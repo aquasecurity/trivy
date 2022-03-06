@@ -14,7 +14,7 @@ type ArtifactType string
 
 const (
 	DockerImageArtifact   ArtifactType = "docker"
-	PackageArtifact       ArtifactType = "package"
+	PackageArtifact       ArtifactType = "dir"
 	DockerArchiveArtifact ArtifactType = "archive"
 )
 
@@ -32,8 +32,8 @@ var artifactTypeToDisabledAnalyzers = map[ArtifactType][]analyzer.Type{
 	DockerArchiveArtifact: analyzer.TypeLockfiles,
 }
 
-func extractArtifactPath(artifactPath string) (ArtifactType, string) {
-	// The user can specify the input artifact type by using the prefix "<artifact-type>:"" before the artifact path
+func analyzeArtifactPath(artifactPath string) (ArtifactType, string) {
+	// The user can specify the input artifact type by using the "<artifact-type>:" prefix before the artifact path
 	// e.g docker:ubuntu, package:/path/to/express
 	for _, artifactType := range ArtifactTypes {
 		prefix := string(artifactType) + ":"
@@ -43,16 +43,21 @@ func extractArtifactPath(artifactPath string) (ArtifactType, string) {
 		}
 	}
 
+	return detectArtifactType(artifactPath), artifactPath
+
+}
+
+// Detect the artifact type by checking if it is a file, directory or does not exist
+func detectArtifactType(artifactPath string) ArtifactType {
 	fileInfo, err := os.Stat(artifactPath)
 	if err != nil {
-		return DockerImageArtifact, artifactPath
+		return DockerImageArtifact
 	}
 
 	if fileInfo.IsDir() {
-		return PackageArtifact, artifactPath
-	} else {
-		return DockerArchiveArtifact, artifactPath
+		return PackageArtifact
 	}
+	return DockerArchiveArtifact
 }
 
 // SbomRun runs generates sbom for image and package artifacts
@@ -63,7 +68,7 @@ func SbomRun(ctx *cli.Context) error {
 	}
 
 	// Extract and set the target path
-	artifactType, artifactPath := extractArtifactPath(opt.ArtifactOption.Target)
+	artifactType, artifactPath := analyzeArtifactPath(opt.ArtifactOption.Target)
 	opt.ArtifactOption.Target = artifactPath
 
 	// Scan the relevant dependencies
