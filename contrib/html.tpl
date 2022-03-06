@@ -53,7 +53,7 @@
       }
       a.toggle-more-links { cursor: pointer; }
     </style>
-    <title>Trivy Report - {{ getCurrentTime }}</title>
+    <title>Trivy Report - {{ now }}</title>
     <script>
       window.onload = function() {
         document.querySelectorAll('td.links').forEach(function(linkCell) {
@@ -83,7 +83,7 @@
     </script>
   </head>
   <body>
-    <h1>Trivy Report - {{ getCurrentTime }}</h1>
+    <h1>Trivy Report - {{ now }}</h1>
     <table>
     {{- range . }}
       <tr class="group-header">
