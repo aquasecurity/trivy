@@ -13,48 +13,46 @@ import (
 type ArtifactType string
 
 const (
-	DockerArtifact  ArtifactType = "Docker"
-	PackageArtifact ArtifactType = "Package"
-	TarfileArtifact ArtifactType = "Tarfile"
+	DockerImageArtifact   ArtifactType = "docker"
+	PackageArtifact       ArtifactType = "package"
+	DockerArchiveArtifact ArtifactType = "archive"
 )
 
+var ArtifactTypes = []ArtifactType{DockerImageArtifact, PackageArtifact, DockerArchiveArtifact}
+
 var artifactTypeToScanner = map[ArtifactType]InitializeScanner{
-	DockerArtifact:  dockerScanner,
-	PackageArtifact: filesystemScanner,
-	TarfileArtifact: archiveScanner,
+	DockerImageArtifact:   dockerScanner,
+	PackageArtifact:       filesystemScanner,
+	DockerArchiveArtifact: archiveScanner,
 }
 
 var artifactTypeToDisabledAnalyzers = map[ArtifactType][]analyzer.Type{
-	DockerArtifact:  analyzer.TypeLockfiles,
-	PackageArtifact: analyzer.TypeIndividualPkgs,
-	TarfileArtifact: analyzer.TypeLockfiles,
+	DockerImageArtifact:   analyzer.TypeLockfiles,
+	PackageArtifact:       analyzer.TypeIndividualPkgs,
+	DockerArchiveArtifact: analyzer.TypeLockfiles,
 }
 
 func extractArtifactPath(artifactPath string) (ArtifactType, string) {
-	if strings.HasPrefix(artifactPath, "dir:") {
-		return PackageArtifact, strings.Split(artifactPath, "dir:")[1]
+	// The user can specify the input artifact type by using the prefix "<artifact-type>:"" before the artifact path
+	// e.g docker:ubuntu, package:/path/to/express
+	for _, artifactType := range ArtifactTypes {
+		prefix := string(artifactType) + ":"
+
+		if strings.HasPrefix(artifactPath, prefix) {
+			return artifactType, strings.Split(artifactPath, prefix)[1]
+		}
 	}
 
-	if strings.HasPrefix(artifactPath, "docker:") {
-		return DockerArtifact, strings.Split(artifactPath, "docker:")[1]
+	fileInfo, err := os.Stat(artifactPath)
+	if err != nil {
+		return DockerImageArtifact, artifactPath
 	}
 
-	if exists, _ := isPathExist(artifactPath); exists {
+	if fileInfo.IsDir() {
 		return PackageArtifact, artifactPath
+	} else {
+		return DockerArchiveArtifact, artifactPath
 	}
-
-	return DockerArtifact, artifactPath
-}
-
-func isPathExist(path string) (bool, error) {
-	_, err := os.Stat(path)
-	if err == nil {
-		return true, nil
-	}
-	if os.IsNotExist(err) {
-		return false, nil
-	}
-	return false, err
 }
 
 // SbomRun runs generates sbom for image and package artifacts
@@ -64,7 +62,7 @@ func SbomRun(ctx *cli.Context) error {
 		return xerrors.Errorf("option error: %w", err)
 	}
 
-	// Set the parsed target path
+	// Extract and set the target path
 	artifactType, artifactPath := extractArtifactPath(opt.ArtifactOption.Target)
 	opt.ArtifactOption.Target = artifactPath
 
