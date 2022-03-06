@@ -353,6 +353,7 @@ func NewApp(version string) *cli.App {
 		NewImageCommand(),
 		NewFilesystemCommand(),
 		NewRootfsCommand(),
+		NewSbomCommand(),
 		NewRepositoryCommand(),
 		NewClientCommand(),
 		NewServerCommand(),
@@ -513,6 +514,24 @@ func NewRootfsCommand() *cli.Command {
 			stringSliceFlag(configPolicy),
 			stringSliceFlag(configData),
 			stringSliceFlag(policyNamespaces),
+		},
+	}
+}
+
+// NewSbomCommand is the factory method to add sbom command
+func NewSbomCommand() *cli.Command {
+	return &cli.Command{
+		Name:      "sbom",
+		ArgsUsage: "artifact",
+		Usage:     "generate sbom for an artifact",
+		Action:    artifact.SbomRun,
+		Flags: []cli.Flag{
+			&formatFlag,
+			&outputFlag,
+			&exitCodeFlag,
+			&clearCacheFlag,
+			&ignoreFileFlag,
+			&timeoutFlag,
 		},
 	}
 }
