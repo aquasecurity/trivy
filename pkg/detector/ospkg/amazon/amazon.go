@@ -11,7 +11,9 @@ import (
 	"golang.org/x/xerrors"
 
 	ftypes "github.com/aquasecurity/fanal/types"
+	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/amazon"
+	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/epel"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/scanner/utils"
 	"github.com/aquasecurity/trivy/pkg/types"
@@ -22,6 +24,11 @@ var (
 		"1": time.Date(2023, 6, 30, 23, 59, 59, 0, time.UTC),
 		// N/A
 		"2": time.Date(3000, 1, 1, 23, 59, 59, 0, time.UTC),
+	}
+
+	epelVersions = map[string]string{
+		"1": "6",
+		"2": "7",
 	}
 )
 
@@ -40,7 +47,8 @@ func WithClock(clock clock.Clock) option {
 
 // Scanner to scan amazon vulnerabilities
 type Scanner struct {
-	ac amazon.VulnSrc
+	osVS   amazon.VulnSrc
+	epelVS epel.VulnSrc
 	options
 }
 
@@ -55,7 +63,8 @@ func NewScanner(opts ...option) *Scanner {
 		opt(o)
 	}
 	return &Scanner{
-		ac:      amazon.NewVulnSrc(),
+		osVS:    amazon.NewVulnSrc(),
+		epelVS:  epel.NewVulnSrc(),
 		options: *o,
 	}
 }
@@ -73,9 +82,23 @@ func (s *Scanner) Detect(osVer string, pkgs []ftypes.Package) ([]types.DetectedV
 
 	var vulns []types.DetectedVulnerability
 	for _, pkg := range pkgs {
-		advisories, err := s.ac.Get(osVer, pkg.Name)
-		if err != nil {
-			return nil, xerrors.Errorf("failed to get amazon advisories: %w", err)
+		var advisories []dbTypes.Advisory
+		var err error
+		// https://docs.fedoraproject.org/en-US/epel/epel-faq/#how_can_i_find_out_if_a_package_is_from_epel
+		if pkg.Vendor == "Fedora Project" {
+			epelVer, ok := epelVersions[osVer]
+			if !ok || epelVer == "6" {
+				continue
+			}
+			advisories, err = s.epelVS.Get(epelVer, pkg.Name)
+			if err != nil {
+				return nil, xerrors.Errorf("failed to get EPEL advisories: %w", err)
+			}
+		} else {
+			advisories, err = s.osVS.Get(osVer, pkg.Name)
+			if err != nil {
+				return nil, xerrors.Errorf("failed to get amazon advisories: %w", err)
+			}
 		}
 
 		installed := utils.FormatVersion(pkg)

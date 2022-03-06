@@ -9,6 +9,8 @@ import (
 	"k8s.io/utils/clock"
 
 	ftypes "github.com/aquasecurity/fanal/types"
+	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
+	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/epel"
 	oracleoval "github.com/aquasecurity/trivy-db/pkg/vulnsrc/oracle-oval"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/scanner/utils"
@@ -31,15 +33,17 @@ var (
 
 // Scanner implements oracle vulnerability scanner
 type Scanner struct {
-	vs    oracleoval.VulnSrc
-	clock clock.Clock
+	osVS         oracleoval.VulnSrc
+	fedoraEPELVS epel.VulnSrc
+	clock        clock.Clock
 }
 
 // NewScanner is the factory method to return oracle vulnerabilities
 func NewScanner() *Scanner {
 	return &Scanner{
-		vs:    oracleoval.NewVulnSrc(),
-		clock: clock.RealClock{},
+		osVS:         oracleoval.NewVulnSrc(),
+		fedoraEPELVS: epel.NewVulnSrc(),
+		clock:        clock.RealClock{},
 	}
 }
 
@@ -66,9 +70,24 @@ func (s *Scanner) Detect(osVer string, pkgs []ftypes.Package) ([]types.DetectedV
 
 	var vulns []types.DetectedVulnerability
 	for _, pkg := range pkgs {
-		advisories, err := s.vs.Get(osVer, pkg.Name)
-		if err != nil {
-			return nil, xerrors.Errorf("failed to get Oracle Linux advisory: %w", err)
+		var advisories []dbTypes.Advisory
+		var err error
+		// https://docs.fedoraproject.org/en-US/epel/epel-faq/#how_can_i_find_out_if_a_package_is_from_epel
+		if pkg.Vendor == "Fedora Project" {
+			switch osVer {
+			case "7", "8", "9":
+				advisories, err = s.fedoraEPELVS.Get(osVer, pkg.Name)
+				if err != nil {
+					return nil, xerrors.Errorf("failed to get EPEL advisory: %w", err)
+				}
+			default:
+				continue
+			}
+		} else {
+			advisories, err = s.osVS.Get(osVer, pkg.Name)
+			if err != nil {
+				return nil, xerrors.Errorf("failed to get Oracle Linux advisory: %w", err)
+			}
 		}
 
 		installed := utils.FormatVersion(pkg)

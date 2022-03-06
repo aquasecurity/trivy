@@ -1,7 +1,6 @@
 package oracle
 
 import (
-	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"testing"
 	"time"
 
@@ -12,6 +11,7 @@ import (
 
 	ftypes "github.com/aquasecurity/fanal/types"
 	"github.com/aquasecurity/trivy-db/pkg/db"
+	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	oracleoval "github.com/aquasecurity/trivy-db/pkg/vulnsrc/oracle-oval"
 	"github.com/aquasecurity/trivy/pkg/dbtest"
 	"github.com/aquasecurity/trivy/pkg/types"
@@ -82,7 +82,7 @@ func TestScanner_IsSupportedVersion(t *testing.T) {
 
 	for testName, v := range vectors {
 		s := &Scanner{
-			vs:    oracleoval.NewVulnSrc(),
+			osVS:  oracleoval.NewVulnSrc(),
 			clock: v.clock,
 		}
 		t.Run(testName, func(t *testing.T) {

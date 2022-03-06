@@ -9,6 +9,8 @@ import (
 	"k8s.io/utils/clock"
 
 	ftypes "github.com/aquasecurity/fanal/types"
+	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
+	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/epel"
 	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/rocky"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/scanner/utils"
@@ -37,7 +39,8 @@ func WithClock(clock clock.Clock) option {
 
 // Scanner implements the Rocky Linux scanner
 type Scanner struct {
-	vs rocky.VulnSrc
+	osVS   rocky.VulnSrc
+	epelVS epel.VulnSrc
 	*options
 }
 
@@ -51,7 +54,8 @@ func NewScanner(opts ...option) *Scanner {
 		opt(o)
 	}
 	return &Scanner{
-		vs:      rocky.NewVulnSrc(),
+		osVS:    rocky.NewVulnSrc(),
+		epelVS:  epel.NewVulnSrc(),
 		options: o,
 	}
 }
@@ -68,16 +72,26 @@ func (s *Scanner) Detect(osVer string, pkgs []ftypes.Package) ([]types.DetectedV
 	var vulns []types.DetectedVulnerability
 	var skipPkgs []string
 	for _, pkg := range pkgs {
-		if pkg.Modularitylabel != "" {
-			skipPkgs = append(skipPkgs, pkg.Name)
-			continue
-		}
 		pkgName := addModularNamespace(pkg.Name, pkg.Modularitylabel)
-		advisories, err := s.vs.Get(osVer, pkgName)
-		if err != nil {
-			return nil, xerrors.Errorf("failed to get Rocky Linux advisories: %w", err)
-		}
 
+		var advisories []dbTypes.Advisory
+		var err error
+		// https://docs.fedoraproject.org/en-US/epel/epel-faq/#how_can_i_find_out_if_a_package_is_from_epel
+		if pkg.Vendor == "Fedora Project" {
+			advisories, err = s.epelVS.Get(osVer, pkgName)
+			if err != nil {
+				return nil, xerrors.Errorf("failed to get EPEL advisories: %w", err)
+			}
+		} else {
+			if pkg.Modularitylabel != "" {
+				skipPkgs = append(skipPkgs, pkg.Name)
+				continue
+			}
+			advisories, err = s.osVS.Get(osVer, pkgName)
+			if err != nil {
+				return nil, xerrors.Errorf("failed to get Rocky Linux advisories: %w", err)
+			}
+		}
 		installed := utils.FormatVersion(pkg)
 		installedVersion := version.NewVersion(installed)
 

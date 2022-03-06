@@ -14,6 +14,7 @@ import (
 	ftypes "github.com/aquasecurity/fanal/types"
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	ustrings "github.com/aquasecurity/trivy-db/pkg/utils/strings"
+	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/epel"
 	redhat "github.com/aquasecurity/trivy-db/pkg/vulnsrc/redhat-oval"
 	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/vulnerability"
 	"github.com/aquasecurity/trivy/pkg/log"
@@ -71,7 +72,8 @@ func WithClock(clock clock.Clock) option {
 
 // Scanner implements the Alpine scanner
 type Scanner struct {
-	vs redhat.VulnSrc
+	osVS   redhat.VulnSrc
+	epelVS epel.VulnSrc
 	*options
 }
 
@@ -85,7 +87,8 @@ func NewScanner(opts ...option) *Scanner {
 		opt(o)
 	}
 	return &Scanner{
-		vs:      redhat.NewVulnSrc(),
+		osVS:    redhat.NewVulnSrc(),
+		epelVS:  epel.NewVulnSrc(),
 		options: o,
 	}
 }
@@ -119,18 +122,33 @@ func (s *Scanner) detect(osVer string, pkg ftypes.Package) ([]types.DetectedVuln
 	// For Red Hat OVAL v2 containing only binary package names
 	pkgName := addModularNamespace(pkg.Name, pkg.Modularitylabel)
 
-	var contentSets []string
-	var nvr string
-	if pkg.BuildInfo == nil {
-		contentSets = defaultContentSets[osVer]
+	var advisories []dbTypes.Advisory
+	var err error
+	// https://docs.fedoraproject.org/en-US/epel/epel-faq/#how_can_i_find_out_if_a_package_is_from_epel
+	if pkg.Vendor == "Fedora Project" {
+		switch osVer {
+		case "7", "8", "9":
+			advisories, err = s.epelVS.Get(osVer, pkgName)
+			if err != nil {
+				return nil, xerrors.Errorf("failed to get EPEL advisories: %w", err)
+			}
+		default:
+			return []types.DetectedVulnerability{}, nil
+		}
 	} else {
-		contentSets = pkg.BuildInfo.ContentSets
-		nvr = fmt.Sprintf("%s-%s", pkg.BuildInfo.Nvr, pkg.BuildInfo.Arch)
-	}
+		var contentSets []string
+		var nvr string
+		if pkg.BuildInfo == nil {
+			contentSets = defaultContentSets[osVer]
+		} else {
+			contentSets = pkg.BuildInfo.ContentSets
+			nvr = fmt.Sprintf("%s-%s", pkg.BuildInfo.Nvr, pkg.BuildInfo.Arch)
+		}
 
-	advisories, err := s.vs.Get(pkgName, contentSets, []string{nvr})
-	if err != nil {
-		return nil, xerrors.Errorf("failed to get Red Hat advisories: %w", err)
+		advisories, err = s.osVS.Get(pkgName, contentSets, []string{nvr})
+		if err != nil {
+			return nil, xerrors.Errorf("failed to get Red Hat advisories: %w", err)
+		}
 	}
 
 	installed := utils.FormatVersion(pkg)
@@ -144,7 +162,7 @@ func (s *Scanner) detect(osVer string, pkg ftypes.Package) ([]types.DetectedVuln
 			PkgName:          pkg.Name,
 			InstalledVersion: utils.FormatVersion(pkg),
 			Layer:            pkg.Layer,
-			SeveritySource:   vulnerability.RedHat,
+			SeveritySource:   string(vulnerability.RedHat),
 			Vulnerability: dbTypes.Vulnerability{
 				Severity: adv.Severity.String(),
 			},
