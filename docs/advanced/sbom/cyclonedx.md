@@ -6,7 +6,7 @@ Note that XML format is not supported at the moment.
 To generate sbom use the `trivy sbom` command.
 
 ```
-$ trivy sbom alpine:3.15
+$ trivy sbom --format cyclonedx alpine:3.15
 ```
 
 <details>
