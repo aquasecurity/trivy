@@ -1,7 +1,6 @@
 package artifact
 
 import (
-	"os"
 	"strings"
 
 	"github.com/aquasecurity/fanal/analyzer"
@@ -32,32 +31,19 @@ var artifactTypeToDisabledAnalyzers = map[ArtifactType][]analyzer.Type{
 	DockerArchiveArtifact:  analyzer.TypeLockfiles,
 }
 
-func analyzeArtifactPath(artifactPath string) (ArtifactType, string) {
-	// The user can specify the input artifact type by using the "<artifact-type>:" prefix before the artifact path
+func analyzeArtifactPath(artifactPath string) (ArtifactType, string, error) {
+	// The user must specify the input artifact type by using the "<artifact-type>:" prefix before the artifact path
 	// e.g image:ubuntu, dir:/path/to/express
 	for _, artifactType := range ArtifactTypes {
 		prefix := string(artifactType) + ":"
 
 		if strings.HasPrefix(artifactPath, prefix) {
-			return artifactType, strings.Split(artifactPath, prefix)[1]
+			return artifactType, strings.Split(artifactPath, prefix)[1], nil
 		}
 	}
 
-	return detectArtifactType(artifactPath), artifactPath
+	return "", "", xerrors.Errorf(`invalid artifact type, artifact type must be one of %s`, ArtifactTypes)
 
-}
-
-// Detect the artifact type by checking if it is a file, directory or does not exist
-func detectArtifactType(artifactPath string) ArtifactType {
-	fileInfo, err := os.Stat(artifactPath)
-	if err != nil {
-		return ContainerImageArtifact
-	}
-
-	if fileInfo.IsDir() {
-		return PackageArtifact
-	}
-	return DockerArchiveArtifact
 }
 
 // SbomRun runs generates sbom for image and package artifacts
@@ -68,7 +54,12 @@ func SbomRun(ctx *cli.Context) error {
 	}
 
 	// Extract and set the target path
-	artifactType, artifactPath := analyzeArtifactPath(opt.ArtifactOption.Target)
+	artifactType, artifactPath, err := analyzeArtifactPath(opt.ArtifactOption.Target)
+
+	if err != nil {
+		return err
+	}
+
 	opt.ArtifactOption.Target = artifactPath
 
 	// Scan the relevant dependencies

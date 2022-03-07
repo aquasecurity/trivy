@@ -44,6 +44,14 @@ var (
 		EnvVars: []string{"TRIVY_FORMAT"},
 	}
 
+	sbomFormatFlag = cli.StringFlag{
+		Name:    "format",
+		Aliases: []string{"f"},
+		Value:   "cyclonedx",
+		Usage:   "format (cyclonedx)",
+		EnvVars: []string{"TRIVY_SBOM_FORMAT"},
+	}
+
 	inputFlag = cli.StringFlag{
 		Name:    "input",
 		Aliases: []string{"i"},
@@ -524,12 +532,11 @@ func NewSbomCommand() *cli.Command {
 		Name:      "sbom",
 		ArgsUsage: "ARTIFACT",
 		Usage:     "generate sbom for an artifact",
-		Description: fmt.Sprintf(`"ARTIFACT" is the artifact path, trivy will determine the artifact type.
-		To tell trivy the artifact type you can use use the "type":"details" format.
+		Description: fmt.Sprintf(`"ARTIFACT" uses the "type":"path" format.
 		Supported types: %s`, artifact.ArtifactTypes),
 		Action: artifact.SbomRun,
 		Flags: []cli.Flag{
-			&formatFlag,
+			&sbomFormatFlag,
 			&outputFlag,
 			&clearCacheFlag,
 			&ignoreFileFlag,
