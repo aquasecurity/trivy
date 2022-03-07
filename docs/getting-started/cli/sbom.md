@@ -2,10 +2,10 @@
 
 ```bash
 NAME:
-   main sbom - generate sbom for an artifact
+   trivy sbom - generate sbom for an artifact
 
 USAGE:
-   main sbom [command options] ARTIFACT
+   trivy sbom [command options] ARTIFACT
 
 DESCRIPTION:
    "ARTIFACT" is the artifact path, trivy will determine the artifact type.
