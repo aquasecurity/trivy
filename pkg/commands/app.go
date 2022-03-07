@@ -522,13 +522,15 @@ func NewRootfsCommand() *cli.Command {
 func NewSbomCommand() *cli.Command {
 	return &cli.Command{
 		Name:      "sbom",
-		ArgsUsage: "artifact",
+		ArgsUsage: "ARTIFACT",
 		Usage:     "generate sbom for an artifact",
-		Action:    artifact.SbomRun,
+		Description: fmt.Sprintf(`"ARTIFACT" is the artifact path, trivy will determine the artifact type.
+		To tell trivy the artifact type you can use use the "type":"details" format.
+		Supported types: %s`, artifact.ArtifactTypes),
+		Action: artifact.SbomRun,
 		Flags: []cli.Flag{
 			&formatFlag,
 			&outputFlag,
-			&exitCodeFlag,
 			&clearCacheFlag,
 			&ignoreFileFlag,
 			&timeoutFlag,

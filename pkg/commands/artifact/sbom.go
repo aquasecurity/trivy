@@ -13,28 +13,28 @@ import (
 type ArtifactType string
 
 const (
-	DockerImageArtifact   ArtifactType = "docker"
-	PackageArtifact       ArtifactType = "dir"
-	DockerArchiveArtifact ArtifactType = "archive"
+	ContainerImageArtifact ArtifactType = "image"
+	PackageArtifact        ArtifactType = "dir"
+	DockerArchiveArtifact  ArtifactType = "archive"
 )
 
-var ArtifactTypes = []ArtifactType{DockerImageArtifact, PackageArtifact, DockerArchiveArtifact}
+var ArtifactTypes = []ArtifactType{ContainerImageArtifact, PackageArtifact, DockerArchiveArtifact}
 
 var artifactTypeToScanner = map[ArtifactType]InitializeScanner{
-	DockerImageArtifact:   dockerScanner,
-	PackageArtifact:       filesystemScanner,
-	DockerArchiveArtifact: archiveScanner,
+	ContainerImageArtifact: dockerScanner,
+	PackageArtifact:        filesystemScanner,
+	DockerArchiveArtifact:  archiveScanner,
 }
 
 var artifactTypeToDisabledAnalyzers = map[ArtifactType][]analyzer.Type{
-	DockerImageArtifact:   analyzer.TypeLockfiles,
-	PackageArtifact:       analyzer.TypeIndividualPkgs,
-	DockerArchiveArtifact: analyzer.TypeLockfiles,
+	ContainerImageArtifact: analyzer.TypeLockfiles,
+	PackageArtifact:        analyzer.TypeIndividualPkgs,
+	DockerArchiveArtifact:  analyzer.TypeLockfiles,
 }
 
 func analyzeArtifactPath(artifactPath string) (ArtifactType, string) {
 	// The user can specify the input artifact type by using the "<artifact-type>:" prefix before the artifact path
-	// e.g docker:ubuntu, package:/path/to/express
+	// e.g image:ubuntu, dir:/path/to/express
 	for _, artifactType := range ArtifactTypes {
 		prefix := string(artifactType) + ":"
 
@@ -51,7 +51,7 @@ func analyzeArtifactPath(artifactPath string) (ArtifactType, string) {
 func detectArtifactType(artifactPath string) ArtifactType {
 	fileInfo, err := os.Stat(artifactPath)
 	if err != nil {
-		return DockerImageArtifact
+		return ContainerImageArtifact
 	}
 
 	if fileInfo.IsDir() {
