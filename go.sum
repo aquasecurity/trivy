@@ -246,10 +246,10 @@ github.com/apparentlymart/go-textseg/v13 v13.0.0 h1:Y+KvPE1NYz0xl601PVImeQfFyEy6
 github.com/apparentlymart/go-textseg/v13 v13.0.0/go.mod h1:ZK2fH7c4NqDTLtiYLvIkEghdlcqw7yxLeM89kiTRPUo=
 github.com/aquasecurity/bolt-fixtures v0.0.0-20200903104109-d34e7f983986 h1:2a30xLN2sUZcMXl50hg+PJCIDdJgIvIbVcKqLJ/ZrtM=
 github.com/aquasecurity/bolt-fixtures v0.0.0-20200903104109-d34e7f983986/go.mod h1:NT+jyeCzXk6vXR5MTkdn4z64TgGfE5HMLC8qfj5unl8=
-github.com/aquasecurity/defsec v0.14.0 h1:zkiD0OKr1WCkuCVKd4IlW4GPSO1dMVx/f9R7gE3ifK8=
-github.com/aquasecurity/defsec v0.14.0/go.mod h1:ePT+j44TFfUwgIZ6yx5FPHgYk2aTXAqsMf/WnE78ujg=
-github.com/aquasecurity/fanal v0.0.0-20220303131110-677831c145ce h1:dSwkYTvQG34juVxAZJaOHIE4EwLS/haRY1GuDNLj7Ug=
-github.com/aquasecurity/fanal v0.0.0-20220303131110-677831c145ce/go.mod h1:uoj6ep+2TaMFIwZa/+CYXevheZ0AXKtoihG25XZhBB4=
+github.com/aquasecurity/defsec v0.17.1 h1:gen/DInkQZ+BnV2X/UCI4Kb7SgJzPKiSb91duNhOWcg=
+github.com/aquasecurity/defsec v0.17.1/go.mod h1:fmymhKkorY0+cTGAML6LQI+BpCEP1zURaI8smST5rV0=
+github.com/aquasecurity/fanal v0.0.0-20220309115321-0183e4870f89 h1:owYWGe2dTRhXuBW3OUekU9+yWec8pNTZthGvTFMq9oY=
+github.com/aquasecurity/fanal v0.0.0-20220309115321-0183e4870f89/go.mod h1:PL2i7JtbuPnLlJVG5HVPAVLMmAUdpA9J/iV7b7E5Gbg=
 github.com/aquasecurity/go-dep-parser v0.0.0-20220302151315-ff6d77c26988 h1:Hd6q0/VF/bC/MT1K/63W2u5ChRIy6cPSQk0YbJ3Vcb8=
 github.com/aquasecurity/go-dep-parser v0.0.0-20220302151315-ff6d77c26988/go.mod h1:XxIz2s4UymZBcg9WwAc2km77lFt9rVE/LmKJe2YVOtY=
 github.com/aquasecurity/go-gem-version v0.0.0-20201115065557-8eed6fe000ce h1:QgBRgJvtEOBtUXilDb1MLi1p1MWoyFDXAu5DEUl5nwM=
@@ -263,8 +263,8 @@ github.com/aquasecurity/go-version v0.0.0-20210121072130-637058cfe492 h1:rcEG5HI
 github.com/aquasecurity/go-version v0.0.0-20210121072130-637058cfe492/go.mod h1:9Beu8XsUNNfzml7WBf3QmyPToP1wm1Gj/Vc5UJKqTzU=
 github.com/aquasecurity/testdocker v0.0.0-20210911155206-e1e85f5a1516 h1:moQmzbpLo5dxHQCyEhqzizsDSNrNhn/7uRTCZzo4A1o=
 github.com/aquasecurity/testdocker v0.0.0-20210911155206-e1e85f5a1516/go.mod h1:gTd97VdQ0rg8Mkiic3rPgNOQdprZ7feTAhiD5mGQjgM=
-github.com/aquasecurity/tfsec v1.5.0 h1:on44QOHN2P1aP8reCBQXBxZPGRe/fJ9DcS3Aj7qfjaQ=
-github.com/aquasecurity/tfsec v1.5.0/go.mod h1:0b1UnsTa71YAhGfb7ecjCGh9+O/1gkGmq6ZTEwrKz70=
+github.com/aquasecurity/tfsec v1.8.0 h1:8U4JU/iJaWq6pcY48+R9kD6vDz58Ud1daUsw2l7hAsE=
+github.com/aquasecurity/tfsec v1.8.0/go.mod h1:Tnj1ozVkv45QdTi1wiVm8Efw3D7ztjQctztG+yU+JwY=
 github.com/aquasecurity/trivy-db v0.0.0-20220130223604-df65ebde46f4 h1:w/cU+uNDHHzMKLNpiohoHvPTtd1mi6Dyih4pqV6FLxQ=
 github.com/aquasecurity/trivy-db v0.0.0-20220130223604-df65ebde46f4/go.mod h1:BOulYmf+l2bd+Bjo3tTsdnbWCsh5UsJn1MqdiZzmm/Q=
 github.com/armon/circbuf v0.0.0-20150827004946-bbbad097214e/go.mod h1:3U/XgcO3hCbHZ8TKRvWD2dDTCfh9M9ya+I9JpbB7O8o=
@@ -1355,9 +1355,8 @@ github.com/openzipkin/zipkin-go v0.2.2/go.mod h1:NaW6tEwdmWMaCDZzg8sh+IBNOxHMPnh
 github.com/owenrumney/go-sarif v1.0.14/go.mod h1:dNDiPlF04ESR/6fHlPyq7gHKmrM0sHUvAGjsoh8ZH0U=
 github.com/owenrumney/go-sarif v1.1.1 h1:QNObu6YX1igyFKhdzd7vgzmw7XsWN3/6NMGuDzBgXmE=
 github.com/owenrumney/go-sarif v1.1.1/go.mod h1:dNDiPlF04ESR/6fHlPyq7gHKmrM0sHUvAGjsoh8ZH0U=
-github.com/owenrumney/go-sarif/v2 v2.0.13/go.mod h1:MSqMMx9WqlBSY7pXoOZWgEsVB4FDNfhcaXDA1j6Sr+w=
-github.com/owenrumney/go-sarif/v2 v2.0.17 h1:F3V0IQYMjOqBtfnQQWC+yv5dTISkcZuG/9YBv0mIEBE=
-github.com/owenrumney/go-sarif/v2 v2.0.17/go.mod h1:MSqMMx9WqlBSY7pXoOZWgEsVB4FDNfhcaXDA1j6Sr+w=
+github.com/owenrumney/go-sarif/v2 v2.1.1 h1:JVUO0cEhG8bvEWIxsRmURY4u7wBZUTgdh4zikkkiPM8=
+github.com/owenrumney/go-sarif/v2 v2.1.1/go.mod h1:MSqMMx9WqlBSY7pXoOZWgEsVB4FDNfhcaXDA1j6Sr+w=
 github.com/owenrumney/squealer v0.3.1 h1:iBo817khHVpcP65om+iXuSYg+G6iaVvjsY0amcy1UAA=
 github.com/owenrumney/squealer v0.3.1/go.mod h1:mRMvbRyrnE2mYghLpn4M2jATJhIddp4XOAKKY60X7nY=
 github.com/package-url/packageurl-go v0.1.1-0.20220203205134-d70459300c8a h1:tkTSd1nhioPqi5Whu3CQ79UjPtaGOytqyNnSCVOqzHM=
