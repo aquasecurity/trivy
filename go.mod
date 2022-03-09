@@ -7,7 +7,7 @@ require (
 	github.com/Masterminds/sprig v2.22.0+incompatible
 	github.com/NYTimes/gziphandler v0.0.0-20170623195520-56545f4a5d46
 	github.com/aquasecurity/bolt-fixtures v0.0.0-20200903104109-d34e7f983986
-	github.com/aquasecurity/fanal v0.0.0-20220303131110-677831c145ce
+	github.com/aquasecurity/fanal v0.0.0-20220309115321-0183e4870f89
 	github.com/aquasecurity/go-dep-parser v0.0.0-20220302151315-ff6d77c26988
 	github.com/aquasecurity/go-gem-version v0.0.0-20201115065557-8eed6fe000ce
 	github.com/aquasecurity/go-npm-version v0.0.0-20201110091526-0b796d180798
@@ -32,7 +32,7 @@ require (
 	github.com/masahiro331/go-mvn-version v0.0.0-20210429150710-d3157d602a08
 	github.com/olekukonko/tablewriter v0.0.5
 	github.com/open-policy-agent/opa v0.37.2
-	github.com/owenrumney/go-sarif/v2 v2.0.17
+	github.com/owenrumney/go-sarif/v2 v2.1.1
 	github.com/package-url/packageurl-go v0.1.1-0.20220203205134-d70459300c8a
 	github.com/spf13/afero v1.8.1
 	github.com/stretchr/testify v1.7.0
@@ -73,8 +73,8 @@ require (
 	github.com/agext/levenshtein v1.2.3 // indirect
 	github.com/apparentlymart/go-cidr v1.1.0 // indirect
 	github.com/apparentlymart/go-textseg/v13 v13.0.0 // indirect
-	github.com/aquasecurity/defsec v0.14.0 // indirect
-	github.com/aquasecurity/tfsec v1.5.0 // indirect
+	github.com/aquasecurity/defsec v0.17.1 // indirect
+	github.com/aquasecurity/tfsec v1.8.0 // indirect
 	github.com/aws/aws-sdk-go v1.43.8 // indirect
 	github.com/bgentry/go-netrc v0.0.0-20140422174119-9fd32a8b3d3d // indirect
 	github.com/bmatcuk/doublestar v1.3.4 // indirect
