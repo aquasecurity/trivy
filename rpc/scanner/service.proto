@@ -35,4 +35,5 @@ message Result {
   string class                                               = 6;
   string   type                                              = 3;
   repeated common.Package packages                           = 5;
+  repeated common.CustomResource custom_resources            = 7;
 }

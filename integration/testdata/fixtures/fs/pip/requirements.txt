@@ -4,3 +4,5 @@ itsdangerous==2.0.0
 Jinja2==3.0.0
 MarkupSafe>2.0.0
 Werkzeug==0.11
+oauth2-client==4.0.0
+python-gitlab==2.0.0

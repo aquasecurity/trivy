@@ -97,7 +97,7 @@ func TestOption_Init(t *testing.T) {
 			name: "invalid option combination: --template enabled without --format",
 			args: []string{"--template", "@contrib/gitlab.tpl", "gitlab/gitlab-ce:12.7.2-ce.0"},
 			logs: []string{
-				"--template is ignored because --format template is not specified. Use --template option with --format template option.",
+				"'--template' is ignored because '--format template' is not specified. Use '--template' option with '--format template' option.",
 			},
 			want: Option{
 				ReportOption: option.ReportOption{
@@ -116,7 +116,7 @@ func TestOption_Init(t *testing.T) {
 			name: "invalid option combination: --template and --format json",
 			args: []string{"--format", "json", "--template", "@contrib/gitlab.tpl", "gitlab/gitlab-ce:12.7.2-ce.0"},
 			logs: []string{
-				"--template is ignored because --format json is specified. Use --template option with --format template option.",
+				"'--template' is ignored because '--format json' is specified. Use '--template' option with '--format template' option.",
 			},
 			want: Option{
 				ReportOption: option.ReportOption{
@@ -136,7 +136,7 @@ func TestOption_Init(t *testing.T) {
 			name: "invalid option combination: --format template without --template",
 			args: []string{"--format", "template", "--severity", "MEDIUM", "gitlab/gitlab-ce:12.7.2-ce.0"},
 			logs: []string{
-				"--format template is ignored because --template not is specified. Specify --template option when you use --format template.",
+				"'--format template' is ignored because '--template' is not specified. Specify '--template' option when you use '--format template'.",
 			},
 			want: Option{
 				ReportOption: option.ReportOption{

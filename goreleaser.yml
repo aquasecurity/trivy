@@ -108,14 +108,15 @@ dockers:
     ids:
       - trivy
     build_flag_templates:
-      - "--label=org.label-schema.schema-version=1.0"
-      - "--label=org.label-schema.name={{ .ProjectName }}"
-      - "--label=org.label-schema.description=A Fast Vulnerability Scanner for Containers"
-      - "--label=org.label-schema.vendor=Aqua Security"
-      - "--label=org.label-schema.version={{ .Version }}"
-      - "--label=org.label-schema.build-date={{ .Date }}"
-      - "--label=org.label-schema.vcs=https://github.com/aquasecurity/trivy"
-      - "--label=org.label-schema.vcs-ref={{ .FullCommit }}"
+      - "--label=org.opencontainers.image.title={{ .ProjectName }}"
+      - "--label=org.opencontainers.image.description=A Fast Vulnerability Scanner for Containers"
+      - "--label=org.opencontainers.image.vendor=Aqua Security"
+      - "--label=org.opencontainers.image.version={{ .Version }}"
+      - "--label=org.opencontainers.image.created={{ .Date }}"
+      - "--label=org.opencontainers.image.source=https://github.com/aquasecurity/trivy"
+      - "--label=org.opencontainers.image.revision={{ .FullCommit }}"
+      - "--label=org.opencontainers.image.url=https://www.aquasec.com/products/trivy/"
+      - "--label=org.opencontainers.image.documentation=https://aquasecurity.github.io/trivy/v{{ .Version }}/"
       - "--platform=linux/amd64"
     extra_files:
     - contrib/
@@ -132,15 +133,41 @@ dockers:
     ids:
       - trivy
     build_flag_templates:
-      - "--label=org.label-schema.schema-version=1.0"
-      - "--label=org.label-schema.name={{ .ProjectName }}"
-      - "--label=org.label-schema.description=A Fast Vulnerability Scanner for Containers"
-      - "--label=org.label-schema.vendor=Aqua Security"
-      - "--label=org.label-schema.version={{ .Version }}"
-      - "--label=org.label-schema.build-date={{ .Date }}"
-      - "--label=org.label-schema.vcs=https://github.com/aquasecurity/trivy"
-      - "--label=org.label-schema.vcs-ref={{ .FullCommit }}"
+      - "--label=org.opencontainers.image.title={{ .ProjectName }}"
+      - "--label=org.opencontainers.image.description=A Fast Vulnerability Scanner for Containers"
+      - "--label=org.opencontainers.image.vendor=Aqua Security"
+      - "--label=org.opencontainers.image.version={{ .Version }}"
+      - "--label=org.opencontainers.image.created={{ .Date }}"
+      - "--label=org.opencontainers.image.source=https://github.com/aquasecurity/trivy"
+      - "--label=org.opencontainers.image.revision={{ .FullCommit }}"
+      - "--label=org.opencontainers.image.url=https://www.aquasec.com/products/trivy/"
+      - "--label=org.opencontainers.image.documentation=https://aquasecurity.github.io/trivy/v{{ .Version }}/"
       - "--platform=linux/arm64"
+    extra_files:
+    - contrib/
+  - image_templates:
+      - "docker.io/aquasec/trivy:{{ .Version }}-s390x"
+      - "docker.io/aquasec/trivy:latest-s390x"
+      - "ghcr.io/aquasecurity/trivy:{{ .Version }}-s390x"
+      - "ghcr.io/aquasecurity/trivy:latest-s390x"
+      - "public.ecr.aws/aquasecurity/trivy:latest-s390x"
+      - "public.ecr.aws/aquasecurity/trivy:{{ .Version }}-s390x"
+    use: buildx
+    goos: linux
+    goarch: s390x
+    ids:
+      - trivy
+    build_flag_templates:
+      - "--label=org.opencontainers.image.title={{ .ProjectName }}"
+      - "--label=org.opencontainers.image.description=A Fast Vulnerability Scanner for Containers"
+      - "--label=org.opencontainers.image.vendor=Aqua Security"
+      - "--label=org.opencontainers.image.version={{ .Version }}"
+      - "--label=org.opencontainers.image.created={{ .Date }}"
+      - "--label=org.opencontainers.image.source=https://github.com/aquasecurity/trivy"
+      - "--label=org.opencontainers.image.revision={{ .FullCommit }}"
+      - "--label=org.opencontainers.image.url=https://www.aquasec.com/products/trivy/"
+      - "--label=org.opencontainers.image.documentation=https://aquasecurity.github.io/trivy/v{{ .Version }}/"
+      - "--platform=linux/s390x"
     extra_files:
     - contrib/
 
@@ -149,23 +176,29 @@ docker_manifests:
     image_templates:
     - 'aquasec/trivy:{{ .Version }}-amd64'
     - 'aquasec/trivy:{{ .Version }}-arm64'
+    - 'aquasec/trivy:{{ .Version }}-s390x'
   - name_template: 'ghcr.io/aquasecurity/trivy:{{ .Version }}'
     image_templates:
     - 'ghcr.io/aquasecurity/trivy:{{ .Version }}-amd64'
     - 'ghcr.io/aquasecurity/trivy:{{ .Version }}-arm64'
+    - 'ghcr.io/aquasecurity/trivy:{{ .Version }}-s390x'
   - name_template: 'public.ecr.aws/aquasecurity/trivy:{{ .Version }}'
     image_templates:
     - 'public.ecr.aws/aquasecurity/trivy:{{ .Version }}-amd64'
     - 'public.ecr.aws/aquasecurity/trivy:{{ .Version }}-arm64'
+    - 'public.ecr.aws/aquasecurity/trivy:{{ .Version }}-s390x'
   - name_template: 'aquasec/trivy:latest'
     image_templates:
     - 'aquasec/trivy:{{ .Version }}-amd64'
     - 'aquasec/trivy:{{ .Version }}-arm64'
+    - 'aquasec/trivy:{{ .Version }}-s390x'
   - name_template: 'ghcr.io/aquasecurity/trivy:latest'
     image_templates:
     - 'ghcr.io/aquasecurity/trivy:{{ .Version }}-amd64'
     - 'ghcr.io/aquasecurity/trivy:{{ .Version }}-arm64'
+    - 'ghcr.io/aquasecurity/trivy:{{ .Version }}-s390x'
   - name_template: 'public.ecr.aws/aquasecurity/trivy:latest'
     image_templates: 
     - 'public.ecr.aws/aquasecurity/trivy:{{ .Version }}-amd64'
     - 'public.ecr.aws/aquasecurity/trivy:{{ .Version }}-arm64'
+    - 'public.ecr.aws/aquasecurity/trivy:{{ .Version }}-s390x'
