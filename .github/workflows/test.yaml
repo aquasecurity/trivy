@@ -75,7 +75,7 @@ jobs:
     - name: Run GoReleaser
       uses: goreleaser/goreleaser-action@v2
       with:
-        version: v0.183.0
+        version: v1.4.1
         args: release --snapshot --rm-dist --skip-publish
 
   build-documents:
