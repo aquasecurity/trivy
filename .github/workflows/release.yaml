@@ -13,7 +13,9 @@ jobs:
     env:
       DOCKER_CLI_EXPERIMENTAL: "enabled"
     permissions:
-      id-token: write
+      id-token: write # For cosign
+      packages: write # For GHCR
+      contents: read  # Not required for public repositories, but for clarity
     steps:
       - name: Install dependencies
         run: |
