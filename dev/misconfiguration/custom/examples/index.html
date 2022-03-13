@@ -16,7 +16,7 @@
         
       
       <link rel="icon" href="../../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.2.3, mkdocs-material-8.2.1+insiders-4.9.1">
+      <meta name="generator" content="mkdocs-1.2.3, mkdocs-material-8.2.5+insiders-4.11.0">
     
     
       
@@ -24,7 +24,7 @@
       
     
     
-      <link rel="stylesheet" href="../../../assets/stylesheets/main.a3608ae2.min.css">
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.589a02ac.min.css">
       
         
         <link rel="stylesheet" href="../../../assets/stylesheets/palette.e6a45f82.min.css">
@@ -35,6 +35,7 @@
     
     
       
+        
         
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
         <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
@@ -3051,12 +3052,12 @@
 <h1 id="examples">Examples</h1>
 <h2 id="custom-policy">Custom Policy</h2>
 <h3 id="kubernetes">Kubernetes</h3>
-<p>See <a href="https://github.com/aquasecurity/trivy/tree/a069ad7818fd83c83cfdbd7df51f3d983b8bc97e/examples/misconf/custom-policy/kubernetes/">here</a>.</p>
+<p>See <a href="https://github.com/aquasecurity/trivy/tree/0fca2cda91aa0c14110e130d93a1a85f9103f582/examples/misconf/custom-policy/kubernetes/">here</a>.</p>
 <p>The custom policy is defined in <code>user.kubernetes.ID001</code> package.
 You need to pass the package prefix you want to evaluate through <code>--namespaces</code> option.
 In this case, the package prefix should be <code>user</code>, <code>user.kuberntes</code>, or <code>user.kubernetes.ID001</code>.</p>
 <h3 id="dockerfile">Dockerfile</h3>
-<p>See <a href="https://github.com/aquasecurity/trivy/tree/a069ad7818fd83c83cfdbd7df51f3d983b8bc97e/examples/misconf/custom-policy/dockerfile/">here</a>.</p>
+<p>See <a href="https://github.com/aquasecurity/trivy/tree/0fca2cda91aa0c14110e130d93a1a85f9103f582/examples/misconf/custom-policy/dockerfile/">here</a>.</p>
 <p>The input will be a dictionary of stages.</p>
 <h4 id="single-stage">Single Stage</h4>
 <details class="example">
@@ -3280,17 +3281,17 @@ In this case, the package prefix should be <code>user</code>, <code>user.kubernt
 </code></pre></div></p>
 </details>
 <h3 id="docker-compose">Docker Compose</h3>
-<p>See <a href="https://github.com/aquasecurity/trivy/tree/a069ad7818fd83c83cfdbd7df51f3d983b8bc97e/examples/misconf/custom-policy/docker-compose/">here</a>.</p>
+<p>See <a href="https://github.com/aquasecurity/trivy/tree/0fca2cda91aa0c14110e130d93a1a85f9103f582/examples/misconf/custom-policy/docker-compose/">here</a>.</p>
 <p>Docker Compose uses YAML format for configurations. You can apply your Rego policies to <code>docker-compose.yml</code>.</p>
 <h3 id="hcl">HCL</h3>
-<p>See <a href="https://github.com/aquasecurity/trivy/tree/a069ad7818fd83c83cfdbd7df51f3d983b8bc97e/examples/misconf/custom-policy/hcl/">here</a>.</p>
+<p>See <a href="https://github.com/aquasecurity/trivy/tree/0fca2cda91aa0c14110e130d93a1a85f9103f582/examples/misconf/custom-policy/hcl/">here</a>.</p>
 <p>Trivy parses HCL files and converts into structured data.</p>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
 <p>Terraform HCL files are not supported yet.</p>
 </div>
 <h3 id="terraform-plan">Terraform Plan</h3>
-<p>See <a href="https://github.com/aquasecurity/trivy/tree/a069ad7818fd83c83cfdbd7df51f3d983b8bc97e/examples/misconf/custom-policy/terraform-plan/">here</a>.</p>
+<p>See <a href="https://github.com/aquasecurity/trivy/tree/0fca2cda91aa0c14110e130d93a1a85f9103f582/examples/misconf/custom-policy/terraform-plan/">here</a>.</p>
 <p>Use the command <a href="https://www.terraform.io/docs/cli/commands/show.html">terraform show</a> to convert the Terraform plan into JSON so that OPA can read the plan.</p>
 <div class="highlight"><pre><span></span><code>$ terraform init
 $ terraform plan --out tfplan.binary
@@ -3298,14 +3299,14 @@ $ terraform show -json tfplan.binary &gt; tfplan.json
 </code></pre></div>
 <p>For more details, see also <a href="https://www.openpolicyagent.org/docs/latest/terraform/">OPA document</a>.</p>
 <h3 id="serverless-framework">Serverless Framework</h3>
-<p>See <a href="https://github.com/aquasecurity/trivy/tree/a069ad7818fd83c83cfdbd7df51f3d983b8bc97e/examples/misconf/custom-policy/serverless/">here</a>.</p>
+<p>See <a href="https://github.com/aquasecurity/trivy/tree/0fca2cda91aa0c14110e130d93a1a85f9103f582/examples/misconf/custom-policy/serverless/">here</a>.</p>
 <p>Server Framework uses YAML format for configurations. You can apply your Rego policies to <code>serverless.yaml</code>.</p>
 <h2 id="custom-data">Custom Data</h2>
-<p>See <a href="https://github.com/aquasecurity/trivy/tree/a069ad7818fd83c83cfdbd7df51f3d983b8bc97e/examples/misconf/custom-data">here</a>.</p>
+<p>See <a href="https://github.com/aquasecurity/trivy/tree/0fca2cda91aa0c14110e130d93a1a85f9103f582/examples/misconf/custom-data">here</a>.</p>
 <h2 id="combined-input">Combined Input</h2>
-<p>See <a href="https://github.com/aquasecurity/trivy/tree/a069ad7818fd83c83cfdbd7df51f3d983b8bc97e/examples/misconf/combine">here</a>.</p>
+<p>See <a href="https://github.com/aquasecurity/trivy/tree/0fca2cda91aa0c14110e130d93a1a85f9103f582/examples/misconf/combine">here</a>.</p>
 <h2 id="go-testing">Go Testing</h2>
-<p>See <a href="https://github.com/aquasecurity/trivy/tree/a069ad7818fd83c83cfdbd7df51f3d983b8bc97e/examples/misconf/go-testing">here</a>.</p>
+<p>See <a href="https://github.com/aquasecurity/trivy/tree/0fca2cda91aa0c14110e130d93a1a85f9103f582/examples/misconf/go-testing">here</a>.</p>
 
 
 
@@ -3374,7 +3375,7 @@ $ terraform show -json tfplan.binary &gt; tfplan.json
     <script id="__config" type="application/json">{"base": "../../..", "features": ["navigation.tabs", "navigation.tabs.sticky", "navigation.sections"], "translations": {"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "search": "../../../assets/javascripts/workers/search.5c9dbbf3.min.js", "version": {"method": "mike", "provider": "mike"}}</script>
     
     
-      <script src="../../../assets/javascripts/bundle.e533ffb0.min.js"></script>
+      <script src="../../../assets/javascripts/bundle.10bf1588.min.js"></script>
       
     
   </body>
