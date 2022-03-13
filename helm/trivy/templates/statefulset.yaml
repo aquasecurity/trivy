@@ -4,6 +4,9 @@ metadata:
   name: {{ include "trivy.fullname" . }}
   labels:
 {{ include "trivy.labels" . | indent 4 }}
+    {{- with .Values.trivy.labels }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
 spec:
   podManagementPolicy: "Parallel"
   serviceName: {{ include "trivy.fullname" . }}
@@ -29,6 +32,9 @@ spec:
       labels:
         app.kubernetes.io/name: {{ include "trivy.name" . }}
         app.kubernetes.io/instance: {{ .Release.Name }}
+        {{- with .Values.trivy.labels }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
     spec:
       serviceAccountName: {{ include "trivy.fullname" . }}
       automountServiceAccountToken: false

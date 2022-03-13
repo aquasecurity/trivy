@@ -19,6 +19,43 @@
       "Target": "requirements.txt",
       "Class": "lang-pkgs",
       "Type": "pip",
+      "Packages": [
+        {
+          "Name": "Flask",
+          "Version": "2.0.0",
+          "Layer": {}
+        },
+        {
+          "Name": "Jinja2",
+          "Version": "3.0.0",
+          "Layer": {}
+        },
+        {
+          "Name": "Werkzeug",
+          "Version": "0.11",
+          "Layer": {}
+        },
+        {
+          "Name": "click",
+          "Version": "8.0.0",
+          "Layer": {}
+        },
+        {
+          "Name": "itsdangerous",
+          "Version": "2.0.0",
+          "Layer": {}
+        },
+        {
+          "Name": "oauth2-client",
+          "Version": "4.0.0",
+          "Layer": {}
+        },
+        {
+          "Name": "python-gitlab",
+          "Version": "2.0.0",
+          "Layer": {}
+        }
+      ],
       "Vulnerabilities": [
         {
           "VulnerabilityID": "CVE-2019-14806",

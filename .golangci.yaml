@@ -9,7 +9,7 @@ linters-settings:
   revive:
     ignore-generated-header: true
   gocyclo:
-    min-complexity: 10
+    min-complexity: 20
   dupl:
     threshold: 100
   goconst:

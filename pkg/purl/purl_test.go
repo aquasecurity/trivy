@@ -22,7 +22,7 @@ func TestNewPackageURL(t *testing.T) {
 		typ      string
 		pkg      ftypes.Package
 		metadata types.Metadata
-		want     packageurl.PackageURL
+		want     purl.PackageURL
 		wantErr  string
 	}{
 		{
@@ -32,11 +32,13 @@ func TestNewPackageURL(t *testing.T) {
 				Name:    "org.springframework:spring-core",
 				Version: "5.3.14",
 			},
-			want: packageurl.PackageURL{
-				Type:      packageurl.TypeMaven,
-				Namespace: "org.springframework",
-				Name:      "spring-core",
-				Version:   "5.3.14",
+			want: purl.PackageURL{
+				PackageURL: packageurl.PackageURL{
+					Type:      packageurl.TypeMaven,
+					Namespace: "org.springframework",
+					Name:      "spring-core",
+					Version:   "5.3.14",
+				},
 			},
 		},
 		{
@@ -46,11 +48,13 @@ func TestNewPackageURL(t *testing.T) {
 				Name:    "@xtuc/ieee754",
 				Version: "1.2.0",
 			},
-			want: packageurl.PackageURL{
-				Type:      packageurl.TypeNPM,
-				Namespace: "@xtuc",
-				Name:      "ieee754",
-				Version:   "1.2.0",
+			want: purl.PackageURL{
+				PackageURL: packageurl.PackageURL{
+					Type:      packageurl.TypeNPM,
+					Namespace: "@xtuc",
+					Name:      "ieee754",
+					Version:   "1.2.0",
+				},
 			},
 		},
 		{
@@ -60,10 +64,12 @@ func TestNewPackageURL(t *testing.T) {
 				Name:    "lodash",
 				Version: "4.17.21",
 			},
-			want: packageurl.PackageURL{
-				Type:    packageurl.TypeNPM,
-				Name:    "lodash",
-				Version: "4.17.21",
+			want: purl.PackageURL{
+				PackageURL: packageurl.PackageURL{
+					Type:    packageurl.TypeNPM,
+					Name:    "lodash",
+					Version: "4.17.21",
+				},
 			},
 		},
 		{
@@ -73,10 +79,12 @@ func TestNewPackageURL(t *testing.T) {
 				Name:    "Django_test",
 				Version: "1.2.0",
 			},
-			want: packageurl.PackageURL{
-				Type:    packageurl.TypePyPi,
-				Name:    "django-test",
-				Version: "1.2.0",
+			want: purl.PackageURL{
+				PackageURL: packageurl.PackageURL{
+					Type:    packageurl.TypePyPi,
+					Name:    "django-test",
+					Version: "1.2.0",
+				},
 			},
 		},
 		{
@@ -86,11 +94,13 @@ func TestNewPackageURL(t *testing.T) {
 				Name:    "symfony/contracts",
 				Version: "v1.0.2",
 			},
-			want: packageurl.PackageURL{
-				Type:      packageurl.TypeComposer,
-				Namespace: "symfony",
-				Name:      "contracts",
-				Version:   "v1.0.2",
+			want: purl.PackageURL{
+				PackageURL: packageurl.PackageURL{
+					Type:      packageurl.TypeComposer,
+					Namespace: "symfony",
+					Name:      "contracts",
+					Version:   "v1.0.2",
+				},
 			},
 		},
 		{
@@ -100,11 +110,13 @@ func TestNewPackageURL(t *testing.T) {
 				Name:    "github.com/go-sql-driver/Mysql",
 				Version: "v1.5.0",
 			},
-			want: packageurl.PackageURL{
-				Type:      packageurl.TypeGolang,
-				Namespace: "github.com/go-sql-driver",
-				Name:      "mysql",
-				Version:   "v1.5.0",
+			want: purl.PackageURL{
+				PackageURL: packageurl.PackageURL{
+					Type:      packageurl.TypeGolang,
+					Namespace: "github.com/go-sql-driver",
+					Name:      "mysql",
+					Version:   "v1.5.0",
+				},
 			},
 		},
 		{
@@ -129,19 +141,21 @@ func TestNewPackageURL(t *testing.T) {
 					Name:   "8",
 				},
 			},
-			want: packageurl.PackageURL{
-				Type:      packageurl.TypeRPM,
-				Namespace: "redhat",
-				Name:      "acl",
-				Version:   "2.2.53-1.el8",
-				Qualifiers: packageurl.Qualifiers{
-					{
-						Key:   "arch",
-						Value: "aarch64",
-					},
-					{
-						Key:   "distro",
-						Value: "redhat-8",
+			want: purl.PackageURL{
+				PackageURL: packageurl.PackageURL{
+					Type:      packageurl.TypeRPM,
+					Namespace: "redhat",
+					Name:      "acl",
+					Version:   "2.2.53-1.el8",
+					Qualifiers: packageurl.Qualifiers{
+						{
+							Key:   "arch",
+							Value: "aarch64",
+						},
+						{
+							Key:   "distro",
+							Value: "redhat-8",
+						},
 					},
 				},
 			},
@@ -161,20 +175,42 @@ func TestNewPackageURL(t *testing.T) {
 					Architecture: "amd64",
 				},
 			},
-			want: packageurl.PackageURL{
-				Type:      packageurl.TypeOCI,
-				Namespace: "",
-				Name:      "core",
-				Version:   "sha256:8fe1727132b2506c17ba0e1f6a6ed8a016bb1f5735e43b2738cd3fd1979b6260",
-				Qualifiers: packageurl.Qualifiers{
-					{
-						Key:   "repository_url",
-						Value: "cblmariner2preview.azurecr.io/base/core",
+			want: purl.PackageURL{
+				PackageURL: packageurl.PackageURL{
+					Type:      packageurl.TypeOCI,
+					Namespace: "",
+					Name:      "core",
+					Version:   "sha256:8fe1727132b2506c17ba0e1f6a6ed8a016bb1f5735e43b2738cd3fd1979b6260",
+					Qualifiers: packageurl.Qualifiers{
+						{
+							Key:   "repository_url",
+							Value: "cblmariner2preview.azurecr.io/base/core",
+						},
+						{
+							Key:   "arch",
+							Value: "amd64",
+						},
 					},
-					{
-						Key:   "arch",
-						Value: "amd64",
-					},
+				},
+			},
+		},
+		{
+			name: "container local",
+			typ:  purl.TypeOCI,
+			metadata: types.Metadata{
+				RepoTags:    []string{},
+				RepoDigests: []string{},
+				ImageConfig: v1.ConfigFile{
+					Architecture: "amd64",
+				},
+				ImageID: "sha256:8fe1727132b2506c17ba0e1f6a6ed8a016bb1f5735e43b2738cd3fd1979b6260",
+			},
+			want: purl.PackageURL{
+				PackageURL: packageurl.PackageURL{
+					Type:      "",
+					Namespace: "",
+					Name:      "",
+					Version:   "",
 				},
 			},
 		},
@@ -194,19 +230,21 @@ func TestNewPackageURL(t *testing.T) {
 					Architecture: "amd64",
 				},
 			},
-			want: packageurl.PackageURL{
-				Type:      packageurl.TypeOCI,
-				Namespace: "",
-				Name:      "alpine",
-				Version:   "sha256:8fe1727132b2506c17ba0e1f6a6ed8a016bb1f5735e43b2738cd3fd1979b6260",
-				Qualifiers: packageurl.Qualifiers{
-					{
-						Key:   "repository_url",
-						Value: "index.docker.io/library/alpine",
-					},
-					{
-						Key:   "arch",
-						Value: "amd64",
+			want: purl.PackageURL{
+				PackageURL: packageurl.PackageURL{
+					Type:      packageurl.TypeOCI,
+					Namespace: "",
+					Name:      "alpine",
+					Version:   "sha256:8fe1727132b2506c17ba0e1f6a6ed8a016bb1f5735e43b2738cd3fd1979b6260",
+					Qualifiers: packageurl.Qualifiers{
+						{
+							Key:   "repository_url",
+							Value: "index.docker.io/library/alpine",
+						},
+						{
+							Key:   "arch",
+							Value: "amd64",
+						},
 					},
 				},
 			},
