@@ -102,6 +102,16 @@ func Test_systemFileFilterHook_Hook(t *testing.T) {
 					"/usr/lib64/python2.7/lib-dynload/Python-2.7.5-py2.7.egg-info",
 					"usr/lib64/python2.7/wsgiref.egg-info", // without the leading slash
 				},
+				CustomResources: []types.CustomResource{
+					{
+						FilePath: "usr/bin/pydoc",
+						Data:     "remove",
+					},
+					{
+						FilePath: "usr/bin/pydoc/needed",
+						Data:     "shouldNotRemove",
+					},
+				},
 			},
 			want: &types.BlobInfo{
 				PackageInfos: []types.PackageInfo{
@@ -151,6 +161,13 @@ func Test_systemFileFilterHook_Hook(t *testing.T) {
 								Version: "v0.81.0",
 							},
 						},
+					},
+				},
+				CustomResources: []types.CustomResource{
+					{
+						FilePath: "usr/bin/pydoc/needed",
+						Data:     "shouldNotRemove",
+						Layer:    types.Layer{},
 					},
 				},
 			},

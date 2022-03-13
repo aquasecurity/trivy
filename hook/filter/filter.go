@@ -73,6 +73,17 @@ func (h systemFileFilterHook) Hook(blob *types.BlobInfo) error {
 		apps = append(apps, app)
 	}
 
+	// Iterate and delete unnecessary customResource
+	i := 0
+	for _, res := range blob.CustomResources {
+		if utils.StringInSlice(res.FilePath, systemFiles) {
+			continue
+		}
+		blob.CustomResources[i] = res
+		i++
+	}
+	blob.CustomResources = blob.CustomResources[:i]
+
 	// Overwrite Applications
 	blob.Applications = apps
 
