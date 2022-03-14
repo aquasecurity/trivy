@@ -10,8 +10,9 @@ import (
 )
 
 var (
-	appDirs    = []string{".git", "vendor"}
-	systemDirs = []string{"proc", "sys", "dev"}
+	// These variables are exported so that a tool importing Trivy as a library can override these values.
+	AppDirs    = []string{".git", "vendor"}
+	SystemDirs = []string{"proc", "sys", "dev"}
 )
 
 const ThresholdSize = int64(200) << 20
@@ -31,7 +32,7 @@ func newWalker(skipFiles, skipDirs []string) walker {
 		cleanSkipFiles = append(cleanSkipFiles, skipFile)
 	}
 
-	for _, skipDir := range append(skipDirs, systemDirs...) {
+	for _, skipDir := range append(skipDirs, SystemDirs...) {
 		skipDir = filepath.Clean(filepath.ToSlash(skipDir))
 		skipDir = strings.TrimLeft(skipDir, "/")
 		cleanSkipDirs = append(cleanSkipDirs, skipDir)
@@ -57,7 +58,7 @@ func (w *walker) shouldSkipDir(dir string) bool {
 
 	// Skip application dirs (relative path)
 	base := filepath.Base(dir)
-	if utils.StringInSlice(base, appDirs) {
+	if utils.StringInSlice(base, AppDirs) {
 		return true
 	}
 
