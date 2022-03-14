@@ -99,7 +99,7 @@ func TestWriter_Write(t *testing.T) {
 			},
 			wantSBOM: &cdx.BOM{
 				BOMFormat:    "CycloneDX",
-				SpecVersion:  "1.3",
+				SpecVersion:  "1.4",
 				SerialNumber: "urn:uuid:3ff14136-e09f-4df9-80ea-000000000001",
 				Version:      1,
 				Metadata: &cdx.Metadata{
@@ -322,7 +322,7 @@ func TestWriter_Write(t *testing.T) {
 			},
 			wantSBOM: &cdx.BOM{
 				BOMFormat:    "CycloneDX",
-				SpecVersion:  "1.3",
+				SpecVersion:  "1.4",
 				SerialNumber: "urn:uuid:3ff14136-e09f-4df9-80ea-000000000001",
 				Version:      1,
 				Metadata: &cdx.Metadata{
@@ -447,7 +447,7 @@ func TestWriter_Write(t *testing.T) {
 			},
 			wantSBOM: &cdx.BOM{
 				BOMFormat:    "CycloneDX",
-				SpecVersion:  "1.3",
+				SpecVersion:  "1.4",
 				SerialNumber: "urn:uuid:3ff14136-e09f-4df9-80ea-000000000001",
 				Version:      1,
 				Metadata: &cdx.Metadata{
@@ -542,7 +542,7 @@ func TestWriter_Write(t *testing.T) {
 			},
 			wantSBOM: &cdx.BOM{
 				BOMFormat:    "CycloneDX",
-				SpecVersion:  "1.3",
+				SpecVersion:  "1.4",
 				SerialNumber: "urn:uuid:3ff14136-e09f-4df9-80ea-000000000001",
 				Version:      1,
 				Metadata: &cdx.Metadata{
@@ -611,7 +611,7 @@ func TestWriter_Write(t *testing.T) {
 
 			wantSBOM: &cdx.BOM{
 				BOMFormat:    "CycloneDX",
-				SpecVersion:  "1.3",
+				SpecVersion:  "1.4",
 				SerialNumber: "urn:uuid:3ff14136-e09f-4df9-80ea-000000000001",
 				Version:      1,
 				Metadata: &cdx.Metadata{
