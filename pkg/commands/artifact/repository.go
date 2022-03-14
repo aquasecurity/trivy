@@ -2,6 +2,7 @@ package artifact
 
 import (
 	"context"
+	"net/http"
 
 	"github.com/urfave/cli/v2"
 	"golang.org/x/xerrors"
@@ -15,6 +16,7 @@ import (
 )
 
 func repositoryScanner(ctx context.Context, dir string, ac cache.ArtifactCache, lac cache.LocalArtifactCache,
+	_ string, _ http.Header,
 	_ bool, artifactOpt artifact.Option, scannerOpt config.ScannerOption) (scanner.Scanner, func(), error) {
 	s, cleanup, err := initializeRepositoryScanner(ctx, dir, ac, lac, artifactOpt, scannerOpt)
 	if err != nil {

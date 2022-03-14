@@ -46,6 +46,12 @@ var StandaloneFilesystemSet = wire.NewSet(
 	StandaloneSuperSet,
 )
 
+// StandaloneFilesystemRemoteSet binds filesystem dependencies for client/server mode
+var StandaloneFilesystemRemoteSet = wire.NewSet(
+	flocal.NewArtifact,
+	RemoteSuperSet,
+)
+
 // StandaloneRepositorySet binds repository dependencies
 var StandaloneRepositorySet = wire.NewSet(
 	remote.NewArtifact,
@@ -54,7 +60,6 @@ var StandaloneRepositorySet = wire.NewSet(
 
 // RemoteSuperSet is used in the client mode
 var RemoteSuperSet = wire.NewSet(
-	aimage.NewArtifact,
 	client.SuperSet,
 	wire.Bind(new(Driver), new(client.Scanner)),
 	NewScanner,
@@ -62,12 +67,14 @@ var RemoteSuperSet = wire.NewSet(
 
 // RemoteDockerSet binds remote docker dependencies
 var RemoteDockerSet = wire.NewSet(
+	aimage.NewArtifact,
 	image.NewDockerImage,
 	RemoteSuperSet,
 )
 
 // RemoteArchiveSet binds remote archive dependencies
 var RemoteArchiveSet = wire.NewSet(
+	aimage.NewArtifact,
 	image.NewArchiveImage,
 	RemoteSuperSet,
 )

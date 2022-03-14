@@ -2,6 +2,8 @@ package artifact
 
 import (
 	"context"
+	"github.com/aquasecurity/trivy/pkg/rpc/client"
+	"net/http"
 
 	"github.com/urfave/cli/v2"
 	"golang.org/x/xerrors"
@@ -14,8 +16,20 @@ import (
 )
 
 func filesystemScanner(ctx context.Context, path string, ac cache.ArtifactCache, lac cache.LocalArtifactCache,
+	_ string, _ http.Header,
 	_ bool, artifactOpt artifact.Option, scannerOpt config.ScannerOption) (scanner.Scanner, func(), error) {
 	s, cleanup, err := initializeFilesystemScanner(ctx, path, ac, lac, artifactOpt, scannerOpt)
+	if err != nil {
+		return scanner.Scanner{}, func() {}, xerrors.Errorf("unable to initialize a filesystem scanner: %w", err)
+	}
+	return s, cleanup, nil
+}
+
+func filesystemRemoteScanner(ctx context.Context, path string, ac cache.ArtifactCache, lac cache.LocalArtifactCache,
+	remoteAddr string, customHeaders http.Header,
+	insecure bool, artifactOpt artifact.Option, scannerOpt config.ScannerOption) (scanner.Scanner, func(), error) {
+	s, cleanup, err := initializeFilesystemRemoteScanner(ctx, path, ac, client.CustomHeaders(customHeaders),
+		client.RemoteURL(remoteAddr), client.Insecure(insecure), artifactOpt, scannerOpt)
 	if err != nil {
 		return scanner.Scanner{}, func() {}, xerrors.Errorf("unable to initialize a filesystem scanner: %w", err)
 	}
@@ -31,7 +45,9 @@ func FilesystemRun(ctx *cli.Context) error {
 
 	// Disable the individual package scanning
 	opt.DisabledAnalyzers = analyzer.TypeIndividualPkgs
-
+	if opt.RemoteAddr != "" {
+		return Run(ctx.Context, opt, filesystemRemoteScanner, initFSCache)
+	}
 	return Run(ctx.Context, opt, filesystemScanner, initFSCache)
 }
 

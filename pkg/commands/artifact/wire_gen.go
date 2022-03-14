@@ -20,6 +20,7 @@ import (
 	"github.com/aquasecurity/trivy-db/pkg/db"
 	"github.com/aquasecurity/trivy/pkg/detector/ospkg"
 	"github.com/aquasecurity/trivy/pkg/result"
+	"github.com/aquasecurity/trivy/pkg/rpc/client"
 	"github.com/aquasecurity/trivy/pkg/scanner"
 	"github.com/aquasecurity/trivy/pkg/scanner/local"
 )
@@ -74,6 +75,18 @@ func initializeFilesystemScanner(ctx context.Context, path string, artifactCache
 	}, nil
 }
 
+func initializeFilesystemRemoteScanner(ctx context.Context, path string, artifactCache cache.ArtifactCache, customHeaders client.CustomHeaders, url client.RemoteURL, insecure client.Insecure, artifactOption artifact.Option, configScannerOption config.ScannerOption) (scanner.Scanner, func(), error) {
+	scannerScanner := client.NewProtobufClient(url, insecure)
+	clientScanner := client.NewScanner(customHeaders, scannerScanner)
+	artifactArtifact, err := local2.NewArtifact(path, artifactCache, artifactOption, configScannerOption)
+	if err != nil {
+		return scanner.Scanner{}, nil, err
+	}
+	scanner2 := scanner.NewScanner(clientScanner, artifactArtifact)
+	return scanner2, func() {
+	}, nil
+}
+
 func initializeRepositoryScanner(ctx context.Context, url string, artifactCache cache.ArtifactCache, localArtifactCache cache.LocalArtifactCache, artifactOption artifact.Option, configScannerOption config.ScannerOption) (scanner.Scanner, func(), error) {
 	applierApplier := applier.NewApplier(localArtifactCache)
 	detector := ospkg.Detector{}
@@ -90,6 +103,45 @@ func initializeRepositoryScanner(ctx context.Context, url string, artifactCache 
 
 func initializeResultClient() result.Client {
 	dbConfig := db.Config{}
-	client := result.NewClient(dbConfig)
-	return client
+	resultClient := result.NewClient(dbConfig)
+	return resultClient
+}
+
+func initializeRemoteDockerScanner(ctx context.Context, imageName string, artifactCache cache.ArtifactCache, customHeaders client.CustomHeaders, url client.RemoteURL, insecure client.Insecure, dockerOpt types.DockerOption, artifactOption artifact.Option, configScannerOption config.ScannerOption) (scanner.Scanner, func(), error) {
+	scannerScanner := client.NewProtobufClient(url, insecure)
+	clientScanner := client.NewScanner(customHeaders, scannerScanner)
+	typesImage, cleanup, err := image.NewDockerImage(ctx, imageName, dockerOpt)
+	if err != nil {
+		return scanner.Scanner{}, nil, err
+	}
+	artifactArtifact, err := image2.NewArtifact(typesImage, artifactCache, artifactOption, configScannerOption)
+	if err != nil {
+		cleanup()
+		return scanner.Scanner{}, nil, err
+	}
+	scanner2 := scanner.NewScanner(clientScanner, artifactArtifact)
+	return scanner2, func() {
+		cleanup()
+	}, nil
+}
+
+func initializeRemoteArchiveScanner(ctx context.Context, filePath string, artifactCache cache.ArtifactCache, customHeaders client.CustomHeaders, url client.RemoteURL, insecure client.Insecure, artifactOption artifact.Option, configScannerOption config.ScannerOption) (scanner.Scanner, error) {
+	scannerScanner := client.NewProtobufClient(url, insecure)
+	clientScanner := client.NewScanner(customHeaders, scannerScanner)
+	typesImage, err := image.NewArchiveImage(filePath)
+	if err != nil {
+		return scanner.Scanner{}, err
+	}
+	artifactArtifact, err := image2.NewArtifact(typesImage, artifactCache, artifactOption, configScannerOption)
+	if err != nil {
+		return scanner.Scanner{}, err
+	}
+	scanner2 := scanner.NewScanner(clientScanner, artifactArtifact)
+	return scanner2, nil
+}
+
+func initializeRemoteResultClient() result.Client {
+	dbConfig := db.Config{}
+	resultClient := result.NewClient(dbConfig)
+	return resultClient
 }

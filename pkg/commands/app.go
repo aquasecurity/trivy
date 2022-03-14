@@ -13,7 +13,6 @@ import (
 	"github.com/aquasecurity/trivy-db/pkg/metadata"
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/commands/artifact"
-	"github.com/aquasecurity/trivy/pkg/commands/client"
 	"github.com/aquasecurity/trivy/pkg/commands/plugin"
 	"github.com/aquasecurity/trivy/pkg/commands/server"
 	"github.com/aquasecurity/trivy/pkg/result"
@@ -313,6 +312,19 @@ var (
 		EnvVars: []string{"TRIVY_INSECURE"},
 	}
 
+	remoteServer = cli.StringFlag{
+		Name:    "remote",
+		Value:   "http://localhost:4954",
+		Usage:   "server address",
+		EnvVars: []string{"TRIVY_REMOTE"},
+	}
+
+	customHeaders = cli.StringSliceFlag{
+		Name:    "custom-headers",
+		Usage:   "custom headers",
+		EnvVars: []string{"TRIVY_CUSTOM_HEADERS"},
+	}
+
 	// Global flags
 	globalFlags = []cli.Flag{
 		&quietFlag,
@@ -470,6 +482,7 @@ func NewFilesystemCommand() *cli.Command {
 			&ignorePolicy,
 			&listAllPackages,
 			&offlineScan,
+			&remoteServer,
 			stringSliceFlag(skipFiles),
 			stringSliceFlag(skipDirs),
 			stringSliceFlag(configPolicy),
@@ -564,7 +577,7 @@ func NewClientCommand() *cli.Command {
 		Aliases:   []string{"c"},
 		ArgsUsage: "image_name",
 		Usage:     "client mode",
-		Action:    client.Run,
+		Action:    artifact.ClientRun,
 		Flags: []cli.Flag{
 			&templateFlag,
 			&formatFlag,
@@ -591,17 +604,8 @@ func NewClientCommand() *cli.Command {
 			// original flags
 			&token,
 			&tokenHeader,
-			&cli.StringFlag{
-				Name:    "remote",
-				Value:   "http://localhost:4954",
-				Usage:   "server address",
-				EnvVars: []string{"TRIVY_REMOTE"},
-			},
-			&cli.StringSliceFlag{
-				Name:    "custom-headers",
-				Usage:   "custom headers",
-				EnvVars: []string{"TRIVY_CUSTOM_HEADERS"},
-			},
+			&remoteServer,
+			&customHeaders,
 		},
 	}
 }

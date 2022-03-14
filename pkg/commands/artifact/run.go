@@ -3,6 +3,7 @@ package artifact
 import (
 	"context"
 	"errors"
+	"net/http"
 	"os"
 
 	"github.com/urfave/cli/v2"
@@ -13,6 +14,7 @@ import (
 	"github.com/aquasecurity/fanal/artifact"
 	"github.com/aquasecurity/fanal/cache"
 	"github.com/aquasecurity/trivy-db/pkg/db"
+	remoteCache "github.com/aquasecurity/trivy/pkg/cache"
 	"github.com/aquasecurity/trivy/pkg/commands/operation"
 	"github.com/aquasecurity/trivy/pkg/log"
 	pkgReport "github.com/aquasecurity/trivy/pkg/report"
@@ -26,7 +28,9 @@ const defaultPolicyNamespace = "appshield"
 var errSkipScan = errors.New("skip subsequent processes")
 
 // InitializeScanner defines the initialize function signature of scanner
-type InitializeScanner func(context.Context, string, cache.ArtifactCache, cache.LocalArtifactCache, bool,
+type InitializeScanner func(context.Context, string, cache.ArtifactCache, cache.LocalArtifactCache,
+	string, http.Header,
+	bool,
 	artifact.Option, config.ScannerOption) (scanner.Scanner, func(), error)
 
 // InitCache defines cache initializer
@@ -92,7 +96,15 @@ func runWithTimeout(ctx context.Context, opt Option, initializeScanner Initializ
 	return nil
 }
 
+func initRemoteCache(c Option) (cache.Cache, error) {
+	return remoteCache.NewRemoteCache(c.RemoteAddr, c.CustomHeaders, c.Insecure), nil
+}
+
 func initFSCache(c Option) (cache.Cache, error) {
+	if c.RemoteAddr != "" {
+		return operation.Cache{}, nil
+	}
+
 	utils.SetCacheDir(c.CacheDir)
 	cache, err := operation.NewCache(c.CacheOption)
 	if err != nil {
@@ -208,7 +220,11 @@ func scan(ctx context.Context, opt Option, initializeScanner InitializeScanner, 
 		NoProgress:        opt.NoProgress || opt.Quiet,
 	}
 
-	s, cleanup, err := initializeScanner(ctx, target, cacheClient, cacheClient, opt.Insecure, artifactOpt, configScannerOptions)
+	var artifactCache cache.ArtifactCache = cacheClient
+	if opt.RemoteAddr != "" {
+		artifactCache = remoteCache.NewRemoteCache(opt.RemoteAddr, opt.CustomHeaders, opt.Insecure)
+	}
+	s, cleanup, err := initializeScanner(ctx, target, artifactCache, cacheClient, opt.RemoteAddr, opt.CustomHeaders, opt.Insecure, artifactOpt, configScannerOptions)
 	if err != nil {
 		return types.Report{}, xerrors.Errorf("unable to initialize a scanner: %w", err)
 	}
