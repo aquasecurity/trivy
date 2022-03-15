@@ -277,19 +277,6 @@ func (cw *Writer) vulnerability(vuln types.DetectedVulnerability, purlMap map[st
 	return &v
 }
 
-func affects(ps string, v string) cdx.Affects {
-	return cdx.Affects{
-		Ref: ps,
-		Range: &[]cdx.AffectedVersions{
-			{
-				Version: v,
-				Status:  cdx.VulnerabilityStatusAffected,
-			},
-		},
-	}
-
-}
-
 func (cw *Writer) pkgToComponent(t string, meta types.Metadata, pkg ftypes.Package) (cdx.Component, error) {
 	pu, err := purl.NewPackageURL(t, meta, pkg)
 	if err != nil {
@@ -451,6 +438,7 @@ func cwes(cweIDs []string) *[]int {
 		i, err := strconv.Atoi(strings.TrimPrefix(strings.ToLower(id), "cwe-"))
 		if err != nil {
 			log.Logger.Debugf("cwe id parse error: %+v", err)
+			continue
 		}
 		ret = append(ret, i)
 	}
@@ -554,5 +542,18 @@ func source(source *dtypes.DataSource) *cdx.Source {
 	return &cdx.Source{
 		Name: string(source.ID),
 		URL:  source.URL,
+	}
+}
+
+func affects(ps string, v string) cdx.Affects {
+	return cdx.Affects{
+		Ref: ps,
+		Range: &[]cdx.AffectedVersions{
+			{
+				Version: v,
+				Status:  cdx.VulnerabilityStatusAffected,
+				// "AffectedVersions.Range" is not included, because it does not exist in DetectedVulnerability.
+			},
+		},
 	}
 }
