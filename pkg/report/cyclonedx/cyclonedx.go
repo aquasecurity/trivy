@@ -1,8 +1,11 @@
 package cyclonedx
 
 import (
+	"github.com/aquasecurity/trivy/pkg/log"
+	"github.com/aquasecurity/trivy/pkg/scanner/utils"
 	"io"
 	"strconv"
+	"strings"
 	"time"
 
 	cdx "github.com/CycloneDX/cyclonedx-go"
@@ -11,6 +14,7 @@ import (
 	"k8s.io/utils/clock"
 
 	ftypes "github.com/aquasecurity/fanal/types"
+	dtypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/purl"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
@@ -127,7 +131,7 @@ func (cw *Writer) convertToBom(r types.Report, version string) (*cdx.BOM, error)
 		Component: metadataComponent,
 	}
 
-	bom.Components, bom.Dependencies, err = cw.parseComponents(r, bom.Metadata.Component.BOMRef)
+	bom.Components, bom.Dependencies, bom.Vulnerabilities, err = cw.parseComponents(r, bom.Metadata.Component.BOMRef)
 	if err != nil {
 		return nil, xerrors.Errorf("failed to parse components: %w", err)
 	}
@@ -135,17 +139,22 @@ func (cw *Writer) convertToBom(r types.Report, version string) (*cdx.BOM, error)
 	return bom, nil
 }
 
-func (cw *Writer) parseComponents(r types.Report, bomRef string) (*[]cdx.Component, *[]cdx.Dependency, error) {
+func (cw *Writer) parseComponents(r types.Report, bomRef string) (*[]cdx.Component, *[]cdx.Dependency, *[]cdx.Vulnerability, error) {
 	var components []cdx.Component
 	var dependencies []cdx.Dependency
 	var metadataDependencies []cdx.Dependency
 	libraryUniqMap := map[string]struct{}{}
+	vulnMap := map[string]*cdx.Vulnerability{}
 	for _, result := range r.Results {
 		var componentDependencies []cdx.Dependency
+		purlMap := map[string]string{}
 		for _, pkg := range result.Packages {
 			pkgComponent, err := cw.pkgToComponent(result.Type, r.Metadata, pkg)
 			if err != nil {
-				return nil, nil, xerrors.Errorf("failed to parse pkg: %w", err)
+				return nil, nil, nil, xerrors.Errorf("failed to parse pkg: %w", err)
+			}
+			if _, ok := purlMap[pkg.Name+utils.FormatVersion(pkg)+pkg.FilePath]; !ok {
+				purlMap[pkg.Name+utils.FormatVersion(pkg)+pkg.FilePath] = pkgComponent.BOMRef
 			}
 
 			// When multiple lock files have the same dependency with the same name and version,
@@ -170,6 +179,22 @@ func (cw *Writer) parseComponents(r types.Report, bomRef string) (*[]cdx.Compone
 			}
 
 			componentDependencies = append(componentDependencies, cdx.Dependency{Ref: pkgComponent.BOMRef})
+		}
+		for _, vuln := range result.Vulnerabilities {
+			if v, ok := vulnMap[vuln.VulnerabilityID]; ok {
+				// If a vulnerability depends on multiple packages,
+				// it will be commonised into a single vulnerability.
+				//   Vulnerability component (CVE-2020-26247)
+				//     -> Library component (nokogiri /srv/app/specifications/app.gemspec)
+				//     -> Library component (nokogiri /srv/app/Gemfile.lock)
+				*v.Affects = append(*v.Affects,
+					cdx.Affects{
+						Ref: purlMap[vuln.PkgName+vuln.InstalledVersion+vuln.PkgPath],
+					},
+				)
+			} else {
+				vulnMap[vuln.VulnerabilityID] = cw.vulnerability(vuln, purlMap)
+			}
 		}
 
 		if result.Type == ftypes.NodePkg || result.Type == ftypes.PythonPkg || result.Type == ftypes.GoBinary ||
@@ -215,11 +240,41 @@ func (cw *Writer) parseComponents(r types.Report, bomRef string) (*[]cdx.Compone
 			metadataDependencies = append(metadataDependencies, cdx.Dependency{Ref: resultComponent.BOMRef})
 		}
 	}
+	var vulnsComponent []cdx.Vulnerability
+	for _, v := range vulnMap {
+		vulnsComponent = append(vulnsComponent, *v)
+	}
 
 	dependencies = append(dependencies,
 		cdx.Dependency{Ref: bomRef, Dependencies: &metadataDependencies},
 	)
-	return &components, &dependencies, nil
+	return &components, &dependencies, &vulnsComponent, nil
+}
+
+func (cw *Writer) vulnerability(vuln types.DetectedVulnerability, purlMap map[string]string) *cdx.Vulnerability {
+	v := cdx.Vulnerability{
+		ID:          vuln.VulnerabilityID,
+		Source:      source(vuln.DataSource),
+		Ratings:     ratings(vuln),
+		CWEs:        cwes(vuln.CweIDs),
+		Description: vuln.Description,
+		Advisories:  advisories(vuln.References),
+	}
+	if vuln.PublishedDate != nil {
+		v.Published = vuln.PublishedDate.String()
+	}
+	if vuln.LastModifiedDate != nil {
+		v.Updated = vuln.LastModifiedDate.String()
+	}
+	if p, ok := purlMap[vuln.PkgName+vuln.InstalledVersion+vuln.PkgPath]; ok {
+		v.Affects = &[]cdx.Affects{
+			{
+				Ref: p,
+			},
+		}
+	}
+
+	return &v
 }
 
 func (cw *Writer) pkgToComponent(t string, meta types.Metadata, pkg ftypes.Package) (cdx.Component, error) {
@@ -361,5 +416,117 @@ func property(key, value string) cdx.Property {
 	return cdx.Property{
 		Name:  Namespace + key,
 		Value: value,
+	}
+}
+
+func advisories(refs []string) *[]cdx.Advisory {
+	var advs []cdx.Advisory
+	for _, ref := range refs {
+		advs = append(advs, cdx.Advisory{
+			URL: ref,
+		})
+	}
+	return &advs
+}
+
+func cwes(cweIDs []string) *[]int {
+	var ret []int
+	if len(cweIDs) == 0 {
+		return nil
+	}
+	for _, id := range cweIDs {
+		i, err := strconv.Atoi(strings.TrimPrefix(strings.ToLower(id), "cwe-"))
+		if err != nil {
+			log.Logger.Debugf("cwe id parse error: %+v", err)
+		}
+		ret = append(ret, i)
+	}
+
+	return &ret
+}
+
+func ratings(vulnerability types.DetectedVulnerability) *[]cdx.VulnerabilityRating {
+	var rates []cdx.VulnerabilityRating
+	for sourceID, cvss := range vulnerability.CVSS {
+		if cvss.V3Score != 0 || cvss.V3Vector != "" {
+			rate := cdx.VulnerabilityRating{
+				Source: &cdx.Source{
+					Name: string(sourceID),
+				},
+				Score:    cvss.V3Score,
+				Method:   cdx.ScoringMethodCVSSv3,
+				Severity: calcSeverity(cvss.V3Score),
+				Vector:   cvss.V3Vector,
+			}
+			if strings.HasPrefix(cvss.V3Vector, "CVSS:3.1") {
+				rate.Method = cdx.ScoringMethodCVSSv31
+			}
+			rates = append(rates, rate)
+		}
+		if cvss.V2Score != 0 || cvss.V2Vector != "" {
+			rate := cdx.VulnerabilityRating{
+				Source: &cdx.Source{
+					Name: string(sourceID),
+				},
+				Score:    cvss.V2Score,
+				Method:   cdx.ScoringMethodCVSSv2,
+				Severity: calcSeverity(cvss.V2Score),
+				Vector:   cvss.V2Vector,
+			}
+			rates = append(rates, rate)
+		}
+	}
+	if vulnerability.DataSource != nil {
+		if _, ok := vulnerability.CVSS[vulnerability.DataSource.ID]; ok {
+			rate := cdx.VulnerabilityRating{
+				Source: &cdx.Source{
+					Name: string(vulnerability.DataSource.ID),
+				},
+				Severity: severity(vulnerability.Severity),
+			}
+			rates = append(rates, rate)
+		}
+	}
+	return &rates
+}
+
+func severity(s string) cdx.Severity {
+	sev, _ := dtypes.NewSeverity(s)
+	switch sev {
+	case dtypes.SeverityLow:
+		return cdx.SeverityLow
+	case dtypes.SeverityMedium:
+		return cdx.SeverityMedium
+	case dtypes.SeverityHigh:
+		return cdx.SeverityHigh
+	case dtypes.SeverityCritical:
+		return cdx.SeverityCritical
+	default:
+		return cdx.SeverityUnknown
+	}
+}
+
+func calcSeverity(score float64) cdx.Severity {
+	if score == 0 {
+		return cdx.SeverityInfo
+	} else if score < 4.0 {
+		return cdx.SeverityLow
+	} else if score < 7.0 {
+		return cdx.SeverityMedium
+	} else if score < 9.0 {
+		return cdx.SeverityHigh
+	} else {
+		return cdx.SeverityCritical
+	}
+}
+
+func source(source *dtypes.DataSource) *cdx.Source {
+	if source == nil {
+		return nil
+	}
+
+	return &cdx.Source{
+		Name: string(source.ID),
+		URL:  source.URL,
 	}
 }

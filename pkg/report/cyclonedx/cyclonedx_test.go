@@ -16,6 +16,7 @@ import (
 
 	fos "github.com/aquasecurity/fanal/analyzer/os"
 	ftypes "github.com/aquasecurity/fanal/types"
+	dtypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/report"
 	"github.com/aquasecurity/trivy/pkg/report/cyclonedx"
 	"github.com/aquasecurity/trivy/pkg/types"
@@ -55,17 +56,55 @@ func TestWriter_Write(t *testing.T) {
 						Type:   fos.CentOS,
 						Packages: []ftypes.Package{
 							{
-								Name:            "acl",
-								Version:         "2.2.53",
-								Release:         "1.el8",
+								Name:            "binutils",
+								Version:         "2.30",
+								Release:         "93.el8",
 								Epoch:           0,
 								Arch:            "aarch64",
-								SrcName:         "acl",
-								SrcVersion:      "2.2.53",
-								SrcRelease:      "1.el8",
+								SrcName:         "binutils",
+								SrcVersion:      "2.30",
+								SrcRelease:      "93.el8",
 								SrcEpoch:        0,
 								Modularitylabel: "",
-								License:         "GPLv2+",
+								License:         "GPLv3+",
+							},
+						},
+						Vulnerabilities: []types.DetectedVulnerability{
+							{
+								VulnerabilityID:  "CVE-2018-20623",
+								PkgName:          "binutils",
+								InstalledVersion: "2.30-93.el8",
+								Layer: ftypes.Layer{
+									DiffID: "sha256:d871dadfb37b53ef1ca45be04fc527562b91989991a8f545345ae3be0b93f92a",
+								},
+								SeveritySource: "redhat",
+								PrimaryURL:     "https://avd.aquasec.com/nvd/cve-2018-20623",
+								Vulnerability: dtypes.Vulnerability{
+									Title:       "binutils: Use-after-free in the error function",
+									Description: "In GNU Binutils 2.31.1, there is a use-after-free in the error function in elfcomm.c when called from the process_archive function in readelf.c via a crafted ELF file.",
+									Severity:    "MEDIUM",
+									CweIDs: []string{
+										"CWE-416",
+									},
+									CVSS: dtypes.VendorCVSS{
+										dtypes.SourceID("nvd"): dtypes.CVSS{
+											V2Vector: "AV:N/AC:M/Au:N/C:N/I:N/A:P",
+											V3Vector: "CVSS:3.0/AV:L/AC:L/PR:N/UI:R/S:U/C:N/I:N/A:H",
+											V2Score:  4.3,
+											V3Score:  5.5,
+										},
+										dtypes.SourceID("redhat"): dtypes.CVSS{
+											V3Vector: "CVSS:3.0/AV:L/AC:L/PR:L/UI:N/S:U/C:L/I:L/A:L",
+											V3Score:  5.3,
+										},
+									},
+									References: []string{
+										"http://lists.opensuse.org/opensuse-security-announce/2019-10/msg00072.html",
+										"http://lists.opensuse.org/opensuse-security-announce/2019-11/msg00008.html",
+									},
+									PublishedDate:    timePtr(time.Date(2018, 12, 31, 19, 29, 0, 0, time.UTC)),
+									LastModifiedDate: timePtr(time.Date(2019, 10, 31, 1, 15, 0, 0, time.UTC)),
+								},
 							},
 						},
 					},
@@ -146,26 +185,26 @@ func TestWriter_Write(t *testing.T) {
 				},
 				Components: &[]cdx.Component{
 					{
-						BOMRef:  "pkg:rpm/centos/acl@2.2.53-1.el8?arch=aarch64&distro=centos-8.3.2011",
+						BOMRef:  "pkg:rpm/centos/binutils@2.30-93.el8?arch=aarch64&distro=centos-8.3.2011",
 						Type:    cdx.ComponentTypeLibrary,
-						Name:    "acl",
-						Version: "2.2.53-1.el8",
+						Name:    "binutils",
+						Version: "2.30-93.el8",
 						Licenses: &cdx.Licenses{
-							cdx.LicenseChoice{Expression: "GPLv2+"},
+							cdx.LicenseChoice{Expression: "GPLv3+"},
 						},
-						PackageURL: "pkg:rpm/centos/acl@2.2.53-1.el8?arch=aarch64&distro=centos-8.3.2011",
+						PackageURL: "pkg:rpm/centos/binutils@2.30-93.el8?arch=aarch64&distro=centos-8.3.2011",
 						Properties: &[]cdx.Property{
 							{
 								Name:  "aquasecurity:trivy:SrcName",
-								Value: "acl",
+								Value: "binutils",
 							},
 							{
 								Name:  "aquasecurity:trivy:SrcVersion",
-								Value: "2.2.53",
+								Value: "2.30",
 							},
 							{
 								Name:  "aquasecurity:trivy:SrcRelease",
-								Value: "1.el8",
+								Value: "93.el8",
 							},
 						},
 					},
@@ -237,7 +276,7 @@ func TestWriter_Write(t *testing.T) {
 						Ref: "3ff14136-e09f-4df9-80ea-000000000002",
 						Dependencies: &[]cdx.Dependency{
 							{
-								Ref: "pkg:rpm/centos/acl@2.2.53-1.el8?arch=aarch64&distro=centos-8.3.2011",
+								Ref: "pkg:rpm/centos/binutils@2.30-93.el8?arch=aarch64&distro=centos-8.3.2011",
 							},
 						},
 					},
@@ -271,6 +310,62 @@ func TestWriter_Write(t *testing.T) {
 							},
 							{
 								Ref: "3ff14136-e09f-4df9-80ea-000000000004",
+							},
+						},
+					},
+				},
+				Vulnerabilities: &[]cdx.Vulnerability{
+					{
+						ID: "CVE-2018-20623",
+						Ratings: &[]cdx.VulnerabilityRating{
+							{
+								Source: &cdx.Source{
+									Name: "redhat",
+									URL:  "",
+								},
+								Score:    5.3,
+								Severity: cdx.SeverityMedium,
+								Method:   cdx.ScoringMethodCVSSv3,
+								Vector:   "CVSS:3.0/AV:L/AC:L/PR:L/UI:N/S:U/C:L/I:L/A:L",
+							},
+							{
+								Source: &cdx.Source{
+									Name: "nvd",
+									URL:  "",
+								},
+								Score:    5.5,
+								Severity: cdx.SeverityMedium,
+								Method:   cdx.ScoringMethodCVSSv3,
+								Vector:   "CVSS:3.0/AV:L/AC:L/PR:N/UI:R/S:U/C:N/I:N/A:H",
+							},
+							{
+								Source: &cdx.Source{
+									Name: "nvd",
+									URL:  "",
+								},
+								Score:    4.3,
+								Severity: cdx.SeverityMedium,
+								Method:   cdx.ScoringMethodCVSSv2,
+								Vector:   "AV:N/AC:M/Au:N/C:N/I:N/A:P",
+							},
+						},
+						CWEs: &[]int{
+							416,
+						},
+						Description: "In GNU Binutils 2.31.1, there is a use-after-free in the error function in elfcomm.c when called from the process_archive function in readelf.c via a crafted ELF file.",
+						Advisories: &[]cdx.Advisory{
+							{
+								URL: "http://lists.opensuse.org/opensuse-security-announce/2019-10/msg00072.html",
+							},
+							{
+								URL: "http://lists.opensuse.org/opensuse-security-announce/2019-11/msg00008.html",
+							},
+						},
+						Published: "2018-12-31 19:29:00 +0000 UTC",
+						Updated:   "2019-10-31 01:15:00 +0000 UTC",
+						Affects: &[]cdx.Affects{
+							{
+								Ref: "pkg:rpm/centos/binutils@2.30-93.el8?arch=aarch64&distro=centos-8.3.2011",
 							},
 						},
 					},
@@ -669,4 +764,7 @@ func TestWriter_Write(t *testing.T) {
 			assert.Equal(t, *tc.wantSBOM, got)
 		})
 	}
+}
+func timePtr(t time.Time) *time.Time {
+	return &t
 }
