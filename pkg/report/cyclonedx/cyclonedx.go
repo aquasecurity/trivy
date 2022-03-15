@@ -1,8 +1,6 @@
 package cyclonedx
 
 import (
-	"github.com/aquasecurity/trivy/pkg/log"
-	"github.com/aquasecurity/trivy/pkg/scanner/utils"
 	"io"
 	"sort"
 	"strconv"
@@ -16,7 +14,9 @@ import (
 
 	ftypes "github.com/aquasecurity/fanal/types"
 	dtypes "github.com/aquasecurity/trivy-db/pkg/types"
+	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/purl"
+	"github.com/aquasecurity/trivy/pkg/scanner/utils"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
 
