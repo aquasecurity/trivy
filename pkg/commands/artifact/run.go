@@ -29,9 +29,7 @@ var errSkipScan = errors.New("skip subsequent processes")
 
 // InitializeScanner defines the initialize function signature of scanner
 type InitializeScanner func(context.Context, string, cache.ArtifactCache, cache.LocalArtifactCache,
-	string, http.Header,
-	bool,
-	artifact.Option, config.ScannerOption) (scanner.Scanner, func(), error)
+	string, http.Header, bool, artifact.Option, config.ScannerOption) (scanner.Scanner, func(), error)
 
 // InitCache defines cache initializer
 type InitCache func(c Option) (cache.Cache, error)
