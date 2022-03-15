@@ -32,7 +32,7 @@ type InitializeScanner func(context.Context, string, cache.ArtifactCache, cache.
 	string, http.Header, bool, artifact.Option, config.ScannerOption) (scanner.Scanner, func(), error)
 
 // InitCache defines cache initializer
-type InitCache func(c Option) (cache.Cache, error)
+type InitCache func(c Option) (cache.ArtifactCache, cache.LocalArtifactCache, error)
 
 // Run performs artifact scanning
 func Run(ctx context.Context, opt Option, initializeScanner InitializeScanner, initCache InitCache) error {
@@ -47,14 +47,16 @@ func runWithTimeout(ctx context.Context, opt Option, initializeScanner Initializ
 		return err
 	}
 
-	cacheClient, err := initCache(opt)
+	artifactCache, localCache, err := initCache(opt)
 	if err != nil {
 		if errors.Is(err, errSkipScan) {
 			return nil
 		}
 		return xerrors.Errorf("cache error: %w", err)
 	}
-	defer cacheClient.Close()
+	if localCache != nil {
+		defer localCache.Close()
+	}
 
 	// When scanning config files or using `remote` option, it doesn't need to download the vulnerability database.
 	if opt.RemoteAddr == "" && utils.StringInSlice(types.SecurityCheckVulnerability, opt.SecurityChecks) {
@@ -67,7 +69,7 @@ func runWithTimeout(ctx context.Context, opt Option, initializeScanner Initializ
 		defer db.Close()
 	}
 
-	report, err := scan(ctx, opt, initializeScanner, cacheClient)
+	report, err := scan(ctx, opt, initializeScanner, artifactCache, localCache)
 	if err != nil {
 		return xerrors.Errorf("scan error: %w", err)
 	}
@@ -94,37 +96,37 @@ func runWithTimeout(ctx context.Context, opt Option, initializeScanner Initializ
 	return nil
 }
 
-func initRemoteCache(c Option) (cache.Cache, error) {
-	return remoteCache.NewRemoteCache(c.RemoteAddr, c.CustomHeaders, c.Insecure), nil
+func initRemoteCache(c Option) (cache.ArtifactCache, cache.LocalArtifactCache, error) {
+	return remoteCache.NewRemoteCache(c.RemoteAddr, c.CustomHeaders, c.Insecure), nil, nil
 }
 
-func initFSCache(c Option) (cache.Cache, error) {
+func initFSCache(c Option) (cache.ArtifactCache, cache.LocalArtifactCache, error) {
 	if c.RemoteAddr != "" {
-		return operation.Cache{}, nil
+		return operation.Cache{}, operation.Cache{}, nil
 	}
 
 	utils.SetCacheDir(c.CacheDir)
 	cache, err := operation.NewCache(c.CacheOption)
 	if err != nil {
-		return operation.Cache{}, xerrors.Errorf("unable to initialize the cache: %w", err)
+		return operation.Cache{}, operation.Cache{}, xerrors.Errorf("unable to initialize the cache: %w", err)
 	}
 	log.Logger.Debugf("cache dir:  %s", utils.CacheDir())
 
 	if c.Reset {
 		defer cache.Close()
 		if err = cache.Reset(); err != nil {
-			return operation.Cache{}, xerrors.Errorf("cache reset error: %w", err)
+			return operation.Cache{}, operation.Cache{}, xerrors.Errorf("cache reset error: %w", err)
 		}
-		return operation.Cache{}, errSkipScan
+		return operation.Cache{}, operation.Cache{}, errSkipScan
 	}
 	if c.ClearCache {
 		defer cache.Close()
 		if err = cache.ClearArtifacts(); err != nil {
-			return operation.Cache{}, xerrors.Errorf("cache clear error: %w", err)
+			return operation.Cache{}, operation.Cache{}, xerrors.Errorf("cache clear error: %w", err)
 		}
-		return operation.Cache{}, errSkipScan
+		return operation.Cache{}, operation.Cache{}, errSkipScan
 	}
-	return cache, nil
+	return cache, cache, nil
 }
 
 func initDB(c Option) error {
@@ -176,7 +178,8 @@ func disabledAnalyzers(opt Option) []analyzer.Type {
 	return analyzers
 }
 
-func scan(ctx context.Context, opt Option, initializeScanner InitializeScanner, cacheClient cache.Cache) (
+func scan(ctx context.Context, opt Option, initializeScanner InitializeScanner,
+	artifactCache cache.ArtifactCache, localCache cache.LocalArtifactCache) (
 	types.Report, error) {
 	target := opt.Target
 	if opt.Input != "" {
@@ -218,7 +221,7 @@ func scan(ctx context.Context, opt Option, initializeScanner InitializeScanner, 
 		NoProgress:        opt.NoProgress || opt.Quiet,
 	}
 
-	s, cleanup, err := initializeScanner(ctx, target, cacheClient, cacheClient, opt.RemoteAddr, opt.CustomHeaders, opt.Insecure, artifactOpt, configScannerOptions)
+	s, cleanup, err := initializeScanner(ctx, target, artifactCache, localCache, opt.RemoteAddr, opt.CustomHeaders, opt.Insecure, artifactOpt, configScannerOptions)
 	if err != nil {
 		return types.Report{}, xerrors.Errorf("unable to initialize a scanner: %w", err)
 	}

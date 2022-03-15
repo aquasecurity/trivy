@@ -21,7 +21,7 @@ type RemoteCache struct {
 }
 
 // NewRemoteCache is the factory method for RemoteCache
-func NewRemoteCache(url string, customHeaders http.Header, insecure bool) cache.Cache {
+func NewRemoteCache(url string, customHeaders http.Header, insecure bool) cache.ArtifactCache {
 	ctx := client.WithCustomHeaders(context.Background(), customHeaders)
 
 	httpClient := &http.Client{
@@ -61,24 +61,4 @@ func (c RemoteCache) MissingBlobs(imageID string, layerIDs []string) (bool, []st
 		return false, nil, xerrors.Errorf("unable to fetch missing layers: %w", err)
 	}
 	return layers.MissingArtifact, layers.MissingBlobIds, nil
-}
-
-// GetArtifact gets artifact information such as image metadata from local cache
-func (c RemoteCache) GetArtifact(artifactID string) (artifactInfo types.ArtifactInfo, err error) {
-	return types.ArtifactInfo{}, nil
-}
-
-// GetBlob gets blob information such as layer data from local cache
-func (c RemoteCache) GetBlob(blobID string) (blobInfo types.BlobInfo, err error) {
-	return types.BlobInfo{}, nil
-}
-
-// Close closes the local database
-func (c RemoteCache) Close() (err error) {
-	return nil
-}
-
-// Clear deletes the local database
-func (c RemoteCache) Clear() (err error) {
-	return nil
 }
