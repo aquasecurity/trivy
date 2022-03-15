@@ -314,7 +314,7 @@ var (
 
 	remoteServer = cli.StringFlag{
 		Name:    "remote",
-		Value:   "http://localhost:4954",
+		Value:   "",
 		Usage:   "server address",
 		EnvVars: []string{"TRIVY_REMOTE"},
 	}
