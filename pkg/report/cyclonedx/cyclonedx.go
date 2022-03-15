@@ -239,15 +239,18 @@ func (cw *Writer) parseComponents(r types.Report, bomRef string) (*[]cdx.Compone
 			metadataDependencies = append(metadataDependencies, cdx.Dependency{Ref: resultComponent.BOMRef})
 		}
 	}
-	var vulnsComponent []cdx.Vulnerability
+	var vulns []cdx.Vulnerability
 	for _, v := range vulnMap {
-		vulnsComponent = append(vulnsComponent, *v)
+		vulns = append(vulns, *v)
 	}
+	sort.Slice(vulns, func(i, j int) bool {
+		return vulns[i].ID > vulns[j].ID
+	})
 
 	dependencies = append(dependencies,
 		cdx.Dependency{Ref: bomRef, Dependencies: &metadataDependencies},
 	)
-	return &components, &dependencies, &vulnsComponent, nil
+	return &components, &dependencies, &vulns, nil
 }
 
 func (cw *Writer) vulnerability(vuln types.DetectedVulnerability, purlMap map[string]string) *cdx.Vulnerability {
