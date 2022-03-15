@@ -46,7 +46,7 @@ func FilesystemRun(ctx *cli.Context) error {
 	// Disable the individual package scanning
 	opt.DisabledAnalyzers = analyzer.TypeIndividualPkgs
 	if opt.RemoteAddr != "" {
-		return Run(ctx.Context, opt, filesystemRemoteScanner, initFSCache)
+		return Run(ctx.Context, opt, filesystemRemoteScanner, initRemoteCache)
 	}
 	return Run(ctx.Context, opt, filesystemScanner, initFSCache)
 }

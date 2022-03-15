@@ -58,8 +58,8 @@ func runWithTimeout(ctx context.Context, opt Option, initializeScanner Initializ
 	}
 	defer cacheClient.Close()
 
-	// When scanning config files, it doesn't need to download the vulnerability database.
-	if utils.StringInSlice(types.SecurityCheckVulnerability, opt.SecurityChecks) {
+	// When scanning config files or using `remote` option, it doesn't need to download the vulnerability database.
+	if opt.RemoteAddr == "" && utils.StringInSlice(types.SecurityCheckVulnerability, opt.SecurityChecks) {
 		if err = initDB(opt); err != nil {
 			if errors.Is(err, errSkipScan) {
 				return nil
@@ -220,11 +220,7 @@ func scan(ctx context.Context, opt Option, initializeScanner InitializeScanner, 
 		NoProgress:        opt.NoProgress || opt.Quiet,
 	}
 
-	var artifactCache cache.ArtifactCache = cacheClient
-	if opt.RemoteAddr != "" {
-		artifactCache = remoteCache.NewRemoteCache(opt.RemoteAddr, opt.CustomHeaders, opt.Insecure)
-	}
-	s, cleanup, err := initializeScanner(ctx, target, artifactCache, cacheClient, opt.RemoteAddr, opt.CustomHeaders, opt.Insecure, artifactOpt, configScannerOptions)
+	s, cleanup, err := initializeScanner(ctx, target, cacheClient, cacheClient, opt.RemoteAddr, opt.CustomHeaders, opt.Insecure, artifactOpt, configScannerOptions)
 	if err != nil {
 		return types.Report{}, xerrors.Errorf("unable to initialize a scanner: %w", err)
 	}
