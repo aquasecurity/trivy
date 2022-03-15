@@ -698,6 +698,13 @@ func TestWriter_Write(t *testing.T) {
 								Method:   cdx.ScoringMethodCVSSv31,
 								Vector:   "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:H/I:N/A:N",
 							},
+							{
+								Source: &cdx.Source{
+									Name: "ruby-advisory-db",
+									URL:  "https://github.com/rubysec/ruby-advisory-db",
+								},
+								Severity: cdx.SeverityHigh,
+							},
 						},
 						Description: "Action Pack is a framework for handling and responding to web requests. Under certain circumstances response bodies will not be closed. In the event a response is *not* notified of a `close`, `ActionDispatch::Executor` will not know to reset thread local state for the next request. This can lead to data being leaked to subsequent requests.This has been fixed in Rails 7.0.2.1, 6.1.4.5, 6.0.4.5, and 5.2.6.1. Upgrading is highly recommended, but to work around this problem a middleware described in GHSA-wh98-p28r-vrc9 can be used.",
 						Advisories: &[]cdx.Advisory{

@@ -186,8 +186,8 @@ func (cw *Writer) parseComponents(r types.Report, bomRef string) (*[]cdx.Compone
 				// If a vulnerability depends on multiple packages,
 				// it will be commonised into a single vulnerability.
 				//   Vulnerability component (CVE-2020-26247)
-				//     -> Library component (nokogiri /srv/app1/specifications/app1.gemspec)
-				//     -> Library component (nokogiri /srv/app2/specifications/app2.gemspec)
+				//     -> Library component (nokogiri /srv/app1/vendor/bundle/ruby/3.0.0/specifications/app1-0.0.1.gemspec)
+				//     -> Library component (nokogiri /srv/app2/vendor/bundle/ruby/3.0.0/specifications/app2-0.0.1.gemspec)
 				*v.Affects = append(*v.Affects,
 					affects(purlMap[vuln.PkgName+vuln.InstalledVersion+vuln.PkgPath], vuln.InstalledVersion),
 				)
@@ -434,13 +434,13 @@ func cwes(cweIDs []string) *[]int {
 	if len(cweIDs) == 0 {
 		return nil
 	}
-	for _, id := range cweIDs {
-		i, err := strconv.Atoi(strings.TrimPrefix(strings.ToLower(id), "cwe-"))
+	for _, cweID := range cweIDs {
+		number, err := strconv.Atoi(strings.TrimPrefix(strings.ToLower(cweID), "cwe-"))
 		if err != nil {
-			log.Logger.Debugf("cwe id parse error: %+v", err)
+			log.Logger.Debugf("cwe id parse error: %s", err.Error())
 			continue
 		}
-		ret = append(ret, i)
+		ret = append(ret, number)
 	}
 
 	return &ret
@@ -478,16 +478,22 @@ func ratings(vulnerability types.DetectedVulnerability) *[]cdx.VulnerabilityRati
 		}
 	}
 	if vulnerability.DataSource != nil {
-		if _, ok := vulnerability.CVSS[vulnerability.DataSource.ID]; ok {
+		if _, ok := vulnerability.CVSS[vulnerability.DataSource.ID]; !ok {
+			s, err := dtypes.NewSeverity(vulnerability.Severity)
+			if err != nil {
+				log.Logger.Debugf("unkown datasorce severity: %s", err.Error())
+			}
 			rate := cdx.VulnerabilityRating{
 				Source: &cdx.Source{
 					Name: string(vulnerability.DataSource.ID),
+					URL:  vulnerability.DataSource.URL,
 				},
-				Severity: severity(vulnerability.Severity),
+				Severity: severity(s),
 			}
 			rates = append(rates, rate)
 		}
 	}
+
 	sort.Slice(rates, func(i, j int) bool {
 		if rates[i].Source.Name != rates[i].Source.Name {
 			return rates[i].Source.Name > rates[i].Source.Name
@@ -500,13 +506,8 @@ func ratings(vulnerability types.DetectedVulnerability) *[]cdx.VulnerabilityRati
 	return &rates
 }
 
-func severity(s string) cdx.Severity {
-	sev, err := dtypes.NewSeverity(s)
-	if err != nil {
-		log.Logger.Debugf("cyclonedx severity error: %s", err.Error())
-		return cdx.SeverityUnknown
-	}
-	switch sev {
+func severity(s dtypes.Severity) cdx.Severity {
+	switch s {
 	case dtypes.SeverityLow:
 		return cdx.SeverityLow
 	case dtypes.SeverityMedium:
