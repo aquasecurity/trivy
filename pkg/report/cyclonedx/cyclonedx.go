@@ -481,7 +481,7 @@ func ratings(vulnerability types.DetectedVulnerability) *[]cdx.VulnerabilityRati
 		if _, ok := vulnerability.CVSS[vulnerability.DataSource.ID]; !ok {
 			s, err := dtypes.NewSeverity(vulnerability.Severity)
 			if err != nil {
-				log.Logger.Debugf("unkown datasorce severity: %s", err.Error())
+				log.Logger.Debugf("unknown severity from datastore: %s", err.Error())
 			}
 			rate := cdx.VulnerabilityRating{
 				Source: &cdx.Source{
@@ -518,20 +518,6 @@ func severity(s dtypes.Severity) cdx.Severity {
 		return cdx.SeverityCritical
 	default:
 		return cdx.SeverityUnknown
-	}
-}
-
-func calcSeverity(score float64) cdx.Severity {
-	if score == 0 {
-		return cdx.SeverityInfo
-	} else if score < 4.0 {
-		return cdx.SeverityLow
-	} else if score < 7.0 {
-		return cdx.SeverityMedium
-	} else if score < 9.0 {
-		return cdx.SeverityHigh
-	} else {
-		return cdx.SeverityCritical
 	}
 }
 
