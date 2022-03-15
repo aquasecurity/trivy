@@ -1,10 +1,11 @@
 package artifact
 
 import (
-	"github.com/urfave/cli/v2"
-	"golang.org/x/xerrors"
 	"net/http"
 	"strings"
+
+	"github.com/urfave/cli/v2"
+	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/commands/option"

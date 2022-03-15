@@ -2,6 +2,11 @@ package artifact
 
 import (
 	"context"
+	"net/http"
+
+	"github.com/urfave/cli/v2"
+	"golang.org/x/xerrors"
+
 	"github.com/aquasecurity/fanal/analyzer"
 	"github.com/aquasecurity/fanal/analyzer/config"
 	"github.com/aquasecurity/fanal/artifact"
@@ -10,9 +15,6 @@ import (
 	"github.com/aquasecurity/trivy/pkg/rpc/client"
 	"github.com/aquasecurity/trivy/pkg/scanner"
 	"github.com/aquasecurity/trivy/pkg/types"
-	"github.com/urfave/cli/v2"
-	"golang.org/x/xerrors"
-	"net/http"
 )
 
 func initializeClientScanner(ctx context.Context, target string, ac cache.ArtifactCache, lac cache.LocalArtifactCache,

@@ -2,7 +2,6 @@ package artifact
 
 import (
 	"context"
-	"github.com/aquasecurity/trivy/pkg/rpc/client"
 	"net/http"
 
 	"github.com/urfave/cli/v2"
@@ -12,6 +11,7 @@ import (
 	"github.com/aquasecurity/fanal/analyzer/config"
 	"github.com/aquasecurity/fanal/artifact"
 	"github.com/aquasecurity/fanal/cache"
+	"github.com/aquasecurity/trivy/pkg/rpc/client"
 	"github.com/aquasecurity/trivy/pkg/scanner"
 )
 
