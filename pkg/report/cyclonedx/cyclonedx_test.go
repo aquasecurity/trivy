@@ -114,7 +114,7 @@ func TestWriter_Write(t *testing.T) {
 						Type:   "bundler",
 						Packages: []ftypes.Package{
 							{
-								Name:    "actioncable",
+								Name:    "actionpack",
 								Version: "7.0.0",
 							},
 							{
@@ -129,7 +129,7 @@ func TestWriter_Write(t *testing.T) {
 						Type:   ftypes.Bundler,
 						Packages: []ftypes.Package{
 							{
-								Name:    "actioncable",
+								Name:    "actionpack",
 								Version: "7.0.0",
 							},
 						},
@@ -225,11 +225,11 @@ func TestWriter_Write(t *testing.T) {
 						},
 					},
 					{
-						BOMRef:     "pkg:gem/actioncable@7.0.0",
+						BOMRef:     "pkg:gem/actionpack@7.0.0",
 						Type:       cdx.ComponentTypeLibrary,
-						Name:       "actioncable",
+						Name:       "actionpack",
 						Version:    "7.0.0",
-						PackageURL: "pkg:gem/actioncable@7.0.0",
+						PackageURL: "pkg:gem/actionpack@7.0.0",
 					},
 					{
 						BOMRef:     "pkg:gem/actioncontroller@7.0.0",
@@ -284,7 +284,7 @@ func TestWriter_Write(t *testing.T) {
 						Ref: "3ff14136-e09f-4df9-80ea-000000000003",
 						Dependencies: &[]cdx.Dependency{
 							{
-								Ref: "pkg:gem/actioncable@7.0.0",
+								Ref: "pkg:gem/actionpack@7.0.0",
 							},
 							{
 								Ref: "pkg:gem/actioncontroller@7.0.0",
@@ -295,7 +295,7 @@ func TestWriter_Write(t *testing.T) {
 						Ref: "3ff14136-e09f-4df9-80ea-000000000004",
 						Dependencies: &[]cdx.Dependency{
 							{
-								Ref: "pkg:gem/actioncable@7.0.0",
+								Ref: "pkg:gem/actionpack@7.0.0",
 							},
 						},
 					},
@@ -320,16 +320,6 @@ func TestWriter_Write(t *testing.T) {
 						Ratings: &[]cdx.VulnerabilityRating{
 							{
 								Source: &cdx.Source{
-									Name: "redhat",
-									URL:  "",
-								},
-								Score:    5.3,
-								Severity: cdx.SeverityMedium,
-								Method:   cdx.ScoringMethodCVSSv3,
-								Vector:   "CVSS:3.0/AV:L/AC:L/PR:L/UI:N/S:U/C:L/I:L/A:L",
-							},
-							{
-								Source: &cdx.Source{
 									Name: "nvd",
 									URL:  "",
 								},
@@ -347,6 +337,16 @@ func TestWriter_Write(t *testing.T) {
 								Severity: cdx.SeverityMedium,
 								Method:   cdx.ScoringMethodCVSSv2,
 								Vector:   "AV:N/AC:M/Au:N/C:N/I:N/A:P",
+							},
+							{
+								Source: &cdx.Source{
+									Name: "redhat",
+									URL:  "",
+								},
+								Score:    5.3,
+								Severity: cdx.SeverityMedium,
+								Method:   cdx.ScoringMethodCVSSv3,
+								Vector:   "CVSS:3.0/AV:L/AC:L/PR:L/UI:N/S:U/C:L/I:L/A:L",
 							},
 						},
 						CWEs: &[]int{
@@ -366,6 +366,12 @@ func TestWriter_Write(t *testing.T) {
 						Affects: &[]cdx.Affects{
 							{
 								Ref: "pkg:rpm/centos/binutils@2.30-93.el8?arch=aarch64&distro=centos-8.3.2011",
+								Range: &[]cdx.AffectedVersions{
+									{
+										Version: "2.30-93.el8",
+										Status:  cdx.VulnerabilityStatusAffected,
+									},
+								},
 							},
 						},
 					},
@@ -410,6 +416,105 @@ func TestWriter_Write(t *testing.T) {
 								SrcEpoch:        1,
 								Modularitylabel: "",
 								License:         "GPLv2+",
+							},
+						},
+					},
+					{
+						Target: "Ruby",
+						Class:  types.ClassLangPkg,
+						Type:   ftypes.GemSpec,
+						Packages: []ftypes.Package{
+							{
+								Name:    "actionpack",
+								Version: "7.0.0",
+								Layer: ftypes.Layer{
+									DiffID: "sha256:ccb64cf0b7ba2e50741d0b64cae324eb5de3b1e2f580bbf177e721b67df38488",
+								},
+								FilePath: "tools/project-john/specifications/actionpack.gemspec",
+							},
+							{
+								Name:    "actionpack",
+								Version: "7.0.1",
+								Layer: ftypes.Layer{
+									DiffID: "sha256:ccb64cf0b7ba2e50741d0b64cae324eb5de3b1e2f580bbf177e721b67df38488",
+								},
+								FilePath: "tools/project-doe/specifications/actionpack.gemspec",
+							},
+						},
+						Vulnerabilities: []types.DetectedVulnerability{
+							{
+								VulnerabilityID:  "CVE-2022-23633",
+								PkgName:          "actionpack",
+								PkgPath:          "tools/project-john/specifications/actionpack.gemspec",
+								InstalledVersion: "7.0.0",
+								FixedVersion:     "~> 5.2.6, >= 5.2.6.2, ~> 6.0.4, >= 6.0.4.6, ~> 6.1.4, >= 6.1.4.6, >= 7.0.2.2",
+								SeveritySource:   "ruby-advisory-db",
+								PrimaryURL:       "https://avd.aquasec.com/nvd/cve-2022-23633",
+								DataSource: &dtypes.DataSource{
+									ID:   "ruby-advisory-db",
+									Name: "Ruby Advisory Database",
+									URL:  "https://github.com/rubysec/ruby-advisory-db",
+								},
+								Vulnerability: dtypes.Vulnerability{
+									Title:       "rubygem-actionpack: information leak between requests",
+									Description: "Action Pack is a framework for handling and responding to web requests. Under certain circumstances response bodies will not be closed. In the event a response is *not* notified of a `close`, `ActionDispatch::Executor` will not know to reset thread local state for the next request. This can lead to data being leaked to subsequent requests.This has been fixed in Rails 7.0.2.1, 6.1.4.5, 6.0.4.5, and 5.2.6.1. Upgrading is highly recommended, but to work around this problem a middleware described in GHSA-wh98-p28r-vrc9 can be used.",
+									Severity:    "HIGH",
+									CVSS: dtypes.VendorCVSS{
+										dtypes.SourceID("nvd"): dtypes.CVSS{
+											V2Vector: "AV:N/AC:M/Au:N/C:P/I:N/A:N",
+											V3Vector: "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:H/I:N/A:N",
+											V2Score:  4.3,
+											V3Score:  5.9,
+										},
+										dtypes.SourceID("redhat"): dtypes.CVSS{
+											V3Vector: "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:H/I:N/A:N",
+											V3Score:  5.9,
+										},
+									},
+									References: []string{
+										"http://www.openwall.com/lists/oss-security/2022/02/11/5",
+										"https://access.redhat.com/security/cve/CVE-2022-23633",
+									},
+									PublishedDate:    timePtr(time.Date(2022, 2, 11, 21, 15, 0, 0, time.UTC)),
+									LastModifiedDate: timePtr(time.Date(2022, 2, 22, 21, 47, 0, 0, time.UTC)),
+								},
+							},
+							{
+								VulnerabilityID:  "CVE-2022-23633",
+								PkgName:          "actionpack",
+								PkgPath:          "tools/project-doe/specifications/actionpack.gemspec",
+								InstalledVersion: "7.0.1",
+								FixedVersion:     "~> 5.2.6, >= 5.2.6.2, ~> 6.0.4, >= 6.0.4.6, ~> 6.1.4, >= 6.1.4.6, >= 7.0.2.2",
+								SeveritySource:   "ruby-advisory-db",
+								PrimaryURL:       "https://avd.aquasec.com/nvd/cve-2022-23633",
+								DataSource: &dtypes.DataSource{
+									ID:   "ruby-advisory-db",
+									Name: "Ruby Advisory Database",
+									URL:  "https://github.com/rubysec/ruby-advisory-db",
+								},
+								Vulnerability: dtypes.Vulnerability{
+									Title:       "rubygem-actionpack: information leak between requests",
+									Description: "Action Pack is a framework for handling and responding to web requests. Under certain circumstances response bodies will not be closed. In the event a response is *not* notified of a `close`, `ActionDispatch::Executor` will not know to reset thread local state for the next request. This can lead to data being leaked to subsequent requests.This has been fixed in Rails 7.0.2.1, 6.1.4.5, 6.0.4.5, and 5.2.6.1. Upgrading is highly recommended, but to work around this problem a middleware described in GHSA-wh98-p28r-vrc9 can be used.",
+									Severity:    "HIGH",
+									CVSS: dtypes.VendorCVSS{
+										dtypes.SourceID("nvd"): dtypes.CVSS{
+											V2Vector: "AV:N/AC:M/Au:N/C:P/I:N/A:N",
+											V3Vector: "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:H/I:N/A:N",
+											V2Score:  4.3,
+											V3Score:  5.9,
+										},
+										dtypes.SourceID("redhat"): dtypes.CVSS{
+											V3Vector: "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:H/I:N/A:N",
+											V3Score:  5.9,
+										},
+									},
+									References: []string{
+										"http://www.openwall.com/lists/oss-security/2022/02/11/5",
+										"https://access.redhat.com/security/cve/CVE-2022-23633",
+									},
+									PublishedDate:    timePtr(time.Date(2022, 2, 11, 21, 15, 0, 0, time.UTC)),
+									LastModifiedDate: timePtr(time.Date(2022, 2, 22, 21, 47, 0, 0, time.UTC)),
+								},
 							},
 						},
 					},
@@ -499,6 +604,40 @@ func TestWriter_Write(t *testing.T) {
 							},
 						},
 					},
+					{
+						BOMRef:     "pkg:gem/actionpack@7.0.0?file_path=tools%2Fproject-john%2Fspecifications%2Factionpack.gemspec",
+						Type:       cdx.ComponentTypeLibrary,
+						Name:       "actionpack",
+						Version:    "7.0.0",
+						PackageURL: "pkg:gem/actionpack@7.0.0",
+						Properties: &[]cdx.Property{
+							{
+								Name:  "aquasecurity:trivy:FilePath",
+								Value: "tools/project-john/specifications/actionpack.gemspec",
+							},
+							{
+								Name:  "aquasecurity:trivy:LayerDiffID",
+								Value: "sha256:ccb64cf0b7ba2e50741d0b64cae324eb5de3b1e2f580bbf177e721b67df38488",
+							},
+						},
+					},
+					{
+						BOMRef:     "pkg:gem/actionpack@7.0.1?file_path=tools%2Fproject-doe%2Fspecifications%2Factionpack.gemspec",
+						Type:       cdx.ComponentTypeLibrary,
+						Name:       "actionpack",
+						Version:    "7.0.1",
+						PackageURL: "pkg:gem/actionpack@7.0.1",
+						Properties: &[]cdx.Property{
+							{
+								Name:  "aquasecurity:trivy:FilePath",
+								Value: "tools/project-doe/specifications/actionpack.gemspec",
+							},
+							{
+								Name:  "aquasecurity:trivy:LayerDiffID",
+								Value: "sha256:ccb64cf0b7ba2e50741d0b64cae324eb5de3b1e2f580bbf177e721b67df38488",
+							},
+						},
+					},
 				},
 				Dependencies: &[]cdx.Dependency{
 					{
@@ -514,6 +653,81 @@ func TestWriter_Write(t *testing.T) {
 						Dependencies: &[]cdx.Dependency{
 							{
 								Ref: "3ff14136-e09f-4df9-80ea-000000000003",
+							},
+							{
+								Ref: "pkg:gem/actionpack@7.0.0?file_path=tools%2Fproject-john%2Fspecifications%2Factionpack.gemspec",
+							},
+							{
+								Ref: "pkg:gem/actionpack@7.0.1?file_path=tools%2Fproject-doe%2Fspecifications%2Factionpack.gemspec",
+							},
+						},
+					},
+				},
+				Vulnerabilities: &[]cdx.Vulnerability{
+					{
+						ID: "CVE-2022-23633",
+						Source: &cdx.Source{
+							Name: "ruby-advisory-db",
+							URL:  "https://github.com/rubysec/ruby-advisory-db",
+						},
+						Ratings: &[]cdx.VulnerabilityRating{
+							{
+								Source: &cdx.Source{
+									Name: "nvd",
+								},
+								Score:    5.9,
+								Severity: cdx.SeverityMedium,
+								Method:   cdx.ScoringMethodCVSSv31,
+								Vector:   "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:H/I:N/A:N",
+							},
+							{
+								Source: &cdx.Source{
+									Name: "nvd",
+								},
+								Score:    4.3,
+								Severity: cdx.SeverityMedium,
+								Method:   cdx.ScoringMethodCVSSv2,
+								Vector:   "AV:N/AC:M/Au:N/C:P/I:N/A:N",
+							},
+							{
+								Source: &cdx.Source{
+									Name: "redhat",
+								},
+								Score:    5.9,
+								Severity: cdx.SeverityMedium,
+								Method:   cdx.ScoringMethodCVSSv31,
+								Vector:   "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:H/I:N/A:N",
+							},
+						},
+						Description: "Action Pack is a framework for handling and responding to web requests. Under certain circumstances response bodies will not be closed. In the event a response is *not* notified of a `close`, `ActionDispatch::Executor` will not know to reset thread local state for the next request. This can lead to data being leaked to subsequent requests.This has been fixed in Rails 7.0.2.1, 6.1.4.5, 6.0.4.5, and 5.2.6.1. Upgrading is highly recommended, but to work around this problem a middleware described in GHSA-wh98-p28r-vrc9 can be used.",
+						Advisories: &[]cdx.Advisory{
+							{
+								URL: "http://www.openwall.com/lists/oss-security/2022/02/11/5",
+							},
+							{
+								URL: "https://access.redhat.com/security/cve/CVE-2022-23633",
+							},
+						},
+						Published: "2022-02-11 21:15:00 +0000 UTC",
+						Updated:   "2022-02-22 21:47:00 +0000 UTC",
+						Affects: &[]cdx.Affects{
+							{
+								Ref: "pkg:gem/actionpack@7.0.0?file_path=tools%2Fproject-john%2Fspecifications%2Factionpack.gemspec",
+								Range: &[]cdx.AffectedVersions{
+									{
+										Version: "7.0.0",
+										Status:  cdx.VulnerabilityStatusAffected,
+									},
+								},
+							},
+							{
+								Ref: "pkg:gem/actionpack@7.0.1?file_path=tools%2Fproject-doe%2Fspecifications%2Factionpack.gemspec",
+								Range: &[]cdx.AffectedVersions{
+									{
+										Version: "7.0.1",
+										Status:  cdx.VulnerabilityStatusAffected,
+									},
+								},
 							},
 						},
 					},

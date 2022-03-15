@@ -4,6 +4,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/scanner/utils"
 	"io"
+	"sort"
 	"strconv"
 	"strings"
 	"time"
@@ -185,12 +186,10 @@ func (cw *Writer) parseComponents(r types.Report, bomRef string) (*[]cdx.Compone
 				// If a vulnerability depends on multiple packages,
 				// it will be commonised into a single vulnerability.
 				//   Vulnerability component (CVE-2020-26247)
-				//     -> Library component (nokogiri /srv/app/specifications/app.gemspec)
-				//     -> Library component (nokogiri /srv/app/Gemfile.lock)
+				//     -> Library component (nokogiri /srv/app1/specifications/app1.gemspec)
+				//     -> Library component (nokogiri /srv/app2/specifications/app2.gemspec)
 				*v.Affects = append(*v.Affects,
-					cdx.Affects{
-						Ref: purlMap[vuln.PkgName+vuln.InstalledVersion+vuln.PkgPath],
-					},
+					affects(purlMap[vuln.PkgName+vuln.InstalledVersion+vuln.PkgPath], vuln.InstalledVersion),
 				)
 			} else {
 				vulnMap[vuln.VulnerabilityID] = cw.vulnerability(vuln, purlMap)
@@ -268,13 +267,24 @@ func (cw *Writer) vulnerability(vuln types.DetectedVulnerability, purlMap map[st
 	}
 	if p, ok := purlMap[vuln.PkgName+vuln.InstalledVersion+vuln.PkgPath]; ok {
 		v.Affects = &[]cdx.Affects{
-			{
-				Ref: p,
-			},
+			affects(p, vuln.InstalledVersion),
 		}
 	}
 
 	return &v
+}
+
+func affects(ps string, v string) cdx.Affects {
+	return cdx.Affects{
+		Ref: ps,
+		Range: &[]cdx.AffectedVersions{
+			{
+				Version: v,
+				Status:  cdx.VulnerabilityStatusAffected,
+			},
+		},
+	}
+
 }
 
 func (cw *Writer) pkgToComponent(t string, meta types.Metadata, pkg ftypes.Package) (cdx.Component, error) {
@@ -487,6 +497,15 @@ func ratings(vulnerability types.DetectedVulnerability) *[]cdx.VulnerabilityRati
 			rates = append(rates, rate)
 		}
 	}
+	sort.Slice(rates, func(i, j int) bool {
+		if rates[i].Source.Name != rates[i].Source.Name {
+			return rates[i].Source.Name > rates[i].Source.Name
+		}
+		if rates[i].Method != rates[i].Method {
+			return rates[i].Method > rates[i].Method
+		}
+		return rates[i].Score > rates[i].Score
+	})
 	return &rates
 }
 
