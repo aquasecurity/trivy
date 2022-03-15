@@ -41,6 +41,7 @@ func TestOption_Init(t *testing.T) {
 					SecurityChecks: []string{types.SecurityCheckVulnerability},
 					Output:         os.Stdout,
 				},
+				CustomHeaders: http.Header{},
 			},
 		},
 		{
@@ -59,6 +60,7 @@ func TestOption_Init(t *testing.T) {
 					SecurityChecks: []string{types.SecurityCheckConfig},
 					Output:         os.Stdout,
 				},
+				CustomHeaders: http.Header{},
 			},
 		},
 		{
@@ -92,6 +94,7 @@ func TestOption_Init(t *testing.T) {
 				ArtifactOption: option.ArtifactOption{
 					Target: "centos:7",
 				},
+				CustomHeaders: http.Header{},
 			},
 		},
 		{
@@ -111,6 +114,7 @@ func TestOption_Init(t *testing.T) {
 				ArtifactOption: option.ArtifactOption{
 					Target: "gitlab/gitlab-ce:12.7.2-ce.0",
 				},
+				CustomHeaders: http.Header{},
 			},
 		},
 		{
@@ -131,6 +135,7 @@ func TestOption_Init(t *testing.T) {
 				ArtifactOption: option.ArtifactOption{
 					Target: "gitlab/gitlab-ce:12.7.2-ce.0",
 				},
+				CustomHeaders: http.Header{},
 			},
 		},
 		{
@@ -150,6 +155,7 @@ func TestOption_Init(t *testing.T) {
 				ArtifactOption: option.ArtifactOption{
 					Target: "gitlab/gitlab-ce:12.7.2-ce.0",
 				},
+				CustomHeaders: http.Header{},
 			},
 		},
 		{
