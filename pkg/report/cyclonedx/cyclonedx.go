@@ -456,7 +456,7 @@ func ratings(vulnerability types.DetectedVulnerability) *[]cdx.VulnerabilityRati
 				},
 				Score:    cvss.V3Score,
 				Method:   cdx.ScoringMethodCVSSv3,
-				Severity: calcSeverity(cvss.V3Score),
+				Severity: severity(vulnerability.VendorSeverity[sourceID]),
 				Vector:   cvss.V3Vector,
 			}
 			if strings.HasPrefix(cvss.V3Vector, "CVSS:3.1") {
@@ -471,7 +471,7 @@ func ratings(vulnerability types.DetectedVulnerability) *[]cdx.VulnerabilityRati
 				},
 				Score:    cvss.V2Score,
 				Method:   cdx.ScoringMethodCVSSv2,
-				Severity: calcSeverity(cvss.V2Score),
+				Severity: severity(vulnerability.VendorSeverity[sourceID]),
 				Vector:   cvss.V2Vector,
 			}
 			rates = append(rates, rate)

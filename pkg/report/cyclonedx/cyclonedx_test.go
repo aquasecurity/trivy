@@ -83,6 +83,10 @@ func TestWriter_Write(t *testing.T) {
 									Title:       "binutils: Use-after-free in the error function",
 									Description: "In GNU Binutils 2.31.1, there is a use-after-free in the error function in elfcomm.c when called from the process_archive function in readelf.c via a crafted ELF file.",
 									Severity:    "MEDIUM",
+									VendorSeverity: dtypes.VendorSeverity{
+										"nvd":    2,
+										"redhat": 2,
+									},
 									CweIDs: []string{
 										"CWE-416",
 									},
@@ -459,6 +463,10 @@ func TestWriter_Write(t *testing.T) {
 									Title:       "rubygem-actionpack: information leak between requests",
 									Description: "Action Pack is a framework for handling and responding to web requests. Under certain circumstances response bodies will not be closed. In the event a response is *not* notified of a `close`, `ActionDispatch::Executor` will not know to reset thread local state for the next request. This can lead to data being leaked to subsequent requests.This has been fixed in Rails 7.0.2.1, 6.1.4.5, 6.0.4.5, and 5.2.6.1. Upgrading is highly recommended, but to work around this problem a middleware described in GHSA-wh98-p28r-vrc9 can be used.",
 									Severity:    "HIGH",
+									VendorSeverity: dtypes.VendorSeverity{
+										"nvd":    2,
+										"redhat": 2,
+									},
 									CVSS: dtypes.VendorCVSS{
 										dtypes.SourceID("nvd"): dtypes.CVSS{
 											V2Vector: "AV:N/AC:M/Au:N/C:P/I:N/A:N",

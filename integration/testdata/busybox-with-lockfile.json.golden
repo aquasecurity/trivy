@@ -73,6 +73,9 @@
           "CweIDs": [
             "CWE-674"
           ],
+          "VendorSeverity": {
+            "nvd": 3
+          },
           "CVSS": {
             "nvd": {
               "V2Vector": "AV:N/AC:L/Au:N/C:N/I:N/A:P",
@@ -109,6 +112,9 @@
           "CweIDs": [
             "CWE-79"
           ],
+          "VendorSeverity": {
+            "nvd": 2
+          },
           "CVSS": {
             "nvd": {
               "V2Vector": "AV:N/AC:M/Au:N/C:N/I:P/A:N",

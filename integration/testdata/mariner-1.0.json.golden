@@ -57,6 +57,9 @@
           "CweIDs": [
             "CWE-122"
           ],
+          "VendorSeverity": {
+            "cbl-mariner": 3
+          },
           "References": [
             "https://github.com/vim/vim/commit/9f8c304c8a390ade133bac29963dc8e56ab14cbc",
             "https://huntr.dev/bounties/fa795954-8775-4f23-98c6-d4d4d3fe8a82",
@@ -86,6 +89,11 @@
           "CweIDs": [
             "CWE-122"
           ],
+          "VendorSeverity": {
+            "cbl-mariner": 1,
+            "nvd": 1,
+            "redhat": 1
+          },
           "CVSS": {
             "nvd": {
               "V2Vector": "AV:N/AC:M/Au:N/C:P/I:N/A:N",
