@@ -153,6 +153,10 @@ func TestScanner_Scan(t *testing.T) {
 										Severity:         common.Severity_CRITICAL,
 										References:       []string{"http://exammple.com"},
 										SeveritySource:   "nvd",
+										VendorSeverity: map[string]common.Severity{
+											"nvd":    2,
+											"redhat": 2,
+										},
 										Cvss: map[string]*common.CVSS{
 											"nvd": {
 												V2Vector: "AV:L/AC:L/Au:N/C:C/I:C/A:C",
@@ -198,6 +202,10 @@ func TestScanner_Scan(t *testing.T) {
 								Description: "Denial os Service",
 								Severity:    "CRITICAL",
 								References:  []string{"http://exammple.com"},
+								VendorSeverity: dbTypes.VendorSeverity{
+									"nvd":    2,
+									"redhat": 2,
+								},
 								CVSS: dbTypes.VendorCVSS{
 									"nvd": {
 										V2Vector: "AV:L/AC:L/Au:N/C:C/I:C/A:C",

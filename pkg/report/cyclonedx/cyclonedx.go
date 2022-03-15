@@ -498,10 +498,7 @@ func ratings(vulnerability types.DetectedVulnerability) *[]cdx.VulnerabilityRati
 		if rates[i].Source.Name != rates[i].Source.Name {
 			return rates[i].Source.Name > rates[i].Source.Name
 		}
-		if rates[i].Method != rates[i].Method {
-			return rates[i].Method > rates[i].Method
-		}
-		return rates[i].Score > rates[i].Score
+		return rates[i].Method > rates[i].Method
 	})
 	return &rates
 }

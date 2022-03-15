@@ -221,6 +221,9 @@ func TestConvertToRpcVulns(t *testing.T) {
 							Title:       "DoS",
 							Description: "Denial of Service",
 							Severity:    "MEDIUM",
+							VendorSeverity: dbTypes.VendorSeverity{
+								"redhat": 2,
+							},
 							CVSS: dbTypes.VendorCVSS{
 								"redhat": {
 									V2Vector: "AV:L/AC:L/Au:N/C:C/I:C/A:C",
@@ -254,6 +257,9 @@ func TestConvertToRpcVulns(t *testing.T) {
 					Title:            "DoS",
 					Description:      "Denial of Service",
 					Severity:         common.Severity_MEDIUM,
+					VendorSeverity: map[string]common.Severity{
+						"redhat": 2,
+					},
 					Cvss: map[string]*common.CVSS{
 						"redhat": {
 							V2Vector: "AV:L/AC:L/Au:N/C:C/I:C/A:C",
@@ -312,6 +318,7 @@ func TestConvertToRpcVulns(t *testing.T) {
 					Title:            "DoS",
 					Description:      "Denial of Service",
 					Severity:         common.Severity_UNKNOWN,
+					VendorSeverity:   make(map[string]common.Severity),
 					Cvss:             make(map[string]*common.CVSS),
 					References:       []string{"http://example.com"},
 					Layer: &common.Layer{
@@ -363,6 +370,9 @@ func TestConvertFromRPCResults(t *testing.T) {
 							Severity:         common.Severity_MEDIUM,
 							SeveritySource:   string(vulnerability.NVD),
 							CweIds:           []string{"CWE-123", "CWE-456"},
+							VendorSeverity: map[string]common.Severity{
+								"redhat": 2,
+							},
 							Cvss: map[string]*common.CVSS{
 								"redhat": {
 									V2Vector: "AV:L/AC:L/Au:N/C:C/I:C/A:C",
@@ -404,11 +414,13 @@ func TestConvertFromRPCResults(t *testing.T) {
 							SeveritySource: vulnerability.NVD,
 							PrimaryURL:     "https://avd.aquasec.com/nvd/CVE-2019-0001",
 							Vulnerability: dbTypes.Vulnerability{
-								Title:          "DoS",
-								Description:    "Denial of Service",
-								Severity:       common.Severity_MEDIUM.String(),
-								CweIDs:         []string{"CWE-123", "CWE-456"},
-								VendorSeverity: nil,
+								Title:       "DoS",
+								Description: "Denial of Service",
+								Severity:    common.Severity_MEDIUM.String(),
+								VendorSeverity: dbTypes.VendorSeverity{
+									"redhat": 2,
+								},
+								CweIDs: []string{"CWE-123", "CWE-456"},
 								CVSS: dbTypes.VendorCVSS{
 									"redhat": {
 										V2Vector: "AV:L/AC:L/Au:N/C:C/I:C/A:C",
@@ -488,7 +500,7 @@ func TestConvertFromRPCResults(t *testing.T) {
 								Description:    "Denial of Service",
 								Severity:       common.Severity_MEDIUM.String(),
 								CweIDs:         []string{"CWE-123", "CWE-456"},
-								VendorSeverity: nil,
+								VendorSeverity: make(dbTypes.VendorSeverity),
 								CVSS: dbTypes.VendorCVSS{
 									"redhat": {
 										V2Vector: "AV:L/AC:L/Au:N/C:C/I:C/A:C",
