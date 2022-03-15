@@ -17,20 +17,9 @@ import (
 	"github.com/aquasecurity/trivy/pkg/types"
 )
 
-func initializeClientScanner(ctx context.Context, target string, ac cache.ArtifactCache, lac cache.LocalArtifactCache,
+func initializeClientDockerScanner(ctx context.Context, target string, ac cache.ArtifactCache, lac cache.LocalArtifactCache,
 	remoteAddr string, customHeaders http.Header,
 	insecure bool, artifactOpt artifact.Option, configScannerOptions config.ScannerOption) (scanner.Scanner, func(), error) {
-
-	if target != "" {
-		// Scan tar file
-		s, err := initializeRemoteArchiveScanner(ctx, target, ac, client.CustomHeaders(customHeaders),
-			client.RemoteURL(remoteAddr), client.Insecure(insecure), artifactOpt, configScannerOptions)
-		if err != nil {
-			return scanner.Scanner{}, nil, xerrors.Errorf("unable to initialize the archive scanner: %w", err)
-		}
-		return s, func() {}, nil
-	}
-
 	// Scan an image in Docker Engine or Docker Registry
 	dockerOpt, err := types.GetDockerOption(insecure)
 	if err != nil {
@@ -42,12 +31,23 @@ func initializeClientScanner(ctx context.Context, target string, ac cache.Artifa
 	if err != nil {
 		return scanner.Scanner{}, nil, xerrors.Errorf("unable to initialize the docker scanner: %w", err)
 	}
-
 	return s, cleanup, nil
 }
 
+func initializeClientTarScanner(ctx context.Context, target string, ac cache.ArtifactCache, lac cache.LocalArtifactCache,
+	remoteAddr string, customHeaders http.Header,
+	insecure bool, artifactOpt artifact.Option, configScannerOptions config.ScannerOption) (scanner.Scanner, func(), error) {
+	// Scan tar file
+	s, err := initializeRemoteArchiveScanner(ctx, target, ac, client.CustomHeaders(customHeaders),
+		client.RemoteURL(remoteAddr), client.Insecure(insecure), artifactOpt, configScannerOptions)
+	if err != nil {
+		return scanner.Scanner{}, nil, xerrors.Errorf("unable to initialize the archive scanner: %w", err)
+	}
+	return s, func() {}, nil
+}
+
 func ClientRun(cliCtx *cli.Context) error {
-	opt, err := NewOption(cliCtx)
+	opt, err := initOption(cliCtx)
 	if err != nil {
 		return xerrors.Errorf("option error: %w", err)
 	}
@@ -57,7 +57,11 @@ func ClientRun(cliCtx *cli.Context) error {
 	// Disable the lock file scanning
 	opt.DisabledAnalyzers = analyzer.TypeLockfiles
 
-	err = runWithTimeout(ctx, opt, initializeClientScanner, initRemoteCache)
+	if opt.Input != "" {
+		err = runWithTimeout(ctx, opt, initializeClientTarScanner, initRemoteCache)
+	} else {
+		err = runWithTimeout(ctx, opt, initializeClientDockerScanner, initRemoteCache)
+	}
 	if xerrors.Is(err, context.DeadlineExceeded) {
 		log.Logger.Warn("Increase --timeout value")
 	}
