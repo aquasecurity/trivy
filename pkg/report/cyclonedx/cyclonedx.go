@@ -510,7 +510,11 @@ func ratings(vulnerability types.DetectedVulnerability) *[]cdx.VulnerabilityRati
 }
 
 func severity(s string) cdx.Severity {
-	sev, _ := dtypes.NewSeverity(s)
+	sev, err := dtypes.NewSeverity(s)
+	if err != nil {
+		log.Logger.Debugf("cyclonedx severity error: %s", err.Error())
+		return cdx.SeverityUnknown
+	}
 	switch sev {
 	case dtypes.SeverityLow:
 		return cdx.SeverityLow
