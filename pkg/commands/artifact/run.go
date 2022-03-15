@@ -237,7 +237,10 @@ func filter(ctx context.Context, opt Option, report types.Report) (types.Report,
 	resultClient := initializeResultClient()
 	results := report.Results
 	for i := range results {
-		resultClient.FillVulnerabilityInfo(results[i].Vulnerabilities, results[i].Type)
+		// run FillVulnerabilityInfo only for local scans
+		if opt.RemoteAddr == "" {
+			resultClient.FillVulnerabilityInfo(results[i].Vulnerabilities, results[i].Type)
+		}
 		vulns, misconfSummary, misconfs, err := resultClient.Filter(ctx, results[i].Vulnerabilities, results[i].Misconfigurations,
 			opt.Severities, opt.IgnoreUnfixed, opt.IncludeNonFailures, opt.IgnoreFile, opt.IgnorePolicy)
 		if err != nil {
