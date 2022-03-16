@@ -21,9 +21,6 @@ type Option struct {
 	option.CacheOption
 	option.ConfigOption
 
-	// For policy downloading
-	NoProgress bool
-
 	// We don't want to allow disabled analyzers to be passed by users,
 	// but it differs depending on scanning modes.
 	DisabledAnalyzers []analyzer.Type
@@ -51,7 +48,6 @@ func NewOption(c *cli.Context) (Option, error) {
 		ReportOption:   option.NewReportOption(c),
 		CacheOption:    option.NewCacheOption(c),
 		ConfigOption:   option.NewConfigOption(c),
-		NoProgress:     c.Bool("no-progress"),
 		RemoteAddr:     c.String("remote"),
 		token:          c.String("token"),
 		tokenHeader:    c.String("token-header"),
