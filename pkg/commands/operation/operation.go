@@ -3,6 +3,7 @@ package operation
 import (
 	"context"
 	"crypto/tls"
+	"github.com/aquasecurity/fanal/types"
 	"os"
 	"strings"
 
@@ -30,6 +31,23 @@ var SuperSet = wire.NewSet(
 type Cache struct {
 	cache.Cache
 }
+
+func NopCache(ac cache.ArtifactCache) cache.Cache {
+	return nopCache{ac}
+}
+
+type nopCache struct {
+	cache.ArtifactCache
+}
+
+func (nopCache) GetArtifact(string) (types.ArtifactInfo, error) {
+	return types.ArtifactInfo{}, nil
+}
+func (nopCache) GetBlob(string) (types.BlobInfo, error) {
+	return types.BlobInfo{}, nil
+}
+func (nopCache) Close() error { return nil }
+func (nopCache) Clear() error { return nil }
 
 // NewCache is the factory method for Cache
 func NewCache(c option.CacheOption) (Cache, error) {

@@ -46,9 +46,9 @@ func FilesystemRun(ctx *cli.Context) error {
 	// Disable the individual package scanning
 	opt.DisabledAnalyzers = analyzer.TypeIndividualPkgs
 	if opt.RemoteAddr != "" {
-		return Run(ctx.Context, opt, filesystemRemoteScanner, initRemoteCache)
+		return Run(ctx.Context, opt, filesystemRemoteScanner, initCache)
 	}
-	return Run(ctx.Context, opt, filesystemScanner, initFSCache)
+	return Run(ctx.Context, opt, filesystemScanner, initCache)
 }
 
 // RootfsRun runs scan on rootfs.
@@ -61,5 +61,5 @@ func RootfsRun(ctx *cli.Context) error {
 	// Disable the lock file scanning
 	opt.DisabledAnalyzers = analyzer.TypeLockfiles
 
-	return Run(ctx.Context, opt, filesystemScanner, initFSCache)
+	return Run(ctx.Context, opt, filesystemScanner, initCache)
 }

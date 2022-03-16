@@ -58,9 +58,9 @@ func ClientRun(cliCtx *cli.Context) error {
 	opt.DisabledAnalyzers = analyzer.TypeLockfiles
 
 	if opt.Input != "" {
-		err = runWithTimeout(ctx, opt, initializeClientTarScanner, initRemoteCache)
+		err = runWithTimeout(ctx, opt, initializeClientTarScanner, initCache)
 	} else {
-		err = runWithTimeout(ctx, opt, initializeClientDockerScanner, initRemoteCache)
+		err = runWithTimeout(ctx, opt, initializeClientDockerScanner, initCache)
 	}
 	if xerrors.Is(err, context.DeadlineExceeded) {
 		log.Logger.Warn("Increase --timeout value")

@@ -9,6 +9,7 @@ import (
 
 	"github.com/aquasecurity/fanal/cache"
 	"github.com/aquasecurity/fanal/types"
+	"github.com/aquasecurity/trivy/pkg/commands/operation"
 	"github.com/aquasecurity/trivy/pkg/rpc"
 	"github.com/aquasecurity/trivy/pkg/rpc/client"
 	rpcCache "github.com/aquasecurity/trivy/rpc/cache"
@@ -21,7 +22,7 @@ type RemoteCache struct {
 }
 
 // NewRemoteCache is the factory method for RemoteCache
-func NewRemoteCache(url string, customHeaders http.Header, insecure bool) cache.ArtifactCache {
+func NewRemoteCache(url string, customHeaders http.Header, insecure bool) cache.Cache {
 	ctx := client.WithCustomHeaders(context.Background(), customHeaders)
 
 	httpClient := &http.Client{
@@ -31,9 +32,8 @@ func NewRemoteCache(url string, customHeaders http.Header, insecure bool) cache.
 			},
 		},
 	}
-
 	c := rpcCache.NewCacheProtobufClient(url, httpClient)
-	return &RemoteCache{ctx: ctx, client: c}
+	return operation.NopCache(&RemoteCache{ctx: ctx, client: c})
 }
 
 // PutArtifact sends artifact to remote client
