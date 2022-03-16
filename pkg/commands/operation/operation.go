@@ -3,7 +3,6 @@ package operation
 import (
 	"context"
 	"crypto/tls"
-	"github.com/aquasecurity/fanal/types"
 	"os"
 	"strings"
 
@@ -12,6 +11,7 @@ import (
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/fanal/cache"
+	"github.com/aquasecurity/fanal/types"
 	"github.com/aquasecurity/trivy-db/pkg/metadata"
 	"github.com/aquasecurity/trivy/pkg/commands/option"
 	"github.com/aquasecurity/trivy/pkg/db"
