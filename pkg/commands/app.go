@@ -313,9 +313,10 @@ var (
 	}
 
 	remoteServer = cli.StringFlag{
-		Name:    "remote",
+		Name:    "server",
 		Value:   "",
 		Usage:   "server address",
+		Aliases: []string{"remote"},
 		EnvVars: []string{"TRIVY_REMOTE"},
 	}
 
