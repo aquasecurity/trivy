@@ -12,11 +12,16 @@ jobs:
     runs-on: ubuntu-18.04 # 20.04 doesn't provide createrepo for now
     env:
       DOCKER_CLI_EXPERIMENTAL: "enabled"
+    permissions:
+      id-token: write # For cosign
+      packages: write # For GHCR
+      contents: read  # Not required for public repositories, but for clarity
     steps:
       - name: Install dependencies
         run: |
           sudo apt-get -y update
           sudo apt-get -y install rpm reprepro createrepo distro-info
+      - uses: sigstore/cosign-installer@51f8e5c6fce54e46006ae97d73b2b6315f518752 # pin@v2.0.0
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v1
       - name: Set up Docker Buildx
@@ -64,7 +69,7 @@ jobs:
       - name: Release
         uses: goreleaser/goreleaser-action@v2
         with:
-          version: v0.183.0
+          version: v1.4.1
           args: release --rm-dist
         env:
           GITHUB_TOKEN: ${{ secrets.ORG_REPO_TOKEN }}

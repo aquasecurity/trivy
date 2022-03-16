@@ -140,3 +140,6 @@ labels:
 - name: help wanted
   color: 006b75
   description: Denotes an issue that needs help from a contributor. Must meet "help wanted" guidelines.
+- name: vulnerability
+  color: e11d21
+  description: Categorizes issue or PR as related to Trivy's own vulnerabilities.
