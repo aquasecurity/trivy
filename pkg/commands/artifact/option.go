@@ -1,9 +1,6 @@
 package artifact
 
 import (
-	"net/http"
-	"strings"
-
 	"github.com/urfave/cli/v2"
 	"golang.org/x/xerrors"
 
@@ -20,17 +17,11 @@ type Option struct {
 	option.ReportOption
 	option.CacheOption
 	option.ConfigOption
+	option.RemoteOption
 
 	// We don't want to allow disabled analyzers to be passed by users,
 	// but it differs depending on scanning modes.
 	DisabledAnalyzers []analyzer.Type
-
-	RemoteAddr    string
-	token         string
-	tokenHeader   string
-	customHeaders []string
-	// this field is populated in Init()
-	CustomHeaders http.Header
 }
 
 // NewOption is the factory method to return options
@@ -48,10 +39,7 @@ func NewOption(c *cli.Context) (Option, error) {
 		ReportOption:   option.NewReportOption(c),
 		CacheOption:    option.NewCacheOption(c),
 		ConfigOption:   option.NewConfigOption(c),
-		RemoteAddr:     c.String("remote"),
-		token:          c.String("token"),
-		tokenHeader:    c.String("token-header"),
-		customHeaders:  c.StringSlice("custom-headers"),
+		RemoteOption:   option.NewRemoteOption(c),
 	}, nil
 }
 
@@ -69,13 +57,6 @@ func (c *Option) Init() error {
 	if err := c.ArtifactOption.Init(c.Context, c.Logger); err != nil {
 		return err
 	}
-
-	c.CustomHeaders = splitCustomHeaders(c.customHeaders)
-	// add token to custom headers
-	if c.token != "" {
-		c.CustomHeaders.Set(c.tokenHeader, c.token)
-	}
-
 	return nil
 }
 
@@ -97,17 +78,4 @@ func (c *Option) skipScan() bool {
 		return true
 	}
 	return false
-}
-
-func splitCustomHeaders(headers []string) http.Header {
-	result := make(http.Header)
-	for _, header := range headers {
-		// e.g. x-api-token:XXX
-		s := strings.SplitN(header, ":", 2)
-		if len(s) != 2 {
-			continue
-		}
-		result.Set(s[0], s[1])
-	}
-	return result
 }
