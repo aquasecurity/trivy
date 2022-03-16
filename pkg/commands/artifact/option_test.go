@@ -41,7 +41,9 @@ func TestOption_Init(t *testing.T) {
 					SecurityChecks: []string{types.SecurityCheckVulnerability},
 					Output:         os.Stdout,
 				},
-				CustomHeaders: http.Header{},
+				RemoteOption: option.RemoteOption{
+					CustomHeaders: http.Header{},
+				},
 			},
 		},
 		{
@@ -60,7 +62,9 @@ func TestOption_Init(t *testing.T) {
 					SecurityChecks: []string{types.SecurityCheckConfig},
 					Output:         os.Stdout,
 				},
-				CustomHeaders: http.Header{},
+				RemoteOption: option.RemoteOption{
+					CustomHeaders: http.Header{},
+				},
 			},
 		},
 		{
@@ -75,6 +79,9 @@ func TestOption_Init(t *testing.T) {
 					Output:         os.Stdout,
 					VulnType:       []string{types.VulnTypeOS, types.VulnTypeLibrary},
 					SecurityChecks: []string{types.SecurityCheckVulnerability},
+				},
+				RemoteOption: option.RemoteOption{
+					CustomHeaders: http.Header{},
 				},
 			},
 		},
@@ -94,7 +101,9 @@ func TestOption_Init(t *testing.T) {
 				ArtifactOption: option.ArtifactOption{
 					Target: "centos:7",
 				},
-				CustomHeaders: http.Header{},
+				RemoteOption: option.RemoteOption{
+					CustomHeaders: http.Header{},
+				},
 			},
 		},
 		{
@@ -114,7 +123,9 @@ func TestOption_Init(t *testing.T) {
 				ArtifactOption: option.ArtifactOption{
 					Target: "gitlab/gitlab-ce:12.7.2-ce.0",
 				},
-				CustomHeaders: http.Header{},
+				RemoteOption: option.RemoteOption{
+					CustomHeaders: http.Header{},
+				},
 			},
 		},
 		{
@@ -135,7 +146,9 @@ func TestOption_Init(t *testing.T) {
 				ArtifactOption: option.ArtifactOption{
 					Target: "gitlab/gitlab-ce:12.7.2-ce.0",
 				},
-				CustomHeaders: http.Header{},
+				RemoteOption: option.RemoteOption{
+					CustomHeaders: http.Header{},
+				},
 			},
 		},
 		{
@@ -155,7 +168,9 @@ func TestOption_Init(t *testing.T) {
 				ArtifactOption: option.ArtifactOption{
 					Target: "gitlab/gitlab-ce:12.7.2-ce.0",
 				},
-				CustomHeaders: http.Header{},
+				RemoteOption: option.RemoteOption{
+					CustomHeaders: http.Header{},
+				},
 			},
 		},
 		{
@@ -247,7 +262,9 @@ func TestConfig_Init(t *testing.T) {
 					SecurityChecks: []string{types.SecurityCheckVulnerability},
 					Output:         os.Stdout,
 				},
-				CustomHeaders: http.Header{},
+				RemoteOption: option.RemoteOption{
+					CustomHeaders: http.Header{},
+				},
 			},
 		},
 		{
@@ -266,7 +283,9 @@ func TestConfig_Init(t *testing.T) {
 					SecurityChecks: []string{types.SecurityCheckConfig},
 					Output:         os.Stdout,
 				},
-				CustomHeaders: http.Header{},
+				RemoteOption: option.RemoteOption{
+					CustomHeaders: http.Header{},
+				},
 			},
 		},
 		{
@@ -282,10 +301,10 @@ func TestConfig_Init(t *testing.T) {
 				ArtifactOption: option.ArtifactOption{
 					Target: "alpine:3.11",
 				},
-				token:       "secret",
-				tokenHeader: "X-Trivy-Token",
-				CustomHeaders: http.Header{
-					"X-Trivy-Token": []string{"secret"},
+				RemoteOption: option.RemoteOption{
+					CustomHeaders: http.Header{
+						"X-Trivy-Token": []string{"secret"},
+					},
 				},
 			},
 		},
@@ -302,10 +321,10 @@ func TestConfig_Init(t *testing.T) {
 				ArtifactOption: option.ArtifactOption{
 					Target: "alpine:3.11",
 				},
-				customHeaders: []string{"foo:bar"},
-				CustomHeaders: http.Header{
-					"Foo": []string{"bar"},
-				},
+				RemoteOption: option.RemoteOption{
+					CustomHeaders: http.Header{
+						"Foo": []string{"bar"},
+					}},
 			},
 		},
 		{
@@ -321,8 +340,9 @@ func TestConfig_Init(t *testing.T) {
 				ArtifactOption: option.ArtifactOption{
 					Target: "alpine:3.11",
 				},
-				customHeaders: []string{"foobaz"},
-				CustomHeaders: http.Header{},
+				RemoteOption: option.RemoteOption{
+					CustomHeaders: http.Header{},
+				},
 			},
 		},
 		{
@@ -341,7 +361,9 @@ func TestConfig_Init(t *testing.T) {
 				ArtifactOption: option.ArtifactOption{
 					Target: "centos:7",
 				},
-				CustomHeaders: http.Header{},
+				RemoteOption: option.RemoteOption{
+					CustomHeaders: http.Header{},
+				},
 			},
 		},
 		{
@@ -361,7 +383,9 @@ func TestConfig_Init(t *testing.T) {
 				ArtifactOption: option.ArtifactOption{
 					Target: "gitlab/gitlab-ce:12.7.2-ce.0",
 				},
-				CustomHeaders: http.Header{},
+				RemoteOption: option.RemoteOption{
+					CustomHeaders: http.Header{},
+				},
 			},
 		},
 		{
@@ -382,7 +406,9 @@ func TestConfig_Init(t *testing.T) {
 				ArtifactOption: option.ArtifactOption{
 					Target: "gitlab/gitlab-ce:12.7.2-ce.0",
 				},
-				CustomHeaders: http.Header{},
+				RemoteOption: option.RemoteOption{
+					CustomHeaders: http.Header{},
+				},
 			},
 		},
 		{
@@ -402,7 +428,9 @@ func TestConfig_Init(t *testing.T) {
 				ArtifactOption: option.ArtifactOption{
 					Target: "gitlab/gitlab-ce:12.7.2-ce.0",
 				},
-				CustomHeaders: http.Header{},
+				RemoteOption: option.RemoteOption{
+					CustomHeaders: http.Header{},
+				},
 			},
 		},
 		{
@@ -422,7 +450,9 @@ func TestConfig_Init(t *testing.T) {
 				ArtifactOption: option.ArtifactOption{
 					Target: "gitlab/gitlab-ce:12.7.2-ce.0",
 				},
-				CustomHeaders: http.Header{},
+				RemoteOption: option.RemoteOption{
+					CustomHeaders: http.Header{},
+				},
 			},
 		},
 		{
@@ -482,34 +512,6 @@ func TestConfig_Init(t *testing.T) {
 			tt.want.GlobalOption.Context = ctx
 			tt.want.GlobalOption.Logger = logger.Sugar()
 			assert.Equal(t, tt.want, c, tt.name)
-		})
-	}
-}
-
-func Test_splitCustomHeaders(t *testing.T) {
-	type args struct {
-		headers []string
-	}
-	tests := []struct {
-		name string
-		args args
-		want http.Header
-	}{
-		{
-			name: "happy path",
-			args: args{
-				headers: []string{"x-api-token:foo bar", "Authorization:user:password"},
-			},
-			want: http.Header{
-				"X-Api-Token":   []string{"foo bar"},
-				"Authorization": []string{"user:password"},
-			},
-		},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			got := splitCustomHeaders(tt.args.headers)
-			assert.Equal(t, tt.want, got)
 		})
 	}
 }
