@@ -46,8 +46,8 @@ var StandaloneFilesystemSet = wire.NewSet(
 	StandaloneSuperSet,
 )
 
-// StandaloneFilesystemRemoteSet binds filesystem dependencies for client/server mode
-var StandaloneFilesystemRemoteSet = wire.NewSet(
+// RemoteFilesystemSet binds filesystem dependencies for client/server mode
+var RemoteFilesystemSet = wire.NewSet(
 	flocal.NewArtifact,
 	RemoteSuperSet,
 )

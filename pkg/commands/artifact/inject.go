@@ -41,7 +41,7 @@ func initializeFilesystemScanner(ctx context.Context, path string, artifactCache
 func initializeFilesystemRemoteScanner(ctx context.Context, path string, artifactCache cache.ArtifactCache,
 	customHeaders client.CustomHeaders, url client.RemoteURL, insecure client.Insecure,
 	artifactOption artifact.Option, configScannerOption config.ScannerOption) (scanner.Scanner, func(), error) {
-	wire.Build(scanner.StandaloneFilesystemRemoteSet)
+	wire.Build(scanner.RemoteFilesystemSet)
 	return scanner.Scanner{}, nil, nil
 }
 func initializeRepositoryScanner(ctx context.Context, url string, artifactCache cache.ArtifactCache,
