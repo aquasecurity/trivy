@@ -137,7 +137,7 @@ labels:
   description: Issues relating to Terraform
 - name: co/cloudformation
   color: d9ead3
-  description: Issues relating to Cloudformation
+  description: Issues relating to CloudFormation
 - name: co/dockerfile
   color: d9ead3
   description: Issues relating to Dockerfile
