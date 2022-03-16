@@ -1,25 +1,23 @@
-name: Scan
-on: [push, pull_request]
+name: Scan vulnerabilities
+on:
+  schedule:
+    - cron: '0 0 * * *'
+  workflow_dispatch:
+
 jobs:
   build:
     name: Scan Go vulnerabilities
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Run Trivy vulnerability scanner to scan for Critical Vulnerabilities
-        uses: aquasecurity/trivy-action@master
+      - name: Run Trivy vulnerability scanner and create GitHub issues
+        uses: knqyf263/trivy-issue-action@v0.0.3
         with:
-          scan-type: 'fs'
-          exit-code: '1'
-          severity: 'CRITICAL'
+          assignee: knqyf263
+          severity: CRITICAL
           skip-dirs: integration,examples
-
-      - name: Run Trivy vulnerability scanner to scan for Medium and High Vulnerabilities
-        uses: aquasecurity/trivy-action@master
-        with:
-          scan-type: 'fs'
-          exit-code: '0'
-          severity: 'HIGH,MEDIUM'
-          skip-dirs: integration,examples
+          label: vulnerability
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
