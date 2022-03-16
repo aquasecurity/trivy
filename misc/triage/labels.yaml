@@ -132,6 +132,19 @@ labels:
 - name: co/poetry
   color: d9ead3
   description: Issues relating to Poetry
+- name: co/terraform
+  color: d9ead3
+  description: Issues relating to Terraform
+- name: co/cloudformation
+  color: d9ead3
+  description: Issues relating to CloudFormation
+- name: co/dockerfile
+  color: d9ead3
+  description: Issues relating to Dockerfile
+- name: co/kubernetes
+  color: d9ead3
+  description: Issues relating to Kubernetes
+
 
 # others
 - name: good first issue
