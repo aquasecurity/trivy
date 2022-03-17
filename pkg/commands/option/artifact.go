@@ -19,6 +19,7 @@ type ArtifactOption struct {
 	SkipDirs    []string
 	SkipFiles   []string
 	OfflineScan bool
+	Type        string
 
 	// this field is populated in Init()
 	Target string
@@ -34,6 +35,7 @@ func NewArtifactOption(c *cli.Context) ArtifactOption {
 		SkipDirs:    c.StringSlice("skip-dirs"),
 		OfflineScan: c.Bool("offline-scan"),
 		Insecure:    c.Bool("insecure"),
+		Type:        c.String("type"),
 	}
 }
 

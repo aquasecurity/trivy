@@ -52,6 +52,14 @@ var (
 		EnvVars: []string{"TRIVY_SBOM_FORMAT"},
 	}
 
+	artifactType = cli.StringFlag{
+		Name:    "type",
+		Aliases: []string{"t"},
+		Value:   "image",
+		Usage:   "input artifact type (image, fs, archive)",
+		EnvVars: []string{"TRIVY_ARTIFACT_TYPE"},
+	}
+
 	inputFlag = cli.StringFlag{
 		Name:    "input",
 		Aliases: []string{"i"},
@@ -538,6 +546,7 @@ func NewSbomCommand() *cli.Command {
 		Flags: []cli.Flag{
 			&sbomFormatFlag,
 			&outputFlag,
+			&artifactType,
 			&clearCacheFlag,
 			&ignoreFileFlag,
 			&timeoutFlag,

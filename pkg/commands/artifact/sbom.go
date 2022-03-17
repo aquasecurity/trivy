@@ -1,19 +1,18 @@
 package artifact
 
 import (
-	"strings"
+	"github.com/urfave/cli/v2"
+	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/types"
-	"github.com/urfave/cli/v2"
-	"golang.org/x/xerrors"
 )
 
 type ArtifactType string
 
 const (
 	ContainerImageArtifact ArtifactType = "image"
-	PackageArtifact        ArtifactType = "dir"
+	PackageArtifact        ArtifactType = "fs"
 	DockerArchiveArtifact  ArtifactType = "archive"
 )
 
@@ -31,21 +30,6 @@ var artifactTypeToDisabledAnalyzers = map[ArtifactType][]analyzer.Type{
 	DockerArchiveArtifact:  analyzer.TypeLockfiles,
 }
 
-func analyzeArtifactPath(artifactPath string) (ArtifactType, string, error) {
-	// The user must specify the input artifact type by using the "<artifact-type>:" prefix before the artifact path
-	// e.g image:ubuntu, dir:/path/to/express
-	for _, artifactType := range ArtifactTypes {
-		prefix := string(artifactType) + ":"
-
-		if strings.HasPrefix(artifactPath, prefix) {
-			return artifactType, strings.Split(artifactPath, prefix)[1], nil
-		}
-	}
-
-	return "", "", xerrors.Errorf(`invalid artifact type, artifact type must be one of %s`, ArtifactTypes)
-
-}
-
 // SbomRun runs generates sbom for image and package artifacts
 func SbomRun(ctx *cli.Context) error {
 	opt, err := initOption(ctx)
@@ -53,19 +37,16 @@ func SbomRun(ctx *cli.Context) error {
 		return xerrors.Errorf("option error: %w", err)
 	}
 
-	// Extract and set the target path
-	artifactType, artifactPath, err := analyzeArtifactPath(opt.ArtifactOption.Target)
+	artifactType := opt.ArtifactOption.Type
 
 	if err != nil {
 		return err
 	}
 
-	opt.ArtifactOption.Target = artifactPath
-
 	// Scan the relevant dependencies
-	opt.DisabledAnalyzers = artifactTypeToDisabledAnalyzers[artifactType]
+	opt.DisabledAnalyzers = artifactTypeToDisabledAnalyzers[ArtifactType(artifactType)]
 	opt.ReportOption.VulnType = []string{types.VulnTypeOS, types.VulnTypeLibrary}
 	opt.ReportOption.SecurityChecks = []string{types.SecurityCheckVulnerability}
 
-	return Run(ctx.Context, opt, artifactTypeToScanner[artifactType], initFSCache)
+	return Run(ctx.Context, opt, artifactTypeToScanner[ArtifactType(artifactType)], initFSCache)
 }
