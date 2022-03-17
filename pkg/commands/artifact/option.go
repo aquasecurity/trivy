@@ -70,6 +70,9 @@ func (c *Option) initPreScanOptions() error {
 	if err := c.CacheOption.Init(); err != nil {
 		return err
 	}
+	if err := c.RemoteOption.Init(c.Logger); err != nil {
+		return err
+	}
 	return nil
 }
 

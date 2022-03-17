@@ -11,7 +11,6 @@ import (
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/fanal/cache"
-	"github.com/aquasecurity/fanal/types"
 	"github.com/aquasecurity/trivy-db/pkg/metadata"
 	"github.com/aquasecurity/trivy/pkg/commands/option"
 	"github.com/aquasecurity/trivy/pkg/db"
@@ -31,23 +30,6 @@ var SuperSet = wire.NewSet(
 type Cache struct {
 	cache.Cache
 }
-
-func NopCache(ac cache.ArtifactCache) cache.Cache {
-	return nopCache{ac}
-}
-
-type nopCache struct {
-	cache.ArtifactCache
-}
-
-func (nopCache) GetArtifact(string) (types.ArtifactInfo, error) {
-	return types.ArtifactInfo{}, nil
-}
-func (nopCache) GetBlob(string) (types.BlobInfo, error) {
-	return types.BlobInfo{}, nil
-}
-func (nopCache) Close() error { return nil }
-func (nopCache) Clear() error { return nil }
 
 // NewCache is the factory method for Cache
 func NewCache(c option.CacheOption) (Cache, error) {
@@ -74,6 +56,8 @@ func NewCache(c option.CacheOption) (Cache, error) {
 		redisCache := cache.NewRedisCache(options)
 		return Cache{Cache: redisCache}, nil
 	}
+
+	// standalone mode
 	fsCache, err := cache.NewFSCache(utils.CacheDir())
 	if err != nil {
 		return Cache{}, xerrors.Errorf("unable to initialize fs cache: %w", err)

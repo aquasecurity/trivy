@@ -5,22 +5,53 @@ import (
 	"strings"
 
 	"github.com/urfave/cli/v2"
+	"go.uber.org/zap"
 )
 
+// RemoteOption holds options for client/server
 type RemoteOption struct {
 	RemoteAddr    string
+	customHeaders []string
+	token         string
+	tokenHeader   string
+	remote        string // deprecated
+
+	// this field is populated in Init()
 	CustomHeaders http.Header
 }
 
 func NewRemoteOption(c *cli.Context) RemoteOption {
 	r := RemoteOption{
-		RemoteAddr: c.String("remote"),
+		RemoteAddr:    c.String("server"),
+		customHeaders: c.StringSlice("custom-headers"),
+		token:         c.String("token"),
+		tokenHeader:   c.String("token-header"),
+		remote:        c.String("remote"), // deprecated
 	}
-	r.CustomHeaders = splitCustomHeaders(c.StringSlice("custom-headers"))
-	if token := c.String("token"); token != "" {
-		r.CustomHeaders.Set(c.String("token-header"), token)
-	}
+
 	return r
+}
+
+// Init initialize the options for client/server mode
+func (c *RemoteOption) Init(logger *zap.SugaredLogger) (err error) {
+	// for backward compatibility, should be removed in the future
+	if c.remote != "" {
+		c.RemoteAddr = c.remote
+	}
+
+	if c.RemoteAddr == "" {
+		if len(c.customHeaders) > 0 || c.token != "" || c.tokenHeader != "" {
+			logger.Warn(`'--token', '--token-header' and 'custom-header' can be used only with '--server'`)
+		}
+		return nil
+	}
+
+	c.CustomHeaders = splitCustomHeaders(c.customHeaders)
+	if c.token != "" {
+		c.CustomHeaders.Set(c.tokenHeader, c.token)
+	}
+
+	return nil
 }
 
 func splitCustomHeaders(headers []string) http.Header {

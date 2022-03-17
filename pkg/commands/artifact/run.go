@@ -3,7 +3,6 @@ package artifact
 import (
 	"context"
 	"errors"
-	"net/http"
 	"os"
 
 	"github.com/urfave/cli/v2"
@@ -14,10 +13,11 @@ import (
 	"github.com/aquasecurity/fanal/artifact"
 	"github.com/aquasecurity/fanal/cache"
 	"github.com/aquasecurity/trivy-db/pkg/db"
-	remoteCache "github.com/aquasecurity/trivy/pkg/cache"
+	tcache "github.com/aquasecurity/trivy/pkg/cache"
 	"github.com/aquasecurity/trivy/pkg/commands/operation"
 	"github.com/aquasecurity/trivy/pkg/log"
 	pkgReport "github.com/aquasecurity/trivy/pkg/report"
+	"github.com/aquasecurity/trivy/pkg/rpc/client"
 	"github.com/aquasecurity/trivy/pkg/scanner"
 	"github.com/aquasecurity/trivy/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/utils"
@@ -27,9 +27,26 @@ const defaultPolicyNamespace = "appshield"
 
 var errSkipScan = errors.New("skip subsequent processes")
 
+type scannerConfig struct {
+	// e.g. image name and file path
+	Target string
+
+	// Cache
+	ArtifactCache      cache.ArtifactCache
+	LocalArtifactCache cache.LocalArtifactCache
+
+	// Client/Server options
+	RemoteOption client.ScannerOption
+
+	// Artifact options
+	ArtifactOption artifact.Option
+
+	// Misconfiguration scanning options
+	MisconfOption config.ScannerOption
+}
+
 // InitializeScanner defines the initialize function signature of scanner
-type InitializeScanner func(context.Context, string, cache.ArtifactCache, cache.LocalArtifactCache,
-	string, http.Header, bool, artifact.Option, config.ScannerOption) (scanner.Scanner, func(), error)
+type InitializeScanner func(context.Context, scannerConfig) (scanner.Scanner, func(), error)
 
 // InitCache defines cache initializer
 type InitCache func(c Option) (cache.Cache, error)
@@ -39,7 +56,11 @@ func Run(ctx context.Context, opt Option, initializeScanner InitializeScanner, i
 	ctx, cancel := context.WithTimeout(ctx, opt.Timeout)
 	defer cancel()
 
-	return runWithTimeout(ctx, opt, initializeScanner, initCache)
+	err := runWithTimeout(ctx, opt, initializeScanner, initCache)
+	if xerrors.Is(err, context.DeadlineExceeded) {
+		log.Logger.Warn("Increase --timeout value")
+	}
+	return err
 }
 
 func runWithTimeout(ctx context.Context, opt Option, initializeScanner InitializeScanner, initCache InitCache) error {
@@ -47,16 +68,16 @@ func runWithTimeout(ctx context.Context, opt Option, initializeScanner Initializ
 		return err
 	}
 
-	commonCache, err := initCache(opt)
+	cacheClient, err := initCache(opt)
 	if err != nil {
 		if errors.Is(err, errSkipScan) {
 			return nil
 		}
 		return xerrors.Errorf("cache error: %w", err)
 	}
-	defer commonCache.Close()
+	defer cacheClient.Close()
 
-	// When scanning config files or using `remote` option, it doesn't need to download the vulnerability database.
+	// When scanning config files or running as client mode, it doesn't need to download the vulnerability database.
 	if opt.RemoteAddr == "" && utils.StringInSlice(types.SecurityCheckVulnerability, opt.SecurityChecks) {
 		if err = initDB(opt); err != nil {
 			if errors.Is(err, errSkipScan) {
@@ -67,7 +88,7 @@ func runWithTimeout(ctx context.Context, opt Option, initializeScanner Initializ
 		defer db.Close()
 	}
 
-	report, err := scan(ctx, opt, initializeScanner, commonCache)
+	report, err := scan(ctx, opt, initializeScanner, cacheClient)
 	if err != nil {
 		return xerrors.Errorf("scan error: %w", err)
 	}
@@ -95,10 +116,13 @@ func runWithTimeout(ctx context.Context, opt Option, initializeScanner Initializ
 }
 
 func initCache(c Option) (cache.Cache, error) {
+	// client/server mode
 	if c.RemoteAddr != "" {
-		return remoteCache.NewRemoteCache(c.RemoteAddr, c.CustomHeaders, c.Insecure), nil
+		remoteCache := tcache.NewRemoteCache(c.RemoteAddr, c.CustomHeaders, c.Insecure)
+		return tcache.NopCache(remoteCache), nil
 	}
 
+	// standalone mode
 	utils.SetCacheDir(c.CacheDir)
 	cache, err := operation.NewCache(c.CacheOption)
 	if err != nil {
@@ -172,7 +196,7 @@ func disabledAnalyzers(opt Option) []analyzer.Type {
 	return analyzers
 }
 
-func scan(ctx context.Context, opt Option, initializeScanner InitializeScanner, commonCache cache.Cache) (
+func scan(ctx context.Context, opt Option, initializeScanner InitializeScanner, cacheClient cache.Cache) (
 	types.Report, error) {
 	target := opt.Target
 	if opt.Input != "" {
@@ -187,7 +211,7 @@ func scan(ctx context.Context, opt Option, initializeScanner InitializeScanner, 
 	}
 	log.Logger.Debugf("Vulnerability type:  %s", scanOptions.VulnType)
 
-	// ScannerOptions is filled only when config scanning is enabled.
+	// ScannerOption is filled only when config scanning is enabled.
 	var configScannerOptions config.ScannerOption
 	if utils.StringInSlice(types.SecurityCheckConfig, opt.SecurityChecks) {
 		noProgress := opt.Quiet || opt.NoProgress
@@ -205,16 +229,25 @@ func scan(ctx context.Context, opt Option, initializeScanner InitializeScanner, 
 		}
 	}
 
-	artifactOpt := artifact.Option{
-		DisabledAnalyzers: disabledAnalyzers(opt),
-		SkipFiles:         opt.SkipFiles,
-		SkipDirs:          opt.SkipDirs,
-		InsecureSkipTLS:   opt.Insecure,
-		Offline:           opt.OfflineScan,
-		NoProgress:        opt.NoProgress || opt.Quiet,
-	}
-
-	s, cleanup, err := initializeScanner(ctx, target, commonCache, commonCache, opt.RemoteAddr, opt.CustomHeaders, opt.Insecure, artifactOpt, configScannerOptions)
+	s, cleanup, err := initializeScanner(ctx, scannerConfig{
+		Target:             target,
+		ArtifactCache:      cacheClient,
+		LocalArtifactCache: cacheClient,
+		RemoteOption: client.ScannerOption{
+			RemoteURL:     opt.RemoteAddr,
+			CustomHeaders: opt.CustomHeaders,
+			Insecure:      opt.Insecure,
+		},
+		ArtifactOption: artifact.Option{
+			DisabledAnalyzers: disabledAnalyzers(opt),
+			SkipFiles:         opt.SkipFiles,
+			SkipDirs:          opt.SkipDirs,
+			InsecureSkipTLS:   opt.Insecure,
+			Offline:           opt.OfflineScan,
+			NoProgress:        opt.NoProgress || opt.Quiet,
+		},
+		MisconfOption: configScannerOptions,
+	})
 	if err != nil {
 		return types.Report{}, xerrors.Errorf("unable to initialize a scanner: %w", err)
 	}
@@ -231,7 +264,7 @@ func filter(ctx context.Context, opt Option, report types.Report) (types.Report,
 	resultClient := initializeResultClient()
 	results := report.Results
 	for i := range results {
-		// run FillVulnerabilityInfo only for local scans
+		// Fill vulnerability info only in standalone mode
 		if opt.RemoteAddr == "" {
 			resultClient.FillVulnerabilityInfo(results[i].Vulnerabilities, results[i].Type)
 		}

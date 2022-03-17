@@ -209,14 +209,14 @@ var (
 
 	token = cli.StringFlag{
 		Name:    "token",
-		Usage:   "for authentication",
+		Usage:   "for authentication in client/server mode",
 		EnvVars: []string{"TRIVY_TOKEN"},
 	}
 
 	tokenHeader = cli.StringFlag{
 		Name:    "token-header",
 		Value:   "Trivy-Token",
-		Usage:   "specify a header name for token",
+		Usage:   "specify a header name for token in client/server mode",
 		EnvVars: []string{"TRIVY_TOKEN_HEADER"},
 	}
 
@@ -314,15 +314,13 @@ var (
 
 	remoteServer = cli.StringFlag{
 		Name:    "server",
-		Value:   "",
 		Usage:   "server address",
-		Aliases: []string{"remote"},
-		EnvVars: []string{"TRIVY_REMOTE"},
+		EnvVars: []string{"TRIVY_SERVER"},
 	}
 
 	customHeaders = cli.StringSliceFlag{
 		Name:    "custom-headers",
-		Usage:   "custom headers",
+		Usage:   "custom headers in client/server mode",
 		EnvVars: []string{"TRIVY_CUSTOM_HEADERS"},
 	}
 
@@ -483,12 +481,19 @@ func NewFilesystemCommand() *cli.Command {
 			&ignorePolicy,
 			&listAllPackages,
 			&offlineScan,
-			&remoteServer,
 			stringSliceFlag(skipFiles),
 			stringSliceFlag(skipDirs),
+
+			// for misconfiguration
 			stringSliceFlag(configPolicy),
 			stringSliceFlag(configData),
 			stringSliceFlag(policyNamespaces),
+
+			// for client/server
+			&remoteServer,
+			&token,
+			&tokenHeader,
+			&customHeaders,
 		},
 	}
 }
@@ -578,7 +583,7 @@ func NewClientCommand() *cli.Command {
 		Aliases:   []string{"c"},
 		ArgsUsage: "image_name",
 		Usage:     "client mode",
-		Action:    artifact.ClientRun,
+		Action:    artifact.ImageRun,
 		Flags: []cli.Flag{
 			&templateFlag,
 			&formatFlag,
@@ -602,11 +607,17 @@ func NewClientCommand() *cli.Command {
 			&offlineScan,
 			&insecureFlag,
 
-			// original flags
 			&token,
 			&tokenHeader,
-			&remoteServer,
 			&customHeaders,
+
+			// original flags
+			&cli.StringFlag{
+				Name:    "remote",
+				Value:   "http://localhost:4954",
+				Usage:   "server address",
+				EnvVars: []string{"TRIVY_REMOTE"},
+			},
 		},
 	}
 }
