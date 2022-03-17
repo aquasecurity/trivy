@@ -3,6 +3,7 @@ package commands
 import (
 	"bytes"
 	"encoding/json"
+	"io"
 	"os"
 	"path/filepath"
 	"testing"
@@ -103,6 +104,76 @@ Vulnerability DB:
 			fw := new(bytes.Buffer)
 			showVersion(cacheDir, tt.args.outputFormat, tt.args.version, fw)
 			assert.Equal(t, tt.expectedOutput, fw.String(), tt.name)
+		})
+	}
+}
+
+//Check flag and command for print version
+func TestPrintVersion(t *testing.T) {
+	tableVersion := "tableVersion"
+	jsonVersion := "jsonVersion"
+	tests := []struct {
+		name        string
+		arguments   []string // 1st argument is path to trivy binaries
+		wantVersion string
+		wantError   string
+	}{
+		{
+			name:        "happy path. '-v' flag is used",
+			arguments:   []string{"path/to/trivy", "-v"},
+			wantVersion: tableVersion,
+		},
+		{
+			name:        "happy path. '-version' flag is used",
+			arguments:   []string{"path/to/trivy", "-version"},
+			wantVersion: tableVersion,
+		},
+		{
+			name:        "happy path. 'version' command is used",
+			arguments:   []string{"path/to/trivy", "version"},
+			wantVersion: tableVersion,
+		},
+		{
+			name:        "happy path. 'version', '--format json' flags are used",
+			arguments:   []string{"path/to/trivy", "version", "--format", "json"},
+			wantVersion: jsonVersion,
+		},
+		{
+			name:      "sad path. '-v', '--format json' flags are used",
+			arguments: []string{"path/to/trivy", "-v", "--format", "json"},
+			wantError: "flag provided but not defined: -format",
+		},
+		{
+			name:      "sad path. '-version', '--format json' flags are used",
+			arguments: []string{"path/to/trivy", "-version", "--format", "json"},
+			wantError: "flag provided but not defined: -format",
+		},
+	}
+
+	savedShowVersion := showVersion
+	defer func() { showVersion = savedShowVersion }()
+
+	for _, test := range tests {
+
+		t.Run(test.name, func(t *testing.T) {
+			resultVersion := ""
+			showVersion = func(cacheDir, outputFormat, version string, outputWriter io.Writer) {
+				if outputFormat == "json" {
+					resultVersion = jsonVersion
+				} else {
+					resultVersion = tableVersion
+				}
+			}
+			t.Failed()
+			app := NewApp("test")
+			err := app.Run(test.arguments)
+
+			if test.wantError != "" {
+				assert.NotNil(t, err)
+				assert.Contains(t, err.Error(), test.wantError)
+			} else {
+				assert.Equal(t, test.wantVersion, resultVersion)
+			}
 		})
 	}
 }
