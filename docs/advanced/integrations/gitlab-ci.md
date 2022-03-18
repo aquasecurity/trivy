@@ -23,6 +23,8 @@ trivy:
     # See https://github.com/docker-library/docker/pull/166
     DOCKER_TLS_CERTDIR: ""
     IMAGE: trivy-ci-test:$CI_COMMIT_SHA
+    TRIVY_NO_PROGRESS: "true"
+    TRIVY_CACHE_DIR: ".trivycache/"
   before_script:
     - export TRIVY_VERSION=$(wget -qO - "https://api.github.com/repos/aquasecurity/trivy/releases/latest" | grep '"tag_name":' | sed -E 's/.*"v([^"]+)".*/\1/')
     - echo $TRIVY_VERSION
@@ -32,11 +34,11 @@ trivy:
     # Build image
     - docker build -t $IMAGE .
     # Build report
-    - ./trivy --cache-dir .trivycache/ image --exit-code 0 --no-progress --format template --template "@contrib/gitlab.tpl" -o gl-container-scanning-report.json $IMAGE
+    - ./trivy image --exit-code 0 --format template --template "@contrib/gitlab.tpl" -o gl-container-scanning-report.json $IMAGE
     # Print report
-    - ./trivy --cache-dir .trivycache/ image --exit-code 0 --no-progress --severity HIGH $IMAGE
+    - ./trivy image --exit-code 0 --severity HIGH $IMAGE
     # Fail on severe vulnerabilities
-    - ./trivy --cache-dir .trivycache/ image --exit-code 1 --severity CRITICAL --no-progress $IMAGE
+    - ./trivy image --exit-code 1 --severity CRITICAL $IMAGE
   cache:
     paths:
       - .trivycache/
@@ -71,20 +73,22 @@ container_scanning:
     TRIVY_USERNAME: "$CI_REGISTRY_USER"
     TRIVY_PASSWORD: "$CI_REGISTRY_PASSWORD"
     TRIVY_AUTH_URL: "$CI_REGISTRY"
+    TRIVY_NO_PROGRESS: "true"
+    TRIVY_CACHE_DIR: ".trivycache/"
     FULL_IMAGE_NAME: $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG
   script:
     - trivy --version
     # cache cleanup is needed when scanning images with the same tags, it does not remove the database
     - time trivy image --clear-cache
     # update vulnerabilities db
-    - time trivy --cache-dir .trivycache/ image --download-db-only --no-progress
+    - time trivy image --download-db-only
     # Builds report and puts it in the default workdir $CI_PROJECT_DIR, so `artifacts:` can take it from there
-    - time trivy --cache-dir .trivycache/ image --exit-code 0 --no-progress --format template --template "@/contrib/gitlab.tpl"
+    - time trivy image --exit-code 0 --format template --template "@/contrib/gitlab.tpl"
         --output "$CI_PROJECT_DIR/gl-container-scanning-report.json" "$FULL_IMAGE_NAME"
     # Prints full report
-    - time trivy --cache-dir .trivycache/ image --exit-code 0 --no-progress "$FULL_IMAGE_NAME"
+    - time trivy image --exit-code 0 "$FULL_IMAGE_NAME"
     # Fail on critical vulnerabilities
-    - time trivy --cache-dir .trivycache/ image --exit-code 1 --severity CRITICAL --no-progress "$FULL_IMAGE_NAME"
+    - time trivy image --exit-code 1 --severity CRITICAL "$FULL_IMAGE_NAME"
   cache:
     paths:
       - .trivycache/
@@ -126,6 +130,8 @@ trivy:
     # See https://github.com/docker-library/docker/pull/166
     DOCKER_TLS_CERTDIR: ""
     IMAGE: trivy-ci-test:$CI_COMMIT_SHA
+    TRIVY_NO_PROGRESS: "true"
+    TRIVY_CACHE_DIR: ".trivycache/"
   before_script:
     - export TRIVY_VERSION=$(wget -qO - "https://api.github.com/repos/aquasecurity/trivy/releases/latest" | grep '"tag_name":' | sed -E 's/.*"v([^"]+)".*/\1/')
     - echo $TRIVY_VERSION
@@ -135,7 +141,7 @@ trivy:
     # Build image
     - docker build -t $IMAGE .
     # Build report
-    - ./trivy --cache-dir .trivycache/ image --exit-code 0 --no-progress --format template --template "@contrib/gitlab-codequality.tpl" -o gl-codeclimate.json $IMAGE
+    - ./trivy image --exit-code 0 --format template --template "@contrib/gitlab-codequality.tpl" -o gl-codeclimate.json $IMAGE
   cache:
     paths:
       - .trivycache/
