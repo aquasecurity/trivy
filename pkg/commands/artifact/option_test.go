@@ -253,8 +253,6 @@ func TestOption_Init(t *testing.T) {
 			set.Bool("reset", false, "")
 			set.Bool("skip-db-update", false, "")
 			set.Bool("download-db-only", false, "")
-			set.Bool("clear-cache", false, "")
-
 			set.String("severity", "CRITICAL", "")
 			set.String("vuln-type", "os,library", "")
 			set.String("security-checks", "vuln", "")
