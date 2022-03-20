@@ -166,14 +166,11 @@ func TestScanner_Scan(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			ts := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				if tt.expectation == nil {
-					err := &struct {
-						Code string
-						Msg  string
-					}{
-						Code: "not_found",
-						Msg:  "expectation is empty",
+					e := map[string]interface{}{
+						"code": "not_found",
+						"msg":  "expectation is empty",
 					}
-					b, _ := json.Marshal(err)
+					b, _ := json.Marshal(e)
 					w.WriteHeader(http.StatusBadGateway)
 					w.Write(b)
 					return
