@@ -33,7 +33,7 @@ func NewRemoteOption(c *cli.Context) RemoteOption {
 }
 
 // Init initialize the options for client/server mode
-func (c *RemoteOption) Init(logger *zap.SugaredLogger) (err error) {
+func (c *RemoteOption) Init(logger *zap.SugaredLogger) {
 	// for testability
 	defer func() {
 		c.token = ""
@@ -51,14 +51,13 @@ func (c *RemoteOption) Init(logger *zap.SugaredLogger) (err error) {
 		if len(c.customHeaders) > 0 || c.token != "" || c.tokenHeader != "" {
 			logger.Warn(`'--token', '--token-header' and 'custom-header' can be used only with '--server'`)
 		}
-		return nil
+		return
 	}
 
 	c.CustomHeaders = splitCustomHeaders(c.customHeaders)
 	if c.token != "" {
 		c.CustomHeaders.Set(c.tokenHeader, c.token)
 	}
-	return nil
 }
 
 func splitCustomHeaders(headers []string) http.Header {
