@@ -34,6 +34,14 @@ func NewRemoteOption(c *cli.Context) RemoteOption {
 
 // Init initialize the options for client/server mode
 func (c *RemoteOption) Init(logger *zap.SugaredLogger) (err error) {
+	// for testability
+	defer func() {
+		c.token = ""
+		c.tokenHeader = ""
+		c.remote = ""
+		c.customHeaders = nil
+	}()
+
 	// for backward compatibility, should be removed in the future
 	if c.remote != "" {
 		c.RemoteAddr = c.remote
@@ -50,7 +58,6 @@ func (c *RemoteOption) Init(logger *zap.SugaredLogger) (err error) {
 	if c.token != "" {
 		c.CustomHeaders.Set(c.tokenHeader, c.token)
 	}
-
 	return nil
 }
 
