@@ -431,9 +431,6 @@ func advisories(refs []string) *[]cdx.Advisory {
 
 func cwes(cweIDs []string) *[]int {
 	var ret []int
-	if len(cweIDs) == 0 {
-		return nil
-	}
 	for _, cweID := range cweIDs {
 		number, err := strconv.Atoi(strings.TrimPrefix(strings.ToLower(cweID), "cwe-"))
 		if err != nil {
@@ -442,7 +439,6 @@ func cwes(cweIDs []string) *[]int {
 		}
 		ret = append(ret, number)
 	}
-
 	return &ret
 }
 
