@@ -75,6 +75,7 @@ func TestOption_Init(t *testing.T) {
 					Target: "alpine:3.11",
 				},
 				RemoteOption: option.RemoteOption{
+					RemoteAddr: "http://localhost:8080",
 					CustomHeaders: http.Header{
 						"X-Trivy-Token": []string{"secret"},
 					},
@@ -97,11 +98,7 @@ func TestOption_Init(t *testing.T) {
 				ArtifactOption: option.ArtifactOption{
 					Target: "alpine:3.11",
 				},
-				RemoteOption: option.RemoteOption{
-					CustomHeaders: http.Header{
-						"X-Trivy-Token": []string{"secret"},
-					},
-				},
+				RemoteOption: option.RemoteOption{},
 			},
 		},
 		{
