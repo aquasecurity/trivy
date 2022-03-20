@@ -1,0 +1,126 @@
+{
+  "SchemaVersion": 2,
+  "ArtifactName": "testdata/fixtures/fs/pom",
+  "ArtifactType": "filesystem",
+  "Metadata": {
+    "ImageConfig": {
+      "architecture": "",
+      "created": "0001-01-01T00:00:00Z",
+      "os": "",
+      "rootfs": {
+        "type": "",
+        "diff_ids": null
+      },
+      "config": {}
+    }
+  },
+  "Results": [
+    {
+      "Target": "pom.xml",
+      "Class": "lang-pkgs",
+      "Type": "pom",
+      "Vulnerabilities": [
+        {
+          "VulnerabilityID": "CVE-2020-9548",
+          "PkgName": "com.fasterxml.jackson.core:jackson-databind",
+          "InstalledVersion": "2.9.1",
+          "FixedVersion": "2.9.10.4",
+          "Layer": {},
+          "SeveritySource": "ghsa",
+          "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2020-9548",
+          "DataSource": {
+            "ID": "ghsa",
+            "Name": "GitHub Security Advisory Maven",
+            "URL": "https://github.com/advisories?query=type%3Areviewed+ecosystem%3Amaven"
+          },
+          "Title": "jackson-databind: Serialization gadgets in anteros-core",
+          "Description": "FasterXML jackson-databind 2.x before 2.9.10.4 mishandles the interaction between serialization gadgets and typing, related to br.com.anteros.dbcp.AnterosDBCPConfig (aka anteros-core).",
+          "Severity": "CRITICAL",
+          "CweIDs": [
+            "CWE-502"
+          ],
+          "CVSS": {
+            "nvd": {
+              "V2Vector": "AV:N/AC:M/Au:N/C:P/I:P/A:P",
+              "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H",
+              "V2Score": 6.8,
+              "V3Score": 9.8
+            },
+            "redhat": {
+              "V3Vector": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:H/I:H/A:H",
+              "V3Score": 8.1
+            }
+          },
+          "References": [
+            "https://access.redhat.com/security/cve/CVE-2020-9548",
+            "https://github.com/FasterXML/jackson-databind/issues/2634",
+            "https://github.com/advisories/GHSA-p43x-xfjf-5jhr",
+            "https://lists.apache.org/thread.html/r35d30db00440ef63b791c4b7f7acb036e14d4a23afa2a249cb66c0fd@%3Cissues.zookeeper.apache.org%3E",
+            "https://lists.apache.org/thread.html/r9464a40d25c3ba1a55622db72f113eb494a889656962d098c70c5bb1@%3Cdev.zookeeper.apache.org%3E",
+            "https://lists.apache.org/thread.html/r98c9b6e4c9e17792e2cd1ec3e4aa20b61a791939046d3f10888176bb@%3Cissues.zookeeper.apache.org%3E",
+            "https://lists.apache.org/thread.html/rb6fecb5e96a6d61e175ff49f33f2713798dd05cf03067c169d195596@%3Cissues.zookeeper.apache.org%3E",
+            "https://lists.apache.org/thread.html/rd5a4457be4623038c3989294429bc063eec433a2e55995d81591e2ca@%3Cissues.zookeeper.apache.org%3E",
+            "https://lists.apache.org/thread.html/rdd49ab9565bec436a896bc00c4b9fc9dce1598e106c318524fbdfec6@%3Cissues.zookeeper.apache.org%3E",
+            "https://lists.apache.org/thread.html/rdd4df698d5d8e635144d2994922bf0842e933809eae259521f3b5097@%3Cissues.zookeeper.apache.org%3E",
+            "https://lists.apache.org/thread.html/rf1bbc0ea4a9f014cf94df9a12a6477d24a27f52741dbc87f2fd52ff2@%3Cissues.geode.apache.org%3E",
+            "https://lists.debian.org/debian-lts-announce/2020/03/msg00008.html",
+            "https://medium.com/@cowtowncoder/on-jackson-cves-dont-panic-here-is-what-you-need-to-know-54cd0d6e8062",
+            "https://nvd.nist.gov/vuln/detail/CVE-2020-9548",
+            "https://security.netapp.com/advisory/ntap-20200904-0006/",
+            "https://www.oracle.com/security-alerts/cpujan2021.html",
+            "https://www.oracle.com/security-alerts/cpujul2020.html",
+            "https://www.oracle.com/security-alerts/cpuoct2020.html",
+            "https://www.oracle.com/security-alerts/cpuoct2021.html"
+          ],
+          "PublishedDate": "2020-03-02T04:15:00Z",
+          "LastModifiedDate": "2021-12-02T21:23:00Z"
+        },
+        {
+          "VulnerabilityID": "CVE-2021-20190",
+          "PkgName": "com.fasterxml.jackson.core:jackson-databind",
+          "InstalledVersion": "2.9.1",
+          "FixedVersion": "2.9.10.7",
+          "Layer": {},
+          "SeveritySource": "nvd",
+          "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2021-20190",
+          "DataSource": {
+            "ID": "glad",
+            "Name": "GitLab Advisory Database Community",
+            "URL": "https://gitlab.com/gitlab-org/advisories-community"
+          },
+          "Title": "jackson-databind: mishandles the interaction between serialization gadgets and typing, related to javax.swing",
+          "Description": "A flaw was found in jackson-databind before 2.9.10.7. FasterXML mishandles the interaction between serialization gadgets and typing. The highest threat from this vulnerability is to data confidentiality and integrity as well as system availability.",
+          "Severity": "HIGH",
+          "CweIDs": [
+            "CWE-502"
+          ],
+          "CVSS": {
+            "nvd": {
+              "V2Vector": "AV:N/AC:M/Au:N/C:P/I:P/A:C",
+              "V3Vector": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:H/I:H/A:H",
+              "V2Score": 8.3,
+              "V3Score": 8.1
+            },
+            "redhat": {
+              "V3Vector": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:H/I:H/A:H",
+              "V3Score": 8.1
+            }
+          },
+          "References": [
+            "https://access.redhat.com/security/cve/CVE-2021-20190",
+            "https://bugzilla.redhat.com/show_bug.cgi?id=1916633",
+            "https://github.com/FasterXML/jackson-databind/commit/7dbf51bf78d157098074a20bd9da39bd48c18e4a",
+            "https://github.com/FasterXML/jackson-databind/issues/2854",
+            "https://github.com/advisories/GHSA-5949-rw7g-wx7w",
+            "https://lists.apache.org/thread.html/r380e9257bacb8551ee6fcf2c59890ae9477b2c78e553fa9ea08e9d9a@%3Ccommits.nifi.apache.org%3E",
+            "https://lists.debian.org/debian-lts-announce/2021/04/msg00025.html",
+            "https://nvd.nist.gov/vuln/detail/CVE-2021-20190",
+            "https://security.netapp.com/advisory/ntap-20210219-0008/"
+          ],
+          "PublishedDate": "2021-01-19T17:15:00Z",
+          "LastModifiedDate": "2021-07-20T23:15:00Z"
+        }
+      ]
+    }
+  ]
+}
