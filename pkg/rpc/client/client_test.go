@@ -2,11 +2,13 @@ package client
 
 import (
 	"crypto/tls"
+	"encoding/json"
 	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"testing"
 
+	"github.com/golang/protobuf/ptypes/timestamp"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
@@ -14,6 +16,7 @@ import (
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy-db/pkg/utils"
 	"github.com/aquasecurity/trivy/pkg/types"
+	"github.com/aquasecurity/trivy/rpc/common"
 	rpc "github.com/aquasecurity/trivy/rpc/scanner"
 )
 
@@ -28,6 +31,7 @@ func TestScanner_Scan(t *testing.T) {
 		name          string
 		customHeaders http.Header
 		args          args
+		expectation   *rpc.ScanResponse
 		wantResults   types.Results
 		wantOS        *ftypes.OS
 		wantEosl      bool
@@ -46,71 +50,55 @@ func TestScanner_Scan(t *testing.T) {
 					VulnType: []string{"os"},
 				},
 			},
-			// TODO: move to httptest
-			//scanExpectation: scanExpectation{
-			//	Args: scanArgs{
-			//		CtxAnything: true,
-			//		Request: &scanner.ScanRequest{
-			//			Target:     "alpine:3.11",
-			//			ArtifactId: "sha256:e7d92cdc71feacf90708cb59182d0df1b911f8ae022d29e8e95d75ca6a99776a",
-			//			BlobIds:    []string{"sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10"},
-			//			Options: &scanner.ScanOptions{
-			//				VulnType: []string{"os"},
-			//			},
-			//		},
-			//	},
-			//	Returns: scanReturns{
-			//		Res: &scanner.ScanResponse{
-			//			Os: &common.OS{
-			//				Family: "alpine",
-			//				Name:   "3.11",
-			//				Eosl:   true,
-			//			},
-			//			Results: []*scanner.Result{
-			//				{
-			//					Target: "alpine:3.11",
-			//					Vulnerabilities: []*common.Vulnerability{
-			//						{
-			//							VulnerabilityId:  "CVE-2020-0001",
-			//							PkgName:          "musl",
-			//							InstalledVersion: "1.2.3",
-			//							FixedVersion:     "1.2.4",
-			//							Title:            "DoS",
-			//							Description:      "Denial os Service",
-			//							Severity:         common.Severity_CRITICAL,
-			//							References:       []string{"http://exammple.com"},
-			//							SeveritySource:   "nvd",
-			//							Cvss: map[string]*common.CVSS{
-			//								"nvd": {
-			//									V2Vector: "AV:L/AC:L/Au:N/C:C/I:C/A:C",
-			//									V3Vector: "CVSS:3.1/AV:L/AC:L/PR:L/UI:N/S:U/C:H/I:H/A:H",
-			//									V2Score:  7.2,
-			//									V3Score:  7.8,
-			//								},
-			//								"redhat": {
-			//									V2Vector: "AV:H/AC:L/Au:N/C:C/I:C/A:C",
-			//									V3Vector: "CVSS:3.1/AV:L/AC:L/PR:L/UI:N/S:U/C:H/I:H/A:H",
-			//									V2Score:  4.2,
-			//									V3Score:  2.8,
-			//								},
-			//							},
-			//							CweIds: []string{"CWE-78"},
-			//							Layer: &common.Layer{
-			//								DiffId: "sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10",
-			//							},
-			//							LastModifiedDate: &timestamp.Timestamp{
-			//								Seconds: 1577840460,
-			//							},
-			//							PublishedDate: &timestamp.Timestamp{
-			//								Seconds: 978310860,
-			//							},
-			//						},
-			//					},
-			//				},
-			//			},
-			//		},
-			//	},
-			//},
+			expectation: &rpc.ScanResponse{
+				Os: &common.OS{
+					Family: "alpine",
+					Name:   "3.11",
+					Eosl:   true,
+				},
+				Results: []*rpc.Result{
+					{
+						Target: "alpine:3.11",
+						Vulnerabilities: []*common.Vulnerability{
+							{
+								VulnerabilityId:  "CVE-2020-0001",
+								PkgName:          "musl",
+								InstalledVersion: "1.2.3",
+								FixedVersion:     "1.2.4",
+								Title:            "DoS",
+								Description:      "Denial os Service",
+								Severity:         common.Severity_CRITICAL,
+								References:       []string{"http://exammple.com"},
+								SeveritySource:   "nvd",
+								Cvss: map[string]*common.CVSS{
+									"nvd": {
+										V2Vector: "AV:L/AC:L/Au:N/C:C/I:C/A:C",
+										V3Vector: "CVSS:3.1/AV:L/AC:L/PR:L/UI:N/S:U/C:H/I:H/A:H",
+										V2Score:  7.2,
+										V3Score:  7.8,
+									},
+									"redhat": {
+										V2Vector: "AV:H/AC:L/Au:N/C:C/I:C/A:C",
+										V3Vector: "CVSS:3.1/AV:L/AC:L/PR:L/UI:N/S:U/C:H/I:H/A:H",
+										V2Score:  4.2,
+										V3Score:  2.8,
+									},
+								},
+								CweIds: []string{"CWE-78"},
+								Layer: &common.Layer{
+									DiffId: "sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10",
+								},
+								LastModifiedDate: &timestamp.Timestamp{
+									Seconds: 1577840460,
+								},
+								PublishedDate: &timestamp.Timestamp{
+									Seconds: 978310860,
+								},
+							},
+						},
+					},
+				},
+			},
 			wantResults: types.Results{
 				{
 					Target: "alpine:3.11",
@@ -170,30 +158,21 @@ func TestScanner_Scan(t *testing.T) {
 					VulnType: []string{"os"},
 				},
 			},
-			//scanExpectation: scanExpectation{
-			//	Args: scanArgs{
-			//		CtxAnything: true,
-			//		Request: &scanner.ScanRequest{
-			//			Target:     "alpine:3.11",
-			//			ArtifactId: "sha256:e7d92cdc71feacf90708cb59182d0df1b911f8ae022d29e8e95d75ca6a99776a",
-			//			BlobIds:    []string{"sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10"},
-			//			Options: &scanner.ScanOptions{
-			//				VulnType: []string{"os"},
-			//			},
-			//		},
-			//	},
-			//	Returns: scanReturns{
-			//		Err: errors.New("error"),
-			//	},
-			//},
-			wantErr: "failed to detect vulnerabilities via RPC",
+			expectation: nil,
+			wantErr:     "failed to detect vulnerabilities via RPC",
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			ts := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				// TODO: return response according to the above expectation
-				fmt.Fprintln(w, "Hello, client")
+				b, err := json.Marshal(tt.expectation)
+				if err != nil {
+					w.WriteHeader(http.StatusNotFound)
+					fmt.Fprintf(w, "json marshalling error: %v", err)
+					return
+				}
+				w.Header().Set("Content-Type", "application/json")
+				w.Write(b)
 			}))
 			client := rpc.NewScannerJSONClient(ts.URL, ts.Client())
 
