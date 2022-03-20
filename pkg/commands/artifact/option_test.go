@@ -98,12 +98,11 @@ func TestOption_Init(t *testing.T) {
 				ArtifactOption: option.ArtifactOption{
 					Target: "alpine:3.11",
 				},
-				RemoteOption: option.RemoteOption{},
 			},
 		},
 		{
 			name: "happy path with good custom headers",
-			args: []string{"--custom-headers", "foo:bar", "alpine:3.11"},
+			args: []string{"--server", "http://localhost:8080", "--custom-headers", "foo:bar", "alpine:3.11"},
 			want: Option{
 				ReportOption: option.ReportOption{
 					Severities:     []dbTypes.Severity{dbTypes.SeverityCritical},
@@ -115,6 +114,7 @@ func TestOption_Init(t *testing.T) {
 					Target: "alpine:3.11",
 				},
 				RemoteOption: option.RemoteOption{
+					RemoteAddr: "http://localhost:8080",
 					CustomHeaders: http.Header{
 						"Foo": []string{"bar"},
 					}},
@@ -122,7 +122,7 @@ func TestOption_Init(t *testing.T) {
 		},
 		{
 			name: "happy path with bad custom headers",
-			args: []string{"--custom-headers", "foobaz", "alpine:3.11"},
+			args: []string{"--server", "http://localhost:8080", "--custom-headers", "foobaz", "alpine:3.11"},
 			want: Option{
 				ReportOption: option.ReportOption{
 					Severities:     []dbTypes.Severity{dbTypes.SeverityCritical},
@@ -133,6 +133,7 @@ func TestOption_Init(t *testing.T) {
 				ArtifactOption: option.ArtifactOption{
 					Target: "alpine:3.11",
 				},
+				RemoteOption: option.RemoteOption{RemoteAddr: "http://localhost:8080", CustomHeaders: http.Header{}},
 			},
 		},
 		{
