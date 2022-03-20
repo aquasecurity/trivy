@@ -230,7 +230,7 @@ func TestClientServer(t *testing.T) {
 				RemoteAddrOption: "--server",
 				Target:           "testdata/fixtures/fs/pom/",
 			},
-			golden: "testdata/fs-pom.json.golder",
+			golden: "testdata/pom.json.golden",
 		},
 	}
 
