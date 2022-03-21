@@ -83,14 +83,6 @@
           "CweIDs": [
             "CWE-203"
           ],
-          "VendorSeverity": {
-            "amazon": 2,
-            "arch-linux": 2,
-            "nvd": 2,
-            "oracle-oval": 2,
-            "redhat": 2,
-            "ubuntu": 2
-          },
           "CVSS": {
             "nvd": {
               "V2Vector": "AV:N/AC:M/Au:N/C:P/I:N/A:N",

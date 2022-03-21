@@ -39,18 +39,6 @@
           "CweIDs": [
             "CWE-79"
           ],
-          "VendorSeverity": {
-            "alma": 2,
-            "amazon": 2,
-            "arch-linux": 2,
-            "ghsa": 2,
-            "nodejs-security-wg": 2,
-            "nvd": 2,
-            "oracle-oval": 2,
-            "redhat": 2,
-            "ruby-advisory-db": 2,
-            "ubuntu": 1
-          },
           "CVSS": {
             "nvd": {
               "V2Vector": "AV:N/AC:M/Au:N/C:N/I:P/A:N",
@@ -163,11 +151,6 @@
           "Title": "nodejs-lodash: prototype pollution in defaultsDeep function leading to modifying properties",
           "Description": "Versions of lodash lower than 4.17.12 are vulnerable to Prototype Pollution. The function defaultsDeep could be tricked into adding or modifying properties of Object.prototype using a constructor payload.",
           "Severity": "CRITICAL",
-          "VendorSeverity": {
-            "ghsa": 4,
-            "nvd": 4,
-            "redhat": 3
-          },
           "CVSS": {
             "nvd": {
               "V2Vector": "AV:N/AC:L/Au:N/C:N/I:P/A:P",

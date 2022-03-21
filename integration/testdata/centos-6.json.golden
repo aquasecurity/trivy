@@ -90,14 +90,6 @@
           "CweIDs": [
             "CWE-787"
           ],
-          "VendorSeverity": {
-            "amazon": 2,
-            "arch-linux": 2,
-            "nvd": 3,
-            "oracle-oval": 2,
-            "photon": 3,
-            "redhat": 2
-          },
           "CVSS": {
             "nvd": {
               "V2Vector": "AV:N/AC:L/Au:N/C:N/I:N/A:P",
@@ -141,14 +133,6 @@
           "CweIDs": [
             "CWE-203"
           ],
-          "VendorSeverity": {
-            "amazon": 2,
-            "arch-linux": 2,
-            "nvd": 2,
-            "oracle-oval": 2,
-            "redhat": 2,
-            "ubuntu": 2
-          },
           "CVSS": {
             "nvd": {
               "V2Vector": "AV:N/AC:M/Au:N/C:P/I:N/A:N",

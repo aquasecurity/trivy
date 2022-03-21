@@ -90,14 +90,6 @@
           "CweIDs": [
             "CWE-273"
           ],
-          "VendorSeverity": {
-            "cbl-mariner": 3,
-            "nvd": 3,
-            "oracle-oval": 1,
-            "photon": 3,
-            "redhat": 1,
-            "ubuntu": 1
-          },
           "CVSS": {
             "nvd": {
               "V2Vector": "AV:L/AC:L/Au:N/C:C/I:C/A:C",

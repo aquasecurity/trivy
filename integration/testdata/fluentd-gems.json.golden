@@ -129,12 +129,6 @@
           "CweIDs": [
             "CWE-787"
           ],
-          "VendorSeverity": {
-            "amazon": 2,
-            "nvd": 4,
-            "redhat": 2,
-            "ubuntu": 2
-          },
           "CVSS": {
             "nvd": {
               "V2Vector": "AV:N/AC:L/Au:N/C:P/I:P/A:P",
@@ -195,11 +189,6 @@
           "CweIDs": [
             "CWE-502"
           ],
-          "VendorSeverity": {
-            "ghsa": 3,
-            "nvd": 4,
-            "redhat": 3
-          },
           "CVSS": {
             "nvd": {
               "V2Vector": "AV:N/AC:L/Au:N/C:P/I:P/A:P",
