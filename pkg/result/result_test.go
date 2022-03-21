@@ -517,6 +517,7 @@ func TestClient_Filter(t *testing.T) {
 				severities:    []dbTypes.Severity{dbTypes.SeverityHigh},
 				ignoreUnfixed: true,
 			},
+			wantVulns: []types.DetectedVulnerability{},
 		},
 		{
 			name: "happy path with ignore-file",

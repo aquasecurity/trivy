@@ -6,6 +6,7 @@ import (
 	"os"
 
 	"github.com/urfave/cli/v2"
+	"golang.org/x/exp/slices"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/fanal/analyzer"
@@ -78,7 +79,7 @@ func runWithTimeout(ctx context.Context, opt Option, initializeScanner Initializ
 	defer cacheClient.Close()
 
 	// When scanning config files or running as client mode, it doesn't need to download the vulnerability database.
-	if opt.RemoteAddr == "" && utils.StringInSlice(types.SecurityCheckVulnerability, opt.SecurityChecks) {
+	if opt.RemoteAddr == "" && slices.Contains(opt.SecurityChecks, types.SecurityCheckVulnerability) {
 		if err = initDB(opt); err != nil {
 			if errors.Is(err, errSkipScan) {
 				return nil
@@ -189,7 +190,7 @@ func disabledAnalyzers(opt Option) []analyzer.Type {
 	}
 
 	// Don't analyze programming language packages when not running in 'library' mode
-	if !utils.StringInSlice(types.VulnTypeLibrary, opt.VulnType) {
+	if !slices.Contains(opt.VulnType, types.VulnTypeLibrary) {
 		analyzers = append(analyzers, analyzer.TypeLanguages...)
 	}
 
@@ -213,7 +214,7 @@ func scan(ctx context.Context, opt Option, initializeScanner InitializeScanner, 
 
 	// ScannerOption is filled only when config scanning is enabled.
 	var configScannerOptions config.ScannerOption
-	if utils.StringInSlice(types.SecurityCheckConfig, opt.SecurityChecks) {
+	if slices.Contains(opt.SecurityChecks, types.SecurityCheckConfig) {
 		noProgress := opt.Quiet || opt.NoProgress
 		builtinPolicyPaths, err := operation.InitBuiltinPolicies(ctx, opt.CacheDir, noProgress, opt.SkipPolicyUpdate)
 		if err != nil {
