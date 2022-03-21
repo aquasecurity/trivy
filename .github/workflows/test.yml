@@ -16,7 +16,7 @@ jobs:
         go-version: 1.18
 
     - name: Check out code into the Go module directory
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
 
     - name: Run unit tests
       run: go test ./...
