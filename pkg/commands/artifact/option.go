@@ -17,6 +17,7 @@ type Option struct {
 	option.ReportOption
 	option.CacheOption
 	option.ConfigOption
+	option.RemoteOption
 
 	// We don't want to allow disabled analyzers to be passed by users,
 	// but it differs depending on scanning modes.
@@ -38,6 +39,7 @@ func NewOption(c *cli.Context) (Option, error) {
 		ReportOption:   option.NewReportOption(c),
 		CacheOption:    option.NewCacheOption(c),
 		ConfigOption:   option.NewConfigOption(c),
+		RemoteOption:   option.NewRemoteOption(c),
 	}, nil
 }
 
@@ -55,7 +57,6 @@ func (c *Option) Init() error {
 	if err := c.ArtifactOption.Init(c.Context, c.Logger); err != nil {
 		return err
 	}
-
 	return nil
 }
 
@@ -69,6 +70,7 @@ func (c *Option) initPreScanOptions() error {
 	if err := c.CacheOption.Init(); err != nil {
 		return err
 	}
+	c.RemoteOption.Init(c.Logger)
 	return nil
 }
 
