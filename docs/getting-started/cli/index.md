@@ -18,6 +18,7 @@ COMMANDS:
    server, s         server mode
    config, conf      scan config files
    plugin, p         manage plugins
+   version           print the version
    help, h           Shows a list of commands or help for one command
 
 GLOBAL OPTIONS:
