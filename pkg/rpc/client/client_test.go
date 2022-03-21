@@ -1,94 +1,27 @@
 package client
 
 import (
-	"context"
-	"errors"
+	"crypto/tls"
+	"encoding/json"
+	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"testing"
 
 	"github.com/golang/protobuf/ptypes/timestamp"
 	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
+	"google.golang.org/protobuf/encoding/protojson"
 
 	ftypes "github.com/aquasecurity/fanal/types"
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy-db/pkg/utils"
 	"github.com/aquasecurity/trivy/pkg/types"
 	"github.com/aquasecurity/trivy/rpc/common"
-	"github.com/aquasecurity/trivy/rpc/scanner"
+	rpc "github.com/aquasecurity/trivy/rpc/scanner"
 )
 
-type mockScanner struct {
-	mock.Mock
-}
-
-type scanArgs struct {
-	Ctx             context.Context
-	CtxAnything     bool
-	Request         *scanner.ScanRequest
-	RequestAnything bool
-}
-
-type scanReturns struct {
-	Res *scanner.ScanResponse
-	Err error
-}
-
-type scanExpectation struct {
-	Args    scanArgs
-	Returns scanReturns
-}
-
-func (_m *mockScanner) ApplyScanExpectation(e scanExpectation) {
-	var args []interface{}
-	if e.Args.CtxAnything {
-		args = append(args, mock.Anything)
-	} else {
-		args = append(args, e.Args.Ctx)
-	}
-	if e.Args.RequestAnything {
-		args = append(args, mock.Anything)
-	} else {
-		args = append(args, e.Args.Request)
-	}
-	_m.On("Scan", args...).Return(e.Returns.Res, e.Returns.Err)
-}
-
-func (_m *mockScanner) ApplyScanExpectations(expectations []scanExpectation) {
-	for _, e := range expectations {
-		_m.ApplyScanExpectation(e)
-	}
-}
-
-// Scan provides a mock function with given fields: Ctx, Request
-func (_m *mockScanner) Scan(Ctx context.Context, Request *scanner.ScanRequest) (*scanner.ScanResponse, error) {
-	ret := _m.Called(Ctx, Request)
-
-	var r0 *scanner.ScanResponse
-	if rf, ok := ret.Get(0).(func(context.Context, *scanner.ScanRequest) *scanner.ScanResponse); ok {
-		r0 = rf(Ctx, Request)
-	} else {
-		if ret.Get(0) != nil {
-			r0 = ret.Get(0).(*scanner.ScanResponse)
-		}
-	}
-
-	var r1 error
-	if rf, ok := ret.Get(1).(func(context.Context, *scanner.ScanRequest) error); ok {
-		r1 = rf(Ctx, Request)
-	} else {
-		r1 = ret.Error(1)
-	}
-
-	return r0, r1
-}
-
 func TestScanner_Scan(t *testing.T) {
-	type fields struct {
-		customHeaders CustomHeaders
-	}
 	type args struct {
 		target   string
 		imageID  string
@@ -96,21 +29,19 @@ func TestScanner_Scan(t *testing.T) {
 		options  types.ScanOptions
 	}
 	tests := []struct {
-		name            string
-		fields          fields
-		args            args
-		scanExpectation scanExpectation
-		wantResults     types.Results
-		wantOS          *ftypes.OS
-		wantEosl        bool
-		wantErr         string
+		name          string
+		customHeaders http.Header
+		args          args
+		expectation   *rpc.ScanResponse
+		wantResults   types.Results
+		wantOS        *ftypes.OS
+		wantEosl      bool
+		wantErr       string
 	}{
 		{
 			name: "happy path",
-			fields: fields{
-				customHeaders: CustomHeaders{
-					"Trivy-Token": []string{"foo"},
-				},
+			customHeaders: http.Header{
+				"Trivy-Token": []string{"foo"},
 			},
 			args: args{
 				target:   "alpine:3.11",
@@ -120,64 +51,49 @@ func TestScanner_Scan(t *testing.T) {
 					VulnType: []string{"os"},
 				},
 			},
-			scanExpectation: scanExpectation{
-				Args: scanArgs{
-					CtxAnything: true,
-					Request: &scanner.ScanRequest{
-						Target:     "alpine:3.11",
-						ArtifactId: "sha256:e7d92cdc71feacf90708cb59182d0df1b911f8ae022d29e8e95d75ca6a99776a",
-						BlobIds:    []string{"sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10"},
-						Options: &scanner.ScanOptions{
-							VulnType: []string{"os"},
-						},
-					},
+			expectation: &rpc.ScanResponse{
+				Os: &common.OS{
+					Family: "alpine",
+					Name:   "3.11",
+					Eosl:   true,
 				},
-				Returns: scanReturns{
-					Res: &scanner.ScanResponse{
-						Os: &common.OS{
-							Family: "alpine",
-							Name:   "3.11",
-							Eosl:   true,
-						},
-						Results: []*scanner.Result{
+				Results: []*rpc.Result{
+					{
+						Target: "alpine:3.11",
+						Vulnerabilities: []*common.Vulnerability{
 							{
-								Target: "alpine:3.11",
-								Vulnerabilities: []*common.Vulnerability{
-									{
-										VulnerabilityId:  "CVE-2020-0001",
-										PkgName:          "musl",
-										InstalledVersion: "1.2.3",
-										FixedVersion:     "1.2.4",
-										Title:            "DoS",
-										Description:      "Denial os Service",
-										Severity:         common.Severity_CRITICAL,
-										References:       []string{"http://exammple.com"},
-										SeveritySource:   "nvd",
-										Cvss: map[string]*common.CVSS{
-											"nvd": {
-												V2Vector: "AV:L/AC:L/Au:N/C:C/I:C/A:C",
-												V3Vector: "CVSS:3.1/AV:L/AC:L/PR:L/UI:N/S:U/C:H/I:H/A:H",
-												V2Score:  7.2,
-												V3Score:  7.8,
-											},
-											"redhat": {
-												V2Vector: "AV:H/AC:L/Au:N/C:C/I:C/A:C",
-												V3Vector: "CVSS:3.1/AV:L/AC:L/PR:L/UI:N/S:U/C:H/I:H/A:H",
-												V2Score:  4.2,
-												V3Score:  2.8,
-											},
-										},
-										CweIds: []string{"CWE-78"},
-										Layer: &common.Layer{
-											DiffId: "sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10",
-										},
-										LastModifiedDate: &timestamp.Timestamp{
-											Seconds: 1577840460,
-										},
-										PublishedDate: &timestamp.Timestamp{
-											Seconds: 978310860,
-										},
+								VulnerabilityId:  "CVE-2020-0001",
+								PkgName:          "musl",
+								InstalledVersion: "1.2.3",
+								FixedVersion:     "1.2.4",
+								Title:            "DoS",
+								Description:      "Denial os Service",
+								Severity:         common.Severity_CRITICAL,
+								References:       []string{"http://exammple.com"},
+								SeveritySource:   "nvd",
+								Cvss: map[string]*common.CVSS{
+									"nvd": {
+										V2Vector: "AV:L/AC:L/Au:N/C:C/I:C/A:C",
+										V3Vector: "CVSS:3.1/AV:L/AC:L/PR:L/UI:N/S:U/C:H/I:H/A:H",
+										V2Score:  7.2,
+										V3Score:  7.8,
 									},
+									"redhat": {
+										V2Vector: "AV:H/AC:L/Au:N/C:C/I:C/A:C",
+										V3Vector: "CVSS:3.1/AV:L/AC:L/PR:L/UI:N/S:U/C:H/I:H/A:H",
+										V2Score:  4.2,
+										V3Score:  2.8,
+									},
+								},
+								CweIds: []string{"CWE-78"},
+								Layer: &common.Layer{
+									DiffId: "sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10",
+								},
+								LastModifiedDate: &timestamp.Timestamp{
+									Seconds: 1577840460,
+								},
+								PublishedDate: &timestamp.Timestamp{
+									Seconds: 978310860,
 								},
 							},
 						},
@@ -232,10 +148,8 @@ func TestScanner_Scan(t *testing.T) {
 		},
 		{
 			name: "sad path: Scan returns an error",
-			fields: fields{
-				customHeaders: CustomHeaders{
-					"Trivy-Token": []string{"foo"},
-				},
+			customHeaders: http.Header{
+				"Trivy-Token": []string{"foo"},
 			},
 			args: args{
 				target:   "alpine:3.11",
@@ -245,41 +159,44 @@ func TestScanner_Scan(t *testing.T) {
 					VulnType: []string{"os"},
 				},
 			},
-			scanExpectation: scanExpectation{
-				Args: scanArgs{
-					CtxAnything: true,
-					Request: &scanner.ScanRequest{
-						Target:     "alpine:3.11",
-						ArtifactId: "sha256:e7d92cdc71feacf90708cb59182d0df1b911f8ae022d29e8e95d75ca6a99776a",
-						BlobIds:    []string{"sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10"},
-						Options: &scanner.ScanOptions{
-							VulnType: []string{"os"},
-						},
-					},
-				},
-				Returns: scanReturns{
-					Err: errors.New("error"),
-				},
-			},
 			wantErr: "failed to detect vulnerabilities via RPC",
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			mockClient := new(mockScanner)
-			mockClient.ApplyScanExpectation(tt.scanExpectation)
+			ts := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				if tt.expectation == nil {
+					e := map[string]interface{}{
+						"code": "not_found",
+						"msg":  "expectation is empty",
+					}
+					b, _ := json.Marshal(e)
+					w.WriteHeader(http.StatusBadGateway)
+					w.Write(b)
+					return
+				}
+				b, err := protojson.Marshal(tt.expectation)
+				if err != nil {
+					w.WriteHeader(http.StatusInternalServerError)
+					fmt.Fprintf(w, "json marshalling error: %v", err)
+					return
+				}
+				w.Header().Set("Content-Type", "application/json")
+				w.Write(b)
+			}))
+			client := rpc.NewScannerJSONClient(ts.URL, ts.Client())
 
-			s := NewScanner(tt.fields.customHeaders, mockClient)
+			s := NewScanner(ScannerOption{CustomHeaders: tt.customHeaders}, WithRPCClient(client))
+
 			gotResults, gotOS, err := s.Scan(tt.args.target, tt.args.imageID, tt.args.layerIDs, tt.args.options)
 
 			if tt.wantErr != "" {
 				require.NotNil(t, err, tt.name)
 				require.Contains(t, err.Error(), tt.wantErr, tt.name)
 				return
-			} else {
-				require.NoError(t, err, tt.name)
 			}
 
+			require.NoError(t, err, tt.name)
 			assert.Equal(t, tt.wantResults, gotResults)
 			assert.Equal(t, tt.wantOS, gotOS)
 		})
@@ -290,36 +207,32 @@ func TestScanner_ScanServerInsecure(t *testing.T) {
 	ts := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {}))
 	defer ts.Close()
 
-	type args struct {
-		request  *scanner.ScanRequest
-		insecure bool
-	}
 	tests := []struct {
-		name    string
-		args    args
-		wantErr string
+		name     string
+		insecure bool
+		wantErr  string
 	}{
 		{
-			name: "happy path",
-			args: args{
-				request:  &scanner.ScanRequest{},
-				insecure: true,
-			},
+			name:     "happy path",
+			insecure: true,
 		},
 		{
-			name: "sad path",
-			args: args{
-				request:  &scanner.ScanRequest{},
-				insecure: false,
-			},
-			wantErr: "certificate signed by unknown authority",
+			name:     "sad path",
+			insecure: false,
+			wantErr:  "certificate signed by unknown authority",
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-
-			s := NewProtobufClient(RemoteURL(ts.URL), Insecure(tt.args.insecure))
-			_, err := s.Scan(context.Background(), tt.args.request)
+			c := rpc.NewScannerProtobufClient(ts.URL, &http.Client{
+				Transport: &http.Transport{
+					TLSClientConfig: &tls.Config{
+						InsecureSkipVerify: tt.insecure,
+					},
+				},
+			})
+			s := NewScanner(ScannerOption{Insecure: tt.insecure}, WithRPCClient(c))
+			_, _, err := s.Scan("dummy", "", nil, types.ScanOptions{})
 
 			if tt.wantErr != "" {
 				require.Error(t, err)

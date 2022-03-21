@@ -26,6 +26,8 @@ import (
 )
 
 type csArgs struct {
+	Command           string
+	RemoteAddrOption  string
 	Format            string
 	TemplatePath      string
 	IgnoreUnfixed     bool
@@ -35,6 +37,7 @@ type csArgs struct {
 	ClientToken       string
 	ClientTokenHeader string
 	ListAllPackages   bool
+	Target            string
 }
 
 func TestClientServer(t *testing.T) {
@@ -219,6 +222,15 @@ func TestClientServer(t *testing.T) {
 				Input: "testdata/fixtures/images/busybox-with-lockfile.tar.gz",
 			},
 			golden: "testdata/busybox-with-lockfile.json.golden",
+		},
+		{
+			name: "scan pox.xml with fs command in client/server mode",
+			args: csArgs{
+				Command:          "fs",
+				RemoteAddrOption: "--server",
+				Target:           "testdata/fixtures/fs/pom/",
+			},
+			golden: "testdata/pom.json.golden",
 		},
 	}
 
@@ -525,8 +537,14 @@ func setupServer(addr, token, tokenHeader, cacheDir, cacheBackend string) []stri
 }
 
 func setupClient(t *testing.T, c csArgs, addr string, cacheDir string, golden string) ([]string, string) {
+	if c.Command == "" {
+		c.Command = "client"
+	}
+	if c.RemoteAddrOption == "" {
+		c.RemoteAddrOption = "--remote"
+	}
 	t.Helper()
-	osArgs := []string{"trivy", "--cache-dir", cacheDir, "client", "--remote", "http://" + addr}
+	osArgs := []string{"trivy", "--cache-dir", cacheDir, c.Command, c.RemoteAddrOption, "http://" + addr}
 
 	if c.Format != "" {
 		osArgs = append(osArgs, "--format", c.Format)
@@ -566,6 +584,10 @@ func setupClient(t *testing.T, c csArgs, addr string, cacheDir string, golden st
 	}
 
 	osArgs = append(osArgs, "--output", outputFile)
+
+	if c.Target != "" {
+		osArgs = append(osArgs, c.Target)
+	}
 
 	return osArgs, outputFile
 }

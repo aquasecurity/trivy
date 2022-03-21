@@ -13,7 +13,6 @@ import (
 	"github.com/aquasecurity/trivy-db/pkg/metadata"
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/commands/artifact"
-	"github.com/aquasecurity/trivy/pkg/commands/client"
 	"github.com/aquasecurity/trivy/pkg/commands/plugin"
 	"github.com/aquasecurity/trivy/pkg/commands/server"
 	"github.com/aquasecurity/trivy/pkg/result"
@@ -210,14 +209,14 @@ var (
 
 	token = cli.StringFlag{
 		Name:    "token",
-		Usage:   "for authentication",
+		Usage:   "for authentication in client/server mode",
 		EnvVars: []string{"TRIVY_TOKEN"},
 	}
 
 	tokenHeader = cli.StringFlag{
 		Name:    "token-header",
 		Value:   "Trivy-Token",
-		Usage:   "specify a header name for token",
+		Usage:   "specify a header name for token in client/server mode",
 		EnvVars: []string{"TRIVY_TOKEN_HEADER"},
 	}
 
@@ -311,6 +310,18 @@ var (
 		Usage:   "allow insecure server connections when using SSL",
 		Value:   false,
 		EnvVars: []string{"TRIVY_INSECURE"},
+	}
+
+	remoteServer = cli.StringFlag{
+		Name:    "server",
+		Usage:   "server address",
+		EnvVars: []string{"TRIVY_SERVER"},
+	}
+
+	customHeaders = cli.StringSliceFlag{
+		Name:    "custom-headers",
+		Usage:   "custom headers in client/server mode",
+		EnvVars: []string{"TRIVY_CUSTOM_HEADERS"},
 	}
 
 	// Global flags
@@ -473,9 +484,17 @@ func NewFilesystemCommand() *cli.Command {
 			&offlineScan,
 			stringSliceFlag(skipFiles),
 			stringSliceFlag(skipDirs),
+
+			// for misconfiguration
 			stringSliceFlag(configPolicy),
 			stringSliceFlag(configData),
 			stringSliceFlag(policyNamespaces),
+
+			// for client/server
+			&remoteServer,
+			&token,
+			&tokenHeader,
+			&customHeaders,
 		},
 	}
 }
@@ -565,7 +584,7 @@ func NewClientCommand() *cli.Command {
 		Aliases:   []string{"c"},
 		ArgsUsage: "image_name",
 		Usage:     "client mode",
-		Action:    client.Run,
+		Action:    artifact.ImageRun,
 		Flags: []cli.Flag{
 			&templateFlag,
 			&formatFlag,
@@ -589,19 +608,16 @@ func NewClientCommand() *cli.Command {
 			&offlineScan,
 			&insecureFlag,
 
-			// original flags
 			&token,
 			&tokenHeader,
+			&customHeaders,
+
+			// original flags
 			&cli.StringFlag{
 				Name:    "remote",
 				Value:   "http://localhost:4954",
 				Usage:   "server address",
 				EnvVars: []string{"TRIVY_REMOTE"},
-			},
-			&cli.StringSliceFlag{
-				Name:    "custom-headers",
-				Usage:   "custom headers",
-				EnvVars: []string{"TRIVY_CUSTOM_HEADERS"},
 			},
 		},
 	}
