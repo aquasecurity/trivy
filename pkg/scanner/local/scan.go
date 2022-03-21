@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/google/wire"
+	"golang.org/x/exp/slices"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/fanal/analyzer"
@@ -18,7 +19,6 @@ import (
 	ospkgDetector "github.com/aquasecurity/trivy/pkg/detector/ospkg"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/types"
-	"github.com/aquasecurity/trivy/pkg/utils"
 
 	_ "github.com/aquasecurity/fanal/analyzer/all"
 	_ "github.com/aquasecurity/fanal/hook/all"
@@ -80,7 +80,7 @@ func (s Scanner) Scan(target string, artifactKey string, blobKeys []string, opti
 	var results types.Results
 
 	// Scan OS packages and language-specific dependencies
-	if utils.StringInSlice(types.SecurityCheckVulnerability, options.SecurityChecks) {
+	if slices.Contains(options.SecurityChecks, types.SecurityCheckVulnerability) {
 		var vulnResults types.Results
 		vulnResults, eosl, err = s.checkVulnerabilities(target, artifactDetail, options)
 		if err != nil {
@@ -93,7 +93,7 @@ func (s Scanner) Scan(target string, artifactKey string, blobKeys []string, opti
 	}
 
 	// Scan IaC config files
-	if utils.StringInSlice(types.SecurityCheckConfig, options.SecurityChecks) {
+	if slices.Contains(options.SecurityChecks, types.SecurityCheckConfig) {
 		configResults := s.misconfsToResults(artifactDetail.Misconfigurations, options)
 		results = append(results, configResults...)
 	}
@@ -106,7 +106,7 @@ func (s Scanner) checkVulnerabilities(target string, detail ftypes.ArtifactDetai
 	var eosl bool
 	var results types.Results
 
-	if utils.StringInSlice(types.VulnTypeOS, options.VulnType) {
+	if slices.Contains(options.VulnType, types.VulnTypeOS) {
 		result, detectedEosl, err := s.scanOSPkgs(target, detail, options)
 		if err != nil {
 			return nil, false, xerrors.Errorf("unable to scan OS packages: %w", err)
@@ -116,7 +116,7 @@ func (s Scanner) checkVulnerabilities(target string, detail ftypes.ArtifactDetai
 		eosl = detectedEosl
 	}
 
-	if utils.StringInSlice(types.VulnTypeLibrary, options.VulnType) {
+	if slices.Contains(options.VulnType, types.VulnTypeLibrary) {
 		libResults, err := s.scanLibrary(detail.Applications, options)
 		if err != nil {
 			return nil, false, xerrors.Errorf("failed to scan application libraries: %w", err)

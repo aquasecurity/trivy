@@ -31,7 +31,6 @@ func NewRemoteCache(url string, customHeaders http.Header, insecure bool) cache.
 			},
 		},
 	}
-
 	c := rpcCache.NewCacheProtobufClient(url, httpClient)
 	return &RemoteCache{ctx: ctx, client: c}
 }

@@ -10,7 +10,7 @@ on:
       - 'LICENSE'
   pull_request:
 env:
-  GO_VERSION: "1.17"
+  GO_VERSION: "1.18"
 jobs:
   test:
     name: Test
@@ -26,7 +26,7 @@ jobs:
       - name: Lint
         uses: golangci/golangci-lint-action@v3.1.0
         with:
-          version: v1.41
+          version: v1.45
           args: --deadline=30m
 
       - name: Run unit tests

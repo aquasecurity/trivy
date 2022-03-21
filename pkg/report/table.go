@@ -8,10 +8,10 @@ import (
 
 	"github.com/fatih/color"
 	"github.com/olekukonko/tablewriter"
+	"golang.org/x/exp/slices"
 
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/types"
-	"github.com/aquasecurity/trivy/pkg/utils"
 )
 
 // TableWriter implements Writer and output in tabular form
@@ -87,7 +87,7 @@ func (tw TableWriter) summary(severityCount map[string]int) (int, []string) {
 
 	var summaries []string
 	for _, severity := range dbTypes.SeverityNames {
-		if !utils.StringInSlice(severity, severities) {
+		if !slices.Contains(severities, severity) {
 			continue
 		}
 		count := severityCount[severity]
