@@ -10,6 +10,7 @@ import (
 
 	"github.com/google/wire"
 	"github.com/open-policy-agent/opa/rego"
+	"golang.org/x/exp/maps"
 	"golang.org/x/exp/slices"
 	"golang.org/x/xerrors"
 
@@ -180,7 +181,7 @@ func filterVulnerabilities(vulns []types.DetectedVulnerability, severities []dbT
 			break
 		}
 	}
-	return toSlice(uniqVulns)
+	return maps.Values(uniqVulns)
 }
 
 func filterMisconfigurations(misconfs []types.DetectedMisconfiguration, severities []dbTypes.Severity,
@@ -224,16 +225,6 @@ func summarize(status types.MisconfStatus, summary *types.MisconfSummary) {
 	case types.StatusException:
 		summary.Exceptions++
 	}
-}
-
-func toSlice(uniqVulns map[string]types.DetectedVulnerability) []types.DetectedVulnerability {
-	// Convert map to slice
-	var vulnerabilities []types.DetectedVulnerability
-	for _, vuln := range uniqVulns {
-		vulnerabilities = append(vulnerabilities, vuln)
-	}
-
-	return vulnerabilities
 }
 
 func applyPolicy(ctx context.Context, vulns []types.DetectedVulnerability, misconfs []types.DetectedMisconfiguration,
