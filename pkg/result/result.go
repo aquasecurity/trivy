@@ -10,6 +10,7 @@ import (
 
 	"github.com/google/wire"
 	"github.com/open-policy-agent/opa/rego"
+	"golang.org/x/exp/slices"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy-db/pkg/db"
@@ -17,7 +18,6 @@ import (
 	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/vulnerability"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/types"
-	"github.com/aquasecurity/trivy/pkg/utils"
 )
 
 const (
@@ -167,7 +167,7 @@ func filterVulnerabilities(vulns []types.DetectedVulnerability, severities []dbT
 			// Ignore unfixed vulnerabilities
 			if ignoreUnfixed && vuln.FixedVersion == "" {
 				continue
-			} else if utils.StringInSlice(vuln.VulnerabilityID, ignoredIDs) {
+			} else if slices.Contains(ignoredIDs, vuln.VulnerabilityID) {
 				continue
 			}
 
@@ -192,7 +192,7 @@ func filterMisconfigurations(misconfs []types.DetectedMisconfiguration, severiti
 		// Filter misconfigurations by severity
 		for _, s := range severities {
 			if s.String() == misconf.Severity {
-				if utils.StringInSlice(misconf.ID, ignoredIDs) {
+				if slices.Contains(ignoredIDs, misconf.ID) {
 					continue
 				}
 
