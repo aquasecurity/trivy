@@ -17,6 +17,11 @@ type JSONWriter struct {
 
 // Write writes the results in JSON format
 func (jw JSONWriter) Write(report types.Report) error {
+	for _, r := range report.Results {
+		for _, v := range r.Vulnerabilities {
+			v.VendorSeverity = nil
+		}
+	}
 	output, err := json.MarshalIndent(report, "", "  ")
 	if err != nil {
 		return xerrors.Errorf("failed to marshal json: %w", err)
