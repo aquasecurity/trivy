@@ -31,6 +31,9 @@ func TestReportWriter_JSON(t *testing.T) {
 						Title:       "foobar",
 						Description: "baz",
 						Severity:    "HIGH",
+						VendorSeverity: map[dbTypes.SourceID]dbTypes.Severity{
+							"nvd": 3,
+						},
 					},
 				},
 			},
