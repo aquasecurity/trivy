@@ -14,15 +14,10 @@ import (
 	"github.com/aquasecurity/trivy/pkg/types"
 )
 
-func getStringPointer(s string) *string {
-	return &s
+func toPtr[T any](v T) *T {
+	return &v
 }
-func getUintPointer(i uint) *uint {
-	return &i
-}
-func getIntPointer(i int) *int {
-	return &i
-}
+
 func TestReportWriter_Sarif(t *testing.T) {
 	tests := []struct {
 		name        string
@@ -66,13 +61,13 @@ func TestReportWriter_Sarif(t *testing.T) {
 			wantRules: []*sarif.ReportingDescriptor{
 				{
 					ID:               "CVE-2020-0001",
-					Name:             getStringPointer("OsPackageVulnerability"),
-					ShortDescription: &sarif.MultiformatMessageString{Text: getStringPointer("CVE-2020-0001")},
-					FullDescription:  &sarif.MultiformatMessageString{Text: getStringPointer("baz")},
+					Name:             toPtr("OsPackageVulnerability"),
+					ShortDescription: &sarif.MultiformatMessageString{Text: toPtr("CVE-2020-0001")},
+					FullDescription:  &sarif.MultiformatMessageString{Text: toPtr("baz")},
 					DefaultConfiguration: &sarif.ReportingConfiguration{
 						Level: "error",
 					},
-					HelpURI: getStringPointer("https://avd.aquasec.com/nvd/cve-2020-0001"),
+					HelpURI: toPtr("https://avd.aquasec.com/nvd/cve-2020-0001"),
 					Properties: map[string]interface{}{
 						"tags": []interface{}{
 							"vulnerability",
@@ -83,25 +78,25 @@ func TestReportWriter_Sarif(t *testing.T) {
 						"security-severity": "7.5",
 					},
 					Help: &sarif.MultiformatMessageString{
-						Text:     getStringPointer("Vulnerability CVE-2020-0001\nSeverity: HIGH\nPackage: foo\nFixed Version: 3.4.5\nLink: [CVE-2020-0001](https://avd.aquasec.com/nvd/cve-2020-0001)\nbaz"),
-						Markdown: getStringPointer("**Vulnerability CVE-2020-0001**\n| Severity | Package | Fixed Version | Link |\n| --- | --- | --- | --- |\n|HIGH|foo|3.4.5|[CVE-2020-0001](https://avd.aquasec.com/nvd/cve-2020-0001)|\n\nbaz"),
+						Text:     toPtr("Vulnerability CVE-2020-0001\nSeverity: HIGH\nPackage: foo\nFixed Version: 3.4.5\nLink: [CVE-2020-0001](https://avd.aquasec.com/nvd/cve-2020-0001)\nbaz"),
+						Markdown: toPtr("**Vulnerability CVE-2020-0001**\n| Severity | Package | Fixed Version | Link |\n| --- | --- | --- | --- |\n|HIGH|foo|3.4.5|[CVE-2020-0001](https://avd.aquasec.com/nvd/cve-2020-0001)|\n\nbaz"),
 					},
 				},
 			},
 			wantResults: []*sarif.Result{
 				{
-					RuleID:    getStringPointer("CVE-2020-0001"),
-					RuleIndex: getUintPointer(0),
-					Level:     getStringPointer("error"),
-					Message:   sarif.Message{Text: getStringPointer("Package: foo\nInstalled Version: 1.2.3\nVulnerability CVE-2020-0001\nSeverity: HIGH\nFixed Version: 3.4.5\nLink: [CVE-2020-0001](https://avd.aquasec.com/nvd/cve-2020-0001)")},
+					RuleID:    toPtr("CVE-2020-0001"),
+					RuleIndex: toPtr[uint](0),
+					Level:     toPtr("error"),
+					Message:   sarif.Message{Text: toPtr("Package: foo\nInstalled Version: 1.2.3\nVulnerability CVE-2020-0001\nSeverity: HIGH\nFixed Version: 3.4.5\nLink: [CVE-2020-0001](https://avd.aquasec.com/nvd/cve-2020-0001)")},
 					Locations: []*sarif.Location{
 						{
 							PhysicalLocation: &sarif.PhysicalLocation{
 								ArtifactLocation: &sarif.ArtifactLocation{
-									URI:       getStringPointer("test"),
-									URIBaseId: getStringPointer("ROOTPATH"),
+									URI:       toPtr("test"),
+									URIBaseId: toPtr("ROOTPATH"),
 								},
-								Region: &sarif.Region{StartLine: getIntPointer(1)},
+								Region: &sarif.Region{StartLine: toPtr(1)},
 							},
 						},
 					},
@@ -138,35 +133,35 @@ func TestReportWriter_Sarif(t *testing.T) {
 			},
 			wantResults: []*sarif.Result{
 				{
-					RuleID:    getStringPointer("KSV001"),
-					RuleIndex: getUintPointer(0),
-					Level:     getStringPointer("error"),
-					Message:   sarif.Message{Text: getStringPointer("Artifact: test\nType: \nVulnerability KSV001\nSeverity: HIGH\nMessage: Message\nLink: [KSV001](https://avd.aquasec.com/appshield/ksv001)")},
+					RuleID:    toPtr("KSV001"),
+					RuleIndex: toPtr[uint](0),
+					Level:     toPtr("error"),
+					Message:   sarif.Message{Text: toPtr("Artifact: test\nType: \nVulnerability KSV001\nSeverity: HIGH\nMessage: Message\nLink: [KSV001](https://avd.aquasec.com/appshield/ksv001)")},
 					Locations: []*sarif.Location{
 						{
 							PhysicalLocation: &sarif.PhysicalLocation{
 								ArtifactLocation: &sarif.ArtifactLocation{
-									URI:       getStringPointer("test"),
-									URIBaseId: getStringPointer("ROOTPATH"),
+									URI:       toPtr("test"),
+									URIBaseId: toPtr("ROOTPATH"),
 								},
-								Region: &sarif.Region{StartLine: getIntPointer(1)},
+								Region: &sarif.Region{StartLine: toPtr(1)},
 							},
 						},
 					},
 				},
 				{
-					RuleID:    getStringPointer("KSV002"),
-					RuleIndex: getUintPointer(1),
-					Level:     getStringPointer("error"),
-					Message:   sarif.Message{Text: getStringPointer("Artifact: test\nType: \nVulnerability KSV002\nSeverity: CRITICAL\nMessage: Message\nLink: [KSV002](https://avd.aquasec.com/appshield/ksv002)")},
+					RuleID:    toPtr("KSV002"),
+					RuleIndex: toPtr[uint](1),
+					Level:     toPtr("error"),
+					Message:   sarif.Message{Text: toPtr("Artifact: test\nType: \nVulnerability KSV002\nSeverity: CRITICAL\nMessage: Message\nLink: [KSV002](https://avd.aquasec.com/appshield/ksv002)")},
 					Locations: []*sarif.Location{
 						{
 							PhysicalLocation: &sarif.PhysicalLocation{
 								ArtifactLocation: &sarif.ArtifactLocation{
-									URI:       getStringPointer("test"),
-									URIBaseId: getStringPointer("ROOTPATH"),
+									URI:       toPtr("test"),
+									URIBaseId: toPtr("ROOTPATH"),
 								},
-								Region: &sarif.Region{StartLine: getIntPointer(1)},
+								Region: &sarif.Region{StartLine: toPtr(1)},
 							},
 						},
 					},
@@ -175,13 +170,13 @@ func TestReportWriter_Sarif(t *testing.T) {
 			wantRules: []*sarif.ReportingDescriptor{
 				{
 					ID:               "KSV001",
-					Name:             getStringPointer("Misconfiguration"),
-					ShortDescription: &sarif.MultiformatMessageString{Text: getStringPointer("KSV001")},
-					FullDescription:  &sarif.MultiformatMessageString{Text: getStringPointer("")},
+					Name:             toPtr("Misconfiguration"),
+					ShortDescription: &sarif.MultiformatMessageString{Text: toPtr("KSV001")},
+					FullDescription:  &sarif.MultiformatMessageString{Text: toPtr("")},
 					DefaultConfiguration: &sarif.ReportingConfiguration{
 						Level: "error",
 					},
-					HelpURI: getStringPointer("https://avd.aquasec.com/appshield/ksv001"),
+					HelpURI: toPtr("https://avd.aquasec.com/appshield/ksv001"),
 					Properties: map[string]interface{}{
 						"tags": []interface{}{
 							"misconfiguration",
@@ -192,19 +187,19 @@ func TestReportWriter_Sarif(t *testing.T) {
 						"security-severity": "8.0",
 					},
 					Help: &sarif.MultiformatMessageString{
-						Text:     getStringPointer("Misconfiguration KSV001\nType: Kubernetes Security Check\nSeverity: HIGH\nCheck: Image tag ':latest' used\nMessage: Message\nLink: [KSV001](https://avd.aquasec.com/appshield/ksv001)\n"),
-						Markdown: getStringPointer("**Misconfiguration KSV001**\n| Type | Severity | Check | Message | Link |\n| --- | --- | --- | --- | --- |\n|Kubernetes Security Check|HIGH|Image tag ':latest' used|Message|[KSV001](https://avd.aquasec.com/appshield/ksv001)|\n\n"),
+						Text:     toPtr("Misconfiguration KSV001\nType: Kubernetes Security Check\nSeverity: HIGH\nCheck: Image tag ':latest' used\nMessage: Message\nLink: [KSV001](https://avd.aquasec.com/appshield/ksv001)\n"),
+						Markdown: toPtr("**Misconfiguration KSV001**\n| Type | Severity | Check | Message | Link |\n| --- | --- | --- | --- | --- |\n|Kubernetes Security Check|HIGH|Image tag ':latest' used|Message|[KSV001](https://avd.aquasec.com/appshield/ksv001)|\n\n"),
 					},
 				},
 				{
 					ID:               "KSV002",
-					Name:             getStringPointer("Misconfiguration"),
-					ShortDescription: &sarif.MultiformatMessageString{Text: getStringPointer("KSV002")},
-					FullDescription:  &sarif.MultiformatMessageString{Text: getStringPointer("")},
+					Name:             toPtr("Misconfiguration"),
+					ShortDescription: &sarif.MultiformatMessageString{Text: toPtr("KSV002")},
+					FullDescription:  &sarif.MultiformatMessageString{Text: toPtr("")},
 					DefaultConfiguration: &sarif.ReportingConfiguration{
 						Level: "error",
 					},
-					HelpURI: getStringPointer("https://avd.aquasec.com/appshield/ksv002"),
+					HelpURI: toPtr("https://avd.aquasec.com/appshield/ksv002"),
 					Properties: map[string]interface{}{
 						"tags": []interface{}{
 							"misconfiguration",
@@ -215,8 +210,8 @@ func TestReportWriter_Sarif(t *testing.T) {
 						"security-severity": "9.5",
 					},
 					Help: &sarif.MultiformatMessageString{
-						Text:     getStringPointer("Misconfiguration KSV002\nType: Kubernetes Security Check\nSeverity: CRITICAL\nCheck: SYS_ADMIN capability added\nMessage: Message\nLink: [KSV002](https://avd.aquasec.com/appshield/ksv002)\n"),
-						Markdown: getStringPointer("**Misconfiguration KSV002**\n| Type | Severity | Check | Message | Link |\n| --- | --- | --- | --- | --- |\n|Kubernetes Security Check|CRITICAL|SYS_ADMIN capability added|Message|[KSV002](https://avd.aquasec.com/appshield/ksv002)|\n\n"),
+						Text:     toPtr("Misconfiguration KSV002\nType: Kubernetes Security Check\nSeverity: CRITICAL\nCheck: SYS_ADMIN capability added\nMessage: Message\nLink: [KSV002](https://avd.aquasec.com/appshield/ksv002)\n"),
+						Markdown: toPtr("**Misconfiguration KSV002**\n| Type | Severity | Check | Message | Link |\n| --- | --- | --- | --- | --- |\n|Kubernetes Security Check|CRITICAL|SYS_ADMIN capability added|Message|[KSV002](https://avd.aquasec.com/appshield/ksv002)|\n\n"),
 					},
 				},
 			},
