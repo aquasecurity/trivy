@@ -365,7 +365,7 @@ func NewApp(version string) *cli.App {
 	return app
 }
 
-var showVersion = func(cacheDir, outputFormat, version string, outputWriter io.Writer) {
+func showVersion(cacheDir, outputFormat, version string, outputWriter io.Writer) {
 	var dbMeta *metadata.Metadata
 
 	mc := metadata.NewClient(cacheDir)
@@ -721,19 +721,16 @@ func NewPluginCommand() *cli.Command {
 // NewVersionCommand adds version command
 func NewVersionCommand() *cli.Command {
 	return &cli.Command{
-		Name:   "version",
-		Usage:  "print the version. '--format json' flag is supported",
-		Action: versionRun,
+		Name:  "version",
+		Usage: "print the version",
+		Action: func(ctx *cli.Context) error {
+			showVersion(ctx.String("cache-dir"), ctx.String("format"), ctx.App.Version, ctx.App.Writer)
+			return nil
+		},
 		Flags: []cli.Flag{
 			&formatFlag,
 		},
 	}
-}
-
-//cli.VersionPrinter doesn't support flags. Use 'version' command to format version output.
-func versionRun(ctx *cli.Context) error {
-	showVersion(ctx.String("cache-dir"), ctx.String("format"), ctx.App.Version, ctx.App.Writer)
-	return nil
 }
 
 // StringSliceFlag is defined globally. When the app runs multiple times,
