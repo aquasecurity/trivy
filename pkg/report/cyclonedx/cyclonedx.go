@@ -491,13 +491,13 @@ func ratings(vulnerability types.DetectedVulnerability) *[]cdx.VulnerabilityRati
 	}
 
 	sort.Slice(rates, func(i, j int) bool {
-		if rates[i].Source.Name != rates[i].Source.Name {
-			return rates[i].Source.Name > rates[i].Source.Name
+		if rates[i].Source.Name != rates[j].Source.Name {
+			return rates[i].Source.Name < rates[j].Source.Name
 		}
-		if rates[i].Method != rates[i].Method {
-			return rates[i].Method > rates[i].Method
+		if rates[i].Method != rates[j].Method {
+			return rates[i].Method < rates[j].Method
 		}
-		return rates[i].Score > rates[i].Score
+		return rates[i].Score < rates[j].Score
 	})
 	return &rates
 }

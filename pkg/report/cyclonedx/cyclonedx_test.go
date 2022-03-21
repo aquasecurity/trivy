@@ -327,20 +327,20 @@ func TestWriter_Write(t *testing.T) {
 									Name: "nvd",
 									URL:  "",
 								},
-								Score:    5.5,
+								Score:    4.3,
 								Severity: cdx.SeverityMedium,
-								Method:   cdx.ScoringMethodCVSSv3,
-								Vector:   "CVSS:3.0/AV:L/AC:L/PR:N/UI:R/S:U/C:N/I:N/A:H",
+								Method:   cdx.ScoringMethodCVSSv2,
+								Vector:   "AV:N/AC:M/Au:N/C:N/I:N/A:P",
 							},
 							{
 								Source: &cdx.Source{
 									Name: "nvd",
 									URL:  "",
 								},
-								Score:    4.3,
+								Score:    5.5,
 								Severity: cdx.SeverityMedium,
-								Method:   cdx.ScoringMethodCVSSv2,
-								Vector:   "AV:N/AC:M/Au:N/C:N/I:N/A:P",
+								Method:   cdx.ScoringMethodCVSSv3,
+								Vector:   "CVSS:3.0/AV:L/AC:L/PR:N/UI:R/S:U/C:N/I:N/A:H",
 							},
 							{
 								Source: &cdx.Source{
@@ -683,19 +683,19 @@ func TestWriter_Write(t *testing.T) {
 								Source: &cdx.Source{
 									Name: "nvd",
 								},
-								Score:    5.9,
+								Score:    4.3,
 								Severity: cdx.SeverityMedium,
-								Method:   cdx.ScoringMethodCVSSv31,
-								Vector:   "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:H/I:N/A:N",
+								Method:   cdx.ScoringMethodCVSSv2,
+								Vector:   "AV:N/AC:M/Au:N/C:P/I:N/A:N",
 							},
 							{
 								Source: &cdx.Source{
 									Name: "nvd",
 								},
-								Score:    4.3,
+								Score:    5.9,
 								Severity: cdx.SeverityMedium,
-								Method:   cdx.ScoringMethodCVSSv2,
-								Vector:   "AV:N/AC:M/Au:N/C:P/I:N/A:N",
+								Method:   cdx.ScoringMethodCVSSv31,
+								Vector:   "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:H/I:N/A:N",
 							},
 							{
 								Source: &cdx.Source{
