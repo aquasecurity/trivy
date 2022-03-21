@@ -358,6 +358,7 @@ func NewApp(version string) *cli.App {
 		NewServerCommand(),
 		NewConfigCommand(),
 		NewPluginCommand(),
+		NewVersionCommand(),
 	}
 	app.Commands = append(app.Commands, plugin.LoadCommands()...)
 
@@ -713,6 +714,21 @@ func NewPluginCommand() *cli.Command {
 				ArgsUsage: "PLUGIN_NAME",
 				Action:    plugin.Update,
 			},
+		},
+	}
+}
+
+// NewVersionCommand adds version command
+func NewVersionCommand() *cli.Command {
+	return &cli.Command{
+		Name:  "version",
+		Usage: "print the version",
+		Action: func(ctx *cli.Context) error {
+			showVersion(ctx.String("cache-dir"), ctx.String("format"), ctx.App.Version, ctx.App.Writer)
+			return nil
+		},
+		Flags: []cli.Flag{
+			&formatFlag,
 		},
 	}
 }
