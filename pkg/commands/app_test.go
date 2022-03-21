@@ -79,27 +79,27 @@ Vulnerability DB:
 		},
 		{
 			name:      "happy path. '-version' flag is used",
-			arguments: []string{"trivy", "-version"},
+			arguments: []string{"trivy", "-version", "--cache-dir", "testdata"},
 			want:      tableOutput,
 		},
 		{
 			name:      "happy path. 'version' command is used",
-			arguments: []string{"trivy", "version"},
+			arguments: []string{"trivy", "--cache-dir", "testdata", "version"},
 			want:      tableOutput,
 		},
 		{
 			name:      "happy path. 'version', '--format json' flags are used",
-			arguments: []string{"path/to/trivy", "version", "--format", "json"},
+			arguments: []string{"trivy", "--cache-dir", "testdata", "version", "--format", "json"},
 			want:      jsonOutput,
 		},
 		{
 			name:      "sad path. '-v', '--format json' flags are used",
-			arguments: []string{"path/to/trivy", "-v", "--format", "json"},
+			arguments: []string{"trivy", "-v", "--format", "json"},
 			wantErr:   "flag provided but not defined: -format",
 		},
 		{
 			name:      "sad path. '-version', '--format json' flags are used",
-			arguments: []string{"path/to/trivy", "-version", "--format", "json"},
+			arguments: []string{"trivy", "-version", "--format", "json"},
 			wantErr:   "flag provided but not defined: -format",
 		},
 	}
