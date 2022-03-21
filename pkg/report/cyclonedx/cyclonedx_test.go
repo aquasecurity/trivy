@@ -819,6 +819,7 @@ func TestWriter_Write(t *testing.T) {
 						},
 					},
 				},
+				Vulnerabilities: &[]cdx.Vulnerability{},
 				Dependencies: &[]cdx.Dependency{
 					{
 						Ref: "3ff14136-e09f-4df9-80ea-000000000003",
@@ -912,6 +913,7 @@ func TestWriter_Write(t *testing.T) {
 						},
 					},
 				},
+				Vulnerabilities: &[]cdx.Vulnerability{},
 				Dependencies: &[]cdx.Dependency{
 					{
 						Ref: "3ff14136-e09f-4df9-80ea-000000000002",
@@ -959,6 +961,7 @@ func TestWriter_Write(t *testing.T) {
 						},
 					},
 				},
+				Vulnerabilities: &[]cdx.Vulnerability{},
 				Dependencies: &[]cdx.Dependency{
 					{
 						Ref: "3ff14136-e09f-4df9-80ea-000000000002",

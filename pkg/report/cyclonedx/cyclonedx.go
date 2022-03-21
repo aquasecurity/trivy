@@ -9,6 +9,7 @@ import (
 
 	cdx "github.com/CycloneDX/cyclonedx-go"
 	"github.com/google/uuid"
+	"golang.org/x/exp/maps"
 	"golang.org/x/xerrors"
 	"k8s.io/utils/clock"
 
@@ -145,7 +146,7 @@ func (cw *Writer) parseComponents(r types.Report, bomRef string) (*[]cdx.Compone
 	var dependencies []cdx.Dependency
 	var metadataDependencies []cdx.Dependency
 	libraryUniqMap := map[string]struct{}{}
-	vulnMap := map[string]*cdx.Vulnerability{}
+	vulnMap := map[string]cdx.Vulnerability{}
 	for _, result := range r.Results {
 		var componentDependencies []cdx.Dependency
 		purlMap := map[string]string{}
@@ -239,10 +240,7 @@ func (cw *Writer) parseComponents(r types.Report, bomRef string) (*[]cdx.Compone
 			metadataDependencies = append(metadataDependencies, cdx.Dependency{Ref: resultComponent.BOMRef})
 		}
 	}
-	var vulns []cdx.Vulnerability
-	for _, v := range vulnMap {
-		vulns = append(vulns, *v)
-	}
+	vulns := maps.Values(vulnMap)
 	sort.Slice(vulns, func(i, j int) bool {
 		return vulns[i].ID > vulns[j].ID
 	})
@@ -253,7 +251,7 @@ func (cw *Writer) parseComponents(r types.Report, bomRef string) (*[]cdx.Compone
 	return &components, &dependencies, &vulns, nil
 }
 
-func (cw *Writer) vulnerability(vuln types.DetectedVulnerability, purlMap map[string]string) *cdx.Vulnerability {
+func (cw *Writer) vulnerability(vuln types.DetectedVulnerability, purlMap map[string]string) cdx.Vulnerability {
 	v := cdx.Vulnerability{
 		ID:          vuln.VulnerabilityID,
 		Source:      source(vuln.DataSource),
@@ -274,7 +272,7 @@ func (cw *Writer) vulnerability(vuln types.DetectedVulnerability, purlMap map[st
 		}
 	}
 
-	return &v
+	return v
 }
 
 func (cw *Writer) pkgToComponent(t string, meta types.Metadata, pkg ftypes.Package) (cdx.Component, error) {
