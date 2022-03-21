@@ -48,6 +48,10 @@ func TestReportWriter_Sarif(t *testing.T) {
 								Title:       "foobar",
 								Description: "baz",
 								Severity:    "HIGH",
+								VendorSeverity: map[dbTypes.SourceID]dbTypes.Severity{
+									"nvd":    4,
+									"redhat": 3,
+								},
 								CVSS: map[dbTypes.SourceID]dbTypes.CVSS{
 									vulnerability.NVD: {
 										V3Vector: "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H",

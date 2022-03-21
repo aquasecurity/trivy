@@ -28,6 +28,9 @@ func TestReportWriter_Template(t *testing.T) {
 					PkgName:         "foo",
 					Vulnerability: dbTypes.Vulnerability{
 						Severity: dbTypes.SeverityHigh.String(),
+						VendorSeverity: map[dbTypes.SourceID]dbTypes.Severity{
+							"nvd": 1,
+						},
 					},
 				},
 				{
