@@ -115,6 +115,8 @@ trivy:
   serverToken: ""
 
 service:
+  # If specified, the name used for the Trivy service.
+  name:
   # type Kubernetes service type
   type: ClusterIP
   # port Kubernetes service port

@@ -124,7 +124,7 @@ Example:
 === "macOS"
 
     ``` bash
-    docker run --rm -v $HOME/Library/Caches:/root/.cache/ aquasec/trivy:{{ git.tag[1:] }} python:3.4-alpine
+    docker run --rm -v $HOME/Library/Caches:/root/.cache/ aquasec/trivy:{{ git.tag[1:] }} image [YOUR_IMAGE_NAME
     ```
 
 If you would like to scan the image on your host machine, you need to mount `docker.sock`.
