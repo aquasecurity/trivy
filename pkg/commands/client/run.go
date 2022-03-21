@@ -5,6 +5,7 @@ import (
 	"os"
 
 	"github.com/urfave/cli/v2"
+	"golang.org/x/exp/slices"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/fanal/analyzer"
@@ -130,7 +131,7 @@ func disabledAnalyzers(opt Option) []analyzer.Type {
 	}
 
 	// Don't analyze programming language packages when not running in 'library' mode
-	if !utils.StringInSlice(types.VulnTypeLibrary, opt.VulnType) {
+	if !slices.Contains(opt.VulnType, types.VulnTypeLibrary) {
 		analyzers = append(analyzers, analyzer.TypeLanguages...)
 	}
 
@@ -142,7 +143,7 @@ func initializeScanner(ctx context.Context, opt Option) (scanner.Scanner, func()
 
 	// ScannerOptions is filled only when config scanning is enabled.
 	var configScannerOptions config.ScannerOption
-	if utils.StringInSlice(types.SecurityCheckConfig, opt.SecurityChecks) {
+	if slices.Contains(opt.SecurityChecks, types.SecurityCheckConfig) {
 		noProgress := opt.Quiet || opt.NoProgress
 		builtinPolicyPaths, err := operation.InitBuiltinPolicies(ctx, opt.CacheDir, noProgress, opt.SkipPolicyUpdate)
 		if err != nil {
