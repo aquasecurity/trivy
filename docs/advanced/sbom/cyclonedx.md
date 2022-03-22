@@ -16,7 +16,7 @@ $ trivy image --format cyclonedx --output result.json alpine:3.15
 $ cat result.json | jq .
 {
   "bomFormat": "CycloneDX",
-  "specVersion": "1.3",
+  "specVersion": "1.4",
   "serialNumber": "urn:uuid:2be5773d-7cd3-4b4b-90a5-e165474ddace",
   "version": 1,
   "metadata": {
@@ -163,13 +163,70 @@ $ cat result.json | jq .
         "3da6a469-964d-4b4e-b67d-e94ec7c88d37"
       ]
     }
+  ],
+  "vulnerabilities": [
+    {
+      "id": "CVE-2021-42386",
+      "source": {
+        "name": "alpine",
+        "url": "https://secdb.alpinelinux.org/"
+      },
+      "ratings": [
+        {
+          "source": {
+            "name": "nvd"
+          },
+          "score": 7.2,
+          "severity": "high",
+          "method": "CVSSv31",
+          "vector": "CVSS:3.1/AV:N/AC:L/PR:H/UI:N/S:U/C:H/I:H/A:H"
+        },
+        {
+          "source": {
+            "name": "nvd"
+          },
+          "score": 6.5,
+          "severity": "medium",
+          "method": "CVSSv2",
+          "vector": "AV:N/AC:L/Au:S/C:P/I:P/A:P"
+        },
+        {
+          "source": {
+            "name": "redhat"
+          },
+          "score": 6.6,
+          "severity": "medium",
+          "method": "CVSSv31",
+          "vector": "CVSS:3.1/AV:N/AC:H/PR:H/UI:N/S:U/C:H/I:H/A:H"
+        }
+      ],
+      "cwes": [
+        416
+      ],
+      "description": "A use-after-free in Busybox's awk applet leads to denial of service and possibly code execution when processing a crafted awk pattern in the nvalloc function",
+      "advisories": [
+        {
+          "url": "https://access.redhat.com/security/cve/CVE-2021-42386"
+        },
+        {
+          "url": "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2021-42386"
+        }
+      ],
+      "published": "2021-11-15 21:15:00 +0000 UTC",
+      "updated": "2022-01-04 17:14:00 +0000 UTC",
+      "affects": [
+        {
+          "ref": "pkg:apk/alpine/busybox@1.33.1-r3?distro=3.14.2"
+        },
+        {
+          "ref": "pkg:apk/alpine/ssl_client@1.33.1-r3?distro=3.14.2"
+        }
+      ]
+    }
   ]
 }
 
 ```
 </details>
-
-!!! caution
-    It doesn't support vulnerabilities yet, but installed packages.
 
 [cyclonedx]: https://cyclonedx.org/

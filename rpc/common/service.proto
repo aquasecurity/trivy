@@ -101,6 +101,7 @@ message Vulnerability {
   google.protobuf.Value     custom_vuln_data     = 18;
   repeated string           vendor_ids           = 19;
   DataSource                data_source          = 20;
+  map<string,Severity>      vendor_severity      = 21;
 }
 
 message DataSource {
