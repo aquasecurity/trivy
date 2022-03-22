@@ -254,7 +254,7 @@ func scan(ctx context.Context, opt Option, initializeScanner InitializeScanner, 
 	}
 	defer cleanup()
 
-	report, err := s.ScanArtifact(ctx, scanOptions)
+	report, err := s.ScanArtifact(ctx, scanOptions, cacheClient)
 	if err != nil {
 		return types.Report{}, xerrors.Errorf("image scan failed: %w", err)
 	}
