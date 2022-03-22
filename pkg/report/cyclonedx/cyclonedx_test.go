@@ -460,7 +460,7 @@ func TestWriter_Write(t *testing.T) {
 								PkgPath:          "tools/project-john/specifications/actionpack.gemspec",
 								InstalledVersion: "7.0.0",
 								FixedVersion:     "~> 5.2.6, >= 5.2.6.2, ~> 6.0.4, >= 6.0.4.6, ~> 6.1.4, >= 6.1.4.6, >= 7.0.2.2",
-								SeveritySource:   "ruby-advisory-db",
+								SeveritySource:   vulnerability.RubySec,
 								PrimaryURL:       "https://avd.aquasec.com/nvd/cve-2022-23633",
 								DataSource: &dtypes.DataSource{
 									ID:   vulnerability.RubySec,
@@ -470,16 +470,17 @@ func TestWriter_Write(t *testing.T) {
 								Vulnerability: dtypes.Vulnerability{
 									Title:       "rubygem-actionpack: information leak between requests",
 									Description: "Action Pack is a framework for handling and responding to web requests. Under certain circumstances response bodies will not be closed. In the event a response is *not* notified of a `close`, `ActionDispatch::Executor` will not know to reset thread local state for the next request. This can lead to data being leaked to subsequent requests.This has been fixed in Rails 7.0.2.1, 6.1.4.5, 6.0.4.5, and 5.2.6.1. Upgrading is highly recommended, but to work around this problem a middleware described in GHSA-wh98-p28r-vrc9 can be used.",
-									Severity:    "HIGH",
+									Severity:    dtypes.SeverityMedium.String(),
 									VendorSeverity: dtypes.VendorSeverity{
-										vulnerability.NVD:    dtypes.SeverityMedium,
-										vulnerability.RedHat: dtypes.SeverityLow,
+										vulnerability.NVD:     dtypes.SeverityMedium,
+										vulnerability.RedHat:  dtypes.SeverityLow,
+										vulnerability.RubySec: dtypes.SeverityHigh,
 									},
 									CVSS: dtypes.VendorCVSS{
 										vulnerability.NVD: dtypes.CVSS{
-											V2Vector: "AV:N/AC:M/Au:N/C:P/I:N/A:N",
+											V2Vector: "AV:N/AC:L/Au:N/C:C/I:P/A:C",
 											V3Vector: "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:H/I:N/A:N",
-											V2Score:  4.3,
+											V2Score:  9.7,
 											V3Score:  5.9,
 										},
 										vulnerability.RedHat: dtypes.CVSS{
@@ -501,7 +502,7 @@ func TestWriter_Write(t *testing.T) {
 								PkgPath:          "tools/project-doe/specifications/actionpack.gemspec",
 								InstalledVersion: "7.0.1",
 								FixedVersion:     "~> 5.2.6, >= 5.2.6.2, ~> 6.0.4, >= 6.0.4.6, ~> 6.1.4, >= 6.1.4.6, >= 7.0.2.2",
-								SeveritySource:   "ruby-advisory-db",
+								SeveritySource:   vulnerability.RubySec,
 								PrimaryURL:       "https://avd.aquasec.com/nvd/cve-2022-23633",
 								DataSource: &dtypes.DataSource{
 									ID:   vulnerability.RubySec,
@@ -511,12 +512,17 @@ func TestWriter_Write(t *testing.T) {
 								Vulnerability: dtypes.Vulnerability{
 									Title:       "rubygem-actionpack: information leak between requests",
 									Description: "Action Pack is a framework for handling and responding to web requests. Under certain circumstances response bodies will not be closed. In the event a response is *not* notified of a `close`, `ActionDispatch::Executor` will not know to reset thread local state for the next request. This can lead to data being leaked to subsequent requests.This has been fixed in Rails 7.0.2.1, 6.1.4.5, 6.0.4.5, and 5.2.6.1. Upgrading is highly recommended, but to work around this problem a middleware described in GHSA-wh98-p28r-vrc9 can be used.",
-									Severity:    dtypes.SeverityHigh.String(),
+									Severity:    dtypes.SeverityMedium.String(),
+									VendorSeverity: dtypes.VendorSeverity{
+										vulnerability.NVD:     dtypes.SeverityMedium,
+										vulnerability.RedHat:  dtypes.SeverityLow,
+										vulnerability.RubySec: dtypes.SeverityHigh,
+									},
 									CVSS: dtypes.VendorCVSS{
 										vulnerability.NVD: dtypes.CVSS{
-											V2Vector: "AV:N/AC:M/Au:N/C:P/I:N/A:N",
+											V2Vector: "AV:N/AC:L/Au:N/C:C/I:P/A:C",
 											V3Vector: "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:H/I:N/A:N",
-											V2Score:  4.3,
+											V2Score:  9.7,
 											V3Score:  5.9,
 										},
 										vulnerability.RedHat: dtypes.CVSS{
@@ -691,10 +697,10 @@ func TestWriter_Write(t *testing.T) {
 								Source: &cdx.Source{
 									Name: string(vulnerability.NVD),
 								},
-								Score:    4.3,
-								Severity: cdx.SeverityMedium,
+								Score:    9.7,
+								Severity: cdx.SeverityHigh,
 								Method:   cdx.ScoringMethodCVSSv2,
-								Vector:   "AV:N/AC:M/Au:N/C:P/I:N/A:N",
+								Vector:   "AV:N/AC:L/Au:N/C:C/I:P/A:C",
 							},
 							{
 								Source: &cdx.Source{
@@ -717,7 +723,6 @@ func TestWriter_Write(t *testing.T) {
 							{
 								Source: &cdx.Source{
 									Name: string(vulnerability.RubySec),
-									URL:  "https://github.com/rubysec/ruby-advisory-db",
 								},
 								Severity: cdx.SeverityHigh,
 							},
