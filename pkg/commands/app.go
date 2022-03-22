@@ -13,6 +13,7 @@ import (
 	"github.com/aquasecurity/trivy-db/pkg/metadata"
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/commands/artifact"
+	"github.com/aquasecurity/trivy/pkg/commands/option"
 	"github.com/aquasecurity/trivy/pkg/commands/plugin"
 	"github.com/aquasecurity/trivy/pkg/commands/server"
 	"github.com/aquasecurity/trivy/pkg/result"
@@ -215,7 +216,7 @@ var (
 
 	tokenHeader = cli.StringFlag{
 		Name:    "token-header",
-		Value:   "Trivy-Token",
+		Value:   option.DefaultTokenHeader,
 		Usage:   "specify a header name for token in client/server mode",
 		EnvVars: []string{"TRIVY_TOKEN_HEADER"},
 	}

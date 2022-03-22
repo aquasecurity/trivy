@@ -260,7 +260,7 @@ func TestOption_Init(t *testing.T) {
 			set.String("format", "", "")
 			set.String("server", "", "")
 			set.String("token", "", "")
-			set.String("token-header", "", "")
+			set.String("token-header", option.DefaultTokenHeader, "")
 			set.Var(&cli.StringSlice{}, "custom-headers", "")
 
 			ctx := cli.NewContext(app, set, nil)
