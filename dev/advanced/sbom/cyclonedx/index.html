@@ -2832,7 +2832,7 @@ Note that XML format is not supported at the moment.</p>
 <div class="highlight"><pre><span></span><code>$ cat result.json | jq .
 {
   &quot;bomFormat&quot;: &quot;CycloneDX&quot;,
-  &quot;specVersion&quot;: &quot;1.3&quot;,
+  &quot;specVersion&quot;: &quot;1.4&quot;,
   &quot;serialNumber&quot;: &quot;urn:uuid:2be5773d-7cd3-4b4b-90a5-e165474ddace&quot;,
   &quot;version&quot;: 1,
   &quot;metadata&quot;: {
@@ -2979,15 +2979,70 @@ Note that XML format is not supported at the moment.</p>
         &quot;3da6a469-964d-4b4e-b67d-e94ec7c88d37&quot;
       ]
     }
+  ],
+  &quot;vulnerabilities&quot;: [
+    {
+      &quot;id&quot;: &quot;CVE-2021-42386&quot;,
+      &quot;source&quot;: {
+        &quot;name&quot;: &quot;alpine&quot;,
+        &quot;url&quot;: &quot;https://secdb.alpinelinux.org/&quot;
+      },
+      &quot;ratings&quot;: [
+        {
+          &quot;source&quot;: {
+            &quot;name&quot;: &quot;nvd&quot;
+          },
+          &quot;score&quot;: 7.2,
+          &quot;severity&quot;: &quot;high&quot;,
+          &quot;method&quot;: &quot;CVSSv31&quot;,
+          &quot;vector&quot;: &quot;CVSS:3.1/AV:N/AC:L/PR:H/UI:N/S:U/C:H/I:H/A:H&quot;
+        },
+        {
+          &quot;source&quot;: {
+            &quot;name&quot;: &quot;nvd&quot;
+          },
+          &quot;score&quot;: 6.5,
+          &quot;severity&quot;: &quot;medium&quot;,
+          &quot;method&quot;: &quot;CVSSv2&quot;,
+          &quot;vector&quot;: &quot;AV:N/AC:L/Au:S/C:P/I:P/A:P&quot;
+        },
+        {
+          &quot;source&quot;: {
+            &quot;name&quot;: &quot;redhat&quot;
+          },
+          &quot;score&quot;: 6.6,
+          &quot;severity&quot;: &quot;medium&quot;,
+          &quot;method&quot;: &quot;CVSSv31&quot;,
+          &quot;vector&quot;: &quot;CVSS:3.1/AV:N/AC:H/PR:H/UI:N/S:U/C:H/I:H/A:H&quot;
+        }
+      ],
+      &quot;cwes&quot;: [
+        416
+      ],
+      &quot;description&quot;: &quot;A use-after-free in Busybox&#39;s awk applet leads to denial of service and possibly code execution when processing a crafted awk pattern in the nvalloc function&quot;,
+      &quot;advisories&quot;: [
+        {
+          &quot;url&quot;: &quot;https://access.redhat.com/security/cve/CVE-2021-42386&quot;
+        },
+        {
+          &quot;url&quot;: &quot;https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2021-42386&quot;
+        }
+      ],
+      &quot;published&quot;: &quot;2021-11-15 21:15:00 +0000 UTC&quot;,
+      &quot;updated&quot;: &quot;2022-01-04 17:14:00 +0000 UTC&quot;,
+      &quot;affects&quot;: [
+        {
+          &quot;ref&quot;: &quot;pkg:apk/alpine/busybox@1.33.1-r3?distro=3.14.2&quot;
+        },
+        {
+          &quot;ref&quot;: &quot;pkg:apk/alpine/ssl_client@1.33.1-r3?distro=3.14.2&quot;
+        }
+      ]
+    }
   ]
 }
 </code></pre></div>
 </details>
-
-<div class="admonition caution">
-<p class="admonition-title">Caution</p>
-<p>It doesn't support vulnerabilities yet, but installed packages.</p>
-</div>
 
 
 
