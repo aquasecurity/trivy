@@ -222,10 +222,10 @@ func TestConvertToRpcVulns(t *testing.T) {
 							Description: "Denial of Service",
 							Severity:    "MEDIUM",
 							VendorSeverity: dbTypes.VendorSeverity{
-								"redhat": 2,
+								vulnerability.RedHat: dbTypes.SeverityMedium,
 							},
 							CVSS: dbTypes.VendorCVSS{
-								"redhat": {
+								vulnerability.RedHat: {
 									V2Vector: "AV:L/AC:L/Au:N/C:C/I:C/A:C",
 									V3Vector: "CVSS:3.1/AV:L/AC:L/PR:L/UI:N/S:U/C:H/I:H/A:H",
 									V2Score:  7.2,
@@ -258,7 +258,7 @@ func TestConvertToRpcVulns(t *testing.T) {
 					Description:      "Denial of Service",
 					Severity:         common.Severity_MEDIUM,
 					VendorSeverity: map[string]common.Severity{
-						"redhat": 2,
+						string(vulnerability.RedHat): common.Severity_MEDIUM,
 					},
 					Cvss: map[string]*common.CVSS{
 						"redhat": {
@@ -371,10 +371,10 @@ func TestConvertFromRPCResults(t *testing.T) {
 							SeveritySource:   string(vulnerability.NVD),
 							CweIds:           []string{"CWE-123", "CWE-456"},
 							VendorSeverity: map[string]common.Severity{
-								"redhat": 2,
+								string(vulnerability.RedHat): common.Severity_MEDIUM,
 							},
 							Cvss: map[string]*common.CVSS{
-								"redhat": {
+								string(vulnerability.RedHat): {
 									V2Vector: "AV:L/AC:L/Au:N/C:C/I:C/A:C",
 									V3Vector: "CVSS:3.1/AV:L/AC:L/PR:L/UI:N/S:U/C:H/I:H/A:H",
 									V2Score:  7.2,
@@ -418,11 +418,11 @@ func TestConvertFromRPCResults(t *testing.T) {
 								Description: "Denial of Service",
 								Severity:    common.Severity_MEDIUM.String(),
 								VendorSeverity: dbTypes.VendorSeverity{
-									"redhat": 2,
+									vulnerability.RedHat: dbTypes.SeverityMedium,
 								},
 								CweIDs: []string{"CWE-123", "CWE-456"},
 								CVSS: dbTypes.VendorCVSS{
-									"redhat": {
+									vulnerability.RedHat: {
 										V2Vector: "AV:L/AC:L/Au:N/C:C/I:C/A:C",
 										V3Vector: "CVSS:3.1/AV:L/AC:L/PR:L/UI:N/S:U/C:H/I:H/A:H",
 										V2Score:  7.2,
@@ -502,7 +502,7 @@ func TestConvertFromRPCResults(t *testing.T) {
 								CweIDs:         []string{"CWE-123", "CWE-456"},
 								VendorSeverity: make(dbTypes.VendorSeverity),
 								CVSS: dbTypes.VendorCVSS{
-									"redhat": {
+									vulnerability.RedHat: {
 										V2Vector: "AV:L/AC:L/Au:N/C:C/I:C/A:C",
 										V3Vector: "CVSS:3.1/AV:L/AC:L/PR:L/UI:N/S:U/C:H/I:H/A:H",
 										V2Score:  7.2,

@@ -17,6 +17,7 @@ import (
 	fos "github.com/aquasecurity/fanal/analyzer/os"
 	ftypes "github.com/aquasecurity/fanal/types"
 	dtypes "github.com/aquasecurity/trivy-db/pkg/types"
+	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/vulnerability"
 	"github.com/aquasecurity/trivy/pkg/report"
 	"github.com/aquasecurity/trivy/pkg/report/cyclonedx"
 	"github.com/aquasecurity/trivy/pkg/types"
@@ -77,27 +78,30 @@ func TestWriter_Write(t *testing.T) {
 								Layer: ftypes.Layer{
 									DiffID: "sha256:d871dadfb37b53ef1ca45be04fc527562b91989991a8f545345ae3be0b93f92a",
 								},
-								SeveritySource: "redhat",
+								SeveritySource: vulnerability.RedHatOVAL,
 								PrimaryURL:     "https://avd.aquasec.com/nvd/cve-2018-20623",
+								DataSource: &dtypes.DataSource{
+									ID:   vulnerability.RedHatOVAL,
+									Name: "Red Hat OVAL v2",
+									URL:  "https://www.redhat.com/security/data/oval/v2/",
+								},
 								Vulnerability: dtypes.Vulnerability{
 									Title:       "binutils: Use-after-free in the error function",
 									Description: "In GNU Binutils 2.31.1, there is a use-after-free in the error function in elfcomm.c when called from the process_archive function in readelf.c via a crafted ELF file.",
-									Severity:    "MEDIUM",
+									Severity:    dtypes.SeverityMedium.String(),
 									VendorSeverity: dtypes.VendorSeverity{
-										"nvd":    2,
-										"redhat": 2,
+										vulnerability.NVD:        dtypes.SeverityMedium,
+										vulnerability.RedHatOVAL: dtypes.SeverityMedium,
 									},
-									CweIDs: []string{
-										"CWE-416",
-									},
+									CweIDs: []string{"CWE-416"},
 									CVSS: dtypes.VendorCVSS{
-										dtypes.SourceID("nvd"): dtypes.CVSS{
+										vulnerability.NVD: dtypes.CVSS{
 											V2Vector: "AV:N/AC:M/Au:N/C:N/I:N/A:P",
 											V3Vector: "CVSS:3.0/AV:L/AC:L/PR:N/UI:R/S:U/C:N/I:N/A:H",
 											V2Score:  4.3,
 											V3Score:  5.5,
 										},
-										dtypes.SourceID("redhat"): dtypes.CVSS{
+										vulnerability.RedHatOVAL: dtypes.CVSS{
 											V3Vector: "CVSS:3.0/AV:L/AC:L/PR:L/UI:N/S:U/C:L/I:L/A:L",
 											V3Score:  5.3,
 										},
@@ -115,7 +119,7 @@ func TestWriter_Write(t *testing.T) {
 					{
 						Target: "app/subproject/Gemfile.lock",
 						Class:  types.ClassLangPkg,
-						Type:   "bundler",
+						Type:   ftypes.Bundler,
 						Packages: []ftypes.Package{
 							{
 								Name:    "actionpack",
@@ -321,10 +325,14 @@ func TestWriter_Write(t *testing.T) {
 				Vulnerabilities: &[]cdx.Vulnerability{
 					{
 						ID: "CVE-2018-20623",
+						Source: &cdx.Source{
+							Name: string(vulnerability.RedHatOVAL),
+							URL:  "https://www.redhat.com/security/data/oval/v2/",
+						},
 						Ratings: &[]cdx.VulnerabilityRating{
 							{
 								Source: &cdx.Source{
-									Name: "nvd",
+									Name: string(vulnerability.NVD),
 									URL:  "",
 								},
 								Score:    4.3,
@@ -334,7 +342,7 @@ func TestWriter_Write(t *testing.T) {
 							},
 							{
 								Source: &cdx.Source{
-									Name: "nvd",
+									Name: string(vulnerability.NVD),
 									URL:  "",
 								},
 								Score:    5.5,
@@ -344,7 +352,7 @@ func TestWriter_Write(t *testing.T) {
 							},
 							{
 								Source: &cdx.Source{
-									Name: "redhat",
+									Name: string(vulnerability.RedHatOVAL),
 									URL:  "",
 								},
 								Score:    5.3,
@@ -391,7 +399,7 @@ func TestWriter_Write(t *testing.T) {
 				Metadata: types.Metadata{
 					Size: 1024,
 					OS: &ftypes.OS{
-						Family: "centos",
+						Family: fos.CentOS,
 						Name:   "8.3.2011",
 						Eosl:   true,
 					},
@@ -455,7 +463,7 @@ func TestWriter_Write(t *testing.T) {
 								SeveritySource:   "ruby-advisory-db",
 								PrimaryURL:       "https://avd.aquasec.com/nvd/cve-2022-23633",
 								DataSource: &dtypes.DataSource{
-									ID:   "ruby-advisory-db",
+									ID:   vulnerability.RubySec,
 									Name: "Ruby Advisory Database",
 									URL:  "https://github.com/rubysec/ruby-advisory-db",
 								},
@@ -464,17 +472,17 @@ func TestWriter_Write(t *testing.T) {
 									Description: "Action Pack is a framework for handling and responding to web requests. Under certain circumstances response bodies will not be closed. In the event a response is *not* notified of a `close`, `ActionDispatch::Executor` will not know to reset thread local state for the next request. This can lead to data being leaked to subsequent requests.This has been fixed in Rails 7.0.2.1, 6.1.4.5, 6.0.4.5, and 5.2.6.1. Upgrading is highly recommended, but to work around this problem a middleware described in GHSA-wh98-p28r-vrc9 can be used.",
 									Severity:    "HIGH",
 									VendorSeverity: dtypes.VendorSeverity{
-										"nvd":    2,
-										"redhat": 2,
+										vulnerability.NVD:    dtypes.SeverityMedium,
+										vulnerability.RedHat: dtypes.SeverityLow,
 									},
 									CVSS: dtypes.VendorCVSS{
-										dtypes.SourceID("nvd"): dtypes.CVSS{
+										vulnerability.NVD: dtypes.CVSS{
 											V2Vector: "AV:N/AC:M/Au:N/C:P/I:N/A:N",
 											V3Vector: "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:H/I:N/A:N",
 											V2Score:  4.3,
 											V3Score:  5.9,
 										},
-										dtypes.SourceID("redhat"): dtypes.CVSS{
+										vulnerability.RedHat: dtypes.CVSS{
 											V3Vector: "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:H/I:N/A:N",
 											V3Score:  5.9,
 										},
@@ -496,22 +504,22 @@ func TestWriter_Write(t *testing.T) {
 								SeveritySource:   "ruby-advisory-db",
 								PrimaryURL:       "https://avd.aquasec.com/nvd/cve-2022-23633",
 								DataSource: &dtypes.DataSource{
-									ID:   "ruby-advisory-db",
+									ID:   vulnerability.RubySec,
 									Name: "Ruby Advisory Database",
 									URL:  "https://github.com/rubysec/ruby-advisory-db",
 								},
 								Vulnerability: dtypes.Vulnerability{
 									Title:       "rubygem-actionpack: information leak between requests",
 									Description: "Action Pack is a framework for handling and responding to web requests. Under certain circumstances response bodies will not be closed. In the event a response is *not* notified of a `close`, `ActionDispatch::Executor` will not know to reset thread local state for the next request. This can lead to data being leaked to subsequent requests.This has been fixed in Rails 7.0.2.1, 6.1.4.5, 6.0.4.5, and 5.2.6.1. Upgrading is highly recommended, but to work around this problem a middleware described in GHSA-wh98-p28r-vrc9 can be used.",
-									Severity:    "HIGH",
+									Severity:    dtypes.SeverityHigh.String(),
 									CVSS: dtypes.VendorCVSS{
-										dtypes.SourceID("nvd"): dtypes.CVSS{
+										vulnerability.NVD: dtypes.CVSS{
 											V2Vector: "AV:N/AC:M/Au:N/C:P/I:N/A:N",
 											V3Vector: "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:H/I:N/A:N",
 											V2Score:  4.3,
 											V3Score:  5.9,
 										},
-										dtypes.SourceID("redhat"): dtypes.CVSS{
+										vulnerability.RedHat: dtypes.CVSS{
 											V3Vector: "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:H/I:N/A:N",
 											V3Score:  5.9,
 										},
@@ -599,7 +607,7 @@ func TestWriter_Write(t *testing.T) {
 					{
 						BOMRef:  "3ff14136-e09f-4df9-80ea-000000000003",
 						Type:    cdx.ComponentTypeOS,
-						Name:    "centos",
+						Name:    fos.CentOS,
 						Version: "8.3.2011",
 						Properties: &[]cdx.Property{
 							{
@@ -675,13 +683,13 @@ func TestWriter_Write(t *testing.T) {
 					{
 						ID: "CVE-2022-23633",
 						Source: &cdx.Source{
-							Name: "ruby-advisory-db",
+							Name: string(vulnerability.RubySec),
 							URL:  "https://github.com/rubysec/ruby-advisory-db",
 						},
 						Ratings: &[]cdx.VulnerabilityRating{
 							{
 								Source: &cdx.Source{
-									Name: "nvd",
+									Name: string(vulnerability.NVD),
 								},
 								Score:    4.3,
 								Severity: cdx.SeverityMedium,
@@ -690,7 +698,7 @@ func TestWriter_Write(t *testing.T) {
 							},
 							{
 								Source: &cdx.Source{
-									Name: "nvd",
+									Name: string(vulnerability.NVD),
 								},
 								Score:    5.9,
 								Severity: cdx.SeverityMedium,
@@ -699,16 +707,16 @@ func TestWriter_Write(t *testing.T) {
 							},
 							{
 								Source: &cdx.Source{
-									Name: "redhat",
+									Name: string(vulnerability.RedHat),
 								},
 								Score:    5.9,
-								Severity: cdx.SeverityMedium,
+								Severity: cdx.SeverityLow,
 								Method:   cdx.ScoringMethodCVSSv31,
 								Vector:   "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:H/I:N/A:N",
 							},
 							{
 								Source: &cdx.Source{
-									Name: "ruby-advisory-db",
+									Name: string(vulnerability.RubySec),
 									URL:  "https://github.com/rubysec/ruby-advisory-db",
 								},
 								Severity: cdx.SeverityHigh,
@@ -977,9 +985,7 @@ func TestWriter_Write(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			var count int
 			newUUID := func() uuid.UUID {
-
 				count++
-
 				return uuid.Must(uuid.Parse(fmt.Sprintf("3ff14136-e09f-4df9-80ea-%012d", count)))
 			}
 

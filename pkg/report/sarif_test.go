@@ -44,8 +44,8 @@ func TestReportWriter_Sarif(t *testing.T) {
 								Description: "baz",
 								Severity:    "HIGH",
 								VendorSeverity: map[dbTypes.SourceID]dbTypes.Severity{
-									"nvd":    4,
-									"redhat": 3,
+									vulnerability.NVD:    dbTypes.SeverityCritical,
+									vulnerability.RedHat: dbTypes.SeverityHigh,
 								},
 								CVSS: map[dbTypes.SourceID]dbTypes.CVSS{
 									vulnerability.NVD: {

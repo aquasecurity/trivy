@@ -8,6 +8,7 @@ import (
 	"github.com/stretchr/testify/assert"
 
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
+	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/vulnerability"
 	"github.com/aquasecurity/trivy/pkg/report"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
@@ -32,7 +33,7 @@ func TestReportWriter_JSON(t *testing.T) {
 						Description: "baz",
 						Severity:    "HIGH",
 						VendorSeverity: map[dbTypes.SourceID]dbTypes.Severity{
-							"nvd": 3,
+							vulnerability.NVD: dbTypes.SeverityHigh,
 						},
 					},
 				},

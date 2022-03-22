@@ -76,7 +76,7 @@ func TestClient_FillVulnerabilityInfo(t *testing.T) {
 						Description: "dos vulnerability",
 						Severity:    dbTypes.SeverityLow.String(),
 						VendorSeverity: dbTypes.VendorSeverity{
-							"nvd": 1,
+							vulnerability.NVD: dbTypes.SeverityLow,
 						},
 						References:       []string{"http://example.com"},
 						LastModifiedDate: utils.MustTimeParse("2020-01-01T01:01:00Z"),
@@ -150,7 +150,7 @@ func TestClient_FillVulnerabilityInfo(t *testing.T) {
 						Description: "dos vulnerability",
 						Severity:    dbTypes.SeverityLow.String(),
 						VendorSeverity: dbTypes.VendorSeverity{
-							"redhat": 1,
+							vulnerability.RedHat: dbTypes.SeverityLow,
 						},
 						CweIDs:     []string{"CWE-311"},
 						References: []string{"http://example.com"},
@@ -203,7 +203,7 @@ func TestClient_FillVulnerabilityInfo(t *testing.T) {
 						Description: "a nasty virus vulnerability for humans",
 						Severity:    dbTypes.SeverityCritical.String(),
 						VendorSeverity: dbTypes.VendorSeverity{
-							"ghsa": 4,
+							vulnerability.GHSA: dbTypes.SeverityCritical,
 						},
 						References: []string{"https://www.who.int/emergencies/diseases/novel-coronavirus-2019"},
 					},

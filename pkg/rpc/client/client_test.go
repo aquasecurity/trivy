@@ -16,6 +16,7 @@ import (
 	ftypes "github.com/aquasecurity/fanal/types"
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy-db/pkg/utils"
+	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/vulnerability"
 	"github.com/aquasecurity/trivy/pkg/types"
 	"github.com/aquasecurity/trivy/rpc/common"
 	rpc "github.com/aquasecurity/trivy/rpc/scanner"
@@ -72,8 +73,8 @@ func TestScanner_Scan(t *testing.T) {
 								References:       []string{"http://exammple.com"},
 								SeveritySource:   "nvd",
 								VendorSeverity: map[string]common.Severity{
-									"nvd":    2,
-									"redhat": 2,
+									string(vulnerability.NVD):    common.Severity_MEDIUM,
+									string(vulnerability.RedHat): common.Severity_MEDIUM,
 								},
 								Cvss: map[string]*common.CVSS{
 									"nvd": {
@@ -119,8 +120,8 @@ func TestScanner_Scan(t *testing.T) {
 								Severity:    "CRITICAL",
 								References:  []string{"http://exammple.com"},
 								VendorSeverity: dbTypes.VendorSeverity{
-									"nvd":    2,
-									"redhat": 2,
+									vulnerability.NVD:    dbTypes.SeverityMedium,
+									vulnerability.RedHat: dbTypes.SeverityMedium,
 								},
 								CVSS: dbTypes.VendorCVSS{
 									"nvd": {
