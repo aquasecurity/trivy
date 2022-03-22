@@ -15,6 +15,7 @@ import (
 
 	ftypes "github.com/aquasecurity/fanal/types"
 	dtypes "github.com/aquasecurity/trivy-db/pkg/types"
+	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/vulnerability"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/purl"
 	"github.com/aquasecurity/trivy/pkg/scanner/utils"
@@ -429,7 +430,7 @@ func cwes(cweIDs []string) *[]int {
 	for _, cweID := range cweIDs {
 		number, err := strconv.Atoi(strings.TrimPrefix(strings.ToLower(cweID), "cwe-"))
 		if err != nil {
-			log.Logger.Debugf("cwe id parse error: %s", err.Error())
+			log.Logger.Debugf("cwe id parse error: %s", err)
 			continue
 		}
 		ret = append(ret, number)
@@ -439,52 +440,27 @@ func cwes(cweIDs []string) *[]int {
 
 func ratings(vulnerability types.DetectedVulnerability) *[]cdx.VulnerabilityRating {
 	var rates []cdx.VulnerabilityRating
-	for sourceID, cvss := range vulnerability.CVSS {
-		if cvss.V3Score != 0 || cvss.V3Vector != "" {
+	for sourceID, severity := range vulnerability.VendorSeverity {
+		// When the vendor also provides CVSS score/vector
+		if cvss, ok := vulnerability.CVSS[sourceID]; ok {
+			if cvss.V2Score != 0 || cvss.V2Vector != "" {
+				rates = append(rates, ratingV2(sourceID, severity, cvss))
+			}
+			if cvss.V3Score != 0 || cvss.V3Vector != "" {
+				rates = append(rates, ratingV3(sourceID, severity, cvss))
+			}
+		} else { // When the vendor provides only severity
 			rate := cdx.VulnerabilityRating{
 				Source: &cdx.Source{
 					Name: string(sourceID),
 				},
-				Score:    cvss.V3Score,
-				Method:   cdx.ScoringMethodCVSSv3,
-				Severity: severity(vulnerability.VendorSeverity[sourceID]),
-				Vector:   cvss.V3Vector,
-			}
-			if strings.HasPrefix(cvss.V3Vector, "CVSS:3.1") {
-				rate.Method = cdx.ScoringMethodCVSSv31
-			}
-			rates = append(rates, rate)
-		}
-		if cvss.V2Score != 0 || cvss.V2Vector != "" {
-			rate := cdx.VulnerabilityRating{
-				Source: &cdx.Source{
-					Name: string(sourceID),
-				},
-				Score:    cvss.V2Score,
-				Method:   cdx.ScoringMethodCVSSv2,
-				Severity: severity(vulnerability.VendorSeverity[sourceID]),
-				Vector:   cvss.V2Vector,
-			}
-			rates = append(rates, rate)
-		}
-	}
-	if vulnerability.DataSource != nil {
-		if _, ok := vulnerability.CVSS[vulnerability.DataSource.ID]; !ok {
-			s, err := dtypes.NewSeverity(vulnerability.Severity)
-			if err != nil {
-				log.Logger.Debugf("unknown severity from datastore: %s", err.Error())
-			}
-			rate := cdx.VulnerabilityRating{
-				Source: &cdx.Source{
-					Name: string(vulnerability.DataSource.ID),
-					URL:  vulnerability.DataSource.URL,
-				},
-				Severity: severity(s),
+				Severity: toCDXSeverity(severity),
 			}
 			rates = append(rates, rate)
 		}
 	}
 
+	// For consistency
 	sort.Slice(rates, func(i, j int) bool {
 		if rates[i].Source.Name != rates[j].Source.Name {
 			return rates[i].Source.Name < rates[j].Source.Name
@@ -497,7 +473,55 @@ func ratings(vulnerability types.DetectedVulnerability) *[]cdx.VulnerabilityRati
 	return &rates
 }
 
-func severity(s dtypes.Severity) cdx.Severity {
+func ratingV2(sourceID dtypes.SourceID, severity dtypes.Severity, cvss dtypes.CVSS) cdx.VulnerabilityRating {
+	cdxSeverity := toCDXSeverity(severity)
+
+	// Trivy keeps only CVSSv3 severity for NVD.
+	// The CVSSv2 severity must be calculated according to CVSSv2 score.
+	if sourceID == vulnerability.NVD {
+		cdxSeverity = nvdSeverityV2(cvss.V2Score)
+	}
+	return cdx.VulnerabilityRating{
+		Source: &cdx.Source{
+			Name: string(sourceID),
+		},
+		Score:    cvss.V2Score,
+		Method:   cdx.ScoringMethodCVSSv2,
+		Severity: cdxSeverity,
+		Vector:   cvss.V2Vector,
+	}
+}
+
+func nvdSeverityV2(score float64) cdx.Severity {
+	// cf. https://nvd.nist.gov/vuln-metrics/cvss
+	switch {
+	case score < 4.0:
+		return cdx.SeverityInfo
+	case 4.0 <= score && score < 7.0:
+		return cdx.SeverityMedium
+	case 7.0 <= score:
+		return cdx.SeverityHigh
+	}
+	return cdx.SeverityUnknown
+}
+
+func ratingV3(sourceID dtypes.SourceID, severity dtypes.Severity, cvss dtypes.CVSS) cdx.VulnerabilityRating {
+	rate := cdx.VulnerabilityRating{
+		Source: &cdx.Source{
+			Name: string(sourceID),
+		},
+		Score:    cvss.V3Score,
+		Method:   cdx.ScoringMethodCVSSv3,
+		Severity: toCDXSeverity(severity),
+		Vector:   cvss.V3Vector,
+	}
+	if strings.HasPrefix(cvss.V3Vector, "CVSS:3.1") {
+		rate.Method = cdx.ScoringMethodCVSSv31
+	}
+	return rate
+}
+
+func toCDXSeverity(s dtypes.Severity) cdx.Severity {
 	switch s {
 	case dtypes.SeverityLow:
 		return cdx.SeverityLow
