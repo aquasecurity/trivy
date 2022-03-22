@@ -149,14 +149,14 @@ func (cw *Writer) parseComponents(r types.Report, bomRef string) (*[]cdx.Compone
 	vulnMap := map[string]cdx.Vulnerability{}
 	for _, result := range r.Results {
 		var componentDependencies []cdx.Dependency
-		purlMap := map[string]string{}
+		bomRefMap := map[string]string{}
 		for _, pkg := range result.Packages {
 			pkgComponent, err := cw.pkgToComponent(result.Type, r.Metadata, pkg)
 			if err != nil {
 				return nil, nil, nil, xerrors.Errorf("failed to parse pkg: %w", err)
 			}
-			if _, ok := purlMap[pkg.Name+utils.FormatVersion(pkg)+pkg.FilePath]; !ok {
-				purlMap[pkg.Name+utils.FormatVersion(pkg)+pkg.FilePath] = pkgComponent.BOMRef
+			if _, ok := bomRefMap[pkg.Name+utils.FormatVersion(pkg)+pkg.FilePath]; !ok {
+				bomRefMap[pkg.Name+utils.FormatVersion(pkg)+pkg.FilePath] = pkgComponent.BOMRef
 			}
 
 			// When multiple lock files have the same dependency with the same name and version,
@@ -183,17 +183,17 @@ func (cw *Writer) parseComponents(r types.Report, bomRef string) (*[]cdx.Compone
 			componentDependencies = append(componentDependencies, cdx.Dependency{Ref: pkgComponent.BOMRef})
 		}
 		for _, vuln := range result.Vulnerabilities {
+			// Take a bom-ref
+			ref := bomRefMap[vuln.PkgName+vuln.InstalledVersion+vuln.PkgPath]
 			if v, ok := vulnMap[vuln.VulnerabilityID]; ok {
 				// If a vulnerability depends on multiple packages,
 				// it will be commonised into a single vulnerability.
 				//   Vulnerability component (CVE-2020-26247)
 				//     -> Library component (nokogiri /srv/app1/vendor/bundle/ruby/3.0.0/specifications/nokogiri-1.10.0.gemspec)
 				//     -> Library component (nokogiri /srv/app2/vendor/bundle/ruby/3.0.0/specifications/nokogiri-1.10.0.gemspec)
-				*v.Affects = append(*v.Affects,
-					affects(purlMap[vuln.PkgName+vuln.InstalledVersion+vuln.PkgPath], vuln.InstalledVersion),
-				)
+				*v.Affects = append(*v.Affects, affects(ref, vuln.InstalledVersion))
 			} else {
-				vulnMap[vuln.VulnerabilityID] = cw.vulnerability(vuln, purlMap)
+				vulnMap[vuln.VulnerabilityID] = cw.vulnerability(vuln, ref)
 			}
 		}
 
@@ -251,7 +251,7 @@ func (cw *Writer) parseComponents(r types.Report, bomRef string) (*[]cdx.Compone
 	return &components, &dependencies, &vulns, nil
 }
 
-func (cw *Writer) vulnerability(vuln types.DetectedVulnerability, purlMap map[string]string) cdx.Vulnerability {
+func (cw *Writer) vulnerability(vuln types.DetectedVulnerability, bomRef string) cdx.Vulnerability {
 	v := cdx.Vulnerability{
 		ID:          vuln.VulnerabilityID,
 		Source:      source(vuln.DataSource),
@@ -266,11 +266,8 @@ func (cw *Writer) vulnerability(vuln types.DetectedVulnerability, purlMap map[st
 	if vuln.LastModifiedDate != nil {
 		v.Updated = vuln.LastModifiedDate.String()
 	}
-	if p, ok := purlMap[vuln.PkgName+vuln.InstalledVersion+vuln.PkgPath]; ok {
-		v.Affects = &[]cdx.Affects{
-			affects(p, vuln.InstalledVersion),
-		}
-	}
+
+	v.Affects = &[]cdx.Affects{affects(bomRef, vuln.InstalledVersion)}
 
 	return v
 }
@@ -526,12 +523,12 @@ func source(source *dtypes.DataSource) *cdx.Source {
 	}
 }
 
-func affects(ps string, v string) cdx.Affects {
+func affects(ref, version string) cdx.Affects {
 	return cdx.Affects{
-		Ref: ps,
+		Ref: ref,
 		Range: &[]cdx.AffectedVersions{
 			{
-				Version: v,
+				Version: version,
 				Status:  cdx.VulnerabilityStatusAffected,
 				// "AffectedVersions.Range" is not included, because it does not exist in DetectedVulnerability.
 			},
