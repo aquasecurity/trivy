@@ -187,8 +187,8 @@ func (cw *Writer) parseComponents(r types.Report, bomRef string) (*[]cdx.Compone
 				// If a vulnerability depends on multiple packages,
 				// it will be commonised into a single vulnerability.
 				//   Vulnerability component (CVE-2020-26247)
-				//     -> Library component (nokogiri /srv/app1/vendor/bundle/ruby/3.0.0/specifications/app1-0.0.1.gemspec)
-				//     -> Library component (nokogiri /srv/app2/vendor/bundle/ruby/3.0.0/specifications/app2-0.0.1.gemspec)
+				//     -> Library component (nokogiri /srv/app1/vendor/bundle/ruby/3.0.0/specifications/nokogiri-1.10.0.gemspec)
+				//     -> Library component (nokogiri /srv/app2/vendor/bundle/ruby/3.0.0/specifications/nokogiri-1.10.0.gemspec)
 				*v.Affects = append(*v.Affects,
 					affects(purlMap[vuln.PkgName+vuln.InstalledVersion+vuln.PkgPath], vuln.InstalledVersion),
 				)
