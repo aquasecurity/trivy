@@ -61,3 +61,12 @@ func (c RemoteCache) MissingBlobs(imageID string, layerIDs []string) (bool, []st
 	}
 	return layers.MissingArtifact, layers.MissingBlobIds, nil
 }
+
+// DeleteBlob removes blob by Id from RemoteCache
+func (c RemoteCache) DeleteBlob(blobID string) error {
+	_, err := c.client.DeleteBlob(c.ctx, rpc.ConvertToDeleteBlobRequest(blobID))
+	if err != nil {
+		return xerrors.Errorf("unable to store cache on the server: %w", err)
+	}
+	return nil
+}
