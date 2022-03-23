@@ -764,6 +764,9 @@ func NewSbomCommand() *cli.Command {
 			&ignoreFileFlag,
 			&timeoutFlag,
 			&severityFlag,
+			&offlineScan,
+			stringSliceFlag(skipFiles),
+			stringSliceFlag(skipDirs),
 
 			// dedicated options
 			&cli.StringFlag{
