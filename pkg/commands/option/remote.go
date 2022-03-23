@@ -58,6 +58,7 @@ func (c *RemoteOption) Init(logger *zap.SugaredLogger) {
 		case c.tokenHeader != "" && c.tokenHeader != DefaultTokenHeader:
 			logger.Warn(`'--token-header' can be used only with '--server'`)
 		}
+		return
 	}
 
 	c.CustomHeaders = splitCustomHeaders(c.customHeaders)
