@@ -15,15 +15,12 @@ import (
 	"github.com/aquasecurity/trivy/pkg/log"
 )
 
-const (
-	dbRepository = "ghcr.io/aquasecurity/trivy-db"
-	dbMediaType  = "application/vnd.aquasec.trivy.db.layer.v1.tar+gzip"
-)
+const dbMediaType = "application/vnd.aquasec.trivy.db.layer.v1.tar+gzip"
 
 // Operation defines the DB operations
 type Operation interface {
 	NeedsUpdate(cliVersion string, skip bool) (need bool, err error)
-	Download(ctx context.Context, dst string) (err error)
+	Download(ctx context.Context, dst string, dbRepository string) (err error)
 }
 
 type options struct {
@@ -132,13 +129,13 @@ func (c *Client) isNewDB(meta metadata.Metadata) bool {
 }
 
 // Download downloads the DB file
-func (c *Client) Download(ctx context.Context, dst string) error {
+func (c *Client) Download(ctx context.Context, dst string, dbRepository string) error {
 	// Remove the metadata file under the cache directory before downloading DB
 	if err := c.metadata.Delete(); err != nil {
 		log.Logger.Debug("no metadata file")
 	}
 
-	if err := c.populateOCIArtifact(); err != nil {
+	if err := c.populateOCIArtifact(dbRepository); err != nil {
 		return xerrors.Errorf("OCI artifact error: %w", err)
 	}
 
@@ -171,7 +168,7 @@ func (c *Client) updateDownloadedAt(dst string) error {
 	return nil
 }
 
-func (c *Client) populateOCIArtifact() error {
+func (c *Client) populateOCIArtifact(dbRepository string) error {
 	if c.artifact == nil {
 		repo := fmt.Sprintf("%s:%d", dbRepository, db.SchemaVersion)
 		art, err := oci.NewArtifact(repo, dbMediaType, c.quiet)

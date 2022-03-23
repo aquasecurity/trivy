@@ -95,7 +95,7 @@ func (c Cache) ClearArtifacts() error {
 }
 
 // DownloadDB downloads the DB
-func DownloadDB(appVersion, cacheDir string, quiet, skipUpdate bool) error {
+func DownloadDB(appVersion, cacheDir, dbRepository string, quiet, skipUpdate bool) error {
 	client := db.NewClient(cacheDir, quiet)
 	ctx := context.Background()
 	needsUpdate, err := client.NeedsUpdate(appVersion, skipUpdate)
@@ -106,7 +106,8 @@ func DownloadDB(appVersion, cacheDir string, quiet, skipUpdate bool) error {
 	if needsUpdate {
 		log.Logger.Info("Need to update DB")
 		log.Logger.Info("Downloading DB...")
-		if err = client.Download(ctx, cacheDir); err != nil {
+		log.Logger.Infof("Repository: %s", dbRepository)
+		if err = client.Download(ctx, cacheDir, dbRepository); err != nil {
 			return xerrors.Errorf("failed to download vulnerability DB: %w", err)
 		}
 	}

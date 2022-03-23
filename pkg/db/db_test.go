@@ -197,6 +197,7 @@ func TestClient_Download(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			cacheDir := t.TempDir()
+			dbRepository := "ghcr.io/aquasecurity/trivy-db"
 
 			// Mock image
 			img := new(fakei.FakeImage)
@@ -207,7 +208,7 @@ func TestClient_Download(t *testing.T) {
 			require.NoError(t, err)
 
 			client := db.NewClient(cacheDir, true, db.WithOCIArtifact(art), db.WithClock(timeDownloadedAt))
-			err = client.Download(context.Background(), cacheDir)
+			err = client.Download(context.Background(), cacheDir, dbRepository)
 			if tt.wantErr != "" {
 				require.Error(t, err)
 				assert.Contains(t, err.Error(), tt.wantErr)

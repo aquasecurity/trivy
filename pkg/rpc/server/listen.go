@@ -23,6 +23,7 @@ import (
 )
 
 const updateInterval = 1 * time.Hour
+const dbRepository = "ghcr.io/aquasecurity/trivy-db"
 
 // Server represents Trivy server
 type Server struct {
@@ -142,7 +143,7 @@ func (w dbWorker) hotUpdate(ctx context.Context, cacheDir string, dbUpdateWg, re
 	}
 	defer os.RemoveAll(tmpDir)
 
-	if err = w.dbClient.Download(ctx, tmpDir); err != nil {
+	if err = w.dbClient.Download(ctx, tmpDir, dbRepository); err != nil {
 		return xerrors.Errorf("failed to download vulnerability DB: %w", err)
 	}
 
