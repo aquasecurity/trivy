@@ -739,10 +739,25 @@ func NewPluginCommand() *cli.Command {
 // NewSbomCommand is the factory method to add sbom command
 func NewSbomCommand() *cli.Command {
 	return &cli.Command{
-		Name:      "sbom",
-		ArgsUsage: "ARTIFACT",
-		Usage:     "generate SBOM for an artifact",
-		Action:    artifact.SbomRun,
+		Name:        "sbom",
+		ArgsUsage:   "ARTIFACT",
+		Usage:       "generate SBOM for an artifact",
+		Description: `ARTIFACT can be a container image, file path/directory, git repository or container image archive. See examples.`,
+		CustomHelpTemplate: cli.CommandHelpTemplate + `EXAMPLES:
+  - image scanning:
+      $ trivy sbom alpine:3.15
+
+  - filesystem scanning:
+      $ trivy sbom --artifact-type fs /path/to/myapp
+
+  - git repository scanning:
+      $ trivy sbom --artifact-type repo github.com/aquasecurity/trivy-ci-test
+
+  - image archive scanning:
+      $ trivy sbom --artifact-type archive ./alpine.tar
+
+`,
+		Action: artifact.SbomRun,
 		Flags: []cli.Flag{
 			&outputFlag,
 			&clearCacheFlag,
