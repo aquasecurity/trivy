@@ -102,6 +102,10 @@ func ConvertToRPCVulns(vulns []types.DetectedVulnerability) []*common.Vulnerabil
 				V3Score:  vendorSeverity.V3Score,
 			}
 		}
+		vensorSeverityMap := make(map[string]common.Severity)
+		for vendor, vendorSeverity := range vuln.VendorSeverity {
+			vensorSeverityMap[string(vendor)] = common.Severity(vendorSeverity)
+		}
 
 		var lastModifiedDate, publishedDate *timestamp.Timestamp
 		if vuln.LastModifiedDate != nil {
@@ -129,6 +133,7 @@ func ConvertToRPCVulns(vulns []types.DetectedVulnerability) []*common.Vulnerabil
 			Title:              vuln.Title,
 			Description:        vuln.Description,
 			Severity:           common.Severity(severity),
+			VendorSeverity:     vensorSeverityMap,
 			References:         vuln.References,
 			Layer:              ConvertToRPCLayer(vuln.Layer),
 			Cvss:               cvssMap,
@@ -240,6 +245,10 @@ func ConvertFromRPCVulns(rpcVulns []*common.Vulnerability) []types.DetectedVulne
 				V3Score:  vendorSeverity.V3Score,
 			}
 		}
+		vensorSeverityMap := make(dbTypes.VendorSeverity)
+		for vendor, vendorSeverity := range vuln.VendorSeverity {
+			vensorSeverityMap[dbTypes.SourceID(vendor)] = dbTypes.Severity(vendorSeverity)
+		}
 
 		var lastModifiedDate, publishedDate *time.Time
 		if vuln.LastModifiedDate != nil {
@@ -267,6 +276,7 @@ func ConvertFromRPCVulns(rpcVulns []*common.Vulnerability) []types.DetectedVulne
 				LastModifiedDate: lastModifiedDate,
 				PublishedDate:    publishedDate,
 				Custom:           vuln.CustomVulnData.AsInterface(),
+				VendorSeverity:   vensorSeverityMap,
 			},
 			Layer:          ConvertFromRPCLayer(vuln.Layer),
 			SeveritySource: dbTypes.SourceID(vuln.SeveritySource),
