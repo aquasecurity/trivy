@@ -2,6 +2,7 @@ package artifact
 
 import (
 	"github.com/urfave/cli/v2"
+	"golang.org/x/exp/maps"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/fanal/analyzer"
@@ -11,23 +12,32 @@ import (
 type ArtifactType string
 
 const (
-	ContainerImageArtifact ArtifactType = "image"
-	PackageArtifact        ArtifactType = "fs"
-	DockerArchiveArtifact  ArtifactType = "archive"
+	containerImageArtifact ArtifactType = "image"
+	filesystemArtifact     ArtifactType = "fs"
+	repositoryArtifact     ArtifactType = "repo"
+	imageArchiveArtifact   ArtifactType = "archive"
 )
 
-var ArtifactTypes = []ArtifactType{ContainerImageArtifact, PackageArtifact, DockerArchiveArtifact}
-
-var artifactTypeToScanner = map[ArtifactType]InitializeScanner{
-	ContainerImageArtifact: dockerScanner,
-	PackageArtifact:        filesystemScanner,
-	DockerArchiveArtifact:  archiveScanner,
-}
-
-var artifactTypeToDisabledAnalyzers = map[ArtifactType][]analyzer.Type{
-	ContainerImageArtifact: analyzer.TypeLockfiles,
-	PackageArtifact:        analyzer.TypeIndividualPkgs,
-	DockerArchiveArtifact:  analyzer.TypeLockfiles,
+var artifactTypes = map[ArtifactType]struct {
+	initializer      InitializeScanner
+	disableAnalyzers []analyzer.Type
+}{
+	containerImageArtifact: {
+		initializer:      imageScanner,
+		disableAnalyzers: analyzer.TypeLockfiles,
+	},
+	filesystemArtifact: {
+		initializer:      filesystemStandaloneScanner,
+		disableAnalyzers: analyzer.TypeIndividualPkgs,
+	},
+	repositoryArtifact: {
+		initializer:      repositoryScanner,
+		disableAnalyzers: analyzer.TypeIndividualPkgs,
+	},
+	imageArchiveArtifact: {
+		initializer:      archiveScanner,
+		disableAnalyzers: analyzer.TypeLockfiles,
+	},
 }
 
 // SbomRun runs generates sbom for image and package artifacts
@@ -37,16 +47,16 @@ func SbomRun(ctx *cli.Context) error {
 		return xerrors.Errorf("option error: %w", err)
 	}
 
-	artifactType := opt.ArtifactOption.Type
-
-	if err != nil {
-		return err
+	artifactType := opt.SbomOption.ArtifactType
+	s, ok := artifactTypes[ArtifactType(artifactType)]
+	if !ok {
+		return xerrors.Errorf(`"--artifact-type" must be %q`, maps.Keys(artifactTypes))
 	}
 
 	// Scan the relevant dependencies
-	opt.DisabledAnalyzers = artifactTypeToDisabledAnalyzers[ArtifactType(artifactType)]
+	opt.DisabledAnalyzers = s.disableAnalyzers
 	opt.ReportOption.VulnType = []string{types.VulnTypeOS, types.VulnTypeLibrary}
 	opt.ReportOption.SecurityChecks = []string{types.SecurityCheckVulnerability}
 
-	return Run(ctx.Context, opt, artifactTypeToScanner[ArtifactType(artifactType)], initFSCache)
+	return Run(ctx.Context, opt, s.initializer, initCache)
 }
