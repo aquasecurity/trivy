@@ -44,22 +44,6 @@ var (
 		EnvVars: []string{"TRIVY_FORMAT"},
 	}
 
-	sbomFormatFlag = cli.StringFlag{
-		Name:    "format",
-		Aliases: []string{"f"},
-		Value:   "cyclonedx",
-		Usage:   "format (cyclonedx)",
-		EnvVars: []string{"TRIVY_SBOM_FORMAT"},
-	}
-
-	artifactType = cli.StringFlag{
-		Name:    "type",
-		Aliases: []string{"t"},
-		Value:   "image",
-		Usage:   "input artifact type (image, fs, archive)",
-		EnvVars: []string{"TRIVY_ARTIFACT_TYPE"},
-	}
-
 	inputFlag = cli.StringFlag{
 		Name:    "input",
 		Aliases: []string{"i"},
@@ -555,26 +539,6 @@ func NewRootfsCommand() *cli.Command {
 	}
 }
 
-// NewSbomCommand is the factory method to add sbom command
-func NewSbomCommand() *cli.Command {
-	return &cli.Command{
-		Name:      "sbom",
-		ArgsUsage: "ARTIFACT",
-		Usage:     "generate sbom for an artifact",
-		Description: fmt.Sprintf(`"ARTIFACT" uses the "type":"path" format.
-		Supported types: %s`, artifact.ArtifactTypes),
-		Action: artifact.SbomRun,
-		Flags: []cli.Flag{
-			&sbomFormatFlag,
-			&outputFlag,
-			&artifactType,
-			&clearCacheFlag,
-			&ignoreFileFlag,
-			&timeoutFlag,
-		},
-	}
-}
-
 // NewRepositoryCommand is the factory method to add repository command
 func NewRepositoryCommand() *cli.Command {
 	return &cli.Command{
@@ -767,6 +731,39 @@ func NewPluginCommand() *cli.Command {
 				Usage:     "update an existing plugin",
 				ArgsUsage: "PLUGIN_NAME",
 				Action:    plugin.Update,
+			},
+		},
+	}
+}
+
+// NewSbomCommand is the factory method to add sbom command
+func NewSbomCommand() *cli.Command {
+	return &cli.Command{
+		Name:      "sbom",
+		ArgsUsage: "ARTIFACT",
+		Usage:     "generate SBOM for an artifact",
+		Action:    artifact.SbomRun,
+		Flags: []cli.Flag{
+			&outputFlag,
+			&clearCacheFlag,
+			&ignoreFileFlag,
+			&timeoutFlag,
+			&severityFlag,
+
+			// dedicated options
+			&cli.StringFlag{
+				Name:    "artifact-type",
+				Aliases: []string{"type"},
+				Value:   "image",
+				Usage:   "input artifact type (image, fs, repo, archive)",
+				EnvVars: []string{"TRIVY_ARTIFACT_TYPE"},
+			},
+			&cli.StringFlag{
+				Name:    "sbom-format",
+				Aliases: []string{"format"},
+				Value:   "cyclonedx",
+				Usage:   "SBOM format (cyclonedx)",
+				EnvVars: []string{"TRIVY_SBOM_FORMAT"},
 			},
 		},
 	}
