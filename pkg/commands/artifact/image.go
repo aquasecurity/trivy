@@ -74,6 +74,10 @@ func ImageRun(ctx *cli.Context) error {
 		return xerrors.Errorf("option error: %w", err)
 	}
 
+	if ctx.Command.Name == "client" {
+		opt.Logger.Warn("`client` is deprecated now. You need to use `--server` option for `image` command.")
+	}
+
 	// Disable the lock file scanning
 	opt.DisabledAnalyzers = analyzer.TypeLockfiles
 
