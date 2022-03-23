@@ -19,6 +19,10 @@ import (
 	"github.com/aquasecurity/trivy/pkg/types"
 )
 
+///////////////
+// Standalone
+///////////////
+
 // StandaloneSuperSet is used in the standalone mode
 var StandaloneSuperSet = wire.NewSet(
 	local.SuperSet,
@@ -52,22 +56,33 @@ var StandaloneRepositorySet = wire.NewSet(
 	StandaloneSuperSet,
 )
 
+/////////////////
+// Client/Server
+/////////////////
+
 // RemoteSuperSet is used in the client mode
 var RemoteSuperSet = wire.NewSet(
-	aimage.NewArtifact,
-	client.SuperSet,
+	client.NewScanner,
 	wire.Bind(new(Driver), new(client.Scanner)),
 	NewScanner,
 )
 
+// RemoteFilesystemSet binds filesystem dependencies for client/server mode
+var RemoteFilesystemSet = wire.NewSet(
+	flocal.NewArtifact,
+	RemoteSuperSet,
+)
+
 // RemoteDockerSet binds remote docker dependencies
 var RemoteDockerSet = wire.NewSet(
+	aimage.NewArtifact,
 	image.NewDockerImage,
 	RemoteSuperSet,
 )
 
 // RemoteArchiveSet binds remote archive dependencies
 var RemoteArchiveSet = wire.NewSet(
+	aimage.NewArtifact,
 	image.NewArchiveImage,
 	RemoteSuperSet,
 )

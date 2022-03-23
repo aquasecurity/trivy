@@ -73,6 +73,7 @@ nav:
       - Plugins: advanced/plugins.md
       - Air-Gapped Environment: advanced/air-gap.md
       - SBOM:
+          - Overview: advanced/sbom/index.md
           - CycloneDX: advanced/sbom/cyclonedx.md
       - Integrations:
           - Overview: advanced/integrations/index.md

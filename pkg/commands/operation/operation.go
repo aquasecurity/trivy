@@ -56,6 +56,8 @@ func NewCache(c option.CacheOption) (Cache, error) {
 		redisCache := cache.NewRedisCache(options)
 		return Cache{Cache: redisCache}, nil
 	}
+
+	// standalone mode
 	fsCache, err := cache.NewFSCache(utils.CacheDir())
 	if err != nil {
 		return Cache{}, xerrors.Errorf("unable to initialize fs cache: %w", err)

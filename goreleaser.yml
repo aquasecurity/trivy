@@ -198,7 +198,17 @@ docker_manifests:
     - 'ghcr.io/aquasecurity/trivy:{{ .Version }}-arm64'
     - 'ghcr.io/aquasecurity/trivy:{{ .Version }}-s390x'
   - name_template: 'public.ecr.aws/aquasecurity/trivy:latest'
-    image_templates: 
+    image_templates:
     - 'public.ecr.aws/aquasecurity/trivy:{{ .Version }}-amd64'
     - 'public.ecr.aws/aquasecurity/trivy:{{ .Version }}-arm64'
     - 'public.ecr.aws/aquasecurity/trivy:{{ .Version }}-s390x'
+
+docker_signs:
+- cmd: cosign
+  env:
+  - COSIGN_EXPERIMENTAL=1
+  artifacts: manifests
+  output: true
+  args:
+  - 'sign'
+  - '${artifact}'
