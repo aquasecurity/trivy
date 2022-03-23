@@ -9,7 +9,7 @@ To generate SBOM, you can use the `--format` option for each subcommand such as 
 $ trivy image --format cyclonedx --output result.json alpine:3.15
 ```
 
-Also, you can use the `trivy sbom` subcommand.
+In addition, you can use the `trivy sbom` subcommand.
 
 ```
 $ trivy sbom alpine:3.15
@@ -174,5 +174,18 @@ $ trivy sbom alpine:3.15
 ```
 
 </details>
+
+`fs`, `repo` and `archive` also work with `sbom` subcommand.
+
+```
+# filesystem
+$ trivy sbom --artifact-type fs /path/to/project
+
+# repository
+$ trivy sbom --artifact-type repo github.com/aquasecurity/trivy-ci-test
+
+# container image archive
+$ trivy sbom --artifact-type archive alpine.tar
+```
 
 [cyclonedx]: cyclonedx.md
