@@ -112,7 +112,7 @@ func (s Scanner) ScanArtifact(ctx context.Context, options types.ScanOptions) (t
 	}
 	defer func() {
 		if err := s.artifact.Clean(artifactInfo); err != nil {
-			log.Logger.Warnf("The artifact %q wasn't removed: %v", artifactInfo.Name, err)
+			log.Logger.Warnf("Failed to clean the artifact %q: %v", artifactInfo.Name, err)
 		}
 	}()
 

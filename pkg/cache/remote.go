@@ -66,7 +66,7 @@ func (c RemoteCache) MissingBlobs(imageID string, layerIDs []string) (bool, []st
 func (c RemoteCache) DeleteBlobs(blobIDs []string) error {
 	_, err := c.client.DeleteBlobs(c.ctx, rpc.ConvertToDeleteBlobsRequest(blobIDs))
 	if err != nil {
-		return xerrors.Errorf("unable to store cache on the server: %w", err)
+		return xerrors.Errorf("unable to delete blobs on the server: %w", err)
 	}
 	return nil
 }
