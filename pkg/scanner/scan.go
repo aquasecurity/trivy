@@ -10,7 +10,6 @@ import (
 	aimage "github.com/aquasecurity/fanal/artifact/image"
 	flocal "github.com/aquasecurity/fanal/artifact/local"
 	"github.com/aquasecurity/fanal/artifact/remote"
-	"github.com/aquasecurity/fanal/cache"
 	"github.com/aquasecurity/fanal/image"
 	ftypes "github.com/aquasecurity/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
@@ -106,11 +105,16 @@ func NewScanner(driver Driver, ar artifact.Artifact) Scanner {
 }
 
 // ScanArtifact scans the artifacts and returns results
-func (s Scanner) ScanArtifact(ctx context.Context, options types.ScanOptions, ac cache.ArtifactCache) (types.Report, error) {
+func (s Scanner) ScanArtifact(ctx context.Context, options types.ScanOptions) (types.Report, error) {
 	artifactInfo, err := s.artifact.Inspect(ctx)
 	if err != nil {
 		return types.Report{}, xerrors.Errorf("failed analysis: %w", err)
 	}
+	defer func() {
+		if err := s.artifact.Clean(artifactInfo); err != nil {
+			log.Logger.Warnf("The artifact %q wasn't removed: %v", artifactInfo.Name, err)
+		}
+	}()
 
 	results, osFound, err := s.driver.Scan(artifactInfo.Name, artifactInfo.ID, artifactInfo.BlobIDs, options)
 	if err != nil {
@@ -120,12 +124,6 @@ func (s Scanner) ScanArtifact(ctx context.Context, options types.ScanOptions, ac
 	if osFound != nil && osFound.Eosl {
 		log.Logger.Warnf("This OS version is no longer supported by the distribution: %s %s", osFound.Family, osFound.Name)
 		log.Logger.Warnf("The vulnerability detection may be insufficient because security updates are not provided")
-	}
-
-	if artifactInfo.Type == ftypes.ArtifactFilesystem {
-		if err := ac.DeleteBlob(artifactInfo.ID); err != nil {
-			log.Logger.Warnf("The artifact %q wasn't removed: %v", artifactInfo.Name, err)
-		}
 	}
 
 	// Layer makes sense only when scanning container images

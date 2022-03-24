@@ -97,14 +97,11 @@ func (s *CacheServer) MissingBlobs(_ context.Context, in *rpcCache.MissingBlobsR
 	return &rpcCache.MissingBlobsResponse{MissingArtifact: missingArtifact, MissingBlobIds: blobIDs}, nil
 }
 
-// DeleteBlob removes blob by Id
-func (s *CacheServer) DeleteBlob(_ context.Context, in *rpcCache.DeleteBlobRequest) (*google_protobuf.Empty, error) {
-	blobId := rpc.ConvertFromDeleteBlobRequest(in)
-	if blobId == "" {
-		return nil, xerrors.Errorf("failed to remove a blob because blobId is empty")
-	}
-	if err := s.cache.DeleteBlob(blobId); err != nil {
-		return nil, xerrors.Errorf("failed to remove a blob(%s): %w", blobId, err)
+// DeleteBlobs removes blobs by IDs
+func (s *CacheServer) DeleteBlobs(_ context.Context, in *rpcCache.DeleteBlobsRequest) (*google_protobuf.Empty, error) {
+	blobIDs := rpc.ConvertFromDeleteBlobsRequest(in)
+	if err := s.cache.DeleteBlobs(blobIDs); err != nil {
+		return nil, xerrors.Errorf("failed to remove a blobs: %w", err)
 	}
 	return &google_protobuf.Empty{}, nil
 }

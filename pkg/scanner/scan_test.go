@@ -194,7 +194,7 @@ func TestScanner_ScanArtifact(t *testing.T) {
 			mockArtifact.ApplyInspectExpectation(tt.inspectExpectation)
 
 			s := NewScanner(d, mockArtifact)
-			got, err := s.ScanArtifact(context.Background(), tt.args.options, nil)
+			got, err := s.ScanArtifact(context.Background(), tt.args.options)
 			if tt.wantErr != "" {
 				require.NotNil(t, err, tt.name)
 				require.Contains(t, err.Error(), tt.wantErr, tt.name)

@@ -51,9 +51,11 @@ func (s *mockCacheServer) MissingBlobs(_ context.Context, in *rpcCache.MissingBl
 	return &rpcCache.MissingBlobsResponse{MissingArtifact: true, MissingBlobIds: layerIDs}, nil
 }
 
-func (s *mockCacheServer) DeleteBlob(_ context.Context, in *rpcCache.DeleteBlobRequest) (*google_protobuf.Empty, error) {
-	if strings.Contains(in.BlobId, "invalid") {
-		return &google_protobuf.Empty{}, xerrors.New("invalid layer ID")
+func (s *mockCacheServer) DeleteBlobs(_ context.Context, in *rpcCache.DeleteBlobsRequest) (*google_protobuf.Empty, error) {
+	for _, blobId := range in.GetBlobIds() {
+		if strings.Contains(blobId, "invalid") {
+			return &google_protobuf.Empty{}, xerrors.New("invalid layer ID")
+		}
 	}
 	return &google_protobuf.Empty{}, nil
 }
