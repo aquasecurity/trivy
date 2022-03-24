@@ -51,7 +51,7 @@ func (s Server) ListenAndServe(serverCache cache.Cache) error {
 	dbUpdateWg := &sync.WaitGroup{}
 
 	go func() {
-		worker := newDBWorker(dbc.NewClient(s.cacheDir, true))
+		worker := newDBWorker(dbc.NewClient(s.cacheDir, true, db.WithDBRepository(dbRepository)))
 		ctx := context.Background()
 		for {
 			time.Sleep(updateInterval)
@@ -143,7 +143,7 @@ func (w dbWorker) hotUpdate(ctx context.Context, cacheDir string, dbUpdateWg, re
 	}
 	defer os.RemoveAll(tmpDir)
 
-	if err = w.dbClient.Download(ctx, tmpDir, dbRepository); err != nil {
+	if err = w.dbClient.Download(ctx, tmpDir); err != nil {
 		return xerrors.Errorf("failed to download vulnerability DB: %w", err)
 	}
 

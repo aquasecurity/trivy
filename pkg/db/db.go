@@ -20,12 +20,13 @@ const dbMediaType = "application/vnd.aquasec.trivy.db.layer.v1.tar+gzip"
 // Operation defines the DB operations
 type Operation interface {
 	NeedsUpdate(cliVersion string, skip bool) (need bool, err error)
-	Download(ctx context.Context, dst string, dbRepository string) (err error)
+	Download(ctx context.Context, dst string) (err error)
 }
 
 type options struct {
-	artifact *oci.Artifact
-	clock    clock.Clock
+	artifact     *oci.Artifact
+	clock        clock.Clock
+	dbRepository string
 }
 
 // Option is a functional option
@@ -37,6 +38,15 @@ func WithOCIArtifact(art *oci.Artifact) Option {
 		opts.artifact = art
 	}
 }
+
+
+// WithDBRepository takes a dbRepository
+func WithDBRepository(dbRepository string) Option {
+	return func(opts *options) {
+		opts.dbRepository = dbRepository
+	}
+}
+
 
 // WithClock takes a clock
 func WithClock(clock clock.Clock) Option {
@@ -129,13 +139,13 @@ func (c *Client) isNewDB(meta metadata.Metadata) bool {
 }
 
 // Download downloads the DB file
-func (c *Client) Download(ctx context.Context, dst string, dbRepository string) error {
+func (c *Client) Download(ctx context.Context, dst string) error {
 	// Remove the metadata file under the cache directory before downloading DB
 	if err := c.metadata.Delete(); err != nil {
 		log.Logger.Debug("no metadata file")
 	}
 
-	if err := c.populateOCIArtifact(dbRepository); err != nil {
+	if err := c.populateOCIArtifact(c.dbRepository); err != nil {
 		return xerrors.Errorf("OCI artifact error: %w", err)
 	}
 

@@ -207,8 +207,8 @@ func TestClient_Download(t *testing.T) {
 			art, err := oci.NewArtifact("db", mediaType, true, oci.WithImage(img))
 			require.NoError(t, err)
 
-			client := db.NewClient(cacheDir, true, db.WithOCIArtifact(art), db.WithClock(timeDownloadedAt))
-			err = client.Download(context.Background(), cacheDir, dbRepository)
+			client := db.NewClient(cacheDir, true, db.WithOCIArtifact(art), db.WithClock(timeDownloadedAt), db.WithDBRepository(dbRepository))
+			err = client.Download(context.Background(), cacheDir)
 			if tt.wantErr != "" {
 				require.Error(t, err)
 				assert.Contains(t, err.Error(), tt.wantErr)
