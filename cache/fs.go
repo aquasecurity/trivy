@@ -5,9 +5,11 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/aquasecurity/fanal/types"
+	"github.com/hashicorp/go-multierror"
 	bolt "go.etcd.io/bbolt"
 	"golang.org/x/xerrors"
+
+	"github.com/aquasecurity/fanal/types"
 )
 
 var _ Cache = &FSCache{}
@@ -111,6 +113,24 @@ func (fs FSCache) GetArtifact(artifactID string) (types.ArtifactInfo, error) {
 		return types.ArtifactInfo{}, xerrors.Errorf("JSON unmarshal error: %w", err)
 	}
 	return info, nil
+}
+
+// DeleteBlobs removes blobs by IDs
+func (fs FSCache) DeleteBlobs(blobIDs []string) error {
+	var errs error
+	err := fs.db.Update(func(tx *bolt.Tx) error {
+		bucket := tx.Bucket([]byte(blobBucket))
+		for _, blobID := range blobIDs {
+			if err := bucket.Delete([]byte(blobID)); err != nil {
+				errs = multierror.Append(errs, err)
+			}
+		}
+		return nil
+	})
+	if err != nil {
+		return xerrors.Errorf("DB delete error: %w", err)
+	}
+	return errs
 }
 
 // PutArtifact stores artifact information such as image metadata in local cache

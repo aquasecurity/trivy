@@ -15,6 +15,8 @@ import (
 	"github.com/aquasecurity/fanal/types"
 )
 
+const correctHash = "sha256:24df0d4e20c0f42d3703bf1f1db2bdd77346c7956f74f423603d651e8e5ae8a7"
+
 func TestRedisCache_PutArtifact(t *testing.T) {
 	type args struct {
 		artifactID     string
@@ -499,4 +501,62 @@ func TestRedisCache_Clear(t *testing.T) {
 		}
 		assert.True(t, s.Exists("foo"))
 	})
+}
+
+func TestRedisCache_DeleteBlobs(t *testing.T) {
+	type args struct {
+		blobIDs []string
+	}
+	tests := []struct {
+		name       string
+		setupRedis bool
+		args       args
+		wantKey    string
+		wantErr    string
+	}{
+		{
+			name:       "happy path",
+			setupRedis: true,
+			args: args{
+				blobIDs: []string{correctHash},
+			},
+			wantKey: "fanal::blob::" + correctHash,
+		},
+		{
+			name:       "no such host",
+			setupRedis: false,
+			args: args{
+				blobIDs: []string{"sha256:24df0d4e20c0f42d3703bf1f1db2bdd77346c7956f74f423603d651e8e5ae800"},
+			},
+			wantErr: "failure in name resolution",
+		},
+	}
+
+	// Set up Redis test server
+	s, err := miniredis.Run()
+	require.NoError(t, err)
+	defer s.Close()
+
+	s.Set(correctHash, "any string")
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			addr := s.Addr()
+			if !tt.setupRedis {
+				addr = "dummy:16379"
+			}
+
+			c := cache.NewRedisCache(&redis.Options{
+				Addr: addr,
+			})
+
+			err = c.DeleteBlobs(tt.args.blobIDs)
+			if tt.wantErr != "" {
+				require.Error(t, err)
+				assert.Contains(t, err.Error(), tt.wantErr)
+				return
+			}
+			assert.NoError(t, err)
+		})
+	}
 }

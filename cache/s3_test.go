@@ -1,6 +1,7 @@
 package cache
 
 import (
+	"errors"
 	"reflect"
 	"testing"
 	"time"
@@ -16,12 +17,23 @@ type mockS3Client struct {
 	s3iface.S3API
 }
 
+const (
+	correctHash = "sha256:24df0d4e20c0f42d3703bf1f1db2bdd77346c7956f74f423603d651e8e5ae8a7"
+)
+
 func (m *mockS3Client) PutObject(*s3.PutObjectInput) (*s3.PutObjectOutput, error) {
 	return &s3.PutObjectOutput{}, nil
 }
 
 func (m *mockS3Client) HeadObject(*s3.HeadObjectInput) (*s3.HeadObjectOutput, error) {
 	return &s3.HeadObjectOutput{}, nil
+}
+
+func (m *mockS3Client) DeleteBucket(in *s3.DeleteBucketInput) (*s3.DeleteBucketOutput, error) {
+	if in != nil && *in.Bucket == blobBucket+"/prefix/"+correctHash {
+		return &s3.DeleteBucketOutput{}, nil
+	}
+	return nil, errors.New("unknown bucket")
 }
 
 func TestS3Cache_PutBlob(t *testing.T) {
@@ -230,6 +242,69 @@ func TestS3Cache_MissingBlobs(t *testing.T) {
 			}
 			if !reflect.DeepEqual(got1, tt.wantStringSlice) {
 				t.Errorf("S3Cache.MissingBlobs() got1 = %v, want %v", got1, tt.wantStringSlice)
+			}
+		})
+	}
+}
+
+func TestS3Cache_DeleteBlobs(t *testing.T) {
+	mockSvc := &mockS3Client{}
+
+	type fields struct {
+		S3         s3iface.S3API
+		Downloader *s3manager.Downloader
+		BucketName string
+		Prefix     string
+	}
+	type args struct {
+		blobIDs []string
+	}
+	tests := []struct {
+		name    string
+		fields  fields
+		args    args
+		wantErr bool
+	}{
+		{
+			name: "happy path",
+			fields: fields{
+				S3:         mockSvc,
+				BucketName: "test",
+				Prefix:     "prefix",
+			},
+			args: args{
+				blobIDs: []string{correctHash},
+			},
+		},
+		{
+			name: "delete blob with bad ID",
+			fields: fields{
+				S3:         mockSvc,
+				BucketName: "test",
+				Prefix:     "prefix",
+			},
+			args: args{
+				blobIDs: []string{"unde"},
+			},
+			wantErr: true,
+		},
+		{
+			name: "delete blobs with bad ID",
+			fields: fields{
+				S3:         mockSvc,
+				BucketName: "test",
+				Prefix:     "prefix",
+			},
+			args: args{
+				blobIDs: []string{correctHash},
+			},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			c := NewS3Cache(tt.fields.BucketName, tt.fields.Prefix, tt.fields.S3, tt.fields.Downloader)
+			if err := c.DeleteBlobs(tt.args.blobIDs); (err != nil) != tt.wantErr {
+				t.Errorf("S3Cache.PutBlob() error = %v, wantErr %v", err, tt.wantErr)
 			}
 		})
 	}

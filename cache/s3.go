@@ -5,12 +5,14 @@ import (
 	"encoding/json"
 	"fmt"
 
-	"github.com/aquasecurity/fanal/types"
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/s3"
 	"github.com/aws/aws-sdk-go/service/s3/s3iface"
 	"github.com/aws/aws-sdk-go/service/s3/s3manager/s3manageriface"
+	"github.com/hashicorp/go-multierror"
 	"golang.org/x/xerrors"
+
+	"github.com/aquasecurity/fanal/types"
 )
 
 var _ Cache = &S3Cache{}
@@ -37,6 +39,18 @@ func (c S3Cache) PutArtifact(artifactID string, artifactConfig types.ArtifactInf
 		return xerrors.Errorf("unable to store artifact information in cache (%s): %w", artifactID, err)
 	}
 	return nil
+}
+
+func (c S3Cache) DeleteBlobs(blobIDs []string) error {
+	var errs error
+	for _, blobID := range blobIDs {
+		key := fmt.Sprintf("%s/%s/%s", blobBucket, c.prefix, blobID)
+		input := &s3.DeleteBucketInput{Bucket: aws.String(key)}
+		if _, err := c.s3Client.DeleteBucket(input); err != nil {
+			errs = multierror.Append(errs, err)
+		}
+	}
+	return errs
 }
 
 func (c S3Cache) PutBlob(blobID string, blobInfo types.BlobInfo) error {
