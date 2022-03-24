@@ -365,6 +365,7 @@ func NewApp(version string) *cli.App {
 		NewImageCommand(),
 		NewFilesystemCommand(),
 		NewRootfsCommand(),
+		NewSbomCommand(),
 		NewRepositoryCommand(),
 		NewClientCommand(),
 		NewServerCommand(),
@@ -730,6 +731,57 @@ func NewPluginCommand() *cli.Command {
 				Usage:     "update an existing plugin",
 				ArgsUsage: "PLUGIN_NAME",
 				Action:    plugin.Update,
+			},
+		},
+	}
+}
+
+// NewSbomCommand is the factory method to add sbom command
+func NewSbomCommand() *cli.Command {
+	return &cli.Command{
+		Name:        "sbom",
+		ArgsUsage:   "ARTIFACT",
+		Usage:       "generate SBOM for an artifact",
+		Description: `ARTIFACT can be a container image, file path/directory, git repository or container image archive. See examples.`,
+		CustomHelpTemplate: cli.CommandHelpTemplate + `EXAMPLES:
+  - image scanning:
+      $ trivy sbom alpine:3.15
+
+  - filesystem scanning:
+      $ trivy sbom --artifact-type fs /path/to/myapp
+
+  - git repository scanning:
+      $ trivy sbom --artifact-type repo github.com/aquasecurity/trivy-ci-test
+
+  - image archive scanning:
+      $ trivy sbom --artifact-type archive ./alpine.tar
+
+`,
+		Action: artifact.SbomRun,
+		Flags: []cli.Flag{
+			&outputFlag,
+			&clearCacheFlag,
+			&ignoreFileFlag,
+			&timeoutFlag,
+			&severityFlag,
+			&offlineScan,
+			stringSliceFlag(skipFiles),
+			stringSliceFlag(skipDirs),
+
+			// dedicated options
+			&cli.StringFlag{
+				Name:    "artifact-type",
+				Aliases: []string{"type"},
+				Value:   "image",
+				Usage:   "input artifact type (image, fs, repo, archive)",
+				EnvVars: []string{"TRIVY_ARTIFACT_TYPE"},
+			},
+			&cli.StringFlag{
+				Name:    "sbom-format",
+				Aliases: []string{"format"},
+				Value:   "cyclonedx",
+				Usage:   "SBOM format (cyclonedx)",
+				EnvVars: []string{"TRIVY_SBOM_FORMAT"},
 			},
 		},
 	}

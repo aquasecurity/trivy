@@ -25,6 +25,7 @@ nav:
               - Repository: getting-started/cli/repo.md
               - Client: getting-started/cli/client.md
               - Server: getting-started/cli/server.md
+              - SBOM: getting-started/cli/sbom.md
   - Vulnerability:
       - Scanning:
           - Overview: vulnerability/scanning/index.md
@@ -72,6 +73,7 @@ nav:
       - Plugins: advanced/plugins.md
       - Air-Gapped Environment: advanced/air-gap.md
       - SBOM:
+          - Overview: advanced/sbom/index.md
           - CycloneDX: advanced/sbom/cyclonedx.md
       - Integrations:
           - Overview: advanced/integrations/index.md
