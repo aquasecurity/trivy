@@ -14,6 +14,41 @@ type MockArtifact struct {
 	mock.Mock
 }
 
+type ArtifactCleanArgs struct {
+	Reference         types.ArtifactReference
+	ReferenceAnything bool
+}
+
+type ArtifactCleanReturns struct {
+	_a0 error
+}
+
+type ArtifactCleanExpectation struct {
+	Args    ArtifactCleanArgs
+	Returns ArtifactCleanReturns
+}
+
+func (_m *MockArtifact) ApplyCleanExpectation(e ArtifactCleanExpectation) {
+	var args []interface{}
+	if e.Args.ReferenceAnything {
+		args = append(args, mock.Anything)
+	} else {
+		args = append(args, e.Args.Reference)
+	}
+	_m.On("Clean", args...).Return(e.Returns._a0)
+}
+
+func (_m *MockArtifact) ApplyCleanExpectations(expectations []ArtifactCleanExpectation) {
+	for _, e := range expectations {
+		_m.ApplyCleanExpectation(e)
+	}
+}
+
+// Clean provides a mock function with given fields: reference
+func (_m *MockArtifact) Clean(reference types.ArtifactReference) error {
+	return nil
+}
+
 type ArtifactInspectArgs struct {
 	Ctx         context.Context
 	CtxAnything bool

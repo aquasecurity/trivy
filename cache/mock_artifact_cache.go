@@ -12,6 +12,50 @@ type MockArtifactCache struct {
 	mock.Mock
 }
 
+type ArtifactCacheDeleteBlobsArgs struct {
+	BlobIDs         []string
+	BlobIDsAnything bool
+}
+
+type ArtifactCacheDeleteBlobsReturns struct {
+	_a0 error
+}
+
+type ArtifactCacheDeleteBlobsExpectation struct {
+	Args    ArtifactCacheDeleteBlobsArgs
+	Returns ArtifactCacheDeleteBlobsReturns
+}
+
+func (_m *MockArtifactCache) ApplyDeleteBlobsExpectation(e ArtifactCacheDeleteBlobsExpectation) {
+	var args []interface{}
+	if e.Args.BlobIDsAnything {
+		args = append(args, mock.Anything)
+	} else {
+		args = append(args, e.Args.BlobIDs)
+	}
+	_m.On("DeleteBlobs", args...).Return(e.Returns._a0)
+}
+
+func (_m *MockArtifactCache) ApplyDeleteBlobsExpectations(expectations []ArtifactCacheDeleteBlobsExpectation) {
+	for _, e := range expectations {
+		_m.ApplyDeleteBlobsExpectation(e)
+	}
+}
+
+// DeleteBlobs provides a mock function with given fields: blobIDs
+func (_m *MockArtifactCache) DeleteBlobs(blobIDs []string) error {
+	ret := _m.Called(blobIDs)
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func([]string) error); ok {
+		r0 = rf(blobIDs)
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
+}
+
 type ArtifactCacheMissingBlobsArgs struct {
 	ArtifactID         string
 	ArtifactIDAnything bool

@@ -78,6 +78,50 @@ func (_m *MockCache) Close() error {
 	return r0
 }
 
+type CacheDeleteBlobArgs struct {
+	BlobID         string
+	BlobIDAnything bool
+}
+
+type CacheDeleteBlobReturns struct {
+	_a0 error
+}
+
+type CacheDeleteBlobExpectation struct {
+	Args    CacheDeleteBlobArgs
+	Returns CacheDeleteBlobReturns
+}
+
+func (_m *MockCache) ApplyDeleteBlobExpectation(e CacheDeleteBlobExpectation) {
+	var args []interface{}
+	if e.Args.BlobIDAnything {
+		args = append(args, mock.Anything)
+	} else {
+		args = append(args, e.Args.BlobID)
+	}
+	_m.On("DeleteBlob", args...).Return(e.Returns._a0)
+}
+
+func (_m *MockCache) ApplyDeleteBlobExpectations(expectations []CacheDeleteBlobExpectation) {
+	for _, e := range expectations {
+		_m.ApplyDeleteBlobExpectation(e)
+	}
+}
+
+// DeleteBlob provides a mock function with given fields: blobID
+func (_m *MockCache) DeleteBlob(blobID string) error {
+	ret := _m.Called(blobID)
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func(string) error); ok {
+		r0 = rf(blobID)
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
+}
+
 type CacheGetArtifactArgs struct {
 	ArtifactID         string
 	ArtifactIDAnything bool
