@@ -589,9 +589,9 @@ func ConvertToDeleteBlobsRequest(blobIDs []string) *cache.DeleteBlobsRequest {
 	return &cache.DeleteBlobsRequest{BlobIds: blobIDs}
 }
 
-func ConvertFromDeleteBlobsRequest(deleteBlobRequest *cache.DeleteBlobsRequest) []string {
-	if deleteBlobRequest == nil {
+func ConvertFromDeleteBlobsRequest(deleteBlobsRequest *cache.DeleteBlobsRequest) []string {
+	if deleteBlobsRequest == nil {
 		return []string{}
 	}
-	return deleteBlobRequest.GetBlobIds()
+	return deleteBlobsRequest.GetBlobIds()
 }
