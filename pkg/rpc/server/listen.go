@@ -51,7 +51,7 @@ func (s Server) ListenAndServe(serverCache cache.Cache) error {
 	dbUpdateWg := &sync.WaitGroup{}
 
 	go func() {
-		worker := newDBWorker(dbc.NewClient(s.cacheDir, true, db.WithDBRepository(dbRepository)))
+		worker := newDBWorker(dbc.NewClient(s.cacheDir, true, dbc.WithDBRepository(dbRepository)))
 		ctx := context.Background()
 		for {
 			time.Sleep(updateInterval)
