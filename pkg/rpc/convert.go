@@ -584,3 +584,14 @@ func ConvertToRPCScanResponse(results types.Results, fos *ftypes.OS) *scanner.Sc
 		Results: rpcResults,
 	}
 }
+
+func ConvertToDeleteBlobsRequest(blobIDs []string) *cache.DeleteBlobsRequest {
+	return &cache.DeleteBlobsRequest{BlobIds: blobIDs}
+}
+
+func ConvertFromDeleteBlobsRequest(deleteBlobsRequest *cache.DeleteBlobsRequest) []string {
+	if deleteBlobsRequest == nil {
+		return []string{}
+	}
+	return deleteBlobsRequest.GetBlobIds()
+}
