@@ -253,8 +253,8 @@ github.com/aquasecurity/go-version v0.0.0-20210121072130-637058cfe492/go.mod h1:
 github.com/aquasecurity/testdocker v0.0.0-20210911155206-e1e85f5a1516 h1:moQmzbpLo5dxHQCyEhqzizsDSNrNhn/7uRTCZzo4A1o=
 github.com/aquasecurity/tfsec v1.8.0 h1:8U4JU/iJaWq6pcY48+R9kD6vDz58Ud1daUsw2l7hAsE=
 github.com/aquasecurity/tfsec v1.8.0/go.mod h1:Tnj1ozVkv45QdTi1wiVm8Efw3D7ztjQctztG+yU+JwY=
-github.com/aquasecurity/trivy-db v0.0.0-20220130223604-df65ebde46f4 h1:w/cU+uNDHHzMKLNpiohoHvPTtd1mi6Dyih4pqV6FLxQ=
-github.com/aquasecurity/trivy-db v0.0.0-20220130223604-df65ebde46f4/go.mod h1:BOulYmf+l2bd+Bjo3tTsdnbWCsh5UsJn1MqdiZzmm/Q=
+github.com/aquasecurity/trivy-db v0.0.0-20220327074450-74195d9604b2 h1:q2Gza4V8uO5C1COzC2HeTbQgJIrmC6dTWaXZ8ujiWu0=
+github.com/aquasecurity/trivy-db v0.0.0-20220327074450-74195d9604b2/go.mod h1:EwiQRdzVq6k7cKOMjkss8LjWMt2FUW7NaYwE7HfZZvk=
 github.com/armon/circbuf v0.0.0-20150827004946-bbbad097214e/go.mod h1:3U/XgcO3hCbHZ8TKRvWD2dDTCfh9M9ya+I9JpbB7O8o=
 github.com/armon/consul-api v0.0.0-20180202201655-eb2c6b5be1b6/go.mod h1:grANhF5doyWs3UAsr3K4I6qtAmlQcZDesFNEHPZAzj8=
 github.com/armon/go-metrics v0.0.0-20180917152333-f0300d1749da/go.mod h1:Q73ZrmVTwzkszR9V5SSuryQ31EELlFMUz1kKyl939pY=
