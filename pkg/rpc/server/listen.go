@@ -23,7 +23,6 @@ import (
 )
 
 const updateInterval = 1 * time.Hour
-const dbRepository = "ghcr.io/aquasecurity/trivy-db"
 
 // Server represents Trivy server
 type Server struct {
@@ -51,7 +50,7 @@ func (s Server) ListenAndServe(serverCache cache.Cache) error {
 	dbUpdateWg := &sync.WaitGroup{}
 
 	go func() {
-		worker := newDBWorker(dbc.NewClient(s.cacheDir, true, dbc.WithDBRepository(dbRepository)))
+		worker := newDBWorker(dbc.NewClient(s.cacheDir, true))
 		ctx := context.Background()
 		for {
 			time.Sleep(updateInterval)

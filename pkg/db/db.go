@@ -15,8 +15,10 @@ import (
 	"github.com/aquasecurity/trivy/pkg/log"
 )
 
-const dbMediaType = "application/vnd.aquasec.trivy.db.layer.v1.tar+gzip"
-
+const (
+	dbMediaType  = "application/vnd.aquasec.trivy.db.layer.v1.tar+gzip"
+	defaultDBRepository = "ghcr.io/aquasecurity/trivy-db"
+)
 // Operation defines the DB operations
 type Operation interface {
 	NeedsUpdate(cliVersion string, skip bool) (need bool, err error)
@@ -39,14 +41,12 @@ func WithOCIArtifact(art *oci.Artifact) Option {
 	}
 }
 
-
 // WithDBRepository takes a dbRepository
 func WithDBRepository(dbRepository string) Option {
 	return func(opts *options) {
 		opts.dbRepository = dbRepository
 	}
 }
-
 
 // WithClock takes a clock
 func WithClock(clock clock.Clock) Option {
@@ -67,7 +67,8 @@ type Client struct {
 // NewClient is the factory method for DB client
 func NewClient(cacheDir string, quiet bool, opts ...Option) *Client {
 	o := &options{
-		clock: clock.RealClock{},
+		clock:        clock.RealClock{},
+		dbRepository: defaultDBRepository,
 	}
 
 	for _, opt := range opts {
@@ -145,7 +146,7 @@ func (c *Client) Download(ctx context.Context, dst string) error {
 		log.Logger.Debug("no metadata file")
 	}
 
-	if err := c.populateOCIArtifact(c.dbRepository); err != nil {
+	if err := c.populateOCIArtifact(); err != nil {
 		return xerrors.Errorf("OCI artifact error: %w", err)
 	}
 
@@ -178,9 +179,9 @@ func (c *Client) updateDownloadedAt(dst string) error {
 	return nil
 }
 
-func (c *Client) populateOCIArtifact(dbRepository string) error {
+func (c *Client) populateOCIArtifact() error {
 	if c.artifact == nil {
-		repo := fmt.Sprintf("%s:%d", dbRepository, db.SchemaVersion)
+		repo := fmt.Sprintf("%s:%d", c.dbRepository, db.SchemaVersion)
 		art, err := oci.NewArtifact(repo, dbMediaType, c.quiet)
 		if err != nil {
 			return xerrors.Errorf("OCI artifact error: %w", err)
