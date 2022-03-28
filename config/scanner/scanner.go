@@ -175,10 +175,12 @@ func (s Scanner) scanCloudFormation(files []types.Config) ([]types.Misconfigurat
 			},
 		}
 
-		filename := flattened.Location.Filename
-		filePath, err := filepath.Rel(rootDir, filename)
-		if err != nil {
-			return nil, xerrors.Errorf("filepath rel, root: [%s], result: [%s] %w", rootDir, filename, err)
+		var filePath = "unknown"
+		if flattened.Location.Filename == "" {
+			filePath, err = filepath.Rel(rootDir, flattened.Location.Filename)
+			if err != nil {
+				return nil, xerrors.Errorf("filepath rel, root: [%s], result: [%s] %w", rootDir, flattened.Location.Filename, err)
+			}
 		}
 
 		misconf, ok := misConfs[filePath]
@@ -244,9 +246,13 @@ func (s Scanner) scanTerraform(files []types.Config) ([]types.Misconfiguration, 
 				EndLine:   flattened.Location.EndLine,
 			},
 		}
-		filePath, err := filepath.Rel(rootDir, flattened.Location.Filename)
-		if err != nil {
-			return nil, xerrors.Errorf("filepath rel: %w", err)
+
+		var filePath = "unknown"
+		if flattened.Location.Filename != "" {
+			filePath, err = filepath.Rel(rootDir, flattened.Location.Filename)
+			if err != nil {
+				return nil, xerrors.Errorf("filepath rel, root: [%s], result: [%s] %w", rootDir, flattened.Location.Filename, err)
+			}
 		}
 
 		misconf, ok := misconfs[filePath]
