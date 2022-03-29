@@ -86,7 +86,7 @@ func TestOption_Init(t *testing.T) {
 			name: "invalid option combination: token and token header without server",
 			args: []string{"--token", "secret", "--token-header", "X-Trivy-Token", "alpine:3.11"},
 			logs: []string{
-				"'--token', '--token-header' and 'custom-header' can be used only with '--server'",
+				`"--token" can be used only with "--server"`,
 			},
 			want: Option{
 				ReportOption: option.ReportOption{
@@ -260,7 +260,7 @@ func TestOption_Init(t *testing.T) {
 			set.String("format", "", "")
 			set.String("server", "", "")
 			set.String("token", "", "")
-			set.String("token-header", "", "")
+			set.String("token-header", option.DefaultTokenHeader, "")
 			set.Var(&cli.StringSlice{}, "custom-headers", "")
 
 			ctx := cli.NewContext(app, set, nil)

@@ -87,7 +87,6 @@ func (c Client) FillVulnerabilityInfo(vulns []types.DetectedVulnerability, repor
 		vulns[i].Severity = severity
 		vulns[i].SeveritySource = severitySource
 		vulns[i].PrimaryURL = c.getPrimaryURL(vulnID, vuln.References, source)
-		vulns[i].Vulnerability.VendorSeverity = nil // Remove VendorSeverity from Results
 	}
 }
 

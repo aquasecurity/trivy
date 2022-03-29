@@ -12,9 +12,7 @@ nav:
       - Overview: getting-started/overview.md
       - Installation: getting-started/installation.md
       - Quick Start: getting-started/quickstart.md
-      - Troubleshooting: getting-started/troubleshooting.md
       - Further Reading: getting-started/further.md
-      - Credits: getting-started/credit.md
     - Docs:
         - Vulnerability:
             - Scanning:
@@ -62,6 +60,9 @@ nav:
             - Overview: advanced/index.md
             - Plugins: advanced/plugins.md
             - Air-Gapped Environment: advanced/air-gap.md
+            - SBOM:
+                - Overview: advanced/sbom/index.md
+                - CycloneDX: advanced/sbom/cyclonedx.md
             - Integrations:
                 - Overview: advanced/integrations/index.md
                 - GitHub Actions: advanced/integrations/github-actions.md
@@ -112,7 +113,6 @@ nav:
         - References: community/references.md
         - CKS Reference: community/cks.md
         - Credits: community/credit.md
-
 theme:
     name: material
     language: 'en'

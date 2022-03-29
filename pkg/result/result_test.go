@@ -72,9 +72,12 @@ func TestClient_FillVulnerabilityInfo(t *testing.T) {
 				{
 					VulnerabilityID: "CVE-2019-0002",
 					Vulnerability: dbTypes.Vulnerability{
-						Title:            "dos",
-						Description:      "dos vulnerability",
-						Severity:         dbTypes.SeverityLow.String(),
+						Title:       "dos",
+						Description: "dos vulnerability",
+						Severity:    dbTypes.SeverityLow.String(),
+						VendorSeverity: dbTypes.VendorSeverity{
+							vulnerability.NVD: dbTypes.SeverityLow,
+						},
 						References:       []string{"http://example.com"},
 						LastModifiedDate: utils.MustTimeParse("2020-01-01T01:01:00Z"),
 						PublishedDate:    utils.MustTimeParse("2001-01-01T01:01:00Z"),
@@ -146,8 +149,11 @@ func TestClient_FillVulnerabilityInfo(t *testing.T) {
 						Title:       "dos",
 						Description: "dos vulnerability",
 						Severity:    dbTypes.SeverityLow.String(),
-						CweIDs:      []string{"CWE-311"},
-						References:  []string{"http://example.com"},
+						VendorSeverity: dbTypes.VendorSeverity{
+							vulnerability.RedHat: dbTypes.SeverityLow,
+						},
+						CweIDs:     []string{"CWE-311"},
+						References: []string{"http://example.com"},
 						CVSS: map[dbTypes.SourceID]dbTypes.CVSS{
 							vulnerability.NVD: {
 								V2Vector: "AV:N/AC:L/Au:N/C:P/I:P/A:P",
@@ -196,7 +202,10 @@ func TestClient_FillVulnerabilityInfo(t *testing.T) {
 						Title:       "COVID-19",
 						Description: "a nasty virus vulnerability for humans",
 						Severity:    dbTypes.SeverityCritical.String(),
-						References:  []string{"https://www.who.int/emergencies/diseases/novel-coronavirus-2019"},
+						VendorSeverity: dbTypes.VendorSeverity{
+							vulnerability.GHSA: dbTypes.SeverityCritical,
+						},
+						References: []string{"https://www.who.int/emergencies/diseases/novel-coronavirus-2019"},
 					},
 					SeveritySource: vulnerability.GHSA,
 					PrimaryURL:     "https://avd.aquasec.com/nvd/cve-2019-0005",

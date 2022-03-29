@@ -110,6 +110,11 @@ func (s Scanner) ScanArtifact(ctx context.Context, options types.ScanOptions) (t
 	if err != nil {
 		return types.Report{}, xerrors.Errorf("failed analysis: %w", err)
 	}
+	defer func() {
+		if err := s.artifact.Clean(artifactInfo); err != nil {
+			log.Logger.Warnf("Failed to clean the artifact %q: %v", artifactInfo.Name, err)
+		}
+	}()
 
 	results, osFound, err := s.driver.Scan(artifactInfo.Name, artifactInfo.ID, artifactInfo.BlobIDs, options)
 	if err != nil {
