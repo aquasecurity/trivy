@@ -87,12 +87,6 @@ nav:
             - Modes:
                 - Standalone: advanced/modes/standalone.md
                 - Client/Server: advanced/modes/client-server.md
-            - Community:
-                - Tools: advanced/community/tools.md
-                - References: advanced/community/references.md
-            - Maintainer:
-                - Help Wanted: advanced/contrib/help-wanted.md
-                - Triage: advanced/contrib/triage.md
         - References:
             - CLI:
                 - Overview:  references/cli/index.md
@@ -104,6 +98,7 @@ nav:
                 - Client: references/cli/client.md
                 - Server:  references/cli/server.md
                 - Plugins: references/cli/plugins.md
+                - SBOM: references/cli/sbom.md
             - Troubleshooting: references/troubleshooting.md
     - Community:
         - How to contribute:
