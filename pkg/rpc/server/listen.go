@@ -2,6 +2,7 @@ package server
 
 import (
 	"context"
+	"github.com/aquasecurity/trivy/pkg/commands/option"
 	"net/http"
 	"os"
 	"sync"
@@ -31,6 +32,7 @@ type Server struct {
 	cacheDir    string
 	token       string
 	tokenHeader string
+	pluginHooks *option.PluginOpt
 }
 
 // NewServer returns an instance of Server
@@ -41,6 +43,17 @@ func NewServer(appVersion, addr, cacheDir, token, tokenHeader string) Server {
 		cacheDir:    cacheDir,
 		token:       token,
 		tokenHeader: tokenHeader,
+	}
+}
+
+func NewServerWithPlugin(appVersion, addr, cacheDir, token, tokenHeader string, plugin *option.PluginOpt) Server {
+	return Server{
+		appVersion:  appVersion,
+		addr:        addr,
+		cacheDir:    cacheDir,
+		token:       token,
+		tokenHeader: tokenHeader,
+		pluginHooks: plugin,
 	}
 }
 
@@ -84,6 +97,40 @@ func newServeMux(serverCache cache.Cache, dbUpdateWg, requestWg *sync.WaitGroup,
 	mux := http.NewServeMux()
 
 	scanServer := rpcScanner.NewScannerServer(initializeScanServer(serverCache), nil)
+	scanHandler := withToken(withWaitGroup(scanServer), token, tokenHeader)
+	mux.Handle(rpcScanner.ScannerPathPrefix, gziphandler.GzipHandler(scanHandler))
+
+	layerServer := rpcCache.NewCacheServer(NewCacheServer(serverCache), nil)
+	layerHandler := withToken(withWaitGroup(layerServer), token, tokenHeader)
+	mux.Handle(rpcCache.CachePathPrefix, gziphandler.GzipHandler(layerHandler))
+
+	mux.HandleFunc("/healthz", func(rw http.ResponseWriter, r *http.Request) {
+		if _, err := rw.Write([]byte("ok")); err != nil {
+			log.Logger.Errorf("health check error: %s", err)
+		}
+	})
+
+	return mux
+}
+
+func newServeMuxWithPlugin(serverCache cache.Cache, dbUpdateWg, requestWg *sync.WaitGroup, token, tokenHeader string, plugin *option.PluginOpt) *http.ServeMux {
+	withWaitGroup := func(base http.Handler) http.Handler {
+		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			// Stop processing requests during DB update
+			dbUpdateWg.Wait()
+
+			// Wait for all requests to be processed before DB update
+			requestWg.Add(1)
+			defer requestWg.Done()
+
+			base.ServeHTTP(w, r)
+
+		})
+	}
+
+	mux := http.NewServeMux()
+
+	scanServer := rpcScanner.NewScannerServer(initScanServerWithPlugin(serverCache, plugin), nil)
 	scanHandler := withToken(withWaitGroup(scanServer), token, tokenHeader)
 	mux.Handle(rpcScanner.ScannerPathPrefix, gziphandler.GzipHandler(scanHandler))
 

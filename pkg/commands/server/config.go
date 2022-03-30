@@ -11,6 +11,7 @@ type Config struct {
 	option.GlobalOption
 	option.DBOption
 	option.CacheOption
+	option.PluginOpt
 
 	Listen      string
 	Token       string
@@ -25,6 +26,20 @@ func NewConfig(c *cli.Context) Config {
 		GlobalOption: gc,
 		DBOption:     option.NewDBOption(c),
 		CacheOption:  option.NewCacheOption(c),
+
+		Listen:      c.String("listen"),
+		Token:       c.String("token"),
+		TokenHeader: c.String("token-header"),
+	}
+}
+
+func NewConfigWithPlugin(c *cli.Context, plugin option.PluginOpt) Config {
+	gc, _ := option.NewGlobalOption(c) // nolint: errcheck
+	return Config{
+		GlobalOption: gc,
+		DBOption:     option.NewDBOption(c),
+		CacheOption:  option.NewCacheOption(c),
+		PluginOpt:    plugin,
 
 		Listen:      c.String("listen"),
 		Token:       c.String("token"),

@@ -2,6 +2,7 @@ package commands
 
 import (
 	"encoding/json"
+	"flag"
 	"fmt"
 	"io"
 	"os"
@@ -376,6 +377,30 @@ func NewApp(version string) *cli.App {
 	app.Commands = append(app.Commands, plugin.LoadCommands()...)
 
 	return app
+}
+
+func NewAPPWithCommandBeforeHook(args []string, hook func(*cli.Context) error) error {
+	cli.VersionPrinter = func(c *cli.Context) {
+		showVersion(c.String("cache-dir"), c.String("format"), c.App.Version, c.App.Writer)
+	}
+
+	app := cli.NewApp()
+	app.Name = "trivy"
+	app.ArgsUsage = "target"
+	app.Usage = "A simple and comprehensive vulnerability scanner for containers"
+	app.EnableBashCompletion = true
+	app.Flags = globalFlags
+	set := flag.NewFlagSet("test", 0)
+	_ = set.Parse(args)
+
+	c := cli.NewContext(app, set, nil)
+
+	command := NewServerCommand()
+	command.Before = hook
+
+	err := command.Run(c)
+
+	return err
 }
 
 func showVersion(cacheDir, outputFormat, version string, outputWriter io.Writer) {

@@ -10,6 +10,7 @@ import (
 	"github.com/aquasecurity/fanal/applier"
 	"github.com/aquasecurity/fanal/cache"
 	"github.com/aquasecurity/trivy-db/pkg/db"
+	"github.com/aquasecurity/trivy/pkg/commands/option"
 	"github.com/aquasecurity/trivy/pkg/detector/ospkg"
 	"github.com/aquasecurity/trivy/pkg/result"
 	"github.com/aquasecurity/trivy/pkg/scanner/local"
@@ -24,5 +25,15 @@ func initializeScanServer(localArtifactCache cache.LocalArtifactCache) *ScanServ
 	config := db.Config{}
 	client := result.NewClient(config)
 	scanServer := NewScanServer(scanner, client)
+	return scanServer
+}
+
+func initScanServerWithPlugin(localArtifactCache cache.LocalArtifactCache, plugin *option.PluginOpt) *ScanServer {
+	applierApplier := applier.NewApplier(localArtifactCache)
+	detector := ospkg.Detector{}
+	scanner := local.NewScanner(applierApplier, detector)
+	config := db.Config{}
+	client := result.NewClient(config)
+	scanServer := NewScanServerWithPlugin(scanner, client, plugin)
 	return scanServer
 }

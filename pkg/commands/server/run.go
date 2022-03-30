@@ -1,6 +1,7 @@
 package server
 
 import (
+	"github.com/aquasecurity/trivy/pkg/commands/option"
 	"github.com/urfave/cli/v2"
 	"golang.org/x/xerrors"
 
@@ -14,6 +15,10 @@ import (
 // Run runs the scan
 func Run(ctx *cli.Context) error {
 	return run(NewConfig(ctx))
+}
+
+func RunWithDefaultOpt(ctx *cli.Context, opt option.PluginOpt) error {
+	return runWithoutUpdateDBOnline(NewConfigWithPlugin(ctx, opt))
 }
 
 func run(c Config) (err error) {
@@ -53,5 +58,40 @@ func run(c Config) (err error) {
 	}
 
 	server := rpcServer.NewServer(c.AppVersion, c.Listen, c.CacheDir, c.Token, c.TokenHeader)
+	return server.ListenAndServe(cache)
+}
+
+func runWithoutUpdateDBOnline(c Config) (err error) {
+	if err = log.InitLogger(c.Debug, c.Quiet); err != nil {
+		return xerrors.Errorf("failed to initialize a logger: %w", err)
+	}
+
+	// initialize config
+	if err = c.Init(); err != nil {
+		return xerrors.Errorf("failed to initialize options: %w", err)
+	}
+
+	// configure cache dir
+	utils.SetCacheDir(c.CacheDir)
+	cache, err := operation.NewCache(c.CacheOption)
+	if err != nil {
+		return xerrors.Errorf("server cache error: %w", err)
+	}
+	defer cache.Close()
+	log.Logger.Debugf("cache dir:  %s", utils.CacheDir())
+
+	if c.Reset {
+		return cache.ClearDB()
+	}
+
+	if c.DownloadDBOnly {
+		return nil
+	}
+
+	if err = db.Init(c.CacheDir); err != nil {
+		return xerrors.Errorf("error in vulnerability DB initialize: %w", err)
+	}
+
+	server := rpcServer.NewServerWithPlugin(c.AppVersion, c.Listen, c.CacheDir, c.Token, c.TokenHeader, &c.PluginOpt)
 	return server.ListenAndServe(cache)
 }

@@ -2,6 +2,7 @@ package server
 
 import (
 	"context"
+	"github.com/aquasecurity/trivy/pkg/commands/option"
 
 	google_protobuf "github.com/golang/protobuf/ptypes/empty"
 	"github.com/google/wire"
@@ -29,11 +30,20 @@ var ScanSuperSet = wire.NewSet(
 type ScanServer struct {
 	localScanner scanner.Driver
 	resultClient result.Client
+	plugin       *option.PluginOpt
 }
 
 // NewScanServer is the factory method for scanner
 func NewScanServer(s scanner.Driver, vulnClient result.Client) *ScanServer {
 	return &ScanServer{localScanner: s, resultClient: vulnClient}
+}
+
+func NewScanServerWithPlugin(s scanner.Driver, vulnClient result.Client, plugin *option.PluginOpt) *ScanServer {
+	return &ScanServer{
+		localScanner: s,
+		resultClient: vulnClient,
+		plugin:       plugin,
+	}
 }
 
 // Scan scans and return response
@@ -51,7 +61,11 @@ func (s *ScanServer) Scan(_ context.Context, in *rpcScanner.ScanRequest) (*rpcSc
 	for i := range results {
 		s.resultClient.FillVulnerabilityInfo(results[i].Vulnerabilities, results[i].Type)
 	}
-	return rpc.ConvertToRPCScanResponse(results, os), nil
+	scanResp := rpc.ConvertToRPCScanResponse(results, os)
+	if s.plugin != nil {
+		s.plugin.DoPlugin(scanResp)
+	}
+	return scanResp, nil
 }
 
 // CacheServer implements the cache
