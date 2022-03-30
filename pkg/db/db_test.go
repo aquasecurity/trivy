@@ -117,8 +117,9 @@ func TestClient_NeedsUpdate(t *testing.T) {
 				Version:    0,
 				NextUpdate: timeNextUpdateDay1,
 			},
-			skip:    true,
-			wantErr: "--skip-update cannot be specified with the old DB",
+			skip: true,
+			wantErr: fmt.Sprintf("--skip-update cannot be specified with the old DB schema. Local DB: %d, Expected: %d",
+				0, tdb.SchemaVersion),
 		},
 		{
 			name:  "happy with old DownloadedAt",

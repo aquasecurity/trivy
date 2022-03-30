@@ -18,6 +18,7 @@ import (
 	"github.com/aquasecurity/trivy-db/pkg/db"
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy-db/pkg/utils"
+	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/vulnerability"
 	"github.com/aquasecurity/trivy/pkg/dbtest"
 	"github.com/aquasecurity/trivy/pkg/result"
 	"github.com/aquasecurity/trivy/pkg/scanner"
@@ -110,10 +111,13 @@ func TestScanServer_Scan(t *testing.T) {
 								SeveritySource:   "nvd",
 								Layer:            &common.Layer{},
 								Cvss:             map[string]*common.CVSS{},
-								PrimaryUrl:       "https://avd.aquasec.com/nvd/cve-2019-0001",
-								Title:            "dos",
-								Description:      "dos vulnerability",
-								References:       []string{"http://example.com"},
+								VendorSeverity: map[string]common.Severity{
+									string(vulnerability.NVD): common.Severity_MEDIUM,
+								},
+								PrimaryUrl:  "https://avd.aquasec.com/nvd/cve-2019-0001",
+								Title:       "dos",
+								Description: "dos vulnerability",
+								References:  []string{"http://example.com"},
 								LastModifiedDate: &timestamp.Timestamp{
 									Seconds: 1577840460,
 								},

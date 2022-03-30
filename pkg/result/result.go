@@ -10,6 +10,8 @@ import (
 
 	"github.com/google/wire"
 	"github.com/open-policy-agent/opa/rego"
+	"golang.org/x/exp/maps"
+	"golang.org/x/exp/slices"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy-db/pkg/db"
@@ -17,7 +19,6 @@ import (
 	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/vulnerability"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/types"
-	"github.com/aquasecurity/trivy/pkg/utils"
 )
 
 const (
@@ -86,7 +87,6 @@ func (c Client) FillVulnerabilityInfo(vulns []types.DetectedVulnerability, repor
 		vulns[i].Severity = severity
 		vulns[i].SeveritySource = severitySource
 		vulns[i].PrimaryURL = c.getPrimaryURL(vulnID, vuln.References, source)
-		vulns[i].Vulnerability.VendorSeverity = nil // Remove VendorSeverity from Results
 	}
 }
 
@@ -167,7 +167,7 @@ func filterVulnerabilities(vulns []types.DetectedVulnerability, severities []dbT
 			// Ignore unfixed vulnerabilities
 			if ignoreUnfixed && vuln.FixedVersion == "" {
 				continue
-			} else if utils.StringInSlice(vuln.VulnerabilityID, ignoredIDs) {
+			} else if slices.Contains(ignoredIDs, vuln.VulnerabilityID) {
 				continue
 			}
 
@@ -180,7 +180,7 @@ func filterVulnerabilities(vulns []types.DetectedVulnerability, severities []dbT
 			break
 		}
 	}
-	return toSlice(uniqVulns)
+	return maps.Values(uniqVulns)
 }
 
 func filterMisconfigurations(misconfs []types.DetectedMisconfiguration, severities []dbTypes.Severity,
@@ -192,7 +192,7 @@ func filterMisconfigurations(misconfs []types.DetectedMisconfiguration, severiti
 		// Filter misconfigurations by severity
 		for _, s := range severities {
 			if s.String() == misconf.Severity {
-				if utils.StringInSlice(misconf.ID, ignoredIDs) {
+				if slices.Contains(ignoredIDs, misconf.ID) {
 					continue
 				}
 
@@ -224,16 +224,6 @@ func summarize(status types.MisconfStatus, summary *types.MisconfSummary) {
 	case types.StatusException:
 		summary.Exceptions++
 	}
-}
-
-func toSlice(uniqVulns map[string]types.DetectedVulnerability) []types.DetectedVulnerability {
-	// Convert map to slice
-	var vulnerabilities []types.DetectedVulnerability
-	for _, vuln := range uniqVulns {
-		vulnerabilities = append(vulnerabilities, vuln)
-	}
-
-	return vulnerabilities
 }
 
 func applyPolicy(ctx context.Context, vulns []types.DetectedVulnerability, misconfs []types.DetectedMisconfiguration,

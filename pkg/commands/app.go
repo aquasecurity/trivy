@@ -13,7 +13,7 @@ import (
 	"github.com/aquasecurity/trivy-db/pkg/metadata"
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/commands/artifact"
-	"github.com/aquasecurity/trivy/pkg/commands/client"
+	"github.com/aquasecurity/trivy/pkg/commands/option"
 	"github.com/aquasecurity/trivy/pkg/commands/plugin"
 	"github.com/aquasecurity/trivy/pkg/commands/server"
 	"github.com/aquasecurity/trivy/pkg/result"
@@ -210,14 +210,14 @@ var (
 
 	token = cli.StringFlag{
 		Name:    "token",
-		Usage:   "for authentication",
+		Usage:   "for authentication in client/server mode",
 		EnvVars: []string{"TRIVY_TOKEN"},
 	}
 
 	tokenHeader = cli.StringFlag{
 		Name:    "token-header",
-		Value:   "Trivy-Token",
-		Usage:   "specify a header name for token",
+		Value:   option.DefaultTokenHeader,
+		Usage:   "specify a header name for token in client/server mode",
 		EnvVars: []string{"TRIVY_TOKEN_HEADER"},
 	}
 
@@ -313,6 +313,18 @@ var (
 		EnvVars: []string{"TRIVY_INSECURE"},
 	}
 
+	remoteServer = cli.StringFlag{
+		Name:    "server",
+		Usage:   "server address",
+		EnvVars: []string{"TRIVY_SERVER"},
+	}
+
+	customHeaders = cli.StringSliceFlag{
+		Name:    "custom-headers",
+		Usage:   "custom headers in client/server mode",
+		EnvVars: []string{"TRIVY_CUSTOM_HEADERS"},
+	}
+
 	// Global flags
 	globalFlags = []cli.Flag{
 		&quietFlag,
@@ -353,11 +365,13 @@ func NewApp(version string) *cli.App {
 		NewImageCommand(),
 		NewFilesystemCommand(),
 		NewRootfsCommand(),
+		NewSbomCommand(),
 		NewRepositoryCommand(),
 		NewClientCommand(),
 		NewServerCommand(),
 		NewConfigCommand(),
 		NewPluginCommand(),
+		NewVersionCommand(),
 	}
 	app.Commands = append(app.Commands, plugin.LoadCommands()...)
 
@@ -472,9 +486,17 @@ func NewFilesystemCommand() *cli.Command {
 			&offlineScan,
 			stringSliceFlag(skipFiles),
 			stringSliceFlag(skipDirs),
+
+			// for misconfiguration
 			stringSliceFlag(configPolicy),
 			stringSliceFlag(configData),
 			stringSliceFlag(policyNamespaces),
+
+			// for client/server
+			&remoteServer,
+			&token,
+			&tokenHeader,
+			&customHeaders,
 		},
 	}
 }
@@ -564,7 +586,7 @@ func NewClientCommand() *cli.Command {
 		Aliases:   []string{"c"},
 		ArgsUsage: "image_name",
 		Usage:     "client mode",
-		Action:    client.Run,
+		Action:    artifact.ImageRun,
 		Flags: []cli.Flag{
 			&templateFlag,
 			&formatFlag,
@@ -588,19 +610,16 @@ func NewClientCommand() *cli.Command {
 			&offlineScan,
 			&insecureFlag,
 
-			// original flags
 			&token,
 			&tokenHeader,
+			&customHeaders,
+
+			// original flags
 			&cli.StringFlag{
 				Name:    "remote",
 				Value:   "http://localhost:4954",
 				Usage:   "server address",
 				EnvVars: []string{"TRIVY_REMOTE"},
-			},
-			&cli.StringSliceFlag{
-				Name:    "custom-headers",
-				Usage:   "custom headers",
-				EnvVars: []string{"TRIVY_CUSTOM_HEADERS"},
 			},
 		},
 	}
@@ -713,6 +732,72 @@ func NewPluginCommand() *cli.Command {
 				ArgsUsage: "PLUGIN_NAME",
 				Action:    plugin.Update,
 			},
+		},
+	}
+}
+
+// NewSbomCommand is the factory method to add sbom command
+func NewSbomCommand() *cli.Command {
+	return &cli.Command{
+		Name:        "sbom",
+		ArgsUsage:   "ARTIFACT",
+		Usage:       "generate SBOM for an artifact",
+		Description: `ARTIFACT can be a container image, file path/directory, git repository or container image archive. See examples.`,
+		CustomHelpTemplate: cli.CommandHelpTemplate + `EXAMPLES:
+  - image scanning:
+      $ trivy sbom alpine:3.15
+
+  - filesystem scanning:
+      $ trivy sbom --artifact-type fs /path/to/myapp
+
+  - git repository scanning:
+      $ trivy sbom --artifact-type repo github.com/aquasecurity/trivy-ci-test
+
+  - image archive scanning:
+      $ trivy sbom --artifact-type archive ./alpine.tar
+
+`,
+		Action: artifact.SbomRun,
+		Flags: []cli.Flag{
+			&outputFlag,
+			&clearCacheFlag,
+			&ignoreFileFlag,
+			&timeoutFlag,
+			&severityFlag,
+			&offlineScan,
+			stringSliceFlag(skipFiles),
+			stringSliceFlag(skipDirs),
+
+			// dedicated options
+			&cli.StringFlag{
+				Name:    "artifact-type",
+				Aliases: []string{"type"},
+				Value:   "image",
+				Usage:   "input artifact type (image, fs, repo, archive)",
+				EnvVars: []string{"TRIVY_ARTIFACT_TYPE"},
+			},
+			&cli.StringFlag{
+				Name:    "sbom-format",
+				Aliases: []string{"format"},
+				Value:   "cyclonedx",
+				Usage:   "SBOM format (cyclonedx)",
+				EnvVars: []string{"TRIVY_SBOM_FORMAT"},
+			},
+		},
+	}
+}
+
+// NewVersionCommand adds version command
+func NewVersionCommand() *cli.Command {
+	return &cli.Command{
+		Name:  "version",
+		Usage: "print the version",
+		Action: func(ctx *cli.Context) error {
+			showVersion(ctx.String("cache-dir"), ctx.String("format"), ctx.App.Version, ctx.App.Writer)
+			return nil
+		},
+		Flags: []cli.Flag{
+			&formatFlag,
 		},
 	}
 }
