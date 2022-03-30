@@ -125,6 +125,14 @@ func TestTar(t *testing.T) {
 			golden: "testdata/ubuntu-1804-ignore-unfixed.json.golden",
 		},
 		{
+			name: "ubuntu 16.04-ESM",
+			testArgs: args{
+				Format: "json",
+				Input:  "testdata/fixtures/images/ubuntu-1604-esm.tar.gz",
+			},
+			golden: "testdata/ubuntu-1604-esm.json.golden",
+		},
+		{
 			name: "centos 7",
 			testArgs: args{
 				Format: "json",
