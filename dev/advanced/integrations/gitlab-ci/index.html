@@ -16,7 +16,7 @@
         
       
       <link rel="icon" href="../../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.2.3, mkdocs-material-8.2.6+insiders-4.11.0">
+      <meta name="generator" content="mkdocs-1.3.0, mkdocs-material-8.2.8+insiders-4.12.0">
     
     
       
@@ -24,7 +24,7 @@
       
     
     
-      <link rel="stylesheet" href="../../../assets/stylesheets/main.5216e7b8.min.css">
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.7d01766c.min.css">
       
         
         <link rel="stylesheet" href="../../../assets/stylesheets/palette.e6a45f82.min.css">
@@ -2292,6 +2292,13 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#gitlab-ci-alternative-template-example-report" class="md-nav__link">
+    Gitlab CI alternative template example report
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -2913,6 +2920,13 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#gitlab-ci-alternative-template-example-report" class="md-nav__link">
+    Gitlab CI alternative template example report
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -3052,8 +3066,13 @@ the <code>template</code> and <code>report</code> type. An updated example is be
 <span class="w">  </span><span class="nt">script</span><span class="p">:</span><span class="w"></span>
 <span class="w">    </span><span class="c1"># Build image</span><span class="w"></span>
 <span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">docker build -t $IMAGE .</span><span class="w"></span>
-<span class="w">    </span><span class="c1"># Build report</span><span class="w"></span>
-<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">./trivy image --exit-code 0 --format template --template &quot;@contrib/gitlab-codequality.tpl&quot; -o gl-codeclimate.json $IMAGE</span><span class="w"></span>
+<span class="w">    </span><span class="c1"># Image report</span><span class="w"></span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">./trivy image --exit-code 0 --format template --template &quot;@contrib/gitlab-codequality.tpl&quot; -o gl-codeclimate-image.json $IMAGE</span><span class="w"></span>
+<span class="w">    </span><span class="c1"># Filesystem report</span><span class="w"></span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">./trivy filesystem --security-checks config,vuln --exit-code 0 --format template --template &quot;@contrib/gitlab-codequality.tpl&quot; -o gl-codeclimate-fs.json .</span><span class="w"></span>
+<span class="w">    </span><span class="c1"># Combine report</span><span class="w"></span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">apk update &amp;&amp; apk add jq</span><span class="w"></span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">jq -s &#39;add&#39; gl-codeclimate-image.json gl-codeclimate-fs.json &gt; gl-codeclimate.json</span><span class="w"></span>
 <span class="w">  </span><span class="nt">cache</span><span class="p">:</span><span class="w"></span>
 <span class="w">    </span><span class="nt">paths</span><span class="p">:</span><span class="w"></span>
 <span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">.trivycache/</span><span class="w"></span>
@@ -3072,6 +3091,11 @@ already have a code quality report in your pipeline, you can use
 be necessary to rename the artifact if you want to reuse the name. To then
 combine the previous artifact with the output of trivy, the following <code>jq</code>
 command can be used, <code>jq -s 'add' prev-codeclimate.json trivy-codeclimate.json &gt; gl-codeclimate.json</code>.</p>
+<h3 id="gitlab-ci-alternative-template-example-report">Gitlab CI alternative template example report</h3>
+<p>You'll be able to see a full report in the Gitlab pipeline code quality UI, where filesystem vulnerabilities and misconfigurations include links to the flagged files and image vulnerabilities report the image/os or runtime/library that the vulnerability originates from instead.</p>
+<p align="left">
+  <img src="../../../imgs/gitlab-codequality.png" width="900">
+</p>
 
 
 
@@ -3137,10 +3161,10 @@ command can be used, <code>jq -s 'add' prev-codeclimate.json trivy-codeclimate.j
       <div class="md-dialog__inner md-typeset"></div>
     </div>
     
-    <script id="__config" type="application/json">{"base": "../../..", "features": ["navigation.tabs", "navigation.tabs.sticky", "navigation.sections"], "translations": {"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "search": "../../../assets/javascripts/workers/search.2c028271.min.js", "version": {"method": "mike", "provider": "mike"}}</script>
+    <script id="__config" type="application/json">{"base": "../../..", "features": ["navigation.tabs", "navigation.tabs.sticky", "navigation.sections"], "search": "../../../assets/javascripts/workers/search.2c028271.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.config.lang": "en", "search.config.pipeline": "stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "version": {"method": "mike", "provider": "mike"}}</script>
     
     
-      <script src="../../../assets/javascripts/bundle.dcd4d203.min.js"></script>
+      <script src="../../../assets/javascripts/bundle.714a356a.min.js"></script>
       
     
   </body>
