@@ -19,9 +19,10 @@ insecure `curl | sh`. Also the image is not changed.
 ```bash
 [...]
 # Run vulnerability scan on build image
+FROM aquasec/trivy:latest AS trivy
 FROM build AS vulnscan
-COPY --from=aquasec/trivy:latest /usr/local/bin/trivy /usr/local/bin/trivy
-RUN trivy rootfs --exit-code 1 --no-progress /
+COPY --from=trivy /usr/local/bin/trivy /usr/local/bin/trivy
+RUN trivy filesystem --exit-code 1 --no-progress /
 [...]
 ```
 
