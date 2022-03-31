@@ -16,9 +16,10 @@ import (
 )
 
 const (
-	dbMediaType  = "application/vnd.aquasec.trivy.db.layer.v1.tar+gzip"
+	dbMediaType         = "application/vnd.aquasec.trivy.db.layer.v1.tar+gzip"
 	defaultDBRepository = "ghcr.io/aquasecurity/trivy-db"
 )
+
 // Operation defines the DB operations
 type Operation interface {
 	NeedsUpdate(cliVersion string, skip bool) (need bool, err error)
