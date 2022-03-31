@@ -237,8 +237,8 @@ github.com/aquasecurity/bolt-fixtures v0.0.0-20200903104109-d34e7f983986 h1:2a30
 github.com/aquasecurity/bolt-fixtures v0.0.0-20200903104109-d34e7f983986/go.mod h1:NT+jyeCzXk6vXR5MTkdn4z64TgGfE5HMLC8qfj5unl8=
 github.com/aquasecurity/defsec v0.17.1 h1:gen/DInkQZ+BnV2X/UCI4Kb7SgJzPKiSb91duNhOWcg=
 github.com/aquasecurity/defsec v0.17.1/go.mod h1:fmymhKkorY0+cTGAML6LQI+BpCEP1zURaI8smST5rV0=
-github.com/aquasecurity/fanal v0.0.0-20220317181013-c4fac2e5fe9c h1:Php9oTqRg5CyEfLaxaLROfKHu6Wldc20+PkJwJczaOI=
-github.com/aquasecurity/fanal v0.0.0-20220317181013-c4fac2e5fe9c/go.mod h1:PL2i7JtbuPnLlJVG5HVPAVLMmAUdpA9J/iV7b7E5Gbg=
+github.com/aquasecurity/fanal v0.0.0-20220324154234-b2df5b98f8cd h1:hMHRTOuuWsPOGhYBV2MWkTVF8E6oRH0CMH4tKuNzm2M=
+github.com/aquasecurity/fanal v0.0.0-20220324154234-b2df5b98f8cd/go.mod h1:F83w17YIlAOD45TNtwgp1sUE9XqVzLARpynv+emTvGw=
 github.com/aquasecurity/go-dep-parser v0.0.0-20220302151315-ff6d77c26988 h1:Hd6q0/VF/bC/MT1K/63W2u5ChRIy6cPSQk0YbJ3Vcb8=
 github.com/aquasecurity/go-dep-parser v0.0.0-20220302151315-ff6d77c26988/go.mod h1:XxIz2s4UymZBcg9WwAc2km77lFt9rVE/LmKJe2YVOtY=
 github.com/aquasecurity/go-gem-version v0.0.0-20201115065557-8eed6fe000ce h1:QgBRgJvtEOBtUXilDb1MLi1p1MWoyFDXAu5DEUl5nwM=
@@ -253,8 +253,8 @@ github.com/aquasecurity/go-version v0.0.0-20210121072130-637058cfe492/go.mod h1:
 github.com/aquasecurity/testdocker v0.0.0-20210911155206-e1e85f5a1516 h1:moQmzbpLo5dxHQCyEhqzizsDSNrNhn/7uRTCZzo4A1o=
 github.com/aquasecurity/tfsec v1.8.0 h1:8U4JU/iJaWq6pcY48+R9kD6vDz58Ud1daUsw2l7hAsE=
 github.com/aquasecurity/tfsec v1.8.0/go.mod h1:Tnj1ozVkv45QdTi1wiVm8Efw3D7ztjQctztG+yU+JwY=
-github.com/aquasecurity/trivy-db v0.0.0-20220130223604-df65ebde46f4 h1:w/cU+uNDHHzMKLNpiohoHvPTtd1mi6Dyih4pqV6FLxQ=
-github.com/aquasecurity/trivy-db v0.0.0-20220130223604-df65ebde46f4/go.mod h1:BOulYmf+l2bd+Bjo3tTsdnbWCsh5UsJn1MqdiZzmm/Q=
+github.com/aquasecurity/trivy-db v0.0.0-20220327074450-74195d9604b2 h1:q2Gza4V8uO5C1COzC2HeTbQgJIrmC6dTWaXZ8ujiWu0=
+github.com/aquasecurity/trivy-db v0.0.0-20220327074450-74195d9604b2/go.mod h1:EwiQRdzVq6k7cKOMjkss8LjWMt2FUW7NaYwE7HfZZvk=
 github.com/armon/circbuf v0.0.0-20150827004946-bbbad097214e/go.mod h1:3U/XgcO3hCbHZ8TKRvWD2dDTCfh9M9ya+I9JpbB7O8o=
 github.com/armon/consul-api v0.0.0-20180202201655-eb2c6b5be1b6/go.mod h1:grANhF5doyWs3UAsr3K4I6qtAmlQcZDesFNEHPZAzj8=
 github.com/armon/go-metrics v0.0.0-20180917152333-f0300d1749da/go.mod h1:Q73ZrmVTwzkszR9V5SSuryQ31EELlFMUz1kKyl939pY=

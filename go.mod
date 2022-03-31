@@ -7,13 +7,13 @@ require (
 	github.com/Masterminds/sprig/v3 v3.2.2
 	github.com/NYTimes/gziphandler v0.0.0-20170623195520-56545f4a5d46
 	github.com/aquasecurity/bolt-fixtures v0.0.0-20200903104109-d34e7f983986
-	github.com/aquasecurity/fanal v0.0.0-20220317181013-c4fac2e5fe9c
+	github.com/aquasecurity/fanal v0.0.0-20220324154234-b2df5b98f8cd
 	github.com/aquasecurity/go-dep-parser v0.0.0-20220302151315-ff6d77c26988
 	github.com/aquasecurity/go-gem-version v0.0.0-20201115065557-8eed6fe000ce
 	github.com/aquasecurity/go-npm-version v0.0.0-20201110091526-0b796d180798
 	github.com/aquasecurity/go-pep440-version v0.0.0-20210121094942-22b2f8951d46
 	github.com/aquasecurity/go-version v0.0.0-20210121072130-637058cfe492
-	github.com/aquasecurity/trivy-db v0.0.0-20220130223604-df65ebde46f4
+	github.com/aquasecurity/trivy-db v0.0.0-20220327074450-74195d9604b2
 	github.com/caarlos0/env/v6 v6.9.1
 	github.com/cenkalti/backoff v2.2.1+incompatible
 	github.com/cheggaaa/pb/v3 v3.0.8
