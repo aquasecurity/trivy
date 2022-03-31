@@ -147,8 +147,8 @@ var (
 
 	securityChecksFlag = cli.StringFlag{
 		Name:    "security-checks",
-		Value:   types.SecurityCheckVulnerability,
-		Usage:   "comma-separated list of what security issues to detect (vuln,config)",
+		Value:   fmt.Sprintf("%s,%s", types.SecurityCheckVulnerability, types.SecurityCheckSecret),
+		Usage:   "comma-separated list of what security issues to detect (vuln,config,secret)",
 		EnvVars: []string{"TRIVY_SECURITY_CHECKS"},
 	}
 

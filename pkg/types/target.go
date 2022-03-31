@@ -28,11 +28,14 @@ const (
 
 	// SecurityCheckConfig is a security check of misconfigurations
 	SecurityCheckConfig = SecurityCheck("config")
+
+	// SecurityCheckSecret is a security check of secrets
+	SecurityCheckSecret = SecurityCheck("secret")
 )
 
 var (
 	vulnTypes      = []string{VulnTypeOS, VulnTypeLibrary}
-	securityChecks = []string{SecurityCheckVulnerability, SecurityCheckConfig}
+	securityChecks = []string{SecurityCheckVulnerability, SecurityCheckConfig, SecurityCheckSecret}
 )
 
 // NewVulnType returns an instance of VulnType
