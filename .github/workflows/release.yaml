@@ -21,7 +21,7 @@ jobs:
         run: |
           sudo apt-get -y update
           sudo apt-get -y install rpm reprepro createrepo distro-info
-      - uses: sigstore/cosign-installer@51f8e5c6fce54e46006ae97d73b2b6315f518752 # pin@v2.0.0
+      - uses: sigstore/cosign-installer@581838fbedd492d2350a9ecd427a95d6de1e5d01 # pin@v2.0.0
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v1
       - name: Set up Docker Buildx
