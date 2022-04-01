@@ -36,7 +36,7 @@ jobs:
           python-version: 3.7
       - name: Setup Chart Linting
         id: lint
-        uses: helm/chart-testing-action@6b64532d456fa490a3da177fbd181ac4c8192b58 #v2.1.0
+        uses: helm/chart-testing-action@dae259e86a35ff09145c0805e2d7dd3f7207064a #v2.1.0
       - name: Setup Kubernetes cluster (KIND)
         uses: helm/kind-action@94729529f85113b88f4f819c17ce61382e6d8478 #v1.2.0
         with:
