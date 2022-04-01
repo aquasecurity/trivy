@@ -35,7 +35,7 @@ require (
 	github.com/owenrumney/go-sarif/v2 v2.1.1
 	github.com/package-url/packageurl-go v0.1.1-0.20220203205134-d70459300c8a
 	github.com/spf13/afero v1.8.1 // indirect
-	github.com/stretchr/testify v1.7.0
+	github.com/stretchr/testify v1.7.1
 	github.com/testcontainers/testcontainers-go v0.12.0
 	github.com/twitchtv/twirp v8.1.1+incompatible
 	github.com/urfave/cli/v2 v2.3.0
