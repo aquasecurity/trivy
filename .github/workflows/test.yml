@@ -5,7 +5,7 @@ on:
       - main
   pull_request:
 env:
-  GO_VERSION: "1.17"
+  GO_VERSION: "1.18"
 jobs:
   lint:
     name: Lint
@@ -20,7 +20,7 @@ jobs:
       - name: Setup golangci-lint
         uses: golangci/golangci-lint-action@v3.1.0
         with:
-          version: v1.43
+          version: v1.45
           args : --verbose
           skip-go-installation: true
   unittest:
