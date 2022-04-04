@@ -81,8 +81,15 @@ func Parse(r dio.ReadSeekerAt, size int64, opts ...Option) ([]types.Library, err
 	retryClient.RetryMax = 5
 	client := retryClient.StandardClient()
 
+	// attempt to read the maven central api url from os environment, if it's
+	// not set use the default
+	mavenURL, ok := os.LookupEnv("MAVEN_CENTRAL_URL")
+	if !ok {
+		mavenURL = baseURL
+	}
+
 	c := conf{
-		baseURL:    baseURL,
+		baseURL:    mavenURL,
 		httpClient: client,
 	}
 	for _, opt := range opts {
