@@ -20,7 +20,7 @@ require (
 	github.com/docker/docker v20.10.12+incompatible
 	github.com/docker/go-connections v0.4.0
 	github.com/fatih/color v1.13.0
-	github.com/go-redis/redis/v8 v8.11.4
+	github.com/go-redis/redis/v8 v8.11.5
 	github.com/golang/protobuf v1.5.2
 	github.com/google/go-containerregistry v0.7.1-0.20211214010025-a65b7844a475
 	github.com/google/uuid v1.3.0
