@@ -38,11 +38,11 @@ Trivy is an [Aqua Security][aquasec] open source project.
 Learn about our open source work and portfolio [here][oss].  
 Contact us about any matter by opening a GitHub Discussion [here][discussions]
 
-[vulnerability]: vulnerability/scanning/index.md
-[misconf]: misconfiguration/index.md
-[os]: vulnerability/detection/os.md
-[lang]: vulnerability/detection/language.md
-[iac]: misconfiguration/iac.md
+[vulnerability]: docs/vulnerability/scanning/index.md
+[misconf]: docs/misconfiguration/index.md
+[os]: docs/vulnerability/detection/os.md
+[lang]: docs/vulnerability/detection/language.md
+[iac]: docs/misconfiguration/iac.md
 
 [aquasec]: https://aquasec.com
 [oss]: https://www.aquasec.com/products/open-source-projects/

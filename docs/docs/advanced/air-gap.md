@@ -109,5 +109,5 @@ In an air-gapped environment, specify `--skip-policy-update` so that Trivy doesn
 $ trivy conf --skip-policy-update /path/to/conf
 ```
 
-[allowlist]: ../getting-started/troubleshooting.md
+[allowlist]: ../references/troubleshooting.md
 [oras]: https://oras.land/cli/

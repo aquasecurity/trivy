@@ -7,105 +7,107 @@ repo_url: https://github.com/aquasecurity/trivy
 edit_uri: ""
 
 nav:
-  - HOME: index.md
-  - Getting started:
+    - HOME: index.md
+    - Getting started:
       - Overview: getting-started/overview.md
       - Installation: getting-started/installation.md
       - Quick Start: getting-started/quickstart.md
-      - Troubleshooting: getting-started/troubleshooting.md
       - Further Reading: getting-started/further.md
-      - Credits: getting-started/credit.md
-      - Reference:
-          - CLI:
-              - Overview: getting-started/cli/index.md
-              - Image: getting-started/cli/image.md
-              - Config: getting-started/cli/config.md
-              - Filesystem: getting-started/cli/fs.md
-              - Rootfs: getting-started/cli/rootfs.md
-              - Repository: getting-started/cli/repo.md
-              - Client: getting-started/cli/client.md
-              - Server: getting-started/cli/server.md
-              - SBOM: getting-started/cli/sbom.md
-  - Vulnerability:
-      - Scanning:
-          - Overview: vulnerability/scanning/index.md
-          - Container Image: vulnerability/scanning/image.md
-          - Filesystem: vulnerability/scanning/filesystem.md
-          - Rootfs: vulnerability/scanning/rootfs.md
-          - Git Repository: vulnerability/scanning/git-repository.md
-      - Detection:
-          - OS Packages: vulnerability/detection/os.md
-          - Language-specific Packages: vulnerability/detection/language.md
-          - Data Sources: vulnerability/detection/data-source.md
-          - Supported: vulnerability/detection/supported.md
-      - Examples:
-          - Vulnerability Filtering: vulnerability/examples/filter.md
-          - Report Formats: vulnerability/examples/report.md
-          - Vulnerability DB: vulnerability/examples/db.md
-          - Cache: vulnerability/examples/cache.md
-          - Others: vulnerability/examples/others.md
-  - Misconfiguration:
-      - Scanning:
-        - Overview: misconfiguration/index.md
-        - Infrastructure as Code: misconfiguration/iac.md
-        - Filesystem: misconfiguration/filesystem.md
-      - Policy:
-          - Built-in Policies: misconfiguration/policy/builtin.md
-          - Exceptions: misconfiguration/policy/exceptions.md
-      - Custom Policies:
-          - Overview: misconfiguration/custom/index.md
-          - Data: misconfiguration/custom/data.md
-          - Combine: misconfiguration/custom/combine.md
-          - Testing: misconfiguration/custom/testing.md
-          - Debugging Policies: misconfiguration/custom/debug.md
-          - Examples: misconfiguration/custom/examples.md
-      - Options:
-          - Policy: misconfiguration/options/policy.md
-          - Filtering: misconfiguration/options/filter.md
-          - Report Formats: misconfiguration/options/report.md
-          - Others: misconfiguration/options/others.md
-      - Comparison:
-          - vs Conftest: misconfiguration/comparison/conftest.md
-          - vs tfsec: misconfiguration/comparison/tfsec.md
-          - vs cfsec: misconfiguration/comparison/cfsec.md
-  - Advanced:
-      - Overview: advanced/index.md
-      - Plugins: advanced/plugins.md
-      - Air-Gapped Environment: advanced/air-gap.md
-      - SBOM:
-          - Overview: advanced/sbom/index.md
-          - CycloneDX: advanced/sbom/cyclonedx.md
-      - Integrations:
-          - Overview: advanced/integrations/index.md
-          - GitHub Actions: advanced/integrations/github-actions.md
-          - CircleCI: advanced/integrations/circleci.md
-          - Travis CI: advanced/integrations/travis-ci.md
-          - GitLab CI: advanced/integrations/gitlab-ci.md
-          - Bitbucket Pipelines: advanced/integrations/bitbucket.md
-          - AWS CodePipeline: advanced/integrations/aws-codepipeline.md
-          - AWS Security Hub: advanced/integrations/aws-security-hub.md
-      - Container Image:
-          - Embed in Dockerfile: advanced/container/embed-in-dockerfile.md
-          - Unpacked container image filesystem: advanced/container/unpacked-filesystem.md
-          - OCI Image: advanced/container/oci.md
-          - Podman: advanced/container/podman.md
-          - Private Docker Registries:
-              - Overview: advanced/private-registries/index.md
-              - Docker Hub: advanced/private-registries/docker-hub.md
-              - AWS ECR (Elastic Container Registry): advanced/private-registries/ecr.md
-              - GCR (Google Container Registry): advanced/private-registries/gcr.md
-              - ACR (Azure Container Registry): advanced/private-registries/acr.md
-              - Self-Hosted: advanced/private-registries/self.md
-      - Modes:
-          - Standalone: advanced/modes/standalone.md
-          - Client/Server: advanced/modes/client-server.md
-      - Community:
-          - Tools: advanced/community/tools.md
-          - References: advanced/community/references.md
-      - Maintainer:
-          - Help Wanted: advanced/contrib/help-wanted.md
-          - Triage: advanced/contrib/triage.md
-
+    - Docs:
+        - Overview: docs/index.md
+        - Vulnerability:
+            - Scanning:
+                - Overview: docs/vulnerability/scanning/index.md
+                - Container Image: docs/vulnerability/scanning/image.md
+                - Filesystem: docs/vulnerability/scanning/filesystem.md
+                - Rootfs: docs/vulnerability/scanning/rootfs.md
+                - Git Repository: docs/vulnerability/scanning/git-repository.md
+            - Detection:
+                - OS Packages: docs/vulnerability/detection/os.md
+                - Language-specific Packages: docs/vulnerability/detection/language.md
+                - Data Sources: docs/vulnerability/detection/data-source.md
+                - Supported: docs/vulnerability/detection/supported.md
+            - Examples:
+                - Vulnerability Filtering: docs/vulnerability/examples/filter.md
+                - Report Formats: docs/vulnerability/examples/report.md
+                - Vulnerability DB: docs/vulnerability/examples/db.md
+                - Cache: docs/vulnerability/examples/cache.md
+                - Others: docs/vulnerability/examples/others.md
+        - Misconfiguration:
+            - Scanning:
+                - Overview: docs/misconfiguration/index.md
+                - Infrastructure as Code: docs/misconfiguration/iac.md
+                - Filesystem: docs/misconfiguration/filesystem.md
+            - Policy:
+                - Built-in Policies: docs/misconfiguration/policy/builtin.md
+                - Exceptions: docs/misconfiguration/policy/exceptions.md
+            - Custom Policies:
+                - Overview: docs/misconfiguration/custom/index.md
+                - Data: docs/misconfiguration/custom/data.md
+                - Combine: docs/misconfiguration/custom/combine.md
+                - Testing: docs/misconfiguration/custom/testing.md
+                - Debugging Policies: docs/misconfiguration/custom/debug.md
+                - Examples: docs/misconfiguration/custom/examples.md
+            - Options:
+                - Policy: docs/misconfiguration/options/policy.md
+                - Filtering: docs/misconfiguration/options/filter.md
+                - Report Formats: docs/misconfiguration/options/report.md
+                - Others: docs/misconfiguration/options/others.md
+            - Comparison:
+                - vs Conftest: docs/misconfiguration/comparison/conftest.md
+                - vs tfsec: docs/misconfiguration/comparison/tfsec.md
+                - vs cfsec: docs/misconfiguration/comparison/cfsec.md
+        - SBOM:
+            - Overview: docs/sbom/index.md
+            - CycloneDX: docs/sbom/cyclonedx.md
+        - Integrations:
+            - Overview: docs/integrations/index.md
+            - GitHub Actions: docs/integrations/github-actions.md
+            - CircleCI: docs/integrations/circleci.md
+            - Travis CI: docs/integrations/travis-ci.md
+            - GitLab CI: docs/integrations/gitlab-ci.md
+            - Bitbucket Pipelines: docs/integrations/bitbucket.md
+            - AWS CodePipeline: docs/integrations/aws-codepipeline.md
+            - AWS Security Hub: docs/integrations/aws-security-hub.md
+        - Advanced:
+            - Plugins: docs/advanced/plugins.md
+            - Air-Gapped Environment: docs/advanced/air-gap.md
+            - Container Image:
+                - Embed in Dockerfile: docs/advanced/container/embed-in-dockerfile.md
+                - Unpacked container image filesystem: docs/advanced/container/unpacked-filesystem.md
+                - OCI Image: docs/advanced/container/oci.md
+                - Podman: docs/advanced/container/podman.md
+                - Private Docker Registries:
+                    - Overview: docs/advanced/private-registries/index.md
+                    - Docker Hub: docs/advanced/private-registries/docker-hub.md
+                    - AWS ECR (Elastic Container Registry): docs/advanced/private-registries/ecr.md
+                    - GCR (Google Container Registry): docs/advanced/private-registries/gcr.md
+                    - ACR (Azure Container Registry): docs/advanced/private-registries/acr.md
+                    - Self-Hosted: docs/advanced/private-registries/self.md
+        - References:
+            - CLI:
+                - Overview:  docs/references/cli/index.md
+                - Image:  docs/references/cli/image.md
+                - Config:  docs/references/cli/config.md
+                - Filesystem:  docs/references/cli/fs.md
+                - Rootfs:  docs/references/cli/rootfs.md
+                - Repository:  docs/references/cli/repo.md
+                - Client: docs/references/cli/client.md
+                - Server:  docs/references/cli/server.md
+                - Plugins: docs/references/cli/plugins.md
+                - SBOM: docs/references/cli/sbom.md
+            - Modes:
+                  - Standalone: docs/references/modes/standalone.md
+                  - Client/Server: docs/references/modes/client-server.md
+            - Troubleshooting: docs/references/troubleshooting.md
+    - Community:
+        - Tools: community/tools.md
+        - References: community/references.md
+        - CKS Reference: community/cks.md
+        - Credits: community/credit.md
+        - Maintainer:
+              - Help Wanted: community/contrib/help-wanted.md
+              - Triage: community/contrib/triage.md
 theme:
     name: material
     language: 'en'

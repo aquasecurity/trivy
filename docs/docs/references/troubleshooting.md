@@ -79,7 +79,7 @@ If trivy is running behind corporate firewall, you have to add the following url
 !!! error
     --skip-update cannot be specified with the old DB schema.
 
-Trivy v0.23.0 or later requires Trivy DB v2. Please update your local database or follow [the instruction of air-gapped environment][air-gapped].
+Trivy v0.23.0 or later requires Trivy DB v2. Please update your local database or follow [the instruction of air-gapped environment][../advanced/air-gap.md].
 
 ## Homebrew
 ### Scope error
@@ -130,4 +130,4 @@ Try again with `--reset` option:
 $ trivy image --reset
 ```
 
-[air-gapped]: ../advanced/air-gap.md
+[air-gapped]: ../how-to-guides/air-gap.md
