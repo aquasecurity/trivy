@@ -100,13 +100,13 @@ nav:
                 - SBOM: references/cli/sbom.md
             - Troubleshooting: references/troubleshooting.md
     - Community:
-        - How to contribute:
-            - Help Wanted: community/contrib/help-wanted.md
-            - Triage: community/contrib/triage.md
         - Tools: community/tools.md
         - References: community/references.md
         - CKS Reference: community/cks.md
         - Credits: community/credit.md
+        - Maintainer:
+              - Help Wanted: community/contrib/help-wanted.md
+              - Triage: community/contrib/triage.md
 theme:
     name: material
     language: 'en'
