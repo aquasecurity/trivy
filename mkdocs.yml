@@ -14,6 +14,7 @@ nav:
       - Quick Start: getting-started/quickstart.md
       - Further Reading: getting-started/further.md
     - Docs:
+        - Overview: docs/index.md
         - Vulnerability:
             - Scanning:
                 - Overview: docs/vulnerability/scanning/index.md
