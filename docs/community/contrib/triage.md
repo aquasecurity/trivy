@@ -1,7 +1,10 @@
+# Triage
+
 Triage is an important part of maintaining the health of the trivy repo.
 A well organized repo allows maintainers to prioritize feature requests, fix bugs, and respond to users facing difficulty with the tool as quickly as possible.
 
 Triage includes:
+
 - Labeling issues
 - Responding to issues
 - Closing issues
