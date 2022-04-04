@@ -60,7 +60,6 @@ nav:
             - Overview: sbom/index.md
             - CycloneDX: sbom/cyclonedx.md
         - Advanced:
-            - Overview: advanced/index.md
             - Plugins: advanced/plugins.md
             - Air-Gapped Environment: advanced/air-gap.md
             - Integrations:
