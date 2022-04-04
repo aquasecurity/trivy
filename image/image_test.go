@@ -93,7 +93,15 @@ func TestNewDockerImage(t *testing.T) {
 						EmptyLayer: false,
 					},
 				},
-				RootFS: v1.RootFS{Type: "layers", DiffIDs: []v1.Hash{v1.Hash{Algorithm: "sha256", Hex: "beee9f30bc1f711043e78d4a2be0668955d4b761d587d6f60c2c8dc081efb203"}}},
+				RootFS: v1.RootFS{
+					Type: "layers",
+					DiffIDs: []v1.Hash{
+						{
+							Algorithm: "sha256",
+							Hex:       "beee9f30bc1f711043e78d4a2be0668955d4b761d587d6f60c2c8dc081efb203",
+						},
+					},
+				},
 				Config: v1.Config{
 					Cmd:         []string{"/bin/sh"},
 					Env:         []string{"PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"},
@@ -130,7 +138,15 @@ func TestNewDockerImage(t *testing.T) {
 						EmptyLayer: false,
 					},
 				},
-				RootFS: v1.RootFS{Type: "layers", DiffIDs: []v1.Hash{v1.Hash{Algorithm: "sha256", Hex: "beee9f30bc1f711043e78d4a2be0668955d4b761d587d6f60c2c8dc081efb203"}}},
+				RootFS: v1.RootFS{
+					Type: "layers",
+					DiffIDs: []v1.Hash{
+						{
+							Algorithm: "sha256",
+							Hex:       "beee9f30bc1f711043e78d4a2be0668955d4b761d587d6f60c2c8dc081efb203",
+						},
+					},
+				},
 				Config: v1.Config{
 					Cmd:         []string{"/bin/sh"},
 					Env:         []string{"PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"},
@@ -171,7 +187,14 @@ func TestNewDockerImage(t *testing.T) {
 				},
 				OS: "linux",
 
-				RootFS: v1.RootFS{Type: "layers", DiffIDs: []v1.Hash{v1.Hash{Algorithm: "sha256", Hex: "531743b7098cb2aaf615641007a129173f63ed86ca32fe7b5a246a1c47286028"}}},
+				RootFS: v1.RootFS{
+					Type: "layers", DiffIDs: []v1.Hash{
+						{
+							Algorithm: "sha256",
+							Hex:       "531743b7098cb2aaf615641007a129173f63ed86ca32fe7b5a246a1c47286028",
+						},
+					},
+				},
 				Config: v1.Config{Env: []string{"PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"},
 					Cmd:         []string{"/bin/sh"},
 					Image:       "sha256:7c41e139ba64dd2eba852a2e963ee86f2e8da3a5bbfaf10cf4349535dbf0ff08",
@@ -217,7 +240,14 @@ func TestNewDockerImage(t *testing.T) {
 				},
 				OS: "linux",
 
-				RootFS: v1.RootFS{Type: "layers", DiffIDs: []v1.Hash{v1.Hash{Algorithm: "sha256", Hex: "531743b7098cb2aaf615641007a129173f63ed86ca32fe7b5a246a1c47286028"}}},
+				RootFS: v1.RootFS{
+					Type: "layers",
+					DiffIDs: []v1.Hash{
+						{
+							Algorithm: "sha256",
+							Hex:       "531743b7098cb2aaf615641007a129173f63ed86ca32fe7b5a246a1c47286028"},
+					},
+				},
 				Config: v1.Config{Env: []string{"PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"},
 					Cmd:         []string{"/bin/sh"},
 					Image:       "sha256:7c41e139ba64dd2eba852a2e963ee86f2e8da3a5bbfaf10cf4349535dbf0ff08",
