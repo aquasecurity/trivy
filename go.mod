@@ -4,7 +4,7 @@ go 1.17
 
 require (
 	github.com/Azure/azure-sdk-for-go v62.0.0+incompatible
-	github.com/Azure/go-autorest/autorest v0.11.24
+	github.com/Azure/go-autorest/autorest v0.11.25
 	github.com/Azure/go-autorest/autorest/adal v0.9.18
 	github.com/Azure/go-autorest/autorest/azure/auth v0.5.11
 	github.com/BurntSushi/toml v1.0.0
