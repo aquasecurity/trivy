@@ -56,13 +56,13 @@ nav:
                 - vs Conftest: misconfiguration/comparison/conftest.md
                 - vs tfsec: misconfiguration/comparison/tfsec.md
                 - vs cfsec: misconfiguration/comparison/cfsec.md
+        - SBOM:
+            - Overview: sbom/index.md
+            - CycloneDX: sbom/cyclonedx.md
         - Advanced:
             - Overview: advanced/index.md
             - Plugins: advanced/plugins.md
             - Air-Gapped Environment: advanced/air-gap.md
-            - SBOM:
-                - Overview: advanced/sbom/index.md
-                - CycloneDX: advanced/sbom/cyclonedx.md
             - Integrations:
                 - Overview: advanced/integrations/index.md
                 - GitHub Actions: advanced/integrations/github-actions.md
