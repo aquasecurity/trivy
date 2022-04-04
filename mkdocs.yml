@@ -59,18 +59,18 @@ nav:
         - SBOM:
             - Overview: docs/sbom/index.md
             - CycloneDX: docs/sbom/cyclonedx.md
+        - Integrations:
+            - Overview: docs/integrations/index.md
+            - GitHub Actions: docs/integrations/github-actions.md
+            - CircleCI: docs/integrations/circleci.md
+            - Travis CI: docs/integrations/travis-ci.md
+            - GitLab CI: docs/integrations/gitlab-ci.md
+            - Bitbucket Pipelines: docs/integrations/bitbucket.md
+            - AWS CodePipeline: docs/integrations/aws-codepipeline.md
+            - AWS Security Hub: docs/integrations/aws-security-hub.md
         - Advanced:
             - Plugins: docs/advanced/plugins.md
             - Air-Gapped Environment: docs/advanced/air-gap.md
-            - Integrations:
-                - Overview: docs/advanced/integrations/index.md
-                - GitHub Actions: docs/advanced/integrations/github-actions.md
-                - CircleCI: docs/advanced/integrations/circleci.md
-                - Travis CI: docs/advanced/integrations/travis-ci.md
-                - GitLab CI: docs/advanced/integrations/gitlab-ci.md
-                - Bitbucket Pipelines: docs/advanced/integrations/bitbucket.md
-                - AWS CodePipeline: docs/advanced/integrations/aws-codepipeline.md
-                - AWS Security Hub: docs/advanced/integrations/aws-security-hub.md
             - Container Image:
                 - Embed in Dockerfile: docs/advanced/container/embed-in-dockerfile.md
                 - Unpacked container image filesystem: docs/advanced/container/unpacked-filesystem.md
