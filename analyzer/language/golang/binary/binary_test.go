@@ -17,7 +17,6 @@ func Test_gobinaryLibraryAnalyzer_Analyze(t *testing.T) {
 		name      string
 		inputFile string
 		want      *analyzer.AnalysisResult
-		wantErr   string
 	}{
 		{
 			name:      "happy path",
@@ -43,7 +42,6 @@ func Test_gobinaryLibraryAnalyzer_Analyze(t *testing.T) {
 		{
 			name:      "broken elf",
 			inputFile: "testdata/broken_elf",
-			wantErr:   "unexpected EOF",
 		},
 	}
 	for _, tt := range tests {
@@ -59,11 +57,6 @@ func Test_gobinaryLibraryAnalyzer_Analyze(t *testing.T) {
 				Content:  f,
 			})
 
-			if tt.wantErr != "" {
-				require.NotNil(t, err)
-				assert.Contains(t, err.Error(), tt.wantErr)
-				return
-			}
 			assert.NoError(t, err)
 			assert.Equal(t, tt.want, got)
 		})
