@@ -140,8 +140,13 @@ trivy:
   script:
     # Build image
     - docker build -t $IMAGE .
-    # Build report
-    - ./trivy image --exit-code 0 --format template --template "@contrib/gitlab-codequality.tpl" -o gl-codeclimate.json $IMAGE
+    # Image report
+    - ./trivy image --exit-code 0 --format template --template "@contrib/gitlab-codequality.tpl" -o gl-codeclimate-image.json $IMAGE
+    # Filesystem report
+    - ./trivy filesystem --security-checks config,vuln --exit-code 0 --format template --template "@contrib/gitlab-codequality.tpl" -o gl-codeclimate-fs.json .
+    # Combine report
+    - apk update && apk add jq
+    - jq -s 'add' gl-codeclimate-image.json gl-codeclimate-fs.json > gl-codeclimate.json
   cache:
     paths:
       - .trivycache/
@@ -161,3 +166,11 @@ already have a code quality report in your pipeline, you can use
 be necessary to rename the artifact if you want to reuse the name. To then
 combine the previous artifact with the output of trivy, the following `jq`
 command can be used, `jq -s 'add' prev-codeclimate.json trivy-codeclimate.json > gl-codeclimate.json`.
+
+### Gitlab CI alternative template example report
+
+You'll be able to see a full report in the Gitlab pipeline code quality UI, where filesystem vulnerabilities and misconfigurations include links to the flagged files and image vulnerabilities report the image/os or runtime/library that the vulnerability originates from instead.
+
+<p align="left">
+  <img src="../../../imgs/gitlab-codequality.png" width="900">
+</p>
