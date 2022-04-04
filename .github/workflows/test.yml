@@ -16,7 +16,7 @@ jobs:
         with:
           go-version: ${{ env.GO_VERSION }}
       - name: Checkout repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
       - name: Setup golangci-lint
         uses: golangci/golangci-lint-action@v3.1.0
         with:
@@ -33,7 +33,7 @@ jobs:
         go-version: ${{ env.GO_VERSION }}
 
     - name: Check out code into the Go module directory
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
 
     - name: Install dependencies
       run: sudo apt-get update && sudo apt-get install libdb-dev
@@ -50,7 +50,7 @@ jobs:
       id: go
 
     - name: Check out code into the Go module directory
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
 
     - name: Install dependencies
       run: sudo apt-get update && sudo apt-get install libdb-dev
