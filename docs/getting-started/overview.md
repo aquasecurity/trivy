@@ -55,28 +55,30 @@ See [Integrations][integrations] for details.
         - An image directory compliant with [OCI Image Format][oci]
     - local filesystem and rootfs
     - remote git repository
-- SBOM (Software Bill of Materials) support
+- [SBOM][sbom] (Software Bill of Materials) support
     - CycloneDX 
 
 Please see [LICENSE][license] for Trivy licensing information.
 
-[vuln]: ../vulnerability/scanning/index.md
-[misconf]: ../misconfiguration/index.md
-[container]: ../vulnerability/scanning/image.md
-[rootfs]: ../vulnerability/scanning/rootfs.md
-[filesystem]: ../vulnerability/scanning/filesystem.md
-[repo]: ../vulnerability/scanning/git-repository.md
+[vuln]: ../docs/vulnerability/scanning/index.md
+[misconf]: ../docs/misconfiguration/index.md
+[container]: ../docs/vulnerability/scanning/image.md
+[rootfs]: ../docs/vulnerability/scanning/rootfs.md
+[filesystem]: ../docs/vulnerability/scanning/filesystem.md
+[repo]: ../docs/vulnerability/scanning/git-repository.md
 
-[standalone]: ../advanced/modes/standalone.md
-[client-server]: ../advanced/modes/client-server.md
-[integrations]: ../advanced/integrations/index.md
+[standalone]: ../docs/references/modes/standalone.md
+[client-server]: ../docs/references/modes/client-server.md
+[integrations]: ../docs/advanced/integrations/index.md
 
-[os]: ../vulnerability/detection/os.md
-[lang]: ../vulnerability/detection/language.md
+[os]: ../docs/vulnerability/detection/os.md
+[lang]: ../docs/vulnerability/detection/language.md
 
-[builtin]: ../misconfiguration/policy/builtin.md
+[builtin]: ../docs/misconfiguration/policy/builtin.md
 [quickstart]: quickstart.md
-[podman]: ../advanced/container/podman.md
+[podman]: ../docs/advanced/container/podman.md
+
+[sbom]: ../docs/sbom/index.md
 
 [oci]: https://github.com/opencontainers/image-spec
 [license]:  https://github.com/aquasecurity/trivy/blob/main/LICENSE

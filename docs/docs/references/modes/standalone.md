@@ -4,13 +4,13 @@
 
 ## Image
 
-![standalone](../../imgs/image.png)
+![standalone](../../../imgs/image.png)
 
 ## Filesystem
 
-![fs](../../imgs/fs.png)
+![fs](../../../imgs/fs.png)
 
 ## Git Repository
 
-![repo](../../imgs/repo.png)
+![repo](../../../imgs/repo.png)
 
