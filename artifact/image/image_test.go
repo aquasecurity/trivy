@@ -138,8 +138,15 @@ func TestArtifact_Inspect(t *testing.T) {
 								EmptyLayer: true,
 							},
 						},
-						OS:     "linux",
-						RootFS: v1.RootFS{Type: "layers", DiffIDs: []v1.Hash{v1.Hash{Algorithm: "sha256", Hex: "beee9f30bc1f711043e78d4a2be0668955d4b761d587d6f60c2c8dc081efb203"}}},
+						OS: "linux",
+						RootFS: v1.RootFS{
+							Type: "layers", DiffIDs: []v1.Hash{
+								{
+									Algorithm: "sha256",
+									Hex:       "beee9f30bc1f711043e78d4a2be0668955d4b761d587d6f60c2c8dc081efb203",
+								},
+							},
+						},
 						Config: v1.Config{
 							Cmd:      []string{"/bin/sh"},
 							Env:      []string{"PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"},
@@ -537,12 +544,26 @@ func TestArtifact_Inspect(t *testing.T) {
 							},
 						},
 						OS: "linux",
-						RootFS: v1.RootFS{Type: "layers", DiffIDs: []v1.Hash{v1.Hash{
-							Algorithm: "sha256", Hex: "932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02"},
-							{Algorithm: "sha256", Hex: "dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5"},
-							{Algorithm: "sha256", Hex: "24df0d4e20c0f42d3703bf1f1db2bdd77346c7956f74f423603d651e8e5ae8a7"},
-							{Algorithm: "sha256", Hex: "a4595c43a874856bf95f3bfc4fbf78bbaa04c92c726276d4f64193a47ced0566"},
-						},
+						RootFS: v1.RootFS{
+							Type: "layers",
+							DiffIDs: []v1.Hash{
+								{
+									Algorithm: "sha256",
+									Hex:       "932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
+								},
+								{
+									Algorithm: "sha256",
+									Hex:       "dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5",
+								},
+								{
+									Algorithm: "sha256",
+									Hex:       "24df0d4e20c0f42d3703bf1f1db2bdd77346c7956f74f423603d651e8e5ae8a7",
+								},
+								{
+									Algorithm: "sha256",
+									Hex:       "a4595c43a874856bf95f3bfc4fbf78bbaa04c92c726276d4f64193a47ced0566",
+								},
+							},
 						},
 						Config: v1.Config{
 							Env:      []string{"PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin", "SSL_CERT_FILE=/etc/ssl/certs/ca-certificates.crt"},
