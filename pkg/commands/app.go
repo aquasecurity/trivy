@@ -649,6 +649,7 @@ func NewServerCommand() *cli.Command {
 			&redisBackendCACert,
 			&redisBackendCert,
 			&redisBackendKey,
+			&dbRepositoryFlag,
 
 			// original flags
 			&token,
