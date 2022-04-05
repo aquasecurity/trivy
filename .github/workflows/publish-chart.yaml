@@ -23,11 +23,11 @@ jobs:
     runs-on: ubuntu-20.04
     steps:
       - name: Checkout
-        uses: actions/checkout@v3 #v2.4.0
+        uses: actions/checkout@ec3a7ce113134d7a93b817d10a8272cb61118579
         with:
           fetch-depth: 0
       - name: Install Helm
-        uses: azure/setup-helm@18bc76811624f360dbd7f18c2d4ecb32c7b87bab #v1.1
+        uses: azure/setup-helm@18bc76811624f360dbd7f18c2d4ecb32c7b87bab
         with:
           version: v3.5.0
       - name: Set up python
@@ -36,9 +36,9 @@ jobs:
           python-version: 3.7
       - name: Setup Chart Linting
         id: lint
-        uses: helm/chart-testing-action@dae259e86a35ff09145c0805e2d7dd3f7207064a #v2.1.0
+        uses: helm/chart-testing-action@dae259e86a35ff09145c0805e2d7dd3f7207064a
       - name: Setup Kubernetes cluster (KIND)
-        uses: helm/kind-action@94729529f85113b88f4f819c17ce61382e6d8478 #v1.2.0
+        uses: helm/kind-action@94729529f85113b88f4f819c17ce61382e6d8478
         with:
           version: ${{ env.KIND_VERSION }}
           image: ${{ env.KIND_IMAGE }}
@@ -56,7 +56,7 @@ jobs:
     runs-on: ubuntu-20.04
     steps:
       - name: Checkout
-        uses: actions/checkout@v3 #v2.4.0
+        uses: actions/checkout@ec3a7ce113134d7a93b817d10a8272cb61118579
         with:
           fetch-depth: 0
       - name: Install chart-releaser
