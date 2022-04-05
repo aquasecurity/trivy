@@ -39,7 +39,7 @@ https://developer.github.com/v3/#rate-limiting
 $ GITHUB_TOKEN=XXXXXXXXXX trivy alpine:3.10
 ```
 
-### Maven rate limiting
+### Maven rate limiting / inconsistent jar vulnerability reporting
 
 !!! error
     ``` bash
@@ -49,14 +49,41 @@ $ GITHUB_TOKEN=XXXXXXXXXX trivy alpine:3.10
     ```
 
 Trivy calls Maven API for better detection of JAR files, but many requests may exceed rate limiting.
-If it happens frequently, try the `--offline-scan` option to stop Trivy from making API requests.
+This can easily happen if you are running more than one instance of Trivy which is concurrently scanning multiple images.
+Once this starts happening Trivy's vulnerability reporting on jar files may become inconsistent.
+There are two options to resolve this issue:
+
+The first is to enable offline scanning using the `--offline-scan` option to stop Trivy from making API requests.
 This option affects only vulnerability scanning. The vulnerability database and builtin policies are downloaded as usual.
 If you want to skip them as well, you can try `--skip-update` and `--skip-policy-update`.
+**Note that a number of vulnerabilities might be fewer than without the `--offline-scan` option.**
 
-Note that a number of vulnerabilities might be fewer than without the `--offline-scan` option.
+The second, more scalable, option is the place Trivy behind a rate-limiting forward-proxy to the Maven Central API.
+One way to achieve this is to use nginx. You can use the following nginx config to enable both rate-limiting and caching (the caching greatly reduces the number of calls to the Maven Central API, especially if you are scanning a lot of similar images):
+
+```nginx
+limit_req_zone global zone=maven:1m rate=10r/s;
+proxy_cache_path /tmp/cache keys_zone=mavencache:10m;
+
+server {
+  listen 80;
+  proxy_cache mavencache;
+
+  location / {
+    limit_req zone=maven burst=1000;
+    proxy_cache_valid any 1h;
+    proxy_pass https://search.maven.org:443;
+  }
+}
+```
+
+This config file will allow a maximum of 10 requests per second to the Maven API, this number was determined experimentally so you might want to use something else if it doesn't fit your needs.
+
+Once nginx is up and running, you need to tell all your Trivy deployments to proxy their Maven API calls through nginx. You can do this by setting the `MAVEN_CENTRAL_URL` environment variable. For example, if your nginx proxy is running at `127.0.0.1`, you can set `MAVEN_CENTRAL_URL=http://127.0.0.1/solrsearch/select`.
+
 
 ### Running in parallel takes same time as series run
-When running trivy on multiple images simultaneously, it will take same time as running trivy in series.  
+When running trivy on multiple images simultaneously, it will take same time as running trivy in series.
 This is because of a limitation of boltdb.
 > Bolt obtains a file lock on the data file so multiple processes cannot open the same database at the same time. Opening an already open Bolt database will cause it to hang until the other process closes it.
 
