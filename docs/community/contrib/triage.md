@@ -1,7 +1,10 @@
+# Triage
+
 Triage is an important part of maintaining the health of the trivy repo.
 A well organized repo allows maintainers to prioritize feature requests, fix bugs, and respond to users facing difficulty with the tool as quickly as possible.
 
 Triage includes:
+
 - Labeling issues
 - Responding to issues
 - Closing issues
@@ -185,7 +188,7 @@ We use two labels [help wanted](https://github.com/aquasecurity/trivy/issues?q=i
 and [good first issue](https://github.com/aquasecurity/trivy/issues?q=is%3Aopen+is%3Aissue+label%3A%22good+first+issue%22)
 to identify issues that have been specially groomed for new contributors.
 
-We have specific [guidelines](/docs/advanced/contribd/contrib/help-wanted.md)
+We have specific [guidelines](/docs/docs/advanced/contribd/contrib/help-wanted.md)
 for how to use these labels. If you see an issue that satisfies these
 guidelines, you can add the `help wanted` label and the `good first issue` label.
 Please note that adding the `good first issue` label must also 

@@ -171,6 +171,4 @@ command can be used, `jq -s 'add' prev-codeclimate.json trivy-codeclimate.json >
 
 You'll be able to see a full report in the Gitlab pipeline code quality UI, where filesystem vulnerabilities and misconfigurations include links to the flagged files and image vulnerabilities report the image/os or runtime/library that the vulnerability originates from instead.
 
-<p align="left">
-  <img src="../../../imgs/gitlab-codequality.png" width="900">
-</p>
+![codequality](../../imgs/gitlab-codequality.png)
