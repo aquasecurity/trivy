@@ -80,6 +80,8 @@ github.com/Azure/azure-sdk-for-go v38.0.0+incompatible/go.mod h1:9XXNKU+eRnpl9mo
 github.com/Azure/azure-sdk-for-go v42.3.0+incompatible/go.mod h1:9XXNKU+eRnpl9moKnB4QOLf1HestfXbmab5FXxiDBjc=
 github.com/Azure/azure-sdk-for-go v62.0.0+incompatible h1:8N2k27SYtc12qj5nTsuFMFJPZn5CGmgMWqTy4y9I7Jw=
 github.com/Azure/azure-sdk-for-go v62.0.0+incompatible/go.mod h1:9XXNKU+eRnpl9moKnB4QOLf1HestfXbmab5FXxiDBjc=
+github.com/Azure/azure-sdk-for-go v63.0.0+incompatible h1:whPsa+jCHQSo5wGMPNLw4bz8q9Co2+vnXHzXGctoTaQ=
+github.com/Azure/azure-sdk-for-go v63.0.0+incompatible/go.mod h1:9XXNKU+eRnpl9moKnB4QOLf1HestfXbmab5FXxiDBjc=
 github.com/Azure/azure-service-bus-go v0.9.1/go.mod h1:yzBx6/BUGfjfeqbRZny9AQIbIe3AcV9WZbAdpkoXOa0=
 github.com/Azure/azure-storage-blob-go v0.8.0/go.mod h1:lPI3aLPpuLTeUwh1sViKXFxwl2B6teiRqI0deQUvsw0=
 github.com/Azure/go-ansiterm v0.0.0-20170929234023-d6e3b3328b78 h1:w+iIsaOQNcT7OZ575w+acHgRric5iCyQh+xv+KJ4HB8=
@@ -240,8 +242,12 @@ github.com/aquasecurity/defsec v0.28.3 h1:OKHgRDIUEVCMPUuCJR3V2FmEe/f9gadjUCBcUX
 github.com/aquasecurity/defsec v0.28.3/go.mod h1:vUdThwusBM7y1gJ7CVX3+h3bsPvpmOIEp3NEdzTDkhA=
 github.com/aquasecurity/fanal v0.0.0-20220404155252-996e81f58b02 h1:Ptpnq9BA0kkFeHtIRmRiiq7SwGzX90ZZodw707cAskM=
 github.com/aquasecurity/fanal v0.0.0-20220404155252-996e81f58b02/go.mod h1:1hHGpqNoLX+qV9S4Tdjh3ivHhojHo2WZiOfAuEmUmfQ=
+github.com/aquasecurity/fanal v0.0.0-20220404213928-818487554375 h1:0HvuS+ZZY28pI5Vk+Ggx12ZKLOVtJRHhDC+BJ5jWCok=
+github.com/aquasecurity/fanal v0.0.0-20220404213928-818487554375/go.mod h1:E4HBsvB6ze5EKRwRnYKoYXJ23y+6wXYgT1LnaxpXl2U=
 github.com/aquasecurity/go-dep-parser v0.0.0-20220302151315-ff6d77c26988 h1:Hd6q0/VF/bC/MT1K/63W2u5ChRIy6cPSQk0YbJ3Vcb8=
 github.com/aquasecurity/go-dep-parser v0.0.0-20220302151315-ff6d77c26988/go.mod h1:XxIz2s4UymZBcg9WwAc2km77lFt9rVE/LmKJe2YVOtY=
+github.com/aquasecurity/go-dep-parser v0.0.0-20220404084355-b8c54558919c h1:NGIklGx3comWl9rdrDtIWCPBrX9fIOR1bo3aBJfY6ps=
+github.com/aquasecurity/go-dep-parser v0.0.0-20220404084355-b8c54558919c/go.mod h1:Tgqzk/cfFdjQTsz711GlFe8ugnTKKEwrsnL8DY0f4kA=
 github.com/aquasecurity/go-gem-version v0.0.0-20201115065557-8eed6fe000ce h1:QgBRgJvtEOBtUXilDb1MLi1p1MWoyFDXAu5DEUl5nwM=
 github.com/aquasecurity/go-gem-version v0.0.0-20201115065557-8eed6fe000ce/go.mod h1:HXgVzOPvXhVGLJs4ZKO817idqr/xhwsTcj17CLYY74s=
 github.com/aquasecurity/go-npm-version v0.0.0-20201110091526-0b796d180798 h1:eveqE9ivrt30CJ7dOajOfBavhZ4zPqHcZe/4tKp0alc=
