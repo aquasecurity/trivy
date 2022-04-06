@@ -7,8 +7,8 @@ require (
 	github.com/Masterminds/sprig/v3 v3.2.2
 	github.com/NYTimes/gziphandler v0.0.0-20170623195520-56545f4a5d46
 	github.com/aquasecurity/bolt-fixtures v0.0.0-20200903104109-d34e7f983986
-	github.com/aquasecurity/fanal v0.0.0-20220405131907-55a9aabfbe72
-	github.com/aquasecurity/go-dep-parser v0.0.0-20220404084355-b8c54558919c
+	github.com/aquasecurity/fanal v0.0.0-20220406084015-9cc93a8482b8
+	github.com/aquasecurity/go-dep-parser v0.0.0-20220406074731-71021a481237
 	github.com/aquasecurity/go-gem-version v0.0.0-20201115065557-8eed6fe000ce
 	github.com/aquasecurity/go-npm-version v0.0.0-20201110091526-0b796d180798
 	github.com/aquasecurity/go-pep440-version v0.0.0-20210121094942-22b2f8951d46
