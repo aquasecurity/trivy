@@ -14,6 +14,7 @@ type DBOption struct {
 	SkipDBUpdate   bool
 	Light          bool
 	NoProgress     bool
+	DBRepository   string
 }
 
 // NewDBOption is the factory method to return the DBOption
@@ -24,6 +25,7 @@ func NewDBOption(c *cli.Context) DBOption {
 		SkipDBUpdate:   c.Bool("skip-db-update"),
 		Light:          c.Bool("light"),
 		NoProgress:     c.Bool("no-progress"),
+		DBRepository:   c.String("db-repository"),
 	}
 }
 

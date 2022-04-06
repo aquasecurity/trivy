@@ -21,7 +21,7 @@ message PackageInfo {
 message Application {
   string           type      = 1;
   string           file_path = 2;
-  repeated Library libraries = 3;
+  repeated Package libraries = 3;
 }
 
 message Package {
@@ -40,12 +40,7 @@ message Package {
   int32  src_epoch   = 9;
   string license     = 10;
   Layer  layer       = 11;
-}
-
-message Library {
-  string name    = 1;
-  string version = 2;
-  string license = 3;
+  string file_path   = 12;
 }
 
 message Misconfiguration {
@@ -102,6 +97,7 @@ message Vulnerability {
   repeated string           vendor_ids           = 19;
   DataSource                data_source          = 20;
   map<string,Severity>      vendor_severity      = 21;
+  string                    pkg_path             = 22;
 }
 
 message DataSource {

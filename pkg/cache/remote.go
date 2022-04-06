@@ -61,3 +61,12 @@ func (c RemoteCache) MissingBlobs(imageID string, layerIDs []string) (bool, []st
 	}
 	return layers.MissingArtifact, layers.MissingBlobIds, nil
 }
+
+// DeleteBlobs removes blobs by IDs from RemoteCache
+func (c RemoteCache) DeleteBlobs(blobIDs []string) error {
+	_, err := c.client.DeleteBlobs(c.ctx, rpc.ConvertToDeleteBlobsRequest(blobIDs))
+	if err != nil {
+		return xerrors.Errorf("unable to delete blobs on the server: %w", err)
+	}
+	return nil
+}

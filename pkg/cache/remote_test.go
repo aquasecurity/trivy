@@ -51,6 +51,15 @@ func (s *mockCacheServer) MissingBlobs(_ context.Context, in *rpcCache.MissingBl
 	return &rpcCache.MissingBlobsResponse{MissingArtifact: true, MissingBlobIds: layerIDs}, nil
 }
 
+func (s *mockCacheServer) DeleteBlobs(_ context.Context, in *rpcCache.DeleteBlobsRequest) (*google_protobuf.Empty, error) {
+	for _, blobId := range in.GetBlobIds() {
+		if strings.Contains(blobId, "invalid") {
+			return &google_protobuf.Empty{}, xerrors.New("invalid layer ID")
+		}
+	}
+	return &google_protobuf.Empty{}, nil
+}
+
 func withToken(base http.Handler, token, tokenHeader string) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if token != "" && token != r.Header.Get(tokenHeader) {
