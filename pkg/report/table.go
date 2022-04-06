@@ -134,7 +134,7 @@ func (tw TableWriter) setVulnerabilityRows(table *tablewriter.Table, vulns []typ
 		severityCount[v.Severity]++
 		lib := v.PkgName
 		if v.PkgPath != "" {
-			lib = fmt.Sprintf("%s. PkgPath: %q", v.PkgName, v.PkgPath)
+			lib = fmt.Sprintf("%s (%s)", v.PkgName, v.PkgPath)
 		}
 
 		title := v.Title
