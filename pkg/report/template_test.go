@@ -7,7 +7,6 @@ import (
 	"time"
 
 	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
 
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/report"
@@ -29,6 +28,9 @@ func TestReportWriter_Template(t *testing.T) {
 					PkgName:         "foo",
 					Vulnerability: dbTypes.Vulnerability{
 						Severity: dbTypes.SeverityHigh.String(),
+						VendorSeverity: map[dbTypes.SourceID]dbTypes.Severity{
+							"nvd": 1,
+						},
 					},
 				},
 				{
@@ -182,43 +184,6 @@ func TestReportWriter_Template(t *testing.T) {
 			})
 			assert.NoError(t, err)
 			assert.Equal(t, tc.expected, got.String())
-		})
-	}
-}
-
-func TestReportWriter_Template_SARIF(t *testing.T) {
-	testCases := []struct {
-		name          string
-		target        string
-		detectedVulns []types.DetectedVulnerability
-		want          string
-	}{
-		//TODO: refactor tests
-	}
-	for _, tc := range testCases {
-		t.Run(tc.name, func(t *testing.T) {
-			templateFile := "../../contrib/sarif.tpl"
-			got := bytes.Buffer{}
-
-			template, err := os.ReadFile(templateFile)
-			require.NoError(t, err, tc.name)
-
-			inputReport := types.Report{
-				Results: types.Results{
-					{
-						Target:          tc.target,
-						Type:            "footype",
-						Vulnerabilities: tc.detectedVulns,
-					},
-				},
-			}
-			err = report.Write(inputReport, report.Option{
-				Format:         "template",
-				Output:         &got,
-				OutputTemplate: string(template),
-			})
-			assert.NoError(t, err)
-			assert.JSONEq(t, tc.want, got.String(), tc.name)
 		})
 	}
 }

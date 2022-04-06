@@ -56,6 +56,8 @@ func NewCache(c option.CacheOption) (Cache, error) {
 		redisCache := cache.NewRedisCache(options)
 		return Cache{Cache: redisCache}, nil
 	}
+
+	// standalone mode
 	fsCache, err := cache.NewFSCache(utils.CacheDir())
 	if err != nil {
 		return Cache{}, xerrors.Errorf("unable to initialize fs cache: %w", err)
@@ -93,8 +95,8 @@ func (c Cache) ClearArtifacts() error {
 }
 
 // DownloadDB downloads the DB
-func DownloadDB(appVersion, cacheDir string, quiet, skipUpdate bool) error {
-	client := db.NewClient(cacheDir, quiet)
+func DownloadDB(appVersion, cacheDir, dbRepository string, quiet, skipUpdate bool) error {
+	client := db.NewClient(cacheDir, quiet, db.WithDBRepository(dbRepository))
 	ctx := context.Background()
 	needsUpdate, err := client.NeedsUpdate(appVersion, skipUpdate)
 	if err != nil {
@@ -103,6 +105,7 @@ func DownloadDB(appVersion, cacheDir string, quiet, skipUpdate bool) error {
 
 	if needsUpdate {
 		log.Logger.Info("Need to update DB")
+		log.Logger.Infof("DB Repository: %s", dbRepository)
 		log.Logger.Info("Downloading DB...")
 		if err = client.Download(ctx, cacheDir); err != nil {
 			return xerrors.Errorf("failed to download vulnerability DB: %w", err)

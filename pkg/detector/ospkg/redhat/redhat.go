@@ -7,6 +7,7 @@ import (
 	"time"
 
 	version "github.com/knqyf263/go-rpm-version"
+	"golang.org/x/exp/maps"
 	"golang.org/x/xerrors"
 	"k8s.io/utils/clock"
 
@@ -179,11 +180,7 @@ func (s *Scanner) detect(osVer string, pkg ftypes.Package) ([]types.DetectedVuln
 		}
 	}
 
-	var vulns []types.DetectedVulnerability
-	for _, vuln := range uniqVulns {
-		vulns = append(vulns, vuln)
-	}
-
+	vulns := maps.Values(uniqVulns)
 	sort.Slice(vulns, func(i, j int) bool {
 		return vulns[i].VulnerabilityID < vulns[j].VulnerabilityID
 	})

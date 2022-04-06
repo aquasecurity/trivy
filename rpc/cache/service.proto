@@ -11,6 +11,7 @@ service Cache {
   rpc PutArtifact(PutArtifactRequest) returns (google.protobuf.Empty);
   rpc PutBlob(PutBlobRequest) returns (google.protobuf.Empty);
   rpc MissingBlobs(MissingBlobsRequest) returns (MissingBlobsResponse);
+  rpc DeleteBlobs(DeleteBlobsRequest) returns (google.protobuf.Empty);
 }
 
 message ArtifactInfo {
@@ -58,4 +59,8 @@ message MissingBlobsRequest {
 message MissingBlobsResponse {
   bool            missing_artifact = 1;
   repeated string missing_blob_ids = 2;
+}
+
+message DeleteBlobsRequest {
+  repeated string blob_ids = 1;
 }

@@ -16,8 +16,8 @@ import (
 )
 
 const (
-	dbRepository = "ghcr.io/aquasecurity/trivy-db"
-	dbMediaType  = "application/vnd.aquasec.trivy.db.layer.v1.tar+gzip"
+	dbMediaType         = "application/vnd.aquasec.trivy.db.layer.v1.tar+gzip"
+	defaultDBRepository = "ghcr.io/aquasecurity/trivy-db"
 )
 
 // Operation defines the DB operations
@@ -27,8 +27,9 @@ type Operation interface {
 }
 
 type options struct {
-	artifact *oci.Artifact
-	clock    clock.Clock
+	artifact     *oci.Artifact
+	clock        clock.Clock
+	dbRepository string
 }
 
 // Option is a functional option
@@ -38,6 +39,13 @@ type Option func(*options)
 func WithOCIArtifact(art *oci.Artifact) Option {
 	return func(opts *options) {
 		opts.artifact = art
+	}
+}
+
+// WithDBRepository takes a dbRepository
+func WithDBRepository(dbRepository string) Option {
+	return func(opts *options) {
+		opts.dbRepository = dbRepository
 	}
 }
 
@@ -60,7 +68,8 @@ type Client struct {
 // NewClient is the factory method for DB client
 func NewClient(cacheDir string, quiet bool, opts ...Option) *Client {
 	o := &options{
-		clock: clock.RealClock{},
+		clock:        clock.RealClock{},
+		dbRepository: defaultDBRepository,
 	}
 
 	for _, opt := range opts {
@@ -94,6 +103,7 @@ func (c *Client) NeedsUpdate(cliVersion string, skip bool) (bool, error) {
 	}
 
 	if skip {
+		log.Logger.Debug("Skipping DB update...")
 		if err = c.validate(meta); err != nil {
 			return false, xerrors.Errorf("validate error: %w", err)
 		}
@@ -101,6 +111,7 @@ func (c *Client) NeedsUpdate(cliVersion string, skip bool) (bool, error) {
 	}
 
 	if db.SchemaVersion != meta.Version {
+		log.Logger.Debugf("The local DB schema version (%d) does not match with supported version schema (%d).", meta.Version, db.SchemaVersion)
 		return true, nil
 	}
 
@@ -109,8 +120,9 @@ func (c *Client) NeedsUpdate(cliVersion string, skip bool) (bool, error) {
 
 func (c *Client) validate(meta metadata.Metadata) error {
 	if db.SchemaVersion != meta.Version {
-		log.Logger.Error("The local DB has an old schema version which is not supported by the current version of Trivy CLI. It needs to be updated.")
-		return xerrors.New("--skip-update cannot be specified with the old DB schema")
+		log.Logger.Error("The local DB has an old schema version which is not supported by the current version of Trivy CLI. DB needs to be updated.")
+		return xerrors.Errorf("--skip-update cannot be specified with the old DB schema. Local DB: %d, Expected: %d",
+			meta.Version, db.SchemaVersion)
 	}
 	return nil
 }
@@ -170,7 +182,7 @@ func (c *Client) updateDownloadedAt(dst string) error {
 
 func (c *Client) populateOCIArtifact() error {
 	if c.artifact == nil {
-		repo := fmt.Sprintf("%s:%d", dbRepository, db.SchemaVersion)
+		repo := fmt.Sprintf("%s:%d", c.dbRepository, db.SchemaVersion)
 		art, err := oci.NewArtifact(repo, dbMediaType, c.quiet)
 		if err != nil {
 			return xerrors.Errorf("OCI artifact error: %w", err)
