@@ -267,7 +267,7 @@ func (p parser) dependencyManagement(deps []pomDependency, props properties) map
 			art := newArtifact(d.GroupID, d.ArtifactID, d.Version, props)
 			result, err := p.resolve(art)
 			if err == nil {
-				depManagement = p.mergeDependencyManagement(depManagement, result.dependencyManagement)
+				depManagement = p.mergeDependencyManagement(result.dependencyManagement, depManagement)
 			}
 			continue
 		}

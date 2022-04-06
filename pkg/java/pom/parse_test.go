@@ -229,6 +229,21 @@ func TestPom_Parse(t *testing.T) {
 			},
 		},
 		{
+			name:      "import multiple dependencyManagement",
+			inputFile: filepath.Join("testdata", "import-dependency-management-multiple", "pom.xml"),
+			local:     true,
+			want: []types.Library{
+				{
+					Name:    "com.example:import",
+					Version: "2.0.0",
+				},
+				{
+					Name:    "org.example:example-api",
+					Version: "1.7.30",
+				},
+			},
+		},
+		{
 			name:      "exclusions",
 			inputFile: filepath.Join("testdata", "exclusions", "pom.xml"),
 			local:     true,
