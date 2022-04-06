@@ -132,6 +132,10 @@ func (tw TableWriter) setVulnerabilityRows(table *tablewriter.Table, vulns []typ
 	severityCount := map[string]int{}
 	for _, v := range vulns {
 		severityCount[v.Severity]++
+		lib := v.PkgName
+		if v.PkgPath != "" {
+			lib = fmt.Sprintf("%s (%s)", v.PkgName, v.PkgPath)
+		}
 
 		title := v.Title
 		if title == "" {
@@ -149,10 +153,10 @@ func (tw TableWriter) setVulnerabilityRows(table *tablewriter.Table, vulns []typ
 
 		var row []string
 		if tw.Output == os.Stdout {
-			row = []string{v.PkgName, v.VulnerabilityID, dbTypes.ColorizeSeverity(v.Severity),
+			row = []string{lib, v.VulnerabilityID, dbTypes.ColorizeSeverity(v.Severity),
 				v.InstalledVersion, v.FixedVersion, strings.TrimSpace(title)}
 		} else {
-			row = []string{v.PkgName, v.VulnerabilityID, v.Severity, v.InstalledVersion, v.FixedVersion, strings.TrimSpace(title)}
+			row = []string{lib, v.VulnerabilityID, v.Severity, v.InstalledVersion, v.FixedVersion, strings.TrimSpace(title)}
 		}
 
 		table.Append(row)
