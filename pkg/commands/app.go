@@ -777,6 +777,7 @@ func NewSbomCommand() *cli.Command {
 			&timeoutFlag,
 			&severityFlag,
 			&offlineScan,
+			&dbRepositoryFlag,
 			stringSliceFlag(skipFiles),
 			stringSliceFlag(skipDirs),
 
