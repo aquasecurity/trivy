@@ -37,7 +37,7 @@ updates:
     - "aplazame/squad_devops-reviewers"
 
 - package-ecosystem: github-actions
-  directory: "/.github/workflows"
+  directory: "/"
   schedule:
     interval: daily
     time: "09:00"
