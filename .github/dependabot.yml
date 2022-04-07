@@ -1,10 +1,55 @@
 version: 2
 updates:
+- package-ecosystem: gomod
+  directory: "/"
+  schedule:
+    interval: daily
+    time: "09:00"
+    timezone: Europe/Madrid
+  open-pull-requests-limit: 10
+  commit-message:
+    prefix: "[Dep][gomod] "
+  #ignore:
+    #- dependency-name: "django"
+      # For django, ignore all updates for version 3.2.x and 4.x
+      #versions: [ "3.2", "4" ]
+  labels:
+    - dependabot
+  reviewers:
+    - "aplazame/squad_devops-reviewers"
+
+- package-ecosystem: gomod
+  directory: "/examples/misconf/go-testing"
+  schedule:
+    interval: daily
+    time: "09:00"
+    timezone: Europe/Madrid
+  open-pull-requests-limit: 10
+  commit-message:
+    prefix: "[Dep][gomod] "
+  #ignore:
+    #- dependency-name: "django"
+      # For django, ignore all updates for version 3.2.x and 4.x
+      #versions: [ "3.2", "4" ]
+  labels:
+    - dependabot
+  reviewers:
+    - "aplazame/squad_devops-reviewers"
+
 - package-ecosystem: github-actions
-  directory: /
+  directory: "/.github/workflows"
   schedule:
     interval: daily
-- package-ecosystem: docker
-  directory: /
-  schedule:
-    interval: daily
+    time: "09:00"
+    timezone: Europe/Madrid
+  open-pull-requests-limit: 10
+  commit-message:
+    prefix: "[Dep][github] "
+  #ignore:
+    #- dependency-name: "django"
+      # For django, ignore all updates for version 3.2.x and 4.x
+      #versions: [ "3.2", "4" ]
+  labels:
+    - dependabot
+  reviewers:
+    - "aplazame/squad_devops-reviewers"
