@@ -2,8 +2,10 @@ package report
 
 import (
 	"fmt"
+	"github.com/aquasecurity/trivy/pkg/log"
 	"io"
 	"os"
+	"path/filepath"
 	"strings"
 
 	"github.com/fatih/color"
@@ -13,6 +15,9 @@ import (
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
+
+// We have to show a message once about using the '-format json' subcommand to get the full pkgPath
+var filePathMessageShown = false
 
 // TableWriter implements Writer and output in tabular form
 type TableWriter struct {
@@ -29,6 +34,7 @@ func (tw TableWriter) Write(report types.Report) error {
 	for _, result := range report.Results {
 		tw.write(result)
 	}
+	filePathMessageShown = false // clear flag after writing all report
 	return nil
 }
 
@@ -134,7 +140,12 @@ func (tw TableWriter) setVulnerabilityRows(table *tablewriter.Table, vulns []typ
 		severityCount[v.Severity]++
 		lib := v.PkgName
 		if v.PkgPath != "" {
-			lib = fmt.Sprintf("%s (%s)", v.PkgName, v.PkgPath)
+			fileName := filepath.Base(v.PkgPath)
+			lib = fmt.Sprintf("%s (%s)", v.PkgName, fileName)
+			if !filePathMessageShown {
+				log.Logger.Infof("Table result includes only package filenames. Use the '--format json' subcommand to get the full path to the package file.")
+				filePathMessageShown = true
+			}
 		}
 
 		title := v.Title
