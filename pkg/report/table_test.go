@@ -48,6 +48,36 @@ func TestReportWriter_Table(t *testing.T) {
 `,
 		},
 		{
+			name: "happy path with filePath in result",
+			results: types.Results{
+				{
+					Target: "test",
+					Vulnerabilities: []types.DetectedVulnerability{
+						{
+							VulnerabilityID:  "CVE-2020-0001",
+							PkgName:          "foo",
+							PkgPath:          "foo/bar",
+							InstalledVersion: "1.2.3",
+							FixedVersion:     "3.4.5",
+							PrimaryURL:       "https://avd.aquasec.com/nvd/cve-2020-0001",
+							Vulnerability: dbTypes.Vulnerability{
+								Title:       "foobar",
+								Description: "baz",
+								Severity:    "HIGH",
+							},
+						},
+					},
+				},
+			},
+			expectedOutput: `+---------------+------------------+----------+-------------------+---------------+--------------------------------------+
+|    LIBRARY    | VULNERABILITY ID | SEVERITY | INSTALLED VERSION | FIXED VERSION |                TITLE                 |
++---------------+------------------+----------+-------------------+---------------+--------------------------------------+
+| foo (foo/bar) | CVE-2020-0001    | HIGH     | 1.2.3             | 3.4.5         | foobar                               |
+|               |                  |          |                   |               | -->avd.aquasec.com/nvd/cve-2020-0001 |
++---------------+------------------+----------+-------------------+---------------+--------------------------------------+
+`,
+		},
+		{
 			name: "no title for vuln and missing primary link",
 			results: types.Results{
 				{
