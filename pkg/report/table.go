@@ -143,7 +143,7 @@ func (tw TableWriter) setVulnerabilityRows(table *tablewriter.Table, vulns []typ
 			fileName := filepath.Base(v.PkgPath)
 			lib = fmt.Sprintf("%s (%s)", v.PkgName, fileName)
 			if !filePathMessageShown {
-				log.Logger.Infof("Table result includes only package filenames. Use the '--format json' subcommand to get the full path to the package file.")
+				log.Logger.Infof("Table result includes only package filenames. Use '--format json' subcommand to get full path to the package file.")
 				filePathMessageShown = true
 			}
 		}
