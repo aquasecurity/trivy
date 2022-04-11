@@ -1,13 +1,13 @@
 Thank you for taking interest in contributing to Trivy!
 
 1. Every Pull Request should have an associated bug or feature issue unless you are fixing a trivial documentation issue.
-4. Please add the associated Issue link in the PR description.
-2. Your PR is more likely to be accepted if it focuses on just one change.
-5. There's no need to add or tag reviewers.
-6. If a reviewer commented on your code or asked for changes, please remember to respond with comment. Do not mark discussion as resolved. It's up to reviewer to mark it resolved (in case if suggested fix addresses problem properly). PRs with unresolved issues should not be merged (even if the comment is unclear or requires no action from your side).
-7. Please include a comment with the results before and after your change.
-8. Your PR is more likely to be accepted if it includes tests (We have not historically been very strict about tests, but we would like to improve this!).
-9. If your PR affects the user experience in some way, please update the README.md and the CLI help accordingly.
+1. Please add the associated Issue link in the PR description.
+1. Your PR is more likely to be accepted if it focuses on just one change.
+1. There's no need to add or tag reviewers.
+1. If a reviewer commented on your code or asked for changes, please remember to respond with comment. Do not mark discussion as resolved. It's up to reviewer to mark it resolved (in case if suggested fix addresses problem properly). PRs with unresolved issues should not be merged (even if the comment is unclear or requires no action from your side).
+1. Please include a comment with the results before and after your change.
+1. Your PR is more likely to be accepted if it includes tests (We have not historically been very strict about tests, but we would like to improve this!).
+1. If your PR affects the user experience in some way, please update the README.md and the CLI help accordingly.
 
 ### Title
 It is not that strict, but we use the title conventions in this repository.
@@ -22,6 +22,7 @@ Each commit message doesn't have to follow the conventions as long as it is clea
 The `type` and `scope` should always be lowercase as shown below.
 
 **Allowed `<type>` values:**
+
 - **feat** for a new feature for the user, not a new feature for build script. Such commit will trigger a release bumping a MINOR version.
 - **fix** for a bug fix for the user, not a fix to a build script. Such commit will trigger a release bumping a PATCH version.
 - **perf** for performance improvements. Such commit will trigger a release bumping a PATCH version.
@@ -33,6 +34,7 @@ The `type` and `scope` should always be lowercase as shown below.
 - **chore** for updates that do not apply to the above, such as dependency updates.
 
 **Example `<scope>` values:**
+
 - alpine
 - redhat
 - ruby
