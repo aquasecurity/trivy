@@ -23,7 +23,7 @@ type TableWriter struct {
 	Output     io.Writer
 
 	// We have to show a message once about using the '-format json' subcommand to get the full pkgPath
-	ShowMessageOnce sync.Once
+	ShowMessageOnce *sync.Once
 
 	// For misconfigurations
 	IncludeNonFailures bool

@@ -42,7 +42,7 @@ func Write(report types.Report, option Option) error {
 		writer = &TableWriter{
 			Output:             option.Output,
 			Severities:         option.Severities,
-			ShowMessageOnce:    sync.Once{},
+			ShowMessageOnce:    &sync.Once{},
 			IncludeNonFailures: option.IncludeNonFailures,
 			Trace:              option.Trace,
 		}
