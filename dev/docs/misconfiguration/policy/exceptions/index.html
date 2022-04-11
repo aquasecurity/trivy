@@ -16,7 +16,7 @@
         
       
       <link rel="icon" href="../../../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.3.0, mkdocs-material-8.2.8+insiders-4.12.0">
+      <meta name="generator" content="mkdocs-1.3.0, mkdocs-material-8.2.9+insiders-4.12.0">
     
     
       
@@ -62,6 +62,10 @@
   
     
     
+    
+      
+    
+      
     
       
     
@@ -1315,14 +1319,18 @@
       
         <li class="md-nav__item">
   <a href="#namespace-based-exceptions" class="md-nav__link">
-    Namespace-based exceptions
+    <span class="md-ellipsis">
+      Namespace-based exceptions
+    </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
   <a href="#rule-based-exceptions" class="md-nav__link">
-    Rule-based exceptions
+    <span class="md-ellipsis">
+      Rule-based exceptions
+    </span>
   </a>
   
 </li>
@@ -2824,6 +2832,84 @@
           
   
   <span class="md-ellipsis">
+    How to contribute
+  </span>
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="How to contribute" data-md-level="2">
+        <label class="md-nav__title" for="__nav_4_5">
+          <span class="md-nav__icon md-icon"></span>
+          How to contribute
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../community/contribute/issue/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Issues
+  </span>
+
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../community/contribute/pr/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Pull Requests
+  </span>
+
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_6" type="checkbox" id="__nav_4_6" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_4_6">
+          
+  
+  <span class="md-ellipsis">
     Maintainer
   </span>
 
@@ -2831,7 +2917,7 @@
         </label>
       
       <nav class="md-nav" aria-label="Maintainer" data-md-level="2">
-        <label class="md-nav__title" for="__nav_4_5">
+        <label class="md-nav__title" for="__nav_4_6">
           <span class="md-nav__icon md-icon"></span>
           Maintainer
         </label>
@@ -2843,7 +2929,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../community/contrib/help-wanted/" class="md-nav__link">
+      <a href="../../../../community/maintainer/help-wanted/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2862,7 +2948,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../community/contrib/triage/" class="md-nav__link">
+      <a href="../../../../community/maintainer/triage/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2916,14 +3002,18 @@
       
         <li class="md-nav__item">
   <a href="#namespace-based-exceptions" class="md-nav__link">
-    Namespace-based exceptions
+    <span class="md-ellipsis">
+      Namespace-based exceptions
+    </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
   <a href="#rule-based-exceptions" class="md-nav__link">
-    Rule-based exceptions
+    <span class="md-ellipsis">
+      Rule-based exceptions
+    </span>
   </a>
   
 </li>
@@ -2968,7 +3058,7 @@ exception[ns] {
 </code></pre></div>
 </div>
 <p>This example exempts all built-in policies for Kubernetes.</p>
-<p>For more details, see <a href="https://github.com/aquasecurity/trivy/tree/52b715421e42ff079e8e8d3040fdcd8d9aee75ff/examples/misconf/namespace-exception">an example</a>.</p>
+<p>For more details, see <a href="https://github.com/aquasecurity/trivy/tree/b4a7d6a86111c4f634b75e0708646a6cdb0747fe/examples/misconf/namespace-exception">an example</a>.</p>
 <h2 id="rule-based-exceptions">Rule-based exceptions</h2>
 <p>There are some cases where you need more flexibility and granularity in defining which cases to exempt.
 Rule-based exceptions lets you granularly choose which individual rules to exempt, while also declaring under which conditions to exempt them.</p>
@@ -3020,7 +3110,7 @@ exception[rules] {
 </div>
 <p>This exception is applied to <a href="https://github.com/aquasecurity/appshield/blob/57bccc1897b2500a731415bda3990b0d4fbc959e/kubernetes/policies/pss/restricted/3_runs_as_root.rego">KSV012</a> in AppShield.
 You can get the package names in <a href="https://github.com/aquasecurity/appshield/">AppShield repository</a> or the JSON output from Trivy.</p>
-<p>For more details, see <a href="https://github.com/aquasecurity/trivy/tree/52b715421e42ff079e8e8d3040fdcd8d9aee75ff/examples/misconf/rule-exception">an example</a>.</p>
+<p>For more details, see <a href="https://github.com/aquasecurity/trivy/tree/b4a7d6a86111c4f634b75e0708646a6cdb0747fe/examples/misconf/rule-exception">an example</a>.</p>
 
 
 
@@ -3086,10 +3176,10 @@ You can get the package names in <a href="https://github.com/aquasecurity/appshi
       <div class="md-dialog__inner md-typeset"></div>
     </div>
     
-    <script id="__config" type="application/json">{"base": "../../../..", "features": ["navigation.tabs", "navigation.tabs.sticky", "navigation.sections"], "search": "../../../../assets/javascripts/workers/search.2c028271.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.config.lang": "en", "search.config.pipeline": "stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "version": {"method": "mike", "provider": "mike"}}</script>
+    <script id="__config" type="application/json">{"base": "../../../..", "features": ["navigation.tabs", "navigation.tabs.sticky", "navigation.sections"], "search": "../../../../assets/javascripts/workers/search.ec8bae80.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.config.lang": "en", "search.config.pipeline": "stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "version": {"method": "mike", "provider": "mike"}}</script>
     
     
-      <script src="../../../../assets/javascripts/bundle.5908fa9b.min.js"></script>
+      <script src="../../../../assets/javascripts/bundle.c07a5e79.min.js"></script>
       
     
   </body>
