@@ -6,6 +6,7 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"sync"
 
 	"github.com/fatih/color"
 	"github.com/olekukonko/tablewriter"
@@ -17,7 +18,7 @@ import (
 )
 
 // We have to show a message once about using the '-format json' subcommand to get the full pkgPath
-var filePathMessageShown = false
+var showMessageOnce sync.Once
 
 // TableWriter implements Writer and output in tabular form
 type TableWriter struct {
@@ -34,7 +35,6 @@ func (tw TableWriter) Write(report types.Report) error {
 	for _, result := range report.Results {
 		tw.write(result)
 	}
-	filePathMessageShown = false // clear flag after writing all report
 	return nil
 }
 
@@ -142,10 +142,9 @@ func (tw TableWriter) setVulnerabilityRows(table *tablewriter.Table, vulns []typ
 		if v.PkgPath != "" {
 			fileName := filepath.Base(v.PkgPath)
 			lib = fmt.Sprintf("%s (%s)", v.PkgName, fileName)
-			if !filePathMessageShown {
+			showMessageOnce.Do(func() {
 				log.Logger.Infof("Table result includes only package filenames. Use '--format json' subcommand to get full path to the package file.")
-				filePathMessageShown = true
-			}
+			})
 		}
 
 		title := v.Title
