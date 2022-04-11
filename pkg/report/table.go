@@ -17,13 +17,13 @@ import (
 	"github.com/aquasecurity/trivy/pkg/types"
 )
 
-// We have to show a message once about using the '-format json' subcommand to get the full pkgPath
-var showMessageOnce sync.Once
-
 // TableWriter implements Writer and output in tabular form
 type TableWriter struct {
 	Severities []dbTypes.Severity
 	Output     io.Writer
+
+	// We have to show a message once about using the '-format json' subcommand to get the full pkgPath
+	ShowMessageOnce sync.Once
 
 	// For misconfigurations
 	IncludeNonFailures bool
@@ -142,8 +142,8 @@ func (tw TableWriter) setVulnerabilityRows(table *tablewriter.Table, vulns []typ
 		if v.PkgPath != "" {
 			fileName := filepath.Base(v.PkgPath)
 			lib = fmt.Sprintf("%s (%s)", v.PkgName, fileName)
-			showMessageOnce.Do(func() {
-				log.Logger.Infof("Table result includes only package filenames. Use '--format json' subcommand to get full path to the package file.")
+			tw.ShowMessageOnce.Do(func() {
+				log.Logger.Infof("Table result includes only package filenames. Use '--format json' option to get the full path to the package file.")
 			})
 		}
 
