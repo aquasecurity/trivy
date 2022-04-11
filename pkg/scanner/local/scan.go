@@ -217,6 +217,7 @@ func (s Scanner) scanLibrary(apps []ftypes.Application, options types.ScanOption
 		}
 		if options.ListAllPackages {
 			libReport.Packages = app.Libraries
+			libReport.Dependencies = app.Dependencies
 		}
 		results = append(results, libReport)
 	}
