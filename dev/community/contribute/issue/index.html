@@ -231,6 +231,11 @@
     <label class="md-overlay" for="__drawer"></label>
     <div data-md-component="skip">
       
+        
+        <a href="#wrong-detection" class="md-skip">
+          Skip to content
+        </a>
+      
     </div>
     <div data-md-component="announce">
       
@@ -2794,6 +2799,16 @@
       
       
       
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    Issues
+  </span>
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
       <a href="./" class="md-nav__link md-nav__link--active">
         
   
@@ -2802,6 +2817,65 @@
   </span>
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#wrong-detection" class="md-nav__link">
+    <span class="md-ellipsis">
+      Wrong detection
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Wrong detection">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#github-advisory-database" class="md-nav__link">
+    <span class="md-ellipsis">
+      GitHub Advisory Database
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gitlab-advisory-database" class="md-nav__link">
+    <span class="md-ellipsis">
+      GitLab Advisory Database
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#red-hat-cve-database" class="md-nav__link">
+    <span class="md-ellipsis">
+      Red Hat CVE Database
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
       
     </li>
   
@@ -2936,6 +3010,56 @@
   
   
   
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#wrong-detection" class="md-nav__link">
+    <span class="md-ellipsis">
+      Wrong detection
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Wrong detection">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#github-advisory-database" class="md-nav__link">
+    <span class="md-ellipsis">
+      GitHub Advisory Database
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gitlab-advisory-database" class="md-nav__link">
+    <span class="md-ellipsis">
+      GitLab Advisory Database
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#red-hat-cve-database" class="md-nav__link">
+    <span class="md-ellipsis">
+      Red Hat CVE Database
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
 </nav>
                   </div>
                 </div>
@@ -2957,6 +3081,23 @@
 <li>Remember that users might search for your issue in the future, so please give it a meaningful title to help others.</li>
 <li>The issue should clearly explain the reason for opening, the proposal if you have any, and any relevant technical information.</li>
 </ul>
+<h2 id="wrong-detection">Wrong detection</h2>
+<p>Trivy depends on <a href="https://aquasecurity.github.io/trivy/latest/docs/vulnerability/detection/data-source/">multiple data sources</a>.
+Sometime these databases contain mistakes.</p>
+<p>If Trivy can't detect any CVE-IDs or shows false positive result, at first please follow the next steps:</p>
+<ol>
+<li>Run Trivy with <code>-f json</code> that shows data sources.</li>
+<li>According to the shown data source, make sure that the security advisory in the data source is correct.</li>
+</ol>
+<p>If the data source is correct and Trivy shows wrong results, please raise an issue on Trivy.</p>
+<h3 id="github-advisory-database">GitHub Advisory Database</h3>
+<p>Visit <a href="https://github.com/advisories">here</a> and search CVE-ID.</p>
+<p>If you find a problem, it'll be nice to fix it: <a href="https://github.blog/2022-02-22-github-advisory-database-now-open-to-community-contributions/">How to contribute to a GitHub security advisory</a></p>
+<h3 id="gitlab-advisory-database">GitLab Advisory Database</h3>
+<p>Visit <a href="https://advisories.gitlab.com/">here</a> and search CVE-ID.</p>
+<p>If you find a problem, it'll be nice to fix it: <a href="https://gitlab.com/gitlab-org/security-products/gemnasium-db/-/issues/new">Create an issue to GitLab Advisory Database</a></p>
+<h3 id="red-hat-cve-database">Red Hat CVE Database</h3>
+<p>Visit <a href="https://access.redhat.com/security/security-updates/?cwe=476#/cve">here</a> and search CVE-ID.</p>
 
 
 
