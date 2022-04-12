@@ -6,16 +6,26 @@ Thank you for taking interest in contributing to Trivy!
 - The issue should clearly explain the reason for opening, the proposal if you have any, and any relevant technical information.
 
 ## Wrong detection
-Trivy depends on Github Advisory Database and Gitlab Advisory Database.
+Trivy depends on [multiple data sources](https://aquasecurity.github.io/trivy/latest/docs/vulnerability/detection/data-source/).
 Sometime these databases contain mistakes.
 
-if Trivy can't detect any CVEs or shows false positive result, at first do the next steps:
-- run Trivy with `-f json` that shows data sources. Please make sure that data source is correct.
-- visit [Github Advisory Database](https://github.com/advisories) and search CVE-ID.
-- visit [Gitlab Advisory Database](https://advisories.gitlab.com/) and search CVE-ID .
+If Trivy can't detect any CVE-IDs or shows false positive result, at first please follow the next steps:
 
-If the data source is correct and Trivy shows wrong results, please raise an issue on Trivy
+1. Run Trivy with `-f json` that shows data sources.
+2. According to the shown data source, make sure that the security advisory in the data source is correct.
 
-If you find a problem, it'll be nice to fix it:
-* How to contribute to a GitHub security advisory: https://github.blog/2022-02-22-github-advisory-database-now-open-to-community-contributions/
-* Create an issue to Gitlab Advisory Database: https://gitlab.com/gitlab-org/security-products/gemnasium-db/-/issues/new
+If the data source is correct and Trivy shows wrong results, please raise an issue on Trivy.
+
+### GitHub Advisory Database
+Visit [here](https://github.com/advisories) and search CVE-ID.
+
+If you find a problem, it'll be nice to fix it: [How to contribute to a GitHub security advisory](https://github.blog/2022-02-22-github-advisory-database-now-open-to-community-contributions/)
+ 
+### GitLab Advisory Database
+Visit [here](https://advisories.gitlab.com/) and search CVE-ID.
+
+If you find a problem, it'll be nice to fix it: [Create an issue to GitLab Advisory Database](https://gitlab.com/gitlab-org/security-products/gemnasium-db/-/issues/new)
+ 
+### Red Hat CVE Database
+Visit [here](https://access.redhat.com/security/security-updates/?cwe=476#/cve) and search CVE-ID.
+
