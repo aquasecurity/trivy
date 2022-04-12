@@ -176,7 +176,7 @@ func (s Scanner) scanCloudFormation(ctx context.Context, files []types.Config) (
 		}
 
 		var filePath = "unknown"
-		if flattened.Location.Filename == "" {
+		if flattened.Location.Filename != "" {
 			filePath, err = filepath.Rel(rootDir, flattened.Location.Filename)
 			if err != nil {
 				return nil, xerrors.Errorf("filepath rel, root: [%s], result: [%s] %w", rootDir, flattened.Location.Filename, err)
