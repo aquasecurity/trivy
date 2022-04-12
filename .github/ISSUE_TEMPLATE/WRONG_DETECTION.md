@@ -5,12 +5,9 @@ about: If Trivy doesn't detect something, or shows false positive detection
 ---
 <!--
 
-Trivy depends on Github Advisory Database and Gitlab Advisory Database. 
-Sometime they have mistakes.
+Please, read the documentation before creating an issue:
+https://aquasecurity.github.io/trivy/latest/community/contribute/issue/
 
-there is a small guide how to fix such mistakes: https://aquasecurity.github.io/trivy/latest/community/contribute/issue/
-
-If the data source is correct and Trivy shows wrong results, please raise an issue on Trivy
 -->
 
 ## Check Advisory Databases
