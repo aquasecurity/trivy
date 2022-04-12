@@ -32,16 +32,81 @@ The `type` and `scope` should always be lowercase as shown below.
 - **test** for adding missing tests, refactoring tests; no production code change.
 - **build** for updating build configuration, development tools or other changes irrelevant to the user.
 - **chore** for updates that do not apply to the above, such as dependency updates.
+- **ci** for changes to CI configuration files and scripts
+- **revert** for revert to a previous commit
 
-**Example `<scope>` values:**
+**Allowed `<scope>` values:**
+
+checks:
+
+- vuln
+- misconf
+- secret
+
+mode:
+
+- image
+- fs
+- repo
+- sbom
+- server
+
+os:
 
 - alpine
 - redhat
+- alma
+- rocky
+- mariner
+- oracle
+- debian
+- ubuntu
+- amazon
+- suse
+- photon
+- distroless
+
+language:
+
 - ruby
+- php
 - python
+- nodejs
+- rust
+- dotnet
+- java
+- go
+
+vuln:
+
+- os
+- lang
+
+config:
+
+- kubernetes
+- dockerfile
 - terraform
+- cloudformation
+
+container
+
+- docker
+- podman
+- containerd
+- oci
+
+cli:
+
+- cli
+- flag
+
+others:
+
+- helm
 - report
-- etc.
+- db
+- deps
 
 The `<scope>` can be empty (e.g. if the change is a global or difficult to assign to a single component), in which case the parentheses are omitted.
 
