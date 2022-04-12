@@ -38,11 +38,13 @@ The `type` and `scope` should always be lowercase as shown below.
 **Allowed `<scope>` values:**
 
 checks:
+
 - vuln
 - misconf
 - secret
 
 mode:
+
 - image
 - fs
 - repo
@@ -50,6 +52,7 @@ mode:
 - server
 
 os:
+
 - alpine
 - redhat
 - alma
@@ -64,6 +67,7 @@ os:
 - distroless
 
 language:
+
 - ruby
 - php
 - python
@@ -74,26 +78,31 @@ language:
 - go
 
 vuln:
+
 - os
 - lang
 
 config:
+
 - kubernetes
 - dockerfile
 - terraform
 - cloudformation
 
-container:
+container
+
 - docker
 - podman
 - containerd
 - oci
 
 cli:
+
 - cli
 - flag
 
 others:
+
 - helm
 - report
 - db
