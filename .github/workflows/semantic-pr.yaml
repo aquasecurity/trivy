@@ -31,11 +31,10 @@ jobs:
             BREAKING
 
           scopes:
-            # checks
             vuln
             misconf
             secret
-            # mode
+
             image
             fs
             repo
