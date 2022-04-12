@@ -4,6 +4,7 @@ import (
 	"io"
 	"path/filepath"
 	"strings"
+	"sync"
 	"time"
 
 	"golang.org/x/xerrors"
@@ -41,6 +42,7 @@ func Write(report types.Report, option Option) error {
 		writer = &TableWriter{
 			Output:             option.Output,
 			Severities:         option.Severities,
+			ShowMessageOnce:    &sync.Once{},
 			IncludeNonFailures: option.IncludeNonFailures,
 			Trace:              option.Trace,
 		}

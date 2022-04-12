@@ -4,13 +4,16 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"path/filepath"
 	"strings"
+	"sync"
 
 	"github.com/fatih/color"
 	"github.com/olekukonko/tablewriter"
 	"golang.org/x/exp/slices"
 
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
+	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
 
@@ -18,6 +21,9 @@ import (
 type TableWriter struct {
 	Severities []dbTypes.Severity
 	Output     io.Writer
+
+	// We have to show a message once about using the '-format json' subcommand to get the full pkgPath
+	ShowMessageOnce *sync.Once
 
 	// For misconfigurations
 	IncludeNonFailures bool
@@ -134,7 +140,11 @@ func (tw TableWriter) setVulnerabilityRows(table *tablewriter.Table, vulns []typ
 		severityCount[v.Severity]++
 		lib := v.PkgName
 		if v.PkgPath != "" {
-			lib = fmt.Sprintf("%s (%s)", v.PkgName, v.PkgPath)
+			fileName := filepath.Base(v.PkgPath)
+			lib = fmt.Sprintf("%s (%s)", v.PkgName, fileName)
+			tw.ShowMessageOnce.Do(func() {
+				log.Logger.Infof("Table result includes only package filenames. Use '--format json' option to get the full path to the package file.")
+			})
 		}
 
 		title := v.Title
