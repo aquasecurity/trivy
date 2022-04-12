@@ -2,7 +2,6 @@ package mod
 
 import (
 	"os"
-	"path"
 	"sort"
 	"testing"
 
@@ -13,31 +12,56 @@ import (
 )
 
 func TestParse(t *testing.T) {
-	vectors := []struct {
+	tests := []struct {
+		name string
 		file string
 		want []types.Library
 	}{
 		{
-			file: "testdata/gomod_normal.sum",
+			name: "normal",
+			file: "testdata/normal/go.mod",
 			want: GoModNormal,
 		},
 		{
-			file: "testdata/gomod_emptyline.sum",
-			want: GoModEmptyLine,
+			name: "replace",
+			file: "testdata/replaced/go.mod",
+			want: GoModReplaced,
 		},
 		{
-			file: "testdata/gomod_many.sum",
-			want: GoModMany,
+			name: "replace with version",
+			file: "testdata/replaced-with-version/go.mod",
+			want: GoModReplacedWithVersion,
 		},
 		{
-			file: "testdata/gomod_trivy.sum",
-			want: GoModTrivy,
+			name: "replaced with version mismatch",
+			file: "testdata/replaced-with-version-mismatch/go.mod",
+			want: GoModReplacedWithVersionMismatch,
+		},
+		{
+			name: "replaced with local path",
+			file: "testdata/replaced-with-local-path/go.mod",
+			want: GoModReplacedWithLocalPath,
+		},
+		{
+			name: "replaced with local path and version",
+			file: "testdata/replaced-with-local-path-and-version/go.mod",
+			want: GoModReplacedWithLocalPathAndVersion,
+		},
+		{
+			name: "replaced with local path and version, mismatch",
+			file: "testdata/replaced-with-local-path-and-version-mismatch/go.mod",
+			want: GoModReplacedWithLocalPathAndVersionMismatch,
+		},
+		{
+			name: "go 1.16",
+			file: "testdata/go116/go.mod",
+			want: GoMod116,
 		},
 	}
 
-	for _, v := range vectors {
-		t.Run(path.Base(v.file), func(t *testing.T) {
-			f, err := os.Open(v.file)
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			f, err := os.Open(tt.file)
 			require.NoError(t, err)
 
 			got, err := Parse(f)
@@ -46,11 +70,11 @@ func TestParse(t *testing.T) {
 			sort.Slice(got, func(i, j int) bool {
 				return got[i].Name < got[j].Name
 			})
-			sort.Slice(v.want, func(i, j int) bool {
-				return v.want[i].Name < v.want[j].Name
+			sort.Slice(tt.want, func(i, j int) bool {
+				return tt.want[i].Name < tt.want[j].Name
 			})
 
-			assert.Equal(t, v.want, got)
+			assert.Equal(t, tt.want, got)
 		})
 	}
 }
