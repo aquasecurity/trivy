@@ -105,9 +105,12 @@ nav:
         - References: community/references.md
         - CKS Reference: community/cks.md
         - Credits: community/credit.md
+        - How to contribute:
+            - Issues: community/contribute/issue.md
+            - Pull Requests: community/contribute/pr.md
         - Maintainer:
-              - Help Wanted: community/contrib/help-wanted.md
-              - Triage: community/contrib/triage.md
+              - Help Wanted: community/maintainer/help-wanted.md
+              - Triage: community/maintainer/triage.md
 theme:
     name: material
     language: 'en'
