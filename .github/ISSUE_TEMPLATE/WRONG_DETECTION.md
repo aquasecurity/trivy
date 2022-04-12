@@ -1,19 +1,14 @@
 ---
 name: Wrong Detection
-labels: ["kind/security-advisory"]
+labels: ["kind/bug"]
 about: If Trivy doesn't detect something, or shows false positive detection
 ---
-<!--
 
-Please, read the documentation before creating an issue:
-https://aquasecurity.github.io/trivy/latest/community/contribute/issue/
+## Checklist
+- [ ] I've read [the documentation regarding wrong detection](https://aquasecurity.github.io/trivy/latest/community/contribute/issue/#wrong-detection).
+- [ ] I've confirmed that a security advisory in data sources was correct.
+    - Run Trivy with `-f json` that shows data sources and make sure that the security advisory is correct.
 
--->
-
-## Check Advisory Databases
-- [ ] run Trivy with `-f json` that shows data sources. Please make sure that data source is correct.
-- [ ] visit [Github Advisory Database](https://github.com/advisories) and search CVE-ID.
-- [ ] visit [Gitlab Advisory Database](https://advisories.gitlab.com/) and search CVE-ID.
 
 ## Description
 
