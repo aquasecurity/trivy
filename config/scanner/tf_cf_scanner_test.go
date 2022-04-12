@@ -31,6 +31,8 @@ func TestTerraformScanning(t *testing.T) {
 	actualErrorCodes := getActualCodes(misconfigurations[0].Failures)
 	assert.EqualValues(t, expectedErrorCodes, actualErrorCodes)
 
+	assert.Equal(t, "main.tf", misconfigurations[0].FilePath)
+
 	var expectedSuccessCodes []string
 	actualSuccessCodes := getActualCodes(misconfigurations[0].Successes)
 	assert.EqualValues(t, expectedSuccessCodes, actualSuccessCodes)
@@ -57,6 +59,8 @@ func TestCloudFormationScanning(t *testing.T) {
 	expectedErrorCodes := []string{"AVD-AWS-0086", "AVD-AWS-0087", "AVD-AWS-0088", "AVD-AWS-0089", "AVD-AWS-0090", "AVD-AWS-0093", "AVD-AWS-0132"}
 	actualErrorCodes := getActualCodes(misconfigurations[0].Failures)
 	assert.EqualValues(t, expectedErrorCodes, actualErrorCodes)
+
+	assert.Equal(t, "cloudformation.yaml", misconfigurations[0].FilePath)
 
 	expectedSuccessCodes := []string{"AVD-AWS-0091", "AVD-AWS-0092", "AVD-AWS-0094"}
 	actualSuccessCodes := getActualCodes(misconfigurations[0].Successes)
