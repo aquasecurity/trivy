@@ -3157,16 +3157,80 @@ Each commit message doesn't have to follow the conventions as long as it is clea
 <li><strong>test</strong> for adding missing tests, refactoring tests; no production code change.</li>
 <li><strong>build</strong> for updating build configuration, development tools or other changes irrelevant to the user.</li>
 <li><strong>chore</strong> for updates that do not apply to the above, such as dependency updates.</li>
+<li><strong>ci</strong> for changes to CI configuration files and scripts</li>
+<li><strong>revert</strong> for revert to a previous commit</li>
 </ul>
-<p><strong>Example <code>&lt;scope&gt;</code> values:</strong></p>
+<p><strong>Allowed <code>&lt;scope&gt;</code> values:</strong></p>
+<p>checks:</p>
+<ul>
+<li>vuln</li>
+<li>misconf</li>
+<li>secret</li>
+</ul>
+<p>mode:</p>
+<ul>
+<li>image</li>
+<li>fs</li>
+<li>repo</li>
+<li>sbom</li>
+<li>server</li>
+</ul>
+<p>os:</p>
 <ul>
 <li>alpine</li>
 <li>redhat</li>
+<li>alma</li>
+<li>rocky</li>
+<li>mariner</li>
+<li>oracle</li>
+<li>debian</li>
+<li>ubuntu</li>
+<li>amazon</li>
+<li>suse</li>
+<li>photon</li>
+<li>distroless</li>
+</ul>
+<p>language:</p>
+<ul>
 <li>ruby</li>
+<li>php</li>
 <li>python</li>
+<li>nodejs</li>
+<li>rust</li>
+<li>dotnet</li>
+<li>java</li>
+<li>go</li>
+</ul>
+<p>vuln:</p>
+<ul>
+<li>os</li>
+<li>lang</li>
+</ul>
+<p>config:</p>
+<ul>
+<li>kubernetes</li>
+<li>dockerfile</li>
 <li>terraform</li>
+<li>cloudformation</li>
+</ul>
+<p>container</p>
+<ul>
+<li>docker</li>
+<li>podman</li>
+<li>containerd</li>
+<li>oci</li>
+</ul>
+<p>cli:</p>
+<ul>
+<li>cli</li>
+<li>flag</li>
+</ul>
+<p>others:</p>
+<ul>
+<li>helm</li>
 <li>report</li>
-<li>etc.</li>
+<li>db</li>
+<li>deps</li>
 </ul>
 <p>The <code>&lt;scope&gt;</code> can be empty (e.g. if the change is a global or difficult to assign to a single component), in which case the parentheses are omitted.</p>
 <h4 id="example-titles">Example titles</h4>
