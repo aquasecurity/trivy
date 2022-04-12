@@ -63,7 +63,7 @@ os:
 - photon
 - distroless
 
-- language
+language:
 - ruby
 - php
 - python
@@ -73,27 +73,27 @@ os:
 - java
 - go
 
-vuln
+vuln:
 - os
 - lang
 
-config
+config:
 - kubernetes
 - dockerfile
 - terraform
 - cloudformation
 
-container
+container:
 - docker
 - podman
 - containerd
 - oci
 
-cli
+cli:
 - cli
 - flag
 
-others
+others:
 - helm
 - report
 - db
