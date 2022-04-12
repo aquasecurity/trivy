@@ -53,6 +53,16 @@ func extractKsplice(v string) string {
 	return ""
 }
 
+func isFips(v string) bool {
+	subs := strings.Split(strings.ToLower(v), ".")
+	for _, s := range subs {
+		if strings.Contains(s, "_fips") {
+			return true
+		}
+	}
+	return false
+}
+
 // Detect scans and return vulnerability in Oracle scanner
 func (s *Scanner) Detect(osVer string, pkgs []ftypes.Package) ([]types.DetectedVulnerability, error) {
 	log.Logger.Info("Detecting Oracle Linux vulnerabilities...")
@@ -78,6 +88,10 @@ func (s *Scanner) Detect(osVer string, pkgs []ftypes.Package) ([]types.DetectedV
 			// extract kspliceX and compare it with kspliceY in advisories
 			// if kspliceX and kspliceY are different, we will skip the advisory
 			if extractKsplice(adv.FixedVersion) != extractKsplice(pkg.Release) {
+				continue
+			}
+			// when one of them doesn't have fips, we'll also skip it
+			if isFips(adv.FixedVersion) != isFips(pkg.Release) {
 				continue
 			}
 

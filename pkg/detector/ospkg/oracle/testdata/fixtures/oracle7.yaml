@@ -10,3 +10,13 @@
         - key: CVE-2017-1000364
           value:
             FixedVersion: "2:2.17-157.ksplice1.el7_3.4"
+    - bucket: gnutls
+      pairs:
+        - key: CVE-2021-20231
+          value:
+            FixedVersion: "10:3.6.16-4.0.1.el7_fips"
+    - bucket: libgcrypt
+      pairs:
+        - key: CVE-2021-33560
+          value:
+            FixedVersion: "10:1.8.5-6.el7_fips"

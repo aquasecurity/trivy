@@ -140,6 +140,80 @@ func TestScanner_Detect(t *testing.T) {
 			},
 		},
 		{
+			name:     "the installed version doesn't have fips",
+			fixtures: []string{"testdata/fixtures/oracle7.yaml", "testdata/fixtures/data-source.yaml"},
+			args: args{
+				osVer: "7",
+				pkgs: []ftypes.Package{
+					{
+						Name:       "gnutls",
+						Epoch:      10,
+						Version:    "3.6.16",
+						Release:    "4.0.1.el7_fips",
+						Arch:       "x86_64",
+						SrcName:    "gnutls",
+						SrcVersion: "3.6.16",
+						SrcRelease: "4.el7",
+					},
+				},
+			},
+			want: nil,
+		},
+		{
+			name:     "the installed version has fips",
+			fixtures: []string{"testdata/fixtures/oracle7.yaml", "testdata/fixtures/data-source.yaml"},
+			args: args{
+				osVer: "7",
+				pkgs: []ftypes.Package{
+					{
+						Name:       "gnutls",
+						Epoch:      10,
+						Version:    "3.6.16",
+						Release:    "",
+						Arch:       "x86_64",
+						SrcEpoch:   2,
+						SrcName:    "gnutls",
+						SrcVersion: "3.6.168",
+						SrcRelease: "4.0.1.el7_fips",
+					},
+				},
+			},
+			want: nil,
+		},
+		{
+			name:     "with fips",
+			fixtures: []string{"testdata/fixtures/oracle7.yaml", "testdata/fixtures/data-source.yaml"},
+			args: args{
+				osVer: "7",
+				pkgs: []ftypes.Package{
+					{
+						Name:       "gnutls",
+						Epoch:      10,
+						Version:    "3.6.16",
+						Release:    "4.0.0.el7_fips",
+						Arch:       "x86_64",
+						SrcEpoch:   10,
+						SrcName:    "gnutls",
+						SrcVersion: "3.6.16",
+						SrcRelease: "4.0.0.el7_fips",
+					},
+				},
+			},
+			want: []types.DetectedVulnerability{
+				{
+					VulnerabilityID:  "CVE-2021-20231",
+					PkgName:          "gnutls",
+					InstalledVersion: "10:3.6.16-4.0.0.el7_fips",
+					FixedVersion:     "10:3.6.16-4.0.1.el7_fips",
+					DataSource: &dbTypes.DataSource{
+						ID:   vulnerability.OracleOVAL,
+						Name: "Oracle Linux OVAL definitions",
+						URL:  "https://linux.oracle.com/security/oval/",
+					},
+				},
+			},
+		},
+		{
 			name:     "without ksplice",
 			fixtures: []string{"testdata/fixtures/oracle7.yaml", "testdata/fixtures/data-source.yaml"},
 			args: args{
