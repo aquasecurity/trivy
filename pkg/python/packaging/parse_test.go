@@ -33,7 +33,7 @@ func TestParse(t *testing.T) {
 			// cd /usr/lib/python3.9/site-packages/setuptools-52.0.0-py3.9.egg-info/
 			// cat PKG-INFO | grep -e "^Name:" -e "^Version:" -e "^License:" | cut -d" " -f2- | \
 			// tr "\n" "\t" | awk -F "\t" '{printf("\{\""$1"\", \""$2"\", \""$3"\"\}\n")}'
-			want: types.Library{"setuptools", "51.3.3", "UNKNOWN"},
+			want: types.Library{Name: "setuptools", Version: "51.3.3", License: "UNKNOWN"},
 		},
 		{
 			name:  "egg-info",
@@ -44,7 +44,7 @@ func TestParse(t *testing.T) {
 			// cd /usr/lib/python3.9/site-packages/
 			// cat distlib-0.3.1-py3.9.egg-info | grep -e "^Name:" -e "^Version:" -e "^License:" | cut -d" " -f2- | \
 			// tr "\n" "\t" | awk -F "\t" '{printf("\{\""$1"\", \""$2"\", \""$3"\"\}\n")}'
-			want: types.Library{"distlib", "0.3.1", "Python license"},
+			want: types.Library{Name: "distlib", Version: "0.3.1", License: "Python license"},
 		},
 		{
 			name:  "wheel METADATA",
@@ -57,7 +57,7 @@ func TestParse(t *testing.T) {
 
 			// for single METADATA file with known name
 			// cat "{{ libname }}.METADATA | grep -e "^Name:" -e "^Version:" -e "^License:" | cut -d" " -f2- | tr "\n" "\t" | awk -F "\t" '{printf("\{\""$1"\", \""$2"\", \""$3"\"\}\n")}'
-			want: types.Library{"simple", "0.1.0", ""},
+			want: types.Library{Name: "simple", Version: "0.1.0", License: ""},
 		},
 		{
 			name: "wheel METADATA",
@@ -65,7 +65,7 @@ func TestParse(t *testing.T) {
 			// for single METADATA file with known name
 			// cat "{{ libname }}.METADATA | grep -e "^Name:" -e "^Version:" -e "^License:" | cut -d" " -f2- | tr "\n" "\t" | awk -F "\t" '{printf("\{\""$1"\", \""$2"\", \""$3"\"\}\n")}'
 			input: "testdata/distlib-0.3.1.METADATA",
-			want:  types.Library{"distlib", "0.3.1", "Python license"},
+			want:  types.Library{Name: "distlib", Version: "0.3.1", License: "Python license"},
 		},
 		{
 			name:    "invalid",

@@ -12,8 +12,8 @@ var (
 	// dotnet restore --use-lock-file
 	// cat packages.lock.json | jq -rc '.dependencies[] | keys[] as $k | "{\"\($k)\", \"\(.[$k] | .resolved)\", \"\"},"'
 	nuGetSimple = []types.Library{
-		{"Newtonsoft.Json", "12.0.3", ""},
-		{"NuGet.Frameworks", "5.7.0", ""},
+		{Name: "Newtonsoft.Json", Version: "12.0.3"},
+		{Name: "NuGet.Frameworks", Version: "5.7.0"},
 	}
 
 	// docker run --rm -i -t mcr.microsoft.com/dotnet/sdk:latest
@@ -25,14 +25,14 @@ var (
 	// dotnet restore --use-lock-file
 	// cat packages.lock.json | jq -rc '.dependencies[] | keys[] as $k | "{\"\($k)\", \"\(.[$k] | .resolved)\", \"\"},"'
 	nuGetSubDependencies = []types.Library{
-		{"Microsoft.Extensions.ApiDescription.Server", "3.0.0", ""},
-		{"Microsoft.OpenApi", "1.1.4", ""},
-		{"Newtonsoft.Json", "12.0.3", ""},
-		{"NuGet.Frameworks", "5.7.0", ""},
-		{"Swashbuckle.AspNetCore", "5.5.1", ""},
-		{"Swashbuckle.AspNetCore.Swagger", "5.5.1", ""},
-		{"Swashbuckle.AspNetCore.SwaggerGen", "5.5.1", ""},
-		{"Swashbuckle.AspNetCore.SwaggerUI", "5.5.1", ""},
+		{Name: "Microsoft.Extensions.ApiDescription.Server", Version: "3.0.0"},
+		{Name: "Microsoft.OpenApi", Version: "1.1.4"},
+		{Name: "Newtonsoft.Json", Version: "12.0.3"},
+		{Name: "NuGet.Frameworks", Version: "5.7.0"},
+		{Name: "Swashbuckle.AspNetCore", Version: "5.5.1"},
+		{Name: "Swashbuckle.AspNetCore.Swagger", Version: "5.5.1"},
+		{Name: "Swashbuckle.AspNetCore.SwaggerGen", Version: "5.5.1"},
+		{Name: "Swashbuckle.AspNetCore.SwaggerUI", Version: "5.5.1"},
 	}
 
 	// mcr.microsoft.com/dotnet/sdk:latest
@@ -44,8 +44,8 @@ var (
 	// dotnet restore --use-lock-file
 	// cat packages.lock.json | jq -rc '.dependencies[] | keys[] as $k | "{\"\($k)\", \"\(.[$k] | .resolved)\", \"\"},"'
 	nuGetLegacy = []types.Library{
-		{"AWSSDK.Core", "3.5.1.30", ""},
-		{"Newtonsoft.Json", "12.0.3", ""},
+		{Name: "AWSSDK.Core", Version: "3.5.1.30"},
+		{Name: "Newtonsoft.Json", Version: "12.0.3"},
 	}
 
 	// docker run --rm -i -t mcr.microsoft.com/dotnet/sdk:latest
@@ -58,45 +58,45 @@ var (
 	// dotnet add package AWSSDK.Core
 	// cat packages.lock.json | jq -rc '.dependencies[] | keys[] as $k | "{\"\($k)\", \"\(.[$k] | .resolved)\", \"\"},"' | sort -u
 	nuGetMultiTarget = []types.Library{
-		{"AWSSDK.Core", "3.5.1.30", ""},
-		{"Microsoft.Bcl.AsyncInterfaces", "1.1.0", ""},
-		{"Microsoft.CSharp", "4.3.0", ""},
-		{"Microsoft.NETCore.Platforms", "1.1.0", ""},
-		{"Microsoft.NETCore.Targets", "1.1.0", ""},
-		{"Microsoft.NETFramework.ReferenceAssemblies", "1.0.0", ""},
-		{"Microsoft.NETFramework.ReferenceAssemblies.net20", "1.0.0", ""},
-		{"Microsoft.NETFramework.ReferenceAssemblies.net40", "1.0.0", ""},
-		{"NETStandard.Library", "1.6.1", ""},
-		{"NETStandard.Library", "2.0.3", ""},
-		{"Newtonsoft.Json", "12.0.3", ""},
-		{"System.Collections", "4.3.0", ""},
-		{"System.ComponentModel", "4.3.0", ""},
-		{"System.ComponentModel.Primitives", "4.3.0", ""},
-		{"System.ComponentModel.TypeConverter", "4.3.0", ""},
-		{"System.Diagnostics.Debug", "4.3.0", ""},
-		{"System.Diagnostics.Tools", "4.3.0", ""},
-		{"System.Dynamic.Runtime", "4.3.0", ""},
-		{"System.Globalization", "4.3.0", ""},
-		{"System.IO", "4.3.0", ""},
-		{"System.Linq", "4.3.0", ""},
-		{"System.Linq.Expressions", "4.3.0", ""},
-		{"System.Net.Primitives", "4.3.0", ""},
-		{"System.ObjectModel", "4.3.0", ""},
-		{"System.Reflection", "4.3.0", ""},
-		{"System.Reflection.Extensions", "4.3.0", ""},
-		{"System.Reflection.Primitives", "4.3.0", ""},
-		{"System.Resources.ResourceManager", "4.3.0", ""},
-		{"System.Runtime", "4.3.0", ""},
-		{"System.Runtime.CompilerServices.Unsafe", "4.5.2", ""},
-		{"System.Runtime.Extensions", "4.3.0", ""},
-		{"System.Runtime.Serialization.Primitives", "4.3.0", ""},
-		{"System.Text.Encoding", "4.3.0", ""},
-		{"System.Text.Encoding.Extensions", "4.3.0", ""},
-		{"System.Text.RegularExpressions", "4.3.0", ""},
-		{"System.Threading", "4.3.0", ""},
-		{"System.Threading.Tasks", "4.3.0", ""},
-		{"System.Threading.Tasks.Extensions", "4.5.2", ""},
-		{"System.Xml.ReaderWriter", "4.3.0", ""},
-		{"System.Xml.XDocument", "4.3.0", ""},
+		{Name: "AWSSDK.Core", Version: "3.5.1.30"},
+		{Name: "Microsoft.Bcl.AsyncInterfaces", Version: "1.1.0"},
+		{Name: "Microsoft.CSharp", Version: "4.3.0"},
+		{Name: "Microsoft.NETCore.Platforms", Version: "1.1.0"},
+		{Name: "Microsoft.NETCore.Targets", Version: "1.1.0"},
+		{Name: "Microsoft.NETFramework.ReferenceAssemblies", Version: "1.0.0"},
+		{Name: "Microsoft.NETFramework.ReferenceAssemblies.net20", Version: "1.0.0"},
+		{Name: "Microsoft.NETFramework.ReferenceAssemblies.net40", Version: "1.0.0"},
+		{Name: "NETStandard.Library", Version: "1.6.1"},
+		{Name: "NETStandard.Library", Version: "2.0.3"},
+		{Name: "Newtonsoft.Json", Version: "12.0.3"},
+		{Name: "System.Collections", Version: "4.3.0"},
+		{Name: "System.ComponentModel", Version: "4.3.0"},
+		{Name: "System.ComponentModel.Primitives", Version: "4.3.0"},
+		{Name: "System.ComponentModel.TypeConverter", Version: "4.3.0"},
+		{Name: "System.Diagnostics.Debug", Version: "4.3.0"},
+		{Name: "System.Diagnostics.Tools", Version: "4.3.0"},
+		{Name: "System.Dynamic.Runtime", Version: "4.3.0"},
+		{Name: "System.Globalization", Version: "4.3.0"},
+		{Name: "System.IO", Version: "4.3.0"},
+		{Name: "System.Linq", Version: "4.3.0"},
+		{Name: "System.Linq.Expressions", Version: "4.3.0"},
+		{Name: "System.Net.Primitives", Version: "4.3.0"},
+		{Name: "System.ObjectModel", Version: "4.3.0"},
+		{Name: "System.Reflection", Version: "4.3.0"},
+		{Name: "System.Reflection.Extensions", Version: "4.3.0"},
+		{Name: "System.Reflection.Primitives", Version: "4.3.0"},
+		{Name: "System.Resources.ResourceManager", Version: "4.3.0"},
+		{Name: "System.Runtime", Version: "4.3.0"},
+		{Name: "System.Runtime.CompilerServices.Unsafe", Version: "4.5.2"},
+		{Name: "System.Runtime.Extensions", Version: "4.3.0"},
+		{Name: "System.Runtime.Serialization.Primitives", Version: "4.3.0"},
+		{Name: "System.Text.Encoding", Version: "4.3.0"},
+		{Name: "System.Text.Encoding.Extensions", Version: "4.3.0"},
+		{Name: "System.Text.RegularExpressions", Version: "4.3.0"},
+		{Name: "System.Threading", Version: "4.3.0"},
+		{Name: "System.Threading.Tasks", Version: "4.3.0"},
+		{Name: "System.Threading.Tasks.Extensions", Version: "4.5.2"},
+		{Name: "System.Xml.ReaderWriter", Version: "4.3.0"},
+		{Name: "System.Xml.XDocument", Version: "4.3.0"},
 	}
 )

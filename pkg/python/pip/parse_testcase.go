@@ -4,44 +4,44 @@ import "github.com/aquasecurity/go-dep-parser/pkg/types"
 
 var (
 	requirementsFlask = []types.Library{
-		{"click", "8.0.0", ""},
-		{"Flask", "2.0.0", ""},
-		{"itsdangerous", "2.0.0", ""},
-		{"Jinja2", "3.0.0", ""},
-		{"MarkupSafe", "2.0.0", ""},
-		{"Werkzeug", "2.0.0", ""},
+		{Name: "click", Version: "8.0.0"},
+		{Name: "Flask", Version: "2.0.0"},
+		{Name: "itsdangerous", Version: "2.0.0"},
+		{Name: "Jinja2", Version: "3.0.0"},
+		{Name: "MarkupSafe", Version: "2.0.0"},
+		{Name: "Werkzeug", Version: "2.0.0"},
 	}
 
 	requirementsComments = []types.Library{
-		{"click", "8.0.0", ""},
-		{"Flask", "2.0.0", ""},
-		{"Jinja2", "3.0.0", ""},
-		{"MarkupSafe", "2.0.0", ""},
+		{Name: "click", Version: "8.0.0"},
+		{Name: "Flask", Version: "2.0.0"},
+		{Name: "Jinja2", Version: "3.0.0"},
+		{Name: "MarkupSafe", Version: "2.0.0"},
 	}
 
 	requirementsSpaces = []types.Library{
-		{"click", "8.0.0", ""},
-		{"Flask", "2.0.0", ""},
-		{"itsdangerous", "2.0.0", ""},
-		{"Jinja2", "3.0.0", ""},
+		{Name: "click", Version: "8.0.0"},
+		{Name: "Flask", Version: "2.0.0"},
+		{Name: "itsdangerous", Version: "2.0.0"},
+		{Name: "Jinja2", Version: "3.0.0"},
 	}
 
 	requirementsNoVersion = []types.Library{
-		{"Flask", "2.0.0", ""},
+		{Name: "Flask", Version: "2.0.0"},
 	}
 
 	requirementsOperator = []types.Library{
-		{"Django", "2.3.4", ""},
-		{"SomeProject", "5.4", ""},
+		{Name: "Django", Version: "2.3.4"},
+		{Name: "SomeProject", Version: "5.4"},
 	}
 
 	requirementsHash = []types.Library{
-		{"FooProject", "1.2", ""},
-		{"Jinja2", "3.0.0", ""},
+		{Name: "FooProject", Version: "1.2"},
+		{Name: "Jinja2", Version: "3.0.0"},
 	}
 
 	requirementsHyphens = []types.Library{
-		{"oauth2-client", "4.0.0", ""},
-		{"python-gitlab", "2.0.0", ""},
+		{Name: "oauth2-client", Version: "4.0.0"},
+		{Name: "python-gitlab", Version: "2.0.0"},
 	}
 )

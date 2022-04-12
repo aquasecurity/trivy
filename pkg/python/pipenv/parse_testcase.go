@@ -10,12 +10,12 @@ var (
 	// pipenv install requests pyyaml
 	// pipenv graph --json | jq -rc '.[] | "{\"\(.package.package_name | ascii_downcase)\", \"\(.package.installed_version)\", \"\"},"'
 	pipenvNormal = []types.Library{
-		{"urllib3", "1.24.2", ""},
-		{"requests", "2.21.0", ""},
-		{"pyyaml", "5.1", ""},
-		{"idna", "2.8", ""},
-		{"chardet", "3.0.4", ""},
-		{"certifi", "2019.3.9", ""},
+		{Name: "urllib3", Version: "1.24.2"},
+		{Name: "requests", Version: "2.21.0"},
+		{Name: "pyyaml", Version: "5.1"},
+		{Name: "idna", Version: "2.8"},
+		{Name: "chardet", Version: "3.0.4"},
+		{Name: "certifi", Version: "2019.3.9"},
 	}
 
 	// docker run --name pipenv --rm -it python:3.9-alpine bash
@@ -25,16 +25,16 @@ var (
 	// pipenv install requests pyyaml django djangorestframework
 	// pipenv graph --json | jq -rc '.[] | "{\"\(.package.package_name | ascii_downcase)\", \"\(.package.installed_version)\", \"\"},"'
 	pipenvDjango = []types.Library{
-		{"urllib3", "1.24.2", ""},
-		{"sqlparse", "0.3.0", ""},
-		{"requests", "2.21.0", ""},
-		{"pyyaml", "5.1", ""},
-		{"pytz", "2019.1", ""},
-		{"idna", "2.8", ""},
-		{"djangorestframework", "3.9.3", ""},
-		{"django", "2.2", ""},
-		{"chardet", "3.0.4", ""},
-		{"certifi", "2019.3.9", ""},
+		{Name: "urllib3", Version: "1.24.2"},
+		{Name: "sqlparse", Version: "0.3.0"},
+		{Name: "requests", Version: "2.21.0"},
+		{Name: "pyyaml", Version: "5.1"},
+		{Name: "pytz", Version: "2019.1"},
+		{Name: "idna", Version: "2.8"},
+		{Name: "djangorestframework", Version: "3.9.3"},
+		{Name: "django", Version: "2.2"},
+		{Name: "chardet", Version: "3.0.4"},
+		{Name: "certifi", Version: "2019.3.9"},
 	}
 
 	// docker run --name pipenv --rm -it python:3.9-alpine bash
@@ -44,29 +44,29 @@ var (
 	// pipenv install requests pyyaml django djangorestframework six botocore python-dateutil simplejson setuptools pyasn1 awscli jinja2
 	// pipenv graph --json | jq -rc '.[] | "{\"\(.package.package_name | ascii_downcase)\", \"\(.package.installed_version)\", \"\"},"'
 	pipenvMany = []types.Library{
-		{"urllib3", "1.24.2", ""},
-		{"sqlparse", "0.3.0", ""},
-		{"six", "1.12.0", ""},
-		{"simplejson", "3.16.0", ""},
-		{"s3transfer", "0.2.0", ""},
-		{"rsa", "3.4.2", ""},
-		{"requests", "2.21.0", ""},
-		{"pyyaml", "3.13", ""},
-		{"pytz", "2019.1", ""},
-		{"python-dateutil", "2.8.0", ""},
-		{"pyasn1", "0.4.5", ""},
-		{"markupsafe", "1.1.1", ""},
-		{"jmespath", "0.9.4", ""},
-		{"jinja2", "2.10.1", ""},
-		{"idna", "2.8", ""},
-		{"framework", "0.1.0", ""},
-		{"docutils", "0.14", ""},
-		{"djangorestframework", "3.9.3", ""},
-		{"django", "2.2", ""},
-		{"colorama", "0.3.9", ""},
-		{"chardet", "3.0.4", ""},
-		{"certifi", "2019.3.9", ""},
-		{"botocore", "1.12.137", ""},
-		{"awscli", "1.16.147", ""},
+		{Name: "urllib3", Version: "1.24.2"},
+		{Name: "sqlparse", Version: "0.3.0"},
+		{Name: "six", Version: "1.12.0"},
+		{Name: "simplejson", Version: "3.16.0"},
+		{Name: "s3transfer", Version: "0.2.0"},
+		{Name: "rsa", Version: "3.4.2"},
+		{Name: "requests", Version: "2.21.0"},
+		{Name: "pyyaml", Version: "3.13"},
+		{Name: "pytz", Version: "2019.1"},
+		{Name: "python-dateutil", Version: "2.8.0"},
+		{Name: "pyasn1", Version: "0.4.5"},
+		{Name: "markupsafe", Version: "1.1.1"},
+		{Name: "jmespath", Version: "0.9.4"},
+		{Name: "jinja2", Version: "2.10.1"},
+		{Name: "idna", Version: "2.8"},
+		{Name: "framework", Version: "0.1.0"},
+		{Name: "docutils", Version: "0.14"},
+		{Name: "djangorestframework", Version: "3.9.3"},
+		{Name: "django", Version: "2.2"},
+		{Name: "colorama", Version: "0.3.9"},
+		{Name: "chardet", Version: "3.0.4"},
+		{Name: "certifi", Version: "2019.3.9"},
+		{Name: "botocore", Version: "1.12.137"},
+		{Name: "awscli", Version: "1.16.147"},
 	}
 )

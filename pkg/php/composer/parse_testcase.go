@@ -5,67 +5,67 @@ import "github.com/aquasecurity/go-dep-parser/pkg/types"
 var (
 	// docker run --name composer --rm -it composer:1.8 bash
 	// composer require pear/log
-	// composer show -i -f json | jq -rc '.installed[] | "{\"\(.name)\", \"\(.version)\", ""},"'
+	// composer show -i -f json | jq -rc '.installed[] | "{\"\(.name)\", \"\(.version)\", },"'
 	ComposerNormal = []types.Library{
-		{"pear/log", "1.13.1", ""},
-		{"pear/pear_exception", "v1.0.0", ""},
+		{Name: "pear/log", Version: "1.13.1"},
+		{Name: "pear/pear_exception", Version: "v1.0.0"},
 	}
 
 	// docker run --name composer --rm -it composer:1.8 bash
 	// composer require pear/log
 	// composer require "laravel/installer"
-	// composer show -i -f json | jq -rc '.installed[] | "{\"\(.name)\", \"\(.version)\", ""},"'
+	// composer show -i -f json | jq -rc '.installed[] | "{\"\(.name)\", \"\(.version)\", },"'
 	ComposerLaravel = []types.Library{
-		{"guzzlehttp/guzzle", "6.3.3", ""},
-		{"guzzlehttp/promises", "v1.3.1", ""},
-		{"guzzlehttp/psr7", "1.5.2", ""},
-		{"laravel/installer", "v2.0.1", ""},
-		{"pear/log", "1.13.1", ""},
-		{"pear/pear_exception", "v1.0.0", ""},
-		{"psr/http-message", "1.0.1", ""},
-		{"ralouphie/getallheaders", "2.0.5", ""},
-		{"symfony/console", "v4.2.7", ""},
-		{"symfony/contracts", "v1.0.2", ""},
-		{"symfony/filesystem", "v4.2.7", ""},
-		{"symfony/polyfill-ctype", "v1.11.0", ""},
-		{"symfony/polyfill-mbstring", "v1.11.0", ""},
-		{"symfony/process", "v4.2.7", ""},
+		{Name: "guzzlehttp/guzzle", Version: "6.3.3"},
+		{Name: "guzzlehttp/promises", Version: "v1.3.1"},
+		{Name: "guzzlehttp/psr7", Version: "1.5.2"},
+		{Name: "laravel/installer", Version: "v2.0.1"},
+		{Name: "pear/log", Version: "1.13.1"},
+		{Name: "pear/pear_exception", Version: "v1.0.0"},
+		{Name: "psr/http-message", Version: "1.0.1"},
+		{Name: "ralouphie/getallheaders", Version: "2.0.5"},
+		{Name: "symfony/console", Version: "v4.2.7"},
+		{Name: "symfony/contracts", Version: "v1.0.2"},
+		{Name: "symfony/filesystem", Version: "v4.2.7"},
+		{Name: "symfony/polyfill-ctype", Version: "v1.11.0"},
+		{Name: "symfony/polyfill-mbstring", Version: "v1.11.0"},
+		{Name: "symfony/process", Version: "v4.2.7"},
 	}
 
 	// docker run --name composer --rm -it composer:1.8 bash
 	// composer require pear/log
 	// composer require "laravel/installer"
 	// composer require "symfony/symfony"
-	// composer show -i -f json | jq -rc '.installed[] | "{\"\(.name)\", \"\(.version)\", ""},"'
+	// composer show -i -f json | jq -rc '.installed[] | "{\"\(.name)\", \"\(.version)\", },"'
 	ComposerSymfony = []types.Library{
-		{"doctrine/annotations", "v1.6.1", ""},
-		{"doctrine/cache", "v1.8.0", ""},
-		{"doctrine/collections", "v1.6.1", ""},
-		{"doctrine/event-manager", "v1.0.0", ""},
-		{"doctrine/lexer", "v1.0.1", ""},
-		{"doctrine/persistence", "1.1.1", ""},
-		{"doctrine/reflection", "v1.0.0", ""},
-		{"fig/link-util", "1.0.0", ""},
-		{"guzzlehttp/guzzle", "6.3.3", ""},
-		{"guzzlehttp/promises", "v1.3.1", ""},
-		{"guzzlehttp/psr7", "1.5.2", ""},
-		{"laravel/installer", "v2.0.1", ""},
-		{"pear/log", "1.13.1", ""},
-		{"pear/pear_exception", "v1.0.0", ""},
-		{"psr/cache", "1.0.1", ""},
-		{"psr/container", "1.0.0", ""},
-		{"psr/http-message", "1.0.1", ""},
-		{"psr/link", "1.0.0", ""},
-		{"psr/log", "1.1.0", ""},
-		{"psr/simple-cache", "1.0.1", ""},
-		{"ralouphie/getallheaders", "2.0.5", ""},
-		{"symfony/contracts", "v1.0.2", ""},
-		{"symfony/polyfill-ctype", "v1.11.0", ""},
-		{"symfony/polyfill-intl-icu", "v1.11.0", ""},
-		{"symfony/polyfill-mbstring", "v1.11.0", ""},
-		{"symfony/polyfill-php72", "v1.11.0", ""},
-		{"symfony/symfony", "v4.2.7", ""},
-		{"twig/twig", "v2.9.0", ""},
+		{Name: "doctrine/annotations", Version: "v1.6.1"},
+		{Name: "doctrine/cache", Version: "v1.8.0"},
+		{Name: "doctrine/collections", Version: "v1.6.1"},
+		{Name: "doctrine/event-manager", Version: "v1.0.0"},
+		{Name: "doctrine/lexer", Version: "v1.0.1"},
+		{Name: "doctrine/persistence", Version: "1.1.1"},
+		{Name: "doctrine/reflection", Version: "v1.0.0"},
+		{Name: "fig/link-util", Version: "1.0.0"},
+		{Name: "guzzlehttp/guzzle", Version: "6.3.3"},
+		{Name: "guzzlehttp/promises", Version: "v1.3.1"},
+		{Name: "guzzlehttp/psr7", Version: "1.5.2"},
+		{Name: "laravel/installer", Version: "v2.0.1"},
+		{Name: "pear/log", Version: "1.13.1"},
+		{Name: "pear/pear_exception", Version: "v1.0.0"},
+		{Name: "psr/cache", Version: "1.0.1"},
+		{Name: "psr/container", Version: "1.0.0"},
+		{Name: "psr/http-message", Version: "1.0.1"},
+		{Name: "psr/link", Version: "1.0.0"},
+		{Name: "psr/log", Version: "1.1.0"},
+		{Name: "psr/simple-cache", Version: "1.0.1"},
+		{Name: "ralouphie/getallheaders", Version: "2.0.5"},
+		{Name: "symfony/contracts", Version: "v1.0.2"},
+		{Name: "symfony/polyfill-ctype", Version: "v1.11.0"},
+		{Name: "symfony/polyfill-intl-icu", Version: "v1.11.0"},
+		{Name: "symfony/polyfill-mbstring", Version: "v1.11.0"},
+		{Name: "symfony/polyfill-php72", Version: "v1.11.0"},
+		{Name: "symfony/symfony", Version: "v4.2.7"},
+		{Name: "twig/twig", Version: "v2.9.0"},
 	}
 
 	// docker run --name composer --rm -it composer:1.8 bash
@@ -73,35 +73,35 @@ var (
 	// composer require "laravel/installer"
 	// composer require "symfony/symfony"
 	// composer require fzaninotto/faker --dev
-	// composer show -i -f json | jq -rc '.installed[] | "{\"\(.name)\", \"\(.version)\", ""},"'
+	// composer show -i -f json | jq -rc '.installed[] | "{\"\(.name)\", \"\(.version)\", },"'
 	ComposerWithDev = []types.Library{
-		{"doctrine/annotations", "v1.6.1", ""},
-		{"doctrine/cache", "v1.8.0", ""},
-		{"doctrine/collections", "v1.6.1", ""},
-		{"doctrine/event-manager", "v1.0.0", ""},
-		{"doctrine/lexer", "v1.0.1", ""},
-		{"doctrine/persistence", "1.1.1", ""},
-		{"doctrine/reflection", "v1.0.0", ""},
-		{"fig/link-util", "1.0.0", ""},
-		{"guzzlehttp/guzzle", "6.3.3", ""},
-		{"guzzlehttp/promises", "v1.3.1", ""},
-		{"guzzlehttp/psr7", "1.5.2", ""},
-		{"laravel/installer", "v2.0.1", ""},
-		{"pear/log", "1.13.1", ""},
-		{"pear/pear_exception", "v1.0.0", ""},
-		{"psr/cache", "1.0.1", ""},
-		{"psr/container", "1.0.0", ""},
-		{"psr/http-message", "1.0.1", ""},
-		{"psr/link", "1.0.0", ""},
-		{"psr/log", "1.1.0", ""},
-		{"psr/simple-cache", "1.0.1", ""},
-		{"ralouphie/getallheaders", "2.0.5", ""},
-		{"symfony/contracts", "v1.0.2", ""},
-		{"symfony/polyfill-ctype", "v1.11.0", ""},
-		{"symfony/polyfill-intl-icu", "v1.11.0", ""},
-		{"symfony/polyfill-mbstring", "v1.11.0", ""},
-		{"symfony/polyfill-php72", "v1.11.0", ""},
-		{"symfony/symfony", "v4.2.7", ""},
-		{"twig/twig", "v2.9.0", ""},
+		{Name: "doctrine/annotations", Version: "v1.6.1"},
+		{Name: "doctrine/cache", Version: "v1.8.0"},
+		{Name: "doctrine/collections", Version: "v1.6.1"},
+		{Name: "doctrine/event-manager", Version: "v1.0.0"},
+		{Name: "doctrine/lexer", Version: "v1.0.1"},
+		{Name: "doctrine/persistence", Version: "1.1.1"},
+		{Name: "doctrine/reflection", Version: "v1.0.0"},
+		{Name: "fig/link-util", Version: "1.0.0"},
+		{Name: "guzzlehttp/guzzle", Version: "6.3.3"},
+		{Name: "guzzlehttp/promises", Version: "v1.3.1"},
+		{Name: "guzzlehttp/psr7", Version: "1.5.2"},
+		{Name: "laravel/installer", Version: "v2.0.1"},
+		{Name: "pear/log", Version: "1.13.1"},
+		{Name: "pear/pear_exception", Version: "v1.0.0"},
+		{Name: "psr/cache", Version: "1.0.1"},
+		{Name: "psr/container", Version: "1.0.0"},
+		{Name: "psr/http-message", Version: "1.0.1"},
+		{Name: "psr/link", Version: "1.0.0"},
+		{Name: "psr/log", Version: "1.1.0"},
+		{Name: "psr/simple-cache", Version: "1.0.1"},
+		{Name: "ralouphie/getallheaders", Version: "2.0.5"},
+		{Name: "symfony/contracts", Version: "v1.0.2"},
+		{Name: "symfony/polyfill-ctype", Version: "v1.11.0"},
+		{Name: "symfony/polyfill-intl-icu", Version: "v1.11.0"},
+		{Name: "symfony/polyfill-mbstring", Version: "v1.11.0"},
+		{Name: "symfony/polyfill-php72", Version: "v1.11.0"},
+		{Name: "symfony/symfony", Version: "v4.2.7"},
+		{Name: "twig/twig", Version: "v2.9.0"},
 	}
 )
