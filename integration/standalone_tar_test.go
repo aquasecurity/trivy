@@ -67,6 +67,14 @@ func TestTar(t *testing.T) {
 			golden: "testdata/alpine-310.json.golden",
 		},
 		{
+			name: "alpine distroless",
+			testArgs: args{
+				Format: "json",
+				Input:  "testdata/fixtures/images/alpine-distroless.tar.gz",
+			},
+			golden: "testdata/alpine-distroless.json.golden",
+		},
+		{
 			name: "amazon linux 1",
 			testArgs: args{
 				Format: "json",
