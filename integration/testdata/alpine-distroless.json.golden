@@ -1,0 +1,85 @@
+{
+  "SchemaVersion": 2,
+  "ArtifactName": "testdata/fixtures/images/alpine-distroless.tar.gz",
+  "ArtifactType": "container_image",
+  "Metadata": {
+    "OS": {
+      "Family": "alpine",
+      "Name": "edge"
+    },
+    "ImageID": "sha256:22848737c0d272ad5d7c7369d8ca830a62929e63e38edcb22085139a6ae0688d",
+    "DiffIDs": [
+      "sha256:89da7cc836da4b53ab1ceb572576458c005e7e444b8bb79abda196668a2f0c92"
+    ],
+    "ImageConfig": {
+      "architecture": "amd64",
+      "author": "github.com/chainguard-dev/apko",
+      "created": "1970-01-01T00:00:00Z",
+      "history": [
+        {
+          "author": "apko",
+          "created": "1970-01-01T00:00:00Z",
+          "created_by": "apko",
+          "comment": "This is an apko single-layer image"
+        }
+      ],
+      "os": "linux",
+      "rootfs": {
+        "type": "layers",
+        "diff_ids": [
+          "sha256:89da7cc836da4b53ab1ceb572576458c005e7e444b8bb79abda196668a2f0c92"
+        ]
+      },
+      "config": {
+        "Entrypoint": [
+          "/usr/bin/git"
+        ],
+        "Env": [
+          "PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin",
+          "SSL_CERT_FILE=/etc/ssl/certs/ca-certificates.crt"
+        ],
+        "User": "65532"
+      }
+    }
+  },
+  "Results": [
+    {
+      "Target": "testdata/fixtures/images/alpine-distroless.tar.gz (alpine edge)",
+      "Class": "os-pkgs",
+      "Type": "alpine",
+      "Vulnerabilities": [
+        {
+          "VulnerabilityID": "CVE-2022-24765",
+          "PkgName": "git",
+          "InstalledVersion": "2.35.1-r2",
+          "FixedVersion": "2.35.2-r0",
+          "Layer": {
+            "DiffID": "sha256:89da7cc836da4b53ab1ceb572576458c005e7e444b8bb79abda196668a2f0c92"
+          },
+          "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2022-24765",
+          "Title": "Git for Windows is a fork of Git containing Windows-specific patches.  ...",
+          "Description": "Git for Windows is a fork of Git containing Windows-specific patches.",
+          "Severity": "MEDIUM",
+          "CweIDs": [
+            "CWE-427"
+          ],
+          "References": [
+            "http://www.openwall.com/lists/oss-security/2022/04/12/7",
+            "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2022-24765",
+            "https://git-scm.com/book/en/v2/Appendix-A%3A-Git-in-Other-Environments-Git-in-Bash",
+            "https://git-scm.com/docs/git#Documentation/git.txt-codeGITCEILINGDIRECTORIEScode",
+            "https://github.com/git-for-windows/git/security/advisories/GHSA-vw2c-22j4-2fh2",
+            "https://ubuntu.com/security/notices/USN-5376-1"
+          ],
+          "PublishedDate": "2022-04-12T18:15:00Z",
+          "LastModifiedDate": "2022-04-12T21:15:00Z"
+        }
+      ]
+    },
+    {
+      "Target": "usr/bin/git-lfs",
+      "Class": "lang-pkgs",
+      "Type": "gobinary"
+    }
+  ]
+}
