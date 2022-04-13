@@ -135,6 +135,10 @@ func TestFSCache_PutBlob(t *testing.T) {
 						Family: "alpine",
 						Name:   "3.10",
 					},
+					Repository: &types.Repository{
+						Family:  "alpine",
+						Release: "3.10",
+					},
 				},
 			},
 			want: `
@@ -143,6 +147,10 @@ func TestFSCache_PutBlob(t *testing.T) {
 				  "OS": {
 				    "Family": "alpine",
 				    "Name": "3.10"
+				  },
+ 				  "Repository": {
+					"Family": "alpine",
+					"Release": "3.10"
 				  }
 				}`,
 			wantLayerID: "",
@@ -158,6 +166,10 @@ func TestFSCache_PutBlob(t *testing.T) {
 					OS: &types.OS{
 						Family: "alpine",
 						Name:   "3.10",
+					},
+					Repository: &types.Repository{
+						Family:  "alpine",
+						Release: "3.10",
 					},
 					PackageInfos: []types.PackageInfo{
 						{
@@ -198,6 +210,10 @@ func TestFSCache_PutBlob(t *testing.T) {
 				  "OS": {
 				    "Family": "alpine",
 				    "Name": "3.10"
+				  },
+ 				  "Repository": {
+					"Family": "alpine",
+					"Release": "3.10"
 				  },
 				  "PackageInfos": [
 				    {

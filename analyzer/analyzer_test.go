@@ -23,6 +23,7 @@ import (
 	_ "github.com/aquasecurity/fanal/analyzer/os/alpine"
 	_ "github.com/aquasecurity/fanal/analyzer/os/ubuntu"
 	_ "github.com/aquasecurity/fanal/analyzer/pkg/apk"
+	_ "github.com/aquasecurity/fanal/analyzer/repo/apk"
 	_ "github.com/aquasecurity/fanal/hook/all"
 )
 
@@ -208,6 +209,33 @@ func TestAnalysisResult_Merge(t *testing.T) {
 				OS: &types.OS{
 					Family: aos.Ubuntu,
 					Name:   "18.04",
+				},
+			},
+		},
+		{
+			name: "alpine OS needs to be extended with apk repositories",
+			fields: fields{
+				OS: &types.OS{
+					Family: aos.Alpine,
+					Name:   "3.15.3",
+				},
+			},
+			args: args{
+				new: &analyzer.AnalysisResult{
+					Repository: &types.Repository{
+						Family:  aos.Alpine,
+						Release: "edge",
+					},
+				},
+			},
+			want: analyzer.AnalysisResult{
+				OS: &types.OS{
+					Family: aos.Alpine,
+					Name:   "3.15.3",
+				},
+				Repository: &types.Repository{
+					Family:  aos.Alpine,
+					Release: "edge",
 				},
 			},
 		},
@@ -458,15 +486,16 @@ func TestAnalyzer_AnalyzerVersions(t *testing.T) {
 			name:     "happy path",
 			disabled: []analyzer.Type{},
 			want: map[string]int{
-				"alpine":  1,
-				"apk":     1,
-				"bundler": 1,
-				"ubuntu":  1,
+				"alpine":   1,
+				"apk-repo": 1,
+				"apk":      1,
+				"bundler":  1,
+				"ubuntu":   1,
 			},
 		},
 		{
 			name:     "disable analyzers",
-			disabled: []analyzer.Type{analyzer.TypeAlpine, analyzer.TypeUbuntu},
+			disabled: []analyzer.Type{analyzer.TypeAlpine, analyzer.TypeApkRepo, analyzer.TypeUbuntu},
 			want: map[string]int{
 				"apk":     1,
 				"bundler": 1,
