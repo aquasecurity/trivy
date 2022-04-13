@@ -33,8 +33,7 @@ nav:
                 - Vulnerability DB: docs/vulnerability/examples/db.md
                 - Cache: docs/vulnerability/examples/cache.md
                 - Others: docs/vulnerability/examples/others.md
-            - Distributions:
-                - CBL-Mariner: docs/vulnerability/distributions/cbl-mariner.md
+            - Distributions: docs/vulnerability/distributions.md
         - Misconfiguration:
             - Scanning:
                 - Overview: docs/misconfiguration/index.md
