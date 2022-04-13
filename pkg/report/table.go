@@ -48,9 +48,10 @@ func (tw TableWriter) write(result types.Result) {
 	if result.Class != types.ClassOSPkg {
 		target += fmt.Sprintf(" (%s)", result.Type)
 	}
-
-	fmt.Printf("\n%s\n", target)
-	fmt.Println(strings.Repeat("=", len(target)))
+	if result.Target != "" || result.Type != "" {
+		fmt.Printf("\n%s\n", target)
+		fmt.Println(strings.Repeat("=", len(target)))
+	}
 	if result.MisconfSummary != nil {
 		// for misconfigurations
 		summary := result.MisconfSummary
