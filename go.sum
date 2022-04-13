@@ -237,10 +237,10 @@ github.com/aquasecurity/bolt-fixtures v0.0.0-20200903104109-d34e7f983986 h1:2a30
 github.com/aquasecurity/bolt-fixtures v0.0.0-20200903104109-d34e7f983986/go.mod h1:NT+jyeCzXk6vXR5MTkdn4z64TgGfE5HMLC8qfj5unl8=
 github.com/aquasecurity/defsec v0.28.4 h1:O0ukf2uMEqRRX3EHfu+9J0EyD39v50NDjwtf96nES8E=
 github.com/aquasecurity/defsec v0.28.4/go.mod h1:vUdThwusBM7y1gJ7CVX3+h3bsPvpmOIEp3NEdzTDkhA=
-github.com/aquasecurity/fanal v0.0.0-20220406084015-9cc93a8482b8 h1:upNoF0Y/HkO0I/ODEoZvlaYmpYl2YVkVuP70QBuI6uc=
-github.com/aquasecurity/fanal v0.0.0-20220406084015-9cc93a8482b8/go.mod h1:Yw8qKVnr4d9bz/nhozrnTAebVrXgpUD6jgXYinm85P0=
-github.com/aquasecurity/go-dep-parser v0.0.0-20220406074731-71021a481237 h1:FX5MaNimz5xK6LYbp+mI23i2m6OmoKaHAEgRVehLDs8=
-github.com/aquasecurity/go-dep-parser v0.0.0-20220406074731-71021a481237/go.mod h1:MewgJXyrz9PgCHh8zunRNY4BY72ltNYWeTYAt1paaLc=
+github.com/aquasecurity/fanal v0.0.0-20220413103552-a2db5fcf54ed h1:8eCdv9koYS04ib1jVfyYGcUjkn9DcEF+W1WAigZmd4s=
+github.com/aquasecurity/fanal v0.0.0-20220413103552-a2db5fcf54ed/go.mod h1:P+PBmaNRkj5kBiRSM5vKtKviKxEm3kK179Mu9BVx1AQ=
+github.com/aquasecurity/go-dep-parser v0.0.0-20220412145205-d0501f906d90 h1:uZcI5qV7J1pzOc6W49l7iEey/KtEVlaqsNU5l65vZLk=
+github.com/aquasecurity/go-dep-parser v0.0.0-20220412145205-d0501f906d90/go.mod h1:rK/5BoRt8/D7xXydoVVeBaQuk6zDJ6W+FWz/RqFuJxI=
 github.com/aquasecurity/go-gem-version v0.0.0-20201115065557-8eed6fe000ce h1:QgBRgJvtEOBtUXilDb1MLi1p1MWoyFDXAu5DEUl5nwM=
 github.com/aquasecurity/go-gem-version v0.0.0-20201115065557-8eed6fe000ce/go.mod h1:HXgVzOPvXhVGLJs4ZKO817idqr/xhwsTcj17CLYY74s=
 github.com/aquasecurity/go-npm-version v0.0.0-20201110091526-0b796d180798 h1:eveqE9ivrt30CJ7dOajOfBavhZ4zPqHcZe/4tKp0alc=
@@ -1653,8 +1653,8 @@ golang.org/x/exp v0.0.0-20191227195350-da58074b4299/go.mod h1:2RIsYlXP63K8oxa1u0
 golang.org/x/exp v0.0.0-20200119233911-0405dc783f0a/go.mod h1:2RIsYlXP63K8oxa1u096TMicItID8zy7Y6sNkU49FU4=
 golang.org/x/exp v0.0.0-20200207192155-f17229e696bd/go.mod h1:J/WKrq2StrnmMY6+EHIKF9dgMWnmCNThgcyBT1FY9mM=
 golang.org/x/exp v0.0.0-20200224162631-6cc2880d07d6/go.mod h1:3jZMyOhIsHpP37uCMkUooju7aAi5cS1Q23tOzKc+0MU=
-golang.org/x/exp v0.0.0-20220321124402-2d6d886f8a82 h1:P3h2IfqHFILVjDaCKXyuKMprdEyIbrbKevbf2EB6lQI=
-golang.org/x/exp v0.0.0-20220321124402-2d6d886f8a82/go.mod h1:lgLbSvA5ygNOMpwM/9anMpWVlVJ7Z+cHWq/eFuinpGE=
+golang.org/x/exp v0.0.0-20220407100705-7b9b53b0aca4 h1:K3x+yU+fbot38x5bQbU2QqUAVyYLEktdNH2GxZLnM3U=
+golang.org/x/exp v0.0.0-20220407100705-7b9b53b0aca4/go.mod h1:lgLbSvA5ygNOMpwM/9anMpWVlVJ7Z+cHWq/eFuinpGE=
 golang.org/x/image v0.0.0-20190227222117-0694c2d4d067/go.mod h1:kZ7UVZpmo3dzQBMxlp+ypCbDeSB+sBbTgSJuh5dn5js=
 golang.org/x/image v0.0.0-20190802002840-cff245a6509b/go.mod h1:FeLwcggjj3mMvU+oOTbSwawSJRM1uh48EjtB4UJZlP0=
 golang.org/x/lint v0.0.0-20180702182130-06c8688daad7/go.mod h1:UVdnD1Gm6xHRNCYTkRU2/jEulfH38KcIWyp/GAMgvoE=
