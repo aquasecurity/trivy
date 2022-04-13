@@ -68,7 +68,17 @@ func (s Scanner) Scan(target string, artifactKey string, blobKeys []string, opti
 	artifactDetail, err := s.applier.ApplyLayers(artifactKey, blobKeys)
 	switch {
 	case errors.Is(err, analyzer.ErrUnknownOS):
-		log.Logger.Debug("OS is not detected and vulnerabilities in OS packages are not detected.")
+		log.Logger.Debug("OS is not detected.")
+
+		// If OS is not detected and repositories are detected, we'll try to use repositories as OS.
+		if artifactDetail.Repository != nil {
+			log.Logger.Debugf("Package repository: %s %s", artifactDetail.Repository.Family, artifactDetail.Repository.Release)
+			log.Logger.Debugf("Assuming OS is %s %s.", artifactDetail.Repository.Family, artifactDetail.Repository.Release)
+			artifactDetail.OS = &ftypes.OS{
+				Family: artifactDetail.Repository.Family,
+				Name:   artifactDetail.Repository.Release,
+			}
+		}
 	case errors.Is(err, analyzer.ErrNoPkgsDetected):
 		log.Logger.Warn("No OS package is detected. Make sure you haven't deleted any files that contain information about the installed packages.")
 		log.Logger.Warn(`e.g. files under "/lib/apk/db/", "/var/lib/dpkg/" and "/var/lib/rpm"`)
