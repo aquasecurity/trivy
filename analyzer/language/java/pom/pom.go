@@ -28,7 +28,7 @@ func (a pomAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInput) (*
 }
 
 func (a pomAnalyzer) Required(filePath string, _ os.FileInfo) bool {
-	return filepath.Base(filePath) == "pom.xml"
+	return filepath.Base(filePath) == types.MavenPom
 }
 
 func (a pomAnalyzer) Type() analyzer.Type {

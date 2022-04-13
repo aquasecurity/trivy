@@ -20,7 +20,7 @@ func init() {
 
 const version = 1
 
-var requiredFiles = []string{"package-lock.json"}
+var requiredFiles = []string{types.NpmPkgLock}
 
 type npmLibraryAnalyzer struct{}
 

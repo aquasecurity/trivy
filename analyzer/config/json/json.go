@@ -17,7 +17,7 @@ const version = 1
 
 var (
 	requiredExt   = ".json"
-	excludedFiles = []string{"package-lock.json", "packages.lock.json"}
+	excludedFiles = []string{types.NpmPkgLock, types.NuGetPkgsLock, types.NuGetPkgsConfig}
 )
 
 type ConfigAnalyzer struct {

@@ -20,7 +20,7 @@ func init() {
 
 const version = 1
 
-var requiredFiles = []string{"composer.lock"}
+var requiredFiles = []string{types.ComposerLock}
 
 type composerLibraryAnalyzer struct{}
 

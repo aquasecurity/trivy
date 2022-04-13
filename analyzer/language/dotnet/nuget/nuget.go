@@ -21,8 +21,8 @@ func init() {
 
 const (
 	version    = 2
-	lockFile   = "packages.lock.json"
-	configFile = "packages.config"
+	lockFile   = types.NuGetPkgsLock
+	configFile = types.NuGetPkgsConfig
 )
 
 var requiredFiles = []string{lockFile, configFile}
