@@ -8,4 +8,5 @@ const (
 	GemSpec   Type = "gemspec"
 
 	SystemFileFilter Type = "system-file-filter"
+	GoModMerge       Type = "gomod-merge"
 )

@@ -20,7 +20,7 @@ func init() {
 
 const version = 1
 
-var requiredFiles = []string{"Pipfile.lock"}
+var requiredFiles = []string{types.PipfileLock}
 
 type pipenvLibraryAnalyzer struct{}
 

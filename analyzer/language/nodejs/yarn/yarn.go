@@ -20,7 +20,7 @@ func init() {
 
 const version = 1
 
-var requiredFiles = []string{"yarn.lock"}
+var requiredFiles = []string{types.YarnLock}
 
 type yarnLibraryAnalyzer struct{}
 

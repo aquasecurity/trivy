@@ -5,27 +5,38 @@ import (
 	"os"
 	"path/filepath"
 
+	"golang.org/x/exp/slices"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/fanal/analyzer"
 	"github.com/aquasecurity/fanal/analyzer/language"
 	"github.com/aquasecurity/fanal/types"
-	"github.com/aquasecurity/fanal/utils"
 	"github.com/aquasecurity/go-dep-parser/pkg/golang/mod"
+	"github.com/aquasecurity/go-dep-parser/pkg/golang/sum"
 )
 
 func init() {
 	analyzer.RegisterAnalyzer(&gomodAnalyzer{})
 }
 
-const version = 1
+const version = 2
 
-var requiredFiles = []string{"go.sum"}
+var requiredFiles = []string{types.GoMod, types.GoSum}
 
 type gomodAnalyzer struct{}
 
 func (a gomodAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInput) (*analyzer.AnalysisResult, error) {
-	res, err := language.Analyze(types.GoMod, input.FilePath, input.Content, mod.Parse)
+	var parser language.Parser
+	switch filepath.Base(input.FilePath) {
+	case types.GoMod:
+		parser = mod.Parse
+	case types.GoSum:
+		parser = sum.Parse
+	default:
+		return nil, nil
+	}
+
+	res, err := language.Analyze(types.GoModule, input.FilePath, input.Content, parser)
 	if err != nil {
 		return nil, xerrors.Errorf("failed to analyze %s: %w", input.FilePath, err)
 	}
@@ -34,7 +45,7 @@ func (a gomodAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInput) 
 
 func (a gomodAnalyzer) Required(filePath string, _ os.FileInfo) bool {
 	fileName := filepath.Base(filePath)
-	return utils.StringInSlice(fileName, requiredFiles)
+	return slices.Contains(requiredFiles, fileName)
 }
 
 func (a gomodAnalyzer) Type() analyzer.Type {

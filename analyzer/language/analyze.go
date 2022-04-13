@@ -33,6 +33,7 @@ func ToAnalysisResult(fileType, filePath, libFilePath string, libs []godeptypes.
 			Name:     lib.Name,
 			Version:  lib.Version,
 			FilePath: libFilePath,
+			Indirect: lib.Indirect,
 			License:  lib.License,
 		})
 	}
