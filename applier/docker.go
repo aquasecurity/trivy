@@ -100,6 +100,10 @@ func ApplyLayers(layers []types.BlobInfo) types.ArtifactDetail {
 			mergedLayer.OS = layer.OS
 		}
 
+		if layer.Repository != nil {
+			mergedLayer.Repository = layer.Repository
+		}
+
 		for _, pkgInfo := range layer.PackageInfos {
 			key := fmt.Sprintf("%s/type:ospkg", pkgInfo.FilePath)
 			nestedMap.SetByString(key, sep, pkgInfo)

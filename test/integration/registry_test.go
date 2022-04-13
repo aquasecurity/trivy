@@ -79,13 +79,14 @@ func TestTLSRegistry(t *testing.T) {
 	}
 
 	testCases := []struct {
-		name       string
-		imageName  string
-		imageFile  string
-		option     types.DockerOption
-		login      bool
-		expectedOS types.OS
-		wantErr    bool
+		name         string
+		imageName    string
+		imageFile    string
+		option       types.DockerOption
+		login        bool
+		expectedOS   types.OS
+		expectedRepo types.Repository
+		wantErr      bool
 	}{
 		{
 			name:      "happy path",
@@ -96,8 +97,9 @@ func TestTLSRegistry(t *testing.T) {
 				Password:              registryPassword,
 				InsecureSkipTLSVerify: true,
 			},
-			expectedOS: types.OS{Name: "3.10.2", Family: "alpine"},
-			wantErr:    false,
+			expectedOS:   types.OS{Name: "3.10.2", Family: "alpine"},
+			expectedRepo: types.Repository{Family: "alpine", Release: "3.10"},
+			wantErr:      false,
 		},
 		{
 			name:      "happy path with docker login",
@@ -106,9 +108,10 @@ func TestTLSRegistry(t *testing.T) {
 			option: types.DockerOption{
 				InsecureSkipTLSVerify: true,
 			},
-			login:      true,
-			expectedOS: types.OS{Name: "3.10.2", Family: "alpine"},
-			wantErr:    false,
+			login:        true,
+			expectedOS:   types.OS{Name: "3.10.2", Family: "alpine"},
+			expectedRepo: types.Repository{Family: "alpine", Release: "3.10"},
+			wantErr:      false,
 		},
 		{
 			name:      "sad path: tls verify",
@@ -156,6 +159,7 @@ func TestTLSRegistry(t *testing.T) {
 			}
 
 			assert.Equal(t, &tc.expectedOS, imageDetail.OS)
+			assert.Equal(t, &tc.expectedRepo, imageDetail.Repository)
 		})
 	}
 }

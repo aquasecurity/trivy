@@ -120,6 +120,7 @@ func (a Artifact) Inspect(ctx context.Context) (types.ArtifactReference, error) 
 	blobInfo := types.BlobInfo{
 		SchemaVersion:     types.BlobJSONSchemaVersion,
 		OS:                result.OS,
+		Repository:        result.Repository,
 		PackageInfos:      result.PackageInfos,
 		Applications:      result.Applications,
 		Misconfigurations: misconfs,

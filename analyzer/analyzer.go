@@ -78,6 +78,7 @@ type Opener func() (dio.ReadSeekCloserAt, error)
 type AnalysisResult struct {
 	m                    sync.Mutex
 	OS                   *types.OS
+	Repository           *types.Repository
 	PackageInfos         []types.PackageInfo
 	Applications         []types.Application
 	Configs              []types.Config
@@ -92,7 +93,7 @@ type AnalysisResult struct {
 }
 
 func (r *AnalysisResult) isEmpty() bool {
-	return r.OS == nil && len(r.PackageInfos) == 0 && len(r.Applications) == 0 &&
+	return r.OS == nil && r.Repository == nil && len(r.PackageInfos) == 0 && len(r.Applications) == 0 &&
 		len(r.Configs) == 0 && len(r.SystemInstalledFiles) == 0 && r.BuildInfo == nil && len(r.CustomResources) == 0
 }
 
@@ -137,6 +138,10 @@ func (r *AnalysisResult) Merge(new *AnalysisResult) {
 		if r.OS == nil || r.OS.Family == aos.RedHat || r.OS.Family == aos.Debian {
 			r.OS = new.OS
 		}
+	}
+
+	if new.Repository != nil {
+		r.Repository = new.Repository
 	}
 
 	if len(new.PackageInfos) > 0 {

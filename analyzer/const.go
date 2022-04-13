@@ -25,6 +25,9 @@ const (
 	TypeDpkg Type = "dpkg"
 	TypeRpm  Type = "rpm"
 
+	// OS Package Repository
+	TypeApkRepo Type = "apk-repo"
+
 	// ============================
 	// Programming Language Package
 	// ============================
