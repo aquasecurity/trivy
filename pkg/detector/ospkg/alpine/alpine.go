@@ -178,12 +178,12 @@ func (s *Scanner) IsSupportedVersion(osFamily, osVer string) bool {
 }
 
 func (s *Scanner) repoRelease(repo *ftypes.Repository) string {
-	var release string
-	if repo != nil {
-		release = repo.Release
-		if strings.Count(release, ".") > 1 {
-			release = release[:strings.LastIndex(release, ".")]
-		}
+	if repo == nil {
+		return ""
+	}
+	release := repo.Release
+	if strings.Count(release, ".") > 1 {
+		release = release[:strings.LastIndex(release, ".")]
 	}
 	return release
 }
