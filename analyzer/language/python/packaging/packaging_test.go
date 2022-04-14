@@ -97,6 +97,11 @@ func Test_packagingAnalyzer_Analyze(t *testing.T) {
 				},
 			},
 		},
+		{
+			name:      "egg zip doesn't contain required files",
+			inputFile: "testdata/no-required-files.egg",
+			want:      nil,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
