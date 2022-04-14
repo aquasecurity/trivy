@@ -198,5 +198,5 @@ require (
 	sigs.k8s.io/yaml v1.3.0 // indirect
 )
 
-// To resolve CVE-2021-3538. Note that it is used only for testing.
-replace github.com/satori/go.uuid v1.2.0 => github.com/satori/go.uuid v1.2.1-0.20181016170032-d91630c85102
+// To resolve CVE-2022-23648
+replace github.com/containerd/containerd v1.5.9 => github.com/containerd/containerd v1.5.10
