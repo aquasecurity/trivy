@@ -49,7 +49,7 @@ type Applier interface {
 
 // OspkgDetector defines operation to detect OS vulnerabilities
 type OspkgDetector interface {
-	Detect(imageName, osFamily, osName string, created time.Time, pkgs []ftypes.Package) (detectedVulns []types.DetectedVulnerability, eosl bool, err error)
+	Detect(imageName, osFamily, osName string, repo *ftypes.Repository, created time.Time, pkgs []ftypes.Package) (detectedVulns []types.DetectedVulnerability, eosl bool, err error)
 }
 
 // Scanner implements the OspkgDetector and LibraryDetector
@@ -68,7 +68,17 @@ func (s Scanner) Scan(target string, artifactKey string, blobKeys []string, opti
 	artifactDetail, err := s.applier.ApplyLayers(artifactKey, blobKeys)
 	switch {
 	case errors.Is(err, analyzer.ErrUnknownOS):
-		log.Logger.Debug("OS is not detected and vulnerabilities in OS packages are not detected.")
+		log.Logger.Debug("OS is not detected.")
+
+		// If OS is not detected and repositories are detected, we'll try to use repositories as OS.
+		if artifactDetail.Repository != nil {
+			log.Logger.Debugf("Package repository: %s %s", artifactDetail.Repository.Family, artifactDetail.Repository.Release)
+			log.Logger.Debugf("Assuming OS is %s %s.", artifactDetail.Repository.Family, artifactDetail.Repository.Release)
+			artifactDetail.OS = &ftypes.OS{
+				Family: artifactDetail.Repository.Family,
+				Name:   artifactDetail.Repository.Release,
+			}
+		}
 	case errors.Is(err, analyzer.ErrNoPkgsDetected):
 		log.Logger.Warn("No OS package is detected. Make sure you haven't deleted any files that contain information about the installed packages.")
 		log.Logger.Warn(`e.g. files under "/lib/apk/db/", "/var/lib/dpkg/" and "/var/lib/rpm"`)
@@ -140,7 +150,7 @@ func (s Scanner) scanOSPkgs(target string, detail ftypes.ArtifactDetail, options
 		pkgs = mergePkgs(pkgs, detail.HistoryPackages)
 	}
 
-	result, eosl, err := s.detectVulnsInOSPkgs(target, detail.OS.Family, detail.OS.Name, pkgs)
+	result, eosl, err := s.detectVulnsInOSPkgs(target, detail.OS.Family, detail.OS.Name, detail.Repository, pkgs)
 	if err != nil {
 		return nil, false, xerrors.Errorf("failed to scan OS packages: %w", err)
 	} else if result == nil {
@@ -157,11 +167,11 @@ func (s Scanner) scanOSPkgs(target string, detail ftypes.ArtifactDetail, options
 	return result, eosl, nil
 }
 
-func (s Scanner) detectVulnsInOSPkgs(target, osFamily, osName string, pkgs []ftypes.Package) (*types.Result, bool, error) {
+func (s Scanner) detectVulnsInOSPkgs(target, osFamily, osName string, repo *ftypes.Repository, pkgs []ftypes.Package) (*types.Result, bool, error) {
 	if osFamily == "" {
 		return nil, false, nil
 	}
-	vulns, eosl, err := s.ospkgDetector.Detect("", osFamily, osName, time.Time{}, pkgs)
+	vulns, eosl, err := s.ospkgDetector.Detect("", osFamily, osName, repo, time.Time{}, pkgs)
 	if err == ospkgDetector.ErrUnsupportedOS {
 		return nil, false, nil
 	} else if err != nil {

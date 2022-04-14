@@ -42,6 +42,7 @@ var (
 		"3.13": time.Date(2022, 11, 1, 23, 59, 59, 0, time.UTC),
 		"3.14": time.Date(2023, 5, 1, 23, 59, 59, 0, time.UTC),
 		"3.15": time.Date(2023, 11, 1, 23, 59, 59, 0, time.UTC),
+		"edge": time.Date(9999, 1, 1, 0, 0, 0, 0, time.UTC),
 	}
 )
 
@@ -79,17 +80,27 @@ func NewScanner(opts ...option) *Scanner {
 }
 
 // Detect vulnerabilities in package using Alpine scanner
-func (s *Scanner) Detect(osVer string, pkgs []ftypes.Package) ([]types.DetectedVulnerability, error) {
+func (s *Scanner) Detect(osVer string, repo *ftypes.Repository, pkgs []ftypes.Package) ([]types.DetectedVulnerability, error) {
 	log.Logger.Info("Detecting Alpine vulnerabilities...")
 	if strings.Count(osVer, ".") > 1 {
 		osVer = osVer[:strings.LastIndex(osVer, ".")]
 	}
+	repoRelease := s.repoRelease(repo)
+
 	log.Logger.Debugf("alpine: os version: %s", osVer)
+	log.Logger.Debugf("alpine: package repository: %s", repoRelease)
 	log.Logger.Debugf("alpine: the number of packages: %d", len(pkgs))
+
+	stream := osVer
+	if repoRelease != "" && osVer != repoRelease {
+		// Prefer the repository release. Use OS version only when the repository is not detected.
+		stream = repoRelease
+		log.Logger.Infof("Use the repository release '%s' for vulnerability detection, instead of OS version '%s'", repoRelease, osVer)
+	}
 
 	var vulns []types.DetectedVulnerability
 	for _, pkg := range pkgs {
-		advisories, err := s.vs.Get(osVer, pkg.SrcName)
+		advisories, err := s.vs.Get(stream, pkg.SrcName)
 		if err != nil {
 			return nil, xerrors.Errorf("failed to get alpine advisories: %w", err)
 		}
@@ -161,8 +172,19 @@ func (s *Scanner) IsSupportedVersion(osFamily, osVer string) bool {
 	eol, ok := eolDates[osVer]
 	if !ok {
 		log.Logger.Warnf("This OS version is not on the EOL list: %s %s", osFamily, osVer)
-		return false
+		return true // may be the latest version
 	}
 
 	return s.clock.Now().Before(eol)
+}
+
+func (s *Scanner) repoRelease(repo *ftypes.Repository) string {
+	if repo == nil {
+		return ""
+	}
+	release := repo.Release
+	if strings.Count(release, ".") > 1 {
+		release = release[:strings.LastIndex(release, ".")]
+	}
+	return release
 }

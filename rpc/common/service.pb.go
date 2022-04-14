@@ -140,6 +140,61 @@ func (x *OS) GetEosl() bool {
 	return false
 }
 
+type Repository struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Family  string `protobuf:"bytes,1,opt,name=family,proto3" json:"family,omitempty"`
+	Release string `protobuf:"bytes,2,opt,name=release,proto3" json:"release,omitempty"`
+}
+
+func (x *Repository) Reset() {
+	*x = Repository{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_rpc_common_service_proto_msgTypes[1]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *Repository) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*Repository) ProtoMessage() {}
+
+func (x *Repository) ProtoReflect() protoreflect.Message {
+	mi := &file_rpc_common_service_proto_msgTypes[1]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use Repository.ProtoReflect.Descriptor instead.
+func (*Repository) Descriptor() ([]byte, []int) {
+	return file_rpc_common_service_proto_rawDescGZIP(), []int{1}
+}
+
+func (x *Repository) GetFamily() string {
+	if x != nil {
+		return x.Family
+	}
+	return ""
+}
+
+func (x *Repository) GetRelease() string {
+	if x != nil {
+		return x.Release
+	}
+	return ""
+}
+
 type PackageInfo struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -152,7 +207,7 @@ type PackageInfo struct {
 func (x *PackageInfo) Reset() {
 	*x = PackageInfo{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_rpc_common_service_proto_msgTypes[1]
+		mi := &file_rpc_common_service_proto_msgTypes[2]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -165,7 +220,7 @@ func (x *PackageInfo) String() string {
 func (*PackageInfo) ProtoMessage() {}
 
 func (x *PackageInfo) ProtoReflect() protoreflect.Message {
-	mi := &file_rpc_common_service_proto_msgTypes[1]
+	mi := &file_rpc_common_service_proto_msgTypes[2]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -178,7 +233,7 @@ func (x *PackageInfo) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PackageInfo.ProtoReflect.Descriptor instead.
 func (*PackageInfo) Descriptor() ([]byte, []int) {
-	return file_rpc_common_service_proto_rawDescGZIP(), []int{1}
+	return file_rpc_common_service_proto_rawDescGZIP(), []int{2}
 }
 
 func (x *PackageInfo) GetFilePath() string {
@@ -208,7 +263,7 @@ type Application struct {
 func (x *Application) Reset() {
 	*x = Application{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_rpc_common_service_proto_msgTypes[2]
+		mi := &file_rpc_common_service_proto_msgTypes[3]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -221,7 +276,7 @@ func (x *Application) String() string {
 func (*Application) ProtoMessage() {}
 
 func (x *Application) ProtoReflect() protoreflect.Message {
-	mi := &file_rpc_common_service_proto_msgTypes[2]
+	mi := &file_rpc_common_service_proto_msgTypes[3]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -234,7 +289,7 @@ func (x *Application) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Application.ProtoReflect.Descriptor instead.
 func (*Application) Descriptor() ([]byte, []int) {
-	return file_rpc_common_service_proto_rawDescGZIP(), []int{2}
+	return file_rpc_common_service_proto_rawDescGZIP(), []int{3}
 }
 
 func (x *Application) GetType() string {
@@ -284,7 +339,7 @@ type Package struct {
 func (x *Package) Reset() {
 	*x = Package{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_rpc_common_service_proto_msgTypes[3]
+		mi := &file_rpc_common_service_proto_msgTypes[4]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -297,7 +352,7 @@ func (x *Package) String() string {
 func (*Package) ProtoMessage() {}
 
 func (x *Package) ProtoReflect() protoreflect.Message {
-	mi := &file_rpc_common_service_proto_msgTypes[3]
+	mi := &file_rpc_common_service_proto_msgTypes[4]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -310,7 +365,7 @@ func (x *Package) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Package.ProtoReflect.Descriptor instead.
 func (*Package) Descriptor() ([]byte, []int) {
-	return file_rpc_common_service_proto_rawDescGZIP(), []int{3}
+	return file_rpc_common_service_proto_rawDescGZIP(), []int{4}
 }
 
 func (x *Package) GetName() string {
@@ -413,7 +468,7 @@ type Misconfiguration struct {
 func (x *Misconfiguration) Reset() {
 	*x = Misconfiguration{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_rpc_common_service_proto_msgTypes[4]
+		mi := &file_rpc_common_service_proto_msgTypes[5]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -426,7 +481,7 @@ func (x *Misconfiguration) String() string {
 func (*Misconfiguration) ProtoMessage() {}
 
 func (x *Misconfiguration) ProtoReflect() protoreflect.Message {
-	mi := &file_rpc_common_service_proto_msgTypes[4]
+	mi := &file_rpc_common_service_proto_msgTypes[5]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -439,7 +494,7 @@ func (x *Misconfiguration) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Misconfiguration.ProtoReflect.Descriptor instead.
 func (*Misconfiguration) Descriptor() ([]byte, []int) {
-	return file_rpc_common_service_proto_rawDescGZIP(), []int{4}
+	return file_rpc_common_service_proto_rawDescGZIP(), []int{5}
 }
 
 func (x *Misconfiguration) GetFileType() string {
@@ -500,7 +555,7 @@ type MisconfResult struct {
 func (x *MisconfResult) Reset() {
 	*x = MisconfResult{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_rpc_common_service_proto_msgTypes[5]
+		mi := &file_rpc_common_service_proto_msgTypes[6]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -513,7 +568,7 @@ func (x *MisconfResult) String() string {
 func (*MisconfResult) ProtoMessage() {}
 
 func (x *MisconfResult) ProtoReflect() protoreflect.Message {
-	mi := &file_rpc_common_service_proto_msgTypes[5]
+	mi := &file_rpc_common_service_proto_msgTypes[6]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -526,7 +581,7 @@ func (x *MisconfResult) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use MisconfResult.ProtoReflect.Descriptor instead.
 func (*MisconfResult) Descriptor() ([]byte, []int) {
-	return file_rpc_common_service_proto_rawDescGZIP(), []int{5}
+	return file_rpc_common_service_proto_rawDescGZIP(), []int{6}
 }
 
 func (x *MisconfResult) GetNamespace() string {
@@ -593,7 +648,7 @@ type DetectedMisconfiguration struct {
 func (x *DetectedMisconfiguration) Reset() {
 	*x = DetectedMisconfiguration{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_rpc_common_service_proto_msgTypes[6]
+		mi := &file_rpc_common_service_proto_msgTypes[7]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -606,7 +661,7 @@ func (x *DetectedMisconfiguration) String() string {
 func (*DetectedMisconfiguration) ProtoMessage() {}
 
 func (x *DetectedMisconfiguration) ProtoReflect() protoreflect.Message {
-	mi := &file_rpc_common_service_proto_msgTypes[6]
+	mi := &file_rpc_common_service_proto_msgTypes[7]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -619,7 +674,7 @@ func (x *DetectedMisconfiguration) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DetectedMisconfiguration.ProtoReflect.Descriptor instead.
 func (*DetectedMisconfiguration) Descriptor() ([]byte, []int) {
-	return file_rpc_common_service_proto_rawDescGZIP(), []int{6}
+	return file_rpc_common_service_proto_rawDescGZIP(), []int{7}
 }
 
 func (x *DetectedMisconfiguration) GetType() string {
@@ -737,7 +792,7 @@ type Vulnerability struct {
 func (x *Vulnerability) Reset() {
 	*x = Vulnerability{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_rpc_common_service_proto_msgTypes[7]
+		mi := &file_rpc_common_service_proto_msgTypes[8]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -750,7 +805,7 @@ func (x *Vulnerability) String() string {
 func (*Vulnerability) ProtoMessage() {}
 
 func (x *Vulnerability) ProtoReflect() protoreflect.Message {
-	mi := &file_rpc_common_service_proto_msgTypes[7]
+	mi := &file_rpc_common_service_proto_msgTypes[8]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -763,7 +818,7 @@ func (x *Vulnerability) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Vulnerability.ProtoReflect.Descriptor instead.
 func (*Vulnerability) Descriptor() ([]byte, []int) {
-	return file_rpc_common_service_proto_rawDescGZIP(), []int{7}
+	return file_rpc_common_service_proto_rawDescGZIP(), []int{8}
 }
 
 func (x *Vulnerability) GetVulnerabilityId() string {
@@ -926,7 +981,7 @@ type DataSource struct {
 func (x *DataSource) Reset() {
 	*x = DataSource{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_rpc_common_service_proto_msgTypes[8]
+		mi := &file_rpc_common_service_proto_msgTypes[9]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -939,7 +994,7 @@ func (x *DataSource) String() string {
 func (*DataSource) ProtoMessage() {}
 
 func (x *DataSource) ProtoReflect() protoreflect.Message {
-	mi := &file_rpc_common_service_proto_msgTypes[8]
+	mi := &file_rpc_common_service_proto_msgTypes[9]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -952,7 +1007,7 @@ func (x *DataSource) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DataSource.ProtoReflect.Descriptor instead.
 func (*DataSource) Descriptor() ([]byte, []int) {
-	return file_rpc_common_service_proto_rawDescGZIP(), []int{8}
+	return file_rpc_common_service_proto_rawDescGZIP(), []int{9}
 }
 
 func (x *DataSource) GetId() string {
@@ -988,7 +1043,7 @@ type Layer struct {
 func (x *Layer) Reset() {
 	*x = Layer{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_rpc_common_service_proto_msgTypes[9]
+		mi := &file_rpc_common_service_proto_msgTypes[10]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -1001,7 +1056,7 @@ func (x *Layer) String() string {
 func (*Layer) ProtoMessage() {}
 
 func (x *Layer) ProtoReflect() protoreflect.Message {
-	mi := &file_rpc_common_service_proto_msgTypes[9]
+	mi := &file_rpc_common_service_proto_msgTypes[10]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1014,7 +1069,7 @@ func (x *Layer) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Layer.ProtoReflect.Descriptor instead.
 func (*Layer) Descriptor() ([]byte, []int) {
-	return file_rpc_common_service_proto_rawDescGZIP(), []int{9}
+	return file_rpc_common_service_proto_rawDescGZIP(), []int{10}
 }
 
 func (x *Layer) GetDigest() string {
@@ -1045,7 +1100,7 @@ type CVSS struct {
 func (x *CVSS) Reset() {
 	*x = CVSS{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_rpc_common_service_proto_msgTypes[10]
+		mi := &file_rpc_common_service_proto_msgTypes[11]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -1058,7 +1113,7 @@ func (x *CVSS) String() string {
 func (*CVSS) ProtoMessage() {}
 
 func (x *CVSS) ProtoReflect() protoreflect.Message {
-	mi := &file_rpc_common_service_proto_msgTypes[10]
+	mi := &file_rpc_common_service_proto_msgTypes[11]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1071,7 +1126,7 @@ func (x *CVSS) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CVSS.ProtoReflect.Descriptor instead.
 func (*CVSS) Descriptor() ([]byte, []int) {
-	return file_rpc_common_service_proto_rawDescGZIP(), []int{10}
+	return file_rpc_common_service_proto_rawDescGZIP(), []int{11}
 }
 
 func (x *CVSS) GetV2Vector() string {
@@ -1116,7 +1171,7 @@ type CustomResource struct {
 func (x *CustomResource) Reset() {
 	*x = CustomResource{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_rpc_common_service_proto_msgTypes[11]
+		mi := &file_rpc_common_service_proto_msgTypes[12]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -1129,7 +1184,7 @@ func (x *CustomResource) String() string {
 func (*CustomResource) ProtoMessage() {}
 
 func (x *CustomResource) ProtoReflect() protoreflect.Message {
-	mi := &file_rpc_common_service_proto_msgTypes[11]
+	mi := &file_rpc_common_service_proto_msgTypes[12]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1142,7 +1197,7 @@ func (x *CustomResource) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CustomResource.ProtoReflect.Descriptor instead.
 func (*CustomResource) Descriptor() ([]byte, []int) {
-	return file_rpc_common_service_proto_rawDescGZIP(), []int{11}
+	return file_rpc_common_service_proto_rawDescGZIP(), []int{12}
 }
 
 func (x *CustomResource) GetType() string {
@@ -1186,7 +1241,11 @@ var file_rpc_common_service_proto_rawDesc = []byte{
 	0x06, 0x66, 0x61, 0x6d, 0x69, 0x6c, 0x79, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x06, 0x66,
 	0x61, 0x6d, 0x69, 0x6c, 0x79, 0x12, 0x12, 0x0a, 0x04, 0x6e, 0x61, 0x6d, 0x65, 0x18, 0x02, 0x20,
 	0x01, 0x28, 0x09, 0x52, 0x04, 0x6e, 0x61, 0x6d, 0x65, 0x12, 0x12, 0x0a, 0x04, 0x65, 0x6f, 0x73,
-	0x6c, 0x18, 0x03, 0x20, 0x01, 0x28, 0x08, 0x52, 0x04, 0x65, 0x6f, 0x73, 0x6c, 0x22, 0x5d, 0x0a,
+	0x6c, 0x18, 0x03, 0x20, 0x01, 0x28, 0x08, 0x52, 0x04, 0x65, 0x6f, 0x73, 0x6c, 0x22, 0x3e, 0x0a,
+	0x0a, 0x52, 0x65, 0x70, 0x6f, 0x73, 0x69, 0x74, 0x6f, 0x72, 0x79, 0x12, 0x16, 0x0a, 0x06, 0x66,
+	0x61, 0x6d, 0x69, 0x6c, 0x79, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x06, 0x66, 0x61, 0x6d,
+	0x69, 0x6c, 0x79, 0x12, 0x18, 0x0a, 0x07, 0x72, 0x65, 0x6c, 0x65, 0x61, 0x73, 0x65, 0x18, 0x02,
+	0x20, 0x01, 0x28, 0x09, 0x52, 0x07, 0x72, 0x65, 0x6c, 0x65, 0x61, 0x73, 0x65, 0x22, 0x5d, 0x0a,
 	0x0b, 0x50, 0x61, 0x63, 0x6b, 0x61, 0x67, 0x65, 0x49, 0x6e, 0x66, 0x6f, 0x12, 0x1b, 0x0a, 0x09,
 	0x66, 0x69, 0x6c, 0x65, 0x5f, 0x70, 0x61, 0x74, 0x68, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52,
 	0x08, 0x66, 0x69, 0x6c, 0x65, 0x50, 0x61, 0x74, 0x68, 0x12, 0x31, 0x0a, 0x08, 0x70, 0x61, 0x63,
@@ -1397,48 +1456,49 @@ func file_rpc_common_service_proto_rawDescGZIP() []byte {
 }
 
 var file_rpc_common_service_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
-var file_rpc_common_service_proto_msgTypes = make([]protoimpl.MessageInfo, 14)
+var file_rpc_common_service_proto_msgTypes = make([]protoimpl.MessageInfo, 15)
 var file_rpc_common_service_proto_goTypes = []interface{}{
 	(Severity)(0),                    // 0: trivy.common.Severity
 	(*OS)(nil),                       // 1: trivy.common.OS
-	(*PackageInfo)(nil),              // 2: trivy.common.PackageInfo
-	(*Application)(nil),              // 3: trivy.common.Application
-	(*Package)(nil),                  // 4: trivy.common.Package
-	(*Misconfiguration)(nil),         // 5: trivy.common.Misconfiguration
-	(*MisconfResult)(nil),            // 6: trivy.common.MisconfResult
-	(*DetectedMisconfiguration)(nil), // 7: trivy.common.DetectedMisconfiguration
-	(*Vulnerability)(nil),            // 8: trivy.common.Vulnerability
-	(*DataSource)(nil),               // 9: trivy.common.DataSource
-	(*Layer)(nil),                    // 10: trivy.common.Layer
-	(*CVSS)(nil),                     // 11: trivy.common.CVSS
-	(*CustomResource)(nil),           // 12: trivy.common.CustomResource
-	nil,                              // 13: trivy.common.Vulnerability.CvssEntry
-	nil,                              // 14: trivy.common.Vulnerability.VendorSeverityEntry
-	(*timestamppb.Timestamp)(nil),    // 15: google.protobuf.Timestamp
-	(*structpb.Value)(nil),           // 16: google.protobuf.Value
+	(*Repository)(nil),               // 2: trivy.common.Repository
+	(*PackageInfo)(nil),              // 3: trivy.common.PackageInfo
+	(*Application)(nil),              // 4: trivy.common.Application
+	(*Package)(nil),                  // 5: trivy.common.Package
+	(*Misconfiguration)(nil),         // 6: trivy.common.Misconfiguration
+	(*MisconfResult)(nil),            // 7: trivy.common.MisconfResult
+	(*DetectedMisconfiguration)(nil), // 8: trivy.common.DetectedMisconfiguration
+	(*Vulnerability)(nil),            // 9: trivy.common.Vulnerability
+	(*DataSource)(nil),               // 10: trivy.common.DataSource
+	(*Layer)(nil),                    // 11: trivy.common.Layer
+	(*CVSS)(nil),                     // 12: trivy.common.CVSS
+	(*CustomResource)(nil),           // 13: trivy.common.CustomResource
+	nil,                              // 14: trivy.common.Vulnerability.CvssEntry
+	nil,                              // 15: trivy.common.Vulnerability.VendorSeverityEntry
+	(*timestamppb.Timestamp)(nil),    // 16: google.protobuf.Timestamp
+	(*structpb.Value)(nil),           // 17: google.protobuf.Value
 }
 var file_rpc_common_service_proto_depIdxs = []int32{
-	4,  // 0: trivy.common.PackageInfo.packages:type_name -> trivy.common.Package
-	4,  // 1: trivy.common.Application.libraries:type_name -> trivy.common.Package
-	10, // 2: trivy.common.Package.layer:type_name -> trivy.common.Layer
-	6,  // 3: trivy.common.Misconfiguration.successes:type_name -> trivy.common.MisconfResult
-	6,  // 4: trivy.common.Misconfiguration.warnings:type_name -> trivy.common.MisconfResult
-	6,  // 5: trivy.common.Misconfiguration.failures:type_name -> trivy.common.MisconfResult
-	6,  // 6: trivy.common.Misconfiguration.exceptions:type_name -> trivy.common.MisconfResult
+	5,  // 0: trivy.common.PackageInfo.packages:type_name -> trivy.common.Package
+	5,  // 1: trivy.common.Application.libraries:type_name -> trivy.common.Package
+	11, // 2: trivy.common.Package.layer:type_name -> trivy.common.Layer
+	7,  // 3: trivy.common.Misconfiguration.successes:type_name -> trivy.common.MisconfResult
+	7,  // 4: trivy.common.Misconfiguration.warnings:type_name -> trivy.common.MisconfResult
+	7,  // 5: trivy.common.Misconfiguration.failures:type_name -> trivy.common.MisconfResult
+	7,  // 6: trivy.common.Misconfiguration.exceptions:type_name -> trivy.common.MisconfResult
 	0,  // 7: trivy.common.DetectedMisconfiguration.severity:type_name -> trivy.common.Severity
-	10, // 8: trivy.common.DetectedMisconfiguration.layer:type_name -> trivy.common.Layer
+	11, // 8: trivy.common.DetectedMisconfiguration.layer:type_name -> trivy.common.Layer
 	0,  // 9: trivy.common.Vulnerability.severity:type_name -> trivy.common.Severity
-	10, // 10: trivy.common.Vulnerability.layer:type_name -> trivy.common.Layer
-	13, // 11: trivy.common.Vulnerability.cvss:type_name -> trivy.common.Vulnerability.CvssEntry
-	15, // 12: trivy.common.Vulnerability.published_date:type_name -> google.protobuf.Timestamp
-	15, // 13: trivy.common.Vulnerability.last_modified_date:type_name -> google.protobuf.Timestamp
-	16, // 14: trivy.common.Vulnerability.custom_advisory_data:type_name -> google.protobuf.Value
-	16, // 15: trivy.common.Vulnerability.custom_vuln_data:type_name -> google.protobuf.Value
-	9,  // 16: trivy.common.Vulnerability.data_source:type_name -> trivy.common.DataSource
-	14, // 17: trivy.common.Vulnerability.vendor_severity:type_name -> trivy.common.Vulnerability.VendorSeverityEntry
-	10, // 18: trivy.common.CustomResource.layer:type_name -> trivy.common.Layer
-	16, // 19: trivy.common.CustomResource.data:type_name -> google.protobuf.Value
-	11, // 20: trivy.common.Vulnerability.CvssEntry.value:type_name -> trivy.common.CVSS
+	11, // 10: trivy.common.Vulnerability.layer:type_name -> trivy.common.Layer
+	14, // 11: trivy.common.Vulnerability.cvss:type_name -> trivy.common.Vulnerability.CvssEntry
+	16, // 12: trivy.common.Vulnerability.published_date:type_name -> google.protobuf.Timestamp
+	16, // 13: trivy.common.Vulnerability.last_modified_date:type_name -> google.protobuf.Timestamp
+	17, // 14: trivy.common.Vulnerability.custom_advisory_data:type_name -> google.protobuf.Value
+	17, // 15: trivy.common.Vulnerability.custom_vuln_data:type_name -> google.protobuf.Value
+	10, // 16: trivy.common.Vulnerability.data_source:type_name -> trivy.common.DataSource
+	15, // 17: trivy.common.Vulnerability.vendor_severity:type_name -> trivy.common.Vulnerability.VendorSeverityEntry
+	11, // 18: trivy.common.CustomResource.layer:type_name -> trivy.common.Layer
+	17, // 19: trivy.common.CustomResource.data:type_name -> google.protobuf.Value
+	12, // 20: trivy.common.Vulnerability.CvssEntry.value:type_name -> trivy.common.CVSS
 	0,  // 21: trivy.common.Vulnerability.VendorSeverityEntry.value:type_name -> trivy.common.Severity
 	22, // [22:22] is the sub-list for method output_type
 	22, // [22:22] is the sub-list for method input_type
@@ -1466,7 +1526,7 @@ func file_rpc_common_service_proto_init() {
 			}
 		}
 		file_rpc_common_service_proto_msgTypes[1].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*PackageInfo); i {
+			switch v := v.(*Repository); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -1478,7 +1538,7 @@ func file_rpc_common_service_proto_init() {
 			}
 		}
 		file_rpc_common_service_proto_msgTypes[2].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*Application); i {
+			switch v := v.(*PackageInfo); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -1490,7 +1550,7 @@ func file_rpc_common_service_proto_init() {
 			}
 		}
 		file_rpc_common_service_proto_msgTypes[3].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*Package); i {
+			switch v := v.(*Application); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -1502,7 +1562,7 @@ func file_rpc_common_service_proto_init() {
 			}
 		}
 		file_rpc_common_service_proto_msgTypes[4].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*Misconfiguration); i {
+			switch v := v.(*Package); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -1514,7 +1574,7 @@ func file_rpc_common_service_proto_init() {
 			}
 		}
 		file_rpc_common_service_proto_msgTypes[5].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*MisconfResult); i {
+			switch v := v.(*Misconfiguration); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -1526,7 +1586,7 @@ func file_rpc_common_service_proto_init() {
 			}
 		}
 		file_rpc_common_service_proto_msgTypes[6].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*DetectedMisconfiguration); i {
+			switch v := v.(*MisconfResult); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -1538,7 +1598,7 @@ func file_rpc_common_service_proto_init() {
 			}
 		}
 		file_rpc_common_service_proto_msgTypes[7].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*Vulnerability); i {
+			switch v := v.(*DetectedMisconfiguration); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -1550,7 +1610,7 @@ func file_rpc_common_service_proto_init() {
 			}
 		}
 		file_rpc_common_service_proto_msgTypes[8].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*DataSource); i {
+			switch v := v.(*Vulnerability); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -1562,7 +1622,7 @@ func file_rpc_common_service_proto_init() {
 			}
 		}
 		file_rpc_common_service_proto_msgTypes[9].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*Layer); i {
+			switch v := v.(*DataSource); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -1574,7 +1634,7 @@ func file_rpc_common_service_proto_init() {
 			}
 		}
 		file_rpc_common_service_proto_msgTypes[10].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*CVSS); i {
+			switch v := v.(*Layer); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -1586,6 +1646,18 @@ func file_rpc_common_service_proto_init() {
 			}
 		}
 		file_rpc_common_service_proto_msgTypes[11].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*CVSS); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_rpc_common_service_proto_msgTypes[12].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*CustomResource); i {
 			case 0:
 				return &v.state
@@ -1604,7 +1676,7 @@ func file_rpc_common_service_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_rpc_common_service_proto_rawDesc,
 			NumEnums:      1,
-			NumMessages:   14,
+			NumMessages:   15,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

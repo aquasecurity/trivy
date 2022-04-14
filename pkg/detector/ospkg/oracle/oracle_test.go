@@ -239,7 +239,7 @@ func TestScanner_Detect(t *testing.T) {
 			defer db.Close()
 
 			s := NewScanner()
-			got, err := s.Detect(tt.args.osVer, tt.args.pkgs)
+			got, err := s.Detect(tt.args.osVer, nil, tt.args.pkgs)
 			if tt.wantErr != "" {
 				require.NotNil(t, err)
 				assert.Contains(t, err.Error(), tt.wantErr)

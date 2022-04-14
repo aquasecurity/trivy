@@ -26,7 +26,7 @@ func NewScanner() *Scanner {
 }
 
 // Detect vulnerabilities in package using CBL-Mariner scanner
-func (s *Scanner) Detect(osVer string, pkgs []ftypes.Package) ([]types.DetectedVulnerability, error) {
+func (s *Scanner) Detect(osVer string, _ *ftypes.Repository, pkgs []ftypes.Package) ([]types.DetectedVulnerability, error) {
 	log.Logger.Info("Detecting CBL-Mariner vulnerabilities...")
 
 	// e.g. 1.0.20210127
