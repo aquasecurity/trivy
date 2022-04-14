@@ -274,7 +274,7 @@ func TestScanner_IsSupportedVersion(t *testing.T) {
 				osFamily: "alpine",
 				osVer:    "unknown",
 			},
-			want: false,
+			want: true,
 		},
 	}
 	for _, tt := range tests {

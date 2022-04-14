@@ -172,7 +172,7 @@ func (s *Scanner) IsSupportedVersion(osFamily, osVer string) bool {
 	eol, ok := eolDates[osVer]
 	if !ok {
 		log.Logger.Warnf("This OS version is not on the EOL list: %s %s", osFamily, osVer)
-		return true
+		return true // may be the latest version
 	}
 
 	return s.clock.Now().Before(eol)
