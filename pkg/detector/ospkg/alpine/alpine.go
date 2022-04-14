@@ -91,10 +91,11 @@ func (s *Scanner) Detect(osVer string, repo *ftypes.Repository, pkgs []ftypes.Pa
 	log.Logger.Debugf("alpine: package repository: %s", repoRelease)
 	log.Logger.Debugf("alpine: the number of packages: %d", len(pkgs))
 
-	// Prefer the repository release, but use OS version if the repository is not detected.
-	stream := repoRelease
-	if stream == "" {
-		stream = osVer
+	stream := osVer
+	if repoRelease != "" && osVer != repoRelease {
+		// Prefer the repository release. Use OS version only when the repository is not detected.
+		stream = repoRelease
+		log.Logger.Infof("Use the repository release '%s' for vulnerability detection, instead of OS version '%s'", repoRelease, osVer)
 	}
 
 	var vulns []types.DetectedVulnerability
@@ -171,7 +172,7 @@ func (s *Scanner) IsSupportedVersion(osFamily, osVer string) bool {
 	eol, ok := eolDates[osVer]
 	if !ok {
 		log.Logger.Warnf("This OS version is not on the EOL list: %s %s", osFamily, osVer)
-		return false
+		return true
 	}
 
 	return s.clock.Now().Before(eol)
