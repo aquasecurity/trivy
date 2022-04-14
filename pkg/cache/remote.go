@@ -26,6 +26,7 @@ func NewRemoteCache(url string, customHeaders http.Header, insecure bool) cache.
 
 	httpClient := &http.Client{
 		Transport: &http.Transport{
+			Proxy: http.ProxyFromEnvironment,
 			TLSClientConfig: &tls.Config{
 				InsecureSkipVerify: insecure,
 			},
