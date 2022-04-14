@@ -33,6 +33,7 @@ nav:
                 - Vulnerability DB: docs/vulnerability/examples/db.md
                 - Cache: docs/vulnerability/examples/cache.md
                 - Others: docs/vulnerability/examples/others.md
+            - Distributions: docs/vulnerability/distributions.md
             - Languages:
                 - Go: docs/vulnerability/languages/golang.md
         - Misconfiguration:
