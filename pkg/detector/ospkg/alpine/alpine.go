@@ -80,17 +80,26 @@ func NewScanner(opts ...option) *Scanner {
 }
 
 // Detect vulnerabilities in package using Alpine scanner
-func (s *Scanner) Detect(osVer string, pkgs []ftypes.Package) ([]types.DetectedVulnerability, error) {
+func (s *Scanner) Detect(osVer string, repo *ftypes.Repository, pkgs []ftypes.Package) ([]types.DetectedVulnerability, error) {
 	log.Logger.Info("Detecting Alpine vulnerabilities...")
 	if strings.Count(osVer, ".") > 1 {
 		osVer = osVer[:strings.LastIndex(osVer, ".")]
 	}
+	repoRelease := s.repoRelease(repo)
+
 	log.Logger.Debugf("alpine: os version: %s", osVer)
+	log.Logger.Debugf("alpine: package repository: %s", repoRelease)
 	log.Logger.Debugf("alpine: the number of packages: %d", len(pkgs))
+
+	// Prefer the repository release, but use OS version if the repository is not detected.
+	stream := repoRelease
+	if stream == "" {
+		stream = osVer
+	}
 
 	var vulns []types.DetectedVulnerability
 	for _, pkg := range pkgs {
-		advisories, err := s.vs.Get(osVer, pkg.SrcName)
+		advisories, err := s.vs.Get(stream, pkg.SrcName)
 		if err != nil {
 			return nil, xerrors.Errorf("failed to get alpine advisories: %w", err)
 		}
@@ -166,4 +175,15 @@ func (s *Scanner) IsSupportedVersion(osFamily, osVer string) bool {
 	}
 
 	return s.clock.Now().Before(eol)
+}
+
+func (s *Scanner) repoRelease(repo *ftypes.Repository) string {
+	var release string
+	if repo != nil {
+		release = repo.Release
+		if strings.Count(release, ".") > 1 {
+			release = release[:strings.LastIndex(release, ".")]
+		}
+	}
+	return release
 }
