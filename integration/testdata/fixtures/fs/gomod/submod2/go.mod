@@ -1,5 +1,7 @@
-module github.com/testdata/testdata/submod
+module github.com/testdata/testdata/submod2
 
 go 1.15
 
-require ()
+require (
+	github.com/abc/abc v2.7.1+incompatible
+)
