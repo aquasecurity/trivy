@@ -3,6 +3,10 @@
     {{- $t_first := true -}}
     {{- range . -}}
     {{- $target := .Target -}}
+    {{- $image := .Target -}}
+    {{- if gt (len $image) 127 -}}
+        {{- $image = $image | regexFind ".{124}$" | printf "...%v" -}}
+    {{- end}}
     {{- range .Vulnerabilities -}}
     {{- if $t_first -}}
       {{- $t_first = false -}}
@@ -13,7 +17,7 @@
     {{- if eq $severity "UNKNOWN" -}}
     {{- $severity = "INFORMATIONAL" -}}
     {{- end -}}
-    {{- $description := .Description -}}
+    {{- $description := escapeString .Description | printf "%q" -}}
     {{- if gt (len $description ) 1021 -}}
         {{- $description = (substr 0 1021 $description) | printf "%v .." -}}
     {{- end}}
@@ -21,7 +25,7 @@
             "SchemaVersion": "2018-10-08",
             "Id": "{{ $target }}/{{ .VulnerabilityID }}",
             "ProductArn": "arn:aws:securityhub:{{ env "AWS_REGION" }}::product/aquasecurity/aquasecurity",
-            "GeneratorId": "Trivy",
+            "GeneratorId": "Trivy/{{ .VulnerabilityID }}",
             "AwsAccountId": "{{ env "AWS_ACCOUNT_ID" }}",
             "Types": [ "Software and Configuration Checks/Vulnerabilities/CVE" ],
             "CreatedAt": "{{ now | date "2006-01-02T15:04:05.999999999Z07:00" }}",
@@ -30,7 +34,7 @@
                 "Label": "{{ $severity }}"
             },
             "Title": "Trivy found a vulnerability to {{ .VulnerabilityID }} in container {{ $target }}",
-            "Description": {{ escapeString $description | printf "%q" }},
+            "Description": {{ $description }},
             "Remediation": {
                 "Recommendation": {
                     "Text": "More information on this vulnerability is provided in the hyperlink",
@@ -45,7 +49,7 @@
                     "Partition": "aws",
                     "Region": "{{ env "AWS_REGION" }}",
                     "Details": {
-                        "Container": { "ImageName": "{{ $target }}" },
+                        "Container": { "ImageName": "{{ $image }}" },
                         "Other": {
                             "CVE ID": "{{ .VulnerabilityID }}",
                             "CVE Title": {{ .Title | printf "%q" }},
