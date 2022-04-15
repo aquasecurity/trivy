@@ -9,7 +9,6 @@ import (
 	"strings"
 
 	"github.com/google/wire"
-	"github.com/open-policy-agent/opa/rego"
 	"golang.org/x/exp/maps"
 	"golang.org/x/exp/slices"
 	"golang.org/x/xerrors"
@@ -19,6 +18,7 @@ import (
 	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/vulnerability"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/types"
+	"github.com/aquasecurity/trivy/pkg/utils"
 )
 
 const (
@@ -228,24 +228,22 @@ func summarize(status types.MisconfStatus, summary *types.MisconfSummary) {
 
 func applyPolicy(ctx context.Context, vulns []types.DetectedVulnerability, misconfs []types.DetectedMisconfiguration,
 	policyFile string) ([]types.DetectedVulnerability, []types.DetectedMisconfiguration, error) {
-	policy, err := os.ReadFile(policyFile)
-	if err != nil {
-		return nil, nil, xerrors.Errorf("unable to read the policy file: %w", err)
-	}
+	var err error
+	var policyStore PolicyStore
 
-	query, err := rego.New(
-		rego.Query("data.trivy.ignore"),
-		rego.Module("lib.rego", module),
-		rego.Module("trivy.rego", string(policy)),
-	).PrepareForEval(ctx)
+	if utils.IsValidURL(policyFile) {
+		policyStore, err = NewRemotePolicyStore(policyFile)
+	} else {
+		policyStore, err = NewLocalPolicyStore(ctx, policyFile)
+	}
 	if err != nil {
-		return nil, nil, xerrors.Errorf("unable to prepare for eval: %w", err)
+		return nil, nil, xerrors.Errorf("unable to create policy store: %w", err)
 	}
 
 	// Vulnerabilities
 	var filteredVulns []types.DetectedVulnerability
 	for _, vuln := range vulns {
-		ignored, err := evaluate(ctx, query, vuln)
+		ignored, err := policyStore.Evaluate(ctx, vuln)
 		if err != nil {
 			return nil, nil, err
 		}
@@ -258,7 +256,7 @@ func applyPolicy(ctx context.Context, vulns []types.DetectedVulnerability, misco
 	// Misconfigurations
 	var filteredMisconfs []types.DetectedMisconfiguration
 	for _, misconf := range misconfs {
-		ignored, err := evaluate(ctx, query, misconf)
+		ignored, err := policyStore.Evaluate(ctx, misconf)
 		if err != nil {
 			return nil, nil, err
 		}
@@ -268,21 +266,6 @@ func applyPolicy(ctx context.Context, vulns []types.DetectedVulnerability, misco
 		filteredMisconfs = append(filteredMisconfs, misconf)
 	}
 	return filteredVulns, filteredMisconfs, nil
-}
-func evaluate(ctx context.Context, query rego.PreparedEvalQuery, input interface{}) (bool, error) {
-	results, err := query.Eval(ctx, rego.EvalInput(input))
-	if err != nil {
-		return false, xerrors.Errorf("unable to evaluate the policy: %w", err)
-	} else if len(results) == 0 {
-		// Handle undefined result.
-		return false, nil
-	}
-	ignore, ok := results[0].Expressions[0].Value.(bool)
-	if !ok {
-		// Handle unexpected result type.
-		return false, xerrors.New("the policy must return boolean")
-	}
-	return ignore, nil
 }
 
 func getIgnoredIDs(ignoreFile string) []string {
