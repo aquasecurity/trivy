@@ -95,7 +95,9 @@ func (s *Scanner) Detect(osVer string, repo *ftypes.Repository, pkgs []ftypes.Pa
 	if repoRelease != "" && osVer != repoRelease {
 		// Prefer the repository release. Use OS version only when the repository is not detected.
 		stream = repoRelease
-		log.Logger.Infof("Use the repository release '%s' for vulnerability detection, instead of OS version '%s'", repoRelease, osVer)
+		if repoRelease != "edge" { // TODO: we should detect the current edge version.
+			log.Logger.Warnf("Mixing Alpine versions is unsupported, OS: '%s', repository: '%s'", osVer, repoRelease)
+		}
 	}
 
 	var vulns []types.DetectedVulnerability
@@ -171,7 +173,7 @@ func (s *Scanner) IsSupportedVersion(osFamily, osVer string) bool {
 
 	eol, ok := eolDates[osVer]
 	if !ok {
-		log.Logger.Warnf("This OS version is not on the EOL list: %s %s", osFamily, osVer)
+		log.Logger.Infof("This OS version is not on the EOL list: %s %s", osFamily, osVer)
 		return true // may be the latest version
 	}
 
