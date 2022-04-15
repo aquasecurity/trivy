@@ -19,7 +19,7 @@ func imageScanner(ctx context.Context, conf scannerConfig) (scanner.Scanner, fun
 		return scanner.Scanner{}, nil, err
 	}
 	s, cleanup, err := initializeDockerScanner(ctx, conf.Target, conf.ArtifactCache, conf.LocalArtifactCache,
-		dockerOpt, conf.ArtifactOption, conf.MisconfOption)
+		dockerOpt, conf.ArtifactOption)
 	if err != nil {
 		return scanner.Scanner{}, func() {}, xerrors.Errorf("unable to initialize a docker scanner: %w", err)
 	}
@@ -29,8 +29,7 @@ func imageScanner(ctx context.Context, conf scannerConfig) (scanner.Scanner, fun
 // archiveScanner initializes an image archive scanner in standalone mode
 // $ trivy image --input alpine.tar
 func archiveScanner(ctx context.Context, conf scannerConfig) (scanner.Scanner, func(), error) {
-	s, err := initializeArchiveScanner(ctx, conf.Target, conf.ArtifactCache, conf.LocalArtifactCache,
-		conf.ArtifactOption, conf.MisconfOption)
+	s, err := initializeArchiveScanner(ctx, conf.Target, conf.ArtifactCache, conf.LocalArtifactCache, conf.ArtifactOption)
 	if err != nil {
 		return scanner.Scanner{}, func() {}, xerrors.Errorf("unable to initialize the archive scanner: %w", err)
 	}
@@ -48,7 +47,7 @@ func remoteImageScanner(ctx context.Context, conf scannerConfig) (
 	}
 
 	s, cleanup, err := initializeRemoteDockerScanner(ctx, conf.Target, conf.ArtifactCache, conf.RemoteOption,
-		dockerOpt, conf.ArtifactOption, conf.MisconfOption)
+		dockerOpt, conf.ArtifactOption)
 	if err != nil {
 		return scanner.Scanner{}, nil, xerrors.Errorf("unable to initialize the docker scanner: %w", err)
 	}
@@ -59,8 +58,7 @@ func remoteImageScanner(ctx context.Context, conf scannerConfig) (
 // $ trivy image --server localhost:4954 --input alpine.tar
 func remoteArchiveScanner(ctx context.Context, conf scannerConfig) (scanner.Scanner, func(), error) {
 	// Scan tar file
-	s, err := initializeRemoteArchiveScanner(ctx, conf.Target, conf.ArtifactCache, conf.RemoteOption,
-		conf.ArtifactOption, conf.MisconfOption)
+	s, err := initializeRemoteArchiveScanner(ctx, conf.Target, conf.ArtifactCache, conf.RemoteOption, conf.ArtifactOption)
 	if err != nil {
 		return scanner.Scanner{}, nil, xerrors.Errorf("unable to initialize the archive scanner: %w", err)
 	}

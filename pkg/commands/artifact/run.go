@@ -246,8 +246,10 @@ func scan(ctx context.Context, opt Option, initializeScanner InitializeScanner, 
 			InsecureSkipTLS:   opt.Insecure,
 			Offline:           opt.OfflineScan,
 			NoProgress:        opt.NoProgress || opt.Quiet,
+
+			// For misconfiguration scanning
+			MisconfScannerOption: configScannerOptions,
 		},
-		MisconfOption: configScannerOptions,
 	})
 	if err != nil {
 		return types.Report{}, xerrors.Errorf("unable to initialize a scanner: %w", err)

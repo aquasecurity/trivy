@@ -139,7 +139,7 @@ func (tw TableWriter) writeSecrets(table *tablewriter.Table, secrets []ftypes.Se
 
 	alignment := []int{tablewriter.ALIGN_CENTER, tablewriter.ALIGN_CENTER, tablewriter.ALIGN_CENTER,
 		tablewriter.ALIGN_CENTER, tablewriter.ALIGN_LEFT}
-	header := []string{"Type", "Description", "Severity", "Line No", "Match"}
+	header := []string{"Category", "Description", "Severity", "Line No", "Match"}
 
 	table.SetColumnAlignment(alignment)
 	table.SetHeader(header)
@@ -227,7 +227,7 @@ func (tw TableWriter) setSecretRows(table *tablewriter.Table, secrets []ftypes.S
 			severity = dbTypes.ColorizeSeverity(severity)
 		}
 
-		row := []string{string(secret.Type), secret.Title, severity,
+		row := []string{string(secret.Category), secret.Title, severity,
 			fmt.Sprintf("%d:%d", secret.StartLine, secret.EndLine), secret.Match}
 
 		table.Append(row)

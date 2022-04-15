@@ -63,6 +63,7 @@ var StandaloneRepositorySet = wire.NewSet(
 // RemoteSuperSet is used in the client mode
 var RemoteSuperSet = wire.NewSet(
 	client.NewScanner,
+	wire.Value([]client.Option(nil)),
 	wire.Bind(new(Driver), new(client.Scanner)),
 	NewScanner,
 )
