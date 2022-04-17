@@ -18,8 +18,8 @@
     {{- $severity = "INFORMATIONAL" -}}
     {{- end -}}
     {{- $description := escapeString .Description | printf "%q" -}}
-    {{- if gt (len $description ) 1021 -}}
-        {{- $description = (substr 0 1021 $description) | printf "%v .." -}}
+    {{- if gt (len $description ) 1020 -}}
+        {{- $description = (substr 0 1020 $description) | printf "%v ..\"" -}}
     {{- end}}
         {
             "SchemaVersion": "2018-10-08",
