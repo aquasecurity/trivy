@@ -7,7 +7,7 @@ require (
 	github.com/Masterminds/sprig/v3 v3.2.2
 	github.com/NYTimes/gziphandler v0.0.0-20170623195520-56545f4a5d46
 	github.com/aquasecurity/bolt-fixtures v0.0.0-20200903104109-d34e7f983986
-	github.com/aquasecurity/fanal v0.0.0-20220414083417-61bfa9f92483
+	github.com/aquasecurity/fanal v0.0.0-20220416191337-4f5b0beebbd3
 	github.com/aquasecurity/go-dep-parser v0.0.0-20220412145205-d0501f906d90
 	github.com/aquasecurity/go-gem-version v0.0.0-20201115065557-8eed6fe000ce
 	github.com/aquasecurity/go-npm-version v0.0.0-20201110091526-0b796d180798
@@ -75,7 +75,7 @@ require (
 	github.com/agext/levenshtein v1.2.3 // indirect
 	github.com/apparentlymart/go-cidr v1.1.0 // indirect
 	github.com/apparentlymart/go-textseg/v13 v13.0.0 // indirect
-	github.com/aquasecurity/defsec v0.28.4 // indirect
+	github.com/aquasecurity/defsec v0.28.5-0.20220416075528-0f0c8fdf63b8 // indirect
 	github.com/aquasecurity/tfsec v1.8.0 // indirect
 	github.com/aws/aws-sdk-go v1.43.31 // indirect
 	github.com/bgentry/go-netrc v0.0.0-20140422174119-9fd32a8b3d3d // indirect
