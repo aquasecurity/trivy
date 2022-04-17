@@ -34,7 +34,7 @@
                 "Label": "{{ $severity }}"
             },
             "Title": "Trivy found a vulnerability to {{ .VulnerabilityID }} in container {{ $target }}",
-            "Description": {{ escapeString $description | printf "%q" }},
+            "Description": {{ $description }},
             "Remediation": {
                 "Recommendation": {
                     "Text": "More information on this vulnerability is provided in the hyperlink",
