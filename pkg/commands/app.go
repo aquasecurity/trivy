@@ -843,6 +843,10 @@ func NewVersionCommand() *cli.Command {
 // StringSliceFlag is defined globally. When the app runs multiple times,
 // the previous value will be retained and it causes unexpected results.
 // The flag value is copied through this function to prevent the issue.
+
+// Todo: temporary unused
+/*
 func stringSliceFlag(f cli.StringSliceFlag) *cli.StringSliceFlag {
 	return &f
 }
+*/
