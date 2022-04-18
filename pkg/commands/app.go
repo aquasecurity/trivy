@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/urfave/cli/v2"
+	"github.com/urfave/cli/v2/altsrc"
 
 	"github.com/aquasecurity/trivy-db/pkg/metadata"
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
@@ -52,13 +53,13 @@ var (
 		EnvVars: []string{"TRIVY_INPUT"},
 	}
 
-	severityFlag = cli.StringFlag{
+	severityFlag = altsrc.NewStringFlag(&cli.StringFlag{
 		Name:    "severity",
 		Aliases: []string{"s"},
 		Value:   strings.Join(dbTypes.SeverityNames, ","),
 		Usage:   "severities of vulnerabilities to be displayed (comma separated)",
 		EnvVars: []string{"TRIVY_SEVERITY"},
-	}
+	})
 
 	outputFlag = cli.StringFlag{
 		Name:    "output",
@@ -125,12 +126,12 @@ var (
 		EnvVars: []string{"TRIVY_IGNORE_UNFIXED"},
 	}
 
-	debugFlag = cli.BoolFlag{
+	debugFlag = *altsrc.NewBoolFlag(&cli.BoolFlag{
 		Name:    "debug",
 		Aliases: []string{"d"},
 		Usage:   "debug mode",
 		EnvVars: []string{"TRIVY_DEBUG"},
-	}
+	})
 
 	removedPkgsFlag = cli.BoolFlag{
 		Name:    "removed-pkgs",
@@ -239,11 +240,11 @@ var (
 		EnvVars: []string{"TRIVY_SKIP_FILES"},
 	}
 
-	skipDirs = cli.StringSliceFlag{
+	skipDirs = altsrc.NewStringSliceFlag(&cli.StringSliceFlag{
 		Name:    "skip-dirs",
 		Usage:   "specify the directories where the traversal is skipped",
 		EnvVars: []string{"TRIVY_SKIP_DIRS"},
-	}
+	})
 
 	offlineScan = cli.BoolFlag{
 		Name:    "offline-scan",
@@ -332,11 +333,19 @@ var (
 		EnvVars: []string{"TRIVY_DB_REPOSITORY"},
 	}
 
+	configFileFlag = cli.StringFlag{
+		Name:    "config",
+		Usage:   "getting flag values from yaml file",
+		Value:   "",
+		EnvVars: []string{"TRIVY_CONFIG"},
+	}
+
 	// Global flags
 	globalFlags = []cli.Flag{
 		&quietFlag,
 		&debugFlag,
 		&cacheDirFlag,
+		&configFileFlag,
 	}
 )
 
@@ -353,6 +362,7 @@ func NewApp(version string) *cli.App {
 	app.Usage = "A simple and comprehensive vulnerability scanner for containers"
 	app.EnableBashCompletion = true
 	app.Flags = globalFlags
+	app.Before = altsrc.InitInputSourceWithContext(globalFlags, altsrc.NewYamlSourceFromFlagFunc("config"))
 
 	if runAsPlugin := os.Getenv("TRIVY_RUN_AS_PLUGIN"); runAsPlugin != "" {
 		app.Action = func(ctx *cli.Context) error {
@@ -432,7 +442,7 @@ func NewImageCommand() *cli.Command {
 			&templateFlag,
 			&formatFlag,
 			&inputFlag,
-			&severityFlag,
+			severityFlag,
 			&outputFlag,
 			&exitCodeFlag,
 			&skipDBUpdateFlag,
@@ -456,57 +466,60 @@ func NewImageCommand() *cli.Command {
 			&offlineScan,
 			&insecureFlag,
 			&dbRepositoryFlag,
+			skipDirs,
 			stringSliceFlag(skipFiles),
-			stringSliceFlag(skipDirs),
 		},
 	}
 }
 
 // NewFilesystemCommand is the factory method to add filesystem command
 func NewFilesystemCommand() *cli.Command {
+	flags := []cli.Flag{
+		&templateFlag,
+		&formatFlag,
+		severityFlag,
+		&outputFlag,
+		&exitCodeFlag,
+		&skipDBUpdateFlag,
+		&skipPolicyUpdateFlag,
+		&clearCacheFlag,
+		&ignoreUnfixedFlag,
+		&vulnTypeFlag,
+		&securityChecksFlag,
+		&ignoreFileFlag,
+		&cacheBackendFlag,
+		&redisBackendCACert,
+		&redisBackendCert,
+		&redisBackendKey,
+		&timeoutFlag,
+		&noProgressFlag,
+		&ignorePolicy,
+		&listAllPackages,
+		&offlineScan,
+		&dbRepositoryFlag,
+		skipDirs,
+		stringSliceFlag(skipFiles),
+
+		// for misconfiguration
+		stringSliceFlag(configPolicy),
+		stringSliceFlag(configData),
+		stringSliceFlag(policyNamespaces),
+
+		// for client/server
+		&remoteServer,
+		&token,
+		&tokenHeader,
+		&customHeaders,
+	}
+
 	return &cli.Command{
 		Name:      "filesystem",
 		Aliases:   []string{"fs"},
 		ArgsUsage: "path",
 		Usage:     "scan local filesystem for language-specific dependencies and config files",
 		Action:    artifact.FilesystemRun,
-		Flags: []cli.Flag{
-			&templateFlag,
-			&formatFlag,
-			&severityFlag,
-			&outputFlag,
-			&exitCodeFlag,
-			&skipDBUpdateFlag,
-			&skipPolicyUpdateFlag,
-			&clearCacheFlag,
-			&ignoreUnfixedFlag,
-			&vulnTypeFlag,
-			&securityChecksFlag,
-			&ignoreFileFlag,
-			&cacheBackendFlag,
-			&redisBackendCACert,
-			&redisBackendCert,
-			&redisBackendKey,
-			&timeoutFlag,
-			&noProgressFlag,
-			&ignorePolicy,
-			&listAllPackages,
-			&offlineScan,
-			&dbRepositoryFlag,
-			stringSliceFlag(skipFiles),
-			stringSliceFlag(skipDirs),
-
-			// for misconfiguration
-			stringSliceFlag(configPolicy),
-			stringSliceFlag(configData),
-			stringSliceFlag(policyNamespaces),
-
-			// for client/server
-			&remoteServer,
-			&token,
-			&tokenHeader,
-			&customHeaders,
-		},
+		Before:    altsrc.InitInputSourceWithContext(flags, altsrc.NewYamlSourceFromFlagFunc("config")),
+		Flags:     flags,
 	}
 }
 
@@ -520,7 +533,7 @@ func NewRootfsCommand() *cli.Command {
 		Flags: []cli.Flag{
 			&templateFlag,
 			&formatFlag,
-			&severityFlag,
+			severityFlag,
 			&outputFlag,
 			&exitCodeFlag,
 			&skipDBUpdateFlag,
@@ -540,8 +553,8 @@ func NewRootfsCommand() *cli.Command {
 			&listAllPackages,
 			&offlineScan,
 			&dbRepositoryFlag,
+			skipDirs,
 			stringSliceFlag(skipFiles),
-			stringSliceFlag(skipDirs),
 			stringSliceFlag(configPolicy),
 			stringSliceFlag(configData),
 			stringSliceFlag(policyNamespaces),
@@ -561,7 +574,7 @@ func NewRepositoryCommand() *cli.Command {
 			&templateFlag,
 			&formatFlag,
 			&inputFlag,
-			&severityFlag,
+			severityFlag,
 			&outputFlag,
 			&exitCodeFlag,
 			&skipDBUpdateFlag,
@@ -584,8 +597,8 @@ func NewRepositoryCommand() *cli.Command {
 			&offlineScan,
 			&insecureFlag,
 			&dbRepositoryFlag,
+			skipDirs,
 			stringSliceFlag(skipFiles),
-			stringSliceFlag(skipDirs),
 		},
 	}
 }
@@ -602,7 +615,7 @@ func NewClientCommand() *cli.Command {
 			&templateFlag,
 			&formatFlag,
 			&inputFlag,
-			&severityFlag,
+			severityFlag,
 			&outputFlag,
 			&exitCodeFlag,
 			&clearCacheFlag,
@@ -614,8 +627,8 @@ func NewClientCommand() *cli.Command {
 			&timeoutFlag,
 			&noProgressFlag,
 			&ignorePolicy,
+			skipDirs,
 			stringSliceFlag(skipFiles),
-			stringSliceFlag(skipDirs),
 			stringSliceFlag(configPolicy),
 			&listAllPackages,
 			&offlineScan,
@@ -677,7 +690,7 @@ func NewConfigCommand() *cli.Command {
 		Flags: []cli.Flag{
 			&templateFlag,
 			&formatFlag,
-			&severityFlag,
+			severityFlag,
 			&outputFlag,
 			&exitCodeFlag,
 			&skipPolicyUpdateFlag,
@@ -685,8 +698,8 @@ func NewConfigCommand() *cli.Command {
 			&clearCacheFlag,
 			&ignoreFileFlag,
 			&timeoutFlag,
+			skipDirs,
 			stringSliceFlag(skipFiles),
-			stringSliceFlag(skipDirs),
 			stringSliceFlag(configPolicyAlias),
 			stringSliceFlag(configDataAlias),
 			stringSliceFlag(policyNamespaces),
@@ -775,11 +788,11 @@ func NewSbomCommand() *cli.Command {
 			&clearCacheFlag,
 			&ignoreFileFlag,
 			&timeoutFlag,
-			&severityFlag,
+			severityFlag,
 			&offlineScan,
 			&dbRepositoryFlag,
+			skipDirs,
 			stringSliceFlag(skipFiles),
-			stringSliceFlag(skipDirs),
 
 			// dedicated options
 			&cli.StringFlag{
