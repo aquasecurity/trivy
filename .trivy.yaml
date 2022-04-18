@@ -1,0 +1,5 @@
+debug: true
+severity: HIGH
+skip-dirs:
+  - examples
+  - integration
