@@ -268,6 +268,15 @@ func TestScanner_IsSupportedVersion(t *testing.T) {
 			want: true,
 		},
 		{
+			name: "alpine edge",
+			now:  time.Date(2019, 5, 2, 23, 59, 59, 0, time.UTC),
+			args: args{
+				osFamily: "alpine",
+				osVer:    "edge",
+			},
+			want: true,
+		},
+		{
 			name: "unknown",
 			now:  time.Date(2019, 5, 2, 23, 59, 59, 0, time.UTC),
 			args: args{
@@ -279,6 +288,9 @@ func TestScanner_IsSupportedVersion(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			_ = dbtest.InitDB(t, []string{"testdata/fixtures/eol.yaml"})
+			defer db.Close()
+
 			s := alpine.NewScanner(alpine.WithClock(fake.NewFakeClock(tt.now)))
 			got := s.IsSupportedVersion(tt.args.osFamily, tt.args.osVer)
 			assert.Equal(t, tt.want, got)
