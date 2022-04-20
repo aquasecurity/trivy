@@ -60,6 +60,11 @@ nav:
                 - vs Conftest: docs/misconfiguration/comparison/conftest.md
                 - vs tfsec: docs/misconfiguration/comparison/tfsec.md
                 - vs cfsec: docs/misconfiguration/comparison/cfsec.md
+        - Secrets:
+            - Scanning:
+                - Overview: docs/secrets/scanning/index.md
+                - Container Image: docs/secrets/scanning/image.md
+                - Filesystem: docs/secrets/scanning/filesystem.md
         - SBOM:
             - Overview: docs/sbom/index.md
             - CycloneDX: docs/sbom/cyclonedx.md
