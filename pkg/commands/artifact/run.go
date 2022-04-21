@@ -11,6 +11,7 @@ import (
 
 	"github.com/aquasecurity/fanal/analyzer"
 	"github.com/aquasecurity/fanal/analyzer/config"
+	"github.com/aquasecurity/fanal/analyzer/secret"
 	"github.com/aquasecurity/fanal/artifact"
 	"github.com/aquasecurity/fanal/cache"
 	"github.com/aquasecurity/trivy-db/pkg/db"
@@ -41,9 +42,6 @@ type scannerConfig struct {
 
 	// Artifact options
 	ArtifactOption artifact.Option
-
-	// Misconfiguration scanning options
-	MisconfOption config.ScannerOption
 }
 
 // InitializeScanner defines the initialize function signature of scanner
@@ -254,6 +252,11 @@ func scan(ctx context.Context, opt Option, initializeScanner InitializeScanner, 
 
 			// For misconfiguration scanning
 			MisconfScannerOption: configScannerOptions,
+
+			// For secret scanning
+			SecretScannerOption: secret.ScannerOption{
+				ConfigPath: opt.SecretConfigPath,
+			},
 		},
 	})
 	if err != nil {
