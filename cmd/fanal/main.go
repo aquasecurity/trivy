@@ -145,12 +145,13 @@ func imageAction(c *cli.Context, fsCache cache.Cache) error {
 	artifactOpt := artifact.Option{
 		SkipFiles: c.StringSlice("skip-files"),
 		SkipDirs:  c.StringSlice("skip-dirs"),
-	}
-	scannerOpt := config.ScannerOption{
-		PolicyPaths: c.StringSlice("policy"),
+
+		MisconfScannerOption: config.ScannerOption{
+			PolicyPaths: c.StringSlice("policy"),
+		},
 	}
 
-	art, cleanup, err := imageArtifact(c.Context, c.Args().First(), fsCache, artifactOpt, scannerOpt)
+	art, cleanup, err := imageArtifact(c.Context, c.Args().First(), fsCache, artifactOpt)
 	if err != nil {
 		return err
 	}
@@ -170,13 +171,14 @@ func fsAction(c *cli.Context, fsCache cache.Cache) error {
 	artifactOpt := artifact.Option{
 		SkipFiles: c.StringSlice("skip-files"),
 		SkipDirs:  c.StringSlice("skip-dirs"),
-	}
-	scannerOpt := config.ScannerOption{
-		Namespaces:  []string{"appshield"},
-		PolicyPaths: c.StringSlice("policy"),
+
+		MisconfScannerOption: config.ScannerOption{
+			Namespaces:  []string{"appshield"},
+			PolicyPaths: c.StringSlice("policy"),
+		},
 	}
 
-	art, err := local.NewArtifact(c.Args().First(), fsCache, artifactOpt, scannerOpt)
+	art, err := local.NewArtifact(c.Args().First(), fsCache, artifactOpt)
 	if err != nil {
 		return err
 	}
@@ -231,13 +233,13 @@ func inspect(ctx context.Context, art artifact.Artifact, c cache.LocalArtifactCa
 }
 
 func imageArtifact(ctx context.Context, imageName string, c cache.ArtifactCache,
-	artifactOpt artifact.Option, scannerOpt config.ScannerOption) (artifact.Artifact, func(), error) {
+	artifactOpt artifact.Option) (artifact.Artifact, func(), error) {
 	img, cleanup, err := image.NewDockerImage(ctx, imageName, types.DockerOption{})
 	if err != nil {
 		return nil, func() {}, err
 	}
 
-	art, err := aimage.NewArtifact(img, c, artifactOpt, scannerOpt)
+	art, err := aimage.NewArtifact(img, c, artifactOpt)
 	if err != nil {
 		return nil, func() {}, err
 	}
@@ -250,7 +252,7 @@ func archiveImageArtifact(imagePath string, c cache.ArtifactCache) (artifact.Art
 		return nil, err
 	}
 
-	art, err := aimage.NewArtifact(img, c, artifact.Option{}, config.ScannerOption{})
+	art, err := aimage.NewArtifact(img, c, artifact.Option{})
 	if err != nil {
 		return nil, err
 	}
@@ -258,5 +260,5 @@ func archiveImageArtifact(imagePath string, c cache.ArtifactCache) (artifact.Art
 }
 
 func remoteArtifact(dir string, c cache.ArtifactCache) (artifact.Artifact, func(), error) {
-	return remote.NewArtifact(dir, c, artifact.Option{}, config.ScannerOption{})
+	return remote.NewArtifact(dir, c, artifact.Option{})
 }

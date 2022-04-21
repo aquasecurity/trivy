@@ -10,7 +10,6 @@ import (
 	"github.com/go-git/go-git/v5/plumbing/transport/http"
 	"golang.org/x/xerrors"
 
-	"github.com/aquasecurity/fanal/analyzer/config"
 	"github.com/aquasecurity/fanal/artifact"
 	"github.com/aquasecurity/fanal/artifact/local"
 	"github.com/aquasecurity/fanal/cache"
@@ -22,7 +21,7 @@ type Artifact struct {
 	local artifact.Artifact
 }
 
-func NewArtifact(rawurl string, c cache.ArtifactCache, artifactOpt artifact.Option, scannerOpt config.ScannerOption) (
+func NewArtifact(rawurl string, c cache.ArtifactCache, artifactOpt artifact.Option) (
 	artifact.Artifact, func(), error) {
 	cleanup := func() {}
 
@@ -58,7 +57,7 @@ func NewArtifact(rawurl string, c cache.ArtifactCache, artifactOpt artifact.Opti
 		_ = os.RemoveAll(tmpDir)
 	}
 
-	art, err := local.NewArtifact(tmpDir, c, artifactOpt, scannerOpt)
+	art, err := local.NewArtifact(tmpDir, c, artifactOpt)
 	if err != nil {
 		return nil, cleanup, xerrors.Errorf("fs artifact: %w", err)
 	}
