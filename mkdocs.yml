@@ -65,6 +65,7 @@ nav:
                 - Overview: docs/secrets/scanning/index.md
                 - Container Image: docs/secrets/scanning/image.md
                 - Filesystem: docs/secrets/scanning/filesystem.md
+            - Configuration: docs/secrets/configuration.md
         - SBOM:
             - Overview: docs/sbom/index.md
             - CycloneDX: docs/sbom/cyclonedx.md
