@@ -378,6 +378,14 @@ func TestAnalyzeFile(t *testing.T) {
 			want: &analyzer.AnalysisResult{},
 		},
 		{
+			name: "ignore permission error",
+			args: args{
+				filePath:     "/etc/alpine-release",
+				testFilePath: "testdata/no-permission",
+			},
+			want: &analyzer.AnalysisResult{},
+		},
+		{
 			name: "sad path with opener error",
 			args: args{
 				filePath:     "/lib/apk/db/installed",
@@ -402,6 +410,11 @@ func TestAnalyzeFile(t *testing.T) {
 				func() (dio.ReadSeekCloserAt, error) {
 					if tt.args.testFilePath == "testdata/error" {
 						return nil, xerrors.New("error")
+					} else if tt.args.testFilePath == "testdata/no-permission" {
+						os.Chmod(tt.args.testFilePath, 0000)
+						t.Cleanup(func() {
+							os.Chmod(tt.args.testFilePath, 0644)
+						})
 					}
 					return os.Open(tt.args.testFilePath)
 				},
