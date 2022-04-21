@@ -39,7 +39,8 @@ type ScannerOption struct {
 
 // SecretAnalyzer is an analyzer for secrets
 type SecretAnalyzer struct {
-	scanner secret.Scanner
+	scanner    secret.Scanner
+	configPath string
 }
 
 func RegisterSecretAnalyzer(opt ScannerOption) error {
@@ -56,7 +57,10 @@ func newSecretAnalyzer(configPath string) (SecretAnalyzer, error) {
 	if err != nil {
 		return SecretAnalyzer{}, xerrors.Errorf("secret scanner error: %w", err)
 	}
-	return SecretAnalyzer{scanner: s}, nil
+	return SecretAnalyzer{
+		scanner:    s,
+		configPath: configPath,
+	}, nil
 }
 
 func (a SecretAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInput) (*analyzer.AnalysisResult, error) {
@@ -124,6 +128,11 @@ func (a SecretAnalyzer) Required(filePath string, fi os.FileInfo) bool {
 
 	// Check if the file should be skipped
 	if slices.Contains(skipFiles, fileName) {
+		return false
+	}
+
+	// Skip the config file for secret scanning
+	if a.configPath == fileName {
 		return false
 	}
 
