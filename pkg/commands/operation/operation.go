@@ -53,7 +53,7 @@ func NewCache(c option.CacheOption) (Cache, error) {
 			}
 		}
 
-		redisCache := cache.NewRedisCache(options)
+		redisCache := cache.NewRedisCache(options, c.CacheTTL)
 		return Cache{Cache: redisCache}, nil
 	}
 
