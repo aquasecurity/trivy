@@ -310,6 +310,17 @@ func ConvertFromRPCOS(rpcOS *common.OS) *ftypes.OS {
 	}
 }
 
+// ConvertFromRPCRepository converts common.Repository to fanal.Repository
+func ConvertFromRPCRepository(rpcRepo *common.Repository) *ftypes.Repository {
+	if rpcRepo == nil {
+		return nil
+	}
+	return &ftypes.Repository{
+		Family:  rpcRepo.Family,
+		Release: rpcRepo.Release,
+	}
+}
+
 // ConvertFromRPCDataSource converts *common.DataSource to *dbTypes.DataSource
 func ConvertFromRPCDataSource(ds *common.DataSource) *dbTypes.DataSource {
 	if ds == nil {
@@ -402,6 +413,7 @@ func ConvertFromRPCPutBlobRequest(req *cache.PutBlobRequest) ftypes.BlobInfo {
 		Digest:            req.BlobInfo.Digest,
 		DiffID:            req.BlobInfo.DiffId,
 		OS:                ConvertFromRPCOS(req.BlobInfo.Os),
+		Repository:        ConvertFromRPCRepository(req.BlobInfo.Repository),
 		PackageInfos:      ConvertFromRPCPackageInfos(req.BlobInfo.PackageInfos),
 		Applications:      ConvertFromRPCApplications(req.BlobInfo.Applications),
 		Misconfigurations: ConvertFromRPCMisconfigurations(req.BlobInfo.Misconfigurations),
@@ -420,6 +432,17 @@ func ConvertToRPCOS(fos *ftypes.OS) *common.OS {
 		Family: fos.Family,
 		Name:   fos.Name,
 		Eosl:   fos.Eosl,
+	}
+}
+
+// ConvertToRPCRepository returns common.Repository
+func ConvertToRPCRepository(repo *ftypes.Repository) *common.Repository {
+	if repo == nil {
+		return nil
+	}
+	return &common.Repository{
+		Family:  repo.Family,
+		Release: repo.Release,
 	}
 }
 
@@ -500,6 +523,7 @@ func ConvertToRPCBlobInfo(diffID string, blobInfo ftypes.BlobInfo) *cache.PutBlo
 			Digest:            blobInfo.Digest,
 			DiffId:            blobInfo.DiffID,
 			Os:                ConvertToRPCOS(blobInfo.OS),
+			Repository:        ConvertToRPCRepository(blobInfo.Repository),
 			PackageInfos:      packageInfos,
 			Applications:      applications,
 			Misconfigurations: misconfigurations,

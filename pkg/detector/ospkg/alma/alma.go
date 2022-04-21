@@ -57,7 +57,7 @@ func NewScanner(opts ...option) *Scanner {
 }
 
 // Detect vulnerabilities in package using AlmaLinux scanner
-func (s *Scanner) Detect(osVer string, pkgs []ftypes.Package) ([]types.DetectedVulnerability, error) {
+func (s *Scanner) Detect(osVer string, _ *ftypes.Repository, pkgs []ftypes.Package) ([]types.DetectedVulnerability, error) {
 	log.Logger.Info("Detecting AlmaLinux vulnerabilities...")
 	if strings.Count(osVer, ".") > 0 {
 		osVer = osVer[:strings.Index(osVer, ".")]

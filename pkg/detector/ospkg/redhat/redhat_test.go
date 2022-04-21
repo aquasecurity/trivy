@@ -274,7 +274,7 @@ func TestScanner_Detect(t *testing.T) {
 			dbtest.InitDB(t, tt.fixtures)
 
 			s := redhat.NewScanner()
-			got, err := s.Detect(tt.args.osVer, tt.args.pkgs)
+			got, err := s.Detect(tt.args.osVer, nil, tt.args.pkgs)
 			require.Equal(t, tt.wantErr, err != nil, err)
 			assert.Equal(t, tt.want, got)
 		})

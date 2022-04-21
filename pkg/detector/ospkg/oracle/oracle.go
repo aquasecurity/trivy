@@ -54,7 +54,7 @@ func extractKsplice(v string) string {
 }
 
 // Detect scans and return vulnerability in Oracle scanner
-func (s *Scanner) Detect(osVer string, pkgs []ftypes.Package) ([]types.DetectedVulnerability, error) {
+func (s *Scanner) Detect(osVer string, _ *ftypes.Repository, pkgs []ftypes.Package) ([]types.DetectedVulnerability, error) {
 	log.Logger.Info("Detecting Oracle Linux vulnerabilities...")
 
 	if strings.Count(osVer, ".") > 0 {

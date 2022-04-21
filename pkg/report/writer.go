@@ -2,8 +2,8 @@ package report
 
 import (
 	"io"
-	"path/filepath"
 	"strings"
+	"sync"
 	"time"
 
 	"golang.org/x/xerrors"
@@ -41,6 +41,7 @@ func Write(report types.Report, option Option) error {
 		writer = &TableWriter{
 			Output:             option.Output,
 			Severities:         option.Severities,
+			ShowMessageOnce:    &sync.Once{},
 			IncludeNonFailures: option.IncludeNonFailures,
 			Trace:              option.Trace,
 		}
@@ -51,7 +52,7 @@ func Write(report types.Report, option Option) error {
 		writer = cyclonedx.NewWriter(option.Output, option.AppVersion)
 	case "template":
 		// We keep `sarif.tpl` template working for backward compatibility for a while.
-		if strings.HasPrefix(option.OutputTemplate, "@") && filepath.Base(option.OutputTemplate) == "sarif.tpl" {
+		if strings.HasPrefix(option.OutputTemplate, "@") && strings.HasSuffix(option.OutputTemplate, "sarif.tpl") {
 			log.Logger.Warn("Using `--template sarif.tpl` is deprecated. Please migrate to `--format sarif`. See https://github.com/aquasecurity/trivy/discussions/1571")
 			writer = SarifWriter{Output: option.Output, Version: option.AppVersion}
 			break

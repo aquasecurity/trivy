@@ -62,7 +62,7 @@ type Operation interface {
 
 // Driver defines operations for OS package scan
 type Driver interface {
-	Detect(string, []ftypes.Package) ([]types.DetectedVulnerability, error)
+	Detect(string, *ftypes.Repository, []ftypes.Package) ([]types.DetectedVulnerability, error)
 	IsSupportedVersion(string, string) bool
 }
 
@@ -70,7 +70,7 @@ type Driver interface {
 type Detector struct{}
 
 // Detect detects the vulnerabilities
-func (d Detector) Detect(_, osFamily, osName string, _ time.Time, pkgs []ftypes.Package) ([]types.DetectedVulnerability, bool, error) {
+func (d Detector) Detect(_, osFamily, osName string, repo *ftypes.Repository, _ time.Time, pkgs []ftypes.Package) ([]types.DetectedVulnerability, bool, error) {
 	driver, err := newDriver(osFamily)
 	if err != nil {
 		return nil, false, ErrUnsupportedOS
@@ -78,7 +78,7 @@ func (d Detector) Detect(_, osFamily, osName string, _ time.Time, pkgs []ftypes.
 
 	eosl := !driver.IsSupportedVersion(osFamily, osName)
 
-	vulns, err := driver.Detect(osName, pkgs)
+	vulns, err := driver.Detect(osName, repo, pkgs)
 	if err != nil {
 		return nil, false, xerrors.Errorf("failed detection: %w", err)
 	}

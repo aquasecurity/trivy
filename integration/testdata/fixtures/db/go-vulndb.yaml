@@ -1,0 +1,28 @@
+- bucket: go::The Go Vulnerability Database
+  pairs:
+    - bucket: golang.org/x/text
+      pairs:
+        - key: CVE-2021-38561
+          value:
+            PatchedVersions:
+              - "0.3.7"
+            VulnerableVersions:
+              - ">= 0, < 0.3.7"
+- bucket: go::GitLab Advisory Database Community
+  pairs:
+    - bucket: github.com/docker/distribution
+      pairs:
+        - key: GMS-2022-20
+          value:
+            PatchedVersions:
+              - "v2.8.0"
+            VulnerableVersions:
+              - "< v2.8.0"
+    - bucket: github.com/open-policy-agent/opa
+      pairs:
+        - key: CVE-2022-23628
+          value:
+            PatchedVersions:
+              - "0.37.0"
+            VulnerableVersions:
+              - ">= 0.33.1, < 0.37.0"

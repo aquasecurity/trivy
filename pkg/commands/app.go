@@ -325,6 +325,13 @@ var (
 		EnvVars: []string{"TRIVY_CUSTOM_HEADERS"},
 	}
 
+	dbRepositoryFlag = cli.StringFlag{
+		Name:    "db-repository",
+		Usage:   "OCI repository to retrieve trivy-db from",
+		Value:   "ghcr.io/aquasecurity/trivy-db",
+		EnvVars: []string{"TRIVY_DB_REPOSITORY"},
+	}
+
 	// Global flags
 	globalFlags = []cli.Flag{
 		&quietFlag,
@@ -448,6 +455,7 @@ func NewImageCommand() *cli.Command {
 			&redisBackendKey,
 			&offlineScan,
 			&insecureFlag,
+			&dbRepositoryFlag,
 			stringSliceFlag(skipFiles),
 			stringSliceFlag(skipDirs),
 		},
@@ -484,6 +492,7 @@ func NewFilesystemCommand() *cli.Command {
 			&ignorePolicy,
 			&listAllPackages,
 			&offlineScan,
+			&dbRepositoryFlag,
 			stringSliceFlag(skipFiles),
 			stringSliceFlag(skipDirs),
 
@@ -530,6 +539,7 @@ func NewRootfsCommand() *cli.Command {
 			&ignorePolicy,
 			&listAllPackages,
 			&offlineScan,
+			&dbRepositoryFlag,
 			stringSliceFlag(skipFiles),
 			stringSliceFlag(skipDirs),
 			stringSliceFlag(configPolicy),
@@ -573,6 +583,7 @@ func NewRepositoryCommand() *cli.Command {
 			&listAllPackages,
 			&offlineScan,
 			&insecureFlag,
+			&dbRepositoryFlag,
 			stringSliceFlag(skipFiles),
 			stringSliceFlag(skipDirs),
 		},
@@ -640,6 +651,7 @@ func NewServerCommand() *cli.Command {
 			&redisBackendCACert,
 			&redisBackendCert,
 			&redisBackendKey,
+			&dbRepositoryFlag,
 
 			// original flags
 			&token,
@@ -765,6 +777,7 @@ func NewSbomCommand() *cli.Command {
 			&timeoutFlag,
 			&severityFlag,
 			&offlineScan,
+			&dbRepositoryFlag,
 			stringSliceFlag(skipFiles),
 			stringSliceFlag(skipDirs),
 
