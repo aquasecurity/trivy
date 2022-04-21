@@ -2,6 +2,8 @@ package analyzer
 
 import (
 	"context"
+	"errors"
+	"io/fs"
 	"os"
 	"sort"
 	"strings"
@@ -241,7 +243,10 @@ func (ag AnalyzerGroup) AnalyzeFile(ctx context.Context, wg *sync.WaitGroup, lim
 			continue
 		}
 		rc, err := opener()
-		if err != nil {
+		if errors.Is(err, fs.ErrPermission) {
+			log.Logger.Debugf("Permission error: %s", filePath)
+			break
+		} else if err != nil {
 			return xerrors.Errorf("unable to open %s: %w", filePath, err)
 		}
 
