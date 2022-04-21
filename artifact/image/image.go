@@ -168,7 +168,7 @@ func (a Artifact) inspect(ctx context.Context, missingImage string, layerKeys, b
 			// If it is a base layer, secret scanning should not be performed.
 			var disabledAnalyers []analyzer.Type
 			if slices.Contains(baseDiffIDs, diffID) {
-				//disabledAnalyers = append(disabledAnalyers, analyzer.TypeSecret)
+				disabledAnalyers = append(disabledAnalyers, analyzer.TypeSecret)
 			}
 
 			layerInfo, err := a.inspectLayer(ctx, diffID, disabledAnalyers)
