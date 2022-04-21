@@ -246,8 +246,10 @@ func scan(ctx context.Context, opt Option, initializeScanner InitializeScanner, 
 			InsecureSkipTLS:   opt.Insecure,
 			Offline:           opt.OfflineScan,
 			NoProgress:        opt.NoProgress || opt.Quiet,
+
+			// For misconfiguration scanning
+			MisconfScannerOption: configScannerOptions,
 		},
-		MisconfOption: configScannerOptions,
 	})
 	if err != nil {
 		return types.Report{}, xerrors.Errorf("unable to initialize a scanner: %w", err)
@@ -269,7 +271,7 @@ func filter(ctx context.Context, opt Option, report types.Report) (types.Report,
 		if opt.RemoteAddr == "" {
 			resultClient.FillVulnerabilityInfo(results[i].Vulnerabilities, results[i].Type)
 		}
-		vulns, misconfSummary, misconfs, err := resultClient.Filter(ctx, results[i].Vulnerabilities, results[i].Misconfigurations,
+		vulns, misconfSummary, misconfs, secrets, err := resultClient.Filter(ctx, results[i].Vulnerabilities, results[i].Misconfigurations, results[i].Secrets,
 			opt.Severities, opt.IgnoreUnfixed, opt.IncludeNonFailures, opt.IgnoreFile, opt.IgnorePolicy)
 		if err != nil {
 			return types.Report{}, xerrors.Errorf("unable to filter vulnerabilities: %w", err)
@@ -277,6 +279,7 @@ func filter(ctx context.Context, opt Option, report types.Report) (types.Report,
 		results[i].Vulnerabilities = vulns
 		results[i].Misconfigurations = misconfs
 		results[i].MisconfSummary = misconfSummary
+		results[i].Secrets = secrets
 	}
 	return report, nil
 }

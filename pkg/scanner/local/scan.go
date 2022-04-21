@@ -104,8 +104,14 @@ func (s Scanner) Scan(target string, artifactKey string, blobKeys []string, opti
 
 	// Scan IaC config files
 	if slices.Contains(options.SecurityChecks, types.SecurityCheckConfig) {
-		configResults := s.misconfsToResults(artifactDetail.Misconfigurations, options)
+		configResults := s.misconfsToResults(artifactDetail.Misconfigurations)
 		results = append(results, configResults...)
+	}
+
+	// Scan secrets
+	if slices.Contains(options.SecurityChecks, types.SecurityCheckSecret) {
+		secretResults := s.secretsToResults(artifactDetail.Secrets)
+		results = append(results, secretResults...)
 	}
 
 	return results, artifactDetail.OS, nil
@@ -236,7 +242,7 @@ func (s Scanner) scanLibrary(apps []ftypes.Application, options types.ScanOption
 	return results, nil
 }
 
-func (s Scanner) misconfsToResults(misconfs []ftypes.Misconfiguration, options types.ScanOptions) types.Results {
+func (s Scanner) misconfsToResults(misconfs []ftypes.Misconfiguration) types.Results {
 	log.Logger.Infof("Detected config files: %d", len(misconfs))
 	var results types.Results
 	for _, misconf := range misconfs {
@@ -269,6 +275,20 @@ func (s Scanner) misconfsToResults(misconfs []ftypes.Misconfiguration, options t
 		return results[i].Target < results[j].Target
 	})
 
+	return results
+}
+
+func (s Scanner) secretsToResults(secrets []ftypes.Secret) types.Results {
+	var results types.Results
+	for _, secret := range secrets {
+		log.Logger.Debugf("Secret file: %s", secret.FilePath)
+
+		results = append(results, types.Result{
+			Target:  secret.FilePath,
+			Class:   types.ClassSecret,
+			Secrets: secret.Findings,
+		})
+	}
 	return results
 }
 
