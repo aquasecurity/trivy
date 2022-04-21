@@ -245,7 +245,8 @@ func (tw TableWriter) setSecretRows(table *tablewriter.Table, secrets []ftypes.S
 		}
 
 		row := []string{string(secret.Category), secret.Title, severity,
-			fmt.Sprintf("%d:%d", secret.StartLine, secret.EndLine), secret.Match}
+			fmt.Sprint(secret.StartLine), // multi-line is not supported for now.
+			secret.Match}
 
 		table.Append(row)
 	}
