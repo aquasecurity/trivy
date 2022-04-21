@@ -347,7 +347,7 @@ func toFinding(rule Rule, loc Location, content []byte) types.SecretFinding {
 
 func findLocation(start, end int, content []byte) (int, int, string) {
 	startLineNum := bytes.Count(content[:start], lineSep) + 1
-	endLineNum := startLineNum + 1 // TODO: support multi lines
+	endLineNum := startLineNum // TODO: support multi lines
 
 	lineStart := bytes.LastIndex(content[:start], lineSep)
 	if lineStart == -1 {
