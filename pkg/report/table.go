@@ -4,7 +4,9 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"path/filepath"
 	"strings"
+	"sync"
 
 	"github.com/fatih/color"
 	"github.com/olekukonko/tablewriter"
@@ -12,6 +14,7 @@ import (
 
 	ftypes "github.com/aquasecurity/fanal/types"
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
+	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
 
@@ -19,6 +22,9 @@ import (
 type TableWriter struct {
 	Severities []dbTypes.Severity
 	Output     io.Writer
+
+	// We have to show a message once about using the '-format json' subcommand to get the full pkgPath
+	ShowMessageOnce *sync.Once
 
 	// For misconfigurations
 	IncludeNonFailures bool
@@ -155,6 +161,14 @@ func (tw TableWriter) setVulnerabilityRows(table *tablewriter.Table, vulns []typ
 	severityCount := map[string]int{}
 	for _, v := range vulns {
 		severityCount[v.Severity]++
+		lib := v.PkgName
+		if v.PkgPath != "" {
+			fileName := filepath.Base(v.PkgPath)
+			lib = fmt.Sprintf("%s (%s)", v.PkgName, fileName)
+			tw.ShowMessageOnce.Do(func() {
+				log.Logger.Infof("Table result includes only package filenames. Use '--format json' option to get the full path to the package file.")
+			})
+		}
 
 		title := v.Title
 		if title == "" {
@@ -172,10 +186,10 @@ func (tw TableWriter) setVulnerabilityRows(table *tablewriter.Table, vulns []typ
 
 		var row []string
 		if tw.Output == os.Stdout {
-			row = []string{v.PkgName, v.VulnerabilityID, dbTypes.ColorizeSeverity(v.Severity),
+			row = []string{lib, v.VulnerabilityID, dbTypes.ColorizeSeverity(v.Severity),
 				v.InstalledVersion, v.FixedVersion, strings.TrimSpace(title)}
 		} else {
-			row = []string{v.PkgName, v.VulnerabilityID, v.Severity, v.InstalledVersion, v.FixedVersion, strings.TrimSpace(title)}
+			row = []string{lib, v.VulnerabilityID, v.Severity, v.InstalledVersion, v.FixedVersion, strings.TrimSpace(title)}
 		}
 
 		table.Append(row)

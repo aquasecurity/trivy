@@ -31,6 +31,14 @@ func TestFilesystem(t *testing.T) {
 		golden string
 	}{
 		{
+			name: "gomod",
+			args: args{
+				securityChecks: "vuln",
+				input:          "testdata/fixtures/fs/gomod",
+			},
+			golden: "testdata/gomod.json.golden",
+		},
+		{
 			name: "nodejs",
 			args: args{
 				securityChecks: "vuln",

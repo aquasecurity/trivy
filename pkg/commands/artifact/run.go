@@ -151,7 +151,7 @@ func initCache(c Option) (cache.Cache, error) {
 func initDB(c Option) error {
 	// download the database file
 	noProgress := c.Quiet || c.NoProgress
-	if err := operation.DownloadDB(c.AppVersion, c.CacheDir, noProgress, c.SkipDBUpdate); err != nil {
+	if err := operation.DownloadDB(c.AppVersion, c.CacheDir, c.DBRepository, noProgress, c.SkipDBUpdate); err != nil {
 		return err
 	}
 

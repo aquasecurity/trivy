@@ -13,6 +13,11 @@ message OS {
   bool   eosl   = 3;
 }
 
+message Repository {
+  string family  = 1;
+  string release = 2;
+}
+
 message PackageInfo {
   string           file_path = 1;
   repeated Package packages  = 2;
@@ -96,7 +101,7 @@ message Vulnerability {
   google.protobuf.Value     custom_vuln_data     = 18;
   repeated string           vendor_ids           = 19;
   DataSource                data_source          = 20;
-  map<string,Severity>      vendor_severity      = 21;
+  map<string, Severity>     vendor_severity      = 21;
   string                    pkg_path             = 22;
 }
 
