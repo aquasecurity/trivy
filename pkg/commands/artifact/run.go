@@ -189,9 +189,14 @@ func disabledAnalyzers(opt Option) []analyzer.Type {
 		analyzers = append(analyzers, analyzer.TypeApkCommand)
 	}
 
-	// Don't analyze programming language packages when not running in 'library' mode
+	// Do not analyze programming language packages when not running in 'library' mode
 	if !slices.Contains(opt.VulnType, types.VulnTypeLibrary) {
 		analyzers = append(analyzers, analyzer.TypeLanguages...)
+	}
+
+	// Do not perform secret scanning when it is not specified.
+	if !slices.Contains(opt.SecurityChecks, types.SecurityCheckSecret) {
+		analyzers = append(analyzers, analyzer.TypeSecret)
 	}
 
 	return analyzers
