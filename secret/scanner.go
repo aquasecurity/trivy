@@ -2,6 +2,8 @@ package secret
 
 import (
 	"bytes"
+	"errors"
+	"github.com/aquasecurity/fanal/log"
 	"os"
 	"regexp"
 	"strings"
@@ -225,20 +227,31 @@ func (b *Blocks) find() {
 }
 
 func NewScanner(configPath string) (Scanner, error) {
-	var global Global
+	// Set default values
+	global := Global{
+		Rules:      builtinRules,
+		AllowRules: builtinAllowRules,
+	}
 
 	// If no config is passed, use built-in rules and allow rules.
 	if configPath == "" {
-		global.Rules = builtinRules
-		global.AllowRules = builtinAllowRules
 		return Scanner{&global}, nil
 	}
 
 	f, err := os.Open(configPath)
-	if err != nil {
+	if errors.Is(err, os.ErrNotExist) {
+		// If the specified file doesn't exist, it just uses built-in rules and allow rules.
+		log.Logger.Debugf("No secret config detected: %s", configPath)
+		return Scanner{&global}, nil
+	} else if err != nil {
 		return Scanner{}, xerrors.Errorf("file open error %s: %w", configPath, err)
 	}
 	defer f.Close()
+
+	log.Logger.Infof("Loading %s for secret scanning...", configPath)
+
+	// reset global
+	global = Global{}
 
 	var config Config
 	if err = yaml.NewDecoder(f).Decode(&config); err != nil {
