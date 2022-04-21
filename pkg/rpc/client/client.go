@@ -43,6 +43,7 @@ type Scanner struct {
 func NewScanner(scannerOptions ScannerOption, opts ...option) Scanner {
 	httpClient := &http.Client{
 		Transport: &http.Transport{
+			Proxy: http.ProxyFromEnvironment,
 			TLSClientConfig: &tls.Config{
 				InsecureSkipVerify: scannerOptions.Insecure,
 			},
