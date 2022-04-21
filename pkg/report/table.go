@@ -56,6 +56,9 @@ func (tw TableWriter) write(result types.Result) {
 
 	target := result.Target
 	if result.Class == types.ClassSecret {
+		if len(result.Secrets) == 0 {
+			return
+		}
 		target += " (secrets)"
 	} else if result.Class != types.ClassOSPkg {
 		target += fmt.Sprintf(" (%s)", result.Type)
