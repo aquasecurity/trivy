@@ -36,10 +36,12 @@ func NewConfigScanner(cacheDir string, policyPaths, dataPaths, namespaces []stri
 }
 
 func (s ConfigScanner) Scan(dir string) ([]types.Misconfiguration, error) {
-	art, err := local.NewArtifact(dir, s.cache, artifact.Option{}, config.ScannerOption{
-		PolicyPaths: s.policyPaths,
-		DataPaths:   s.dataPaths,
-		Namespaces:  s.namespaces,
+	art, err := local.NewArtifact(dir, s.cache, artifact.Option{
+		MisconfScannerOption: config.ScannerOption{
+			PolicyPaths: s.policyPaths,
+			DataPaths:   s.dataPaths,
+			Namespaces:  s.namespaces,
+		},
 	})
 	if err != nil {
 		return nil, err

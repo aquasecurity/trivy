@@ -9,14 +9,12 @@ import (
 
 	"golang.org/x/mod/sumdb/dirhash"
 	"golang.org/x/xerrors"
-
-	"github.com/aquasecurity/fanal/analyzer/config"
 )
 
-func CalcKey(id string, analyzerVersions, hookVersions map[string]int, artifactOpt artifact.Option, scannerOpt config.ScannerOption) (string, error) {
+func CalcKey(id string, analyzerVersions, hookVersions map[string]int, artifactOpt artifact.Option) (string, error) {
 	// Sort options for consistent results
 	artifactOpt.Sort()
-	scannerOpt.Sort()
+	artifactOpt.MisconfScannerOption.Sort()
 
 	h := sha256.New()
 
@@ -34,7 +32,7 @@ func CalcKey(id string, analyzerVersions, hookVersions map[string]int, artifactO
 	}
 
 	// Write policy and data contents
-	for _, paths := range [][]string{scannerOpt.PolicyPaths, scannerOpt.DataPaths} {
+	for _, paths := range [][]string{artifactOpt.MisconfScannerOption.PolicyPaths, artifactOpt.MisconfScannerOption.DataPaths} {
 		for _, p := range paths {
 			s, err := dirhash.HashDir(p, "", dirhash.DefaultHash)
 			if err != nil {
@@ -46,6 +44,8 @@ func CalcKey(id string, analyzerVersions, hookVersions map[string]int, artifactO
 			}
 		}
 	}
+
+	// TODO: add secret scanner option here
 
 	return fmt.Sprintf("sha256:%x", h.Sum(nil)), nil
 }

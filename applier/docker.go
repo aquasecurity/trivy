@@ -120,6 +120,14 @@ func ApplyLayers(layers []types.BlobInfo) types.ArtifactDetail {
 			key := fmt.Sprintf("%s/type:config", config.FilePath)
 			nestedMap.SetByString(key, sep, config)
 		}
+		for _, secret := range layer.Secrets {
+			secret.Layer = types.Layer{
+				Digest: layer.Digest,
+				DiffID: layer.DiffID,
+			}
+			key := fmt.Sprintf("%s/type:secret", secret.FilePath)
+			nestedMap.SetByString(key, sep, secret)
+		}
 		for _, customResource := range layer.CustomResources {
 			key := fmt.Sprintf("%s/custom:%s", customResource.FilePath, customResource.Type)
 			customResource.Layer = types.Layer{
@@ -138,6 +146,8 @@ func ApplyLayers(layers []types.BlobInfo) types.ArtifactDetail {
 			mergedLayer.Applications = append(mergedLayer.Applications, v)
 		case types.Misconfiguration:
 			mergedLayer.Misconfigurations = append(mergedLayer.Misconfigurations, v)
+		case types.Secret:
+			mergedLayer.Secrets = append(mergedLayer.Secrets, v)
 		case types.CustomResource:
 			mergedLayer.CustomResources = append(mergedLayer.CustomResources, v)
 		}

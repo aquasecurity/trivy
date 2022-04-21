@@ -56,7 +56,7 @@ func (c RedisCache) DeleteBlobs(blobIDs []string) error {
 	for _, blobID := range blobIDs {
 		key := fmt.Sprintf("%s::%s::%s", redisPrefix, artifactBucket, blobID)
 		if err := c.client.Del(context.TODO(), key).Err(); err != nil {
-			errs = multierror.Append(errs, err)
+			errs = multierror.Append(errs, xerrors.Errorf("unable to delete blob %s: %w", blobID, err))
 		}
 	}
 	return errs

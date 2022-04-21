@@ -80,6 +80,11 @@ const (
 	TypeTerraform      Type = "terraform"
 	TypeCloudFormation Type = "cloudFormation"
 
+	// ========
+	// Secrets
+	// ========
+	TypeSecret Type = "secret"
+
 	// =======
 	// Red Hat
 	// =======

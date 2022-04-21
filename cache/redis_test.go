@@ -528,7 +528,7 @@ func TestRedisCache_DeleteBlobs(t *testing.T) {
 			args: args{
 				blobIDs: []string{"sha256:24df0d4e20c0f42d3703bf1f1db2bdd77346c7956f74f423603d651e8e5ae800"},
 			},
-			wantErr: "failure in name resolution",
+			wantErr: "unable to delete blob",
 		},
 	}
 
