@@ -18,7 +18,7 @@ func TestSecretScanner(t *testing.T) {
 		Title:     "Generic Rule",
 		Severity:  "HIGH",
 		StartLine: 2,
-		EndLine:   3,
+		EndLine:   2,
 		Match:     "generic secret line secret=\"*****\"",
 	}
 	wantFinding2 := types.SecretFinding{
@@ -27,7 +27,7 @@ func TestSecretScanner(t *testing.T) {
 		Title:     "Generic Rule",
 		Severity:  "HIGH",
 		StartLine: 4,
-		EndLine:   5,
+		EndLine:   4,
 		Match:     "secret=\"*****\"",
 	}
 	wantFinding3 := types.SecretFinding{
@@ -36,7 +36,7 @@ func TestSecretScanner(t *testing.T) {
 		Title:     "Generic Rule",
 		Severity:  "HIGH",
 		StartLine: 5,
-		EndLine:   6,
+		EndLine:   5,
 		Match:     "credentials: { user: \"*****\" password: \"123456789\" }",
 	}
 	wantFinding4 := types.SecretFinding{
@@ -45,7 +45,7 @@ func TestSecretScanner(t *testing.T) {
 		Title:     "Generic Rule",
 		Severity:  "HIGH",
 		StartLine: 5,
-		EndLine:   6,
+		EndLine:   5,
 		Match:     "credentials: { user: \"username\" password: \"*****\" }",
 	}
 	wantFinding5 := types.SecretFinding{
@@ -54,7 +54,7 @@ func TestSecretScanner(t *testing.T) {
 		Title:     "GitHub Personal Access Token",
 		Severity:  "CRITICAL",
 		StartLine: 1,
-		EndLine:   2,
+		EndLine:   1,
 		Match:     "*****",
 	}
 	tests := []struct {
