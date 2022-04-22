@@ -3129,14 +3129,16 @@ USAGE:
    trivy server <span class="o">[</span><span class="nb">command</span> options<span class="o">]</span> <span class="o">[</span>arguments...<span class="o">]</span>
 
 OPTIONS:
-   --skip-update          skip db update <span class="o">(</span>default: <span class="nb">false</span><span class="o">)</span> <span class="o">[</span><span class="nv">$TRIVY_SKIP_UPDATE</span><span class="o">]</span>
-   --download-db-only     download/update vulnerability database but don<span class="err">&#39;</span>t run a scan <span class="o">(</span>default: <span class="nb">false</span><span class="o">)</span> <span class="o">[</span><span class="nv">$TRIVY_DOWNLOAD_DB_ONLY</span><span class="o">]</span>
-   --reset                remove all caches and database <span class="o">(</span>default: <span class="nb">false</span><span class="o">)</span> <span class="o">[</span><span class="nv">$TRIVY_RESET</span><span class="o">]</span>
-   --cache-backend value  cache backend <span class="o">(</span>e.g. redis://localhost:6379<span class="o">)</span> <span class="o">(</span>default: <span class="s2">&quot;fs&quot;</span><span class="o">)</span> <span class="o">[</span><span class="nv">$TRIVY_CACHE_BACKEND</span><span class="o">]</span>
-   --token value          <span class="k">for</span> authentication <span class="o">[</span><span class="nv">$TRIVY_TOKEN</span><span class="o">]</span>
-   --token-header value   specify a header name <span class="k">for</span> token <span class="o">(</span>default: <span class="s2">&quot;Trivy-Token&quot;</span><span class="o">)</span> <span class="o">[</span><span class="nv">$TRIVY_TOKEN_HEADER</span><span class="o">]</span>
-   --listen value         listen address <span class="o">(</span>default: <span class="s2">&quot;localhost:4954&quot;</span><span class="o">)</span> <span class="o">[</span><span class="nv">$TRIVY_LISTEN</span><span class="o">]</span>
-   --help, -h             show <span class="nb">help</span> <span class="o">(</span>default: <span class="nb">false</span><span class="o">)</span>
+   --skip-db-update, --skip-update  skip updating vulnerability database <span class="o">(</span>default: <span class="nb">false</span><span class="o">)</span> <span class="o">[</span><span class="nv">$TRIVY_SKIP_UPDATE</span>, <span class="nv">$TRIVY_SKIP_DB_UPDATE</span><span class="o">]</span>
+   --download-db-only               download/update vulnerability database but don<span class="err">&#39;</span>t run a scan <span class="o">(</span>default: <span class="nb">false</span><span class="o">)</span> <span class="o">[</span><span class="nv">$TRIVY_DOWNLOAD_DB_ONLY</span><span class="o">]</span>
+   --reset                          remove all caches and database <span class="o">(</span>default: <span class="nb">false</span><span class="o">)</span> <span class="o">[</span><span class="nv">$TRIVY_RESET</span><span class="o">]</span>
+   --cache-backend value            cache backend <span class="o">(</span>e.g. redis://localhost:6379<span class="o">)</span> <span class="o">(</span>default: <span class="s2">&quot;fs&quot;</span><span class="o">)</span> <span class="o">[</span><span class="nv">$TRIVY_CACHE_BACKEND</span><span class="o">]</span>
+   --cache-ttl value                cache TTL when using redis as cache backend <span class="o">(</span>default: 0s<span class="o">)</span> <span class="o">[</span><span class="nv">$TRIVY_CACHE_TTL</span><span class="o">]</span>
+   --db-repository value            OCI repository to retrieve trivy-db from <span class="o">(</span>default: <span class="s2">&quot;ghcr.io/aquasecurity/trivy-db&quot;</span><span class="o">)</span> <span class="o">[</span><span class="nv">$TRIVY_DB_REPOSITORY</span><span class="o">]</span>
+   --token value                    <span class="k">for</span> authentication <span class="k">in</span> client/server mode <span class="o">[</span><span class="nv">$TRIVY_TOKEN</span><span class="o">]</span>
+   --token-header value             specify a header name <span class="k">for</span> token <span class="k">in</span> client/server mode <span class="o">(</span>default: <span class="s2">&quot;Trivy-Token&quot;</span><span class="o">)</span> <span class="o">[</span><span class="nv">$TRIVY_TOKEN_HEADER</span><span class="o">]</span>
+   --listen value                   listen address <span class="o">(</span>default: <span class="s2">&quot;localhost:4954&quot;</span><span class="o">)</span> <span class="o">[</span><span class="nv">$TRIVY_LISTEN</span><span class="o">]</span>
+   --help, -h                       show <span class="nb">help</span> <span class="o">(</span>default: <span class="nb">false</span><span class="o">)</span>
 </code></pre></div>
 
 

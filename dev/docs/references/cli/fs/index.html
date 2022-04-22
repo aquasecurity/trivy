@@ -3123,10 +3123,10 @@
 
 <h1 id="filesystem">Filesystem</h1>
 <div class="highlight"><pre><span></span><code>NAME:
-   trivy filesystem - scan <span class="nb">local</span> filesystem
+   trivy filesystem - scan <span class="nb">local</span> filesystem <span class="k">for</span> language-specific dependencies and config files
 
 USAGE:
-   trivy filesystem <span class="o">[</span><span class="nb">command</span> options<span class="o">]</span> dir
+   trivy filesystem <span class="o">[</span><span class="nb">command</span> options<span class="o">]</span> path
 
 OPTIONS:
    --template value, -t value                     output template <span class="o">[</span><span class="nv">$TRIVY_TEMPLATE</span><span class="o">]</span>
@@ -3142,20 +3142,22 @@ OPTIONS:
    --security-checks value                        comma-separated list of what security issues to detect <span class="o">(</span>vuln,config<span class="o">)</span> <span class="o">(</span>default: <span class="s2">&quot;vuln&quot;</span><span class="o">)</span> <span class="o">[</span><span class="nv">$TRIVY_SECURITY_CHECKS</span><span class="o">]</span>
    --ignorefile value                             specify .trivyignore file <span class="o">(</span>default: <span class="s2">&quot;.trivyignore&quot;</span><span class="o">)</span> <span class="o">[</span><span class="nv">$TRIVY_IGNOREFILE</span><span class="o">]</span>
    --cache-backend value                          cache backend <span class="o">(</span>e.g. redis://localhost:6379<span class="o">)</span> <span class="o">(</span>default: <span class="s2">&quot;fs&quot;</span><span class="o">)</span> <span class="o">[</span><span class="nv">$TRIVY_CACHE_BACKEND</span><span class="o">]</span>
+   --cache-ttl value                              cache TTL when using redis as cache backend <span class="o">(</span>default: 0s<span class="o">)</span> <span class="o">[</span><span class="nv">$TRIVY_CACHE_TTL</span><span class="o">]</span>
    --timeout value                                timeout <span class="o">(</span>default: 5m0s<span class="o">)</span> <span class="o">[</span><span class="nv">$TRIVY_TIMEOUT</span><span class="o">]</span>
    --no-progress                                  suppress progress bar <span class="o">(</span>default: <span class="nb">false</span><span class="o">)</span> <span class="o">[</span><span class="nv">$TRIVY_NO_PROGRESS</span><span class="o">]</span>
    --ignore-policy value                          specify the Rego file to evaluate each vulnerability <span class="o">[</span><span class="nv">$TRIVY_IGNORE_POLICY</span><span class="o">]</span>
    --list-all-pkgs                                enabling the option will output all packages regardless of vulnerability <span class="o">(</span>default: <span class="nb">false</span><span class="o">)</span> <span class="o">[</span><span class="nv">$TRIVY_LIST_ALL_PKGS</span><span class="o">]</span>
    --offline-scan                                 <span class="k">do</span> not issue API requests to identify dependencies <span class="o">(</span>default: <span class="nb">false</span><span class="o">)</span> <span class="o">[</span><span class="nv">$TRIVY_OFFLINE_SCAN</span><span class="o">]</span>
-   --skip-files value                             specify the file paths to skip traversal <span class="o">[</span><span class="nv">$TRIVY_SKIP_FILES</span><span class="o">]</span>
-   --skip-dirs value                              specify the directories where the traversal is skipped <span class="o">[</span><span class="nv">$TRIVY_SKIP_DIRS</span><span class="o">]</span>
-   --config-policy value                          specify paths to the Rego policy files directory, applying config files <span class="o">[</span><span class="nv">$TRIVY_CONFIG_POLICY</span><span class="o">]</span>
-   --config-data value                            specify paths from which data <span class="k">for</span> the Rego policies will be recursively loaded <span class="o">[</span><span class="nv">$TRIVY_CONFIG_DATA</span><span class="o">]</span>
-   --policy-namespaces value, --namespaces value  Rego namespaces <span class="o">(</span>default: <span class="s2">&quot;users&quot;</span><span class="o">)</span> <span class="o">[</span><span class="nv">$TRIVY_POLICY_NAMESPACES</span><span class="o">]</span>
+   --db-repository value                          OCI repository to retrieve trivy-db from <span class="o">(</span>default: <span class="s2">&quot;ghcr.io/aquasecurity/trivy-db&quot;</span><span class="o">)</span> <span class="o">[</span><span class="nv">$TRIVY_DB_REPOSITORY</span><span class="o">]</span>
+   --skip-files value                             specify the file paths to skip traversal                                        <span class="o">(</span>accepts multiple inputs<span class="o">)</span> <span class="o">[</span><span class="nv">$TRIVY_SKIP_FILES</span><span class="o">]</span>
+   --skip-dirs value                              specify the directories where the traversal is skipped                          <span class="o">(</span>accepts multiple inputs<span class="o">)</span> <span class="o">[</span><span class="nv">$TRIVY_SKIP_DIRS</span><span class="o">]</span>
+   --config-policy value                          specify paths to the Rego policy files directory, applying config files         <span class="o">(</span>accepts multiple inputs<span class="o">)</span> <span class="o">[</span><span class="nv">$TRIVY_CONFIG_POLICY</span><span class="o">]</span>
+   --config-data value                            specify paths from which data <span class="k">for</span> the Rego policies will be recursively loaded  <span class="o">(</span>accepts multiple inputs<span class="o">)</span> <span class="o">[</span><span class="nv">$TRIVY_CONFIG_DATA</span><span class="o">]</span>
+   --policy-namespaces value, --namespaces value  Rego namespaces <span class="o">(</span>default: <span class="s2">&quot;users&quot;</span><span class="o">)</span>                                              <span class="o">(</span>accepts multiple inputs<span class="o">)</span> <span class="o">[</span><span class="nv">$TRIVY_POLICY_NAMESPACES</span><span class="o">]</span>
    --server value                                 server address <span class="o">[</span><span class="nv">$TRIVY_SERVER</span><span class="o">]</span>
-   --token value                                  <span class="k">for</span> authentication <span class="o">[</span><span class="nv">$TRIVY_TOKEN</span><span class="o">]</span>
-   --token-header value                           specify a header name <span class="k">for</span> token <span class="o">(</span>default: <span class="s2">&quot;Trivy-Token&quot;</span><span class="o">)</span> <span class="o">[</span><span class="nv">$TRIVY_TOKEN_HEADER</span><span class="o">]</span>
-   --custom-headers value                         custom headers <span class="o">[</span><span class="nv">$TRIVY_CUSTOM_HEADERS</span><span class="o">]</span>
+   --token value                                  <span class="k">for</span> authentication <span class="k">in</span> client/server mode <span class="o">[</span><span class="nv">$TRIVY_TOKEN</span><span class="o">]</span>
+   --token-header value                           specify a header name <span class="k">for</span> token <span class="k">in</span> client/server mode <span class="o">(</span>default: <span class="s2">&quot;Trivy-Token&quot;</span><span class="o">)</span> <span class="o">[</span><span class="nv">$TRIVY_TOKEN_HEADER</span><span class="o">]</span>
+   --custom-headers value                         custom headers <span class="k">in</span> client/server mode  <span class="o">(</span>accepts multiple inputs<span class="o">)</span> <span class="o">[</span><span class="nv">$TRIVY_CUSTOM_HEADERS</span><span class="o">]</span>
    --help, -h                                     show <span class="nb">help</span> <span class="o">(</span>default: <span class="nb">false</span><span class="o">)</span>
 </code></pre></div>
 
