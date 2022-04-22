@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"time"
 
 	"github.com/go-redis/redis/v8"
 	"github.com/hashicorp/go-multierror"
@@ -19,12 +20,14 @@ const (
 )
 
 type RedisCache struct {
-	client *redis.Client
+	client     *redis.Client
+	expiration time.Duration
 }
 
-func NewRedisCache(options *redis.Options) RedisCache {
+func NewRedisCache(options *redis.Options, expiration time.Duration) RedisCache {
 	return RedisCache{
-		client: redis.NewClient(options),
+		client:     redis.NewClient(options),
+		expiration: expiration,
 	}
 }
 
@@ -34,7 +37,7 @@ func (c RedisCache) PutArtifact(artifactID string, artifactConfig types.Artifact
 	if err != nil {
 		return xerrors.Errorf("failed to marshal artifact JSON: %w", err)
 	}
-	if err := c.client.Set(context.TODO(), key, string(b), 0).Err(); err != nil {
+	if err := c.client.Set(context.TODO(), key, string(b), c.expiration).Err(); err != nil {
 		return xerrors.Errorf("unable to store artifact information in Redis cache (%s): %w", artifactID, err)
 	}
 	return nil
@@ -46,7 +49,7 @@ func (c RedisCache) PutBlob(blobID string, blobInfo types.BlobInfo) error {
 		return xerrors.Errorf("failed to marshal blob JSON: %w", err)
 	}
 	key := fmt.Sprintf("%s::%s::%s", redisPrefix, blobBucket, blobID)
-	if err := c.client.Set(context.TODO(), key, string(b), 0).Err(); err != nil {
+	if err := c.client.Set(context.TODO(), key, string(b), c.expiration).Err(); err != nil {
 		return xerrors.Errorf("unable to store blob information in Redis cache (%s): %w", blobID, err)
 	}
 	return nil
