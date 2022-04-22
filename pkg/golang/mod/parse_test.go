@@ -23,6 +23,11 @@ func TestParse(t *testing.T) {
 			want: GoModNormal,
 		},
 		{
+			name: "without go version",
+			file: "testdata/no-go-version/go.mod",
+			want: GoModNoGoVersion,
+		},
+		{
 			name: "replace",
 			file: "testdata/replaced/go.mod",
 			want: GoModReplaced,

@@ -52,4 +52,9 @@ var (
 	GoMod116 = []types.Library{
 		{Name: "github.com/aquasecurity/go-dep-parser", Version: "0.0.0-20211224170007-df43bca6b6ff", Indirect: false},
 	}
+
+	// execute go mod tidy in no-go-version folder
+	GoModNoGoVersion = []types.Library{
+		{Name: "github.com/aquasecurity/go-dep-parser", Version: "0.0.0-20211224170007-df43bca6b6ff", Indirect: false},
+	}
 )
