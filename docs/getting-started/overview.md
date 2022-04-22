@@ -1,6 +1,6 @@
 # Overview
 
-Trivy detects two types of security issues:
+Trivy detects three types of security issues:
 
 - [Vulnerabilities][vuln]
     - [OS packages][os] (Alpine, Red Hat Universal Base Image, Red Hat Enterprise Linux, CentOS, AlmaLinux, Rocky Linux, CBL-Mariner, Oracle Linux, Debian, Ubuntu, Amazon Linux, openSUSE Leap, SUSE Enterprise Linux, Photon OS and Distroless)
@@ -11,6 +11,11 @@ Trivy detects two types of security issues:
     - Terraform
     - CloudFormation
     - more coming soon
+- [Secrets][secret]
+    - AWS access key
+    - GCP service account
+    - GitHub personal access token
+    - etc.
 
 Trivy can scan three different artifacts:
 
@@ -26,6 +31,8 @@ See [Integrations][integrations] for details.
 [lang]: ../docs/vulnerability/detection/language.md
 
 [misconf]: ../docs/misconfiguration/index.md
+
+[secret]: ../docs/secret/scanning.md
 
 [container]: ../docs/vulnerability/scanning/image.md
 [rootfs]: ../docs/vulnerability/scanning/rootfs.md

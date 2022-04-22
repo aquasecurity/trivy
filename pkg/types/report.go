@@ -37,6 +37,7 @@ const (
 	ClassOSPkg   = "os-pkgs"
 	ClassLangPkg = "lang-pkgs"
 	ClassConfig  = "config"
+	ClassSecret  = "secret"
 )
 
 // Result holds a target and detected vulnerabilities
@@ -48,6 +49,7 @@ type Result struct {
 	Vulnerabilities   []DetectedVulnerability    `json:"Vulnerabilities,omitempty"`
 	MisconfSummary    *MisconfSummary            `json:"MisconfSummary,omitempty"`
 	Misconfigurations []DetectedMisconfiguration `json:"Misconfigurations,omitempty"`
+	Secrets           []ftypes.SecretFinding     `json:"Secrets,omitempty"`
 	CustomResources   []ftypes.CustomResource    `json:"CustomResources,omitempty"`
 }
 

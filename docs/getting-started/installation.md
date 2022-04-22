@@ -174,7 +174,7 @@ The same image is hosted on [Amazon ECR Public][ecr] as well.
 docker pull public.ecr.aws/aquasecurity/trivy:{{ git.tag[1:] }}
 ```
 ## Helm
-### Installing from the the Aqua Chart Repository
+### Installing from the Aqua Chart Repository
 
 ```
 helm repo add aquasecurity https://aquasecurity.github.io/helm-charts/
