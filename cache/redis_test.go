@@ -69,7 +69,7 @@ func TestRedisCache_PutArtifact(t *testing.T) {
 
 			c := cache.NewRedisCache(&redis.Options{
 				Addr: addr,
-			})
+			}, 0)
 
 			err = c.PutArtifact(tt.args.artifactID, tt.args.artifactConfig)
 			if tt.wantErr != "" {
@@ -158,7 +158,7 @@ func TestRedisCache_PutBlob(t *testing.T) {
 
 			c := cache.NewRedisCache(&redis.Options{
 				Addr: addr,
-			})
+			}, 0)
 
 			err = c.PutBlob(tt.args.blobID, tt.args.blobConfig)
 			if tt.wantErr != "" {
@@ -243,7 +243,7 @@ func TestRedisCache_GetArtifact(t *testing.T) {
 
 			c := cache.NewRedisCache(&redis.Options{
 				Addr: addr,
-			})
+			}, 0)
 
 			got, err := c.GetArtifact(tt.artifactID)
 			if tt.wantErr != "" {
@@ -336,7 +336,7 @@ func TestRedisCache_GetBlob(t *testing.T) {
 
 			c := cache.NewRedisCache(&redis.Options{
 				Addr: addr,
-			})
+			}, 0)
 
 			got, err := c.GetBlob(tt.blobID)
 			if tt.wantErr != "" {
@@ -447,7 +447,7 @@ func TestRedisCache_MissingBlobs(t *testing.T) {
 
 			c := cache.NewRedisCache(&redis.Options{
 				Addr: addr,
-			})
+			}, 0)
 
 			missingArtifact, missingBlobIDs, err := c.MissingBlobs(tt.args.artifactID, tt.args.blobIDs)
 			if tt.wantErr != "" {
@@ -472,7 +472,7 @@ func TestRedisCache_Close(t *testing.T) {
 	t.Run("close", func(t *testing.T) {
 		c := cache.NewRedisCache(&redis.Options{
 			Addr: s.Addr(),
-		})
+		}, 0)
 		closeErr := c.Close()
 		require.NoError(t, closeErr)
 		time.Sleep(3 * time.Second) // give it some time
@@ -494,7 +494,7 @@ func TestRedisCache_Clear(t *testing.T) {
 	t.Run("clear", func(t *testing.T) {
 		c := cache.NewRedisCache(&redis.Options{
 			Addr: s.Addr(),
-		})
+		}, 0)
 		require.NoError(t, c.Clear())
 		for i := 0; i < 200; i++ {
 			assert.False(t, s.Exists(fmt.Sprintf("fanal::key%d", i)))
@@ -548,7 +548,7 @@ func TestRedisCache_DeleteBlobs(t *testing.T) {
 
 			c := cache.NewRedisCache(&redis.Options{
 				Addr: addr,
-			})
+			}, 0)
 
 			err = c.DeleteBlobs(tt.args.blobIDs)
 			if tt.wantErr != "" {

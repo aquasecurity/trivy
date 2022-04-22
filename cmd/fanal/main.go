@@ -134,7 +134,7 @@ func initializeCache(backend string) (cache.Cache, error) {
 	if strings.HasPrefix(backend, "redis://") {
 		cacheClient = cache.NewRedisCache(&redis.Options{
 			Addr: strings.TrimPrefix(backend, "redis://"),
-		})
+		}, 0)
 	} else {
 		cacheClient, err = cache.NewFSCache(utils.CacheDir())
 	}
