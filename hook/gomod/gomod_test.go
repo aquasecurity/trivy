@@ -154,6 +154,45 @@ func Test_gomodMergeHook_Hook(t *testing.T) {
 				},
 			},
 		},
+		{
+			name: "Go 1.16 and go.sum is not found",
+			blob: &types.BlobInfo{
+				Applications: []types.Application{
+					{
+						Type:     types.GoModule,
+						FilePath: "/app/go.mod",
+						Libraries: []types.Package{
+							{
+								Name:    "github.com/aquasecurity/go-dep-parser",
+								Version: "v0.0.0-20220412145205-d0501f906d90",
+							},
+							{
+								Name:    "github.com/aws/aws-sdk-go",
+								Version: "v1.43.31",
+							},
+						},
+					},
+				},
+			},
+			want: &types.BlobInfo{
+				Applications: []types.Application{
+					{
+						Type:     types.GoModule,
+						FilePath: "/app/go.mod",
+						Libraries: []types.Package{
+							{
+								Name:    "github.com/aquasecurity/go-dep-parser",
+								Version: "v0.0.0-20220412145205-d0501f906d90",
+							},
+							{
+								Name:    "github.com/aws/aws-sdk-go",
+								Version: "v1.43.31",
+							},
+						},
+					},
+				},
+			},
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
