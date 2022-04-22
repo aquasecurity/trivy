@@ -32,6 +32,9 @@ var (
 
 		// node.js
 		types.NodePkg,
+
+		// Go binaries
+		types.GoBinary,
 	}
 )
 
