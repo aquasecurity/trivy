@@ -142,7 +142,7 @@ func TestDriver_Detect(t *testing.T) {
 			driver, err := library.NewDriver(tt.libType)
 			require.NoError(t, err)
 
-			got, err := driver.DetectVulnerabilities(tt.args.pkgName, tt.args.pkgVer)
+			got, err := driver.DetectVulnerabilities("", tt.args.pkgName, tt.args.pkgVer)
 			if tt.wantErr != "" {
 				require.Error(t, err)
 				assert.Contains(t, err.Error(), tt.wantErr)

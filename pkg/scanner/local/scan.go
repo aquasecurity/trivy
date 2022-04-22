@@ -14,6 +14,7 @@ import (
 	"github.com/aquasecurity/fanal/analyzer"
 	"github.com/aquasecurity/fanal/applier"
 	ftypes "github.com/aquasecurity/fanal/types"
+	godeptypes "github.com/aquasecurity/go-dep-parser/pkg/types"
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/detector/library"
 	ospkgDetector "github.com/aquasecurity/trivy/pkg/detector/ospkg"
@@ -209,6 +210,8 @@ func (s Scanner) scanLibrary(apps []ftypes.Application, options types.ScanOption
 			target = t
 		}
 
+		applyLibDependencies(vulns, app.Dependencies)
+
 		libReport := types.Result{
 			Target:          target,
 			Vulnerabilities: vulns,
@@ -225,6 +228,47 @@ func (s Scanner) scanLibrary(apps []ftypes.Application, options types.ScanOption
 		return results[i].Target < results[j].Target
 	})
 	return results, nil
+}
+
+func applyLibDependencies(vulns []types.DetectedVulnerability, deps []godeptypes.Dependency) {
+	reversed := make(map[string][]string)
+	for _, dep := range deps {
+		for _, dependOn := range dep.DependsOn {
+			items, ok := reversed[dependOn]
+			if !ok {
+				reversed[dependOn] = []string{dep.ID}
+			} else {
+				reversed[dependOn] = append(items, dep.ID)
+			}
+		}
+	}
+	//register direct parents
+	for i, vuln := range vulns {
+		if parents, ok := reversed[vuln.PkgID]; ok {
+			for _, parent := range parents {
+				visitedParents := make([]string, 0)
+				item := types.DependencyTreeItem{ID: parent}
+				resolveParentDependency(&item, reversed, visitedParents)
+				vulns[i].PkgParents = append(vuln.PkgParents, item)
+			}
+		}
+	}
+
+}
+func resolveParentDependency(item *types.DependencyTreeItem, reversed map[string][]string, visitedParents []string) {
+	parents, ok := reversed[item.ID]
+	if ok {
+		for _, parent := range parents {
+			if slices.Contains(visitedParents, parent) {
+				continue
+			}
+			visitedParents = append(visitedParents, parent)
+
+			parentItem := types.DependencyTreeItem{ID: parent}
+			item.Parents = append(item.Parents, parentItem)
+			resolveParentDependency(&parentItem, reversed, visitedParents)
+		}
+	}
 }
 
 func (s Scanner) misconfsToResults(misconfs []ftypes.Misconfiguration, options types.ScanOptions) types.Results {

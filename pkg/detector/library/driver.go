@@ -75,7 +75,7 @@ func (d *Driver) Type() string {
 // If "ecosystem" is pip, it looks for buckets with "pip::" and gets security advisories from those buckets.
 // It allows us to add a new data source with the ecosystem prefix (e.g. pip::new-data-source)
 // and detect vulnerabilities without specifying a specific bucket name.
-func (d *Driver) DetectVulnerabilities(pkgName, pkgVer string) ([]types.DetectedVulnerability, error) {
+func (d *Driver) DetectVulnerabilities(pkgID, pkgName, pkgVer string) ([]types.DetectedVulnerability, error) {
 	// e.g. "pip::", "npm::"
 	prefix := fmt.Sprintf("%s::", d.ecosystem)
 	advisories, err := d.dbc.GetAdvisories(prefix, vulnerability.NormalizePkgName(d.ecosystem, pkgName))
@@ -92,6 +92,7 @@ func (d *Driver) DetectVulnerabilities(pkgName, pkgVer string) ([]types.Detected
 		vuln := types.DetectedVulnerability{
 			VulnerabilityID:  adv.VulnerabilityID,
 			PkgName:          pkgName,
+			PkgID:            pkgID,
 			InstalledVersion: pkgVer,
 			FixedVersion:     createFixedVersions(adv),
 			DataSource:       adv.DataSource,
