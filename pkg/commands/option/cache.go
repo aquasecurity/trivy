@@ -2,6 +2,7 @@ package option
 
 import (
 	"strings"
+	"time"
 
 	"github.com/urfave/cli/v2"
 	"golang.org/x/xerrors"
@@ -10,6 +11,7 @@ import (
 // CacheOption holds the options for cache
 type CacheOption struct {
 	CacheBackend string
+	CacheTTL     time.Duration
 	RedisOption
 }
 
@@ -24,6 +26,7 @@ type RedisOption struct {
 func NewCacheOption(c *cli.Context) CacheOption {
 	return CacheOption{
 		CacheBackend: c.String("cache-backend"),
+		CacheTTL:     c.Duration("cache-ttl"),
 		RedisOption: RedisOption{
 			RedisCACert: c.String("redis-ca"),
 			RedisCert:   c.String("redis-cert"),

@@ -166,6 +166,12 @@ var (
 		EnvVars: []string{"TRIVY_CACHE_BACKEND"},
 	}
 
+	cacheTTL = cli.DurationFlag{
+		Name:    "cache-ttl",
+		Usage:   "cache TTL when using redis as cache backend",
+		EnvVars: []string{"TRIVY_CACHE_TTL"},
+	}
+
 	redisBackendCACert = cli.StringFlag{
 		Name:    "redis-ca",
 		Usage:   "redis ca file location, if using redis as cache backend",
@@ -457,6 +463,7 @@ func NewImageCommand() *cli.Command {
 			&ignorePolicy,
 			&listAllPackages,
 			&cacheBackendFlag,
+			&cacheTTL,
 			&redisBackendCACert,
 			&redisBackendCert,
 			&redisBackendKey,
@@ -492,6 +499,7 @@ func NewFilesystemCommand() *cli.Command {
 			&securityChecksFlag,
 			&ignoreFileFlag,
 			&cacheBackendFlag,
+			&cacheTTL,
 			&redisBackendCACert,
 			&redisBackendCert,
 			&redisBackendKey,
@@ -540,6 +548,7 @@ func NewRootfsCommand() *cli.Command {
 			&securityChecksFlag,
 			&ignoreFileFlag,
 			&cacheBackendFlag,
+			&cacheTTL,
 			&redisBackendCACert,
 			&redisBackendCert,
 			&redisBackendKey,
@@ -583,6 +592,7 @@ func NewRepositoryCommand() *cli.Command {
 			&securityChecksFlag,
 			&ignoreFileFlag,
 			&cacheBackendFlag,
+			&cacheTTL,
 			&redisBackendCACert,
 			&redisBackendCert,
 			&redisBackendKey,
@@ -660,6 +670,7 @@ func NewServerCommand() *cli.Command {
 			&downloadDBOnlyFlag,
 			&resetFlag,
 			&cacheBackendFlag,
+			&cacheTTL,
 			&redisBackendCACert,
 			&redisBackendCert,
 			&redisBackendKey,
