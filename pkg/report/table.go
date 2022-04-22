@@ -12,6 +12,7 @@ import (
 	"github.com/olekukonko/tablewriter"
 	"golang.org/x/exp/slices"
 
+	ftypes "github.com/aquasecurity/fanal/types"
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/types"
@@ -42,33 +43,41 @@ func (tw TableWriter) write(result types.Result) {
 	table := tablewriter.NewWriter(tw.Output)
 
 	var severityCount map[string]int
-	if len(result.Vulnerabilities) != 0 {
+	switch {
+	case len(result.Vulnerabilities) != 0:
 		severityCount = tw.writeVulnerabilities(table, result.Vulnerabilities)
-	} else if len(result.Misconfigurations) != 0 {
+	case len(result.Misconfigurations) != 0:
 		severityCount = tw.writeMisconfigurations(table, result.Misconfigurations)
+	case len(result.Secrets) != 0:
+		severityCount = tw.writeSecrets(table, result.Secrets)
 	}
 
 	total, summaries := tw.summary(severityCount)
 
 	target := result.Target
-	if result.Class != types.ClassOSPkg {
+	if result.Class == types.ClassSecret {
+		if len(result.Secrets) == 0 {
+			return
+		}
+		target += " (secrets)"
+	} else if result.Class != types.ClassOSPkg {
 		target += fmt.Sprintf(" (%s)", result.Type)
 	}
 
 	fmt.Printf("\n%s\n", target)
 	fmt.Println(strings.Repeat("=", len(target)))
-	if result.MisconfSummary != nil {
+	if result.Class == types.ClassConfig {
 		// for misconfigurations
 		summary := result.MisconfSummary
 		fmt.Printf("Tests: %d (SUCCESSES: %d, FAILURES: %d, EXCEPTIONS: %d)\n",
 			summary.Successes+summary.Failures+summary.Exceptions, summary.Successes, summary.Failures, summary.Exceptions)
 		fmt.Printf("Failures: %d (%s)\n\n", total, strings.Join(summaries, ", "))
 	} else {
-		// for vulnerabilities
+		// for vulnerabilities and secrets
 		fmt.Printf("Total: %d (%s)\n\n", total, strings.Join(summaries, ", "))
 	}
 
-	if len(result.Vulnerabilities) == 0 && len(result.Misconfigurations) == 0 {
+	if len(result.Vulnerabilities) == 0 && len(result.Misconfigurations) == 0 && len(result.Secrets) == 0 {
 		return
 	}
 
@@ -130,6 +139,20 @@ func (tw TableWriter) writeMisconfigurations(table *tablewriter.Table, misconfs 
 	table.SetColumnAlignment(alignment)
 	table.SetHeader(header)
 	severityCount := tw.setMisconfRows(table, misconfs)
+
+	return severityCount
+}
+
+func (tw TableWriter) writeSecrets(table *tablewriter.Table, secrets []ftypes.SecretFinding) map[string]int {
+	table.SetColWidth(80)
+
+	alignment := []int{tablewriter.ALIGN_CENTER, tablewriter.ALIGN_CENTER, tablewriter.ALIGN_CENTER,
+		tablewriter.ALIGN_CENTER, tablewriter.ALIGN_LEFT}
+	header := []string{"Category", "Description", "Severity", "Line No", "Match"}
+
+	table.SetColumnAlignment(alignment)
+	table.SetHeader(header)
+	severityCount := tw.setSecretRows(table, secrets)
 
 	return severityCount
 }
@@ -206,6 +229,24 @@ func (tw TableWriter) setMisconfRows(table *tablewriter.Table, misconfs []types.
 			// Remove status
 			row = append(row[:4], row[5:]...)
 		}
+
+		table.Append(row)
+	}
+	return severityCount
+}
+
+func (tw TableWriter) setSecretRows(table *tablewriter.Table, secrets []ftypes.SecretFinding) map[string]int {
+	severityCount := map[string]int{}
+	for _, secret := range secrets {
+		severity := secret.Severity
+		severityCount[severity]++
+		if tw.Output == os.Stdout {
+			severity = dbTypes.ColorizeSeverity(severity)
+		}
+
+		row := []string{string(secret.Category), secret.Title, severity,
+			fmt.Sprint(secret.StartLine), // multi-line is not supported for now.
+			secret.Match}
 
 		table.Append(row)
 	}
