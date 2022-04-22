@@ -103,7 +103,7 @@ You can specify `slack-access-token` and `slack-web-hook` in `disable-rules` so 
 Markdown files are ignored by default, but you may want to scan markdown files as well.
 You can disable the allow list by adding `markdown` to `disable-allow-rules`.
 
-You can see a full list of IDs [here][builtin].
+You can see a full list of rule IDs [here][builtin]. Allow rule IDs are below in the file.
 
 ``` yaml
 disable-rules:
