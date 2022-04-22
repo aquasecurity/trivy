@@ -32,6 +32,11 @@ All you need to do for scanning is to specify a target such as an image name of 
   <figcaption>Demo: Misconfiguration Detection</figcaption>
 </figure>
 
+<figure style="text-aligh: center">
+  <img src="imgs/secret-demo.gif" width="1000">
+  <figcaption>Demo: Secret Detection</figcaption>
+</figure>
+
 ---
 
 Trivy is an [Aqua Security][aquasec] open source project.  
