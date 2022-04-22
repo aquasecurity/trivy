@@ -14,7 +14,6 @@
     gpgcheck=0
     enabled=1
     EOF
-
     sudo yum -y update
     sudo yum -y install trivy
     ```
