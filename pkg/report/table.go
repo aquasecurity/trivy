@@ -76,6 +76,8 @@ func (tw TableWriter) write(result types.Result) {
 	table.SetRowLine(true)
 	table.Render()
 
+	tw.renderDependencies(result)
+
 	// For debugging
 	if tw.Trace {
 		tw.outputTrace(result)
@@ -211,6 +213,48 @@ func (tw TableWriter) setMisconfRows(table *tablewriter.Table, misconfs []types.
 	}
 	return severityCount
 }
+func (tw TableWriter) renderDepParent(item types.DependencyTreeItem, level int, isLastItem bool) {
+	var line string
+	padding := strings.Repeat(" ", level*2)
+	if item.Parents != nil {
+		line = fmt.Sprintf(" %s└─┬ %s", padding, item.ID)
+	} else {
+		if isLastItem {
+			line = fmt.Sprintf(" %s└── %s", padding, item.ID)
+		} else {
+			line = fmt.Sprintf(" %s├── %s", padding, item.ID)
+		}
+	}
+	tw.Println(line)
+	for i, parent := range item.Parents {
+		tw.renderDepParent(parent, level+1, i+1 == len(item.Parents))
+	}
+
+}
+func (tw TableWriter) renderDependencies(result types.Result) {
+
+	for _, vuln := range result.Vulnerabilities { //precheck
+		if vuln.PkgParents != nil {
+			tw.Println()
+			tw.Println("Reversed dependencies:")
+			tw.Println("=======================")
+			tw.Println()
+
+			break
+		}
+	}
+
+	seen := make([]string, 0)
+	for _, vuln := range result.Vulnerabilities {
+		if vuln.PkgParents != nil && !slices.Contains(seen, vuln.PkgID) {
+			tw.Println("", vuln.PkgID)
+			seen = append(seen, vuln.PkgID)
+			for i, parent := range vuln.PkgParents {
+				tw.renderDepParent(parent, 0, i+1 == len(vuln.PkgParents))
+			}
+		}
+	}
+}
 
 func (tw TableWriter) outputTrace(result types.Result) {
 	blue := color.New(color.FgBlue).SprintFunc()
@@ -238,7 +282,6 @@ func (tw TableWriter) outputTrace(result types.Result) {
 		tw.Println()
 	}
 }
-
 func (tw TableWriter) Println(a ...interface{}) {
 	_, _ = fmt.Fprintln(tw.Output, a...)
 }
