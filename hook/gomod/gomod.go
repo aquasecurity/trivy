@@ -32,8 +32,9 @@ func (h gomodMergeHook) Hook(blob *types.BlobInfo) error {
 			if file == types.GoMod && lessThanGo117(app) {
 				// e.g. /app/go.mod => /app/go.sum
 				gosumFile := filepath.Join(dir, types.GoSum)
-				gosum := findGoSum(gosumFile, blob.Applications)
-				mergeGoSum(&app, gosum)
+				if gosum := findGoSum(gosumFile, blob.Applications); gosum != nil {
+					mergeGoSum(&app, gosum)
+				}
 			}
 		}
 		apps = append(apps, app)
