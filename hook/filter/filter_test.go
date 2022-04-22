@@ -192,11 +192,11 @@ func Test_systemFileFilterHook_Hook(t *testing.T) {
 			want: &types.BlobInfo{},
 		},
 		{
-			name: "go is not affected",
+			name: "go binaries",
 			blob: &types.BlobInfo{
 				Applications: []types.Application{
 					{
-						Type:     "gobinary",
+						Type:     types.GoBinary,
 						FilePath: "usr/local/bin/goreleaser",
 						Libraries: []types.Package{
 							{
@@ -210,15 +210,36 @@ func Test_systemFileFilterHook_Hook(t *testing.T) {
 					"usr/local/bin/goreleaser",
 				},
 			},
+			want: &types.BlobInfo{},
+		},
+		{
+			name: "Rust will not be skipped",
+			blob: &types.BlobInfo{
+				Applications: []types.Application{
+					{
+						Type:     types.Cargo,
+						FilePath: "app/Cargo.lock",
+						Libraries: []types.Package{
+							{
+								Name:    "ghash",
+								Version: "0.4.4",
+							},
+						},
+					},
+				},
+				SystemFiles: []string{
+					"app/Cargo.lock",
+				},
+			},
 			want: &types.BlobInfo{
 				Applications: []types.Application{
 					{
-						Type:     "gobinary",
-						FilePath: "usr/local/bin/goreleaser",
+						Type:     types.Cargo,
+						FilePath: "app/Cargo.lock",
 						Libraries: []types.Package{
 							{
-								Name:    "github.com/sassoftware/go-rpmutils",
-								Version: "v0.0.0-20190420191620-a8f1baeba37b",
+								Name:    "ghash",
+								Version: "0.4.4",
 							},
 						},
 					},
