@@ -17,10 +17,10 @@ type options struct {
 	rpcClient rpc.Scanner
 }
 
-type option func(*options)
+type Option func(*options)
 
 // WithRPCClient takes rpc client for testability
-func WithRPCClient(c rpc.Scanner) option {
+func WithRPCClient(c rpc.Scanner) Option {
 	return func(opts *options) {
 		opts.rpcClient = c
 	}
@@ -40,7 +40,7 @@ type Scanner struct {
 }
 
 // NewScanner is the factory method to return RPC Scanner
-func NewScanner(scannerOptions ScannerOption, opts ...option) Scanner {
+func NewScanner(scannerOptions ScannerOption, opts ...Option) Scanner {
 	httpClient := &http.Client{
 		Transport: &http.Transport{
 			Proxy: http.ProxyFromEnvironment,

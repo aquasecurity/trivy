@@ -147,8 +147,8 @@ var (
 
 	securityChecksFlag = cli.StringFlag{
 		Name:    "security-checks",
-		Value:   types.SecurityCheckVulnerability,
-		Usage:   "comma-separated list of what security issues to detect (vuln,config)",
+		Value:   fmt.Sprintf("%s,%s", types.SecurityCheckVulnerability, types.SecurityCheckSecret),
+		Usage:   "comma-separated list of what security issues to detect (vuln,config,secret)",
 		EnvVars: []string{"TRIVY_SECURITY_CHECKS"},
 	}
 
@@ -338,6 +338,13 @@ var (
 		EnvVars: []string{"TRIVY_DB_REPOSITORY"},
 	}
 
+	secretConfig = cli.StringFlag{
+		Name:    "secret-config",
+		Usage:   "specify a path to config file for secret scanning",
+		Value:   "trivy-secret.yaml",
+		EnvVars: []string{"TRIVY_SECRET_CONFIG"},
+	}
+
 	// Global flags
 	globalFlags = []cli.Flag{
 		&quietFlag,
@@ -463,6 +470,7 @@ func NewImageCommand() *cli.Command {
 			&offlineScan,
 			&insecureFlag,
 			&dbRepositoryFlag,
+			&secretConfig,
 			stringSliceFlag(skipFiles),
 			stringSliceFlag(skipDirs),
 		},
@@ -501,6 +509,7 @@ func NewFilesystemCommand() *cli.Command {
 			&listAllPackages,
 			&offlineScan,
 			&dbRepositoryFlag,
+			&secretConfig,
 			stringSliceFlag(skipFiles),
 			stringSliceFlag(skipDirs),
 
@@ -549,6 +558,7 @@ func NewRootfsCommand() *cli.Command {
 			&listAllPackages,
 			&offlineScan,
 			&dbRepositoryFlag,
+			&secretConfig,
 			stringSliceFlag(skipFiles),
 			stringSliceFlag(skipDirs),
 			stringSliceFlag(configPolicy),
@@ -594,6 +604,7 @@ func NewRepositoryCommand() *cli.Command {
 			&offlineScan,
 			&insecureFlag,
 			&dbRepositoryFlag,
+			&secretConfig,
 			stringSliceFlag(skipFiles),
 			stringSliceFlag(skipDirs),
 		},
@@ -630,6 +641,7 @@ func NewClientCommand() *cli.Command {
 			&listAllPackages,
 			&offlineScan,
 			&insecureFlag,
+			&secretConfig,
 
 			&token,
 			&tokenHeader,

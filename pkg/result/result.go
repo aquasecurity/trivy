@@ -14,6 +14,7 @@ import (
 	"golang.org/x/exp/slices"
 	"golang.org/x/xerrors"
 
+	ftypes "github.com/aquasecurity/fanal/types"
 	"github.com/aquasecurity/trivy-db/pkg/db"
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/vulnerability"
@@ -131,24 +132,25 @@ func (c Client) getPrimaryURL(vulnID string, refs []string, source dbTypes.Sourc
 }
 
 // Filter filter out the vulnerabilities
-func (c Client) Filter(ctx context.Context, vulns []types.DetectedVulnerability, misconfs []types.DetectedMisconfiguration,
+func (c Client) Filter(ctx context.Context, vulns []types.DetectedVulnerability, misconfs []types.DetectedMisconfiguration, secrets []ftypes.SecretFinding,
 	severities []dbTypes.Severity, ignoreUnfixed, includeNonFailures bool, ignoreFile, policyFile string) (
-	[]types.DetectedVulnerability, *types.MisconfSummary, []types.DetectedMisconfiguration, error) {
+	[]types.DetectedVulnerability, *types.MisconfSummary, []types.DetectedMisconfiguration, []ftypes.SecretFinding, error) {
 	ignoredIDs := getIgnoredIDs(ignoreFile)
 
 	filteredVulns := filterVulnerabilities(vulns, severities, ignoreUnfixed, ignoredIDs)
 	misconfSummary, filteredMisconfs := filterMisconfigurations(misconfs, severities, includeNonFailures, ignoredIDs)
+	filteredSecrets := filterSecrets(secrets, severities)
 
 	if policyFile != "" {
 		var err error
 		filteredVulns, filteredMisconfs, err = applyPolicy(ctx, filteredVulns, filteredMisconfs, policyFile)
 		if err != nil {
-			return nil, nil, nil, xerrors.Errorf("failed to apply the policy: %w", err)
+			return nil, nil, nil, nil, xerrors.Errorf("failed to apply the policy: %w", err)
 		}
 	}
 	sort.Sort(types.BySeverity(filteredVulns))
 
-	return filteredVulns, misconfSummary, filteredMisconfs, nil
+	return filteredVulns, misconfSummary, filteredMisconfs, filteredSecrets, nil
 }
 
 func filterVulnerabilities(vulns []types.DetectedVulnerability, severities []dbTypes.Severity,
@@ -213,6 +215,20 @@ func filterMisconfigurations(misconfs []types.DetectedMisconfiguration, severiti
 	}
 
 	return summary, filtered
+}
+
+func filterSecrets(secrets []ftypes.SecretFinding, severities []dbTypes.Severity) []ftypes.SecretFinding {
+	var filtered []ftypes.SecretFinding
+	for _, secret := range secrets {
+		// Filter secrets by severity
+		for _, s := range severities {
+			if s.String() == secret.Severity {
+				filtered = append(filtered, secret)
+				break
+			}
+		}
+	}
+	return filtered
 }
 
 func summarize(status types.MisconfStatus, summary *types.MisconfSummary) {

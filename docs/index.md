@@ -6,10 +6,10 @@ hide:
 
 ![logo](imgs/logo.png){ align=left }
 
-`Trivy` (`tri` pronounced like **tri**gger, `vy` pronounced like en**vy**) is a simple and comprehensive [vulnerability][vulnerability]/[misconfiguration][misconf] scanner for containers and other artifacts.
-A software vulnerability is a glitch, flaw, or weakness present in the software or in an Operating System.
+`Trivy` (`tri` pronounced like **tri**gger, `vy` pronounced like en**vy**) is a simple and comprehensive [vulnerability][vulnerability]/[misconfiguration][misconf]/[secret][secret] scanner for containers and other artifacts.
 `Trivy` detects vulnerabilities of [OS packages][os] (Alpine, RHEL, CentOS, etc.) and [language-specific packages][lang] (Bundler, Composer, npm, yarn, etc.).
 In addition, `Trivy` scans [Infrastructure as Code (IaC) files][iac] such as Terraform and Kubernetes, to detect potential configuration issues that expose your deployments to the risk of attack.
+`Trivy` also scans [hardcoded secrets][secret] like passwords, api keys, and tokens.
 `Trivy` is easy to use. Just install the binary and you're ready to scan.
 All you need to do for scanning is to specify a target such as an image name of the container.
 
@@ -40,6 +40,7 @@ Contact us about any matter by opening a GitHub Discussion [here][discussions]
 
 [vulnerability]: docs/vulnerability/scanning/index.md
 [misconf]: docs/misconfiguration/index.md
+[secret]: docs/secret/scanning.md
 [os]: docs/vulnerability/detection/os.md
 [lang]: docs/vulnerability/detection/language.md
 [iac]: docs/misconfiguration/iac.md
