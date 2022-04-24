@@ -97,7 +97,7 @@ We would recommend specifying `--skip-dirs` for faster secret scanning.
 In container image scanning, Trivy walks the file tree rooted  `/` and scans all the files other than [built-in allowed paths][builtin].
 It will take a while if your image contains a lot of files even though Trivy tries to avoid scanning layers from a base image.
 If you want to make scanning faster, `--skip-dirs` and `--skip-files` helps so that Trivy will skip scanning those files and directories.
-The usage examples are [here][examples]
+The usage examples are [here][examples].
 
 `allow-rules` is also helpful. See the [allow-rules][allow-rules] section.
 
