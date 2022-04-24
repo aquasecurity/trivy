@@ -105,7 +105,7 @@ It specifies AWS-related rule IDs in `enable-builin-rules`.
 All other rules are disabled, so the scanning will be much faster.
 We would strongly recommend using this option if you don't need all rules.
 
-You can see a full list of rule IDs [here][builtin]. Allow rule IDs are below in the file.
+You can see a full list of [built-in rule IDs][builtin] and [built-in allow rule IDs][builtin-allow].
 
 ``` yaml
 enable-builtin-rules:
@@ -127,8 +127,7 @@ In addition, there are some allow rules.
 Markdown files are ignored by default, but you may want to scan markdown files as well.
 You can disable the allow rule by adding `markdown` to `disable-allow-rules`.
 
-
-You can see a full list of rule IDs [here][builtin]. Allow rule IDs are below in the file.
+You can see a full list of [built-in rule IDs][builtin] and [built-in allow rule IDs][builtin-allow].
 
 ``` yaml
 disable-rules:
@@ -139,5 +138,6 @@ disable-allow-rules:
 ```
 
 
-[builtin]: https://github.com/aquasecurity/fanal/blob/main/secret/builtin.go
+[builtin]: https://github.com/aquasecurity/fanal/blob/main/secret/builtin-rules.go
+[builtin]: https://github.com/aquasecurity/fanal/blob/main/secret/builtin-allow-rules.go
 [examples]: ./examples.md
