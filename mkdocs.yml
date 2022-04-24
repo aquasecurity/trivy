@@ -63,6 +63,7 @@ nav:
         - Secret:
             - Scanning: docs/secret/scanning.md
             - Configuration: docs/secret/configuration.md
+            - Examples: docs/secret/examples.md
         - SBOM:
             - Overview: docs/sbom/index.md
             - CycloneDX: docs/sbom/cyclonedx.md
