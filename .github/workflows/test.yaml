@@ -92,9 +92,7 @@ jobs:
         python-version: 3.x
     - name: Install dependencies
       run: |
-        pip install mkdocs-material
-        pip install mike
-        pip install mkdocs-macros-plugin
+        pip install -r docs/build/requirements.txt
     - name: Configure the git user
       run: |
         git config user.name "knqyf263"
