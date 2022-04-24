@@ -99,19 +99,22 @@ It will take a while if your image contains a lot of files even though Trivy tri
 If you want to make scanning faster, `--skip-dirs` and `--skip-files` helps so that Trivy will skip scanning those files and directories.
 The usage examples are [here][examples]
 
-`allow-rules` is also helpful.
+`allow-rules` is also helpful. See the [allow-rules][allow-rules] section.
 
 In addition, all the built-in rules are enabled by default, so it takes some time to scan all of them.
 If you don't need all those rules, you can use `enable-builtin-rules` or `disable-rules` in the configuration file.
 You should use `enable-builin-rules` if you need only AWS secret detection, for example.
 All rules are disabled except for the ones you specify, so it runs very fast.
 On the other hand, you should use `disable-rules` if you just want to disable some built-in rules.
-See [the configuration page][configuration] for the detail.
+See the [enable-rules][enable-rules] and [disable-rules][disable-rules] sections for the detail.
 
 ## Credit
 This feature is inspired by [gitleaks][gitleaks]. 
 
 [builtin]: https://github.com/aquasecurity/fanal/blob/main/secret/builtin.go
 [configuration]: ./configuration.md
+[allow-rules]: ./configuration.md#allow-rules
+[enable-rules]: ./configuration.md#enable-rules
+[disable-rules]: ./configuration.md#disable-rules
 [examples]: ./examples.md
 [gitleaks]: https://github.com/zricethezav/gitleaks
