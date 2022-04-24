@@ -1,4 +1,5 @@
 # Examples
+Also see [quick start][quick-start].
 
 ## Skip Directories
 Trivy traversals directories and scans all files except those matching the built-in allow rules by default.
@@ -93,3 +94,5 @@ disable-allow-rules:
 # Pass the above config with `--secret-config`.
 $ trivy fs --secret-config ./secret-config/trivy.yaml /path/to/your_project
 ```
+
+[quick-start]: ./scanning.md#quick-start
