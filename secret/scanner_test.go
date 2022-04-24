@@ -1,15 +1,24 @@
 package secret_test
 
 import (
+	"go.uber.org/zap"
+	"go.uber.org/zap/zapcore"
 	"os"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
+	"github.com/aquasecurity/fanal/log"
 	"github.com/aquasecurity/fanal/secret"
 	"github.com/aquasecurity/fanal/types"
 )
+
+func TestMain(m *testing.M) {
+	logger, _ := zap.NewDevelopment(zap.IncreaseLevel(zapcore.FatalLevel))
+	log.SetLogger(logger.Sugar())
+	os.Exit(m.Run())
+}
 
 func TestSecretScanner(t *testing.T) {
 	wantFinding1 := types.SecretFinding{
@@ -49,14 +58,24 @@ func TestSecretScanner(t *testing.T) {
 		Match:     "credentials: { user: \"username\" password: \"*****\" }",
 	}
 	wantFinding5 := types.SecretFinding{
+		RuleID:    "aws-access-key-id",
+		Category:  secret.CategoryAWS,
+		Title:     "AWS Access Key ID",
+		Severity:  "CRITICAL",
+		StartLine: 2,
+		EndLine:   2,
+		Match:     "AWS_ACCESS_KEY_ID=*****",
+	}
+	wantFinding6 := types.SecretFinding{
 		RuleID:    "github-pat",
-		Category:  "GitHub",
+		Category:  secret.CategoryGitHub,
 		Title:     "GitHub Personal Access Token",
 		Severity:  "CRITICAL",
 		StartLine: 1,
 		EndLine:   1,
-		Match:     "*****",
+		Match:     "GITHUB_PAT=*****",
 	}
+
 	tests := []struct {
 		name          string
 		configPath    string
@@ -110,14 +129,26 @@ func TestSecretScanner(t *testing.T) {
 			inputFilePath: "testdata/builtin-rule-secret.txt",
 			want: types.Secret{
 				FilePath: "testdata/builtin-rule-secret.txt",
-				Findings: []types.SecretFinding{wantFinding5},
+				Findings: []types.SecretFinding{wantFinding5, wantFinding6},
 			},
 		},
 		{
-			name:          "should disable ghp builtin rule",
+			name:          "should enable github-pat builtin rule, but disable aws-access-key-id rule",
+			configPath:    "testdata/config-enable-ghp.yaml",
+			inputFilePath: "testdata/builtin-rule-secret.txt",
+			want: types.Secret{
+				FilePath: "testdata/builtin-rule-secret.txt",
+				Findings: []types.SecretFinding{wantFinding6},
+			},
+		},
+		{
+			name:          "should disable github-pat builtin rule",
 			configPath:    "testdata/config-disable-ghp.yaml",
 			inputFilePath: "testdata/builtin-rule-secret.txt",
-			want:          types.Secret{},
+			want: types.Secret{
+				FilePath: "testdata/builtin-rule-secret.txt",
+				Findings: []types.SecretFinding{wantFinding5},
+			},
 		},
 		{
 			name:          "should disable custom rule",

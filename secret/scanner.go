@@ -3,16 +3,17 @@ package secret
 import (
 	"bytes"
 	"errors"
-	"github.com/aquasecurity/fanal/log"
 	"os"
 	"regexp"
 	"strings"
 	"sync"
 
+	"github.com/samber/lo"
 	"golang.org/x/exp/slices"
 	"golang.org/x/xerrors"
 	"gopkg.in/yaml.v3"
 
+	"github.com/aquasecurity/fanal/log"
 	"github.com/aquasecurity/fanal/types"
 )
 
@@ -23,11 +24,19 @@ type Scanner struct {
 }
 
 type Config struct {
-	DisableRuleIDs      []string     `yaml:"disable-rules"`       // Disable built-in rules
-	DisableAllowRuleIDs []string     `yaml:"disable-allow-rules"` // Disable built-in allow rules
-	CustomRules         []Rule       `yaml:"rules"`
-	CustomAllowRules    AllowRules   `yaml:"allow-rules"`
-	ExcludeBlock        ExcludeBlock `yaml:"exclude-block"`
+	// Enable only specified built-in rules. If only one ID is specified, all other rules are disabled.
+	// All the built-in rules are enabled if this field is not specified. It doesn't affect custom rules.
+	EnableBuiltinRuleIDs []string `yaml:"enable-builtin-rules"`
+
+	// Disable rules. It is applied to enabled IDs.
+	DisableRuleIDs []string `yaml:"disable-rules"`
+
+	// Disable allow rules.
+	DisableAllowRuleIDs []string `yaml:"disable-allow-rules"`
+
+	CustomRules      []Rule       `yaml:"rules"`
+	CustomAllowRules AllowRules   `yaml:"allow-rules"`
+	ExcludeBlock     ExcludeBlock `yaml:"exclude-block"`
 }
 
 type Global struct {
@@ -258,23 +267,28 @@ func NewScanner(configPath string) (Scanner, error) {
 		return Scanner{}, xerrors.Errorf("secrets config decode error: %w", err)
 	}
 
-	rules := append(builtinRules, config.CustomRules...)
-	for _, rule := range rules {
-		// Disable rules
-		if slices.Contains(config.DisableRuleIDs, rule.ID) {
-			continue
-		}
-		global.Rules = append(global.Rules, rule)
+	enabledRules := builtinRules
+	if len(config.EnableBuiltinRuleIDs) != 0 {
+		// Enable only specified built-in rules
+		enabledRules = lo.Filter(builtinRules, func(v Rule, _ int) bool {
+			return slices.Contains(config.EnableBuiltinRuleIDs, v.ID)
+		})
 	}
 
+	// Custom rules are enabled regardless of "enable-builtin-rules".
+	enabledRules = append(enabledRules, config.CustomRules...)
+
+	// Disable specified rules
+	global.Rules = lo.Filter(enabledRules, func(v Rule, _ int) bool {
+		return !slices.Contains(config.DisableRuleIDs, v.ID)
+	})
+
+	// Disable specified allow rules
 	allowRules := append(builtinAllowRules, config.CustomAllowRules...)
-	for _, allowRule := range allowRules {
-		// Disable allow rules
-		if slices.Contains(config.DisableAllowRuleIDs, allowRule.ID) {
-			continue
-		}
-		global.AllowRules = append(global.AllowRules, allowRule)
-	}
+	global.AllowRules = lo.Filter(allowRules, func(v AllowRule, _ int) bool {
+		return !slices.Contains(config.DisableAllowRuleIDs, v.ID)
+	})
+
 	global.ExcludeBlock = config.ExcludeBlock
 
 	return Scanner{Global: &global}, nil
