@@ -92,9 +92,26 @@ If you don't need secret scanning, you can disable it via the `--security-checks
 $ trivy image --security-checks vuln alpine:3.15
 ```
 
+## Recommendation
+We would recommend specifying `--skip-dirs` for faster secret scanning.
+In container image scanning, Trivy walks the file tree rooted  `/` and scans all the files other than [built-in allowed paths][builtin].
+It will take a while if your image contains a lot of files even though Trivy tries to avoid scanning layers from a base image.
+If you want to make scanning faster, `--skip-dirs` and `--skip-files` helps so that Trivy will skip scanning those files and directories.
+The usage examples are [here][examples]
+
+`allow-rules` is also helpful.
+
+In addition, all the built-in rules are enabled by default, so it takes some time to scan all of them.
+If you don't need all those rules, you can use `enable-builtin-rules` or `disable-rules` in the configuration file.
+You should use `enable-builin-rules` if you need only AWS secret detection, for example.
+All rules are disabled except for the ones you specify, so it runs very fast.
+On the other hand, you should use `disable-rules` if you just want to disable some built-in rules.
+See [the configuration page][configuration] for the detail.
+
 ## Credit
 This feature is inspired by [gitleaks][gitleaks]. 
 
 [builtin]: https://github.com/aquasecurity/fanal/blob/main/secret/builtin.go
 [configuration]: ./configuration.md
+[examples]: ./examples.md
 [gitleaks]: https://github.com/zricethezav/gitleaks
