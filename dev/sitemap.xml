@@ -321,6 +321,11 @@
          <changefreq>daily</changefreq>
     </url>
     <url>
+         <loc>https://aquasecurity.github.io/trivy/dev/docs/secret/examples/</loc>
+         <lastmod>2022-04-24</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
          <loc>https://aquasecurity.github.io/trivy/dev/docs/secret/scanning/</loc>
          <lastmod>2022-04-24</lastmod>
          <changefreq>daily</changefreq>
