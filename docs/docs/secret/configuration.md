@@ -1,7 +1,9 @@
 # Configuration
 Trivy tries to load `trivy-secret.yaml` in the current directory by default.
-If the file doesn't exist, only builtin rules are used.
-You can customize the config file name via the `--secret-config` flag.
+If the file doesn't exist, only built-in rules are used.
+You can customize the config file path via the `--secret-config` flag.
+
+You can see the example [here][examples].
 
 ## Custom Rules
 Trivy allows defining custom rules. You can see an example.
@@ -95,15 +97,37 @@ allow-rules:
 :   - Golang regular expression used to allow matched paths.
     - `regex` or `path` must be specified.
 
+## Enable Rules
+Trivy provides plenty of out-of-box rules and allow rules, but you may not need all of them.
+In that case, `enable-builin-rules` will be helpful.
+If you just need AWS secret detection, you can enable only relevant rules as shown below.
+It specifies AWS-related rule IDs in `enable-builin-rules`.
+All other rules are disabled, so the scanning will be much faster.
+We would strongly recommend using this option if you don't need all rules.
+
+You can see a full list of [built-in rule IDs][builtin] and [built-in allow rule IDs][builtin-allow].
+
+``` yaml
+enable-builtin-rules:
+  - aws-access-key-id
+  - aws-account-id
+  - aws-secret-access-key
+```
+
 ## Disable Rules
-Trivy offers builtin rules and allow rules, but you may want to disable some of them.
+Trivy offers built-in rules and allow rules, but you may want to disable some of them.
 For example, you don't use Slack, so Slack doesn't have to be scanned.
-You can specify `slack-access-token` and `slack-web-hook` in `disable-rules` so that those rules will be disabled for less false positives.
+You can specify the Slack rule IDs, `slack-access-token` and `slack-web-hook` in `disable-rules` so that those rules will be disabled for less false positives.
 
+You should specify either `enable-builin-rules` or `disable-rules`.
+If they both are specified, `disable-rules` takes precedence.
+In case `github-pat` is specified in `enable-builin-rules` and `disable-rules`, it will be disabled.
+
+In addition, there are some allow rules.
 Markdown files are ignored by default, but you may want to scan markdown files as well.
-You can disable the allow list by adding `markdown` to `disable-allow-rules`.
+You can disable the allow rule by adding `markdown` to `disable-allow-rules`.
 
-You can see a full list of rule IDs [here][builtin]. Allow rule IDs are below in the file.
+You can see a full list of [built-in rule IDs][builtin] and [built-in allow rule IDs][builtin-allow].
 
 ``` yaml
 disable-rules:
@@ -113,29 +137,7 @@ disable-allow-rules:
   - markdown
 ```
 
-## Example
 
-``` yaml
-$ cat trivy-secret.yaml
-rules:
-  - id: rule1
-    category: general
-    title: Generic Rule
-    severity: HIGH
-    regex: (?i)(?P<key>(secret))(=|:).{0,5}['"](?P<secret>[0-9a-zA-Z\-_=]{8,64})['"]
-    allow-rules:
-      - id: skip-text
-        description: skip text files
-        path: .*\.txt
-allow-rules:
-  - id: social-security-number
-    description: skip social security number
-    regex: 219-09-9999
-disable-rules:
-  - slack-access-token
-  - slack-web-hook
-disable-allow-rules:
-  - markdown
-```
-
-[builtin]: https://github.com/aquasecurity/fanal/blob/main/secret/builtin.go
+[builtin]: https://github.com/aquasecurity/fanal/blob/main/secret/builtin-rules.go
+[builtin]: https://github.com/aquasecurity/fanal/blob/main/secret/builtin-allow-rules.go
+[examples]: ./examples.md
