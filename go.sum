@@ -222,8 +222,8 @@ github.com/apparentlymart/go-textseg/v13 v13.0.0 h1:Y+KvPE1NYz0xl601PVImeQfFyEy6
 github.com/apparentlymart/go-textseg/v13 v13.0.0/go.mod h1:ZK2fH7c4NqDTLtiYLvIkEghdlcqw7yxLeM89kiTRPUo=
 github.com/aquasecurity/defsec v0.28.5-0.20220416075528-0f0c8fdf63b8 h1:TQOc6oTNT1943KbsivdxBnNHlZbp6cF3AcMzVLJCotg=
 github.com/aquasecurity/defsec v0.28.5-0.20220416075528-0f0c8fdf63b8/go.mod h1:vUdThwusBM7y1gJ7CVX3+h3bsPvpmOIEp3NEdzTDkhA=
-github.com/aquasecurity/go-dep-parser v0.0.0-20220412145205-d0501f906d90 h1:uZcI5qV7J1pzOc6W49l7iEey/KtEVlaqsNU5l65vZLk=
-github.com/aquasecurity/go-dep-parser v0.0.0-20220412145205-d0501f906d90/go.mod h1:rK/5BoRt8/D7xXydoVVeBaQuk6zDJ6W+FWz/RqFuJxI=
+github.com/aquasecurity/go-dep-parser v0.0.0-20220422134844-880747206031 h1:4LtaaQ6nrd9EVpd1z5P0snZSSPfzCHiLljGipJlOQTs=
+github.com/aquasecurity/go-dep-parser v0.0.0-20220422134844-880747206031/go.mod h1:7EOQWQmyavVPY3fScbbPdd3dB/b0Q4ZbJ/NZCvNKrLs=
 github.com/aquasecurity/go-version v0.0.0-20210121072130-637058cfe492 h1:rcEG5HI490FF0a7zuvxOxen52ddygCfNVjP0XOCMl+M=
 github.com/aquasecurity/go-version v0.0.0-20210121072130-637058cfe492/go.mod h1:9Beu8XsUNNfzml7WBf3QmyPToP1wm1Gj/Vc5UJKqTzU=
 github.com/aquasecurity/testdocker v0.0.0-20210911155206-e1e85f5a1516 h1:moQmzbpLo5dxHQCyEhqzizsDSNrNhn/7uRTCZzo4A1o=
@@ -855,8 +855,8 @@ github.com/hashicorp/go-multierror v1.1.1 h1:H5DkEtf6CXdFp0N0Em5UCwQpXMWke8IA0+l
 github.com/hashicorp/go-multierror v1.1.1/go.mod h1:iw975J/qwKPdAO1clOe2L8331t/9/fmwbPZ6JB6eMoM=
 github.com/hashicorp/go-retryablehttp v0.6.4/go.mod h1:vAew36LZh98gCBJNLH42IQ1ER/9wtLZZ8meHqQvEYWY=
 github.com/hashicorp/go-retryablehttp v0.6.6/go.mod h1:vAew36LZh98gCBJNLH42IQ1ER/9wtLZZ8meHqQvEYWY=
-github.com/hashicorp/go-retryablehttp v0.7.0 h1:eu1EI/mbirUgP5C8hVsTNaGZreBDlYiwC1FZWkvQPQ4=
-github.com/hashicorp/go-retryablehttp v0.7.0/go.mod h1:vAew36LZh98gCBJNLH42IQ1ER/9wtLZZ8meHqQvEYWY=
+github.com/hashicorp/go-retryablehttp v0.7.1 h1:sUiuQAnLlbvmExtFQs72iFW/HXeUn8Z1aJLQ4LJJbTQ=
+github.com/hashicorp/go-retryablehttp v0.7.1/go.mod h1:vAew36LZh98gCBJNLH42IQ1ER/9wtLZZ8meHqQvEYWY=
 github.com/hashicorp/go-rootcerts v1.0.0/go.mod h1:K6zTfqpRlCUIjkwsN4Z+hiSfzSTQa6eBIzfwKfwNnHU=
 github.com/hashicorp/go-safetemp v1.0.0 h1:2HR189eFNrjHQyENnQMMpCiBAsRxzbTMIgBhEyExpmo=
 github.com/hashicorp/go-safetemp v1.0.0/go.mod h1:oaerMy3BhqiTbVye6QuFhFtIceqFoDHxNAB65b+Rj1I=
