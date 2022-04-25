@@ -13,13 +13,14 @@ As for `--namespaces` option, the detail is described as below.
 ### File formats
 If a file name matches the following file patterns, Trivy will parse the file and pass it as input to your Rego policy.
 
-| File format    | File pattern                                     |
-| -------------- | ------------------------------------------------ |
-| JSON           | `*.json`                                         |
-| YAML           | `*.yaml`                                         |
-| TOML           | `*.toml`                                         |
-| HCL            | `*.hcl`, `*.hcl1`, and `*.hcl2`                  |
-| Dockerfile     | `Dockerfile`, `Dockerfile.*`, and `*.Dockerfile` |
+| File format   | File pattern                                              |
+| ------------- | --------------------------------------------------------- |
+| JSON          | `*.json`                                                  |
+| YAML          | `*.yaml`                                                  |
+| TOML          | `*.toml`                                                  |
+| HCL           | `*.hcl`, `*.hcl1`, and `*.hcl2`                           |
+| Dockerfile    | `Dockerfile`, `Dockerfile.*`, and `*.Dockerfile`          |
+| Containerfile | `Containerfile`, `Containerfile.*`, and `*.Containerfile` |
 
 ### Configuration languages
 In the above general file formats, Trivy automatically identifies the following types of configuration files:
