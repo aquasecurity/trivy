@@ -11,7 +11,7 @@ require (
 	github.com/GoogleCloudPlatform/docker-credential-gcr v2.0.5+incompatible
 	github.com/alicebob/miniredis/v2 v2.18.0
 	github.com/aquasecurity/defsec v0.28.5-0.20220416075528-0f0c8fdf63b8
-	github.com/aquasecurity/go-dep-parser v0.0.0-20220412145205-d0501f906d90
+	github.com/aquasecurity/go-dep-parser v0.0.0-20220422134844-880747206031
 	github.com/aquasecurity/go-version v0.0.0-20210121072130-637058cfe492
 	github.com/aquasecurity/testdocker v0.0.0-20210911155206-e1e85f5a1516
 	github.com/aquasecurity/tfsec v1.8.0
@@ -105,7 +105,7 @@ require (
 	github.com/hashicorp/errwrap v1.1.0 // indirect
 	github.com/hashicorp/go-cleanhttp v0.5.2 // indirect
 	github.com/hashicorp/go-getter v1.5.11 // indirect
-	github.com/hashicorp/go-retryablehttp v0.7.0 // indirect
+	github.com/hashicorp/go-retryablehttp v0.7.1 // indirect
 	github.com/hashicorp/go-safetemp v1.0.0 // indirect
 	github.com/hashicorp/go-uuid v1.0.2 // indirect
 	github.com/hashicorp/go-version v1.4.0 // indirect
