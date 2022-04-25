@@ -42,6 +42,11 @@ var builtinAllowRules = []AllowRule{
 		Path:        MustCompile(`^usr\/local\/lib\/python[\d.]+\/`),
 	},
 	{
+		ID:          "rubygems",
+		Description: "Ruby container images",
+		Path:        MustCompile(`^usr\/lib\/gems\/`),
+	},
+	{
 		ID:          "wordpress",
 		Description: "Wordpress container images",
 		Path:        MustCompile(`^usr\/src\/wordpress\/`),
