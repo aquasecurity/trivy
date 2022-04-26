@@ -11,7 +11,7 @@ import (
 )
 
 // filesystemStandaloneScanner initializes a filesystem scanner in standalone mode
-func filesystemStandaloneScanner(ctx context.Context, conf scannerConfig) (scanner.Scanner, func(), error) {
+func filesystemStandaloneScanner(ctx context.Context, conf ScannerConfig) (scanner.Scanner, func(), error) {
 	s, cleanup, err := initializeFilesystemScanner(ctx, conf.Target, conf.ArtifactCache, conf.LocalArtifactCache, conf.ArtifactOption)
 	if err != nil {
 		return scanner.Scanner{}, func() {}, xerrors.Errorf("unable to initialize a filesystem scanner: %w", err)
@@ -20,7 +20,7 @@ func filesystemStandaloneScanner(ctx context.Context, conf scannerConfig) (scann
 }
 
 // filesystemRemoteScanner initializes a filesystem scanner in client/server mode
-func filesystemRemoteScanner(ctx context.Context, conf scannerConfig) (scanner.Scanner, func(), error) {
+func filesystemRemoteScanner(ctx context.Context, conf ScannerConfig) (scanner.Scanner, func(), error) {
 	s, cleanup, err := initializeRemoteFilesystemScanner(ctx, conf.Target, conf.ArtifactCache, conf.RemoteOption, conf.ArtifactOption)
 	if err != nil {
 		return scanner.Scanner{}, func() {}, xerrors.Errorf("unable to initialize a filesystem scanner: %w", err)

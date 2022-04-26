@@ -13,7 +13,7 @@ import (
 
 // imageScanner initializes a container image scanner in standalone mode
 // $ trivy image alpine:3.15
-func imageScanner(ctx context.Context, conf scannerConfig) (scanner.Scanner, func(), error) {
+func imageScanner(ctx context.Context, conf ScannerConfig) (scanner.Scanner, func(), error) {
 	dockerOpt, err := types.GetDockerOption(conf.ArtifactOption.InsecureSkipTLS)
 	if err != nil {
 		return scanner.Scanner{}, nil, err
@@ -28,7 +28,7 @@ func imageScanner(ctx context.Context, conf scannerConfig) (scanner.Scanner, fun
 
 // archiveScanner initializes an image archive scanner in standalone mode
 // $ trivy image --input alpine.tar
-func archiveScanner(ctx context.Context, conf scannerConfig) (scanner.Scanner, func(), error) {
+func archiveScanner(ctx context.Context, conf ScannerConfig) (scanner.Scanner, func(), error) {
 	s, err := initializeArchiveScanner(ctx, conf.Target, conf.ArtifactCache, conf.LocalArtifactCache, conf.ArtifactOption)
 	if err != nil {
 		return scanner.Scanner{}, func() {}, xerrors.Errorf("unable to initialize the archive scanner: %w", err)
@@ -38,7 +38,7 @@ func archiveScanner(ctx context.Context, conf scannerConfig) (scanner.Scanner, f
 
 // remoteImageScanner initializes a container image scanner in client/server mode
 // $ trivy image --server localhost:4954 alpine:3.15
-func remoteImageScanner(ctx context.Context, conf scannerConfig) (
+func remoteImageScanner(ctx context.Context, conf ScannerConfig) (
 	scanner.Scanner, func(), error) {
 	// Scan an image in Docker Engine, Docker Registry, etc.
 	dockerOpt, err := types.GetDockerOption(conf.ArtifactOption.InsecureSkipTLS)
@@ -56,7 +56,7 @@ func remoteImageScanner(ctx context.Context, conf scannerConfig) (
 
 // remoteArchiveScanner initializes an image archive scanner in client/server mode
 // $ trivy image --server localhost:4954 --input alpine.tar
-func remoteArchiveScanner(ctx context.Context, conf scannerConfig) (scanner.Scanner, func(), error) {
+func remoteArchiveScanner(ctx context.Context, conf ScannerConfig) (scanner.Scanner, func(), error) {
 	// Scan tar file
 	s, err := initializeRemoteArchiveScanner(ctx, conf.Target, conf.ArtifactCache, conf.RemoteOption, conf.ArtifactOption)
 	if err != nil {
