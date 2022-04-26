@@ -24,12 +24,21 @@ func TestFilesystem(t *testing.T) {
 		namespaces     []string
 		listAllPkgs    bool
 		input          string
+		secretConfig   string
 	}
 	tests := []struct {
 		name   string
 		args   args
 		golden string
 	}{
+		{
+			name: "gomod",
+			args: args{
+				securityChecks: "vuln",
+				input:          "testdata/fixtures/fs/gomod",
+			},
+			golden: "testdata/gomod.json.golden",
+		},
 		{
 			name: "nodejs",
 			args: args{
@@ -92,6 +101,15 @@ func TestFilesystem(t *testing.T) {
 			},
 			golden: "testdata/dockerfile-custom-policies.json.golden",
 		},
+		{
+			name: "secrets",
+			args: args{
+				securityChecks: "vuln,secret",
+				input:          "testdata/fixtures/fs/secrets",
+				secretConfig:   "testdata/fixtures/fs/secrets/trivy-secret.yaml",
+			},
+			golden: "testdata/secrets.json.golden",
+		},
 	}
 
 	// Set up testing DB
@@ -133,6 +151,10 @@ func TestFilesystem(t *testing.T) {
 
 			if tt.args.listAllPkgs {
 				osArgs = append(osArgs, "--list-all-pkgs")
+			}
+
+			if tt.args.secretConfig != "" {
+				osArgs = append(osArgs, "--secret-config", tt.args.secretConfig)
 			}
 
 			osArgs = append(osArgs, "--output", outputFile)

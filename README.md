@@ -22,24 +22,31 @@ Scanner for vulnerabilities in container images, file systems, and Git repositor
 `Trivy` (`tri` pronounced like **tri**gger, `vy` pronounced like en**vy**) is a simple and comprehensive scanner for vulnerabilities in container images, file systems, and Git repositories, as well as for configuration issues.
 `Trivy` detects vulnerabilities of OS packages (Alpine, RHEL, CentOS, etc.) and language-specific packages (Bundler, Composer, npm, yarn, etc.).
 In addition, `Trivy` scans Infrastructure as Code (IaC) files such as Terraform, Dockerfile and Kubernetes, to detect potential configuration issues that expose your deployments to the risk of attack.
+`Trivy` also scans hardcoded secrets like passwords, API keys and tokens.
 `Trivy` is easy to use. Just install the binary and you're ready to scan.
 
-<p align="center">
+<figure style="text-aligh: center">
   <img src="docs/imgs/overview.png" width="800" alt="Trivy Overview">
-</p>
+</figure>
 
 ### Demo: Vulnerability Detection (Container Image)
-<p align="center">
+<figure style="text-aligh: center">
   <img src="docs/imgs/vuln-demo.gif" width="1000" alt="Vulnerability Detection">
-</p>
+</figure>
 
 ### Demo: Misconfiguration Detection (IaC Files)
-<p align="center">
+<figure style="text-aligh: center">
   <img src="docs/imgs/misconf-demo.gif" width="1000" alt="Misconfiguration Detection">
-</p>
+</figure>
+
+### Demo: Secret Detection
+<figure style="text-aligh: center">
+  <img src="docs/imgs/secret-demo.gif" width="1000">
+</figure>
+
 
 # Quick Start
-## Scan Image for Vulnerabilities
+## Scan Image for Vulnerabilities and Secrets
 Simply specify an image name (and a tag).
 
 ```
@@ -72,17 +79,17 @@ Total: 1 (UNKNOWN: 0, LOW: 0, MEDIUM: 1, HIGH: 0, CRITICAL: 0)
 ```
 </details>
 
-## Scan Filesystem for Vulnerabilities and Misconfigurations
+## Scan Filesystem for Vulnerabilities, Secrets and Misconfigurations
 Simply specify a directory to scan.
 
 ```bash
-$ trivy fs --security-checks vuln,config [YOUR_PROJECT_DIR]
+$ trivy fs --security-checks vuln,secret,config [YOUR_PROJECT_DIR]
 ```
 
 For example:
 
 ```bash
-$ trivy fs --security-checks vuln,config myproject/
+$ trivy fs --security-checks vuln,secret,config myproject/
 ```
 
 <details>
@@ -171,6 +178,10 @@ Failures: 1 (UNKNOWN: 0, LOW: 0, MEDIUM: 0, HIGH: 1, CRITICAL: 0)
   - A wide variety of built-in policies are provided **out of the box**
     - Kubernetes, Docker, Terraform, and more coming soon
   - Support custom policies
+- Secret detection
+  - A wide variety of built-in rules are provided **out of the box**
+  - Support custom rules
+  - Scan container images at high speed
 - Simple
   - Specify only an image name, a path to config files, or an artifact name
 - Fast

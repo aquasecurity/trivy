@@ -147,8 +147,8 @@ var (
 
 	securityChecksFlag = cli.StringFlag{
 		Name:    "security-checks",
-		Value:   types.SecurityCheckVulnerability,
-		Usage:   "comma-separated list of what security issues to detect (vuln,config)",
+		Value:   fmt.Sprintf("%s,%s", types.SecurityCheckVulnerability, types.SecurityCheckSecret),
+		Usage:   "comma-separated list of what security issues to detect (vuln,config,secret)",
 		EnvVars: []string{"TRIVY_SECURITY_CHECKS"},
 	}
 
@@ -164,6 +164,12 @@ var (
 		Value:   "fs",
 		Usage:   "cache backend (e.g. redis://localhost:6379)",
 		EnvVars: []string{"TRIVY_CACHE_BACKEND"},
+	}
+
+	cacheTTL = cli.DurationFlag{
+		Name:    "cache-ttl",
+		Usage:   "cache TTL when using redis as cache backend",
+		EnvVars: []string{"TRIVY_CACHE_TTL"},
 	}
 
 	redisBackendCACert = cli.StringFlag{
@@ -332,6 +338,13 @@ var (
 		EnvVars: []string{"TRIVY_DB_REPOSITORY"},
 	}
 
+	secretConfig = cli.StringFlag{
+		Name:    "secret-config",
+		Usage:   "specify a path to config file for secret scanning",
+		Value:   "trivy-secret.yaml",
+		EnvVars: []string{"TRIVY_SECRET_CONFIG"},
+	}
+
 	// Global flags
 	globalFlags = []cli.Flag{
 		&quietFlag,
@@ -450,12 +463,14 @@ func NewImageCommand() *cli.Command {
 			&ignorePolicy,
 			&listAllPackages,
 			&cacheBackendFlag,
+			&cacheTTL,
 			&redisBackendCACert,
 			&redisBackendCert,
 			&redisBackendKey,
 			&offlineScan,
 			&insecureFlag,
 			&dbRepositoryFlag,
+			&secretConfig,
 			stringSliceFlag(skipFiles),
 			stringSliceFlag(skipDirs),
 		},
@@ -484,6 +499,7 @@ func NewFilesystemCommand() *cli.Command {
 			&securityChecksFlag,
 			&ignoreFileFlag,
 			&cacheBackendFlag,
+			&cacheTTL,
 			&redisBackendCACert,
 			&redisBackendCert,
 			&redisBackendKey,
@@ -493,6 +509,7 @@ func NewFilesystemCommand() *cli.Command {
 			&listAllPackages,
 			&offlineScan,
 			&dbRepositoryFlag,
+			&secretConfig,
 			stringSliceFlag(skipFiles),
 			stringSliceFlag(skipDirs),
 
@@ -531,6 +548,7 @@ func NewRootfsCommand() *cli.Command {
 			&securityChecksFlag,
 			&ignoreFileFlag,
 			&cacheBackendFlag,
+			&cacheTTL,
 			&redisBackendCACert,
 			&redisBackendCert,
 			&redisBackendKey,
@@ -539,6 +557,8 @@ func NewRootfsCommand() *cli.Command {
 			&ignorePolicy,
 			&listAllPackages,
 			&offlineScan,
+			&dbRepositoryFlag,
+			&secretConfig,
 			stringSliceFlag(skipFiles),
 			stringSliceFlag(skipDirs),
 			stringSliceFlag(configPolicy),
@@ -572,6 +592,7 @@ func NewRepositoryCommand() *cli.Command {
 			&securityChecksFlag,
 			&ignoreFileFlag,
 			&cacheBackendFlag,
+			&cacheTTL,
 			&redisBackendCACert,
 			&redisBackendCert,
 			&redisBackendKey,
@@ -582,6 +603,8 @@ func NewRepositoryCommand() *cli.Command {
 			&listAllPackages,
 			&offlineScan,
 			&insecureFlag,
+			&dbRepositoryFlag,
+			&secretConfig,
 			stringSliceFlag(skipFiles),
 			stringSliceFlag(skipDirs),
 		},
@@ -618,6 +641,7 @@ func NewClientCommand() *cli.Command {
 			&listAllPackages,
 			&offlineScan,
 			&insecureFlag,
+			&secretConfig,
 
 			&token,
 			&tokenHeader,
@@ -646,6 +670,7 @@ func NewServerCommand() *cli.Command {
 			&downloadDBOnlyFlag,
 			&resetFlag,
 			&cacheBackendFlag,
+			&cacheTTL,
 			&redisBackendCACert,
 			&redisBackendCert,
 			&redisBackendKey,
@@ -775,6 +800,7 @@ func NewSbomCommand() *cli.Command {
 			&timeoutFlag,
 			&severityFlag,
 			&offlineScan,
+			&dbRepositoryFlag,
 			stringSliceFlag(skipFiles),
 			stringSliceFlag(skipDirs),
 
