@@ -2,6 +2,9 @@ package result
 
 import (
 	"context"
+	"net/http"
+	"net/http/httptest"
+	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -360,6 +363,14 @@ func TestClient_getPrimaryURL(t *testing.T) {
 }
 
 func TestClient_Filter(t *testing.T) {
+	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if strings.HasPrefix(r.URL.Path, policyURI) {
+			result := []byte(`{"result": true}`)
+			w.Header().Add("Content-Type", "application/json")
+			_, err := w.Write(result)
+			require.NoError(t, err)
+		}
+	}))
 	type args struct {
 		vulns         []types.DetectedVulnerability
 		misconfs      []types.DetectedMisconfiguration
@@ -765,6 +776,86 @@ func TestClient_Filter(t *testing.T) {
 					},
 				},
 			},
+		},
+		{
+			name: "happy path with filtering all vulns by remote policy",
+			args: args{
+				vulns: []types.DetectedVulnerability{
+					{
+						VulnerabilityID:  "CVE-2019-0001",
+						PkgName:          "foo",
+						InstalledVersion: "1.2.3",
+						FixedVersion:     "1.2.4",
+						Vulnerability: dbTypes.Vulnerability{
+							Severity: dbTypes.SeverityLow.String(),
+						},
+					},
+					{
+						VulnerabilityID:  "CVE-2019-0002",
+						PkgName:          "bar",
+						InstalledVersion: "1.2.3",
+						FixedVersion:     "1.2.4",
+						Vulnerability: dbTypes.Vulnerability{
+							Severity: dbTypes.SeverityCritical.String(),
+						},
+					},
+					{
+						VulnerabilityID:  "CVE-2018-0001",
+						PkgName:          "baz",
+						InstalledVersion: "1.2.3",
+						FixedVersion:     "",
+						Vulnerability: dbTypes.Vulnerability{
+							Severity: dbTypes.SeverityHigh.String(),
+						},
+					},
+					{
+						VulnerabilityID:  "CVE-2018-0001",
+						PkgName:          "bar",
+						InstalledVersion: "1.2.3",
+						FixedVersion:     "",
+						Vulnerability: dbTypes.Vulnerability{
+							Severity: dbTypes.SeverityCritical.String(),
+						},
+					},
+					{
+						VulnerabilityID:  "CVE-2018-0002",
+						PkgName:          "bar",
+						InstalledVersion: "1.2.3",
+						FixedVersion:     "",
+						Vulnerability: dbTypes.Vulnerability{
+							Severity: "",
+						},
+					},
+				},
+				misconfs: []types.DetectedMisconfiguration{
+					{
+						Type:     ftypes.Kubernetes,
+						ID:       "ID100",
+						Title:    "Bad Deployment",
+						Message:  "something bad",
+						Severity: dbTypes.SeverityCritical.String(),
+						Status:   types.StatusFailure,
+					},
+					{
+						Type:     ftypes.Kubernetes,
+						ID:       "ID200",
+						Title:    "Bad Pod",
+						Message:  "something bad",
+						Severity: dbTypes.SeverityMedium.String(),
+						Status:   types.StatusPassed,
+					},
+				},
+				severities:    []dbTypes.Severity{dbTypes.SeverityCritical, dbTypes.SeverityHigh, dbTypes.SeverityUnknown},
+				ignoreUnfixed: false,
+				policyFile:    ts.URL,
+			},
+			wantVulns: []types.DetectedVulnerability(nil),
+			wantMisconfSummary: &types.MisconfSummary{
+				Successes:  0,
+				Failures:   1,
+				Exceptions: 0,
+			},
+			wantMisconfs: []types.DetectedMisconfiguration(nil),
 		},
 	}
 	for _, tt := range tests {
