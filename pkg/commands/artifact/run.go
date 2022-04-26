@@ -200,8 +200,7 @@ func disabledAnalyzers(opt Option) []analyzer.Type {
 	return analyzers
 }
 
-func scan(ctx context.Context, opt Option, initializeScanner InitializeScanner, cacheClient cache.Cache) (
-	types.Report, error) {
+func initScannerConfig(ctx context.Context, opt Option, cacheClient cache.Cache) (ScannerConfig, types.ScanOptions, error) {
 	target := opt.Target
 	if opt.Input != "" {
 		target = opt.Input
@@ -221,7 +220,7 @@ func scan(ctx context.Context, opt Option, initializeScanner InitializeScanner, 
 		noProgress := opt.Quiet || opt.NoProgress
 		builtinPolicyPaths, err := operation.InitBuiltinPolicies(ctx, opt.CacheDir, noProgress, opt.SkipPolicyUpdate)
 		if err != nil {
-			return types.Report{}, xerrors.Errorf("failed to initialize built-in policies: %w", err)
+			return ScannerConfig{}, types.ScanOptions{}, xerrors.Errorf("failed to initialize built-in policies: %w", err)
 		}
 
 		configScannerOptions = config.ScannerOption{
@@ -233,7 +232,7 @@ func scan(ctx context.Context, opt Option, initializeScanner InitializeScanner, 
 		}
 	}
 
-	s, cleanup, err := initializeScanner(ctx, ScannerConfig{
+	return ScannerConfig{
 		Target:             target,
 		ArtifactCache:      cacheClient,
 		LocalArtifactCache: cacheClient,
@@ -258,7 +257,18 @@ func scan(ctx context.Context, opt Option, initializeScanner InitializeScanner, 
 				ConfigPath: opt.SecretConfigPath,
 			},
 		},
-	})
+	}, scanOptions, nil
+}
+
+func scan(ctx context.Context, opt Option, initializeScanner InitializeScanner, cacheClient cache.Cache) (
+	types.Report, error) {
+
+	scannerConfig, scanOptions, err := initScannerConfig(ctx, opt, cacheClient)
+	if err != nil {
+		return types.Report{}, err
+	}
+
+	s, cleanup, err := initializeScanner(ctx, scannerConfig)
 	if err != nil {
 		return types.Report{}, xerrors.Errorf("unable to initialize a scanner: %w", err)
 	}
