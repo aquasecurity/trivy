@@ -2642,14 +2642,15 @@
 <h2 id="rhelcentos">RHEL/CentOS</h2>
 <div class="tabbed-set" data-tabs="1:2"><input checked="checked" id="__tabbed_1_1" name="__tabbed_1" type="radio" /><label for="__tabbed_1_1">Repository</label><div class="tabbed-content">
 <p>Add repository setting to <code>/etc/yum.repos.d</code>.</p>
-<div class="highlight"><pre><span></span><code>$ sudo vim /etc/yum.repos.d/trivy.repo
-<span class="o">[</span>trivy<span class="o">]</span>
-<span class="nv">name</span><span class="o">=</span>Trivy repository
-<span class="nv">baseurl</span><span class="o">=</span>https://aquasecurity.github.io/trivy-repo/rpm/releases/<span class="nv">$releasever</span>/<span class="nv">$basearch</span>/
-<span class="nv">gpgcheck</span><span class="o">=</span><span class="m">0</span>
-<span class="nv">enabled</span><span class="o">=</span><span class="m">1</span>
-$ sudo yum -y update
-$ sudo yum -y install trivy
+<div class="highlight"><pre><span></span><code>cat <span class="s">&lt;&lt; EOF | sudo tee -a /etc/yum.repos.d/trivy.repo</span>
+<span class="s">[trivy]</span>
+<span class="s">name=Trivy repository</span>
+<span class="s">baseurl=https://aquasecurity.github.io/trivy-repo/rpm/releases/$releasever/$basearch/</span>
+<span class="s">gpgcheck=0</span>
+<span class="s">enabled=1</span>
+<span class="s">EOF</span>
+sudo yum -y update
+sudo yum -y install trivy
 </code></pre></div>
 </div>
 <input id="__tabbed_1_2" name="__tabbed_1" type="radio" /><label for="__tabbed_1_2">RPM</label><div class="tabbed-content">
