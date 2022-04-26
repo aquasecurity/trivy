@@ -2,11 +2,12 @@ package result
 
 import (
 	"context"
-	"io/ioutil"
+	"os"
 	"path/filepath"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestNewLocalPolicyStore(t *testing.T) {
@@ -32,9 +33,8 @@ invalid rego file
 	}
 	tempDir := t.TempDir()
 	for filename, content := range policyFiles {
-		if err := ioutil.WriteFile(filepath.Join(tempDir, filename), content, 0600); err != nil {
-			t.Fatalf("unable to create temp file %s: %s", filename, err)
-		}
+		err := os.WriteFile(filepath.Join(tempDir, filename), content, 0600)
+		require.NoError(t, err)
 	}
 
 	tests := []struct {
