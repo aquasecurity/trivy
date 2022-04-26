@@ -237,9 +237,7 @@ func scan(ctx context.Context, opt Option, initializeScanner InitializeScanner, 
 	}
 
 	// Do not load config file for secret scanning
-	if !slices.Contains(opt.SecurityChecks, types.SecurityCheckSecret) {
-		opt.SecretConfigPath = ""
-	} else {
+	if slices.Contains(opt.SecurityChecks, types.SecurityCheckSecret) {
 		ver := fmt.Sprintf("v%s", opt.AppVersion)
 		if opt.AppVersion == "dev" {
 			ver = "dev"
@@ -247,6 +245,8 @@ func scan(ctx context.Context, opt Option, initializeScanner InitializeScanner, 
 		log.Logger.Info("Secret detection is enabled")
 		log.Logger.Info("If your scanning is slow, please try '--security-checks vuln' to disable secret scanning")
 		log.Logger.Infof("Please see also https://aquasecurity.github.io/trivy/%s/docs/secret/scanning/#recommendation for faster secret detection", ver)
+	} else {
+		opt.SecretConfigPath = ""
 	}
 
 	s, cleanup, err := initializeScanner(ctx, scannerConfig{
