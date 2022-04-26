@@ -3,6 +3,7 @@ package artifact
 import (
 	"context"
 	"errors"
+	"fmt"
 	"os"
 
 	"github.com/urfave/cli/v2"
@@ -78,6 +79,7 @@ func runWithTimeout(ctx context.Context, opt Option, initializeScanner Initializ
 
 	// When scanning config files or running as client mode, it doesn't need to download the vulnerability database.
 	if opt.RemoteAddr == "" && slices.Contains(opt.SecurityChecks, types.SecurityCheckVulnerability) {
+		log.Logger.Info("Vulnerability detection is enabled")
 		if err = initDB(opt); err != nil {
 			if errors.Is(err, errSkipScan) {
 				return nil
@@ -218,6 +220,7 @@ func scan(ctx context.Context, opt Option, initializeScanner InitializeScanner, 
 	// ScannerOption is filled only when config scanning is enabled.
 	var configScannerOptions config.ScannerOption
 	if slices.Contains(opt.SecurityChecks, types.SecurityCheckConfig) {
+		log.Logger.Info("Misconfiguration detection is enabled")
 		noProgress := opt.Quiet || opt.NoProgress
 		builtinPolicyPaths, err := operation.InitBuiltinPolicies(ctx, opt.CacheDir, noProgress, opt.SkipPolicyUpdate)
 		if err != nil {
@@ -231,6 +234,19 @@ func scan(ctx context.Context, opt Option, initializeScanner InitializeScanner, 
 			DataPaths:    opt.DataPaths,
 			FilePatterns: opt.FilePatterns,
 		}
+	}
+
+	// Do not load config file for secret scanning
+	if !slices.Contains(opt.SecurityChecks, types.SecurityCheckSecret) {
+		opt.SecretConfigPath = ""
+	} else {
+		ver := fmt.Sprintf("v%s", opt.AppVersion)
+		if opt.AppVersion == "dev" {
+			ver = "dev"
+		}
+		log.Logger.Info("Secret detection is enabled")
+		log.Logger.Info("If your scanning is slow, please try '--security-checks vuln' to disable secret scanning")
+		log.Logger.Infof("Please see also https://aquasecurity.github.io/trivy/%s/docs/secret/scanning/#recommendation for faster secret detection", ver)
 	}
 
 	s, cleanup, err := initializeScanner(ctx, scannerConfig{
