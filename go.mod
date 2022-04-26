@@ -48,6 +48,8 @@ require (
 	k8s.io/utils v0.0.0-20201110183641-67b214c5f920
 )
 
+require github.com/samber/lo v1.16.0
+
 require (
 	cloud.google.com/go v0.99.0 // indirect
 	cloud.google.com/go/storage v1.14.0 // indirect

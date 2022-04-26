@@ -468,7 +468,10 @@ func ratings(vulnerability types.DetectedVulnerability) *[]cdx.VulnerabilityRati
 		if rates[i].Method != rates[j].Method {
 			return rates[i].Method < rates[j].Method
 		}
-		return rates[i].Score < rates[j].Score
+		if rates[i].Score != nil && rates[j].Score != nil {
+			return *rates[i].Score < *rates[j].Score
+		}
+		return rates[i].Vector < rates[j].Vector
 	})
 	return &rates
 }
@@ -485,7 +488,7 @@ func ratingV2(sourceID dtypes.SourceID, severity dtypes.Severity, cvss dtypes.CV
 		Source: &cdx.Source{
 			Name: string(sourceID),
 		},
-		Score:    cvss.V2Score,
+		Score:    &cvss.V2Score,
 		Method:   cdx.ScoringMethodCVSSv2,
 		Severity: cdxSeverity,
 		Vector:   cvss.V2Vector,
@@ -510,7 +513,7 @@ func ratingV3(sourceID dtypes.SourceID, severity dtypes.Severity, cvss dtypes.CV
 		Source: &cdx.Source{
 			Name: string(sourceID),
 		},
-		Score:    cvss.V3Score,
+		Score:    &cvss.V3Score,
 		Method:   cdx.ScoringMethodCVSSv3,
 		Severity: toCDXSeverity(severity),
 		Vector:   cvss.V3Vector,
