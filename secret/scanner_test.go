@@ -75,6 +75,15 @@ func TestSecretScanner(t *testing.T) {
 		EndLine:   1,
 		Match:     "GITHUB_PAT=*****",
 	}
+	wantFinding7 := types.SecretFinding{
+		RuleID:    "github-pat",
+		Category:  secret.CategoryGitHub,
+		Title:     "GitHub Personal Access Token",
+		Severity:  "CRITICAL",
+		StartLine: 1,
+		EndLine:   1,
+		Match:     "aaaaaaaaaaaaaaaaaa GITHUB_PAT=***** bbbbbbbbbbbbbbbbbbb",
+	}
 
 	tests := []struct {
 		name          string
@@ -214,6 +223,14 @@ func TestSecretScanner(t *testing.T) {
 			want: types.Secret{
 				FilePath: "testdata/secret.txt",
 				Findings: []types.SecretFinding{wantFinding3, wantFinding4},
+			},
+		},
+		{
+			name:          "truncate long line",
+			inputFilePath: "testdata/long-line-secret.txt",
+			want: types.Secret{
+				FilePath: "testdata/long-line-secret.txt",
+				Findings: []types.SecretFinding{wantFinding7},
 			},
 		},
 	}
