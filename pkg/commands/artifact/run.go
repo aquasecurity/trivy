@@ -29,7 +29,7 @@ const defaultPolicyNamespace = "appshield"
 
 var errSkipScan = errors.New("skip subsequent processes")
 
-type scannerConfig struct {
+type ScannerConfig struct {
 	// e.g. image name and file path
 	Target string
 
@@ -45,7 +45,7 @@ type scannerConfig struct {
 }
 
 // InitializeScanner defines the initialize function signature of scanner
-type InitializeScanner func(context.Context, scannerConfig) (scanner.Scanner, func(), error)
+type InitializeScanner func(context.Context, ScannerConfig) (scanner.Scanner, func(), error)
 
 // InitCache defines cache initializer
 type InitCache func(c Option) (cache.Cache, error)
@@ -233,7 +233,7 @@ func scan(ctx context.Context, opt Option, initializeScanner InitializeScanner, 
 		}
 	}
 
-	s, cleanup, err := initializeScanner(ctx, scannerConfig{
+	s, cleanup, err := initializeScanner(ctx, ScannerConfig{
 		Target:             target,
 		ArtifactCache:      cacheClient,
 		LocalArtifactCache: cacheClient,
