@@ -392,6 +392,11 @@ func findLocation(start, end int, content []byte) (int, int, string) {
 
 	match := string(content[start:end])
 	matchLine := string(content[lineStart:lineEnd])
+	if len(matchLine) > 100 {
+		truncatedLineStart := lo.Ternary(start-30 < 0, 0, start-30)
+		truncatedLineEnd := lo.Ternary(end+20 > len(content), len(content), end+20)
+		matchLine = string(content[truncatedLineStart:truncatedLineEnd])
+	}
 
 	// Mask credentials
 	matchLine = strings.TrimSpace(strings.ReplaceAll(matchLine, match, "*****"))
