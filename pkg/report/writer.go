@@ -51,9 +51,7 @@ func Write(report types.Report, option Option) error {
 	case "cyclonedx":
 		// TODO: support xml format option with cyclonedx writer
 		writer = cyclonedx.NewWriter(option.Output, option.AppVersion)
-	case "spdx-json":
-		writer = spdx.NewWriter(option.Output, option.AppVersion, option.Format)
-	case "spdx":
+	case "spdx", "spdx-json":
 		writer = spdx.NewWriter(option.Output, option.AppVersion, option.Format)
 	case "template":
 		// We keep `sarif.tpl` template working for backward compatibility for a while.
