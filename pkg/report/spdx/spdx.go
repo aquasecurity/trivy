@@ -6,13 +6,14 @@ import (
 
 	"golang.org/x/xerrors"
 
-	ftypes "github.com/aquasecurity/fanal/types"
-	"github.com/aquasecurity/trivy/pkg/types"
 	"github.com/google/uuid"
 	"github.com/spdx/tools-golang/jsonsaver"
 	"github.com/spdx/tools-golang/spdx"
 	"github.com/spdx/tools-golang/tvsaver"
 	"k8s.io/utils/clock"
+
+	ftypes "github.com/aquasecurity/fanal/types"
+	"github.com/aquasecurity/trivy/pkg/types"
 )
 
 const (
