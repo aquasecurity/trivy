@@ -3,11 +3,11 @@ module github.com/aquasecurity/trivy
 go 1.18
 
 require (
-	github.com/CycloneDX/cyclonedx-go v0.5.0
+	github.com/CycloneDX/cyclonedx-go v0.5.1
 	github.com/Masterminds/sprig/v3 v3.2.2
 	github.com/NYTimes/gziphandler v0.0.0-20170623195520-56545f4a5d46
 	github.com/aquasecurity/bolt-fixtures v0.0.0-20200903104109-d34e7f983986
-	github.com/aquasecurity/fanal v0.0.0-20220425071928-af75d05f1e6e
+	github.com/aquasecurity/fanal v0.0.0-20220426115253-1d75fc0c7219
 	github.com/aquasecurity/go-dep-parser v0.0.0-20220422134844-880747206031
 	github.com/aquasecurity/go-gem-version v0.0.0-20201115065557-8eed6fe000ce
 	github.com/aquasecurity/go-npm-version v0.0.0-20201110091526-0b796d180798
@@ -34,6 +34,7 @@ require (
 	github.com/open-policy-agent/opa v0.39.0
 	github.com/owenrumney/go-sarif/v2 v2.1.1
 	github.com/package-url/packageurl-go v0.1.1-0.20220203205134-d70459300c8a
+	github.com/samber/lo v1.16.0
 	github.com/spf13/afero v1.8.1 // indirect
 	github.com/stretchr/testify v1.7.1
 	github.com/testcontainers/testcontainers-go v0.12.0
@@ -151,7 +152,6 @@ require (
 	github.com/remyoudompheng/bigfft v0.0.0-20200410134404-eec4a21b6bb0 // indirect
 	github.com/rivo/uniseg v0.2.0 // indirect
 	github.com/russross/blackfriday/v2 v2.1.0 // indirect
-	github.com/samber/lo v1.15.0 // indirect
 	github.com/saracen/walker v0.0.0-20191201085201-324a081bae7e // indirect
 	github.com/sergi/go-diff v1.1.0 // indirect
 	github.com/shopspring/decimal v1.2.0 // indirect
