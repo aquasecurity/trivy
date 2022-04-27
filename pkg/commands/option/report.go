@@ -137,7 +137,7 @@ func (c *ReportOption) populateSecurityChecks() error {
 }
 
 func (c *ReportOption) forceListAllPkgs(logger *zap.SugaredLogger) bool {
-	if c.Format == "cyclonedx" && !c.ListAllPkgs {
+	if (c.Format == "cyclonedx" || c.Format == "spdx" || c.Format == "spdx-json") && !c.ListAllPkgs {
 		logger.Debugf("'--format cyclonedx' automatically enables '--list-all-pkgs'.")
 		return true
 	}
