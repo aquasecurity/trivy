@@ -304,9 +304,10 @@ func ConvertFromRPCOS(rpcOS *common.OS) *ftypes.OS {
 		return nil
 	}
 	return &ftypes.OS{
-		Family: rpcOS.Family,
-		Name:   rpcOS.Name,
-		Eosl:   rpcOS.Eosl,
+		Family:   rpcOS.Family,
+		Name:     rpcOS.Name,
+		Eosl:     rpcOS.Eosl,
+		Extended: rpcOS.Extended,
 	}
 }
 
@@ -429,9 +430,10 @@ func ConvertToRPCOS(fos *ftypes.OS) *common.OS {
 		return nil
 	}
 	return &common.OS{
-		Family: fos.Family,
-		Name:   fos.Name,
-		Eosl:   fos.Eosl,
+		Family:   fos.Family,
+		Name:     fos.Name,
+		Eosl:     fos.Eosl,
+		Extended: fos.Extended,
 	}
 }
 
