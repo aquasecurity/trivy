@@ -10,7 +10,7 @@ require (
 	github.com/BurntSushi/toml v1.1.0
 	github.com/GoogleCloudPlatform/docker-credential-gcr v2.0.5+incompatible
 	github.com/alicebob/miniredis/v2 v2.18.0
-	github.com/aquasecurity/defsec v0.28.5-0.20220416075528-0f0c8fdf63b8
+	github.com/aquasecurity/defsec v0.28.5-0.20220426090908-0df04f1fa28b
 	github.com/aquasecurity/go-dep-parser v0.0.0-20220422134844-880747206031
 	github.com/aquasecurity/go-version v0.0.0-20210121072130-637058cfe492
 	github.com/aquasecurity/testdocker v0.0.0-20210911155206-e1e85f5a1516
@@ -43,7 +43,7 @@ require (
 	github.com/urfave/cli/v2 v2.4.0
 	go.etcd.io/bbolt v1.3.6
 	go.uber.org/zap v1.21.0
-	golang.org/x/crypto v0.0.0-20220208233918-bba287dce954 // indirect
+	golang.org/x/crypto v0.0.0-20220315160706-3147a52a75dd // indirect
 	golang.org/x/exp v0.0.0-20220407100705-7b9b53b0aca4
 	golang.org/x/mod v0.6.0-dev.0.20211013180041-c96bc1413d57
 	golang.org/x/net v0.0.0-20220127200216-cd36cc0744dd // indirect
