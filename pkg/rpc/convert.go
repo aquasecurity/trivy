@@ -8,7 +8,6 @@ import (
 	"google.golang.org/protobuf/types/known/structpb"
 
 	ftypes "github.com/aquasecurity/fanal/types"
-	deptypes "github.com/aquasecurity/go-dep-parser/pkg/types"
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/types"
@@ -33,6 +32,7 @@ func ConvertToRPCPkgs(pkgs []ftypes.Package) []*common.Package {
 			SrcEpoch:   int32(pkg.SrcEpoch),
 			License:    pkg.License,
 			Layer:      ConvertToRPCLayer(pkg.Layer),
+			FilePath:   pkg.FilePath,
 		})
 	}
 	return rpcPkgs
@@ -54,35 +54,10 @@ func ConvertFromRPCPkgs(rpcPkgs []*common.Package) []ftypes.Package {
 			SrcEpoch:   int(pkg.SrcEpoch),
 			License:    pkg.License,
 			Layer:      ConvertFromRPCLayer(pkg.Layer),
+			FilePath:   pkg.FilePath,
 		})
 	}
 	return pkgs
-}
-
-// ConvertFromRPCLibraries returns list of Fanal library
-func ConvertFromRPCLibraries(rpcLibs []*common.Library) []ftypes.Package {
-	var pkgs []ftypes.Package
-	for _, l := range rpcLibs {
-		pkgs = append(pkgs, ftypes.Package{
-			Name:    l.Name,
-			Version: l.Version,
-			License: l.License,
-		})
-	}
-	return pkgs
-}
-
-// ConvertToRPCLibraries returns list of libraries
-func ConvertToRPCLibraries(libs []deptypes.Library) []*common.Library {
-	var rpcLibs []*common.Library
-	for _, l := range libs {
-		rpcLibs = append(rpcLibs, &common.Library{
-			Name:    l.Name,
-			Version: l.Version,
-			License: l.License,
-		})
-	}
-	return rpcLibs
 }
 
 // ConvertToRPCVulns returns common.Vulnerability
@@ -128,6 +103,7 @@ func ConvertToRPCVulns(vulns []types.DetectedVulnerability) []*common.Vulnerabil
 			VulnerabilityId:    vuln.VulnerabilityID,
 			VendorIds:          vuln.VendorIDs,
 			PkgName:            vuln.PkgName,
+			PkgPath:            vuln.PkgPath,
 			InstalledVersion:   vuln.InstalledVersion,
 			FixedVersion:       vuln.FixedVersion,
 			Title:              vuln.Title,
@@ -264,6 +240,7 @@ func ConvertFromRPCVulns(rpcVulns []*common.Vulnerability) []types.DetectedVulne
 			VulnerabilityID:  vuln.VulnerabilityId,
 			VendorIDs:        vuln.VendorIds,
 			PkgName:          vuln.PkgName,
+			PkgPath:          vuln.PkgPath,
 			InstalledVersion: vuln.InstalledVersion,
 			FixedVersion:     vuln.FixedVersion,
 			Vulnerability: dbTypes.Vulnerability{
@@ -333,6 +310,17 @@ func ConvertFromRPCOS(rpcOS *common.OS) *ftypes.OS {
 	}
 }
 
+// ConvertFromRPCRepository converts common.Repository to fanal.Repository
+func ConvertFromRPCRepository(rpcRepo *common.Repository) *ftypes.Repository {
+	if rpcRepo == nil {
+		return nil
+	}
+	return &ftypes.Repository{
+		Family:  rpcRepo.Family,
+		Release: rpcRepo.Release,
+	}
+}
+
 // ConvertFromRPCDataSource converts *common.DataSource to *dbTypes.DataSource
 func ConvertFromRPCDataSource(ds *common.DataSource) *dbTypes.DataSource {
 	if ds == nil {
@@ -364,7 +352,7 @@ func ConvertFromRPCApplications(rpcApps []*common.Application) []ftypes.Applicat
 		apps = append(apps, ftypes.Application{
 			Type:      rpcApp.Type,
 			FilePath:  rpcApp.FilePath,
-			Libraries: ConvertFromRPCLibraries(rpcApp.Libraries),
+			Libraries: ConvertFromRPCPkgs(rpcApp.Libraries),
 		})
 	}
 	return apps
@@ -425,6 +413,7 @@ func ConvertFromRPCPutBlobRequest(req *cache.PutBlobRequest) ftypes.BlobInfo {
 		Digest:            req.BlobInfo.Digest,
 		DiffID:            req.BlobInfo.DiffId,
 		OS:                ConvertFromRPCOS(req.BlobInfo.Os),
+		Repository:        ConvertFromRPCRepository(req.BlobInfo.Repository),
 		PackageInfos:      ConvertFromRPCPackageInfos(req.BlobInfo.PackageInfos),
 		Applications:      ConvertFromRPCApplications(req.BlobInfo.Applications),
 		Misconfigurations: ConvertFromRPCMisconfigurations(req.BlobInfo.Misconfigurations),
@@ -443,6 +432,17 @@ func ConvertToRPCOS(fos *ftypes.OS) *common.OS {
 		Family: fos.Family,
 		Name:   fos.Name,
 		Eosl:   fos.Eosl,
+	}
+}
+
+// ConvertToRPCRepository returns common.Repository
+func ConvertToRPCRepository(repo *ftypes.Repository) *common.Repository {
+	if repo == nil {
+		return nil
+	}
+	return &common.Repository{
+		Family:  repo.Family,
+		Release: repo.Release,
 	}
 }
 
@@ -478,18 +478,10 @@ func ConvertToRPCBlobInfo(diffID string, blobInfo ftypes.BlobInfo) *cache.PutBlo
 
 	var applications []*common.Application
 	for _, app := range blobInfo.Applications {
-		var libs []*common.Library
-		for _, lib := range app.Libraries {
-			libs = append(libs, &common.Library{
-				Name:    lib.Name,
-				Version: lib.Version,
-				License: lib.License,
-			})
-		}
 		applications = append(applications, &common.Application{
 			Type:      app.Type,
 			FilePath:  app.FilePath,
-			Libraries: libs,
+			Libraries: ConvertToRPCPkgs(app.Libraries),
 		})
 	}
 
@@ -531,6 +523,7 @@ func ConvertToRPCBlobInfo(diffID string, blobInfo ftypes.BlobInfo) *cache.PutBlo
 			Digest:            blobInfo.Digest,
 			DiffId:            blobInfo.DiffID,
 			Os:                ConvertToRPCOS(blobInfo.OS),
+			Repository:        ConvertToRPCRepository(blobInfo.Repository),
 			PackageInfos:      packageInfos,
 			Applications:      applications,
 			Misconfigurations: misconfigurations,

@@ -9,7 +9,6 @@ import (
 
 	fos "github.com/aquasecurity/fanal/analyzer/os"
 	ftypes "github.com/aquasecurity/fanal/types"
-	ptypes "github.com/aquasecurity/go-dep-parser/pkg/types"
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/vulnerability"
 	"github.com/aquasecurity/trivy/pkg/types"
@@ -130,68 +129,6 @@ func TestConvertFromRpcPkgs(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			got := ConvertFromRPCPkgs(tt.args.rpcPkgs)
 			assert.Equal(t, tt.want, got, tt.name)
-		})
-	}
-}
-
-func TestConvertFromRpcLibraries(t *testing.T) {
-	type args struct {
-		rpcLibs []*common.Library
-	}
-	tests := []struct {
-		name string
-		args args
-		want []ftypes.Package
-	}{
-		{
-			name: "happy path",
-			args: args{
-				rpcLibs: []*common.Library{
-					{Name: "foo", Version: "1.2.3"},
-					{Name: "bar", Version: "4.5.6"},
-				},
-			},
-			want: []ftypes.Package{
-				{Name: "foo", Version: "1.2.3"},
-				{Name: "bar", Version: "4.5.6"},
-			},
-		},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			got := ConvertFromRPCLibraries(tt.args.rpcLibs)
-			assert.Equal(t, got, tt.want, tt.name)
-		})
-	}
-}
-
-func TestConvertToRpcLibraries(t *testing.T) {
-	type args struct {
-		libs []ptypes.Library
-	}
-	tests := []struct {
-		name string
-		args args
-		want []*common.Library
-	}{
-		{
-			name: "happy path",
-			args: args{
-				libs: []ptypes.Library{
-					{Name: "foo", Version: "1.2.3"},
-					{Name: "bar", Version: "4.5.6"},
-				},
-			},
-			want: []*common.Library{
-				{Name: "foo", Version: "1.2.3"},
-				{Name: "bar", Version: "4.5.6"},
-			},
-		},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			got := ConvertToRPCLibraries(tt.args.libs)
-			assert.Equal(t, got, tt.want, tt.name)
 		})
 	}
 }
