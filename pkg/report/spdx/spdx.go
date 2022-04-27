@@ -41,6 +41,8 @@ type options struct {
 
 type option func(*options)
 
+type spdxSaveFunction func(*spdx.Document2_2, io.Writer) error
+
 func WithClock(clock clock.Clock) option {
 	return func(opts *options) {
 		opts.clock = clock
@@ -78,10 +80,15 @@ func (cw Writer) Write(report types.Report) error {
 		return xerrors.Errorf("failed to convert bom: %w", err)
 	}
 
+	var saveFunc spdxSaveFunction
 	if cw.spdxFormat != "spdx-json" {
-		tvsaver.Save2_2(spdxDoc, cw.output)
+		saveFunc = tvsaver.Save2_2
 	} else {
-		jsonsaver.Save2_2(spdxDoc, cw.output)
+		saveFunc = jsonsaver.Save2_2
+	}
+
+	if err = saveFunc(spdxDoc, cw.output); err != nil {
+		return xerrors.Errorf("failed to save bom: %w", err)
 	}
 	return nil
 }
