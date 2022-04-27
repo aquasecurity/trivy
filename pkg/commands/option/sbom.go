@@ -8,7 +8,7 @@ import (
 	"go.uber.org/zap"
 )
 
-var supportedSbomFormats = []string{"cyclonedx"}
+var supportedSbomFormats = []string{"cyclonedx", "spdx", "spdx-json"}
 
 // SbomOption holds the options for SBOM generation
 type SbomOption struct {

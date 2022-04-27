@@ -5,6 +5,7 @@ import (
 	"os"
 	"strings"
 
+	"github.com/aquasecurity/fanal/utils"
 	"github.com/aquasecurity/trivy/pkg/types"
 
 	"github.com/urfave/cli/v2"
@@ -137,7 +138,7 @@ func (c *ReportOption) populateSecurityChecks() error {
 }
 
 func (c *ReportOption) forceListAllPkgs(logger *zap.SugaredLogger) bool {
-	if (c.Format == "cyclonedx" || c.Format == "spdx" || c.Format == "spdx-json") && !c.ListAllPkgs {
+	if utils.StringInSlice(c.Format, supportedSbomFormats) && !c.ListAllPkgs {
 		logger.Debugf("'--format cyclonedx' automatically enables '--list-all-pkgs'.")
 		return true
 	}

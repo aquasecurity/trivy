@@ -17,9 +17,9 @@
     {{- if eq $severity "UNKNOWN" -}}
     {{- $severity = "INFORMATIONAL" -}}
     {{- end -}}
-    {{- $description := escapeString .Description | printf "%q" -}}
-    {{- if gt (len $description ) 1021 -}}
-        {{- $description = (substr 0 1021 $description) | printf "%v .." -}}
+    {{- $description := .Description -}}
+    {{- if gt (len $description ) 512 -}}
+        {{- $description = (substr 0 512 $description) | printf "%v .." -}}
     {{- end}}
         {
             "SchemaVersion": "2018-10-08",
@@ -34,7 +34,7 @@
                 "Label": "{{ $severity }}"
             },
             "Title": "Trivy found a vulnerability to {{ .VulnerabilityID }} in container {{ $target }}",
-            "Description": {{ $description }},
+            "Description": {{ escapeString $description | printf "%q" }},
             "Remediation": {
                 "Recommendation": {
                     "Text": "More information on this vulnerability is provided in the hyperlink",

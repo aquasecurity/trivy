@@ -11,6 +11,7 @@ import (
 
 	"github.com/aquasecurity/fanal/analyzer"
 	"github.com/aquasecurity/fanal/analyzer/config"
+	"github.com/aquasecurity/fanal/analyzer/secret"
 	"github.com/aquasecurity/fanal/artifact"
 	"github.com/aquasecurity/fanal/cache"
 	"github.com/aquasecurity/trivy-db/pkg/db"
@@ -28,7 +29,7 @@ const defaultPolicyNamespace = "appshield"
 
 var errSkipScan = errors.New("skip subsequent processes")
 
-type scannerConfig struct {
+type ScannerConfig struct {
 	// e.g. image name and file path
 	Target string
 
@@ -41,13 +42,10 @@ type scannerConfig struct {
 
 	// Artifact options
 	ArtifactOption artifact.Option
-
-	// Misconfiguration scanning options
-	MisconfOption config.ScannerOption
 }
 
 // InitializeScanner defines the initialize function signature of scanner
-type InitializeScanner func(context.Context, scannerConfig) (scanner.Scanner, func(), error)
+type InitializeScanner func(context.Context, ScannerConfig) (scanner.Scanner, func(), error)
 
 // InitCache defines cache initializer
 type InitCache func(c Option) (cache.Cache, error)
@@ -189,9 +187,14 @@ func disabledAnalyzers(opt Option) []analyzer.Type {
 		analyzers = append(analyzers, analyzer.TypeApkCommand)
 	}
 
-	// Don't analyze programming language packages when not running in 'library' mode
+	// Do not analyze programming language packages when not running in 'library' mode
 	if !slices.Contains(opt.VulnType, types.VulnTypeLibrary) {
 		analyzers = append(analyzers, analyzer.TypeLanguages...)
+	}
+
+	// Do not perform secret scanning when it is not specified.
+	if !slices.Contains(opt.SecurityChecks, types.SecurityCheckSecret) {
+		analyzers = append(analyzers, analyzer.TypeSecret)
 	}
 
 	return analyzers
@@ -230,7 +233,7 @@ func scan(ctx context.Context, opt Option, initializeScanner InitializeScanner, 
 		}
 	}
 
-	s, cleanup, err := initializeScanner(ctx, scannerConfig{
+	s, cleanup, err := initializeScanner(ctx, ScannerConfig{
 		Target:             target,
 		ArtifactCache:      cacheClient,
 		LocalArtifactCache: cacheClient,
@@ -246,8 +249,15 @@ func scan(ctx context.Context, opt Option, initializeScanner InitializeScanner, 
 			InsecureSkipTLS:   opt.Insecure,
 			Offline:           opt.OfflineScan,
 			NoProgress:        opt.NoProgress || opt.Quiet,
+
+			// For misconfiguration scanning
+			MisconfScannerOption: configScannerOptions,
+
+			// For secret scanning
+			SecretScannerOption: secret.ScannerOption{
+				ConfigPath: opt.SecretConfigPath,
+			},
 		},
-		MisconfOption: configScannerOptions,
 	})
 	if err != nil {
 		return types.Report{}, xerrors.Errorf("unable to initialize a scanner: %w", err)
@@ -269,7 +279,7 @@ func filter(ctx context.Context, opt Option, report types.Report) (types.Report,
 		if opt.RemoteAddr == "" {
 			resultClient.FillVulnerabilityInfo(results[i].Vulnerabilities, results[i].Type)
 		}
-		vulns, misconfSummary, misconfs, err := resultClient.Filter(ctx, results[i].Vulnerabilities, results[i].Misconfigurations,
+		vulns, misconfSummary, misconfs, secrets, err := resultClient.Filter(ctx, results[i].Vulnerabilities, results[i].Misconfigurations, results[i].Secrets,
 			opt.Severities, opt.IgnoreUnfixed, opt.IncludeNonFailures, opt.IgnoreFile, opt.IgnorePolicy)
 		if err != nil {
 			return types.Report{}, xerrors.Errorf("unable to filter vulnerabilities: %w", err)
@@ -277,6 +287,7 @@ func filter(ctx context.Context, opt Option, report types.Report) (types.Report,
 		results[i].Vulnerabilities = vulns
 		results[i].Misconfigurations = misconfs
 		results[i].MisconfSummary = misconfSummary
+		results[i].Secrets = secrets
 	}
 	return report, nil
 }
