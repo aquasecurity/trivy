@@ -1,4 +1,0 @@
-{
-  "revision" : "[GITHUB_SHA]",
-  "roots": ["docker", "kubernetes", "defsec"]
-}
