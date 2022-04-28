@@ -1,6 +1,7 @@
 package spdx
 
 import (
+	"fmt"
 	"io"
 	"time"
 
@@ -14,6 +15,7 @@ import (
 
 	ftypes "github.com/aquasecurity/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/types"
+	"github.com/mitchellh/hashstructure/v2"
 )
 
 const (
@@ -126,7 +128,8 @@ func pkgToSpdxPackage(t string, meta types.Metadata, pkg ftypes.Package) (spdx.P
 	var spdxPackage spdx.Package2_2
 	license := getLicense(pkg)
 
-	spdxPackage.PackageSPDXIdentifier = spdx.ElementID(pkg.Name + "-" + pkg.Version)
+	pkgID, _ := getPackageID(pkg)
+	spdxPackage.PackageSPDXIdentifier = spdx.ElementID(pkgID)
 	spdxPackage.PackageName = pkg.Name
 	spdxPackage.PackageVersion = pkg.Version
 
@@ -149,4 +152,16 @@ func getLicense(p ftypes.Package) string {
 
 func getDocumentNamespace(r types.Report, cw *Writer) string {
 	return DocumentNamespace + "/" + string(r.ArtifactType) + "/" + r.ArtifactName + "-" + cw.newUUID().String()
+}
+
+func getPackageID(p ftypes.Package) (string, error) {
+	f, err := hashstructure.Hash(p, hashstructure.FormatV2, &hashstructure.HashOptions{
+		ZeroNil:      true,
+		SlicesAsSets: true,
+	})
+	if err != nil {
+		return "", xerrors.Errorf("could not build package ID for package=%+v: %+v", p, err)
+	}
+
+	return fmt.Sprintf("%x", f), nil
 }
