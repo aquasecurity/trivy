@@ -13,9 +13,10 @@ import (
 	"github.com/spdx/tools-golang/tvsaver"
 	"k8s.io/utils/clock"
 
+	"github.com/mitchellh/hashstructure/v2"
+
 	ftypes "github.com/aquasecurity/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/types"
-	"github.com/mitchellh/hashstructure/v2"
 )
 
 const (
@@ -128,7 +129,11 @@ func pkgToSpdxPackage(t string, meta types.Metadata, pkg ftypes.Package) (spdx.P
 	var spdxPackage spdx.Package2_2
 	license := getLicense(pkg)
 
-	pkgID, _ := getPackageID(pkg)
+	pkgID, err := getPackageID(pkg)
+	if err != nil {
+		return spdx.Package2_2{}, xerrors.Errorf("failed to get %s package ID: %w", pkg.Name, err)
+	}
+	
 	spdxPackage.PackageSPDXIdentifier = spdx.ElementID(pkgID)
 	spdxPackage.PackageName = pkg.Name
 	spdxPackage.PackageVersion = pkg.Version
