@@ -53,8 +53,12 @@ func NewCache(c option.CacheOption) (Cache, error) {
 			}
 		}
 
-		redisCache := cache.NewRedisCache(options)
+		redisCache := cache.NewRedisCache(options, c.CacheTTL)
 		return Cache{Cache: redisCache}, nil
+	}
+
+	if c.CacheTTL != 0 {
+		log.Logger.Warn("'--cache-ttl' is only available with Redis cache backend")
 	}
 
 	// standalone mode

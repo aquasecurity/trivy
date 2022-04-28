@@ -14,7 +14,6 @@ import (
 	"github.com/aquasecurity/fanal/analyzer"
 	"github.com/aquasecurity/fanal/applier"
 	ftypes "github.com/aquasecurity/fanal/types"
-	godeptypes "github.com/aquasecurity/go-dep-parser/pkg/types"
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/detector/library"
 	ospkgDetector "github.com/aquasecurity/trivy/pkg/detector/ospkg"
@@ -50,7 +49,7 @@ type Applier interface {
 
 // OspkgDetector defines operation to detect OS vulnerabilities
 type OspkgDetector interface {
-	Detect(imageName, osFamily, osName string, created time.Time, pkgs []ftypes.Package) (detectedVulns []types.DetectedVulnerability, eosl bool, err error)
+	Detect(imageName, osFamily, osName string, repo *ftypes.Repository, created time.Time, pkgs []ftypes.Package) (detectedVulns []types.DetectedVulnerability, eosl bool, err error)
 }
 
 // Scanner implements the OspkgDetector and LibraryDetector
@@ -69,7 +68,17 @@ func (s Scanner) Scan(target string, artifactKey string, blobKeys []string, opti
 	artifactDetail, err := s.applier.ApplyLayers(artifactKey, blobKeys)
 	switch {
 	case errors.Is(err, analyzer.ErrUnknownOS):
-		log.Logger.Debug("OS is not detected and vulnerabilities in OS packages are not detected.")
+		log.Logger.Debug("OS is not detected.")
+
+		// If OS is not detected and repositories are detected, we'll try to use repositories as OS.
+		if artifactDetail.Repository != nil {
+			log.Logger.Debugf("Package repository: %s %s", artifactDetail.Repository.Family, artifactDetail.Repository.Release)
+			log.Logger.Debugf("Assuming OS is %s %s.", artifactDetail.Repository.Family, artifactDetail.Repository.Release)
+			artifactDetail.OS = &ftypes.OS{
+				Family: artifactDetail.Repository.Family,
+				Name:   artifactDetail.Repository.Release,
+			}
+		}
 	case errors.Is(err, analyzer.ErrNoPkgsDetected):
 		log.Logger.Warn("No OS package is detected. Make sure you haven't deleted any files that contain information about the installed packages.")
 		log.Logger.Warn(`e.g. files under "/lib/apk/db/", "/var/lib/dpkg/" and "/var/lib/rpm"`)
@@ -95,8 +104,14 @@ func (s Scanner) Scan(target string, artifactKey string, blobKeys []string, opti
 
 	// Scan IaC config files
 	if slices.Contains(options.SecurityChecks, types.SecurityCheckConfig) {
-		configResults := s.misconfsToResults(artifactDetail.Misconfigurations, options)
+		configResults := s.misconfsToResults(artifactDetail.Misconfigurations)
 		results = append(results, configResults...)
+	}
+
+	// Scan secrets
+	if slices.Contains(options.SecurityChecks, types.SecurityCheckSecret) {
+		secretResults := s.secretsToResults(artifactDetail.Secrets)
+		results = append(results, secretResults...)
 	}
 
 	return results, artifactDetail.OS, nil
@@ -141,7 +156,7 @@ func (s Scanner) scanOSPkgs(target string, detail ftypes.ArtifactDetail, options
 		pkgs = mergePkgs(pkgs, detail.HistoryPackages)
 	}
 
-	result, eosl, err := s.detectVulnsInOSPkgs(target, detail.OS.Family, detail.OS.Name, pkgs)
+	result, eosl, err := s.detectVulnsInOSPkgs(target, detail.OS.Family, detail.OS.Name, detail.Repository, pkgs)
 	if err != nil {
 		return nil, false, xerrors.Errorf("failed to scan OS packages: %w", err)
 	} else if result == nil {
@@ -158,11 +173,11 @@ func (s Scanner) scanOSPkgs(target string, detail ftypes.ArtifactDetail, options
 	return result, eosl, nil
 }
 
-func (s Scanner) detectVulnsInOSPkgs(target, osFamily, osName string, pkgs []ftypes.Package) (*types.Result, bool, error) {
+func (s Scanner) detectVulnsInOSPkgs(target, osFamily, osName string, repo *ftypes.Repository, pkgs []ftypes.Package) (*types.Result, bool, error) {
 	if osFamily == "" {
 		return nil, false, nil
 	}
-	vulns, eosl, err := s.ospkgDetector.Detect("", osFamily, osName, time.Time{}, pkgs)
+	vulns, eosl, err := s.ospkgDetector.Detect("", osFamily, osName, repo, time.Time{}, pkgs)
 	if err == ospkgDetector.ErrUnsupportedOS {
 		return nil, false, nil
 	} else if err != nil {
@@ -210,8 +225,6 @@ func (s Scanner) scanLibrary(apps []ftypes.Application, options types.ScanOption
 			target = t
 		}
 
-		applyLibDependencies(vulns, app.Dependencies)
-
 		libReport := types.Result{
 			Target:          target,
 			Vulnerabilities: vulns,
@@ -230,48 +243,7 @@ func (s Scanner) scanLibrary(apps []ftypes.Application, options types.ScanOption
 	return results, nil
 }
 
-func applyLibDependencies(vulns []types.DetectedVulnerability, deps []godeptypes.Dependency) {
-	reversed := make(map[string][]string)
-	for _, dep := range deps {
-		for _, dependOn := range dep.DependsOn {
-			items, ok := reversed[dependOn]
-			if !ok {
-				reversed[dependOn] = []string{dep.ID}
-			} else {
-				reversed[dependOn] = append(items, dep.ID)
-			}
-		}
-	}
-	//register direct parents
-	for i, vuln := range vulns {
-		if parents, ok := reversed[vuln.PkgID]; ok {
-			for _, parent := range parents {
-				visitedParents := make([]string, 0)
-				item := types.DependencyTreeItem{ID: parent}
-				resolveParentDependency(&item, reversed, visitedParents)
-				vulns[i].PkgParents = append(vuln.PkgParents, item)
-			}
-		}
-	}
-
-}
-func resolveParentDependency(item *types.DependencyTreeItem, reversed map[string][]string, visitedParents []string) {
-	parents, ok := reversed[item.ID]
-	if ok {
-		for _, parent := range parents {
-			if slices.Contains(visitedParents, parent) {
-				continue
-			}
-			visitedParents = append(visitedParents, parent)
-
-			parentItem := types.DependencyTreeItem{ID: parent}
-			item.Parents = append(item.Parents, parentItem)
-			resolveParentDependency(&parentItem, reversed, visitedParents)
-		}
-	}
-}
-
-func (s Scanner) misconfsToResults(misconfs []ftypes.Misconfiguration, options types.ScanOptions) types.Results {
+func (s Scanner) misconfsToResults(misconfs []ftypes.Misconfiguration) types.Results {
 	log.Logger.Infof("Detected config files: %d", len(misconfs))
 	var results types.Results
 	for _, misconf := range misconfs {
@@ -304,6 +276,20 @@ func (s Scanner) misconfsToResults(misconfs []ftypes.Misconfiguration, options t
 		return results[i].Target < results[j].Target
 	})
 
+	return results
+}
+
+func (s Scanner) secretsToResults(secrets []ftypes.Secret) types.Results {
+	var results types.Results
+	for _, secret := range secrets {
+		log.Logger.Debugf("Secret file: %s", secret.FilePath)
+
+		results = append(results, types.Result{
+			Target:  secret.FilePath,
+			Class:   types.ClassSecret,
+			Secrets: secret.Findings,
+		})
+	}
 	return results
 }
 

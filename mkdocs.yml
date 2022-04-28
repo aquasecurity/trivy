@@ -33,6 +33,9 @@ nav:
                 - Vulnerability DB: docs/vulnerability/examples/db.md
                 - Cache: docs/vulnerability/examples/cache.md
                 - Others: docs/vulnerability/examples/others.md
+            - Distributions: docs/vulnerability/distributions.md
+            - Languages:
+                - Go: docs/vulnerability/languages/golang.md
         - Misconfiguration:
             - Scanning:
                 - Overview: docs/misconfiguration/index.md
@@ -57,6 +60,10 @@ nav:
                 - vs Conftest: docs/misconfiguration/comparison/conftest.md
                 - vs tfsec: docs/misconfiguration/comparison/tfsec.md
                 - vs cfsec: docs/misconfiguration/comparison/cfsec.md
+        - Secret:
+            - Scanning: docs/secret/scanning.md
+            - Configuration: docs/secret/configuration.md
+            - Examples: docs/secret/examples.md
         - SBOM:
             - Overview: docs/sbom/index.md
             - CycloneDX: docs/sbom/cyclonedx.md
@@ -105,9 +112,12 @@ nav:
         - References: community/references.md
         - CKS Reference: community/cks.md
         - Credits: community/credit.md
+        - How to contribute:
+            - Issues: community/contribute/issue.md
+            - Pull Requests: community/contribute/pr.md
         - Maintainer:
-              - Help Wanted: community/contrib/help-wanted.md
-              - Triage: community/contrib/triage.md
+              - Help Wanted: community/maintainer/help-wanted.md
+              - Triage: community/maintainer/triage.md
 theme:
     name: material
     language: 'en'

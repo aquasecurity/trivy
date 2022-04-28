@@ -29,8 +29,9 @@ message PutArtifactRequest {
 }
 
 message BlobInfo {
-  int32     schema_version                           = 1;
-  common.OS os                                       = 2;
+  int32             schema_version                   = 1;
+  common.OS         os                               = 2;
+  common.Repository repository                       = 11;
   repeated common.PackageInfo package_infos          = 3;
   repeated common.Application applications           = 4;
   repeated common.Misconfiguration misconfigurations = 9;

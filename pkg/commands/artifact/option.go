@@ -19,6 +19,7 @@ type Option struct {
 	option.ConfigOption
 	option.RemoteOption
 	option.SbomOption
+	option.SecretOption
 
 	// We don't want to allow disabled analyzers to be passed by users,
 	// but it differs depending on scanning modes.
@@ -42,6 +43,7 @@ func NewOption(c *cli.Context) (Option, error) {
 		ConfigOption:   option.NewConfigOption(c),
 		RemoteOption:   option.NewRemoteOption(c),
 		SbomOption:     option.NewSbomOption(c),
+		SecretOption:   option.NewSecretOption(c),
 	}, nil
 }
 
