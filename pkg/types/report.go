@@ -77,19 +77,3 @@ func (results Results) Failed() bool {
 	}
 	return false
 }
-
-// TODO: consider structure, just PoC
-type K8sReport struct {
-	SchemaVersion int `json:",omitempty"`
-	ClusterName   string
-	Workloads     []K8sWorkload
-}
-
-type K8sWorkload struct {
-	Namespace  string
-	APIVersion string
-	Kind       string
-	Name       string
-	Metadata   Metadata `json:",omitempty"`
-	Results    Results  `json:",omitempty"`
-}

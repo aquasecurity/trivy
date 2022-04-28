@@ -207,6 +207,14 @@ var (
 		EnvVars: []string{"TRIVY_TIMEOUT"},
 	}
 
+	namespaceFlag = cli.StringFlag{
+		Name:    "namespace",
+		Aliases: []string{"n"},
+		Value:   "",
+		Usage:   "namespace to scan",
+		EnvVars: []string{"TRIVY_K8S_NAMESPACE"},
+	}
+
 	// TODO: remove this flag after a sufficient deprecation period.
 	lightFlag = cli.BoolFlag{
 		Name:    "light",
@@ -775,13 +783,14 @@ func NewPluginCommand() *cli.Command {
 // NewK8sCommand is the factory method to add k8s subcommand
 func NewK8sCommand() *cli.Command {
 	return &cli.Command{
-		Name:      "kubernetes",
-		Aliases:   []string{"k8s"},
-		ArgsUsage: "TODO",
-		Usage:     "TODO",
-		Action:    artifact.K8sRun,
+		Name:    "kubernetes",
+		Aliases: []string{"k8s"},
+		Usage:   "TODO",
+		Action:  artifact.K8sRun,
 		Flags: []cli.Flag{
-			&templateFlag,
+			&namespaceFlag,
+
+			//&templateFlag,
 			&formatFlag,
 			&severityFlag,
 			&outputFlag,
