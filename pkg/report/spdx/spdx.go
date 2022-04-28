@@ -17,7 +17,7 @@ import (
 )
 
 const (
-	SPDXVersion         = "SPDX-2.1"
+	SPDXVersion         = "SPDX-2.2"
 	DataLicense         = "CC0-1.0"
 	SPDXIdentifier      = "DOCUMENT"
 	DocumentNamespace   = "http://aquasecurity.github.io/trivy"

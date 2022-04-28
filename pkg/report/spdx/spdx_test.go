@@ -98,7 +98,7 @@ func TestWriter_Write(t *testing.T) {
 			},
 			wantSBOM: &spdx.Document2_2{
 				CreationInfo: &spdx.CreationInfo2_2{
-					SPDXVersion:                "SPDX-2.1",
+					SPDXVersion:                "SPDX-2.2",
 					DataLicense:                "CC0-1.0",
 					SPDXIdentifier:             "DOCUMENT",
 					DocumentName:               "rails:latest",
@@ -209,7 +209,7 @@ func TestWriter_Write(t *testing.T) {
 			},
 			wantSBOM: &spdx.Document2_2{
 				CreationInfo: &spdx.CreationInfo2_2{
-					SPDXVersion:                "SPDX-2.1",
+					SPDXVersion:                "SPDX-2.2",
 					DataLicense:                "CC0-1.0",
 					SPDXIdentifier:             "DOCUMENT",
 					DocumentName:               "centos:latest",
@@ -274,7 +274,7 @@ func TestWriter_Write(t *testing.T) {
 			},
 			wantSBOM: &spdx.Document2_2{
 				CreationInfo: &spdx.CreationInfo2_2{
-					SPDXVersion:                "SPDX-2.1",
+					SPDXVersion:                "SPDX-2.2",
 					DataLicense:                "CC0-1.0",
 					SPDXIdentifier:             "DOCUMENT",
 					DocumentName:               "masahiro331/CVE-2021-41098",
@@ -323,7 +323,7 @@ func TestWriter_Write(t *testing.T) {
 			},
 			wantSBOM: &spdx.Document2_2{
 				CreationInfo: &spdx.CreationInfo2_2{
-					SPDXVersion:                "SPDX-2.1",
+					SPDXVersion:                "SPDX-2.2",
 					DataLicense:                "CC0-1.0",
 					SPDXIdentifier:             "DOCUMENT",
 					DocumentName:               "test-aggregate",
@@ -355,7 +355,7 @@ func TestWriter_Write(t *testing.T) {
 			},
 			wantSBOM: &spdx.Document2_2{
 				CreationInfo: &spdx.CreationInfo2_2{
-					SPDXVersion:                "SPDX-2.1",
+					SPDXVersion:                "SPDX-2.2",
 					DataLicense:                "CC0-1.0",
 					SPDXIdentifier:             "DOCUMENT",
 					DocumentName:               "empty/path",
