@@ -55,12 +55,12 @@ func K8sRun(ctx *cli.Context) error {
 
 	kubeConfig, err := trivyk8s.GetKubeConfig()
 	if err != nil {
-		log.Fatal(err)
+		return xerrors.Errorf("get kubeconfig error: %w", err)
 	}
 
 	trivyk8s, err := trivyk8s.New(kubeConfig)
 	if err != nil {
-		log.Fatal(err)
+		return xerrors.Errorf("trivyk8s new error: %w", err)
 	}
 
 	k8sArtifacts, err := trivyk8s.ListArtifacts(ctx.Context, opt.KubernetesOption.Namespace)
@@ -179,15 +179,14 @@ func k8sScan(ctx context.Context, target string, initializeScanner InitializeSca
 	config.Target = target
 	s, cleanup, err := initializeScanner(ctx, config)
 	if err != nil {
-		// TODO: should exit?
 		log.Logger.Errorf("Unexpected error during scanning %s: %s", config.Target, err)
-		return types.Report{}, nil
+		return types.Report{}, err
 	}
 	defer cleanup()
 
 	report, err := s.ScanArtifact(ctx, opts)
 	if err != nil {
-		return types.Report{}, xerrors.Errorf("image scan failed: %w", err)
+		return types.Report{}, xerrors.Errorf("artifact scan failed: %w", err)
 	}
 	return report, nil
 }
