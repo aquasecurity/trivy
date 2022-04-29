@@ -94,8 +94,19 @@ func scanK8sImages(ctx *cli.Context, opt Option, cacheClient cache.Cache, artifa
 	for _, artifact := range artifacts {
 		for _, image := range artifact.Images {
 			report, err := k8sScan(ctx.Context, image, imageScanner, scannerConfig, scannerOptions)
+
+			// if an image failed to be scanned, we add the report as error and continue to scan other images
 			if err != nil {
-				return xerrors.Errorf("scan error: %w", err)
+				reports = append(reports, reportk8s.KubernetesReport{
+					Namespace: artifact.Namespace,
+					Kind:      artifact.Kind,
+					Name:      artifact.Name,
+					Image:     image,
+					Results:   report.Results,
+					Error:     err,
+				})
+
+				continue
 			}
 
 			report, err = filter(ctx.Context, opt, report)
