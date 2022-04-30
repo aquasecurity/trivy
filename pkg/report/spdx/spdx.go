@@ -5,15 +5,13 @@ import (
 	"io"
 	"time"
 
-	"golang.org/x/xerrors"
-
 	"github.com/google/uuid"
+	"github.com/mitchellh/hashstructure/v2"
 	"github.com/spdx/tools-golang/jsonsaver"
 	"github.com/spdx/tools-golang/spdx"
 	"github.com/spdx/tools-golang/tvsaver"
+	"golang.org/x/xerrors"
 	"k8s.io/utils/clock"
-
-	"github.com/mitchellh/hashstructure/v2"
 
 	ftypes "github.com/aquasecurity/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/types"
@@ -133,7 +131,7 @@ func pkgToSpdxPackage(t string, meta types.Metadata, pkg ftypes.Package) (spdx.P
 	if err != nil {
 		return spdx.Package2_2{}, xerrors.Errorf("failed to get %s package ID: %w", pkg.Name, err)
 	}
-	
+
 	spdxPackage.PackageSPDXIdentifier = spdx.ElementID(pkgID)
 	spdxPackage.PackageName = pkg.Name
 	spdxPackage.PackageVersion = pkg.Version
