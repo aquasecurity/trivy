@@ -235,10 +235,10 @@ github.com/apparentlymart/go-textseg/v13 v13.0.0 h1:Y+KvPE1NYz0xl601PVImeQfFyEy6
 github.com/apparentlymart/go-textseg/v13 v13.0.0/go.mod h1:ZK2fH7c4NqDTLtiYLvIkEghdlcqw7yxLeM89kiTRPUo=
 github.com/aquasecurity/bolt-fixtures v0.0.0-20200903104109-d34e7f983986 h1:2a30xLN2sUZcMXl50hg+PJCIDdJgIvIbVcKqLJ/ZrtM=
 github.com/aquasecurity/bolt-fixtures v0.0.0-20200903104109-d34e7f983986/go.mod h1:NT+jyeCzXk6vXR5MTkdn4z64TgGfE5HMLC8qfj5unl8=
-github.com/aquasecurity/defsec v0.28.5-0.20220416075528-0f0c8fdf63b8 h1:TQOc6oTNT1943KbsivdxBnNHlZbp6cF3AcMzVLJCotg=
-github.com/aquasecurity/defsec v0.28.5-0.20220416075528-0f0c8fdf63b8/go.mod h1:vUdThwusBM7y1gJ7CVX3+h3bsPvpmOIEp3NEdzTDkhA=
-github.com/aquasecurity/fanal v0.0.0-20220426115253-1d75fc0c7219 h1:RLwHw7cVIoQhWsmqwmmfjIdGoR8NHtjdNpzZHU4+8gU=
-github.com/aquasecurity/fanal v0.0.0-20220426115253-1d75fc0c7219/go.mod h1:XYE/iBTb7OjRMmZ1ZmXwjhhKiFrOW3zW2nYo1Usodhs=
+github.com/aquasecurity/defsec v0.28.5-0.20220426090908-0df04f1fa28b h1:v3+rrNd5zXHsGZ6rQkox1z9/0H5tYLs0EJlQmgcP9Rc=
+github.com/aquasecurity/defsec v0.28.5-0.20220426090908-0df04f1fa28b/go.mod h1:3pFStAmcS8LE2OI0AE6IvxB5nu6kDqYRJBwrUZavN+U=
+github.com/aquasecurity/fanal v0.0.0-20220430134203-bc6fd26a109e h1:kD4OeyNl/f6Q3Ib0gw3jDZh7jnBI6YVb1SmbgM8Ym7M=
+github.com/aquasecurity/fanal v0.0.0-20220430134203-bc6fd26a109e/go.mod h1:p1NjKKUjCnIoITrl9dMwAYg5Rs7kkLd9VLS3SYmaBLQ=
 github.com/aquasecurity/go-dep-parser v0.0.0-20220422134844-880747206031 h1:4LtaaQ6nrd9EVpd1z5P0snZSSPfzCHiLljGipJlOQTs=
 github.com/aquasecurity/go-dep-parser v0.0.0-20220422134844-880747206031/go.mod h1:7EOQWQmyavVPY3fScbbPdd3dB/b0Q4ZbJ/NZCvNKrLs=
 github.com/aquasecurity/go-gem-version v0.0.0-20201115065557-8eed6fe000ce h1:QgBRgJvtEOBtUXilDb1MLi1p1MWoyFDXAu5DEUl5nwM=
@@ -1642,8 +1642,8 @@ golang.org/x/crypto v0.0.0-20210817164053-32db794688a5/go.mod h1:GvvjBRRGRdwPK5y
 golang.org/x/crypto v0.0.0-20210921155107-089bfa567519/go.mod h1:GvvjBRRGRdwPK5ydBHafDWAxML/pGHZbMvKqRZ5+Abc=
 golang.org/x/crypto v0.0.0-20211108221036-ceb1ce70b4fa/go.mod h1:GvvjBRRGRdwPK5ydBHafDWAxML/pGHZbMvKqRZ5+Abc=
 golang.org/x/crypto v0.0.0-20211215153901-e495a2d5b3d3/go.mod h1:IxCIyHEi3zRg3s0A5j5BB6A9Jmi73HwBIUl50j+osU4=
-golang.org/x/crypto v0.0.0-20220208233918-bba287dce954 h1:BkypuErRT9A9I/iljuaG3/zdMjd/J6m8tKKJQtGfSdA=
-golang.org/x/crypto v0.0.0-20220208233918-bba287dce954/go.mod h1:IxCIyHEi3zRg3s0A5j5BB6A9Jmi73HwBIUl50j+osU4=
+golang.org/x/crypto v0.0.0-20220315160706-3147a52a75dd h1:XcWmESyNjXJMLahc3mqVQJcgSTDxFxhETVlfk9uGc38=
+golang.org/x/crypto v0.0.0-20220315160706-3147a52a75dd/go.mod h1:IxCIyHEi3zRg3s0A5j5BB6A9Jmi73HwBIUl50j+osU4=
 golang.org/x/exp v0.0.0-20190121172915-509febef88a4/go.mod h1:CJ0aWSM057203Lf6IL+f9T1iT9GByDxfZKAQTCR3kQA=
 golang.org/x/exp v0.0.0-20190125153040-c74c464bbbf2/go.mod h1:CJ0aWSM057203Lf6IL+f9T1iT9GByDxfZKAQTCR3kQA=
 golang.org/x/exp v0.0.0-20190306152737-a1d7652674e8/go.mod h1:CJ0aWSM057203Lf6IL+f9T1iT9GByDxfZKAQTCR3kQA=
