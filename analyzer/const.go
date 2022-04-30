@@ -112,4 +112,7 @@ var (
 
 	// TypeIndividualPkgs has all analyzers for individual packages
 	TypeIndividualPkgs = []Type{TypeGemSpec, TypeNodePkg, TypePythonPkg, TypeGoBinary, TypeJar}
+
+	// TypeConfigFiles has all config file analyzers
+	TypeConfigFiles = []Type{TypeYaml, TypeTOML, TypeJSON, TypeDockerfile, TypeHCL, TypeTerraform, TypeCloudFormation}
 )
