@@ -133,7 +133,7 @@ func pkgToSpdxPackage(t string, meta types.Metadata, pkg ftypes.Package) (spdx.P
 	if err != nil {
 		return spdx.Package2_2{}, xerrors.Errorf("failed to get %s package ID: %w", pkg.Name, err)
 	}
-	
+
 	spdxPackage.PackageSPDXIdentifier = spdx.ElementID(pkgID)
 	spdxPackage.PackageName = pkg.Name
 	spdxPackage.PackageVersion = pkg.Version

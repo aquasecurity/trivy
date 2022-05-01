@@ -12,7 +12,7 @@ $ trivy image --format spdx --output result.spdx alpine:3.15
 <summary>Result</summary>
 
 ```
-$ cat result.spdx | jq .
+$ cat result.spdx
 SPDXVersion: SPDX-2.2
 DataLicense: CC0-1.0
 SPDXID: SPDXRef-DOCUMENT
