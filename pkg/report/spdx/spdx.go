@@ -5,15 +5,13 @@ import (
 	"io"
 	"time"
 
-	"golang.org/x/xerrors"
-
 	"github.com/google/uuid"
+	"github.com/mitchellh/hashstructure/v2"
 	"github.com/spdx/tools-golang/jsonsaver"
 	"github.com/spdx/tools-golang/spdx"
 	"github.com/spdx/tools-golang/tvsaver"
+	"golang.org/x/xerrors"
 	"k8s.io/utils/clock"
-
-	"github.com/mitchellh/hashstructure/v2"
 
 	ftypes "github.com/aquasecurity/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/types"
