@@ -1,10 +1,11 @@
 package secret_test
 
 import (
-	"go.uber.org/zap"
-	"go.uber.org/zap/zapcore"
 	"os"
 	"testing"
+
+	"go.uber.org/zap"
+	"go.uber.org/zap/zapcore"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -83,6 +84,15 @@ func TestSecretScanner(t *testing.T) {
 		StartLine: 1,
 		EndLine:   1,
 		Match:     "aaaaaaaaaaaaaaaaaa GITHUB_PAT=***** bbbbbbbbbbbbbbbbbbb",
+	}
+	wantFinding8 := types.SecretFinding{
+		RuleID:    "rule1",
+		Category:  "general",
+		Title:     "Generic Rule",
+		Severity:  "UNKNOWN",
+		StartLine: 2,
+		EndLine:   2,
+		Match:     "generic secret line secret=\"*****\"",
 	}
 
 	tests := []struct {
@@ -231,6 +241,15 @@ func TestSecretScanner(t *testing.T) {
 			want: types.Secret{
 				FilePath: "testdata/long-line-secret.txt",
 				Findings: []types.SecretFinding{wantFinding7},
+			},
+		},
+		{
+			name:          "add unknown severity when rule has no severity",
+			configPath:    "testdata/config-without-severity.yaml",
+			inputFilePath: "testdata/secret.txt",
+			want: types.Secret{
+				FilePath: "testdata/secret.txt",
+				Findings: []types.SecretFinding{wantFinding8},
 			},
 		},
 	}

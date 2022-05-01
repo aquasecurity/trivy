@@ -361,10 +361,11 @@ func (s Scanner) Scan(args ScanArgs) types.Secret {
 
 func toFinding(rule Rule, loc Location, content []byte) types.SecretFinding {
 	startLine, endLine, matchLine := findLocation(loc.Start, loc.End, content)
+
 	return types.SecretFinding{
 		RuleID:    rule.ID,
 		Category:  rule.Category,
-		Severity:  rule.Severity,
+		Severity:  lo.Ternary(rule.Severity == "", "UNKNOWN", rule.Severity),
 		Title:     rule.Title,
 		StartLine: startLine,
 		EndLine:   endLine,
