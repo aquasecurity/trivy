@@ -2,7 +2,6 @@ module github.com/aquasecurity/trivy
 
 go 1.18
 
-
 require (
 	github.com/CycloneDX/cyclonedx-go v0.5.1
 	github.com/Masterminds/sprig/v3 v3.2.2
@@ -205,8 +204,3 @@ require github.com/mitchellh/hashstructure/v2 v2.0.2
 
 // To resolve CVE-2022-23648
 replace github.com/containerd/containerd v1.5.9 => github.com/containerd/containerd v1.5.10
-
-
-replace github.com/aquasecurity/fanal v0.0.0-20220426115253-1d75fc0c7219 => /Users/shira.cohen/Aqua/fanal
-replace github.com/aquasecurity/go-dep-parser v0.0.0-20220424191228-4e8cb4d277a5 => /Users/shira.cohen/Aqua/go-dep-parser
-
