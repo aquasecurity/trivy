@@ -38,7 +38,7 @@ jobs:
         with:
           fetch-depth: 0
       - name: Cache Go modules
-        uses: actions/cache@v3.0.1
+        uses: actions/cache@v3.0.2
         with:
           path: ~/go/pkg/mod
           key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
