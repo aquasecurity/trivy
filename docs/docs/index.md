@@ -57,6 +57,7 @@ See [Integrations][integrations] for details.
     - remote git repository
 - [SBOM][sbom] (Software Bill of Materials) support
     - CycloneDX 
+    - SPDX
 
 Please see [LICENSE][license] for Trivy licensing information.
 

@@ -198,6 +198,7 @@ Failures: 1 (UNKNOWN: 0, LOW: 0, MEDIUM: 0, HIGH: 1, CRITICAL: 0)
   - container image, local filesystem and remote git repository
 - Supply chain security (SBOM support)
   - Support CycloneDX
+  - Support SPDX
 
 # Integrations
 - [GitHub Actions][action]
