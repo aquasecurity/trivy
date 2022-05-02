@@ -11,6 +11,7 @@ import (
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/report/cyclonedx"
+	"github.com/aquasecurity/trivy/pkg/report/spdx"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
 
@@ -50,6 +51,8 @@ func Write(report types.Report, option Option) error {
 	case "cyclonedx":
 		// TODO: support xml format option with cyclonedx writer
 		writer = cyclonedx.NewWriter(option.Output, option.AppVersion)
+	case "spdx", "spdx-json":
+		writer = spdx.NewWriter(option.Output, option.AppVersion, option.Format)
 	case "template":
 		// We keep `sarif.tpl` template working for backward compatibility for a while.
 		if strings.HasPrefix(option.OutputTemplate, "@") && strings.HasSuffix(option.OutputTemplate, "sarif.tpl") {

@@ -816,7 +816,7 @@ func NewSbomCommand() *cli.Command {
 				Name:    "sbom-format",
 				Aliases: []string{"format"},
 				Value:   "cyclonedx",
-				Usage:   "SBOM format (cyclonedx)",
+				Usage:   "SBOM format (cyclonedx, spdx, spdx-json)",
 				EnvVars: []string{"TRIVY_SBOM_FORMAT"},
 			},
 		},

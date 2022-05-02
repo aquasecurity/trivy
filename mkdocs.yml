@@ -7,125 +7,126 @@ repo_url: https://github.com/aquasecurity/trivy
 edit_uri: ""
 
 nav:
-    - HOME: index.md
-    - Getting started:
+  - HOME: index.md
+  - Getting started:
       - Overview: getting-started/overview.md
       - Installation: getting-started/installation.md
       - Quick Start: getting-started/quickstart.md
       - Further Reading: getting-started/further.md
-    - Docs:
-        - Overview: docs/index.md
-        - Vulnerability:
-            - Scanning:
-                - Overview: docs/vulnerability/scanning/index.md
-                - Container Image: docs/vulnerability/scanning/image.md
-                - Filesystem: docs/vulnerability/scanning/filesystem.md
-                - Rootfs: docs/vulnerability/scanning/rootfs.md
-                - Git Repository: docs/vulnerability/scanning/git-repository.md
-            - Detection:
-                - OS Packages: docs/vulnerability/detection/os.md
-                - Language-specific Packages: docs/vulnerability/detection/language.md
-                - Data Sources: docs/vulnerability/detection/data-source.md
-                - Supported: docs/vulnerability/detection/supported.md
-            - Examples:
-                - Vulnerability Filtering: docs/vulnerability/examples/filter.md
-                - Report Formats: docs/vulnerability/examples/report.md
-                - Vulnerability DB: docs/vulnerability/examples/db.md
-                - Cache: docs/vulnerability/examples/cache.md
-                - Others: docs/vulnerability/examples/others.md
-            - Distributions: docs/vulnerability/distributions.md
-            - Languages:
-                - Go: docs/vulnerability/languages/golang.md
-        - Misconfiguration:
-            - Scanning:
-                - Overview: docs/misconfiguration/index.md
-                - Infrastructure as Code: docs/misconfiguration/iac.md
-                - Filesystem: docs/misconfiguration/filesystem.md
-            - Policy:
-                - Built-in Policies: docs/misconfiguration/policy/builtin.md
-                - Exceptions: docs/misconfiguration/policy/exceptions.md
-            - Custom Policies:
-                - Overview: docs/misconfiguration/custom/index.md
-                - Data: docs/misconfiguration/custom/data.md
-                - Combine: docs/misconfiguration/custom/combine.md
-                - Testing: docs/misconfiguration/custom/testing.md
-                - Debugging Policies: docs/misconfiguration/custom/debug.md
-                - Examples: docs/misconfiguration/custom/examples.md
-            - Options:
-                - Policy: docs/misconfiguration/options/policy.md
-                - Filtering: docs/misconfiguration/options/filter.md
-                - Report Formats: docs/misconfiguration/options/report.md
-                - Others: docs/misconfiguration/options/others.md
-            - Comparison:
-                - vs Conftest: docs/misconfiguration/comparison/conftest.md
-                - vs tfsec: docs/misconfiguration/comparison/tfsec.md
-                - vs cfsec: docs/misconfiguration/comparison/cfsec.md
-        - Secret:
-            - Scanning: docs/secret/scanning.md
-            - Configuration: docs/secret/configuration.md
-            - Examples: docs/secret/examples.md
-        - SBOM:
-            - Overview: docs/sbom/index.md
-            - CycloneDX: docs/sbom/cyclonedx.md
-        - Integrations:
-            - Overview: docs/integrations/index.md
-            - GitHub Actions: docs/integrations/github-actions.md
-            - CircleCI: docs/integrations/circleci.md
-            - Travis CI: docs/integrations/travis-ci.md
-            - GitLab CI: docs/integrations/gitlab-ci.md
-            - Bitbucket Pipelines: docs/integrations/bitbucket.md
-            - AWS CodePipeline: docs/integrations/aws-codepipeline.md
-            - AWS Security Hub: docs/integrations/aws-security-hub.md
-        - Advanced:
-            - Plugins: docs/advanced/plugins.md
-            - Air-Gapped Environment: docs/advanced/air-gap.md
-            - Container Image:
-                - Embed in Dockerfile: docs/advanced/container/embed-in-dockerfile.md
-                - Unpacked container image filesystem: docs/advanced/container/unpacked-filesystem.md
-                - OCI Image: docs/advanced/container/oci.md
-                - Podman: docs/advanced/container/podman.md
-                - Private Docker Registries:
-                    - Overview: docs/advanced/private-registries/index.md
-                    - Docker Hub: docs/advanced/private-registries/docker-hub.md
-                    - AWS ECR (Elastic Container Registry): docs/advanced/private-registries/ecr.md
-                    - GCR (Google Container Registry): docs/advanced/private-registries/gcr.md
-                    - ACR (Azure Container Registry): docs/advanced/private-registries/acr.md
-                    - Self-Hosted: docs/advanced/private-registries/self.md
-        - References:
-            - CLI:
-                - Overview:  docs/references/cli/index.md
-                - Image:  docs/references/cli/image.md
-                - Config:  docs/references/cli/config.md
-                - Filesystem:  docs/references/cli/fs.md
-                - Rootfs:  docs/references/cli/rootfs.md
-                - Repository:  docs/references/cli/repo.md
-                - Client: docs/references/cli/client.md
-                - Server:  docs/references/cli/server.md
-                - Plugins: docs/references/cli/plugins.md
-                - SBOM: docs/references/cli/sbom.md
-            - Modes:
-                  - Standalone: docs/references/modes/standalone.md
-                  - Client/Server: docs/references/modes/client-server.md
-            - Troubleshooting: docs/references/troubleshooting.md
-    - Community:
-        - Tools: community/tools.md
-        - References: community/references.md
-        - CKS Reference: community/cks.md
-        - Credits: community/credit.md
-        - How to contribute:
-            - Issues: community/contribute/issue.md
-            - Pull Requests: community/contribute/pr.md
-        - Maintainer:
-              - Help Wanted: community/maintainer/help-wanted.md
-              - Triage: community/maintainer/triage.md
+  - Docs:
+      - Overview: docs/index.md
+      - Vulnerability:
+          - Scanning:
+              - Overview: docs/vulnerability/scanning/index.md
+              - Container Image: docs/vulnerability/scanning/image.md
+              - Filesystem: docs/vulnerability/scanning/filesystem.md
+              - Rootfs: docs/vulnerability/scanning/rootfs.md
+              - Git Repository: docs/vulnerability/scanning/git-repository.md
+          - Detection:
+              - OS Packages: docs/vulnerability/detection/os.md
+              - Language-specific Packages: docs/vulnerability/detection/language.md
+              - Data Sources: docs/vulnerability/detection/data-source.md
+              - Supported: docs/vulnerability/detection/supported.md
+          - Examples:
+              - Vulnerability Filtering: docs/vulnerability/examples/filter.md
+              - Report Formats: docs/vulnerability/examples/report.md
+              - Vulnerability DB: docs/vulnerability/examples/db.md
+              - Cache: docs/vulnerability/examples/cache.md
+              - Others: docs/vulnerability/examples/others.md
+          - Distributions: docs/vulnerability/distributions.md
+          - Languages:
+              - Go: docs/vulnerability/languages/golang.md
+      - Misconfiguration:
+          - Scanning:
+              - Overview: docs/misconfiguration/index.md
+              - Infrastructure as Code: docs/misconfiguration/iac.md
+              - Filesystem: docs/misconfiguration/filesystem.md
+          - Policy:
+              - Built-in Policies: docs/misconfiguration/policy/builtin.md
+              - Exceptions: docs/misconfiguration/policy/exceptions.md
+          - Custom Policies:
+              - Overview: docs/misconfiguration/custom/index.md
+              - Data: docs/misconfiguration/custom/data.md
+              - Combine: docs/misconfiguration/custom/combine.md
+              - Testing: docs/misconfiguration/custom/testing.md
+              - Debugging Policies: docs/misconfiguration/custom/debug.md
+              - Examples: docs/misconfiguration/custom/examples.md
+          - Options:
+              - Policy: docs/misconfiguration/options/policy.md
+              - Filtering: docs/misconfiguration/options/filter.md
+              - Report Formats: docs/misconfiguration/options/report.md
+              - Others: docs/misconfiguration/options/others.md
+          - Comparison:
+              - vs Conftest: docs/misconfiguration/comparison/conftest.md
+              - vs tfsec: docs/misconfiguration/comparison/tfsec.md
+              - vs cfsec: docs/misconfiguration/comparison/cfsec.md
+      - Secret:
+          - Scanning: docs/secret/scanning.md
+          - Configuration: docs/secret/configuration.md
+          - Examples: docs/secret/examples.md
+      - SBOM:
+          - Overview: docs/sbom/index.md
+          - CycloneDX: docs/sbom/cyclonedx.md
+          - SPDX: docs/sbom/spdx.md
+      - Integrations:
+          - Overview: docs/integrations/index.md
+          - GitHub Actions: docs/integrations/github-actions.md
+          - CircleCI: docs/integrations/circleci.md
+          - Travis CI: docs/integrations/travis-ci.md
+          - GitLab CI: docs/integrations/gitlab-ci.md
+          - Bitbucket Pipelines: docs/integrations/bitbucket.md
+          - AWS CodePipeline: docs/integrations/aws-codepipeline.md
+          - AWS Security Hub: docs/integrations/aws-security-hub.md
+      - Advanced:
+          - Plugins: docs/advanced/plugins.md
+          - Air-Gapped Environment: docs/advanced/air-gap.md
+          - Container Image:
+              - Embed in Dockerfile: docs/advanced/container/embed-in-dockerfile.md
+              - Unpacked container image filesystem: docs/advanced/container/unpacked-filesystem.md
+              - OCI Image: docs/advanced/container/oci.md
+              - Podman: docs/advanced/container/podman.md
+              - Private Docker Registries:
+                  - Overview: docs/advanced/private-registries/index.md
+                  - Docker Hub: docs/advanced/private-registries/docker-hub.md
+                  - AWS ECR (Elastic Container Registry): docs/advanced/private-registries/ecr.md
+                  - GCR (Google Container Registry): docs/advanced/private-registries/gcr.md
+                  - ACR (Azure Container Registry): docs/advanced/private-registries/acr.md
+                  - Self-Hosted: docs/advanced/private-registries/self.md
+      - References:
+          - CLI:
+              - Overview: docs/references/cli/index.md
+              - Image: docs/references/cli/image.md
+              - Config: docs/references/cli/config.md
+              - Filesystem: docs/references/cli/fs.md
+              - Rootfs: docs/references/cli/rootfs.md
+              - Repository: docs/references/cli/repo.md
+              - Client: docs/references/cli/client.md
+              - Server: docs/references/cli/server.md
+              - Plugins: docs/references/cli/plugins.md
+              - SBOM: docs/references/cli/sbom.md
+          - Modes:
+              - Standalone: docs/references/modes/standalone.md
+              - Client/Server: docs/references/modes/client-server.md
+          - Troubleshooting: docs/references/troubleshooting.md
+  - Community:
+      - Tools: community/tools.md
+      - References: community/references.md
+      - CKS Reference: community/cks.md
+      - Credits: community/credit.md
+      - How to contribute:
+          - Issues: community/contribute/issue.md
+          - Pull Requests: community/contribute/pr.md
+      - Maintainer:
+          - Help Wanted: community/maintainer/help-wanted.md
+          - Triage: community/maintainer/triage.md
 theme:
-    name: material
-    language: 'en'
-    logo: imgs/logo-white.svg
-    features:
-      - navigation.tabs
-      - navigation.tabs.sticky
-      - navigation.sections
+  name: material
+  language: "en"
+  logo: imgs/logo-white.svg
+  features:
+    - navigation.tabs
+    - navigation.tabs.sticky
+    - navigation.sections
 
 markdown_extensions:
   - pymdownx.highlight

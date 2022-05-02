@@ -155,6 +155,7 @@ require (
 	github.com/sergi/go-diff v1.1.0 // indirect
 	github.com/shopspring/decimal v1.2.0 // indirect
 	github.com/sirupsen/logrus v1.8.1 // indirect
+	github.com/spdx/tools-golang v0.3.0
 	github.com/spf13/cast v1.4.1 // indirect
 	github.com/stretchr/objx v0.3.0 // indirect
 	github.com/tmccombs/hcl2json v0.3.4 // indirect
@@ -197,6 +198,8 @@ require (
 	modernc.org/token v1.0.0 // indirect
 	sigs.k8s.io/yaml v1.3.0 // indirect
 )
+
+require github.com/mitchellh/hashstructure/v2 v2.0.2
 
 // To resolve CVE-2022-23648
 replace github.com/containerd/containerd v1.5.9 => github.com/containerd/containerd v1.5.10
