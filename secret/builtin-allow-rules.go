@@ -3,8 +3,8 @@ package secret
 var builtinAllowRules = []AllowRule{
 	{
 		ID:          "tests",
-		Description: "Avoid paths containing test",
-		Path:        MustCompile(`\/test`),
+		Description: "Avoid test files and paths",
+		Path:        MustCompile(`(\/test|-test|_test|\.test)`),
 	},
 	{
 		ID:          "vendor",
@@ -19,7 +19,7 @@ var builtinAllowRules = []AllowRule{
 	{
 		ID:          "locale-dir",
 		Description: "Locales directory contains locales file",
-		Path:        MustCompile(`\/locale\/`),
+		Path:        MustCompile(`\/locales?\/`),
 	},
 	{
 		ID:          "markdown",
