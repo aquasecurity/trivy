@@ -1,9 +1,8 @@
 package poetry
 
 import (
-	"io"
-
 	"github.com/BurntSushi/toml"
+	dio "github.com/aquasecurity/go-dep-parser/pkg/io"
 	"github.com/aquasecurity/go-dep-parser/pkg/types"
 	"golang.org/x/xerrors"
 )
@@ -22,10 +21,16 @@ type Lockfile struct {
 	} `toml:"package"`
 }
 
-func Parse(r io.Reader) ([]types.Library, error) {
+type Parser struct{}
+
+func NewParser() types.Parser {
+	return &Parser{}
+}
+
+func (p *Parser) Parse(r dio.ReadSeekerAt) ([]types.Library, []types.Dependency, error) {
 	var lockfile Lockfile
 	if _, err := toml.DecodeReader(r, &lockfile); err != nil {
-		return nil, xerrors.Errorf("decode error: %w", err)
+		return nil, nil, xerrors.Errorf("decode error: %w", err)
 	}
 
 	var libs []types.Library
@@ -35,5 +40,5 @@ func Parse(r io.Reader) ([]types.Library, error) {
 			Version: pkg.Version,
 		})
 	}
-	return libs, nil
+	return libs, nil, nil
 }

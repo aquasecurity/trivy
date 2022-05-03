@@ -2,10 +2,10 @@ package pip
 
 import (
 	"bufio"
-	"io"
 	"strings"
 	"unicode"
 
+	dio "github.com/aquasecurity/go-dep-parser/pkg/io"
 	"github.com/aquasecurity/go-dep-parser/pkg/types"
 	"golang.org/x/xerrors"
 )
@@ -16,7 +16,14 @@ const (
 	hashMarker    string = "--"
 )
 
-func Parse(r io.Reader) ([]types.Library, error) {
+type Parser struct{}
+
+func NewParser() types.Parser {
+	return &Parser{}
+}
+
+func (p *Parser) Parse(r dio.ReadSeekerAt) ([]types.Library, []types.Dependency, error) {
+
 	scanner := bufio.NewScanner(r)
 	var libs []types.Library
 	for scanner.Scan() {
@@ -36,9 +43,9 @@ func Parse(r io.Reader) ([]types.Library, error) {
 		})
 	}
 	if err := scanner.Err(); err != nil {
-		return nil, xerrors.Errorf("scan error: %w", err)
+		return nil, nil, xerrors.Errorf("scan error: %w", err)
 	}
-	return libs, nil
+	return libs, nil, nil
 }
 
 func rStripByKey(line string, key string) string {

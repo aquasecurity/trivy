@@ -364,7 +364,7 @@ func TestPom_Parse(t *testing.T) {
 
 			p := pom.NewParser(tt.inputFile, pom.WithRemoteRepos(remoteRepos), pom.WithOffline(tt.offline))
 
-			got, err := p.Parse(f)
+			got, _, err := p.Parse(f)
 			if tt.wantErr != "" {
 				require.NotNil(t, err)
 				assert.Contains(t, err.Error(), tt.wantErr)

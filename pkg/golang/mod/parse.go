@@ -9,21 +9,28 @@ import (
 	"golang.org/x/mod/modfile"
 	"golang.org/x/xerrors"
 
+	dio "github.com/aquasecurity/go-dep-parser/pkg/io"
 	"github.com/aquasecurity/go-dep-parser/pkg/types"
 )
 
+type Parser struct{}
+
+func NewParser() types.Parser {
+	return &Parser{}
+}
+
 // Parse parses a go.mod file
-func Parse(r io.Reader) ([]types.Library, error) {
+func (p *Parser) Parse(r dio.ReadSeekerAt) ([]types.Library, []types.Dependency, error) {
 	libs := map[string]types.Library{}
 
 	goModData, err := io.ReadAll(r)
 	if err != nil {
-		return nil, xerrors.Errorf("file read error: %w", err)
+		return nil, nil, xerrors.Errorf("file read error: %w", err)
 	}
 
 	modFileParsed, err := modfile.Parse("go.mod", goModData, nil)
 	if err != nil {
-		return nil, xerrors.Errorf("go.mod parse error: %w", err)
+		return nil, nil, xerrors.Errorf("go.mod parse error: %w", err)
 	}
 
 	skipIndirect := true
@@ -74,7 +81,7 @@ func Parse(r io.Reader) ([]types.Library, error) {
 		}
 	}
 
-	return maps.Values(libs), nil
+	return maps.Values(libs), nil, nil
 }
 
 // Check if the Go version is less than 1.17

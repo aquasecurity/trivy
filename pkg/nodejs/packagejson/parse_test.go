@@ -16,7 +16,7 @@ func TestParse(t *testing.T) {
 	vectors := []struct {
 		name      string
 		inputFile string
-		want      types.Library
+		want      []types.Library
 		wantErr   string
 	}{
 		{
@@ -27,21 +27,21 @@ func TestParse(t *testing.T) {
 			// npm init --force
 			// npm install --save promise jquery
 			// npm ls | grep -E -o "\S+@\S+" | awk -F@ 'NR>0 {printf("{\""$1"\", \""$2"\"},\n")}'
-			want: types.Library{
+			want: []types.Library{{
 				Name:    "bootstrap",
 				Version: "5.0.2",
 				License: "MIT",
-			},
+			}},
 			wantErr: "",
 		},
 		{
 			name:      "happy path - legacy license",
 			inputFile: "testdata/legacy_package.json",
-			want: types.Library{
+			want: []types.Library{{
 				Name:    "angular",
 				Version: "4.1.2",
 				License: "ISC",
-			},
+			}},
 			wantErr: "",
 		},
 		{
@@ -52,7 +52,7 @@ func TestParse(t *testing.T) {
 			// npm init --force
 			// npm install --save promise jquery
 			// npm ls | grep -E -o "\S+@\S+" | awk -F@ 'NR>0 {printf("{\""$1"\", \""$2"\"},\n")}'
-			want:    types.Library{},
+			want:    []types.Library{},
 			wantErr: "JSON decode error",
 		},
 	}
@@ -62,7 +62,7 @@ func TestParse(t *testing.T) {
 			f, err := os.Open(v.inputFile)
 			require.NoError(t, err)
 
-			got, err := packagejson.Parse(f)
+			got, _, err := packagejson.NewParser().Parse(f)
 			if v.wantErr != "" {
 				require.Error(t, err)
 				assert.Contains(t, err.Error(), v.wantErr)

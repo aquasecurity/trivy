@@ -4,8 +4,8 @@
   "requires": true,
   "dependencies": {
     "asap": {
-      "version": "2.0.6",
-      "resolved": "https://registry.npmjs.org/asap/-/asap-2.0.6.tgz",
+      "version": "2.0.7",
+      "resolved": "https://registry.npmjs.org/asap/-/asap-2.0.7.tgz",
       "integrity": "sha1-5QNHYR1+aQlDIIu9r+vLwvuGbUY="
     },
     "jquery": {

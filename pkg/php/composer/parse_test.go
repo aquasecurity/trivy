@@ -39,7 +39,7 @@ func TestParse(t *testing.T) {
 			f, err := os.Open(v.file)
 			require.NoError(t, err)
 
-			got, err := Parse(f)
+			got, _, err := NewParser().Parse(f)
 			require.NoError(t, err)
 
 			assert.Equal(t, v.want, got)

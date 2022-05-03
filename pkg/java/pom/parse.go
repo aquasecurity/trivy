@@ -11,6 +11,7 @@ import (
 	"path/filepath"
 	"strings"
 
+	dio "github.com/aquasecurity/go-dep-parser/pkg/io"
 	multierror "github.com/hashicorp/go-multierror"
 	"golang.org/x/net/html/charset"
 	"golang.org/x/xerrors"
@@ -51,7 +52,7 @@ type parser struct {
 	offline            bool
 }
 
-func NewParser(filePath string, opts ...option) *parser {
+func NewParser(filePath string, opts ...option) types.Parser {
 	o := &options{
 		offline:     false,
 		remoteRepos: []string{centralURL},
@@ -77,10 +78,10 @@ func NewParser(filePath string, opts ...option) *parser {
 	}
 }
 
-func (p *parser) Parse(r io.Reader) ([]types.Library, error) {
+func (p *parser) Parse(r dio.ReadSeekerAt) ([]types.Library, []types.Dependency, error) {
 	content, err := parsePom(r)
 	if err != nil {
-		return nil, xerrors.Errorf("failed to parse POM: %w", err)
+		return nil, nil, xerrors.Errorf("failed to parse POM: %w", err)
 	}
 
 	root := &pom{
@@ -91,7 +92,7 @@ func (p *parser) Parse(r io.Reader) ([]types.Library, error) {
 	// Analyze root POM
 	result, err := p.analyze(root, nil)
 	if err != nil {
-		return nil, xerrors.Errorf("analyze error (%s): %w", p.rootPath, err)
+		return nil, nil, xerrors.Errorf("analyze error (%s): %w", p.rootPath, err)
 	}
 
 	// Cache root POM
@@ -100,7 +101,7 @@ func (p *parser) Parse(r io.Reader) ([]types.Library, error) {
 	return p.parseRoot(root.artifact())
 }
 
-func (p *parser) parseRoot(root artifact) ([]types.Library, error) {
+func (p *parser) parseRoot(root artifact) ([]types.Library, []types.Dependency, error) {
 	// Prepare a queue for dependencies
 	queue := newArtifactQueue()
 
@@ -109,6 +110,7 @@ func (p *parser) parseRoot(root artifact) ([]types.Library, error) {
 	queue.enqueue(root)
 
 	var libs []types.Library
+	var deps []types.Dependency
 	uniqArtifacts := map[string]version{}
 
 	// Iterate direct and transitive dependencies
@@ -118,11 +120,14 @@ func (p *parser) parseRoot(root artifact) ([]types.Library, error) {
 		// Modules should be handled separately so that they can have independent dependencies.
 		// It means multi-module allows for duplicate dependencies.
 		if art.Module {
-			moduleLibs, err := p.parseRoot(art)
+			moduleLibs, moduleDeps, err := p.parseRoot(art)
 			if err != nil {
-				return nil, err
+				return nil, nil, err
 			}
 			libs = append(libs, moduleLibs...)
+			if deps != nil {
+				deps = append(deps, moduleDeps...)
+			}
 			continue
 		}
 
@@ -135,14 +140,14 @@ func (p *parser) parseRoot(root artifact) ([]types.Library, error) {
 
 		result, err := p.resolve(art)
 		if err != nil {
-			return nil, xerrors.Errorf("resolve error (%s): %w", art, err)
+			return nil, nil, xerrors.Errorf("resolve error (%s): %w", art, err)
 		}
 
 		// Parse, cache, and enqueue modules.
 		for _, relativePath := range result.modules {
 			moduleArtifact, err := p.parseModule(result.filePath, relativePath)
 			if err != nil {
-				return nil, xerrors.Errorf("module error (%s): %w", relativePath, err)
+				return nil, nil, xerrors.Errorf("module error (%s): %w", relativePath, err)
 			}
 
 			queue.enqueue(moduleArtifact)
@@ -166,7 +171,7 @@ func (p *parser) parseRoot(root artifact) ([]types.Library, error) {
 		})
 	}
 
-	return libs, nil
+	return libs, deps, nil
 }
 
 func (p *parser) parseModule(currentPath, relativePath string) (artifact, error) {

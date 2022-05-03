@@ -2,10 +2,10 @@ package lock
 
 import (
 	"encoding/json"
-	"io"
 
 	"golang.org/x/xerrors"
 
+	dio "github.com/aquasecurity/go-dep-parser/pkg/io"
 	"github.com/aquasecurity/go-dep-parser/pkg/types"
 )
 
@@ -21,12 +21,18 @@ type Dependency struct {
 	Resolved string
 }
 
-func Parse(r io.Reader) ([]types.Library, error) {
+type Parser struct{}
+
+func NewParser() types.Parser {
+	return &Parser{}
+}
+
+func (p *Parser) Parse(r dio.ReadSeekerAt) ([]types.Library, []types.Dependency, error) {
 	var lockFile LockFile
 	decoder := json.NewDecoder(r)
 
 	if err := decoder.Decode(&lockFile); err != nil {
-		return nil, xerrors.Errorf("failed to decode packages.lock.json: %w", err)
+		return nil, nil, xerrors.Errorf("failed to decode packages.lock.json: %w", err)
 	}
 
 	uniqueLibs := map[types.Library]struct{}{}
@@ -50,5 +56,5 @@ func Parse(r io.Reader) ([]types.Library, error) {
 		libraries = append(libraries, lib)
 	}
 
-	return libraries, nil
+	return libraries, nil, nil
 }

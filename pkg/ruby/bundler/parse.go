@@ -2,14 +2,21 @@ package bundler
 
 import (
 	"bufio"
-	"io"
 	"strings"
 
+	dio "github.com/aquasecurity/go-dep-parser/pkg/io"
 	"github.com/aquasecurity/go-dep-parser/pkg/types"
+
 	"golang.org/x/xerrors"
 )
 
-func Parse(r io.Reader) ([]types.Library, error) {
+type Parser struct{}
+
+func NewParser() types.Parser {
+	return &Parser{}
+}
+
+func (p *Parser) Parse(r dio.ReadSeekerAt) ([]types.Library, []types.Dependency, error) {
 	var libs []types.Library
 	scanner := bufio.NewScanner(r)
 	for scanner.Scan() {
@@ -27,9 +34,9 @@ func Parse(r io.Reader) ([]types.Library, error) {
 		}
 	}
 	if err := scanner.Err(); err != nil {
-		return nil, xerrors.Errorf("scan error: %w", err)
+		return nil, nil, xerrors.Errorf("scan error: %w", err)
 	}
-	return libs, nil
+	return libs, nil, nil
 }
 
 func countLeadingSpace(line string) int {

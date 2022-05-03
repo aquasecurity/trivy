@@ -2,10 +2,10 @@ package config
 
 import (
 	"encoding/xml"
-	"io"
 
 	"golang.org/x/xerrors"
 
+	dio "github.com/aquasecurity/go-dep-parser/pkg/io"
 	"github.com/aquasecurity/go-dep-parser/pkg/types"
 )
 
@@ -22,10 +22,16 @@ type config struct {
 	Packages []cfgPackageReference `xml:"package"`
 }
 
-func Parse(r io.Reader) ([]types.Library, error) {
+type Parser struct{}
+
+func NewParser() types.Parser {
+	return &Parser{}
+}
+
+func (p *Parser) Parse(r dio.ReadSeekerAt) ([]types.Library, []types.Dependency, error) {
 	var cfgData config
 	if err := xml.NewDecoder(r).Decode(&cfgData); err != nil {
-		return nil, xerrors.Errorf("failed to decode .config file: %w", err)
+		return nil, nil, xerrors.Errorf("failed to decode .config file: %w", err)
 	}
 
 	uniqueLibs := map[types.Library]struct{}{}
@@ -46,5 +52,5 @@ func Parse(r io.Reader) ([]types.Library, error) {
 		libs = append(libs, lib)
 	}
 
-	return libs, nil
+	return libs, nil, nil
 }

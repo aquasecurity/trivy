@@ -2,7 +2,6 @@ package npm
 
 import (
 	"os"
-	"path"
 	"sort"
 	"strings"
 	"testing"
@@ -14,45 +13,78 @@ import (
 )
 
 func TestParse(t *testing.T) {
-	vectors := []struct {
-		file string // Test input file
-		want []types.Library
+	tests := []struct {
+		name     string
+		file     string // Test input file
+		want     []types.Library
+		wantDeps []types.Dependency
 	}{
 		{
-			file: "testdata/package-lock_normal.json",
-			want: npmNormal,
+			name:     "normal",
+			file:     "testdata/package-lock_normal.json",
+			want:     npmNormal,
+			wantDeps: npmNormalDeps,
 		},
 		{
-			file: "testdata/package-lock_react.json",
-			want: npmReact,
+			name:     "react",
+			file:     "testdata/package-lock_react.json",
+			want:     npmReact,
+			wantDeps: npmReactDeps,
 		},
 		{
-			file: "testdata/package-lock_with_dev.json",
-			want: npmWithDev,
+			name:     "with devDependencies",
+			file:     "testdata/package-lock_with_dev.json",
+			want:     npmWithDev,
+			wantDeps: npmWithDevDeps,
 		},
 		{
-			file: "testdata/package-lock_many.json",
-			want: npmMany,
+			name:     "many packages",
+			file:     "testdata/package-lock_many.json",
+			want:     npmMany,
+			wantDeps: npmManyDeps,
 		},
 		{
-			file: "testdata/package-lock_nested.json",
-			want: npmNested,
+			name:     "nested packages",
+			file:     "testdata/package-lock_nested.json",
+			want:     npmNested,
+			wantDeps: npmNestedDeps,
+		},
+		{
+			name:     "deep nested packages",
+			file:     "testdata/package-lock_deep-nested.json",
+			want:     npmDeepNested,
+			wantDeps: npmDeepNestedDeps,
 		},
 	}
 
-	for _, v := range vectors {
-		t.Run(path.Base(v.file), func(t *testing.T) {
-			f, err := os.Open(v.file)
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			f, err := os.Open(tt.file)
 			require.NoError(t, err)
 
-			got, err := Parse(f)
+			got, deps, err := NewParser().Parse(f)
 			require.NoError(t, err)
 
 			sortLibs(got)
-			sortLibs(v.want)
+			sortLibs(tt.want)
 
-			assert.Equal(t, v.want, got)
+			assert.Equal(t, tt.want, got)
+			if tt.wantDeps != nil {
+				sortDeps(deps)
+				sortDeps(tt.wantDeps)
+				assert.Equal(t, tt.wantDeps, deps)
+			}
 		})
+	}
+}
+
+func sortDeps(deps []types.Dependency) {
+	sort.Slice(deps, func(i, j int) bool {
+		return strings.Compare(deps[i].ID, deps[j].ID) < 0
+	})
+
+	for i := range deps {
+		sort.Strings(deps[i].DependsOn)
 	}
 }
 

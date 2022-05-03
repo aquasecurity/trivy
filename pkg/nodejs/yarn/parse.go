@@ -3,10 +3,10 @@ package yarn
 import (
 	"bufio"
 	"fmt"
-	"io"
 	"regexp"
 	"strings"
 
+	dio "github.com/aquasecurity/go-dep-parser/pkg/io"
 	"github.com/aquasecurity/go-dep-parser/pkg/types"
 	"golang.org/x/xerrors"
 )
@@ -60,7 +60,13 @@ func validProtocol(protocol string) (valid bool) {
 	return false
 }
 
-func Parse(r io.Reader) (libs []types.Library, err error) {
+type Parser struct{}
+
+func NewParser() types.Parser {
+	return &Parser{}
+}
+
+func (p *Parser) Parse(r dio.ReadSeekerAt) (libs []types.Library, deps []types.Dependency, err error) {
 	scanner := bufio.NewScanner(r)
 	unique := map[string]struct{}{}
 	var lib types.Library
@@ -78,7 +84,7 @@ func Parse(r io.Reader) (libs []types.Library, err error) {
 				continue
 			}
 			if lib.Name == "" {
-				return nil, xerrors.New("Invalid yarn.lock format")
+				return nil, nil, xerrors.New("Invalid yarn.lock format")
 			}
 			// fetch between version prefix and last double-quote
 			symbol := fmt.Sprintf("%s@%s", lib.Name, version)
@@ -110,5 +116,5 @@ func Parse(r io.Reader) (libs []types.Library, err error) {
 			lib.Name = name
 		}
 	}
-	return libs, nil
+	return libs, nil, nil
 }

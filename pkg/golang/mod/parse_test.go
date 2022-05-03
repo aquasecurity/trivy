@@ -69,7 +69,7 @@ func TestParse(t *testing.T) {
 			f, err := os.Open(tt.file)
 			require.NoError(t, err)
 
-			got, err := Parse(f)
+			got, _, err := NewParser().Parse(f)
 			require.NoError(t, err)
 
 			sort.Slice(got, func(i, j int) bool {

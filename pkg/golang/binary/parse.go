@@ -29,11 +29,17 @@ func convertError(err error) error {
 	return err
 }
 
+type Parser struct{}
+
+func NewParser() types.Parser {
+	return &Parser{}
+}
+
 // Parse scans file to try to report the Go and module versions.
-func Parse(r dio.ReadSeekerAt) ([]types.Library, error) {
+func (p *Parser) Parse(r dio.ReadSeekerAt) ([]types.Library, []types.Dependency, error) {
 	info, err := buildinfo.Read(r)
 	if err != nil {
-		return nil, convertError(err)
+		return nil, nil, convertError(err)
 	}
 
 	libs := make([]types.Library, 0, len(info.Deps))
@@ -50,5 +56,5 @@ func Parse(r dio.ReadSeekerAt) ([]types.Library, error) {
 		})
 	}
 
-	return libs, nil
+	return libs, nil, nil
 }

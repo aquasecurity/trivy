@@ -2,8 +2,8 @@ package packagejson
 
 import (
 	"encoding/json"
-	"io"
 
+	dio "github.com/aquasecurity/go-dep-parser/pkg/io"
 	"github.com/aquasecurity/go-dep-parser/pkg/types"
 	"golang.org/x/xerrors"
 )
@@ -13,23 +13,28 @@ type packageJSON struct {
 	Version string      `json:"version"`
 	License interface{} `json:"license"`
 }
+type Parser struct{}
 
-func Parse(r io.Reader) (types.Library, error) {
+func NewParser() types.Parser {
+	return &Parser{}
+}
+
+func (p *Parser) Parse(r dio.ReadSeekerAt) ([]types.Library, []types.Dependency, error) {
 	var data packageJSON
 	err := json.NewDecoder(r).Decode(&data)
 	if err != nil {
-		return types.Library{}, xerrors.Errorf("JSON decode error: %w", err)
+		return nil, nil, xerrors.Errorf("JSON decode error: %w", err)
 	}
 
 	if data.Name == "" || data.Version == "" {
-		return types.Library{}, xerrors.Errorf("unable to parse package.json")
+		return nil, nil, xerrors.Errorf("unable to parse package.json")
 	}
 
-	return types.Library{
+	return []types.Library{{
 		Name:    data.Name,
 		Version: data.Version,
 		License: parseLicense(data.License),
-	}, nil
+	}}, nil, nil
 }
 
 func parseLicense(val interface{}) string {

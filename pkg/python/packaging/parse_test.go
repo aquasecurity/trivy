@@ -15,7 +15,7 @@ func TestParse(t *testing.T) {
 	tests := []struct {
 		name    string
 		input   string
-		want    types.Library
+		want    []types.Library
 		wantErr bool
 	}{
 		// listing dependencies based on METADATA/PKG-INFO files
@@ -33,7 +33,7 @@ func TestParse(t *testing.T) {
 			// cd /usr/lib/python3.9/site-packages/setuptools-52.0.0-py3.9.egg-info/
 			// cat PKG-INFO | grep -e "^Name:" -e "^Version:" -e "^License:" | cut -d" " -f2- | \
 			// tr "\n" "\t" | awk -F "\t" '{printf("\{\""$1"\", \""$2"\", \""$3"\"\}\n")}'
-			want: types.Library{Name: "setuptools", Version: "51.3.3", License: "UNKNOWN"},
+			want: []types.Library{{Name: "setuptools", Version: "51.3.3", License: "UNKNOWN"}},
 		},
 		{
 			name:  "egg-info",
@@ -44,7 +44,7 @@ func TestParse(t *testing.T) {
 			// cd /usr/lib/python3.9/site-packages/
 			// cat distlib-0.3.1-py3.9.egg-info | grep -e "^Name:" -e "^Version:" -e "^License:" | cut -d" " -f2- | \
 			// tr "\n" "\t" | awk -F "\t" '{printf("\{\""$1"\", \""$2"\", \""$3"\"\}\n")}'
-			want: types.Library{Name: "distlib", Version: "0.3.1", License: "Python license"},
+			want: []types.Library{{Name: "distlib", Version: "0.3.1", License: "Python license"}},
 		},
 		{
 			name:  "wheel METADATA",
@@ -57,7 +57,7 @@ func TestParse(t *testing.T) {
 
 			// for single METADATA file with known name
 			// cat "{{ libname }}.METADATA | grep -e "^Name:" -e "^Version:" -e "^License:" | cut -d" " -f2- | tr "\n" "\t" | awk -F "\t" '{printf("\{\""$1"\", \""$2"\", \""$3"\"\}\n")}'
-			want: types.Library{Name: "simple", Version: "0.1.0", License: ""},
+			want: []types.Library{{Name: "simple", Version: "0.1.0", License: ""}},
 		},
 		{
 			name: "wheel METADATA",
@@ -65,7 +65,7 @@ func TestParse(t *testing.T) {
 			// for single METADATA file with known name
 			// cat "{{ libname }}.METADATA | grep -e "^Name:" -e "^Version:" -e "^License:" | cut -d" " -f2- | tr "\n" "\t" | awk -F "\t" '{printf("\{\""$1"\", \""$2"\", \""$3"\"\}\n")}'
 			input: "testdata/distlib-0.3.1.METADATA",
-			want:  types.Library{Name: "distlib", Version: "0.3.1", License: "Python license"},
+			want:  []types.Library{{Name: "distlib", Version: "0.3.1", License: "Python license"}},
 		},
 		{
 			name:    "invalid",
@@ -78,7 +78,7 @@ func TestParse(t *testing.T) {
 			f, err := os.Open(tt.input)
 			require.NoError(t, err)
 
-			got, err := packaging.Parse(f)
+			got, _, err := packaging.NewParser().Parse(f)
 			require.Equal(t, tt.wantErr, err != nil)
 
 			assert.Equal(t, tt.want, got)
