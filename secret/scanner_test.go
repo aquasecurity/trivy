@@ -182,13 +182,19 @@ func TestSecretScanner(t *testing.T) {
 			want:          types.Secret{},
 		},
 		{
-			name:          "allow-rule regex",
+			name:          "allow-rule regex inside group",
 			configPath:    "testdata/allow-regex.yaml",
 			inputFilePath: "testdata/secret.txt",
 			want: types.Secret{
 				FilePath: "testdata/secret.txt",
 				Findings: []types.SecretFinding{wantFinding1},
 			},
+		},
+		{
+			name:          "allow-rule regex outside group",
+			configPath:    "testdata/allow-regex-outside-group.yaml",
+			inputFilePath: "testdata/secret.txt",
+			want:          types.Secret{},
 		},
 		{
 			name:          "exclude-block regexes",

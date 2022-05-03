@@ -92,40 +92,68 @@ type Rule struct {
 	SecretGroupName string                   `yaml:"secret-group-name"`
 }
 
-func (r *Rule) FindLocations(content []byte) []Location {
+func (s *Scanner) FindLocations(r Rule, content []byte) []Location {
 	if r.Regex == nil {
 		return nil
 	}
-	var indices [][]int
-	if r.SecretGroupName == "" {
-		indices = r.Regex.FindAllIndex(content, -1)
-	} else {
-		indices = r.FindSubmatchIndices(content)
+
+	if r.SecretGroupName != "" {
+		return s.FindSubmatchLocations(r, content)
 	}
 
 	var locs []Location
+	indices := r.Regex.FindAllIndex(content, -1)
 	for _, index := range indices {
-		locs = append(locs, Location{
+		loc := Location{
 			Start: index[0],
 			End:   index[1],
-		})
+		}
+
+		if s.AllowLocation(r, content, loc) {
+			continue
+		}
+
+		locs = append(locs, loc)
 	}
 	return locs
 }
 
-func (r *Rule) FindSubmatchIndices(content []byte) [][]int {
-	var indices [][]int
-	matchsLocs := r.Regex.FindAllSubmatchIndex(content, -1)
-	for _, matchLocs := range matchsLocs {
-		for i, name := range r.Regex.SubexpNames() {
-			if name == r.SecretGroupName {
-				startLocIndex := 2 * i
-				endLocIndex := startLocIndex + 1
-				indices = append(indices, []int{matchLocs[startLocIndex], matchLocs[endLocIndex]})
-			}
+func (s *Scanner) FindSubmatchLocations(r Rule, content []byte) []Location {
+	var submatchLocations []Location
+	matchsIndices := r.Regex.FindAllSubmatchIndex(content, -1)
+	for _, matchIndices := range matchsIndices {
+		matchLocation := Location{ // first two indexes are always start and end of the whole match
+			Start: matchIndices[0],
+			End:   matchIndices[1],
+		}
+
+		if s.AllowLocation(r, content, matchLocation) {
+			continue
+		}
+
+		matchSubgroupsLocations := r.getMatchSubgroupsLocations(matchIndices)
+		if len(matchSubgroupsLocations) > 0 {
+			submatchLocations = append(submatchLocations, matchSubgroupsLocations...)
 		}
 	}
-	return indices
+	return submatchLocations
+}
+
+func (s *Scanner) AllowLocation(r Rule, content []byte, loc Location) bool {
+	match := string(content[loc.Start:loc.End])
+	return s.Allow(match) || r.Allow(match)
+}
+
+func (r *Rule) getMatchSubgroupsLocations(matchLocs []int) []Location {
+	var locations []Location
+	for i, name := range r.Regex.SubexpNames() {
+		if name == r.SecretGroupName {
+			startLocIndex := 2 * i
+			endLocIndex := startLocIndex + 1
+			locations = append(locations, Location{Start: matchLocs[startLocIndex], End: matchLocs[endLocIndex]})
+		}
+	}
+	return locations
 }
 
 func (r *Rule) MatchPath(path string) bool {
@@ -326,20 +354,13 @@ func (s Scanner) Scan(args ScanArgs) types.Secret {
 		}
 
 		// Detect secrets
-		locs := rule.FindLocations(args.Content)
+		locs := s.FindLocations(rule, args.Content)
 		if len(locs) == 0 {
 			continue
 		}
 
 		localExcludedBlocks := newBlocks(args.Content, rule.ExcludeBlock.Regexes)
 		for _, loc := range locs {
-			match := string(args.Content[loc.Start:loc.End])
-
-			// Apply global and local allow rules.
-			if s.Allow(match) || rule.Allow(match) {
-				continue
-			}
-
 			// Skip the secret if it is within excluded blocks.
 			if globalExcludedBlocks.Match(loc) || localExcludedBlocks.Match(loc) {
 				continue
