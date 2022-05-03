@@ -3,7 +3,7 @@ module github.com/aquasecurity/trivy
 go 1.18
 
 require (
-	github.com/CycloneDX/cyclonedx-go v0.5.1
+	github.com/CycloneDX/cyclonedx-go v0.5.2
 	github.com/Masterminds/sprig/v3 v3.2.2
 	github.com/NYTimes/gziphandler v1.1.1
 	github.com/aquasecurity/bolt-fixtures v0.0.0-20200903104109-d34e7f983986
