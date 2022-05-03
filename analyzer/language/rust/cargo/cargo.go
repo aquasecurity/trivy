@@ -22,7 +22,7 @@ const version = 1
 type cargoLibraryAnalyzer struct{}
 
 func (a cargoLibraryAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInput) (*analyzer.AnalysisResult, error) {
-	res, err := language.Analyze(types.Cargo, input.FilePath, input.Content, cargo.Parse)
+	res, err := language.Analyze(types.Cargo, input.FilePath, input.Content, cargo.NewParser())
 	if err != nil {
 		return nil, xerrors.Errorf("error with Cargo.lock: %w", err)
 	}

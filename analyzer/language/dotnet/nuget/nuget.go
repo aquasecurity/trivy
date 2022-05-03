@@ -2,6 +2,7 @@ package nuget
 
 import (
 	"context"
+	"golang.org/x/exp/slices"
 	"os"
 	"path/filepath"
 
@@ -10,7 +11,6 @@ import (
 	"github.com/aquasecurity/fanal/analyzer"
 	"github.com/aquasecurity/fanal/analyzer/language"
 	"github.com/aquasecurity/fanal/types"
-	"github.com/aquasecurity/fanal/utils"
 	"github.com/aquasecurity/go-dep-parser/pkg/nuget/config"
 	"github.com/aquasecurity/go-dep-parser/pkg/nuget/lock"
 )
@@ -31,11 +31,11 @@ type nugetLibraryAnalyzer struct{}
 
 func (a nugetLibraryAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInput) (*analyzer.AnalysisResult, error) {
 	// Set the default parser
-	parser := lock.Parse
+	parser := lock.NewParser()
 
 	targetFile := filepath.Base(input.FilePath)
 	if targetFile == configFile {
-		parser = config.Parse
+		parser = config.NewParser()
 	}
 
 	res, err := language.Analyze(types.NuGet, input.FilePath, input.Content, parser)
@@ -47,7 +47,7 @@ func (a nugetLibraryAnalyzer) Analyze(_ context.Context, input analyzer.Analysis
 
 func (a nugetLibraryAnalyzer) Required(filePath string, _ os.FileInfo) bool {
 	fileName := filepath.Base(filePath)
-	return utils.StringInSlice(fileName, requiredFiles)
+	return slices.Contains(requiredFiles, fileName)
 }
 
 func (a nugetLibraryAnalyzer) Type() analyzer.Type {
