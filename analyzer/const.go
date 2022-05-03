@@ -6,6 +6,7 @@ const (
 	// ======
 	//   OS
 	// ======
+	TypeOSRelease  Type = "os-release"
 	TypeAlpine     Type = "alpine"
 	TypeAmazon     Type = "amazon"
 	TypeCBLMariner Type = "cbl-mariner"
