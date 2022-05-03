@@ -21,7 +21,7 @@ const version = 1
 type pipLibraryAnalyzer struct{}
 
 func (a pipLibraryAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInput) (*analyzer.AnalysisResult, error) {
-	res, err := language.Analyze(types.Pip, input.FilePath, input.Content, pip.Parse)
+	res, err := language.Analyze(types.Pip, input.FilePath, input.Content, pip.NewParser())
 	if err != nil {
 		return nil, xerrors.Errorf("unable to parse requirements.txt: %w", err)
 	}

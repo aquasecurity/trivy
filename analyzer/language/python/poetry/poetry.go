@@ -22,7 +22,7 @@ const version = 1
 type poetryLibraryAnalyzer struct{}
 
 func (a poetryLibraryAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInput) (*analyzer.AnalysisResult, error) {
-	res, err := language.Analyze(types.Poetry, input.FilePath, input.Content, poetry.Parse)
+	res, err := language.Analyze(types.Poetry, input.FilePath, input.Content, poetry.NewParser())
 	if err != nil {
 		return nil, xerrors.Errorf("unable to parse poetry.lock: %w", err)
 	}

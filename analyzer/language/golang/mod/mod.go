@@ -13,6 +13,7 @@ import (
 	"github.com/aquasecurity/fanal/types"
 	"github.com/aquasecurity/go-dep-parser/pkg/golang/mod"
 	"github.com/aquasecurity/go-dep-parser/pkg/golang/sum"
+	godeptypes "github.com/aquasecurity/go-dep-parser/pkg/types"
 )
 
 func init() {
@@ -26,12 +27,12 @@ var requiredFiles = []string{types.GoMod, types.GoSum}
 type gomodAnalyzer struct{}
 
 func (a gomodAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInput) (*analyzer.AnalysisResult, error) {
-	var parser language.Parser
+	var parser godeptypes.Parser
 	switch filepath.Base(input.FilePath) {
 	case types.GoMod:
-		parser = mod.Parse
+		parser = mod.NewParser()
 	case types.GoSum:
-		parser = sum.Parse
+		parser = sum.NewParser()
 	default:
 		return nil, nil
 	}
