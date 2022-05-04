@@ -101,15 +101,7 @@ func scanK8sImages(ctx *cli.Context, opt Option, cacheClient cache.Cache, artifa
 
 			// if an image failed to be scanned, we add the report as error and continue to scan other images
 			if err != nil {
-				reports = append(reports, KubernetesReport{
-					Namespace: artifact.Namespace,
-					Kind:      artifact.Kind,
-					Name:      artifact.Name,
-					Image:     image,
-					Results:   report.Results,
-					Error:     err,
-				})
-
+				reports = append(reports, newK8sReport(artifact, report.Results, image, err))
 				continue
 			}
 
@@ -118,13 +110,7 @@ func scanK8sImages(ctx *cli.Context, opt Option, cacheClient cache.Cache, artifa
 				return xerrors.Errorf("filter error: %w", err)
 			}
 
-			reports = append(reports, KubernetesReport{
-				Namespace: artifact.Namespace,
-				Kind:      artifact.Kind,
-				Name:      artifact.Name,
-				Image:     image,
-				Results:   report.Results,
-			})
+			reports = append(reports, newK8sReport(artifact, report.Results, image, nil))
 		}
 	}
 
@@ -170,12 +156,7 @@ func scanK8sIac(ctx *cli.Context, opt Option, cacheClient cache.Cache, artifacts
 			return xerrors.Errorf("filter error: %w", err)
 		}
 
-		reports = append(reports, KubernetesReport{
-			Namespace: artifact.Namespace,
-			Kind:      artifact.Kind,
-			Name:      artifact.Name,
-			Results:   report.Results,
-		})
+		reports = append(reports, newK8sReport(artifact, report.Results, "", nil))
 	}
 
 	fmt.Printf("%v\n", reports)
@@ -215,8 +196,6 @@ func createTempFile(artifact *artifacts.Artifact) (*os.File, error) {
 		return nil, xerrors.Errorf("creating tmp file error: %w", err)
 	}
 
-	fmt.Println("debugging", file.Name())
-
 	// TODO: marshal and return as byte can be on the trivy-kubernetes library
 	data, err := yaml.Marshal(artifact.RawResource)
 	if err != nil {
@@ -229,4 +208,16 @@ func createTempFile(artifact *artifacts.Artifact) (*os.File, error) {
 	}
 
 	return file, nil
+}
+
+func newK8sReport(artifact *artifacts.Artifact, results types.Results, image string, err error) KubernetesReport {
+	return KubernetesReport{
+		Namespace: artifact.Namespace,
+		Kind:      artifact.Kind,
+		Name:      artifact.Name,
+		Image:     image,
+		// maybe add the full report here
+		Results: results,
+		Error:   err,
+	}
 }
