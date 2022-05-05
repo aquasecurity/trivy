@@ -50,6 +50,8 @@ require (
 	k8s.io/utils v0.0.0-20211116205334-6203023598ed
 )
 
+require gopkg.in/yaml.v2 v2.4.0
+
 require (
 	cloud.google.com/go v0.99.0 // indirect
 	cloud.google.com/go/storage v1.14.0 // indirect
@@ -216,7 +218,6 @@ require (
 	gopkg.in/go-playground/validator.v9 v9.31.0 // indirect
 	gopkg.in/inf.v0 v0.9.1 // indirect
 	gopkg.in/warnings.v0 v0.1.2 // indirect
-	gopkg.in/yaml.v2 v2.4.0 // indirect
 	k8s.io/api v0.23.6 // indirect
 	k8s.io/apimachinery v0.23.6 // indirect
 	k8s.io/cli-runtime v0.23.6 // indirect
