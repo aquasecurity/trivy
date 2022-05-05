@@ -14,8 +14,7 @@ rules:
     category: general
     title: Generic Rule
     severity: HIGH
-    path:
-      - .*\.sh
+    path: .*\.sh
     keywords:
       - secret
     regex: (?i)(?P<key>(secret))(=|:).{0,5}['"](?P<secret>[0-9a-zA-Z\-_=]{8,64})['"]
