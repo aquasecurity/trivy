@@ -80,9 +80,14 @@ func K8sRun(ctx *cli.Context) error {
 		return xerrors.Errorf("k8s scan error: %w", err)
 	}
 
+	clusterName, err := k8s.GetCurrentContext()
+	if err != nil {
+		return xerrors.Errorf("failed to get k8s current context: %w", err)
+	}
+
 	report := types.K8sReport{
 		SchemaVersion: 0,
-		ClusterName:   "test", // TODO: how to get cluster name
+		ClusterName:   clusterName,
 		Resources:     resources,
 	}
 

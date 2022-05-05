@@ -245,4 +245,4 @@ require (
 replace github.com/containerd/containerd v1.5.9 => github.com/containerd/containerd v1.5.10
 
 // TODO(josedonizetti): Remove once the PR is merged on trivy-kubernetes
-replace github.com/aquasecurity/trivy-kubernetes v0.0.1 => github.com/josedonizetti/trivy-kubernetes v0.0.0-20220502215127-aa70f38c1a9e
+replace github.com/aquasecurity/trivy-kubernetes v0.0.1 => github.com/josedonizetti/trivy-kubernetes v0.0.0-20220505210517-0e457c8a6698

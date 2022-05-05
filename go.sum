@@ -1002,8 +1002,8 @@ github.com/jmoiron/sqlx v1.2.1-0.20190826204134-d7d95172beb5/go.mod h1:1FEQNm3xl
 github.com/joefitzgerald/rainbow-reporter v0.1.0/go.mod h1:481CNgqmVHQZzdIbN52CupLJyoVwB10FQ/IQlF1pdL8=
 github.com/joho/godotenv v1.3.0/go.mod h1:7hK45KPybAkOC6peb+G5yklZfMxEjkZhHbwpqxOKXbg=
 github.com/jonboulle/clockwork v0.1.0/go.mod h1:Ii8DK3G1RaLaWxj9trq07+26W01tbo22gdxWY5EU2bo=
-github.com/josedonizetti/trivy-kubernetes v0.0.0-20220502215127-aa70f38c1a9e h1:5Y1aA47Bv7z06wQ2kZph9Oi6usbXx/dEzQaFLf39TyE=
-github.com/josedonizetti/trivy-kubernetes v0.0.0-20220502215127-aa70f38c1a9e/go.mod h1:z+kVCimcxUHBSNa5I8KURRotFkQiQrjSTvZMFsFuB+s=
+github.com/josedonizetti/trivy-kubernetes v0.0.0-20220505210517-0e457c8a6698 h1:13B+DnXwWy2zx+JCqlRxApMjnPGBY+BwJzBnz+9AnNI=
+github.com/josedonizetti/trivy-kubernetes v0.0.0-20220505210517-0e457c8a6698/go.mod h1:z+kVCimcxUHBSNa5I8KURRotFkQiQrjSTvZMFsFuB+s=
 github.com/josharian/intern v1.0.0 h1:vlS4z54oSdjm0bgjRigI+G1HpF+tI+9rE5LLzOg8HmY=
 github.com/josharian/intern v1.0.0/go.mod h1:5DoeVV0s6jJacbCEi61lwdGj/aVlrQvzHFFd8Hwg//Y=
 github.com/jpillora/backoff v0.0.0-20180909062703-3050d21c67d7/go.mod h1:2iMrUgbbvHEiQClaW2NsSzMyGHqN+rDFqY705q49KG0=
