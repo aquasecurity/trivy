@@ -77,3 +77,20 @@ func (results Results) Failed() bool {
 	}
 	return false
 }
+
+// K8sReport represents a kubernetes scan report
+type K8sReport struct {
+	SchemaVersion int `json:",omitempty"`
+	ClusterName   string
+	Resources     []K8sResource
+}
+
+// K8sReport represents a kubernetes resource report
+type K8sResource struct {
+	Namespace string
+	Kind      string
+	Name      string
+	//TODO(josedonizetti): should add metadata? per report? per Result?
+	//Metadata  Metadata `json:",omitempty"`
+	Results Results `json:",omitempty"`
+}
