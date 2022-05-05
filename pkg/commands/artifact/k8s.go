@@ -223,7 +223,7 @@ func createTempFile(artifact *artifacts.Artifact) (*os.File, error) {
 	// TODO(josedonizetti): marshal and return as byte slice should be on the trivy-kubernetes library?
 	data, err := yaml.Marshal(artifact.RawResource)
 	if err != nil {
-		return nil, xerrors.Errorf("marshalling resource error: %w", err)
+		return nil, xerrors.Errorf("marshaling resource error: %w", err)
 	}
 
 	_, err = file.Write(data)
