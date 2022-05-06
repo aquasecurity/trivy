@@ -13,7 +13,7 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Run Trivy vulnerability scanner and create GitHub issues
-        uses: knqyf263/trivy-issue-action@v0.0.3
+        uses: knqyf263/trivy-issue-action@v0.0.4
         with:
           assignee: knqyf263
           severity: CRITICAL
