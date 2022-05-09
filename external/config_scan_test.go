@@ -7,6 +7,7 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/aquasecurity/fanal/external"
+	_ "github.com/aquasecurity/fanal/handler/misconf"
 	"github.com/aquasecurity/fanal/types"
 )
 

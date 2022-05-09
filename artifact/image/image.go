@@ -20,7 +20,6 @@ import (
 	"github.com/aquasecurity/fanal/artifact"
 	"github.com/aquasecurity/fanal/cache"
 	"github.com/aquasecurity/fanal/handler"
-	_ "github.com/aquasecurity/fanal/handler/all"
 	"github.com/aquasecurity/fanal/log"
 	"github.com/aquasecurity/fanal/types"
 	"github.com/aquasecurity/fanal/walker"
