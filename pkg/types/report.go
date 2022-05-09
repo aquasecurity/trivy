@@ -95,3 +95,20 @@ type K8sResource struct {
 	//Metadata  Metadata `json:",omitempty"`
 	Results Results `json:",omitempty"`
 }
+
+// Failed returns whether the k8s report includes any vulnerabilities or misconfigurations
+func (report K8sReport) Failed() bool {
+	for _, r := range report.Vulnerabilities {
+		if r.Results.Failed() {
+			return true
+		}
+	}
+
+	for _, r := range report.Misconfigurations {
+		if r.Results.Failed() {
+			return true
+		}
+	}
+
+	return false
+}

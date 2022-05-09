@@ -109,7 +109,7 @@ func runWithTimeout(ctx context.Context, opt Option, initializeScanner Initializ
 		return xerrors.Errorf("unable to write results: %w", err)
 	}
 
-	exit(opt, report.Results)
+	exit(opt, report.Results.Failed())
 
 	return nil
 }
@@ -307,8 +307,8 @@ func filter(ctx context.Context, opt Option, report types.Report) (types.Report,
 	return report, nil
 }
 
-func exit(c Option, results types.Results) {
-	if c.ExitCode != 0 && results.Failed() {
+func exit(c Option, failedResults bool) {
+	if c.ExitCode != 0 && failedResults {
 		os.Exit(c.ExitCode)
 	}
 }

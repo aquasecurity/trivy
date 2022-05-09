@@ -89,6 +89,8 @@ func K8sRun(ctx *cli.Context) error {
 		return xerrors.Errorf("unable to write results: %w", err)
 	}
 
+	exit(opt, report.Failed())
+
 	return nil
 }
 
