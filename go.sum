@@ -176,10 +176,10 @@ github.com/apparentlymart/go-textseg/v13 v13.0.0 h1:Y+KvPE1NYz0xl601PVImeQfFyEy6
 github.com/apparentlymart/go-textseg/v13 v13.0.0/go.mod h1:ZK2fH7c4NqDTLtiYLvIkEghdlcqw7yxLeM89kiTRPUo=
 github.com/aquasecurity/bolt-fixtures v0.0.0-20200903104109-d34e7f983986 h1:2a30xLN2sUZcMXl50hg+PJCIDdJgIvIbVcKqLJ/ZrtM=
 github.com/aquasecurity/bolt-fixtures v0.0.0-20200903104109-d34e7f983986/go.mod h1:NT+jyeCzXk6vXR5MTkdn4z64TgGfE5HMLC8qfj5unl8=
-github.com/aquasecurity/defsec v0.53.2 h1:ULvas2SZypNkptk7bx9o8Av5rb7lv0CCsTEi9OMDaHs=
-github.com/aquasecurity/defsec v0.53.2/go.mod h1:2PoWBy92rfT55Y/hb2NiP5EDcpECtVelxliCchYgH9M=
-github.com/aquasecurity/fanal v0.0.0-20220506162538-6b4d2aed9e95 h1:/vLbUyCwhWxO2oit2GDyHgrm62XdJZcYwGFZwB4js0w=
-github.com/aquasecurity/fanal v0.0.0-20220506162538-6b4d2aed9e95/go.mod h1:uOFmDohvB888BCpRBYLvbRxCgI869Ev4w1ajD5Fx0F0=
+github.com/aquasecurity/defsec v0.55.2 h1:bnazYuf340OZpb8YPeKzw6foCdfnTF9Go2v5TBfT4uQ=
+github.com/aquasecurity/defsec v0.55.2/go.mod h1:VAVRjHT9x2xgj0h3rvcaVUcnu17IlsnbZ+PjSTVbpw8=
+github.com/aquasecurity/fanal v0.0.0-20220509144007-6b1f16b3535d h1:DEUmASgYAB8REJHGMrwfvRc6ISn/q1EuwjHPCQwPXmA=
+github.com/aquasecurity/fanal v0.0.0-20220509144007-6b1f16b3535d/go.mod h1:ehBVv1oerH4JJu/DsJvNLC3kPdZUJnpbYJEE0DcNBF0=
 github.com/aquasecurity/go-dep-parser v0.0.0-20220503151658-d316f5cc2cff h1:YNlzRYB0n4mZtfuWx6AWaGEjnLVNekchyoFDlYFZegs=
 github.com/aquasecurity/go-dep-parser v0.0.0-20220503151658-d316f5cc2cff/go.mod h1:7EOQWQmyavVPY3fScbbPdd3dB/b0Q4ZbJ/NZCvNKrLs=
 github.com/aquasecurity/go-gem-version v0.0.0-20201115065557-8eed6fe000ce h1:QgBRgJvtEOBtUXilDb1MLi1p1MWoyFDXAu5DEUl5nwM=
@@ -932,8 +932,8 @@ github.com/mitchellh/osext v0.0.0-20151018003038-5e2d6d41470f/go.mod h1:OkQIRizQ
 github.com/mitchellh/reflectwalk v1.0.0/go.mod h1:mSTlrgnPZtwu0c4WaC2kGObEpuNDbx0jmZXqmk4esnw=
 github.com/mitchellh/reflectwalk v1.0.2 h1:G2LzWKi524PWgd3mLHV8Y5k7s6XUvT0Gef6zxSIeXaQ=
 github.com/mitchellh/reflectwalk v1.0.2/go.mod h1:mSTlrgnPZtwu0c4WaC2kGObEpuNDbx0jmZXqmk4esnw=
-github.com/moby/buildkit v0.10.2 h1:jywa+mPPtsfCQqpIbt72RUKf49hTTCirTqIs4LG0n+8=
-github.com/moby/buildkit v0.10.2/go.mod h1:jxeOuly98l9gWHai0Ojrbnczrk/rf+o9/JqNhY+UCSo=
+github.com/moby/buildkit v0.10.3 h1:/dGykD8FW+H4p++q5+KqKEo6gAkYKyBQHdawdjVwVAU=
+github.com/moby/buildkit v0.10.3/go.mod h1:jxeOuly98l9gWHai0Ojrbnczrk/rf+o9/JqNhY+UCSo=
 github.com/moby/locker v1.0.1/go.mod h1:S7SDdo5zpBK84bzzVlKr2V0hz+7x9hWbYC/kq7oQppc=
 github.com/moby/spdystream v0.2.0/go.mod h1:f7i0iNDQJ059oMTcWxx8MA/zKFIuD/lY+0GqbN2Wy8c=
 github.com/moby/sys/mount v0.2.0/go.mod h1:aAivFE2LB3W4bACsUXChRHQ0qKWsetY4Y9V7sxOougM=
