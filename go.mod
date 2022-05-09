@@ -7,7 +7,7 @@ require (
 	github.com/Masterminds/sprig/v3 v3.2.2
 	github.com/NYTimes/gziphandler v1.1.1
 	github.com/aquasecurity/bolt-fixtures v0.0.0-20200903104109-d34e7f983986
-	github.com/aquasecurity/fanal v0.0.0-20220509163053-4bf7a6857475
+	github.com/aquasecurity/fanal v0.0.0-20220509194339-dba079939a2f
 	github.com/aquasecurity/go-dep-parser v0.0.0-20220503151658-d316f5cc2cff
 	github.com/aquasecurity/go-gem-version v0.0.0-20201115065557-8eed6fe000ce
 	github.com/aquasecurity/go-npm-version v0.0.0-20201110091526-0b796d180798
@@ -30,6 +30,7 @@ require (
 	github.com/knqyf263/go-deb-version v0.0.0-20190517075300-09fca494f03d
 	github.com/knqyf263/go-rpm-version v0.0.0-20170716094938-74609b86c936
 	github.com/masahiro331/go-mvn-version v0.0.0-20210429150710-d3157d602a08
+	github.com/mitchellh/hashstructure/v2 v2.0.2
 	github.com/olekukonko/tablewriter v0.0.5
 	github.com/open-policy-agent/opa v0.40.0
 	github.com/owenrumney/go-sarif/v2 v2.1.1
@@ -38,8 +39,8 @@ require (
 	github.com/spf13/afero v1.8.1 // indirect
 	github.com/stretchr/testify v1.7.1
 	github.com/testcontainers/testcontainers-go v0.12.0
-	github.com/twitchtv/twirp v8.1.1+incompatible
-	github.com/urfave/cli/v2 v2.4.0
+	github.com/twitchtv/twirp v8.1.2+incompatible
+	github.com/urfave/cli/v2 v2.5.1
 	go.uber.org/zap v1.21.0
 	golang.org/x/exp v0.0.0-20220407100705-7b9b53b0aca4
 	golang.org/x/sys v0.0.0-20220412211240-33da011f77ad // indirect
@@ -122,6 +123,8 @@ require (
 	github.com/knqyf263/nested v0.0.1 // indirect
 	github.com/liamg/iamgo v0.0.6 // indirect
 	github.com/liamg/jfather v0.0.7 // indirect
+	github.com/liamg/memoryfs v1.4.1 // indirect
+	github.com/liamg/tml v0.6.0 // indirect
 	github.com/magiconair/properties v1.8.5 // indirect
 	github.com/mattn/go-colorable v0.1.12 // indirect
 	github.com/mattn/go-isatty v0.0.14 // indirect
@@ -192,12 +195,12 @@ require (
 	modernc.org/token v1.0.0 // indirect
 )
 
-require github.com/mitchellh/hashstructure/v2 v2.0.2
-
 require (
-	github.com/liamg/memoryfs v1.4.1 // indirect
-	github.com/liamg/tml v0.6.0 // indirect
+	github.com/mailru/easyjson v0.7.6
+	github.com/tetratelabs/wazero v0.0.0-20220509065650-96bc7c84624e
 )
+
+require github.com/josharian/intern v1.0.0 // indirect
 
 // To resolve CVE-2022-23648
 replace github.com/containerd/containerd v1.5.9 => github.com/containerd/containerd v1.5.10
