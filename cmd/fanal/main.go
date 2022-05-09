@@ -20,7 +20,7 @@ import (
 	"github.com/aquasecurity/fanal/artifact/local"
 	"github.com/aquasecurity/fanal/artifact/remote"
 	"github.com/aquasecurity/fanal/cache"
-	_ "github.com/aquasecurity/fanal/hook/all"
+	_ "github.com/aquasecurity/fanal/handler/all"
 	"github.com/aquasecurity/fanal/image"
 	"github.com/aquasecurity/fanal/types"
 	"github.com/aquasecurity/fanal/utils"

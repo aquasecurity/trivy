@@ -19,8 +19,8 @@ import (
 	"github.com/aquasecurity/fanal/analyzer/secret"
 	"github.com/aquasecurity/fanal/artifact"
 	"github.com/aquasecurity/fanal/cache"
-	"github.com/aquasecurity/fanal/config/scanner"
-	"github.com/aquasecurity/fanal/hook"
+	"github.com/aquasecurity/fanal/handler"
+	_ "github.com/aquasecurity/fanal/handler/all"
 	"github.com/aquasecurity/fanal/log"
 	"github.com/aquasecurity/fanal/types"
 	"github.com/aquasecurity/fanal/walker"
@@ -31,12 +31,11 @@ const (
 )
 
 type Artifact struct {
-	image       types.Image
-	cache       cache.ArtifactCache
-	walker      walker.LayerTar
-	analyzer    analyzer.AnalyzerGroup
-	hookManager hook.Manager
-	scanner     scanner.Scanner
+	image          types.Image
+	cache          cache.ArtifactCache
+	walker         walker.LayerTar
+	analyzer       analyzer.AnalyzerGroup
+	handlerManager handler.Manager
 
 	artifactOption artifact.Option
 }
@@ -48,9 +47,10 @@ func NewArtifact(img types.Image, c cache.ArtifactCache, opt artifact.Option) (a
 		return nil, xerrors.Errorf("config scanner error: %w", err)
 	}
 
-	s, err := scanner.New("", misconf.Namespaces, misconf.PolicyPaths, misconf.DataPaths, misconf.Trace)
+	// Initialize handlers
+	handlerManager, err := handler.NewManager(opt)
 	if err != nil {
-		return nil, xerrors.Errorf("scanner init error: %w", err)
+		return nil, xerrors.Errorf("handler init error: %w", err)
 	}
 
 	// Register secret analyzer
@@ -59,12 +59,11 @@ func NewArtifact(img types.Image, c cache.ArtifactCache, opt artifact.Option) (a
 	}
 
 	return Artifact{
-		image:       img,
-		cache:       c,
-		walker:      walker.NewLayerTar(opt.SkipFiles, opt.SkipDirs),
-		analyzer:    analyzer.NewAnalyzerGroup(opt.AnalyzerGroup, opt.DisabledAnalyzers),
-		hookManager: hook.NewManager(opt.DisabledHooks),
-		scanner:     s,
+		image:          img,
+		cache:          c,
+		walker:         walker.NewLayerTar(opt.SkipFiles, opt.SkipDirs),
+		analyzer:       analyzer.NewAnalyzerGroup(opt.AnalyzerGroup, opt.DisabledAnalyzers),
+		handlerManager: handlerManager,
 
 		artifactOption: opt,
 	}, nil
@@ -143,7 +142,7 @@ func (a Artifact) calcCacheKeys(imageID string, diffIDs []string) (string, []str
 	}
 
 	layerKeyMap := map[string]string{}
-	hookVersions := a.hookManager.Versions()
+	hookVersions := a.handlerManager.Versions()
 	var layerKeys []string
 	for _, diffID := range diffIDs {
 		blobKey, err := cache.CalcKey(diffID, a.analyzer.AnalyzerVersions(), hookVersions, a.artifactOption)
@@ -215,12 +214,14 @@ func (a Artifact) inspectLayer(ctx context.Context, diffID string, disabled []an
 		return types.BlobInfo{}, xerrors.Errorf("unable to get uncompressed layer %s: %w", diffID, err)
 	}
 
+	// Prepare variables
 	var wg sync.WaitGroup
-	result := new(analyzer.AnalysisResult)
+	opts := analyzer.AnalysisOptions{Offline: a.artifactOption.Offline}
+	result := analyzer.NewAnalysisResult()
 	limit := semaphore.NewWeighted(parallel)
 
+	// Walk a tar layer
 	opqDirs, whFiles, err := a.walker.Walk(r, func(filePath string, info os.FileInfo, opener analyzer.Opener) error {
-		opts := analyzer.AnalysisOptions{Offline: a.artifactOption.Offline}
 		if err = a.analyzer.AnalyzeFile(ctx, &wg, limit, result, "", filePath, info, opener, disabled, opts); err != nil {
 			return xerrors.Errorf("failed to analyze %s: %w", filePath, err)
 		}
@@ -245,7 +246,6 @@ func (a Artifact) inspectLayer(ctx context.Context, diffID string, disabled []an
 		PackageInfos:    result.PackageInfos,
 		Applications:    result.Applications,
 		Secrets:         result.Secrets,
-		SystemFiles:     result.SystemInstalledFiles,
 		OpaqueDirs:      opqDirs,
 		WhiteoutFiles:   whFiles,
 		CustomResources: result.CustomResources,
@@ -254,9 +254,9 @@ func (a Artifact) inspectLayer(ctx context.Context, diffID string, disabled []an
 		BuildInfo: result.BuildInfo,
 	}
 
-	// Call hooks to modify blob info
-	if err = a.hookManager.CallHooks(&blobInfo); err != nil {
-		return types.BlobInfo{}, xerrors.Errorf("failed to call hooks: %w", err)
+	// Call post handlers to modify blob info
+	if err = a.handlerManager.PostHandle(ctx, result, &blobInfo); err != nil {
+		return types.BlobInfo{}, xerrors.Errorf("post handler error: %w", err)
 	}
 
 	return blobInfo, nil

@@ -28,12 +28,10 @@ const (
 	// Config files
 	YAML           = "yaml"
 	JSON           = "json"
-	TOML           = "toml"
 	Dockerfile     = "dockerfile"
-	HCL            = "hcl"
 	Terraform      = "terraform"
-	Kubernetes     = "kubernetes"
 	CloudFormation = "cloudformation"
+	Kubernetes     = "kubernetes"
 	Ansible        = "ansible"
 
 	// Language-specific file names

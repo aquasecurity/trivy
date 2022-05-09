@@ -5,15 +5,12 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/aquasecurity/fanal/analyzer/config/cloudformation"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/fanal/analyzer"
-	"github.com/aquasecurity/fanal/analyzer/config/docker"
-	"github.com/aquasecurity/fanal/analyzer/config/hcl"
+	"github.com/aquasecurity/fanal/analyzer/config/dockerfile"
 	"github.com/aquasecurity/fanal/analyzer/config/json"
 	"github.com/aquasecurity/fanal/analyzer/config/terraform"
-	"github.com/aquasecurity/fanal/analyzer/config/toml"
 	"github.com/aquasecurity/fanal/analyzer/config/yaml"
 	"github.com/aquasecurity/fanal/types"
 )
@@ -21,11 +18,13 @@ import (
 const separator = ":"
 
 type ScannerOption struct {
-	Trace        bool
-	Namespaces   []string
-	FilePatterns []string
-	PolicyPaths  []string
-	DataPaths    []string
+	Trace                   bool
+	RegoOnly                bool
+	Namespaces              []string
+	FilePatterns            []string
+	PolicyPaths             []string
+	DataPaths               []string
+	DisableEmbeddedPolicies bool
 }
 
 func (o *ScannerOption) Sort() {
@@ -36,7 +35,7 @@ func (o *ScannerOption) Sort() {
 }
 
 func RegisterConfigAnalyzers(filePatterns []string) error {
-	var dockerRegexp, hclRegexp, jsonRegexp, tomlRegexp, yamlRegexp *regexp.Regexp
+	var dockerRegexp, jsonRegexp, yamlRegexp *regexp.Regexp
 	for _, p := range filePatterns {
 		// e.g. "dockerfile:my_dockerfile_*"
 		s := strings.SplitN(p, separator, 2)
@@ -52,12 +51,8 @@ func RegisterConfigAnalyzers(filePatterns []string) error {
 		switch fileType {
 		case types.Dockerfile:
 			dockerRegexp = r
-		case types.HCL:
-			hclRegexp = r
 		case types.JSON:
 			jsonRegexp = r
-		case types.TOML:
-			tomlRegexp = r
 		case types.YAML:
 			yamlRegexp = r
 		default:
@@ -65,12 +60,9 @@ func RegisterConfigAnalyzers(filePatterns []string) error {
 		}
 	}
 
-	analyzer.RegisterAnalyzer(docker.NewConfigAnalyzer(dockerRegexp))
-	analyzer.RegisterAnalyzer(hcl.NewConfigAnalyzer(hclRegexp))
-	analyzer.RegisterAnalyzer(json.NewConfigAnalyzer(jsonRegexp))
+	analyzer.RegisterAnalyzer(dockerfile.NewConfigAnalyzer(dockerRegexp))
 	analyzer.RegisterAnalyzer(terraform.NewConfigAnalyzer())
-	analyzer.RegisterAnalyzer(cloudformation.NewConfigAnalyzer())
-	analyzer.RegisterAnalyzer(toml.NewConfigAnalyzer(tomlRegexp))
+	analyzer.RegisterAnalyzer(json.NewConfigAnalyzer(jsonRegexp))
 	analyzer.RegisterAnalyzer(yaml.NewConfigAnalyzer(yamlRegexp))
 
 	return nil

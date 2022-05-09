@@ -13,8 +13,13 @@ __rego_input__ := {
 	"selector": [{"type": "dockerfile"}],
 }
 
-deny[msg] {
+deny[res] {
     input.stages[from]
     from == "alpine:3.10"
 	msg := "Old image"
+	res := {
+	    "msg": msg,
+	    "startline": 1,
+	    "endline": 2,
+	}
 }

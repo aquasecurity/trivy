@@ -39,10 +39,18 @@ func TestConfigScanner_Scan(t *testing.T) {
 							Query:     "data.testdata.xyz_200.deny",
 							Message:   "Old image",
 							PolicyMetadata: types.PolicyMetadata{
-								ID:       "XYZ-200",
-								Type:     "Docker Security Check",
-								Title:    "Old FROM",
-								Severity: "LOW",
+								ID:          "XYZ-200",
+								Type:        "Dockerfile Security Check",
+								Title:       "Old FROM",
+								Description: "Rego module: data.testdata.xyz_200",
+								Severity:    "LOW",
+							},
+							IacMetadata: types.IacMetadata{
+								Resource:  "",
+								Provider:  "Dockerfile",
+								Service:   "general",
+								StartLine: 1,
+								EndLine:   2,
 							},
 						},
 					},
@@ -65,10 +73,18 @@ func TestConfigScanner_Scan(t *testing.T) {
 							Namespace: "testdata.xyz_200",
 							Query:     "data.testdata.xyz_200.deny",
 							PolicyMetadata: types.PolicyMetadata{
-								ID:       "XYZ-200",
-								Type:     "Docker Security Check",
-								Title:    "Old FROM",
-								Severity: "LOW",
+								ID:          "XYZ-200",
+								Type:        "Dockerfile Security Check",
+								Title:       "Old FROM",
+								Description: "Rego module: data.testdata.xyz_200",
+								Severity:    "LOW",
+							},
+							IacMetadata: types.IacMetadata{
+								Resource:  "",
+								Provider:  "Dockerfile",
+								Service:   "general",
+								StartLine: 0,
+								EndLine:   0,
 							},
 						},
 					},
@@ -79,7 +95,7 @@ func TestConfigScanner_Scan(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			s, err := external.NewConfigScanner(t.TempDir(),
-				tt.fields.policyPaths, tt.fields.dataPaths, tt.fields.namespaces)
+				tt.fields.policyPaths, tt.fields.dataPaths, tt.fields.namespaces, false)
 			require.NoError(t, err)
 
 			got, err := s.Scan(tt.inputDir)

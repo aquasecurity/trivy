@@ -14,13 +14,14 @@ import (
 )
 
 type ConfigScanner struct {
-	cache       cache.FSCache
-	policyPaths []string
-	dataPaths   []string
-	namespaces  []string
+	cache         cache.FSCache
+	policyPaths   []string
+	dataPaths     []string
+	namespaces    []string
+	allowEmbedded bool
 }
 
-func NewConfigScanner(cacheDir string, policyPaths, dataPaths, namespaces []string) (*ConfigScanner, error) {
+func NewConfigScanner(cacheDir string, policyPaths, dataPaths, namespaces []string, allowEmbedded bool) (*ConfigScanner, error) {
 	// Initialize local cache
 	cacheClient, err := cache.NewFSCache(cacheDir)
 	if err != nil {
@@ -28,19 +29,21 @@ func NewConfigScanner(cacheDir string, policyPaths, dataPaths, namespaces []stri
 	}
 
 	return &ConfigScanner{
-		cache:       cacheClient,
-		policyPaths: policyPaths,
-		dataPaths:   dataPaths,
-		namespaces:  namespaces,
+		cache:         cacheClient,
+		policyPaths:   policyPaths,
+		dataPaths:     dataPaths,
+		namespaces:    namespaces,
+		allowEmbedded: allowEmbedded,
 	}, nil
 }
 
 func (s ConfigScanner) Scan(dir string) ([]types.Misconfiguration, error) {
 	art, err := local.NewArtifact(dir, s.cache, artifact.Option{
 		MisconfScannerOption: config.ScannerOption{
-			PolicyPaths: s.policyPaths,
-			DataPaths:   s.dataPaths,
-			Namespaces:  s.namespaces,
+			PolicyPaths:             s.policyPaths,
+			DataPaths:               s.dataPaths,
+			Namespaces:              s.namespaces,
+			DisableEmbeddedPolicies: !s.allowEmbedded,
 		},
 	})
 	if err != nil {
