@@ -4,8 +4,10 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"io"
 	"os"
 
+	"github.com/cheggaaa/pb/v3"
 	"github.com/urfave/cli/v2"
 	"golang.org/x/xerrors"
 	"gopkg.in/yaml.v2"
@@ -91,6 +93,13 @@ func K8sRun(ctx *cli.Context) error {
 }
 
 func k8sRun(ctx *cli.Context, opt Option, cacheClient cache.Cache, k8sArtifacts []*artifacts.Artifact) (types.K8sReport, error) {
+	// progress bar
+	bar := pb.StartNew(len(k8sArtifacts))
+	if opt.NoProgress {
+		bar.SetWriter(io.Discard)
+	}
+	defer bar.Finish()
+
 	// image scanner configurations
 	imageScannerConfig, imageScannerOptions, err := initImageScannerConfig(ctx.Context, opt, cacheClient)
 	if err != nil {
@@ -109,6 +118,8 @@ func k8sRun(ctx *cli.Context, opt Option, cacheClient cache.Cache, k8sArtifacts 
 	// Loops once over all artifacts, and execute scanners as necessary. Not every artifacts has an image,
 	// so image scanner is not always executed.
 	for _, artifact := range k8sArtifacts {
+		bar.Increment()
+
 		// scan images if present
 		for _, image := range artifact.Images {
 			imageReport, err := k8sScan(ctx.Context, image, imageScanner, imageScannerConfig, imageScannerOptions)
