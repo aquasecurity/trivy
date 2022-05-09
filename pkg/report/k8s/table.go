@@ -18,7 +18,7 @@ type TableWriter struct {
 func (tw TableWriter) Write(report types.K8sReport) error {
 	data := make([][]string, 0)
 
-	for _, resource := range report.Resources {
+	for _, resource := range report.Vulnerabilities {
 		d := make([]string, 5)
 
 		d[0] = resource.Namespace

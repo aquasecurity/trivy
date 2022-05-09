@@ -791,9 +791,11 @@ func NewK8sCommand() *cli.Command {
 			&namespaceFlag,
 
 			//&templateFlag,
-			&formatFlag,
-			&severityFlag,
+			// For now only format is json, and it is the default
+			//&formatFlag,
+
 			&outputFlag,
+			&severityFlag,
 			&exitCodeFlag,
 			&skipDBUpdateFlag,
 			&skipPolicyUpdateFlag,

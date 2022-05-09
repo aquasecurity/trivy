@@ -80,9 +80,10 @@ func (results Results) Failed() bool {
 
 // K8sReport represents a kubernetes scan report
 type K8sReport struct {
-	SchemaVersion int `json:",omitempty"`
-	ClusterName   string
-	Resources     []K8sResource
+	SchemaVersion     int `json:",omitempty"`
+	ClusterName       string
+	Vulnerabilities   []K8sResource `json:",omitempty"`
+	Misconfigurations []K8sResource `json:",omitempty"`
 }
 
 // K8sReport represents a kubernetes resource report
