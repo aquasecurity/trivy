@@ -20,7 +20,7 @@ import (
 	"github.com/aquasecurity/fanal/artifact"
 	aimage "github.com/aquasecurity/fanal/artifact/image"
 	"github.com/aquasecurity/fanal/cache"
-	_ "github.com/aquasecurity/fanal/hook/all"
+	_ "github.com/aquasecurity/fanal/handler/all"
 	"github.com/aquasecurity/fanal/image"
 	"github.com/aquasecurity/fanal/types"
 	dtypes "github.com/docker/docker/api/types"
