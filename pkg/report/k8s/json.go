@@ -5,8 +5,9 @@ import (
 	"fmt"
 	"io"
 
-	"github.com/aquasecurity/trivy/pkg/types"
 	"golang.org/x/xerrors"
+
+	"github.com/aquasecurity/trivy/pkg/types"
 )
 
 type JSONWriter struct {

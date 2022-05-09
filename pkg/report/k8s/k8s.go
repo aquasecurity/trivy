@@ -1,9 +1,10 @@
 package k8s
 
 import (
+	"golang.org/x/xerrors"
+
 	"github.com/aquasecurity/trivy/pkg/report"
 	"github.com/aquasecurity/trivy/pkg/types"
-	"golang.org/x/xerrors"
 )
 
 type Writer interface {
