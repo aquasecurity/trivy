@@ -13,8 +13,6 @@ type Writer interface {
 func Write(report types.K8sReport, option report.Option) error {
 	var writer Writer
 	switch option.Format {
-	case "table":
-		writer = &TableWriter{Output: option.Output}
 	case "json":
 		writer = &JSONWriter{Output: option.Output}
 	default:
