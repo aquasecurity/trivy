@@ -195,13 +195,6 @@ require (
 	modernc.org/token v1.0.0 // indirect
 )
 
-require (
-	github.com/mailru/easyjson v0.7.6
-	github.com/tetratelabs/wazero v0.0.0-20220509065650-96bc7c84624e
-)
-
-require github.com/josharian/intern v1.0.0 // indirect
-
 // To resolve CVE-2022-23648
 replace github.com/containerd/containerd v1.5.9 => github.com/containerd/containerd v1.5.10
 
