@@ -4,9 +4,7 @@
 package integration
 
 import (
-	"fmt"
 	"io"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"strings"
@@ -168,9 +166,6 @@ func TestFilesystem(t *testing.T) {
 
 			// Run "trivy fs"
 			assert.Nil(t, app.Run(osArgs))
-
-			data, _ := ioutil.ReadFile(outputFile)
-			fmt.Println(string(data))
 
 			// Compare want and got
 			compareReports(t, tt.golden, outputFile)
