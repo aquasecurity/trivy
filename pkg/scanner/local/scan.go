@@ -308,8 +308,12 @@ func toDetectedMisconfiguration(res ftypes.MisconfResult, defaultSeverity dbType
 		msg = "No issues found"
 	}
 
-	primaryURL := fmt.Sprintf("https://avd.aquasec.com/misconfig/%s", strings.ToLower(res.ID))
-	res.References = append(res.References, primaryURL)
+	var primaryURL string
+
+	if res.ID != "" && res.ID != "N/A" {
+		primaryURL = fmt.Sprintf("https://avd.aquasec.com/misconfig/%s", strings.ToLower(res.ID))
+		res.References = append(res.References, primaryURL)
+	}
 
 	return types.DetectedMisconfiguration{
 		ID:          res.ID,
