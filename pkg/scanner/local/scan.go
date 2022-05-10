@@ -21,7 +21,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/types"
 
 	_ "github.com/aquasecurity/fanal/analyzer/all"
-	_ "github.com/aquasecurity/fanal/hook/all"
+	_ "github.com/aquasecurity/fanal/handler/all"
 )
 
 var (

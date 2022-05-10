@@ -1,0 +1,25 @@
+# The importable parts of Twirp have no external dependencies. They just use the
+# standard library. But both protoc-gen-twirp and Twirp's tests *do* have some
+# dependencies, and this manifest lists them.
+#
+# All dependencies are specified as overrides, not constraints, so that dep
+# doesn't get confused if someone imports Twirp. We don't want to falsely
+# require any particular versions of these libraries - they are *only* for
+# tests and building main packages.
+
+[[override]]
+  name = "google.golang.org/protobuf"
+  version = "1.26.0"
+
+[[override]]
+  name = "github.com/pkg/errors"
+  version = "0.8.0"
+
+[[override]]
+  name = "github.com/stretchr/testify"
+  version = "1.2.0"
+
+[prune]
+  unused-packages = true
+  go-tests = true
+  non-go = true

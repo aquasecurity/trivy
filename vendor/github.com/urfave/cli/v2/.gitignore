@@ -1,0 +1,10 @@
+*.coverprofile
+*.orig
+node_modules/
+vendor
+.idea
+internal/*/built-example
+coverage.txt
+/.local/
+
+*.exe

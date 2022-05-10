@@ -1,0 +1,17 @@
+{
+  "Tools": [
+    {
+      "Repository": "github.com/kisielk/errcheck",
+      "Commit": "db0ca22445717d1b2c51ac1034440e0a2a2de645"
+    },
+    {
+      "Repository": "github.com/twitchtv/retool",
+      "Commit": "6f6d4930d88c40e23d2b54d12e64f0444e1fb4ef"
+    },
+    {
+      "Repository": "google.golang.org/protobuf/cmd/protoc-gen-go",
+      "Commit": "fc9592f7ac4bade8f83e636263f8f07715c698d1"
+    }
+  ],
+  "RetoolVersion": "1.3.5"
+}

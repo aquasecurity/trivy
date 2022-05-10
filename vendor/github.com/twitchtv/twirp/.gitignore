@@ -1,0 +1,6 @@
+*.test
+npm-debug.log
+
+/bin
+/release
+/build
