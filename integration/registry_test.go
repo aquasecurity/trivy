@@ -58,7 +58,7 @@ func setupRegistry(ctx context.Context, baseDir string, authURL *url.URL) (testc
 			"REGISTRY_AUTH_TOKEN_AUTOREDIRECT":   "false",
 		},
 		BindMounts: map[string]string{
-			filepath.Join(baseDir, "data", "certs"): "/certs",
+			"/certs": filepath.Join(baseDir, "data", "certs"),
 		},
 		SkipReaper: true,
 		AutoRemove: true,
@@ -78,8 +78,8 @@ func setupAuthServer(ctx context.Context, baseDir string) (testcontainers.Contai
 		Image:        authImage,
 		ExposedPorts: []string{authPort},
 		BindMounts: map[string]string{
-			filepath.Join(baseDir, "data", "auth_config"): "/config",
-			filepath.Join(baseDir, "data", "certs"):       "/certs",
+			"/config": filepath.Join(baseDir, "data", "auth_config"),
+			"/certs":  filepath.Join(baseDir, "data", "certs"),
 		},
 		SkipReaper: true,
 		AutoRemove: true,

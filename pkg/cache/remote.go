@@ -26,12 +26,12 @@ func NewRemoteCache(url string, customHeaders http.Header, insecure bool) cache.
 
 	httpClient := &http.Client{
 		Transport: &http.Transport{
+			Proxy: http.ProxyFromEnvironment,
 			TLSClientConfig: &tls.Config{
 				InsecureSkipVerify: insecure,
 			},
 		},
 	}
-
 	c := rpcCache.NewCacheProtobufClient(url, httpClient)
 	return &RemoteCache{ctx: ctx, client: c}
 }
@@ -61,4 +61,13 @@ func (c RemoteCache) MissingBlobs(imageID string, layerIDs []string) (bool, []st
 		return false, nil, xerrors.Errorf("unable to fetch missing layers: %w", err)
 	}
 	return layers.MissingArtifact, layers.MissingBlobIds, nil
+}
+
+// DeleteBlobs removes blobs by IDs from RemoteCache
+func (c RemoteCache) DeleteBlobs(blobIDs []string) error {
+	_, err := c.client.DeleteBlobs(c.ctx, rpc.ConvertToDeleteBlobsRequest(blobIDs))
+	if err != nil {
+		return xerrors.Errorf("unable to delete blobs on the server: %w", err)
+	}
+	return nil
 }

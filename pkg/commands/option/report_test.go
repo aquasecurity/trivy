@@ -103,7 +103,7 @@ func TestReportReportConfig_Init(t *testing.T) {
 			},
 			args: []string{"centos:7"},
 			logs: []string{
-				"'--format cyclonedx' automatically enables '--list-all-pkgs'.",
+				"'cyclonedx', 'spdx', and 'spdx-json' automatically enables '--list-all-pkgs'.",
 				"Severities: CRITICAL",
 			},
 			want: ReportOption{

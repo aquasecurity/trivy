@@ -192,7 +192,7 @@ func TestDockerEngine(t *testing.T) {
 			name:         "sad path, invalid image",
 			invalidImage: true,
 			input:        "badimage:latest",
-			wantErr:      "unable to inspect the image (index.docker.io/library/badimage:latest)",
+			wantErr:      "unable to inspect the image (badimage:latest)",
 		},
 	}
 

@@ -14,18 +14,17 @@ jobs:
     runs-on: ubuntu-18.04
     steps:
       - name: Checkout main
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           fetch-depth: 0
           persist-credentials: true
-      - uses: actions/setup-python@v2
+      - uses: actions/setup-python@v3
         with:
           python-version: 3.x
       - name: Install dependencies
         run: |
           pip install git+https://${GH_TOKEN}@github.com/squidfunk/mkdocs-material-insiders.git
-          pip install mike
-          pip install mkdocs-macros-plugin
+          pip install -r docs/build/requirements.txt
         env:
           GH_TOKEN: ${{ secrets.MKDOCS_AQUA_BOT }}
       - name: Configure the git user

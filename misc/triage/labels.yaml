@@ -132,6 +132,19 @@ labels:
 - name: co/poetry
   color: d9ead3
   description: Issues relating to Poetry
+- name: co/terraform
+  color: d9ead3
+  description: Issues relating to Terraform
+- name: co/cloudformation
+  color: d9ead3
+  description: Issues relating to CloudFormation
+- name: co/dockerfile
+  color: d9ead3
+  description: Issues relating to Dockerfile
+- name: co/kubernetes
+  color: d9ead3
+  description: Issues relating to Kubernetes
+
 
 # others
 - name: good first issue
@@ -140,3 +153,6 @@ labels:
 - name: help wanted
   color: 006b75
   description: Denotes an issue that needs help from a contributor. Must meet "help wanted" guidelines.
+- name: vulnerability
+  color: e11d21
+  description: Categorizes issue or PR as related to Trivy's own vulnerabilities.

@@ -1,0 +1,16 @@
+builds:
+  # This is a library project, we don't want to build any binaries.
+  # Building and testing is performed in the CI workflow
+  - skip: true
+release:
+  extra_files:
+    - glob: ./bom.json
+milestones:
+  - name_template: "{{ .Tag }}"
+    close: true
+changelog:
+  sort: asc
+  filters:
+    exclude:
+      - '^docs:'
+      - '^test:'

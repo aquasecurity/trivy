@@ -13,8 +13,8 @@
       "type": "issue",
       "check_name": "container_scanning",
       "categories": [ "Security" ],
-      "description": {{ list .VulnerabilityID .Title | join ": " | printf "%q" }},
-      "fingerprint": "{{ .VulnerabilityID | sha1sum }}",
+      "description": {{ list .VulnerabilityID .PkgName .InstalledVersion .Title | join " - " | printf "%q" }},
+      "fingerprint": "{{ list .VulnerabilityID .PkgName .InstalledVersion $target | join "" | sha1sum }}",
       "content": {{ .Description | printf "%q" }},
       "severity": {{ if eq .Severity "LOW" -}}
                     "info"
@@ -28,9 +28,41 @@
                     "info"
                   {{- end }},
       "location": {
-        "path": "{{ .PkgName }}-{{ .InstalledVersion }}",
+        "path": "{{ $target }}",
         "lines": {
-          "begin": 1
+          "begin": 0
+        }
+      }
+    }
+    {{- end -}}
+    {{- range .Misconfigurations -}}
+    {{- if $t_first -}}
+      {{- $t_first = false -}}
+    {{ else -}}
+      ,
+    {{- end }}
+    {
+      "type": "issue",
+      "check_name": "container_scanning",
+      "categories": [ "Security" ],
+      "description": {{ list .ID .Title | join ": " | printf "%q" }},
+      "fingerprint": "{{ list .ID .Title $target | join "" | sha1sum }}",
+      "content": {{ .Description | printf "%q" }},
+      "severity": {{ if eq .Severity "LOW" -}}
+                    "info"
+                  {{- else if eq .Severity "MEDIUM" -}}
+                    "minor"
+                  {{- else if eq .Severity "HIGH" -}}
+                    "major"
+                  {{- else if eq .Severity "CRITICAL" -}}
+                    "critical"
+                  {{-  else -}}
+                    "info"
+                  {{- end }},
+      "location": {
+        "path": "{{ $target }}",
+        "lines": {
+          "begin": {{ .IacMetadata.StartLine }}
         }
       }
     }

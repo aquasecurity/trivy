@@ -7,10 +7,12 @@ metadata:
 {{ include "trivy.labels" . | indent 4 }}
   namespace: {{ .Release.Namespace }}
 {{- if .Values.rbac.pspEnabled }}
+  {{- if .Capabilities.APIVersions.Has "policy/v1beta1/PodSecurityPolicy" }}
 rules:
 - apiGroups:      ['policy']
   resources:      ['podsecuritypolicies']
   verbs:          ['use']
   resourceNames:  [{{ include "trivy.fullname" . }}]
+  {{- end }}
 {{- end }}
 {{- end }}

@@ -7,6 +7,7 @@ import (
 	"time"
 
 	version "github.com/knqyf263/go-rpm-version"
+	"golang.org/x/exp/maps"
 	"golang.org/x/xerrors"
 	"k8s.io/utils/clock"
 
@@ -91,7 +92,7 @@ func NewScanner(opts ...option) *Scanner {
 }
 
 // Detect scans and returns redhat vulenrabilities
-func (s *Scanner) Detect(osVer string, pkgs []ftypes.Package) ([]types.DetectedVulnerability, error) {
+func (s *Scanner) Detect(osVer string, _ *ftypes.Repository, pkgs []ftypes.Package) ([]types.DetectedVulnerability, error) {
 	log.Logger.Info("Detecting RHEL/CentOS vulnerabilities...")
 	if strings.Count(osVer, ".") > 0 {
 		osVer = osVer[:strings.Index(osVer, ".")]
@@ -179,11 +180,7 @@ func (s *Scanner) detect(osVer string, pkg ftypes.Package) ([]types.DetectedVuln
 		}
 	}
 
-	var vulns []types.DetectedVulnerability
-	for _, vuln := range uniqVulns {
-		vulns = append(vulns, vuln)
-	}
-
+	vulns := maps.Values(uniqVulns)
 	sort.Slice(vulns, func(i, j int) bool {
 		return vulns[i].VulnerabilityID < vulns[j].VulnerabilityID
 	})
