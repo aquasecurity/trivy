@@ -176,10 +176,10 @@ github.com/apparentlymart/go-textseg/v13 v13.0.0 h1:Y+KvPE1NYz0xl601PVImeQfFyEy6
 github.com/apparentlymart/go-textseg/v13 v13.0.0/go.mod h1:ZK2fH7c4NqDTLtiYLvIkEghdlcqw7yxLeM89kiTRPUo=
 github.com/aquasecurity/bolt-fixtures v0.0.0-20200903104109-d34e7f983986 h1:2a30xLN2sUZcMXl50hg+PJCIDdJgIvIbVcKqLJ/ZrtM=
 github.com/aquasecurity/bolt-fixtures v0.0.0-20200903104109-d34e7f983986/go.mod h1:NT+jyeCzXk6vXR5MTkdn4z64TgGfE5HMLC8qfj5unl8=
-github.com/aquasecurity/defsec v0.55.4 h1:dov2um3iCJjO1HFiQF46XVyr3G85qtdYAKDZGROGMuc=
-github.com/aquasecurity/defsec v0.55.4/go.mod h1:VAVRjHT9x2xgj0h3rvcaVUcnu17IlsnbZ+PjSTVbpw8=
-github.com/aquasecurity/fanal v0.0.0-20220509203558-71d78314fc04 h1:sEcgFzUL0f3f6A2QrEwR+j36czpUuKuusddyPtTOkKo=
-github.com/aquasecurity/fanal v0.0.0-20220509203558-71d78314fc04/go.mod h1:Tx6CaTaYdVfuJhhR1ISWyh/PUaAwRV2UV8wbbrlDemw=
+github.com/aquasecurity/defsec v0.55.5 h1:6BDkiuk7TkPZsyou7vRrLOU4j7rd1uX50JHHIm3HTZc=
+github.com/aquasecurity/defsec v0.55.5/go.mod h1:erYNqVU+guUDnM06O2rEl3IKKYNtMN82T36BSR/GbTo=
+github.com/aquasecurity/fanal v0.0.0-20220510081040-058e4169c91d h1:bPYxDaOpFrhEAz8PeCWAcWizVcQj5Unpz9WPTkaYH0U=
+github.com/aquasecurity/fanal v0.0.0-20220510081040-058e4169c91d/go.mod h1:Mfsezo8M+Do6TLQ/NfMmw8fjneFqHB96B50KnbK90rA=
 github.com/aquasecurity/go-dep-parser v0.0.0-20220503151658-d316f5cc2cff h1:YNlzRYB0n4mZtfuWx6AWaGEjnLVNekchyoFDlYFZegs=
 github.com/aquasecurity/go-dep-parser v0.0.0-20220503151658-d316f5cc2cff/go.mod h1:7EOQWQmyavVPY3fScbbPdd3dB/b0Q4ZbJ/NZCvNKrLs=
 github.com/aquasecurity/go-gem-version v0.0.0-20201115065557-8eed6fe000ce h1:QgBRgJvtEOBtUXilDb1MLi1p1MWoyFDXAu5DEUl5nwM=
@@ -1036,8 +1036,8 @@ github.com/opentracing/opentracing-go v1.1.0/go.mod h1:UkNAQd3GIcIGf0SeVgPpRdFSt
 github.com/owenrumney/go-sarif v1.1.1/go.mod h1:dNDiPlF04ESR/6fHlPyq7gHKmrM0sHUvAGjsoh8ZH0U=
 github.com/owenrumney/go-sarif/v2 v2.1.1 h1:JVUO0cEhG8bvEWIxsRmURY4u7wBZUTgdh4zikkkiPM8=
 github.com/owenrumney/go-sarif/v2 v2.1.1/go.mod h1:MSqMMx9WqlBSY7pXoOZWgEsVB4FDNfhcaXDA1j6Sr+w=
-github.com/owenrumney/squealer v1.0.0 h1:XC23T+ijXB5/7Ma0CEOxCrns5XJRV2a/sB6O+NeMeiQ=
-github.com/owenrumney/squealer v1.0.0/go.mod h1:8WF7DZOKgwTzc3bAxv2bFipTqQ53E2YA6Hb6P+xN+7w=
+github.com/owenrumney/squealer v1.0.1-0.20220510063705-c0be93f0edea h1:RwQ26NYF4vvP7GckFRB4ABL18Byo7vnYBzMpmZKkGwQ=
+github.com/owenrumney/squealer v1.0.1-0.20220510063705-c0be93f0edea/go.mod h1:WWvhG67r/BBwvLwmE2TcASI0b/xyPxmR9y33q/mg4ig=
 github.com/package-url/packageurl-go v0.1.1-0.20220203205134-d70459300c8a h1:tkTSd1nhioPqi5Whu3CQ79UjPtaGOytqyNnSCVOqzHM=
 github.com/package-url/packageurl-go v0.1.1-0.20220203205134-d70459300c8a/go.mod h1:uQd4a7Rh3ZsVg5j0lNyAfyxIeGde9yrlhjF78GzeW0c=
 github.com/pascaldekloe/goe v0.0.0-20180627143212-57f6aae5913c/go.mod h1:lzWF7FIEvWOWxwDKqyGYQf6ZUaNfKdP144TG7ZOy1lc=
