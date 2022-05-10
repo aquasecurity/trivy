@@ -25,7 +25,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/utils"
 )
 
-var defaultPolicyNamespaces = []string{"appshield", "defsec"}
+var defaultPolicyNamespaces = []string{"appshield", "defsec", "builtin"}
 
 var errSkipScan = errors.New("skip subsequent processes")
 
