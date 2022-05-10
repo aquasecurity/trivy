@@ -3,6 +3,8 @@ package external_test
 import (
 	"testing"
 
+	"github.com/aquasecurity/defsec/pkg/scan"
+
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
@@ -52,6 +54,30 @@ func TestConfigScanner_Scan(t *testing.T) {
 								Service:   "general",
 								StartLine: 1,
 								EndLine:   2,
+								Code: scan.Code{
+									Lines: []scan.Line{
+										{
+											Number:      1,
+											Content:     "FROM alpine:3.10",
+											IsCause:     true,
+											Annotation:  "",
+											Truncated:   false,
+											Highlighted: "FROM alpine:3.10",
+											FirstCause:  false,
+											LastCause:   false,
+										},
+										{
+											Number:      2,
+											Content:     "",
+											IsCause:     true,
+											Annotation:  "",
+											Truncated:   false,
+											Highlighted: "",
+											FirstCause:  false,
+											LastCause:   false,
+										},
+									},
+								},
 							},
 						},
 					},
