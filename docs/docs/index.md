@@ -63,7 +63,7 @@ Please see [LICENSE][license] for Trivy licensing information.
 
 [installation]: ../getting-started/installation.md
 [vuln]: ../docs/vulnerability/scanning/index.md
-[misconf]: ../docs/misconfiguration/index.md
+[misconf]: ../docs/misconfiguration/scanning.md
 [container]: ../docs/vulnerability/scanning/image.md
 [rootfs]: ../docs/vulnerability/scanning/rootfs.md
 [filesystem]: ../docs/vulnerability/scanning/filesystem.md

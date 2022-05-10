@@ -25,7 +25,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/utils"
 )
 
-const defaultPolicyNamespace = "appshield"
+var defaultPolicyNamespaces = []string{"appshield", "defsec", "builtin"}
 
 var errSkipScan = errors.New("skip subsequent processes")
 
@@ -223,16 +223,10 @@ func scan(ctx context.Context, opt Option, initializeScanner InitializeScanner, 
 	// ScannerOption is filled only when config scanning is enabled.
 	var configScannerOptions config.ScannerOption
 	if slices.Contains(opt.SecurityChecks, types.SecurityCheckConfig) {
-		noProgress := opt.Quiet || opt.NoProgress
-		builtinPolicyPaths, err := operation.InitBuiltinPolicies(ctx, opt.CacheDir, noProgress, opt.SkipPolicyUpdate)
-		if err != nil {
-			return types.Report{}, xerrors.Errorf("failed to initialize built-in policies: %w", err)
-		}
-
 		configScannerOptions = config.ScannerOption{
 			Trace:        opt.Trace,
-			Namespaces:   append(opt.PolicyNamespaces, defaultPolicyNamespace),
-			PolicyPaths:  append(opt.PolicyPaths, builtinPolicyPaths...),
+			Namespaces:   append(opt.PolicyNamespaces, defaultPolicyNamespaces...),
+			PolicyPaths:  opt.PolicyPaths,
 			DataPaths:    opt.DataPaths,
 			FilePatterns: opt.FilePatterns,
 		}

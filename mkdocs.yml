@@ -37,10 +37,7 @@ nav:
           - Languages:
               - Go: docs/vulnerability/languages/golang.md
       - Misconfiguration:
-          - Scanning:
-              - Overview: docs/misconfiguration/index.md
-              - Infrastructure as Code: docs/misconfiguration/iac.md
-              - Filesystem: docs/misconfiguration/filesystem.md
+          - Scanning: docs/misconfiguration/scanning.md
           - Policy:
               - Built-in Policies: docs/misconfiguration/policy/builtin.md
               - Exceptions: docs/misconfiguration/policy/exceptions.md
