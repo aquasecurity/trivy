@@ -14,7 +14,6 @@ require (
 	github.com/aquasecurity/go-pep440-version v0.0.0-20210121094942-22b2f8951d46
 	github.com/aquasecurity/go-version v0.0.0-20210121072130-637058cfe492
 	github.com/aquasecurity/trivy-db v0.0.0-20220327074450-74195d9604b2
-	github.com/aquasecurity/trivy-kubernetes v0.0.1
 	github.com/caarlos0/env/v6 v6.9.1
 	github.com/cenkalti/backoff v2.2.1+incompatible
 	github.com/cheggaaa/pb/v3 v3.0.8
@@ -243,8 +242,7 @@ require (
 
 require github.com/mitchellh/hashstructure/v2 v2.0.2
 
+require github.com/aquasecurity/trivy-kubernetes v0.0.0-20220510114145-df312e1f6e28
+
 // To resolve CVE-2022-23648
 replace github.com/containerd/containerd v1.5.9 => github.com/containerd/containerd v1.5.10
-
-// TODO(josedonizetti): Remove once the PR is merged on trivy-kubernetes
-replace github.com/aquasecurity/trivy-kubernetes v0.0.1 => github.com/josedonizetti/trivy-kubernetes v0.0.0-20220505210517-0e457c8a6698
