@@ -68,8 +68,8 @@ func TestFilesystem(t *testing.T) {
 			name: "dockerfile",
 			args: args{
 				securityChecks: "config",
-				policyPaths:    []string{"testdata/fixtures/fs/dockerfile/policy"},
 				input:          "testdata/fixtures/fs/dockerfile",
+				namespaces:     []string{"testing"},
 			},
 			golden: "testdata/dockerfile.json.golden",
 		},

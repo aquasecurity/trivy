@@ -7,8 +7,8 @@ require (
 	github.com/Masterminds/sprig/v3 v3.2.2
 	github.com/NYTimes/gziphandler v1.1.1
 	github.com/aquasecurity/bolt-fixtures v0.0.0-20200903104109-d34e7f983986
-	github.com/aquasecurity/fanal v0.0.0-20220430134203-bc6fd26a109e
-	github.com/aquasecurity/go-dep-parser v0.0.0-20220422134844-880747206031
+	github.com/aquasecurity/fanal v0.0.0-20220510103759-9ad40432d340
+	github.com/aquasecurity/go-dep-parser v0.0.0-20220503151658-d316f5cc2cff
 	github.com/aquasecurity/go-gem-version v0.0.0-20201115065557-8eed6fe000ce
 	github.com/aquasecurity/go-npm-version v0.0.0-20201110091526-0b796d180798
 	github.com/aquasecurity/go-pep440-version v0.0.0-20210121094942-22b2f8951d46
@@ -30,6 +30,7 @@ require (
 	github.com/knqyf263/go-deb-version v0.0.0-20190517075300-09fca494f03d
 	github.com/knqyf263/go-rpm-version v0.0.0-20170716094938-74609b86c936
 	github.com/masahiro331/go-mvn-version v0.0.0-20210429150710-d3157d602a08
+	github.com/mitchellh/hashstructure/v2 v2.0.2
 	github.com/olekukonko/tablewriter v0.0.5
 	github.com/open-policy-agent/opa v0.40.0
 	github.com/owenrumney/go-sarif/v2 v2.1.1
@@ -38,8 +39,8 @@ require (
 	github.com/spf13/afero v1.8.1 // indirect
 	github.com/stretchr/testify v1.7.1
 	github.com/testcontainers/testcontainers-go v0.12.0
-	github.com/twitchtv/twirp v8.1.1+incompatible
-	github.com/urfave/cli/v2 v2.4.0
+	github.com/twitchtv/twirp v8.1.2+incompatible
+	github.com/urfave/cli/v2 v2.5.1
 	go.uber.org/zap v1.21.0
 	golang.org/x/exp v0.0.0-20220407100705-7b9b53b0aca4
 	golang.org/x/sys v0.0.0-20220412211240-33da011f77ad // indirect
@@ -57,7 +58,7 @@ require (
 	github.com/Azure/azure-sdk-for-go v63.0.0+incompatible // indirect
 	github.com/Azure/go-ansiterm v0.0.0-20210617225240-d185dfc1b5a1 // indirect
 	github.com/Azure/go-autorest v14.2.0+incompatible // indirect
-	github.com/Azure/go-autorest/autorest v0.11.25 // indirect
+	github.com/Azure/go-autorest/autorest v0.11.27 // indirect
 	github.com/Azure/go-autorest/autorest/adal v0.9.18 // indirect
 	github.com/Azure/go-autorest/autorest/azure/auth v0.5.11 // indirect
 	github.com/Azure/go-autorest/autorest/azure/cli v0.4.5 // indirect
@@ -70,7 +71,6 @@ require (
 	github.com/Masterminds/semver v1.5.0 // indirect
 	github.com/Masterminds/semver/v3 v3.1.1 // indirect
 	github.com/Microsoft/go-winio v0.5.1 // indirect
-	github.com/Microsoft/hcsshim v0.9.2 // indirect
 	github.com/OneOfOne/xxhash v1.2.8 // indirect
 	github.com/ProtonMail/go-crypto v0.0.0-20210428141323-04723f9f07d7 // indirect
 	github.com/PuerkitoBio/purell v1.1.1 // indirect
@@ -80,23 +80,21 @@ require (
 	github.com/agext/levenshtein v1.2.3 // indirect
 	github.com/apparentlymart/go-cidr v1.1.0 // indirect
 	github.com/apparentlymart/go-textseg/v13 v13.0.0 // indirect
-	github.com/aquasecurity/defsec v0.28.5-0.20220426090908-0df04f1fa28b // indirect
-	github.com/aquasecurity/tfsec v1.8.0 // indirect
-	github.com/aws/aws-sdk-go v1.43.31 // indirect
+	github.com/aquasecurity/defsec v0.56.0 // indirect
+	github.com/aws/aws-sdk-go v1.44.5 // indirect
 	github.com/bgentry/go-netrc v0.0.0-20140422174119-9fd32a8b3d3d // indirect
 	github.com/bmatcuk/doublestar v1.3.4 // indirect
 	github.com/briandowns/spinner v1.12.0 // indirect
 	github.com/cespare/xxhash/v2 v2.1.2 // indirect
-	github.com/containerd/cgroups v1.0.3 // indirect
-	github.com/containerd/containerd v1.6.2 // indirect
-	github.com/containerd/stargz-snapshotter/estargz v0.10.1 // indirect
+	github.com/containerd/containerd v1.6.3-0.20220401172941-5ff8fce1fcc6 // indirect
+	github.com/containerd/stargz-snapshotter/estargz v0.11.3 // indirect
 	github.com/containerd/typeurl v1.0.2 // indirect
 	github.com/cpuguy83/go-md2man/v2 v2.0.1 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/dgryski/go-rendezvous v0.0.0-20200823014737-9f7001d12a5f // indirect
 	github.com/dimchansky/utfbom v1.1.1 // indirect
-	github.com/docker/cli v20.10.11+incompatible // indirect
-	github.com/docker/distribution v2.7.1+incompatible // indirect
+	github.com/docker/cli v20.10.13+incompatible // indirect
+	github.com/docker/distribution v2.8.0+incompatible // indirect
 	github.com/docker/docker-credential-helpers v0.6.4 // indirect
 	github.com/docker/go-units v0.4.0 // indirect
 	github.com/emirpasic/gods v1.12.0 // indirect
@@ -127,11 +125,10 @@ require (
 	github.com/hashicorp/go-multierror v1.1.1 // indirect
 	github.com/hashicorp/go-retryablehttp v0.7.1 // indirect
 	github.com/hashicorp/go-safetemp v1.0.0 // indirect
-	github.com/hashicorp/go-uuid v1.0.2 // indirect
+	github.com/hashicorp/go-uuid v1.0.3 // indirect
 	github.com/hashicorp/go-version v1.4.0 // indirect
-	github.com/hashicorp/hcl v1.0.0 // indirect
-	github.com/hashicorp/hcl/v2 v2.11.1 // indirect
-	github.com/huandu/xstrings v1.3.1 // indirect
+	github.com/hashicorp/hcl/v2 v2.12.0 // indirect
+	github.com/huandu/xstrings v1.3.2 // indirect
 	github.com/imdario/mergo v0.3.12 // indirect
 	github.com/inconshreveable/mousetrap v1.0.0 // indirect
 	github.com/jbenet/go-context v0.0.0-20150711004518-d14ea06fba99 // indirect
@@ -140,35 +137,36 @@ require (
 	github.com/json-iterator/go v1.1.12 // indirect
 	github.com/kballard/go-shellquote v0.0.0-20180428030007-95032a82bc51 // indirect
 	github.com/kevinburke/ssh_config v0.0.0-20201106050909-4977a11b4351 // indirect
-	github.com/klauspost/compress v1.14.2 // indirect
+	github.com/klauspost/compress v1.15.1 // indirect
 	github.com/knqyf263/go-rpmdb v0.0.0-20220209103220-0f7a6d951a6d // indirect
 	github.com/knqyf263/nested v0.0.1 // indirect
 	github.com/liamg/iamgo v0.0.6 // indirect
 	github.com/liamg/jfather v0.0.7 // indirect
+	github.com/liamg/memoryfs v1.4.1 // indirect
+	github.com/liamg/tml v0.6.0 // indirect
 	github.com/liggitt/tabwriter v0.0.0-20181228230101-89fcab3d43de // indirect
 	github.com/magiconair/properties v1.8.5 // indirect
 	github.com/mailru/easyjson v0.7.6 // indirect
 	github.com/mattn/go-colorable v0.1.12 // indirect
 	github.com/mattn/go-isatty v0.0.14 // indirect
 	github.com/mattn/go-runewidth v0.0.12 // indirect
-	github.com/mitchellh/copystructure v1.0.0 // indirect
+	github.com/mitchellh/copystructure v1.2.0 // indirect
 	github.com/mitchellh/go-homedir v1.1.0 // indirect
 	github.com/mitchellh/go-testing-interface v1.0.0 // indirect
 	github.com/mitchellh/go-wordwrap v1.0.1 // indirect
-	github.com/mitchellh/mapstructure v1.4.3 // indirect
-	github.com/mitchellh/reflectwalk v1.0.0 // indirect
-	github.com/moby/buildkit v0.9.3 // indirect
-	github.com/moby/sys/mount v0.2.0 // indirect
+	github.com/mitchellh/reflectwalk v1.0.2 // indirect
+	github.com/moby/buildkit v0.10.3 // indirect
+	github.com/moby/sys/mount v0.3.0 // indirect
 	github.com/moby/sys/mountinfo v0.6.0 // indirect
-	github.com/moby/term v0.0.0-20210610120745-9d4ed1856297 // indirect
+	github.com/moby/term v0.0.0-20210619224110-3f7ff695adc6 // indirect
 	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd // indirect
 	github.com/modern-go/reflect2 v1.0.2 // indirect
 	github.com/monochromegane/go-gitignore v0.0.0-20200626010858-205db1a8cc00 // indirect
 	github.com/morikuni/aec v1.0.0 // indirect
 	github.com/opencontainers/go-digest v1.0.0 // indirect
-	github.com/opencontainers/image-spec v1.0.2 // indirect
-	github.com/opencontainers/runc v1.1.0 // indirect
-	github.com/owenrumney/squealer v0.3.2 // indirect
+	github.com/opencontainers/image-spec v1.0.3-0.20211202183452-c5a74bcca799 // indirect
+	github.com/opencontainers/runc v1.1.1 // indirect
+	github.com/owenrumney/squealer v1.0.1-0.20220510063705-c0be93f0edea // indirect
 	github.com/peterbourgon/diskv v2.0.1+incompatible // indirect
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
@@ -185,7 +183,6 @@ require (
 	github.com/spf13/cobra v1.4.0 // indirect
 	github.com/spf13/pflag v1.0.5 // indirect
 	github.com/stretchr/objx v0.3.0 // indirect
-	github.com/tmccombs/hcl2json v0.3.4 // indirect
 	github.com/ulikunitz/xz v0.5.8 // indirect
 	github.com/vbatts/tar-split v0.11.2 // indirect
 	github.com/xanzy/ssh-agent v0.3.0 // indirect
@@ -240,9 +237,10 @@ require (
 	sigs.k8s.io/yaml v1.3.0 // indirect
 )
 
-require github.com/mitchellh/hashstructure/v2 v2.0.2
-
 require github.com/aquasecurity/trivy-kubernetes v0.0.0-20220510114145-df312e1f6e28
 
 // To resolve CVE-2022-23648
 replace github.com/containerd/containerd v1.5.9 => github.com/containerd/containerd v1.5.10
+
+// See https://github.com/moby/moby/issues/42939#issuecomment-1114255529
+replace github.com/docker/docker => github.com/docker/docker v20.10.3-0.20220224222438-c78f6963a1c0+incompatible

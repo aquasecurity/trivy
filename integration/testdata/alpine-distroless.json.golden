@@ -5,7 +5,7 @@
   "Metadata": {
     "OS": {
       "Family": "alpine",
-      "Name": "edge"
+      "Name": "3.16"
     },
     "ImageID": "sha256:22848737c0d272ad5d7c7369d8ca830a62929e63e38edcb22085139a6ae0688d",
     "DiffIDs": [
@@ -44,7 +44,7 @@
   },
   "Results": [
     {
-      "Target": "testdata/fixtures/images/alpine-distroless.tar.gz (alpine edge)",
+      "Target": "testdata/fixtures/images/alpine-distroless.tar.gz (alpine 3.16)",
       "Class": "os-pkgs",
       "Type": "alpine",
       "Vulnerabilities": [

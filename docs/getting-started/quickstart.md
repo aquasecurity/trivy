@@ -80,5 +80,5 @@ Failures: 1 (UNKNOWN: 0, LOW: 0, MEDIUM: 0, HIGH: 1, CRITICAL: 0)
 For more details, see [here][misconf].
 
 [vulnerability]: ../docs/vulnerability/scanning/index.md
-[misconf]: ../docs/misconfiguration/index.md
+[misconf]: ../docs/misconfiguration/scanning.md
 [secret]: ../docs/secret/scanning.md
