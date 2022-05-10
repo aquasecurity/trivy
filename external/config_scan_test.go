@@ -46,7 +46,7 @@ func TestConfigScanner_Scan(t *testing.T) {
 								Description: "Rego module: data.testdata.xyz_200",
 								Severity:    "LOW",
 							},
-							IacMetadata: types.IacMetadata{
+							CauseMetadata: types.CauseMetadata{
 								Resource:  "",
 								Provider:  "Dockerfile",
 								Service:   "general",
@@ -80,7 +80,7 @@ func TestConfigScanner_Scan(t *testing.T) {
 								Description: "Rego module: data.testdata.xyz_200",
 								Severity:    "LOW",
 							},
-							IacMetadata: types.IacMetadata{
+							CauseMetadata: types.CauseMetadata{
 								Resource:  "",
 								Provider:  "Dockerfile",
 								Service:   "general",

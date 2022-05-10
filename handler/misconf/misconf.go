@@ -268,6 +268,8 @@ func resultsToMisconf(configType string, scannerName string, results scan.Result
 			ruleID = result.Rule().AVDID
 		}
 
+		cause := types.NewCauseWithCode(result)
+
 		misconfResult := types.MisconfResult{
 			Namespace: result.RegoNamespace(),
 			Query:     query,
@@ -281,14 +283,8 @@ func resultsToMisconf(configType string, scannerName string, results scan.Result
 				RecommendedActions: flattened.Resolution,
 				References:         flattened.Links,
 			},
-			IacMetadata: types.IacMetadata{
-				Resource:  flattened.Resource,
-				Provider:  flattened.RuleProvider.DisplayName(),
-				Service:   flattened.RuleService,
-				StartLine: flattened.Location.StartLine,
-				EndLine:   flattened.Location.EndLine,
-			},
-			Traces: result.Traces(),
+			CauseMetadata: cause,
+			Traces:        result.Traces(),
 		}
 
 		filePath := flattened.Location.Filename
