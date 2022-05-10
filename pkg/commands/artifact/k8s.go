@@ -66,10 +66,7 @@ func K8sRun(ctx *cli.Context) error {
 		return xerrors.Errorf("failed to instantiate dynamic client: %w", err)
 	}
 
-	trivyk8s := trivyk8s.New(k8sDynamicClient)
-	if len(opt.KubernetesOption.Namespace) > 0 {
-		trivyk8s = trivyk8s.Namespace(opt.KubernetesOption.Namespace)
-	}
+	trivyk8s := trivyk8s.New(k8sDynamicClient).Namespace(opt.KubernetesOption.Namespace)
 
 	// list all kubernetes scannable artifacts
 	k8sArtifacts, err := trivyk8s.ListArtifacts(ctx.Context)
@@ -188,23 +185,19 @@ func initConfigScannerConfig(ctx context.Context, opt Option, cacheClient cache.
 }
 
 func k8sScanConfig(ctx *cli.Context, config ScannerConfig, opts types.ScanOptions, a *artifacts.Artifact) (types.Report, error) {
-	file, err := createTempFile(a)
-	if err != nil {
-		return types.Report{}, xerrors.Errorf("scan error: %w", err)
-	}
+	fileName, err := createTempFile(a)
 	defer func() {
-		if err := file.Close(); err != nil {
-			log.Logger.Errorf("failed to delete temp file %s:%w:", file.Name(), err)
+		if err := os.Remove(fileName); err != nil {
+			log.Logger.Errorf("failed to delete temp file %s:%w:", fileName, err)
 		}
 	}()
-
-	report, err := k8sScan(ctx.Context, file.Name(), filesystemStandaloneScanner, config, opts)
 	if err != nil {
 		return types.Report{}, xerrors.Errorf("scan error: %w", err)
 	}
 
-	if err := os.Remove(file.Name()); err != nil {
-		log.Logger.Errorf("failed to delete temp file %s:%w:", file.Name(), err)
+	report, err := k8sScan(ctx.Context, fileName, filesystemStandaloneScanner, config, opts)
+	if err != nil {
+		return types.Report{}, xerrors.Errorf("scan error: %w", err)
 	}
 
 	return report, nil
@@ -226,25 +219,31 @@ func k8sScan(ctx context.Context, target string, initializeScanner InitializeSca
 	return report, nil
 }
 
-func createTempFile(artifact *artifacts.Artifact) (*os.File, error) {
+func createTempFile(artifact *artifacts.Artifact) (string, error) {
 	filename := fmt.Sprintf("%s-%s-%s-*.yaml", artifact.Namespace, artifact.Kind, artifact.Name)
+
 	file, err := os.CreateTemp("", filename)
 	if err != nil {
-		return nil, xerrors.Errorf("creating tmp file error: %w", err)
+		return "", xerrors.Errorf("creating tmp file error: %w", err)
 	}
+	defer func() {
+		if err := file.Close(); err != nil {
+			log.Logger.Errorf("failed to close temp file %s:%w:", file.Name(), err)
+		}
+	}()
 
 	// TODO(josedonizetti): marshal and return as byte slice should be on the trivy-kubernetes library?
 	data, err := yaml.Marshal(artifact.RawResource)
 	if err != nil {
-		return nil, xerrors.Errorf("marshaling resource error: %w", err)
+		return "", xerrors.Errorf("marshaling resource error: %w", err)
 	}
 
 	_, err = file.Write(data)
 	if err != nil {
-		return nil, xerrors.Errorf("writing tmp file error: %w", err)
+		return "", xerrors.Errorf("writing tmp file error: %w", err)
 	}
 
-	return file, nil
+	return file.Name(), nil
 }
 
 func newK8sResource(artifact *artifacts.Artifact, report types.Report) types.K8sResource {
