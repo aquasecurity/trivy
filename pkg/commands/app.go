@@ -823,12 +823,6 @@ func NewK8sCommand() *cli.Command {
 			stringSliceFlag(configPolicy),
 			stringSliceFlag(configData),
 			stringSliceFlag(policyNamespaces),
-
-			// for client/server
-			&remoteServer,
-			&token,
-			&tokenHeader,
-			&customHeaders,
 		},
 	}
 }
