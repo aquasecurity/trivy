@@ -14,21 +14,32 @@ import (
 	"github.com/aquasecurity/trivy/pkg/types"
 )
 
+const (
+	DirectRelationship   string = "direct"
+	IndirectRelationship string = "indirect"
+	RuntimeScope         string = "runtime"
+	DevelopmentScope     string = "development"
+)
+
 type GsbomPackage struct {
 	Purl         string   `json:"purl,omitempty"`
 	Relationship string   `json:"relationship,omitempty"`
 	Dependencies []string `json:"dependencies,omitempty"`
+	Scope        string   `json:"scope,omitempty"`
+	Metadata     Metadata `json:"metadata,omitempty"`
 }
 
 type GsbomFile struct {
 	SrcLocation string `json:"source_location,omitempty"`
 }
 
+//TODO can also be number or boolean
+type Metadata map[string]interface{}
+
 type GsbomManifest struct {
-	Name string     `json:"name,omitempty"`
-	File *GsbomFile `json:"file,omitempty"`
-	//TODO can also be number or boolean
-	Metadata map[string]string       `json:"metadata,omitempty"`
+	Name     string                  `json:"name,omitempty"`
+	File     *GsbomFile              `json:"file,omitempty"`
+	Metadata Metadata                `json:"metadata,omitempty"`
 	Resolved map[string]GsbomPackage `json:"resolved,omitempty"`
 }
 
@@ -106,6 +117,8 @@ func (gsbmw GsbomWriter) Write(report types.Report) error {
 		for _, pkg := range result.Packages {
 			var err error
 			gsbompkg := GsbomPackage{}
+			gsbompkg.Scope = RuntimeScope
+			gsbompkg.Relationship = DirectRelationship
 			gsbompkg.Purl, err = buildPurl(result.Type, pkg)
 			if err != nil {
 				return xerrors.Errorf("unable to build purl: %w for the package: %s", err, pkg.Name)
@@ -129,6 +142,7 @@ func (gsbmw GsbomWriter) Write(report types.Report) error {
 	}
 	return nil
 }
+
 func buildPurl(t string, pkg ftypes.Package) (string, error) {
 	packageUrl, err := purl.NewPackageURL(t, types.Metadata{}, pkg)
 	if err != nil {
