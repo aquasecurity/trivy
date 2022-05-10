@@ -163,8 +163,8 @@ github.com/apparentlymart/go-dump v0.0.0-20180507223929-23540a00eaa3/go.mod h1:o
 github.com/apparentlymart/go-textseg v1.0.0/go.mod h1:z96Txxhf3xSFMPmb5X/1W05FF/Nj9VFpLOpjS5yuumk=
 github.com/apparentlymart/go-textseg/v13 v13.0.0 h1:Y+KvPE1NYz0xl601PVImeQfFyEy6iT90AvPUL1NNfNw=
 github.com/apparentlymart/go-textseg/v13 v13.0.0/go.mod h1:ZK2fH7c4NqDTLtiYLvIkEghdlcqw7yxLeM89kiTRPUo=
-github.com/aquasecurity/defsec v0.55.4 h1:dov2um3iCJjO1HFiQF46XVyr3G85qtdYAKDZGROGMuc=
-github.com/aquasecurity/defsec v0.55.4/go.mod h1:VAVRjHT9x2xgj0h3rvcaVUcnu17IlsnbZ+PjSTVbpw8=
+github.com/aquasecurity/defsec v0.55.5 h1:6BDkiuk7TkPZsyou7vRrLOU4j7rd1uX50JHHIm3HTZc=
+github.com/aquasecurity/defsec v0.55.5/go.mod h1:erYNqVU+guUDnM06O2rEl3IKKYNtMN82T36BSR/GbTo=
 github.com/aquasecurity/go-dep-parser v0.0.0-20220503151658-d316f5cc2cff h1:YNlzRYB0n4mZtfuWx6AWaGEjnLVNekchyoFDlYFZegs=
 github.com/aquasecurity/go-dep-parser v0.0.0-20220503151658-d316f5cc2cff/go.mod h1:7EOQWQmyavVPY3fScbbPdd3dB/b0Q4ZbJ/NZCvNKrLs=
 github.com/aquasecurity/go-version v0.0.0-20210121072130-637058cfe492 h1:rcEG5HI490FF0a7zuvxOxen52ddygCfNVjP0XOCMl+M=
@@ -968,8 +968,8 @@ github.com/opencontainers/selinux v1.8.0/go.mod h1:RScLhm78qiWa2gbVCcGkC7tCGdgk3
 github.com/opencontainers/selinux v1.8.2/go.mod h1:MUIHuUEvKB1wtJjQdOyYRgOnLD2xAPP8dBsCoU0KuF8=
 github.com/opencontainers/selinux v1.10.0/go.mod h1:2i0OySw99QjzBBQByd1Gr9gSjvuho1lHsJxIJ3gGbJI=
 github.com/opentracing/opentracing-go v1.1.0/go.mod h1:UkNAQd3GIcIGf0SeVgPpRdFStlNbqXla1AfSYxPUl2o=
-github.com/owenrumney/squealer v1.0.0 h1:XC23T+ijXB5/7Ma0CEOxCrns5XJRV2a/sB6O+NeMeiQ=
-github.com/owenrumney/squealer v1.0.0/go.mod h1:8WF7DZOKgwTzc3bAxv2bFipTqQ53E2YA6Hb6P+xN+7w=
+github.com/owenrumney/squealer v1.0.1-0.20220510063705-c0be93f0edea h1:RwQ26NYF4vvP7GckFRB4ABL18Byo7vnYBzMpmZKkGwQ=
+github.com/owenrumney/squealer v1.0.1-0.20220510063705-c0be93f0edea/go.mod h1:WWvhG67r/BBwvLwmE2TcASI0b/xyPxmR9y33q/mg4ig=
 github.com/pascaldekloe/goe v0.0.0-20180627143212-57f6aae5913c/go.mod h1:lzWF7FIEvWOWxwDKqyGYQf6ZUaNfKdP144TG7ZOy1lc=
 github.com/pelletier/go-toml v1.2.0/go.mod h1:5z9KED0ma1S8pY6P1sdut58dfprrGBbd/94hg7ilaic=
 github.com/pelletier/go-toml v1.8.1/go.mod h1:T2/BmBdy8dvIRq1a/8aqjN41wvWlN4lrapLU/GW4pbc=
