@@ -309,8 +309,8 @@ func toDetectedMisconfiguration(res ftypes.MisconfResult, defaultSeverity dbType
 	}
 
 	var primaryURL string
-	if strings.HasPrefix(res.Namespace, "appshield.") {
-		primaryURL = fmt.Sprintf("https://avd.aquasec.com/appshield/%s", strings.ToLower(res.ID))
+	if strings.HasPrefix(res.Namespace, "builtin.") {
+		primaryURL = fmt.Sprintf("https://avd.aquasec.com/misconfig/%s", strings.ToLower(res.ID))
 		res.References = append(res.References, primaryURL)
 	} else if strings.Contains(res.Type, "tfsec") {
 		for _, ref := range res.References {
