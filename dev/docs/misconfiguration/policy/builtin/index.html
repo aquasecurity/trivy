@@ -852,71 +852,10 @@
   
   
   
-    
-    <li class="md-nav__item md-nav__item--nested">
-      
-      
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_3_1" type="checkbox" id="__nav_3_3_1" >
-      
-      
-      
-      
-        <label class="md-nav__link" for="__nav_3_3_1">
-          Scanning
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <nav class="md-nav" aria-label="Scanning" data-md-level="3">
-        <label class="md-nav__title" for="__nav_3_3_1">
-          <span class="md-nav__icon md-icon"></span>
-          Scanning
-        </label>
-        <ul class="md-nav__list" data-md-scrollfix>
-          
-            
-              
-  
-  
-  
     <li class="md-nav__item">
-      <a href="../../" class="md-nav__link">
-        Overview
+      <a href="../../scanning/" class="md-nav__link">
+        Scanning
       </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../iac/" class="md-nav__link">
-        Infrastructure as Code
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../filesystem/" class="md-nav__link">
-        Filesystem
-      </a>
-    </li>
-  
-
-            
-          
-        </ul>
-      </nav>
     </li>
   
 
@@ -992,20 +931,6 @@
         <li class="md-nav__item">
   <a href="#policy-sources" class="md-nav__link">
     Policy Sources
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#policy-distribution" class="md-nav__link">
-    Policy Distribution
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#update-interval" class="md-nav__link">
-    Update Interval
   </a>
   
 </li>
@@ -2436,20 +2361,6 @@
   
 </li>
       
-        <li class="md-nav__item">
-  <a href="#policy-distribution" class="md-nav__link">
-    Policy Distribution
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#update-interval" class="md-nav__link">
-    Update Interval
-  </a>
-  
-</li>
-      
     </ul>
   
 </nav>
@@ -2466,9 +2377,8 @@
 
 <h1 id="built-in-policies">Built-in Policies</h1>
 <h2 id="policy-sources">Policy Sources</h2>
-<p>Built-in policies are mainly written in <a href="https://www.openpolicyagent.org/docs/latest/policy-language/">Rego</a>.
-Those policies are managed under <a href="https://github.com/aquasecurity/appshield">AppShield repository</a>.
-Terraform policies are currently powered by <a href="https://github.com/aquasecurity/tfsec">tfsec</a> and CloudFormation policies are powered by <a href="https://github.com/aquasecurity/cfsec">cfsec</a>.</p>
+<p>Built-in policies are mainly written in <a href="https://www.openpolicyagent.org/docs/latest/policy-language/">Rego</a> and Go.
+Those policies are managed under <a href="https://github.com/aquasecurity/defsec">defsec repository</a>.</p>
 <table>
 <thead>
 <tr>
@@ -2479,30 +2389,24 @@ Terraform policies are currently powered by <a href="https://github.com/aquasecu
 <tbody>
 <tr>
 <td>Kubernetes</td>
-<td><a href="https://github.com/aquasecurity/appshield/tree/master/kubernetes">AppShield</a></td>
+<td><a href="https://github.com/aquasecurity/defsec/tree/master/internal/rules/kubernetes">defsec</a></td>
 </tr>
 <tr>
 <td>Dockerfile, Containerfile</td>
-<td><a href="https://github.com/aquasecurity/appshield/tree/master/docker">AppShield</a></td>
+<td><a href="https://github.com/aquasecurity/appshield/tree/master/internal/rules/docker">defsec</a></td>
 </tr>
 <tr>
 <td>Terraform</td>
-<td><a href="https://tfsec.dev/">tfsec</a></td>
+<td><a href="https://github.com/aquasecurity/defsec">defsec</a></td>
 </tr>
 <tr>
 <td>CloudFormation</td>
-<td><a href="https://cfsec.dev/">cfsec</a></td>
+<td><a href="https://github.com/aquasecurity/defsec">defsec</a></td>
 </tr>
 </tbody>
 </table>
-<p>For suggestions or issues regarding policy content, please open an issue under <a href="https://github.com/aquasecurity/appshield">AppShield</a>, <a href="https://github.com/aquasecurity/tfsec">tfsec</a> or <a href="https://github.com/aquasecurity/cfsec">cfsec</a> repository.</p>
+<p>For suggestions or issues regarding policy content, please open an issue under the <a href="https://github.com/aquasecurity/defsec">defsec</a> repository.</p>
 <p>Ansible are coming soon.</p>
-<h2 id="policy-distribution">Policy Distribution</h2>
-<p>AppShield policies are distributed as an OPA bundle on <a href="https://github.com/aquasecurity/appshield/pkgs/container/appshield">GitHub Container Registry</a> (GHCR).
-When misconfiguration detection is enabled, Trivy pulls the OPA bundle from GHCR as an OCI artifact and stores it in the cache.
-Those policies are then loaded into Trivy OPA engine and used for detecting misconfigurations.</p>
-<h2 id="update-interval">Update Interval</h2>
-<p>Trivy checks for updates to OPA bundle on GHCR every 24 hours and pulls it if there are any updates.</p>
 
               
             </article>
@@ -2516,7 +2420,7 @@ Those policies are then loaded into Trivy OPA engine and used for detecting misc
     <nav class="md-footer__inner md-grid" aria-label="Footer">
       
         
-        <a href="../../filesystem/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Filesystem" rel="prev">
+        <a href="../../scanning/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Scanning" rel="prev">
           <div class="md-footer__button md-icon">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
           </div>
@@ -2525,7 +2429,7 @@ Those policies are then loaded into Trivy OPA engine and used for detecting misc
               <span class="md-footer__direction">
                 Previous
               </span>
-              Filesystem
+              Scanning
             </div>
           </div>
         </a>

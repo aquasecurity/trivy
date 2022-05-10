@@ -850,71 +850,10 @@
   
   
   
-    
-    <li class="md-nav__item md-nav__item--nested">
-      
-      
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_3_1" type="checkbox" id="__nav_3_3_1" >
-      
-      
-      
-      
-        <label class="md-nav__link" for="__nav_3_3_1">
-          Scanning
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <nav class="md-nav" aria-label="Scanning" data-md-level="3">
-        <label class="md-nav__title" for="__nav_3_3_1">
-          <span class="md-nav__icon md-icon"></span>
-          Scanning
-        </label>
-        <ul class="md-nav__list" data-md-scrollfix>
-          
-            
-              
-  
-  
-  
     <li class="md-nav__item">
-      <a href="../../misconfiguration/" class="md-nav__link">
-        Overview
+      <a href="../../misconfiguration/scanning/" class="md-nav__link">
+        Scanning
       </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../misconfiguration/iac/" class="md-nav__link">
-        Infrastructure as Code
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../misconfiguration/filesystem/" class="md-nav__link">
-        Filesystem
-      </a>
-    </li>
-  
-
-            
-          
-        </ul>
-      </nav>
     </li>
   
 
@@ -1701,27 +1640,6 @@
   
     <nav class="md-nav" aria-label="Air-Gapped Environment for misconfigurations">
       <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#download-misconfiguration-policies" class="md-nav__link">
-    Download misconfiguration policies
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#transfer-misconfiguration-policies-into-the-air-gapped-environment" class="md-nav__link">
-    Transfer misconfiguration policies into the air-gapped environment
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#put-the-misconfiguration-policies-in-trivys-cache-directory" class="md-nav__link">
-    Put the misconfiguration policies in Trivy's cache directory
-  </a>
-  
-</li>
         
           <li class="md-nav__item">
   <a href="#run-trivy-with-skip-policy-update-option" class="md-nav__link">
@@ -2538,27 +2456,6 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#download-misconfiguration-policies" class="md-nav__link">
-    Download misconfiguration policies
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#transfer-misconfiguration-policies-into-the-air-gapped-environment" class="md-nav__link">
-    Transfer misconfiguration policies into the air-gapped environment
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#put-the-misconfiguration-policies-in-trivys-cache-directory" class="md-nav__link">
-    Put the misconfiguration policies in Trivy's cache directory
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
   <a href="#run-trivy-with-skip-policy-update-option" class="md-nav__link">
     Run Trivy with --skip-policy-update option
   </a>
@@ -2618,38 +2515,7 @@ In addition, if you want to scan Java dependencies such as JAR and pom.xml, you 
 <div class="highlight"><pre><span></span><code>$ trivy image --skip-update --offline-scan alpine:3.12
 </code></pre></div>
 <h2 id="air-gapped-environment-for-misconfigurations">Air-Gapped Environment for misconfigurations</h2>
-<h3 id="download-misconfiguration-policies">Download misconfiguration policies</h3>
-<p>At first, you need to download misconfiguration policies for use in air-gapped environments.
-Please follow <a href="https://oras.land/cli/">oras installation instruction</a>.</p>
-<p>Download <code>bundle.tar.gz</code>:</p>
-<div class="highlight"><pre><span></span><code>$ oras pull ghcr.io/aquasecurity/appshield:latest -a
-</code></pre></div>
-<h3 id="transfer-misconfiguration-policies-into-the-air-gapped-environment">Transfer misconfiguration policies into the air-gapped environment</h3>
-<p>The way of transfer depends on the environment.</p>
-<div class="highlight"><pre><span></span><code>$ rsync -av -e ssh /path/to/bundle.tar.gz [user]@[host]:dst
-</code></pre></div>
-<h3 id="put-the-misconfiguration-policies-in-trivys-cache-directory">Put the misconfiguration policies in Trivy's cache directory</h3>
-<p>You have to know where to put the misconfiguration policies file. The following command shows the default cache directory.</p>
-<div class="highlight"><pre><span></span><code>$ ssh user@host
-$ trivy -h | grep cache
-   --cache-dir value  cache directory (default: &quot;/home/myuser/.cache/trivy&quot;) [$TRIVY_CACHE_DIR]
-</code></pre></div>
-<p>Put the misconfiguration policies file in the cache directory + <code>/policy/content</code>.</p>
-<div class="highlight"><pre><span></span><code>$ mkdir -p /home/myuser/.cache/trivy/policy/content
-$ cd /home/myuser/.cache/trivy/policy/content
-$ mv /path/to/bundle.tar.gz .
-</code></pre></div>
-<p>Then, decompress it.
-<code>bundle.tar.gz</code> file includes two folders: <code>docker</code>, <code>kubernetes</code> and file: <code>.manifest</code>.</p>
-<div class="highlight"><pre><span></span><code>$ tar xvf bundle.tar.gz 
-x ./docker/
-...
-x ./kubernetes/
-...
-x ./.manifest
-$ rm bundle.tar.gz
-</code></pre></div>
-<p>In an air-gapped environment it is your responsibility to update policies on a regular basis, so that the scanner can detect recently-identified misconfigurations. </p>
+<p>No special measures are required to detect misconfigurations in an air-gapped environment.</p>
 <h3 id="run-trivy-with-skip-policy-update-option">Run Trivy with --skip-policy-update option</h3>
 <p>In an air-gapped environment, specify <code>--skip-policy-update</code> so that Trivy doesn't attempt to download the latest misconfiguration policies.</p>
 <div class="highlight"><pre><span></span><code>$ trivy conf --skip-policy-update /path/to/conf

@@ -852,71 +852,10 @@
   
   
   
-    
-    <li class="md-nav__item md-nav__item--nested">
-      
-      
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_3_1" type="checkbox" id="__nav_3_3_1" >
-      
-      
-      
-      
-        <label class="md-nav__link" for="__nav_3_3_1">
-          Scanning
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <nav class="md-nav" aria-label="Scanning" data-md-level="3">
-        <label class="md-nav__title" for="__nav_3_3_1">
-          <span class="md-nav__icon md-icon"></span>
-          Scanning
-        </label>
-        <ul class="md-nav__list" data-md-scrollfix>
-          
-            
-              
-  
-  
-  
     <li class="md-nav__item">
-      <a href="../../" class="md-nav__link">
-        Overview
+      <a href="../../scanning/" class="md-nav__link">
+        Scanning
       </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../iac/" class="md-nav__link">
-        Infrastructure as Code
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../filesystem/" class="md-nav__link">
-        Filesystem
-      </a>
-    </li>
-  
-
-            
-          
-        </ul>
-      </nav>
     </li>
   
 
@@ -2451,7 +2390,7 @@
 
 
 <h1 id="exceptions">Exceptions</h1>
-<p>Exceptions lets you to specify cases where you allow policy violations.
+<p>Exceptions let you specify cases where you allow policy violations.
 Trivy supports two types of exceptions.</p>
 <div class="admonition info">
 <p class="admonition-title">Info</p>
@@ -2471,12 +2410,12 @@ import data.namespaces
 
 exception[ns] {
     ns := data.namespaces[_]
-    startswith(ns, &quot;appshield&quot;)
+    startswith(ns, &quot;builtin.kubernetes&quot;)
 }
 </code></pre></div>
 </div>
 <p>This example exempts all built-in policies for Kubernetes.</p>
-<p>For more details, see <a href="https://github.com/aquasecurity/trivy/tree/6601d2957a4441bdba72b199752359f576ff4d6c/examples/misconf/namespace-exception">an example</a>.</p>
+<p>For more details, see <a href="https://github.com/aquasecurity/trivy/tree/5a58e41476d4ab53e83831a4fe63d5e9118643ba/examples/misconf/namespace-exception">an example</a>.</p>
 <h2 id="rule-based-exceptions">Rule-based exceptions</h2>
 <p>There are some cases where you need more flexibility and granularity in defining which cases to exempt.
 Rule-based exceptions lets you granularly choose which individual rules to exempt, while also declaring under which conditions to exempt them.</p>
@@ -2518,7 +2457,7 @@ exception[rules] {
 <p>If you want to apply rule-based exceptions to built-in policies, you have to define the exception under the same package.</p>
 <div class="admonition example">
 <p class="admonition-title">Example</p>
-<div class="highlight"><pre><span></span><code>package appshield.kubernetes.KSV012
+<div class="highlight"><pre><span></span><code>package builtin.kubernetes.KSV012
 
 exception[rules] {
     input.metadata.name == &quot;can-run-as-root&quot;
@@ -2526,9 +2465,9 @@ exception[rules] {
 }
 </code></pre></div>
 </div>
-<p>This exception is applied to <a href="https://github.com/aquasecurity/appshield/blob/57bccc1897b2500a731415bda3990b0d4fbc959e/kubernetes/policies/pss/restricted/3_runs_as_root.rego">KSV012</a> in AppShield.
-You can get the package names in <a href="https://github.com/aquasecurity/appshield/">AppShield repository</a> or the JSON output from Trivy.</p>
-<p>For more details, see <a href="https://github.com/aquasecurity/trivy/tree/6601d2957a4441bdba72b199752359f576ff4d6c/examples/misconf/rule-exception">an example</a>.</p>
+<p>This exception is applied to <a href="https://github.com/aquasecurity/defsec/blob/master/internal/rules/kubernetes/policies/pss/restricted/3_runs_as_root.rego">KSV012</a> in defsec.
+You can get the package names in the <a href="https://github.com/aquasecurity/defsec/">defsec repository</a> or the JSON output from Trivy.</p>
+<p>For more details, see <a href="https://github.com/aquasecurity/trivy/tree/5a58e41476d4ab53e83831a4fe63d5e9118643ba/examples/misconf/rule-exception">an example</a>.</p>
 
               
             </article>
