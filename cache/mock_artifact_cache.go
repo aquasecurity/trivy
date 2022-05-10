@@ -3,6 +3,7 @@
 package cache
 
 import (
+	"github.com/aquasecurity/defsec/pkg/scan"
 	types "github.com/aquasecurity/fanal/types"
 	mock "github.com/stretchr/testify/mock"
 )
@@ -215,6 +216,22 @@ func (_m *MockArtifactCache) ApplyPutBlobExpectations(expectations []ArtifactCac
 
 // PutBlob provides a mock function with given fields: blobID, blobInfo
 func (_m *MockArtifactCache) PutBlob(blobID string, blobInfo types.BlobInfo) error {
+
+	for i := range blobInfo.Misconfigurations {
+		for j := range blobInfo.Misconfigurations[i].Failures {
+			blobInfo.Misconfigurations[i].Failures[j].Code = scan.Code{}
+		}
+		for j := range blobInfo.Misconfigurations[i].Successes {
+			blobInfo.Misconfigurations[i].Successes[j].Code = scan.Code{}
+		}
+		for j := range blobInfo.Misconfigurations[i].Warnings {
+			blobInfo.Misconfigurations[i].Warnings[j].Code = scan.Code{}
+		}
+		for j := range blobInfo.Misconfigurations[i].Exceptions {
+			blobInfo.Misconfigurations[i].Exceptions[j].Code = scan.Code{}
+		}
+	}
+
 	ret := _m.Called(blobID, blobInfo)
 
 	var r0 error

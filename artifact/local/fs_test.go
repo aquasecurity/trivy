@@ -6,6 +6,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+
 	"github.com/stretchr/testify/require"
 
 	"github.com/aquasecurity/fanal/analyzer"
@@ -313,7 +314,7 @@ func TestTerraformMisconfigurationScan(t *testing.T) {
 												"https://trivy.dev/",
 											},
 										},
-										IacMetadata: types.IacMetadata{
+										CauseMetadata: types.CauseMetadata{
 											Resource:  "aws_s3_bucket.asd",
 											Provider:  "Generic",
 											Service:   "general",
@@ -334,9 +335,9 @@ func TestTerraformMisconfigurationScan(t *testing.T) {
 			want: types.ArtifactReference{
 				Name: "testdata/misconfig/terraform/single-failure/src",
 				Type: types.ArtifactFilesystem,
-				ID:   "sha256:cb9fb68025356db86a916c149daf50383a40daa50483354616d18b616f074505",
+				ID:   "sha256:dc57de3ae4ed975849e3cecd1486d98b574adbf5b434577847a3848868e73519",
 				BlobIDs: []string{
-					"sha256:cb9fb68025356db86a916c149daf50383a40daa50483354616d18b616f074505",
+					"sha256:dc57de3ae4ed975849e3cecd1486d98b574adbf5b434577847a3848868e73519",
 				},
 			},
 		},
@@ -387,7 +388,7 @@ func TestTerraformMisconfigurationScan(t *testing.T) {
 												"https://trivy.dev/",
 											},
 										},
-										IacMetadata: types.IacMetadata{
+										CauseMetadata: types.CauseMetadata{
 											Resource:  "aws_s3_bucket.two",
 											Provider:  "Generic",
 											Service:   "general",
@@ -411,7 +412,7 @@ func TestTerraformMisconfigurationScan(t *testing.T) {
 												"https://trivy.dev/",
 											},
 										},
-										IacMetadata: types.IacMetadata{
+										CauseMetadata: types.CauseMetadata{
 											Resource:  "aws_s3_bucket.one",
 											Provider:  "Generic",
 											Service:   "general",
@@ -445,7 +446,7 @@ func TestTerraformMisconfigurationScan(t *testing.T) {
 												"https://trivy.dev/",
 											},
 										},
-										IacMetadata: types.IacMetadata{
+										CauseMetadata: types.CauseMetadata{
 											Resource:  "aws_s3_bucket.three",
 											Provider:  "Generic",
 											Service:   "general",
@@ -466,9 +467,9 @@ func TestTerraformMisconfigurationScan(t *testing.T) {
 			want: types.ArtifactReference{
 				Name: "testdata/misconfig/terraform/multiple-failures/src",
 				Type: types.ArtifactFilesystem,
-				ID:   "sha256:e70e076f6dd9984e68b658bae406bef21bb478074340e2e0760f26675db8d1e2",
+				ID:   "sha256:856577cc8d50cb63deb91380047683d9f0927f4564fbea3c1780547eda17945b",
 				BlobIDs: []string{
-					"sha256:e70e076f6dd9984e68b658bae406bef21bb478074340e2e0760f26675db8d1e2",
+					"sha256:856577cc8d50cb63deb91380047683d9f0927f4564fbea3c1780547eda17945b",
 				},
 			},
 		},
@@ -555,7 +556,7 @@ func TestTerraformMisconfigurationScan(t *testing.T) {
 												"https://trivy.dev/",
 											},
 										},
-										IacMetadata: types.IacMetadata{
+										CauseMetadata: types.CauseMetadata{
 											Provider:  "Generic",
 											Service:   "general",
 											StartLine: 0,
@@ -574,9 +575,9 @@ func TestTerraformMisconfigurationScan(t *testing.T) {
 			want: types.ArtifactReference{
 				Name: "testdata/misconfig/terraform/passed/src",
 				Type: types.ArtifactFilesystem,
-				ID:   "sha256:2b951fdd2017f781cd83cd2bab8663b8dfc802984f848f0d752f485988b0ac8f",
+				ID:   "sha256:cbf81bfe1f796551adad5a652d77ae53afb9aae3a17c769f19b9156e05a88c5c",
 				BlobIDs: []string{
-					"sha256:2b951fdd2017f781cd83cd2bab8663b8dfc802984f848f0d752f485988b0ac8f",
+					"sha256:cbf81bfe1f796551adad5a652d77ae53afb9aae3a17c769f19b9156e05a88c5c",
 				},
 			},
 		},
@@ -657,7 +658,7 @@ func TestCloudFormationMisconfigurationScan(t *testing.T) {
 												"https://trivy.dev/",
 											},
 										},
-										IacMetadata: types.IacMetadata{
+										CauseMetadata: types.CauseMetadata{
 											Resource:  "main.yaml:3-6",
 											Provider:  "Generic",
 											Service:   "general",
@@ -678,9 +679,9 @@ func TestCloudFormationMisconfigurationScan(t *testing.T) {
 			want: types.ArtifactReference{
 				Name: "testdata/misconfig/cloudformation/single-failure/src",
 				Type: types.ArtifactFilesystem,
-				ID:   "sha256:d7f27bf7e9553a619d0674df4fa9c8951384039495715272497802e789083d91",
+				ID:   "sha256:f718e9055c01214a8bb08d77803dd4cd5731a72facdc96a5f438945f3dbfa2de",
 				BlobIDs: []string{
-					"sha256:d7f27bf7e9553a619d0674df4fa9c8951384039495715272497802e789083d91",
+					"sha256:f718e9055c01214a8bb08d77803dd4cd5731a72facdc96a5f438945f3dbfa2de",
 				},
 			},
 		},
@@ -731,7 +732,7 @@ func TestCloudFormationMisconfigurationScan(t *testing.T) {
 												"https://trivy.dev/",
 											},
 										},
-										IacMetadata: types.IacMetadata{
+										CauseMetadata: types.CauseMetadata{
 											Resource:  "main.yaml:2-5",
 											Provider:  "Generic",
 											Service:   "general",
@@ -755,7 +756,7 @@ func TestCloudFormationMisconfigurationScan(t *testing.T) {
 												"https://trivy.dev/",
 											},
 										},
-										IacMetadata: types.IacMetadata{
+										CauseMetadata: types.CauseMetadata{
 											Resource:  "main.yaml:6-9",
 											Provider:  "Generic",
 											Service:   "general",
@@ -776,9 +777,9 @@ func TestCloudFormationMisconfigurationScan(t *testing.T) {
 			want: types.ArtifactReference{
 				Name: "testdata/misconfig/cloudformation/multiple-failures/src",
 				Type: types.ArtifactFilesystem,
-				ID:   "sha256:1268a313c83736b59c95f57bebe8e7ce7b23e38ce0a0276c8d681ee018c046ef",
+				ID:   "sha256:91930e4af7e4824a8c0d7e42150489b887e087dec4880c5260b98bccb3f46e32",
 				BlobIDs: []string{
-					"sha256:1268a313c83736b59c95f57bebe8e7ce7b23e38ce0a0276c8d681ee018c046ef",
+					"sha256:91930e4af7e4824a8c0d7e42150489b887e087dec4880c5260b98bccb3f46e32",
 				},
 			},
 		},
@@ -865,7 +866,7 @@ func TestCloudFormationMisconfigurationScan(t *testing.T) {
 												"https://trivy.dev/",
 											},
 										},
-										IacMetadata: types.IacMetadata{
+										CauseMetadata: types.CauseMetadata{
 											Resource:  "",
 											Provider:  "Generic",
 											Service:   "general",
@@ -885,9 +886,9 @@ func TestCloudFormationMisconfigurationScan(t *testing.T) {
 			want: types.ArtifactReference{
 				Name: "testdata/misconfig/cloudformation/passed/src",
 				Type: types.ArtifactFilesystem,
-				ID:   "sha256:e4418b1b7ab0b642afc01e14d262379f589b156928d8a4dee2e7ed12c1c5ab42",
+				ID:   "sha256:e8c39cdb21b2ffc7ebbb5378efc5281620982e9cf93d23fc20452e74924a269d",
 				BlobIDs: []string{
-					"sha256:e4418b1b7ab0b642afc01e14d262379f589b156928d8a4dee2e7ed12c1c5ab42",
+					"sha256:e8c39cdb21b2ffc7ebbb5378efc5281620982e9cf93d23fc20452e74924a269d",
 				},
 			},
 		},
@@ -969,7 +970,7 @@ func TestDockerfileMisconfigurationScan(t *testing.T) {
 												"https://trivy.dev/",
 											},
 										},
-										IacMetadata: types.IacMetadata{
+										CauseMetadata: types.CauseMetadata{
 											Provider:  "Generic",
 											Service:   "general",
 											StartLine: 1,
@@ -989,9 +990,9 @@ func TestDockerfileMisconfigurationScan(t *testing.T) {
 			want: types.ArtifactReference{
 				Name: "testdata/misconfig/dockerfile/single-failure/src",
 				Type: types.ArtifactFilesystem,
-				ID:   "sha256:2b9978e2c33280d7979f9f98b5dcc04c665878e939fd53c0cd7059b9b4001e89",
+				ID:   "sha256:07e466fb2de8ddb0c7dc6d7a911a427ba58d82918a501766f3b86cdfcb387379",
 				BlobIDs: []string{
-					"sha256:2b9978e2c33280d7979f9f98b5dcc04c665878e939fd53c0cd7059b9b4001e89",
+					"sha256:07e466fb2de8ddb0c7dc6d7a911a427ba58d82918a501766f3b86cdfcb387379",
 				},
 			},
 		},
@@ -1043,7 +1044,7 @@ func TestDockerfileMisconfigurationScan(t *testing.T) {
 												"https://trivy.dev/",
 											},
 										},
-										IacMetadata: types.IacMetadata{
+										CauseMetadata: types.CauseMetadata{
 											Provider:  "Generic",
 											Service:   "general",
 											StartLine: 1,
@@ -1066,7 +1067,7 @@ func TestDockerfileMisconfigurationScan(t *testing.T) {
 												"https://trivy.dev/",
 											},
 										},
-										IacMetadata: types.IacMetadata{
+										CauseMetadata: types.CauseMetadata{
 											Provider:  "Generic",
 											Service:   "general",
 											StartLine: 3,
@@ -1086,9 +1087,9 @@ func TestDockerfileMisconfigurationScan(t *testing.T) {
 			want: types.ArtifactReference{
 				Name: "testdata/misconfig/dockerfile/multiple-failures/src",
 				Type: types.ArtifactFilesystem,
-				ID:   "sha256:9d74e3c12286e79493413bed695391d0a03d23713079539e127208bbc889500b",
+				ID:   "sha256:0eb9251f1678f2b6eddbafd6efcc24b2cf05c77612028e5d9a920c2133978f6c",
 				BlobIDs: []string{
-					"sha256:9d74e3c12286e79493413bed695391d0a03d23713079539e127208bbc889500b",
+					"sha256:0eb9251f1678f2b6eddbafd6efcc24b2cf05c77612028e5d9a920c2133978f6c",
 				},
 			},
 		},
@@ -1176,7 +1177,7 @@ func TestDockerfileMisconfigurationScan(t *testing.T) {
 												"https://trivy.dev/",
 											},
 										},
-										IacMetadata: types.IacMetadata{
+										CauseMetadata: types.CauseMetadata{
 											Resource:  "",
 											Provider:  "Generic",
 											Service:   "general",
@@ -1196,9 +1197,9 @@ func TestDockerfileMisconfigurationScan(t *testing.T) {
 			want: types.ArtifactReference{
 				Name: "testdata/misconfig/dockerfile/passed/src",
 				Type: types.ArtifactFilesystem,
-				ID:   "sha256:374620666c4e973297d1a812243c90278a61ddb95ab9be2fea923d7bd0768081",
+				ID:   "sha256:5175224f06ea46c06562a690f24fbddb32a73d7c5864446241b4571a2082bbec",
 				BlobIDs: []string{
-					"sha256:374620666c4e973297d1a812243c90278a61ddb95ab9be2fea923d7bd0768081",
+					"sha256:5175224f06ea46c06562a690f24fbddb32a73d7c5864446241b4571a2082bbec",
 				},
 			},
 		},
@@ -1280,7 +1281,7 @@ func TestKubernetesMisconfigurationScan(t *testing.T) {
 												"https://trivy.dev/",
 											},
 										},
-										IacMetadata: types.IacMetadata{
+										CauseMetadata: types.CauseMetadata{
 											Provider:  "Generic",
 											Service:   "general",
 											StartLine: 7,
@@ -1300,9 +1301,9 @@ func TestKubernetesMisconfigurationScan(t *testing.T) {
 			want: types.ArtifactReference{
 				Name: "testdata/misconfig/kubernetes/single-failure/src",
 				Type: types.ArtifactFilesystem,
-				ID:   "sha256:2e899ffbda3242bb1c558fb569d139b806bb63f5d00f9b090969c58ebd5e0f2e",
+				ID:   "sha256:496b9b5bbd73d9f195b3543916fb1e7f9b9b6ffbc9bd26495ea1ef3cbd1909f7",
 				BlobIDs: []string{
-					"sha256:2e899ffbda3242bb1c558fb569d139b806bb63f5d00f9b090969c58ebd5e0f2e",
+					"sha256:496b9b5bbd73d9f195b3543916fb1e7f9b9b6ffbc9bd26495ea1ef3cbd1909f7",
 				},
 			},
 		},
@@ -1354,7 +1355,7 @@ func TestKubernetesMisconfigurationScan(t *testing.T) {
 												"https://trivy.dev/",
 											},
 										},
-										IacMetadata: types.IacMetadata{
+										CauseMetadata: types.CauseMetadata{
 											Provider:  "Generic",
 											Service:   "general",
 											StartLine: 7,
@@ -1377,7 +1378,7 @@ func TestKubernetesMisconfigurationScan(t *testing.T) {
 												"https://trivy.dev/",
 											},
 										},
-										IacMetadata: types.IacMetadata{
+										CauseMetadata: types.CauseMetadata{
 											Provider:  "Generic",
 											Service:   "general",
 											StartLine: 10,
@@ -1397,9 +1398,9 @@ func TestKubernetesMisconfigurationScan(t *testing.T) {
 			want: types.ArtifactReference{
 				Name: "testdata/misconfig/kubernetes/multiple-failures/src",
 				Type: types.ArtifactFilesystem,
-				ID:   "sha256:bbe586f111cd9e39b0c53d9c50b3048050c5446d495c9f06714f7c1151f8344f",
+				ID:   "sha256:05a1ad1e544468dbe15bef2267f023f34ea3164b460c22f3718e346fdc6c7703",
 				BlobIDs: []string{
-					"sha256:bbe586f111cd9e39b0c53d9c50b3048050c5446d495c9f06714f7c1151f8344f",
+					"sha256:05a1ad1e544468dbe15bef2267f023f34ea3164b460c22f3718e346fdc6c7703",
 				},
 			},
 		},
@@ -1487,7 +1488,7 @@ func TestKubernetesMisconfigurationScan(t *testing.T) {
 												"https://trivy.dev/",
 											},
 										},
-										IacMetadata: types.IacMetadata{
+										CauseMetadata: types.CauseMetadata{
 											Resource:  "",
 											Provider:  "Generic",
 											Service:   "general",
@@ -1507,9 +1508,9 @@ func TestKubernetesMisconfigurationScan(t *testing.T) {
 			want: types.ArtifactReference{
 				Name: "testdata/misconfig/kubernetes/passed/src",
 				Type: types.ArtifactFilesystem,
-				ID:   "sha256:8c487c0d8f31e5cbe7dda99f75fd09b8ec632c0e89a064752e8d52654266429a",
+				ID:   "sha256:f83ddd54bd590efb0083cba277fcc2ca1ff9eace136c4871d8998018e9e124b6",
 				BlobIDs: []string{
-					"sha256:8c487c0d8f31e5cbe7dda99f75fd09b8ec632c0e89a064752e8d52654266429a",
+					"sha256:f83ddd54bd590efb0083cba277fcc2ca1ff9eace136c4871d8998018e9e124b6",
 				},
 			},
 		},
