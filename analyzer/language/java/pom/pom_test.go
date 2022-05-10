@@ -2,6 +2,7 @@ package pom
 
 import (
 	"os"
+	"path/filepath"
 	"testing"
 
 	"github.com/aquasecurity/fanal/types"
@@ -14,6 +15,7 @@ import (
 func Test_pomAnalyzer_Analyze(t *testing.T) {
 	tests := []struct {
 		name      string
+		inputDir  string
 		inputFile string
 		want      *analyzer.AnalysisResult
 		wantErr   string
@@ -26,6 +28,25 @@ func Test_pomAnalyzer_Analyze(t *testing.T) {
 					{
 						Type:     types.Pom,
 						FilePath: "testdata/happy/pom.xml",
+						Libraries: []types.Package{
+							{
+								Name:    "com.example:example",
+								Version: "1.0.0",
+							},
+						},
+					},
+				},
+			},
+		},
+		{
+			name:      "happy dir path",
+			inputDir:  "testdata/happy",
+			inputFile: "pom.xml",
+			want: &analyzer.AnalysisResult{
+				Applications: []types.Application{
+					{
+						Type:     types.Pom,
+						FilePath: "pom.xml",
 						Libraries: []types.Package{
 							{
 								Name:    "com.example:example",
@@ -59,15 +80,22 @@ func Test_pomAnalyzer_Analyze(t *testing.T) {
 			inputFile: "testdata/broken/pom.xml",
 			wantErr:   "xml decode error",
 		},
+		{
+			name:      "sad dir path",
+			inputDir:  "testdata/broken",
+			inputFile: "pom.xml",
+			wantErr:   "xml decode error",
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			f, err := os.Open(tt.inputFile)
+			f, err := os.Open(filepath.Join(tt.inputDir, tt.inputFile))
 			require.NoError(t, err)
 			defer f.Close()
 
 			a := pomAnalyzer{}
 			got, err := a.Analyze(nil, analyzer.AnalysisInput{
+				Dir:      tt.inputDir,
 				FilePath: tt.inputFile,
 				Content:  f,
 			})

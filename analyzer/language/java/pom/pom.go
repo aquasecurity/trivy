@@ -2,9 +2,10 @@ package pom
 
 import (
 	"context"
-	"golang.org/x/xerrors"
 	"os"
 	"path/filepath"
+
+	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/go-dep-parser/pkg/java/pom"
 
@@ -23,7 +24,7 @@ const version = 1
 type pomAnalyzer struct{}
 
 func (a pomAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInput) (*analyzer.AnalysisResult, error) {
-	p := pom.NewParser(input.FilePath, pom.WithOffline(input.Options.Offline))
+	p := pom.NewParser(filepath.Join(input.Dir, input.FilePath), pom.WithOffline(input.Options.Offline))
 	res, err := language.Analyze(types.Pom, input.FilePath, input.Content, p)
 	if err != nil {
 		return nil, xerrors.Errorf("%s parse error: %w", input.FilePath, err)
