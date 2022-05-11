@@ -23,6 +23,7 @@ type Resource struct {
 	//TODO(josedonizetti): should add metadata? per report? per Result?
 	//Metadata  Metadata `json:",omitempty"`
 	Results types.Results `json:",omitempty"`
+	Error   string        `json:",omitempty"`
 }
 
 // Failed returns whether the k8s report includes any vulnerabilities or misconfigurations

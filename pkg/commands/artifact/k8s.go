@@ -122,8 +122,9 @@ func k8sRun(cliContext *cli.Context, opt Option, cacheClient cache.Cache, k8sArt
 		for _, image := range artifact.Images {
 			imageReport, err := k8sScan(ctx, image, imageScanner, imageScannerConfig, imageScannerOptions)
 			if err != nil {
-				// TODO(josedonizetti): should not ignore image on the report, it should display there was an error
-				log.Logger.Errorf("failed to scan image %s: %s", image, err)
+				// add error to report
+				log.Logger.Debugf("failed to scan image %s: %s", image, err)
+				vulns = append(vulns, newK8sResource(artifact, imageReport, err))
 				continue
 			}
 
@@ -132,13 +133,15 @@ func k8sRun(cliContext *cli.Context, opt Option, cacheClient cache.Cache, k8sArt
 				return k8sReport.Report{}, xerrors.Errorf("filter error: %w", err)
 			}
 
-			vulns = append(vulns, newK8sResource(artifact, imageReport))
+			vulns = append(vulns, newK8sResource(artifact, imageReport, nil))
 		}
 
 		// scan configurations
 		configReport, err := k8sScanConfig(ctx, configScannerConfig, configScannerOptions, artifact)
 		if err != nil {
-			return k8sReport.Report{}, xerrors.Errorf("failed to scan k8s config: %w", err)
+			// add error to report
+			log.Logger.Debugf("failed to scan config %s/%s: %s", artifact.Kind, artifact.Name, err)
+			misconfigs = append(misconfigs, newK8sResource(artifact, configReport, err))
 		}
 
 		configReport, err = filter(ctx, opt, configReport)
@@ -146,7 +149,7 @@ func k8sRun(cliContext *cli.Context, opt Option, cacheClient cache.Cache, k8sArt
 			return k8sReport.Report{}, xerrors.Errorf("filter error: %w", err)
 		}
 
-		misconfigs = append(misconfigs, newK8sResource(artifact, configReport))
+		misconfigs = append(misconfigs, newK8sResource(artifact, configReport, nil))
 	}
 
 	return k8sReport.Report{
@@ -196,7 +199,7 @@ func k8sScan(ctx context.Context, target string, initializeScanner InitializeSca
 	config.Target = target
 	s, cleanup, err := initializeScanner(ctx, config)
 	if err != nil {
-		log.Logger.Errorf("unexpected error during scanning %s: %s", config.Target, err)
+		log.Logger.Debugf("unexpected error during scanning %s: %s", config.Target, err)
 		return types.Report{}, err
 	}
 	defer cleanup()
@@ -237,7 +240,7 @@ func createTempFile(artifact *artifacts.Artifact) (string, error) {
 	return file.Name(), nil
 }
 
-func newK8sResource(artifact *artifacts.Artifact, report types.Report) k8sReport.Resource {
+func newK8sResource(artifact *artifacts.Artifact, report types.Report, err error) k8sReport.Resource {
 	results := make([]types.Result, 0, len(report.Results))
 	// fix target name
 	for _, result := range report.Results {
@@ -249,12 +252,19 @@ func newK8sResource(artifact *artifacts.Artifact, report types.Report) k8sReport
 		results = append(results, result)
 	}
 
-	return k8sReport.Resource{
+	k8sreport := k8sReport.Resource{
 		Namespace: artifact.Namespace,
 		Kind:      artifact.Kind,
 		Name:      artifact.Name,
 		Results:   results,
 	}
+
+	// if there was any error during the scan
+	if err != nil {
+		k8sreport.Error = err.Error()
+	}
+
+	return k8sreport
 }
 
 func removeFile(filename string) {
