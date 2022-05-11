@@ -269,6 +269,6 @@ func newK8sResource(artifact *artifacts.Artifact, report types.Report, err error
 
 func removeFile(filename string) {
 	if err := os.Remove(filename); err != nil {
-		log.Logger.Errorf("failed to remove temp file %s:%w:", filename, err)
+		log.Logger.Errorf("failed to remove temp file %s: %s:", filename, err)
 	}
 }

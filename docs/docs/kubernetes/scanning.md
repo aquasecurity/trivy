@@ -1,5 +1,8 @@
 # Kubernetes
 
+!!! warning "EXPERIMENTAL"
+    This feature might change without preserving backwards compatibility.
+
 Scan your Kubernetes cluster for both Vulnerabilities and Misconfigurations.
 
 Scan a full cluster:

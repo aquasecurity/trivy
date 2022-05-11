@@ -785,7 +785,7 @@ func NewK8sCommand() *cli.Command {
 	return &cli.Command{
 		Name:    "kubernetes",
 		Aliases: []string{"k8s"},
-		Usage:   "scan kubernetes images and misconfigurations",
+		Usage:   "scan kubernetes vulnerabilities and misconfigurations",
 		Action:  artifact.K8sRun,
 		Flags: []cli.Flag{
 			&namespaceFlag,
