@@ -63,12 +63,10 @@ func (r *misconfigRenderer) printSingleDivider() {
 func (r *misconfigRenderer) renderSingle(misconf types.DetectedMisconfiguration) {
 	r.renderSummary(misconf)
 	r.renderCode(misconf)
-	r.printf("\n")
+	r.printf("\n\n")
 }
 
 func (r *misconfigRenderer) renderSummary(misconf types.DetectedMisconfiguration) {
-
-	r.printDoubleDivider()
 
 	// show pass/fail/exception unless we are only showing failures
 	if r.includeNonFailures {

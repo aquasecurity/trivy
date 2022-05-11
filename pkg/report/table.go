@@ -42,6 +42,10 @@ func (tw TableWriter) Write(report types.Report) error {
 func (tw TableWriter) write(result types.Result) {
 	table := tablewriter.NewWriter(tw.Output)
 
+	//table.SetCenterSeparator(tml.Sprintf("<dim>┼"))
+	//table.SetColumnSeparator(tml.Sprintf("<dim>│"))
+	//table.SetRowSeparator(tml.Sprintf("<dim>─"))
+
 	var severityCount map[string]int
 	switch {
 	case len(result.Vulnerabilities) != 0:
