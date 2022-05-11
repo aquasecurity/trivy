@@ -1,12 +1,17 @@
 package report
 
 import (
+	"bytes"
 	"fmt"
 	"io"
 	"os"
 	"path/filepath"
 	"strings"
 	"sync"
+
+	"github.com/liamg/clinch/terminal"
+
+	"github.com/liamg/tml"
 
 	"github.com/fatih/color"
 	"github.com/olekukonko/tablewriter"
@@ -42,12 +47,14 @@ func (tw TableWriter) Write(report types.Report) error {
 func (tw TableWriter) write(result types.Result) {
 	table := tablewriter.NewWriter(tw.Output)
 
+	misconfigBuffer := bytes.NewBuffer([]byte{})
+
 	var severityCount map[string]int
 	switch {
 	case len(result.Vulnerabilities) != 0:
 		severityCount = tw.writeVulnerabilities(table, result.Vulnerabilities)
 	case len(result.Misconfigurations) != 0:
-		severityCount = tw.writeMisconfigurations(table, result.Misconfigurations)
+		severityCount = tw.writeMisconfigurations(misconfigBuffer, result.Target, result.Misconfigurations)
 	case len(result.Secrets) != 0:
 		severityCount = tw.writeSecrets(table, result.Secrets)
 	}
@@ -77,13 +84,15 @@ func (tw TableWriter) write(result types.Result) {
 		fmt.Printf("Total: %d (%s)\n\n", total, strings.Join(summaries, ", "))
 	}
 
-	if len(result.Vulnerabilities) == 0 && len(result.Misconfigurations) == 0 && len(result.Secrets) == 0 {
-		return
+	if len(result.Vulnerabilities) > 0 || len(result.Secrets) > 0 {
+		table.SetAutoMergeCells(true)
+		table.SetRowLine(true)
+		table.Render()
 	}
 
-	table.SetAutoMergeCells(true)
-	table.SetRowLine(true)
-	table.Render()
+	if len(result.Misconfigurations) > 0 {
+		_, _ = fmt.Fprint(tw.Output, misconfigBuffer.String())
+	}
 
 	// For debugging
 	if tw.Trace {
@@ -118,27 +127,6 @@ func (tw TableWriter) writeVulnerabilities(table *tablewriter.Table, vulns []typ
 	header := []string{"Library", "Vulnerability ID", "Severity", "Installed Version", "Fixed Version", "Title"}
 	table.SetHeader(header)
 	severityCount := tw.setVulnerabilityRows(table, vulns)
-
-	return severityCount
-}
-
-func (tw TableWriter) writeMisconfigurations(table *tablewriter.Table, misconfs []types.DetectedMisconfiguration) map[string]int {
-	table.SetColWidth(40)
-
-	alignment := []int{tablewriter.ALIGN_CENTER, tablewriter.ALIGN_CENTER, tablewriter.ALIGN_LEFT,
-		tablewriter.ALIGN_CENTER, tablewriter.ALIGN_CENTER, tablewriter.ALIGN_LEFT}
-	header := []string{"Type", "Misconf ID", "Check", "Severity", "Status", "Message"}
-
-	if !tw.IncludeNonFailures {
-		// Remove status
-		statusPos := 4
-		alignment = append(alignment[:statusPos], alignment[statusPos+1:]...)
-		header = append(header[:statusPos], header[statusPos+1:]...)
-	}
-
-	table.SetColumnAlignment(alignment)
-	table.SetHeader(header)
-	severityCount := tw.setMisconfRows(table, misconfs)
 
 	return severityCount
 }
@@ -197,44 +185,6 @@ func (tw TableWriter) setVulnerabilityRows(table *tablewriter.Table, vulns []typ
 	return severityCount
 }
 
-func (tw TableWriter) setMisconfRows(table *tablewriter.Table, misconfs []types.DetectedMisconfiguration) map[string]int {
-	severityCount := map[string]int{}
-	for _, misconf := range misconfs {
-		if misconf.Status == types.StatusFailure {
-			severityCount[misconf.Severity]++
-			if misconf.PrimaryURL != "" {
-				primaryURL := strings.TrimPrefix(misconf.PrimaryURL, "https://")
-				misconf.Message = fmt.Sprintf("%s -->%s", misconf.Message, primaryURL)
-			}
-		}
-
-		severity := misconf.Severity
-		status := string(misconf.Status)
-		if tw.Output == os.Stdout {
-			switch misconf.Status {
-			case types.StatusPassed:
-				severity = color.New(color.FgGreen).Sprint(misconf.Severity)
-				status = color.New(color.FgGreen).Sprint(misconf.Status)
-			case types.StatusException:
-				severity = color.New(color.FgMagenta).Sprint(misconf.Severity)
-				status = color.New(color.FgMagenta).Sprint(misconf.Status)
-			case types.StatusFailure:
-				severity = dbTypes.ColorizeSeverity(severity)
-				status = color.New(color.FgRed).Sprint(misconf.Status)
-			}
-		}
-
-		row := []string{misconf.Type, misconf.ID, misconf.Title, severity, status, misconf.Message}
-		if !tw.IncludeNonFailures {
-			// Remove status
-			row = append(row[:4], row[5:]...)
-		}
-
-		table.Append(row)
-	}
-	return severityCount
-}
-
 func (tw TableWriter) setSecretRows(table *tablewriter.Table, secrets []ftypes.SecretFinding) map[string]int {
 	severityCount := map[string]int{}
 	for _, secret := range secrets {
@@ -282,4 +232,101 @@ func (tw TableWriter) outputTrace(result types.Result) {
 
 func (tw TableWriter) Println(a ...interface{}) {
 	_, _ = fmt.Fprintln(tw.Output, a...)
+}
+
+func (tw TableWriter) countMisconfigSeverities(misconfs []types.DetectedMisconfiguration) map[string]int {
+	severityCount := map[string]int{}
+	for _, misconf := range misconfs {
+		if misconf.Status == types.StatusFailure {
+			severityCount[misconf.Severity]++
+		}
+	}
+	return severityCount
+}
+
+func (tw TableWriter) writeMisconfigurations(w io.Writer, target string, misconfs []types.DetectedMisconfiguration) map[string]int {
+	for _, misconf := range misconfs {
+		tw.writeMisconfiguration(w, target, misconf)
+	}
+	return tw.countMisconfigSeverities(misconfs)
+}
+
+func (tw TableWriter) writeMisconfiguration(w io.Writer, filename string, misconf types.DetectedMisconfiguration) {
+
+	width, _ := terminal.Size()
+	if width <= 0 {
+		width = 40
+	}
+	_ = tml.Fprintf(w, "<dim>%s\n", strings.Repeat("═", width))
+
+	// show pass/fail/exception unless we are only showing failures
+	if tw.IncludeNonFailures {
+		switch misconf.Status {
+		case types.StatusPassed:
+			_ = tml.Fprintf(w, "<green><bold>%s: ", misconf.Status)
+		case types.StatusFailure:
+			_ = tml.Fprintf(w, "<red><bold>%s: ", misconf.Status)
+		case types.StatusException:
+			_ = tml.Fprintf(w, "<yellow><bold>%s: ", misconf.Status)
+		}
+	}
+
+	// severity
+	switch misconf.Severity {
+	case "CRITICAL":
+		_ = tml.Fprintf(w, "<red><bold>%s: ", misconf.Severity)
+	case "HIGH":
+		_ = tml.Fprintf(w, "<red>%s: ", misconf.Severity)
+	case "MEDIUM":
+		_ = tml.Fprintf(w, "<yellow>%s: ", misconf.Severity)
+	case "LOW":
+		_ = tml.Fprintf(w, "%s: ", misconf.Severity)
+	default:
+		_ = tml.Fprintf(w, "<blue>%s: ", misconf.Severity)
+	}
+
+	// message + description
+	_ = tml.Fprintf(w, "%s\n", misconf.Message)
+	_ = tml.Fprintf(w, "<dim>%s\n", strings.Repeat("═", width))
+	_ = tml.Fprintf(w, "<italic><dim>%s\n", misconf.Description)
+	// show link if we have one
+	if misconf.PrimaryURL != "" {
+		_ = tml.Fprintf(w, "\n<italic><dim>See %s\n", misconf.PrimaryURL)
+	}
+
+	// highlight code if we can...
+	if lines := misconf.CauseMetadata.Code.Lines; len(lines) > 0 {
+		_ = tml.Fprintf(w, "<dim>%s\n", strings.Repeat("─", width))
+		var lineInfo string
+		if misconf.CauseMetadata.StartLine > 0 {
+			lineInfo = tml.Sprintf("<dim>:</dim><blue>%d", misconf.CauseMetadata.StartLine)
+			if misconf.CauseMetadata.EndLine > misconf.CauseMetadata.StartLine {
+				lineInfo = tml.Sprintf("%s<blue>-%d", lineInfo, misconf.CauseMetadata.EndLine)
+			}
+		}
+		_ = tml.Fprintf(w, " <blue>%s%s\n", filename, lineInfo)
+		_ = tml.Fprintf(w, "<dim>%s\n", strings.Repeat("─", width))
+		for i, line := range lines {
+			if line.Truncated {
+				_ = tml.Fprintf(w, "<dim>%4s   ", strings.Repeat(".", len(fmt.Sprintf("%d", line.Number))))
+			} else if line.IsCause {
+				_ = tml.Fprintf(w, "<red>%4d ", line.Number)
+				switch {
+				case (line.FirstCause && line.LastCause) || len(lines) == 1:
+					_ = tml.Fprintf(w, "<red>[ ")
+				case line.FirstCause || i == 0:
+					_ = tml.Fprintf(w, "<red>┌ ")
+				case line.LastCause || i == len(lines)-1:
+					_ = tml.Fprintf(w, "<red>└ ")
+				default:
+					_ = tml.Fprintf(w, "<red>│ ")
+				}
+			} else {
+				_ = tml.Fprintf(w, "<dim><italic>%4d   ", line.Number)
+			}
+			_ = tml.Fprintf(w, "%s\n", line.Highlighted)
+		}
+	}
+
+	_ = tml.Fprintf(w, "<dim>%s\n\n", strings.Repeat("─", width))
 }
