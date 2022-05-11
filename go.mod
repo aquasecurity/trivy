@@ -31,7 +31,7 @@ require (
 	github.com/knqyf263/go-rpm-version v0.0.0-20170716094938-74609b86c936
 	github.com/masahiro331/go-mvn-version v0.0.0-20210429150710-d3157d602a08
 	github.com/mitchellh/hashstructure/v2 v2.0.2
-	github.com/olekukonko/tablewriter v0.0.5
+	github.com/olekukonko/tablewriter v0.0.5 // indirect
 	github.com/open-policy-agent/opa v0.40.0
 	github.com/owenrumney/go-sarif/v2 v2.1.1
 	github.com/package-url/packageurl-go v0.1.1-0.20220203205134-d70459300c8a
@@ -78,7 +78,7 @@ require (
 	github.com/agext/levenshtein v1.2.3 // indirect
 	github.com/apparentlymart/go-cidr v1.1.0 // indirect
 	github.com/apparentlymart/go-textseg/v13 v13.0.0 // indirect
-	github.com/aquasecurity/defsec v0.57.3 // indirect
+	github.com/aquasecurity/defsec v0.57.3
 	github.com/aws/aws-sdk-go v1.44.5 // indirect
 	github.com/bgentry/go-netrc v0.0.0-20140422174119-9fd32a8b3d3d // indirect
 	github.com/bmatcuk/doublestar v1.3.4 // indirect
@@ -239,7 +239,10 @@ require gopkg.in/yaml.v2 v2.4.0
 
 require github.com/aquasecurity/trivy-kubernetes v0.1.0
 
-require github.com/liamg/clinch v1.5.6
+require (
+	github.com/liamg/clinch v1.5.6
+	github.com/liamg/tablewriter v0.0.6-0.20220511153426-31abfc8f8ee4
+)
 
 require (
 	github.com/alecthomas/chroma v0.10.0 // indirect

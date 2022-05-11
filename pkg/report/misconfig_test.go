@@ -1,7 +1,9 @@
-package report
+package report_test
 
 import (
 	"testing"
+
+	"github.com/aquasecurity/trivy/pkg/report"
 
 	"github.com/aquasecurity/defsec/pkg/scan"
 	ftypes "github.com/aquasecurity/fanal/types"
@@ -32,7 +34,7 @@ func TestMisconfigRenderer(t *testing.T) {
 					Title:       "Config file is bad",
 					Description: "Your config file is not good.",
 					Message:     "Oh no, a bad config.",
-					Severity:    severityHigh,
+					Severity:    "HIGH",
 					PrimaryURL:  "https://google.com/search?q=bad%20config",
 					Status:      "FAIL",
 				},
@@ -56,7 +58,7 @@ See https://google.com/search?q=bad%20config
 					Title:       "Config file is bad",
 					Description: "Your config file is not good.",
 					Message:     "Oh no, a bad config.",
-					Severity:    severityHigh,
+					Severity:    "HIGH",
 					PrimaryURL:  "https://google.com/search?q=bad%20config",
 					Status:      "FAIL",
 					CauseMetadata: ftypes.CauseMetadata{
@@ -111,7 +113,7 @@ See https://google.com/search?q=bad%20config
 					Title:       "Config file is bad",
 					Description: "Your config file is not good.",
 					Message:     "Oh no, a bad config.",
-					Severity:    severityHigh,
+					Severity:    "HIGH",
 					PrimaryURL:  "https://google.com/search?q=bad%20config",
 					Status:      "FAIL",
 					CauseMetadata: ftypes.CauseMetadata{
@@ -142,7 +144,7 @@ See https://google.com/search?q=bad%20config
 					Title:       "Config file is bad again",
 					Description: "Your config file is still not good.",
 					Message:     "Oh no, a bad config AGAIN.",
-					Severity:    severityMedium,
+					Severity:    "MEDIUM",
 					PrimaryURL:  "https://google.com/search?q=bad%20config",
 					Status:      "PASS",
 				},
@@ -176,7 +178,7 @@ See https://google.com/search?q=bad%20config
 
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			renderer := NewMisconfigRenderer("my-file", test.input, test.includeNonFailures)
+			renderer := report.NewMisconfigRenderer("my-file", test.input, test.includeNonFailures)
 			assert.Equal(t, test.want, stripANSI(renderer.Render()))
 		})
 	}

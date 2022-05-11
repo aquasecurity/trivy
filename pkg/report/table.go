@@ -9,7 +9,7 @@ import (
 	"sync"
 
 	"github.com/fatih/color"
-	"github.com/olekukonko/tablewriter"
+	"github.com/liamg/tablewriter"
 	"golang.org/x/exp/slices"
 
 	ftypes "github.com/aquasecurity/fanal/types"
@@ -41,10 +41,6 @@ func (tw TableWriter) Write(report types.Report) error {
 
 func (tw TableWriter) write(result types.Result) {
 	table := tablewriter.NewWriter(tw.Output)
-
-	//table.SetCenterSeparator(tml.Sprintf("<dim>┼"))
-	//table.SetColumnSeparator(tml.Sprintf("<dim>│"))
-	//table.SetRowSeparator(tml.Sprintf("<dim>─"))
 
 	var severityCount map[string]int
 	switch {
