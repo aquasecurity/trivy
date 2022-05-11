@@ -5,9 +5,17 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/aquasecurity/trivy/pkg/types"
 	"github.com/liamg/clinch/terminal"
 	"github.com/liamg/tml"
+
+	"github.com/aquasecurity/trivy/pkg/types"
+)
+
+const (
+	severityCritical = "CRITICAL"
+	severityHigh     = "HIGH"
+	severityMedium   = "MEDIUM"
+	severityLow      = "LOW"
 )
 
 type misconfigRenderer struct {
@@ -76,13 +84,13 @@ func (r *misconfigRenderer) renderSummary(misconf types.DetectedMisconfiguration
 
 	// severity
 	switch misconf.Severity {
-	case "CRITICAL":
+	case severityCritical:
 		r.printf("<red><bold>%s: ", misconf.Severity)
-	case "HIGH":
+	case severityHigh:
 		r.printf("<red>%s: ", misconf.Severity)
-	case "MEDIUM":
+	case severityMedium:
 		r.printf("<yellow>%s: ", misconf.Severity)
-	case "LOW":
+	case severityLow:
 		r.printf("%s: ", misconf.Severity)
 	default:
 		r.printf("<blue>%s: ", misconf.Severity)
