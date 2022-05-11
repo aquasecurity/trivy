@@ -56,6 +56,7 @@ type GsbomDetector struct {
 type Gsbom struct {
 	Version   int                      `json:"version,omitempty"`
 	Detector  GsbomDetector            `json:"detector,omitempty"`
+	Metadata  Metadata                 `json:"metadata,omitempty"`
 	Ref       string                   `json:"ref,omitempty"`
 	Sha       string                   `json:"sha,omitempty"`
 	Job       *GsbomJob                `json:"job,omitempty"`
@@ -97,6 +98,8 @@ func (gsbmw GsbomWriter) Write(report types.Report) error {
 		Id:   getenv("GITHUB_RUN_ID"),
 	}
 
+	// gsbom.Metadata = getMetadata(report.Metadata)
+
 	manifests := make(map[string]GsbomManifest)
 
 	for _, result := range report.Results {
@@ -118,7 +121,7 @@ func (gsbmw GsbomWriter) Write(report types.Report) error {
 			var err error
 			gsbompkg := GsbomPackage{}
 			gsbompkg.Scope = RuntimeScope
-			gsbompkg.Relationship = DirectRelationship
+			gsbompkg.Relationship = getPkgRelationshipType(pkg)
 			gsbompkg.Purl, err = buildPurl(result.Type, pkg)
 			if err != nil {
 				return xerrors.Errorf("unable to build purl: %w for the package: %s", err, pkg.Name)
@@ -142,6 +145,20 @@ func (gsbmw GsbomWriter) Write(report types.Report) error {
 	}
 	return nil
 }
+
+func getPkgRelationshipType(pkg ftypes.Package) string {
+	if pkg.Indirect {
+		return IndirectRelationship
+	}
+	return DirectRelationship
+}
+
+// func getMetadata(pkg ftypes.Package) Metadata {
+// 	purl, _ := buildPurl("generic", pkg)
+// 	metadata := Metadata{}
+// 	metadata["trivy:distro"] = purl
+// 	return metadata
+// }
 
 func buildPurl(t string, pkg ftypes.Package) (string, error) {
 	packageUrl, err := purl.NewPackageURL(t, types.Metadata{}, pkg)

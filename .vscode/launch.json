@@ -10,7 +10,14 @@
       "request": "launch",
       "mode": "auto",
       "program": "${workspaceFolder}/cmd/trivy/main.go",
-      "args": ["image", "--format", "gsbom", "alpine:3.15"]
+      "args": [
+        "sbom",
+        "--format",
+        "gsbom",
+        "-type",
+        "fs",
+        "/Users/shira.cohen/Argon/package-test/redis"
+      ]
     }
   ]
 }
