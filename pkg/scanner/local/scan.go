@@ -332,7 +332,7 @@ func toDetectedMisconfiguration(res ftypes.MisconfResult, defaultSeverity dbType
 		Status:      status,
 		Layer:       layer,
 		Traces:      res.Traces,
-		IacMetadata: ftypes.IacMetadata{
+		IacMetadata: ftypes.CauseMetadata{
 			Resource:  res.Resource,
 			Provider:  res.Provider,
 			Service:   res.Service,

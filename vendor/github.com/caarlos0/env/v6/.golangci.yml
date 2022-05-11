@@ -1,0 +1,8 @@
+linters:
+  enable:
+    - thelper
+    - gofumpt
+    - tparallel
+    - unconvert
+    - unparam
+    - wastedassign

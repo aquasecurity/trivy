@@ -1,0 +1,19 @@
+language: go
+go:
+- master
+env:
+  - GO111MODULE=on
+script:
+- make build-travis
+deploy:
+  - provider: releases
+    skip_cleanup: true
+    api_key:
+      secure: "T/uvbRV2dguNO8pEq8xINN1U1GUOkoXVf6Yc7gN0DH7OiNfraj88V5jH5M/tIE/WpFw0zNQXA5oF0V1czs7YG5TytG3/ioUdEyWqcpkeMcFJmhk/MAmSIwbfA0jP5EKuQ7fvaRRRclcLD3rHrxYKnDrKUedaQXraz31pJTydK5IaC8vPVfYAZ4NBGenlxVLXAXZM5uwpdqxLV25BAxdlEQkn5AEeGbii59QNblF5xaoYhQ7i5NL7nn4kKYqWwEJ0+osZ0dIEHVCNaF6hmiTsv7Wv+Yt0cT9FVwsbnV/wsd4XLszbIXXCXwe/cwrs/hxSkPN1FA9Tom9Qho5DPlI4+qf9qvLI+iUZ2XgqLdAvB1zEx0Sv/VdOPHCJuejvdxLCJfHAkjBWkz6U7F1llREtQS0L9tURBbt48LrrAgMKyNoXjknIk3LRQ0Sdd2ncMZ4OMK1OjcLOlfaJnhVsXYhkIVF4n/pS0WC5qn8JqSlxUxgopH13+cELY56d0sOhbIHVSmpZml7NOfgF4K2sLqkT+2uQjWwWBic0kuQ3h5pzcJAZvjUSN6+phxUg3i/EOWeeiiYUv3LS1hX5ZEZ+4ORM++1J3lk/Btk7iH1mYJVJoSg0rWojL3nGGDMrqb+AsdkXOo5LdtjMVzkUWqfvvdzAGoITcc4+FQZ+nt9uPWrUEbA="
+    name: "tml $TRAVIS_TAG"
+    file:
+      - bin/darwin-amd64/tml
+      - bin/linux-amd64/tml
+    on:
+      repo: liamg/tml
+      tags: true

@@ -1,0 +1,44 @@
+builds:
+# This is a library project, we don't want to build any binaries.
+# Building and testing is performed in the CI workflow
+- skip: true
+
+release:
+  prerelease: auto
+
+source:
+  enabled: true
+
+sboms:
+- artifacts: source
+  documents:
+  - "${artifact}.cdx.sbom"
+  cmd: cyclonedx-gomod
+  args: [ "mod", "-licenses", "-json", "-output", "$document", "./.." ]
+
+milestones:
+- name_template: "{{ .Tag }}"
+  close: true
+
+changelog:
+  use: github
+  sort: asc
+  groups:
+  - title: Features
+    regexp: "^.*feat[(\\w)]*:+.*$"
+    order: 0
+  - title: Fixes
+    regexp: "^.*fix[(\\w)]*:+.*$"
+    order: 1
+  - title: Building and Packaging
+    regexp: "^.*build[(\\w)]*:+.*$"
+    order: 2
+  - title: Documentation
+    regexp: "^.*docs[(\\w)]*:+.*$"
+    order: 3
+  - title: Others
+    order: 999
+  filters:
+    exclude:
+    - '^test:'
+    - '^Merge '
