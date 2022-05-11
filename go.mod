@@ -241,7 +241,7 @@ require github.com/aquasecurity/trivy-kubernetes v0.1.0
 
 require (
 	github.com/liamg/clinch v1.5.6
-	github.com/liamg/tablewriter v0.0.6-0.20220511153426-31abfc8f8ee4
+	github.com/liamg/tablewriter v0.0.6-0.20220511154856-265b7cfd7979
 )
 
 require (
