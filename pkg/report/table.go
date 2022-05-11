@@ -1,17 +1,12 @@
 package report
 
 import (
-	"bytes"
 	"fmt"
 	"io"
 	"os"
 	"path/filepath"
 	"strings"
 	"sync"
-
-	"github.com/liamg/clinch/terminal"
-
-	"github.com/liamg/tml"
 
 	"github.com/fatih/color"
 	"github.com/olekukonko/tablewriter"
@@ -47,14 +42,12 @@ func (tw TableWriter) Write(report types.Report) error {
 func (tw TableWriter) write(result types.Result) {
 	table := tablewriter.NewWriter(tw.Output)
 
-	misconfigBuffer := bytes.NewBuffer([]byte{})
-
 	var severityCount map[string]int
 	switch {
 	case len(result.Vulnerabilities) != 0:
 		severityCount = tw.writeVulnerabilities(table, result.Vulnerabilities)
 	case len(result.Misconfigurations) != 0:
-		severityCount = tw.writeMisconfigurations(misconfigBuffer, result.Target, result.Misconfigurations)
+		severityCount = tw.countMisconfigSeverities(result.Misconfigurations)
 	case len(result.Secrets) != 0:
 		severityCount = tw.writeSecrets(table, result.Secrets)
 	}
@@ -91,7 +84,7 @@ func (tw TableWriter) write(result types.Result) {
 	}
 
 	if len(result.Misconfigurations) > 0 {
-		_, _ = fmt.Fprint(tw.Output, misconfigBuffer.String())
+		_, _ = fmt.Fprint(tw.Output, NewMisconfigRenderer(result.Target, result.Misconfigurations, tw.IncludeNonFailures).Render())
 	}
 
 	// For debugging
@@ -242,91 +235,4 @@ func (tw TableWriter) countMisconfigSeverities(misconfs []types.DetectedMisconfi
 		}
 	}
 	return severityCount
-}
-
-func (tw TableWriter) writeMisconfigurations(w io.Writer, target string, misconfs []types.DetectedMisconfiguration) map[string]int {
-	for _, misconf := range misconfs {
-		tw.writeMisconfiguration(w, target, misconf)
-	}
-	return tw.countMisconfigSeverities(misconfs)
-}
-
-func (tw TableWriter) writeMisconfiguration(w io.Writer, filename string, misconf types.DetectedMisconfiguration) {
-
-	width, _ := terminal.Size()
-	if width <= 0 {
-		width = 40
-	}
-	_ = tml.Fprintf(w, "<dim>%s\n", strings.Repeat("═", width))
-
-	// show pass/fail/exception unless we are only showing failures
-	if tw.IncludeNonFailures {
-		switch misconf.Status {
-		case types.StatusPassed:
-			_ = tml.Fprintf(w, "<green><bold>%s: ", misconf.Status)
-		case types.StatusFailure:
-			_ = tml.Fprintf(w, "<red><bold>%s: ", misconf.Status)
-		case types.StatusException:
-			_ = tml.Fprintf(w, "<yellow><bold>%s: ", misconf.Status)
-		}
-	}
-
-	// severity
-	switch misconf.Severity {
-	case "CRITICAL":
-		_ = tml.Fprintf(w, "<red><bold>%s: ", misconf.Severity)
-	case "HIGH":
-		_ = tml.Fprintf(w, "<red>%s: ", misconf.Severity)
-	case "MEDIUM":
-		_ = tml.Fprintf(w, "<yellow>%s: ", misconf.Severity)
-	case "LOW":
-		_ = tml.Fprintf(w, "%s: ", misconf.Severity)
-	default:
-		_ = tml.Fprintf(w, "<blue>%s: ", misconf.Severity)
-	}
-
-	// message + description
-	_ = tml.Fprintf(w, "%s\n", misconf.Message)
-	_ = tml.Fprintf(w, "<dim>%s\n", strings.Repeat("═", width))
-	_ = tml.Fprintf(w, "<italic><dim>%s\n", misconf.Description)
-	// show link if we have one
-	if misconf.PrimaryURL != "" {
-		_ = tml.Fprintf(w, "\n<italic><dim>See %s\n", misconf.PrimaryURL)
-	}
-
-	// highlight code if we can...
-	if lines := misconf.CauseMetadata.Code.Lines; len(lines) > 0 {
-		_ = tml.Fprintf(w, "<dim>%s\n", strings.Repeat("─", width))
-		var lineInfo string
-		if misconf.CauseMetadata.StartLine > 0 {
-			lineInfo = tml.Sprintf("<dim>:</dim><blue>%d", misconf.CauseMetadata.StartLine)
-			if misconf.CauseMetadata.EndLine > misconf.CauseMetadata.StartLine {
-				lineInfo = tml.Sprintf("%s<blue>-%d", lineInfo, misconf.CauseMetadata.EndLine)
-			}
-		}
-		_ = tml.Fprintf(w, " <blue>%s%s\n", filename, lineInfo)
-		_ = tml.Fprintf(w, "<dim>%s\n", strings.Repeat("─", width))
-		for i, line := range lines {
-			if line.Truncated {
-				_ = tml.Fprintf(w, "<dim>%4s   ", strings.Repeat(".", len(fmt.Sprintf("%d", line.Number))))
-			} else if line.IsCause {
-				_ = tml.Fprintf(w, "<red>%4d ", line.Number)
-				switch {
-				case (line.FirstCause && line.LastCause) || len(lines) == 1:
-					_ = tml.Fprintf(w, "<red>[ ")
-				case line.FirstCause || i == 0:
-					_ = tml.Fprintf(w, "<red>┌ ")
-				case line.LastCause || i == len(lines)-1:
-					_ = tml.Fprintf(w, "<red>└ ")
-				default:
-					_ = tml.Fprintf(w, "<red>│ ")
-				}
-			} else {
-				_ = tml.Fprintf(w, "<dim><italic>%4d   ", line.Number)
-			}
-			_ = tml.Fprintf(w, "%s\n", line.Highlighted)
-		}
-	}
-
-	_ = tml.Fprintf(w, "<dim>%s\n\n", strings.Repeat("─", width))
 }
