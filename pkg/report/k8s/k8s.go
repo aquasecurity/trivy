@@ -42,10 +42,12 @@ func (report Report) Failed() bool {
 	return false
 }
 
+// Writer defines the result write operation
 type Writer interface {
 	Write(Report) error
 }
 
+// Write writes the results in the give format
 func Write(report Report, option report.Option) error {
 	var writer Writer
 	switch option.Format {

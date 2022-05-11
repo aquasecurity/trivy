@@ -87,7 +87,10 @@ func K8sRun(ctx *cli.Context) error {
 	return nil
 }
 
-func k8sRun(ctx *cli.Context, opt Option, cacheClient cache.Cache, k8sArtifacts []*artifacts.Artifact) (k8sReport.Report, error) {
+func k8sRun(cliContext *cli.Context, opt Option, cacheClient cache.Cache, k8sArtifacts []*artifacts.Artifact) (k8sReport.Report, error) {
+	ctx, cancel := context.WithTimeout(cliContext.Context, opt.Timeout)
+	defer cancel()
+
 	// progress bar
 	bar := pb.StartNew(len(k8sArtifacts))
 	if opt.NoProgress {
@@ -96,13 +99,13 @@ func k8sRun(ctx *cli.Context, opt Option, cacheClient cache.Cache, k8sArtifacts 
 	defer bar.Finish()
 
 	// image scanner configurations
-	imageScannerConfig, imageScannerOptions, err := initImageScannerConfig(ctx.Context, opt, cacheClient)
+	imageScannerConfig, imageScannerOptions, err := initImageScannerConfig(ctx, opt, cacheClient)
 	if err != nil {
 		return k8sReport.Report{}, xerrors.Errorf("scanner config error: %w", err)
 	}
 
 	// config scanner configurations
-	configScannerConfig, configScannerOptions, err := initConfigScannerConfig(ctx.Context, opt, cacheClient)
+	configScannerConfig, configScannerOptions, err := initConfigScannerConfig(ctx, opt, cacheClient)
 	if err != nil {
 		return k8sReport.Report{}, xerrors.Errorf("scanner config error: %w", err)
 	}
@@ -117,14 +120,14 @@ func k8sRun(ctx *cli.Context, opt Option, cacheClient cache.Cache, k8sArtifacts 
 
 		// scan images if present
 		for _, image := range artifact.Images {
-			imageReport, err := k8sScan(ctx.Context, image, imageScanner, imageScannerConfig, imageScannerOptions)
+			imageReport, err := k8sScan(ctx, image, imageScanner, imageScannerConfig, imageScannerOptions)
 			if err != nil {
 				// TODO(josedonizetti): should not ignore image on the report, it should display there was an error
-				log.Logger.Errorf("failed to scan image %s:%w:", image, err)
+				log.Logger.Errorf("failed to scan image %s: %s", image, err)
 				continue
 			}
 
-			imageReport, err = filter(ctx.Context, opt, imageReport)
+			imageReport, err = filter(ctx, opt, imageReport)
 			if err != nil {
 				return k8sReport.Report{}, xerrors.Errorf("filter error: %w", err)
 			}
@@ -138,7 +141,7 @@ func k8sRun(ctx *cli.Context, opt Option, cacheClient cache.Cache, k8sArtifacts 
 			return k8sReport.Report{}, xerrors.Errorf("failed to scan k8s config: %w", err)
 		}
 
-		configReport, err = filter(ctx.Context, opt, configReport)
+		configReport, err = filter(ctx, opt, configReport)
 		if err != nil {
 			return k8sReport.Report{}, xerrors.Errorf("filter error: %w", err)
 		}
@@ -174,18 +177,14 @@ func initConfigScannerConfig(ctx context.Context, opt Option, cacheClient cache.
 	return initScannerConfig(ctx, opt, cacheClient)
 }
 
-func k8sScanConfig(ctx *cli.Context, config ScannerConfig, opts types.ScanOptions, a *artifacts.Artifact) (types.Report, error) {
+func k8sScanConfig(ctx context.Context, config ScannerConfig, opts types.ScanOptions, a *artifacts.Artifact) (types.Report, error) {
 	fileName, err := createTempFile(a)
-	defer func() {
-		if err := os.Remove(fileName); err != nil {
-			log.Logger.Errorf("failed to delete temp file %s:%w:", fileName, err)
-		}
-	}()
 	if err != nil {
 		return types.Report{}, xerrors.Errorf("scan error: %w", err)
 	}
+	defer removeFile(fileName)
 
-	report, err := k8sScan(ctx.Context, fileName, filesystemStandaloneScanner, config, opts)
+	report, err := k8sScan(ctx, fileName, filesystemStandaloneScanner, config, opts)
 	if err != nil {
 		return types.Report{}, xerrors.Errorf("scan error: %w", err)
 	}
@@ -218,18 +217,20 @@ func createTempFile(artifact *artifacts.Artifact) (string, error) {
 	}
 	defer func() {
 		if err := file.Close(); err != nil {
-			log.Logger.Errorf("failed to close temp file %s:%w:", file.Name(), err)
+			log.Logger.Errorf("failed to close temp file %s: %s:", file.Name(), err)
 		}
 	}()
 
 	// TODO(josedonizetti): marshal and return as byte slice should be on the trivy-kubernetes library?
 	data, err := yaml.Marshal(artifact.RawResource)
 	if err != nil {
+		removeFile(filename)
 		return "", xerrors.Errorf("marshaling resource error: %w", err)
 	}
 
 	_, err = file.Write(data)
 	if err != nil {
+		removeFile(filename)
 		return "", xerrors.Errorf("writing tmp file error: %w", err)
 	}
 
@@ -253,5 +254,11 @@ func newK8sResource(artifact *artifacts.Artifact, report types.Report) k8sReport
 		Kind:      artifact.Kind,
 		Name:      artifact.Name,
 		Results:   results,
+	}
+}
+
+func removeFile(filename string) {
+	if err := os.Remove(filename); err != nil {
+		log.Logger.Errorf("failed to remove temp file %s:%w:", filename, err)
 	}
 }

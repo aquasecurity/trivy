@@ -809,7 +809,7 @@ func NewK8sCommand() *cli.Command {
 			&redisBackendCACert,
 			&redisBackendCert,
 			&redisBackendKey,
-			//&timeoutFlag,
+			&timeoutFlag,
 			&noProgressFlag,
 			&ignorePolicy,
 			&listAllPackages,
