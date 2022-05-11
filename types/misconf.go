@@ -48,7 +48,7 @@ func NewCauseWithCode(underlying scan.Result) CauseMetadata {
 		StartLine: flat.Location.StartLine,
 		EndLine:   flat.Location.EndLine,
 	}
-	if code, err := underlying.GetCode(true); err == nil {
+	if code, err := underlying.GetCode(); err == nil {
 		cause.Code = *code
 	}
 	return cause

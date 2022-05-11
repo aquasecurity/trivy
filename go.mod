@@ -10,7 +10,7 @@ require (
 	github.com/BurntSushi/toml v1.1.0 // indirect
 	github.com/GoogleCloudPlatform/docker-credential-gcr v2.0.5+incompatible
 	github.com/alicebob/miniredis/v2 v2.18.0
-	github.com/aquasecurity/defsec v0.56.2
+	github.com/aquasecurity/defsec v0.57.3
 	github.com/aws/aws-sdk-go v1.44.5
 	github.com/docker/docker v20.10.14+incompatible
 	github.com/docker/go-connections v0.4.0
@@ -68,6 +68,7 @@ require (
 	github.com/ProtonMail/go-crypto v0.0.0-20210428141323-04723f9f07d7 // indirect
 	github.com/acomagu/bufpipe v1.0.3 // indirect
 	github.com/agext/levenshtein v1.2.3 // indirect
+	github.com/alecthomas/chroma v0.10.0 // indirect
 	github.com/alicebob/gopher-json v0.0.0-20200520072559-a9ecdc9d1d3a // indirect
 	github.com/apparentlymart/go-cidr v1.1.0 // indirect
 	github.com/apparentlymart/go-textseg/v13 v13.0.0 // indirect
@@ -82,6 +83,7 @@ require (
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/dgryski/go-rendezvous v0.0.0-20200823014737-9f7001d12a5f // indirect
 	github.com/dimchansky/utfbom v1.1.1 // indirect
+	github.com/dlclark/regexp2 v1.4.0 // indirect
 	github.com/docker/cli v20.10.13+incompatible // indirect
 	github.com/docker/distribution v2.8.0+incompatible // indirect
 	github.com/docker/docker-credential-helpers v0.6.4 // indirect
@@ -116,7 +118,6 @@ require (
 	github.com/klauspost/compress v1.15.1 // indirect
 	github.com/liamg/iamgo v0.0.6 // indirect
 	github.com/liamg/jfather v0.0.7 // indirect
-	github.com/liamg/tml v0.6.0 // indirect
 	github.com/magiconair/properties v1.8.5 // indirect
 	github.com/mattn/go-isatty v0.0.14 // indirect
 	github.com/mattn/go-runewidth v0.0.12 // indirect
