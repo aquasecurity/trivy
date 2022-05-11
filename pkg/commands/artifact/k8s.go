@@ -56,17 +56,12 @@ func K8sRun(ctx *cli.Context) error {
 		defer db.Close()
 	}
 
-	kubeConfig, err := k8s.GetKubeConfig()
+	cluster, err := k8s.GetCluster()
 	if err != nil {
-		return xerrors.Errorf("get kubeconfig error: %w", err)
+		return xerrors.Errorf("get k8s cluster: %w", err)
 	}
 
-	k8sDynamicClient, err := k8s.NewDynamicClient(kubeConfig)
-	if err != nil {
-		return xerrors.Errorf("failed to instantiate dynamic client: %w", err)
-	}
-
-	trivyk8s := trivyk8s.New(k8sDynamicClient).Namespace(opt.KubernetesOption.Namespace)
+	trivyk8s := trivyk8s.New(cluster).Namespace(opt.KubernetesOption.Namespace)
 
 	// list all kubernetes scannable artifacts
 	k8sArtifacts, err := trivyk8s.ListArtifacts(ctx.Context)
@@ -78,6 +73,7 @@ func K8sRun(ctx *cli.Context) error {
 	if err != nil {
 		return xerrors.Errorf("k8s scan error: %w", err)
 	}
+	report.ClusterName = cluster.GetCurrentContext()
 
 	if err = k8sReport.Write(report, pkgReport.Option{
 		Format: "json", // for now json is the default
@@ -150,14 +146,8 @@ func k8sRun(ctx *cli.Context, opt Option, cacheClient cache.Cache, k8sArtifacts 
 		misconfigs = append(misconfigs, newK8sResource(artifact, configReport))
 	}
 
-	clusterName, err := k8s.GetCurrentContext()
-	if err != nil {
-		return types.K8sReport{}, xerrors.Errorf("failed to get k8s current context: %w", err)
-	}
-
 	return types.K8sReport{
 		SchemaVersion:     0,
-		ClusterName:       clusterName,
 		Vulnerabilities:   vulns,
 		Misconfigurations: misconfigs,
 	}, nil
