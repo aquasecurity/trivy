@@ -87,7 +87,7 @@ func K8sRun(ctx *cli.Context) error {
 	return nil
 }
 
-func k8sRun(ctx *cli.Context, opt Option, cacheClient cache.Cache, k8sArtifacts []*artifacts.Artifact) (types.K8sReport, error) {
+func k8sRun(ctx *cli.Context, opt Option, cacheClient cache.Cache, k8sArtifacts []*artifacts.Artifact) (k8sReport.Report, error) {
 	// progress bar
 	bar := pb.StartNew(len(k8sArtifacts))
 	if opt.NoProgress {
@@ -98,17 +98,17 @@ func k8sRun(ctx *cli.Context, opt Option, cacheClient cache.Cache, k8sArtifacts 
 	// image scanner configurations
 	imageScannerConfig, imageScannerOptions, err := initImageScannerConfig(ctx.Context, opt, cacheClient)
 	if err != nil {
-		return types.K8sReport{}, xerrors.Errorf("scanner config error: %w", err)
+		return k8sReport.Report{}, xerrors.Errorf("scanner config error: %w", err)
 	}
 
 	// config scanner configurations
 	configScannerConfig, configScannerOptions, err := initConfigScannerConfig(ctx.Context, opt, cacheClient)
 	if err != nil {
-		return types.K8sReport{}, xerrors.Errorf("scanner config error: %w", err)
+		return k8sReport.Report{}, xerrors.Errorf("scanner config error: %w", err)
 	}
 
-	vulns := make([]types.K8sResource, 0)
-	misconfigs := make([]types.K8sResource, 0)
+	vulns := make([]k8sReport.Resource, 0)
+	misconfigs := make([]k8sReport.Resource, 0)
 
 	// Loops once over all artifacts, and execute scanners as necessary. Not every artifacts has an image,
 	// so image scanner is not always executed.
@@ -126,7 +126,7 @@ func k8sRun(ctx *cli.Context, opt Option, cacheClient cache.Cache, k8sArtifacts 
 
 			imageReport, err = filter(ctx.Context, opt, imageReport)
 			if err != nil {
-				return types.K8sReport{}, xerrors.Errorf("filter error: %w", err)
+				return k8sReport.Report{}, xerrors.Errorf("filter error: %w", err)
 			}
 
 			vulns = append(vulns, newK8sResource(artifact, imageReport))
@@ -135,18 +135,18 @@ func k8sRun(ctx *cli.Context, opt Option, cacheClient cache.Cache, k8sArtifacts 
 		// scan configurations
 		configReport, err := k8sScanConfig(ctx, configScannerConfig, configScannerOptions, artifact)
 		if err != nil {
-			return types.K8sReport{}, xerrors.Errorf("failed to scan k8s config: %w", err)
+			return k8sReport.Report{}, xerrors.Errorf("failed to scan k8s config: %w", err)
 		}
 
 		configReport, err = filter(ctx.Context, opt, configReport)
 		if err != nil {
-			return types.K8sReport{}, xerrors.Errorf("filter error: %w", err)
+			return k8sReport.Report{}, xerrors.Errorf("filter error: %w", err)
 		}
 
 		misconfigs = append(misconfigs, newK8sResource(artifact, configReport))
 	}
 
-	return types.K8sReport{
+	return k8sReport.Report{
 		SchemaVersion:     0,
 		Vulnerabilities:   vulns,
 		Misconfigurations: misconfigs,
@@ -236,7 +236,7 @@ func createTempFile(artifact *artifacts.Artifact) (string, error) {
 	return file.Name(), nil
 }
 
-func newK8sResource(artifact *artifacts.Artifact, report types.Report) types.K8sResource {
+func newK8sResource(artifact *artifacts.Artifact, report types.Report) k8sReport.Resource {
 	results := make([]types.Result, 0, len(report.Results))
 	// fix target name
 	for _, result := range report.Results {
@@ -248,7 +248,7 @@ func newK8sResource(artifact *artifacts.Artifact, report types.Report) types.K8s
 		results = append(results, result)
 	}
 
-	return types.K8sResource{
+	return k8sReport.Resource{
 		Namespace: artifact.Namespace,
 		Kind:      artifact.Kind,
 		Name:      artifact.Name,

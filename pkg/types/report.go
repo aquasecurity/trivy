@@ -77,38 +77,3 @@ func (results Results) Failed() bool {
 	}
 	return false
 }
-
-// K8sReport represents a kubernetes scan report
-type K8sReport struct {
-	SchemaVersion     int `json:",omitempty"`
-	ClusterName       string
-	Vulnerabilities   []K8sResource `json:",omitempty"`
-	Misconfigurations []K8sResource `json:",omitempty"`
-}
-
-// K8sReport represents a kubernetes resource report
-type K8sResource struct {
-	Namespace string
-	Kind      string
-	Name      string
-	//TODO(josedonizetti): should add metadata? per report? per Result?
-	//Metadata  Metadata `json:",omitempty"`
-	Results Results `json:",omitempty"`
-}
-
-// Failed returns whether the k8s report includes any vulnerabilities or misconfigurations
-func (report K8sReport) Failed() bool {
-	for _, r := range report.Vulnerabilities {
-		if r.Results.Failed() {
-			return true
-		}
-	}
-
-	for _, r := range report.Misconfigurations {
-		if r.Results.Failed() {
-			return true
-		}
-	}
-
-	return false
-}
