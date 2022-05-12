@@ -20,34 +20,42 @@
       "Class": "config",
       "Type": "dockerfile",
       "MisconfSummary": {
-        "Successes": 0,
+        "Successes": 23,
         "Failures": 2,
         "Exceptions": 0
       },
       "Misconfigurations": [
         {
-          "Type": "N/A",
+          "Type": "Dockerfile Security Check",
           "ID": "N/A",
           "Title": "N/A",
+          "Description": "Rego module: data.user.bar",
           "Message": "something bad: bar",
           "Namespace": "user.bar",
           "Query": "data.user.bar.deny",
           "Severity": "UNKNOWN",
           "Status": "FAIL",
           "Layer": {},
-          "IacMetadata": {}
+          "IacMetadata": {
+            "Provider": "Generic",
+            "Service": "general"
+          }
         },
         {
-          "Type": "N/A",
+          "Type": "Dockerfile Security Check",
           "ID": "N/A",
           "Title": "N/A",
+          "Description": "Rego module: data.user.foo",
           "Message": "something bad: foo",
           "Namespace": "user.foo",
           "Query": "data.user.foo.deny",
           "Severity": "UNKNOWN",
           "Status": "FAIL",
           "Layer": {},
-          "IacMetadata": {}
+          "IacMetadata": {
+            "Provider": "Generic",
+            "Service": "general"
+          }
         }
       ]
     }
