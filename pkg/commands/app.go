@@ -211,7 +211,7 @@ var (
 		Name:    "namespace",
 		Aliases: []string{"n"},
 		Value:   "",
-		Usage:   "namespace to scan",
+		Usage:   "specify a namespace to scan",
 		EnvVars: []string{"TRIVY_K8S_NAMESPACE"},
 	}
 
@@ -789,11 +789,6 @@ func NewK8sCommand() *cli.Command {
 		Action:  artifact.K8sRun,
 		Flags: []cli.Flag{
 			&namespaceFlag,
-
-			//&templateFlag,
-			// For now only format is json, and it is the default
-			//&formatFlag,
-
 			&outputFlag,
 			&severityFlag,
 			&exitCodeFlag,

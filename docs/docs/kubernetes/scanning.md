@@ -1,7 +1,8 @@
 # Kubernetes
 
 !!! warning "EXPERIMENTAL"
-    This feature might change without preserving backwards compatibility.
+
+This feature might change without preserving backwards compatibility.
 
 Scan your Kubernetes cluster for both Vulnerabilities and Misconfigurations.
 
@@ -11,7 +12,7 @@ Scan a full cluster:
 $ trivy k8s
 ```
 
-Scan a namespace:
+Scan a specific namespace:
 
 ```
 $ trivy k8s -n default
@@ -23,8 +24,8 @@ Scan a namespace for only `CRITICAL` Vulnerabilities and Misconfigurations:
 $ trivy k8s -n default -o results.json --severity CRITICAL
 ```
 
-It uses local kubectl configuration to access the API server to list artifacts.
-Currently, the only supported output is json to be used for automation, other reports will be implemented soon.
+Trivy uses your local kubectl configuration to access the API server to list artifacts.
+At this time, JSON is the only supported output and is intended to be used for automation, other reports will be implemented soon.
 
 <details>
 <summary>Result</summary>
