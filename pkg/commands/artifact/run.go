@@ -64,7 +64,8 @@ type ScannerConfig struct {
 }
 
 type Runner struct {
-	cache cache.Cache
+	cache  cache.Cache
+	dbOpen bool
 }
 
 type runnerOption func(*Runner)
@@ -89,19 +90,12 @@ func NewRunner(cliOption Option, opts ...runnerOption) (*Runner, error) {
 		return nil, xerrors.Errorf("logger error: %w", err)
 	}
 
-	// When custom cache is not passed, it uses the default cache implementation.
-	if r.cache == nil {
-		r.cache, err = initCache(cliOption)
-		if err != nil {
-			return nil, xerrors.Errorf("cache error: %w", err)
-		}
+	if err = r.initCache(cliOption); err != nil {
+		return nil, xerrors.Errorf("cache error: %w", err)
 	}
 
-	// When scanning config files or running as client mode, it doesn't need to download the vulnerability database.
-	if cliOption.RemoteAddr == "" && slices.Contains(cliOption.SecurityChecks, types.SecurityCheckVulnerability) {
-		if err = initDB(cliOption); err != nil {
-			return nil, xerrors.Errorf("DB error: %w", err)
-		}
+	if err = r.initDB(cliOption); err != nil {
+		return nil, xerrors.Errorf("DB error: %w", err)
 	}
 
 	return r, nil
@@ -113,8 +107,11 @@ func (r *Runner) Close() error {
 	if err := r.cache.Close(); err != nil {
 		errs = multierror.Append(errs, err)
 	}
-	if err := db.Close(); err != nil {
-		errs = multierror.Append(errs, err)
+
+	if r.dbOpen {
+		if err := db.Close(); err != nil {
+			errs = multierror.Append(errs, err)
+		}
 	}
 	return errs
 }
@@ -225,6 +222,70 @@ func (r *Runner) Report(opt Option, report types.Report) error {
 	return nil
 }
 
+func (r *Runner) initDB(c Option) error {
+	// When scanning config files or running as client mode, it doesn't need to download the vulnerability database.
+	if c.RemoteAddr != "" || !slices.Contains(c.SecurityChecks, types.SecurityCheckVulnerability) {
+		return nil
+	}
+
+	// download the database file
+	noProgress := c.Quiet || c.NoProgress
+	if err := operation.DownloadDB(c.AppVersion, c.CacheDir, c.DBRepository, noProgress, c.SkipDBUpdate); err != nil {
+		return err
+	}
+
+	if c.DownloadDBOnly {
+		return SkipScan
+	}
+
+	if err := db.Init(c.CacheDir); err != nil {
+		return xerrors.Errorf("error in vulnerability DB initialize: %w", err)
+	}
+	r.dbOpen = true
+
+	return nil
+}
+
+func (r *Runner) initCache(c Option) error {
+	// Skip initializing cache when custom cache is passed
+	if r.cache != nil {
+		return nil
+	}
+
+	// client/server mode
+	if c.RemoteAddr != "" {
+		remoteCache := tcache.NewRemoteCache(c.RemoteAddr, c.CustomHeaders, c.Insecure)
+		r.cache = tcache.NopCache(remoteCache)
+		return nil
+	}
+
+	// standalone mode
+	utils.SetCacheDir(c.CacheDir)
+	cache, err := operation.NewCache(c.CacheOption)
+	if err != nil {
+		return xerrors.Errorf("unable to initialize the cache: %w", err)
+	}
+	log.Logger.Debugf("cache dir:  %s", utils.CacheDir())
+
+	if c.Reset {
+		defer cache.Close()
+		if err = cache.Reset(); err != nil {
+			return xerrors.Errorf("cache reset error: %w", err)
+		}
+		return SkipScan
+	}
+	if c.ClearCache {
+		defer cache.Close()
+		if err = cache.ClearArtifacts(); err != nil {
+			return xerrors.Errorf("cache clear error: %w", err)
+		}
+		return SkipScan
+	}
+
+	r.cache = cache
+	return nil
+}
+
 // Run performs artifact scanning
 func Run(cliCtx *cli.Context, artifactType ArtifactType) error {
 	opt, err := InitOption(cliCtx)
@@ -285,55 +346,6 @@ func run(ctx context.Context, opt Option, artifactType ArtifactType) (err error)
 
 	exit(opt, report.Results)
 
-	return nil
-}
-
-func initCache(c Option) (cache.Cache, error) {
-	// client/server mode
-	if c.RemoteAddr != "" {
-		remoteCache := tcache.NewRemoteCache(c.RemoteAddr, c.CustomHeaders, c.Insecure)
-		return tcache.NopCache(remoteCache), nil
-	}
-
-	// standalone mode
-	utils.SetCacheDir(c.CacheDir)
-	cache, err := operation.NewCache(c.CacheOption)
-	if err != nil {
-		return operation.Cache{}, xerrors.Errorf("unable to initialize the cache: %w", err)
-	}
-	log.Logger.Debugf("cache dir:  %s", utils.CacheDir())
-
-	if c.Reset {
-		defer cache.Close()
-		if err = cache.Reset(); err != nil {
-			return operation.Cache{}, xerrors.Errorf("cache reset error: %w", err)
-		}
-		return operation.Cache{}, SkipScan
-	}
-	if c.ClearCache {
-		defer cache.Close()
-		if err = cache.ClearArtifacts(); err != nil {
-			return operation.Cache{}, xerrors.Errorf("cache clear error: %w", err)
-		}
-		return operation.Cache{}, SkipScan
-	}
-	return cache, nil
-}
-
-func initDB(c Option) error {
-	// download the database file
-	noProgress := c.Quiet || c.NoProgress
-	if err := operation.DownloadDB(c.AppVersion, c.CacheDir, c.DBRepository, noProgress, c.SkipDBUpdate); err != nil {
-		return err
-	}
-
-	if c.DownloadDBOnly {
-		return SkipScan
-	}
-
-	if err := db.Init(c.CacheDir); err != nil {
-		return xerrors.Errorf("error in vulnerability DB initialize: %w", err)
-	}
 	return nil
 }
 
