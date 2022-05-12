@@ -20,6 +20,11 @@ func SbomRun(ctx *cli.Context) error {
 		return xerrors.Errorf(`"--artifact-type" must be %q`, supportedArtifactTypes)
 	}
 
+	// Pass the specified image archive via "--input".
+	if artifactType == imageArchiveArtifact {
+		opt.Input = opt.Target
+	}
+
 	// Scan the relevant dependencies
 	opt.ReportOption.VulnType = []string{types.VulnTypeOS, types.VulnTypeLibrary}
 	opt.ReportOption.SecurityChecks = []string{types.SecurityCheckVulnerability}

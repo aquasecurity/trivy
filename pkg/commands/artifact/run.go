@@ -317,7 +317,7 @@ func run(ctx context.Context, opt Option, artifactType ArtifactType) (err error)
 
 	var report types.Report
 	switch artifactType {
-	case containerImageArtifact:
+	case containerImageArtifact, imageArchiveArtifact:
 		if report, err = runner.ScanImage(ctx, opt); err != nil {
 			return xerrors.Errorf("image scan error: %w", err)
 		}
