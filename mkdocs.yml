@@ -58,6 +58,7 @@ nav:
               - vs tfsec: docs/misconfiguration/comparison/tfsec.md
               - vs cfsec: docs/misconfiguration/comparison/cfsec.md
       - Kubernetes:
+          - Scanning: docs/kubernetes/cli/scanning.md
           - Operator:
               - Overview: docs/kubernetes/operator/index.md
               - Installation:

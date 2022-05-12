@@ -74,7 +74,7 @@ Please see [LICENSE][license] for Trivy licensing information.
 [rootfs]: ../docs/vulnerability/scanning/rootfs.md
 [filesystem]: ../docs/vulnerability/scanning/filesystem.md
 [repo]: ../docs/vulnerability/scanning/git-repository.md
-[kubernetes]: ../docs/kubernetes/scanning.md
+[kubernetes]: ../docs/kubernetes/cli/scanning.md
 
 [standalone]: ../docs/references/modes/standalone.md
 [client-server]: ../docs/references/modes/client-server.md
