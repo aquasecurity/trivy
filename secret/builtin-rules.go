@@ -1,6 +1,8 @@
 package secret
 
 import (
+	"fmt"
+
 	"github.com/aquasecurity/fanal/types"
 )
 
@@ -64,21 +66,32 @@ var (
 	CategoryTypeform             = types.SecretRuleCategory("Typeform")
 )
 
+// Reusable regex patterns
+const (
+	quote       = `["']?`
+	connect     = `\s*(:|=>|=)\s*`
+	startSecret = `(^|\s+)`
+	endSecret   = `(\s+|$)`
+
+	aws = `(aws)?_?`
+)
+
 var builtinRules = []Rule{
 	{
-		ID:       "aws-access-key-id",
-		Category: CategoryAWS,
-		Severity: "CRITICAL",
-		Title:    "AWS Access Key ID",
-		Regex:    MustCompile(`(A3T[A-Z0-9]|AKIA|AGPA|AIDA|AROA|AIPA|ANPA|ANVA|ASIA)[A-Z0-9]{16}`),
-		Keywords: []string{"AKIA", "AGPA", "AIDA", "AROA", "AIPA", "ANPA", "ANVA", "ASIA"},
+		ID:              "aws-access-key-id",
+		Category:        CategoryAWS,
+		Severity:        "CRITICAL",
+		Title:           "AWS Access Key ID",
+		Regex:           MustCompile(fmt.Sprintf(`(?P<secret>(A3T[A-Z0-9]|AKIA|AGPA|AIDA|AROA|AIPA|ANPA|ANVA|ASIA)[A-Z0-9]{16})%s`, endSecret)),
+		SecretGroupName: "secret",
+		Keywords:        []string{"AKIA", "AGPA", "AIDA", "AROA", "AIPA", "ANPA", "ANVA", "ASIA"},
 	},
 	{
 		ID:              "aws-secret-access-key",
 		Category:        CategoryAWS,
 		Severity:        "CRITICAL",
 		Title:           "AWS Secret Access Key",
-		Regex:           MustCompile(`(?i)["']?(aws)?_?(secret)?_?(access)?_?key["']?\s*(:|=>|=)\s*(?P<secret>["']?[A-Za-z0-9\/\+=]{40})["']?`),
+		Regex:           MustCompile(fmt.Sprintf(`(?i)%s%s%s(secret)?_?(access)?_?key%s%s%s(?P<secret>[A-Za-z0-9\/\+=]{40})%s%s`, startSecret, quote, aws, quote, connect, quote, quote, endSecret)),
 		SecretGroupName: "secret",
 		Keywords:        []string{"key"},
 	},
@@ -87,7 +100,7 @@ var builtinRules = []Rule{
 		Category:        CategoryAWS,
 		Severity:        "HIGH",
 		Title:           "AWS Account ID",
-		Regex:           MustCompile(`(?i)["']?(aws)?_?account_?(id)?["']?\s*(:|=>|=)\s*['"]?(?P<secret>[0-9]{4}\-?[0-9]{4}\-?[0-9]{4})['"]?`),
+		Regex:           MustCompile(fmt.Sprintf(`(?i)%s%s%saccount_?(id)?%s%s%s(?P<secret>[0-9]{4}\-?[0-9]{4}\-?[0-9]{4})%s%s`, startSecret, quote, aws, quote, connect, quote, quote, endSecret)),
 		SecretGroupName: "secret",
 		Keywords:        []string{"account"},
 	},
