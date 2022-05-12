@@ -31,11 +31,14 @@ const (
 
 	// SecurityCheckSecret is a security check of secrets
 	SecurityCheckSecret = SecurityCheck("secret")
+
+	// SecurityCheckSecret is a security check of secrets
+	SecurityCheckDependencies = SecurityCheck("deps")
 )
 
 var (
 	vulnTypes      = []string{VulnTypeOS, VulnTypeLibrary}
-	securityChecks = []string{SecurityCheckVulnerability, SecurityCheckConfig, SecurityCheckSecret}
+	securityChecks = []string{SecurityCheckVulnerability, SecurityCheckConfig, SecurityCheckSecret, SecurityCheckDependencies}
 )
 
 // NewVulnType returns an instance of VulnType

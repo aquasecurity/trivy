@@ -56,7 +56,7 @@ func SbomRun(ctx *cli.Context) error {
 	// Scan the relevant dependencies
 	opt.DisabledAnalyzers = s.disableAnalyzers
 	opt.ReportOption.VulnType = []string{types.VulnTypeOS, types.VulnTypeLibrary}
-	opt.ReportOption.SecurityChecks = []string{types.SecurityCheckVulnerability}
+	opt.ReportOption.SecurityChecks = []string{types.SecurityCheckVulnerability, types.SecurityCheckDependencies}
 
 	return Run(ctx.Context, opt, s.initializer, initCache)
 }

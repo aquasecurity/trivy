@@ -122,10 +122,12 @@ func (gsbmw GsbomWriter) Write(report types.Report) error {
 			gsbompkg := GsbomPackage{}
 			gsbompkg.Scope = RuntimeScope
 			gsbompkg.Relationship = getPkgRelationshipType(pkg)
+			gsbompkg.Dependencies = getDependencies(report.Results, pkg)
 			gsbompkg.Purl, err = buildPurl(result.Type, pkg)
 			if err != nil {
 				return xerrors.Errorf("unable to build purl: %w for the package: %s", err, pkg.Name)
 			}
+
 			resolved[pkg.Name] = gsbompkg
 		}
 
@@ -144,6 +146,18 @@ func (gsbmw GsbomWriter) Write(report types.Report) error {
 		return xerrors.Errorf("failed to write generic sbom: %w", err)
 	}
 	return nil
+}
+
+func getDependencies(results []types.Result, pkg ftypes.Package) []string {
+	var dependencies []string
+	for _, result := range results {
+		for _, dep := range result.Dependencies {
+			if dep.ID == pkg.ID {
+				dependencies = append(dependencies, dep.DependsOn...)
+			}
+		}
+	}
+	return dependencies
 }
 
 func getPkgRelationshipType(pkg ftypes.Package) string {
