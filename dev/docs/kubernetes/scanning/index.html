@@ -10,14 +10,14 @@
       
       
       
-        <link rel="canonical" href="https://aquasecurity.github.io/trivy/dev/docs/secret/configuration/">
+        <link rel="canonical" href="https://aquasecurity.github.io/trivy/dev/docs/kubernetes/scanning/">
       
       <link rel="icon" href="../../../assets/images/favicon.png">
       <meta name="generator" content="mkdocs-1.3.0, mkdocs-material-8.2.10">
     
     
       
-        <title>Configuration - Trivy</title>
+        <title>Scanning - Trivy</title>
       
     
     
@@ -63,7 +63,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#configuration" class="md-skip">
+        <a href="#kubernetes" class="md-skip">
           Skip to content
         </a>
       
@@ -103,7 +103,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Configuration
+              Scanning
             
           </span>
         </div>
@@ -1212,16 +1212,14 @@
               
   
   
-    
-  
   
     
       
     
-    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_4" type="checkbox" id="__nav_3_4" checked>
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_4" type="checkbox" id="__nav_3_4" >
       
       
       
@@ -1244,7 +1242,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../scanning/" class="md-nav__link">
+      <a href="../../secret/scanning/" class="md-nav__link">
         Scanning
       </a>
     </li>
@@ -1256,73 +1254,11 @@
               
   
   
-    
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
-      
-      
-        
-      
-      
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          Configuration
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <a href="./" class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href="../../secret/configuration/" class="md-nav__link">
         Configuration
       </a>
-      
-        
-
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#custom-rules" class="md-nav__link">
-    Custom Rules
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#allow-rules" class="md-nav__link">
-    Allow Rules
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#enable-rules" class="md-nav__link">
-    Enable Rules
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#disable-rules" class="md-nav__link">
-    Disable Rules
-  </a>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-      
     </li>
   
 
@@ -1334,7 +1270,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../examples/" class="md-nav__link">
+      <a href="../../secret/examples/" class="md-nav__link">
         Examples
       </a>
     </li>
@@ -1353,14 +1289,16 @@
               
   
   
+    
+  
   
     
       
     
-    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_5" type="checkbox" id="__nav_3_5" >
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_5" type="checkbox" id="__nav_3_5" checked>
       
       
       
@@ -1381,11 +1319,21 @@
               
   
   
+    
   
-    <li class="md-nav__item">
-      <a href="../../kubernetes/scanning/" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
         Scanning
       </a>
+      
     </li>
   
 
@@ -2416,42 +2364,6 @@
     
   
   
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#custom-rules" class="md-nav__link">
-    Custom Rules
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#allow-rules" class="md-nav__link">
-    Allow Rules
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#enable-rules" class="md-nav__link">
-    Enable Rules
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#disable-rules" class="md-nav__link">
-    Disable Rules
-  </a>
-  
-</li>
-      
-    </ul>
-  
 </nav>
                   </div>
                 </div>
@@ -2464,166 +2376,176 @@
                 
 
 
-<h1 id="configuration">Configuration</h1>
-<p>Trivy tries to load <code>trivy-secret.yaml</code> in the current directory by default.
-If the file doesn't exist, only built-in rules are used.
-You can customize the config file path via the <code>--secret-config</code> flag.</p>
-<p>You can see the example <a href="../examples/">here</a>.</p>
-<h2 id="custom-rules">Custom Rules</h2>
-<p>Trivy allows defining custom rules. You can see an example.</p>
-<div class="highlight"><pre><span></span><code><span class="nt">rules</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">rule1</span><span class="w"></span>
-<span class="w">    </span><span class="nt">category</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">general</span><span class="w"></span>
-<span class="w">    </span><span class="nt">title</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Generic Rule</span><span class="w"></span>
-<span class="w">    </span><span class="nt">severity</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">HIGH</span><span class="w"></span>
-<span class="w">    </span><span class="nt">path</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">.*\.sh</span><span class="w"></span>
-<span class="w">    </span><span class="nt">keywords</span><span class="p">:</span><span class="w"></span>
-<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">secret</span><span class="w"></span>
-<span class="w">    </span><span class="nt">regex</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">(?i)(?P&lt;key&gt;(secret))(=|:).{0,5}[&#39;&quot;](?P&lt;secret&gt;[0-9a-zA-Z\-_=]{8,64})[&#39;&quot;]</span><span class="w"></span>
-<span class="w">    </span><span class="nt">secret-group-name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">secret</span><span class="w"></span>
-<span class="w">    </span><span class="nt">allow-rules</span><span class="p">:</span><span class="w"></span>
-<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">skip-text</span><span class="w"></span>
-<span class="w">        </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">skip text files</span><span class="w"></span>
-<span class="w">        </span><span class="nt">path</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">.*\.txt</span><span class="w"></span>
+<h1 id="kubernetes">Kubernetes</h1>
+<div class="admonition warning">
+<p class="admonition-title">EXPERIMENTAL</p>
+</div>
+<p>This feature might change without preserving backwards compatibility.</p>
+<p>Scan your Kubernetes cluster for both Vulnerabilities and Misconfigurations.</p>
+<p>Scan a full cluster:</p>
+<div class="highlight"><pre><span></span><code>$ trivy k8s
 </code></pre></div>
-<dl>
-<dt><code>id</code> (required)</dt>
-<dd>
-<ul>
-<li>Unique identifier for this rule.</li>
-</ul>
-</dd>
-<dt><code>category</code> (required)</dt>
-<dd>
-<ul>
-<li>String used for metadata and reporting purposes.</li>
-</ul>
-</dd>
-<dt><code>title</code> (required)</dt>
-<dd>
-<ul>
-<li>Short human-readable title of the rule.</li>
-</ul>
-</dd>
-<dt><code>severity</code> (required)</dt>
-<dd>
-<ul>
-<li>How critical this rule is.</li>
-<li>Allowed values:<ul>
-<li>CRITICAL</li>
-<li>HIGH</li>
-<li>MEDIUM</li>
-<li>LOW</li>
-</ul>
-</li>
-</ul>
-</dd>
-<dt><code>regex</code> (required)</dt>
-<dd>
-<ul>
-<li>Golang regular expression used to detect secrets.</li>
-</ul>
-</dd>
-<dt><code>path</code> (optional)</dt>
-<dd>
-<ul>
-<li>Golang regular expression used to match paths.</li>
-</ul>
-</dd>
-<dt><code>keywords</code> (optional, recommended)</dt>
-<dd>
-<ul>
-<li>Keywords are used for pre-regex check filtering.</li>
-<li>Rules that contain keywords will perform a quick string compare check to make sure the keyword(s) are in the content being scanned.</li>
-<li>Ideally these values should either be part of the identifier or unique strings specific to the rule's regex.</li>
-<li>It is recommended to define for better performance.</li>
-</ul>
-</dd>
-<dt><code>allow-rules</code> (optional)</dt>
-<dd>
-<ul>
-<li>Allow rules for a single rule to reduce false positives with known secrets.</li>
-<li>The details are below.</li>
-</ul>
-</dd>
-</dl>
-<h2 id="allow-rules">Allow Rules</h2>
-<p>If the detected secret is matched with the specified <code>regex</code>, then that secret will be skipped and not detected.
-The same logic applies for <code>path</code>.</p>
-<p><code>allow-rules</code> can be defined globally and per each rule. The fields are the same.</p>
-<div class="highlight"><pre><span></span><code><span class="nt">rules</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">rule1</span><span class="w"></span>
-<span class="w">    </span><span class="nt">category</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">general</span><span class="w"></span>
-<span class="w">    </span><span class="nt">title</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Generic Rule</span><span class="w"></span>
-<span class="w">    </span><span class="nt">severity</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">HIGH</span><span class="w"></span>
-<span class="w">    </span><span class="nt">regex</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">(?i)(?P&lt;key&gt;(secret))(=|:).{0,5}[&#39;&quot;](?P&lt;secret&gt;[0-9a-zA-Z\-_=]{8,64})[&#39;&quot;]</span><span class="w"></span>
-<span class="w">    </span><span class="nt">allow-rules</span><span class="p">:</span><span class="w"></span>
-<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">skip-text</span><span class="w"></span>
-<span class="w">        </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">skip text files</span><span class="w"></span>
-<span class="w">        </span><span class="nt">path</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">.*\.txt</span><span class="w"></span>
-<span class="nt">allow-rules</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">social-security-number</span><span class="w"></span>
-<span class="w">    </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">skip social security number</span><span class="w"></span>
-<span class="w">    </span><span class="nt">regex</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">219-09-9999</span><span class="w"></span>
+<p>Scan a specific namespace:</p>
+<div class="highlight"><pre><span></span><code>$ trivy k8s -n default
 </code></pre></div>
-<dl>
-<dt><code>id</code> (required)</dt>
-<dd>
-<ul>
-<li>Unique identifier for this allow rule.</li>
-</ul>
-</dd>
-<dt><code>description</code> (optional)</dt>
-<dd>
-<ul>
-<li>Short human-readable description of this allow rule.</li>
-</ul>
-</dd>
-<dt><code>regex</code> (optional)</dt>
-<dd>
-<ul>
-<li>Golang regular expression used to allow detected secrets.</li>
-<li><code>regex</code> or <code>path</code> must be specified.</li>
-</ul>
-</dd>
-<dt><code>path</code> (optional)</dt>
-<dd>
-<ul>
-<li>Golang regular expression used to allow matched paths.</li>
-<li><code>regex</code> or <code>path</code> must be specified.</li>
-</ul>
-</dd>
-</dl>
-<h2 id="enable-rules">Enable Rules</h2>
-<p>Trivy provides plenty of out-of-box rules and allow rules, but you may not need all of them.
-In that case, <code>enable-builin-rules</code> will be helpful.
-If you just need AWS secret detection, you can enable only relevant rules as shown below.
-It specifies AWS-related rule IDs in <code>enable-builin-rules</code>.
-All other rules are disabled, so the scanning will be much faster.
-We would strongly recommend using this option if you don't need all rules.</p>
-<p>You can see a full list of <a href="https://github.com/aquasecurity/fanal/blob/main/secret/builtin-allow-rules.go">built-in rule IDs</a> and [built-in allow rule IDs][builtin-allow].</p>
-<div class="highlight"><pre><span></span><code><span class="nt">enable-builtin-rules</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">aws-access-key-id</span><span class="w"></span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">aws-account-id</span><span class="w"></span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">aws-secret-access-key</span><span class="w"></span>
+<p>Scan a namespace for only <code>CRITICAL</code> Vulnerabilities and Misconfigurations:</p>
+<div class="highlight"><pre><span></span><code>$ trivy k8s -n default -o results.json --severity CRITICAL
 </code></pre></div>
-<h2 id="disable-rules">Disable Rules</h2>
-<p>Trivy offers built-in rules and allow rules, but you may want to disable some of them.
-For example, you don't use Slack, so Slack doesn't have to be scanned.
-You can specify the Slack rule IDs, <code>slack-access-token</code> and <code>slack-web-hook</code> in <code>disable-rules</code> so that those rules will be disabled for less false positives.</p>
-<p>You should specify either <code>enable-builin-rules</code> or <code>disable-rules</code>.
-If they both are specified, <code>disable-rules</code> takes precedence.
-In case <code>github-pat</code> is specified in <code>enable-builin-rules</code> and <code>disable-rules</code>, it will be disabled.</p>
-<p>In addition, there are some allow rules.
-Markdown files are ignored by default, but you may want to scan markdown files as well.
-You can disable the allow rule by adding <code>markdown</code> to <code>disable-allow-rules</code>.</p>
-<p>You can see a full list of <a href="https://github.com/aquasecurity/fanal/blob/main/secret/builtin-allow-rules.go">built-in rule IDs</a> and [built-in allow rule IDs][builtin-allow].</p>
-<div class="highlight"><pre><span></span><code><span class="nt">disable-rules</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">slack-access-token</span><span class="w"></span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">slack-web-hook</span><span class="w"></span>
-<span class="nt">disable-allow-rules</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">markdown</span><span class="w"></span>
+<p>Trivy uses your local kubectl configuration to access the API server to list artifacts.
+At this time, JSON is the only supported output and is intended to be used for automation, other reports will be implemented soon.</p>
+<details>
+<summary>Result</summary>
+
+<div class="highlight"><pre><span></span><code>{
+  &quot;ClusterName&quot;: &quot;minikube&quot;,
+  &quot;Vulnerabilities&quot;: [
+    {
+      &quot;Namespace&quot;: &quot;default&quot;,
+      &quot;Kind&quot;: &quot;Deployment&quot;,
+      &quot;Name&quot;: &quot;app&quot;,
+      &quot;Results&quot;: [
+        {
+          &quot;Target&quot;: &quot;ubuntu:latest (ubuntu 22.04)&quot;,
+          &quot;Class&quot;: &quot;os-pkgs&quot;,
+          &quot;Type&quot;: &quot;ubuntu&quot;,
+          &quot;Vulnerabilities&quot;: [
+            {
+              &quot;VulnerabilityID&quot;: &quot;CVE-2016-2781&quot;,
+              &quot;PkgName&quot;: &quot;coreutils&quot;,
+              &quot;InstalledVersion&quot;: &quot;8.32-4.1ubuntu1&quot;,
+              &quot;Layer&quot;: {
+                &quot;Digest&quot;: &quot;sha256:125a6e411906fe6b0aaa50fc9d600bf6ff9bb11a8651727ce1ed482dc271c24c&quot;,
+                &quot;DiffID&quot;: &quot;sha256:e59fc94956120a6c7629f085027578e6357b48061d45714107e79f04a81a6f0c&quot;
+              },
+              &quot;SeveritySource&quot;: &quot;ubuntu&quot;,
+              &quot;PrimaryURL&quot;: &quot;https://avd.aquasec.com/nvd/cve-2016-2781&quot;,
+              &quot;DataSource&quot;: {
+                &quot;ID&quot;: &quot;ubuntu&quot;,
+                &quot;Name&quot;: &quot;Ubuntu CVE Tracker&quot;,
+                &quot;URL&quot;: &quot;https://git.launchpad.net/ubuntu-cve-tracker&quot;
+              },
+              &quot;Title&quot;: &quot;coreutils: Non-privileged session can escape to the parent session in chroot&quot;,
+              &quot;Description&quot;: &quot;chroot in GNU coreutils, when used with --userspec, allows local users to escape to the parent session via a crafted TIOCSTI ioctl call, which pushes characters to the terminal&#39;s input buffer.&quot;,
+              &quot;Severity&quot;: &quot;LOW&quot;,
+              &quot;CweIDs&quot;: [
+                &quot;CWE-20&quot;
+              ],
+              &quot;VendorSeverity&quot;: {
+                &quot;cbl-mariner&quot;: 2,
+                &quot;nvd&quot;: 2,
+                &quot;redhat&quot;: 2,
+                &quot;ubuntu&quot;: 1
+              },
+              &quot;CVSS&quot;: {
+                &quot;nvd&quot;: {
+                  &quot;V2Vector&quot;: &quot;AV:L/AC:L/Au:N/C:N/I:P/A:N&quot;,
+                  &quot;V3Vector&quot;: &quot;CVSS:3.0/AV:L/AC:L/PR:L/UI:N/S:C/C:N/I:H/A:N&quot;,
+                  &quot;V2Score&quot;: 2.1,
+                  &quot;V3Score&quot;: 6.5
+                },
+                &quot;redhat&quot;: {
+                  &quot;V2Vector&quot;: &quot;AV:L/AC:H/Au:N/C:C/I:C/A:C&quot;,
+                  &quot;V3Vector&quot;: &quot;CVSS:3.0/AV:L/AC:L/PR:N/UI:R/S:C/C:H/I:H/A:H&quot;,
+                  &quot;V2Score&quot;: 6.2,
+                  &quot;V3Score&quot;: 8.6
+                }
+              },
+              &quot;References&quot;: [
+                &quot;http://seclists.org/oss-sec/2016/q1/452&quot;,
+                &quot;http://www.openwall.com/lists/oss-security/2016/02/28/2&quot;,
+                &quot;http://www.openwall.com/lists/oss-security/2016/02/28/3&quot;,
+                &quot;https://access.redhat.com/security/cve/CVE-2016-2781&quot;,
+                &quot;https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2016-2781&quot;,
+                &quot;https://lists.apache.org/thread.html/rf9fa47ab66495c78bb4120b0754dd9531ca2ff0430f6685ac9b07772@%3Cdev.mina.apache.org%3E&quot;,
+                &quot;https://lore.kernel.org/patchwork/patch/793178/&quot;,
+                &quot;https://nvd.nist.gov/vuln/detail/CVE-2016-2781&quot;
+              ],
+              &quot;PublishedDate&quot;: &quot;2017-02-07T15:59:00Z&quot;,
+              &quot;LastModifiedDate&quot;: &quot;2021-02-25T17:15:00Z&quot;
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  &quot;Misconfigurations&quot;: [
+    {
+      &quot;Namespace&quot;: &quot;default&quot;,
+      &quot;Kind&quot;: &quot;Deployment&quot;,
+      &quot;Name&quot;: &quot;app&quot;,
+      &quot;Results&quot;: [
+        {
+          &quot;Target&quot;: &quot;Deployment/app&quot;,
+          &quot;Class&quot;: &quot;config&quot;,
+          &quot;Type&quot;: &quot;kubernetes&quot;,
+          &quot;MisconfSummary&quot;: {
+            &quot;Successes&quot;: 20,
+            &quot;Failures&quot;: 19,
+            &quot;Exceptions&quot;: 0
+          },
+          &quot;Misconfigurations&quot;: [
+            {
+              &quot;Type&quot;: &quot;Kubernetes Security Check&quot;,
+              &quot;ID&quot;: &quot;KSV001&quot;,
+              &quot;Title&quot;: &quot;Process can elevate its own privileges&quot;,
+              &quot;Description&quot;: &quot;A program inside the container can elevate its own privileges and run as root, which might give the program control over the container and node.&quot;,
+              &quot;Message&quot;: &quot;Container &#39;app&#39; of Deployment &#39;app&#39; should set &#39;securityContext.allowPrivilegeEscalation&#39; to false&quot;,
+              &quot;Namespace&quot;: &quot;builtin.kubernetes.KSV001&quot;,
+              &quot;Query&quot;: &quot;data.builtin.kubernetes.KSV001.deny&quot;,
+              &quot;Resolution&quot;: &quot;Set &#39;set containers[].securityContext.allowPrivilegeEscalation&#39; to &#39;false&#39;.&quot;,
+              &quot;Severity&quot;: &quot;MEDIUM&quot;,
+              &quot;PrimaryURL&quot;: &quot;https://avd.aquasec.com/misconfig/ksv001&quot;,
+              &quot;References&quot;: [
+                &quot;https://kubernetes.io/docs/concepts/security/pod-security-standards/#restricted&quot;,
+                &quot;https://avd.aquasec.com/misconfig/ksv001&quot;
+              ],
+              &quot;Status&quot;: &quot;FAIL&quot;,
+              &quot;Layer&quot;: {},
+              &quot;IacMetadata&quot;: {
+                &quot;Provider&quot;: &quot;Kubernetes&quot;,
+                &quot;Service&quot;: &quot;general&quot;,
+                &quot;StartLine&quot;: 121,
+                &quot;EndLine&quot;: 133
+              }
+            },
+            {
+              &quot;Type&quot;: &quot;Kubernetes Security Check&quot;,
+              &quot;ID&quot;: &quot;KSV003&quot;,
+              &quot;Title&quot;: &quot;Default capabilities not dropped&quot;,
+              &quot;Description&quot;: &quot;The container should drop all default capabilities and add only those that are needed for its execution.&quot;,
+              &quot;Message&quot;: &quot;Container &#39;app&#39; of Deployment &#39;app&#39; should add &#39;ALL&#39; to &#39;securityContext.capabilities.drop&#39;&quot;,
+              &quot;Namespace&quot;: &quot;builtin.kubernetes.KSV003&quot;,
+              &quot;Query&quot;: &quot;data.builtin.kubernetes.KSV003.deny&quot;,
+              &quot;Resolution&quot;: &quot;Add &#39;ALL&#39; to containers[].securityContext.capabilities.drop.&quot;,
+              &quot;Severity&quot;: &quot;LOW&quot;,
+              &quot;PrimaryURL&quot;: &quot;https://avd.aquasec.com/misconfig/ksv003&quot;,
+              &quot;References&quot;: [
+                &quot;https://kubesec.io/basics/containers-securitycontext-capabilities-drop-index-all/&quot;,
+                &quot;https://avd.aquasec.com/misconfig/ksv003&quot;
+              ],
+              &quot;Status&quot;: &quot;FAIL&quot;,
+              &quot;Layer&quot;: {},
+              &quot;IacMetadata&quot;: {
+                &quot;Provider&quot;: &quot;Kubernetes&quot;,
+                &quot;Service&quot;: &quot;general&quot;,
+                &quot;StartLine&quot;: 121,
+                &quot;EndLine&quot;: 133
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      &quot;Namespace&quot;: &quot;default&quot;,
+      &quot;Kind&quot;: &quot;ConfigMap&quot;,
+      &quot;Name&quot;: &quot;kube-root-ca.crt&quot;
+    }
+  ]
+}
 </code></pre></div>
+
+</details>
 
               
             </article>
@@ -2637,7 +2559,7 @@ You can disable the allow rule by adding <code>markdown</code> to <code>disable-
     <nav class="md-footer__inner md-grid" aria-label="Footer">
       
         
-        <a href="../scanning/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Scanning" rel="prev">
+        <a href="../../secret/examples/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Examples" rel="prev">
           <div class="md-footer__button md-icon">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
           </div>
@@ -2646,20 +2568,20 @@ You can disable the allow rule by adding <code>markdown</code> to <code>disable-
               <span class="md-footer__direction">
                 Previous
               </span>
-              Scanning
+              Examples
             </div>
           </div>
         </a>
       
       
         
-        <a href="../examples/" class="md-footer__link md-footer__link--next" aria-label="Next: Examples" rel="next">
+        <a href="../../sbom/" class="md-footer__link md-footer__link--next" aria-label="Next: Overview" rel="next">
           <div class="md-footer__title">
             <div class="md-ellipsis">
               <span class="md-footer__direction">
                 Next
               </span>
-              Examples
+              Overview
             </div>
           </div>
           <div class="md-footer__button md-icon">
