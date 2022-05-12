@@ -207,6 +207,14 @@ var (
 		EnvVars: []string{"TRIVY_TIMEOUT"},
 	}
 
+	namespaceFlag = cli.StringFlag{
+		Name:    "namespace",
+		Aliases: []string{"n"},
+		Value:   "",
+		Usage:   "specify a namespace to scan",
+		EnvVars: []string{"TRIVY_K8S_NAMESPACE"},
+	}
+
 	// TODO: remove this flag after a sufficient deprecation period.
 	lightFlag = cli.BoolFlag{
 		Name:    "light",
@@ -385,12 +393,13 @@ func NewApp(version string) *cli.App {
 		NewImageCommand(),
 		NewFilesystemCommand(),
 		NewRootfsCommand(),
-		NewSbomCommand(),
 		NewRepositoryCommand(),
 		NewClientCommand(),
 		NewServerCommand(),
 		NewConfigCommand(),
 		NewPluginCommand(),
+		NewK8sCommand(),
+		NewSbomCommand(),
 		NewVersionCommand(),
 	}
 	app.Commands = append(app.Commands, plugin.LoadCommands()...)
@@ -767,6 +776,48 @@ func NewPluginCommand() *cli.Command {
 				ArgsUsage: "PLUGIN_NAME",
 				Action:    plugin.Update,
 			},
+		},
+	}
+}
+
+// NewK8sCommand is the factory method to add k8s subcommand
+func NewK8sCommand() *cli.Command {
+	return &cli.Command{
+		Name:    "kubernetes",
+		Aliases: []string{"k8s"},
+		Usage:   "scan kubernetes vulnerabilities and misconfigurations",
+		Action:  artifact.K8sRun,
+		Flags: []cli.Flag{
+			&namespaceFlag,
+			&outputFlag,
+			&severityFlag,
+			&exitCodeFlag,
+			&skipDBUpdateFlag,
+			&skipPolicyUpdateFlag,
+			&clearCacheFlag,
+			&ignoreUnfixedFlag,
+			&vulnTypeFlag,
+			&securityChecksFlag,
+			&ignoreFileFlag,
+			&cacheBackendFlag,
+			&cacheTTL,
+			&redisBackendCACert,
+			&redisBackendCert,
+			&redisBackendKey,
+			&timeoutFlag,
+			&noProgressFlag,
+			&ignorePolicy,
+			&listAllPackages,
+			&offlineScan,
+			&dbRepositoryFlag,
+			&secretConfig,
+			stringSliceFlag(skipFiles),
+			stringSliceFlag(skipDirs),
+
+			// for misconfiguration
+			stringSliceFlag(configPolicy),
+			stringSliceFlag(configData),
+			stringSliceFlag(policyNamespaces),
 		},
 	}
 }
