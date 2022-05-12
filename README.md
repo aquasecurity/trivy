@@ -1,6 +1,15 @@
+<div align="center">
 <img src="docs/imgs/logo.png" width="200">
 
-[Documentation](docs)
+[![GitHub Release][release-img]][release]
+[![Test][test-img]][test]
+[![Go Report Card][go-report-img]][go-report]
+[![License: Apache-2.0][license-img]][license]
+[![GitHub All Releases][github-all-releases-img]][release]
+![Docker Pulls][docker-pulls]
+
+[📖 Documentation](docs)
+</div>
 
 Trivy is the world’s most popular open source security scanner. It is reliable, fast, extremely easy to use, and it works wherever you need it.
 
@@ -132,6 +141,17 @@ Find out more in the [Trivy Documentation](docs) - [Getting Started](getting-sta
 Trivy is an [Aqua Security][aquasec] open source project.  
 Learn about our open source work and portfolio [here][oss].  
 Contact us about any matter by opening a GitHub Discussion [here][discussions]
+
+[test]: https://github.com/aquasecurity/trivy/actions/workflows/test.yaml
+[test-img]: https://github.com/aquasecurity/trivy/actions/workflows/test.yaml/badge.svg
+[go-report]: https://goreportcard.com/report/github.com/aquasecurity/trivy
+[go-report-img]: https://goreportcard.com/badge/github.com/aquasecurity/trivy
+[release]: https://github.com/aquasecurity/trivy/releases
+[release-img]: https://img.shields.io/github/release/aquasecurity/trivy.svg?logo=github
+[github-all-releases-img]: https://img.shields.io/github/downloads/aquasecurity/trivy/total?logo=github
+[docker-pulls]: https://img.shields.io/docker/pulls/aquasec/trivy?logo=docker&label=docker%20pulls%20%2F%20trivy
+[license]: https://github.com/aquasecurity/trivy/blob/main/LICENSE
+[license-img]: https://img.shields.io/badge/License-Apache%202.0-blue.svg
 
 
 [getting-started]: https://aquasecurity.github.io/trivy/v0.27.1/getting-started/overview/
