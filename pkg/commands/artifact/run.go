@@ -109,7 +109,7 @@ func runWithTimeout(ctx context.Context, opt Option, initializeScanner Initializ
 		return xerrors.Errorf("unable to write results: %w", err)
 	}
 
-	exit(opt, report.Results)
+	exit(opt, report.Results.Failed())
 
 	return nil
 }
@@ -205,8 +205,7 @@ func disabledAnalyzers(opt Option) []analyzer.Type {
 	return analyzers
 }
 
-func scan(ctx context.Context, opt Option, initializeScanner InitializeScanner, cacheClient cache.Cache) (
-	types.Report, error) {
+func initScannerConfig(ctx context.Context, opt Option, cacheClient cache.Cache) (ScannerConfig, types.ScanOptions, error) {
 	target := opt.Target
 	if opt.Input != "" {
 		target = opt.Input
@@ -232,7 +231,7 @@ func scan(ctx context.Context, opt Option, initializeScanner InitializeScanner, 
 		}
 	}
 
-	s, cleanup, err := initializeScanner(ctx, ScannerConfig{
+	return ScannerConfig{
 		Target:             target,
 		ArtifactCache:      cacheClient,
 		LocalArtifactCache: cacheClient,
@@ -257,7 +256,18 @@ func scan(ctx context.Context, opt Option, initializeScanner InitializeScanner, 
 				ConfigPath: opt.SecretConfigPath,
 			},
 		},
-	})
+	}, scanOptions, nil
+}
+
+func scan(ctx context.Context, opt Option, initializeScanner InitializeScanner, cacheClient cache.Cache) (
+	types.Report, error) {
+
+	scannerConfig, scanOptions, err := initScannerConfig(ctx, opt, cacheClient)
+	if err != nil {
+		return types.Report{}, err
+	}
+
+	s, cleanup, err := initializeScanner(ctx, scannerConfig)
 	if err != nil {
 		return types.Report{}, xerrors.Errorf("unable to initialize a scanner: %w", err)
 	}
@@ -291,8 +301,8 @@ func filter(ctx context.Context, opt Option, report types.Report) (types.Report,
 	return report, nil
 }
 
-func exit(c Option, results types.Results) {
-	if c.ExitCode != 0 && results.Failed() {
+func exit(c Option, failedResults bool) {
+	if c.ExitCode != 0 && failedResults {
 		os.Exit(c.ExitCode)
 	}
 }
