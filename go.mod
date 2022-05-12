@@ -51,11 +51,6 @@ require (
 )
 
 require (
-	github.com/aquasecurity/trivy-kubernetes v0.0.0-20220510114145-df312e1f6e28
-	gopkg.in/yaml.v2 v2.4.0
-)
-
-require (
 	cloud.google.com/go v0.99.0 // indirect
 	cloud.google.com/go/storage v1.14.0 // indirect
 	github.com/Azure/azure-sdk-for-go v63.0.0+incompatible // indirect
@@ -240,8 +235,9 @@ require (
 	sigs.k8s.io/yaml v1.3.0 // indirect
 )
 
-// TODO(josedonizetti): replace once the PRs are merged on upstream trivy
-replace github.com/aquasecurity/trivy-kubernetes v0.0.0-20220510114145-df312e1f6e28 => github.com/josedonizetti/trivy-kubernetes v0.0.0-20220511000729-eb1f2bd8495c
+require gopkg.in/yaml.v2 v2.4.0
+
+require github.com/aquasecurity/trivy-kubernetes v0.1.0
 
 // To resolve CVE-2022-23648
 replace github.com/containerd/containerd v1.5.9 => github.com/containerd/containerd v1.5.10
