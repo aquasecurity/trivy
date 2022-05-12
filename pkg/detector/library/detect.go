@@ -25,7 +25,7 @@ func Detect(libType string, pkgs []ftypes.Package) ([]types.DetectedVulnerabilit
 func detect(driver Driver, libs []ftypes.Package) ([]types.DetectedVulnerability, error) {
 	var vulnerabilities []types.DetectedVulnerability
 	for _, lib := range libs {
-		vulns, err := driver.DetectVulnerabilities(lib.Id, lib.Name, lib.Version)
+		vulns, err := driver.DetectVulnerabilities(lib.ID, lib.Name, lib.Version)
 		if err != nil {
 			return nil, xerrors.Errorf("failed to detect %s vulnerabilities: %w", driver.Type(), err)
 		}
