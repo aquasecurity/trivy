@@ -115,7 +115,7 @@ func (s Scanner) Scan(target string, artifactKey string, blobKeys []string, opti
 	}
 
 	// Scan dependencies
-	if slices.Contains(options.SecurityChecks, types.SecurityCheckDependencies) {
+	if options.ListDependencies {
 		depsResults := s.dependenciesToResults(results, artifactDetail.Applications)
 		results = depsResults
 	}

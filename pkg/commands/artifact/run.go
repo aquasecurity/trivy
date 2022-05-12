@@ -217,6 +217,7 @@ func scan(ctx context.Context, opt Option, initializeScanner InitializeScanner, 
 		SecurityChecks:      opt.SecurityChecks,
 		ScanRemovedPackages: opt.ScanRemovedPkgs, // this is valid only for image subcommand
 		ListAllPackages:     opt.ListAllPkgs,
+		ListDependencies:    opt.ListDepenedencies,
 	}
 	log.Logger.Debugf("Vulnerability type:  %s", scanOptions.VulnType)
 

@@ -3,6 +3,8 @@ package types
 import (
 	"fmt"
 	"sort"
+
+	"github.com/aquasecurity/defsec/pkg/scan"
 )
 
 type Misconfiguration struct {
@@ -20,7 +22,7 @@ type MisconfResult struct {
 	Query          string `json:",omitempty"`
 	Message        string `json:",omitempty"`
 	PolicyMetadata `json:",omitempty"`
-	IacMetadata    `json:",omitempty"`
+	CauseMetadata  `json:",omitempty"`
 
 	// For debugging
 	Traces []string `json:",omitempty"`
@@ -28,12 +30,28 @@ type MisconfResult struct {
 
 type MisconfResults []MisconfResult
 
-type IacMetadata struct {
-	Resource  string `json:",omitempty"`
-	Provider  string `json:",omitempty"`
-	Service   string `json:",omitempty"`
-	StartLine int    `json:",omitempty"`
-	EndLine   int    `json:",omitempty"`
+type CauseMetadata struct {
+	Resource  string    `json:",omitempty"`
+	Provider  string    `json:",omitempty"`
+	Service   string    `json:",omitempty"`
+	StartLine int       `json:",omitempty"`
+	EndLine   int       `json:",omitempty"`
+	Code      scan.Code `json:",omitempty"`
+}
+
+func NewCauseWithCode(underlying scan.Result) CauseMetadata {
+	flat := underlying.Flatten()
+	cause := CauseMetadata{
+		Resource:  flat.Resource,
+		Provider:  flat.RuleProvider.DisplayName(),
+		Service:   flat.RuleService,
+		StartLine: flat.Location.StartLine,
+		EndLine:   flat.Location.EndLine,
+	}
+	if code, err := underlying.GetCode(true); err == nil {
+		cause.Code = *code
+	}
+	return cause
 }
 
 type PolicyMetadata struct {
