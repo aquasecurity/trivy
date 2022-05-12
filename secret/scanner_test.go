@@ -94,6 +94,24 @@ func TestSecretScanner(t *testing.T) {
 		EndLine:   2,
 		Match:     "generic secret line secret=\"*****\"",
 	}
+	wantFinding9 := types.SecretFinding{
+		RuleID:    "aws-secret-access-key",
+		Category:  secret.CategoryAWS,
+		Title:     "AWS Secret Access Key",
+		Severity:  "CRITICAL",
+		StartLine: 1,
+		EndLine:   1,
+		Match:     `'AWS_secret_KEY'="*****"`,
+	}
+	wantFinding10 := types.SecretFinding{
+		RuleID:    "aws-account-id",
+		Category:  secret.CategoryAWS,
+		Title:     "AWS Account ID",
+		Severity:  "HIGH",
+		StartLine: 3,
+		EndLine:   3,
+		Match:     `"aws_account_ID":'*****'`,
+	}
 
 	tests := []struct {
 		name          string
@@ -108,6 +126,15 @@ func TestSecretScanner(t *testing.T) {
 			want: types.Secret{
 				FilePath: "testdata/secret.txt",
 				Findings: []types.SecretFinding{wantFinding1, wantFinding2},
+			},
+		},
+		{
+			name:          "find aws secrets",
+			configPath:    "testdata/config.yaml",
+			inputFilePath: "testdata/aws-secrets.txt",
+			want: types.Secret{
+				FilePath: "testdata/aws-secrets.txt",
+				Findings: []types.SecretFinding{wantFinding5, wantFinding9, wantFinding10},
 			},
 		},
 		{
@@ -257,6 +284,11 @@ func TestSecretScanner(t *testing.T) {
 				FilePath: "testdata/secret.txt",
 				Findings: []types.SecretFinding{wantFinding8},
 			},
+		},
+		{
+			name:          "invalid aws secrets",
+			inputFilePath: "testdata/invalid-aws-secrets.txt",
+			want:          types.Secret{},
 		},
 	}
 
