@@ -5,6 +5,7 @@ import (
 	"errors"
 	"os"
 
+	"github.com/hashicorp/go-multierror"
 	"github.com/urfave/cli/v2"
 	"golang.org/x/exp/slices"
 	"golang.org/x/xerrors"
@@ -25,9 +26,27 @@ import (
 	"github.com/aquasecurity/trivy/pkg/utils"
 )
 
-var defaultPolicyNamespaces = []string{"appshield", "defsec", "builtin"}
+type ArtifactType string
 
-var errSkipScan = errors.New("skip subsequent processes")
+const (
+	containerImageArtifact ArtifactType = "image"
+	filesystemArtifact     ArtifactType = "fs"
+	rootfsArtifact         ArtifactType = "rootfs"
+	repositoryArtifact     ArtifactType = "repo"
+	imageArchiveArtifact   ArtifactType = "archive"
+)
+
+var (
+	defaultPolicyNamespaces = []string{"appshield", "defsec", "builtin"}
+
+	supportedArtifactTypes = []ArtifactType{containerImageArtifact, filesystemArtifact, rootfsArtifact,
+		repositoryArtifact, imageArchiveArtifact}
+
+	SkipScan = errors.New("skip subsequent processes")
+)
+
+// InitializeScanner defines the initialize function signature of scanner
+type InitializeScanner func(context.Context, ScannerConfig) (scanner.Scanner, func(), error)
 
 type ScannerConfig struct {
 	// e.g. image name and file path
@@ -44,60 +63,154 @@ type ScannerConfig struct {
 	ArtifactOption artifact.Option
 }
 
-// InitializeScanner defines the initialize function signature of scanner
-type InitializeScanner func(context.Context, ScannerConfig) (scanner.Scanner, func(), error)
-
-// InitCache defines cache initializer
-type InitCache func(c Option) (cache.Cache, error)
-
-// Run performs artifact scanning
-func Run(ctx context.Context, opt Option, initializeScanner InitializeScanner, initCache InitCache) error {
-	ctx, cancel := context.WithTimeout(ctx, opt.Timeout)
-	defer cancel()
-
-	err := runWithTimeout(ctx, opt, initializeScanner, initCache)
-	if xerrors.Is(err, context.DeadlineExceeded) {
-		log.Logger.Warn("Increase --timeout value")
-	}
-	return err
+type Runner struct {
+	cache cache.Cache
 }
 
-func runWithTimeout(ctx context.Context, opt Option, initializeScanner InitializeScanner, initCache InitCache) error {
-	if err := log.InitLogger(opt.Debug, opt.Quiet); err != nil {
-		return err
+type runnerOption func(*Runner)
+
+// WithCacheClient takes a custom cache implementation
+func WithCacheClient(c cache.Cache) runnerOption {
+	return func(r *Runner) {
+		r.cache = c
+	}
+}
+
+// NewRunner initializes Runner that provides scanning functionalities.
+// It is possible to return SkipScan and it must be handled by caller.
+func NewRunner(cliOption Option, opts ...runnerOption) (*Runner, error) {
+	r := &Runner{}
+	for _, opt := range opts {
+		opt(r)
 	}
 
-	cacheClient, err := initCache(opt)
+	err := log.InitLogger(cliOption.Debug, cliOption.Quiet)
 	if err != nil {
-		if errors.Is(err, errSkipScan) {
-			return nil
-		}
-		return xerrors.Errorf("cache error: %w", err)
+		return nil, xerrors.Errorf("logger error: %w", err)
 	}
-	defer cacheClient.Close()
+
+	// When custom cache is not passed, it uses the default cache implementation.
+	if r.cache == nil {
+		r.cache, err = initCache(cliOption)
+		if err != nil {
+			return nil, xerrors.Errorf("cache error: %w", err)
+		}
+	}
 
 	// When scanning config files or running as client mode, it doesn't need to download the vulnerability database.
-	if opt.RemoteAddr == "" && slices.Contains(opt.SecurityChecks, types.SecurityCheckVulnerability) {
-		if err = initDB(opt); err != nil {
-			if errors.Is(err, errSkipScan) {
-				return nil
-			}
-			return xerrors.Errorf("DB error: %w", err)
+	if cliOption.RemoteAddr == "" && slices.Contains(cliOption.SecurityChecks, types.SecurityCheckVulnerability) {
+		if err = initDB(cliOption); err != nil {
+			return nil, xerrors.Errorf("DB error: %w", err)
 		}
-		defer db.Close()
 	}
 
-	report, err := scan(ctx, opt, initializeScanner, cacheClient)
+	return r, nil
+}
+
+// Close closes everything
+func (r *Runner) Close() error {
+	var errs error
+	if err := r.cache.Close(); err != nil {
+		errs = multierror.Append(errs, err)
+	}
+	if err := db.Close(); err != nil {
+		errs = multierror.Append(errs, err)
+	}
+	return errs
+}
+
+func (r *Runner) ScanImage(ctx context.Context, opt Option) (types.Report, error) {
+	// Disable the lock file scanning
+	opt.DisabledAnalyzers = analyzer.TypeLockfiles
+
+	var s InitializeScanner
+	switch {
+	case opt.Input != "" && opt.RemoteAddr == "":
+		// Scan image tarball in standalone mode
+		s = archiveStandaloneScanner
+	case opt.Input != "" && opt.RemoteAddr != "":
+		// Scan image tarball in client/server mode
+		s = archiveRemoteScanner
+	case opt.Input == "" && opt.RemoteAddr == "":
+		// Scan container image in standalone mode
+		s = imageStandaloneScanner
+	case opt.Input == "" && opt.RemoteAddr != "":
+		// Scan container image in client/server mode
+		s = imageRemoteScanner
+	}
+
+	return r.Scan(ctx, opt, s)
+}
+
+func (r *Runner) ScanFilesystem(ctx context.Context, opt Option) (types.Report, error) {
+	// Disable the individual package scanning
+	opt.DisabledAnalyzers = append(opt.DisabledAnalyzers, analyzer.TypeIndividualPkgs...)
+
+	return r.scanFS(ctx, opt)
+}
+
+func (r *Runner) ScanRootfs(ctx context.Context, opt Option) (types.Report, error) {
+	// Disable the lock file scanning
+	opt.DisabledAnalyzers = append(opt.DisabledAnalyzers, analyzer.TypeLockfiles...)
+
+	return r.scanFS(ctx, opt)
+}
+
+func (r *Runner) scanFS(ctx context.Context, opt Option) (types.Report, error) {
+	var s InitializeScanner
+	if opt.RemoteAddr == "" {
+		// Scan filesystem in standalone mode
+		s = filesystemStandaloneScanner
+	} else {
+		// Scan filesystem in client/server mode
+		s = filesystemRemoteScanner
+	}
+
+	return r.Scan(ctx, opt, s)
+}
+
+func (r *Runner) ScanRepository(ctx context.Context, opt Option) (types.Report, error) {
+	// Do not scan OS packages
+	opt.VulnType = []string{types.VulnTypeLibrary}
+
+	// Disable the OS analyzers and individual package analyzers
+	opt.DisabledAnalyzers = append(analyzer.TypeIndividualPkgs, analyzer.TypeOSes...)
+
+	return r.Scan(ctx, opt, repositoryStandaloneScanner)
+}
+
+func (r *Runner) Scan(ctx context.Context, opt Option, initializeScanner InitializeScanner) (types.Report, error) {
+	report, err := scan(ctx, opt, initializeScanner, r.cache)
 	if err != nil {
-		return xerrors.Errorf("scan error: %w", err)
+		return types.Report{}, xerrors.Errorf("scan error: %w", err)
 	}
 
-	report, err = filter(ctx, opt, report)
-	if err != nil {
-		return xerrors.Errorf("filter error: %w", err)
-	}
+	return report, nil
+}
 
-	if err = pkgReport.Write(report, pkgReport.Option{
+func (r *Runner) Filter(ctx context.Context, opt Option, report types.Report) (types.Report, error) {
+	resultClient := initializeResultClient()
+	results := report.Results
+	for i := range results {
+		// Fill vulnerability info only in standalone mode
+		if opt.RemoteAddr == "" {
+			resultClient.FillVulnerabilityInfo(results[i].Vulnerabilities, results[i].Type)
+		}
+		vulns, misconfSummary, misconfs, secrets, err := resultClient.Filter(ctx, results[i].Vulnerabilities, results[i].Misconfigurations, results[i].Secrets,
+			opt.Severities, opt.IgnoreUnfixed, opt.IncludeNonFailures, opt.IgnoreFile, opt.IgnorePolicy)
+		if err != nil {
+			return types.Report{}, xerrors.Errorf("unable to filter vulnerabilities: %w", err)
+		}
+		results[i].Vulnerabilities = vulns
+		results[i].Misconfigurations = misconfs
+		results[i].MisconfSummary = misconfSummary
+		results[i].Secrets = secrets
+	}
+	return report, nil
+}
+
+func (r *Runner) Report(opt Option, report types.Report) error {
+	if err := pkgReport.Write(report, pkgReport.Option{
 		AppVersion:         opt.GlobalOption.AppVersion,
 		Format:             opt.Format,
 		Output:             opt.Output,
@@ -107,6 +220,67 @@ func runWithTimeout(ctx context.Context, opt Option, initializeScanner Initializ
 		Trace:              opt.Trace,
 	}); err != nil {
 		return xerrors.Errorf("unable to write results: %w", err)
+	}
+
+	return nil
+}
+
+// Run performs artifact scanning
+func Run(cliCtx *cli.Context, artifactType ArtifactType) error {
+	opt, err := InitOption(cliCtx)
+	if err != nil {
+		return err
+	}
+
+	return run(cliCtx.Context, opt, artifactType)
+}
+
+func run(ctx context.Context, opt Option, artifactType ArtifactType) (err error) {
+	ctx, cancel := context.WithTimeout(ctx, opt.Timeout)
+	defer cancel()
+
+	defer func() {
+		if xerrors.Is(err, context.DeadlineExceeded) {
+			log.Logger.Warn("Increase --timeout value")
+		}
+	}()
+
+	runner, err := NewRunner(opt)
+	if err != nil {
+		if errors.Is(err, SkipScan) {
+			return nil
+		}
+		return xerrors.Errorf("init error: %w", err)
+	}
+	defer runner.Close()
+
+	var report types.Report
+	switch artifactType {
+	case containerImageArtifact:
+		if report, err = runner.ScanImage(ctx, opt); err != nil {
+			return xerrors.Errorf("image scan error: %w", err)
+		}
+	case filesystemArtifact:
+		if report, err = runner.ScanFilesystem(ctx, opt); err != nil {
+			return xerrors.Errorf("filesystem scan error: %w", err)
+		}
+	case rootfsArtifact:
+		if report, err = runner.ScanRootfs(ctx, opt); err != nil {
+			return xerrors.Errorf("rootfs scan error: %w", err)
+		}
+	case repositoryArtifact:
+		if report, err = runner.ScanRepository(ctx, opt); err != nil {
+			return xerrors.Errorf("repository scan error: %w", err)
+		}
+	}
+
+	report, err = runner.Filter(ctx, opt, report)
+	if err != nil {
+		return xerrors.Errorf("filter error: %w", err)
+	}
+
+	if err = runner.Report(opt, report); err != nil {
+		return xerrors.Errorf("report error: %w", err)
 	}
 
 	exit(opt, report.Results)
@@ -134,14 +308,14 @@ func initCache(c Option) (cache.Cache, error) {
 		if err = cache.Reset(); err != nil {
 			return operation.Cache{}, xerrors.Errorf("cache reset error: %w", err)
 		}
-		return operation.Cache{}, errSkipScan
+		return operation.Cache{}, SkipScan
 	}
 	if c.ClearCache {
 		defer cache.Close()
 		if err = cache.ClearArtifacts(); err != nil {
 			return operation.Cache{}, xerrors.Errorf("cache clear error: %w", err)
 		}
-		return operation.Cache{}, errSkipScan
+		return operation.Cache{}, SkipScan
 	}
 	return cache, nil
 }
@@ -154,7 +328,7 @@ func initDB(c Option) error {
 	}
 
 	if c.DownloadDBOnly {
-		return errSkipScan
+		return SkipScan
 	}
 
 	if err := db.Init(c.CacheDir); err != nil {
@@ -163,7 +337,7 @@ func initDB(c Option) error {
 	return nil
 }
 
-func initOption(ctx *cli.Context) (Option, error) {
+func InitOption(ctx *cli.Context) (Option, error) {
 	opt, err := NewOption(ctx)
 	if err != nil {
 		return Option{}, xerrors.Errorf("option error: %w", err)
@@ -266,27 +440,6 @@ func scan(ctx context.Context, opt Option, initializeScanner InitializeScanner, 
 	report, err := s.ScanArtifact(ctx, scanOptions)
 	if err != nil {
 		return types.Report{}, xerrors.Errorf("image scan failed: %w", err)
-	}
-	return report, nil
-}
-
-func filter(ctx context.Context, opt Option, report types.Report) (types.Report, error) {
-	resultClient := initializeResultClient()
-	results := report.Results
-	for i := range results {
-		// Fill vulnerability info only in standalone mode
-		if opt.RemoteAddr == "" {
-			resultClient.FillVulnerabilityInfo(results[i].Vulnerabilities, results[i].Type)
-		}
-		vulns, misconfSummary, misconfs, secrets, err := resultClient.Filter(ctx, results[i].Vulnerabilities, results[i].Misconfigurations, results[i].Secrets,
-			opt.Severities, opt.IgnoreUnfixed, opt.IncludeNonFailures, opt.IgnoreFile, opt.IgnorePolicy)
-		if err != nil {
-			return types.Report{}, xerrors.Errorf("unable to filter vulnerabilities: %w", err)
-		}
-		results[i].Vulnerabilities = vulns
-		results[i].Misconfigurations = misconfs
-		results[i].MisconfSummary = misconfSummary
-		results[i].Secrets = secrets
 	}
 	return report, nil
 }

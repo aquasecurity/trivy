@@ -6,14 +6,13 @@ import (
 	"github.com/urfave/cli/v2"
 	"golang.org/x/xerrors"
 
-	"github.com/aquasecurity/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/scanner"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
 
-// imageScanner initializes a container image scanner in standalone mode
+// imageStandaloneScanner initializes a container image scanner in standalone mode
 // $ trivy image alpine:3.15
-func imageScanner(ctx context.Context, conf ScannerConfig) (scanner.Scanner, func(), error) {
+func imageStandaloneScanner(ctx context.Context, conf ScannerConfig) (scanner.Scanner, func(), error) {
 	dockerOpt, err := types.GetDockerOption(conf.ArtifactOption.InsecureSkipTLS)
 	if err != nil {
 		return scanner.Scanner{}, nil, err
@@ -26,9 +25,9 @@ func imageScanner(ctx context.Context, conf ScannerConfig) (scanner.Scanner, fun
 	return s, cleanup, nil
 }
 
-// archiveScanner initializes an image archive scanner in standalone mode
+// archiveStandaloneScanner initializes an image archive scanner in standalone mode
 // $ trivy image --input alpine.tar
-func archiveScanner(ctx context.Context, conf ScannerConfig) (scanner.Scanner, func(), error) {
+func archiveStandaloneScanner(ctx context.Context, conf ScannerConfig) (scanner.Scanner, func(), error) {
 	s, err := initializeArchiveScanner(ctx, conf.Target, conf.ArtifactCache, conf.LocalArtifactCache, conf.ArtifactOption)
 	if err != nil {
 		return scanner.Scanner{}, func() {}, xerrors.Errorf("unable to initialize the archive scanner: %w", err)
@@ -36,9 +35,9 @@ func archiveScanner(ctx context.Context, conf ScannerConfig) (scanner.Scanner, f
 	return s, func() {}, nil
 }
 
-// remoteImageScanner initializes a container image scanner in client/server mode
+// imageRemoteScanner initializes a container image scanner in client/server mode
 // $ trivy image --server localhost:4954 alpine:3.15
-func remoteImageScanner(ctx context.Context, conf ScannerConfig) (
+func imageRemoteScanner(ctx context.Context, conf ScannerConfig) (
 	scanner.Scanner, func(), error) {
 	// Scan an image in Docker Engine, Docker Registry, etc.
 	dockerOpt, err := types.GetDockerOption(conf.ArtifactOption.InsecureSkipTLS)
@@ -54,9 +53,9 @@ func remoteImageScanner(ctx context.Context, conf ScannerConfig) (
 	return s, cleanup, nil
 }
 
-// remoteArchiveScanner initializes an image archive scanner in client/server mode
+// archiveRemoteScanner initializes an image archive scanner in client/server mode
 // $ trivy image --server localhost:4954 --input alpine.tar
-func remoteArchiveScanner(ctx context.Context, conf ScannerConfig) (scanner.Scanner, func(), error) {
+func archiveRemoteScanner(ctx context.Context, conf ScannerConfig) (scanner.Scanner, func(), error) {
 	// Scan tar file
 	s, err := initializeRemoteArchiveScanner(ctx, conf.Target, conf.ArtifactCache, conf.RemoteOption, conf.ArtifactOption)
 	if err != nil {
@@ -67,43 +66,5 @@ func remoteArchiveScanner(ctx context.Context, conf ScannerConfig) (scanner.Scan
 
 // ImageRun runs scan on container image
 func ImageRun(ctx *cli.Context) error {
-	opt, err := initOption(ctx)
-	if err != nil {
-		return xerrors.Errorf("option error: %w", err)
-	}
-
-	// Disable the lock file scanning
-	opt.DisabledAnalyzers = analyzer.TypeLockfiles
-
-	if opt.Input != "" {
-		return archiveImageRun(ctx.Context, opt)
-	}
-
-	return imageRun(ctx.Context, opt)
-}
-
-func archiveImageRun(ctx context.Context, opt Option) error {
-	// standalone mode
-	scanner := archiveScanner
-
-	if opt.RemoteAddr != "" {
-		// client/server mode
-		scanner = remoteArchiveScanner
-	}
-
-	// scan tar file
-	return Run(ctx, opt, scanner, initCache)
-}
-
-func imageRun(ctx context.Context, opt Option) error {
-	// standalone mode
-	scanner := imageScanner
-
-	if opt.RemoteAddr != "" {
-		// client/server mode
-		scanner = remoteImageScanner
-	}
-
-	// scan container image
-	return Run(ctx, opt, scanner, initCache)
+	return Run(ctx, containerImageArtifact)
 }
