@@ -30,7 +30,7 @@ type misconfigRenderer struct {
 func NewMisconfigRenderer(target string, misconfs []types.DetectedMisconfiguration, includeNonFailures bool, ansi bool) *misconfigRenderer {
 	width, _, err := terminal.GetSize(0)
 	if err != nil || width == 0 {
-		width = 40
+		width = 80
 	}
 	if !ansi {
 		tml.DisableFormatting()
