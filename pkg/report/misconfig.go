@@ -143,7 +143,7 @@ func (r *misconfigRenderer) renderCode(misconf types.DetectedMisconfiguration) {
 					r.printf("<red>│ ")
 				}
 			} else {
-				r.printf("<dim><italic>%4d   ", line.Number)
+				r.printf("<dim>%4d   ", line.Number)
 			}
 			if r.ansi {
 				r.printf("%s\n", line.Highlighted)

@@ -167,7 +167,7 @@ func (tw TableWriter) setVulnerabilityRows(tableWriter *table.Table, vulns []typ
 
 		if len(v.PrimaryURL) > 0 {
 			if tw.isOutputToTerminal() {
-				title = tml.Sprintf("%s\n<blue><italic>%s</italic></blue>", title, v.PrimaryURL)
+				title = tml.Sprintf("%s\n<blue>%s</blue>", title, v.PrimaryURL)
 			} else {
 				title = fmt.Sprintf("%s\n%s", title, v.PrimaryURL)
 			}
