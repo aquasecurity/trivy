@@ -147,7 +147,7 @@ require (
 	github.com/mailru/easyjson v0.7.6 // indirect
 	github.com/mattn/go-colorable v0.1.12 // indirect
 	github.com/mattn/go-isatty v0.0.14 // indirect
-	github.com/mattn/go-runewidth v0.0.12 // indirect
+	github.com/mattn/go-runewidth v0.0.13 // indirect
 	github.com/mitchellh/copystructure v1.2.0 // indirect
 	github.com/mitchellh/go-homedir v1.1.0 // indirect
 	github.com/mitchellh/go-testing-interface v1.0.0 // indirect
@@ -240,8 +240,8 @@ require gopkg.in/yaml.v2 v2.4.0
 require github.com/aquasecurity/trivy-kubernetes v0.1.0
 
 require (
+	github.com/aquasecurity/table v1.2.0
 	github.com/liamg/clinch v1.5.6
-	github.com/liamg/tablewriter v0.0.6-0.20220511154856-265b7cfd7979
 )
 
 require (

@@ -8,14 +8,18 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/fatih/color"
-	"github.com/liamg/tablewriter"
-	"golang.org/x/exp/slices"
-
 	ftypes "github.com/aquasecurity/fanal/types"
+
+	"github.com/aquasecurity/table"
+
+	"github.com/liamg/tml"
+
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/types"
+
+	"github.com/fatih/color"
+	"golang.org/x/exp/slices"
 )
 
 // TableWriter implements Writer and output in tabular form
@@ -39,17 +43,35 @@ func (tw TableWriter) Write(report types.Report) error {
 	return nil
 }
 
-func (tw TableWriter) write(result types.Result) {
-	table := tablewriter.NewWriter(tw.Output)
+func (tw TableWriter) isOutputToTerminal() bool {
+	if tw.Output != os.Stdout {
+		return false
+	}
+	o, err := os.Stdout.Stat()
+	if err != nil {
+		return false
+	}
+	return (o.Mode() & os.ModeCharDevice) == os.ModeCharDevice
+}
 
-	var severityCount map[string]int
+func (tw TableWriter) write(result types.Result) {
+
+	tableWriter := table.New(tw.Output)
+	if tw.isOutputToTerminal() { // use colours if we're not piping elsewhere
+		tableWriter.SetHeaderStyle(table.StyleBold)
+		tableWriter.SetLineStyle(table.StyleDim)
+	}
+	tableWriter.SetBorders(true)
+	tableWriter.SetAutoMerge(true)
+	tableWriter.SetRowLines(true)
+
+	severityCount := tw.countSeverities(result)
+
 	switch {
-	case len(result.Vulnerabilities) != 0:
-		severityCount = tw.writeVulnerabilities(table, result.Vulnerabilities)
-	case len(result.Misconfigurations) != 0:
-		severityCount = tw.countMisconfigSeverities(result.Misconfigurations)
-	case len(result.Secrets) != 0:
-		severityCount = tw.writeSecrets(table, result.Secrets)
+	case len(result.Vulnerabilities) > 0:
+		tw.writeVulnerabilities(tableWriter, result.Vulnerabilities)
+	case len(result.Secrets) > 0:
+		tw.writeSecrets(tableWriter, result.Secrets)
 	}
 
 	total, summaries := tw.summary(severityCount)
@@ -77,11 +99,7 @@ func (tw TableWriter) write(result types.Result) {
 		fmt.Printf("Total: %d (%s)\n\n", total, strings.Join(summaries, ", "))
 	}
 
-	if len(result.Vulnerabilities) > 0 || len(result.Secrets) > 0 {
-		table.SetAutoMergeCells(true)
-		table.SetRowLine(true)
-		table.Render()
-	}
+	tableWriter.Render()
 
 	if len(result.Misconfigurations) > 0 {
 		_, _ = fmt.Fprint(tw.Output, NewMisconfigRenderer(result.Target, result.Misconfigurations, tw.IncludeNonFailures).Render())
@@ -116,32 +134,14 @@ func (tw TableWriter) summary(severityCount map[string]int) (int, []string) {
 	return total, summaries
 }
 
-func (tw TableWriter) writeVulnerabilities(table *tablewriter.Table, vulns []types.DetectedVulnerability) map[string]int {
-	header := []string{"Library", "Vulnerability ID", "Severity", "Installed Version", "Fixed Version", "Title"}
-	table.SetHeader(header)
-	severityCount := tw.setVulnerabilityRows(table, vulns)
-
-	return severityCount
+func (tw TableWriter) writeVulnerabilities(tableWriter *table.Table, vulns []types.DetectedVulnerability) {
+	header := []string{"Library", "Vulnerability", "Severity", "Installed Version", "Fixed Version", "Title"}
+	tableWriter.SetHeaders(header...)
+	tw.setVulnerabilityRows(tableWriter, vulns)
 }
 
-func (tw TableWriter) writeSecrets(table *tablewriter.Table, secrets []ftypes.SecretFinding) map[string]int {
-	table.SetColWidth(80)
-
-	alignment := []int{tablewriter.ALIGN_CENTER, tablewriter.ALIGN_CENTER, tablewriter.ALIGN_CENTER,
-		tablewriter.ALIGN_CENTER, tablewriter.ALIGN_LEFT}
-	header := []string{"Category", "Description", "Severity", "Line No", "Match"}
-
-	table.SetColumnAlignment(alignment)
-	table.SetHeader(header)
-	severityCount := tw.setSecretRows(table, secrets)
-
-	return severityCount
-}
-
-func (tw TableWriter) setVulnerabilityRows(table *tablewriter.Table, vulns []types.DetectedVulnerability) map[string]int {
-	severityCount := map[string]int{}
+func (tw TableWriter) setVulnerabilityRows(tableWriter *table.Table, vulns []types.DetectedVulnerability) {
 	for _, v := range vulns {
-		severityCount[v.Severity]++
 		lib := v.PkgName
 		if v.PkgPath != "" {
 			fileName := filepath.Base(v.PkgPath)
@@ -161,8 +161,11 @@ func (tw TableWriter) setVulnerabilityRows(table *tablewriter.Table, vulns []typ
 		}
 
 		if len(v.PrimaryURL) > 0 {
-			r := strings.NewReplacer("https://", "", "http://", "")
-			title = fmt.Sprintf("%s -->%s", title, r.Replace(v.PrimaryURL))
+			if tw.isOutputToTerminal() {
+				title = tml.Sprintf("%s\n<blue><italic>%s</italic></blue>", title, v.PrimaryURL)
+			} else {
+				title = fmt.Sprintf("%s\n%s", title, v.PrimaryURL)
+			}
 		}
 
 		var row []string
@@ -173,27 +176,8 @@ func (tw TableWriter) setVulnerabilityRows(table *tablewriter.Table, vulns []typ
 			row = []string{lib, v.VulnerabilityID, v.Severity, v.InstalledVersion, v.FixedVersion, strings.TrimSpace(title)}
 		}
 
-		table.Append(row)
+		tableWriter.AddRow(row...)
 	}
-	return severityCount
-}
-
-func (tw TableWriter) setSecretRows(table *tablewriter.Table, secrets []ftypes.SecretFinding) map[string]int {
-	severityCount := map[string]int{}
-	for _, secret := range secrets {
-		severity := secret.Severity
-		severityCount[severity]++
-		if tw.Output == os.Stdout {
-			severity = dbTypes.ColorizeSeverity(severity)
-		}
-
-		row := []string{string(secret.Category), secret.Title, severity,
-			fmt.Sprint(secret.StartLine), // multi-line is not supported for now.
-			secret.Match}
-
-		table.Append(row)
-	}
-	return severityCount
 }
 
 func (tw TableWriter) outputTrace(result types.Result) {
@@ -223,16 +207,48 @@ func (tw TableWriter) outputTrace(result types.Result) {
 	}
 }
 
+func (tw TableWriter) writeSecrets(tableWriter *table.Table, secrets []ftypes.SecretFinding) {
+
+	alignment := []table.Alignment{table.AlignCenter, table.AlignCenter, table.AlignCenter,
+		table.AlignCenter, table.AlignLeft}
+	header := []string{"Category", "Description", "Severity", "Line No", "Match"}
+
+	tableWriter.SetAlignment(alignment...)
+	tableWriter.SetHeaders(header...)
+	tw.setSecretRows(tableWriter, secrets)
+}
+
+func (tw TableWriter) setSecretRows(tableWriter *table.Table, secrets []ftypes.SecretFinding) {
+	for _, secret := range secrets {
+		severity := secret.Severity
+		if tw.isOutputToTerminal() {
+			severity = dbTypes.ColorizeSeverity(severity)
+		}
+		row := []string{string(secret.Category), secret.Title, severity,
+			fmt.Sprint(secret.StartLine), // multi-line is not supported for now.
+			secret.Match}
+
+		tableWriter.AddRow(row...)
+	}
+}
+
 func (tw TableWriter) Println(a ...interface{}) {
 	_, _ = fmt.Fprintln(tw.Output, a...)
 }
 
-func (tw TableWriter) countMisconfigSeverities(misconfs []types.DetectedMisconfiguration) map[string]int {
+func (tw TableWriter) countSeverities(result types.Result) map[string]int {
 	severityCount := map[string]int{}
-	for _, misconf := range misconfs {
+	for _, misconf := range result.Misconfigurations {
 		if misconf.Status == types.StatusFailure {
 			severityCount[misconf.Severity]++
 		}
+	}
+	for _, secret := range result.Secrets {
+		severity := secret.Severity
+		severityCount[severity]++
+	}
+	for _, v := range result.Vulnerabilities {
+		severityCount[v.Severity]++
 	}
 	return severityCount
 }
