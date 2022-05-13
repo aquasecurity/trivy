@@ -218,7 +218,7 @@ var (
 
 	reportFlag = cli.StringFlag{
 		Name:  "report",
-		Value: "all",
+		Value: "summary",
 		Usage: "specify a report format for the output. (all,summary default: all)",
 	}
 
