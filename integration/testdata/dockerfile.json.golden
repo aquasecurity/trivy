@@ -42,7 +42,7 @@
           ],
           "Status": "FAIL",
           "Layer": {},
-          "IacMetadata": {
+          "CauseMetadata": {
             "Provider": "Dockerfile",
             "Service": "general"
           }

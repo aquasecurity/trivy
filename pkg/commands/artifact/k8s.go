@@ -67,9 +67,9 @@ func K8sRun(cliCtx *cli.Context) error {
 	report.ClusterName = cluster.GetCurrentContext()
 
 	if err = k8sReport.Write(report, pkgReport.Option{
-		Format: "json", // for now json is the default
+		Format: opt.KubernetesOption.ReportFormat, // for now json is the default
 		Output: opt.Output,
-	}); err != nil {
+	}, opt.Severities); err != nil {
 		return xerrors.Errorf("unable to write results: %w", err)
 	}
 
