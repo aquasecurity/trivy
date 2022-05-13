@@ -5,13 +5,13 @@ import (
 	"os"
 	"strings"
 
-	"github.com/aquasecurity/trivy/pkg/types"
-
 	"github.com/urfave/cli/v2"
 	"go.uber.org/zap"
+	"golang.org/x/exp/slices"
 	"golang.org/x/xerrors"
 
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
+	"github.com/aquasecurity/trivy/pkg/types"
 )
 
 // ReportOption holds the options for reporting scan results
@@ -137,8 +137,8 @@ func (c *ReportOption) populateSecurityChecks() error {
 }
 
 func (c *ReportOption) forceListAllPkgs(logger *zap.SugaredLogger) bool {
-	if c.Format == "cyclonedx" && !c.ListAllPkgs {
-		logger.Debugf("'--format cyclonedx' automatically enables '--list-all-pkgs'.")
+	if slices.Contains(supportedSbomFormats, c.Format) && !c.ListAllPkgs {
+		logger.Debugf("'cyclonedx', 'spdx', and 'spdx-json' automatically enables '--list-all-pkgs'.")
 		return true
 	}
 	return false

@@ -19,6 +19,8 @@ type Option struct {
 	option.ConfigOption
 	option.RemoteOption
 	option.SbomOption
+	option.SecretOption
+	option.KubernetesOption
 
 	// We don't want to allow disabled analyzers to be passed by users,
 	// but it differs depending on scanning modes.
@@ -33,15 +35,17 @@ func NewOption(c *cli.Context) (Option, error) {
 	}
 
 	return Option{
-		GlobalOption:   gc,
-		ArtifactOption: option.NewArtifactOption(c),
-		DBOption:       option.NewDBOption(c),
-		ImageOption:    option.NewImageOption(c),
-		ReportOption:   option.NewReportOption(c),
-		CacheOption:    option.NewCacheOption(c),
-		ConfigOption:   option.NewConfigOption(c),
-		RemoteOption:   option.NewRemoteOption(c),
-		SbomOption:     option.NewSbomOption(c),
+		GlobalOption:     gc,
+		ArtifactOption:   option.NewArtifactOption(c),
+		DBOption:         option.NewDBOption(c),
+		ImageOption:      option.NewImageOption(c),
+		ReportOption:     option.NewReportOption(c),
+		CacheOption:      option.NewCacheOption(c),
+		ConfigOption:     option.NewConfigOption(c),
+		RemoteOption:     option.NewRemoteOption(c),
+		SbomOption:       option.NewSbomOption(c),
+		SecretOption:     option.NewSecretOption(c),
+		KubernetesOption: option.NewKubernetesOption(c),
 	}, nil
 }
 

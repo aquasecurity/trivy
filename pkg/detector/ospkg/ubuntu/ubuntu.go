@@ -51,6 +51,7 @@ var (
 		"20.10": time.Date(2021, 7, 22, 23, 59, 59, 0, time.UTC),
 		"21.04": time.Date(2022, 1, 22, 23, 59, 59, 0, time.UTC),
 		"21.10": time.Date(2022, 7, 22, 23, 59, 59, 0, time.UTC),
+		"22.04": time.Date(2032, 4, 23, 23, 59, 59, 0, time.UTC),
 	}
 )
 
@@ -88,7 +89,7 @@ func NewScanner(opts ...option) *Scanner {
 }
 
 // Detect scans and returns the vulnerabilities
-func (s *Scanner) Detect(osVer string, pkgs []ftypes.Package) ([]types.DetectedVulnerability, error) {
+func (s *Scanner) Detect(osVer string, _ *ftypes.Repository, pkgs []ftypes.Package) ([]types.DetectedVulnerability, error) {
 	log.Logger.Info("Detecting Ubuntu vulnerabilities...")
 	log.Logger.Debugf("ubuntu: os version: %s", osVer)
 	log.Logger.Debugf("ubuntu: the number of packages: %d", len(pkgs))

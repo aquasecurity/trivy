@@ -22,7 +22,7 @@
       "MisconfSummary": {
         "Successes": 0,
         "Failures": 0,
-        "Exceptions": 1
+        "Exceptions": 23
       }
     }
   ]

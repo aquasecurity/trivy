@@ -2,8 +2,8 @@ package report
 
 import (
 	"io"
-	"path/filepath"
 	"strings"
+	"sync"
 	"time"
 
 	"golang.org/x/xerrors"
@@ -11,6 +11,7 @@ import (
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/report/cyclonedx"
+	"github.com/aquasecurity/trivy/pkg/report/spdx"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
 
@@ -41,6 +42,7 @@ func Write(report types.Report, option Option) error {
 		writer = &TableWriter{
 			Output:             option.Output,
 			Severities:         option.Severities,
+			ShowMessageOnce:    &sync.Once{},
 			IncludeNonFailures: option.IncludeNonFailures,
 			Trace:              option.Trace,
 		}
@@ -49,9 +51,11 @@ func Write(report types.Report, option Option) error {
 	case "cyclonedx":
 		// TODO: support xml format option with cyclonedx writer
 		writer = cyclonedx.NewWriter(option.Output, option.AppVersion)
+	case "spdx", "spdx-json":
+		writer = spdx.NewWriter(option.Output, option.AppVersion, option.Format)
 	case "template":
 		// We keep `sarif.tpl` template working for backward compatibility for a while.
-		if strings.HasPrefix(option.OutputTemplate, "@") && filepath.Base(option.OutputTemplate) == "sarif.tpl" {
+		if strings.HasPrefix(option.OutputTemplate, "@") && strings.HasSuffix(option.OutputTemplate, "sarif.tpl") {
 			log.Logger.Warn("Using `--template sarif.tpl` is deprecated. Please migrate to `--format sarif`. See https://github.com/aquasecurity/trivy/discussions/1571")
 			writer = SarifWriter{Output: option.Output, Version: option.AppVersion}
 			break

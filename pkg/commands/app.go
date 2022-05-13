@@ -147,8 +147,8 @@ var (
 
 	securityChecksFlag = cli.StringFlag{
 		Name:    "security-checks",
-		Value:   types.SecurityCheckVulnerability,
-		Usage:   "comma-separated list of what security issues to detect (vuln,config)",
+		Value:   fmt.Sprintf("%s,%s", types.SecurityCheckVulnerability, types.SecurityCheckSecret),
+		Usage:   "comma-separated list of what security issues to detect (vuln,config,secret)",
 		EnvVars: []string{"TRIVY_SECURITY_CHECKS"},
 	}
 
@@ -164,6 +164,12 @@ var (
 		Value:   "fs",
 		Usage:   "cache backend (e.g. redis://localhost:6379)",
 		EnvVars: []string{"TRIVY_CACHE_BACKEND"},
+	}
+
+	cacheTTL = cli.DurationFlag{
+		Name:    "cache-ttl",
+		Usage:   "cache TTL when using redis as cache backend",
+		EnvVars: []string{"TRIVY_CACHE_TTL"},
 	}
 
 	redisBackendCACert = cli.StringFlag{
@@ -199,6 +205,14 @@ var (
 		Value:   time.Second * 300,
 		Usage:   "timeout",
 		EnvVars: []string{"TRIVY_TIMEOUT"},
+	}
+
+	namespaceFlag = cli.StringFlag{
+		Name:    "namespace",
+		Aliases: []string{"n"},
+		Value:   "",
+		Usage:   "specify a namespace to scan",
+		EnvVars: []string{"TRIVY_K8S_NAMESPACE"},
 	}
 
 	// TODO: remove this flag after a sufficient deprecation period.
@@ -332,6 +346,13 @@ var (
 		EnvVars: []string{"TRIVY_DB_REPOSITORY"},
 	}
 
+	secretConfig = cli.StringFlag{
+		Name:    "secret-config",
+		Usage:   "specify a path to config file for secret scanning",
+		Value:   "trivy-secret.yaml",
+		EnvVars: []string{"TRIVY_SECRET_CONFIG"},
+	}
+
 	// Global flags
 	globalFlags = []cli.Flag{
 		&quietFlag,
@@ -372,12 +393,13 @@ func NewApp(version string) *cli.App {
 		NewImageCommand(),
 		NewFilesystemCommand(),
 		NewRootfsCommand(),
-		NewSbomCommand(),
 		NewRepositoryCommand(),
 		NewClientCommand(),
 		NewServerCommand(),
 		NewConfigCommand(),
 		NewPluginCommand(),
+		NewK8sCommand(),
+		NewSbomCommand(),
 		NewVersionCommand(),
 	}
 	app.Commands = append(app.Commands, plugin.LoadCommands()...)
@@ -450,12 +472,14 @@ func NewImageCommand() *cli.Command {
 			&ignorePolicy,
 			&listAllPackages,
 			&cacheBackendFlag,
+			&cacheTTL,
 			&redisBackendCACert,
 			&redisBackendCert,
 			&redisBackendKey,
 			&offlineScan,
 			&insecureFlag,
 			&dbRepositoryFlag,
+			&secretConfig,
 			stringSliceFlag(skipFiles),
 			stringSliceFlag(skipDirs),
 
@@ -490,6 +514,7 @@ func NewFilesystemCommand() *cli.Command {
 			&securityChecksFlag,
 			&ignoreFileFlag,
 			&cacheBackendFlag,
+			&cacheTTL,
 			&redisBackendCACert,
 			&redisBackendCert,
 			&redisBackendKey,
@@ -499,6 +524,7 @@ func NewFilesystemCommand() *cli.Command {
 			&listAllPackages,
 			&offlineScan,
 			&dbRepositoryFlag,
+			&secretConfig,
 			stringSliceFlag(skipFiles),
 			stringSliceFlag(skipDirs),
 
@@ -537,6 +563,7 @@ func NewRootfsCommand() *cli.Command {
 			&securityChecksFlag,
 			&ignoreFileFlag,
 			&cacheBackendFlag,
+			&cacheTTL,
 			&redisBackendCACert,
 			&redisBackendCert,
 			&redisBackendKey,
@@ -546,6 +573,7 @@ func NewRootfsCommand() *cli.Command {
 			&listAllPackages,
 			&offlineScan,
 			&dbRepositoryFlag,
+			&secretConfig,
 			stringSliceFlag(skipFiles),
 			stringSliceFlag(skipDirs),
 			stringSliceFlag(configPolicy),
@@ -579,6 +607,7 @@ func NewRepositoryCommand() *cli.Command {
 			&securityChecksFlag,
 			&ignoreFileFlag,
 			&cacheBackendFlag,
+			&cacheTTL,
 			&redisBackendCACert,
 			&redisBackendCert,
 			&redisBackendKey,
@@ -590,6 +619,7 @@ func NewRepositoryCommand() *cli.Command {
 			&offlineScan,
 			&insecureFlag,
 			&dbRepositoryFlag,
+			&secretConfig,
 			stringSliceFlag(skipFiles),
 			stringSliceFlag(skipDirs),
 		},
@@ -626,6 +656,7 @@ func NewClientCommand() *cli.Command {
 			&listAllPackages,
 			&offlineScan,
 			&insecureFlag,
+			&secretConfig,
 
 			&token,
 			&tokenHeader,
@@ -654,6 +685,7 @@ func NewServerCommand() *cli.Command {
 			&downloadDBOnlyFlag,
 			&resetFlag,
 			&cacheBackendFlag,
+			&cacheTTL,
 			&redisBackendCACert,
 			&redisBackendCert,
 			&redisBackendKey,
@@ -754,6 +786,48 @@ func NewPluginCommand() *cli.Command {
 	}
 }
 
+// NewK8sCommand is the factory method to add k8s subcommand
+func NewK8sCommand() *cli.Command {
+	return &cli.Command{
+		Name:    "kubernetes",
+		Aliases: []string{"k8s"},
+		Usage:   "scan kubernetes vulnerabilities and misconfigurations",
+		Action:  artifact.K8sRun,
+		Flags: []cli.Flag{
+			&namespaceFlag,
+			&outputFlag,
+			&severityFlag,
+			&exitCodeFlag,
+			&skipDBUpdateFlag,
+			&skipPolicyUpdateFlag,
+			&clearCacheFlag,
+			&ignoreUnfixedFlag,
+			&vulnTypeFlag,
+			&securityChecksFlag,
+			&ignoreFileFlag,
+			&cacheBackendFlag,
+			&cacheTTL,
+			&redisBackendCACert,
+			&redisBackendCert,
+			&redisBackendKey,
+			&timeoutFlag,
+			&noProgressFlag,
+			&ignorePolicy,
+			&listAllPackages,
+			&offlineScan,
+			&dbRepositoryFlag,
+			&secretConfig,
+			stringSliceFlag(skipFiles),
+			stringSliceFlag(skipDirs),
+
+			// for misconfiguration
+			stringSliceFlag(configPolicy),
+			stringSliceFlag(configData),
+			stringSliceFlag(policyNamespaces),
+		},
+	}
+}
+
 // NewSbomCommand is the factory method to add sbom command
 func NewSbomCommand() *cli.Command {
 	return &cli.Command{
@@ -783,6 +857,7 @@ func NewSbomCommand() *cli.Command {
 			&timeoutFlag,
 			&severityFlag,
 			&offlineScan,
+			&dbRepositoryFlag,
 			stringSliceFlag(skipFiles),
 			stringSliceFlag(skipDirs),
 
@@ -798,7 +873,7 @@ func NewSbomCommand() *cli.Command {
 				Name:    "sbom-format",
 				Aliases: []string{"format"},
 				Value:   "cyclonedx",
-				Usage:   "SBOM format (cyclonedx)",
+				Usage:   "SBOM format (cyclonedx, spdx, spdx-json)",
 				EnvVars: []string{"TRIVY_SBOM_FORMAT"},
 			},
 		},

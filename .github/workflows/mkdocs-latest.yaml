@@ -24,8 +24,7 @@ jobs:
       - name: Install dependencies
         run: |
           pip install git+https://${GH_TOKEN}@github.com/squidfunk/mkdocs-material-insiders.git
-          pip install mike
-          pip install mkdocs-macros-plugin
+          pip install -r docs/build/requirements.txt
         env:
           GH_TOKEN: ${{ secrets.MKDOCS_AQUA_BOT }}
       - name: Configure the git user

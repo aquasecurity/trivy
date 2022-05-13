@@ -363,6 +363,7 @@ func TestClient_Filter(t *testing.T) {
 	type args struct {
 		vulns         []types.DetectedVulnerability
 		misconfs      []types.DetectedMisconfiguration
+		secrets       []ftypes.SecretFinding
 		severities    []dbTypes.Severity
 		ignoreUnfixed bool
 		ignoreFile    string
@@ -374,6 +375,7 @@ func TestClient_Filter(t *testing.T) {
 		wantVulns          []types.DetectedVulnerability
 		wantMisconfSummary *types.MisconfSummary
 		wantMisconfs       []types.DetectedMisconfiguration
+		wantSecrets        []ftypes.SecretFinding
 	}{
 		{
 			name: "happy path",
@@ -443,6 +445,24 @@ func TestClient_Filter(t *testing.T) {
 						Status:   types.StatusPassed,
 					},
 				},
+				secrets: []ftypes.SecretFinding{
+					{
+						RuleID:    "generic-critical-rule",
+						Severity:  dbTypes.SeverityCritical.String(),
+						Title:     "Critical Secret should pass filter",
+						StartLine: 1,
+						EndLine:   2,
+						Match:     "*****",
+					},
+					{
+						RuleID:    "generic-low-rule",
+						Severity:  dbTypes.SeverityLow.String(),
+						Title:     "Low Secret should be ignored",
+						StartLine: 3,
+						EndLine:   4,
+						Match:     "*****",
+					},
+				},
 				severities:    []dbTypes.Severity{dbTypes.SeverityCritical, dbTypes.SeverityHigh, dbTypes.SeverityUnknown},
 				ignoreUnfixed: false,
 			},
@@ -497,6 +517,16 @@ func TestClient_Filter(t *testing.T) {
 					Message:  "something bad",
 					Severity: dbTypes.SeverityCritical.String(),
 					Status:   types.StatusFailure,
+				},
+			},
+			wantSecrets: []ftypes.SecretFinding{
+				{
+					RuleID:    "generic-critical-rule",
+					Severity:  dbTypes.SeverityCritical.String(),
+					Title:     "Critical Secret should pass filter",
+					StartLine: 1,
+					EndLine:   2,
+					Match:     "*****",
 				},
 			},
 		},
@@ -770,12 +800,13 @@ func TestClient_Filter(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			c := Client{}
-			gotVulns, gotMisconfSummary, gotMisconfs, err := c.Filter(context.Background(), tt.args.vulns, tt.args.misconfs,
+			gotVulns, gotMisconfSummary, gotMisconfs, gotSecrets, err := c.Filter(context.Background(), tt.args.vulns, tt.args.misconfs, tt.args.secrets,
 				tt.args.severities, tt.args.ignoreUnfixed, false, tt.args.ignoreFile, tt.args.policyFile)
 			require.NoError(t, err)
 			assert.Equal(t, tt.wantVulns, gotVulns)
 			assert.Equal(t, tt.wantMisconfSummary, gotMisconfSummary)
 			assert.Equal(t, tt.wantMisconfs, gotMisconfs)
+			assert.Equal(t, tt.wantSecrets, gotSecrets)
 		})
 	}
 }
