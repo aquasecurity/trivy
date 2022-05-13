@@ -86,8 +86,12 @@ func (tw TableWriter) write(result types.Result) {
 		target += fmt.Sprintf(" (%s)", result.Type)
 	}
 
-	fmt.Printf("\n%s\n", target)
-	fmt.Println(strings.Repeat("=", len(target)))
+	if tw.isOutputToTerminal() {
+		_ = tml.Printf("\n<underline><bold>%s</bold></underline>\n\n", target)
+	} else {
+		fmt.Printf("\n%s\n", target)
+		fmt.Println(strings.Repeat("=", len(target)))
+	}
 	if result.Class == types.ClassConfig {
 		// for misconfigurations
 		summary := result.MisconfSummary
