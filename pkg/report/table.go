@@ -57,7 +57,7 @@ func (tw TableWriter) isOutputToTerminal() bool {
 func (tw TableWriter) write(result types.Result) {
 
 	tableWriter := table.New(tw.Output)
-	if tw.isOutputToTerminal() { // use colours if we're not piping elsewhere
+	if tw.isOutputToTerminal() { // use ansi output if we're not piping elsewhere
 		tableWriter.SetHeaderStyle(table.StyleBold)
 		tableWriter.SetLineStyle(table.StyleDim)
 	}
@@ -87,6 +87,7 @@ func (tw TableWriter) write(result types.Result) {
 	}
 
 	if tw.isOutputToTerminal() {
+		// nolint
 		_ = tml.Printf("\n<underline><bold>%s</bold></underline>\n\n", target)
 	} else {
 		fmt.Printf("\n%s\n", target)
