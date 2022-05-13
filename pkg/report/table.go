@@ -173,7 +173,7 @@ func (tw TableWriter) setVulnerabilityRows(tableWriter *table.Table, vulns []typ
 		}
 
 		var row []string
-		if tw.Output == os.Stdout {
+		if tw.isOutputToTerminal() {
 			row = []string{lib, v.VulnerabilityID, dbTypes.ColorizeSeverity(v.Severity),
 				v.InstalledVersion, v.FixedVersion, strings.TrimSpace(title)}
 		} else {
