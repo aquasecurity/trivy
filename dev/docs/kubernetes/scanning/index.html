@@ -2382,6 +2382,7 @@
 </div>
 <p>This feature might change without preserving backwards compatibility.</p>
 <p>Scan your Kubernetes cluster for both Vulnerabilities and Misconfigurations.</p>
+<p>Trivy uses your local kubectl configuration to access the API server to list artifacts.</p>
 <p>Scan a full cluster:</p>
 <div class="highlight"><pre><span></span><code>$ trivy k8s
 </code></pre></div>
@@ -2391,158 +2392,163 @@
 <p>Scan a namespace for only <code>CRITICAL</code> Vulnerabilities and Misconfigurations:</p>
 <div class="highlight"><pre><span></span><code>$ trivy k8s -n default -o results.json --severity CRITICAL
 </code></pre></div>
-<p>Trivy uses your local kubectl configuration to access the API server to list artifacts.
-At this time, JSON is the only supported output and is intended to be used for automation, other reports will be implemented soon.</p>
+<p>Scan a cluster and generate a simple summary report. The only outputs currently supported are <code>all</code> and <code>summary</code>. The default report format is <code>summary</code></p>
+<div class="highlight"><pre><span></span><code>$ trivy k8s 
+</code></pre></div>
+<p><img alt="k8s Summary Report" src="../../../imgs/k8s-summary.png" /></p>
+<p>To get all of the detail the output contains, use <code>--report all</code>, to get JSON output:</p>
+<div class="highlight"><pre><span></span><code>$ trivy k8s --report all
+</code></pre></div>
 <details>
 <summary>Result</summary>
 
-<div class="highlight"><pre><span></span><code>{
-  &quot;ClusterName&quot;: &quot;minikube&quot;,
-  &quot;Vulnerabilities&quot;: [
-    {
-      &quot;Namespace&quot;: &quot;default&quot;,
-      &quot;Kind&quot;: &quot;Deployment&quot;,
-      &quot;Name&quot;: &quot;app&quot;,
-      &quot;Results&quot;: [
-        {
-          &quot;Target&quot;: &quot;ubuntu:latest (ubuntu 22.04)&quot;,
-          &quot;Class&quot;: &quot;os-pkgs&quot;,
-          &quot;Type&quot;: &quot;ubuntu&quot;,
-          &quot;Vulnerabilities&quot;: [
-            {
-              &quot;VulnerabilityID&quot;: &quot;CVE-2016-2781&quot;,
-              &quot;PkgName&quot;: &quot;coreutils&quot;,
-              &quot;InstalledVersion&quot;: &quot;8.32-4.1ubuntu1&quot;,
-              &quot;Layer&quot;: {
-                &quot;Digest&quot;: &quot;sha256:125a6e411906fe6b0aaa50fc9d600bf6ff9bb11a8651727ce1ed482dc271c24c&quot;,
-                &quot;DiffID&quot;: &quot;sha256:e59fc94956120a6c7629f085027578e6357b48061d45714107e79f04a81a6f0c&quot;
-              },
-              &quot;SeveritySource&quot;: &quot;ubuntu&quot;,
-              &quot;PrimaryURL&quot;: &quot;https://avd.aquasec.com/nvd/cve-2016-2781&quot;,
-              &quot;DataSource&quot;: {
-                &quot;ID&quot;: &quot;ubuntu&quot;,
-                &quot;Name&quot;: &quot;Ubuntu CVE Tracker&quot;,
-                &quot;URL&quot;: &quot;https://git.launchpad.net/ubuntu-cve-tracker&quot;
-              },
-              &quot;Title&quot;: &quot;coreutils: Non-privileged session can escape to the parent session in chroot&quot;,
-              &quot;Description&quot;: &quot;chroot in GNU coreutils, when used with --userspec, allows local users to escape to the parent session via a crafted TIOCSTI ioctl call, which pushes characters to the terminal&#39;s input buffer.&quot;,
-              &quot;Severity&quot;: &quot;LOW&quot;,
-              &quot;CweIDs&quot;: [
-                &quot;CWE-20&quot;
-              ],
-              &quot;VendorSeverity&quot;: {
-                &quot;cbl-mariner&quot;: 2,
-                &quot;nvd&quot;: 2,
-                &quot;redhat&quot;: 2,
-                &quot;ubuntu&quot;: 1
-              },
-              &quot;CVSS&quot;: {
-                &quot;nvd&quot;: {
-                  &quot;V2Vector&quot;: &quot;AV:L/AC:L/Au:N/C:N/I:P/A:N&quot;,
-                  &quot;V3Vector&quot;: &quot;CVSS:3.0/AV:L/AC:L/PR:L/UI:N/S:C/C:N/I:H/A:N&quot;,
-                  &quot;V2Score&quot;: 2.1,
-                  &quot;V3Score&quot;: 6.5
-                },
-                &quot;redhat&quot;: {
-                  &quot;V2Vector&quot;: &quot;AV:L/AC:H/Au:N/C:C/I:C/A:C&quot;,
-                  &quot;V3Vector&quot;: &quot;CVSS:3.0/AV:L/AC:L/PR:N/UI:R/S:C/C:H/I:H/A:H&quot;,
-                  &quot;V2Score&quot;: 6.2,
-                  &quot;V3Score&quot;: 8.6
-                }
-              },
-              &quot;References&quot;: [
-                &quot;http://seclists.org/oss-sec/2016/q1/452&quot;,
-                &quot;http://www.openwall.com/lists/oss-security/2016/02/28/2&quot;,
-                &quot;http://www.openwall.com/lists/oss-security/2016/02/28/3&quot;,
-                &quot;https://access.redhat.com/security/cve/CVE-2016-2781&quot;,
-                &quot;https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2016-2781&quot;,
-                &quot;https://lists.apache.org/thread.html/rf9fa47ab66495c78bb4120b0754dd9531ca2ff0430f6685ac9b07772@%3Cdev.mina.apache.org%3E&quot;,
-                &quot;https://lore.kernel.org/patchwork/patch/793178/&quot;,
-                &quot;https://nvd.nist.gov/vuln/detail/CVE-2016-2781&quot;
-              ],
-              &quot;PublishedDate&quot;: &quot;2017-02-07T15:59:00Z&quot;,
-              &quot;LastModifiedDate&quot;: &quot;2021-02-25T17:15:00Z&quot;
-            }
-          ]
-        }
-      ]
-    }
-  ],
-  &quot;Misconfigurations&quot;: [
-    {
-      &quot;Namespace&quot;: &quot;default&quot;,
-      &quot;Kind&quot;: &quot;Deployment&quot;,
-      &quot;Name&quot;: &quot;app&quot;,
-      &quot;Results&quot;: [
-        {
-          &quot;Target&quot;: &quot;Deployment/app&quot;,
-          &quot;Class&quot;: &quot;config&quot;,
-          &quot;Type&quot;: &quot;kubernetes&quot;,
-          &quot;MisconfSummary&quot;: {
-            &quot;Successes&quot;: 20,
-            &quot;Failures&quot;: 19,
-            &quot;Exceptions&quot;: 0
-          },
-          &quot;Misconfigurations&quot;: [
-            {
-              &quot;Type&quot;: &quot;Kubernetes Security Check&quot;,
-              &quot;ID&quot;: &quot;KSV001&quot;,
-              &quot;Title&quot;: &quot;Process can elevate its own privileges&quot;,
-              &quot;Description&quot;: &quot;A program inside the container can elevate its own privileges and run as root, which might give the program control over the container and node.&quot;,
-              &quot;Message&quot;: &quot;Container &#39;app&#39; of Deployment &#39;app&#39; should set &#39;securityContext.allowPrivilegeEscalation&#39; to false&quot;,
-              &quot;Namespace&quot;: &quot;builtin.kubernetes.KSV001&quot;,
-              &quot;Query&quot;: &quot;data.builtin.kubernetes.KSV001.deny&quot;,
-              &quot;Resolution&quot;: &quot;Set &#39;set containers[].securityContext.allowPrivilegeEscalation&#39; to &#39;false&#39;.&quot;,
-              &quot;Severity&quot;: &quot;MEDIUM&quot;,
-              &quot;PrimaryURL&quot;: &quot;https://avd.aquasec.com/misconfig/ksv001&quot;,
-              &quot;References&quot;: [
-                &quot;https://kubernetes.io/docs/concepts/security/pod-security-standards/#restricted&quot;,
-                &quot;https://avd.aquasec.com/misconfig/ksv001&quot;
-              ],
-              &quot;Status&quot;: &quot;FAIL&quot;,
-              &quot;Layer&quot;: {},
-              &quot;IacMetadata&quot;: {
-                &quot;Provider&quot;: &quot;Kubernetes&quot;,
-                &quot;Service&quot;: &quot;general&quot;,
-                &quot;StartLine&quot;: 121,
-                &quot;EndLine&quot;: 133
-              }
-            },
-            {
-              &quot;Type&quot;: &quot;Kubernetes Security Check&quot;,
-              &quot;ID&quot;: &quot;KSV003&quot;,
-              &quot;Title&quot;: &quot;Default capabilities not dropped&quot;,
-              &quot;Description&quot;: &quot;The container should drop all default capabilities and add only those that are needed for its execution.&quot;,
-              &quot;Message&quot;: &quot;Container &#39;app&#39; of Deployment &#39;app&#39; should add &#39;ALL&#39; to &#39;securityContext.capabilities.drop&#39;&quot;,
-              &quot;Namespace&quot;: &quot;builtin.kubernetes.KSV003&quot;,
-              &quot;Query&quot;: &quot;data.builtin.kubernetes.KSV003.deny&quot;,
-              &quot;Resolution&quot;: &quot;Add &#39;ALL&#39; to containers[].securityContext.capabilities.drop.&quot;,
-              &quot;Severity&quot;: &quot;LOW&quot;,
-              &quot;PrimaryURL&quot;: &quot;https://avd.aquasec.com/misconfig/ksv003&quot;,
-              &quot;References&quot;: [
-                &quot;https://kubesec.io/basics/containers-securitycontext-capabilities-drop-index-all/&quot;,
-                &quot;https://avd.aquasec.com/misconfig/ksv003&quot;
-              ],
-              &quot;Status&quot;: &quot;FAIL&quot;,
-              &quot;Layer&quot;: {},
-              &quot;IacMetadata&quot;: {
-                &quot;Provider&quot;: &quot;Kubernetes&quot;,
-                &quot;Service&quot;: &quot;general&quot;,
-                &quot;StartLine&quot;: 121,
-                &quot;EndLine&quot;: 133
-              }
-            }
-          ]
-        }
-      ]
-    },
-    {
-      &quot;Namespace&quot;: &quot;default&quot;,
-      &quot;Kind&quot;: &quot;ConfigMap&quot;,
-      &quot;Name&quot;: &quot;kube-root-ca.crt&quot;
-    }
-  ]
-}
+<div class="highlight"><pre><span></span><code><span class="p">{</span><span class="w"></span>
+<span class="w">  </span><span class="nt">&quot;ClusterName&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;minikube&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">  </span><span class="nt">&quot;Vulnerabilities&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"></span>
+<span class="w">    </span><span class="p">{</span><span class="w"></span>
+<span class="w">      </span><span class="nt">&quot;Namespace&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;default&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">      </span><span class="nt">&quot;Kind&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Deployment&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">      </span><span class="nt">&quot;Name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;app&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">      </span><span class="nt">&quot;Results&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"></span>
+<span class="w">        </span><span class="p">{</span><span class="w"></span>
+<span class="w">          </span><span class="nt">&quot;Target&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;ubuntu:latest (ubuntu 22.04)&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">          </span><span class="nt">&quot;Class&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;os-pkgs&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">          </span><span class="nt">&quot;Type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;ubuntu&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">          </span><span class="nt">&quot;Vulnerabilities&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"></span>
+<span class="w">            </span><span class="p">{</span><span class="w"></span>
+<span class="w">              </span><span class="nt">&quot;VulnerabilityID&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;CVE-2016-2781&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">              </span><span class="nt">&quot;PkgName&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;coreutils&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">              </span><span class="nt">&quot;InstalledVersion&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;8.32-4.1ubuntu1&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">              </span><span class="nt">&quot;Layer&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">                </span><span class="nt">&quot;Digest&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;sha256:125a6e411906fe6b0aaa50fc9d600bf6ff9bb11a8651727ce1ed482dc271c24c&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">                </span><span class="nt">&quot;DiffID&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;sha256:e59fc94956120a6c7629f085027578e6357b48061d45714107e79f04a81a6f0c&quot;</span><span class="w"></span>
+<span class="w">              </span><span class="p">},</span><span class="w"></span>
+<span class="w">              </span><span class="nt">&quot;SeveritySource&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;ubuntu&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">              </span><span class="nt">&quot;PrimaryURL&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;https://avd.aquasec.com/nvd/cve-2016-2781&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">              </span><span class="nt">&quot;DataSource&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">                </span><span class="nt">&quot;ID&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;ubuntu&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">                </span><span class="nt">&quot;Name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Ubuntu CVE Tracker&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">                </span><span class="nt">&quot;URL&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;https://git.launchpad.net/ubuntu-cve-tracker&quot;</span><span class="w"></span>
+<span class="w">              </span><span class="p">},</span><span class="w"></span>
+<span class="w">              </span><span class="nt">&quot;Title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;coreutils: Non-privileged session can escape to the parent session in chroot&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">              </span><span class="nt">&quot;Description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;chroot in GNU coreutils, when used with --userspec, allows local users to escape to the parent session via a crafted TIOCSTI ioctl call, which pushes characters to the terminal&#39;s input buffer.&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">              </span><span class="nt">&quot;Severity&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;LOW&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">              </span><span class="nt">&quot;CweIDs&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"></span>
+<span class="w">                </span><span class="s2">&quot;CWE-20&quot;</span><span class="w"></span>
+<span class="w">              </span><span class="p">],</span><span class="w"></span>
+<span class="w">              </span><span class="nt">&quot;VendorSeverity&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">                </span><span class="nt">&quot;cbl-mariner&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"></span>
+<span class="w">                </span><span class="nt">&quot;nvd&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"></span>
+<span class="w">                </span><span class="nt">&quot;redhat&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"></span>
+<span class="w">                </span><span class="nt">&quot;ubuntu&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="w"></span>
+<span class="w">              </span><span class="p">},</span><span class="w"></span>
+<span class="w">              </span><span class="nt">&quot;CVSS&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">                </span><span class="nt">&quot;nvd&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">                  </span><span class="nt">&quot;V2Vector&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;AV:L/AC:L/Au:N/C:N/I:P/A:N&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">                  </span><span class="nt">&quot;V3Vector&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;CVSS:3.0/AV:L/AC:L/PR:L/UI:N/S:C/C:N/I:H/A:N&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">                  </span><span class="nt">&quot;V2Score&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">2.1</span><span class="p">,</span><span class="w"></span>
+<span class="w">                  </span><span class="nt">&quot;V3Score&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">6.5</span><span class="w"></span>
+<span class="w">                </span><span class="p">},</span><span class="w"></span>
+<span class="w">                </span><span class="nt">&quot;redhat&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">                  </span><span class="nt">&quot;V2Vector&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;AV:L/AC:H/Au:N/C:C/I:C/A:C&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">                  </span><span class="nt">&quot;V3Vector&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;CVSS:3.0/AV:L/AC:L/PR:N/UI:R/S:C/C:H/I:H/A:H&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">                  </span><span class="nt">&quot;V2Score&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">6.2</span><span class="p">,</span><span class="w"></span>
+<span class="w">                  </span><span class="nt">&quot;V3Score&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">8.6</span><span class="w"></span>
+<span class="w">                </span><span class="p">}</span><span class="w"></span>
+<span class="w">              </span><span class="p">},</span><span class="w"></span>
+<span class="w">              </span><span class="nt">&quot;References&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"></span>
+<span class="w">                </span><span class="s2">&quot;http://seclists.org/oss-sec/2016/q1/452&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">                </span><span class="s2">&quot;http://www.openwall.com/lists/oss-security/2016/02/28/2&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">                </span><span class="s2">&quot;http://www.openwall.com/lists/oss-security/2016/02/28/3&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">                </span><span class="s2">&quot;https://access.redhat.com/security/cve/CVE-2016-2781&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">                </span><span class="s2">&quot;https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2016-2781&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">                </span><span class="s2">&quot;https://lists.apache.org/thread.html/rf9fa47ab66495c78bb4120b0754dd9531ca2ff0430f6685ac9b07772@%3Cdev.mina.apache.org%3E&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">                </span><span class="s2">&quot;https://lore.kernel.org/patchwork/patch/793178/&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">                </span><span class="s2">&quot;https://nvd.nist.gov/vuln/detail/CVE-2016-2781&quot;</span><span class="w"></span>
+<span class="w">              </span><span class="p">],</span><span class="w"></span>
+<span class="w">              </span><span class="nt">&quot;PublishedDate&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2017-02-07T15:59:00Z&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">              </span><span class="nt">&quot;LastModifiedDate&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2021-02-25T17:15:00Z&quot;</span><span class="w"></span>
+<span class="w">            </span><span class="p">}</span><span class="w"></span>
+<span class="w">          </span><span class="p">]</span><span class="w"></span>
+<span class="w">        </span><span class="p">}</span><span class="w"></span>
+<span class="w">      </span><span class="p">]</span><span class="w"></span>
+<span class="w">    </span><span class="p">}</span><span class="w"></span>
+<span class="w">  </span><span class="p">],</span><span class="w"></span>
+<span class="w">  </span><span class="nt">&quot;Misconfigurations&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"></span>
+<span class="w">    </span><span class="p">{</span><span class="w"></span>
+<span class="w">      </span><span class="nt">&quot;Namespace&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;default&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">      </span><span class="nt">&quot;Kind&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Deployment&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">      </span><span class="nt">&quot;Name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;app&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">      </span><span class="nt">&quot;Results&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"></span>
+<span class="w">        </span><span class="p">{</span><span class="w"></span>
+<span class="w">          </span><span class="nt">&quot;Target&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Deployment/app&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">          </span><span class="nt">&quot;Class&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;config&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">          </span><span class="nt">&quot;Type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;kubernetes&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">          </span><span class="nt">&quot;MisconfSummary&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">            </span><span class="nt">&quot;Successes&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">20</span><span class="p">,</span><span class="w"></span>
+<span class="w">            </span><span class="nt">&quot;Failures&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">19</span><span class="p">,</span><span class="w"></span>
+<span class="w">            </span><span class="nt">&quot;Exceptions&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="w"></span>
+<span class="w">          </span><span class="p">},</span><span class="w"></span>
+<span class="w">          </span><span class="nt">&quot;Misconfigurations&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"></span>
+<span class="w">            </span><span class="p">{</span><span class="w"></span>
+<span class="w">              </span><span class="nt">&quot;Type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Kubernetes Security Check&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">              </span><span class="nt">&quot;ID&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;KSV001&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">              </span><span class="nt">&quot;Title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Process can elevate its own privileges&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">              </span><span class="nt">&quot;Description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;A program inside the container can elevate its own privileges and run as root, which might give the program control over the container and node.&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">              </span><span class="nt">&quot;Message&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Container &#39;app&#39; of Deployment &#39;app&#39; should set &#39;securityContext.allowPrivilegeEscalation&#39; to false&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">              </span><span class="nt">&quot;Namespace&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;builtin.kubernetes.KSV001&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">              </span><span class="nt">&quot;Query&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;data.builtin.kubernetes.KSV001.deny&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">              </span><span class="nt">&quot;Resolution&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Set &#39;set containers[].securityContext.allowPrivilegeEscalation&#39; to &#39;false&#39;.&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">              </span><span class="nt">&quot;Severity&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;MEDIUM&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">              </span><span class="nt">&quot;PrimaryURL&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;https://avd.aquasec.com/misconfig/ksv001&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">              </span><span class="nt">&quot;References&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"></span>
+<span class="w">                </span><span class="s2">&quot;https://kubernetes.io/docs/concepts/security/pod-security-standards/#restricted&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">                </span><span class="s2">&quot;https://avd.aquasec.com/misconfig/ksv001&quot;</span><span class="w"></span>
+<span class="w">              </span><span class="p">],</span><span class="w"></span>
+<span class="w">              </span><span class="nt">&quot;Status&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;FAIL&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">              </span><span class="nt">&quot;Layer&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{},</span><span class="w"></span>
+<span class="w">              </span><span class="nt">&quot;IacMetadata&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">                </span><span class="nt">&quot;Provider&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Kubernetes&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">                </span><span class="nt">&quot;Service&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;general&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">                </span><span class="nt">&quot;StartLine&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">121</span><span class="p">,</span><span class="w"></span>
+<span class="w">                </span><span class="nt">&quot;EndLine&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">133</span><span class="w"></span>
+<span class="w">              </span><span class="p">}</span><span class="w"></span>
+<span class="w">            </span><span class="p">},</span><span class="w"></span>
+<span class="w">            </span><span class="p">{</span><span class="w"></span>
+<span class="w">              </span><span class="nt">&quot;Type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Kubernetes Security Check&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">              </span><span class="nt">&quot;ID&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;KSV003&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">              </span><span class="nt">&quot;Title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Default capabilities not dropped&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">              </span><span class="nt">&quot;Description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;The container should drop all default capabilities and add only those that are needed for its execution.&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">              </span><span class="nt">&quot;Message&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Container &#39;app&#39; of Deployment &#39;app&#39; should add &#39;ALL&#39; to &#39;securityContext.capabilities.drop&#39;&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">              </span><span class="nt">&quot;Namespace&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;builtin.kubernetes.KSV003&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">              </span><span class="nt">&quot;Query&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;data.builtin.kubernetes.KSV003.deny&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">              </span><span class="nt">&quot;Resolution&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Add &#39;ALL&#39; to containers[].securityContext.capabilities.drop.&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">              </span><span class="nt">&quot;Severity&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;LOW&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">              </span><span class="nt">&quot;PrimaryURL&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;https://avd.aquasec.com/misconfig/ksv003&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">              </span><span class="nt">&quot;References&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"></span>
+<span class="w">                </span><span class="s2">&quot;https://kubesec.io/basics/containers-securitycontext-capabilities-drop-index-all/&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">                </span><span class="s2">&quot;https://avd.aquasec.com/misconfig/ksv003&quot;</span><span class="w"></span>
+<span class="w">              </span><span class="p">],</span><span class="w"></span>
+<span class="w">              </span><span class="nt">&quot;Status&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;FAIL&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">              </span><span class="nt">&quot;Layer&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{},</span><span class="w"></span>
+<span class="w">              </span><span class="nt">&quot;IacMetadata&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">                </span><span class="nt">&quot;Provider&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Kubernetes&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">                </span><span class="nt">&quot;Service&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;general&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">                </span><span class="nt">&quot;StartLine&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">121</span><span class="p">,</span><span class="w"></span>
+<span class="w">                </span><span class="nt">&quot;EndLine&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">133</span><span class="w"></span>
+<span class="w">              </span><span class="p">}</span><span class="w"></span>
+<span class="w">            </span><span class="p">}</span><span class="w"></span>
+<span class="w">          </span><span class="p">]</span><span class="w"></span>
+<span class="w">        </span><span class="p">}</span><span class="w"></span>
+<span class="w">      </span><span class="p">]</span><span class="w"></span>
+<span class="w">    </span><span class="p">},</span><span class="w"></span>
+<span class="w">    </span><span class="p">{</span><span class="w"></span>
+<span class="w">      </span><span class="nt">&quot;Namespace&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;default&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">      </span><span class="nt">&quot;Kind&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;ConfigMap&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">      </span><span class="nt">&quot;Name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;kube-root-ca.crt&quot;</span><span class="w"></span>
+<span class="w">    </span><span class="p">}</span><span class="w"></span>
+<span class="w">  </span><span class="p">]</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
 </code></pre></div>
 
 </details>
