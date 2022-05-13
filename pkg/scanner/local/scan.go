@@ -261,8 +261,8 @@ func applyLibDependencies(vulns []types.DetectedVulnerability, deps []godeptypes
 		if parents, ok := reversed[vuln.PkgID]; ok {
 			for _, parent := range parents {
 				visitedParents := make([]string, 0)
-				item := types.DependencyTreeItem{ID: parent}
-				resolveParentDependency(&item, reversed, visitedParents)
+				item := &types.DependencyTreeItem{ID: parent}
+				resolveParentDependency(item, reversed, visitedParents)
 				vulns[i].PkgParents = append(vuln.PkgParents, item)
 			}
 		}
@@ -278,9 +278,9 @@ func resolveParentDependency(item *types.DependencyTreeItem, reversed map[string
 			}
 			visitedParents = append(visitedParents, parent)
 
-			parentItem := types.DependencyTreeItem{ID: parent}
+			parentItem := &types.DependencyTreeItem{ID: parent}
 			item.Parents = append(item.Parents, parentItem)
-			resolveParentDependency(&parentItem, reversed, visitedParents)
+			resolveParentDependency(parentItem, reversed, visitedParents)
 		}
 	}
 }
