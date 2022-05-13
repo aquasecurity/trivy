@@ -195,8 +195,8 @@ github.com/aquasecurity/go-pep440-version v0.0.0-20210121094942-22b2f8951d46/go.
 github.com/aquasecurity/go-version v0.0.0-20201107203531-5e48ac5d022a/go.mod h1:9Beu8XsUNNfzml7WBf3QmyPToP1wm1Gj/Vc5UJKqTzU=
 github.com/aquasecurity/go-version v0.0.0-20210121072130-637058cfe492 h1:rcEG5HI490FF0a7zuvxOxen52ddygCfNVjP0XOCMl+M=
 github.com/aquasecurity/go-version v0.0.0-20210121072130-637058cfe492/go.mod h1:9Beu8XsUNNfzml7WBf3QmyPToP1wm1Gj/Vc5UJKqTzU=
-github.com/aquasecurity/table v1.2.0 h1:26N9hFB5qttCjWoBgeKIlBtmlCpSwfL01BK7N+IOBN0=
-github.com/aquasecurity/table v1.2.0/go.mod h1:1MFKrEPJ8NchM917BrVGvsqoXJo1OL1Ja7dF3PgUea4=
+github.com/aquasecurity/table v1.5.1 h1:y05AuHM3p4BGybbGn/XbcTX3RxpyzeTXAXYMcJve4IE=
+github.com/aquasecurity/table v1.5.1/go.mod h1:1MFKrEPJ8NchM917BrVGvsqoXJo1OL1Ja7dF3PgUea4=
 github.com/aquasecurity/testdocker v0.0.0-20210911155206-e1e85f5a1516 h1:moQmzbpLo5dxHQCyEhqzizsDSNrNhn/7uRTCZzo4A1o=
 github.com/aquasecurity/trivy-db v0.0.0-20220327074450-74195d9604b2 h1:q2Gza4V8uO5C1COzC2HeTbQgJIrmC6dTWaXZ8ujiWu0=
 github.com/aquasecurity/trivy-db v0.0.0-20220327074450-74195d9604b2/go.mod h1:EwiQRdzVq6k7cKOMjkss8LjWMt2FUW7NaYwE7HfZZvk=

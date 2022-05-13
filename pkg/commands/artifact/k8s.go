@@ -79,7 +79,7 @@ func K8sRun(ctx *cli.Context) error {
 	if err = k8sReport.Write(report, pkgReport.Option{
 		Format: opt.KubernetesOption.ReportFormat, // for now json is the default
 		Output: opt.Output,
-	}); err != nil {
+	}, opt.KubernetesOption.Severity); err != nil {
 		return xerrors.Errorf("unable to write results: %w", err)
 	}
 

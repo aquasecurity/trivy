@@ -239,7 +239,7 @@ require gopkg.in/yaml.v2 v2.4.0
 
 require github.com/aquasecurity/trivy-kubernetes v0.1.0
 
-require github.com/aquasecurity/table v1.2.0
+require github.com/aquasecurity/table v1.5.1
 
 require (
 	github.com/alecthomas/chroma v0.10.0 // indirect

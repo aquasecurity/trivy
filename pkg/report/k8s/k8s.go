@@ -84,13 +84,13 @@ type Writer interface {
 }
 
 // Write writes the results in the give format
-func Write(report Report, option report.Option) error {
+func Write(report Report, option report.Option, severity string) error {
 	var writer Writer
 	switch option.Format {
 	case "json":
 		writer = &JSONWriter{Output: option.Output}
 	case "summary":
-		writer = &SummaryWriter{Output: option.Output}
+		writer = NewSummaryWriter(option.Output, severity)
 	default:
 		return xerrors.Errorf("unknown format: %v", option.Format)
 	}
