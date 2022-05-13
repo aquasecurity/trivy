@@ -3,6 +3,8 @@ package k8s
 import (
 	"golang.org/x/xerrors"
 
+	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
+
 	"github.com/aquasecurity/trivy/pkg/report"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
@@ -84,13 +86,13 @@ type Writer interface {
 }
 
 // Write writes the results in the give format
-func Write(report Report, option report.Option, severity string) error {
+func Write(report Report, option report.Option, severities []dbTypes.Severity) error {
 	var writer Writer
 	switch option.Format {
 	case "json":
 		writer = &JSONWriter{Output: option.Output}
 	case "summary":
-		writer = NewSummaryWriter(option.Output, severity)
+		writer = NewSummaryWriter(option.Output, severities)
 	default:
 		return xerrors.Errorf("unknown format: %v", option.Format)
 	}

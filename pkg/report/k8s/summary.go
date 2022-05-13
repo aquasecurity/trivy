@@ -8,6 +8,7 @@ import (
 	"strings"
 
 	"github.com/aquasecurity/table"
+	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 
 	"github.com/liamg/tml"
 )
@@ -18,10 +19,10 @@ type SummaryWriter struct {
 	SeverityHeadings []string
 }
 
-func NewSummaryWriter(output io.Writer, severity string) SummaryWriter {
+func NewSummaryWriter(output io.Writer, requiredSevs []dbTypes.Severity) SummaryWriter {
 	var severities []string
 	var severityHeadings []string
-	severities, severityHeadings = getRequiredSeverities(severity)
+	severities, severityHeadings = getRequiredSeverities(requiredSevs)
 	return SummaryWriter{
 		Output:           output,
 		Severities:       severities,
@@ -83,16 +84,17 @@ func (s SummaryWriter) generateSummary(sevCount map[string]int) []string {
 	return parts
 }
 
-func getRequiredSeverities(severity string) ([]string, []string) {
-	requiredSevOrder := []string{"CRITICAL", "HIGH", "MEDIUM", "LOW", "UNKNOWN"}
+func getRequiredSeverities(requiredSevs []dbTypes.Severity) ([]string, []string) {
+	requiredSevOrder := []dbTypes.Severity{dbTypes.SeverityCritical,
+		dbTypes.SeverityHigh, dbTypes.SeverityMedium,
+		dbTypes.SeverityLow, dbTypes.SeverityUnknown}
 	var severities []string
 	var severityHeadings []string
-	sevSplit := strings.Split(severity, ",")
 	for _, sev := range requiredSevOrder {
-		for _, p := range sevSplit {
+		for _, p := range requiredSevs {
 			if p == sev {
-				severities = append(severities, sev)
-				severityHeadings = append(severityHeadings, strings.ToUpper(sev[:1]))
+				severities = append(severities, sev.String())
+				severityHeadings = append(severityHeadings, strings.ToUpper(sev.String()[:1]))
 				continue
 			}
 		}
