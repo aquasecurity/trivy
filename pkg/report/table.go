@@ -107,7 +107,7 @@ func (tw TableWriter) write(result types.Result) {
 	tableWriter.Render()
 
 	if len(result.Misconfigurations) > 0 {
-		_, _ = fmt.Fprint(tw.Output, NewMisconfigRenderer(result.Target, result.Misconfigurations, tw.IncludeNonFailures).Render())
+		_, _ = fmt.Fprint(tw.Output, NewMisconfigRenderer(result.Target, result.Misconfigurations, tw.IncludeNonFailures, tw.isOutputToTerminal()).Render())
 	}
 
 	// For debugging

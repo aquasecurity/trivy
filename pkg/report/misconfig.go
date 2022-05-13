@@ -24,12 +24,16 @@ type misconfigRenderer struct {
 	includeNonFailures bool
 	w                  *bytes.Buffer
 	width              int
+	ansi               bool
 }
 
-func NewMisconfigRenderer(target string, misconfs []types.DetectedMisconfiguration, includeNonFailures bool) *misconfigRenderer {
+func NewMisconfigRenderer(target string, misconfs []types.DetectedMisconfiguration, includeNonFailures bool, ansi bool) *misconfigRenderer {
 	width, _ := terminal.Size()
 	if width <= 0 {
 		width = 40
+	}
+	if !ansi {
+		tml.DisableFormatting()
 	}
 	return &misconfigRenderer{
 		w:                  bytes.NewBuffer([]byte{}),
@@ -37,6 +41,7 @@ func NewMisconfigRenderer(target string, misconfs []types.DetectedMisconfigurati
 		misconfs:           misconfs,
 		includeNonFailures: includeNonFailures,
 		width:              width,
+		ansi:               ansi,
 	}
 }
 
@@ -140,7 +145,11 @@ func (r *misconfigRenderer) renderCode(misconf types.DetectedMisconfiguration) {
 			} else {
 				r.printf("<dim><italic>%4d   ", line.Number)
 			}
-			r.printf("%s\n", line.Highlighted)
+			if r.ansi {
+				r.printf("%s\n", line.Highlighted)
+			} else {
+				r.printf("%s\n", line.Content)
+			}
 		}
 		r.printSingleDivider()
 	}
