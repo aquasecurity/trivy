@@ -1,6 +1,7 @@
 package report_test
 
 import (
+	"strings"
 	"testing"
 
 	"github.com/aquasecurity/trivy/pkg/report"
@@ -179,7 +180,7 @@ See https://google.com/search?q=bad%20config
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
 			renderer := report.NewMisconfigRenderer("my-file", test.input, test.includeNonFailures, false)
-			assert.Equal(t, test.want, renderer.Render())
+			assert.Equal(t, test.want, strings.ReplaceAll(renderer.Render(), "\r\n", "\n"))
 		})
 	}
 }
