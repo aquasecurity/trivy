@@ -54,6 +54,8 @@ type sarifData struct {
 	artifactLocation string
 	message          string
 	cvssScore        string
+	startLine        int
+	endLine          int
 }
 
 func (sw *SarifWriter) addSarifRule(data *sarifData) {
@@ -85,9 +87,14 @@ func (sw *SarifWriter) addSarifRule(data *sarifData) {
 func (sw *SarifWriter) addSarifResult(data *sarifData) {
 	sw.addSarifRule(data)
 
+	region := sarif.NewRegion().WithStartLine(1)
+	if data.startLine > 0 {
+		region = sarif.NewSimpleRegion(data.startLine, data.endLine)
+	}
+
 	location := sarif.NewPhysicalLocation().
 		WithArtifactLocation(sarif.NewSimpleArtifactLocation(data.artifactLocation).WithUriBaseId("ROOTPATH")).
-		WithRegion(sarif.NewRegion().WithStartLine(1))
+		WithRegion(region)
 	result := sarif.NewRuleResult(data.vulnerabilityId).
 		WithRuleIndex(data.resultIndex).
 		WithMessage(sarif.NewTextMessage(data.message)).
@@ -153,6 +160,8 @@ func (sw SarifWriter) Write(report types.Report) error {
 				url:              misconf.PrimaryURL,
 				resourceClass:    string(res.Class),
 				artifactLocation: toPathUri(res.Target),
+				startLine:        misconf.IacMetadata.StartLine,
+				endLine:          misconf.IacMetadata.EndLine,
 				resultIndex:      getRuleIndex(misconf.ID, ruleIndexes),
 				fullDescription:  html.EscapeString(misconf.Description),
 				helpText: fmt.Sprintf("Misconfiguration %v\nType: %s\nSeverity: %v\nCheck: %v\nMessage: %v\nLink: [%v](%v)\n%s",

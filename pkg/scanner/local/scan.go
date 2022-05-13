@@ -22,7 +22,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/types"
 
 	_ "github.com/aquasecurity/fanal/analyzer/all"
-	_ "github.com/aquasecurity/fanal/hook/all"
+	_ "github.com/aquasecurity/fanal/handler/all"
 )
 
 var (
@@ -352,16 +352,12 @@ func toDetectedMisconfiguration(res ftypes.MisconfResult, defaultSeverity dbType
 	}
 
 	var primaryURL string
-	if strings.HasPrefix(res.Namespace, "appshield.") {
-		primaryURL = fmt.Sprintf("https://avd.aquasec.com/appshield/%s", strings.ToLower(res.ID))
+
+	// empty namespace implies a go rule from defsec, "builtin" refers to a built-in rego rule
+	// this ensures we don't generate bad links for custom policies
+	if res.Namespace == "" || strings.HasPrefix(res.Namespace, "builtin.") {
+		primaryURL = fmt.Sprintf("https://avd.aquasec.com/misconfig/%s", strings.ToLower(res.ID))
 		res.References = append(res.References, primaryURL)
-	} else if strings.Contains(res.Type, "tfsec") {
-		for _, ref := range res.References {
-			if strings.HasPrefix(ref, "https://tfsec.dev/docs/") {
-				primaryURL = ref
-				break
-			}
-		}
 	}
 
 	return types.DetectedMisconfiguration{
@@ -379,7 +375,7 @@ func toDetectedMisconfiguration(res ftypes.MisconfResult, defaultSeverity dbType
 		Status:      status,
 		Layer:       layer,
 		Traces:      res.Traces,
-		IacMetadata: ftypes.IacMetadata{
+		IacMetadata: ftypes.CauseMetadata{
 			Resource:  res.Resource,
 			Provider:  res.Provider,
 			Service:   res.Service,

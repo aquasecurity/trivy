@@ -30,7 +30,7 @@ See [Integrations][integrations] for details.
 [os]: ../docs/vulnerability/detection/os.md
 [lang]: ../docs/vulnerability/detection/language.md
 
-[misconf]: ../docs/misconfiguration/index.md
+[misconf]: ../docs/misconfiguration/scanning.md
 
 [secret]: ../docs/secret/scanning.md
 

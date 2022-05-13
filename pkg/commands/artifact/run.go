@@ -25,7 +25,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/utils"
 )
 
-const defaultPolicyNamespace = "appshield"
+var defaultPolicyNamespaces = []string{"appshield", "defsec", "builtin"}
 
 var errSkipScan = errors.New("skip subsequent processes")
 
@@ -109,7 +109,7 @@ func runWithTimeout(ctx context.Context, opt Option, initializeScanner Initializ
 		return xerrors.Errorf("unable to write results: %w", err)
 	}
 
-	exit(opt, report.Results)
+	exit(opt, report.Results.Failed())
 
 	return nil
 }
@@ -197,11 +197,15 @@ func disabledAnalyzers(opt Option) []analyzer.Type {
 		analyzers = append(analyzers, analyzer.TypeSecret)
 	}
 
+	// Do not perform misconfiguration scanning when it is not specified.
+	if !slices.Contains(opt.SecurityChecks, types.SecurityCheckConfig) {
+		analyzers = append(analyzers, analyzer.TypeConfigFiles...)
+	}
+
 	return analyzers
 }
 
-func scan(ctx context.Context, opt Option, initializeScanner InitializeScanner, cacheClient cache.Cache) (
-	types.Report, error) {
+func initScannerConfig(ctx context.Context, opt Option, cacheClient cache.Cache) (ScannerConfig, types.ScanOptions, error) {
 	target := opt.Target
 	if opt.Input != "" {
 		target = opt.Input
@@ -218,22 +222,16 @@ func scan(ctx context.Context, opt Option, initializeScanner InitializeScanner, 
 	// ScannerOption is filled only when config scanning is enabled.
 	var configScannerOptions config.ScannerOption
 	if slices.Contains(opt.SecurityChecks, types.SecurityCheckConfig) {
-		noProgress := opt.Quiet || opt.NoProgress
-		builtinPolicyPaths, err := operation.InitBuiltinPolicies(ctx, opt.CacheDir, noProgress, opt.SkipPolicyUpdate)
-		if err != nil {
-			return types.Report{}, xerrors.Errorf("failed to initialize built-in policies: %w", err)
-		}
-
 		configScannerOptions = config.ScannerOption{
 			Trace:        opt.Trace,
-			Namespaces:   append(opt.PolicyNamespaces, defaultPolicyNamespace),
-			PolicyPaths:  append(opt.PolicyPaths, builtinPolicyPaths...),
+			Namespaces:   append(opt.PolicyNamespaces, defaultPolicyNamespaces...),
+			PolicyPaths:  opt.PolicyPaths,
 			DataPaths:    opt.DataPaths,
 			FilePatterns: opt.FilePatterns,
 		}
 	}
 
-	s, cleanup, err := initializeScanner(ctx, ScannerConfig{
+	return ScannerConfig{
 		Target:             target,
 		ArtifactCache:      cacheClient,
 		LocalArtifactCache: cacheClient,
@@ -258,7 +256,18 @@ func scan(ctx context.Context, opt Option, initializeScanner InitializeScanner, 
 				ConfigPath: opt.SecretConfigPath,
 			},
 		},
-	})
+	}, scanOptions, nil
+}
+
+func scan(ctx context.Context, opt Option, initializeScanner InitializeScanner, cacheClient cache.Cache) (
+	types.Report, error) {
+
+	scannerConfig, scanOptions, err := initScannerConfig(ctx, opt, cacheClient)
+	if err != nil {
+		return types.Report{}, err
+	}
+
+	s, cleanup, err := initializeScanner(ctx, scannerConfig)
 	if err != nil {
 		return types.Report{}, xerrors.Errorf("unable to initialize a scanner: %w", err)
 	}
@@ -292,8 +301,8 @@ func filter(ctx context.Context, opt Option, report types.Report) (types.Report,
 	return report, nil
 }
 
-func exit(c Option, results types.Results) {
-	if c.ExitCode != 0 && results.Failed() {
+func exit(c Option, failedResults bool) {
+	if c.ExitCode != 0 && failedResults {
 		os.Exit(c.ExitCode)
 	}
 }
