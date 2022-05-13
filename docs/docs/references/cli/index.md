@@ -14,7 +14,7 @@ COMMANDS:
    image, i          scan an image
    filesystem, fs    scan local filesystem
    repository, repo  scan remote repository
-   client, c         client mode
+   client, c         DEPRECATED client mode
    server, s         server mode
    config, conf      scan config files
    plugin, p         manage plugins

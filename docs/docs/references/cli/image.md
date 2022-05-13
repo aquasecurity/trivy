@@ -35,5 +35,9 @@ OPTIONS:
    --db-repository value            OCI repository to retrieve trivy-db from (default: "ghcr.io/aquasecurity/trivy-db") [$TRIVY_DB_REPOSITORY]
    --skip-files value               specify the file paths to skip traversal                (accepts multiple inputs) [$TRIVY_SKIP_FILES]
    --skip-dirs value                specify the directories where the traversal is skipped  (accepts multiple inputs) [$TRIVY_SKIP_DIRS]
+   --server value                   server address [$TRIVY_SERVER]
+   --token value                    for authentication in client/server mode [$TRIVY_TOKEN]
+   --token-header value             specify a header name for token in client/server mode (default: "Trivy-Token") [$TRIVY_TOKEN_HEADER]
+   --custom-headers value           custom headers in client/server mode  (accepts multiple inputs) [$TRIVY_CUSTOM_HEADERS]
    --help, -h                       show help (default: false)
 ```
