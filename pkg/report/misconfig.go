@@ -104,11 +104,11 @@ func (r *misconfigRenderer) renderSummary(misconf types.DetectedMisconfiguration
 	r.printDoubleDivider()
 
 	// description
-	r.printf("<italic><dim>%s\n", misconf.Description)
+	r.printf("<dim>%s\n", misconf.Description)
 
 	// show link if we have one
 	if misconf.PrimaryURL != "" {
-		r.printf("\n<italic><dim>See %s\n", misconf.PrimaryURL)
+		r.printf("\n<dim>See %s\n", misconf.PrimaryURL)
 	}
 
 	r.printSingleDivider()
