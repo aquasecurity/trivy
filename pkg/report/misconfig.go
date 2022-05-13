@@ -58,17 +58,17 @@ func (r *misconfigRenderer) printf(format string, args ...interface{}) {
 }
 
 func (r *misconfigRenderer) printDoubleDivider() {
-	r.printf("<dim>%s\n", strings.Repeat("═", r.width))
+	r.printf("<dim>%s\r\n", strings.Repeat("═", r.width))
 }
 
 func (r *misconfigRenderer) printSingleDivider() {
-	r.printf("<dim>%s\n", strings.Repeat("─", r.width))
+	r.printf("<dim>%s\r\n", strings.Repeat("─", r.width))
 }
 
 func (r *misconfigRenderer) renderSingle(misconf types.DetectedMisconfiguration) {
 	r.renderSummary(misconf)
 	r.renderCode(misconf)
-	r.printf("\n\n")
+	r.printf("\r\n\r\n")
 }
 
 func (r *misconfigRenderer) renderSummary(misconf types.DetectedMisconfiguration) {
@@ -100,15 +100,15 @@ func (r *misconfigRenderer) renderSummary(misconf types.DetectedMisconfiguration
 	}
 
 	// heading
-	r.printf("%s\n", misconf.Message)
+	r.printf("%s\r\n", misconf.Message)
 	r.printDoubleDivider()
 
 	// description
-	r.printf("<dim>%s\n", misconf.Description)
+	r.printf("<dim>%s\r\n", misconf.Description)
 
 	// show link if we have one
 	if misconf.PrimaryURL != "" {
-		r.printf("\n<dim>See %s\n", misconf.PrimaryURL)
+		r.printf("\r\n<dim>See %s\r\n", misconf.PrimaryURL)
 	}
 
 	r.printSingleDivider()
@@ -125,7 +125,7 @@ func (r *misconfigRenderer) renderCode(misconf types.DetectedMisconfiguration) {
 				lineInfo = tml.Sprintf("%s<blue>-%d", lineInfo, misconf.CauseMetadata.EndLine)
 			}
 		}
-		r.printf(" <blue>%s%s\n", r.target, lineInfo)
+		r.printf(" <blue>%s%s\r\n", r.target, lineInfo)
 		r.printSingleDivider()
 		for i, line := range lines {
 			if line.Truncated {
@@ -146,9 +146,9 @@ func (r *misconfigRenderer) renderCode(misconf types.DetectedMisconfiguration) {
 				r.printf("<dim>%4d   ", line.Number)
 			}
 			if r.ansi {
-				r.printf("%s\n", line.Highlighted)
+				r.printf("%s\r\n", line.Highlighted)
 			} else {
-				r.printf("%s\n", line.Content)
+				r.printf("%s\r\n", line.Content)
 			}
 		}
 		r.printSingleDivider()
