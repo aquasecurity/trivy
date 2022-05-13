@@ -15,6 +15,7 @@ import (
 	"github.com/aquasecurity/fanal/analyzer"
 	"github.com/aquasecurity/fanal/cache"
 	"github.com/aquasecurity/trivy-db/pkg/db"
+
 	"github.com/aquasecurity/trivy/pkg/log"
 	pkgReport "github.com/aquasecurity/trivy/pkg/report"
 	k8sReport "github.com/aquasecurity/trivy/pkg/report/k8s"
@@ -76,9 +77,9 @@ func K8sRun(ctx *cli.Context) error {
 	report.ClusterName = cluster.GetCurrentContext()
 
 	if err = k8sReport.Write(report, pkgReport.Option{
-		Format: "json", // for now json is the default
+		Format: opt.KubernetesOption.ReportFormat, // for now json is the default
 		Output: opt.Output,
-	}); err != nil {
+	}, opt.Severities); err != nil {
 		return xerrors.Errorf("unable to write results: %w", err)
 	}
 

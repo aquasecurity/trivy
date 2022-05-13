@@ -12,6 +12,7 @@ import (
 
 	"github.com/aquasecurity/trivy-db/pkg/metadata"
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
+
 	"github.com/aquasecurity/trivy/pkg/commands/artifact"
 	"github.com/aquasecurity/trivy/pkg/commands/option"
 	"github.com/aquasecurity/trivy/pkg/commands/plugin"
@@ -213,6 +214,12 @@ var (
 		Value:   "",
 		Usage:   "specify a namespace to scan",
 		EnvVars: []string{"TRIVY_K8S_NAMESPACE"},
+	}
+
+	reportFlag = cli.StringFlag{
+		Name:  "report",
+		Value: "summary",
+		Usage: "specify a report format for the output. (all,summary default: all)",
 	}
 
 	// TODO: remove this flag after a sufficient deprecation period.
@@ -789,6 +796,7 @@ func NewK8sCommand() *cli.Command {
 		Action:  artifact.K8sRun,
 		Flags: []cli.Flag{
 			&namespaceFlag,
+			&reportFlag,
 			&outputFlag,
 			&severityFlag,
 			&exitCodeFlag,

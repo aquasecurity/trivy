@@ -6,6 +6,8 @@ This feature might change without preserving backwards compatibility.
 
 Scan your Kubernetes cluster for both Vulnerabilities and Misconfigurations.
 
+Trivy uses your local kubectl configuration to access the API server to list artifacts.
+
 Scan a full cluster:
 
 ```
@@ -24,13 +26,25 @@ Scan a namespace for only `CRITICAL` Vulnerabilities and Misconfigurations:
 $ trivy k8s -n default -o results.json --severity CRITICAL
 ```
 
-Trivy uses your local kubectl configuration to access the API server to list artifacts.
-At this time, JSON is the only supported output and is intended to be used for automation, other reports will be implemented soon.
+Scan a cluster and generate a simple summary report. The only outputs currently supported are `all` and `summary`. The default report format is `summary`
+
+```
+$ trivy k8s 
+```
+
+![k8s Summary Report](../../imgs/k8s-summary.png)
+
+To get all of the detail the output contains, use `--report all`, to get JSON output:
+
+```
+$ trivy k8s --report all
+```
+
 
 <details>
 <summary>Result</summary>
 
-```
+```json
 {
   "ClusterName": "minikube",
   "Vulnerabilities": [
