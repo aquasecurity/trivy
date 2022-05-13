@@ -147,7 +147,7 @@ func TestReportWriter_Table(t *testing.T) {
 				IncludeNonFailures: tc.includeNonFailures,
 			})
 			assert.NoError(t, err)
-			assert.Equal(t, tc.expectedOutput, stripANSI(tableWritten.String()), tc.name)
+			assert.Equal(t, tc.expectedOutput, tableWritten.String(), tc.name)
 		})
 	}
 }

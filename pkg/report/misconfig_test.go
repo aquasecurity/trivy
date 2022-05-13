@@ -178,30 +178,8 @@ See https://google.com/search?q=bad%20config
 
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			renderer := report.NewMisconfigRenderer("my-file", test.input, test.includeNonFailures)
-			assert.Equal(t, test.want, stripANSI(renderer.Render()))
+			renderer := report.NewMisconfigRenderer("my-file", test.input, test.includeNonFailures, false)
+			assert.Equal(t, test.want, renderer.Render())
 		})
 	}
-}
-
-// strip ANSI characters to make tests more readable/maintainable and less brittle
-// NOTE: this only strips CSI codes
-func stripANSI(input string) string {
-	var output string
-	inCSI := false
-	prev := rune(0)
-	for _, r := range input {
-		if inCSI {
-			if r >= 0x40 && r <= 0x7E {
-				inCSI = false
-			}
-		} else if r == '[' && prev == 0x1b {
-			inCSI = true
-			output = output[:len(output)-1]
-		} else {
-			output = output + string(r)
-		}
-		prev = r
-	}
-	return output
 }
