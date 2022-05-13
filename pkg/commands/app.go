@@ -218,8 +218,8 @@ var (
 
 	reportFlag = cli.StringFlag{
 		Name:  "report",
-		Value: "json",
-		Usage: "specify a report format for the output. (json,summary default: json)",
+		Value: "all",
+		Usage: "specify a report format for the output. (all,summary default: all)",
 	}
 
 	// TODO: remove this flag after a sufficient deprecation period.

@@ -89,7 +89,7 @@ type Writer interface {
 func Write(report Report, option report.Option, severities []dbTypes.Severity) error {
 	var writer Writer
 	switch option.Format {
-	case "json":
+	case "all":
 		writer = &JSONWriter{Output: option.Output}
 	case "summary":
 		writer = NewSummaryWriter(option.Output, severities)
