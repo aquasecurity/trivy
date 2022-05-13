@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/liamg/clinch/terminal"
 	"github.com/liamg/tml"
+	"golang.org/x/crypto/ssh/terminal"
 
 	"github.com/aquasecurity/trivy/pkg/types"
 )
@@ -28,7 +28,7 @@ type misconfigRenderer struct {
 }
 
 func NewMisconfigRenderer(target string, misconfs []types.DetectedMisconfiguration, includeNonFailures bool, ansi bool) *misconfigRenderer {
-	width, _ := terminal.Size()
+	width, _, _ := terminal.GetSize(0)
 	if width <= 0 {
 		width = 40
 	}

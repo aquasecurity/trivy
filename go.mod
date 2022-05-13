@@ -195,7 +195,7 @@ require (
 	go.starlark.net v0.0.0-20200306205701-8dd3e2ee1dd5 // indirect
 	go.uber.org/atomic v1.7.0 // indirect
 	go.uber.org/multierr v1.6.0 // indirect
-	golang.org/x/crypto v0.0.0-20220315160706-3147a52a75dd // indirect
+	golang.org/x/crypto v0.0.0-20220315160706-3147a52a75dd
 	golang.org/x/mod v0.6.0-dev.0.20211013180041-c96bc1413d57 // indirect
 	golang.org/x/net v0.0.0-20220127200216-cd36cc0744dd // indirect
 	golang.org/x/oauth2 v0.0.0-20211104180415-d3ed0bb246c8 // indirect
@@ -239,10 +239,7 @@ require gopkg.in/yaml.v2 v2.4.0
 
 require github.com/aquasecurity/trivy-kubernetes v0.1.0
 
-require (
-	github.com/aquasecurity/table v1.2.0
-	github.com/liamg/clinch v1.5.6
-)
+require github.com/aquasecurity/table v1.2.0
 
 require (
 	github.com/alecthomas/chroma v0.10.0 // indirect
