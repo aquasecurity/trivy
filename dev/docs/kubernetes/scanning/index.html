@@ -2390,7 +2390,7 @@
 <div class="highlight"><pre><span></span><code>$ trivy k8s -n default
 </code></pre></div>
 <p>Scan a namespace for only <code>CRITICAL</code> Vulnerabilities and Misconfigurations:</p>
-<div class="highlight"><pre><span></span><code>$ trivy k8s -n default -o results.json --severity CRITICAL
+<div class="highlight"><pre><span></span><code>$ trivy k8s -n default --severity CRITICAL
 </code></pre></div>
 <p>Scan a cluster and generate a simple summary report. The only outputs currently supported are <code>all</code> and <code>summary</code>. The default report format is <code>summary</code></p>
 <div class="highlight"><pre><span></span><code>$ trivy k8s 
