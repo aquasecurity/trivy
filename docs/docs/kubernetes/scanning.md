@@ -29,7 +29,7 @@ $ trivy k8s -n default --severity CRITICAL
 Scan a cluster and generate a simple summary report. The only outputs currently supported are `all` and `summary`. The default report format is `summary`
 
 ```
-$ trivy k8s 
+$ trivy k8s
 ```
 
 ![k8s Summary Report](../../imgs/k8s-summary.png)

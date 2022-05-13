@@ -12,10 +12,6 @@ import (
 	"golang.org/x/xerrors"
 	"gopkg.in/yaml.v2"
 
-	"github.com/aquasecurity/fanal/analyzer"
-	"github.com/aquasecurity/fanal/cache"
-	"github.com/aquasecurity/trivy-db/pkg/db"
-
 	"github.com/aquasecurity/trivy/pkg/log"
 	pkgReport "github.com/aquasecurity/trivy/pkg/report"
 	k8sReport "github.com/aquasecurity/trivy/pkg/report/k8s"
@@ -27,35 +23,29 @@ import (
 )
 
 // K8sRun runs scan on kubernetes cluster
-func K8sRun(ctx *cli.Context) error {
-	opt, err := initOption(ctx)
+func K8sRun(cliCtx *cli.Context) error {
+	opt, err := InitOption(cliCtx)
 	if err != nil {
 		return xerrors.Errorf("option error: %w", err)
 	}
 
-	if err = log.InitLogger(opt.Debug, true); err != nil {
-		return err
-	}
+	ctx, cancel := context.WithTimeout(cliCtx.Context, opt.Timeout)
+	defer cancel()
 
-	cacheClient, err := initCache(opt)
+	defer func() {
+		if xerrors.Is(err, context.DeadlineExceeded) {
+			log.Logger.Warn("Increase --timeout value")
+		}
+	}()
+
+	runner, err := NewRunner(opt)
 	if err != nil {
-		if errors.Is(err, errSkipScan) {
+		if errors.Is(err, SkipScan) {
 			return nil
 		}
-		return xerrors.Errorf("cache error: %w", err)
+		return xerrors.Errorf("init error: %w", err)
 	}
-	defer cacheClient.Close()
-
-	// Disable DB update when using client/server
-	if opt.RemoteAddr == "" {
-		if err = initDB(opt); err != nil {
-			if errors.Is(err, errSkipScan) {
-				return nil
-			}
-			return xerrors.Errorf("DB error: %w", err)
-		}
-		defer db.Close()
-	}
+	defer runner.Close()
 
 	cluster, err := k8s.GetCluster()
 	if err != nil {
@@ -65,12 +55,12 @@ func K8sRun(ctx *cli.Context) error {
 	trivyk8s := trivyk8s.New(cluster).Namespace(opt.KubernetesOption.Namespace)
 
 	// list all kubernetes scannable artifacts
-	k8sArtifacts, err := trivyk8s.ListArtifacts(ctx.Context)
+	k8sArtifacts, err := trivyk8s.ListArtifacts(ctx)
 	if err != nil {
 		return xerrors.Errorf("get k8s artifacts error: %w", err)
 	}
 
-	report, err := k8sRun(ctx, opt, cacheClient, k8sArtifacts)
+	report, err := k8sRun(ctx, runner, opt, k8sArtifacts)
 	if err != nil {
 		return xerrors.Errorf("k8s scan error: %w", err)
 	}
@@ -88,40 +78,34 @@ func K8sRun(ctx *cli.Context) error {
 	return nil
 }
 
-func k8sRun(cliContext *cli.Context, opt Option, cacheClient cache.Cache, k8sArtifacts []*artifacts.Artifact) (k8sReport.Report, error) {
-	ctx, cancel := context.WithTimeout(cliContext.Context, opt.Timeout)
-	defer cancel()
+func k8sRun(ctx context.Context, runner *Runner, opt Option, artifacts []*artifacts.Artifact) (k8sReport.Report, error) {
+	opt.SecurityChecks = []string{types.SecurityCheckVulnerability, types.SecurityCheckConfig}
 
 	// progress bar
-	bar := pb.StartNew(len(k8sArtifacts))
+	bar := pb.StartNew(len(artifacts))
 	if opt.NoProgress {
 		bar.SetWriter(io.Discard)
 	}
 	defer bar.Finish()
 
-	// image scanner configurations
-	imageScannerConfig, imageScannerOptions, err := initImageScannerConfig(ctx, opt, cacheClient)
-	if err != nil {
-		return k8sReport.Report{}, xerrors.Errorf("scanner config error: %w", err)
-	}
-
-	// config scanner configurations
-	configScannerConfig, configScannerOptions, err := initConfigScannerConfig(ctx, opt, cacheClient)
-	if err != nil {
-		return k8sReport.Report{}, xerrors.Errorf("scanner config error: %w", err)
-	}
-
 	vulns := make([]k8sReport.Resource, 0)
 	misconfigs := make([]k8sReport.Resource, 0)
 
+	// disable logs before scanning
+	err := log.InitLogger(opt.Debug, true)
+	if err != nil {
+		return k8sReport.Report{}, xerrors.Errorf("logger error: %w", err)
+	}
+
 	// Loops once over all artifacts, and execute scanners as necessary. Not every artifacts has an image,
 	// so image scanner is not always executed.
-	for _, artifact := range k8sArtifacts {
+	for _, artifact := range artifacts {
 		bar.Increment()
 
 		// scan images if present
 		for _, image := range artifact.Images {
-			imageReport, err := k8sScan(ctx, image, imageScanner, imageScannerConfig, imageScannerOptions)
+			opt.Target = image
+			imageReport, err := runner.ScanImage(ctx, opt)
 			if err != nil {
 				// add error to report
 				log.Logger.Debugf("failed to scan image %s: %s", image, err)
@@ -129,7 +113,7 @@ func k8sRun(cliContext *cli.Context, opt Option, cacheClient cache.Cache, k8sArt
 				continue
 			}
 
-			imageReport, err = filter(ctx, opt, imageReport)
+			imageReport, err = runner.Filter(ctx, opt, imageReport)
 			if err != nil {
 				return k8sReport.Report{}, xerrors.Errorf("filter error: %w", err)
 			}
@@ -138,14 +122,21 @@ func k8sRun(cliContext *cli.Context, opt Option, cacheClient cache.Cache, k8sArt
 		}
 
 		// scan configurations
-		configReport, err := k8sScanConfig(ctx, configScannerConfig, configScannerOptions, artifact)
+		configFile, err := createTempFile(artifact)
+		if err != nil {
+			return k8sReport.Report{}, xerrors.Errorf("scan error: %w", err)
+		}
+
+		opt.Target = configFile
+		configReport, err := runner.ScanFilesystem(ctx, opt)
+		removeFile(configFile)
 		if err != nil {
 			// add error to report
 			log.Logger.Debugf("failed to scan config %s/%s: %s", artifact.Kind, artifact.Name, err)
 			misconfigs = append(misconfigs, newK8sResource(artifact, configReport, err))
 		}
 
-		configReport, err = filter(ctx, opt, configReport)
+		configReport, err = runner.Filter(ctx, opt, configReport)
 		if err != nil {
 			return k8sReport.Report{}, xerrors.Errorf("filter error: %w", err)
 		}
@@ -153,63 +144,17 @@ func k8sRun(cliContext *cli.Context, opt Option, cacheClient cache.Cache, k8sArt
 		misconfigs = append(misconfigs, newK8sResource(artifact, configReport, nil))
 	}
 
+	// enable logs after scanning
+	err = log.InitLogger(opt.Debug, opt.Quiet)
+	if err != nil {
+		return k8sReport.Report{}, xerrors.Errorf("logger error: %w", err)
+	}
+
 	return k8sReport.Report{
 		SchemaVersion:     0,
 		Vulnerabilities:   vulns,
 		Misconfigurations: misconfigs,
 	}, nil
-}
-
-func initImageScannerConfig(ctx context.Context, opt Option, cacheClient cache.Cache) (ScannerConfig, types.ScanOptions, error) {
-	// Disable the lock file scanning
-	opt.DisabledAnalyzers = analyzer.TypeLockfiles
-
-	return initScannerConfig(ctx, opt, cacheClient)
-}
-
-func initConfigScannerConfig(ctx context.Context, opt Option, cacheClient cache.Cache) (ScannerConfig, types.ScanOptions, error) {
-	// Disable OS and language analyzers
-	opt.DisabledAnalyzers = append(analyzer.TypeOSes, analyzer.TypeLanguages...)
-
-	// Scan only config files
-	opt.VulnType = nil
-	opt.SecurityChecks = []string{types.SecurityCheckConfig}
-
-	// Skip downloading vulnerability DB
-	opt.SkipDBUpdate = true
-
-	return initScannerConfig(ctx, opt, cacheClient)
-}
-
-func k8sScanConfig(ctx context.Context, config ScannerConfig, opts types.ScanOptions, a *artifacts.Artifact) (types.Report, error) {
-	fileName, err := createTempFile(a)
-	if err != nil {
-		return types.Report{}, xerrors.Errorf("scan error: %w", err)
-	}
-	defer removeFile(fileName)
-
-	report, err := k8sScan(ctx, fileName, filesystemStandaloneScanner, config, opts)
-	if err != nil {
-		return types.Report{}, xerrors.Errorf("scan error: %w", err)
-	}
-
-	return report, nil
-}
-
-func k8sScan(ctx context.Context, target string, initializeScanner InitializeScanner, config ScannerConfig, opts types.ScanOptions) (types.Report, error) {
-	config.Target = target
-	s, cleanup, err := initializeScanner(ctx, config)
-	if err != nil {
-		log.Logger.Debugf("unexpected error during scanning %s: %s", config.Target, err)
-		return types.Report{}, err
-	}
-	defer cleanup()
-
-	report, err := s.ScanArtifact(ctx, opts)
-	if err != nil {
-		return types.Report{}, xerrors.Errorf("artifact scan failed: %w", err)
-	}
-	return report, nil
 }
 
 func createTempFile(artifact *artifacts.Artifact) (string, error) {
