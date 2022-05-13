@@ -91,6 +91,12 @@ func k8sRun(ctx context.Context, runner *Runner, opt Option, artifacts []*artifa
 	vulns := make([]k8sReport.Resource, 0)
 	misconfigs := make([]k8sReport.Resource, 0)
 
+	// disable logs before scanning
+	err := log.InitLogger(opt.Debug, true)
+	if err != nil {
+		return k8sReport.Report{}, xerrors.Errorf("logger error: %w", err)
+	}
+
 	// Loops once over all artifacts, and execute scanners as necessary. Not every artifacts has an image,
 	// so image scanner is not always executed.
 	for _, artifact := range artifacts {
@@ -136,6 +142,12 @@ func k8sRun(ctx context.Context, runner *Runner, opt Option, artifacts []*artifa
 		}
 
 		misconfigs = append(misconfigs, newK8sResource(artifact, configReport, nil))
+	}
+
+	// enable logs after scanning
+	err = log.InitLogger(opt.Debug, opt.Quiet)
+	if err != nil {
+		return k8sReport.Report{}, xerrors.Errorf("logger error: %w", err)
 	}
 
 	return k8sReport.Report{
