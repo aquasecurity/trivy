@@ -10,20 +10,7 @@ cluster - for example, initiating a vulnerability scan and configuration audit w
   <figcaption>Workload reconcilers discover K8s controllers, manage scan jobs, and create VulnerabilityReport and ConfigAuditReport objects.</figcaption>
 </figure>
 
-Similarly, the operator performs infrastructure checks by watching Kubernetes cluster nodes and executing CIS Kubernetes Benchmark
-for each of them.
 
-<figure>
-  <img src="./images/operator/trivy-operator-infrastructure.png" />
-  <figcaption>Infrastructure reconciler discovers K8s nodes, manages scan jobs, and creates CISKubeBenchReport objects.</figcaption>
-</figure>
-
-In other words, the desired state for the controllers managed by this operator is that for each workload or node there
-are security reports stored in the cluster as custom resources. Each custom resource is owned by a built-in resource
-to inherit its life cycle. Beyond that, we take advantage of Kubernetes [garbage collector][k8s-garbage-collection]
-to automatically delete stale reports and trigger rescan. For example, deleting a ReplicaSet will delete controlee
-VulnerabilityReports, whereas deleting a VulnerabilityReport owned by a ReplicaSet will rescan that ReplicaSet and
-eventually recreate the VulnerabilityReport.
 
 Rescan is also triggered whenever a config of a configuration audit plugin has changed. For example, when a new OPA
 policy script is added to the Confest plugin config. This is implemented by adding the label named `plugin-config-hash`
@@ -38,8 +25,7 @@ with new plugin's configuration.
 </figure>
 
 !!! warning
-    Currently, the operator supports [vulnerabilityreports], [configauditreports], and [ciskubebenchreports] security
-    resources. We plan to support [kubehunterreports]. We also plan to implement rescan on configurable schedule, for
+    Currently, the operator supports [vulnerabilityreports] and [configauditreports]. We plan to support [kubehunterreports] and [ciskubebenchreports] security resources soon. We also plan to implement rescan on configurable schedule, for
     example every 24 hours.
 
 ## What's Next?
