@@ -33,7 +33,17 @@ Read more in the [Trivy Documentation](docs)
 
 # Quick Start
 
-General usage:
+## Get Trivy
+
+Get Trivy by your favorite installation method. See [installation] section in the documentation for details. For example:
+
+- `apt-get install trivy`
+- `yum install trivy`
+- `brew install aquasecurity/trivy/trivy`
+- `docker run aquasec/trivy`
+- Download binary from https://github.com/aquasecurity/trivy/releases/latest/
+
+## General usage
 
 ```bash
 trivy <target> [--security-checks <scanner1,scanner2>]
@@ -162,9 +172,11 @@ Contact us about any matter by opening a GitHub Discussion [here][discussions]
 [license-img]: https://img.shields.io/badge/License-Apache%202.0-blue.svg
 
 
-[getting-started]: https://aquasecurity.github.io/trivy/v0.27.1/getting-started/overview/
+[getting-started]: https://aquasecurity.github.io/trivy/latest/getting-started/overview/
 [docs]: https://aquasecurity.github.io/trivy
-[integrations]:https://aquasecurity.github.io/trivy/v0.27.1/docs/integrations/
+[integrations]:https://aquasecurity.github.io/trivy/latest/docs/integrations/
+[installation]:https://aquasecurity.github.io/trivy/latest/docs/getting-started/installation/
+[releases]: https://github.com/aquasecurity/trivy/releases
 [alpine]: https://ariadne.space/2021/06/08/the-vulnerability-remediation-lifecycle-of-alpine-containers/
 [rego]: https://www.openpolicyagent.org/docs/latest/#rego
 [aquasec]: https://aquasec.com
