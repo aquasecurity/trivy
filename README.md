@@ -105,6 +105,14 @@ Failures: 1 (HIGH: 1, CRITICAL: 0)
 ```
 </details>
 
+```bash
+$ trivy k8s mycluster
+```
+
+<details>
+<summary>Result</summary>
+![k8s summary](docs/imgs/k8s-summary.png)
+</details>
 
 Find out more in the [Trivy Documentation](docs) - [Getting Started](getting-started)
 
