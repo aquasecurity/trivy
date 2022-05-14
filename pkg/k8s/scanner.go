@@ -85,12 +85,12 @@ func (s *scanner) scanVulns(ctx context.Context, artifact *artifacts.Artifact) (
 			continue
 		}
 
-		imageReport, err = s.runner.Filter(ctx, s.opt, imageReport)
+		resource, err := s.filter(ctx, imageReport, artifact)
 		if err != nil {
 			return nil, xerrors.Errorf("filter error: %w", err)
 		}
 
-		resources = append(resources, createResource(artifact, imageReport, nil))
+		resources = append(resources, resource)
 	}
 
 	return resources, nil
@@ -117,5 +117,15 @@ func (s *scanner) scanMisconfigs(ctx context.Context, artifact *artifacts.Artifa
 		return Resource{}, xerrors.Errorf("filter error: %w", err)
 	}
 
-	return createResource(artifact, configReport, nil), nil
+	return s.filter(ctx, configReport, artifact)
+}
+
+func (s *scanner) filter(ctx context.Context, report types.Report, artifact *artifacts.Artifact) (Resource, error) {
+	report, err := s.runner.Filter(ctx, s.opt, report)
+	if err != nil {
+		return Resource{}, xerrors.Errorf("filter error: %w", err)
+	}
+
+	return createResource(artifact, report, nil), nil
+
 }
