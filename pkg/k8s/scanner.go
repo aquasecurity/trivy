@@ -44,24 +44,11 @@ func (s *scanner) run(ctx context.Context, artifacts []*artifacts.Artifact) (Rep
 	for _, artifact := range artifacts {
 		bar.Increment()
 
-		// scan images if present
-		for _, image := range artifact.Images {
-			s.opt.Target = image
-			imageReport, err := s.runner.ScanImage(ctx, s.opt)
-			if err != nil {
-				// add error to report
-				log.Logger.Debugf("failed to scan image %s: %s", image, err)
-				vulns = append(vulns, createResource(artifact, imageReport, err))
-				continue
-			}
-
-			imageReport, err = s.runner.Filter(ctx, s.opt, imageReport)
-			if err != nil {
-				return Report{}, xerrors.Errorf("filter error: %w", err)
-			}
-
-			vulns = append(vulns, createResource(artifact, imageReport, nil))
+		resources, err := s.scanVulns(ctx, artifact)
+		if err != nil {
+			return Report{}, xerrors.Errorf("filter error: %w", err)
 		}
+		vulns = append(vulns, resources...)
 
 		// scan configurations
 		configFile, err := createTempFile(artifact)
@@ -97,4 +84,30 @@ func (s *scanner) run(ctx context.Context, artifacts []*artifacts.Artifact) (Rep
 		Vulnerabilities:   vulns,
 		Misconfigurations: misconfigs,
 	}, nil
+}
+
+func (s *scanner) scanVulns(ctx context.Context, artifact *artifacts.Artifact) ([]Resource, error) {
+	resources := make([]Resource, 0, len(artifact.Images))
+
+	for _, image := range artifact.Images {
+
+		s.opt.Target = image
+
+		imageReport, err := s.runner.ScanImage(ctx, s.opt)
+
+		if err != nil {
+			log.Logger.Debugf("failed to scan image %s: %s", image, err)
+			resources = append(resources, createResource(artifact, imageReport, err))
+			continue
+		}
+
+		imageReport, err = s.runner.Filter(ctx, s.opt, imageReport)
+		if err != nil {
+			return nil, xerrors.Errorf("filter error: %w", err)
+		}
+
+		resources = append(resources, createResource(artifact, imageReport, nil))
+	}
+
+	return resources, nil
 }
