@@ -68,10 +68,14 @@ nav:
               - Getting Started: docs/kubernetes/operator/getting-started.md
               - Configuration: docs/kubernetes/operator/configuration.md
               - Settings: docs/kubernetes/operator/settings.md
+              - Vulnerability Scanning:
+                    - Overview: docs/kubernetes/operator/vulnerability-scanning/index.md 
+                    - Scan Configuration: docs/kubernetes/operator/vulnerability-scanning/config.md 
+                    - Managed registries: docs/kubernetes/operator/vulnerability-scanning/managed-registries.md 
+                    - FAQ: docs/kubernetes/operator/vulnerability-scanning/faq.md 
               - Configuration Auditing:
                     - Overview: docs/kubernetes/operator/configuration-auditing/index.md
                     - Built-in Configuration Audit Policies: docs/kubernetes/operator/configuration-auditing/built-in-policies.md
-              - Frequently Asked Questions: docs/kubernetes/operator/faq.md
               - Troubleshooting: docs/kubernetes/operator/troubleshooting.md
       - Secret:
           - Scanning: docs/secret/scanning.md
