@@ -1,58 +1,67 @@
 # Helm
 
-[Helm], which is de facto standard package manager for Kubernetes, allows installing applications from parameterized
+[Helm], which is a popular package manager for Kubernetes, allows installing applications from parameterized
 YAML manifests called Helm [charts].
 
-To address shortcomings of [static YAML manifests](./kubectl.md) we provide the Helm chart to deploy the Trivy-Operator.
-The Helm chart supports all [Install Modes](./../configuration.md#install-modes).
+The Helm chart is available on GitHub in [https://github.com/aquasecurity/trivy-operator](https://github.com/aquasecurity/trivy-operator) under `/deploy/helm` and is also hosted in a Chart repository for your convenience under [https://aquasecurity.github.io/helm-charts/](https://aquasecurity.github.io/helm-charts/).
 
-As an example, let's install the operator in the `trivy-system` namespace and configure it to select all namespaces,
-except `kube-system` and `trivy-system`:
+## Example - Chart repository
 
-1. Clone the chart directory:
-   ```
-   git clone --depth 1 --branch {{ git.tag }} https://github.com/aquasecurity/trivy-operator.git
-   cd trivy-operator
-   ```
-   Or add Aqua chart repository:
-   ```
-   helm repo add aqua https://aquasecurity.github.io/helm-charts/
-   helm repo update
-   ```
-2. Install the chart from a local directory:
-   ```
-   helm install trivy-operator ./deploy/helm \
-     --namespace trivy-system \
-     --create-namespace \
-     --set="trivy.ignoreUnfixed=true"
-   ```
-   Or install the chart from the Aqua chart repository:
-   ```
-   helm install trivy-operator aqua/trivy-operator \
-     --namespace trivy-system \
-     --create-namespace \
-     --set="trivy.ignoreUnfixed=true" \
-     --version {{ var.chart_version }}
-   ```
-   There are many [values] in the chart that can be set to configure Trivy-Operator.
-3. Check that the `trivy-operator` Helm release is created in the `trivy-system` namespace, and it has status
-   `deployed`:
-   ```console
-   $ helm list -n trivy-system
-   NAME              	NAMESPACE         	REVISION	UPDATED                             	STATUS  	CHART                   	APP VERSION
-   trivy-operator	trivy-system	1       	2021-01-27 20:09:53.158961 +0100 CET	deployed	trivy-operator-{{ var.chart_version }}	{{ git.tag[1:] }}
-   ```
-   To confirm that the operator is running, check that the `trivy-operator` Deployment in the `trivy-system`
-   namespace is available and all its containers are ready:
-   ```console
-   $ kubectl get deployment -n trivy-system
-   NAME                 READY   UP-TO-DATE   AVAILABLE   AGE
-   trivy-operator   1/1     1            1           11m
-   ```
-   If for some reason it's not ready yet, check the logs of the Deployment for errors:
-   ```
-   kubectl logs deployment/trivy-operator -n trivy-system
-   ```
+This will install the operator in the `trivy-system` namespace and configure it to scan all namespaces, except `kube-system` and `trivy-system`:
+
+```bash
+helm repo add aqua https://aquasecurity.github.io/helm-charts/
+helm repo update
+helm install trivy-operator aqua/trivy-operator \
+   --namespace trivy-system \
+   --create-namespace \
+   --set="trivy.ignoreUnfixed=true" \
+   --version {{ var.chart_version }}
+```
+
+## Example - Download the chart
+
+This will install the operator in the `trivy-system` namespace and configure it to scan all namespaces, except `kube-system` and `trivy-system`:
+
+```bash
+git clone --depth 1 --branch {{ git.tag }} https://github.com/aquasecurity/trivy-operator.git
+cd trivy-operator
+helm install trivy-operator ./deploy/helm \
+--namespace trivy-system \
+--create-namespace \
+--set="trivy.ignoreUnfixed=true"
+```
+
+## Post install sanity check
+
+Check that the `trivy-operator` Helm release is created in the `trivy-system` namespace, and it has status `deployed`:
+
+```console
+$ helm list -n trivy-system
+NAME              	NAMESPACE         	REVISION	UPDATED                             	STATUS  	CHART                   	APP VERSION
+trivy-operator	trivy-system	1       	2021-01-27 20:09:53.158961 +0100 CET	deployed	trivy-operator-{{ var.chart_version }}	{{ git.tag[1:] }}
+```
+
+To confirm that the operator is running, check that the `trivy-operator` Deployment in the `trivy-system`
+namespace is available and all its containers are ready:
+
+```console
+$ kubectl get deployment -n trivy-system
+NAME                 READY   UP-TO-DATE   AVAILABLE   AGE
+trivy-operator   1/1     1            1           11m
+```
+
+If for some reason it's not ready yet, check the logs of the Deployment for errors:
+
+```
+kubectl logs deployment/trivy-operator -n trivy-system
+```
+
+## Advanced Configuration
+
+The Helm chart supports all available [installation modes](./../configuration.md#install-modes) of Trivy Operator. 
+
+Please refer to the chart's [values] file for configuration options.
 
 ## Uninstall
 
