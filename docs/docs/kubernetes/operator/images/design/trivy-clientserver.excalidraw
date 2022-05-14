@@ -2259,7 +2259,7 @@
       "boundElementIds": [],
       "fontSize": 16,
       "fontFamily": 1,
-      "text": "Set the value of SERVER_URL\nfrom the starboard-operator secret",
+      "text": "Set the value of SERVER_URL\nfrom the trivy-operator secret",
       "baseline": 34,
       "textAlign": "left",
       "verticalAlign": "top"

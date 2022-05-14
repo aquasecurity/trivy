@@ -194,8 +194,8 @@ Trivy must run as root so the scan Job defined the `securityContext` with the `r
 
 [Devendra Turkar]: https://github.com/deven0t
 [Daniel Pacak]: https://github.com/danielpacak
-[Standalone]: https://aquasecurity.github.io/starboard/v0.13.2/integrations/vulnerability-scanners/trivy/#standalone
-[ClientServer]: https://aquasecurity.github.io/starboard/v0.13.2/integrations/vulnerability-scanners/trivy/#clientserver
+[Standalone]: /docs/kubernetes/operator/vulnerability-scanning/trivy/#standalone
+[ClientServer]: /docs/kubernetes/operator/vulnerability-scanning/trivy/#standalone
 [Configuring nodes to authenticate to a private registry]: https://kubernetes.io/docs/concepts/containers/images/#configuring-nodes-to-authenticate-to-a-private-registry
 [AWS ECR Private registry authentication]: https://docs.aws.amazon.com/AmazonECR/latest/userguide/registry_auth.html
 [AlwaysPullImages]: https://kubernetes.io/docs/reference/access-authn-authz/admission-controllers/#alwayspullimages

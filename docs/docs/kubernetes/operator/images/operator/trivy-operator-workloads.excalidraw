@@ -2177,7 +2177,7 @@
       "boundElementIds": [],
       "fontSize": 20,
       "fontFamily": 1,
-      "text": "Deployment: starboard-operator",
+      "text": "Deployment: trivy-operator",
       "baseline": 18,
       "textAlign": "left",
       "verticalAlign": "top"
