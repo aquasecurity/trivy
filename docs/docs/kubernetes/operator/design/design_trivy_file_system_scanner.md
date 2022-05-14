@@ -184,12 +184,12 @@ Trivy must run as root so the scan Job defined the `securityContext` with the `r
    a multitenant cluster so that users can be assured that their private images can only be used by those who
    have the credentials to pull them. (Thanks [kfox1111] for pointing this out!)
 2. We cannot scan K8s workloads scaled down to 0 replicas because we cannot infer on which cluster node a scan Job should
-   run. (In general, a node name is only set on a running Pod.) But once a workload is scaled up, Starboard Operator
+   run. (In general, a node name is only set on a running Pod.) But once a workload is scaled up, Trivy Operator
    will receive the update event and will have another chance to scan it.
 3. It's hard to identify Pods managed by the CronJob controller, therefore we'll skip them.
 4. Trivy filesystem command does not work in [ClientServer] mode. Therefore, this solution is subject to the limits of
    the [Standalone] mode. We plan to extend Trivy filesystem command to work in ClientServer mode and improve the
-   implementation of Starboard once it's available.
+   implementation of Trivy once it's available.
 5. Trivy must run as root and this may be blocked by some Admission Controllers such as PodSecurityPolicy.
 
 [Devendra Turkar]: https://github.com/deven0t

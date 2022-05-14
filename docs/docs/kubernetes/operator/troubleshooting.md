@@ -1,6 +1,6 @@
-# Troubleshooting the Starboard Operator
+# Troubleshooting the Trivy Operator
 
-The Starboard Operator installs several Kubernetes resources into your Kubernetes cluster.
+The Trivy Operator installs several Kubernetes resources into your Kubernetes cluster.
 
 Here are the common steps to check whether the operator is running correctly and to troubleshoot common issues.
 
@@ -9,7 +9,7 @@ Feel free to either [open an issue](https://github.com/aquasecurity/starboard/is
 
 ## Installation
 
-Make sure that the latest version of the Starboard Operator is installed inside of your Kubernetes cluster.
+Make sure that the latest version of the Trivy Operator is installed inside of your Kubernetes cluster.
 For this, have a look at the installation [options.](./installation/helm.md)
 
 For instance, if your are using the Helm deployment, you need to check the Helm Chart version deployed to your cluster. You can check the Helm Chart version with the following command:
@@ -17,11 +17,11 @@ For instance, if your are using the Helm deployment, you need to check the Helm 
 helm list -n <namespace>
 ```
 
-Please make sure to replace the `namespace` with the namespace to which you installed the Starboard Operator. In the installation guide, we are using `starboard-system` as our namespace.
+Please make sure to replace the `namespace` with the namespace to which you installed the Trivy Operator. In the installation guide, we are using `starboard-system` as our namespace.
 
-## Starboard Pod Not Running
+## Trivy Pod Not Running
 
-The Starboard Operator will run a pod inside your cluster. If you have followed the installation guide, you will have installed the Operator to the `starboard-system`. If you have installed it to another namespace, make sure to adapt the commands below.
+The Trivy Operator will run a pod inside your cluster. If you have followed the installation guide, you will have installed the Operator to the `starboard-system`. If you have installed it to another namespace, make sure to adapt the commands below.
 
 Make sure that the pod is in the `Running` status:
 ```
@@ -50,16 +50,16 @@ kubectl logs deployment/starboard-operator -n starboard-system
 
 If your pod is not running, try to look for errors as they can give an indication on the problem.
 
-If there are too many logs messages, try deleting the Starboard pod and observe its behaviour upon restarting. A new pod should spin up automatically after deleting the failed pod.
+If there are too many logs messages, try deleting the Trivy pod and observe its behaviour upon restarting. A new pod should spin up automatically after deleting the failed pod.
 
 ## ImagePullBackOff or ErrImagePull
 
-Check the status of the Starboard Operator pod running inside of your Kubernetes cluster. If the Status is ImagePullBackOff or ErrImagePull, it means that the Operator either
+Check the status of the Trivy Operator pod running inside of your Kubernetes cluster. If the Status is ImagePullBackOff or ErrImagePull, it means that the Operator either
 
 * tries to access the wrong image
 * cannot pull the image from the registry
 
-Make sure that you are providing the right resources upon installing the Starboard Operator.
+Make sure that you are providing the right resources upon installing the Trivy Operator.
 
 ## CrashLoopBackOff
 
@@ -75,13 +75,13 @@ Check the logs for reconcilation errors:
 kubectl logs deployment/starboard-operator -n starboard-system
 ```
 
-If this is the case, the Starboard Operator likely does not have the right configurations to access your resource. 
+If this is the case, the Trivy Operator likely does not have the right configurations to access your resource. 
 
 ## Operator does not Create VulnerabilityReports
 
-VulnerabilityReports are owned and controlled by the immediate Kubernetes workload. Every VulnerabilityReport of a pod is thus, linked to a [ReplicaSet.](./index.md) In case the Starboard Operator does not create a VulnerabilityReport for your workloads, it could be that it is not monitoring the namespace that your workloads are running on.
+VulnerabilityReports are owned and controlled by the immediate Kubernetes workload. Every VulnerabilityReport of a pod is thus, linked to a [ReplicaSet.](./index.md) In case the Trivy Operator does not create a VulnerabilityReport for your workloads, it could be that it is not monitoring the namespace that your workloads are running on.
 
-An easy way to check this is by looking for the `ClusterRoleBinding` for the Starboard Operator:
+An easy way to check this is by looking for the `ClusterRoleBinding` for the Trivy Operator:
 
 ```
 kubectl get ClusterRoleBinding | grep "starboard-operator"
@@ -102,6 +102,6 @@ system:controller:resourcequota-controller   resourcequota-controller        Ser
 system:kube-controller-manager               system:kube-controller-manager  User
 ```
 
-If the `ClusterRoleBinding` does not exist, Starboard currently cannot monitor any namespace outside of the `starboard-system` namespace. 
+If the `ClusterRoleBinding` does not exist, Trivy currently cannot monitor any namespace outside of the `starboard-system` namespace. 
 
 For instance, if you are using the [Helm Chart](./installation/helm.md), you want to make sure to set the `targetNamespace` to the namespace that you want the Operator to monitor.

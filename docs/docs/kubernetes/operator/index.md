@@ -24,10 +24,6 @@ with new plugin's configuration.
   <figurecaption>Plugin configuration reconciler deletes ConfigAuditReports whenever the configuration changes.</figurecaption>
 </figure>
 
-!!! warning
-    Currently, the operator supports [vulnerabilityreports] and [configauditreports]. We plan to support [kubehunterreports] and [ciskubebenchreports] security resources soon. We also plan to implement rescan on configurable schedule, for
-    example every 24 hours.
-
 ## What's Next?
 
 - Install the operator and follow the [Getting Started](./getting-started.md) guide.

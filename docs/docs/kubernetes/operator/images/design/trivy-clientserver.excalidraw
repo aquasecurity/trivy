@@ -1746,7 +1746,7 @@
       "boundElementIds": [],
       "fontSize": 20,
       "fontFamily": 1,
-      "text": "Imagine that your app is controlled\nby a Kubernetes Deployment and\nits PodSpec has 2 init containers\nand 3 (regular) containers.\n\nIn Starboard we scan it by creating\na scan Job and parsing job logs.",
+      "text": "Imagine that your app is controlled\nby a Kubernetes Deployment and\nits PodSpec has 2 init containers\nand 3 (regular) containers.\n\nIn Trivy we scan it by creating\na scan Job and parsing job logs.",
       "baseline": 168,
       "textAlign": "left",
       "verticalAlign": "top"

@@ -183,66 +183,8 @@ No resources found in default namespace.
     You can define the validity period for VulnerabilityReports by setting the duration as the value of the
     `OPERATOR_VULNERABILITY_SCANNER_REPORT_TTL` environment variable. For example, setting the value to `24h`
     would delete reports after 24 hours. When a VulnerabilityReport gets deleted Trivy-Operator will automatically
-    rescan the underlying workload. Assuming that the vulnerability scanner has updated its vulnerability database,
-    new VulnerabilityReports will contain the latest vulnerabilities.
 
-## Infrastructure Scanning
 
-The operator discovers also Kubernetes nodes and runs CIS Kubernetes Benchmark checks on each of them. The results are
-stored as CISKubeBenchReport objects. In other words, for a cluster with 3 nodes the operator will eventually create
-3 benchmark reports:
-
-```
-kubectl get node
-```
-
-<details>
-<summary>Result</summary>
-
-```
-NAME                 STATUS   ROLES    AGE     VERSION
-kind-control-plane   Ready    master   3h27m   v1.18.8
-kind-worker          Ready    <none>   3h26m   v1.18.8
-kind-worker2         Ready    <none>   3h26m   v1.18.8
-```
-</details>
-
-```
-kubectl get ciskubebenchreports -o wide
-```
-
-<details>
-<summary>Result</summary>
-
-```
-NAME                 SCANNER      AGE   FAIL   WARN   INFO   PASS
-kind-control-plane   kube-bench   8s    12     40     0      70
-kind-worker          kube-bench   9s    2      27     0      18
-kind-worker2         kube-bench   9s    2      27     0      18
-```
-</details>
-
-Notice that each CISKubeBenchReport is named after a node and is controlled by that node to inherit its life cycle:
-
-```
-kubectl tree node kind-control-plane -A
-```
-
-<details>
-<summary>Result</summary>
-
-```
-NAMESPACE        NAME                                              READY  REASON        AGE
-                 Node/kind-control-plane                           True   KubeletReady  48m
-                 ├─CISKubeBenchReport/kind-control-plane           -                    44m
-                 ├─CSINode/kind-control-plane                      -                    48m
-kube-node-lease  ├─Lease/kind-control-plane                        -                    48m
-kube-system      ├─Pod/etcd-kind-control-plane                     True                 48m
-kube-system      ├─Pod/kube-apiserver-kind-control-plane           True                 48m
-kube-system      ├─Pod/kube-controller-manager-kind-control-plane  True                 48m
-kube-system      └─Pod/kube-scheduler-kind-control-plane           True                 48m
-```
-</details>
 
 ## What's Next?
 
