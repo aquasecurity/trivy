@@ -46,31 +46,15 @@ func (s *scanner) run(ctx context.Context, artifacts []*artifacts.Artifact) (Rep
 
 		resources, err := s.scanVulns(ctx, artifact)
 		if err != nil {
-			return Report{}, xerrors.Errorf("filter error: %w", err)
+			return Report{}, xerrors.Errorf("scanning vulnerabilities error: %w", err)
 		}
 		vulns = append(vulns, resources...)
 
-		// scan configurations
-		configFile, err := createTempFile(artifact)
+		resource, err := s.scanMisconfigs(ctx, artifact)
 		if err != nil {
-			return Report{}, xerrors.Errorf("scan error: %w", err)
+			return Report{}, xerrors.Errorf("scanning misconfigurations error: %w", err)
 		}
-
-		s.opt.Target = configFile
-		configReport, err := s.runner.ScanFilesystem(ctx, s.opt)
-		removeFile(configFile)
-		if err != nil {
-			// add error to report
-			log.Logger.Debugf("failed to scan config %s/%s: %s", artifact.Kind, artifact.Name, err)
-			misconfigs = append(misconfigs, createResource(artifact, configReport, err))
-		}
-
-		configReport, err = s.runner.Filter(ctx, s.opt, configReport)
-		if err != nil {
-			return Report{}, xerrors.Errorf("filter error: %w", err)
-		}
-
-		misconfigs = append(misconfigs, createResource(artifact, configReport, nil))
+		misconfigs = append(misconfigs, resource)
 	}
 
 	// enable logs after scanning
@@ -110,4 +94,28 @@ func (s *scanner) scanVulns(ctx context.Context, artifact *artifacts.Artifact) (
 	}
 
 	return resources, nil
+}
+
+func (s *scanner) scanMisconfigs(ctx context.Context, artifact *artifacts.Artifact) (Resource, error) {
+	configFile, err := createTempFile(artifact)
+	if err != nil {
+		return Resource{}, xerrors.Errorf("scan error: %w", err)
+	}
+
+	s.opt.Target = configFile
+
+	configReport, err := s.runner.ScanFilesystem(ctx, s.opt)
+	//remove config file after scanning
+	removeFile(configFile)
+	if err != nil {
+		log.Logger.Debugf("failed to scan config %s/%s: %s", artifact.Kind, artifact.Name, err)
+		return createResource(artifact, configReport, err), err
+	}
+
+	configReport, err = s.runner.Filter(ctx, s.opt, configReport)
+	if err != nil {
+		return Resource{}, xerrors.Errorf("filter error: %w", err)
+	}
+
+	return createResource(artifact, configReport, nil), nil
 }
