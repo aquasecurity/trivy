@@ -74,7 +74,6 @@ nav:
                     - Built-in Configuration Audit Policies: docs/kubernetes/operator/configuration-auditing/built-in-policies.md
               - Frequently Asked Questions: docs/kubernetes/operator/faq.md
               - Troubleshooting: docs/kubernetes/operator/troubleshooting.md
-              - Further Reading: docs/kubernetes/operator/further-reading.md
       - Secret:
           - Scanning: docs/secret/scanning.md
           - Configuration: docs/secret/configuration.md
