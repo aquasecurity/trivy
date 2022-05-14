@@ -64,7 +64,6 @@ nav:
               - Installation:
                     - kubectl: docs/kubernetes/operator/installation/kubectl.md
                     - Helm: docs/kubernetes/operator/installation/helm.md
-                    - Operator Lifecycle Manager: docs/kubernetes/operator/installation/olm.md
                     - Upgrade: docs/kubernetes/operator/installation/upgrade.md
               - Getting Started: docs/kubernetes/operator/getting-started.md
               - Configuration: docs/kubernetes/operator/configuration.md
