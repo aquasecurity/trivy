@@ -15,8 +15,9 @@ import (
 )
 
 type scanner struct {
-	runner *cmd.Runner
-	opt    cmd.Option
+	cluster string
+	runner  *cmd.Runner
+	opt     cmd.Option
 }
 
 func (s *scanner) run(ctx context.Context, artifacts []*artifacts.Artifact) (Report, error) {
@@ -65,6 +66,7 @@ func (s *scanner) run(ctx context.Context, artifacts []*artifacts.Artifact) (Rep
 
 	return Report{
 		SchemaVersion:     0,
+		ClusterName:       s.cluster,
 		Vulnerabilities:   vulns,
 		Misconfigurations: misconfigs,
 	}, nil

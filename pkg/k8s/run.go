@@ -11,6 +11,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/log"
 	pkgReport "github.com/aquasecurity/trivy/pkg/report"
 
+	"github.com/aquasecurity/trivy-kubernetes/pkg/artifacts"
 	"github.com/aquasecurity/trivy-kubernetes/pkg/k8s"
 	"github.com/aquasecurity/trivy-kubernetes/pkg/trivyk8s"
 )
@@ -45,21 +46,26 @@ func Run(cliCtx *cli.Context) error {
 		return xerrors.Errorf("get k8s cluster: %w", err)
 	}
 
-	trivyk8s := trivyk8s.New(cluster).Namespace(opt.KubernetesOption.Namespace)
-
-	// list all kubernetes scannable artifacts
-	artifacts, err := trivyk8s.ListArtifacts(ctx)
+	// get kubernetes scannable artifacts
+	artifacts, err := getArtifacts(ctx, cluster, opt.KubernetesOption.Namespace)
 	if err != nil {
 		return xerrors.Errorf("get k8s artifacts error: %w", err)
 	}
 
-	s := &scanner{runner, opt}
+	s := &scanner{
+		cluster: cluster.GetCurrentContext(),
+		runner:  runner,
+		opt:     opt,
+	}
 
+	return run(ctx, s, opt, artifacts)
+}
+
+func run(ctx context.Context, s *scanner, opt cmd.Option, artifacts []*artifacts.Artifact) error {
 	report, err := s.run(ctx, artifacts)
 	if err != nil {
 		return xerrors.Errorf("k8s scan error: %w", err)
 	}
-	report.ClusterName = cluster.GetCurrentContext()
 
 	if err = write(report, pkgReport.Option{
 		Format: opt.KubernetesOption.ReportFormat, // for now json is the default
@@ -71,4 +77,8 @@ func Run(cliCtx *cli.Context) error {
 	cmd.Exit(opt, report.Failed())
 
 	return nil
+}
+
+func getArtifacts(ctx context.Context, cluster k8s.Cluster, namespace string) ([]*artifacts.Artifact, error) {
+	return trivyk8s.New(cluster).Namespace(namespace).ListArtifacts(ctx)
 }
