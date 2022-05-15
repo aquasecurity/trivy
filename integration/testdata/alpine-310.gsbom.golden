@@ -8,7 +8,7 @@
   "ref": "/ref/feature-1",
   "sha": "39da54a1ff04120a31df8cbc94ce9ede251d21a3",
   "job": {
-    "correlator": "workflow-name_build"
+    "correlator": "workflow-name_integration"
     "id": "1910764383"
   },
   "scanned": "2020-08-10T07:28:17Z",

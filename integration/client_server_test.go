@@ -335,8 +335,6 @@ func TestClientServerWithTemplate(t *testing.T) {
 				return "1910764383"
 			case "GITHUB_WORKFLOW":
 				return "workflow-name"
-			case "GITHUB_JOB":
-				return "build"
 			default:
 				return ""
 			}

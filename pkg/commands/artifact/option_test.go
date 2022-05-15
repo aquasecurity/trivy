@@ -222,6 +222,7 @@ func TestOption_Init(t *testing.T) {
 					SecurityChecks: []string{types.SecurityCheckVulnerability},
 					Format:         "gsbom",
 					ListAllPkgs:    true,
+					ListDepenedencies: true,
 				},
 				ArtifactOption: option.ArtifactOption{
 					Target: "gitlab/gitlab-ce:12.7.2-ce.0",
