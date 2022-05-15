@@ -27,9 +27,8 @@ kubectl logs deployment/trivy-operator -n trivy-system
 
 ## Advanced Configuration
 
-Trivy-Operator refers to the [settings] configured in ConfigMaps and Secrets under the `trivy-system` namespace. You can always change these settings by editing configuration objects.
-
-You can further adjust the [Configuration](./../configuration.md) of the operator with environment variables. For example, to change the target namespace from all namespaces to the `default` namespace edit the `trivy-operator` Deployment and change the value of the `OPERATOR_TARGET_NAMESPACES` environment variable from the blank string (`""`) to the `default` value.
+You can configure Trivy-Operator to control it's behavior and adapt it to your needs. Aspects of the operator machinery are configured using environment variables on the operator Pod, while aspects of the scanning behavior are controlled by ConfigMaps and Secrets.
+To learn more, please refer to the [Configuration](config) documentation.
 
 ## Uninstall
 

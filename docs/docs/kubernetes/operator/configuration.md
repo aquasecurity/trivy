@@ -1,6 +1,8 @@
-# Operator Configuration
+# Configuration
 
-Configuration of the operator is done by setting environment variables on the operator's Pod.
+You can configure Trivy-Operator to control it's behavior and adapt it to your needs. Aspects of the operator machinery are configured using environment variables on the operator Pod, while aspects of the scanning behavior are controlled by ConfigMaps and Secrets.
+
+# Operator Configuration
 
 | NAME| DEFAULT| DESCRIPTION|
 |---|---|---|
@@ -25,9 +27,6 @@ Configuration of the operator is done by setting environment variables on the op
 | `OPERATOR_LEADER_ELECTION_ENABLED`| `false`| The flag to enable operator replica leader election|
 | `OPERATOR_LEADER_ELECTION_ID`| `trivy-operator-lock`| The name of the resource lock for leader election|
 
-
-## Install Modes
-
 The values of the `OPERATOR_NAMESPACE` and `OPERATOR_TARGET_NAMESPACES` determine the install mode, which in turn determines the multitenancy support of the operator.
 
 | MODE| OPERATOR_NAMESPACE | OPERATOR_TARGET_NAMESPACES | DESCRIPTION|
@@ -36,5 +35,66 @@ The values of the `OPERATOR_NAMESPACE` and `OPERATOR_TARGET_NAMESPACES` determin
 | SingleNamespace| `operators`| `foo`| The operator can be configured to watch for events in a single namespace that the operator is not deployed in. |
 | MultiNamespace| `operators`| `foo,bar,baz`| The operator can be configured to watch for events in more than one namespace.                                 |
 | AllNamespaces| `operators`| (blank string)| The operator can be configured to watch for events in all namespaces.|
+
+## Example - configure namespaces to scan
+
+To change the target namespace from all namespaces to the `default` namespace edit the `trivy-operator` Deployment and change the value of the `OPERATOR_TARGET_NAMESPACES` environment variable from the blank string (`""`) to the `default` value.
+
+# Scanning configuration
+
+| CONFIGMAP KEY| DEFAULT| DESCRIPTION|
+|---|---|---|
+| `vulnerabilityReports.scanner`| `Trivy`| The name of the plugin that generates vulnerability reports. Either `Trivy` or `Aqua`.|
+| `vulnerabilityReports.scanJobsInSameNamespace` | `"false"`| Whether to run vulnerability scan jobs in same namespace of workload. Set `"true"` to enable.|
+| `scanJob.tolerations`| N/A| JSON representation of the [tolerations] to be applied to the scanner pods so that they can run on nodes with matching taints. Example: `'[{"key":"key1", "operator":"Equal", "value":"value1", "effect":"NoSchedule"}]'`|
+| `scanJob.annotations`| N/A| One-line comma-separated representation of the annotations which the user wants the scanner pods to be annotated with. Example: `foo=bar,env=stage` will annotate the scanner pods with the annotations `foo: bar` and `env: stage` |
+| `scanJob.templateLabel`| N/A| One-line comma-separated representation of the template labels which the user wants the scanner pods to be labeled with. Example: `foo=bar,env=stage` will labeled the scanner pods with the labels `foo: bar` and `env: stage`|
+
+## Example - patch ConfigMap
+
+By default Trivy displays vulnerabilities with all severity levels (`UNKNOWN`, `LOW`, `MEDIUM`, `HIGH`, `CRITICAL`). To display only `HIGH` and `CRITICAL` vulnerabilities by patching the `trivy.severity` value in the `trivy-operator-trivy-config` ConfigMap:
+
+```bash
+kubectl patch cm trivy-operator-trivy-config -n trivy-operator \
+  --type merge \
+  -p "$(cat <<EOF
+{
+  "data": {
+    "trivy.severity": "HIGH,CRITICAL"
+  }
+}
+EOF
+)"
+```
+
+## Example - patch Secret
+
+To set the GitHub token used by Trivy scanner add the `trivy.githubToken` value to the `trivy-operator-trivy-config` Secret:
+
+```bash
+kubectl patch secret trivy-operator-trivy-config -n trivy-operator \
+  --type merge \
+  -p "$(cat <<EOF
+{
+  "data": {
+    "trivy.githubToken": "$(echo -n <your token> | base64)"
+  }
+}
+EOF
+)"
+```
+
+## Example - delete a key
+
+The following `kubectl patch` command deletes the `trivy.httpProxy` key:
+
+```bash
+kubectl patch cm trivy-operator-trivy-config -n trivy-operator \
+  --type json \
+  -p '[{"op": "remove", "path": "/data/trivy.httpProxy"}]'
+```
+
+[tolerations]: https://kubernetes.io/docs/concepts/scheduling-eviction/taint-and-toleration
+
 
 [prometheus]: https://github.com/prometheus
