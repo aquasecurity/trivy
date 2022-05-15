@@ -13,6 +13,11 @@ import (
 	"github.com/aquasecurity/trivy/pkg/types"
 )
 
+const (
+	allReport     = "all"
+	summaryReport = "summary"
+)
+
 type Option struct {
 	Format     string
 	Report     string
