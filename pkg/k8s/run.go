@@ -82,10 +82,16 @@ func run(ctx context.Context, s *scanner, opt cmd.Option, artifacts []*artifacts
 }
 
 func getArtifacts(ctx context.Context, args cli.Args, cluster k8s.Cluster, namespace string) ([]*artifacts.Artifact, error) {
-	trivyk8s := trivyk8s.New(cluster).Namespace(namespace)
+	trivyk8s := trivyk8s.New(cluster)
 
 	if !args.Present() {
-		return trivyk8s.ListArtifacts(ctx)
+		return trivyk8s.Namespace(namespace).ListArtifacts(ctx)
+	}
+
+	// if scanning single resource, and namespace is empty
+	// uses default namespace
+	if len(namespace) == 0 {
+		namespace = cluster.GetCurrentNamespace()
 	}
 
 	kind, name, err := extractKindAndName(args)
@@ -93,7 +99,7 @@ func getArtifacts(ctx context.Context, args cli.Args, cluster k8s.Cluster, names
 		return nil, err
 	}
 
-	artifact, err := trivyk8s.GetArtifact(ctx, kind, name)
+	artifact, err := trivyk8s.Namespace(namespace).GetArtifact(ctx, kind, name)
 	if err != nil {
 		return nil, err
 	}
