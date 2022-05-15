@@ -11,7 +11,7 @@ Trivy uses your local kubectl configuration to access the API server to list art
 Scan a full cluster and generate a simple summary report:
 
 ```
-$ trivy k8s
+$ trivy k8s --report=summary
 ```
 
 ![k8s Summary Report](../../imgs/k8s-summary.png)
@@ -21,26 +21,26 @@ The summary report is the default. To get all of the detail the output contains,
 Filter by severity:
 
 ```
-$ trivy k8s --severity=CRITICAL
+$ trivy k8s --severity=CRITICAL --report=all
 ```
 
 Scan a specific namespace:
 
 ```
-$ trivy k8s -n kube-system
+$ trivy k8s -n kube-system --report=summary
 ```
 
 Scan a specific resource and get all the output:
 
 ```
-$ trivy k8s -n default --report all deployment/appname
+$ trivy k8s deployment/appname
 ```
 
 The supported formats are `table`, which is the default, and `json`.
 To get a JSON output on a full cluster scan:
 
 ```
-$ trivy k8s --report all --format json -o results.json
+$ trivy k8s --format json -o results.json
 ```
 
 <details>
