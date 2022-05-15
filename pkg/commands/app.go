@@ -379,7 +379,7 @@ func NewApp(version string) *cli.App {
 	app.Name = "trivy"
 	app.Version = version
 	app.ArgsUsage = "target"
-	app.Usage = "A simple and comprehensive vulnerability scanner for containers"
+	app.Usage = "Scanner for vulnerabilities in container images, file systems, and Git repositories, as well as for configuration issues and hard-coded secrets"
 	app.EnableBashCompletion = true
 	app.Flags = globalFlags
 
