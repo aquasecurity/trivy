@@ -16,6 +16,9 @@ import (
 const (
 	allReport     = "all"
 	summaryReport = "summary"
+
+	tableFormat = "table"
+	jsonFormat  = "json"
 )
 
 type Option struct {
@@ -108,9 +111,9 @@ type Writer interface {
 func write(report Report, option Option) error {
 	var writer Writer
 	switch option.Format {
-	case "json":
+	case jsonFormat:
 		writer = &JSONWriter{Output: option.Output, Report: option.Report}
-	case "table":
+	case tableFormat:
 		writer = &TableWriter{
 			Output:     option.Output,
 			Report:     option.Report,

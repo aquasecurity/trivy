@@ -25,9 +25,9 @@ func Run(cliCtx *cli.Context) error {
 	}
 
 	// Full-cluster scanning with '--format table' without explicit '--report all' is not allowed so that it won't mess up user's terminal.
-	if cliCtx.String("report") == "all" &&
+	if cliCtx.String("report") == allReport &&
 		!cliCtx.IsSet("report") &&
-		cliCtx.String("format") == "table" &&
+		cliCtx.String("format") == tableFormat &&
 		!cliCtx.Args().Present() {
 
 		m := "All the results in the table format can mess up your terminal. Use \"--report all\" to tell Trivy to output it to your terminal anyway, or consider \"--report summary\" to show the summary output."
