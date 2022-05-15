@@ -642,7 +642,7 @@ func NewClientCommand() *cli.Command {
 		ArgsUsage: "image_name",
 		Usage:     "[DEPRECATED] client mode",
 		Action: func(ctx *cli.Context) error {
-			log.Logger.Warn("`client` subcommand is deprecated now. You need to use `--server` option in `image` subcommand.")
+			log.Logger.Warn("`client` subcommand is deprecated now. See https://github.com/aquasecurity/trivy/discussions/2119")
 			return artifact.ImageRun(ctx)
 		},
 		Hidden: true, // It is no longer displayed
