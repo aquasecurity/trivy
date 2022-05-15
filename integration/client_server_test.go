@@ -333,6 +333,10 @@ func TestClientServerWithTemplate(t *testing.T) {
 				return "integration"
 			case "GITHUB_RUN_ID":
 				return "1910764383"
+			case "GITHUB_WORKFLOW":
+				return "workflow-name"
+			case "GITHUB_JOB":
+				return "build"
 			default:
 				return ""
 			}

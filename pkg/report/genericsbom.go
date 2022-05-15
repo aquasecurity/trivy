@@ -94,11 +94,11 @@ func (gsbmw GsbomWriter) Write(report types.Report) error {
 	gsbom.Sha = getenv("GITHUB_SHA")
 
 	gsbom.Job = &GsbomJob{
-		Correlator: getenv(fmt.Sprintf("%s_%s", "GITHUB_WORKFLOW", "GITHUB_JOB")),
+		Correlator: (fmt.Sprintf("%s_%s", getenv("GITHUB_WORKFLOW"), getenv("GITHUB_JOB"))),
 		Id:         getenv("GITHUB_RUN_ID"),
 	}
 
-	// gsbom.Metadata = purl.NewPackageURL(string(report.ArtifactType), report.Metadata, )
+	gsbom.Metadata = getMetaData(report)
 
 	manifests := make(map[string]GsbomManifest)
 
@@ -128,10 +128,6 @@ func (gsbmw GsbomWriter) Write(report types.Report) error {
 				return xerrors.Errorf("unable to build purl: %w for the package: %s", err, pkg.Name)
 			}
 
-			if manifest.Metadata == nil && pkg.Layer.Digest != "" {
-				manifest.Metadata = Metadata{"trivy:filesystem": pkg.Layer.Digest}
-			}
-
 			resolved[pkg.Name] = gsbompkg
 		}
 
@@ -150,6 +146,17 @@ func (gsbmw GsbomWriter) Write(report types.Report) error {
 		return xerrors.Errorf("failed to write generic sbom: %w", err)
 	}
 	return nil
+}
+
+func getMetaData(report types.Report) Metadata {
+	metadata := Metadata{}
+	if report.Metadata.RepoTags != nil {
+		metadata["repo_tag"] = report.Metadata.RepoTags[0]
+	}
+	if report.Metadata.RepoDigests != nil {
+		metadata["repo_digest"] = report.Metadata.RepoDigests[0]
+	}
+	return metadata
 }
 
 func getDependencies(results []types.Result, pkg ftypes.Package) []string {
@@ -177,5 +184,4 @@ func buildPurl(t string, pkg ftypes.Package) (string, error) {
 		return "", err
 	}
 	return packageUrl.ToString(), nil
-
 }

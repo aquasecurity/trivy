@@ -8,7 +8,7 @@
   "ref": "/ref/feature-1",
   "sha": "39da54a1ff04120a31df8cbc94ce9ede251d21a3",
   "job": {
-    "name": "integration",
+    "correlator": "workflow-name_build"
     "id": "1910764383"
   },
   "scanned": "2020-08-10T07:28:17Z",
@@ -17,46 +17,74 @@
       "name": "alpine",
       "resolved": {
         "alpine-baselayout": {
-          "purl": "pkg:apk/alpine-baselayout@3.1.2-r0"
+          "package_url": "pkg:apk/alpine-baselayout@3.1.2-r0",
+          "relationship": "direct",
+          "scope": "runtime"
         },
         "alpine-keys": {
-          "purl": "pkg:apk/alpine-keys@2.1-r2"
+          "package_url": "pkg:apk/alpine-keys@2.1-r2",
+          "relationship": "direct",
+          "scope": "runtime"
         },
         "apk-tools": {
-          "purl": "pkg:apk/apk-tools@2.10.4-r2"
+          "package_url": "pkg:apk/apk-tools@2.10.4-r2",
+          "relationship": "direct",
+          "scope": "runtime"
         },
         "busybox": {
-          "purl": "pkg:apk/busybox@1.30.1-r2"
+          "package_url": "pkg:apk/busybox@1.30.1-r2",
+          "relationship": "direct",
+          "scope": "runtime"
         },
         "ca-certificates-cacert": {
-          "purl": "pkg:apk/ca-certificates-cacert@20190108-r0"
+          "package_url": "pkg:apk/ca-certificates-cacert@20190108-r0",
+          "relationship": "direct",
+          "scope": "runtime"
         },
         "libc-utils": {
-          "purl": "pkg:apk/libc-utils@0.7.1-r0"
+          "package_url": "pkg:apk/libc-utils@0.7.1-r0",
+          "relationship": "direct",
+          "scope": "runtime"
         },
         "libcrypto1.1": {
-          "purl": "pkg:apk/libcrypto1.1@1.1.1c-r0"
+          "package_url": "pkg:apk/libcrypto1.1@1.1.1c-r0",
+          "relationship": "direct",
+          "scope": "runtime"
         },
         "libssl1.1": {
-          "purl": "pkg:apk/libssl1.1@1.1.1c-r0"
+          "package_url": "pkg:apk/libssl1.1@1.1.1c-r0",
+          "relationship": "direct",
+          "scope": "runtime"
         },
         "libtls-standalone": {
-          "purl": "pkg:apk/libtls-standalone@2.9.1-r0"
+          "package_url": "pkg:apk/libtls-standalone@2.9.1-r0",
+          "relationship": "direct",
+          "scope": "runtime"
         },
         "musl": {
-          "purl": "pkg:apk/musl@1.1.22-r3"
+          "package_url": "pkg:apk/musl@1.1.22-r3",
+          "relationship": "direct",
+          "scope": "runtime"
         },
         "musl-utils": {
-          "purl": "pkg:apk/musl-utils@1.1.22-r3"
+          "package_url": "pkg:apk/musl-utils@1.1.22-r3",
+          "relationship": "direct",
+          "scope": "runtime"
         },
         "scanelf": {
-          "purl": "pkg:apk/scanelf@1.2.3-r0"
+          "package_url": "pkg:apk/scanelf@1.2.3-r0",
+          "relationship": "direct",
+          "scope": "runtime"
         },
         "ssl_client": {
-          "purl": "pkg:apk/ssl_client@1.30.1-r2"
+          "package_url": "pkg:apk/ssl_client@1.30.1-r2",
+          "relationship": "direct",
+          "scope": "runtime"
         },
         "zlib": {
-          "purl": "pkg:apk/zlib@1.2.11-r1"
+          "package_url": "pkg:apk/zlib@1.2.11-r1",
+          "relationship": "direct",
+          "scope": "runtime"
         }
       }
     }
