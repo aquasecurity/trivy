@@ -18,6 +18,12 @@ $ trivy k8s
 
 The summary report is the default. To get all of the detail the output contains, use `--report all`.
 
+Filter by severity:
+
+```
+$ trivy k8s --severity=CRITICAL
+```
+
 Scan a specific namespace:
 
 ```
