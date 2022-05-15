@@ -12,11 +12,11 @@ import (
 
 	"github.com/aquasecurity/trivy-db/pkg/metadata"
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
-
 	"github.com/aquasecurity/trivy/pkg/commands/artifact"
 	"github.com/aquasecurity/trivy/pkg/commands/option"
 	"github.com/aquasecurity/trivy/pkg/commands/plugin"
 	"github.com/aquasecurity/trivy/pkg/commands/server"
+	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/result"
 	"github.com/aquasecurity/trivy/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/utils"
@@ -639,8 +639,12 @@ func NewClientCommand() *cli.Command {
 		Name:      "client",
 		Aliases:   []string{"c"},
 		ArgsUsage: "image_name",
-		Usage:     "client mode",
-		Action:    artifact.ImageRun,
+		Usage:     "[DEPRECATED] client mode",
+		Action: func(ctx *cli.Context) error {
+			log.Logger.Warn("`client` subcommand is deprecated now. You need to use `--server` option in `image` subcommand.")
+			return artifact.ImageRun(ctx)
+		},
+		Hidden: true, // It is no longer displayed
 		Flags: []cli.Flag{
 			&templateFlag,
 			&formatFlag,
