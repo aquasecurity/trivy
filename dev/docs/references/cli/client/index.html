@@ -2380,12 +2380,14 @@
 
 <h1 id="client">Client</h1>
 <div class="highlight"><pre><span></span><code>NAME:
-   trivy client - client mode
+   trivy client - DEPRECATED client mode, use <span class="sb">`</span>trivy image<span class="sb">`</span> with <span class="sb">`</span>--server<span class="sb">`</span> option <span class="k">for</span> remote scans now.
 
 USAGE:
-   trivy client <span class="o">[</span><span class="nb">command</span> options<span class="o">]</span> image_name
+   trivy image --server value
 
-OPTIONS:
+   trivy client <span class="o">[</span>deprecated <span class="nb">command</span> options<span class="o">]</span> image_name
+
+DEPRECATED OPTIONS:
    --template value, -t value  output template <span class="o">[</span><span class="nv">$TRIVY_TEMPLATE</span><span class="o">]</span>
    --format value, -f value    format <span class="o">(</span>table, json, sarif, template<span class="o">)</span> <span class="o">(</span>default: <span class="s2">&quot;table&quot;</span><span class="o">)</span> <span class="o">[</span><span class="nv">$TRIVY_FORMAT</span><span class="o">]</span>
    --input value, -i value     input file path instead of image name <span class="o">[</span><span class="nv">$TRIVY_INPUT</span><span class="o">]</span>

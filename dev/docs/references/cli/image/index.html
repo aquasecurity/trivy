@@ -2413,6 +2413,10 @@ OPTIONS:
    --db-repository value            OCI repository to retrieve trivy-db from <span class="o">(</span>default: <span class="s2">&quot;ghcr.io/aquasecurity/trivy-db&quot;</span><span class="o">)</span> <span class="o">[</span><span class="nv">$TRIVY_DB_REPOSITORY</span><span class="o">]</span>
    --skip-files value               specify the file paths to skip traversal                <span class="o">(</span>accepts multiple inputs<span class="o">)</span> <span class="o">[</span><span class="nv">$TRIVY_SKIP_FILES</span><span class="o">]</span>
    --skip-dirs value                specify the directories where the traversal is skipped  <span class="o">(</span>accepts multiple inputs<span class="o">)</span> <span class="o">[</span><span class="nv">$TRIVY_SKIP_DIRS</span><span class="o">]</span>
+   --server value                   server address <span class="o">[</span><span class="nv">$TRIVY_SERVER</span><span class="o">]</span>
+   --token value                    <span class="k">for</span> authentication <span class="k">in</span> client/server mode <span class="o">[</span><span class="nv">$TRIVY_TOKEN</span><span class="o">]</span>
+   --token-header value             specify a header name <span class="k">for</span> token <span class="k">in</span> client/server mode <span class="o">(</span>default: <span class="s2">&quot;Trivy-Token&quot;</span><span class="o">)</span> <span class="o">[</span><span class="nv">$TRIVY_TOKEN_HEADER</span><span class="o">]</span>
+   --custom-headers value           custom headers <span class="k">in</span> client/server mode  <span class="o">(</span>accepts multiple inputs<span class="o">)</span> <span class="o">[</span><span class="nv">$TRIVY_CUSTOM_HEADERS</span><span class="o">]</span>
    --help, -h                       show <span class="nb">help</span> <span class="o">(</span>default: <span class="nb">false</span><span class="o">)</span>
 </code></pre></div>
 
