@@ -2,6 +2,7 @@ package k8s
 
 import (
 	"fmt"
+	"io"
 
 	"golang.org/x/xerrors"
 
@@ -9,9 +10,15 @@ import (
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy-kubernetes/pkg/artifacts"
 
-	"github.com/aquasecurity/trivy/pkg/report"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
+
+type Option struct {
+	Format     string
+	Report     string
+	Output     io.Writer
+	Severities []dbTypes.Severity
+}
 
 // Report represents a kubernetes scan report
 type Report struct {
@@ -37,6 +44,9 @@ type Resource struct {
 	// Metadata  Metadata `json:",omitempty"`
 	Results types.Results `json:",omitempty"`
 	Error   string        `json:",omitempty"`
+
+	// original report
+	Report types.Report
 }
 
 // Failed returns whether the k8s report includes any vulnerabilities or misconfigurations
@@ -90,13 +100,17 @@ type Writer interface {
 }
 
 // write writes the results in the give format
-func write(report Report, option report.Option, severities []dbTypes.Severity) error {
+func write(report Report, option Option) error {
 	var writer Writer
 	switch option.Format {
-	case "all":
-		writer = &JSONWriter{Output: option.Output}
-	case "summary":
-		writer = NewSummaryWriter(option.Output, severities)
+	case "json":
+		writer = &JSONWriter{Output: option.Output, Report: option.Report}
+	case "table":
+		writer = &TableWriter{
+			Output:     option.Output,
+			Report:     option.Report,
+			Severities: option.Severities,
+		}
 	default:
 		return xerrors.Errorf("unknown format: %v", option.Format)
 	}
@@ -121,6 +135,7 @@ func createResource(artifact *artifacts.Artifact, report types.Report, err error
 		Kind:      artifact.Kind,
 		Name:      artifact.Name,
 		Results:   results,
+		Report:    report,
 	}
 
 	// if there was any error during the scan

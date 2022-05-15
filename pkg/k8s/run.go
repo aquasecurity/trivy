@@ -3,13 +3,14 @@ package k8s
 import (
 	"context"
 	"errors"
+	"fmt"
+	"strings"
 
 	"github.com/urfave/cli/v2"
 	"golang.org/x/xerrors"
 
 	cmd "github.com/aquasecurity/trivy/pkg/commands/artifact"
 	"github.com/aquasecurity/trivy/pkg/log"
-	pkgReport "github.com/aquasecurity/trivy/pkg/report"
 
 	"github.com/aquasecurity/trivy-kubernetes/pkg/artifacts"
 	"github.com/aquasecurity/trivy-kubernetes/pkg/k8s"
@@ -47,7 +48,7 @@ func Run(cliCtx *cli.Context) error {
 	}
 
 	// get kubernetes scannable artifacts
-	artifacts, err := getArtifacts(ctx, cluster, opt.KubernetesOption.Namespace)
+	artifacts, err := getArtifacts(ctx, cliCtx.Args(), cluster, opt.KubernetesOption.Namespace)
 	if err != nil {
 		return xerrors.Errorf("get k8s artifacts error: %w", err)
 	}
@@ -67,10 +68,12 @@ func run(ctx context.Context, s *scanner, opt cmd.Option, artifacts []*artifacts
 		return xerrors.Errorf("k8s scan error: %w", err)
 	}
 
-	if err = write(report, pkgReport.Option{
-		Format: opt.KubernetesOption.ReportFormat,
-		Output: opt.Output,
-	}, opt.Severities); err != nil {
+	if err = write(report, Option{
+		Format:     opt.Format,
+		Report:     opt.KubernetesOption.ReportFormat,
+		Output:     opt.Output,
+		Severities: opt.Severities,
+	}); err != nil {
 		return xerrors.Errorf("unable to write results: %w", err)
 	}
 
@@ -79,6 +82,38 @@ func run(ctx context.Context, s *scanner, opt cmd.Option, artifacts []*artifacts
 	return nil
 }
 
-func getArtifacts(ctx context.Context, cluster k8s.Cluster, namespace string) ([]*artifacts.Artifact, error) {
-	return trivyk8s.New(cluster).Namespace(namespace).ListArtifacts(ctx)
+func getArtifacts(ctx context.Context, args cli.Args, cluster k8s.Cluster, namespace string) ([]*artifacts.Artifact, error) {
+	trivyk8s := trivyk8s.New(cluster).Namespace(namespace)
+
+	if !args.Present() {
+		return trivyk8s.ListArtifacts(ctx)
+	}
+
+	kind, name, err := extractKindAndName(args)
+	if err != nil {
+		return nil, err
+	}
+
+	artifact, err := trivyk8s.GetArtifact(ctx, kind, name)
+	if err != nil {
+		return nil, err
+	}
+
+	return []*artifacts.Artifact{artifact}, nil
+}
+
+func extractKindAndName(args cli.Args) (string, string, error) {
+	switch args.Len() {
+	case 1:
+		s := strings.Split(args.Get(0), "/")
+		if len(s) != 2 {
+			return "", "", fmt.Errorf("can't parse arguments: %v", args.Slice())
+		}
+
+		return s[0], s[1], nil
+	case 2:
+		return args.Get(0), args.Get(1), nil
+	}
+
+	return "", "", fmt.Errorf("can't parse arguments: %v", args.Slice())
 }

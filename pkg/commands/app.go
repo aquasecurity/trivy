@@ -798,6 +798,7 @@ func NewK8sCommand() *cli.Command {
 		Flags: []cli.Flag{
 			&namespaceFlag,
 			&reportFlag,
+			&formatFlag,
 			&outputFlag,
 			&severityFlag,
 			&exitCodeFlag,
