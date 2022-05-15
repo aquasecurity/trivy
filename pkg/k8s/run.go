@@ -3,7 +3,6 @@ package k8s
 import (
 	"context"
 	"errors"
-	"fmt"
 	"strings"
 
 	"github.com/urfave/cli/v2"
@@ -107,7 +106,7 @@ func extractKindAndName(args cli.Args) (string, string, error) {
 	case 1:
 		s := strings.Split(args.Get(0), "/")
 		if len(s) != 2 {
-			return "", "", fmt.Errorf("can't parse arguments: %v", args.Slice())
+			return "", "", xerrors.Errorf("can't parse arguments: %v", args.Slice())
 		}
 
 		return s[0], s[1], nil
@@ -115,5 +114,5 @@ func extractKindAndName(args cli.Args) (string, string, error) {
 		return args.Get(0), args.Get(1), nil
 	}
 
-	return "", "", fmt.Errorf("can't parse arguments: %v", args.Slice())
+	return "", "", xerrors.Errorf("can't parse arguments: %v", args.Slice())
 }
