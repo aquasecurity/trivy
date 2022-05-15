@@ -17,7 +17,13 @@ import (
 )
 
 // Run runs scan on kubernetes cluster
+
 func Run(cliCtx *cli.Context) error {
+	opt, err := cmd.InitOption(cliCtx)
+	if err != nil {
+		return xerrors.Errorf("option error: %w", err)
+	}
+
 	// Full-cluster scanning with '--format table' without explicit '--report all' is not allowed so that it won't mess up user's terminal.
 	if cliCtx.String("report") == "all" &&
 		!cliCtx.IsSet("report") &&
@@ -27,11 +33,6 @@ func Run(cliCtx *cli.Context) error {
 		m := "All the results in the table format can mess up your terminal. Use \"--report all\" to tell Trivy to output it to your terminal anyway, or consider \"--report summary\" to show the summary output."
 
 		return xerrors.New(m)
-	}
-
-	opt, err := cmd.InitOption(cliCtx)
-	if err != nil {
-		return xerrors.Errorf("option error: %w", err)
 	}
 
 	ctx, cancel := context.WithTimeout(cliCtx.Context, opt.Timeout)
