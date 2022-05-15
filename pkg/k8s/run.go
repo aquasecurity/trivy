@@ -51,7 +51,11 @@ func Run(cliCtx *cli.Context) error {
 		}
 		return xerrors.Errorf("init error: %w", err)
 	}
-	defer runner.Close()
+	defer func() {
+		if err := runner.Close(); err != nil {
+			log.Logger.Errorf("failed to close runner: %s", err)
+		}
+	}()
 
 	cluster, err := k8s.GetCluster()
 	if err != nil {
