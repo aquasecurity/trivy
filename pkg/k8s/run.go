@@ -25,6 +25,18 @@ func Run(cliCtx *cli.Context) error {
 	}
 
 	// Full-cluster scanning with '--format table' without explicit '--report all' is not allowed so that it won't mess up user's terminal.
+	// To show all the results, user needs to specify "--report all" explicitly
+	// even though the default value of "--report" is "all".
+	//
+	// e.g. $ trivy k8s --report all
+	//
+	// Or they can use "--format json" with implicit "--report all".
+	//
+	// e.g. $ trivy k8s --format json // All the results are shown in JSON
+	//
+	// Single resource scanning is allowed with implicit "--report all".
+	//
+	// e.g. $ trivy k8s pod myapp
 	if cliCtx.String("report") == allReport &&
 		!cliCtx.IsSet("report") &&
 		cliCtx.String("format") == tableFormat &&
