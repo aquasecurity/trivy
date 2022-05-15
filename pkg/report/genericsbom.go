@@ -22,7 +22,7 @@ const (
 )
 
 type GsbomPackage struct {
-	Purl         string   `json:"purl,omitempty"`
+	PackageUrl   string   `json:"package_url,omitempty"`
 	Relationship string   `json:"relationship,omitempty"`
 	Dependencies []string `json:"dependencies,omitempty"`
 	Scope        string   `json:"scope,omitempty"`
@@ -44,18 +44,18 @@ type GsbomManifest struct {
 }
 
 type GsbomJob struct {
-	Name string `json:"name,omitempty"`
-	Id   string `json:"id,omitempty"`
+	Correlator string `json:"correlator,omitempty"`
+	Id         string `json:"id,omitempty"`
 }
 type GsbomDetector struct {
-	Name    string `json:"name,omitempty"`
-	Version string `json:"version,omitempty"`
-	Url     string `json:"url,omitempty"`
+	Name    string `json:"name"`
+	Version string `json:"version"`
+	Url     string `json:"url"`
 }
 
 type Gsbom struct {
 	Version   int                      `json:"version,omitempty"`
-	Detector  GsbomDetector            `json:"detector,omitempty"`
+	Detector  GsbomDetector            `json:"detector"`
 	Metadata  Metadata                 `json:"metadata,omitempty"`
 	Ref       string                   `json:"ref,omitempty"`
 	Sha       string                   `json:"sha,omitempty"`
@@ -94,11 +94,11 @@ func (gsbmw GsbomWriter) Write(report types.Report) error {
 	gsbom.Sha = getenv("GITHUB_SHA")
 
 	gsbom.Job = &GsbomJob{
-		Name: getenv("GITHUB_JOB"),
-		Id:   getenv("GITHUB_RUN_ID"),
+		Correlator: getenv(fmt.Sprintf("%s_%s", "GITHUB_WORKFLOW", "GITHUB_JOB")),
+		Id:         getenv("GITHUB_RUN_ID"),
 	}
 
-	// gsbom.Metadata = getMetadata(report.Metadata)
+	// gsbom.Metadata = purl.NewPackageURL(string(report.ArtifactType), report.Metadata, )
 
 	manifests := make(map[string]GsbomManifest)
 
@@ -123,9 +123,13 @@ func (gsbmw GsbomWriter) Write(report types.Report) error {
 			gsbompkg.Scope = RuntimeScope
 			gsbompkg.Relationship = getPkgRelationshipType(pkg)
 			gsbompkg.Dependencies = getDependencies(report.Results, pkg)
-			gsbompkg.Purl, err = buildPurl(result.Type, pkg)
+			gsbompkg.PackageUrl, err = buildPurl(result.Type, pkg)
 			if err != nil {
 				return xerrors.Errorf("unable to build purl: %w for the package: %s", err, pkg.Name)
+			}
+
+			if manifest.Metadata == nil && pkg.Layer.Digest != "" {
+				manifest.Metadata = Metadata{"trivy:filesystem": pkg.Layer.Digest}
 			}
 
 			resolved[pkg.Name] = gsbompkg
@@ -166,13 +170,6 @@ func getPkgRelationshipType(pkg ftypes.Package) string {
 	}
 	return DirectRelationship
 }
-
-// func getMetadata(pkg ftypes.Package) Metadata {
-// 	purl, _ := buildPurl("generic", pkg)
-// 	metadata := Metadata{}
-// 	metadata["trivy:distro"] = purl
-// 	return metadata
-// }
 
 func buildPurl(t string, pkg ftypes.Package) (string, error) {
 	packageUrl, err := purl.NewPackageURL(t, types.Metadata{}, pkg)

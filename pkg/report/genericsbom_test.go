@@ -64,10 +64,14 @@ func TestReportWriter_gSBOM(t *testing.T) {
 					},
 					Resolved: map[string]report.GsbomPackage{
 						"@xtuc/ieee754": {
-							Purl: "pkg:npm/%40xtuc/ieee754@1.2.0",
+							PackageUrl:   "pkg:npm/%40xtuc/ieee754@1.2.0",
+							Relationship: "direct",
+							Scope:        "runtime",
 						},
 						"@xtuc/long": {
-							Purl: "pkg:npm/%40xtuc/long@4.2.2",
+							PackageUrl:   "pkg:npm/%40xtuc/long@4.2.2",
+							Relationship: "direct",
+							Scope:        "runtime",
 						},
 					},
 				},
@@ -104,10 +108,14 @@ func TestReportWriter_gSBOM(t *testing.T) {
 					},
 					Resolved: map[string]report.GsbomPackage{
 						"com.google.code.gson:gson": {
-							Purl: "pkg:maven/com.google.code.gson/gson@2.2.2",
+							PackageUrl:   "pkg:maven/com.google.code.gson/gson@2.2.2",
+							Relationship: "direct",
+							Scope:        "runtime",
 						},
 						"net.sf.opencsv:opencsv": {
-							Purl: "pkg:maven/net.sf.opencsv/opencsv@2.3",
+							PackageUrl:   "pkg:maven/net.sf.opencsv/opencsv@2.3",
+							Relationship: "direct",
+							Scope:        "runtime",
 						},
 					},
 				},

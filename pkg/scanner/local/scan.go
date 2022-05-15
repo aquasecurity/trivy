@@ -116,8 +116,9 @@ func (s Scanner) Scan(target string, artifactKey string, blobKeys []string, opti
 
 	// Scan dependencies
 	if options.ListDependencies {
-		depsResults := s.dependenciesToResults(results, artifactDetail.Applications)
-		results = depsResults
+		if depsResults := s.dependenciesToResults(results, artifactDetail.Applications); depsResults != nil {
+			results = depsResults
+		}
 	}
 
 	return results, artifactDetail.OS, nil
@@ -298,21 +299,20 @@ func (s Scanner) secretsToResults(secrets []ftypes.Secret) types.Results {
 	return results
 }
 
-func (s Scanner) dependenciesToResults(results []types.Result, apps []ftypes.Application) types.Results {
+func (s Scanner) dependenciesToResults(results types.Results, apps []ftypes.Application) types.Results {
 	if len(apps) == 0 {
 		return nil
 	}
 
-	var depsResults types.Results
-	for _, result := range results {
+	depsResults := results
+	for i, result := range results {
 		for _, app := range apps {
 			if len(app.Dependencies) == 0 {
 				continue
 			}
 
 			if result.Target == app.FilePath {
-				result.Dependencies = app.Dependencies
-				depsResults = append(depsResults, result)
+				depsResults[i].Dependencies = app.Dependencies
 			}
 		}
 	}

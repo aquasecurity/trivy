@@ -15,8 +15,10 @@
         "--format",
         "gsbom",
         "-type",
-        "fs",
-        "/Users/shira.cohen/Argon/package-test/redis"
+        // "fs",
+        "image",
+        // "/Users/shira.cohen/Argon/package-test/redis"
+        "alpine:3.15.4"
       ]
     }
   ]
