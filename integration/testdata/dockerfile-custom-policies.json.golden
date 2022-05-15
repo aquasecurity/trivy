@@ -36,7 +36,7 @@
           "Severity": "UNKNOWN",
           "Status": "FAIL",
           "Layer": {},
-          "IacMetadata": {
+          "CauseMetadata": {
             "Provider": "Generic",
             "Service": "general"
           }
@@ -52,7 +52,7 @@
           "Severity": "UNKNOWN",
           "Status": "FAIL",
           "Layer": {},
-          "IacMetadata": {
+          "CauseMetadata": {
             "Provider": "Generic",
             "Service": "general"
           }

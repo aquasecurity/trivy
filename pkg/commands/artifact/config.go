@@ -10,7 +10,7 @@ import (
 
 // ConfigRun runs scan on config files
 func ConfigRun(ctx *cli.Context) error {
-	opt, err := initOption(ctx)
+	opt, err := InitOption(ctx)
 	if err != nil {
 		return xerrors.Errorf("option error: %w", err)
 	}
@@ -22,9 +22,6 @@ func ConfigRun(ctx *cli.Context) error {
 	opt.VulnType = nil
 	opt.SecurityChecks = []string{types.SecurityCheckConfig}
 
-	// Skip downloading vulnerability DB
-	opt.SkipDBUpdate = true
-
 	// Run filesystem command internally
-	return Run(ctx.Context, opt, filesystemStandaloneScanner, initCache)
+	return run(ctx.Context, opt, filesystemArtifact)
 }
