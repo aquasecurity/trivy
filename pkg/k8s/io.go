@@ -5,7 +5,7 @@ import (
 	"os"
 
 	"golang.org/x/xerrors"
-	"gopkg.in/yaml.v2"
+	"gopkg.in/yaml.v3"
 
 	"github.com/aquasecurity/trivy/pkg/log"
 
@@ -25,16 +25,9 @@ func createTempFile(artifact *artifacts.Artifact) (string, error) {
 		}
 	}()
 
-	data, err := yaml.Marshal(artifact.RawResource)
-	if err != nil {
+	if err := yaml.NewEncoder(file).Encode(artifact.RawResource); err != nil {
 		removeFile(filename)
 		return "", xerrors.Errorf("marshaling resource error: %w", err)
-	}
-
-	_, err = file.Write(data)
-	if err != nil {
-		removeFile(filename)
-		return "", xerrors.Errorf("writing tmp file error: %w", err)
 	}
 
 	return file.Name(), nil

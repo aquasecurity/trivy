@@ -5,6 +5,7 @@ import (
 
 	"golang.org/x/xerrors"
 
+	ftypes "github.com/aquasecurity/fanal/types"
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy-kubernetes/pkg/artifacts"
 
@@ -109,7 +110,7 @@ func createResource(artifact *artifacts.Artifact, report types.Report, err error
 	for _, result := range report.Results {
 		// if resource is a kubernetes file fix the target name,
 		// to avoid showing the temp file that was removed.
-		if result.Type == "kubernetes" {
+		if result.Type == ftypes.Kubernetes {
 			result.Target = fmt.Sprintf("%s/%s", artifact.Kind, artifact.Name)
 		}
 		results = append(results, result)

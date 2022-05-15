@@ -31,8 +31,7 @@ func (s *scanner) run(ctx context.Context, artifacts []*artifacts.Artifact) (Rep
 	}
 	defer bar.Finish()
 
-	vulns := make([]Resource, 0)
-	misconfigs := make([]Resource, 0)
+	var vulns, misconfigs []Resource
 
 	// disable logs before scanning
 	err := log.InitLogger(s.opt.Debug, true)
@@ -112,11 +111,6 @@ func (s *scanner) scanMisconfigs(ctx context.Context, artifact *artifacts.Artifa
 	if err != nil {
 		log.Logger.Debugf("failed to scan config %s/%s: %s", artifact.Kind, artifact.Name, err)
 		return createResource(artifact, configReport, err), err
-	}
-
-	configReport, err = s.runner.Filter(ctx, s.opt, configReport)
-	if err != nil {
-		return Resource{}, xerrors.Errorf("filter error: %w", err)
 	}
 
 	return s.filter(ctx, configReport, artifact)

@@ -68,7 +68,7 @@ func run(ctx context.Context, s *scanner, opt cmd.Option, artifacts []*artifacts
 	}
 
 	if err = write(report, pkgReport.Option{
-		Format: opt.KubernetesOption.ReportFormat, // for now json is the default
+		Format: opt.KubernetesOption.ReportFormat,
 		Output: opt.Output,
 	}, opt.Severities); err != nil {
 		return xerrors.Errorf("unable to write results: %w", err)
