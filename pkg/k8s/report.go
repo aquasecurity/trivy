@@ -46,7 +46,7 @@ type Resource struct {
 	Error   string        `json:",omitempty"`
 
 	// original report
-	Report types.Report
+	Report types.Report `json:"-"`
 }
 
 // Failed returns whether the k8s report includes any vulnerabilities or misconfigurations
