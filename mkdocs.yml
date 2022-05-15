@@ -61,10 +61,7 @@ nav:
           - Scanning: docs/kubernetes/cli/scanning.md
           - Operator:
               - Overview: docs/kubernetes/operator/index.md
-              - Installation:
-                    - kubectl: docs/kubernetes/operator/installation/kubectl.md
-                    - Helm: docs/kubernetes/operator/installation/helm.md
-                    - Upgrade: docs/kubernetes/operator/installation/upgrade.md
+              - Installation: docs/kubernetes/operator/install.md
               - Getting Started: docs/kubernetes/operator/getting-started.md
               - Configuration: docs/kubernetes/operator/configuration.md
               - Vulnerability Scanning:
