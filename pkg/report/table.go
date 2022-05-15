@@ -8,18 +8,25 @@ import (
 	"strings"
 	"sync"
 
-	ftypes "github.com/aquasecurity/fanal/types"
-
-	"github.com/aquasecurity/table"
-
+	"github.com/fatih/color"
 	"github.com/liamg/tml"
+	"golang.org/x/exp/slices"
 
+	ftypes "github.com/aquasecurity/fanal/types"
+	"github.com/aquasecurity/table"
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/types"
+)
 
-	"github.com/fatih/color"
-	"golang.org/x/exp/slices"
+var (
+	SeverityColor = []func(a ...interface{}) string{
+		color.New(color.FgCyan).SprintFunc(),   // UNKNOWN
+		color.New(color.FgBlue).SprintFunc(),   // LOW
+		color.New(color.FgYellow).SprintFunc(), // MEDIUM
+		color.New(color.FgHiRed).SprintFunc(),  // HIGH
+		color.New(color.FgRed).SprintFunc(),    // CRITICAL
+	}
 )
 
 // TableWriter implements Writer and output in tabular form
@@ -175,7 +182,7 @@ func (tw TableWriter) setVulnerabilityRows(tableWriter *table.Table, vulns []typ
 
 		var row []string
 		if tw.isOutputToTerminal() {
-			row = []string{lib, v.VulnerabilityID, dbTypes.ColorizeSeverity(v.Severity),
+			row = []string{lib, v.VulnerabilityID, ColorizeSeverity(v.Severity, v.Severity),
 				v.InstalledVersion, v.FixedVersion, strings.TrimSpace(title)}
 		} else {
 			row = []string{lib, v.VulnerabilityID, v.Severity, v.InstalledVersion, v.FixedVersion, strings.TrimSpace(title)}
@@ -227,7 +234,7 @@ func (tw TableWriter) setSecretRows(tableWriter *table.Table, secrets []ftypes.S
 	for _, secret := range secrets {
 		severity := secret.Severity
 		if tw.isOutputToTerminal() {
-			severity = dbTypes.ColorizeSeverity(severity)
+			severity = ColorizeSeverity(severity, severity)
 		}
 		row := []string{string(secret.Category), secret.Title, severity,
 			fmt.Sprint(secret.StartLine), // multi-line is not supported for now.
@@ -256,4 +263,13 @@ func (tw TableWriter) countSeverities(result types.Result) map[string]int {
 		severityCount[v.Severity]++
 	}
 	return severityCount
+}
+
+func ColorizeSeverity(value, severity string) string {
+	for i, name := range dbTypes.SeverityNames {
+		if severity == name {
+			return SeverityColor[i](value)
+		}
+	}
+	return color.New(color.FgBlue).SprintFunc()(severity)
 }
