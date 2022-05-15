@@ -17,6 +17,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/commands/option"
 	"github.com/aquasecurity/trivy/pkg/commands/plugin"
 	"github.com/aquasecurity/trivy/pkg/commands/server"
+	"github.com/aquasecurity/trivy/pkg/k8s"
 	"github.com/aquasecurity/trivy/pkg/result"
 	"github.com/aquasecurity/trivy/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/utils"
@@ -793,7 +794,7 @@ func NewK8sCommand() *cli.Command {
 		Name:    "kubernetes",
 		Aliases: []string{"k8s"},
 		Usage:   "scan kubernetes vulnerabilities and misconfigurations",
-		Action:  artifact.K8sRun,
+		Action:  k8s.Run,
 		Flags: []cli.Flag{
 			&namespaceFlag,
 			&reportFlag,
