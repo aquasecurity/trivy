@@ -9,8 +9,7 @@ import (
 
 	"github.com/aquasecurity/table"
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
-
-	"github.com/liamg/tml"
+	pkgReport "github.com/aquasecurity/trivy/pkg/report"
 )
 
 type SummaryWriter struct {
@@ -62,7 +61,7 @@ func (s SummaryWriter) Write(report Report) error {
 
 	keyParts := []string{"Severities:"}
 	for _, s := range s.Severities {
-		keyParts = append(keyParts, fmt.Sprintf("%s=%s", s[:1], colourSeverityValue(s, s)))
+		keyParts = append(keyParts, fmt.Sprintf("%s=%s", s[:1], pkgReport.ColorizeSeverity(s, s)))
 	}
 
 	_, _ = fmt.Fprintln(s.Output, strings.Join(keyParts, " "))
@@ -75,7 +74,7 @@ func (s SummaryWriter) generateSummary(sevCount map[string]int) []string {
 
 	for _, sev := range s.Severities {
 		if count, ok := sevCount[sev]; ok {
-			parts = append(parts, colourSeverityValue(strconv.Itoa(count), sev))
+			parts = append(parts, pkgReport.ColorizeSeverity(strconv.Itoa(count), sev))
 		} else {
 			parts = append(parts, " ")
 		}
@@ -141,19 +140,4 @@ func configureHeader(s SummaryWriter, t *table.Table) {
 	t.SetAlignment(headerAlignment...)
 	t.SetAutoMergeHeaders(true)
 	t.SetHeaderColSpans(0, 1, 1, sevCount, sevCount, sevCount)
-}
-
-func colourSeverityValue(value string, severity string) string {
-	switch severity {
-	case "CRITICAL":
-		return tml.Sprintf("<bold><red>%s</red></bold>", value)
-	case "HIGH":
-		return tml.Sprintf("<red>%s</red>", value)
-	case "MEDIUM":
-		return tml.Sprintf("<yellow>%s</yellow>", value)
-	case "UNKNOWN":
-		return tml.Sprintf("<blue>%s</blue>", value)
-	default:
-		return tml.Sprintf("%s", value)
-	}
 }
