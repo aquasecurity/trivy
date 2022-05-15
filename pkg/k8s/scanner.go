@@ -123,5 +123,4 @@ func (s *scanner) filter(ctx context.Context, report types.Report, artifact *art
 	}
 
 	return createResource(artifact, report, nil), nil
-
 }
