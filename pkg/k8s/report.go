@@ -1,9 +1,13 @@
 package k8s
 
 import (
+	"fmt"
+
 	"golang.org/x/xerrors"
 
+	ftypes "github.com/aquasecurity/fanal/types"
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
+	"github.com/aquasecurity/trivy-kubernetes/pkg/artifacts"
 
 	"github.com/aquasecurity/trivy/pkg/report"
 	"github.com/aquasecurity/trivy/pkg/types"
@@ -85,8 +89,8 @@ type Writer interface {
 	Write(Report) error
 }
 
-// Write writes the results in the give format
-func Write(report Report, option report.Option, severities []dbTypes.Severity) error {
+// write writes the results in the give format
+func write(report Report, option report.Option, severities []dbTypes.Severity) error {
 	var writer Writer
 	switch option.Format {
 	case "all":
@@ -98,4 +102,31 @@ func Write(report Report, option report.Option, severities []dbTypes.Severity) e
 	}
 
 	return writer.Write(report)
+}
+
+func createResource(artifact *artifacts.Artifact, report types.Report, err error) Resource {
+	results := make([]types.Result, 0, len(report.Results))
+	// fix target name
+	for _, result := range report.Results {
+		// if resource is a kubernetes file fix the target name,
+		// to avoid showing the temp file that was removed.
+		if result.Type == ftypes.Kubernetes {
+			result.Target = fmt.Sprintf("%s/%s", artifact.Kind, artifact.Name)
+		}
+		results = append(results, result)
+	}
+
+	r := Resource{
+		Namespace: artifact.Namespace,
+		Kind:      artifact.Kind,
+		Name:      artifact.Name,
+		Results:   results,
+	}
+
+	// if there was any error during the scan
+	if err != nil {
+		r.Error = err.Error()
+	}
+
+	return r
 }

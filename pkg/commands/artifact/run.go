@@ -344,7 +344,7 @@ func run(ctx context.Context, opt Option, artifactType ArtifactType) (err error)
 		return xerrors.Errorf("report error: %w", err)
 	}
 
-	exit(opt, report.Results.Failed())
+	Exit(opt, report.Results.Failed())
 
 	return nil
 }
@@ -466,7 +466,7 @@ func scan(ctx context.Context, opt Option, initializeScanner InitializeScanner, 
 	return report, nil
 }
 
-func exit(c Option, failedResults bool) {
+func Exit(c Option, failedResults bool) {
 	if c.ExitCode != 0 && failedResults {
 		os.Exit(c.ExitCode)
 	}
