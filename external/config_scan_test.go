@@ -59,7 +59,7 @@ func TestConfigScanner_Scan(t *testing.T) {
 										{
 											Number:      1,
 											Content:     "FROM alpine:3.10",
-											Highlighted: "\x1b\x1b[38;5;64mFROM\x1b\x1b[0m\x1b\x1b[38;5;37m alpine:3.10\x1b",
+											Highlighted: "\x1b[38;5;64mFROM\x1b[0m\x1b[38;5;37m alpine:3.10",
 											IsCause:     true,
 											Annotation:  "",
 											Truncated:   false,
