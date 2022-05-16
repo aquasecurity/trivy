@@ -17,21 +17,6 @@ type JSONWriter struct {
 
 // Write writes the results in JSON format
 func (jw JSONWriter) Write(report types.Report) error {
-	// VendorSeverity includes all vendor severities.
-	// It would be noisy to users, so it should be removed from the JSON output.
-	for i := 0; i < len(report.Results); i++ {
-		for j := 0; j < len(report.Results[i].Vulnerabilities); j++ {
-			report.Results[i].Vulnerabilities[j].VendorSeverity = nil
-		}
-		// remove the Highlighted attribute from the json results
-		for j := 0; j < len(report.Results[i].Misconfigurations); j++ {
-			for li, _ := range report.Results[i].Misconfigurations[j].CauseMetadata.Code.Lines {
-				report.Results[i].Misconfigurations[j].CauseMetadata.Code.Lines[li].Highlighted = ""
-			}
-
-		}
-	}
-
 	output, err := json.MarshalIndent(report, "", "  ")
 	if err != nil {
 		return xerrors.Errorf("failed to marshal json: %w", err)
