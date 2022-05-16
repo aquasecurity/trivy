@@ -5,11 +5,12 @@ Trivy detects two types of security issues:
 - [Vulnerabilities][vuln]
 - [Misconfigurations][misconf]
 
-Trivy can scan three different artifacts:
+Trivy can scan four different artifacts:
 
 - [Container Images][container]
 - [Filesystem][filesystem] and [Rootfs][rootfs]
 - [Git Repositories][repo]
+- [Kubernetes][kubernetes]
 
 Trivy can be run in two different modes:
 
@@ -56,17 +57,19 @@ See [Integrations][integrations] for details.
     - local filesystem and rootfs
     - remote git repository
 - [SBOM][sbom] (Software Bill of Materials) support
-    - CycloneDX 
+    - CycloneDX
+    - SPDX
 
 Please see [LICENSE][license] for Trivy licensing information.
 
 [installation]: ../getting-started/installation.md
 [vuln]: ../docs/vulnerability/scanning/index.md
-[misconf]: ../docs/misconfiguration/index.md
+[misconf]: ../docs/misconfiguration/scanning.md
 [container]: ../docs/vulnerability/scanning/image.md
 [rootfs]: ../docs/vulnerability/scanning/rootfs.md
 [filesystem]: ../docs/vulnerability/scanning/filesystem.md
 [repo]: ../docs/vulnerability/scanning/git-repository.md
+[kubernetes]: ../docs/kubernetes/scanning.md
 
 [standalone]: ../docs/references/modes/standalone.md
 [client-server]: ../docs/references/modes/client-server.md

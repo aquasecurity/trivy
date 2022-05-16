@@ -3,21 +3,20 @@
 Trivy uses tfsec internally to scan Terraform HCL files, but Trivy doesn't support some features provided by tfsec.
 This section describes the differences between Trivy and tfsec.
 
-| Feature                     | Trivy                                   | tfsec                |
-| --------------------------- | --------------------------------------- | -------------------- |
-| Built-in Policies           | :material-check:                        | :material-check:     |
-| Custom Policies             | Rego[^1]                                | JSON and YAML        |
-| Policy Metadata[^2]         | :material-check:                        | :material-check:     |
-| Show Successes              | :material-check:                        | :material-check:     |
-| Disable Policies            | :material-check:                        | :material-check:     |
-| Show Issue Lines            | :material-close:                        | :material-check:     |
-| Support .tfvars             | :material-close:                        | :material-check:     |
-| View Statistics             | :material-close:                        | :material-check:     |
-| Filtering by Severity       | :material-check:                        | :material-close:     |
-| Supported Formats           | Dockerfile, JSON, YAML, Terraform, etc. | Terraform            |
+| Feature               | Trivy                                                  | tfsec                |
+|-----------------------|--------------------------------------------------------|----------------------|
+| Built-in Policies     | :material-check:                                       | :material-check:     |
+| Custom Policies       | Rego                                                   | Rego, JSON, and YAML |
+| Policy Metadata[^1]   | :material-check:                                       | :material-check:     |
+| Show Successes        | :material-check:                                       | :material-check:     |
+| Disable Policies      | :material-check:                                       | :material-check:     |
+| Show Issue Lines      | :material-check:                                       | :material-check:     |
+| Support .tfvars       | :material-close:                                       | :material-check:     |
+| View Statistics       | :material-close:                                       | :material-check:     |
+| Filtering by Severity | :material-check:                                       | :material-check:     |
+| Supported Formats     | Dockerfile, JSON, YAML, Terraform, CloudFormation etc. | Terraform            |
 
-[^1]: Terraform HCL files are not supported.
-[^2]: To enrich the results such as ID, Title, Description, Severity, etc.
+[^1]: To enrich the results such as ID, Title, Description, Severity, etc.
 
 tfsec is designed for Terraform.
 People who use only Terraform should use tfsec.

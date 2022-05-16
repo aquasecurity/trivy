@@ -1,7 +1,9 @@
 # SBOM
+
 Trivy currently supports the following SBOM formats.
 
 - [CycloneDX][cyclonedx]
+- [SPDX][spdx]
 
 To generate SBOM, you can use the `--format` option for each subcommand such as `image` and `fs`.
 
@@ -189,3 +191,4 @@ $ trivy sbom --artifact-type archive alpine.tar
 ```
 
 [cyclonedx]: cyclonedx.md
+[spdx]: spdx.md

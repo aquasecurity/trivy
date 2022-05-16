@@ -2,12 +2,14 @@
 
 ```bash
 NAME:
-   trivy client - client mode
+   trivy client - DEPRECATED client mode, use `trivy image` with `--server` option for remote scans now.
 
 USAGE:
-   trivy client [command options] image_name
+   trivy image --server value
 
-OPTIONS:
+   trivy client [deprecated command options] image_name
+
+DEPRECATED OPTIONS:
    --template value, -t value  output template [$TRIVY_TEMPLATE]
    --format value, -f value    format (table, json, sarif, template) (default: "table") [$TRIVY_FORMAT]
    --input value, -i value     input file path instead of image name [$TRIVY_INPUT]

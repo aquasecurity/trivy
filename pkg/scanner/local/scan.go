@@ -21,7 +21,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/types"
 
 	_ "github.com/aquasecurity/fanal/analyzer/all"
-	_ "github.com/aquasecurity/fanal/hook/all"
+	_ "github.com/aquasecurity/fanal/handler/all"
 )
 
 var (
@@ -104,8 +104,14 @@ func (s Scanner) Scan(target string, artifactKey string, blobKeys []string, opti
 
 	// Scan IaC config files
 	if slices.Contains(options.SecurityChecks, types.SecurityCheckConfig) {
-		configResults := s.misconfsToResults(artifactDetail.Misconfigurations, options)
+		configResults := s.misconfsToResults(artifactDetail.Misconfigurations)
 		results = append(results, configResults...)
+	}
+
+	// Scan secrets
+	if slices.Contains(options.SecurityChecks, types.SecurityCheckSecret) {
+		secretResults := s.secretsToResults(artifactDetail.Secrets)
+		results = append(results, secretResults...)
 	}
 
 	return results, artifactDetail.OS, nil
@@ -236,7 +242,7 @@ func (s Scanner) scanLibrary(apps []ftypes.Application, options types.ScanOption
 	return results, nil
 }
 
-func (s Scanner) misconfsToResults(misconfs []ftypes.Misconfiguration, options types.ScanOptions) types.Results {
+func (s Scanner) misconfsToResults(misconfs []ftypes.Misconfiguration) types.Results {
 	log.Logger.Infof("Detected config files: %d", len(misconfs))
 	var results types.Results
 	for _, misconf := range misconfs {
@@ -272,6 +278,20 @@ func (s Scanner) misconfsToResults(misconfs []ftypes.Misconfiguration, options t
 	return results
 }
 
+func (s Scanner) secretsToResults(secrets []ftypes.Secret) types.Results {
+	var results types.Results
+	for _, secret := range secrets {
+		log.Logger.Debugf("Secret file: %s", secret.FilePath)
+
+		results = append(results, types.Result{
+			Target:  secret.FilePath,
+			Class:   types.ClassSecret,
+			Secrets: secret.Findings,
+		})
+	}
+	return results
+}
+
 func toDetectedMisconfiguration(res ftypes.MisconfResult, defaultSeverity dbTypes.Severity,
 	status types.MisconfStatus, layer ftypes.Layer) types.DetectedMisconfiguration {
 
@@ -289,16 +309,12 @@ func toDetectedMisconfiguration(res ftypes.MisconfResult, defaultSeverity dbType
 	}
 
 	var primaryURL string
-	if strings.HasPrefix(res.Namespace, "appshield.") {
-		primaryURL = fmt.Sprintf("https://avd.aquasec.com/appshield/%s", strings.ToLower(res.ID))
+
+	// empty namespace implies a go rule from defsec, "builtin" refers to a built-in rego rule
+	// this ensures we don't generate bad links for custom policies
+	if res.Namespace == "" || strings.HasPrefix(res.Namespace, "builtin.") {
+		primaryURL = fmt.Sprintf("https://avd.aquasec.com/misconfig/%s", strings.ToLower(res.ID))
 		res.References = append(res.References, primaryURL)
-	} else if strings.Contains(res.Type, "tfsec") {
-		for _, ref := range res.References {
-			if strings.HasPrefix(ref, "https://tfsec.dev/docs/") {
-				primaryURL = ref
-				break
-			}
-		}
 	}
 
 	return types.DetectedMisconfiguration{
@@ -316,12 +332,13 @@ func toDetectedMisconfiguration(res ftypes.MisconfResult, defaultSeverity dbType
 		Status:      status,
 		Layer:       layer,
 		Traces:      res.Traces,
-		IacMetadata: ftypes.IacMetadata{
+		CauseMetadata: ftypes.CauseMetadata{
 			Resource:  res.Resource,
 			Provider:  res.Provider,
 			Service:   res.Service,
 			StartLine: res.StartLine,
 			EndLine:   res.EndLine,
+			Code:      res.Code,
 		},
 	}
 }

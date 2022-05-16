@@ -10,6 +10,7 @@ import (
 	cdx "github.com/CycloneDX/cyclonedx-go"
 	v1 "github.com/google/go-containerregistry/pkg/v1"
 	"github.com/google/uuid"
+	"github.com/samber/lo"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	fake "k8s.io/utils/clock/testing"
@@ -335,7 +336,7 @@ func TestWriter_Write(t *testing.T) {
 									Name: string(vulnerability.NVD),
 									URL:  "",
 								},
-								Score:    4.3,
+								Score:    lo.ToPtr(4.3),
 								Severity: cdx.SeverityMedium,
 								Method:   cdx.ScoringMethodCVSSv2,
 								Vector:   "AV:N/AC:M/Au:N/C:N/I:N/A:P",
@@ -345,7 +346,7 @@ func TestWriter_Write(t *testing.T) {
 									Name: string(vulnerability.NVD),
 									URL:  "",
 								},
-								Score:    5.5,
+								Score:    lo.ToPtr(5.5),
 								Severity: cdx.SeverityMedium,
 								Method:   cdx.ScoringMethodCVSSv3,
 								Vector:   "CVSS:3.0/AV:L/AC:L/PR:N/UI:R/S:U/C:N/I:N/A:H",
@@ -355,7 +356,7 @@ func TestWriter_Write(t *testing.T) {
 									Name: string(vulnerability.RedHatOVAL),
 									URL:  "",
 								},
-								Score:    5.3,
+								Score:    lo.ToPtr(5.3),
 								Severity: cdx.SeverityMedium,
 								Method:   cdx.ScoringMethodCVSSv3,
 								Vector:   "CVSS:3.0/AV:L/AC:L/PR:L/UI:N/S:U/C:L/I:L/A:L",
@@ -697,7 +698,7 @@ func TestWriter_Write(t *testing.T) {
 								Source: &cdx.Source{
 									Name: string(vulnerability.NVD),
 								},
-								Score:    9.7,
+								Score:    lo.ToPtr(9.7),
 								Severity: cdx.SeverityHigh,
 								Method:   cdx.ScoringMethodCVSSv2,
 								Vector:   "AV:N/AC:L/Au:N/C:C/I:P/A:C",
@@ -706,7 +707,7 @@ func TestWriter_Write(t *testing.T) {
 								Source: &cdx.Source{
 									Name: string(vulnerability.NVD),
 								},
-								Score:    5.9,
+								Score:    lo.ToPtr(5.9),
 								Severity: cdx.SeverityMedium,
 								Method:   cdx.ScoringMethodCVSSv31,
 								Vector:   "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:H/I:N/A:N",
@@ -715,7 +716,7 @@ func TestWriter_Write(t *testing.T) {
 								Source: &cdx.Source{
 									Name: string(vulnerability.RedHat),
 								},
-								Score:    5.9,
+								Score:    lo.ToPtr(5.9),
 								Severity: cdx.SeverityLow,
 								Method:   cdx.ScoringMethodCVSSv31,
 								Vector:   "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:H/I:N/A:N",
