@@ -154,13 +154,6 @@ var (
 		EnvVars: []string{"TRIVY_SECURITY_CHECKS"},
 	}
 
-	k8sSecurityChecksFlag = cli.StringFlag{
-		Name:    "security-checks",
-		Value:   fmt.Sprintf("%s,%s", types.SecurityCheckVulnerability, types.SecurityCheckConfig),
-		Usage:   "comma-separated list of what security issues to detect (vuln,config)",
-		EnvVars: []string{"TRIVY_SECURITY_CHECKS"},
-	}
-
 	cacheDirFlag = cli.StringFlag{
 		Name:    "cache-dir",
 		Value:   utils.DefaultCacheDir(),
@@ -834,7 +827,10 @@ func NewK8sCommand() *cli.Command {
 			&clearCacheFlag,
 			&ignoreUnfixedFlag,
 			&vulnTypeFlag,
-			&k8sSecurityChecksFlag,
+			withValue(
+				&securityChecksFlag,
+				fmt.Sprintf("%s,%s", types.SecurityCheckVulnerability, types.SecurityCheckConfig),
+			),
 			&ignoreFileFlag,
 			&cacheBackendFlag,
 			&cacheTTL,
@@ -931,4 +927,9 @@ func NewVersionCommand() *cli.Command {
 // The flag value is copied through this function to prevent the issue.
 func stringSliceFlag(f cli.StringSliceFlag) *cli.StringSliceFlag {
 	return &f
+}
+
+func withValue(s *cli.StringFlag, value string) *cli.StringFlag {
+	s.Value = value
+	return s
 }
