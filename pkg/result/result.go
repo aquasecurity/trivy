@@ -10,14 +10,16 @@ import (
 
 	"github.com/google/wire"
 	"github.com/open-policy-agent/opa/rego"
+	"golang.org/x/exp/maps"
+	"golang.org/x/exp/slices"
 	"golang.org/x/xerrors"
 
+	ftypes "github.com/aquasecurity/fanal/types"
 	"github.com/aquasecurity/trivy-db/pkg/db"
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/vulnerability"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/types"
-	"github.com/aquasecurity/trivy/pkg/utils"
 )
 
 const (
@@ -86,7 +88,6 @@ func (c Client) FillVulnerabilityInfo(vulns []types.DetectedVulnerability, repor
 		vulns[i].Severity = severity
 		vulns[i].SeveritySource = severitySource
 		vulns[i].PrimaryURL = c.getPrimaryURL(vulnID, vuln.References, source)
-		vulns[i].Vulnerability.VendorSeverity = nil // Remove VendorSeverity from Results
 	}
 }
 
@@ -131,24 +132,25 @@ func (c Client) getPrimaryURL(vulnID string, refs []string, source dbTypes.Sourc
 }
 
 // Filter filter out the vulnerabilities
-func (c Client) Filter(ctx context.Context, vulns []types.DetectedVulnerability, misconfs []types.DetectedMisconfiguration,
+func (c Client) Filter(ctx context.Context, vulns []types.DetectedVulnerability, misconfs []types.DetectedMisconfiguration, secrets []ftypes.SecretFinding,
 	severities []dbTypes.Severity, ignoreUnfixed, includeNonFailures bool, ignoreFile, policyFile string) (
-	[]types.DetectedVulnerability, *types.MisconfSummary, []types.DetectedMisconfiguration, error) {
+	[]types.DetectedVulnerability, *types.MisconfSummary, []types.DetectedMisconfiguration, []ftypes.SecretFinding, error) {
 	ignoredIDs := getIgnoredIDs(ignoreFile)
 
 	filteredVulns := filterVulnerabilities(vulns, severities, ignoreUnfixed, ignoredIDs)
 	misconfSummary, filteredMisconfs := filterMisconfigurations(misconfs, severities, includeNonFailures, ignoredIDs)
+	filteredSecrets := filterSecrets(secrets, severities)
 
 	if policyFile != "" {
 		var err error
 		filteredVulns, filteredMisconfs, err = applyPolicy(ctx, filteredVulns, filteredMisconfs, policyFile)
 		if err != nil {
-			return nil, nil, nil, xerrors.Errorf("failed to apply the policy: %w", err)
+			return nil, nil, nil, nil, xerrors.Errorf("failed to apply the policy: %w", err)
 		}
 	}
 	sort.Sort(types.BySeverity(filteredVulns))
 
-	return filteredVulns, misconfSummary, filteredMisconfs, nil
+	return filteredVulns, misconfSummary, filteredMisconfs, filteredSecrets, nil
 }
 
 func filterVulnerabilities(vulns []types.DetectedVulnerability, severities []dbTypes.Severity,
@@ -167,7 +169,7 @@ func filterVulnerabilities(vulns []types.DetectedVulnerability, severities []dbT
 			// Ignore unfixed vulnerabilities
 			if ignoreUnfixed && vuln.FixedVersion == "" {
 				continue
-			} else if utils.StringInSlice(vuln.VulnerabilityID, ignoredIDs) {
+			} else if slices.Contains(ignoredIDs, vuln.VulnerabilityID) {
 				continue
 			}
 
@@ -180,7 +182,7 @@ func filterVulnerabilities(vulns []types.DetectedVulnerability, severities []dbT
 			break
 		}
 	}
-	return toSlice(uniqVulns)
+	return maps.Values(uniqVulns)
 }
 
 func filterMisconfigurations(misconfs []types.DetectedMisconfiguration, severities []dbTypes.Severity,
@@ -192,7 +194,7 @@ func filterMisconfigurations(misconfs []types.DetectedMisconfiguration, severiti
 		// Filter misconfigurations by severity
 		for _, s := range severities {
 			if s.String() == misconf.Severity {
-				if utils.StringInSlice(misconf.ID, ignoredIDs) {
+				if slices.Contains(ignoredIDs, misconf.ID) {
 					continue
 				}
 
@@ -215,6 +217,20 @@ func filterMisconfigurations(misconfs []types.DetectedMisconfiguration, severiti
 	return summary, filtered
 }
 
+func filterSecrets(secrets []ftypes.SecretFinding, severities []dbTypes.Severity) []ftypes.SecretFinding {
+	var filtered []ftypes.SecretFinding
+	for _, secret := range secrets {
+		// Filter secrets by severity
+		for _, s := range severities {
+			if s.String() == secret.Severity {
+				filtered = append(filtered, secret)
+				break
+			}
+		}
+	}
+	return filtered
+}
+
 func summarize(status types.MisconfStatus, summary *types.MisconfSummary) {
 	switch status {
 	case types.StatusFailure:
@@ -224,16 +240,6 @@ func summarize(status types.MisconfStatus, summary *types.MisconfSummary) {
 	case types.StatusException:
 		summary.Exceptions++
 	}
-}
-
-func toSlice(uniqVulns map[string]types.DetectedVulnerability) []types.DetectedVulnerability {
-	// Convert map to slice
-	var vulnerabilities []types.DetectedVulnerability
-	for _, vuln := range uniqVulns {
-		vulnerabilities = append(vulnerabilities, vuln)
-	}
-
-	return vulnerabilities
 }
 
 func applyPolicy(ctx context.Context, vulns []types.DetectedVulnerability, misconfs []types.DetectedMisconfiguration,

@@ -72,9 +72,12 @@ func TestClient_FillVulnerabilityInfo(t *testing.T) {
 				{
 					VulnerabilityID: "CVE-2019-0002",
 					Vulnerability: dbTypes.Vulnerability{
-						Title:            "dos",
-						Description:      "dos vulnerability",
-						Severity:         dbTypes.SeverityLow.String(),
+						Title:       "dos",
+						Description: "dos vulnerability",
+						Severity:    dbTypes.SeverityLow.String(),
+						VendorSeverity: dbTypes.VendorSeverity{
+							vulnerability.NVD: dbTypes.SeverityLow,
+						},
 						References:       []string{"http://example.com"},
 						LastModifiedDate: utils.MustTimeParse("2020-01-01T01:01:00Z"),
 						PublishedDate:    utils.MustTimeParse("2001-01-01T01:01:00Z"),
@@ -146,8 +149,11 @@ func TestClient_FillVulnerabilityInfo(t *testing.T) {
 						Title:       "dos",
 						Description: "dos vulnerability",
 						Severity:    dbTypes.SeverityLow.String(),
-						CweIDs:      []string{"CWE-311"},
-						References:  []string{"http://example.com"},
+						VendorSeverity: dbTypes.VendorSeverity{
+							vulnerability.RedHat: dbTypes.SeverityLow,
+						},
+						CweIDs:     []string{"CWE-311"},
+						References: []string{"http://example.com"},
 						CVSS: map[dbTypes.SourceID]dbTypes.CVSS{
 							vulnerability.NVD: {
 								V2Vector: "AV:N/AC:L/Au:N/C:P/I:P/A:P",
@@ -196,7 +202,10 @@ func TestClient_FillVulnerabilityInfo(t *testing.T) {
 						Title:       "COVID-19",
 						Description: "a nasty virus vulnerability for humans",
 						Severity:    dbTypes.SeverityCritical.String(),
-						References:  []string{"https://www.who.int/emergencies/diseases/novel-coronavirus-2019"},
+						VendorSeverity: dbTypes.VendorSeverity{
+							vulnerability.GHSA: dbTypes.SeverityCritical,
+						},
+						References: []string{"https://www.who.int/emergencies/diseases/novel-coronavirus-2019"},
 					},
 					SeveritySource: vulnerability.GHSA,
 					PrimaryURL:     "https://avd.aquasec.com/nvd/cve-2019-0005",
@@ -354,6 +363,7 @@ func TestClient_Filter(t *testing.T) {
 	type args struct {
 		vulns         []types.DetectedVulnerability
 		misconfs      []types.DetectedMisconfiguration
+		secrets       []ftypes.SecretFinding
 		severities    []dbTypes.Severity
 		ignoreUnfixed bool
 		ignoreFile    string
@@ -365,6 +375,7 @@ func TestClient_Filter(t *testing.T) {
 		wantVulns          []types.DetectedVulnerability
 		wantMisconfSummary *types.MisconfSummary
 		wantMisconfs       []types.DetectedMisconfiguration
+		wantSecrets        []ftypes.SecretFinding
 	}{
 		{
 			name: "happy path",
@@ -434,6 +445,24 @@ func TestClient_Filter(t *testing.T) {
 						Status:   types.StatusPassed,
 					},
 				},
+				secrets: []ftypes.SecretFinding{
+					{
+						RuleID:    "generic-critical-rule",
+						Severity:  dbTypes.SeverityCritical.String(),
+						Title:     "Critical Secret should pass filter",
+						StartLine: 1,
+						EndLine:   2,
+						Match:     "*****",
+					},
+					{
+						RuleID:    "generic-low-rule",
+						Severity:  dbTypes.SeverityLow.String(),
+						Title:     "Low Secret should be ignored",
+						StartLine: 3,
+						EndLine:   4,
+						Match:     "*****",
+					},
+				},
 				severities:    []dbTypes.Severity{dbTypes.SeverityCritical, dbTypes.SeverityHigh, dbTypes.SeverityUnknown},
 				ignoreUnfixed: false,
 			},
@@ -490,6 +519,16 @@ func TestClient_Filter(t *testing.T) {
 					Status:   types.StatusFailure,
 				},
 			},
+			wantSecrets: []ftypes.SecretFinding{
+				{
+					RuleID:    "generic-critical-rule",
+					Severity:  dbTypes.SeverityCritical.String(),
+					Title:     "Critical Secret should pass filter",
+					StartLine: 1,
+					EndLine:   2,
+					Match:     "*****",
+				},
+			},
 		},
 		{
 			name: "happy path with ignore-unfixed",
@@ -517,6 +556,7 @@ func TestClient_Filter(t *testing.T) {
 				severities:    []dbTypes.Severity{dbTypes.SeverityHigh},
 				ignoreUnfixed: true,
 			},
+			wantVulns: []types.DetectedVulnerability{},
 		},
 		{
 			name: "happy path with ignore-file",
@@ -760,12 +800,13 @@ func TestClient_Filter(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			c := Client{}
-			gotVulns, gotMisconfSummary, gotMisconfs, err := c.Filter(context.Background(), tt.args.vulns, tt.args.misconfs,
+			gotVulns, gotMisconfSummary, gotMisconfs, gotSecrets, err := c.Filter(context.Background(), tt.args.vulns, tt.args.misconfs, tt.args.secrets,
 				tt.args.severities, tt.args.ignoreUnfixed, false, tt.args.ignoreFile, tt.args.policyFile)
 			require.NoError(t, err)
 			assert.Equal(t, tt.wantVulns, gotVulns)
 			assert.Equal(t, tt.wantMisconfSummary, gotMisconfSummary)
 			assert.Equal(t, tt.wantMisconfs, gotMisconfs)
+			assert.Equal(t, tt.wantSecrets, gotSecrets)
 		})
 	}
 }

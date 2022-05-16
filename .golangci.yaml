@@ -44,6 +44,7 @@ linters:
     - misspell
 
 run:
+  go: 1.18
   skip-files:
     - ".*._mock.go$"
     - ".*._test.go$"

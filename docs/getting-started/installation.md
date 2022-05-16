@@ -7,14 +7,15 @@
     Add repository setting to `/etc/yum.repos.d`.
 
     ``` bash
-    $ sudo vim /etc/yum.repos.d/trivy.repo
+    cat << EOF | sudo tee -a /etc/yum.repos.d/trivy.repo
     [trivy]
     name=Trivy repository
     baseurl=https://aquasecurity.github.io/trivy-repo/rpm/releases/$releasever/$basearch/
     gpgcheck=0
     enabled=1
-    $ sudo yum -y update
-    $ sudo yum -y install trivy
+    EOF
+    sudo yum -y update
+    sudo yum -y install trivy
     ```
 
 === "RPM"
@@ -124,7 +125,7 @@ Example:
 === "macOS"
 
     ``` bash
-    docker run --rm -v $HOME/Library/Caches:/root/.cache/ aquasec/trivy:{{ git.tag[1:] }} python:3.4-alpine
+    docker run --rm -v $HOME/Library/Caches:/root/.cache/ aquasec/trivy:{{ git.tag[1:] }} image [YOUR_IMAGE_NAME
     ```
 
 If you would like to scan the image on your host machine, you need to mount `docker.sock`.
@@ -174,7 +175,7 @@ The same image is hosted on [Amazon ECR Public][ecr] as well.
 docker pull public.ecr.aws/aquasecurity/trivy:{{ git.tag[1:] }}
 ```
 ## Helm
-### Installing from the the Aqua Chart Repository
+### Installing from the Aqua Chart Repository
 
 ```
 helm repo add aquasecurity https://aquasecurity.github.io/helm-charts/

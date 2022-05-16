@@ -27,7 +27,7 @@ deps:
 	go mod tidy
 
 $(GOBIN)/golangci-lint:
-	curl -sfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh| sh -s -- -b $(GOBIN) v1.41.1
+	curl -sfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh| sh -s -- -b $(GOBIN) v1.45.2
 
 .PHONY: test
 test:
@@ -58,7 +58,9 @@ protoc:
 	docker run --rm -it -v ${PWD}:/app -w /app trivy-protoc make _$@
 
 _protoc:
-	find ./rpc/ -name "*.proto" -type f -exec protoc --twirp_out=. --twirp_opt=paths=source_relative --go_out=. --go_opt=paths=source_relative {} \;
+	for path in `find ./rpc/ -name "*.proto" -type f`; do \
+		protoc --twirp_out=. --twirp_opt=paths=source_relative --go_out=. --go_opt=paths=source_relative $${path} || exit; \
+	done
 
 .PHONY: install
 install:

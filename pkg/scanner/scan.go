@@ -19,6 +19,10 @@ import (
 	"github.com/aquasecurity/trivy/pkg/types"
 )
 
+///////////////
+// Standalone
+///////////////
+
 // StandaloneSuperSet is used in the standalone mode
 var StandaloneSuperSet = wire.NewSet(
 	local.SuperSet,
@@ -52,22 +56,34 @@ var StandaloneRepositorySet = wire.NewSet(
 	StandaloneSuperSet,
 )
 
+/////////////////
+// Client/Server
+/////////////////
+
 // RemoteSuperSet is used in the client mode
 var RemoteSuperSet = wire.NewSet(
-	aimage.NewArtifact,
-	client.SuperSet,
+	client.NewScanner,
+	wire.Value([]client.Option(nil)),
 	wire.Bind(new(Driver), new(client.Scanner)),
 	NewScanner,
 )
 
+// RemoteFilesystemSet binds filesystem dependencies for client/server mode
+var RemoteFilesystemSet = wire.NewSet(
+	flocal.NewArtifact,
+	RemoteSuperSet,
+)
+
 // RemoteDockerSet binds remote docker dependencies
 var RemoteDockerSet = wire.NewSet(
+	aimage.NewArtifact,
 	image.NewDockerImage,
 	RemoteSuperSet,
 )
 
 // RemoteArchiveSet binds remote archive dependencies
 var RemoteArchiveSet = wire.NewSet(
+	aimage.NewArtifact,
 	image.NewArchiveImage,
 	RemoteSuperSet,
 )
@@ -95,6 +111,11 @@ func (s Scanner) ScanArtifact(ctx context.Context, options types.ScanOptions) (t
 	if err != nil {
 		return types.Report{}, xerrors.Errorf("failed analysis: %w", err)
 	}
+	defer func() {
+		if err := s.artifact.Clean(artifactInfo); err != nil {
+			log.Logger.Warnf("Failed to clean the artifact %q: %v", artifactInfo.Name, err)
+		}
+	}()
 
 	results, osFound, err := s.driver.Scan(artifactInfo.Name, artifactInfo.ID, artifactInfo.BlobIDs, options)
 	if err != nil {

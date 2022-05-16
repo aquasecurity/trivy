@@ -4,7 +4,7 @@ on:
     tags:
       - "v*"
 env:
-  GO_VERSION: "1.17"
+  GO_VERSION: "1.18"
   GH_USER: "aqua-bot"
 jobs:
   release:
@@ -12,11 +12,16 @@ jobs:
     runs-on: ubuntu-18.04 # 20.04 doesn't provide createrepo for now
     env:
       DOCKER_CLI_EXPERIMENTAL: "enabled"
+    permissions:
+      id-token: write # For cosign
+      packages: write # For GHCR
+      contents: read  # Not required for public repositories, but for clarity
     steps:
       - name: Install dependencies
         run: |
           sudo apt-get -y update
           sudo apt-get -y install rpm reprepro createrepo distro-info
+      - uses: sigstore/cosign-installer@536b37ec5d5b543420bdfd9b744c5965bd4d8730
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v1
       - name: Set up Docker Buildx
@@ -25,15 +30,15 @@ jobs:
       - name: Show available Docker Buildx platforms
         run: echo ${{ steps.buildx.outputs.platforms }}
       - name: Setup Go
-        uses: actions/setup-go@v2
+        uses: actions/setup-go@v3
         with:
           go-version: ${{ env.GO_VERSION }}
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           fetch-depth: 0
       - name: Cache Go modules
-        uses: actions/cache@v2
+        uses: actions/cache@v3.0.2
         with:
           path: ~/go/pkg/mod
           key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
@@ -64,12 +69,12 @@ jobs:
       - name: Release
         uses: goreleaser/goreleaser-action@v2
         with:
-          version: v0.183.0
+          version: v1.4.1
           args: release --rm-dist
         env:
           GITHUB_TOKEN: ${{ secrets.ORG_REPO_TOKEN }}
       - name: Checkout trivy-repo
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           repository: ${{ github.repository_owner }}/trivy-repo
           path: trivy-repo

@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/google/wire"
+	"golang.org/x/exp/slices"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/fanal/analyzer"
@@ -18,10 +19,9 @@ import (
 	ospkgDetector "github.com/aquasecurity/trivy/pkg/detector/ospkg"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/types"
-	"github.com/aquasecurity/trivy/pkg/utils"
 
 	_ "github.com/aquasecurity/fanal/analyzer/all"
-	_ "github.com/aquasecurity/fanal/hook/all"
+	_ "github.com/aquasecurity/fanal/handler/all"
 )
 
 var (
@@ -49,7 +49,7 @@ type Applier interface {
 
 // OspkgDetector defines operation to detect OS vulnerabilities
 type OspkgDetector interface {
-	Detect(imageName, osFamily, osName string, created time.Time, pkgs []ftypes.Package) (detectedVulns []types.DetectedVulnerability, eosl bool, err error)
+	Detect(imageName, osFamily, osName string, repo *ftypes.Repository, created time.Time, pkgs []ftypes.Package) (detectedVulns []types.DetectedVulnerability, eosl bool, err error)
 }
 
 // Scanner implements the OspkgDetector and LibraryDetector
@@ -68,7 +68,17 @@ func (s Scanner) Scan(target string, artifactKey string, blobKeys []string, opti
 	artifactDetail, err := s.applier.ApplyLayers(artifactKey, blobKeys)
 	switch {
 	case errors.Is(err, analyzer.ErrUnknownOS):
-		log.Logger.Debug("OS is not detected and vulnerabilities in OS packages are not detected.")
+		log.Logger.Debug("OS is not detected.")
+
+		// If OS is not detected and repositories are detected, we'll try to use repositories as OS.
+		if artifactDetail.Repository != nil {
+			log.Logger.Debugf("Package repository: %s %s", artifactDetail.Repository.Family, artifactDetail.Repository.Release)
+			log.Logger.Debugf("Assuming OS is %s %s.", artifactDetail.Repository.Family, artifactDetail.Repository.Release)
+			artifactDetail.OS = &ftypes.OS{
+				Family: artifactDetail.Repository.Family,
+				Name:   artifactDetail.Repository.Release,
+			}
+		}
 	case errors.Is(err, analyzer.ErrNoPkgsDetected):
 		log.Logger.Warn("No OS package is detected. Make sure you haven't deleted any files that contain information about the installed packages.")
 		log.Logger.Warn(`e.g. files under "/lib/apk/db/", "/var/lib/dpkg/" and "/var/lib/rpm"`)
@@ -80,7 +90,7 @@ func (s Scanner) Scan(target string, artifactKey string, blobKeys []string, opti
 	var results types.Results
 
 	// Scan OS packages and language-specific dependencies
-	if utils.StringInSlice(types.SecurityCheckVulnerability, options.SecurityChecks) {
+	if slices.Contains(options.SecurityChecks, types.SecurityCheckVulnerability) {
 		var vulnResults types.Results
 		vulnResults, eosl, err = s.checkVulnerabilities(target, artifactDetail, options)
 		if err != nil {
@@ -93,9 +103,15 @@ func (s Scanner) Scan(target string, artifactKey string, blobKeys []string, opti
 	}
 
 	// Scan IaC config files
-	if utils.StringInSlice(types.SecurityCheckConfig, options.SecurityChecks) {
-		configResults := s.misconfsToResults(artifactDetail.Misconfigurations, options)
+	if slices.Contains(options.SecurityChecks, types.SecurityCheckConfig) {
+		configResults := s.misconfsToResults(artifactDetail.Misconfigurations)
 		results = append(results, configResults...)
+	}
+
+	// Scan secrets
+	if slices.Contains(options.SecurityChecks, types.SecurityCheckSecret) {
+		secretResults := s.secretsToResults(artifactDetail.Secrets)
+		results = append(results, secretResults...)
 	}
 
 	return results, artifactDetail.OS, nil
@@ -106,7 +122,7 @@ func (s Scanner) checkVulnerabilities(target string, detail ftypes.ArtifactDetai
 	var eosl bool
 	var results types.Results
 
-	if utils.StringInSlice(types.VulnTypeOS, options.VulnType) {
+	if slices.Contains(options.VulnType, types.VulnTypeOS) {
 		result, detectedEosl, err := s.scanOSPkgs(target, detail, options)
 		if err != nil {
 			return nil, false, xerrors.Errorf("unable to scan OS packages: %w", err)
@@ -116,7 +132,7 @@ func (s Scanner) checkVulnerabilities(target string, detail ftypes.ArtifactDetai
 		eosl = detectedEosl
 	}
 
-	if utils.StringInSlice(types.VulnTypeLibrary, options.VulnType) {
+	if slices.Contains(options.VulnType, types.VulnTypeLibrary) {
 		libResults, err := s.scanLibrary(detail.Applications, options)
 		if err != nil {
 			return nil, false, xerrors.Errorf("failed to scan application libraries: %w", err)
@@ -140,7 +156,7 @@ func (s Scanner) scanOSPkgs(target string, detail ftypes.ArtifactDetail, options
 		pkgs = mergePkgs(pkgs, detail.HistoryPackages)
 	}
 
-	result, eosl, err := s.detectVulnsInOSPkgs(target, detail.OS.Family, detail.OS.Name, pkgs)
+	result, eosl, err := s.detectVulnsInOSPkgs(target, detail.OS.Family, detail.OS.Name, detail.Repository, pkgs)
 	if err != nil {
 		return nil, false, xerrors.Errorf("failed to scan OS packages: %w", err)
 	} else if result == nil {
@@ -157,11 +173,11 @@ func (s Scanner) scanOSPkgs(target string, detail ftypes.ArtifactDetail, options
 	return result, eosl, nil
 }
 
-func (s Scanner) detectVulnsInOSPkgs(target, osFamily, osName string, pkgs []ftypes.Package) (*types.Result, bool, error) {
+func (s Scanner) detectVulnsInOSPkgs(target, osFamily, osName string, repo *ftypes.Repository, pkgs []ftypes.Package) (*types.Result, bool, error) {
 	if osFamily == "" {
 		return nil, false, nil
 	}
-	vulns, eosl, err := s.ospkgDetector.Detect("", osFamily, osName, time.Time{}, pkgs)
+	vulns, eosl, err := s.ospkgDetector.Detect("", osFamily, osName, repo, time.Time{}, pkgs)
 	if err == ospkgDetector.ErrUnsupportedOS {
 		return nil, false, nil
 	} else if err != nil {
@@ -226,7 +242,7 @@ func (s Scanner) scanLibrary(apps []ftypes.Application, options types.ScanOption
 	return results, nil
 }
 
-func (s Scanner) misconfsToResults(misconfs []ftypes.Misconfiguration, options types.ScanOptions) types.Results {
+func (s Scanner) misconfsToResults(misconfs []ftypes.Misconfiguration) types.Results {
 	log.Logger.Infof("Detected config files: %d", len(misconfs))
 	var results types.Results
 	for _, misconf := range misconfs {
@@ -262,6 +278,20 @@ func (s Scanner) misconfsToResults(misconfs []ftypes.Misconfiguration, options t
 	return results
 }
 
+func (s Scanner) secretsToResults(secrets []ftypes.Secret) types.Results {
+	var results types.Results
+	for _, secret := range secrets {
+		log.Logger.Debugf("Secret file: %s", secret.FilePath)
+
+		results = append(results, types.Result{
+			Target:  secret.FilePath,
+			Class:   types.ClassSecret,
+			Secrets: secret.Findings,
+		})
+	}
+	return results
+}
+
 func toDetectedMisconfiguration(res ftypes.MisconfResult, defaultSeverity dbTypes.Severity,
 	status types.MisconfStatus, layer ftypes.Layer) types.DetectedMisconfiguration {
 
@@ -279,16 +309,12 @@ func toDetectedMisconfiguration(res ftypes.MisconfResult, defaultSeverity dbType
 	}
 
 	var primaryURL string
-	if strings.HasPrefix(res.Namespace, "appshield.") {
-		primaryURL = fmt.Sprintf("https://avd.aquasec.com/appshield/%s", strings.ToLower(res.ID))
+
+	// empty namespace implies a go rule from defsec, "builtin" refers to a built-in rego rule
+	// this ensures we don't generate bad links for custom policies
+	if res.Namespace == "" || strings.HasPrefix(res.Namespace, "builtin.") {
+		primaryURL = fmt.Sprintf("https://avd.aquasec.com/misconfig/%s", strings.ToLower(res.ID))
 		res.References = append(res.References, primaryURL)
-	} else if strings.Contains(res.Type, "tfsec") {
-		for _, ref := range res.References {
-			if strings.HasPrefix(ref, "https://tfsec.dev/docs/") {
-				primaryURL = ref
-				break
-			}
-		}
 	}
 
 	return types.DetectedMisconfiguration{
@@ -306,12 +332,13 @@ func toDetectedMisconfiguration(res ftypes.MisconfResult, defaultSeverity dbType
 		Status:      status,
 		Layer:       layer,
 		Traces:      res.Traces,
-		IacMetadata: ftypes.IacMetadata{
+		CauseMetadata: ftypes.CauseMetadata{
 			Resource:  res.Resource,
 			Provider:  res.Provider,
 			Service:   res.Service,
 			StartLine: res.StartLine,
 			EndLine:   res.EndLine,
+			Code:      res.Code,
 		},
 	}
 }
