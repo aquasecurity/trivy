@@ -335,9 +335,9 @@ func TestTerraformMisconfigurationScan(t *testing.T) {
 			want: types.ArtifactReference{
 				Name: "testdata/misconfig/terraform/single-failure/src",
 				Type: types.ArtifactFilesystem,
-				ID:   "sha256:d2388ae4eed1b3b79344be05e45f799332fb040963a1f3c19a4da2f09bf053f7",
+				ID:   "sha256:9535a90d9c3521da9e9bb7ea18e6ba97c0cb5682a1e9de061c41c10661b73b5d",
 				BlobIDs: []string{
-					"sha256:d2388ae4eed1b3b79344be05e45f799332fb040963a1f3c19a4da2f09bf053f7",
+					"sha256:9535a90d9c3521da9e9bb7ea18e6ba97c0cb5682a1e9de061c41c10661b73b5d",
 				},
 			},
 		},
@@ -467,9 +467,9 @@ func TestTerraformMisconfigurationScan(t *testing.T) {
 			want: types.ArtifactReference{
 				Name: "testdata/misconfig/terraform/multiple-failures/src",
 				Type: types.ArtifactFilesystem,
-				ID:   "sha256:d18259051a0ed97e05e0754bd88df48cc7f0c6ac1ab2760f6f3fe9283bd9ac39",
+				ID:   "sha256:edd09616626744797a36512032528212e2dcc285faaecb062947792a70f04ff7",
 				BlobIDs: []string{
-					"sha256:d18259051a0ed97e05e0754bd88df48cc7f0c6ac1ab2760f6f3fe9283bd9ac39",
+					"sha256:edd09616626744797a36512032528212e2dcc285faaecb062947792a70f04ff7",
 				},
 			},
 		},
