@@ -194,9 +194,7 @@ func (tw TableWriter) setVulnerabilityRows(tableWriter *table.Table, vulns []typ
 
 		tableWriter.AddRow(row...)
 	}
-	return severityCount
 }
-
 func (tw TableWriter) setMisconfRows(table *tablewriter.Table, misconfs []types.DetectedMisconfiguration) map[string]int {
 	severityCount := map[string]int{}
 	for _, misconf := range misconfs {
