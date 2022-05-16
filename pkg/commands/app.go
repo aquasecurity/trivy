@@ -154,6 +154,13 @@ var (
 		EnvVars: []string{"TRIVY_SECURITY_CHECKS"},
 	}
 
+	k8sSecurityChecksFlag = cli.StringFlag{
+		Name:    "security-checks",
+		Value:   fmt.Sprintf("%s,%s", types.SecurityCheckVulnerability, types.SecurityCheckConfig),
+		Usage:   "comma-separated list of what security issues to detect (vuln,config)",
+		EnvVars: []string{"TRIVY_SECURITY_CHECKS"},
+	}
+
 	cacheDirFlag = cli.StringFlag{
 		Name:    "cache-dir",
 		Value:   utils.DefaultCacheDir(),
@@ -827,7 +834,7 @@ func NewK8sCommand() *cli.Command {
 			&clearCacheFlag,
 			&ignoreUnfixedFlag,
 			&vulnTypeFlag,
-			&securityChecksFlag,
+			&k8sSecurityChecksFlag,
 			&ignoreFileFlag,
 			&cacheBackendFlag,
 			&cacheTTL,
