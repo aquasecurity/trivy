@@ -241,25 +241,30 @@ func (tw TableWriter) renderDependencies(result types.Result) {
 
 	seen := make([]string, 0)
 	var root treeprint.Tree
-
 	for _, vuln := range result.Vulnerabilities {
-		if root == nil {
+		if vuln.PkgParents != nil {
 			root = treeprint.NewWithRoot(fmt.Sprintf(`
 Vulnerability origin graph:
 ===========================
 %s`, result.Target))
+			break
 		}
-
-		if !slices.Contains(seen, vuln.PkgID) {
-			seen = append(seen, vuln.PkgID)
-
-			branch := root.AddBranch(vuln.PkgID)
-
-			addParents(branch, vuln.PkgParents)
-		}
-
 	}
+
 	if root != nil {
+		for _, vuln := range result.Vulnerabilities {
+			if root == nil {
+			}
+
+			if !slices.Contains(seen, vuln.PkgID) {
+				seen = append(seen, vuln.PkgID)
+
+				branch := root.AddBranch(vuln.PkgID)
+
+				addParents(branch, vuln.PkgParents)
+			}
+
+		}
 		tw.Println(root.String())
 	}
 }
