@@ -22,7 +22,7 @@ type scanner struct {
 
 func (s *scanner) run(ctx context.Context, artifacts []*artifacts.Artifact) (Report, error) {
 	// Todo move to run.go
-	// default security check is `Vuln` and `Config`
+	// default security check is `vuln` and `config`
 	if len(s.opt.SecurityChecks) == 0 {
 		s.opt.SecurityChecks = []string{types.SecurityCheckVulnerability, types.SecurityCheckConfig}
 	}
