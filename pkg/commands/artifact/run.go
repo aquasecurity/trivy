@@ -402,7 +402,6 @@ func initScannerConfig(opt Option, cacheClient cache.Cache) (ScannerConfig, type
 		SecurityChecks:      opt.SecurityChecks,
 		ScanRemovedPackages: opt.ScanRemovedPkgs, // this is valid only for image subcommand
 		ListAllPackages:     opt.ListAllPkgs,
-		ListDependencies:    opt.ListDepenedencies,
 	}
 	log.Logger.Debugf("Vulnerability type:  %s", scanOptions.VulnType)
 

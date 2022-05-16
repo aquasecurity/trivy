@@ -33,7 +33,6 @@ type GsbomFile struct {
 	SrcLocation string `json:"source_location,omitempty"`
 }
 
-//TODO can also be number or boolean
 type Metadata map[string]interface{}
 
 type GsbomManifest struct {
@@ -98,7 +97,7 @@ func (gsbmw GsbomWriter) Write(report types.Report) error {
 		Id:         getenv("GITHUB_RUN_ID"),
 	}
 
-	gsbom.Metadata = getMetaData(report)
+	gsbom.Metadata = getMetadata(report)
 
 	manifests := make(map[string]GsbomManifest)
 
@@ -148,27 +147,26 @@ func (gsbmw GsbomWriter) Write(report types.Report) error {
 	return nil
 }
 
-func getMetaData(report types.Report) Metadata {
+func getMetadata(report types.Report) Metadata {
 	metadata := Metadata{}
 	if report.Metadata.RepoTags != nil {
-		metadata["repo_tag"] = report.Metadata.RepoTags[0]
+		metadata["aquasecurity:trivy:RepoTag"] = report.Metadata.RepoTags[0]
 	}
 	if report.Metadata.RepoDigests != nil {
-		metadata["repo_digest"] = report.Metadata.RepoDigests[0]
+		metadata["aquasecurity:trivy:RepoDigest"] = report.Metadata.RepoDigests[0]
 	}
 	return metadata
 }
 
 func getDependencies(results []types.Result, pkg ftypes.Package) []string {
-	var dependencies []string
 	for _, result := range results {
 		for _, dep := range result.Dependencies {
 			if dep.ID == pkg.ID {
-				dependencies = append(dependencies, dep.DependsOn...)
+				return dep.DependsOn
 			}
 		}
 	}
-	return dependencies
+	return []string{}
 }
 
 func getPkgRelationshipType(pkg ftypes.Package) string {

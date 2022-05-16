@@ -31,12 +31,11 @@ type ReportOption struct {
 	severities     string
 
 	// these variables are populated by Init()
-	VulnType          []string
-	SecurityChecks    []string
-	Output            io.Writer
-	Severities        []dbTypes.Severity
-	ListAllPkgs       bool
-	ListDepenedencies bool
+	VulnType       []string
+	SecurityChecks []string
+	Output         io.Writer
+	Severities     []dbTypes.Severity
+	ListAllPkgs    bool
 }
 
 // NewReportOption is the factory method to return ReportOption
@@ -47,14 +46,13 @@ func NewReportOption(c *cli.Context) ReportOption {
 		Template:     c.String("template"),
 		IgnorePolicy: c.String("ignore-policy"),
 
-		vulnType:          c.String("vuln-type"),
-		securityChecks:    c.String("security-checks"),
-		severities:        c.String("severity"),
-		IgnoreFile:        c.String("ignorefile"),
-		IgnoreUnfixed:     c.Bool("ignore-unfixed"),
-		ExitCode:          c.Int("exit-code"),
-		ListAllPkgs:       c.Bool("list-all-pkgs"),
-		ListDepenedencies: c.Bool("list-all-dependencies"),
+		vulnType:       c.String("vuln-type"),
+		securityChecks: c.String("security-checks"),
+		severities:     c.String("severity"),
+		IgnoreFile:     c.String("ignorefile"),
+		IgnoreUnfixed:  c.Bool("ignore-unfixed"),
+		ExitCode:       c.Int("exit-code"),
+		ListAllPkgs:    c.Bool("list-all-pkgs"),
 	}
 }
 
@@ -85,10 +83,6 @@ func (c *ReportOption) Init(output io.Writer, logger *zap.SugaredLogger) error {
 
 	if c.forceListAllPkgs(logger) {
 		c.ListAllPkgs = true
-	}
-
-	if c.forceListAllDependencies(logger) {
-		c.ListDepenedencies = true
 	}
 
 	c.Severities = splitSeverity(logger, c.severities)
@@ -150,14 +144,6 @@ func (c *ReportOption) populateSecurityChecks() error {
 func (c *ReportOption) forceListAllPkgs(logger *zap.SugaredLogger) bool {
 	if slices.Contains(supportedSbomFormats, c.Format) && !c.ListAllPkgs {
 		logger.Debugf("'gsbom', 'cyclonedx', 'spdx', and 'spdx-json' automatically enables '--list-all-pkgs'.")
-		return true
-	}
-	return false
-}
-
-func (c *ReportOption) forceListAllDependencies(logger *zap.SugaredLogger) bool {
-	if slices.Contains(supportedSbomFormats, c.Format) && !c.ListDepenedencies {
-		logger.Debugf("'gsbom', 'cyclonedx', 'spdx', and 'spdx-json' automatically enables '--list-all-dependencies'.")
 		return true
 	}
 	return false

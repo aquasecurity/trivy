@@ -6,5 +6,4 @@ type ScanOptions struct {
 	SecurityChecks      []string
 	ScanRemovedPackages bool
 	ListAllPackages     bool
-	ListDependencies    bool
 }

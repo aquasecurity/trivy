@@ -216,13 +216,12 @@ func TestOption_Init(t *testing.T) {
 			},
 			want: Option{
 				ReportOption: option.ReportOption{
-					Severities:        []dbTypes.Severity{dbTypes.SeverityCritical},
-					Output:            os.Stdout,
-					VulnType:          []string{types.VulnTypeOS, types.VulnTypeLibrary},
-					SecurityChecks:    []string{types.SecurityCheckVulnerability},
-					Format:            "gsbom",
-					ListAllPkgs:       true,
-					ListDepenedencies: true,
+					Severities:     []dbTypes.Severity{dbTypes.SeverityCritical},
+					Output:         os.Stdout,
+					VulnType:       []string{types.VulnTypeOS, types.VulnTypeLibrary},
+					SecurityChecks: []string{types.SecurityCheckVulnerability},
+					Format:         "gsbom",
+					ListAllPkgs:    true,
 				},
 				ArtifactOption: option.ArtifactOption{
 					Target: "gitlab/gitlab-ce:12.7.2-ce.0",
@@ -273,13 +272,12 @@ func TestOption_Init(t *testing.T) {
 			},
 			want: Option{
 				ReportOption: option.ReportOption{
-					Severities:        []dbTypes.Severity{dbTypes.SeverityCritical},
-					Output:            os.Stdout,
-					VulnType:          []string{types.VulnTypeOS, types.VulnTypeLibrary},
-					SecurityChecks:    []string{types.SecurityCheckVulnerability},
-					Format:            "gsbom",
-					ListAllPkgs:       true,
-					ListDepenedencies: true,
+					Severities:     []dbTypes.Severity{dbTypes.SeverityCritical},
+					Output:         os.Stdout,
+					VulnType:       []string{types.VulnTypeOS, types.VulnTypeLibrary},
+					SecurityChecks: []string{types.SecurityCheckVulnerability},
+					Format:         "gsbom",
+					ListAllPkgs:    true,
 				},
 				ArtifactOption: option.ArtifactOption{
 					Target: "gitlab/gitlab-ce:12.7.2-ce.0",

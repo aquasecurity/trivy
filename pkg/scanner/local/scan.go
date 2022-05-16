@@ -115,7 +115,7 @@ func (s Scanner) Scan(target string, artifactKey string, blobKeys []string, opti
 	}
 
 	// Scan dependencies
-	if options.ListDependencies {
+	if options.ListAllPackages {
 		if depsResults := s.dependenciesToResults(results, artifactDetail.Applications); depsResults != nil {
 			results = depsResults
 		}
