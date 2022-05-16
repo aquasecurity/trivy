@@ -2387,36 +2387,207 @@ This will output a large trace from Open Policy Agent like the following:</p>
 <p>Only failed policies show traces. If you want to debug a passed policy, you need to make it fail on purpose.</p>
 </div>
 <div class="highlight"><pre><span></span><code>$ trivy conf --trace configs/
-<span class="m">2021</span>-07-11T16:45:58.493+0300    INFO    Detected config files: <span class="m">1</span>
+<span class="m">2022</span>-05-16T13:47:58.853+0100    INFO    Detected config files: <span class="m">1</span>
 
 Dockerfile <span class="o">(</span>dockerfile<span class="o">)</span>
 <span class="o">=======================</span>
-Tests: <span class="m">23</span> <span class="o">(</span>SUCCESSES: <span class="m">22</span>, FAILURES: <span class="m">1</span>, EXCEPTIONS: <span class="m">0</span><span class="o">)</span>
-Failures: <span class="m">1</span> <span class="o">(</span>UNKNOWN: <span class="m">0</span>, LOW: <span class="m">0</span>, MEDIUM: <span class="m">0</span>, HIGH: <span class="m">1</span>, CRITICAL: <span class="m">0</span><span class="o">)</span>
+Tests: <span class="m">23</span> <span class="o">(</span>SUCCESSES: <span class="m">21</span>, FAILURES: <span class="m">2</span>, EXCEPTIONS: <span class="m">0</span><span class="o">)</span>
+Failures: <span class="m">2</span> <span class="o">(</span>UNKNOWN: <span class="m">0</span>, LOW: <span class="m">0</span>, MEDIUM: <span class="m">1</span>, HIGH: <span class="m">1</span>, CRITICAL: <span class="m">0</span><span class="o">)</span>
 
-+---------------------------+------------+----------------------+----------+------------------------------------------+
-<span class="p">|</span>           TYPE            <span class="p">|</span> MISCONF ID <span class="p">|</span>        CHECK         <span class="p">|</span> SEVERITY <span class="p">|</span>                 MESSAGE                  <span class="p">|</span>
-+---------------------------+------------+----------------------+----------+------------------------------------------+
-<span class="p">|</span> Dockerfile Security Check <span class="p">|</span>   DS002    <span class="p">|</span> Image user is <span class="s1">&#39;root&#39;</span> <span class="p">|</span>   HIGH   <span class="p">|</span> Last USER <span class="nb">command</span> <span class="k">in</span>                     <span class="p">|</span>
-<span class="p">|</span>                           <span class="p">|</span>            <span class="p">|</span>                      <span class="p">|</span>          <span class="p">|</span> Dockerfile should not be <span class="s1">&#39;root&#39;</span>          <span class="p">|</span>
-<span class="p">|</span>                           <span class="p">|</span>            <span class="p">|</span>                      <span class="p">|</span>          <span class="p">|</span> --&gt;avd.aquasec.com/appshield/ds002       <span class="p">|</span>
-+---------------------------+------------+----------------------+----------+------------------------------------------+
+MEDIUM: Specify a tag <span class="k">in</span> the <span class="s1">&#39;FROM&#39;</span> statement <span class="k">for</span> image <span class="s1">&#39;alpine&#39;</span>
+═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+When using a <span class="s1">&#39;FROM&#39;</span> statement you should use a specific tag to avoid uncontrolled behavior when the image is updated.
+
+See https://avd.aquasec.com/misconfig/ds001
+───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+ Dockerfile:1
+───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+   <span class="m">1</span> <span class="o">[</span> FROM alpine:latest
+───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+HIGH: Last USER <span class="nb">command</span> <span class="k">in</span> Dockerfile should not be <span class="s1">&#39;root&#39;</span>
+═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+Running containers with <span class="s1">&#39;root&#39;</span> user can lead to a container escape situation. It is a best practice to run containers as non-root users, which can be <span class="k">done</span> by adding a <span class="s1">&#39;USER&#39;</span> statement to the Dockerfile.
+
+See https://avd.aquasec.com/misconfig/ds002
+───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+ Dockerfile:3
+───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+   <span class="m">3</span> <span class="o">[</span> USER root
+───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+
+ID: DS001
+File: Dockerfile
+Namespace: builtin.dockerfile.DS001
+Query: data.builtin.dockerfile.DS001.deny
+Message: Specify a tag <span class="k">in</span> the <span class="s1">&#39;FROM&#39;</span> statement <span class="k">for</span> image <span class="s1">&#39;alpine&#39;</span>
+TRACE  Enter data.builtin.dockerfile.DS001.deny <span class="o">=</span> _
+TRACE  <span class="p">|</span> Eval data.builtin.dockerfile.DS001.deny <span class="o">=</span> _
+TRACE  <span class="p">|</span> Index data.builtin.dockerfile.DS001.deny <span class="o">(</span>matched <span class="m">1</span> rule<span class="o">)</span>
+TRACE  <span class="p">|</span> Enter data.builtin.dockerfile.DS001.deny
+TRACE  <span class="p">|</span> <span class="p">|</span> Eval <span class="nv">output</span> <span class="o">=</span> data.builtin.dockerfile.DS001.fail_latest<span class="o">[</span>_<span class="o">]</span>
+TRACE  <span class="p">|</span> <span class="p">|</span> Index data.builtin.dockerfile.DS001.fail_latest <span class="o">(</span>matched <span class="m">1</span> rule<span class="o">)</span>
+TRACE  <span class="p">|</span> <span class="p">|</span> Enter data.builtin.dockerfile.DS001.fail_latest
+TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Eval <span class="nv">output</span> <span class="o">=</span> data.builtin.dockerfile.DS001.image_tags<span class="o">[</span>_<span class="o">]</span>
+TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Index data.builtin.dockerfile.DS001.image_tags <span class="o">(</span>matched <span class="m">2</span> rules<span class="o">)</span>
+TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Enter data.builtin.dockerfile.DS001.image_tags
+TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Eval <span class="nv">from</span> <span class="o">=</span> data.lib.docker.from<span class="o">[</span>_<span class="o">]</span>
+TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Index data.lib.docker.from <span class="o">(</span>matched <span class="m">1</span> rule<span class="o">)</span>
+TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Enter data.lib.docker.from
+TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Eval <span class="nv">instruction</span> <span class="o">=</span> input.stages<span class="o">[</span>_<span class="o">][</span>_<span class="o">]</span>
+TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Eval instruction.Cmd <span class="o">=</span> <span class="s2">&quot;from&quot;</span>
+TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Exit data.lib.docker.from
+TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Redo data.lib.docker.from
+TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Redo instruction.Cmd <span class="o">=</span> <span class="s2">&quot;from&quot;</span>
+TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Redo <span class="nv">instruction</span> <span class="o">=</span> input.stages<span class="o">[</span>_<span class="o">][</span>_<span class="o">]</span>
+TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Eval instruction.Cmd <span class="o">=</span> <span class="s2">&quot;from&quot;</span>
+TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Fail instruction.Cmd <span class="o">=</span> <span class="s2">&quot;from&quot;</span>
+TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Redo <span class="nv">instruction</span> <span class="o">=</span> input.stages<span class="o">[</span>_<span class="o">][</span>_<span class="o">]</span>
+TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Eval instruction.Cmd <span class="o">=</span> <span class="s2">&quot;from&quot;</span>
+TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Fail instruction.Cmd <span class="o">=</span> <span class="s2">&quot;from&quot;</span>
+TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Redo <span class="nv">instruction</span> <span class="o">=</span> input.stages<span class="o">[</span>_<span class="o">][</span>_<span class="o">]</span>
+TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Eval <span class="nv">name</span> <span class="o">=</span> from.Value<span class="o">[</span><span class="m">0</span><span class="o">]</span>
+TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Eval not startswith<span class="o">(</span>name, <span class="s2">&quot;</span>$<span class="s2">&quot;</span><span class="o">)</span>
+TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Enter startswith<span class="o">(</span>name, <span class="s2">&quot;</span>$<span class="s2">&quot;</span><span class="o">)</span>
+TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Eval startswith<span class="o">(</span>name, <span class="s2">&quot;</span>$<span class="s2">&quot;</span><span class="o">)</span>
+TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Fail startswith<span class="o">(</span>name, <span class="s2">&quot;</span>$<span class="s2">&quot;</span><span class="o">)</span>
+TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Eval data.builtin.dockerfile.DS001.parse_tag<span class="o">(</span>name, __local505__<span class="o">)</span>
+TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Index data.builtin.dockerfile.DS001.parse_tag <span class="o">(</span>matched <span class="m">2</span> rules<span class="o">)</span>
+TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Enter data.builtin.dockerfile.DS001.parse_tag
+TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Eval split<span class="o">(</span>name, <span class="s2">&quot;:&quot;</span>, __local504__<span class="o">)</span>
+TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Eval <span class="o">[</span>img, tag<span class="o">]</span> <span class="o">=</span> __local504__
+TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Exit data.builtin.dockerfile.DS001.parse_tag
+TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Eval <span class="o">[</span>img, tag<span class="o">]</span> <span class="o">=</span> __local505__
+TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Eval <span class="nv">output</span> <span class="o">=</span> <span class="o">{</span><span class="s2">&quot;cmd&quot;</span>: from, <span class="s2">&quot;img&quot;</span>: img, <span class="s2">&quot;tag&quot;</span>: tag<span class="o">}</span>
+TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Exit data.builtin.dockerfile.DS001.image_tags
+TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Redo data.builtin.dockerfile.DS001.image_tags
+TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Redo <span class="nv">output</span> <span class="o">=</span> <span class="o">{</span><span class="s2">&quot;cmd&quot;</span>: from, <span class="s2">&quot;img&quot;</span>: img, <span class="s2">&quot;tag&quot;</span>: tag<span class="o">}</span>
+TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Redo <span class="o">[</span>img, tag<span class="o">]</span> <span class="o">=</span> __local505__
+TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Redo data.builtin.dockerfile.DS001.parse_tag<span class="o">(</span>name, __local505__<span class="o">)</span>
+TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Redo data.builtin.dockerfile.DS001.parse_tag
+TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Redo <span class="o">[</span>img, tag<span class="o">]</span> <span class="o">=</span> __local504__
+TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Redo split<span class="o">(</span>name, <span class="s2">&quot;:&quot;</span>, __local504__<span class="o">)</span>
+TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Enter data.builtin.dockerfile.DS001.parse_tag
+TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Eval <span class="nv">tag</span> <span class="o">=</span> <span class="s2">&quot;latest&quot;</span>
+TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Eval not contains<span class="o">(</span>img, <span class="s2">&quot;:&quot;</span><span class="o">)</span>
+TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Enter contains<span class="o">(</span>img, <span class="s2">&quot;:&quot;</span><span class="o">)</span>
+TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Eval contains<span class="o">(</span>img, <span class="s2">&quot;:&quot;</span><span class="o">)</span>
+TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Exit contains<span class="o">(</span>img, <span class="s2">&quot;:&quot;</span><span class="o">)</span>
+TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Redo contains<span class="o">(</span>img, <span class="s2">&quot;:&quot;</span><span class="o">)</span>
+TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Redo contains<span class="o">(</span>img, <span class="s2">&quot;:&quot;</span><span class="o">)</span>
+TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Fail not contains<span class="o">(</span>img, <span class="s2">&quot;:&quot;</span><span class="o">)</span>
+TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Redo <span class="nv">tag</span> <span class="o">=</span> <span class="s2">&quot;latest&quot;</span>
+TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Redo <span class="nv">name</span> <span class="o">=</span> from.Value<span class="o">[</span><span class="m">0</span><span class="o">]</span>
+TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Redo <span class="nv">from</span> <span class="o">=</span> data.lib.docker.from<span class="o">[</span>_<span class="o">]</span>
+TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Enter data.builtin.dockerfile.DS001.image_tags
+TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Eval <span class="nv">from</span> <span class="o">=</span> data.lib.docker.from<span class="o">[</span>i<span class="o">]</span>
+TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Index data.lib.docker.from <span class="o">(</span>matched <span class="m">1</span> rule<span class="o">)</span>
+TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Eval <span class="nv">name</span> <span class="o">=</span> from.Value<span class="o">[</span><span class="m">0</span><span class="o">]</span>
+TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Eval <span class="nv">cmd_obj</span> <span class="o">=</span> input.stages<span class="o">[</span>j<span class="o">][</span>k<span class="o">]</span>
+TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Eval <span class="nv">possibilities</span> <span class="o">=</span> <span class="o">{</span><span class="s2">&quot;arg&quot;</span>, <span class="s2">&quot;env&quot;</span><span class="o">}</span>
+TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Eval cmd_obj.Cmd <span class="o">=</span> possibilities<span class="o">[</span>l<span class="o">]</span>
+TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Fail cmd_obj.Cmd <span class="o">=</span> possibilities<span class="o">[</span>l<span class="o">]</span>
+TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Redo <span class="nv">possibilities</span> <span class="o">=</span> <span class="o">{</span><span class="s2">&quot;arg&quot;</span>, <span class="s2">&quot;env&quot;</span><span class="o">}</span>
+TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Redo <span class="nv">cmd_obj</span> <span class="o">=</span> input.stages<span class="o">[</span>j<span class="o">][</span>k<span class="o">]</span>
+TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Eval <span class="nv">possibilities</span> <span class="o">=</span> <span class="o">{</span><span class="s2">&quot;arg&quot;</span>, <span class="s2">&quot;env&quot;</span><span class="o">}</span>
+TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Eval cmd_obj.Cmd <span class="o">=</span> possibilities<span class="o">[</span>l<span class="o">]</span>
+TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Fail cmd_obj.Cmd <span class="o">=</span> possibilities<span class="o">[</span>l<span class="o">]</span>
+TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Redo <span class="nv">possibilities</span> <span class="o">=</span> <span class="o">{</span><span class="s2">&quot;arg&quot;</span>, <span class="s2">&quot;env&quot;</span><span class="o">}</span>
+TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Redo <span class="nv">cmd_obj</span> <span class="o">=</span> input.stages<span class="o">[</span>j<span class="o">][</span>k<span class="o">]</span>
+TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Eval <span class="nv">possibilities</span> <span class="o">=</span> <span class="o">{</span><span class="s2">&quot;arg&quot;</span>, <span class="s2">&quot;env&quot;</span><span class="o">}</span>
+TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Eval cmd_obj.Cmd <span class="o">=</span> possibilities<span class="o">[</span>l<span class="o">]</span>
+TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Fail cmd_obj.Cmd <span class="o">=</span> possibilities<span class="o">[</span>l<span class="o">]</span>
+TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Redo <span class="nv">possibilities</span> <span class="o">=</span> <span class="o">{</span><span class="s2">&quot;arg&quot;</span>, <span class="s2">&quot;env&quot;</span><span class="o">}</span>
+TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Redo <span class="nv">cmd_obj</span> <span class="o">=</span> input.stages<span class="o">[</span>j<span class="o">][</span>k<span class="o">]</span>
+TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Redo <span class="nv">name</span> <span class="o">=</span> from.Value<span class="o">[</span><span class="m">0</span><span class="o">]</span>
+TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Redo <span class="nv">from</span> <span class="o">=</span> data.lib.docker.from<span class="o">[</span>i<span class="o">]</span>
+TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Eval <span class="nv">__local752__</span> <span class="o">=</span> output.img
+TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Eval neq<span class="o">(</span>__local752__, <span class="s2">&quot;scratch&quot;</span><span class="o">)</span>
+TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Eval <span class="nv">__local753__</span> <span class="o">=</span> output.img
+TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Eval not data.builtin.dockerfile.DS001.is_alias<span class="o">(</span>__local753__<span class="o">)</span>
+TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Enter data.builtin.dockerfile.DS001.is_alias<span class="o">(</span>__local753__<span class="o">)</span>
+TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Eval data.builtin.dockerfile.DS001.is_alias<span class="o">(</span>__local753__<span class="o">)</span>
+TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Index data.builtin.dockerfile.DS001.is_alias <span class="o">(</span>matched <span class="m">1</span> rule, early <span class="nb">exit</span><span class="o">)</span>
+TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Enter data.builtin.dockerfile.DS001.is_alias
+TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Eval <span class="nv">img</span> <span class="o">=</span> data.builtin.dockerfile.DS001.get_aliases<span class="o">[</span>_<span class="o">]</span>
+TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Index data.builtin.dockerfile.DS001.get_aliases <span class="o">(</span>matched <span class="m">1</span> rule<span class="o">)</span>
+TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Enter data.builtin.dockerfile.DS001.get_aliases
+TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Eval <span class="nv">from_cmd</span> <span class="o">=</span> data.lib.docker.from<span class="o">[</span>_<span class="o">]</span>
+TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Index data.lib.docker.from <span class="o">(</span>matched <span class="m">1</span> rule<span class="o">)</span>
+TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Eval <span class="nv">__local749__</span> <span class="o">=</span> from_cmd.Value
+TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Eval data.builtin.dockerfile.DS001.get_alias<span class="o">(</span>__local749__, __local503__<span class="o">)</span>
+TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Index data.builtin.dockerfile.DS001.get_alias <span class="o">(</span>matched <span class="m">1</span> rule<span class="o">)</span>
+TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Enter data.builtin.dockerfile.DS001.get_alias
+TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Eval <span class="nv">__local748__</span> <span class="o">=</span> values<span class="o">[</span>i<span class="o">]</span>
+TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Eval lower<span class="o">(</span>__local748__, __local501__<span class="o">)</span>
+TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Eval <span class="s2">&quot;as&quot;</span> <span class="o">=</span> __local501__
+TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Fail <span class="s2">&quot;as&quot;</span> <span class="o">=</span> __local501__
+TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Redo lower<span class="o">(</span>__local748__, __local501__<span class="o">)</span>
+TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Redo <span class="nv">__local748__</span> <span class="o">=</span> values<span class="o">[</span>i<span class="o">]</span>
+TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Fail data.builtin.dockerfile.DS001.get_alias<span class="o">(</span>__local749__, __local503__<span class="o">)</span>
+TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Redo <span class="nv">__local749__</span> <span class="o">=</span> from_cmd.Value
+TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Redo <span class="nv">from_cmd</span> <span class="o">=</span> data.lib.docker.from<span class="o">[</span>_<span class="o">]</span>
+TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Fail <span class="nv">img</span> <span class="o">=</span> data.builtin.dockerfile.DS001.get_aliases<span class="o">[</span>_<span class="o">]</span>
+TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Fail data.builtin.dockerfile.DS001.is_alias<span class="o">(</span>__local753__<span class="o">)</span>
+TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Eval output.tag <span class="o">=</span> <span class="s2">&quot;latest&quot;</span>
+TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Exit data.builtin.dockerfile.DS001.fail_latest
+TRACE  <span class="p">|</span> <span class="p">|</span> Redo data.builtin.dockerfile.DS001.fail_latest
+TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Redo output.tag <span class="o">=</span> <span class="s2">&quot;latest&quot;</span>
+TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Redo <span class="nv">__local753__</span> <span class="o">=</span> output.img
+TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Redo neq<span class="o">(</span>__local752__, <span class="s2">&quot;scratch&quot;</span><span class="o">)</span>
+TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Redo <span class="nv">__local752__</span> <span class="o">=</span> output.img
+TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Redo <span class="nv">output</span> <span class="o">=</span> data.builtin.dockerfile.DS001.image_tags<span class="o">[</span>_<span class="o">]</span>
+TRACE  <span class="p">|</span> <span class="p">|</span> Eval <span class="nv">__local754__</span> <span class="o">=</span> output.img
+TRACE  <span class="p">|</span> <span class="p">|</span> Eval sprintf<span class="o">(</span><span class="s2">&quot;Specify a tag in the &#39;FROM&#39; statement for image &#39;%s&#39;&quot;</span>, <span class="o">[</span>__local754__<span class="o">]</span>, __local509__<span class="o">)</span>
+TRACE  <span class="p">|</span> <span class="p">|</span> Eval <span class="nv">msg</span> <span class="o">=</span> __local509__
+TRACE  <span class="p">|</span> <span class="p">|</span> Eval <span class="nv">__local755__</span> <span class="o">=</span> output.cmd
+TRACE  <span class="p">|</span> <span class="p">|</span> Eval data.lib.docker.result<span class="o">(</span>msg, __local755__, __local510__<span class="o">)</span>
+TRACE  <span class="p">|</span> <span class="p">|</span> Index data.lib.docker.result <span class="o">(</span>matched <span class="m">1</span> rule<span class="o">)</span>
+TRACE  <span class="p">|</span> <span class="p">|</span> Enter data.lib.docker.result
+TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Eval object.get<span class="o">(</span>cmd, <span class="s2">&quot;EndLine&quot;</span>, <span class="m">0</span>, __local470__<span class="o">)</span>
+TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Eval object.get<span class="o">(</span>cmd, <span class="s2">&quot;Path&quot;</span>, <span class="s2">&quot;&quot;</span>, __local471__<span class="o">)</span>
+TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Eval object.get<span class="o">(</span>cmd, <span class="s2">&quot;StartLine&quot;</span>, <span class="m">0</span>, __local472__<span class="o">)</span>
+TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Eval <span class="nv">result</span> <span class="o">=</span> <span class="o">{</span><span class="s2">&quot;endline&quot;</span>: __local470__, <span class="s2">&quot;filepath&quot;</span>: __local471__, <span class="s2">&quot;msg&quot;</span>: msg, <span class="s2">&quot;startline&quot;</span>: __local472__<span class="o">}</span>
+TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Exit data.lib.docker.result
+TRACE  <span class="p">|</span> <span class="p">|</span> Eval <span class="nv">res</span> <span class="o">=</span> __local510__
+TRACE  <span class="p">|</span> <span class="p">|</span> Exit data.builtin.dockerfile.DS001.deny
+TRACE  <span class="p">|</span> Redo data.builtin.dockerfile.DS001.deny
+TRACE  <span class="p">|</span> <span class="p">|</span> Redo <span class="nv">res</span> <span class="o">=</span> __local510__
+TRACE  <span class="p">|</span> <span class="p">|</span> Redo data.lib.docker.result<span class="o">(</span>msg, __local755__, __local510__<span class="o">)</span>
+TRACE  <span class="p">|</span> <span class="p">|</span> Redo data.lib.docker.result
+TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Redo <span class="nv">result</span> <span class="o">=</span> <span class="o">{</span><span class="s2">&quot;endline&quot;</span>: __local470__, <span class="s2">&quot;filepath&quot;</span>: __local471__, <span class="s2">&quot;msg&quot;</span>: msg, <span class="s2">&quot;startline&quot;</span>: __local472__<span class="o">}</span>
+TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Redo object.get<span class="o">(</span>cmd, <span class="s2">&quot;StartLine&quot;</span>, <span class="m">0</span>, __local472__<span class="o">)</span>
+TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Redo object.get<span class="o">(</span>cmd, <span class="s2">&quot;Path&quot;</span>, <span class="s2">&quot;&quot;</span>, __local471__<span class="o">)</span>
+TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Redo object.get<span class="o">(</span>cmd, <span class="s2">&quot;EndLine&quot;</span>, <span class="m">0</span>, __local470__<span class="o">)</span>
+TRACE  <span class="p">|</span> <span class="p">|</span> Redo <span class="nv">__local755__</span> <span class="o">=</span> output.cmd
+TRACE  <span class="p">|</span> <span class="p">|</span> Redo <span class="nv">msg</span> <span class="o">=</span> __local509__
+TRACE  <span class="p">|</span> <span class="p">|</span> Redo sprintf<span class="o">(</span><span class="s2">&quot;Specify a tag in the &#39;FROM&#39; statement for image &#39;%s&#39;&quot;</span>, <span class="o">[</span>__local754__<span class="o">]</span>, __local509__<span class="o">)</span>
+TRACE  <span class="p">|</span> <span class="p">|</span> Redo <span class="nv">__local754__</span> <span class="o">=</span> output.img
+TRACE  <span class="p">|</span> <span class="p">|</span> Redo <span class="nv">output</span> <span class="o">=</span> data.builtin.dockerfile.DS001.fail_latest<span class="o">[</span>_<span class="o">]</span>
+TRACE  <span class="p">|</span> Exit data.builtin.dockerfile.DS001.deny <span class="o">=</span> _
+TRACE  Redo data.builtin.dockerfile.DS001.deny <span class="o">=</span> _
+TRACE  <span class="p">|</span> Redo data.builtin.dockerfile.DS001.deny <span class="o">=</span> _
+TRACE
+
 
 ID: DS002
 File: Dockerfile
-Namespace: appshield.dockerfile.DS002
-Query: data.appshield.dockerfile.DS002.deny
+Namespace: builtin.dockerfile.DS002
+Query: data.builtin.dockerfile.DS002.deny
 Message: Last USER <span class="nb">command</span> <span class="k">in</span> Dockerfile should not be <span class="s1">&#39;root&#39;</span>
-TRACE  Enter data.appshield.dockerfile.DS002.deny <span class="o">=</span> _
-TRACE  <span class="p">|</span> Eval data.appshield.dockerfile.DS002.deny <span class="o">=</span> _
-TRACE  <span class="p">|</span> Index data.appshield.dockerfile.DS002.deny matched <span class="m">2</span> rules<span class="o">)</span>
-TRACE  <span class="p">|</span> Enter data.appshield.dockerfile.DS002.deny
-TRACE  <span class="p">|</span> <span class="p">|</span> Eval data.appshield.dockerfile.DS002.fail_user_count
-TRACE  <span class="p">|</span> <span class="p">|</span> Index data.appshield.dockerfile.DS002.fail_user_count <span class="o">(</span>matched <span class="m">1</span> rule<span class="o">)</span>
-TRACE  <span class="p">|</span> <span class="p">|</span> Enter data.appshield.dockerfile.DS002.fail_user_count
-TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Eval <span class="nv">__local559__</span> <span class="o">=</span> data.appshield.dockerfile.DS002.get_user
-TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Index data.appshield.dockerfile.DS002.get_user <span class="o">(</span>matched <span class="m">1</span> rule<span class="o">)</span>
-TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Enter data.appshield.dockerfile.DS002.get_user
+TRACE  Enter data.builtin.dockerfile.DS002.deny <span class="o">=</span> _
+TRACE  <span class="p">|</span> Eval data.builtin.dockerfile.DS002.deny <span class="o">=</span> _
+TRACE  <span class="p">|</span> Index data.builtin.dockerfile.DS002.deny <span class="o">(</span>matched <span class="m">2</span> rules<span class="o">)</span>
+TRACE  <span class="p">|</span> Enter data.builtin.dockerfile.DS002.deny
+TRACE  <span class="p">|</span> <span class="p">|</span> Eval data.builtin.dockerfile.DS002.fail_user_count
+TRACE  <span class="p">|</span> <span class="p">|</span> Index data.builtin.dockerfile.DS002.fail_user_count <span class="o">(</span>matched <span class="m">1</span> rule, early <span class="nb">exit</span><span class="o">)</span>
+TRACE  <span class="p">|</span> <span class="p">|</span> Enter data.builtin.dockerfile.DS002.fail_user_count
+TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Eval <span class="nv">__local771__</span> <span class="o">=</span> data.builtin.dockerfile.DS002.get_user
+TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Index data.builtin.dockerfile.DS002.get_user <span class="o">(</span>matched <span class="m">1</span> rule<span class="o">)</span>
+TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Enter data.builtin.dockerfile.DS002.get_user
 TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Eval <span class="nv">user</span> <span class="o">=</span> data.lib.docker.user<span class="o">[</span>_<span class="o">]</span>
 TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Index data.lib.docker.user <span class="o">(</span>matched <span class="m">1</span> rule<span class="o">)</span>
 TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Enter data.lib.docker.user
@@ -2425,182 +2596,90 @@ TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span
 TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Fail instruction.Cmd <span class="o">=</span> <span class="s2">&quot;user&quot;</span>
 TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Redo <span class="nv">instruction</span> <span class="o">=</span> input.stages<span class="o">[</span>_<span class="o">][</span>_<span class="o">]</span>
 TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Eval instruction.Cmd <span class="o">=</span> <span class="s2">&quot;user&quot;</span>
-TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Fail instruction.Cmd <span class="o">=</span> <span class="s2">&quot;user&quot;</span>
-TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Redo <span class="nv">instruction</span> <span class="o">=</span> input.stages<span class="o">[</span>_<span class="o">][</span>_<span class="o">]</span>
-TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Eval instruction.Cmd <span class="o">=</span> <span class="s2">&quot;user&quot;</span>
-TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Fail instruction.Cmd <span class="o">=</span> <span class="s2">&quot;user&quot;</span>
-TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Redo <span class="nv">instruction</span> <span class="o">=</span> input.stages<span class="o">[</span>_<span class="o">][</span>_<span class="o">]</span>
-TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Eval instruction.Cmd <span class="o">=</span> <span class="s2">&quot;user&quot;</span>
-TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Fail instruction.Cmd <span class="o">=</span> <span class="s2">&quot;user&quot;</span>
-TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Redo <span class="nv">instruction</span> <span class="o">=</span> input.stages<span class="o">[</span>_<span class="o">][</span>_<span class="o">]</span>
-TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Eval instruction.Cmd <span class="o">=</span> <span class="s2">&quot;user&quot;</span>
-TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Fail instruction.Cmd <span class="o">=</span> <span class="s2">&quot;user&quot;</span>
-TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Redo <span class="nv">instruction</span> <span class="o">=</span> input.stages<span class="o">[</span>_<span class="o">][</span>_<span class="o">]</span>
-TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Eval instruction.Cmd <span class="o">=</span> <span class="s2">&quot;user&quot;</span>
-TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Fail instruction.Cmd <span class="o">=</span> <span class="s2">&quot;user&quot;</span>
-TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Redo <span class="nv">instruction</span> <span class="o">=</span> input.stages<span class="o">[</span>_<span class="o">][</span>_<span class="o">]</span>
-TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Eval instruction.Cmd <span class="o">=</span> <span class="s2">&quot;user&quot;</span>
-TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Fail instruction.Cmd <span class="o">=</span> <span class="s2">&quot;user&quot;</span>
-TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Redo <span class="nv">instruction</span> <span class="o">=</span> input.stages<span class="o">[</span>_<span class="o">][</span>_<span class="o">]</span>
-TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Eval instruction.Cmd <span class="o">=</span> <span class="s2">&quot;user&quot;</span>
 TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Exit data.lib.docker.user
-TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Eval <span class="nv">username</span> <span class="o">=</span> user.Value<span class="o">[</span>_<span class="o">]</span>
-TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Exit data.appshield.dockerfile.DS002.get_user
-TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Redo data.appshield.dockerfile.DS002.get_user
-TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Redo <span class="nv">username</span> <span class="o">=</span> user.Value<span class="o">[</span>_<span class="o">]</span>
-TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Redo <span class="nv">user</span> <span class="o">=</span> data.lib.docker.user<span class="o">[</span>_<span class="o">]</span>
-TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Redo data.lib.docker.user
-TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Redo instruction.Cmd <span class="o">=</span> <span class="s2">&quot;user&quot;</span>
-TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Redo <span class="nv">instruction</span> <span class="o">=</span> input.stages<span class="o">[</span>_<span class="o">][</span>_<span class="o">]</span>
-TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Eval instruction.Cmd <span class="o">=</span> <span class="s2">&quot;user&quot;</span>
-TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Exit data.lib.docker.user
-TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Eval <span class="nv">username</span> <span class="o">=</span> user.Value<span class="o">[</span>_<span class="o">]</span>
-TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Exit data.appshield.dockerfile.DS002.get_user
-TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Redo data.appshield.dockerfile.DS002.get_user
-TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Redo <span class="nv">username</span> <span class="o">=</span> user.Value<span class="o">[</span>_<span class="o">]</span>
-TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Redo <span class="nv">user</span> <span class="o">=</span> data.lib.docker.user<span class="o">[</span>_<span class="o">]</span>
 TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Redo data.lib.docker.user
 TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Redo instruction.Cmd <span class="o">=</span> <span class="s2">&quot;user&quot;</span>
 TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Redo <span class="nv">instruction</span> <span class="o">=</span> input.stages<span class="o">[</span>_<span class="o">][</span>_<span class="o">]</span>
 TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Eval instruction.Cmd <span class="o">=</span> <span class="s2">&quot;user&quot;</span>
 TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Fail instruction.Cmd <span class="o">=</span> <span class="s2">&quot;user&quot;</span>
 TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Redo <span class="nv">instruction</span> <span class="o">=</span> input.stages<span class="o">[</span>_<span class="o">][</span>_<span class="o">]</span>
-TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Eval count<span class="o">(</span>__local559__, __local391__<span class="o">)</span>
-TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Eval lt<span class="o">(</span>__local391__, <span class="m">1</span><span class="o">)</span>
-TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Fail lt<span class="o">(</span>__local391__, <span class="m">1</span><span class="o">)</span>
-TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Redo count<span class="o">(</span>__local559__, __local391__<span class="o">)</span>
-TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Redo <span class="nv">__local559__</span> <span class="o">=</span> data.appshield.dockerfile.DS002.get_user
-TRACE  <span class="p">|</span> <span class="p">|</span> Fail data.appshield.dockerfile.DS002.fail_user_count
-TRACE  <span class="p">|</span> Enter data.appshield.dockerfile.DS002.deny
-TRACE  <span class="p">|</span> <span class="p">|</span> Eval data.appshield.dockerfile.DS002.fail_last_user_root
-TRACE  <span class="p">|</span> <span class="p">|</span> Index data.appshield.dockerfile.DS002.fail_last_user_root <span class="o">(</span>matched <span class="m">1</span> rule<span class="o">)</span>
-TRACE  <span class="p">|</span> <span class="p">|</span> Enter data.appshield.dockerfile.DS002.fail_last_user_root
-TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Eval <span class="nv">__local560__</span> <span class="o">=</span> data.appshield.dockerfile.DS002.get_user
-TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Index data.appshield.dockerfile.DS002.get_user <span class="o">(</span>matched <span class="m">1</span> rule<span class="o">)</span>
-TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Enter data.appshield.dockerfile.DS002.get_user
-TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Eval <span class="nv">user</span> <span class="o">=</span> data.lib.docker.user<span class="o">[</span>_<span class="o">]</span>
-TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Index data.lib.docker.user <span class="o">(</span>matched <span class="m">1</span> rule<span class="o">)</span>
-TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Enter data.lib.docker.user
-TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Eval <span class="nv">instruction</span> <span class="o">=</span> input.stages<span class="o">[</span>_<span class="o">][</span>_<span class="o">]</span>
-TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Eval instruction.Cmd <span class="o">=</span> <span class="s2">&quot;user&quot;</span>
-TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Fail instruction.Cmd <span class="o">=</span> <span class="s2">&quot;user&quot;</span>
-TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Redo <span class="nv">instruction</span> <span class="o">=</span> input.stages<span class="o">[</span>_<span class="o">][</span>_<span class="o">]</span>
-TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Eval instruction.Cmd <span class="o">=</span> <span class="s2">&quot;user&quot;</span>
-TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Fail instruction.Cmd <span class="o">=</span> <span class="s2">&quot;user&quot;</span>
-TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Redo <span class="nv">instruction</span> <span class="o">=</span> input.stages<span class="o">[</span>_<span class="o">][</span>_<span class="o">]</span>
-TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Eval instruction.Cmd <span class="o">=</span> <span class="s2">&quot;user&quot;</span>
-TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Fail instruction.Cmd <span class="o">=</span> <span class="s2">&quot;user&quot;</span>
-TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Redo <span class="nv">instruction</span> <span class="o">=</span> input.stages<span class="o">[</span>_<span class="o">][</span>_<span class="o">]</span>
-TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Eval instruction.Cmd <span class="o">=</span> <span class="s2">&quot;user&quot;</span>
-TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Fail instruction.Cmd <span class="o">=</span> <span class="s2">&quot;user&quot;</span>
-TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Redo <span class="nv">instruction</span> <span class="o">=</span> input.stages<span class="o">[</span>_<span class="o">][</span>_<span class="o">]</span>
-TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Eval instruction.Cmd <span class="o">=</span> <span class="s2">&quot;user&quot;</span>
-TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Fail instruction.Cmd <span class="o">=</span> <span class="s2">&quot;user&quot;</span>
-TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Redo <span class="nv">instruction</span> <span class="o">=</span> input.stages<span class="o">[</span>_<span class="o">][</span>_<span class="o">]</span>
-TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Eval instruction.Cmd <span class="o">=</span> <span class="s2">&quot;user&quot;</span>
-TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Fail instruction.Cmd <span class="o">=</span> <span class="s2">&quot;user&quot;</span>
-TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Redo <span class="nv">instruction</span> <span class="o">=</span> input.stages<span class="o">[</span>_<span class="o">][</span>_<span class="o">]</span>
-TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Eval instruction.Cmd <span class="o">=</span> <span class="s2">&quot;user&quot;</span>
-TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Fail instruction.Cmd <span class="o">=</span> <span class="s2">&quot;user&quot;</span>
-TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Redo <span class="nv">instruction</span> <span class="o">=</span> input.stages<span class="o">[</span>_<span class="o">][</span>_<span class="o">]</span>
-TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Eval instruction.Cmd <span class="o">=</span> <span class="s2">&quot;user&quot;</span>
-TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Exit data.lib.docker.user
 TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Eval <span class="nv">username</span> <span class="o">=</span> user.Value<span class="o">[</span>_<span class="o">]</span>
-TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Exit data.appshield.dockerfile.DS002.get_user
-TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Redo data.appshield.dockerfile.DS002.get_user
+TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Exit data.builtin.dockerfile.DS002.get_user
+TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Redo data.builtin.dockerfile.DS002.get_user
 TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Redo <span class="nv">username</span> <span class="o">=</span> user.Value<span class="o">[</span>_<span class="o">]</span>
 TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Redo <span class="nv">user</span> <span class="o">=</span> data.lib.docker.user<span class="o">[</span>_<span class="o">]</span>
-TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Redo data.lib.docker.user
-TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Redo instruction.Cmd <span class="o">=</span> <span class="s2">&quot;user&quot;</span>
-TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Redo <span class="nv">instruction</span> <span class="o">=</span> input.stages<span class="o">[</span>_<span class="o">][</span>_<span class="o">]</span>
-TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Eval instruction.Cmd <span class="o">=</span> <span class="s2">&quot;user&quot;</span>
-TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Exit data.lib.docker.user
-TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Eval <span class="nv">username</span> <span class="o">=</span> user.Value<span class="o">[</span>_<span class="o">]</span>
-TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Exit data.appshield.dockerfile.DS002.get_user
-TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Redo data.appshield.dockerfile.DS002.get_user
-TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Redo <span class="nv">username</span> <span class="o">=</span> user.Value<span class="o">[</span>_<span class="o">]</span>
-TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Redo <span class="nv">user</span> <span class="o">=</span> data.lib.docker.user<span class="o">[</span>_<span class="o">]</span>
-TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Redo data.lib.docker.user
-TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Redo instruction.Cmd <span class="o">=</span> <span class="s2">&quot;user&quot;</span>
-TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Redo <span class="nv">instruction</span> <span class="o">=</span> input.stages<span class="o">[</span>_<span class="o">][</span>_<span class="o">]</span>
-TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Eval instruction.Cmd <span class="o">=</span> <span class="s2">&quot;user&quot;</span>
-TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Fail instruction.Cmd <span class="o">=</span> <span class="s2">&quot;user&quot;</span>
-TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Redo <span class="nv">instruction</span> <span class="o">=</span> input.stages<span class="o">[</span>_<span class="o">][</span>_<span class="o">]</span>
-TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Eval cast_array<span class="o">(</span>__local560__, __local392__<span class="o">)</span>
-TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Eval <span class="nv">user</span> <span class="o">=</span> __local392__
-TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Eval <span class="nv">__local561__</span> <span class="o">=</span> data.appshield.dockerfile.DS002.get_user
-TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Index data.appshield.dockerfile.DS002.get_user <span class="o">(</span>matched <span class="m">1</span> rule<span class="o">)</span>
-TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Enter data.appshield.dockerfile.DS002.get_user
-TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Eval <span class="nv">user</span> <span class="o">=</span> data.lib.docker.user<span class="o">[</span>_<span class="o">]</span>
-TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Index data.lib.docker.user <span class="o">(</span>matched <span class="m">1</span> rule<span class="o">)</span>
-TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Enter data.lib.docker.user
-TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Eval <span class="nv">instruction</span> <span class="o">=</span> input.stages<span class="o">[</span>_<span class="o">][</span>_<span class="o">]</span>
-TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Eval instruction.Cmd <span class="o">=</span> <span class="s2">&quot;user&quot;</span>
-TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Fail instruction.Cmd <span class="o">=</span> <span class="s2">&quot;user&quot;</span>
-TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Redo <span class="nv">instruction</span> <span class="o">=</span> input.stages<span class="o">[</span>_<span class="o">][</span>_<span class="o">]</span>
-TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Eval instruction.Cmd <span class="o">=</span> <span class="s2">&quot;user&quot;</span>
-TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Fail instruction.Cmd <span class="o">=</span> <span class="s2">&quot;user&quot;</span>
-TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Redo <span class="nv">instruction</span> <span class="o">=</span> input.stages<span class="o">[</span>_<span class="o">][</span>_<span class="o">]</span>
-TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Eval instruction.Cmd <span class="o">=</span> <span class="s2">&quot;user&quot;</span>
-TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Fail instruction.Cmd <span class="o">=</span> <span class="s2">&quot;user&quot;</span>
-TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Redo <span class="nv">instruction</span> <span class="o">=</span> input.stages<span class="o">[</span>_<span class="o">][</span>_<span class="o">]</span>
-TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Eval instruction.Cmd <span class="o">=</span> <span class="s2">&quot;user&quot;</span>
-TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Fail instruction.Cmd <span class="o">=</span> <span class="s2">&quot;user&quot;</span>
-TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Redo <span class="nv">instruction</span> <span class="o">=</span> input.stages<span class="o">[</span>_<span class="o">][</span>_<span class="o">]</span>
-TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Eval instruction.Cmd <span class="o">=</span> <span class="s2">&quot;user&quot;</span>
-TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Fail instruction.Cmd <span class="o">=</span> <span class="s2">&quot;user&quot;</span>
-TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Redo <span class="nv">instruction</span> <span class="o">=</span> input.stages<span class="o">[</span>_<span class="o">][</span>_<span class="o">]</span>
-TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Eval instruction.Cmd <span class="o">=</span> <span class="s2">&quot;user&quot;</span>
-TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Fail instruction.Cmd <span class="o">=</span> <span class="s2">&quot;user&quot;</span>
-TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Redo <span class="nv">instruction</span> <span class="o">=</span> input.stages<span class="o">[</span>_<span class="o">][</span>_<span class="o">]</span>
-TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Eval instruction.Cmd <span class="o">=</span> <span class="s2">&quot;user&quot;</span>
-TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Fail instruction.Cmd <span class="o">=</span> <span class="s2">&quot;user&quot;</span>
-TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Redo <span class="nv">instruction</span> <span class="o">=</span> input.stages<span class="o">[</span>_<span class="o">][</span>_<span class="o">]</span>
-TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Eval instruction.Cmd <span class="o">=</span> <span class="s2">&quot;user&quot;</span>
-TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Exit data.lib.docker.user
-TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Eval <span class="nv">username</span> <span class="o">=</span> user.Value<span class="o">[</span>_<span class="o">]</span>
-TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Exit data.appshield.dockerfile.DS002.get_user
-TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Redo data.appshield.dockerfile.DS002.get_user
-TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Redo <span class="nv">username</span> <span class="o">=</span> user.Value<span class="o">[</span>_<span class="o">]</span>
-TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Redo <span class="nv">user</span> <span class="o">=</span> data.lib.docker.user<span class="o">[</span>_<span class="o">]</span>
-TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Redo data.lib.docker.user
-TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Redo instruction.Cmd <span class="o">=</span> <span class="s2">&quot;user&quot;</span>
-TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Redo <span class="nv">instruction</span> <span class="o">=</span> input.stages<span class="o">[</span>_<span class="o">][</span>_<span class="o">]</span>
-TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Eval instruction.Cmd <span class="o">=</span> <span class="s2">&quot;user&quot;</span>
-TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Exit data.lib.docker.user
-TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Eval <span class="nv">username</span> <span class="o">=</span> user.Value<span class="o">[</span>_<span class="o">]</span>
-TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Exit data.appshield.dockerfile.DS002.get_user
-TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Redo data.appshield.dockerfile.DS002.get_user
-TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Redo <span class="nv">username</span> <span class="o">=</span> user.Value<span class="o">[</span>_<span class="o">]</span>
-TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Redo <span class="nv">user</span> <span class="o">=</span> data.lib.docker.user<span class="o">[</span>_<span class="o">]</span>
-TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Redo data.lib.docker.user
-TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Redo instruction.Cmd <span class="o">=</span> <span class="s2">&quot;user&quot;</span>
-TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Redo <span class="nv">instruction</span> <span class="o">=</span> input.stages<span class="o">[</span>_<span class="o">][</span>_<span class="o">]</span>
-TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Eval instruction.Cmd <span class="o">=</span> <span class="s2">&quot;user&quot;</span>
-TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Fail instruction.Cmd <span class="o">=</span> <span class="s2">&quot;user&quot;</span>
-TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Redo <span class="nv">instruction</span> <span class="o">=</span> input.stages<span class="o">[</span>_<span class="o">][</span>_<span class="o">]</span>
-TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Eval count<span class="o">(</span>__local561__, __local393__<span class="o">)</span>
-TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Eval <span class="nv">len</span> <span class="o">=</span> __local393__
-TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Eval minus<span class="o">(</span>len, <span class="m">1</span>, __local394__<span class="o">)</span>
-TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Eval user<span class="o">[</span>__local394__<span class="o">]</span> <span class="o">=</span> <span class="s2">&quot;root&quot;</span>
-TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Exit data.appshield.dockerfile.DS002.fail_last_user_root
-TRACE  <span class="p">|</span> <span class="p">|</span> Eval <span class="nv">res</span> <span class="o">=</span> <span class="s2">&quot;Last USER command in Dockerfile should not be &#39;root&#39;&quot;</span>
-TRACE  <span class="p">|</span> <span class="p">|</span> Exit data.appshield.dockerfile.DS002.deny
-TRACE  <span class="p">|</span> Redo data.appshield.dockerfile.DS002.deny
-TRACE  <span class="p">|</span> <span class="p">|</span> Redo <span class="nv">res</span> <span class="o">=</span> <span class="s2">&quot;Last USER command in Dockerfile should not be &#39;root&#39;&quot;</span>
-TRACE  <span class="p">|</span> <span class="p">|</span> Redo data.appshield.dockerfile.DS002.fail_last_user_root
-TRACE  <span class="p">|</span> <span class="p">|</span> Redo data.appshield.dockerfile.DS002.fail_last_user_root
-TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Redo user<span class="o">[</span>__local394__<span class="o">]</span> <span class="o">=</span> <span class="s2">&quot;root&quot;</span>
-TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Redo minus<span class="o">(</span>len, <span class="m">1</span>, __local394__<span class="o">)</span>
-TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Redo <span class="nv">len</span> <span class="o">=</span> __local393__
-TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Redo count<span class="o">(</span>__local561__, __local393__<span class="o">)</span>
-TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Redo <span class="nv">__local561__</span> <span class="o">=</span> data.appshield.dockerfile.DS002.get_user
-TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Redo <span class="nv">user</span> <span class="o">=</span> __local392__
-TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Redo cast_array<span class="o">(</span>__local560__, __local392__<span class="o">)</span>
-TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Redo <span class="nv">__local560__</span> <span class="o">=</span> data.appshield.dockerfile.DS002.get_user
-TRACE  <span class="p">|</span> Exit data.appshield.dockerfile.DS002.deny <span class="o">=</span> _
-TRACE  Redo data.appshield.dockerfile.DS002.deny <span class="o">=</span> _
-TRACE  <span class="p">|</span> Redo data.appshield.dockerfile.DS002.deny <span class="o">=</span> _
+TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Eval count<span class="o">(</span>__local771__, __local536__<span class="o">)</span>
+TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Eval lt<span class="o">(</span>__local536__, <span class="m">1</span><span class="o">)</span>
+TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Fail lt<span class="o">(</span>__local536__, <span class="m">1</span><span class="o">)</span>
+TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Redo count<span class="o">(</span>__local771__, __local536__<span class="o">)</span>
+TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Redo <span class="nv">__local771__</span> <span class="o">=</span> data.builtin.dockerfile.DS002.get_user
+TRACE  <span class="p">|</span> <span class="p">|</span> Fail data.builtin.dockerfile.DS002.fail_user_count
+TRACE  <span class="p">|</span> Enter data.builtin.dockerfile.DS002.deny
+TRACE  <span class="p">|</span> <span class="p">|</span> Eval <span class="nv">cmd</span> <span class="o">=</span> data.builtin.dockerfile.DS002.fail_last_user_root<span class="o">[</span>_<span class="o">]</span>
+TRACE  <span class="p">|</span> <span class="p">|</span> Index data.builtin.dockerfile.DS002.fail_last_user_root <span class="o">(</span>matched <span class="m">1</span> rule<span class="o">)</span>
+TRACE  <span class="p">|</span> <span class="p">|</span> Enter data.builtin.dockerfile.DS002.fail_last_user_root
+TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Eval <span class="nv">stage_users</span> <span class="o">=</span> data.lib.docker.stage_user<span class="o">[</span>_<span class="o">]</span>
+TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Index data.lib.docker.stage_user <span class="o">(</span>matched <span class="m">1</span> rule<span class="o">)</span>
+TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Enter data.lib.docker.stage_user
+TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Eval <span class="nv">stage</span> <span class="o">=</span> input.stages<span class="o">[</span>stage_name<span class="o">]</span>
+TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Eval <span class="nv">users</span> <span class="o">=</span> <span class="o">[</span>cmd <span class="p">|</span> <span class="nv">cmd</span> <span class="o">=</span> stage<span class="o">[</span>_<span class="o">]</span><span class="p">;</span> cmd.Cmd <span class="o">=</span> <span class="s2">&quot;user&quot;</span><span class="o">]</span>
+TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Enter <span class="nv">cmd</span> <span class="o">=</span> stage<span class="o">[</span>_<span class="o">]</span><span class="p">;</span> cmd.Cmd <span class="o">=</span> <span class="s2">&quot;user&quot;</span>
+TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Eval <span class="nv">cmd</span> <span class="o">=</span> stage<span class="o">[</span>_<span class="o">]</span>
+TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Eval cmd.Cmd <span class="o">=</span> <span class="s2">&quot;user&quot;</span>
+TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Fail cmd.Cmd <span class="o">=</span> <span class="s2">&quot;user&quot;</span>
+TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Redo <span class="nv">cmd</span> <span class="o">=</span> stage<span class="o">[</span>_<span class="o">]</span>
+TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Eval cmd.Cmd <span class="o">=</span> <span class="s2">&quot;user&quot;</span>
+TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Exit <span class="nv">cmd</span> <span class="o">=</span> stage<span class="o">[</span>_<span class="o">]</span><span class="p">;</span> cmd.Cmd <span class="o">=</span> <span class="s2">&quot;user&quot;</span>
+TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Redo <span class="nv">cmd</span> <span class="o">=</span> stage<span class="o">[</span>_<span class="o">]</span><span class="p">;</span> cmd.Cmd <span class="o">=</span> <span class="s2">&quot;user&quot;</span>
+TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Redo cmd.Cmd <span class="o">=</span> <span class="s2">&quot;user&quot;</span>
+TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Redo <span class="nv">cmd</span> <span class="o">=</span> stage<span class="o">[</span>_<span class="o">]</span>
+TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Eval cmd.Cmd <span class="o">=</span> <span class="s2">&quot;user&quot;</span>
+TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Fail cmd.Cmd <span class="o">=</span> <span class="s2">&quot;user&quot;</span>
+TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Redo <span class="nv">cmd</span> <span class="o">=</span> stage<span class="o">[</span>_<span class="o">]</span>
+TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Exit data.lib.docker.stage_user
+TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Redo data.lib.docker.stage_user
+TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Redo <span class="nv">users</span> <span class="o">=</span> <span class="o">[</span>cmd <span class="p">|</span> <span class="nv">cmd</span> <span class="o">=</span> stage<span class="o">[</span>_<span class="o">]</span><span class="p">;</span> cmd.Cmd <span class="o">=</span> <span class="s2">&quot;user&quot;</span><span class="o">]</span>
+TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Redo <span class="nv">stage</span> <span class="o">=</span> input.stages<span class="o">[</span>stage_name<span class="o">]</span>
+TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Eval count<span class="o">(</span>stage_users, __local537__<span class="o">)</span>
+TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Eval <span class="nv">len</span> <span class="o">=</span> __local537__
+TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Eval minus<span class="o">(</span>len, <span class="m">1</span>, __local538__<span class="o">)</span>
+TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Eval <span class="nv">last</span> <span class="o">=</span> stage_users<span class="o">[</span>__local538__<span class="o">]</span>
+TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Eval <span class="nv">user</span> <span class="o">=</span> last.Value<span class="o">[</span><span class="m">0</span><span class="o">]</span>
+TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Eval <span class="nv">user</span> <span class="o">=</span> <span class="s2">&quot;root&quot;</span>
+TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Exit data.builtin.dockerfile.DS002.fail_last_user_root
+TRACE  <span class="p">|</span> <span class="p">|</span> Redo data.builtin.dockerfile.DS002.fail_last_user_root
+TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Redo <span class="nv">user</span> <span class="o">=</span> <span class="s2">&quot;root&quot;</span>
+TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Redo <span class="nv">user</span> <span class="o">=</span> last.Value<span class="o">[</span><span class="m">0</span><span class="o">]</span>
+TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Redo <span class="nv">last</span> <span class="o">=</span> stage_users<span class="o">[</span>__local538__<span class="o">]</span>
+TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Redo minus<span class="o">(</span>len, <span class="m">1</span>, __local538__<span class="o">)</span>
+TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Redo <span class="nv">len</span> <span class="o">=</span> __local537__
+TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Redo count<span class="o">(</span>stage_users, __local537__<span class="o">)</span>
+TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Redo <span class="nv">stage_users</span> <span class="o">=</span> data.lib.docker.stage_user<span class="o">[</span>_<span class="o">]</span>
+TRACE  <span class="p">|</span> <span class="p">|</span> Eval <span class="nv">msg</span> <span class="o">=</span> <span class="s2">&quot;Last USER command in Dockerfile should not be &#39;root&#39;&quot;</span>
+TRACE  <span class="p">|</span> <span class="p">|</span> Eval data.lib.docker.result<span class="o">(</span>msg, cmd, __local540__<span class="o">)</span>
+TRACE  <span class="p">|</span> <span class="p">|</span> Index data.lib.docker.result <span class="o">(</span>matched <span class="m">1</span> rule<span class="o">)</span>
+TRACE  <span class="p">|</span> <span class="p">|</span> Enter data.lib.docker.result
+TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Eval object.get<span class="o">(</span>cmd, <span class="s2">&quot;EndLine&quot;</span>, <span class="m">0</span>, __local470__<span class="o">)</span>
+TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Eval object.get<span class="o">(</span>cmd, <span class="s2">&quot;Path&quot;</span>, <span class="s2">&quot;&quot;</span>, __local471__<span class="o">)</span>
+TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Eval object.get<span class="o">(</span>cmd, <span class="s2">&quot;StartLine&quot;</span>, <span class="m">0</span>, __local472__<span class="o">)</span>
+TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Eval <span class="nv">result</span> <span class="o">=</span> <span class="o">{</span><span class="s2">&quot;endline&quot;</span>: __local470__, <span class="s2">&quot;filepath&quot;</span>: __local471__, <span class="s2">&quot;msg&quot;</span>: msg, <span class="s2">&quot;startline&quot;</span>: __local472__<span class="o">}</span>
+TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Exit data.lib.docker.result
+TRACE  <span class="p">|</span> <span class="p">|</span> Eval <span class="nv">res</span> <span class="o">=</span> __local540__
+TRACE  <span class="p">|</span> <span class="p">|</span> Exit data.builtin.dockerfile.DS002.deny
+TRACE  <span class="p">|</span> Redo data.builtin.dockerfile.DS002.deny
+TRACE  <span class="p">|</span> <span class="p">|</span> Redo <span class="nv">res</span> <span class="o">=</span> __local540__
+TRACE  <span class="p">|</span> <span class="p">|</span> Redo data.lib.docker.result<span class="o">(</span>msg, cmd, __local540__<span class="o">)</span>
+TRACE  <span class="p">|</span> <span class="p">|</span> Redo data.lib.docker.result
+TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Redo <span class="nv">result</span> <span class="o">=</span> <span class="o">{</span><span class="s2">&quot;endline&quot;</span>: __local470__, <span class="s2">&quot;filepath&quot;</span>: __local471__, <span class="s2">&quot;msg&quot;</span>: msg, <span class="s2">&quot;startline&quot;</span>: __local472__<span class="o">}</span>
+TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Redo object.get<span class="o">(</span>cmd, <span class="s2">&quot;StartLine&quot;</span>, <span class="m">0</span>, __local472__<span class="o">)</span>
+TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Redo object.get<span class="o">(</span>cmd, <span class="s2">&quot;Path&quot;</span>, <span class="s2">&quot;&quot;</span>, __local471__<span class="o">)</span>
+TRACE  <span class="p">|</span> <span class="p">|</span> <span class="p">|</span> Redo object.get<span class="o">(</span>cmd, <span class="s2">&quot;EndLine&quot;</span>, <span class="m">0</span>, __local470__<span class="o">)</span>
+TRACE  <span class="p">|</span> <span class="p">|</span> Redo <span class="nv">msg</span> <span class="o">=</span> <span class="s2">&quot;Last USER command in Dockerfile should not be &#39;root&#39;&quot;</span>
+TRACE  <span class="p">|</span> <span class="p">|</span> Redo <span class="nv">cmd</span> <span class="o">=</span> data.builtin.dockerfile.DS002.fail_last_user_root<span class="o">[</span>_<span class="o">]</span>
+TRACE  <span class="p">|</span> Exit data.builtin.dockerfile.DS002.deny <span class="o">=</span> _
+TRACE  Redo data.builtin.dockerfile.DS002.deny <span class="o">=</span> _
+TRACE  <span class="p">|</span> Redo data.builtin.dockerfile.DS002.deny <span class="o">=</span> _
+TRACE
 </code></pre></div>
 
               

@@ -2463,22 +2463,23 @@ Also, you can write your own policies in <a href="https://www.openpolicyagent.or
 <div class="highlight"><pre><span></span><code>$ ls build/
 Dockerfile
 $ trivy config ./build
-2021-07-09T10:06:29.188+0300    INFO    Need to update the built-in policies
-2021-07-09T10:06:29.188+0300    INFO    Downloading the built-in policies...
-2021-07-09T10:06:30.520+0300    INFO    Detected config files: 1
+2022-05-16T13:29:29.952+0100    INFO    Detected config files: 1
 
 Dockerfile (dockerfile)
 =======================
 Tests: 23 (SUCCESSES: 22, FAILURES: 1, EXCEPTIONS: 0)
-Failures: 1 (UNKNOWN: 0, LOW: 0, MEDIUM: 0, HIGH: 1, CRITICAL: 0)
+Failures: 1 (UNKNOWN: 0, LOW: 0, MEDIUM: 1, HIGH: 0, CRITICAL: 0)
 
-+---------------------------+------------+----------------------+----------+------------------------------------------+
-|           TYPE            | MISCONF ID |        CHECK         | SEVERITY |                 MESSAGE                  |
-+---------------------------+------------+----------------------+----------+------------------------------------------+
-| Dockerfile Security Check |   DS002    | Image user is &#39;root&#39; |   HIGH   | Last USER command in                     |
-|                           |            |                      |          | Dockerfile should not be &#39;root&#39;          |
-|                           |            |                      |          | --&gt;avd.aquasec.com/appshield/ds002       |
-+---------------------------+------------+----------------------+----------+------------------------------------------+
+MEDIUM: Specify a tag in the &#39;FROM&#39; statement for image &#39;alpine&#39;
+══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+When using a &#39;FROM&#39; statement you should use a specific tag to avoid uncontrolled behavior when the image is updated.
+
+See https://avd.aquasec.com/misconfig/ds001
+──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+Dockerfile:1
+──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+1 [ FROM alpine:latest
+──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 </code></pre></div>
 </div>
 <p>You can also enable misconfiguration detection in container image, filesystem and git repository scanning via <code>--security-checks config</code>.</p>
@@ -2497,35 +2498,37 @@ You can specify <code>--security-checks vuln,config,secret</code> to enable vuln
 <div class="highlight"><pre><span></span><code>$ ls myapp/
 Dockerfile Pipfile.lock
 $ trivy fs --security-checks vuln,config,secret --severity HIGH,CRITICAL myapp/
-<span class="m">2021</span>-07-09T12:03:27.564+0300    INFO    Number of language-specific files: <span class="m">1</span>
-<span class="m">2021</span>-07-09T12:03:27.564+0300    INFO    Detecting pipenv vulnerabilities...
-<span class="m">2021</span>-07-09T12:03:27.566+0300    INFO    Detected config files: <span class="m">1</span>
+<span class="m">2022</span>-05-16T13:42:21.440+0100    INFO    Number of language-specific files: <span class="m">1</span>
+<span class="m">2022</span>-05-16T13:42:21.440+0100    INFO    Detecting pipenv vulnerabilities...
+<span class="m">2022</span>-05-16T13:42:21.440+0100    INFO    Detected config files: <span class="m">1</span>
 
 Pipfile.lock <span class="o">(</span>pipenv<span class="o">)</span>
 <span class="o">=====================</span>
 Total: <span class="m">1</span> <span class="o">(</span>HIGH: <span class="m">1</span>, CRITICAL: <span class="m">0</span><span class="o">)</span>
 
-+----------+------------------+----------+-------------------+---------------+---------------------------------------+
-<span class="p">|</span> LIBRARY  <span class="p">|</span> VULNERABILITY ID <span class="p">|</span> SEVERITY <span class="p">|</span> INSTALLED VERSION <span class="p">|</span> FIXED VERSION <span class="p">|</span>                 TITLE                 <span class="p">|</span>
-+----------+------------------+----------+-------------------+---------------+---------------------------------------+
-<span class="p">|</span> httplib2 <span class="p">|</span> CVE-2021-21240   <span class="p">|</span> HIGH     <span class="p">|</span> <span class="m">0</span>.12.1            <span class="p">|</span> <span class="m">0</span>.19.0        <span class="p">|</span> python-httplib2: Regular              <span class="p">|</span>
-<span class="p">|</span>          <span class="p">|</span>                  <span class="p">|</span>          <span class="p">|</span>                   <span class="p">|</span>               <span class="p">|</span> expression denial of                  <span class="p">|</span>
-<span class="p">|</span>          <span class="p">|</span>                  <span class="p">|</span>          <span class="p">|</span>                   <span class="p">|</span>               <span class="p">|</span> service via malicious header          <span class="p">|</span>
-<span class="p">|</span>          <span class="p">|</span>                  <span class="p">|</span>          <span class="p">|</span>                   <span class="p">|</span>               <span class="p">|</span> --&gt;avd.aquasec.com/nvd/cve-2021-21240 <span class="p">|</span>
-+----------+------------------+----------+-------------------+---------------+---------------------------------------+
+┌──────────┬────────────────┬──────────┬───────────────────┬───────────────┬───────────────────────────────────────────────────────────┐
+│ Library  │ Vulnerability  │ Severity │ Installed Version │ Fixed Version │                           Title                           │
+├──────────┼────────────────┼──────────┼───────────────────┼───────────────┼───────────────────────────────────────────────────────────┤
+│ httplib2 │ CVE-2021-21240 │ HIGH     │ <span class="m">0</span>.12.1            │ <span class="m">0</span>.19.0        │ python-httplib2: Regular expression denial of service via │
+│          │                │          │                   │               │ malicious header                                          │
+│          │                │          │                   │               │ https://avd.aquasec.com/nvd/cve-2021-21240                │
+└──────────┴────────────────┴──────────┴───────────────────┴───────────────┴───────────────────────────────────────────────────────────┘
 
 Dockerfile <span class="o">(</span>dockerfile<span class="o">)</span>
 <span class="o">=======================</span>
-Tests: <span class="m">23</span> <span class="o">(</span>SUCCESSES: <span class="m">22</span>, FAILURES: <span class="m">1</span>, EXCEPTIONS: <span class="m">0</span><span class="o">)</span>
+Tests: <span class="m">17</span> <span class="o">(</span>SUCCESSES: <span class="m">16</span>, FAILURES: <span class="m">1</span>, EXCEPTIONS: <span class="m">0</span><span class="o">)</span>
 Failures: <span class="m">1</span> <span class="o">(</span>HIGH: <span class="m">1</span>, CRITICAL: <span class="m">0</span><span class="o">)</span>
 
-+---------------------------+------------+----------------------+----------+------------------------------------------+
-<span class="p">|</span>           TYPE            <span class="p">|</span> MISCONF ID <span class="p">|</span>        CHECK         <span class="p">|</span> SEVERITY <span class="p">|</span>                 MESSAGE                  <span class="p">|</span>
-+---------------------------+------------+----------------------+----------+------------------------------------------+
-<span class="p">|</span> Dockerfile Security Check <span class="p">|</span>   DS002    <span class="p">|</span> Image user is <span class="s1">&#39;root&#39;</span> <span class="p">|</span>   HIGH   <span class="p">|</span> Last USER <span class="nb">command</span> <span class="k">in</span>                     <span class="p">|</span>
-<span class="p">|</span>                           <span class="p">|</span>            <span class="p">|</span>                      <span class="p">|</span>          <span class="p">|</span> Dockerfile should not be <span class="s1">&#39;root&#39;</span>          <span class="p">|</span>
-<span class="p">|</span>                           <span class="p">|</span>            <span class="p">|</span>                      <span class="p">|</span>          <span class="p">|</span> --&gt;avd.aquasec.com/appshield/ds002       <span class="p">|</span>
-+---------------------------+------------+----------------------+----------+------------------------------------------+
+HIGH: Last USER <span class="nb">command</span> <span class="k">in</span> Dockerfile should not be <span class="s1">&#39;root&#39;</span>
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+Running containers with <span class="s1">&#39;root&#39;</span> user can lead to a container escape situation. It is a best practice to run containers as non-root users, which can be <span class="k">done</span> by adding a <span class="s1">&#39;USER&#39;</span> statement to the Dockerfile.
+
+See https://avd.aquasec.com/misconfig/ds002
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+Dockerfile:3
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+<span class="m">3</span> <span class="o">[</span> USER root
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 </code></pre></div>
 </div>
 <p>In the above example, Trivy detected vulnerabilities of Python dependencies and misconfigurations in Dockerfile.</p>
@@ -2540,83 +2543,53 @@ $ trivy conf --severity HIGH,CRITICAL ./iac
 <details>
 <summary>Result</summary>
 
-<div class="highlight"><pre><span></span><code>2021-07-09T11:51:08.212+0300    INFO    Need to update the built-in policies
-2021-07-09T11:51:08.212+0300    INFO    Downloading the built-in policies...
-2021-07-09T11:51:09.527+0300    INFO    Detected config files: 3
+<div class="highlight"><pre><span></span><code>2022-05-16T13:46:31.115+0100    INFO    Detected config files: 3
 
 Dockerfile (dockerfile)
 =======================
-Tests: 23 (SUCCESSES: 22, FAILURES: 1, EXCEPTIONS: 0)
+Tests: 17 (SUCCESSES: 16, FAILURES: 1, EXCEPTIONS: 0)
 Failures: 1 (HIGH: 1, CRITICAL: 0)
 
-+---------------------------+------------+----------------------+----------+------------------------------------------+
-|           TYPE            | MISCONF ID |        CHECK         | SEVERITY |                 MESSAGE                  |
-+---------------------------+------------+----------------------+----------+------------------------------------------+
-| Dockerfile Security Check |   DS002    | Image user is &#39;root&#39; |   HIGH   | Last USER command in                     |
-|                           |            |                      |          | Dockerfile should not be &#39;root&#39;          |
-|                           |            |                      |          | --&gt;avd.aquasec.com/appshield/ds002       |
-+---------------------------+------------+----------------------+----------+------------------------------------------+
+HIGH: Last USER command in Dockerfile should not be &#39;root&#39;
+═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+Running containers with &#39;root&#39; user can lead to a container escape situation. It is a best practice to run containers as non-root users, which can be done by adding a &#39;USER&#39; statement to the Dockerfile.
+
+See https://avd.aquasec.com/misconfig/ds002
+───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+ Dockerfile:3
+───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+   3 [ USER root
+───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+
 
 deployment.yaml (kubernetes)
 ============================
-Tests: 28 (SUCCESSES: 15, FAILURES: 13, EXCEPTIONS: 0)
-Failures: 13 (HIGH: 1, CRITICAL: 0)
+Tests: 8 (SUCCESSES: 8, FAILURES: 0, EXCEPTIONS: 0)
+Failures: 0 (HIGH: 0, CRITICAL: 0)
 
-+---------------------------+------------+----------------------------+----------+------------------------------------------+
-|           TYPE            | MISCONF ID |           CHECK            | SEVERITY |                 MESSAGE                  |
-+---------------------------+------------+----------------------------+----------+------------------------------------------+
-| Kubernetes Security Check |   KSV005   | SYS_ADMIN capability added |   HIGH   | Container &#39;hello-kubernetes&#39; of          |
-|                           |            |                            |          | Deployment &#39;hello-kubernetes&#39;            |
-|                           |            |                            |          | should not include &#39;SYS_ADMIN&#39; in        |
-|                           |            |                            |          | &#39;securityContext.capabilities.add&#39;       |
-|                           |            |                            |          | --&gt;avd.aquasec.com/appshield/ksv005      |
-+---------------------------+------------+----------------------------+----------+------------------------------------------+
 
 main.tf (terraform)
 ===================
-Tests: 23 (SUCCESSES: 14, FAILURES: 9, EXCEPTIONS: 0)
-Failures: 9 (HIGH: 6, CRITICAL: 1)
+Tests: 1 (SUCCESSES: 0, FAILURES: 1, EXCEPTIONS: 0)
+Failures: 1 (HIGH: 0, CRITICAL: 1)
 
-+------------------------------------------+------------+------------------------------------------+----------+--------------------------------------------------------+
-|                   TYPE                   | MISCONF ID |                  CHECK                   | SEVERITY |                        MESSAGE                         |
-+------------------------------------------+------------+------------------------------------------+----------+--------------------------------------------------------+
-|   Terraform Security Check powered by    |   AWS003   | AWS Classic resource usage.              |   HIGH   | Resource                                               |
-|                  tfsec                   |            |                                          |          | &#39;aws_db_security_group.my-group&#39;                       |
-|                                          |            |                                          |          | uses EC2 Classic. Use a VPC instead.                   |
-|                                          |            |                                          |          | --&gt;tfsec.dev/docs/aws/AWS003/                          |
-+                                          +------------+------------------------------------------+----------+--------------------------------------------------------+
-|                                          |   AWS004   | Use of plain HTTP.                       | CRITICAL | Resource                                               |
-|                                          |            |                                          |          | &#39;aws_alb_listener.my-alb-listener&#39;                     |
-|                                          |            |                                          |          | uses plain HTTP instead of HTTPS.                      |
-|                                          |            |                                          |          | --&gt;tfsec.dev/docs/aws/AWS004/                          |
-+                                          +------------+------------------------------------------+----------+--------------------------------------------------------+
-|                                          |   AWS018   | Missing description for security         |   HIGH   | Resource                                               |
-|                                          |            | group/security group rule.               |          | &#39;aws_security_group_rule.my-rule&#39; should               |
-|                                          |            |                                          |          | include a description for auditing                     |
-|                                          |            |                                          |          | purposes. --&gt;tfsec.dev/docs/aws/AWS018/                |
-+                                          +------------+------------------------------------------+          +--------------------------------------------------------+
-|                                          |   AWS025   | API Gateway domain name uses outdated    |          | Resource                                               |
-|                                          |            | SSL/TLS protocols.                       |          | &#39;aws_api_gateway_domain_name.empty_security_policy&#39;    |
-|                                          |            |                                          |          | defines outdated SSL/TLS policies (not using           |
-|                                          |            |                                          |          | TLS_1_2). --&gt;tfsec.dev/docs/aws/AWS025/                |
-+                                          +            +                                          +          +--------------------------------------------------------+
-|                                          |            |                                          |          | Resource                                               |
-|                                          |            |                                          |          | &#39;aws_api_gateway_domain_name.missing_security_policy&#39;  |
-|                                          |            |                                          |          | should include security_policy (defaults to outdated   |
-|                                          |            |                                          |          | SSL/TLS policy). --&gt;tfsec.dev/docs/aws/AWS025/         |
-+                                          +            +                                          +          +--------------------------------------------------------+
-|                                          |            |                                          |          | Resource                                               |
-|                                          |            |                                          |          | &#39;aws_api_gateway_domain_name.outdated_security_policy&#39; |
-|                                          |            |                                          |          | defines outdated SSL/TLS policies (not using TLS_1_2). |
-|                                          |            |                                          |          | --&gt;tfsec.dev/docs/aws/AWS025/                          |
-+                                          +------------+------------------------------------------+          +--------------------------------------------------------+
-|                                          |   AZU003   | Unencrypted managed disk.                |          | Resource &#39;azurerm_managed_disk.source&#39;                 |
-|                                          |            |                                          |          | defines an unencrypted managed disk.                   |
-|                                          |            |                                          |          | --&gt;tfsec.dev/docs/azure/AZU003/                        |
-+------------------------------------------+------------+------------------------------------------+----------+--------------------------------------------------------+
+CRITICAL: Classic resources should not be used.
+═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+AWS Classic resources run in a shared environment with infrastructure owned by other AWS customers. You should run
+resources in a VPC instead.
+
+See https://avd.aquasec.com/misconfig/avd-aws-0081
+───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+ main.tf:2-4
+───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+   2 ┌ resource &quot;aws_db_security_group&quot; &quot;sg&quot; {
+   3 │
+   4 └ }
+───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 </code></pre></div>
 
-    </details>
+</details>
 
 <p>You can see the config type next to each file name.</p>
 <div class="admonition example">

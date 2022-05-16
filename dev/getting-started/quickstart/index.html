@@ -2441,35 +2441,35 @@
 </code></pre></div>
 <p>For example:</p>
 <div class="highlight"><pre><span></span><code>$ trivy image myimage:1.0.0
-<span class="m">2022</span>-04-21T18:56:44.099+0300    INFO    Detected OS: alpine
-<span class="m">2022</span>-04-21T18:56:44.099+0300    INFO    Detecting Alpine vulnerabilities...
-<span class="m">2022</span>-04-21T18:56:44.101+0300    INFO    Number of language-specific files: <span class="m">0</span>
+<span class="m">2022</span>-05-16T13:25:17.826+0100    INFO    Detected OS: alpine
+<span class="m">2022</span>-05-16T13:25:17.826+0100    INFO    Detecting Alpine vulnerabilities...
+<span class="m">2022</span>-05-16T13:25:17.826+0100    INFO    Number of language-specific files: <span class="m">0</span>
 
-myimage:1.0.0 <span class="o">(</span>alpine <span class="m">3</span>.15.0<span class="o">)</span>
-<span class="o">=============================</span>
-Total: <span class="m">6</span> <span class="o">(</span>UNKNOWN: <span class="m">0</span>, LOW: <span class="m">0</span>, MEDIUM: <span class="m">0</span>, HIGH: <span class="m">0</span>, CRITICAL: <span class="m">2</span><span class="o">)</span>
+myimage:1.0.0 <span class="o">(</span>alpine <span class="m">3</span>.15.3<span class="o">)</span>
 
-+--------------+------------------+----------+-------------------+---------------+---------------------------------------+
-<span class="p">|</span>   LIBRARY    <span class="p">|</span> VULNERABILITY ID <span class="p">|</span> SEVERITY <span class="p">|</span> INSTALLED VERSION <span class="p">|</span> FIXED VERSION <span class="p">|</span>                 TITLE                 <span class="p">|</span>
-+--------------+------------------+----------+-------------------+---------------+---------------------------------------+
-<span class="p">|</span> busybox      <span class="p">|</span> CVE-2022-28391   <span class="p">|</span> CRITICAL <span class="p">|</span> <span class="m">1</span>.34.1-r3         <span class="p">|</span> <span class="m">1</span>.34.1-r5     <span class="p">|</span> CVE-2022-28391 affecting              <span class="p">|</span>
-<span class="p">|</span>              <span class="p">|</span>                  <span class="p">|</span>          <span class="p">|</span>                   <span class="p">|</span>               <span class="p">|</span> package busybox <span class="m">1</span>.35.0                <span class="p">|</span>
-<span class="p">|</span>              <span class="p">|</span>                  <span class="p">|</span>          <span class="p">|</span>                   <span class="p">|</span>               <span class="p">|</span> --&gt;avd.aquasec.com/nvd/cve-2022-28391 <span class="p">|</span>
-+--------------+------------------<span class="p">|</span>          <span class="p">|</span>-------------------+---------------+---------------------------------------+
-<span class="p">|</span> ssl_client   <span class="p">|</span> CVE-2022-28391   <span class="p">|</span>          <span class="p">|</span> <span class="m">1</span>.34.1-r3         <span class="p">|</span> <span class="m">1</span>.34.1-r5     <span class="p">|</span> CVE-2022-28391 affecting              <span class="p">|</span>
-<span class="p">|</span>              <span class="p">|</span>                  <span class="p">|</span>          <span class="p">|</span>                   <span class="p">|</span>               <span class="p">|</span> package busybox <span class="m">1</span>.35.0                <span class="p">|</span>
-<span class="p">|</span>              <span class="p">|</span>                  <span class="p">|</span>          <span class="p">|</span>                   <span class="p">|</span>               <span class="p">|</span> --&gt;avd.aquasec.com/nvd/cve-2022-28391 <span class="p">|</span>
-+--------------+------------------+----------+-------------------+---------------+---------------------------------------+
+Total: <span class="m">2</span> <span class="o">(</span>UNKNOWN: <span class="m">0</span>, LOW: <span class="m">0</span>, MEDIUM: <span class="m">0</span>, HIGH: <span class="m">0</span>, CRITICAL: <span class="m">2</span><span class="o">)</span>
+
+┌────────────┬────────────────┬──────────┬───────────────────┬───────────────┬─────────────────────────────────────────────────────────┐
+│  Library   │ Vulnerability  │ Severity │ Installed Version │ Fixed Version │                          Title                          │
+├────────────┼────────────────┼──────────┼───────────────────┼───────────────┼─────────────────────────────────────────────────────────┤
+│ busybox    │ CVE-2022-28391 │ CRITICAL │ <span class="m">1</span>.34.1-r4         │ <span class="m">1</span>.34.1-r5     │ busybox: remote attackers may execute arbitrary code <span class="k">if</span> │
+│            │                │          │                   │               │ netstat is used                                         │
+│            │                │          │                   │               │ https://avd.aquasec.com/nvd/cve-2022-28391              │
+├────────────┤                │          │                   │               │                                                         │
+│ ssl_client │                │          │                   │               │                                                         │
+│            │                │          │                   │               │                                                         │
+│            │                │          │                   │               │                                                         │
+└────────────┴────────────────┴──────────┴───────────────────┴───────────────┴─────────────────────────────────────────────────────────┘
 
 app/deploy.sh <span class="o">(</span>secrets<span class="o">)</span>
-<span class="o">=======================</span>
+
 Total: <span class="m">1</span> <span class="o">(</span>UNKNOWN: <span class="m">0</span>, LOW: <span class="m">0</span>, MEDIUM: <span class="m">0</span>, HIGH: <span class="m">0</span>, CRITICAL: <span class="m">1</span><span class="o">)</span>
 
-+----------+-------------------+----------+---------+--------------------------------+
-<span class="p">|</span> CATEGORY <span class="p">|</span>    DESCRIPTION    <span class="p">|</span> SEVERITY <span class="p">|</span> LINE NO <span class="p">|</span>             MATCH              <span class="p">|</span>
-+----------+-------------------+----------+---------+--------------------------------+
-<span class="p">|</span>   AWS    <span class="p">|</span> AWS Access Key ID <span class="p">|</span> CRITICAL <span class="p">|</span>   <span class="m">10</span>    <span class="p">|</span> <span class="nb">export</span> <span class="nv">AWS_ACCESS_KEY_ID</span><span class="o">=</span>***** <span class="p">|</span>
-+----------+-------------------+----------+---------+--------------------------------+
+┌──────────┬───────────────────┬──────────┬─────────┬────────────────────────────────┐
+│ Category │    Description    │ Severity │ Line No │             Match              │
+├──────────┼───────────────────┼──────────┼─────────┼────────────────────────────────┤
+│   AWS    │ AWS Access Key ID │ CRITICAL │    <span class="m">3</span>    │ <span class="nb">export</span> <span class="nv">AWS_ACCESS_KEY_ID</span><span class="o">=</span>***** │
+└──────────┴───────────────────┴──────────┴─────────┴────────────────────────────────┘
 </code></pre></div>
 <p>For more details, see <a href="../../docs/vulnerability/scanning/">vulnerability</a> and <a href="../../docs/secret/scanning/">secret</a> pages.</p>
 <h2 id="scan-directory-for-misconfigurations">Scan directory for misconfigurations</h2>
@@ -2480,22 +2480,23 @@ Total: <span class="m">1</span> <span class="o">(</span>UNKNOWN: <span class="m"
 <div class="highlight"><pre><span></span><code>$ ls build/
 Dockerfile
 $ trivy config ./build
-<span class="m">2021</span>-07-09T10:06:29.188+0300    INFO    Need to update the built-in policies
-<span class="m">2021</span>-07-09T10:06:29.188+0300    INFO    Downloading the built-in policies...
-<span class="m">2021</span>-07-09T10:06:30.520+0300    INFO    Detected config files: <span class="m">1</span>
+<span class="m">2022</span>-05-16T13:29:29.952+0100    INFO    Detected config files: <span class="m">1</span>
 
 Dockerfile <span class="o">(</span>dockerfile<span class="o">)</span>
 <span class="o">=======================</span>
 Tests: <span class="m">23</span> <span class="o">(</span>SUCCESSES: <span class="m">22</span>, FAILURES: <span class="m">1</span>, EXCEPTIONS: <span class="m">0</span><span class="o">)</span>
-Failures: <span class="m">1</span> <span class="o">(</span>UNKNOWN: <span class="m">0</span>, LOW: <span class="m">0</span>, MEDIUM: <span class="m">0</span>, HIGH: <span class="m">1</span>, CRITICAL: <span class="m">0</span><span class="o">)</span>
+Failures: <span class="m">1</span> <span class="o">(</span>UNKNOWN: <span class="m">0</span>, LOW: <span class="m">0</span>, MEDIUM: <span class="m">1</span>, HIGH: <span class="m">0</span>, CRITICAL: <span class="m">0</span><span class="o">)</span>
 
-+---------------------------+------------+----------------------+----------+------------------------------------------+
-<span class="p">|</span>           TYPE            <span class="p">|</span> MISCONF ID <span class="p">|</span>        CHECK         <span class="p">|</span> SEVERITY <span class="p">|</span>                 MESSAGE                  <span class="p">|</span>
-+---------------------------+------------+----------------------+----------+------------------------------------------+
-<span class="p">|</span> Dockerfile Security Check <span class="p">|</span>   DS002    <span class="p">|</span> Image user is <span class="s1">&#39;root&#39;</span> <span class="p">|</span>   HIGH   <span class="p">|</span> Last USER <span class="nb">command</span> <span class="k">in</span>                     <span class="p">|</span>
-<span class="p">|</span>                           <span class="p">|</span>            <span class="p">|</span>                      <span class="p">|</span>          <span class="p">|</span> Dockerfile should not be <span class="s1">&#39;root&#39;</span>          <span class="p">|</span>
-<span class="p">|</span>                           <span class="p">|</span>            <span class="p">|</span>                      <span class="p">|</span>          <span class="p">|</span> --&gt;avd.aquasec.com/appshield/ds002       <span class="p">|</span>
-+---------------------------+------------+----------------------+----------+------------------------------------------+
+MEDIUM: Specify a tag <span class="k">in</span> the <span class="s1">&#39;FROM&#39;</span> statement <span class="k">for</span> image <span class="s1">&#39;alpine&#39;</span>
+══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+When using a <span class="s1">&#39;FROM&#39;</span> statement you should use a specific tag to avoid uncontrolled behavior when the image is updated.
+
+See https://avd.aquasec.com/misconfig/ds001
+──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+ Dockerfile:1
+──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+   <span class="m">1</span> <span class="o">[</span> FROM alpine:latest
+──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 </code></pre></div>
 <p>For more details, see <a href="../../docs/misconfiguration/scanning/">here</a>.</p>
 
