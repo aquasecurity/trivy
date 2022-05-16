@@ -16,6 +16,8 @@ import (
 	"github.com/aquasecurity/trivy/pkg/commands/option"
 	"github.com/aquasecurity/trivy/pkg/commands/plugin"
 	"github.com/aquasecurity/trivy/pkg/commands/server"
+	"github.com/aquasecurity/trivy/pkg/k8s"
+	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/result"
 	"github.com/aquasecurity/trivy/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/utils"
@@ -215,6 +217,12 @@ var (
 		EnvVars: []string{"TRIVY_K8S_NAMESPACE"},
 	}
 
+	reportFlag = cli.StringFlag{
+		Name:  "report",
+		Value: "all",
+		Usage: "specify a report format for the output. (all,summary default: all)",
+	}
+
 	// TODO: remove this flag after a sufficient deprecation period.
 	lightFlag = cli.BoolFlag{
 		Name:    "light",
@@ -371,7 +379,7 @@ func NewApp(version string) *cli.App {
 	app.Name = "trivy"
 	app.Version = version
 	app.ArgsUsage = "target"
-	app.Usage = "A simple and comprehensive vulnerability scanner for containers"
+	app.Usage = "Scanner for vulnerabilities in container images, file systems, and Git repositories, as well as for configuration issues and hard-coded secrets"
 	app.EnableBashCompletion = true
 	app.Flags = globalFlags
 
@@ -482,6 +490,12 @@ func NewImageCommand() *cli.Command {
 			&secretConfig,
 			stringSliceFlag(skipFiles),
 			stringSliceFlag(skipDirs),
+
+			// for client/server
+			&remoteServer,
+			&token,
+			&tokenHeader,
+			&customHeaders,
 		},
 	}
 }
@@ -626,8 +640,12 @@ func NewClientCommand() *cli.Command {
 		Name:      "client",
 		Aliases:   []string{"c"},
 		ArgsUsage: "image_name",
-		Usage:     "client mode",
-		Action:    artifact.ImageRun,
+		Usage:     "[DEPRECATED] client mode",
+		Action: func(ctx *cli.Context) error {
+			log.Logger.Warn("`client` subcommand is deprecated now. See https://github.com/aquasecurity/trivy/discussions/2119")
+			return artifact.ImageRun(ctx)
+		},
+		Hidden: true, // It is no longer displayed
 		Flags: []cli.Flag{
 			&templateFlag,
 			&formatFlag,
@@ -786,9 +804,21 @@ func NewK8sCommand() *cli.Command {
 		Name:    "kubernetes",
 		Aliases: []string{"k8s"},
 		Usage:   "scan kubernetes vulnerabilities and misconfigurations",
-		Action:  artifact.K8sRun,
+		CustomHelpTemplate: cli.CommandHelpTemplate + `EXAMPLES:
+  - cluster scanning:
+      $ trivy k8s --report summary
+
+  - namespace scanning:
+      $ trivy k8s -n kube-system --report summary
+
+  - resource scanning:
+      $ trivy k8s deployment/orion
+`,
+		Action: k8s.Run,
 		Flags: []cli.Flag{
 			&namespaceFlag,
+			&reportFlag,
+			&formatFlag,
 			&outputFlag,
 			&severityFlag,
 			&exitCodeFlag,
