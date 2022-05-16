@@ -22,7 +22,7 @@ OPTIONS:
    --ignore-unfixed                 display only fixed vulnerabilities (default: false) [$TRIVY_IGNORE_UNFIXED]
    --removed-pkgs                   detect vulnerabilities of removed packages (only for Alpine) (default: false) [$TRIVY_REMOVED_PKGS]
    --vuln-type value                comma-separated list of vulnerability types (os,library) (default: "os,library") [$TRIVY_VULN_TYPE]
-   --security-checks value          comma-separated list of what security issues to detect (vuln,config) (default: "vuln") [$TRIVY_SECURITY_CHECKS]
+   --security-checks value          comma-separated list of what security issues to detect (vuln,config,secret) (default: "vuln,secret") [$TRIVY_SECURITY_CHECKS]
    --ignorefile value               specify .trivyignore file (default: ".trivyignore") [$TRIVY_IGNOREFILE]
    --timeout value                  timeout (default: 5m0s) [$TRIVY_TIMEOUT]
    --light                          deprecated (default: false) [$TRIVY_LIGHT]
