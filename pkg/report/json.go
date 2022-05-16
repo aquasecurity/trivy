@@ -23,6 +23,13 @@ func (jw JSONWriter) Write(report types.Report) error {
 		for j := 0; j < len(report.Results[i].Vulnerabilities); j++ {
 			report.Results[i].Vulnerabilities[j].VendorSeverity = nil
 		}
+		// remove the Highlighted attribute from the json results
+		for j := 0; j < len(report.Results[i].Misconfigurations); j++ {
+			for li, _ := range report.Results[i].Misconfigurations[j].CauseMetadata.Code.Lines {
+				report.Results[i].Misconfigurations[j].CauseMetadata.Code.Lines[li].Highlighted = ""
+			}
+
+		}
 	}
 
 	output, err := json.MarshalIndent(report, "", "  ")
