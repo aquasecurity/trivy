@@ -251,6 +251,3 @@ replace github.com/containerd/containerd v1.5.9 => github.com/containerd/contain
 
 // See https://github.com/moby/moby/issues/42939#issuecomment-1114255529
 replace github.com/docker/docker => github.com/docker/docker v20.10.3-0.20220224222438-c78f6963a1c0+incompatible
-
-// TODO: remove once the feature is merged upstream
-replace github.com/aquasecurity/trivy-kubernetes v0.1.0 => github.com/josedonizetti/trivy-kubernetes v0.0.0-20220515001536-b6e8afada9c5
