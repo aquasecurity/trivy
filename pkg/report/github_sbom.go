@@ -21,7 +21,7 @@ const (
 	DevelopmentScope     string = "development"
 )
 
-type GsbomPackage struct {
+type GithubSbomPackage struct {
 	PackageUrl   string   `json:"package_url,omitempty"`
 	Relationship string   `json:"relationship,omitempty"`
 	Dependencies []string `json:"dependencies,omitempty"`
@@ -29,41 +29,41 @@ type GsbomPackage struct {
 	Metadata     Metadata `json:"metadata,omitempty"`
 }
 
-type GsbomFile struct {
+type GithubSbomFile struct {
 	SrcLocation string `json:"source_location,omitempty"`
 }
 
 type Metadata map[string]interface{}
 
-type GsbomManifest struct {
-	Name     string                  `json:"name,omitempty"`
-	File     *GsbomFile              `json:"file,omitempty"`
-	Metadata Metadata                `json:"metadata,omitempty"`
-	Resolved map[string]GsbomPackage `json:"resolved,omitempty"`
+type GithubSbomManifest struct {
+	Name     string                       `json:"name,omitempty"`
+	File     *GithubSbomFile              `json:"file,omitempty"`
+	Metadata Metadata                     `json:"metadata,omitempty"`
+	Resolved map[string]GithubSbomPackage `json:"resolved,omitempty"`
 }
 
-type GsbomJob struct {
+type GithubSbomJob struct {
 	Correlator string `json:"correlator,omitempty"`
 	Id         string `json:"id,omitempty"`
 }
-type GsbomDetector struct {
+type GithubSbomDetector struct {
 	Name    string `json:"name"`
 	Version string `json:"version"`
 	Url     string `json:"url"`
 }
 
-type Gsbom struct {
-	Version   int                      `json:"version,omitempty"`
-	Detector  GsbomDetector            `json:"detector"`
-	Metadata  Metadata                 `json:"metadata,omitempty"`
-	Ref       string                   `json:"ref,omitempty"`
-	Sha       string                   `json:"sha,omitempty"`
-	Job       *GsbomJob                `json:"job,omitempty"`
-	Scanned   string                   `json:"scanned,omitempty"`
-	Manifests map[string]GsbomManifest `json:"manifests,omitempty"`
+type GithubSbom struct {
+	Version   int                           `json:"version,omitempty"`
+	Detector  GithubSbomDetector            `json:"detector"`
+	Metadata  Metadata                      `json:"metadata,omitempty"`
+	Ref       string                        `json:"ref,omitempty"`
+	Sha       string                        `json:"sha,omitempty"`
+	Job       *GithubSbomJob                `json:"job,omitempty"`
+	Scanned   string                        `json:"scanned,omitempty"`
+	Manifests map[string]GithubSbomManifest `json:"manifests,omitempty"`
 }
 
-type GsbomWriter struct {
+type GithubSbomWriter struct {
 	Output  io.Writer
 	Version string
 }
@@ -73,40 +73,40 @@ func init() {
 	CustomTemplateFuncMap["getenv"] = os.Getenv
 }
 
-func (gsbmw GsbomWriter) Write(report types.Report) error {
+func (gsbmw GithubSbomWriter) Write(report types.Report) error {
 	getenv, ok := CustomTemplateFuncMap["getenv"].(func(string) string)
 	if !ok {
 		return xerrors.Errorf("invalid getenv reference")
 	}
-	gsbom := &Gsbom{}
+	githubSbom := &GithubSbom{}
 
 	//use now() method that can be overwritten while integration tests run
-	gsbom.Scanned = CustomTemplateFuncMap["now"].(func() time.Time)().Format(time.RFC3339)
-	gsbom.Detector = GsbomDetector{
+	githubSbom.Scanned = CustomTemplateFuncMap["now"].(func() time.Time)().Format(time.RFC3339)
+	githubSbom.Detector = GithubSbomDetector{
 		Name:    "trivy",
 		Version: gsbmw.Version,
 		Url:     "https://github.com/aquasecurity/trivy",
 	}
-	gsbom.Version = 1 // The version of the repository snapshot submission. It's not clear what value to set
+	githubSbom.Version = 1 // The version of the repository snapshot submission. It's not clear what value to set
 
-	gsbom.Ref = getenv("GITHUB_REF")
-	gsbom.Sha = getenv("GITHUB_SHA")
+	githubSbom.Ref = getenv("GITHUB_REF")
+	githubSbom.Sha = getenv("GITHUB_SHA")
 
-	gsbom.Job = &GsbomJob{
+	githubSbom.Job = &GithubSbomJob{
 		Correlator: (fmt.Sprintf("%s_%s", getenv("GITHUB_WORKFLOW"), getenv("GITHUB_JOB"))),
 		Id:         getenv("GITHUB_RUN_ID"),
 	}
 
-	gsbom.Metadata = getMetadata(report)
+	githubSbom.Metadata = getMetadata(report)
 
-	manifests := make(map[string]GsbomManifest)
+	manifests := make(map[string]GithubSbomManifest)
 
 	for _, result := range report.Results {
-		manifest := GsbomManifest{}
+		manifest := GithubSbomManifest{}
 		manifest.Name = result.Type
 		//show path for languages only
 		if result.Class == types.ClassLangPkg {
-			manifest.File = &GsbomFile{
+			manifest.File = &GithubSbomFile{
 				SrcLocation: result.Target,
 			}
 		}
@@ -114,35 +114,35 @@ func (gsbmw GsbomWriter) Write(report types.Report) error {
 			return xerrors.Errorf("unable to find packages")
 		}
 
-		resolved := make(map[string]GsbomPackage)
+		resolved := make(map[string]GithubSbomPackage)
 
 		for _, pkg := range result.Packages {
 			var err error
-			gsbompkg := GsbomPackage{}
-			gsbompkg.Scope = RuntimeScope
-			gsbompkg.Relationship = getPkgRelationshipType(pkg)
-			gsbompkg.Dependencies = getDependencies(report.Results, pkg)
-			gsbompkg.PackageUrl, err = buildPurl(result.Type, pkg)
+			githubSbomPkg := GithubSbomPackage{}
+			githubSbomPkg.Scope = RuntimeScope
+			githubSbomPkg.Relationship = getPkgRelationshipType(pkg)
+			githubSbomPkg.Dependencies = getDependencies(report.Results, pkg)
+			githubSbomPkg.PackageUrl, err = buildPurl(result.Type, pkg)
 			if err != nil {
 				return xerrors.Errorf("unable to build purl: %w for the package: %s", err, pkg.Name)
 			}
 
-			resolved[pkg.Name] = gsbompkg
+			resolved[pkg.Name] = githubSbomPkg
 		}
 
 		manifest.Resolved = resolved
 		manifests[result.Target] = manifest
 	}
 
-	gsbom.Manifests = manifests
+	githubSbom.Manifests = manifests
 
-	output, err := json.MarshalIndent(gsbom, "", "  ")
+	output, err := json.MarshalIndent(githubSbom, "", "  ")
 	if err != nil {
-		return xerrors.Errorf("failed to marshal generic sbom: %w", err)
+		return xerrors.Errorf("failed to marshal github sbom: %w", err)
 	}
 
 	if _, err = fmt.Fprint(gsbmw.Output, string(output)); err != nil {
-		return xerrors.Errorf("failed to write generic sbom: %w", err)
+		return xerrors.Errorf("failed to write github sbom: %w", err)
 	}
 	return nil
 }

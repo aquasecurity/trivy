@@ -48,8 +48,8 @@ func Write(report types.Report, option Option) error {
 		}
 	case "json":
 		writer = &JSONWriter{Output: option.Output}
-	case "gsbom":
-		writer = &GsbomWriter{Output: option.Output, Version: option.AppVersion}
+	case "github-sbom":
+		writer = &GithubSbomWriter{Output: option.Output, Version: option.AppVersion}
 	case "cyclonedx":
 		// TODO: support xml format option with cyclonedx writer
 		writer = cyclonedx.NewWriter(option.Output, option.AppVersion)

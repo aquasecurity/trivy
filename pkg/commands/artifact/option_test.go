@@ -209,10 +209,10 @@ func TestOption_Init(t *testing.T) {
 			},
 		},
 		{
-			name: "Generic sbom and list all packages",
-			args: []string{"--format", "gsbom", "gitlab/gitlab-ce:12.7.2-ce.0"},
+			name: "Github sbom and list all packages",
+			args: []string{"--format", "github-sbom", "gitlab/gitlab-ce:12.7.2-ce.0"},
 			logs: []string{
-				"--format gsbom is specified, all packages will be returned.",
+				"--format github-sbom is specified, all packages will be returned.",
 			},
 			want: Option{
 				ReportOption: option.ReportOption{
@@ -220,7 +220,7 @@ func TestOption_Init(t *testing.T) {
 					Output:         os.Stdout,
 					VulnType:       []string{types.VulnTypeOS, types.VulnTypeLibrary},
 					SecurityChecks: []string{types.SecurityCheckVulnerability},
-					Format:         "gsbom",
+					Format:         "github-sbom",
 					ListAllPkgs:    true,
 				},
 				ArtifactOption: option.ArtifactOption{
@@ -265,10 +265,10 @@ func TestOption_Init(t *testing.T) {
 			},
 		},
 		{
-			name: "Generic sbom and list all packages",
-			args: []string{"--format", "gsbom", "gitlab/gitlab-ce:12.7.2-ce.0"},
+			name: "Github sbom and list all packages",
+			args: []string{"--format", "github-sbom", "gitlab/gitlab-ce:12.7.2-ce.0"},
 			logs: []string{
-				"--format gsbom is specified, all packages will be returned.",
+				"--format github-sbom is specified, all packages will be returned.",
 			},
 			want: Option{
 				ReportOption: option.ReportOption{
@@ -276,7 +276,7 @@ func TestOption_Init(t *testing.T) {
 					Output:         os.Stdout,
 					VulnType:       []string{types.VulnTypeOS, types.VulnTypeLibrary},
 					SecurityChecks: []string{types.SecurityCheckVulnerability},
-					Format:         "gsbom",
+					Format:         "github-sbom",
 					ListAllPkgs:    true,
 				},
 				ArtifactOption: option.ArtifactOption{

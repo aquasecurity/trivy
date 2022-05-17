@@ -13,11 +13,11 @@ import (
 	"github.com/aquasecurity/trivy/pkg/types"
 )
 
-func TestReportWriter_gSBOM(t *testing.T) {
+func TestReportWriter_GithubSBOM(t *testing.T) {
 	testCases := []struct {
 		name   string
 		report types.Report
-		want   map[string]report.GsbomManifest
+		want   map[string]report.GithubSbomManifest
 	}{
 		{
 			name: "happy path - packages",
@@ -56,13 +56,13 @@ func TestReportWriter_gSBOM(t *testing.T) {
 					},
 				},
 			},
-			want: map[string]report.GsbomManifest{
+			want: map[string]report.GithubSbomManifest{
 				"yarn.lock": {
 					Name: "yarn",
-					File: &report.GsbomFile{
+					File: &report.GithubSbomFile{
 						SrcLocation: "yarn.lock",
 					},
-					Resolved: map[string]report.GsbomPackage{
+					Resolved: map[string]report.GithubSbomPackage{
 						"@xtuc/ieee754": {
 							PackageUrl:   "pkg:npm/%40xtuc/ieee754@1.2.0",
 							Relationship: "direct",
@@ -100,13 +100,13 @@ func TestReportWriter_gSBOM(t *testing.T) {
 					},
 				},
 			},
-			want: map[string]report.GsbomManifest{
+			want: map[string]report.GithubSbomManifest{
 				"pom.xml": {
 					Name: "pom",
-					File: &report.GsbomFile{
+					File: &report.GithubSbomFile{
 						SrcLocation: "pom.xml",
 					},
-					Resolved: map[string]report.GsbomPackage{
+					Resolved: map[string]report.GithubSbomPackage{
 						"com.google.code.gson:gson": {
 							PackageUrl:   "pkg:maven/com.google.code.gson/gson@2.2.2",
 							Relationship: "direct",
@@ -125,21 +125,21 @@ func TestReportWriter_gSBOM(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			jw := report.GsbomWriter{}
-			gsbomWritten := bytes.Buffer{}
-			jw.Output = &gsbomWritten
+			jw := report.GithubSbomWriter{}
+			githubSbomWritten := bytes.Buffer{}
+			jw.Output = &githubSbomWritten
 
 			inputResults := tc.report
 
 			err := report.Write(inputResults, report.Option{
-				Format: "gsbom",
-				Output: &gsbomWritten,
+				Format: "github-sbom",
+				Output: &githubSbomWritten,
 			})
 			assert.NoError(t, err)
 
-			var got report.Gsbom
-			err = json.Unmarshal(gsbomWritten.Bytes(), &got)
-			assert.NoError(t, err, "invalid gsbom written")
+			var got report.GithubSbom
+			err = json.Unmarshal(githubSbomWritten.Bytes(), &got)
+			assert.NoError(t, err, "invalid github-sbom written")
 
 			assert.Equal(t, tc.want, got.Manifests, tc.name)
 		})

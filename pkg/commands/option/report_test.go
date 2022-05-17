@@ -103,7 +103,7 @@ func TestReportReportConfig_Init(t *testing.T) {
 			},
 			args: []string{"centos:7"},
 			logs: []string{
-				"'gsbom', 'cyclonedx', 'spdx', and 'spdx-json' automatically enables '--list-all-pkgs'.",
+				"'github-sbom', 'cyclonedx', 'spdx', and 'spdx-json' automatically enables '--list-all-pkgs'.",
 				"Severities: CRITICAL",
 			},
 			want: ReportOption{
