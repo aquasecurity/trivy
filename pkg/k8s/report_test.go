@@ -13,7 +13,7 @@ var (
 		Kind:      "Deploy",
 		Name:      "orion",
 		Results: types.Results{
-			{Misconfigurations: []types.DetectedMisconfiguration{{ID: "ID100"}}},
+			{Misconfigurations: []types.DetectedMisconfiguration{{ID: "ID100", Status: types.StatusFailure}}},
 		},
 	}
 
@@ -31,7 +31,7 @@ var (
 		Kind:      "Deploy",
 		Name:      "orion",
 		Results: types.Results{
-			{Misconfigurations: []types.DetectedMisconfiguration{{ID: "ID100"}}},
+			{Misconfigurations: []types.DetectedMisconfiguration{{ID: "ID100", Status: types.StatusFailure}}},
 			{Vulnerabilities: []types.DetectedVulnerability{{VulnerabilityID: "CVE-2020-8888"}}},
 		},
 	}
@@ -126,6 +126,48 @@ func TestResource_fullname(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.expected, func(t *testing.T) {
 			assert.Equal(t, tt.expected, tt.resource.fullname())
+		})
+	}
+}
+
+func TestResourceFailed(t *testing.T) {
+	tests := []struct {
+		name     string
+		report   Report
+		expected bool
+	}{
+		{
+			name: "report with both misconfigs and vulnerabilities",
+			report: Report{
+				Vulnerabilities:   []Resource{deployOrionWithVulns, cronjobHelloWithVulns},
+				Misconfigurations: []Resource{deployOrionWithMisconfigs, podPrometheusWithMisconfigs},
+			},
+			expected: true,
+		},
+		{
+			name: "report with only misconfigurations",
+			report: Report{
+				Misconfigurations: []Resource{deployOrionWithMisconfigs, podPrometheusWithMisconfigs},
+			},
+			expected: true,
+		},
+		{
+			name: "report with only vulnerabilities",
+			report: Report{
+				Vulnerabilities: []Resource{deployOrionWithVulns, cronjobHelloWithVulns},
+			},
+			expected: true,
+		},
+		{
+			name:     "report without vulnerabilities and misconfigurations",
+			report:   Report{},
+			expected: false,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			assert.Equal(t, tt.expected, tt.report.Failed())
 		})
 	}
 }
