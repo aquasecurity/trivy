@@ -1,4 +1,4 @@
-- bucket: rocky 8
+- bucket: rocky 8.5
   pairs:
     - bucket: nginx:1.16::nginx # actual: bucket of modular package is not created. ref: https://github.com/aquasecurity/trivy-db/pull/154
       pairs:

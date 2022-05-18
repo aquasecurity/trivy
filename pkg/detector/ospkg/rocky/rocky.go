@@ -1,7 +1,6 @@
 package rocky
 
 import (
-	"strings"
 	"time"
 
 	version "github.com/knqyf263/go-rpm-version"
@@ -19,7 +18,7 @@ var (
 	eolDates = map[string]time.Time{
 		// Source:
 		// https://endoflife.date/rocky-linux
-		"8": time.Date(2029, 5, 31, 23, 59, 59, 0, time.UTC),
+		"8.5": time.Date(2029, 5, 31, 23, 59, 59, 0, time.UTC),
 	}
 )
 
@@ -59,9 +58,6 @@ func NewScanner(opts ...option) *Scanner {
 // Detect vulnerabilities in package using Rocky Linux scanner
 func (s *Scanner) Detect(osVer string, _ *ftypes.Repository, pkgs []ftypes.Package) ([]types.DetectedVulnerability, error) {
 	log.Logger.Info("Detecting Rocky Linux vulnerabilities...")
-	if strings.Count(osVer, ".") > 0 {
-		osVer = osVer[:strings.Index(osVer, ".")]
-	}
 	log.Logger.Debugf("Rocky Linux: os version: %s", osVer)
 	log.Logger.Debugf("Rocky Linux: the number of packages: %d", len(pkgs))
 
@@ -105,10 +101,6 @@ func (s *Scanner) Detect(osVer string, _ *ftypes.Repository, pkgs []ftypes.Packa
 
 // IsSupportedVersion checks the OSFamily can be scanned using Rocky Linux scanner
 func (s *Scanner) IsSupportedVersion(osFamily, osVer string) bool {
-	if strings.Count(osVer, ".") > 0 {
-		osVer = osVer[:strings.Index(osVer, ".")]
-	}
-
 	eol, ok := eolDates[osVer]
 	if !ok {
 		log.Logger.Warnf("This OS version is not on the EOL list: %s %s", osFamily, osVer)

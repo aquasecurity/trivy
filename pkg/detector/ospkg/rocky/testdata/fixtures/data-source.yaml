@@ -1,6 +1,6 @@
 - bucket: data-source
   pairs:
-    - key: rocky 8
+    - key: rocky 8.5
       value:
         ID: "rocky"
         Name: "Rocky Linux updateinfo"

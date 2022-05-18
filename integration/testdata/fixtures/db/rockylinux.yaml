@@ -1,4 +1,4 @@
-- bucket: rocky 8
+- bucket: rocky 8.5
   pairs:
     - bucket: openssl-libs
       pairs:
