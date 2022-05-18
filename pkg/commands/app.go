@@ -800,6 +800,11 @@ func NewPluginCommand() *cli.Command {
 
 // NewK8sCommand is the factory method to add k8s subcommand
 func NewK8sCommand() *cli.Command {
+	k8sSecurityChecksFlag := withValue(
+		securityChecksFlag,
+		fmt.Sprintf("%s,%s", types.SecurityCheckVulnerability, types.SecurityCheckConfig),
+	)
+
 	return &cli.Command{
 		Name:    "kubernetes",
 		Aliases: []string{"k8s"},
@@ -827,7 +832,7 @@ func NewK8sCommand() *cli.Command {
 			&clearCacheFlag,
 			&ignoreUnfixedFlag,
 			&vulnTypeFlag,
-			&securityChecksFlag,
+			&k8sSecurityChecksFlag,
 			&ignoreFileFlag,
 			&cacheBackendFlag,
 			&cacheTTL,
@@ -924,4 +929,9 @@ func NewVersionCommand() *cli.Command {
 // The flag value is copied through this function to prevent the issue.
 func stringSliceFlag(f cli.StringSliceFlag) *cli.StringSliceFlag {
 	return &f
+}
+
+func withValue(s cli.StringFlag, value string) cli.StringFlag {
+	s.Value = value
+	return s
 }

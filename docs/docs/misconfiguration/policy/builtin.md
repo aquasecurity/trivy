@@ -19,4 +19,4 @@ Ansible are coming soon.
 [rego]: https://www.openpolicyagent.org/docs/latest/policy-language/
 [defsec]: https://github.com/aquasecurity/defsec
 [kubernetes]: https://github.com/aquasecurity/defsec/tree/master/internal/rules/kubernetes
-[docker]: https://github.com/aquasecurity/appshield/tree/master/internal/rules/docker
+[docker]: https://github.com/aquasecurity/defsec/tree/master/internal/rules/docker
