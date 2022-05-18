@@ -2819,7 +2819,7 @@ trivy conf --policy ./policy --data ./data --namespaces user ./configs
 </code></pre></div>
 <p>For more details, see <a href="../../custom/data/">Custom Data</a>.</p>
 <h2 id="pass-namespaces">Pass namespaces</h2>
-<p>By default, Trivy evaluate policies defined in <code>appshield.*</code>.
+<p>By default, Trivy evaluates policies defined in <code>builtin.*</code>.
 If you want to evaluate custom policies in other packages, you have to specify package prefixes through <code>--namespaces</code> option.
 This can be repeated for specifying multiple packages.</p>
 <div class="highlight"><pre><span></span><code>trivy conf --policy ./policy --namespaces main --namespaces user ./configs

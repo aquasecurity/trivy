@@ -3024,7 +3024,7 @@ If you add a new custom policy, it must be defined under a new package like <cod
 <div class="highlight"><pre><span></span><code>package user.kubernetes.ID001
 </code></pre></div>
 </div>
-<p>By default, only <code>appshield.*</code> packages will be evaluated.
+<p>By default, only <code>builtin.*</code> packages will be evaluated.
 If you define custom packages, you have to specify the package prefix via <code>--namespaces</code> option. </p>
 <div class="highlight"><pre><span></span><code>trivy conf --policy /path/to/custom_policies --namespaces user /path/to/config_dir
 </code></pre></div>
