@@ -26,7 +26,7 @@ trivy conf --policy ./policy --data ./data --namespaces user ./configs
 For more details, see [Custom Data](../custom/data.md).
 
 ## Pass namespaces
-By default, Trivy evaluate policies defined in `appshield.*`.
+By default, Trivy evaluates policies defined in `builtin.*`.
 If you want to evaluate custom policies in other packages, you have to specify package prefixes through `--namespaces` option.
 This can be repeated for specifying multiple packages.
 
