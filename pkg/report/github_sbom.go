@@ -88,7 +88,7 @@ func (gsbmw GithubSbomWriter) Write(report types.Report) error {
 		Version: gsbmw.Version,
 		Url:     "https://github.com/aquasecurity/trivy",
 	}
-	githubSbom.Version = 1 // The version of the repository snapshot submission. It's not clear what value to set
+	githubSbom.Version = 0 // The version of the repository snapshot submission. It's not clear what value to set
 
 	githubSbom.Ref = getenv("GITHUB_REF")
 	githubSbom.Sha = getenv("GITHUB_SHA")
