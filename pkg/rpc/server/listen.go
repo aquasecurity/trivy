@@ -130,7 +130,7 @@ func (w dbWorker) update(ctx context.Context, appVersion, cacheDir string,
 
 	log.Logger.Info("Updating DB...")
 	if err = w.hotUpdate(ctx, cacheDir, dbUpdateWg, requestWg); err != nil {
-		return xerrors.Errorf("failed DB hot update: err")
+		return xerrors.Errorf("failed DB hot update: %w", err)
 	}
 	return nil
 }
