@@ -38,6 +38,11 @@ func TestReportWriter_GithubSBOM(t *testing.T) {
 								Name:    "@xtuc/long",
 								Version: "4.2.2",
 							},
+							{
+								Name:     "@xtuc/binaryen",
+								Version:  "1.37.33",
+								Indirect: true,
+							},
 						},
 						Vulnerabilities: []types.DetectedVulnerability{
 							{
@@ -71,6 +76,11 @@ func TestReportWriter_GithubSBOM(t *testing.T) {
 						"@xtuc/long": {
 							PackageUrl:   "pkg:npm/%40xtuc/long@4.2.2",
 							Relationship: "direct",
+							Scope:        "runtime",
+						},
+						"@xtuc/binaryen": {
+							PackageUrl:   "pkg:npm/%40xtuc/binaryen@1.37.33",
+							Relationship: "indirect",
 							Scope:        "runtime",
 						},
 					},

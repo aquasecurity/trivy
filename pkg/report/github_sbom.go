@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"strings"
 	"time"
 
 	"golang.org/x/xerrors"
@@ -87,7 +88,7 @@ func (gsbmw GithubSbomWriter) Write(report types.Report) error {
 		Version: gsbmw.Version,
 		Url:     "https://github.com/aquasecurity/trivy",
 	}
-	githubSbom.Version = 1 // The version of the repository snapshot submission. It's not clear what value to set
+	githubSbom.Version = 0 // The version of the repository snapshot submission.
 
 	githubSbom.Ref = getenv("GITHUB_REF")
 	githubSbom.Sha = getenv("GITHUB_SHA")
@@ -150,10 +151,10 @@ func (gsbmw GithubSbomWriter) Write(report types.Report) error {
 func getMetadata(report types.Report) Metadata {
 	metadata := Metadata{}
 	if report.Metadata.RepoTags != nil {
-		metadata["aquasecurity:trivy:RepoTag"] = report.Metadata.RepoTags[0]
+		metadata["aquasecurity:trivy:RepoTag"] = strings.Join(report.Metadata.RepoTags, ", ")
 	}
 	if report.Metadata.RepoDigests != nil {
-		metadata["aquasecurity:trivy:RepoDigest"] = report.Metadata.RepoDigests[0]
+		metadata["aquasecurity:trivy:RepoDigest"] = strings.Join(report.Metadata.RepoDigests, ", ")
 	}
 	return metadata
 }
