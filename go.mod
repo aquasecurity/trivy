@@ -10,7 +10,7 @@ require (
 	github.com/BurntSushi/toml v1.1.0 // indirect
 	github.com/GoogleCloudPlatform/docker-credential-gcr v2.0.5+incompatible
 	github.com/alicebob/miniredis/v2 v2.18.0
-	github.com/aquasecurity/defsec v0.58.1
+	github.com/aquasecurity/defsec v0.58.2
 	github.com/aws/aws-sdk-go v1.44.5
 	github.com/docker/docker v20.10.14+incompatible
 	github.com/docker/go-connections v0.4.0
