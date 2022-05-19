@@ -5,6 +5,7 @@ import (
 	"io"
 
 	"github.com/cheggaaa/pb/v3"
+	"golang.org/x/exp/slices"
 	"golang.org/x/xerrors"
 
 	cmd "github.com/aquasecurity/trivy/pkg/commands/artifact"
@@ -21,9 +22,6 @@ type scanner struct {
 }
 
 func (s *scanner) run(ctx context.Context, artifacts []*artifacts.Artifact) (Report, error) {
-	// Todo move to run.go
-	s.opt.SecurityChecks = []string{types.SecurityCheckVulnerability, types.SecurityCheckConfig}
-
 	// progress bar
 	bar := pb.StartNew(len(artifacts))
 	if s.opt.NoProgress {
@@ -44,17 +42,21 @@ func (s *scanner) run(ctx context.Context, artifacts []*artifacts.Artifact) (Rep
 	for _, artifact := range artifacts {
 		bar.Increment()
 
-		resources, err := s.scanVulns(ctx, artifact)
-		if err != nil {
-			return Report{}, xerrors.Errorf("scanning vulnerabilities error: %w", err)
+		if slices.Contains(s.opt.SecurityChecks, types.SecurityCheckVulnerability) {
+			resources, err := s.scanVulns(ctx, artifact)
+			if err != nil {
+				return Report{}, xerrors.Errorf("scanning vulnerabilities error: %w", err)
+			}
+			vulns = append(vulns, resources...)
 		}
-		vulns = append(vulns, resources...)
 
-		resource, err := s.scanMisconfigs(ctx, artifact)
-		if err != nil {
-			return Report{}, xerrors.Errorf("scanning misconfigurations error: %w", err)
+		if slices.Contains(s.opt.SecurityChecks, types.SecurityCheckConfig) {
+			resource, err := s.scanMisconfigs(ctx, artifact)
+			if err != nil {
+				return Report{}, xerrors.Errorf("scanning misconfigurations error: %w", err)
+			}
+			misconfigs = append(misconfigs, resource)
 		}
-		misconfigs = append(misconfigs, resource)
 	}
 
 	// enable logs after scanning

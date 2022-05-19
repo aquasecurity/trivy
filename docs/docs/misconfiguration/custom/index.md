@@ -95,7 +95,7 @@ A package name must be unique per policy.
     package user.kubernetes.ID001
     ```
 
-By default, only `appshield.*` packages will be evaluated.
+By default, only `builtin.*` packages will be evaluated.
 If you define custom packages, you have to specify the package prefix via `--namespaces` option. 
 
 ``` bash

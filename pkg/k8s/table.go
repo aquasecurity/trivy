@@ -4,6 +4,9 @@ import (
 	"io"
 
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
+
+	"golang.org/x/xerrors"
+
 	pkgReport "github.com/aquasecurity/trivy/pkg/report"
 )
 
@@ -36,6 +39,9 @@ func (tw TableWriter) Write(report Report) error {
 	case summaryReport:
 		writer := NewSummaryWriter(tw.Output, tw.Severities)
 		return writer.Write(report)
+	default:
+		return xerrors.Errorf(`report %q not supported. Use "summary" or "all"`, tw.Report)
 	}
+
 	return nil
 }
