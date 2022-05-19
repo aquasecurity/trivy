@@ -12,35 +12,35 @@ For example:
 
 ``` shell
 $ trivy image myimage:1.0.0
-2022-04-21T18:56:44.099+0300    INFO    Detected OS: alpine
-2022-04-21T18:56:44.099+0300    INFO    Detecting Alpine vulnerabilities...
-2022-04-21T18:56:44.101+0300    INFO    Number of language-specific files: 0
+2022-05-16T13:25:17.826+0100	INFO	Detected OS: alpine
+2022-05-16T13:25:17.826+0100	INFO	Detecting Alpine vulnerabilities...
+2022-05-16T13:25:17.826+0100	INFO	Number of language-specific files: 0
 
-myimage:1.0.0 (alpine 3.15.0)
-=============================
-Total: 6 (UNKNOWN: 0, LOW: 0, MEDIUM: 0, HIGH: 0, CRITICAL: 2)
+myimage:1.0.0 (alpine 3.15.3)
 
-+--------------+------------------+----------+-------------------+---------------+---------------------------------------+
-|   LIBRARY    | VULNERABILITY ID | SEVERITY | INSTALLED VERSION | FIXED VERSION |                 TITLE                 |
-+--------------+------------------+----------+-------------------+---------------+---------------------------------------+
-| busybox      | CVE-2022-28391   | CRITICAL | 1.34.1-r3         | 1.34.1-r5     | CVE-2022-28391 affecting              |
-|              |                  |          |                   |               | package busybox 1.35.0                |
-|              |                  |          |                   |               | -->avd.aquasec.com/nvd/cve-2022-28391 |
-+--------------+------------------|          |-------------------+---------------+---------------------------------------+
-| ssl_client   | CVE-2022-28391   |          | 1.34.1-r3         | 1.34.1-r5     | CVE-2022-28391 affecting              |
-|              |                  |          |                   |               | package busybox 1.35.0                |
-|              |                  |          |                   |               | -->avd.aquasec.com/nvd/cve-2022-28391 |
-+--------------+------------------+----------+-------------------+---------------+---------------------------------------+
+Total: 2 (UNKNOWN: 0, LOW: 0, MEDIUM: 0, HIGH: 0, CRITICAL: 2)
+
+┌────────────┬────────────────┬──────────┬───────────────────┬───────────────┬─────────────────────────────────────────────────────────┐
+│  Library   │ Vulnerability  │ Severity │ Installed Version │ Fixed Version │                          Title                          │
+├────────────┼────────────────┼──────────┼───────────────────┼───────────────┼─────────────────────────────────────────────────────────┤
+│ busybox    │ CVE-2022-28391 │ CRITICAL │ 1.34.1-r4         │ 1.34.1-r5     │ busybox: remote attackers may execute arbitrary code if │
+│            │                │          │                   │               │ netstat is used                                         │
+│            │                │          │                   │               │ https://avd.aquasec.com/nvd/cve-2022-28391              │
+├────────────┤                │          │                   │               │                                                         │
+│ ssl_client │                │          │                   │               │                                                         │
+│            │                │          │                   │               │                                                         │
+│            │                │          │                   │               │                                                         │
+└────────────┴────────────────┴──────────┴───────────────────┴───────────────┴─────────────────────────────────────────────────────────┘
 
 app/deploy.sh (secrets)
-=======================
+
 Total: 1 (UNKNOWN: 0, LOW: 0, MEDIUM: 0, HIGH: 0, CRITICAL: 1)
 
-+----------+-------------------+----------+---------+--------------------------------+
-| CATEGORY |    DESCRIPTION    | SEVERITY | LINE NO |             MATCH              |
-+----------+-------------------+----------+---------+--------------------------------+
-|   AWS    | AWS Access Key ID | CRITICAL |   10    | export AWS_ACCESS_KEY_ID=***** |
-+----------+-------------------+----------+---------+--------------------------------+
+┌──────────┬───────────────────┬──────────┬─────────┬────────────────────────────────┐
+│ Category │    Description    │ Severity │ Line No │             Match              │
+├──────────┼───────────────────┼──────────┼─────────┼────────────────────────────────┤
+│   AWS    │ AWS Access Key ID │ CRITICAL │    3    │ export AWS_ACCESS_KEY_ID=***** │
+└──────────┴───────────────────┴──────────┴─────────┴────────────────────────────────┘
 ```
 
 For more details, see [vulnerability][vulnerability] and [secret][secret] pages.
@@ -59,22 +59,23 @@ For example:
 $ ls build/
 Dockerfile
 $ trivy config ./build
-2021-07-09T10:06:29.188+0300    INFO    Need to update the built-in policies
-2021-07-09T10:06:29.188+0300    INFO    Downloading the built-in policies...
-2021-07-09T10:06:30.520+0300    INFO    Detected config files: 1
+2022-05-16T13:29:29.952+0100	INFO	Detected config files: 1
 
 Dockerfile (dockerfile)
 =======================
 Tests: 23 (SUCCESSES: 22, FAILURES: 1, EXCEPTIONS: 0)
-Failures: 1 (UNKNOWN: 0, LOW: 0, MEDIUM: 0, HIGH: 1, CRITICAL: 0)
+Failures: 1 (UNKNOWN: 0, LOW: 0, MEDIUM: 1, HIGH: 0, CRITICAL: 0)
 
-+---------------------------+------------+----------------------+----------+------------------------------------------+
-|           TYPE            | MISCONF ID |        CHECK         | SEVERITY |                 MESSAGE                  |
-+---------------------------+------------+----------------------+----------+------------------------------------------+
-| Dockerfile Security Check |   DS002    | Image user is 'root' |   HIGH   | Last USER command in                     |
-|                           |            |                      |          | Dockerfile should not be 'root'          |
-|                           |            |                      |          | -->avd.aquasec.com/appshield/ds002       |
-+---------------------------+------------+----------------------+----------+------------------------------------------+
+MEDIUM: Specify a tag in the 'FROM' statement for image 'alpine'
+══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+When using a 'FROM' statement you should use a specific tag to avoid uncontrolled behavior when the image is updated.
+
+See https://avd.aquasec.com/misconfig/ds001
+──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+ Dockerfile:1
+──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+   1 [ FROM alpine:latest
+──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 ```
 
 For more details, see [here][misconf].
