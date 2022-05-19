@@ -3,7 +3,9 @@ package k8s
 import (
 	"fmt"
 	"io"
+	"strings"
 
+	"golang.org/x/exp/maps"
 	"golang.org/x/xerrors"
 
 	ftypes "github.com/aquasecurity/fanal/types"
@@ -57,6 +59,10 @@ type Resource struct {
 	Report types.Report `json:"-"`
 }
 
+func (r Resource) fullname() string {
+	return strings.ToLower(fmt.Sprintf("%s/%s/%s", r.Namespace, r.Kind, r.Name))
+}
+
 // Failed returns whether the k8s report includes any vulnerabilities or misconfigurations
 func (r Report) Failed() bool {
 	for _, r := range r.Vulnerabilities {
@@ -80,25 +86,32 @@ func (r Report) consolidate() ConsolidatedReport {
 		ClusterName:   r.ClusterName,
 	}
 
+	index := make(map[string]Resource)
+
 	for _, m := range r.Misconfigurations {
-		found := false
-		for _, v := range r.Vulnerabilities {
-			if v.Kind == m.Kind && v.Name == m.Name && v.Namespace == m.Namespace {
-				consolidated.Findings = append(consolidated.Findings, Resource{
-					Namespace: v.Namespace,
-					Kind:      v.Kind,
-					Name:      v.Name,
-					Results:   append(v.Results, m.Results...),
-					Error:     v.Error,
-				})
-				found = true
-				continue
-			}
-		}
-		if !found {
-			consolidated.Findings = append(consolidated.Findings, m)
-		}
+		index[m.fullname()] = m
 	}
+
+	for _, v := range r.Vulnerabilities {
+		key := v.fullname()
+
+		if r, ok := index[key]; ok {
+			index[key] = Resource{
+				Namespace: r.Namespace,
+				Kind:      r.Kind,
+				Name:      r.Name,
+				Results:   append(r.Results, v.Results...),
+				Error:     r.Error,
+			}
+
+			continue
+		}
+
+		index[key] = v
+	}
+
+	consolidated.Findings = maps.Values(index)
+
 	return consolidated
 }
 
@@ -120,7 +133,7 @@ func write(report Report, option Option) error {
 			Severities: option.Severities,
 		}
 	default:
-		return xerrors.Errorf("unknown format: %v", option.Format)
+		return xerrors.Errorf(`unknown format %q. Use "json" or "table"`, option.Format)
 	}
 
 	return writer.Write(report)
