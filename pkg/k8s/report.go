@@ -133,7 +133,7 @@ func write(report Report, option Option) error {
 			Severities: option.Severities,
 		}
 	default:
-		return xerrors.Errorf("unknown format %q. Use \"json\" or \"table\"", option.Format)
+		return xerrors.Errorf(`unknown format %q. Use "json" or "table"`, option.Format)
 	}
 
 	return writer.Write(report)

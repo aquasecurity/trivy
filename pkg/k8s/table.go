@@ -40,7 +40,7 @@ func (tw TableWriter) Write(report Report) error {
 		writer := NewSummaryWriter(tw.Output, tw.Severities)
 		return writer.Write(report)
 	default:
-		return xerrors.Errorf("report %q not supported. please use \"summary\" or \"all\"", tw.Report)
+		return xerrors.Errorf(`report %q not supported. Use "summary" or "all"`, tw.Report)
 	}
 
 	return nil
