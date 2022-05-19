@@ -1,10 +1,17 @@
 # GitLab CI
 
-If you're a GitLab Ultimate customer, GitLab 14.0 and above include out-of-the-box integration with Trivy. To enable it for your project, simply add the container scanning template to your `.gitlab-ci.yml` file. For more details, please refer to [GitLab's documentation](https://docs.gitlab.com/ee/user/application_security/container_scanning/).
+GitLab 15.0 includes [free](https://gitlab.com/groups/gitlab-org/-/epics/2233) integration with Trivy.
 
-If you're using an earlier version of GitLab, you can still use the new integration by copying the [contents of the 14.0 template](https://gitlab.com/gitlab-org/gitlab/blob/master/lib/gitlab/ci/templates/Security/Container-Scanning.gitlab-ci.yml) to your configuration.
+To [configure container scanning with Trivy in GitLab](https://docs.gitlab.com/ee/user/application_security/container_scanning/#configuration), simply include the CI template in your `.gitlab-ci.yml` file:
 
-Alternatively, you can always use the example configurations below.
+```yaml
+include:
+  - template: Security/Container-Scanning.gitlab-ci.yml
+```
+
+If you're a GitLab 14.x Ultimate customer, you can use the same configuration above.
+
+Alternatively, you can always use the example configurations below. Note that the examples use [`contrib/gitlab.tpl`](https://github.com/aquasecurity/trivy/blob/main/contrib/gitlab.tpl), which does not work with GitLab 15.0 and above (for details, see [issue 1598](https://github.com/aquasecurity/trivy/issues/1598)).
 
 ```yaml
 stages:
