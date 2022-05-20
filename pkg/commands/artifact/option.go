@@ -34,7 +34,7 @@ func NewOption(c *cli.Context) (Option, error) {
 		return Option{}, xerrors.Errorf("failed to initialize global options: %w", err)
 	}
 
-	return Option{
+	option := Option{
 		GlobalOption:     gc,
 		ArtifactOption:   option.NewArtifactOption(c),
 		DBOption:         option.NewDBOption(c),
@@ -46,7 +46,13 @@ func NewOption(c *cli.Context) (Option, error) {
 		SbomOption:       option.NewSbomOption(c),
 		SecretOption:     option.NewSecretOption(c),
 		KubernetesOption: option.NewKubernetesOption(c),
-	}, nil
+	}
+	if gc.DisableNetworking {
+		option.DBOption.SkipDBUpdate = true
+		option.ArtifactOption.OfflineScan = true
+	}
+
+	return option, nil
 }
 
 // Init initializes the artifact options

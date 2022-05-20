@@ -30,6 +30,11 @@ type VersionInfo struct {
 }
 
 var (
+	// If set to true features like fetching the db that use networking will
+	// work by default.
+	// This allows for trivy to be built to default opt-out of networking
+	defaultUseNetworking = true
+
 	templateFlag = cli.StringFlag{
 		Name:    "template",
 		Aliases: []string{"t"},
@@ -81,6 +86,7 @@ var (
 		Aliases: []string{"skip-update"},
 		Usage:   "skip updating vulnerability database",
 		EnvVars: []string{"TRIVY_SKIP_UPDATE", "TRIVY_SKIP_DB_UPDATE"},
+		Value:   !defaultUseNetworking,
 	}
 
 	skipPolicyUpdateFlag = cli.BoolFlag{
@@ -271,6 +277,7 @@ var (
 		Name:    "offline-scan",
 		Usage:   "do not issue API requests to identify dependencies",
 		EnvVars: []string{"TRIVY_OFFLINE_SCAN"},
+		Value:   !defaultUseNetworking,
 	}
 
 	// For misconfigurations

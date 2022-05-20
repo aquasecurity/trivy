@@ -9,6 +9,9 @@ import (
 	"golang.org/x/xerrors"
 )
 
+// Allow for building trivy with remote API calls completely disabled
+var disableOnlineScanning string
+
 // ArtifactOption holds the options for an artifact scanning
 type ArtifactOption struct {
 	Input      string
@@ -26,13 +29,17 @@ type ArtifactOption struct {
 
 // NewArtifactOption is the factory method to return artifact option
 func NewArtifactOption(c *cli.Context) ArtifactOption {
+	offlineScan := c.Bool("offline-scan")
+	if disableOnlineScanning == "true" {
+		offlineScan = true
+	}
 	return ArtifactOption{
 		Input:       c.String("input"),
 		Timeout:     c.Duration("timeout"),
 		ClearCache:  c.Bool("clear-cache"),
 		SkipFiles:   c.StringSlice("skip-files"),
 		SkipDirs:    c.StringSlice("skip-dirs"),
-		OfflineScan: c.Bool("offline-scan"),
+		OfflineScan: offlineScan,
 		Insecure:    c.Bool("insecure"),
 	}
 }

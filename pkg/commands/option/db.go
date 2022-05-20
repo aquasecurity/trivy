@@ -7,6 +7,9 @@ import (
 	"github.com/aquasecurity/trivy/pkg/log"
 )
 
+// Allow for building trivy with DB updates completely disabled
+var disableDBUpdates string
+
 // DBOption holds the options for trivy DB
 type DBOption struct {
 	Reset          bool
@@ -19,10 +22,14 @@ type DBOption struct {
 
 // NewDBOption is the factory method to return the DBOption
 func NewDBOption(c *cli.Context) DBOption {
+	skipDBUpdate := c.Bool("skip-db-update")
+	if disableDBUpdates == "true" {
+		skipDBUpdate = true
+	}
 	return DBOption{
 		Reset:          c.Bool("reset"),
 		DownloadDBOnly: c.Bool("download-db-only"),
-		SkipDBUpdate:   c.Bool("skip-db-update"),
+		SkipDBUpdate:   skipDBUpdate,
 		Light:          c.Bool("light"),
 		NoProgress:     c.Bool("no-progress"),
 		DBRepository:   c.String("db-repository"),
