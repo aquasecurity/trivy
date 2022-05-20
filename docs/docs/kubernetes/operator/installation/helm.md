@@ -39,7 +39,7 @@ Check that the `trivy-operator` Helm release is created in the `trivy-system` na
 ```console
 $ helm list -n trivy-system
 NAME              	NAMESPACE         	REVISION	UPDATED                             	STATUS  	CHART                   	APP VERSION
-trivy-operator	trivy-system	1       	2021-01-27 20:09:53.158961 +0100 CET	deployed	trivy-operator-{{ var.operator_version }}	{{  var.operator_version }}
+trivy-operator	trivy-system	1       	2021-01-27 20:09:53.158961 +0100 CET	deployed	trivy-operator-{{ var.operator_version }}	{{  var.operator_version[1:] }}
 ```
 
 To confirm that the operator is running, check that the `trivy-operator` Deployment in the `trivy-system`
