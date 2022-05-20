@@ -160,9 +160,9 @@ func (s *Scanner) detect(osVer string, pkg ftypes.Package) ([]types.DetectedVuln
 			// RedHat may contain several advisories for package (RHSA advisories).
 			// We can overwrite fixed version here
 			// Therefore, we should skip unpatched vulnerabilities if they were added earlier
-			//if _, ok := uniqVulns[vulnID]; !ok {
-			uniqVulns[vulnID] = vuln
-			//}
+			if _, ok := uniqVulns[vulnID]; !ok {
+				uniqVulns[vulnID] = vuln
+			}
 			continue
 		}
 
