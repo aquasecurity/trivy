@@ -7,7 +7,7 @@ Kubernetes Yaml deployment files are available on GitHub in [https://github.com/
 This will install the operator in the `trivy-system` namespace and configure it to scan all namespaces, except `kube-system` and `trivy-system`:
 
 ```bash
-kubectl apply -f https://raw.githubusercontent.com/aquasecurity/trivy-operator/{{ git.tag }}/deploy/static/trivy-operator.yaml
+kubectl apply -f https://raw.githubusercontent.com/aquasecurity/trivy-operator/{{ var.operator_version }}/deploy/static/trivy-operator.yaml
 ```
 
 To confirm that the operator is running, check that the `trivy-operator` Deployment in the `trivy-system`
@@ -38,7 +38,7 @@ To learn more, please refer to the [Configuration](config) documentation.
 You can uninstall the operator with the following command:
 
 ```
-kubectl delete -f https://raw.githubusercontent.com/aquasecurity/trivy-operator/{{ git.tag }}/deploy/static/trivy-operator.yaml
+kubectl delete -f https://raw.githubusercontent.com/aquasecurity/trivy-operator/{{  var.operator_version }}/deploy/static/trivy-operator.yaml
 ```
 
 [Settings]: ./../../settings.md

@@ -16,7 +16,7 @@ helm install trivy-operator aqua/trivy-operator \
    --namespace trivy-system \
    --create-namespace \
    --set="trivy.ignoreUnfixed=true" \
-   --version {{ var.chart_version }}
+   --version {{ var.operator_version }}
 ```
 
 ## Example - Download the chart
@@ -24,7 +24,7 @@ helm install trivy-operator aqua/trivy-operator \
 This will install the operator in the `trivy-system` namespace and configure it to scan all namespaces, except `kube-system` and `trivy-system`:
 
 ```bash
-git clone --depth 1 --branch {{ git.tag }} https://github.com/aquasecurity/trivy-operator.git
+git clone --depth 1 --branch {{ var.operator_version }} https://github.com/aquasecurity/trivy-operator.git
 cd trivy-operator
 helm install trivy-operator ./deploy/helm \
 --namespace trivy-system \
@@ -39,7 +39,7 @@ Check that the `trivy-operator` Helm release is created in the `trivy-system` na
 ```console
 $ helm list -n trivy-system
 NAME              	NAMESPACE         	REVISION	UPDATED                             	STATUS  	CHART                   	APP VERSION
-trivy-operator	trivy-system	1       	2021-01-27 20:09:53.158961 +0100 CET	deployed	trivy-operator-{{ var.chart_version }}	{{ git.tag[1:] }}
+trivy-operator	trivy-system	1       	2021-01-27 20:09:53.158961 +0100 CET	deployed	trivy-operator-{{ var.operator_version }}	{{  var.operator_version[1:] }}
 ```
 
 To confirm that the operator is running, check that the `trivy-operator` Deployment in the `trivy-system`
@@ -87,4 +87,4 @@ You have to manually delete custom resource definitions created by the `helm ins
 
 [Helm]: https://helm.sh/
 [charts]: https://helm.sh/docs/topics/charts/
-[values]: https://raw.githubusercontent.com/aquasecurity/trivy-operator/{{ git.tag }}/deploy/helm/values.yaml
+[values]: https://raw.githubusercontent.com/aquasecurity/trivy-operator/{{  var.operator_version }}/deploy/helm/values.yaml
