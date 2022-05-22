@@ -2798,9 +2798,13 @@
 
 
 <h1 id="gitlab-ci">GitLab CI</h1>
-<p>If you're a GitLab Ultimate customer, GitLab 14.0 and above include out-of-the-box integration with Trivy. To enable it for your project, simply add the container scanning template to your <code>.gitlab-ci.yml</code> file. For more details, please refer to <a href="https://docs.gitlab.com/ee/user/application_security/container_scanning/">GitLab's documentation</a>.</p>
-<p>If you're using an earlier version of GitLab, you can still use the new integration by copying the <a href="https://gitlab.com/gitlab-org/gitlab/blob/master/lib/gitlab/ci/templates/Security/Container-Scanning.gitlab-ci.yml">contents of the 14.0 template</a> to your configuration.</p>
-<p>Alternatively, you can always use the example configurations below.</p>
+<p>GitLab 15.0 includes <a href="https://gitlab.com/groups/gitlab-org/-/epics/2233">free</a> integration with Trivy.</p>
+<p>To <a href="https://docs.gitlab.com/ee/user/application_security/container_scanning/#configuration">configure container scanning with Trivy in GitLab</a>, simply include the CI template in your <code>.gitlab-ci.yml</code> file:</p>
+<div class="highlight"><pre><span></span><code><span class="nt">include</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">template</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Security/Container-Scanning.gitlab-ci.yml</span><span class="w"></span>
+</code></pre></div>
+<p>If you're a GitLab 14.x Ultimate customer, you can use the same configuration above.</p>
+<p>Alternatively, you can always use the example configurations below. Note that the examples use <a href="https://github.com/aquasecurity/trivy/blob/main/contrib/gitlab.tpl"><code>contrib/gitlab.tpl</code></a>, which does not work with GitLab 15.0 and above (for details, see <a href="https://github.com/aquasecurity/trivy/issues/1598">issue 1598</a>).</p>
 <div class="highlight"><pre><span></span><code><span class="nt">stages</span><span class="p">:</span><span class="w"></span>
 <span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">test</span><span class="w"></span>
 
