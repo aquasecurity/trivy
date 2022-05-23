@@ -69,7 +69,7 @@ func Run(cliCtx *cli.Context) error {
 		}
 	}()
 
-	cluster, err := k8s.GetCluster()
+	cluster, err := k8s.GetCluster(opt.KubernetesOption.ClusterContext)
 	if err != nil {
 		return xerrors.Errorf("get k8s cluster: %w", err)
 	}
@@ -80,8 +80,14 @@ func Run(cliCtx *cli.Context) error {
 		return xerrors.Errorf("get k8s artifacts error: %w", err)
 	}
 
+	currentContext := opt.KubernetesOption.ClusterContext
+	if len(currentContext) == 0 {
+		// if context is empty, the default one was scanned
+		currentContext = cluster.GetCurrentContext()
+	}
+
 	s := &scanner{
-		cluster: cluster.GetCurrentContext(),
+		cluster: currentContext,
 		runner:  runner,
 		opt:     opt,
 	}
