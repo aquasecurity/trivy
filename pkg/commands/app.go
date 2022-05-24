@@ -802,7 +802,11 @@ func NewPluginCommand() *cli.Command {
 func NewK8sCommand() *cli.Command {
 	k8sSecurityChecksFlag := withValue(
 		securityChecksFlag,
-		fmt.Sprintf("%s,%s", types.SecurityCheckVulnerability, types.SecurityCheckConfig),
+		fmt.Sprintf(
+			"%s,%s,%s",
+			types.SecurityCheckVulnerability,
+			types.SecurityCheckConfig,
+			types.SecurityCheckSecret),
 	)
 
 	return &cli.Command{
