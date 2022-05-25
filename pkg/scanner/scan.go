@@ -56,6 +56,12 @@ var StandaloneRepositorySet = wire.NewSet(
 	StandaloneSuperSet,
 )
 
+// StandaloneCycloneDXSet binds repository dependencies
+var StandaloneCycloneDXSet = wire.NewSet(
+	remote.NewArtifact,
+	StandaloneSuperSet,
+)
+
 /////////////////
 // Client/Server
 /////////////////

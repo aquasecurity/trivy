@@ -55,6 +55,12 @@ func initializeResultClient() result.Client {
 	return result.Client{}
 }
 
+func initializeCycloneDXScanner(ctx context.Context, filePath string, artifactCache cache.ArtifactCache,
+	localArtifactCache cache.LocalArtifactCache, artifactOption artifact.Option) (scanner.Scanner, func(), error) {
+	wire.Build(scanner.StandaloneCycloneDXSet)
+	return scanner.Scanner{}, nil, nil
+}
+
 /////////////////
 // Client/Server
 /////////////////

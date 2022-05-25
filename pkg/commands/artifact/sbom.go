@@ -1,6 +1,8 @@
 package artifact
 
 import (
+	"context"
+	"github.com/aquasecurity/trivy/pkg/scanner"
 	"github.com/urfave/cli/v2"
 	"golang.org/x/exp/slices"
 	"golang.org/x/xerrors"
@@ -30,4 +32,8 @@ func SbomRun(ctx *cli.Context) error {
 	opt.ReportOption.SecurityChecks = []string{types.SecurityCheckVulnerability}
 
 	return run(ctx.Context, opt, artifactType)
+}
+
+func cyclonedxScanner(ctx context.Context, conf ScannerConfig) (scanner.Scanner, func(), error) {
+	return scanner.Scanner{}, nil, nil
 }

@@ -34,6 +34,7 @@ const (
 	rootfsArtifact         ArtifactType = "rootfs"
 	repositoryArtifact     ArtifactType = "repo"
 	imageArchiveArtifact   ArtifactType = "archive"
+	cycloneDXArtifact                   = "cyclonedx"
 )
 
 var (
@@ -185,6 +186,10 @@ func (r *Runner) Scan(ctx context.Context, opt Option, initializeScanner Initial
 	return report, nil
 }
 
+func (r *Runner) ScanCycloneDX(ctx context.Context, opt Option) (types.Report, error) {
+	return r.Scan(ctx, opt, cyclonedxScanner)
+}
+
 func (r *Runner) Filter(ctx context.Context, opt Option, report types.Report) (types.Report, error) {
 	resultClient := initializeResultClient()
 	results := report.Results
@@ -332,6 +337,10 @@ func run(ctx context.Context, opt Option, artifactType ArtifactType) (err error)
 	case repositoryArtifact:
 		if report, err = runner.ScanRepository(ctx, opt); err != nil {
 			return xerrors.Errorf("repository scan error: %w", err)
+		}
+	case cycloneDXArtifact:
+		if report, err = runner.ScanCycloneDX(ctx, opt); err != nil {
+			return xerrors.Errorf("cyclonedx scan error: %w", err)
 		}
 	}
 
