@@ -251,3 +251,5 @@ replace github.com/containerd/containerd v1.5.9 => github.com/containerd/contain
 
 // See https://github.com/moby/moby/issues/42939#issuecomment-1114255529
 replace github.com/docker/docker => github.com/docker/docker v20.10.3-0.20220224222438-c78f6963a1c0+incompatible
+
+replace github.com/aquasecurity/trivy-db => github.com/DmitriyLewen/trivy-db v0.0.0-20220525124753-0c89b94d4fc5
