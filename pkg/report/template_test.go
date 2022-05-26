@@ -9,6 +9,7 @@ import (
 	"github.com/stretchr/testify/assert"
 
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
+	"github.com/aquasecurity/trivy/pkg/clock"
 	"github.com/aquasecurity/trivy/pkg/report"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
@@ -162,9 +163,8 @@ func TestReportWriter_Template(t *testing.T) {
 	}
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			report.Now = func() time.Time {
-				return time.Date(2020, 8, 10, 7, 28, 17, 958601, time.UTC)
-			}
+			clock.SetFakeTime(t, time.Date(2020, 8, 10, 7, 28, 17, 958601, time.UTC))
+
 			os.Setenv("AWS_ACCOUNT_ID", "123456789012")
 			got := bytes.Buffer{}
 			inputReport := types.Report{

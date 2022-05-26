@@ -18,6 +18,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/commands/server"
 	"github.com/aquasecurity/trivy/pkg/k8s"
 	"github.com/aquasecurity/trivy/pkg/log"
+	"github.com/aquasecurity/trivy/pkg/report"
 	"github.com/aquasecurity/trivy/pkg/result"
 	"github.com/aquasecurity/trivy/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/utils"
@@ -41,8 +42,8 @@ var (
 	formatFlag = cli.StringFlag{
 		Name:    "format",
 		Aliases: []string{"f"},
-		Value:   "table",
-		Usage:   "format (table, json, sarif, template)",
+		Value:   report.FormatTable,
+		Usage:   "format (table, json, sarif, template, cyclonedx, spdx, spdx-json, github)",
 		EnvVars: []string{"TRIVY_FORMAT"},
 	}
 
@@ -906,8 +907,8 @@ func NewSbomCommand() *cli.Command {
 			&cli.StringFlag{
 				Name:    "sbom-format",
 				Aliases: []string{"format"},
-				Value:   "cyclonedx",
-				Usage:   "SBOM format (cyclonedx, spdx, spdx-json)",
+				Value:   report.FormatCycloneDX,
+				Usage:   "SBOM format (cyclonedx, spdx, spdx-json, github)",
 				EnvVars: []string{"TRIVY_SBOM_FORMAT"},
 			},
 		},
