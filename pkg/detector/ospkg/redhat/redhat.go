@@ -140,9 +140,6 @@ func (s *Scanner) detect(osVer string, pkg ftypes.Package) ([]types.DetectedVuln
 	uniqVulns := map[string]types.DetectedVulnerability{}
 	for _, adv := range advisories {
 		vulnID := adv.VulnerabilityID
-		if vulnID == "CVE-2021-21705" {
-			fmt.Println()
-		}
 		vuln := types.DetectedVulnerability{
 			VulnerabilityID:  vulnID,
 			PkgName:          pkg.Name,
@@ -157,9 +154,8 @@ func (s *Scanner) detect(osVer string, pkg ftypes.Package) ([]types.DetectedVuln
 
 		// unpatched vulnerabilities
 		if adv.FixedVersion == "" {
-			// RedHat may contain several advisories for package (RHSA advisories).
-			// We can overwrite fixed version here
-			// Therefore, we should skip unpatched vulnerabilities if they were added earlier
+			// Red Hat may contain several advisories for the same vulnerability (RHSA advisories).
+			// To avoid overwriting the fixed version by mistake, we should skip unpatched vulnerabilities if they were added earlier
 			if _, ok := uniqVulns[vulnID]; !ok {
 				uniqVulns[vulnID] = vuln
 			}
