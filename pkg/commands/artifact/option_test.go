@@ -14,6 +14,7 @@ import (
 
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/commands/option"
+	"github.com/aquasecurity/trivy/pkg/report"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
 
@@ -245,19 +246,19 @@ func TestOption_Init(t *testing.T) {
 			},
 		},
 		{
-			name: "json and list all packages",
-			args: []string{"--format", "json", "gitlab/gitlab-ce:12.7.2-ce.0"},
+			name: "github enables list-all-pkgs",
+			args: []string{"--format", "github", "alpine:3.15"},
 			want: Option{
 				ReportOption: option.ReportOption{
 					Severities:     []dbTypes.Severity{dbTypes.SeverityCritical},
 					Output:         os.Stdout,
 					VulnType:       []string{types.VulnTypeOS, types.VulnTypeLibrary},
 					SecurityChecks: []string{types.SecurityCheckVulnerability},
-					Format:         "json",
-					ListAllPkgs:    false,
+					Format:         report.FormatGitHub,
+					ListAllPkgs:    true,
 				},
 				ArtifactOption: option.ArtifactOption{
-					Target: "gitlab/gitlab-ce:12.7.2-ce.0",
+					Target: "alpine:3.15",
 				},
 			},
 		},
