@@ -28,7 +28,8 @@ func Run(cliCtx *cli.Context) error {
 	// To show all the results, user needs to specify "--report all" explicitly
 	// even though the default value of "--report" is "all".
 	//
-	// e.g. $ trivy k8s --report all
+	// e.g. $ trivy k8s cluster --report all
+	//      $ trivy k8s all --report all
 	//
 	// Or they can use "--format json" with implicit "--report all".
 	//
@@ -37,10 +38,11 @@ func Run(cliCtx *cli.Context) error {
 	// Single resource scanning is allowed with implicit "--report all".
 	//
 	// e.g. $ trivy k8s pod myapp
+	args := cliCtx.Args()
 	if cliCtx.String("report") == allReport &&
 		!cliCtx.IsSet("report") &&
 		cliCtx.String("format") == tableFormat &&
-		!cliCtx.Args().Present() {
+		(args.Get(0) == "cluster" || args.Get(0) == "all") {
 
 		m := "All the results in the table format can mess up your terminal. Use \"--report all\" to tell Trivy to output it to your terminal anyway, or consider \"--report summary\" to show the summary output."
 
@@ -75,7 +77,7 @@ func Run(cliCtx *cli.Context) error {
 	}
 
 	// get kubernetes scannable artifacts
-	artifacts, err := getArtifacts(ctx, cliCtx.Args(), cluster, opt.KubernetesOption.Namespace)
+	artifacts, err := getArtifacts(ctx, args, cluster, opt.KubernetesOption.Namespace)
 	if err != nil {
 		return xerrors.Errorf("get k8s artifacts error: %w", err)
 	}
@@ -121,27 +123,30 @@ func run(ctx context.Context, s *scanner, opt cmd.Option, artifacts []*artifacts
 func getArtifacts(ctx context.Context, args cli.Args, cluster k8s.Cluster, namespace string) ([]*artifacts.Artifact, error) {
 	trivyk8s := trivyk8s.New(cluster)
 
-	if !args.Present() {
-		return trivyk8s.Namespace(namespace).ListArtifacts(ctx)
-	}
-
-	// if scanning single resource, and namespace is empty
+	// if scanning all, or single resource, and namespace is empty
 	// uses default namespace
 	if len(namespace) == 0 {
 		namespace = cluster.GetCurrentNamespace()
 	}
 
-	kind, name, err := extractKindAndName(args)
-	if err != nil {
-		return nil, err
-	}
+	switch args.Get(0) {
+	case "cluster":
+		return trivyk8s.ListArtifacts(ctx)
+	case "all":
+		return trivyk8s.Namespace(namespace).ListArtifacts(ctx)
+	default:
+		kind, name, err := extractKindAndName(args)
+		if err != nil {
+			return nil, err
+		}
 
-	artifact, err := trivyk8s.Namespace(namespace).GetArtifact(ctx, kind, name)
-	if err != nil {
-		return nil, err
-	}
+		artifact, err := trivyk8s.Namespace(namespace).GetArtifact(ctx, kind, name)
+		if err != nil {
+			return nil, err
+		}
 
-	return []*artifacts.Artifact{artifact}, nil
+		return []*artifacts.Artifact{artifact}, nil
+	}
 }
 
 func extractKindAndName(args cli.Args) (string, string, error) {
