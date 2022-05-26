@@ -114,13 +114,6 @@ func (s Scanner) Scan(target string, artifactKey string, blobKeys []string, opti
 		results = append(results, secretResults...)
 	}
 
-	// Scan dependencies
-	if options.ListAllPackages {
-		if depsResults := s.dependenciesToResults(results, artifactDetail.Applications); depsResults != nil {
-			results = depsResults
-		}
-	}
-
 	return results, artifactDetail.OS, nil
 }
 
@@ -240,6 +233,7 @@ func (s Scanner) scanLibrary(apps []ftypes.Application, options types.ScanOption
 		}
 		if options.ListAllPackages {
 			libReport.Packages = app.Libraries
+			libReport.Dependencies = app.Dependencies
 		}
 		results = append(results, libReport)
 	}
@@ -297,27 +291,6 @@ func (s Scanner) secretsToResults(secrets []ftypes.Secret) types.Results {
 		})
 	}
 	return results
-}
-
-func (s Scanner) dependenciesToResults(results types.Results, apps []ftypes.Application) types.Results {
-	if len(apps) == 0 {
-		return nil
-	}
-
-	depsResults := results
-	for i, result := range results {
-		for _, app := range apps {
-			if len(app.Dependencies) == 0 {
-				continue
-			}
-
-			if result.Target == app.FilePath {
-				depsResults[i].Dependencies = app.Dependencies
-			}
-		}
-	}
-
-	return depsResults
 }
 
 func toDetectedMisconfiguration(res ftypes.MisconfResult, defaultSeverity dbTypes.Severity,

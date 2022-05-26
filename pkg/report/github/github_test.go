@@ -1,4 +1,4 @@
-package report_test
+package github_test
 
 import (
 	"bytes"
@@ -10,17 +10,18 @@ import (
 	ftypes "github.com/aquasecurity/fanal/types"
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/report"
+	"github.com/aquasecurity/trivy/pkg/report/github"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
 
-func TestReportWriter_GithubSBOM(t *testing.T) {
-	testCases := []struct {
+func TestWriter_Write(t *testing.T) {
+	tests := []struct {
 		name   string
 		report types.Report
-		want   map[string]report.GithubSbomManifest
+		want   map[string]github.Manifest
 	}{
 		{
-			name: "happy path - packages",
+			name: "os packages",
 			report: types.Report{
 				SchemaVersion: 2,
 				ArtifactName:  "alpine:3.14",
@@ -61,13 +62,13 @@ func TestReportWriter_GithubSBOM(t *testing.T) {
 					},
 				},
 			},
-			want: map[string]report.GithubSbomManifest{
+			want: map[string]github.Manifest{
 				"yarn.lock": {
 					Name: "yarn",
-					File: &report.GithubSbomFile{
+					File: &github.File{
 						SrcLocation: "yarn.lock",
 					},
-					Resolved: map[string]report.GithubSbomPackage{
+					Resolved: map[string]github.Package{
 						"@xtuc/ieee754": {
 							PackageUrl:   "pkg:npm/%40xtuc/ieee754@1.2.0",
 							Relationship: "direct",
@@ -88,7 +89,7 @@ func TestReportWriter_GithubSBOM(t *testing.T) {
 			},
 		},
 		{
-			name: "happy path - maven",
+			name: "maven",
 			report: types.Report{
 				SchemaVersion: 2,
 				ArtifactName:  "my-java-app",
@@ -110,13 +111,13 @@ func TestReportWriter_GithubSBOM(t *testing.T) {
 					},
 				},
 			},
-			want: map[string]report.GithubSbomManifest{
+			want: map[string]github.Manifest{
 				"pom.xml": {
 					Name: "pom",
-					File: &report.GithubSbomFile{
+					File: &github.File{
 						SrcLocation: "pom.xml",
 					},
-					Resolved: map[string]report.GithubSbomPackage{
+					Resolved: map[string]github.Package{
 						"com.google.code.gson:gson": {
 							PackageUrl:   "pkg:maven/com.google.code.gson/gson@2.2.2",
 							Relationship: "direct",
@@ -133,25 +134,25 @@ func TestReportWriter_GithubSBOM(t *testing.T) {
 		},
 	}
 
-	for _, tc := range testCases {
-		t.Run(tc.name, func(t *testing.T) {
-			jw := report.GithubSbomWriter{}
-			githubSbomWritten := bytes.Buffer{}
-			jw.Output = &githubSbomWritten
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			jw := github.Writer{}
+			written := bytes.Buffer{}
+			jw.Output = &written
 
-			inputResults := tc.report
+			inputResults := tt.report
 
 			err := report.Write(inputResults, report.Option{
 				Format: "github-sbom",
-				Output: &githubSbomWritten,
+				Output: &written,
 			})
 			assert.NoError(t, err)
 
-			var got report.GithubSbom
-			err = json.Unmarshal(githubSbomWritten.Bytes(), &got)
-			assert.NoError(t, err, "invalid github-sbom written")
+			var got github.DependencySnapshot
+			err = json.Unmarshal(written.Bytes(), &got)
+			assert.NoError(t, err, "invalid github written")
 
-			assert.Equal(t, tc.want, got.Manifests, tc.name)
+			assert.Equal(t, tt.want, got.Manifests, tt.name)
 		})
 	}
 }
