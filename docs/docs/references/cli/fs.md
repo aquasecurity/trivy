@@ -15,6 +15,7 @@ OPTIONS:
    --exit-code value                              Exit code when vulnerabilities were found (default: 0) [$TRIVY_EXIT_CODE]
    --skip-db-update, --skip-update                skip updating vulnerability database (default: false) [$TRIVY_SKIP_UPDATE, $TRIVY_SKIP_DB_UPDATE]
    --skip-policy-update                           skip updating built-in policies (default: false) [$TRIVY_SKIP_POLICY_UPDATE]
+   --insecure                                     allow insecure server connections when using SSL (default: false) [$TRIVY_INSECURE]
    --clear-cache, -c                              clear image caches without scanning (default: false) [$TRIVY_CLEAR_CACHE]
    --ignore-unfixed                               display only fixed vulnerabilities (default: false) [$TRIVY_IGNORE_UNFIXED]
    --vuln-type value                              comma-separated list of vulnerability types (os,library) (default: "os,library") [$TRIVY_VULN_TYPE]
