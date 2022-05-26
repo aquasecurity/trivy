@@ -1,4 +1,4 @@
-package report_test
+package github_test
 
 import (
 	"bytes"
@@ -10,17 +10,18 @@ import (
 	ftypes "github.com/aquasecurity/fanal/types"
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/report"
+	"github.com/aquasecurity/trivy/pkg/report/github"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
 
-func TestReportWriter_gSBOM(t *testing.T) {
-	testCases := []struct {
+func TestWriter_Write(t *testing.T) {
+	tests := []struct {
 		name   string
 		report types.Report
-		want   map[string]report.GsbomManifest
+		want   map[string]github.Manifest
 	}{
 		{
-			name: "happy path - packages",
+			name: "os packages",
 			report: types.Report{
 				SchemaVersion: 2,
 				ArtifactName:  "alpine:3.14",
@@ -37,6 +38,11 @@ func TestReportWriter_gSBOM(t *testing.T) {
 							{
 								Name:    "@xtuc/long",
 								Version: "4.2.2",
+							},
+							{
+								Name:     "@xtuc/binaryen",
+								Version:  "1.37.33",
+								Indirect: true,
 							},
 						},
 						Vulnerabilities: []types.DetectedVulnerability{
@@ -56,25 +62,34 @@ func TestReportWriter_gSBOM(t *testing.T) {
 					},
 				},
 			},
-			want: map[string]report.GsbomManifest{
+			want: map[string]github.Manifest{
 				"yarn.lock": {
 					Name: "yarn",
-					File: &report.GsbomFile{
+					File: &github.File{
 						SrcLocation: "yarn.lock",
 					},
-					Resolved: map[string]report.GsbomPackage{
+					Resolved: map[string]github.Package{
 						"@xtuc/ieee754": {
-							Purl: "pkg:npm/%40xtuc/ieee754@1.2.0",
+							PackageUrl:   "pkg:npm/%40xtuc/ieee754@1.2.0",
+							Relationship: "direct",
+							Scope:        "runtime",
 						},
 						"@xtuc/long": {
-							Purl: "pkg:npm/%40xtuc/long@4.2.2",
+							PackageUrl:   "pkg:npm/%40xtuc/long@4.2.2",
+							Relationship: "direct",
+							Scope:        "runtime",
+						},
+						"@xtuc/binaryen": {
+							PackageUrl:   "pkg:npm/%40xtuc/binaryen@1.37.33",
+							Relationship: "indirect",
+							Scope:        "runtime",
 						},
 					},
 				},
 			},
 		},
 		{
-			name: "happy path - maven",
+			name: "maven",
 			report: types.Report{
 				SchemaVersion: 2,
 				ArtifactName:  "my-java-app",
@@ -96,18 +111,22 @@ func TestReportWriter_gSBOM(t *testing.T) {
 					},
 				},
 			},
-			want: map[string]report.GsbomManifest{
+			want: map[string]github.Manifest{
 				"pom.xml": {
 					Name: "pom",
-					File: &report.GsbomFile{
+					File: &github.File{
 						SrcLocation: "pom.xml",
 					},
-					Resolved: map[string]report.GsbomPackage{
+					Resolved: map[string]github.Package{
 						"com.google.code.gson:gson": {
-							Purl: "pkg:maven/com.google.code.gson/gson@2.2.2",
+							PackageUrl:   "pkg:maven/com.google.code.gson/gson@2.2.2",
+							Relationship: "direct",
+							Scope:        "runtime",
 						},
 						"net.sf.opencsv:opencsv": {
-							Purl: "pkg:maven/net.sf.opencsv/opencsv@2.3",
+							PackageUrl:   "pkg:maven/net.sf.opencsv/opencsv@2.3",
+							Relationship: "direct",
+							Scope:        "runtime",
 						},
 					},
 				},
@@ -115,25 +134,25 @@ func TestReportWriter_gSBOM(t *testing.T) {
 		},
 	}
 
-	for _, tc := range testCases {
-		t.Run(tc.name, func(t *testing.T) {
-			jw := report.GsbomWriter{}
-			gsbomWritten := bytes.Buffer{}
-			jw.Output = &gsbomWritten
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			jw := github.Writer{}
+			written := bytes.Buffer{}
+			jw.Output = &written
 
-			inputResults := tc.report
+			inputResults := tt.report
 
 			err := report.Write(inputResults, report.Option{
-				Format: "gsbom",
-				Output: &gsbomWritten,
+				Format: "github",
+				Output: &written,
 			})
 			assert.NoError(t, err)
 
-			var got report.Gsbom
-			err = json.Unmarshal(gsbomWritten.Bytes(), &got)
-			assert.NoError(t, err, "invalid gsbom written")
+			var got github.DependencySnapshot
+			err = json.Unmarshal(written.Bytes(), &got)
+			assert.NoError(t, err, "invalid github written")
 
-			assert.Equal(t, tc.want, got.Manifests, tc.name)
+			assert.Equal(t, tt.want, got.Manifests, tt.name)
 		})
 	}
 }

@@ -6,6 +6,7 @@ import (
 	v1 "github.com/google/go-containerregistry/pkg/v1" // nolint: goimports
 
 	ftypes "github.com/aquasecurity/fanal/types"
+	gdpTypes "github.com/aquasecurity/go-dep-parser/pkg/types"
 )
 
 // Report represents a scan result
@@ -48,6 +49,7 @@ type Result struct {
 	Class             ResultClass                `json:"Class,omitempty"`
 	Type              string                     `json:"Type,omitempty"`
 	Packages          []ftypes.Package           `json:"Packages,omitempty"`
+	Dependencies      []gdpTypes.Dependency      `json:"Dependencies,omitempty"`
 	Vulnerabilities   []DetectedVulnerability    `json:"Vulnerabilities,omitempty"`
 	MisconfSummary    *MisconfSummary            `json:"MisconfSummary,omitempty"`
 	Misconfigurations []DetectedMisconfiguration `json:"Misconfigurations,omitempty"`

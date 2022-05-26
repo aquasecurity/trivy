@@ -209,26 +209,6 @@ func TestOption_Init(t *testing.T) {
 			},
 		},
 		{
-			name: "Generic sbom and list all packages",
-			args: []string{"--format", "gsbom", "gitlab/gitlab-ce:12.7.2-ce.0"},
-			logs: []string{
-				"--format gsbom is specified, all packages will be returned.",
-			},
-			want: Option{
-				ReportOption: option.ReportOption{
-					Severities:     []dbTypes.Severity{dbTypes.SeverityCritical},
-					Output:         os.Stdout,
-					VulnType:       []string{types.VulnTypeOS, types.VulnTypeLibrary},
-					SecurityChecks: []string{types.SecurityCheckVulnerability},
-					Format:         "gsbom",
-					ListAllPkgs:    true,
-				},
-				ArtifactOption: option.ArtifactOption{
-					Target: "gitlab/gitlab-ce:12.7.2-ce.0",
-				},
-			},
-		},
-		{
 			name: "json and list all packages",
 			args: []string{"--format", "json", "gitlab/gitlab-ce:12.7.2-ce.0"},
 			want: Option{
@@ -258,26 +238,6 @@ func TestOption_Init(t *testing.T) {
 					VulnType:       []string{types.VulnTypeOS, types.VulnTypeLibrary},
 					SecurityChecks: []string{types.SecurityCheckVulnerability},
 					Format:         "template",
-				},
-				ArtifactOption: option.ArtifactOption{
-					Target: "gitlab/gitlab-ce:12.7.2-ce.0",
-				},
-			},
-		},
-		{
-			name: "Generic sbom and list all packages",
-			args: []string{"--format", "gsbom", "gitlab/gitlab-ce:12.7.2-ce.0"},
-			logs: []string{
-				"--format gsbom is specified, all packages will be returned.",
-			},
-			want: Option{
-				ReportOption: option.ReportOption{
-					Severities:     []dbTypes.Severity{dbTypes.SeverityCritical},
-					Output:         os.Stdout,
-					VulnType:       []string{types.VulnTypeOS, types.VulnTypeLibrary},
-					SecurityChecks: []string{types.SecurityCheckVulnerability},
-					Format:         "gsbom",
-					ListAllPkgs:    true,
 				},
 				ArtifactOption: option.ArtifactOption{
 					Target: "gitlab/gitlab-ce:12.7.2-ce.0",
