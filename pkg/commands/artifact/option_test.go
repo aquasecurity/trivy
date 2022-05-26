@@ -211,7 +211,7 @@ func TestOption_Init(t *testing.T) {
 		},
 		{
 			name: "json and list all packages",
-			args: []string{"--format", "json", "gitlab/gitlab-ce:12.7.2-ce.0"},
+			args: []string{"--format", "json", "--list-all-pkgs", "gitlab/gitlab-ce:12.7.2-ce.0"},
 			want: Option{
 				ReportOption: option.ReportOption{
 					Severities:     []dbTypes.Severity{dbTypes.SeverityCritical},
@@ -219,7 +219,7 @@ func TestOption_Init(t *testing.T) {
 					VulnType:       []string{types.VulnTypeOS, types.VulnTypeLibrary},
 					SecurityChecks: []string{types.SecurityCheckVulnerability},
 					Format:         "json",
-					ListAllPkgs:    false,
+					ListAllPkgs:    true,
 				},
 				ArtifactOption: option.ArtifactOption{
 					Target: "gitlab/gitlab-ce:12.7.2-ce.0",
@@ -289,6 +289,7 @@ func TestOption_Init(t *testing.T) {
 			set.Bool("reset", false, "")
 			set.Bool("skip-db-update", false, "")
 			set.Bool("download-db-only", false, "")
+			set.Bool("list-all-pkgs", false, "")
 			set.String("severity", "CRITICAL", "")
 			set.String("vuln-type", "os,library", "")
 			set.String("security-checks", "vuln", "")
