@@ -69,11 +69,6 @@ func (c *ReportOption) Init(output io.Writer, logger *zap.SugaredLogger) error {
 			logger.Warn("'--format template' is ignored because '--template' is not specified. Specify '--template' option when you use '--format template'.")
 		}
 	}
-	if c.Format == "github-sbom" {
-		logger.Info("--format github-sbom is specified, all packages will be returned.")
-
-		c.ListAllPkgs = true
-	}
 
 	// "--list-all-pkgs" option is unavailable with "--format table".
 	// If user specifies "--list-all-pkgs" with "--format table", we should warn it.
