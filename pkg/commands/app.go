@@ -827,10 +827,10 @@ func NewK8sCommand() *cli.Command {
 		Usage:   "scan kubernetes vulnerabilities, secrets and misconfigurations",
 		CustomHelpTemplate: cli.CommandHelpTemplate + `EXAMPLES:
   - cluster scanning:
-      $ trivy k8s --report summary
+      $ trivy k8s --report summary cluster
 
   - namespace scanning:
-      $ trivy k8s -n kube-system --report summary
+      $ trivy k8s -n kube-system --report summary all
 
   - resource scanning:
       $ trivy k8s deployment/orion
