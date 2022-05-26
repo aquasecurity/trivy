@@ -163,8 +163,7 @@ func TestReportWriter_Template(t *testing.T) {
 	}
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			cleanup := clock.SetFakeTime(time.Date(2020, 8, 10, 7, 28, 17, 958601, time.UTC))
-			defer cleanup()
+			clock.SetFakeTime(t, time.Date(2020, 8, 10, 7, 28, 17, 958601, time.UTC))
 
 			os.Setenv("AWS_ACCOUNT_ID", "123456789012")
 			got := bytes.Buffer{}

@@ -143,7 +143,7 @@ func TestWriter_Write(t *testing.T) {
 			inputResults := tt.report
 
 			err := report.Write(inputResults, report.Option{
-				Format: "github-sbom",
+				Format: "github",
 				Output: &written,
 			})
 			assert.NoError(t, err)
