@@ -159,7 +159,11 @@ func (s *Scanner) detect(osVer string, pkg ftypes.Package) ([]types.DetectedVuln
 
 		// unpatched vulnerabilities
 		if adv.FixedVersion == "" {
-			uniqVulns[vulnID] = vuln
+			// Red Hat may contain several advisories for the same vulnerability (RHSA advisories).
+			// To avoid overwriting the fixed version by mistake, we should skip unpatched vulnerabilities if they were added earlier
+			if _, ok := uniqVulns[vulnID]; !ok {
+				uniqVulns[vulnID] = vuln
+			}
 			continue
 		}
 
