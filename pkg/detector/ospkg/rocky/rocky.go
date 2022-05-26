@@ -18,7 +18,8 @@ var (
 	eolDates = map[string]time.Time{
 		// Source:
 		// https://endoflife.date/rocky-linux
-		"8.5": time.Date(2029, 5, 31, 23, 59, 59, 0, time.UTC),
+		"8.5": time.Date(2022, 5, 15, 23, 59, 59, 0, time.UTC),
+		"8.6": time.Date(2029, 5, 31, 23, 59, 59, 0, time.UTC),
 	}
 )
 

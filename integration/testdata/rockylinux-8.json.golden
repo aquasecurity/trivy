@@ -5,7 +5,8 @@
   "Metadata": {
     "OS": {
       "Family": "rocky",
-      "Name": "8.5"
+      "Name": "8.5",
+      "Eosl": true
     },
     "ImageID": "sha256:210996f98b856d7cd00496ddbe9412e73f1c714c95de09661e07b4e43648f9ab",
     "DiffIDs": [
