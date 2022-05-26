@@ -14,7 +14,6 @@ type ArtifactOption struct {
 	Input      string
 	Timeout    time.Duration
 	ClearCache bool
-	Insecure   bool
 
 	SkipDirs    []string
 	SkipFiles   []string
@@ -33,13 +32,11 @@ func NewArtifactOption(c *cli.Context) ArtifactOption {
 		SkipFiles:   c.StringSlice("skip-files"),
 		SkipDirs:    c.StringSlice("skip-dirs"),
 		OfflineScan: c.Bool("offline-scan"),
-		Insecure:    c.Bool("insecure"),
 	}
 }
 
 // Init initialize the CLI context for artifact scanning
 func (c *ArtifactOption) Init(ctx *cli.Context, logger *zap.SugaredLogger) (err error) {
-
 	// kubernetes subcommand doesn't require any argument
 	if ctx.Command.Name == "kubernetes" {
 		return nil

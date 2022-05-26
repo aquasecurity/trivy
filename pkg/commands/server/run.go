@@ -13,10 +13,10 @@ import (
 
 // Run runs the scan
 func Run(ctx *cli.Context) error {
-	return run(NewConfig(ctx))
+	return run(NewOption(ctx))
 }
 
-func run(c Config) (err error) {
+func run(c Option) (err error) {
 	if err = log.InitLogger(c.Debug, c.Quiet); err != nil {
 		return xerrors.Errorf("failed to initialize a logger: %w", err)
 	}
