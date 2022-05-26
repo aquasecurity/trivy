@@ -40,7 +40,7 @@ func run(c Option) (err error) {
 	}
 
 	// download the database file
-	if err = operation.DownloadDB(c.AppVersion, c.CacheDir, c.DBRepository, true, c.InsecureTlsSkip, c.SkipDBUpdate); err != nil {
+	if err = operation.DownloadDB(c.AppVersion, c.CacheDir, c.DBRepository, true, c.Insecure, c.SkipDBUpdate); err != nil {
 		return err
 	}
 
@@ -53,5 +53,5 @@ func run(c Option) (err error) {
 	}
 
 	server := rpcServer.NewServer(c.AppVersion, c.Listen, c.CacheDir, c.Token, c.TokenHeader)
-	return server.ListenAndServe(cache, c.InsecureTlsSkip)
+	return server.ListenAndServe(cache, c.Insecure)
 }

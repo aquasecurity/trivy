@@ -45,12 +45,12 @@ func NewServer(appVersion, addr, cacheDir, token, tokenHeader string) Server {
 }
 
 // ListenAndServe starts Trivy server
-func (s Server) ListenAndServe(serverCache cache.Cache, insecureTlsSkipForDb bool) error {
+func (s Server) ListenAndServe(serverCache cache.Cache, insecure bool) error {
 	requestWg := &sync.WaitGroup{}
 	dbUpdateWg := &sync.WaitGroup{}
 
 	go func() {
-		worker := newDBWorker(dbc.NewClient(s.cacheDir, true, insecureTlsSkipForDb))
+		worker := newDBWorker(dbc.NewClient(s.cacheDir, true, insecure))
 		ctx := context.Background()
 		for {
 			time.Sleep(updateInterval)

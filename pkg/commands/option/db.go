@@ -9,25 +9,23 @@ import (
 
 // DBOption holds the options for trivy DB
 type DBOption struct {
-	Reset           bool
-	DownloadDBOnly  bool
-	SkipDBUpdate    bool
-	InsecureTlsSkip bool
-	Light           bool
-	NoProgress      bool
-	DBRepository    string
+	Reset          bool
+	DownloadDBOnly bool
+	SkipDBUpdate   bool
+	Light          bool
+	NoProgress     bool
+	DBRepository   string
 }
 
 // NewDBOption is the factory method to return the DBOption
 func NewDBOption(c *cli.Context) DBOption {
 	return DBOption{
-		Reset:           c.Bool("reset"),
-		DownloadDBOnly:  c.Bool("download-db-only"),
-		SkipDBUpdate:    c.Bool("skip-db-update"),
-		InsecureTlsSkip: c.Bool("insecure"),
-		Light:           c.Bool("light"),
-		NoProgress:      c.Bool("no-progress"),
-		DBRepository:    c.String("db-repository"),
+		Reset:          c.Bool("reset"),
+		DownloadDBOnly: c.Bool("download-db-only"),
+		SkipDBUpdate:   c.Bool("skip-db-update"),
+		Light:          c.Bool("light"),
+		NoProgress:     c.Bool("no-progress"),
+		DBRepository:   c.String("db-repository"),
 	}
 }
 
