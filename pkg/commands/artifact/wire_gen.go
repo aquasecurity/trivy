@@ -22,6 +22,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/rpc/client"
 	"github.com/aquasecurity/trivy/pkg/scanner"
 	"github.com/aquasecurity/trivy/pkg/scanner/local"
+	"github.com/aquasecurity/trivy/pkg/scanner/sbom"
 )
 
 // Injectors from inject.go:
@@ -93,6 +94,19 @@ func initializeRepositoryScanner(ctx context.Context, url string, artifactCache 
 	}, nil
 }
 
+func initializeCycloneDXScanner(ctx context.Context,path string, artifactCache cache.ArtifactCache, localArtifactCache cache.LocalArtifactCache, artifactOption artifact.Option) (scanner.Scanner, func(), error) {
+	applierApplier := applier.NewApplier(localArtifactCache)
+	detector := ospkg.Detector{}
+	localScanner := sbom.NewScanner(applierApplier, detector)
+	artifactArtifact, err := sbom2.NewArtifact(path, artifactCache, artifactOption)
+	if err != nil {
+		return scanner.Scanner{}, nil, err
+	}
+	scannerScanner := scanner.NewScanner(localScanner, artifactArtifact)
+	return scannerScanner, func() {
+	}, nil
+}
+
 func initializeResultClient() result.Client {
 	config := db.Config{}
 	client := result.NewClient(config)
@@ -145,6 +159,19 @@ func initializeRemoteFilesystemScanner(ctx context.Context, path string, artifac
 	v := _wireValue
 	clientScanner := client.NewScanner(remoteScanOptions, v...)
 	artifactArtifact, err := local2.NewArtifact(path, artifactCache, artifactOption)
+	if err != nil {
+		return scanner.Scanner{}, nil, err
+	}
+	scannerScanner := scanner.NewScanner(clientScanner, artifactArtifact)
+	return scannerScanner, func() {
+	}, nil
+}
+
+// initializeRemoteCycloneDXScanner is for cycloneDX scanning in client/server mode
+func initializeRemoteCycloneDXScanner(ctx context.Context, path string, artifactCache cache.ArtifactCache, remoteScanOptions client.ScannerOption, artifactOption artifact.Option) (scanner.Scanner, func(), error) {
+	v := _wireValue
+	clientScanner := client.NewScanner(remoteScanOptions, v...)
+	artifactArtifact, err := sbom2.NewArtifact(path, artifactCache, artifactOption)
 	if err != nil {
 		return scanner.Scanner{}, nil, err
 	}

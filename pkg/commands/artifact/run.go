@@ -34,14 +34,14 @@ const (
 	rootfsArtifact         ArtifactType = "rootfs"
 	repositoryArtifact     ArtifactType = "repo"
 	imageArchiveArtifact   ArtifactType = "archive"
-	cycloneDXArtifact                   = "cyclonedx"
+	cycloneDXArtifact      ArtifactType = "cyclonedx"
 )
 
 var (
 	defaultPolicyNamespaces = []string{"appshield", "defsec", "builtin"}
 
 	supportedArtifactTypes = []ArtifactType{containerImageArtifact, filesystemArtifact, rootfsArtifact,
-		repositoryArtifact, imageArchiveArtifact}
+		repositoryArtifact, imageArchiveArtifact, cycloneDXArtifact}
 
 	SkipScan = errors.New("skip subsequent processes")
 )
@@ -187,7 +187,16 @@ func (r *Runner) Scan(ctx context.Context, opt Option, initializeScanner Initial
 }
 
 func (r *Runner) ScanCycloneDX(ctx context.Context, opt Option) (types.Report, error) {
-	return r.Scan(ctx, opt, cyclonedxScanner)
+	var s InitializeScanner
+	if opt.RemoteAddr == "" {
+		// Scan filesystem in standalone mode
+		s = cycloneDXStandaloneScanner
+	} else {
+		// Scan filesystem in client/server mode
+		s = cycloneDXRemoteScanner
+	}
+
+	return r.Scan(ctx, opt, s)
 }
 
 func (r *Runner) Filter(ctx context.Context, opt Option, report types.Report) (types.Report, error) {
