@@ -11,8 +11,8 @@ import (
 	"golang.org/x/xerrors"
 
 	ftypes "github.com/aquasecurity/fanal/types"
+	"github.com/aquasecurity/trivy/pkg/clock"
 	"github.com/aquasecurity/trivy/pkg/purl"
-	pkgReport "github.com/aquasecurity/trivy/pkg/report"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
 
@@ -65,6 +65,7 @@ type DependencySnapshot struct {
 	Manifests map[string]Manifest `json:"manifests,omitempty"`
 }
 
+// Writer generates JSON for GitHub Dependency Snapshots
 type Writer struct {
 	Output  io.Writer
 	Version string
@@ -74,7 +75,7 @@ func (w Writer) Write(report types.Report) error {
 	snapshot := &DependencySnapshot{}
 
 	//use now() method that can be overwritten while integration tests run
-	snapshot.Scanned = pkgReport.Now().Format(time.RFC3339)
+	snapshot.Scanned = clock.Now().Format(time.RFC3339)
 	snapshot.Detector = Detector{
 		Name:    "trivy",
 		Version: w.Version,

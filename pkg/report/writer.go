@@ -17,10 +17,7 @@ import (
 
 const (
 	SchemaVersion = 2
-)
 
-// Now returns the current time
-var Now = time.Now
 
 type Option struct {
 	Format         string
