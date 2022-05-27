@@ -116,7 +116,7 @@ func (w Writer) Write(report types.Report) error {
 			githubPkg := Package{}
 			githubPkg.Scope = RuntimeScope
 			githubPkg.Relationship = getPkgRelationshipType(pkg)
-			githubPkg.Dependencies = getDependencies(result, pkg)
+			githubPkg.Dependencies = getDependencies(pkg)
 			githubPkg.PackageUrl, err = buildPurl(result.Type, pkg)
 			if err != nil {
 				return xerrors.Errorf("unable to build purl for %s: %w", pkg.Name, err)
@@ -153,13 +153,12 @@ func getMetadata(report types.Report) Metadata {
 	return metadata
 }
 
-func getDependencies(result types.Result, pkg ftypes.Package) []string {
-	for _, dep := range result.Dependencies {
-		if dep.ID == pkg.ID {
-			return dep.DependsOn
-		}
+func getDependencies(pkg ftypes.Package) []string {
+	deps := []string{}
+	for _, dep := range pkg.Dependencies {
+		deps = append(deps, dep.DependsOn...)
 	}
-	return []string{}
+	return deps
 }
 
 func getPkgRelationshipType(pkg ftypes.Package) string {
