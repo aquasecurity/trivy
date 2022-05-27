@@ -103,8 +103,10 @@ func (tw TableWriter) write(result types.Result) {
 	if result.Class == types.ClassConfig {
 		// for misconfigurations
 		summary := result.MisconfSummary
-		fmt.Printf("Tests: %d (SUCCESSES: %d, FAILURES: %d, EXCEPTIONS: %d)\n",
-			summary.Successes+summary.Failures+summary.Exceptions, summary.Successes, summary.Failures, summary.Exceptions)
+		if summary != nil {
+			fmt.Printf("Tests: %d (SUCCESSES: %d, FAILURES: %d, EXCEPTIONS: %d)\n",
+				summary.Successes+summary.Failures+summary.Exceptions, summary.Successes, summary.Failures, summary.Exceptions)
+		}
 		fmt.Printf("Failures: %d (%s)\n\n", total, strings.Join(summaries, ", "))
 	} else {
 		// for vulnerabilities and secrets
