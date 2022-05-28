@@ -198,8 +198,7 @@ func (cw *Writer) parseComponents(r types.Report, bomRef string) (*[]cdx.Compone
 			}
 		}
 
-		if result.Type == ftypes.NodePkg || result.Type == ftypes.PythonPkg || result.Type == ftypes.GoBinary ||
-			result.Type == ftypes.GemSpec || result.Type == ftypes.Jar {
+		if isAggreated(result.Type) {
 			// If a package is language-specific package that isn't associated with a lock file,
 			// it will be a dependency of a component under "metadata".
 			// e.g.
@@ -293,6 +292,10 @@ func (cw *Writer) pkgToComponent(t string, meta types.Metadata, pkg ftypes.Packa
 			cdx.LicenseChoice{Expression: pkg.License},
 		}
 	}
+	if isAggreated(t) {
+		properties := appendProperties(*component.Properties, PropertyType, t)
+		component.Properties = &properties
+	}
 
 	return component, nil
 }
@@ -376,6 +379,10 @@ func (cw Writer) resultToComponent(r types.Result, osFound *ftypes.OS) cdx.Compo
 	}
 
 	return component
+}
+
+func isAggreated(t string) bool {
+	return t == ftypes.NodePkg || t == ftypes.PythonPkg || t == ftypes.GemSpec || t == ftypes.Jar
 }
 
 func parseProperties(pkg ftypes.Package) []cdx.Property {
