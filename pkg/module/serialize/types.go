@@ -4,6 +4,11 @@ import (
 	"github.com/aquasecurity/trivy/pkg/types"
 )
 
+// TinyGo doesn't support encoding/json, but github.com/mailru/easyjson for now.
+// We need to generate JSON-related methods like MarshalEasyJSON implementing easyjson.Marshaler.
+//
+// $ make easyjson
+
 //easyjson:json
 type StringSlice []string
 

@@ -82,3 +82,10 @@ label: $(GOBIN)/labeler
 mkdocs-serve:
 	docker build -t $(MKDOCS_IMAGE) -f docs/build/Dockerfile docs/build
 	docker run --name mkdocs-serve --rm -v $(PWD):/docs -p $(MKDOCS_PORT):8000 $(MKDOCS_IMAGE)
+
+$(GOBIN)/easyjson:
+	go install github.com/mailru/easyjson/...@v0.7.7
+
+.PHONY: easyjson
+easyjson: $(GOBIN)/easyjson
+	easyjson pkg/module/serialize/types.go
