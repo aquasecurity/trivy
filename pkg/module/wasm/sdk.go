@@ -1,5 +1,8 @@
 package wasm
 
+// This package is designed to be imported by WASM modules.
+// TinyGo can build this package, but Go cannot.
+
 import (
 	"fmt"
 	"reflect"
