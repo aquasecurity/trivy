@@ -21,6 +21,7 @@ import (
 
 	"github.com/aquasecurity/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/log"
+	tapi "github.com/aquasecurity/trivy/pkg/module/api"
 	"github.com/aquasecurity/trivy/pkg/module/serialize"
 	"github.com/aquasecurity/trivy/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/utils"
@@ -286,6 +287,18 @@ func newWASMPlugin(ctx context.Context, r wazero.Runtime, code []byte) (*wasmMod
 		return nil, xerrors.Errorf("failed to get a module version: %w", err)
 	}
 
+	// Get a module API version
+	apiVersion, err := moduleAPIVersion(ctx, mod)
+	if err != nil {
+		return nil, xerrors.Errorf("failed to get a module version: %w", err)
+	}
+
+	if apiVersion != tapi.Version {
+		log.Logger.Infof("Ignore %s@v%d module due to API version mismatch, got: %d, want: %d",
+			name, version, apiVersion, tapi.Version)
+		return nil, nil
+	}
+
 	// Get required files
 	requiredFiles, err := moduleRequiredFiles(ctx, mod)
 	if err != nil {
@@ -445,6 +458,22 @@ func moduleVersion(ctx context.Context, mod api.Module) (int, error) {
 		return 0, xerrors.Errorf("wasm function version() invocation error: %w", err)
 	} else if len(versionRes) != 1 {
 		return 0, xerrors.New("invalid signature: version")
+	}
+
+	return int(versionRes[0]), nil
+}
+
+func moduleAPIVersion(ctx context.Context, mod api.Module) (int, error) {
+	versionFunc := mod.ExportedFunction("api_version")
+	if versionFunc == nil {
+		return 0, xerrors.New("api_version() must be exported")
+	}
+
+	versionRes, err := versionFunc.Call(ctx)
+	if err != nil {
+		return 0, xerrors.Errorf("wasm function api_version() invocation error: %w", err)
+	} else if len(versionRes) != 1 {
+		return 0, xerrors.New("invalid signature: api_version")
 	}
 
 	return int(versionRes[0]), nil

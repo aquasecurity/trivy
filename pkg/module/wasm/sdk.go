@@ -7,11 +7,8 @@ import (
 
 	"github.com/mailru/easyjson"
 
+	"github.com/aquasecurity/trivy/pkg/module/api"
 	"github.com/aquasecurity/trivy/pkg/module/serialize"
-)
-
-const (
-	apiVersion = 1
 )
 
 func Debug(message string) {
@@ -54,17 +51,9 @@ func _warn(ptr uint32, size uint32)
 //export error
 func _error(ptr uint32, size uint32)
 
-type Module interface {
-	Version() int
-	Name() string
-	RequiredFiles() []string
-	Analyze(filePath string) (*serialize.AnalysisResult, error)
-	PostScan(serialize.Results) serialize.Results
-}
+var module api.Module
 
-var module Module
-
-func RegisterPlugin(p Module) {
+func RegisterPlugin(p api.Module) {
 	module = p
 }
 
@@ -77,7 +66,7 @@ func _name() uint64 {
 
 //export api_version
 func _apiVersion() uint32 {
-	return apiVersion
+	return api.Version
 }
 
 //export version
