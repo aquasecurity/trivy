@@ -35,12 +35,14 @@ func TestSecretAnalyzer(t *testing.T) {
 		name       string
 		configPath string
 		filePath   string
+		dir        string
 		want       *analyzer.AnalysisResult
 	}{
 		{
 			name:       "return results",
 			configPath: "testdata/config.yaml",
 			filePath:   "testdata/secret.txt",
+			dir:        ".",
 			want: &analyzer.AnalysisResult{
 				Secrets: []types.Secret{{
 					FilePath: "testdata/secret.txt",
@@ -48,6 +50,24 @@ func TestSecretAnalyzer(t *testing.T) {
 				},
 				},
 			},
+		},
+		{
+			name:       "image scan return result",
+			configPath: "testdata/image-config.yaml",
+			filePath:   "testdata/secret.txt",
+			want: &analyzer.AnalysisResult{
+				Secrets: []types.Secret{{
+					FilePath: "/testdata/secret.txt",
+					Findings: []types.SecretFinding{wantFinding1, wantFinding2},
+				},
+				},
+			},
+		},
+		{
+			name:       "image scan return nil",
+			configPath: "testdata/image-config.yaml",
+			filePath:   "testdata/secret.doc",
+			want:       nil,
 		},
 		{
 			name:       "return nil when no results",
@@ -74,6 +94,7 @@ func TestSecretAnalyzer(t *testing.T) {
 
 			got, err := a.Analyze(context.TODO(), analyzer.AnalysisInput{
 				FilePath: tt.filePath,
+				Dir:      tt.dir,
 				Content:  content,
 				Info:     fi,
 			})
