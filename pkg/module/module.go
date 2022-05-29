@@ -26,12 +26,16 @@ import (
 	"github.com/aquasecurity/trivy/pkg/utils"
 )
 
-var exportFunctions = map[string]interface{}{
-	"debug": logDebug,
-	"info":  logInfo,
-	"warn":  logWarn,
-	"error": logError,
-}
+var (
+	exportFunctions = map[string]interface{}{
+		"debug": logDebug,
+		"info":  logInfo,
+		"warn":  logWarn,
+		"error": logError,
+	}
+
+	moduleRelativeDir = filepath.Join(".trivy", "modules")
+)
 
 func logDebug(ctx context.Context, m api.Module, offset, size uint32) {
 	buf := readMemory(ctx, m, offset, size)
@@ -103,11 +107,11 @@ func NewManager(ctx context.Context) (*Manager, error) {
 }
 
 func (m *Manager) loadModules(ctx context.Context) error {
-	cacheDir := utils.CacheDir()
-	moduleDir := filepath.Join(cacheDir, "modules")
+	moduleDir := dir()
 	if err := os.MkdirAll(moduleDir, 0755); err != nil {
 		return xerrors.Errorf("mkdir error: %w", err)
 	}
+	log.Logger.Debugf("Module dir: %s", moduleDir)
 
 	entries, err := os.ReadDir(moduleDir)
 	if err != nil {
@@ -115,13 +119,14 @@ func (m *Manager) loadModules(ctx context.Context) error {
 	}
 
 	for _, entry := range entries {
-		if !entry.Type().IsRegular() {
+		if !entry.Type().IsRegular() || filepath.Ext(entry.Name()) != ".wasm" {
 			continue
 		}
 
-		filePath := entry.Name()
+		fileName := entry.Name()
+		filePath := filepath.Join(moduleDir, fileName)
 
-		log.Logger.Info("Loading WASM module %s...", filePath)
+		log.Logger.Infof("Loading %s...", fileName)
 		wasmCode, err := os.ReadFile(filePath)
 		if err != nil {
 			return xerrors.Errorf("file read error: %w", err)
@@ -129,7 +134,7 @@ func (m *Manager) loadModules(ctx context.Context) error {
 
 		p, err := newWASMPlugin(ctx, m.runtime, wasmCode)
 		if err != nil {
-			return xerrors.Errorf("WASM module init error %s: %w", filePath, err)
+			return xerrors.Errorf("WASM module init error %s: %w", fileName, err)
 		}
 
 		m.modules = append(m.modules, p)
@@ -473,4 +478,8 @@ func moduleRequiredFiles(ctx context.Context, mod api.Module) ([]*regexp.Regexp,
 	}
 
 	return requiredFiles, nil
+}
+
+func dir() string {
+	return filepath.Join(utils.HomeDir(), moduleRelativeDir)
 }
