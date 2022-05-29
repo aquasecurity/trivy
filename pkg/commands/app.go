@@ -806,13 +806,17 @@ func NewPluginCommand() *cli.Command {
 func NewK8sCommand() *cli.Command {
 	k8sSecurityChecksFlag := withValue(
 		securityChecksFlag,
-		fmt.Sprintf("%s,%s", types.SecurityCheckVulnerability, types.SecurityCheckConfig),
+		fmt.Sprintf(
+			"%s,%s,%s",
+			types.SecurityCheckVulnerability,
+			types.SecurityCheckConfig,
+			types.SecurityCheckSecret),
 	)
 
 	return &cli.Command{
 		Name:    "kubernetes",
 		Aliases: []string{"k8s"},
-		Usage:   "scan kubernetes vulnerabilities and misconfigurations",
+		Usage:   "scan kubernetes vulnerabilities, secrets and misconfigurations",
 		CustomHelpTemplate: cli.CommandHelpTemplate + `EXAMPLES:
   - cluster scanning:
       $ trivy k8s --report summary
