@@ -19,6 +19,7 @@ import (
 	tcache "github.com/aquasecurity/trivy/pkg/cache"
 	"github.com/aquasecurity/trivy/pkg/commands/operation"
 	"github.com/aquasecurity/trivy/pkg/log"
+	"github.com/aquasecurity/trivy/pkg/module"
 	pkgReport "github.com/aquasecurity/trivy/pkg/report"
 	"github.com/aquasecurity/trivy/pkg/rpc/client"
 	"github.com/aquasecurity/trivy/pkg/scanner"
@@ -66,6 +67,9 @@ type ScannerConfig struct {
 type Runner struct {
 	cache  cache.Cache
 	dbOpen bool
+
+	// WASM modules
+	module *module.Manager
 }
 
 type runnerOption func(*Runner)
@@ -98,11 +102,19 @@ func NewRunner(cliOption Option, opts ...runnerOption) (*Runner, error) {
 		return nil, xerrors.Errorf("DB error: %w", err)
 	}
 
+	// Initialize WASM modules
+	m, err := module.NewManager(cliOption.Context.Context)
+	if err != nil {
+		return nil, xerrors.Errorf("WASM module error: %w", err)
+	}
+	m.Register()
+	r.module = m
+
 	return r, nil
 }
 
 // Close closes everything
-func (r *Runner) Close() error {
+func (r *Runner) Close(ctx context.Context) error {
 	var errs error
 	if err := r.cache.Close(); err != nil {
 		errs = multierror.Append(errs, err)
@@ -112,6 +124,10 @@ func (r *Runner) Close() error {
 		if err := db.Close(); err != nil {
 			errs = multierror.Append(errs, err)
 		}
+	}
+
+	if err := r.module.Close(ctx); err != nil {
+		errs = multierror.Append(errs, err)
 	}
 	return errs
 }
@@ -188,11 +204,22 @@ func (r *Runner) Scan(ctx context.Context, opt Option, initializeScanner Initial
 func (r *Runner) Filter(ctx context.Context, opt Option, report types.Report) (types.Report, error) {
 	resultClient := initializeResultClient()
 	results := report.Results
+
+	// Fill vulnerability details
 	for i := range results {
 		// Fill vulnerability info only in standalone mode
 		if opt.RemoteAddr == "" {
 			resultClient.FillVulnerabilityInfo(results[i].Vulnerabilities, results[i].Type)
 		}
+	}
+
+	// Call WASM functions for processing results
+	if err := r.module.PostScan(ctx, &report); err != nil {
+		return types.Report{}, xerrors.Errorf("WASM modules post scan error: %w", err)
+	}
+
+	// Filter results
+	for i := range results {
 		vulns, misconfSummary, misconfs, secrets, err := resultClient.Filter(ctx, results[i].Vulnerabilities, results[i].Misconfigurations, results[i].Secrets,
 			opt.Severities, opt.IgnoreUnfixed, opt.IncludeNonFailures, opt.IgnoreFile, opt.IgnorePolicy)
 		if err != nil {
@@ -313,7 +340,7 @@ func run(ctx context.Context, opt Option, artifactType ArtifactType) (err error)
 		}
 		return xerrors.Errorf("init error: %w", err)
 	}
-	defer runner.Close()
+	defer runner.Close(ctx)
 
 	var report types.Report
 	switch artifactType {

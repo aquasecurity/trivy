@@ -114,6 +114,14 @@ func (s Scanner) Scan(target string, artifactKey string, blobKeys []string, opti
 		results = append(results, secretResults...)
 	}
 
+	// For WASM plugins and custom analyzers
+	if len(artifactDetail.CustomResources) != 0 {
+		results = append(results, types.Result{
+			Class:           types.ClassCustom,
+			CustomResources: artifactDetail.CustomResources,
+		})
+	}
+
 	return results, artifactDetail.OS, nil
 }
 
