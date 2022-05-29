@@ -182,8 +182,8 @@ github.com/aquasecurity/bolt-fixtures v0.0.0-20200903104109-d34e7f983986 h1:2a30
 github.com/aquasecurity/bolt-fixtures v0.0.0-20200903104109-d34e7f983986/go.mod h1:NT+jyeCzXk6vXR5MTkdn4z64TgGfE5HMLC8qfj5unl8=
 github.com/aquasecurity/defsec v0.58.2 h1:cT9c9Ybxmg2uiscBukfuUOi2llIsGm9sGhHZlF8OWSc=
 github.com/aquasecurity/defsec v0.58.2/go.mod h1:42FxKif2itz+MHFlJ3TJjdroL9Jzj3THoexlueBTU5w=
-github.com/aquasecurity/fanal v0.0.0-20220519114754-f9a9d959763a h1:+CP8v+mryAfCB++HaC/utmyO7DoikF4FnItu64UJ9NI=
-github.com/aquasecurity/fanal v0.0.0-20220519114754-f9a9d959763a/go.mod h1:YBL0ONEaoaYpL21Lr7aEK2sJPP/nxduHTqve4yTzhv0=
+github.com/aquasecurity/fanal v0.0.0-20220529172046-20bc5eb926ed h1:7U6oLBYg3tf7XAk/mlVzDhgOnQNIWqEiDmbkntQ/gAM=
+github.com/aquasecurity/fanal v0.0.0-20220529172046-20bc5eb926ed/go.mod h1:KTIGmbRJQWzY0vq9XDy925urdizzS4xHHF17PChpxi0=
 github.com/aquasecurity/go-dep-parser v0.0.0-20220503151658-d316f5cc2cff h1:YNlzRYB0n4mZtfuWx6AWaGEjnLVNekchyoFDlYFZegs=
 github.com/aquasecurity/go-dep-parser v0.0.0-20220503151658-d316f5cc2cff/go.mod h1:7EOQWQmyavVPY3fScbbPdd3dB/b0Q4ZbJ/NZCvNKrLs=
 github.com/aquasecurity/go-gem-version v0.0.0-20201115065557-8eed6fe000ce h1:QgBRgJvtEOBtUXilDb1MLi1p1MWoyFDXAu5DEUl5nwM=
@@ -198,8 +198,8 @@ github.com/aquasecurity/go-version v0.0.0-20210121072130-637058cfe492/go.mod h1:
 github.com/aquasecurity/table v1.5.1 h1:y05AuHM3p4BGybbGn/XbcTX3RxpyzeTXAXYMcJve4IE=
 github.com/aquasecurity/table v1.5.1/go.mod h1:1MFKrEPJ8NchM917BrVGvsqoXJo1OL1Ja7dF3PgUea4=
 github.com/aquasecurity/testdocker v0.0.0-20210911155206-e1e85f5a1516 h1:moQmzbpLo5dxHQCyEhqzizsDSNrNhn/7uRTCZzo4A1o=
-github.com/aquasecurity/trivy-db v0.0.0-20220510190819-8ca06716f46e h1:NLm5KWGcnkwaUR1GODPePyhNsbuFiT6lgKYcCcW9c10=
-github.com/aquasecurity/trivy-db v0.0.0-20220510190819-8ca06716f46e/go.mod h1:/nULgnDeq/JMPMVwE1dmf4kWlYn++7VrM3O2naj4BHA=
+github.com/aquasecurity/trivy-db v0.0.0-20220521101419-4ae4eb1b87dd h1:Rl2QGX4lCXXp+WjXVl4yQaWF9NEc07YiNy5YV84Dkng=
+github.com/aquasecurity/trivy-db v0.0.0-20220521101419-4ae4eb1b87dd/go.mod h1:/nULgnDeq/JMPMVwE1dmf4kWlYn++7VrM3O2naj4BHA=
 github.com/aquasecurity/trivy-kubernetes v0.2.2 h1:j7jdALJ+NuuRm/q2s60eH1FfvFfvheEtPgfmSArU7Ww=
 github.com/aquasecurity/trivy-kubernetes v0.2.2/go.mod h1:+AIWIhAXnx3YBDQPrtVNfw5C2DHQ0raehMz5Uhwt/yc=
 github.com/armon/circbuf v0.0.0-20150827004946-bbbad097214e/go.mod h1:3U/XgcO3hCbHZ8TKRvWD2dDTCfh9M9ya+I9JpbB7O8o=
@@ -457,8 +457,6 @@ github.com/docker/cli v20.10.13+incompatible/go.mod h1:JLrzqnKDaYBop7H2jaqPtU4hH
 github.com/docker/distribution v0.0.0-20190905152932-14b96e55d84c/go.mod h1:0+TTO4EOBfRPhZXAeF1Vu+W3hHZ8eLp8PgKVZlcvtFY=
 github.com/docker/distribution v2.7.1-0.20190205005809-0d3efadf0154+incompatible/go.mod h1:J2gT2udsDAN96Uj4KfcMRqY0/ypR+oyYUYmja8H+y+w=
 github.com/docker/distribution v2.7.1+incompatible/go.mod h1:J2gT2udsDAN96Uj4KfcMRqY0/ypR+oyYUYmja8H+y+w=
-github.com/docker/distribution v2.8.0+incompatible h1:l9EaZDICImO1ngI+uTifW+ZYvvz7fKISBAKpg+MbWbY=
-github.com/docker/distribution v2.8.0+incompatible/go.mod h1:J2gT2udsDAN96Uj4KfcMRqY0/ypR+oyYUYmja8H+y+w=
 github.com/docker/distribution v2.8.1+incompatible h1:Q50tZOPR6T/hjNsyc9g8/syEs6bk8XXApsHjKukMl68=
 github.com/docker/distribution v2.8.1+incompatible/go.mod h1:J2gT2udsDAN96Uj4KfcMRqY0/ypR+oyYUYmja8H+y+w=
 github.com/docker/docker v20.10.3-0.20220224222438-c78f6963a1c0+incompatible h1:Ptj2To+ezU/mCBUKdYXBQ2r3/2EJojAlOZrsgprF+is=
@@ -1244,6 +1242,8 @@ github.com/syndtr/gocapability v0.0.0-20200815063812-42c35b437635/go.mod h1:hkRG
 github.com/tchap/go-patricia v2.2.6+incompatible/go.mod h1:bmLyhP68RS6kStMGxByiQ23RP/odRBOTVjwp2cDyi6I=
 github.com/testcontainers/testcontainers-go v0.12.0 h1:SK0NryGHIx7aifF6YqReORL18aGAA4bsDPtikDVCEyg=
 github.com/testcontainers/testcontainers-go v0.12.0/go.mod h1:SIndOQXZng0IW8iWU1Js0ynrfZ8xcxrTtDfF6rD2pxs=
+github.com/tetratelabs/wazero v0.0.0-20220529032218-029a79476b4f h1:bN4C2nSpz/ND03EbZoV+3xR8Ivc5rV6FBpoErU2uU14=
+github.com/tetratelabs/wazero v0.0.0-20220529032218-029a79476b4f/go.mod h1:Y4X/zO4sC2dJjZG9GDYNRbJGogfqFYJY/BbyKlOxXGI=
 github.com/thoas/go-funk v0.9.1 h1:O549iLZqPpTUQ10ykd26sZhzD+rmR5pWhuElrhbC20M=
 github.com/tmc/grpc-websocket-proxy v0.0.0-20170815181823-89b8d40f7ca8/go.mod h1:ncp9v5uamzpCO7NfCPTXjqaC+bZgJeR0sMTm6dMHP7U=
 github.com/tmc/grpc-websocket-proxy v0.0.0-20190109142713-0ad062ec5ee5/go.mod h1:ncp9v5uamzpCO7NfCPTXjqaC+bZgJeR0sMTm6dMHP7U=
@@ -1261,8 +1261,8 @@ github.com/urfave/cli v1.22.1/go.mod h1:Gos4lmkARVdJ6EkW0WaNv/tZAAMe9V7XWyB60NtX
 github.com/urfave/cli v1.22.2/go.mod h1:Gos4lmkARVdJ6EkW0WaNv/tZAAMe9V7XWyB60NtXRu0=
 github.com/urfave/cli v1.22.4/go.mod h1:Gos4lmkARVdJ6EkW0WaNv/tZAAMe9V7XWyB60NtXRu0=
 github.com/urfave/cli/v2 v2.3.0/go.mod h1:LJmUH05zAU44vOAcrfzZQKsZbVcdbOG8rtL3/XcUArI=
-github.com/urfave/cli/v2 v2.5.1 h1:YKwdkyA0xTBzOaP2G0DVxBnCheHGP+Y9VbKAs4K1Ess=
-github.com/urfave/cli/v2 v2.5.1/go.mod h1:oDzoM7pVwz6wHn5ogWgFUU1s4VJayeQS+aEZDqXIEJs=
+github.com/urfave/cli/v2 v2.6.0 h1:yj2Drkflh8X/zUrkWlWlUjZYHyWN7WMmpVxyxXIUyv8=
+github.com/urfave/cli/v2 v2.6.0/go.mod h1:oDzoM7pVwz6wHn5ogWgFUU1s4VJayeQS+aEZDqXIEJs=
 github.com/vbatts/tar-split v0.11.2 h1:Via6XqJr0hceW4wff3QRzD5gAk/tatMw/4ZA7cTlIME=
 github.com/vbatts/tar-split v0.11.2/go.mod h1:vV3ZuO2yWSVsz+pfFzDG/upWH1JhjOiEaWq6kXyQ3VI=
 github.com/vishvananda/netlink v0.0.0-20181108222139-023a6dafdcdf/go.mod h1:+SR5DhBJrl6ZM7CoCKvpw5BKroDKQ+PJqOg65H/2ktk=
