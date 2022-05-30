@@ -155,7 +155,6 @@ func (b TrivyBOM) Package(component cdx.Component) (*ftypes.Package, error) {
 	if err != nil {
 		return nil, xerrors.Errorf("failed to parse purl: %w", err)
 	}
-	pkg.Name = component.Name
 
 	if component.Licenses != nil {
 		for _, license := range *component.Licenses {

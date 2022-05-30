@@ -14,7 +14,6 @@ import (
 	"github.com/aquasecurity/fanal/analyzer"
 	"github.com/aquasecurity/fanal/applier"
 	ftypes "github.com/aquasecurity/fanal/types"
-	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/detector/library"
 	ospkgDetector "github.com/aquasecurity/trivy/pkg/detector/ospkg"
 	"github.com/aquasecurity/trivy/pkg/log"
@@ -100,18 +99,6 @@ func (s Scanner) Scan(target string, artifactKey string, blobKeys []string, opti
 			artifactDetail.OS.Eosl = eosl
 		}
 		results = append(results, vulnResults...)
-	}
-
-	// Scan IaC config files
-	if slices.Contains(options.SecurityChecks, types.SecurityCheckConfig) {
-		configResults := s.misconfsToResults(artifactDetail.Misconfigurations)
-		results = append(results, configResults...)
-	}
-
-	// Scan secrets
-	if slices.Contains(options.SecurityChecks, types.SecurityCheckSecret) {
-		secretResults := s.secretsToResults(artifactDetail.Secrets)
-		results = append(results, secretResults...)
 	}
 
 	return results, artifactDetail.OS, nil
@@ -240,107 +227,6 @@ func (s Scanner) scanLibrary(apps []ftypes.Application, options types.ScanOption
 		return results[i].Target < results[j].Target
 	})
 	return results, nil
-}
-
-func (s Scanner) misconfsToResults(misconfs []ftypes.Misconfiguration) types.Results {
-	log.Logger.Infof("Detected config files: %d", len(misconfs))
-	var results types.Results
-	for _, misconf := range misconfs {
-		log.Logger.Debugf("Scanned config file: %s", misconf.FilePath)
-
-		var detected []types.DetectedMisconfiguration
-
-		for _, f := range misconf.Failures {
-			detected = append(detected, toDetectedMisconfiguration(f, dbTypes.SeverityCritical, types.StatusFailure, misconf.Layer))
-		}
-		for _, w := range misconf.Warnings {
-			detected = append(detected, toDetectedMisconfiguration(w, dbTypes.SeverityMedium, types.StatusFailure, misconf.Layer))
-		}
-		for _, w := range misconf.Successes {
-			detected = append(detected, toDetectedMisconfiguration(w, dbTypes.SeverityUnknown, types.StatusPassed, misconf.Layer))
-		}
-		for _, w := range misconf.Exceptions {
-			detected = append(detected, toDetectedMisconfiguration(w, dbTypes.SeverityUnknown, types.StatusException, misconf.Layer))
-		}
-
-		results = append(results, types.Result{
-			Target:            misconf.FilePath,
-			Class:             types.ClassConfig,
-			Type:              misconf.FileType,
-			Misconfigurations: detected,
-		})
-	}
-
-	sort.Slice(results, func(i, j int) bool {
-		return results[i].Target < results[j].Target
-	})
-
-	return results
-}
-
-func (s Scanner) secretsToResults(secrets []ftypes.Secret) types.Results {
-	var results types.Results
-	for _, secret := range secrets {
-		log.Logger.Debugf("Secret file: %s", secret.FilePath)
-
-		results = append(results, types.Result{
-			Target:  secret.FilePath,
-			Class:   types.ClassSecret,
-			Secrets: secret.Findings,
-		})
-	}
-	return results
-}
-
-func toDetectedMisconfiguration(res ftypes.MisconfResult, defaultSeverity dbTypes.Severity,
-	status types.MisconfStatus, layer ftypes.Layer) types.DetectedMisconfiguration {
-
-	severity := defaultSeverity
-	sev, err := dbTypes.NewSeverity(res.Severity)
-	if err != nil {
-		log.Logger.Warnf("severity must be %s, but %s", dbTypes.SeverityNames, res.Severity)
-	} else {
-		severity = sev
-	}
-
-	msg := strings.TrimSpace(res.Message)
-	if msg == "" {
-		msg = "No issues found"
-	}
-
-	var primaryURL string
-
-	// empty namespace implies a go rule from defsec, "builtin" refers to a built-in rego rule
-	// this ensures we don't generate bad links for custom policies
-	if res.Namespace == "" || strings.HasPrefix(res.Namespace, "builtin.") {
-		primaryURL = fmt.Sprintf("https://avd.aquasec.com/misconfig/%s", strings.ToLower(res.ID))
-		res.References = append(res.References, primaryURL)
-	}
-
-	return types.DetectedMisconfiguration{
-		ID:          res.ID,
-		Type:        res.Type,
-		Title:       res.Title,
-		Description: res.Description,
-		Message:     msg,
-		Resolution:  res.RecommendedActions,
-		Namespace:   res.Namespace,
-		Query:       res.Query,
-		Severity:    severity.String(),
-		PrimaryURL:  primaryURL,
-		References:  res.References,
-		Status:      status,
-		Layer:       layer,
-		Traces:      res.Traces,
-		CauseMetadata: ftypes.CauseMetadata{
-			Resource:  res.Resource,
-			Provider:  res.Provider,
-			Service:   res.Service,
-			StartLine: res.StartLine,
-			EndLine:   res.EndLine,
-			Code:      res.Code,
-		},
-	}
 }
 
 func mergePkgs(pkgs, pkgsFromCommands []ftypes.Package) []ftypes.Package {

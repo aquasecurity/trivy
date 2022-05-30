@@ -5,15 +5,14 @@ import (
 	"strconv"
 	"strings"
 
-	cn "github.com/google/go-containerregistry/pkg/name"
-	"github.com/package-url/packageurl-go"
-	"golang.org/x/xerrors"
-
 	"github.com/aquasecurity/fanal/analyzer"
 	"github.com/aquasecurity/fanal/analyzer/os"
 	ftypes "github.com/aquasecurity/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/scanner/utils"
 	"github.com/aquasecurity/trivy/pkg/types"
+	cn "github.com/google/go-containerregistry/pkg/name"
+	"github.com/package-url/packageurl-go"
+	"golang.org/x/xerrors"
 )
 
 const (
@@ -40,6 +39,7 @@ func FromString(purl string) (*ftypes.Package, error) {
 
 func Package(purl packageurl.PackageURL) (*ftypes.Package, error) {
 	pkg := &ftypes.Package{
+		Name:    purl.Name,
 		Version: purl.Version,
 	}
 	for _, q := range purl.Qualifiers {
@@ -74,8 +74,10 @@ func Package(purl packageurl.PackageURL) (*ftypes.Package, error) {
 
 	if purl.Type == packageurl.TypeMaven {
 		purl.Namespace = strings.ReplaceAll(purl.Namespace, "/", ":")
+		pkg.Name = strings.Join([]string{purl.Namespace, purl.Name}, ":")
+	} else {
+		pkg.Name = strings.Join([]string{purl.Namespace, purl.Name}, "/")
 	}
-	pkg.Name = strings.Join([]string{purl.Namespace, purl.Name}, "/")
 
 	return pkg, nil
 }

@@ -277,3 +277,56 @@ func TestNewPackageURL(t *testing.T) {
 		})
 	}
 }
+
+func TestFromString(t *testing.T) {
+
+	testCases := []struct {
+		name    string
+		purl    string
+		want    ftypes.Package
+		wantErr string
+	}{
+		{
+			name: "happy path for maven",
+			purl: "pkg:maven/org.springframework/spring-core@5.0.4.RELEASE",
+			want: ftypes.Package{
+				Name:    "org.springframework:spring-core",
+				Version: "5.0.4.RELEASE",
+			},
+		},
+		{
+			name: "happy path for npm",
+			purl: "pkg:npm/bootstrap@5.0.2?file_path=app%2Fapp%2Fpackage.json",
+			want: ftypes.Package{
+				Name:    "bootstrap",
+				Version: "5.0.2",
+			},
+		},
+		{
+			name: "happy path for apk",
+			purl: "pkg:apk/alpine/alpine-baselayout@3.2.0-r16?distro=3.14.2",
+			want: ftypes.Package{
+				Name:    "alpine-baselayout",
+				Version: "3.2.0-r16",
+			},
+		},
+		{
+			name:    "sad path bad rpm",
+			purl:    "pkg:rpm/redhat/a--@1.0.0",
+			wantErr: "failed to parse",
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			pkg, err := purl.FromString(tc.purl)
+			if tc.wantErr != "" {
+				require.Error(t, err)
+				assert.Contains(t, err.Error(), tc.wantErr)
+				return
+			}
+			assert.NoError(t, err)
+			assert.Equal(t, tc.want, *pkg, tc.name)
+		})
+	}
+}
