@@ -58,9 +58,9 @@ $ trivy image python:3.4-alpine
 <details>
 <summary>Result</summary>
 
-https://github.com/aquasecurity/trivy/blob/1e192ce8a4febe5afed38f6086088784d2b36f84/docs/imgs/trivy-image.mov
+https://github.com/aquasecurity/trivy/blob/987700dddb0cf0c653ec84f3d8ad3162716e07db/docs/imgs/trivy-image.mov
 
-https://github.com/aquasecurity/trivy/blob/1e192ce8a4febe5afed38f6086088784d2b36f84/docs/imgs/trivy-image.mov?raw=true
+https://github.com/aquasecurity/trivy/blob/987700dddb0cf0c653ec84f3d8ad3162716e07db/docs/imgs/trivy-image.mov?raw=true
 
 ![](docs/imgs/trivy-image.mov)
 
