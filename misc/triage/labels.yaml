@@ -97,8 +97,22 @@ labels:
 - name: scan/secret
   color: d9ead3
   description: Issues relating to secret scanning
-- name: scan/kubernetes
+- name: scan/sbom
   color: d9ead3
+  description: Issues relating to SBOM
+
+# target
+- name: target/container-image
+  color: 0ebdb0
+  description: Issues relating to container image scanning
+- name: target/filesystem
+  color: 0ebdb0
+  description: Issues relating to filesystem scanning
+- name: target/repository
+  color: 0ebdb0
+  description: Issues relating to VCS repository scanning
+- name: target/kubernetes
+  color: 0ebdb0
   description: Issues relating to kubernetes cluster scanning
 
 # others
