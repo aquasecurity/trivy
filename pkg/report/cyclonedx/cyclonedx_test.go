@@ -642,6 +642,10 @@ func TestWriter_Write(t *testing.T) {
 								Name:  "aquasecurity:trivy:LayerDiffID",
 								Value: "sha256:ccb64cf0b7ba2e50741d0b64cae324eb5de3b1e2f580bbf177e721b67df38488",
 							},
+							{
+								Name:  "aquasecurity:trivy:Type",
+								Value: "gemspec",
+							},
 						},
 					},
 					{
@@ -658,6 +662,10 @@ func TestWriter_Write(t *testing.T) {
 							{
 								Name:  "aquasecurity:trivy:LayerDiffID",
 								Value: "sha256:ccb64cf0b7ba2e50741d0b64cae324eb5de3b1e2f580bbf177e721b67df38488",
+							},
+							{
+								Name:  "aquasecurity:trivy:Type",
+								Value: "gemspec",
 							},
 						},
 					},
@@ -923,6 +931,10 @@ func TestWriter_Write(t *testing.T) {
 							{
 								Name:  "aquasecurity:trivy:LayerDiffID",
 								Value: "sha256:661c3fd3cc16b34c070f3620ca6b03b6adac150f9a7e5d0e3c707a159990f88e",
+							},
+							{
+								Name:  "aquasecurity:trivy:Type",
+								Value: "node-pkg",
 							},
 						},
 					},
