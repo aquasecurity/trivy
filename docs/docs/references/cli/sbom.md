@@ -21,7 +21,7 @@ OPTIONS:
    --insecure                           allow insecure server connections when using SSL (default: false) [$TRIVY_INSECURE]
    --skip-files value                   specify the file paths to skip traversal                (accepts multiple inputs) [$TRIVY_SKIP_FILES]
    --skip-dirs value                    specify the directories where the traversal is skipped  (accepts multiple inputs) [$TRIVY_SKIP_DIRS]
-   --artifact-type value, --type value  input artifact type (image, fs, repo, archive) (default: "image") [$TRIVY_ARTIFACT_TYPE]
+   --artifact-type value, --type value  input artifact type (image, fs, repo, archive, cyclonedx) (default: "image") [$TRIVY_ARTIFACT_TYPE]
    --sbom-format value, --format value  SBOM format (cyclonedx, spdx, spdx-json) (default: "cyclonedx") [$TRIVY_SBOM_FORMAT]
    --help, -h                           show help (default: false)
 ```

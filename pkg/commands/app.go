@@ -905,7 +905,7 @@ func NewSbomCommand() *cli.Command {
 				Name:    "artifact-type",
 				Aliases: []string{"type"},
 				Value:   "image",
-				Usage:   "input artifact type (image, fs, repo, archive)",
+				Usage:   "input artifact type (image, fs, repo, archive, cyclonedx)",
 				EnvVars: []string{"TRIVY_ARTIFACT_TYPE"},
 			},
 			&cli.StringFlag{
