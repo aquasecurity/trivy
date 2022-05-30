@@ -14,7 +14,6 @@ import (
 	"github.com/aquasecurity/fanal/analyzer"
 	"github.com/aquasecurity/fanal/applier"
 	ftypes "github.com/aquasecurity/fanal/types"
-	godeptypes "github.com/aquasecurity/go-dep-parser/pkg/types"
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/detector/library"
 	ospkgDetector "github.com/aquasecurity/trivy/pkg/detector/ospkg"
@@ -235,8 +234,14 @@ func (s Scanner) scanLibrary(apps []ftypes.Application, options types.ScanOption
 		if options.ListAllPackages {
 			libReport.Packages = app.Libraries
 
+			idx := make(map[string][]string)
+
+			for _, dep := range app.Dependencies {
+				idx[dep.ID] = dep.DependsOn
+			}
+
 			for _, pkg := range libReport.Packages {
-				pkg.Dependencies = filterPkgDeps(pkg, app.Dependencies)
+				pkg.DependsOn = idx[pkg.ID]
 			}
 		}
 		results = append(results, libReport)
@@ -245,30 +250,6 @@ func (s Scanner) scanLibrary(apps []ftypes.Application, options types.ScanOption
 		return results[i].Target < results[j].Target
 	})
 	return results, nil
-}
-
-func filterPkgDeps(pkg ftypes.Package, deps []godeptypes.Dependency) []godeptypes.Dependency {
-	idx := make(map[string]godeptypes.Dependency)
-	var root godeptypes.Dependency
-
-	for _, dep := range deps {
-		idx[dep.ID] = dep
-		if dep.ID == pkg.ID {
-			root = dep
-		}
-	}
-	return getChildrenDeps(root, idx)
-}
-func getChildrenDeps(parent godeptypes.Dependency, idx map[string]godeptypes.Dependency) []godeptypes.Dependency {
-	res := make([]godeptypes.Dependency, 0)
-	for _, id := range parent.DependsOn {
-		child, found := idx[id]
-		if found {
-			res = append(res, child)
-			res = append(res, getChildrenDeps(child, idx)...)
-		}
-	}
-	return res
 }
 
 func (s Scanner) misconfsToResults(misconfs []ftypes.Misconfiguration) types.Results {
