@@ -33,7 +33,7 @@ require (
 	github.com/saracen/walker v0.0.0-20191201085201-324a081bae7e
 	github.com/sosedoff/gitkit v0.3.0
 	github.com/stretchr/testify v1.7.1
-	github.com/testcontainers/testcontainers-go v0.12.0
+	github.com/testcontainers/testcontainers-go v0.13.0
 	github.com/urfave/cli/v2 v2.6.0
 	go.etcd.io/bbolt v1.3.6
 	go.uber.org/zap v1.21.0
@@ -74,7 +74,7 @@ require (
 	github.com/apparentlymart/go-textseg/v13 v13.0.0 // indirect
 	github.com/bgentry/go-netrc v0.0.0-20140422174119-9fd32a8b3d3d // indirect
 	github.com/bmatcuk/doublestar v1.3.4 // indirect
-	github.com/cenkalti/backoff v2.2.1+incompatible // indirect
+	github.com/cenkalti/backoff/v4 v4.1.2 // indirect
 	github.com/cespare/xxhash/v2 v2.1.2 // indirect
 	github.com/containerd/containerd v1.6.3-0.20220401172941-5ff8fce1fcc6 // indirect
 	github.com/containerd/stargz-snapshotter/estargz v0.11.3 // indirect

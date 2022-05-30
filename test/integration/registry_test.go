@@ -54,10 +54,10 @@ func TestTLSRegistry(t *testing.T) {
 			"REGISTRY_AUTH_HTPASSWD_PATH":   "/auth/htpasswd",
 			"REGISTRY_AUTH_HTPASSWD_REALM":  "Registry Realm",
 		},
-		BindMounts: map[string]string{
-			"/certs": filepath.Join(baseDir, "data", "registry", "certs"),
-			"/auth":  filepath.Join(baseDir, "data", "registry", "auth"),
-		},
+		Mounts: testcontainers.Mounts(
+			testcontainers.BindMount(filepath.Join(baseDir, "data", "registry", "certs"), "/certs"),
+			testcontainers.BindMount(filepath.Join(baseDir, "data", "registry", "auth"), "/auth"),
+		),
 		WaitingFor: wait.ForLog("listening on [::]:5443"),
 	}
 
