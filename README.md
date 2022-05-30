@@ -58,7 +58,7 @@ $ trivy image python:3.4-alpine
 <details>
 <summary>Result</summary>
 
-![trivy image demo](docs/imgs/trivy-image.mov)
+/docs/imgs/trivy-image.mov
 
 </details>
 
@@ -69,7 +69,7 @@ $ trivy fs --security-checks vuln,secret,config myproject/
 <details>
 <summary>Result</summary>
 
-![trivy fs demo](docs/imgs/trivy-fs.mov)
+/docs/imgs/trivy-fs.mov
 
 </details>
 
