@@ -4,10 +4,11 @@ import (
 	"context"
 	"crypto/sha256"
 	"encoding/json"
-	"github.com/opencontainers/go-digest"
-	"golang.org/x/xerrors"
 	"os"
 	"path/filepath"
+
+	"github.com/opencontainers/go-digest"
+	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/fanal/analyzer"
 	"github.com/aquasecurity/fanal/analyzer/config"
@@ -43,7 +44,6 @@ func NewArtifact(filePath string, c cache.ArtifactCache, opt artifact.Option) (a
 func (a Artifact) Inspect(_ context.Context) (types.ArtifactReference, error) {
 	var err error
 	bom := cyclonedx.TrivyBOM{}
-
 	extension := filepath.Ext(a.filePath)
 	switch extension {
 	case ".json":
@@ -65,9 +65,10 @@ func (a Artifact) Inspect(_ context.Context) (types.ArtifactReference, error) {
 		return types.ArtifactReference{}, xerrors.Errorf("failed to get blob info: %w", err)
 	}
 	blobInfo := types.BlobInfo{
-		Applications: apps,
-		PackageInfos: pkgInfos,
-		OS:           o,
+		SchemaVersion: types.BlobJSONSchemaVersion,
+		Applications:  apps,
+		PackageInfos:  pkgInfos,
+		OS:            o,
 	}
 
 	cacheKey, err := a.calcCacheKey(blobInfo)

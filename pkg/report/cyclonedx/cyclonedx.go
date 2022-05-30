@@ -212,6 +212,7 @@ func (cw *Writer) parseComponents(r types.Report, bomRef string) (*[]cdx.Compone
 			metadataDependencies = append(metadataDependencies, cdx.Dependency{Ref: resultComponent.BOMRef})
 		}
 	}
+
 	vulns := maps.Values(vulnMap)
 	sort.Slice(vulns, func(i, j int) bool {
 		return vulns[i].ID > vulns[j].ID

@@ -168,22 +168,24 @@ func (b TrivyBOM) Package(component cdx.Component) (*ftypes.Package, error) {
 	}
 
 	for _, p := range *component.Properties {
-		switch p.Name {
-		case PropertySrcName:
-			pkg.SrcName = p.Value
-		case PropertySrcVersion:
-			pkg.SrcVersion = p.Value
-		case PropertySrcRelease:
-			pkg.SrcRelease = p.Value
-		case PropertySrcEpoch:
-			pkg.SrcEpoch, err = strconv.Atoi(p.Value)
-			if err != nil {
-				return nil, xerrors.Errorf("failed to parse source epoch: %w", err)
+		if strings.HasPrefix(p.Name, Namespace) {
+			switch strings.TrimPrefix(p.Name, Namespace) {
+			case PropertySrcName:
+				pkg.SrcName = p.Value
+			case PropertySrcVersion:
+				pkg.SrcVersion = p.Value
+			case PropertySrcRelease:
+				pkg.SrcRelease = p.Value
+			case PropertySrcEpoch:
+				pkg.SrcEpoch, err = strconv.Atoi(p.Value)
+				if err != nil {
+					return nil, xerrors.Errorf("failed to parse source epoch: %w", err)
+				}
+			case PropertyModularitylabel:
+				pkg.Modularitylabel = p.Value
+			case PropertyLayerDiffID:
+				pkg.Layer.DiffID = p.Value
 			}
-		case PropertyModularitylabel:
-			pkg.Modularitylabel = p.Value
-		case PropertyLayerDiffID:
-			pkg.Layer.DiffID = p.Value
 		}
 	}
 
@@ -402,7 +404,7 @@ func getProperty(properties *[]cdx.Property, key string) string {
 	}
 
 	for _, p := range *properties {
-		if p.Name == key {
+		if p.Name == Namespace+key {
 			return p.Value
 		}
 	}
