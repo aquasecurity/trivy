@@ -17,13 +17,13 @@ import (
 	"github.com/aquasecurity/fanal/image"
 	"github.com/aquasecurity/fanal/types"
 	"github.com/aquasecurity/trivy-db/pkg/db"
+	sbom2 "github.com/aquasecurity/trivy/pkg/artifact/sbom"
 	"github.com/aquasecurity/trivy/pkg/detector/ospkg"
 	"github.com/aquasecurity/trivy/pkg/result"
 	"github.com/aquasecurity/trivy/pkg/rpc/client"
 	"github.com/aquasecurity/trivy/pkg/scanner"
 	"github.com/aquasecurity/trivy/pkg/scanner/local"
 	"github.com/aquasecurity/trivy/pkg/scanner/sbom"
-	sbom2 "github.com/aquasecurity/trivy/pkg/artifact/sbom"
 )
 
 // Injectors from inject.go:
@@ -95,7 +95,7 @@ func initializeRepositoryScanner(ctx context.Context, url string, artifactCache 
 	}, nil
 }
 
-func initializeCycloneDXScanner(ctx context.Context,path string, artifactCache cache.ArtifactCache, localArtifactCache cache.LocalArtifactCache, artifactOption artifact.Option) (scanner.Scanner, func(), error) {
+func initializeCycloneDXScanner(ctx context.Context, path string, artifactCache cache.ArtifactCache, localArtifactCache cache.LocalArtifactCache, artifactOption artifact.Option) (scanner.Scanner, func(), error) {
 	applierApplier := applier.NewApplier(localArtifactCache)
 	detector := ospkg.Detector{}
 	localScanner := sbom.NewScanner(applierApplier, detector)

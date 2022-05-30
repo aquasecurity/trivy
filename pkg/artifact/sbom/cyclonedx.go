@@ -7,7 +7,7 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/opencontainers/go-digest"
+	digest "github.com/opencontainers/go-digest"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/fanal/analyzer"

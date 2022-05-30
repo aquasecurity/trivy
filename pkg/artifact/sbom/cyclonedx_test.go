@@ -3,13 +3,14 @@ package sbom_test
 import (
 	"context"
 	"errors"
+	"testing"
+
 	"github.com/aquasecurity/fanal/artifact"
-	"github.com/aquasecurity/fanal/artifact/sbom"
 	"github.com/aquasecurity/fanal/cache"
 	"github.com/aquasecurity/fanal/types"
+	"github.com/aquasecurity/trivy/pkg/artifact/sbom"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"testing"
 )
 
 func TestArtifact_Inspect(t *testing.T) {
@@ -113,7 +114,7 @@ func TestArtifact_Inspect(t *testing.T) {
 			},
 			want: types.ArtifactReference{
 				Name: "urn:uuid:c986ba94-e37d-49c8-9e30-96daccd0415b",
-				Type: types.ArtifactCycloneDX,
+				Type: sbom.ArtifactCycloneDX,
 				ID:   "sha256:97707b9207dddb2aef23c137cccdba7a7a8af5d0db775bd16017709b72fcc723",
 				BlobIDs: []string{
 					"sha256:97707b9207dddb2aef23c137cccdba7a7a8af5d0db775bd16017709b72fcc723",
@@ -138,7 +139,7 @@ func TestArtifact_Inspect(t *testing.T) {
 			},
 			want: types.ArtifactReference{
 				Name: "urn:uuid:c986ba94-e37d-49c8-9e30-96daccd0415b",
-				Type: types.ArtifactCycloneDX,
+				Type: sbom.ArtifactCycloneDX,
 				ID:   "sha256:39b0aab5944e80a029561d275ed0e23fade3513b0a5ae5ed3cc8343d60a1be1d",
 				BlobIDs: []string{
 					"sha256:39b0aab5944e80a029561d275ed0e23fade3513b0a5ae5ed3cc8343d60a1be1d",
@@ -159,7 +160,7 @@ func TestArtifact_Inspect(t *testing.T) {
 			},
 			want: types.ArtifactReference{
 				Name: "urn:uuid:c986ba94-e37d-49c8-9e30-96daccd0415b",
-				Type: types.ArtifactCycloneDX,
+				Type: sbom.ArtifactCycloneDX,
 				ID:   "sha256:c3f109c4b5b9000e41c436262d19d2bd48be6b14681e441a3d2bf4e6e21e41fc",
 				BlobIDs: []string{
 					"sha256:c3f109c4b5b9000e41c436262d19d2bd48be6b14681e441a3d2bf4e6e21e41fc",

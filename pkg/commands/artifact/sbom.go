@@ -2,11 +2,12 @@ package artifact
 
 import (
 	"context"
-	"github.com/aquasecurity/trivy/pkg/scanner"
+
 	"github.com/urfave/cli/v2"
 	"golang.org/x/exp/slices"
 	"golang.org/x/xerrors"
 
+	"github.com/aquasecurity/trivy/pkg/scanner"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
 

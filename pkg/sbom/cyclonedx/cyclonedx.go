@@ -1,12 +1,12 @@
 package cyclonedx
 
 import (
-	"golang.org/x/xerrors"
 	"sort"
 	"strconv"
 	"strings"
 
 	cdx "github.com/CycloneDX/cyclonedx-go"
+	"golang.org/x/xerrors"
 
 	ftypes "github.com/aquasecurity/fanal/types"
 	dtypes "github.com/aquasecurity/trivy-db/pkg/types"
