@@ -90,6 +90,9 @@ func (tw TableWriter) write(result types.Result) {
 		}
 		target += " (secrets)"
 	} else if result.Class != types.ClassOSPkg {
+		if result.Class == types.ClassConfig && len(result.Misconfigurations) == 0 {
+			return
+		}
 		target += fmt.Sprintf(" (%s)", result.Type)
 	}
 
@@ -103,10 +106,8 @@ func (tw TableWriter) write(result types.Result) {
 	if result.Class == types.ClassConfig {
 		// for misconfigurations
 		summary := result.MisconfSummary
-		if summary != nil {
-			fmt.Printf("Tests: %d (SUCCESSES: %d, FAILURES: %d, EXCEPTIONS: %d)\n",
-				summary.Successes+summary.Failures+summary.Exceptions, summary.Successes, summary.Failures, summary.Exceptions)
-		}
+		fmt.Printf("Tests: %d (SUCCESSES: %d, FAILURES: %d, EXCEPTIONS: %d)\n",
+			summary.Successes+summary.Failures+summary.Exceptions, summary.Successes, summary.Failures, summary.Exceptions)
 		fmt.Printf("Failures: %d (%s)\n\n", total, strings.Join(summaries, ", "))
 	} else {
 		// for vulnerabilities and secrets
