@@ -62,7 +62,6 @@ func (tw TableWriter) isOutputToTerminal() bool {
 }
 
 func (tw TableWriter) write(result types.Result) {
-
 	tableWriter := table.New(tw.Output)
 	if tw.isOutputToTerminal() { // use ansi output if we're not piping elsewhere
 		tableWriter.SetHeaderStyle(table.StyleBold)
@@ -84,15 +83,14 @@ func (tw TableWriter) write(result types.Result) {
 	total, summaries := tw.summary(severityCount)
 
 	target := result.Target
-	if result.Class == types.ClassSecret {
+	if result.Class == types.ClassConfig && len(result.Misconfigurations) == 0 {
+		return
+	} else if result.Class == types.ClassSecret {
 		if len(result.Secrets) == 0 {
 			return
 		}
 		target += " (secrets)"
 	} else if result.Class != types.ClassOSPkg {
-		if result.Class == types.ClassConfig && len(result.Misconfigurations) == 0 {
-			return
-		}
 		target += fmt.Sprintf(" (%s)", result.Type)
 	}
 
