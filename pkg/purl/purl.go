@@ -2,6 +2,7 @@ package purl
 
 import (
 	"fmt"
+	"strconv"
 	"strings"
 
 	cn "github.com/google/go-containerregistry/pkg/name"
@@ -22,6 +23,61 @@ const (
 type PackageURL struct {
 	packageurl.PackageURL
 	FilePath string
+}
+
+func FromString(purl string) (*ftypes.Package, error) {
+	p, err := packageurl.FromString(purl)
+	if err != nil {
+		return nil, xerrors.Errorf("failed to parse purl: %w", err)
+	}
+	pkg, err := Package(p)
+	if err != nil {
+		return nil, xerrors.Errorf("failed to convert package: %w", err)
+	}
+
+	return pkg, nil
+}
+
+func Package(purl packageurl.PackageURL) (*ftypes.Package, error) {
+	pkg := &ftypes.Package{
+		Version: purl.Version,
+	}
+	for _, q := range purl.Qualifiers {
+		switch q.Key {
+		case "arch":
+			pkg.Arch = q.Value
+		}
+	}
+
+	v := purl.Version
+	if purl.Type == packageurl.TypeRPM {
+		epochIndex := strings.Index(v, ":")
+		if epochIndex > 0 {
+			e, err := strconv.Atoi(v[:epochIndex])
+			if err != nil {
+				return nil, xerrors.Errorf("failed to parse epoch: %w", err)
+			}
+			pkg.Epoch = e
+			v = v[epochIndex+1:]
+		}
+
+		relIndex := strings.LastIndex(v, "-")
+		if relIndex == -1 {
+			return nil, xerrors.Errorf("failed to parse release: %s", v)
+		}
+		pkg.Release = v[relIndex+1:]
+		pkg.Version = v[:relIndex]
+	}
+	if purl.Namespace == "" || purl.Type == packageurl.TypeRPM || purl.Type == packageurl.TypeDebian || purl.Type == string(analyzer.TypeApk) {
+		return pkg, nil
+	}
+
+	if purl.Type == packageurl.TypeMaven {
+		purl.Namespace = strings.ReplaceAll(purl.Namespace, "/", ":")
+	}
+	pkg.Name = strings.Join([]string{purl.Namespace, purl.Name}, "/")
+
+	return pkg, nil
 }
 
 func (purl PackageURL) BOMRef() string {

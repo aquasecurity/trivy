@@ -23,6 +23,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/scanner"
 	"github.com/aquasecurity/trivy/pkg/scanner/local"
 	"github.com/aquasecurity/trivy/pkg/scanner/sbom"
+	sbom2 "github.com/aquasecurity/trivy/pkg/artifact/sbom"
 )
 
 // Injectors from inject.go:
