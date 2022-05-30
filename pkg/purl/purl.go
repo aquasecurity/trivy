@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	cn "github.com/google/go-containerregistry/pkg/name"
+	packageurl "github.com/package-url/packageurl-go"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/fanal/analyzer"
@@ -13,7 +14,6 @@ import (
 	ftypes "github.com/aquasecurity/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/scanner/utils"
 	"github.com/aquasecurity/trivy/pkg/types"
-	packageurl "github.com/package-url/packageurl-go"
 )
 
 const (

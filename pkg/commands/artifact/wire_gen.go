@@ -8,17 +8,16 @@ package artifact
 
 import (
 	"context"
-
 	"github.com/aquasecurity/fanal/applier"
 	"github.com/aquasecurity/fanal/artifact"
 	image2 "github.com/aquasecurity/fanal/artifact/image"
 	local2 "github.com/aquasecurity/fanal/artifact/local"
+	sbom2 "github.com/aquasecurity/trivy/pkg/artifact/sbom"
 	"github.com/aquasecurity/fanal/artifact/remote"
 	"github.com/aquasecurity/fanal/cache"
 	"github.com/aquasecurity/fanal/image"
 	"github.com/aquasecurity/fanal/types"
 	"github.com/aquasecurity/trivy-db/pkg/db"
-	sbom2 "github.com/aquasecurity/trivy/pkg/artifact/sbom"
 	"github.com/aquasecurity/trivy/pkg/detector/ospkg"
 	"github.com/aquasecurity/trivy/pkg/result"
 	"github.com/aquasecurity/trivy/pkg/rpc/client"
