@@ -58,11 +58,7 @@ $ trivy image python:3.4-alpine
 <details>
 <summary>Result</summary>
 
-https://github.com/aquasecurity/trivy/blob/987700dddb0cf0c653ec84f3d8ad3162716e07db/docs/imgs/trivy-image.mov
-
-https://github.com/aquasecurity/trivy/blob/987700dddb0cf0c653ec84f3d8ad3162716e07db/docs/imgs/trivy-image.mov?raw=true
-
-![](docs/imgs/trivy-image.mov)
+https://user-images.githubusercontent.com/1161307/171013513-95f18734-233d-45d3-aaf5-d6aec687db0e.mov
 
 </details>
 
