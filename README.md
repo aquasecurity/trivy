@@ -69,7 +69,7 @@ $ trivy fs --security-checks vuln,secret,config myproject/
 <details>
 <summary>Result</summary>
 
-/docs/imgs/trivy-fs.mov
+https://user-images.githubusercontent.com/1161307/171013917-b1f37810-f434-465c-b01a-22de036bd9b3.mov
 
 </details>
 
