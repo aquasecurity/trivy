@@ -11,7 +11,7 @@
 [📖 Documentation](docs)
 </div>
 
-Trivy is the world’s most popular open source security scanner. It is reliable, fast, extremely easy to use, and it works wherever you need it.
+Trivy is a comprehensive security scanner. It is reliable, fast, extremely easy to use, and it works wherever you need it.
 
 Trivy has different *scanners* that look for different security issues, and different *targets* where it can find those issues.
 
@@ -58,21 +58,8 @@ $ trivy image python:3.4-alpine
 <details>
 <summary>Result</summary>
 
-```
-2019-05-16T01:20:43.180+0900    INFO    Updating vulnerability database...
-2019-05-16T01:20:53.029+0900    INFO    Detecting Alpine vulnerabilities...
+![trivy image demo](docs/imgs/trivy-image.mov)
 
-python:3.4-alpine3.9 (alpine 3.9.2)
-===================================
-Total: 1 (UNKNOWN: 0, LOW: 0, MEDIUM: 1, HIGH: 0, CRITICAL: 0)
-
-+---------+------------------+----------+-------------------+---------------+--------------------------------+
-| LIBRARY | VULNERABILITY ID | SEVERITY | INSTALLED VERSION | FIXED VERSION |             TITLE              |
-+---------+------------------+----------+-------------------+---------------+--------------------------------+
-| openssl | CVE-2019-1543    | MEDIUM   | 1.1.1a-r1         | 1.1.1b-r1     | openssl: ChaCha20-Poly1305     |
-|         |                  |          |                   |               | with long nonces               |
-+---------+------------------+----------+-------------------+---------------+--------------------------------+
-```
 </details>
 
 ```bash
@@ -82,37 +69,8 @@ $ trivy fs --security-checks vuln,secret,config myproject/
 <details>
 <summary>Result</summary>
 
-```bash
-2021-07-09T12:03:27.564+0300    INFO    Number of language-specific files: 1
-2021-07-09T12:03:27.564+0300    INFO    Detecting pipenv vulnerabilities...
-2021-07-09T12:03:27.566+0300    INFO    Detected config files: 1
+![trivy fs demo](docs/imgs/trivy-fs.mov)
 
-Pipfile.lock (pipenv)
-=====================
-Total: 1 (HIGH: 1, CRITICAL: 0)
-
-+----------+------------------+----------+-------------------+---------------+---------------------------------------+
-| LIBRARY  | VULNERABILITY ID | SEVERITY | INSTALLED VERSION | FIXED VERSION |                 TITLE                 |
-+----------+------------------+----------+-------------------+---------------+---------------------------------------+
-| httplib2 | CVE-2021-21240   | HIGH     | 0.12.1            | 0.19.0        | python-httplib2: Regular              |
-|          |                  |          |                   |               | expression denial of                  |
-|          |                  |          |                   |               | service via malicious header          |
-|          |                  |          |                   |               | -->avd.aquasec.com/nvd/cve-2021-21240 |
-+----------+------------------+----------+-------------------+---------------+---------------------------------------+
-
-Dockerfile (dockerfile)
-=======================
-Tests: 23 (SUCCESSES: 22, FAILURES: 1, EXCEPTIONS: 0)
-Failures: 1 (HIGH: 1, CRITICAL: 0)
-
-+---------------------------+------------+----------------------+----------+------------------------------------------+
-|           TYPE            | MISCONF ID |        CHECK         | SEVERITY |                 MESSAGE                  |
-+---------------------------+------------+----------------------+----------+------------------------------------------+
-| Dockerfile Security Check |   DS002    | Image user is 'root' |   HIGH   | Last USER command in                     |
-|                           |            |                      |          | Dockerfile should not be 'root'          |
-|                           |            |                      |          | -->avd.aquasec.com/appshield/ds002       |
-+---------------------------+------------+----------------------+----------+------------------------------------------+
-```
 </details>
 
 ```bash
@@ -121,7 +79,9 @@ $ trivy k8s mycluster
 
 <details>
 <summary>Result</summary>
-![k8s summary](docs/imgs/k8s-summary.png)
+
+![k8s summary](docs/imgs/trivy-k8s.png)
+
 </details>
 
 Find out more in the [Trivy Documentation](docs) - [Getting Started](getting-started)
