@@ -62,6 +62,8 @@ https://github.com/aquasecurity/trivy/blob/1e192ce8a4febe5afed38f6086088784d2b36
 
 https://github.com/aquasecurity/trivy/blob/1e192ce8a4febe5afed38f6086088784d2b36f84/docs/imgs/trivy-image.mov?raw=true
 
+![](docs/imgs/trivy-image.mov)
+
 </details>
 
 ```bash
