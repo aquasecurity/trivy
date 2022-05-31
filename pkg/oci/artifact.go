@@ -9,7 +9,7 @@ import (
 	"path/filepath"
 
 	"github.com/cheggaaa/pb/v3"
-
+	"github.com/google/go-containerregistry/pkg/authn"
 	"github.com/google/go-containerregistry/pkg/name"
 	v1 "github.com/google/go-containerregistry/pkg/v1"
 	"github.com/google/go-containerregistry/pkg/v1/remote"
@@ -75,18 +75,18 @@ func NewArtifact(repo, mediaType string, quiet, insecure bool, opts ...Option) (
 		return nil, xerrors.Errorf("OCI layer error: %w", err)
 	}
 
+	manifest, err := o.img.Manifest()
+	if err != nil {
+		return nil, xerrors.Errorf("OCI manifest error: %w", err)
+	}
+
 	// A single layer is only supported now.
-	if len(layers) != 1 {
+	if len(layers) != 1 || len(manifest.Layers) != 1 {
 		return nil, xerrors.Errorf("OCI artifact must be a single layer")
 	}
 
 	// Take the first layer
 	layer := layers[0]
-
-	manifest, err := o.img.Manifest()
-	if err != nil {
-		return nil, xerrors.Errorf("OCI manifest error: %w", err)
-	}
 
 	// Take the file name of the first layer
 	fileName, ok := manifest.Layers[0].Annotations[titleAnnotation]
