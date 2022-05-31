@@ -11,11 +11,11 @@ MKDOCS_PORT := 8000
 u := $(if $(update),-u)
 
 $(GOBIN)/wire:
-	GO111MODULE=off go get github.com/google/wire/cmd/wire
+	go install github.com/google/wire/cmd/wire@latest
 
 .PHONY: wire
 wire: $(GOBIN)/wire
-	wire gen ./pkg/...
+	wire gen ./pkg/commands/... ./pkg/rpc/...
 
 .PHONY: mock
 mock: $(GOBIN)/mockery
