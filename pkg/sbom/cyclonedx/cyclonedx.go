@@ -97,41 +97,39 @@ func (b TrivyBOM) Extract() ([]ftypes.Application, []ftypes.PackageInfo, *ftypes
 		var pkgInfo ftypes.PackageInfo
 		app, appOk := appMap[dep.Ref]
 		for _, d := range *dep.Dependencies {
-			switch dep.Ref {
-			case rootBOMRef:
-				// root Ref depends on Aggregate libraries, Applications and Operating system.
-				app, ok := appMap[d.Ref]
-				if !ok {
-					continue
+			lib, libOk := libMap[d.Ref]
+			// root Ref depends on Aggregate libraries, Applications and Operating system.
+			if dep.Ref == rootBOMRef {
+				a, ok := appMap[d.Ref]
+				if ok {
+					apps = append(apps, *a)
 				}
-				apps = append(apps, *app)
-			case osBOMRef:
-				// OperationsSystem Ref depends on os libraries.
-				lib, ok := libMap[d.Ref]
-				if !ok {
-					continue
+				if libOk {
+					// TODO: aggregate
 				}
-				pkg, err := b.Package(lib)
-				if err != nil {
-					return nil, nil, nil, xerrors.Errorf("failed to parse package: %w", err)
-				}
-				pkgInfo.Packages = append(pkgInfo.Packages, *pkg)
-			default:
-				// Other Ref dependencies application libraries.
-				if !appOk {
-					continue
-				}
-				lib, ok := libMap[d.Ref]
-				if !ok {
-					continue
-				}
-				pkg, err := b.Package(lib)
-				if err != nil {
-					return nil, nil, nil, xerrors.Errorf("failed to parse package: %w", err)
-				}
-				app.Libraries = append(app.Libraries, *pkg)
+				continue
 			}
 
+			if !libOk {
+				continue
+			}
+			pkg, err := b.Package(lib)
+			if err != nil {
+				return nil, nil, nil, xerrors.Errorf("failed to parse package: %w", err)
+			}
+
+			// OperationsSystem Ref depends on os libraries.
+			if dep.Ref == osBOMRef {
+				pkgInfo.Packages = append(pkgInfo.Packages, *pkg)
+				continue
+			}
+
+			if !appOk {
+				continue
+			}
+
+			// Other Ref dependencies application libraries.
+			app.Libraries = append(app.Libraries, *pkg)
 		}
 		if len(pkgInfo.Packages) != 0 {
 			pkgInfos = append(pkgInfos, pkgInfo)
