@@ -1,6 +1,7 @@
 package cyclonedx
 
 import (
+	"github.com/package-url/packageurl-go"
 	"sort"
 	"strconv"
 	"strings"
@@ -146,7 +147,34 @@ func (b TrivyBOM) Extract() ([]ftypes.Application, []ftypes.PackageInfo, *ftypes
 }
 
 func (b TrivyBOM) Aggregate(libs []cdx.Component) ([]ftypes.Application, error) {
-	return []ftypes.Application{}, nil
+	appsMap := map[string]*ftypes.Application{}
+	for _, lib := range libs {
+		p, err := packageurl.FromString(lib.PackageURL)
+		if err != nil {
+			return nil, xerrors.Errorf("failed to parse purl from string: %w", err)
+		}
+
+		app, ok := appsMap[p.Type]
+		if !ok {
+			app = &ftypes.Application{
+				Type:     purl.Type(p.Type),
+				FilePath: p.Type,
+			}
+			appsMap[p.Type] = app
+		}
+		pkg, err := purl.Package(p)
+		if err != nil {
+			return nil, xerrors.Errorf("failed to parse purl to package: %w", err)
+		}
+
+		app.Libraries = append(app.Libraries, *pkg)
+	}
+
+	var apps []ftypes.Application
+	for _, app := range appsMap {
+		apps = append(apps, *app)
+	}
+	return apps, nil
 }
 
 func (b TrivyBOM) OS(component cdx.Component) *ftypes.OS {

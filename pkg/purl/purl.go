@@ -296,6 +296,21 @@ func purlType(t string) string {
 	return t
 }
 
+func Type(t string) string {
+	switch t {
+	case packageurl.TypeMaven:
+		return string(analyzer.TypeJar)
+	case packageurl.TypeGem:
+		return string(analyzer.TypeGemSpec)
+	case packageurl.TypePyPi:
+		return string(analyzer.TypePythonPkg)
+	case packageurl.TypeGolang:
+		return string(analyzer.TypeGoBinary)
+	case packageurl.TypeNPM:
+		return string(analyzer.TypeNodePkg)
+	}
+	return ""
+}
 func parseQualifier(pkg ftypes.Package) packageurl.Qualifiers {
 	qualifiers := packageurl.Qualifiers{}
 	if pkg.Arch != "" {
