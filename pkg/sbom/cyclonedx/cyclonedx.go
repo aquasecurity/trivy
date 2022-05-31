@@ -53,7 +53,7 @@ func (b TrivyBOM) Extract() ([]ftypes.Application, []ftypes.PackageInfo, *ftypes
 	var osBOMRef string
 	rootBOMRef := b.Metadata.Component.BOMRef
 	appMap := make(map[string]*ftypes.Application)
-	libMap := make(map[string]*ftypes.Package)
+	libMap := make(map[string]cdx.Component)
 
 	os := &ftypes.OS{}
 	for _, component := range *b.Components {
@@ -64,25 +64,22 @@ func (b TrivyBOM) Extract() ([]ftypes.Application, []ftypes.PackageInfo, *ftypes
 		case cdx.ComponentTypeApplication:
 			appMap[component.BOMRef] = b.Application(component)
 		case cdx.ComponentTypeLibrary:
-			pkg, err := b.Package(component)
-			if err != nil {
-				return nil, nil, nil, xerrors.Errorf("failed to parse package: %w", err)
-			}
-			if component.Properties == nil {
-				libMap[component.BOMRef] = pkg
-				continue
-			}
 			if t := getProperty(component.Properties, PropertyType); t != "" {
 				// If type property exists, it is Application.
 				app := ftypes.Application{
 					Type:     t,
 					FilePath: getProperty(component.Properties, PropertyFilePath),
 				}
+
+				pkg, err := b.Package(component)
+				if err != nil {
+					return nil, nil, nil, xerrors.Errorf("failed to parse package: %w", err)
+				}
 				app.Libraries = []ftypes.Package{*pkg}
 				appMap[component.BOMRef] = &app
 			} else {
 				// If it isn't application component, it is library.
-				libMap[component.BOMRef] = pkg
+				libMap[component.BOMRef] = component
 			}
 		}
 	}
@@ -110,9 +107,13 @@ func (b TrivyBOM) Extract() ([]ftypes.Application, []ftypes.PackageInfo, *ftypes
 				apps = append(apps, *app)
 			case osBOMRef:
 				// OperationsSystem Ref depends on os libraries.
-				pkg, ok := libMap[d.Ref]
+				lib, ok := libMap[d.Ref]
 				if !ok {
 					continue
+				}
+				pkg, err := b.Package(lib)
+				if err != nil {
+					return nil, nil, nil, xerrors.Errorf("failed to parse package: %w", err)
 				}
 				pkgInfo.Packages = append(pkgInfo.Packages, *pkg)
 			default:
@@ -120,9 +121,13 @@ func (b TrivyBOM) Extract() ([]ftypes.Application, []ftypes.PackageInfo, *ftypes
 				if !appOk {
 					continue
 				}
-				pkg, ok := libMap[d.Ref]
+				lib, ok := libMap[d.Ref]
 				if !ok {
 					continue
+				}
+				pkg, err := b.Package(lib)
+				if err != nil {
+					return nil, nil, nil, xerrors.Errorf("failed to parse package: %w", err)
 				}
 				app.Libraries = append(app.Libraries, *pkg)
 			}
