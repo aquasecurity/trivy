@@ -759,7 +759,8 @@
         "ID": "loose-envify@1.4.0",
         "Name": "loose-envify",
         "Version": "1.4.0",
-        "Layer": {}
+        "Layer": {},
+        "DependsOn": ["js-tokens@4.0.0"]
       },
       {
         "ID": "object-assign@4.1.1",
@@ -771,19 +772,22 @@
         "ID": "promise@8.0.3",
         "Name": "promise",
         "Version": "8.0.3",
-        "Layer": {}
+        "Layer": {},
+        "DependsOn": ["asap@2.0.6"]
       },
       {
         "ID": "prop-types@15.7.2",
         "Name": "prop-types",
         "Version": "15.7.2",
-        "Layer": {}
+        "Layer": {},
+        "DependsOn": ["loose-envify@1.4.0", "object-assign@4.1.1", "react-is@16.8.6"]
       },
       {
         "ID": "react@16.8.6",
         "Name": "react",
         "Version": "16.8.6",
-        "Layer": {}
+        "Layer": {},
+        "DependsOn": ["loose-envify@1.4.0", "object-assign@4.1.1", "prop-types@15.7.2", "scheduler@0.13.6"]
       },
       {
         "ID": "react-is@16.8.6",
@@ -795,45 +799,21 @@
         "ID": "redux@4.0.1",
         "Name": "redux",
         "Version": "4.0.1",
-        "Layer": {}
+        "Layer": {},
+        "DependsOn": ["loose-envify@1.4.0", "symbol-observable@1.2.0"]
       },
       {
         "ID": "scheduler@0.13.6",
         "Name": "scheduler",
         "Version": "0.13.6",
-        "Layer": {}
+        "Layer": {},
+        "DependsOn": ["loose-envify@1.4.0", "object-assign@4.1.1"]
       },
       {
         "ID": "symbol-observable@1.2.0",
         "Name": "symbol-observable",
         "Version": "1.2.0",
         "Layer": {}
-      }
-    ],
-    "Dependencies" : [
-      {
-        "ID": "loose-envify@1.4.0",
-        "DependsOn": ["js-tokens@4.0.0"]
-      },
-      {
-        "ID": "promise@8.0.3",
-        "DependsOn": ["asap@2.0.6"]
-      },
-      {
-        "ID": "prop-types@15.7.2",
-        "DependsOn": ["loose-envify@1.4.0", "object-assign@4.1.1", "react-is@16.8.6"]
-      },
-      {
-        "ID": "react@16.8.6",
-        "DependsOn": ["loose-envify@1.4.0", "object-assign@4.1.1", "prop-types@15.7.2", "scheduler@0.13.6"]
-      },
-      {
-        "ID": "redux@4.0.1",
-        "DependsOn": ["loose-envify@1.4.0", "symbol-observable@1.2.0"]
-      },
-      {
-        "ID": "scheduler@0.13.6",
-        "DependsOn": ["loose-envify@1.4.0", "object-assign@4.1.1"]
       }
     ]
   },

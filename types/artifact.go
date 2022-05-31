@@ -3,7 +3,6 @@ package types
 import (
 	"time"
 
-	godeptypes "github.com/aquasecurity/go-dep-parser/pkg/types"
 	v1 "github.com/google/go-containerregistry/pkg/v1"
 )
 
@@ -38,9 +37,11 @@ type Package struct {
 	Modularitylabel string     `json:",omitempty"` // only for Red Hat based distributions
 	BuildInfo       *BuildInfo `json:",omitempty"` // only for Red Hat
 
-	Indirect bool   `json:",omitempty"`
-	License  string `json:",omitempty"`
-	Layer    Layer  `json:",omitempty"`
+	Indirect  bool     `json:",omitempty"` // this package is direct dependency of the project or not
+	DependsOn []string `json:",omitempty"` // dependencies of this package
+
+	License string `json:",omitempty"`
+	Layer   Layer  `json:",omitempty"`
 
 	// Each package metadata have the file path, while the package from lock files does not have.
 	FilePath string `json:",omitempty"`
@@ -77,9 +78,6 @@ type Application struct {
 
 	// Libraries is a list of lang-specific packages
 	Libraries []Package
-
-	// Dependencies represents dependency graph
-	Dependencies []godeptypes.Dependency `json:",omitempty"`
 }
 
 type File struct {
