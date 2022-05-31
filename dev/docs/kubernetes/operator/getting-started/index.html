@@ -1531,7 +1531,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../vulnerability-scanning/config.md" class="md-nav__link">
+      <a href="../vulnerability-scanning/configuration/" class="md-nav__link">
         Scan Configuration
       </a>
     </li>
@@ -2802,12 +2802,7 @@
 <h1 id="getting-started">Getting Started</h1>
 <h2 id="before-you-begin">Before you Begin</h2>
 <p>You need to have a Kubernetes cluster, and the kubectl command-line tool must be configured to communicate with your
-cluster. If you do not already have a cluster, you can create one by installing <a href="https://minikube.sigs.k8s.io/docs/">minikube</a> or <a href="https://kind.sigs.k8s.io/docs/">kind</a>, or you can use one
-of these Kubernetes playgrounds:</p>
-<ul>
-<li><a href="https://www.katacoda.com/courses/kubernetes/playground/">Katacoda</a></li>
-<li><a href="http://labs.play-with-k8s.com/">Play with Kubernetes</a></li>
-</ul>
+cluster. If you do not already have a cluster, you can create one by installing <a href="https://minikube.sigs.k8s.io/docs/">minikube</a>, <a href="https://kind.sigs.k8s.io/docs/">kind</a> or <a href="https://microk8s.io/">microk8s</a>, or you can use the following <a href="http://labs.play-with-k8s.com/">Kubernetes playground</a>.</p>
 <p>You also need the Trivy-Operator to be installed in the <code>trivy-system</code> namespace, e.g. with
 <a href="../installation/kubectl/">kubectl</a> or <a href="../installation/helm/">Helm</a>. Let's also assume that the operator is
 configured to discover built-in Kubernetes resources in all namespaces, except <code>kube-system</code> and <code>trivy-system</code>.</p>

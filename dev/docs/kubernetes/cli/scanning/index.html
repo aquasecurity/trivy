@@ -1281,9 +1281,40 @@
         
       
       
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          Scanning
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
       <a href="./" class="md-nav__link md-nav__link--active">
         Scanning
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#cli-commands" class="md-nav__link">
+    CLI Commands
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
       
     </li>
   
@@ -1486,7 +1517,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../operator/vulnerability-scanning/config.md" class="md-nav__link">
+      <a href="../../operator/vulnerability-scanning/configuration/" class="md-nav__link">
         Scan Configuration
       </a>
     </li>
@@ -2713,6 +2744,21 @@
     
   
   
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#cli-commands" class="md-nav__link">
+    CLI Commands
+  </a>
+  
+</li>
+      
+    </ul>
+  
 </nav>
                   </div>
                 </div>
@@ -2730,8 +2776,10 @@
 <p class="admonition-title">EXPERIMENTAL</p>
 </div>
 <p>This feature might change without preserving backwards compatibility.</p>
-<p>Scan your Kubernetes cluster for both Vulnerabilities, Secrets and Misconfigurations.</p>
+<p>The Trivy K8s CLI allows you to scan your Kubernetes cluster for Vulnerabilities, Secrets and Misconfigurations. You can either run the CLI locally or integrate it into your CI/CD pipeline. The difference to the Trivy CLI is that the Trivy K8s CLI allows you to scan running workloads directly within your cluster.</p>
+<p>If you are looking for continuous cluster audit scanning, have a look at the <a href="../../operator/getting-started/">Trivy K8s operator.</a></p>
 <p>Trivy uses your local kubectl configuration to access the API server to list artifacts.</p>
+<h2 id="cli-commands">CLI Commands</h2>
 <p>Scan a full cluster and generate a simple summary report:</p>
 <div class="highlight"><pre><span></span><code>$ trivy k8s --report=summary
 </code></pre></div>
@@ -2751,6 +2799,11 @@ $ trivy k8s --security-checks=config --report=summary
 <p>Scan a specific resource and get all the output:</p>
 <div class="highlight"><pre><span></span><code>$ trivy k8s deployment/appname
 </code></pre></div>
+<p>If you want to pass in flags before scanning specific workloads, you will have to do it before the resource name.
+For example, scanning a deployment in the app namespace of your Kubernetes cluster for critical vulnerabilities would be done through the following command:</p>
+<p><div class="highlight"><pre><span></span><code>$ trivy k8s -n app --severity=CRITICAL deployment/appname
+</code></pre></div>
+This is specific to all Trivy CLI commands.</p>
 <p>The supported formats are <code>table</code>, which is the default, and <code>json</code>.
 To get a JSON output on a full cluster scan:</p>
 <div class="highlight"><pre><span></span><code>$ trivy k8s --format json -o results.json

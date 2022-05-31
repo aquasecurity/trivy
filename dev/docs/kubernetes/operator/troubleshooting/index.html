@@ -1476,7 +1476,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../vulnerability-scanning/config.md" class="md-nav__link">
+      <a href="../vulnerability-scanning/configuration/" class="md-nav__link">
         Scan Configuration
       </a>
     </li>
@@ -2855,7 +2855,7 @@ In some cases you might want to refer to <a href="https://aquasecurity.github.io
 <h2 id="operator-pod-not-running">Operator Pod Not Running</h2>
 <p>The Trivy Operator will run a pod inside your cluster. If you have followed the installation guide, you will have installed the Operator to the <code>trivy-system</code>.</p>
 <p>Make sure that the pod is in the <code>Running</code> status:
-<div class="highlight"><pre><span></span><code>kubectl get pods -n trivy-operator
+<div class="highlight"><pre><span></span><code>kubectl get pods -n trivy-system
 </code></pre></div></p>
 <p>This is how it will look if it is running okay:</p>
 <div class="highlight"><pre><span></span><code>NAMESPACE            NAME                                         READY   STATUS    RESTARTS      AGE
