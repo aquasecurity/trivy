@@ -1,9 +1,11 @@
 package cyclonedx
 
 import (
+	"fmt"
 	"io"
 	"sort"
 	"strconv"
+	"strings"
 	"time"
 
 	cdx "github.com/CycloneDX/cyclonedx-go"
@@ -13,10 +15,15 @@ import (
 	"k8s.io/utils/clock"
 
 	ftypes "github.com/aquasecurity/fanal/types"
+	"github.com/aquasecurity/trivy/pkg/artifact/sbom"
 	"github.com/aquasecurity/trivy/pkg/purl"
 	"github.com/aquasecurity/trivy/pkg/sbom/cyclonedx"
 	"github.com/aquasecurity/trivy/pkg/scanner/utils"
 	"github.com/aquasecurity/trivy/pkg/types"
+)
+
+var (
+	ErrInvalidBOMLink = xerrors.New("invalid bomLink format error")
 )
 
 // Writer implements types.Writer
@@ -74,9 +81,18 @@ func NewWriter(output io.Writer, version string, opts ...option) Writer {
 
 // Write writes the results in CycloneDX format
 func (cw Writer) Write(report types.Report) error {
-	bom, err := cw.convertToBom(report, cw.version)
-	if err != nil {
-		return xerrors.Errorf("failed to convert bom: %w", err)
+	var bom *cdx.BOM
+	var err error
+	if report.ArtifactType == sbom.ArtifactCycloneDX {
+		bom, err = cw.vex(report.Results, report.ArtifactName)
+		if err != nil {
+			return xerrors.Errorf("failed to convert vex: %w", err)
+		}
+	} else {
+		bom, err = cw.convertToBom(report, cw.version)
+		if err != nil {
+			return xerrors.Errorf("failed to convert bom: %w", err)
+		}
 	}
 
 	if err = cdx.NewBOMEncoder(cw.output, cw.format).Encode(bom); err != nil {
@@ -84,6 +100,38 @@ func (cw Writer) Write(report types.Report) error {
 	}
 
 	return nil
+}
+
+func (cw *Writer) vex(results types.Results, bomLink string) (*cdx.BOM, error) {
+	vulnMap := map[string]cdx.Vulnerability{}
+	for _, result := range results {
+		for _, vuln := range result.Vulnerabilities {
+			ref, err := vexRef(bomLink, vuln.Ref)
+			if err != nil {
+				return nil, err
+			}
+			if v, ok := vulnMap[vuln.VulnerabilityID]; ok {
+				*v.Affects = append(*v.Affects, cyclonedx.Affects(ref, vuln.InstalledVersion))
+			} else {
+				vulnMap[vuln.VulnerabilityID] = cyclonedx.Vulnerability(vuln, ref)
+			}
+		}
+	}
+	vulns := maps.Values(vulnMap)
+	sort.Slice(vulns, func(i, j int) bool {
+		return vulns[i].ID > vulns[j].ID
+	})
+
+	bom := cdx.NewBOM()
+	bom.Vulnerabilities = &vulns
+	return bom, nil
+}
+
+func vexRef(bomLink string, bomRef string) (string, error) {
+	if !strings.HasPrefix(bomLink, "urn:uuid:") {
+		return "", ErrInvalidBOMLink
+	}
+	return fmt.Sprintf("%s/%d#%s", strings.Replace(bomLink, "uuid", "cdx", 1), cdx.BOMFileFormatJSON, bomRef), nil
 }
 
 func (cw *Writer) convertToBom(r types.Report, version string) (*cdx.BOM, error) {

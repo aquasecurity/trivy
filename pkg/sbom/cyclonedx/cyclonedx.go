@@ -52,7 +52,6 @@ func (b TrivyBOM) Extract() ([]ftypes.Application, []ftypes.PackageInfo, *ftypes
 	}
 
 	var osBOMRef string
-	rootBOMRef := b.Metadata.Component.BOMRef
 	appMap := make(map[string]*ftypes.Application)
 	libMap := make(map[string]cdx.Component)
 
@@ -99,17 +98,12 @@ func (b TrivyBOM) Extract() ([]ftypes.Application, []ftypes.PackageInfo, *ftypes
 		var pkgInfo ftypes.PackageInfo
 		app, appOk := appMap[dep.Ref]
 		for _, d := range *dep.Dependencies {
-			// Root Ref depends on Aggregate libraries, Applications and Operating system.
-			if dep.Ref == rootBOMRef {
-				a, ok := appMap[d.Ref]
-				if ok {
-					apps = append(apps, *a)
-				}
-				continue
+			if a, ok := appMap[d.Ref]; ok {
+				apps = append(apps, *a)
 			}
 
-			lib, libOk := libMap[d.Ref]
-			if !libOk {
+			lib, ok := libMap[d.Ref]
+			if !ok {
 				continue
 			}
 			pkg, err := b.Package(lib)
@@ -117,19 +111,15 @@ func (b TrivyBOM) Extract() ([]ftypes.Application, []ftypes.PackageInfo, *ftypes
 				return nil, nil, nil, xerrors.Errorf("failed to parse package: %w", err)
 			}
 
-			// OperationsSystem Ref depends on os libraries.
 			if dep.Ref == osBOMRef {
+				// OperationsSystem Ref depends on os libraries.
 				pkgInfo.Packages = append(pkgInfo.Packages, *pkg)
-				continue
-			}
-
-			if !appOk {
+			} else if !appOk {
 				unrelatedLibs = append(unrelatedLibs, lib)
 			} else {
 				// Other Ref dependencies application libraries.
 				app.Libraries = append(app.Libraries, *pkg)
 			}
-
 		}
 		if len(pkgInfo.Packages) != 0 {
 			pkgInfos = append(pkgInfos, pkgInfo)
