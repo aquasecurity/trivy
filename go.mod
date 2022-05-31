@@ -139,7 +139,7 @@ require (
 	github.com/moby/sys/mountinfo v0.6.0 // indirect
 	github.com/moby/term v0.0.0-20210619224110-3f7ff695adc6 // indirect
 	github.com/morikuni/aec v1.0.0 // indirect
-	github.com/opencontainers/go-digest v1.0.0 // indirect
+	github.com/opencontainers/go-digest v1.0.0
 	github.com/opencontainers/image-spec v1.0.3-0.20211202183452-c5a74bcca799 // indirect
 	github.com/opencontainers/runc v1.1.1 // indirect
 	github.com/owenrumney/squealer v1.0.1-0.20220510063705-c0be93f0edea // indirect
@@ -251,3 +251,5 @@ replace github.com/containerd/containerd v1.5.9 => github.com/containerd/contain
 
 // See https://github.com/moby/moby/issues/42939#issuecomment-1114255529
 replace github.com/docker/docker => github.com/docker/docker v20.10.3-0.20220224222438-c78f6963a1c0+incompatible
+
+replace github.com/aquasecurity/fanal => github.com/masahiro331/fanal v0.0.0-20220531181814-19bed6bac5ae
