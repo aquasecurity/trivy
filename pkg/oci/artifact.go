@@ -56,7 +56,7 @@ func NewArtifact(repo, mediaType string, quiet, insecure bool, opts ...Option) (
 			return nil, xerrors.Errorf("repository name error (%s): %w", repo, err)
 		}
 
-		var remoteOpts []remote.Option
+		remoteOpts := []remote.Option{remote.WithAuthFromKeychain(authn.DefaultKeychain)}
 		if insecure {
 			t := &http.Transport{
 				TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
