@@ -37,6 +37,17 @@ func (s *scanner) run(ctx context.Context, artifacts []*artifacts.Artifact) (Rep
 		return Report{}, xerrors.Errorf("logger error: %w", err)
 	}
 
+	// enable log, this is done in a defer function,
+	// to enable logs even when the function returns earlier
+	// due to an error
+	defer func() {
+		err = log.InitLogger(s.opt.Debug, false)
+		if err != nil {
+			// we use log.Fatal here because the error was to enable the logger
+			log.Fatal(xerrors.Errorf("can't enable logger error: %w", err))
+		}
+	}()
+
 	// Loops once over all artifacts, and execute scanners as necessary. Not every artifacts has an image,
 	// so image scanner is not always executed.
 	for _, artifact := range artifacts {
@@ -57,12 +68,6 @@ func (s *scanner) run(ctx context.Context, artifacts []*artifacts.Artifact) (Rep
 			}
 			misconfigs = append(misconfigs, resource)
 		}
-	}
-
-	// enable logs after scanning
-	err = log.InitLogger(s.opt.Debug, s.opt.Quiet)
-	if err != nil {
-		return Report{}, xerrors.Errorf("logger error: %w", err)
 	}
 
 	return Report{

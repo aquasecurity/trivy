@@ -92,7 +92,10 @@ func Run(cliCtx *cli.Context) error {
 		opt:     opt,
 	}
 
-	return run(ctx, s, opt, artifacts)
+	// we assign the error here so the defer function can see the last error
+	// to check if it was a context.DeadlineExceeded, instead of returning directly
+	err = run(ctx, s, opt, artifacts)
+	return err
 }
 
 func run(ctx context.Context, s *scanner, opt cmd.Option, artifacts []*artifacts.Artifact) error {
