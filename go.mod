@@ -197,7 +197,7 @@ require (
 
 require (
 	github.com/aquasecurity/table v1.5.1
-	github.com/aquasecurity/trivy-kubernetes v0.2.2
+	github.com/aquasecurity/trivy-kubernetes v0.2.3-0.20220523142917-375e14b1a7c8
 )
 
 require (
