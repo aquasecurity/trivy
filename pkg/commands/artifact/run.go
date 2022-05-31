@@ -85,7 +85,14 @@ type runner struct {
 	dbOpen bool
 }
 
-type runnerOption func(Runner)
+type runnerOption func(*runner)
+
+// WithCacheClient takes a custom cache implementation
+func WithCacheClient(c cache.Cache) runnerOption {
+	return func(r *runner) {
+		r.cache = c
+	}
+}
 
 // NewRunner initializes Runner that provides scanning functionalities.
 // It is possible to return SkipScan and it must be handled by caller.
