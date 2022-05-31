@@ -3,8 +3,9 @@ package alpine
 import (
 	"bufio"
 	"context"
-	"golang.org/x/exp/slices"
 	"os"
+
+	"golang.org/x/exp/slices"
 
 	"golang.org/x/xerrors"
 

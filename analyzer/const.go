@@ -78,6 +78,7 @@ const (
 	TypeDockerfile     Type = "dockerfile"
 	TypeTerraform      Type = "terraform"
 	TypeCloudFormation Type = "cloudFormation"
+	TypeHelm           Type = "helm"
 
 	// ========
 	// Secrets

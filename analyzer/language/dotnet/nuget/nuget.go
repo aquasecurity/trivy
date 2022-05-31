@@ -2,9 +2,10 @@ package nuget
 
 import (
 	"context"
-	"golang.org/x/exp/slices"
 	"os"
 	"path/filepath"
+
+	"golang.org/x/exp/slices"
 
 	"golang.org/x/xerrors"
 

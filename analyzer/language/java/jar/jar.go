@@ -2,10 +2,11 @@ package jar
 
 import (
 	"context"
-	"github.com/aquasecurity/fanal/types"
 	"os"
 	"path/filepath"
 	"strings"
+
+	"github.com/aquasecurity/fanal/types"
 
 	"golang.org/x/xerrors"
 
