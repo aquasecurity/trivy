@@ -26,7 +26,7 @@ func TestArtifact_Inspect(t *testing.T) {
 			filePath: "testdata/bom.json",
 			putBlobExpectation: cache.ArtifactCachePutBlobExpectation{
 				Args: cache.ArtifactCachePutBlobArgs{
-					BlobID: "sha256:980e9b72e376c2773e0ba5ce836bdc9cddb02f5cd1a8162b6c0faf0a20ba9d88",
+					BlobID: "sha256:5d5b1fb13a42ec2222990c9241875615940ac6740f6e24b203a787b6ede38111",
 					BlobInfo: types.BlobInfo{
 						SchemaVersion: types.BlobJSONSchemaVersion,
 						OS: &types.OS{
@@ -121,9 +121,9 @@ func TestArtifact_Inspect(t *testing.T) {
 			want: types.ArtifactReference{
 				Name: "urn:uuid:c986ba94-e37d-49c8-9e30-96daccd0415b",
 				Type: sbom.ArtifactCycloneDX,
-				ID:   "sha256:980e9b72e376c2773e0ba5ce836bdc9cddb02f5cd1a8162b6c0faf0a20ba9d88",
+				ID:   "sha256:5d5b1fb13a42ec2222990c9241875615940ac6740f6e24b203a787b6ede38111",
 				BlobIDs: []string{
-					"sha256:980e9b72e376c2773e0ba5ce836bdc9cddb02f5cd1a8162b6c0faf0a20ba9d88",
+					"sha256:5d5b1fb13a42ec2222990c9241875615940ac6740f6e24b203a787b6ede38111",
 				},
 			},
 		},
