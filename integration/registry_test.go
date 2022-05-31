@@ -57,9 +57,9 @@ func setupRegistry(ctx context.Context, baseDir string, authURL *url.URL) (testc
 			"REGISTRY_AUTH_TOKEN_ROOTCERTBUNDLE": "/certs/cert.pem",
 			"REGISTRY_AUTH_TOKEN_AUTOREDIRECT":   "false",
 		},
-		BindMounts: map[string]string{
-			"/certs": filepath.Join(baseDir, "data", "certs"),
-		},
+		Mounts: testcontainers.Mounts(
+			testcontainers.BindMount(filepath.Join(baseDir, "data", "certs"), "/certs"),
+		),
 		SkipReaper: true,
 		AutoRemove: true,
 		WaitingFor: wait.ForLog("listening on [::]:5443"),
@@ -77,10 +77,10 @@ func setupAuthServer(ctx context.Context, baseDir string) (testcontainers.Contai
 		Name:         "docker_auth",
 		Image:        authImage,
 		ExposedPorts: []string{authPort},
-		BindMounts: map[string]string{
-			"/config": filepath.Join(baseDir, "data", "auth_config"),
-			"/certs":  filepath.Join(baseDir, "data", "certs"),
-		},
+		Mounts: testcontainers.Mounts(
+			testcontainers.BindMount(filepath.Join(baseDir, "data", "auth_config"), "/config"),
+			testcontainers.BindMount(filepath.Join(baseDir, "data", "certs"), "/certs"),
+		),
 		SkipReaper: true,
 		AutoRemove: true,
 		Cmd:        []string{"/config/config.yml"},
