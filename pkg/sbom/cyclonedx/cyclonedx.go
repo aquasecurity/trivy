@@ -89,6 +89,7 @@ func (b TrivyBOM) Extract() ([]ftypes.Application, []ftypes.PackageInfo, *ftypes
 
 	var apps []ftypes.Application
 	var pkgInfos []ftypes.PackageInfo
+	var unrelatedLibs []cdx.Component
 	for _, dep := range *b.Dependencies {
 		if dep.Dependencies == nil {
 			continue
@@ -97,19 +98,16 @@ func (b TrivyBOM) Extract() ([]ftypes.Application, []ftypes.PackageInfo, *ftypes
 		var pkgInfo ftypes.PackageInfo
 		app, appOk := appMap[dep.Ref]
 		for _, d := range *dep.Dependencies {
-			lib, libOk := libMap[d.Ref]
-			// root Ref depends on Aggregate libraries, Applications and Operating system.
+			// Root Ref depends on Aggregate libraries, Applications and Operating system.
 			if dep.Ref == rootBOMRef {
 				a, ok := appMap[d.Ref]
 				if ok {
 					apps = append(apps, *a)
 				}
-				if libOk {
-					// TODO: aggregate
-				}
 				continue
 			}
 
+			lib, libOk := libMap[d.Ref]
 			if !libOk {
 				continue
 			}
@@ -125,18 +123,30 @@ func (b TrivyBOM) Extract() ([]ftypes.Application, []ftypes.PackageInfo, *ftypes
 			}
 
 			if !appOk {
-				continue
+				unrelatedLibs = append(unrelatedLibs, lib)
+			} else {
+				// Other Ref dependencies application libraries.
+				app.Libraries = append(app.Libraries, *pkg)
 			}
 
-			// Other Ref dependencies application libraries.
-			app.Libraries = append(app.Libraries, *pkg)
 		}
 		if len(pkgInfo.Packages) != 0 {
 			pkgInfos = append(pkgInfos, pkgInfo)
 		}
 	}
+	if len(unrelatedLibs) != 0 {
+		aggregatedApps, err := b.Aggregate(unrelatedLibs)
+		if err != nil {
+			return nil, nil, nil, xerrors.Errorf("failed to aggregate libraries: %w", err)
+		}
+		apps = append(apps, aggregatedApps...)
+	}
 
 	return apps, pkgInfos, os, nil
+}
+
+func (b TrivyBOM) Aggregate(libs []cdx.Component) ([]ftypes.Application, error) {
+	return []ftypes.Application{}, nil
 }
 
 func (b TrivyBOM) OS(component cdx.Component) *ftypes.OS {
