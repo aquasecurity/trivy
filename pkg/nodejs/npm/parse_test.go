@@ -55,6 +55,12 @@ func TestParse(t *testing.T) {
 			want:     npmDeepNested,
 			wantDeps: npmDeepNestedDeps,
 		},
+		{
+			name:     "direct libraries",
+			file:     "testdata/package-lock_with_packages.json",
+			want:     npmWithPkgs,
+			wantDeps: npmWithPkgsDeps,
+		},
 	}
 
 	for _, tt := range tests {

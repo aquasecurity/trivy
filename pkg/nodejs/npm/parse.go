@@ -17,12 +17,19 @@ import (
 
 type LockFile struct {
 	Dependencies map[string]Dependency
+	Packages     map[string]Package
 }
 type Dependency struct {
 	Version      string
 	Dev          bool
 	Dependencies map[string]Dependency
 	Requires     map[string]string
+}
+
+type Package struct {
+	Name         string
+	Version      string
+	Dependencies map[string]string
 }
 
 type Parser struct{}
@@ -43,12 +50,13 @@ func (p *Parser) Parse(r dio.ReadSeekerAt) ([]types.Library, []types.Dependency,
 		return nil, nil, xerrors.Errorf("decode error: %w", err)
 	}
 
-	libs, deps := p.parse(lockFile.Dependencies, map[string]string{})
+	dircetDeps := lockFile.Packages[""].Dependencies
+	libs, deps := p.parse(lockFile.Dependencies, dircetDeps, map[string]string{})
 
 	return unique(libs), uniqueDeps(deps), nil
 }
 
-func (p *Parser) parse(dependencies map[string]Dependency, versions map[string]string) ([]types.Library, []types.Dependency) {
+func (p *Parser) parse(dependencies map[string]Dependency, dircetDeps map[string]string, versions map[string]string) ([]types.Library, []types.Dependency) {
 	// Update package name and version mapping.
 	for pkgName, dep := range dependencies {
 		// Overwrite the existing package version so that the nested version can take precedence.
@@ -63,9 +71,10 @@ func (p *Parser) parse(dependencies map[string]Dependency, versions map[string]s
 		}
 
 		lib := types.Library{
-			ID:      p.ID(pkgName, dependency.Version),
-			Name:    pkgName,
-			Version: dependency.Version,
+			ID:       p.ID(pkgName, dependency.Version),
+			Name:     pkgName,
+			Version:  dependency.Version,
+			Indirect: isIndirectLib(pkgName, dircetDeps),
 		}
 		libs = append(libs, lib)
 
@@ -94,7 +103,7 @@ func (p *Parser) parse(dependencies map[string]Dependency, versions map[string]s
 
 		if dependency.Dependencies != nil {
 			// Recursion
-			childLibs, childDeps := p.parse(dependency.Dependencies, maps.Clone(versions))
+			childLibs, childDeps := p.parse(dependency.Dependencies, dircetDeps, maps.Clone(versions))
 			libs = append(libs, childLibs...)
 			deps = append(deps, childDeps...)
 		}
@@ -127,4 +136,9 @@ func uniqueDeps(deps []types.Dependency) []types.Dependency {
 		}
 	}
 	return uniqDeps
+}
+
+func isIndirectLib(libName string, dircetDeps map[string]string) bool {
+	_, ok := dircetDeps[libName]
+	return !ok
 }
