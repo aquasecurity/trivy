@@ -233,16 +233,6 @@ func (s Scanner) scanLibrary(apps []ftypes.Application, options types.ScanOption
 		}
 		if options.ListAllPackages {
 			libReport.Packages = app.Libraries
-
-			idx := make(map[string][]string)
-
-			for _, dep := range app.Dependencies {
-				idx[dep.ID] = dep.DependsOn
-			}
-
-			for _, pkg := range libReport.Packages {
-				pkg.DependsOn = idx[pkg.ID]
-			}
 		}
 		results = append(results, libReport)
 	}
