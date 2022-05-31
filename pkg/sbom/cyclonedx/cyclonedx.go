@@ -1,12 +1,12 @@
 package cyclonedx
 
 import (
-	"github.com/package-url/packageurl-go"
 	"sort"
 	"strconv"
 	"strings"
 
 	cdx "github.com/CycloneDX/cyclonedx-go"
+	"github.com/package-url/packageurl-go"
 	"golang.org/x/xerrors"
 
 	ftypes "github.com/aquasecurity/fanal/types"
