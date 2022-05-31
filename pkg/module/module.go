@@ -109,8 +109,9 @@ func NewManager(ctx context.Context) (*Manager, error) {
 
 func (m *Manager) loadModules(ctx context.Context) error {
 	moduleDir := dir()
-	if err := os.MkdirAll(moduleDir, 0755); err != nil {
-		return xerrors.Errorf("mkdir error: %w", err)
+	_, err := os.Stat(moduleDir)
+	if os.IsNotExist(err) {
+		return nil
 	}
 	log.Logger.Debugf("Module dir: %s", moduleDir)
 
@@ -371,7 +372,7 @@ func (a *wasmModule) Analyze(ctx context.Context, input analyzer.AnalysisInput) 
 	if err != nil {
 		return nil, xerrors.Errorf("failed to write string to memory: %w", err)
 	}
-	defer a.free.Call(ctx, inputPtr)
+	defer a.free.Call(ctx, inputPtr) // nolint: errcheck
 
 	analyzeRes, err := a.analyze.Call(ctx, inputPtr, inputSize)
 	if err != nil {
@@ -397,7 +398,7 @@ func (a *wasmModule) PostScan(ctx context.Context, report *types.Report) error {
 	if err != nil {
 		return xerrors.Errorf("post scan marshal error: %w", err)
 	}
-	defer a.free.Call(ctx, inputPtr)
+	defer a.free.Call(ctx, inputPtr) //nolint: errcheck
 
 	analyzeRes, err := a.postScan.Call(ctx, inputPtr, inputSize)
 	if err != nil {
