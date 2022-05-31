@@ -162,7 +162,7 @@ func (b TrivyBOM) Aggregate(libs []cdx.Component) ([]ftypes.Application, error) 
 			}
 			appsMap[p.Type] = app
 		}
-		pkg, err := purl.Package(p)
+		pkg, err := b.Package(lib)
 		if err != nil {
 			return nil, xerrors.Errorf("failed to parse purl to package: %w", err)
 		}
@@ -196,6 +196,7 @@ func (b TrivyBOM) Package(component cdx.Component) (*ftypes.Package, error) {
 	if err != nil {
 		return nil, xerrors.Errorf("failed to parse purl: %w", err)
 	}
+	pkg.Ref = component.BOMRef
 
 	if component.Licenses != nil {
 		for _, license := range *component.Licenses {

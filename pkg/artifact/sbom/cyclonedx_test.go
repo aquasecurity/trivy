@@ -26,7 +26,7 @@ func TestArtifact_Inspect(t *testing.T) {
 			filePath: "testdata/bom.json",
 			putBlobExpectation: cache.ArtifactCachePutBlobExpectation{
 				Args: cache.ArtifactCachePutBlobArgs{
-					BlobID: "sha256:97707b9207dddb2aef23c137cccdba7a7a8af5d0db775bd16017709b72fcc723",
+					BlobID: "sha256:980e9b72e376c2773e0ba5ce836bdc9cddb02f5cd1a8162b6c0faf0a20ba9d88",
 					BlobInfo: types.BlobInfo{
 						SchemaVersion: types.BlobJSONSchemaVersion,
 						OS: &types.OS{
@@ -38,6 +38,7 @@ func TestArtifact_Inspect(t *testing.T) {
 								Packages: []types.Package{
 									{
 										Name: "musl", Version: "1.2.3-r0", SrcName: "musl", SrcVersion: "1.2.3-r0", License: "MIT",
+										Ref: "pkg:apk/alpine/musl@1.2.3-r0?distro=3.16.0",
 										Layer: types.Layer{
 											DiffID: "sha256:dd565ff850e7003356e2b252758f9bdc1ff2803f61e995e24c7844f6297f8fc3",
 										},
@@ -52,6 +53,7 @@ func TestArtifact_Inspect(t *testing.T) {
 								Libraries: []types.Package{
 									{
 										Name:    "org.codehaus.mojo:child-project",
+										Ref:     "pkg:maven/org.codehaus.mojo/child-project@1.0?file_path=app%2Fmaven%2Ftarget%2Fchild-project-1.0.jar",
 										Version: "1.0",
 										Layer: types.Layer{
 											DiffID: "sha256:3c79e832b1b4891a1cb4a326ef8524e0bd14a2537150ac0e203a5677176c1ca1",
@@ -66,6 +68,7 @@ func TestArtifact_Inspect(t *testing.T) {
 									{
 										Name:    "bootstrap",
 										Version: "5.0.2",
+										Ref:     "pkg:npm/bootstrap@5.0.2?file_path=app%2Fapp%2Fpackage.json",
 										License: "MIT",
 										Layer: types.Layer{
 											DiffID: "sha256:3c79e832b1b4891a1cb4a326ef8524e0bd14a2537150ac0e203a5677176c1ca1",
@@ -80,6 +83,7 @@ func TestArtifact_Inspect(t *testing.T) {
 									{
 										Name:    "pear/log",
 										Version: "1.13.1",
+										Ref:     "pkg:composer/pear/log@1.13.1",
 										Layer: types.Layer{
 											DiffID: "sha256:3c79e832b1b4891a1cb4a326ef8524e0bd14a2537150ac0e203a5677176c1ca1",
 										},
@@ -88,6 +92,7 @@ func TestArtifact_Inspect(t *testing.T) {
 
 										Name:    "pear/pear_exception",
 										Version: "v1.0.0",
+										Ref:     "pkg:composer/pear/pear_exception@v1.0.0",
 										Layer: types.Layer{
 											DiffID: "sha256:3c79e832b1b4891a1cb4a326ef8524e0bd14a2537150ac0e203a5677176c1ca1",
 										},
@@ -101,6 +106,7 @@ func TestArtifact_Inspect(t *testing.T) {
 									{
 										Name:    "github.com/package-url/packageurl-go",
 										Version: "v0.1.1-0.20220203205134-d70459300c8a",
+										Ref:     "pkg:golang/github.com/package-url/packageurl-go@v0.1.1-0.20220203205134-d70459300c8a",
 										Layer: types.Layer{
 											DiffID: "sha256:3c79e832b1b4891a1cb4a326ef8524e0bd14a2537150ac0e203a5677176c1ca1",
 										},
@@ -115,9 +121,9 @@ func TestArtifact_Inspect(t *testing.T) {
 			want: types.ArtifactReference{
 				Name: "urn:uuid:c986ba94-e37d-49c8-9e30-96daccd0415b",
 				Type: sbom.ArtifactCycloneDX,
-				ID:   "sha256:97707b9207dddb2aef23c137cccdba7a7a8af5d0db775bd16017709b72fcc723",
+				ID:   "sha256:980e9b72e376c2773e0ba5ce836bdc9cddb02f5cd1a8162b6c0faf0a20ba9d88",
 				BlobIDs: []string{
-					"sha256:97707b9207dddb2aef23c137cccdba7a7a8af5d0db775bd16017709b72fcc723",
+					"sha256:980e9b72e376c2773e0ba5ce836bdc9cddb02f5cd1a8162b6c0faf0a20ba9d88",
 				},
 			},
 		},
