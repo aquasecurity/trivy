@@ -5,6 +5,7 @@ import (
 	"sort"
 	"strings"
 
+	"github.com/aquasecurity/fanal/analyzer/config/helm"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/fanal/analyzer"
@@ -35,7 +36,7 @@ func (o *ScannerOption) Sort() {
 }
 
 func RegisterConfigAnalyzers(filePatterns []string) error {
-	var dockerRegexp, jsonRegexp, yamlRegexp *regexp.Regexp
+	var dockerRegexp, jsonRegexp, yamlRegexp, helmRegexp *regexp.Regexp
 	for _, p := range filePatterns {
 		// e.g. "dockerfile:my_dockerfile_*"
 		s := strings.SplitN(p, separator, 2)
@@ -55,6 +56,8 @@ func RegisterConfigAnalyzers(filePatterns []string) error {
 			jsonRegexp = r
 		case types.YAML:
 			yamlRegexp = r
+		case types.Helm:
+			helmRegexp = r
 		default:
 			return xerrors.Errorf("unknown file type: %s, pattern: %s", fileType, pattern)
 		}
@@ -64,6 +67,7 @@ func RegisterConfigAnalyzers(filePatterns []string) error {
 	analyzer.RegisterAnalyzer(terraform.NewConfigAnalyzer())
 	analyzer.RegisterAnalyzer(json.NewConfigAnalyzer(jsonRegexp))
 	analyzer.RegisterAnalyzer(yaml.NewConfigAnalyzer(yamlRegexp))
+	analyzer.RegisterAnalyzer(helm.NewConfigAnalyzer(helmRegexp))
 
 	return nil
 }

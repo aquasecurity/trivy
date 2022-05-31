@@ -44,10 +44,11 @@ func TestSecretAnalyzer(t *testing.T) {
 			filePath:   "testdata/secret.txt",
 			dir:        ".",
 			want: &analyzer.AnalysisResult{
-				Secrets: []types.Secret{{
-					FilePath: "testdata/secret.txt",
-					Findings: []types.SecretFinding{wantFinding1, wantFinding2},
-				},
+				Secrets: []types.Secret{
+					{
+						FilePath: "testdata/secret.txt",
+						Findings: []types.SecretFinding{wantFinding1, wantFinding2},
+					},
 				},
 			},
 		},
@@ -56,10 +57,11 @@ func TestSecretAnalyzer(t *testing.T) {
 			configPath: "testdata/image-config.yaml",
 			filePath:   "testdata/secret.txt",
 			want: &analyzer.AnalysisResult{
-				Secrets: []types.Secret{{
-					FilePath: "/testdata/secret.txt",
-					Findings: []types.SecretFinding{wantFinding1, wantFinding2},
-				},
+				Secrets: []types.Secret{
+					{
+						FilePath: "/testdata/secret.txt",
+						Findings: []types.SecretFinding{wantFinding1, wantFinding2},
+					},
 				},
 			},
 		},

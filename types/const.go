@@ -33,6 +33,7 @@ const (
 	CloudFormation = "cloudformation"
 	Kubernetes     = "kubernetes"
 	Ansible        = "ansible"
+	Helm           = "helm"
 
 	// Language-specific file names
 	NuGetPkgsLock   = "packages.lock.json"

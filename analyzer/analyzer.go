@@ -319,7 +319,9 @@ func (ag AnalyzerGroup) AnalyzeFile(ctx context.Context, wg *sync.WaitGroup, lim
 				log.Logger.Debugf("Analysis error: %s", err)
 				return
 			}
-			result.Merge(ret)
+			if ret != nil {
+				result.Merge(ret)
+			}
 		}(a, rc)
 	}
 

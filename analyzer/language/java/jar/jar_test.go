@@ -29,9 +29,18 @@ func Test_javaLibraryAnalyzer_Analyze(t *testing.T) {
 						FilePath: "testdata/test.war",
 						Libraries: []types.Package{
 							{Name: "org.glassfish:javax.el", FilePath: "testdata/test.war", Version: "3.0.0"},
-							{Name: "com.fasterxml.jackson.core:jackson-databind", FilePath: "testdata/test.war", Version: "2.9.10.6"},
-							{Name: "com.fasterxml.jackson.core:jackson-annotations", FilePath: "testdata/test.war", Version: "2.9.10"},
-							{Name: "com.fasterxml.jackson.core:jackson-core", FilePath: "testdata/test.war", Version: "2.9.10"},
+							{
+								Name: "com.fasterxml.jackson.core:jackson-databind", FilePath: "testdata/test.war",
+								Version: "2.9.10.6",
+							},
+							{
+								Name: "com.fasterxml.jackson.core:jackson-annotations", FilePath: "testdata/test.war",
+								Version: "2.9.10",
+							},
+							{
+								Name: "com.fasterxml.jackson.core:jackson-core", FilePath: "testdata/test.war",
+								Version: "2.9.10",
+							},
 							{Name: "org.slf4j:slf4j-api", FilePath: "testdata/test.war", Version: "1.7.30"},
 							{Name: "com.cronutils:cron-utils", FilePath: "testdata/test.war", Version: "9.1.2"},
 							{Name: "org.apache.commons:commons-lang3", FilePath: "testdata/test.war", Version: "3.11"},
@@ -50,7 +59,10 @@ func Test_javaLibraryAnalyzer_Analyze(t *testing.T) {
 						Type:     types.Jar,
 						FilePath: "testdata/test.par",
 						Libraries: []types.Package{
-							{Name: "com.fasterxml.jackson.core:jackson-core", FilePath: "testdata/test.par", Version: "2.9.10"},
+							{
+								Name: "com.fasterxml.jackson.core:jackson-core", FilePath: "testdata/test.par",
+								Version: "2.9.10",
+							},
 						},
 					},
 				},

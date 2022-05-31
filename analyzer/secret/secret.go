@@ -30,8 +30,10 @@ var (
 		"Gemfile.lock",
 	}
 	skipDirs = []string{".git", "node_modules"}
-	skipExts = []string{".jpg", ".png", ".gif", ".doc", ".pdf", ".bin", ".svg", ".socket", ".deb", ".rpm",
-		".zip", ".gz", ".gzip", ".tar", ".pyc"}
+	skipExts = []string{
+		".jpg", ".png", ".gif", ".doc", ".pdf", ".bin", ".svg", ".socket", ".deb", ".rpm",
+		".zip", ".gz", ".gzip", ".tar", ".pyc",
+	}
 )
 
 type ScannerOption struct {
