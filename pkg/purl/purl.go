@@ -60,10 +60,14 @@ func NewPackageURL(t string, metadata types.Metadata, pkg ftypes.Package) (Packa
 		qualifiers = append(qualifiers, qs...)
 	case packageurl.TypeDebian:
 		qualifiers = append(qualifiers, parseDeb(metadata.OS)...)
-		namespace = metadata.OS.Family
+		if metadata.OS != nil {
+			namespace = metadata.OS.Family
+		}
 	case string(analyzer.TypeApk): // TODO: replace with packageurl.TypeApk once they add it.
 		qualifiers = append(qualifiers, parseApk(metadata.OS)...)
-		namespace = metadata.OS.Family
+		if metadata.OS != nil {
+			namespace = metadata.OS.Family
+		}
 	case packageurl.TypeMaven:
 		namespace, name = parseMaven(name)
 	case packageurl.TypePyPi:
@@ -119,6 +123,10 @@ func parseOCI(metadata types.Metadata) (packageurl.PackageURL, error) {
 }
 
 func parseApk(fos *ftypes.OS) packageurl.Qualifiers {
+	if fos == nil {
+		return packageurl.Qualifiers{}
+	}
+
 	return packageurl.Qualifiers{
 		{
 			Key:   "distro",
@@ -129,6 +137,11 @@ func parseApk(fos *ftypes.OS) packageurl.Qualifiers {
 
 // ref. https://github.com/package-url/purl-spec/blob/a748c36ad415c8aeffe2b8a4a5d8a50d16d6d85f/PURL-TYPES.rst#deb
 func parseDeb(fos *ftypes.OS) packageurl.Qualifiers {
+
+	if fos == nil {
+		return packageurl.Qualifiers{}
+	}
+
 	distro := fmt.Sprintf("%s-%s", fos.Family, fos.Name)
 	return packageurl.Qualifiers{
 		{
@@ -140,6 +153,10 @@ func parseDeb(fos *ftypes.OS) packageurl.Qualifiers {
 
 // ref. https://github.com/package-url/purl-spec/blob/a748c36ad415c8aeffe2b8a4a5d8a50d16d6d85f/PURL-TYPES.rst#rpm
 func parseRPM(fos *ftypes.OS, modularityLabel string) (string, packageurl.Qualifiers) {
+	if fos == nil {
+		return "", packageurl.Qualifiers{}
+	}
+
 	// SLES string has whitespace
 	family := fos.Family
 	if fos.Family == os.SLES {

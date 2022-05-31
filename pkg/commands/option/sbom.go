@@ -1,14 +1,15 @@
 package option
 
 import (
+	"github.com/urfave/cli/v2"
+	"go.uber.org/zap"
 	"golang.org/x/exp/slices"
 	"golang.org/x/xerrors"
 
-	"github.com/urfave/cli/v2"
-	"go.uber.org/zap"
+	"github.com/aquasecurity/trivy/pkg/report"
 )
 
-var supportedSbomFormats = []string{"cyclonedx", "spdx", "spdx-json"}
+var supportedSbomFormats = []string{report.FormatCycloneDX, report.FormatSPDX, report.FormatSPDXJSON, report.FormatGitHub}
 
 // SbomOption holds the options for SBOM generation
 type SbomOption struct {

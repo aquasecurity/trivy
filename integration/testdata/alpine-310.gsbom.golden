@@ -1,0 +1,91 @@
+{
+  "detector": {
+    "name": "trivy",
+    "version": "dev",
+    "url": "https://github.com/aquasecurity/trivy"
+  },
+  "ref": "/ref/feature-1",
+  "sha": "39da54a1ff04120a31df8cbc94ce9ede251d21a3",
+  "job": {
+    "correlator": "workflow-name_integration",
+    "id": "1910764383"
+  },
+  "scanned": "2020-08-10T07:28:17Z",
+  "manifests": {
+    "testdata/fixtures/images/alpine-310.tar.gz (alpine 3.10.2)": {
+      "name": "alpine",
+      "resolved": {
+        "alpine-baselayout": {
+          "package_url": "pkg:apk/alpine-baselayout@3.1.2-r0",
+          "relationship": "direct",
+          "scope": "runtime"
+        },
+        "alpine-keys": {
+          "package_url": "pkg:apk/alpine-keys@2.1-r2",
+          "relationship": "direct",
+          "scope": "runtime"
+        },
+        "apk-tools": {
+          "package_url": "pkg:apk/apk-tools@2.10.4-r2",
+          "relationship": "direct",
+          "scope": "runtime"
+        },
+        "busybox": {
+          "package_url": "pkg:apk/busybox@1.30.1-r2",
+          "relationship": "direct",
+          "scope": "runtime"
+        },
+        "ca-certificates-cacert": {
+          "package_url": "pkg:apk/ca-certificates-cacert@20190108-r0",
+          "relationship": "direct",
+          "scope": "runtime"
+        },
+        "libc-utils": {
+          "package_url": "pkg:apk/libc-utils@0.7.1-r0",
+          "relationship": "direct",
+          "scope": "runtime"
+        },
+        "libcrypto1.1": {
+          "package_url": "pkg:apk/libcrypto1.1@1.1.1c-r0",
+          "relationship": "direct",
+          "scope": "runtime"
+        },
+        "libssl1.1": {
+          "package_url": "pkg:apk/libssl1.1@1.1.1c-r0",
+          "relationship": "direct",
+          "scope": "runtime"
+        },
+        "libtls-standalone": {
+          "package_url": "pkg:apk/libtls-standalone@2.9.1-r0",
+          "relationship": "direct",
+          "scope": "runtime"
+        },
+        "musl": {
+          "package_url": "pkg:apk/musl@1.1.22-r3",
+          "relationship": "direct",
+          "scope": "runtime"
+        },
+        "musl-utils": {
+          "package_url": "pkg:apk/musl-utils@1.1.22-r3",
+          "relationship": "direct",
+          "scope": "runtime"
+        },
+        "scanelf": {
+          "package_url": "pkg:apk/scanelf@1.2.3-r0",
+          "relationship": "direct",
+          "scope": "runtime"
+        },
+        "ssl_client": {
+          "package_url": "pkg:apk/ssl_client@1.30.1-r2",
+          "relationship": "direct",
+          "scope": "runtime"
+        },
+        "zlib": {
+          "package_url": "pkg:apk/zlib@1.2.11-r1",
+          "relationship": "direct",
+          "scope": "runtime"
+        }
+      }
+    }
+  }
+}

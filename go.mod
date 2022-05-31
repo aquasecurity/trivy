@@ -7,7 +7,7 @@ require (
 	github.com/Masterminds/sprig/v3 v3.2.2
 	github.com/NYTimes/gziphandler v1.1.1
 	github.com/aquasecurity/bolt-fixtures v0.0.0-20200903104109-d34e7f983986
-	github.com/aquasecurity/fanal v0.0.0-20220516110734-b18dcc16cd58
+	github.com/aquasecurity/fanal v0.0.0-20220519114754-f9a9d959763a
 	github.com/aquasecurity/go-dep-parser v0.0.0-20220503151658-d316f5cc2cff
 	github.com/aquasecurity/go-gem-version v0.0.0-20201115065557-8eed6fe000ce
 	github.com/aquasecurity/go-npm-version v0.0.0-20201110091526-0b796d180798
@@ -78,7 +78,7 @@ require (
 	github.com/agext/levenshtein v1.2.3 // indirect
 	github.com/apparentlymart/go-cidr v1.1.0 // indirect
 	github.com/apparentlymart/go-textseg/v13 v13.0.0 // indirect
-	github.com/aquasecurity/defsec v0.57.6
+	github.com/aquasecurity/defsec v0.58.2
 	github.com/aws/aws-sdk-go v1.44.5 // indirect
 	github.com/bgentry/go-netrc v0.0.0-20140422174119-9fd32a8b3d3d // indirect
 	github.com/bmatcuk/doublestar v1.3.4 // indirect
@@ -92,7 +92,7 @@ require (
 	github.com/dgryski/go-rendezvous v0.0.0-20200823014737-9f7001d12a5f // indirect
 	github.com/dimchansky/utfbom v1.1.1 // indirect
 	github.com/docker/cli v20.10.13+incompatible // indirect
-	github.com/docker/distribution v2.8.0+incompatible // indirect
+	github.com/docker/distribution v2.8.1+incompatible // indirect
 	github.com/docker/docker-credential-helpers v0.6.4 // indirect
 	github.com/docker/go-units v0.4.0 // indirect
 	github.com/emirpasic/gods v1.12.0 // indirect
@@ -199,7 +199,7 @@ require (
 
 require (
 	github.com/aquasecurity/table v1.5.1
-	github.com/aquasecurity/trivy-kubernetes v0.2.1
+	github.com/aquasecurity/trivy-kubernetes v0.2.2
 )
 
 require (
@@ -251,6 +251,3 @@ replace github.com/containerd/containerd v1.5.9 => github.com/containerd/contain
 
 // See https://github.com/moby/moby/issues/42939#issuecomment-1114255529
 replace github.com/docker/docker => github.com/docker/docker v20.10.3-0.20220224222438-c78f6963a1c0+incompatible
-
-// TODO: remove once the feature is merged upstream
-replace github.com/aquasecurity/trivy-kubernetes v0.1.0 => github.com/josedonizetti/trivy-kubernetes v0.0.0-20220515001536-b6e8afada9c5

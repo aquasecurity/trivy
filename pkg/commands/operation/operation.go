@@ -98,8 +98,8 @@ func (c Cache) ClearArtifacts() error {
 }
 
 // DownloadDB downloads the DB
-func DownloadDB(appVersion, cacheDir, dbRepository string, quiet, skipUpdate bool) error {
-	client := db.NewClient(cacheDir, quiet, db.WithDBRepository(dbRepository))
+func DownloadDB(appVersion, cacheDir, dbRepository string, quiet, insecure, skipUpdate bool) error {
+	client := db.NewClient(cacheDir, quiet, insecure, db.WithDBRepository(dbRepository))
 	ctx := context.Background()
 	needsUpdate, err := client.NeedsUpdate(appVersion, skipUpdate)
 	if err != nil {

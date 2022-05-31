@@ -180,10 +180,10 @@ github.com/apparentlymart/go-textseg/v13 v13.0.0 h1:Y+KvPE1NYz0xl601PVImeQfFyEy6
 github.com/apparentlymart/go-textseg/v13 v13.0.0/go.mod h1:ZK2fH7c4NqDTLtiYLvIkEghdlcqw7yxLeM89kiTRPUo=
 github.com/aquasecurity/bolt-fixtures v0.0.0-20200903104109-d34e7f983986 h1:2a30xLN2sUZcMXl50hg+PJCIDdJgIvIbVcKqLJ/ZrtM=
 github.com/aquasecurity/bolt-fixtures v0.0.0-20200903104109-d34e7f983986/go.mod h1:NT+jyeCzXk6vXR5MTkdn4z64TgGfE5HMLC8qfj5unl8=
-github.com/aquasecurity/defsec v0.57.6 h1:IeREWBMeJUmHHlG41FnjmsvndjoAs0aso6judsr82nc=
-github.com/aquasecurity/defsec v0.57.6/go.mod h1:42FxKif2itz+MHFlJ3TJjdroL9Jzj3THoexlueBTU5w=
-github.com/aquasecurity/fanal v0.0.0-20220516110734-b18dcc16cd58 h1:o6Y1tS1NuzDRDDb8pfKW/ElwBYW8fRI8etgaw9FlRJQ=
-github.com/aquasecurity/fanal v0.0.0-20220516110734-b18dcc16cd58/go.mod h1:5E2NdTg9dgzGfMNpy+5egrezFBF1v8j+iiUYPLL1cs0=
+github.com/aquasecurity/defsec v0.58.2 h1:cT9c9Ybxmg2uiscBukfuUOi2llIsGm9sGhHZlF8OWSc=
+github.com/aquasecurity/defsec v0.58.2/go.mod h1:42FxKif2itz+MHFlJ3TJjdroL9Jzj3THoexlueBTU5w=
+github.com/aquasecurity/fanal v0.0.0-20220519114754-f9a9d959763a h1:+CP8v+mryAfCB++HaC/utmyO7DoikF4FnItu64UJ9NI=
+github.com/aquasecurity/fanal v0.0.0-20220519114754-f9a9d959763a/go.mod h1:YBL0ONEaoaYpL21Lr7aEK2sJPP/nxduHTqve4yTzhv0=
 github.com/aquasecurity/go-dep-parser v0.0.0-20220503151658-d316f5cc2cff h1:YNlzRYB0n4mZtfuWx6AWaGEjnLVNekchyoFDlYFZegs=
 github.com/aquasecurity/go-dep-parser v0.0.0-20220503151658-d316f5cc2cff/go.mod h1:7EOQWQmyavVPY3fScbbPdd3dB/b0Q4ZbJ/NZCvNKrLs=
 github.com/aquasecurity/go-gem-version v0.0.0-20201115065557-8eed6fe000ce h1:QgBRgJvtEOBtUXilDb1MLi1p1MWoyFDXAu5DEUl5nwM=
@@ -200,8 +200,8 @@ github.com/aquasecurity/table v1.5.1/go.mod h1:1MFKrEPJ8NchM917BrVGvsqoXJo1OL1Ja
 github.com/aquasecurity/testdocker v0.0.0-20210911155206-e1e85f5a1516 h1:moQmzbpLo5dxHQCyEhqzizsDSNrNhn/7uRTCZzo4A1o=
 github.com/aquasecurity/trivy-db v0.0.0-20220510190819-8ca06716f46e h1:NLm5KWGcnkwaUR1GODPePyhNsbuFiT6lgKYcCcW9c10=
 github.com/aquasecurity/trivy-db v0.0.0-20220510190819-8ca06716f46e/go.mod h1:/nULgnDeq/JMPMVwE1dmf4kWlYn++7VrM3O2naj4BHA=
-github.com/aquasecurity/trivy-kubernetes v0.2.1 h1:h7MeJpwZXd4+9f6mWRslrYQWSY/NXede50zUDx4kwLk=
-github.com/aquasecurity/trivy-kubernetes v0.2.1/go.mod h1:9fU3sHz/wXN5ruZ5snUEJpzm2X6pUndKucv1mz9Walc=
+github.com/aquasecurity/trivy-kubernetes v0.2.2 h1:j7jdALJ+NuuRm/q2s60eH1FfvFfvheEtPgfmSArU7Ww=
+github.com/aquasecurity/trivy-kubernetes v0.2.2/go.mod h1:+AIWIhAXnx3YBDQPrtVNfw5C2DHQ0raehMz5Uhwt/yc=
 github.com/armon/circbuf v0.0.0-20150827004946-bbbad097214e/go.mod h1:3U/XgcO3hCbHZ8TKRvWD2dDTCfh9M9ya+I9JpbB7O8o=
 github.com/armon/consul-api v0.0.0-20180202201655-eb2c6b5be1b6/go.mod h1:grANhF5doyWs3UAsr3K4I6qtAmlQcZDesFNEHPZAzj8=
 github.com/armon/go-metrics v0.0.0-20180917152333-f0300d1749da/go.mod h1:Q73ZrmVTwzkszR9V5SSuryQ31EELlFMUz1kKyl939pY=
@@ -459,6 +459,8 @@ github.com/docker/distribution v2.7.1-0.20190205005809-0d3efadf0154+incompatible
 github.com/docker/distribution v2.7.1+incompatible/go.mod h1:J2gT2udsDAN96Uj4KfcMRqY0/ypR+oyYUYmja8H+y+w=
 github.com/docker/distribution v2.8.0+incompatible h1:l9EaZDICImO1ngI+uTifW+ZYvvz7fKISBAKpg+MbWbY=
 github.com/docker/distribution v2.8.0+incompatible/go.mod h1:J2gT2udsDAN96Uj4KfcMRqY0/ypR+oyYUYmja8H+y+w=
+github.com/docker/distribution v2.8.1+incompatible h1:Q50tZOPR6T/hjNsyc9g8/syEs6bk8XXApsHjKukMl68=
+github.com/docker/distribution v2.8.1+incompatible/go.mod h1:J2gT2udsDAN96Uj4KfcMRqY0/ypR+oyYUYmja8H+y+w=
 github.com/docker/docker v20.10.3-0.20220224222438-c78f6963a1c0+incompatible h1:Ptj2To+ezU/mCBUKdYXBQ2r3/2EJojAlOZrsgprF+is=
 github.com/docker/docker v20.10.3-0.20220224222438-c78f6963a1c0+incompatible/go.mod h1:eEKB0N0r5NX/I1kEveEz05bcu8tLC/8azJZsviup8Sk=
 github.com/docker/docker-credential-helpers v0.6.3/go.mod h1:WRaJzqw3CTB9bk10avuGsjVBZsD05qeibJ1/TYlvc0Y=

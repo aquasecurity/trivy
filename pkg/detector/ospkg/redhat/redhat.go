@@ -36,6 +36,10 @@ var (
 			"rhel-8-for-x86_64-baseos-rpms",
 			"rhel-8-for-x86_64-appstream-rpms",
 		},
+		"9": {
+			"rhel-9-for-x86_64-baseos-rpms",
+			"rhel-9-for-x86_64-appstream-rpms",
+		},
 	}
 	redhatEOLDates = map[string]time.Time{
 		"4": time.Date(2017, 5, 31, 23, 59, 59, 0, time.UTC),
@@ -44,6 +48,7 @@ var (
 		// N/A
 		"7": time.Date(3000, 1, 1, 23, 59, 59, 0, time.UTC),
 		"8": time.Date(3000, 1, 1, 23, 59, 59, 0, time.UTC),
+		"9": time.Date(3000, 1, 1, 23, 59, 59, 0, time.UTC),
 	}
 	centosEOLDates = map[string]time.Time{
 		"3": time.Date(2010, 10, 31, 23, 59, 59, 0, time.UTC),
@@ -154,7 +159,11 @@ func (s *Scanner) detect(osVer string, pkg ftypes.Package) ([]types.DetectedVuln
 
 		// unpatched vulnerabilities
 		if adv.FixedVersion == "" {
-			uniqVulns[vulnID] = vuln
+			// Red Hat may contain several advisories for the same vulnerability (RHSA advisories).
+			// To avoid overwriting the fixed version by mistake, we should skip unpatched vulnerabilities if they were added earlier
+			if _, ok := uniqVulns[vulnID]; !ok {
+				uniqVulns[vulnID] = vuln
+			}
 			continue
 		}
 
