@@ -1,3 +1,5 @@
+//go:build tinygo.wasm
+
 package wasm
 
 // This package is designed to be imported by WASM modules.
