@@ -3,11 +3,7 @@
 ## Before you Begin
 
 You need to have a Kubernetes cluster, and the kubectl command-line tool must be configured to communicate with your
-cluster. If you do not already have a cluster, you can create one by installing [minikube] or [kind], or you can use one
-of these Kubernetes playgrounds:
-
-* [Katacoda]
-* [Play with Kubernetes]
+cluster. If you do not already have a cluster, you can create one by installing [minikube], [kind] or [microk8s], or you can use the following [Kubernetes playground].
 
 You also need the Trivy-Operator to be installed in the `trivy-system` namespace, e.g. with
 [kubectl](./installation/kubectl.md) or [Helm](./installation/helm.md). Let's also assume that the operator is
@@ -194,8 +190,8 @@ No resources found in default namespace.
 
 [minikube]: https://minikube.sigs.k8s.io/docs/
 [kind]: https://kind.sigs.k8s.io/docs/
-[Katacoda]: https://www.katacoda.com/courses/kubernetes/playground/
-[Play with Kubernetes]: http://labs.play-with-k8s.com/
+[microk8s]: https://microk8s.io/
+[Kubernetes playground]: http://labs.play-with-k8s.com/
 [tree]: https://github.com/ahmetb/kubectl-tree
 [Private Registries]: ./../vulnerability-scanning/private-registries.md
 [Vulnerability Scanner]: ./../vulnerability-scanning/index.md

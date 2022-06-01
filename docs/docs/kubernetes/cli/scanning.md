@@ -4,9 +4,13 @@
 
 This feature might change without preserving backwards compatibility.
 
-Scan your Kubernetes cluster for both Vulnerabilities, Secrets and Misconfigurations.
+The Trivy K8s CLI allows you to scan your Kubernetes cluster for Vulnerabilities, Secrets and Misconfigurations. You can either run the CLI locally or integrate it into your CI/CD pipeline. The difference to the Trivy CLI is that the Trivy K8s CLI allows you to scan running workloads directly within your cluster.
+
+If you are looking for continuous cluster audit scanning, have a look at the [Trivy K8s operator.](../operator/getting-started.md)
 
 Trivy uses your local kubectl configuration to access the API server to list artifacts.
+
+## CLI Commands
 
 Scan a full cluster and generate a simple summary report:
 
@@ -43,6 +47,14 @@ Scan a specific resource and get all the output:
 ```
 $ trivy k8s deployment/appname
 ```
+
+If you want to pass in flags before scanning specific workloads, you will have to do it before the resource name.
+For example, scanning a deployment in the app namespace of your Kubernetes cluster for critical vulnerabilities would be done through the following command:
+
+```
+$ trivy k8s -n app --severity=CRITICAL deployment/appname
+```
+This is specific to all Trivy CLI commands.
 
 The supported formats are `table`, which is the default, and `json`.
 To get a JSON output on a full cluster scan:
@@ -206,3 +218,4 @@ $ trivy k8s --format json -o results.json
 ```
 
 </details>
+
