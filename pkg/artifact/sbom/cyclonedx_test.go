@@ -26,7 +26,7 @@ func TestArtifact_Inspect(t *testing.T) {
 			filePath: "testdata/bom.json",
 			putBlobExpectation: cache.ArtifactCachePutBlobExpectation{
 				Args: cache.ArtifactCachePutBlobArgs{
-					BlobID: "sha256:5d5b1fb13a42ec2222990c9241875615940ac6740f6e24b203a787b6ede38111",
+					BlobID: "sha256:4bfa323cf3ec98edb9fe0d658dfb60fd9746c108ac6d156cbc0ed6eb1e8577cd",
 					BlobInfo: types.BlobInfo{
 						SchemaVersion: types.BlobJSONSchemaVersion,
 						OS: &types.OS{
@@ -47,35 +47,6 @@ func TestArtifact_Inspect(t *testing.T) {
 							},
 						},
 						Applications: []types.Application{
-							{
-								Type:     "jar",
-								FilePath: "app/maven/target/child-project-1.0.jar",
-								Libraries: []types.Package{
-									{
-										Name:    "org.codehaus.mojo:child-project",
-										Ref:     "pkg:maven/org.codehaus.mojo/child-project@1.0?file_path=app%2Fmaven%2Ftarget%2Fchild-project-1.0.jar",
-										Version: "1.0",
-										Layer: types.Layer{
-											DiffID: "sha256:3c79e832b1b4891a1cb4a326ef8524e0bd14a2537150ac0e203a5677176c1ca1",
-										},
-									},
-								},
-							},
-							{
-								Type:     "node-pkg",
-								FilePath: "app/app/package.json",
-								Libraries: []types.Package{
-									{
-										Name:    "bootstrap",
-										Version: "5.0.2",
-										Ref:     "pkg:npm/bootstrap@5.0.2?file_path=app%2Fapp%2Fpackage.json",
-										License: "MIT",
-										Layer: types.Layer{
-											DiffID: "sha256:3c79e832b1b4891a1cb4a326ef8524e0bd14a2537150ac0e203a5677176c1ca1",
-										},
-									},
-								},
-							},
 							{
 								Type:     "composer",
 								FilePath: "app/composer/composer.lock",
@@ -113,6 +84,35 @@ func TestArtifact_Inspect(t *testing.T) {
 									},
 								},
 							},
+							{
+								Type:     "jar",
+								FilePath: "app/maven/target/child-project-1.0.jar",
+								Libraries: []types.Package{
+									{
+										Name:    "org.codehaus.mojo:child-project",
+										Ref:     "pkg:maven/org.codehaus.mojo/child-project@1.0?file_path=app%2Fmaven%2Ftarget%2Fchild-project-1.0.jar",
+										Version: "1.0",
+										Layer: types.Layer{
+											DiffID: "sha256:3c79e832b1b4891a1cb4a326ef8524e0bd14a2537150ac0e203a5677176c1ca1",
+										},
+									},
+								},
+							},
+							{
+								Type:     "node-pkg",
+								FilePath: "app/app/package.json",
+								Libraries: []types.Package{
+									{
+										Name:    "bootstrap",
+										Version: "5.0.2",
+										Ref:     "pkg:npm/bootstrap@5.0.2?file_path=app%2Fapp%2Fpackage.json",
+										License: "MIT",
+										Layer: types.Layer{
+											DiffID: "sha256:3c79e832b1b4891a1cb4a326ef8524e0bd14a2537150ac0e203a5677176c1ca1",
+										},
+									},
+								},
+							},
 						},
 					},
 				},
@@ -121,9 +121,89 @@ func TestArtifact_Inspect(t *testing.T) {
 			want: types.ArtifactReference{
 				Name: "urn:uuid:c986ba94-e37d-49c8-9e30-96daccd0415b",
 				Type: sbom.ArtifactCycloneDX,
-				ID:   "sha256:5d5b1fb13a42ec2222990c9241875615940ac6740f6e24b203a787b6ede38111",
+				ID:   "sha256:4bfa323cf3ec98edb9fe0d658dfb60fd9746c108ac6d156cbc0ed6eb1e8577cd",
 				BlobIDs: []string{
-					"sha256:5d5b1fb13a42ec2222990c9241875615940ac6740f6e24b203a787b6ede38111",
+					"sha256:4bfa323cf3ec98edb9fe0d658dfb60fd9746c108ac6d156cbc0ed6eb1e8577cd",
+				},
+			},
+		},
+		{
+			name:     "happy path for unrelated bom",
+			filePath: "testdata/unrelated-bom.json",
+			putBlobExpectation: cache.ArtifactCachePutBlobExpectation{
+				Args: cache.ArtifactCachePutBlobArgs{
+					BlobID: "sha256:ea09d8a95228b312911406d9b3add685e8b2ee87dd3823453cb20569802aa88d",
+					BlobInfo: types.BlobInfo{
+						SchemaVersion: types.BlobJSONSchemaVersion,
+						Applications: []types.Application{
+							{
+								Type:     "composer",
+								FilePath: "app/composer/composer.lock",
+								Libraries: []types.Package{
+									{
+										Name:    "pear/log",
+										Version: "1.13.1",
+										Ref:     "pkg:composer/pear/log@1.13.1",
+									},
+									{
+
+										Name:    "pear/pear_exception",
+										Version: "v1.0.0",
+										Ref:     "pkg:composer/pear/pear_exception@v1.0.0",
+									},
+								},
+							},
+						},
+					},
+				},
+				Returns: cache.ArtifactCachePutBlobReturns{},
+			},
+			want: types.ArtifactReference{
+				Name: "urn:uuid:c986ba94-e37d-49c8-9e30-96daccd0415b",
+				Type: sbom.ArtifactCycloneDX,
+				ID:   "sha256:ea09d8a95228b312911406d9b3add685e8b2ee87dd3823453cb20569802aa88d",
+				BlobIDs: []string{
+					"sha256:ea09d8a95228b312911406d9b3add685e8b2ee87dd3823453cb20569802aa88d",
+				},
+			},
+		},
+		{
+			name:     "happy path for independent library bom",
+			filePath: "testdata/independent-library-bom.json",
+			putBlobExpectation: cache.ArtifactCachePutBlobExpectation{
+				Args: cache.ArtifactCachePutBlobArgs{
+					BlobID: "sha256:ba85a9ec1a62fee42a97c76d073cef5fe352e07856e598db5c816dc280ca4e27",
+					BlobInfo: types.BlobInfo{
+						SchemaVersion: types.BlobJSONSchemaVersion,
+						Applications: []types.Application{
+							{
+								Type:     "composer",
+								FilePath: "composer",
+								Libraries: []types.Package{
+									{
+										Name:    "pear/log",
+										Version: "1.13.1",
+										Ref:     "pkg:composer/pear/log@1.13.1",
+									},
+									{
+
+										Name:    "pear/pear_exception",
+										Version: "v1.0.0",
+										Ref:     "pkg:composer/pear/pear_exception@v1.0.0",
+									},
+								},
+							},
+						},
+					},
+				},
+				Returns: cache.ArtifactCachePutBlobReturns{},
+			},
+			want: types.ArtifactReference{
+				Name: "urn:uuid:c986ba94-e37d-49c8-9e30-96daccd0415b",
+				Type: sbom.ArtifactCycloneDX,
+				ID:   "sha256:ba85a9ec1a62fee42a97c76d073cef5fe352e07856e598db5c816dc280ca4e27",
+				BlobIDs: []string{
+					"sha256:ba85a9ec1a62fee42a97c76d073cef5fe352e07856e598db5c816dc280ca4e27",
 				},
 			},
 		},

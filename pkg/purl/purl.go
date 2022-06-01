@@ -2,6 +2,7 @@ package purl
 
 import (
 	"fmt"
+	cdx "github.com/CycloneDX/cyclonedx-go"
 	"strconv"
 	"strings"
 
@@ -296,8 +297,18 @@ func purlType(t string) string {
 	return t
 }
 
+func TypeFromLibraryComponent(c cdx.Component) (string, error) {
+	p, err := packageurl.FromString(c.PackageURL)
+	if err != nil {
+		return "", xerrors.Errorf("failed to parse purl: %w", err)
+	}
+	return Type(p.Type), nil
+}
+
 func Type(t string) string {
 	switch t {
+	case packageurl.TypeComposer:
+		return string(analyzer.TypeComposer)
 	case packageurl.TypeMaven:
 		return string(analyzer.TypeJar)
 	case packageurl.TypeGem:
@@ -311,6 +322,7 @@ func Type(t string) string {
 	}
 	return ""
 }
+
 func parseQualifier(pkg ftypes.Package) packageurl.Qualifiers {
 	qualifiers := packageurl.Qualifiers{}
 	if pkg.Arch != "" {

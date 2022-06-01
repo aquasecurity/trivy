@@ -55,7 +55,7 @@ func (b TrivyBOM) Extract() ([]ftypes.Application, []ftypes.PackageInfo, *ftypes
 	appMap := make(map[string]*ftypes.Application)
 	libMap := make(map[string]cdx.Component)
 
-	os := &ftypes.OS{}
+	var os *ftypes.OS
 	for _, component := range *b.Components {
 		switch component.Type {
 		case cdx.ComponentTypeOS:
@@ -118,8 +118,19 @@ func (b TrivyBOM) Extract() ([]ftypes.Application, []ftypes.PackageInfo, *ftypes
 				unrelatedLibs = append(unrelatedLibs, lib)
 			} else {
 				// Other Ref dependencies application libraries.
+				if app.Type == "" {
+					t, err := purl.TypeFromLibraryComponent(lib)
+					if err != nil {
+						return nil, nil, nil, xerrors.Errorf("failed to get type from component: %w", err)
+					}
+					app.Type = t
+				}
 				app.Libraries = append(app.Libraries, *pkg)
 			}
+		}
+		if appOk {
+			apps = append(apps, *app)
+			delete(appMap, dep.Ref)
 		}
 		if len(pkgInfo.Packages) != 0 {
 			pkgInfos = append(pkgInfos, pkgInfo)
@@ -143,6 +154,7 @@ func (b TrivyBOM) Aggregate(libs []cdx.Component) ([]ftypes.Application, error) 
 		if err != nil {
 			return nil, xerrors.Errorf("failed to parse purl from string: %w", err)
 		}
+		log.Logger.Infof("%+v  %s", p, p.Type)
 
 		app, ok := appsMap[p.Type]
 		if !ok {
