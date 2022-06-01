@@ -73,7 +73,7 @@ jobs:
         go-version: ${{ env.GO_VERSION }}
 
     - name: Run GoReleaser
-      uses: goreleaser/goreleaser-action@v2
+      uses: goreleaser/goreleaser-action@v3
       with:
         version: v1.4.1
         args: release --snapshot --rm-dist --skip-publish
