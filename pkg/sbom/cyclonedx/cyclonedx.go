@@ -154,7 +154,6 @@ func (b TrivyBOM) Aggregate(libs []cdx.Component) ([]ftypes.Application, error) 
 		if err != nil {
 			return nil, xerrors.Errorf("failed to parse purl from string: %w", err)
 		}
-		log.Logger.Infof("%+v  %s", p, p.Type)
 
 		app, ok := appsMap[p.Type]
 		if !ok {
