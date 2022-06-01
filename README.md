@@ -1,14 +1,5 @@
-<p align="center">
-  <img src="docs/imgs/logo.png" width="200">
-</p>
-
-<p align="center">
-  <a href="https://aquasecurity.github.io/trivy/">Documentation</a> 
-</p>
-
-<p align="center">
-Scanner for vulnerabilities in container images, file systems, and Git repositories, as well as for configuration issues
-</p>
+<div align="center">
+<img src="docs/imgs/logo.png" width="200">
 
 [![GitHub Release][release-img]][release]
 [![Test][test-img]][test]
@@ -17,76 +8,59 @@ Scanner for vulnerabilities in container images, file systems, and Git repositor
 [![GitHub All Releases][github-all-releases-img]][release]
 ![Docker Pulls][docker-pulls]
 
+[📖 Documentation](docs)
+</div>
 
-# Abstract
-`Trivy` (`tri` pronounced like **tri**gger, `vy` pronounced like en**vy**) is a simple and comprehensive scanner for vulnerabilities in container images, file systems, and Git repositories, as well as for configuration issues.
-`Trivy` detects vulnerabilities of OS packages (Alpine, RHEL, CentOS, etc.) and language-specific packages (Bundler, Composer, npm, yarn, etc.).
-In addition, `Trivy` scans Infrastructure as Code (IaC) files such as Terraform, Dockerfile and Kubernetes, to detect potential configuration issues that expose your deployments to the risk of attack.
-`Trivy` also scans hardcoded secrets like passwords, API keys and tokens.
-`Trivy` is easy to use. Just install the binary and you're ready to scan.
+Trivy (`tri` pronounced like **tri**gger, `vy` pronounced like en**vy**) is a comprehensive security scanner. It is reliable, fast, extremely easy to use, and it works wherever you need it.
 
-<figure style="text-aligh: center">
-  <img src="docs/imgs/overview.png" width="800" alt="Trivy Overview">
-</figure>
+Trivy has different *scanners* that look for different security issues, and different *targets* where it can find those issues.
 
-### Demo: Vulnerability Detection (Container Image)
-<figure style="text-aligh: center">
-  <img src="docs/imgs/vuln-demo.gif" width="1000" alt="Vulnerability Detection">
-</figure>
+Targets:
+- Container Image
+- Filesystem
+- Git repository (remote)
+- Kubernetes cluster or resource
 
-### Demo: Misconfiguration Detection (IaC Files)
-<figure style="text-aligh: center">
-  <img src="docs/imgs/misconf-demo.gif" width="1000" alt="Misconfiguration Detection">
-</figure>
+Scanners:
+- OS packages and software dependencies in use (SBOM)
+- Known vulnerabilities (CVEs)
+- IaC misconfigurations
+- Sensitive information and secrets
 
-### Demo: Secret Detection
-<figure style="text-aligh: center">
-  <img src="docs/imgs/secret-demo.gif" width="1000">
-</figure>
+Much more scanners and targets are coming up. Missing something? Let us know!
 
+Read more in the [Trivy Documentation](docs)
 
-# Quick Start
-## Scan Image for Vulnerabilities and Secrets
-Simply specify an image name (and a tag).
+## Quick Start
 
+### Get Trivy
+
+Get Trivy by your favorite installation method. See [installation] section in the documentation for details. For example:
+
+- `apt-get install trivy`
+- `yum install trivy`
+- `brew install aquasecurity/trivy/trivy`
+- `docker run aquasec/trivy`
+- Download binary from https://github.com/aquasecurity/trivy/releases/latest/
+
+### General usage
+
+```bash
+trivy <target> [--security-checks <scanner1,scanner2>] TARGET_NAME
 ```
-$ trivy image [YOUR_IMAGE_NAME]
-```
 
-For example:
+Examples:
 
-```
+```bash
 $ trivy image python:3.4-alpine
 ```
 
 <details>
 <summary>Result</summary>
 
-```
-2019-05-16T01:20:43.180+0900    INFO    Updating vulnerability database...
-2019-05-16T01:20:53.029+0900    INFO    Detecting Alpine vulnerabilities...
+https://user-images.githubusercontent.com/1161307/171013513-95f18734-233d-45d3-aaf5-d6aec687db0e.mov
 
-python:3.4-alpine3.9 (alpine 3.9.2)
-===================================
-Total: 1 (UNKNOWN: 0, LOW: 0, MEDIUM: 1, HIGH: 0, CRITICAL: 0)
-
-+---------+------------------+----------+-------------------+---------------+--------------------------------+
-| LIBRARY | VULNERABILITY ID | SEVERITY | INSTALLED VERSION | FIXED VERSION |             TITLE              |
-+---------+------------------+----------+-------------------+---------------+--------------------------------+
-| openssl | CVE-2019-1543    | MEDIUM   | 1.1.1a-r1         | 1.1.1b-r1     | openssl: ChaCha20-Poly1305     |
-|         |                  |          |                   |               | with long nonces               |
-+---------+------------------+----------+-------------------+---------------+--------------------------------+
-```
 </details>
-
-## Scan Filesystem for Vulnerabilities, Secrets and Misconfigurations
-Simply specify a directory to scan.
-
-```bash
-$ trivy fs --security-checks vuln,secret,config [YOUR_PROJECT_DIR]
-```
-
-For example:
 
 ```bash
 $ trivy fs --security-checks vuln,secret,config myproject/
@@ -95,117 +69,50 @@ $ trivy fs --security-checks vuln,secret,config myproject/
 <details>
 <summary>Result</summary>
 
-```bash
-2021-07-09T12:03:27.564+0300    INFO    Number of language-specific files: 1
-2021-07-09T12:03:27.564+0300    INFO    Detecting pipenv vulnerabilities...
-2021-07-09T12:03:27.566+0300    INFO    Detected config files: 1
+https://user-images.githubusercontent.com/1161307/171013917-b1f37810-f434-465c-b01a-22de036bd9b3.mov
 
-Pipfile.lock (pipenv)
-=====================
-Total: 1 (HIGH: 1, CRITICAL: 0)
-
-+----------+------------------+----------+-------------------+---------------+---------------------------------------+
-| LIBRARY  | VULNERABILITY ID | SEVERITY | INSTALLED VERSION | FIXED VERSION |                 TITLE                 |
-+----------+------------------+----------+-------------------+---------------+---------------------------------------+
-| httplib2 | CVE-2021-21240   | HIGH     | 0.12.1            | 0.19.0        | python-httplib2: Regular              |
-|          |                  |          |                   |               | expression denial of                  |
-|          |                  |          |                   |               | service via malicious header          |
-|          |                  |          |                   |               | -->avd.aquasec.com/nvd/cve-2021-21240 |
-+----------+------------------+----------+-------------------+---------------+---------------------------------------+
-
-Dockerfile (dockerfile)
-=======================
-Tests: 23 (SUCCESSES: 22, FAILURES: 1, EXCEPTIONS: 0)
-Failures: 1 (HIGH: 1, CRITICAL: 0)
-
-+---------------------------+------------+----------------------+----------+------------------------------------------+
-|           TYPE            | MISCONF ID |        CHECK         | SEVERITY |                 MESSAGE                  |
-+---------------------------+------------+----------------------+----------+------------------------------------------+
-| Dockerfile Security Check |   DS002    | Image user is 'root' |   HIGH   | Last USER command in                     |
-|                           |            |                      |          | Dockerfile should not be 'root'          |
-|                           |            |                      |          | -->avd.aquasec.com/appshield/ds002       |
-+---------------------------+------------+----------------------+----------+------------------------------------------+
-```
 </details>
 
-## Scan Directory for Misconfigurations
-
-Simply specify a directory containing IaC files such as Terraform and Dockerfile.
-
-```
-$ trivy config [YOUR_IAC_DIR]
-```
-
-For example:
-
-```
-$ ls build/
-Dockerfile
-$ trivy config ./build
+```bash
+$ trivy k8s mycluster
 ```
 
 <details>
 <summary>Result</summary>
 
-```
-2021-07-09T10:06:29.188+0300    INFO    Need to update the built-in policies
-2021-07-09T10:06:29.188+0300    INFO    Downloading the built-in policies...
-2021-07-09T10:06:30.520+0300    INFO    Detected config files: 1
-
-Dockerfile (dockerfile)
-=======================
-Tests: 23 (SUCCESSES: 22, FAILURES: 1, EXCEPTIONS: 0)
-Failures: 1 (UNKNOWN: 0, LOW: 0, MEDIUM: 0, HIGH: 1, CRITICAL: 0)
-
-+---------------------------+------------+----------------------+----------+------------------------------------------+
-|           TYPE            | MISCONF ID |        CHECK         | SEVERITY |                 MESSAGE                  |
-+---------------------------+------------+----------------------+----------+------------------------------------------+
-| Dockerfile Security Check |   DS002    | Image user is 'root' |   HIGH   | Last USER command in                     |
-|                           |            |                      |          | Dockerfile should not be 'root'          |
-|                           |            |                      |          | -->avd.aquasec.com/appshield/ds002       |
-+---------------------------+------------+----------------------+----------+------------------------------------------+
-```
+![k8s summary](docs/imgs/trivy-k8s.png)
 
 </details>
 
+Find out more in the [Trivy Documentation](docs) - [Getting Started](getting-started)
 
-# Features
+
+## Highlights
 
 - Comprehensive vulnerability detection
   - OS packages (Alpine Linux, Red Hat Universal Base Image, Red Hat Enterprise Linux, CentOS, AlmaLinux, Rocky Linux, CBL-Mariner, Oracle Linux, Debian, Ubuntu, Amazon Linux, openSUSE Leap, SUSE Enterprise Linux, Photon OS and Distroless)
   - **Language-specific packages** (Bundler, Composer, Pipenv, Poetry, npm, yarn, Cargo, NuGet, Maven, and Go)
-- Misconfiguration detection (IaC scanning) 
-  - A wide variety of built-in policies are provided **out of the box**
-    - Kubernetes, Docker, Terraform, and more coming soon
-  - Support custom policies
-- Secret detection
-  - A wide variety of built-in rules are provided **out of the box**
-  - Support custom rules
-  - Scan container images at high speed
-- Simple
-  - Specify only an image name, a path to config files, or an artifact name
-- Fast
-  - The first scan will finish within 10 seconds (depending on your network). Consequent scans will finish in single seconds.
-- Easy installation
-  - `apt-get install`, `yum install` and `brew install` are possible.
-  - **No pre-requisites** such as installation of DB, libraries, etc.
-- High accuracy
-  - **Especially [Alpine Linux][alpine] and RHEL/CentOS**
-  - Other OSes are also high
-- DevSecOps
-  - **Suitable for CI** such as GitHub Actions, Jenkins, GitLab CI, etc.
-- Support multiple targets
-  - container image, local filesystem and remote git repository
+  - High accuracy, especially [Alpine Linux][alpine] and RHEL/CentOS
 - Supply chain security (SBOM support)
   - Support CycloneDX
   - Support SPDX
-
-# Integrations
-- [GitHub Actions][action]
-- [Visual Studio Code][vscode]
-
-# Documentation
-The official documentation, which provides detailed installation, configuration, and quick start guides, is available at https://aquasecurity.github.io/trivy/.
+- Misconfiguration detection (IaC scanning) 
+  - Wide variety of security checks are provided **out of the box**
+  - Kubernetes, Docker, Terraform, and more
+  - User-defined policies using [OPA Rego][rego]
+- Secret detection
+  - A wide variety of built-in rules are provided **out of the box**
+  - User-defined patterns
+  - Efficient scanning of container images
+- Simple
+  - Available in apt, yum, brew, dockerhub
+  - **No pre-requisites** such as a database, system libraries, or eny environmental requirements. The binary runs anywhere.
+  - The first scan will finish within 10 seconds (depending on your network). Consequent scans will finish instantaneously.
+- Fits your workflow
+  - **Great for CI** such as GitHub Actions, Jenkins, GitLab CI, etc.
+  - Available as extension for IDEs such as vscode, jetbrains, vim
+  - Available as extension for Docker Desktop, Rancher Desktop
+  - See [integrations] section in the documentation.
 
 ---
 
@@ -224,10 +131,14 @@ Contact us about any matter by opening a GitHub Discussion [here][discussions]
 [license]: https://github.com/aquasecurity/trivy/blob/main/LICENSE
 [license-img]: https://img.shields.io/badge/License-Apache%202.0-blue.svg
 
-[alpine]: https://ariadne.space/2021/06/08/the-vulnerability-remediation-lifecycle-of-alpine-containers/
-[action]: https://github.com/aquasecurity/trivy-action
-[vscode]: https://github.com/aquasecurity/trivy-vscode-extension
 
+[getting-started]: https://aquasecurity.github.io/trivy/latest/getting-started/overview/
+[docs]: https://aquasecurity.github.io/trivy
+[integrations]:https://aquasecurity.github.io/trivy/latest/docs/integrations/
+[installation]:https://aquasecurity.github.io/trivy/latest/docs/getting-started/installation/
+[releases]: https://github.com/aquasecurity/trivy/releases
+[alpine]: https://ariadne.space/2021/06/08/the-vulnerability-remediation-lifecycle-of-alpine-containers/
+[rego]: https://www.openpolicyagent.org/docs/latest/#rego
 [aquasec]: https://aquasec.com
 [oss]: https://www.aquasec.com/products/open-source-projects/
 [discussions]: https://github.com/aquasecurity/trivy/discussions

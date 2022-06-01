@@ -2,6 +2,7 @@ package k8s
 
 import (
 	"io"
+	"sync"
 
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 
@@ -19,7 +20,7 @@ type TableWriter struct {
 func (tw TableWriter) Write(report Report) error {
 	switch tw.Report {
 	case allReport:
-		t := pkgReport.TableWriter{Output: tw.Output, Severities: tw.Severities}
+		t := pkgReport.TableWriter{Output: tw.Output, Severities: tw.Severities, ShowMessageOnce: &sync.Once{}}
 		for _, r := range report.Vulnerabilities {
 			if r.Report.Results.Failed() {
 				err := t.Write(r.Report)
