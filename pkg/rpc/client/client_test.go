@@ -228,7 +228,7 @@ func TestScanner_ScanServerInsecure(t *testing.T) {
 		{
 			name:     "sad path",
 			insecure: false,
-			wantErr:  "certificate signed by unknown authority",
+			wantErr:  "failed to do request",
 		},
 	}
 	for _, tt := range tests {
