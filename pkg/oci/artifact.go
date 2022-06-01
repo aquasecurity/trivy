@@ -2,7 +2,9 @@ package oci
 
 import (
 	"context"
+	"crypto/tls"
 	"io"
+	"net/http"
 	"os"
 
 	"github.com/cheggaaa/pb/v3"
@@ -37,7 +39,7 @@ type Artifact struct {
 }
 
 // NewArtifact returns a new artifact
-func NewArtifact(repo, mediaType string, quiet bool, opts ...Option) (*Artifact, error) {
+func NewArtifact(repo, mediaType string, quiet, insecure bool, opts ...Option) (*Artifact, error) {
 	o := &options{}
 
 	for _, opt := range opts {
@@ -50,7 +52,15 @@ func NewArtifact(repo, mediaType string, quiet bool, opts ...Option) (*Artifact,
 			return nil, xerrors.Errorf("repository name error (%s): %w", repo, err)
 		}
 
-		o.img, err = remote.Image(ref)
+		var remoteOpts []remote.Option
+		if insecure {
+			t := &http.Transport{
+				TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
+			}
+			remoteOpts = append(remoteOpts, remote.WithTransport(t))
+		}
+
+		o.img, err = remote.Image(ref, remoteOpts...)
 		if err != nil {
 			return nil, xerrors.Errorf("OCI repository error: %w", err)
 		}

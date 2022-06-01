@@ -60,13 +60,14 @@ func WithClock(clock clock.Clock) Option {
 type Client struct {
 	*options
 
-	cacheDir string
-	metadata metadata.Client
-	quiet    bool
+	cacheDir              string
+	metadata              metadata.Client
+	quiet                 bool
+	insecureSkipTLSVerify bool
 }
 
 // NewClient is the factory method for DB client
-func NewClient(cacheDir string, quiet bool, opts ...Option) *Client {
+func NewClient(cacheDir string, quiet, insecure bool, opts ...Option) *Client {
 	o := &options{
 		clock:        clock.RealClock{},
 		dbRepository: defaultDBRepository,
@@ -77,10 +78,11 @@ func NewClient(cacheDir string, quiet bool, opts ...Option) *Client {
 	}
 
 	return &Client{
-		options:  o,
-		cacheDir: cacheDir,
-		metadata: metadata.NewClient(cacheDir),
-		quiet:    quiet,
+		options:               o,
+		cacheDir:              cacheDir,
+		metadata:              metadata.NewClient(cacheDir),
+		quiet:                 quiet,
+		insecureSkipTLSVerify: insecure, // insecure skip for download DB
 	}
 }
 
@@ -183,7 +185,7 @@ func (c *Client) updateDownloadedAt(dst string) error {
 func (c *Client) populateOCIArtifact() error {
 	if c.artifact == nil {
 		repo := fmt.Sprintf("%s:%d", c.dbRepository, db.SchemaVersion)
-		art, err := oci.NewArtifact(repo, dbMediaType, c.quiet)
+		art, err := oci.NewArtifact(repo, dbMediaType, c.quiet, c.insecureSkipTLSVerify)
 		if err != nil {
 			return xerrors.Errorf("OCI artifact error: %w", err)
 		}

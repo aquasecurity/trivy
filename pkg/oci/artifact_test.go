@@ -83,7 +83,7 @@ func TestNewArtifact(t *testing.T) {
 			img := new(fakei.FakeImage)
 			img.LayersReturns(tt.layersReturns.layers, tt.layersReturns.err)
 
-			_, err = oci.NewArtifact("repo", tt.mediaType, true, oci.WithImage(img))
+			_, err = oci.NewArtifact("repo", tt.mediaType, true, false, oci.WithImage(img))
 			if tt.wantErr != "" {
 				require.Error(t, err)
 				assert.Contains(t, err.Error(), tt.wantErr)
@@ -128,7 +128,7 @@ func TestArtifact_Download(t *testing.T) {
 			img.LayersReturns([]v1.Layer{flayer}, nil)
 
 			mediaType := "application/vnd.cncf.openpolicyagent.layer.v1.tar+gzip"
-			artifact, err := oci.NewArtifact("repo", mediaType, true, oci.WithImage(img))
+			artifact, err := oci.NewArtifact("repo", mediaType, true, false, oci.WithImage(img))
 			require.NoError(t, err)
 
 			err = artifact.Download(context.Background(), tempDir)

@@ -62,7 +62,7 @@
       "location": {
         "path": "{{ $target }}",
         "lines": {
-          "begin": {{ .IacMetadata.StartLine }}
+          "begin": {{ .CauseMetadata.StartLine }}
         }
       }
     }

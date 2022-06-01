@@ -13,10 +13,10 @@ import (
 
 // Run runs the scan
 func Run(ctx *cli.Context) error {
-	return run(NewConfig(ctx))
+	return run(NewOption(ctx))
 }
 
-func run(c Config) (err error) {
+func run(c Option) (err error) {
 	if err = log.InitLogger(c.Debug, c.Quiet); err != nil {
 		return xerrors.Errorf("failed to initialize a logger: %w", err)
 	}
@@ -40,7 +40,7 @@ func run(c Config) (err error) {
 	}
 
 	// download the database file
-	if err = operation.DownloadDB(c.AppVersion, c.CacheDir, c.DBRepository, true, c.SkipDBUpdate); err != nil {
+	if err = operation.DownloadDB(c.AppVersion, c.CacheDir, c.DBRepository, true, c.Insecure, c.SkipDBUpdate); err != nil {
 		return err
 	}
 
@@ -53,5 +53,5 @@ func run(c Config) (err error) {
 	}
 
 	server := rpcServer.NewServer(c.AppVersion, c.Listen, c.CacheDir, c.Token, c.TokenHeader)
-	return server.ListenAndServe(cache)
+	return server.ListenAndServe(cache, c.Insecure)
 }

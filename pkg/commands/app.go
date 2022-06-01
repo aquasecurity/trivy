@@ -218,6 +218,14 @@ var (
 		EnvVars: []string{"TRIVY_K8S_NAMESPACE"},
 	}
 
+	contextFlag = cli.StringFlag{
+		Name:    "context",
+		Aliases: []string{"ctx"},
+		Value:   "",
+		Usage:   "specify a context to scan",
+		EnvVars: []string{"TRIVY_K8S_CONTEXT"},
+	}
+
 	reportFlag = cli.StringFlag{
 		Name:  "report",
 		Value: "all",
@@ -517,6 +525,7 @@ func NewFilesystemCommand() *cli.Command {
 			&exitCodeFlag,
 			&skipDBUpdateFlag,
 			&skipPolicyUpdateFlag,
+			&insecureFlag,
 			&clearCacheFlag,
 			&ignoreUnfixedFlag,
 			&vulnTypeFlag,
@@ -565,6 +574,7 @@ func NewRootfsCommand() *cli.Command {
 			&outputFlag,
 			&exitCodeFlag,
 			&skipDBUpdateFlag,
+			&insecureFlag,
 			&skipPolicyUpdateFlag,
 			&clearCacheFlag,
 			&ignoreUnfixedFlag,
@@ -696,6 +706,7 @@ func NewServerCommand() *cli.Command {
 		Flags: []cli.Flag{
 			&skipDBUpdateFlag,
 			&downloadDBOnlyFlag,
+			&insecureFlag,
 			&resetFlag,
 			&cacheBackendFlag,
 			&cacheTTL,
@@ -803,13 +814,17 @@ func NewPluginCommand() *cli.Command {
 func NewK8sCommand() *cli.Command {
 	k8sSecurityChecksFlag := withValue(
 		securityChecksFlag,
-		fmt.Sprintf("%s,%s", types.SecurityCheckVulnerability, types.SecurityCheckConfig),
+		fmt.Sprintf(
+			"%s,%s,%s",
+			types.SecurityCheckVulnerability,
+			types.SecurityCheckConfig,
+			types.SecurityCheckSecret),
 	)
 
 	return &cli.Command{
 		Name:    "kubernetes",
 		Aliases: []string{"k8s"},
-		Usage:   "scan kubernetes vulnerabilities and misconfigurations",
+		Usage:   "scan kubernetes vulnerabilities, secrets and misconfigurations",
 		CustomHelpTemplate: cli.CommandHelpTemplate + `EXAMPLES:
   - cluster scanning:
       $ trivy k8s --report summary
@@ -822,6 +837,7 @@ func NewK8sCommand() *cli.Command {
 `,
 		Action: k8s.Run,
 		Flags: []cli.Flag{
+			&contextFlag,
 			&namespaceFlag,
 			&reportFlag,
 			&formatFlag,
@@ -829,6 +845,7 @@ func NewK8sCommand() *cli.Command {
 			&severityFlag,
 			&exitCodeFlag,
 			&skipDBUpdateFlag,
+			&insecureFlag,
 			&skipPolicyUpdateFlag,
 			&clearCacheFlag,
 			&ignoreUnfixedFlag,
@@ -888,6 +905,7 @@ func NewSbomCommand() *cli.Command {
 			&severityFlag,
 			&offlineScan,
 			&dbRepositoryFlag,
+			&insecureFlag,
 			stringSliceFlag(skipFiles),
 			stringSliceFlag(skipDirs),
 

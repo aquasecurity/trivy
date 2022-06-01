@@ -16,12 +16,12 @@ func TestNew(t *testing.T) {
 	tests := []struct {
 		name string
 		args []string
-		want server.Config
+		want server.Option
 	}{
 		{
 			name: "happy path",
 			args: []string{"-quiet", "--no-progress", "--reset", "--skip-db-update", "--listen", "localhost:8080"},
-			want: server.Config{
+			want: server.Option{
 				GlobalOption: option.GlobalOption{
 					Quiet: true,
 				},
@@ -49,7 +49,7 @@ func TestNew(t *testing.T) {
 
 			tt.want.GlobalOption.Context = ctx
 
-			got := server.NewConfig(ctx)
+			got := server.NewOption(ctx)
 			assert.Equal(t, tt.want.GlobalOption.Quiet, got.Quiet, tt.name)
 			assert.Equal(t, tt.want.DBOption, got.DBOption, tt.name)
 			assert.Equal(t, tt.want.Listen, got.Listen, tt.name)
@@ -88,7 +88,7 @@ func TestConfig_Init(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			c := &server.Config{
+			c := &server.Option{
 				DBOption: tt.dbConfig,
 			}
 
