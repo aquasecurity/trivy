@@ -116,7 +116,7 @@ func (w Writer) Write(report types.Report) error {
 			githubPkg := Package{}
 			githubPkg.Scope = RuntimeScope
 			githubPkg.Relationship = getPkgRelationshipType(pkg)
-			githubPkg.Dependencies = getDependencies(result, pkg)
+			githubPkg.Dependencies = pkg.DependsOn
 			githubPkg.PackageUrl, err = buildPurl(result.Type, pkg)
 			if err != nil {
 				return xerrors.Errorf("unable to build purl for %s: %w", pkg.Name, err)
@@ -151,15 +151,6 @@ func getMetadata(report types.Report) Metadata {
 		metadata["aquasecurity:trivy:RepoDigest"] = strings.Join(report.Metadata.RepoDigests, ", ")
 	}
 	return metadata
-}
-
-func getDependencies(result types.Result, pkg ftypes.Package) []string {
-	for _, dep := range result.Dependencies {
-		if dep.ID == pkg.ID {
-			return dep.DependsOn
-		}
-	}
-	return []string{}
 }
 
 func getPkgRelationshipType(pkg ftypes.Package) string {
