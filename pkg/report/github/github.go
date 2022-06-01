@@ -55,7 +55,7 @@ type Detector struct {
 }
 
 type DependencySnapshot struct {
-	Version   int                 `json:"version,omitempty"`
+	Version   int                 `json:"version"`
 	Detector  Detector            `json:"detector"`
 	Metadata  Metadata            `json:"metadata,omitempty"`
 	Ref       string              `json:"ref,omitempty"`

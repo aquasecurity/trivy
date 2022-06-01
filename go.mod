@@ -246,6 +246,8 @@ require (
 	sigs.k8s.io/yaml v1.3.0 // indirect
 )
 
+replace github.com/aquasecurity/go-dep-parser v0.0.0-20220503151658-d316f5cc2cff => /Users/shira.cohen/Aqua/go-dep-parser
+
 // To resolve CVE-2022-23648
 replace github.com/containerd/containerd v1.5.9 => github.com/containerd/containerd v1.5.10
 
