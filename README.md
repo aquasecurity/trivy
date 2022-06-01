@@ -11,7 +11,7 @@
 [📖 Documentation](docs)
 </div>
 
-Trivy is a comprehensive security scanner. It is reliable, fast, extremely easy to use, and it works wherever you need it.
+Trivy (`tri` pronounced like **tri**gger, `vy` pronounced like en**vy**) is a comprehensive security scanner. It is reliable, fast, extremely easy to use, and it works wherever you need it.
 
 Trivy has different *scanners* that look for different security issues, and different *targets* where it can find those issues.
 
@@ -31,9 +31,9 @@ Much more scanners and targets are coming up. Missing something? Let us know!
 
 Read more in the [Trivy Documentation](docs)
 
-# Quick Start
+## Quick Start
 
-## Get Trivy
+### Get Trivy
 
 Get Trivy by your favorite installation method. See [installation] section in the documentation for details. For example:
 
@@ -43,10 +43,10 @@ Get Trivy by your favorite installation method. See [installation] section in th
 - `docker run aquasec/trivy`
 - Download binary from https://github.com/aquasecurity/trivy/releases/latest/
 
-## General usage
+### General usage
 
 ```bash
-trivy <target> [--security-checks <scanner1,scanner2>]
+trivy <target> [--security-checks <scanner1,scanner2>] TARGET_NAME
 ```
 
 Examples:
@@ -87,7 +87,7 @@ $ trivy k8s mycluster
 Find out more in the [Trivy Documentation](docs) - [Getting Started](getting-started)
 
 
-# Highlights
+## Highlights
 
 - Comprehensive vulnerability detection
   - OS packages (Alpine Linux, Red Hat Universal Base Image, Red Hat Enterprise Linux, CentOS, AlmaLinux, Rocky Linux, CBL-Mariner, Oracle Linux, Debian, Ubuntu, Amazon Linux, openSUSE Leap, SUSE Enterprise Linux, Photon OS and Distroless)
