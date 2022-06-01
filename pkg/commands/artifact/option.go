@@ -53,13 +53,8 @@ func NewOption(c *cli.Context) (Option, error) {
 
 // Init initializes the artifact options
 func (c *Option) Init() error {
-	if err := c.initPreScanOptions(); err != nil {
+	if err := c.InitPreScanOptions(); err != nil {
 		return err
-	}
-
-	// --clear-cache, --download-db-only and --reset don't conduct the scan
-	if c.skipScan() {
-		return nil
 	}
 
 	if err := c.ArtifactOption.Init(c.Context, c.Logger); err != nil {
@@ -68,7 +63,13 @@ func (c *Option) Init() error {
 	return nil
 }
 
-func (c *Option) initPreScanOptions() error {
+// InitPreScanOptions initializes the pre scan options
+func (c *Option) InitPreScanOptions() error {
+	// --clear-cache, --download-db-only and --reset don't conduct the scan
+	if c.skipScan() {
+		return nil
+	}
+
 	if err := c.ReportOption.Init(c.Context.App.Writer, c.Logger); err != nil {
 		return err
 	}

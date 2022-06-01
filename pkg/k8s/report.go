@@ -120,8 +120,8 @@ type Writer interface {
 	Write(Report) error
 }
 
-// write writes the results in the give format
-func write(report Report, option Option) error {
+// Write writes the results in the give format
+func Write(report Report, option Option) error {
 	var writer Writer
 	switch option.Format {
 	case jsonFormat:

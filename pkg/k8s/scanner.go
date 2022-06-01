@@ -15,13 +15,17 @@ import (
 	"github.com/aquasecurity/trivy-kubernetes/pkg/artifacts"
 )
 
-type scanner struct {
+type Scanner struct {
 	cluster string
 	runner  cmd.Runner
 	opt     cmd.Option
 }
 
-func (s *scanner) run(ctx context.Context, artifacts []*artifacts.Artifact) (Report, error) {
+func NewScanner(cluster string, runner *cmd.Runner, opt cmd.Option) *Scanner {
+	return &Scanner{cluster, runner, opt}
+}
+
+func (s *Scanner) Scan(ctx context.Context, artifacts []*artifacts.Artifact) (Report, error) {
 	// progress bar
 	bar := pb.StartNew(len(artifacts))
 	if s.opt.NoProgress {
@@ -78,7 +82,7 @@ func (s *scanner) run(ctx context.Context, artifacts []*artifacts.Artifact) (Rep
 	}, nil
 }
 
-func (s *scanner) scanVulns(ctx context.Context, artifact *artifacts.Artifact) ([]Resource, error) {
+func (s *Scanner) scanVulns(ctx context.Context, artifact *artifacts.Artifact) ([]Resource, error) {
 	resources := make([]Resource, 0, len(artifact.Images))
 
 	for _, image := range artifact.Images {
@@ -104,7 +108,7 @@ func (s *scanner) scanVulns(ctx context.Context, artifact *artifacts.Artifact) (
 	return resources, nil
 }
 
-func (s *scanner) scanMisconfigs(ctx context.Context, artifact *artifacts.Artifact) (Resource, error) {
+func (s *Scanner) scanMisconfigs(ctx context.Context, artifact *artifacts.Artifact) (Resource, error) {
 	configFile, err := createTempFile(artifact)
 	if err != nil {
 		return Resource{}, xerrors.Errorf("scan error: %w", err)
@@ -123,7 +127,7 @@ func (s *scanner) scanMisconfigs(ctx context.Context, artifact *artifacts.Artifa
 	return s.filter(ctx, configReport, artifact)
 }
 
-func (s *scanner) filter(ctx context.Context, report types.Report, artifact *artifacts.Artifact) (Resource, error) {
+func (s *Scanner) filter(ctx context.Context, report types.Report, artifact *artifacts.Artifact) (Resource, error) {
 	report, err := s.runner.Filter(ctx, s.opt, report)
 	if err != nil {
 		return Resource{}, xerrors.Errorf("filter error: %w", err)

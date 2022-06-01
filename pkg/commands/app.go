@@ -16,7 +16,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/commands/option"
 	"github.com/aquasecurity/trivy/pkg/commands/plugin"
 	"github.com/aquasecurity/trivy/pkg/commands/server"
-	"github.com/aquasecurity/trivy/pkg/k8s"
+	k8scommands "github.com/aquasecurity/trivy/pkg/k8s/commands"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/report"
 	"github.com/aquasecurity/trivy/pkg/result"
@@ -821,6 +821,43 @@ func NewK8sCommand() *cli.Command {
 			types.SecurityCheckSecret),
 	)
 
+	flags := []cli.Flag{
+		&contextFlag,
+		&namespaceFlag,
+		&reportFlag,
+		&formatFlag,
+		&outputFlag,
+		&severityFlag,
+		&exitCodeFlag,
+		&skipDBUpdateFlag,
+		&insecureFlag,
+		&skipPolicyUpdateFlag,
+		&clearCacheFlag,
+		&ignoreUnfixedFlag,
+		&vulnTypeFlag,
+		&k8sSecurityChecksFlag,
+		&ignoreFileFlag,
+		&cacheBackendFlag,
+		&cacheTTL,
+		&redisBackendCACert,
+		&redisBackendCert,
+		&redisBackendKey,
+		&timeoutFlag,
+		&noProgressFlag,
+		&ignorePolicy,
+		&listAllPackages,
+		&offlineScan,
+		&dbRepositoryFlag,
+		&secretConfig,
+		stringSliceFlag(skipFiles),
+		stringSliceFlag(skipDirs),
+
+		// for misconfiguration
+		stringSliceFlag(configPolicy),
+		stringSliceFlag(configData),
+		stringSliceFlag(policyNamespaces),
+	}
+
 	return &cli.Command{
 		Name:    "kubernetes",
 		Aliases: []string{"k8s"},
@@ -835,42 +872,19 @@ func NewK8sCommand() *cli.Command {
   - resource scanning:
       $ trivy k8s deployment/orion
 `,
-		Action: k8s.Run,
-		Flags: []cli.Flag{
-			&contextFlag,
-			&namespaceFlag,
-			&reportFlag,
-			&formatFlag,
-			&outputFlag,
-			&severityFlag,
-			&exitCodeFlag,
-			&skipDBUpdateFlag,
-			&insecureFlag,
-			&skipPolicyUpdateFlag,
-			&clearCacheFlag,
-			&ignoreUnfixedFlag,
-			&vulnTypeFlag,
-			&k8sSecurityChecksFlag,
-			&ignoreFileFlag,
-			&cacheBackendFlag,
-			&cacheTTL,
-			&redisBackendCACert,
-			&redisBackendCert,
-			&redisBackendKey,
-			&timeoutFlag,
-			&noProgressFlag,
-			&ignorePolicy,
-			&listAllPackages,
-			&offlineScan,
-			&dbRepositoryFlag,
-			&secretConfig,
-			stringSliceFlag(skipFiles),
-			stringSliceFlag(skipDirs),
-
-			// for misconfiguration
-			stringSliceFlag(configPolicy),
-			stringSliceFlag(configData),
-			stringSliceFlag(policyNamespaces),
+		Flags:  flags,
+		Action: k8scommands.ResourceRun,
+		Subcommands: cli.Commands{
+			{
+				Name:   "cluster",
+				Flags:  flags,
+				Action: k8scommands.ClusterRun,
+			},
+			{
+				Name:   "all",
+				Flags:  flags,
+				Action: k8scommands.NamespaceRun,
+			},
 		},
 	}
 }

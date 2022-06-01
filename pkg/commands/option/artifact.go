@@ -41,7 +41,7 @@ func (c *ArtifactOption) Init(ctx *cli.Context, logger *zap.SugaredLogger) (err 
 		logger.Debug(`trivy requires at least 1 argument or --input option`)
 		_ = cli.ShowSubcommandHelp(ctx) // nolint: errcheck
 		os.Exit(0)
-	} else if ctx.Args().Len() > 1 && ctx.Command.Name != "kubernetes" {
+	} else if ctx.Args().Len() > 1 {
 		logger.Error(`multiple targets cannot be specified`)
 		return xerrors.New("arguments error")
 	}
