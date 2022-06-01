@@ -57,6 +57,11 @@ func (c *Option) Init() error {
 		return err
 	}
 
+	// --clear-cache, --download-db-only and --reset don't conduct the scan
+	if c.SkipScan() {
+		return nil
+	}
+
 	if err := c.ArtifactOption.Init(c.Context, c.Logger); err != nil {
 		return err
 	}
@@ -65,11 +70,6 @@ func (c *Option) Init() error {
 
 // InitPreScanOptions initializes the pre scan options
 func (c *Option) InitPreScanOptions() error {
-	// --clear-cache, --download-db-only and --reset don't conduct the scan
-	if c.skipScan() {
-		return nil
-	}
-
 	if err := c.ReportOption.Init(c.Context.App.Writer, c.Logger); err != nil {
 		return err
 	}
@@ -83,10 +83,11 @@ func (c *Option) InitPreScanOptions() error {
 		return err
 	}
 	c.RemoteOption.Init(c.Logger)
+
 	return nil
 }
 
-func (c *Option) skipScan() bool {
+func (c *Option) SkipScan() bool {
 	if c.ClearCache || c.DownloadDBOnly || c.Reset {
 		return true
 	}

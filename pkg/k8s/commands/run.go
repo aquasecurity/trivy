@@ -9,6 +9,7 @@ import (
 
 	cmd "github.com/aquasecurity/trivy/pkg/commands/artifact"
 	"github.com/aquasecurity/trivy/pkg/k8s"
+	"github.com/aquasecurity/trivy/pkg/k8s/report"
 	"github.com/aquasecurity/trivy/pkg/log"
 
 	"github.com/aquasecurity/trivy-kubernetes/pkg/artifacts"
@@ -46,7 +47,7 @@ func run(ctx context.Context, opt cmd.Option, cluster string, artifacts []*artif
 		return xerrors.Errorf("k8s scan error: %w", err)
 	}
 
-	if err := k8s.Write(r, k8s.Option{
+	if err := report.Write(r, report.Option{
 		Format:     opt.Format,
 		Report:     opt.KubernetesOption.ReportFormat,
 		Output:     opt.Output,

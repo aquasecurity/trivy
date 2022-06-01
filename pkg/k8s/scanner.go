@@ -9,6 +9,7 @@ import (
 	"golang.org/x/xerrors"
 
 	cmd "github.com/aquasecurity/trivy/pkg/commands/artifact"
+	"github.com/aquasecurity/trivy/pkg/k8s/report"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/types"
 
@@ -25,7 +26,7 @@ func NewScanner(cluster string, runner *cmd.Runner, opt cmd.Option) *Scanner {
 	return &Scanner{cluster, runner, opt}
 }
 
-func (s *Scanner) Scan(ctx context.Context, artifacts []*artifacts.Artifact) (Report, error) {
+func (s *Scanner) Scan(ctx context.Context, artifacts []*artifacts.Artifact) (report.Report, error) {
 	// progress bar
 	bar := pb.StartNew(len(artifacts))
 	if s.opt.NoProgress {
@@ -33,12 +34,12 @@ func (s *Scanner) Scan(ctx context.Context, artifacts []*artifacts.Artifact) (Re
 	}
 	defer bar.Finish()
 
-	var vulns, misconfigs []Resource
+	var vulns, misconfigs []report.Resource
 
 	// disable logs before scanning
 	err := log.InitLogger(s.opt.Debug, true)
 	if err != nil {
-		return Report{}, xerrors.Errorf("logger error: %w", err)
+		return report.Report{}, xerrors.Errorf("logger error: %w", err)
 	}
 
 	// enable log, this is done in a defer function,
@@ -60,7 +61,7 @@ func (s *Scanner) Scan(ctx context.Context, artifacts []*artifacts.Artifact) (Re
 		if slices.Contains(s.opt.SecurityChecks, types.SecurityCheckVulnerability) {
 			resources, err := s.scanVulns(ctx, artifact)
 			if err != nil {
-				return Report{}, xerrors.Errorf("scanning vulnerabilities error: %w", err)
+				return report.Report{}, xerrors.Errorf("scanning vulnerabilities error: %w", err)
 			}
 			vulns = append(vulns, resources...)
 		}
@@ -68,13 +69,13 @@ func (s *Scanner) Scan(ctx context.Context, artifacts []*artifacts.Artifact) (Re
 		if slices.Contains(s.opt.SecurityChecks, types.SecurityCheckConfig) {
 			resource, err := s.scanMisconfigs(ctx, artifact)
 			if err != nil {
-				return Report{}, xerrors.Errorf("scanning misconfigurations error: %w", err)
+				return report.Report{}, xerrors.Errorf("scanning misconfigurations error: %w", err)
 			}
 			misconfigs = append(misconfigs, resource)
 		}
 	}
 
-	return Report{
+	return report.Report{
 		SchemaVersion:     0,
 		ClusterName:       s.cluster,
 		Vulnerabilities:   vulns,
@@ -82,8 +83,8 @@ func (s *Scanner) Scan(ctx context.Context, artifacts []*artifacts.Artifact) (Re
 	}, nil
 }
 
-func (s *Scanner) scanVulns(ctx context.Context, artifact *artifacts.Artifact) ([]Resource, error) {
-	resources := make([]Resource, 0, len(artifact.Images))
+func (s *Scanner) scanVulns(ctx context.Context, artifact *artifacts.Artifact) ([]report.Resource, error) {
+	resources := make([]report.Resource, 0, len(artifact.Images))
 
 	for _, image := range artifact.Images {
 
@@ -93,7 +94,7 @@ func (s *Scanner) scanVulns(ctx context.Context, artifact *artifacts.Artifact) (
 
 		if err != nil {
 			log.Logger.Debugf("failed to scan image %s: %s", image, err)
-			resources = append(resources, createResource(artifact, imageReport, err))
+			resources = append(resources, report.CreateResource(artifact, imageReport, err))
 			continue
 		}
 
@@ -108,10 +109,10 @@ func (s *Scanner) scanVulns(ctx context.Context, artifact *artifacts.Artifact) (
 	return resources, nil
 }
 
-func (s *Scanner) scanMisconfigs(ctx context.Context, artifact *artifacts.Artifact) (Resource, error) {
+func (s *Scanner) scanMisconfigs(ctx context.Context, artifact *artifacts.Artifact) (report.Resource, error) {
 	configFile, err := createTempFile(artifact)
 	if err != nil {
-		return Resource{}, xerrors.Errorf("scan error: %w", err)
+		return report.Resource{}, xerrors.Errorf("scan error: %w", err)
 	}
 
 	s.opt.Target = configFile
@@ -121,17 +122,17 @@ func (s *Scanner) scanMisconfigs(ctx context.Context, artifact *artifacts.Artifa
 	removeFile(configFile)
 	if err != nil {
 		log.Logger.Debugf("failed to scan config %s/%s: %s", artifact.Kind, artifact.Name, err)
-		return createResource(artifact, configReport, err), err
+		return report.CreateResource(artifact, configReport, err), err
 	}
 
 	return s.filter(ctx, configReport, artifact)
 }
 
-func (s *Scanner) filter(ctx context.Context, report types.Report, artifact *artifacts.Artifact) (Resource, error) {
-	report, err := s.runner.Filter(ctx, s.opt, report)
+func (s *Scanner) filter(ctx context.Context, r types.Report, artifact *artifacts.Artifact) (report.Resource, error) {
+	r, err := s.runner.Filter(ctx, s.opt, r)
 	if err != nil {
-		return Resource{}, xerrors.Errorf("filter error: %w", err)
+		return report.Resource{}, xerrors.Errorf("filter error: %w", err)
 	}
 
-	return createResource(artifact, report, nil), nil
+	return report.CreateResource(artifact, r, nil), nil
 }

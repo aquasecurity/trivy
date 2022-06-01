@@ -1,4 +1,4 @@
-package k8s
+package report
 
 import (
 	"fmt"
@@ -139,7 +139,7 @@ func Write(report Report, option Option) error {
 	return writer.Write(report)
 }
 
-func createResource(artifact *artifacts.Artifact, report types.Report, err error) Resource {
+func CreateResource(artifact *artifacts.Artifact, report types.Report, err error) Resource {
 	results := make([]types.Result, 0, len(report.Results))
 	// fix target name
 	for _, result := range report.Results {
