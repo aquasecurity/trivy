@@ -84,7 +84,7 @@ $ trivy k8s mycluster
 
 </details>
 
-Find out more in the [Trivy Documentation][docs] - [Getting Started](getting-started)
+Find out more in the [Trivy Documentation][docs] - [Getting Started][getting-started]
 
 
 ## Highlights
