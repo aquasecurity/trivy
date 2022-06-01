@@ -70,7 +70,7 @@ func run(ctx context.Context, opt cmd.Option, cluster string, artifacts []*artif
 //
 // Or they can use "--format json" with implicit "--report all".
 //
-// e.g. $ trivy k8s --format json // All the results are shown in JSON
+// e.g. $ trivy k8s cluster --format json // All the results are shown in JSON
 //
 // Single resource scanning is allowed with implicit "--report all".
 //

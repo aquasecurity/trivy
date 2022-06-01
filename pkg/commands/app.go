@@ -862,28 +862,32 @@ func NewK8sCommand() *cli.Command {
 		Name:    "kubernetes",
 		Aliases: []string{"k8s"},
 		Usage:   "scan kubernetes vulnerabilities, secrets and misconfigurations",
-		CustomHelpTemplate: cli.CommandHelpTemplate + `EXAMPLES:
-  - cluster scanning:
-      $ trivy k8s --report summary cluster
+		UsageText: `
+- cluster scanning:
+	$ trivy k8s cluster --report summary
 
-  - namespace scanning:
-      $ trivy k8s -n kube-system --report summary all
+- namespace scanning:
+	$ trivy k8s all -n kube-system --report summary
 
-  - resource scanning:
-      $ trivy k8s deployment/orion
+- resource scanning:
+	$ trivy k8s deployment/orion
 `,
 		Flags:  flags,
 		Action: k8scommands.ResourceRun,
 		Subcommands: cli.Commands{
 			{
-				Name:   "cluster",
-				Flags:  flags,
-				Action: k8scommands.ClusterRun,
+				Name:      "cluster",
+				Usage:     "scan a kubernetes cluster vulnerabilities, secrets and misconfigurations",
+				UsageText: "$ trivy k8s cluster --report summary",
+				Flags:     flags,
+				Action:    k8scommands.ClusterRun,
 			},
 			{
-				Name:   "all",
-				Flags:  flags,
-				Action: k8scommands.NamespaceRun,
+				Name:      "all",
+				Usage:     "scan a kubernetes namespace vulnerabilities, secrets and misconfigurations",
+				UsageText: "$ trivy k8s all --report summary",
+				Flags:     flags,
+				Action:    k8scommands.NamespaceRun,
 			},
 		},
 	}
