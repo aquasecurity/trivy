@@ -67,7 +67,7 @@ jobs:
           args: mod -licenses -json -output bom.json
           version: ^v1
       - name: Release
-        uses: goreleaser/goreleaser-action@v2
+        uses: goreleaser/goreleaser-action@v3
         with:
           version: v1.4.1
           args: release --rm-dist
