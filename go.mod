@@ -253,4 +253,4 @@ replace github.com/containerd/containerd v1.5.9 => github.com/containerd/contain
 // See https://github.com/moby/moby/issues/42939#issuecomment-1114255529
 replace github.com/docker/docker => github.com/docker/docker v20.10.3-0.20220224222438-c78f6963a1c0+incompatible
 
-replace github.com/aquasecurity/fanal => github.com/masahiro331/fanal v0.0.0-20220531181814-19bed6bac5ae
+replace github.com/aquasecurity/fanal => github.com/masahiro331/fanal v0.0.0-20220601172823-b583f35520c7
