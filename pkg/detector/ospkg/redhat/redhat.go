@@ -146,7 +146,7 @@ func (s *Scanner) detect(osVer string, pkg ftypes.Package) ([]types.DetectedVuln
 	uniqVulns := map[string]types.DetectedVulnerability{}
 	for _, adv := range advisories {
 		// if Arches for advisory is empty or pkg.Arch is "noarch", then any Arches are affected
-		if adv.Arches != nil && pkg.Arch != "noarch" {
+		if len(adv.Arches) != 0 && pkg.Arch != "noarch" {
 			if !slices.Contains(adv.Arches, pkg.Arch) {
 				continue
 			}
