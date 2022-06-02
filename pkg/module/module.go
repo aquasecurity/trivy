@@ -16,7 +16,7 @@ import (
 	"github.com/tetratelabs/wazero"
 	"github.com/tetratelabs/wazero/api"
 	"github.com/tetratelabs/wazero/experimental"
-	"github.com/tetratelabs/wazero/wasi"
+	wasi "github.com/tetratelabs/wazero/wasi_snapshot_preview1"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/fanal/analyzer"
@@ -91,12 +91,12 @@ func NewManager(ctx context.Context) (*Manager, error) {
 	_, err := m.runtime.NewModuleBuilder("env").
 		ExportMemoryWithMax("mem", 1, 1).
 		ExportFunctions(exportFunctions).
-		Instantiate(ctx)
+		Instantiate(ctx, m.runtime)
 	if err != nil {
 		return nil, xerrors.Errorf("wasm module build error: %w", err)
 	}
 
-	if _, err = wasi.InstantiateSnapshotPreview1(ctx, m.runtime); err != nil {
+	if _, err = wasi.Instantiate(ctx, m.runtime); err != nil {
 		return nil, xerrors.Errorf("WASI init error: %w", err)
 	}
 
