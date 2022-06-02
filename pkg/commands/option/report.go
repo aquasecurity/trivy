@@ -138,7 +138,7 @@ func (c *ReportOption) populateSecurityChecks() error {
 
 func (c *ReportOption) forceListAllPkgs(logger *zap.SugaredLogger) bool {
 	if slices.Contains(supportedSbomFormats, c.Format) && !c.ListAllPkgs {
-		logger.Debugf("'cyclonedx', 'spdx', and 'spdx-json' automatically enables '--list-all-pkgs'.")
+		logger.Debugf("'github', 'cyclonedx', 'spdx', and 'spdx-json' automatically enables '--list-all-pkgs'.")
 		return true
 	}
 	return false

@@ -11,6 +11,7 @@ import (
 	"go.uber.org/zap/zaptest/observer"
 
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
+	"github.com/aquasecurity/trivy/pkg/report"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
 
@@ -78,7 +79,7 @@ func TestReportReportConfig_Init(t *testing.T) {
 				severities:     "CRITICAL",
 				vulnType:       "os,library",
 				securityChecks: "vuln",
-				Format:         "cyclonedx",
+				Format:         report.FormatCycloneDX,
 				listAllPksgs:   true,
 			},
 			args: []string{"centos:7"},
@@ -86,7 +87,7 @@ func TestReportReportConfig_Init(t *testing.T) {
 				Severities:     []dbTypes.Severity{dbTypes.SeverityCritical},
 				VulnType:       []string{types.VulnTypeOS, types.VulnTypeLibrary},
 				SecurityChecks: []string{types.SecurityCheckVulnerability},
-				Format:         "cyclonedx",
+				Format:         report.FormatCycloneDX,
 				Output:         os.Stdout,
 				ListAllPkgs:    true,
 			},
@@ -103,7 +104,7 @@ func TestReportReportConfig_Init(t *testing.T) {
 			},
 			args: []string{"centos:7"},
 			logs: []string{
-				"'cyclonedx', 'spdx', and 'spdx-json' automatically enables '--list-all-pkgs'.",
+				"'github', 'cyclonedx', 'spdx', and 'spdx-json' automatically enables '--list-all-pkgs'.",
 				"Severities: CRITICAL",
 			},
 			want: ReportOption{

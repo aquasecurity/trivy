@@ -70,7 +70,7 @@ nav:
               - Configuration: docs/kubernetes/operator/configuration.md
               - Vulnerability Scanning:
                     - Overview: docs/kubernetes/operator/vulnerability-scanning/index.md 
-                    - Scan Configuration: docs/kubernetes/operator/vulnerability-scanning/config.md 
+                    - Scan Configuration: docs/kubernetes/operator/vulnerability-scanning/configuration.md 
                     - Managed registries: docs/kubernetes/operator/vulnerability-scanning/managed-registries.md 
                     - FAQ: docs/kubernetes/operator/vulnerability-scanning/faq.md 
               - Configuration Auditing:

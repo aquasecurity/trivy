@@ -6,25 +6,27 @@ import (
 	"github.com/aquasecurity/trivy/pkg/commands/option"
 )
 
-// Config holds the Trivy config
-type Config struct {
+// Option holds the Trivy config
+type Option struct {
 	option.GlobalOption
 	option.DBOption
 	option.CacheOption
+	option.OtherOption
 
 	Listen      string
 	Token       string
 	TokenHeader string
 }
 
-// NewConfig is the factory method to return config
-func NewConfig(c *cli.Context) Config {
+// NewOption is the factory method to return config
+func NewOption(c *cli.Context) Option {
 	// the error is ignored because logger is unnecessary
 	gc, _ := option.NewGlobalOption(c) // nolint: errcheck
-	return Config{
+	return Option{
 		GlobalOption: gc,
 		DBOption:     option.NewDBOption(c),
 		CacheOption:  option.NewCacheOption(c),
+		OtherOption:  option.NewOtherOption(c),
 
 		Listen:      c.String("listen"),
 		Token:       c.String("token"),
@@ -33,7 +35,7 @@ func NewConfig(c *cli.Context) Config {
 }
 
 // Init initializes the config
-func (c *Config) Init() (err error) {
+func (c *Option) Init() (err error) {
 	if err := c.DBOption.Init(); err != nil {
 		return err
 	}
