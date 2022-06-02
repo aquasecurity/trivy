@@ -69,9 +69,38 @@
         - key: CVE-2006-4023
           value:
             Entries:
-              - FixedVersion: """
+              - FixedVersion: ""
                 Affected:
                   - 0
                   - 1
                 Cves:
                   - Severity: 1
+    - bucket: kernel-headers
+      pairs:
+        - key: RHSA-2016:2098
+          value:
+            Entries:
+              - FixedVersion: 0:3.10.0-327.36.3.el7
+                Affected:
+                  - 0
+                  - 1
+                Cves:
+                  - ID: CVE-2016-5195
+                    Severity: 3
+                Arches:
+                  - ppc64
+                  - ppc64le
+                  - s390x
+                  - x86_64
+        - key: RHSA-2017:0372
+          value:
+            Entries:
+              - FixedVersion: 0:4.5.0-15.2.1.el7
+                Affected:
+                  - 0
+                  - 1
+                Cves:
+                  - ID: CVE-2016-5195
+                    Severity: 3
+                Arches:
+                  - aarch64

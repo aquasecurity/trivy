@@ -109,24 +109,24 @@ func TestWriter_Write(t *testing.T) {
 					ExternalDocumentReferences: map[string]spdx.ExternalDocumentRef2_2{},
 				},
 				Packages: map[spdx.ElementID]*spdx.Package2_2{
-					spdx.ElementID("65e3655ffcc41ab9"): {
-						PackageSPDXIdentifier:     spdx.ElementID("65e3655ffcc41ab9"),
+					spdx.ElementID("3639080be74a6685"): {
+						PackageSPDXIdentifier:     spdx.ElementID("3639080be74a6685"),
 						PackageName:               "actioncontroller",
 						PackageVersion:            "7.0.0",
 						PackageLicenseConcluded:   "NONE",
 						PackageLicenseDeclared:    "NONE",
 						IsFilesAnalyzedTagPresent: true,
 					},
-					spdx.ElementID("97cf5c89611089c6"): {
-						PackageSPDXIdentifier:     spdx.ElementID("97cf5c89611089c6"),
+					spdx.ElementID("8ee950e6d31d8cf9"): {
+						PackageSPDXIdentifier:     spdx.ElementID("8ee950e6d31d8cf9"),
 						PackageName:               "actionpack",
 						PackageVersion:            "7.0.0",
 						PackageLicenseConcluded:   "NONE",
 						PackageLicenseDeclared:    "NONE",
 						IsFilesAnalyzedTagPresent: true,
 					},
-					spdx.ElementID("3ee76dba6a695d6d"): {
-						PackageSPDXIdentifier:     spdx.ElementID("3ee76dba6a695d6d"),
+					spdx.ElementID("d234c2159623e835"): {
+						PackageSPDXIdentifier:     spdx.ElementID("d234c2159623e835"),
 						PackageName:               "binutils",
 						PackageVersion:            "2.30",
 						PackageLicenseConcluded:   "GPLv3+",
@@ -220,24 +220,24 @@ func TestWriter_Write(t *testing.T) {
 					ExternalDocumentReferences: map[string]spdx.ExternalDocumentRef2_2{},
 				},
 				Packages: map[spdx.ElementID]*spdx.Package2_2{
-					spdx.ElementID("40d016db96700ecb"): {
-						PackageSPDXIdentifier:     spdx.ElementID("40d016db96700ecb"),
+					spdx.ElementID("bb78dad8374b2a15"): {
+						PackageSPDXIdentifier:     spdx.ElementID("bb78dad8374b2a15"),
 						PackageName:               "acl",
 						PackageVersion:            "2.2.53",
 						PackageLicenseConcluded:   "GPLv2+",
 						PackageLicenseDeclared:    "GPLv2+",
 						IsFilesAnalyzedTagPresent: true,
 					},
-					spdx.ElementID("ff543ca421929db5"): {
-						PackageSPDXIdentifier:     spdx.ElementID("ff543ca421929db5"),
+					spdx.ElementID("73217041edb86985"): {
+						PackageSPDXIdentifier:     spdx.ElementID("73217041edb86985"),
 						PackageName:               "actionpack",
 						PackageVersion:            "7.0.0",
 						PackageLicenseConcluded:   "NONE",
 						PackageLicenseDeclared:    "NONE",
 						IsFilesAnalyzedTagPresent: true,
 					},
-					spdx.ElementID("639cce3bbd87450f"): {
-						PackageSPDXIdentifier:     spdx.ElementID("639cce3bbd87450f"),
+					spdx.ElementID("81bcacb3a43392d2"): {
+						PackageSPDXIdentifier:     spdx.ElementID("81bcacb3a43392d2"),
 						PackageName:               "actionpack",
 						PackageVersion:            "7.0.1",
 						PackageLicenseConcluded:   "NONE",
@@ -285,8 +285,8 @@ func TestWriter_Write(t *testing.T) {
 					ExternalDocumentReferences: map[string]spdx.ExternalDocumentRef2_2{},
 				},
 				Packages: map[spdx.ElementID]*spdx.Package2_2{
-					spdx.ElementID("9572b967bcbc8ea2"): {
-						PackageSPDXIdentifier:     spdx.ElementID("9572b967bcbc8ea2"),
+					spdx.ElementID("2540a9d087ba8509"): {
+						PackageSPDXIdentifier:     spdx.ElementID("2540a9d087ba8509"),
 						PackageName:               "actioncable",
 						PackageVersion:            "6.1.4.1",
 						PackageLicenseConcluded:   "NONE",
@@ -334,8 +334,8 @@ func TestWriter_Write(t *testing.T) {
 					ExternalDocumentReferences: map[string]spdx.ExternalDocumentRef2_2{},
 				},
 				Packages: map[spdx.ElementID]*spdx.Package2_2{
-					spdx.ElementID("1275fe237f4887b3"): {
-						PackageSPDXIdentifier:     spdx.ElementID("1275fe237f4887b3"),
+					spdx.ElementID("932072222bf5ccd6"): {
+						PackageSPDXIdentifier:     spdx.ElementID("932072222bf5ccd6"),
 						PackageName:               "ruby-typeprof",
 						PackageVersion:            "0.20.1",
 						PackageLicenseConcluded:   "MIT",
