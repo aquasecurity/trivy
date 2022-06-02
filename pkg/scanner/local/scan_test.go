@@ -1,6 +1,7 @@
 package local
 
 import (
+	"context"
 	"errors"
 	"testing"
 	"time"
@@ -874,7 +875,7 @@ func TestScanner_Scan(t *testing.T) {
 			applier.ApplyApplyLayersExpectation(tt.applyLayersExpectation)
 
 			s := NewScanner(applier, ospkg.Detector{}, vulnerability.NewClient(db.Config{}))
-			gotResults, gotOS, err := s.Scan(tt.args.target, "", tt.args.layerIDs, tt.args.options)
+			gotResults, gotOS, err := s.Scan(context.Background(), tt.args.target, "", tt.args.layerIDs, tt.args.options)
 			if tt.wantErr != "" {
 				require.NotNil(t, err, tt.name)
 				require.Contains(t, err.Error(), tt.wantErr, tt.name)
