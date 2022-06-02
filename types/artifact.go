@@ -37,6 +37,7 @@ type Package struct {
 	Modularitylabel string     `json:",omitempty"` // only for Red Hat based distributions
 	BuildInfo       *BuildInfo `json:",omitempty"` // only for Red Hat
 
+	Ref       string   `json:",omitempty"` // identifier which can be used to reference the component elsewhere
 	Indirect  bool     `json:",omitempty"` // this package is direct dependency of the project or not
 	DependsOn []string `json:",omitempty"` // dependencies of this package
 
