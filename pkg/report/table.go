@@ -247,15 +247,28 @@ Vulnerability origin graph:
 		}
 	}
 
+	pkgSeverityCount := map[string]map[string]int{}
+
+	for _, vuln := range result.Vulnerabilities {
+		cnts, ok := pkgSeverityCount[vuln.PkgID]
+		if !ok {
+			cnts = map[string]int{}
+		}
+
+		cnts[vuln.Severity]++
+		pkgSeverityCount[vuln.PkgID] = cnts
+	}
+
 	if root != nil {
 		for _, vuln := range result.Vulnerabilities {
-			if root == nil {
-			}
-
 			if !slices.Contains(seen, vuln.PkgID) {
+
+				_, summaries := tw.summary(pkgSeverityCount[vuln.PkgID])
+				topLvlId := fmt.Sprintf("%s, (%s)", vuln.PkgID, strings.Join(summaries, ", "))
+
 				seen = append(seen, vuln.PkgID)
 
-				branch := root.AddBranch(vuln.PkgID)
+				branch := root.AddBranch(topLvlId)
 
 				addParents(branch, vuln.PkgParents)
 			}
