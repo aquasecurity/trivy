@@ -132,7 +132,7 @@ Contact us about any matter by opening a GitHub Discussion [here][discussions]
 [license-img]: https://img.shields.io/badge/License-Apache%202.0-blue.svg
 
 
-[getting-started]: https://aquasecurity.github.io/trivy/latest/getting-started/overview/
+[getting-started]: https://aquasecurity.github.io/trivy/latest/getting-started/installation/
 [docs]: https://aquasecurity.github.io/trivy
 [integrations]:https://aquasecurity.github.io/trivy/latest/docs/integrations/
 [installation]:https://aquasecurity.github.io/trivy/latest/docs/getting-started/installation/
