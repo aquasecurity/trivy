@@ -78,6 +78,23 @@ jobs:
         version: v1.4.1
         args: release --snapshot --rm-dist --skip-publish
 
+  wasm-test:
+    name: WebAssembly Test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install TinyGo
+        run: |
+          wget https://github.com/tinygo-org/tinygo/releases/download/v0.23.0/tinygo_0.23.0_amd64.deb
+          sudo dpkg -i tinygo_0.23.0_amd64.deb
+
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Build WASM module
+        run: |
+          cd examples/module/spring4shell
+          tinygo build -o spring4shell.wasm -scheduler=none -target=wasi --no-debug spring4shell.go
+
   build-documents:
     name: Documentation Test
     runs-on: ubuntu-latest
