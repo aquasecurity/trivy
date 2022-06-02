@@ -87,7 +87,7 @@
                 Cves:
                   - ID: CVE-2016-5195
                     Severity: 3
-                Arch:
+                Arches:
                   - ppc64
                   - ppc64le
                   - s390x
@@ -102,5 +102,5 @@
                 Cves:
                   - ID: CVE-2016-5195
                     Severity: 3
-                Arch:
+                Arches:
                   - aarch64

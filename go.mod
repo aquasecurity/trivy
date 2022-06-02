@@ -13,7 +13,7 @@ require (
 	github.com/aquasecurity/go-npm-version v0.0.0-20201110091526-0b796d180798
 	github.com/aquasecurity/go-pep440-version v0.0.0-20210121094942-22b2f8951d46
 	github.com/aquasecurity/go-version v0.0.0-20210121072130-637058cfe492
-	github.com/aquasecurity/trivy-db v0.0.0-20220510190819-8ca06716f46e
+	github.com/aquasecurity/trivy-db v0.0.0-20220602091213-39d8a6798e07
 	github.com/caarlos0/env/v6 v6.9.1
 	github.com/cenkalti/backoff v2.2.1+incompatible
 	github.com/cheggaaa/pb/v3 v3.0.8
@@ -251,5 +251,3 @@ replace github.com/containerd/containerd v1.5.9 => github.com/containerd/contain
 
 // See https://github.com/moby/moby/issues/42939#issuecomment-1114255529
 replace github.com/docker/docker => github.com/docker/docker v20.10.3-0.20220224222438-c78f6963a1c0+incompatible
-
-replace github.com/aquasecurity/trivy-db => github.com/DmitriyLewen/trivy-db v0.0.0-20220525124753-0c89b94d4fc5

@@ -162,23 +162,6 @@ func TestScanner_Detect(t *testing.T) {
 				pkgs: []ftypes.Package{
 					{
 						Name:       "kernel-headers",
-						Version:    "3.10.0-326.36",
-						Release:    "3.el7",
-						Epoch:      0,
-						Arch:       "x86_64",
-						SrcName:    "kernel-headers",
-						SrcVersion: "3.10.0-326.36",
-						SrcRelease: "3.el7",
-						SrcEpoch:   0,
-						Layer: ftypes.Layer{
-							DiffID: "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
-						},
-						BuildInfo: &ftypes.BuildInfo{
-							ContentSets: []string{"rhel-7-server-rpms"},
-						},
-					},
-					{
-						Name:       "kernel-headers",
 						Version:    "3.10.0-1127.19",
 						Release:    "1.el7",
 						Epoch:      0,
@@ -199,10 +182,10 @@ func TestScanner_Detect(t *testing.T) {
 			want: []types.DetectedVulnerability{
 				{
 					VulnerabilityID:  "CVE-2016-5195",
-					VendorIDs:        []string{"RHSA-2016:2098"},
+					VendorIDs:        []string{"RHSA-2017:0372"},
 					PkgName:          "kernel-headers",
-					InstalledVersion: "3.10.0-326.36-3.el7",
-					FixedVersion:     "3.10.0-327.36.3.el7",
+					InstalledVersion: "3.10.0-1127.19-1.el7",
+					FixedVersion:     "4.5.0-15.2.1.el7",
 					SeveritySource:   vulnerability.RedHat,
 					Vulnerability: dbTypes.Vulnerability{
 						Severity: dbTypes.SeverityHigh.String(),
@@ -211,12 +194,88 @@ func TestScanner_Detect(t *testing.T) {
 						DiffID: "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
 					},
 				},
+			},
+		},
+		{
+			name: "happy path: advisory without architecture",
+			fixtures: []string{
+				"testdata/fixtures/redhat.yaml",
+				"testdata/fixtures/cpe.yaml",
+			},
+			args: args{
+				osVer: "8.3",
+				pkgs: []ftypes.Package{
+					{
+						Name:            "php",
+						Version:         "7.2.10",
+						Release:         "1.module_el8.2.0+313+b04d0a66",
+						Arch:            "aarch64",
+						SrcName:         "php",
+						SrcVersion:      "7.2.10",
+						SrcRelease:      "1.module_el8.2.0+313+b04d0a66",
+						Modularitylabel: "php:7.2:8020020200507003613:2c7ca891",
+						Layer: ftypes.Layer{
+							DiffID: "sha256:3e968ecc016e1b9aa19023798229bf2d25c813d1bf092533f38b056aff820524",
+						},
+						BuildInfo: &ftypes.BuildInfo{
+							Nvr:  "ubi8-init-container-8.0-7",
+							Arch: "x86_64",
+						},
+					},
+				},
+			},
+			want: []types.DetectedVulnerability{
+				{
+					VulnerabilityID:  "CVE-2019-11043",
+					VendorIDs:        []string{"RHSA-2020:0322"},
+					PkgName:          "php",
+					InstalledVersion: "7.2.10-1.module_el8.2.0+313+b04d0a66",
+					FixedVersion:     "7.2.11-1.1.module+el8.0.0+4664+17bd8d65",
+					SeveritySource:   vulnerability.RedHat,
+					Vulnerability: dbTypes.Vulnerability{
+						Severity: dbTypes.SeverityCritical.String(),
+					},
+					Layer: ftypes.Layer{
+						DiffID: "sha256:3e968ecc016e1b9aa19023798229bf2d25c813d1bf092533f38b056aff820524",
+					},
+				},
+			},
+		},
+		{
+			name: "happy path: advisories have different arches",
+			fixtures: []string{
+				"testdata/fixtures/redhat.yaml",
+				"testdata/fixtures/cpe.yaml",
+			},
+			args: args{
+				osVer: "7.6",
+				pkgs: []ftypes.Package{
+					{
+						Name:       "kernel-headers",
+						Version:    "3.10.0-326.36",
+						Release:    "3.el7",
+						Epoch:      0,
+						Arch:       "x86_64",
+						SrcName:    "kernel-headers",
+						SrcVersion: "3.10.0-326.36",
+						SrcRelease: "3.el7",
+						SrcEpoch:   0,
+						Layer: ftypes.Layer{
+							DiffID: "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
+						},
+						BuildInfo: &ftypes.BuildInfo{
+							ContentSets: []string{"rhel-7-server-rpms"},
+						},
+					},
+				},
+			},
+			want: []types.DetectedVulnerability{
 				{
 					VulnerabilityID:  "CVE-2016-5195",
-					VendorIDs:        []string{"RHSA-2017:0372"},
+					VendorIDs:        []string{"RHSA-2016:2098"},
 					PkgName:          "kernel-headers",
-					InstalledVersion: "3.10.0-1127.19-1.el7",
-					FixedVersion:     "4.5.0-15.2.1.el7",
+					InstalledVersion: "3.10.0-326.36-3.el7",
+					FixedVersion:     "3.10.0-327.36.3.el7",
 					SeveritySource:   vulnerability.RedHat,
 					Vulnerability: dbTypes.Vulnerability{
 						Severity: dbTypes.SeverityHigh.String(),
