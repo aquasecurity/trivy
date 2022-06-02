@@ -14,7 +14,6 @@ import (
 	"github.com/aquasecurity/fanal/analyzer"
 	"github.com/aquasecurity/fanal/applier"
 	ftypes "github.com/aquasecurity/fanal/types"
-	godeptypes "github.com/aquasecurity/go-dep-parser/pkg/types"
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/detector/library"
 	ospkgDetector "github.com/aquasecurity/trivy/pkg/detector/ospkg"
@@ -225,7 +224,8 @@ func (s Scanner) scanLibrary(apps []ftypes.Application, options types.ScanOption
 			// When the file path is empty, we will overwrite it with the pre-defined value.
 			target = t
 		}
-		applyLibDependencies(vulns, app.Dependencies)
+
+		applyLibDependencies(vulns, app.Libraries)
 
 		libReport := types.Result{
 			Target:          target,
@@ -243,15 +243,15 @@ func (s Scanner) scanLibrary(apps []ftypes.Application, options types.ScanOption
 	})
 	return results, nil
 }
-func applyLibDependencies(vulns []types.DetectedVulnerability, deps []godeptypes.Dependency) {
+func applyLibDependencies(vulns []types.DetectedVulnerability, libs []ftypes.Package) {
 	reversed := make(map[string][]string)
-	for _, dep := range deps {
-		for _, dependOn := range dep.DependsOn {
+	for _, lib := range libs {
+		for _, dependOn := range lib.DependsOn {
 			items, ok := reversed[dependOn]
 			if !ok {
-				reversed[dependOn] = []string{dep.ID}
+				reversed[dependOn] = []string{lib.ID}
 			} else {
-				reversed[dependOn] = append(items, dep.ID)
+				reversed[dependOn] = append(items, lib.ID)
 			}
 		}
 	}
