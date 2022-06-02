@@ -205,11 +205,6 @@ func (r *Runner) Scan(ctx context.Context, opt Option, initializeScanner Initial
 func (r *Runner) Filter(ctx context.Context, opt Option, report types.Report) (types.Report, error) {
 	results := report.Results
 
-	// Call WASM functions for processing results
-	if err := r.module.PostScan(ctx, &report); err != nil {
-		return types.Report{}, xerrors.Errorf("WASM modules post scan error: %w", err)
-	}
-
 	// Filter results
 	for i := range results {
 		vulns, misconfSummary, misconfs, secrets, err := result.Filter(ctx, results[i].Vulnerabilities, results[i].Misconfigurations, results[i].Secrets,

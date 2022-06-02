@@ -23,6 +23,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/log"
 	tapi "github.com/aquasecurity/trivy/pkg/module/api"
 	"github.com/aquasecurity/trivy/pkg/module/serialize"
+	"github.com/aquasecurity/trivy/pkg/scanner/post"
 	"github.com/aquasecurity/trivy/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/utils"
 )
@@ -146,18 +147,9 @@ func (m *Manager) loadModules(ctx context.Context) error {
 }
 
 func (m *Manager) Register() {
-	for _, p := range m.modules {
-		p.Register()
+	for _, mod := range m.modules {
+		mod.Register()
 	}
-}
-
-func (m *Manager) PostScan(ctx context.Context, report *types.Report) error {
-	for _, p := range m.modules {
-		if err := p.PostScan(ctx, report); err != nil {
-			return xerrors.Errorf("%s post scan error: %w", p.name, err)
-		}
-	}
-	return nil
 }
 
 func (m *Manager) Close(ctx context.Context) error {
@@ -248,6 +240,9 @@ type wasmModule struct {
 	version       int
 	requiredFiles []*regexp.Regexp
 
+	isAnalyzer    bool
+	isPostScanner bool
+
 	// Exported functions
 	analyze  api.Function
 	postScan api.Function
@@ -306,6 +301,16 @@ func newWASMPlugin(ctx context.Context, r wazero.Runtime, code []byte) (*wasmMod
 		return nil, xerrors.Errorf("failed to get required files: %w", err)
 	}
 
+	isAnalyzer, err := moduleIsAnalyzer(ctx, mod)
+	if err != nil {
+		return nil, xerrors.Errorf("failed to check if the module is an analyzer: %w", err)
+	}
+
+	isPostScanner, err := moduleIsPostScanner(ctx, mod)
+	if err != nil {
+		return nil, xerrors.Errorf("failed to check if the module is a post scanner: %w", err)
+	}
+
 	// Get exported functions by WASM module
 	analyzeFunc := mod.ExportedFunction("analyze")
 	if analyzeFunc == nil {
@@ -322,6 +327,9 @@ func newWASMPlugin(ctx context.Context, r wazero.Runtime, code []byte) (*wasmMod
 		version:       version,
 		requiredFiles: requiredFiles,
 
+		isAnalyzer:    isAnalyzer,
+		isPostScanner: isPostScanner,
+
 		analyze:  analyzeFunc,
 		postScan: postScanFunc,
 		malloc:   malloc,
@@ -329,26 +337,46 @@ func newWASMPlugin(ctx context.Context, r wazero.Runtime, code []byte) (*wasmMod
 	}, nil
 }
 
-func (a *wasmModule) Register() {
-	log.Logger.Infof("Registering WASM module: %s@v%d", a.name, a.version)
-	analyzer.RegisterAnalyzer(a)
+func (m *wasmModule) Register() {
+	log.Logger.Infof("Registering WASM module: %s@v%d", m.name, m.version)
+	if m.isAnalyzer {
+		log.Logger.Debugf("Registering custom analyzer in %s@v%d", m.name, m.version)
+		analyzer.RegisterAnalyzer(m)
+	}
+	if m.isPostScanner {
+		log.Logger.Debugf("Registering custom post scanner in %s@v%d", m.name, m.version)
+		post.RegisterPostScanner(m)
+	}
 }
 
-func (a *wasmModule) Close(ctx context.Context) error {
-	return a.mod.Close(ctx)
+func (m *wasmModule) Close(ctx context.Context) error {
+	return m.mod.Close(ctx)
 }
 
-func (a *wasmModule) Type() analyzer.Type {
-	return analyzer.Type(a.name)
+func (m *wasmModule) Type() analyzer.Type {
+	return analyzer.Type(m.name)
 }
 
-func (a *wasmModule) Version() int {
-	return a.version
+func (m *wasmModule) Name() string {
+	return m.name
 }
 
-func (a *wasmModule) Analyze(ctx context.Context, input analyzer.AnalysisInput) (*analyzer.AnalysisResult, error) {
+func (m *wasmModule) Version() int {
+	return m.version
+}
+
+func (m *wasmModule) Required(filePath string, _ os.FileInfo) bool {
+	for _, r := range m.requiredFiles {
+		if r.MatchString(filePath) {
+			return true
+		}
+	}
+	return false
+}
+
+func (m *wasmModule) Analyze(ctx context.Context, input analyzer.AnalysisInput) (*analyzer.AnalysisResult, error) {
 	filePath := "/" + filepath.ToSlash(input.FilePath)
-	log.Logger.Debugf("Module %s: analyzing %s...", a.name, filePath)
+	log.Logger.Debugf("Module %s: analyzing %s...", m.name, filePath)
 
 	memfs := memoryfs.New()
 	if err := memfs.MkdirAll(filepath.Dir(filePath), fs.ModePerm); err != nil {
@@ -368,13 +396,13 @@ func (a *wasmModule) Analyze(ctx context.Context, input analyzer.AnalysisInput) 
 	}
 	defer closer.Close(ctx)
 
-	inputPtr, inputSize, err := stringToPtrSize(ctx, filePath, a.mod, a.malloc)
+	inputPtr, inputSize, err := stringToPtrSize(ctx, filePath, m.mod, m.malloc)
 	if err != nil {
 		return nil, xerrors.Errorf("failed to write string to memory: %w", err)
 	}
-	defer a.free.Call(ctx, inputPtr) // nolint: errcheck
+	defer m.free.Call(ctx, inputPtr) // nolint: errcheck
 
-	analyzeRes, err := a.analyze.Call(ctx, inputPtr, inputSize)
+	analyzeRes, err := m.analyze.Call(ctx, inputPtr, inputSize)
 	if err != nil {
 		return nil, xerrors.Errorf("analyze error: %w", err)
 	} else if len(analyzeRes) != 1 {
@@ -382,50 +410,44 @@ func (a *wasmModule) Analyze(ctx context.Context, input analyzer.AnalysisInput) 
 	}
 
 	var result analyzer.AnalysisResult
-	if err = unmarshal(ctx, a.mod, analyzeRes[0], &result); err != nil {
+	if err = unmarshal(ctx, m.mod, analyzeRes[0], &result); err != nil {
 		return nil, xerrors.Errorf("invalid return value: %w", err)
 	}
 
 	return &result, nil
 }
 
-func (a *wasmModule) PostScan(ctx context.Context, report *types.Report) error {
-	results := lo.Map(report.Results, func(r types.Result, _ int) serialize.Result {
+// PostScan performs post scanning
+// e.g. Remove a vulnerability, change severity, etc.
+// TODO: improve memory usage
+func (m *wasmModule) PostScan(ctx context.Context, results types.Results) (types.Results, error) {
+	serializeResults := lo.Map(results, func(r types.Result, _ int) serialize.Result {
 		return serialize.Result(r)
 	})
 
-	inputPtr, inputSize, err := marshal(ctx, a.mod, a.malloc, serialize.Results(results))
+	inputPtr, inputSize, err := marshal(ctx, m.mod, m.malloc, serialize.Results(serializeResults))
 	if err != nil {
-		return xerrors.Errorf("post scan marshal error: %w", err)
+		return nil, xerrors.Errorf("post scan marshal error: %w", err)
 	}
-	defer a.free.Call(ctx, inputPtr) //nolint: errcheck
+	defer m.free.Call(ctx, inputPtr) //nolint: errcheck
 
-	analyzeRes, err := a.postScan.Call(ctx, inputPtr, inputSize)
+	analyzeRes, err := m.postScan.Call(ctx, inputPtr, inputSize)
 	if err != nil {
-		return xerrors.Errorf("post scan invocation error: %w", err)
+		return nil, xerrors.Errorf("post scan invocation error: %w", err)
 	} else if len(analyzeRes) != 1 {
-		return xerrors.New("invalid signature: post_scan")
+		return nil, xerrors.New("invalid signature: post_scan")
 	}
 
-	if err = unmarshal(ctx, a.mod, analyzeRes[0], &results); err != nil {
-		return xerrors.Errorf("post scan unmarshal error: %w", err)
+	if err = unmarshal(ctx, m.mod, analyzeRes[0], &serializeResults); err != nil {
+		return nil, xerrors.Errorf("post scan unmarshal error: %w", err)
 	}
 
 	// Override scan results
-	report.Results = lo.Map(results, func(r serialize.Result, _ int) types.Result {
+	results = lo.Map(serializeResults, func(r serialize.Result, _ int) types.Result {
 		return types.Result(r)
 	})
 
-	return nil
-}
-
-func (a *wasmModule) Required(filePath string, _ os.FileInfo) bool {
-	for _, r := range a.requiredFiles {
-		if r.MatchString(filePath) {
-			return true
-		}
-	}
-	return false
+	return results, nil
 }
 
 func moduleName(ctx context.Context, mod api.Module) (string, error) {
@@ -508,6 +530,30 @@ func moduleRequiredFiles(ctx context.Context, mod api.Module) ([]*regexp.Regexp,
 	}
 
 	return requiredFiles, nil
+}
+
+func moduleIsAnalyzer(ctx context.Context, mod api.Module) (bool, error) {
+	return isType(ctx, mod, "is_analyzer")
+}
+
+func moduleIsPostScanner(ctx context.Context, mod api.Module) (bool, error) {
+	return isType(ctx, mod, "is_post_scanner")
+}
+
+func isType(ctx context.Context, mod api.Module, name string) (bool, error) {
+	isFunc := mod.ExportedFunction(name)
+	if isFunc == nil {
+		return false, xerrors.Errorf("%s() must be exported", name)
+	}
+
+	isRes, err := isFunc.Call(ctx)
+	if err != nil {
+		return false, xerrors.Errorf("wasm function %s() invocation error: %w", name, err)
+	} else if len(isRes) != 1 {
+		return false, xerrors.Errorf("invalid signature: %s", name)
+	}
+
+	return isRes[0] > 0, nil
 }
 
 func dir() string {

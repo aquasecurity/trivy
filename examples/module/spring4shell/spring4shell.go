@@ -1,3 +1,5 @@
+//go:build tinygo.wasm
+
 package main
 
 import (
@@ -9,17 +11,16 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/aquasecurity/trivy/pkg/types"
-
 	"github.com/aquasecurity/trivy/pkg/module/serialize"
 	"github.com/aquasecurity/trivy/pkg/module/wasm"
+	"github.com/aquasecurity/trivy/pkg/types"
 )
 
 const (
-	PluginVersion     = 1
-	PluginName        = "spring4shell"
-	TypeJavaMajor     = PluginName + "/java-major-version"
-	TypeTomcatVersion = PluginName + "/tomcat-version"
+	ModuleVersion     = 1
+	ModuleName        = "spring4shell"
+	TypeJavaMajor     = ModuleName + "/java-major-version"
+	TypeTomcatVersion = ModuleName + "/tomcat-version"
 )
 
 var (
@@ -28,17 +29,17 @@ var (
 
 // main is required for TinyGo to compile to Wasm.
 func main() {
-	wasm.RegisterPlugin(Spring4Shell{})
+	wasm.RegisterModule(Spring4Shell{})
 }
 
 type Spring4Shell struct{}
 
 func (Spring4Shell) Version() int {
-	return PluginVersion
+	return ModuleVersion
 }
 
 func (Spring4Shell) Name() string {
-	return PluginName
+	return ModuleName
 }
 
 func (Spring4Shell) RequiredFiles() []string {

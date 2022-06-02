@@ -7,7 +7,13 @@ const Version = 1
 type Module interface {
 	Version() int
 	Name() string
+}
+
+type Analyzer interface {
 	RequiredFiles() []string
 	Analyze(filePath string) (*serialize.AnalysisResult, error)
+}
+
+type PostScanner interface {
 	PostScan(serialize.Results) serialize.Results
 }

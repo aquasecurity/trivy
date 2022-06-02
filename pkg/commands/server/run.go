@@ -7,6 +7,7 @@ import (
 	"github.com/aquasecurity/trivy-db/pkg/db"
 	"github.com/aquasecurity/trivy/pkg/commands/operation"
 	"github.com/aquasecurity/trivy/pkg/log"
+	"github.com/aquasecurity/trivy/pkg/module"
 	rpcServer "github.com/aquasecurity/trivy/pkg/rpc/server"
 	"github.com/aquasecurity/trivy/pkg/utils"
 )
@@ -51,6 +52,13 @@ func run(c Option) (err error) {
 	if err = db.Init(c.CacheDir); err != nil {
 		return xerrors.Errorf("error in vulnerability DB initialize: %w", err)
 	}
+
+	// Initialize WASM modules
+	m, err := module.NewManager(c.Context.Context)
+	if err != nil {
+		return xerrors.Errorf("WASM module error: %w", err)
+	}
+	m.Register()
 
 	server := rpcServer.NewServer(c.AppVersion, c.Listen, c.CacheDir, c.Token, c.TokenHeader)
 	return server.ListenAndServe(cache, c.Insecure)

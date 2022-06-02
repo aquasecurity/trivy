@@ -1,6 +1,7 @@
 package local
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"sort"
@@ -20,6 +21,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/detector/library"
 	ospkgDetector "github.com/aquasecurity/trivy/pkg/detector/ospkg"
 	"github.com/aquasecurity/trivy/pkg/log"
+	"github.com/aquasecurity/trivy/pkg/scanner/post"
 	"github.com/aquasecurity/trivy/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/vulnerability"
 )
@@ -69,7 +71,7 @@ func NewScanner(applier Applier, ospkgDetector OspkgDetector, vulnClient vulnera
 }
 
 // Scan scans the artifact and return results.
-func (s Scanner) Scan(target string, artifactKey string, blobKeys []string, options types.ScanOptions) (types.Results, *ftypes.OS, error) {
+func (s Scanner) Scan(ctx context.Context, target, artifactKey string, blobKeys []string, options types.ScanOptions) (types.Results, *ftypes.OS, error) {
 	artifactDetail, err := s.applier.ApplyLayers(artifactKey, blobKeys)
 	switch {
 	case errors.Is(err, analyzer.ErrUnknownOS):
@@ -130,6 +132,12 @@ func (s Scanner) Scan(target string, artifactKey string, blobKeys []string, opti
 	for i := range results {
 		// Fill vulnerability details
 		s.vulnClient.FillInfo(results[i].Vulnerabilities)
+	}
+
+	// Post scanning
+	results, err = post.Scan(ctx, results)
+	if err != nil {
+		return nil, nil, xerrors.Errorf("post scan error: %w", err)
 	}
 
 	return results, artifactDetail.OS, nil

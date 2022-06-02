@@ -58,7 +58,7 @@ func _error(ptr uint32, size uint32)
 
 var module api.Module
 
-func RegisterPlugin(p api.Module) {
+func RegisterModule(p api.Module) {
 	module = p
 }
 
@@ -79,9 +79,17 @@ func _version() uint32 {
 	return uint32(module.Version())
 }
 
+//export is_analyzer
+func _isAnalyzer() uint64 {
+	if _, ok := module.(api.Analyzer); !ok {
+		return 0
+	}
+	return 1
+}
+
 //export required
 func _required() uint64 {
-	files := module.RequiredFiles()
+	files := module.(api.Analyzer).RequiredFiles()
 	ss := serialize.StringSlice(files)
 	return marshal(ss)
 }
@@ -89,12 +97,20 @@ func _required() uint64 {
 //export analyze
 func _analyze(ptr, size uint32) uint64 {
 	filePath := ptrToString(ptr, size)
-	custom, err := module.Analyze(filePath)
+	custom, err := module.(api.Analyzer).Analyze(filePath)
 	if err != nil {
 		Error(fmt.Sprintf("analyze error: %s", err))
 		return 0
 	}
 	return marshal(custom)
+}
+
+//export is_post_scanner
+func _isPostScanner() uint64 {
+	if _, ok := module.(api.PostScanner); !ok {
+		return 0
+	}
+	return 1
 }
 
 //export post_scan
@@ -105,7 +121,7 @@ func _post_scan(ptr, size uint32) uint64 {
 		return 0
 	}
 
-	report = module.PostScan(report)
+	report = module.(api.PostScanner).PostScan(report)
 	return marshal(report)
 }
 
