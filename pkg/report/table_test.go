@@ -197,11 +197,11 @@ func TestReportWriter_Table(t *testing.T) {
 Vulnerability origin graph:
 ===========================
 package-lock.json
-├── node-fetch@1.7.3
+├── node-fetch@1.7.3, (MEDIUM: 0, HIGH: 1)
 │   └── isomorphic-fetch@2.2.1
 │       └── fbjs@0.8.18
 │           └── styled-components@3.1.3
-└── sanitize-html@1.20.0
+└── sanitize-html@1.20.0, (MEDIUM: 1, HIGH: 0)
 
 `,
 		},
@@ -214,6 +214,7 @@ package-lock.json
 				Format:             "table",
 				Output:             &tableWritten,
 				IncludeNonFailures: tc.includeNonFailures,
+				Severities:         []dbTypes.Severity{dbTypes.SeverityHigh, dbTypes.SeverityMedium},
 			})
 			assert.NoError(t, err)
 			assert.Equal(t, tc.expectedOutput, tableWritten.String(), tc.name)
