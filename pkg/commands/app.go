@@ -218,6 +218,14 @@ var (
 		EnvVars: []string{"TRIVY_K8S_NAMESPACE"},
 	}
 
+	contextFlag = cli.StringFlag{
+		Name:    "context",
+		Aliases: []string{"ctx"},
+		Value:   "",
+		Usage:   "specify a context to scan",
+		EnvVars: []string{"TRIVY_K8S_CONTEXT"},
+	}
+
 	reportFlag = cli.StringFlag{
 		Name:  "report",
 		Value: "all",
@@ -829,6 +837,7 @@ func NewK8sCommand() *cli.Command {
 `,
 		Action: k8s.Run,
 		Flags: []cli.Flag{
+			&contextFlag,
 			&namespaceFlag,
 			&reportFlag,
 			&formatFlag,

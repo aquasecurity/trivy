@@ -24,7 +24,7 @@ The Trivy Operator will run a pod inside your cluster. If you have followed the 
 
 Make sure that the pod is in the `Running` status:
 ```
-kubectl get pods -n trivy-operator
+kubectl get pods -n trivy-system
 ```
 
 This is how it will look if it is running okay:

@@ -1,4 +1,5 @@
 {
+  "version": 0,
   "detector": {
     "name": "trivy",
     "version": "dev",
