@@ -3,7 +3,6 @@ package ospkg
 import (
 	"time"
 
-	"github.com/google/wire"
 	"golang.org/x/xerrors"
 
 	fos "github.com/aquasecurity/fanal/analyzer/os"
@@ -26,11 +25,6 @@ import (
 var (
 	// ErrUnsupportedOS defines error for unsupported OS
 	ErrUnsupportedOS = xerrors.New("unsupported os")
-
-	// SuperSet binds dependencies for OS scan
-	SuperSet = wire.NewSet(
-		wire.Struct(new(Detector)),
-	)
 
 	drivers = map[string]Driver{
 		fos.Alpine:       alpine.NewScanner(),

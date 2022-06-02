@@ -15,12 +15,9 @@ import (
 
 	"github.com/aquasecurity/fanal/cache"
 	ftypes "github.com/aquasecurity/fanal/types"
-	"github.com/aquasecurity/trivy-db/pkg/db"
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy-db/pkg/utils"
 	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/vulnerability"
-	"github.com/aquasecurity/trivy/pkg/dbtest"
-	"github.com/aquasecurity/trivy/pkg/result"
 	"github.com/aquasecurity/trivy/pkg/scanner"
 	"github.com/aquasecurity/trivy/pkg/types"
 	rpcCache "github.com/aquasecurity/trivy/rpc/cache"
@@ -39,15 +36,13 @@ func TestScanServer_Scan(t *testing.T) {
 	}
 	tests := []struct {
 		name            string
-		fixtures        []string
 		args            args
 		scanExpectation scanner.DriverScanExpectation
 		want            *rpcScanner.ScanResponse
 		wantErr         string
 	}{
 		{
-			name:     "happy path",
-			fixtures: []string{"testdata/fixtures/vulnerability.yaml", "testdata/fixtures/data-source.yaml"},
+			name: "happy path",
 			args: args{
 				in: &rpcScanner.ScanRequest{
 					Target:     "alpine:3.11",
@@ -72,10 +67,19 @@ func TestScanServer_Scan(t *testing.T) {
 									PkgName:          "musl",
 									InstalledVersion: "1.2.3",
 									FixedVersion:     "1.2.4",
+									SeveritySource:   "nvd",
 									Vulnerability: dbTypes.Vulnerability{
+										Title:       "dos",
+										Description: "dos vulnerability",
+										Severity:    "MEDIUM",
+										VendorSeverity: map[dbTypes.SourceID]dbTypes.Severity{
+											vulnerability.NVD: dbTypes.SeverityMedium,
+										},
+										References:       []string{"http://example.com"},
 										LastModifiedDate: utils.MustTimeParse("2020-01-01T01:01:00Z"),
 										PublishedDate:    utils.MustTimeParse("2001-01-01T01:01:00Z"),
 									},
+									PrimaryURL: "https://avd.aquasec.com/nvd/cve-2019-0001",
 									DataSource: &dbTypes.DataSource{
 										Name: "DOS vulnerabilities",
 										URL:  "https://vuld-db-example.com/",
@@ -161,21 +165,17 @@ func TestScanServer_Scan(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			dbtest.InitDB(t, tt.fixtures)
-			defer db.Close()
-
 			mockDriver := new(scanner.MockDriver)
 			mockDriver.ApplyScanExpectation(tt.scanExpectation)
 
-			s := NewScanServer(mockDriver, result.NewClient(db.Config{}))
+			s := NewScanServer(mockDriver)
 			got, err := s.Scan(context.Background(), tt.args.in)
 			if tt.wantErr != "" {
 				require.NotNil(t, err, tt.name)
 				assert.Contains(t, err.Error(), tt.wantErr, tt.name)
 				return
-			} else {
-				assert.NoError(t, err, tt.name)
 			}
+			assert.NoError(t, err, tt.name)
 			assert.Equal(t, tt.want, got)
 		})
 	}

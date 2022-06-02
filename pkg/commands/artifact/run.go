@@ -21,6 +21,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/module"
 	pkgReport "github.com/aquasecurity/trivy/pkg/report"
+	"github.com/aquasecurity/trivy/pkg/result"
 	"github.com/aquasecurity/trivy/pkg/rpc/client"
 	"github.com/aquasecurity/trivy/pkg/scanner"
 	"github.com/aquasecurity/trivy/pkg/types"
@@ -202,16 +203,7 @@ func (r *Runner) Scan(ctx context.Context, opt Option, initializeScanner Initial
 }
 
 func (r *Runner) Filter(ctx context.Context, opt Option, report types.Report) (types.Report, error) {
-	resultClient := initializeResultClient()
 	results := report.Results
-
-	// Fill vulnerability details
-	for i := range results {
-		// Fill vulnerability info only in standalone mode
-		if opt.RemoteAddr == "" {
-			resultClient.FillVulnerabilityInfo(results[i].Vulnerabilities, results[i].Type)
-		}
-	}
 
 	// Call WASM functions for processing results
 	if err := r.module.PostScan(ctx, &report); err != nil {
@@ -220,7 +212,7 @@ func (r *Runner) Filter(ctx context.Context, opt Option, report types.Report) (t
 
 	// Filter results
 	for i := range results {
-		vulns, misconfSummary, misconfs, secrets, err := resultClient.Filter(ctx, results[i].Vulnerabilities, results[i].Misconfigurations, results[i].Secrets,
+		vulns, misconfSummary, misconfs, secrets, err := result.Filter(ctx, results[i].Vulnerabilities, results[i].Misconfigurations, results[i].Secrets,
 			opt.Severities, opt.IgnoreUnfixed, opt.IncludeNonFailures, opt.IgnoreFile, opt.IgnorePolicy)
 		if err != nil {
 			return types.Report{}, xerrors.Errorf("unable to filter vulnerabilities: %w", err)

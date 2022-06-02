@@ -8,7 +8,6 @@ import (
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/fanal/cache"
-	"github.com/aquasecurity/trivy/pkg/result"
 	"github.com/aquasecurity/trivy/pkg/rpc"
 	"github.com/aquasecurity/trivy/pkg/scanner"
 	"github.com/aquasecurity/trivy/pkg/scanner/local"
@@ -21,19 +20,17 @@ import (
 var ScanSuperSet = wire.NewSet(
 	local.SuperSet,
 	wire.Bind(new(scanner.Driver), new(local.Scanner)),
-	result.SuperSet,
 	NewScanServer,
 )
 
 // ScanServer implements the scanner
 type ScanServer struct {
 	localScanner scanner.Driver
-	resultClient result.Client
 }
 
 // NewScanServer is the factory method for scanner
-func NewScanServer(s scanner.Driver, vulnClient result.Client) *ScanServer {
-	return &ScanServer{localScanner: s, resultClient: vulnClient}
+func NewScanServer(s scanner.Driver) *ScanServer {
+	return &ScanServer{localScanner: s}
 }
 
 // Scan scans and return response
@@ -48,9 +45,6 @@ func (s *ScanServer) Scan(_ context.Context, in *rpcScanner.ScanRequest) (*rpcSc
 		return nil, xerrors.Errorf("failed scan, %s: %w", in.Target, err)
 	}
 
-	for i := range results {
-		s.resultClient.FillVulnerabilityInfo(results[i].Vulnerabilities, results[i].Type)
-	}
 	return rpc.ConvertToRPCScanResponse(results, os), nil
 }
 
