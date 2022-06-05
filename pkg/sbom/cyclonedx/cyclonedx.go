@@ -42,6 +42,11 @@ const (
 	PropertyLayerDiffID     = "LayerDiffID"
 )
 
+const (
+	// https://json-schema.org/understanding-json-schema/reference/string.html#dates-and-times
+	timeLayout = "2006-01-02T15:04:05+00:00"
+)
+
 type TrivyBOM struct {
 	cdx.BOM
 }
@@ -244,10 +249,10 @@ func Vulnerability(vuln types.DetectedVulnerability, bomRef string) cdx.Vulnerab
 		Advisories:  advisories(vuln.References),
 	}
 	if vuln.PublishedDate != nil {
-		v.Published = vuln.PublishedDate.String()
+		v.Published = vuln.PublishedDate.Format(timeLayout)
 	}
 	if vuln.LastModifiedDate != nil {
-		v.Updated = vuln.LastModifiedDate.String()
+		v.Updated = vuln.LastModifiedDate.Format(timeLayout)
 	}
 
 	v.Affects = &[]cdx.Affects{Affects(bomRef, vuln.InstalledVersion)}
@@ -316,6 +321,11 @@ func advisories(refs []string) *[]cdx.Advisory {
 }
 
 func cwes(cweIDs []string) *[]int {
+	// to skip cdx.Vulnerability.CWEs when generating json
+	// we should return 'clear' nil without 'type' interface part
+	if cweIDs == nil {
+		return nil
+	}
 	var ret []int
 	for _, cweID := range cweIDs {
 		number, err := strconv.Atoi(strings.TrimPrefix(strings.ToLower(cweID), "cwe-"))

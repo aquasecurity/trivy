@@ -151,7 +151,7 @@ func TestWriter_Write(t *testing.T) {
 				SerialNumber: "urn:uuid:3ff14136-e09f-4df9-80ea-000000000001",
 				Version:      1,
 				Metadata: &cdx.Metadata{
-					Timestamp: "2021-08-25T12:20:30.000000005Z",
+					Timestamp: "2021-08-25T12:20:30+00:00",
 					Tools: &[]cdx.Tool{
 						{
 							Name:    "trivy",
@@ -374,8 +374,8 @@ func TestWriter_Write(t *testing.T) {
 								URL: "http://lists.opensuse.org/opensuse-security-announce/2019-11/msg00008.html",
 							},
 						},
-						Published: "2018-12-31 19:29:00 +0000 UTC",
-						Updated:   "2019-10-31 01:15:00 +0000 UTC",
+						Published: "2018-12-31T19:29:00+00:00",
+						Updated:   "2019-10-31T01:15:00+00:00",
 						Affects: &[]cdx.Affects{
 							{
 								Ref: "pkg:rpm/centos/binutils@2.30-93.el8?arch=aarch64&distro=centos-8.3.2011",
@@ -549,7 +549,7 @@ func TestWriter_Write(t *testing.T) {
 				SerialNumber: "urn:uuid:3ff14136-e09f-4df9-80ea-000000000001",
 				Version:      1,
 				Metadata: &cdx.Metadata{
-					Timestamp: "2021-08-25T12:20:30.000000005Z",
+					Timestamp: "2021-08-25T12:20:30+00:00",
 					Tools: &[]cdx.Tool{
 						{
 							Name:    "trivy",
@@ -745,8 +745,8 @@ func TestWriter_Write(t *testing.T) {
 								URL: "https://access.redhat.com/security/cve/CVE-2022-23633",
 							},
 						},
-						Published: "2022-02-11 21:15:00 +0000 UTC",
-						Updated:   "2022-02-22 21:47:00 +0000 UTC",
+						Published: "2022-02-11T21:15:00+00:00",
+						Updated:   "2022-02-22T21:47:00+00:00",
 						Affects: &[]cdx.Affects{
 							{
 								Ref: "pkg:gem/actionpack@7.0.0?file_path=tools%2Fproject-john%2Fspecifications%2Factionpack.gemspec",
@@ -797,7 +797,7 @@ func TestWriter_Write(t *testing.T) {
 				SerialNumber: "urn:uuid:3ff14136-e09f-4df9-80ea-000000000001",
 				Version:      1,
 				Metadata: &cdx.Metadata{
-					Timestamp: "2021-08-25T12:20:30.000000005Z",
+					Timestamp: "2021-08-25T12:20:30+00:00",
 					Tools: &[]cdx.Tool{
 						{
 							Name:    "trivy",
@@ -893,7 +893,7 @@ func TestWriter_Write(t *testing.T) {
 				SerialNumber: "urn:uuid:3ff14136-e09f-4df9-80ea-000000000001",
 				Version:      1,
 				Metadata: &cdx.Metadata{
-					Timestamp: "2021-08-25T12:20:30.000000005Z",
+					Timestamp: "2021-08-25T12:20:30+00:00",
 					Tools: &[]cdx.Tool{
 						{
 							Name:    "trivy",
@@ -967,7 +967,7 @@ func TestWriter_Write(t *testing.T) {
 				SerialNumber: "urn:uuid:3ff14136-e09f-4df9-80ea-000000000001",
 				Version:      1,
 				Metadata: &cdx.Metadata{
-					Timestamp: "2021-08-25T12:20:30.000000005Z",
+					Timestamp: "2021-08-25T12:20:30+00:00",
 					Tools: &[]cdx.Tool{
 						{
 							Name:    "trivy",

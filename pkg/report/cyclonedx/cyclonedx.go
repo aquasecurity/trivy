@@ -6,7 +6,6 @@ import (
 	"sort"
 	"strconv"
 	"strings"
-	"time"
 
 	cdx "github.com/CycloneDX/cyclonedx-go"
 	"github.com/google/uuid"
@@ -24,6 +23,11 @@ import (
 
 var (
 	ErrInvalidBOMLink = xerrors.New("invalid bomLink format error")
+)
+
+const (
+	// https://json-schema.org/understanding-json-schema/reference/string.html#dates-and-times
+	timeLayout = "2006-01-02T15:04:05+00:00"
 )
 
 // Writer implements types.Writer
@@ -143,7 +147,7 @@ func (cw *Writer) convertToBom(r types.Report, version string) (*cdx.BOM, error)
 	}
 
 	bom.Metadata = &cdx.Metadata{
-		Timestamp: cw.clock.Now().UTC().Format(time.RFC3339Nano),
+		Timestamp: cw.clock.Now().UTC().Format(timeLayout),
 		Tools: &[]cdx.Tool{
 			{
 				Vendor:  "aquasecurity",

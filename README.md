@@ -8,7 +8,7 @@
 [![GitHub All Releases][github-all-releases-img]][release]
 ![Docker Pulls][docker-pulls]
 
-[📖 Documentation](docs)
+[📖 Documentation][docs]
 </div>
 
 Trivy (`tri` pronounced like **tri**gger, `vy` pronounced like en**vy**) is a comprehensive security scanner. It is reliable, fast, extremely easy to use, and it works wherever you need it.
@@ -29,7 +29,7 @@ Scanners:
 
 Much more scanners and targets are coming up. Missing something? Let us know!
 
-Read more in the [Trivy Documentation](docs)
+Read more in the [Trivy Documentation][docs]
 
 ## Quick Start
 
@@ -84,7 +84,7 @@ $ trivy k8s mycluster
 
 </details>
 
-Find out more in the [Trivy Documentation](docs) - [Getting Started](getting-started)
+Find out more in the [Trivy Documentation][docs] - [Getting Started][getting-started]
 
 
 ## Highlights
@@ -132,7 +132,7 @@ Contact us about any matter by opening a GitHub Discussion [here][discussions]
 [license-img]: https://img.shields.io/badge/License-Apache%202.0-blue.svg
 
 
-[getting-started]: https://aquasecurity.github.io/trivy/latest/getting-started/overview/
+[getting-started]: https://aquasecurity.github.io/trivy/latest/getting-started/installation/
 [docs]: https://aquasecurity.github.io/trivy
 [integrations]:https://aquasecurity.github.io/trivy/latest/docs/integrations/
 [installation]:https://aquasecurity.github.io/trivy/latest/docs/getting-started/installation/
