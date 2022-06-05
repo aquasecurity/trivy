@@ -2,10 +2,10 @@ package purl
 
 import (
 	"fmt"
-	cdx "github.com/CycloneDX/cyclonedx-go"
 	"strconv"
 	"strings"
 
+	cdx "github.com/CycloneDX/cyclonedx-go"
 	cn "github.com/google/go-containerregistry/pkg/name"
 	packageurl "github.com/package-url/packageurl-go"
 	"golang.org/x/xerrors"
