@@ -51,10 +51,7 @@ type TrivyBOM struct {
 	cdx.BOM
 }
 
-func (b TrivyBOM) Extract() ([]ftypes.Application, []ftypes.PackageInfo, *ftypes.OS, error) {
-	if b.Components == nil {
-		return nil, nil, nil, nil
-	}
+func (b TrivyBOM) parseComponents() (string, *ftypes.OS, map[string]*ftypes.Application, map[string]cdx.Component, error) {
 
 	var osBOMRef string
 	appMap := make(map[string]*ftypes.Application)
@@ -78,7 +75,7 @@ func (b TrivyBOM) Extract() ([]ftypes.Application, []ftypes.PackageInfo, *ftypes
 
 				pkg, err := b.Package(component)
 				if err != nil {
-					return nil, nil, nil, xerrors.Errorf("failed to parse package: %w", err)
+					return "", nil, nil, nil, xerrors.Errorf("failed to parse package: %w", err)
 				}
 				app.Libraries = []ftypes.Package{*pkg}
 				appMap[component.BOMRef] = &app
@@ -88,6 +85,19 @@ func (b TrivyBOM) Extract() ([]ftypes.Application, []ftypes.PackageInfo, *ftypes
 			}
 		}
 	}
+
+	return osBOMRef, os, appMap, libMap, nil
+}
+
+func (b TrivyBOM) Extract() ([]ftypes.Application, []ftypes.PackageInfo, *ftypes.OS, error) {
+	if b.Components == nil {
+		return nil, nil, nil, nil
+	}
+	osBOMRef, os, appMap, libMap, err := b.parseComponents()
+	if err != nil {
+		return nil, nil, nil, xerrors.Errorf("failed to parse components: %w", err)
+	}
+
 	if b.Dependencies == nil {
 		return nil, nil, os, nil
 	}
