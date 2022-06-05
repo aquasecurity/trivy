@@ -83,7 +83,6 @@ The following table lists the configurable parameters of the Trivy chart and the
 | `tolerations`                         | Tolerations for pod assignment                                              |     |
 | `podAnnotations`                      | Annotations for pods created by statefulset                             | `{}` |
 
-
 The above parameters map to the env variables defined in [trivy](https://github.com/aquasecurity/trivy#configuration).
 
 Specify each parameter using the `--set key=value[,key=value]` argument to `helm install`.
