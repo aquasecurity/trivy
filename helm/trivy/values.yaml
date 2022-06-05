@@ -53,8 +53,7 @@ tolerations: []
 
 ## Annotations for pods created by statefulset
 ## Ref: https://kubernetes.io/docs/concepts/overview/working-with-objects/annotations/
-podAnnotations:
-  name: hehehe
+podAnnotations: {}
 
 trivy:
   # debugMode the flag to enable Trivy debug mode
