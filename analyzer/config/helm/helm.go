@@ -71,9 +71,8 @@ func (a ConfigAnalyzer) Required(filePath string, info os.FileInfo) bool {
 		return false
 	}
 
-	ext := filepath.Ext(filePath)
 	for _, acceptable := range []string{".tpl", ".json", ".yaml", ".tar", ".tgz", ".tar.gz"} {
-		if strings.EqualFold(ext, acceptable) {
+		if strings.HasSuffix(strings.ToLower(filePath), acceptable) {
 			return true
 		}
 	}
