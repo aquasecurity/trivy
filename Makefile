@@ -11,7 +11,16 @@ MKDOCS_PORT := 8000
 u := $(if $(update),-u)
 
 $(GOBIN)/wire:
-	GO111MODULE=off go get github.com/google/wire/cmd/wire
+	go install github.com/google/wire/cmd/wire@v0.5.0
+
+$(GOBIN)/crane:
+	go install github.com/google/go-containerregistry/cmd/crane@v0.9.0
+
+$(GOBIN)/golangci-lint:
+	curl -sfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh| sh -s -- -b $(GOBIN) v1.45.2
+
+$(GOBIN)/labeler:
+	go install github.com/knqyf263/labeler@latest
 
 .PHONY: wire
 wire: $(GOBIN)/wire
@@ -26,15 +35,14 @@ deps:
 	go get ${u} -d
 	go mod tidy
 
-$(GOBIN)/golangci-lint:
-	curl -sfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh| sh -s -- -b $(GOBIN) v1.45.2
 
 .PHONY: test
 test:
 	go test -v -short -coverprofile=coverage.txt -covermode=atomic ./...
 
-integration/testdata/fixtures/images/*.tar.gz:
-	git clone https://github.com/aquasecurity/trivy-test-images.git integration/testdata/fixtures/images
+integration/testdata/fixtures/images/*.tar.gz: $(GOBIN)/crane
+	mkdir -p integration/testdata/fixtures/images/
+	integration/scripts/download-images.sh
 
 .PHONY: test-integration
 test-integration: integration/testdata/fixtures/images/*.tar.gz
@@ -69,9 +77,6 @@ install:
 .PHONY: clean
 clean:
 	rm -rf integration/testdata/fixtures/images
-
-$(GOBIN)/labeler:
-	go install github.com/knqyf263/labeler@latest
 
 .PHONY: label
 label: $(GOBIN)/labeler
