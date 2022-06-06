@@ -74,9 +74,14 @@ trivy:
   # You can create a GitHub token by following the instructions in
   # https://help.github.com/en/github/authenticating-to-github/creating-a-personal-access-token-for-the-command-line
   gitHubToken: ""
+
+  ## Annotations for pods created by statefulset
+  ## Ref: https://kubernetes.io/docs/concepts/overview/working-with-objects/annotations/
+
   podAnnotations: {}
     ## kube2iam/kiam annotation
     # iam.amazonaws.com/role: arn:aws:iam::ACCOUNT_ID:role/IAM_ROLE_NAME
+
   # Docker registry credentials
   # See also: https://aquasecurity.github.io/trivy/dev/advanced/private-registries/docker-hub/
   #
