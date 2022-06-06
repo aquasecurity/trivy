@@ -396,6 +396,11 @@ func Test_helmConfigAnalyzer_Required(t *testing.T) {
 			want:     true,
 		},
 		{
+			name:     "testchart.tar.gz",
+			filePath: "testdata/testchart.tar.gz",
+			want:     true,
+		},
+		{
 			name:     "nope.tgz",
 			filePath: "testdata/nope.tgz",
 			want:     true, // its a tarball after all
