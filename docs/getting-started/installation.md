@@ -228,10 +228,6 @@ trivy:
   podAnnotations: {}
     ## kube2iam/kiam annotation
     # iam.amazonaws.com/role: arn:aws:iam::ACCOUNT_ID:role/IAM_ROLE_NAME
-
-  serviceAccount:
-    annotations: {}
-      # eks.amazonaws.com/role-arn: arn:aws:iam::ACCOUNT_ID:role/IAM_ROLE_NAME
 ```
 
 > **Tip**: List all releases using `helm list`.
