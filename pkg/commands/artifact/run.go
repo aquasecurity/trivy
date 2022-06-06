@@ -63,24 +63,41 @@ type ScannerConfig struct {
 	ArtifactOption artifact.Option
 }
 
-type Runner struct {
+type Runner interface {
+	// ScanImage scans an image
+	ScanImage(ctx context.Context, opt Option) (types.Report, error)
+	// ScanFilesystem scans a filesystem
+	ScanFilesystem(ctx context.Context, opt Option) (types.Report, error)
+	// ScanRootfs scans rootfs
+	ScanRootfs(ctx context.Context, opt Option) (types.Report, error)
+	// ScanRepositroy scans repository
+	ScanRepository(ctx context.Context, opt Option) (types.Report, error)
+	// Filter filter a report
+	Filter(ctx context.Context, opt Option, report types.Report) (types.Report, error)
+	// Report a writes a report
+	Report(opt Option, report types.Report) error
+	// Close closes runner
+	Close() error
+}
+
+type runner struct {
 	cache  cache.Cache
 	dbOpen bool
 }
 
-type runnerOption func(*Runner)
+type runnerOption func(*runner)
 
 // WithCacheClient takes a custom cache implementation
 func WithCacheClient(c cache.Cache) runnerOption {
-	return func(r *Runner) {
+	return func(r *runner) {
 		r.cache = c
 	}
 }
 
 // NewRunner initializes Runner that provides scanning functionalities.
 // It is possible to return SkipScan and it must be handled by caller.
-func NewRunner(cliOption Option, opts ...runnerOption) (*Runner, error) {
-	r := &Runner{}
+func NewRunner(cliOption Option, opts ...runnerOption) (Runner, error) {
+	r := &runner{}
 	for _, opt := range opts {
 		opt(r)
 	}
@@ -102,7 +119,7 @@ func NewRunner(cliOption Option, opts ...runnerOption) (*Runner, error) {
 }
 
 // Close closes everything
-func (r *Runner) Close() error {
+func (r *runner) Close() error {
 	var errs error
 	if err := r.cache.Close(); err != nil {
 		errs = multierror.Append(errs, err)
@@ -116,7 +133,7 @@ func (r *Runner) Close() error {
 	return errs
 }
 
-func (r *Runner) ScanImage(ctx context.Context, opt Option) (types.Report, error) {
+func (r *runner) ScanImage(ctx context.Context, opt Option) (types.Report, error) {
 	// Disable the lock file scanning
 	opt.DisabledAnalyzers = analyzer.TypeLockfiles
 
@@ -136,24 +153,24 @@ func (r *Runner) ScanImage(ctx context.Context, opt Option) (types.Report, error
 		s = imageRemoteScanner
 	}
 
-	return r.Scan(ctx, opt, s)
+	return r.scan(ctx, opt, s)
 }
 
-func (r *Runner) ScanFilesystem(ctx context.Context, opt Option) (types.Report, error) {
+func (r *runner) ScanFilesystem(ctx context.Context, opt Option) (types.Report, error) {
 	// Disable the individual package scanning
 	opt.DisabledAnalyzers = append(opt.DisabledAnalyzers, analyzer.TypeIndividualPkgs...)
 
 	return r.scanFS(ctx, opt)
 }
 
-func (r *Runner) ScanRootfs(ctx context.Context, opt Option) (types.Report, error) {
+func (r *runner) ScanRootfs(ctx context.Context, opt Option) (types.Report, error) {
 	// Disable the lock file scanning
 	opt.DisabledAnalyzers = append(opt.DisabledAnalyzers, analyzer.TypeLockfiles...)
 
 	return r.scanFS(ctx, opt)
 }
 
-func (r *Runner) scanFS(ctx context.Context, opt Option) (types.Report, error) {
+func (r *runner) scanFS(ctx context.Context, opt Option) (types.Report, error) {
 	var s InitializeScanner
 	if opt.RemoteAddr == "" {
 		// Scan filesystem in standalone mode
@@ -163,20 +180,20 @@ func (r *Runner) scanFS(ctx context.Context, opt Option) (types.Report, error) {
 		s = filesystemRemoteScanner
 	}
 
-	return r.Scan(ctx, opt, s)
+	return r.scan(ctx, opt, s)
 }
 
-func (r *Runner) ScanRepository(ctx context.Context, opt Option) (types.Report, error) {
+func (r *runner) ScanRepository(ctx context.Context, opt Option) (types.Report, error) {
 	// Do not scan OS packages
 	opt.VulnType = []string{types.VulnTypeLibrary}
 
 	// Disable the OS analyzers and individual package analyzers
 	opt.DisabledAnalyzers = append(analyzer.TypeIndividualPkgs, analyzer.TypeOSes...)
 
-	return r.Scan(ctx, opt, repositoryStandaloneScanner)
+	return r.scan(ctx, opt, repositoryStandaloneScanner)
 }
 
-func (r *Runner) Scan(ctx context.Context, opt Option, initializeScanner InitializeScanner) (types.Report, error) {
+func (r *runner) scan(ctx context.Context, opt Option, initializeScanner InitializeScanner) (types.Report, error) {
 	report, err := scan(ctx, opt, initializeScanner, r.cache)
 	if err != nil {
 		return types.Report{}, xerrors.Errorf("scan error: %w", err)
@@ -185,7 +202,7 @@ func (r *Runner) Scan(ctx context.Context, opt Option, initializeScanner Initial
 	return report, nil
 }
 
-func (r *Runner) Filter(ctx context.Context, opt Option, report types.Report) (types.Report, error) {
+func (r *runner) Filter(ctx context.Context, opt Option, report types.Report) (types.Report, error) {
 	resultClient := initializeResultClient()
 	results := report.Results
 	for i := range results {
@@ -206,7 +223,7 @@ func (r *Runner) Filter(ctx context.Context, opt Option, report types.Report) (t
 	return report, nil
 }
 
-func (r *Runner) Report(opt Option, report types.Report) error {
+func (r *runner) Report(opt Option, report types.Report) error {
 	if err := pkgReport.Write(report, pkgReport.Option{
 		AppVersion:         opt.GlobalOption.AppVersion,
 		Format:             opt.Format,
@@ -222,7 +239,7 @@ func (r *Runner) Report(opt Option, report types.Report) error {
 	return nil
 }
 
-func (r *Runner) initDB(c Option) error {
+func (r *runner) initDB(c Option) error {
 	// When scanning config files or running as client mode, it doesn't need to download the vulnerability database.
 	if c.RemoteAddr != "" || !slices.Contains(c.SecurityChecks, types.SecurityCheckVulnerability) {
 		return nil
@@ -246,7 +263,7 @@ func (r *Runner) initDB(c Option) error {
 	return nil
 }
 
-func (r *Runner) initCache(c Option) error {
+func (r *runner) initCache(c Option) error {
 	// Skip initializing cache when custom cache is passed
 	if r.cache != nil {
 		return nil
