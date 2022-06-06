@@ -231,6 +231,133 @@ func TestScanner_Detect(t *testing.T) {
 			},
 			wantErr: "failed to unmarshal advisory JSON",
 		},
+		{
+			name:     "unpatched without fips",
+			fixtures: []string{"testdata/fixtures/oracle7.yaml", "testdata/fixtures/data-source.yaml"},
+			args: args{
+				osVer: "7",
+				pkgs: []ftypes.Package{
+					{
+						Name:       "gnutls",
+						Version:    "3.6.3",
+						Release:    "1.el8",
+						Arch:       "x86_64",
+						SrcName:    "gnutls",
+						SrcVersion: "3.6.3",
+						SrcRelease: "1.el8",
+					},
+				},
+			},
+			want: []types.DetectedVulnerability{
+				{
+					VulnerabilityID:  "CVE-2021-20231",
+					PkgName:          "gnutls",
+					InstalledVersion: "3.6.3-1.el8",
+					FixedVersion:     "3.6.16-4.el8",
+					DataSource: &dbTypes.DataSource{
+						ID:   vulnerability.OracleOVAL,
+						Name: "Oracle Linux OVAL definitions",
+						URL:  "https://linux.oracle.com/security/oval/",
+					},
+				},
+				{
+					VulnerabilityID:  "CVE-2021-20232",
+					PkgName:          "gnutls",
+					InstalledVersion: "3.6.3-1.el8",
+					FixedVersion:     "3.6.16-4.el8",
+					DataSource: &dbTypes.DataSource{
+						ID:   vulnerability.OracleOVAL,
+						Name: "Oracle Linux OVAL definitions",
+						URL:  "https://linux.oracle.com/security/oval/",
+					},
+				},
+				{
+					VulnerabilityID:  "CVE-2021-3580",
+					PkgName:          "gnutls",
+					InstalledVersion: "3.6.3-1.el8",
+					FixedVersion:     "3.6.16-4.el8",
+					DataSource: &dbTypes.DataSource{
+						ID:   vulnerability.OracleOVAL,
+						Name: "Oracle Linux OVAL definitions",
+						URL:  "https://linux.oracle.com/security/oval/",
+					},
+				},
+			},
+		},
+		{
+			name:     "patched without fips",
+			fixtures: []string{"testdata/fixtures/oracle7.yaml", "testdata/fixtures/data-source.yaml"},
+			args: args{
+				osVer: "7",
+				pkgs: []ftypes.Package{
+					{
+						Name:       "gnutls",
+						Version:    "3.6.16",
+						Release:    "4.el8",
+						Arch:       "x86_64",
+						SrcName:    "gnutls",
+						SrcVersion: "3.6.16",
+						SrcRelease: "4.el8",
+					},
+				},
+			},
+			want: nil,
+		},
+		{
+			name:     "unpatched with fips",
+			fixtures: []string{"testdata/fixtures/oracle7.yaml", "testdata/fixtures/data-source.yaml"},
+			args: args{
+				osVer: "7",
+				pkgs: []ftypes.Package{
+					{
+						Name:       "gnutls",
+						Epoch:      10,
+						Version:    "3.6.16",
+						Release:    "4.el8_fips",
+						Arch:       "x86_64",
+						SrcEpoch:   10,
+						SrcName:    "gnutls",
+						SrcVersion: "3.6.16_fips",
+						SrcRelease: "4.el8",
+					},
+				},
+			},
+			want: []types.DetectedVulnerability{
+				{
+					VulnerabilityID:  "CVE-2021-20231",
+					PkgName:          "gnutls",
+					InstalledVersion: "10:3.6.16-4.el8_fips",
+					FixedVersion:     "10:3.6.16-4.0.1.el8_fips",
+					DataSource: &dbTypes.DataSource{
+						ID:   vulnerability.OracleOVAL,
+						Name: "Oracle Linux OVAL definitions",
+						URL:  "https://linux.oracle.com/security/oval/",
+					},
+				},
+				{
+					VulnerabilityID:  "CVE-2021-20232",
+					PkgName:          "gnutls",
+					InstalledVersion: "10:3.6.16-4.el8_fips",
+					FixedVersion:     "10:3.6.16-4.0.1.el8_fips",
+					DataSource: &dbTypes.DataSource{
+						ID:   vulnerability.OracleOVAL,
+						Name: "Oracle Linux OVAL definitions",
+						URL:  "https://linux.oracle.com/security/oval/",
+					},
+				},
+				{
+					VulnerabilityID:  "CVE-2021-3580",
+					PkgName:          "gnutls",
+					InstalledVersion: "10:3.6.16-4.el8_fips",
+					FixedVersion:     "10:3.6.16-4.0.1.el8_fips",
+					DataSource: &dbTypes.DataSource{
+						ID:   vulnerability.OracleOVAL,
+						Name: "Oracle Linux OVAL definitions",
+						URL:  "https://linux.oracle.com/security/oval/",
+					},
+				},
+			},
+		},
 	}
 
 	for _, tt := range tests {
