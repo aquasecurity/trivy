@@ -8,6 +8,7 @@ import (
 
 	version "github.com/knqyf263/go-rpm-version"
 	"golang.org/x/exp/maps"
+	"golang.org/x/exp/slices"
 	"golang.org/x/xerrors"
 	"k8s.io/utils/clock"
 
@@ -144,6 +145,13 @@ func (s *Scanner) detect(osVer string, pkg ftypes.Package) ([]types.DetectedVuln
 
 	uniqVulns := map[string]types.DetectedVulnerability{}
 	for _, adv := range advisories {
+		// if Arches for advisory is empty or pkg.Arch is "noarch", then any Arches are affected
+		if len(adv.Arches) != 0 && pkg.Arch != "noarch" {
+			if !slices.Contains(adv.Arches, pkg.Arch) {
+				continue
+			}
+		}
+
 		vulnID := adv.VulnerabilityID
 		vuln := types.DetectedVulnerability{
 			VulnerabilityID:  vulnID,

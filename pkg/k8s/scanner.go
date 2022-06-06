@@ -17,7 +17,7 @@ import (
 
 type scanner struct {
 	cluster string
-	runner  *cmd.Runner
+	runner  cmd.Runner
 	opt     cmd.Option
 }
 

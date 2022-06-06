@@ -90,3 +90,38 @@ func TestCacheOption_Init(t *testing.T) {
 		})
 	}
 }
+
+func TestCacheOption_CacheBackendMasked(t *testing.T) {
+	type fields struct {
+		backend string
+	}
+	tests := []struct {
+		name   string
+		fields fields
+		want   string
+	}{
+		{
+			name: "redis cache backend masked",
+			fields: fields{
+				backend: "redis://root:password@localhost:6379",
+			},
+			want: "redis://****@localhost:6379",
+		},
+		{
+			name: "redis cache backend masked does nothing",
+			fields: fields{
+				backend: "redis://localhost:6379",
+			},
+			want: "redis://localhost:6379",
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			c := &option.CacheOption{
+				CacheBackend: tt.fields.backend,
+			}
+
+			assert.Equal(t, tt.want, c.CacheBackendMasked())
+		})
+	}
+}

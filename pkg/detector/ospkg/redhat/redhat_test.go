@@ -152,6 +152,96 @@ func TestScanner_Detect(t *testing.T) {
 			},
 		},
 		{
+			name: "happy path: package without architecture",
+			fixtures: []string{
+				"testdata/fixtures/redhat.yaml",
+				"testdata/fixtures/cpe.yaml",
+			},
+			args: args{
+				osVer: "7.6",
+				pkgs: []ftypes.Package{
+					{
+						Name:       "kernel-headers",
+						Version:    "3.10.0-1127.19",
+						Release:    "1.el7",
+						Epoch:      0,
+						Arch:       "noarch",
+						SrcName:    "kernel-headers",
+						SrcVersion: "3.10.0-1127.19",
+						SrcRelease: "1.el7",
+						SrcEpoch:   0,
+						Layer: ftypes.Layer{
+							DiffID: "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
+						},
+						BuildInfo: &ftypes.BuildInfo{
+							ContentSets: []string{"rhel-7-server-rpms"},
+						},
+					},
+				},
+			},
+			want: []types.DetectedVulnerability{
+				{
+					VulnerabilityID:  "CVE-2016-5195",
+					VendorIDs:        []string{"RHSA-2017:0372"},
+					PkgName:          "kernel-headers",
+					InstalledVersion: "3.10.0-1127.19-1.el7",
+					FixedVersion:     "4.5.0-15.2.1.el7",
+					SeveritySource:   vulnerability.RedHat,
+					Vulnerability: dbTypes.Vulnerability{
+						Severity: dbTypes.SeverityHigh.String(),
+					},
+					Layer: ftypes.Layer{
+						DiffID: "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
+					},
+				},
+			},
+		},
+		{
+			name: "happy path: advisories have different arches",
+			fixtures: []string{
+				"testdata/fixtures/redhat.yaml",
+				"testdata/fixtures/cpe.yaml",
+			},
+			args: args{
+				osVer: "7.6",
+				pkgs: []ftypes.Package{
+					{
+						Name:       "kernel-headers",
+						Version:    "3.10.0-326.36",
+						Release:    "3.el7",
+						Epoch:      0,
+						Arch:       "x86_64",
+						SrcName:    "kernel-headers",
+						SrcVersion: "3.10.0-326.36",
+						SrcRelease: "3.el7",
+						SrcEpoch:   0,
+						Layer: ftypes.Layer{
+							DiffID: "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
+						},
+						BuildInfo: &ftypes.BuildInfo{
+							ContentSets: []string{"rhel-7-server-rpms"},
+						},
+					},
+				},
+			},
+			want: []types.DetectedVulnerability{
+				{
+					VulnerabilityID:  "CVE-2016-5195",
+					VendorIDs:        []string{"RHSA-2016:2098"},
+					PkgName:          "kernel-headers",
+					InstalledVersion: "3.10.0-326.36-3.el7",
+					FixedVersion:     "3.10.0-327.36.3.el7",
+					SeveritySource:   vulnerability.RedHat,
+					Vulnerability: dbTypes.Vulnerability{
+						Severity: dbTypes.SeverityHigh.String(),
+					},
+					Layer: ftypes.Layer{
+						DiffID: "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
+					},
+				},
+			},
+		},
+		{
 			name: "no build info",
 			fixtures: []string{
 				"testdata/fixtures/redhat.yaml",
