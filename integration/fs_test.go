@@ -113,9 +113,9 @@ func TestFilesystem(t *testing.T) {
 			name: "helm chart directory scanning with builtin policies",
 			args: args{
 				securityChecks: "config",
-				input:          "testdata/fixtures/fs/helm_mysql",
+				input:          "testdata/fixtures/fs/helm_testchart",
 			},
-			golden: "testdata/helm_mysql.json.golden",
+			golden: "testdata/helm_testchart.json.golden",
 		},
 		{
 			name: "secrets",

@@ -1,6 +1,6 @@
 {
   "SchemaVersion": 2,
-  "ArtifactName": "testdata/fixtures/fs/helm",
+  "ArtifactName": "testdata/fixtures/fs/helm_testchart",
   "ArtifactType": "filesystem",
   "Metadata": {
     "ImageConfig": {
@@ -16,7 +16,7 @@
   },
   "Results": [
     {
-      "Target": "testchart.tar.gz:templates/deployment.yaml",
+      "Target": "templates/deployment.yaml",
       "Class": "config",
       "Type": "helm",
       "MisconfSummary": {
@@ -146,7 +146,7 @@
       ]
     },
     {
-      "Target": "testchart.tar.gz:templates/service.yaml",
+      "Target": "templates/service.yaml",
       "Class": "config",
       "Type": "helm",
       "MisconfSummary": {
@@ -156,7 +156,7 @@
       }
     },
     {
-      "Target": "testchart.tar.gz:templates/serviceaccount.yaml",
+      "Target": "templates/serviceaccount.yaml",
       "Class": "config",
       "Type": "helm",
       "MisconfSummary": {
