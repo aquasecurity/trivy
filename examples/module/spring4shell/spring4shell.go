@@ -70,7 +70,7 @@ func (s Spring4Shell) Analyze(filePath string) (*serialize.AnalysisResult, error
 
 // Parse a jdk release file like "/usr/local/openjdk-11/release"
 func (Spring4Shell) parseJavaRelease(f *os.File, filePath string) (*serialize.AnalysisResult, error) {
-	var javaMajorVersion string
+	var javaVersion string
 	scanner := bufio.NewScanner(f)
 	for scanner.Scan() {
 		line := scanner.Text()
@@ -83,12 +83,7 @@ func (Spring4Shell) parseJavaRelease(f *os.File, filePath string) (*serialize.An
 			return nil, fmt.Errorf("invalid java version: %s", line)
 		}
 
-		ver := strings.Trim(ss[1], `"`)
-		if index := strings.Index(ver, "."); index != -1 {
-			ver = ver[:index]
-		}
-
-		javaMajorVersion = ver
+		javaVersion = strings.Trim(ss[1], `"`)
 	}
 
 	if err := scanner.Err(); err != nil {
@@ -100,7 +95,7 @@ func (Spring4Shell) parseJavaRelease(f *os.File, filePath string) (*serialize.An
 			{
 				Type:     TypeJavaMajor,
 				FilePath: filePath,
-				Data:     javaMajorVersion,
+				Data:     javaVersion,
 			},
 		},
 	}, nil
@@ -138,11 +133,24 @@ func (Spring4Shell) PostScan(results serialize.Results) serialize.Results {
 
 		for _, c := range result.CustomResources {
 			if c.Type == TypeJavaMajor {
-				v, err := strconv.Atoi(c.Data.(string))
-				if err != nil {
-					return nil
+				v := c.Data.(string)
+				ss := strings.Split(v, ".")
+				if len(ss) == 0 || len(ss) < 2 {
+					wasm.Warn("Invalid Java version: " + v)
+					continue
 				}
-				javaMajorVersion = v
+
+				ver := ss[0]
+				if ver == "1" {
+					ver = ss[1]
+				}
+
+				var err error
+				javaMajorVersion, err = strconv.Atoi(ver)
+				if err != nil {
+					wasm.Warn("Invalid Java version: " + v)
+					continue
+				}
 			} else if c.Type == TypeTomcatVersion {
 				tomcatVersion = c.Data.(string)
 			}
