@@ -1,0 +1,43 @@
+{{- if eq .Values.architecture "replication" }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "mysql.secondary.fullname" . }}
+  namespace: {{ .Release.Namespace }}
+  labels: {{- include "common.labels.standard" . | nindent 4 }}
+    app.kubernetes.io/component: secondary
+    {{- if .Values.commonLabels }}
+    {{- include "common.tplvalues.render" ( dict "value" .Values.commonLabels "context" $ ) | nindent 4 }}
+    {{- end }}
+  annotations:
+    {{- if .Values.commonAnnotations }}
+    {{- include "common.tplvalues.render" ( dict "value" .Values.commonAnnotations "context" $ ) | nindent 4 }}
+    {{- end }}
+    {{- if .Values.secondary.service.annotations }}
+    {{- include "common.tplvalues.render" ( dict "value" .Values.secondary.service.annotations "context" $ ) | nindent 4 }}
+    {{- end }}
+spec:
+  type: {{ .Values.secondary.service.type }}
+  {{- if and (eq .Values.secondary.service.type "ClusterIP") .Values.secondary.service.clusterIP }}
+  clusterIP: {{ .Values.secondary.service.clusterIP }}
+  {{- end }}
+  {{- if and .Values.secondary.service.loadBalancerIP (eq .Values.secondary.service.type "LoadBalancer") }}
+  loadBalancerIP: {{ .Values.secondary.service.loadBalancerIP }}
+  externalTrafficPolicy: {{ .Values.secondary.service.externalTrafficPolicy | quote }}
+  {{- end }}
+  {{- if and (eq .Values.secondary.service.type "LoadBalancer") .Values.secondary.service.loadBalancerSourceRanges }}
+  loadBalancerSourceRanges: {{- toYaml .Values.secondary.service.loadBalancerSourceRanges | nindent 4 }}
+  {{- end }}
+  ports:
+    - name: mysql
+      port: {{ .Values.secondary.service.port }}
+      protocol: TCP
+      targetPort: mysql
+      {{- if (and (or (eq .Values.secondary.service.type "NodePort") (eq .Values.secondary.service.type "LoadBalancer")) .Values.secondary.service.nodePort) }}
+      nodePort: {{ .Values.secondary.service.nodePort }}
+      {{- else if eq .Values.secondary.service.type "ClusterIP" }}
+      nodePort: null
+      {{- end }}
+  selector: {{ include "common.labels.matchLabels" . | nindent 4 }}
+    app.kubernetes.io/component: secondary
+{{- end }}

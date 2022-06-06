@@ -1,0 +1,41 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "mysql.primary.fullname" . }}
+  namespace: {{ .Release.Namespace }}
+  labels: {{- include "common.labels.standard" . | nindent 4 }}
+    app.kubernetes.io/component: primary
+    {{- if .Values.commonLabels }}
+    {{- include "common.tplvalues.render" ( dict "value" .Values.commonLabels "context" $ ) | nindent 4 }}
+    {{- end }}
+  annotations:
+    {{- if .Values.commonAnnotations }}
+    {{- include "common.tplvalues.render" ( dict "value" .Values.commonAnnotations "context" $ ) | nindent 4 }}
+    {{- end }}
+    {{- if .Values.primary.service.annotations }}
+    {{- include "common.tplvalues.render" ( dict "value" .Values.primary.service.annotations "context" $ ) | nindent 4 }}
+    {{- end }}
+spec:
+  type: {{ .Values.primary.service.type }}
+  {{- if and (eq .Values.primary.service.type "ClusterIP") .Values.primary.service.clusterIP }}
+  clusterIP: {{ .Values.primary.service.clusterIP }}
+  {{- end }}
+  {{- if and .Values.primary.service.loadBalancerIP (eq .Values.primary.service.type "LoadBalancer") }}
+  loadBalancerIP: {{ .Values.primary.service.loadBalancerIP }}
+  externalTrafficPolicy: {{ .Values.primary.service.externalTrafficPolicy | quote }}
+  {{- end }}
+  {{- if and (eq .Values.primary.service.type "LoadBalancer") .Values.primary.service.loadBalancerSourceRanges }}
+  loadBalancerSourceRanges: {{- toYaml .Values.primary.service.loadBalancerSourceRanges | nindent 4 }}
+  {{- end }}
+  ports:
+    - name: mysql
+      port: {{ .Values.primary.service.port }}
+      protocol: TCP
+      targetPort: mysql
+      {{- if (and (or (eq .Values.primary.service.type "NodePort") (eq .Values.primary.service.type "LoadBalancer")) .Values.primary.service.nodePort) }}
+      nodePort: {{ .Values.primary.service.nodePort }}
+      {{- else if eq .Values.primary.service.type "ClusterIP" }}
+      nodePort: null
+      {{- end }}
+  selector: {{ include "common.labels.matchLabels" . | nindent 4 }}
+    app.kubernetes.io/component: primary
