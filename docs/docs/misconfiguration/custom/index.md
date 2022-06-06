@@ -14,25 +14,22 @@ As for `--namespaces` option, the detail is described as below.
 If a file name matches the following file patterns, Trivy will parse the file and pass it as input to your Rego policy.
 
 | File format   | File pattern                                              |
-| ------------- | --------------------------------------------------------- |
+|---------------|-----------------------------------------------------------|
 | JSON          | `*.json`                                                  |
-| YAML          | `*.yaml`                                                  |
-| TOML          | `*.toml`                                                  |
-| HCL           | `*.hcl`, `*.hcl1`, and `*.hcl2`                           |
+| YAML          | `*.yaml` and `*.yml`                                      |
 | Dockerfile    | `Dockerfile`, `Dockerfile.*`, and `*.Dockerfile`          |
 | Containerfile | `Containerfile`, `Containerfile.*`, and `*.Containerfile` |
+| Terraform     | `*.tf` and `*.tf.json`                                    |
 
 ### Configuration languages
 In the above general file formats, Trivy automatically identifies the following types of configuration files:
 
-- Ansible (YAML)
 - CloudFormation (JSON/YAML)
 - Kubernetes (JSON/YAML)
+- Helm (YAML)
+- Terraform Plan (JSON)
 
 This is useful for filtering inputs, as described below.
-
-!!! warning
-    Custom policies do not support Terraform at the moment.
 
 ## Rego format
 A single package must contain only one policy.
@@ -41,11 +38,12 @@ A single package must contain only one policy.
     ``` rego
     package user.kubernetes.ID001
     
+    import lib.result
+
     __rego_metadata__ := {
     	"id": "ID001",
     	"title": "Deployment not allowed",
     	"severity": "LOW",
-    	"type": "Custom Kubernetes Check",
     	"description": "Deployments are not allowed because of some reasons.",
     }
 
@@ -55,9 +53,10 @@ A single package must contain only one policy.
         ],
     }
     
-    deny[msg] {
-    	input.kind == "Deployment"
-    	msg = sprintf("Found deployment '%s' but deployments are not allowed", [input.metadata.name])
+    deny[res] {
+        input.kind == "Deployment"
+        msg := sprintf("Found deployment '%s' but deployments are not allowed", [input.metadata.name])
+        res := result.new(msg, input)
     }
     ```
 
@@ -73,6 +72,9 @@ If you add a new custom policy, it must be defined under a new package like `use
     - MAY include the group name such as `kubernetes` for clarity
         - Group name has no effect on policy evaluation
 
+`import data.lib.result` (optional)
+:   - MAY be defined if you would like to embellish your result(s) with line numbers and code highlighting
+
 `__rego_metadata__` (optional)
 :   - SHOULD be defined for clarity since these values will be displayed in the scan results
 
@@ -82,9 +84,11 @@ If you add a new custom policy, it must be defined under a new package like `use
 `deny` (required)
 :   - SHOULD be `deny` or start with `deny_`
         - Although `warn`, `warn_*`, `violation`, `violation_` also work for compatibility, `deny` is recommended as severity can be defined in `__rego_metadata__`.
-    - SHOULD return `string`
-        - Although `object` with `msg` field is accepted, other fields are dropped and `string` is recommended.
-        - e.g. `{"msg": "deny message", "details": "something"}`
+    - SHOULD return ONE OF:
+        - The result of a call to `result.new(msg, cause)`. The `msg` is a `string` describing the issue occurrence, and the `cause` is the property/object where the issue occurred. Providing this allows Trivy to ascertain line numbers and highlight code in the output. 
+        - A `string` denoting the detected issue
+            - Although `object` with `msg` field is accepted, other fields are dropped and `string` is recommended if `result.new()` is not utilised.
+            - e.g. `{"msg": "deny message", "details": "something"}`
     
 
 ### Package
@@ -114,7 +118,6 @@ Metadata helps enrich Trivy's scan results with useful information.
     	"id": "ID001",
     	"title": "Deployment not allowed",
     	"severity": "LOW",
-    	"type": "Custom Kubernetes Check",
     	"description": "Deployments are not allowed because of some reasons.",
     	"recommended_actions": "Remove Deployment",
     	"url": "https://cloud.google.com/blog/products/containers-kubernetes/kubernetes-best-practices-resource-requests-and-limits",
@@ -123,30 +126,33 @@ Metadata helps enrich Trivy's scan results with useful information.
   
 All fields under `__rego_metadata__` are optional.
 
-| Field name         | Allowed values                      | Default value | In table           | In JSON          |
-| ------------------ | ------------------------------------| :-----------: | :----------------: |:---------------: |
-| id                 | Any characters                      | N/A           | :material-check:   | :material-check: |
-| title              | Any characters                      | N/A           | :material-check:   | :material-check: |
-| severity           | `LOW`, `MEDIUM`, `HIGH`, `CRITICAL` | UNKNOWN       | :material-check:   | :material-check: |
-| type               | Any characters                      | N/A           | :material-check:   | :material-check: |
-| description        | Any characters                      |               | :material-close:   | :material-check: |
-| recommended_actions| Any characters                      |               | :material-close:   | :material-check: | 
-| url                | Any characters                      |               | :material-close:   | :material-check: |
+| Field name          | Allowed values                      | Default value |     In table     |     In JSON      |
+|---------------------|-------------------------------------|:-------------:|:----------------:|:----------------:|
+| id                  | Any characters                      |      N/A      | :material-check: | :material-check: |
+| title               | Any characters                      |      N/A      | :material-check: | :material-check: |
+| severity            | `LOW`, `MEDIUM`, `HIGH`, `CRITICAL` |    UNKNOWN    | :material-check: | :material-check: |
+| description         | Any characters                      |               | :material-close: | :material-check: |
+| recommended_actions | Any characters                      |               | :material-close: | :material-check: | 
+| url                 | Any characters                      |               | :material-close: | :material-check: |
 
 Some fields are displayed in scan results.
 
 ``` bash
-deployment.yaml (kubernetes)
-============================
-Tests: 28 (SUCCESSES: 14, FAILURES: 14, EXCEPTIONS: 0)
-Failures: 14 (HIGH: 1)
+k.yaml (kubernetes)
+───────────────────
 
-+---------------------------+------------+-------------------------------------+----------+------------------------------------------+
-|           TYPE            | MISCONF ID |                CHECK                | SEVERITY |                 MESSAGE                  |
-+---------------------------+------------+-------------------------------------+----------+------------------------------------------+
-| Custom Kubernetes Check   |   ID001    | Deployment not allowed              |   LOW    | Found deployment 'test' but deployments  |
-|                           |            |                                     |          | are not allowed                          |
-+---------------------------+------------+-------------------------------------+----------+------------------------------------------+
+Tests: 32 (SUCCESSES: 31, FAILURES: 1, EXCEPTIONS: 0)
+Failures: 1 (UNKNOWN: 0, LOW: 1, MEDIUM: 0, HIGH: 0, CRITICAL: 0)
+
+LOW: Found deployment 'my-deployment' but deployments are not allowed
+════════════════════════════════════════════════════════════════════════
+Deployments are not allowed because of some reasons.
+────────────────────────────────────────────────────────────────────────
+ k.yaml:1-2
+────────────────────────────────────────────────────────────────────────
+   1 ┌ apiVersion: v1
+   2 └ kind: Deployment
+────────────────────────────────────────────────────────────────────────
 ```
 
 ### Input
@@ -164,21 +170,21 @@ All fields under `__rego_input` are optional.
     ```
 
 `combine` (boolean)
-: The details is [here](combine.md).
+: The details are [here](combine.md).
 
 `selector` (array)
-:   This option filters the input by file formats or configuration languages. 
+:   This option filters the input by file format or configuration language. 
     In the above example, Trivy passes only Kubernetes files to this policy.
-    Even if Dockerfile exists in the specified directory, it will not be passed to the policy as input.
+    Even if a Dockerfile exists in the specified directory, it will not be passed to the policy as input.
 
-    When configuration language such as Kubernetes is not identified, file format such as JSON will be used as `type`.
-    When configuration language is identified, it will overwrite `type`.
+    When configuration languages such as Kubernetes are not identified, file formats such as JSON will be used as `type`.
+    When a configuration language is identified, it will overwrite `type`.
     
     !!! example
         `pod.yaml` including Kubernetes Pod will be handled as `kubernetes`, not `yaml`.
         `type` is overwritten by `kubernetes` from `yaml`.
 
-    `type` accepts `kubernetes`, `dockerfile`, `ansible`, `cloudformation`, `json`, `yaml`, `toml`, or `hcl`.
+    `type` accepts `kubernetes`, `dockerfile`, `cloudformation`, `terraform`, `terraformplan`, `json`, or `yaml`.
 
 [rego]: https://www.openpolicyagent.org/docs/latest/policy-language/
 [package]: https://www.openpolicyagent.org/docs/latest/policy-language/#packages
