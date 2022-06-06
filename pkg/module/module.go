@@ -36,7 +36,7 @@ var (
 		"error": logError,
 	}
 
-	moduleRelativeDir = filepath.Join(".trivy", "modules")
+	ModuleRelativeDir = filepath.Join(".trivy", "modules")
 )
 
 func logDebug(ctx context.Context, m api.Module, offset, size uint32) {
@@ -557,5 +557,5 @@ func isType(ctx context.Context, mod api.Module, name string) (bool, error) {
 }
 
 func dir() string {
-	return filepath.Join(utils.HomeDir(), moduleRelativeDir)
+	return filepath.Join(utils.HomeDir(), ModuleRelativeDir)
 }

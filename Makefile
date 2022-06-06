@@ -40,6 +40,10 @@ integration/testdata/fixtures/images/*.tar.gz:
 test-integration: integration/testdata/fixtures/images/*.tar.gz
 	go test -v -tags=integration ./integration/...
 
+.PHONY: test-module-integration
+test-integration: integration/testdata/fixtures/images/*.tar.gz
+	go test -v -tags=integration,module ./integration/...
+
 .PHONY: lint
 lint: $(GOBIN)/golangci-lint
 	$(GOBIN)/golangci-lint run --timeout 5m
