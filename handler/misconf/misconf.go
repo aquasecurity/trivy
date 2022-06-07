@@ -10,20 +10,19 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/aquasecurity/defsec/pkg/detection"
-	"github.com/aquasecurity/defsec/pkg/scanners/helm"
-
 	"github.com/liamg/memoryfs"
+	"github.com/samber/lo"
 	"golang.org/x/xerrors"
 
+	"github.com/aquasecurity/defsec/pkg/detection"
 	"github.com/aquasecurity/defsec/pkg/scan"
 	"github.com/aquasecurity/defsec/pkg/scanners"
 	cfscanner "github.com/aquasecurity/defsec/pkg/scanners/cloudformation"
 	dfscanner "github.com/aquasecurity/defsec/pkg/scanners/dockerfile"
+	"github.com/aquasecurity/defsec/pkg/scanners/helm"
 	k8sscanner "github.com/aquasecurity/defsec/pkg/scanners/kubernetes"
 	"github.com/aquasecurity/defsec/pkg/scanners/options"
 	tfscanner "github.com/aquasecurity/defsec/pkg/scanners/terraform"
-
 	"github.com/aquasecurity/fanal/analyzer"
 	"github.com/aquasecurity/fanal/artifact"
 	"github.com/aquasecurity/fanal/handler"
@@ -270,7 +269,7 @@ func resultsToMisconf(configType string, scannerName string, results scan.Result
 			ruleID = result.Rule().AVDID
 		}
 
-		cause := types.NewCauseWithCode(result)
+		cause := NewCauseWithCode(result)
 
 		misconfResult := types.MisconfResult{
 			Namespace: result.RegoNamespace(),
@@ -314,4 +313,32 @@ func resultsToMisconf(configType string, scannerName string, results scan.Result
 	}
 
 	return types.ToMisconfigurations(misconfs)
+}
+
+func NewCauseWithCode(underlying scan.Result) types.CauseMetadata {
+	flat := underlying.Flatten()
+	cause := types.CauseMetadata{
+		Resource:  flat.Resource,
+		Provider:  flat.RuleProvider.DisplayName(),
+		Service:   flat.RuleService,
+		StartLine: flat.Location.StartLine,
+		EndLine:   flat.Location.EndLine,
+	}
+	if code, err := underlying.GetCode(); err == nil {
+		cause.Code = types.Code{
+			Lines: lo.Map(code.Lines, func(l scan.Line, i int) types.Line {
+				return types.Line{
+					Number:      l.Number,
+					Content:     l.Content,
+					IsCause:     l.IsCause,
+					Annotation:  l.Annotation,
+					Truncated:   l.Truncated,
+					Highlighted: l.Highlighted,
+					FirstCause:  l.FirstCause,
+					LastCause:   l.LastCause,
+				}
+			}),
+		}
+	}
+	return cause
 }
