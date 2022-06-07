@@ -211,9 +211,9 @@ func TestTar(t *testing.T) {
 			name: "oracle linux 8",
 			testArgs: args{
 				Format: "json",
-				Input:  "testdata/fixtures/images/oraclelinux-8-slim.tar.gz",
+				Input:  "testdata/fixtures/images/oraclelinux-8.tar.gz",
 			},
-			golden: "testdata/oraclelinux-8-slim.json.golden",
+			golden: "testdata/oraclelinux-8.json.golden",
 		},
 		{
 			name: "opensuse leap 15.1",
