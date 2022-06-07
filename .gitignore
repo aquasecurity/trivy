@@ -30,3 +30,6 @@ integration/testdata/fixtures/images
 
 # goreleaser output
 dist
+
+# WebAssembly
+*.wasm
