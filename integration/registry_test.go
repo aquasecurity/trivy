@@ -221,6 +221,9 @@ func scan(t *testing.T, imageRef name.Reference, baseDir, goldenFile string, opt
 	// Set up testing DB
 	cacheDir := initDB(t)
 
+	// Set a temp dir so that modules will not be loaded
+	t.Setenv("XDG_DATA_HOME", cacheDir)
+
 	// Setup the output file
 	outputFile := filepath.Join(t.TempDir(), "output.json")
 	if *update {

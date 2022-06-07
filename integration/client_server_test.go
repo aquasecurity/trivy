@@ -526,6 +526,9 @@ func setup(t *testing.T, options setupOptions) (*cli.App, string, string) {
 	// Set up testing DB
 	cacheDir := initDB(t)
 
+	// Set a temp dir so that modules will not be loaded
+	t.Setenv("XDG_DATA_HOME", cacheDir)
+
 	port, err := getFreePort()
 	assert.NoError(t, err)
 	addr := fmt.Sprintf("localhost:%d", port)
