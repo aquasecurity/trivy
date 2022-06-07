@@ -135,13 +135,13 @@ func TestDockerEngine(t *testing.T) {
 		},
 		{
 			name:     "distroless base",
-			imageTag: "gcr.io/distroless/base:latest",
+			imageTag: "ghcr.io/aquasecurity/trivy-test-images:distroless-base",
 			input:    "testdata/fixtures/images/distroless-base.tar.gz",
 			golden:   "testdata/distroless-base.json.golden",
 		},
 		{
 			name:     "distroless python2.7",
-			imageTag: "gcr.io/distroless/python2.7:latest",
+			imageTag: "ghcr.io/aquasecurity/trivy-test-images:distroless-python27",
 			input:    "testdata/fixtures/images/distroless-python27.tar.gz",
 			golden:   "testdata/distroless-python27.json.golden",
 		},
