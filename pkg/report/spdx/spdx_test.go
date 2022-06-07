@@ -109,16 +109,16 @@ func TestWriter_Write(t *testing.T) {
 					ExternalDocumentReferences: map[string]spdx.ExternalDocumentRef2_2{},
 				},
 				Packages: map[spdx.ElementID]*spdx.Package2_2{
-					spdx.ElementID("8201b0a3a8b66330"): {
-						PackageSPDXIdentifier:     spdx.ElementID("8201b0a3a8b66330"),
+					spdx.ElementID("41fbfd3a15a9c237"): {
+						PackageSPDXIdentifier:     spdx.ElementID("41fbfd3a15a9c237"),
 						PackageName:               "actioncontroller",
 						PackageVersion:            "7.0.1",
 						PackageLicenseConcluded:   "NONE",
 						PackageLicenseDeclared:    "NONE",
 						IsFilesAnalyzedTagPresent: true,
 					},
-					spdx.ElementID("d9d3445df1dbff62"): {
-						PackageSPDXIdentifier:     spdx.ElementID("d9d3445df1dbff62"),
+					spdx.ElementID("fbe7ba5907d0f5a2"): {
+						PackageSPDXIdentifier:     spdx.ElementID("fbe7ba5907d0f5a2"),
 						PackageName:               "actionpack",
 						PackageVersion:            "7.0.1",
 						PackageLicenseConcluded:   "NONE",
@@ -228,16 +228,16 @@ func TestWriter_Write(t *testing.T) {
 						PackageLicenseDeclared:    "GPLv2+",
 						IsFilesAnalyzedTagPresent: true,
 					},
-					spdx.ElementID("3eaa685de3a96def"): {
-						PackageSPDXIdentifier:     spdx.ElementID("3eaa685de3a96def"),
+					spdx.ElementID("216407676208fcb1"): {
+						PackageSPDXIdentifier:     spdx.ElementID("216407676208fcb1"),
 						PackageName:               "actionpack",
 						PackageVersion:            "7.0.1",
 						PackageLicenseConcluded:   "NONE",
 						PackageLicenseDeclared:    "NONE",
 						IsFilesAnalyzedTagPresent: true,
 					},
-					spdx.ElementID("216407676208fcb1"): {
-						PackageSPDXIdentifier:     spdx.ElementID("216407676208fcb1"),
+					spdx.ElementID("ee8bb4e8354184d"): {
+						PackageSPDXIdentifier:     spdx.ElementID("ee8bb4e8354184d"),
 						PackageName:               "actionpack",
 						PackageVersion:            "7.0.1",
 						PackageLicenseConcluded:   "NONE",
