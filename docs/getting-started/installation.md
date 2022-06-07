@@ -223,11 +223,9 @@ trivy:
 Add the AWS role to pod's annotations:
 
 ```yaml
-trivy:
-
-  podAnnotations: {}
-    ## kube2iam/kiam annotation
-    # iam.amazonaws.com/role: arn:aws:iam::ACCOUNT_ID:role/IAM_ROLE_NAME
+podAnnotations: {}
+  ## kube2iam/kiam annotation
+  # iam.amazonaws.com/role: arn:aws:iam::ACCOUNT_ID:role/IAM_ROLE_NAME
 ```
 
 > **Tip**: List all releases using `helm list`.
