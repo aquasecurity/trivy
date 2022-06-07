@@ -3,11 +3,10 @@ module github.com/aquasecurity/trivy
 go 1.18
 
 require (
-	github.com/CycloneDX/cyclonedx-go v0.5.2
+	github.com/CycloneDX/cyclonedx-go v0.6.0
 	github.com/Masterminds/sprig/v3 v3.2.2
 	github.com/NYTimes/gziphandler v1.1.1
 	github.com/aquasecurity/bolt-fixtures v0.0.0-20200903104109-d34e7f983986
-	github.com/aquasecurity/fanal v0.0.0-20220602184043-656e958eba6b
 	github.com/aquasecurity/go-dep-parser v0.0.0-20220503151658-d316f5cc2cff
 	github.com/aquasecurity/go-gem-version v0.0.0-20201115065557-8eed6fe000ce
 	github.com/aquasecurity/go-npm-version v0.0.0-20201110091526-0b796d180798
@@ -235,6 +234,8 @@ require (
 	sigs.k8s.io/kustomize/api v0.11.4 // indirect
 	sigs.k8s.io/kustomize/kyaml v0.13.6 // indirect
 )
+
+require github.com/aquasecurity/fanal v0.0.0-20220607082632-cee9188f43ac
 
 require (
 	github.com/MakeNowJust/heredoc v0.0.0-20170808103936-bb23615498cd // indirect

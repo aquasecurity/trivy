@@ -102,6 +102,22 @@ func TestFilesystem(t *testing.T) {
 			golden: "testdata/dockerfile-custom-policies.json.golden",
 		},
 		{
+			name: "tarball helm chart scanning with builtin policies",
+			args: args{
+				securityChecks: "config",
+				input:          "testdata/fixtures/fs/helm",
+			},
+			golden: "testdata/helm.json.golden",
+		},
+		{
+			name: "helm chart directory scanning with builtin policies",
+			args: args{
+				securityChecks: "config",
+				input:          "testdata/fixtures/fs/helm_testchart",
+			},
+			golden: "testdata/helm_testchart.json.golden",
+		},
+		{
 			name: "secrets",
 			args: args{
 				securityChecks: "vuln,secret",
@@ -117,8 +133,10 @@ func TestFilesystem(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			osArgs := []string{"trivy", "--cache-dir", cacheDir, "fs", "--skip-db-update", "--skip-policy-update",
-				"--format", "json", "--offline-scan", "--security-checks", tt.args.securityChecks}
+			osArgs := []string{
+				"trivy", "--cache-dir", cacheDir, "fs", "--skip-db-update", "--skip-policy-update",
+				"--format", "json", "--offline-scan", "--security-checks", tt.args.securityChecks,
+			}
 
 			if len(tt.args.policyPaths) != 0 {
 				for _, policyPath := range tt.args.policyPaths {

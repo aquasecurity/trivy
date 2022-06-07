@@ -1,6 +1,7 @@
 package option
 
 import (
+	"fmt"
 	"strings"
 	"time"
 
@@ -50,4 +51,16 @@ func (c *CacheOption) Init() error {
 		}
 	}
 	return nil
+}
+
+// CacheBackendMasked returns the redis connection string masking credentials
+func (c *CacheOption) CacheBackendMasked() string {
+	endIndex := strings.Index(c.CacheBackend, "@")
+	if endIndex == -1 {
+		return c.CacheBackend
+	}
+
+	startIndex := strings.Index(c.CacheBackend, "//")
+
+	return fmt.Sprintf("%s****%s", c.CacheBackend[:startIndex+2], c.CacheBackend[endIndex:])
 }

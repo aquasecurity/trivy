@@ -51,6 +51,10 @@ affinity: {}
 ## Ref: https://kubernetes.io/docs/concepts/configuration/taint-and-toleration/
 tolerations: []
 
+## Annotations for pods created by statefulset
+## Ref: https://kubernetes.io/docs/concepts/overview/working-with-objects/annotations/
+podAnnotations: {}
+
 trivy:
   # debugMode the flag to enable Trivy debug mode
   debugMode: false

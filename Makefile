@@ -10,8 +10,21 @@ MKDOCS_PORT := 8000
 
 u := $(if $(update),-u)
 
+# Tools
 $(GOBIN)/wire:
-	go install github.com/google/wire/cmd/wire@latest
+	go install github.com/google/wire/cmd/wire@v0.5.0
+
+$(GOBIN)/crane:
+	go install github.com/google/go-containerregistry/cmd/crane@v0.9.0
+
+$(GOBIN)/golangci-lint:
+	curl -sfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh| sh -s -- -b $(GOBIN) v1.45.2
+
+$(GOBIN)/labeler:
+	go install github.com/knqyf263/labeler@latest
+
+$(GOBIN)/easyjson:
+	go install github.com/mailru/easyjson/...@v0.7.7
 
 .PHONY: wire
 wire: $(GOBIN)/wire
@@ -26,15 +39,14 @@ deps:
 	go get ${u} -d
 	go mod tidy
 
-$(GOBIN)/golangci-lint:
-	curl -sfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh| sh -s -- -b $(GOBIN) v1.45.2
 
 .PHONY: test
 test:
 	go test -v -short -coverprofile=coverage.txt -covermode=atomic ./...
 
-integration/testdata/fixtures/images/*.tar.gz:
-	git clone https://github.com/aquasecurity/trivy-test-images.git integration/testdata/fixtures/images
+integration/testdata/fixtures/images/*.tar.gz: $(GOBIN)/crane
+	mkdir -p integration/testdata/fixtures/images/
+	integration/scripts/download-images.sh
 
 .PHONY: test-integration
 test-integration: integration/testdata/fixtures/images/*.tar.gz
@@ -74,9 +86,6 @@ install:
 clean:
 	rm -rf integration/testdata/fixtures/images
 
-$(GOBIN)/labeler:
-	go install github.com/knqyf263/labeler@latest
-
 .PHONY: label
 label: $(GOBIN)/labeler
 	labeler apply misc/triage/labels.yaml -r aquasecurity/trivy -l 5
@@ -86,9 +95,6 @@ label: $(GOBIN)/labeler
 mkdocs-serve:
 	docker build -t $(MKDOCS_IMAGE) -f docs/build/Dockerfile docs/build
 	docker run --name mkdocs-serve --rm -v $(PWD):/docs -p $(MKDOCS_PORT):8000 $(MKDOCS_IMAGE)
-
-$(GOBIN)/easyjson:
-	go install github.com/mailru/easyjson/...@v0.7.7
 
 .PHONY: easyjson
 easyjson: $(GOBIN)/easyjson

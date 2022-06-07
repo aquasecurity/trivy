@@ -75,11 +75,11 @@ func TestWriter_Write(t *testing.T) {
 						Packages: []ftypes.Package{
 							{
 								Name:    "actionpack",
-								Version: "7.0.0",
+								Version: "7.0.1",
 							},
 							{
 								Name:    "actioncontroller",
-								Version: "7.0.0",
+								Version: "7.0.1",
 							},
 						},
 					},
@@ -90,7 +90,7 @@ func TestWriter_Write(t *testing.T) {
 						Packages: []ftypes.Package{
 							{
 								Name:    "actionpack",
-								Version: "7.0.0",
+								Version: "7.0.1",
 							},
 						},
 					},
@@ -112,7 +112,7 @@ func TestWriter_Write(t *testing.T) {
 					spdx.ElementID("8201b0a3a8b66330"): {
 						PackageSPDXIdentifier:     spdx.ElementID("8201b0a3a8b66330"),
 						PackageName:               "actioncontroller",
-						PackageVersion:            "7.0.0",
+						PackageVersion:            "7.0.1",
 						PackageLicenseConcluded:   "NONE",
 						PackageLicenseDeclared:    "NONE",
 						IsFilesAnalyzedTagPresent: true,
@@ -120,7 +120,7 @@ func TestWriter_Write(t *testing.T) {
 					spdx.ElementID("d9d3445df1dbff62"): {
 						PackageSPDXIdentifier:     spdx.ElementID("d9d3445df1dbff62"),
 						PackageName:               "actionpack",
-						PackageVersion:            "7.0.0",
+						PackageVersion:            "7.0.1",
 						PackageLicenseConcluded:   "NONE",
 						PackageLicenseDeclared:    "NONE",
 						IsFilesAnalyzedTagPresent: true,
@@ -189,7 +189,7 @@ func TestWriter_Write(t *testing.T) {
 						Packages: []ftypes.Package{
 							{
 								Name:    "actionpack",
-								Version: "7.0.0",
+								Version: "7.0.1",
 								Layer: ftypes.Layer{
 									DiffID: "sha256:ccb64cf0b7ba2e50741d0b64cae324eb5de3b1e2f580bbf177e721b67df38488",
 								},
@@ -231,7 +231,7 @@ func TestWriter_Write(t *testing.T) {
 					spdx.ElementID("3eaa685de3a96def"): {
 						PackageSPDXIdentifier:     spdx.ElementID("3eaa685de3a96def"),
 						PackageName:               "actionpack",
-						PackageVersion:            "7.0.0",
+						PackageVersion:            "7.0.1",
 						PackageLicenseConcluded:   "NONE",
 						PackageLicenseDeclared:    "NONE",
 						IsFilesAnalyzedTagPresent: true,

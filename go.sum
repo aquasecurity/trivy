@@ -96,8 +96,8 @@ github.com/BurntSushi/toml v0.3.1/go.mod h1:xHWCNGjB5oqiDr8zfno3MHue2Ht5sIBksp03
 github.com/BurntSushi/toml v1.1.0 h1:ksErzDEI1khOiGPgpwuI7x2ebx/uXQNw7xJpn9Eq1+I=
 github.com/BurntSushi/toml v1.1.0/go.mod h1:CxXYINrC8qIiEnFrOxCa7Jy5BFHlXnUU2pbicEuybxQ=
 github.com/BurntSushi/xgb v0.0.0-20160522181843-27f122750802/go.mod h1:IVnqGOEym/WlBOVXweHU+Q+/VP0lqqI8lqeDx9IjBqo=
-github.com/CycloneDX/cyclonedx-go v0.5.2 h1:CkdGw2R/tZWmEbSypJVZG+3+2SAsDjJirfIrG/RbIVg=
-github.com/CycloneDX/cyclonedx-go v0.5.2/go.mod h1:nQCiF4Tvrg5Ieu8qPhYMvzPGMu5I7fANZkrSsJjl5mg=
+github.com/CycloneDX/cyclonedx-go v0.6.0 h1:SizWGbZzFTC/O/1yh072XQBMxfvsoWqd//oKCIyzFyE=
+github.com/CycloneDX/cyclonedx-go v0.6.0/go.mod h1:nQCiF4Tvrg5Ieu8qPhYMvzPGMu5I7fANZkrSsJjl5mg=
 github.com/DATA-DOG/go-sqlmock v1.5.0 h1:Shsta01QNfFxHCfpW6YH2STWB0MudeXXEWMr20OEh60=
 github.com/GoogleCloudPlatform/docker-credential-gcr v2.0.5+incompatible h1:juIaKLLVhqzP55d8x4cSVgwyQv76Z55/fRv/UBr2KkQ=
 github.com/GoogleCloudPlatform/docker-credential-gcr v2.0.5+incompatible/go.mod h1:BB1eHdMLYEFuFdBlRMb0N7YGVdM5s6Pt0njxgvfbGGs=
@@ -188,8 +188,8 @@ github.com/aquasecurity/bolt-fixtures v0.0.0-20200903104109-d34e7f983986 h1:2a30
 github.com/aquasecurity/bolt-fixtures v0.0.0-20200903104109-d34e7f983986/go.mod h1:NT+jyeCzXk6vXR5MTkdn4z64TgGfE5HMLC8qfj5unl8=
 github.com/aquasecurity/defsec v0.59.0 h1:BmX5j5Y7+IhJ4hKYGIJWMcmVUqaIiTjtEqL5doT995Q=
 github.com/aquasecurity/defsec v0.59.0/go.mod h1:42FxKif2itz+MHFlJ3TJjdroL9Jzj3THoexlueBTU5w=
-github.com/aquasecurity/fanal v0.0.0-20220602184043-656e958eba6b h1:MJ0dQEsu3ysFadSmFyX+mTgINNJk0VfeEmJIT5ARCEs=
-github.com/aquasecurity/fanal v0.0.0-20220602184043-656e958eba6b/go.mod h1:c0Kqe6ffFdrugzH8NZuF5V4gllHJO6ef8u8DqXE8k9g=
+github.com/aquasecurity/fanal v0.0.0-20220607082632-cee9188f43ac h1:OzP+N2jZH2xmwiZXXfnOEUDw+dKtGvwtmOgXkWbZjMA=
+github.com/aquasecurity/fanal v0.0.0-20220607082632-cee9188f43ac/go.mod h1:c0Kqe6ffFdrugzH8NZuF5V4gllHJO6ef8u8DqXE8k9g=
 github.com/aquasecurity/go-dep-parser v0.0.0-20220503151658-d316f5cc2cff h1:YNlzRYB0n4mZtfuWx6AWaGEjnLVNekchyoFDlYFZegs=
 github.com/aquasecurity/go-dep-parser v0.0.0-20220503151658-d316f5cc2cff/go.mod h1:7EOQWQmyavVPY3fScbbPdd3dB/b0Q4ZbJ/NZCvNKrLs=
 github.com/aquasecurity/go-gem-version v0.0.0-20201115065557-8eed6fe000ce h1:QgBRgJvtEOBtUXilDb1MLi1p1MWoyFDXAu5DEUl5nwM=
