@@ -171,10 +171,10 @@ func (d pomDependency) Resolve(props map[string]string, depManagement map[string
 	// Evaluate variables
 	dep := pomDependency{
 		Text:       d.Text,
-		GroupID:    evaluateVariable(d.GroupID, props),
-		ArtifactID: evaluateVariable(d.ArtifactID, props),
-		Version:    evaluateVariable(d.Version, props),
-		Scope:      evaluateVariable(d.Scope, props),
+		GroupID:    evaluateVariable(d.GroupID, props, nil),
+		ArtifactID: evaluateVariable(d.ArtifactID, props, nil),
+		Version:    evaluateVariable(d.Version, props, nil),
+		Scope:      evaluateVariable(d.Scope, props, nil),
 		Optional:   d.Optional,
 		Exclusions: d.Exclusions,
 	}
@@ -182,10 +182,10 @@ func (d pomDependency) Resolve(props map[string]string, depManagement map[string
 	// Inherit version, scope and optional from dependencyManagement
 	if managed, ok := depManagement[d.Name()]; ok {
 		if dep.Version == "" {
-			dep.Version = evaluateVariable(managed.Version, props)
+			dep.Version = evaluateVariable(managed.Version, props, nil)
 		}
 		if dep.Scope == "" {
-			dep.Scope = evaluateVariable(managed.Scope, props)
+			dep.Scope = evaluateVariable(managed.Scope, props, nil)
 		}
 		// TODO: need to check the behavior
 		if !dep.Optional {

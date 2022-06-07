@@ -39,6 +39,17 @@ func Test_evaluateVariable(t *testing.T) {
 			want: "aaa-bbb",
 		},
 		{
+			name: "looped variables",
+			args: args{
+				s: "${foo.name}",
+				props: map[string]string{
+					"foo.name": "${bar.name}",
+					"bar.name": "${foo.name}",
+				},
+			},
+			want: "",
+		},
+		{
 			name: "same variables",
 			args: args{
 				s: "${foo.name}-${foo.name}",
@@ -81,7 +92,7 @@ func Test_evaluateVariable(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got := evaluateVariable(tt.args.s, tt.args.props)
+			got := evaluateVariable(tt.args.s, tt.args.props, nil)
 			assert.Equal(t, tt.want, got)
 		})
 	}

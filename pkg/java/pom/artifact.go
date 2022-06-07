@@ -5,6 +5,9 @@ import (
 	"os"
 	"regexp"
 	"strings"
+
+	"github.com/aquasecurity/go-dep-parser/pkg/log"
+	"golang.org/x/exp/slices"
 )
 
 var (
@@ -21,9 +24,9 @@ type artifact struct {
 
 func newArtifact(groupID, artifactID, version string, props map[string]string) artifact {
 	return artifact{
-		GroupID:    evaluateVariable(groupID, props),
-		ArtifactID: evaluateVariable(artifactID, props),
-		Version:    newVersion(evaluateVariable(version, props)),
+		GroupID:    evaluateVariable(groupID, props, nil),
+		ArtifactID: evaluateVariable(artifactID, props, nil),
+		Version:    newVersion(evaluateVariable(version, props, nil)),
 	}
 }
 
@@ -90,7 +93,7 @@ func (v1 version) String() string {
 	return v1.ver
 }
 
-func evaluateVariable(s string, props map[string]string) string {
+func evaluateVariable(s string, props map[string]string, seenProps []string) string {
 	if props == nil {
 		props = map[string]string{}
 	}
@@ -105,9 +108,28 @@ func evaluateVariable(s string, props map[string]string) string {
 		} else {
 			// <properties> might include another property.
 			// e.g. <animal.sniffer.skip>${skipTests}</animal.sniffer.skip>
-			newValue = evaluateVariable(props[m[1]], props)
+			ss, ok := props[m[1]]
+			if ok {
+				// search for looped properties
+				if slices.Contains(seenProps, ss) {
+					printLoopedPropertiesStack(m[0], seenProps)
+					return ""
+				}
+				seenProps = append(seenProps, ss) // save evaluated props to check if we get this prop again
+				newValue = evaluateVariable(ss, props, seenProps)
+				seenProps = []string{} // clear props if we returned from recursive. Required for correct work with 2 same props like ${foo}-${foo}
+			}
+
 		}
 		s = strings.ReplaceAll(s, m[0], newValue)
 	}
 	return s
+}
+
+func printLoopedPropertiesStack(env string, usedProps []string) {
+	var s string
+	for _, prop := range usedProps {
+		s += fmt.Sprintf("%s -> ", prop)
+	}
+	log.Logger.Warnf("Lopped properties were detected: %s%s", s, env)
 }
