@@ -149,7 +149,7 @@ func TestDockerEngine(t *testing.T) {
 			name:     "oracle linux 8",
 			imageTag: "ghcr.io/aquasecurity/trivy-test-images:oraclelinux-8",
 			input:    "testdata/fixtures/images/oraclelinux-8.tar.gz",
-			golden:   "testdata/oraclelinux-8-slim.json.golden",
+			golden:   "testdata/oraclelinux-8.json.golden",
 		},
 		{
 			name:     "ubuntu 18.04",
