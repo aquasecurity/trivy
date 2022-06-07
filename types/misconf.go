@@ -3,8 +3,6 @@ package types
 import (
 	"fmt"
 	"sort"
-
-	"github.com/aquasecurity/defsec/pkg/scan"
 )
 
 type Misconfiguration struct {
@@ -31,27 +29,27 @@ type MisconfResult struct {
 type MisconfResults []MisconfResult
 
 type CauseMetadata struct {
-	Resource  string    `json:",omitempty"`
-	Provider  string    `json:",omitempty"`
-	Service   string    `json:",omitempty"`
-	StartLine int       `json:",omitempty"`
-	EndLine   int       `json:",omitempty"`
-	Code      scan.Code `json:",omitempty"`
+	Resource  string `json:",omitempty"`
+	Provider  string `json:",omitempty"`
+	Service   string `json:",omitempty"`
+	StartLine int    `json:",omitempty"`
+	EndLine   int    `json:",omitempty"`
+	Code      Code   `json:",omitempty"`
 }
 
-func NewCauseWithCode(underlying scan.Result) CauseMetadata {
-	flat := underlying.Flatten()
-	cause := CauseMetadata{
-		Resource:  flat.Resource,
-		Provider:  flat.RuleProvider.DisplayName(),
-		Service:   flat.RuleService,
-		StartLine: flat.Location.StartLine,
-		EndLine:   flat.Location.EndLine,
-	}
-	if code, err := underlying.GetCode(); err == nil {
-		cause.Code = *code
-	}
-	return cause
+type Code struct {
+	Lines []Line
+}
+
+type Line struct {
+	Number      int    `json:"Number"`
+	Content     string `json:"Content"`
+	IsCause     bool   `json:"IsCause"`
+	Annotation  string `json:"Annotation"`
+	Truncated   bool   `json:"Truncated"`
+	Highlighted string `json:"Highlighted,omitempty"`
+	FirstCause  bool   `json:"FirstCause"`
+	LastCause   bool   `json:"LastCause"`
 }
 
 type PolicyMetadata struct {
