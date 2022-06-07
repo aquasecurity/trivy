@@ -1,0 +1,14 @@
+run:
+  go: 1.18
+  timeout: 5m
+linters:
+  enable:
+    - gofmt
+  disable:
+    - errcheck
+    - gosimple
+    - govet
+    - ineffassign
+    - staticcheck
+    - structcheck
+    - unused 
