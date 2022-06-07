@@ -8,37 +8,37 @@
       "Name": "6.10",
       "EOSL": true
     },
-    "ImageID": "sha256:d0957ffdf8a2ea8c8925903862b65a1b6850dbb019f88d45e927d3d5a3fa0c31",
+    "ImageID": "sha256:5bf9684f472089d6d5cb636041d3d6dc748dbde39f1aefc374bbd367bd2aabbf",
     "DiffIDs": [
       "sha256:af6bf1987c2eb07d73f33836b0d8fd825d7c785273526b077e46780e8b4b2ae9"
     ],
     "ImageConfig": {
       "architecture": "amd64",
       "author": "https://github.com/CentOS/sig-cloud-instance-images",
-      "container": "d519f3e5c41d16388d3fba0dac626427b21deb98cce150dee80c180b9baf9435",
-      "created": "2019-03-14T21:20:11.486358099Z",
-      "docker_version": "18.06.1-ce",
+      "container": "39f18700e994db8cbf9769e400afd93f3e9d0b00e06d44fe31f5e81513204d42",
+      "created": "2021-09-15T18:20:39.183628076Z",
+      "docker_version": "20.10.7",
       "history": [
         {
           "author": "https://github.com/CentOS/sig-cloud-instance-images",
-          "created": "2018-10-09T18:20:03.816986835Z",
+          "created": "2021-09-15T18:20:32.237976425Z",
           "created_by": "/bin/sh -c #(nop)  MAINTAINER https://github.com/CentOS/sig-cloud-instance-images",
           "empty_layer": true
         },
         {
           "author": "https://github.com/CentOS/sig-cloud-instance-images",
-          "created": "2019-03-14T21:20:10.936939354Z",
+          "created": "2021-09-15T18:20:38.186052996Z",
           "created_by": "/bin/sh -c #(nop) ADD file:0065316a41144e95bcb133567cc86816b8368a823cc067d741e06ded59849fd8 in / "
         },
         {
           "author": "https://github.com/CentOS/sig-cloud-instance-images",
-          "created": "2019-03-14T21:20:11.322700622Z",
+          "created": "2021-09-15T18:20:38.990977879Z",
           "created_by": "/bin/sh -c #(nop)  LABEL org.label-schema.schema-version=1.0 org.label-schema.name=CentOS Base Image org.label-schema.vendor=CentOS org.label-schema.license=GPLv2 org.label-schema.build-date=20181006",
           "empty_layer": true
         },
         {
           "author": "https://github.com/CentOS/sig-cloud-instance-images",
-          "created": "2019-03-14T21:20:11.486358099Z",
+          "created": "2021-09-15T18:20:39.183628076Z",
           "created_by": "/bin/sh -c #(nop)  CMD [\"/bin/bash\"]",
           "empty_layer": true
         }
@@ -57,15 +57,14 @@
         "Env": [
           "PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
         ],
-        "Image": "sha256:143abcd43bce45f4fd9ba51c7361051d7ea9e9e1eadb66e5c94a9c1b7754524f",
+        "Image": "sha256:60e456a7493aee808844ffd1e87bffc99b84bb095366bfd68b8843e0328f9e20",
         "Labels": {
           "org.label-schema.build-date": "20181006",
           "org.label-schema.license": "GPLv2",
           "org.label-schema.name": "CentOS Base Image",
           "org.label-schema.schema-version": "1.0",
           "org.label-schema.vendor": "CentOS"
-        },
-        "ArgsEscaped": true
+        }
       }
     }
   },
@@ -80,6 +79,7 @@
           "PkgName": "glibc",
           "InstalledVersion": "2.12-1.212.el6",
           "Layer": {
+            "Digest": "sha256:ff50d722b38227ec8f2bbf0cdbce428b66745077c173d8117d91376128fa532e",
             "DiffID": "sha256:af6bf1987c2eb07d73f33836b0d8fd825d7c785273526b077e46780e8b4b2ae9"
           },
           "SeveritySource": "redhat",
@@ -123,6 +123,7 @@
           "InstalledVersion": "1.0.1e-57.el6",
           "FixedVersion": "1.0.1e-58.el6_10",
           "Layer": {
+            "Digest": "sha256:ff50d722b38227ec8f2bbf0cdbce428b66745077c173d8117d91376128fa532e",
             "DiffID": "sha256:af6bf1987c2eb07d73f33836b0d8fd825d7c785273526b077e46780e8b4b2ae9"
           },
           "SeveritySource": "redhat",
