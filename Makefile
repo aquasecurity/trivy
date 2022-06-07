@@ -53,7 +53,8 @@ test-integration: integration/testdata/fixtures/images/*.tar.gz
 	go test -v -tags=integration ./integration/...
 
 .PHONY: test-module-integration
-test-integration: integration/testdata/fixtures/images/*.tar.gz
+test-module-integration: integration/testdata/fixtures/images/*.tar.gz
+	tinygo build -o examples/module/spring4shell/spring4shell.wasm -scheduler=none -target=wasi --no-debug examples/module/spring4shell/spring4shell.go
 	go test -v -tags=integration,module ./integration/...
 
 .PHONY: lint
