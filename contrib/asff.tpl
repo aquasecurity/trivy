@@ -66,7 +66,57 @@
             ],
             "RecordState": "ACTIVE"
         }
-       {{- end -}}
+        {{- end -}}
+        {{- range .Misconfigurations -}}
+            {{- if $t_first -}}{{- $t_first = false -}}{{- else -}},{{- end -}}
+            {{- $severity := .Severity -}}
+            {{- if eq $severity "UNKNOWN" -}}
+                {{- $severity = "INFORMATIONAL" -}}
+            {{- end -}}
+            {{- $description := .Description -}}
+            {{- if gt (len $description ) 512 -}}
+                {{- $description = (substr 0 512 $description) | printf "%v .." -}}
+            {{- end}}
+        {
+            "SchemaVersion": "2018-10-08",
+            "Id": "{{ $target }}/{{ .ID }}",
+            "ProductArn": "arn:aws:securityhub:{{ env "AWS_REGION" }}::product/aquasecurity/aquasecurity",
+            "GeneratorId": "Trivy/{{ .ID }}",
+            "AwsAccountId": "{{ env "AWS_ACCOUNT_ID" }}",
+            "Types": [ "Software and Configuration Checks" ],
+            "CreatedAt": "{{ now | date "2006-01-02T15:04:05.999999999Z07:00" }}",
+            "UpdatedAt": "{{ now | date "2006-01-02T15:04:05.999999999Z07:00" }}",
+            "Severity": {
+                "Label": "{{ $severity }}"
+            },
+            "Title": "Trivy found a misconfiguration in {{ $target }}: {{ .Title }}",
+            "Description": {{ escapeString $description | printf "%q" }},
+            "Remediation": {
+                "Recommendation": {
+                    "Text": "{{ .Resolution }}",
+                    "Url": "{{ .PrimaryURL }}"
+                }
+            },
+            "ProductFields": { "Product Name": "Trivy" },
+            "Resources": [
+                {
+                    "Type": "Other",
+                    "Id": "{{ $target }}",
+                    "Partition": "aws",
+                    "Region": "{{ env "AWS_REGION" }}",
+                    "Details": {
+                        "Other": {
+                            "Message": "{{ .Message }}",
+                            "Filename": "{{ $target }}",
+                            "StartLine": "{{ .CauseMetadata.StartLine }}",
+                            "EndLine": "{{ .CauseMetadata.EndLine }}"
+                        }
+                    }
+                }
+            ],
+            "RecordState": "ACTIVE"
+        }
+        {{- end -}}
       {{- end }}
     ]
 }
