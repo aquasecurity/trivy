@@ -1,6 +1,6 @@
 # Quick Start
 
-## Scan image for vulnerabilities
+## Scan image for vulnerabilities and secrets
 
 Simply specify an image name (and a tag).
 
@@ -10,32 +10,40 @@ $ trivy image [YOUR_IMAGE_NAME]
 
 For example:
 
+``` shell
+$ trivy image myimage:1.0.0
+2022-05-16T13:25:17.826+0100	INFO	Detected OS: alpine
+2022-05-16T13:25:17.826+0100	INFO	Detecting Alpine vulnerabilities...
+2022-05-16T13:25:17.826+0100	INFO	Number of language-specific files: 0
+
+myimage:1.0.0 (alpine 3.15.3)
+
+Total: 2 (UNKNOWN: 0, LOW: 0, MEDIUM: 0, HIGH: 0, CRITICAL: 2)
+
+┌────────────┬────────────────┬──────────┬───────────────────┬───────────────┬─────────────────────────────────────────────────────────┐
+│  Library   │ Vulnerability  │ Severity │ Installed Version │ Fixed Version │                          Title                          │
+├────────────┼────────────────┼──────────┼───────────────────┼───────────────┼─────────────────────────────────────────────────────────┤
+│ busybox    │ CVE-2022-28391 │ CRITICAL │ 1.34.1-r4         │ 1.34.1-r5     │ busybox: remote attackers may execute arbitrary code if │
+│            │                │          │                   │               │ netstat is used                                         │
+│            │                │          │                   │               │ https://avd.aquasec.com/nvd/cve-2022-28391              │
+├────────────┤                │          │                   │               │                                                         │
+│ ssl_client │                │          │                   │               │                                                         │
+│            │                │          │                   │               │                                                         │
+│            │                │          │                   │               │                                                         │
+└────────────┴────────────────┴──────────┴───────────────────┴───────────────┴─────────────────────────────────────────────────────────┘
+
+app/deploy.sh (secrets)
+
+Total: 1 (UNKNOWN: 0, LOW: 0, MEDIUM: 0, HIGH: 0, CRITICAL: 1)
+
+┌──────────┬───────────────────┬──────────┬─────────┬────────────────────────────────┐
+│ Category │    Description    │ Severity │ Line No │             Match              │
+├──────────┼───────────────────┼──────────┼─────────┼────────────────────────────────┤
+│   AWS    │ AWS Access Key ID │ CRITICAL │    3    │ export AWS_ACCESS_KEY_ID=***** │
+└──────────┴───────────────────┴──────────┴─────────┴────────────────────────────────┘
 ```
-$ trivy image python:3.4-alpine
-```
 
-<details>
-<summary>Result</summary>
-
-```
-2019-05-16T01:20:43.180+0900    INFO    Updating vulnerability database...
-2019-05-16T01:20:53.029+0900    INFO    Detecting Alpine vulnerabilities...
-
-python:3.4-alpine3.9 (alpine 3.9.2)
-===================================
-Total: 1 (UNKNOWN: 0, LOW: 0, MEDIUM: 1, HIGH: 0, CRITICAL: 0)
-
-+---------+------------------+----------+-------------------+---------------+--------------------------------+
-| LIBRARY | VULNERABILITY ID | SEVERITY | INSTALLED VERSION | FIXED VERSION |             TITLE              |
-+---------+------------------+----------+-------------------+---------------+--------------------------------+
-| openssl | CVE-2019-1543    | MEDIUM   | 1.1.1a-r1         | 1.1.1b-r1     | openssl: ChaCha20-Poly1305     |
-|         |                  |          |                   |               | with long nonces               |
-+---------+------------------+----------+-------------------+---------------+--------------------------------+
-```
-
-</details>
-
-For more details, see [here][vulnerability].
+For more details, see [vulnerability][vulnerability] and [secret][secret] pages.
 
 ## Scan directory for misconfigurations
 
@@ -47,37 +55,31 @@ $ trivy config [YOUR_IAC_DIR]
 
 For example:
 
-```
+``` shell
 $ ls build/
 Dockerfile
 $ trivy config ./build
-```
-
-<details>
-<summary>Result</summary>
-
-```
-2021-07-09T10:06:29.188+0300    INFO    Need to update the built-in policies
-2021-07-09T10:06:29.188+0300    INFO    Downloading the built-in policies...
-2021-07-09T10:06:30.520+0300    INFO    Detected config files: 1
+2022-05-16T13:29:29.952+0100	INFO	Detected config files: 1
 
 Dockerfile (dockerfile)
 =======================
 Tests: 23 (SUCCESSES: 22, FAILURES: 1, EXCEPTIONS: 0)
-Failures: 1 (UNKNOWN: 0, LOW: 0, MEDIUM: 0, HIGH: 1, CRITICAL: 0)
+Failures: 1 (UNKNOWN: 0, LOW: 0, MEDIUM: 1, HIGH: 0, CRITICAL: 0)
 
-+---------------------------+------------+----------------------+----------+------------------------------------------+
-|           TYPE            | MISCONF ID |        CHECK         | SEVERITY |                 MESSAGE                  |
-+---------------------------+------------+----------------------+----------+------------------------------------------+
-| Dockerfile Security Check |   DS002    | Image user is 'root' |   HIGH   | Last USER command in                     |
-|                           |            |                      |          | Dockerfile should not be 'root'          |
-|                           |            |                      |          | -->avd.aquasec.com/appshield/ds002       |
-+---------------------------+------------+----------------------+----------+------------------------------------------+
+MEDIUM: Specify a tag in the 'FROM' statement for image 'alpine'
+══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+When using a 'FROM' statement you should use a specific tag to avoid uncontrolled behavior when the image is updated.
+
+See https://avd.aquasec.com/misconfig/ds001
+──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+ Dockerfile:1
+──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+   1 [ FROM alpine:latest
+──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 ```
-
-</details>
 
 For more details, see [here][misconf].
 
-[vulnerability]: ../vulnerability/scanning/index.md
-[misconf]: ../misconfiguration/index.md
+[vulnerability]: ../docs/vulnerability/scanning/index.md
+[misconf]: ../docs/misconfiguration/scanning.md
+[secret]: ../docs/secret/scanning.md

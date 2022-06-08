@@ -16,15 +16,15 @@ jobs:
     name: Test
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
       - name: Set up Go
-        uses: actions/setup-go@v2
+        uses: actions/setup-go@v3
         with:
           go-version: ${{ env.GO_VERSION }}
 
       - name: Lint
-        uses: golangci/golangci-lint-action@v3.1.0
+        uses: golangci/golangci-lint-action@v3.2.0
         with:
           version: v1.45
           args: --deadline=30m
@@ -37,13 +37,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Set up Go
-      uses: actions/setup-go@v2
+      uses: actions/setup-go@v3
       with:
         go-version: ${{ env.GO_VERSION }}
       id: go
 
     - name: Check out code into the Go module directory
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
 
     - name: Run integration tests
       run: make test-integration
@@ -55,25 +55,25 @@ jobs:
       DOCKER_CLI_EXPERIMENTAL: "enabled"
     steps:
     - name: Set up QEMU
-      uses: docker/setup-qemu-action@v1
+      uses: docker/setup-qemu-action@v2
 
     - name: Set up Docker Buildx
       id: buildx
-      uses: docker/setup-buildx-action@v1
+      uses: docker/setup-buildx-action@v2
 
     - name: Show available Docker Buildx platforms
       run: echo ${{ steps.buildx.outputs.platforms }}
 
     - name: Checkout
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
 
     - name: Set up Go
-      uses: actions/setup-go@v2
+      uses: actions/setup-go@v3
       with:
         go-version: ${{ env.GO_VERSION }}
 
     - name: Run GoReleaser
-      uses: goreleaser/goreleaser-action@v2
+      uses: goreleaser/goreleaser-action@v3
       with:
         version: v1.4.1
         args: release --snapshot --rm-dist --skip-publish
@@ -83,7 +83,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Checkout
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
       with:
         fetch-depth: 0
         persist-credentials: true
@@ -92,9 +92,7 @@ jobs:
         python-version: 3.x
     - name: Install dependencies
       run: |
-        pip install mkdocs-material
-        pip install mike
-        pip install mkdocs-macros-plugin
+        pip install -r docs/build/requirements.txt
     - name: Configure the git user
       run: |
         git config user.name "knqyf263"

@@ -1,6 +1,8 @@
 package types
 
 import (
+	"encoding/json"
+
 	v1 "github.com/google/go-containerregistry/pkg/v1" // nolint: goimports
 
 	ftypes "github.com/aquasecurity/fanal/types"
@@ -37,6 +39,7 @@ const (
 	ClassOSPkg   = "os-pkgs"
 	ClassLangPkg = "lang-pkgs"
 	ClassConfig  = "config"
+	ClassSecret  = "secret"
 )
 
 // Result holds a target and detected vulnerabilities
@@ -48,7 +51,31 @@ type Result struct {
 	Vulnerabilities   []DetectedVulnerability    `json:"Vulnerabilities,omitempty"`
 	MisconfSummary    *MisconfSummary            `json:"MisconfSummary,omitempty"`
 	Misconfigurations []DetectedMisconfiguration `json:"Misconfigurations,omitempty"`
+	Secrets           []ftypes.SecretFinding     `json:"Secrets,omitempty"`
 	CustomResources   []ftypes.CustomResource    `json:"CustomResources,omitempty"`
+}
+
+func (r *Result) MarshalJSON() ([]byte, error) {
+	// VendorSeverity includes all vendor severities.
+	// It would be noisy to users, so it should be removed from the JSON output.
+	for i := range r.Vulnerabilities {
+		r.Vulnerabilities[i].VendorSeverity = nil
+	}
+
+	// remove the Highlighted attribute from the json results
+	for i := range r.Misconfigurations {
+		for li := range r.Misconfigurations[i].CauseMetadata.Code.Lines {
+			r.Misconfigurations[i].CauseMetadata.Code.Lines[li].Highlighted = ""
+		}
+	}
+
+	// Notice the Alias struct prevents MarshalJSON being called infinitely
+	type ResultAlias Result
+	return json.Marshal(&struct {
+		*ResultAlias
+	}{
+		ResultAlias: (*ResultAlias)(r),
+	})
 }
 
 type MisconfSummary struct {

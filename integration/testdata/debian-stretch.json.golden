@@ -57,6 +57,7 @@
           "PkgName": "bash",
           "InstalledVersion": "4.4-5",
           "Layer": {
+            "Digest": "sha256:9cc2ad81d40d54dcae7fa5e8e17d9c34e8bba3b7c2cc7e26fb22734608bda32e",
             "DiffID": "sha256:f73e7e79899a33b4b9b78da62efb71520844f8dd518f3c390e27bc3063bce307"
           },
           "SeveritySource": "debian",
@@ -109,6 +110,7 @@
           "InstalledVersion": "1.43.4-2",
           "FixedVersion": "1.43.4-2+deb9u1",
           "Layer": {
+            "Digest": "sha256:9cc2ad81d40d54dcae7fa5e8e17d9c34e8bba3b7c2cc7e26fb22734608bda32e",
             "DiffID": "sha256:f73e7e79899a33b4b9b78da62efb71520844f8dd518f3c390e27bc3063bce307"
           },
           "SeveritySource": "nvd",
@@ -167,6 +169,7 @@
           "InstalledVersion": "1.43.4-2",
           "FixedVersion": "1.43.4-2+deb9u1",
           "Layer": {
+            "Digest": "sha256:9cc2ad81d40d54dcae7fa5e8e17d9c34e8bba3b7c2cc7e26fb22734608bda32e",
             "DiffID": "sha256:f73e7e79899a33b4b9b78da62efb71520844f8dd518f3c390e27bc3063bce307"
           },
           "SeveritySource": "nvd",
@@ -225,6 +228,7 @@
           "InstalledVersion": "1.43.4-2",
           "FixedVersion": "1.43.4-2+deb9u1",
           "Layer": {
+            "Digest": "sha256:9cc2ad81d40d54dcae7fa5e8e17d9c34e8bba3b7c2cc7e26fb22734608bda32e",
             "DiffID": "sha256:f73e7e79899a33b4b9b78da62efb71520844f8dd518f3c390e27bc3063bce307"
           },
           "SeveritySource": "nvd",
@@ -283,6 +287,7 @@
           "InstalledVersion": "1.43.4-2",
           "FixedVersion": "1.43.4-2+deb9u1",
           "Layer": {
+            "Digest": "sha256:9cc2ad81d40d54dcae7fa5e8e17d9c34e8bba3b7c2cc7e26fb22734608bda32e",
             "DiffID": "sha256:f73e7e79899a33b4b9b78da62efb71520844f8dd518f3c390e27bc3063bce307"
           },
           "SeveritySource": "nvd",
