@@ -34,7 +34,7 @@ require (
 	github.com/sosedoff/gitkit v0.3.0
 	github.com/stretchr/testify v1.7.1
 	github.com/testcontainers/testcontainers-go v0.13.0
-	github.com/urfave/cli/v2 v2.6.0
+	github.com/urfave/cli/v2 v2.8.1
 	go.etcd.io/bbolt v1.3.6
 	go.uber.org/zap v1.21.0
 	golang.org/x/crypto v0.0.0-20220315160706-3147a52a75dd // indirect
@@ -204,6 +204,7 @@ require (
 	github.com/xeipuuv/gojsonreference v0.0.0-20180127040603-bd5ef7bd5415 // indirect
 	github.com/xeipuuv/gojsonschema v1.2.0 // indirect
 	github.com/xlab/treeprint v0.0.0-20181112141820-a009c3971eca // indirect
+	github.com/xrash/smetrics v0.0.0-20201216005158-039620a65673 // indirect
 	github.com/yashtewari/glob-intersection v0.1.0 // indirect
 	github.com/yuin/gopher-lua v0.0.0-20210529063254-f4c35e4016d9 // indirect
 	github.com/zclconf/go-cty v1.10.0 // indirect
