@@ -1,3 +1,6 @@
+GOPATH=$(shell go env GOPATH)
+GOBIN=$(GOPATH)/bin
+
 .PHONY: deps
 deps:
 	go get -d
@@ -15,8 +18,12 @@ lint: devel-deps
 cover: devel-deps
 	goveralls
 
-test/integration/testdata/fixtures/*.tar.gz:
-	git clone https://github.com/aquasecurity/trivy-test-images.git test/integration/testdata/fixtures
+$(GOBIN)/crane:
+	go install github.com/google/go-containerregistry/cmd/crane@v0.9.0
+
+test/integration/testdata/fixtures/*.tar.gz: $(GOBIN)/crane
+	mkdir -p test/integration/testdata/fixtures/
+	test/integration/scripts/download-images.sh
 
 .PHONY: test-integration
 test-integration: test/integration/testdata/fixtures/*.tar.gz
