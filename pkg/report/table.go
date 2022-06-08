@@ -218,7 +218,7 @@ func (tw TableWriter) setMisconfRows(table *tablewriter.Table, misconfs []types.
 				severity = color.New(color.FgMagenta).Sprint(misconf.Severity)
 				status = color.New(color.FgMagenta).Sprint(misconf.Status)
 			case types.StatusFailure:
-				severity = dbTypes.ColorizeSeverity(severity)
+				severity = color.New(color.FgRed).Sprint(misconf.Severity)
 				status = color.New(color.FgRed).Sprint(misconf.Status)
 			}
 		}
