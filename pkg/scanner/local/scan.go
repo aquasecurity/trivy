@@ -65,6 +65,7 @@ func NewScanner(applier Applier, ospkgDetector OspkgDetector) Scanner {
 
 // Scan scans the artifact and return results.
 func (s Scanner) Scan(target string, artifactKey string, blobKeys []string, options types.ScanOptions) (types.Results, *ftypes.OS, error) {
+	var results types.Results
 	artifactDetail, err := s.applier.ApplyLayers(artifactKey, blobKeys)
 	switch {
 	case errors.Is(err, analyzer.ErrUnknownOS):
@@ -79,6 +80,10 @@ func (s Scanner) Scan(target string, artifactKey string, blobKeys []string, opti
 				Name:   artifactDetail.Repository.Release,
 			}
 		}
+		results = append(results, types.Result{
+			Class: types.ClassError,
+			Type:  "UnknownOs",
+		})
 	case errors.Is(err, analyzer.ErrNoPkgsDetected):
 		log.Logger.Warn("No OS package is detected. Make sure you haven't deleted any files that contain information about the installed packages.")
 		log.Logger.Warn(`e.g. files under "/lib/apk/db/", "/var/lib/dpkg/" and "/var/lib/rpm"`)
@@ -87,7 +92,6 @@ func (s Scanner) Scan(target string, artifactKey string, blobKeys []string, opti
 	}
 
 	var eosl bool
-	var results types.Results
 
 	// Scan OS packages and language-specific dependencies
 	if slices.Contains(options.SecurityChecks, types.SecurityCheckVulnerability) {
@@ -146,8 +150,11 @@ func (s Scanner) checkVulnerabilities(target string, detail ftypes.ArtifactDetai
 func (s Scanner) scanOSPkgs(target string, detail ftypes.ArtifactDetail, options types.ScanOptions) (
 	*types.Result, bool, error) {
 	if detail.OS == nil {
-		log.Logger.Debug("Detected OS: unknown")
-		return nil, false, nil
+		log.Logger.Infof("Detected OS: unknown")
+		return &types.Result{
+			Class: types.ClassError,
+			Type:  "UnknownOs",
+		}, false, nil
 	}
 	log.Logger.Infof("Detected OS: %s", detail.OS.Family)
 
@@ -180,7 +187,10 @@ func (s Scanner) detectVulnsInOSPkgs(target, osFamily, osName string, repo *ftyp
 	}
 	vulns, eosl, err := s.ospkgDetector.Detect("", osFamily, osName, repo, time.Time{}, pkgs)
 	if err == ospkgDetector.ErrUnsupportedOS {
-		return nil, false, nil
+		return &types.Result{
+			Class: types.ClassError,
+			Type:  "UnsupportedOs",
+		}, false, nil
 	} else if err != nil {
 		return nil, false, xerrors.Errorf("failed vulnerability detection of OS packages: %w", err)
 	}
