@@ -33,7 +33,6 @@ var update = flag.Bool("update", false, "update golden files")
 
 type testCase struct {
 	name                string
-	imageName           string
 	remoteImageName     string
 	imageFile           string
 	wantOS              types.OS
@@ -44,42 +43,36 @@ type testCase struct {
 var testCases = []testCase{
 	{
 		name:            "happy path, alpine:3.10",
-		imageName:       "alpine:3.10",
 		remoteImageName: "ghcr.io/aquasecurity/trivy-test-images:alpine-310",
 		imageFile:       "testdata/fixtures/alpine-310.tar.gz",
 		wantOS:          types.OS{Name: "3.10.2", Family: "alpine"},
 	},
 	{
 		name:            "happy path, amazonlinux:2",
-		imageName:       "amazonlinux:2",
 		remoteImageName: "ghcr.io/aquasecurity/trivy-test-images:amazon-2",
 		imageFile:       "testdata/fixtures/amazon-2.tar.gz",
 		wantOS:          types.OS{Name: "2 (Karoo)", Family: "amazon"},
 	},
 	{
 		name:            "happy path, debian:buster",
-		imageName:       "debian:buster",
 		remoteImageName: "ghcr.io/aquasecurity/trivy-test-images:debian-buster",
 		imageFile:       "testdata/fixtures/debian-buster.tar.gz",
 		wantOS:          types.OS{Name: "10.1", Family: "debian"},
 	},
 	{
 		name:            "happy path, photon:3.0",
-		imageName:       "photon:30",
 		remoteImageName: "ghcr.io/aquasecurity/trivy-test-images:photon-30",
 		imageFile:       "testdata/fixtures/photon-30.tar.gz",
 		wantOS:          types.OS{Name: "3.0", Family: "photon"},
 	},
 	{
 		name:            "happy path, registry.redhat.io/ubi7",
-		imageName:       "registry.redhat.io/ubi7",
 		remoteImageName: "ghcr.io/aquasecurity/trivy-test-images:ubi-7",
 		imageFile:       "testdata/fixtures/ubi-7.tar.gz",
 		wantOS:          types.OS{Name: "7.7", Family: "redhat"},
 	},
 	{
 		name:            "happy path, opensuse leap 15.1",
-		imageName:       "opensuse/leap:latest",
 		remoteImageName: "ghcr.io/aquasecurity/trivy-test-images:opensuse-leap-151",
 		imageFile:       "testdata/fixtures/opensuse-leap-151.tar.gz",
 		wantOS:          types.OS{Name: "15.1", Family: "opensuse.leap"},
@@ -87,21 +80,18 @@ var testCases = []testCase{
 	{
 		// from registry.suse.com/suse/sle15:15.3.17.8.16
 		name:            "happy path, suse 15.3 (NDB)",
-		imageName:       "suse/sle15:15.3.17.8.16",
 		remoteImageName: "ghcr.io/aquasecurity/trivy-test-images:suse-15.3_ndb",
 		imageFile:       "testdata/fixtures/suse-15.3_ndb.tar.gz",
 		wantOS:          types.OS{Name: "15.3", Family: "suse linux enterprise server"},
 	},
 	{
 		name:            "happy path, Fedora 35",
-		imageName:       "fedora:35",
 		remoteImageName: "ghcr.io/aquasecurity/trivy-test-images:fedora-35",
 		imageFile:       "testdata/fixtures/fedora-35.tar.gz",
 		wantOS:          types.OS{Name: "35", Family: "fedora"},
 	},
 	{
 		name:                "happy path, vulnimage with lock files",
-		imageName:           "knqyf263/vuln-image:1.2.3",
 		remoteImageName:     "ghcr.io/aquasecurity/trivy-test-images:vulnimage",
 		imageFile:           "testdata/fixtures/vulnimage.tar.gz",
 		wantOS:              types.OS{Name: "3.7.1", Family: "alpine"},
@@ -254,8 +244,9 @@ func commonChecks(t *testing.T, detail types.ArtifactDetail, tc testCase) {
 }
 
 func checkOSPackages(t *testing.T, detail types.ArtifactDetail, tc testCase) {
-	r := strings.NewReplacer("/", "-", ":", "-")
-	goldenFile := fmt.Sprintf("testdata/goldens/packages/%s.json.golden", r.Replace(tc.imageName))
+	splitted := strings.Split(tc.remoteImageName, ":")
+	goldenFile := fmt.Sprintf("testdata/goldens/packages/%s.json.golden", splitted[len(splitted)-1])
+
 	if *update {
 		b, err := json.MarshalIndent(detail.Packages, "", "  ")
 		require.NoError(t, err)
