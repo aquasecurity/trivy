@@ -29,7 +29,7 @@ require (
 	github.com/open-policy-agent/opa v0.40.0 // indirect
 	github.com/opencontainers/go-digest v1.0.0
 	github.com/opencontainers/image-spec v1.0.3-0.20211202183452-c5a74bcca799
-	github.com/samber/lo v1.19.0
+	github.com/samber/lo v1.21.0
 	github.com/saracen/walker v0.0.0-20191201085201-324a081bae7e
 	github.com/sosedoff/gitkit v0.3.0
 	github.com/stretchr/testify v1.7.1
