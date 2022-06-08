@@ -92,19 +92,25 @@ func readReport(t *testing.T, filePath string) types.Report {
 	require.NoError(t, err, filePath)
 	defer f.Close()
 
-	var res types.Report
-	err = json.NewDecoder(f).Decode(&res)
+	var report types.Report
+	err = json.NewDecoder(f).Decode(&report)
 	require.NoError(t, err, filePath)
 
 	// We don't compare history because the nano-seconds in "created" don't match
-	res.Metadata.ImageConfig.History = nil
+	report.Metadata.ImageConfig.History = nil
 
 	// We don't compare repo tags because the archive doesn't support it
-	res.Metadata.RepoTags = nil
+	report.Metadata.RepoTags = nil
 
-	res.Metadata.RepoDigests = nil
+	report.Metadata.RepoDigests = nil
 
-	return res
+	for i, result := range report.Results {
+		for j := range result.Vulnerabilities {
+			report.Results[i].Vulnerabilities[j].Layer.Digest = ""
+		}
+	}
+
+	return report
 }
 
 func compareReports(t *testing.T, wantFile, gotFile string) {

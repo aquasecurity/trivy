@@ -81,6 +81,7 @@ The following table lists the configurable parameters of the Trivy chart and the
 | `nodeSelector`                        | Node labels for pod assignment                                              |     |
 | `affinity`                            | Affinity settings for pod assignment                                              |     |
 | `tolerations`                         | Tolerations for pod assignment                                              |     |
+| `podAnnotations`                      | Annotations for pods created by statefulset                             | `{}` |
 
 The above parameters map to the env variables defined in [trivy](https://github.com/aquasecurity/trivy#configuration).
 
