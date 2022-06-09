@@ -735,30 +735,35 @@
         "ID": "asap@2.0.6",
         "Name": "asap",
         "Version": "2.0.6",
+        "Indirect": true,
         "Layer": {}
       },
       {
         "ID": "jquery@3.3.9",
         "Name": "jquery",
         "Version": "3.3.9",
+        "Indirect": true,
         "Layer": {}
       },
       {
         "ID": "js-tokens@4.0.0",
         "Name": "js-tokens",
         "Version": "4.0.0",
+        "Indirect": true,
         "Layer": {}
       },
       {
         "ID": "lodash@4.17.4",
         "Name": "lodash",
         "Version": "4.17.4",
+        "Indirect": true,
         "Layer": {}
       },
       {
         "ID": "loose-envify@1.4.0",
         "Name": "loose-envify",
         "Version": "1.4.0",
+        "Indirect": true,
         "Layer": {},
         "DependsOn": ["js-tokens@4.0.0"]
       },
@@ -766,12 +771,14 @@
         "ID": "object-assign@4.1.1",
         "Name": "object-assign",
         "Version": "4.1.1",
+        "Indirect": true,
         "Layer": {}
       },
       {
         "ID": "promise@8.0.3",
         "Name": "promise",
         "Version": "8.0.3",
+        "Indirect": true,
         "Layer": {},
         "DependsOn": ["asap@2.0.6"]
       },
@@ -779,6 +786,7 @@
         "ID": "prop-types@15.7.2",
         "Name": "prop-types",
         "Version": "15.7.2",
+        "Indirect": true,
         "Layer": {},
         "DependsOn": ["loose-envify@1.4.0", "object-assign@4.1.1", "react-is@16.8.6"]
       },
@@ -786,6 +794,7 @@
         "ID": "react@16.8.6",
         "Name": "react",
         "Version": "16.8.6",
+        "Indirect": true,
         "Layer": {},
         "DependsOn": ["loose-envify@1.4.0", "object-assign@4.1.1", "prop-types@15.7.2", "scheduler@0.13.6"]
       },
@@ -793,12 +802,14 @@
         "ID": "react-is@16.8.6",
         "Name": "react-is",
         "Version": "16.8.6",
+        "Indirect": true,
         "Layer": {}
       },
       {
         "ID": "redux@4.0.1",
         "Name": "redux",
         "Version": "4.0.1",
+        "Indirect": true,
         "Layer": {},
         "DependsOn": ["loose-envify@1.4.0", "symbol-observable@1.2.0"]
       },
@@ -806,6 +817,7 @@
         "ID": "scheduler@0.13.6",
         "Name": "scheduler",
         "Version": "0.13.6",
+        "Indirect": true,
         "Layer": {},
         "DependsOn": ["loose-envify@1.4.0", "object-assign@4.1.1"]
       },
@@ -813,6 +825,7 @@
         "ID": "symbol-observable@1.2.0",
         "Name": "symbol-observable",
         "Version": "1.2.0",
+        "Indirect": true,
         "Layer": {}
       }
     ]
