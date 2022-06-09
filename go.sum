@@ -188,8 +188,8 @@ github.com/aquasecurity/bolt-fixtures v0.0.0-20200903104109-d34e7f983986 h1:2a30
 github.com/aquasecurity/bolt-fixtures v0.0.0-20200903104109-d34e7f983986/go.mod h1:NT+jyeCzXk6vXR5MTkdn4z64TgGfE5HMLC8qfj5unl8=
 github.com/aquasecurity/defsec v0.59.0 h1:BmX5j5Y7+IhJ4hKYGIJWMcmVUqaIiTjtEqL5doT995Q=
 github.com/aquasecurity/defsec v0.59.0/go.mod h1:42FxKif2itz+MHFlJ3TJjdroL9Jzj3THoexlueBTU5w=
-github.com/aquasecurity/fanal v0.0.0-20220606114023-67ac2173b7d9 h1:bbwJnRN7C01+Uo7Qfewo7gSXoT5cB8NXzpSyLM44K44=
-github.com/aquasecurity/fanal v0.0.0-20220606114023-67ac2173b7d9/go.mod h1:c0Kqe6ffFdrugzH8NZuF5V4gllHJO6ef8u8DqXE8k9g=
+github.com/aquasecurity/fanal v0.0.0-20220607082632-cee9188f43ac h1:OzP+N2jZH2xmwiZXXfnOEUDw+dKtGvwtmOgXkWbZjMA=
+github.com/aquasecurity/fanal v0.0.0-20220607082632-cee9188f43ac/go.mod h1:c0Kqe6ffFdrugzH8NZuF5V4gllHJO6ef8u8DqXE8k9g=
 github.com/aquasecurity/go-dep-parser v0.0.0-20220503151658-d316f5cc2cff h1:YNlzRYB0n4mZtfuWx6AWaGEjnLVNekchyoFDlYFZegs=
 github.com/aquasecurity/go-dep-parser v0.0.0-20220503151658-d316f5cc2cff/go.mod h1:7EOQWQmyavVPY3fScbbPdd3dB/b0Q4ZbJ/NZCvNKrLs=
 github.com/aquasecurity/go-gem-version v0.0.0-20201115065557-8eed6fe000ce h1:QgBRgJvtEOBtUXilDb1MLi1p1MWoyFDXAu5DEUl5nwM=
