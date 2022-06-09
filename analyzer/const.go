@@ -22,9 +22,10 @@ const (
 	TypeUbuntu     Type = "ubuntu"
 
 	// OS Package
-	TypeApk  Type = "apk"
-	TypeDpkg Type = "dpkg"
-	TypeRpm  Type = "rpm"
+	TypeApk   Type = "apk"
+	TypeDpkg  Type = "dpkg"
+	TypeRpm   Type = "rpm"
+	TypeRpmqa Type = "rpmqa"
 
 	// OS Package Repository
 	TypeApkRepo Type = "apk-repo"
