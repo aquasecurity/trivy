@@ -487,6 +487,33 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#aws-private-registry-permissions" class="md-nav__link">
+    AWS private registry permissions
+  </a>
+  
+    <nav class="md-nav" aria-label="AWS private registry permissions">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#iam-role-service-account" class="md-nav__link">
+    IAM Role Service account
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#kube2iam-or-kiam" class="md-nav__link">
+    Kube2iam or Kiam
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -2968,6 +2995,33 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#aws-private-registry-permissions" class="md-nav__link">
+    AWS private registry permissions
+  </a>
+  
+    <nav class="md-nav" aria-label="AWS private registry permissions">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#iam-role-service-account" class="md-nav__link">
+    IAM Role Service account
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#kube2iam-or-kiam" class="md-nav__link">
+    Kube2iam or Kiam
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -2991,7 +3045,7 @@
 <h2 id="rhelcentos">RHEL/CentOS</h2>
 <div class="tabbed-set" data-tabs="1:2"><input checked="checked" id="__tabbed_1_1" name="__tabbed_1" type="radio" /><label for="__tabbed_1_1">Repository</label><div class="tabbed-content">
 <p>Add repository setting to <code>/etc/yum.repos.d</code>.</p>
-<div class="highlight"><pre><span></span><code><span class="nv">RELEASE_VERSION</span><span class="o">=</span><span class="k">$(</span>grep -Po <span class="s1">&#39;(?&lt;=VERSION_ID=&quot;)[0-9]&#39;</span> /etc/os-release<span class="k">)</span> 
+<div class="highlight"><pre><span></span><code><span class="nv">RELEASE_VERSION</span><span class="o">=</span><span class="k">$(</span>grep -Po <span class="s1">&#39;(?&lt;=VERSION_ID=&quot;)[0-9]&#39;</span> /etc/os-release<span class="k">)</span>
 cat <span class="s">&lt;&lt; EOF | sudo tee -a /etc/yum.repos.d/trivy.repo</span>
 <span class="s">[trivy]</span>
 <span class="s">name=Trivy repository</span>
@@ -3122,6 +3176,27 @@ helm install my-trivy aquasecurity/trivy
 </code></pre></div>
 <p>The command deploys Trivy on the Kubernetes cluster in the default configuration. The <a href="https://github.com/aquasecurity/trivy/tree/v0.28.1/helm/trivy">Parameters</a>
 section lists the parameters that can be configured during installation.</p>
+<h3 id="aws-private-registry-permissions">AWS private registry permissions</h3>
+<p>You may need to grant permissions to allow trivy to pull images from private registry (AWS ECR).</p>
+<p>It depends on how you want to provide AWS Role to trivy.</p>
+<ul>
+<li><a href="https://github.com/aws/amazon-eks-pod-identity-webhook">IAM Role Service account</a></li>
+<li><a href="https://github.com/jtblin/kube2iam">Kube2iam</a> or <a href="https://github.com/uswitch/kiam">Kiam</a></li>
+</ul>
+<h4 id="iam-role-service-account">IAM Role Service account</h4>
+<p>Add the AWS role in trivy's service account annotations:</p>
+<div class="highlight"><pre><span></span><code><span class="nt">trivy</span><span class="p">:</span><span class="w"></span>
+
+<span class="w">  </span><span class="nt">serviceAccount</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">annotations</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{}</span><span class="w"></span>
+<span class="w">      </span><span class="c1"># eks.amazonaws.com/role-arn: arn:aws:iam::ACCOUNT_ID:role/IAM_ROLE_NAME</span><span class="w"></span>
+</code></pre></div>
+<h4 id="kube2iam-or-kiam">Kube2iam or Kiam</h4>
+<p>Add the AWS role to pod's annotations:</p>
+<div class="highlight"><pre><span></span><code><span class="nt">podAnnotations</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{}</span><span class="w"></span>
+<span class="w">  </span><span class="c1">## kube2iam/kiam annotation</span><span class="w"></span>
+<span class="w">  </span><span class="c1"># iam.amazonaws.com/role: arn:aws:iam::ACCOUNT_ID:role/IAM_ROLE_NAME</span><span class="w"></span>
+</code></pre></div>
 <blockquote>
 <p><strong>Tip</strong>: List all releases using <code>helm list</code>.</p>
 </blockquote>
