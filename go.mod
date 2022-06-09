@@ -7,8 +7,8 @@ require (
 	github.com/Masterminds/sprig/v3 v3.2.2
 	github.com/NYTimes/gziphandler v1.1.1
 	github.com/aquasecurity/bolt-fixtures v0.0.0-20200903104109-d34e7f983986
-	github.com/aquasecurity/fanal v0.0.0-20220607082632-cee9188f43ac
-	github.com/aquasecurity/go-dep-parser v0.0.0-20220503151658-d316f5cc2cff
+	github.com/aquasecurity/fanal v0.0.0-20220609071827-a54e3bfc23f2
+	github.com/aquasecurity/go-dep-parser v0.0.0-20220531123411-1dabb532605f
 	github.com/aquasecurity/go-gem-version v0.0.0-20201115065557-8eed6fe000ce
 	github.com/aquasecurity/go-npm-version v0.0.0-20201110091526-0b796d180798
 	github.com/aquasecurity/go-pep440-version v0.0.0-20210121094942-22b2f8951d46
@@ -53,7 +53,7 @@ require (
 require (
 	cloud.google.com/go v0.99.0 // indirect
 	cloud.google.com/go/storage v1.14.0 // indirect
-	github.com/Azure/azure-sdk-for-go v64.0.0+incompatible // indirect
+	github.com/Azure/azure-sdk-for-go v65.0.0+incompatible // indirect
 	github.com/Azure/go-ansiterm v0.0.0-20210617225240-d185dfc1b5a1 // indirect
 	github.com/Azure/go-autorest v14.2.0+incompatible // indirect
 	github.com/Azure/go-autorest/autorest v0.11.27 // indirect
