@@ -74,6 +74,7 @@ trivy:
   # You can create a GitHub token by following the instructions in
   # https://help.github.com/en/github/authenticating-to-github/creating-a-personal-access-token-for-the-command-line
   gitHubToken: ""
+
   # Docker registry credentials
   # See also: https://aquasecurity.github.io/trivy/dev/advanced/private-registries/docker-hub/
   #
