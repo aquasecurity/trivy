@@ -21,7 +21,7 @@ require (
 	github.com/hashicorp/go-multierror v1.1.1
 	github.com/knqyf263/go-apk-version v0.0.0-20200609155635-041fdbb8563f
 	github.com/knqyf263/go-deb-version v0.0.0-20190517075300-09fca494f03d
-	github.com/knqyf263/go-rpmdb v0.0.0-20220209103220-0f7a6d951a6d
+	github.com/knqyf263/go-rpmdb v0.0.0-20220607073645-842f01763e21
 	github.com/knqyf263/nested v0.0.1
 	github.com/kylelemons/godebug v1.1.0
 	github.com/liamg/memoryfs v1.4.1
@@ -240,13 +240,13 @@ require (
 	k8s.io/kubectl v0.23.5 // indirect
 	k8s.io/utils v0.0.0-20211116205334-6203023598ed // indirect
 	lukechampine.com/uint128 v1.1.1 // indirect
-	modernc.org/cc/v3 v3.35.22 // indirect
-	modernc.org/ccgo/v3 v3.15.1 // indirect
-	modernc.org/libc v1.14.1 // indirect
+	modernc.org/cc/v3 v3.36.0 // indirect
+	modernc.org/ccgo/v3 v3.16.6 // indirect
+	modernc.org/libc v1.16.7 // indirect
 	modernc.org/mathutil v1.4.1 // indirect
-	modernc.org/memory v1.0.5 // indirect
+	modernc.org/memory v1.1.1 // indirect
 	modernc.org/opt v0.1.1 // indirect
-	modernc.org/sqlite v1.14.5 // indirect
+	modernc.org/sqlite v1.17.3 // indirect
 	modernc.org/strutil v1.1.1 // indirect
 	modernc.org/token v1.0.0 // indirect
 	oras.land/oras-go v1.1.1 // indirect

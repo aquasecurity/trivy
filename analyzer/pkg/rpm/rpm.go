@@ -133,7 +133,7 @@ func (a rpmPkgAnalyzer) parsePkgInfo(rc io.Reader) ([]types.Package, []string, e
 		// If the package is not provided by vendor, the installed files should not be skipped.
 		var files []string
 		if packageProvidedByVendor(pkg.Vendor) {
-			files, err = pkg.InstalledFiles()
+			files, err = pkg.InstalledFileNames()
 			if err != nil {
 				return nil, nil, xerrors.Errorf("unable to get installed files: %w", err)
 			}
@@ -141,12 +141,12 @@ func (a rpmPkgAnalyzer) parsePkgInfo(rc io.Reader) ([]types.Package, []string, e
 
 		p := types.Package{
 			Name:            pkg.Name,
-			Epoch:           pkg.Epoch,
+			Epoch:           pkg.EpochNum(),
 			Version:         pkg.Version,
 			Release:         pkg.Release,
 			Arch:            arch,
 			SrcName:         srcName,
-			SrcEpoch:        pkg.Epoch, // NOTE: use epoch of binary package as epoch of src package
+			SrcEpoch:        pkg.EpochNum(), // NOTE: use epoch of binary package as epoch of src package
 			SrcVersion:      srcVer,
 			SrcRelease:      srcRel,
 			Modularitylabel: pkg.Modularitylabel,
