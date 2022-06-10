@@ -8,14 +8,41 @@ import (
 	"golang.org/x/xerrors"
 
 	cmd "github.com/aquasecurity/trivy/pkg/commands/artifact"
-	"github.com/aquasecurity/trivy/pkg/k8s"
+	scanner "github.com/aquasecurity/trivy/pkg/k8s"
 	"github.com/aquasecurity/trivy/pkg/k8s/report"
 	"github.com/aquasecurity/trivy/pkg/log"
 
 	"github.com/aquasecurity/trivy-kubernetes/pkg/artifacts"
+	"github.com/aquasecurity/trivy-kubernetes/pkg/k8s"
 )
 
-// run runs scan on kubernetes cluster
+const (
+	clusterArtifact = "cluster"
+	allArtifact     = "all"
+)
+
+// Run runs a k8s scan
+func Run(cliCtx *cli.Context) error {
+	opt, err := cmd.InitOption(cliCtx)
+	if err != nil {
+		return xerrors.Errorf("option error: %w", err)
+	}
+
+	cluster, err := k8s.GetCluster(opt.KubernetesOption.ClusterContext)
+	if err != nil {
+		return xerrors.Errorf("get k8s cluster: %w", err)
+	}
+
+	switch cliCtx.Args().Get(0) {
+	case clusterArtifact:
+		return clusterRun(cliCtx, opt, cluster)
+	case allArtifact:
+		return namespaceRun(cliCtx, opt, cluster)
+	default: // resourceArtifact
+		return resourceRun(cliCtx, opt, cluster)
+	}
+}
+
 func run(ctx context.Context, opt cmd.Option, cluster string, artifacts []*artifacts.Artifact) error {
 	ctx, cancel := context.WithTimeout(ctx, opt.Timeout)
 	defer cancel()
@@ -40,7 +67,7 @@ func run(ctx context.Context, opt cmd.Option, cluster string, artifacts []*artif
 		}
 	}()
 
-	s := k8s.NewScanner(cluster, runner, opt)
+	s := scanner.NewScanner(cluster, runner, opt)
 
 	r, err := s.Scan(ctx, artifacts)
 	if err != nil {
@@ -65,12 +92,12 @@ func run(ctx context.Context, opt cmd.Option, cluster string, artifacts []*artif
 // To show all the results, user needs to specify "--report all" explicitly
 // even though the default value of "--report" is "all".
 //
-// e.g. $ trivy k8s cluster --report all
-//      $ trivy k8s all --report all
+// e.g. $ trivy k8s --report all cluster
+//      $ trivy k8s --report all all
 //
 // Or they can use "--format json" with implicit "--report all".
 //
-// e.g. $ trivy k8s cluster --format json // All the results are shown in JSON
+// e.g. $ trivy k8s --format json cluster // All the results are shown in JSON
 //
 // Single resource scanning is allowed with implicit "--report all".
 //

@@ -1,7 +1,6 @@
 package commands
 
 import (
-	"os"
 	"strings"
 
 	"github.com/urfave/cli/v2"
@@ -10,25 +9,11 @@ import (
 	"github.com/aquasecurity/trivy-kubernetes/pkg/artifacts"
 	"github.com/aquasecurity/trivy-kubernetes/pkg/k8s"
 	"github.com/aquasecurity/trivy-kubernetes/pkg/trivyk8s"
+	cmd "github.com/aquasecurity/trivy/pkg/commands/artifact"
 )
 
-// ResourceRun runs scan on kubernetes cluster
-func ResourceRun(cliCtx *cli.Context) error {
-	if cliCtx.String("input") == "" && cliCtx.Args().Len() == 0 {
-		_ = cli.ShowSubcommandHelp(cliCtx) // nolint: errcheck
-		os.Exit(0)
-	}
-
-	opt, err := InitOption(cliCtx)
-	if err != nil {
-		return xerrors.Errorf("option error: %w", err)
-	}
-
-	cluster, err := k8s.GetCluster(opt.KubernetesOption.ClusterContext)
-	if err != nil {
-		return xerrors.Errorf("get k8s cluster: %w", err)
-	}
-
+// resourceRun runs scan on kubernetes cluster
+func resourceRun(cliCtx *cli.Context, opt cmd.Option, cluster k8s.Cluster) error {
 	kind, name, err := extractKindAndName(cliCtx.Args())
 	if err != nil {
 		return err

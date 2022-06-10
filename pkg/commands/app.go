@@ -821,74 +821,54 @@ func NewK8sCommand() *cli.Command {
 			types.SecurityCheckSecret),
 	)
 
-	flags := []cli.Flag{
-		&contextFlag,
-		&namespaceFlag,
-		&reportFlag,
-		&formatFlag,
-		&outputFlag,
-		&severityFlag,
-		&exitCodeFlag,
-		&skipDBUpdateFlag,
-		&insecureFlag,
-		&skipPolicyUpdateFlag,
-		&clearCacheFlag,
-		&ignoreUnfixedFlag,
-		&vulnTypeFlag,
-		&k8sSecurityChecksFlag,
-		&ignoreFileFlag,
-		&cacheBackendFlag,
-		&cacheTTL,
-		&redisBackendCACert,
-		&redisBackendCert,
-		&redisBackendKey,
-		&timeoutFlag,
-		&noProgressFlag,
-		&ignorePolicy,
-		&listAllPackages,
-		&offlineScan,
-		&dbRepositoryFlag,
-		&secretConfig,
-		stringSliceFlag(skipFiles),
-		stringSliceFlag(skipDirs),
-
-		// for misconfiguration
-		stringSliceFlag(configPolicy),
-		stringSliceFlag(configData),
-		stringSliceFlag(policyNamespaces),
-	}
-
 	return &cli.Command{
 		Name:    "kubernetes",
 		Aliases: []string{"k8s"},
 		Usage:   "scan kubernetes vulnerabilities, secrets and misconfigurations",
-		UsageText: `
-- cluster scanning:
-	$ trivy k8s cluster --report summary
-
-- namespace scanning:
-	$ trivy k8s all -n kube-system --report summary
-
-- resource scanning:
-	$ trivy k8s deployment/orion
+		CustomHelpTemplate: cli.CommandHelpTemplate + `EXAMPLES:
+  - cluster scanning:
+      $ trivy k8s --report summary cluster
+  - namespace scanning:
+      $ trivy k8s -n kube-system --report summary all
+  - resource scanning:
+      $ trivy k8s deployment/orion
 `,
-		Flags:  flags,
-		Action: k8scommands.ResourceRun,
-		Subcommands: cli.Commands{
-			{
-				Name:      "cluster",
-				Usage:     "scan a kubernetes cluster vulnerabilities, secrets and misconfigurations",
-				UsageText: "$ trivy k8s cluster --report summary",
-				Flags:     flags,
-				Action:    k8scommands.ClusterRun,
-			},
-			{
-				Name:      "all",
-				Usage:     "scan a kubernetes namespace vulnerabilities, secrets and misconfigurations",
-				UsageText: "$ trivy k8s all --report summary",
-				Flags:     flags,
-				Action:    k8scommands.NamespaceRun,
-			},
+		Action: k8scommands.Run,
+		Flags: []cli.Flag{
+			&contextFlag,
+			&namespaceFlag,
+			&reportFlag,
+			&formatFlag,
+			&outputFlag,
+			&severityFlag,
+			&exitCodeFlag,
+			&skipDBUpdateFlag,
+			&insecureFlag,
+			&skipPolicyUpdateFlag,
+			&clearCacheFlag,
+			&ignoreUnfixedFlag,
+			&vulnTypeFlag,
+			&k8sSecurityChecksFlag,
+			&ignoreFileFlag,
+			&cacheBackendFlag,
+			&cacheTTL,
+			&redisBackendCACert,
+			&redisBackendCert,
+			&redisBackendKey,
+			&timeoutFlag,
+			&noProgressFlag,
+			&ignorePolicy,
+			&listAllPackages,
+			&offlineScan,
+			&dbRepositoryFlag,
+			&secretConfig,
+			stringSliceFlag(skipFiles),
+			stringSliceFlag(skipDirs),
+
+			// for misconfiguration
+			stringSliceFlag(configPolicy),
+			stringSliceFlag(configData),
+			stringSliceFlag(policyNamespaces),
 		},
 	}
 }
