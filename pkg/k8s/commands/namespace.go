@@ -16,7 +16,7 @@ func namespaceRun(cliCtx *cli.Context, opt cmd.Option, cluster k8s.Cluster) erro
 		return err
 	}
 
-	trivyk8s := trivyk8s.New(cluster).Namespace(getNamespace(cluster, opt))
+	trivyk8s := trivyk8s.New(cluster).Namespace(getNamespace(opt, cluster.GetCurrentNamespace()))
 
 	artifacts, err := trivyk8s.ListArtifacts(cliCtx.Context)
 	if err != nil {
@@ -26,10 +26,10 @@ func namespaceRun(cliCtx *cli.Context, opt cmd.Option, cluster k8s.Cluster) erro
 	return run(cliCtx.Context, opt, cluster.GetCurrentContext(), artifacts)
 }
 
-func getNamespace(cluster k8s.Cluster, opt cmd.Option) string {
+func getNamespace(opt cmd.Option, currentNamespace string) string {
 	if len(opt.KubernetesOption.Namespace) > 0 {
 		return opt.KubernetesOption.Namespace
 	}
 
-	return cluster.GetCurrentNamespace()
+	return currentNamespace
 }
