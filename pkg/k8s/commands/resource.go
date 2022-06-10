@@ -14,12 +14,12 @@ import (
 
 // resourceRun runs scan on kubernetes cluster
 func resourceRun(cliCtx *cli.Context, opt cmd.Option, cluster k8s.Cluster) error {
-	kind, name, err := extractKindAndName(cliCtx.Args())
+	kind, name, err := extractKindAndName(cliCtx.Args().Slice())
 	if err != nil {
 		return err
 	}
 
-	trivyk8s := trivyk8s.New(cluster).Namespace(getNamespace(cluster, opt))
+	trivyk8s := trivyk8s.New(cluster).Namespace(getNamespace(opt, cluster.GetCurrentNamespace()))
 
 	artifact, err := trivyk8s.GetArtifact(cliCtx.Context, kind, name)
 	if err != nil {
@@ -29,18 +29,18 @@ func resourceRun(cliCtx *cli.Context, opt cmd.Option, cluster k8s.Cluster) error
 	return run(cliCtx.Context, opt, cluster.GetCurrentContext(), []*artifacts.Artifact{artifact})
 }
 
-func extractKindAndName(args cli.Args) (string, string, error) {
-	switch args.Len() {
+func extractKindAndName(args []string) (string, string, error) {
+	switch len(args) {
 	case 1:
-		s := strings.Split(args.Get(0), "/")
+		s := strings.Split(args[0], "/")
 		if len(s) != 2 {
-			return "", "", xerrors.Errorf("can't parse arguments: %v", args.Slice())
+			return "", "", xerrors.Errorf("can't parse arguments: %v", args)
 		}
 
 		return s[0], s[1], nil
 	case 2:
-		return args.Get(0), args.Get(1), nil
+		return args[0], args[1], nil
 	}
 
-	return "", "", xerrors.Errorf("can't parse arguments: %v", args.Slice())
+	return "", "", xerrors.Errorf("can't parse arguments: %v", args)
 }
