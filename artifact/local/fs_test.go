@@ -954,17 +954,20 @@ func TestDockerfileMisconfigurationScan(t *testing.T) {
 					BlobIDAnything: true,
 					BlobInfo: types.BlobInfo{
 						SchemaVersion: types.BlobJSONSchemaVersion,
+						Digest:        "", DiffID: "",
+						OS:           (*types.OS)(nil),
+						Repository:   (*types.Repository)(nil),
+						PackageInfos: []types.PackageInfo(nil),
+						Applications: []types.Application(nil),
 						Misconfigurations: []types.Misconfiguration{
 							{
-								FileType:  "dockerfile",
-								FilePath:  "Dockerfile",
-								Successes: nil,
-								Warnings:  nil,
-								Failures: []types.MisconfResult{
-									{
+								FileType: "dockerfile",
+								FilePath: "Dockerfile",
+								Successes: types.MisconfResults{
+									types.MisconfResult{
 										Namespace: "user.something",
 										Query:     "data.user.something.deny",
-										Message:   "No commands allowed!",
+										Message:   "",
 										PolicyMetadata: types.PolicyMetadata{
 											ID:                 "TEST001",
 											Type:               "Dockerfile Security Check",
@@ -972,23 +975,33 @@ func TestDockerfileMisconfigurationScan(t *testing.T) {
 											Description:        "This is a test policy.",
 											Severity:           "LOW",
 											RecommendedActions: "Have a cup of tea.",
-											References: []string{
-												"https://trivy.dev/",
-											},
+											References:         []string{"https://trivy.dev/"},
 										},
 										CauseMetadata: types.CauseMetadata{
+											Resource:  "",
 											Provider:  "Generic",
 											Service:   "general",
-											StartLine: 1,
-											EndLine:   1,
-										},
-										Traces: nil,
+											StartLine: 0,
+											EndLine:   0,
+											Code: types.Code{
+												Lines: []types.Line(nil),
+											},
+										}, Traces: []string(nil),
 									},
 								},
-								Exceptions: nil,
-								Layer:      types.Layer{},
+								Warnings:   types.MisconfResults(nil),
+								Failures:   types.MisconfResults(nil),
+								Exceptions: types.MisconfResults(nil),
+								Layer: types.Layer{
+									Digest: "",
+									DiffID: "",
+								},
 							},
-						},
+						}, Secrets: []types.Secret(nil),
+						OpaqueDirs:      []string(nil),
+						WhiteoutFiles:   []string(nil),
+						BuildInfo:       (*types.BuildInfo)(nil),
+						CustomResources: []types.CustomResource(nil),
 					},
 				},
 				Returns: cache.ArtifactCachePutBlobReturns{},
@@ -996,9 +1009,9 @@ func TestDockerfileMisconfigurationScan(t *testing.T) {
 			want: types.ArtifactReference{
 				Name: "testdata/misconfig/dockerfile/single-failure/src",
 				Type: types.ArtifactFilesystem,
-				ID:   "sha256:bae35382aa4766f210b71ba633fa2398544f98e9e694ca2fa29f1d29acbcdcd1",
+				ID:   "sha256:c328a989d1f08b96d499174d215c267aa9f78ab73f524439ce9a919eb39dfc34",
 				BlobIDs: []string{
-					"sha256:bae35382aa4766f210b71ba633fa2398544f98e9e694ca2fa29f1d29acbcdcd1",
+					"sha256:c328a989d1f08b96d499174d215c267aa9f78ab73f524439ce9a919eb39dfc34",
 				},
 			},
 		},
@@ -1028,17 +1041,21 @@ func TestDockerfileMisconfigurationScan(t *testing.T) {
 					BlobIDAnything: true,
 					BlobInfo: types.BlobInfo{
 						SchemaVersion: types.BlobJSONSchemaVersion,
+						Digest:        "",
+						DiffID:        "",
+						OS:            (*types.OS)(nil),
+						Repository:    (*types.Repository)(nil),
+						PackageInfos:  []types.PackageInfo(nil),
+						Applications:  []types.Application(nil),
 						Misconfigurations: []types.Misconfiguration{
 							{
-								FileType:  "dockerfile",
-								FilePath:  "Dockerfile",
-								Successes: nil,
-								Warnings:  nil,
-								Failures: []types.MisconfResult{
-									{
+								FileType: "dockerfile",
+								FilePath: "Dockerfile",
+								Successes: types.MisconfResults{
+									types.MisconfResult{
 										Namespace: "user.something",
 										Query:     "data.user.something.deny",
-										Message:   "No commands allowed!",
+										Message:   "",
 										PolicyMetadata: types.PolicyMetadata{
 											ID:                 "TEST001",
 											Type:               "Dockerfile Security Check",
@@ -1046,46 +1063,33 @@ func TestDockerfileMisconfigurationScan(t *testing.T) {
 											Description:        "This is a test policy.",
 											Severity:           "LOW",
 											RecommendedActions: "Have a cup of tea.",
-											References: []string{
-												"https://trivy.dev/",
-											},
+											References:         []string{"https://trivy.dev/"},
 										},
 										CauseMetadata: types.CauseMetadata{
+											Resource:  "",
 											Provider:  "Generic",
 											Service:   "general",
-											StartLine: 1,
-											EndLine:   1,
-										},
-										Traces: nil,
-									},
-									{
-										Namespace: "user.something",
-										Query:     "data.user.something.deny",
-										Message:   "No commands allowed!",
-										PolicyMetadata: types.PolicyMetadata{
-											ID:                 "TEST001",
-											Type:               "Dockerfile Security Check",
-											Title:              "Test policy",
-											Description:        "This is a test policy.",
-											Severity:           "LOW",
-											RecommendedActions: "Have a cup of tea.",
-											References: []string{
-												"https://trivy.dev/",
+											StartLine: 0,
+											EndLine:   0,
+											Code: types.Code{
+												Lines: []types.Line(nil),
 											},
-										},
-										CauseMetadata: types.CauseMetadata{
-											Provider:  "Generic",
-											Service:   "general",
-											StartLine: 3,
-											EndLine:   3,
-										},
-										Traces: nil,
+										}, Traces: []string(nil),
 									},
 								},
-								Exceptions: nil,
-								Layer:      types.Layer{},
+								Warnings:   types.MisconfResults(nil),
+								Failures:   types.MisconfResults(nil),
+								Exceptions: types.MisconfResults(nil),
+								Layer: types.Layer{
+									Digest: "",
+									DiffID: "",
+								},
 							},
-						},
+						}, Secrets: []types.Secret(nil),
+						OpaqueDirs:      []string(nil),
+						WhiteoutFiles:   []string(nil),
+						BuildInfo:       (*types.BuildInfo)(nil),
+						CustomResources: []types.CustomResource(nil),
 					},
 				},
 				Returns: cache.ArtifactCachePutBlobReturns{},
@@ -1093,9 +1097,9 @@ func TestDockerfileMisconfigurationScan(t *testing.T) {
 			want: types.ArtifactReference{
 				Name: "testdata/misconfig/dockerfile/multiple-failures/src",
 				Type: types.ArtifactFilesystem,
-				ID:   "sha256:f60b979121b663676f4569947d3bdfe48d842a3a64163499d555f3eb7240d0f1",
+				ID:   "sha256:c328a989d1f08b96d499174d215c267aa9f78ab73f524439ce9a919eb39dfc34",
 				BlobIDs: []string{
-					"sha256:f60b979121b663676f4569947d3bdfe48d842a3a64163499d555f3eb7240d0f1",
+					"sha256:c328a989d1f08b96d499174d215c267aa9f78ab73f524439ce9a919eb39dfc34",
 				},
 			},
 		},

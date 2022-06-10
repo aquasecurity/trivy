@@ -35,16 +35,18 @@ func TestConfigScanner_Scan(t *testing.T) {
 					FileType: "dockerfile",
 					FilePath: "Dockerfile",
 					Failures: types.MisconfResults{
-						{
+						types.MisconfResult{
 							Namespace: "testdata.xyz_200",
 							Query:     "data.testdata.xyz_200.deny",
 							Message:   "Old image",
 							PolicyMetadata: types.PolicyMetadata{
-								ID:          "XYZ-200",
-								Type:        "Dockerfile Security Check",
-								Title:       "Old FROM",
-								Description: "Rego module: data.testdata.xyz_200",
-								Severity:    "LOW",
+								ID:                 "XYZ-200",
+								Type:               "Dockerfile Security Check",
+								Title:              "Old FROM",
+								Description:        "Rego module: data.testdata.xyz_200",
+								Severity:           "LOW",
+								RecommendedActions: "",
+								References:         []string(nil),
 							},
 							CauseMetadata: types.CauseMetadata{
 								Resource:  "",
@@ -76,8 +78,14 @@ func TestConfigScanner_Scan(t *testing.T) {
 										},
 									},
 								},
-							},
+							}, Traces: []string(nil),
 						},
+					}, Warnings: types.MisconfResults(nil),
+					Successes:  types.MisconfResults(nil),
+					Exceptions: types.MisconfResults(nil),
+					Layer: types.Layer{
+						Digest: "",
+						DiffID: "",
 					},
 				},
 			},

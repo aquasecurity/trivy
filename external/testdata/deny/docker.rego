@@ -14,8 +14,8 @@ __rego_input__ := {
 }
 
 deny[res] {
-    input.stages[from]
-    from == "alpine:3.10"
+    stage := input.Stages[_]
+    stage.Name == "alpine:3.10"
 	msg := "Old image"
 	res := {
 	    "msg": msg,
