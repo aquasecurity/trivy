@@ -1,21 +1,21 @@
 {
   "SchemaVersion": 2,
-  "ArtifactName": "testdata/fixtures/images/oraclelinux-8-slim.tar.gz",
+  "ArtifactName": "testdata/fixtures/images/oraclelinux-8.tar.gz",
   "ArtifactType": "container_image",
   "Metadata": {
     "OS": {
       "Family": "oracle",
       "Name": "8.0"
     },
-    "ImageID": "sha256:73f821d86dfb84de2f3371288b1c28ff9f78913f7f61bf60eb652fafab548ea3",
+    "ImageID": "sha256:8988c7081e1f7b6c2928cbc4832b8a05968bb589d45d444ca1e3027c68f97f56",
     "DiffIDs": [
-      "sha256:e3196b7450602f5547c52d197255dfa96a006ea9c52c19bf3ba2d5412a4b161e"
+      "sha256:91bac58a9ffae0dc2031e3f90d7bf04f66ccf019f180372152b0916d6e8a796f"
     ],
     "ImageConfig": {
       "architecture": "amd64",
       "author": "Oracle Linux Product Team \u003col-ovm-info_ww@oracle.com\u003e",
-      "container": "c00a901742ec3d7be814b0a90a11eb41c332c8ed5c9f49035af0e97c2a4b1114",
-      "created": "2019-10-15T21:23:40.950042801Z",
+      "container": "b5339bf682ea7c2a5b817144038646d7fa55d72e9943283bd0ff5e01eb8e5e40",
+      "created": "2019-10-15T21:23:26.082686371Z",
       "docker_version": "18.06.1-ce",
       "history": [
         {
@@ -26,12 +26,12 @@
         },
         {
           "author": "Oracle Linux Product Team \u003col-ovm-info_ww@oracle.com\u003e",
-          "created": "2019-10-15T21:23:40.753460369Z",
-          "created_by": "/bin/sh -c #(nop) ADD file:4d6968487994b1c559af3fbb14644e32f15bf8c154b4db9209d05b434f691776 in / "
+          "created": "2019-10-15T21:23:25.715030578Z",
+          "created_by": "/bin/sh -c #(nop) ADD file:40a576906f00da132c935b4713c8012d0ac0422f507fc3239d647b0ed9930ed7 in / "
         },
         {
           "author": "Oracle Linux Product Team \u003col-ovm-info_ww@oracle.com\u003e",
-          "created": "2019-10-15T21:23:40.950042801Z",
+          "created": "2019-10-15T21:23:26.082686371Z",
           "created_by": "/bin/sh -c #(nop)  CMD [\"/bin/bash\"]",
           "empty_layer": true
         }
@@ -40,7 +40,7 @@
       "rootfs": {
         "type": "layers",
         "diff_ids": [
-          "sha256:e3196b7450602f5547c52d197255dfa96a006ea9c52c19bf3ba2d5412a4b161e"
+          "sha256:91bac58a9ffae0dc2031e3f90d7bf04f66ccf019f180372152b0916d6e8a796f"
         ]
       },
       "config": {
@@ -50,14 +50,14 @@
         "Env": [
           "PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
         ],
-        "Image": "sha256:966f5e6fbcc4915f120935883ccc882ae0271e00917a2955cae3cca10fc899b9",
+        "Image": "sha256:d2f0ba2a964f3d0b1935be99979b6930f8b989217ff6a5e6d4093e9df9baee11",
         "ArgsEscaped": true
       }
     }
   },
   "Results": [
     {
-      "Target": "testdata/fixtures/images/oraclelinux-8-slim.tar.gz (oracle 8.0)",
+      "Target": "testdata/fixtures/images/oraclelinux-8.tar.gz (oracle 8.0)",
       "Class": "os-pkgs",
       "Type": "oracle",
       "Vulnerabilities": [
@@ -67,7 +67,8 @@
           "InstalledVersion": "7.61.1-8.el8",
           "FixedVersion": "7.61.1-11.el8",
           "Layer": {
-            "DiffID": "sha256:e3196b7450602f5547c52d197255dfa96a006ea9c52c19bf3ba2d5412a4b161e"
+            "Digest": "sha256:e1b9aa33b064e76023cc29e9fac51bcebe62740c92ed38f09ba6205ddd9aa6f4",
+            "DiffID": "sha256:91bac58a9ffae0dc2031e3f90d7bf04f66ccf019f180372152b0916d6e8a796f"
           },
           "SeveritySource": "oracle-oval",
           "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-3823",
@@ -122,7 +123,8 @@
           "InstalledVersion": "7.61.1-8.el8",
           "FixedVersion": "7.61.1-12.el8",
           "Layer": {
-            "DiffID": "sha256:e3196b7450602f5547c52d197255dfa96a006ea9c52c19bf3ba2d5412a4b161e"
+            "Digest": "sha256:e1b9aa33b064e76023cc29e9fac51bcebe62740c92ed38f09ba6205ddd9aa6f4",
+            "DiffID": "sha256:91bac58a9ffae0dc2031e3f90d7bf04f66ccf019f180372152b0916d6e8a796f"
           },
           "SeveritySource": "oracle-oval",
           "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-5436",

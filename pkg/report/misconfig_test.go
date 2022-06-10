@@ -6,7 +6,6 @@ import (
 
 	"github.com/aquasecurity/trivy/pkg/report"
 
-	"github.com/aquasecurity/defsec/pkg/scan"
 	ftypes "github.com/aquasecurity/fanal/types"
 
 	"github.com/aquasecurity/trivy/pkg/types"
@@ -68,8 +67,8 @@ See https://google.com/search?q=bad%20config
 						Service:   "",
 						StartLine: 0,
 						EndLine:   0,
-						Code: scan.Code{
-							Lines: []scan.Line{
+						Code: ftypes.Code{
+							Lines: []ftypes.Line{
 								{
 									Number: 1,
 								},
@@ -120,8 +119,8 @@ See https://google.com/search?q=bad%20config
 					CauseMetadata: ftypes.CauseMetadata{
 						StartLine: 2,
 						EndLine:   2,
-						Code: scan.Code{
-							Lines: []scan.Line{
+						Code: ftypes.Code{
+							Lines: []ftypes.Line{
 								{
 									Number: 1,
 								},

@@ -72,6 +72,7 @@ The following table lists the configurable parameters of the Trivy chart and the
 | `trivy.cache.redis.enabled`           | Enable Redis as caching backend                                         | `false` |
 | `trivy.cache.redis.url`               | Specify redis connection url, e.g. redis://redis.redis.svc:6379         | `` |
 | `trivy.serverToken`                   | The token to authenticate Trivy client with Trivy server                | `` |
+| `trivy.podAnnotations`                | Annotations for pods created by statefulset                             | `{}` |
 | `service.name`                        | If specified, the name used for the Trivy service                       |     |
 | `service.type`                        | Kubernetes service type                                                 | `ClusterIP` |
 | `service.port`                        | Kubernetes service port                                                 | `4954`      |
@@ -81,6 +82,7 @@ The following table lists the configurable parameters of the Trivy chart and the
 | `nodeSelector`                        | Node labels for pod assignment                                              |     |
 | `affinity`                            | Affinity settings for pod assignment                                              |     |
 | `tolerations`                         | Tolerations for pod assignment                                              |     |
+| `podAnnotations`                      | Annotations for pods created by statefulset                             | `{}` |
 
 The above parameters map to the env variables defined in [trivy](https://github.com/aquasecurity/trivy#configuration).
 
