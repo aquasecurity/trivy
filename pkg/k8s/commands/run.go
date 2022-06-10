@@ -8,8 +8,8 @@ import (
 	"golang.org/x/xerrors"
 
 	cmd "github.com/aquasecurity/trivy/pkg/commands/artifact"
-	scanner "github.com/aquasecurity/trivy/pkg/k8s"
 	"github.com/aquasecurity/trivy/pkg/k8s/report"
+	"github.com/aquasecurity/trivy/pkg/k8s/scanner"
 	"github.com/aquasecurity/trivy/pkg/log"
 
 	"github.com/aquasecurity/trivy-kubernetes/pkg/artifacts"

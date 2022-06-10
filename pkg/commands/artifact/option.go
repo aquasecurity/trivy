@@ -68,7 +68,6 @@ func (c *Option) Init() error {
 	return nil
 }
 
-// initPreScanOptions initializes the pre scan options
 func (c *Option) initPreScanOptions() error {
 	if err := c.ReportOption.Init(c.Context.App.Writer, c.Logger); err != nil {
 		return err
@@ -83,7 +82,6 @@ func (c *Option) initPreScanOptions() error {
 		return err
 	}
 	c.RemoteOption.Init(c.Logger)
-
 	return nil
 }
 

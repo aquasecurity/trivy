@@ -1,4 +1,4 @@
-package k8s
+package scanner
 
 import (
 	"context"
@@ -22,7 +22,7 @@ type Scanner struct {
 	opt     cmd.Option
 }
 
-func NewScanner(cluster string, runner *cmd.Runner, opt cmd.Option) *Scanner {
+func NewScanner(cluster string, runner cmd.Runner, opt cmd.Option) *Scanner {
 	return &Scanner{cluster, runner, opt}
 }
 
