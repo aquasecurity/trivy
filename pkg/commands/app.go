@@ -664,7 +664,6 @@ func NewClientCommand() *cli.Command {
 			&severityFlag,
 			&outputFlag,
 			&exitCodeFlag,
-			&clearCacheFlag,
 			&ignoreUnfixedFlag,
 			&removedPkgsFlag,
 			&vulnTypeFlag,
