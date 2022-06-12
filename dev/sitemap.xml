@@ -61,6 +61,11 @@
          <changefreq>daily</changefreq>
     </url>
     <url>
+         <loc>https://aquasecurity.github.io/trivy/dev/docs/advanced/container/containerd/</loc>
+         <lastmod>2022-06-12</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
          <loc>https://aquasecurity.github.io/trivy/dev/docs/advanced/container/embed-in-dockerfile/</loc>
          <lastmod>2022-06-12</lastmod>
          <changefreq>daily</changefreq>
