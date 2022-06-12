@@ -7,6 +7,8 @@ import (
 	"strconv"
 	"strings"
 
+	"golang.org/x/xerrors"
+
 	"github.com/aquasecurity/table"
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	pkgReport "github.com/aquasecurity/trivy/pkg/report"
@@ -32,8 +34,14 @@ func NewSummaryWriter(output io.Writer, requiredSevs []dbTypes.Severity) Summary
 // Write writes the results in a summarized table format
 func (s SummaryWriter) Write(report Report) error {
 	consolidated := report.consolidate()
-	_, _ = fmt.Fprintln(s.Output)
-	_, _ = fmt.Fprintf(s.Output, "Summary Report for %s\n", consolidated.ClusterName)
+
+	if _, err := fmt.Fprintln(s.Output); err != nil {
+		return xerrors.Errorf("failed to write summary report: %w", err)
+	}
+
+	if _, err := fmt.Fprintf(s.Output, "Summary Report for %s\n", consolidated.ClusterName); err != nil {
+		return xerrors.Errorf("failed to write summary report: %w", err)
+	}
 
 	t := table.New(s.Output)
 	t.SetRowLines(false)
