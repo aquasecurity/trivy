@@ -119,7 +119,7 @@ nav:
               - Repository: docs/references/cli/repo.md
               - Client: docs/references/cli/client.md
               - Server: docs/references/cli/server.md
-              - Plugins: docs/references/cli/plugins.md
+              - Plugin: docs/references/cli/plugin.md
               - SBOM: docs/references/cli/sbom.md
           - Modes:
               - Standalone: docs/references/modes/standalone.md
