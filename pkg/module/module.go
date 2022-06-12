@@ -116,31 +116,35 @@ func (m *Manager) loadModules(ctx context.Context) error {
 	}
 	log.Logger.Debugf("Module dir: %s", moduleDir)
 
-	entries, err := os.ReadDir(moduleDir)
-	if err != nil {
-		return xerrors.Errorf("read dir error: %w", err)
-	}
-
-	for _, entry := range entries {
-		if !entry.Type().IsRegular() || filepath.Ext(entry.Name()) != ".wasm" {
-			continue
+	err = filepath.Walk(moduleDir, func(path string, info fs.FileInfo, err error) error {
+		if err != nil {
+			return err
+		} else if info.IsDir() || filepath.Ext(info.Name()) != ".wasm" {
+			return nil
 		}
 
-		fileName := entry.Name()
-		filePath := filepath.Join(moduleDir, fileName)
+		rel, err := filepath.Rel(moduleDir, path)
+		if err != nil {
+			return xerrors.Errorf("failed to get a relative path: %w", err)
+		}
 
-		log.Logger.Infof("Loading %s...", fileName)
-		wasmCode, err := os.ReadFile(filePath)
+		log.Logger.Infof("Loading %s...", rel)
+		wasmCode, err := os.ReadFile(path)
 		if err != nil {
 			return xerrors.Errorf("file read error: %w", err)
 		}
 
 		p, err := newWASMPlugin(ctx, m.runtime, wasmCode)
 		if err != nil {
-			return xerrors.Errorf("WASM module init error %s: %w", fileName, err)
+			return xerrors.Errorf("WASM module init error %s: %w", rel, err)
 		}
 
 		m.modules = append(m.modules, p)
+
+		return nil
+	})
+	if err != nil {
+		return xerrors.Errorf("module walk error: %w", err)
 	}
 
 	return nil

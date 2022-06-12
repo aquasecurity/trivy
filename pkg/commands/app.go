@@ -826,6 +826,13 @@ func NewModuleCommand() *cli.Command {
 				ArgsUsage: "REPOSITORY",
 				Action:    module.Install,
 			},
+			{
+				Name:      "uninstall",
+				Aliases:   []string{"u"},
+				Usage:     "uninstall a module",
+				ArgsUsage: "REPOSITORY",
+				Action:    module.Uninstall,
+			},
 		},
 	}
 }

@@ -27,6 +27,24 @@ func Install(c *cli.Context) error {
 	return nil
 }
 
+// Uninstall uninstalls a module
+func Uninstall(c *cli.Context) error {
+	if c.NArg() != 1 {
+		cli.ShowSubcommandHelpAndExit(c, 1)
+	}
+
+	if err := initLogger(c); err != nil {
+		return xerrors.Errorf("log initialization error: %w", err)
+	}
+
+	repo := c.Args().First()
+	if err := module.Uninstall(c.Context, repo); err != nil {
+		return xerrors.Errorf("module uninstall error: %w", err)
+	}
+
+	return nil
+}
+
 func initLogger(ctx *cli.Context) error {
 	conf, err := option.NewGlobalOption(ctx)
 	if err != nil {
