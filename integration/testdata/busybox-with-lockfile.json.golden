@@ -3,35 +3,35 @@
   "ArtifactName": "testdata/fixtures/images/busybox-with-lockfile.tar.gz",
   "ArtifactType": "container_image",
   "Metadata": {
-    "ImageID": "sha256:17c82adee8b5ffec7d6e30dba333bb37986add86afeb4a07754407bb049faedb",
+    "ImageID": "sha256:88702f6b6133bf06cc46af48437d0c0fc661239155548757c65916504a0e5eee",
     "DiffIDs": [
-      "sha256:a6d503001157aedc826853f9b67f26d35966221b158bff03849868ae4a821116",
+      "sha256:797ac4999b67d8c38a596919efa5b7b6a4a8fd5814cb8564efa482c5d8403e6d",
       "sha256:ea6f6933da66090da8bfe233d68f083792a68f944cd2d8f9fbb52da795813a4f"
     ],
     "ImageConfig": {
       "architecture": "amd64",
-      "created": "2020-04-26T16:23:28.996276377Z",
-      "docker_version": "19.03.8",
+      "created": "2022-06-07T04:24:40.230164Z",
+      "docker_version": "20.10.14",
       "history": [
         {
-          "created": "2020-03-10T00:19:32.83969331Z",
-          "created_by": "/bin/sh -c #(nop) ADD file:450bea8cddb743ed282cb1ade3d1614033172b93ef531c69a4e49fda3016cef0 in / "
+          "created": "2022-03-11T20:19:46.778911455Z",
+          "created_by": "/bin/sh -c #(nop) ADD file:39f6523fbc03f554a59461a34850d68c31cd5822e5a6fddf2d0ea198ed9a11c4 in / "
         },
         {
-          "created": "2020-03-10T00:19:33.019716493Z",
+          "created": "2022-03-11T20:19:46.866228701Z",
           "created_by": "/bin/sh -c #(nop)  CMD [\"sh\"]",
           "empty_layer": true
         },
         {
-          "created": "2020-04-26T16:23:28.996276377Z",
-          "created_by": "/bin/sh -c #(nop) ADD 343df0159abcc51b06b4e56bfd4c06d2003b88947ed93b0cec6214ae5985669e in . "
+          "created": "2022-06-07T04:24:40.230164Z",
+          "created_by": "/bin/sh -c #(nop) COPY file:343df0159abcc51b06b4e56bfd4c06d2003b88947ed93b0cec6214ae5985669e in . "
         }
       ],
       "os": "linux",
       "rootfs": {
         "type": "layers",
         "diff_ids": [
-          "sha256:a6d503001157aedc826853f9b67f26d35966221b158bff03849868ae4a821116",
+          "sha256:797ac4999b67d8c38a596919efa5b7b6a4a8fd5814cb8564efa482c5d8403e6d",
           "sha256:ea6f6933da66090da8bfe233d68f083792a68f944cd2d8f9fbb52da795813a4f"
         ]
       },
@@ -42,8 +42,7 @@
         "Env": [
           "PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
         ],
-        "Image": "sha256:83aa35aa1c79e4b6957e018da6e322bfca92bf3b4696a211b42502543c242d6f",
-        "ArgsEscaped": true
+        "Image": "sha256:2fb6fc2d97e10c79983aa10e013824cc7fc8bae50630e32159821197dda95fe3"
       }
     }
   },
@@ -59,6 +58,7 @@
           "InstalledVersion": "1.9.0",
           "FixedVersion": "\u003e= 2.1.0",
           "Layer": {
+            "Digest": "sha256:fd2e3bc9bccc9c677572a542d020998389de94f127ca2c252ae627fc7c241cee",
             "DiffID": "sha256:ea6f6933da66090da8bfe233d68f083792a68f944cd2d8f9fbb52da795813a4f"
           },
           "SeveritySource": "nvd",
@@ -95,6 +95,7 @@
           "InstalledVersion": "1.9.0",
           "FixedVersion": "\u003e= 3.1.0, \u003e= 2.1.3, \u003c 3.0.0",
           "Layer": {
+            "Digest": "sha256:fd2e3bc9bccc9c677572a542d020998389de94f127ca2c252ae627fc7c241cee",
             "DiffID": "sha256:ea6f6933da66090da8bfe233d68f083792a68f944cd2d8f9fbb52da795813a4f"
           },
           "SeveritySource": "nvd",

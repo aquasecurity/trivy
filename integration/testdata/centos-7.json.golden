@@ -7,27 +7,27 @@
       "Family": "centos",
       "Name": "7.6.1810"
     },
-    "ImageID": "sha256:9f38484d220fa527b1fb19747638497179500a1bed8bf0498eb788229229e6e1",
+    "ImageID": "sha256:f1cb7c7d58b73eac859c395882eec49d50651244e342cd6c68a5c7809785f427",
     "DiffIDs": [
-      "sha256:d69483a6face4499acb974449d1303591fcbb5cdce5420f36f8a6607bda11854"
+      "sha256:89169d87dbe2b72ba42bfbb3579c957322baca28e03a1e558076542a1c1b2b4a"
     ],
     "ImageConfig": {
       "architecture": "amd64",
-      "container": "958baf5225f586da9c70a21e911a0a875402dd22d83133d78b3b3aa6130e7892",
-      "created": "2019-03-14T21:19:53.361167852Z",
+      "container": "cc6043a787f6d1c7ae3e121ebdf1c4478186336aa7274871780a0a7bcc3a061a",
+      "created": "2019-03-14T21:20:29.635970966Z",
       "docker_version": "18.06.1-ce",
       "history": [
         {
-          "created": "2019-03-14T21:19:52.66982152Z",
-          "created_by": "/bin/sh -c #(nop) ADD file:074f2c974463ab38cf3532134e8ba2c91c9e346457713f2e8b8e2ac0ee9fd83d in / "
+          "created": "2019-03-14T21:20:28.997703205Z",
+          "created_by": "/bin/sh -c #(nop) ADD file:54b004357379717dfb7ea6f024ca80ce762ea4b06647fcddc0f6697146551172 in / "
         },
         {
-          "created": "2019-03-14T21:19:53.099141434Z",
-          "created_by": "/bin/sh -c #(nop)  LABEL org.label-schema.schema-version=1.0 org.label-schema.name=CentOS Base Image org.label-schema.vendor=CentOS org.label-schema.license=GPLv2 org.label-schema.build-date=20190305",
+          "created": "2019-03-14T21:20:29.452720615Z",
+          "created_by": "/bin/sh -c #(nop)  LABEL org.label-schema.schema-version=1.0 org.label-schema.name=CentOS Base Image org.label-schema.vendor=CentOS org.label-schema.license=GPLv2 org.label-schema.build-date=20181204",
           "empty_layer": true
         },
         {
-          "created": "2019-03-14T21:19:53.361167852Z",
+          "created": "2019-03-14T21:20:29.635970966Z",
           "created_by": "/bin/sh -c #(nop)  CMD [\"/bin/bash\"]",
           "empty_layer": true
         }
@@ -36,7 +36,7 @@
       "rootfs": {
         "type": "layers",
         "diff_ids": [
-          "sha256:d69483a6face4499acb974449d1303591fcbb5cdce5420f36f8a6607bda11854"
+          "sha256:89169d87dbe2b72ba42bfbb3579c957322baca28e03a1e558076542a1c1b2b4a"
         ]
       },
       "config": {
@@ -46,9 +46,9 @@
         "Env": [
           "PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
         ],
-        "Image": "sha256:294e8d8145287e70f07328cc09d840fad8980b801223321b983442f097aff0d8",
+        "Image": "sha256:698a0848ee35389ab7b98494bdc60f887c54ddb94fc2326a1fb4eff8895aff43",
         "Labels": {
-          "org.label-schema.build-date": "20190305",
+          "org.label-schema.build-date": "20181204",
           "org.label-schema.license": "GPLv2",
           "org.label-schema.name": "CentOS Base Image",
           "org.label-schema.schema-version": "1.0",
@@ -69,7 +69,8 @@
           "PkgName": "bash",
           "InstalledVersion": "4.2.46-31.el7",
           "Layer": {
-            "DiffID": "sha256:d69483a6face4499acb974449d1303591fcbb5cdce5420f36f8a6607bda11854"
+            "Digest": "sha256:ac9208207adaac3a48e54a4dc6b49c69e78c3072d2b3add7efdabf814db2133b",
+            "DiffID": "sha256:89169d87dbe2b72ba42bfbb3579c957322baca28e03a1e558076542a1c1b2b4a"
           },
           "SeveritySource": "redhat",
           "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-18276",
@@ -116,7 +117,8 @@
           "InstalledVersion": "1:1.0.2k-16.el7",
           "FixedVersion": "1:1.0.2k-19.el7",
           "Layer": {
-            "DiffID": "sha256:d69483a6face4499acb974449d1303591fcbb5cdce5420f36f8a6607bda11854"
+            "Digest": "sha256:ac9208207adaac3a48e54a4dc6b49c69e78c3072d2b3add7efdabf814db2133b",
+            "DiffID": "sha256:89169d87dbe2b72ba42bfbb3579c957322baca28e03a1e558076542a1c1b2b4a"
           },
           "SeveritySource": "redhat",
           "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-1559",
@@ -195,7 +197,8 @@
           "InstalledVersion": "1:1.0.2k-16.el7",
           "FixedVersion": "1:1.0.2k-19.el7",
           "Layer": {
-            "DiffID": "sha256:d69483a6face4499acb974449d1303591fcbb5cdce5420f36f8a6607bda11854"
+            "Digest": "sha256:ac9208207adaac3a48e54a4dc6b49c69e78c3072d2b3add7efdabf814db2133b",
+            "DiffID": "sha256:89169d87dbe2b72ba42bfbb3579c957322baca28e03a1e558076542a1c1b2b4a"
           },
           "SeveritySource": "redhat",
           "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2018-0734",
