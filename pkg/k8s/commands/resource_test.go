@@ -17,7 +17,7 @@ func Test_extractKindAndName(t *testing.T) {
 		{
 			name:          "one argument only",
 			args:          []string{"deploy"},
-			expectedError: "can't parse arguments: [deploy]",
+			expectedError: "can't parse arguments [deploy]. Please run `trivy k8s` for usage.",
 		},
 		{
 			name:         "bar separated",
@@ -34,7 +34,7 @@ func Test_extractKindAndName(t *testing.T) {
 		{
 			name:          "multiple arguments separated",
 			args:          []string{"test test test"},
-			expectedError: "can't parse arguments: [test test test]",
+			expectedError: "can't parse arguments [test test test]. Please run `trivy k8s` for usage.",
 		},
 	}
 
