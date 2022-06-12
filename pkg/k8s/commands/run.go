@@ -30,7 +30,7 @@ func Run(cliCtx *cli.Context) error {
 
 	cluster, err := k8s.GetCluster(opt.KubernetesOption.ClusterContext)
 	if err != nil {
-		return xerrors.Errorf("get k8s cluster: %w", err)
+		return xerrors.Errorf("failed getting k8s cluster: %w", err)
 	}
 
 	switch cliCtx.Args().Get(0) {

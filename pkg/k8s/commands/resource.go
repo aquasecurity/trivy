@@ -34,7 +34,7 @@ func extractKindAndName(args []string) (string, string, error) {
 	case 1:
 		s := strings.Split(args[0], "/")
 		if len(s) != 2 {
-			return "", "", xerrors.Errorf("can't parse arguments: %v", args)
+			return "", "", xerrors.Errorf("can't parse arguments %v. Please run `trivy k8s` for usage.", args)
 		}
 
 		return s[0], s[1], nil
@@ -42,5 +42,5 @@ func extractKindAndName(args []string) (string, string, error) {
 		return args[0], args[1], nil
 	}
 
-	return "", "", xerrors.Errorf("can't parse arguments: %v", args)
+	return "", "", xerrors.Errorf("can't parse arguments %v. Please run `trivy k8s` for usage.", args)
 }
