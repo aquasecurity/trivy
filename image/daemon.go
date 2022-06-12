@@ -1,6 +1,7 @@
 package image
 
 import (
+	"context"
 	"github.com/google/go-containerregistry/pkg/name"
 
 	"github.com/aquasecurity/fanal/image/daemon"
@@ -27,6 +28,18 @@ func tryPodmanDaemon(ref string) (types.Image, func(), error) {
 	return daemonImage{
 		Image: img,
 		name:  ref,
+	}, cleanup, nil
+}
+
+func tryContainerdDaemon(ctx context.Context, imageName string) (types.Image, func(), error) {
+	img, cleanup, err := daemon.ContainerdImage(ctx, imageName)
+	if err != nil {
+		return nil, cleanup, err
+	}
+
+	return daemonImage{
+		Image: img,
+		name:  imageName,
 	}, cleanup, nil
 }
 

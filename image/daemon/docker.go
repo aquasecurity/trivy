@@ -54,7 +54,7 @@ func DockerImage(ref name.Reference) (Image, func(), error) {
 	}
 
 	return &image{
-		opener:  imageOpener(imageID, f, c.ImageSave),
+		opener:  imageOpener(context.Background(), imageID, f, c.ImageSave),
 		inspect: inspect,
 		history: history,
 	}, cleanup, nil

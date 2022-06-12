@@ -11,7 +11,7 @@ import (
 	"github.com/aquasecurity/fanal/types"
 )
 
-func NewDockerImage(ctx context.Context, imageName string, option types.DockerOption) (types.Image, func(), error) {
+func NewContainerImage(ctx context.Context, imageName string, option types.DockerOption) (types.Image, func(), error) {
 	var errs error
 
 	var nameOpts []name.Option
@@ -35,6 +35,12 @@ func NewDockerImage(ctx context.Context, imageName string, option types.DockerOp
 	img, cleanup, err = tryPodmanDaemon(imageName)
 	if err == nil {
 		// Return v1.Image if the image is found in Podman
+		return img, cleanup, nil
+	}
+	errs = multierror.Append(errs, err)
+
+	img, cleanup, err = tryContainerdDaemon(ctx, imageName)
+	if err == nil {
 		return img, cleanup, nil
 	}
 	errs = multierror.Append(errs, err)

@@ -3,6 +3,7 @@
     "Name": ".composer-phpext-rundeps",
     "Version": "0",
     "Layer": {
+      "Digest": "sha256:1eea04acda91d39256def9ea27cb33007e243a1b4f7f8908bcfd9d3de376905d",
       "DiffID": "sha256:2f4a5c9187c249834ebc28783bd3c65bdcbacaa8baa6620ddaa27846dd3ef708"
     }
   },
@@ -10,6 +11,7 @@
     "Name": ".persistent-deps",
     "Version": "0",
     "Layer": {
+      "Digest": "sha256:88777455d910410652665cec0149a02db3584d6dc26e306788a3532d480b00ae",
       "DiffID": "sha256:0ea33a93585cf1917ba522b2304634c3073654062d5282c1346322967790ef33"
     }
   },
@@ -17,6 +19,7 @@
     "Name": ".php-rundeps",
     "Version": "0",
     "Layer": {
+      "Digest": "sha256:3d6152f6ac208640f9fb494d1c379fe508db1fc5754cd08fefec200bddd13e0e",
       "DiffID": "sha256:6408527580eade39c2692dbb6b0f6a9321448d06ea1c2eef06bb7f37da9c5013"
     }
   },
@@ -27,6 +30,7 @@
     "SrcVersion": "3.0.5-r2",
     "License": "GPL2",
     "Layer": {
+      "Digest": "sha256:c67f3896b22c1378881cbbb9c9d1edfe881fd07f713371835ef46d93c649684d",
       "DiffID": "sha256:ebf12965380b39889c99a9c02e82ba465f887b45975b6e389d42e9e6a3857888"
     }
   },
@@ -37,6 +41,7 @@
     "SrcVersion": "2.1-r1",
     "License": "MIT",
     "Layer": {
+      "Digest": "sha256:c67f3896b22c1378881cbbb9c9d1edfe881fd07f713371835ef46d93c649684d",
       "DiffID": "sha256:ebf12965380b39889c99a9c02e82ba465f887b45975b6e389d42e9e6a3857888"
     }
   },
@@ -47,6 +52,7 @@
     "SrcVersion": "2.10.1-r0",
     "License": "GPL2",
     "Layer": {
+      "Digest": "sha256:c67f3896b22c1378881cbbb9c9d1edfe881fd07f713371835ef46d93c649684d",
       "DiffID": "sha256:ebf12965380b39889c99a9c02e82ba465f887b45975b6e389d42e9e6a3857888"
     }
   },
@@ -57,6 +63,7 @@
     "SrcVersion": "1.6.3-r0",
     "License": "ASL 2.0",
     "Layer": {
+      "Digest": "sha256:c191915691a422a1b0230c9010165ff655204a9fd95e3b43151132bcb237826b",
       "DiffID": "sha256:2da3602d664dd3f71fae83cbc566d4e80b432c6ee8bb4efd94c8e85122f503d4"
     }
   },
@@ -67,6 +74,7 @@
     "SrcVersion": "1.6.1-r1",
     "License": "ASL 2.0",
     "Layer": {
+      "Digest": "sha256:c191915691a422a1b0230c9010165ff655204a9fd95e3b43151132bcb237826b",
       "DiffID": "sha256:2da3602d664dd3f71fae83cbc566d4e80b432c6ee8bb4efd94c8e85122f503d4"
     }
   },
@@ -77,6 +85,7 @@
     "SrcVersion": "4.4.19-r1",
     "License": "GPL3+",
     "Layer": {
+      "Digest": "sha256:c191915691a422a1b0230c9010165ff655204a9fd95e3b43151132bcb237826b",
       "DiffID": "sha256:2da3602d664dd3f71fae83cbc566d4e80b432c6ee8bb4efd94c8e85122f503d4"
     }
   },
@@ -87,6 +96,7 @@
     "SrcVersion": "1.27.2-r11",
     "License": "GPL2",
     "Layer": {
+      "Digest": "sha256:c67f3896b22c1378881cbbb9c9d1edfe881fd07f713371835ef46d93c649684d",
       "DiffID": "sha256:ebf12965380b39889c99a9c02e82ba465f887b45975b6e389d42e9e6a3857888"
     }
   },
@@ -97,6 +107,7 @@
     "SrcVersion": "20171114-r0",
     "License": "MPL 2.0 GPL2+",
     "Layer": {
+      "Digest": "sha256:88777455d910410652665cec0149a02db3584d6dc26e306788a3532d480b00ae",
       "DiffID": "sha256:0ea33a93585cf1917ba522b2304634c3073654062d5282c1346322967790ef33"
     }
   },
@@ -107,6 +118,7 @@
     "SrcVersion": "7.61.0-r0",
     "License": "MIT",
     "Layer": {
+      "Digest": "sha256:88777455d910410652665cec0149a02db3584d6dc26e306788a3532d480b00ae",
       "DiffID": "sha256:0ea33a93585cf1917ba522b2304634c3073654062d5282c1346322967790ef33"
     }
   },
@@ -117,6 +129,7 @@
     "SrcVersion": "5.3.28-r0",
     "License": "custom",
     "Layer": {
+      "Digest": "sha256:c191915691a422a1b0230c9010165ff655204a9fd95e3b43151132bcb237826b",
       "DiffID": "sha256:2da3602d664dd3f71fae83cbc566d4e80b432c6ee8bb4efd94c8e85122f503d4"
     }
   },
@@ -127,6 +140,7 @@
     "SrcVersion": "2.2.5-r0",
     "License": "MIT",
     "Layer": {
+      "Digest": "sha256:c191915691a422a1b0230c9010165ff655204a9fd95e3b43151132bcb237826b",
       "DiffID": "sha256:2da3602d664dd3f71fae83cbc566d4e80b432c6ee8bb4efd94c8e85122f503d4"
     }
   },
@@ -137,6 +151,7 @@
     "SrcVersion": "1.13-r1",
     "License": "GPL",
     "Layer": {
+      "Digest": "sha256:c191915691a422a1b0230c9010165ff655204a9fd95e3b43151132bcb237826b",
       "DiffID": "sha256:2da3602d664dd3f71fae83cbc566d4e80b432c6ee8bb4efd94c8e85122f503d4"
     }
   },
@@ -147,6 +162,7 @@
     "SrcVersion": "2.15.2-r0",
     "License": "GPL2+",
     "Layer": {
+      "Digest": "sha256:c191915691a422a1b0230c9010165ff655204a9fd95e3b43151132bcb237826b",
       "DiffID": "sha256:2da3602d664dd3f71fae83cbc566d4e80b432c6ee8bb4efd94c8e85122f503d4"
     }
   },
@@ -157,6 +173,7 @@
     "SrcVersion": "1.0.6-r6",
     "License": "BSD",
     "Layer": {
+      "Digest": "sha256:c191915691a422a1b0230c9010165ff655204a9fd95e3b43151132bcb237826b",
       "DiffID": "sha256:2da3602d664dd3f71fae83cbc566d4e80b432c6ee8bb4efd94c8e85122f503d4"
     }
   },
@@ -167,6 +184,7 @@
     "SrcVersion": "0.7.1-r0",
     "License": "BSD",
     "Layer": {
+      "Digest": "sha256:c67f3896b22c1378881cbbb9c9d1edfe881fd07f713371835ef46d93c649684d",
       "DiffID": "sha256:ebf12965380b39889c99a9c02e82ba465f887b45975b6e389d42e9e6a3857888"
     }
   },
@@ -177,6 +195,7 @@
     "SrcVersion": "7.61.1-r0",
     "License": "MIT",
     "Layer": {
+      "Digest": "sha256:3d6152f6ac208640f9fb494d1c379fe508db1fc5754cd08fefec200bddd13e0e",
       "DiffID": "sha256:6408527580eade39c2692dbb6b0f6a9321448d06ea1c2eef06bb7f37da9c5013"
     }
   },
@@ -187,6 +206,7 @@
     "SrcVersion": "20170329.3.1-r3",
     "License": "BSD",
     "Layer": {
+      "Digest": "sha256:3d6152f6ac208640f9fb494d1c379fe508db1fc5754cd08fefec200bddd13e0e",
       "DiffID": "sha256:6408527580eade39c2692dbb6b0f6a9321448d06ea1c2eef06bb7f37da9c5013"
     }
   },
@@ -197,6 +217,7 @@
     "SrcVersion": "3.2.1-r4",
     "License": "MIT",
     "Layer": {
+      "Digest": "sha256:c191915691a422a1b0230c9010165ff655204a9fd95e3b43151132bcb237826b",
       "DiffID": "sha256:2da3602d664dd3f71fae83cbc566d4e80b432c6ee8bb4efd94c8e85122f503d4"
     }
   },
@@ -207,6 +228,7 @@
     "SrcVersion": "2.6.5-r0",
     "License": "custom",
     "Layer": {
+      "Digest": "sha256:88777455d910410652665cec0149a02db3584d6dc26e306788a3532d480b00ae",
       "DiffID": "sha256:0ea33a93585cf1917ba522b2304634c3073654062d5282c1346322967790ef33"
     }
   },
@@ -217,6 +239,7 @@
     "SrcVersion": "2.6.5-r0",
     "License": "custom",
     "Layer": {
+      "Digest": "sha256:c67f3896b22c1378881cbbb9c9d1edfe881fd07f713371835ef46d93c649684d",
       "DiffID": "sha256:ebf12965380b39889c99a9c02e82ba465f887b45975b6e389d42e9e6a3857888"
     }
   },
@@ -227,6 +250,7 @@
     "SrcVersion": "2.6.5-r0",
     "License": "custom",
     "Layer": {
+      "Digest": "sha256:c67f3896b22c1378881cbbb9c9d1edfe881fd07f713371835ef46d93c649684d",
       "DiffID": "sha256:ebf12965380b39889c99a9c02e82ba465f887b45975b6e389d42e9e6a3857888"
     }
   },
@@ -237,6 +261,7 @@
     "SrcVersion": "2.6.5-r0",
     "License": "custom",
     "Layer": {
+      "Digest": "sha256:c67f3896b22c1378881cbbb9c9d1edfe881fd07f713371835ef46d93c649684d",
       "DiffID": "sha256:ebf12965380b39889c99a9c02e82ba465f887b45975b6e389d42e9e6a3857888"
     }
   },
@@ -247,6 +272,7 @@
     "SrcVersion": "2.1.26-r11",
     "License": "custom",
     "Layer": {
+      "Digest": "sha256:c191915691a422a1b0230c9010165ff655204a9fd95e3b43151132bcb237826b",
       "DiffID": "sha256:2da3602d664dd3f71fae83cbc566d4e80b432c6ee8bb4efd94c8e85122f503d4"
     }
   },
@@ -257,6 +283,7 @@
     "SrcVersion": "1.0.15-r0",
     "License": "ISC",
     "Layer": {
+      "Digest": "sha256:3d6152f6ac208640f9fb494d1c379fe508db1fc5754cd08fefec200bddd13e0e",
       "DiffID": "sha256:6408527580eade39c2692dbb6b0f6a9321448d06ea1c2eef06bb7f37da9c5013"
     }
   },
@@ -267,6 +294,7 @@
     "SrcVersion": "1.8.0-r2",
     "License": "BSD",
     "Layer": {
+      "Digest": "sha256:88777455d910410652665cec0149a02db3584d6dc26e306788a3532d480b00ae",
       "DiffID": "sha256:0ea33a93585cf1917ba522b2304634c3073654062d5282c1346322967790ef33"
     }
   },
@@ -277,6 +305,7 @@
     "SrcVersion": "2.31-r0",
     "License": "GPL2 GPL2+ LGPL2+ BSD Public Domain",
     "Layer": {
+      "Digest": "sha256:c191915691a422a1b0230c9010165ff655204a9fd95e3b43151132bcb237826b",
       "DiffID": "sha256:2da3602d664dd3f71fae83cbc566d4e80b432c6ee8bb4efd94c8e85122f503d4"
     }
   },
@@ -287,6 +316,7 @@
     "SrcVersion": "2.9.7-r0",
     "License": "MIT",
     "Layer": {
+      "Digest": "sha256:3d6152f6ac208640f9fb494d1c379fe508db1fc5754cd08fefec200bddd13e0e",
       "DiffID": "sha256:6408527580eade39c2692dbb6b0f6a9321448d06ea1c2eef06bb7f37da9c5013"
     }
   },
@@ -297,6 +327,7 @@
     "SrcVersion": "4.5.2-r0",
     "License": "GPL2+",
     "Layer": {
+      "Digest": "sha256:c191915691a422a1b0230c9010165ff655204a9fd95e3b43151132bcb237826b",
       "DiffID": "sha256:2da3602d664dd3f71fae83cbc566d4e80b432c6ee8bb4efd94c8e85122f503d4"
     }
   },
@@ -307,6 +338,7 @@
     "SrcVersion": "1.1.18-r3",
     "License": "MIT",
     "Layer": {
+      "Digest": "sha256:c67f3896b22c1378881cbbb9c9d1edfe881fd07f713371835ef46d93c649684d",
       "DiffID": "sha256:ebf12965380b39889c99a9c02e82ba465f887b45975b6e389d42e9e6a3857888"
     }
   },
@@ -317,6 +349,7 @@
     "SrcVersion": "1.1.18-r3",
     "License": "MIT BSD GPL2+",
     "Layer": {
+      "Digest": "sha256:c67f3896b22c1378881cbbb9c9d1edfe881fd07f713371835ef46d93c649684d",
       "DiffID": "sha256:ebf12965380b39889c99a9c02e82ba465f887b45975b6e389d42e9e6a3857888"
     }
   },
@@ -327,6 +360,7 @@
     "SrcVersion": "6.0_p20171125-r1",
     "License": "MIT",
     "Layer": {
+      "Digest": "sha256:3d6152f6ac208640f9fb494d1c379fe508db1fc5754cd08fefec200bddd13e0e",
       "DiffID": "sha256:6408527580eade39c2692dbb6b0f6a9321448d06ea1c2eef06bb7f37da9c5013"
     }
   },
@@ -337,6 +371,7 @@
     "SrcVersion": "6.0_p20171125-r1",
     "License": "MIT",
     "Layer": {
+      "Digest": "sha256:3d6152f6ac208640f9fb494d1c379fe508db1fc5754cd08fefec200bddd13e0e",
       "DiffID": "sha256:6408527580eade39c2692dbb6b0f6a9321448d06ea1c2eef06bb7f37da9c5013"
     }
   },
@@ -347,6 +382,7 @@
     "SrcVersion": "6.0_p20171125-r1",
     "License": "MIT",
     "Layer": {
+      "Digest": "sha256:3d6152f6ac208640f9fb494d1c379fe508db1fc5754cd08fefec200bddd13e0e",
       "DiffID": "sha256:6408527580eade39c2692dbb6b0f6a9321448d06ea1c2eef06bb7f37da9c5013"
     }
   },
@@ -357,6 +393,7 @@
     "SrcVersion": "7.5_p1-r9",
     "License": "as-is",
     "Layer": {
+      "Digest": "sha256:c191915691a422a1b0230c9010165ff655204a9fd95e3b43151132bcb237826b",
       "DiffID": "sha256:2da3602d664dd3f71fae83cbc566d4e80b432c6ee8bb4efd94c8e85122f503d4"
     }
   },
@@ -367,6 +404,7 @@
     "SrcVersion": "7.5_p1-r9",
     "License": "as-is",
     "Layer": {
+      "Digest": "sha256:c191915691a422a1b0230c9010165ff655204a9fd95e3b43151132bcb237826b",
       "DiffID": "sha256:2da3602d664dd3f71fae83cbc566d4e80b432c6ee8bb4efd94c8e85122f503d4"
     }
   },
@@ -377,6 +415,7 @@
     "SrcVersion": "7.5_p1-r9",
     "License": "as-is",
     "Layer": {
+      "Digest": "sha256:c191915691a422a1b0230c9010165ff655204a9fd95e3b43151132bcb237826b",
       "DiffID": "sha256:2da3602d664dd3f71fae83cbc566d4e80b432c6ee8bb4efd94c8e85122f503d4"
     }
   },
@@ -387,6 +426,7 @@
     "SrcVersion": "7.5_p1-r9",
     "License": "as-is",
     "Layer": {
+      "Digest": "sha256:c191915691a422a1b0230c9010165ff655204a9fd95e3b43151132bcb237826b",
       "DiffID": "sha256:2da3602d664dd3f71fae83cbc566d4e80b432c6ee8bb4efd94c8e85122f503d4"
     }
   },
@@ -397,6 +437,7 @@
     "SrcVersion": "7.5_p1-r9",
     "License": "as-is",
     "Layer": {
+      "Digest": "sha256:c191915691a422a1b0230c9010165ff655204a9fd95e3b43151132bcb237826b",
       "DiffID": "sha256:2da3602d664dd3f71fae83cbc566d4e80b432c6ee8bb4efd94c8e85122f503d4"
     }
   },
@@ -407,6 +448,7 @@
     "SrcVersion": "7.5_p1-r9",
     "License": "as-is",
     "Layer": {
+      "Digest": "sha256:c191915691a422a1b0230c9010165ff655204a9fd95e3b43151132bcb237826b",
       "DiffID": "sha256:2da3602d664dd3f71fae83cbc566d4e80b432c6ee8bb4efd94c8e85122f503d4"
     }
   },
@@ -417,6 +459,7 @@
     "SrcVersion": "2.7.5-r2",
     "License": "GPL",
     "Layer": {
+      "Digest": "sha256:c191915691a422a1b0230c9010165ff655204a9fd95e3b43151132bcb237826b",
       "DiffID": "sha256:2da3602d664dd3f71fae83cbc566d4e80b432c6ee8bb4efd94c8e85122f503d4"
     }
   },
@@ -427,6 +470,7 @@
     "SrcVersion": "10.30-r0",
     "License": "BSD",
     "Layer": {
+      "Digest": "sha256:c191915691a422a1b0230c9010165ff655204a9fd95e3b43151132bcb237826b",
       "DiffID": "sha256:2da3602d664dd3f71fae83cbc566d4e80b432c6ee8bb4efd94c8e85122f503d4"
     }
   },
@@ -437,6 +481,7 @@
     "SrcVersion": "1.3.10-r0",
     "License": "ISC",
     "Layer": {
+      "Digest": "sha256:c191915691a422a1b0230c9010165ff655204a9fd95e3b43151132bcb237826b",
       "DiffID": "sha256:2da3602d664dd3f71fae83cbc566d4e80b432c6ee8bb4efd94c8e85122f503d4"
     }
   },
@@ -447,6 +492,7 @@
     "SrcVersion": "2.7.15-r2",
     "License": "custom",
     "Layer": {
+      "Digest": "sha256:c191915691a422a1b0230c9010165ff655204a9fd95e3b43151132bcb237826b",
       "DiffID": "sha256:2da3602d664dd3f71fae83cbc566d4e80b432c6ee8bb4efd94c8e85122f503d4"
     }
   },
@@ -457,6 +503,7 @@
     "SrcVersion": "7.0.003-r0",
     "License": "GPL",
     "Layer": {
+      "Digest": "sha256:c191915691a422a1b0230c9010165ff655204a9fd95e3b43151132bcb237826b",
       "DiffID": "sha256:2da3602d664dd3f71fae83cbc566d4e80b432c6ee8bb4efd94c8e85122f503d4"
     }
   },
@@ -467,6 +514,7 @@
     "SrcVersion": "1.2.2-r1",
     "License": "GPL2",
     "Layer": {
+      "Digest": "sha256:c67f3896b22c1378881cbbb9c9d1edfe881fd07f713371835ef46d93c649684d",
       "DiffID": "sha256:ebf12965380b39889c99a9c02e82ba465f887b45975b6e389d42e9e6a3857888"
     }
   },
@@ -477,6 +525,7 @@
     "SrcVersion": "1.3.9-r3",
     "License": "ASL 2.0",
     "Layer": {
+      "Digest": "sha256:c191915691a422a1b0230c9010165ff655204a9fd95e3b43151132bcb237826b",
       "DiffID": "sha256:2da3602d664dd3f71fae83cbc566d4e80b432c6ee8bb4efd94c8e85122f503d4"
     }
   },
@@ -487,6 +536,7 @@
     "SrcVersion": "3.21.0-r1",
     "License": "custom",
     "Layer": {
+      "Digest": "sha256:c191915691a422a1b0230c9010165ff655204a9fd95e3b43151132bcb237826b",
       "DiffID": "sha256:2da3602d664dd3f71fae83cbc566d4e80b432c6ee8bb4efd94c8e85122f503d4"
     }
   },
@@ -497,6 +547,7 @@
     "SrcVersion": "1.27.2-r11",
     "License": "GPL2",
     "Layer": {
+      "Digest": "sha256:c67f3896b22c1378881cbbb9c9d1edfe881fd07f713371835ef46d93c649684d",
       "DiffID": "sha256:ebf12965380b39889c99a9c02e82ba465f887b45975b6e389d42e9e6a3857888"
     }
   },
@@ -507,6 +558,7 @@
     "SrcVersion": "1.9.7-r0",
     "License": "apache bsd",
     "Layer": {
+      "Digest": "sha256:c191915691a422a1b0230c9010165ff655204a9fd95e3b43151132bcb237826b",
       "DiffID": "sha256:2da3602d664dd3f71fae83cbc566d4e80b432c6ee8bb4efd94c8e85122f503d4"
     }
   },
@@ -517,6 +569,7 @@
     "SrcVersion": "1.9.7-r0",
     "License": "apache bsd",
     "Layer": {
+      "Digest": "sha256:c191915691a422a1b0230c9010165ff655204a9fd95e3b43151132bcb237826b",
       "DiffID": "sha256:2da3602d664dd3f71fae83cbc566d4e80b432c6ee8bb4efd94c8e85122f503d4"
     }
   },
@@ -527,6 +580,7 @@
     "SrcVersion": "1.29-r1",
     "License": "GPL",
     "Layer": {
+      "Digest": "sha256:88777455d910410652665cec0149a02db3584d6dc26e306788a3532d480b00ae",
       "DiffID": "sha256:0ea33a93585cf1917ba522b2304634c3073654062d5282c1346322967790ef33"
     }
   },
@@ -537,6 +591,7 @@
     "SrcVersion": "0.16.1-r0",
     "License": "MIT",
     "Layer": {
+      "Digest": "sha256:c191915691a422a1b0230c9010165ff655204a9fd95e3b43151132bcb237826b",
       "DiffID": "sha256:2da3602d664dd3f71fae83cbc566d4e80b432c6ee8bb4efd94c8e85122f503d4"
     }
   },
@@ -547,6 +602,7 @@
     "SrcVersion": "5.2.3-r1",
     "License": "custom",
     "Layer": {
+      "Digest": "sha256:88777455d910410652665cec0149a02db3584d6dc26e306788a3532d480b00ae",
       "DiffID": "sha256:0ea33a93585cf1917ba522b2304634c3073654062d5282c1346322967790ef33"
     }
   },
@@ -557,6 +613,7 @@
     "SrcVersion": "5.2.3-r1",
     "License": "custom",
     "Layer": {
+      "Digest": "sha256:88777455d910410652665cec0149a02db3584d6dc26e306788a3532d480b00ae",
       "DiffID": "sha256:0ea33a93585cf1917ba522b2304634c3073654062d5282c1346322967790ef33"
     }
   },
@@ -567,6 +624,7 @@
     "SrcVersion": "1.2.11-r1",
     "License": "zlib",
     "Layer": {
+      "Digest": "sha256:c67f3896b22c1378881cbbb9c9d1edfe881fd07f713371835ef46d93c649684d",
       "DiffID": "sha256:ebf12965380b39889c99a9c02e82ba465f887b45975b6e389d42e9e6a3857888"
     }
   }

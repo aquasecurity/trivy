@@ -89,6 +89,7 @@ func (a alpinePkgAnalyzer) parseApkInfo(scanner *bufio.Scanner) ([]types.Package
 
 	return a.uniquePkgs(pkgs), installedFiles
 }
+
 func (a alpinePkgAnalyzer) uniquePkgs(pkgs []types.Package) (uniqPkgs []types.Package) {
 	uniq := map[string]struct{}{}
 	for _, pkg := range pkgs {

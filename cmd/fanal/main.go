@@ -234,7 +234,7 @@ func inspect(ctx context.Context, art artifact.Artifact, c cache.LocalArtifactCa
 
 func imageArtifact(ctx context.Context, imageName string, c cache.ArtifactCache,
 	artifactOpt artifact.Option) (artifact.Artifact, func(), error) {
-	img, cleanup, err := image.NewDockerImage(ctx, imageName, types.DockerOption{})
+	img, cleanup, err := image.NewContainerImage(ctx, imageName, types.DockerOption{})
 	if err != nil {
 		return nil, func() {}, err
 	}

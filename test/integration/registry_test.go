@@ -196,7 +196,7 @@ func analyze(ctx context.Context, imageRef string, opt types.DockerOption) (*typ
 	}
 	cli.NegotiateAPIVersion(ctx)
 
-	img, cleanup, err := image.NewDockerImage(ctx, imageRef, opt)
+	img, cleanup, err := image.NewContainerImage(ctx, imageRef, opt)
 	if err != nil {
 		return nil, err
 	}

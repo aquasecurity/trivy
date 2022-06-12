@@ -107,7 +107,7 @@ func PodmanImage(ref string) (Image, func(), error) {
 	}
 
 	return &image{
-		opener:  imageOpener(ref, f, c.imageSave),
+		opener:  imageOpener(context.Background(), ref, f, c.imageSave),
 		inspect: inspect,
 	}, cleanup, nil
 }

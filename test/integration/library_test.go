@@ -120,7 +120,7 @@ func TestFanal_Library_DockerLessMode(t *testing.T) {
 				PruneChildren: true,
 			})
 
-			img, cleanup, err := image.NewDockerImage(ctx, tc.remoteImageName, types.DockerOption{})
+			img, cleanup, err := image.NewContainerImage(ctx, tc.remoteImageName, types.DockerOption{})
 			require.NoError(t, err, tc.name)
 			defer cleanup()
 
@@ -166,7 +166,7 @@ func TestFanal_Library_DockerMode(t *testing.T) {
 			err = cli.ImageTag(ctx, tc.remoteImageName, tc.imageFile)
 			require.NoError(t, err, tc.name)
 
-			img, cleanup, err := image.NewDockerImage(ctx, tc.imageFile, types.DockerOption{})
+			img, cleanup, err := image.NewContainerImage(ctx, tc.imageFile, types.DockerOption{})
 			require.NoError(t, err, tc.name)
 			defer cleanup()
 
