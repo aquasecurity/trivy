@@ -20,7 +20,7 @@
       "Class": "config",
       "Type": "dockerfile",
       "MisconfSummary": {
-        "Successes": 23,
+        "Successes": 22,
         "Failures": 2,
         "Exceptions": 0
       },
@@ -38,7 +38,10 @@
           "Layer": {},
           "CauseMetadata": {
             "Provider": "Generic",
-            "Service": "general"
+            "Service": "general",
+            "Code": {
+              "Lines": null
+            }
           }
         },
         {
@@ -54,7 +57,10 @@
           "Layer": {},
           "CauseMetadata": {
             "Provider": "Generic",
-            "Service": "general"
+            "Service": "general",
+            "Code": {
+              "Lines": null
+            }
           }
         }
       ]
