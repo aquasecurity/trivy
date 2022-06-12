@@ -64,7 +64,6 @@ policy that checks for recommended Kubernetes labels on any resource kind.
 | [A root primary or supplementary GID set] | Containers should be forbidden from running with a root primary or supplementary GID.                                                            | Workload |
 | [Default Seccomp profile not set]         | The RuntimeDefault seccomp profile must be required, or allow specific additional profiles.                                                      | Workload |
 
-[Writing Custom Configuration Audit Policies]: ./../tutorials/writing-custom-configuration-audit-policies.md
 
 [CPU not limited]: https://avd.aquasec.com/misconfig/kubernetes/ksv011/
 [CPU requests not specified]: https://avd.aquasec.com/misconfig/kubernetes/ksv015/

@@ -17,7 +17,7 @@ Scan a full cluster and generate a simple summary report:
 $ trivy k8s --report=summary
 ```
 
-![k8s Summary Report](../../../imgs/k8s-summary.png)
+![k8s Summary Report](../../../imgs/trivy-k8s.png)
 
 The summary report is the default. To get all of the detail the output contains, use `--report all`.
 

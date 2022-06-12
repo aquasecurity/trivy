@@ -34,7 +34,7 @@ func initializeDockerScanner(ctx context.Context, imageName string, artifactCach
 	config := db.Config{}
 	client := vulnerability.NewClient(config)
 	localScanner := local.NewScanner(applierApplier, detector, client)
-	typesImage, cleanup, err := image.NewDockerImage(ctx, imageName, dockerOpt)
+	typesImage, cleanup, err := image.NewContainerImage(ctx, imageName, dockerOpt)
 	if err != nil {
 		return scanner.Scanner{}, nil, err
 	}
@@ -106,7 +106,7 @@ func initializeRepositoryScanner(ctx context.Context, url string, artifactCache 
 func initializeRemoteDockerScanner(ctx context.Context, imageName string, artifactCache cache.ArtifactCache, remoteScanOptions client.ScannerOption, dockerOpt types.DockerOption, artifactOption artifact.Option) (scanner.Scanner, func(), error) {
 	v := _wireValue
 	clientScanner := client.NewScanner(remoteScanOptions, v...)
-	typesImage, cleanup, err := image.NewDockerImage(ctx, imageName, dockerOpt)
+	typesImage, cleanup, err := image.NewContainerImage(ctx, imageName, dockerOpt)
 	if err != nil {
 		return scanner.Scanner{}, nil, err
 	}

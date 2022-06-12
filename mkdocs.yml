@@ -57,6 +57,10 @@ nav:
               - vs Conftest: docs/misconfiguration/comparison/conftest.md
               - vs tfsec: docs/misconfiguration/comparison/tfsec.md
               - vs cfsec: docs/misconfiguration/comparison/cfsec.md
+      - Secret:
+          - Scanning: docs/secret/scanning.md
+          - Configuration: docs/secret/configuration.md
+          - Examples: docs/secret/examples.md
       - Kubernetes:
           - CLI:
               - Scanning: docs/kubernetes/cli/scanning.md
@@ -77,10 +81,6 @@ nav:
                     - Overview: docs/kubernetes/operator/configuration-auditing/index.md
                     - Built-in Configuration Audit Policies: docs/kubernetes/operator/configuration-auditing/built-in-policies.md
               - Troubleshooting: docs/kubernetes/operator/troubleshooting.md
-      - Secret:
-          - Scanning: docs/secret/scanning.md
-          - Configuration: docs/secret/configuration.md
-          - Examples: docs/secret/examples.md
       - SBOM:
           - Overview: docs/sbom/index.md
           - CycloneDX: docs/sbom/cyclonedx.md
@@ -103,6 +103,7 @@ nav:
               - Unpacked container image filesystem: docs/advanced/container/unpacked-filesystem.md
               - OCI Image: docs/advanced/container/oci.md
               - Podman: docs/advanced/container/podman.md
+              - containerd: docs/advanced/container/containerd.md
               - Private Docker Registries:
                   - Overview: docs/advanced/private-registries/index.md
                   - Docker Hub: docs/advanced/private-registries/docker-hub.md

@@ -32,7 +32,7 @@ var StandaloneSuperSet = wire.NewSet(
 
 // StandaloneDockerSet binds docker dependencies
 var StandaloneDockerSet = wire.NewSet(
-	image.NewDockerImage,
+	image.NewContainerImage,
 	aimage.NewArtifact,
 	StandaloneSuperSet,
 )
@@ -77,7 +77,7 @@ var RemoteFilesystemSet = wire.NewSet(
 // RemoteDockerSet binds remote docker dependencies
 var RemoteDockerSet = wire.NewSet(
 	aimage.NewArtifact,
-	image.NewDockerImage,
+	image.NewContainerImage,
 	RemoteSuperSet,
 )
 
