@@ -95,6 +95,7 @@ nav:
           - AWS CodePipeline: docs/integrations/aws-codepipeline.md
           - AWS Security Hub: docs/integrations/aws-security-hub.md
       - Advanced:
+          - Modules: docs/advanced/modules.md
           - Plugins: docs/advanced/plugins.md
           - Air-Gapped Environment: docs/advanced/air-gap.md
           - Container Image:

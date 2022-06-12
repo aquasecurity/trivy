@@ -25,3 +25,6 @@ $ trivy image spring-core-rce-jdk8:latest
 ```
 
 In the above example, the Java version is 8 which is not affected by CVE-2022-22965, so this module changes the severity from CRITICAL to LOW.
+
+## Note
+This module is used for testing.

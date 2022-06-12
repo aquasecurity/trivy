@@ -1,8 +1,7 @@
 # Kubernetes
 
 !!! warning "EXPERIMENTAL"
-
-This feature might change without preserving backwards compatibility.
+    This feature might change without preserving backwards compatibility.
 
 The Trivy K8s CLI allows you to scan your Kubernetes cluster for Vulnerabilities, Secrets and Misconfigurations. You can either run the CLI locally or integrate it into your CI/CD pipeline. The difference to the Trivy CLI is that the Trivy K8s CLI allows you to scan running workloads directly within your cluster.
 
