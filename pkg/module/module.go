@@ -16,7 +16,6 @@ import (
 	"github.com/tetratelabs/wazero"
 	"github.com/tetratelabs/wazero/api"
 	"github.com/tetratelabs/wazero/experimental"
-	wasi "github.com/tetratelabs/wazero/wasi_snapshot_preview1"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/fanal/analyzer"
@@ -26,6 +25,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/scanner/post"
 	"github.com/aquasecurity/trivy/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/utils"
+	wasi "github.com/tetratelabs/wazero/wasi_snapshot_preview1"
 )
 
 var (
@@ -87,21 +87,8 @@ func NewManager(ctx context.Context) (*Manager, error) {
 	// Create a new WebAssembly Runtime.
 	m.runtime = wazero.NewRuntime()
 
-	// Instantiate a Go-defined module named "env" that exports functions.
-	_, err := m.runtime.NewModuleBuilder("env").
-		ExportMemoryWithMax("mem", 1, 1).
-		ExportFunctions(exportFunctions).
-		Instantiate(ctx, m.runtime)
-	if err != nil {
-		return nil, xerrors.Errorf("wasm module build error: %w", err)
-	}
-
-	if _, err = wasi.Instantiate(ctx, m.runtime); err != nil {
-		return nil, xerrors.Errorf("WASI init error: %w", err)
-	}
-
 	// Load WASM modules in local
-	if err = m.loadModules(ctx); err != nil {
+	if err := m.loadModules(ctx); err != nil {
 		return nil, xerrors.Errorf("module load error: %w", err)
 	}
 
@@ -258,6 +245,22 @@ func newWASMPlugin(ctx context.Context, r wazero.Runtime, code []byte) (*wasmMod
 	// Combine the above into our baseline config, overriding defaults (which discard stdout and have no file system).
 	config := wazero.NewModuleConfig().WithStdout(os.Stdout).WithFS(memoryfs.New())
 
+	// Create an empty namespace so that multiple modules will not conflict
+	ns := r.NewNamespace(ctx)
+
+	// Instantiate a Go-defined module named "env" that exports functions.
+	_, err := r.NewModuleBuilder("env").
+		ExportMemoryWithMax("mem", 1, 1).
+		ExportFunctions(exportFunctions).
+		Instantiate(ctx, ns)
+	if err != nil {
+		return nil, xerrors.Errorf("wasm module build error: %w", err)
+	}
+
+	if _, err = wasi.NewBuilder(r).Instantiate(ctx, ns); err != nil {
+		return nil, xerrors.Errorf("WASI init error: %w", err)
+	}
+
 	// Compile the WebAssembly module using the default configuration.
 	compiled, err := r.CompileModule(ctx, code, wazero.NewCompileConfig())
 	if err != nil {
@@ -265,7 +268,7 @@ func newWASMPlugin(ctx context.Context, r wazero.Runtime, code []byte) (*wasmMod
 	}
 
 	// InstantiateModule runs the "_start" function which is what TinyGo compiles "main" to.
-	mod, err := r.InstantiateModule(ctx, compiled, config)
+	mod, err := ns.InstantiateModule(ctx, compiled, config)
 	if err != nil {
 		return nil, xerrors.Errorf("module init error: %w", err)
 	}
