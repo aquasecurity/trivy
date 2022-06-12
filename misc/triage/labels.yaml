@@ -100,6 +100,9 @@ labels:
 - name: scan/sbom
   color: d9ead3
   description: Issues relating to SBOM
+- name: scan/license
+  color: d9ead3
+  description: Issues relating to license scanning
 
 # target
 - name: target/container-image
