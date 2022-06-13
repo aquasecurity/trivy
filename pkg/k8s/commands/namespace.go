@@ -5,6 +5,7 @@ import (
 	"golang.org/x/xerrors"
 
 	cmd "github.com/aquasecurity/trivy/pkg/commands/artifact"
+	"github.com/aquasecurity/trivy/pkg/log"
 
 	"github.com/aquasecurity/trivy-kubernetes/pkg/k8s"
 	"github.com/aquasecurity/trivy-kubernetes/pkg/trivyk8s"
@@ -16,7 +17,7 @@ func namespaceRun(cliCtx *cli.Context, opt cmd.Option, cluster k8s.Cluster) erro
 		return err
 	}
 
-	trivyk8s := trivyk8s.New(cluster).Namespace(getNamespace(opt, cluster.GetCurrentNamespace()))
+	trivyk8s := trivyk8s.New(cluster, log.Logger).Namespace(getNamespace(opt, cluster.GetCurrentNamespace()))
 
 	artifacts, err := trivyk8s.ListArtifacts(cliCtx.Context)
 	if err != nil {

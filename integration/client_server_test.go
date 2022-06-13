@@ -564,10 +564,10 @@ func setupServer(addr, token, tokenHeader, cacheDir, cacheBackend string) []stri
 
 func setupClient(t *testing.T, c csArgs, addr string, cacheDir string, golden string) ([]string, string) {
 	if c.Command == "" {
-		c.Command = "client"
+		c.Command = "image"
 	}
 	if c.RemoteAddrOption == "" {
-		c.RemoteAddrOption = "--remote"
+		c.RemoteAddrOption = "--server"
 	}
 	t.Helper()
 	osArgs := []string{"trivy", "--cache-dir", cacheDir, c.Command, c.RemoteAddrOption, "http://" + addr}

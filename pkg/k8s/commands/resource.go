@@ -10,6 +10,7 @@ import (
 	"github.com/aquasecurity/trivy-kubernetes/pkg/k8s"
 	"github.com/aquasecurity/trivy-kubernetes/pkg/trivyk8s"
 	cmd "github.com/aquasecurity/trivy/pkg/commands/artifact"
+	"github.com/aquasecurity/trivy/pkg/log"
 )
 
 // resourceRun runs scan on kubernetes cluster
@@ -19,7 +20,7 @@ func resourceRun(cliCtx *cli.Context, opt cmd.Option, cluster k8s.Cluster) error
 		return err
 	}
 
-	trivyk8s := trivyk8s.New(cluster).Namespace(getNamespace(opt, cluster.GetCurrentNamespace()))
+	trivyk8s := trivyk8s.New(cluster, log.Logger).Namespace(getNamespace(opt, cluster.GetCurrentNamespace()))
 
 	artifact, err := trivyk8s.GetArtifact(cliCtx.Context, kind, name)
 	if err != nil {
