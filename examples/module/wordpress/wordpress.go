@@ -117,23 +117,18 @@ func (WordpressModule) PostScan(results serialize.Results) (serialize.Results, e
 			wpVersion = c.Data.(string)
 			wasm.Info(fmt.Sprintf("WordPress Version: %s", wpVersion))
 
-			wasm.Info("parsing...")
 			ver, err := version.NewVersion(wpVersion)
 			if err != nil {
 				return nil, err
 			}
-			wasm.Info("checking...")
 			if affectedVersion.Check(ver) {
-				wasm.Info("check vulnerable")
 				vulnerable = true
 			}
-			wasm.Info("checked...")
 			break
 		}
 	}
 
 	if vulnerable {
-		wasm.Info("vulnerable")
 		// Add CVE-2020-36326 and CVE-2018-19296
 		results = append(results, serialize.Result{
 			Target: wpPath,
