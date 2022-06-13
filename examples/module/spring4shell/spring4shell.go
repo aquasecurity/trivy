@@ -11,6 +11,7 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/aquasecurity/trivy/pkg/module/api"
 	"github.com/aquasecurity/trivy/pkg/module/serialize"
 	"github.com/aquasecurity/trivy/pkg/module/wasm"
 	"github.com/aquasecurity/trivy/pkg/types"
@@ -123,7 +124,14 @@ func (Spring4Shell) parseTomcatReleaseNotes(f *os.File, filePath string) (*seria
 	}, nil
 }
 
-func (Spring4Shell) PostScan(results serialize.Results) serialize.Results {
+func (Spring4Shell) PostScanSpec() serialize.PostScanSpec {
+	return serialize.PostScanSpec{
+		Action: api.ActionUpdate, // Update severity
+		IDs:    []string{"CVE-2022-22965"},
+	}
+}
+
+func (Spring4Shell) PostScan(results serialize.Results) (serialize.Results, error) {
 	var javaMajorVersion int
 	var tomcatVersion string
 	for _, result := range results {
@@ -174,13 +182,13 @@ func (Spring4Shell) PostScan(results serialize.Results) serialize.Results {
 				continue
 			}
 
-			// If it doesn't satisfy one of requirements, the severity should be changed to LOW.
+			// If it doesn't satisfy any of requirements, the severity should be changed to LOW.
 			if !strings.Contains(vuln.PkgPath, ".war") || !vulnerable {
-				wasm.Info("change CVE-2022-22965 severity from CRITICAL to LOW")
+				wasm.Info(fmt.Sprintf("change %s CVE-2022-22965 severity from CRITICAL to LOW", vuln.PkgName))
 				results[i].Vulnerabilities[j].Severity = "LOW"
 			}
 		}
 	}
 
-	return results
+	return results, nil
 }
