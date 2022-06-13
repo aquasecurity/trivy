@@ -97,6 +97,7 @@ type Analyzer interface {
 }
 
 type PostScanner interface {
+    PostScanSpec() serialize.PostScanSpec
     PostScan(serialize.Results) serialize.Results
 }
 ```
@@ -147,7 +148,7 @@ func (WordpressModule) Analyze(filePath string) (*serialize.AnalysisResult, erro
     defer f.Close()
 
     var wpVersion string
-	scanner := bufio.NewScanner(f)
+    scanner := bufio.NewScanner(f)
     for scanner.Scan() {
         line := scanner.Text()
         if !strings.HasPrefix(line, "$wp_version=") {
@@ -159,8 +160,8 @@ func (WordpressModule) Analyze(filePath string) (*serialize.AnalysisResult, erro
             return nil, fmt.Errorf("invalid wordpress version: %s", line)
         }
 
-		// NOTE: it is an example; you actually need to handle comments, etc
-		ss[1] = strings.TrimSpace(ss[1])
+        // NOTE: it is an example; you actually need to handle comments, etc
+        ss[1] = strings.TrimSpace(ss[1])
         wpVersion = strings.Trim(ss[1], `";`)
     }
 
@@ -176,36 +177,117 @@ func (WordpressModule) Analyze(filePath string) (*serialize.AnalysisResult, erro
                 Data:     wpVersion,
             },
         },
-	}, nil
+    }, nil
 }
 ```
 
+!!! tips
+    Trivy caches analysis results according to the module version.
+    We'd recommend cleaning the cache or changing the module version every time you update `Analyzer`.
+
+
 #### PostScanner interface
-`PostScan` is called after scanning and takes the scan result from Trivy.
-`CustomResources` includes the values your `Analyze` returns, so you can modify the scan result according to the custom resources.
+`PostScan` is called after scanning and takes the scan result as an argument from Trivy.
+In post scanning, your module can perform one of three actions:
+
+- Insert
+    - Add a new security finding
+    - e.g. Add a new vulnerability and misconfiguration
+- Update
+    - Update the detected vulnerability and misconfiguration
+    - e.g. Change a severity
+- Delete
+    - Update the detected vulnerability and misconfiguration
+    - e.g. Remove Spring4Shell because it is not actually affected.
+ 
+`PostScanSpec()` returns which action the module does.
+If it is `Update` or `Delete`, it also needs to return IDs such as CVE-ID and misconfiguration ID, which your module wants to update or delete.
+
+`serialize.Results` contains the filtered results matching IDs you specified.
+Also, it includes `CustomResources` with the values your `Analyze` returns, so you can modify the scan result according to the custom resources.
 
 ```go
-func (Spring4Shell) PostScan(results serialize.Results) serialize.Results {
+func (WordpressModule) PostScanSpec() serialize.PostScanSpec {
+    return serialize.PostScanSpec{
+        Action: api.ActionInsert, // Add new vulnerabilities
+    }
+}
+
+func (WordpressModule) PostScan(results serialize.Results) serialize.Results {
+    // e.g. results
+    // [
+    //   {
+    //     "Target": "",
+    //     "Class": "custom",
+    //     "CustomResources": [
+    //       {
+    //         "Type": "wordpress-version",
+    //         "FilePath": "/usr/src/wordpress/wp-includes/version.php",
+    //         "Layer": {
+    //           "DiffID": "sha256:057649e61046e02c975b84557c03c6cca095b8c9accd3bd20eb4e432f7aec887"
+    //         },
+    //         "Data": "5.7.1"
+    //       }
+    //     ]
+    //   }
+    // ]   
     var wpVersion int
     for _, result := range results {
-		// Skip non custom resources
         if result.Class != types.ClassCustom {
             continue
         }
-
-
+		
         for _, c := range result.CustomResources {
-            if c.Type == typeWPVersion {
-                v := c.Data.(string)
+            if c.Type != typeWPVersion {
+                continue
             }
-        }
+            wpVersion = c.Data.(string)
+            wasm.Info(fmt.Sprintf("WordPress Version: %s", wpVersion))
 
+            ...snip...
+			
+            if affectedVersion.Check(ver) {
+                vulnerable = true
+            }
+            break
+        }
+    }
+
+    if vulnerable {
+        // Add CVE-2020-36326
+        results = append(results, serialize.Result{
+            Target: wpPath,
+            Class:  types.ClassLangPkg,
+			Type:   "wordpress",
+            Vulnerabilities: []types.DetectedVulnerability {
+                {
+                    VulnerabilityID:  "CVE-2020-36326",
+                    PkgName:          "wordpress",
+                    InstalledVersion: wpVersion,
+                    FixedVersion:     "5.7.2",
+                    Vulnerability: dbTypes.Vulnerability{
+                        Title:    "PHPMailer 6.1.8 through 6.4.0 allows object injection through Phar Deserialization via addAttachment with a UNC pathname.",
+                        Severity: "CRITICAL",
+                    },
+                },
+            },
+        })
+    }
+}
 ```
 
-## Example
-https://github.com/aquasecurity/trivy-plugin-kubectl
+The new vulnerability will be added to the scan results.
+This example shows how the module inserts a new finding.
+If you are interested in `Update`, you can see an example of [Spring4Shell][trivy-module-spring4shell].
+
+## Examples
+- [Spring4Shell][trivy-module-spring4shell]
+- [WordPress][trivy-module-wordpress]
 
 
 [tinygo]: https://tinygo.org/
 [spring4shell]: https://blog.aquasec.com/zero-day-rce-vulnerability-spring4shell
 [wazero]: https://github.com/tetratelabs/wazero
+
+[trivy-module-spring4shell]: https://github.com/aquasecurity/trivy/tree/main/examples/module/spring4shell
+[trivy-module-wordpress]: https://github.com/aquasecurity/trivy/tree/main/examples/module/wordpress
