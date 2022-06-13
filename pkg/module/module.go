@@ -16,6 +16,7 @@ import (
 	"github.com/tetratelabs/wazero"
 	"github.com/tetratelabs/wazero/api"
 	"github.com/tetratelabs/wazero/experimental"
+	"golang.org/x/exp/slices"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/fanal/analyzer"
@@ -233,6 +234,7 @@ type wasmModule struct {
 
 	isAnalyzer    bool
 	isPostScanner bool
+	postScanSpec  serialize.PostScanSpec
 
 	// Exported functions
 	analyze  api.Function
@@ -250,7 +252,7 @@ func newWASMPlugin(ctx context.Context, r wazero.Runtime, code []byte) (*wasmMod
 
 	// Instantiate a Go-defined module named "env" that exports functions.
 	_, err := r.NewModuleBuilder("env").
-		ExportMemoryWithMax("mem", 1, 1).
+		ExportMemory("mem", 100).
 		ExportFunctions(exportFunctions).
 		Instantiate(ctx, ns)
 	if err != nil {
@@ -328,6 +330,15 @@ func newWASMPlugin(ctx context.Context, r wazero.Runtime, code []byte) (*wasmMod
 		return nil, xerrors.New("post_scan() must be exported")
 	}
 
+	var postScanSpec serialize.PostScanSpec
+	if isPostScanner {
+		// This spec defines how the module works in post scanning like INSERT, UPDATE and DELETE.
+		postScanSpec, err = modulePostScanSpec(ctx, mod)
+		if err != nil {
+			return nil, xerrors.Errorf("failed to get a post scan spec: %w", err)
+		}
+	}
+
 	return &wasmModule{
 		mod:           mod,
 		name:          name,
@@ -336,6 +347,7 @@ func newWASMPlugin(ctx context.Context, r wazero.Runtime, code []byte) (*wasmMod
 
 		isAnalyzer:    isAnalyzer,
 		isPostScanner: isPostScanner,
+		postScanSpec:  postScanSpec,
 
 		analyze:  analyzeFunc,
 		postScan: postScanFunc,
@@ -426,13 +438,25 @@ func (m *wasmModule) Analyze(ctx context.Context, input analyzer.AnalysisInput) 
 
 // PostScan performs post scanning
 // e.g. Remove a vulnerability, change severity, etc.
-// TODO: improve memory usage
 func (m *wasmModule) PostScan(ctx context.Context, results types.Results) (types.Results, error) {
-	serializeResults := lo.Map(results, func(r types.Result, _ int) serialize.Result {
-		return serialize.Result(r)
-	})
+	// Find custom resources
+	var custom serialize.Result
+	for _, result := range results {
+		if result.Class == types.ClassCustom {
+			custom = serialize.Result(result)
+			break
+		}
+	}
 
-	inputPtr, inputSize, err := marshal(ctx, m.mod, m.malloc, serialize.Results(serializeResults))
+	arg := serialize.Results{custom}
+	switch m.postScanSpec.Action {
+	case tapi.ActionUpdate, tapi.ActionDelete:
+		// Pass the relevant results to the module
+		arg = append(arg, findIDs(m.postScanSpec.IDs, results)...)
+	}
+
+	// Marshal the argument into WASM memory so that the WASM module can read it.
+	inputPtr, inputSize, err := marshal(ctx, m.mod, m.malloc, arg)
 	if err != nil {
 		return nil, xerrors.Errorf("post scan marshal error: %w", err)
 	}
@@ -445,16 +469,113 @@ func (m *wasmModule) PostScan(ctx context.Context, results types.Results) (types
 		return nil, xerrors.New("invalid signature: post_scan")
 	}
 
-	if err = unmarshal(ctx, m.mod, analyzeRes[0], &serializeResults); err != nil {
+	var got types.Results
+	if err = unmarshal(ctx, m.mod, analyzeRes[0], &got); err != nil {
 		return nil, xerrors.Errorf("post scan unmarshal error: %w", err)
 	}
 
-	// Override scan results
-	results = lo.Map(serializeResults, func(r serialize.Result, _ int) types.Result {
-		return types.Result(r)
-	})
+	switch m.postScanSpec.Action {
+	case tapi.ActionInsert:
+		results = append(results, got...)
+	case tapi.ActionUpdate:
+		updateResults(got, results)
+	case tapi.ActionDelete:
+		deleteResults(got, results)
+	}
 
 	return results, nil
+}
+
+func findIDs(ids []string, results types.Results) serialize.Results {
+	var filtered serialize.Results
+	for _, result := range results {
+		if result.Class == types.ClassCustom {
+			continue
+		}
+		vulns := lo.Filter(result.Vulnerabilities, func(v types.DetectedVulnerability, _ int) bool {
+			return slices.Contains(ids, v.VulnerabilityID)
+		})
+		misconfs := lo.Filter(result.Misconfigurations, func(m types.DetectedMisconfiguration, _ int) bool {
+			return slices.Contains(ids, m.ID)
+		})
+		if len(vulns) > 0 || len(misconfs) > 0 {
+			filtered = append(filtered, serialize.Result{
+				Target:            result.Target,
+				Class:             result.Class,
+				Type:              result.Type,
+				Vulnerabilities:   vulns,
+				Misconfigurations: misconfs,
+			})
+		}
+	}
+	return filtered
+}
+
+func updateResults(gotResults, results types.Results) {
+	for _, g := range gotResults {
+		for i, result := range results {
+			if g.Target == result.Target && g.Class == result.Class && g.Type == result.Type {
+				results[i].Vulnerabilities = lo.Map(result.Vulnerabilities, func(v types.DetectedVulnerability, _ int) types.DetectedVulnerability {
+					// Update vulnerabilities in the existing result
+					for _, got := range g.Vulnerabilities {
+						if got.VulnerabilityID == v.VulnerabilityID && got.PkgName == v.PkgName &&
+							got.PkgPath == v.PkgPath && got.InstalledVersion == v.InstalledVersion {
+
+							// Override vulnerability details
+							v.SeveritySource = got.SeveritySource
+							v.Vulnerability = got.Vulnerability
+						}
+					}
+					return v
+				})
+
+				results[i].Misconfigurations = lo.Map(result.Misconfigurations, func(m types.DetectedMisconfiguration, _ int) types.DetectedMisconfiguration {
+					// Update misconfigurations in the existing result
+					for _, got := range g.Misconfigurations {
+						if got.ID == m.ID &&
+							got.CauseMetadata.StartLine == m.CauseMetadata.StartLine &&
+							got.CauseMetadata.EndLine == m.CauseMetadata.EndLine {
+
+							// Override misconfiguration details
+							m.CauseMetadata = got.CauseMetadata
+							m.Severity = got.Severity
+							m.Status = got.Status
+						}
+					}
+					return m
+				})
+			}
+		}
+	}
+}
+
+func deleteResults(gotResults, results types.Results) {
+	for _, gotResult := range gotResults {
+		for i, result := range results {
+			// Remove vulnerabilities and misconfigurations from the existing result
+			if gotResult.Target == result.Target && gotResult.Class == result.Class && gotResult.Type == result.Type {
+				results[i].Vulnerabilities = lo.Reject(result.Vulnerabilities, func(v types.DetectedVulnerability, _ int) bool {
+					for _, got := range gotResult.Vulnerabilities {
+						if got.VulnerabilityID == v.VulnerabilityID && got.PkgName == v.PkgName &&
+							got.PkgPath == v.PkgPath && got.InstalledVersion == v.InstalledVersion {
+							return true
+						}
+					}
+					return false
+				})
+				results[i].Misconfigurations = lo.Reject(result.Misconfigurations, func(v types.DetectedMisconfiguration, _ int) bool {
+					for _, got := range gotResult.Misconfigurations {
+						if got.ID == v.ID && got.Status == v.Status &&
+							got.CauseMetadata.StartLine == v.CauseMetadata.StartLine &&
+							got.CauseMetadata.EndLine == v.CauseMetadata.EndLine {
+							return true
+						}
+					}
+					return false
+				})
+			}
+		}
+	}
 }
 
 func moduleName(ctx context.Context, mod api.Module) (string, error) {
@@ -565,4 +686,25 @@ func isType(ctx context.Context, mod api.Module, name string) (bool, error) {
 
 func dir() string {
 	return filepath.Join(utils.HomeDir(), ModuleRelativeDir)
+}
+
+func modulePostScanSpec(ctx context.Context, mod api.Module) (serialize.PostScanSpec, error) {
+	postScanSpecFunc := mod.ExportedFunction("post_scan_spec")
+	if postScanSpecFunc == nil {
+		return serialize.PostScanSpec{}, xerrors.New("post_scan_spec() must be exported")
+	}
+
+	postScanSpecRes, err := postScanSpecFunc.Call(ctx)
+	if err != nil {
+		return serialize.PostScanSpec{}, xerrors.Errorf("wasm function post_scan_spec() invocation error: %w", err)
+	} else if len(postScanSpecRes) != 1 {
+		return serialize.PostScanSpec{}, xerrors.New("invalid signature: post_scan_spec")
+	}
+
+	var spec serialize.PostScanSpec
+	if err = unmarshal(ctx, mod, postScanSpecRes[0], &spec); err != nil {
+		return serialize.PostScanSpec{}, xerrors.Errorf("invalid return value: %w", err)
+	}
+
+	return spec, nil
 }

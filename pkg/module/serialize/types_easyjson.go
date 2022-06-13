@@ -2235,7 +2235,112 @@ func easyjson6601e8cdEncodeGithubComAquasecurityFanalTypes7(out *jwriter.Writer,
 	}
 	out.RawByte('}')
 }
-func easyjson6601e8cdDecodeGithubComAquasecurityTrivyPkgModuleSerialize3(in *jlexer.Lexer, out *AnalysisResult) {
+func easyjson6601e8cdDecodeGithubComAquasecurityTrivyPkgModuleSerialize3(in *jlexer.Lexer, out *PostScanSpec) {
+	isTopLevel := in.IsStart()
+	if in.IsNull() {
+		if isTopLevel {
+			in.Consumed()
+		}
+		in.Skip()
+		return
+	}
+	in.Delim('{')
+	for !in.IsDelim('}') {
+		key := in.UnsafeFieldName(false)
+		in.WantColon()
+		if in.IsNull() {
+			in.Skip()
+			in.WantComma()
+			continue
+		}
+		switch key {
+		case "Action":
+			out.Action = PostScanAction(in.String())
+		case "IDs":
+			if in.IsNull() {
+				in.Skip()
+				out.IDs = nil
+			} else {
+				in.Delim('[')
+				if out.IDs == nil {
+					if !in.IsDelim(']') {
+						out.IDs = make([]string, 0, 4)
+					} else {
+						out.IDs = []string{}
+					}
+				} else {
+					out.IDs = (out.IDs)[:0]
+				}
+				for !in.IsDelim(']') {
+					var v50 string
+					v50 = string(in.String())
+					out.IDs = append(out.IDs, v50)
+					in.WantComma()
+				}
+				in.Delim(']')
+			}
+		default:
+			in.SkipRecursive()
+		}
+		in.WantComma()
+	}
+	in.Delim('}')
+	if isTopLevel {
+		in.Consumed()
+	}
+}
+func easyjson6601e8cdEncodeGithubComAquasecurityTrivyPkgModuleSerialize3(out *jwriter.Writer, in PostScanSpec) {
+	out.RawByte('{')
+	first := true
+	_ = first
+	{
+		const prefix string = ",\"Action\":"
+		out.RawString(prefix[1:])
+		out.String(string(in.Action))
+	}
+	{
+		const prefix string = ",\"IDs\":"
+		out.RawString(prefix)
+		if in.IDs == nil && (out.Flags&jwriter.NilSliceAsEmpty) == 0 {
+			out.RawString("null")
+		} else {
+			out.RawByte('[')
+			for v51, v52 := range in.IDs {
+				if v51 > 0 {
+					out.RawByte(',')
+				}
+				out.String(string(v52))
+			}
+			out.RawByte(']')
+		}
+	}
+	out.RawByte('}')
+}
+
+// MarshalJSON supports json.Marshaler interface
+func (v PostScanSpec) MarshalJSON() ([]byte, error) {
+	w := jwriter.Writer{}
+	easyjson6601e8cdEncodeGithubComAquasecurityTrivyPkgModuleSerialize3(&w, v)
+	return w.Buffer.BuildBytes(), w.Error
+}
+
+// MarshalEasyJSON supports easyjson.Marshaler interface
+func (v PostScanSpec) MarshalEasyJSON(w *jwriter.Writer) {
+	easyjson6601e8cdEncodeGithubComAquasecurityTrivyPkgModuleSerialize3(w, v)
+}
+
+// UnmarshalJSON supports json.Unmarshaler interface
+func (v *PostScanSpec) UnmarshalJSON(data []byte) error {
+	r := jlexer.Lexer{Data: data}
+	easyjson6601e8cdDecodeGithubComAquasecurityTrivyPkgModuleSerialize3(&r, v)
+	return r.Error()
+}
+
+// UnmarshalEasyJSON supports easyjson.Unmarshaler interface
+func (v *PostScanSpec) UnmarshalEasyJSON(l *jlexer.Lexer) {
+	easyjson6601e8cdDecodeGithubComAquasecurityTrivyPkgModuleSerialize3(l, v)
+}
+func easyjson6601e8cdDecodeGithubComAquasecurityTrivyPkgModuleSerialize4(in *jlexer.Lexer, out *AnalysisResult) {
 	isTopLevel := in.IsStart()
 	if in.IsNull() {
 		if isTopLevel {
@@ -2270,9 +2375,9 @@ func easyjson6601e8cdDecodeGithubComAquasecurityTrivyPkgModuleSerialize3(in *jle
 					out.CustomResources = (out.CustomResources)[:0]
 				}
 				for !in.IsDelim(']') {
-					var v50 CustomResource
-					easyjson6601e8cdDecodeGithubComAquasecurityTrivyPkgModuleSerialize4(in, &v50)
-					out.CustomResources = append(out.CustomResources, v50)
+					var v53 CustomResource
+					easyjson6601e8cdDecodeGithubComAquasecurityTrivyPkgModuleSerialize5(in, &v53)
+					out.CustomResources = append(out.CustomResources, v53)
 					in.WantComma()
 				}
 				in.Delim(']')
@@ -2287,7 +2392,7 @@ func easyjson6601e8cdDecodeGithubComAquasecurityTrivyPkgModuleSerialize3(in *jle
 		in.Consumed()
 	}
 }
-func easyjson6601e8cdEncodeGithubComAquasecurityTrivyPkgModuleSerialize3(out *jwriter.Writer, in AnalysisResult) {
+func easyjson6601e8cdEncodeGithubComAquasecurityTrivyPkgModuleSerialize4(out *jwriter.Writer, in AnalysisResult) {
 	out.RawByte('{')
 	first := true
 	_ = first
@@ -2298,11 +2403,11 @@ func easyjson6601e8cdEncodeGithubComAquasecurityTrivyPkgModuleSerialize3(out *jw
 			out.RawString("null")
 		} else {
 			out.RawByte('[')
-			for v51, v52 := range in.CustomResources {
-				if v51 > 0 {
+			for v54, v55 := range in.CustomResources {
+				if v54 > 0 {
 					out.RawByte(',')
 				}
-				easyjson6601e8cdEncodeGithubComAquasecurityTrivyPkgModuleSerialize4(out, v52)
+				easyjson6601e8cdEncodeGithubComAquasecurityTrivyPkgModuleSerialize5(out, v55)
 			}
 			out.RawByte(']')
 		}
@@ -2313,27 +2418,27 @@ func easyjson6601e8cdEncodeGithubComAquasecurityTrivyPkgModuleSerialize3(out *jw
 // MarshalJSON supports json.Marshaler interface
 func (v AnalysisResult) MarshalJSON() ([]byte, error) {
 	w := jwriter.Writer{}
-	easyjson6601e8cdEncodeGithubComAquasecurityTrivyPkgModuleSerialize3(&w, v)
+	easyjson6601e8cdEncodeGithubComAquasecurityTrivyPkgModuleSerialize4(&w, v)
 	return w.Buffer.BuildBytes(), w.Error
 }
 
 // MarshalEasyJSON supports easyjson.Marshaler interface
 func (v AnalysisResult) MarshalEasyJSON(w *jwriter.Writer) {
-	easyjson6601e8cdEncodeGithubComAquasecurityTrivyPkgModuleSerialize3(w, v)
+	easyjson6601e8cdEncodeGithubComAquasecurityTrivyPkgModuleSerialize4(w, v)
 }
 
 // UnmarshalJSON supports json.Unmarshaler interface
 func (v *AnalysisResult) UnmarshalJSON(data []byte) error {
 	r := jlexer.Lexer{Data: data}
-	easyjson6601e8cdDecodeGithubComAquasecurityTrivyPkgModuleSerialize3(&r, v)
+	easyjson6601e8cdDecodeGithubComAquasecurityTrivyPkgModuleSerialize4(&r, v)
 	return r.Error()
 }
 
 // UnmarshalEasyJSON supports easyjson.Unmarshaler interface
 func (v *AnalysisResult) UnmarshalEasyJSON(l *jlexer.Lexer) {
-	easyjson6601e8cdDecodeGithubComAquasecurityTrivyPkgModuleSerialize3(l, v)
+	easyjson6601e8cdDecodeGithubComAquasecurityTrivyPkgModuleSerialize4(l, v)
 }
-func easyjson6601e8cdDecodeGithubComAquasecurityTrivyPkgModuleSerialize4(in *jlexer.Lexer, out *CustomResource) {
+func easyjson6601e8cdDecodeGithubComAquasecurityTrivyPkgModuleSerialize5(in *jlexer.Lexer, out *CustomResource) {
 	isTopLevel := in.IsStart()
 	if in.IsNull() {
 		if isTopLevel {
@@ -2374,7 +2479,7 @@ func easyjson6601e8cdDecodeGithubComAquasecurityTrivyPkgModuleSerialize4(in *jle
 		in.Consumed()
 	}
 }
-func easyjson6601e8cdEncodeGithubComAquasecurityTrivyPkgModuleSerialize4(out *jwriter.Writer, in CustomResource) {
+func easyjson6601e8cdEncodeGithubComAquasecurityTrivyPkgModuleSerialize5(out *jwriter.Writer, in CustomResource) {
 	out.RawByte('{')
 	first := true
 	_ = first

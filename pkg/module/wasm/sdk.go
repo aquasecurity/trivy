@@ -113,16 +113,25 @@ func _isPostScanner() uint64 {
 	return 1
 }
 
+//export post_scan_spec
+func _post_scan_spec() uint64 {
+	return marshal(module.(api.PostScanner).PostScanSpec())
+}
+
 //export post_scan
 func _post_scan(ptr, size uint32) uint64 {
-	var report serialize.Results
-	if err := unmarshal(ptr, size, &report); err != nil {
+	var results serialize.Results
+	if err := unmarshal(ptr, size, &results); err != nil {
 		Error(fmt.Sprintf("post scan error: %s", err))
 		return 0
 	}
 
-	report = module.(api.PostScanner).PostScan(report)
-	return marshal(report)
+	results, err := module.(api.PostScanner).PostScan(results)
+	if err != nil {
+		Error(fmt.Sprintf("post scan error: %s", err))
+		return 0
+	}
+	return marshal(results)
 }
 
 func marshal(v easyjson.Marshaler) uint64 {

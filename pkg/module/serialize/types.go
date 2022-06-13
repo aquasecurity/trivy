@@ -32,6 +32,19 @@ type CustomResource struct {
 	Data     interface{}
 }
 
+type PostScanAction string
+
+//easyjson:json
+type PostScanSpec struct {
+	// What action the module will do in post scanning.
+	// value: INSERT, UPDATE and DELETE
+	Action PostScanAction
+
+	// IDs represent which vulnerability and misconfiguration ID will be updated or deleted in post scanning.
+	// When the action is UPDATE, the matched result will be passed to the module.
+	IDs []string
+}
+
 //easyjson:json
 type Results []Result
 
