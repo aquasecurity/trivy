@@ -35,6 +35,7 @@ Modules should be distributed in OCI registries like GitHub Container Registry.
     Trivy modules available in public are not audited for security.
     You should install and run third-party modules at your own risk even though WebAssembly is sandboxed.
 
+Under the hood Trivy leverages [wazero][wazero] to run WebAssembly modules without any dependencies.
 
 ## Installing a Module
 A module can be installed using the `trivy module install` command.
@@ -67,88 +68,144 @@ You will see the log messages about WASM modules.
 2022-06-12T12:57:14.865+0300    INFO    Module spring4shell: change CVE-2022-22965 severity from CRITICAL to LOW
 ```
 
-In the above example, the Spring4Shell module changed the severity to LOW because the application doesn't satisfy one of conditions.
+In the above example, the Spring4Shell module changed the severity from CRITICAL to LOW because the application doesn't satisfy one of conditions.
 
-## Installing and Running Plugins on the fly
-`trivy plugin run` installs a plugin and runs it on the fly.
-If the plugin is already present in the cache, the installation is skipped.
 
-```bash
-trivy plugin run github.com/aquasecurity/trivy-plugin-kubectl pod your-pod -- --exit-code 1
-```
-
-## Uninstalling Plugins
-Specify a plugin name with `trivy plugin uninstall` command.
+## Uninstalling Modules
+Specify a module repository with `trivy module uninstall` command.
 
 ```bash
-$ trivy plugin uninstall kubectl
+$ trivy module uninstall ghcr.io/aquasecurity/trivy-module-spring4shell
 ```
 
-## Building Plugins
-Each plugin has a top-level directory, and then a plugin.yaml file.
+## Building Modules
+It supports TinyGo only at the moment.
 
-```bash
-your-plugin/
-  |
-  |- plugin.yaml
-  |- your-plugin.sh
+### TinyGo
+Trivy provides Go SDK including three interfaces.
+Your own module needs to implement either or both `Analyzer` and `PostScanner` in addition to `Module`.
+
+```go
+type Module interface {
+    Version() int
+    Name() string
+}
+
+type Analyzer interface {
+    RequiredFiles() []string
+    Analyze(filePath string) (*serialize.AnalysisResult, error)
+}
+
+type PostScanner interface {
+    PostScan(serialize.Results) serialize.Results
+}
 ```
 
-In the example above, the plugin is contained inside of a directory named `your-plugin`.
-It has two files: plugin.yaml (required) and an executable script, your-plugin.sh (optional).
+In the following tutorial, it creates a WordPress module that detects a WordPress version and a critical vulnerability accordingly.
 
-The core of a plugin is a simple YAML file named plugin.yaml.
-Here is an example YAML of trivy-plugin-kubectl plugin that adds support for Kubernetes scanning.
+#### Module interface
+`Version()` returns your module version and should be incremented after updates.
+`Name()` returns your module name.
 
-```yaml
-name: "kubectl"
-repository: github.com/aquasecurity/trivy-plugin-kubectl
-version: "0.1.0"
-usage: scan kubectl resources
-description: |-
-  A Trivy plugin that scans the images of a kubernetes resource.
-  Usage: trivy kubectl TYPE[.VERSION][.GROUP] NAME
-platforms:
-  - selector: # optional
-      os: darwin
-      arch: amd64
-    uri: ./trivy-kubectl # where the execution file is (local file, http, git, etc.)
-    bin: ./trivy-kubectl # path to the execution file
-  - selector: # optional
-      os: linux
-      arch: amd64
-    uri: https://github.com/aquasecurity/trivy-plugin-kubectl/releases/download/v0.1.0/trivy-kubectl.tar.gz
-    bin: ./trivy-kubectl
+```go
+package main
+
+const (
+    version = 1
+    name = "wordpress-module"
+)
+
+type WordpressModule struct{}
+
+func (WordpressModule) Version() int {
+    return version
+}
+
+func (WordpressModule) Name() string {
+    return name
+}
 ```
 
-The `plugin.yaml` field should contain the following information:
+#### Analyzer interface
+If you implement the `Analyzer` interface, `Analyze` method is called when the file path is matched to file patterns returned by `RequiredFiles()`.
+`Analyze` takes the matched file path, then the file can be opened by `os.Open()`.
 
-- name: The name of the plugin. This also determines how the plugin will be made available in the Trivy CLI. For example, if the plugin is named kubectl, you can call the plugin with `trivy kubectl`. (required)
-- version: The version of the plugin. (required)
-- usage: A short usage description. (required)
-- description: A long description of the plugin. This is where you could provide a helpful documentation of your plugin. (required)
-- platforms: (required)
-  - selector: The OS/Architecture specific variations of a execution file. (optional)
-    - os: OS information based on GOOS (linux, darwin, etc.) (optional)
-    - arch: The architecture information based on GOARCH (amd64, arm64, etc.) (optional)
-  - uri: Where the executable file is. Relative path from the root directory of the plugin or remote URL such as HTTP and S3. (required)
-  - bin: Which file to call when the plugin is executed. Relative path from the root directory of the plugin. (required)
+```go
+const typeWPVersion = "wordpress-version"
 
-The following rules will apply in deciding which platform to select:
+func (WordpressModule) RequiredFiles() []string {
+    return []string{
+        `wp-includes\/version.php`,
+    }
+}
 
-- If both `os` and `arch` under `selector` match the current platform, search will stop and the platform will be used.
-- If `selector` is not present, the platform will be used.
-- If `os` matches and there is no more specific `arch` match, the platform will be used.
-- If no `platform` match is found, Trivy will exit with an error.
+func (WordpressModule) Analyze(filePath string) (*serialize.AnalysisResult, error) {
+    f, err := os.Open(filePath) // e.g. filePath: /usr/src/wordpress/wp-includes/version.php
+    if err != nil {
+        return nil, err
+    }
+    defer f.Close()
 
-After determining platform, Trivy will download the execution file from `uri` and store it in the plugin cache.
-When the plugin is called via Trivy CLI, `bin` command will be executed.
+    var wpVersion string
+	scanner := bufio.NewScanner(f)
+    for scanner.Scan() {
+        line := scanner.Text()
+        if !strings.HasPrefix(line, "$wp_version=") {
+            continue
+        }
 
-The plugin is responsible for handling flags and arguments. Any arguments are passed to the plugin from the `trivy` command.
+        ss := strings.Split(line, "=")
+        if len(ss) != 2 {
+            return nil, fmt.Errorf("invalid wordpress version: %s", line)
+        }
+
+		// NOTE: it is an example; you actually need to handle comments, etc
+		ss[1] = strings.TrimSpace(ss[1])
+        wpVersion = strings.Trim(ss[1], `";`)
+    }
+
+    if err = scanner.Err(); err != nil {
+        return nil, err
+    }
+	
+    return &serialize.AnalysisResult{
+        CustomResources: []serialize.CustomResource{
+            {
+                Type:     typeWPVersion,
+                FilePath: filePath,
+                Data:     wpVersion,
+            },
+        },
+	}, nil
+}
+```
+
+#### PostScanner interface
+`PostScan` is called after scanning and takes the scan result from Trivy.
+`CustomResources` includes the values your `Analyze` returns, so you can modify the scan result according to the custom resources.
+
+```go
+func (Spring4Shell) PostScan(results serialize.Results) serialize.Results {
+    var wpVersion int
+    for _, result := range results {
+		// Skip non custom resources
+        if result.Class != types.ClassCustom {
+            continue
+        }
+
+
+        for _, c := range result.CustomResources {
+            if c.Type == typeWPVersion {
+                v := c.Data.(string)
+            }
+        }
+
+```
 
 ## Example
 https://github.com/aquasecurity/trivy-plugin-kubectl
 
+
 [tinygo]: https://tinygo.org/
 [spring4shell]: https://blog.aquasec.com/zero-day-rce-vulnerability-spring4shell
-
+[wazero]: https://github.com/tetratelabs/wazero
