@@ -16,6 +16,7 @@ import (
 	"github.com/tetratelabs/wazero"
 	"github.com/tetratelabs/wazero/api"
 	"github.com/tetratelabs/wazero/experimental"
+	wasi "github.com/tetratelabs/wazero/wasi_snapshot_preview1"
 	"golang.org/x/exp/slices"
 	"golang.org/x/xerrors"
 
@@ -26,7 +27,6 @@ import (
 	"github.com/aquasecurity/trivy/pkg/scanner/post"
 	"github.com/aquasecurity/trivy/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/utils"
-	wasi "github.com/tetratelabs/wazero/wasi_snapshot_preview1"
 )
 
 var (
