@@ -63,7 +63,7 @@ func TestCycloneDX(t *testing.T) {
 			app := commands.NewApp("dev")
 			app.Writer = io.Discard
 
-			// Run "trivy fs"
+			// Run "trivy sbom"
 			assert.Nil(t, app.Run(osArgs))
 
 			// Compare want and got

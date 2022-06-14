@@ -208,10 +208,10 @@ func (r *runner) scan(ctx context.Context, opt Option, initializeScanner Initial
 func (r *runner) ScanCycloneDX(ctx context.Context, opt Option) (types.Report, error) {
 	var s InitializeScanner
 	if opt.RemoteAddr == "" {
-		// Scan filesystem in standalone mode
+		// Scan cycloneDX in standalone mode
 		s = cycloneDXStandaloneScanner
 	} else {
-		// Scan filesystem in client/server mode
+		// Scan cycloneDX in client/server mode
 		s = cycloneDXRemoteScanner
 	}
 
