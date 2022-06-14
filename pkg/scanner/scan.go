@@ -12,7 +12,6 @@ import (
 	"github.com/aquasecurity/fanal/artifact/remote"
 	"github.com/aquasecurity/fanal/image"
 	ftypes "github.com/aquasecurity/fanal/types"
-	"github.com/aquasecurity/trivy/pkg/artifact/sbom"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/report"
 	"github.com/aquasecurity/trivy/pkg/rpc/client"
@@ -54,12 +53,6 @@ var StandaloneFilesystemSet = wire.NewSet(
 // StandaloneRepositorySet binds repository dependencies
 var StandaloneRepositorySet = wire.NewSet(
 	remote.NewArtifact,
-	StandaloneSuperSet,
-)
-
-// StandaloneCycloneDXSet binds repository dependencies
-var StandaloneCycloneDXSet = wire.NewSet(
-	sbom.NewArtifact,
 	StandaloneSuperSet,
 )
 
