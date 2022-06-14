@@ -15,7 +15,7 @@ require (
 	github.com/aquasecurity/go-version v0.0.0-20210121072130-637058cfe492
 	github.com/aquasecurity/table v1.5.1
 	github.com/aquasecurity/trivy-db v0.0.0-20220602091213-39d8a6798e07
-	github.com/aquasecurity/trivy-kubernetes v0.3.0
+	github.com/aquasecurity/trivy-kubernetes v0.3.1-0.20220613131930-79b2cb425b18
 	github.com/caarlos0/env/v6 v6.9.3
 	github.com/cenkalti/backoff v2.2.1+incompatible
 	github.com/cheggaaa/pb/v3 v3.0.8
