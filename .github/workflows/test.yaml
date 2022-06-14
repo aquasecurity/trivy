@@ -23,6 +23,13 @@ jobs:
         with:
           go-version: ${{ env.GO_VERSION }}
 
+      - name: go mod tidy
+        run: |
+          go mod tidy
+          if [ -n "$(git status --porcelain)" ]; then
+            exit 1
+          fi
+
       - name: Lint
         uses: golangci/golangci-lint-action@v3.2.0
         with:
