@@ -38,7 +38,7 @@ func TestModule(t *testing.T) {
 	cacheDir := initDB(t)
 
 	// Set up module dir
-	moduleDir := filepath.Join(cacheDir, module.ModuleRelativeDir)
+	moduleDir := filepath.Join(cacheDir, module.RelativeDir)
 	err := os.MkdirAll(moduleDir, 0700)
 	require.NoError(t, err)
 

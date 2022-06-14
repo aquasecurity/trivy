@@ -37,7 +37,7 @@ var (
 		"error": logError,
 	}
 
-	ModuleRelativeDir = filepath.Join(".trivy", "modules")
+	RelativeDir = filepath.Join(".trivy", "modules")
 )
 
 func logDebug(ctx context.Context, m api.Module, offset, size uint32) {
@@ -304,12 +304,6 @@ func newWASMPlugin(ctx context.Context, r wazero.Runtime, code []byte) (*wasmMod
 		return nil, nil
 	}
 
-	// Get required files
-	requiredFiles, err := moduleRequiredFiles(ctx, mod)
-	if err != nil {
-		return nil, xerrors.Errorf("failed to get required files: %w", err)
-	}
-
 	isAnalyzer, err := moduleIsAnalyzer(ctx, mod)
 	if err != nil {
 		return nil, xerrors.Errorf("failed to check if the module is an analyzer: %w", err)
@@ -328,6 +322,15 @@ func newWASMPlugin(ctx context.Context, r wazero.Runtime, code []byte) (*wasmMod
 	postScanFunc := mod.ExportedFunction("post_scan")
 	if postScanFunc == nil {
 		return nil, xerrors.New("post_scan() must be exported")
+	}
+
+	var requiredFiles []*regexp.Regexp
+	if isAnalyzer {
+		// Get required files
+		requiredFiles, err = moduleRequiredFiles(ctx, mod)
+		if err != nil {
+			return nil, xerrors.Errorf("failed to get required files: %w", err)
+		}
 	}
 
 	var postScanSpec serialize.PostScanSpec
@@ -685,7 +688,7 @@ func isType(ctx context.Context, mod api.Module, name string) (bool, error) {
 }
 
 func dir() string {
-	return filepath.Join(utils.HomeDir(), ModuleRelativeDir)
+	return filepath.Join(utils.HomeDir(), RelativeDir)
 }
 
 func modulePostScanSpec(ctx context.Context, mod api.Module) (serialize.PostScanSpec, error) {

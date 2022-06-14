@@ -1,3 +1,4 @@
+//go:generate tinygo build -o spring4shell.wasm -scheduler=none -target=wasi --no-debug spring4shell.go
 //go:build tinygo.wasm
 
 package main

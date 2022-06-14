@@ -10,6 +10,7 @@ import (
 
 type Scanner interface {
 	Name() string
+	Version() int
 	PostScan(ctx context.Context, results types.Results) (types.Results, error)
 }
 
@@ -18,8 +19,16 @@ func RegisterPostScanner(s Scanner) {
 	postScanners[s.Name()] = s
 }
 
-func UnregisterPostScanner(name string) {
+func DeregisterPostScanner(name string) {
 	delete(postScanners, name)
+}
+
+func ScannerVersions() map[string]int {
+	versions := map[string]int{}
+	for _, s := range postScanners {
+		versions[s.Name()] = s.Version()
+	}
+	return versions
 }
 
 var postScanners = map[string]Scanner{}

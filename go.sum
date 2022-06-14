@@ -168,8 +168,8 @@ github.com/aquasecurity/bolt-fixtures v0.0.0-20200903104109-d34e7f983986 h1:2a30
 github.com/aquasecurity/bolt-fixtures v0.0.0-20200903104109-d34e7f983986/go.mod h1:NT+jyeCzXk6vXR5MTkdn4z64TgGfE5HMLC8qfj5unl8=
 github.com/aquasecurity/defsec v0.63.1 h1:aYYFtM3yyvnOHIRVCfMrjOaub/cJSDI9hDIIPrwWXxI=
 github.com/aquasecurity/defsec v0.63.1/go.mod h1:xUmN8mHLF2RCITp9v6HH+vkqfnfAX6BsIC5pbCwzg9k=
-github.com/aquasecurity/fanal v0.0.0-20220612100412-981bf73efeed h1:D8FZ9CWT0AYzZlVhy2zClWkPQ+ETBxsSgqVHUHrImrY=
-github.com/aquasecurity/fanal v0.0.0-20220612100412-981bf73efeed/go.mod h1:8gUQwnfro5XSt9dBKmzdnTS/aVh35UMc6p3LWChBtrc=
+github.com/aquasecurity/fanal v0.0.0-20220614081037-38f84d9308bd h1:KWB4g3Qx24ozf5rZbG7x/sCpNdDYm1bf75LF8mAi2iA=
+github.com/aquasecurity/fanal v0.0.0-20220614081037-38f84d9308bd/go.mod h1:8gUQwnfro5XSt9dBKmzdnTS/aVh35UMc6p3LWChBtrc=
 github.com/aquasecurity/go-dep-parser v0.0.0-20220531123411-1dabb532605f h1:tBLOZtvvSqpe2TIcmEGpyLwVDLIORE1hRrdUiLE5bwE=
 github.com/aquasecurity/go-dep-parser v0.0.0-20220531123411-1dabb532605f/go.mod h1:7EOQWQmyavVPY3fScbbPdd3dB/b0Q4ZbJ/NZCvNKrLs=
 github.com/aquasecurity/go-gem-version v0.0.0-20201115065557-8eed6fe000ce h1:QgBRgJvtEOBtUXilDb1MLi1p1MWoyFDXAu5DEUl5nwM=
@@ -1202,8 +1202,8 @@ github.com/syndtr/gocapability v0.0.0-20200815063812-42c35b437635/go.mod h1:hkRG
 github.com/tchap/go-patricia/v2 v2.3.1/go.mod h1:VZRHKAb53DLaG+nA9EaYYiaEx6YztwDlLElMsnSHD4k=
 github.com/testcontainers/testcontainers-go v0.13.0 h1:OUujSlEGsXVo/ykPVZk3KanBNGN0TYb/7oKIPVn15JA=
 github.com/testcontainers/testcontainers-go v0.13.0/go.mod h1:z1abufU633Eb/FmSBTzV6ntZAC1eZBYPtaFsn4nPuDk=
-github.com/tetratelabs/wazero v0.0.0-20220602075157-6e458acdbc59 h1:XUqs7id/bU0YacTtmuQI0CBZJskpj+I8kILmzJp0Tww=
-github.com/tetratelabs/wazero v0.0.0-20220602075157-6e458acdbc59/go.mod h1:Y4X/zO4sC2dJjZG9GDYNRbJGogfqFYJY/BbyKlOxXGI=
+github.com/tetratelabs/wazero v0.0.0-20220606011721-119b069ba23e h1:ZamZ43RLjKymhv0ny0uXU1cUL8T/UEXmTQRJLAvJcF4=
+github.com/tetratelabs/wazero v0.0.0-20220606011721-119b069ba23e/go.mod h1:Y4X/zO4sC2dJjZG9GDYNRbJGogfqFYJY/BbyKlOxXGI=
 github.com/thoas/go-funk v0.9.1 h1:O549iLZqPpTUQ10ykd26sZhzD+rmR5pWhuElrhbC20M=
 github.com/tidwall/gjson v1.14.1 h1:iymTbGkQBhveq21bEvAQ81I0LEBork8BFe1CUZXdyuo=
 github.com/tidwall/gjson v1.14.1/go.mod h1:/wbyibRr2FHMks5tjHJ5F8dMZh3AcwJEMf5vlfC0lxk=
