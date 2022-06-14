@@ -93,7 +93,7 @@ func (cw Writer) Write(report types.Report) error {
 			return xerrors.Errorf("failed to convert vex: %w", err)
 		}
 	} else {
-		bom, err = cw.convertToBom(report, cw.version)
+		bom, err = cw.convertToBom(report)
 		if err != nil {
 			return xerrors.Errorf("failed to convert bom: %w", err)
 		}
@@ -128,17 +128,31 @@ func (cw *Writer) vex(results types.Results, bomLink string) (*cdx.BOM, error) {
 
 	bom := cdx.NewBOM()
 	bom.Vulnerabilities = &vulns
+	bom.Metadata = cw.newBOMMetadata()
 	return bom, nil
 }
 
 func vexRef(bomLink string, bomRef string) (string, error) {
 	if !strings.HasPrefix(bomLink, "urn:uuid:") {
-		return "", ErrInvalidBOMLink
+		return "", xerrors.Errorf("%q: %w", bomLink, ErrInvalidBOMLink)
 	}
 	return fmt.Sprintf("%s/%d#%s", strings.Replace(bomLink, "uuid", "cdx", 1), cdx.BOMFileFormatJSON, bomRef), nil
 }
 
-func (cw *Writer) convertToBom(r types.Report, version string) (*cdx.BOM, error) {
+func (cw *Writer) newBOMMetadata() *cdx.Metadata {
+	return &cdx.Metadata{
+		Timestamp: cw.clock.Now().UTC().Format(timeLayout),
+		Tools: &[]cdx.Tool{
+			{
+				Vendor:  "aquasecurity",
+				Name:    "trivy",
+				Version: cw.version,
+			},
+		},
+	}
+}
+
+func (cw *Writer) convertToBom(r types.Report) (*cdx.BOM, error) {
 	bom := cdx.NewBOM()
 	bom.SerialNumber = cw.options.newUUID().URN()
 	metadataComponent, err := cw.reportToComponent(r)
@@ -146,17 +160,8 @@ func (cw *Writer) convertToBom(r types.Report, version string) (*cdx.BOM, error)
 		return nil, xerrors.Errorf("failed to parse metadata component: %w", err)
 	}
 
-	bom.Metadata = &cdx.Metadata{
-		Timestamp: cw.clock.Now().UTC().Format(timeLayout),
-		Tools: &[]cdx.Tool{
-			{
-				Vendor:  "aquasecurity",
-				Name:    "trivy",
-				Version: version,
-			},
-		},
-		Component: metadataComponent,
-	}
+	bom.Metadata = cw.newBOMMetadata()
+	bom.Metadata.Component = metadataComponent
 
 	bom.Components, bom.Dependencies, bom.Vulnerabilities, err = cw.parseComponents(r, bom.Metadata.Component.BOMRef)
 	if err != nil {
