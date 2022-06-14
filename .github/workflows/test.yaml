@@ -104,7 +104,7 @@ jobs:
       uses: goreleaser/goreleaser-action@v3
       with:
         version: v1.4.1
-        args: release --snapshot --rm-dist --skip-publish
+        args: release --snapshot --rm-dist --skip-publish --timeout 60m
 
   build-documents:
     name: Documentation Test
