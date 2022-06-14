@@ -909,6 +909,12 @@ func NewSbomCommand() *cli.Command {
 			stringSliceFlag(skipFiles),
 			stringSliceFlag(skipDirs),
 
+			// for client/server
+			&remoteServer,
+			&token,
+			&tokenHeader,
+			&customHeaders,
+
 			// dedicated options
 			&cli.StringFlag{
 				Name:    "artifact-type",
