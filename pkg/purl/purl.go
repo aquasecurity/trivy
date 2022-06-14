@@ -297,14 +297,6 @@ func purlType(t string) string {
 	return t
 }
 
-func TypeFromLibraryComponent(c cdx.Component) (string, error) {
-	p, err := packageurl.FromString(c.PackageURL)
-	if err != nil {
-		return "", xerrors.Errorf("failed to parse purl: %w", err)
-	}
-	return Type(p.Type), nil
-}
-
 func Type(t string) string {
 	switch t {
 	case packageurl.TypeComposer:

@@ -134,7 +134,7 @@ func (b TrivyBOM) Extract() ([]ftypes.Application, []ftypes.PackageInfo, *ftypes
 			} else {
 				// Other Ref dependencies application libraries.
 				if app.Type == "" {
-					t, err := purl.TypeFromLibraryComponent(lib)
+					t, err := typeFromComponent(lib)
 					if err != nil {
 						return nil, nil, nil, xerrors.Errorf("failed to get type from component: %w", err)
 					}
@@ -191,6 +191,14 @@ func (b TrivyBOM) Aggregate(libs []cdx.Component) ([]ftypes.Application, error) 
 		apps = append(apps, *app)
 	}
 	return apps, nil
+}
+
+func typeFromComponent(c cdx.Component) (string, error) {
+	p, err := packageurl.FromString(c.PackageURL)
+	if err != nil {
+		return "", xerrors.Errorf("failed to parse purl: %w", err)
+	}
+	return purl.Type(p.Type), nil
 }
 
 func (b TrivyBOM) OS(component cdx.Component) *ftypes.OS {
