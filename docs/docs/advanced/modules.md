@@ -104,6 +104,10 @@ type PostScanner interface {
 
 In the following tutorial, it creates a WordPress module that detects a WordPress version and a critical vulnerability accordingly.
 
+!!! tips
+    You can use logging functions such as `Debug` and `Info` for debugging.
+    See [examples](#examples) for the detail.
+
 #### Module interface
 `Version()` returns your module version and should be incremented after updates.
 `Name()` returns your module name.
