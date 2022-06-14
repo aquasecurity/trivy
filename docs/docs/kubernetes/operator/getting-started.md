@@ -193,6 +193,3 @@ No resources found in default namespace.
 [microk8s]: https://microk8s.io/
 [Kubernetes playground]: http://labs.play-with-k8s.com/
 [tree]: https://github.com/ahmetb/kubectl-tree
-[Private Registries]: ./../vulnerability-scanning/private-registries.md
-[Vulnerability Scanner]: ./../vulnerability-scanning/index.md
-[Configuration Checker]: ./../configuration-auditing/index.md

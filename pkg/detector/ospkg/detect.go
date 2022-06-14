@@ -57,7 +57,7 @@ func RegisterDriver(name string, driver Driver) {
 
 // Operation defines operation of OSpkg scan
 type Operation interface {
-	Detect(string, string, string, time.Time, []ftypes.Package) ([]types.DetectedVulnerability, bool, error)
+	Detect(string, string, string, *ftypes.Repository, time.Time, []ftypes.Package) ([]types.DetectedVulnerability, bool, error)
 }
 
 // Driver defines operations for OS package scan
