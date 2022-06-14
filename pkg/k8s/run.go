@@ -119,7 +119,7 @@ func run(ctx context.Context, s *scanner, opt cmd.Option, artifacts []*artifacts
 }
 
 func getArtifacts(ctx context.Context, args cli.Args, cluster k8s.Cluster, namespace string) ([]*artifacts.Artifact, error) {
-	trivyk8s := trivyk8s.New(cluster)
+	trivyk8s := trivyk8s.New(cluster, log.Logger)
 
 	if !args.Present() {
 		return trivyk8s.Namespace(namespace).ListArtifacts(ctx)
