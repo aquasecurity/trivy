@@ -99,7 +99,9 @@ func (cw Writer) Write(report types.Report) error {
 		}
 	}
 
-	if err = cdx.NewBOMEncoder(cw.output, cw.format).Encode(bom); err != nil {
+	encoder := cdx.NewBOMEncoder(cw.output, cw.format)
+	encoder.SetPretty(true)
+	if err = encoder.Encode(bom); err != nil {
 		return xerrors.Errorf("failed to encode bom: %w", err)
 	}
 
