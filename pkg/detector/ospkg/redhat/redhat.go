@@ -76,7 +76,7 @@ func WithClock(clock clock.Clock) option {
 	}
 }
 
-// Scanner implements the Alpine scanner
+// Scanner implements the RedHat scanner
 type Scanner struct {
 	vs redhat.VulnSrc
 	*options
