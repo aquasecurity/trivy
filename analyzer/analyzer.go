@@ -66,8 +66,18 @@ func RegisterAnalyzer(analyzer analyzer) {
 	analyzers[analyzer.Type()] = analyzer
 }
 
+// DeregisterAnalyzer is mainly for testing
+func DeregisterAnalyzer(t Type) {
+	delete(analyzers, t)
+}
+
 func RegisterConfigAnalyzer(analyzer configAnalyzer) {
 	configAnalyzers[analyzer.Type()] = analyzer
+}
+
+// DeregisterConfigAnalyzer is mainly for testing
+func DeregisterConfigAnalyzer(t Type) {
+	delete(configAnalyzers, t)
 }
 
 // CustomGroup returns a group name for custom analyzers

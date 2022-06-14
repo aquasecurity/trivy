@@ -113,12 +113,13 @@ func (a Artifact) Inspect(ctx context.Context) (types.ArtifactReference, error) 
 	result.Sort()
 
 	blobInfo := types.BlobInfo{
-		SchemaVersion: types.BlobJSONSchemaVersion,
-		OS:            result.OS,
-		Repository:    result.Repository,
-		PackageInfos:  result.PackageInfos,
-		Applications:  result.Applications,
-		Secrets:       result.Secrets,
+		SchemaVersion:   types.BlobJSONSchemaVersion,
+		OS:              result.OS,
+		Repository:      result.Repository,
+		PackageInfos:    result.PackageInfos,
+		Applications:    result.Applications,
+		Secrets:         result.Secrets,
+		CustomResources: result.CustomResources,
 	}
 
 	if err = a.handlerManager.PostHandle(ctx, result, &blobInfo); err != nil {
