@@ -902,6 +902,7 @@ func NewSbomCommand() *cli.Command {
 			&clearCacheFlag,
 			&ignoreFileFlag,
 			&timeoutFlag,
+			&skipDBUpdateFlag,
 			&severityFlag,
 			&offlineScan,
 			&dbRepositoryFlag,
