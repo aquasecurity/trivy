@@ -21,6 +21,10 @@ func (testPostScanner) Name() string {
 	return "test"
 }
 
+func (testPostScanner) Version() int {
+	return 1
+}
+
 func (testPostScanner) PostScan(ctx context.Context, results types.Results) (types.Results, error) {
 	for i, r := range results {
 		if r.Target == "bad" {
@@ -90,7 +94,7 @@ func TestScan(t *testing.T) {
 			s := testPostScanner{}
 			post.RegisterPostScanner(s)
 			defer func() {
-				post.UnregisterPostScanner(s.Name())
+				post.DeregisterPostScanner(s.Name())
 			}()
 
 			results, err := post.Scan(context.Background(), tt.results)
