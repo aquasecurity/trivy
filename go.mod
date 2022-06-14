@@ -10,7 +10,8 @@ require (
 	github.com/BurntSushi/toml v1.1.0 // indirect
 	github.com/GoogleCloudPlatform/docker-credential-gcr v2.0.5+incompatible
 	github.com/alicebob/miniredis/v2 v2.21.0
-	github.com/aquasecurity/go-dep-parser v0.0.0-20220531123411-1dabb532605f
+	github.com/aquasecurity/defsec v0.63.1
+	github.com/aquasecurity/go-dep-parser v0.0.0-20220607141748-ab2deea55bdf
 	github.com/aquasecurity/go-version v0.0.0-20210121072130-637058cfe492
 	github.com/aquasecurity/testdocker v0.0.0-20210911155206-e1e85f5a1516
 	github.com/aws/aws-sdk-go v1.44.25
@@ -51,8 +52,6 @@ require (
 	golang.org/x/xerrors v0.0.0-20200804184101-5ec99f83aff1
 	gopkg.in/yaml.v3 v3.0.1
 )
-
-require github.com/aquasecurity/defsec v0.63.1
 
 require (
 	cloud.google.com/go v0.99.0 // indirect
