@@ -2,10 +2,8 @@ package purl
 
 import (
 	"fmt"
-	"strconv"
 	"strings"
 
-	cdx "github.com/CycloneDX/cyclonedx-go"
 	cn "github.com/google/go-containerregistry/pkg/name"
 	packageurl "github.com/package-url/packageurl-go"
 	"golang.org/x/xerrors"
@@ -15,6 +13,7 @@ import (
 	ftypes "github.com/aquasecurity/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/scanner/utils"
 	"github.com/aquasecurity/trivy/pkg/types"
+	"github.com/knqyf263/go-rpm-version"
 )
 
 const (
@@ -53,22 +52,10 @@ func Package(purl packageurl.PackageURL) (*ftypes.Package, error) {
 
 	v := purl.Version
 	if purl.Type == packageurl.TypeRPM {
-		epochIndex := strings.Index(v, ":")
-		if epochIndex > 0 {
-			e, err := strconv.Atoi(v[:epochIndex])
-			if err != nil {
-				return nil, xerrors.Errorf("failed to parse epoch: %w", err)
-			}
-			pkg.Epoch = e
-			v = v[epochIndex+1:]
-		}
-
-		relIndex := strings.LastIndex(v, "-")
-		if relIndex == -1 {
-			return nil, xerrors.Errorf("failed to parse release: %s", v)
-		}
-		pkg.Release = v[relIndex+1:]
-		pkg.Version = v[:relIndex]
+		rpmVer := version.NewVersion(v)
+		pkg.Release = rpmVer.Release()
+		pkg.Version = rpmVer.Version()
+		pkg.Epoch = rpmVer.Epoch()
 	}
 	if purl.Namespace == "" || purl.Type == packageurl.TypeRPM || purl.Type == packageurl.TypeDebian || purl.Type == string(analyzer.TypeApk) {
 		return pkg, nil

@@ -28,7 +28,7 @@ require (
 	github.com/hashicorp/go-getter v1.6.1
 	github.com/knqyf263/go-apk-version v0.0.0-20200609155635-041fdbb8563f
 	github.com/knqyf263/go-deb-version v0.0.0-20190517075300-09fca494f03d
-	github.com/knqyf263/go-rpm-version v0.0.0-20170716094938-74609b86c936
+	github.com/knqyf263/go-rpm-version v0.0.0-20220614171824-631e686d1075
 	github.com/masahiro331/go-mvn-version v0.0.0-20210429150710-d3157d602a08
 	github.com/mitchellh/hashstructure/v2 v2.0.2
 	github.com/olekukonko/tablewriter v0.0.5 // indirect
