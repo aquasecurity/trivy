@@ -2819,7 +2819,7 @@
 <p>Kubernetes Yaml deployment files are available on GitHub in <a href="https://github.com/aquasecurity/trivy-operator">https://github.com/aquasecurity/trivy-operator</a> under <code>/deploy/static</code>.</p>
 <h2 id="example-deploy-from-github">Example - Deploy from GitHub</h2>
 <p>This will install the operator in the <code>trivy-system</code> namespace and configure it to scan all namespaces, except <code>kube-system</code> and <code>trivy-system</code>:</p>
-<div class="highlight"><pre><span></span><code>kubectl apply -f https://raw.githubusercontent.com/aquasecurity/trivy-operator/v0.0.5/deploy/static/trivy-operator.yaml
+<div class="highlight"><pre><span></span><code>kubectl apply -f https://raw.githubusercontent.com/aquasecurity/trivy-operator/v0.0.7/deploy/static/trivy-operator.yaml
 </code></pre></div>
 <p>To confirm that the operator is running, check that the <code>trivy-operator</code> Deployment in the <code>trivy-system</code>
 namespace is available and all its containers are ready:</p>
@@ -2839,7 +2839,7 @@ To learn more, please refer to the <a href="config">Configuration</a> documentat
 <p>Uninstalling the operator and deleting custom resource definitions will also delete all generated security reports.</p>
 </div>
 <p>You can uninstall the operator with the following command:</p>
-<div class="highlight"><pre><span></span><code>kubectl delete -f https://raw.githubusercontent.com/aquasecurity/trivy-operator/v0.0.5/deploy/static/trivy-operator.yaml
+<div class="highlight"><pre><span></span><code>kubectl delete -f https://raw.githubusercontent.com/aquasecurity/trivy-operator/v0.0.7/deploy/static/trivy-operator.yaml
 </code></pre></div>
 
               

@@ -2855,11 +2855,11 @@ helm install trivy-operator aqua/trivy-operator <span class="se">\</span>
    --namespace trivy-system <span class="se">\</span>
    --create-namespace <span class="se">\</span>
    --set<span class="o">=</span><span class="s2">&quot;trivy.ignoreUnfixed=true&quot;</span> <span class="se">\</span>
-   --version v0.0.5
+   --version v0.0.7
 </code></pre></div>
 <h2 id="example-download-the-chart">Example - Download the chart</h2>
 <p>This will install the operator in the <code>trivy-system</code> namespace and configure it to scan all namespaces, except <code>kube-system</code> and <code>trivy-system</code>:</p>
-<div class="highlight"><pre><span></span><code>git clone --depth <span class="m">1</span> --branch v0.0.5 https://github.com/aquasecurity/trivy-operator.git
+<div class="highlight"><pre><span></span><code>git clone --depth <span class="m">1</span> --branch v0.0.7 https://github.com/aquasecurity/trivy-operator.git
 <span class="nb">cd</span> trivy-operator
 helm install trivy-operator ./deploy/helm <span class="se">\</span>
 --namespace trivy-system <span class="se">\</span>
@@ -2870,7 +2870,7 @@ helm install trivy-operator ./deploy/helm <span class="se">\</span>
 <p>Check that the <code>trivy-operator</code> Helm release is created in the <code>trivy-system</code> namespace, and it has status <code>deployed</code>:</p>
 <div class="highlight"><pre><span></span><code><span class="gp">$ </span>helm list -n trivy-system
 <span class="go">NAME                NAMESPACE           REVISION    UPDATED                                 STATUS      CHART                       APP VERSION</span>
-<span class="go">trivy-operator  trivy-system    1           2021-01-27 20:09:53.158961 +0100 CET    deployed    trivy-operator-v0.0.5   0.0.5</span>
+<span class="go">trivy-operator  trivy-system    1           2021-01-27 20:09:53.158961 +0100 CET    deployed    trivy-operator-v0.0.7   0.0.7</span>
 </code></pre></div>
 <p>To confirm that the operator is running, check that the <code>trivy-operator</code> Deployment in the <code>trivy-system</code>
 namespace is available and all its containers are ready:</p>
@@ -2883,7 +2883,7 @@ namespace is available and all its containers are ready:</p>
 </code></pre></div>
 <h2 id="advanced-configuration">Advanced Configuration</h2>
 <p>The Helm chart supports all available <a href="../../configuration/#install-modes">installation modes</a> of Trivy Operator. </p>
-<p>Please refer to the chart's <a href="https://raw.githubusercontent.com/aquasecurity/trivy-operator/v0.0.5/deploy/helm/values.yaml">values</a> file for configuration options.</p>
+<p>Please refer to the chart's <a href="https://raw.githubusercontent.com/aquasecurity/trivy-operator/v0.0.7/deploy/helm/values.yaml">values</a> file for configuration options.</p>
 <h2 id="uninstall">Uninstall</h2>
 <p>You can uninstall the operator with the following command:</p>
 <div class="highlight"><pre><span></span><code>helm uninstall trivy-operator -n trivy-system
