@@ -12,7 +12,7 @@ require (
 )
 
 require (
-	github.com/aquasecurity/fanal v0.0.0-20220612100412-981bf73efeed // indirect
+	github.com/aquasecurity/fanal v0.0.0-20220614081037-38f84d9308bd // indirect
 	github.com/caarlos0/env/v6 v6.9.3 // indirect
 	github.com/google/go-containerregistry v0.7.1-0.20211214010025-a65b7844a475 // indirect
 	github.com/josharian/intern v1.0.0 // indirect
