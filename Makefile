@@ -50,12 +50,8 @@ deps:
 .PHONY: generate-test-modules
 generate-test-modules: $(TEST_MODULES)
 
-# Compile WASM modules for unit tests
-$(TEST_MODULE_DIR)/*/%.wasm:$(TEST_MODULE_DIR)/*/%.go
-	go generate $<
-
-# Compile WASM modules for integration tests
-$(EXAMPLE_MODULE_DIR)/%.wasm:$(EXAMPLE_MODULE_DIR)/%.go
+# Compile WASM modules for unit and integration tests
+%.wasm:%.go
 	go generate $<
 
 # Run unit tests
