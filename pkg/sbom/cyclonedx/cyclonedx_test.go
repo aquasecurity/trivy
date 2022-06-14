@@ -1,6 +1,7 @@
 package cyclonedx
 
 import (
+	"sort"
 	"testing"
 
 	cdx "github.com/CycloneDX/cyclonedx-go"
@@ -77,6 +78,9 @@ func TestTrivyBOM_Aggregate(t *testing.T) {
 			} else {
 				require.NoError(t, err)
 			}
+			sort.Slice(got, func(i, j int) bool {
+				return got[i].FilePath < got[j].FilePath
+			})
 			assert.Equal(t, tt.want, got)
 		})
 	}
