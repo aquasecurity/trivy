@@ -11,6 +11,7 @@ on:
   pull_request:
 env:
   GO_VERSION: "1.18"
+  TINYGO_VERSION: "0.23.0"
 jobs:
   test:
     name: Test
@@ -28,6 +29,11 @@ jobs:
         with:
           version: v1.45
           args: --deadline=30m
+
+      - name: Install TinyGo
+        run: |
+          wget https://github.com/tinygo-org/tinygo/releases/download/v${TINYGO_VERSION}/tinygo_${TINYGO_VERSION}_amd64.deb
+          sudo dpkg -i tinygo_${TINYGO_VERSION}_amd64.deb
 
       - name: Run unit tests
         run: make test
@@ -60,8 +66,8 @@ jobs:
 
       - name: Install TinyGo
         run: |
-          wget https://github.com/tinygo-org/tinygo/releases/download/v0.23.0/tinygo_0.23.0_amd64.deb
-          sudo dpkg -i tinygo_0.23.0_amd64.deb
+          wget https://github.com/tinygo-org/tinygo/releases/download/v${TINYGO_VERSION}/tinygo_${TINYGO_VERSION}_amd64.deb
+          sudo dpkg -i tinygo_${TINYGO_VERSION}_amd64.deb
 
       - name: Checkout
         uses: actions/checkout@v3
