@@ -479,7 +479,9 @@ func (m *wasmModule) PostScan(ctx context.Context, results types.Results) (types
 
 	switch m.postScanSpec.Action {
 	case tapi.ActionInsert:
-		results = append(results, got...)
+		results = append(results, lo.Filter(got, func(r types.Result, _ int) bool {
+			return r.Class != types.ClassCustom
+		})...)
 	case tapi.ActionUpdate:
 		updateResults(got, results)
 	case tapi.ActionDelete:
