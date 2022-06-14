@@ -32,7 +32,10 @@ labels:
   description: Categorizes issue or PR as related to a unit/integration test.
 - name: kind/security
   color: f4dddc
-  description: security issues
+  description: Categorizes issue or PR as related to Trivy's own security or internal vulnerabilities.
+- name: kind/integration
+  color: f4dddc
+  description: Categorizes issue or PR as related to a third party integration of Trivy.
 
 # lifecycle for the stale bot
 - name: lifecycle/frozen
@@ -125,6 +128,3 @@ labels:
 - name: help wanted
   color: 006b75
   description: Denotes an issue that needs help from a contributor. Must meet "help wanted" guidelines.
-- name: vulnerability
-  color: e11d21
-  description: Categorizes issue or PR as related to Trivy's own vulnerabilities.
