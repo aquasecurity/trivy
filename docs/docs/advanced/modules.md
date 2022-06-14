@@ -98,7 +98,7 @@ type Analyzer interface {
 
 type PostScanner interface {
     PostScanSpec() serialize.PostScanSpec
-    PostScan(serialize.Results) serialize.Results
+    PostScan(serialize.Results) (serialize.Results, error)
 }
 ```
 
@@ -213,7 +213,7 @@ func (WordpressModule) PostScanSpec() serialize.PostScanSpec {
     }
 }
 
-func (WordpressModule) PostScan(results serialize.Results) serialize.Results {
+func (WordpressModule) PostScan(results serialize.Results) (serialize.Results, error) {
     // e.g. results
     // [
     //   {
@@ -273,12 +273,37 @@ func (WordpressModule) PostScan(results serialize.Results) serialize.Results {
             },
         })
     }
+    return results, nil
 }
 ```
 
 The new vulnerability will be added to the scan results.
 This example shows how the module inserts a new finding.
 If you are interested in `Update`, you can see an example of [Spring4Shell][trivy-module-spring4shell].
+
+#### Build
+Follow [the install guide][tinygo-installation] and install TinyGo.
+
+```bash
+$ tinygo build -o wordpress.wasm -scheduler=none -target=wasi --no-debug wordpress.go
+```
+
+Put the built binary to the module directory that is under the home directory by default.
+
+```bash
+$ mkdir -p ~/.trivy/modules
+$ cp spring4shell.wasm ~/.trivy/modules
+```
+
+## Distribute Your Module
+You can distribute your own module in OCI registries. Please follow [the oras installation instruction][oras].
+
+```bash
+oras push ghcr.io/aquasecurity/trivy-module-wordpress:latest wordpress.wasm:application/vnd.module.wasm.content.layer.v1+wasm
+Uploading 3daa3dac086b wordpress.wasm
+Pushed ghcr.io/aquasecurity/trivy-module-wordpress:latest
+Digest: sha256:6416d0199d66ce52ced19f01d75454b22692ff3aa7737e45f7a189880840424f
+```
 
 ## Examples
 - [Spring4Shell][trivy-module-spring4shell]
@@ -291,3 +316,6 @@ If you are interested in `Update`, you can see an example of [Spring4Shell][triv
 
 [trivy-module-spring4shell]: https://github.com/aquasecurity/trivy/tree/main/examples/module/spring4shell
 [trivy-module-wordpress]: https://github.com/aquasecurity/trivy/tree/main/examples/module/wordpress
+
+[tinygo-installation]: https://tinygo.org/getting-started/install/
+[oras]: https://oras.land/cli/
