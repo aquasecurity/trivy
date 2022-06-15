@@ -233,6 +233,13 @@ func TestSecretScanner(t *testing.T) {
 			},
 		},
 		{
+			name:          "skip examples file",
+			inputFilePath: "testdata/example-secret.txt",
+			want: types.Secret{
+				FilePath: "testdata/example-secret.txt",
+			},
+		},
+		{
 			name:          "global allow-rule path",
 			configPath:    "testdata/global-allow-path.yaml",
 			inputFilePath: "testdata/secret.txt",
