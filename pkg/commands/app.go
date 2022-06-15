@@ -16,7 +16,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/commands/option"
 	"github.com/aquasecurity/trivy/pkg/commands/plugin"
 	"github.com/aquasecurity/trivy/pkg/commands/server"
-	"github.com/aquasecurity/trivy/pkg/k8s"
+	k8scommands "github.com/aquasecurity/trivy/pkg/k8s/commands"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/report"
 	"github.com/aquasecurity/trivy/pkg/result"
@@ -827,15 +827,13 @@ func NewK8sCommand() *cli.Command {
 		Usage:   "scan kubernetes vulnerabilities, secrets and misconfigurations",
 		CustomHelpTemplate: cli.CommandHelpTemplate + `EXAMPLES:
   - cluster scanning:
-      $ trivy k8s --report summary
-
+      $ trivy k8s --report summary cluster
   - namespace scanning:
-      $ trivy k8s -n kube-system --report summary
-
+      $ trivy k8s -n kube-system --report summary all
   - resource scanning:
       $ trivy k8s deployment/orion
 `,
-		Action: k8s.Run,
+		Action: k8scommands.Run,
 		Flags: []cli.Flag{
 			&contextFlag,
 			&namespaceFlag,
