@@ -89,8 +89,8 @@ github.com/alecthomas/units v0.0.0-20151022065526-2efee857e7cf/go.mod h1:ybxpYRF
 github.com/alecthomas/units v0.0.0-20190717042225-c3de453c63f4/go.mod h1:ybxpYRFXyAe+OPACYpWeL0wqObRcbAqCMya13uyzqw0=
 github.com/alexflint/go-filemutex v0.0.0-20171022225611-72bdc8eae2ae/go.mod h1:CgnQgUtFrFz9mxFNtED3jI5tLDjKlOM+oUF/sTk6ps0=
 github.com/antihax/optional v1.0.0/go.mod h1:uupD/76wgC+ih3iEmQUL+0Ugr19nfwCT1kdvxnR2qWY=
-github.com/aquasecurity/fanal v0.0.0-20220614114854-29c7165f4672 h1:M2h0GYHJYIEbLPoXCkjPE44j7Qa8DFqka7XzPBN13Pw=
-github.com/aquasecurity/fanal v0.0.0-20220614114854-29c7165f4672/go.mod h1:8gUQwnfro5XSt9dBKmzdnTS/aVh35UMc6p3LWChBtrc=
+github.com/aquasecurity/fanal v0.0.0-20220614123434-09d6aced4205 h1:Q36FKpJGusjOw1bSt39B2XihgaAtONe4HJGilfxX55k=
+github.com/aquasecurity/fanal v0.0.0-20220614123434-09d6aced4205/go.mod h1:pHIJ3Tp3Krn+l4Ywdngll3LKNVYBy24Ln2YlOk+g+fU=
 github.com/aquasecurity/trivy-db v0.0.0-20220602091213-39d8a6798e07 h1:EZfv20xfeW4Pj3yOjdzc+PnVvxJYgY7a0E0F3ewRsLI=
 github.com/aquasecurity/trivy-db v0.0.0-20220602091213-39d8a6798e07/go.mod h1:/nULgnDeq/JMPMVwE1dmf4kWlYn++7VrM3O2naj4BHA=
 github.com/armon/circbuf v0.0.0-20150827004946-bbbad097214e/go.mod h1:3U/XgcO3hCbHZ8TKRvWD2dDTCfh9M9ya+I9JpbB7O8o=

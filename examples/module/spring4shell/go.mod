@@ -8,7 +8,7 @@ replace github.com/aquasecurity/trivy => ../../../
 require github.com/aquasecurity/trivy v0.0.0-00010101000000-000000000000
 
 require (
-	github.com/aquasecurity/fanal v0.0.0-20220614114854-29c7165f4672 // indirect
+	github.com/aquasecurity/fanal v0.0.0-20220614123434-09d6aced4205 // indirect
 	github.com/aquasecurity/trivy-db v0.0.0-20220602091213-39d8a6798e07 // indirect
 	github.com/caarlos0/env/v6 v6.9.3 // indirect
 	github.com/google/go-containerregistry v0.7.1-0.20211214010025-a65b7844a475 // indirect
