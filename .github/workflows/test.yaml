@@ -36,6 +36,7 @@ jobs:
         with:
           version: v1.45
           args: --deadline=30m
+          skip-cache: true
 
       - name: Install TinyGo
         run: |
