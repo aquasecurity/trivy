@@ -208,7 +208,7 @@ In post scanning, your module can perform one of three actions:
     - Update the detected vulnerability and misconfiguration
     - e.g. Change a severity
 - Delete
-    - Update the detected vulnerability and misconfiguration
+    - Delete the detected vulnerability and misconfiguration
     - e.g. Remove Spring4Shell because it is not actually affected.
  
 `PostScanSpec()` returns which action the module does.
@@ -291,6 +291,9 @@ func (WordpressModule) PostScan(results serialize.Results) (serialize.Results, e
 The new vulnerability will be added to the scan results.
 This example shows how the module inserts a new finding.
 If you are interested in `Update`, you can see an example of [Spring4Shell][trivy-module-spring4shell].
+
+In the `Delete` action, `PostScan` needs to return results you want to delete.
+If `PostScan` returns an empty, Trivy will not delete anything.
 
 #### Build
 Follow [the install guide][tinygo-installation] and install TinyGo.
