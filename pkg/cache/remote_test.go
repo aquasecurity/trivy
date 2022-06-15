@@ -328,7 +328,7 @@ func TestRemoteCache_PutArtifactInsecure(t *testing.T) {
 				imageInfo: types.ArtifactInfo{},
 				insecure:  false,
 			},
-			wantErr: "certificate signed by unknown authority",
+			wantErr: "failed to do request",
 		},
 	}
 	for _, tt := range tests {

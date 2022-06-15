@@ -228,16 +228,16 @@ func TestWriter_Write(t *testing.T) {
 						PackageLicenseDeclared:    "GPLv2+",
 						IsFilesAnalyzedTagPresent: true,
 					},
-					spdx.ElementID("ee8bb4e8354184d"): {
-						PackageSPDXIdentifier:     spdx.ElementID("ee8bb4e8354184d"),
+					spdx.ElementID("216407676208fcb1"): {
+						PackageSPDXIdentifier:     spdx.ElementID("216407676208fcb1"),
 						PackageName:               "actionpack",
 						PackageVersion:            "7.0.1",
 						PackageLicenseConcluded:   "NONE",
 						PackageLicenseDeclared:    "NONE",
 						IsFilesAnalyzedTagPresent: true,
 					},
-					spdx.ElementID("216407676208fcb1"): {
-						PackageSPDXIdentifier:     spdx.ElementID("216407676208fcb1"),
+					spdx.ElementID("ee8bb4e8354184d"): {
+						PackageSPDXIdentifier:     spdx.ElementID("ee8bb4e8354184d"),
 						PackageName:               "actionpack",
 						PackageVersion:            "7.0.1",
 						PackageLicenseConcluded:   "NONE",

@@ -70,7 +70,7 @@ jobs:
         uses: goreleaser/goreleaser-action@v3
         with:
           version: v1.4.1
-          args: release --rm-dist
+          args: release --rm-dist --timeout 60m
         env:
           GITHUB_TOKEN: ${{ secrets.ORG_REPO_TOKEN }}
       - name: Checkout trivy-repo

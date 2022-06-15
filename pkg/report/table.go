@@ -45,6 +45,10 @@ type TableWriter struct {
 // Write writes the result on standard output
 func (tw TableWriter) Write(report types.Report) error {
 	for _, result := range report.Results {
+		// Not display a table of custom resources
+		if result.Class == types.ClassCustom {
+			continue
+		}
 		tw.write(result)
 	}
 	return nil

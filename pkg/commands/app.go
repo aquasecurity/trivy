@@ -13,6 +13,7 @@ import (
 	"github.com/aquasecurity/trivy-db/pkg/metadata"
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/commands/artifact"
+	"github.com/aquasecurity/trivy/pkg/commands/module"
 	"github.com/aquasecurity/trivy/pkg/commands/option"
 	"github.com/aquasecurity/trivy/pkg/commands/plugin"
 	"github.com/aquasecurity/trivy/pkg/commands/server"
@@ -415,6 +416,7 @@ func NewApp(version string) *cli.App {
 		NewServerCommand(),
 		NewConfigCommand(),
 		NewPluginCommand(),
+		NewModuleCommand(),
 		NewK8sCommand(),
 		NewSbomCommand(),
 		NewVersionCommand(),
@@ -804,6 +806,31 @@ func NewPluginCommand() *cli.Command {
 				Usage:     "update an existing plugin",
 				ArgsUsage: "PLUGIN_NAME",
 				Action:    plugin.Update,
+			},
+		},
+	}
+}
+
+// NewModuleCommand is the factory method to add module subcommand
+func NewModuleCommand() *cli.Command {
+	return &cli.Command{
+		Name:    "module",
+		Aliases: []string{"m"},
+		Usage:   "manage modules",
+		Subcommands: cli.Commands{
+			{
+				Name:      "install",
+				Aliases:   []string{"i"},
+				Usage:     "install a module",
+				ArgsUsage: "REPOSITORY",
+				Action:    module.Install,
+			},
+			{
+				Name:      "uninstall",
+				Aliases:   []string{"u"},
+				Usage:     "uninstall a module",
+				ArgsUsage: "REPOSITORY",
+				Action:    module.Uninstall,
 			},
 		},
 	}

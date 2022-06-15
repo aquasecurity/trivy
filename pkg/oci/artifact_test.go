@@ -82,6 +82,20 @@ func TestNewArtifact(t *testing.T) {
 			// Mock image
 			img := new(fakei.FakeImage)
 			img.LayersReturns(tt.layersReturns.layers, tt.layersReturns.err)
+			img.ManifestReturns(&v1.Manifest{
+				Layers: []v1.Descriptor{
+					{
+						MediaType: "application/vnd.cncf.openpolicyagent.layer.v1.tar+gzip",
+						Size:      100,
+						Digest: v1.Hash{
+							Algorithm: "sha256",
+							Hex:       "cba33656188782852f58993f45b68bfb8577f64cdcf02a604e3fc2afbeb5f2d8"},
+						Annotations: map[string]string{
+							"org.opencontainers.image.title": "bundle.tar.gz",
+						},
+					},
+				},
+			}, nil)
 
 			_, err = oci.NewArtifact("repo", tt.mediaType, true, false, oci.WithImage(img))
 			if tt.wantErr != "" {
@@ -126,6 +140,20 @@ func TestArtifact_Download(t *testing.T) {
 			// Mock image
 			img := new(fakei.FakeImage)
 			img.LayersReturns([]v1.Layer{flayer}, nil)
+			img.ManifestReturns(&v1.Manifest{
+				Layers: []v1.Descriptor{
+					{
+						MediaType: "application/vnd.cncf.openpolicyagent.layer.v1.tar+gzip",
+						Size:      100,
+						Digest: v1.Hash{
+							Algorithm: "sha256",
+							Hex:       "cba33656188782852f58993f45b68bfb8577f64cdcf02a604e3fc2afbeb5f2d8"},
+						Annotations: map[string]string{
+							"org.opencontainers.image.title": "bundle.tar.gz",
+						},
+					},
+				},
+			}, nil)
 
 			mediaType := "application/vnd.cncf.openpolicyagent.layer.v1.tar+gzip"
 			artifact, err := oci.NewArtifact("repo", mediaType, true, false, oci.WithImage(img))

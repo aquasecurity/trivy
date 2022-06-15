@@ -51,10 +51,11 @@ func TestScanner_ScanArtifact(t *testing.T) {
 			},
 			scanExpectation: DriverScanExpectation{
 				Args: DriverScanArgs{
-					Target:   "alpine:3.11",
-					ImageID:  "sha256:e7d92cdc71feacf90708cb59182d0df1b911f8ae022d29e8e95d75ca6a99776a",
-					LayerIDs: []string{"sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10"},
-					Options:  types.ScanOptions{VulnType: []string{"os"}},
+					CtxAnything: true,
+					Target:      "alpine:3.11",
+					ImageID:     "sha256:e7d92cdc71feacf90708cb59182d0df1b911f8ae022d29e8e95d75ca6a99776a",
+					LayerIDs:    []string{"sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10"},
+					Options:     types.ScanOptions{VulnType: []string{"os"}},
 				},
 				Returns: DriverScanReturns{
 					Results: types.Results{
@@ -173,10 +174,11 @@ func TestScanner_ScanArtifact(t *testing.T) {
 			},
 			scanExpectation: DriverScanExpectation{
 				Args: DriverScanArgs{
-					Target:   "alpine:3.11",
-					ImageID:  "sha256:e7d92cdc71feacf90708cb59182d0df1b911f8ae022d29e8e95d75ca6a99776a",
-					LayerIDs: []string{"sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10"},
-					Options:  types.ScanOptions{VulnType: []string{"os"}},
+					CtxAnything: true,
+					Target:      "alpine:3.11",
+					ImageID:     "sha256:e7d92cdc71feacf90708cb59182d0df1b911f8ae022d29e8e95d75ca6a99776a",
+					LayerIDs:    []string{"sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10"},
+					Options:     types.ScanOptions{VulnType: []string{"os"}},
 				},
 				Returns: DriverScanReturns{
 					Err: errors.New("error"),
