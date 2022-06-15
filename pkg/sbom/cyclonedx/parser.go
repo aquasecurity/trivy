@@ -5,9 +5,9 @@ import (
 	"io"
 	"path/filepath"
 
+	cdx "github.com/CycloneDX/cyclonedx-go"
 	"golang.org/x/xerrors"
 
-	cdx "github.com/CycloneDX/cyclonedx-go"
 	ftypes "github.com/aquasecurity/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/sbom"
 )
@@ -22,17 +22,26 @@ func NewParser(name string) *Parser {
 	}
 }
 
-func (p Parser) Parse(r io.Reader) (string, *ftypes.OS, []ftypes.PackageInfo, []ftypes.Application, error) {
+func NewTrivyBOM(r io.Reader, ext string) (TrivyBOM, error) {
 	b := TrivyBOM{}
-	switch p.extension {
+	switch ext {
 	case ".json":
 		if err := json.NewDecoder(r).Decode(&b); err != nil {
-			return "", nil, nil, nil, xerrors.Errorf("failed to json decode: %w", err)
+			return TrivyBOM{}, xerrors.Errorf("failed to json decode: %w", err)
 		}
-	case ".xml":
-		// TODO: not supported yet
+		return b, nil
+	// case ".xml":
+	// TODO: not supported yet
 	default:
-		return "", nil, nil, nil, xerrors.Errorf("invalid cycloneDX format: %s", p.extension)
+		return TrivyBOM{}, xerrors.Errorf("invalid cycloneDX format: %s", ext)
+	}
+	return b, nil
+}
+
+func (p Parser) Parse(r io.Reader) (string, *ftypes.OS, []ftypes.PackageInfo, []ftypes.Application, error) {
+	b, err := NewTrivyBOM(r, p.extension)
+	if err != nil {
+		return "", nil, nil, nil, xerrors.Errorf("failed to new Trivy BOM: %w", err)
 	}
 
 	if b.Components == nil {
