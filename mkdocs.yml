@@ -7,12 +7,22 @@ repo_url: https://github.com/aquasecurity/trivy
 edit_uri: ""
 
 nav:
-  - HOME: index.md
-  - Getting started:
-      - Overview: getting-started/overview.md
-      - Installation: getting-started/installation.md
-      - Quick Start: getting-started/quickstart.md
-      - Further Reading: getting-started/further.md
+  - Installation: index.md
+  - Tutorials:
+      - Quick Start: tutorials/quickstart.md
+      - Trivy Kubernetes: tutorials/trivy-kubernetes.md
+      - GitOps: tutorials/GitOps.md
+      - Integrations:
+          - Overview: tutorials/integrations/index.md
+          - GitHub Actions: tutorials/integrations/github-actions.md
+          - CircleCI: tutorials/integrations/circleci.md
+          - Travis CI: tutorials/integrations/travis-ci.md
+          - GitLab CI: tutorials/integrations/gitlab-ci.md
+          - Bitbucket Pipelines: tutorials/integrations/bitbucket.md
+          - AWS CodePipeline: tutorials/integrations/aws-codepipeline.md
+          - AWS Security Hub: tutorials/integrations/aws-security-hub.md
+      - Cloud Platforms:
+          - OVHcloud: tutorials/cloud-platfomrs/ovhcloud.md
   - Docs:
       - Overview: docs/index.md
       - Vulnerability:
@@ -85,15 +95,6 @@ nav:
           - Overview: docs/sbom/index.md
           - CycloneDX: docs/sbom/cyclonedx.md
           - SPDX: docs/sbom/spdx.md
-      - Integrations:
-          - Overview: docs/integrations/index.md
-          - GitHub Actions: docs/integrations/github-actions.md
-          - CircleCI: docs/integrations/circleci.md
-          - Travis CI: docs/integrations/travis-ci.md
-          - GitLab CI: docs/integrations/gitlab-ci.md
-          - Bitbucket Pipelines: docs/integrations/bitbucket.md
-          - AWS CodePipeline: docs/integrations/aws-codepipeline.md
-          - AWS Security Hub: docs/integrations/aws-security-hub.md
       - Advanced:
           - Plugins: docs/advanced/plugins.md
           - Air-Gapped Environment: docs/advanced/air-gap.md
