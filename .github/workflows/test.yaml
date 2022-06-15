@@ -36,7 +36,7 @@ jobs:
         with:
           version: v1.45
           args: --deadline=30m
-          skip-cache: true
+          skip-cache: true # https://github.com/golangci/golangci-lint-action/issues/244#issuecomment-1052197778
 
       - name: Install TinyGo
         run: |
