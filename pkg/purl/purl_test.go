@@ -311,9 +311,12 @@ func TestFromString(t *testing.T) {
 			},
 		},
 		{
-			name:    "sad path bad rpm",
-			purl:    "pkg:rpm/redhat/a--@1.0.0",
-			wantErr: "failed to parse",
+			name: "bad rpm",
+			purl: "pkg:rpm/redhat/a--@1.0.0",
+			want: ftypes.Package{
+				Name:    "a--",
+				Version: "1.0.0",
+			},
 		},
 	}
 
