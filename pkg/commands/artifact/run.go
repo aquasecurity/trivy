@@ -3,6 +3,7 @@ package artifact
 import (
 	"context"
 	"errors"
+	"fmt"
 	"os"
 
 	"github.com/hashicorp/go-multierror"
@@ -153,7 +154,7 @@ func (r *runner) ScanImage(ctx context.Context, opt Option) (types.Report, error
 		s = imageRemoteScanner
 	}
 
-	return r.scan(ctx, opt, s)
+	return r.scanArtifact(ctx, opt, s)
 }
 
 func (r *runner) ScanFilesystem(ctx context.Context, opt Option) (types.Report, error) {
@@ -180,7 +181,7 @@ func (r *runner) scanFS(ctx context.Context, opt Option) (types.Report, error) {
 		s = filesystemRemoteScanner
 	}
 
-	return r.scan(ctx, opt, s)
+	return r.scanArtifact(ctx, opt, s)
 }
 
 func (r *runner) ScanRepository(ctx context.Context, opt Option) (types.Report, error) {
@@ -190,10 +191,10 @@ func (r *runner) ScanRepository(ctx context.Context, opt Option) (types.Report, 
 	// Disable the OS analyzers and individual package analyzers
 	opt.DisabledAnalyzers = append(analyzer.TypeIndividualPkgs, analyzer.TypeOSes...)
 
-	return r.scan(ctx, opt, repositoryStandaloneScanner)
+	return r.scanArtifact(ctx, opt, repositoryStandaloneScanner)
 }
 
-func (r *runner) scan(ctx context.Context, opt Option, initializeScanner InitializeScanner) (types.Report, error) {
+func (r *runner) scanArtifact(ctx context.Context, opt Option, initializeScanner InitializeScanner) (types.Report, error) {
 	report, err := scan(ctx, opt, initializeScanner, r.cache)
 	if err != nil {
 		return types.Report{}, xerrors.Errorf("scan error: %w", err)
@@ -417,14 +418,19 @@ func initScannerConfig(opt Option, cacheClient cache.Cache) (ScannerConfig, type
 	scanOptions := types.ScanOptions{
 		VulnType:            opt.VulnType,
 		SecurityChecks:      opt.SecurityChecks,
-		ScanRemovedPackages: opt.ScanRemovedPkgs, // this is valid only for image subcommand
+		ScanRemovedPackages: opt.ScanRemovedPkgs, // this is valid only for 'image' subcommand
 		ListAllPackages:     opt.ListAllPkgs,
 	}
-	log.Logger.Debugf("Vulnerability type:  %s", scanOptions.VulnType)
+
+	if slices.Contains(opt.SecurityChecks, types.SecurityCheckVulnerability) {
+		log.Logger.Info("Vulnerability scanning is enabled")
+		log.Logger.Debugf("Vulnerability type:  %s", scanOptions.VulnType)
+	}
 
 	// ScannerOption is filled only when config scanning is enabled.
 	var configScannerOptions config.ScannerOption
 	if slices.Contains(opt.SecurityChecks, types.SecurityCheckConfig) {
+		log.Logger.Info("Misconfiguration scanning is enabled")
 		configScannerOptions = config.ScannerOption{
 			Trace:        opt.Trace,
 			Namespaces:   append(opt.PolicyNamespaces, defaultPolicyNamespaces...),
@@ -432,6 +438,19 @@ func initScannerConfig(opt Option, cacheClient cache.Cache) (ScannerConfig, type
 			DataPaths:    opt.DataPaths,
 			FilePatterns: opt.FilePatterns,
 		}
+	}
+
+	// Do not load config file for secret scanning
+	if slices.Contains(opt.SecurityChecks, types.SecurityCheckSecret) {
+		ver := fmt.Sprintf("v%s", opt.AppVersion)
+		if opt.AppVersion == "dev" {
+			ver = opt.AppVersion
+		}
+		log.Logger.Info("Secret scanning is enabled")
+		log.Logger.Info("If your scanning is slow, please try '--security-checks vuln' to disable secret scanning")
+		log.Logger.Infof("Please see also https://aquasecurity.github.io/trivy/%s/docs/secret/scanning/#recommendation for faster secret detection", ver)
+	} else {
+		opt.SecretConfigPath = ""
 	}
 
 	return ScannerConfig{
