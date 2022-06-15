@@ -239,6 +239,9 @@ Dependency Origin Tree
 
 		_, summaries := tw.summary(pkgSeverityCount[vuln.PkgID])
 		topLvlID := fmt.Sprintf("%s, (%s)", vuln.PkgID, strings.Join(summaries, ", "))
+		if tw.isOutputToTerminal() {
+			topLvlID = color.HiRedString(topLvlID)
+		}
 
 		seen[vuln.PkgID] = struct{}{}
 		branch := root.AddBranch(topLvlID)
