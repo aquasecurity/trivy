@@ -59,19 +59,32 @@ $ trivy module install ghcr.io/aquasecurity/trivy-module-spring4shell
 ## Using Modules
 Once the module is installed, Trivy will load all available modules in the cache on the start of the next Trivy execution.
 The modules may inject custom logic into scanning and change the result.
+You can run Trivy as usual and modules are loaded automatically.
 
 You will see the log messages about WASM modules.
 
 ```shell
+$ trivy image ghcr.io/aquasecurity/trivy-test-images:spring4shell-jre8
 2022-06-12T12:57:13.210+0300    INFO    Loading ghcr.io/aquasecurity/trivy-module-spring4shell/spring4shell.wasm...
 2022-06-12T12:57:13.596+0300    INFO    Registering WASM module: spring4shell@v1
 ...
 2022-06-12T12:57:14.865+0300    INFO    Module spring4shell: Java Version: 8, Tomcat Version: 8.5.77
 2022-06-12T12:57:14.865+0300    INFO    Module spring4shell: change CVE-2022-22965 severity from CRITICAL to LOW
+
+Java (jar)
+
+Total: 9 (UNKNOWN: 1, LOW: 3, MEDIUM: 2, HIGH: 3, CRITICAL: 0)
+
+┌──────────────────────────────────────────────────────────────┬─────────────────────┬──────────┬───────────────────┬────────────────────────┬────────────────────────────────────────────────────────────┐
+│                           Library                            │    Vulnerability    │ Severity │ Installed Version │     Fixed Version      │                           Title                            │
+├──────────────────────────────────────────────────────────────┼─────────────────────┼──────────┼───────────────────┼────────────────────────┼────────────────────────────────────────────────────────────┤
+│ org.springframework.boot:spring-boot (helloworld.war)        │ CVE-2022-22965      │ LOW      │ 2.6.3             │ 2.5.12, 2.6.6          │ spring-framework: RCE via Data Binding on JDK 9+           │
+│                                                              │                     │          │                   │                        │ https://avd.aquasec.com/nvd/cve-2022-22965                 │
+├──────────────────────────────────────────────────────────────┼─────────────────────┼──────────┼───────────────────┼────────────────────────┼────────────────────────────────────────────────────────────┤
+...(snip)...
 ```
 
 In the above example, the Spring4Shell module changed the severity from CRITICAL to LOW because the application doesn't satisfy one of conditions.
-
 
 ## Uninstalling Modules
 Specify a module repository with `trivy module uninstall` command.
