@@ -10,7 +10,6 @@ import (
 
 	"github.com/fatih/color"
 	"github.com/liamg/tml"
-	"github.com/olekukonko/tablewriter"
 	"github.com/xlab/treeprint"
 	"golang.org/x/exp/slices"
 
@@ -195,43 +194,6 @@ func (tw TableWriter) setVulnerabilityRows(tableWriter *table.Table, vulns []typ
 
 		tableWriter.AddRow(row...)
 	}
-}
-func (tw TableWriter) setMisconfRows(table *tablewriter.Table, misconfs []types.DetectedMisconfiguration) map[string]int {
-	severityCount := map[string]int{}
-	for _, misconf := range misconfs {
-		if misconf.Status == types.StatusFailure {
-			severityCount[misconf.Severity]++
-			if misconf.PrimaryURL != "" {
-				primaryURL := strings.TrimPrefix(misconf.PrimaryURL, "https://")
-				misconf.Message = fmt.Sprintf("%s -->%s", misconf.Message, primaryURL)
-			}
-		}
-
-		severity := misconf.Severity
-		status := string(misconf.Status)
-		if tw.Output == os.Stdout {
-			switch misconf.Status {
-			case types.StatusPassed:
-				severity = color.New(color.FgGreen).Sprint(misconf.Severity)
-				status = color.New(color.FgGreen).Sprint(misconf.Status)
-			case types.StatusException:
-				severity = color.New(color.FgMagenta).Sprint(misconf.Severity)
-				status = color.New(color.FgMagenta).Sprint(misconf.Status)
-			case types.StatusFailure:
-				severity = color.New(color.FgRed).Sprint(misconf.Severity)
-				status = color.New(color.FgRed).Sprint(misconf.Status)
-			}
-		}
-
-		row := []string{misconf.Type, misconf.ID, misconf.Title, severity, status, misconf.Message}
-		if !tw.IncludeNonFailures {
-			// Remove status
-			row = append(row[:4], row[5:]...)
-		}
-
-		table.Append(row)
-	}
-	return severityCount
 }
 func (tw TableWriter) renderDependencies(result types.Result) {
 
