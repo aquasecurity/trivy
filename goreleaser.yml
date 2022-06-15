@@ -19,6 +19,7 @@ builds:
       - arm
       - arm64
       - s390x
+      - ppc64le
     goarm:
       - 7
     ignore:
