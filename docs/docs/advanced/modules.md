@@ -37,7 +37,7 @@ Modules should be distributed in OCI registries like GitHub Container Registry.
     WebAssembly is sandboxed and secure by design, but Trivy modules available in public are not audited for security.
     You should install and run third-party modules at your own risk even though 
 
-Under the hood Trivy leverages [wazero][wazero] to run WebAssembly modules without any dependencies.
+Under the hood Trivy leverages [wazero][wazero] to run WebAssembly modules without CGO.
 
 ## Installing a Module
 A module can be installed using the `trivy module install` command.
