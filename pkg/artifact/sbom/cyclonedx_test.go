@@ -284,7 +284,7 @@ func TestArtifact_Inspect(t *testing.T) {
 			c := new(cache.MockArtifactCache)
 			c.ApplyPutBlobExpectation(tt.putBlobExpectation)
 
-			a, err := sbom.NewArtifact(tt.filePath, c, artifact.Option{})
+			a, err := sbom.NewArtifact(string(sbom.ArtifactCycloneDX), tt.filePath, c, artifact.Option{})
 			require.NoError(t, err)
 
 			got, err := a.Inspect(context.Background())

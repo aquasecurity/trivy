@@ -35,16 +35,16 @@ func SbomRun(ctx *cli.Context) error {
 	return run(ctx.Context, opt, artifactType)
 }
 
-func cycloneDXStandaloneScanner(ctx context.Context, conf ScannerConfig) (scanner.Scanner, func(), error) {
-	s, cleanup, err := initializeCycloneDXScanner(ctx, conf.Target, conf.ArtifactCache, conf.LocalArtifactCache, conf.ArtifactOption)
+func sbomStandaloneScanner(ctx context.Context, conf ScannerConfig) (scanner.Scanner, func(), error) {
+	s, cleanup, err := initializeCycloneDXScanner(ctx, conf.ArtifactType, conf.Target, conf.ArtifactCache, conf.LocalArtifactCache, conf.ArtifactOption)
 	if err != nil {
 		return scanner.Scanner{}, func() {}, xerrors.Errorf("unable to initialize a cycloneDX scanner: %w", err)
 	}
 	return s, cleanup, nil
 }
 
-func cycloneDXRemoteScanner(ctx context.Context, conf ScannerConfig) (scanner.Scanner, func(), error) {
-	s, cleanup, err := initializeRemoteCycloneDXScanner(ctx, conf.Target, conf.ArtifactCache, conf.RemoteOption, conf.ArtifactOption)
+func sbomRemoteScanner(ctx context.Context, conf ScannerConfig) (scanner.Scanner, func(), error) {
+	s, cleanup, err := initializeRemoteCycloneDXScanner(ctx, conf.ArtifactType, conf.Target, conf.ArtifactCache, conf.RemoteOption, conf.ArtifactOption)
 	if err != nil {
 		return scanner.Scanner{}, func() {}, xerrors.Errorf("unable to initialize a cycloneDX scanner: %w", err)
 	}

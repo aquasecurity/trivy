@@ -16,6 +16,7 @@ import (
 	"github.com/aquasecurity/fanal/cache"
 	"github.com/aquasecurity/fanal/handler"
 	"github.com/aquasecurity/fanal/types"
+	"github.com/aquasecurity/trivy/pkg/sbom"
 	"github.com/aquasecurity/trivy/pkg/sbom/cyclonedx"
 )
 
@@ -28,39 +29,34 @@ type Artifact struct {
 	cache          cache.ArtifactCache
 	analyzer       analyzer.AnalyzerGroup
 	handlerManager handler.Manager
+	sbomParser     sbom.Parser
 
 	artifactOption      artifact.Option
 	configScannerOption config.ScannerOption
 }
 
-func NewArtifact(filePath string, c cache.ArtifactCache, opt artifact.Option) (artifact.Artifact, error) {
+func NewArtifact(artifactType, filePath string, c cache.ArtifactCache, opt artifact.Option) (artifact.Artifact, error) {
+	var parser sbom.Parser
+	switch artifactType {
+	case string(ArtifactCycloneDX):
+		parser = cyclonedx.NewParser(filePath)
+	}
 	return Artifact{
 		filePath:       filepath.Clean(filePath),
+		sbomParser:     parser,
 		cache:          c,
 		artifactOption: opt,
 	}, nil
 }
 
 func (a Artifact) Inspect(_ context.Context) (types.ArtifactReference, error) {
-	var err error
-	bom := cyclonedx.TrivyBOM{}
-	extension := filepath.Ext(a.filePath)
-	switch extension {
-	case ".json":
-		f, err := os.Open(a.filePath)
-		if err != nil {
-			return types.ArtifactReference{}, xerrors.Errorf("failed to open cycloneDX file error: %w", err)
-		}
-		defer f.Close()
-		if err := json.NewDecoder(f).Decode(&bom); err != nil {
-			return types.ArtifactReference{}, xerrors.Errorf("failed to json decode: %w", err)
-		}
-	case ".xml":
-		// TODO: not supported yet
-	default:
-		return types.ArtifactReference{}, xerrors.Errorf("invalid cycloneDX format: %s", extension)
+	f, err := os.Open(a.filePath)
+	if err != nil {
+		return types.ArtifactReference{}, xerrors.Errorf("failed to open sbom file error: %w", err)
 	}
-	apps, pkgInfos, o, err := bom.Extract()
+	defer f.Close()
+
+	bomID, o, pkgInfos, apps, err := a.sbomParser.Parse(f)
 	if err != nil {
 		return types.ArtifactReference{}, xerrors.Errorf("failed to get blob info: %w", err)
 	}
@@ -81,11 +77,20 @@ func (a Artifact) Inspect(_ context.Context) (types.ArtifactReference, error) {
 	}
 
 	return types.ArtifactReference{
-		Name:    bom.SerialNumber,
-		Type:    ArtifactCycloneDX,
+		Name:    bomID,
+		Type:    a.Type(),
 		ID:      cacheKey, // use a cache key as pseudo artifact ID
 		BlobIDs: []string{cacheKey},
 	}, nil
+}
+
+func (a Artifact) Type() types.ArtifactType {
+	switch a.sbomParser.Type() {
+	case cyclonedx.FormatCycloneDX:
+		return ArtifactCycloneDX
+	default:
+		return ""
+	}
 }
 
 func (a Artifact) Clean(reference types.ArtifactReference) error {

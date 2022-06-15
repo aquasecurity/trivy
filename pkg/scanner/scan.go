@@ -12,6 +12,7 @@ import (
 	"github.com/aquasecurity/fanal/artifact/remote"
 	"github.com/aquasecurity/fanal/image"
 	ftypes "github.com/aquasecurity/fanal/types"
+	"github.com/aquasecurity/trivy/pkg/artifact/sbom"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/report"
 	"github.com/aquasecurity/trivy/pkg/rpc/client"
@@ -56,6 +57,12 @@ var StandaloneRepositorySet = wire.NewSet(
 	StandaloneSuperSet,
 )
 
+// StandaloneSBOMSet binds sbom dependencies
+var StandaloneSBOMSet = wire.NewSet(
+	sbom.NewArtifact,
+	StandaloneSuperSet,
+)
+
 /////////////////
 // Client/Server
 /////////////////
@@ -71,6 +78,12 @@ var RemoteSuperSet = wire.NewSet(
 // RemoteFilesystemSet binds filesystem dependencies for client/server mode
 var RemoteFilesystemSet = wire.NewSet(
 	flocal.NewArtifact,
+	RemoteSuperSet,
+)
+
+// RemoteSBOMSet binds sbom dependencies for client/server mode
+var RemoteSBOMSet = wire.NewSet(
+	sbom.NewArtifact,
 	RemoteSuperSet,
 )
 

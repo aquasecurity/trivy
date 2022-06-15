@@ -62,6 +62,9 @@ type ScannerConfig struct {
 
 	// Artifact options
 	ArtifactOption artifact.Option
+
+	// SBOM
+	ArtifactType string
 }
 
 type Runner interface {
@@ -73,8 +76,8 @@ type Runner interface {
 	ScanRootfs(ctx context.Context, opt Option) (types.Report, error)
 	// ScanRepositroy scans repository
 	ScanRepository(ctx context.Context, opt Option) (types.Report, error)
-	// ScanCycloneDX scans CycloneDX
-	ScanCycloneDX(ctx context.Context, opt Option) (types.Report, error)
+	// ScanSBOM scans CycloneDX
+	ScanSBOM(ctx context.Context, opt Option) (types.Report, error)
 	// Filter filter a report
 	Filter(ctx context.Context, opt Option, report types.Report) (types.Report, error)
 	// Report a writes a report
@@ -205,14 +208,14 @@ func (r *runner) scan(ctx context.Context, opt Option, initializeScanner Initial
 	return report, nil
 }
 
-func (r *runner) ScanCycloneDX(ctx context.Context, opt Option) (types.Report, error) {
+func (r *runner) ScanSBOM(ctx context.Context, opt Option) (types.Report, error) {
 	var s InitializeScanner
 	if opt.RemoteAddr == "" {
 		// Scan cycloneDX in standalone mode
-		s = cycloneDXStandaloneScanner
+		s = sbomStandaloneScanner
 	} else {
 		// Scan cycloneDX in client/server mode
-		s = cycloneDXRemoteScanner
+		s = sbomRemoteScanner
 	}
 
 	return r.scan(ctx, opt, s)
@@ -367,7 +370,7 @@ func run(ctx context.Context, opt Option, artifactType ArtifactType) (err error)
 			return xerrors.Errorf("repository scan error: %w", err)
 		}
 	case cycloneDXArtifact:
-		if report, err = runner.ScanCycloneDX(ctx, opt); err != nil {
+		if report, err = runner.ScanSBOM(ctx, opt); err != nil {
 			return xerrors.Errorf("cyclonedx scan error: %w", err)
 		}
 	}
@@ -457,6 +460,7 @@ func initScannerConfig(opt Option, cacheClient cache.Cache) (ScannerConfig, type
 	return ScannerConfig{
 		Target:             target,
 		ArtifactCache:      cacheClient,
+		ArtifactType:       opt.ArtifactType,
 		LocalArtifactCache: cacheClient,
 		RemoteOption: client.ScannerOption{
 			RemoteURL:     opt.RemoteAddr,
