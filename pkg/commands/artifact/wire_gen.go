@@ -105,7 +105,9 @@ func initializeRepositoryScanner(ctx context.Context, url string, artifactCache 
 func initializeSBOMScanner(ctx context.Context, report, path string, artifactCache cache.ArtifactCache, localArtifactCache cache.LocalArtifactCache, artifactOption artifact.Option) (scanner.Scanner, func(), error) {
 	applierApplier := applier.NewApplier(localArtifactCache)
 	detector := ospkg.Detector{}
-	localScanner := local.NewScanner(applierApplier, detector)
+	config := db.Config{}
+	client := vulnerability.NewClient(config)
+	localScanner := local.NewScanner(applierApplier, detector, client)
 	artifactArtifact, err := sbom2.NewArtifact(report, path, artifactCache, artifactOption)
 	if err != nil {
 		return scanner.Scanner{}, nil, err

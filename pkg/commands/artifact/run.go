@@ -236,7 +236,7 @@ func (r *runner) ScanSBOM(ctx context.Context, opt Option) (types.Report, error)
 		s = sbomRemoteScanner
 	}
 
-	return r.scan(ctx, opt, s)
+	return r.scanArtifact(ctx, opt, s)
 }
 
 func (r *runner) Filter(ctx context.Context, opt Option, report types.Report) (types.Report, error) {
@@ -385,7 +385,7 @@ func run(ctx context.Context, opt Option, artifactType ArtifactType) (err error)
 			return xerrors.Errorf("repository scan error: %w", err)
 		}
 	case cycloneDXArtifact:
-		if report, err = runner.ScanSBOM(ctx, opt); err != nil {
+		if report, err = r.ScanSBOM(ctx, opt); err != nil {
 			return xerrors.Errorf("cyclonedx scan error: %w", err)
 		}
 	}
