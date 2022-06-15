@@ -78,7 +78,7 @@ const (
 	OpenSUSE
 )
 
-// Scanner implements the Alpine scanner
+// Scanner implements the SUSE scanner
 type Scanner struct {
 	vs susecvrf.VulnSrc
 	*options

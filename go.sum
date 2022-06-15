@@ -69,8 +69,9 @@ github.com/Azure/go-autorest/autorest v0.11.27 h1:F3R3q42aWytozkV8ihzcgMO4OA4cuq
 github.com/Azure/go-autorest/autorest v0.11.27/go.mod h1:7l8ybrIdUmGqZMTD0sRtAr8NvbHjfofbf8RSP2q7w7U=
 github.com/Azure/go-autorest/autorest/adal v0.9.13/go.mod h1:W/MM4U6nLxnIskrw4UwWzlHfGjwUS50aOsc/I3yuU8M=
 github.com/Azure/go-autorest/autorest/adal v0.9.15/go.mod h1:tGMin8I49Yij6AQ+rvV+Xa/zwxYQB5hmsd6DkfAx2+A=
-github.com/Azure/go-autorest/autorest/adal v0.9.18 h1:kLnPsRjzZZUF3K5REu/Kc+qMQrvuza2bwSnNdhmzLfQ=
 github.com/Azure/go-autorest/autorest/adal v0.9.18/go.mod h1:XVVeme+LZwABT8K5Lc3hA4nAe8LDBVle26gTrguhhPQ=
+github.com/Azure/go-autorest/autorest/adal v0.9.20 h1:gJ3E98kMpFB1MFqQCvA1yFab8vthOeD4VlFRQULxahg=
+github.com/Azure/go-autorest/autorest/adal v0.9.20/go.mod h1:XVVeme+LZwABT8K5Lc3hA4nAe8LDBVle26gTrguhhPQ=
 github.com/Azure/go-autorest/autorest/azure/auth v0.5.11 h1:P6bYXFoao05z5uhOQzbC3Qd8JqF3jUoocoTeIxkp2cA=
 github.com/Azure/go-autorest/autorest/azure/auth v0.5.11/go.mod h1:84w/uV8E37feW2NCJ08uT9VBfjfUHpgLVnG2InYD6cg=
 github.com/Azure/go-autorest/autorest/azure/cli v0.4.5 h1:0W/yGmFdTIT77fvdlGZ0LMISoLHFJ7Tx4U0yeB+uFs4=
@@ -168,10 +169,10 @@ github.com/aquasecurity/bolt-fixtures v0.0.0-20200903104109-d34e7f983986 h1:2a30
 github.com/aquasecurity/bolt-fixtures v0.0.0-20200903104109-d34e7f983986/go.mod h1:NT+jyeCzXk6vXR5MTkdn4z64TgGfE5HMLC8qfj5unl8=
 github.com/aquasecurity/defsec v0.63.1 h1:aYYFtM3yyvnOHIRVCfMrjOaub/cJSDI9hDIIPrwWXxI=
 github.com/aquasecurity/defsec v0.63.1/go.mod h1:xUmN8mHLF2RCITp9v6HH+vkqfnfAX6BsIC5pbCwzg9k=
-github.com/aquasecurity/fanal v0.0.0-20220614114854-29c7165f4672 h1:M2h0GYHJYIEbLPoXCkjPE44j7Qa8DFqka7XzPBN13Pw=
-github.com/aquasecurity/fanal v0.0.0-20220614114854-29c7165f4672/go.mod h1:8gUQwnfro5XSt9dBKmzdnTS/aVh35UMc6p3LWChBtrc=
-github.com/aquasecurity/go-dep-parser v0.0.0-20220531123411-1dabb532605f h1:tBLOZtvvSqpe2TIcmEGpyLwVDLIORE1hRrdUiLE5bwE=
-github.com/aquasecurity/go-dep-parser v0.0.0-20220531123411-1dabb532605f/go.mod h1:7EOQWQmyavVPY3fScbbPdd3dB/b0Q4ZbJ/NZCvNKrLs=
+github.com/aquasecurity/fanal v0.0.0-20220614123434-09d6aced4205 h1:Q36FKpJGusjOw1bSt39B2XihgaAtONe4HJGilfxX55k=
+github.com/aquasecurity/fanal v0.0.0-20220614123434-09d6aced4205/go.mod h1:pHIJ3Tp3Krn+l4Ywdngll3LKNVYBy24Ln2YlOk+g+fU=
+github.com/aquasecurity/go-dep-parser v0.0.0-20220607141748-ab2deea55bdf h1:LE3sTKuErkJqkNsPOYvbPb/3VOKKZKyjqBQla1KBL0k=
+github.com/aquasecurity/go-dep-parser v0.0.0-20220607141748-ab2deea55bdf/go.mod h1:7EOQWQmyavVPY3fScbbPdd3dB/b0Q4ZbJ/NZCvNKrLs=
 github.com/aquasecurity/go-gem-version v0.0.0-20201115065557-8eed6fe000ce h1:QgBRgJvtEOBtUXilDb1MLi1p1MWoyFDXAu5DEUl5nwM=
 github.com/aquasecurity/go-gem-version v0.0.0-20201115065557-8eed6fe000ce/go.mod h1:HXgVzOPvXhVGLJs4ZKO817idqr/xhwsTcj17CLYY74s=
 github.com/aquasecurity/go-npm-version v0.0.0-20201110091526-0b796d180798 h1:eveqE9ivrt30CJ7dOajOfBavhZ4zPqHcZe/4tKp0alc=

@@ -167,7 +167,7 @@ extra:
     provider: mike
   var:
     prev_git_tag: "v0.0.0"
-    operator_version: "v0.0.5"
+    operator_version: "v0.0.7"
 
 plugins:
   - search
