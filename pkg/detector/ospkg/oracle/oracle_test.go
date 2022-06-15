@@ -131,6 +131,7 @@ func TestScanner_Detect(t *testing.T) {
 					PkgName:          "curl",
 					InstalledVersion: "7.29.0-59.0.1.el7",
 					FixedVersion:     "7.29.0-59.0.1.el7_9.1",
+					VendorIDs:        []string{"ELSA-2020-5002"},
 					DataSource: &dbTypes.DataSource{
 						ID:   vulnerability.OracleOVAL,
 						Name: "Oracle Linux OVAL definitions",
@@ -204,6 +205,7 @@ func TestScanner_Detect(t *testing.T) {
 					PkgName:          "glibc",
 					InstalledVersion: "2:2.17-156.ksplice1.el7",
 					FixedVersion:     "2:2.17-157.ksplice1.el7_3.4",
+					VendorIDs:        []string{"ELSA-2017-3582"},
 					DataSource: &dbTypes.DataSource{
 						ID:   vulnerability.OracleOVAL,
 						Name: "Oracle Linux OVAL definitions",
@@ -254,6 +256,7 @@ func TestScanner_Detect(t *testing.T) {
 					PkgName:          "gnutls",
 					InstalledVersion: "3.6.3-1.el8",
 					FixedVersion:     "3.6.16-4.el8",
+					VendorIDs:        []string{"ELSA-2021-4451"},
 					DataSource: &dbTypes.DataSource{
 						ID:   vulnerability.OracleOVAL,
 						Name: "Oracle Linux OVAL definitions",
@@ -265,6 +268,7 @@ func TestScanner_Detect(t *testing.T) {
 					PkgName:          "gnutls",
 					InstalledVersion: "3.6.3-1.el8",
 					FixedVersion:     "3.6.16-4.el8",
+					VendorIDs:        []string{"ELSA-2021-4451"},
 					DataSource: &dbTypes.DataSource{
 						ID:   vulnerability.OracleOVAL,
 						Name: "Oracle Linux OVAL definitions",
@@ -276,6 +280,7 @@ func TestScanner_Detect(t *testing.T) {
 					PkgName:          "gnutls",
 					InstalledVersion: "3.6.3-1.el8",
 					FixedVersion:     "3.6.16-4.el8",
+					VendorIDs:        []string{"ELSA-2021-4451"},
 					DataSource: &dbTypes.DataSource{
 						ID:   vulnerability.OracleOVAL,
 						Name: "Oracle Linux OVAL definitions",
@@ -328,6 +333,7 @@ func TestScanner_Detect(t *testing.T) {
 					PkgName:          "gnutls",
 					InstalledVersion: "10:3.6.16-4.el8_fips",
 					FixedVersion:     "10:3.6.16-4.0.1.el8_fips",
+					VendorIDs:        []string{"ELSA-2022-9221"},
 					DataSource: &dbTypes.DataSource{
 						ID:   vulnerability.OracleOVAL,
 						Name: "Oracle Linux OVAL definitions",
@@ -339,6 +345,7 @@ func TestScanner_Detect(t *testing.T) {
 					PkgName:          "gnutls",
 					InstalledVersion: "10:3.6.16-4.el8_fips",
 					FixedVersion:     "10:3.6.16-4.0.1.el8_fips",
+					VendorIDs:        []string{"ELSA-2022-9221"},
 					DataSource: &dbTypes.DataSource{
 						ID:   vulnerability.OracleOVAL,
 						Name: "Oracle Linux OVAL definitions",
@@ -350,6 +357,41 @@ func TestScanner_Detect(t *testing.T) {
 					PkgName:          "gnutls",
 					InstalledVersion: "10:3.6.16-4.el8_fips",
 					FixedVersion:     "10:3.6.16-4.0.1.el8_fips",
+					VendorIDs:        []string{"ELSA-2022-9221"},
+					DataSource: &dbTypes.DataSource{
+						ID:   vulnerability.OracleOVAL,
+						Name: "Oracle Linux OVAL definitions",
+						URL:  "https://linux.oracle.com/security/oval/",
+					},
+				},
+			},
+		},
+		{
+			name:     "multiple advisories",
+			fixtures: []string{"testdata/fixtures/multiple-advisories.yaml", "testdata/fixtures/data-source.yaml"},
+			args: args{
+				osVer: "7",
+				pkgs: []ftypes.Package{
+					{
+						Name:       "kernel-uek",
+						Version:    "5.4.17",
+						Release:    "2102.201.1.el8",
+						SrcName:    "kernel-uek",
+						SrcVersion: "5.4.17",
+						SrcRelease: "2102.201.1.el8",
+					},
+				},
+			},
+			want: []types.DetectedVulnerability{
+				{
+					VulnerabilityID:  "CVE-2021-23133",
+					PkgName:          "kernel-uek",
+					InstalledVersion: "5.4.17-2102.201.1.el8",
+					FixedVersion:     "5.4.17-2102.203.5.el8",
+					VendorIDs: []string{
+						"ELSA-2021-9306",
+						"ELSA-2021-9362",
+					},
 					DataSource: &dbTypes.DataSource{
 						ID:   vulnerability.OracleOVAL,
 						Name: "Oracle Linux OVAL definitions",
@@ -375,7 +417,7 @@ func TestScanner_Detect(t *testing.T) {
 				assert.NoError(t, err)
 			}
 
-			assert.Equal(t, tt.want, got)
+			assert.ElementsMatch(t, tt.want, got)
 		})
 	}
 }

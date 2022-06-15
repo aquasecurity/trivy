@@ -1,10 +1,13 @@
 package oracle
 
 import (
+	ustrings "github.com/aquasecurity/trivy-db/pkg/utils/strings"
+	"sort"
 	"strings"
 	"time"
 
 	version "github.com/knqyf263/go-rpm-version"
+	"golang.org/x/exp/maps"
 	"golang.org/x/xerrors"
 	"k8s.io/utils/clock"
 
@@ -43,20 +46,6 @@ func NewScanner() *Scanner {
 	}
 }
 
-func extractKsplice(v string) string {
-	subs := strings.Split(strings.ToLower(v), ".")
-	for _, s := range subs {
-		if strings.HasPrefix(s, "ksplice") {
-			return s
-		}
-	}
-	return ""
-}
-
-func isFips(v string) bool {
-	return strings.HasSuffix(strings.ToLower(v), "_fips")
-}
-
 // Detect scans and return vulnerability in Oracle scanner
 func (s *Scanner) Detect(osVer string, _ *ftypes.Repository, pkgs []ftypes.Package) ([]types.DetectedVulnerability, error) {
 	log.Logger.Info("Detecting Oracle Linux vulnerabilities...")
@@ -77,19 +66,14 @@ func (s *Scanner) Detect(osVer string, _ *ftypes.Repository, pkgs []ftypes.Packa
 
 		installed := utils.FormatVersion(pkg)
 		installedVersion := version.NewVersion(installed)
+
+		uniqVulns := map[string]types.DetectedVulnerability{}
 		for _, adv := range advisories {
-			// when one of them doesn't have ksplice, we'll also skip it
-			// extract kspliceX and compare it with kspliceY in advisories
-			// if kspliceX and kspliceY are different, we will skip the advisory
-			if extractKsplice(adv.FixedVersion) != extractKsplice(pkg.Release) {
+			if oracleoval.GetPackageFlavor(adv.FixedVersion) != oracleoval.GetPackageFlavor(pkg.Release) {
 				continue
 			}
 
-			if isFips(adv.FixedVersion) != isFips(pkg.Release) {
-				continue
-			}
-
-			fixedVersion := version.NewVersion(adv.FixedVersion)
+			vulnID := adv.VulnerabilityID
 			vuln := types.DetectedVulnerability{
 				VulnerabilityID:  adv.VulnerabilityID,
 				PkgName:          pkg.Name,
@@ -97,12 +81,43 @@ func (s *Scanner) Detect(osVer string, _ *ftypes.Repository, pkgs []ftypes.Packa
 				Layer:            pkg.Layer,
 				Custom:           adv.Custom,
 				DataSource:       adv.DataSource,
+				VendorIDs:        adv.VendorIDs,
 			}
+
+			// unpatched vulnerabilities
+			if adv.FixedVersion == "" {
+				// To avoid overwriting the fixed version by mistake, we should skip unpatched vulnerabilities if they were added earlier
+				if _, ok := uniqVulns[vulnID]; !ok {
+					uniqVulns[vulnID] = vuln
+				}
+				continue
+			}
+			// patched vulnerabilities
+			fixedVersion := version.NewVersion(adv.FixedVersion)
 			if installedVersion.LessThan(fixedVersion) {
-				vuln.FixedVersion = adv.FixedVersion
-				vulns = append(vulns, vuln)
+				vuln.VendorIDs = adv.VendorIDs
+				vuln.FixedVersion = fixedVersion.String()
+
+				if v, ok := uniqVulns[vulnID]; ok {
+					// In case two advisories resolve the same CVE-ID.
+					// e.g. The first fix might be incomplete.
+					v.VendorIDs = ustrings.Unique(append(v.VendorIDs, vuln.VendorIDs...))
+
+					// The newer fixed version should be taken.
+					if version.NewVersion(v.FixedVersion).LessThan(fixedVersion) {
+						v.FixedVersion = vuln.FixedVersion
+					}
+					uniqVulns[vulnID] = v
+				} else {
+					uniqVulns[vulnID] = vuln
+				}
 			}
 		}
+
+		vulns = append(vulns, maps.Values(uniqVulns)...)
+		sort.Slice(vulns, func(i, j int) bool {
+			return vulns[i].VulnerabilityID < vulns[j].VulnerabilityID
+		})
 	}
 	return vulns, nil
 }

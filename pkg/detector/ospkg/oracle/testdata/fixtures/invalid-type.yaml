@@ -4,6 +4,7 @@
       pairs:
         - key: CVE-2020-8177
           value:
-            FixedVersion:
-              - foo
-              - bar
+            Entries:
+            - FixedVersion:
+                - foo
+                - bar

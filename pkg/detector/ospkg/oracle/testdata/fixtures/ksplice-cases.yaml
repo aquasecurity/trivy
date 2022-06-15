@@ -1,13 +1,5 @@
 - bucket: Oracle Linux 7
   pairs:
-    - bucket: curl
-      pairs:
-        - key: CVE-2020-8177
-          value:
-            Entries:
-              - FixedVersion: "7.29.0-59.0.1.el7_9.1"
-                VendorIDs:
-                  - ELSA-2020-5002
     - bucket: glibc
       pairs:
         - key: CVE-2017-1000364
@@ -24,24 +16,33 @@
               - FixedVersion: "3.6.16-4.el8"
                 VendorIDs:
                   - ELSA-2021-4451
-              - FixedVersion: "10:3.6.16-4.0.1.el8_fips"
-                VendorIDs:
-                  - ELSA-2022-9221
         - key: CVE-2021-20232
           value:
             Entries:
               - FixedVersion: "3.6.16-4.el8"
                 VendorIDs:
                   - ELSA-2021-4451
+        - key: CVE-2021-3580
+          value:
+            Entries:
+              - FixedVersion: "3.6.16-4.el8"
+                VendorIDs:
+                  - ELSA-2021-4451
+        - key: CVE-2021-20231
+          value:
+            Entries:
+              - FixedVersion: "10:3.6.16-4.0.1.el8_fips"
+                VendorIDs:
+                  - ELSA-2022-9221
+        - key: CVE-2021-20232
+          value:
+            Entries:
               - FixedVersion: "10:3.6.16-4.0.1.el8_fips"
                 VendorIDs:
                   - ELSA-2022-9221
         - key: CVE-2021-3580
           value:
             Entries:
-                - FixedVersion: "3.6.16-4.el8"
-                  VendorIDs:
-                    - ELSA-2021-4451
-                - FixedVersion: "10:3.6.16-4.0.1.el8_fips"
-                  VendorIDs:
-                    - ELSA-2022-9221
+              - FixedVersion: "10:3.6.16-4.0.1.el8_fips"
+                VendorIDs:
+                  - ELSA-2022-9221
