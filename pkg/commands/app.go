@@ -16,6 +16,9 @@ import (
 	"github.com/aquasecurity/trivy/pkg/commands/option"
 	"github.com/aquasecurity/trivy/pkg/commands/plugin"
 	"github.com/aquasecurity/trivy/pkg/commands/server"
+	k8scommands "github.com/aquasecurity/trivy/pkg/k8s/commands"
+	"github.com/aquasecurity/trivy/pkg/log"
+	"github.com/aquasecurity/trivy/pkg/report"
 	"github.com/aquasecurity/trivy/pkg/result"
 	"github.com/aquasecurity/trivy/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/utils"
@@ -39,8 +42,8 @@ var (
 	formatFlag = cli.StringFlag{
 		Name:    "format",
 		Aliases: []string{"f"},
-		Value:   "table",
-		Usage:   "format (table, json, sarif, template)",
+		Value:   report.FormatTable,
+		Usage:   "format (table, json, sarif, template, cyclonedx, spdx, spdx-json, github)",
 		EnvVars: []string{"TRIVY_FORMAT"},
 	}
 
@@ -207,6 +210,28 @@ var (
 		EnvVars: []string{"TRIVY_TIMEOUT"},
 	}
 
+	namespaceFlag = cli.StringFlag{
+		Name:    "namespace",
+		Aliases: []string{"n"},
+		Value:   "",
+		Usage:   "specify a namespace to scan",
+		EnvVars: []string{"TRIVY_K8S_NAMESPACE"},
+	}
+
+	contextFlag = cli.StringFlag{
+		Name:    "context",
+		Aliases: []string{"ctx"},
+		Value:   "",
+		Usage:   "specify a context to scan",
+		EnvVars: []string{"TRIVY_K8S_CONTEXT"},
+	}
+
+	reportFlag = cli.StringFlag{
+		Name:  "report",
+		Value: "all",
+		Usage: "specify a report format for the output. (all,summary default: all)",
+	}
+
 	// TODO: remove this flag after a sufficient deprecation period.
 	lightFlag = cli.BoolFlag{
 		Name:    "light",
@@ -363,7 +388,7 @@ func NewApp(version string) *cli.App {
 	app.Name = "trivy"
 	app.Version = version
 	app.ArgsUsage = "target"
-	app.Usage = "A simple and comprehensive vulnerability scanner for containers"
+	app.Usage = "Scanner for vulnerabilities in container images, file systems, and Git repositories, as well as for configuration issues and hard-coded secrets"
 	app.EnableBashCompletion = true
 	app.Flags = globalFlags
 
@@ -385,12 +410,13 @@ func NewApp(version string) *cli.App {
 		NewImageCommand(),
 		NewFilesystemCommand(),
 		NewRootfsCommand(),
-		NewSbomCommand(),
 		NewRepositoryCommand(),
 		NewClientCommand(),
 		NewServerCommand(),
 		NewConfigCommand(),
 		NewPluginCommand(),
+		NewK8sCommand(),
+		NewSbomCommand(),
 		NewVersionCommand(),
 	}
 	app.Commands = append(app.Commands, plugin.LoadCommands()...)
@@ -473,6 +499,12 @@ func NewImageCommand() *cli.Command {
 			&secretConfig,
 			stringSliceFlag(skipFiles),
 			stringSliceFlag(skipDirs),
+
+			// for client/server
+			&remoteServer,
+			&token,
+			&tokenHeader,
+			&customHeaders,
 		},
 	}
 }
@@ -493,6 +525,7 @@ func NewFilesystemCommand() *cli.Command {
 			&exitCodeFlag,
 			&skipDBUpdateFlag,
 			&skipPolicyUpdateFlag,
+			&insecureFlag,
 			&clearCacheFlag,
 			&ignoreUnfixedFlag,
 			&vulnTypeFlag,
@@ -541,6 +574,7 @@ func NewRootfsCommand() *cli.Command {
 			&outputFlag,
 			&exitCodeFlag,
 			&skipDBUpdateFlag,
+			&insecureFlag,
 			&skipPolicyUpdateFlag,
 			&clearCacheFlag,
 			&ignoreUnfixedFlag,
@@ -617,8 +651,12 @@ func NewClientCommand() *cli.Command {
 		Name:      "client",
 		Aliases:   []string{"c"},
 		ArgsUsage: "image_name",
-		Usage:     "client mode",
-		Action:    artifact.ImageRun,
+		Usage:     "[DEPRECATED] client mode",
+		Action: func(ctx *cli.Context) error {
+			log.Logger.Warn("`client` subcommand is deprecated now. See https://github.com/aquasecurity/trivy/discussions/2119")
+			return artifact.ImageRun(ctx)
+		},
+		Hidden: true, // It is no longer displayed
 		Flags: []cli.Flag{
 			&templateFlag,
 			&formatFlag,
@@ -626,7 +664,6 @@ func NewClientCommand() *cli.Command {
 			&severityFlag,
 			&outputFlag,
 			&exitCodeFlag,
-			&clearCacheFlag,
 			&ignoreUnfixedFlag,
 			&removedPkgsFlag,
 			&vulnTypeFlag,
@@ -668,6 +705,7 @@ func NewServerCommand() *cli.Command {
 		Flags: []cli.Flag{
 			&skipDBUpdateFlag,
 			&downloadDBOnlyFlag,
+			&insecureFlag,
 			&resetFlag,
 			&cacheBackendFlag,
 			&cacheTTL,
@@ -771,6 +809,69 @@ func NewPluginCommand() *cli.Command {
 	}
 }
 
+// NewK8sCommand is the factory method to add k8s subcommand
+func NewK8sCommand() *cli.Command {
+	k8sSecurityChecksFlag := withValue(
+		securityChecksFlag,
+		fmt.Sprintf(
+			"%s,%s,%s",
+			types.SecurityCheckVulnerability,
+			types.SecurityCheckConfig,
+			types.SecurityCheckSecret),
+	)
+
+	return &cli.Command{
+		Name:    "kubernetes",
+		Aliases: []string{"k8s"},
+		Usage:   "scan kubernetes vulnerabilities, secrets and misconfigurations",
+		CustomHelpTemplate: cli.CommandHelpTemplate + `EXAMPLES:
+  - cluster scanning:
+      $ trivy k8s --report summary cluster
+  - namespace scanning:
+      $ trivy k8s -n kube-system --report summary all
+  - resource scanning:
+      $ trivy k8s deployment/orion
+`,
+		Action: k8scommands.Run,
+		Flags: []cli.Flag{
+			&contextFlag,
+			&namespaceFlag,
+			&reportFlag,
+			&formatFlag,
+			&outputFlag,
+			&severityFlag,
+			&exitCodeFlag,
+			&skipDBUpdateFlag,
+			&insecureFlag,
+			&skipPolicyUpdateFlag,
+			&clearCacheFlag,
+			&ignoreUnfixedFlag,
+			&vulnTypeFlag,
+			&k8sSecurityChecksFlag,
+			&ignoreFileFlag,
+			&cacheBackendFlag,
+			&cacheTTL,
+			&redisBackendCACert,
+			&redisBackendCert,
+			&redisBackendKey,
+			&timeoutFlag,
+			&noProgressFlag,
+			&ignorePolicy,
+			&listAllPackages,
+			&offlineScan,
+			&dbRepositoryFlag,
+			&secretConfig,
+			stringSliceFlag(skipFiles),
+			stringSliceFlag(skipDirs),
+
+			// for misconfiguration
+			stringSliceFlag(configPolicy),
+			stringSliceFlag(configData),
+			stringSliceFlag(policyNamespaces),
+		},
+	}
+}
+
 // NewSbomCommand is the factory method to add sbom command
 func NewSbomCommand() *cli.Command {
 	return &cli.Command{
@@ -801,6 +902,7 @@ func NewSbomCommand() *cli.Command {
 			&severityFlag,
 			&offlineScan,
 			&dbRepositoryFlag,
+			&insecureFlag,
 			stringSliceFlag(skipFiles),
 			stringSliceFlag(skipDirs),
 
@@ -815,8 +917,8 @@ func NewSbomCommand() *cli.Command {
 			&cli.StringFlag{
 				Name:    "sbom-format",
 				Aliases: []string{"format"},
-				Value:   "cyclonedx",
-				Usage:   "SBOM format (cyclonedx)",
+				Value:   report.FormatCycloneDX,
+				Usage:   "SBOM format (cyclonedx, spdx, spdx-json, github)",
 				EnvVars: []string{"TRIVY_SBOM_FORMAT"},
 			},
 		},
@@ -843,4 +945,9 @@ func NewVersionCommand() *cli.Command {
 // The flag value is copied through this function to prevent the issue.
 func stringSliceFlag(f cli.StringSliceFlag) *cli.StringSliceFlag {
 	return &f
+}
+
+func withValue(s cli.StringFlag, value string) cli.StringFlag {
+	s.Value = value
+	return s
 }

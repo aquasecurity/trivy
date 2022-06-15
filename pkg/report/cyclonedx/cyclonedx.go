@@ -5,7 +5,6 @@ import (
 	"sort"
 	"strconv"
 	"strings"
-	"time"
 
 	cdx "github.com/CycloneDX/cyclonedx-go"
 	"github.com/google/uuid"
@@ -45,6 +44,9 @@ const (
 	PropertyFilePath        = "FilePath"
 	PropertyLayerDigest     = "LayerDigest"
 	PropertyLayerDiffID     = "LayerDiffID"
+
+	// https://json-schema.org/understanding-json-schema/reference/string.html#dates-and-times
+	timeLayout = "2006-01-02T15:04:05+00:00"
 )
 
 // Writer implements types.Writer
@@ -123,7 +125,7 @@ func (cw *Writer) convertToBom(r types.Report, version string) (*cdx.BOM, error)
 	}
 
 	bom.Metadata = &cdx.Metadata{
-		Timestamp: cw.clock.Now().UTC().Format(time.RFC3339Nano),
+		Timestamp: cw.clock.Now().UTC().Format(timeLayout),
 		Tools: &[]cdx.Tool{
 			{
 				Vendor:  "aquasecurity",
@@ -262,10 +264,10 @@ func (cw *Writer) vulnerability(vuln types.DetectedVulnerability, bomRef string)
 		Advisories:  advisories(vuln.References),
 	}
 	if vuln.PublishedDate != nil {
-		v.Published = vuln.PublishedDate.String()
+		v.Published = vuln.PublishedDate.Format(timeLayout)
 	}
 	if vuln.LastModifiedDate != nil {
-		v.Updated = vuln.LastModifiedDate.String()
+		v.Updated = vuln.LastModifiedDate.Format(timeLayout)
 	}
 
 	v.Affects = &[]cdx.Affects{affects(bomRef, vuln.InstalledVersion)}
@@ -426,6 +428,11 @@ func advisories(refs []string) *[]cdx.Advisory {
 }
 
 func cwes(cweIDs []string) *[]int {
+	// to skip cdx.Vulnerability.CWEs when generating json
+	// we should return 'clear' nil without 'type' interface part
+	if cweIDs == nil {
+		return nil
+	}
 	var ret []int
 	for _, cweID := range cweIDs {
 		number, err := strconv.Atoi(strings.TrimPrefix(strings.ToLower(cweID), "cwe-"))

@@ -19,12 +19,19 @@ jobs:
       - uses: actions/checkout@v3
 
       - name: Set up Go
-        uses: actions/setup-go@v2
+        uses: actions/setup-go@v3
         with:
           go-version: ${{ env.GO_VERSION }}
 
+      - name: go mod tidy
+        run: |
+          go mod tidy
+          if [ -n "$(git status --porcelain)" ]; then
+            exit 1
+          fi
+
       - name: Lint
-        uses: golangci/golangci-lint-action@v3.1.0
+        uses: golangci/golangci-lint-action@v3.2.0
         with:
           version: v1.45
           args: --deadline=30m
@@ -37,7 +44,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Set up Go
-      uses: actions/setup-go@v2
+      uses: actions/setup-go@v3
       with:
         go-version: ${{ env.GO_VERSION }}
       id: go
@@ -55,11 +62,11 @@ jobs:
       DOCKER_CLI_EXPERIMENTAL: "enabled"
     steps:
     - name: Set up QEMU
-      uses: docker/setup-qemu-action@v1
+      uses: docker/setup-qemu-action@v2
 
     - name: Set up Docker Buildx
       id: buildx
-      uses: docker/setup-buildx-action@v1
+      uses: docker/setup-buildx-action@v2
 
     - name: Show available Docker Buildx platforms
       run: echo ${{ steps.buildx.outputs.platforms }}
@@ -68,12 +75,12 @@ jobs:
       uses: actions/checkout@v3
 
     - name: Set up Go
-      uses: actions/setup-go@v2
+      uses: actions/setup-go@v3
       with:
         go-version: ${{ env.GO_VERSION }}
 
     - name: Run GoReleaser
-      uses: goreleaser/goreleaser-action@v2
+      uses: goreleaser/goreleaser-action@v3
       with:
         version: v1.4.1
         args: release --snapshot --rm-dist --skip-publish

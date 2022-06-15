@@ -21,6 +21,7 @@ import (
 	testcontainers "github.com/testcontainers/testcontainers-go"
 	"github.com/urfave/cli/v2"
 
+	"github.com/aquasecurity/trivy/pkg/clock"
 	"github.com/aquasecurity/trivy/pkg/commands"
 	"github.com/aquasecurity/trivy/pkg/report"
 )
@@ -198,9 +199,9 @@ func TestClientServer(t *testing.T) {
 		{
 			name: "oracle 8",
 			args: csArgs{
-				Input: "testdata/fixtures/images/oraclelinux-8-slim.tar.gz",
+				Input: "testdata/fixtures/images/oraclelinux-8.tar.gz",
 			},
-			golden: "testdata/oraclelinux-8-slim.json.golden",
+			golden: "testdata/oraclelinux-8.json.golden",
 		},
 		{
 			name: "opensuse leap 15.1",
@@ -256,7 +257,7 @@ func TestClientServer(t *testing.T) {
 	}
 }
 
-func TestClientServerWithTemplate(t *testing.T) {
+func TestClientServerWithFormat(t *testing.T) {
 	tests := []struct {
 		name   string
 		args   csArgs
@@ -306,16 +307,34 @@ func TestClientServerWithTemplate(t *testing.T) {
 			},
 			golden: "testdata/alpine-310.html.golden",
 		},
+		{
+			name: "alpine 3.10 with github dependency snapshots format",
+			args: csArgs{
+				Format: "github",
+				Input:  "testdata/fixtures/images/alpine-310.tar.gz",
+			},
+			golden: "testdata/alpine-310.gsbom.golden",
+		},
 	}
+
+	fakeTime := time.Date(2020, 8, 10, 7, 28, 17, 958601, time.UTC)
+	clock.SetFakeTime(t, fakeTime)
 
 	report.CustomTemplateFuncMap = map[string]interface{}{
 		"now": func() time.Time {
-			return time.Date(2020, 8, 10, 7, 28, 17, 958601, time.UTC)
+			return fakeTime
 		},
 		"date": func(format string, t time.Time) string {
 			return t.Format(format)
 		},
 	}
+
+	// For GitHub Dependency Snapshots
+	t.Setenv("GITHUB_REF", "/ref/feature-1")
+	t.Setenv("GITHUB_SHA", "39da54a1ff04120a31df8cbc94ce9ede251d21a3")
+	t.Setenv("GITHUB_JOB", "integration")
+	t.Setenv("GITHUB_RUN_ID", "1910764383")
+	t.Setenv("GITHUB_WORKFLOW", "workflow-name")
 
 	t.Cleanup(func() {
 		report.CustomTemplateFuncMap = map[string]interface{}{}
@@ -545,10 +564,10 @@ func setupServer(addr, token, tokenHeader, cacheDir, cacheBackend string) []stri
 
 func setupClient(t *testing.T, c csArgs, addr string, cacheDir string, golden string) ([]string, string) {
 	if c.Command == "" {
-		c.Command = "client"
+		c.Command = "image"
 	}
 	if c.RemoteAddrOption == "" {
-		c.RemoteAddrOption = "--remote"
+		c.RemoteAddrOption = "--server"
 	}
 	t.Helper()
 	osArgs := []string{"trivy", "--cache-dir", cacheDir, c.Command, c.RemoteAddrOption, "http://" + addr}

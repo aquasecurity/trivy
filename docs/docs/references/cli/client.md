@@ -2,19 +2,20 @@
 
 ```bash
 NAME:
-   trivy client - client mode
+   trivy client - DEPRECATED client mode, use `trivy image` with `--server` option for remote scans now.
 
 USAGE:
-   trivy client [command options] image_name
+   trivy image --server value
 
-OPTIONS:
+   trivy client [deprecated command options] image_name
+
+DEPRECATED OPTIONS:
    --template value, -t value  output template [$TRIVY_TEMPLATE]
    --format value, -f value    format (table, json, sarif, template) (default: "table") [$TRIVY_FORMAT]
    --input value, -i value     input file path instead of image name [$TRIVY_INPUT]
    --severity value, -s value  severities of vulnerabilities to be displayed (comma separated) (default: "UNKNOWN,LOW,MEDIUM,HIGH,CRITICAL") [$TRIVY_SEVERITY]
    --output value, -o value    output file name [$TRIVY_OUTPUT]
    --exit-code value           Exit code when vulnerabilities were found (default: 0) [$TRIVY_EXIT_CODE]
-   --clear-cache, -c           clear image caches without scanning (default: false) [$TRIVY_CLEAR_CACHE]
    --ignore-unfixed            display only fixed vulnerabilities (default: false) [$TRIVY_IGNORE_UNFIXED]
    --removed-pkgs              detect vulnerabilities of removed packages (only for Alpine) (default: false) [$TRIVY_REMOVED_PKGS]
    --vuln-type value           comma-separated list of vulnerability types (os,library) (default: "os,library") [$TRIVY_VULN_TYPE]

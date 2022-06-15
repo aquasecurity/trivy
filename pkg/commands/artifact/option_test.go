@@ -14,6 +14,7 @@ import (
 
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/commands/option"
+	"github.com/aquasecurity/trivy/pkg/report"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
 
@@ -209,6 +210,23 @@ func TestOption_Init(t *testing.T) {
 			},
 		},
 		{
+			name: "json and list all packages",
+			args: []string{"--format", "json", "--list-all-pkgs", "gitlab/gitlab-ce:12.7.2-ce.0"},
+			want: Option{
+				ReportOption: option.ReportOption{
+					Severities:     []dbTypes.Severity{dbTypes.SeverityCritical},
+					Output:         os.Stdout,
+					VulnType:       []string{types.VulnTypeOS, types.VulnTypeLibrary},
+					SecurityChecks: []string{types.SecurityCheckVulnerability},
+					Format:         "json",
+					ListAllPkgs:    true,
+				},
+				ArtifactOption: option.ArtifactOption{
+					Target: "gitlab/gitlab-ce:12.7.2-ce.0",
+				},
+			},
+		},
+		{
 			name: "invalid option combination: --format template without --template",
 			args: []string{"--format", "template", "--severity", "MEDIUM", "gitlab/gitlab-ce:12.7.2-ce.0"},
 			logs: []string{
@@ -227,6 +245,24 @@ func TestOption_Init(t *testing.T) {
 				},
 			},
 		},
+		{
+			name: "github enables list-all-pkgs",
+			args: []string{"--format", "github", "alpine:3.15"},
+			want: Option{
+				ReportOption: option.ReportOption{
+					Severities:     []dbTypes.Severity{dbTypes.SeverityCritical},
+					Output:         os.Stdout,
+					VulnType:       []string{types.VulnTypeOS, types.VulnTypeLibrary},
+					SecurityChecks: []string{types.SecurityCheckVulnerability},
+					Format:         report.FormatGitHub,
+					ListAllPkgs:    true,
+				},
+				ArtifactOption: option.ArtifactOption{
+					Target: "alpine:3.15",
+				},
+			},
+		},
+
 		{
 			name:    "sad: skip and download db",
 			args:    []string{"--skip-db-update", "--download-db-only", "alpine:3.10"},
@@ -253,6 +289,7 @@ func TestOption_Init(t *testing.T) {
 			set.Bool("reset", false, "")
 			set.Bool("skip-db-update", false, "")
 			set.Bool("download-db-only", false, "")
+			set.Bool("list-all-pkgs", false, "")
 			set.String("severity", "CRITICAL", "")
 			set.String("vuln-type", "os,library", "")
 			set.String("security-checks", "vuln", "")

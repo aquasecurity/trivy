@@ -21,16 +21,16 @@ jobs:
         run: |
           sudo apt-get -y update
           sudo apt-get -y install rpm reprepro createrepo distro-info
-      - uses: sigstore/cosign-installer@51f8e5c6fce54e46006ae97d73b2b6315f518752
+      - uses: sigstore/cosign-installer@536b37ec5d5b543420bdfd9b744c5965bd4d8730
       - name: Set up QEMU
-        uses: docker/setup-qemu-action@v1
+        uses: docker/setup-qemu-action@v2
       - name: Set up Docker Buildx
         id: buildx
-        uses: docker/setup-buildx-action@v1
+        uses: docker/setup-buildx-action@v2
       - name: Show available Docker Buildx platforms
         run: echo ${{ steps.buildx.outputs.platforms }}
       - name: Setup Go
-        uses: actions/setup-go@v2
+        uses: actions/setup-go@v3
         with:
           go-version: ${{ env.GO_VERSION }}
       - name: Checkout code
@@ -38,25 +38,25 @@ jobs:
         with:
           fetch-depth: 0
       - name: Cache Go modules
-        uses: actions/cache@v3.0.1
+        uses: actions/cache@v3.0.2
         with:
           path: ~/go/pkg/mod
           key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
           restore-keys: |
             ${{ runner.os }}-go-
       - name: Login to docker.io registry
-        uses: docker/login-action@v1
+        uses: docker/login-action@v2
         with:
           username: ${{ secrets.DOCKERHUB_USER }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
       - name: Login to ghcr.io registry
-        uses: docker/login-action@v1
+        uses: docker/login-action@v2
         with:
           registry: ghcr.io
           username: ${{ env.GH_USER }}
           password: ${{ secrets.GITHUB_TOKEN }}
       - name: Login to ECR
-        uses: docker/login-action@v1
+        uses: docker/login-action@v2
         with:
           registry: public.ecr.aws
           username: ${{ secrets.ECR_ACCESS_KEY_ID }}
@@ -67,7 +67,7 @@ jobs:
           args: mod -licenses -json -output bom.json
           version: ^v1
       - name: Release
-        uses: goreleaser/goreleaser-action@v2
+        uses: goreleaser/goreleaser-action@v3
         with:
           version: v1.4.1
           args: release --rm-dist

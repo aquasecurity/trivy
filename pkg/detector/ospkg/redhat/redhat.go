@@ -8,6 +8,7 @@ import (
 
 	version "github.com/knqyf263/go-rpm-version"
 	"golang.org/x/exp/maps"
+	"golang.org/x/exp/slices"
 	"golang.org/x/xerrors"
 	"k8s.io/utils/clock"
 
@@ -36,6 +37,10 @@ var (
 			"rhel-8-for-x86_64-baseos-rpms",
 			"rhel-8-for-x86_64-appstream-rpms",
 		},
+		"9": {
+			"rhel-9-for-x86_64-baseos-rpms",
+			"rhel-9-for-x86_64-appstream-rpms",
+		},
 	}
 	redhatEOLDates = map[string]time.Time{
 		"4": time.Date(2017, 5, 31, 23, 59, 59, 0, time.UTC),
@@ -44,6 +49,7 @@ var (
 		// N/A
 		"7": time.Date(3000, 1, 1, 23, 59, 59, 0, time.UTC),
 		"8": time.Date(3000, 1, 1, 23, 59, 59, 0, time.UTC),
+		"9": time.Date(3000, 1, 1, 23, 59, 59, 0, time.UTC),
 	}
 	centosEOLDates = map[string]time.Time{
 		"3": time.Date(2010, 10, 31, 23, 59, 59, 0, time.UTC),
@@ -70,7 +76,7 @@ func WithClock(clock clock.Clock) option {
 	}
 }
 
-// Scanner implements the Alpine scanner
+// Scanner implements the RedHat scanner
 type Scanner struct {
 	vs redhat.VulnSrc
 	*options
@@ -139,6 +145,13 @@ func (s *Scanner) detect(osVer string, pkg ftypes.Package) ([]types.DetectedVuln
 
 	uniqVulns := map[string]types.DetectedVulnerability{}
 	for _, adv := range advisories {
+		// if Arches for advisory is empty or pkg.Arch is "noarch", then any Arches are affected
+		if len(adv.Arches) != 0 && pkg.Arch != "noarch" {
+			if !slices.Contains(adv.Arches, pkg.Arch) {
+				continue
+			}
+		}
+
 		vulnID := adv.VulnerabilityID
 		vuln := types.DetectedVulnerability{
 			VulnerabilityID:  vulnID,
@@ -154,7 +167,11 @@ func (s *Scanner) detect(osVer string, pkg ftypes.Package) ([]types.DetectedVuln
 
 		// unpatched vulnerabilities
 		if adv.FixedVersion == "" {
-			uniqVulns[vulnID] = vuln
+			// Red Hat may contain several advisories for the same vulnerability (RHSA advisories).
+			// To avoid overwriting the fixed version by mistake, we should skip unpatched vulnerabilities if they were added earlier
+			if _, ok := uniqVulns[vulnID]; !ok {
+				uniqVulns[vulnID] = vuln
+			}
 			continue
 		}
 

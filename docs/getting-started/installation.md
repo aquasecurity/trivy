@@ -2,15 +2,15 @@
 
 ## RHEL/CentOS
 
-
 === "Repository"
     Add repository setting to `/etc/yum.repos.d`.
 
     ``` bash
+    RELEASE_VERSION=$(grep -Po '(?<=VERSION_ID=")[0-9]' /etc/os-release)
     cat << EOF | sudo tee -a /etc/yum.repos.d/trivy.repo
     [trivy]
     name=Trivy repository
-    baseurl=https://aquasecurity.github.io/trivy-repo/rpm/releases/$releasever/$basearch/
+    baseurl=https://aquasecurity.github.io/trivy-repo/rpm/releases/$RELEASE_VERSION/\$basearch/
     gpgcheck=0
     enabled=1
     EOF
@@ -44,9 +44,8 @@
     sudo dpkg -i trivy_{{ git.tag[1:] }}_Linux-64bit.deb
     ```
 
-
-
 ## Arch Linux
+
 Package trivy-bin can be installed from the Arch User Repository.
 
 === "pikaur"
@@ -81,8 +80,8 @@ nix-env --install trivy
 
 Or through your configuration on NixOS or with home-manager as usual
 
-
 ## Install Script
+
 This script downloads Trivy binary based on your OS and architecture.
 
 ```bash
@@ -107,7 +106,9 @@ go install
 ```
 
 ## Docker
+
 ### Docker Hub
+
 Replace [YOUR_CACHE_DIR] with the cache directory on your machine.
 
 ```bash
@@ -166,7 +167,6 @@ The same image is hosted on [GitHub Container Registry][registry] as well.
 docker pull ghcr.io/aquasecurity/trivy:{{ git.tag[1:] }}
 ```
 
-
 ### Amazon ECR Public
 
 The same image is hosted on [Amazon ECR Public][ecr] as well.
@@ -174,7 +174,9 @@ The same image is hosted on [Amazon ECR Public][ecr] as well.
 ```bash
 docker pull public.ecr.aws/aquasecurity/trivy:{{ git.tag[1:] }}
 ```
+
 ## Helm
+
 ### Installing from the Aqua Chart Repository
 
 ```
@@ -194,6 +196,37 @@ helm install my-release .
 
 The command deploys Trivy on the Kubernetes cluster in the default configuration. The [Parameters][helm]
 section lists the parameters that can be configured during installation.
+
+### AWS private registry permissions
+
+You may need to grant permissions to allow trivy to pull images from private registry (AWS ECR).
+
+It depends on how you want to provide AWS Role to trivy.
+
+- [IAM Role Service account](https://github.com/aws/amazon-eks-pod-identity-webhook)
+- [Kube2iam](https://github.com/jtblin/kube2iam) or [Kiam](https://github.com/uswitch/kiam)
+
+#### IAM Role Service account
+
+Add the AWS role in trivy's service account annotations:
+
+```yaml
+trivy:
+
+  serviceAccount:
+    annotations: {}
+      # eks.amazonaws.com/role-arn: arn:aws:iam::ACCOUNT_ID:role/IAM_ROLE_NAME
+```
+
+#### Kube2iam or Kiam
+
+Add the AWS role to pod's annotations:
+
+```yaml
+podAnnotations: {}
+  ## kube2iam/kiam annotation
+  # iam.amazonaws.com/role: arn:aws:iam::ACCOUNT_ID:role/IAM_ROLE_NAME
+```
 
 > **Tip**: List all releases using `helm list`.
 

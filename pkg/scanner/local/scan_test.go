@@ -687,7 +687,7 @@ func TestScanner_Scan(t *testing.T) {
 								FilePath: "/app/configs/deployment.yaml",
 								Successes: []ftypes.MisconfResult{
 									{
-										Namespace: "appshield.kubernetes.id200",
+										Namespace: "builtin.kubernetes.id200",
 										PolicyMetadata: ftypes.PolicyMetadata{
 											ID:       "ID200",
 											Type:     "Kubernetes Security Check",
@@ -739,11 +739,11 @@ func TestScanner_Scan(t *testing.T) {
 							ID:         "ID200",
 							Title:      "Bad Deployment",
 							Message:    "No issues found",
-							Namespace:  "appshield.kubernetes.id200",
+							Namespace:  "builtin.kubernetes.id200",
 							Severity:   "MEDIUM",
-							PrimaryURL: "https://avd.aquasec.com/appshield/id200",
+							PrimaryURL: "https://avd.aquasec.com/misconfig/id200",
 							References: []string{
-								"https://avd.aquasec.com/appshield/id200",
+								"https://avd.aquasec.com/misconfig/id200",
 							},
 							Status: types.StatusPassed,
 							Layer: ftypes.Layer{

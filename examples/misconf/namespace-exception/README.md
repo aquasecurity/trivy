@@ -1,5 +1,5 @@
 # Namespace-based exceptions
-`policy/k8s_exception.rego` exempts all policies with `appshield.kubernetes` prefix.
+`policy/k8s_exception.rego` exempts all policies with `builtin.kubernetes` prefix.
 It means all built-in policies for Kubernetes are disabled.
 
 ``` bash

@@ -152,7 +152,7 @@ func TestClient_NeedsUpdate(t *testing.T) {
 				require.NoError(t, err)
 			}
 
-			client := db.NewClient(cacheDir, true, db.WithClock(tt.clock))
+			client := db.NewClient(cacheDir, true, false, db.WithClock(tt.clock))
 			needsUpdate, err := client.NeedsUpdate("test", tt.skip)
 
 			switch {
@@ -203,10 +203,10 @@ func TestClient_Download(t *testing.T) {
 			img.LayersReturns([]v1.Layer{newFakeLayer(t, tt.input)}, nil)
 
 			// Mock OCI artifact
-			art, err := oci.NewArtifact("db", mediaType, true, oci.WithImage(img))
+			art, err := oci.NewArtifact("db", mediaType, true, false, oci.WithImage(img))
 			require.NoError(t, err)
 
-			client := db.NewClient(cacheDir, true, db.WithOCIArtifact(art), db.WithClock(timeDownloadedAt))
+			client := db.NewClient(cacheDir, true, false, db.WithOCIArtifact(art), db.WithClock(timeDownloadedAt))
 			err = client.Download(context.Background(), cacheDir)
 			if tt.wantErr != "" {
 				require.Error(t, err)
