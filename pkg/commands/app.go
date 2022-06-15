@@ -13,10 +13,11 @@ import (
 	"github.com/aquasecurity/trivy-db/pkg/metadata"
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/commands/artifact"
+	"github.com/aquasecurity/trivy/pkg/commands/module"
 	"github.com/aquasecurity/trivy/pkg/commands/option"
 	"github.com/aquasecurity/trivy/pkg/commands/plugin"
 	"github.com/aquasecurity/trivy/pkg/commands/server"
-	"github.com/aquasecurity/trivy/pkg/k8s"
+	k8scommands "github.com/aquasecurity/trivy/pkg/k8s/commands"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/report"
 	"github.com/aquasecurity/trivy/pkg/result"
@@ -415,6 +416,7 @@ func NewApp(version string) *cli.App {
 		NewServerCommand(),
 		NewConfigCommand(),
 		NewPluginCommand(),
+		NewModuleCommand(),
 		NewK8sCommand(),
 		NewSbomCommand(),
 		NewVersionCommand(),
@@ -664,7 +666,6 @@ func NewClientCommand() *cli.Command {
 			&severityFlag,
 			&outputFlag,
 			&exitCodeFlag,
-			&clearCacheFlag,
 			&ignoreUnfixedFlag,
 			&removedPkgsFlag,
 			&vulnTypeFlag,
@@ -810,6 +811,31 @@ func NewPluginCommand() *cli.Command {
 	}
 }
 
+// NewModuleCommand is the factory method to add module subcommand
+func NewModuleCommand() *cli.Command {
+	return &cli.Command{
+		Name:    "module",
+		Aliases: []string{"m"},
+		Usage:   "manage modules",
+		Subcommands: cli.Commands{
+			{
+				Name:      "install",
+				Aliases:   []string{"i"},
+				Usage:     "install a module",
+				ArgsUsage: "REPOSITORY",
+				Action:    module.Install,
+			},
+			{
+				Name:      "uninstall",
+				Aliases:   []string{"u"},
+				Usage:     "uninstall a module",
+				ArgsUsage: "REPOSITORY",
+				Action:    module.Uninstall,
+			},
+		},
+	}
+}
+
 // NewK8sCommand is the factory method to add k8s subcommand
 func NewK8sCommand() *cli.Command {
 	k8sSecurityChecksFlag := withValue(
@@ -827,15 +853,13 @@ func NewK8sCommand() *cli.Command {
 		Usage:   "scan kubernetes vulnerabilities, secrets and misconfigurations",
 		CustomHelpTemplate: cli.CommandHelpTemplate + `EXAMPLES:
   - cluster scanning:
-      $ trivy k8s --report summary
-
+      $ trivy k8s --report summary cluster
   - namespace scanning:
-      $ trivy k8s -n kube-system --report summary
-
+      $ trivy k8s -n kube-system --report summary all
   - resource scanning:
       $ trivy k8s deployment/orion
 `,
-		Action: k8s.Run,
+		Action: k8scommands.Run,
 		Flags: []cli.Flag{
 			&contextFlag,
 			&namespaceFlag,

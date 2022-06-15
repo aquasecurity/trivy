@@ -95,6 +95,7 @@ nav:
           - AWS CodePipeline: docs/integrations/aws-codepipeline.md
           - AWS Security Hub: docs/integrations/aws-security-hub.md
       - Advanced:
+          - Modules: docs/advanced/modules.md
           - Plugins: docs/advanced/plugins.md
           - Air-Gapped Environment: docs/advanced/air-gap.md
           - Container Image:
@@ -120,7 +121,7 @@ nav:
               - Repository: docs/references/cli/repo.md
               - Client: docs/references/cli/client.md
               - Server: docs/references/cli/server.md
-              - Plugins: docs/references/cli/plugins.md
+              - Plugin: docs/references/cli/plugin.md
               - SBOM: docs/references/cli/sbom.md
           - Modes:
               - Standalone: docs/references/modes/standalone.md
@@ -166,7 +167,7 @@ extra:
     provider: mike
   var:
     prev_git_tag: "v0.0.0"
-    operator_version: "v0.0.5"
+    operator_version: "v0.0.7"
 
 plugins:
   - search

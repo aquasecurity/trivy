@@ -1,9 +1,5 @@
 package types
 
-import (
-	"golang.org/x/exp/slices"
-)
-
 // VulnType represents vulnerability type
 type VulnType = string
 
@@ -34,22 +30,6 @@ const (
 )
 
 var (
-	vulnTypes      = []string{VulnTypeOS, VulnTypeLibrary}
-	securityChecks = []string{SecurityCheckVulnerability, SecurityCheckConfig, SecurityCheckSecret}
+	VulnTypes      = []string{VulnTypeOS, VulnTypeLibrary}
+	SecurityChecks = []string{SecurityCheckVulnerability, SecurityCheckConfig, SecurityCheckSecret}
 )
-
-// NewVulnType returns an instance of VulnType
-func NewVulnType(s string) VulnType {
-	if slices.Contains(vulnTypes, s) {
-		return s
-	}
-	return VulnTypeUnknown
-}
-
-// NewSecurityCheck returns an instance of SecurityCheck
-func NewSecurityCheck(s string) SecurityCheck {
-	if slices.Contains(securityChecks, s) {
-		return s
-	}
-	return SecurityCheckUnknown
-}

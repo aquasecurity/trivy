@@ -11,6 +11,10 @@ import (
 	"golang.org/x/xerrors"
 )
 
+const (
+	xdgDataHome = "XDG_DATA_HOME"
+)
+
 var cacheDir string
 
 // DefaultCacheDir returns/creates the cache-dir to be used for trivy operations
@@ -30,6 +34,16 @@ func CacheDir() string {
 // SetCacheDir sets the trivy cacheDir
 func SetCacheDir(dir string) {
 	cacheDir = dir
+}
+
+func HomeDir() string {
+	dataHome := os.Getenv(xdgDataHome)
+	if dataHome != "" {
+		return dataHome
+	}
+
+	homeDir, _ := os.UserHomeDir()
+	return homeDir
 }
 
 // CopyFile copies the file content from scr to dst

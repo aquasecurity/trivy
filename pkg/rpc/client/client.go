@@ -61,8 +61,8 @@ func NewScanner(scannerOptions ScannerOption, opts ...Option) Scanner {
 }
 
 // Scan scans the image
-func (s Scanner) Scan(target, artifactKey string, blobKeys []string, options types.ScanOptions) (types.Results, *ftypes.OS, error) {
-	ctx := WithCustomHeaders(context.Background(), s.customHeaders)
+func (s Scanner) Scan(ctx context.Context, target, artifactKey string, blobKeys []string, options types.ScanOptions) (types.Results, *ftypes.OS, error) {
+	ctx = WithCustomHeaders(ctx, s.customHeaders)
 
 	var res *rpc.ScanResponse
 	err := r.Retry(func() error {

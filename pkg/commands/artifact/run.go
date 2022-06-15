@@ -3,6 +3,7 @@ package artifact
 import (
 	"context"
 	"errors"
+	"fmt"
 	"os"
 
 	"github.com/hashicorp/go-multierror"
@@ -19,7 +20,9 @@ import (
 	tcache "github.com/aquasecurity/trivy/pkg/cache"
 	"github.com/aquasecurity/trivy/pkg/commands/operation"
 	"github.com/aquasecurity/trivy/pkg/log"
+	"github.com/aquasecurity/trivy/pkg/module"
 	pkgReport "github.com/aquasecurity/trivy/pkg/report"
+	"github.com/aquasecurity/trivy/pkg/result"
 	"github.com/aquasecurity/trivy/pkg/rpc/client"
 	"github.com/aquasecurity/trivy/pkg/scanner"
 	"github.com/aquasecurity/trivy/pkg/types"
@@ -83,12 +86,15 @@ type Runner interface {
 	// Report a writes a report
 	Report(opt Option, report types.Report) error
 	// Close closes runner
-	Close() error
+	Close(ctx context.Context) error
 }
 
 type runner struct {
 	cache  cache.Cache
 	dbOpen bool
+
+	// WASM modules
+	module *module.Manager
 }
 
 type runnerOption func(*runner)
@@ -121,11 +127,19 @@ func NewRunner(cliOption Option, opts ...runnerOption) (Runner, error) {
 		return nil, xerrors.Errorf("DB error: %w", err)
 	}
 
+	// Initialize WASM modules
+	m, err := module.NewManager(cliOption.Context.Context)
+	if err != nil {
+		return nil, xerrors.Errorf("WASM module error: %w", err)
+	}
+	m.Register()
+	r.module = m
+
 	return r, nil
 }
 
 // Close closes everything
-func (r *runner) Close() error {
+func (r *runner) Close(ctx context.Context) error {
 	var errs error
 	if err := r.cache.Close(); err != nil {
 		errs = multierror.Append(errs, err)
@@ -135,6 +149,10 @@ func (r *runner) Close() error {
 		if err := db.Close(); err != nil {
 			errs = multierror.Append(errs, err)
 		}
+	}
+
+	if err := r.module.Close(ctx); err != nil {
+		errs = multierror.Append(errs, err)
 	}
 	return errs
 }
@@ -159,7 +177,7 @@ func (r *runner) ScanImage(ctx context.Context, opt Option) (types.Report, error
 		s = imageRemoteScanner
 	}
 
-	return r.scan(ctx, opt, s)
+	return r.scanArtifact(ctx, opt, s)
 }
 
 func (r *runner) ScanFilesystem(ctx context.Context, opt Option) (types.Report, error) {
@@ -186,7 +204,7 @@ func (r *runner) scanFS(ctx context.Context, opt Option) (types.Report, error) {
 		s = filesystemRemoteScanner
 	}
 
-	return r.scan(ctx, opt, s)
+	return r.scanArtifact(ctx, opt, s)
 }
 
 func (r *runner) ScanRepository(ctx context.Context, opt Option) (types.Report, error) {
@@ -196,10 +214,10 @@ func (r *runner) ScanRepository(ctx context.Context, opt Option) (types.Report, 
 	// Disable the OS analyzers and individual package analyzers
 	opt.DisabledAnalyzers = append(analyzer.TypeIndividualPkgs, analyzer.TypeOSes...)
 
-	return r.scan(ctx, opt, repositoryStandaloneScanner)
+	return r.scanArtifact(ctx, opt, repositoryStandaloneScanner)
 }
 
-func (r *runner) scan(ctx context.Context, opt Option, initializeScanner InitializeScanner) (types.Report, error) {
+func (r *runner) scanArtifact(ctx context.Context, opt Option, initializeScanner InitializeScanner) (types.Report, error) {
 	report, err := scan(ctx, opt, initializeScanner, r.cache)
 	if err != nil {
 		return types.Report{}, xerrors.Errorf("scan error: %w", err)
@@ -222,14 +240,11 @@ func (r *runner) ScanSBOM(ctx context.Context, opt Option) (types.Report, error)
 }
 
 func (r *runner) Filter(ctx context.Context, opt Option, report types.Report) (types.Report, error) {
-	resultClient := initializeResultClient()
 	results := report.Results
+
+	// Filter results
 	for i := range results {
-		// Fill vulnerability info only in standalone mode
-		if opt.RemoteAddr == "" {
-			resultClient.FillVulnerabilityInfo(results[i].Vulnerabilities, results[i].Type)
-		}
-		vulns, misconfSummary, misconfs, secrets, err := resultClient.Filter(ctx, results[i].Vulnerabilities, results[i].Misconfigurations, results[i].Secrets,
+		vulns, misconfSummary, misconfs, secrets, err := result.Filter(ctx, results[i].Vulnerabilities, results[i].Misconfigurations, results[i].Secrets,
 			opt.Severities, opt.IgnoreUnfixed, opt.IncludeNonFailures, opt.IgnoreFile, opt.IgnorePolicy)
 		if err != nil {
 			return types.Report{}, xerrors.Errorf("unable to filter vulnerabilities: %w", err)
@@ -342,31 +357,31 @@ func run(ctx context.Context, opt Option, artifactType ArtifactType) (err error)
 		}
 	}()
 
-	runner, err := NewRunner(opt)
+	r, err := NewRunner(opt)
 	if err != nil {
 		if errors.Is(err, SkipScan) {
 			return nil
 		}
 		return xerrors.Errorf("init error: %w", err)
 	}
-	defer runner.Close()
+	defer r.Close(ctx)
 
 	var report types.Report
 	switch artifactType {
 	case containerImageArtifact, imageArchiveArtifact:
-		if report, err = runner.ScanImage(ctx, opt); err != nil {
+		if report, err = r.ScanImage(ctx, opt); err != nil {
 			return xerrors.Errorf("image scan error: %w", err)
 		}
 	case filesystemArtifact:
-		if report, err = runner.ScanFilesystem(ctx, opt); err != nil {
+		if report, err = r.ScanFilesystem(ctx, opt); err != nil {
 			return xerrors.Errorf("filesystem scan error: %w", err)
 		}
 	case rootfsArtifact:
-		if report, err = runner.ScanRootfs(ctx, opt); err != nil {
+		if report, err = r.ScanRootfs(ctx, opt); err != nil {
 			return xerrors.Errorf("rootfs scan error: %w", err)
 		}
 	case repositoryArtifact:
-		if report, err = runner.ScanRepository(ctx, opt); err != nil {
+		if report, err = r.ScanRepository(ctx, opt); err != nil {
 			return xerrors.Errorf("repository scan error: %w", err)
 		}
 	case cycloneDXArtifact:
@@ -375,12 +390,12 @@ func run(ctx context.Context, opt Option, artifactType ArtifactType) (err error)
 		}
 	}
 
-	report, err = runner.Filter(ctx, opt, report)
+	report, err = r.Filter(ctx, opt, report)
 	if err != nil {
 		return xerrors.Errorf("filter error: %w", err)
 	}
 
-	if err = runner.Report(opt, report); err != nil {
+	if err = r.Report(opt, report); err != nil {
 		return xerrors.Errorf("report error: %w", err)
 	}
 
@@ -440,14 +455,19 @@ func initScannerConfig(opt Option, cacheClient cache.Cache) (ScannerConfig, type
 	scanOptions := types.ScanOptions{
 		VulnType:            opt.VulnType,
 		SecurityChecks:      opt.SecurityChecks,
-		ScanRemovedPackages: opt.ScanRemovedPkgs, // this is valid only for image subcommand
+		ScanRemovedPackages: opt.ScanRemovedPkgs, // this is valid only for 'image' subcommand
 		ListAllPackages:     opt.ListAllPkgs,
 	}
-	log.Logger.Debugf("Vulnerability type:  %s", scanOptions.VulnType)
+
+	if slices.Contains(opt.SecurityChecks, types.SecurityCheckVulnerability) {
+		log.Logger.Info("Vulnerability scanning is enabled")
+		log.Logger.Debugf("Vulnerability type:  %s", scanOptions.VulnType)
+	}
 
 	// ScannerOption is filled only when config scanning is enabled.
 	var configScannerOptions config.ScannerOption
 	if slices.Contains(opt.SecurityChecks, types.SecurityCheckConfig) {
+		log.Logger.Info("Misconfiguration scanning is enabled")
 		configScannerOptions = config.ScannerOption{
 			Trace:        opt.Trace,
 			Namespaces:   append(opt.PolicyNamespaces, defaultPolicyNamespaces...),
@@ -455,6 +475,19 @@ func initScannerConfig(opt Option, cacheClient cache.Cache) (ScannerConfig, type
 			DataPaths:    opt.DataPaths,
 			FilePatterns: opt.FilePatterns,
 		}
+	}
+
+	// Do not load config file for secret scanning
+	if slices.Contains(opt.SecurityChecks, types.SecurityCheckSecret) {
+		ver := fmt.Sprintf("v%s", opt.AppVersion)
+		if opt.AppVersion == "dev" {
+			ver = opt.AppVersion
+		}
+		log.Logger.Info("Secret scanning is enabled")
+		log.Logger.Info("If your scanning is slow, please try '--security-checks vuln' to disable secret scanning")
+		log.Logger.Infof("Please see also https://aquasecurity.github.io/trivy/%s/docs/secret/scanning/#recommendation for faster secret detection", ver)
+	} else {
+		opt.SecretConfigPath = ""
 	}
 
 	return ScannerConfig{

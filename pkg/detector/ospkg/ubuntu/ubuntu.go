@@ -67,7 +67,7 @@ func WithClock(clock clock.Clock) option {
 	}
 }
 
-// Scanner implements the Alpine scanner
+// Scanner implements the Ubuntu scanner
 type Scanner struct {
 	vs ubuntu.VulnSrc
 	*options
