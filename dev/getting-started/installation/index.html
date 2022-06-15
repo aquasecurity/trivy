@@ -3122,11 +3122,24 @@ sudo dpkg -i trivy_0.28.1_Linux-64bit.deb
 <div class="highlight"><pre><span></span><code>brew install aquasecurity/trivy/trivy
 </code></pre></div>
 <h2 id="nixnixos">Nix/NixOS</h2>
-<p>You can use nix on Linux or macOS and on others unofficially.</p>
-<p>Note that trivy is currently only in the unstable channels.</p>
-<div class="highlight"><pre><span></span><code>nix-env --install trivy
+<p>Direct issues installing <code>trivy</code> via <code>nix</code> through the channels mentioned <a href="https://nixos.wiki/wiki/Support">here</a></p>
+<p>You can use <code>nix</code> on Linux or macOS and on other platforms unofficially.</p>
+<p><code>nix-env --install -A nixpkgs.trivy</code></p>
+<p>Or through your configuration as usual</p>
+<p>NixOS:</p>
+<div class="highlight"><pre><span></span><code>  <span class="c1"># your other config ...</span>
+  environment<span class="o">.</span><span class="ss">systemPackages =</span> <span class="k">with</span> pkgs<span class="p">;</span> <span class="p">[</span>
+    <span class="c1"># your other packages ...</span>
+    trivy
+  <span class="p">];</span>
 </code></pre></div>
-<p>Or through your configuration on NixOS or with home-manager as usual</p>
+<p>home-manager:</p>
+<div class="highlight"><pre><span></span><code>  <span class="c1"># your other config ...</span>
+  home<span class="o">.</span><span class="ss">packages =</span> <span class="k">with</span> pkgs<span class="p">;</span> <span class="p">[</span>
+    <span class="c1"># your other packages ...</span>
+    trivy
+  <span class="p">];</span>
+</code></pre></div>
 <h2 id="install-script">Install Script</h2>
 <p>This script downloads Trivy binary based on your OS and architecture.</p>
 <div class="highlight"><pre><span></span><code>curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh <span class="p">|</span> sh -s -- -b /usr/local/bin v0.28.1
