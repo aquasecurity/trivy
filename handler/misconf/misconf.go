@@ -5,6 +5,7 @@ import (
 	"context"
 	_ "embed"
 	"fmt"
+	"github.com/aquasecurity/defsec/pkg/scanners/rbac"
 	"io/fs"
 	"os"
 	"path/filepath"
@@ -180,6 +181,7 @@ func newMisconfPostHandler(artifactOpt artifact.Option) (handler.PostHandler, er
 			types.Dockerfile:     dfscanner.NewScanner(opts...),
 			types.Kubernetes:     k8sscanner.NewScanner(opts...),
 			types.Helm:           helm.New(opts...),
+			types.Rbac:           rbac.NewScanner(opts...),
 		},
 	}, nil
 }
@@ -190,6 +192,7 @@ var enabledDefsecTypes = map[detection.FileType]string{
 	detection.FileTypeDockerfile:     types.Dockerfile,
 	detection.FileTypeKubernetes:     types.Kubernetes,
 	detection.FileTypeHelm:           types.Helm,
+	detection.FileTypeRbac:           types.Rbac,
 }
 
 // Handle detects misconfigurations.
