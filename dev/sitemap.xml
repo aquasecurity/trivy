@@ -56,6 +56,11 @@
          <changefreq>daily</changefreq>
     </url>
     <url>
+         <loc>https://aquasecurity.github.io/trivy/dev/docs/advanced/modules/</loc>
+         <lastmod>2022-06-15</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
          <loc>https://aquasecurity.github.io/trivy/dev/docs/advanced/plugins/</loc>
          <lastmod>2022-06-15</lastmod>
          <changefreq>daily</changefreq>
@@ -336,7 +341,12 @@
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>https://aquasecurity.github.io/trivy/dev/docs/references/cli/plugins/</loc>
+         <loc>https://aquasecurity.github.io/trivy/dev/docs/references/cli/module/</loc>
+         <lastmod>2022-06-15</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://aquasecurity.github.io/trivy/dev/docs/references/cli/plugin/</loc>
          <lastmod>2022-06-15</lastmod>
          <changefreq>daily</changefreq>
     </url>
