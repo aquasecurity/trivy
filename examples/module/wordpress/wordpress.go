@@ -28,7 +28,9 @@ func main() {
 	wasm.RegisterModule(WordpressModule{})
 }
 
-type WordpressModule struct{}
+type WordpressModule struct {
+	// Cannot define fields as modules can't keep state.
+}
 
 func (WordpressModule) Version() int {
 	return moduleVersion

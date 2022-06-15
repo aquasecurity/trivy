@@ -120,7 +120,9 @@ const (
     name = "wordpress-module"
 )
 
-type WordpressModule struct{}
+type WordpressModule struct{
+	// Cannot define fields as modules can't keep state.
+}
 
 func (WordpressModule) Version() int {
     return version
@@ -130,6 +132,9 @@ func (WordpressModule) Name() string {
     return name
 }
 ```
+
+!!! info
+    A struct cannot have any fields. Each method invocation is performed in different states.
 
 #### Analyzer interface
 If you implement the `Analyzer` interface, `Analyze` method is called when the file path is matched to file patterns returned by `RequiredFiles()`.

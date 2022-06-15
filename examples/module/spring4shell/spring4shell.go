@@ -34,7 +34,9 @@ func main() {
 	wasm.RegisterModule(Spring4Shell{})
 }
 
-type Spring4Shell struct{}
+type Spring4Shell struct {
+	// Cannot define fields as modules can't keep state.
+}
 
 func (Spring4Shell) Version() int {
 	return ModuleVersion
