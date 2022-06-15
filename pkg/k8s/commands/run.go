@@ -62,7 +62,7 @@ func run(ctx context.Context, opt cmd.Option, cluster string, artifacts []*artif
 		return xerrors.Errorf("init error: %w", err)
 	}
 	defer func() {
-		if err := runner.Close(); err != nil {
+		if err := runner.Close(ctx); err != nil {
 			log.Logger.Errorf("failed to close runner: %s", err)
 		}
 	}()

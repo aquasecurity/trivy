@@ -114,7 +114,7 @@ func (c *ReportOption) populateVulnTypes() error {
 	}
 
 	for _, v := range strings.Split(c.vulnType, ",") {
-		if types.NewVulnType(v) == types.VulnTypeUnknown {
+		if !slices.Contains(types.VulnTypes, v) {
 			return xerrors.Errorf("unknown vulnerability type (%s)", v)
 		}
 		c.VulnType = append(c.VulnType, v)
@@ -128,7 +128,7 @@ func (c *ReportOption) populateSecurityChecks() error {
 	}
 
 	for _, v := range strings.Split(c.securityChecks, ",") {
-		if types.NewSecurityCheck(v) == types.SecurityCheckUnknown {
+		if !slices.Contains(types.SecurityChecks, v) {
 			return xerrors.Errorf("unknown security check (%s)", v)
 		}
 		c.SecurityChecks = append(c.SecurityChecks, v)

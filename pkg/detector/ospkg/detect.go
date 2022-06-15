@@ -3,7 +3,6 @@ package ospkg
 import (
 	"time"
 
-	"github.com/google/wire"
 	"golang.org/x/xerrors"
 
 	fos "github.com/aquasecurity/fanal/analyzer/os"
@@ -27,12 +26,6 @@ var (
 	// ErrUnsupportedOS defines error for unsupported OS
 	ErrUnsupportedOS = xerrors.New("unsupported os")
 
-	// SuperSet binds dependencies for OS scan
-	SuperSet = wire.NewSet(
-		wire.Struct(new(Detector)),
-		wire.Bind(new(Operation), new(Detector)),
-	)
-
 	drivers = map[string]Driver{
 		fos.Alpine:       alpine.NewScanner(),
 		fos.Alma:         alma.NewScanner(),
@@ -53,11 +46,6 @@ var (
 // RegisterDriver is defined for extensibility and not supposed to be used in Trivy.
 func RegisterDriver(name string, driver Driver) {
 	drivers[name] = driver
-}
-
-// Operation defines operation of OSpkg scan
-type Operation interface {
-	Detect(string, string, string, *ftypes.Repository, time.Time, []ftypes.Package) ([]types.DetectedVulnerability, bool, error)
 }
 
 // Driver defines operations for OS package scan

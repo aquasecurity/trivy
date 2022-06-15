@@ -199,6 +199,9 @@ func TestDockerEngine(t *testing.T) {
 	// Set up testing DB
 	cacheDir := initDB(t)
 
+	// Set a temp dir so that modules will not be loaded
+	t.Setenv("XDG_DATA_HOME", cacheDir)
+
 	ctx := context.Background()
 	defer ctx.Done()
 

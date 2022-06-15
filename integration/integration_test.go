@@ -1,5 +1,4 @@
-//go:build integration
-// +build integration
+//go:build integration || module_integration
 
 package integration
 
@@ -10,6 +9,7 @@ import (
 	"net"
 	"os"
 	"path/filepath"
+	"sort"
 	"testing"
 	"time"
 
@@ -108,6 +108,13 @@ func readReport(t *testing.T, filePath string) types.Report {
 		for j := range result.Vulnerabilities {
 			report.Results[i].Vulnerabilities[j].Layer.Digest = ""
 		}
+
+		sort.Slice(result.CustomResources, func(i, j int) bool {
+			if result.CustomResources[i].Type != result.CustomResources[j].Type {
+				return result.CustomResources[i].Type < result.CustomResources[j].Type
+			}
+			return result.CustomResources[i].FilePath < result.CustomResources[j].FilePath
+		})
 	}
 
 	return report

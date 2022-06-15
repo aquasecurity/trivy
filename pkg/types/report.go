@@ -40,6 +40,7 @@ const (
 	ClassLangPkg = "lang-pkgs"
 	ClassConfig  = "config"
 	ClassSecret  = "secret"
+	ClassCustom  = "custom"
 )
 
 // Result holds a target and detected vulnerabilities
