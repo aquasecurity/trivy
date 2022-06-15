@@ -2795,23 +2795,23 @@
 <p>Trivy uses your local kubectl configuration to access the API server to list artifacts.</p>
 <h2 id="cli-commands">CLI Commands</h2>
 <p>Scan a full cluster and generate a simple summary report:</p>
-<div class="highlight"><pre><span></span><code>$ trivy k8s --report=summary
+<div class="highlight"><pre><span></span><code>$ trivy k8s --report=summary cluster
 </code></pre></div>
 <p><img alt="k8s Summary Report" src="../../../../imgs/trivy-k8s.png" /></p>
 <p>The summary report is the default. To get all of the detail the output contains, use <code>--report all</code>.</p>
 <p>Filter by severity:</p>
-<div class="highlight"><pre><span></span><code>$ trivy k8s --severity=CRITICAL --report=all
+<div class="highlight"><pre><span></span><code>$ trivy k8s --severity=CRITICAL --report=all cluster
 </code></pre></div>
 <p>Filter by security check (Vulnerabilties, Secrets or Misconfigurations):</p>
-<div class="highlight"><pre><span></span><code>$ trivy k8s --security-checks=secret --report=summary
+<div class="highlight"><pre><span></span><code>$ trivy k8s --security-checks=secret --report=summary cluster
 # or
-$ trivy k8s --security-checks=config --report=summary
+$ trivy k8s --security-checks=config --report=summary cluster
 </code></pre></div>
 <p>Scan a specific namespace:</p>
-<div class="highlight"><pre><span></span><code>$ trivy k8s -n kube-system --report=summary
+<div class="highlight"><pre><span></span><code>$ trivy k8s -n kube-system --report=summary all
 </code></pre></div>
 <p>Scan a specific resource and get all the output:</p>
-<div class="highlight"><pre><span></span><code>$ trivy k8s deployment/appname
+<div class="highlight"><pre><span></span><code>$ trivy k8s deployment appname
 </code></pre></div>
 <p>If you want to pass in flags before scanning specific workloads, you will have to do it before the resource name.
 For example, scanning a deployment in the app namespace of your Kubernetes cluster for critical vulnerabilities would be done through the following command:</p>
@@ -2820,7 +2820,7 @@ For example, scanning a deployment in the app namespace of your Kubernetes clust
 This is specific to all Trivy CLI commands.</p>
 <p>The supported formats are <code>table</code>, which is the default, and <code>json</code>.
 To get a JSON output on a full cluster scan:</p>
-<div class="highlight"><pre><span></span><code>$ trivy k8s --format json -o results.json
+<div class="highlight"><pre><span></span><code>$ trivy k8s --format json -o results.json cluster
 </code></pre></div>
 <details>
 <summary>Result</summary>
