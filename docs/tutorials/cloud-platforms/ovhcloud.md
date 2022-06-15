@@ -1,14 +1,14 @@
 # Scan for vulnerabilities and misconfigurations of your OVHcloud Managed Kubernetes with Trivy
 
-The original tutorial can be found in the [OVH documentation.]()
+The original tutorial can be found in the [OVH documentation.](https://docs.ovh.com/gb/en/kubernetes/installing-trivy/)
 
 ## Requirements
 
 This tutorial presupposes that you already have a working OVHcloud Managed Kubernetes cluster, and some basic knowledge of how to operate it.
 
-Moreover, follow the deploying a [Hello World application](https://docs.ovh.com/gb/en/kubernetes/deploying-an-application/) documentation in order to have an example application running on your cluster.
+Follow the deploying a [Hello World application](https://docs.ovh.com/gb/en/kubernetes/deploying-an-application/) documentation in order to have an example application running on your cluster.
 
-At this time you should have a running Kubernetes cluster with hello-world deployment and pod like below:
+At this time you should have a running Kubernetes cluster with a hello-world deployment and a pod like below:
 
 ```
 $ kubectl get po,deploy
@@ -25,7 +25,7 @@ deployment.apps/hello-world-deployment   1/1     1            1           35m
 
 You can install Trivy on your computer from the binaries, the source, HomeBrew, Arch Linux, Ubuntu, etc. and even use it directly from a Docker image.
 
-For this tutorial you will install it via HomeBrew:
+For this tutorial, we will install Trivy via HomeBrew:
 
 ```
 brew install aquasecurity/trivy/trivy
@@ -86,7 +86,7 @@ After the installation, check that the trivy CLI is working correctly:
 trivy version
 ```
 
-You should have a behavior like this:
+You should have a behaviour like this:
 
 ```
 $ trivy version
@@ -114,7 +114,7 @@ COMMANDS:
    help, h           Shows a list of commands or help for one command
 ```
 
-As you can see, the trivy CLI contains a lot of commands and options, as you can scan vulnerabilities in container images, file systemes, Git repositories, configuration issues, etc. For this tutorial we will focus on the k8s command.
+As you can see, the trivy CLI contains a lot of commands and options. You can scan vulnerabilities in container images, file systemes, Git repositories, configuration issues, etc. For this tutorial we will focus on the k8s command.
 
 When you execute trivy k8s, the command works like the kubectl command. So when you execute the CLI, it searches your Kubernetes cluster configuration.
 
@@ -143,7 +143,7 @@ Summary Report for kubernetes-admin@my-cilium-cluster
 Severities: C=CRITICAL H=HIGH M=MEDIUM L=LOW U=UNKNOWN
 ```
 
-As you can see, in our default namespace, our OVHcloud Managed Kubernetes cluster (and with an “hello world” application deployed) has several vulnerabilities and misconfigurations.
+As you can see, in our default namespace on our OVHcloud Managed Kubernetes cluster, the "hello-world" deployment has several vulnerabilities and misconfigurations.
 
 We will take a closer look at theses vulnerabilities and misconfigurations. For that, you will ask Trivy to generate a full report, still in the default namespace.
 
@@ -153,7 +153,7 @@ To generate this full report, simply execute the CLI:
 trivy k8s -n default --report all
 ```
 
-You should obtain a report and a list of vulnerabilities and misconfigurations like this:
+You can obtain a report and a list of vulnerabilities and misconfigurations like this:
 
 ```
 $ trivy k8s -n default --report all
@@ -354,7 +354,7 @@ helm repo add aqua https://aquasecurity.github.io/helm-charts/
 helm repo update
 ```
 
-These commands will add the Trivy Helm repository to your local Helm chart repository and update the installed chart repositories:
+These commands will add the Trivy Helm repository to your local Helm chart repository list and update the installed chart repositories:
 
 ```
 $ helm repo add aqua https://aquasecurity.github.io/helm-charts/

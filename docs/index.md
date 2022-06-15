@@ -1,4 +1,10 @@
-# Docs
+---
+hide:
+- navigation
+- toc
+---
+
+![logo](imgs/logo.png){ align=left }
 
 Trivy (tri pronounced like trigger, vy pronounced like envy) is a comprehensive security scanner. It is reliable, fast, extremely easy to use, and it works wherever you need it.
 
@@ -264,33 +270,31 @@ The Trivy Operator can be installed through [kubectl][operator-kubectl] as Kuber
 [registry]: https://github.com/orgs/aquasecurity/packages/container/package/trivy
 [helm]: https://github.com/aquasecurity/trivy/tree/{{ git.tag }}/helm/trivy
 [slack]: https://slack.aquasec.com
-[operator-kubectl]: ./kubernetes/operator/installation/kubectl.md
-[operator-helm]: ./kubernetes/operator/installation/helm.md
+[operator-kubectl]: ./docs/kubernetes/operator/installation/kubectl.md
+[operator-helm]: ./docs/kubernetes/operator/installation/helm.md
 
 Please see [LICENSE][license] for Trivy licensing information.
 
-[installation]: ../getting-started/installation.md
-[vuln]: ../docs/vulnerability/scanning/index.md
-[misconf]: ../docs/misconfiguration/scanning.md
-[kubernetesoperator]: ../docs/kubernetes/operator/index.md
-[container]: ../docs/vulnerability/scanning/image.md
-[rootfs]: ../docs/vulnerability/scanning/rootfs.md
-[filesystem]: ../docs/vulnerability/scanning/filesystem.md
-[repo]: ../docs/vulnerability/scanning/git-repository.md
-[kubernetes]: ../docs/kubernetes/cli/scanning.md
+[vuln]: ./docs/vulnerability/scanning/index.md
+[misconf]: ./docs/misconfiguration/scanning.md
+[kubernetesoperator]: ./docs/kubernetes/operator/index.md
+[container]: ./docs/vulnerability/scanning/image.md
+[rootfs]: ./docs/vulnerability/scanning/rootfs.md
+[filesystem]: ./docs/vulnerability/scanning/filesystem.md
+[repo]: ./docs/vulnerability/scanning/git-repository.md
+[kubernetes]: ./docs/kubernetes/cli/scanning.md
 
-[standalone]: ../docs/references/modes/standalone.md
-[client-server]: ../docs/references/modes/client-server.md
-[integrations]: ../docs/integrations/index.md
+[standalone]: ./docs/references/modes/standalone.md
+[client-server]: ./docs/references/modes/client-server.md
+[integrations]: ./tutorials/integrations/index.md
 
-[os]: ../docs/vulnerability/detection/os.md
-[lang]: ../docs/vulnerability/detection/language.md
+[os]: ./docs/vulnerability/detection/os.md
+[lang]: ./docs/vulnerability/detection/language.md
+[builtin]: ./docs/misconfiguration/policy/builtin.md
+[quickstart]: ./tutorials/quickstart.md
+[podman]: ./docs/advanced/container/podman.md
 
-[builtin]: ../docs/misconfiguration/policy/builtin.md
-[quickstart]: ../getting-started/quickstart.md
-[podman]: ../docs/advanced/container/podman.md
-
-[sbom]: ../docs/sbom/index.md
+[sbom]: ./docs/sbom/index.md
 
 [oci]: https://github.com/opencontainers/image-spec
 [license]:  https://github.com/aquasecurity/trivy/blob/main/LICENSE

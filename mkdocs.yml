@@ -11,7 +11,6 @@ nav:
   - Tutorials:
       - Quick Start: tutorials/quickstart.md
       - Trivy Kubernetes: tutorials/trivy-kubernetes.md
-      - GitOps: tutorials/GitOps.md
       - Integrations:
           - Overview: tutorials/integrations/index.md
           - GitHub Actions: tutorials/integrations/github-actions.md
@@ -21,8 +20,9 @@ nav:
           - Bitbucket Pipelines: tutorials/integrations/bitbucket.md
           - AWS CodePipeline: tutorials/integrations/aws-codepipeline.md
           - AWS Security Hub: tutorials/integrations/aws-security-hub.md
+          - GitOps: tutorials/integrations/gitops.md
       - Cloud Platforms:
-          - OVHcloud: tutorials/cloud-platfomrs/ovhcloud.md
+          - OVHcloud: tutorials/cloud-platforms/ovhcloud.md
   - Docs:
       - Overview: docs/index.md
       - Vulnerability:
