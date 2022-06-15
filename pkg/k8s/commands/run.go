@@ -17,8 +17,8 @@ import (
 )
 
 const (
-	clusterArtifact = "cluster"
-	allArtifact     = "all"
+	clusterArtifact    = "cluster"
+	everythingArtifact = "everything"
 )
 
 // Run runs a k8s scan
@@ -36,7 +36,7 @@ func Run(cliCtx *cli.Context) error {
 	switch cliCtx.Args().Get(0) {
 	case clusterArtifact:
 		return clusterRun(cliCtx, opt, cluster)
-	case allArtifact:
+	case everythingArtifact:
 		return namespaceRun(cliCtx, opt, cluster)
 	default: // resourceArtifact
 		return resourceRun(cliCtx, opt, cluster)
@@ -93,7 +93,7 @@ func run(ctx context.Context, opt cmd.Option, cluster string, artifacts []*artif
 // even though the default value of "--report" is "all".
 //
 // e.g. $ trivy k8s --report all cluster
-//      $ trivy k8s --report all all
+//      $ trivy k8s --report all everything
 //
 // Or they can use "--format json" with implicit "--report all".
 //

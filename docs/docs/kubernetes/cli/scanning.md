@@ -38,7 +38,7 @@ $ trivy k8s --security-checks=config --report=summary cluster
 Scan a specific namespace:
 
 ```
-$ trivy k8s -n kube-system --report=summary all
+$ trivy k8s -n kube-system --report=summary everything
 ```
 
 Scan a specific resource and get all the output:
