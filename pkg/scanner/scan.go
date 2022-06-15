@@ -32,7 +32,7 @@ var StandaloneSuperSet = wire.NewSet(
 
 // StandaloneDockerSet binds docker dependencies
 var StandaloneDockerSet = wire.NewSet(
-	image.NewDockerImage,
+	image.NewContainerImage,
 	aimage.NewArtifact,
 	StandaloneSuperSet,
 )
@@ -77,7 +77,7 @@ var RemoteFilesystemSet = wire.NewSet(
 // RemoteDockerSet binds remote docker dependencies
 var RemoteDockerSet = wire.NewSet(
 	aimage.NewArtifact,
-	image.NewDockerImage,
+	image.NewContainerImage,
 	RemoteSuperSet,
 )
 
@@ -96,7 +96,7 @@ type Scanner struct {
 
 // Driver defines operations of scanner
 type Driver interface {
-	Scan(target string, artifactKey string, blobKeys []string, options types.ScanOptions) (
+	Scan(ctx context.Context, target, artifactKey string, blobKeys []string, options types.ScanOptions) (
 		results types.Results, osFound *ftypes.OS, err error)
 }
 
@@ -117,7 +117,7 @@ func (s Scanner) ScanArtifact(ctx context.Context, options types.ScanOptions) (t
 		}
 	}()
 
-	results, osFound, err := s.driver.Scan(artifactInfo.Name, artifactInfo.ID, artifactInfo.BlobIDs, options)
+	results, osFound, err := s.driver.Scan(ctx, artifactInfo.Name, artifactInfo.ID, artifactInfo.BlobIDs, options)
 	if err != nil {
 		return types.Report{}, xerrors.Errorf("scan failed: %w", err)
 	}

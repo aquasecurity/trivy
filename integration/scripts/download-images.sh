@@ -4,6 +4,8 @@ TEST_IMAGE=ghcr.io/aquasecurity/trivy-test-images
 
 CURRENT=$(cd $(dirname $0);pwd)
 
+mkdir -p ${CURRENT}/../testdata/fixtures/images/
+
 # List the tags
 TAGS=$(crane ls ${TEST_IMAGE})
 

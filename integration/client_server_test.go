@@ -526,6 +526,9 @@ func setup(t *testing.T, options setupOptions) (*cli.App, string, string) {
 	// Set up testing DB
 	cacheDir := initDB(t)
 
+	// Set a temp dir so that modules will not be loaded
+	t.Setenv("XDG_DATA_HOME", cacheDir)
+
 	port, err := getFreePort()
 	assert.NoError(t, err)
 	addr := fmt.Sprintf("localhost:%d", port)
@@ -564,10 +567,10 @@ func setupServer(addr, token, tokenHeader, cacheDir, cacheBackend string) []stri
 
 func setupClient(t *testing.T, c csArgs, addr string, cacheDir string, golden string) ([]string, string) {
 	if c.Command == "" {
-		c.Command = "client"
+		c.Command = "image"
 	}
 	if c.RemoteAddrOption == "" {
-		c.RemoteAddrOption = "--remote"
+		c.RemoteAddrOption = "--server"
 	}
 	t.Helper()
 	osArgs := []string{"trivy", "--cache-dir", cacheDir, c.Command, c.RemoteAddrOption, "http://" + addr}

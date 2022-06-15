@@ -49,6 +49,7 @@ run:
     - ".*._mock.go$"
     - ".*._test.go$"
     - "integration/*"
+    - "examples/*"
 
 issues:
   exclude-rules:

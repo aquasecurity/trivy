@@ -1,4 +1,4 @@
-package k8s
+package report
 
 import (
 	"fmt"
@@ -120,8 +120,8 @@ type Writer interface {
 	Write(Report) error
 }
 
-// write writes the results in the give format
-func write(report Report, option Option) error {
+// Write writes the results in the give format
+func Write(report Report, option Option) error {
 	var writer Writer
 	switch option.Format {
 	case jsonFormat:
@@ -139,7 +139,7 @@ func write(report Report, option Option) error {
 	return writer.Write(report)
 }
 
-func createResource(artifact *artifacts.Artifact, report types.Report, err error) Resource {
+func CreateResource(artifact *artifacts.Artifact, report types.Report, err error) Resource {
 	results := make([]types.Result, 0, len(report.Results))
 	// fix target name
 	for _, result := range report.Results {

@@ -1,8 +1,7 @@
 # Kubernetes
 
 !!! warning "EXPERIMENTAL"
-
-This feature might change without preserving backwards compatibility.
+    This feature might change without preserving backwards compatibility.
 
 The Trivy K8s CLI allows you to scan your Kubernetes cluster for Vulnerabilities, Secrets and Misconfigurations. You can either run the CLI locally or integrate it into your CI/CD pipeline. The difference to the Trivy CLI is that the Trivy K8s CLI allows you to scan running workloads directly within your cluster.
 
@@ -15,37 +14,37 @@ Trivy uses your local kubectl configuration to access the API server to list art
 Scan a full cluster and generate a simple summary report:
 
 ```
-$ trivy k8s --report=summary
+$ trivy k8s --report=summary cluster
 ```
 
-![k8s Summary Report](../../../imgs/k8s-summary.png)
+![k8s Summary Report](../../../imgs/trivy-k8s.png)
 
 The summary report is the default. To get all of the detail the output contains, use `--report all`.
 
 Filter by severity:
 
 ```
-$ trivy k8s --severity=CRITICAL --report=all
+$ trivy k8s --severity=CRITICAL --report=all cluster
 ```
 
 Filter by security check (Vulnerabilties, Secrets or Misconfigurations):
 
 ```
-$ trivy k8s --security-checks=secret --report=summary
+$ trivy k8s --security-checks=secret --report=summary cluster
 # or
-$ trivy k8s --security-checks=config --report=summary
+$ trivy k8s --security-checks=config --report=summary cluster
 ```
 
 Scan a specific namespace:
 
 ```
-$ trivy k8s -n kube-system --report=summary
+$ trivy k8s -n kube-system --report=summary all
 ```
 
 Scan a specific resource and get all the output:
 
 ```
-$ trivy k8s deployment/appname
+$ trivy k8s deployment appname
 ```
 
 If you want to pass in flags before scanning specific workloads, you will have to do it before the resource name.
@@ -60,7 +59,7 @@ The supported formats are `table`, which is the default, and `json`.
 To get a JSON output on a full cluster scan:
 
 ```
-$ trivy k8s --format json -o results.json
+$ trivy k8s --format json -o results.json cluster
 ```
 
 <details>
