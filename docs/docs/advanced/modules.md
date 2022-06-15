@@ -32,8 +32,10 @@ Then, you can update the scan result however you want.
 Modules should be distributed in OCI registries like GitHub Container Registry.
 
 !!! warning
-    Trivy modules available in public are not audited for security.
-    You should install and run third-party modules at your own risk even though WebAssembly is sandboxed.
+    WebAssembly doesn't allow file access and network access by default.
+    Modules can read required files only, but cannot overwrite them.
+    WebAssembly is sandboxed and secure by design, but Trivy modules available in public are not audited for security.
+    You should install and run third-party modules at your own risk even though 
 
 Under the hood Trivy leverages [wazero][wazero] to run WebAssembly modules without any dependencies.
 
