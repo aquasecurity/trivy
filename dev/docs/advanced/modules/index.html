@@ -2019,6 +2019,13 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
+  <a href="#initialize-your-module" class="md-nav__link">
+    Initialize your module
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#module-interface" class="md-nav__link">
     Module interface
   </a>
@@ -2910,6 +2917,13 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
+  <a href="#initialize-your-module" class="md-nav__link">
+    Initialize your module
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#module-interface" class="md-nav__link">
     Module interface
   </a>
@@ -3082,6 +3096,10 @@ Your own module needs to implement either or both <code>Analyzer</code> and <cod
 <p>You can use logging functions such as <code>Debug</code> and <code>Info</code> for debugging.
 See <a href="#examples">examples</a> for the detail.</p>
 </div>
+<h4 id="initialize-your-module">Initialize your module</h4>
+<p>Replace the repository name with yours.</p>
+<div class="highlight"><pre><span></span><code>$ go mod init github.com/aquasecurity/trivy-module-wordpress
+</code></pre></div>
 <h4 id="module-interface">Module interface</h4>
 <p><code>Version()</code> returns your module version and should be incremented after updates.
 <code>Name()</code> returns your module name.</p>
@@ -3281,7 +3299,7 @@ Digest: sha256:6416d0199d66ce52ced19f01d75454b22692ff3aa7737e45f7a189880840424f
 <h2 id="examples">Examples</h2>
 <ul>
 <li><a href="https://github.com/aquasecurity/trivy/tree/main/examples/module/spring4shell">Spring4Shell</a></li>
-<li><a href="https://github.com/aquasecurity/trivy/tree/main/examples/module/wordpress">WordPress</a></li>
+<li><a href="https://github.com/aquasecurity/trivy-module-wordpress">WordPress</a></li>
 </ul>
 
               
