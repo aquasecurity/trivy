@@ -30,12 +30,10 @@ func NewTrivyBOM(r io.Reader, ext string) (TrivyBOM, error) {
 			return TrivyBOM{}, xerrors.Errorf("failed to json decode: %w", err)
 		}
 		return b, nil
-	// case ".xml":
-	// TODO: not supported yet
-	default:
-		return TrivyBOM{}, xerrors.Errorf("invalid cycloneDX format: %s", ext)
+	case ".xml":
+		// TODO: not supported yet
 	}
-	return b, nil
+	return TrivyBOM{}, xerrors.Errorf("invalid cycloneDX format: %s", ext)
 }
 
 func (p Parser) Parse(r io.Reader) (string, *ftypes.OS, []ftypes.PackageInfo, []ftypes.Application, error) {
