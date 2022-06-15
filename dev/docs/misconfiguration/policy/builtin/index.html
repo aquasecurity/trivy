@@ -2813,7 +2813,7 @@ Those policies are managed under <a href="https://github.com/aquasecurity/defsec
 <tbody>
 <tr>
 <td>Kubernetes</td>
-<td><a href="https://github.com/aquasecurity/defsec/tree/master/internal/rules/kubernetes">defsec</a></td>
+<td><a href="https://github.com/aquasecurity/defsec/tree/master/internal/rules/rbac">defsec</a></td>
 </tr>
 <tr>
 <td>Dockerfile, Containerfile</td>
@@ -2829,12 +2829,16 @@ Those policies are managed under <a href="https://github.com/aquasecurity/defsec
 </tr>
 <tr>
 <td>Helm Chart</td>
-<td><a href="https://github.com/aquasecurity/defsec/tree/master/internal/rules/kubernetes">defsec</a></td>
+<td><a href="https://github.com/aquasecurity/defsec/tree/master/internal/rules/rbac">defsec</a></td>
+</tr>
+<tr>
+<td>RBAC</td>
+<td><a href="https://github.com/aquasecurity/defsec">defsec</a>[rbac]</td>
 </tr>
 </tbody>
 </table>
 <p>For suggestions or issues regarding policy content, please open an issue under the <a href="https://github.com/aquasecurity/defsec">defsec</a> repository.</p>
-<p>Helm Chart scanning will resolve the chart to Kubernetes manifests then run the <a href="https://github.com/aquasecurity/defsec/tree/master/internal/rules/kubernetes">kubenetes</a> checks.</p>
+<p>Helm Chart scanning will resolve the chart to Kubernetes manifests then run the <a href="https://github.com/aquasecurity/defsec/tree/master/internal/rules/rbac">kubenetes</a> checks.</p>
 <p>Ansible scanning is coming soon.</p>
 
               
