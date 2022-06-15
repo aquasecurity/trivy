@@ -123,6 +123,13 @@ In the following tutorial, it creates a WordPress module that detects a WordPres
     You can use logging functions such as `Debug` and `Info` for debugging.
     See [examples](#examples) for the detail.
 
+#### Initialize your module
+Replace the repository name with yours.
+
+```
+$ go mod init github.com/aquasecurity/trivy-module-wordpress
+```
+
 #### Module interface
 `Version()` returns your module version and should be incremented after updates.
 `Name()` returns your module name.
@@ -345,7 +352,7 @@ Digest: sha256:6416d0199d66ce52ced19f01d75454b22692ff3aa7737e45f7a189880840424f
 [wazero]: https://github.com/tetratelabs/wazero
 
 [trivy-module-spring4shell]: https://github.com/aquasecurity/trivy/tree/main/examples/module/spring4shell
-[trivy-module-wordpress]: https://github.com/aquasecurity/trivy/tree/main/examples/module/wordpress
+[trivy-module-wordpress]: https://github.com/aquasecurity/trivy-module-wordpress
 
 [tinygo-installation]: https://tinygo.org/getting-started/install/
 [oras]: https://oras.land/cli/
