@@ -52,6 +52,10 @@ generate-test-modules: $(TEST_MODULES)
 
 # Compile WASM modules for unit and integration tests
 %.wasm:%.go
+	@if !(type "tinygo" > /dev/null 2>&1); then \
+		echo "Need to install TinyGo. Follow https://tinygo.org/getting-started/install/"; \
+		exit 1; \
+	fi
 	go generate $<
 
 # Run unit tests
@@ -71,7 +75,6 @@ test-integration: integration/testdata/fixtures/images/*.tar.gz
 # Run WASM integration tests
 .PHONY: test-module-integration
 test-module-integration: integration/testdata/fixtures/images/*.tar.gz $(EXAMPLE_MODULES)
-	tinygo build -o examples/module/spring4shell/spring4shell.wasm -scheduler=none -target=wasi --no-debug examples/module/spring4shell/spring4shell.go
 	go test -v -tags=module_integration ./integration/...
 
 .PHONY: lint
