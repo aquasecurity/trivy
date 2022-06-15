@@ -52,8 +52,6 @@ require (
 	k8s.io/utils v0.0.0-20220210201930-3a6ce19ff2f9
 )
 
-require github.com/olekukonko/tablewriter v0.0.5 // indirect
-
 require (
 	cloud.google.com/go v0.99.0 // indirect
 	cloud.google.com/go/storage v1.14.0 // indirect
@@ -215,6 +213,7 @@ require (
 	github.com/multiformats/go-multihash v0.0.15 // indirect
 	github.com/multiformats/go-varint v0.0.6 // indirect
 	github.com/munnerz/goautoneg v0.0.0-20191010083416-a7dc8b61c822 // indirect
+	github.com/olekukonko/tablewriter v0.0.5 // indirect
 	github.com/opencontainers/go-digest v1.0.0 // indirect
 	github.com/opencontainers/image-spec v1.0.3-0.20220303224323-02efb9a75ee1 // indirect
 	github.com/opencontainers/runc v1.1.2 // indirect

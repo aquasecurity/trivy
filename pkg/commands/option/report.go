@@ -16,8 +16,9 @@ import (
 
 // ReportOption holds the options for reporting scan results
 type ReportOption struct {
-	Format   string
-	Template string
+	Format         string
+	Template       string
+	DependencyTree bool
 
 	IgnoreFile    string
 	IgnoreUnfixed bool
@@ -41,10 +42,11 @@ type ReportOption struct {
 // NewReportOption is the factory method to return ReportOption
 func NewReportOption(c *cli.Context) ReportOption {
 	return ReportOption{
-		output:       c.String("output"),
-		Format:       c.String("format"),
-		Template:     c.String("template"),
-		IgnorePolicy: c.String("ignore-policy"),
+		output:         c.String("output"),
+		Format:         c.String("format"),
+		DependencyTree: c.Bool("dependency-tree"),
+		Template:       c.String("template"),
+		IgnorePolicy:   c.String("ignore-policy"),
 
 		vulnType:       c.String("vuln-type"),
 		securityChecks: c.String("security-checks"),
@@ -139,6 +141,10 @@ func (c *ReportOption) populateSecurityChecks() error {
 func (c *ReportOption) forceListAllPkgs(logger *zap.SugaredLogger) bool {
 	if slices.Contains(supportedSbomFormats, c.Format) && !c.ListAllPkgs {
 		logger.Debugf("'github', 'cyclonedx', 'spdx', and 'spdx-json' automatically enables '--list-all-pkgs'.")
+		return true
+	}
+	if c.DependencyTree {
+		logger.Debugf("'--dependency-tree' enables '--list-all-pkgs'.")
 		return true
 	}
 	return false

@@ -371,6 +371,12 @@ var (
 		EnvVars: []string{"TRIVY_SECRET_CONFIG"},
 	}
 
+	dependencyTree = cli.BoolFlag{
+		Name:    "dependency-tree",
+		Usage:   "show dependency origin tree (EXPERIMENTAL)",
+		EnvVars: []string{"TRIVY_DEPENDENCY_TREE"},
+	}
+
 	// Global flags
 	globalFlags = []cli.Flag{
 		&quietFlag,
@@ -499,6 +505,7 @@ func NewImageCommand() *cli.Command {
 			&insecureFlag,
 			&dbRepositoryFlag,
 			&secretConfig,
+			&dependencyTree,
 			stringSliceFlag(skipFiles),
 			stringSliceFlag(skipDirs),
 
@@ -545,6 +552,7 @@ func NewFilesystemCommand() *cli.Command {
 			&offlineScan,
 			&dbRepositoryFlag,
 			&secretConfig,
+			&dependencyTree,
 			stringSliceFlag(skipFiles),
 			stringSliceFlag(skipDirs),
 
@@ -595,6 +603,7 @@ func NewRootfsCommand() *cli.Command {
 			&offlineScan,
 			&dbRepositoryFlag,
 			&secretConfig,
+			&dependencyTree,
 			stringSliceFlag(skipFiles),
 			stringSliceFlag(skipDirs),
 			stringSliceFlag(configPolicy),
@@ -641,6 +650,7 @@ func NewRepositoryCommand() *cli.Command {
 			&insecureFlag,
 			&dbRepositoryFlag,
 			&secretConfig,
+			&dependencyTree,
 			stringSliceFlag(skipFiles),
 			stringSliceFlag(skipDirs),
 		},
@@ -681,6 +691,7 @@ func NewClientCommand() *cli.Command {
 			&offlineScan,
 			&insecureFlag,
 			&secretConfig,
+			&dependencyTree,
 
 			&token,
 			&tokenHeader,

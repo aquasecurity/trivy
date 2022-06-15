@@ -6,6 +6,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 
+	ftypes "github.com/aquasecurity/fanal/types"
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/report"
 	"github.com/aquasecurity/trivy/pkg/types"
@@ -143,6 +144,37 @@ func TestReportWriter_Table(t *testing.T) {
 					Target: "package-lock.json",
 					Class:  "lang-pkgs",
 					Type:   "npm",
+					Packages: []ftypes.Package{
+						{
+							ID:      "node-fetch@1.7.3",
+							Name:    "node-fetch",
+							Version: "1.7.3",
+						},
+						{
+							ID:      "isomorphic-fetch@2.2.1",
+							Name:    "isomorphic-fetch",
+							Version: "2.2.1",
+							DependsOn: []string{
+								"node-fetch@1.7.3",
+							},
+						},
+						{
+							ID:      "fbjs@0.8.18",
+							Name:    "fbjs",
+							Version: "0.8.18",
+							DependsOn: []string{
+								"isomorphic-fetch@2.2.1",
+							},
+						},
+						{
+							ID:      "styled-components@3.1.3",
+							Name:    "styled-components",
+							Version: "3.1.3",
+							DependsOn: []string{
+								"fbjs@0.8.18",
+							},
+						},
+					},
 					Vulnerabilities: []types.DetectedVulnerability{
 						{
 							VulnerabilityID: "CVE-2022-0235",
@@ -152,21 +184,6 @@ func TestReportWriter_Table(t *testing.T) {
 								Title:       "foobar",
 								Description: "baz",
 								Severity:    "HIGH",
-							},
-							PkgParents: []*types.DependencyTreeItem{
-								{
-									ID: "isomorphic-fetch@2.2.1",
-									Parents: []*types.DependencyTreeItem{
-										{
-											ID: "fbjs@0.8.18",
-											Parents: []*types.DependencyTreeItem{
-												{
-													ID: "styled-components@3.1.3",
-												},
-											},
-										},
-									},
-								},
 							},
 							InstalledVersion: "1.7.3",
 							FixedVersion:     "2.6.7, 3.1.1",
@@ -194,8 +211,8 @@ func TestReportWriter_Table(t *testing.T) {
 │ sanitize-html │ CVE-2021-26539 │ MEDIUM   │ 1.20.0            │ 2.3.1         │        │
 └───────────────┴────────────────┴──────────┴───────────────────┴───────────────┴────────┘
 
-Vulnerability origin graph:
-===========================
+Dependency Origin Tree
+======================
 package-lock.json
 ├── node-fetch@1.7.3, (MEDIUM: 0, HIGH: 1)
 │   └── isomorphic-fetch@2.2.1
@@ -213,6 +230,7 @@ package-lock.json
 			err := report.Write(types.Report{Results: tc.results}, report.Option{
 				Format:             "table",
 				Output:             &tableWritten,
+				Tree:               true,
 				IncludeNonFailures: tc.includeNonFailures,
 				Severities:         []dbTypes.Severity{dbTypes.SeverityHigh, dbTypes.SeverityMedium},
 			})

@@ -10,6 +10,7 @@ import (
 
 	"github.com/fatih/color"
 	"github.com/liamg/tml"
+	"github.com/samber/lo"
 	"github.com/xlab/treeprint"
 	"golang.org/x/exp/slices"
 
@@ -34,6 +35,9 @@ var (
 type TableWriter struct {
 	Severities []dbTypes.Severity
 	Output     io.Writer
+
+	// Show dependency origin tree
+	Tree bool
 
 	// We have to show a message once about using the '-format json' subcommand to get the full pkgPath
 	ShowMessageOnce *sync.Once
@@ -123,7 +127,9 @@ func (tw TableWriter) write(result types.Result) {
 		_, _ = fmt.Fprint(tw.Output, NewMisconfigRenderer(result.Target, result.Misconfigurations, tw.IncludeNonFailures, tw.isOutputToTerminal()).Render())
 	}
 
-	tw.renderDependencies(result)
+	if tw.Tree {
+		tw.renderDependencyTree(result)
+	}
 
 	// For debugging
 	if tw.Trace {
@@ -199,22 +205,21 @@ func (tw TableWriter) setVulnerabilityRows(tableWriter *table.Table, vulns []typ
 		tableWriter.AddRow(row...)
 	}
 }
-func (tw TableWriter) renderDependencies(result types.Result) {
-
-	seen := make([]string, 0)
-	var root treeprint.Tree
-	for _, vuln := range result.Vulnerabilities {
-		if vuln.PkgParents != nil {
-			root = treeprint.NewWithRoot(fmt.Sprintf(`
-Vulnerability origin graph:
-===========================
-%s`, result.Target))
-			break
-		}
+func (tw TableWriter) renderDependencyTree(result types.Result) {
+	// Get parents of each dependency
+	parents := reverseDeps(result.Packages)
+	if len(parents) == 0 {
+		return
 	}
 
-	pkgSeverityCount := map[string]map[string]int{}
+	root := treeprint.NewWithRoot(fmt.Sprintf(`
+Dependency Origin Tree
+======================
+%s`, result.Target))
 
+	// This count is next to the package ID.
+	// e.g. node-fetch@1.7.3 (MEDIUM: 2, HIGH: 1, CRITICAL: 3)
+	pkgSeverityCount := map[string]map[string]int{}
 	for _, vuln := range result.Vulnerabilities {
 		cnts, ok := pkgSeverityCount[vuln.PkgID]
 		if !ok {
@@ -225,30 +230,52 @@ Vulnerability origin graph:
 		pkgSeverityCount[vuln.PkgID] = cnts
 	}
 
-	if root != nil {
-		for _, vuln := range result.Vulnerabilities {
-			if !slices.Contains(seen, vuln.PkgID) {
-
-				_, summaries := tw.summary(pkgSeverityCount[vuln.PkgID])
-				topLvlId := fmt.Sprintf("%s, (%s)", vuln.PkgID, strings.Join(summaries, ", "))
-
-				seen = append(seen, vuln.PkgID)
-
-				branch := root.AddBranch(topLvlId)
-
-				addParents(branch, vuln.PkgParents)
-			}
-
+	// Render tree
+	seen := map[string]struct{}{}
+	for _, vuln := range result.Vulnerabilities {
+		if _, ok := seen[vuln.PkgID]; ok {
+			continue
 		}
-		tw.Println(root.String())
+
+		_, summaries := tw.summary(pkgSeverityCount[vuln.PkgID])
+		topLvlID := fmt.Sprintf("%s, (%s)", vuln.PkgID, strings.Join(summaries, ", "))
+
+		seen[vuln.PkgID] = struct{}{}
+		branch := root.AddBranch(topLvlID)
+		addParents(branch, vuln.PkgID, parents)
+
+	}
+	tw.Println(root.String())
+}
+
+func addParents(topItem treeprint.Tree, pkgID string, parentMap map[string][]string) {
+	parents, ok := parentMap[pkgID]
+	if !ok {
+		return
+	}
+	for _, parent := range parents {
+		branch := topItem.AddBranch(parent)
+		addParents(branch, parent, parentMap)
 	}
 }
 
-func addParents(topItem treeprint.Tree, parents []*types.DependencyTreeItem) {
-	for _, parent := range parents {
-		branch := topItem.AddBranch(parent.ID)
-		addParents(branch, parent.Parents)
+func reverseDeps(libs []ftypes.Package) map[string][]string {
+	reversed := make(map[string][]string)
+	for _, lib := range libs {
+		for _, dependOn := range lib.DependsOn {
+			items, ok := reversed[dependOn]
+			if !ok {
+				reversed[dependOn] = []string{lib.ID}
+			} else {
+				reversed[dependOn] = append(items, lib.ID)
+			}
+		}
 	}
+
+	for k, v := range reversed {
+		reversed[k] = lo.Uniq(v)
+	}
+	return reversed
 }
 
 func (tw TableWriter) outputTrace(result types.Result) {
