@@ -47,6 +47,8 @@ func Package(purl packageurl.PackageURL) (*ftypes.Package, error) {
 		switch q.Key {
 		case "arch":
 			pkg.Arch = q.Value
+		case "modularitylabel":
+			pkg.Modularitylabel = q.Value
 		}
 	}
 
