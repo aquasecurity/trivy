@@ -153,6 +153,8 @@ func (WordpressModule) Name() string {
 
 #### Analyzer interface
 If you implement the `Analyzer` interface, `Analyze` method is called when the file path is matched to file patterns returned by `RequiredFiles()`.
+A file pattern must be a regular expression. The syntax detail is [here][regexp].
+
 `Analyze` takes the matched file path, then the file can be opened by `os.Open()`.
 
 ```go
@@ -336,6 +338,7 @@ Digest: sha256:6416d0199d66ce52ced19f01d75454b22692ff3aa7737e45f7a189880840424f
 - [Spring4Shell][trivy-module-spring4shell]
 - [WordPress][trivy-module-wordpress]
 
+[regexp]: https://github.com/google/re2/wiki/Syntax
 
 [tinygo]: https://tinygo.org/
 [spring4shell]: https://blog.aquasec.com/zero-day-rce-vulnerability-spring4shell
