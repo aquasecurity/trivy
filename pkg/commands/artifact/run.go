@@ -243,6 +243,7 @@ func (r *runner) Report(opt Option, report types.Report) error {
 		AppVersion:         opt.GlobalOption.AppVersion,
 		Format:             opt.Format,
 		Output:             opt.Output,
+		Tree:               opt.DependencyTree,
 		Severities:         opt.Severities,
 		OutputTemplate:     opt.Template,
 		IncludeNonFailures: opt.IncludeNonFailures,
