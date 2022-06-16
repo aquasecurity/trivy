@@ -160,27 +160,6 @@ func TestScanner_Detect(t *testing.T) {
 			want: nil,
 		},
 		{
-			name:     "the installed version has ksplice2",
-			fixtures: []string{"testdata/fixtures/oracle7.yaml", "testdata/fixtures/data-source.yaml"},
-			args: args{
-				osVer: "7",
-				pkgs: []ftypes.Package{
-					{
-						Name:       "glibc",
-						Epoch:      2,
-						Version:    "2.28",
-						Release:    "151.0.1.ksplice2.el8",
-						Arch:       "x86_64",
-						SrcEpoch:   2,
-						SrcName:    "glibc",
-						SrcVersion: "2.28",
-						SrcRelease: "151.0.1.ksplice2.el8",
-					},
-				},
-			},
-			want: nil,
-		},
-		{
 			name:     "with ksplice",
 			fixtures: []string{"testdata/fixtures/oracle7.yaml", "testdata/fixtures/data-source.yaml"},
 			args: args{
@@ -206,6 +185,40 @@ func TestScanner_Detect(t *testing.T) {
 					InstalledVersion: "2:2.17-156.ksplice1.el7",
 					FixedVersion:     "2:2.17-157.ksplice1.el7_3.4",
 					VendorIDs:        []string{"ELSA-2017-3582"},
+					DataSource: &dbTypes.DataSource{
+						ID:   vulnerability.OracleOVAL,
+						Name: "Oracle Linux OVAL definitions",
+						URL:  "https://linux.oracle.com/security/oval/",
+					},
+				},
+			},
+		},
+		{
+			name:     "ksplice2",
+			fixtures: []string{"testdata/fixtures/oracle7.yaml", "testdata/fixtures/data-source.yaml"},
+			args: args{
+				osVer: "7",
+				pkgs: []ftypes.Package{
+					{
+						Name:       "glibcx",
+						Epoch:      0,
+						Version:    "0.1",
+						Release:    "123.ksplice1.el7_3.4",
+						Arch:       "x86_64",
+						SrcEpoch:   0,
+						SrcName:    "glibc",
+						SrcVersion: "0.1",
+						SrcRelease: "123.ksplice1.el7_3.4",
+					},
+				},
+			},
+			want: []types.DetectedVulnerability{
+				{
+					VulnerabilityID:  "CVE-2001-10001",
+					PkgName:          "glibcx",
+					InstalledVersion: "0.1-123.ksplice1.el7_3.4",
+					FixedVersion:     "0.1-123.ksplice2.el7_3.4",
+					VendorIDs:        []string{"ELSA-2001-1001"},
 					DataSource: &dbTypes.DataSource{
 						ID:   vulnerability.OracleOVAL,
 						Name: "Oracle Linux OVAL definitions",

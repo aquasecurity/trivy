@@ -1,0 +1,13 @@
+- bucket: Oracle Linux 7
+  pairs:
+    - bucket: kernel-uek
+      pairs:
+        - key: CVE-2021-23133
+          value:
+            Entries:
+              - FixedVersion: "5.4.17-2102.202.5.el8"
+                VendorIDs:
+                  - ELSA-2021-9306
+              - FixedVersion: "5.4.17-2102.203.5.el8"
+                VendorIDs:
+                  - ELSA-2021-9362

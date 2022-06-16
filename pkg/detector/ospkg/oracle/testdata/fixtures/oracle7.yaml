@@ -16,6 +16,17 @@
               - FixedVersion: "2:2.17-157.ksplice1.el7_3.4"
                 VendorIDs:
                   - ELSA-2017-3582
+    - bucket: glibcx
+      pairs:
+        - key: CVE-2001-10001
+          value:
+            Entries:
+              - FixedVersion: "0:0.1-123.ksplice1.el7_3.4"
+                VendorIDs:
+                  - ELSA-2001-1000
+              - FixedVersion: "0:0.1-123.ksplice2.el7_3.4"
+                VendorIDs:
+                  - ELSA-2001-1001
     - bucket: gnutls
       pairs:
         - key: CVE-2021-20231
