@@ -78,6 +78,11 @@ func (c *ReportOption) Init(output io.Writer, logger *zap.SugaredLogger) error {
 		logger.Warn(`"--list-all-pkgs" cannot be used with "--format table". Try "--format json" or other formats.`)
 	}
 
+	// "--dependency-tree" option is available only with "--format table".
+	if c.DependencyTree && c.Format != "table" {
+		logger.Warn(`"--dependency-tree" can be used only with "--format table".`)
+	}
+
 	if c.forceListAllPkgs(logger) {
 		c.ListAllPkgs = true
 	}
