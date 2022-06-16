@@ -87,10 +87,11 @@ func (sw *SarifWriter) addSarifRule(data *sarifData) {
 func (sw *SarifWriter) addSarifResult(data *sarifData) {
 	sw.addSarifRule(data)
 
-	region := sarif.NewRegion().WithStartLine(1)
+	region := sarif.NewRegion().WithStartLine(1).WithEndLine(1)
 	if data.startLine > 0 {
 		region = sarif.NewSimpleRegion(data.startLine, data.endLine)
 	}
+	region.WithStartColumn(1).WithEndColumn(1)
 
 	location := sarif.NewPhysicalLocation().
 		WithArtifactLocation(sarif.NewSimpleArtifactLocation(data.artifactLocation).WithUriBaseId("ROOTPATH")).
