@@ -216,7 +216,7 @@ func getIgnoredIDs(ignoreFile string) []string {
 		if len(fields) > 1 {
 			exp, err := getExpirationDate(fields)
 			if err != nil {
-				log.Logger.Warnf("Error while parsing expiration date in .trivyignore file: %s\n", err)
+				log.Logger.Warnf("Error while parsing expiration date in .trivyignore file: %s", err)
 				continue
 			}
 			if !exp.IsZero() {
