@@ -237,7 +237,7 @@ func getIgnoredIDs(ignoreFile string) []string {
 func getExpirationDate(fields []string) (time.Time, error) {
 	for _, field := range fields {
 		if strings.HasPrefix(field, "exp:") {
-			return time.Parse(time.RFC3339, strings.TrimPrefix(field, "exp:"))
+			return time.Parse("2006-01-02", strings.TrimPrefix(field, "exp:"))
 		}
 	}
 
