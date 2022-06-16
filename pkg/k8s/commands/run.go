@@ -4,7 +4,10 @@ import (
 	"context"
 	"errors"
 
+	"github.com/aquasecurity/trivy/pkg/commands/option"
+	"github.com/aquasecurity/trivy/pkg/types"
 	"github.com/urfave/cli/v2"
+	"golang.org/x/exp/slices"
 	"golang.org/x/xerrors"
 
 	cmd "github.com/aquasecurity/trivy/pkg/commands/artifact"
@@ -73,19 +76,59 @@ func run(ctx context.Context, opt cmd.Option, cluster string, artifacts []*artif
 	if err != nil {
 		return xerrors.Errorf("k8s scan error: %w", err)
 	}
+	workloadReport, rbacReport := separateMisConfigRoleAssessment(r, opt.ReportOption)
 
-	if err := report.Write(r, report.Option{
-		Format:     opt.Format,
-		Report:     opt.KubernetesOption.ReportFormat,
-		Output:     opt.Output,
-		Severities: opt.Severities,
+	if err := report.Write(workloadReport, report.Option{
+		Format:        opt.Format,
+		Report:        opt.KubernetesOption.ReportFormat,
+		Output:        opt.Output,
+		Severities:    opt.Severities,
+		ColumnHeading: report.ColumnHeading(opt.ReportOption, report.WorkloadColumns()),
 	}); err != nil {
-		return xerrors.Errorf("unable to write results: %w", err)
+		return xerrors.Errorf("unable to write workload results: %w", err)
+	}
+
+	if err := report.Write(rbacReport, report.Option{
+		Format:        opt.Format,
+		Report:        opt.KubernetesOption.ReportFormat,
+		Output:        opt.Output,
+		Severities:    opt.Severities,
+		ColumnHeading: report.ColumnHeading(opt.ReportOption, report.RoleColumns()),
+	}); err != nil {
+		return xerrors.Errorf("unable to write rbac results: %w", err)
 	}
 
 	cmd.Exit(opt, r.Failed())
 
 	return nil
+}
+
+func separateMisConfigRoleAssessment(k8sReport report.Report, rp option.ReportOption) (report.Report, report.Report) {
+	workloadMisconfig := make([]report.Resource, 0)
+	rbacAssessment := make([]report.Resource, 0)
+	for _, misConfig := range k8sReport.Misconfigurations {
+		if slices.Contains(rp.SecurityChecks, types.SecurityCheckRbac) && rbacResource(misConfig) {
+			rbacAssessment = append(rbacAssessment, misConfig)
+		} else {
+			if slices.Contains(rp.SecurityChecks, types.SecurityCheckConfig) && !rbacResource(misConfig) {
+				workloadMisconfig = append(workloadMisconfig, misConfig)
+			}
+		}
+	}
+	return report.Report{
+			SchemaVersion:     0,
+			ClusterName:       k8sReport.ClusterName,
+			Vulnerabilities:   k8sReport.Vulnerabilities,
+			Misconfigurations: workloadMisconfig,
+		}, report.Report{
+			SchemaVersion:     0,
+			ClusterName:       k8sReport.ClusterName,
+			Misconfigurations: rbacAssessment,
+		}
+}
+
+func rbacResource(misConfig report.Resource) bool {
+	return misConfig.Kind == "Role" || misConfig.Kind == "RoleBinding" || misConfig.Kind == "ClusterRole" || misConfig.Kind == "ClusterRoleBinding"
 }
 
 // Full-cluster scanning with '--format table' without explicit '--report all' is not allowed so that it won't mess up user's terminal.

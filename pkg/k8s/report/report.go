@@ -24,10 +24,11 @@ const (
 )
 
 type Option struct {
-	Format     string
-	Report     string
-	Output     io.Writer
-	Severities []dbTypes.Severity
+	Format        string
+	Report        string
+	Output        io.Writer
+	Severities    []dbTypes.Severity
+	ColumnHeading []string
 }
 
 // Report represents a kubernetes scan report
@@ -128,9 +129,10 @@ func Write(report Report, option Option) error {
 		writer = &JSONWriter{Output: option.Output, Report: option.Report}
 	case tableFormat:
 		writer = &TableWriter{
-			Output:     option.Output,
-			Report:     option.Report,
-			Severities: option.Severities,
+			Output:        option.Output,
+			Report:        option.Report,
+			Severities:    option.Severities,
+			ColumnHeading: option.ColumnHeading,
 		}
 	default:
 		return xerrors.Errorf(`unknown format %q. Use "json" or "table"`, option.Format)

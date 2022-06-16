@@ -7,6 +7,9 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/aquasecurity/trivy/pkg/commands/option"
+	"github.com/aquasecurity/trivy/pkg/types"
+
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/table"
@@ -18,9 +21,10 @@ type SummaryWriter struct {
 	Output           io.Writer
 	Severities       []string
 	SeverityHeadings []string
+	ColumnHeading    []string
 }
 
-func NewSummaryWriter(output io.Writer, requiredSevs []dbTypes.Severity) SummaryWriter {
+func NewSummaryWriter(output io.Writer, requiredSevs []dbTypes.Severity, columnHeading []string) SummaryWriter {
 	var severities []string
 	var severityHeadings []string
 	severities, severityHeadings = getRequiredSeverities(requiredSevs)
@@ -28,11 +32,40 @@ func NewSummaryWriter(output io.Writer, requiredSevs []dbTypes.Severity) Summary
 		Output:           output,
 		Severities:       severities,
 		SeverityHeadings: severityHeadings,
+		ColumnHeading:    columnHeading,
 	}
+}
+
+func ColumnHeading(rp option.ReportOption, availableColumns []string) []string {
+	column := []string{NameSpaceColumn, ResourceColumn}
+	securityOptions := make(map[string]interface{}, 0)
+	//maintain column order (vuln,config,secret)
+	for _, check := range rp.SecurityChecks {
+		switch check {
+		case types.SecurityCheckVulnerability:
+			securityOptions[VulnerabilitiesColumn] = nil
+		case types.SecurityCheckConfig:
+			securityOptions[MisconfigurationsColumn] = nil
+		case types.SecurityCheckSecret:
+			securityOptions[SecretsColumn] = nil
+		case types.SecurityCheckRbac:
+			securityOptions[RbacAssessmentColumn] = nil
+		}
+	}
+	for _, col := range availableColumns {
+		if _, ok := securityOptions[col]; ok {
+			column = append(column, col)
+		}
+	}
+	return column
 }
 
 // Write writes the results in a summarized table format
 func (s SummaryWriter) Write(report Report) error {
+	// no report column to print
+	if len(s.ColumnHeading) == 2 {
+		return nil
+	}
 	consolidated := report.consolidate()
 
 	if _, err := fmt.Fprintln(s.Output); err != nil {
@@ -45,7 +78,7 @@ func (s SummaryWriter) Write(report Report) error {
 
 	t := table.New(s.Output)
 	t.SetRowLines(false)
-	configureHeader(s, t)
+	configureHeader(s, t, s.ColumnHeading)
 
 	sort.Slice(consolidated.Findings, func(i, j int) bool {
 		return consolidated.Findings[i].Namespace > consolidated.Findings[j].Namespace
@@ -58,10 +91,15 @@ func (s SummaryWriter) Write(report Report) error {
 		vCount, mCount, sCount := accumulateSeverityCounts(finding)
 		name := fmt.Sprintf("%s/%s", finding.Kind, finding.Name)
 		rowParts := []string{finding.Namespace, name}
-		rowParts = append(rowParts, s.generateSummary(vCount)...)
-		rowParts = append(rowParts, s.generateSummary(mCount)...)
-		rowParts = append(rowParts, s.generateSummary(sCount)...)
-
+		if len(vCount) > 0 {
+			rowParts = append(rowParts, s.generateSummary(vCount)...)
+		}
+		if len(mCount) > 0 {
+			rowParts = append(rowParts, s.generateSummary(mCount)...)
+		}
+		if len(sCount) > 0 {
+			rowParts = append(rowParts, s.generateSummary(sCount)...)
+		}
 		t.AddRow(rowParts...)
 	}
 
@@ -127,25 +165,23 @@ func accumulateSeverityCounts(finding Resource) (map[string]int, map[string]int,
 	return vCount, mCount, sCount
 }
 
-func configureHeader(s SummaryWriter, t *table.Table) {
+func configureHeader(s SummaryWriter, t *table.Table, columnHeading []string) {
 	sevCount := len(s.Severities)
-
-	headerRow := []string{"Namespace", "Resource"}
-	//  vulnerabilities headings
-	headerRow = append(headerRow, s.SeverityHeadings...)
-	//  misconfig headings
-	headerRow = append(headerRow, s.SeverityHeadings...)
-	//  secrets headings
-	headerRow = append(headerRow, s.SeverityHeadings...)
-	headerAlignment := []table.Alignment{table.AlignLeft, table.AlignLeft}
-
-	for i := 0; i < len(headerRow)-2; i++ {
-		headerAlignment = append(headerAlignment, table.AlignCenter)
+	if len(columnHeading) > 2 {
+		headerRow := []string{columnHeading[0], columnHeading[1]}
+		//  vulnerabilities headings
+		count := len(columnHeading) - len(headerRow)
+		colSpan := []int{1, 1}
+		headerAlignment := []table.Alignment{table.AlignLeft, table.AlignLeft}
+		for i := 0; i < count; i++ {
+			headerRow = append(headerRow, s.SeverityHeadings...)
+			colSpan = append(colSpan, sevCount)
+			headerAlignment = append(headerAlignment, table.AlignCenter)
+		}
+		t.SetHeaders(columnHeading...)
+		t.AddHeaders(headerRow...)
+		t.SetAlignment(headerAlignment...)
+		t.SetAutoMergeHeaders(true)
+		t.SetHeaderColSpans(0, colSpan...)
 	}
-
-	t.SetHeaders("Namespace", "Resource", "Vulnerabilities", "Misconfigurations", "Secrets")
-	t.AddHeaders(headerRow...)
-	t.SetAlignment(headerAlignment...)
-	t.SetAutoMergeHeaders(true)
-	t.SetHeaderColSpans(0, 1, 1, sevCount, sevCount, sevCount)
 }

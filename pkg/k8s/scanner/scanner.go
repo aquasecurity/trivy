@@ -66,7 +66,7 @@ func (s *Scanner) Scan(ctx context.Context, artifacts []*artifacts.Artifact) (re
 			vulns = append(vulns, resources...)
 		}
 
-		if slices.Contains(s.opt.SecurityChecks, types.SecurityCheckConfig) {
+		if slices.Contains(s.opt.SecurityChecks, types.SecurityCheckConfig) || slices.Contains(s.opt.SecurityChecks, types.SecurityCheckRbac) {
 			resource, err := s.scanMisconfigs(ctx, artifact)
 			if err != nil {
 				return report.Report{}, xerrors.Errorf("scanning misconfigurations error: %w", err)
