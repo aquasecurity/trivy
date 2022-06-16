@@ -33,7 +33,6 @@ nav:
               - Vulnerability DB: docs/vulnerability/examples/db.md
               - Cache: docs/vulnerability/examples/cache.md
               - Others: docs/vulnerability/examples/others.md
-              - Vulnerability origin graph: docs/vulnerability/examples/vulnerability-origin-graph.md
           - Distributions: docs/vulnerability/distributions.md
           - Languages:
               - Go: docs/vulnerability/languages/golang.md
