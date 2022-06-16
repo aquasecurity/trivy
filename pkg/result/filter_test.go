@@ -245,6 +245,35 @@ func TestClient_Filter(t *testing.T) {
 							Severity: dbTypes.SeverityLow.String(),
 						},
 					},
+					{
+						VulnerabilityID:  "CVE-2022-0001",
+						PkgName:          "foo",
+						InstalledVersion: "1.2.3",
+						FixedVersion:     "1.2.4",
+						Vulnerability: dbTypes.Vulnerability{
+							Severity: dbTypes.SeverityLow.String(),
+						},
+					},
+					{
+						// this vulnerability is ignored
+						VulnerabilityID:  "CVE-2022-0002",
+						PkgName:          "foo",
+						InstalledVersion: "1.2.3",
+						FixedVersion:     "1.2.4",
+						Vulnerability: dbTypes.Vulnerability{
+							Severity: dbTypes.SeverityLow.String(),
+						},
+					},
+					{
+						// this vulnerability is ignored
+						VulnerabilityID:  "CVE-2022-0003",
+						PkgName:          "foo",
+						InstalledVersion: "1.2.3",
+						FixedVersion:     "1.2.4",
+						Vulnerability: dbTypes.Vulnerability{
+							Severity: dbTypes.SeverityLow.String(),
+						},
+					},
 				},
 				misconfs: []types.DetectedMisconfiguration{
 					{
@@ -263,6 +292,15 @@ func TestClient_Filter(t *testing.T) {
 			wantVulns: []types.DetectedVulnerability{
 				{
 					VulnerabilityID:  "CVE-2019-0003",
+					PkgName:          "foo",
+					InstalledVersion: "1.2.3",
+					FixedVersion:     "1.2.4",
+					Vulnerability: dbTypes.Vulnerability{
+						Severity: dbTypes.SeverityLow.String(),
+					},
+				},
+				{
+					VulnerabilityID:  "CVE-2022-0001",
 					PkgName:          "foo",
 					InstalledVersion: "1.2.3",
 					FixedVersion:     "1.2.4",
