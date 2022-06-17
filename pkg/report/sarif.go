@@ -7,6 +7,7 @@ import (
 	"regexp"
 	"strings"
 
+	containerName "github.com/google/go-containerregistry/pkg/name"
 	"github.com/owenrumney/go-sarif/v2/sarif"
 	"golang.org/x/xerrors"
 
@@ -141,7 +142,7 @@ func (sw SarifWriter) Write(report types.Report) error {
 				cvssScore:        getCVSSScore(vuln),
 				url:              vuln.PrimaryURL,
 				resourceClass:    string(res.Class),
-				artifactLocation: toPathUri(path),
+				artifactLocation: ToPathUri(path),
 				resultIndex:      getRuleIndex(vuln.VulnerabilityID, ruleIndexes),
 				fullDescription:  html.EscapeString(fullDescription),
 				helpText: fmt.Sprintf("Vulnerability %v\nSeverity: %v\nPackage: %v\nFixed Version: %v\nLink: [%v](%v)\n%v",
@@ -160,7 +161,7 @@ func (sw SarifWriter) Write(report types.Report) error {
 				cvssScore:        severityToScore(misconf.Severity),
 				url:              misconf.PrimaryURL,
 				resourceClass:    string(res.Class),
-				artifactLocation: toPathUri(res.Target),
+				artifactLocation: ToPathUri(res.Target),
 				startLine:        misconf.CauseMetadata.StartLine,
 				endLine:          misconf.CauseMetadata.EndLine,
 				resultIndex:      getRuleIndex(misconf.ID, ruleIndexes),
@@ -208,11 +209,18 @@ func toSarifErrorLevel(severity string) string {
 	}
 }
 
-func toPathUri(input string) string {
+func ToPathUri(input string) string {
 	var matches = pathRegex.FindStringSubmatch(input)
 	if matches != nil {
 		input = matches[pathRegex.SubexpIndex("path")]
 	}
+	ref, err := containerName.ParseReference(input)
+	if err == nil {
+		input = strings.TrimSuffix(input, ref.Identifier())
+		input = strings.TrimSuffix(input, "@")
+		input = strings.TrimSuffix(input, ":")
+	}
+
 	return strings.ReplaceAll(input, "\\", "/")
 }
 

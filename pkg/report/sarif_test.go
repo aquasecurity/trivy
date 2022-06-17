@@ -259,3 +259,30 @@ func TestReportWriter_Sarif(t *testing.T) {
 		})
 	}
 }
+
+func TestToPathUri(t *testing.T) {
+	tests := []struct {
+		input  string
+		output string
+	}{
+		{
+			input:  "almalinux@sha256:08042694fffd61e6a0b3a22dadba207c8937977915ff6b1879ad744fd6638837",
+			output: "almalinux",
+		},
+		{
+			input:  "alpine:latest (alpine 3.13.4)",
+			output: "alpine",
+		},
+		{
+			input:  "docker.io/my-organization/my-app:2c6912aee7bde44b84d810aed106ca84f40e2e29",
+			output: "docker.io/my-organization/my-app",
+		},
+	}
+
+	for _, test := range tests {
+		got := report.ToPathUri(test.input)
+		if got != test.output {
+			t.Errorf("toPathUri(%q) got %q, wanted %q", test.input, got, test.output)
+		}
+	}
+}
