@@ -85,13 +85,50 @@ func TestScanner_Detect(t *testing.T) {
 						SrcEpoch:        1,
 						SrcVersion:      "1.14.1",
 						SrcRelease:      "8.module_el8.3.0+2165+af250afe.alma",
-						Modularitylabel: "nginx:1.14:8040020210610090123:9f9e2e7e", // actual: "", ref: https://bugs.almalinux.org/view.php?id=173
+						Modularitylabel: "", // ref: https://bugs.almalinux.org/view.php?id=173 ,  https://github.com/aquasecurity/trivy/issues/2342#issuecomment-1158459628
 						License:         "BSD",
 						Layer:           ftypes.Layer{},
 					},
 				},
 			},
 			want: nil,
+		},
+		{
+			name:     "modular package",
+			fixtures: []string{"testdata/fixtures/modular.yaml", "testdata/fixtures/data-source.yaml"},
+			args: args{
+				osVer: "8.6",
+				pkgs: []ftypes.Package{
+					{
+						Name:            "httpd",
+						Epoch:           0,
+						Version:         "2.4.37",
+						Release:         "46.module_el8.6.0+2872+fe0ff7aa.1.alma",
+						Arch:            "x86_64",
+						SrcName:         "httpd",
+						SrcEpoch:        0,
+						SrcVersion:      "2.4.37",
+						SrcRelease:      "46.module_el8.6.0+2872+fe0ff7aa.1.alma",
+						Modularitylabel: "httpd:2.4:8060020220510105858:9edba152",
+						License:         "ASL 2.0",
+						Layer:           ftypes.Layer{},
+					},
+				},
+			},
+			want: []types.DetectedVulnerability{
+				{
+					PkgName:          "httpd",
+					VulnerabilityID:  "CVE-2020-35452",
+					InstalledVersion: "2.4.37-46.module_el8.6.0+2872+fe0ff7aa.1.alma",
+					FixedVersion:     "2.4.37-47.module_el8.6.0+2872+fe0ff7aa.1.alma",
+					Layer:            ftypes.Layer{},
+					DataSource: &dbTypes.DataSource{
+						ID:   vulnerability.Alma,
+						Name: "AlmaLinux Product Errata",
+						URL:  "https://errata.almalinux.org/",
+					},
+				},
+			},
 		},
 		{
 			name:     "Get returns an error",
