@@ -68,7 +68,7 @@ func (s *Scanner) Detect(osVer string, _ *ftypes.Repository, pkgs []ftypes.Packa
 	var vulns []types.DetectedVulnerability
 	var skipPkgs []string
 	for _, pkg := range pkgs {
-		if strings.Contains(pkg.Release, ".module_el") {
+		if strings.Contains(pkg.Release, ".module_el") && pkg.Modularitylabel == "" {
 			skipPkgs = append(skipPkgs, pkg.Name)
 			continue
 		}
