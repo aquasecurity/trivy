@@ -1,6 +1,6 @@
 # GitHub Actions
 
-- Here is the [Trivy Github Action][action]
+- Here is the [Trivy GitHub Action][action]
 - The Microsoft Azure team have written a [container-scan action][azure] that uses Trivy and Dockle
 - For full control over the options specified to Trivy, this [blog post][blog] describes adding Trivy into your own GitHub action workflows 
 
