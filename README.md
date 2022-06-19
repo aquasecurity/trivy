@@ -135,7 +135,7 @@ Contact us about any matter by opening a GitHub Discussion [here][discussions]
 [getting-started]: https://aquasecurity.github.io/trivy/latest/getting-started/installation/
 [docs]: https://aquasecurity.github.io/trivy
 [integrations]:https://aquasecurity.github.io/trivy/latest/docs/integrations/
-[installation]:https://aquasecurity.github.io/trivy/latest/docs/getting-started/installation/
+[installation]:https://aquasecurity.github.io/trivy/latest/getting-started/installation/
 [releases]: https://github.com/aquasecurity/trivy/releases
 [alpine]: https://ariadne.space/2021/06/08/the-vulnerability-remediation-lifecycle-of-alpine-containers/
 [rego]: https://www.openpolicyagent.org/docs/latest/#rego
