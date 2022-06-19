@@ -35,12 +35,14 @@
             },
             "Title": "Trivy found a vulnerability to {{ .VulnerabilityID }} in container {{ $target }}",
             "Description": {{ escapeString $description | printf "%q" }},
+            {{ if not (empty .PrimaryURL) -}}
             "Remediation": {
                 "Recommendation": {
                     "Text": "More information on this vulnerability is provided in the hyperlink",
                     "Url": "{{ .PrimaryURL }}"
                 }
             },
+            {{ end -}}
             "ProductFields": { "Product Name": "Trivy" },
             "Resources": [
                 {
