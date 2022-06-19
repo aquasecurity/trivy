@@ -1469,7 +1469,7 @@ func writeError(ctx context.Context, resp http.ResponseWriter, err error, hooks 
 	callResponseSent(ctx, hooks)
 }
 
-// sanitizeBaseURL parses the the baseURL, and adds the "http" scheme if needed.
+// sanitizeBaseURL parses the baseURL, and adds the "http" scheme if needed.
 // If the URL is unparsable, the baseURL is returned unchaged.
 func sanitizeBaseURL(baseURL string) string {
 	u, err := url.Parse(baseURL)
