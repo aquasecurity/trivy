@@ -53,7 +53,7 @@ type CacheServer struct {
 	cache cache.Cache
 }
 
-// NewCacheServer is the facotry method for cacheServer
+// NewCacheServer is the factory method for cacheServer
 func NewCacheServer(c cache.Cache) *CacheServer {
 	return &CacheServer{cache: c}
 }
