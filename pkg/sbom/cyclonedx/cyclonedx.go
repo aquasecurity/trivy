@@ -54,59 +54,65 @@ type CycloneDX struct {
 	cdx.BOM
 }
 
-func (b CycloneDX) componentMap() map[string]cdx.Component {
+func (c CycloneDX) componentMap() map[string]cdx.Component {
 	componentMap := make(map[string]cdx.Component)
-	for _, component := range *b.Components {
+
+	if c.Components == nil {
+		return componentMap
+	}
+
+	for _, component := range *c.Components {
 		componentMap[component.BOMRef] = component
 	}
-	if b.Metadata != nil {
-		componentMap[b.Metadata.Component.BOMRef] = *b.Metadata.Component
+	if c.Metadata != nil {
+		componentMap[c.Metadata.Component.BOMRef] = *c.Metadata.Component
 	}
 	return componentMap
 }
 
-func (b CycloneDX) dependenciesMap() map[string][]string {
+func (c CycloneDX) dependenciesMap() map[string][]string {
 	dependencyMap := make(map[string][]string)
-	for _, dep := range *b.Dependencies {
+
+	if c.Dependencies == nil {
+		return dependencyMap
+	}
+	for _, dep := range *c.Dependencies {
 		if _, ok := dependencyMap[dep.Ref]; ok {
-			continue
-		}
-		if dep.Dependencies == nil {
 			continue
 		}
 
 		var refs []string
-		for _, d := range *dep.Dependencies {
-			refs = append(refs, d.Ref)
+		if dep.Dependencies != nil {
+			for _, d := range *dep.Dependencies {
+				refs = append(refs, d.Ref)
+			}
 		}
+
 		dependencyMap[dep.Ref] = refs
 	}
 	return dependencyMap
 }
 
-func (b CycloneDX) parse() (string, *ftypes.OS, []ftypes.PackageInfo, []ftypes.Application, error) {
-	depsMap := b.dependenciesMap()
-	componentMap := b.componentMap()
+func (c CycloneDX) parse() (string, *ftypes.OS, []ftypes.PackageInfo, []ftypes.Application, error) {
+	depsMap := c.dependenciesMap()
+	componentMap := c.componentMap()
 
 	var OS *ftypes.OS
 	var apps []ftypes.Application
 	var pkgInfos []ftypes.PackageInfo
-	libMap := make(map[string]cdx.Component)
 	usedComponent := make(map[string]struct{})
 	for bomRef, deps := range depsMap {
 		component := componentMap[bomRef]
 		switch component.Type {
-		case cdx.ComponentTypeContainer:
-			continue
 		case cdx.ComponentTypeOS:
-			OS = b.OS(component)
+			OS = c.OS(component)
 			var components []cdx.Component
 			components = parseDependencies(components, deps, componentMap, depsMap)
 
 			var pkgInfo ftypes.PackageInfo
-			for _, c := range components {
-				usedComponent[c.BOMRef] = struct{}{}
-				pkg, err := b.Package(c)
+			for _, com := range components {
+				usedComponent[com.BOMRef] = struct{}{}
+				pkg, err := c.Package(com)
 				if err != nil {
 					return "", nil, nil, nil, xerrors.Errorf("failed to parse os package: %w", err)
 				}
@@ -114,40 +120,44 @@ func (b CycloneDX) parse() (string, *ftypes.OS, []ftypes.PackageInfo, []ftypes.A
 			}
 			pkgInfos = append(pkgInfos, pkgInfo)
 		case cdx.ComponentTypeApplication:
-			app := b.Application(component)
+			if getProperty(component.Properties, PropertyType) == "" {
+				continue
+			}
+			app := c.Application(component)
 			var components []cdx.Component
 			components = parseDependencies(components, deps, componentMap, depsMap)
 
-			for _, c := range components {
-				usedComponent[c.BOMRef] = struct{}{}
-				pkg, err := b.Package(c)
+			for _, com := range components {
+				usedComponent[com.BOMRef] = struct{}{}
+				pkg, err := c.Package(com)
 				if err != nil {
 					return "", nil, nil, nil, xerrors.Errorf("failed to parse language package: %w", err)
 				}
 				app.Libraries = append(app.Libraries, *pkg)
 			}
 			apps = append(apps, *app)
-		case cdx.ComponentTypeLibrary:
-			libMap[component.BOMRef] = component
-		default:
-			continue
 		}
 	}
+
 	for bomRef := range usedComponent {
-		delete(libMap, bomRef)
+		delete(componentMap, bomRef)
 	}
 
 	var libComponents []cdx.Component
-	for _, c := range libMap {
+	for _, c := range componentMap {
+		if c.Type != cdx.ComponentTypeLibrary {
+			continue
+		}
 		libComponents = append(libComponents, c)
 	}
-	aggregatedApps, err := b.Aggregate(libComponents)
+
+	aggregatedApps, err := c.Aggregate(libComponents)
 	if err != nil {
 		return "", nil, nil, nil, xerrors.Errorf("failed to parse aggregate package: %w", err)
 	}
 	apps = append(apps, aggregatedApps...)
 
-	return b.SerialNumber, OS, pkgInfos, apps, nil
+	return c.SerialNumber, OS, pkgInfos, apps, nil
 }
 
 func parseDependencies(components []cdx.Component, dependencies []string, componentMap map[string]cdx.Component, dependenciesMap map[string][]string) []cdx.Component {
@@ -167,7 +177,7 @@ func parseDependencies(components []cdx.Component, dependencies []string, compon
 	return components
 }
 
-func (b CycloneDX) Aggregate(libs []cdx.Component) ([]ftypes.Application, error) {
+func (c CycloneDX) Aggregate(libs []cdx.Component) ([]ftypes.Application, error) {
 	appsMap := map[string]*ftypes.Application{}
 	for _, lib := range libs {
 		p, err := packageurl.FromString(lib.PackageURL)
@@ -183,7 +193,7 @@ func (b CycloneDX) Aggregate(libs []cdx.Component) ([]ftypes.Application, error)
 			}
 			appsMap[p.Type] = app
 		}
-		pkg, err := b.Package(lib)
+		pkg, err := c.Package(lib)
 		if err != nil {
 			return nil, xerrors.Errorf("failed to parse purl to package: %w", err)
 		}
@@ -198,29 +208,21 @@ func (b CycloneDX) Aggregate(libs []cdx.Component) ([]ftypes.Application, error)
 	return apps, nil
 }
 
-func typeFromComponent(c cdx.Component) (string, error) {
-	p, err := packageurl.FromString(c.PackageURL)
-	if err != nil {
-		return "", xerrors.Errorf("failed to parse purl: %w", err)
-	}
-	return purl.Type(p.Type), nil
-}
-
-func (b CycloneDX) OS(component cdx.Component) *ftypes.OS {
+func (c CycloneDX) OS(component cdx.Component) *ftypes.OS {
 	return &ftypes.OS{
 		Family: component.Name,
 		Name:   component.Version,
 	}
 }
 
-func (b CycloneDX) Application(component cdx.Component) *ftypes.Application {
+func (c CycloneDX) Application(component cdx.Component) *ftypes.Application {
 	return &ftypes.Application{
 		Type:     getProperty(component.Properties, PropertyType),
 		FilePath: component.Name,
 	}
 }
 
-func (b CycloneDX) Package(component cdx.Component) (*ftypes.Package, error) {
+func (c CycloneDX) Package(component cdx.Component) (*ftypes.Package, error) {
 	pkg, err := purl.FromString(component.PackageURL)
 	if err != nil {
 		return nil, xerrors.Errorf("failed to parse purl from string: %w", err)

@@ -86,7 +86,7 @@ func TestParser_Parse(t *testing.T) {
 					},
 					{
 						Type:     "jar",
-						FilePath: "app/maven/target/child-project-1.0.jar",
+						FilePath: "maven",
 						Libraries: []ftypes.Package{
 							{
 								Name:    "org.codehaus.mojo:child-project",
@@ -100,7 +100,7 @@ func TestParser_Parse(t *testing.T) {
 					},
 					{
 						Type:     "node-pkg",
-						FilePath: "app/app/package.json",
+						FilePath: "npm",
 						Libraries: []ftypes.Package{
 							{
 								Name:    "bootstrap",
@@ -124,7 +124,7 @@ func TestParser_Parse(t *testing.T) {
 				apps: []ftypes.Application{
 					{
 						Type:     "composer",
-						FilePath: "app/composer/composer.lock",
+						FilePath: "composer",
 						Libraries: []ftypes.Package{
 							{
 								Name:    "pear/log",
@@ -153,6 +153,11 @@ func TestParser_Parse(t *testing.T) {
 						FilePath: "composer",
 						Libraries: []ftypes.Package{
 							{
+								Name:    "pear/core",
+								Version: "1.13.1",
+								Ref:     "pkg:composer/pear/core@1.13.1",
+							},
+							{
 								Name:    "pear/log",
 								Version: "1.13.1",
 								Ref:     "pkg:composer/pear/log@1.13.1",
@@ -176,6 +181,9 @@ func TestParser_Parse(t *testing.T) {
 				OS: &ftypes.OS{
 					Family: "alpine",
 					Name:   "3.16.0",
+				},
+				pkgInfos: []ftypes.PackageInfo{
+					{},
 				},
 			},
 		},

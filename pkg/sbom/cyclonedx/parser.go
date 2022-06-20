@@ -21,14 +21,14 @@ func NewParser(name string) *Parser {
 	}
 }
 
-func NewTrivyBOM(r io.Reader, ext string) (CycloneDX, error) {
-	b := CycloneDX{}
+func NewCycloneDX(r io.Reader, ext string) (CycloneDX, error) {
+	c := CycloneDX{}
 	switch ext {
 	case ".json":
-		if err := json.NewDecoder(r).Decode(&b); err != nil {
+		if err := json.NewDecoder(r).Decode(&c); err != nil {
 			return CycloneDX{}, xerrors.Errorf("failed to json decode: %w", err)
 		}
-		return b, nil
+		return c, nil
 	case ".xml":
 		// TODO: not supported yet
 	}
@@ -36,13 +36,9 @@ func NewTrivyBOM(r io.Reader, ext string) (CycloneDX, error) {
 }
 
 func (p Parser) Parse(r io.Reader) (string, *ftypes.OS, []ftypes.PackageInfo, []ftypes.Application, error) {
-	b, err := NewTrivyBOM(r, p.extension)
+	b, err := NewCycloneDX(r, p.extension)
 	if err != nil {
 		return "", nil, nil, nil, xerrors.Errorf("failed to new Trivy BOM: %w", err)
-	}
-
-	if b.Components == nil {
-		return b.SerialNumber, nil, nil, nil, nil
 	}
 
 	return b.parse()
