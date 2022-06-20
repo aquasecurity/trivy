@@ -39,7 +39,7 @@ func NewArtifact(artifactType, filePath string, c cache.ArtifactCache, opt artif
 	var parser sbom.Parser
 	switch artifactType {
 	case string(ArtifactCycloneDX):
-		parser = cyclonedx.NewParser(filePath)
+		parser = cyclonedx.New(filePath)
 	}
 	return Artifact{
 		filePath:       filepath.Clean(filePath),

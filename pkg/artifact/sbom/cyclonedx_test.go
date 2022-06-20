@@ -26,7 +26,7 @@ func TestArtifact_Inspect(t *testing.T) {
 			filePath: "testdata/bom.json",
 			putBlobExpectation: cache.ArtifactCachePutBlobExpectation{
 				Args: cache.ArtifactCachePutBlobArgs{
-					BlobID: "sha256:b9e26b9ce62acdbeb928b9d71bb9c76ade0ec9949da03344ca2444f8072a9381",
+					BlobID: "sha256:fd52cf6b39e76fe0b62ba5635c53626b88b9c8860c82b8230c1a6ac57395f641",
 					BlobInfo: types.BlobInfo{
 						SchemaVersion: types.BlobJSONSchemaVersion,
 						OS: &types.OS{
@@ -86,7 +86,7 @@ func TestArtifact_Inspect(t *testing.T) {
 							},
 							{
 								Type:     "jar",
-								FilePath: "app/maven/target/child-project-1.0.jar",
+								FilePath: "",
 								Libraries: []types.Package{
 									{
 										Name:    "org.codehaus.mojo:child-project",
@@ -100,7 +100,7 @@ func TestArtifact_Inspect(t *testing.T) {
 							},
 							{
 								Type:     "node-pkg",
-								FilePath: "app/app/package.json",
+								FilePath: "",
 								Libraries: []types.Package{
 									{
 										Name:    "bootstrap",
@@ -121,9 +121,9 @@ func TestArtifact_Inspect(t *testing.T) {
 			want: types.ArtifactReference{
 				Name: "urn:uuid:c986ba94-e37d-49c8-9e30-96daccd0415b",
 				Type: sbom.ArtifactCycloneDX,
-				ID:   "sha256:b9e26b9ce62acdbeb928b9d71bb9c76ade0ec9949da03344ca2444f8072a9381",
+				ID:   "sha256:fd52cf6b39e76fe0b62ba5635c53626b88b9c8860c82b8230c1a6ac57395f641",
 				BlobIDs: []string{
-					"sha256:b9e26b9ce62acdbeb928b9d71bb9c76ade0ec9949da03344ca2444f8072a9381",
+					"sha256:fd52cf6b39e76fe0b62ba5635c53626b88b9c8860c82b8230c1a6ac57395f641",
 				},
 			},
 		},
@@ -137,12 +137,15 @@ func TestArtifact_Inspect(t *testing.T) {
 			filePath: "testdata/os-only-bom.json",
 			putBlobExpectation: cache.ArtifactCachePutBlobExpectation{
 				Args: cache.ArtifactCachePutBlobArgs{
-					BlobID: "sha256:39b0aab5944e80a029561d275ed0e23fade3513b0a5ae5ed3cc8343d60a1be1d",
+					BlobID: "sha256:05a4e94bb5503e437108210c90849a977ea0b9b83e4e8606aabc9647b2a5256c",
 					BlobInfo: types.BlobInfo{
 						SchemaVersion: types.BlobJSONSchemaVersion,
 						OS: &types.OS{
 							Family: "alpine",
 							Name:   "3.16.0",
+						},
+						PackageInfos: []types.PackageInfo{
+							{},
 						},
 					},
 				},

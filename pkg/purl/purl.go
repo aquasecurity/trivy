@@ -25,12 +25,18 @@ type PackageURL struct {
 	FilePath string
 }
 
-func FromString(purl string) (*ftypes.Package, error) {
+func FromString(purl string) (*PackageURL, error) {
 	p, err := packageurl.FromString(purl)
 	if err != nil {
 		return nil, xerrors.Errorf("failed to parse purl: %w", err)
 	}
 
+	return &PackageURL{
+		PackageURL: p,
+	}, nil
+}
+
+func (p *PackageURL) Package() *ftypes.Package {
 	pkg := &ftypes.Package{
 		Name:    p.Name,
 		Version: p.Version,
@@ -55,7 +61,7 @@ func FromString(purl string) (*ftypes.Package, error) {
 	// Return of packages without Namespace.
 	// OS packages does not have namespace.
 	if p.Namespace == "" || p.Type == packageurl.TypeRPM || p.Type == packageurl.TypeDebian || p.Type == string(analyzer.TypeApk) {
-		return pkg, nil
+		return pkg
 	}
 
 	if p.Type == packageurl.TypeMaven {
@@ -66,7 +72,26 @@ func FromString(purl string) (*ftypes.Package, error) {
 		pkg.Name = strings.Join([]string{p.Namespace, p.Name}, "/")
 	}
 
-	return pkg, nil
+	return pkg
+}
+
+// AppType returns an application type in Trivy
+func (p *PackageURL) AppType() string {
+	switch p.Type {
+	case packageurl.TypeComposer:
+		return string(analyzer.TypeComposer)
+	case packageurl.TypeMaven:
+		return string(analyzer.TypeJar)
+	case packageurl.TypeGem:
+		return string(analyzer.TypeGemSpec)
+	case packageurl.TypePyPi:
+		return string(analyzer.TypePythonPkg)
+	case packageurl.TypeGolang:
+		return string(analyzer.TypeGoBinary)
+	case packageurl.TypeNPM:
+		return string(analyzer.TypeNodePkg)
+	}
+	return p.Type
 }
 
 func (purl PackageURL) BOMRef() string {
@@ -280,24 +305,6 @@ func purlType(t string) string {
 		return packageurl.TypeOCI
 	}
 	return t
-}
-
-func Type(t string) string {
-	switch t {
-	case packageurl.TypeComposer:
-		return string(analyzer.TypeComposer)
-	case packageurl.TypeMaven:
-		return string(analyzer.TypeJar)
-	case packageurl.TypeGem:
-		return string(analyzer.TypeGemSpec)
-	case packageurl.TypePyPi:
-		return string(analyzer.TypePythonPkg)
-	case packageurl.TypeGolang:
-		return string(analyzer.TypeGoBinary)
-	case packageurl.TypeNPM:
-		return string(analyzer.TypeNodePkg)
-	}
-	return ""
 }
 
 func parseQualifier(pkg ftypes.Package) packageurl.Qualifiers {
