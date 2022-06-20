@@ -50,49 +50,124 @@ const (
 	FormatCycloneDX sbom.SBOMFormat = "cyclonedx"
 )
 
-type TrivyBOM struct {
+type CycloneDX struct {
 	cdx.BOM
 }
 
-func (b TrivyBOM) parseComponents() (string, *ftypes.OS, map[string]*ftypes.Application, map[string]cdx.Component, error) {
-
-	var osBOMRef string
-	appMap := make(map[string]*ftypes.Application)
-	libMap := make(map[string]cdx.Component)
-
-	var os *ftypes.OS
+func (b CycloneDX) componentMap() map[string]cdx.Component {
+	componentMap := make(map[string]cdx.Component)
 	for _, component := range *b.Components {
-		switch component.Type {
-		case cdx.ComponentTypeOS:
-			osBOMRef = component.BOMRef
-			os = b.OS(component)
-		case cdx.ComponentTypeApplication:
-			appMap[component.BOMRef] = b.Application(component)
-		case cdx.ComponentTypeLibrary:
-			if t := getProperty(component.Properties, PropertyType); t != "" {
-				// If type property exists, it is Application.
-				app := ftypes.Application{
-					Type:     t,
-					FilePath: getProperty(component.Properties, PropertyFilePath),
-				}
-
-				pkg, err := b.Package(component)
-				if err != nil {
-					return "", nil, nil, nil, xerrors.Errorf("failed to parse package: %w", err)
-				}
-				app.Libraries = []ftypes.Package{*pkg}
-				appMap[component.BOMRef] = &app
-			} else {
-				// If it isn't application component, it is library.
-				libMap[component.BOMRef] = component
-			}
-		}
+		componentMap[component.BOMRef] = component
 	}
-
-	return osBOMRef, os, appMap, libMap, nil
+	if b.Metadata != nil {
+		componentMap[b.Metadata.Component.BOMRef] = *b.Metadata.Component
+	}
+	return componentMap
 }
 
-func (b TrivyBOM) Aggregate(libs []cdx.Component) ([]ftypes.Application, error) {
+func (b CycloneDX) dependenciesMap() map[string][]string {
+	dependencyMap := make(map[string][]string)
+	for _, dep := range *b.Dependencies {
+		if _, ok := dependencyMap[dep.Ref]; ok {
+			continue
+		}
+		if dep.Dependencies == nil {
+			continue
+		}
+
+		var refs []string
+		for _, d := range *dep.Dependencies {
+			refs = append(refs, d.Ref)
+		}
+		dependencyMap[dep.Ref] = refs
+	}
+	return dependencyMap
+}
+
+func (b CycloneDX) parse() (string, *ftypes.OS, []ftypes.PackageInfo, []ftypes.Application, error) {
+	depsMap := b.dependenciesMap()
+	componentMap := b.componentMap()
+
+	var OS *ftypes.OS
+	var apps []ftypes.Application
+	var pkgInfos []ftypes.PackageInfo
+	libMap := make(map[string]cdx.Component)
+	usedComponent := make(map[string]struct{})
+	for bomRef, deps := range depsMap {
+		component := componentMap[bomRef]
+		switch component.Type {
+		case cdx.ComponentTypeContainer:
+			continue
+		case cdx.ComponentTypeOS:
+			OS = b.OS(component)
+			var components []cdx.Component
+			components = parseDependencies(components, deps, componentMap, depsMap)
+
+			var pkgInfo ftypes.PackageInfo
+			for _, c := range components {
+				usedComponent[c.BOMRef] = struct{}{}
+				pkg, err := b.Package(c)
+				if err != nil {
+					return "", nil, nil, nil, xerrors.Errorf("failed to parse os package: %w", err)
+				}
+				pkgInfo.Packages = append(pkgInfo.Packages, *pkg)
+			}
+			pkgInfos = append(pkgInfos, pkgInfo)
+		case cdx.ComponentTypeApplication:
+			app := b.Application(component)
+			var components []cdx.Component
+			components = parseDependencies(components, deps, componentMap, depsMap)
+
+			for _, c := range components {
+				usedComponent[c.BOMRef] = struct{}{}
+				pkg, err := b.Package(c)
+				if err != nil {
+					return "", nil, nil, nil, xerrors.Errorf("failed to parse language package: %w", err)
+				}
+				app.Libraries = append(app.Libraries, *pkg)
+			}
+			apps = append(apps, *app)
+		case cdx.ComponentTypeLibrary:
+			libMap[component.BOMRef] = component
+		default:
+			continue
+		}
+	}
+	for bomRef := range usedComponent {
+		delete(libMap, bomRef)
+	}
+
+	var libComponents []cdx.Component
+	for _, c := range libMap {
+		libComponents = append(libComponents, c)
+	}
+	aggregatedApps, err := b.Aggregate(libComponents)
+	if err != nil {
+		return "", nil, nil, nil, xerrors.Errorf("failed to parse aggregate package: %w", err)
+	}
+	apps = append(apps, aggregatedApps...)
+
+	return b.SerialNumber, OS, pkgInfos, apps, nil
+}
+
+func parseDependencies(components []cdx.Component, dependencies []string, componentMap map[string]cdx.Component, dependenciesMap map[string][]string) []cdx.Component {
+	for _, dep := range dependencies {
+		component, ok := componentMap[dep]
+		if !ok {
+			continue
+		}
+		components = append(components, component)
+
+		deps, ok := dependenciesMap[dep]
+		if !ok {
+			continue
+		}
+		components = append(components, parseDependencies(components, deps, componentMap, dependenciesMap)...)
+	}
+	return components
+}
+
+func (b CycloneDX) Aggregate(libs []cdx.Component) ([]ftypes.Application, error) {
 	appsMap := map[string]*ftypes.Application{}
 	for _, lib := range libs {
 		p, err := packageurl.FromString(lib.PackageURL)
@@ -131,24 +206,24 @@ func typeFromComponent(c cdx.Component) (string, error) {
 	return purl.Type(p.Type), nil
 }
 
-func (b TrivyBOM) OS(component cdx.Component) *ftypes.OS {
+func (b CycloneDX) OS(component cdx.Component) *ftypes.OS {
 	return &ftypes.OS{
 		Family: component.Name,
 		Name:   component.Version,
 	}
 }
 
-func (b TrivyBOM) Application(component cdx.Component) *ftypes.Application {
+func (b CycloneDX) Application(component cdx.Component) *ftypes.Application {
 	return &ftypes.Application{
 		Type:     getProperty(component.Properties, PropertyType),
 		FilePath: component.Name,
 	}
 }
 
-func (b TrivyBOM) Package(component cdx.Component) (*ftypes.Package, error) {
+func (b CycloneDX) Package(component cdx.Component) (*ftypes.Package, error) {
 	pkg, err := purl.FromString(component.PackageURL)
 	if err != nil {
-		return nil, xerrors.Errorf("failed to parse purl: %w", err)
+		return nil, xerrors.Errorf("failed to parse purl from string: %w", err)
 	}
 	pkg.Ref = component.BOMRef
 
