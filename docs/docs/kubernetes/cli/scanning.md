@@ -27,7 +27,7 @@ Filter by severity:
 $ trivy k8s --severity=CRITICAL --report=all cluster
 ```
 
-Filter by security check (Vulnerabilties, Secrets or Misconfigurations):
+Filter by security check (Vulnerabilities, Secrets or Misconfigurations):
 
 ```
 $ trivy k8s --security-checks=secret --report=summary cluster

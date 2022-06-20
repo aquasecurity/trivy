@@ -73,7 +73,7 @@ type Runner interface {
 	ScanFilesystem(ctx context.Context, opt Option) (types.Report, error)
 	// ScanRootfs scans rootfs
 	ScanRootfs(ctx context.Context, opt Option) (types.Report, error)
-	// ScanRepositroy scans repository
+	// ScanRepository scans repository
 	ScanRepository(ctx context.Context, opt Option) (types.Report, error)
 	// Filter filter a report
 	Filter(ctx context.Context, opt Option, report types.Report) (types.Report, error)

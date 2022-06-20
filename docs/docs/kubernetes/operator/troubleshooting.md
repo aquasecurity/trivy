@@ -65,11 +65,11 @@ Make sure that you are providing the right resources upon installing the Trivy O
 If your pod is in `CrashLoopBackOff`, it is likely the case that the pod cannot be scheduled on the Kubernetes node that it is trying to schedule on.
 In this case, you want to investigate further whether there is an issue with the node. It could for instance be the case that the node does not have sufficient resources.
 
-## Reconcilation Error
+## Reconciliation Error
 
 It could happen that the pod appears to be running normally but does not reconcile the resources inside of your Kubernetes cluster.
 
-Check the logs for reconcilation errors:
+Check the logs for reconciliation errors:
 ```
 kubectl logs deployment/trivy-operator -n trivy-system
 ```
