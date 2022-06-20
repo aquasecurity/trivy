@@ -5,15 +5,15 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/aquasecurity/fanal/analyzer/config/helm"
+	"github.com/aquasecurity/trivy/pkg/fanal/analyzer/config/helm"
 	"golang.org/x/xerrors"
 
-	"github.com/aquasecurity/fanal/analyzer"
-	"github.com/aquasecurity/fanal/analyzer/config/dockerfile"
-	"github.com/aquasecurity/fanal/analyzer/config/json"
-	"github.com/aquasecurity/fanal/analyzer/config/terraform"
-	"github.com/aquasecurity/fanal/analyzer/config/yaml"
-	"github.com/aquasecurity/fanal/types"
+	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
+	"github.com/aquasecurity/trivy/pkg/fanal/analyzer/config/dockerfile"
+	"github.com/aquasecurity/trivy/pkg/fanal/analyzer/config/json"
+	"github.com/aquasecurity/trivy/pkg/fanal/analyzer/config/terraform"
+	"github.com/aquasecurity/trivy/pkg/fanal/analyzer/config/yaml"
+	"github.com/aquasecurity/trivy/pkg/fanal/types"
 )
 
 const separator = ":"

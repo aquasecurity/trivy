@@ -8,9 +8,9 @@ import (
 
 	"golang.org/x/exp/slices"
 
-	"github.com/aquasecurity/fanal/analyzer"
-	aos "github.com/aquasecurity/fanal/analyzer/os"
-	"github.com/aquasecurity/fanal/types"
+	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
+	aos "github.com/aquasecurity/trivy/pkg/fanal/analyzer/os"
+	"github.com/aquasecurity/trivy/pkg/fanal/types"
 )
 
 func init() {

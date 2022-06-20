@@ -2,14 +2,15 @@ package gomod
 
 import (
 	"context"
-	"github.com/aquasecurity/fanal/analyzer"
-	"github.com/aquasecurity/fanal/artifact"
 	"path/filepath"
+
+	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
+	"github.com/aquasecurity/trivy/pkg/fanal/artifact"
 
 	"golang.org/x/exp/maps"
 
-	"github.com/aquasecurity/fanal/handler"
-	"github.com/aquasecurity/fanal/types"
+	"github.com/aquasecurity/trivy/pkg/fanal/handler"
+	"github.com/aquasecurity/trivy/pkg/fanal/types"
 )
 
 func init() {

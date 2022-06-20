@@ -3,7 +3,7 @@
 package cache
 
 import (
-	types "github.com/aquasecurity/fanal/types"
+	types "github.com/aquasecurity/trivy/pkg/fanal/types"
 	mock "github.com/stretchr/testify/mock"
 )
 

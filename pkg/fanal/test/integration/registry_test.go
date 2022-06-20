@@ -19,14 +19,14 @@ import (
 	testcontainers "github.com/testcontainers/testcontainers-go"
 	"github.com/testcontainers/testcontainers-go/wait"
 
-	_ "github.com/aquasecurity/fanal/analyzer/all"
-	"github.com/aquasecurity/fanal/applier"
-	"github.com/aquasecurity/fanal/artifact"
-	aimage "github.com/aquasecurity/fanal/artifact/image"
-	"github.com/aquasecurity/fanal/cache"
-	"github.com/aquasecurity/fanal/image"
-	testdocker "github.com/aquasecurity/fanal/test/integration/docker"
-	"github.com/aquasecurity/fanal/types"
+	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/all"
+	"github.com/aquasecurity/trivy/pkg/fanal/applier"
+	"github.com/aquasecurity/trivy/pkg/fanal/artifact"
+	aimage "github.com/aquasecurity/trivy/pkg/fanal/artifact/image"
+	"github.com/aquasecurity/trivy/pkg/fanal/cache"
+	"github.com/aquasecurity/trivy/pkg/fanal/image"
+	testdocker "github.com/aquasecurity/trivy/pkg/fanal/test/integration/docker"
+	"github.com/aquasecurity/trivy/pkg/fanal/types"
 )
 
 const (

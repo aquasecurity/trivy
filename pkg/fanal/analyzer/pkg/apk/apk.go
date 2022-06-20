@@ -9,9 +9,9 @@ import (
 
 	apkVersion "github.com/knqyf263/go-apk-version"
 
-	"github.com/aquasecurity/fanal/analyzer"
-	"github.com/aquasecurity/fanal/types"
-	"github.com/aquasecurity/fanal/utils"
+	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
+	"github.com/aquasecurity/trivy/pkg/fanal/types"
+	"github.com/aquasecurity/trivy/pkg/fanal/utils"
 )
 
 func init() {

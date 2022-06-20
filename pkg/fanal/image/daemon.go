@@ -2,10 +2,11 @@ package image
 
 import (
 	"context"
+
 	"github.com/google/go-containerregistry/pkg/name"
 
-	"github.com/aquasecurity/fanal/image/daemon"
-	"github.com/aquasecurity/fanal/types"
+	"github.com/aquasecurity/trivy/pkg/fanal/image/daemon"
+	"github.com/aquasecurity/trivy/pkg/fanal/types"
 )
 
 func tryDockerDaemon(imageName string, ref name.Reference) (types.Image, func(), error) {

@@ -6,11 +6,11 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/aquasecurity/fanal/analyzer"
+	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 
 	"github.com/stretchr/testify/assert"
 
-	"github.com/aquasecurity/fanal/walker"
+	"github.com/aquasecurity/trivy/pkg/fanal/walker"
 	"github.com/stretchr/testify/require"
 )
 

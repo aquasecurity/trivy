@@ -9,9 +9,9 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/aquasecurity/fanal/artifact"
-	"github.com/aquasecurity/fanal/cache"
-	"github.com/aquasecurity/fanal/types"
+	"github.com/aquasecurity/trivy/pkg/fanal/artifact"
+	"github.com/aquasecurity/trivy/pkg/fanal/cache"
+	"github.com/aquasecurity/trivy/pkg/fanal/types"
 )
 
 func setupGitServer() (*httptest.Server, error) {
@@ -150,7 +150,7 @@ func Test_newURL(t *testing.T) {
 		{
 			name: "happy path: no scheme",
 			args: args{
-				rawurl: "github.com/aquasecurity/fanal",
+				rawurl: "github.com/aquasecurity/trivy/pkg/fanal",
 			},
 			want: "https://github.com/aquasecurity/fanal",
 		},

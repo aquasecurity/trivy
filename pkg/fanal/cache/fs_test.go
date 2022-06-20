@@ -13,7 +13,7 @@ import (
 	"github.com/stretchr/testify/require"
 	bolt "go.etcd.io/bbolt"
 
-	"github.com/aquasecurity/fanal/types"
+	"github.com/aquasecurity/trivy/pkg/fanal/types"
 )
 
 func newTempDB(t *testing.T, dbPath string) (string, error) {

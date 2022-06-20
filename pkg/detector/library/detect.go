@@ -3,7 +3,7 @@ package library
 import (
 	"golang.org/x/xerrors"
 
-	ftypes "github.com/aquasecurity/fanal/types"
+	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
 

@@ -4,7 +4,7 @@ import (
 	"context"
 	"testing"
 
-	"github.com/aquasecurity/fanal/types"
+	"github.com/aquasecurity/trivy/pkg/fanal/types"
 	"golang.org/x/xerrors"
 
 	"github.com/aws/aws-sdk-go/aws/request"

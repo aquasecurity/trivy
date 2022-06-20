@@ -5,11 +5,12 @@ import (
 	"context"
 	_ "embed"
 	"fmt"
-	"github.com/aquasecurity/defsec/pkg/scanners/rbac"
 	"io/fs"
 	"os"
 	"path/filepath"
 	"strings"
+
+	"github.com/aquasecurity/defsec/pkg/scanners/rbac"
 
 	"github.com/liamg/memoryfs"
 	"github.com/samber/lo"
@@ -24,10 +25,10 @@ import (
 	k8sscanner "github.com/aquasecurity/defsec/pkg/scanners/kubernetes"
 	"github.com/aquasecurity/defsec/pkg/scanners/options"
 	tfscanner "github.com/aquasecurity/defsec/pkg/scanners/terraform"
-	"github.com/aquasecurity/fanal/analyzer"
-	"github.com/aquasecurity/fanal/artifact"
-	"github.com/aquasecurity/fanal/handler"
-	"github.com/aquasecurity/fanal/types"
+	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
+	"github.com/aquasecurity/trivy/pkg/fanal/artifact"
+	"github.com/aquasecurity/trivy/pkg/fanal/handler"
+	"github.com/aquasecurity/trivy/pkg/fanal/types"
 )
 
 func init() {

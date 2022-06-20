@@ -5,10 +5,10 @@ import (
 	"os"
 	"testing"
 
-	aos "github.com/aquasecurity/fanal/analyzer/os"
-	"github.com/aquasecurity/fanal/types"
+	aos "github.com/aquasecurity/trivy/pkg/fanal/analyzer/os"
+	"github.com/aquasecurity/trivy/pkg/fanal/types"
 
-	"github.com/aquasecurity/fanal/analyzer"
+	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )

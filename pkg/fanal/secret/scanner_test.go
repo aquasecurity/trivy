@@ -10,9 +10,9 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/aquasecurity/fanal/log"
-	"github.com/aquasecurity/fanal/secret"
-	"github.com/aquasecurity/fanal/types"
+	"github.com/aquasecurity/trivy/pkg/fanal/log"
+	"github.com/aquasecurity/trivy/pkg/fanal/secret"
+	"github.com/aquasecurity/trivy/pkg/fanal/types"
 )
 
 func TestMain(m *testing.M) {

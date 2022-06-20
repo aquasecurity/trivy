@@ -4,14 +4,14 @@ import (
 	"context"
 	"strings"
 
-	"github.com/aquasecurity/fanal/artifact"
+	"github.com/aquasecurity/trivy/pkg/fanal/artifact"
 
 	"golang.org/x/exp/slices"
 
-	"github.com/aquasecurity/fanal/analyzer"
+	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 
-	"github.com/aquasecurity/fanal/handler"
-	"github.com/aquasecurity/fanal/types"
+	"github.com/aquasecurity/trivy/pkg/fanal/handler"
+	"github.com/aquasecurity/trivy/pkg/fanal/types"
 )
 
 func init() {

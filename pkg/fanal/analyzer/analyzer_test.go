@@ -13,18 +13,18 @@ import (
 	"golang.org/x/sync/semaphore"
 	"golang.org/x/xerrors"
 
-	"github.com/aquasecurity/fanal/analyzer"
-	aos "github.com/aquasecurity/fanal/analyzer/os"
-	"github.com/aquasecurity/fanal/types"
 	dio "github.com/aquasecurity/go-dep-parser/pkg/io"
+	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
+	aos "github.com/aquasecurity/trivy/pkg/fanal/analyzer/os"
+	"github.com/aquasecurity/trivy/pkg/fanal/types"
 
-	_ "github.com/aquasecurity/fanal/analyzer/command/apk"
-	_ "github.com/aquasecurity/fanal/analyzer/language/ruby/bundler"
-	_ "github.com/aquasecurity/fanal/analyzer/os/alpine"
-	_ "github.com/aquasecurity/fanal/analyzer/os/ubuntu"
-	_ "github.com/aquasecurity/fanal/analyzer/pkg/apk"
-	_ "github.com/aquasecurity/fanal/analyzer/repo/apk"
-	_ "github.com/aquasecurity/fanal/handler/all"
+	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/command/apk"
+	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/language/ruby/bundler"
+	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/os/alpine"
+	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/os/ubuntu"
+	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/pkg/apk"
+	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/repo/apk"
+	_ "github.com/aquasecurity/trivy/pkg/fanal/handler/all"
 )
 
 type mockConfigAnalyzer struct{}

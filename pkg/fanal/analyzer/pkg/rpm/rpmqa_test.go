@@ -4,7 +4,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/aquasecurity/fanal/types"
+	"github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/stretchr/testify/assert"
 )
 

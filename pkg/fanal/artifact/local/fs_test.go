@@ -9,17 +9,17 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	"github.com/aquasecurity/fanal/analyzer"
-	"github.com/aquasecurity/fanal/analyzer/config"
-	"github.com/aquasecurity/fanal/artifact"
-	"github.com/aquasecurity/fanal/cache"
-	"github.com/aquasecurity/fanal/types"
+	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
+	"github.com/aquasecurity/trivy/pkg/fanal/analyzer/config"
+	"github.com/aquasecurity/trivy/pkg/fanal/artifact"
+	"github.com/aquasecurity/trivy/pkg/fanal/cache"
+	"github.com/aquasecurity/trivy/pkg/fanal/types"
 
-	_ "github.com/aquasecurity/fanal/analyzer/language/python/pip"
-	_ "github.com/aquasecurity/fanal/analyzer/os/alpine"
-	_ "github.com/aquasecurity/fanal/analyzer/pkg/apk"
-	_ "github.com/aquasecurity/fanal/handler/misconf"
-	_ "github.com/aquasecurity/fanal/handler/sysfile"
+	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/language/python/pip"
+	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/os/alpine"
+	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/pkg/apk"
+	_ "github.com/aquasecurity/trivy/pkg/fanal/handler/misconf"
+	_ "github.com/aquasecurity/trivy/pkg/fanal/handler/sysfile"
 )
 
 func TestArtifact_Inspect(t *testing.T) {

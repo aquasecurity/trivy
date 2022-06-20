@@ -14,7 +14,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/aquasecurity/fanal/image/token/azure"
+	"github.com/aquasecurity/trivy/pkg/fanal/image/token/azure"
 )
 
 const (

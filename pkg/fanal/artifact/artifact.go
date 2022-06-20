@@ -4,10 +4,10 @@ import (
 	"context"
 	"sort"
 
-	"github.com/aquasecurity/fanal/analyzer"
-	misconf "github.com/aquasecurity/fanal/analyzer/config"
-	"github.com/aquasecurity/fanal/analyzer/secret"
-	"github.com/aquasecurity/fanal/types"
+	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
+	misconf "github.com/aquasecurity/trivy/pkg/fanal/analyzer/config"
+	"github.com/aquasecurity/trivy/pkg/fanal/analyzer/secret"
+	"github.com/aquasecurity/trivy/pkg/fanal/types"
 )
 
 type Option struct {

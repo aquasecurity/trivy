@@ -3,7 +3,7 @@ package secret
 import (
 	"fmt"
 
-	"github.com/aquasecurity/fanal/types"
+	"github.com/aquasecurity/trivy/pkg/fanal/types"
 )
 
 var (
