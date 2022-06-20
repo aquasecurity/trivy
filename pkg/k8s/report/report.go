@@ -5,6 +5,8 @@ import (
 	"io"
 	"strings"
 
+	"golang.org/x/exp/slices"
+
 	"golang.org/x/exp/maps"
 	"golang.org/x/xerrors"
 
@@ -122,23 +124,61 @@ type Writer interface {
 }
 
 // Write writes the results in the give format
-func Write(report Report, option Option) error {
-	var writer Writer
+func Write(report Report, option Option, securityChecks []string) error {
 	switch option.Format {
 	case jsonFormat:
-		writer = &JSONWriter{Output: option.Output, Report: option.Report}
+		jwriter := JSONWriter{Output: option.Output, Report: option.Report}
+		return jwriter.Write(report)
 	case tableFormat:
-		writer = &TableWriter{
+		workloadReport, rbacReport := separateMisConfigRoleAssessment(report, securityChecks)
+		WorkloadWriter := &TableWriter{
 			Output:        option.Output,
 			Report:        option.Report,
 			Severities:    option.Severities,
-			ColumnHeading: option.ColumnHeading,
+			ColumnHeading: ColumnHeading(securityChecks, WorkloadColumns()),
 		}
+		err := WorkloadWriter.Write(workloadReport)
+		if err != nil {
+			return err
+		}
+		rbacWriter := &TableWriter{
+			Output:        option.Output,
+			Report:        option.Report,
+			Severities:    option.Severities,
+			ColumnHeading: ColumnHeading(securityChecks, RoleColumns()),
+		}
+		return rbacWriter.Write(rbacReport)
 	default:
 		return xerrors.Errorf(`unknown format %q. Use "json" or "table"`, option.Format)
 	}
+}
 
-	return writer.Write(report)
+func separateMisConfigRoleAssessment(k8sReport Report, securityChecks []string) (Report, Report) {
+	workloadMisconfig := make([]Resource, 0)
+	rbacAssessment := make([]Resource, 0)
+	for _, misConfig := range k8sReport.Misconfigurations {
+		if slices.Contains(securityChecks, types.SecurityCheckRbac) && rbacResource(misConfig) {
+			rbacAssessment = append(rbacAssessment, misConfig)
+		} else {
+			if slices.Contains(securityChecks, types.SecurityCheckConfig) && !rbacResource(misConfig) {
+				workloadMisconfig = append(workloadMisconfig, misConfig)
+			}
+		}
+	}
+	return Report{
+			SchemaVersion:     0,
+			ClusterName:       k8sReport.ClusterName,
+			Vulnerabilities:   k8sReport.Vulnerabilities,
+			Misconfigurations: workloadMisconfig,
+		}, Report{
+			SchemaVersion:     0,
+			ClusterName:       k8sReport.ClusterName,
+			Misconfigurations: rbacAssessment,
+		}
+}
+
+func rbacResource(misConfig Resource) bool {
+	return misConfig.Kind == "Role" || misConfig.Kind == "RoleBinding" || misConfig.Kind == "ClusterRole" || misConfig.Kind == "ClusterRoleBinding"
 }
 
 func CreateResource(artifact *artifacts.Artifact, report types.Report, err error) Resource {

@@ -19,7 +19,7 @@ type TableWriter struct {
 }
 
 const (
-	NameSpaceColumn         = "Namespace"
+	NamespaceColumn         = "Namespace"
 	ResourceColumn          = "Resource"
 	VulnerabilitiesColumn   = "Vulnerabilities"
 	MisconfigurationsColumn = "Misconfigurations"

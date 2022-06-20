@@ -110,7 +110,7 @@ func (s Scanner) Scan(ctx context.Context, target, artifactKey string, blobKeys 
 	}
 
 	// Scan IaC config files
-	if slices.Contains(options.SecurityChecks, types.SecurityCheckConfig) || slices.Contains(options.SecurityChecks, types.SecurityCheckRbac) {
+	if shouldScanMisconfig(options.SecurityChecks) {
 		configResults := s.misconfsToResults(artifactDetail.Misconfigurations)
 		results = append(results, configResults...)
 	}
@@ -141,6 +141,10 @@ func (s Scanner) Scan(ctx context.Context, target, artifactKey string, blobKeys 
 	}
 
 	return results, artifactDetail.OS, nil
+}
+
+func shouldScanMisconfig(securityChecks []string) bool {
+	return slices.Contains(securityChecks, types.SecurityCheckConfig) || slices.Contains(securityChecks, types.SecurityCheckRbac)
 }
 
 func (s Scanner) checkVulnerabilities(target string, detail ftypes.ArtifactDetail, options types.ScanOptions) (

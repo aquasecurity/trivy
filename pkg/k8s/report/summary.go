@@ -7,7 +7,6 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/aquasecurity/trivy/pkg/commands/option"
 	"github.com/aquasecurity/trivy/pkg/types"
 
 	"golang.org/x/xerrors"
@@ -21,7 +20,7 @@ type SummaryWriter struct {
 	Output           io.Writer
 	Severities       []string
 	SeverityHeadings []string
-	ColumnHeading    []string
+	ColumnsHeading   []string
 }
 
 func NewSummaryWriter(output io.Writer, requiredSevs []dbTypes.Severity, columnHeading []string) SummaryWriter {
@@ -32,15 +31,15 @@ func NewSummaryWriter(output io.Writer, requiredSevs []dbTypes.Severity, columnH
 		Output:           output,
 		Severities:       severities,
 		SeverityHeadings: severityHeadings,
-		ColumnHeading:    columnHeading,
+		ColumnsHeading:   columnHeading,
 	}
 }
 
-func ColumnHeading(rp option.ReportOption, availableColumns []string) []string {
-	column := []string{NameSpaceColumn, ResourceColumn}
+func ColumnHeading(securityChecks []string, availableColumns []string) []string {
+	columns := []string{NamespaceColumn, ResourceColumn}
 	securityOptions := make(map[string]interface{}, 0)
 	//maintain column order (vuln,config,secret)
-	for _, check := range rp.SecurityChecks {
+	for _, check := range securityChecks {
 		switch check {
 		case types.SecurityCheckVulnerability:
 			securityOptions[VulnerabilitiesColumn] = nil
@@ -54,16 +53,16 @@ func ColumnHeading(rp option.ReportOption, availableColumns []string) []string {
 	}
 	for _, col := range availableColumns {
 		if _, ok := securityOptions[col]; ok {
-			column = append(column, col)
+			columns = append(columns, col)
 		}
 	}
-	return column
+	return columns
 }
 
 // Write writes the results in a summarized table format
 func (s SummaryWriter) Write(report Report) error {
 	// no report column to print
-	if len(s.ColumnHeading) == 2 {
+	if len(s.ColumnsHeading) == 2 {
 		return nil
 	}
 	consolidated := report.consolidate()
@@ -78,7 +77,7 @@ func (s SummaryWriter) Write(report Report) error {
 
 	t := table.New(s.Output)
 	t.SetRowLines(false)
-	configureHeader(s, t, s.ColumnHeading)
+	configureHeader(s, t, s.ColumnsHeading)
 
 	sort.Slice(consolidated.Findings, func(i, j int) bool {
 		return consolidated.Findings[i].Namespace > consolidated.Findings[j].Namespace
