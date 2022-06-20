@@ -32,7 +32,7 @@ func (r Comparer) IsVulnerable(ver string, advisory dbTypes.Advisory) bool {
 
 // matchVersion checks if the package version satisfies the given constraint.
 func (r Comparer) matchVersion(currentVersion, constraint string) (bool, error) {
-	// There are same packages for ruby and jruby. We need trim platform suffix
+	// There are same packages for ruby with different platform suffixes. We need trim these suffixes
 	// Otherwise suffix will recognize as pre-release version (https://semver.org/#spec-item-9)
 	// e.g. https://rubygems.org/gems/puma/versions/5.6.4-java and https://rubygems.org/gems/puma/versions/5.6.4
 	currentVersion = platformReplacer.Replace(currentVersion)
