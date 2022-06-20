@@ -6,11 +6,12 @@ import (
 	"os"
 	"strings"
 
+	"golang.org/x/exp/slices"
+	"golang.org/x/xerrors"
+
 	"github.com/aquasecurity/go-dep-parser/pkg/io"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
-	"golang.org/x/exp/slices"
-	"golang.org/x/xerrors"
 )
 
 func init() {

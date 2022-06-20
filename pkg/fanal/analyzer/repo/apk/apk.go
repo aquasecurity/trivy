@@ -20,6 +20,7 @@ func init() {
 }
 
 const version = 1
+const edgeVersion = "edge"
 
 var (
 	requiredFiles  = []string{"etc/apk/repositories"}
@@ -52,8 +53,8 @@ func (a apkRepoAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInput
 		switch {
 		case repoVer == "":
 			repoVer = newVersion
-		case repoVer == "edge" || newVersion == "edge":
-			repoVer = "edge"
+		case repoVer == edgeVersion || newVersion == edgeVersion:
+			repoVer = edgeVersion
 		default:
 			oldVer, err := ver.Parse(repoVer)
 			if err != nil {

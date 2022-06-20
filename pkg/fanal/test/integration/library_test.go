@@ -15,6 +15,11 @@ import (
 	"strings"
 	"testing"
 
+	dtypes "github.com/docker/docker/api/types"
+	"github.com/docker/docker/client"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
+
 	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/all"
 	"github.com/aquasecurity/trivy/pkg/fanal/applier"
 	"github.com/aquasecurity/trivy/pkg/fanal/artifact"
@@ -23,10 +28,6 @@ import (
 	_ "github.com/aquasecurity/trivy/pkg/fanal/handler/all"
 	"github.com/aquasecurity/trivy/pkg/fanal/image"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
-	dtypes "github.com/docker/docker/api/types"
-	"github.com/docker/docker/client"
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
 )
 
 var update = flag.Bool("update", false, "update golden files")

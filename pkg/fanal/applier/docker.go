@@ -5,8 +5,9 @@ import (
 	"strings"
 	"time"
 
-	"github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/knqyf263/nested"
+
+	"github.com/aquasecurity/trivy/pkg/fanal/types"
 )
 
 type Config struct {
@@ -89,11 +90,11 @@ func ApplyLayers(layers []types.BlobInfo) types.ArtifactDetail {
 
 	for _, layer := range layers {
 		for _, opqDir := range layer.OpaqueDirs {
-			opqDir = strings.TrimSuffix(opqDir, sep) //this is necessary so that an empty element is not contribute into the array of the DeleteByString function
-			_ = nestedMap.DeleteByString(opqDir, sep)
+			opqDir = strings.TrimSuffix(opqDir, sep)  //this is necessary so that an empty element is not contribute into the array of the DeleteByString function
+			_ = nestedMap.DeleteByString(opqDir, sep) // nolint
 		}
 		for _, whFile := range layer.WhiteoutFiles {
-			_ = nestedMap.DeleteByString(whFile, sep)
+			_ = nestedMap.DeleteByString(whFile, sep) // nolint
 		}
 
 		if layer.OS != nil {
@@ -138,6 +139,7 @@ func ApplyLayers(layers []types.BlobInfo) types.ArtifactDetail {
 		}
 	}
 
+	// nolint
 	_ = nestedMap.Walk(func(keys []string, value interface{}) error {
 		switch v := value.(type) {
 		case types.PackageInfo:

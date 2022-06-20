@@ -1,9 +1,10 @@
 package image
 
 import (
-	"github.com/aquasecurity/trivy/pkg/fanal/types"
 	v1 "github.com/google/go-containerregistry/pkg/v1"
 	"github.com/hashicorp/go-multierror"
+
+	"github.com/aquasecurity/trivy/pkg/fanal/types"
 )
 
 func NewArchiveImage(fileName string) (types.Image, error) {

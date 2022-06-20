@@ -20,7 +20,7 @@ func DockerImage(ref name.Reference) (Image, func(), error) {
 	}
 	defer func() {
 		if err != nil {
-			c.Close()
+			_ = c.Close()
 		}
 	}()
 
@@ -48,8 +48,8 @@ func DockerImage(ref name.Reference) (Image, func(), error) {
 	}
 
 	cleanup = func() {
-		c.Close()
-		f.Close()
+		_ = c.Close()
+		_ = f.Close()
 		_ = os.Remove(f.Name())
 	}
 

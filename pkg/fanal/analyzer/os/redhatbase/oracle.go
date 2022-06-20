@@ -10,9 +10,10 @@ import (
 
 	"github.com/aquasecurity/trivy/pkg/fanal/utils"
 
+	"golang.org/x/xerrors"
+
 	aos "github.com/aquasecurity/trivy/pkg/fanal/analyzer/os"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
-	"golang.org/x/xerrors"
 )
 
 const oracleAnalyzerVersion = 1

@@ -7,9 +7,10 @@ import (
 
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 
-	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+
+	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 )
 
 func Test_ubuntuOSAnalyzer_Analyze(t *testing.T) {

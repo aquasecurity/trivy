@@ -4,8 +4,9 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/stretchr/testify/assert"
+
+	"github.com/aquasecurity/trivy/pkg/fanal/types"
 )
 
 func TestParseMarinerDistrolessManifest(t *testing.T) {

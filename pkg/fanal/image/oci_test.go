@@ -1,8 +1,9 @@
 package image
 
 import (
-	"github.com/stretchr/testify/assert"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestTryOCI(t *testing.T) {

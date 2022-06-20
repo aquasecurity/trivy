@@ -7,8 +7,9 @@ import (
 var Logger *zap.SugaredLogger
 
 func init() {
-	logger, _ := zap.NewProduction()
-	Logger = logger.Sugar()
+	if logger, err := zap.NewProduction(); err == nil {
+		Logger = logger.Sugar()
+	}
 }
 
 func SetLogger(l *zap.SugaredLogger) {

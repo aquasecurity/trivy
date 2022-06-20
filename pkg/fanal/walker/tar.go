@@ -86,7 +86,10 @@ func (w LayerTar) Walk(layer io.Reader, analyzeFn WalkFunc) ([]string, []string,
 
 func (w LayerTar) processFile(filePath string, tr *tar.Reader, fi fs.FileInfo, analyzeFn WalkFunc) error {
 	tf := newTarFile(fi.Size(), tr)
-	defer tf.Clean()
+	defer func() {
+		// nolint
+		_ = tf.Clean()
+	}()
 
 	if err := analyzeFn(filePath, fi, tf.Open); err != nil {
 		return xerrors.Errorf("failed to analyze file: %w", err)

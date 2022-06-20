@@ -11,10 +11,11 @@ import (
 	"regexp"
 	"strings"
 
+	"golang.org/x/xerrors"
+
 	dio "github.com/aquasecurity/go-dep-parser/pkg/io"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
-	"golang.org/x/xerrors"
 )
 
 const version = 1

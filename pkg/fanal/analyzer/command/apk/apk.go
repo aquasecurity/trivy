@@ -91,6 +91,7 @@ func (a alpineCmdAnalyzer) fetchApkIndexArchive(targetOS types.OS) (*apkIndex, e
 			return nil, xerrors.Errorf("failed to read APKINDEX archive file: %w", err)
 		}
 	} else {
+		// nolint
 		resp, err := http.Get(url)
 		if err != nil {
 			return nil, xerrors.Errorf("failed to fetch APKINDEX archive: %w", err)

@@ -36,7 +36,6 @@ func IsCommandAvailable(name string) bool {
 }
 
 func IsGzip(f *bufio.Reader) bool {
-	buf := make([]byte, 3)
 	buf, err := f.Peek(3)
 	if err != nil {
 		return false
