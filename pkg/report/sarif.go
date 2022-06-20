@@ -218,9 +218,7 @@ func ToPathUri(input string) string {
 	}
 	ref, err := containerName.ParseReference(input)
 	if err == nil {
-		input = strings.TrimSuffix(input, ref.Identifier())
-		input = strings.TrimSuffix(input, "@")
-		input = strings.TrimSuffix(input, ":")
+		input = ref.Context().RepositoryStr()
 	}
 
 	return strings.ReplaceAll(input, "\\", "/")
