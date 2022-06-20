@@ -16,7 +16,7 @@ Those policies are managed under [defsec repository][defsec].
 
 For suggestions or issues regarding policy content, please open an issue under the [defsec][defsec] repository.
 
-Helm Chart scanning will resolve the chart to Kubernetes manifests then run the [kubenetes][kubernetes] checks.
+Helm Chart scanning will resolve the chart to Kubernetes manifests then run the [kubernetes][kubernetes] checks.
 
 Ansible scanning is coming soon.
 

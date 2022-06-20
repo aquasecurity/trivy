@@ -71,7 +71,7 @@ func TestScanner_Scan(t *testing.T) {
 								Title:            "DoS",
 								Description:      "Denial os Service",
 								Severity:         common.Severity_CRITICAL,
-								References:       []string{"http://exammple.com"},
+								References:       []string{"http://example.com"},
 								SeveritySource:   "nvd",
 								VendorSeverity: map[string]common.Severity{
 									string(vulnerability.NVD):    common.Severity_MEDIUM,
@@ -119,7 +119,7 @@ func TestScanner_Scan(t *testing.T) {
 								Title:       "DoS",
 								Description: "Denial os Service",
 								Severity:    "CRITICAL",
-								References:  []string{"http://exammple.com"},
+								References:  []string{"http://example.com"},
 								VendorSeverity: dbTypes.VendorSeverity{
 									vulnerability.NVD:    dbTypes.SeverityMedium,
 									vulnerability.RedHat: dbTypes.SeverityMedium,

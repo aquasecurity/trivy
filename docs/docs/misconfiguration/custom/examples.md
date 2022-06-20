@@ -6,7 +6,7 @@ See [here][k8s].
 
 The custom policy is defined in `user.kubernetes.ID001` package.
 You need to pass the package prefix you want to evaluate through `--namespaces` option.
-In this case, the package prefix should be `user`, `user.kuberntes`, or `user.kubernetes.ID001`.
+In this case, the package prefix should be `user`, `user.kubernetes`, or `user.kubernetes.ID001`.
 
 ### Dockerfile
 See [here][dockerfile].
