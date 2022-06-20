@@ -150,7 +150,7 @@ func Test_newURL(t *testing.T) {
 		{
 			name: "happy path: no scheme",
 			args: args{
-				rawurl: "github.com/aquasecurity/trivy/pkg/fanal",
+				rawurl: "github.com/aquasecurity/fanal",
 			},
 			want: "https://github.com/aquasecurity/fanal",
 		},
