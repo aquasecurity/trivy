@@ -41,8 +41,7 @@ func (h gomodMergeHook) Handle(_ context.Context, _ *analyzer.AnalysisResult, bl
 				// e.g. /app/go.mod => /app/go.sum
 				gosumFile := filepath.Join(dir, types.GoSum)
 				if gosum := findGoSum(gosumFile, blob.Applications); gosum != nil {
-					application := app
-					mergeGoSum(&application, gosum)
+					mergeGoSum(&app, gosum) // nolint
 				}
 			}
 		}
