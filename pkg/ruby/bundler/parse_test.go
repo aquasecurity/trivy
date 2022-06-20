@@ -28,6 +28,10 @@ func TestParse(t *testing.T) {
 			file: "testdata/Gemfile_many.lock",
 			want: BundlerMany,
 		},
+		{
+			file: "testdata/Gemfile_rails7.lock",
+			want: BundlerV2RailsV7,
+		},
 	}
 
 	for _, v := range vectors {

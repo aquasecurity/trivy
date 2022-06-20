@@ -27,9 +27,11 @@ func (p *Parser) Parse(r dio.ReadSeekerAt) ([]types.Library, []types.Dependency,
 			if len(s) != 2 {
 				continue
 			}
+			version := strings.Trim(s[1], "()")          // drop parentheses
+			version = strings.SplitN(version, "-", 2)[0] // drop platform (e.g. 1.13.6-x86_64-linux => 1.13.6)
 			libs = append(libs, types.Library{
 				Name:    s[0],
-				Version: strings.Trim(s[1], "()"),
+				Version: version,
 			})
 		}
 	}
