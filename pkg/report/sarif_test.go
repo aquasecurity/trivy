@@ -29,7 +29,7 @@ func TestReportWriter_Sarif(t *testing.T) {
 			name: "report with vulnerabilities",
 			input: types.Results{
 				{
-					Target: "test",
+					Target: "library/test",
 					Class:  types.ClassOSPkg,
 					Vulnerabilities: []types.DetectedVulnerability{
 						{
@@ -97,7 +97,7 @@ func TestReportWriter_Sarif(t *testing.T) {
 						{
 							PhysicalLocation: &sarif.PhysicalLocation{
 								ArtifactLocation: &sarif.ArtifactLocation{
-									URI:       toPtr("test"),
+									URI:       toPtr("library/test"),
 									URIBaseId: toPtr("ROOTPATH"),
 								},
 								Region: &sarif.Region{
@@ -116,7 +116,7 @@ func TestReportWriter_Sarif(t *testing.T) {
 			name: "report with misconfigurations",
 			input: types.Results{
 				{
-					Target: "test",
+					Target: "library/test",
 					Class:  types.ClassConfig,
 					Misconfigurations: []types.DetectedMisconfiguration{
 						{
@@ -145,12 +145,12 @@ func TestReportWriter_Sarif(t *testing.T) {
 					RuleID:    toPtr("KSV001"),
 					RuleIndex: toPtr[uint](0),
 					Level:     toPtr("error"),
-					Message:   sarif.Message{Text: toPtr("Artifact: test\nType: \nVulnerability KSV001\nSeverity: HIGH\nMessage: Message\nLink: [KSV001](https://avd.aquasec.com/appshield/ksv001)")},
+					Message:   sarif.Message{Text: toPtr("Artifact: library/test\nType: \nVulnerability KSV001\nSeverity: HIGH\nMessage: Message\nLink: [KSV001](https://avd.aquasec.com/appshield/ksv001)")},
 					Locations: []*sarif.Location{
 						{
 							PhysicalLocation: &sarif.PhysicalLocation{
 								ArtifactLocation: &sarif.ArtifactLocation{
-									URI:       toPtr("test"),
+									URI:       toPtr("library/test"),
 									URIBaseId: toPtr("ROOTPATH"),
 								},
 								Region: &sarif.Region{
@@ -167,12 +167,12 @@ func TestReportWriter_Sarif(t *testing.T) {
 					RuleID:    toPtr("KSV002"),
 					RuleIndex: toPtr[uint](1),
 					Level:     toPtr("error"),
-					Message:   sarif.Message{Text: toPtr("Artifact: test\nType: \nVulnerability KSV002\nSeverity: CRITICAL\nMessage: Message\nLink: [KSV002](https://avd.aquasec.com/appshield/ksv002)")},
+					Message:   sarif.Message{Text: toPtr("Artifact: library/test\nType: \nVulnerability KSV002\nSeverity: CRITICAL\nMessage: Message\nLink: [KSV002](https://avd.aquasec.com/appshield/ksv002)")},
 					Locations: []*sarif.Location{
 						{
 							PhysicalLocation: &sarif.PhysicalLocation{
 								ArtifactLocation: &sarif.ArtifactLocation{
-									URI:       toPtr("test"),
+									URI:       toPtr("library/test"),
 									URIBaseId: toPtr("ROOTPATH"),
 								},
 								Region: &sarif.Region{
