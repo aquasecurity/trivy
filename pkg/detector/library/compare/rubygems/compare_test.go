@@ -72,6 +72,17 @@ func TestRubyGemsComparer_IsVulnerable(t *testing.T) {
 			want: false,
 		},
 		{
+			// https://github.com/aquasecurity/trivy/issues/2353
+			name: "removed suffix",
+			args: args{
+				currentVersion: "5.6.4-java",
+				advisory: types.Advisory{
+					PatchedVersions: []string{">= 5.6.4"},
+				},
+			},
+			want: false,
+		},
+		{
 			name: "invalid version",
 			args: args{
 				currentVersion: "1.2..4",
