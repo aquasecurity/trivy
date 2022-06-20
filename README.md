@@ -74,7 +74,7 @@ https://user-images.githubusercontent.com/1161307/171013917-b1f37810-f434-465c-b
 </details>
 
 ```bash
-$ trivy k8s mycluster
+$ trivy k8s --report summary cluster
 ```
 
 <details>
@@ -83,6 +83,8 @@ $ trivy k8s mycluster
 ![k8s summary](docs/imgs/trivy-k8s.png)
 
 </details>
+
+Note that you can also receive a detailed scan, scan only a specific namespace, resource and more.
 
 Find out more in the [Trivy Documentation][docs] - [Getting Started][getting-started]
 
