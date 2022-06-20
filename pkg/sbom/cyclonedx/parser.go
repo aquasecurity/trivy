@@ -138,7 +138,7 @@ func (c CycloneDX) parse() (string, *ftypes.OS, []ftypes.PackageInfo, []ftypes.A
 		return c.Type == cdx.ComponentTypeLibrary
 	})
 
-	aggregatedApps, err := c.Aggregate(libComponents)
+	aggregatedApps, err := aggregateLangPkgs(libComponents)
 	if err != nil {
 		return "", nil, nil, nil, xerrors.Errorf("failed to aggregate packages: %w", err)
 	}
@@ -189,11 +189,7 @@ func walkDependencies(rootRef string, components []cdx.Component, componentMap m
 func (c CycloneDX) componentMap() map[string]cdx.Component {
 	componentMap := make(map[string]cdx.Component)
 
-	if c.Components == nil {
-		return componentMap
-	}
-
-	for _, component := range *c.Components {
+	for _, component := range fromPtr(c.Components) {
 		componentMap[component.BOMRef] = component
 	}
 	if c.Metadata != nil {
@@ -205,19 +201,14 @@ func (c CycloneDX) componentMap() map[string]cdx.Component {
 func (c CycloneDX) dependenciesMap() map[string][]string {
 	dependencyMap := make(map[string][]string)
 
-	if c.Dependencies == nil {
-		return dependencyMap
-	}
-	for _, dep := range *c.Dependencies {
+	for _, dep := range fromPtr(c.Dependencies) {
 		if _, ok := dependencyMap[dep.Ref]; ok {
 			continue
 		}
 
 		var refs []string
-		if dep.Dependencies != nil {
-			for _, d := range *dep.Dependencies {
-				refs = append(refs, d.Ref)
-			}
+		for _, d := range fromPtr(dep.Dependencies) {
+			refs = append(refs, d.Ref)
 		}
 
 		dependencyMap[dep.Ref] = refs
@@ -225,29 +216,26 @@ func (c CycloneDX) dependenciesMap() map[string][]string {
 	return dependencyMap
 }
 
-func (c CycloneDX) Aggregate(libs []cdx.Component) ([]ftypes.Application, error) {
-	appMap := map[string]*ftypes.Application{}
+func aggregateLangPkgs(libs []cdx.Component) ([]ftypes.Application, error) {
+	pkgs := map[string][]ftypes.Package{}
 	for _, lib := range libs {
 		appType, pkg, err := toPackage(lib)
 		if err != nil {
 			return nil, xerrors.Errorf("failed to parse purl to package: %w", err)
 		}
 
-		app, ok := appMap[appType]
-		if !ok {
-			// Pseudo application like Node.js and Ruby, not lock files
-			app = &ftypes.Application{
-				Type: appType,
-			}
-			appMap[appType] = app
-		}
-
-		app.Libraries = append(app.Libraries, *pkg)
+		pkgs[appType] = append(pkgs[appType], *pkg)
 	}
 
 	var apps []ftypes.Application
-	for _, app := range appMap {
-		apps = append(apps, *app)
+	for appType, pkgs := range pkgs {
+		sort.Slice(pkgs, func(i, j int) bool {
+			return pkgs[i].Name < pkgs[j].Name
+		})
+		apps = append(apps, ftypes.Application{
+			Type:      appType,
+			Libraries: pkgs,
+		})
 	}
 	return apps, nil
 }
@@ -276,19 +264,13 @@ func toPackage(component cdx.Component) (string, *ftypes.Package, error) {
 	pkg.Ref = component.BOMRef
 
 	var licenses []string
-	if component.Licenses != nil {
-		for _, license := range *component.Licenses {
-			licenses = append(licenses, license.Expression)
-		}
+	for _, license := range fromPtr(component.Licenses) {
+		licenses = append(licenses, license.Expression)
 	}
 	// TODO: In Trivy's SBOM, Expression is singular
 	pkg.License = strings.Join(licenses, ", ")
 
-	if component.Properties == nil {
-		return p.AppType(), pkg, nil
-	}
-
-	for _, p := range *component.Properties {
+	for _, p := range fromPtr(component.Properties) {
 		if strings.HasPrefix(p.Name, Namespace) {
 			switch strings.TrimPrefix(p.Name, Namespace) {
 			case PropertySrcName:
@@ -314,14 +296,18 @@ func toPackage(component cdx.Component) (string, *ftypes.Package, error) {
 }
 
 func getProperty(properties *[]cdx.Property, key string) string {
-	if properties == nil {
-		return ""
-	}
-
-	for _, p := range *properties {
+	for _, p := range fromPtr(properties) {
 		if p.Name == Namespace+key {
 			return p.Value
 		}
 	}
 	return ""
+}
+
+func fromPtr[T any](ptr *T) T {
+	if ptr == nil {
+		var t T
+		return t
+	}
+	return *ptr
 }

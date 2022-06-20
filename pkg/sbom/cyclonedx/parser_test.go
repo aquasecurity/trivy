@@ -2,10 +2,8 @@ package cyclonedx_test
 
 import (
 	"os"
-	"sort"
 	"testing"
 
-	cdx "github.com/CycloneDX/cyclonedx-go"
 	ftypes "github.com/aquasecurity/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/sbom/cyclonedx"
 	"github.com/stretchr/testify/assert"
@@ -88,7 +86,7 @@ func TestParser_Parse(t *testing.T) {
 						},
 					},
 					{
-						Type:     "jar",
+						Type: "jar",
 						Libraries: []ftypes.Package{
 							{
 								Name:    "org.codehaus.mojo:child-project",
@@ -221,81 +219,6 @@ func TestParser_Parse(t *testing.T) {
 			assert.Equal(t, tt.want.OS, OS)
 			assert.Equal(t, tt.want.pkgInfos, pkgInfos)
 			assert.Equal(t, tt.want.apps, apps)
-		})
-	}
-}
-
-func TestTrivyBOM_Aggregate(t *testing.T) {
-
-	tests := []struct {
-		name    string
-		libs    []cdx.Component
-		want    []ftypes.Application
-		wantErr string
-	}{
-		{
-			name: "happy path",
-			libs: []cdx.Component{
-				{
-					BOMRef:     "pkg:composer/pear/pear_exception@v1.0.0",
-					PackageURL: "pkg:composer/pear/pear_exception@v1.0.0",
-				},
-				{
-					BOMRef:     "pkg:npm/bootstrap@5.0.2?file_path=app%2Fapp%2Fpackage.json",
-					PackageURL: "pkg:npm/bootstrap@5.0.2?file_path=app%2Fapp%2Fpackage.json",
-				},
-			},
-			want: []ftypes.Application{
-				{
-					Type:     "composer",
-					FilePath: "composer",
-					Libraries: []ftypes.Package{
-						{
-							Name:    "pear/pear_exception",
-							Version: "v1.0.0",
-							Ref:     "pkg:composer/pear/pear_exception@v1.0.0",
-						},
-					},
-				},
-				{
-					Type:     "node-pkg",
-					FilePath: "npm",
-					Libraries: []ftypes.Package{
-						{
-							Name:    "bootstrap",
-							Version: "5.0.2",
-							Ref:     "pkg:npm/bootstrap@5.0.2?file_path=app%2Fapp%2Fpackage.json",
-						},
-					},
-				},
-			},
-		},
-		{
-			name: "sad path invalid component",
-			libs: []cdx.Component{
-				{
-					BOMRef:     "pkg:composer/pear/pear_exception@v1.0.0",
-					PackageURL: "invalidpurl",
-				},
-			},
-			wantErr: "failed to parse purl",
-		},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			c := cyclonedx.CycloneDX{}
-			got, err := c.Aggregate(tt.libs)
-			if tt.wantErr != "" {
-				require.NotNil(t, err)
-				assert.Contains(t, err.Error(), tt.wantErr)
-				return
-			} else {
-				require.NoError(t, err)
-			}
-			sort.Slice(got, func(i, j int) bool {
-				return got[i].FilePath < got[j].FilePath
-			})
-			assert.Equal(t, tt.want, got)
 		})
 	}
 }
