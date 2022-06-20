@@ -16,6 +16,7 @@ import (
 	"github.com/aquasecurity/fanal/analyzer/secret"
 	"github.com/aquasecurity/fanal/artifact"
 	"github.com/aquasecurity/fanal/cache"
+	ftypes "github.com/aquasecurity/fanal/types"
 	"github.com/aquasecurity/trivy-db/pkg/db"
 	tcache "github.com/aquasecurity/trivy/pkg/cache"
 	"github.com/aquasecurity/trivy/pkg/commands/operation"
@@ -67,7 +68,7 @@ type ScannerConfig struct {
 	ArtifactOption artifact.Option
 
 	// SBOM
-	ArtifactType string
+	ArtifactType ftypes.ArtifactType
 }
 
 type Runner interface {
@@ -493,7 +494,7 @@ func initScannerConfig(opt Option, cacheClient cache.Cache) (ScannerConfig, type
 	return ScannerConfig{
 		Target:             target,
 		ArtifactCache:      cacheClient,
-		ArtifactType:       opt.ArtifactType,
+		ArtifactType:       ftypes.ArtifactType(opt.ArtifactType),
 		LocalArtifactCache: cacheClient,
 		RemoteOption: client.ScannerOption{
 			RemoteURL:     opt.RemoteAddr,

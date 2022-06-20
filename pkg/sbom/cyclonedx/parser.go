@@ -1,9 +1,7 @@
 package cyclonedx
 
 import (
-	"encoding/json"
 	"io"
-	"path/filepath"
 	"sort"
 	"strconv"
 	"strings"
@@ -23,32 +21,29 @@ const (
 )
 
 type CycloneDX struct {
-	extension string
+	format cdx.BOMFileFormat
 	cdx.BOM
 }
 
-func New(name string) sbom.Parser {
+func NewJSON() sbom.Parser {
 	c := cdx.NewBOM()
 
 	return &CycloneDX{
-		BOM:       *c,
-		extension: filepath.Ext(name),
+		BOM:    *c,
+		format: cdx.BOMFileFormatJSON,
 	}
 }
 
-func (c CycloneDX) Parse(r io.Reader) (string, *ftypes.OS, []ftypes.PackageInfo, []ftypes.Application, error) {
-	switch filepath.Ext(c.extension) {
-	case ".json":
-		if err := json.NewDecoder(r).Decode(&c); err != nil {
-			return "", nil, nil, nil, xerrors.Errorf("failed to json decode: %w", err)
-		}
-	case ".xml":
-		// TODO: not supported yet
+func (c *CycloneDX) Parse(r io.Reader) (string, *ftypes.OS, []ftypes.PackageInfo, []ftypes.Application, error) {
+	decoder := cdx.NewBOMDecoder(r, c.format)
+	if err := decoder.Decode(&c.BOM); err != nil {
+		return "", nil, nil, nil, xerrors.Errorf("CycloneDX decode error: %w", err)
 	}
+
 	return c.parse()
 }
 
-func (c CycloneDX) Type() sbom.SBOMFormat {
+func (c *CycloneDX) Type() sbom.SBOMFormat {
 	return FormatCycloneDX
 }
 
@@ -94,7 +89,7 @@ func parsePkgs(components []cdx.Component, seen map[string]struct{}) ([]ftypes.P
 	return pkgs, nil
 }
 
-func (c CycloneDX) parse() (string, *ftypes.OS, []ftypes.PackageInfo, []ftypes.Application, error) {
+func (c *CycloneDX) parse() (string, *ftypes.OS, []ftypes.PackageInfo, []ftypes.Application, error) {
 	depMap := c.dependenciesMap()
 	componentMap := c.componentMap()
 
@@ -186,7 +181,7 @@ func walkDependencies(rootRef string, components []cdx.Component, componentMap m
 	return components
 }
 
-func (c CycloneDX) componentMap() map[string]cdx.Component {
+func (c *CycloneDX) componentMap() map[string]cdx.Component {
 	componentMap := make(map[string]cdx.Component)
 
 	for _, component := range fromPtr(c.Components) {
@@ -198,7 +193,7 @@ func (c CycloneDX) componentMap() map[string]cdx.Component {
 	return componentMap
 }
 
-func (c CycloneDX) dependenciesMap() map[string][]string {
+func (c *CycloneDX) dependenciesMap() map[string][]string {
 	dependencyMap := make(map[string][]string)
 
 	for _, dep := range fromPtr(c.Dependencies) {

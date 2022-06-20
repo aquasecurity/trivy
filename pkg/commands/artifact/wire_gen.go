@@ -102,7 +102,7 @@ func initializeRepositoryScanner(ctx context.Context, url string, artifactCache 
 	}, nil
 }
 
-func initializeSBOMScanner(ctx context.Context, report, path string, artifactCache cache.ArtifactCache, localArtifactCache cache.LocalArtifactCache, artifactOption artifact.Option) (scanner.Scanner, func(), error) {
+func initializeSBOMScanner(ctx context.Context, report types.ArtifactType, path string, artifactCache cache.ArtifactCache, localArtifactCache cache.LocalArtifactCache, artifactOption artifact.Option) (scanner.Scanner, func(), error) {
 	applierApplier := applier.NewApplier(localArtifactCache)
 	detector := ospkg.Detector{}
 	config := db.Config{}
@@ -172,7 +172,7 @@ func initializeRemoteFilesystemScanner(ctx context.Context, path string, artifac
 }
 
 // initializeRemoteCycloneDXScanner is for cycloneDX scanning in client/server mode
-func initializeRemoteSBOMScanner(ctx context.Context, report, path string, artifactCache cache.ArtifactCache, remoteScanOptions client.ScannerOption, artifactOption artifact.Option) (scanner.Scanner, func(), error) {
+func initializeRemoteSBOMScanner(ctx context.Context, report types.ArtifactType, path string, artifactCache cache.ArtifactCache, remoteScanOptions client.ScannerOption, artifactOption artifact.Option) (scanner.Scanner, func(), error) {
 	v := _wireValue
 	clientScanner := client.NewScanner(remoteScanOptions, v...)
 	artifactArtifact, err := sbom2.NewArtifact(report, path, artifactCache, artifactOption)

@@ -20,7 +20,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/sbom/cyclonedx"
 )
 
-var (
+const (
 	ArtifactCycloneDX types.ArtifactType = "cyclonedx"
 )
 
@@ -29,23 +29,27 @@ type Artifact struct {
 	cache          cache.ArtifactCache
 	analyzer       analyzer.AnalyzerGroup
 	handlerManager handler.Manager
-	sbomParser     sbom.Parser
+
+	sbomFormat types.ArtifactType // CycloneDX, SPDX, etc.
+	sbomParser sbom.Parser
 
 	artifactOption      artifact.Option
 	configScannerOption config.ScannerOption
 }
 
-func NewArtifact(artifactType, filePath string, c cache.ArtifactCache, opt artifact.Option) (artifact.Artifact, error) {
+func NewArtifact(artifactType types.ArtifactType, filePath string, c cache.ArtifactCache, opt artifact.Option) (artifact.Artifact, error) {
 	var parser sbom.Parser
 	switch artifactType {
-	case string(ArtifactCycloneDX):
-		parser = cyclonedx.New(filePath)
+	case ArtifactCycloneDX:
+		parser = cyclonedx.NewJSON()
 	}
 	return Artifact{
 		filePath:       filepath.Clean(filePath),
-		sbomParser:     parser,
 		cache:          c,
 		artifactOption: opt,
+
+		sbomFormat: artifactType,
+		sbomParser: parser,
 	}, nil
 }
 
@@ -78,19 +82,10 @@ func (a Artifact) Inspect(_ context.Context) (types.ArtifactReference, error) {
 
 	return types.ArtifactReference{
 		Name:    bomID,
-		Type:    a.Type(),
+		Type:    a.sbomFormat,
 		ID:      cacheKey, // use a cache key as pseudo artifact ID
 		BlobIDs: []string{cacheKey},
 	}, nil
-}
-
-func (a Artifact) Type() types.ArtifactType {
-	switch a.sbomParser.Type() {
-	case cyclonedx.FormatCycloneDX:
-		return ArtifactCycloneDX
-	default:
-		return ""
-	}
 }
 
 func (a Artifact) Clean(reference types.ArtifactReference) error {

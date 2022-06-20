@@ -203,7 +203,7 @@ func TestParser_Parse(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			parser := cyclonedx.New(tt.inputFile)
+			parser := cyclonedx.NewJSON()
 			f, err := os.Open(tt.inputFile)
 			require.NoError(t, err)
 

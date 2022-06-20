@@ -13,8 +13,8 @@ var supportedSbomFormats = []string{report.FormatCycloneDX, report.FormatSPDX, r
 
 // SbomOption holds the options for SBOM generation
 type SbomOption struct {
-	ArtifactType string
-	SbomFormat   string
+	ArtifactType string // input format
+	SbomFormat   string // output format
 }
 
 // NewSbomOption is the factory method to return SBOM options
