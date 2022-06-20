@@ -3086,7 +3086,7 @@ sudo yum -y install trivy
 </code></pre></div>
 </div>
 <input id="__tabbed_1_2" name="__tabbed_1" type="radio" /><label for="__tabbed_1_2">RPM</label><div class="tabbed-content">
-<div class="highlight"><pre><span></span><code>rpm -ivh https://github.com/aquasecurity/trivy/releases/download/v0.28.1/trivy_0.28.1_Linux-64bit.rpm
+<div class="highlight"><pre><span></span><code>rpm -ivh https://github.com/aquasecurity/trivy/releases/download/v0.29.0/trivy_0.29.0_Linux-64bit.rpm
 </code></pre></div>
 </div>
 </div>
@@ -3101,8 +3101,8 @@ sudo apt-get install trivy
 </code></pre></div>
 </div>
 <input id="__tabbed_2_2" name="__tabbed_2" type="radio" /><label for="__tabbed_2_2">DEB</label><div class="tabbed-content">
-<div class="highlight"><pre><span></span><code>wget https://github.com/aquasecurity/trivy/releases/download/v0.28.1/trivy_0.28.1_Linux-64bit.deb
-sudo dpkg -i trivy_0.28.1_Linux-64bit.deb
+<div class="highlight"><pre><span></span><code>wget https://github.com/aquasecurity/trivy/releases/download/v0.29.0/trivy_0.29.0_Linux-64bit.deb
+sudo dpkg -i trivy_0.29.0_Linux-64bit.deb
 </code></pre></div>
 </div>
 </div>
@@ -3142,16 +3142,16 @@ sudo dpkg -i trivy_0.28.1_Linux-64bit.deb
 </code></pre></div>
 <h2 id="install-script">Install Script</h2>
 <p>This script downloads Trivy binary based on your OS and architecture.</p>
-<div class="highlight"><pre><span></span><code>curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh <span class="p">|</span> sh -s -- -b /usr/local/bin v0.28.1
+<div class="highlight"><pre><span></span><code>curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh <span class="p">|</span> sh -s -- -b /usr/local/bin v0.29.0
 </code></pre></div>
 <h2 id="binary">Binary</h2>
-<p>Download the archive file for your operating system/architecture from <a href="https://github.com/aquasecurity/trivy/releases/tag/v0.28.1">here</a>. 
+<p>Download the archive file for your operating system/architecture from <a href="https://github.com/aquasecurity/trivy/releases/tag/v0.29.0">here</a>. 
 Unpack the archive, and put the binary somewhere in your <code>$PATH</code> (on UNIX-y systems, /usr/local/bin or the like).
 Make sure it has execution bits turned on.</p>
 <h2 id="from-source">From source</h2>
 <div class="highlight"><pre><span></span><code>mkdir -p <span class="nv">$GOPATH</span>/src/github.com/aquasecurity
 <span class="nb">cd</span> <span class="nv">$GOPATH</span>/src/github.com/aquasecurity
-git clone --depth <span class="m">1</span> --branch v0.28.1 https://github.com/aquasecurity/trivy
+git clone --depth <span class="m">1</span> --branch v0.29.0 https://github.com/aquasecurity/trivy
 <span class="nb">cd</span> trivy/cmd/trivy/
 <span class="nb">export</span> <span class="nv">GO111MODULE</span><span class="o">=</span>on
 go install
@@ -3159,21 +3159,21 @@ go install
 <h2 id="docker">Docker</h2>
 <h3 id="docker-hub">Docker Hub</h3>
 <p>Replace [YOUR_CACHE_DIR] with the cache directory on your machine.</p>
-<div class="highlight"><pre><span></span><code>docker pull aquasec/trivy:0.28.1
+<div class="highlight"><pre><span></span><code>docker pull aquasec/trivy:0.29.0
 </code></pre></div>
 <p>Example:</p>
 <div class="tabbed-set" data-tabs="4:2"><input checked="checked" id="__tabbed_4_1" name="__tabbed_4" type="radio" /><label for="__tabbed_4_1">Linux</label><div class="tabbed-content">
-<div class="highlight"><pre><span></span><code>docker run --rm -v <span class="o">[</span>YOUR_CACHE_DIR<span class="o">]</span>:/root/.cache/ aquasec/trivy:0.28.1 image <span class="o">[</span>YOUR_IMAGE_NAME<span class="o">]</span>
+<div class="highlight"><pre><span></span><code>docker run --rm -v <span class="o">[</span>YOUR_CACHE_DIR<span class="o">]</span>:/root/.cache/ aquasec/trivy:0.29.0 image <span class="o">[</span>YOUR_IMAGE_NAME<span class="o">]</span>
 </code></pre></div>
 </div>
 <input id="__tabbed_4_2" name="__tabbed_4" type="radio" /><label for="__tabbed_4_2">macOS</label><div class="tabbed-content">
-<div class="highlight"><pre><span></span><code>docker run --rm -v <span class="nv">$HOME</span>/Library/Caches:/root/.cache/ aquasec/trivy:0.28.1 image <span class="o">[</span>YOUR_IMAGE_NAME
+<div class="highlight"><pre><span></span><code>docker run --rm -v <span class="nv">$HOME</span>/Library/Caches:/root/.cache/ aquasec/trivy:0.29.0 image <span class="o">[</span>YOUR_IMAGE_NAME
 </code></pre></div>
 </div>
 </div>
 <p>If you would like to scan the image on your host machine, you need to mount <code>docker.sock</code>.</p>
 <div class="highlight"><pre><span></span><code>docker run --rm -v /var/run/docker.sock:/var/run/docker.sock <span class="se">\</span>
-    -v <span class="nv">$HOME</span>/Library/Caches:/root/.cache/ aquasec/trivy:0.28.1 python:3.4-alpine
+    -v <span class="nv">$HOME</span>/Library/Caches:/root/.cache/ aquasec/trivy:0.29.0 python:3.4-alpine
 </code></pre></div>
 <p>Please re-pull latest <code>aquasec/trivy</code> if an error occurred.</p>
 <details>
@@ -3198,11 +3198,11 @@ Total: <span class="m">1</span> <span class="o">(</span>UNKNOWN: <span class="m"
 
 <h3 id="github-container-registry">GitHub Container Registry</h3>
 <p>The same image is hosted on <a href="https://github.com/orgs/aquasecurity/packages/container/package/trivy">GitHub Container Registry</a> as well.</p>
-<div class="highlight"><pre><span></span><code>docker pull ghcr.io/aquasecurity/trivy:0.28.1
+<div class="highlight"><pre><span></span><code>docker pull ghcr.io/aquasecurity/trivy:0.29.0
 </code></pre></div>
 <h3 id="amazon-ecr-public">Amazon ECR Public</h3>
 <p>The same image is hosted on <a href="https://gallery.ecr.aws/aquasecurity/trivy">Amazon ECR Public</a> as well.</p>
-<div class="highlight"><pre><span></span><code>docker pull public.ecr.aws/aquasecurity/trivy:0.28.1
+<div class="highlight"><pre><span></span><code>docker pull public.ecr.aws/aquasecurity/trivy:0.29.0
 </code></pre></div>
 <h2 id="helm">Helm</h2>
 <h3 id="installing-from-the-aqua-chart-repository">Installing from the Aqua Chart Repository</h3>
@@ -3215,7 +3215,7 @@ helm install my-trivy aquasecurity/trivy
 <p>To install the chart with the release name <code>my-release</code>:</p>
 <div class="highlight"><pre><span></span><code>helm install my-release .
 </code></pre></div>
-<p>The command deploys Trivy on the Kubernetes cluster in the default configuration. The <a href="https://github.com/aquasecurity/trivy/tree/v0.28.1/helm/trivy">Parameters</a>
+<p>The command deploys Trivy on the Kubernetes cluster in the default configuration. The <a href="https://github.com/aquasecurity/trivy/tree/v0.29.0/helm/trivy">Parameters</a>
 section lists the parameters that can be configured during installation.</p>
 <h3 id="aws-private-registry-permissions">AWS private registry permissions</h3>
 <p>You may need to grant permissions to allow trivy to pull images from private registry (AWS ECR).</p>

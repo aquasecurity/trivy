@@ -1725,8 +1725,8 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#reconcilation-error" class="md-nav__link">
-    Reconcilation Error
+  <a href="#reconciliation-error" class="md-nav__link">
+    Reconciliation Error
   </a>
   
 </li>
@@ -2842,8 +2842,8 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#reconcilation-error" class="md-nav__link">
-    Reconcilation Error
+  <a href="#reconciliation-error" class="md-nav__link">
+    Reconciliation Error
   </a>
   
 </li>
@@ -2908,9 +2908,9 @@ trivy-operator     trivy-operator-6c9bd97d58-hsz4g          1/1     Running   5 
 <h2 id="crashloopbackoff">CrashLoopBackOff</h2>
 <p>If your pod is in <code>CrashLoopBackOff</code>, it is likely the case that the pod cannot be scheduled on the Kubernetes node that it is trying to schedule on.
 In this case, you want to investigate further whether there is an issue with the node. It could for instance be the case that the node does not have sufficient resources.</p>
-<h2 id="reconcilation-error">Reconcilation Error</h2>
+<h2 id="reconciliation-error">Reconciliation Error</h2>
 <p>It could happen that the pod appears to be running normally but does not reconcile the resources inside of your Kubernetes cluster.</p>
-<p>Check the logs for reconcilation errors:
+<p>Check the logs for reconciliation errors:
 <div class="highlight"><pre><span></span><code>kubectl logs deployment/trivy-operator -n trivy-system
 </code></pre></div></p>
 <p>If this is the case, the Trivy Operator likely does not have the right configurations to access your resource. </p>
