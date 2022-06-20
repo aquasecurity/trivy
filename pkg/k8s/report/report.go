@@ -8,9 +8,9 @@ import (
 	"golang.org/x/exp/maps"
 	"golang.org/x/xerrors"
 
-	ftypes "github.com/aquasecurity/fanal/types"
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy-kubernetes/pkg/artifacts"
+	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 
 	"github.com/aquasecurity/trivy/pkg/types"
 )
