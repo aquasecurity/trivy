@@ -30,20 +30,12 @@ func FromString(purl string) (*ftypes.Package, error) {
 	if err != nil {
 		return nil, xerrors.Errorf("failed to parse purl: %w", err)
 	}
-	pkg, err := Package(p)
-	if err != nil {
-		return nil, xerrors.Errorf("failed to convert package: %w", err)
-	}
 
-	return pkg, nil
-}
-
-func Package(purl packageurl.PackageURL) (*ftypes.Package, error) {
 	pkg := &ftypes.Package{
-		Name:    purl.Name,
-		Version: purl.Version,
+		Name:    p.Name,
+		Version: p.Version,
 	}
-	for _, q := range purl.Qualifiers {
+	for _, q := range p.Qualifiers {
 		switch q.Key {
 		case "arch":
 			pkg.Arch = q.Value
@@ -52,22 +44,26 @@ func Package(purl packageurl.PackageURL) (*ftypes.Package, error) {
 		}
 	}
 
-	v := purl.Version
-	if purl.Type == packageurl.TypeRPM {
-		rpmVer := version.NewVersion(v)
+	if p.Type == packageurl.TypeRPM {
+		rpmVer := version.NewVersion(p.Version)
 		pkg.Release = rpmVer.Release()
 		pkg.Version = rpmVer.Version()
 		pkg.Epoch = rpmVer.Epoch()
 	}
-	if purl.Namespace == "" || purl.Type == packageurl.TypeRPM || purl.Type == packageurl.TypeDebian || purl.Type == string(analyzer.TypeApk) {
+
+	// TODO: replace with packageurl.TypeApk once they add it.
+	// Return of packages without Namespace.
+	// OS packages does not have namespace.
+	if p.Namespace == "" || p.Type == packageurl.TypeRPM || p.Type == packageurl.TypeDebian || p.Type == string(analyzer.TypeApk) {
 		return pkg, nil
 	}
 
-	if purl.Type == packageurl.TypeMaven {
-		purl.Namespace = strings.ReplaceAll(purl.Namespace, "/", ":")
-		pkg.Name = strings.Join([]string{purl.Namespace, purl.Name}, ":")
+	if p.Type == packageurl.TypeMaven {
+		// Maven package separate ":"
+		// e.g. org.springframework:spring-core
+		pkg.Name = strings.Join([]string{p.Namespace, p.Name}, ":")
 	} else {
-		pkg.Name = strings.Join([]string{purl.Namespace, purl.Name}, "/")
+		pkg.Name = strings.Join([]string{p.Namespace, p.Name}, "/")
 	}
 
 	return pkg, nil
@@ -99,7 +95,7 @@ func NewPackageURL(t string, metadata types.Metadata, pkg ftypes.Package) (Packa
 
 	ptype := purlType(t)
 	name := pkg.Name
-	version := utils.FormatVersion(pkg)
+	ver := utils.FormatVersion(pkg)
 	namespace := ""
 
 	switch ptype {
@@ -136,7 +132,7 @@ func NewPackageURL(t string, metadata types.Metadata, pkg ftypes.Package) (Packa
 	}
 
 	return PackageURL{
-		PackageURL: *packageurl.NewPackageURL(ptype, namespace, name, version, qualifiers, ""),
+		PackageURL: *packageurl.NewPackageURL(ptype, namespace, name, ver, qualifiers, ""),
 		FilePath:   pkg.FilePath,
 	}, nil
 }

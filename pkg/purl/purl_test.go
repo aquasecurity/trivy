@@ -311,6 +311,10 @@ func TestFromString(t *testing.T) {
 			},
 		},
 		{
+			name: "happy path for rpm",
+			purl: "pkg:rpm/redhat/containers-common@0.1.14",
+		},
+		{
 			name: "bad rpm",
 			purl: "pkg:rpm/redhat/a--@1.0.0",
 			want: ftypes.Package{
