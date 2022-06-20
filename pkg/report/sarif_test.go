@@ -267,15 +267,15 @@ func TestToPathUri(t *testing.T) {
 	}{
 		{
 			input:  "almalinux@sha256:08042694fffd61e6a0b3a22dadba207c8937977915ff6b1879ad744fd6638837",
-			output: "almalinux",
+			output: "library/almalinux",
 		},
 		{
 			input:  "alpine:latest (alpine 3.13.4)",
-			output: "alpine",
+			output: "library/alpine",
 		},
 		{
 			input:  "docker.io/my-organization/my-app:2c6912aee7bde44b84d810aed106ca84f40e2e29",
-			output: "docker.io/my-organization/my-app",
+			output: "my-organization/my-app",
 		},
 	}
 
