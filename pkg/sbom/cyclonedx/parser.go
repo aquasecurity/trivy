@@ -7,12 +7,11 @@ import (
 	"strings"
 
 	cdx "github.com/CycloneDX/cyclonedx-go"
-	"github.com/aquasecurity/trivy/pkg/purl"
 	"github.com/samber/lo"
-
 	"golang.org/x/xerrors"
 
 	ftypes "github.com/aquasecurity/fanal/types"
+	"github.com/aquasecurity/trivy/pkg/purl"
 	"github.com/aquasecurity/trivy/pkg/sbom"
 )
 
