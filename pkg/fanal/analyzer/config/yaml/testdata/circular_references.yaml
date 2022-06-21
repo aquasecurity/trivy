@@ -1,0 +1,3 @@
+circular: &circular
+  name:
+    <<: *circular

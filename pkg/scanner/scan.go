@@ -3,21 +3,20 @@ package scanner
 import (
 	"context"
 
-	"github.com/google/wire"
-	"golang.org/x/xerrors"
-
-	"github.com/aquasecurity/fanal/artifact"
-	aimage "github.com/aquasecurity/fanal/artifact/image"
-	flocal "github.com/aquasecurity/fanal/artifact/local"
-	"github.com/aquasecurity/fanal/artifact/remote"
-	"github.com/aquasecurity/fanal/image"
-	ftypes "github.com/aquasecurity/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/artifact/sbom"
+	"github.com/aquasecurity/trivy/pkg/fanal/artifact"
+	aimage "github.com/aquasecurity/trivy/pkg/fanal/artifact/image"
+	flocal "github.com/aquasecurity/trivy/pkg/fanal/artifact/local"
+	"github.com/aquasecurity/trivy/pkg/fanal/artifact/remote"
+	"github.com/aquasecurity/trivy/pkg/fanal/image"
+	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/report"
 	"github.com/aquasecurity/trivy/pkg/rpc/client"
 	"github.com/aquasecurity/trivy/pkg/scanner/local"
 	"github.com/aquasecurity/trivy/pkg/types"
+	"github.com/google/wire"
+	"golang.org/x/xerrors"
 )
 
 ///////////////

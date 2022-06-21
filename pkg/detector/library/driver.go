@@ -8,7 +8,6 @@ import (
 
 	"golang.org/x/xerrors"
 
-	ftypes "github.com/aquasecurity/fanal/types"
 	"github.com/aquasecurity/trivy-db/pkg/db"
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/vulnerability"
@@ -16,6 +15,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/detector/library/compare/npm"
 	"github.com/aquasecurity/trivy/pkg/detector/library/compare/pep440"
 	"github.com/aquasecurity/trivy/pkg/detector/library/compare/rubygems"
+	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
 
@@ -75,7 +75,7 @@ func (d *Driver) Type() string {
 // If "ecosystem" is pip, it looks for buckets with "pip::" and gets security advisories from those buckets.
 // It allows us to add a new data source with the ecosystem prefix (e.g. pip::new-data-source)
 // and detect vulnerabilities without specifying a specific bucket name.
-func (d *Driver) DetectVulnerabilities(pkgName, pkgVer string) ([]types.DetectedVulnerability, error) {
+func (d *Driver) DetectVulnerabilities(pkgID, pkgName, pkgVer string) ([]types.DetectedVulnerability, error) {
 	// e.g. "pip::", "npm::"
 	prefix := fmt.Sprintf("%s::", d.ecosystem)
 	advisories, err := d.dbc.GetAdvisories(prefix, vulnerability.NormalizePkgName(d.ecosystem, pkgName))
@@ -91,6 +91,7 @@ func (d *Driver) DetectVulnerabilities(pkgName, pkgVer string) ([]types.Detected
 
 		vuln := types.DetectedVulnerability{
 			VulnerabilityID:  adv.VulnerabilityID,
+			PkgID:            pkgID,
 			PkgName:          pkgName,
 			InstalledVersion: pkgVer,
 			FixedVersion:     createFixedVersions(adv),

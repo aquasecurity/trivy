@@ -186,7 +186,7 @@
             "URL": "https://github.com/advisories?query=type%3Areviewed+ecosystem%3Arubygems"
           },
           "Title": "rubygem-activesupport: potentially unintended unmarshalling of user-provided objects in MemCacheStore and RedisCacheStore",
-          "Description": "A deserialization of untrusted data vulnernerability exists in rails \u003c 5.2.4.3, rails \u003c 6.0.3.1 that can allow an attacker to unmarshal user-provided objects in MemCacheStore and RedisCacheStore potentially resulting in an RCE.",
+          "Description": "A deserialization of untrusted data vulnerability exists in rails \u003c 5.2.4.3, rails \u003c 6.0.3.1 that can allow an attacker to unmarshal user-provided objects in MemCacheStore and RedisCacheStore potentially resulting in an RCE.",
           "Severity": "HIGH",
           "CweIDs": [
             "CWE-502"

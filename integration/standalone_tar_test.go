@@ -240,7 +240,7 @@ func TestTar(t *testing.T) {
 			golden: "testdata/mariner-1.0.json.golden",
 		},
 		{
-			name: "buxybox with Cargo.lock integration",
+			name: "busybox with Cargo.lock integration",
 			testArgs: args{
 				Format: "json",
 				Input:  "testdata/fixtures/images/busybox-with-lockfile.tar.gz",

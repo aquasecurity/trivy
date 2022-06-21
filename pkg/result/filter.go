@@ -7,14 +7,15 @@ import (
 	"os"
 	"sort"
 	"strings"
+	"time"
 
 	"github.com/open-policy-agent/opa/rego"
 	"golang.org/x/exp/maps"
 	"golang.org/x/exp/slices"
 	"golang.org/x/xerrors"
 
-	ftypes "github.com/aquasecurity/fanal/types"
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
+	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
@@ -210,12 +211,37 @@ func getIgnoredIDs(ignoreFile string) []string {
 		if strings.HasPrefix(line, "#") || line == "" {
 			continue
 		}
-		ignoredIDs = append(ignoredIDs, line)
+		// Process all fields
+		fields := strings.Fields(line)
+		if len(fields) > 1 {
+			exp, err := getExpirationDate(fields)
+			if err != nil {
+				log.Logger.Warnf("Error while parsing expiration date in .trivyignore file: %s", err)
+				continue
+			}
+			if !exp.IsZero() {
+				now := time.Now()
+				if exp.Before(now) {
+					continue
+				}
+			}
+		}
+		ignoredIDs = append(ignoredIDs, fields[0])
 	}
 
 	log.Logger.Debugf("These IDs will be ignored: %q", ignoredIDs)
 
 	return ignoredIDs
+}
+
+func getExpirationDate(fields []string) (time.Time, error) {
+	for _, field := range fields {
+		if strings.HasPrefix(field, "exp:") {
+			return time.Parse("2006-01-02", strings.TrimPrefix(field, "exp:"))
+		}
+	}
+
+	return time.Time{}, nil
 }
 
 func shouldOverwrite(old, new types.DetectedVulnerability) bool {

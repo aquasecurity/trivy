@@ -16,10 +16,10 @@ import (
 	"github.com/stretchr/testify/require"
 	fake "k8s.io/utils/clock/testing"
 
-	fos "github.com/aquasecurity/fanal/analyzer/os"
-	ftypes "github.com/aquasecurity/fanal/types"
 	dtypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/vulnerability"
+	fos "github.com/aquasecurity/trivy/pkg/fanal/analyzer/os"
+	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/report"
 	"github.com/aquasecurity/trivy/pkg/report/cyclonedx"
 	"github.com/aquasecurity/trivy/pkg/types"

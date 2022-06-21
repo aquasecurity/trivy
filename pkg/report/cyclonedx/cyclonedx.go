@@ -13,8 +13,8 @@ import (
 	"golang.org/x/xerrors"
 	"k8s.io/utils/clock"
 
-	ftypes "github.com/aquasecurity/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/artifact/sbom"
+	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/purl"
 	"github.com/aquasecurity/trivy/pkg/sbom/cyclonedx"
 	"github.com/aquasecurity/trivy/pkg/scanner/utils"

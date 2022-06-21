@@ -6,7 +6,7 @@ import (
 
 	"github.com/aquasecurity/trivy/pkg/report"
 
-	ftypes "github.com/aquasecurity/fanal/types"
+	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 
 	"github.com/aquasecurity/trivy/pkg/types"
 	"github.com/stretchr/testify/assert"

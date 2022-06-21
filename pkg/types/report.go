@@ -5,7 +5,7 @@ import (
 
 	v1 "github.com/google/go-containerregistry/pkg/v1" // nolint: goimports
 
-	ftypes "github.com/aquasecurity/fanal/types"
+	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 )
 
 // Report represents a scan result
@@ -89,7 +89,7 @@ func (s MisconfSummary) Empty() bool {
 	return s.Successes == 0 && s.Failures == 0 && s.Exceptions == 0
 }
 
-// Failed returns whether the result includes any vulnerabilities or misconfigurations
+// Failed returns whether the result includes any vulnerabilities, misconfigurations or secrets
 func (results Results) Failed() bool {
 	for _, r := range results {
 		if len(r.Vulnerabilities) > 0 {
@@ -99,6 +99,9 @@ func (results Results) Failed() bool {
 			if m.Status == StatusFailure {
 				return true
 			}
+		}
+		if len(r.Secrets) > 0 {
+			return true
 		}
 	}
 	return false

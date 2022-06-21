@@ -7,7 +7,7 @@ import (
 	"github.com/google/wire"
 	"golang.org/x/xerrors"
 
-	"github.com/aquasecurity/fanal/cache"
+	"github.com/aquasecurity/trivy/pkg/fanal/cache"
 	"github.com/aquasecurity/trivy/pkg/rpc"
 	"github.com/aquasecurity/trivy/pkg/scanner"
 	"github.com/aquasecurity/trivy/pkg/scanner/local"
@@ -53,7 +53,7 @@ type CacheServer struct {
 	cache cache.Cache
 }
 
-// NewCacheServer is the facotry method for cacheServer
+// NewCacheServer is the factory method for cacheServer
 func NewCacheServer(c cache.Cache) *CacheServer {
 	return &CacheServer{cache: c}
 }

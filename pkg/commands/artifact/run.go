@@ -6,20 +6,15 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/hashicorp/go-multierror"
-	"github.com/urfave/cli/v2"
-	"golang.org/x/exp/slices"
-	"golang.org/x/xerrors"
-
-	"github.com/aquasecurity/fanal/analyzer"
-	"github.com/aquasecurity/fanal/analyzer/config"
-	"github.com/aquasecurity/fanal/analyzer/secret"
-	"github.com/aquasecurity/fanal/artifact"
-	"github.com/aquasecurity/fanal/cache"
-	ftypes "github.com/aquasecurity/fanal/types"
 	"github.com/aquasecurity/trivy-db/pkg/db"
 	tcache "github.com/aquasecurity/trivy/pkg/cache"
 	"github.com/aquasecurity/trivy/pkg/commands/operation"
+	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
+	"github.com/aquasecurity/trivy/pkg/fanal/analyzer/config"
+	"github.com/aquasecurity/trivy/pkg/fanal/analyzer/secret"
+	"github.com/aquasecurity/trivy/pkg/fanal/artifact"
+	"github.com/aquasecurity/trivy/pkg/fanal/cache"
+	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/module"
 	pkgReport "github.com/aquasecurity/trivy/pkg/report"
@@ -28,6 +23,10 @@ import (
 	"github.com/aquasecurity/trivy/pkg/scanner"
 	"github.com/aquasecurity/trivy/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/utils"
+	"github.com/hashicorp/go-multierror"
+	"github.com/urfave/cli/v2"
+	"golang.org/x/exp/slices"
+	"golang.org/x/xerrors"
 )
 
 type ArtifactType string
@@ -78,7 +77,7 @@ type Runner interface {
 	ScanFilesystem(ctx context.Context, opt Option) (types.Report, error)
 	// ScanRootfs scans rootfs
 	ScanRootfs(ctx context.Context, opt Option) (types.Report, error)
-	// ScanRepositroy scans repository
+	// ScanRepository scans repository
 	ScanRepository(ctx context.Context, opt Option) (types.Report, error)
 	// ScanSBOM scans CycloneDX
 	ScanSBOM(ctx context.Context, opt Option) (types.Report, error)
@@ -263,6 +262,7 @@ func (r *runner) Report(opt Option, report types.Report) error {
 		AppVersion:         opt.GlobalOption.AppVersion,
 		Format:             opt.Format,
 		Output:             opt.Output,
+		Tree:               opt.DependencyTree,
 		Severities:         opt.Severities,
 		OutputTemplate:     opt.Template,
 		IncludeNonFailures: opt.IncludeNonFailures,

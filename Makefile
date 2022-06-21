@@ -1,4 +1,4 @@
-VERSION := $(shell git describe --tags)
+VERSION := $(shell git describe --tags --always)
 LDFLAGS := -ldflags "-s -w -X=main.version=$(VERSION)"
 
 GOPATH := $(shell go env GOPATH)
@@ -70,7 +70,7 @@ integration/testdata/fixtures/images/*.tar.gz: $(GOBIN)/crane
 # Run integration tests
 .PHONY: test-integration
 test-integration: integration/testdata/fixtures/images/*.tar.gz
-	go test -v -tags=integration ./integration/...
+	go test -v -tags=integration ./integration/... ./pkg/fanal/test/integration/...
 
 # Run WASM integration tests
 .PHONY: test-module-integration
