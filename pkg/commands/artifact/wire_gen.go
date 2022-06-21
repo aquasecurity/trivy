@@ -8,6 +8,7 @@ package artifact
 
 import (
 	"context"
+
 	"github.com/aquasecurity/fanal/applier"
 	"github.com/aquasecurity/fanal/artifact"
 	image2 "github.com/aquasecurity/fanal/artifact/image"
