@@ -1,6 +1,6 @@
 package types
 
-import ftypes "github.com/aquasecurity/fanal/types"
+import ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 
 // DetectedMisconfiguration holds detected misconfigurations
 type DetectedMisconfiguration struct {

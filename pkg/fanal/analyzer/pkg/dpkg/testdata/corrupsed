@@ -1,0 +1,87 @@
+Package: libpam-runtime
+Status: install ok installed
+Priority: required
+Section: admin
+Installed-Size: 300
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Architecture: all
+Multi-Arch: foreign
+Source: pam
+Version: 1.1.8-3.1ubuntu3
+Replaces: libpam0g-dev, libpam0g-util
+Depends: debconf (>= 0.5) | debconf-2.0, debconf (>= 1.5.19) | cdebconf, libpam-modules (>= 1.0.1-6)
+Conflicts: libpam0g-util
+Conffiles:
+/etc/pam.conf 87fc76f18e98ee7d3848f6b81b3391e5
+/etc/pam.d/other 31aa7f2181889ffb00b87df4126d1701
+Description: Runtime support for the PAM library
+Contains configuration files and  directories required for
+authentication  to work on Debian systems.  This package is required
+on almost all installations.
+Homepage: http://pam.sourceforge.net/
+Original-Maintainer: Steve Langasek <vorlon@debian.org>
+
+Package: libpam-modules-bin
+Status: install ok installed
+Priority: required
+Section: admin
+Installed-Size: 299
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Architecture: amd64
+Multi-Arch: foreign
+Source: pam
+Version: 1.1.8-3.1ubuntu3
+Replaces: libpam-modules (<< 1.1.3-8)
+Depends: libaudit1 (>= 1:2.2.1), libc6 (>= 2.14), libpam0g (>= 0.99.7.1), libselinux1 (>= 1.32)
+Description: Pluggable Authentication Modules for PAM - helper binaries
+This package contains helper binaries used by the standard set of PAM
+modules in the libpam-modules package.
+Homepage: http://pam.sourceforge.net/
+Original-Maintainer: Steve Langasek <vorlon@debian.org>
+
+Package: makedev
+Status: install ok installed
+Priority: required
+Section: admin
+Installed-Size: 125
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Architecture: all
+Multi-Arch: foreign
+Version: 2.3.1-93ubuntu1
+Depends: base-passwd (>= 3.0.4)
+Conflicts: udev (<= 0.024-7)
+Description: creates device files in /dev
+The MAKEDEV executable is used to create device files, often in /dev.
+.
+Device files are special files through which applications can interact
+with hardware.
+.
+This package is not necessary for most modern Linux systems, where the udev
+subsystem provides a more dynamic mechanism for device file management.
+Original-Maintainer: Debian QA Group <packages@qa.debian.org>
+
+Package: brokenPackageWithNoVersionThatShouldGetThrownOut
+
+Package: libgcc1
+Status: install ok installed
+Priority: required
+Section: libs
+Installed-Size: 131
+Maintainer: Ubuntu Core developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Architecture: amd64
+Multi-Arch: same
+Source: gcc-5 (5.1.1-12ubuntu1)
+Version: 1:5.1.1-12ubuntu1
+Depends: gcc-5-base (= 5.1.1-12ubuntu1), libc6 (>= 2.14)
+Pre-Depends: multiarch-support
+Breaks: gcc-4.3 (<< 4.3.6-1), gcc-4.4 (<< 4.4.6-4), gcc-4.5 (<< 4.5.3-2)
+Description: GCC support library
+Shared version of the support library, a library of internal subroutines
+that GCC uses to overcome shortcomings of particular machines, or
+special needs for some languages.
+Homepage: http://gcc.gnu.org/
+Original-Maintainer: Debian GCC Maintainers <debian-gcc@lists.debian.org>
+
+Package: invalidpkg
+Source: invalidpkg-5 (5.#)
+Version: 1:5.#

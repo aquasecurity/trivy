@@ -4,7 +4,7 @@
 package server
 
 import (
-	"github.com/aquasecurity/fanal/cache"
+	"github.com/aquasecurity/trivy/pkg/fanal/cache"
 	"github.com/google/wire"
 )
 
