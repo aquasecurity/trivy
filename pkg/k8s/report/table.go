@@ -12,9 +12,26 @@ import (
 )
 
 type TableWriter struct {
-	Report     string
-	Output     io.Writer
-	Severities []dbTypes.Severity
+	Report        string
+	Output        io.Writer
+	Severities    []dbTypes.Severity
+	ColumnHeading []string
+}
+
+const (
+	NamespaceColumn         = "Namespace"
+	ResourceColumn          = "Resource"
+	VulnerabilitiesColumn   = "Vulnerabilities"
+	MisconfigurationsColumn = "Misconfigurations"
+	SecretsColumn           = "Secrets"
+	RbacAssessmentColumn    = "RBAC Assessment"
+)
+
+func WorkloadColumns() []string {
+	return []string{VulnerabilitiesColumn, MisconfigurationsColumn, SecretsColumn}
+}
+func RoleColumns() []string {
+	return []string{RbacAssessmentColumn}
 }
 
 func (tw TableWriter) Write(report Report) error {
@@ -38,7 +55,7 @@ func (tw TableWriter) Write(report Report) error {
 			}
 		}
 	case summaryReport:
-		writer := NewSummaryWriter(tw.Output, tw.Severities)
+		writer := NewSummaryWriter(tw.Output, tw.Severities, tw.ColumnHeading)
 		return writer.Write(report)
 	default:
 		return xerrors.Errorf(`report %q not supported. Use "summary" or "all"`, tw.Report)
