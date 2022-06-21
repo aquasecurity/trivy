@@ -6,6 +6,11 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/hashicorp/go-multierror"
+	"github.com/urfave/cli/v2"
+	"golang.org/x/exp/slices"
+	"golang.org/x/xerrors"
+
 	"github.com/aquasecurity/trivy-db/pkg/db"
 	tcache "github.com/aquasecurity/trivy/pkg/cache"
 	"github.com/aquasecurity/trivy/pkg/commands/operation"
@@ -23,10 +28,6 @@ import (
 	"github.com/aquasecurity/trivy/pkg/scanner"
 	"github.com/aquasecurity/trivy/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/utils"
-	"github.com/hashicorp/go-multierror"
-	"github.com/urfave/cli/v2"
-	"golang.org/x/exp/slices"
-	"golang.org/x/xerrors"
 )
 
 type ArtifactType string

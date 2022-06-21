@@ -3,6 +3,9 @@ package scanner
 import (
 	"context"
 
+	"github.com/google/wire"
+	"golang.org/x/xerrors"
+
 	"github.com/aquasecurity/trivy/pkg/artifact/sbom"
 	"github.com/aquasecurity/trivy/pkg/fanal/artifact"
 	aimage "github.com/aquasecurity/trivy/pkg/fanal/artifact/image"
@@ -15,8 +18,6 @@ import (
 	"github.com/aquasecurity/trivy/pkg/rpc/client"
 	"github.com/aquasecurity/trivy/pkg/scanner/local"
 	"github.com/aquasecurity/trivy/pkg/types"
-	"github.com/google/wire"
-	"golang.org/x/xerrors"
 )
 
 ///////////////
