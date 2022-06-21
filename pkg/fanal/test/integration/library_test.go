@@ -41,60 +41,60 @@ type testCase struct {
 	wantApplicationFile string
 }
 
-var testCases = []testCase{
+var tests = []testCase{
 	{
 		name:            "happy path, alpine:3.10",
 		remoteImageName: "ghcr.io/aquasecurity/trivy-test-images:alpine-310",
-		imageFile:       "testdata/fixtures/alpine-310.tar.gz",
+		imageFile:       "../../../../integration/testdata/fixtures/images/alpine-310.tar.gz",
 		wantOS:          types.OS{Name: "3.10.2", Family: "alpine"},
 	},
 	{
 		name:            "happy path, amazonlinux:2",
 		remoteImageName: "ghcr.io/aquasecurity/trivy-test-images:amazon-2",
-		imageFile:       "testdata/fixtures/amazon-2.tar.gz",
+		imageFile:       "../../../../integration/testdata/fixtures/images/amazon-2.tar.gz",
 		wantOS:          types.OS{Name: "2 (Karoo)", Family: "amazon"},
 	},
 	{
 		name:            "happy path, debian:buster",
 		remoteImageName: "ghcr.io/aquasecurity/trivy-test-images:debian-buster",
-		imageFile:       "testdata/fixtures/debian-buster.tar.gz",
+		imageFile:       "../../../../integration/testdata/fixtures/images/debian-buster.tar.gz",
 		wantOS:          types.OS{Name: "10.1", Family: "debian"},
 	},
 	{
 		name:            "happy path, photon:3.0",
 		remoteImageName: "ghcr.io/aquasecurity/trivy-test-images:photon-30",
-		imageFile:       "testdata/fixtures/photon-30.tar.gz",
+		imageFile:       "../../../../integration/testdata/fixtures/images/photon-30.tar.gz",
 		wantOS:          types.OS{Name: "3.0", Family: "photon"},
 	},
 	{
 		name:            "happy path, registry.redhat.io/ubi7",
 		remoteImageName: "ghcr.io/aquasecurity/trivy-test-images:ubi-7",
-		imageFile:       "testdata/fixtures/ubi-7.tar.gz",
+		imageFile:       "../../../../integration/testdata/fixtures/images/ubi-7.tar.gz",
 		wantOS:          types.OS{Name: "7.7", Family: "redhat"},
 	},
 	{
 		name:            "happy path, opensuse leap 15.1",
 		remoteImageName: "ghcr.io/aquasecurity/trivy-test-images:opensuse-leap-151",
-		imageFile:       "testdata/fixtures/opensuse-leap-151.tar.gz",
+		imageFile:       "../../../../integration/testdata/fixtures/images/opensuse-leap-151.tar.gz",
 		wantOS:          types.OS{Name: "15.1", Family: "opensuse.leap"},
 	},
 	{
 		// from registry.suse.com/suse/sle15:15.3.17.8.16
 		name:            "happy path, suse 15.3 (NDB)",
 		remoteImageName: "ghcr.io/aquasecurity/trivy-test-images:suse-15.3_ndb",
-		imageFile:       "testdata/fixtures/suse-15.3_ndb.tar.gz",
+		imageFile:       "../../../../integration/testdata/fixtures/images/suse-15.3_ndb.tar.gz",
 		wantOS:          types.OS{Name: "15.3", Family: "suse linux enterprise server"},
 	},
 	{
 		name:            "happy path, Fedora 35",
 		remoteImageName: "ghcr.io/aquasecurity/trivy-test-images:fedora-35",
-		imageFile:       "testdata/fixtures/fedora-35.tar.gz",
+		imageFile:       "../../../../integration/testdata/fixtures/images/fedora-35.tar.gz",
 		wantOS:          types.OS{Name: "35", Family: "fedora"},
 	},
 	{
 		name:                "happy path, vulnimage with lock files",
 		remoteImageName:     "ghcr.io/aquasecurity/trivy-test-images:vulnimage",
-		imageFile:           "testdata/fixtures/vulnimage.tar.gz",
+		imageFile:           "../../../../integration/testdata/fixtures/images/vulnimage.tar.gz",
 		wantOS:              types.OS{Name: "3.7.1", Family: "alpine"},
 		wantApplicationFile: "testdata/goldens/vuln-image1.2.3.expectedlibs.golden",
 		wantPkgsFromCmds:    "testdata/goldens/vuln-image1.2.3.expectedpkgsfromcmds.golden",
@@ -102,27 +102,28 @@ var testCases = []testCase{
 }
 
 func TestFanal_Library_DockerLessMode(t *testing.T) {
-	for _, tc := range testCases {
-		tc := tc
-		t.Run(tc.name, func(t *testing.T) {
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 			ctx := context.Background()
 			d := t.TempDir()
 
 			c, err := cache.NewFSCache(d)
-			require.NoError(t, err, tc.name)
+			require.NoError(t, err, tt.name)
 
 			cli, err := client.NewClientWithOpts(client.FromEnv, client.WithAPIVersionNegotiation())
-			require.NoError(t, err, tc.name)
+			require.NoError(t, err)
 
 			// remove existing Image if any
-			_, _ = cli.ImageRemove(ctx, tc.remoteImageName, dtypes.ImageRemoveOptions{
+			_, _ = cli.ImageRemove(ctx, tt.remoteImageName, dtypes.ImageRemoveOptions{
 				Force:         true,
 				PruneChildren: true,
 			})
 
-			img, cleanup, err := image.NewContainerImage(ctx, tc.remoteImageName, types.DockerOption{})
-			require.NoError(t, err, tc.name)
+			// Enable only registry scanning
+			img, cleanup, err := image.NewContainerImage(ctx, tt.remoteImageName, types.DockerOption{},
+				image.DisableDockerd(), image.DisablePodman(), image.DisableContainerd())
+			require.NoError(t, err)
 			defer cleanup()
 
 			ar, err := aimage.NewArtifact(img, c, artifact.Option{})
@@ -132,20 +133,18 @@ func TestFanal_Library_DockerLessMode(t *testing.T) {
 
 			// run tests twice, one without cache and with cache
 			for i := 1; i <= 2; i++ {
-				runChecks(t, ctx, ar, applier, tc)
+				runChecks(t, ctx, ar, applier, tt)
 			}
 
 			// clear Cache
-			require.NoError(t, c.Clear(), tc.name)
+			require.NoError(t, c.Clear())
 		})
 	}
 }
 
 func TestFanal_Library_DockerMode(t *testing.T) {
-	for _, tc := range testCases {
-		tc := tc
-		t.Run(tc.name, func(t *testing.T) {
-			t.Parallel()
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
 			ctx := context.Background()
 			d := t.TempDir()
 
@@ -153,22 +152,21 @@ func TestFanal_Library_DockerMode(t *testing.T) {
 			require.NoError(t, err)
 
 			cli, err := client.NewClientWithOpts(client.FromEnv, client.WithAPIVersionNegotiation())
-			require.NoError(t, err, tc.name)
+			require.NoError(t, err, tt.name)
 
-			testfile, err := os.Open(tc.imageFile)
+			testfile, err := os.Open(tt.imageFile)
 			require.NoError(t, err)
 
 			// load image into docker engine
 			resp, err := cli.ImageLoad(ctx, testfile, true)
-			require.NoError(t, err, tc.name)
-			io.Copy(ioutil.Discard, resp.Body)
+			require.NoError(t, err, tt.name)
+			_, err = io.Copy(ioutil.Discard, resp.Body)
+			require.NoError(t, err, tt.name)
 
-			// tag our image to something unique
-			err = cli.ImageTag(ctx, tc.remoteImageName, tc.imageFile)
-			require.NoError(t, err, tc.name)
-
-			img, cleanup, err := image.NewContainerImage(ctx, tc.imageFile, types.DockerOption{})
-			require.NoError(t, err, tc.name)
+			// Enable only dockerd scanning
+			img, cleanup, err := image.NewContainerImage(ctx, tt.remoteImageName, types.DockerOption{},
+				image.DisablePodman(), image.DisableContainerd(), image.DisableRemote())
+			require.NoError(t, err, tt.name)
 			defer cleanup()
 
 			ar, err := aimage.NewArtifact(img, c, artifact.Option{})
@@ -178,34 +176,27 @@ func TestFanal_Library_DockerMode(t *testing.T) {
 
 			// run tests twice, one without cache and with cache
 			for i := 1; i <= 2; i++ {
-				runChecks(t, ctx, ar, applier, tc)
+				runChecks(t, ctx, ar, applier, tt)
 			}
 
 			// clear Cache
-			require.NoError(t, c.Clear(), tc.name)
+			require.NoError(t, c.Clear(), tt.name)
 
-			// remove Image
-			_, err = cli.ImageRemove(ctx, tc.imageFile, dtypes.ImageRemoveOptions{
+			_, err = cli.ImageRemove(ctx, tt.remoteImageName, dtypes.ImageRemoveOptions{
 				Force:         true,
 				PruneChildren: true,
 			})
-			assert.NoError(t, err, tc.name)
-			_, err = cli.ImageRemove(ctx, tc.remoteImageName, dtypes.ImageRemoveOptions{
-				Force:         true,
-				PruneChildren: true,
-			})
-			assert.NoError(t, err, tc.name)
+			assert.NoError(t, err, tt.name)
 
 			// clear Cache
-			require.NoError(t, c.Clear(), tc.name)
+			require.NoError(t, c.Clear(), tt.name)
 		})
 	}
 }
 
 func TestFanal_Library_TarMode(t *testing.T) {
-	for _, tc := range testCases {
-		tc := tc
-		t.Run(tc.name, func(t *testing.T) {
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 			ctx := context.Background()
 			d := t.TempDir()
@@ -213,18 +204,18 @@ func TestFanal_Library_TarMode(t *testing.T) {
 			c, err := cache.NewFSCache(d)
 			require.NoError(t, err)
 
-			img, err := image.NewArchiveImage(tc.imageFile)
-			require.NoError(t, err, tc.name)
+			img, err := image.NewArchiveImage(tt.imageFile)
+			require.NoError(t, err, tt.name)
 
 			ar, err := aimage.NewArtifact(img, c, artifact.Option{})
 			require.NoError(t, err)
 
 			applier := applier.NewApplier(c)
 
-			runChecks(t, ctx, ar, applier, tc)
+			runChecks(t, ctx, ar, applier, tt)
 
 			// clear Cache
-			require.NoError(t, c.Clear(), tc.name)
+			require.NoError(t, c.Clear(), tt.name)
 		})
 	}
 }

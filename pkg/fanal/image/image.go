@@ -11,9 +11,51 @@ import (
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 )
 
-func NewContainerImage(ctx context.Context, imageName string, option types.DockerOption) (types.Image, func(), error) {
-	var errs error
+type options struct {
+	dockerd    bool
+	podman     bool
+	containerd bool
+	remote     bool
+}
 
+type option func(*options)
+
+func DisableDockerd() option {
+	return func(opts *options) {
+		opts.dockerd = false
+	}
+}
+
+func DisablePodman() option {
+	return func(opts *options) {
+		opts.podman = false
+	}
+}
+
+func DisableContainerd() option {
+	return func(opts *options) {
+		opts.containerd = false
+	}
+}
+
+func DisableRemote() option {
+	return func(opts *options) {
+		opts.remote = false
+	}
+}
+
+func NewContainerImage(ctx context.Context, imageName string, option types.DockerOption, opts ...option) (types.Image, func(), error) {
+	o := &options{
+		dockerd:    true,
+		podman:     true,
+		containerd: true,
+		remote:     true,
+	}
+	for _, opt := range opts {
+		opt(o)
+	}
+
+	var errs error
 	var nameOpts []name.Option
 	if option.NonSSL {
 		nameOpts = append(nameOpts, name.Insecure)
@@ -24,35 +66,45 @@ func NewContainerImage(ctx context.Context, imageName string, option types.Docke
 	}
 
 	// Try accessing Docker Daemon
-	img, cleanup, err := tryDockerDaemon(imageName, ref)
-	if err == nil {
-		// Return v1.Image if the image is found in Docker Engine
-		return img, cleanup, nil
+	if o.dockerd {
+		img, cleanup, err := tryDockerDaemon(imageName, ref)
+		if err == nil {
+			// Return v1.Image if the image is found in Docker Engine
+			return img, cleanup, nil
+		}
+		errs = multierror.Append(errs, err)
 	}
-	errs = multierror.Append(errs, err)
 
 	// Try accessing Podman
-	img, cleanup, err = tryPodmanDaemon(imageName)
-	if err == nil {
-		// Return v1.Image if the image is found in Podman
-		return img, cleanup, nil
+	if o.podman {
+		img, cleanup, err := tryPodmanDaemon(imageName)
+		if err == nil {
+			// Return v1.Image if the image is found in Podman
+			return img, cleanup, nil
+		}
+		errs = multierror.Append(errs, err)
 	}
-	errs = multierror.Append(errs, err)
 
-	img, cleanup, err = tryContainerdDaemon(ctx, imageName)
-	if err == nil {
-		return img, cleanup, nil
+	// Try containerd
+	if o.containerd {
+		img, cleanup, err := tryContainerdDaemon(ctx, imageName)
+		if err == nil {
+			// Return v1.Image if the image is found in containerd
+			return img, cleanup, nil
+		}
+		errs = multierror.Append(errs, err)
 	}
-	errs = multierror.Append(errs, err)
 
 	// Try accessing Docker Registry
-	img, err = tryRemote(ctx, imageName, ref, option)
-	if err == nil {
-		// Return v1.Image if the image is found in Docker Registry
-		return img, func() {}, nil
+	if o.remote {
+		img, err := tryRemote(ctx, imageName, ref, option)
+		if err == nil {
+			// Return v1.Image if the image is found in a remote registry
+			return img, func() {}, nil
+		}
+		errs = multierror.Append(errs, err)
 	}
 
-	errs = multierror.Append(errs, err)
 	return nil, func() {}, errs
 }
 

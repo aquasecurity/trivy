@@ -90,7 +90,7 @@ func TestTLSRegistry(t *testing.T) {
 		{
 			name:      "happy path",
 			imageName: "ghcr.io/aquasecurity/trivy-test-images:alpine-310",
-			imageFile: "testdata/fixtures/alpine-310.tar.gz",
+			imageFile: "../../../../integration/testdata/fixtures/images/alpine-310.tar.gz",
 			option: types.DockerOption{
 				UserName:              registryUsername,
 				Password:              registryPassword,
@@ -103,7 +103,7 @@ func TestTLSRegistry(t *testing.T) {
 		{
 			name:      "happy path with docker login",
 			imageName: "ghcr.io/aquasecurity/trivy-test-images:alpine-310",
-			imageFile: "testdata/fixtures/alpine-310.tar.gz",
+			imageFile: "../../../../integration/testdata/fixtures/images/alpine-310.tar.gz",
 			option: types.DockerOption{
 				InsecureSkipTLSVerify: true,
 			},
@@ -115,7 +115,7 @@ func TestTLSRegistry(t *testing.T) {
 		{
 			name:      "sad path: tls verify",
 			imageName: "ghcr.io/aquasecurity/trivy-test-images:alpine-310",
-			imageFile: "testdata/fixtures/alpine-310.tar.gz",
+			imageFile: "../../../../integration/testdata/fixtures/images/alpine-310.tar.gz",
 			option: types.DockerOption{
 				UserName: registryUsername,
 				Password: registryPassword,
@@ -125,7 +125,7 @@ func TestTLSRegistry(t *testing.T) {
 		{
 			name:      "sad path: no credential",
 			imageName: "ghcr.io/aquasecurity/trivy-test-images:alpine-310",
-			imageFile: "testdata/fixtures/alpine-310.tar.gz",
+			imageFile: "../../../../integration/testdata/fixtures/images/alpine-310.tar.gz",
 			option: types.DockerOption{
 				InsecureSkipTLSVerify: true,
 			},

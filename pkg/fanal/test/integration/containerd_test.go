@@ -8,7 +8,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
-	"path"
 	"path/filepath"
 	"strings"
 	"testing"
@@ -40,6 +39,9 @@ func configureTestDataPaths(t *testing.T) (string, string) {
 	require.NoError(t, err)
 
 	socketPath := filepath.Join(containerdDir, "containerd.sock")
+
+	// Set a containerd socket
+	t.Setenv("CONTAINERD_ADDRESS", socketPath)
 
 	return tmpDir, socketPath
 }
@@ -79,7 +81,7 @@ func TestContainerd_LocalImage(t *testing.T) {
 		{
 			name:       "alpine 3.10",
 			imageName:  "ghcr.io/aquasecurity/trivy-test-images:alpine-310",
-			tarArchive: "alpine-310.tar.gz",
+			tarArchive: "../../../../integration/testdata/fixtures/images/alpine-310.tar.gz",
 			wantMetadata: types.ImageMetadata{
 				ID: "sha256:961769676411f082461f9ef46626dd7a2d1e2b2a38e6a44364bcbecf51e66dd4",
 				DiffIDs: []string{
@@ -116,7 +118,7 @@ func TestContainerd_LocalImage(t *testing.T) {
 		{
 			name:       "vulnimage",
 			imageName:  "ghcr.io/aquasecurity/trivy-test-images:vulnimage",
-			tarArchive: "vulnimage.tar.gz",
+			tarArchive: "../../../../integration/testdata/fixtures/images/vulnimage.tar.gz",
 			wantMetadata: types.ImageMetadata{
 				ID: "sha256:c17083664da903e13e9092fa3a3a1aeee2431aa2728298e3dbcec72f26369c41",
 				DiffIDs: []string{
@@ -208,9 +210,6 @@ func TestContainerd_LocalImage(t *testing.T) {
 	tmpDir, socketPath := configureTestDataPaths(t)
 	defer os.RemoveAll(tmpDir)
 
-	// Set a containerd socket
-	t.Setenv("CONTAINERD_ADDRESS", socketPath)
-
 	containerdC := startContainerd(t, ctx, tmpDir)
 	defer containerdC.Terminate(ctx)
 
@@ -229,7 +228,7 @@ func TestContainerd_LocalImage(t *testing.T) {
 				c.Close()
 			}()
 
-			archive, err := os.Open(path.Join("testdata", "fixtures", tt.tarArchive))
+			archive, err := os.Open(tt.tarArchive)
 			require.NoError(t, err)
 
 			uncompressedArchive, err := gzip.NewReader(archive)
@@ -239,7 +238,9 @@ func TestContainerd_LocalImage(t *testing.T) {
 			_, err = client.Import(ctx, uncompressedArchive)
 			require.NoError(t, err)
 
-			img, cleanup, err := image.NewContainerImage(ctx, tt.imageName, types.DockerOption{})
+			// Enable only containerd
+			img, cleanup, err := image.NewContainerImage(ctx, tt.imageName, types.DockerOption{},
+				image.DisableDockerd(), image.DisablePodman(), image.DisableRemote())
 			require.NoError(t, err)
 			defer cleanup()
 
@@ -287,7 +288,6 @@ func TestContainerd_PullImage(t *testing.T) {
 				RepoDigests: []string{"ghcr.io/aquasecurity/trivy-test-images@sha256:72c42ed48c3a2db31b7dafe17d275b634664a708d901ec9fd57b1529280f01fb"},
 				ConfigFile: v1.ConfigFile{
 					Architecture: "amd64",
-					Container:    "0a80155a31551fcc1a36fccbbda79fcd3f0b1c7d270653d00310e6e2217c57e6",
 					Created: v1.Time{
 						Time: time.Date(2019, 8, 20, 20, 19, 55, 211423266, time.UTC),
 					},
@@ -301,22 +301,6 @@ func TestContainerd_PullImage(t *testing.T) {
 							},
 						},
 					},
-					DockerVersion: "18.06.1-ce",
-					History: []v1.History{
-						{
-							Created: v1.Time{
-								Time: time.Date(2019, 8, 20, 20, 19, 55, 62606894, time.UTC),
-							},
-							CreatedBy: "/bin/sh -c #(nop) ADD file:fe64057fbb83dccb960efabbf1cd8777920ef279a7fa8dbca0a8801c651bdf7c in / ",
-						},
-						{
-							Created: v1.Time{
-								Time: time.Date(2019, 8, 20, 20, 19, 55, 211423266, time.UTC),
-							},
-							CreatedBy:  "/bin/sh -c #(nop)  CMD [\"/bin/sh\"]",
-							EmptyLayer: true,
-						},
-					},
 					Config: v1.Config{
 						Cmd: []string{
 							"/bin/sh",
@@ -324,8 +308,7 @@ func TestContainerd_PullImage(t *testing.T) {
 						Env: []string{
 							"PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin",
 						},
-						Image:       "sha256:06f4121dff4d0123ce11bd2e44f48da9ba9ddcd23ae376ea1f363f63ea0849b5",
-						ArgsEscaped: true,
+						ArgsEscaped: false,
 					},
 				},
 			},
@@ -357,7 +340,9 @@ func TestContainerd_PullImage(t *testing.T) {
 			_, err = cli.Pull(ctx, tt.imageName)
 			require.NoError(t, err)
 
-			img, cleanup, err := image.NewContainerImage(ctx, tt.imageName, types.DockerOption{})
+			// Enable only containerd
+			img, cleanup, err := image.NewContainerImage(ctx, tt.imageName, types.DockerOption{},
+				image.DisableDockerd(), image.DisablePodman(), image.DisableRemote())
 			require.NoError(t, err)
 			defer cleanup()
 
