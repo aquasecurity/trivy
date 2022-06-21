@@ -99,6 +99,8 @@ trivy:
   # If the flag is enabled you have to manually download the `trivy.db` file and mount it in the
   # `/home/scanner/.cache/trivy/db/trivy.db` path (see `cacheDir`).
   skipUpdate: false
+  # OCI repository to retrieve the trivy vulnerability database from
+  dbRepository: ghcr.io/aquasecurity/trivy-db
   # Trivy supports filesystem and redis as caching backend
   # https://github.com/aquasecurity/trivy#specify-cache-backend
   # This location is only used for the cache, not the db storage: https://github.com/aquasecurity/trivy/issues/765#issue-756010345
