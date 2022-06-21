@@ -43,9 +43,6 @@ jobs:
           wget https://github.com/tinygo-org/tinygo/releases/download/v${TINYGO_VERSION}/tinygo_${TINYGO_VERSION}_amd64.deb
           sudo dpkg -i tinygo_${TINYGO_VERSION}_amd64.deb
 
-      - name: Install dependencies
-        run: sudo apt-get update && sudo apt-get install libdb-dev
-
       - name: Run unit tests
         run: make test
 
@@ -61,9 +58,6 @@ jobs:
 
     - name: Check out code into the Go module directory
       uses: actions/checkout@v3
-
-    - name: Install dependencies
-      run: sudo apt-get update && sudo apt-get install libdb-dev
 
     - name: Run integration tests
       run: make test-integration
