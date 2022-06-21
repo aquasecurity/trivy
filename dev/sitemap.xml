@@ -171,66 +171,6 @@
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>https://aquasecurity.github.io/trivy/dev/docs/kubernetes/operator/configuration/</loc>
-         <lastmod>2022-06-21</lastmod>
-         <changefreq>daily</changefreq>
-    </url>
-    <url>
-         <loc>https://aquasecurity.github.io/trivy/dev/docs/kubernetes/operator/getting-started/</loc>
-         <lastmod>2022-06-21</lastmod>
-         <changefreq>daily</changefreq>
-    </url>
-    <url>
-         <loc>https://aquasecurity.github.io/trivy/dev/docs/kubernetes/operator/troubleshooting/</loc>
-         <lastmod>2022-06-21</lastmod>
-         <changefreq>daily</changefreq>
-    </url>
-    <url>
-         <loc>https://aquasecurity.github.io/trivy/dev/docs/kubernetes/operator/configuration-auditing/</loc>
-         <lastmod>2022-06-21</lastmod>
-         <changefreq>daily</changefreq>
-    </url>
-    <url>
-         <loc>https://aquasecurity.github.io/trivy/dev/docs/kubernetes/operator/configuration-auditing/built-in-policies/</loc>
-         <lastmod>2022-06-21</lastmod>
-         <changefreq>daily</changefreq>
-    </url>
-    <url>
-         <loc>https://aquasecurity.github.io/trivy/dev/docs/kubernetes/operator/installation/helm/</loc>
-         <lastmod>2022-06-21</lastmod>
-         <changefreq>daily</changefreq>
-    </url>
-    <url>
-         <loc>https://aquasecurity.github.io/trivy/dev/docs/kubernetes/operator/installation/kubectl/</loc>
-         <lastmod>2022-06-21</lastmod>
-         <changefreq>daily</changefreq>
-    </url>
-    <url>
-         <loc>https://aquasecurity.github.io/trivy/dev/docs/kubernetes/operator/installation/upgrade/</loc>
-         <lastmod>2022-06-21</lastmod>
-         <changefreq>daily</changefreq>
-    </url>
-    <url>
-         <loc>https://aquasecurity.github.io/trivy/dev/docs/kubernetes/operator/vulnerability-scanning/</loc>
-         <lastmod>2022-06-21</lastmod>
-         <changefreq>daily</changefreq>
-    </url>
-    <url>
-         <loc>https://aquasecurity.github.io/trivy/dev/docs/kubernetes/operator/vulnerability-scanning/configuration/</loc>
-         <lastmod>2022-06-21</lastmod>
-         <changefreq>daily</changefreq>
-    </url>
-    <url>
-         <loc>https://aquasecurity.github.io/trivy/dev/docs/kubernetes/operator/vulnerability-scanning/faq/</loc>
-         <lastmod>2022-06-21</lastmod>
-         <changefreq>daily</changefreq>
-    </url>
-    <url>
-         <loc>https://aquasecurity.github.io/trivy/dev/docs/kubernetes/operator/vulnerability-scanning/managed-registries/</loc>
-         <lastmod>2022-06-21</lastmod>
-         <changefreq>daily</changefreq>
-    </url>
-    <url>
          <loc>https://aquasecurity.github.io/trivy/dev/docs/misconfiguration/scanning/</loc>
          <lastmod>2022-06-21</lastmod>
          <changefreq>daily</changefreq>
