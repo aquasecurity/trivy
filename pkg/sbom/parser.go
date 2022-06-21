@@ -3,7 +3,7 @@ package sbom
 import (
 	"io"
 
-	"github.com/aquasecurity/fanal/types"
+	"github.com/aquasecurity/trivy/pkg/fanal/types"
 )
 
 type SBOMFormat string
