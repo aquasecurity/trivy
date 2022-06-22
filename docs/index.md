@@ -32,6 +32,11 @@ See [Integrations][integrations] for details.
 
 Please see [LICENSE][license] for Trivy licensing information.
 
+## Getting Started
+
+- [Installation](./home/installation.md)
+- [Quick Start](./home/quickstart.md)
+
 [integrations]: ./tutorials/integrations/index.md
 [slack]: https://slack.aquasec.com
 [license]:  https://github.com/aquasecurity/trivy/blob/main/LICENSE
