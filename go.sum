@@ -174,6 +174,8 @@ github.com/aquasecurity/defsec v0.68.4 h1:moFF8/XDKduRlCzqnqoM2ltTJsWMFNxjaWOY0e
 github.com/aquasecurity/defsec v0.68.4/go.mod h1:m59o8MPMXFbMgulxFOvFRW8tVg4gcnqZ9Gi3uvd/6zg=
 github.com/aquasecurity/go-dep-parser v0.0.0-20220607141748-ab2deea55bdf h1:LE3sTKuErkJqkNsPOYvbPb/3VOKKZKyjqBQla1KBL0k=
 github.com/aquasecurity/go-dep-parser v0.0.0-20220607141748-ab2deea55bdf/go.mod h1:7EOQWQmyavVPY3fScbbPdd3dB/b0Q4ZbJ/NZCvNKrLs=
+github.com/aquasecurity/go-dep-parser v0.0.0-20220620143653-00462f6a05c8 h1:N4Fwm2ClxZd862T3jNAIx+ZlQJPYilUoIukMG3triGw=
+github.com/aquasecurity/go-dep-parser v0.0.0-20220620143653-00462f6a05c8/go.mod h1:7EOQWQmyavVPY3fScbbPdd3dB/b0Q4ZbJ/NZCvNKrLs=
 github.com/aquasecurity/go-gem-version v0.0.0-20201115065557-8eed6fe000ce h1:QgBRgJvtEOBtUXilDb1MLi1p1MWoyFDXAu5DEUl5nwM=
 github.com/aquasecurity/go-gem-version v0.0.0-20201115065557-8eed6fe000ce/go.mod h1:HXgVzOPvXhVGLJs4ZKO817idqr/xhwsTcj17CLYY74s=
 github.com/aquasecurity/go-npm-version v0.0.0-20201110091526-0b796d180798 h1:eveqE9ivrt30CJ7dOajOfBavhZ4zPqHcZe/4tKp0alc=
