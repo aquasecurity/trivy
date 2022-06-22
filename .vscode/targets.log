@@ -1,0 +1,442 @@
+make all --print-data-base --no-builtin-variables --no-builtin-rules --question
+# GNU Make 3.81
+# Copyright (C) 2006  Free Software Foundation, Inc.
+# This is free software; see the source for copying conditions.
+# There is NO warranty; not even for MERCHANTABILITY or FITNESS FOR A
+# PARTICULAR PURPOSE.
+
+# This program built for i386-apple-darwin11.3.0
+ 
+make: *** No rule to make target `all'.  Stop.
+
+
+# Make data base, printed on Wed Jun 22 09:42:47 2022
+
+# Variables
+
+# automatic
+<D = $(patsubst %/,%,$(dir $<))
+# automatic
+?F = $(notdir $?)
+# environment
+ELECTRON_NO_ATTACH_CONSOLE = 1
+# environment
+VSCODE_LOG_NATIVE = false
+# automatic
+?D = $(patsubst %/,%,$(dir $?))
+# automatic
+@D = $(patsubst %/,%,$(dir $@))
+# automatic
+ 
+@F = $(notdir $@)
+# makefile
+CURDIR := /Users/anaisurlichs/code/trivy
+# makefile
+SHELL = /bin/sh
+# makefile (from `Makefile', line 9)
+MKDOCS_PORT := 8000
+# environment
+VSCODE_NLS_CONFIG = {"locale":"en-gb","availableLanguages":{},"_languagePackSupport":true}
+# environment
+_ = /usr/bin/make
+# makefile (from `Makefile', line 11)
+u := 
+# environment
+STARSHIP_SESSION_KEY = 5055159103622792
+# environment
+VSCODE_AMD_ENTRYPOINT = vs/workbench/api/node/extensionHostProcess
+# makefile (from `Makefile', line 1)
+VERSION := v0.23.0-243-g801c871a
+# environment
+VSCODE_VERBOSE_LOGGING = true
+# environment
+__CFBundleIdentifier = com.microsoft.VSCode
+# environment
+INFOPATH = /opt/homebrew/share/info:
+# environment
+VSCODE_IPC_HOOK_EXTHOST = /var/folders/lm/zqmqzm4x4z9dd6m75lbr4tyc0000gp/T/vscode-ipc-fa651dea-5e67-489a-ae07-d07803a8a9f4.sock
+# environment
+VSCODE_CWD = /Users/anaisurlichs/code/trivy
+# environment
+GOPROXY = https://proxy.golang.org,direct
+# environment
+PATH = /opt/homebrew/opt/go/libexec/bin:/Users/anaisurlichs/Downloads/google-cloud-sdk/bin:/Users/anaisurlichs/.krew/bin:/opt/homebrew/bin:/opt/homebrew/sbin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/go/bin:/Users/anaisurlichs/.cargo/bin:/Users/anaisurlichs/go/bin
+# environment
+GOROOT = /opt/homebrew/opt/go/libexec
+# makefile (from `Makefile', line 1)
+MAKEFILE_LIST :=  Makefile
+# makefile (from `Makefile', line 4)
+GOPATH = $(shell go env GOPATH)
+# environment
+VSCODE_LOG_STACK = false
+# environment
+ELECTRON_RUN_AS_NODE = 1
+# makefile (from `Makefile', line 2)
+LDFLAGS = -ldflags "-s -w -X=main.version=$(VERSION)"
+# default
+.FEATURES := target-specific order-only second-expansion else-if archives jobserver check-symlink
+# makefile (from `Makefile', line 8)
+MKDOCS_IMAGE := aquasec/mkdocs-material:dev
+# environment
+SSH_AUTH_SOCK = /private/tmp/com.apple.launchd.rDgTw8ph97/Listeners
+# automatic
+%F = $(notdir $%)
+# makefile (from `Makefile', line 5)
+GOBIN = $(GOPATH)/bin
+# environment
+VSCODE_PIPE_LOGGING = true
+# environment
+PWD = /Users/anaisurlichs/code/trivy
+# environment
+HOMEBREW_CELLAR = /opt/homebrew/Cellar
+# environment
+ORIGINAL_XDG_CURRENT_DESKTOP = undefined
+# environment
+MANPATH = /opt/homebrew/share/man::
+# environment
+GOMODCACHE = /Users/anaisurlichs/go/pkg/mod
+# environment
+HOME = /Users/anaisurlichs
+# default
+MAKEFILEPATH = $(shell /usr/bin/xcode-select -print-path 2>/dev/null || echo /Developer)/Makefiles
+# environment
+VSCODE_CLI = 1
+# environment
+VSCODE_CODE_CACHE_PATH = /Users/anaisurlichs/Library/Application Support/Code/CachedData/30d9c6cd9483b2cc586687151bcbcd635f373630
+# environment
+LOGNAME = anaisurlichs
+# environment
+APPLICATION_INSIGHTS_NO_DIAGNOSTIC_CHANNEL = 1
+# environment
+ZSH = /Users/anaisurlichs/.oh-my-zsh
+# environment
+VSCODE_HANDLES_UNCAUGHT_ERRORS = true
+# automatic
+^D = $(patsubst %/,%,$(dir $^))
+# environment
+XPC_FLAGS = 0x0
+# default
+MAKE = $(MAKE_COMMAND)
+# default
+MAKECMDGOALS := all
+# environment
+SHLVL = 3
+# default
+MAKE_VERSION := 3.81
+# environment
+USER = anaisurlichs
+# makefile
+.DEFAULT_GOAL := /Users/anaisurlichs/go/bin/wire
+# environment
+TERM_SESSION_ID = 8EB77A27-7E81-43B8-BC2A-EC62DD36D116
+# automatic
+%D = $(patsubst %/,%,$(dir $%))
+# makefile (from `Makefile', line 6)
+GOSRC = $(GOPATH)/src
+# default
+MAKE_COMMAND := /Library/Developer/CommandLineTools/usr/bin/make
+# environment
+TERM_PROGRAM = Apple_Terminal
+# default
+.VARIABLES := 
+# environment
+TMPDIR = /var/folders/lm/zqmqzm4x4z9dd6m75lbr4tyc0000gp/T/
+# automatic
+*F = $(notdir $*)
+# environment
+VSCODE_IPC_HOOK = /Users/anaisurlichs/Library/Application Support/Code/1.68.1-main.sock
+# makefile
+MAKEFLAGS = Rrqp
+# environment
+MFLAGS = -Rrqp
+# automatic
+*D = $(patsubst %/,%,$(dir $*))
+# environment
+TERM_PROGRAM_VERSION = 445
+# environment
+NVM_DIR = /Users/anaisurlichs/.nvm
+# environment
+XPC_SERVICE_NAME = application.com.microsoft.VSCode.12255743.12255749.712FEE2B-3E68-4B0A-A697-95F13458C532
+# environment
+HOMEBREW_PREFIX = /opt/homebrew
+# automatic
++D = $(patsubst %/,%,$(dir $+))
+# automatic
++F = $(notdir $+)
+# environment
+HOMEBREW_REPOSITORY = /opt/homebrew
+# environment
+__CF_USER_TEXT_ENCODING = 0x1F6:0:2
+# environment
+COMMAND_MODE = unix2003
+# default
+MAKEFILES := 
+# automatic
+<F = $(notdir $<)
+# environment
+LC_ALL = C
+# automatic
+^F = $(notdir $^)
+# default
+SUFFIXES := 
+# environment
+MAKELEVEL := 0
+# environment
+GPG_TTY = /dev/ttys000
+# environment
+LANG = C
+# environment
+TERM = xterm-256color
+# environment
+VSCODE_PID = 3106
+# environment
+STARSHIP_SHELL = zsh
+# variable set hash-table stats:
+# Load=88/1024=9%, Rehash=0, Collisions=6/152=4%
+
+# Pattern-specific Variable Values
+
+# No pattern-specific variable values.
+
+# Directories
+
+# integration/testdata/fixtures/images: could not be stat'd.
+# . (device 16777234, inode 983323): 30 files, no impossibilities.
+
+# 30 files, no impossibilities in 2 directories.
+
+# Implicit Rules
+
+# No implicit rules.
+
+# Files
+
+/Users/anaisurlichs/go/bin/golangci-lint:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+#  commands to execute (from `Makefile', line 20):
+	curl -sfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh| sh -s -- -b $(GOBIN) v1.45.2
+	
+
+# Not a target:
+all:
+#  Command-line target.
+#  Implicit rule search has been done.
+#  File does not exist.
+#  File has not been updated.
+# variable set hash-table stats:
+# Load=0/32=0%, Rehash=0, Collisions=0/0=0%
+
+.PHONY: wire mock deps test test-integration lint fmt build protoc install clean label mkdocs-serve
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+
+protoc:
+#  Phony target (prerequisite of .PHONY).
+#  Implicit rule search has not been done.
+#  File does not exist.
+#  File has not been updated.
+#  commands to execute (from `Makefile', line 65):
+	docker build -t trivy-protoc - < Dockerfile.protoc
+	docker run --rm -it -v ${PWD}:/app -w /app trivy-protoc make _$@
+	
+
+deps:
+#  Phony target (prerequisite of .PHONY).
+#  Implicit rule search has not been done.
+#  File does not exist.
+#  File has not been updated.
+#  commands to execute (from `Makefile', line 35):
+	go get ${u} -d
+	go mod tidy
+	
+
+_protoc:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+#  commands to execute (from `Makefile', line 69):
+	for path in `find ./rpc/ -name "*.proto" -type f`; do \
+	protoc --twirp_out=. --twirp_opt=paths=source_relative --go_out=. --go_opt=paths=source_relative $${path} || exit; \
+	done
+	
+
+# Not a target:
+.SUFFIXES:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+
+# Not a target:
+Makefile:
+#  Implicit rule search has been done.
+#  Last modified 2022-06-22 09:42:27
+#  File has been updated.
+#  Successfully updated.
+# variable set hash-table stats:
+# Load=0/32=0%, Rehash=0, Collisions=0/0=0%
+
+test:
+#  Phony target (prerequisite of .PHONY).
+#  Implicit rule search has not been done.
+#  File does not exist.
+#  File has not been updated.
+#  commands to execute (from `Makefile', line 41):
+	go test -v -short -coverprofile=coverage.txt -covermode=atomic ./...
+	
+
+integration/testdata/fixtures/images/*.tar.gz: /Users/anaisurlichs/go/bin/crane
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+#  commands to execute (from `Makefile', line 44):
+	mkdir -p integration/testdata/fixtures/images/
+	integration/scripts/download-images.sh
+	
+
+build:
+#  Phony target (prerequisite of .PHONY).
+#  Implicit rule search has not been done.
+#  File does not exist.
+#  File has not been updated.
+#  commands to execute (from `Makefile', line 61):
+	go build $(LDFLAGS) ./cmd/trivy
+	
+
+mkdocs-serve:
+#  Phony target (prerequisite of .PHONY).
+#  Implicit rule search has not been done.
+#  File does not exist.
+#  File has not been updated.
+#  commands to execute (from `Makefile', line 88):
+	docker build -t $(MKDOCS_IMAGE) -f docs/build/Dockerfile docs/build
+	docker run --name mkdocs-serve --rm -v $(PWD):/docs -p $(MKDOCS_PORT):8000 $(MKDOCS_IMAGE)
+	
+
+wire: /Users/anaisurlichs/go/bin/wire
+#  Phony target (prerequisite of .PHONY).
+ 
+#  Implicit rule search has not been done.
+#  File does not exist.
+#  File has not been updated.
+#  commands to execute (from `Makefile', line 27):
+	wire gen ./pkg/...
+	
+
+/Users/anaisurlichs/go/bin/wire:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+#  commands to execute (from `Makefile', line 14):
+	go install github.com/google/wire/cmd/wire@v0.5.0
+	
+
+# Not a target:
+.DEFAULT:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+
+/Users/anaisurlichs/go/bin/crane:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+#  commands to execute (from `Makefile', line 17):
+	go install github.com/google/go-containerregistry/cmd/crane@v0.9.0
+	
+
+/Users/anaisurlichs/go/bin/labeler:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+#  commands to execute (from `Makefile', line 23):
+	go install github.com/knqyf263/labeler@latest
+	
+
+clean:
+#  Phony target (prerequisite of .PHONY).
+#  Implicit rule search has not been done.
+#  File does not exist.
+#  File has not been updated.
+#  commands to execute (from `Makefile', line 79):
+	rm -rf integration/testdata/fixtures/images
+	
+
+label: /Users/anaisurlichs/go/bin/labeler
+#  Phony target (prerequisite of .PHONY).
+#  Implicit rule search has not been done.
+#  File does not exist.
+#  File has not been updated.
+#  commands to execute (from `Makefile', line 83):
+	labeler apply misc/triage/labels.yaml -r aquasecurity/trivy -l 5
+	
+
+fmt:
+#  Phony target (prerequisite of .PHONY).
+#  Implicit rule search has not been done.
+#  File does not exist.
+#  File has not been updated.
+#  commands to execute (from `Makefile', line 57):
+	find ./ -name "*.proto" | xargs clang-format -i
+	
+
+lint: /Users/anaisurlichs/go/bin/golangci-lint
+#  Phony target (prerequisite of .PHONY).
+#  Implicit rule search has not been done.
+#  File does not exist.
+#  File has not been updated.
+#  commands to execute (from `Makefile', line 53):
+	$(GOBIN)/golangci-lint run --timeout 5m
+	
+
+# Not a target:
+/Users/anaisurlichs/go/bin/mockery:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+
+test-integration: integration/testdata/fixtures/images/*.tar.gz
+#  Phony target (prerequisite of .PHONY).
+#  Implicit rule search has not been done.
+#  File does not exist.
+#  File has not been updated.
+#  commands to execute (from `Makefile', line 49):
+	go test -v -tags=integration ./integration/...
+	
+
+mock: /Users/anaisurlichs/go/bin/mockery
+#  Phony target (prerequisite of .PHONY).
+#  Implicit rule search has not been done.
+#  File does not exist.
+#  File has not been updated.
+#  commands to execute (from `Makefile', line 31):
+	mockery -all -inpkg -case=snake -dir $(DIR)
+	
+
+install:
+#  Phony target (prerequisite of .PHONY).
+#  Implicit rule search has not been done.
+#  File does not exist.
+#  File has not been updated.
+#  commands to execute (from `Makefile', line 75):
+	go install $(LDFLAGS) ./cmd/trivy
+	
+
+# files hash-table stats:
+# Load=25/1024=2%, Rehash=0, Collisions=0/68=0%
+# VPATH Search Paths
+
+# No `vpath' search paths.
+
+# No general (`VPATH' variable) search path.
+
+# # of strings in strcache: 1
+# # of strcache buffers: 1
+# strcache size: total = 4096 / max = 4096 / min = 4096 / avg = 4096
+# strcache free: total = 4087 / max = 4087 / min = 4087 / avg = 4087
+
+# Finished Make data base on Wed Jun 22 09:42:47 2022
+
+ 

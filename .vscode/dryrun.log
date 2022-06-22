@@ -1,0 +1,4 @@
+make: Entering directory `/Users/anaisurlichs/code/trivy'
+go install github.com/google/wire/cmd/wire@v0.5.0
+make: Leaving directory `/Users/anaisurlichs/code/trivy'
+ 

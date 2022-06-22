@@ -7,11 +7,15 @@ repo_url: https://github.com/aquasecurity/trivy
 edit_uri: ""
 
 nav:
-  - Installation: index.md
+  - Getting Started: 
+      - Overview: index.md
+      - Quick Start: home/quickstart.md
+      - Insgtallagtion: home/installation.md
   - Tutorials:
-      - Quick Start: tutorials/quickstart.md
-      - Trivy Kubernetes: tutorials/trivy-kubernetes.md
-      - Integrations:
+      - Trivy Kubernetes: 
+          - Trivy K8s CLI: tutorials/trivy-kubernetes.md
+          - OVHcloud: tutorials/cloud-platforms/ovhcloud.md
+      - CI/CD:
           - Overview: tutorials/integrations/index.md
           - GitHub Actions: tutorials/integrations/github-actions.md
           - CircleCI: tutorials/integrations/circleci.md
@@ -20,10 +24,11 @@ nav:
           - Bitbucket Pipelines: tutorials/integrations/bitbucket.md
           - AWS CodePipeline: tutorials/integrations/aws-codepipeline.md
           - AWS Security Hub: tutorials/integrations/aws-security-hub.md
-          - GitOps: tutorials/integrations/gitops.md
-      - Cloud Platforms:
-          - OVHcloud: tutorials/cloud-platforms/ovhcloud.md
-  - Docs:
+          - GitOps: tutorials/integrations/gitops.md        
+      - Tools: community/tools.md
+      - References: community/references.md
+      - CKS Reference: community/cks.md
+  - Trivy CLI:
       - Overview: docs/index.md
       - Vulnerability:
           - Scanning:
@@ -127,11 +132,8 @@ nav:
               - Standalone: docs/references/modes/standalone.md
               - Client/Server: docs/references/modes/client-server.md
           - Troubleshooting: docs/references/troubleshooting.md
-  - Community:
-      - Tools: community/tools.md
-      - References: community/references.md
-      - CKS Reference: community/cks.md
-      - Credits: community/credit.md
+  - Trivy Operator: operator/index.md
+  - Contributing:
       - How to contribute:
           - Issues: community/contribute/issue.md
           - Pull Requests: community/contribute/pr.md
