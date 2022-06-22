@@ -7,8 +7,8 @@ import (
 	"golang.org/x/xerrors"
 	"k8s.io/utils/clock"
 
-	ftypes "github.com/aquasecurity/fanal/types"
 	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/ubuntu"
+	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/scanner/utils"
 	"github.com/aquasecurity/trivy/pkg/types"
@@ -70,7 +70,7 @@ func WithClock(clock clock.Clock) option {
 	}
 }
 
-// Scanner implements the Alpine scanner
+// Scanner implements the Ubuntu scanner
 type Scanner struct {
 	vs ubuntu.VulnSrc
 	*options

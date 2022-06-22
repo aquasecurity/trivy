@@ -8,20 +8,21 @@ package artifact
 
 import (
 	"context"
-	"github.com/aquasecurity/fanal/applier"
-	"github.com/aquasecurity/fanal/artifact"
-	image2 "github.com/aquasecurity/fanal/artifact/image"
-	local2 "github.com/aquasecurity/fanal/artifact/local"
-	"github.com/aquasecurity/fanal/artifact/remote"
-	"github.com/aquasecurity/fanal/cache"
-	"github.com/aquasecurity/fanal/image"
-	"github.com/aquasecurity/fanal/types"
+
 	"github.com/aquasecurity/trivy-db/pkg/db"
 	"github.com/aquasecurity/trivy/pkg/detector/ospkg"
-	"github.com/aquasecurity/trivy/pkg/result"
+	"github.com/aquasecurity/trivy/pkg/fanal/applier"
+	"github.com/aquasecurity/trivy/pkg/fanal/artifact"
+	image2 "github.com/aquasecurity/trivy/pkg/fanal/artifact/image"
+	local2 "github.com/aquasecurity/trivy/pkg/fanal/artifact/local"
+	"github.com/aquasecurity/trivy/pkg/fanal/artifact/remote"
+	"github.com/aquasecurity/trivy/pkg/fanal/cache"
+	"github.com/aquasecurity/trivy/pkg/fanal/image"
+	"github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/rpc/client"
 	"github.com/aquasecurity/trivy/pkg/scanner"
 	"github.com/aquasecurity/trivy/pkg/scanner/local"
+	"github.com/aquasecurity/trivy/pkg/vulnerability"
 )
 
 // Injectors from inject.go:
@@ -31,8 +32,10 @@ import (
 func initializeDockerScanner(ctx context.Context, imageName string, artifactCache cache.ArtifactCache, localArtifactCache cache.LocalArtifactCache, dockerOpt types.DockerOption, artifactOption artifact.Option) (scanner.Scanner, func(), error) {
 	applierApplier := applier.NewApplier(localArtifactCache)
 	detector := ospkg.Detector{}
-	localScanner := local.NewScanner(applierApplier, detector)
-	typesImage, cleanup, err := image.NewDockerImage(ctx, imageName, dockerOpt)
+	config := db.Config{}
+	client := vulnerability.NewClient(config)
+	localScanner := local.NewScanner(applierApplier, detector, client)
+	typesImage, cleanup, err := image.NewContainerImage(ctx, imageName, dockerOpt)
 	if err != nil {
 		return scanner.Scanner{}, nil, err
 	}
@@ -52,7 +55,9 @@ func initializeDockerScanner(ctx context.Context, imageName string, artifactCach
 func initializeArchiveScanner(ctx context.Context, filePath string, artifactCache cache.ArtifactCache, localArtifactCache cache.LocalArtifactCache, artifactOption artifact.Option) (scanner.Scanner, error) {
 	applierApplier := applier.NewApplier(localArtifactCache)
 	detector := ospkg.Detector{}
-	localScanner := local.NewScanner(applierApplier, detector)
+	config := db.Config{}
+	client := vulnerability.NewClient(config)
+	localScanner := local.NewScanner(applierApplier, detector, client)
 	typesImage, err := image.NewArchiveImage(filePath)
 	if err != nil {
 		return scanner.Scanner{}, err
@@ -69,7 +74,9 @@ func initializeArchiveScanner(ctx context.Context, filePath string, artifactCach
 func initializeFilesystemScanner(ctx context.Context, path string, artifactCache cache.ArtifactCache, localArtifactCache cache.LocalArtifactCache, artifactOption artifact.Option) (scanner.Scanner, func(), error) {
 	applierApplier := applier.NewApplier(localArtifactCache)
 	detector := ospkg.Detector{}
-	localScanner := local.NewScanner(applierApplier, detector)
+	config := db.Config{}
+	client := vulnerability.NewClient(config)
+	localScanner := local.NewScanner(applierApplier, detector, client)
 	artifactArtifact, err := local2.NewArtifact(path, artifactCache, artifactOption)
 	if err != nil {
 		return scanner.Scanner{}, nil, err
@@ -82,7 +89,9 @@ func initializeFilesystemScanner(ctx context.Context, path string, artifactCache
 func initializeRepositoryScanner(ctx context.Context, url string, artifactCache cache.ArtifactCache, localArtifactCache cache.LocalArtifactCache, artifactOption artifact.Option) (scanner.Scanner, func(), error) {
 	applierApplier := applier.NewApplier(localArtifactCache)
 	detector := ospkg.Detector{}
-	localScanner := local.NewScanner(applierApplier, detector)
+	config := db.Config{}
+	client := vulnerability.NewClient(config)
+	localScanner := local.NewScanner(applierApplier, detector, client)
 	artifactArtifact, cleanup, err := remote.NewArtifact(url, artifactCache, artifactOption)
 	if err != nil {
 		return scanner.Scanner{}, nil, err
@@ -93,18 +102,12 @@ func initializeRepositoryScanner(ctx context.Context, url string, artifactCache 
 	}, nil
 }
 
-func initializeResultClient() result.Client {
-	config := db.Config{}
-	client := result.NewClient(config)
-	return client
-}
-
 // initializeRemoteDockerScanner is for container image scanning in client/server mode
 // e.g. dockerd, container registry, podman, etc.
 func initializeRemoteDockerScanner(ctx context.Context, imageName string, artifactCache cache.ArtifactCache, remoteScanOptions client.ScannerOption, dockerOpt types.DockerOption, artifactOption artifact.Option) (scanner.Scanner, func(), error) {
 	v := _wireValue
 	clientScanner := client.NewScanner(remoteScanOptions, v...)
-	typesImage, cleanup, err := image.NewDockerImage(ctx, imageName, dockerOpt)
+	typesImage, cleanup, err := image.NewContainerImage(ctx, imageName, dockerOpt)
 	if err != nil {
 		return scanner.Scanner{}, nil, err
 	}
@@ -151,10 +154,4 @@ func initializeRemoteFilesystemScanner(ctx context.Context, path string, artifac
 	scannerScanner := scanner.NewScanner(clientScanner, artifactArtifact)
 	return scannerScanner, func() {
 	}, nil
-}
-
-func initializeRemoteResultClient() result.Client {
-	config := db.Config{}
-	resultClient := result.NewClient(config)
-	return resultClient
 }

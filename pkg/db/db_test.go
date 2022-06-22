@@ -6,7 +6,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/google/go-containerregistry/pkg/v1"
+	v1 "github.com/google/go-containerregistry/pkg/v1"
 	fakei "github.com/google/go-containerregistry/pkg/v1/fake"
 	"github.com/google/go-containerregistry/pkg/v1/tarball"
 	"github.com/google/go-containerregistry/pkg/v1/types"
@@ -152,7 +152,7 @@ func TestClient_NeedsUpdate(t *testing.T) {
 				require.NoError(t, err)
 			}
 
-			client := db.NewClient(cacheDir, true, db.WithClock(tt.clock))
+			client := db.NewClient(cacheDir, true, false, db.WithClock(tt.clock))
 			needsUpdate, err := client.NeedsUpdate("test", tt.skip)
 
 			switch {
@@ -201,12 +201,26 @@ func TestClient_Download(t *testing.T) {
 			// Mock image
 			img := new(fakei.FakeImage)
 			img.LayersReturns([]v1.Layer{newFakeLayer(t, tt.input)}, nil)
+			img.ManifestReturns(&v1.Manifest{
+				Layers: []v1.Descriptor{
+					{
+						MediaType: "application/vnd.aquasec.trivy.db.layer.v1.tar+gzip",
+						Size:      100,
+						Digest: v1.Hash{
+							Algorithm: "sha256",
+							Hex:       "aec482bc254b5dd025d3eaf5bb35997d3dba783e394e8f91d5a415963151bfb8"},
+						Annotations: map[string]string{
+							"org.opencontainers.image.title": "db.tar.gz",
+						},
+					},
+				},
+			}, nil)
 
 			// Mock OCI artifact
-			art, err := oci.NewArtifact("db", mediaType, true, oci.WithImage(img))
+			art, err := oci.NewArtifact("db", mediaType, true, false, oci.WithImage(img))
 			require.NoError(t, err)
 
-			client := db.NewClient(cacheDir, true, db.WithOCIArtifact(art), db.WithClock(timeDownloadedAt))
+			client := db.NewClient(cacheDir, true, false, db.WithOCIArtifact(art), db.WithClock(timeDownloadedAt))
 			err = client.Download(context.Background(), cacheDir)
 			if tt.wantErr != "" {
 				require.Error(t, err)

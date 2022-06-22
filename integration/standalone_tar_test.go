@@ -219,9 +219,9 @@ func TestTar(t *testing.T) {
 			name: "oracle linux 8",
 			testArgs: args{
 				Format: "json",
-				Input:  "testdata/fixtures/images/oraclelinux-8-slim.tar.gz",
+				Input:  "testdata/fixtures/images/oraclelinux-8.tar.gz",
 			},
-			golden: "testdata/oraclelinux-8-slim.json.golden",
+			golden: "testdata/oraclelinux-8.json.golden",
 		},
 		{
 			name: "opensuse leap 15.1",
@@ -248,7 +248,7 @@ func TestTar(t *testing.T) {
 			golden: "testdata/mariner-1.0.json.golden",
 		},
 		{
-			name: "buxybox with Cargo.lock integration",
+			name: "busybox with Cargo.lock integration",
 			testArgs: args{
 				Format: "json",
 				Input:  "testdata/fixtures/images/busybox-with-lockfile.tar.gz",
@@ -268,6 +268,9 @@ func TestTar(t *testing.T) {
 
 	// Set up testing DB
 	cacheDir := initDB(t)
+
+	// Set a temp dir so that modules will not be loaded
+	t.Setenv("XDG_DATA_HOME", cacheDir)
 
 	// Setup CLI App
 	app := commands.NewApp("dev")

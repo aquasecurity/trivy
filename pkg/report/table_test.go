@@ -7,6 +7,7 @@ import (
 	"github.com/stretchr/testify/assert"
 
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
+	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/report"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
@@ -39,12 +40,12 @@ func TestReportWriter_Table(t *testing.T) {
 					},
 				},
 			},
-			expectedOutput: `+---------+------------------+----------+-------------------+---------------+--------------------------------------+
-| LIBRARY | VULNERABILITY ID | SEVERITY | INSTALLED VERSION | FIXED VERSION |                TITLE                 |
-+---------+------------------+----------+-------------------+---------------+--------------------------------------+
-| foo     | CVE-2020-0001    | HIGH     | 1.2.3             | 3.4.5         | foobar                               |
-|         |                  |          |                   |               | -->avd.aquasec.com/nvd/cve-2020-0001 |
-+---------+------------------+----------+-------------------+---------------+--------------------------------------+
+			expectedOutput: `┌─────────┬───────────────┬──────────┬───────────────────┬───────────────┬───────────────────────────────────────────┐
+│ Library │ Vulnerability │ Severity │ Installed Version │ Fixed Version │                   Title                   │
+├─────────┼───────────────┼──────────┼───────────────────┼───────────────┼───────────────────────────────────────────┤
+│ foo     │ CVE-2020-0001 │ HIGH     │ 1.2.3             │ 3.4.5         │ foobar                                    │
+│         │               │          │                   │               │ https://avd.aquasec.com/nvd/cve-2020-0001 │
+└─────────┴───────────────┴──────────┴───────────────────┴───────────────┴───────────────────────────────────────────┘
 `,
 		},
 		{
@@ -69,12 +70,12 @@ func TestReportWriter_Table(t *testing.T) {
 					},
 				},
 			},
-			expectedOutput: `+-----------+------------------+----------+-------------------+---------------+--------------------------------------+
-|  LIBRARY  | VULNERABILITY ID | SEVERITY | INSTALLED VERSION | FIXED VERSION |                TITLE                 |
-+-----------+------------------+----------+-------------------+---------------+--------------------------------------+
-| foo (bar) | CVE-2020-0001    | HIGH     | 1.2.3             | 3.4.5         | foobar                               |
-|           |                  |          |                   |               | -->avd.aquasec.com/nvd/cve-2020-0001 |
-+-----------+------------------+----------+-------------------+---------------+--------------------------------------+
+			expectedOutput: `┌───────────┬───────────────┬──────────┬───────────────────┬───────────────┬───────────────────────────────────────────┐
+│  Library  │ Vulnerability │ Severity │ Installed Version │ Fixed Version │                   Title                   │
+├───────────┼───────────────┼──────────┼───────────────────┼───────────────┼───────────────────────────────────────────┤
+│ foo (bar) │ CVE-2020-0001 │ HIGH     │ 1.2.3             │ 3.4.5         │ foobar                                    │
+│           │               │          │                   │               │ https://avd.aquasec.com/nvd/cve-2020-0001 │
+└───────────┴───────────────┴──────────┴───────────────────┴───────────────┴───────────────────────────────────────────┘
 `,
 		},
 		{
@@ -96,11 +97,11 @@ func TestReportWriter_Table(t *testing.T) {
 					},
 				},
 			},
-			expectedOutput: `+---------+------------------+----------+-------------------+---------------+--------+
-| LIBRARY | VULNERABILITY ID | SEVERITY | INSTALLED VERSION | FIXED VERSION | TITLE  |
-+---------+------------------+----------+-------------------+---------------+--------+
-| foo     | CVE-2020-0001    | HIGH     | 1.2.3             | 3.4.5         | foobar |
-+---------+------------------+----------+-------------------+---------------+--------+
+			expectedOutput: `┌─────────┬───────────────┬──────────┬───────────────────┬───────────────┬────────┐
+│ Library │ Vulnerability │ Severity │ Installed Version │ Fixed Version │ Title  │
+├─────────┼───────────────┼──────────┼───────────────────┼───────────────┼────────┤
+│ foo     │ CVE-2020-0001 │ HIGH     │ 1.2.3             │ 3.4.5         │ foobar │
+└─────────┴───────────────┴──────────┴───────────────────┴───────────────┴────────┘
 `,
 		},
 		{
@@ -124,93 +125,102 @@ func TestReportWriter_Table(t *testing.T) {
 					},
 				},
 			},
-			expectedOutput: `+---------+------------------+----------+-------------------+---------------+--------------------------------------+
-| LIBRARY | VULNERABILITY ID | SEVERITY | INSTALLED VERSION | FIXED VERSION |                TITLE                 |
-+---------+------------------+----------+-------------------+---------------+--------------------------------------+
-| foo     | CVE-2020-1234    | HIGH     | 1.2.3             | 3.4.5         | a b c d e f g h i j k l...           |
-|         |                  |          |                   |               | -->avd.aquasec.com/nvd/cve-2020-1234 |
-+---------+------------------+----------+-------------------+---------------+--------------------------------------+
-`,
-		},
-		{
-			name: "happy path misconfigurations",
-			results: types.Results{
-				{
-					Target: "test",
-					Misconfigurations: []types.DetectedMisconfiguration{
-						{
-							Type:       "Kubernetes Security Check",
-							ID:         "KSV001",
-							Title:      "Image tag ':latest' used",
-							Message:    "Message",
-							Severity:   "HIGH",
-							PrimaryURL: "https://avd.aquasec.com/appshield/ksv001",
-							Status:     types.StatusFailure,
-						},
-						{
-							Type:       "Kubernetes Security Check",
-							ID:         "KSV002",
-							Title:      "SYS_ADMIN capability added",
-							Message:    "Message",
-							Severity:   "CRITICAL",
-							PrimaryURL: "https://avd.aquasec.com/appshield/ksv002",
-							Status:     types.StatusFailure,
-						},
-					},
-				},
-			},
-			expectedOutput: `+---------------------------+------------+----------------------------+----------+------------------------------------------+
-|           TYPE            | MISCONF ID |           CHECK            | SEVERITY |                 MESSAGE                  |
-+---------------------------+------------+----------------------------+----------+------------------------------------------+
-| Kubernetes Security Check |   KSV001   | Image tag ':latest' used   |   HIGH   | Message                                  |
-|                           |            |                            |          | -->avd.aquasec.com/appshield/ksv001      |
-+                           +------------+----------------------------+----------+------------------------------------------+
-|                           |   KSV002   | SYS_ADMIN capability added | CRITICAL | Message                                  |
-|                           |            |                            |          | -->avd.aquasec.com/appshield/ksv002      |
-+---------------------------+------------+----------------------------+----------+------------------------------------------+
-`,
-		},
-		{
-			name:               "happy path misconfigurations with successes",
-			includeNonFailures: true,
-			results: types.Results{
-				{
-					Target: "test",
-					Misconfigurations: []types.DetectedMisconfiguration{
-						{
-							Type:       "Kubernetes Security Check",
-							ID:         "KSV001",
-							Title:      "Image tag ':latest' used",
-							Message:    "Message",
-							Severity:   "HIGH",
-							PrimaryURL: "https://avd.aquasec.com/appshield/ksv001",
-							Status:     types.StatusFailure,
-						},
-						{
-							Type:       "Kubernetes Security Check",
-							ID:         "KSV002",
-							Title:      "SYS_ADMIN capability added",
-							Message:    "Message",
-							Severity:   "CRITICAL",
-							PrimaryURL: "https://avd.aquasec.com/appshield/ksv002",
-							Status:     types.StatusPassed,
-						},
-					},
-				},
-			},
-			expectedOutput: `+---------------------------+------------+----------------------------+----------+--------+------------------------------------------+
-|           TYPE            | MISCONF ID |           CHECK            | SEVERITY | STATUS |                 MESSAGE                  |
-+---------------------------+------------+----------------------------+----------+--------+------------------------------------------+
-| Kubernetes Security Check |   KSV001   | Image tag ':latest' used   |   HIGH   |  FAIL  | Message                                  |
-|                           |            |                            |          |        | -->avd.aquasec.com/appshield/ksv001      |
-+                           +------------+----------------------------+----------+--------+------------------------------------------+
-|                           |   KSV002   | SYS_ADMIN capability added | CRITICAL |  PASS  | Message                                  |
-+---------------------------+------------+----------------------------+----------+--------+------------------------------------------+
+			expectedOutput: `┌─────────┬───────────────┬──────────┬───────────────────┬───────────────┬───────────────────────────────────────────┐
+│ Library │ Vulnerability │ Severity │ Installed Version │ Fixed Version │                   Title                   │
+├─────────┼───────────────┼──────────┼───────────────────┼───────────────┼───────────────────────────────────────────┤
+│ foo     │ CVE-2020-1234 │ HIGH     │ 1.2.3             │ 3.4.5         │ a b c d e f g h i j k l...                │
+│         │               │          │                   │               │ https://avd.aquasec.com/nvd/cve-2020-1234 │
+└─────────┴───────────────┴──────────┴───────────────────┴───────────────┴───────────────────────────────────────────┘
 `,
 		},
 		{
 			name:           "no vulns",
 			expectedOutput: ``,
+		},
+		{
+			name: "happy path with vulnerability origin graph",
+			results: types.Results{
+				{
+					Target: "package-lock.json",
+					Class:  "lang-pkgs",
+					Type:   "npm",
+					Packages: []ftypes.Package{
+						{
+							ID:      "node-fetch@1.7.3",
+							Name:    "node-fetch",
+							Version: "1.7.3",
+						},
+						{
+							ID:      "isomorphic-fetch@2.2.1",
+							Name:    "isomorphic-fetch",
+							Version: "2.2.1",
+							DependsOn: []string{
+								"node-fetch@1.7.3",
+							},
+						},
+						{
+							ID:      "fbjs@0.8.18",
+							Name:    "fbjs",
+							Version: "0.8.18",
+							DependsOn: []string{
+								"isomorphic-fetch@2.2.1",
+							},
+						},
+						{
+							ID:      "styled-components@3.1.3",
+							Name:    "styled-components",
+							Version: "3.1.3",
+							DependsOn: []string{
+								"fbjs@0.8.18",
+							},
+						},
+					},
+					Vulnerabilities: []types.DetectedVulnerability{
+						{
+							VulnerabilityID: "CVE-2022-0235",
+							PkgID:           "node-fetch@1.7.3",
+							PkgName:         "node-fetch",
+							Vulnerability: dbTypes.Vulnerability{
+								Title:       "foobar",
+								Description: "baz",
+								Severity:    "HIGH",
+							},
+							InstalledVersion: "1.7.3",
+							FixedVersion:     "2.6.7, 3.1.1",
+						},
+						{
+							VulnerabilityID: "CVE-2021-26539",
+							PkgID:           "sanitize-html@1.20.0",
+							PkgName:         "sanitize-html",
+							Vulnerability: dbTypes.Vulnerability{
+								Title:       "foobar",
+								Description: "baz",
+								Severity:    "MEDIUM",
+							},
+							InstalledVersion: "1.20.0",
+							FixedVersion:     "2.3.1",
+						},
+					},
+				},
+			},
+			expectedOutput: `┌───────────────┬────────────────┬──────────┬───────────────────┬───────────────┬────────┐
+│    Library    │ Vulnerability  │ Severity │ Installed Version │ Fixed Version │ Title  │
+├───────────────┼────────────────┼──────────┼───────────────────┼───────────────┼────────┤
+│ node-fetch    │ CVE-2022-0235  │ HIGH     │ 1.7.3             │ 2.6.7, 3.1.1  │ foobar │
+├───────────────┼────────────────┼──────────┼───────────────────┼───────────────┤        │
+│ sanitize-html │ CVE-2021-26539 │ MEDIUM   │ 1.20.0            │ 2.3.1         │        │
+└───────────────┴────────────────┴──────────┴───────────────────┴───────────────┴────────┘
+
+Dependency Origin Tree
+======================
+package-lock.json
+├── node-fetch@1.7.3, (MEDIUM: 0, HIGH: 1)
+│   └── isomorphic-fetch@2.2.1
+│       └── fbjs@0.8.18
+│           └── styled-components@3.1.3
+└── sanitize-html@1.20.0, (MEDIUM: 1, HIGH: 0)
+
+`,
 		},
 	}
 
@@ -220,7 +230,9 @@ func TestReportWriter_Table(t *testing.T) {
 			err := report.Write(types.Report{Results: tc.results}, report.Option{
 				Format:             "table",
 				Output:             &tableWritten,
+				Tree:               true,
 				IncludeNonFailures: tc.includeNonFailures,
+				Severities:         []dbTypes.Severity{dbTypes.SeverityHigh, dbTypes.SeverityMedium},
 			})
 			assert.NoError(t, err)
 			assert.Equal(t, tc.expectedOutput, tableWritten.String(), tc.name)

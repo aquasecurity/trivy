@@ -33,6 +33,7 @@ message Application {
 message Package {
   // binary package
   // e.g. bind-utils
+  string id      = 13;
   string name    = 1;
   string version = 2;
   string release = 3;
@@ -47,6 +48,7 @@ message Package {
   string license     = 10;
   Layer  layer       = 11;
   string file_path   = 12;
+  repeated string depends_on = 14;
 }
 
 message Misconfiguration {
@@ -104,6 +106,7 @@ message Vulnerability {
   DataSource                data_source          = 20;
   map<string, Severity>     vendor_severity      = 21;
   string                    pkg_path             = 22;
+  string                    pkg_id               = 23;
 }
 
 message DataSource {

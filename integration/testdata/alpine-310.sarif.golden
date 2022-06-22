@@ -83,7 +83,10 @@
                   "uriBaseId": "ROOTPATH"
                 },
                 "region": {
-                  "startLine": 1
+                  "startLine": 1,
+                  "startColumn": 1,
+                  "endLine": 1,
+                  "endColumn": 1
                 }
               }
             }
@@ -104,7 +107,10 @@
                   "uriBaseId": "ROOTPATH"
                 },
                 "region": {
-                  "startLine": 1
+                  "startLine": 1,
+                  "startColumn": 1,
+                  "endLine": 1,
+                  "endColumn": 1
                 }
               }
             }
@@ -125,7 +131,10 @@
                   "uriBaseId": "ROOTPATH"
                 },
                 "region": {
-                  "startLine": 1
+                  "startLine": 1,
+                  "startColumn": 1,
+                  "endLine": 1,
+                  "endColumn": 1
                 }
               }
             }
@@ -146,7 +155,10 @@
                   "uriBaseId": "ROOTPATH"
                 },
                 "region": {
-                  "startLine": 1
+                  "startLine": 1,
+                  "startColumn": 1,
+                  "endLine": 1,
+                  "endColumn": 1
                 }
               }
             }

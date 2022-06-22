@@ -6,7 +6,6 @@ import (
 	"github.com/urfave/cli/v2"
 	"golang.org/x/xerrors"
 
-	"github.com/aquasecurity/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/scanner"
 )
 
@@ -30,39 +29,10 @@ func filesystemRemoteScanner(ctx context.Context, conf ScannerConfig) (scanner.S
 
 // FilesystemRun runs scan on filesystem for language-specific dependencies and config files
 func FilesystemRun(ctx *cli.Context) error {
-	opt, err := initOption(ctx)
-	if err != nil {
-		return xerrors.Errorf("option error: %w", err)
-	}
-
-	// Disable the individual package scanning
-	opt.DisabledAnalyzers = analyzer.TypeIndividualPkgs
-	//opt.DisabledAnalyzers = append(opt.DisabledAnalyzers, analyzer.TypeSecret)
-
-	// client/server mode
-	if opt.RemoteAddr != "" {
-		return Run(ctx.Context, opt, filesystemRemoteScanner, initCache)
-	}
-
-	// standalone mode
-	return Run(ctx.Context, opt, filesystemStandaloneScanner, initCache)
+	return Run(ctx, filesystemArtifact)
 }
 
 // RootfsRun runs scan on rootfs.
 func RootfsRun(ctx *cli.Context) error {
-	opt, err := initOption(ctx)
-	if err != nil {
-		return xerrors.Errorf("option error: %w", err)
-	}
-
-	// Disable the lock file scanning
-	opt.DisabledAnalyzers = analyzer.TypeLockfiles
-
-	// client/server mode
-	if opt.RemoteAddr != "" {
-		return Run(ctx.Context, opt, filesystemRemoteScanner, initCache)
-	}
-
-	// standalone mode
-	return Run(ctx.Context, opt, filesystemStandaloneScanner, initCache)
+	return Run(ctx, rootfsArtifact)
 }

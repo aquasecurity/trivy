@@ -1,6 +1,7 @@
 package client
 
 import (
+	"context"
 	"crypto/tls"
 	"encoding/json"
 	"fmt"
@@ -13,10 +14,10 @@ import (
 	"github.com/stretchr/testify/require"
 	"google.golang.org/protobuf/encoding/protojson"
 
-	ftypes "github.com/aquasecurity/fanal/types"
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy-db/pkg/utils"
 	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/vulnerability"
+	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/types"
 	"github.com/aquasecurity/trivy/rpc/common"
 	rpc "github.com/aquasecurity/trivy/rpc/scanner"
@@ -70,7 +71,7 @@ func TestScanner_Scan(t *testing.T) {
 								Title:            "DoS",
 								Description:      "Denial os Service",
 								Severity:         common.Severity_CRITICAL,
-								References:       []string{"http://exammple.com"},
+								References:       []string{"http://example.com"},
 								SeveritySource:   "nvd",
 								VendorSeverity: map[string]common.Severity{
 									string(vulnerability.NVD):    common.Severity_MEDIUM,
@@ -118,7 +119,7 @@ func TestScanner_Scan(t *testing.T) {
 								Title:       "DoS",
 								Description: "Denial os Service",
 								Severity:    "CRITICAL",
-								References:  []string{"http://exammple.com"},
+								References:  []string{"http://example.com"},
 								VendorSeverity: dbTypes.VendorSeverity{
 									vulnerability.NVD:    dbTypes.SeverityMedium,
 									vulnerability.RedHat: dbTypes.SeverityMedium,
@@ -197,7 +198,7 @@ func TestScanner_Scan(t *testing.T) {
 
 			s := NewScanner(ScannerOption{CustomHeaders: tt.customHeaders}, WithRPCClient(client))
 
-			gotResults, gotOS, err := s.Scan(tt.args.target, tt.args.imageID, tt.args.layerIDs, tt.args.options)
+			gotResults, gotOS, err := s.Scan(context.Background(), tt.args.target, tt.args.imageID, tt.args.layerIDs, tt.args.options)
 
 			if tt.wantErr != "" {
 				require.NotNil(t, err, tt.name)
@@ -228,7 +229,7 @@ func TestScanner_ScanServerInsecure(t *testing.T) {
 		{
 			name:     "sad path",
 			insecure: false,
-			wantErr:  "certificate signed by unknown authority",
+			wantErr:  "failed to do request",
 		},
 	}
 	for _, tt := range tests {
@@ -241,7 +242,7 @@ func TestScanner_ScanServerInsecure(t *testing.T) {
 				},
 			})
 			s := NewScanner(ScannerOption{Insecure: tt.insecure}, WithRPCClient(c))
-			_, _, err := s.Scan("dummy", "", nil, types.ScanOptions{})
+			_, _, err := s.Scan(context.Background(), "dummy", "", nil, types.ScanOptions{})
 
 			if tt.wantErr != "" {
 				require.Error(t, err)

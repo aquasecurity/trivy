@@ -7,8 +7,8 @@ import (
 	"github.com/golang/protobuf/ptypes/timestamp"
 	"google.golang.org/protobuf/types/known/structpb"
 
-	ftypes "github.com/aquasecurity/fanal/types"
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
+	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/types"
 	"github.com/aquasecurity/trivy/rpc/cache"
@@ -21,6 +21,7 @@ func ConvertToRPCPkgs(pkgs []ftypes.Package) []*common.Package {
 	var rpcPkgs []*common.Package
 	for _, pkg := range pkgs {
 		rpcPkgs = append(rpcPkgs, &common.Package{
+			Id:         pkg.ID,
 			Name:       pkg.Name,
 			Version:    pkg.Version,
 			Release:    pkg.Release,
@@ -33,6 +34,7 @@ func ConvertToRPCPkgs(pkgs []ftypes.Package) []*common.Package {
 			License:    pkg.License,
 			Layer:      ConvertToRPCLayer(pkg.Layer),
 			FilePath:   pkg.FilePath,
+			DependsOn:  pkg.DependsOn,
 		})
 	}
 	return rpcPkgs
@@ -43,6 +45,7 @@ func ConvertFromRPCPkgs(rpcPkgs []*common.Package) []ftypes.Package {
 	var pkgs []ftypes.Package
 	for _, pkg := range rpcPkgs {
 		pkgs = append(pkgs, ftypes.Package{
+			ID:         pkg.Id,
 			Name:       pkg.Name,
 			Version:    pkg.Version,
 			Release:    pkg.Release,
@@ -55,6 +58,7 @@ func ConvertFromRPCPkgs(rpcPkgs []*common.Package) []ftypes.Package {
 			License:    pkg.License,
 			Layer:      ConvertFromRPCLayer(pkg.Layer),
 			FilePath:   pkg.FilePath,
+			DependsOn:  pkg.DependsOn,
 		})
 	}
 	return pkgs
@@ -102,6 +106,7 @@ func ConvertToRPCVulns(vulns []types.DetectedVulnerability) []*common.Vulnerabil
 		rpcVulns = append(rpcVulns, &common.Vulnerability{
 			VulnerabilityId:    vuln.VulnerabilityID,
 			VendorIds:          vuln.VendorIDs,
+			PkgId:              vuln.PkgID,
 			PkgName:            vuln.PkgName,
 			PkgPath:            vuln.PkgPath,
 			InstalledVersion:   vuln.InstalledVersion,
@@ -239,6 +244,7 @@ func ConvertFromRPCVulns(rpcVulns []*common.Vulnerability) []types.DetectedVulne
 		vulns = append(vulns, types.DetectedVulnerability{
 			VulnerabilityID:  vuln.VulnerabilityId,
 			VendorIDs:        vuln.VendorIds,
+			PkgID:            vuln.PkgId,
 			PkgName:          vuln.PkgName,
 			PkgPath:          vuln.PkgPath,
 			InstalledVersion: vuln.InstalledVersion,

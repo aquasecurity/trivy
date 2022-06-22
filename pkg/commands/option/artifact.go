@@ -14,7 +14,6 @@ type ArtifactOption struct {
 	Input      string
 	Timeout    time.Duration
 	ClearCache bool
-	Insecure   bool
 
 	SkipDirs    []string
 	SkipFiles   []string
@@ -33,7 +32,6 @@ func NewArtifactOption(c *cli.Context) ArtifactOption {
 		SkipFiles:   c.StringSlice("skip-files"),
 		SkipDirs:    c.StringSlice("skip-dirs"),
 		OfflineScan: c.Bool("offline-scan"),
-		Insecure:    c.Bool("insecure"),
 	}
 }
 
@@ -43,7 +41,7 @@ func (c *ArtifactOption) Init(ctx *cli.Context, logger *zap.SugaredLogger) (err 
 		logger.Debug(`trivy requires at least 1 argument or --input option`)
 		_ = cli.ShowSubcommandHelp(ctx) // nolint: errcheck
 		os.Exit(0)
-	} else if ctx.Args().Len() > 1 {
+	} else if ctx.Args().Len() > 1 && ctx.Command.Name != "kubernetes" {
 		logger.Error(`multiple targets cannot be specified`)
 		return xerrors.New("arguments error")
 	}

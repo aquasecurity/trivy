@@ -5,7 +5,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 
-	"github.com/aquasecurity/fanal/types"
+	"github.com/aquasecurity/trivy/pkg/fanal/types"
 )
 
 func TestFormatSrcVersion(t *testing.T) {

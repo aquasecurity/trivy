@@ -1,0 +1,821 @@
+[
+  {
+    "Name": "adduser",
+    "Version": "3.118",
+    "SrcName": "adduser",
+    "SrcVersion": "3.118",
+    "Layer": {
+      "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+    }
+  },
+  {
+    "Name": "apt",
+    "Version": "1.8.2",
+    "SrcName": "apt",
+    "SrcVersion": "1.8.2",
+    "Layer": {
+      "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+    }
+  },
+  {
+    "Name": "base-files",
+    "Version": "10.3+deb10u1",
+    "SrcName": "base-files",
+    "SrcVersion": "10.3+deb10u1",
+    "Layer": {
+      "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+    }
+  },
+  {
+    "Name": "base-passwd",
+    "Version": "3.5.46",
+    "SrcName": "base-passwd",
+    "SrcVersion": "3.5.46",
+    "Layer": {
+      "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+    }
+  },
+  {
+    "Name": "bash",
+    "Version": "5.0-4",
+    "SrcName": "bash",
+    "SrcVersion": "5.0-4",
+    "Layer": {
+      "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+    }
+  },
+  {
+    "Name": "bsdutils",
+    "Version": "1:2.33.1-0.1",
+    "SrcName": "util-linux",
+    "SrcVersion": "2.33.1-0.1",
+    "Layer": {
+      "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+    }
+  },
+  {
+    "Name": "coreutils",
+    "Version": "8.30-3",
+    "SrcName": "coreutils",
+    "SrcVersion": "8.30-3",
+    "Layer": {
+      "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+    }
+  },
+  {
+    "Name": "dash",
+    "Version": "0.5.10.2-5",
+    "SrcName": "dash",
+    "SrcVersion": "0.5.10.2-5",
+    "Layer": {
+      "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+    }
+  },
+  {
+    "Name": "debconf",
+    "Version": "1.5.71",
+    "SrcName": "debconf",
+    "SrcVersion": "1.5.71",
+    "Layer": {
+      "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+    }
+  },
+  {
+    "Name": "debian-archive-keyring",
+    "Version": "2019.1",
+    "SrcName": "debian-archive-keyring",
+    "SrcVersion": "2019.1",
+    "Layer": {
+      "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+    }
+  },
+  {
+    "Name": "debianutils",
+    "Version": "4.8.6.1",
+    "SrcName": "debianutils",
+    "SrcVersion": "4.8.6.1",
+    "Layer": {
+      "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+    }
+  },
+  {
+    "Name": "diffutils",
+    "Version": "1:3.7-3",
+    "SrcName": "diffutils",
+    "SrcVersion": "1:3.7-3",
+    "Layer": {
+      "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+    }
+  },
+  {
+    "Name": "dpkg",
+    "Version": "1.19.7",
+    "SrcName": "dpkg",
+    "SrcVersion": "1.19.7",
+    "Layer": {
+      "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+    }
+  },
+  {
+    "Name": "e2fsprogs",
+    "Version": "1.44.5-1+deb10u1",
+    "SrcName": "e2fsprogs",
+    "SrcVersion": "1.44.5-1+deb10u1",
+    "Layer": {
+      "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+    }
+  },
+  {
+    "Name": "fdisk",
+    "Version": "2.33.1-0.1",
+    "SrcName": "util-linux",
+    "SrcVersion": "2.33.1-0.1",
+    "Layer": {
+      "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+    }
+  },
+  {
+    "Name": "findutils",
+    "Version": "4.6.0+git+20190209-2",
+    "SrcName": "findutils",
+    "SrcVersion": "4.6.0+git+20190209-2",
+    "Layer": {
+      "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+    }
+  },
+  {
+    "Name": "gcc-8-base",
+    "Version": "8.3.0-6",
+    "SrcName": "gcc-8",
+    "SrcVersion": "8.3.0-6",
+    "Layer": {
+      "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+    }
+  },
+  {
+    "Name": "gpgv",
+    "Version": "2.2.12-1+deb10u1",
+    "SrcName": "gnupg2",
+    "SrcVersion": "2.2.12-1+deb10u1",
+    "Layer": {
+      "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+    }
+  },
+  {
+    "Name": "grep",
+    "Version": "3.3-1",
+    "SrcName": "grep",
+    "SrcVersion": "3.3-1",
+    "Layer": {
+      "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+    }
+  },
+  {
+    "Name": "gzip",
+    "Version": "1.9-3",
+    "SrcName": "gzip",
+    "SrcVersion": "1.9-3",
+    "Layer": {
+      "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+    }
+  },
+  {
+    "Name": "hostname",
+    "Version": "3.21",
+    "SrcName": "hostname",
+    "SrcVersion": "3.21",
+    "Layer": {
+      "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+    }
+  },
+  {
+    "Name": "init-system-helpers",
+    "Version": "1.56+nmu1",
+    "SrcName": "init-system-helpers",
+    "SrcVersion": "1.56+nmu1",
+    "Layer": {
+      "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+    }
+  },
+  {
+    "Name": "iproute2",
+    "Version": "4.20.0-2",
+    "SrcName": "iproute2",
+    "SrcVersion": "4.20.0-2",
+    "Layer": {
+      "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+    }
+  },
+  {
+    "Name": "iputils-ping",
+    "Version": "3:20180629-2",
+    "SrcName": "iputils",
+    "SrcVersion": "3:20180629-2",
+    "Layer": {
+      "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+    }
+  },
+  {
+    "Name": "libacl1",
+    "Version": "2.2.53-4",
+    "SrcName": "acl",
+    "SrcVersion": "2.2.53-4",
+    "Layer": {
+      "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+    }
+  },
+  {
+    "Name": "libapt-pkg5.0",
+    "Version": "1.8.2",
+    "SrcName": "apt",
+    "SrcVersion": "1.8.2",
+    "Layer": {
+      "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+    }
+  },
+  {
+    "Name": "libattr1",
+    "Version": "1:2.4.48-4",
+    "SrcName": "attr",
+    "SrcVersion": "1:2.4.48-4",
+    "Layer": {
+      "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+    }
+  },
+  {
+    "Name": "libaudit-common",
+    "Version": "1:2.8.4-3",
+    "SrcName": "audit",
+    "SrcVersion": "1:2.8.4-3",
+    "Layer": {
+      "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+    }
+  },
+  {
+    "Name": "libaudit1",
+    "Version": "1:2.8.4-3",
+    "SrcName": "audit",
+    "SrcVersion": "1:2.8.4-3",
+    "Layer": {
+      "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+    }
+  },
+  {
+    "Name": "libblkid1",
+    "Version": "2.33.1-0.1",
+    "SrcName": "util-linux",
+    "SrcVersion": "2.33.1-0.1",
+    "Layer": {
+      "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+    }
+  },
+  {
+    "Name": "libbz2-1.0",
+    "Version": "1.0.6-9.2~deb10u1",
+    "SrcName": "bzip2",
+    "SrcVersion": "1.0.6-9.2~deb10u1",
+    "Layer": {
+      "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+    }
+  },
+  {
+    "Name": "libc-bin",
+    "Version": "2.28-10",
+    "SrcName": "glibc",
+    "SrcVersion": "2.28-10",
+    "Layer": {
+      "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+    }
+  },
+  {
+    "Name": "libc6",
+    "Version": "2.28-10",
+    "SrcName": "glibc",
+    "SrcVersion": "2.28-10",
+    "Layer": {
+      "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+    }
+  },
+  {
+    "Name": "libcap-ng0",
+    "Version": "0.7.9-2",
+    "SrcName": "libcap-ng",
+    "SrcVersion": "0.7.9-2",
+    "Layer": {
+      "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+    }
+  },
+  {
+    "Name": "libcap2",
+    "Version": "1:2.25-2",
+    "SrcName": "libcap2",
+    "SrcVersion": "1:2.25-2",
+    "Layer": {
+      "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+    }
+  },
+  {
+    "Name": "libcap2-bin",
+    "Version": "1:2.25-2",
+    "SrcName": "libcap2",
+    "SrcVersion": "1:2.25-2",
+    "Layer": {
+      "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+    }
+  },
+  {
+    "Name": "libcom-err2",
+    "Version": "1.44.5-1+deb10u1",
+    "SrcName": "e2fsprogs",
+    "SrcVersion": "1.44.5-1+deb10u1",
+    "Layer": {
+      "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+    }
+  },
+  {
+    "Name": "libdb5.3",
+    "Version": "5.3.28+dfsg1-0.5",
+    "SrcName": "db5.3",
+    "SrcVersion": "5.3.28+dfsg1-0.5",
+    "Layer": {
+      "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+    }
+  },
+  {
+    "Name": "libdebconfclient0",
+    "Version": "0.249",
+    "SrcName": "cdebconf",
+    "SrcVersion": "0.249",
+    "Layer": {
+      "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+    }
+  },
+  {
+    "Name": "libelf1",
+    "Version": "0.176-1.1",
+    "SrcName": "elfutils",
+    "SrcVersion": "0.176-1.1",
+    "Layer": {
+      "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+    }
+  },
+  {
+    "Name": "libext2fs2",
+    "Version": "1.44.5-1+deb10u1",
+    "SrcName": "e2fsprogs",
+    "SrcVersion": "1.44.5-1+deb10u1",
+    "Layer": {
+      "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+    }
+  },
+  {
+    "Name": "libfdisk1",
+    "Version": "2.33.1-0.1",
+    "SrcName": "util-linux",
+    "SrcVersion": "2.33.1-0.1",
+    "Layer": {
+      "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+    }
+  },
+  {
+    "Name": "libffi6",
+    "Version": "3.2.1-9",
+    "SrcName": "libffi",
+    "SrcVersion": "3.2.1-9",
+    "Layer": {
+      "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+    }
+  },
+  {
+    "Name": "libgcc1",
+    "Version": "1:8.3.0-6",
+    "SrcName": "gcc-8",
+    "SrcVersion": "8.3.0-6",
+    "Layer": {
+      "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+    }
+  },
+  {
+    "Name": "libgcrypt20",
+    "Version": "1.8.4-5",
+    "SrcName": "libgcrypt20",
+    "SrcVersion": "1.8.4-5",
+    "Layer": {
+      "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+    }
+  },
+  {
+    "Name": "libgmp10",
+    "Version": "2:6.1.2+dfsg-4",
+    "SrcName": "gmp",
+    "SrcVersion": "2:6.1.2+dfsg-4",
+    "Layer": {
+      "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+    }
+  },
+  {
+    "Name": "libgnutls30",
+    "Version": "3.6.7-4",
+    "SrcName": "gnutls28",
+    "SrcVersion": "3.6.7-4",
+    "Layer": {
+      "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+    }
+  },
+  {
+    "Name": "libgpg-error0",
+    "Version": "1.35-1",
+    "SrcName": "libgpg-error",
+    "SrcVersion": "1.35-1",
+    "Layer": {
+      "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+    }
+  },
+  {
+    "Name": "libhogweed4",
+    "Version": "3.4.1-1",
+    "SrcName": "nettle",
+    "SrcVersion": "3.4.1-1",
+    "Layer": {
+      "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+    }
+  },
+  {
+    "Name": "libidn2-0",
+    "Version": "2.0.5-1",
+    "SrcName": "libidn2",
+    "SrcVersion": "2.0.5-1",
+    "Layer": {
+      "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+    }
+  },
+  {
+    "Name": "liblz4-1",
+    "Version": "1.8.3-1",
+    "SrcName": "lz4",
+    "SrcVersion": "1.8.3-1",
+    "Layer": {
+      "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+    }
+  },
+  {
+    "Name": "liblzma5",
+    "Version": "5.2.4-1",
+    "SrcName": "xz-utils",
+    "SrcVersion": "5.2.4-1",
+    "Layer": {
+      "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+    }
+  },
+  {
+    "Name": "libmnl0",
+    "Version": "1.0.4-2",
+    "SrcName": "libmnl",
+    "SrcVersion": "1.0.4-2",
+    "Layer": {
+      "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+    }
+  },
+  {
+    "Name": "libmount1",
+    "Version": "2.33.1-0.1",
+    "SrcName": "util-linux",
+    "SrcVersion": "2.33.1-0.1",
+    "Layer": {
+      "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+    }
+  },
+  {
+    "Name": "libncursesw6",
+    "Version": "6.1+20181013-2+deb10u1",
+    "SrcName": "ncurses",
+    "SrcVersion": "6.1+20181013-2+deb10u1",
+    "Layer": {
+      "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+    }
+  },
+  {
+    "Name": "libnettle6",
+    "Version": "3.4.1-1",
+    "SrcName": "nettle",
+    "SrcVersion": "3.4.1-1",
+    "Layer": {
+      "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+    }
+  },
+  {
+    "Name": "libp11-kit0",
+    "Version": "0.23.15-2",
+    "SrcName": "p11-kit",
+    "SrcVersion": "0.23.15-2",
+    "Layer": {
+      "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+    }
+  },
+  {
+    "Name": "libpam-modules",
+    "Version": "1.3.1-5",
+    "SrcName": "pam",
+    "SrcVersion": "1.3.1-5",
+    "Layer": {
+      "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+    }
+  },
+  {
+    "Name": "libpam-modules-bin",
+    "Version": "1.3.1-5",
+    "SrcName": "pam",
+    "SrcVersion": "1.3.1-5",
+    "Layer": {
+      "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+    }
+  },
+  {
+    "Name": "libpam-runtime",
+    "Version": "1.3.1-5",
+    "SrcName": "pam",
+    "SrcVersion": "1.3.1-5",
+    "Layer": {
+      "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+    }
+  },
+  {
+    "Name": "libpam0g",
+    "Version": "1.3.1-5",
+    "SrcName": "pam",
+    "SrcVersion": "1.3.1-5",
+    "Layer": {
+      "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+    }
+  },
+  {
+    "Name": "libpcre3",
+    "Version": "2:8.39-12",
+    "SrcName": "pcre3",
+    "SrcVersion": "2:8.39-12",
+    "Layer": {
+      "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+    }
+  },
+  {
+    "Name": "libseccomp2",
+    "Version": "2.3.3-4",
+    "SrcName": "libseccomp",
+    "SrcVersion": "2.3.3-4",
+    "Layer": {
+      "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+    }
+  },
+  {
+    "Name": "libselinux1",
+    "Version": "2.8-1+b1",
+    "SrcName": "libselinux",
+    "SrcVersion": "2.8-1",
+    "Layer": {
+      "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+    }
+  },
+  {
+    "Name": "libsemanage-common",
+    "Version": "2.8-2",
+    "SrcName": "libsemanage",
+    "SrcVersion": "2.8-2",
+    "Layer": {
+      "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+    }
+  },
+  {
+    "Name": "libsemanage1",
+    "Version": "2.8-2",
+    "SrcName": "libsemanage",
+    "SrcVersion": "2.8-2",
+    "Layer": {
+      "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+    }
+  },
+  {
+    "Name": "libsepol1",
+    "Version": "2.8-1",
+    "SrcName": "libsepol",
+    "SrcVersion": "2.8-1",
+    "Layer": {
+      "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+    }
+  },
+  {
+    "Name": "libsmartcols1",
+    "Version": "2.33.1-0.1",
+    "SrcName": "util-linux",
+    "SrcVersion": "2.33.1-0.1",
+    "Layer": {
+      "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+    }
+  },
+  {
+    "Name": "libss2",
+    "Version": "1.44.5-1+deb10u1",
+    "SrcName": "e2fsprogs",
+    "SrcVersion": "1.44.5-1+deb10u1",
+    "Layer": {
+      "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+    }
+  },
+  {
+    "Name": "libstdc++6",
+    "Version": "8.3.0-6",
+    "SrcName": "gcc-8",
+    "SrcVersion": "8.3.0-6",
+    "Layer": {
+      "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+    }
+  },
+  {
+    "Name": "libsystemd0",
+    "Version": "241-7~deb10u1",
+    "SrcName": "systemd",
+    "SrcVersion": "241-7~deb10u1",
+    "Layer": {
+      "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+    }
+  },
+  {
+    "Name": "libtasn1-6",
+    "Version": "4.13-3",
+    "SrcName": "libtasn1-6",
+    "SrcVersion": "4.13-3",
+    "Layer": {
+      "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+    }
+  },
+  {
+    "Name": "libtinfo6",
+    "Version": "6.1+20181013-2+deb10u1",
+    "SrcName": "ncurses",
+    "SrcVersion": "6.1+20181013-2+deb10u1",
+    "Layer": {
+      "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+    }
+  },
+  {
+    "Name": "libudev1",
+    "Version": "241-7~deb10u1",
+    "SrcName": "systemd",
+    "SrcVersion": "241-7~deb10u1",
+    "Layer": {
+      "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+    }
+  },
+  {
+    "Name": "libunistring2",
+    "Version": "0.9.10-1",
+    "SrcName": "libunistring",
+    "SrcVersion": "0.9.10-1",
+    "Layer": {
+      "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+    }
+  },
+  {
+    "Name": "libuuid1",
+    "Version": "2.33.1-0.1",
+    "SrcName": "util-linux",
+    "SrcVersion": "2.33.1-0.1",
+    "Layer": {
+      "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+    }
+  },
+  {
+    "Name": "libxtables12",
+    "Version": "1.8.2-4",
+    "SrcName": "iptables",
+    "SrcVersion": "1.8.2-4",
+    "Layer": {
+      "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+    }
+  },
+  {
+    "Name": "libzstd1",
+    "Version": "1.3.8+dfsg-3",
+    "SrcName": "libzstd",
+    "SrcVersion": "1.3.8+dfsg-3",
+    "Layer": {
+      "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+    }
+  },
+  {
+    "Name": "login",
+    "Version": "1:4.5-1.1",
+    "SrcName": "shadow",
+    "SrcVersion": "1:4.5-1.1",
+    "Layer": {
+      "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+    }
+  },
+  {
+    "Name": "mawk",
+    "Version": "1.3.3-17+b3",
+    "SrcName": "mawk",
+    "SrcVersion": "1.3.3-17",
+    "Layer": {
+      "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+    }
+  },
+  {
+    "Name": "mount",
+    "Version": "2.33.1-0.1",
+    "SrcName": "util-linux",
+    "SrcVersion": "2.33.1-0.1",
+    "Layer": {
+      "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+    }
+  },
+  {
+    "Name": "ncurses-base",
+    "Version": "6.1+20181013-2+deb10u1",
+    "SrcName": "ncurses",
+    "SrcVersion": "6.1+20181013-2+deb10u1",
+    "Layer": {
+      "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+    }
+  },
+  {
+    "Name": "ncurses-bin",
+    "Version": "6.1+20181013-2+deb10u1",
+    "SrcName": "ncurses",
+    "SrcVersion": "6.1+20181013-2+deb10u1",
+    "Layer": {
+      "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+    }
+  },
+  {
+    "Name": "passwd",
+    "Version": "1:4.5-1.1",
+    "SrcName": "shadow",
+    "SrcVersion": "1:4.5-1.1",
+    "Layer": {
+      "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+    }
+  },
+  {
+    "Name": "perl-base",
+    "Version": "5.28.1-6",
+    "SrcName": "perl",
+    "SrcVersion": "5.28.1-6",
+    "Layer": {
+      "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+    }
+  },
+  {
+    "Name": "sed",
+    "Version": "4.7-1",
+    "SrcName": "sed",
+    "SrcVersion": "4.7-1",
+    "Layer": {
+      "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+    }
+  },
+  {
+    "Name": "sysvinit-utils",
+    "Version": "2.93-8",
+    "SrcName": "sysvinit",
+    "SrcVersion": "2.93-8",
+    "Layer": {
+      "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+    }
+  },
+  {
+    "Name": "tar",
+    "Version": "1.30+dfsg-6",
+    "SrcName": "tar",
+    "SrcVersion": "1.30+dfsg-6",
+    "Layer": {
+      "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+    }
+  },
+  {
+    "Name": "tzdata",
+    "Version": "2019b-0+deb10u1",
+    "SrcName": "tzdata",
+    "SrcVersion": "2019b-0+deb10u1",
+    "Layer": {
+      "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+    }
+  },
+  {
+    "Name": "util-linux",
+    "Version": "2.33.1-0.1",
+    "SrcName": "util-linux",
+    "SrcVersion": "2.33.1-0.1",
+    "Layer": {
+      "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+    }
+  },
+  {
+    "Name": "zlib1g",
+    "Version": "1:1.2.11.dfsg-1",
+    "SrcName": "zlib",
+    "SrcVersion": "1:1.2.11.dfsg-1",
+    "Layer": {
+      "DiffID": "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
+    }
+  }
+]

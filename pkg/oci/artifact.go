@@ -2,11 +2,14 @@ package oci
 
 import (
 	"context"
+	"crypto/tls"
 	"io"
+	"net/http"
 	"os"
+	"path/filepath"
 
 	"github.com/cheggaaa/pb/v3"
-
+	"github.com/google/go-containerregistry/pkg/authn"
 	"github.com/google/go-containerregistry/pkg/name"
 	v1 "github.com/google/go-containerregistry/pkg/v1"
 	"github.com/google/go-containerregistry/pkg/v1/remote"
@@ -14,6 +17,8 @@ import (
 
 	"github.com/aquasecurity/trivy/pkg/downloader"
 )
+
+const titleAnnotation = "org.opencontainers.image.title"
 
 type options struct {
 	img v1.Image
@@ -31,13 +36,14 @@ func WithImage(img v1.Image) Option {
 
 // Artifact is used to download artifacts such as vulnerability database and policies from OCI registries.
 type Artifact struct {
-	image v1.Image
-	layer v1.Layer // Take the first layer as OCI artifact
-	quiet bool
+	fileName string
+	image    v1.Image
+	layer    v1.Layer // Take the first layer as OCI artifact
+	quiet    bool
 }
 
 // NewArtifact returns a new artifact
-func NewArtifact(repo, mediaType string, quiet bool, opts ...Option) (*Artifact, error) {
+func NewArtifact(repo, mediaType string, quiet, insecure bool, opts ...Option) (*Artifact, error) {
 	o := &options{}
 
 	for _, opt := range opts {
@@ -50,7 +56,15 @@ func NewArtifact(repo, mediaType string, quiet bool, opts ...Option) (*Artifact,
 			return nil, xerrors.Errorf("repository name error (%s): %w", repo, err)
 		}
 
-		o.img, err = remote.Image(ref)
+		remoteOpts := []remote.Option{remote.WithAuthFromKeychain(authn.DefaultKeychain)}
+		if insecure {
+			t := &http.Transport{
+				TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
+			}
+			remoteOpts = append(remoteOpts, remote.WithTransport(t))
+		}
+
+		o.img, err = remote.Image(ref, remoteOpts...)
 		if err != nil {
 			return nil, xerrors.Errorf("OCI repository error: %w", err)
 		}
@@ -61,13 +75,24 @@ func NewArtifact(repo, mediaType string, quiet bool, opts ...Option) (*Artifact,
 		return nil, xerrors.Errorf("OCI layer error: %w", err)
 	}
 
+	manifest, err := o.img.Manifest()
+	if err != nil {
+		return nil, xerrors.Errorf("OCI manifest error: %w", err)
+	}
+
 	// A single layer is only supported now.
-	if len(layers) != 1 {
+	if len(layers) != 1 || len(manifest.Layers) != 1 {
 		return nil, xerrors.Errorf("OCI artifact must be a single layer")
 	}
 
 	// Take the first layer
 	layer := layers[0]
+
+	// Take the file name of the first layer
+	fileName, ok := manifest.Layers[0].Annotations[titleAnnotation]
+	if !ok {
+		return nil, xerrors.Errorf("annotation %s is missing", titleAnnotation)
+	}
 
 	layerMediaType, err := layer.MediaType()
 	if err != nil {
@@ -77,9 +102,10 @@ func NewArtifact(repo, mediaType string, quiet bool, opts ...Option) (*Artifact,
 	}
 
 	return &Artifact{
-		image: o.img,
-		layer: layer,
-		quiet: quiet,
+		fileName: fileName,
+		image:    o.img,
+		layer:    layer,
+		quiet:    quiet,
 	}, nil
 }
 
@@ -104,13 +130,18 @@ func (a Artifact) Download(ctx context.Context, dir string) error {
 	defer bar.Finish()
 
 	// https://github.com/hashicorp/go-getter/issues/326
-	f, err := os.CreateTemp("", "artifact-*.tar.gz")
+	tempDir, err := os.MkdirTemp("", "trivy")
+	if err != nil {
+		return xerrors.Errorf("failed to create a temp dir: %w", err)
+	}
+
+	f, err := os.Create(filepath.Join(tempDir, a.fileName))
 	if err != nil {
 		return xerrors.Errorf("failed to create a temp file: %w", err)
 	}
 	defer func() {
 		_ = f.Close()
-		_ = os.Remove(f.Name())
+		_ = os.RemoveAll(tempDir)
 	}()
 
 	// Download the layer content into a temporal file
@@ -118,7 +149,7 @@ func (a Artifact) Download(ctx context.Context, dir string) error {
 		return xerrors.Errorf("copy error: %w", err)
 	}
 
-	// Decompress artifact-xxx.tar.gz and copy it into the cache dir
+	// Decompress the downloaded file if it is compressed and copy it into the dst
 	if err = downloader.Download(ctx, f.Name(), dir, dir); err != nil {
 		return xerrors.Errorf("download error: %w", err)
 	}

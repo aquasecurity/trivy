@@ -22,7 +22,7 @@ OPTIONS:
    --ignore-unfixed                 display only fixed vulnerabilities (default: false) [$TRIVY_IGNORE_UNFIXED]
    --removed-pkgs                   detect vulnerabilities of removed packages (only for Alpine) (default: false) [$TRIVY_REMOVED_PKGS]
    --vuln-type value                comma-separated list of vulnerability types (os,library) (default: "os,library") [$TRIVY_VULN_TYPE]
-   --security-checks value          comma-separated list of what security issues to detect (vuln,config) (default: "vuln") [$TRIVY_SECURITY_CHECKS]
+   --security-checks value          comma-separated list of what security issues to detect (vuln,config,secret) (default: "vuln,secret") [$TRIVY_SECURITY_CHECKS]
    --ignorefile value               specify .trivyignore file (default: ".trivyignore") [$TRIVY_IGNOREFILE]
    --timeout value                  timeout (default: 5m0s) [$TRIVY_TIMEOUT]
    --light                          deprecated (default: false) [$TRIVY_LIGHT]
@@ -35,5 +35,9 @@ OPTIONS:
    --db-repository value            OCI repository to retrieve trivy-db from (default: "ghcr.io/aquasecurity/trivy-db") [$TRIVY_DB_REPOSITORY]
    --skip-files value               specify the file paths to skip traversal                (accepts multiple inputs) [$TRIVY_SKIP_FILES]
    --skip-dirs value                specify the directories where the traversal is skipped  (accepts multiple inputs) [$TRIVY_SKIP_DIRS]
+   --server value                   server address [$TRIVY_SERVER]
+   --token value                    for authentication in client/server mode [$TRIVY_TOKEN]
+   --token-header value             specify a header name for token in client/server mode (default: "Trivy-Token") [$TRIVY_TOKEN_HEADER]
+   --custom-headers value           custom headers in client/server mode  (accepts multiple inputs) [$TRIVY_CUSTOM_HEADERS]
    --help, -h                       show help (default: false)
 ```

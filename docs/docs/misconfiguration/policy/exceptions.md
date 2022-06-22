@@ -1,5 +1,5 @@
 # Exceptions
-Exceptions lets you to specify cases where you allow policy violations.
+Exceptions let you specify cases where you allow policy violations.
 Trivy supports two types of exceptions.
 
 !!! info
@@ -22,7 +22,7 @@ The `exception` rule must be defined under `namespace.exceptions`.
         
     exception[ns] {
         ns := data.namespaces[_]
-        startswith(ns, "appshield")
+        startswith(ns, "builtin.kubernetes")
     }
     ```
 
@@ -79,7 +79,7 @@ If you want to apply rule-based exceptions to built-in policies, you have to def
 
 !!! example
     ``` rego
-    package appshield.kubernetes.KSV012
+    package builtin.kubernetes.KSV012
 
     exception[rules] {
         input.metadata.name == "can-run-as-root"
@@ -87,12 +87,12 @@ If you want to apply rule-based exceptions to built-in policies, you have to def
     }
     ```
 
-This exception is applied to [KSV012][ksv012] in AppShield.
-You can get the package names in [AppShield repository][appshield] or the JSON output from Trivy.
+This exception is applied to [KSV012][ksv012] in defsec.
+You can get the package names in the [defsec repository][defsec] or the JSON output from Trivy.
 
 For more details, see [an example][rule-example].
 
 [ns-example]: https://github.com/aquasecurity/trivy/tree/{{ git.commit }}/examples/misconf/namespace-exception
 [rule-example]: https://github.com/aquasecurity/trivy/tree/{{ git.commit }}/examples/misconf/rule-exception
-[ksv012]: https://github.com/aquasecurity/appshield/blob/57bccc1897b2500a731415bda3990b0d4fbc959e/kubernetes/policies/pss/restricted/3_runs_as_root.rego
-[appshield]: https://github.com/aquasecurity/appshield/
+[ksv012]: https://github.com/aquasecurity/defsec/blob/master/internal/rules/kubernetes/policies/pss/restricted/3_runs_as_root.rego
+[defsec]: https://github.com/aquasecurity/defsec/

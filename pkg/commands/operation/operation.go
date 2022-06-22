@@ -10,12 +10,11 @@ import (
 	"github.com/google/wire"
 	"golang.org/x/xerrors"
 
-	"github.com/aquasecurity/fanal/cache"
 	"github.com/aquasecurity/trivy-db/pkg/metadata"
 	"github.com/aquasecurity/trivy/pkg/commands/option"
 	"github.com/aquasecurity/trivy/pkg/db"
+	"github.com/aquasecurity/trivy/pkg/fanal/cache"
 	"github.com/aquasecurity/trivy/pkg/log"
-	"github.com/aquasecurity/trivy/pkg/policy"
 	"github.com/aquasecurity/trivy/pkg/utils"
 )
 
@@ -34,7 +33,7 @@ type Cache struct {
 // NewCache is the factory method for Cache
 func NewCache(c option.CacheOption) (Cache, error) {
 	if strings.HasPrefix(c.CacheBackend, "redis://") {
-		log.Logger.Infof("Redis cache: %s", c.CacheBackend)
+		log.Logger.Infof("Redis cache: %s", c.CacheBackendMasked())
 		options, err := redis.ParseURL(c.CacheBackend)
 		if err != nil {
 			return Cache{}, err
@@ -99,8 +98,8 @@ func (c Cache) ClearArtifacts() error {
 }
 
 // DownloadDB downloads the DB
-func DownloadDB(appVersion, cacheDir, dbRepository string, quiet, skipUpdate bool) error {
-	client := db.NewClient(cacheDir, quiet, db.WithDBRepository(dbRepository))
+func DownloadDB(appVersion, cacheDir, dbRepository string, quiet, insecure, skipUpdate bool) error {
+	client := db.NewClient(cacheDir, quiet, insecure, db.WithDBRepository(dbRepository))
 	ctx := context.Background()
 	needsUpdate, err := client.NeedsUpdate(appVersion, skipUpdate)
 	if err != nil {
@@ -121,40 +120,6 @@ func DownloadDB(appVersion, cacheDir, dbRepository string, quiet, skipUpdate boo
 		return xerrors.Errorf("failed to show database info: %w", err)
 	}
 	return nil
-}
-
-// InitBuiltinPolicies downloads the built-in policies and loads them
-func InitBuiltinPolicies(ctx context.Context, cacheDir string, quiet, skipUpdate bool) ([]string, error) {
-	client, err := policy.NewClient(cacheDir, quiet)
-	if err != nil {
-		return nil, xerrors.Errorf("policy client error: %w", err)
-	}
-
-	needsUpdate := false
-	if !skipUpdate {
-		needsUpdate, err = client.NeedsUpdate()
-		if err != nil {
-			return nil, xerrors.Errorf("unable to check if built-in policies need to be updated: %w", err)
-		}
-	}
-
-	if needsUpdate {
-		log.Logger.Info("Need to update the built-in policies")
-		log.Logger.Info("Downloading the built-in policies...")
-		if err = client.DownloadBuiltinPolicies(ctx); err != nil {
-			return nil, xerrors.Errorf("failed to download built-in policies: %w", err)
-		}
-	}
-
-	policyPaths, err := client.LoadBuiltinPolicies()
-	if err != nil {
-		if skipUpdate {
-			log.Logger.Info("No built-in policies were loaded")
-			return nil, nil
-		}
-		return nil, xerrors.Errorf("policy load error: %w", err)
-	}
-	return policyPaths, nil
 }
 
 func showDBInfo(cacheDir string) error {

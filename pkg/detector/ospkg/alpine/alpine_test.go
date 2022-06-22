@@ -5,18 +5,18 @@ import (
 	"testing"
 	"time"
 
-	"github.com/aquasecurity/fanal/analyzer/os"
+	"github.com/aquasecurity/trivy/pkg/fanal/analyzer/os"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	fake "k8s.io/utils/clock/testing"
 
-	ftypes "github.com/aquasecurity/fanal/types"
 	"github.com/aquasecurity/trivy-db/pkg/db"
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/vulnerability"
 	"github.com/aquasecurity/trivy/pkg/dbtest"
 	"github.com/aquasecurity/trivy/pkg/detector/ospkg/alpine"
+	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
 

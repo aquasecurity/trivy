@@ -1,0 +1,4 @@
+replacements:
+  amd64: 64bit
+  386: 32bit
+  arm: ARM
