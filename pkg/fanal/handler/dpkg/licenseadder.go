@@ -23,7 +23,7 @@ func newDpkgLicensePostHandler(artifact.Option) (handler.PostHandler, error) {
 	return dpkgLicensePostHandler{}, nil
 }
 
-// Handle adds licenses to dpkg files
+// Handle adds licenses to dpkg packages
 func (h dpkgLicensePostHandler) Handle(_ context.Context, _ *analyzer.AnalysisResult, blob *types.BlobInfo) error {
 	licenses := map[string]string{}
 	var customResources []types.CustomResource
@@ -33,7 +33,7 @@ func (h dpkgLicensePostHandler) Handle(_ context.Context, _ *analyzer.AnalysisRe
 				licenses[resource.FilePath] = r
 			}
 		} else {
-			// we don't need to include into Result list of all dpkg licenses
+			// we don't need to include dpkg licenses in the Result list
 			// remove dpkg licenses from CustomResources
 			customResources = append(customResources, resource)
 		}

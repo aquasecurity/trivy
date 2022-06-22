@@ -68,7 +68,7 @@ func parseCopyrightFile(input analyzer.AnalysisInput, scanner *bufio.Scanner) (*
 		}
 	}
 
-	// Use 'github.com/google/licenseclassifier' for find licenses
+	// Used 'github.com/google/licenseclassifier' to find licenses
 	result := cl.Match(buf)
 	for _, match := range result.Matches {
 		if !slices.Contains(licenses, match.Name) {
