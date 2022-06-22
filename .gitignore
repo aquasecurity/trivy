@@ -16,6 +16,7 @@
 *.out
 
 .idea
+.vscode
 
 # Directory Cache Files
 .DS_Store
