@@ -18,6 +18,6 @@ jobs:
           assignee: knqyf263
           severity: CRITICAL
           skip-dirs: integration,examples
-          label: vulnerability
+          label: kind/security
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
