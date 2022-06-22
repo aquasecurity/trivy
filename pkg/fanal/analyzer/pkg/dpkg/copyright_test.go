@@ -11,7 +11,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestDpkgLicencesAnalyzer_Analyze(t *testing.T) {
+func TestDpkgLicensesAnalyzer_Analyze(t *testing.T) {
 	tests := []struct {
 		name              string
 		copyrightFilePath string
@@ -82,7 +82,7 @@ func TestDpkgLicencesAnalyzer_Analyze(t *testing.T) {
 				Content:  f,
 				FilePath: strings.TrimPrefix(test.copyrightFilePath, "testdata/copyrightFiles/"),
 			}
-			a := dpkgLicencesAnalyzer{}
+			a := dpkgLicensesAnalyzer{}
 
 			license, _ := a.Analyze(context.Background(), input)
 			assert.Equal(t, test.wantLicense, license)
@@ -119,7 +119,7 @@ func TestDpkgLicencesAnalyzer_Required(t *testing.T) {
 	}
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			a := dpkgLicencesAnalyzer{}
+			a := dpkgLicensesAnalyzer{}
 			assert.Equal(t, test.want, a.Required(test.filePath, nil))
 		})
 	}

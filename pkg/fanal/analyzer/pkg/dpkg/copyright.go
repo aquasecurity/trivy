@@ -19,22 +19,22 @@ import (
 )
 
 func init() {
-	analyzer.RegisterAnalyzer(&dpkgLicencesAnalyzer{})
+	analyzer.RegisterAnalyzer(&dpkgLicensesAnalyzer{})
 }
 
 const LicenseAdder = "dpkg-license-adder"
 
 var (
-	dpkgLicencesAnalyzerVersion = 1
+	dpkgLicensesAnalyzerVersion = 1
 
 	cl, _                        = classifier.DefaultClassifier()
 	copyrightFileRegexp          = regexp.MustCompile(`^usr/share/doc/([0-9A-Za-z_.-]+)/copyright$`)
 	commonLicenseReferenceRegexp = regexp.MustCompile(`/?usr/share/common-licenses/([0-9A-Za-z_.+-]+[0-9A-Za-z+])`)
 )
 
-type dpkgLicencesAnalyzer struct{}
+type dpkgLicensesAnalyzer struct{}
 
-func (a dpkgLicencesAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInput) (*analyzer.AnalysisResult, error) {
+func (a dpkgLicensesAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInput) (*analyzer.AnalysisResult, error) {
 	scanner := bufio.NewScanner(input.Content)
 	return parseCopyrightFile(input, scanner)
 }
@@ -92,16 +92,16 @@ func parseCopyrightFile(input analyzer.AnalysisInput, scanner *bufio.Scanner) (*
 	}, nil
 }
 
-func (a dpkgLicencesAnalyzer) Required(filePath string, _ os.FileInfo) bool {
+func (a dpkgLicensesAnalyzer) Required(filePath string, _ os.FileInfo) bool {
 	return copyrightFileRegexp.MatchString(filePath)
 }
 
-func (a dpkgLicencesAnalyzer) Type() analyzer.Type {
-	return analyzer.TypeDpkgLicence
+func (a dpkgLicensesAnalyzer) Type() analyzer.Type {
+	return analyzer.TypeDpkgLicense
 }
 
-func (a dpkgLicencesAnalyzer) Version() int {
-	return dpkgLicencesAnalyzerVersion
+func (a dpkgLicensesAnalyzer) Version() int {
+	return dpkgLicensesAnalyzerVersion
 }
 
 func getPkgNameFromLicenseFilePath(filePath string) string {

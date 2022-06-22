@@ -95,7 +95,7 @@ const (
 	// =======
 	// Debian
 	// =======
-	TypeDpkgLicence = "dpkg-license"
+	TypeDpkgLicense = "dpkg-license"
 )
 
 var (

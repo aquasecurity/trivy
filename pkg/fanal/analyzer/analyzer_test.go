@@ -505,7 +505,7 @@ func TestAnalyzer_AnalyzerVersions(t *testing.T) {
 				"bundler":      1,
 				"ubuntu":       1,
 				"dpkg":         2,
-				"dpkg-licence": 1,
+				"dpkg-license": 1,
 			},
 		},
 		{
@@ -515,7 +515,7 @@ func TestAnalyzer_AnalyzerVersions(t *testing.T) {
 				"apk":          1,
 				"bundler":      1,
 				"dpkg":         2,
-				"dpkg-licence": 1,
+				"dpkg-license": 1,
 			},
 		},
 	}
