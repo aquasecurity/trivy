@@ -59,6 +59,7 @@ require (
 require (
 	github.com/alicebob/gopher-json v0.0.0-20200520072559-a9ecdc9d1d3a // indirect
 	github.com/gofrs/uuid v4.0.0+incompatible // indirect
+	github.com/google/licenseclassifier/v2 v2.0.0-pre5 // indirect
 	github.com/yuin/gopher-lua v0.0.0-20210529063254-f4c35e4016d9 // indirect
 )
 

@@ -91,6 +91,11 @@ const (
 	// =======
 	TypeRedHatContentManifestType = "redhat-content-manifest"
 	TypeRedHatDockerfileType      = "redhat-dockerfile"
+
+	// =======
+	// Debian
+	// =======
+	TypeDpkgLicence = "dpkg-licence"
 )
 
 var (

@@ -147,6 +147,10 @@ func (r *AnalysisResult) Sort() {
 		})
 	}
 
+	sort.Slice(r.CustomResources, func(i, j int) bool {
+		return r.CustomResources[i].FilePath < r.CustomResources[j].FilePath
+	})
+
 	for _, files := range r.Files {
 		sort.Slice(files, func(i, j int) bool {
 			return files[i].Path < files[j].Path
