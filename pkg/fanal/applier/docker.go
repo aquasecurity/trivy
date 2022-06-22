@@ -5,6 +5,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/knqyf263/nested"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
@@ -98,7 +99,7 @@ func ApplyLayers(layers []types.BlobInfo) types.ArtifactDetail {
 		}
 
 		if layer.OS != nil {
-			mergedLayer.OS = layer.OS
+			mergedLayer.OS = analyzer.MergeOsVersion(mergedLayer.OS, layer.OS)
 		}
 
 		if layer.Repository != nil {

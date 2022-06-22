@@ -176,14 +176,7 @@ func (r *AnalysisResult) Merge(new *AnalysisResult) {
 	r.m.Lock()
 	defer r.m.Unlock()
 
-	if new.OS != nil {
-		// OLE also has /etc/redhat-release and it detects OLE as RHEL by mistake.
-		// In that case, OS must be overwritten with the content of /etc/oracle-release.
-		// There is the same problem between Debian and Ubuntu.
-		if r.OS == nil || r.OS.Family == aos.RedHat || r.OS.Family == aos.Debian {
-			r.OS = new.OS
-		}
-	}
+	r.OS = MergeOsVersion(r.OS, new.OS)
 
 	if new.Repository != nil {
 		r.Repository = new.Repository
@@ -351,4 +344,32 @@ func (ag AnalyzerGroup) AnalyzeImageConfig(targetOS types.OS, configBlob []byte)
 		return pkgs
 	}
 	return nil
+}
+
+func MergeOsVersion(old, new *types.OS) *types.OS {
+	switch {
+	case old == nil:
+		return new
+	// OLE also has /etc/redhat-release and it detects OLE as RHEL by mistake.
+	// In that case, OS must be overwritten with the content of /etc/oracle-release.
+	// There is the same problem between Debian and Ubuntu.
+	case old.Family == aos.RedHat, old.Family == aos.Debian:
+		return new
+	// Ubuntu has ESM program: https://ubuntu.com/security/esm
+	// OS version and esm status are stored in different files.
+	// We have to merge OS version after parsing these files.
+	case old.Family == aos.Ubuntu && new.Family == aos.Ubuntu:
+		if strings.HasSuffix(old.Name, "-ESM") { // version number with ESM suffix already stored
+			return old
+		}
+		if old.Extended != "" {
+			new.Name = new.Name + "-" + old.Extended
+			return new
+		}
+		if new.Extended != "" {
+			old.Name = old.Name + "-" + new.Extended
+			return old
+		}
+	}
+	return old
 }

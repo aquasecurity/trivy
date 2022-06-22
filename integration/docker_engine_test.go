@@ -165,12 +165,6 @@ func TestDockerEngine(t *testing.T) {
 			golden:        "testdata/ubuntu-1804-ignore-unfixed.json.golden",
 		},
 		{
-			name:     "ubuntu 16.04-esm",
-			imageTag: "ubuntu:16.04-ESM",
-			input:    "testdata/fixtures/images/ubuntu-1604-esm.tar.gz",
-			golden:   "testdata/ubuntu-1604-esm.json.golden",
-		},
-		{
 			name:     "opensuse leap 15.1",
 			imageTag: "ghcr.io/aquasecurity/trivy-test-images:opensuse-leap-151",
 			input:    "testdata/fixtures/images/opensuse-leap-151.tar.gz",

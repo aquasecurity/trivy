@@ -117,13 +117,6 @@ func TestClientServer(t *testing.T) {
 			golden: "testdata/ubuntu-1804.json.golden",
 		},
 		{
-			name: "ubuntu 16.04-ESM",
-			args: csArgs{
-				Input: "testdata/fixtures/images/ubuntu-1604-esm.tar.gz",
-			},
-			golden: "testdata/ubuntu-1604-esm.json.golden",
-		},
-		{
 			name: "centos 7",
 			args: csArgs{
 				Input: "testdata/fixtures/images/centos-7.tar.gz",

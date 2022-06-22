@@ -3,24 +3,35 @@ package ubuntu
 import (
 	"bufio"
 	"context"
+	"encoding/json"
 	"os"
 	"strings"
 
 	"golang.org/x/xerrors"
+	"k8s.io/utils/strings/slices"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	aos "github.com/aquasecurity/trivy/pkg/fanal/analyzer/os"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
-	"github.com/aquasecurity/trivy/pkg/fanal/utils"
 )
 
 func init() {
 	analyzer.RegisterAnalyzer(&ubuntuOSAnalyzer{})
 }
 
-const version = 1
+const (
+	version            = 1
+	ubuntuConfFilePath = "etc/lsb-release"
+	esmConfFilePath    = "var/lib/ubuntu-advantage/status.json"
+	esmServiceName     = "esm-infra"
+	esmStatusEnabled   = "enabled"
+	esmVersionSuffix   = "ESM"
+)
 
-var requiredFiles = []string{"etc/lsb-release"}
+var requiredFiles = []string{
+	ubuntuConfFilePath,
+	esmConfFilePath,
+}
 
 type ubuntuOSAnalyzer struct{}
 
@@ -42,12 +53,25 @@ func (a ubuntuOSAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInpu
 				},
 			}, nil
 		}
+
+		if input.FilePath == esmConfFilePath { // Check esm config file
+			if esmEnabled(line) {
+				return &analyzer.AnalysisResult{
+					OS: &types.OS{
+						Family:   aos.Ubuntu,
+						Extended: esmVersionSuffix,
+					},
+				}, nil
+			} else {
+				return nil, nil
+			}
+		}
 	}
 	return nil, xerrors.Errorf("ubuntu: %w", aos.AnalyzeOSError)
 }
 
 func (a ubuntuOSAnalyzer) Required(filePath string, _ os.FileInfo) bool {
-	return utils.StringInSlice(filePath, requiredFiles)
+	return slices.Contains(requiredFiles, filePath)
 }
 
 func (a ubuntuOSAnalyzer) Type() analyzer.Type {
@@ -56,4 +80,30 @@ func (a ubuntuOSAnalyzer) Type() analyzer.Type {
 
 func (a ubuntuOSAnalyzer) Version() int {
 	return version
+}
+
+// structs to parse ESM status
+type status struct {
+	Services []service `json:"services"`
+}
+
+type service struct {
+	Name   string `json:"name"`
+	Status string `json:"status"`
+}
+
+func esmEnabled(config string) bool {
+	st := status{}
+
+	err := json.Unmarshal([]byte(config), &st)
+	if err != nil {
+		return false
+	}
+
+	for _, s := range st.Services { // Find ESM Service
+		if s.Name == esmServiceName && s.Status == esmStatusEnabled {
+			return true
+		}
+	}
+	return false
 }

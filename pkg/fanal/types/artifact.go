@@ -7,9 +7,10 @@ import (
 )
 
 type OS struct {
-	Family string
-	Name   string
-	Eosl   bool `json:"EOSL,omitempty"`
+	Family   string
+	Name     string
+	Extended string `json:"extended,omitempty"` // This field is used for enhanced security maintenance programs such as Ubuntu ESM, Debian Extended LTS.
+	Eosl     bool   `json:"EOSL,omitempty"`
 }
 
 type Repository struct {
