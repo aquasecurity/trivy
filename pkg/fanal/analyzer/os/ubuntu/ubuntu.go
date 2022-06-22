@@ -7,8 +7,8 @@ import (
 	"os"
 	"strings"
 
+	"golang.org/x/exp/slices"
 	"golang.org/x/xerrors"
-	"k8s.io/utils/strings/slices"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	aos "github.com/aquasecurity/trivy/pkg/fanal/analyzer/os"
