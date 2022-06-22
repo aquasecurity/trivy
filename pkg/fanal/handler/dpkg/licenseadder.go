@@ -29,10 +29,12 @@ func (h dpkgLicensePostHandler) Handle(_ context.Context, _ *analyzer.AnalysisRe
 	var customResources []types.CustomResource
 	for _, resource := range blob.CustomResources {
 		if resource.Type == dpkg.LicenseAdder {
-			licenses[resource.FilePath] = resource.Data.(string)
+			if r, ok := resource.Data.(string); ok {
+				licenses[resource.FilePath] = r
+			}
 		} else {
-			// we don't need to include into Result list of all dpkg licences
-			// remove dpkg licences from CustomResources
+			// we don't need to include into Result list of all dpkg licenses
+			// remove dpkg licenses from CustomResources
 			customResources = append(customResources, resource)
 		}
 	}

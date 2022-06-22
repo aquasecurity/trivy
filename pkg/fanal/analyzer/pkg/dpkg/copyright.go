@@ -9,9 +9,11 @@ import (
 	"regexp"
 	"strings"
 
+	classifier "github.com/google/licenseclassifier/v2/assets"
+
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
-	classifier "github.com/google/licenseclassifier/v2/assets"
+
 	"golang.org/x/exp/slices"
 	"golang.org/x/xerrors"
 )
