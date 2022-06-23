@@ -11,6 +11,7 @@ import (
 	"strings"
 
 	"github.com/aquasecurity/defsec/pkg/scanners/rbac"
+	"github.com/aquasecurity/trivy/pkg/log"
 
 	"github.com/liamg/memoryfs"
 	"github.com/samber/lo"
@@ -236,7 +237,8 @@ func (h misconfPostHandler) Handle(ctx context.Context, result *analyzer.Analysi
 	for t, scanner := range h.scanners {
 		results, err := scanner.ScanFS(ctx, mapMemoryFS[t], ".")
 		if err != nil {
-			return xerrors.Errorf("scan config error: %w", err)
+			log.Logger.Errorf("scan config error: %v", err)
+			continue
 		}
 
 		misconfs = append(misconfs, resultsToMisconf(t, scanner.Name(), results)...)
