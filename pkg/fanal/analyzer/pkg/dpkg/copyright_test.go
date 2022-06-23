@@ -3,7 +3,6 @@ package dpkg
 import (
 	"context"
 	"os"
-	"strings"
 	"testing"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
@@ -13,13 +12,15 @@ import (
 
 func TestDpkgLicensesAnalyzer_Analyze(t *testing.T) {
 	tests := []struct {
-		name              string
-		copyrightFilePath string
-		wantLicense       *analyzer.AnalysisResult
+		name                 string
+		filePath             string
+		inputContentFilePath string
+		wantLicense          *analyzer.AnalysisResult
 	}{
 		{
-			name:              "happy path. There are 'License:' pattern and licenseclassifier",
-			copyrightFilePath: "testdata/copyrightFiles/usr/share/doc/zlib1g/copyright",
+			name:                 "happy path. There are 'License:' pattern and licenseclassifier",
+			filePath:             "usr/share/doc/zlib1g/copyright",
+			inputContentFilePath: "testdata/license-pattern-and-classifier-copyright",
 			wantLicense: &analyzer.AnalysisResult{
 				CustomResources: []types.CustomResource{
 					{
@@ -31,8 +32,9 @@ func TestDpkgLicensesAnalyzer_Analyze(t *testing.T) {
 			},
 		},
 		{
-			name:              "happy path. There is Common license",
-			copyrightFilePath: "testdata/copyrightFiles/usr/share/doc/adduser/copyright",
+			name:                 "happy path. There is Common license",
+			filePath:             "usr/share/doc/adduser/copyright",
+			inputContentFilePath: "testdata/common-license-copyright",
 			wantLicense: &analyzer.AnalysisResult{
 				CustomResources: []types.CustomResource{
 					{
@@ -44,8 +46,9 @@ func TestDpkgLicensesAnalyzer_Analyze(t *testing.T) {
 			},
 		},
 		{
-			name:              "happy path. There are Common license, 'License:' pattern and licenseclassifier",
-			copyrightFilePath: "testdata/copyrightFiles/usr/share/doc/apt/copyright",
+			name:                 "happy path. There are Common license, 'License:' pattern and licenseclassifier",
+			filePath:             "usr/share/doc/apt/copyright",
+			inputContentFilePath: "testdata/all-patterns-copyright",
 			wantLicense: &analyzer.AnalysisResult{
 				CustomResources: []types.CustomResource{
 					{
@@ -57,8 +60,9 @@ func TestDpkgLicensesAnalyzer_Analyze(t *testing.T) {
 			},
 		},
 		{
-			name:              "happy path. Licenses not found",
-			copyrightFilePath: "testdata/copyrightFiles/usr/share/doc/tzdata/copyright",
+			name:                 "happy path. Licenses not found",
+			filePath:             "usr/share/doc/tzdata/copyright",
+			inputContentFilePath: "testdata/no-license-copyright",
 			wantLicense: &analyzer.AnalysisResult{
 				CustomResources: []types.CustomResource{
 					{
@@ -73,18 +77,19 @@ func TestDpkgLicensesAnalyzer_Analyze(t *testing.T) {
 
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			f, err := os.Open(test.copyrightFilePath)
+			f, err := os.Open(test.inputContentFilePath)
 			if err != nil {
 				t.Error("unable to read test file")
 			}
 
 			input := analyzer.AnalysisInput{
 				Content:  f,
-				FilePath: strings.TrimPrefix(test.copyrightFilePath, "testdata/copyrightFiles/"),
+				FilePath: test.filePath,
 			}
 			a := dpkgLicensesAnalyzer{}
 
-			license, _ := a.Analyze(context.Background(), input)
+			license, err := a.Analyze(context.Background(), input)
+			assert.NoError(t, err)
 			assert.Equal(t, test.wantLicense, license)
 		})
 	}

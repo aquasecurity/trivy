@@ -4,7 +4,6 @@ import (
 	"bufio"
 	"context"
 	"io"
-	"io/ioutil"
 	"os"
 	"regexp"
 	"strings"
@@ -42,13 +41,6 @@ func (a dpkgLicensesAnalyzer) Analyze(_ context.Context, input analyzer.Analysis
 // parseCopyrightFile parses /usr/share/doc/*/copyright files
 func parseCopyrightFile(input analyzer.AnalysisInput, scanner *bufio.Scanner) (*analyzer.AnalysisResult, error) {
 	var licenses []string
-	buf, err := ioutil.ReadAll(input.Content) // save stream to buffer for use at github.com/google/licenseclassifier
-	if err != nil {
-		return nil, xerrors.Errorf("unable to read content from %q: %w", input.FilePath, err)
-	}
-	if _, err := input.Content.Seek(0, io.SeekStart); err != nil { // rewind the reader to the beginning of the stream after saving
-		return nil, xerrors.Errorf("unable to rewind reader for %q file: %w", input.FilePath, err)
-	}
 
 	for scanner.Scan() {
 		line := scanner.Text()
@@ -68,8 +60,17 @@ func parseCopyrightFile(input analyzer.AnalysisInput, scanner *bufio.Scanner) (*
 		}
 	}
 
+	// rewind the reader to the beginning of the stream after saving
+	if _, err := input.Content.Seek(0, io.SeekStart); err != nil {
+		return nil, xerrors.Errorf("unable to rewind reader for %q file: %w", input.FilePath, err)
+	}
+
 	// Used 'github.com/google/licenseclassifier' to find licenses
-	result := cl.Match(buf)
+	result, err := cl.MatchFrom(input.Content)
+	if err != nil {
+		return nil, xerrors.Errorf("unable to match licenses from %q file: %w", input.FilePath, err)
+	}
+
 	for _, match := range result.Matches {
 		if !slices.Contains(licenses, match.Name) {
 			licenses = append(licenses, match.Name)

@@ -39,19 +39,14 @@ func (h dpkgLicensePostHandler) Handle(_ context.Context, _ *analyzer.AnalysisRe
 		}
 	}
 
-	var infos []types.PackageInfo
-	for _, pkgInfo := range blob.PackageInfos {
-
-		for i, pkg := range pkgInfo.Packages {
-			license, ok := licenses[pkg.Name]
-			if ok {
-				pkgInfo.Packages[i].License = license
+	for i, pkgInfo := range blob.PackageInfos {
+		for j, pkg := range pkgInfo.Packages {
+			if license, ok := licenses[pkg.Name]; ok {
+				blob.PackageInfos[i].Packages[j].License = license
 			}
 		}
-		infos = append(infos, pkgInfo)
 	}
 
-	blob.PackageInfos = infos
 	blob.CustomResources = customResources
 	return nil
 }
