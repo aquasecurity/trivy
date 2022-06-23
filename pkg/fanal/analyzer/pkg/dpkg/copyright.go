@@ -5,74 +5,46 @@ import (
 	"context"
 	"io"
 	"os"
+	"path/filepath"
 	"regexp"
 	"strings"
 
-	classifier "github.com/google/licenseclassifier/v2/assets"
-
-	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
-	"github.com/aquasecurity/trivy/pkg/fanal/types"
-
+	classifier "github.com/google/licenseclassifier/v2"
+	"github.com/google/licenseclassifier/v2/assets"
 	"golang.org/x/exp/slices"
 	"golang.org/x/xerrors"
+
+	dio "github.com/aquasecurity/go-dep-parser/pkg/io"
+	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
+	"github.com/aquasecurity/trivy/pkg/fanal/types"
 )
 
 func init() {
-	analyzer.RegisterAnalyzer(&dpkgLicensesAnalyzer{})
+	analyzer.RegisterAnalyzer(&dpkgLicenseAnalyzer{})
+
+	var err error
+	licenseClassifier, err = assets.DefaultClassifier()
+	if err != nil {
+		panic(err)
+	}
 }
 
 var (
-	dpkgLicensesAnalyzerVersion = 1
+	dpkgLicenseAnalyzerVersion = 1
 
-	cl, _                        = classifier.DefaultClassifier()
-	copyrightFileRegexp          = regexp.MustCompile(`^usr/share/doc/([0-9A-Za-z_.-]+)/copyright$`)
+	licenseClassifier *classifier.Classifier
+
 	commonLicenseReferenceRegexp = regexp.MustCompile(`/?usr/share/common-licenses/([0-9A-Za-z_.+-]+[0-9A-Za-z+])`)
 )
 
-type dpkgLicensesAnalyzer struct{}
+// dpkgLicenseAnalyzer parses copyright files and detect licenses
+type dpkgLicenseAnalyzer struct{}
 
-func (a dpkgLicensesAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInput) (*analyzer.AnalysisResult, error) {
-	scanner := bufio.NewScanner(input.Content)
-	return parseCopyrightFile(input, scanner)
-}
-
-// parseCopyrightFile parses /usr/share/doc/*/copyright files
-func parseCopyrightFile(input analyzer.AnalysisInput, scanner *bufio.Scanner) (*analyzer.AnalysisResult, error) {
-	var licenses []string
-
-	for scanner.Scan() {
-		line := scanner.Text()
-
-		// 'License: *' pattern is used
-		if strings.HasPrefix(line, "License:") {
-			l := strings.TrimSpace(line[8:])
-			if !slices.Contains(licenses, l) {
-				licenses = append(licenses, l)
-			}
-		} else {
-			// Common license pattern is used
-			license := commonLicenseReferenceRegexp.FindStringSubmatch(line)
-			if len(license) == 2 && !slices.Contains(licenses, license[1]) {
-				licenses = append(licenses, license[1])
-			}
-		}
-	}
-
-	// rewind the reader to the beginning of the stream after saving
-	if _, err := input.Content.Seek(0, io.SeekStart); err != nil {
-		return nil, xerrors.Errorf("unable to rewind reader for %q file: %w", input.FilePath, err)
-	}
-
-	// Used 'github.com/google/licenseclassifier' to find licenses
-	result, err := cl.MatchFrom(input.Content)
+// Analyze parses /usr/share/doc/*/copyright files
+func (a dpkgLicenseAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInput) (*analyzer.AnalysisResult, error) {
+	licenses, err := a.parseCopyright(input.Content)
 	if err != nil {
-		return nil, xerrors.Errorf("unable to match licenses from %q file: %w", input.FilePath, err)
-	}
-
-	for _, match := range result.Matches {
-		if !slices.Contains(licenses, match.Name) {
-			licenses = append(licenses, match.Name)
-		}
+		return nil, xerrors.Errorf("failed to parse %s: %w", input.FilePath, err)
 	}
 
 	licensesStr := strings.Join(licenses, ", ")
@@ -84,29 +56,70 @@ func parseCopyrightFile(input analyzer.AnalysisInput, scanner *bufio.Scanner) (*
 		CustomResources: []types.CustomResource{
 			{
 				Type:     string(types.DpkgLicensePostHandler),
-				FilePath: getPkgNameFromLicenseFilePath(input.FilePath),
+				FilePath: input.FilePath,
 				Data:     licensesStr,
 			},
 		},
 	}, nil
 }
 
-func (a dpkgLicensesAnalyzer) Required(filePath string, _ os.FileInfo) bool {
-	return copyrightFileRegexp.MatchString(filePath)
+// parseCopyright parses /usr/share/doc/*/copyright files
+func (a dpkgLicenseAnalyzer) parseCopyright(r dio.ReadSeekerAt) ([]string, error) {
+	scanner := bufio.NewScanner(r)
+	var licenses []string
+	for scanner.Scan() {
+		line := scanner.Text()
+
+		switch {
+		case strings.HasPrefix(line, "License:"):
+			// Machine-readable format
+			// cf. https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/#:~:text=The%20debian%2Fcopyright%20file%20must,in%20the%20Debian%20Policy%20Manual.
+			l := strings.TrimSpace(line[8:])
+			if !slices.Contains(licenses, l) {
+				licenses = append(licenses, l)
+			}
+		case strings.Contains(line, "/usr/share/common-licenses/"):
+			// Common license pattern
+			license := commonLicenseReferenceRegexp.FindStringSubmatch(line)
+			if len(license) == 2 && !slices.Contains(licenses, license[1]) {
+				licenses = append(licenses, license[1])
+			}
+		}
+	}
+
+	// If licenses are already found, they will be returned.
+	if len(licenses) > 0 {
+		return licenses, nil
+	}
+
+	// Rewind the reader to the beginning of the stream after saving
+	if _, err := r.Seek(0, io.SeekStart); err != nil {
+		return nil, xerrors.Errorf("unable to rewind reader: %w", err)
+	}
+
+	// Use 'github.com/google/licenseclassifier' to find licenses
+	result, err := licenseClassifier.MatchFrom(r)
+	if err != nil {
+		return nil, xerrors.Errorf("unable to match licenses: %w", err)
+	}
+
+	for _, match := range result.Matches {
+		if !slices.Contains(licenses, match.Name) {
+			licenses = append(licenses, match.Name)
+		}
+	}
+
+	return licenses, nil
 }
 
-func (a dpkgLicensesAnalyzer) Type() analyzer.Type {
+func (a dpkgLicenseAnalyzer) Required(filePath string, _ os.FileInfo) bool {
+	return strings.HasPrefix(filePath, "usr/share/doc/") && filepath.Base(filePath) == "copyright"
+}
+
+func (a dpkgLicenseAnalyzer) Type() analyzer.Type {
 	return analyzer.TypeDpkgLicense
 }
 
-func (a dpkgLicensesAnalyzer) Version() int {
-	return dpkgLicensesAnalyzerVersion
-}
-
-func getPkgNameFromLicenseFilePath(filePath string) string {
-	pkgName := copyrightFileRegexp.FindStringSubmatch(filePath)
-	if len(pkgName) == 2 {
-		return pkgName[1]
-	}
-	return ""
+func (a dpkgLicenseAnalyzer) Version() int {
+	return dpkgLicenseAnalyzerVersion
 }

@@ -8,7 +8,7 @@ const (
 	MisconfPostHandler             HandlerType = "misconf"
 	DpkgLicensePostHandler         HandlerType = "dpkg-license-adder"
 
-	// SystemFileFilterPostHandlerPriority should be higher than other handlers.
+	// SystemFileFilteringPostHandlerPriority should be higher than other handlers.
 	// Otherwise, other handlers need to process unnecessary files.
 	SystemFileFilteringPostHandlerPriority = 100
 

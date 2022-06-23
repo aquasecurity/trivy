@@ -5,12 +5,14 @@ import (
 	"os"
 	"testing"
 
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
+
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
-	"github.com/stretchr/testify/assert"
 )
 
-func TestDpkgLicensesAnalyzer_Analyze(t *testing.T) {
+func Test_dpkgLicenseAnalyzer_Analyze(t *testing.T) {
 	tests := []struct {
 		name                 string
 		filePath             string
@@ -18,56 +20,56 @@ func TestDpkgLicensesAnalyzer_Analyze(t *testing.T) {
 		wantLicense          *analyzer.AnalysisResult
 	}{
 		{
-			name:                 "happy path. There are 'License:' pattern and licenseclassifier",
+			name:                 "machine-readable format",
 			filePath:             "usr/share/doc/zlib1g/copyright",
 			inputContentFilePath: "testdata/license-pattern-and-classifier-copyright",
 			wantLicense: &analyzer.AnalysisResult{
 				CustomResources: []types.CustomResource{
 					{
 						Type:     string(types.DpkgLicensePostHandler),
-						FilePath: "zlib1g",
+						FilePath: "usr/share/doc/zlib1g/copyright",
 						Data:     "Zlib",
 					},
 				},
 			},
 		},
 		{
-			name:                 "happy path. There is Common license",
+			name:                 "common-licenses format",
 			filePath:             "usr/share/doc/adduser/copyright",
 			inputContentFilePath: "testdata/common-license-copyright",
 			wantLicense: &analyzer.AnalysisResult{
 				CustomResources: []types.CustomResource{
 					{
 						Type:     string(types.DpkgLicensePostHandler),
-						FilePath: "adduser",
-						Data:     "GPL-2, GPL-2.0",
+						FilePath: "usr/share/doc/adduser/copyright",
+						Data:     "GPL-2",
 					},
 				},
 			},
 		},
 		{
-			name:                 "happy path. There are Common license, 'License:' pattern and licenseclassifier",
+			name:                 "machine-readable and common-licenses format",
 			filePath:             "usr/share/doc/apt/copyright",
 			inputContentFilePath: "testdata/all-patterns-copyright",
 			wantLicense: &analyzer.AnalysisResult{
 				CustomResources: []types.CustomResource{
 					{
 						Type:     string(types.DpkgLicensePostHandler),
-						FilePath: "apt",
-						Data:     "GPLv2+, GPL-2, GPL-2.0",
+						FilePath: "usr/share/doc/apt/copyright",
+						Data:     "GPLv2+, GPL-2",
 					},
 				},
 			},
 		},
 		{
-			name:                 "happy path. Licenses not found",
+			name:                 "no license found",
 			filePath:             "usr/share/doc/tzdata/copyright",
 			inputContentFilePath: "testdata/no-license-copyright",
 			wantLicense: &analyzer.AnalysisResult{
 				CustomResources: []types.CustomResource{
 					{
 						Type:     string(types.DpkgLicensePostHandler),
-						FilePath: "tzdata",
+						FilePath: "usr/share/doc/tzdata/copyright",
 						Data:     "Unknown",
 					},
 				},
@@ -75,27 +77,25 @@ func TestDpkgLicensesAnalyzer_Analyze(t *testing.T) {
 		},
 	}
 
-	for _, test := range tests {
-		t.Run(test.name, func(t *testing.T) {
-			f, err := os.Open(test.inputContentFilePath)
-			if err != nil {
-				t.Error("unable to read test file")
-			}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			f, err := os.Open(tt.inputContentFilePath)
+			require.NoError(t, err)
 
 			input := analyzer.AnalysisInput{
 				Content:  f,
-				FilePath: test.filePath,
+				FilePath: tt.filePath,
 			}
-			a := dpkgLicensesAnalyzer{}
+			a := dpkgLicenseAnalyzer{}
 
 			license, err := a.Analyze(context.Background(), input)
-			assert.NoError(t, err)
-			assert.Equal(t, test.wantLicense, license)
+			require.NoError(t, err)
+			assert.Equal(t, tt.wantLicense, license)
 		})
 	}
 }
 
-func TestDpkgLicencesAnalyzer_Required(t *testing.T) {
+func Test_dpkgLicenseAnalyzer_Required(t *testing.T) {
 	tests := []struct {
 		name     string
 		filePath string
@@ -107,49 +107,20 @@ func TestDpkgLicencesAnalyzer_Required(t *testing.T) {
 			want:     true,
 		},
 		{
-			name:     "sad path. Wrong path",
-			filePath: "/usr/share/doc/library/eject/copyright",
+			name:     "bad prefix",
+			filePath: "usr/share/doc/eject/copyright/file",
 			want:     false,
 		},
 		{
-			name:     "sad path. Wrong prefix",
-			filePath: "/usr/share/doc/eject/copyright/file",
-			want:     false,
-		},
-		{
-			name:     "sad path. Wrong suffix",
-			filePath: "/usr/share/doc/eject/copyright",
+			name:     "bad file name",
+			filePath: "usr/share/doc/eject/copyright/foo",
 			want:     false,
 		},
 	}
-	for _, test := range tests {
-		t.Run(test.name, func(t *testing.T) {
-			a := dpkgLicensesAnalyzer{}
-			assert.Equal(t, test.want, a.Required(test.filePath, nil))
-		})
-	}
-}
-
-func TestDpkgAnalyzer_getPkgNameFromLicenseFilePath(t *testing.T) {
-	tests := []struct {
-		name     string
-		filePath string
-		wantPkg  string
-	}{
-		{
-			name:     "happy path",
-			filePath: "usr/share/doc/eject/copyright",
-			wantPkg:  "eject",
-		},
-		{
-			name:     "sad path",
-			filePath: "usr/share/doc/library/eject/copyright",
-			wantPkg:  "",
-		},
-	}
-	for _, test := range tests {
-		t.Run(test.name, func(t *testing.T) {
-			assert.Equal(t, test.wantPkg, getPkgNameFromLicenseFilePath(test.filePath))
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			a := dpkgLicenseAnalyzer{}
+			assert.Equal(t, tt.want, a.Required(tt.filePath, nil))
 		})
 	}
 }
