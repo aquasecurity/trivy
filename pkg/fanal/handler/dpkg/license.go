@@ -2,6 +2,7 @@ package dpkg
 
 import (
 	"context"
+	"strings"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/artifact"
@@ -29,7 +30,9 @@ func (h dpkgLicensePostHandler) Handle(_ context.Context, _ *analyzer.AnalysisRe
 	for _, resource := range blob.CustomResources {
 		if resource.Type == string(types.DpkgLicensePostHandler) {
 			if r, ok := resource.Data.(string); ok {
-				licenses[resource.FilePath] = r
+				// e.g. "usr/share/doc/zlib1g/copyright" => "zlib1g"
+				pkgName := strings.Split(resource.FilePath, "/")[3]
+				licenses[pkgName] = r
 			}
 		} else {
 			// we don't need to include dpkg licenses in the Result list

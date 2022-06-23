@@ -271,23 +271,23 @@ func TestArtifact_Inspect(t *testing.T) {
 							},
 							CustomResources: []types.CustomResource{
 								{
-									Type:     "dpkg-license-adder",
-									FilePath: "base-files",
+									Type:     "dpkg-license",
+									FilePath: "usr/share/doc/base-files/copyright",
 									Data:     "GPL",
 								},
 								{
-									Type:     "dpkg-license-adder",
-									FilePath: "ca-certificates",
-									Data:     "GPL-2+, GPL-2, MPL-2.0, GPL-2.0",
+									Type:     "dpkg-license",
+									FilePath: "usr/share/doc/ca-certificates/copyright",
+									Data:     "GPL-2+, GPL-2, MPL-2.0",
 								},
 								{
-									Type:     "dpkg-license-adder",
-									FilePath: "netbase",
+									Type:     "dpkg-license",
+									FilePath: "usr/share/doc/netbase/copyright",
 									Data:     "GPL-2",
 								},
 								{
-									Type:     "dpkg-license-adder",
-									FilePath: "tzdata",
+									Type:     "dpkg-license",
+									FilePath: "usr/share/doc/tzdata/copyright",
 									Data:     "Unknown",
 								},
 							},
@@ -332,18 +332,18 @@ func TestArtifact_Inspect(t *testing.T) {
 							},
 							CustomResources: []types.CustomResource{
 								{
-									Type:     "dpkg-license-adder",
-									FilePath: "libc6",
-									Data:     "LGPL-2.1, GPL-2, MIT, SunPro, BSD-3-Clause, GPL-2.0, ISC, LicenseRef-MIT-Lucent",
+									Type:     "dpkg-license",
+									FilePath: "usr/share/doc/libc6/copyright",
+									Data:     "LGPL-2.1, GPL-2",
 								},
 								{
-									Type:     "dpkg-license-adder",
-									FilePath: "libssl1.1",
+									Type:     "dpkg-license",
+									FilePath: "usr/share/doc/libssl1.1/copyright",
 									Data:     "OpenSSL",
 								},
 								{
-									Type:     "dpkg-license-adder",
-									FilePath: "openssl",
+									Type:     "dpkg-license",
+									FilePath: "usr/share/doc/openssl/copyright",
 									Data:     "OpenSSL",
 								},
 							},

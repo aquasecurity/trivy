@@ -6,7 +6,7 @@ const (
 	SystemFileFilteringPostHandler HandlerType = "system-file-filter"
 	GoModMergePostHandler          HandlerType = "go-mod-merge"
 	MisconfPostHandler             HandlerType = "misconf"
-	DpkgLicensePostHandler         HandlerType = "dpkg-license-adder"
+	DpkgLicensePostHandler         HandlerType = "dpkg-license"
 
 	// SystemFileFilteringPostHandlerPriority should be higher than other handlers.
 	// Otherwise, other handlers need to process unnecessary files.
