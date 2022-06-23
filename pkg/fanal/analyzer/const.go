@@ -22,10 +22,11 @@ const (
 	TypeUbuntu     Type = "ubuntu"
 
 	// OS Package
-	TypeApk   Type = "apk"
-	TypeDpkg  Type = "dpkg"
-	TypeRpm   Type = "rpm"
-	TypeRpmqa Type = "rpmqa"
+	TypeApk         Type = "apk"
+	TypeDpkg        Type = "dpkg"
+	TypeDpkgLicense Type = "dpkg-license" // For analyzing licenses
+	TypeRpm         Type = "rpm"
+	TypeRpmqa       Type = "rpmqa"
 
 	// OS Package Repository
 	TypeApkRepo Type = "apk-repo"
@@ -89,13 +90,8 @@ const (
 	// =======
 	// Red Hat
 	// =======
-	TypeRedHatContentManifestType = "redhat-content-manifest"
-	TypeRedHatDockerfileType      = "redhat-dockerfile"
-
-	// =======
-	// Debian
-	// =======
-	TypeDpkgLicense = "dpkg-license"
+	TypeRedHatContentManifestType Type = "redhat-content-manifest"
+	TypeRedHatDockerfileType      Type = "redhat-dockerfile"
 )
 
 var (
