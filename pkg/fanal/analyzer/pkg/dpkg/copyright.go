@@ -104,7 +104,7 @@ func (a dpkgLicenseAnalyzer) parseCopyright(r dio.ReadSeekerAt) ([]string, error
 	}
 
 	for _, match := range result.Matches {
-		if !slices.Contains(licenses, match.Name) {
+		if match.Confidence > 0.9 && !slices.Contains(licenses, match.Name) {
 			licenses = append(licenses, match.Name)
 		}
 	}
