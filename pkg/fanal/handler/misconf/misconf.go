@@ -237,7 +237,7 @@ func (h misconfPostHandler) Handle(ctx context.Context, result *analyzer.Analysi
 	for t, scanner := range h.scanners {
 		results, err := scanner.ScanFS(ctx, mapMemoryFS[t], ".")
 		if err != nil {
-			log.Logger.Errorf("scan config error: %v", err)
+			log.Logger.Errorf("scan %q was broken with error: %v", scanner.Name(), err)
 			continue
 		}
 
