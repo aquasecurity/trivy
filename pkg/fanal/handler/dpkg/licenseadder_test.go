@@ -5,7 +5,6 @@ import (
 	"testing"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
-	"github.com/aquasecurity/trivy/pkg/fanal/analyzer/pkg/dpkg"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/stretchr/testify/assert"
 )
@@ -29,7 +28,7 @@ func TestDpkgLicenseHook_Hook(t *testing.T) {
 				},
 				CustomResources: []types.CustomResource{
 					{
-						Type:     dpkg.LicenseAdder,
+						Type:     string(types.DpkgLicensePostHandler),
 						FilePath: "base-files",
 						Data:     "GPL",
 					},

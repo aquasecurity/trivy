@@ -21,8 +21,6 @@ func init() {
 	analyzer.RegisterAnalyzer(&dpkgLicensesAnalyzer{})
 }
 
-const LicenseAdder = "dpkg-license-adder"
-
 var (
 	dpkgLicensesAnalyzerVersion = 1
 
@@ -85,7 +83,7 @@ func parseCopyrightFile(input analyzer.AnalysisInput, scanner *bufio.Scanner) (*
 	return &analyzer.AnalysisResult{
 		CustomResources: []types.CustomResource{
 			{
-				Type:     LicenseAdder,
+				Type:     string(types.DpkgLicensePostHandler),
 				FilePath: getPkgNameFromLicenseFilePath(input.FilePath),
 				Data:     licensesStr,
 			},

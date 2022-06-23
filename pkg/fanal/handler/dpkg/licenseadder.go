@@ -4,11 +4,10 @@ import (
 	"context"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
-	"github.com/aquasecurity/trivy/pkg/fanal/analyzer/pkg/dpkg"
 	"github.com/aquasecurity/trivy/pkg/fanal/artifact"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/handler"
-	"github.com/aquasecurity/trivy/pkg/fanal/types"
+	types "github.com/aquasecurity/trivy/pkg/fanal/types"
 )
 
 func init() {
@@ -28,7 +27,7 @@ func (h dpkgLicensePostHandler) Handle(_ context.Context, _ *analyzer.AnalysisRe
 	licenses := map[string]string{}
 	var customResources []types.CustomResource
 	for _, resource := range blob.CustomResources {
-		if resource.Type == dpkg.LicenseAdder {
+		if resource.Type == string(types.DpkgLicensePostHandler) {
 			if r, ok := resource.Data.(string); ok {
 				licenses[resource.FilePath] = r
 			}

@@ -24,7 +24,7 @@ func TestDpkgLicensesAnalyzer_Analyze(t *testing.T) {
 			wantLicense: &analyzer.AnalysisResult{
 				CustomResources: []types.CustomResource{
 					{
-						Type:     LicenseAdder,
+						Type:     string(types.DpkgLicensePostHandler),
 						FilePath: "zlib1g",
 						Data:     "Zlib",
 					},
@@ -38,7 +38,7 @@ func TestDpkgLicensesAnalyzer_Analyze(t *testing.T) {
 			wantLicense: &analyzer.AnalysisResult{
 				CustomResources: []types.CustomResource{
 					{
-						Type:     LicenseAdder,
+						Type:     string(types.DpkgLicensePostHandler),
 						FilePath: "adduser",
 						Data:     "GPL-2, GPL-2.0",
 					},
@@ -52,7 +52,7 @@ func TestDpkgLicensesAnalyzer_Analyze(t *testing.T) {
 			wantLicense: &analyzer.AnalysisResult{
 				CustomResources: []types.CustomResource{
 					{
-						Type:     LicenseAdder,
+						Type:     string(types.DpkgLicensePostHandler),
 						FilePath: "apt",
 						Data:     "GPLv2+, GPL-2, GPL-2.0",
 					},
@@ -66,7 +66,7 @@ func TestDpkgLicensesAnalyzer_Analyze(t *testing.T) {
 			wantLicense: &analyzer.AnalysisResult{
 				CustomResources: []types.CustomResource{
 					{
-						Type:     LicenseAdder,
+						Type:     string(types.DpkgLicensePostHandler),
 						FilePath: "tzdata",
 						Data:     "Unknown",
 					},
