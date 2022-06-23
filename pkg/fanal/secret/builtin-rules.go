@@ -169,14 +169,21 @@ var builtinRules = []Rule{
 		Regex:    MustCompile(`xox[baprs]-([0-9a-zA-Z]{10,48})?`),
 		Keywords: []string{"xoxb-", "xoxa-", "xoxp-", "xoxr-", "xoxs-"},
 	},
-
 	{
-		ID:       "stripe-access-token",
+		ID:       "stripe-publishable-token",
 		Category: CategoryStripe,
-		Title:    "Stripe",
-		Severity: "HIGH",
-		Regex:    MustCompile(`(?i)(sk|pk)_(test|live)_[0-9a-z]{10,32}`),
-		Keywords: []string{"sk_test_", "sk_live_", "pk_test_", "pk_live_"},
+		Title:    "Stripe Publishable Key",
+		Severity: "LOW",
+		Regex:    MustCompile(`(?i)pk_(test|live)_[0-9a-z]{10,32}`),
+		Keywords: []string{"pk_test_", "pk_live_"},
+	},
+	{
+		ID:       "stripe-secret-token",
+		Category: CategoryStripe,
+		Title:    "Stripe Secret Key",
+		Severity: "CRITICAL",
+		Regex:    MustCompile(`(?i)sk_(test|live)_[0-9a-z]{10,32}`),
+		Keywords: []string{"sk_test_", "sk_live_"},
 	},
 	{
 		ID:       "pypi-upload-token",
