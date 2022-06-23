@@ -27,9 +27,11 @@ const (
 
 	// SecurityCheckSecret is a security check of secrets
 	SecurityCheckSecret = SecurityCheck("secret")
+	// SecurityCheckRbac is a security check of rbac assessment
+	SecurityCheckRbac = SecurityCheck("rbac")
 )
 
 var (
 	VulnTypes      = []string{VulnTypeOS, VulnTypeLibrary}
-	SecurityChecks = []string{SecurityCheckVulnerability, SecurityCheckConfig, SecurityCheckSecret}
+	SecurityChecks = []string{SecurityCheckVulnerability, SecurityCheckConfig, SecurityCheckSecret, SecurityCheckRbac}
 )

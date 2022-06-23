@@ -73,13 +73,12 @@ func run(ctx context.Context, opt cmd.Option, cluster string, artifacts []*artif
 	if err != nil {
 		return xerrors.Errorf("k8s scan error: %w", err)
 	}
-
 	if err := report.Write(r, report.Option{
 		Format:     opt.Format,
 		Report:     opt.KubernetesOption.ReportFormat,
 		Output:     opt.Output,
 		Severities: opt.Severities,
-	}); err != nil {
+	}, opt.ReportOption.SecurityChecks); err != nil {
 		return xerrors.Errorf("unable to write results: %w", err)
 	}
 
