@@ -47,6 +47,13 @@ Scan a specific resource and get all the output:
 $ trivy k8s deployment appname
 ```
 
+Scan all deploys, or deploys and configmaps:
+
+```
+$ trivy k8s --report=summary deployment
+$ trivy k8s --report=summary deployment,configmaps
+```
+
 If you want to pass in flags before scanning specific workloads, you will have to do it before the resource name.
 For example, scanning a deployment in the app namespace of your Kubernetes cluster for critical vulnerabilities would be done through the following command:
 
