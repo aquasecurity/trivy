@@ -107,6 +107,8 @@ func ApplyLayers(layers []types.BlobInfo) types.ArtifactDetail {
 
 		for _, pkgInfo := range layer.PackageInfos {
 			key := fmt.Sprintf("%s/type:ospkg", pkgInfo.FilePath)
+			//
+			pkgInfo = mergeLicense(nestedMap, strings.Split(key, sep), pkgInfo)
 			nestedMap.SetByString(key, sep, pkgInfo)
 		}
 		for _, app := range layer.Applications {
@@ -209,4 +211,26 @@ func aggregate(detail *types.ArtifactDetail) {
 
 	// Overwrite Applications
 	detail.Applications = apps
+}
+
+// dpkg packageInfo and licenses are in separate files.
+// if update only packageInfo in new layer, then this layer will not have licenses
+// in this case we overwrite licenses with empty value
+// we need to check previous layer if License field is empty
+func mergeLicense(nestedMap nested.Nested, key []string, new types.PackageInfo) types.PackageInfo {
+	n, err := nestedMap.Get(key)
+	if err == nested.ErrNoSuchKey {
+		return new
+	}
+	old := n.(types.PackageInfo)
+	for i, newPkg := range new.Packages {
+		if newPkg.License == "" {
+			for _, oldPkg := range old.Packages {
+				if newPkg.Name == oldPkg.Name && newPkg.SrcName == oldPkg.SrcName {
+					new.Packages[i].License = oldPkg.License
+				}
+			}
+		}
+	}
+	return new
 }
