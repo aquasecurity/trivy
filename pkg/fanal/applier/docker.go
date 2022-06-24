@@ -219,15 +219,16 @@ func aggregate(detail *types.ArtifactDetail) {
 // we need to check previous layer if License field is empty
 func mergeLicense(nestedMap nested.Nested, key []string, new types.PackageInfo) types.PackageInfo {
 	n, err := nestedMap.Get(key)
-	if err == nested.ErrNoSuchKey {
+	if err != nil && err == nested.ErrNoSuchKey {
 		return new
 	}
-	old := n.(types.PackageInfo)
-	for i, newPkg := range new.Packages {
-		if newPkg.License == "" {
-			for _, oldPkg := range old.Packages {
-				if newPkg.Name == oldPkg.Name && newPkg.SrcName == oldPkg.SrcName {
-					new.Packages[i].License = oldPkg.License
+	if old, ok := n.(types.PackageInfo); ok {
+		for i, newPkg := range new.Packages {
+			if newPkg.License == "" {
+				for _, oldPkg := range old.Packages {
+					if newPkg.Name == oldPkg.Name && newPkg.SrcName == oldPkg.SrcName {
+						new.Packages[i].License = oldPkg.License
+					}
 				}
 			}
 		}
