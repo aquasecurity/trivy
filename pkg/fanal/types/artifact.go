@@ -23,16 +23,17 @@ type Layer struct {
 }
 
 type Package struct {
-	ID         string `json:",omitempty"`
-	Name       string `json:",omitempty"`
-	Version    string `json:",omitempty"`
-	Release    string `json:",omitempty"`
-	Epoch      int    `json:",omitempty"`
-	Arch       string `json:",omitempty"`
-	SrcName    string `json:",omitempty"`
-	SrcVersion string `json:",omitempty"`
-	SrcRelease string `json:",omitempty"`
-	SrcEpoch   int    `json:",omitempty"`
+	ID         string   `json:",omitempty"`
+	Name       string   `json:",omitempty"`
+	Version    string   `json:",omitempty"`
+	Release    string   `json:",omitempty"`
+	Epoch      int      `json:",omitempty"`
+	Arch       string   `json:",omitempty"`
+	SrcName    string   `json:",omitempty"`
+	SrcVersion string   `json:",omitempty"`
+	SrcRelease string   `json:",omitempty"`
+	SrcEpoch   int      `json:",omitempty"`
+	Licenses   []string `json:",omitempty"`
 
 	Modularitylabel string     `json:",omitempty"` // only for Red Hat based distributions
 	BuildInfo       *BuildInfo `json:",omitempty"` // only for Red Hat
@@ -41,8 +42,7 @@ type Package struct {
 	Indirect  bool     `json:",omitempty"` // this package is direct dependency of the project or not
 	DependsOn []string `json:",omitempty"` // dependencies of this package
 
-	License string `json:",omitempty"`
-	Layer   Layer  `json:",omitempty"`
+	Layer Layer `json:",omitempty"`
 
 	// Each package metadata have the file path, while the package from lock files does not have.
 	FilePath string `json:",omitempty"`
@@ -136,6 +136,7 @@ type BlobInfo struct {
 	Applications      []Application      `json:",omitempty"`
 	Misconfigurations []Misconfiguration `json:",omitempty"`
 	Secrets           []Secret           `json:",omitempty"`
+	Licenses          []LicenseFile      `json:",omitempty"`
 	OpaqueDirs        []string           `json:",omitempty"`
 	WhiteoutFiles     []string           `json:",omitempty"`
 
@@ -157,6 +158,7 @@ type ArtifactDetail struct {
 	Applications      []Application      `json:",omitempty"`
 	Misconfigurations []Misconfiguration `json:",omitempty"`
 	Secrets           []Secret           `json:",omitempty"`
+	Licenses          []LicenseFile      `json:",omitempty"`
 
 	// HistoryPackages are packages extracted from RUN instructions
 	HistoryPackages []Package `json:",omitempty"`

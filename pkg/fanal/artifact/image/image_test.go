@@ -77,60 +77,60 @@ func TestArtifact_Inspect(t *testing.T) {
 										{
 											Name: "alpine-baselayout", Version: "3.2.0-r3",
 											SrcName: "alpine-baselayout", SrcVersion: "3.2.0-r3",
-											License: "GPL-2.0-only",
+											Licenses: []string{"GPL-2.0-only"},
 										},
 										{
 											Name: "alpine-keys", Version: "2.1-r2", SrcName: "alpine-keys",
-											SrcVersion: "2.1-r2", License: "MIT",
+											SrcVersion: "2.1-r2", Licenses: []string{"MIT"},
 										},
 										{
 											Name: "apk-tools", Version: "2.10.4-r3", SrcName: "apk-tools",
-											SrcVersion: "2.10.4-r3", License: "GPL2",
+											SrcVersion: "2.10.4-r3", Licenses: []string{"GPL2"},
 										},
 										{
 											Name: "busybox", Version: "1.31.1-r9", SrcName: "busybox",
-											SrcVersion: "1.31.1-r9", License: "GPL-2.0-only",
+											SrcVersion: "1.31.1-r9", Licenses: []string{"GPL-2.0-only"},
 										},
 										{
 											Name: "ca-certificates-cacert", Version: "20191127-r1",
 											SrcName: "ca-certificates", SrcVersion: "20191127-r1",
-											License: "MPL-2.0 GPL-2.0-or-later",
+											Licenses: []string{"MPL-2.0 GPL-2.0-or-later"},
 										},
 										{
 											Name: "libc-utils", Version: "0.7.2-r0", SrcName: "libc-dev",
-											SrcVersion: "0.7.2-r0", License: "BSD",
+											SrcVersion: "0.7.2-r0", Licenses: []string{"BSD"},
 										},
 										{
 											Name: "libcrypto1.1", Version: "1.1.1d-r3", SrcName: "openssl",
-											SrcVersion: "1.1.1d-r3", License: "OpenSSL",
+											SrcVersion: "1.1.1d-r3", Licenses: []string{"OpenSSL"},
 										},
 										{
 											Name: "libssl1.1", Version: "1.1.1d-r3", SrcName: "openssl",
-											SrcVersion: "1.1.1d-r3", License: "OpenSSL",
+											SrcVersion: "1.1.1d-r3", Licenses: []string{"OpenSSL"},
 										},
 										{
 											Name: "libtls-standalone", Version: "2.9.1-r0",
-											SrcName: "libtls-standalone", SrcVersion: "2.9.1-r0", License: "ISC",
+											SrcName: "libtls-standalone", SrcVersion: "2.9.1-r0", Licenses: []string{"ISC"},
 										},
 										{
 											Name: "musl", Version: "1.1.24-r2", SrcName: "musl",
-											SrcVersion: "1.1.24-r2", License: "MIT",
+											SrcVersion: "1.1.24-r2", Licenses: []string{"MIT"},
 										},
 										{
 											Name: "musl-utils", Version: "1.1.24-r2", SrcName: "musl",
-											SrcVersion: "1.1.24-r2", License: "MIT BSD GPL2+",
+											SrcVersion: "1.1.24-r2", Licenses: []string{"MIT BSD GPL2+"},
 										},
 										{
 											Name: "scanelf", Version: "1.2.4-r0", SrcName: "pax-utils",
-											SrcVersion: "1.2.4-r0", License: "GPL-2.0-only",
+											SrcVersion: "1.2.4-r0", Licenses: []string{"GPL-2.0-only"},
 										},
 										{
 											Name: "ssl_client", Version: "1.31.1-r9", SrcName: "busybox",
-											SrcVersion: "1.31.1-r9", License: "GPL-2.0-only",
+											SrcVersion: "1.31.1-r9", Licenses: []string{"GPL-2.0-only"},
 										},
 										{
 											Name: "zlib", Version: "1.2.11-r3", SrcName: "zlib",
-											SrcVersion: "1.2.11-r3", License: "Zlib",
+											SrcVersion: "1.2.11-r3", Licenses: []string{"Zlib"},
 										},
 									},
 								},
@@ -269,26 +269,32 @@ func TestArtifact_Inspect(t *testing.T) {
 									},
 								},
 							},
-							CustomResources: []types.CustomResource{
+							Licenses: []types.LicenseFile{
 								{
-									Type:     "dpkg-license",
+									Type:     types.LicenseTypeDpkg,
 									FilePath: "usr/share/doc/base-files/copyright",
-									Data:     "GPL",
+									Findings: []types.LicenseFinding{
+										{License: "GPL"},
+									},
+									Package: "base-files",
 								},
 								{
-									Type:     "dpkg-license",
+									Type:     types.LicenseTypeDpkg,
 									FilePath: "usr/share/doc/ca-certificates/copyright",
-									Data:     "GPL-2+, GPL-2, MPL-2.0",
+									Findings: []types.LicenseFinding{
+										{License: "GPL-2+"},
+										{License: "GPL-2"},
+										{License: "MPL-2.0"},
+									},
+									Package: "ca-certificates",
 								},
 								{
-									Type:     "dpkg-license",
+									Type:     types.LicenseTypeDpkg,
 									FilePath: "usr/share/doc/netbase/copyright",
-									Data:     "GPL-2",
-								},
-								{
-									Type:     "dpkg-license",
-									FilePath: "usr/share/doc/tzdata/copyright",
-									Data:     "Unknown",
+									Findings: []types.LicenseFinding{
+										{License: "GPL-2"},
+									},
+									Package: "netbase",
 								},
 							},
 						},
@@ -330,21 +336,31 @@ func TestArtifact_Inspect(t *testing.T) {
 									},
 								},
 							},
-							CustomResources: []types.CustomResource{
+							Licenses: []types.LicenseFile{
 								{
-									Type:     "dpkg-license",
+									Type:     types.LicenseTypeDpkg,
 									FilePath: "usr/share/doc/libc6/copyright",
-									Data:     "LGPL-2.1, GPL-2",
+									Findings: []types.LicenseFinding{
+										{License: "LGPL-2.1"},
+										{License: "GPL-2"},
+									},
+									Package: "libc6",
 								},
 								{
-									Type:     "dpkg-license",
+									Type:     types.LicenseTypeDpkg,
 									FilePath: "usr/share/doc/libssl1.1/copyright",
-									Data:     "OpenSSL",
+									Findings: []types.LicenseFinding{
+										{License: "OpenSSL"},
+									},
+									Package: "libssl1.1",
 								},
 								{
-									Type:     "dpkg-license",
+									Type:     types.LicenseTypeDpkg,
 									FilePath: "usr/share/doc/openssl/copyright",
-									Data:     "OpenSSL",
+									Findings: []types.LicenseFinding{
+										{License: "OpenSSL"},
+									},
+									Package: "openssl",
 								},
 							},
 						},
@@ -743,60 +759,60 @@ func TestArtifact_Inspect(t *testing.T) {
 										{
 											Name: "alpine-baselayout", Version: "3.2.0-r3",
 											SrcName: "alpine-baselayout", SrcVersion: "3.2.0-r3",
-											License: "GPL-2.0-only",
+											Licenses: []string{"GPL-2.0-only"},
 										},
 										{
 											Name: "alpine-keys", Version: "2.1-r2", SrcName: "alpine-keys",
-											SrcVersion: "2.1-r2", License: "MIT",
+											SrcVersion: "2.1-r2", Licenses: []string{"MIT"},
 										},
 										{
 											Name: "apk-tools", Version: "2.10.4-r3", SrcName: "apk-tools",
-											SrcVersion: "2.10.4-r3", License: "GPL2",
+											SrcVersion: "2.10.4-r3", Licenses: []string{"GPL2"},
 										},
 										{
 											Name: "busybox", Version: "1.31.1-r9", SrcName: "busybox",
-											SrcVersion: "1.31.1-r9", License: "GPL-2.0-only",
+											SrcVersion: "1.31.1-r9", Licenses: []string{"GPL-2.0-only"},
 										},
 										{
 											Name: "ca-certificates-cacert", Version: "20191127-r1",
 											SrcName: "ca-certificates", SrcVersion: "20191127-r1",
-											License: "MPL-2.0 GPL-2.0-or-later",
+											Licenses: []string{"MPL-2.0 GPL-2.0-or-later"},
 										},
 										{
 											Name: "libc-utils", Version: "0.7.2-r0", SrcName: "libc-dev",
-											SrcVersion: "0.7.2-r0", License: "BSD",
+											SrcVersion: "0.7.2-r0", Licenses: []string{"BSD"},
 										},
 										{
 											Name: "libcrypto1.1", Version: "1.1.1d-r3", SrcName: "openssl",
-											SrcVersion: "1.1.1d-r3", License: "OpenSSL",
+											SrcVersion: "1.1.1d-r3", Licenses: []string{"OpenSSL"},
 										},
 										{
 											Name: "libssl1.1", Version: "1.1.1d-r3", SrcName: "openssl",
-											SrcVersion: "1.1.1d-r3", License: "OpenSSL",
+											SrcVersion: "1.1.1d-r3", Licenses: []string{"OpenSSL"},
 										},
 										{
 											Name: "libtls-standalone", Version: "2.9.1-r0",
-											SrcName: "libtls-standalone", SrcVersion: "2.9.1-r0", License: "ISC",
+											SrcName: "libtls-standalone", SrcVersion: "2.9.1-r0", Licenses: []string{"ISC"},
 										},
 										{
 											Name: "musl", Version: "1.1.24-r2", SrcName: "musl",
-											SrcVersion: "1.1.24-r2", License: "MIT",
+											SrcVersion: "1.1.24-r2", Licenses: []string{"MIT"},
 										},
 										{
 											Name: "musl-utils", Version: "1.1.24-r2", SrcName: "musl",
-											SrcVersion: "1.1.24-r2", License: "MIT BSD GPL2+",
+											SrcVersion: "1.1.24-r2", Licenses: []string{"MIT BSD GPL2+"},
 										},
 										{
 											Name: "scanelf", Version: "1.2.4-r0", SrcName: "pax-utils",
-											SrcVersion: "1.2.4-r0", License: "GPL-2.0-only",
+											SrcVersion: "1.2.4-r0", Licenses: []string{"GPL-2.0-only"},
 										},
 										{
 											Name: "ssl_client", Version: "1.31.1-r9", SrcName: "busybox",
-											SrcVersion: "1.31.1-r9", License: "GPL-2.0-only",
+											SrcVersion: "1.31.1-r9", Licenses: []string{"GPL-2.0-only"},
 										},
 										{
 											Name: "zlib", Version: "1.2.11-r3", SrcName: "zlib",
-											SrcVersion: "1.2.11-r3", License: "Zlib",
+											SrcVersion: "1.2.11-r3", Licenses: []string{"Zlib"},
 										},
 									},
 								},
@@ -849,60 +865,60 @@ func TestArtifact_Inspect(t *testing.T) {
 										{
 											Name: "alpine-baselayout", Version: "3.2.0-r3",
 											SrcName: "alpine-baselayout", SrcVersion: "3.2.0-r3",
-											License: "GPL-2.0-only",
+											Licenses: []string{"GPL-2.0-only"},
 										},
 										{
 											Name: "alpine-keys", Version: "2.1-r2", SrcName: "alpine-keys",
-											SrcVersion: "2.1-r2", License: "MIT",
+											SrcVersion: "2.1-r2", Licenses: []string{"MIT"},
 										},
 										{
 											Name: "apk-tools", Version: "2.10.4-r3", SrcName: "apk-tools",
-											SrcVersion: "2.10.4-r3", License: "GPL2",
+											SrcVersion: "2.10.4-r3", Licenses: []string{"GPL2"},
 										},
 										{
 											Name: "busybox", Version: "1.31.1-r9", SrcName: "busybox",
-											SrcVersion: "1.31.1-r9", License: "GPL-2.0-only",
+											SrcVersion: "1.31.1-r9", Licenses: []string{"GPL-2.0-only"},
 										},
 										{
 											Name: "ca-certificates-cacert", Version: "20191127-r1",
 											SrcName: "ca-certificates", SrcVersion: "20191127-r1",
-											License: "MPL-2.0 GPL-2.0-or-later",
+											Licenses: []string{"MPL-2.0 GPL-2.0-or-later"},
 										},
 										{
 											Name: "libc-utils", Version: "0.7.2-r0", SrcName: "libc-dev",
-											SrcVersion: "0.7.2-r0", License: "BSD",
+											SrcVersion: "0.7.2-r0", Licenses: []string{"BSD"},
 										},
 										{
 											Name: "libcrypto1.1", Version: "1.1.1d-r3", SrcName: "openssl",
-											SrcVersion: "1.1.1d-r3", License: "OpenSSL",
+											SrcVersion: "1.1.1d-r3", Licenses: []string{"OpenSSL"},
 										},
 										{
 											Name: "libssl1.1", Version: "1.1.1d-r3", SrcName: "openssl",
-											SrcVersion: "1.1.1d-r3", License: "OpenSSL",
+											SrcVersion: "1.1.1d-r3", Licenses: []string{"OpenSSL"},
 										},
 										{
 											Name: "libtls-standalone", Version: "2.9.1-r0",
-											SrcName: "libtls-standalone", SrcVersion: "2.9.1-r0", License: "ISC",
+											SrcName: "libtls-standalone", SrcVersion: "2.9.1-r0", Licenses: []string{"ISC"},
 										},
 										{
 											Name: "musl", Version: "1.1.24-r2", SrcName: "musl",
-											SrcVersion: "1.1.24-r2", License: "MIT",
+											SrcVersion: "1.1.24-r2", Licenses: []string{"MIT"},
 										},
 										{
 											Name: "musl-utils", Version: "1.1.24-r2", SrcName: "musl",
-											SrcVersion: "1.1.24-r2", License: "MIT BSD GPL2+",
+											SrcVersion: "1.1.24-r2", Licenses: []string{"MIT BSD GPL2+"},
 										},
 										{
 											Name: "scanelf", Version: "1.2.4-r0", SrcName: "pax-utils",
-											SrcVersion: "1.2.4-r0", License: "GPL-2.0-only",
+											SrcVersion: "1.2.4-r0", Licenses: []string{"GPL-2.0-only"},
 										},
 										{
 											Name: "ssl_client", Version: "1.31.1-r9", SrcName: "busybox",
-											SrcVersion: "1.31.1-r9", License: "GPL-2.0-only",
+											SrcVersion: "1.31.1-r9", Licenses: []string{"GPL-2.0-only"},
 										},
 										{
 											Name: "zlib", Version: "1.2.11-r3", SrcName: "zlib",
-											SrcVersion: "1.2.11-r3", License: "Zlib",
+											SrcVersion: "1.2.11-r3", Licenses: []string{"Zlib"},
 										},
 									},
 								},

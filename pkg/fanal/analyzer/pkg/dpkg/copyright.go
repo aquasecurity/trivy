@@ -11,6 +11,7 @@ import (
 
 	classifier "github.com/google/licenseclassifier/v2"
 	"github.com/google/licenseclassifier/v2/assets"
+	"github.com/samber/lo"
 	"golang.org/x/exp/slices"
 	"golang.org/x/xerrors"
 
@@ -44,20 +45,25 @@ type dpkgLicenseAnalyzer struct{}
 func (a dpkgLicenseAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInput) (*analyzer.AnalysisResult, error) {
 	licenses, err := a.parseCopyright(input.Content)
 	if err != nil {
-		return nil, xerrors.Errorf("failed to parse %s: %w", input.FilePath, err)
+		return nil, xerrors.Errorf("parse copyright %s: %w", input.FilePath, err)
+	} else if len(licenses) == 0 {
+		return nil, nil
 	}
 
-	licensesStr := strings.Join(licenses, ", ")
-	if licensesStr == "" {
-		licensesStr = "Unknown"
-	}
+	findings := lo.Map(licenses, func(license string, _ int) types.LicenseFinding {
+		return types.LicenseFinding{License: license}
+	})
+
+	// e.g. "usr/share/doc/zlib1g/copyright" => "zlib1g"
+	pkgName := strings.Split(input.FilePath, "/")[3]
 
 	return &analyzer.AnalysisResult{
-		CustomResources: []types.CustomResource{
+		Licenses: []types.LicenseFile{
 			{
-				Type:     string(types.DpkgLicensePostHandler),
+				Type:     types.LicenseTypeDpkg,
 				FilePath: input.FilePath,
-				Data:     licensesStr,
+				Findings: findings,
+				Package:  pkgName,
 			},
 		},
 	}, nil
@@ -94,7 +100,7 @@ func (a dpkgLicenseAnalyzer) parseCopyright(r dio.ReadSeekerAt) ([]string, error
 
 	// Rewind the reader to the beginning of the stream after saving
 	if _, err := r.Seek(0, io.SeekStart); err != nil {
-		return nil, xerrors.Errorf("unable to rewind reader: %w", err)
+		return nil, xerrors.Errorf("seek error: %w", err)
 	}
 
 	// Use 'github.com/google/licenseclassifier' to find licenses

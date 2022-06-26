@@ -14,72 +14,74 @@ import (
 
 func Test_dpkgLicenseAnalyzer_Analyze(t *testing.T) {
 	tests := []struct {
-		name                 string
-		filePath             string
-		inputContentFilePath string
-		wantLicense          *analyzer.AnalysisResult
+		name     string
+		filePath string
+		testFile string
+		want     *analyzer.AnalysisResult
 	}{
 		{
-			name:                 "machine-readable format",
-			filePath:             "usr/share/doc/zlib1g/copyright",
-			inputContentFilePath: "testdata/license-pattern-and-classifier-copyright",
-			wantLicense: &analyzer.AnalysisResult{
-				CustomResources: []types.CustomResource{
+			name:     "machine-readable format",
+			filePath: "usr/share/doc/zlib1g/copyright",
+			testFile: "testdata/license-pattern-and-classifier-copyright",
+			want: &analyzer.AnalysisResult{
+				Licenses: []types.LicenseFile{
 					{
-						Type:     string(types.DpkgLicensePostHandler),
+						Type:     types.LicenseTypeDpkg,
 						FilePath: "usr/share/doc/zlib1g/copyright",
-						Data:     "Zlib",
+						Findings: []types.LicenseFinding{
+							{License: "Zlib"},
+						},
+						Package: "zlib1g",
 					},
 				},
 			},
 		},
 		{
-			name:                 "common-licenses format",
-			filePath:             "usr/share/doc/adduser/copyright",
-			inputContentFilePath: "testdata/common-license-copyright",
-			wantLicense: &analyzer.AnalysisResult{
-				CustomResources: []types.CustomResource{
+			name:     "common-licenses format",
+			filePath: "usr/share/doc/adduser/copyright",
+			testFile: "testdata/common-license-copyright",
+			want: &analyzer.AnalysisResult{
+				Licenses: []types.LicenseFile{
 					{
-						Type:     string(types.DpkgLicensePostHandler),
+						Type:     types.LicenseTypeDpkg,
 						FilePath: "usr/share/doc/adduser/copyright",
-						Data:     "GPL-2",
+						Findings: []types.LicenseFinding{
+							{License: "GPL-2"},
+						},
+						Package: "adduser",
 					},
 				},
 			},
 		},
 		{
-			name:                 "machine-readable and common-licenses format",
-			filePath:             "usr/share/doc/apt/copyright",
-			inputContentFilePath: "testdata/all-patterns-copyright",
-			wantLicense: &analyzer.AnalysisResult{
-				CustomResources: []types.CustomResource{
+			name:     "machine-readable and common-licenses format",
+			filePath: "usr/share/doc/apt/copyright",
+			testFile: "testdata/all-patterns-copyright",
+			want: &analyzer.AnalysisResult{
+				Licenses: []types.LicenseFile{
 					{
-						Type:     string(types.DpkgLicensePostHandler),
+						Type:     types.LicenseTypeDpkg,
 						FilePath: "usr/share/doc/apt/copyright",
-						Data:     "GPLv2+, GPL-2",
+						Findings: []types.LicenseFinding{
+							{License: "GPLv2+"},
+							{License: "GPL-2"},
+						},
+						Package: "apt",
 					},
 				},
 			},
 		},
 		{
-			name:                 "no license found",
-			filePath:             "usr/share/doc/tzdata/copyright",
-			inputContentFilePath: "testdata/no-license-copyright",
-			wantLicense: &analyzer.AnalysisResult{
-				CustomResources: []types.CustomResource{
-					{
-						Type:     string(types.DpkgLicensePostHandler),
-						FilePath: "usr/share/doc/tzdata/copyright",
-						Data:     "Unknown",
-					},
-				},
-			},
+			name:     "no license found",
+			filePath: "usr/share/doc/tzdata/copyright",
+			testFile: "testdata/no-license-copyright",
+			want:     nil,
 		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			f, err := os.Open(tt.inputContentFilePath)
+			f, err := os.Open(tt.testFile)
 			require.NoError(t, err)
 
 			input := analyzer.AnalysisInput{
@@ -90,7 +92,7 @@ func Test_dpkgLicenseAnalyzer_Analyze(t *testing.T) {
 
 			license, err := a.Analyze(context.Background(), input)
 			require.NoError(t, err)
-			assert.Equal(t, tt.wantLicense, license)
+			assert.Equal(t, tt.want, license)
 		})
 	}
 }

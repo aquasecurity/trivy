@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/knqyf263/nested"
+	"github.com/samber/lo"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 )
@@ -105,16 +106,19 @@ func ApplyLayers(layers []types.BlobInfo) types.ArtifactDetail {
 			mergedLayer.Repository = layer.Repository
 		}
 
+		// Apply OS packages
 		for _, pkgInfo := range layer.PackageInfos {
 			key := fmt.Sprintf("%s/type:ospkg", pkgInfo.FilePath)
-			//
-			pkgInfo = mergeLicense(nestedMap, strings.Split(key, sep), pkgInfo)
 			nestedMap.SetByString(key, sep, pkgInfo)
 		}
+
+		// Apply language-specific packages
 		for _, app := range layer.Applications {
 			key := fmt.Sprintf("%s/type:%s", app.FilePath, app.Type)
 			nestedMap.SetByString(key, sep, app)
 		}
+
+		// Apply misconfigurations
 		for _, config := range layer.Misconfigurations {
 			config.Layer = types.Layer{
 				Digest: layer.Digest,
@@ -123,6 +127,8 @@ func ApplyLayers(layers []types.BlobInfo) types.ArtifactDetail {
 			key := fmt.Sprintf("%s/type:config", config.FilePath)
 			nestedMap.SetByString(key, sep, config)
 		}
+
+		// Apply secrets
 		for _, secret := range layer.Secrets {
 			secret.Layer = types.Layer{
 				Digest: layer.Digest,
@@ -131,6 +137,18 @@ func ApplyLayers(layers []types.BlobInfo) types.ArtifactDetail {
 			key := fmt.Sprintf("%s/type:secret", secret.FilePath)
 			nestedMap.SetByString(key, sep, secret)
 		}
+
+		// Apply license files
+		for _, license := range layer.Licenses {
+			license.Layer = types.Layer{
+				Digest: layer.Digest,
+				DiffID: layer.DiffID,
+			}
+			key := fmt.Sprintf("%s/type:license,%s", license.FilePath, license.Type)
+			nestedMap.SetByString(key, sep, license)
+		}
+
+		// Apply custom resources
 		for _, customResource := range layer.CustomResources {
 			key := fmt.Sprintf("%s/custom:%s", customResource.FilePath, customResource.Type)
 			customResource.Layer = types.Layer{
@@ -152,11 +170,29 @@ func ApplyLayers(layers []types.BlobInfo) types.ArtifactDetail {
 			mergedLayer.Misconfigurations = append(mergedLayer.Misconfigurations, v)
 		case types.Secret:
 			mergedLayer.Secrets = append(mergedLayer.Secrets, v)
+		case types.LicenseFile:
+			mergedLayer.Licenses = append(mergedLayer.Licenses, v)
 		case types.CustomResource:
 			mergedLayer.CustomResources = append(mergedLayer.CustomResources, v)
 		}
 		return nil
 	})
+
+	// Extract dpkg licenses
+	// The license information is not stored in the dpkg database and in a separate file,
+	// so we have to merge the license information into the package.
+	dpkgLicenses := map[string][]string{}
+	for _, license := range mergedLayer.Licenses {
+		if license.Type != types.LicenseTypeDpkg {
+			continue
+		}
+		// e.g.
+		//	"adduser" => {"GPL-2"}
+		//  "openssl" => {"MIT", "BSD"}
+		dpkgLicenses[license.Package] = lo.Map(license.Findings, func(finding types.LicenseFinding, _ int) string {
+			return finding.License
+		})
+	}
 
 	for i, pkg := range mergedLayer.Packages {
 		originLayerDigest, originLayerDiffID, buildInfo := lookupOriginLayerForPkg(pkg, layers)
@@ -165,6 +201,11 @@ func ApplyLayers(layers []types.BlobInfo) types.ArtifactDetail {
 			DiffID: originLayerDiffID,
 		}
 		mergedLayer.Packages[i].BuildInfo = buildInfo
+
+		// Only debian packages
+		if licenses, ok := dpkgLicenses[pkg.Name]; ok {
+			pkg.Licenses = licenses
+		}
 	}
 
 	for _, app := range mergedLayer.Applications {
@@ -177,7 +218,7 @@ func ApplyLayers(layers []types.BlobInfo) types.ArtifactDetail {
 		}
 	}
 
-	// Aggregate python/ruby/node.js packages
+	// Aggregate python/ruby/node.js packages and JAR files
 	aggregate(&mergedLayer)
 
 	return mergedLayer
@@ -211,27 +252,4 @@ func aggregate(detail *types.ArtifactDetail) {
 
 	// Overwrite Applications
 	detail.Applications = apps
-}
-
-// dpkg packageInfo and licenses are in separate files.
-// if update only packageInfo in new layer, then this layer will not have licenses
-// in this case we overwrite licenses with empty value
-// we need to check previous layer if License field is empty
-func mergeLicense(nestedMap nested.Nested, key []string, new types.PackageInfo) types.PackageInfo {
-	n, err := nestedMap.Get(key)
-	if err != nil && err == nested.ErrNoSuchKey {
-		return new
-	}
-	if old, ok := n.(types.PackageInfo); ok {
-		for i, newPkg := range new.Packages {
-			if newPkg.License == "" {
-				for _, oldPkg := range old.Packages {
-					if newPkg.Name == oldPkg.Name && newPkg.SrcName == oldPkg.SrcName {
-						new.Packages[i].License = oldPkg.License
-					}
-				}
-			}
-		}
-	}
-	return new
 }
