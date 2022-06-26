@@ -84,6 +84,8 @@ func lookupOriginLayerForLib(filePath string, lib types.Package, layers []types.
 	return "", ""
 }
 
+// ApplyLayers returns the merged layer
+// nolint: gocyclo
 func ApplyLayers(layers []types.BlobInfo) types.ArtifactDetail {
 	sep := "/"
 	nestedMap := nested.Nested{}
