@@ -75,7 +75,7 @@ func (a alpinePkgAnalyzer) parseApkInfo(scanner *bufio.Scanner) ([]types.Package
 			pkg.SrcName = origin
 			pkg.SrcVersion = version
 		case "L:":
-			pkg.License = line[2:]
+			pkg.Licenses = []string{line[2:]}
 		case "F:":
 			dir = line[2:]
 		case "R:":
