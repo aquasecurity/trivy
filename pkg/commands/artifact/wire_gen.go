@@ -10,10 +10,10 @@ import (
 	"context"
 
 	"github.com/aquasecurity/trivy-db/pkg/db"
-	sbom2 "github.com/aquasecurity/trivy/pkg/artifact/sbom"
 	"github.com/aquasecurity/trivy/pkg/detector/ospkg"
 	"github.com/aquasecurity/trivy/pkg/fanal/applier"
 	"github.com/aquasecurity/trivy/pkg/fanal/artifact"
+	sbom2 "github.com/aquasecurity/trivy/pkg/fanal/artifact/sbom"
 	image2 "github.com/aquasecurity/trivy/pkg/fanal/artifact/image"
 	local2 "github.com/aquasecurity/trivy/pkg/fanal/artifact/local"
 	"github.com/aquasecurity/trivy/pkg/fanal/artifact/remote"

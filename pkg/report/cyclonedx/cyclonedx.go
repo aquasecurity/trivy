@@ -13,7 +13,6 @@ import (
 	"golang.org/x/xerrors"
 	"k8s.io/utils/clock"
 
-	"github.com/aquasecurity/trivy/pkg/artifact/sbom"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/purl"
 	"github.com/aquasecurity/trivy/pkg/sbom/cyclonedx"
@@ -87,7 +86,7 @@ func NewWriter(output io.Writer, version string, opts ...option) Writer {
 func (cw Writer) Write(report types.Report) error {
 	var bom *cdx.BOM
 	var err error
-	if report.ArtifactType == sbom.ArtifactCycloneDX {
+	if report.ArtifactType == ftypes.ArtifactCycloneDX {
 		bom, err = cw.vex(report.Results, report.ArtifactName)
 		if err != nil {
 			return xerrors.Errorf("failed to convert vex: %w", err)

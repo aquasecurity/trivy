@@ -20,10 +20,6 @@ import (
 	"github.com/aquasecurity/trivy/pkg/sbom/cyclonedx"
 )
 
-const (
-	ArtifactCycloneDX types.ArtifactType = "cyclonedx"
-)
-
 type Artifact struct {
 	filePath       string
 	cache          cache.ArtifactCache
@@ -40,7 +36,7 @@ type Artifact struct {
 func NewArtifact(artifactType types.ArtifactType, filePath string, c cache.ArtifactCache, opt artifact.Option) (artifact.Artifact, error) {
 	var parser sbom.Parser
 	switch artifactType {
-	case ArtifactCycloneDX:
+	case types.ArtifactCycloneDX:
 		parser = cyclonedx.NewJSON()
 	}
 	return Artifact{
