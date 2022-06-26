@@ -852,10 +852,10 @@ func NewK8sCommand() *cli.Command {
 	k8sSecurityChecksFlag := withValue(
 		securityChecksFlag,
 		fmt.Sprintf(
-			"%s,%s,%s",
+			"%s,%s,%s,%s",
 			types.SecurityCheckVulnerability,
 			types.SecurityCheckConfig,
-			types.SecurityCheckSecret),
+			types.SecurityCheckSecret, types.SecurityCheckRbac),
 	)
 
 	return &cli.Command{
