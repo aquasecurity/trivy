@@ -182,9 +182,9 @@ func ApplyLayers(layers []types.BlobInfo) types.ArtifactDetail {
 	// The license information is not stored in the dpkg database and in a separate file,
 	// so we have to merge the license information into the package.
 	dpkgLicenses := map[string][]string{}
-	for _, license := range mergedLayer.Licenses {
+	mergedLayer.Licenses = lo.Reject(mergedLayer.Licenses, func(license types.LicenseFile, _ int) bool {
 		if license.Type != types.LicenseTypeDpkg {
-			continue
+			return false
 		}
 		// e.g.
 		//	"adduser" => {"GPL-2"}
@@ -192,6 +192,11 @@ func ApplyLayers(layers []types.BlobInfo) types.ArtifactDetail {
 		dpkgLicenses[license.Package] = lo.Map(license.Findings, func(finding types.LicenseFinding, _ int) string {
 			return finding.License
 		})
+		// Remove this license in the merged result as it is merged into the package information.
+		return true
+	})
+	if len(mergedLayer.Licenses) == 0 {
+		mergedLayer.Licenses = nil
 	}
 
 	for i, pkg := range mergedLayer.Packages {
@@ -204,7 +209,7 @@ func ApplyLayers(layers []types.BlobInfo) types.ArtifactDetail {
 
 		// Only debian packages
 		if licenses, ok := dpkgLicenses[pkg.Name]; ok {
-			pkg.Licenses = licenses
+			mergedLayer.Packages[i].Licenses = licenses
 		}
 	}
 
