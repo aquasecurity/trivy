@@ -54,6 +54,31 @@ func TestDriver_Detect(t *testing.T) {
 			},
 		},
 		{
+			name: "case-sensitive go package",
+			fixtures: []string{
+				"testdata/fixtures/go.yaml",
+				"testdata/fixtures/data-source.yaml",
+			},
+			libType: ftypes.GoModule,
+			args: args{
+				pkgName: "github.com/Masterminds/vcs",
+				pkgVer:  "v1.13.1",
+			},
+			want: []types.DetectedVulnerability{
+				{
+					VulnerabilityID:  "CVE-2022-21235",
+					PkgName:          "github.com/Masterminds/vcs",
+					InstalledVersion: "v1.13.1",
+					FixedVersion:     "v1.13.2",
+					DataSource: &dbTypes.DataSource{
+						ID:   vulnerability.GLAD,
+						Name: "GitLab Advisory Database Community",
+						URL:  "https://gitlab.com/gitlab-org/advisories-community",
+					},
+				},
+			},
+		},
+		{
 			name:     "non-prefixed buckets",
 			fixtures: []string{"testdata/fixtures/php-without-prefix.yaml"},
 			libType:  ftypes.Composer,
