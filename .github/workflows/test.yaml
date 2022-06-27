@@ -28,6 +28,7 @@ jobs:
         run: |
           go mod tidy
           if [ -n "$(git status --porcelain)" ]; then
+            echo "Run 'go mod tidy' and push it"
             exit 1
           fi
 
