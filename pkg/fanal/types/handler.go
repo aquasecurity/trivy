@@ -7,7 +7,7 @@ const (
 	GoModMergePostHandler          HandlerType = "go-mod-merge"
 	MisconfPostHandler             HandlerType = "misconf"
 
-	// SystemFileFilterPostHandlerPriority should be higher than other handlers.
+	// SystemFileFilteringPostHandlerPriority should be higher than other handlers.
 	// Otherwise, other handlers need to process unnecessary files.
 	SystemFileFilteringPostHandlerPriority = 100
 

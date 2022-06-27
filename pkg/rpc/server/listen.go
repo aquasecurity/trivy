@@ -26,21 +26,23 @@ const updateInterval = 1 * time.Hour
 
 // Server represents Trivy server
 type Server struct {
-	appVersion  string
-	addr        string
-	cacheDir    string
-	token       string
-	tokenHeader string
+	appVersion   string
+	addr         string
+	cacheDir     string
+	token        string
+	tokenHeader  string
+	dbRepository string
 }
 
 // NewServer returns an instance of Server
-func NewServer(appVersion, addr, cacheDir, token, tokenHeader string) Server {
+func NewServer(appVersion, addr, cacheDir, token, tokenHeader, dbRepository string) Server {
 	return Server{
-		appVersion:  appVersion,
-		addr:        addr,
-		cacheDir:    cacheDir,
-		token:       token,
-		tokenHeader: tokenHeader,
+		appVersion:   appVersion,
+		addr:         addr,
+		cacheDir:     cacheDir,
+		token:        token,
+		tokenHeader:  tokenHeader,
+		dbRepository: dbRepository,
 	}
 }
 
@@ -50,7 +52,7 @@ func (s Server) ListenAndServe(serverCache cache.Cache, insecure bool) error {
 	dbUpdateWg := &sync.WaitGroup{}
 
 	go func() {
-		worker := newDBWorker(dbc.NewClient(s.cacheDir, true, insecure))
+		worker := newDBWorker(dbc.NewClient(s.cacheDir, true, insecure, dbc.WithDBRepository(s.dbRepository)))
 		ctx := context.Background()
 		for {
 			time.Sleep(updateInterval)

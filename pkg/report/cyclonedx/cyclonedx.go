@@ -8,6 +8,7 @@ import (
 
 	cdx "github.com/CycloneDX/cyclonedx-go"
 	"github.com/google/uuid"
+	"github.com/samber/lo"
 	"golang.org/x/exp/maps"
 	"golang.org/x/xerrors"
 	"k8s.io/utils/clock"
@@ -290,10 +291,11 @@ func (cw *Writer) pkgToComponent(t string, meta types.Metadata, pkg ftypes.Packa
 		Properties: &properties,
 	}
 
-	if pkg.License != "" {
-		component.Licenses = &cdx.Licenses{
-			cdx.LicenseChoice{Expression: pkg.License},
-		}
+	if len(pkg.Licenses) != 0 {
+		choices := lo.Map(pkg.Licenses, func(license string, i int) cdx.LicenseChoice {
+			return cdx.LicenseChoice{Expression: license}
+		})
+		component.Licenses = lo.ToPtr(cdx.Licenses(choices))
 	}
 
 	return component, nil

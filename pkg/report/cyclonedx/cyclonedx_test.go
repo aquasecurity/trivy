@@ -68,7 +68,7 @@ func TestWriter_Write(t *testing.T) {
 								SrcRelease:      "93.el8",
 								SrcEpoch:        0,
 								Modularitylabel: "",
-								License:         "GPLv3+",
+								Licenses:        []string{"GPLv3+"},
 							},
 						},
 						Vulnerabilities: []types.DetectedVulnerability{
@@ -428,7 +428,7 @@ func TestWriter_Write(t *testing.T) {
 								SrcRelease:      "1.el8",
 								SrcEpoch:        1,
 								Modularitylabel: "",
-								License:         "GPLv2+",
+								Licenses:        []string{"GPLv2+"},
 							},
 						},
 					},
@@ -867,9 +867,9 @@ func TestWriter_Write(t *testing.T) {
 						Type:   ftypes.NodePkg,
 						Packages: []ftypes.Package{
 							{
-								Name:    "ruby-typeprof",
-								Version: "0.20.1",
-								License: "MIT",
+								Name:     "ruby-typeprof",
+								Version:  "0.20.1",
+								Licenses: []string{"MIT"},
 								Layer: ftypes.Layer{
 									DiffID: "sha256:661c3fd3cc16b34c070f3620ca6b03b6adac150f9a7e5d0e3c707a159990f88e",
 								},

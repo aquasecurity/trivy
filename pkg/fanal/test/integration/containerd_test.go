@@ -255,10 +255,20 @@ func TestContainerd_LocalImage(t *testing.T) {
 			got, err := a.ApplyLayers(ref.ID, ref.BlobIDs)
 			require.NoError(t, err)
 
-			// Parse a golden file
 			tag := strings.Split(tt.imageName, ":")[1]
-			golden, err := os.Open(fmt.Sprintf("testdata/goldens/packages/%s.json.golden", tag))
+			goldenFile := fmt.Sprintf("testdata/goldens/packages/%s.json.golden", tag)
+
+			if *update {
+				b, err := json.MarshalIndent(got.Packages, "", "  ")
+				require.NoError(t, err)
+				err = os.WriteFile(goldenFile, b, 0666)
+				require.NoError(t, err)
+			}
+
+			// Parse a golden file
+			golden, err := os.Open(goldenFile)
 			require.NoError(t, err)
+			defer golden.Close()
 
 			var wantPkgs []types.Package
 			err = json.NewDecoder(golden).Decode(&wantPkgs)
