@@ -15,6 +15,7 @@ func TestCycloneDX(t *testing.T) {
 
 	type args struct {
 		input        string
+		format       string
 		artifactType string
 	}
 	tests := []struct {
@@ -26,6 +27,7 @@ func TestCycloneDX(t *testing.T) {
 			name: "centos7-bom by trivy",
 			args: args{
 				input:        "testdata/fixtures/sbom/centos7-bom.json",
+				format:       "cyclonedx",
 				artifactType: "cyclonedx",
 			},
 			golden: "testdata/centos7-bom.json.golden",
@@ -34,6 +36,7 @@ func TestCycloneDX(t *testing.T) {
 			name: "fluentd-multiple-lockfiles-bom by trivy",
 			args: args{
 				input:        "testdata/fixtures/sbom/fluentd-multiple-lockfiles-bom.json",
+				format:       "cyclonedx",
 				artifactType: "cyclonedx",
 			},
 			golden: "testdata/fluentd-multiple-lockfiles-bom.json.golden",
@@ -47,7 +50,7 @@ func TestCycloneDX(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			osArgs := []string{
 				"trivy", "--cache-dir", cacheDir, "sbom", "--skip-db-update",
-				"--artifact-type", tt.args.artifactType,
+				"--artifact-type", tt.args.artifactType, "--format", tt.args.format,
 			}
 
 			// Setup the output file

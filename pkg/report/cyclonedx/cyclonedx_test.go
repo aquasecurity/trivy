@@ -18,7 +18,6 @@ import (
 	dtypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/vulnerability"
 	fos "github.com/aquasecurity/trivy/pkg/fanal/analyzer/os"
-	"github.com/aquasecurity/trivy/pkg/fanal/artifact/sbom"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/report"
 	"github.com/aquasecurity/trivy/pkg/report/cyclonedx"
@@ -397,7 +396,7 @@ func TestWriter_Write(t *testing.T) {
 			inputReport: types.Report{
 				SchemaVersion: report.SchemaVersion,
 				ArtifactName:  "urn:uuid:3ff14136-e09f-4df9-80ea-000000000001",
-				ArtifactType:  sbom.ArtifactCycloneDX,
+				ArtifactType:  ftypes.ArtifactCycloneDX,
 				Metadata: types.Metadata{
 					Size: 1024,
 					OS: &ftypes.OS{
@@ -431,7 +430,7 @@ func TestWriter_Write(t *testing.T) {
 								SrcRelease:      "93.el8",
 								SrcEpoch:        0,
 								Modularitylabel: "",
-								License:         "GPLv3+",
+								Licenses:        []string{"GPLv3+"},
 							},
 						},
 						Vulnerabilities: []types.DetectedVulnerability{

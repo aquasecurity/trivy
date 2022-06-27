@@ -35,10 +35,9 @@ type Artifact struct {
 
 func NewArtifact(artifactType types.ArtifactType, filePath string, c cache.ArtifactCache, opt artifact.Option) (artifact.Artifact, error) {
 	var parser sbom.Parser
+
 	switch artifactType {
 	case types.ArtifactCycloneDX:
-		parser = cyclonedx.NewJSON()
-	default:
 		parser = cyclonedx.NewJSON()
 	}
 	return Artifact{
