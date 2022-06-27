@@ -31,7 +31,7 @@ func Test_packagingAnalyzer_Analyze(t *testing.T) {
 							{
 								Name:     "kitchen",
 								Version:  "1.2.6",
-								License:  "LGPLv2+",
+								Licenses: []string{"LGPLv2+"},
 								FilePath: "testdata/kitchen-1.2.6-py2.7.egg",
 							},
 						},
@@ -51,7 +51,7 @@ func Test_packagingAnalyzer_Analyze(t *testing.T) {
 							{
 								Name:     "distlib",
 								Version:  "0.3.1",
-								License:  "Python license",
+								Licenses: []string{"Python license"},
 								FilePath: "testdata/happy.egg-info/PKG-INFO",
 							},
 						},
@@ -90,7 +90,7 @@ func Test_packagingAnalyzer_Analyze(t *testing.T) {
 							{
 								Name:     "distlib",
 								Version:  "0.3.1",
-								License:  "Python license",
+								Licenses: []string{"Python license"},
 								FilePath: "testdata/happy.dist-info/METADATA",
 							},
 						},

@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/knqyf263/nested"
+	"github.com/samber/lo"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 )
@@ -83,6 +84,8 @@ func lookupOriginLayerForLib(filePath string, lib types.Package, layers []types.
 	return "", ""
 }
 
+// ApplyLayers returns the merged layer
+// nolint: gocyclo
 func ApplyLayers(layers []types.BlobInfo) types.ArtifactDetail {
 	sep := "/"
 	nestedMap := nested.Nested{}
@@ -105,14 +108,19 @@ func ApplyLayers(layers []types.BlobInfo) types.ArtifactDetail {
 			mergedLayer.Repository = layer.Repository
 		}
 
+		// Apply OS packages
 		for _, pkgInfo := range layer.PackageInfos {
 			key := fmt.Sprintf("%s/type:ospkg", pkgInfo.FilePath)
 			nestedMap.SetByString(key, sep, pkgInfo)
 		}
+
+		// Apply language-specific packages
 		for _, app := range layer.Applications {
 			key := fmt.Sprintf("%s/type:%s", app.FilePath, app.Type)
 			nestedMap.SetByString(key, sep, app)
 		}
+
+		// Apply misconfigurations
 		for _, config := range layer.Misconfigurations {
 			config.Layer = types.Layer{
 				Digest: layer.Digest,
@@ -121,6 +129,8 @@ func ApplyLayers(layers []types.BlobInfo) types.ArtifactDetail {
 			key := fmt.Sprintf("%s/type:config", config.FilePath)
 			nestedMap.SetByString(key, sep, config)
 		}
+
+		// Apply secrets
 		for _, secret := range layer.Secrets {
 			secret.Layer = types.Layer{
 				Digest: layer.Digest,
@@ -129,6 +139,18 @@ func ApplyLayers(layers []types.BlobInfo) types.ArtifactDetail {
 			key := fmt.Sprintf("%s/type:secret", secret.FilePath)
 			nestedMap.SetByString(key, sep, secret)
 		}
+
+		// Apply license files
+		for _, license := range layer.Licenses {
+			license.Layer = types.Layer{
+				Digest: layer.Digest,
+				DiffID: layer.DiffID,
+			}
+			key := fmt.Sprintf("%s/type:license,%s", license.FilePath, license.Type)
+			nestedMap.SetByString(key, sep, license)
+		}
+
+		// Apply custom resources
 		for _, customResource := range layer.CustomResources {
 			key := fmt.Sprintf("%s/custom:%s", customResource.FilePath, customResource.Type)
 			customResource.Layer = types.Layer{
@@ -150,11 +172,34 @@ func ApplyLayers(layers []types.BlobInfo) types.ArtifactDetail {
 			mergedLayer.Misconfigurations = append(mergedLayer.Misconfigurations, v)
 		case types.Secret:
 			mergedLayer.Secrets = append(mergedLayer.Secrets, v)
+		case types.LicenseFile:
+			mergedLayer.Licenses = append(mergedLayer.Licenses, v)
 		case types.CustomResource:
 			mergedLayer.CustomResources = append(mergedLayer.CustomResources, v)
 		}
 		return nil
 	})
+
+	// Extract dpkg licenses
+	// The license information is not stored in the dpkg database and in a separate file,
+	// so we have to merge the license information into the package.
+	dpkgLicenses := map[string][]string{}
+	mergedLayer.Licenses = lo.Reject(mergedLayer.Licenses, func(license types.LicenseFile, _ int) bool {
+		if license.Type != types.LicenseTypeDpkg {
+			return false
+		}
+		// e.g.
+		//	"adduser" => {"GPL-2"}
+		//  "openssl" => {"MIT", "BSD"}
+		dpkgLicenses[license.Package] = lo.Map(license.Findings, func(finding types.LicenseFinding, _ int) string {
+			return finding.License
+		})
+		// Remove this license in the merged result as it is merged into the package information.
+		return true
+	})
+	if len(mergedLayer.Licenses) == 0 {
+		mergedLayer.Licenses = nil
+	}
 
 	for i, pkg := range mergedLayer.Packages {
 		originLayerDigest, originLayerDiffID, buildInfo := lookupOriginLayerForPkg(pkg, layers)
@@ -163,6 +208,11 @@ func ApplyLayers(layers []types.BlobInfo) types.ArtifactDetail {
 			DiffID: originLayerDiffID,
 		}
 		mergedLayer.Packages[i].BuildInfo = buildInfo
+
+		// Only debian packages
+		if licenses, ok := dpkgLicenses[pkg.Name]; ok {
+			mergedLayer.Packages[i].Licenses = licenses
+		}
 	}
 
 	for _, app := range mergedLayer.Applications {
@@ -175,7 +225,7 @@ func ApplyLayers(layers []types.BlobInfo) types.ArtifactDetail {
 		}
 	}
 
-	// Aggregate python/ruby/node.js packages
+	// Aggregate python/ruby/node.js packages and JAR files
 	aggregate(&mergedLayer)
 
 	return mergedLayer

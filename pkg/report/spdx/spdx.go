@@ -3,6 +3,7 @@ package spdx
 import (
 	"fmt"
 	"io"
+	"strings"
 	"time"
 
 	"github.com/google/uuid"
@@ -26,6 +27,8 @@ const (
 	CreatorTool         = "trivy"
 )
 
+type Hash func(v interface{}, format hashstructure.Format, opts *hashstructure.HashOptions) (uint64, error)
+
 type Writer struct {
 	output  io.Writer
 	version string
@@ -38,6 +41,7 @@ type options struct {
 	format     spdx.Document2_1
 	clock      clock.Clock
 	newUUID    newUUID
+	hasher     Hash
 	spdxFormat string
 }
 
@@ -57,11 +61,18 @@ func WithNewUUID(newUUID newUUID) option {
 	}
 }
 
+func WithHasher(hasher Hash) option {
+	return func(opts *options) {
+		opts.hasher = hasher
+	}
+}
+
 func NewWriter(output io.Writer, version string, spdxFormat string, opts ...option) Writer {
 	o := &options{
 		format:     spdx.Document2_1{},
 		clock:      clock.RealClock{},
 		newUUID:    uuid.New,
+		hasher:     hashstructure.Hash,
 		spdxFormat: spdxFormat,
 	}
 
@@ -100,7 +111,7 @@ func (cw *Writer) convertToBom(r types.Report, version string) (*spdx.Document2_
 
 	for _, result := range r.Results {
 		for _, pkg := range result.Packages {
-			spdxPackage, err := pkgToSpdxPackage(result.Type, r.Metadata, pkg)
+			spdxPackage, err := cw.pkgToSpdxPackage(pkg)
 			if err != nil {
 				return nil, xerrors.Errorf("failed to parse pkg: %w", err)
 			}
@@ -123,11 +134,11 @@ func (cw *Writer) convertToBom(r types.Report, version string) (*spdx.Document2_
 	}, nil
 }
 
-func pkgToSpdxPackage(t string, meta types.Metadata, pkg ftypes.Package) (spdx.Package2_2, error) {
+func (cw *Writer) pkgToSpdxPackage(pkg ftypes.Package) (spdx.Package2_2, error) {
 	var spdxPackage spdx.Package2_2
 	license := getLicense(pkg)
 
-	pkgID, err := getPackageID(pkg)
+	pkgID, err := getPackageID(cw.hasher, pkg)
 	if err != nil {
 		return spdx.Package2_2{}, xerrors.Errorf("failed to get %s package ID: %w", pkg.Name, err)
 	}
@@ -146,19 +157,23 @@ func pkgToSpdxPackage(t string, meta types.Metadata, pkg ftypes.Package) (spdx.P
 }
 
 func getLicense(p ftypes.Package) string {
-	if p.License == "" {
+	if len(p.Licenses) == 0 {
 		return "NONE"
 	}
 
-	return p.License
+	return strings.Join(p.Licenses, ", ")
 }
 
 func getDocumentNamespace(r types.Report, cw *Writer) string {
 	return DocumentNamespace + "/" + string(r.ArtifactType) + "/" + r.ArtifactName + "-" + cw.newUUID().String()
 }
 
-func getPackageID(p ftypes.Package) (string, error) {
-	f, err := hashstructure.Hash(p, hashstructure.FormatV2, &hashstructure.HashOptions{
+func getPackageID(h Hash, p ftypes.Package) (string, error) {
+	// Not use these values for the hash
+	p.Layer = ftypes.Layer{}
+	p.FilePath = ""
+
+	f, err := h(p, hashstructure.FormatV2, &hashstructure.HashOptions{
 		ZeroNil:      true,
 		SlicesAsSets: true,
 	})

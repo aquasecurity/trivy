@@ -119,6 +119,7 @@ func (a Artifact) Inspect(ctx context.Context) (types.ArtifactReference, error) 
 		PackageInfos:    result.PackageInfos,
 		Applications:    result.Applications,
 		Secrets:         result.Secrets,
+		Licenses:        result.Licenses,
 		CustomResources: result.CustomResources,
 	}
 
