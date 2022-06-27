@@ -1,0 +1,10 @@
+- bucket: "go::GitLab Advisory Database Community"
+  pairs:
+    - bucket: github.com/Masterminds/vcs
+      pairs:
+        - key: CVE-2022-21235
+          value:
+            PatchedVersions:
+              - v1.13.2
+            VulnerableVersions:
+              - "<v1.13.2"
