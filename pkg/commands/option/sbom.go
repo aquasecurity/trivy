@@ -3,18 +3,17 @@ package option
 import (
 	"github.com/urfave/cli/v2"
 	"go.uber.org/zap"
-	"golang.org/x/exp/slices"
-	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/report"
 )
 
-var supportedSbomFormats = []string{report.FormatCycloneDX, report.FormatSPDX, report.FormatSPDXJSON, report.FormatGitHub}
+var supportedSbomFormats = []string{report.FormatCycloneDX, report.FormatSPDX, report.FormatSPDXJSON,
+	report.FormatGitHub}
 
 // SbomOption holds the options for SBOM generation
 type SbomOption struct {
-	ArtifactType string
-	SbomFormat   string
+	ArtifactType string // deprecated
+	SbomFormat   string // deprecated
 }
 
 // NewSbomOption is the factory method to return SBOM options
@@ -31,9 +30,9 @@ func (c *SbomOption) Init(ctx *cli.Context, logger *zap.SugaredLogger) error {
 		return nil
 	}
 
-	if !slices.Contains(supportedSbomFormats, c.SbomFormat) {
-		logger.Errorf(`"--format" must be %q`, supportedSbomFormats)
-		return xerrors.Errorf(`"--format" must be %q`, supportedSbomFormats)
+	if c.ArtifactType != "" || c.SbomFormat != "" {
+		logger.Error("'trivy sbom' is now for scanning SBOM. " +
+			"See https://github.com/aquasecurity/trivy/discussions/2407 for the detail")
 	}
 
 	return nil
