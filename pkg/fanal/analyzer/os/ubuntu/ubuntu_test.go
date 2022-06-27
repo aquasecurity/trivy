@@ -3,7 +3,6 @@ package ubuntu
 import (
 	"context"
 	"os"
-	"strings"
 	"testing"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
@@ -14,46 +13,51 @@ import (
 
 func Test_ubuntuOSAnalyzer_Analyze(t *testing.T) {
 	tests := []struct {
-		name      string
-		inputFile string
-		want      *analyzer.AnalysisResult
-		wantErr   string
+		name     string
+		filePath string
+		testFile string
+		want     *analyzer.AnalysisResult
+		wantErr  string
 	}{
 		{
-			name:      "happy path. Parse lsb-release file",
-			inputFile: "testdata/lsb-release",
+			name:     "happy path. Parse lsb-release file",
+			filePath: "testdata/lsb-release",
+			testFile: "testdata/lsb-release",
 			want: &analyzer.AnalysisResult{
 				OS: &types.OS{Family: "ubuntu", Name: "18.04"},
 			},
 		},
 		{
-			name:      "happy path. Parse status.json file(ESM enabled)",
-			inputFile: "testdata/esm_enabled_status.json",
+			name:     "happy path. Parse status.json file(ESM enabled)",
+			filePath: "var/lib/ubuntu-advantage/status.json",
+			testFile: "testdata/esm_enabled_status.json",
 			want: &analyzer.AnalysisResult{
 				OS: &types.OS{Family: "ubuntu", Extended: "ESM"},
 			},
 		},
 		{
-			name:      "happy path. Parse status.json file(ESM disabled)",
-			inputFile: "testdata/esm_disabled_status.json",
-			want:      nil,
+			name:     "happy path. Parse status.json file(ESM disabled)",
+			filePath: "var/lib/ubuntu-advantage/status.json",
+			testFile: "testdata/esm_disabled_status.json",
+			want:     nil,
 		},
 		{
-			name:      "sad path",
-			inputFile: "testdata/invalid",
-			wantErr:   "ubuntu: unable to analyze OS information",
+			name:     "sad path",
+			filePath: "testdata/lsb-release",
+			testFile: "testdata/invalid",
+			wantErr:  "ubuntu: unable to analyze OS information",
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			a := ubuntuOSAnalyzer{}
-			f, err := os.Open(tt.inputFile)
+			f, err := os.Open(tt.testFile)
 			require.NoError(t, err)
 			defer f.Close()
 
 			ctx := context.Background()
 			got, err := a.Analyze(ctx, analyzer.AnalysisInput{
-				FilePath: createFilePathFromTestFile(tt.inputFile),
+				FilePath: tt.filePath,
 				Content:  f,
 			})
 			if tt.wantErr != "" {
@@ -75,8 +79,13 @@ func Test_ubuntuOSAnalyzer_Required(t *testing.T) {
 		want     bool
 	}{
 		{
-			name:     "happy path",
+			name:     "happy path lsb-release",
 			filePath: "etc/lsb-release",
+			want:     true,
+		},
+		{
+			name:     "happy path status.json",
+			filePath: "var/lib/ubuntu-advantage/status.json",
 			want:     true,
 		},
 		{
@@ -91,13 +100,5 @@ func Test_ubuntuOSAnalyzer_Required(t *testing.T) {
 			got := a.Required(tt.filePath, nil)
 			assert.Equal(t, tt.want, got)
 		})
-	}
-}
-
-func createFilePathFromTestFile(testFile string) string {
-	if strings.HasSuffix(testFile, "status.json") {
-		return esmConfFilePath
-	} else {
-		return ubuntuConfFilePath
 	}
 }

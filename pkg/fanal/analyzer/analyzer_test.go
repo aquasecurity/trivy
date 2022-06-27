@@ -213,6 +213,29 @@ func TestAnalysisResult_Merge(t *testing.T) {
 			},
 		},
 		{
+			name: "Ubuntu must be added ESM suffix",
+			fields: fields{
+				OS: &types.OS{
+					Family: aos.Ubuntu, // this must be overwritten
+					Name:   "16.04",
+				},
+			},
+			args: args{
+				new: &analyzer.AnalysisResult{
+					OS: &types.OS{
+						Family:   aos.Ubuntu,
+						Extended: "ESM",
+					},
+				},
+			},
+			want: analyzer.AnalysisResult{
+				OS: &types.OS{
+					Family: aos.Ubuntu,
+					Name:   "16.04-ESM",
+				},
+			},
+		},
+		{
 			name: "alpine OS needs to be extended with apk repositories",
 			fields: fields{
 				OS: &types.OS{
