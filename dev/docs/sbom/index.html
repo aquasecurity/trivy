@@ -2493,8 +2493,7 @@
 <p>To generate SBOM, you can use the <code>--format</code> option for each subcommand such as <code>image</code> and <code>fs</code>.</p>
 <div class="highlight"><pre><span></span><code>$ trivy image --format cyclonedx --output result.json alpine:3.15
 </code></pre></div>
-<p>In addition, you can use the <code>trivy sbom</code> subcommand.</p>
-<div class="highlight"><pre><span></span><code>$ trivy sbom alpine:3.15
+<div class="highlight"><pre><span></span><code>$ trivy fs --format cyclonedx --output result.json /app/myproject
 </code></pre></div>
 <details>
 <summary>Result</summary>
@@ -2653,17 +2652,6 @@
 </code></pre></div>
 
 </details>
-
-<p><code>fs</code>, <code>repo</code> and <code>archive</code> also work with <code>sbom</code> subcommand.</p>
-<div class="highlight"><pre><span></span><code># filesystem
-$ trivy sbom --artifact-type fs /path/to/project
-
-# repository
-$ trivy sbom --artifact-type repo github.com/aquasecurity/trivy-ci-test
-
-# container image archive
-$ trivy sbom --artifact-type archive alpine.tar
-</code></pre></div>
 
               
             </article>
