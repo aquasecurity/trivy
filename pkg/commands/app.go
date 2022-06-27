@@ -959,11 +959,13 @@ func NewSbomCommand() *cli.Command {
 				Aliases: []string{"type"},
 				Usage:   "input artifact type (image, fs, repo, archive)",
 				EnvVars: []string{"TRIVY_ARTIFACT_TYPE"},
+				Hidden:  true,
 			},
 			&cli.StringFlag{
 				Name:    "sbom-format",
 				Usage:   "SBOM format (cyclonedx, spdx, spdx-json, github)",
 				EnvVars: []string{"TRIVY_SBOM_FORMAT"},
+				Hidden:  true,
 			},
 		},
 	}
