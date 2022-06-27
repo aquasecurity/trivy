@@ -151,7 +151,7 @@ func (a rpmPkgAnalyzer) parsePkgInfo(rc io.Reader) ([]types.Package, []string, e
 			SrcVersion:      srcVer,
 			SrcRelease:      srcRel,
 			Modularitylabel: pkg.Modularitylabel,
-			License:         pkg.License,
+			Licenses:        []string{pkg.License},
 		}
 		pkgs = append(pkgs, p)
 		installedFiles = append(installedFiles, files...)

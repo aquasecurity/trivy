@@ -245,6 +245,7 @@ func (a Artifact) inspectLayer(ctx context.Context, diffID string, disabled []an
 		PackageInfos:    result.PackageInfos,
 		Applications:    result.Applications,
 		Secrets:         result.Secrets,
+		Licenses:        result.Licenses,
 		OpaqueDirs:      opqDirs,
 		WhiteoutFiles:   whFiles,
 		CustomResources: result.CustomResources,

@@ -32,13 +32,17 @@ func ToAnalysisResult(fileType, filePath, libFilePath string, libs []godeptypes.
 
 	var pkgs []types.Package
 	for _, lib := range libs {
+		var licenses []string
+		if lib.License != "" {
+			licenses = []string{lib.License}
+		}
 		pkgs = append(pkgs, types.Package{
 			ID:        lib.ID,
 			Name:      lib.Name,
 			Version:   lib.Version,
 			FilePath:  libFilePath,
 			Indirect:  lib.Indirect,
-			License:   lib.License,
+			Licenses:  licenses,
 			DependsOn: deps[lib.ID],
 		})
 	}
