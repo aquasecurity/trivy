@@ -37,13 +37,11 @@ const (
 	rootfsArtifact         ArtifactType = "rootfs"
 	repositoryArtifact     ArtifactType = "repo"
 	imageArchiveArtifact   ArtifactType = "archive"
+	sbomArtifact           ArtifactType = "sbom"
 )
 
 var (
 	defaultPolicyNamespaces = []string{"appshield", "defsec", "builtin"}
-
-	supportedArtifactTypes = []ArtifactType{containerImageArtifact, filesystemArtifact, rootfsArtifact,
-		repositoryArtifact, imageArchiveArtifact}
 
 	SkipScan = errors.New("skip subsequent processes")
 )
@@ -75,6 +73,8 @@ type Runner interface {
 	ScanRootfs(ctx context.Context, opt Option) (types.Report, error)
 	// ScanRepository scans repository
 	ScanRepository(ctx context.Context, opt Option) (types.Report, error)
+	// ScanSBOM scans SBOM
+	ScanSBOM(ctx context.Context, opt Option) (types.Report, error)
 	// Filter filter a report
 	Filter(ctx context.Context, opt Option, report types.Report) (types.Report, error)
 	// Report a writes a report
@@ -211,6 +211,15 @@ func (r *runner) ScanRepository(ctx context.Context, opt Option) (types.Report, 
 	return r.scanArtifact(ctx, opt, repositoryStandaloneScanner)
 }
 
+func (r *runner) ScanSBOM(ctx context.Context, opt Option) (types.Report, error) {
+	// Scan vulnerabilities
+	opt.ReportOption.VulnType = []string{types.VulnTypeOS, types.VulnTypeLibrary}
+	opt.ReportOption.SecurityChecks = []string{types.SecurityCheckVulnerability}
+
+	// TODO: implement SBOM scanning
+	return types.Report{}, nil
+}
+
 func (r *runner) scanArtifact(ctx context.Context, opt Option, initializeScanner InitializeScanner) (types.Report, error) {
 	report, err := scan(ctx, opt, initializeScanner, r.cache)
 	if err != nil {
@@ -323,7 +332,7 @@ func (r *runner) initCache(c Option) error {
 func Run(cliCtx *cli.Context, artifactType ArtifactType) error {
 	opt, err := InitOption(cliCtx)
 	if err != nil {
-		return err
+		return xerrors.Errorf("InitOption: %w", err)
 	}
 
 	return run(cliCtx.Context, opt, artifactType)
@@ -365,6 +374,10 @@ func run(ctx context.Context, opt Option, artifactType ArtifactType) (err error)
 	case repositoryArtifact:
 		if report, err = r.ScanRepository(ctx, opt); err != nil {
 			return xerrors.Errorf("repository scan error: %w", err)
+		}
+	case sbomArtifact:
+		if report, err = r.ScanSBOM(ctx, opt); err != nil {
+			return xerrors.Errorf("sbom scan error: %w", err)
 		}
 	}
 

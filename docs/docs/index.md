@@ -63,6 +63,7 @@ See [Integrations][integrations] for details.
 - [SBOM][sbom] (Software Bill of Materials) support
     - CycloneDX
     - SPDX
+    - GitHub Dependency Snapshots
 
 Please see [LICENSE][license] for Trivy licensing information.
 
