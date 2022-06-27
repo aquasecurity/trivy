@@ -1,9 +1,10 @@
 package option
 
 import (
-	"github.com/aquasecurity/trivy/pkg/report"
 	"github.com/urfave/cli/v2"
 	"go.uber.org/zap"
+
+	"github.com/aquasecurity/trivy/pkg/report"
 )
 
 var supportedSbomFormats = []string{report.FormatCycloneDX, report.FormatSPDX, report.FormatSPDXJSON,
