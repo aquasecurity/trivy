@@ -38,16 +38,12 @@ const (
 	rootfsArtifact         ArtifactType = "rootfs"
 	repositoryArtifact     ArtifactType = "repo"
 	imageArchiveArtifact   ArtifactType = "archive"
-	cycloneDXArtifact      ArtifactType = "cyclonedx"
+	sbomArtifact           ArtifactType = "sbom"
 )
 
 var (
 	defaultPolicyNamespaces = []string{"appshield", "defsec", "builtin"}
-
-	supportedArtifactTypes = []ArtifactType{containerImageArtifact, filesystemArtifact, rootfsArtifact,
-		repositoryArtifact, imageArchiveArtifact, cycloneDXArtifact}
-
-	SkipScan = errors.New("skip subsequent processes")
+	SkipScan                = errors.New("skip subsequent processes")
 )
 
 // InitializeScanner defines the initialize function signature of scanner
@@ -80,7 +76,7 @@ type Runner interface {
 	ScanRootfs(ctx context.Context, opt Option) (types.Report, error)
 	// ScanRepository scans repository
 	ScanRepository(ctx context.Context, opt Option) (types.Report, error)
-	// ScanSBOM scans CycloneDX
+	// ScanSBOM scans SBOM
 	ScanSBOM(ctx context.Context, opt Option) (types.Report, error)
 	// Filter filter a report
 	Filter(ctx context.Context, opt Option, report types.Report) (types.Report, error)
@@ -218,16 +214,11 @@ func (r *runner) ScanRepository(ctx context.Context, opt Option) (types.Report, 
 	return r.scanArtifact(ctx, opt, repositoryStandaloneScanner)
 }
 
-func (r *runner) scanArtifact(ctx context.Context, opt Option, initializeScanner InitializeScanner) (types.Report, error) {
-	report, err := scan(ctx, opt, initializeScanner, r.cache)
-	if err != nil {
-		return types.Report{}, xerrors.Errorf("scan error: %w", err)
-	}
-
-	return report, nil
-}
-
 func (r *runner) ScanSBOM(ctx context.Context, opt Option) (types.Report, error) {
+	// Scan vulnerabilities
+	opt.ReportOption.VulnType = []string{types.VulnTypeOS, types.VulnTypeLibrary}
+	opt.ReportOption.SecurityChecks = []string{types.SecurityCheckVulnerability}
+
 	var s InitializeScanner
 	if opt.RemoteAddr == "" {
 		// Scan cycloneDX in standalone mode
@@ -238,6 +229,15 @@ func (r *runner) ScanSBOM(ctx context.Context, opt Option) (types.Report, error)
 	}
 
 	return r.scanArtifact(ctx, opt, s)
+}
+
+func (r *runner) scanArtifact(ctx context.Context, opt Option, initializeScanner InitializeScanner) (types.Report, error) {
+	report, err := scan(ctx, opt, initializeScanner, r.cache)
+	if err != nil {
+		return types.Report{}, xerrors.Errorf("scan error: %w", err)
+	}
+
+	return report, nil
 }
 
 func (r *runner) Filter(ctx context.Context, opt Option, report types.Report) (types.Report, error) {
@@ -343,7 +343,7 @@ func (r *runner) initCache(c Option) error {
 func Run(cliCtx *cli.Context, artifactType ArtifactType) error {
 	opt, err := InitOption(cliCtx)
 	if err != nil {
-		return err
+		return xerrors.Errorf("InitOption: %w", err)
 	}
 
 	return run(cliCtx.Context, opt, artifactType)
@@ -386,9 +386,9 @@ func run(ctx context.Context, opt Option, artifactType ArtifactType) (err error)
 		if report, err = r.ScanRepository(ctx, opt); err != nil {
 			return xerrors.Errorf("repository scan error: %w", err)
 		}
-	case cycloneDXArtifact:
+	case sbomArtifact:
 		if report, err = r.ScanSBOM(ctx, opt); err != nil {
-			return xerrors.Errorf("cyclonedx scan error: %w", err)
+			return xerrors.Errorf("sbom scan error: %w", err)
 		}
 	}
 

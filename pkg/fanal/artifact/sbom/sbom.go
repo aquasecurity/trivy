@@ -38,6 +38,8 @@ func NewArtifact(artifactType types.ArtifactType, filePath string, c cache.Artif
 	switch artifactType {
 	case types.ArtifactCycloneDX:
 		parser = cyclonedx.NewJSON()
+	default:
+		parser = cyclonedx.NewJSON()
 	}
 	return Artifact{
 		filePath:       filepath.Clean(filePath),

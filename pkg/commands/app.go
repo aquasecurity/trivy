@@ -912,36 +912,46 @@ func NewK8sCommand() *cli.Command {
 
 // NewSbomCommand is the factory method to add sbom command
 func NewSbomCommand() *cli.Command {
+	SbomSecurityChecksFlag := withValue(securityChecksFlag, types.SecurityCheckVulnerability)
 	return &cli.Command{
-		Name:        "sbom",
-		ArgsUsage:   "ARTIFACT",
-		Usage:       "generate SBOM for an artifact",
-		Description: `ARTIFACT can be a container image, file path/directory, git repository or container image archive. See examples.`,
+		Name:      "sbom",
+		ArgsUsage: "SBOM",
+		Usage:     "scan SBOM for vulnerabilities",
 		CustomHelpTemplate: cli.CommandHelpTemplate + `EXAMPLES:
-  - image scanning:
-      $ trivy sbom alpine:3.15
+  - Scan CycloneDX and show the result in tables:
+      $ trivy sbom /path/to/report.cdx
 
-  - filesystem scanning:
-      $ trivy sbom --artifact-type fs /path/to/myapp
-
-  - git repository scanning:
-      $ trivy sbom --artifact-type repo github.com/aquasecurity/trivy-ci-test
-
-  - image archive scanning:
-      $ trivy sbom --artifact-type archive ./alpine.tar
-
+  - Scan CycloneDX and generate a CycloneDX report:
+      $ trivy sbom --format cyclonedx /path/to/report.cdx
 `,
-		Action: artifact.SbomRun,
+		Action: artifact.SBOMRun,
 		Flags: []cli.Flag{
+			&templateFlag,
+			&formatFlag,
+			&inputFlag,
 			&outputFlag,
+			&exitCodeFlag,
+			&skipDBUpdateFlag,
+			&downloadDBOnlyFlag,
+			&resetFlag,
 			&clearCacheFlag,
+			&noProgressFlag,
+			&ignoreUnfixedFlag,
 			&ignoreFileFlag,
 			&timeoutFlag,
-			&skipDBUpdateFlag,
 			&severityFlag,
+			&ignorePolicy,
+			&listAllPackages,
+			&cacheBackendFlag,
+			&cacheTTL,
+			&redisBackendCACert,
+			&redisBackendCert,
+			&redisBackendKey,
 			&offlineScan,
-			&dbRepositoryFlag,
 			&insecureFlag,
+			&dbRepositoryFlag,
+			&SbomSecurityChecksFlag,
+
 			stringSliceFlag(skipFiles),
 			stringSliceFlag(skipDirs),
 
@@ -951,20 +961,19 @@ func NewSbomCommand() *cli.Command {
 			&tokenHeader,
 			&customHeaders,
 
-			// dedicated options
+			// deprecated options
 			&cli.StringFlag{
 				Name:    "artifact-type",
 				Aliases: []string{"type"},
-				Value:   "image",
-				Usage:   "input artifact type (image, fs, repo, archive, cyclonedx)",
+				Usage:   "input artifact type (image, fs, repo, archive)",
 				EnvVars: []string{"TRIVY_ARTIFACT_TYPE"},
+				Hidden:  true,
 			},
 			&cli.StringFlag{
 				Name:    "sbom-format",
-				Aliases: []string{"format"},
-				Value:   report.FormatCycloneDX,
 				Usage:   "SBOM format (cyclonedx, spdx, spdx-json, github)",
 				EnvVars: []string{"TRIVY_SBOM_FORMAT"},
+				Hidden:  true,
 			},
 		},
 	}

@@ -257,12 +257,10 @@ func toPackage(component cdx.Component) (string, *ftypes.Package, error) {
 	pkg := p.Package()
 	pkg.Ref = component.BOMRef
 
-	var licenses []string
 	for _, license := range fromPtr(component.Licenses) {
-		licenses = append(licenses, license.Expression)
+		pkg.Licenses = append(pkg.Licenses, license.Expression)
 	}
 	// TODO: In Trivy's SBOM, Expression is singular
-	pkg.License = strings.Join(licenses, ", ")
 
 	for _, p := range fromPtr(component.Properties) {
 		if strings.HasPrefix(p.Name, Namespace) {
