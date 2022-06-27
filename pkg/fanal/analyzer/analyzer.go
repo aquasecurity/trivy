@@ -176,7 +176,9 @@ func (r *AnalysisResult) Merge(new *AnalysisResult) {
 	r.m.Lock()
 	defer r.m.Unlock()
 
-	r.OS = MergeOsVersion(r.OS, new.OS)
+	if new.OS != nil {
+		r.OS = MergeOsVersion(r.OS, new.OS)
+	}
 
 	if new.Repository != nil {
 		r.Repository = new.Repository

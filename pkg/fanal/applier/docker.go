@@ -5,9 +5,9 @@ import (
 	"strings"
 	"time"
 
-	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/knqyf263/nested"
 
+	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 )
 
