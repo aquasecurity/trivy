@@ -27,6 +27,7 @@ require (
 	github.com/golang-jwt/jwt v3.2.2+incompatible
 	github.com/golang/protobuf v1.5.2
 	github.com/google/go-containerregistry v0.7.1-0.20211214010025-a65b7844a475
+	github.com/google/licenseclassifier/v2 v2.0.0-pre5
 	github.com/google/uuid v1.3.0
 	github.com/google/wire v0.5.0
 	github.com/hashicorp/go-getter v1.6.2
@@ -95,7 +96,7 @@ require (
 	github.com/alecthomas/chroma v0.10.0 // indirect
 	github.com/apparentlymart/go-cidr v1.1.0 // indirect
 	github.com/apparentlymart/go-textseg/v13 v13.0.0 // indirect
-	github.com/aquasecurity/defsec v0.68.4
+	github.com/aquasecurity/defsec v0.68.5
 	github.com/asaskevich/govalidator v0.0.0-20200428143746-21a406dcc535 // indirect
 	github.com/aws/aws-sdk-go v1.44.25
 	github.com/beorn7/perks v1.0.1 // indirect

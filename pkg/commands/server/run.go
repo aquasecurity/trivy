@@ -60,6 +60,6 @@ func run(c Option) (err error) {
 	}
 	m.Register()
 
-	server := rpcServer.NewServer(c.AppVersion, c.Listen, c.CacheDir, c.Token, c.TokenHeader)
+	server := rpcServer.NewServer(c.AppVersion, c.Listen, c.CacheDir, c.Token, c.TokenHeader, c.DBRepository)
 	return server.ListenAndServe(cache, c.Insecure)
 }
