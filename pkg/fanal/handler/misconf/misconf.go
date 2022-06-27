@@ -18,7 +18,7 @@ import (
 	"github.com/aquasecurity/defsec/pkg/scan"
 	"github.com/aquasecurity/defsec/pkg/scanners"
 	cfscanner "github.com/aquasecurity/defsec/pkg/scanners/cloudformation"
-	cfparse "github.com/aquasecurity/defsec/pkg/scanners/cloudformation/parser"
+	cfparser "github.com/aquasecurity/defsec/pkg/scanners/cloudformation/parser"
 	dfscanner "github.com/aquasecurity/defsec/pkg/scanners/dockerfile"
 	"github.com/aquasecurity/defsec/pkg/scanners/helm"
 	k8sscanner "github.com/aquasecurity/defsec/pkg/scanners/kubernetes"
@@ -237,7 +237,7 @@ func (h misconfPostHandler) Handle(ctx context.Context, result *analyzer.Analysi
 	for t, scanner := range h.scanners {
 		results, err := scanner.ScanFS(ctx, mapMemoryFS[t], ".")
 		if err != nil {
-			if _, ok := err.(*cfparse.InvalidContentError); ok {
+			if _, ok := err.(*cfparser.InvalidContentError); ok {
 				log.Logger.Errorf("scan %q was broken with InvalidContentError: %v", scanner.Name(), err)
 				continue
 			}
