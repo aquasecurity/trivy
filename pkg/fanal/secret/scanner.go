@@ -381,22 +381,24 @@ func (s Scanner) Scan(args ScanArgs) types.Secret {
 }
 
 func toFinding(rule Rule, loc Location, content []byte) types.SecretFinding {
-	startLine, endLine, matchLine := findLocation(loc.Start, loc.End, content)
+	startLine, endLine, code, matchLine := findLocation(loc.Start, loc.End, content)
 
 	return types.SecretFinding{
 		RuleID:    rule.ID,
 		Category:  rule.Category,
 		Severity:  lo.Ternary(rule.Severity == "", "UNKNOWN", rule.Severity),
 		Title:     rule.Title,
+		Match:     matchLine,
 		StartLine: startLine,
 		EndLine:   endLine,
-		Match:     matchLine,
+		Code:      code,
 	}
 }
 
-func findLocation(start, end int, content []byte) (int, int, string) {
-	startLineNum := bytes.Count(content[:start], lineSep) + 1
-	endLineNum := startLineNum // TODO: support multi lines
+const secretHighlightRadius = 2 // number of lines above + below each secret to include in code output
+
+func findLocation(start, end int, content []byte) (int, int, types.Code, string) {
+	startLineNum := bytes.Count(content[:start], lineSep)
 
 	lineStart := bytes.LastIndex(content[:start], lineSep)
 	if lineStart == -1 {
@@ -419,9 +421,41 @@ func findLocation(start, end int, content []byte) (int, int, string) {
 		truncatedLineEnd := lo.Ternary(end+20 > len(content), len(content), end+20)
 		matchLine = string(content[truncatedLineStart:truncatedLineEnd])
 	}
+	endLineNum := startLineNum + strings.Count(match, string(lineSep))
 
 	// Mask credentials
 	matchLine = strings.TrimSpace(strings.ReplaceAll(matchLine, match, "*****"))
 
-	return startLineNum, endLineNum, matchLine
+	var code types.Code
+
+	lines := strings.Split(string(content), string(lineSep))
+	codeStart := lo.Ternary(startLineNum-secretHighlightRadius < 0, 0, startLineNum-secretHighlightRadius)
+	codeEnd := lo.Ternary(endLineNum+secretHighlightRadius > len(lines), len(lines), endLineNum+secretHighlightRadius)
+
+	rawLines := lines[codeStart:codeEnd]
+	var foundFirst bool
+	for i, rawLine := range rawLines {
+		realLine := codeStart + i
+		line := strings.ReplaceAll(rawLine, match, strings.Repeat("*", len(match)))
+		inCause := realLine >= startLineNum && realLine <= endLineNum
+		code.Lines = append(code.Lines, types.Line{
+			Number:      startLineNum + i,
+			Content:     line,
+			IsCause:     inCause,
+			Highlighted: line,
+			FirstCause:  !foundFirst && inCause,
+			LastCause:   false,
+		})
+		foundFirst = foundFirst || inCause
+	}
+	if len(code.Lines) > 0 {
+		for i := len(code.Lines) - 1; i >= 0; i-- {
+			if code.Lines[i].IsCause {
+				code.Lines[i].LastCause = true
+				break
+			}
+		}
+	}
+
+	return startLineNum + 1, endLineNum + 1, code, matchLine
 }

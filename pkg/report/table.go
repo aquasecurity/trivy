@@ -82,11 +82,8 @@ func (tw TableWriter) write(result types.Result) {
 
 	severityCount := tw.countSeverities(result)
 
-	switch {
-	case len(result.Vulnerabilities) > 0:
+	if len(result.Vulnerabilities) > 0 {
 		tw.writeVulnerabilities(tableWriter, result.Vulnerabilities)
-	case len(result.Secrets) > 0:
-		tw.writeSecrets(tableWriter, result.Secrets)
 	}
 
 	total, summaries := tw.summary(severityCount)
@@ -125,6 +122,9 @@ func (tw TableWriter) write(result types.Result) {
 
 	if len(result.Misconfigurations) > 0 {
 		_, _ = fmt.Fprint(tw.Output, NewMisconfigRenderer(result.Target, result.Misconfigurations, tw.IncludeNonFailures, tw.isOutputToTerminal()).Render())
+	}
+	if len(result.Secrets) > 0 {
+		_, _ = fmt.Fprint(tw.Output, NewSecretRenderer(result.Target, result.Secrets, tw.isOutputToTerminal()).Render())
 	}
 
 	if tw.Tree {
