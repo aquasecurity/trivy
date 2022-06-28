@@ -1,4 +1,4 @@
-package yarn
+package pnpm
 
 import (
 	"context"
@@ -27,7 +27,7 @@ type pnpmLibraryAnalyzer struct{}
 func (a pnpmLibraryAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInput) (*analyzer.AnalysisResult, error) {
 	res, err := language.Analyze(types.Pnpm, input.FilePath, input.Content, pnpm.NewParser())
 	if err != nil {
-		return nil, xerrors.Errorf("unable to parse pnpm-lock.yaml: %w", err)
+		return nil, xerrors.Errorf("unable to parse %s: %w", input.FilePath, err)
 	}
 	return res, nil
 }
