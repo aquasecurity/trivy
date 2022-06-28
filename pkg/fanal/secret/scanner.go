@@ -436,8 +436,11 @@ func findLocation(start, end int, content []byte) (int, int, types.Code, string)
 	var foundFirst bool
 	for i, rawLine := range rawLines {
 		realLine := codeStart + i
-		line := strings.ReplaceAll(rawLine, match, strings.Repeat("*", len(match)))
+		line := rawLine
 		inCause := realLine >= startLineNum && realLine <= endLineNum
+		if inCause {
+			line = strings.ReplaceAll(line, match, strings.Repeat("*", len(match)))
+		}
 		code.Lines = append(code.Lines, types.Line{
 			Number:      codeStart + i + 1,
 			Content:     line,
