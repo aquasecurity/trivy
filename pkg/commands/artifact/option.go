@@ -21,6 +21,7 @@ type Option struct {
 	option.SbomOption
 	option.SecretOption
 	option.KubernetesOption
+	option.LicenseOption
 	option.OtherOption
 
 	// We don't want to allow disabled analyzers to be passed by users,
@@ -47,6 +48,7 @@ func NewOption(c *cli.Context) (Option, error) {
 		SbomOption:       option.NewSbomOption(c),
 		SecretOption:     option.NewSecretOption(c),
 		KubernetesOption: option.NewKubernetesOption(c),
+		LicenseOption:    option.NewLicenseOption(c),
 		OtherOption:      option.NewOtherOption(c),
 	}, nil
 }

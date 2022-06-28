@@ -9,6 +9,7 @@ import (
 	"strings"
 	"sync"
 
+	"github.com/aquasecurity/trivy/pkg/fanal/analyzer/licensing"
 	v1 "github.com/google/go-containerregistry/pkg/v1"
 	"golang.org/x/exp/slices"
 	"golang.org/x/sync/semaphore"
@@ -55,6 +56,11 @@ func NewArtifact(img types.Image, c cache.ArtifactCache, opt artifact.Option) (a
 	// Register secret analyzer
 	if err = secret.RegisterSecretAnalyzer(opt.SecretScannerOption); err != nil {
 		return nil, xerrors.Errorf("secret scanner error: %w", err)
+	}
+
+	// Register licensing analyzer
+	if err = licensing.RegisterLicenseScanner(opt.LicensingScannerOption); err != nil {
+		return nil, xerrors.Errorf("licensing scanner error: %w", err)
 	}
 
 	return Artifact{

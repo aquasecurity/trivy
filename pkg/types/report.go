@@ -40,6 +40,7 @@ const (
 	ClassLangPkg = "lang-pkgs"
 	ClassConfig  = "config"
 	ClassSecret  = "secret"
+	ClassLicense = "license"
 	ClassCustom  = "custom"
 )
 
@@ -53,6 +54,8 @@ type Result struct {
 	MisconfSummary    *MisconfSummary            `json:"MisconfSummary,omitempty"`
 	Misconfigurations []DetectedMisconfiguration `json:"Misconfigurations,omitempty"`
 	Secrets           []ftypes.SecretFinding     `json:"Secrets,omitempty"`
+	License           ftypes.LicenseFile         `json:"Licences,omitempty"`
+	PackageLicense    *ftypes.PackageLicense     `json:"PackageLicenses,omitempty"`
 	CustomResources   []ftypes.CustomResource    `json:"CustomResources,omitempty"`
 }
 
@@ -77,6 +80,11 @@ func (r *Result) MarshalJSON() ([]byte, error) {
 	}{
 		ResultAlias: (*ResultAlias)(r),
 	})
+}
+
+func (r *Result) IsEmpty() bool {
+	return len(r.Packages) == 0 && len(r.Vulnerabilities) == 0 && len(r.Misconfigurations) == 0 &&
+		len(r.Secrets) == 0 && len(r.CustomResources) == 0
 }
 
 type MisconfSummary struct {

@@ -6,6 +6,8 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/aquasecurity/trivy/pkg/fanal/analyzer/licensing"
+	"github.com/aquasecurity/trivy/pkg/fanal/walker"
 	"github.com/hashicorp/go-multierror"
 	"github.com/urfave/cli/v2"
 	"golang.org/x/exp/slices"
@@ -42,8 +44,7 @@ const (
 
 var (
 	defaultPolicyNamespaces = []string{"appshield", "defsec", "builtin"}
-
-	SkipScan = errors.New("skip subsequent processes")
+	SkipScan                = errors.New("skip subsequent processes")
 )
 
 // InitializeScanner defines the initialize function signature of scanner
@@ -152,8 +153,14 @@ func (r *runner) Close(ctx context.Context) error {
 }
 
 func (r *runner) ScanImage(ctx context.Context, opt Option) (types.Report, error) {
-	// Disable the lock file scanning
-	opt.DisabledAnalyzers = analyzer.TypeLockfiles
+
+	// override the AppDirs to scan
+	if slices.Contains(opt.SecurityChecks, types.SecurityCheckLicense) {
+		log.Logger.Debug("Overriding walk.AppDirs to include vendor")
+		walker.AppDirs = []string{".git"}
+	} else {
+		opt.DisabledAnalyzers = analyzer.TypeLockfiles
+	}
 
 	var s InitializeScanner
 	switch {
@@ -175,8 +182,10 @@ func (r *runner) ScanImage(ctx context.Context, opt Option) (types.Report, error
 }
 
 func (r *runner) ScanFilesystem(ctx context.Context, opt Option) (types.Report, error) {
-	// Disable the individual package scanning
-	opt.DisabledAnalyzers = append(opt.DisabledAnalyzers, analyzer.TypeIndividualPkgs...)
+	// Disable the individual package scanning if not running a license check
+	if !slices.Contains(opt.SecurityChecks, types.SecurityCheckLicense) {
+		opt.DisabledAnalyzers = append(opt.DisabledAnalyzers, analyzer.TypeIndividualPkgs...)
+	}
 
 	return r.scanFS(ctx, opt)
 }
@@ -420,7 +429,7 @@ func disabledAnalyzers(opt Option) []analyzer.Type {
 	}
 
 	// Do not analyze programming language packages when not running in 'library' mode
-	if !slices.Contains(opt.VulnType, types.VulnTypeLibrary) {
+	if !slices.Contains(opt.VulnType, types.VulnTypeLibrary) && !slices.Contains(opt.SecurityChecks, types.SecurityCheckLicense) {
 		analyzers = append(analyzers, analyzer.TypeLanguages...)
 	}
 
@@ -432,6 +441,10 @@ func disabledAnalyzers(opt Option) []analyzer.Type {
 	// Do not perform misconfiguration scanning when it is not specified.
 	if !slices.Contains(opt.SecurityChecks, types.SecurityCheckConfig) {
 		analyzers = append(analyzers, analyzer.TypeConfigFiles...)
+	}
+
+	if !slices.Contains(opt.SecurityChecks, types.SecurityCheckLicense) {
+		analyzers = append(analyzers, analyzer.TypeLicense)
 	}
 
 	return analyzers
@@ -481,6 +494,10 @@ func initScannerConfig(opt Option, cacheClient cache.Cache) (ScannerConfig, type
 		opt.SecretConfigPath = ""
 	}
 
+	if slices.Contains(opt.SecurityChecks, types.SecurityCheckLicense) {
+		log.Logger.Info("License scanning is enabled")
+	}
+
 	return ScannerConfig{
 		Target:             target,
 		ArtifactCache:      cacheClient,
@@ -504,6 +521,11 @@ func initScannerConfig(opt Option, cacheClient cache.Cache) (ScannerConfig, type
 			// For secret scanning
 			SecretScannerOption: secret.ScannerOption{
 				ConfigPath: opt.SecretConfigPath,
+			},
+
+			LicensingScannerOption: licensing.ScannerOption{
+				RiskThreshold:   opt.RiskThreshold,
+				IgnoredLicenses: opt.IgnoredLicenses,
 			},
 		},
 	}, scanOptions, nil

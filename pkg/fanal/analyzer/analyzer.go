@@ -242,6 +242,8 @@ func (r *AnalysisResult) Merge(new *AnalysisResult) {
 		}
 	}
 
+	r.Licenses = append(r.Licenses, new.Licenses...)
+
 	r.CustomResources = append(r.CustomResources, new.CustomResources...)
 }
 

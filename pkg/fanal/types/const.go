@@ -37,6 +37,9 @@ const (
 	Helm           = "helm"
 	Rbac           = "rbac"
 
+	// Licensing
+	License = "license"
+
 	// Language-specific file names
 	NuGetPkgsLock   = "packages.lock.json"
 	NuGetPkgsConfig = "packages.config"

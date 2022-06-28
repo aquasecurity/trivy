@@ -8,6 +8,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/aquasecurity/trivy/pkg/fanal/licensing/classification"
 	"github.com/google/wire"
 	"golang.org/x/exp/slices"
 	"golang.org/x/xerrors"
@@ -67,7 +68,8 @@ func NewScanner(applier Applier, ospkgDetector OspkgDetector, vulnClient vulnera
 	return Scanner{
 		applier:       applier,
 		ospkgDetector: ospkgDetector,
-		vulnClient:    vulnClient}
+		vulnClient:    vulnClient,
+	}
 }
 
 // Scan scans the artifact and return results.
@@ -127,6 +129,18 @@ func (s Scanner) Scan(ctx context.Context, target, artifactKey string, blobKeys 
 			Class:           types.ClassCustom,
 			CustomResources: artifactDetail.CustomResources,
 		})
+	}
+
+	// Scan package licenses
+	if slices.Contains(options.SecurityChecks, types.SecurityCheckLicense) {
+		licenseResults := s.packageLicensesToResults(artifactDetail.Applications)
+		results = append(results, licenseResults...)
+	}
+
+	// Scan licenses
+	if slices.Contains(options.SecurityChecks, types.SecurityCheckLicense) {
+		licenseResults := s.licensesToResults(artifactDetail.Licenses)
+		results = append(results, licenseResults...)
 	}
 
 	for i := range results {
@@ -317,6 +331,55 @@ func (s Scanner) secretsToResults(secrets []ftypes.Secret) types.Results {
 			Target:  secret.FilePath,
 			Class:   types.ClassSecret,
 			Secrets: secret.Findings,
+		})
+	}
+	return results
+}
+
+func (s Scanner) licensesToResults(licenses []ftypes.LicenseFile) types.Results {
+	var results types.Results
+	for _, license := range licenses {
+		log.Logger.Debugf("Secret file: %s", license.FilePath)
+
+		results = append(results, types.Result{
+			Target:  license.FilePath,
+			Class:   types.ClassLicense,
+			License: license,
+		})
+	}
+	return results
+}
+
+func (s Scanner) packageLicensesToResults(apps []ftypes.Application) types.Results {
+	var results types.Results
+	for _, app := range apps {
+		log.Logger.Debugf("Package file: %s", app.FilePath)
+
+		var findings []ftypes.LicenseFinding
+
+		for _, lib := range app.Libraries {
+			if lib.License != "" {
+				if classificationIndex, class := classification.GoogleClassification(lib.License); classificationIndex <= classification.RiskThreshold {
+					findings = append(findings, ftypes.LicenseFinding{
+						PackageName:                      lib.Name,
+						License:                          lib.License,
+						Confidence:                       1,
+						GoogleLicenseClassificationIndex: classificationIndex,
+						GoogleLicenseClassification:      class,
+					})
+				}
+			}
+		}
+
+		license := &ftypes.PackageLicense{
+			PackageName: app.FilePath,
+			Findings:    findings,
+		}
+
+		results = append(results, types.Result{
+			Target:         app.FilePath,
+			Class:          types.ClassLicense,
+			PackageLicense: license,
 		})
 	}
 	return results

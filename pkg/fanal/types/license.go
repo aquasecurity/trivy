@@ -15,5 +15,15 @@ type LicenseFile struct {
 }
 
 type LicenseFinding struct {
-	License string `json:"license"`
+	License                          string  `json:"license"`
+	Confidence                       float64 `json:"match_confidence"`
+	GoogleLicenseClassificationIndex int     `json:"classification_index"`
+	GoogleLicenseClassification      string  `json:"google_license_classification"`
+	LicenseLink                      string  `json:"license_link,omitempty"`
+	PackageName                      string  `json:"package_name,omitempty"`
+}
+
+type PackageLicense struct {
+	PackageName string
+	Findings    []LicenseFinding
 }

@@ -56,7 +56,7 @@ func (tw TableWriter) Write(report types.Report) error {
 		}
 		tw.write(result)
 	}
-	return nil
+	return New(tw.Output, tw.isOutputToTerminal()).WriteLicenseReport(report)
 }
 
 func (tw TableWriter) isOutputToTerminal() bool {
@@ -71,6 +71,10 @@ func (tw TableWriter) isOutputToTerminal() bool {
 }
 
 func (tw TableWriter) write(result types.Result) {
+	if result.IsEmpty() {
+		return
+	}
+
 	tableWriter := table.New(tw.Output)
 	if tw.isOutputToTerminal() { // use ansi output if we're not piping elsewhere
 		tableWriter.SetHeaderStyle(table.StyleBold)
@@ -196,10 +200,14 @@ func (tw TableWriter) setVulnerabilityRows(tableWriter *table.Table, vulns []typ
 
 		var row []string
 		if tw.isOutputToTerminal() {
-			row = []string{lib, v.VulnerabilityID, ColorizeSeverity(v.Severity, v.Severity),
-				v.InstalledVersion, v.FixedVersion, strings.TrimSpace(title)}
+			row = []string{
+				lib, v.VulnerabilityID, ColorizeSeverity(v.Severity, v.Severity),
+				v.InstalledVersion, v.FixedVersion, strings.TrimSpace(title),
+			}
 		} else {
-			row = []string{lib, v.VulnerabilityID, v.Severity, v.InstalledVersion, v.FixedVersion, strings.TrimSpace(title)}
+			row = []string{
+				lib, v.VulnerabilityID, v.Severity, v.InstalledVersion, v.FixedVersion, strings.TrimSpace(title),
+			}
 		}
 
 		tableWriter.AddRow(row...)
@@ -310,8 +318,10 @@ func (tw TableWriter) outputTrace(result types.Result) {
 
 func (tw TableWriter) writeSecrets(tableWriter *table.Table, secrets []ftypes.SecretFinding) {
 
-	alignment := []table.Alignment{table.AlignCenter, table.AlignCenter, table.AlignCenter,
-		table.AlignCenter, table.AlignLeft}
+	alignment := []table.Alignment{
+		table.AlignCenter, table.AlignCenter, table.AlignCenter,
+		table.AlignCenter, table.AlignLeft,
+	}
 	header := []string{"Category", "Description", "Severity", "Line No", "Match"}
 
 	tableWriter.SetAlignment(alignment...)
@@ -325,9 +335,11 @@ func (tw TableWriter) setSecretRows(tableWriter *table.Table, secrets []ftypes.S
 		if tw.isOutputToTerminal() {
 			severity = ColorizeSeverity(severity, severity)
 		}
-		row := []string{string(secret.Category), secret.Title, severity,
+		row := []string{
+			string(secret.Category), secret.Title, severity,
 			fmt.Sprint(secret.StartLine), // multi-line is not supported for now.
-			secret.Match}
+			secret.Match,
+		}
 
 		tableWriter.AddRow(row...)
 	}

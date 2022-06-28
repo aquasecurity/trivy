@@ -371,6 +371,19 @@ var (
 		EnvVars: []string{"TRIVY_SECRET_CONFIG"},
 	}
 
+	ignoredLicenses = cli.StringSliceFlag{
+		Name:    "ignored-licenses",
+		Usage:   "specify a list of license to ignore",
+		EnvVars: []string{"TRIVY_IGNORED_LICENSES"},
+	}
+
+	licenseRiskThreshold = cli.IntFlag{
+		Name:    "license-risk-threshold",
+		Usage:   "specify the threshold of license risk to report on",
+		Value:   4,
+		EnvVars: []string{"TRIVY_LICENSE_RISK_THRESHOLD"},
+	}
+
 	dependencyTree = cli.BoolFlag{
 		Name:    "dependency-tree",
 		Usage:   "show dependency origin tree (EXPERIMENTAL)",
@@ -448,7 +461,8 @@ func showVersion(cacheDir, outputFormat, version string, outputWriter io.Writer)
 
 	switch outputFormat {
 	case "json":
-		b, _ := json.Marshal(VersionInfo{ // nolint: errcheck
+		b, _ := json.Marshal(VersionInfo{
+			// nolint: errcheck
 			Version:         version,
 			VulnerabilityDB: dbMeta,
 		})
@@ -506,6 +520,8 @@ func NewImageCommand() *cli.Command {
 			&dbRepositoryFlag,
 			&secretConfig,
 			&dependencyTree,
+			&licenseRiskThreshold,
+			&ignoredLicenses,
 			stringSliceFlag(skipFiles),
 			stringSliceFlag(skipDirs),
 
@@ -552,6 +568,8 @@ func NewFilesystemCommand() *cli.Command {
 			&offlineScan,
 			&dbRepositoryFlag,
 			&secretConfig,
+			&licenseRiskThreshold,
+			&ignoredLicenses,
 			&dependencyTree,
 			stringSliceFlag(skipFiles),
 			stringSliceFlag(skipDirs),
@@ -603,6 +621,8 @@ func NewRootfsCommand() *cli.Command {
 			&offlineScan,
 			&dbRepositoryFlag,
 			&secretConfig,
+			&licenseRiskThreshold,
+			&ignoredLicenses,
 			&dependencyTree,
 			stringSliceFlag(skipFiles),
 			stringSliceFlag(skipDirs),
@@ -650,6 +670,8 @@ func NewRepositoryCommand() *cli.Command {
 			&insecureFlag,
 			&dbRepositoryFlag,
 			&secretConfig,
+			&licenseRiskThreshold,
+			&ignoredLicenses,
 			&dependencyTree,
 			stringSliceFlag(skipFiles),
 			stringSliceFlag(skipDirs),
@@ -691,6 +713,8 @@ func NewClientCommand() *cli.Command {
 			&offlineScan,
 			&insecureFlag,
 			&secretConfig,
+			&licenseRiskThreshold,
+			&ignoredLicenses,
 			&dependencyTree,
 
 			&token,
