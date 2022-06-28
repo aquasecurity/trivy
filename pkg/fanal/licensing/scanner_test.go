@@ -6,6 +6,7 @@ import (
 	"math"
 	"os"
 	"path/filepath"
+	"sort"
 	"testing"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
@@ -138,6 +139,12 @@ func Test_LicenseScanning(t *testing.T) {
 				require.Len(t, licenses, 1)
 				license := licenses[0]
 				assert.Len(t, license.Findings, len(tt.expectedFindings))
+
+				// sort findings for consistent checking
+				sort.Slice(license.Findings, func(i, j int) bool {
+					return license.Findings[i].License < license.Findings[j].License
+				})
+
 				for i, f := range tt.expectedFindings {
 					lf := license.Findings[i]
 					assert.Equal(t, f.License, lf.License)

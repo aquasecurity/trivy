@@ -21,6 +21,7 @@ const version = 1
 
 var skipDirs = []string{
 	"node_modules/",
+	"usr/share/doc/",
 }
 
 var includedExts = []string{
