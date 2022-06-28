@@ -70,14 +70,6 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Cache Go modules
-        uses: actions/cache@v3.0.2
-        with:
-          path: ~/go/pkg/mod
-          key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
-          restore-keys: |
-            ${{ runner.os }}-go-
-
       - name: Generate SBOM
         uses: CycloneDX/gh-gomod-generate-sbom@v1
         with:
