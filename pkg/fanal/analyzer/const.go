@@ -53,6 +53,7 @@ const (
 	TypeNpmPkgLock Type = "npm"
 	TypeNodePkg    Type = "node-pkg"
 	TypeYarn       Type = "yarn"
+	TypePnpm       Type = "pnpm"
 
 	// .NET
 	TypeNuget Type = "nuget"
@@ -103,13 +104,13 @@ var (
 
 	// TypeLanguages has all language analyzers
 	TypeLanguages = []Type{TypeBundler, TypeGemSpec, TypeCargo, TypeComposer, TypeJar, TypePom,
-		TypeNpmPkgLock, TypeNodePkg, TypeYarn, TypeNuget, TypePythonPkg, TypePip, TypePipenv,
+		TypeNpmPkgLock, TypeNodePkg, TypeYarn, TypePnpm, TypeNuget, TypePythonPkg, TypePip, TypePipenv,
 		TypePoetry, TypeGoBinary, TypeGoMod,
 	}
 
 	// TypeLockfiles has all lock file analyzers
 	TypeLockfiles = []Type{TypeBundler, TypeNpmPkgLock, TypeYarn,
-		TypePip, TypePipenv, TypePoetry, TypeGoMod, TypePom,
+		TypePnpm, TypePip, TypePipenv, TypePoetry, TypeGoMod, TypePom,
 	}
 
 	// TypeIndividualPkgs has all analyzers for individual packages

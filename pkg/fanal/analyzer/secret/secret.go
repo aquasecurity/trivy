@@ -26,6 +26,7 @@ var (
 		"go.sum",
 		"package-lock.json",
 		"yarn.lock",
+		"pnpm-lock.yaml",
 		"Pipfile.lock",
 		"Gemfile.lock",
 	}
