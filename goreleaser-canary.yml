@@ -15,3 +15,17 @@ builds:
     goarch:
       - amd64
       - arm64
+
+archives:
+  -
+    format: tar.gz
+    name_template: "{{.ProjectName}}_{{.Version}}_{{.Os}}-{{.Arch}}"
+    replacements:
+      amd64: 64bit
+      arm64: ARM64
+      darwin: macOS
+      linux: Linux
+    files:
+      - README.md
+      - LICENSE
+      - contrib/*.tpl

@@ -5,72 +5,50 @@ on:
       - 'main'
   workflow_dispatch:
 
-env:
-  GO_VERSION: "1.18"
-
 jobs:
-  Canary:
-    name: Canary
-    runs-on: ubuntu-latest
+  build-binaries:
+    name: build binaries
+    uses: ./.github/workflows/build.yaml
+    with:
+      goreleaser_file: goreleaser-canary.yml
+      goreleaser_options: '--snapshot --rm-dist --timeout 60m'
 
+  upload-binaries:
+    name: upload-binaries
+    needs: build-binaries # run this jobs afterbuild-binaries job completes
+    runs-on: ubuntu-18.04 # 20.04 doesn't provide createrepo for now
     steps:
-      - name: Setup Go 
-        uses: actions/setup-go@v3
-        with:
-          go-version: ${{ env.GO_VERSION }}
-
-      - name: Checkout code
-        uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
-
-      - name: Cache Go modules
+      - name: Restore Trivy binaries from cache
         uses: actions/cache@v3.0.2
         with:
-          path: ~/go/pkg/mod
-          key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
-          restore-keys: |
-            ${{ runner.os }}-go-
+          path: dist/
+          key: ${{ runner.os }}-bins-${{github.workflow}}-${{github.sha}}
 
-      - name: Release
-        uses: goreleaser/goreleaser-action@v3
-        with:
-          version: v1.4.1
-          args: build -f=goreleaser-canary.yml --snapshot --rm-dist
-
-      - name: Copy contribution files for upload
-        run: |
-          for dir in dist/*/; do
-            mkdir $dir/contrib
-            cp {README.md,LICENSE} $dir
-            cp contrib/*.tpl $dir/contrib
-          done
-
-      # Upload artifacts 
+        # Upload artifacts
       - name: Upload artifacts (trivy_Linux-64bit)
         uses: actions/upload-artifact@v3
         with:
           name: trivy_Linux-64bit
-          path: dist/trivy_canary_build_linux_amd64
+          path: dist/trivy_*_Linux-64bit.tar.gz
           if-no-files-found: error
-      
+
       - name: Upload artifacts (trivy_Linux-ARM64)
         uses: actions/upload-artifact@v3
         with:
           name: trivy_Linux-ARM64
-          path: dist/trivy_canary_build_linux_arm64
+          path: dist/trivy_*_Linux-ARM64.tar.gz
           if-no-files-found: error
 
       - name: Upload artifacts (trivy_macOS-64bit)
         uses: actions/upload-artifact@v3
         with:
           name: trivy_macOS-64bit
-          path: dist/trivy_canary_build_darwin_amd64
+          path: dist/trivy_*_macOS-64bit.tar.gz
           if-no-files-found: error
 
       - name: Upload artifacts (trivy_macOS-ARM64)
         uses: actions/upload-artifact@v3
         with:
           name: trivy_macOS-ARM64
-          path: dist/trivy_canary_build_darwin_arm64
+          path: dist/trivy_*_macOS-ARM64.tar.gz
           if-no-files-found: error
