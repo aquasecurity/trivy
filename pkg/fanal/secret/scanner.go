@@ -439,7 +439,7 @@ func findLocation(start, end int, content []byte) (int, int, types.Code, string)
 		line := strings.ReplaceAll(rawLine, match, strings.Repeat("*", len(match)))
 		inCause := realLine >= startLineNum && realLine <= endLineNum
 		code.Lines = append(code.Lines, types.Line{
-			Number:      startLineNum + i,
+			Number:      codeStart + i + 1,
 			Content:     line,
 			IsCause:     inCause,
 			Highlighted: line,
