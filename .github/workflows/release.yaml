@@ -9,7 +9,7 @@ jobs:
     name: Release
     uses: ./.github/workflows/build.yaml
     with:
-      goreleaser_file: goreleaser.yml
+      goreleaser_config: goreleaser.yml
       goreleaser_options: '--rm-dist --timeout 60m'
     secrets: inherit
 
@@ -18,6 +18,11 @@ jobs:
     needs: release # run this job after 'release' job completes
     runs-on: ubuntu-18.04 # 20.04 doesn't provide createrepo for now
     steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
       - name: Restore Trivy binaries from cache
         uses: actions/cache@v3.0.2
         with:
