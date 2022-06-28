@@ -15,7 +15,7 @@ jobs:
 
   deploy-rpm-deb-packages:
     name: deploy rpm/dep
-    needs: release
+    needs: release # run this jobs release job completes
     runs-on: ubuntu-18.04 # 20.04 doesn't provide createrepo for now
     steps:
       - name: Restore Trivy binaries from cache

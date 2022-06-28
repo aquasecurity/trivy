@@ -15,7 +15,7 @@ jobs:
 
   upload-binaries:
     name: upload-binaries
-    needs: build-binaries # run this jobs afterbuild-binaries job completes
+    needs: build-binaries # run this jobs after build-binaries job completes
     runs-on: ubuntu-18.04 # 20.04 doesn't provide createrepo for now
     steps:
       - name: Restore Trivy binaries from cache
