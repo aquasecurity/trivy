@@ -327,6 +327,11 @@ type ScanArgs struct {
 	Content  []byte
 }
 
+type Match struct {
+	Rule     Rule
+	Location Location
+}
+
 func (s Scanner) Scan(args ScanArgs) types.Secret {
 	// Global allowed paths
 	if s.AllowPath(args.FilePath) {
@@ -334,6 +339,10 @@ func (s Scanner) Scan(args ScanArgs) types.Secret {
 			FilePath: args.FilePath,
 		}
 	}
+
+	censored := make([]byte, len(args.Content))
+	copy(censored, args.Content)
+	var matched []Match
 
 	var findings []types.SecretFinding
 	globalExcludedBlocks := newBlocks(args.Content, s.ExcludeBlock.Regexes)
@@ -360,14 +369,23 @@ func (s Scanner) Scan(args ScanArgs) types.Secret {
 		}
 
 		localExcludedBlocks := newBlocks(args.Content, rule.ExcludeBlock.Regexes)
+
 		for _, loc := range locs {
 			// Skip the secret if it is within excluded blocks.
 			if globalExcludedBlocks.Match(loc) || localExcludedBlocks.Match(loc) {
 				continue
 			}
 
-			findings = append(findings, toFinding(rule, loc, args.Content))
+			matched = append(matched, Match{
+				Rule:     rule,
+				Location: loc,
+			})
+			censored = censorLocation(loc, censored)
 		}
+	}
+
+	for _, match := range matched {
+		findings = append(findings, toFinding(match.Rule, match.Location, censored))
 	}
 
 	if len(findings) == 0 {
@@ -378,6 +396,16 @@ func (s Scanner) Scan(args ScanArgs) types.Secret {
 		FilePath: args.FilePath,
 		Findings: findings,
 	}
+}
+
+func censorLocation(loc Location, input []byte) []byte {
+	return append(
+		input[:loc.Start],
+		append(
+			bytes.Repeat([]byte("*"), loc.End-loc.Start),
+			input[loc.End:]...,
+		)...,
+	)
 }
 
 func toFinding(rule Rule, loc Location, content []byte) types.SecretFinding {
@@ -423,9 +451,6 @@ func findLocation(start, end int, content []byte) (int, int, types.Code, string)
 	}
 	endLineNum := startLineNum + strings.Count(match, string(lineSep))
 
-	// Mask credentials
-	matchLine = strings.TrimSpace(strings.ReplaceAll(matchLine, match, "*****"))
-
 	var code types.Code
 
 	lines := strings.Split(string(content), string(lineSep))
@@ -436,16 +461,12 @@ func findLocation(start, end int, content []byte) (int, int, types.Code, string)
 	var foundFirst bool
 	for i, rawLine := range rawLines {
 		realLine := codeStart + i
-		line := rawLine
 		inCause := realLine >= startLineNum && realLine <= endLineNum
-		if inCause {
-			line = strings.ReplaceAll(line, match, strings.Repeat("*", len(match)))
-		}
 		code.Lines = append(code.Lines, types.Line{
 			Number:      codeStart + i + 1,
-			Content:     line,
+			Content:     rawLine,
 			IsCause:     inCause,
-			Highlighted: line,
+			Highlighted: rawLine,
 			FirstCause:  !foundFirst && inCause,
 			LastCause:   false,
 		})

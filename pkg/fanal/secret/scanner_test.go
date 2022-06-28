@@ -29,7 +29,29 @@ func TestSecretScanner(t *testing.T) {
 		Severity:  "HIGH",
 		StartLine: 2,
 		EndLine:   2,
-		Match:     "generic secret line secret=\"*****\"",
+		Match:     "generic secret line secret=\"*********\"",
+		Code: types.Code{
+			Lines: []types.Line{
+				{
+					Number:      1,
+					Content:     "--- ignore block start ---",
+					Highlighted: "--- ignore block start ---",
+				},
+				{
+					Number:      2,
+					Content:     "generic secret line secret=\"*********\"",
+					Highlighted: "generic secret line secret=\"*********\"",
+					IsCause:     true,
+					FirstCause:  true,
+					LastCause:   true,
+				},
+				{
+					Number:      3,
+					Content:     "--- ignore block stop ---",
+					Highlighted: "--- ignore block stop ---",
+				},
+			},
+		},
 	}
 	wantFinding2 := types.SecretFinding{
 		RuleID:    "rule1",
@@ -38,7 +60,70 @@ func TestSecretScanner(t *testing.T) {
 		Severity:  "HIGH",
 		StartLine: 4,
 		EndLine:   4,
-		Match:     "secret=\"*****\"",
+		Match:     "secret=\"**********\"",
+		Code: types.Code{
+			Lines: []types.Line{
+				{
+					Number:      2,
+					Content:     "generic secret line secret=\"*********\"",
+					Highlighted: "generic secret line secret=\"*********\"",
+				},
+				{
+					Number:      3,
+					Content:     "--- ignore block stop ---",
+					Highlighted: "--- ignore block stop ---",
+				},
+				{
+					Number:      4,
+					Content:     "secret=\"**********\"",
+					Highlighted: "secret=\"**********\"",
+					IsCause:     true,
+					FirstCause:  true,
+					LastCause:   true,
+				},
+				{
+					Number:      5,
+					Content:     "credentials: { user: \"username\" password: \"123456789\" }",
+					Highlighted: "credentials: { user: \"username\" password: \"123456789\" }",
+				},
+			},
+		},
+	}
+	wantFindingRegexDisabled := types.SecretFinding{
+		RuleID:    "rule1",
+		Category:  "general",
+		Title:     "Generic Rule",
+		Severity:  "HIGH",
+		StartLine: 4,
+		EndLine:   4,
+		Match:     "secret=\"**********\"",
+		Code: types.Code{
+			Lines: []types.Line{
+				{
+					Number:      2,
+					Content:     "generic secret line secret=\"somevalue\"",
+					Highlighted: "generic secret line secret=\"somevalue\"",
+				},
+				{
+					Number:      3,
+					Content:     "--- ignore block stop ---",
+					Highlighted: "--- ignore block stop ---",
+				},
+				{
+					Number:      4,
+					Content:     "secret=\"**********\"",
+					Highlighted: "secret=\"**********\"",
+					IsCause:     true,
+					FirstCause:  true,
+					LastCause:   true,
+				},
+				{
+					Number:      5,
+					Content:     "credentials: { user: \"username\" password: \"123456789\" }",
+					Highlighted: "credentials: { user: \"username\" password: \"123456789\" }",
+				},
+			},
+		},
 	}
 	wantFinding3 := types.SecretFinding{
 		RuleID:    "rule1",
@@ -47,7 +132,29 @@ func TestSecretScanner(t *testing.T) {
 		Severity:  "HIGH",
 		StartLine: 5,
 		EndLine:   5,
-		Match:     "credentials: { user: \"*****\" password: \"123456789\" }",
+		Match:     "credentials: { user: \"********\" password: \"*********\" }",
+		Code: types.Code{
+			Lines: []types.Line{
+				{
+					Number:      3,
+					Content:     "--- ignore block stop ---",
+					Highlighted: "--- ignore block stop ---",
+				},
+				{
+					Number:      4,
+					Content:     "secret=\"othervalue\"",
+					Highlighted: "secret=\"othervalue\"",
+				},
+				{
+					Number:      5,
+					Content:     "credentials: { user: \"********\" password: \"*********\" }",
+					Highlighted: "credentials: { user: \"********\" password: \"*********\" }",
+					IsCause:     true,
+					FirstCause:  true,
+					LastCause:   true,
+				},
+			},
+		},
 	}
 	wantFinding4 := types.SecretFinding{
 		RuleID:    "rule1",
@@ -56,7 +163,29 @@ func TestSecretScanner(t *testing.T) {
 		Severity:  "HIGH",
 		StartLine: 5,
 		EndLine:   5,
-		Match:     "credentials: { user: \"username\" password: \"*****\" }",
+		Match:     "credentials: { user: \"********\" password: \"*********\" }",
+		Code: types.Code{
+			Lines: []types.Line{
+				{
+					Number:      3,
+					Content:     "--- ignore block stop ---",
+					Highlighted: "--- ignore block stop ---",
+				},
+				{
+					Number:      4,
+					Content:     "secret=\"othervalue\"",
+					Highlighted: "secret=\"othervalue\"",
+				},
+				{
+					Number:      5,
+					Content:     "credentials: { user: \"********\" password: \"*********\" }",
+					Highlighted: "credentials: { user: \"********\" password: \"*********\" }",
+					IsCause:     true,
+					FirstCause:  true,
+					LastCause:   true,
+				},
+			},
+		},
 	}
 	wantFinding5 := types.SecretFinding{
 		RuleID:    "aws-access-key-id",
@@ -65,7 +194,81 @@ func TestSecretScanner(t *testing.T) {
 		Severity:  "CRITICAL",
 		StartLine: 2,
 		EndLine:   2,
-		Match:     "AWS_ACCESS_KEY_ID=*****",
+		Match:     "AWS_ACCESS_KEY_ID=********************",
+		Code: types.Code{
+			Lines: []types.Line{
+				{
+					Number:      1,
+					Content:     "'AWS_secret_KEY'=\"****************************************\"",
+					Highlighted: "'AWS_secret_KEY'=\"****************************************\"",
+				},
+				{
+					Number:      2,
+					Content:     "AWS_ACCESS_KEY_ID=********************",
+					Highlighted: "AWS_ACCESS_KEY_ID=********************",
+					IsCause:     true,
+					FirstCause:  true,
+					LastCause:   true,
+				},
+				{
+					Number:      3,
+					Content:     "\"aws_account_ID\":'**************'",
+					Highlighted: "\"aws_account_ID\":'**************'",
+				},
+			},
+		},
+	}
+	wantFinding5a := types.SecretFinding{
+		RuleID:    "aws-access-key-id",
+		Category:  secret.CategoryAWS,
+		Title:     "AWS Access Key ID",
+		Severity:  "CRITICAL",
+		StartLine: 2,
+		EndLine:   2,
+		Match:     "AWS_ACCESS_KEY_ID=********************",
+		Code: types.Code{
+			Lines: []types.Line{
+				{
+					Number:      1,
+					Content:     "GITHUB_PAT=****************************************",
+					Highlighted: "GITHUB_PAT=****************************************",
+				},
+				{
+					Number:      2,
+					Content:     "AWS_ACCESS_KEY_ID=********************",
+					Highlighted: "AWS_ACCESS_KEY_ID=********************",
+					IsCause:     true,
+					FirstCause:  true,
+					LastCause:   true,
+				},
+			},
+		},
+	}
+	wantFindingPATDisabled := types.SecretFinding{
+		RuleID:    "aws-access-key-id",
+		Category:  secret.CategoryAWS,
+		Title:     "AWS Access Key ID",
+		Severity:  "CRITICAL",
+		StartLine: 2,
+		EndLine:   2,
+		Match:     "AWS_ACCESS_KEY_ID=********************",
+		Code: types.Code{
+			Lines: []types.Line{
+				{
+					Number:      1,
+					Content:     "GITHUB_PAT=ghp_012345678901234567890123456789abcdef",
+					Highlighted: "GITHUB_PAT=ghp_012345678901234567890123456789abcdef",
+				},
+				{
+					Number:      2,
+					Content:     "AWS_ACCESS_KEY_ID=********************",
+					Highlighted: "AWS_ACCESS_KEY_ID=********************",
+					IsCause:     true,
+					FirstCause:  true,
+					LastCause:   true,
+				},
+			},
+		},
 	}
 	wantFinding6 := types.SecretFinding{
 		RuleID:    "github-pat",
@@ -74,7 +277,50 @@ func TestSecretScanner(t *testing.T) {
 		Severity:  "CRITICAL",
 		StartLine: 1,
 		EndLine:   1,
-		Match:     "GITHUB_PAT=*****",
+		Match:     "GITHUB_PAT=****************************************",
+		Code: types.Code{
+			Lines: []types.Line{
+				{
+					Number:      1,
+					Content:     "GITHUB_PAT=****************************************",
+					Highlighted: "GITHUB_PAT=****************************************",
+					IsCause:     true,
+					FirstCause:  true,
+					LastCause:   true,
+				},
+				{
+					Number:      2,
+					Content:     "AWS_ACCESS_KEY_ID=********************",
+					Highlighted: "AWS_ACCESS_KEY_ID=********************",
+				},
+			},
+		},
+	}
+	wantFindingGHButDisableAWS := types.SecretFinding{
+		RuleID:    "github-pat",
+		Category:  secret.CategoryGitHub,
+		Title:     "GitHub Personal Access Token",
+		Severity:  "CRITICAL",
+		StartLine: 1,
+		EndLine:   1,
+		Match:     "GITHUB_PAT=****************************************",
+		Code: types.Code{
+			Lines: []types.Line{
+				{
+					Number:      1,
+					Content:     "GITHUB_PAT=****************************************",
+					Highlighted: "GITHUB_PAT=****************************************",
+					IsCause:     true,
+					FirstCause:  true,
+					LastCause:   true,
+				},
+				{
+					Number:      2,
+					Content:     "AWS_ACCESS_KEY_ID=AKIA0123456789ABCDEF",
+					Highlighted: "AWS_ACCESS_KEY_ID=AKIA0123456789ABCDEF",
+				},
+			},
+		},
 	}
 	wantFinding7 := types.SecretFinding{
 		RuleID:    "github-pat",
@@ -83,7 +329,19 @@ func TestSecretScanner(t *testing.T) {
 		Severity:  "CRITICAL",
 		StartLine: 1,
 		EndLine:   1,
-		Match:     "aaaaaaaaaaaaaaaaaa GITHUB_PAT=***** bbbbbbbbbbbbbbbbbbb",
+		Match:     "aaaaaaaaaaaaaaaaaa GITHUB_PAT=**************************************** bbbbbbbbbbbbbbbbbbb",
+		Code: types.Code{
+			Lines: []types.Line{
+				{
+					Number:      1,
+					Content:     "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa GITHUB_PAT=**************************************** bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+					Highlighted: "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa GITHUB_PAT=**************************************** bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+					IsCause:     true,
+					FirstCause:  true,
+					LastCause:   true,
+				},
+			},
+		},
 	}
 	wantFinding8 := types.SecretFinding{
 		RuleID:    "rule1",
@@ -92,7 +350,29 @@ func TestSecretScanner(t *testing.T) {
 		Severity:  "UNKNOWN",
 		StartLine: 2,
 		EndLine:   2,
-		Match:     "generic secret line secret=\"*****\"",
+		Match:     "generic secret line secret=\"*********\"",
+		Code: types.Code{
+			Lines: []types.Line{
+				{
+					Number:      1,
+					Content:     "--- ignore block start ---",
+					Highlighted: "--- ignore block start ---",
+				},
+				{
+					Number:      2,
+					Content:     "generic secret line secret=\"*********\"",
+					Highlighted: "generic secret line secret=\"*********\"",
+					IsCause:     true,
+					FirstCause:  true,
+					LastCause:   true,
+				},
+				{
+					Number:      3,
+					Content:     "--- ignore block stop ---",
+					Highlighted: "--- ignore block stop ---",
+				},
+			},
+		},
 	}
 	wantFinding9 := types.SecretFinding{
 		RuleID:    "aws-secret-access-key",
@@ -101,7 +381,24 @@ func TestSecretScanner(t *testing.T) {
 		Severity:  "CRITICAL",
 		StartLine: 1,
 		EndLine:   1,
-		Match:     `'AWS_secret_KEY'="*****"`,
+		Match:     `'AWS_secret_KEY'="****************************************"`,
+		Code: types.Code{
+			Lines: []types.Line{
+				{
+					Number:      1,
+					Content:     "'AWS_secret_KEY'=\"****************************************\"",
+					Highlighted: "'AWS_secret_KEY'=\"****************************************\"",
+					IsCause:     true,
+					FirstCause:  true,
+					LastCause:   true,
+				},
+				{
+					Number:      2,
+					Content:     "AWS_ACCESS_KEY_ID=********************",
+					Highlighted: "AWS_ACCESS_KEY_ID=********************",
+				},
+			},
+		},
 	}
 	wantFinding10 := types.SecretFinding{
 		RuleID:    "aws-account-id",
@@ -110,7 +407,29 @@ func TestSecretScanner(t *testing.T) {
 		Severity:  "HIGH",
 		StartLine: 3,
 		EndLine:   3,
-		Match:     `"aws_account_ID":'*****'`,
+		Match:     `"aws_account_ID":'**************'`,
+		Code: types.Code{
+			Lines: []types.Line{
+				{
+					Number:      1,
+					Content:     "'AWS_secret_KEY'=\"****************************************\"",
+					Highlighted: "'AWS_secret_KEY'=\"****************************************\"",
+				},
+				{
+					Number:      2,
+					Content:     "AWS_ACCESS_KEY_ID=********************",
+					Highlighted: "AWS_ACCESS_KEY_ID=********************",
+				},
+				{
+					Number:      3,
+					Content:     "\"aws_account_ID\":'**************'",
+					Highlighted: "\"aws_account_ID\":'**************'",
+					IsCause:     true,
+					FirstCause:  true,
+					LastCause:   true,
+				},
+			},
+		},
 	}
 
 	tests := []struct {
@@ -175,7 +494,7 @@ func TestSecretScanner(t *testing.T) {
 			inputFilePath: "testdata/builtin-rule-secret.txt",
 			want: types.Secret{
 				FilePath: "testdata/builtin-rule-secret.txt",
-				Findings: []types.SecretFinding{wantFinding5, wantFinding6},
+				Findings: []types.SecretFinding{wantFinding5a, wantFinding6},
 			},
 		},
 		{
@@ -184,7 +503,7 @@ func TestSecretScanner(t *testing.T) {
 			inputFilePath: "testdata/builtin-rule-secret.txt",
 			want: types.Secret{
 				FilePath: "testdata/builtin-rule-secret.txt",
-				Findings: []types.SecretFinding{wantFinding6},
+				Findings: []types.SecretFinding{wantFindingGHButDisableAWS},
 			},
 		},
 		{
@@ -193,7 +512,7 @@ func TestSecretScanner(t *testing.T) {
 			inputFilePath: "testdata/builtin-rule-secret.txt",
 			want: types.Secret{
 				FilePath: "testdata/builtin-rule-secret.txt",
-				Findings: []types.SecretFinding{wantFinding5},
+				Findings: []types.SecretFinding{wantFindingPATDisabled},
 			},
 		},
 		{
@@ -229,7 +548,7 @@ func TestSecretScanner(t *testing.T) {
 			inputFilePath: "testdata/secret.txt",
 			want: types.Secret{
 				FilePath: "testdata/secret.txt",
-				Findings: []types.SecretFinding{wantFinding2},
+				Findings: []types.SecretFinding{wantFindingRegexDisabled},
 			},
 		},
 		{
@@ -263,7 +582,7 @@ func TestSecretScanner(t *testing.T) {
 			inputFilePath: "testdata/secret.txt",
 			want: types.Secret{
 				FilePath: "testdata/secret.txt",
-				Findings: []types.SecretFinding{wantFinding2},
+				Findings: []types.SecretFinding{wantFindingRegexDisabled},
 			},
 		},
 		{
