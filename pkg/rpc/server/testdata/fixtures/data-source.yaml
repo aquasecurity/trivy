@@ -1,6 +1,0 @@
-- bucket: data-source
-  pairs:
-    - key: vulnerability
-      value:
-        Name: "DOS vulnerabilities"
-        URL:  "https://vuld-db-example.com/"

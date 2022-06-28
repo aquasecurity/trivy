@@ -7,11 +7,9 @@ import (
 	"github.com/golang/protobuf/ptypes/timestamp"
 	"google.golang.org/protobuf/types/known/structpb"
 
-	ftypes "github.com/aquasecurity/fanal/types"
-	deptypes "github.com/aquasecurity/go-dep-parser/pkg/types"
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
+	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
-	"github.com/aquasecurity/trivy/pkg/report"
 	"github.com/aquasecurity/trivy/pkg/types"
 	"github.com/aquasecurity/trivy/rpc/cache"
 	"github.com/aquasecurity/trivy/rpc/common"
@@ -23,6 +21,7 @@ func ConvertToRPCPkgs(pkgs []ftypes.Package) []*common.Package {
 	var rpcPkgs []*common.Package
 	for _, pkg := range pkgs {
 		rpcPkgs = append(rpcPkgs, &common.Package{
+			Id:         pkg.ID,
 			Name:       pkg.Name,
 			Version:    pkg.Version,
 			Release:    pkg.Release,
@@ -32,8 +31,10 @@ func ConvertToRPCPkgs(pkgs []ftypes.Package) []*common.Package {
 			SrcVersion: pkg.SrcVersion,
 			SrcRelease: pkg.SrcRelease,
 			SrcEpoch:   int32(pkg.SrcEpoch),
-			License:    pkg.License,
+			Licenses:   pkg.Licenses,
 			Layer:      ConvertToRPCLayer(pkg.Layer),
+			FilePath:   pkg.FilePath,
+			DependsOn:  pkg.DependsOn,
 		})
 	}
 	return rpcPkgs
@@ -44,6 +45,7 @@ func ConvertFromRPCPkgs(rpcPkgs []*common.Package) []ftypes.Package {
 	var pkgs []ftypes.Package
 	for _, pkg := range rpcPkgs {
 		pkgs = append(pkgs, ftypes.Package{
+			ID:         pkg.Id,
 			Name:       pkg.Name,
 			Version:    pkg.Version,
 			Release:    pkg.Release,
@@ -53,37 +55,13 @@ func ConvertFromRPCPkgs(rpcPkgs []*common.Package) []ftypes.Package {
 			SrcVersion: pkg.SrcVersion,
 			SrcRelease: pkg.SrcRelease,
 			SrcEpoch:   int(pkg.SrcEpoch),
-			License:    pkg.License,
+			Licenses:   pkg.Licenses,
 			Layer:      ConvertFromRPCLayer(pkg.Layer),
+			FilePath:   pkg.FilePath,
+			DependsOn:  pkg.DependsOn,
 		})
 	}
 	return pkgs
-}
-
-// ConvertFromRPCLibraries returns list of Fanal library
-func ConvertFromRPCLibraries(rpcLibs []*common.Library) []ftypes.Package {
-	var pkgs []ftypes.Package
-	for _, l := range rpcLibs {
-		pkgs = append(pkgs, ftypes.Package{
-			Name:    l.Name,
-			Version: l.Version,
-			License: l.License,
-		})
-	}
-	return pkgs
-}
-
-// ConvertToRPCLibraries returns list of libraries
-func ConvertToRPCLibraries(libs []deptypes.Library) []*common.Library {
-	var rpcLibs []*common.Library
-	for _, l := range libs {
-		rpcLibs = append(rpcLibs, &common.Library{
-			Name:    l.Name,
-			Version: l.Version,
-			License: l.License,
-		})
-	}
-	return rpcLibs
 }
 
 // ConvertToRPCVulns returns common.Vulnerability
@@ -102,6 +80,10 @@ func ConvertToRPCVulns(vulns []types.DetectedVulnerability) []*common.Vulnerabil
 				V2Score:  vendorSeverity.V2Score,
 				V3Score:  vendorSeverity.V3Score,
 			}
+		}
+		vensorSeverityMap := make(map[string]common.Severity)
+		for vendor, vendorSeverity := range vuln.VendorSeverity {
+			vensorSeverityMap[string(vendor)] = common.Severity(vendorSeverity)
 		}
 
 		var lastModifiedDate, publishedDate *timestamp.Timestamp
@@ -124,12 +106,15 @@ func ConvertToRPCVulns(vulns []types.DetectedVulnerability) []*common.Vulnerabil
 		rpcVulns = append(rpcVulns, &common.Vulnerability{
 			VulnerabilityId:    vuln.VulnerabilityID,
 			VendorIds:          vuln.VendorIDs,
+			PkgId:              vuln.PkgID,
 			PkgName:            vuln.PkgName,
+			PkgPath:            vuln.PkgPath,
 			InstalledVersion:   vuln.InstalledVersion,
 			FixedVersion:       vuln.FixedVersion,
 			Title:              vuln.Title,
 			Description:        vuln.Description,
 			Severity:           common.Severity(severity),
+			VendorSeverity:     vensorSeverityMap,
 			References:         vuln.References,
 			Layer:              ConvertToRPCLayer(vuln.Layer),
 			Cvss:               cvssMap,
@@ -193,20 +178,38 @@ func ConvertToRPCDataSource(ds *dbTypes.DataSource) *common.DataSource {
 	}
 }
 
-// ConvertFromRPCResults converts scanner.Result to report.Result
-func ConvertFromRPCResults(rpcResults []*scanner.Result) []report.Result {
-	var results []report.Result
+// ConvertFromRPCResults converts scanner.Result to types.Result
+func ConvertFromRPCResults(rpcResults []*scanner.Result) []types.Result {
+	var results []types.Result
 	for _, result := range rpcResults {
-		results = append(results, report.Result{
+		results = append(results, types.Result{
 			Target:            result.Target,
 			Vulnerabilities:   ConvertFromRPCVulns(result.Vulnerabilities),
 			Misconfigurations: ConvertFromRPCMisconfs(result.Misconfigurations),
-			Class:             report.ResultClass(result.Class),
+			Class:             types.ResultClass(result.Class),
 			Type:              result.Type,
 			Packages:          ConvertFromRPCPkgs(result.Packages),
+			CustomResources:   ConvertFromRPCCustomResources(result.CustomResources),
 		})
 	}
 	return results
+}
+
+// ConvertFromRPCCustomResources converts array of cache.CustomResource to fanal.CustomResource
+func ConvertFromRPCCustomResources(rpcCustomResources []*common.CustomResource) []ftypes.CustomResource {
+	var resources []ftypes.CustomResource
+	for _, res := range rpcCustomResources {
+		resources = append(resources, ftypes.CustomResource{
+			Type:     res.Type,
+			FilePath: res.FilePath,
+			Layer: ftypes.Layer{
+				Digest: res.Layer.Digest,
+				DiffID: res.Layer.DiffId,
+			},
+			Data: res.Data,
+		})
+	}
+	return resources
 }
 
 // ConvertFromRPCVulns converts []*common.Vulnerability to []types.DetectedVulnerability
@@ -223,6 +226,10 @@ func ConvertFromRPCVulns(rpcVulns []*common.Vulnerability) []types.DetectedVulne
 				V3Score:  vendorSeverity.V3Score,
 			}
 		}
+		vensorSeverityMap := make(dbTypes.VendorSeverity)
+		for vendor, vendorSeverity := range vuln.VendorSeverity {
+			vensorSeverityMap[dbTypes.SourceID(vendor)] = dbTypes.Severity(vendorSeverity)
+		}
 
 		var lastModifiedDate, publishedDate *time.Time
 		if vuln.LastModifiedDate != nil {
@@ -237,7 +244,9 @@ func ConvertFromRPCVulns(rpcVulns []*common.Vulnerability) []types.DetectedVulne
 		vulns = append(vulns, types.DetectedVulnerability{
 			VulnerabilityID:  vuln.VulnerabilityId,
 			VendorIDs:        vuln.VendorIds,
+			PkgID:            vuln.PkgId,
 			PkgName:          vuln.PkgName,
+			PkgPath:          vuln.PkgPath,
 			InstalledVersion: vuln.InstalledVersion,
 			FixedVersion:     vuln.FixedVersion,
 			Vulnerability: dbTypes.Vulnerability{
@@ -250,6 +259,7 @@ func ConvertFromRPCVulns(rpcVulns []*common.Vulnerability) []types.DetectedVulne
 				LastModifiedDate: lastModifiedDate,
 				PublishedDate:    publishedDate,
 				Custom:           vuln.CustomVulnData.AsInterface(),
+				VendorSeverity:   vensorSeverityMap,
 			},
 			Layer:          ConvertFromRPCLayer(vuln.Layer),
 			SeveritySource: dbTypes.SourceID(vuln.SeveritySource),
@@ -306,6 +316,17 @@ func ConvertFromRPCOS(rpcOS *common.OS) *ftypes.OS {
 	}
 }
 
+// ConvertFromRPCRepository converts common.Repository to fanal.Repository
+func ConvertFromRPCRepository(rpcRepo *common.Repository) *ftypes.Repository {
+	if rpcRepo == nil {
+		return nil
+	}
+	return &ftypes.Repository{
+		Family:  rpcRepo.Family,
+		Release: rpcRepo.Release,
+	}
+}
+
 // ConvertFromRPCDataSource converts *common.DataSource to *dbTypes.DataSource
 func ConvertFromRPCDataSource(ds *common.DataSource) *dbTypes.DataSource {
 	if ds == nil {
@@ -337,7 +358,7 @@ func ConvertFromRPCApplications(rpcApps []*common.Application) []ftypes.Applicat
 		apps = append(apps, ftypes.Application{
 			Type:      rpcApp.Type,
 			FilePath:  rpcApp.FilePath,
-			Libraries: ConvertFromRPCLibraries(rpcApp.Libraries),
+			Libraries: ConvertFromRPCPkgs(rpcApp.Libraries),
 		})
 	}
 	return apps
@@ -398,11 +419,13 @@ func ConvertFromRPCPutBlobRequest(req *cache.PutBlobRequest) ftypes.BlobInfo {
 		Digest:            req.BlobInfo.Digest,
 		DiffID:            req.BlobInfo.DiffId,
 		OS:                ConvertFromRPCOS(req.BlobInfo.Os),
+		Repository:        ConvertFromRPCRepository(req.BlobInfo.Repository),
 		PackageInfos:      ConvertFromRPCPackageInfos(req.BlobInfo.PackageInfos),
 		Applications:      ConvertFromRPCApplications(req.BlobInfo.Applications),
 		Misconfigurations: ConvertFromRPCMisconfigurations(req.BlobInfo.Misconfigurations),
 		OpaqueDirs:        req.BlobInfo.OpaqueDirs,
 		WhiteoutFiles:     req.BlobInfo.WhiteoutFiles,
+		CustomResources:   ConvertFromRPCCustomResources(req.BlobInfo.CustomResources),
 	}
 }
 
@@ -415,6 +438,17 @@ func ConvertToRPCOS(fos *ftypes.OS) *common.OS {
 		Family: fos.Family,
 		Name:   fos.Name,
 		Eosl:   fos.Eosl,
+	}
+}
+
+// ConvertToRPCRepository returns common.Repository
+func ConvertToRPCRepository(repo *ftypes.Repository) *common.Repository {
+	if repo == nil {
+		return nil
+	}
+	return &common.Repository{
+		Family:  repo.Family,
+		Release: repo.Release,
 	}
 }
 
@@ -450,18 +484,10 @@ func ConvertToRPCBlobInfo(diffID string, blobInfo ftypes.BlobInfo) *cache.PutBlo
 
 	var applications []*common.Application
 	for _, app := range blobInfo.Applications {
-		var libs []*common.Library
-		for _, lib := range app.Libraries {
-			libs = append(libs, &common.Library{
-				Name:    lib.Name,
-				Version: lib.Version,
-				License: lib.License,
-			})
-		}
 		applications = append(applications, &common.Application{
 			Type:      app.Type,
 			FilePath:  app.FilePath,
-			Libraries: libs,
+			Libraries: ConvertToRPCPkgs(app.Libraries),
 		})
 	}
 
@@ -478,6 +504,24 @@ func ConvertToRPCBlobInfo(diffID string, blobInfo ftypes.BlobInfo) *cache.PutBlo
 
 	}
 
+	var customResources []*common.CustomResource
+	for _, res := range blobInfo.CustomResources {
+		data, err := structpb.NewValue(res.Data)
+		if err != nil {
+
+		} else {
+			customResources = append(customResources, &common.CustomResource{
+				Type:     res.Type,
+				FilePath: res.FilePath,
+				Layer: &common.Layer{
+					Digest: res.Layer.Digest,
+					DiffId: res.Layer.DiffID,
+				},
+				Data: data,
+			})
+		}
+	}
+
 	return &cache.PutBlobRequest{
 		DiffId: diffID,
 		BlobInfo: &cache.BlobInfo{
@@ -485,11 +529,13 @@ func ConvertToRPCBlobInfo(diffID string, blobInfo ftypes.BlobInfo) *cache.PutBlo
 			Digest:            blobInfo.Digest,
 			DiffId:            blobInfo.DiffID,
 			Os:                ConvertToRPCOS(blobInfo.OS),
+			Repository:        ConvertToRPCRepository(blobInfo.Repository),
 			PackageInfos:      packageInfos,
 			Applications:      applications,
 			Misconfigurations: misconfigurations,
 			OpaqueDirs:        blobInfo.OpaqueDirs,
 			WhiteoutFiles:     blobInfo.WhiteoutFiles,
+			CustomResources:   customResources,
 		},
 	}
 }
@@ -518,8 +564,8 @@ func ConvertToMissingBlobsRequest(imageID string, layerIDs []string) *cache.Miss
 	}
 }
 
-// ConvertToRPCScanResponse converts report.Result to ScanResponse
-func ConvertToRPCScanResponse(results report.Results, fos *ftypes.OS) *scanner.ScanResponse {
+// ConvertToRPCScanResponse converts types.Result to ScanResponse
+func ConvertToRPCScanResponse(results types.Results, fos *ftypes.OS) *scanner.ScanResponse {
 	var rpcResults []*scanner.Result
 	for _, result := range results {
 		rpcResults = append(rpcResults, &scanner.Result{
@@ -536,4 +582,15 @@ func ConvertToRPCScanResponse(results report.Results, fos *ftypes.OS) *scanner.S
 		Os:      ConvertToRPCOS(fos),
 		Results: rpcResults,
 	}
+}
+
+func ConvertToDeleteBlobsRequest(blobIDs []string) *cache.DeleteBlobsRequest {
+	return &cache.DeleteBlobsRequest{BlobIds: blobIDs}
+}
+
+func ConvertFromDeleteBlobsRequest(deleteBlobsRequest *cache.DeleteBlobsRequest) []string {
+	if deleteBlobsRequest == nil {
+		return []string{}
+	}
+	return deleteBlobsRequest.GetBlobIds()
 }

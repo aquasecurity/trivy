@@ -1,5 +1,4 @@
-//go:build integration
-// +build integration
+//go:build integration || module_integration
 
 package integration
 
@@ -10,6 +9,7 @@ import (
 	"net"
 	"os"
 	"path/filepath"
+	"sort"
 	"testing"
 	"time"
 
@@ -19,7 +19,7 @@ import (
 	"github.com/aquasecurity/trivy-db/pkg/db"
 	"github.com/aquasecurity/trivy-db/pkg/metadata"
 	"github.com/aquasecurity/trivy/pkg/dbtest"
-	"github.com/aquasecurity/trivy/pkg/report"
+	"github.com/aquasecurity/trivy/pkg/types"
 )
 
 var update = flag.Bool("update", false, "update golden files")
@@ -85,26 +85,39 @@ func waitPort(ctx context.Context, addr string) error {
 	}
 }
 
-func readReport(t *testing.T, filePath string) report.Report {
+func readReport(t *testing.T, filePath string) types.Report {
 	t.Helper()
 
 	f, err := os.Open(filePath)
 	require.NoError(t, err, filePath)
 	defer f.Close()
 
-	var res report.Report
-	err = json.NewDecoder(f).Decode(&res)
+	var report types.Report
+	err = json.NewDecoder(f).Decode(&report)
 	require.NoError(t, err, filePath)
 
 	// We don't compare history because the nano-seconds in "created" don't match
-	res.Metadata.ImageConfig.History = nil
+	report.Metadata.ImageConfig.History = nil
 
 	// We don't compare repo tags because the archive doesn't support it
-	res.Metadata.RepoTags = nil
+	report.Metadata.RepoTags = nil
 
-	res.Metadata.RepoDigests = nil
+	report.Metadata.RepoDigests = nil
 
-	return res
+	for i, result := range report.Results {
+		for j := range result.Vulnerabilities {
+			report.Results[i].Vulnerabilities[j].Layer.Digest = ""
+		}
+
+		sort.Slice(result.CustomResources, func(i, j int) bool {
+			if result.CustomResources[i].Type != result.CustomResources[j].Type {
+				return result.CustomResources[i].Type < result.CustomResources[j].Type
+			}
+			return result.CustomResources[i].FilePath < result.CustomResources[j].FilePath
+		})
+	}
+
+	return report
 }
 
 func compareReports(t *testing.T, wantFile, gotFile string) {

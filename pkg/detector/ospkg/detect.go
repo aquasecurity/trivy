@@ -3,11 +3,8 @@ package ospkg
 import (
 	"time"
 
-	"github.com/google/wire"
 	"golang.org/x/xerrors"
 
-	fos "github.com/aquasecurity/fanal/analyzer/os"
-	ftypes "github.com/aquasecurity/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/detector/ospkg/alma"
 	"github.com/aquasecurity/trivy/pkg/detector/ospkg/alpine"
 	"github.com/aquasecurity/trivy/pkg/detector/ospkg/amazon"
@@ -19,6 +16,8 @@ import (
 	"github.com/aquasecurity/trivy/pkg/detector/ospkg/rocky"
 	"github.com/aquasecurity/trivy/pkg/detector/ospkg/suse"
 	"github.com/aquasecurity/trivy/pkg/detector/ospkg/ubuntu"
+	fos "github.com/aquasecurity/trivy/pkg/fanal/analyzer/os"
+	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
@@ -26,12 +25,6 @@ import (
 var (
 	// ErrUnsupportedOS defines error for unsupported OS
 	ErrUnsupportedOS = xerrors.New("unsupported os")
-
-	// SuperSet binds dependencies for OS scan
-	SuperSet = wire.NewSet(
-		wire.Struct(new(Detector)),
-		wire.Bind(new(Operation), new(Detector)),
-	)
 
 	drivers = map[string]Driver{
 		fos.Alpine:       alpine.NewScanner(),
@@ -55,14 +48,9 @@ func RegisterDriver(name string, driver Driver) {
 	drivers[name] = driver
 }
 
-// Operation defines operation of OSpkg scan
-type Operation interface {
-	Detect(string, string, string, time.Time, []ftypes.Package) ([]types.DetectedVulnerability, bool, error)
-}
-
 // Driver defines operations for OS package scan
 type Driver interface {
-	Detect(string, []ftypes.Package) ([]types.DetectedVulnerability, error)
+	Detect(string, *ftypes.Repository, []ftypes.Package) ([]types.DetectedVulnerability, error)
 	IsSupportedVersion(string, string) bool
 }
 
@@ -70,7 +58,7 @@ type Driver interface {
 type Detector struct{}
 
 // Detect detects the vulnerabilities
-func (d Detector) Detect(_, osFamily, osName string, _ time.Time, pkgs []ftypes.Package) ([]types.DetectedVulnerability, bool, error) {
+func (d Detector) Detect(_, osFamily, osName string, repo *ftypes.Repository, _ time.Time, pkgs []ftypes.Package) ([]types.DetectedVulnerability, bool, error) {
 	driver, err := newDriver(osFamily)
 	if err != nil {
 		return nil, false, ErrUnsupportedOS
@@ -78,7 +66,7 @@ func (d Detector) Detect(_, osFamily, osName string, _ time.Time, pkgs []ftypes.
 
 	eosl := !driver.IsSupportedVersion(osFamily, osName)
 
-	vulns, err := driver.Detect(osName, pkgs)
+	vulns, err := driver.Detect(osName, repo, pkgs)
 	if err != nil {
 		return nil, false, xerrors.Errorf("failed detection: %w", err)
 	}

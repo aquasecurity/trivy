@@ -1,7 +1,5 @@
 package types
 
-import "github.com/aquasecurity/trivy/pkg/utils"
-
 // VulnType represents vulnerability type
 type VulnType = string
 
@@ -26,25 +24,14 @@ const (
 
 	// SecurityCheckConfig is a security check of misconfigurations
 	SecurityCheckConfig = SecurityCheck("config")
+
+	// SecurityCheckSecret is a security check of secrets
+	SecurityCheckSecret = SecurityCheck("secret")
+	// SecurityCheckRbac is a security check of rbac assessment
+	SecurityCheckRbac = SecurityCheck("rbac")
 )
 
 var (
-	vulnTypes      = []string{VulnTypeOS, VulnTypeLibrary}
-	securityChecks = []string{SecurityCheckVulnerability, SecurityCheckConfig}
+	VulnTypes      = []string{VulnTypeOS, VulnTypeLibrary}
+	SecurityChecks = []string{SecurityCheckVulnerability, SecurityCheckConfig, SecurityCheckSecret, SecurityCheckRbac}
 )
-
-// NewVulnType returns an instance of VulnType
-func NewVulnType(s string) VulnType {
-	if utils.StringInSlice(s, vulnTypes) {
-		return s
-	}
-	return VulnTypeUnknown
-}
-
-// NewSecurityCheck returns an instance of SecurityCheck
-func NewSecurityCheck(s string) SecurityCheck {
-	if utils.StringInSlice(s, securityChecks) {
-		return s
-	}
-	return SecurityCheckUnknown
-}

@@ -11,11 +11,11 @@ import (
 	"github.com/twitchtv/twirp"
 	"golang.org/x/xerrors"
 
-	"github.com/aquasecurity/fanal/cache"
 	"github.com/aquasecurity/trivy-db/pkg/db"
 	"github.com/aquasecurity/trivy-db/pkg/metadata"
 	dbFile "github.com/aquasecurity/trivy/pkg/db"
 	dbc "github.com/aquasecurity/trivy/pkg/db"
+	"github.com/aquasecurity/trivy/pkg/fanal/cache"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/utils"
 	rpcCache "github.com/aquasecurity/trivy/rpc/cache"
@@ -26,31 +26,33 @@ const updateInterval = 1 * time.Hour
 
 // Server represents Trivy server
 type Server struct {
-	appVersion  string
-	addr        string
-	cacheDir    string
-	token       string
-	tokenHeader string
+	appVersion   string
+	addr         string
+	cacheDir     string
+	token        string
+	tokenHeader  string
+	dbRepository string
 }
 
 // NewServer returns an instance of Server
-func NewServer(appVersion, addr, cacheDir, token, tokenHeader string) Server {
+func NewServer(appVersion, addr, cacheDir, token, tokenHeader, dbRepository string) Server {
 	return Server{
-		appVersion:  appVersion,
-		addr:        addr,
-		cacheDir:    cacheDir,
-		token:       token,
-		tokenHeader: tokenHeader,
+		appVersion:   appVersion,
+		addr:         addr,
+		cacheDir:     cacheDir,
+		token:        token,
+		tokenHeader:  tokenHeader,
+		dbRepository: dbRepository,
 	}
 }
 
 // ListenAndServe starts Trivy server
-func (s Server) ListenAndServe(serverCache cache.Cache) error {
+func (s Server) ListenAndServe(serverCache cache.Cache, insecure bool) error {
 	requestWg := &sync.WaitGroup{}
 	dbUpdateWg := &sync.WaitGroup{}
 
 	go func() {
-		worker := newDBWorker(dbc.NewClient(s.cacheDir, true))
+		worker := newDBWorker(dbc.NewClient(s.cacheDir, true, insecure, dbc.WithDBRepository(s.dbRepository)))
 		ctx := context.Background()
 		for {
 			time.Sleep(updateInterval)
@@ -130,7 +132,7 @@ func (w dbWorker) update(ctx context.Context, appVersion, cacheDir string,
 
 	log.Logger.Info("Updating DB...")
 	if err = w.hotUpdate(ctx, cacheDir, dbUpdateWg, requestWg); err != nil {
-		return xerrors.Errorf("failed DB hot update")
+		return xerrors.Errorf("failed DB hot update: %w", err)
 	}
 	return nil
 }

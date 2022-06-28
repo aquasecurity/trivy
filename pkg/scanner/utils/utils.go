@@ -3,7 +3,7 @@ package utils
 import (
 	"fmt"
 
-	"github.com/aquasecurity/fanal/types"
+	"github.com/aquasecurity/trivy/pkg/fanal/types"
 )
 
 // FormatVersion formats the package version based on epoch, version & release

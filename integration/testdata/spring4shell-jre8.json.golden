@@ -1,0 +1,266 @@
+{
+  "SchemaVersion": 2,
+  "ArtifactName": "testdata/fixtures/images/spring4shell-jre8.tar.gz",
+  "ArtifactType": "container_image",
+  "Metadata": {
+    "OS": {
+      "Family": "debian",
+      "Name": "11.3"
+    },
+    "ImageID": "sha256:b88bc3d2f0b5aacf1d36efa498f427d923b01c854dac090acf5368c55ac04fda",
+    "DiffIDs": [
+      "sha256:608f3a074261105f129d707e4d9ad3d41b5baa94887f092b7c2857f7274a2fce",
+      "sha256:1f6e409d1c59c8e06608a024b82d50490313abc3b2ff93730e43135d5be0cd72",
+      "sha256:0e78b1e5673e8cc7c102fdda9e6b830b7dee2b29b178f34d25d9be59387e6950",
+      "sha256:ba40706eccba610401e4942e29f50bdf36807f8638942ce20805b359ae3ac1c1",
+      "sha256:053db4876c0df3df3294ee00e32e140b130ba33807d088750cb69b0e6fad158e",
+      "sha256:85595543df2b1115a18284a8ef62d0b235c4bc29e3d33b55f89b54ee1eadf4c6",
+      "sha256:868d710aa4dc5fc4793508564fc45c991ed8d5f6ab3e4cf52bb856f29546f3d8",
+      "sha256:77b2d158369254d5055183f5483f8b6661170857b61768d1d95d18c2ec1714b6",
+      "sha256:eb769943b91f10a0418f2fc3b4a4fde6c6293be60c37293fcc0fa319edaf27a5"
+    ],
+    "ImageConfig": {
+      "architecture": "amd64",
+      "created": "2022-06-06T13:51:57.120019Z",
+      "docker_version": "20.10.14",
+      "history": [
+        {
+          "created": "2022-03-29T00:22:18.812238611Z",
+          "created_by": "/bin/sh -c #(nop) ADD file:966d3669b40f5fbaecee1ecbeb58debe19001076da5d94717080d55efbc25971 in / "
+        },
+        {
+          "created": "2022-03-29T00:22:19.186561403Z",
+          "created_by": "/bin/sh -c #(nop)  CMD [\"bash\"]",
+          "empty_layer": true
+        },
+        {
+          "created": "2022-03-29T00:52:15.681202963Z",
+          "created_by": "/bin/sh -c set -eux; \tapt-get update; \tapt-get install -y --no-install-recommends \t\tca-certificates p11-kit \t; \trm -rf /var/lib/apt/lists/*"
+        },
+        {
+          "created": "2022-03-29T00:57:17.289858958Z",
+          "created_by": "/bin/sh -c #(nop)  ENV JAVA_HOME=/usr/local/openjdk-8",
+          "empty_layer": true
+        },
+        {
+          "created": "2022-03-29T00:57:17.842070347Z",
+          "created_by": "/bin/sh -c { echo '#/bin/sh'; echo 'echo \"$JAVA_HOME\"'; } \u003e /usr/local/bin/docker-java-home \u0026\u0026 chmod +x /usr/local/bin/docker-java-home \u0026\u0026 [ \"$JAVA_HOME\" = \"$(docker-java-home)\" ] # backwards compatibility"
+        },
+        {
+          "created": "2022-03-29T00:57:17.930626834Z",
+          "created_by": "/bin/sh -c #(nop)  ENV PATH=/usr/local/openjdk-8/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin",
+          "empty_layer": true
+        },
+        {
+          "created": "2022-03-29T00:57:18.024334574Z",
+          "created_by": "/bin/sh -c #(nop)  ENV LANG=C.UTF-8",
+          "empty_layer": true
+        },
+        {
+          "created": "2022-03-29T00:57:18.115954625Z",
+          "created_by": "/bin/sh -c #(nop)  ENV JAVA_VERSION=8u322",
+          "empty_layer": true
+        },
+        {
+          "created": "2022-03-29T00:58:15.033935002Z",
+          "created_by": "/bin/sh -c set -eux; \t\tarch=\"$(dpkg --print-architecture)\"; \tcase \"$arch\" in \t\t'amd64') \t\t\tdownloadUrl='https://github.com/AdoptOpenJDK/openjdk8-upstream-binaries/releases/download/jdk8u322-b06/OpenJDK8U-jre_x64_linux_8u322b06.tar.gz'; \t\t\t;; \t\t'arm64') \t\t\tdownloadUrl='https://github.com/AdoptOpenJDK/openjdk8-upstream-binaries/releases/download/jdk8u322-b06/OpenJDK8U-jre_aarch64_linux_8u322b06.tar.gz'; \t\t\t;; \t\t*) echo \u003e\u00262 \"error: unsupported architecture: '$arch'\"; exit 1 ;; \tesac; \t\tsavedAptMark=\"$(apt-mark showmanual)\"; \tapt-get update; \tapt-get install -y --no-install-recommends \t\tdirmngr \t\tgnupg \t\twget \t; \trm -rf /var/lib/apt/lists/*; \t\twget --progress=dot:giga -O openjdk.tgz \"$downloadUrl\"; \twget --progress=dot:giga -O openjdk.tgz.asc \"$downloadUrl.sign\"; \t\texport GNUPGHOME=\"$(mktemp -d)\"; \tgpg --batch --keyserver keyserver.ubuntu.com --recv-keys EAC843EBD3EFDB98CC772FADA5CD6035332FA671; \tgpg --batch --keyserver keyserver.ubuntu.com --keyserver-options no-self-sigs-only --recv-keys CA5F11C6CE22644D42C6AC4492EF8D39DC13168F; \tgpg --batch --list-sigs --keyid-format 0xLONG CA5F11C6CE22644D42C6AC4492EF8D39DC13168F \t\t| tee /dev/stderr \t\t| grep '0xA5CD6035332FA671' \t\t| grep 'Andrew Haley'; \tgpg --batch --verify openjdk.tgz.asc openjdk.tgz; \tgpgconf --kill all; \trm -rf \"$GNUPGHOME\"; \t\tmkdir -p \"$JAVA_HOME\"; \ttar --extract \t\t--file openjdk.tgz \t\t--directory \"$JAVA_HOME\" \t\t--strip-components 1 \t\t--no-same-owner \t; \trm openjdk.tgz*; \t\tapt-mark auto '.*' \u003e /dev/null; \t[ -z \"$savedAptMark\" ] || apt-mark manual $savedAptMark \u003e /dev/null; \tapt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false; \t\t{ \t\techo '#!/usr/bin/env bash'; \t\techo 'set -Eeuo pipefail'; \t\techo 'trust extract --overwrite --format=java-cacerts --filter=ca-anchors --purpose=server-auth \"$JAVA_HOME/lib/security/cacerts\"'; \t} \u003e /etc/ca-certificates/update.d/docker-openjdk; \tchmod +x /etc/ca-certificates/update.d/docker-openjdk; \t/etc/ca-certificates/update.d/docker-openjdk; \t\tfind \"$JAVA_HOME/lib\" -name '*.so' -exec dirname '{}' ';' | sort -u \u003e /etc/ld.so.conf.d/docker-openjdk.conf; \tldconfig; \t\tjava -version"
+        },
+        {
+          "created": "2022-03-30T05:24:58.62001394Z",
+          "created_by": "/bin/sh -c #(nop)  ENV CATALINA_HOME=/usr/local/tomcat",
+          "empty_layer": true
+        },
+        {
+          "created": "2022-03-30T05:24:58.713370816Z",
+          "created_by": "/bin/sh -c #(nop)  ENV PATH=/usr/local/tomcat/bin:/usr/local/openjdk-8/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin",
+          "empty_layer": true
+        },
+        {
+          "created": "2022-03-30T05:24:59.23051474Z",
+          "created_by": "/bin/sh -c mkdir -p \"$CATALINA_HOME\""
+        },
+        {
+          "created": "2022-03-30T05:24:59.327279736Z",
+          "created_by": "/bin/sh -c #(nop) WORKDIR /usr/local/tomcat",
+          "empty_layer": true
+        },
+        {
+          "created": "2022-03-30T05:24:59.421537441Z",
+          "created_by": "/bin/sh -c #(nop)  ENV TOMCAT_NATIVE_LIBDIR=/usr/local/tomcat/native-jni-lib",
+          "empty_layer": true
+        },
+        {
+          "created": "2022-03-30T05:24:59.517366785Z",
+          "created_by": "/bin/sh -c #(nop)  ENV LD_LIBRARY_PATH=/usr/local/tomcat/native-jni-lib",
+          "empty_layer": true
+        },
+        {
+          "created": "2022-03-30T05:42:09.694872721Z",
+          "created_by": "/bin/sh -c #(nop)  ENV GPG_KEYS=05AB33110949707C93A279E3D3EFE6B686867BA6 07E48665A34DCAFAE522E5E6266191C37C037D42 47309207D818FFD8DCD3F83F1931D684307A10A5 541FBE7D8F78B25E055DDEE13C370389288584E7 5C3C5F3E314C866292F359A8F3AD5C94A67F707E 765908099ACF92702C7D949BFA0C35EA8AA299F1 79F7026C690BAA50B92CD8B66A3AD3F4F22C4FED 9BA44C2621385CB966EBA586F72C284D731FABEE A27677289986DB50844682F8ACB77FC2E86E29AC A9C5DF4D22E99998D9875A5110C01C5A2F6059E7 DCFD35E0BF8CA7344752DE8B6FB21E8933C60243 F3A04C595DB5B6A5F1ECA43E3B7BBB100D811BBE F7DA48BB64BCB84ECBA7EE6935CD23C10D498E23",
+          "empty_layer": true
+        },
+        {
+          "created": "2022-03-30T05:42:09.790546995Z",
+          "created_by": "/bin/sh -c #(nop)  ENV TOMCAT_MAJOR=8",
+          "empty_layer": true
+        },
+        {
+          "created": "2022-03-30T05:42:09.882411219Z",
+          "created_by": "/bin/sh -c #(nop)  ENV TOMCAT_VERSION=8.5.77",
+          "empty_layer": true
+        },
+        {
+          "created": "2022-03-30T05:42:09.972728447Z",
+          "created_by": "/bin/sh -c #(nop)  ENV TOMCAT_SHA512=50f96584cbbbeeda92a3b573e7fe7e2c49e57ed4bc5246257dc1409abac0710b49fa7049a0dd9a3b8467bca2aa078ef608f49b676c1abf12529528ff71bb0260",
+          "empty_layer": true
+        },
+        {
+          "created": "2022-03-30T05:42:10.425808771Z",
+          "created_by": "/bin/sh -c #(nop) COPY dir:4b2b2ad5d081ef9a92d92841b7b643214ae6e21bbb961e3197c3615dd08813ab in /usr/local/tomcat "
+        },
+        {
+          "created": "2022-03-30T05:42:13.894391571Z",
+          "created_by": "/bin/sh -c set -eux; \tapt-get update; \txargs -rt apt-get install -y --no-install-recommends \u003c \"$TOMCAT_NATIVE_LIBDIR/.dependencies.txt\"; \trm -rf /var/lib/apt/lists/*"
+        },
+        {
+          "created": "2022-03-30T05:42:15.098598192Z",
+          "created_by": "/bin/sh -c set -eux; \tnativeLines=\"$(catalina.sh configtest 2\u003e\u00261)\"; \tnativeLines=\"$(echo \"$nativeLines\" | grep 'Apache Tomcat Native')\"; \tnativeLines=\"$(echo \"$nativeLines\" | sort -u)\"; \tif ! echo \"$nativeLines\" | grep -E 'INFO: Loaded( APR based)? Apache Tomcat Native library' \u003e\u00262; then \t\techo \u003e\u00262 \"$nativeLines\"; \t\texit 1; \tfi"
+        },
+        {
+          "created": "2022-03-30T05:42:15.18926788Z",
+          "created_by": "/bin/sh -c #(nop)  EXPOSE 8080",
+          "empty_layer": true
+        },
+        {
+          "created": "2022-03-30T05:42:15.283787651Z",
+          "created_by": "/bin/sh -c #(nop)  CMD [\"catalina.sh\" \"run\"]",
+          "empty_layer": true
+        },
+        {
+          "created": "2022-06-06T13:51:57.120019Z",
+          "created_by": "/bin/sh -c #(nop) COPY file:4a1136b54136f8775efe918c4cd6af1ad1e507b36a49286d4f2c6bde722d33f4 in /usr/local/tomcat/webapps/ "
+        }
+      ],
+      "os": "linux",
+      "rootfs": {
+        "type": "layers",
+        "diff_ids": [
+          "sha256:608f3a074261105f129d707e4d9ad3d41b5baa94887f092b7c2857f7274a2fce",
+          "sha256:1f6e409d1c59c8e06608a024b82d50490313abc3b2ff93730e43135d5be0cd72",
+          "sha256:0e78b1e5673e8cc7c102fdda9e6b830b7dee2b29b178f34d25d9be59387e6950",
+          "sha256:ba40706eccba610401e4942e29f50bdf36807f8638942ce20805b359ae3ac1c1",
+          "sha256:053db4876c0df3df3294ee00e32e140b130ba33807d088750cb69b0e6fad158e",
+          "sha256:85595543df2b1115a18284a8ef62d0b235c4bc29e3d33b55f89b54ee1eadf4c6",
+          "sha256:868d710aa4dc5fc4793508564fc45c991ed8d5f6ab3e4cf52bb856f29546f3d8",
+          "sha256:77b2d158369254d5055183f5483f8b6661170857b61768d1d95d18c2ec1714b6",
+          "sha256:eb769943b91f10a0418f2fc3b4a4fde6c6293be60c37293fcc0fa319edaf27a5"
+        ]
+      },
+      "config": {
+        "Cmd": [
+          "catalina.sh",
+          "run"
+        ],
+        "Env": [
+          "PATH=/usr/local/tomcat/bin:/usr/local/openjdk-8/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin",
+          "JAVA_HOME=/usr/local/openjdk-8",
+          "LANG=C.UTF-8",
+          "JAVA_VERSION=8u322",
+          "CATALINA_HOME=/usr/local/tomcat",
+          "TOMCAT_NATIVE_LIBDIR=/usr/local/tomcat/native-jni-lib",
+          "LD_LIBRARY_PATH=/usr/local/tomcat/native-jni-lib",
+          "GPG_KEYS=05AB33110949707C93A279E3D3EFE6B686867BA6 07E48665A34DCAFAE522E5E6266191C37C037D42 47309207D818FFD8DCD3F83F1931D684307A10A5 541FBE7D8F78B25E055DDEE13C370389288584E7 5C3C5F3E314C866292F359A8F3AD5C94A67F707E 765908099ACF92702C7D949BFA0C35EA8AA299F1 79F7026C690BAA50B92CD8B66A3AD3F4F22C4FED 9BA44C2621385CB966EBA586F72C284D731FABEE A27677289986DB50844682F8ACB77FC2E86E29AC A9C5DF4D22E99998D9875A5110C01C5A2F6059E7 DCFD35E0BF8CA7344752DE8B6FB21E8933C60243 F3A04C595DB5B6A5F1ECA43E3B7BBB100D811BBE F7DA48BB64BCB84ECBA7EE6935CD23C10D498E23",
+          "TOMCAT_MAJOR=8",
+          "TOMCAT_VERSION=8.5.77",
+          "TOMCAT_SHA512=50f96584cbbbeeda92a3b573e7fe7e2c49e57ed4bc5246257dc1409abac0710b49fa7049a0dd9a3b8467bca2aa078ef608f49b676c1abf12529528ff71bb0260"
+        ],
+        "Image": "sha256:d69eef03ed55cfa0d799181c477762549e7ce94deb23193f04e6bec0c23d0dfd",
+        "WorkingDir": "/usr/local/tomcat",
+        "ExposedPorts": {
+          "8080/tcp": {}
+        }
+      }
+    }
+  },
+  "Results": [
+    {
+      "Target": "testdata/fixtures/images/spring4shell-jre8.tar.gz (debian 11.3)",
+      "Class": "os-pkgs",
+      "Type": "debian"
+    },
+    {
+      "Target": "Java",
+      "Class": "lang-pkgs",
+      "Type": "jar",
+      "Vulnerabilities": [
+        {
+          "VulnerabilityID": "CVE-2022-22965",
+          "PkgName": "org.springframework:spring-beans",
+          "PkgPath": "usr/local/tomcat/webapps/helloworld.war",
+          "InstalledVersion": "5.3.15",
+          "FixedVersion": "5.3.18",
+          "Layer": {
+            "Digest": "sha256:cc44af318e91e6f9f9bf73793fa4f0639487613f46aa1f819b02b6e8fb5c6c07",
+            "DiffID": "sha256:eb769943b91f10a0418f2fc3b4a4fde6c6293be60c37293fcc0fa319edaf27a5"
+          },
+          "SeveritySource": "ghsa",
+          "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2022-22965",
+          "DataSource": {
+            "ID": "ghsa",
+            "Name": "GitHub Security Advisory Maven",
+            "URL": "https://github.com/advisories?query=type%3Areviewed+ecosystem%3Amaven"
+          },
+          "Title": "spring-framework: RCE via Data Binding on JDK 9+",
+          "Description": "A Spring MVC or Spring WebFlux application running on JDK 9+ may be vulnerable to remote code execution (RCE) via data binding. The specific exploit requires the application to run on Tomcat as a WAR deployment. If the application is deployed as a Spring Boot executable jar, i.e. the default, it is not vulnerable to the exploit. However, the nature of the vulnerability is more general, and there may be other ways to exploit it.",
+          "Severity": "LOW",
+          "CweIDs": [
+            "CWE-94"
+          ],
+          "CVSS": {
+            "ghsa": {
+              "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H",
+              "V3Score": 9.8
+            },
+            "nvd": {
+              "V2Vector": "AV:N/AC:L/Au:N/C:P/I:P/A:P",
+              "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H",
+              "V2Score": 7.5,
+              "V3Score": 9.8
+            },
+            "redhat": {
+              "V3Vector": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:H/I:H/A:H",
+              "V3Score": 8.1
+            }
+          },
+          "References": [
+            "https://github.com/advisories/GHSA-36p3-wjmg-h94x"
+          ]
+        }
+      ]
+    },
+    {
+      "Target": "",
+      "Class": "custom",
+      "CustomResources": [
+        {
+          "Type": "spring4shell/java-major-version",
+          "FilePath": "/usr/local/openjdk-8/release",
+          "Layer": {
+            "Digest": "sha256:d7b564a873af313eb2dbcb1ed0d393c57543e3666bdedcbe5d75841d72b1f791",
+            "DiffID": "sha256:ba40706eccba610401e4942e29f50bdf36807f8638942ce20805b359ae3ac1c1"
+          },
+          "Data": "1.8.0_322"
+        },
+        {
+          "Type": "spring4shell/tomcat-version",
+          "FilePath": "/usr/local/tomcat/RELEASE-NOTES",
+          "Layer": {
+            "Digest": "sha256:59c0978ccb117247fd40d936973c40df89195f60466118c5acc6a55f8ba29f06",
+            "DiffID": "sha256:85595543df2b1115a18284a8ef62d0b235c4bc29e3d33b55f89b54ee1eadf4c6"
+          },
+          "Data": "8.5.77"
+        }
+      ]
+    }
+  ]
+}

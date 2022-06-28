@@ -4,7 +4,7 @@
 *.dll
 *.so
 *.dylib
-trivy
+/trivy
 
 ## chart release
 .cr-release-packages
@@ -16,6 +16,7 @@ trivy
 *.out
 
 .idea
+.vscode
 
 # Directory Cache Files
 .DS_Store
@@ -30,3 +31,6 @@ integration/testdata/fixtures/images
 
 # goreleaser output
 dist
+
+# WebAssembly
+*.wasm

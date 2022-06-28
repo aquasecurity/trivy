@@ -7,6 +7,7 @@ import (
 	"regexp"
 	"strings"
 
+	containerName "github.com/google/go-containerregistry/pkg/name"
 	"github.com/owenrumney/go-sarif/v2/sarif"
 	"golang.org/x/xerrors"
 
@@ -54,6 +55,8 @@ type sarifData struct {
 	artifactLocation string
 	message          string
 	cvssScore        string
+	startLine        int
+	endLine          int
 }
 
 func (sw *SarifWriter) addSarifRule(data *sarifData) {
@@ -85,9 +88,15 @@ func (sw *SarifWriter) addSarifRule(data *sarifData) {
 func (sw *SarifWriter) addSarifResult(data *sarifData) {
 	sw.addSarifRule(data)
 
+	region := sarif.NewRegion().WithStartLine(1).WithEndLine(1)
+	if data.startLine > 0 {
+		region = sarif.NewSimpleRegion(data.startLine, data.endLine)
+	}
+	region.WithStartColumn(1).WithEndColumn(1)
+
 	location := sarif.NewPhysicalLocation().
 		WithArtifactLocation(sarif.NewSimpleArtifactLocation(data.artifactLocation).WithUriBaseId("ROOTPATH")).
-		WithRegion(sarif.NewRegion().WithStartLine(1))
+		WithRegion(region)
 	result := sarif.NewRuleResult(data.vulnerabilityId).
 		WithRuleIndex(data.resultIndex).
 		WithMessage(sarif.NewTextMessage(data.message)).
@@ -106,7 +115,7 @@ func getRuleIndex(id string, indexes map[string]int) int {
 	}
 }
 
-func (sw SarifWriter) Write(report Report) error {
+func (sw SarifWriter) Write(report types.Report) error {
 	sarifReport, err := sarif.New(sarif.Version210)
 	if err != nil {
 		return xerrors.Errorf("error creating a new sarif template: %w", err)
@@ -117,14 +126,16 @@ func (sw SarifWriter) Write(report Report) error {
 
 	ruleIndexes := map[string]int{}
 	for _, res := range report.Results {
+		target := ToPathUri(res.Target)
+
 		for _, vuln := range res.Vulnerabilities {
 			fullDescription := vuln.Description
 			if fullDescription == "" {
 				fullDescription = vuln.Title
 			}
-			path := vuln.PkgPath
-			if path == "" {
-				path = res.Target
+			path := target
+			if vuln.PkgPath != "" {
+				path = ToPathUri(vuln.PkgPath)
 			}
 			sw.addSarifResult(&sarifData{
 				title:            "vulnerability",
@@ -133,7 +144,7 @@ func (sw SarifWriter) Write(report Report) error {
 				cvssScore:        getCVSSScore(vuln),
 				url:              vuln.PrimaryURL,
 				resourceClass:    string(res.Class),
-				artifactLocation: toPathUri(path),
+				artifactLocation: path,
 				resultIndex:      getRuleIndex(vuln.VulnerabilityID, ruleIndexes),
 				fullDescription:  html.EscapeString(fullDescription),
 				helpText: fmt.Sprintf("Vulnerability %v\nSeverity: %v\nPackage: %v\nFixed Version: %v\nLink: [%v](%v)\n%v",
@@ -152,7 +163,9 @@ func (sw SarifWriter) Write(report Report) error {
 				cvssScore:        severityToScore(misconf.Severity),
 				url:              misconf.PrimaryURL,
 				resourceClass:    string(res.Class),
-				artifactLocation: toPathUri(res.Target),
+				artifactLocation: target,
+				startLine:        misconf.CauseMetadata.StartLine,
+				endLine:          misconf.CauseMetadata.EndLine,
 				resultIndex:      getRuleIndex(misconf.ID, ruleIndexes),
 				fullDescription:  html.EscapeString(misconf.Description),
 				helpText: fmt.Sprintf("Misconfiguration %v\nType: %s\nSeverity: %v\nCheck: %v\nMessage: %v\nLink: [%v](%v)\n%s",
@@ -174,11 +187,11 @@ func (sw SarifWriter) Write(report Report) error {
 
 func toSarifRuleName(class string) string {
 	switch class {
-	case ClassOSPkg:
+	case types.ClassOSPkg:
 		return sarifOsPackageVulnerability
-	case ClassLangPkg:
+	case types.ClassLangPkg:
 		return sarifLanguageSpecificVulnerability
-	case ClassConfig:
+	case types.ClassConfig:
 		return sarifConfigFiles
 	default:
 		return sarifUnknownIssue
@@ -198,11 +211,16 @@ func toSarifErrorLevel(severity string) string {
 	}
 }
 
-func toPathUri(input string) string {
+func ToPathUri(input string) string {
 	var matches = pathRegex.FindStringSubmatch(input)
 	if matches != nil {
 		input = matches[pathRegex.SubexpIndex("path")]
 	}
+	ref, err := containerName.ParseReference(input)
+	if err == nil {
+		input = ref.Context().RepositoryStr()
+	}
+
 	return strings.ReplaceAll(input, "\\", "/")
 }
 

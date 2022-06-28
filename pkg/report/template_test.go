@@ -7,9 +7,9 @@ import (
 	"time"
 
 	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
 
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
+	"github.com/aquasecurity/trivy/pkg/clock"
 	"github.com/aquasecurity/trivy/pkg/report"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
@@ -29,6 +29,9 @@ func TestReportWriter_Template(t *testing.T) {
 					PkgName:         "foo",
 					Vulnerability: dbTypes.Vulnerability{
 						Severity: dbTypes.SeverityHigh.String(),
+						VendorSeverity: map[dbTypes.SourceID]dbTypes.Severity{
+							"nvd": 1,
+						},
 					},
 				},
 				{
@@ -160,13 +163,12 @@ func TestReportWriter_Template(t *testing.T) {
 	}
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			report.Now = func() time.Time {
-				return time.Date(2020, 8, 10, 7, 28, 17, 958601, time.UTC)
-			}
+			clock.SetFakeTime(t, time.Date(2020, 8, 10, 7, 28, 17, 958601, time.UTC))
+
 			os.Setenv("AWS_ACCOUNT_ID", "123456789012")
 			got := bytes.Buffer{}
-			inputReport := report.Report{
-				Results: report.Results{
+			inputReport := types.Report{
+				Results: types.Results{
 					{
 						Target:          "foojunit",
 						Type:            "test",
@@ -182,43 +184,6 @@ func TestReportWriter_Template(t *testing.T) {
 			})
 			assert.NoError(t, err)
 			assert.Equal(t, tc.expected, got.String())
-		})
-	}
-}
-
-func TestReportWriter_Template_SARIF(t *testing.T) {
-	testCases := []struct {
-		name          string
-		target        string
-		detectedVulns []types.DetectedVulnerability
-		want          string
-	}{
-		//TODO: refactor tests
-	}
-	for _, tc := range testCases {
-		t.Run(tc.name, func(t *testing.T) {
-			templateFile := "../../contrib/sarif.tpl"
-			got := bytes.Buffer{}
-
-			template, err := os.ReadFile(templateFile)
-			require.NoError(t, err, tc.name)
-
-			inputReport := report.Report{
-				Results: report.Results{
-					{
-						Target:          tc.target,
-						Type:            "footype",
-						Vulnerabilities: tc.detectedVulns,
-					},
-				},
-			}
-			err = report.Write(inputReport, report.Option{
-				Format:         "template",
-				Output:         &got,
-				OutputTemplate: string(template),
-			})
-			assert.NoError(t, err)
-			assert.JSONEq(t, tc.want, got.String(), tc.name)
 		})
 	}
 }

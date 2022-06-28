@@ -1,0 +1,9 @@
+# Global
+*   @knqyf263
+
+# Helm chart
+helm/trivy/ @krol3
+
+# Kubernetes scanning
+pkg/k8s/                @josedonizetti @chen-keinan
+docs/docs/kubernetes/   @josedonizetti @chen-keinan

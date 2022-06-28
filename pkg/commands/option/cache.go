@@ -1,7 +1,9 @@
 package option
 
 import (
+	"fmt"
 	"strings"
+	"time"
 
 	"github.com/urfave/cli/v2"
 	"golang.org/x/xerrors"
@@ -10,6 +12,7 @@ import (
 // CacheOption holds the options for cache
 type CacheOption struct {
 	CacheBackend string
+	CacheTTL     time.Duration
 	RedisOption
 }
 
@@ -24,6 +27,7 @@ type RedisOption struct {
 func NewCacheOption(c *cli.Context) CacheOption {
 	return CacheOption{
 		CacheBackend: c.String("cache-backend"),
+		CacheTTL:     c.Duration("cache-ttl"),
 		RedisOption: RedisOption{
 			RedisCACert: c.String("redis-ca"),
 			RedisCert:   c.String("redis-cert"),
@@ -47,4 +51,16 @@ func (c *CacheOption) Init() error {
 		}
 	}
 	return nil
+}
+
+// CacheBackendMasked returns the redis connection string masking credentials
+func (c *CacheOption) CacheBackendMasked() string {
+	endIndex := strings.Index(c.CacheBackend, "@")
+	if endIndex == -1 {
+		return c.CacheBackend
+	}
+
+	startIndex := strings.Index(c.CacheBackend, "//")
+
+	return fmt.Sprintf("%s****%s", c.CacheBackend[:startIndex+2], c.CacheBackend[endIndex:])
 }

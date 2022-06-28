@@ -16,6 +16,8 @@
                   - 924
                 Cves:
                   - Severity: 1.0
+                Arches:
+                  - x86_64
     - bucket: openssl
       pairs:
         - key: RHSA-2019:2304

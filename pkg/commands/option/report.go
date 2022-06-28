@@ -1,22 +1,24 @@
 package option
 
 import (
+	"io"
 	"os"
 	"strings"
 
-	"github.com/aquasecurity/trivy/pkg/types"
-
 	"github.com/urfave/cli/v2"
 	"go.uber.org/zap"
+	"golang.org/x/exp/slices"
 	"golang.org/x/xerrors"
 
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
+	"github.com/aquasecurity/trivy/pkg/types"
 )
 
 // ReportOption holds the options for reporting scan results
 type ReportOption struct {
-	Format   string
-	Template string
+	Format         string
+	Template       string
+	DependencyTree bool
 
 	IgnoreFile    string
 	IgnoreUnfixed bool
@@ -32,17 +34,19 @@ type ReportOption struct {
 	// these variables are populated by Init()
 	VulnType       []string
 	SecurityChecks []string
-	Output         *os.File
+	Output         io.Writer
 	Severities     []dbTypes.Severity
+	ListAllPkgs    bool
 }
 
 // NewReportOption is the factory method to return ReportOption
 func NewReportOption(c *cli.Context) ReportOption {
 	return ReportOption{
-		output:       c.String("output"),
-		Format:       c.String("format"),
-		Template:     c.String("template"),
-		IgnorePolicy: c.String("ignore-policy"),
+		output:         c.String("output"),
+		Format:         c.String("format"),
+		DependencyTree: c.Bool("dependency-tree"),
+		Template:       c.String("template"),
+		IgnorePolicy:   c.String("ignore-policy"),
 
 		vulnType:       c.String("vuln-type"),
 		securityChecks: c.String("security-checks"),
@@ -50,31 +54,46 @@ func NewReportOption(c *cli.Context) ReportOption {
 		IgnoreFile:     c.String("ignorefile"),
 		IgnoreUnfixed:  c.Bool("ignore-unfixed"),
 		ExitCode:       c.Int("exit-code"),
+		ListAllPkgs:    c.Bool("list-all-pkgs"),
 	}
 }
 
 // Init initializes the ReportOption
-func (c *ReportOption) Init(logger *zap.SugaredLogger) error {
-	var err error
-
+func (c *ReportOption) Init(output io.Writer, logger *zap.SugaredLogger) error {
 	if c.Template != "" {
 		if c.Format == "" {
-			logger.Warn("--template is ignored because --format template is not specified. Use --template option with --format template option.")
+			logger.Warn("'--template' is ignored because '--format template' is not specified. Use '--template' option with '--format template' option.")
 		} else if c.Format != "template" {
-			logger.Warnf("--template is ignored because --format %s is specified. Use --template option with --format template option.", c.Format)
+			logger.Warnf("'--template' is ignored because '--format %s' is specified. Use '--template' option with '--format template' option.", c.Format)
+		}
+	} else {
+		if c.Format == "template" {
+			logger.Warn("'--format template' is ignored because '--template' is not specified. Specify '--template' option when you use '--format template'.")
 		}
 	}
-	if c.Format == "template" && c.Template == "" {
-		logger.Warn("--format template is ignored because --template not is specified. Specify --template option when you use --format template.")
+
+	// "--list-all-pkgs" option is unavailable with "--format table".
+	// If user specifies "--list-all-pkgs" with "--format table", we should warn it.
+	if c.ListAllPkgs && c.Format == "table" {
+		logger.Warn(`"--list-all-pkgs" cannot be used with "--format table". Try "--format json" or other formats.`)
+	}
+
+	// "--dependency-tree" option is available only with "--format table".
+	if c.DependencyTree && c.Format != "table" {
+		logger.Warn(`"--dependency-tree" can be used only with "--format table".`)
+	}
+
+	if c.forceListAllPkgs(logger) {
+		c.ListAllPkgs = true
 	}
 
 	c.Severities = splitSeverity(logger, c.severities)
 
-	if err = c.populateVulnTypes(); err != nil {
+	if err := c.populateVulnTypes(); err != nil {
 		return xerrors.Errorf("vuln type: %w", err)
 	}
 
-	if err = c.populateSecurityChecks(); err != nil {
+	if err := c.populateSecurityChecks(); err != nil {
 		return xerrors.Errorf("security checks: %w", err)
 	}
 
@@ -83,12 +102,15 @@ func (c *ReportOption) Init(logger *zap.SugaredLogger) error {
 	c.vulnType = ""
 	c.securityChecks = ""
 
-	c.Output = os.Stdout
+	// The output is os.Stdout by default
 	if c.output != "" {
-		if c.Output, err = os.Create(c.output); err != nil {
+		var err error
+		if output, err = os.Create(c.output); err != nil {
 			return xerrors.Errorf("failed to create an output file: %w", err)
 		}
 	}
+
+	c.Output = output
 
 	return nil
 }
@@ -99,7 +121,7 @@ func (c *ReportOption) populateVulnTypes() error {
 	}
 
 	for _, v := range strings.Split(c.vulnType, ",") {
-		if types.NewVulnType(v) == types.VulnTypeUnknown {
+		if !slices.Contains(types.VulnTypes, v) {
 			return xerrors.Errorf("unknown vulnerability type (%s)", v)
 		}
 		c.VulnType = append(c.VulnType, v)
@@ -113,12 +135,24 @@ func (c *ReportOption) populateSecurityChecks() error {
 	}
 
 	for _, v := range strings.Split(c.securityChecks, ",") {
-		if types.NewSecurityCheck(v) == types.SecurityCheckUnknown {
+		if !slices.Contains(types.SecurityChecks, v) {
 			return xerrors.Errorf("unknown security check (%s)", v)
 		}
 		c.SecurityChecks = append(c.SecurityChecks, v)
 	}
 	return nil
+}
+
+func (c *ReportOption) forceListAllPkgs(logger *zap.SugaredLogger) bool {
+	if slices.Contains(supportedSbomFormats, c.Format) && !c.ListAllPkgs {
+		logger.Debugf("'github', 'cyclonedx', 'spdx', and 'spdx-json' automatically enables '--list-all-pkgs'.")
+		return true
+	}
+	if c.DependencyTree {
+		logger.Debugf("'--dependency-tree' enables '--list-all-pkgs'.")
+		return true
+	}
+	return false
 }
 
 func splitSeverity(logger *zap.SugaredLogger, severity string) []dbTypes.Severity {

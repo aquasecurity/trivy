@@ -4,8 +4,8 @@ import (
 	"github.com/urfave/cli/v2"
 	"golang.org/x/xerrors"
 
-	"github.com/aquasecurity/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/commands/option"
+	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 )
 
 // Option holds the artifact options
@@ -17,6 +17,11 @@ type Option struct {
 	option.ReportOption
 	option.CacheOption
 	option.ConfigOption
+	option.RemoteOption
+	option.SbomOption
+	option.SecretOption
+	option.KubernetesOption
+	option.OtherOption
 
 	// We don't want to allow disabled analyzers to be passed by users,
 	// but it differs depending on scanning modes.
@@ -31,13 +36,18 @@ func NewOption(c *cli.Context) (Option, error) {
 	}
 
 	return Option{
-		GlobalOption:   gc,
-		ArtifactOption: option.NewArtifactOption(c),
-		DBOption:       option.NewDBOption(c),
-		ImageOption:    option.NewImageOption(c),
-		ReportOption:   option.NewReportOption(c),
-		CacheOption:    option.NewCacheOption(c),
-		ConfigOption:   option.NewConfigOption(c),
+		GlobalOption:     gc,
+		ArtifactOption:   option.NewArtifactOption(c),
+		DBOption:         option.NewDBOption(c),
+		ImageOption:      option.NewImageOption(c),
+		ReportOption:     option.NewReportOption(c),
+		CacheOption:      option.NewCacheOption(c),
+		ConfigOption:     option.NewConfigOption(c),
+		RemoteOption:     option.NewRemoteOption(c),
+		SbomOption:       option.NewSbomOption(c),
+		SecretOption:     option.NewSecretOption(c),
+		KubernetesOption: option.NewKubernetesOption(c),
+		OtherOption:      option.NewOtherOption(c),
 	}, nil
 }
 
@@ -55,12 +65,11 @@ func (c *Option) Init() error {
 	if err := c.ArtifactOption.Init(c.Context, c.Logger); err != nil {
 		return err
 	}
-
 	return nil
 }
 
 func (c *Option) initPreScanOptions() error {
-	if err := c.ReportOption.Init(c.Logger); err != nil {
+	if err := c.ReportOption.Init(c.Context.App.Writer, c.Logger); err != nil {
 		return err
 	}
 	if err := c.DBOption.Init(); err != nil {
@@ -69,6 +78,10 @@ func (c *Option) initPreScanOptions() error {
 	if err := c.CacheOption.Init(); err != nil {
 		return err
 	}
+	if err := c.SbomOption.Init(c.Context, c.Logger); err != nil {
+		return err
+	}
+	c.RemoteOption.Init(c.Logger)
 	return nil
 }
 
