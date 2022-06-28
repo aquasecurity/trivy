@@ -20,7 +20,7 @@ func TestSecretAnalyzer(t *testing.T) {
 		Severity:  "HIGH",
 		StartLine: 2,
 		EndLine:   2,
-		Match:     "generic secret line secret=\"*****\"",
+		Match:     "generic secret line secret=\"*********\"",
 		Code: types.Code{
 			Lines: []types.Line{
 				{
@@ -63,14 +63,14 @@ func TestSecretAnalyzer(t *testing.T) {
 		Severity:  "HIGH",
 		StartLine: 4,
 		EndLine:   4,
-		Match:     "secret=\"*****\"",
+		Match:     "secret=\"**********\"",
 		Code: types.Code{
 			Lines: []types.Line{
 				{
 					Number:      2,
-					Content:     "generic secret line secret=\"somevalue\"",
+					Content:     "generic secret line secret=\"*********\"",
 					IsCause:     false,
-					Highlighted: "generic secret line secret=\"somevalue\"",
+					Highlighted: "generic secret line secret=\"*********\"",
 				},
 				{
 					Number:      3,
