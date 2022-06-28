@@ -48,6 +48,14 @@ func TestFilesystem(t *testing.T) {
 			golden: "testdata/nodejs.json.golden",
 		},
 		{
+			name: "pnpm",
+			args: args{
+				securityChecks: "vuln",
+				input:          "testdata/fixtures/fs/pnpm",
+			},
+			golden: "testdata/pnpm.json.golden",
+		},
+		{
 			name: "pip",
 			args: args{
 				securityChecks: "vuln",
