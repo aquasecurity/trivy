@@ -2,8 +2,8 @@ name: build
 on:
   workflow_call:
     inputs:
-      goreleaser_file:
-        description: 'file path to GoReleaser file'
+      goreleaser_config:
+        description: 'file path to GoReleaser config'
         required: true
         type: string
       goreleaser_options:
@@ -19,7 +19,7 @@ env:
 jobs:
   release:
     name: Release
-    runs-on: ubuntu-18.04 # 20.04 doesn't provide createrepo for now
+    runs-on: ubuntu-latest
     env:
       DOCKER_CLI_EXPERIMENTAL: "enabled"
     permissions:
@@ -60,12 +60,6 @@ jobs:
           username: ${{ secrets.ECR_ACCESS_KEY_ID }}
           password: ${{ secrets.ECR_SECRET_ACCESS_KEY }}
 
-      - name: Generate SBOM
-        uses: CycloneDX/gh-gomod-generate-sbom@v1
-        with:
-          args: mod -licenses -json -output bom.json
-          version: ^v1
-
       - name: Setup Go
         uses: actions/setup-go@v3
         with:
@@ -83,6 +77,12 @@ jobs:
           key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
           restore-keys: |
             ${{ runner.os }}-go-
+
+      - name: Generate SBOM
+        uses: CycloneDX/gh-gomod-generate-sbom@v1
+        with:
+          args: mod -licenses -json -output bom.json
+          version: ^v1
 
       - name: Goreleaser
         uses: goreleaser/goreleaser-action@v3
