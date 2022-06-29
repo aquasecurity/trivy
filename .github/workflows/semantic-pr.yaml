@@ -79,6 +79,9 @@ jobs:
 
             cli
             flag
+            
+            cyclonedx
+            spdx
 
             helm
             report
