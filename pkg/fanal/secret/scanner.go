@@ -340,8 +340,8 @@ func (s Scanner) Scan(args ScanArgs) types.Secret {
 		}
 	}
 
-	censored := make([]byte, len(args.Content))
-	copy(censored, args.Content)
+	var censored []byte
+	var copyCensored sync.Once
 	var matched []Match
 
 	var findings []types.SecretFinding
@@ -379,6 +379,10 @@ func (s Scanner) Scan(args ScanArgs) types.Secret {
 			matched = append(matched, Match{
 				Rule:     rule,
 				Location: loc,
+			})
+			copyCensored.Do(func() {
+				censored := make([]byte, len(args.Content))
+				copy(censored, args.Content)
 			})
 			censored = censorLocation(loc, censored)
 		}
