@@ -1,4 +1,4 @@
-name: build
+name: Reusable release
 on:
   workflow_call:
     inputs:
@@ -76,7 +76,7 @@ jobs:
           args: mod -licenses -json -output bom.json
           version: ^v1
 
-      - name: Goreleaser
+      - name: GoReleaser
         uses: goreleaser/goreleaser-action@v3
         with:
           version: v1.4.1

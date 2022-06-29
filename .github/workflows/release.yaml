@@ -7,13 +7,13 @@ on:
 jobs:
   release:
     name: Release
-    uses: ./.github/workflows/build.yaml
+    uses: ./.github/workflows/reusable-release.yaml
     with:
       goreleaser_config: goreleaser.yml
       goreleaser_options: '--rm-dist --timeout 60m'
     secrets: inherit
 
-  deploy-rpm-deb-packages:
+  deploy-packages:
     name: Deploy rpm/dep packages
     needs: release # run this job after 'release' job completes
     runs-on: ubuntu-18.04 # 20.04 doesn't provide createrepo for now

@@ -8,10 +8,10 @@ on:
 jobs:
   build-binaries:
     name: Build binaries
-    uses: ./.github/workflows/build.yaml
+    uses: ./.github/workflows/reusable-release.yaml
     with:
       goreleaser_config: goreleaser-canary.yml
-      goreleaser_options: '--snapshot --rm-dist --timeout 60m'
+      goreleaser_options: '--snapshot --rm-dist --timeout 60m' # will not release
     secrets: inherit
 
   upload-binaries:
