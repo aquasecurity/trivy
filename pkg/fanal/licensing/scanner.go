@@ -18,9 +18,9 @@ type ScanArgs struct {
 	Content  []byte
 }
 
-func NewScanner(riskThreshold int, ignoredLicenses []string) (Scanner, error) {
+func NewScanner(ignoredLicenses []string) (Scanner, error) {
 
-	classifier, err := classification.NewClassifier(riskThreshold, ignoredLicenses)
+	classifier, err := classification.NewClassifier(ignoredLicenses)
 	if err != nil {
 		return Scanner{}, xerrors.Errorf("classifier could not be created: %w", err)
 	}

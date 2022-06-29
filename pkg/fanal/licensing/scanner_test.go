@@ -3,7 +3,6 @@ package licensing
 import (
 	"fmt"
 	"io/fs"
-	"math"
 	"os"
 	"path/filepath"
 	"sort"
@@ -23,7 +22,6 @@ func Test_LicenseScanning(t *testing.T) {
 		expectLicense    bool
 		packageName      string
 		expectedFindings []types.LicenseFinding
-		riskThreshold    int
 	}{
 		{
 			name:          "C file with AGPL-3.0",
@@ -36,19 +34,6 @@ func Test_LicenseScanning(t *testing.T) {
 					Confidence:                  0.98,
 				},
 			},
-		},
-		{
-			name:             "C file with AGPL-3.0 with 100 confidence",
-			filePath:         "testdata/licensed.c",
-			expectLicense:    false,
-			expectedFindings: []types.LicenseFinding{},
-		},
-		{
-			name:             "C file with ignored AGPL-3.0",
-			filePath:         "testdata/licensed.c",
-			expectLicense:    false,
-			expectedFindings: []types.LicenseFinding{},
-			riskThreshold:    7,
 		},
 		{
 			name:          "C file with no license",
@@ -71,7 +56,6 @@ func Test_LicenseScanning(t *testing.T) {
 			name:          "Apache-2.0 CSS File",
 			filePath:      "testdata/styles.css",
 			expectLicense: true,
-			riskThreshold: 7,
 			expectedFindings: []types.LicenseFinding{
 				{
 					License:                     "Apache-2.0",
@@ -97,21 +81,40 @@ func Test_LicenseScanning(t *testing.T) {
 					Confidence:                  0.98,
 				},
 			},
-			riskThreshold: 7,
 		},
 		{
 			name:          "Apache 2 License file",
 			filePath:      "testdata/LICENSE_apache2",
-			expectLicense: false,
+			expectLicense: true,
+			expectedFindings: []types.LicenseFinding{
+				{
+					License:                     "Apache-2.0",
+					GoogleLicenseClassification: "notice",
+					Confidence:                  1,
+				},
+				{
+					License:                     "ECL-2.0",
+					GoogleLicenseClassification: "unknown",
+					Confidence:                  1,
+				},
+				{
+					License:                     "SHL-0.5",
+					GoogleLicenseClassification: "unknown",
+					Confidence:                  1,
+				},
+				{
+					License:                     "SHL-0.51",
+					GoogleLicenseClassification: "unknown",
+					Confidence:                  1,
+				},
+			},
 		},
 	}
 
 	for _, tt := range tests {
 		t.Run(fmt.Sprintf("%#v", tt.name), func(t *testing.T) {
 
-			threshold := int(math.Max(float64(tt.riskThreshold), 4))
-
-			scanner, err := NewScanner(threshold, []string{})
+			scanner, err := NewScanner([]string{})
 			require.NoError(t, err)
 
 			var testFS fs.FS
@@ -136,7 +139,7 @@ func Test_LicenseScanning(t *testing.T) {
 
 			if tt.expectLicense {
 				assert.NotNil(t, licenses)
-				require.Len(t, licenses, 1)
+				require.GreaterOrEqual(t, len(licenses), 1)
 				license := licenses[0]
 				assert.Len(t, license.Findings, len(tt.expectedFindings))
 
@@ -151,6 +154,8 @@ func Test_LicenseScanning(t *testing.T) {
 					assert.Equal(t, f.GoogleLicenseClassification, lf.GoogleLicenseClassification)
 					assert.Greater(t, lf.Confidence, 0.8)
 				}
+			} else {
+				assert.Len(t, licenses, 0)
 			}
 		})
 

@@ -10,6 +10,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/types"
 	"github.com/fatih/color"
 	"github.com/liamg/tml"
+	"golang.org/x/exp/slices"
 	"golang.org/x/text/cases"
 	"golang.org/x/text/language"
 )
@@ -17,12 +18,16 @@ import (
 type LicenseReportWriter struct {
 	output             io.Writer
 	isOutputToTerminal bool
+	riskThreshold      int
+	ignoredLicenses    []string
 }
 
-func New(output io.Writer, terminalOutput bool) LicenseReportWriter {
+func New(output io.Writer, terminalOutput bool, riskThreshold int, ignoredLicenses []string) LicenseReportWriter {
 	return LicenseReportWriter{
 		output:             output,
 		isOutputToTerminal: terminalOutput,
+		riskThreshold:      riskThreshold,
+		ignoredLicenses:    ignoredLicenses,
 	}
 }
 
@@ -49,6 +54,10 @@ func (w LicenseReportWriter) writePackages(report types.Report) error {
 	for _, r := range report.Results {
 		if r.PackageLicense != nil {
 			for _, finding := range r.PackageLicense.Findings {
+				if finding.GoogleLicenseClassificationIndex > w.riskThreshold ||
+					slices.Contains(w.ignoredLicenses, finding.License) {
+					continue
+				}
 				findings = append(findings, reportFinding{
 					target:                    finding.PackageName,
 					googleClassification:      finding.GoogleLicenseClassification,
@@ -71,13 +80,17 @@ func (w LicenseReportWriter) writeLooseFiles(report types.Report) error {
 	var findings []reportFinding
 
 	for _, r := range report.Results {
-		for _, f := range r.License.Findings {
+		for _, finding := range r.License.Findings {
+			if finding.GoogleLicenseClassificationIndex > w.riskThreshold ||
+				slices.Contains(w.ignoredLicenses, finding.License) {
+				continue
+			}
 			findings = append(findings, reportFinding{
 				target:                    r.Target,
-				googleClassification:      f.GoogleLicenseClassification,
-				googleClassificationIndex: f.GoogleLicenseClassificationIndex,
-				licenseName:               f.License,
-				licenseLink:               f.LicenseLink,
+				googleClassification:      finding.GoogleLicenseClassification,
+				googleClassificationIndex: finding.GoogleLicenseClassificationIndex,
+				licenseName:               finding.License,
+				licenseLink:               finding.LicenseLink,
 			})
 		}
 	}

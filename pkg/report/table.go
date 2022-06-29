@@ -45,6 +45,10 @@ type TableWriter struct {
 	// For misconfigurations
 	IncludeNonFailures bool
 	Trace              bool
+
+	// For licenses
+	LicenseRiskThreshold int
+	IgnoredLicenses      []string
 }
 
 // Write writes the result on standard output
@@ -56,7 +60,8 @@ func (tw TableWriter) Write(report types.Report) error {
 		}
 		tw.write(result)
 	}
-	return New(tw.Output, tw.isOutputToTerminal()).WriteLicenseReport(report)
+	licenseReporter := New(tw.Output, tw.isOutputToTerminal(), tw.LicenseRiskThreshold, tw.IgnoredLicenses)
+	return licenseReporter.WriteLicenseReport(report)
 }
 
 func (tw TableWriter) isOutputToTerminal() bool {

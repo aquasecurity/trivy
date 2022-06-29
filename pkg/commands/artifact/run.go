@@ -258,14 +258,16 @@ func (r *runner) Filter(ctx context.Context, opt Option, report types.Report) (t
 
 func (r *runner) Report(opt Option, report types.Report) error {
 	if err := pkgReport.Write(report, pkgReport.Option{
-		AppVersion:         opt.GlobalOption.AppVersion,
-		Format:             opt.Format,
-		Output:             opt.Output,
-		Tree:               opt.DependencyTree,
-		Severities:         opt.Severities,
-		OutputTemplate:     opt.Template,
-		IncludeNonFailures: opt.IncludeNonFailures,
-		Trace:              opt.Trace,
+		AppVersion:           opt.GlobalOption.AppVersion,
+		Format:               opt.Format,
+		Output:               opt.Output,
+		Tree:                 opt.DependencyTree,
+		Severities:           opt.Severities,
+		OutputTemplate:       opt.Template,
+		IncludeNonFailures:   opt.IncludeNonFailures,
+		Trace:                opt.Trace,
+		LicenseRiskThreshold: opt.RiskThreshold,
+		IgnoredLicenses:      opt.IgnoredLicenses,
 	}); err != nil {
 		return xerrors.Errorf("unable to write results: %w", err)
 	}
@@ -523,8 +525,8 @@ func initScannerConfig(opt Option, cacheClient cache.Cache) (ScannerConfig, type
 				ConfigPath: opt.SecretConfigPath,
 			},
 
+			// For license scanning
 			LicensingScannerOption: licensing.ScannerOption{
-				RiskThreshold:   opt.RiskThreshold,
 				IgnoredLicenses: opt.IgnoredLicenses,
 			},
 		},

@@ -136,6 +136,42 @@ func TestArtifact_Inspect(t *testing.T) {
 									},
 								},
 							},
+							Licenses: []types.LicenseFile{
+								{
+									Type:     "",
+									FilePath: "/etc/ssl/misc/CA.pl",
+									Findings: []types.LicenseFinding{
+										{
+											License:                          "OpenSSL",
+											Confidence:                       1,
+											GoogleLicenseClassificationIndex: 5,
+											GoogleLicenseClassification:      "notice",
+											LicenseLink:                      "https://spdx.org/licenses/OpenSSL.html",
+										},
+									},
+									Layer: types.Layer{
+										Digest: "",
+										DiffID: "",
+									},
+								},
+								{
+									Type:     "",
+									FilePath: "/etc/ssl/misc/tsget.pl",
+									Findings: []types.LicenseFinding{
+										{
+											License:                          "OpenSSL",
+											Confidence:                       1,
+											GoogleLicenseClassificationIndex: 5,
+											GoogleLicenseClassification:      "notice",
+											LicenseLink:                      "https://spdx.org/licenses/OpenSSL.html",
+										},
+									},
+									Layer: types.Layer{
+										Digest: "",
+										DiffID: "",
+									},
+								},
+							},
 							Applications:  []types.Application(nil),
 							OpaqueDirs:    []string(nil),
 							WhiteoutFiles: []string(nil),
@@ -339,6 +375,18 @@ func TestArtifact_Inspect(t *testing.T) {
 								},
 							},
 							Licenses: []types.LicenseFile{
+								{
+									FilePath: "/usr/lib/ssl/misc/CA.pl",
+									Findings: []types.LicenseFinding{
+										{
+											License:                          "OpenSSL",
+											Confidence:                       1,
+											GoogleLicenseClassificationIndex: 5,
+											GoogleLicenseClassification:      "notice",
+											LicenseLink:                      "https://spdx.org/licenses/OpenSSL.html",
+										},
+									},
+								},
 								{
 									Type:     types.LicenseTypeDpkg,
 									FilePath: "usr/share/doc/libc6/copyright",
@@ -562,32 +610,32 @@ func TestArtifact_Inspect(t *testing.T) {
 			artifactOpt: artifact.Option{
 				DisabledAnalyzers: []analyzer.Type{
 					analyzer.TypeDebian, analyzer.TypeDpkg, analyzer.TypeDpkgLicense, analyzer.TypeComposer,
-					analyzer.TypeBundler,
+					analyzer.TypeBundler, analyzer.TypeLicense,
 				},
 			},
 			missingBlobsExpectation: cache.ArtifactCacheMissingBlobsExpectation{
 				Args: cache.ArtifactCacheMissingBlobsArgs{
 					ArtifactID: "sha256:a646bb11d39c149d4aaf9b888233048e0848304e5abd75667ea6f21d540d800c",
 					BlobIDs: []string{
-						"sha256:eed2b2213e6960e91735774de22190bc2d01adff80dc1b11894fc7d644b3f208",
-						"sha256:4c12ca22d1f52d5e8bc0374a4725f054d1c54026dd15f0a9540c137c4b5f2241",
-						"sha256:6bae274ff56a622182a474430757c5e4bc7a2f939a66a364f7caaa9c5d8bbd39",
-						"sha256:d52ae7b8104c24bdac9c0b41067a8e3376307824de9f51ac3ce20b7f10c05aad",
+						"sha256:57ada28264043324e1f99eb3db63de1a7e3f27f1fa4dcbb1df2f76875b98b9c4",
+						"sha256:64f08ed6c84283289beb64335f76a4c60a89f62c7937b8ea50fd8bfda304f0e2",
+						"sha256:da802174ac83921ac629ec623f5f5ad530291fb2420102f6a213322cb257655c",
+						"sha256:996fcbfcc2964d20456afd0de16747533693b1cbebb72a6d28823a134abf0f5f",
 					},
 				},
 				Returns: cache.ArtifactCacheMissingBlobsReturns{
 					MissingBlobIDs: []string{
-						"sha256:eed2b2213e6960e91735774de22190bc2d01adff80dc1b11894fc7d644b3f208",
-						"sha256:4c12ca22d1f52d5e8bc0374a4725f054d1c54026dd15f0a9540c137c4b5f2241",
-						"sha256:6bae274ff56a622182a474430757c5e4bc7a2f939a66a364f7caaa9c5d8bbd39",
-						"sha256:d52ae7b8104c24bdac9c0b41067a8e3376307824de9f51ac3ce20b7f10c05aad",
+						"sha256:57ada28264043324e1f99eb3db63de1a7e3f27f1fa4dcbb1df2f76875b98b9c4",
+						"sha256:64f08ed6c84283289beb64335f76a4c60a89f62c7937b8ea50fd8bfda304f0e2",
+						"sha256:da802174ac83921ac629ec623f5f5ad530291fb2420102f6a213322cb257655c",
+						"sha256:996fcbfcc2964d20456afd0de16747533693b1cbebb72a6d28823a134abf0f5f",
 					},
 				},
 			},
 			putBlobExpectations: []cache.ArtifactCachePutBlobExpectation{
 				{
 					Args: cache.ArtifactCachePutBlobArgs{
-						BlobID: "sha256:eed2b2213e6960e91735774de22190bc2d01adff80dc1b11894fc7d644b3f208",
+						BlobID: "sha256:57ada28264043324e1f99eb3db63de1a7e3f27f1fa4dcbb1df2f76875b98b9c4",
 						BlobInfo: types.BlobInfo{
 							SchemaVersion: types.BlobJSONSchemaVersion,
 							Digest:        "",
@@ -597,7 +645,7 @@ func TestArtifact_Inspect(t *testing.T) {
 				},
 				{
 					Args: cache.ArtifactCachePutBlobArgs{
-						BlobID: "sha256:4c12ca22d1f52d5e8bc0374a4725f054d1c54026dd15f0a9540c137c4b5f2241",
+						BlobID: "sha256:64f08ed6c84283289beb64335f76a4c60a89f62c7937b8ea50fd8bfda304f0e2",
 						BlobInfo: types.BlobInfo{
 							SchemaVersion: types.BlobJSONSchemaVersion,
 							Digest:        "",
@@ -607,7 +655,7 @@ func TestArtifact_Inspect(t *testing.T) {
 				},
 				{
 					Args: cache.ArtifactCachePutBlobArgs{
-						BlobID: "sha256:6bae274ff56a622182a474430757c5e4bc7a2f939a66a364f7caaa9c5d8bbd39",
+						BlobID: "sha256:da802174ac83921ac629ec623f5f5ad530291fb2420102f6a213322cb257655c",
 						BlobInfo: types.BlobInfo{
 							SchemaVersion: types.BlobJSONSchemaVersion,
 							Digest:        "",
@@ -618,7 +666,7 @@ func TestArtifact_Inspect(t *testing.T) {
 				},
 				{
 					Args: cache.ArtifactCachePutBlobArgs{
-						BlobID: "sha256:d52ae7b8104c24bdac9c0b41067a8e3376307824de9f51ac3ce20b7f10c05aad",
+						BlobID: "sha256:996fcbfcc2964d20456afd0de16747533693b1cbebb72a6d28823a134abf0f5f",
 						BlobInfo: types.BlobInfo{
 							SchemaVersion: types.BlobJSONSchemaVersion,
 							Digest:        "",
@@ -633,10 +681,10 @@ func TestArtifact_Inspect(t *testing.T) {
 				Type: types.ArtifactContainerImage,
 				ID:   "sha256:a646bb11d39c149d4aaf9b888233048e0848304e5abd75667ea6f21d540d800c",
 				BlobIDs: []string{
-					"sha256:eed2b2213e6960e91735774de22190bc2d01adff80dc1b11894fc7d644b3f208",
-					"sha256:4c12ca22d1f52d5e8bc0374a4725f054d1c54026dd15f0a9540c137c4b5f2241",
-					"sha256:6bae274ff56a622182a474430757c5e4bc7a2f939a66a364f7caaa9c5d8bbd39",
-					"sha256:d52ae7b8104c24bdac9c0b41067a8e3376307824de9f51ac3ce20b7f10c05aad",
+					"sha256:57ada28264043324e1f99eb3db63de1a7e3f27f1fa4dcbb1df2f76875b98b9c4",
+					"sha256:64f08ed6c84283289beb64335f76a4c60a89f62c7937b8ea50fd8bfda304f0e2",
+					"sha256:da802174ac83921ac629ec623f5f5ad530291fb2420102f6a213322cb257655c",
+					"sha256:996fcbfcc2964d20456afd0de16747533693b1cbebb72a6d28823a134abf0f5f",
 				},
 				ImageMetadata: types.ImageMetadata{
 					ID: "sha256:58701fd185bda36cab0557bb6438661831267aa4a9e0b54211c4d5317a48aff4",
@@ -821,6 +869,32 @@ func TestArtifact_Inspect(t *testing.T) {
 									},
 								},
 							},
+							Licenses: []types.LicenseFile{
+								{
+									FilePath: "/etc/ssl/misc/CA.pl",
+									Findings: []types.LicenseFinding{
+										{
+											License:                          "OpenSSL",
+											Confidence:                       1,
+											GoogleLicenseClassificationIndex: 5,
+											GoogleLicenseClassification:      "notice",
+											LicenseLink:                      "https://spdx.org/licenses/OpenSSL.html",
+										},
+									},
+								},
+								{
+									FilePath: "/etc/ssl/misc/tsget.pl",
+									Findings: []types.LicenseFinding{
+										{
+											License:                          "OpenSSL",
+											Confidence:                       1,
+											GoogleLicenseClassificationIndex: 5,
+											GoogleLicenseClassification:      "notice",
+											LicenseLink:                      "https://spdx.org/licenses/OpenSSL.html",
+										},
+									},
+								},
+							},
 							Applications:  []types.Application(nil),
 							OpaqueDirs:    []string(nil),
 							WhiteoutFiles: []string(nil),
@@ -924,6 +998,32 @@ func TestArtifact_Inspect(t *testing.T) {
 										{
 											Name: "zlib", Version: "1.2.11-r3", SrcName: "zlib",
 											SrcVersion: "1.2.11-r3", Licenses: []string{"Zlib"},
+										},
+									},
+								},
+							},
+							Licenses: []types.LicenseFile{
+								{
+									FilePath: "/etc/ssl/misc/CA.pl",
+									Findings: []types.LicenseFinding{
+										{
+											License:                          "OpenSSL",
+											Confidence:                       1,
+											GoogleLicenseClassificationIndex: 5,
+											GoogleLicenseClassification:      "notice",
+											LicenseLink:                      "https://spdx.org/licenses/OpenSSL.html",
+										},
+									},
+								},
+								{
+									FilePath: "/etc/ssl/misc/tsget.pl",
+									Findings: []types.LicenseFinding{
+										{
+											License:                          "OpenSSL",
+											Confidence:                       1,
+											GoogleLicenseClassificationIndex: 5,
+											GoogleLicenseClassification:      "notice",
+											LicenseLink:                      "https://spdx.org/licenses/OpenSSL.html",
 										},
 									},
 								},

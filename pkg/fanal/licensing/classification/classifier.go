@@ -12,18 +12,16 @@ import (
 )
 
 var (
-	RiskThreshold = 4
+	IgnoredLicenses []string
 )
 
 type Classifier struct {
 	classifier *classifier.Classifier
-
-	ignoredLicenses []string
 }
 
-func NewClassifier(riskTreshold int, ignoredLicenses []string) (*Classifier, error) {
+func NewClassifier(ignoredLicenses []string) (*Classifier, error) {
 	var c *classifier.Classifier
-	RiskThreshold = riskTreshold
+	IgnoredLicenses = ignoredLicenses
 
 	_, err := assets.ReadLicenseDir()
 	if err != nil {
@@ -34,8 +32,7 @@ func NewClassifier(riskTreshold int, ignoredLicenses []string) (*Classifier, err
 		return nil, err
 	}
 	return &Classifier{
-		classifier:      c,
-		ignoredLicenses: ignoredLicenses,
+		classifier: c,
 	}, nil
 }
 
@@ -59,19 +56,16 @@ func (c *Classifier) googleClassifierLicence(filePath string, contents []byte) (
 	matcher := c.classifier.Match(c.classifier.Normalize(contents))
 
 	for _, m := range matcher.Matches {
-		if !c.licenseIgnored(m.Name) {
-			if riskLevel, classification := GoogleClassification(m.Name); riskLevel <= RiskThreshold {
-				licenseLink := fmt.Sprintf("https://spdx.org/licenses/%s.html", m.Name)
+		riskLevel, classification := GoogleClassification(m.Name)
+		licenseLink := fmt.Sprintf("https://spdx.org/licenses/%s.html", m.Name)
 
-				license.Findings = append(license.Findings, types.LicenseFinding{
-					License:                          m.Name,
-					Confidence:                       m.Confidence,
-					GoogleLicenseClassificationIndex: riskLevel,
-					GoogleLicenseClassification:      classification,
-					LicenseLink:                      licenseLink,
-				})
-			}
-		}
+		license.Findings = append(license.Findings, types.LicenseFinding{
+			License:                          m.Name,
+			Confidence:                       m.Confidence,
+			GoogleLicenseClassificationIndex: riskLevel,
+			GoogleLicenseClassification:      classification,
+			LicenseLink:                      licenseLink,
+		})
 	}
 
 	return license, nil
@@ -84,19 +78,16 @@ func (c *Classifier) defaultClassifyLicense(filePath string, contents []byte) (t
 
 	matcher := licensedb.InvestigateLicenseText(contents)
 	for l, confidence := range matcher {
-		if !c.licenseIgnored(l) {
-			if riskLevel, classification := GoogleClassification(l); riskLevel <= RiskThreshold {
-				licenseLink := fmt.Sprintf("https://spdx.org/licenses/%s.html", l)
+		riskLevel, classification := GoogleClassification(l)
+		licenseLink := fmt.Sprintf("https://spdx.org/licenses/%s.html", l)
 
-				license.Findings = append(license.Findings, types.LicenseFinding{
-					License:                          l,
-					Confidence:                       float64(confidence),
-					GoogleLicenseClassificationIndex: riskLevel,
-					GoogleLicenseClassification:      classification,
-					LicenseLink:                      licenseLink,
-				})
-			}
-		}
+		license.Findings = append(license.Findings, types.LicenseFinding{
+			License:                          l,
+			Confidence:                       float64(confidence),
+			GoogleLicenseClassificationIndex: riskLevel,
+			GoogleLicenseClassification:      classification,
+			LicenseLink:                      licenseLink,
+		})
 	}
 
 	return license, nil
@@ -122,9 +113,13 @@ func GoogleClassification(licenseName string) (int, string) {
 	}
 }
 
-func (c *Classifier) licenseIgnored(licenseName string) bool {
-	if c.ignoredLicenses != nil || len(c.ignoredLicenses) > 0 {
-		return slices.Contains(c.ignoredLicenses, licenseName)
+func LicenseIgnored(licenseName string) bool {
+	if licenseName == "" {
+		return true
+	}
+
+	if len(IgnoredLicenses) > 0 {
+		return slices.Contains(IgnoredLicenses, licenseName)
 	}
 
 	return false

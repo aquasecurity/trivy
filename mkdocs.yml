@@ -70,6 +70,8 @@ nav:
           - Overview: docs/sbom/index.md
           - CycloneDX: docs/sbom/cyclonedx.md
           - SPDX: docs/sbom/spdx.md
+      - License:
+            - Scanning: docs/licenses/scanning.md
       - Integrations:
           - Overview: docs/integrations/index.md
           - GitHub Actions: docs/integrations/github-actions.md

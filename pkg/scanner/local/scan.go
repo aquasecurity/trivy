@@ -359,16 +359,15 @@ func (s Scanner) packageLicensesToResults(apps []ftypes.Application) types.Resul
 
 		for _, lib := range app.Libraries {
 			for _, license := range lib.Licenses {
-				if license != "" {
-					if classificationIndex, class := classification.GoogleClassification(license); classificationIndex <= classification.RiskThreshold {
-						findings = append(findings, ftypes.LicenseFinding{
-							PackageName:                      lib.Name,
-							License:                          license,
-							Confidence:                       1,
-							GoogleLicenseClassificationIndex: classificationIndex,
-							GoogleLicenseClassification:      class,
-						})
-					}
+				if !classification.LicenseIgnored(license) {
+					classificationIndex, class := classification.GoogleClassification(license)
+					findings = append(findings, ftypes.LicenseFinding{
+						PackageName:                      lib.Name,
+						License:                          license,
+						Confidence:                       1,
+						GoogleLicenseClassificationIndex: classificationIndex,
+						GoogleLicenseClassification:      class,
+					})
 				}
 			}
 		}

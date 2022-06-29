@@ -20,14 +20,14 @@ import (
 const version = 1
 
 var skipDirs = []string{
-	"node_modules/",
-	"usr/share/doc/",
+	"node_modules/",  // node scan will pick these up
+	"usr/share/doc/", // dpkg will pick these up
 }
 
-var includedExts = []string{
-	".asp", ".aspx", ".bas", ".bat", ".b", ".c", ".cgi", ".cs", ".css", ".fish", ".html", ".h", ".ini",
-	".java", ".js", ".jsx", ".js.map", ".markdown", ".md", ".py", ".php", ".pl", ".r", ".rb", ".sh", ".sql", ".ts",
-	".tsx", ".ts.map", ".txt", ".zsh",
+var acceptedExtensions = []string{
+	".asp", ".aspx", ".bas", ".bat", ".b", ".c", ".cue", ".cgi", ".cs", ".css", ".fish", ".html", ".h", ".ini",
+	".java", ".js", ".jsx", ".markdown", ".md", ".py", ".php", ".pl", ".r", ".rb", ".sh", ".sql", ".ts",
+	".tsx", ".txt", ".vue", ".zsh",
 }
 
 var acceptedFileNames = []string{
@@ -36,7 +36,6 @@ var acceptedFileNames = []string{
 
 type ScannerOption struct {
 	IgnoredLicenses []string
-	RiskThreshold   int
 }
 
 // LicenseAnalyzer is an analyzer for licenses
@@ -54,7 +53,7 @@ func RegisterLicenseScanner(opt ScannerOption) error {
 }
 
 func newLicenseScanner(opt ScannerOption) (LicenseAnalyzer, error) {
-	s, err := licensing.NewScanner(opt.RiskThreshold, opt.IgnoredLicenses)
+	s, err := licensing.NewScanner(opt.IgnoredLicenses)
 	if err != nil {
 		return LicenseAnalyzer{}, xerrors.Errorf("license scanner error: %w", err)
 	}
@@ -104,7 +103,7 @@ func (a LicenseAnalyzer) Required(filePath string, _ os.FileInfo) bool {
 		}
 	}
 	ext := strings.ToLower(filepath.Ext(filePath))
-	if slices.Contains(includedExts, ext) {
+	if slices.Contains(acceptedExtensions, ext) {
 		return true
 	}
 

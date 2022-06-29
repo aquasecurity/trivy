@@ -40,6 +40,10 @@ type Option struct {
 	// For misconfigurations
 	IncludeNonFailures bool
 	Trace              bool
+
+	// For licenses
+	LicenseRiskThreshold int
+	IgnoredLicenses      []string
 }
 
 // Write writes the result to output, format as passed in argument
@@ -48,12 +52,14 @@ func Write(report types.Report, option Option) error {
 	switch option.Format {
 	case FormatTable:
 		writer = &TableWriter{
-			Output:             option.Output,
-			Severities:         option.Severities,
-			Tree:               option.Tree,
-			ShowMessageOnce:    &sync.Once{},
-			IncludeNonFailures: option.IncludeNonFailures,
-			Trace:              option.Trace,
+			Output:               option.Output,
+			Severities:           option.Severities,
+			Tree:                 option.Tree,
+			ShowMessageOnce:      &sync.Once{},
+			IncludeNonFailures:   option.IncludeNonFailures,
+			Trace:                option.Trace,
+			LicenseRiskThreshold: option.LicenseRiskThreshold,
+			IgnoredLicenses:      option.IgnoredLicenses,
 		}
 	case FormatJSON:
 		writer = &JSONWriter{Output: option.Output}
