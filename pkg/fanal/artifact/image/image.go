@@ -9,7 +9,6 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/aquasecurity/trivy/pkg/fanal/analyzer/licensing"
 	v1 "github.com/google/go-containerregistry/pkg/v1"
 	"golang.org/x/exp/slices"
 	"golang.org/x/sync/semaphore"
@@ -17,6 +16,7 @@ import (
 
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer/config"
+	"github.com/aquasecurity/trivy/pkg/fanal/analyzer/licensing"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer/secret"
 	"github.com/aquasecurity/trivy/pkg/fanal/artifact"
 	"github.com/aquasecurity/trivy/pkg/fanal/cache"

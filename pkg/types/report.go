@@ -54,7 +54,7 @@ type Result struct {
 	MisconfSummary    *MisconfSummary            `json:"MisconfSummary,omitempty"`
 	Misconfigurations []DetectedMisconfiguration `json:"Misconfigurations,omitempty"`
 	Secrets           []ftypes.SecretFinding     `json:"Secrets,omitempty"`
-	License           ftypes.LicenseFile         `json:"Licences,omitempty"`
+	License           ftypes.LicenseFile         `json:"Licenses,omitempty"`
 	PackageLicense    *ftypes.PackageLicense     `json:"PackageLicenses,omitempty"`
 	CustomResources   []ftypes.CustomResource    `json:"CustomResources,omitempty"`
 }

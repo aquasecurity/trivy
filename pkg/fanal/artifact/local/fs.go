@@ -9,13 +9,13 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/aquasecurity/trivy/pkg/fanal/analyzer/licensing"
 	"github.com/opencontainers/go-digest"
 	"golang.org/x/sync/semaphore"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer/config"
+	"github.com/aquasecurity/trivy/pkg/fanal/analyzer/licensing"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer/secret"
 	"github.com/aquasecurity/trivy/pkg/fanal/artifact"
 	"github.com/aquasecurity/trivy/pkg/fanal/cache"

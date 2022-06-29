@@ -34,7 +34,7 @@ func (s *Scanner) Scan(ctx context.Context, artifacts []*artifacts.Artifact) (re
 	}
 	defer bar.Finish()
 
-	var vulns, misconfigs, licenses []report.Resource
+	var vulns, misconfigs []report.Resource
 
 	// disable logs before scanning
 	err := log.InitLogger(s.opt.Debug, true)
@@ -72,14 +72,6 @@ func (s *Scanner) Scan(ctx context.Context, artifacts []*artifacts.Artifact) (re
 				return report.Report{}, xerrors.Errorf("scanning misconfigurations error: %w", err)
 			}
 			misconfigs = append(misconfigs, resource)
-		}
-
-		if slices.Contains(s.opt.SecurityChecks, types.SecurityCheckLicense) {
-			resource, err := s.scanLicenses(ctx, artifact)
-			if err != nil {
-				return report.Report{}, xerrors.Errorf("scanning licenses error: %w", err)
-			}
-			licenses = append(licenses, resource)
 		}
 	}
 
@@ -139,26 +131,6 @@ func (s *Scanner) scanMisconfigs(ctx context.Context, artifact *artifacts.Artifa
 
 	return s.filter(ctx, configReport, artifact)
 }
-
-func (s *Scanner) scanLicenses(ctx context.Context, artifact *artifacts.Artifact) (report.Resource, error) {
-	licenseFile, err := createTempFile(artifact)
-	if err != nil {
-		return report.Resource{}, xerrors.Errorf("scan error: %w", err)
-	}
-
-	s.opt.Target = licenseFile
-
-	licenseReport, err := s.runner.ScanFilesystem(ctx, s.opt)
-	// remove config file after scanning
-	removeFile(licenseFile)
-	if err != nil {
-		log.Logger.Debugf("failed to scan config %s/%s: %s", artifact.Kind, artifact.Name, err)
-		return report.CreateResource(artifact, licenseReport, err), err
-	}
-
-	return s.filter(ctx, licenseReport, artifact)
-}
-
 func (s *Scanner) filter(ctx context.Context, r types.Report, artifact *artifacts.Artifact) (report.Resource, error) {
 	r, err := s.runner.Filter(ctx, s.opt, r)
 	if err != nil {

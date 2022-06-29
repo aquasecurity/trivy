@@ -13,5 +13,4 @@ const (
 
 	GoModMergePostHandlerPriority = 50
 	MisconfPostHandlerPriority    = 50
-	LicensePostHandlerPriority    = 50
 )

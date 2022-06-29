@@ -13,6 +13,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/licensing"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
+
 	"golang.org/x/exp/slices"
 	"golang.org/x/xerrors"
 )
@@ -31,6 +32,7 @@ var acceptedExtensions = []string{
 }
 
 var acceptedFileNames = []string{
+	// nolint
 	"license", "licence", "copyright",
 }
 

@@ -6,8 +6,6 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/aquasecurity/trivy/pkg/fanal/analyzer/licensing"
-	"github.com/aquasecurity/trivy/pkg/fanal/walker"
 	"github.com/hashicorp/go-multierror"
 	"github.com/urfave/cli/v2"
 	"golang.org/x/exp/slices"
@@ -18,9 +16,11 @@ import (
 	"github.com/aquasecurity/trivy/pkg/commands/operation"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer/config"
+	"github.com/aquasecurity/trivy/pkg/fanal/analyzer/licensing"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer/secret"
 	"github.com/aquasecurity/trivy/pkg/fanal/artifact"
 	"github.com/aquasecurity/trivy/pkg/fanal/cache"
+	"github.com/aquasecurity/trivy/pkg/fanal/walker"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/module"
 	pkgReport "github.com/aquasecurity/trivy/pkg/report"
@@ -159,6 +159,7 @@ func (r *runner) ScanImage(ctx context.Context, opt Option) (types.Report, error
 		log.Logger.Debug("Overriding walk.AppDirs to include vendor")
 		walker.AppDirs = []string{".git"}
 	} else {
+		// disable lock file scanning when not license check
 		opt.DisabledAnalyzers = analyzer.TypeLockfiles
 	}
 
@@ -430,7 +431,8 @@ func disabledAnalyzers(opt Option) []analyzer.Type {
 		analyzers = append(analyzers, analyzer.TypeApkCommand)
 	}
 
-	// Do not analyze programming language packages when not running in 'library' mode
+	// Do not analyze programming language packages when not running in 'library' mode and it
+	// is not a license check
 	if !slices.Contains(opt.VulnType, types.VulnTypeLibrary) && !slices.Contains(opt.SecurityChecks, types.SecurityCheckLicense) {
 		analyzers = append(analyzers, analyzer.TypeLanguages...)
 	}

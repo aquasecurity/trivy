@@ -8,6 +8,7 @@ import (
 
 	"github.com/aquasecurity/table"
 	"github.com/aquasecurity/trivy/pkg/types"
+
 	"github.com/fatih/color"
 	"github.com/liamg/tml"
 	"golang.org/x/exp/slices"
@@ -137,7 +138,7 @@ func (w LicenseReportWriter) writeFindings(findings []reportFinding, headings ..
 	tableWriter.SetHeaders(headings...)
 
 	for _, f := range findings {
-		tableWriter.AddRow(colorizeLicenceClassification(strings.TrimSpace(f.googleClassification)),
+		tableWriter.AddRow(colorizeLicenseClassification(strings.TrimSpace(f.googleClassification)),
 			strings.TrimSpace(f.licenseName), strings.TrimSpace(f.target))
 	}
 
@@ -155,11 +156,12 @@ func (w LicenseReportWriter) Printf(msg string, a ...interface{}) {
 }
 
 func (w LicenseReportWriter) PrintTitle(title string) {
+	// nolint
 	_ = tml.Fprintf(w.output, "\n<underline><bold>%s</bold></underline>\n\n", title)
 
 }
 
-func colorizeLicenceClassification(classification string) string {
+func colorizeLicenseClassification(classification string) string {
 	switch classification {
 	case "unknown":
 		return color.New(color.FgHiRed).Sprintf("Non Standard")

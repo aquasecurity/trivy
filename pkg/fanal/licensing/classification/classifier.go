@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
+
 	"github.com/go-enry/go-license-detector/v4/licensedb"
 	"github.com/google/licenseclassifier"
 	classifier "github.com/google/licenseclassifier/v2"
@@ -36,7 +37,7 @@ func NewClassifier(ignoredLicenses []string) (*Classifier, error) {
 	}, nil
 }
 
-// Classify detects and classifies the licencedFile found in a file
+// Classify detects and classifies the licensedFile found in a file
 func (c *Classifier) Classify(filePath string, contents []byte) (types.LicenseFile, error) {
 	licFile, err := c.defaultClassifyLicense(filePath, contents)
 	if err != nil {
@@ -44,13 +45,13 @@ func (c *Classifier) Classify(filePath string, contents []byte) (types.LicenseFi
 	}
 
 	if len(licFile.Findings) == 0 {
-		return c.googleClassifierLicence(filePath, contents)
+		return c.googleClassifierLicense(filePath, contents)
 	}
 
 	return licFile, nil
 }
 
-func (c *Classifier) googleClassifierLicence(filePath string, contents []byte) (types.LicenseFile, error) {
+func (c *Classifier) googleClassifierLicense(filePath string, contents []byte) (types.LicenseFile, error) {
 
 	license := types.LicenseFile{FilePath: filePath}
 	matcher := c.classifier.Match(c.classifier.Normalize(contents))

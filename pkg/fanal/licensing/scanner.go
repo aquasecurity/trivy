@@ -6,6 +6,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/fanal/licensing/classification"
 	"github.com/aquasecurity/trivy/pkg/fanal/log"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
+
 	"golang.org/x/xerrors"
 )
 
@@ -41,6 +42,9 @@ func (s Scanner) ScanFS(filesystem fs.FS) ([]types.LicenseFile, error) {
 		}
 
 		content, err := fs.ReadFile(filesystem, path)
+		if err != nil {
+			return err
+		}
 		licenseFile, err := s.classifier.Classify(path, content)
 		if err != nil {
 			return err

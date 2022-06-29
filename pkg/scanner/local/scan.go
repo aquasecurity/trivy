@@ -8,7 +8,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/aquasecurity/trivy/pkg/fanal/licensing/classification"
 	"github.com/google/wire"
 	"golang.org/x/exp/slices"
 	"golang.org/x/xerrors"
@@ -20,6 +19,7 @@ import (
 	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/all"
 	"github.com/aquasecurity/trivy/pkg/fanal/applier"
 	_ "github.com/aquasecurity/trivy/pkg/fanal/handler/all"
+	"github.com/aquasecurity/trivy/pkg/fanal/licensing/classification"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/scanner/post"
