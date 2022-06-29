@@ -381,7 +381,7 @@ func (s Scanner) Scan(args ScanArgs) types.Secret {
 				Location: loc,
 			})
 			copyCensored.Do(func() {
-				censored := make([]byte, len(args.Content))
+				censored = make([]byte, len(args.Content))
 				copy(censored, args.Content)
 			})
 			censored = censorLocation(loc, censored)
