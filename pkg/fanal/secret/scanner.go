@@ -327,6 +327,11 @@ type ScanArgs struct {
 	Content  []byte
 }
 
+type Match struct {
+	Rule     Rule
+	Location Location
+}
+
 func (s Scanner) Scan(args ScanArgs) types.Secret {
 	// Global allowed paths
 	if s.AllowPath(args.FilePath) {
@@ -334,6 +339,10 @@ func (s Scanner) Scan(args ScanArgs) types.Secret {
 			FilePath: args.FilePath,
 		}
 	}
+
+	var censored []byte
+	var copyCensored sync.Once
+	var matched []Match
 
 	var findings []types.SecretFinding
 	globalExcludedBlocks := newBlocks(args.Content, s.ExcludeBlock.Regexes)
@@ -360,14 +369,27 @@ func (s Scanner) Scan(args ScanArgs) types.Secret {
 		}
 
 		localExcludedBlocks := newBlocks(args.Content, rule.ExcludeBlock.Regexes)
+
 		for _, loc := range locs {
 			// Skip the secret if it is within excluded blocks.
 			if globalExcludedBlocks.Match(loc) || localExcludedBlocks.Match(loc) {
 				continue
 			}
 
-			findings = append(findings, toFinding(rule, loc, args.Content))
+			matched = append(matched, Match{
+				Rule:     rule,
+				Location: loc,
+			})
+			copyCensored.Do(func() {
+				censored = make([]byte, len(args.Content))
+				copy(censored, args.Content)
+			})
+			censored = censorLocation(loc, censored)
 		}
+	}
+
+	for _, match := range matched {
+		findings = append(findings, toFinding(match.Rule, match.Location, censored))
 	}
 
 	if len(findings) == 0 {
@@ -380,23 +402,35 @@ func (s Scanner) Scan(args ScanArgs) types.Secret {
 	}
 }
 
+func censorLocation(loc Location, input []byte) []byte {
+	return append(
+		input[:loc.Start],
+		append(
+			bytes.Repeat([]byte("*"), loc.End-loc.Start),
+			input[loc.End:]...,
+		)...,
+	)
+}
+
 func toFinding(rule Rule, loc Location, content []byte) types.SecretFinding {
-	startLine, endLine, matchLine := findLocation(loc.Start, loc.End, content)
+	startLine, endLine, code, matchLine := findLocation(loc.Start, loc.End, content)
 
 	return types.SecretFinding{
 		RuleID:    rule.ID,
 		Category:  rule.Category,
 		Severity:  lo.Ternary(rule.Severity == "", "UNKNOWN", rule.Severity),
 		Title:     rule.Title,
+		Match:     matchLine,
 		StartLine: startLine,
 		EndLine:   endLine,
-		Match:     matchLine,
+		Code:      code,
 	}
 }
 
-func findLocation(start, end int, content []byte) (int, int, string) {
-	startLineNum := bytes.Count(content[:start], lineSep) + 1
-	endLineNum := startLineNum // TODO: support multi lines
+const secretHighlightRadius = 2 // number of lines above + below each secret to include in code output
+
+func findLocation(start, end int, content []byte) (int, int, types.Code, string) {
+	startLineNum := bytes.Count(content[:start], lineSep)
 
 	lineStart := bytes.LastIndex(content[:start], lineSep)
 	if lineStart == -1 {
@@ -419,9 +453,37 @@ func findLocation(start, end int, content []byte) (int, int, string) {
 		truncatedLineEnd := lo.Ternary(end+20 > len(content), len(content), end+20)
 		matchLine = string(content[truncatedLineStart:truncatedLineEnd])
 	}
+	endLineNum := startLineNum + strings.Count(match, string(lineSep))
 
-	// Mask credentials
-	matchLine = strings.TrimSpace(strings.ReplaceAll(matchLine, match, "*****"))
+	var code types.Code
 
-	return startLineNum, endLineNum, matchLine
+	lines := strings.Split(string(content), string(lineSep))
+	codeStart := lo.Ternary(startLineNum-secretHighlightRadius < 0, 0, startLineNum-secretHighlightRadius)
+	codeEnd := lo.Ternary(endLineNum+secretHighlightRadius > len(lines), len(lines), endLineNum+secretHighlightRadius)
+
+	rawLines := lines[codeStart:codeEnd]
+	var foundFirst bool
+	for i, rawLine := range rawLines {
+		realLine := codeStart + i
+		inCause := realLine >= startLineNum && realLine <= endLineNum
+		code.Lines = append(code.Lines, types.Line{
+			Number:      codeStart + i + 1,
+			Content:     rawLine,
+			IsCause:     inCause,
+			Highlighted: rawLine,
+			FirstCause:  !foundFirst && inCause,
+			LastCause:   false,
+		})
+		foundFirst = foundFirst || inCause
+	}
+	if len(code.Lines) > 0 {
+		for i := len(code.Lines) - 1; i >= 0; i-- {
+			if code.Lines[i].IsCause {
+				code.Lines[i].LastCause = true
+				break
+			}
+		}
+	}
+
+	return startLineNum + 1, endLineNum + 1, code, matchLine
 }
