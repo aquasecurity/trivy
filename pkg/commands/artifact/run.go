@@ -3,7 +3,6 @@ package artifact
 import (
 	"context"
 	"errors"
-	"fmt"
 	"os"
 
 	"github.com/hashicorp/go-multierror"
@@ -470,13 +469,9 @@ func initScannerConfig(opt Option, cacheClient cache.Cache) (ScannerConfig, type
 
 	// Do not load config file for secret scanning
 	if slices.Contains(opt.SecurityChecks, types.SecurityCheckSecret) {
-		ver := fmt.Sprintf("v%s", opt.AppVersion)
-		if opt.AppVersion == "dev" {
-			ver = opt.AppVersion
-		}
 		log.Logger.Info("Secret scanning is enabled")
 		log.Logger.Info("If your scanning is slow, please try '--security-checks vuln' to disable secret scanning")
-		log.Logger.Infof("Please see also https://aquasecurity.github.io/trivy/%s/docs/secret/scanning/#recommendation for faster secret detection", ver)
+		log.Logger.Infof("Please see also https://aquasecurity.github.io/trivy/%s/docs/secret/scanning/#recommendation for faster secret detection", opt.AppVersion)
 	} else {
 		opt.SecretConfigPath = ""
 	}
