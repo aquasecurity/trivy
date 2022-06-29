@@ -24,6 +24,8 @@ func NewClassifier(ignoredLicenses []string) (*Classifier, error) {
 	var c *classifier.Classifier
 	IgnoredLicenses = ignoredLicenses
 
+	licensedb.Preload()
+
 	_, err := assets.ReadLicenseDir()
 	if err != nil {
 		return nil, err
@@ -74,8 +76,6 @@ func (c *Classifier) googleClassifierLicense(filePath string, contents []byte) (
 
 func (c *Classifier) defaultClassifyLicense(filePath string, contents []byte) (types.LicenseFile, error) {
 	license := types.LicenseFile{FilePath: filePath}
-
-	licensedb.Preload()
 
 	matcher := licensedb.InvestigateLicenseText(contents)
 	for l, confidence := range matcher {
