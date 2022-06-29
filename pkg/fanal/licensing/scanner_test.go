@@ -75,11 +75,6 @@ func Test_LicenseScanning(t *testing.T) {
 					GoogleLicenseClassification: "notice",
 					Confidence:                  0.98,
 				},
-				{
-					License:                     "MIT-0",
-					GoogleLicenseClassification: "unknown",
-					Confidence:                  0.98,
-				},
 			},
 		},
 		{
@@ -90,21 +85,6 @@ func Test_LicenseScanning(t *testing.T) {
 				{
 					License:                     "Apache-2.0",
 					GoogleLicenseClassification: "notice",
-					Confidence:                  1,
-				},
-				{
-					License:                     "ECL-2.0",
-					GoogleLicenseClassification: "unknown",
-					Confidence:                  1,
-				},
-				{
-					License:                     "SHL-0.5",
-					GoogleLicenseClassification: "unknown",
-					Confidence:                  1,
-				},
-				{
-					License:                     "SHL-0.51",
-					GoogleLicenseClassification: "unknown",
 					Confidence:                  1,
 				},
 			},

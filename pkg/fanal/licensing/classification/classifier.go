@@ -41,18 +41,16 @@ func NewClassifier(ignoredLicenses []string) (*Classifier, error) {
 
 // Classify detects and classifies the licensedFile found in a file
 func (c *Classifier) Classify(filePath string, contents []byte) (types.LicenseFile, error) {
-	// licFile, err := c.defaultClassifyLicense(filePath, contents)
-	// if err != nil {
-	// 	return licFile, err
-	// }
-	//
-	// if len(licFile.Findings) == 0 {
-	// 	return c.googleClassifierLicense(filePath, contents)
-	// }
-	//
-	// return licFile, nil
+	licFile, err := c.googleClassifierLicense(filePath, contents)
+	if err != nil {
+		return licFile, err
+	}
 
-	return c.googleClassifierLicense(filePath, contents)
+	if len(licFile.Findings) == 0 {
+		return c.fallbackClassifyLicense(filePath, contents)
+	}
+
+	return licFile, nil
 }
 
 func (c *Classifier) googleClassifierLicense(filePath string, contents []byte) (types.LicenseFile, error) {
@@ -76,7 +74,7 @@ func (c *Classifier) googleClassifierLicense(filePath string, contents []byte) (
 	return license, nil
 }
 
-func (c *Classifier) defaultClassifyLicense(filePath string, contents []byte) (types.LicenseFile, error) {
+func (c *Classifier) fallbackClassifyLicense(filePath string, contents []byte) (types.LicenseFile, error) {
 	license := types.LicenseFile{FilePath: filePath}
 
 	matcher := licensedb.InvestigateLicenseText(contents)
