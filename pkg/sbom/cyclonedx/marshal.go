@@ -56,9 +56,9 @@ var (
 )
 
 type Marshaler struct {
-	version string
-	clock   clock.Clock
-	newUUID newUUID
+	appVersion string // Trivy version
+	clock      clock.Clock
+	newUUID    newUUID
 }
 
 type newUUID func() uuid.UUID
@@ -79,9 +79,9 @@ func WithNewUUID(newUUID newUUID) marshalOption {
 
 func NewMarshaler(version string, opts ...marshalOption) *Marshaler {
 	e := &Marshaler{
-		version: version,
-		clock:   clock.RealClock{},
-		newUUID: uuid.New,
+		appVersion: version,
+		clock:      clock.RealClock{},
+		newUUID:    uuid.New,
 	}
 
 	for _, opt := range opts {
@@ -117,8 +117,7 @@ func (e *Marshaler) MarshalVulnerabilities(report types.Report) (*cdx.BOM, error
 	vulnMap := map[string]cdx.Vulnerability{}
 	for _, result := range report.Results {
 		for _, vuln := range result.Vulnerabilities {
-			// TODO: consider ArtifactName
-			ref, err := externalRef(report.ArtifactName, vuln.Ref)
+			ref, err := externalRef(report.Metadata.BomID, vuln.Ref)
 			if err != nil {
 				return nil, err
 			}
@@ -148,7 +147,7 @@ func (e *Marshaler) cdxMetadata() *cdx.Metadata {
 			{
 				Vendor:  "aquasecurity",
 				Name:    "trivy",
-				Version: e.version,
+				Version: e.appVersion,
 			},
 		},
 	}
