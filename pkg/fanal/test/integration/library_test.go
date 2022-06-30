@@ -174,6 +174,7 @@ func TestFanal_Library_DockerMode(t *testing.T) {
 			defer cleanup()
 
 			ar, err := aimage.NewArtifact(img, c, artifact.Option{
+				// disable license checking in the test - in parallel it will fail because of resource requirement
 				DisabledAnalyzers: []analyzer.Type{analyzer.TypeLicense},
 			})
 			require.NoError(t, err)
@@ -188,14 +189,10 @@ func TestFanal_Library_DockerMode(t *testing.T) {
 			// clear Cache
 			require.NoError(t, c.Clear(), tt.name)
 
-			_, err = cli.ImageRemove(ctx, tt.remoteImageName, dtypes.ImageRemoveOptions{
+			_, _ = cli.ImageRemove(ctx, tt.remoteImageName, dtypes.ImageRemoveOptions{
 				Force:         true,
 				PruneChildren: true,
 			})
-			assert.NoError(t, err, tt.name)
-
-			// clear Cache
-			require.NoError(t, c.Clear(), tt.name)
 		})
 	}
 }
