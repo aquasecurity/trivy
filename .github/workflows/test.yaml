@@ -11,6 +11,7 @@ on:
   pull_request:
 env:
   GO_VERSION: "1.18"
+  TINYGO_VERSION: "0.23.0"
 jobs:
   test:
     name: Test
@@ -23,11 +24,25 @@ jobs:
         with:
           go-version: ${{ env.GO_VERSION }}
 
+      - name: go mod tidy
+        run: |
+          go mod tidy
+          if [ -n "$(git status --porcelain)" ]; then
+            echo "Run 'go mod tidy' and push it"
+            exit 1
+          fi
+
       - name: Lint
         uses: golangci/golangci-lint-action@v3.2.0
         with:
           version: v1.45
           args: --deadline=30m
+          skip-cache: true # https://github.com/golangci/golangci-lint-action/issues/244#issuecomment-1052197778
+
+      - name: Install TinyGo
+        run: |
+          wget https://github.com/tinygo-org/tinygo/releases/download/v${TINYGO_VERSION}/tinygo_${TINYGO_VERSION}_amd64.deb
+          sudo dpkg -i tinygo_${TINYGO_VERSION}_amd64.deb
 
       - name: Run unit tests
         run: make test
@@ -47,6 +62,28 @@ jobs:
 
     - name: Run integration tests
       run: make test-integration
+
+  module-test:
+    name: Module Integration Test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set up Go
+        uses: actions/setup-go@v3
+        with:
+          go-version: ${{ env.GO_VERSION }}
+        id: go
+
+      - name: Install TinyGo
+        run: |
+          wget https://github.com/tinygo-org/tinygo/releases/download/v${TINYGO_VERSION}/tinygo_${TINYGO_VERSION}_amd64.deb
+          sudo dpkg -i tinygo_${TINYGO_VERSION}_amd64.deb
+
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Run module integration tests
+        run: |
+          make test-module-integration
 
   build-test:
     name: Build Test
@@ -76,7 +113,7 @@ jobs:
       uses: goreleaser/goreleaser-action@v3
       with:
         version: v1.4.1
-        args: release --snapshot --rm-dist --skip-publish
+        args: release --snapshot --rm-dist --skip-publish --timeout 60m
 
   build-documents:
     name: Documentation Test

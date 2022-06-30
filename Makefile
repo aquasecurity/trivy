@@ -1,15 +1,24 @@
-VERSION := $(shell git describe --tags)
-LDFLAGS=-ldflags "-s -w -X=main.version=$(VERSION)"
+VERSION := $(shell git describe --tags --always)
+LDFLAGS := -ldflags "-s -w -X=main.version=$(VERSION)"
 
-GOPATH=$(shell go env GOPATH)
-GOBIN=$(GOPATH)/bin
-GOSRC=$(GOPATH)/src
+GOPATH := $(shell go env GOPATH)
+GOBIN := $(GOPATH)/bin
+GOSRC := $(GOPATH)/src
+
+TEST_MODULE_DIR := pkg/module/testdata
+TEST_MODULE_SRCS := $(wildcard $(TEST_MODULE_DIR)/*/*.go)
+TEST_MODULES := $(patsubst %.go,%.wasm,$(TEST_MODULE_SRCS))
+
+EXAMPLE_MODULE_DIR := examples/module
+EXAMPLE_MODULE_SRCS := $(wildcard $(EXAMPLE_MODULE_DIR)/*/*.go)
+EXAMPLE_MODULES := $(patsubst %.go,%.wasm,$(EXAMPLE_MODULE_SRCS))
 
 MKDOCS_IMAGE := aquasec/mkdocs-material:dev
 MKDOCS_PORT := 8000
 
 u := $(if $(update),-u)
 
+# Tools
 $(GOBIN)/wire:
 	go install github.com/google/wire/cmd/wire@v0.5.0
 
@@ -22,9 +31,12 @@ $(GOBIN)/golangci-lint:
 $(GOBIN)/labeler:
 	go install github.com/knqyf263/labeler@latest
 
+$(GOBIN)/easyjson:
+	go install github.com/mailru/easyjson/...@v0.7.7
+
 .PHONY: wire
 wire: $(GOBIN)/wire
-	wire gen ./pkg/...
+	wire gen ./pkg/commands/... ./pkg/rpc/...
 
 .PHONY: mock
 mock: $(GOBIN)/mockery
@@ -35,18 +47,35 @@ deps:
 	go get ${u} -d
 	go mod tidy
 
+.PHONY: generate-test-modules
+generate-test-modules: $(TEST_MODULES)
 
+# Compile WASM modules for unit and integration tests
+%.wasm:%.go
+	@if !(type "tinygo" > /dev/null 2>&1); then \
+		echo "Need to install TinyGo. Follow https://tinygo.org/getting-started/install/"; \
+		exit 1; \
+	fi
+	go generate $<
+
+# Run unit tests
 .PHONY: test
-test:
+test: $(TEST_MODULES)
 	go test -v -short -coverprofile=coverage.txt -covermode=atomic ./...
 
 integration/testdata/fixtures/images/*.tar.gz: $(GOBIN)/crane
 	mkdir -p integration/testdata/fixtures/images/
 	integration/scripts/download-images.sh
 
+# Run integration tests
 .PHONY: test-integration
 test-integration: integration/testdata/fixtures/images/*.tar.gz
-	go test -v -tags=integration ./integration/...
+	go test -v -tags=integration ./integration/... ./pkg/fanal/test/integration/...
+
+# Run WASM integration tests
+.PHONY: test-module-integration
+test-module-integration: integration/testdata/fixtures/images/*.tar.gz $(EXAMPLE_MODULES)
+	go test -v -tags=module_integration ./integration/...
 
 .PHONY: lint
 lint: $(GOBIN)/golangci-lint
@@ -78,12 +107,18 @@ install:
 clean:
 	rm -rf integration/testdata/fixtures/images
 
+# Create labels on GitHub
 .PHONY: label
 label: $(GOBIN)/labeler
 	labeler apply misc/triage/labels.yaml -r aquasecurity/trivy -l 5
 
+# Run MkDocs development server to preview the documentation page
 .PHONY: mkdocs-serve
-## Runs MkDocs development server to preview the documentation page
 mkdocs-serve:
 	docker build -t $(MKDOCS_IMAGE) -f docs/build/Dockerfile docs/build
 	docker run --name mkdocs-serve --rm -v $(PWD):/docs -p $(MKDOCS_PORT):8000 $(MKDOCS_IMAGE)
+
+# Generate JSON marshaler/unmarshaler for TinyGo/WebAssembly as TinyGo doesn't support encoding/json.
+.PHONY: easyjson
+easyjson: $(GOBIN)/easyjson
+	easyjson pkg/module/serialize/types.go

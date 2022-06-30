@@ -26,6 +26,21 @@ Scanners:
 
 Much more scanners and targets are coming up. [Join the Slack][slack] channel to stay up to date, ask questions, and let us know what features you would like to see.
 
+<figure style="text-align: center">
+  <img src="imgs/vuln-demo.gif" width="1000">
+  <figcaption>Demo: Vulnerability Detection</figcaption>
+</figure>
+
+<figure style="text-align: center">
+  <img src="imgs/misconf-demo.gif" width="1000">
+  <figcaption>Demo: Misconfiguration Detection</figcaption>
+</figure>
+
+<figure style="text-align: center">
+  <img src="imgs/secret-demo.gif" width="1000">
+  <figcaption>Demo: Secret Detection</figcaption>
+</figure>
+
 It is designed to be used in CI. Before pushing to a container registry or deploying your application, you can scan your local container image and other artifacts easily.
 See [Integrations][integrations] for details.
 

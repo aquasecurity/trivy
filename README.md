@@ -74,7 +74,7 @@ https://user-images.githubusercontent.com/1161307/171013917-b1f37810-f434-465c-b
 </details>
 
 ```bash
-$ trivy k8s mycluster
+$ trivy k8s --report summary cluster
 ```
 
 <details>
@@ -83,6 +83,8 @@ $ trivy k8s mycluster
 ![k8s summary](docs/imgs/trivy-k8s.png)
 
 </details>
+
+Note that you can also receive a detailed scan, scan only a specific namespace, resource and more.
 
 Find out more in the [Trivy Documentation][docs] - [Getting Started][getting-started]
 
@@ -135,7 +137,7 @@ Contact us about any matter by opening a GitHub Discussion [here][discussions]
 [getting-started]: https://aquasecurity.github.io/trivy/latest/getting-started/installation/
 [docs]: https://aquasecurity.github.io/trivy
 [integrations]:https://aquasecurity.github.io/trivy/latest/docs/integrations/
-[installation]:https://aquasecurity.github.io/trivy/latest/docs/getting-started/installation/
+[installation]:https://aquasecurity.github.io/trivy/latest/getting-started/installation/
 [releases]: https://github.com/aquasecurity/trivy/releases
 [alpine]: https://ariadne.space/2021/06/08/the-vulnerability-remediation-lifecycle-of-alpine-containers/
 [rego]: https://www.openpolicyagent.org/docs/latest/#rego

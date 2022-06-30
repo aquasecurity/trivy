@@ -70,15 +70,33 @@ brew install aquasecurity/trivy/trivy
 
 ## Nix/NixOS
 
-You can use nix on Linux or macOS and on others unofficially.
+Direct issues installing `trivy` via `nix` through the channels mentioned [here](https://nixos.wiki/wiki/Support)
 
-Note that trivy is currently only in the unstable channels.
+You can use `nix` on Linux or macOS and on other platforms unofficially.
 
-```bash
-nix-env --install trivy
+`nix-env --install -A nixpkgs.trivy`
+
+Or through your configuration as usual
+
+NixOS:
+
+```nix
+  # your other config ...
+  environment.systemPackages = with pkgs; [
+    # your other packages ...
+    trivy
+  ];
 ```
 
-Or through your configuration on NixOS or with home-manager as usual
+home-manager:
+
+```nix
+  # your other config ...
+  home.packages = with pkgs; [
+    # your other packages ...
+    trivy
+  ];
+```
 
 ## Install Script
 

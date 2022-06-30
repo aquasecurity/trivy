@@ -225,7 +225,7 @@ func TestClientServer(t *testing.T) {
 			golden: "testdata/mariner-1.0.json.golden",
 		},
 		{
-			name: "buxybox with Cargo.lock",
+			name: "busybox with Cargo.lock",
 			args: csArgs{
 				Input: "testdata/fixtures/images/busybox-with-lockfile.tar.gz",
 			},
@@ -525,6 +525,9 @@ func setup(t *testing.T, options setupOptions) (*cli.App, string, string) {
 
 	// Set up testing DB
 	cacheDir := initDB(t)
+
+	// Set a temp dir so that modules will not be loaded
+	t.Setenv("XDG_DATA_HOME", cacheDir)
 
 	port, err := getFreePort()
 	assert.NoError(t, err)

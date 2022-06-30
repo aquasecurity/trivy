@@ -18,8 +18,7 @@ import (
 )
 
 const (
-	configFile  = "plugin.yaml"
-	xdgDataHome = "XDG_DATA_HOME"
+	configFile = "plugin.yaml"
 )
 
 var (
@@ -297,13 +296,7 @@ func loadMetadata(dir string) (Plugin, error) {
 }
 
 func dir() string {
-	dataHome := os.Getenv(xdgDataHome)
-	if dataHome != "" {
-		return filepath.Join(dataHome, pluginsRelativeDir)
-	}
-
-	homeDir, _ := os.UserHomeDir()
-	return filepath.Join(homeDir, pluginsRelativeDir)
+	return filepath.Join(utils.HomeDir(), pluginsRelativeDir)
 }
 
 func isInstalled(url string) (Plugin, bool) {

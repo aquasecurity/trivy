@@ -7,6 +7,7 @@ import (
 	"github.com/stretchr/testify/assert"
 
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
+	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/report"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
@@ -136,6 +137,91 @@ func TestReportWriter_Table(t *testing.T) {
 			name:           "no vulns",
 			expectedOutput: ``,
 		},
+		{
+			name: "happy path with vulnerability origin graph",
+			results: types.Results{
+				{
+					Target: "package-lock.json",
+					Class:  "lang-pkgs",
+					Type:   "npm",
+					Packages: []ftypes.Package{
+						{
+							ID:      "node-fetch@1.7.3",
+							Name:    "node-fetch",
+							Version: "1.7.3",
+						},
+						{
+							ID:      "isomorphic-fetch@2.2.1",
+							Name:    "isomorphic-fetch",
+							Version: "2.2.1",
+							DependsOn: []string{
+								"node-fetch@1.7.3",
+							},
+						},
+						{
+							ID:      "fbjs@0.8.18",
+							Name:    "fbjs",
+							Version: "0.8.18",
+							DependsOn: []string{
+								"isomorphic-fetch@2.2.1",
+							},
+						},
+						{
+							ID:      "styled-components@3.1.3",
+							Name:    "styled-components",
+							Version: "3.1.3",
+							DependsOn: []string{
+								"fbjs@0.8.18",
+							},
+						},
+					},
+					Vulnerabilities: []types.DetectedVulnerability{
+						{
+							VulnerabilityID: "CVE-2022-0235",
+							PkgID:           "node-fetch@1.7.3",
+							PkgName:         "node-fetch",
+							Vulnerability: dbTypes.Vulnerability{
+								Title:       "foobar",
+								Description: "baz",
+								Severity:    "HIGH",
+							},
+							InstalledVersion: "1.7.3",
+							FixedVersion:     "2.6.7, 3.1.1",
+						},
+						{
+							VulnerabilityID: "CVE-2021-26539",
+							PkgID:           "sanitize-html@1.20.0",
+							PkgName:         "sanitize-html",
+							Vulnerability: dbTypes.Vulnerability{
+								Title:       "foobar",
+								Description: "baz",
+								Severity:    "MEDIUM",
+							},
+							InstalledVersion: "1.20.0",
+							FixedVersion:     "2.3.1",
+						},
+					},
+				},
+			},
+			expectedOutput: `┌───────────────┬────────────────┬──────────┬───────────────────┬───────────────┬────────┐
+│    Library    │ Vulnerability  │ Severity │ Installed Version │ Fixed Version │ Title  │
+├───────────────┼────────────────┼──────────┼───────────────────┼───────────────┼────────┤
+│ node-fetch    │ CVE-2022-0235  │ HIGH     │ 1.7.3             │ 2.6.7, 3.1.1  │ foobar │
+├───────────────┼────────────────┼──────────┼───────────────────┼───────────────┤        │
+│ sanitize-html │ CVE-2021-26539 │ MEDIUM   │ 1.20.0            │ 2.3.1         │        │
+└───────────────┴────────────────┴──────────┴───────────────────┴───────────────┴────────┘
+
+Dependency Origin Tree
+======================
+package-lock.json
+├── node-fetch@1.7.3, (MEDIUM: 0, HIGH: 1)
+│   └── isomorphic-fetch@2.2.1
+│       └── fbjs@0.8.18
+│           └── styled-components@3.1.3
+└── sanitize-html@1.20.0, (MEDIUM: 1, HIGH: 0)
+
+`,
+		},
 	}
 
 	for _, tc := range testCases {
@@ -144,7 +230,9 @@ func TestReportWriter_Table(t *testing.T) {
 			err := report.Write(types.Report{Results: tc.results}, report.Option{
 				Format:             "table",
 				Output:             &tableWritten,
+				Tree:               true,
 				IncludeNonFailures: tc.includeNonFailures,
+				Severities:         []dbTypes.Severity{dbTypes.SeverityHigh, dbTypes.SeverityMedium},
 			})
 			assert.NoError(t, err)
 			assert.Equal(t, tc.expectedOutput, tableWritten.String(), tc.name)

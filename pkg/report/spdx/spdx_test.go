@@ -3,11 +3,14 @@ package spdx_test
 import (
 	"bytes"
 	"fmt"
+	"hash/fnv"
 	"testing"
 	"time"
 
-	fos "github.com/aquasecurity/fanal/analyzer/os"
-	ftypes "github.com/aquasecurity/fanal/types"
+	"github.com/mitchellh/hashstructure/v2"
+
+	fos "github.com/aquasecurity/trivy/pkg/fanal/analyzer/os"
+	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/report"
 	reportSpdx "github.com/aquasecurity/trivy/pkg/report/spdx"
 	"github.com/aquasecurity/trivy/pkg/types"
@@ -64,7 +67,7 @@ func TestWriter_Write(t *testing.T) {
 								SrcRelease:      "93.el8",
 								SrcEpoch:        0,
 								Modularitylabel: "",
-								License:         "GPLv3+",
+								Licenses:        []string{"GPLv3+"},
 							},
 						},
 					},
@@ -109,24 +112,24 @@ func TestWriter_Write(t *testing.T) {
 					ExternalDocumentReferences: map[string]spdx.ExternalDocumentRef2_2{},
 				},
 				Packages: map[spdx.ElementID]*spdx.Package2_2{
-					spdx.ElementID("41fbfd3a15a9c237"): {
-						PackageSPDXIdentifier:     spdx.ElementID("41fbfd3a15a9c237"),
+					spdx.ElementID("eb0263038c3b445b"): {
+						PackageSPDXIdentifier:     spdx.ElementID("eb0263038c3b445b"),
 						PackageName:               "actioncontroller",
 						PackageVersion:            "7.0.1",
 						PackageLicenseConcluded:   "NONE",
 						PackageLicenseDeclared:    "NONE",
 						IsFilesAnalyzedTagPresent: true,
 					},
-					spdx.ElementID("fbe7ba5907d0f5a2"): {
-						PackageSPDXIdentifier:     spdx.ElementID("fbe7ba5907d0f5a2"),
+					spdx.ElementID("826226d056ff30c0"): {
+						PackageSPDXIdentifier:     spdx.ElementID("826226d056ff30c0"),
 						PackageName:               "actionpack",
 						PackageVersion:            "7.0.1",
 						PackageLicenseConcluded:   "NONE",
 						PackageLicenseDeclared:    "NONE",
 						IsFilesAnalyzedTagPresent: true,
 					},
-					spdx.ElementID("a49b9e67b4e8bc6d"): {
-						PackageSPDXIdentifier:     spdx.ElementID("a49b9e67b4e8bc6d"),
+					spdx.ElementID("fd0dc3cf913d5bc3"): {
+						PackageSPDXIdentifier:     spdx.ElementID("fd0dc3cf913d5bc3"),
 						PackageName:               "binutils",
 						PackageVersion:            "2.30",
 						PackageLicenseConcluded:   "GPLv3+",
@@ -178,7 +181,7 @@ func TestWriter_Write(t *testing.T) {
 								SrcRelease:      "1.el8",
 								SrcEpoch:        1,
 								Modularitylabel: "",
-								License:         "GPLv2+",
+								Licenses:        []string{"GPLv2+"},
 							},
 						},
 					},
@@ -220,24 +223,16 @@ func TestWriter_Write(t *testing.T) {
 					ExternalDocumentReferences: map[string]spdx.ExternalDocumentRef2_2{},
 				},
 				Packages: map[spdx.ElementID]*spdx.Package2_2{
-					spdx.ElementID("a3a5d111639875c5"): {
-						PackageSPDXIdentifier:     spdx.ElementID("a3a5d111639875c5"),
+					spdx.ElementID("d8dccb186bafaf37"): {
+						PackageSPDXIdentifier:     spdx.ElementID("d8dccb186bafaf37"),
 						PackageName:               "acl",
 						PackageVersion:            "2.2.53",
 						PackageLicenseConcluded:   "GPLv2+",
 						PackageLicenseDeclared:    "GPLv2+",
 						IsFilesAnalyzedTagPresent: true,
 					},
-					spdx.ElementID("ee8bb4e8354184d"): {
-						PackageSPDXIdentifier:     spdx.ElementID("ee8bb4e8354184d"),
-						PackageName:               "actionpack",
-						PackageVersion:            "7.0.1",
-						PackageLicenseConcluded:   "NONE",
-						PackageLicenseDeclared:    "NONE",
-						IsFilesAnalyzedTagPresent: true,
-					},
-					spdx.ElementID("216407676208fcb1"): {
-						PackageSPDXIdentifier:     spdx.ElementID("216407676208fcb1"),
+					spdx.ElementID("826226d056ff30c0"): {
+						PackageSPDXIdentifier:     spdx.ElementID("826226d056ff30c0"),
 						PackageName:               "actionpack",
 						PackageVersion:            "7.0.1",
 						PackageLicenseConcluded:   "NONE",
@@ -285,8 +280,8 @@ func TestWriter_Write(t *testing.T) {
 					ExternalDocumentReferences: map[string]spdx.ExternalDocumentRef2_2{},
 				},
 				Packages: map[spdx.ElementID]*spdx.Package2_2{
-					spdx.ElementID("839e3cde077d6a35"): {
-						PackageSPDXIdentifier:     spdx.ElementID("839e3cde077d6a35"),
+					spdx.ElementID("3da61e86d0530402"): {
+						PackageSPDXIdentifier:     spdx.ElementID("3da61e86d0530402"),
 						PackageName:               "actioncable",
 						PackageVersion:            "6.1.4.1",
 						PackageLicenseConcluded:   "NONE",
@@ -309,9 +304,9 @@ func TestWriter_Write(t *testing.T) {
 						Type:   ftypes.NodePkg,
 						Packages: []ftypes.Package{
 							{
-								Name:    "ruby-typeprof",
-								Version: "0.20.1",
-								License: "MIT",
+								Name:     "ruby-typeprof",
+								Version:  "0.20.1",
+								Licenses: []string{"MIT"},
 								Layer: ftypes.Layer{
 									DiffID: "sha256:661c3fd3cc16b34c070f3620ca6b03b6adac150f9a7e5d0e3c707a159990f88e",
 								},
@@ -334,8 +329,8 @@ func TestWriter_Write(t *testing.T) {
 					ExternalDocumentReferences: map[string]spdx.ExternalDocumentRef2_2{},
 				},
 				Packages: map[spdx.ElementID]*spdx.Package2_2{
-					spdx.ElementID("a42cd3b1681a0bcb"): {
-						PackageSPDXIdentifier:     spdx.ElementID("a42cd3b1681a0bcb"),
+					spdx.ElementID("9f3d92e5ae2cadfb"): {
+						PackageSPDXIdentifier:     spdx.ElementID("9f3d92e5ae2cadfb"),
 						PackageName:               "ruby-typeprof",
 						PackageVersion:            "0.20.1",
 						PackageLicenseConcluded:   "MIT",
@@ -380,8 +375,25 @@ func TestWriter_Write(t *testing.T) {
 				return uuid.Must(uuid.Parse(fmt.Sprintf("3ff14136-e09f-4df9-80ea-%012d", count)))
 			}
 
+			// Fake function calculating the hash value
+			h := fnv.New64()
+			hasher := func(v interface{}, format hashstructure.Format, opts *hashstructure.HashOptions) (uint64, error) {
+				pkg, ok := v.(ftypes.Package)
+				if !ok {
+					require.Failf(t, "unknown type", "%T", v)
+				}
+
+				h.Reset()
+				if _, err := h.Write([]byte(pkg.Name)); err != nil {
+					return 0, err
+				}
+
+				return h.Sum64(), nil
+			}
+
 			output := bytes.NewBuffer(nil)
-			writer := reportSpdx.NewWriter(output, "dev", "spdx-json", reportSpdx.WithClock(clock), reportSpdx.WithNewUUID(newUUID))
+			writer := reportSpdx.NewWriter(output, "dev", "spdx-json",
+				reportSpdx.WithClock(clock), reportSpdx.WithNewUUID(newUUID), reportSpdx.WithHasher(hasher))
 
 			err := writer.Write(tc.inputReport)
 			require.NoError(t, err)

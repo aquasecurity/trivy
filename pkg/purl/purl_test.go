@@ -8,9 +8,9 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/aquasecurity/fanal/analyzer"
-	"github.com/aquasecurity/fanal/analyzer/os"
-	ftypes "github.com/aquasecurity/fanal/types"
+	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
+	"github.com/aquasecurity/trivy/pkg/fanal/analyzer/os"
+	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/purl"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
@@ -60,6 +60,37 @@ func TestNewPackageURL(t *testing.T) {
 		{
 			name: "yarn package with non-namespace",
 			typ:  string(analyzer.TypeYarn),
+			pkg: ftypes.Package{
+				Name:    "lodash",
+				Version: "4.17.21",
+			},
+			want: purl.PackageURL{
+				PackageURL: packageurl.PackageURL{
+					Type:    packageurl.TypeNPM,
+					Name:    "lodash",
+					Version: "4.17.21",
+				},
+			},
+		},
+		{
+			name: "pnpm package",
+			typ:  string(analyzer.TypePnpm),
+			pkg: ftypes.Package{
+				Name:    "@xtuc/ieee754",
+				Version: "1.2.0",
+			},
+			want: purl.PackageURL{
+				PackageURL: packageurl.PackageURL{
+					Type:      packageurl.TypeNPM,
+					Namespace: "@xtuc",
+					Name:      "ieee754",
+					Version:   "1.2.0",
+				},
+			},
+		},
+		{
+			name: "pnpm package with non-namespace",
+			typ:  string(analyzer.TypePnpm),
 			pkg: ftypes.Package{
 				Name:    "lodash",
 				Version: "4.17.21",

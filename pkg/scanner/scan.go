@@ -6,12 +6,12 @@ import (
 	"github.com/google/wire"
 	"golang.org/x/xerrors"
 
-	"github.com/aquasecurity/fanal/artifact"
-	aimage "github.com/aquasecurity/fanal/artifact/image"
-	flocal "github.com/aquasecurity/fanal/artifact/local"
-	"github.com/aquasecurity/fanal/artifact/remote"
-	"github.com/aquasecurity/fanal/image"
-	ftypes "github.com/aquasecurity/fanal/types"
+	"github.com/aquasecurity/trivy/pkg/fanal/artifact"
+	aimage "github.com/aquasecurity/trivy/pkg/fanal/artifact/image"
+	flocal "github.com/aquasecurity/trivy/pkg/fanal/artifact/local"
+	"github.com/aquasecurity/trivy/pkg/fanal/artifact/remote"
+	"github.com/aquasecurity/trivy/pkg/fanal/image"
+	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/report"
 	"github.com/aquasecurity/trivy/pkg/rpc/client"
@@ -96,7 +96,7 @@ type Scanner struct {
 
 // Driver defines operations of scanner
 type Driver interface {
-	Scan(target string, artifactKey string, blobKeys []string, options types.ScanOptions) (
+	Scan(ctx context.Context, target, artifactKey string, blobKeys []string, options types.ScanOptions) (
 		results types.Results, osFound *ftypes.OS, err error)
 }
 
@@ -117,7 +117,7 @@ func (s Scanner) ScanArtifact(ctx context.Context, options types.ScanOptions) (t
 		}
 	}()
 
-	results, osFound, err := s.driver.Scan(artifactInfo.Name, artifactInfo.ID, artifactInfo.BlobIDs, options)
+	results, osFound, err := s.driver.Scan(ctx, artifactInfo.Name, artifactInfo.ID, artifactInfo.BlobIDs, options)
 	if err != nil {
 		return types.Report{}, xerrors.Errorf("scan failed: %w", err)
 	}

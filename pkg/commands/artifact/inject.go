@@ -8,10 +8,9 @@ import (
 
 	"github.com/google/wire"
 
-	"github.com/aquasecurity/fanal/artifact"
-	"github.com/aquasecurity/fanal/cache"
-	"github.com/aquasecurity/fanal/types"
-	"github.com/aquasecurity/trivy/pkg/result"
+	"github.com/aquasecurity/trivy/pkg/fanal/artifact"
+	"github.com/aquasecurity/trivy/pkg/fanal/cache"
+	"github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/rpc/client"
 	"github.com/aquasecurity/trivy/pkg/scanner"
 )
@@ -50,11 +49,6 @@ func initializeRepositoryScanner(ctx context.Context, url string, artifactCache 
 	return scanner.Scanner{}, nil, nil
 }
 
-func initializeResultClient() result.Client {
-	wire.Build(result.SuperSet)
-	return result.Client{}
-}
-
 /////////////////
 // Client/Server
 /////////////////
@@ -81,9 +75,4 @@ func initializeRemoteFilesystemScanner(ctx context.Context, path string, artifac
 	remoteScanOptions client.ScannerOption, artifactOption artifact.Option) (scanner.Scanner, func(), error) {
 	wire.Build(scanner.RemoteFilesystemSet)
 	return scanner.Scanner{}, nil, nil
-}
-
-func initializeRemoteResultClient() result.Client {
-	wire.Build(result.SuperSet)
-	return result.Client{}
 }

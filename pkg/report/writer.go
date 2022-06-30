@@ -29,11 +29,13 @@ const (
 )
 
 type Option struct {
+	AppVersion string
+
 	Format         string
 	Output         io.Writer
+	Tree           bool
 	Severities     []dbTypes.Severity
 	OutputTemplate string
-	AppVersion     string
 
 	// For misconfigurations
 	IncludeNonFailures bool
@@ -48,6 +50,7 @@ func Write(report types.Report, option Option) error {
 		writer = &TableWriter{
 			Output:             option.Output,
 			Severities:         option.Severities,
+			Tree:               option.Tree,
 			ShowMessageOnce:    &sync.Once{},
 			IncludeNonFailures: option.IncludeNonFailures,
 			Trace:              option.Trace,

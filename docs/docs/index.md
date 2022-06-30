@@ -6,7 +6,7 @@ This documentation details how to use Trivy to access the features listed below.
 
 - Comprehensive vulnerability detection
     - [OS packages][os] (Alpine, Red Hat Universal Base Image, Red Hat Enterprise Linux, CentOS, AlmaLinux, Rocky Linux, CBL-Mariner, Oracle Linux, Debian, Ubuntu, Amazon Linux, openSUSE Leap, SUSE Enterprise Linux, Photon OS and Distroless)
-    - [**Language-specific packages**][lang] (Bundler, Composer, Pipenv, Poetry, npm, yarn, Cargo, NuGet, Maven, and Go)
+    - [**Language-specific packages**][lang] (Bundler, Composer, Pipenv, Poetry, npm, yarn, pnpm, Cargo, NuGet, Maven, and Go)
 - Detect IaC misconfigurations
     - A wide variety of [built-in policies][builtin] are provided **out of the box**:
         - Kubernetes
@@ -41,6 +41,7 @@ This documentation details how to use Trivy to access the features listed below.
 - [SBOM][sbom] (Software Bill of Materials) support
     - CycloneDX
     - SPDX
+    - GitHub Dependency Snapshots
 
 Please see [LICENSE][license] for Trivy licensing information.
 

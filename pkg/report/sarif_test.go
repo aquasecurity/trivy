@@ -29,7 +29,7 @@ func TestReportWriter_Sarif(t *testing.T) {
 			name: "report with vulnerabilities",
 			input: types.Results{
 				{
-					Target: "test",
+					Target: "library/test",
 					Class:  types.ClassOSPkg,
 					Vulnerabilities: []types.DetectedVulnerability{
 						{
@@ -97,10 +97,15 @@ func TestReportWriter_Sarif(t *testing.T) {
 						{
 							PhysicalLocation: &sarif.PhysicalLocation{
 								ArtifactLocation: &sarif.ArtifactLocation{
-									URI:       toPtr("test"),
+									URI:       toPtr("library/test"),
 									URIBaseId: toPtr("ROOTPATH"),
 								},
-								Region: &sarif.Region{StartLine: toPtr(1)},
+								Region: &sarif.Region{
+									StartLine:   toPtr(1),
+									EndLine:     toPtr(1),
+									StartColumn: toPtr(1),
+									EndColumn:   toPtr(1),
+								},
 							},
 						},
 					},
@@ -111,7 +116,7 @@ func TestReportWriter_Sarif(t *testing.T) {
 			name: "report with misconfigurations",
 			input: types.Results{
 				{
-					Target: "test",
+					Target: "library/test",
 					Class:  types.ClassConfig,
 					Misconfigurations: []types.DetectedMisconfiguration{
 						{
@@ -140,15 +145,20 @@ func TestReportWriter_Sarif(t *testing.T) {
 					RuleID:    toPtr("KSV001"),
 					RuleIndex: toPtr[uint](0),
 					Level:     toPtr("error"),
-					Message:   sarif.Message{Text: toPtr("Artifact: test\nType: \nVulnerability KSV001\nSeverity: HIGH\nMessage: Message\nLink: [KSV001](https://avd.aquasec.com/appshield/ksv001)")},
+					Message:   sarif.Message{Text: toPtr("Artifact: library/test\nType: \nVulnerability KSV001\nSeverity: HIGH\nMessage: Message\nLink: [KSV001](https://avd.aquasec.com/appshield/ksv001)")},
 					Locations: []*sarif.Location{
 						{
 							PhysicalLocation: &sarif.PhysicalLocation{
 								ArtifactLocation: &sarif.ArtifactLocation{
-									URI:       toPtr("test"),
+									URI:       toPtr("library/test"),
 									URIBaseId: toPtr("ROOTPATH"),
 								},
-								Region: &sarif.Region{StartLine: toPtr(1)},
+								Region: &sarif.Region{
+									StartLine:   toPtr(1),
+									EndLine:     toPtr(1),
+									StartColumn: toPtr(1),
+									EndColumn:   toPtr(1),
+								},
 							},
 						},
 					},
@@ -157,15 +167,20 @@ func TestReportWriter_Sarif(t *testing.T) {
 					RuleID:    toPtr("KSV002"),
 					RuleIndex: toPtr[uint](1),
 					Level:     toPtr("error"),
-					Message:   sarif.Message{Text: toPtr("Artifact: test\nType: \nVulnerability KSV002\nSeverity: CRITICAL\nMessage: Message\nLink: [KSV002](https://avd.aquasec.com/appshield/ksv002)")},
+					Message:   sarif.Message{Text: toPtr("Artifact: library/test\nType: \nVulnerability KSV002\nSeverity: CRITICAL\nMessage: Message\nLink: [KSV002](https://avd.aquasec.com/appshield/ksv002)")},
 					Locations: []*sarif.Location{
 						{
 							PhysicalLocation: &sarif.PhysicalLocation{
 								ArtifactLocation: &sarif.ArtifactLocation{
-									URI:       toPtr("test"),
+									URI:       toPtr("library/test"),
 									URIBaseId: toPtr("ROOTPATH"),
 								},
-								Region: &sarif.Region{StartLine: toPtr(1)},
+								Region: &sarif.Region{
+									StartLine:   toPtr(1),
+									EndLine:     toPtr(1),
+									StartColumn: toPtr(1),
+									EndColumn:   toPtr(1),
+								},
 							},
 						},
 					},
@@ -242,5 +257,32 @@ func TestReportWriter_Sarif(t *testing.T) {
 			assert.Equal(t, tt.wantRules, result.Runs[0].Tool.Driver.Rules, tt.name)
 			assert.Equal(t, tt.wantResults, result.Runs[0].Results, tt.name)
 		})
+	}
+}
+
+func TestToPathUri(t *testing.T) {
+	tests := []struct {
+		input  string
+		output string
+	}{
+		{
+			input:  "almalinux@sha256:08042694fffd61e6a0b3a22dadba207c8937977915ff6b1879ad744fd6638837",
+			output: "library/almalinux",
+		},
+		{
+			input:  "alpine:latest (alpine 3.13.4)",
+			output: "library/alpine",
+		},
+		{
+			input:  "docker.io/my-organization/my-app:2c6912aee7bde44b84d810aed106ca84f40e2e29",
+			output: "my-organization/my-app",
+		},
+	}
+
+	for _, test := range tests {
+		got := report.ToPathUri(test.input)
+		if got != test.output {
+			t.Errorf("toPathUri(%q) got %q, wanted %q", test.input, got, test.output)
+		}
 	}
 }

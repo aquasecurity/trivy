@@ -1,5 +1,10 @@
 - bucket: data-source
   pairs:
+    - key: go::GitLab Advisory Database Community
+      value:
+        ID: "glad"
+        Name: "GitLab Advisory Database Community"
+        URL:  "https://gitlab.com/gitlab-org/advisories-community"
     - key: composer::GitLab Advisory Database Community
       value:
         ID: "glad"

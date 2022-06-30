@@ -13,10 +13,11 @@ import (
 	"github.com/aquasecurity/trivy-db/pkg/metadata"
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/commands/artifact"
+	"github.com/aquasecurity/trivy/pkg/commands/module"
 	"github.com/aquasecurity/trivy/pkg/commands/option"
 	"github.com/aquasecurity/trivy/pkg/commands/plugin"
 	"github.com/aquasecurity/trivy/pkg/commands/server"
-	"github.com/aquasecurity/trivy/pkg/k8s"
+	k8scommands "github.com/aquasecurity/trivy/pkg/k8s/commands"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/report"
 	"github.com/aquasecurity/trivy/pkg/result"
@@ -370,6 +371,12 @@ var (
 		EnvVars: []string{"TRIVY_SECRET_CONFIG"},
 	}
 
+	dependencyTree = cli.BoolFlag{
+		Name:    "dependency-tree",
+		Usage:   "show dependency origin tree (EXPERIMENTAL)",
+		EnvVars: []string{"TRIVY_DEPENDENCY_TREE"},
+	}
+
 	// Global flags
 	globalFlags = []cli.Flag{
 		&quietFlag,
@@ -415,6 +422,7 @@ func NewApp(version string) *cli.App {
 		NewServerCommand(),
 		NewConfigCommand(),
 		NewPluginCommand(),
+		NewModuleCommand(),
 		NewK8sCommand(),
 		NewSbomCommand(),
 		NewVersionCommand(),
@@ -497,6 +505,7 @@ func NewImageCommand() *cli.Command {
 			&insecureFlag,
 			&dbRepositoryFlag,
 			&secretConfig,
+			&dependencyTree,
 			stringSliceFlag(skipFiles),
 			stringSliceFlag(skipDirs),
 
@@ -543,6 +552,7 @@ func NewFilesystemCommand() *cli.Command {
 			&offlineScan,
 			&dbRepositoryFlag,
 			&secretConfig,
+			&dependencyTree,
 			stringSliceFlag(skipFiles),
 			stringSliceFlag(skipDirs),
 
@@ -593,6 +603,7 @@ func NewRootfsCommand() *cli.Command {
 			&offlineScan,
 			&dbRepositoryFlag,
 			&secretConfig,
+			&dependencyTree,
 			stringSliceFlag(skipFiles),
 			stringSliceFlag(skipDirs),
 			stringSliceFlag(configPolicy),
@@ -639,6 +650,7 @@ func NewRepositoryCommand() *cli.Command {
 			&insecureFlag,
 			&dbRepositoryFlag,
 			&secretConfig,
+			&dependencyTree,
 			stringSliceFlag(skipFiles),
 			stringSliceFlag(skipDirs),
 		},
@@ -664,7 +676,6 @@ func NewClientCommand() *cli.Command {
 			&severityFlag,
 			&outputFlag,
 			&exitCodeFlag,
-			&clearCacheFlag,
 			&ignoreUnfixedFlag,
 			&removedPkgsFlag,
 			&vulnTypeFlag,
@@ -680,6 +691,7 @@ func NewClientCommand() *cli.Command {
 			&offlineScan,
 			&insecureFlag,
 			&secretConfig,
+			&dependencyTree,
 
 			&token,
 			&tokenHeader,
@@ -810,32 +822,56 @@ func NewPluginCommand() *cli.Command {
 	}
 }
 
+// NewModuleCommand is the factory method to add module subcommand
+func NewModuleCommand() *cli.Command {
+	return &cli.Command{
+		Name:    "module",
+		Aliases: []string{"m"},
+		Usage:   "manage modules",
+		Subcommands: cli.Commands{
+			{
+				Name:      "install",
+				Aliases:   []string{"i"},
+				Usage:     "install a module",
+				ArgsUsage: "REPOSITORY",
+				Action:    module.Install,
+			},
+			{
+				Name:      "uninstall",
+				Aliases:   []string{"u"},
+				Usage:     "uninstall a module",
+				ArgsUsage: "REPOSITORY",
+				Action:    module.Uninstall,
+			},
+		},
+	}
+}
+
 // NewK8sCommand is the factory method to add k8s subcommand
 func NewK8sCommand() *cli.Command {
 	k8sSecurityChecksFlag := withValue(
 		securityChecksFlag,
 		fmt.Sprintf(
-			"%s,%s,%s",
+			"%s,%s,%s,%s",
 			types.SecurityCheckVulnerability,
 			types.SecurityCheckConfig,
-			types.SecurityCheckSecret),
+			types.SecurityCheckSecret, types.SecurityCheckRbac),
 	)
 
 	return &cli.Command{
-		Name:    "kubernetes",
-		Aliases: []string{"k8s"},
-		Usage:   "scan kubernetes vulnerabilities, secrets and misconfigurations",
+		Name:      "kubernetes",
+		Aliases:   []string{"k8s"},
+		Usage:     "scan kubernetes vulnerabilities, secrets and misconfigurations",
+		UsageText: "trivy k8s [command options] <cluster|all| or specific resources like kubectl. eg: pods, pod/NAME>",
 		CustomHelpTemplate: cli.CommandHelpTemplate + `EXAMPLES:
   - cluster scanning:
-      $ trivy k8s --report summary
-
+      $ trivy k8s --report summary cluster
   - namespace scanning:
-      $ trivy k8s -n kube-system --report summary
-
+      $ trivy k8s -n kube-system --report summary all
   - resource scanning:
       $ trivy k8s deployment/orion
 `,
-		Action: k8s.Run,
+		Action: k8scommands.Run,
 		Flags: []cli.Flag{
 			&contextFlag,
 			&namespaceFlag,
@@ -878,51 +914,59 @@ func NewK8sCommand() *cli.Command {
 // NewSbomCommand is the factory method to add sbom command
 func NewSbomCommand() *cli.Command {
 	return &cli.Command{
-		Name:        "sbom",
-		ArgsUsage:   "ARTIFACT",
-		Usage:       "generate SBOM for an artifact",
-		Description: `ARTIFACT can be a container image, file path/directory, git repository or container image archive. See examples.`,
+		Name:      "sbom",
+		ArgsUsage: "SBOM",
+		Usage:     "scan SBOM for vulnerabilities",
 		CustomHelpTemplate: cli.CommandHelpTemplate + `EXAMPLES:
-  - image scanning:
-      $ trivy sbom alpine:3.15
+  - Scan CycloneDX and show the result in tables:
+      $ trivy sbom /path/to/report.cdx
 
-  - filesystem scanning:
-      $ trivy sbom --artifact-type fs /path/to/myapp
-
-  - git repository scanning:
-      $ trivy sbom --artifact-type repo github.com/aquasecurity/trivy-ci-test
-
-  - image archive scanning:
-      $ trivy sbom --artifact-type archive ./alpine.tar
-
+  - Scan CycloneDX and generate a CycloneDX report:
+      $ trivy sbom --format cyclonedx /path/to/report.cdx
 `,
-		Action: artifact.SbomRun,
+		Action: artifact.SBOMRun,
 		Flags: []cli.Flag{
+			&templateFlag,
+			&formatFlag,
+			&inputFlag,
+			&severityFlag,
 			&outputFlag,
+			&exitCodeFlag,
+			&skipDBUpdateFlag,
+			&downloadDBOnlyFlag,
+			&resetFlag,
 			&clearCacheFlag,
+			&noProgressFlag,
+			&ignoreUnfixedFlag,
 			&ignoreFileFlag,
 			&timeoutFlag,
-			&severityFlag,
+			&ignorePolicy,
+			&listAllPackages,
+			&cacheBackendFlag,
+			&cacheTTL,
+			&redisBackendCACert,
+			&redisBackendCert,
+			&redisBackendKey,
 			&offlineScan,
-			&dbRepositoryFlag,
 			&insecureFlag,
+			&dbRepositoryFlag,
+
 			stringSliceFlag(skipFiles),
 			stringSliceFlag(skipDirs),
 
-			// dedicated options
+			// deprecated options
 			&cli.StringFlag{
 				Name:    "artifact-type",
 				Aliases: []string{"type"},
-				Value:   "image",
 				Usage:   "input artifact type (image, fs, repo, archive)",
 				EnvVars: []string{"TRIVY_ARTIFACT_TYPE"},
+				Hidden:  true,
 			},
 			&cli.StringFlag{
 				Name:    "sbom-format",
-				Aliases: []string{"format"},
-				Value:   report.FormatCycloneDX,
 				Usage:   "SBOM format (cyclonedx, spdx, spdx-json, github)",
 				EnvVars: []string{"TRIVY_SBOM_FORMAT"},
+				Hidden:  true,
 			},
 		},
 	}

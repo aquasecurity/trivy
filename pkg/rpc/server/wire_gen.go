@@ -7,12 +7,12 @@
 package server
 
 import (
-	"github.com/aquasecurity/fanal/applier"
-	"github.com/aquasecurity/fanal/cache"
 	"github.com/aquasecurity/trivy-db/pkg/db"
 	"github.com/aquasecurity/trivy/pkg/detector/ospkg"
-	"github.com/aquasecurity/trivy/pkg/result"
+	"github.com/aquasecurity/trivy/pkg/fanal/applier"
+	"github.com/aquasecurity/trivy/pkg/fanal/cache"
 	"github.com/aquasecurity/trivy/pkg/scanner/local"
+	"github.com/aquasecurity/trivy/pkg/vulnerability"
 )
 
 // Injectors from inject.go:
@@ -20,9 +20,9 @@ import (
 func initializeScanServer(localArtifactCache cache.LocalArtifactCache) *ScanServer {
 	applierApplier := applier.NewApplier(localArtifactCache)
 	detector := ospkg.Detector{}
-	scanner := local.NewScanner(applierApplier, detector)
 	config := db.Config{}
-	client := result.NewClient(config)
-	scanServer := NewScanServer(scanner, client)
+	client := vulnerability.NewClient(config)
+	scanner := local.NewScanner(applierApplier, detector, client)
+	scanServer := NewScanServer(scanner)
 	return scanServer
 }

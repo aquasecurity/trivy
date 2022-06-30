@@ -32,6 +32,7 @@ message Application {
 message Package {
   // binary package
   // e.g. bind-utils
+  string id      = 13;
   string name    = 1;
   string version = 2;
   string release = 3;
@@ -39,13 +40,14 @@ message Package {
   string arch    = 5;
   // src package containing some binary packages
   // e.g. bind
-  string src_name    = 6;
-  string src_version = 7;
-  string src_release = 8;
-  int32  src_epoch   = 9;
-  string license     = 10;
-  Layer  layer       = 11;
-  string file_path   = 12;
+  string          src_name    = 6;
+  string          src_version = 7;
+  string          src_release = 8;
+  int32           src_epoch   = 9;
+  repeated string licenses    = 15;
+  Layer           layer       = 11;
+  string          file_path   = 12;
+  repeated string depends_on  = 14;
 }
 
 message Misconfiguration {
@@ -103,6 +105,7 @@ message Vulnerability {
   DataSource                data_source          = 20;
   map<string, Severity>     vendor_severity      = 21;
   string                    pkg_path             = 22;
+  string                    pkg_id               = 23;
 }
 
 message DataSource {

@@ -16,8 +16,9 @@ import (
 
 // ReportOption holds the options for reporting scan results
 type ReportOption struct {
-	Format   string
-	Template string
+	Format         string
+	Template       string
+	DependencyTree bool
 
 	IgnoreFile    string
 	IgnoreUnfixed bool
@@ -41,10 +42,11 @@ type ReportOption struct {
 // NewReportOption is the factory method to return ReportOption
 func NewReportOption(c *cli.Context) ReportOption {
 	return ReportOption{
-		output:       c.String("output"),
-		Format:       c.String("format"),
-		Template:     c.String("template"),
-		IgnorePolicy: c.String("ignore-policy"),
+		output:         c.String("output"),
+		Format:         c.String("format"),
+		DependencyTree: c.Bool("dependency-tree"),
+		Template:       c.String("template"),
+		IgnorePolicy:   c.String("ignore-policy"),
 
 		vulnType:       c.String("vuln-type"),
 		securityChecks: c.String("security-checks"),
@@ -74,6 +76,11 @@ func (c *ReportOption) Init(output io.Writer, logger *zap.SugaredLogger) error {
 	// If user specifies "--list-all-pkgs" with "--format table", we should warn it.
 	if c.ListAllPkgs && c.Format == "table" {
 		logger.Warn(`"--list-all-pkgs" cannot be used with "--format table". Try "--format json" or other formats.`)
+	}
+
+	// "--dependency-tree" option is available only with "--format table".
+	if c.DependencyTree && c.Format != "table" {
+		logger.Warn(`"--dependency-tree" can be used only with "--format table".`)
 	}
 
 	if c.forceListAllPkgs(logger) {
@@ -114,7 +121,7 @@ func (c *ReportOption) populateVulnTypes() error {
 	}
 
 	for _, v := range strings.Split(c.vulnType, ",") {
-		if types.NewVulnType(v) == types.VulnTypeUnknown {
+		if !slices.Contains(types.VulnTypes, v) {
 			return xerrors.Errorf("unknown vulnerability type (%s)", v)
 		}
 		c.VulnType = append(c.VulnType, v)
@@ -128,7 +135,7 @@ func (c *ReportOption) populateSecurityChecks() error {
 	}
 
 	for _, v := range strings.Split(c.securityChecks, ",") {
-		if types.NewSecurityCheck(v) == types.SecurityCheckUnknown {
+		if !slices.Contains(types.SecurityChecks, v) {
 			return xerrors.Errorf("unknown security check (%s)", v)
 		}
 		c.SecurityChecks = append(c.SecurityChecks, v)
@@ -139,6 +146,10 @@ func (c *ReportOption) populateSecurityChecks() error {
 func (c *ReportOption) forceListAllPkgs(logger *zap.SugaredLogger) bool {
 	if slices.Contains(supportedSbomFormats, c.Format) && !c.ListAllPkgs {
 		logger.Debugf("'github', 'cyclonedx', 'spdx', and 'spdx-json' automatically enables '--list-all-pkgs'.")
+		return true
+	}
+	if c.DependencyTree {
+		logger.Debugf("'--dependency-tree' enables '--list-all-pkgs'.")
 		return true
 	}
 	return false

@@ -1,6 +1,7 @@
 package local
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"sort"
@@ -11,17 +12,18 @@ import (
 	"golang.org/x/exp/slices"
 	"golang.org/x/xerrors"
 
-	"github.com/aquasecurity/fanal/analyzer"
-	"github.com/aquasecurity/fanal/applier"
-	ftypes "github.com/aquasecurity/fanal/types"
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/detector/library"
 	ospkgDetector "github.com/aquasecurity/trivy/pkg/detector/ospkg"
+	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
+	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/all"
+	"github.com/aquasecurity/trivy/pkg/fanal/applier"
+	_ "github.com/aquasecurity/trivy/pkg/fanal/handler/all"
+	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
+	"github.com/aquasecurity/trivy/pkg/scanner/post"
 	"github.com/aquasecurity/trivy/pkg/types"
-
-	_ "github.com/aquasecurity/fanal/analyzer/all"
-	_ "github.com/aquasecurity/fanal/handler/all"
+	"github.com/aquasecurity/trivy/pkg/vulnerability"
 )
 
 var (
@@ -35,9 +37,10 @@ var (
 
 // SuperSet binds dependencies for Local scan
 var SuperSet = wire.NewSet(
+	vulnerability.SuperSet,
 	applier.NewApplier,
 	wire.Bind(new(Applier), new(applier.Applier)),
-	ospkgDetector.SuperSet,
+	wire.Struct(new(ospkgDetector.Detector)),
 	wire.Bind(new(OspkgDetector), new(ospkgDetector.Detector)),
 	NewScanner,
 )
@@ -56,15 +59,19 @@ type OspkgDetector interface {
 type Scanner struct {
 	applier       Applier
 	ospkgDetector OspkgDetector
+	vulnClient    vulnerability.Client
 }
 
 // NewScanner is the factory method for Scanner
-func NewScanner(applier Applier, ospkgDetector OspkgDetector) Scanner {
-	return Scanner{applier: applier, ospkgDetector: ospkgDetector}
+func NewScanner(applier Applier, ospkgDetector OspkgDetector, vulnClient vulnerability.Client) Scanner {
+	return Scanner{
+		applier:       applier,
+		ospkgDetector: ospkgDetector,
+		vulnClient:    vulnClient}
 }
 
 // Scan scans the artifact and return results.
-func (s Scanner) Scan(target string, artifactKey string, blobKeys []string, options types.ScanOptions) (types.Results, *ftypes.OS, error) {
+func (s Scanner) Scan(ctx context.Context, target, artifactKey string, blobKeys []string, options types.ScanOptions) (types.Results, *ftypes.OS, error) {
 	artifactDetail, err := s.applier.ApplyLayers(artifactKey, blobKeys)
 	switch {
 	case errors.Is(err, analyzer.ErrUnknownOS):
@@ -103,7 +110,7 @@ func (s Scanner) Scan(target string, artifactKey string, blobKeys []string, opti
 	}
 
 	// Scan IaC config files
-	if slices.Contains(options.SecurityChecks, types.SecurityCheckConfig) {
+	if shouldScanMisconfig(options.SecurityChecks) {
 		configResults := s.misconfsToResults(artifactDetail.Misconfigurations)
 		results = append(results, configResults...)
 	}
@@ -114,7 +121,30 @@ func (s Scanner) Scan(target string, artifactKey string, blobKeys []string, opti
 		results = append(results, secretResults...)
 	}
 
+	// For WASM plugins and custom analyzers
+	if len(artifactDetail.CustomResources) != 0 {
+		results = append(results, types.Result{
+			Class:           types.ClassCustom,
+			CustomResources: artifactDetail.CustomResources,
+		})
+	}
+
+	for i := range results {
+		// Fill vulnerability details
+		s.vulnClient.FillInfo(results[i].Vulnerabilities)
+	}
+
+	// Post scanning
+	results, err = post.Scan(ctx, results)
+	if err != nil {
+		return nil, nil, xerrors.Errorf("post scan error: %w", err)
+	}
+
 	return results, artifactDetail.OS, nil
+}
+
+func shouldScanMisconfig(securityChecks []string) bool {
+	return slices.Contains(securityChecks, types.SecurityCheckConfig) || slices.Contains(securityChecks, types.SecurityCheckRbac)
 }
 
 func (s Scanner) checkVulnerabilities(target string, detail ftypes.ArtifactDetail, options types.ScanOptions) (

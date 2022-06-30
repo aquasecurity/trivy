@@ -48,6 +48,14 @@ func TestFilesystem(t *testing.T) {
 			golden: "testdata/nodejs.json.golden",
 		},
 		{
+			name: "pnpm",
+			args: args{
+				securityChecks: "vuln",
+				input:          "testdata/fixtures/fs/pnpm",
+			},
+			golden: "testdata/pnpm.json.golden",
+		},
+		{
 			name: "pip",
 			args: args{
 				securityChecks: "vuln",
@@ -130,6 +138,9 @@ func TestFilesystem(t *testing.T) {
 
 	// Set up testing DB
 	cacheDir := initDB(t)
+
+	// Set a temp dir so that modules will not be loaded
+	t.Setenv("XDG_DATA_HOME", cacheDir)
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
