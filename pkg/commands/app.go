@@ -8,6 +8,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/samber/lo"
 	"github.com/urfave/cli/v2"
 
 	"github.com/aquasecurity/trivy-db/pkg/metadata"
@@ -913,7 +914,6 @@ func NewK8sCommand() *cli.Command {
 
 // NewSbomCommand is the factory method to add sbom command
 func NewSbomCommand() *cli.Command {
-	SbomSecurityChecksFlag := withValue(securityChecksFlag, types.SecurityCheckVulnerability)
 	return &cli.Command{
 		Name:      "sbom",
 		ArgsUsage: "SBOM",
@@ -951,7 +951,7 @@ func NewSbomCommand() *cli.Command {
 			&offlineScan,
 			&insecureFlag,
 			&dbRepositoryFlag,
-			&SbomSecurityChecksFlag,
+			lo.ToPtr(withValue(securityChecksFlag, types.SecurityCheckVulnerability)), // Enable only vulnerability scanning
 
 			stringSliceFlag(skipFiles),
 			stringSliceFlag(skipDirs),
