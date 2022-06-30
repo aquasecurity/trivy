@@ -23,16 +23,6 @@ All you need to do for scanning is to specify a target such as an image name of 
 </div>
 
 <figure style="text-align: center">
-  <img src="imgs/vuln-demo.gif" width="1000">
-  <figcaption>Demo: Vulnerability Detection</figcaption>
-</figure>
-
-<figure style="text-align: center">
-  <img src="imgs/misconf-demo.gif" width="1000">
-  <figcaption>Demo: Misconfiguration Detection</figcaption>
-</figure>
-
-<figure style="text-align: center">
   <img src="imgs/secret-demo.gif" width="1000">
   <figcaption>Demo: Secret Detection</figcaption>
 </figure>
