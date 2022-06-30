@@ -120,11 +120,14 @@ func TestArtifact_Inspect(t *testing.T) {
 				Returns: cache.ArtifactCachePutBlobReturns{},
 			},
 			want: types.ArtifactReference{
-				Name: "urn:uuid:c986ba94-e37d-49c8-9e30-96daccd0415b",
+				Name: "testdata/bom.json",
 				Type: types.ArtifactCycloneDX,
 				ID:   "sha256:21f10e5ab97c37f6c4d6a45815cd5db10e9539d5db8614d3b1d8890111d7a2b8",
 				BlobIDs: []string{
 					"sha256:21f10e5ab97c37f6c4d6a45815cd5db10e9539d5db8614d3b1d8890111d7a2b8",
+				},
+				BomMetadata: types.BomMetadata{
+					ID: "urn:uuid:c986ba94-e37d-49c8-9e30-96daccd0415b",
 				},
 			},
 		},
@@ -162,7 +165,7 @@ func TestArtifact_Inspect(t *testing.T) {
 			c := new(cache.MockArtifactCache)
 			c.ApplyPutBlobExpectation(tt.putBlobExpectation)
 
-			a, err := sbom.NewArtifact(types.ArtifactCycloneDX, tt.filePath, c, artifact.Option{})
+			a, err := sbom.NewArtifact(tt.filePath, c, artifact.Option{})
 			require.NoError(t, err)
 
 			got, err := a.Inspect(context.Background())

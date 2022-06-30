@@ -19,7 +19,6 @@ import (
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer/secret"
 	"github.com/aquasecurity/trivy/pkg/fanal/artifact"
 	"github.com/aquasecurity/trivy/pkg/fanal/cache"
-	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/module"
 	pkgReport "github.com/aquasecurity/trivy/pkg/report"
@@ -30,15 +29,16 @@ import (
 	"github.com/aquasecurity/trivy/pkg/utils"
 )
 
-type ArtifactType string
+// Target represents what kind of artifact Trivy scans
+type Target string
 
 const (
-	containerImageArtifact ArtifactType = "image"
-	filesystemArtifact     ArtifactType = "fs"
-	rootfsArtifact         ArtifactType = "rootfs"
-	repositoryArtifact     ArtifactType = "repo"
-	imageArchiveArtifact   ArtifactType = "archive"
-	sbomArtifact           ArtifactType = "sbom"
+	containerImageArtifact Target = "image"
+	filesystemArtifact     Target = "fs"
+	rootfsArtifact         Target = "rootfs"
+	repositoryArtifact     Target = "repo"
+	imageArchiveArtifact   Target = "archive"
+	sbomArtifact           Target = "sbom"
 )
 
 var (
@@ -62,9 +62,6 @@ type ScannerConfig struct {
 
 	// Artifact options
 	ArtifactOption artifact.Option
-
-	// SBOM
-	ArtifactType ftypes.ArtifactType
 }
 
 type Runner interface {
@@ -118,10 +115,6 @@ func NewRunner(cliOption Option, opts ...runnerOption) (Runner, error) {
 
 	if err = r.initCache(cliOption); err != nil {
 		return nil, xerrors.Errorf("cache error: %w", err)
-	}
-
-	if err = r.initDB(cliOption); err != nil {
-		return nil, xerrors.Errorf("DB error: %w", err)
 	}
 
 	// Initialize WASM modules
@@ -232,6 +225,11 @@ func (r *runner) ScanSBOM(ctx context.Context, opt Option) (types.Report, error)
 }
 
 func (r *runner) scanArtifact(ctx context.Context, opt Option, initializeScanner InitializeScanner) (types.Report, error) {
+	// Update the vulnerability database if needed.
+	if err := r.initDB(opt); err != nil {
+		return types.Report{}, xerrors.Errorf("DB error: %w", err)
+	}
+
 	report, err := scan(ctx, opt, initializeScanner, r.cache)
 	if err != nil {
 		return types.Report{}, xerrors.Errorf("scan error: %w", err)
@@ -340,7 +338,7 @@ func (r *runner) initCache(c Option) error {
 }
 
 // Run performs artifact scanning
-func Run(cliCtx *cli.Context, artifactType ArtifactType) error {
+func Run(cliCtx *cli.Context, artifactType Target) error {
 	opt, err := InitOption(cliCtx)
 	if err != nil {
 		return xerrors.Errorf("InitOption: %w", err)
@@ -349,7 +347,7 @@ func Run(cliCtx *cli.Context, artifactType ArtifactType) error {
 	return run(cliCtx.Context, opt, artifactType)
 }
 
-func run(ctx context.Context, opt Option, artifactType ArtifactType) (err error) {
+func run(ctx context.Context, opt Option, artifactType Target) (err error) {
 	ctx, cancel := context.WithTimeout(ctx, opt.Timeout)
 	defer cancel()
 
@@ -495,7 +493,6 @@ func initScannerConfig(opt Option, cacheClient cache.Cache) (ScannerConfig, type
 	return ScannerConfig{
 		Target:             target,
 		ArtifactCache:      cacheClient,
-		ArtifactType:       ftypes.ArtifactType(opt.ArtifactType),
 		LocalArtifactCache: cacheClient,
 		RemoteOption: client.ScannerOption{
 			RemoteURL:     opt.RemoteAddr,

@@ -33,6 +33,7 @@ var StandaloneSuperSet = wire.NewSet(
 
 // StandaloneDockerSet binds docker dependencies
 var StandaloneDockerSet = wire.NewSet(
+	wire.Value([]image.Option(nil)), // optional functions
 	image.NewContainerImage,
 	aimage.NewArtifact,
 	StandaloneSuperSet,
@@ -90,6 +91,7 @@ var RemoteSBOMSet = wire.NewSet(
 // RemoteDockerSet binds remote docker dependencies
 var RemoteDockerSet = wire.NewSet(
 	aimage.NewArtifact,
+	wire.Value([]image.Option(nil)), // optional functions
 	image.NewContainerImage,
 	RemoteSuperSet,
 )
@@ -150,12 +152,17 @@ func (s Scanner) ScanArtifact(ctx context.Context, options types.ScanOptions) (t
 		ArtifactName:  artifactInfo.Name,
 		ArtifactType:  artifactInfo.Type,
 		Metadata: types.Metadata{
-			OS:          osFound,
+			OS: osFound,
+
+			// Container image
 			ImageID:     artifactInfo.ImageMetadata.ID,
 			DiffIDs:     artifactInfo.ImageMetadata.DiffIDs,
 			RepoTags:    artifactInfo.ImageMetadata.RepoTags,
 			RepoDigests: artifactInfo.ImageMetadata.RepoDigests,
 			ImageConfig: artifactInfo.ImageMetadata.ConfigFile,
+
+			// SBOM
+			BomID: artifactInfo.BomMetadata.ID,
 		},
 		Results: results,
 	}, nil

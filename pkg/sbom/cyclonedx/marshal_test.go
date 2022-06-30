@@ -1057,7 +1057,7 @@ func TestMarshaler_MarshalVulnerabilities(t *testing.T) {
 			name: "happy path for cyclonedx scan",
 			inputReport: types.Report{
 				SchemaVersion: report.SchemaVersion,
-				ArtifactName:  "urn:uuid:3ff14136-e09f-4df9-80ea-000000000001",
+				ArtifactName:  "cyclonedx.json",
 				ArtifactType:  ftypes.ArtifactCycloneDX,
 				Metadata: types.Metadata{
 					Size: 1024,
@@ -1073,6 +1073,7 @@ func TestMarshaler_MarshalVulnerabilities(t *testing.T) {
 					ImageConfig: v1.ConfigFile{
 						Architecture: "arm64",
 					},
+					BomID: "urn:uuid:3ff14136-e09f-4df9-80ea-000000000001",
 				},
 				Results: types.Results{
 					{

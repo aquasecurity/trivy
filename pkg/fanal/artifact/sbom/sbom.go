@@ -16,6 +16,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/fanal/cache"
 	"github.com/aquasecurity/trivy/pkg/fanal/handler"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
+	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/sbom"
 	"github.com/aquasecurity/trivy/pkg/sbom/cyclonedx"
 )
@@ -26,27 +27,15 @@ type Artifact struct {
 	analyzer       analyzer.AnalyzerGroup
 	handlerManager handler.Manager
 
-	sbomFormat  types.ArtifactType // CycloneDX, SPDX, etc.
-	unmarshaler sbom.Unmarshaler
-
 	artifactOption      artifact.Option
 	configScannerOption config.ScannerOption
 }
 
-func NewArtifact(artifactType types.ArtifactType, filePath string, c cache.ArtifactCache, opt artifact.Option) (artifact.Artifact, error) {
-	var unmarshaler sbom.Unmarshaler
-
-	switch artifactType {
-	case types.ArtifactCycloneDX:
-		unmarshaler = cyclonedx.NewJSONUnmarshaler()
-	}
+func NewArtifact(filePath string, c cache.ArtifactCache, opt artifact.Option) (artifact.Artifact, error) {
 	return Artifact{
 		filePath:       filepath.Clean(filePath),
 		cache:          c,
 		artifactOption: opt,
-
-		sbomFormat:  artifactType,
-		unmarshaler: unmarshaler,
 	}, nil
 }
 
@@ -57,9 +46,21 @@ func (a Artifact) Inspect(_ context.Context) (types.ArtifactReference, error) {
 	}
 	defer f.Close()
 
-	bom, err := a.unmarshaler.Unmarshal(f)
+	// Format auto-detection
+	format := sbom.DetectFormat(f)
+	log.Logger.Infof("Detected SBOM format: %s", format)
+
+	var unmarshaler sbom.Unmarshaler
+	switch format {
+	case sbom.FormatCycloneDXJSON:
+		unmarshaler = cyclonedx.NewJSONUnmarshaler()
+	default:
+		return types.ArtifactReference{}, xerrors.Errorf("%s scanning is not yet supported", format)
+
+	}
+	bom, err := unmarshaler.Unmarshal(f)
 	if err != nil {
-		return types.ArtifactReference{}, xerrors.Errorf("failed to get blob info: %w", err)
+		return types.ArtifactReference{}, xerrors.Errorf("failed to unmarshal: %w", err)
 	}
 	blobInfo := types.BlobInfo{
 		SchemaVersion: types.BlobJSONSchemaVersion,
@@ -77,11 +78,20 @@ func (a Artifact) Inspect(_ context.Context) (types.ArtifactReference, error) {
 		return types.ArtifactReference{}, xerrors.Errorf("failed to store blob (%s) in cache: %w", cacheKey, err)
 	}
 
+	var artifactType types.ArtifactType
+	switch format {
+	case sbom.FormatCycloneDXJSON, sbom.FormatCycloneDXXML:
+		artifactType = types.ArtifactCycloneDX
+	}
+
 	return types.ArtifactReference{
-		Name:    bom.ID,
-		Type:    a.sbomFormat,
+		Name:    a.filePath,
+		Type:    artifactType,
 		ID:      cacheKey, // use a cache key as pseudo artifact ID
 		BlobIDs: []string{cacheKey},
+		BomMetadata: types.BomMetadata{
+			ID: bom.ID,
+		},
 	}, nil
 }
 

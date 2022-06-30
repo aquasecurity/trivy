@@ -3,6 +3,7 @@ package option
 import (
 	"github.com/urfave/cli/v2"
 	"go.uber.org/zap"
+	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/report"
 )
@@ -33,6 +34,7 @@ func (c *SbomOption) Init(ctx *cli.Context, logger *zap.SugaredLogger) error {
 	if c.ArtifactType != "" || c.SbomFormat != "" {
 		logger.Error("'trivy sbom' is now for scanning SBOM. " +
 			"See https://github.com/aquasecurity/trivy/discussions/2407 for the detail")
+		return xerrors.New("'--artifact-type' and '--sbom-format' are no longer available")
 	}
 
 	return nil

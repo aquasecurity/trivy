@@ -28,6 +28,9 @@ type Metadata struct {
 	RepoTags    []string      `json:",omitempty"`
 	RepoDigests []string      `json:",omitempty"`
 	ImageConfig v1.ConfigFile `json:",omitempty"`
+
+	// SBOM
+	BomID string `json:",omitempty"` // ID in an input SBOM such as serial number
 }
 
 // Results to hold list of Result

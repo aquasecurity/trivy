@@ -18,33 +18,33 @@ type options struct {
 	remote     bool
 }
 
-type option func(*options)
+type Option func(*options)
 
-func DisableDockerd() option {
+func DisableDockerd() Option {
 	return func(opts *options) {
 		opts.dockerd = false
 	}
 }
 
-func DisablePodman() option {
+func DisablePodman() Option {
 	return func(opts *options) {
 		opts.podman = false
 	}
 }
 
-func DisableContainerd() option {
+func DisableContainerd() Option {
 	return func(opts *options) {
 		opts.containerd = false
 	}
 }
 
-func DisableRemote() option {
+func DisableRemote() Option {
 	return func(opts *options) {
 		opts.remote = false
 	}
 }
 
-func NewContainerImage(ctx context.Context, imageName string, option types.DockerOption, opts ...option) (types.Image, func(), error) {
+func NewContainerImage(ctx context.Context, imageName string, option types.DockerOption, opts ...Option) (types.Image, func(), error) {
 	o := &options{
 		dockerd:    true,
 		podman:     true,
