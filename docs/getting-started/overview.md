@@ -4,7 +4,7 @@ Trivy detects three types of security issues:
 
 - [Vulnerabilities][vuln]
     - [OS packages][os] (Alpine, Red Hat Universal Base Image, Red Hat Enterprise Linux, CentOS, AlmaLinux, Rocky Linux, CBL-Mariner, Oracle Linux, Debian, Ubuntu, Amazon Linux, openSUSE Leap, SUSE Enterprise Linux, Photon OS and Distroless)
-    - [Language-specific packages][lang] (Bundler, Composer, Pipenv, Poetry, npm, yarn, Cargo, NuGet, Maven, and Go)
+    - [Language-specific packages][lang] (Bundler, Composer, Pipenv, Poetry, npm, yarn, pnpm, Cargo, NuGet, Maven, and Go)
 - [Misconfigurations][misconf]
     - Kubernetes
     - Docker

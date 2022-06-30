@@ -166,7 +166,7 @@ var builtinRules = []Rule{
 		Category: CategorySlack,
 		Title:    "Slack token",
 		Severity: "HIGH",
-		Regex:    MustCompile(`xox[baprs]-([0-9a-zA-Z]{10,48})?`),
+		Regex:    MustCompile(`xox[baprs]-([0-9a-zA-Z]{10,48})`),
 		Keywords: []string{"xoxb-", "xoxa-", "xoxp-", "xoxr-", "xoxs-"},
 	},
 	{

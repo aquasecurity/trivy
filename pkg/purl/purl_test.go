@@ -73,6 +73,37 @@ func TestNewPackageURL(t *testing.T) {
 			},
 		},
 		{
+			name: "pnpm package",
+			typ:  string(analyzer.TypePnpm),
+			pkg: ftypes.Package{
+				Name:    "@xtuc/ieee754",
+				Version: "1.2.0",
+			},
+			want: purl.PackageURL{
+				PackageURL: packageurl.PackageURL{
+					Type:      packageurl.TypeNPM,
+					Namespace: "@xtuc",
+					Name:      "ieee754",
+					Version:   "1.2.0",
+				},
+			},
+		},
+		{
+			name: "pnpm package with non-namespace",
+			typ:  string(analyzer.TypePnpm),
+			pkg: ftypes.Package{
+				Name:    "lodash",
+				Version: "4.17.21",
+			},
+			want: purl.PackageURL{
+				PackageURL: packageurl.PackageURL{
+					Type:    packageurl.TypeNPM,
+					Name:    "lodash",
+					Version: "4.17.21",
+				},
+			},
+		},
+		{
 			name: "pypi package",
 			typ:  string(analyzer.TypePip),
 			pkg: ftypes.Package{

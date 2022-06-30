@@ -1,11 +1,11 @@
 package cyclonedx_test
 
 import (
-	"bytes"
-	"encoding/json"
 	"fmt"
 	"testing"
 	"time"
+
+	"github.com/aquasecurity/trivy/pkg/sbom/cyclonedx"
 
 	cdx "github.com/CycloneDX/cyclonedx-go"
 	v1 "github.com/google/go-containerregistry/pkg/v1"
@@ -20,15 +20,14 @@ import (
 	fos "github.com/aquasecurity/trivy/pkg/fanal/analyzer/os"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/report"
-	"github.com/aquasecurity/trivy/pkg/report/cyclonedx"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
 
 func TestWriter_Write(t *testing.T) {
-	testCases := []struct {
+	tests := []struct {
 		name        string
 		inputReport types.Report
-		wantSBOM    *cdx.BOM
+		want        *cdx.BOM
 	}{
 		{
 			name: "happy path for container scan",
@@ -111,8 +110,8 @@ func TestWriter_Write(t *testing.T) {
 										"http://lists.opensuse.org/opensuse-security-announce/2019-10/msg00072.html",
 										"http://lists.opensuse.org/opensuse-security-announce/2019-11/msg00008.html",
 									},
-									PublishedDate:    timePtr(time.Date(2018, 12, 31, 19, 29, 0, 0, time.UTC)),
-									LastModifiedDate: timePtr(time.Date(2019, 10, 31, 1, 15, 0, 0, time.UTC)),
+									PublishedDate:    lo.ToPtr(time.Date(2018, 12, 31, 19, 29, 0, 0, time.UTC)),
+									LastModifiedDate: lo.ToPtr(time.Date(2019, 10, 31, 1, 15, 0, 0, time.UTC)),
 								},
 							},
 						},
@@ -145,7 +144,8 @@ func TestWriter_Write(t *testing.T) {
 					},
 				},
 			},
-			wantSBOM: &cdx.BOM{
+			want: &cdx.BOM{
+				XMLNS:        "http://cyclonedx.org/schema/bom/1.4",
 				BOMFormat:    "CycloneDX",
 				SpecVersion:  "1.4",
 				SerialNumber: "urn:uuid:3ff14136-e09f-4df9-80ea-000000000001",
@@ -666,8 +666,8 @@ func TestWriter_Write(t *testing.T) {
 										"http://www.openwall.com/lists/oss-security/2022/02/11/5",
 										"https://access.redhat.com/security/cve/CVE-2022-23633",
 									},
-									PublishedDate:    timePtr(time.Date(2022, 2, 11, 21, 15, 0, 0, time.UTC)),
-									LastModifiedDate: timePtr(time.Date(2022, 2, 22, 21, 47, 0, 0, time.UTC)),
+									PublishedDate:    lo.ToPtr(time.Date(2022, 2, 11, 21, 15, 0, 0, time.UTC)),
+									LastModifiedDate: lo.ToPtr(time.Date(2022, 2, 22, 21, 47, 0, 0, time.UTC)),
 								},
 							},
 							{
@@ -708,15 +708,16 @@ func TestWriter_Write(t *testing.T) {
 										"http://www.openwall.com/lists/oss-security/2022/02/11/5",
 										"https://access.redhat.com/security/cve/CVE-2022-23633",
 									},
-									PublishedDate:    timePtr(time.Date(2022, 2, 11, 21, 15, 0, 0, time.UTC)),
-									LastModifiedDate: timePtr(time.Date(2022, 2, 22, 21, 47, 0, 0, time.UTC)),
+									PublishedDate:    lo.ToPtr(time.Date(2022, 2, 11, 21, 15, 0, 0, time.UTC)),
+									LastModifiedDate: lo.ToPtr(time.Date(2022, 2, 22, 21, 47, 0, 0, time.UTC)),
 								},
 							},
 						},
 					},
 				},
 			},
-			wantSBOM: &cdx.BOM{
+			want: &cdx.BOM{
+				XMLNS:        "http://cyclonedx.org/schema/bom/1.4",
 				BOMFormat:    "CycloneDX",
 				SpecVersion:  "1.4",
 				SerialNumber: "urn:uuid:3ff14136-e09f-4df9-80ea-000000000001",
@@ -964,7 +965,8 @@ func TestWriter_Write(t *testing.T) {
 					},
 				},
 			},
-			wantSBOM: &cdx.BOM{
+			want: &cdx.BOM{
+				XMLNS:        "http://cyclonedx.org/schema/bom/1.4",
 				BOMFormat:    "CycloneDX",
 				SpecVersion:  "1.4",
 				SerialNumber: "urn:uuid:3ff14136-e09f-4df9-80ea-000000000001",
@@ -1060,7 +1062,8 @@ func TestWriter_Write(t *testing.T) {
 					},
 				},
 			},
-			wantSBOM: &cdx.BOM{
+			want: &cdx.BOM{
+				XMLNS:        "http://cyclonedx.org/schema/bom/1.4",
 				BOMFormat:    "CycloneDX",
 				SpecVersion:  "1.4",
 				SerialNumber: "urn:uuid:3ff14136-e09f-4df9-80ea-000000000001",
@@ -1133,8 +1136,8 @@ func TestWriter_Write(t *testing.T) {
 				ArtifactType:  ftypes.ArtifactFilesystem,
 				Results:       types.Results{},
 			},
-
-			wantSBOM: &cdx.BOM{
+			want: &cdx.BOM{
+				XMLNS:        "http://cyclonedx.org/schema/bom/1.4",
 				BOMFormat:    "CycloneDX",
 				SpecVersion:  "1.4",
 				SerialNumber: "urn:uuid:3ff14136-e09f-4df9-80ea-000000000001",
@@ -1160,10 +1163,12 @@ func TestWriter_Write(t *testing.T) {
 						},
 					},
 				},
+				Components:      new([]cdx.Component),
 				Vulnerabilities: &[]cdx.Vulnerability{},
 				Dependencies: &[]cdx.Dependency{
 					{
-						Ref: "3ff14136-e09f-4df9-80ea-000000000002",
+						Ref:          "3ff14136-e09f-4df9-80ea-000000000002",
+						Dependencies: new([]cdx.Dependency),
 					},
 				},
 			},
@@ -1172,28 +1177,19 @@ func TestWriter_Write(t *testing.T) {
 
 	clock := fake.NewFakeClock(time.Date(2021, 8, 25, 12, 20, 30, 5, time.UTC))
 
-	for _, tc := range testCases {
-		t.Run(tc.name, func(t *testing.T) {
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
 			var count int
 			newUUID := func() uuid.UUID {
 				count++
 				return uuid.Must(uuid.Parse(fmt.Sprintf("3ff14136-e09f-4df9-80ea-%012d", count)))
 			}
 
-			output := bytes.NewBuffer(nil)
-			writer := cyclonedx.NewWriter(output, "dev", cyclonedx.WithClock(clock), cyclonedx.WithNewUUID(newUUID))
-
-			err := writer.Write(tc.inputReport)
+			marshaler := cyclonedx.NewMarshaler("dev", cyclonedx.WithClock(clock), cyclonedx.WithNewUUID(newUUID))
+			got, err := marshaler.Marshal(tt.inputReport)
 			require.NoError(t, err)
 
-			var got cdx.BOM
-			err = json.NewDecoder(output).Decode(&got)
-			require.NoError(t, err)
-
-			assert.Equal(t, *tc.wantSBOM, got)
+			assert.Equal(t, tt.want, got)
 		})
 	}
-}
-func timePtr(t time.Time) *time.Time {
-	return &t
 }

@@ -291,7 +291,7 @@ func purlType(t string) string {
 		return packageurl.TypePyPi
 	case string(analyzer.TypeGoBinary), string(analyzer.TypeGoMod):
 		return packageurl.TypeGolang
-	case string(analyzer.TypeNpmPkgLock), string(analyzer.TypeNodePkg), string(analyzer.TypeYarn):
+	case string(analyzer.TypeNpmPkgLock), string(analyzer.TypeNodePkg), string(analyzer.TypeYarn), string(analyzer.TypePnpm):
 		return packageurl.TypeNPM
 	case os.Alpine:
 		return string(analyzer.TypeApk)

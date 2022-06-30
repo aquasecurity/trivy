@@ -859,9 +859,10 @@ func NewK8sCommand() *cli.Command {
 	)
 
 	return &cli.Command{
-		Name:    "kubernetes",
-		Aliases: []string{"k8s"},
-		Usage:   "scan kubernetes vulnerabilities, secrets and misconfigurations",
+		Name:      "kubernetes",
+		Aliases:   []string{"k8s"},
+		Usage:     "scan kubernetes vulnerabilities, secrets and misconfigurations",
+		UsageText: "trivy k8s [command options] <cluster|all| or specific resources like kubectl. eg: pods, pod/NAME>",
 		CustomHelpTemplate: cli.CommandHelpTemplate + `EXAMPLES:
   - cluster scanning:
       $ trivy k8s --report summary cluster

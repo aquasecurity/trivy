@@ -20,7 +20,41 @@ func TestSecretAnalyzer(t *testing.T) {
 		Severity:  "HIGH",
 		StartLine: 2,
 		EndLine:   2,
-		Match:     "generic secret line secret=\"*****\"",
+		Match:     "generic secret line secret=\"*********\"",
+		Code: types.Code{
+			Lines: []types.Line{
+				{
+					Number:      1,
+					Content:     "--- ignore block start ---",
+					IsCause:     false,
+					Annotation:  "",
+					Truncated:   false,
+					Highlighted: "--- ignore block start ---",
+					FirstCause:  false,
+					LastCause:   false,
+				},
+				{
+					Number:      2,
+					Content:     "generic secret line secret=\"*********\"",
+					IsCause:     true,
+					Annotation:  "",
+					Truncated:   false,
+					Highlighted: "generic secret line secret=\"*********\"",
+					FirstCause:  true,
+					LastCause:   true,
+				},
+				{
+					Number:      3,
+					Content:     "--- ignore block stop ---",
+					IsCause:     false,
+					Annotation:  "",
+					Truncated:   false,
+					Highlighted: "--- ignore block stop ---",
+					FirstCause:  false,
+					LastCause:   false,
+				},
+			},
+		},
 	}
 	wantFinding2 := types.SecretFinding{
 		RuleID:    "rule1",
@@ -29,7 +63,36 @@ func TestSecretAnalyzer(t *testing.T) {
 		Severity:  "HIGH",
 		StartLine: 4,
 		EndLine:   4,
-		Match:     "secret=\"*****\"",
+		Match:     "secret=\"**********\"",
+		Code: types.Code{
+			Lines: []types.Line{
+				{
+					Number:      2,
+					Content:     "generic secret line secret=\"*********\"",
+					IsCause:     false,
+					Highlighted: "generic secret line secret=\"*********\"",
+				},
+				{
+					Number:      3,
+					Content:     "--- ignore block stop ---",
+					IsCause:     false,
+					Highlighted: "--- ignore block stop ---",
+				},
+				{
+					Number:      4,
+					Content:     "secret=\"**********\"",
+					IsCause:     true,
+					Highlighted: "secret=\"**********\"",
+					FirstCause:  true,
+					LastCause:   true,
+				},
+				{
+					Number:      5,
+					Content:     "credentials: { user: \"username\" password: \"123456789\" }",
+					Highlighted: "credentials: { user: \"username\" password: \"123456789\" }",
+				},
+			},
+		},
 	}
 	tests := []struct {
 		name       string

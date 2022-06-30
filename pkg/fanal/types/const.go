@@ -19,6 +19,7 @@ const (
 	PythonPkg  = "python-pkg"
 	NodePkg    = "node-pkg"
 	Yarn       = "yarn"
+	Pnpm       = "pnpm"
 	Jar        = "jar"
 	Pom        = "pom"
 	GoBinary   = "gobinary"
@@ -47,6 +48,7 @@ const (
 
 	NpmPkgLock = "package-lock.json"
 	YarnLock   = "yarn.lock"
+	PnpmLock   = "pnpm-lock.yaml"
 
 	ComposerLock = "composer.lock"
 
