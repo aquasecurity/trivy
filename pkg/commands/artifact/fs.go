@@ -29,10 +29,10 @@ func filesystemRemoteScanner(ctx context.Context, conf ScannerConfig) (scanner.S
 
 // FilesystemRun runs scan on filesystem for language-specific dependencies and config files
 func FilesystemRun(ctx *cli.Context) error {
-	return Run(ctx, filesystemArtifact)
+	return Run(ctx, TargetFilesystem)
 }
 
 // RootfsRun runs scan on rootfs.
 func RootfsRun(ctx *cli.Context) error {
-	return Run(ctx, rootfsArtifact)
+	return Run(ctx, TargetRootfs)
 }

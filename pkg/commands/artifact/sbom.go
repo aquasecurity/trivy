@@ -11,7 +11,7 @@ import (
 
 // SBOMRun scans SBOM for vulnerabilities
 func SBOMRun(ctx *cli.Context) error {
-	return Run(ctx, sbomArtifact)
+	return Run(ctx, TargetSBOM)
 }
 
 func sbomStandaloneScanner(ctx context.Context, conf ScannerConfig) (scanner.Scanner, func(), error) {

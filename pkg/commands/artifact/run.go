@@ -29,16 +29,16 @@ import (
 	"github.com/aquasecurity/trivy/pkg/utils"
 )
 
-// Target represents what kind of artifact Trivy scans
-type Target string
+// TargetKind represents what kind of artifact Trivy scans
+type TargetKind string
 
 const (
-	containerImageArtifact Target = "image"
-	filesystemArtifact     Target = "fs"
-	rootfsArtifact         Target = "rootfs"
-	repositoryArtifact     Target = "repo"
-	imageArchiveArtifact   Target = "archive"
-	sbomArtifact           Target = "sbom"
+	TargetContainerImage TargetKind = "image"
+	TargetFilesystem     TargetKind = "fs"
+	TargetRootfs         TargetKind = "rootfs"
+	TargetRepository     TargetKind = "repo"
+	TargetImageArchive   TargetKind = "archive"
+	TargetSBOM           TargetKind = "sbom"
 )
 
 var (
@@ -338,16 +338,16 @@ func (r *runner) initCache(c Option) error {
 }
 
 // Run performs artifact scanning
-func Run(cliCtx *cli.Context, artifactType Target) error {
+func Run(cliCtx *cli.Context, targetKind TargetKind) error {
 	opt, err := InitOption(cliCtx)
 	if err != nil {
 		return xerrors.Errorf("InitOption: %w", err)
 	}
 
-	return run(cliCtx.Context, opt, artifactType)
+	return run(cliCtx.Context, opt, targetKind)
 }
 
-func run(ctx context.Context, opt Option, artifactType Target) (err error) {
+func run(ctx context.Context, opt Option, targetKind TargetKind) (err error) {
 	ctx, cancel := context.WithTimeout(ctx, opt.Timeout)
 	defer cancel()
 
@@ -367,24 +367,24 @@ func run(ctx context.Context, opt Option, artifactType Target) (err error) {
 	defer r.Close(ctx)
 
 	var report types.Report
-	switch artifactType {
-	case containerImageArtifact, imageArchiveArtifact:
+	switch targetKind {
+	case TargetContainerImage, TargetImageArchive:
 		if report, err = r.ScanImage(ctx, opt); err != nil {
 			return xerrors.Errorf("image scan error: %w", err)
 		}
-	case filesystemArtifact:
+	case TargetFilesystem:
 		if report, err = r.ScanFilesystem(ctx, opt); err != nil {
 			return xerrors.Errorf("filesystem scan error: %w", err)
 		}
-	case rootfsArtifact:
+	case TargetRootfs:
 		if report, err = r.ScanRootfs(ctx, opt); err != nil {
 			return xerrors.Errorf("rootfs scan error: %w", err)
 		}
-	case repositoryArtifact:
+	case TargetRepository:
 		if report, err = r.ScanRepository(ctx, opt); err != nil {
 			return xerrors.Errorf("repository scan error: %w", err)
 		}
-	case sbomArtifact:
+	case TargetSBOM:
 		if report, err = r.ScanSBOM(ctx, opt); err != nil {
 			return xerrors.Errorf("sbom scan error: %w", err)
 		}

@@ -66,5 +66,5 @@ func archiveRemoteScanner(ctx context.Context, conf ScannerConfig) (scanner.Scan
 
 // ImageRun runs scan on container image
 func ImageRun(ctx *cli.Context) error {
-	return Run(ctx, containerImageArtifact)
+	return Run(ctx, TargetContainerImage)
 }
