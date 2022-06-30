@@ -4,11 +4,13 @@
 package integration
 
 import (
-	"github.com/aquasecurity/trivy/pkg/commands"
-	"github.com/stretchr/testify/assert"
 	"io"
 	"path/filepath"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
+
+	"github.com/aquasecurity/trivy/pkg/commands"
 )
 
 func TestCycloneDX(t *testing.T) {
@@ -49,8 +51,7 @@ func TestCycloneDX(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			osArgs := []string{
-				"trivy", "--cache-dir", cacheDir, "sbom", "--skip-db-update",
-				"--artifact-type", tt.args.artifactType, "--format", tt.args.format,
+				"trivy", "--cache-dir", cacheDir, "sbom", "--skip-db-update", "--format", tt.args.format,
 			}
 
 			// Setup the output file
