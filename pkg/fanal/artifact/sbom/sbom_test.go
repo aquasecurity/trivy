@@ -27,7 +27,7 @@ func TestArtifact_Inspect(t *testing.T) {
 			filePath: "testdata/bom.json",
 			putBlobExpectation: cache.ArtifactCachePutBlobExpectation{
 				Args: cache.ArtifactCachePutBlobArgs{
-					BlobID: "sha256:fd52cf6b39e76fe0b62ba5635c53626b88b9c8860c82b8230c1a6ac57395f641",
+					BlobID: "sha256:21f10e5ab97c37f6c4d6a45815cd5db10e9539d5db8614d3b1d8890111d7a2b8",
 					BlobInfo: types.BlobInfo{
 						SchemaVersion: types.BlobJSONSchemaVersion,
 						OS: &types.OS{
@@ -38,7 +38,7 @@ func TestArtifact_Inspect(t *testing.T) {
 							{
 								Packages: []types.Package{
 									{
-										Name: "musl", Version: "1.2.3-r0", SrcName: "musl", SrcVersion: "1.2.3-r0", License: "MIT",
+										Name: "musl", Version: "1.2.3-r0", SrcName: "musl", SrcVersion: "1.2.3-r0", Licenses: []string{"MIT"},
 										Ref: "pkg:apk/alpine/musl@1.2.3-r0?distro=3.16.0",
 										Layer: types.Layer{
 											DiffID: "sha256:dd565ff850e7003356e2b252758f9bdc1ff2803f61e995e24c7844f6297f8fc3",
@@ -104,10 +104,10 @@ func TestArtifact_Inspect(t *testing.T) {
 								FilePath: "",
 								Libraries: []types.Package{
 									{
-										Name:    "bootstrap",
-										Version: "5.0.2",
-										Ref:     "pkg:npm/bootstrap@5.0.2?file_path=app%2Fapp%2Fpackage.json",
-										License: "MIT",
+										Name:     "bootstrap",
+										Version:  "5.0.2",
+										Ref:      "pkg:npm/bootstrap@5.0.2?file_path=app%2Fapp%2Fpackage.json",
+										Licenses: []string{"MIT"},
 										Layer: types.Layer{
 											DiffID: "sha256:3c79e832b1b4891a1cb4a326ef8524e0bd14a2537150ac0e203a5677176c1ca1",
 										},
@@ -121,10 +121,10 @@ func TestArtifact_Inspect(t *testing.T) {
 			},
 			want: types.ArtifactReference{
 				Name: "urn:uuid:c986ba94-e37d-49c8-9e30-96daccd0415b",
-				Type: sbom.ArtifactCycloneDX,
-				ID:   "sha256:fd52cf6b39e76fe0b62ba5635c53626b88b9c8860c82b8230c1a6ac57395f641",
+				Type: types.ArtifactCycloneDX,
+				ID:   "sha256:21f10e5ab97c37f6c4d6a45815cd5db10e9539d5db8614d3b1d8890111d7a2b8",
 				BlobIDs: []string{
-					"sha256:fd52cf6b39e76fe0b62ba5635c53626b88b9c8860c82b8230c1a6ac57395f641",
+					"sha256:21f10e5ab97c37f6c4d6a45815cd5db10e9539d5db8614d3b1d8890111d7a2b8",
 				},
 			},
 		},
@@ -162,7 +162,7 @@ func TestArtifact_Inspect(t *testing.T) {
 			c := new(cache.MockArtifactCache)
 			c.ApplyPutBlobExpectation(tt.putBlobExpectation)
 
-			a, err := sbom.NewArtifact(sbom.ArtifactCycloneDX, tt.filePath, c, artifact.Option{})
+			a, err := sbom.NewArtifact(types.ArtifactCycloneDX, tt.filePath, c, artifact.Option{})
 			require.NoError(t, err)
 
 			got, err := a.Inspect(context.Background())

@@ -26,27 +26,27 @@ type Artifact struct {
 	analyzer       analyzer.AnalyzerGroup
 	handlerManager handler.Manager
 
-	sbomFormat types.ArtifactType // CycloneDX, SPDX, etc.
-	sbomParser sbom.Parser
+	sbomFormat  types.ArtifactType // CycloneDX, SPDX, etc.
+	unmarshaler sbom.Unmarshaler
 
 	artifactOption      artifact.Option
 	configScannerOption config.ScannerOption
 }
 
 func NewArtifact(artifactType types.ArtifactType, filePath string, c cache.ArtifactCache, opt artifact.Option) (artifact.Artifact, error) {
-	var parser sbom.Parser
+	var unmarshaler sbom.Unmarshaler
 
 	switch artifactType {
 	case types.ArtifactCycloneDX:
-		parser = cyclonedx.NewJSON()
+		unmarshaler = cyclonedx.NewJSONUnmarshaler()
 	}
 	return Artifact{
 		filePath:       filepath.Clean(filePath),
 		cache:          c,
 		artifactOption: opt,
 
-		sbomFormat: artifactType,
-		sbomParser: parser,
+		sbomFormat:  artifactType,
+		unmarshaler: unmarshaler,
 	}, nil
 }
 
@@ -57,15 +57,15 @@ func (a Artifact) Inspect(_ context.Context) (types.ArtifactReference, error) {
 	}
 	defer f.Close()
 
-	bomID, o, pkgInfos, apps, err := a.sbomParser.Parse(f)
+	bom, err := a.unmarshaler.Unmarshal(f)
 	if err != nil {
 		return types.ArtifactReference{}, xerrors.Errorf("failed to get blob info: %w", err)
 	}
 	blobInfo := types.BlobInfo{
 		SchemaVersion: types.BlobJSONSchemaVersion,
-		Applications:  apps,
-		PackageInfos:  pkgInfos,
-		OS:            o,
+		OS:            bom.OS,
+		PackageInfos:  bom.Packages,
+		Applications:  bom.Applications,
 	}
 
 	cacheKey, err := a.calcCacheKey(blobInfo)
@@ -78,7 +78,7 @@ func (a Artifact) Inspect(_ context.Context) (types.ArtifactReference, error) {
 	}
 
 	return types.ArtifactReference{
-		Name:    bomID,
+		Name:    bom.ID,
 		Type:    a.sbomFormat,
 		ID:      cacheKey, // use a cache key as pseudo artifact ID
 		BlobIDs: []string{cacheKey},

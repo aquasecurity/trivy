@@ -1,6 +1,7 @@
 package cyclonedx
 
 import (
+	"fmt"
 	"sort"
 	"strconv"
 	"strings"
@@ -36,6 +37,7 @@ const (
 	PropertyRepoTag    = "RepoTag"
 
 	// Package properties
+	PropertyPkgType         = "PkgType"
 	PropertySrcName         = "SrcName"
 	PropertySrcVersion      = "SrcVersion"
 	PropertySrcRelease      = "SrcRelease"
@@ -47,6 +49,10 @@ const (
 
 	// https://json-schema.org/understanding-json-schema/reference/string.html#dates-and-times
 	timeLayout = "2006-01-02T15:04:05+00:00"
+)
+
+var (
+	ErrInvalidBOMLink = xerrors.New("invalid bomLink format error")
 )
 
 type Marshaler struct {
@@ -94,7 +100,49 @@ func (e *Marshaler) Marshal(report types.Report) (*cdx.BOM, error) {
 		return nil, xerrors.Errorf("failed to parse metadata component: %w", err)
 	}
 
-	bom.Metadata = &cdx.Metadata{
+	bom.Metadata = e.cdxMetadata()
+	bom.Metadata.Component = metadataComponent
+
+	bom.Components, bom.Dependencies, bom.Vulnerabilities, err = e.marshalComponents(report, bom.Metadata.Component.BOMRef)
+	if err != nil {
+		return nil, xerrors.Errorf("failed to parse components: %w", err)
+	}
+
+	return bom, nil
+}
+
+// MarshalVulnerabilities converts the Trivy report to the CycloneDX format only with vulnerabilities.
+// The output refers to another CycloneDX SBOM.
+func (e *Marshaler) MarshalVulnerabilities(report types.Report) (*cdx.BOM, error) {
+	vulnMap := map[string]cdx.Vulnerability{}
+	for _, result := range report.Results {
+		for _, vuln := range result.Vulnerabilities {
+			// TODO: consider ArtifactName
+			ref, err := externalRef(report.ArtifactName, vuln.Ref)
+			if err != nil {
+				return nil, err
+			}
+			if v, ok := vulnMap[vuln.VulnerabilityID]; ok {
+				*v.Affects = append(*v.Affects, cdxAffects(ref, vuln.InstalledVersion))
+			} else {
+				vulnMap[vuln.VulnerabilityID] = toCdxVulnerability(ref, vuln)
+			}
+		}
+	}
+	vulns := maps.Values(vulnMap)
+	sort.Slice(vulns, func(i, j int) bool {
+		return vulns[i].ID > vulns[j].ID
+	})
+
+	bom := cdx.NewBOM()
+	bom.Vulnerabilities = &vulns
+	bom.Metadata = e.cdxMetadata()
+	return bom, nil
+
+}
+
+func (e *Marshaler) cdxMetadata() *cdx.Metadata {
+	return &cdx.Metadata{
 		Timestamp: e.clock.Now().UTC().Format(timeLayout),
 		Tools: &[]cdx.Tool{
 			{
@@ -103,18 +151,17 @@ func (e *Marshaler) Marshal(report types.Report) (*cdx.BOM, error) {
 				Version: e.version,
 			},
 		},
-		Component: metadataComponent,
 	}
-
-	bom.Components, bom.Dependencies, bom.Vulnerabilities, err = e.parseComponents(report, bom.Metadata.Component.BOMRef)
-	if err != nil {
-		return nil, xerrors.Errorf("failed to parse components: %w", err)
-	}
-
-	return bom, nil
 }
 
-func (e *Marshaler) parseComponents(r types.Report, bomRef string) (*[]cdx.Component, *[]cdx.Dependency, *[]cdx.Vulnerability, error) {
+func externalRef(bomLink string, bomRef string) (string, error) {
+	if !strings.HasPrefix(bomLink, "urn:uuid:") {
+		return "", xerrors.Errorf("%q: %w", bomLink, ErrInvalidBOMLink)
+	}
+	return fmt.Sprintf("%s/%d#%s", strings.Replace(bomLink, "uuid", "cdx", 1), cdx.BOMFileFormatJSON, bomRef), nil
+}
+
+func (e *Marshaler) marshalComponents(r types.Report, bomRef string) (*[]cdx.Component, *[]cdx.Dependency, *[]cdx.Vulnerability, error) {
 	var components []cdx.Component
 	var dependencies []cdx.Dependency
 	var metadataDependencies []cdx.Dependency
@@ -326,12 +373,12 @@ func (e Marshaler) resultToCdxComponent(r types.Result, osFound *ftypes.OS) cdx.
 	return component
 }
 
-func pkgToCdxComponent(t string, meta types.Metadata, pkg ftypes.Package) (cdx.Component, error) {
-	pu, err := purl.NewPackageURL(t, meta, pkg)
+func pkgToCdxComponent(pkgType string, meta types.Metadata, pkg ftypes.Package) (cdx.Component, error) {
+	pu, err := purl.NewPackageURL(pkgType, meta, pkg)
 	if err != nil {
 		return cdx.Component{}, xerrors.Errorf("failed to new package purl: %w", err)
 	}
-	properties := cdxProperties(pkg)
+	properties := cdxProperties(pkgType, pkg)
 	component := cdx.Component{
 		Type:       cdx.ComponentTypeLibrary,
 		Name:       pkg.Name,
@@ -351,11 +398,12 @@ func pkgToCdxComponent(t string, meta types.Metadata, pkg ftypes.Package) (cdx.C
 	return component, nil
 }
 
-func cdxProperties(pkg ftypes.Package) *[]cdx.Property {
+func cdxProperties(pkgType string, pkg ftypes.Package) *[]cdx.Property {
 	props := []struct {
 		name  string
 		value string
 	}{
+		{PropertyPkgType, pkgType},
 		{PropertyFilePath, pkg.FilePath},
 		{PropertySrcName, pkg.SrcName},
 		{PropertySrcVersion, pkg.SrcVersion},
