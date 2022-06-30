@@ -7,7 +7,6 @@ Trivy has a native [Kubernetes Operator](operator) which continuously scans your
 
 
 <figure>
-  <img src="./images/operator/trivy-operator-workloads.png" />
   <figcaption>Workload reconcilers discover K8s controllers, manage scan jobs, and create VulnerabilityReport and ConfigAuditReport objects.</figcaption>
 </figure>
 
