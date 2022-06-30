@@ -65,7 +65,7 @@ func (s *Scanner) Detect(osVer string, _ *ftypes.Repository, pkgs []ftypes.Packa
 	log.Logger.Info("Detecting Amazon Linux vulnerabilities...")
 
 	osVer = strings.Fields(osVer)[0]
-	if osVer != "2" {
+	if osVer != "2" && osVer != "2022" {
 		osVer = "1"
 	}
 	log.Logger.Debugf("amazon: os version: %s", osVer)
