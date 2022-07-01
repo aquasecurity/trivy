@@ -23,6 +23,20 @@ All you need to do for scanning is to specify a target such as an image name of 
 </div>
 
 <figure style="text-align: center">
+  <video width="1000">
+    <source src="https://user-images.githubusercontent.com/1161307/171013513-95f18734-233d-45d3-aaf5-d6aec687db0e.mov" type="video/mp4" />
+  </video>
+  <figcaption>Demo: Vulnerability Detection</figcaption>
+</figure>
+
+<figure style="text-align: center">
+  <video width="1000">
+    <source src="https://user-images.githubusercontent.com/1161307/171013917-b1f37810-f434-465c-b01a-22de036bd9b3.mov" type="video/mp4" />
+  </video>
+  <figcaption>Demo: Misconfiguration Detection</figcaption>
+</figure>
+
+<figure style="text-align: center">
   <img src="imgs/secret-demo.gif" width="1000">
   <figcaption>Demo: Secret Detection</figcaption>
 </figure>
