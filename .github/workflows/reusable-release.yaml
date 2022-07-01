@@ -85,7 +85,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.ORG_REPO_TOKEN }}
 
       - name: Cache Trivy binaries
-        uses: actions/cache@v3.0.2
+        uses: actions/cache@v3.0.4
         with:
           path: dist/
           # use 'github.sha' to create a unique cache folder for each run.
