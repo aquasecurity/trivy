@@ -15,7 +15,7 @@ function create_rpm_repo () {
 
 cd trivy-repo
 
-VERSIONS=(5 6 7 8)
+VERSIONS=(5 6 7 8 9)
 for version in ${VERSIONS[@]}; do
         echo "Processing RHEL/CentOS $version..."
         create_rpm_repo $version
