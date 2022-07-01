@@ -1,10 +1,9 @@
 ---
 hide:
-- navigation
 - toc
 ---
 
-![logo](imgs/logo.png){ align=left }
+![logo](imgs/logo.png){ align=right }
 
 Trivy (tri pronounced like trigger, vy pronounced like envy) is a comprehensive security scanner. It is reliable, fast, extremely easy to use, and it works wherever you need it.
 
@@ -24,7 +23,12 @@ Scanners:
 - IaC misconfigurations
 - Sensitive information and secrets
 
+It is designed to be used in CI. Before pushing to a container registry or deploying your application, you can scan your local container image and other artifacts easily.
+See [Integrations][integrations] for details.
+
 Much more scanners and targets are coming up. [Join the Slack][slack] channel to stay up to date, ask questions, and let us know what features you would like to see.
+
+Please see [LICENSE][license] for Trivy licensing information.
 
 <figure style="text-align: center">
   <img src="imgs/vuln-demo.gif" width="1000">
@@ -40,17 +44,6 @@ Much more scanners and targets are coming up. [Join the Slack][slack] channel to
   <img src="imgs/secret-demo.gif" width="1000">
   <figcaption>Demo: Secret Detection</figcaption>
 </figure>
-
-It is designed to be used in CI. Before pushing to a container registry or deploying your application, you can scan your local container image and other artifacts easily.
-See [Integrations][integrations] for details.
-
-
-Please see [LICENSE][license] for Trivy licensing information.
-
-## Getting Started
-
-- [Installation](./home/installation.md)
-- [Quick Start](./home/quickstart.md)
 
 [integrations]: ./tutorials/integrations/index.md
 [slack]: https://slack.aquasec.com

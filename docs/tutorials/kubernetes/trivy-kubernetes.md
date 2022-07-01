@@ -68,7 +68,7 @@ This has several benefits:
 - The CRDs can be both machine and human-readable depending on which applications consume the CRDs. This allows for more versatile applications of the Trivy operator. 
 
  
-There are several ways that you can install the Trivy Operator in your cluster. In this guide, we’re going to use the Helm installation based on the [following documentation.](../docs/kubernetes/operator/installation/helm.md)
+There are several ways that you can install the Trivy Operator in your cluster. In this guide, we’re going to use the Helm installation based on the [following documentation.](../../docs/kubernetes/operator/index.md)
 
 Make sure that you have the [Helm CLI installed.](https://helm.sh/docs/intro/install/)
 Next, run the following commands.

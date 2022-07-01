@@ -250,15 +250,15 @@ podAnnotations: {}
 
 # Trivy Operator Installation
 
-The Trivy Operator can be installed through [kubectl][operator-kubectl] as Kubernetes manifests or as a [Helm Chart.][operator-helm]
+The Trivy Operator can be installed through kubectl as Kubernetes manifests or as a Helm Chart.
+For installation options and further information, please refer to the Trivy [Operator Documentation.][operator-docs]
 
 
 [ecr]: https://gallery.ecr.aws/aquasecurity/trivy
 [registry]: https://github.com/orgs/aquasecurity/packages/container/package/trivy
 [helm]: https://github.com/aquasecurity/trivy/tree/{{ git.tag }}/helm/trivy
 [slack]: https://slack.aquasec.com
-[operator-kubectl]: ./docs/kubernetes/operator/installation/kubectl.md
-[operator-helm]: ./docs/kubernetes/operator/installation/helm.md
+[operator-docs]: https://aquasecurity.github.io/trivy-operator/latest/
 
 [vuln]: ./docs/vulnerability/scanning/index.md
 [misconf]: ./docs/misconfiguration/scanning.md
@@ -276,7 +276,7 @@ The Trivy Operator can be installed through [kubectl][operator-kubectl] as Kuber
 [os]: ./docs/vulnerability/detection/os.md
 [lang]: ./docs/vulnerability/detection/language.md
 [builtin]: ./docs/misconfiguration/policy/builtin.md
-[quickstart]: ./tutorials/quickstart.md
+[quickstart]: ./home/quickstart.md
 [podman]: ./docs/advanced/container/podman.md
 
 [sbom]: ./docs/sbom/index.md
