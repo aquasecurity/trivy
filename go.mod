@@ -44,7 +44,7 @@ require (
 	github.com/package-url/packageurl-go v0.1.1-0.20220203205134-d70459300c8a
 	github.com/samber/lo v1.21.0
 	github.com/sosedoff/gitkit v0.3.0
-	github.com/stretchr/testify v1.7.3
+	github.com/stretchr/testify v1.8.0
 	github.com/testcontainers/testcontainers-go v0.13.0
 	github.com/tetratelabs/wazero v0.0.0-20220606011721-119b069ba23e
 	github.com/twitchtv/twirp v8.1.2+incompatible
