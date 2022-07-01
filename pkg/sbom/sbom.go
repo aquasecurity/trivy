@@ -6,6 +6,8 @@ import (
 	"io"
 	"strings"
 
+	"golang.org/x/xerrors"
+
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 )
 
@@ -30,9 +32,7 @@ const (
 	FormatUnknown       = "unknown"
 )
 
-func DetectFormat(r io.ReadSeeker) Format {
-	defer r.Seek(0, io.SeekStart)
-
+func DetectFormat(r io.ReadSeeker) (Format, error) {
 	type cyclonedx struct {
 		// XML specific field
 		XMLNS string `json:"-" xml:"xmlns,attr"`
@@ -45,19 +45,22 @@ func DetectFormat(r io.ReadSeeker) Format {
 	var cdxBom cyclonedx
 	if err := json.NewDecoder(r).Decode(&cdxBom); err == nil {
 		if cdxBom.BOMFormat == "CycloneDX" {
-			return FormatCycloneDXJSON
+			return FormatCycloneDXJSON, nil
 		}
 	}
-	_, _ = r.Seek(0, io.SeekStart)
+
+	if _, err := r.Seek(0, io.SeekStart); err != nil {
+		return FormatUnknown, xerrors.Errorf("seek error: %w", err)
+	}
 
 	// Try CycloneDX XML
 	if err := xml.NewDecoder(r).Decode(&cdxBom); err == nil {
 		if strings.HasPrefix(cdxBom.XMLNS, "http://cyclonedx.org") {
-			return FormatCycloneDXXML
+			return FormatCycloneDXXML, nil
 		}
 	}
 
 	// TODO: implement SPDX
 
-	return FormatUnknown
+	return FormatUnknown, nil
 }
