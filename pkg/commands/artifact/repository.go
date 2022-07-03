@@ -20,5 +20,5 @@ func repositoryStandaloneScanner(ctx context.Context, conf ScannerConfig) (scann
 
 // RepositoryRun runs scan on repository
 func RepositoryRun(ctx *cli.Context) error {
-	return Run(ctx, repositoryArtifact)
+	return Run(ctx, TargetRepository)
 }

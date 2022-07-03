@@ -8,6 +8,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/samber/lo"
 	"github.com/urfave/cli/v2"
 
 	"github.com/aquasecurity/trivy-db/pkg/metadata"
@@ -929,7 +930,6 @@ func NewSbomCommand() *cli.Command {
 			&templateFlag,
 			&formatFlag,
 			&inputFlag,
-			&severityFlag,
 			&outputFlag,
 			&exitCodeFlag,
 			&skipDBUpdateFlag,
@@ -940,6 +940,7 @@ func NewSbomCommand() *cli.Command {
 			&ignoreUnfixedFlag,
 			&ignoreFileFlag,
 			&timeoutFlag,
+			&severityFlag,
 			&ignorePolicy,
 			&listAllPackages,
 			&cacheBackendFlag,
@@ -950,9 +951,16 @@ func NewSbomCommand() *cli.Command {
 			&offlineScan,
 			&insecureFlag,
 			&dbRepositoryFlag,
+			lo.ToPtr(withValue(securityChecksFlag, types.SecurityCheckVulnerability)), // Enable only vulnerability scanning
 
 			stringSliceFlag(skipFiles),
 			stringSliceFlag(skipDirs),
+
+			// for client/server
+			&remoteServer,
+			&token,
+			&tokenHeader,
+			&customHeaders,
 
 			// deprecated options
 			&cli.StringFlag{

@@ -1,0 +1,52 @@
+{
+  "bomFormat": "CycloneDX",
+  "specVersion": "1.4",
+  "serialNumber": "urn:uuid:c986ba94-e37d-49c8-9e30-96daccd0415b",
+  "version": 1,
+  "metadata": {
+    "timestamp": "2022-05-28T10:20:03.79527Z",
+    "tools": [
+      {
+        "vendor": "aquasecurity",
+        "name": "trivy",
+        "version": "dev"
+      }
+    ],
+    "component": {
+      "bom-ref": "0f585d64-4815-4b72-92c5-97dae191fa4a",
+      "type": "application",
+      "name": "maven-test-project",
+      "properties": [
+        {
+          "name": "aquasecurity:trivy:SchemaVersion",
+          "value": "2"
+        }
+      ]
+    }
+  },
+  "components": [
+    {
+      "bom-ref": "pkg:composer/pear/core@1.13.1",
+      "type": "library",
+      "name": "pear/core",
+      "version": "1.13.1",
+      "purl": "pkg:composer/pear/core@1.13.1"
+    },
+    {
+      "bom-ref": "pkg:composer/pear/log@1.13.1",
+      "type": "library",
+      "name": "pear/log",
+      "version": "1.13.1",
+      "purl": "invalid-purl-format"
+    }
+  ],
+  "dependencies": [
+    {
+      "ref": "pkg:composer/pear/core@1.13.1",
+      "dependsOn": [
+        "pkg:composer/pear/log@1.13.1"
+      ]
+    }
+  ],
+  "vulnerabilities": []
+}

@@ -15,6 +15,9 @@ type Report struct {
 	ArtifactType  ftypes.ArtifactType `json:",omitempty"`
 	Metadata      Metadata            `json:",omitempty"`
 	Results       Results             `json:",omitempty"`
+
+	// SBOM
+	CycloneDX *ftypes.CycloneDX `json:"-"` // Just for internal usage, not exported in JSON
 }
 
 // Metadata represents a metadata of artifact

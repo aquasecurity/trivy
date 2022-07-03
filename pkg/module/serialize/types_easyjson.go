@@ -4,14 +4,13 @@ package serialize
 
 import (
 	json "encoding/json"
-	time "time"
-
 	types2 "github.com/aquasecurity/trivy-db/pkg/types"
 	types1 "github.com/aquasecurity/trivy/pkg/fanal/types"
 	types "github.com/aquasecurity/trivy/pkg/types"
 	easyjson "github.com/mailru/easyjson"
 	jlexer "github.com/mailru/easyjson/jlexer"
 	jwriter "github.com/mailru/easyjson/jwriter"
+	time "time"
 )
 
 // suppress unused package warning
@@ -1303,6 +1302,8 @@ func easyjson6601e8cdDecodeGithubComAquasecurityTrivyPkgTypes(in *jlexer.Lexer, 
 			out.SeveritySource = types2.SourceID(in.String())
 		case "PrimaryURL":
 			out.PrimaryURL = string(in.String())
+		case "Ref":
+			out.Ref = string(in.String())
 		case "DataSource":
 			if in.IsNull() {
 				in.Skip()
@@ -1555,6 +1556,16 @@ func easyjson6601e8cdEncodeGithubComAquasecurityTrivyPkgTypes(out *jwriter.Write
 			out.RawString(prefix)
 		}
 		out.String(string(in.PrimaryURL))
+	}
+	if in.Ref != "" {
+		const prefix string = ",\"Ref\":"
+		if first {
+			first = false
+			out.RawString(prefix[1:])
+		} else {
+			out.RawString(prefix)
+		}
+		out.String(string(in.Ref))
 	}
 	if in.DataSource != nil {
 		const prefix string = ",\"DataSource\":"
