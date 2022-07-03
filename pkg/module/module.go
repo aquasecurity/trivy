@@ -9,7 +9,6 @@ import (
 	"path/filepath"
 	"regexp"
 
-	"github.com/hashicorp/go-multierror"
 	"github.com/liamg/memoryfs"
 	"github.com/mailru/easyjson"
 	"github.com/samber/lo"
@@ -145,16 +144,7 @@ func (m *Manager) Register() {
 }
 
 func (m *Manager) Close(ctx context.Context) error {
-	var errs error
-	if err := m.runtime.Close(ctx); err != nil {
-		errs = multierror.Append(errs, err)
-	}
-	for _, p := range m.modules {
-		if err := p.Close(ctx); err != nil {
-			errs = multierror.Append(errs, err)
-		}
-	}
-	return errs
+	return m.runtime.Close(ctx)
 }
 
 func splitPtrSize(u uint64) (uint32, uint32) {
@@ -412,10 +402,7 @@ func (m *wasmModule) Analyze(ctx context.Context, input analyzer.AnalysisInput) 
 	}
 
 	// Pass memory fs to the analyze() function
-	ctx, closer, err := experimental.WithFS(ctx, memfs)
-	if err != nil {
-		return nil, xerrors.Errorf("fs error: %w", err)
-	}
+	ctx, closer := experimental.WithFS(ctx, memfs)
 	defer closer.Close(ctx)
 
 	inputPtr, inputSize, err := stringToPtrSize(ctx, filePath, m.mod, m.malloc)
