@@ -7,6 +7,7 @@ import (
 	"golang.org/x/xerrors"
 
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
+	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/sbom/cyclonedx"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
@@ -35,6 +36,7 @@ func (w Writer) Write(report types.Report) error {
 	// Each vulnerability has a reference to a component in the original CycloneDX.
 	// e.g. "urn:cdx:3e671687-395b-41f5-a30f-a58921a69b79/1#jackson-databind-2.8.0"
 	if report.ArtifactType == ftypes.ArtifactCycloneDX {
+		log.Logger.Info("Components will not be exported in the CycloneDX report as the input is CycloneDX")
 		bom, err = w.marshaler.MarshalVulnerabilities(report)
 	} else {
 		bom, err = w.marshaler.Marshal(report)
