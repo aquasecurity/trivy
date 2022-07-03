@@ -5,26 +5,18 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/spf13/cobra"
 	"github.com/urfave/cli/v2"
 	"golang.org/x/xerrors"
 
-	"github.com/aquasecurity/trivy/pkg/commands/option"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/plugin"
 )
 
 // Install installs a plugin
-func Install(c *cli.Context) error {
-	if c.NArg() != 1 {
-		cli.ShowSubcommandHelpAndExit(c, 1)
-	}
-
-	if err := initLogger(c); err != nil {
-		return xerrors.Errorf("initialize error: %w", err)
-	}
-
-	url := c.Args().First()
-	if _, err := plugin.Install(c.Context, url, true); err != nil {
+func Install(cmd *cobra.Command, args []string) error {
+	url := args[0]
+	if _, err := plugin.Install(cmd.Context(), url, true); err != nil {
 		return xerrors.Errorf("plugin install error: %w", err)
 	}
 
@@ -35,10 +27,6 @@ func Install(c *cli.Context) error {
 func Uninstall(c *cli.Context) error {
 	if c.NArg() != 1 {
 		cli.ShowSubcommandHelpAndExit(c, 1)
-	}
-
-	if err := initLogger(c); err != nil {
-		return xerrors.Errorf("initialize error: %w", err)
 	}
 
 	pluginName := c.Args().First()
@@ -53,10 +41,6 @@ func Uninstall(c *cli.Context) error {
 func Information(c *cli.Context) error {
 	if c.NArg() != 1 {
 		cli.ShowSubcommandHelpAndExit(c, 1)
-	}
-
-	if err := initLogger(c); err != nil {
-		return xerrors.Errorf("initialize logger error: %w", err)
 	}
 
 	pluginName := c.Args().First()
@@ -74,10 +58,6 @@ func Information(c *cli.Context) error {
 
 // List displays a list of all of installed plugins
 func List(c *cli.Context) error {
-	if err := initLogger(c); err != nil {
-		return xerrors.Errorf("initialize error: %w", err)
-	}
-
 	info, err := plugin.List()
 	if err != nil {
 		return xerrors.Errorf("plugin list display error: %w", err)
@@ -96,10 +76,6 @@ func Update(c *cli.Context) error {
 		cli.ShowSubcommandHelpAndExit(c, 1)
 	}
 
-	if err := initLogger(c); err != nil {
-		return xerrors.Errorf("initialize error: %w", err)
-	}
-
 	pluginName := c.Args().First()
 	if err := plugin.Update(pluginName); err != nil {
 		return xerrors.Errorf("plugin update error: %w", err)
@@ -112,10 +88,6 @@ func Update(c *cli.Context) error {
 func Run(c *cli.Context) error {
 	if c.NArg() < 1 {
 		cli.ShowSubcommandHelpAndExit(c, 1)
-	}
-
-	if err := initLogger(c); err != nil {
-		return xerrors.Errorf("initialize error: %w", err)
 	}
 
 	url := c.Args().First()
@@ -137,8 +109,8 @@ func RunWithArgs(ctx context.Context, url string, args []string) error {
 }
 
 // LoadCommands loads plugins as subcommands
-func LoadCommands() cli.Commands {
-	var commands cli.Commands
+func LoadCommands() []*cobra.Command {
+	var commands []*cobra.Command
 	plugins, err := plugin.LoadAll()
 	if err != nil {
 		log.Logger.Debugf("no plugins were loaded")
@@ -146,34 +118,17 @@ func LoadCommands() cli.Commands {
 	}
 	for _, p := range plugins {
 		p := p
-		cmd := &cli.Command{
-			Name:  p.Name,
-			Usage: p.Usage,
-			Action: func(c *cli.Context) error {
-				if err := initLogger(c); err != nil {
-					return xerrors.Errorf("initialize error: %w", err)
-				}
-
-				if err := p.Run(c.Context, c.Args().Slice()); err != nil {
+		cmd := &cobra.Command{
+			Use:   fmt.Sprintf("%s [flags]", p.Name),
+			Short: p.Usage,
+			RunE: func(cmd *cobra.Command, args []string) error {
+				if err = p.Run(cmd.Context(), args); err != nil {
 					return xerrors.Errorf("plugin error: %w", err)
 				}
 				return nil
 			},
-			SkipFlagParsing: true,
 		}
 		commands = append(commands, cmd)
 	}
 	return commands
-}
-
-func initLogger(ctx *cli.Context) error {
-	conf, err := option.NewGlobalOption(ctx)
-	if err != nil {
-		return xerrors.Errorf("config error: %w", err)
-	}
-
-	if err = log.InitLogger(conf.Debug, conf.Quiet); err != nil {
-		return xerrors.Errorf("failed to initialize a logger: %w", err)
-	}
-	return nil
 }

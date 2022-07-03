@@ -3,11 +3,10 @@ package artifact
 import (
 	"context"
 
-	"github.com/urfave/cli/v2"
-	"golang.org/x/xerrors"
+	"github.com/aquasecurity/trivy/pkg/types"
 
 	"github.com/aquasecurity/trivy/pkg/scanner"
-	"github.com/aquasecurity/trivy/pkg/types"
+	"golang.org/x/xerrors"
 )
 
 // imageStandaloneScanner initializes a container image scanner in standalone mode
@@ -64,7 +63,47 @@ func archiveRemoteScanner(ctx context.Context, conf ScannerConfig) (scanner.Scan
 	return s, func() {}, nil
 }
 
-// ImageRun runs scan on container image
-func ImageRun(ctx *cli.Context) error {
-	return Run(ctx, TargetContainerImage)
+// filesystemStandaloneScanner initializes a filesystem scanner in standalone mode
+func filesystemStandaloneScanner(ctx context.Context, conf ScannerConfig) (scanner.Scanner, func(), error) {
+	s, cleanup, err := initializeFilesystemScanner(ctx, conf.Target, conf.ArtifactCache, conf.LocalArtifactCache, conf.ArtifactOption)
+	if err != nil {
+		return scanner.Scanner{}, func() {}, xerrors.Errorf("unable to initialize a filesystem scanner: %w", err)
+	}
+	return s, cleanup, nil
+}
+
+// filesystemRemoteScanner initializes a filesystem scanner in client/server mode
+func filesystemRemoteScanner(ctx context.Context, conf ScannerConfig) (scanner.Scanner, func(), error) {
+	s, cleanup, err := initializeRemoteFilesystemScanner(ctx, conf.Target, conf.ArtifactCache, conf.RemoteOption, conf.ArtifactOption)
+	if err != nil {
+		return scanner.Scanner{}, func() {}, xerrors.Errorf("unable to initialize a filesystem scanner: %w", err)
+	}
+	return s, cleanup, nil
+}
+
+// filesystemStandaloneScanner initializes a repository scanner in standalone mode
+func repositoryStandaloneScanner(ctx context.Context, conf ScannerConfig) (scanner.Scanner, func(), error) {
+	s, cleanup, err := initializeRepositoryScanner(ctx, conf.Target, conf.ArtifactCache, conf.LocalArtifactCache, conf.ArtifactOption)
+	if err != nil {
+		return scanner.Scanner{}, func() {}, xerrors.Errorf("unable to initialize a filesystem scanner: %w", err)
+	}
+	return s, cleanup, nil
+}
+
+// sbomStandaloneScanner initializes a SBOM scanner in standalone mode
+func sbomStandaloneScanner(ctx context.Context, conf ScannerConfig) (scanner.Scanner, func(), error) {
+	s, cleanup, err := initializeSBOMScanner(ctx, conf.Target, conf.ArtifactCache, conf.LocalArtifactCache, conf.ArtifactOption)
+	if err != nil {
+		return scanner.Scanner{}, func() {}, xerrors.Errorf("unable to initialize a cycloneDX scanner: %w", err)
+	}
+	return s, cleanup, nil
+}
+
+// sbomRemoteScanner initializes a SBOM scanner in client/server mode
+func sbomRemoteScanner(ctx context.Context, conf ScannerConfig) (scanner.Scanner, func(), error) {
+	s, cleanup, err := initializeRemoteSBOMScanner(ctx, conf.Target, conf.ArtifactCache, conf.RemoteOption, conf.ArtifactOption)
+	if err != nil {
+		return scanner.Scanner{}, func() {}, xerrors.Errorf("unable to initialize a cycloneDX scanner: %w", err)
+	}
+	return s, cleanup, nil
 }
