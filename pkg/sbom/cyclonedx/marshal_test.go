@@ -1073,7 +1073,16 @@ func TestMarshaler_MarshalVulnerabilities(t *testing.T) {
 					ImageConfig: v1.ConfigFile{
 						Architecture: "arm64",
 					},
-					BomID: "urn:uuid:3ff14136-e09f-4df9-80ea-000000000001",
+				},
+				CycloneDX: &ftypes.CycloneDX{
+					SerialNumber: "urn:uuid:f08a6ccd-4dce-4759-bd84-c626675d60a7",
+					Version:      1,
+					Metadata: ftypes.Metadata{
+						Component: ftypes.Component{
+							Type: ftypes.ComponentType(cdx.ComponentTypeApplication),
+							Name: "centos:8",
+						},
+					},
 				},
 				Results: types.Results{
 					{
@@ -1159,6 +1168,11 @@ func TestMarshaler_MarshalVulnerabilities(t *testing.T) {
 							Version: "dev",
 						},
 					},
+					Component: &cdx.Component{
+						Name:   "centos:8",
+						Type:   cdx.ComponentTypeApplication,
+						BOMRef: "urn:uuid:f08a6ccd-4dce-4759-bd84-c626675d60a7/1",
+					},
 				},
 				Vulnerabilities: &[]cdx.Vulnerability{
 					{
@@ -1215,7 +1229,7 @@ func TestMarshaler_MarshalVulnerabilities(t *testing.T) {
 						Updated:   "2019-10-31T01:15:00+00:00",
 						Affects: &[]cdx.Affects{
 							{
-								Ref: "urn:cdx:3ff14136-e09f-4df9-80ea-000000000001/1#pkg:rpm/centos/binutils@2.30-93.el8?arch=aarch64&distro=centos-8.3.2011",
+								Ref: "urn:cdx:f08a6ccd-4dce-4759-bd84-c626675d60a7/1#pkg:rpm/centos/binutils@2.30-93.el8?arch=aarch64&distro=centos-8.3.2011",
 								Range: &[]cdx.AffectedVersions{
 									{
 										Version: "2.30-93.el8",

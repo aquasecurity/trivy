@@ -160,11 +160,9 @@ func (s Scanner) ScanArtifact(ctx context.Context, options types.ScanOptions) (t
 			RepoTags:    artifactInfo.ImageMetadata.RepoTags,
 			RepoDigests: artifactInfo.ImageMetadata.RepoDigests,
 			ImageConfig: artifactInfo.ImageMetadata.ConfigFile,
-
-			// SBOM
-			BomID: artifactInfo.BomMetadata.ID,
 		},
-		Results: results,
+		CycloneDX: artifactInfo.CycloneDX,
+		Results:   results,
 	}, nil
 }
 

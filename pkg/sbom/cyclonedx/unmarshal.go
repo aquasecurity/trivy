@@ -93,11 +93,33 @@ func (u *Unmarshaler) Unmarshal(r io.Reader) (sbom.SBOM, error) {
 		return apps[i].FilePath < apps[j].FilePath
 	})
 
+	var metadata ftypes.Metadata
+	if bom.Metadata != nil {
+		metadata.Timestamp = bom.Metadata.Timestamp
+		if bom.Metadata.Component != nil {
+			metadata.Component = toTrivyCdxComponent(bom.Metadata.Component)
+		}
+	}
+
+	var components []ftypes.Component
+	for _, c := range fromPtr(bom.Components) {
+		components = append(components, toTrivyCdxComponent(&c))
+	}
+
 	return sbom.SBOM{
-		ID:           bom.SerialNumber,
 		OS:           osInfo,
 		Packages:     pkgInfos,
 		Applications: apps,
+
+		// Keep the original SBOM
+		CycloneDX: &ftypes.CycloneDX{
+			BOMFormat:    bom.BOMFormat,
+			SpecVersion:  bom.SpecVersion,
+			SerialNumber: bom.SerialNumber,
+			Version:      bom.Version,
+			Metadata:     metadata,
+			Components:   components,
+		},
 	}, nil
 }
 
@@ -275,6 +297,21 @@ func toPackage(component cdx.Component) (string, *ftypes.Package, error) {
 	}
 
 	return p.AppType(), pkg, nil
+}
+
+func toTrivyCdxComponent(component *cdx.Component) ftypes.Component {
+	if component == nil {
+		return ftypes.Component{}
+	}
+
+	return ftypes.Component{
+		BOMRef:     component.BOMRef,
+		MIMEType:   component.MIMEType,
+		Type:       ftypes.ComponentType(component.Type),
+		Name:       component.Name,
+		Version:    component.Version,
+		PackageURL: component.PackageURL,
+	}
 }
 
 func lookupProperty(properties *[]cdx.Property, key string) string {

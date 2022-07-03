@@ -98,9 +98,9 @@ func (a Artifact) Inspect(_ context.Context) (types.ArtifactReference, error) {
 		Type:    artifactType,
 		ID:      cacheKey, // use a cache key as pseudo artifact ID
 		BlobIDs: []string{cacheKey},
-		BomMetadata: types.BomMetadata{
-			ID: bom.ID,
-		},
+
+		// Keep an original report
+		CycloneDX: bom.CycloneDX,
 	}, nil
 }
 

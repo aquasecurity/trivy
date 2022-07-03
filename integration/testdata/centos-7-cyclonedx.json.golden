@@ -14,21 +14,7 @@
     "component": {
       "bom-ref": "urn:uuid:1455c02d-64ca-453e-a5df-ddfb70a7c804/1",
       "type": "container",
-      "name": "integration/testdata/fixtures/images/centos-7.tar.gz",
-      "properties": [
-        {
-          "name": "aquasecurity:trivy:SchemaVersion",
-          "value": "2"
-        },
-        {
-          "name": "aquasecurity:trivy:ImageID",
-          "value": "sha256:f1cb7c7d58b73eac859c395882eec49d50651244e342cd6c68a5c7809785f427"
-        },
-        {
-          "name": "aquasecurity:trivy:DiffID",
-          "value": "sha256:89169d87dbe2b72ba42bfbb3579c957322baca28e03a1e558076542a1c1b2b4a"
-        }
-      ]
+      "name": "integration/testdata/fixtures/images/centos-7.tar.gz"
     }
   },
   "vulnerabilities": [

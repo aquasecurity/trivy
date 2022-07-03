@@ -13,7 +13,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/sbom/cyclonedx"
 )
 
-func TestParser_Parse(t *testing.T) {
+func TestUnmarshaler_Unmarshal(t *testing.T) {
 	tests := []struct {
 		name      string
 		inputFile string
@@ -24,7 +24,6 @@ func TestParser_Parse(t *testing.T) {
 			name:      "happy path",
 			inputFile: "testdata/happy/bom.json",
 			want: sbom.SBOM{
-				ID: "urn:uuid:c986ba94-e37d-49c8-9e30-96daccd0415b",
 				OS: &ftypes.OS{
 					Family: "alpine",
 					Name:   "3.16.0",
@@ -115,7 +114,6 @@ func TestParser_Parse(t *testing.T) {
 			name:      "happy path for unrelated bom",
 			inputFile: "testdata/happy/unrelated-bom.json",
 			want: sbom.SBOM{
-				ID: "urn:uuid:c986ba94-e37d-49c8-9e30-96daccd0415b",
 				Applications: []ftypes.Application{
 					{
 						Type:     "composer",
@@ -141,7 +139,6 @@ func TestParser_Parse(t *testing.T) {
 			name:      "happy path for independent library bom",
 			inputFile: "testdata/happy/independent-library-bom.json",
 			want: sbom.SBOM{
-				ID: "urn:uuid:c986ba94-e37d-49c8-9e30-96daccd0415b",
 				Applications: []ftypes.Application{
 					{
 						Type:     "composer",
@@ -172,7 +169,6 @@ func TestParser_Parse(t *testing.T) {
 			name:      "happy path only os component",
 			inputFile: "testdata/happy/os-only-bom.json",
 			want: sbom.SBOM{
-				ID: "urn:uuid:c986ba94-e37d-49c8-9e30-96daccd0415b",
 				OS: &ftypes.OS{
 					Family: "alpine",
 					Name:   "3.16.0",
@@ -185,9 +181,7 @@ func TestParser_Parse(t *testing.T) {
 		{
 			name:      "happy path empty component",
 			inputFile: "testdata/happy/empty-bom.json",
-			want: sbom.SBOM{
-				ID: "urn:uuid:c986ba94-e37d-49c8-9e30-96daccd0415b",
-			},
+			want:      sbom.SBOM{},
 		},
 		{
 			name:      "sad path invalid purl",
@@ -210,11 +204,11 @@ func TestParser_Parse(t *testing.T) {
 				return
 			}
 
+			// Not compare the CycloneDX field
+			got.CycloneDX = nil
+
 			require.NoError(t, err)
 			assert.Equal(t, tt.want, got)
-			//assert.Equal(t, tt.want.OS, OS)
-			//assert.Equal(t, tt.want.pkgInfos, pkgInfos)
-			//assert.Equal(t, tt.want.apps, apps)
 		})
 	}
 }

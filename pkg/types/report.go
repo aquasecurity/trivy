@@ -15,6 +15,9 @@ type Report struct {
 	ArtifactType  ftypes.ArtifactType `json:",omitempty"`
 	Metadata      Metadata            `json:",omitempty"`
 	Results       Results             `json:",omitempty"`
+
+	// SBOM
+	CycloneDX *ftypes.CycloneDX `json:"-"` // Just for internal usage, not exported in JSON
 }
 
 // Metadata represents a metadata of artifact
@@ -28,9 +31,6 @@ type Metadata struct {
 	RepoTags    []string      `json:",omitempty"`
 	RepoDigests []string      `json:",omitempty"`
 	ImageConfig v1.ConfigFile `json:",omitempty"`
-
-	// SBOM
-	BomID string `json:",omitempty"` // ID in an input SBOM such as serial number
 }
 
 // Results to hold list of Result

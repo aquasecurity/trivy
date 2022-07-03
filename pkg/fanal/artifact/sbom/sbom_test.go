@@ -126,9 +126,6 @@ func TestArtifact_Inspect(t *testing.T) {
 				BlobIDs: []string{
 					"sha256:21f10e5ab97c37f6c4d6a45815cd5db10e9539d5db8614d3b1d8890111d7a2b8",
 				},
-				BomMetadata: types.BomMetadata{
-					ID: "urn:uuid:c986ba94-e37d-49c8-9e30-96daccd0415b",
-				},
 			},
 		},
 		{
@@ -173,9 +170,12 @@ func TestArtifact_Inspect(t *testing.T) {
 				require.NotNil(t, err)
 				assert.Contains(t, err.Error(), tt.wantErr)
 				return
-			} else {
-				require.NoError(t, err)
 			}
+
+			// Not compare the original CycloneDX report
+			got.CycloneDX = nil
+
+			require.NoError(t, err)
 			assert.Equal(t, tt.want, got)
 		})
 	}

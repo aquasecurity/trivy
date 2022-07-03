@@ -104,7 +104,9 @@ type ArtifactReference struct {
 	ID            string
 	BlobIDs       []string
 	ImageMetadata ImageMetadata
-	BomMetadata   BomMetadata
+
+	// SBOM
+	CycloneDX *CycloneDX
 }
 
 type ImageMetadata struct {
@@ -113,12 +115,6 @@ type ImageMetadata struct {
 	RepoTags    []string
 	RepoDigests []string
 	ConfigFile  v1.ConfigFile
-}
-
-type BomMetadata struct {
-	// SBOM ID
-	// e.g. serial number in CycloneDX
-	ID string
 }
 
 // ArtifactInfo is stored in cache

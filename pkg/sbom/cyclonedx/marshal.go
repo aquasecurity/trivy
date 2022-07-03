@@ -117,7 +117,7 @@ func (e *Marshaler) MarshalVulnerabilities(report types.Report) (*cdx.BOM, error
 	vulnMap := map[string]cdx.Vulnerability{}
 	for _, result := range report.Results {
 		for _, vuln := range result.Vulnerabilities {
-			ref, err := externalRef(report.Metadata.BomID, vuln.Ref)
+			ref, err := externalRef(report.CycloneDX.SerialNumber, vuln.Ref)
 			if err != nil {
 				return nil, err
 			}
@@ -134,10 +134,31 @@ func (e *Marshaler) MarshalVulnerabilities(report types.Report) (*cdx.BOM, error
 	})
 
 	bom := cdx.NewBOM()
-	bom.Vulnerabilities = &vulns
 	bom.Metadata = e.cdxMetadata()
-	return bom, nil
 
+	// Fill the detected vulnerabilities
+	bom.Vulnerabilities = &vulns
+
+	// Use the original component as is
+	bom.Metadata.Component = &cdx.Component{
+		Name:    report.CycloneDX.Metadata.Component.Name,
+		Version: report.CycloneDX.Metadata.Component.Version,
+		Type:    cdx.ComponentType(report.CycloneDX.Metadata.Component.Type),
+	}
+
+	// Overwrite the bom ref as it must be the BOM ref of the original CycloneDX.
+	// e.g.
+	//  "metadata" : {
+	//    "timestamp" : "2022-07-02T00:00:00Z",
+	//    "component" : {
+	//      "name" : "Acme Product",
+	//      "version": "2.4.0",
+	//      "type" : "application",
+	//      "bom-ref" : "urn:cdx:f08a6ccd-4dce-4759-bd84-c626675d60a7/1"
+	//    }
+	//  },
+	bom.Metadata.Component.BOMRef = fmt.Sprintf("%s/%d", report.CycloneDX.SerialNumber, report.CycloneDX.Version)
+	return bom, nil
 }
 
 func (e *Marshaler) cdxMetadata() *cdx.Metadata {

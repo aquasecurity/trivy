@@ -12,10 +12,11 @@ import (
 )
 
 type SBOM struct {
-	ID           string
 	OS           *types.OS
 	Packages     []types.PackageInfo
 	Applications []types.Application
+
+	CycloneDX *types.CycloneDX
 }
 
 type Unmarshaler interface {
