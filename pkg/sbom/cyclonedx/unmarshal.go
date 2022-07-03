@@ -97,13 +97,13 @@ func (u *Unmarshaler) Unmarshal(r io.Reader) (sbom.SBOM, error) {
 	if bom.Metadata != nil {
 		metadata.Timestamp = bom.Metadata.Timestamp
 		if bom.Metadata.Component != nil {
-			metadata.Component = toTrivyCdxComponent(bom.Metadata.Component)
+			metadata.Component = toTrivyCdxComponent(fromPtr(bom.Metadata.Component))
 		}
 	}
 
 	var components []ftypes.Component
 	for _, c := range fromPtr(bom.Components) {
-		components = append(components, toTrivyCdxComponent(&c))
+		components = append(components, toTrivyCdxComponent(c))
 	}
 
 	return sbom.SBOM{
@@ -299,11 +299,7 @@ func toPackage(component cdx.Component) (string, *ftypes.Package, error) {
 	return p.AppType(), pkg, nil
 }
 
-func toTrivyCdxComponent(component *cdx.Component) ftypes.Component {
-	if component == nil {
-		return ftypes.Component{}
-	}
-
+func toTrivyCdxComponent(component cdx.Component) ftypes.Component {
 	return ftypes.Component{
 		BOMRef:     component.BOMRef,
 		MIMEType:   component.MIMEType,
