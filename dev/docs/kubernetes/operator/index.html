@@ -2487,12 +2487,11 @@
 
 
 <h1 id="trivy-operator">Trivy Operator</h1>
-<p>Trivy has a native <a href="operator">Kubernetes Operator</a> which continuously scans your Kubernetes cluster for security issues, and generates security reports as Kubernetes <a href="crd">Custom Resources</a>. It does it by watching Kubernetes for state changes and automatically triggering scans in response to changes, for example initiating a vulnerability scan when a new Pod is created.</p>
+<p>Trivy has a native <a href="https://kubernetes.io/docs/concepts/extend-kubernetes/operator/">Kubernetes Operator</a> which continuously scans your Kubernetes cluster for security issues, and generates security reports as Kubernetes <a href="https://kubernetes.io/docs/concepts/extend-kubernetes/api-extension/custom-resources/">Custom Resources</a>. It does it by watching Kubernetes for state changes and automatically triggering scans in response to changes, for example initiating a vulnerability scan when a new Pod is created.</p>
 <blockquote>
 <p>Kubernetes-native security toolkit. (<a href="https://aquasecurity.github.io/trivy-operator/latest">Documentation</a>).</p>
 </blockquote>
 <figure>
-  <img src="./images/operator/trivy-operator-workloads.png" />
   <figcaption>Workload reconcilers discover K8s controllers, manage scan jobs, and create VulnerabilityReport and ConfigAuditReport objects.</figcaption>
 </figure>
 
