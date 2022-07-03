@@ -3,14 +3,53 @@
   "specVersion": "1.4",
   "version": 1,
   "metadata": {
-    "timestamp": "2022-06-14T15:32:23+00:00",
+    "timestamp": "2022-07-03T08:45:54+00:00",
     "tools": [
       {
         "vendor": "aquasecurity",
         "name": "trivy",
         "version": "dev"
       }
-    ]
+    ],
+    "component": {
+      "bom-ref": "urn:uuid:31ee662c-480e-4f63-9765-23ea8afc754d/1",
+      "type": "container",
+      "name": "integration/testdata/fixtures/images/fluentd-multiple-lockfiles.tar.gz",
+      "properties": [
+        {
+          "name": "aquasecurity:trivy:SchemaVersion",
+          "value": "2"
+        },
+        {
+          "name": "aquasecurity:trivy:ImageID",
+          "value": "sha256:5a992077baba51b97f27591a10d54d2f2723dc9c81a3fe419e261023f2554933"
+        },
+        {
+          "name": "aquasecurity:trivy:DiffID",
+          "value": "sha256:831c5620387fb9efec59fc82a42b948546c6be601e3ab34a87108ecf852aa15f"
+        },
+        {
+          "name": "aquasecurity:trivy:DiffID",
+          "value": "sha256:02874b2b269dea8dde0f7edb4c9906904dfe38a09de1a214f20c650cfb15c60e"
+        },
+        {
+          "name": "aquasecurity:trivy:DiffID",
+          "value": "sha256:3752e1f6fd759c795c13aff2c93c081529366e27635ba6621e849b0f9cfc77f0"
+        },
+        {
+          "name": "aquasecurity:trivy:DiffID",
+          "value": "sha256:75e43d55939745950bc3f8fad56c5834617c4339f0f54755e69a0dd5372624e9"
+        },
+        {
+          "name": "aquasecurity:trivy:DiffID",
+          "value": "sha256:788c00e2cfc8f2a018ae4344ccf0b2c226ebd756d7effd1ce50eea1a4252cd89"
+        },
+        {
+          "name": "aquasecurity:trivy:DiffID",
+          "value": "sha256:25165eb51d15842f870f97873e0a58409d5e860e6108e3dd829bd10e484c0065"
+        }
+      ]
+    }
   },
   "vulnerabilities": [
     {
@@ -57,7 +96,7 @@
       "cwes": [
         502
       ],
-      "description": "A deserialization of untrusted data vulnernerability exists in rails \u003c 5.2.4.3, rails \u003c 6.0.3.1 that can allow an attacker to unmarshal user-provided objects in MemCacheStore and RedisCacheStore potentially resulting in an RCE.",
+      "description": "A deserialization of untrusted data vulnerability exists in rails \u003c 5.2.4.3, rails \u003c 6.0.3.1 that can allow an attacker to unmarshal user-provided objects in MemCacheStore and RedisCacheStore potentially resulting in an RCE.",
       "advisories": [
         {
           "url": "http://lists.opensuse.org/opensuse-security-announce/2020-10/msg00031.html"

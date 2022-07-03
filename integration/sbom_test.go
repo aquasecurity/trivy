@@ -5,16 +5,18 @@ package integration
 
 import (
 	"io"
+	"os"
 	"path/filepath"
 	"testing"
 
+	cdx "github.com/CycloneDX/cyclonedx-go"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 
 	"github.com/aquasecurity/trivy/pkg/commands"
 )
 
 func TestCycloneDX(t *testing.T) {
-
 	type args struct {
 		input        string
 		format       string
@@ -28,20 +30,20 @@ func TestCycloneDX(t *testing.T) {
 		{
 			name: "centos7-bom by trivy",
 			args: args{
-				input:        "testdata/fixtures/sbom/centos7-bom.json",
+				input:        "testdata/fixtures/sbom/centos-7-cyclonedx.json",
 				format:       "cyclonedx",
 				artifactType: "cyclonedx",
 			},
-			golden: "testdata/centos7-bom.json.golden",
+			golden: "testdata/centos-7-cyclonedx.json.golden",
 		},
 		{
 			name: "fluentd-multiple-lockfiles-bom by trivy",
 			args: args{
-				input:        "testdata/fixtures/sbom/fluentd-multiple-lockfiles-bom.json",
+				input:        "testdata/fixtures/sbom/fluentd-multiple-lockfiles-cyclonedx.json",
 				format:       "cyclonedx",
 				artifactType: "cyclonedx",
 			},
-			golden: "testdata/fluentd-multiple-lockfiles-bom.json.golden",
+			golden: "testdata/fluentd-multiple-lockfiles-cyclonedx.json.golden",
 		},
 	}
 
@@ -71,7 +73,24 @@ func TestCycloneDX(t *testing.T) {
 			assert.Nil(t, app.Run(osArgs))
 
 			// Compare want and got
-			compareReports(t, tt.golden, outputFile)
+			want := decodeCycloneDX(t, tt.golden)
+			got := decodeCycloneDX(t, outputFile)
+			assert.Equal(t, want, got)
 		})
 	}
+}
+
+func decodeCycloneDX(t *testing.T, filePath string) *cdx.BOM {
+	f, err := os.Open(filePath)
+	require.NoError(t, err)
+	defer f.Close()
+
+	bom := cdx.NewBOM()
+	decoder := cdx.NewBOMDecoder(f, cdx.BOMFileFormatJSON)
+	err = decoder.Decode(bom)
+	require.NoError(t, err)
+
+	bom.Metadata.Timestamp = ""
+
+	return bom
 }
