@@ -1473,9 +1473,47 @@
         
       
       
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          CycloneDX
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
       <a href="./" class="md-nav__link md-nav__link--active">
         CycloneDX
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#reporting" class="md-nav__link">
+    Reporting
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#scanning" class="md-nav__link">
+    Scanning
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
       
     </li>
   
@@ -2472,6 +2510,28 @@
     
   
   
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#reporting" class="md-nav__link">
+    Reporting
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#scanning" class="md-nav__link">
+    Scanning
+  </a>
+  
+</li>
+      
+    </ul>
+  
 </nav>
                   </div>
                 </div>
@@ -2485,6 +2545,7 @@
 
 
 <h1 id="cyclonedx">CycloneDX</h1>
+<h2 id="reporting">Reporting</h2>
 <p>Trivy generates JSON reports in the <a href="https://cyclonedx.org/">CycloneDX</a> format.
 Note that XML format is not supported at the moment.</p>
 <p>You can use the regular subcommands (like <code>image</code>, <code>fs</code> and <code>rootfs</code>) and specify <code>cyclonedx</code> with the <code>--format</code> option.</p>
@@ -2708,6 +2769,33 @@ Note that XML format is not supported at the moment.</p>
 </code></pre></div>
 
 </details>
+
+<h2 id="scanning">Scanning</h2>
+<p>Trivy can take CycloneDX as an input and scan for vulnerabilities.
+To scan SBOM, you can use the <code>sbom</code> subcommand and pass the path to your CycloneDX report. </p>
+<div class="highlight"><pre><span></span><code>$ trivy sbom /path/to/cyclonedx.json
+
+cyclonedx.json <span class="o">(</span>alpine <span class="m">3</span>.7.1<span class="o">)</span>
+<span class="o">=========================</span>
+Total: <span class="m">3</span> <span class="o">(</span>CRITICAL: <span class="m">3</span><span class="o">)</span>
+
+┌─────────────┬────────────────┬──────────┬───────────────────┬───────────────┬──────────────────────────────────────────────────────────────┐
+│   Library   │ Vulnerability  │ Severity │ Installed Version │ Fixed Version │                            Title                             │
+├─────────────┼────────────────┼──────────┼───────────────────┼───────────────┼──────────────────────────────────────────────────────────────┤
+│ curl        │ CVE-2018-14618 │ CRITICAL │ <span class="m">7</span>.61.0-r0         │ <span class="m">7</span>.61.1-r0     │ curl: NTLM password overflow via integer overflow            │
+│             │                │          │                   │               │ https://avd.aquasec.com/nvd/cve-2018-14618                   │
+├─────────────┼────────────────┼──────────┼───────────────────┼───────────────┼──────────────────────────────────────────────────────────────┤
+│ libbz2      │ CVE-2019-12900 │ CRITICAL │ <span class="m">1</span>.0.6-r6          │ <span class="m">1</span>.0.6-r7      │ bzip2: out-of-bounds write <span class="k">in</span> <span class="k">function</span> BZ2_decompress        │
+│             │                │          │                   │               │ https://avd.aquasec.com/nvd/cve-2019-12900                   │
+├─────────────┼────────────────┼──────────┼───────────────────┼───────────────┼──────────────────────────────────────────────────────────────┤
+│ sqlite-libs │ CVE-2019-8457  │ CRITICAL │ <span class="m">3</span>.21.0-r1         │ <span class="m">3</span>.25.3-r1     │ sqlite: heap out-of-bound <span class="nb">read</span> <span class="k">in</span> <span class="k">function</span> rtreenode<span class="o">()</span>       │
+│             │                │          │                   │               │ https://avd.aquasec.com/nvd/cve-2019-8457                    │
+└─────────────┴────────────────┴──────────┴───────────────────┴───────────────┴──────────────────────────────────────────────────────────────┘
+</code></pre></div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>If you want to generate a CycloneDX report from a CycloneDX input, please be aware that the output stores references to your original CycloneDX report and contains only detected vulnerabilities, not components.</p>
+</div>
 
               
             </article>
