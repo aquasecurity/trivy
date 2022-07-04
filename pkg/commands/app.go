@@ -869,6 +869,9 @@ func NewK8sCommand() *cli.Command {
       $ trivy k8s --report summary cluster
   - namespace scanning:
       $ trivy k8s -n kube-system --report summary all
+  - resources scanning:
+      $ trivy k8s --report=summary deploy
+      $ trivy k8s --namespace=kube-system --report=summary deploy,configmaps
   - resource scanning:
       $ trivy k8s deployment/orion
 `,
