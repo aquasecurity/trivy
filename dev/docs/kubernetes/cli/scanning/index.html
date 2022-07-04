@@ -2560,6 +2560,10 @@ $ trivy k8s --security-checks=config --report=summary cluster
 <p>Scan a specific resource and get all the output:</p>
 <div class="highlight"><pre><span></span><code>$ trivy k8s deployment appname
 </code></pre></div>
+<p>Scan all deploys, or deploys and configmaps:</p>
+<div class="highlight"><pre><span></span><code>$ trivy k8s --report=summary deployment
+$ trivy k8s --report=summary deployment,configmaps
+</code></pre></div>
 <p>If you want to pass in flags before scanning specific workloads, you will have to do it before the resource name.
 For example, scanning a deployment in the app namespace of your Kubernetes cluster for critical vulnerabilities would be done through the following command:</p>
 <p><div class="highlight"><pre><span></span><code>$ trivy k8s -n app --severity=CRITICAL deployment/appname
