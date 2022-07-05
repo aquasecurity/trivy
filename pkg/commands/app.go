@@ -57,7 +57,7 @@ func NewApp(version string) *cobra.Command {
 	}
 
 	rootCmd.Version = version
-	cmds := []*cobra.Command{
+	rootCmd.AddCommand(
 		NewImageCommand(globalFlags),
 		NewFilesystemCommand(globalFlags),
 		NewRootfsCommand(globalFlags),
@@ -70,15 +70,7 @@ func NewApp(version string) *cobra.Command {
 		NewKubernetesCommand(globalFlags),
 		NewSBOMCommand(globalFlags),
 		NewVersionCommand(globalFlags),
-	}
-	for _, cmd := range cmds {
-		cmd.PreRunE = func(cmd *cobra.Command, args []string) error {
-			// cf. https://github.com/spf13/cobra/issues/875
-			//     https://github.com/spf13/viper/issues/233
-			return viper.BindPFlags(cmd.Flags())
-		}
-	}
-	rootCmd.AddCommand(cmds...)
+	)
 	rootCmd.AddCommand(plugin.LoadCommands()...)
 
 	return rootCmd
@@ -564,16 +556,19 @@ func showVersion(cacheDir, outputFormat, version string, outputWriter io.Writer)
 	}
 }
 
-func validateArgs(_ *cobra.Command, args []string) error {
+func validateArgs(cmd *cobra.Command, args []string) error {
 	// '--clear-cache', '--download-db-only' and '--reset' don't conduct the scan
 	if viper.GetBool(flag.ClearCacheFlag) || viper.GetBool(flag.DownloadDBOnlyFlag) || viper.GetBool(flag.ResetFlag) {
 		return nil
 	}
 
 	if len(args) == 0 && viper.GetString(flag.InputFlag) == "" {
+		cmd.Help()
 		return xerrors.New(`Require at least 1 argument or --input option`)
 	} else if len(args) > 1 {
+		cmd.Help()
 		return xerrors.New(`multiple targets cannot be specified`)
 	}
+
 	return nil
 }
