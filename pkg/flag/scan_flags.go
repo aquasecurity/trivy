@@ -76,7 +76,7 @@ func (f *ScanFlags) AddFlags(cmd *cobra.Command) {
 func (f *ScanFlags) ToOptions(args []string) (ScanOptions, error) {
 	input := viper.GetString(InputFlag)
 	var target string
-	if input == "" {
+	if input == "" && len(args) == 1 {
 		target = args[0]
 	}
 

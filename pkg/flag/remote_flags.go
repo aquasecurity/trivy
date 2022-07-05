@@ -4,11 +4,11 @@ import (
 	"net/http"
 	"strings"
 
+	"github.com/samber/lo"
+	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 
 	"github.com/aquasecurity/trivy/pkg/log"
-	"github.com/samber/lo"
-	"github.com/spf13/cobra"
 )
 
 const (

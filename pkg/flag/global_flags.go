@@ -3,10 +3,11 @@ package flag
 import (
 	"time"
 
-	"github.com/aquasecurity/trivy/pkg/fanal/utils"
 	"github.com/samber/lo"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
+
+	"github.com/aquasecurity/trivy/pkg/utils"
 )
 
 const (
@@ -41,7 +42,7 @@ func NewGlobalDefaultFlags() *GlobalFlags {
 		Debug:    lo.ToPtr(false),
 		Insecure: lo.ToPtr(false),
 		Timeout:  lo.ToPtr(time.Second * 300), // 5 mins
-		CacheDir: lo.ToPtr(utils.CacheDir()),
+		CacheDir: lo.ToPtr(utils.DefaultCacheDir()),
 	}
 }
 
