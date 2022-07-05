@@ -175,6 +175,10 @@ func (f *ReportFlags) forceListAllPkgs(format string, listAllPkgs, dependencyTre
 }
 
 func splitSeverity(severity string) []dbTypes.Severity {
+	if severity == "" {
+		return nil
+	}
+
 	var severities []dbTypes.Severity
 	for _, s := range strings.Split(severity, ",") {
 		sev, err := dbTypes.NewSeverity(s)
