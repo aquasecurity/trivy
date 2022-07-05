@@ -1,11 +1,12 @@
 package flag
 
 import (
-	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/samber/lo"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	"golang.org/x/xerrors"
+
+	"github.com/aquasecurity/trivy/pkg/log"
 )
 
 const (

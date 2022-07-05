@@ -5,12 +5,10 @@ import (
 	"strings"
 	"time"
 
-	"github.com/spf13/viper"
-
-	"golang.org/x/xerrors"
-
 	"github.com/samber/lo"
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
+	"golang.org/x/xerrors"
 )
 
 const (

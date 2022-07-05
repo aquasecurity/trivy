@@ -3,10 +3,9 @@ package report
 import (
 	"testing"
 
-	"github.com/aquasecurity/trivy/pkg/commands/option"
-
 	"github.com/stretchr/testify/assert"
 
+	"github.com/aquasecurity/trivy/pkg/flag"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
 
@@ -214,42 +213,42 @@ func Test_separateMisConfigRoleAssessment(t *testing.T) {
 	tests := []struct {
 		name                string
 		k8sReport           Report
-		rp                  option.ReportOption
+		opts                flag.ScanOptions
 		wantRbacReport      Report
 		wantMisConfigReport Report
 	}{
 		{
 			name:                "Role and Deployment Reports",
 			k8sReport:           Report{Misconfigurations: []Resource{{Kind: "Role"}, {Kind: "Deployment"}}},
-			rp:                  option.ReportOption{SecurityChecks: []string{"config", "rbac"}},
+			opts:                flag.ScanOptions{SecurityChecks: []string{"config", "rbac"}},
 			wantRbacReport:      Report{Misconfigurations: []Resource{{Kind: "Role"}}},
 			wantMisConfigReport: Report{Misconfigurations: []Resource{{Kind: "Deployment"}}},
 		},
 		{
 			name:                "Role Report Only",
 			k8sReport:           Report{Misconfigurations: []Resource{{Kind: "Role"}, {Kind: "Deployment"}}},
-			rp:                  option.ReportOption{SecurityChecks: []string{"rbac"}},
+			opts:                flag.ScanOptions{SecurityChecks: []string{"rbac"}},
 			wantRbacReport:      Report{Misconfigurations: []Resource{{Kind: "Role"}}},
 			wantMisConfigReport: Report{Misconfigurations: []Resource{}},
 		},
 		{
 			name:                "Deployment Report Only",
 			k8sReport:           Report{Misconfigurations: []Resource{{Kind: "Role"}, {Kind: "Deployment"}}},
-			rp:                  option.ReportOption{SecurityChecks: []string{"config"}},
+			opts:                flag.ScanOptions{SecurityChecks: []string{"config"}},
 			wantRbacReport:      Report{Misconfigurations: []Resource{}},
 			wantMisConfigReport: Report{Misconfigurations: []Resource{{Kind: "Deployment"}}},
 		},
 		{
 			name:                "No Deployment & No Role Reports",
 			k8sReport:           Report{Misconfigurations: []Resource{{Kind: "Role"}, {Kind: "Deployment"}}},
-			rp:                  option.ReportOption{SecurityChecks: []string{"vuln"}},
+			opts:                flag.ScanOptions{SecurityChecks: []string{"vuln"}},
 			wantRbacReport:      Report{Misconfigurations: []Resource{}},
 			wantMisConfigReport: Report{Misconfigurations: []Resource{}},
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			misConfig, rbac := separateMisConfigRoleAssessment(tt.k8sReport, tt.rp.SecurityChecks)
+			misConfig, rbac := separateMisConfigRoleAssessment(tt.k8sReport, tt.opts.SecurityChecks)
 			assert.Equal(t, len(tt.wantMisConfigReport.Misconfigurations), len(misConfig.Misconfigurations))
 			assert.Equal(t, len(tt.wantRbacReport.Misconfigurations), len(rbac.Misconfigurations))
 		})

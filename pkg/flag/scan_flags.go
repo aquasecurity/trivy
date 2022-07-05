@@ -4,13 +4,13 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/samber/lo"
+	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
+	"golang.org/x/exp/slices"
 
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/types"
-	"github.com/samber/lo"
-	"github.com/spf13/cobra"
-	"golang.org/x/exp/slices"
 )
 
 const (

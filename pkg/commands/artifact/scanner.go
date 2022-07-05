@@ -3,10 +3,10 @@ package artifact
 import (
 	"context"
 
-	"github.com/aquasecurity/trivy/pkg/types"
+	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/scanner"
-	"golang.org/x/xerrors"
+	"github.com/aquasecurity/trivy/pkg/types"
 )
 
 // imageStandaloneScanner initializes a container image scanner in standalone mode

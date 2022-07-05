@@ -5,19 +5,16 @@ import (
 	"os"
 	"strings"
 
-	"github.com/aquasecurity/trivy/pkg/result"
-
-	"golang.org/x/xerrors"
-
-	"golang.org/x/exp/slices"
-
-	"github.com/aquasecurity/trivy/pkg/log"
-	"github.com/aquasecurity/trivy/pkg/report"
-
-	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/samber/lo"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
+	"golang.org/x/exp/slices"
+	"golang.org/x/xerrors"
+
+	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
+	"github.com/aquasecurity/trivy/pkg/log"
+	"github.com/aquasecurity/trivy/pkg/report"
+	"github.com/aquasecurity/trivy/pkg/result"
 )
 
 const (

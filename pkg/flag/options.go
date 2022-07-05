@@ -3,9 +3,10 @@ package flag
 import (
 	"io"
 
-	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/spf13/cobra"
 	"golang.org/x/xerrors"
+
+	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 )
 
 type Flags struct {

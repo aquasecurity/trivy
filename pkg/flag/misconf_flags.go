@@ -1,10 +1,11 @@
 package flag
 
 import (
-	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/samber/lo"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
+
+	"github.com/aquasecurity/trivy/pkg/log"
 )
 
 const (
@@ -63,7 +64,7 @@ func (f *MisconfFlags) AddFlags(cmd *cobra.Command) {
 	}
 	if f.SkipPolicyUpdate != nil {
 		cmd.Flags().Bool(SkipPolicyUpdateFlag, *f.SkipPolicyUpdate, "deprecated")
-		cmd.Flags().MarkHidden(SkipPolicyUpdateFlag)
+		cmd.Flags().MarkHidden(SkipPolicyUpdateFlag) // nolint: gosec
 	}
 	if f.Trace != nil {
 		cmd.Flags().Bool(TraceFlag, *f.Trace, "enable more verbose trace output for custom queries")

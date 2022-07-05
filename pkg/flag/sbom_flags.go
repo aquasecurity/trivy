@@ -1,11 +1,12 @@
 package flag
 
 import (
-	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/samber/lo"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	"golang.org/x/xerrors"
+
+	"github.com/aquasecurity/trivy/pkg/log"
 )
 
 const (
@@ -33,11 +34,11 @@ func NewDefaultSBOMFlags() *SBOMFlags {
 func (f *SBOMFlags) AddFlags(cmd *cobra.Command) {
 	if f.ArtifactType != nil {
 		cmd.Flags().String(ArtifactTypeFlag, *f.ArtifactType, "deprecated")
-		cmd.Flags().MarkHidden(ArtifactTypeFlag)
+		cmd.Flags().MarkHidden(ArtifactTypeFlag) // nolint: gosec
 	}
 	if f.SBOMFormat != nil {
 		cmd.Flags().String(SBOMFormat, *f.SBOMFormat, "deprecated")
-		cmd.Flags().MarkHidden(SBOMFormat)
+		cmd.Flags().MarkHidden(SBOMFormat) // nolint: gosec
 	}
 }
 
