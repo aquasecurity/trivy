@@ -11,7 +11,7 @@ __rego_metadata__ := {
 __rego_input__ := {"selector": [{"type": "dockerfile"}]}
 
 deny[res] {
-	add := input.stages[_][_]
+	add := input.Stages[_].Commands[_]
 	add.Cmd == "add"
 	startswith(add.Value[0], "http://")
 
