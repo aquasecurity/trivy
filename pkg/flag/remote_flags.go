@@ -4,6 +4,8 @@ import (
 	"net/http"
 	"strings"
 
+	"github.com/spf13/viper"
+
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/samber/lo"
 	"github.com/spf13/cobra"
@@ -79,10 +81,10 @@ func (f *RemoteFlags) AddFlags(cmd *cobra.Command) {
 }
 
 func (f *RemoteFlags) ToOptions() RemoteOptions {
-	serverAddr := lo.FromPtr(f.ServerAddr)
-	customHeaders := splitCustomHeaders(lo.FromPtr(f.CustomHeaders))
-	token := lo.FromPtr(f.Token)
-	tokenHeader := lo.FromPtr(f.TokenHeader)
+	serverAddr := viper.GetString(ServerFlag)
+	customHeaders := splitCustomHeaders(viper.GetStringSlice(CustomHeadersFlag))
+	token := viper.GetString(ServerTokenFlag)
+	tokenHeader := viper.GetString(ServerTokenHeaderFlag)
 
 	if serverAddr == "" {
 		switch {
@@ -104,6 +106,7 @@ func (f *RemoteFlags) ToOptions() RemoteOptions {
 		TokenHeader:   tokenHeader,
 		ServerAddr:    serverAddr,
 		CustomHeaders: customHeaders,
+		Listen:        viper.GetString(ServerListenFlag),
 	}
 }
 
