@@ -124,7 +124,7 @@ func NewImageCommand(globalFlags *flag.GlobalFlags) *cobra.Command {
 	}
 
 	cmd := &cobra.Command{
-		Use:     "image [flags] image_name",
+		Use:     "image [flags] IMAGE_NAME",
 		Aliases: []string{"i"},
 		Short:   "scan a container image",
 
@@ -160,7 +160,7 @@ func NewFilesystemCommand(globalFlags *flag.GlobalFlags) *cobra.Command {
 	}
 
 	cmd := &cobra.Command{
-		Use:     "filessytem [flags] path",
+		Use:     "filessytem [flags] PATH",
 		Aliases: []string{"fs"},
 		Short:   "scan local filesystem",
 		PreRunE: validateArgs,
@@ -189,7 +189,7 @@ func NewRootfsCommand(globalFlags *flag.GlobalFlags) *cobra.Command {
 	}
 
 	cmd := &cobra.Command{
-		Use:     "rootfs [flags] dir",
+		Use:     "rootfs [flags] ROOTDIR",
 		Short:   "scan rootfs",
 		PreRunE: validateArgs,
 		RunE: func(cmd *cobra.Command, args []string) error {
@@ -218,7 +218,7 @@ func NewRepositoryCommand(globalFlags *flag.GlobalFlags) *cobra.Command {
 	}
 
 	cmd := &cobra.Command{
-		Use:     "repository [flags] repo_url",
+		Use:     "repository [flags] REPO_URL",
 		Short:   "scan remote repository",
 		PreRunE: validateArgs,
 		RunE: func(cmd *cobra.Command, args []string) error {
@@ -251,7 +251,7 @@ func NewClientCommand(globalFlags *flag.GlobalFlags) *cobra.Command {
 	}
 
 	cmd := &cobra.Command{
-		Use:     "client [flags] image_name",
+		Use:     "client [flags] IMAGE_NAME",
 		Aliases: []string{"c"},
 		Hidden:  true, // 'client' command is deprecated
 		PreRunE: validateArgs,
@@ -318,7 +318,7 @@ func NewConfigCommand(globalFlags *flag.GlobalFlags) *cobra.Command {
 	}
 
 	cmd := &cobra.Command{
-		Use:     "config [flags] dir",
+		Use:     "config [flags] DIR",
 		Aliases: []string{"conf"},
 		Short:   "scan config files for misconfigurations",
 		PreRunE: validateArgs,
@@ -470,7 +470,7 @@ func NewSBOMCommand(globalFlags *flag.GlobalFlags) *cobra.Command {
 	}
 
 	cmd := &cobra.Command{
-		Use:   "sbom [flags] path",
+		Use:   "sbom [flags] SBOM_PATH",
 		Short: "scan SBOM for vulnerabilities",
 		Args:  cobra.ExactArgs(1),
 		Example: `- Scan CycloneDX and show the result in tables:
