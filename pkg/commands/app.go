@@ -46,7 +46,7 @@ func NewApp(version string) *cobra.Command {
 	cobra.OnInitialize(initConfig)
 
 	globalFlags := flag.NewGlobalDefaultFlags()
-	rootCmd := NewRootCommand(globalFlags)
+	rootCmd := NewRootCommand(version, globalFlags)
 
 	if runAsPlugin := os.Getenv("TRIVY_RUN_AS_PLUGIN"); runAsPlugin != "" {
 		rootCmd.RunE = func(cmd *cobra.Command, args []string) error {
@@ -56,7 +56,6 @@ func NewApp(version string) *cobra.Command {
 		return rootCmd
 	}
 
-	rootCmd.Version = version
 	rootCmd.AddCommand(
 		NewImageCommand(globalFlags),
 		NewFilesystemCommand(globalFlags),
@@ -83,7 +82,8 @@ func initConfig() {
 	viper.AutomaticEnv()
 }
 
-func NewRootCommand(globalFlags *flag.GlobalFlags) *cobra.Command {
+func NewRootCommand(version string, globalFlags *flag.GlobalFlags) *cobra.Command {
+	var versionFormat string
 	cmd := &cobra.Command{
 		Use:   "trivy [global flags] command [flags] target",
 		Short: "Unified security scanner",
@@ -91,8 +91,12 @@ func NewRootCommand(globalFlags *flag.GlobalFlags) *cobra.Command {
 		CompletionOptions: cobra.CompletionOptions{
 			DisableDefaultCmd: true,
 		},
+		Args: cobra.NoArgs,
 		PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
 			cmd.SetOut(outputWriter)
+
+			// Set the Trivy version here so that we can override version printer.
+			cmd.Version = version
 
 			// viper.BindPFlags cannot be called in init().
 			// cf. https://github.com/spf13/cobra/issues/875
@@ -100,12 +104,30 @@ func NewRootCommand(globalFlags *flag.GlobalFlags) *cobra.Command {
 			if err := viper.BindPFlags(cmd.Flags()); err != nil {
 				return err
 			}
+			if err := viper.BindPFlags(cmd.PersistentFlags()); err != nil {
+				return err
+			}
 
 			// Initialize logger
 			globalOptions := globalFlags.ToOptions()
+
 			return log.InitLogger(globalOptions.Debug, globalOptions.Quiet)
 		},
+		RunE: func(cmd *cobra.Command, args []string) error {
+			globalOptions := globalFlags.ToOptions()
+			if globalOptions.ShowVersion {
+				// Customize version output
+				showVersion(globalOptions.CacheDir, versionFormat, version, outputWriter)
+			} else {
+				return cmd.Help()
+			}
+			return nil
+		},
 	}
+
+	// Add version format flag, only json is supported
+	cmd.Flags().StringVarP(&versionFormat, flag.FormatFlag, "f", "", "version format (json)")
+
 	globalFlags.AddFlags(cmd)
 
 	return cmd
@@ -134,7 +156,7 @@ func NewImageCommand(globalFlags *flag.GlobalFlags) *cobra.Command {
 		// cmd.RunE               -> run the command
 		PreRunE: validateArgs,
 		RunE: func(cmd *cobra.Command, args []string) error {
-			options, err := imageFlags.ToOptions(cmd.Root().Version, args, globalFlags, outputWriter)
+			options, err := imageFlags.ToOptions(cmd.Version, args, globalFlags, outputWriter)
 			if err != nil {
 				return xerrors.Errorf("flag error: %w", err)
 			}
@@ -160,12 +182,12 @@ func NewFilesystemCommand(globalFlags *flag.GlobalFlags) *cobra.Command {
 	}
 
 	cmd := &cobra.Command{
-		Use:     "filessytem [flags] PATH",
+		Use:     "filesystem [flags] PATH",
 		Aliases: []string{"fs"},
 		Short:   "scan local filesystem",
 		PreRunE: validateArgs,
 		RunE: func(cmd *cobra.Command, args []string) error {
-			options, err := fsFlags.ToOptions(cmd.Root().Version, args, globalFlags, outputWriter)
+			options, err := fsFlags.ToOptions(cmd.Version, args, globalFlags, outputWriter)
 			if err != nil {
 				return xerrors.Errorf("flag error: %w", err)
 			}
@@ -193,7 +215,7 @@ func NewRootfsCommand(globalFlags *flag.GlobalFlags) *cobra.Command {
 		Short:   "scan rootfs",
 		PreRunE: validateArgs,
 		RunE: func(cmd *cobra.Command, args []string) error {
-			options, err := rootfsFlags.ToOptions(cmd.Root().Version, args, globalFlags, outputWriter)
+			options, err := rootfsFlags.ToOptions(cmd.Version, args, globalFlags, outputWriter)
 			if err != nil {
 				return xerrors.Errorf("flag error: %w", err)
 			}
@@ -222,7 +244,7 @@ func NewRepositoryCommand(globalFlags *flag.GlobalFlags) *cobra.Command {
 		Short:   "scan remote repository",
 		PreRunE: validateArgs,
 		RunE: func(cmd *cobra.Command, args []string) error {
-			options, err := repoFlags.ToOptions(cmd.Root().Version, args, globalFlags, outputWriter)
+			options, err := repoFlags.ToOptions(cmd.Version, args, globalFlags, outputWriter)
 			if err != nil {
 				return xerrors.Errorf("flag error: %w", err)
 			}
@@ -258,7 +280,7 @@ func NewClientCommand(globalFlags *flag.GlobalFlags) *cobra.Command {
 		RunE: func(cmd *cobra.Command, args []string) error {
 			log.Logger.Warn("'client' subcommand is deprecated now. See https://github.com/aquasecurity/trivy/discussions/2119")
 
-			options, err := clientFlags.ToOptions(cmd.Root().Version, args, globalFlags, outputWriter)
+			options, err := clientFlags.ToOptions(cmd.Version, args, globalFlags, outputWriter)
 			if err != nil {
 				return xerrors.Errorf("flag error: %w", err)
 			}
@@ -271,7 +293,7 @@ func NewClientCommand(globalFlags *flag.GlobalFlags) *cobra.Command {
 	// deprecated flags
 	remoteFlags.ServerAddr = lo.ToPtr("")
 	cmd.Flags().StringVar(remoteFlags.ServerAddr, "remote", "http://localhost:4954", "server address")
-	viper.BindPFlag("remote", cmd.Flags().Lookup("remote"))
+	viper.BindPFlag("remote", cmd.Flags().Lookup("remote")) // nolint: gosec
 
 	return cmd
 }
@@ -290,7 +312,7 @@ func NewServerCommand(globalFlags *flag.GlobalFlags) *cobra.Command {
 		Short:   "server mode",
 		Args:    cobra.ExactArgs(0),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			options, err := serverFlags.ToOptions(cmd.Root().Version, args, globalFlags, outputWriter)
+			options, err := serverFlags.ToOptions(cmd.Version, args, globalFlags, outputWriter)
 			if err != nil {
 				return xerrors.Errorf("flag error: %w", err)
 			}
@@ -323,7 +345,7 @@ func NewConfigCommand(globalFlags *flag.GlobalFlags) *cobra.Command {
 		Short:   "scan config files for misconfigurations",
 		PreRunE: validateArgs,
 		RunE: func(cmd *cobra.Command, args []string) error {
-			options, err := configFlags.ToOptions(cmd.Root().Version, args, globalFlags, outputWriter)
+			options, err := configFlags.ToOptions(cmd.Version, args, globalFlags, outputWriter)
 			if err != nil {
 				return xerrors.Errorf("flag error: %w", err)
 			}
@@ -440,7 +462,7 @@ func NewKubernetesCommand(globalFlags *flag.GlobalFlags) *cobra.Command {
 `,
 		Args: cobra.MinimumNArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			opts, err := k8sFlags.ToOptions(cmd.Root().Version, args, globalFlags, outputWriter)
+			opts, err := k8sFlags.ToOptions(cmd.Version, args, globalFlags, outputWriter)
 			if err != nil {
 				return xerrors.Errorf("flag error: %w", err)
 			}
@@ -481,7 +503,7 @@ func NewSBOMCommand(globalFlags *flag.GlobalFlags) *cobra.Command {
 `,
 		PreRunE: validateArgs,
 		RunE: func(cmd *cobra.Command, args []string) error {
-			options, err := sbomFlags.ToOptions(cmd.Root().Version, args, globalFlags, outputWriter)
+			options, err := sbomFlags.ToOptions(cmd.Version, args, globalFlags, outputWriter)
 			if err != nil {
 				return xerrors.Errorf("flag error: %w", err)
 			}
@@ -495,28 +517,22 @@ func NewSBOMCommand(globalFlags *flag.GlobalFlags) *cobra.Command {
 }
 
 func NewVersionCommand(globalFlags *flag.GlobalFlags) *cobra.Command {
-	versionFlags := &flag.Flags{
-		ReportFlags: &flag.ReportFlags{
-			Format: lo.ToPtr(""),
-		},
-	}
-
+	var versionFormat string
 	cmd := &cobra.Command{
 		Use:   "version [flags]",
 		Short: "print the version",
 		Args:  cobra.NoArgs,
 		RunE: func(cmd *cobra.Command, args []string) error {
-			options, err := versionFlags.ToOptions(cmd.Root().Version, args, globalFlags, outputWriter)
-			if err != nil {
-				return xerrors.Errorf("flag error: %w", err)
-			}
-			showVersion(options.CacheDir, options.Format, options.AppVersion, outputWriter)
+			options := globalFlags.ToOptions()
+			showVersion(options.CacheDir, versionFormat, cmd.Version, outputWriter)
 
 			return nil
 		},
 		SilenceErrors: true,
 	}
-	versionFlags.AddFlags(cmd)
+
+	// Add version format flag, only json is supported
+	cmd.Flags().StringVarP(&versionFormat, flag.FormatFlag, "f", "", "version format (json)")
 
 	return cmd
 }
@@ -563,11 +579,11 @@ func validateArgs(cmd *cobra.Command, args []string) error {
 	}
 
 	if len(args) == 0 && viper.GetString(flag.InputFlag) == "" {
-		cmd.Help()
-		return xerrors.New(`Require at least 1 argument or --input option`)
+		log.Logger.Error(`Require at least 1 argument or --input option`)
+		return cmd.Help()
 	} else if len(args) > 1 {
-		cmd.Help()
-		return xerrors.New(`multiple targets cannot be specified`)
+		log.Logger.Error(`multiple targets cannot be specified`)
+		return cmd.Help()
 	}
 
 	return nil
