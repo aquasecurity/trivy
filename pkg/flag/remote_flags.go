@@ -57,7 +57,7 @@ func NewClientFlags() *RemoteFlags {
 func NewServerDefaultFlags() *RemoteFlags {
 	return &RemoteFlags{
 		Token:       lo.ToPtr(""),
-		TokenHeader: lo.ToPtr(""),
+		TokenHeader: lo.ToPtr(DefaultTokenHeader),
 		Listen:      lo.ToPtr("localhost:4954"),
 	}
 }
@@ -73,7 +73,7 @@ func (f *RemoteFlags) AddFlags(cmd *cobra.Command) {
 		cmd.Flags().String(ServerTokenFlag, *f.Token, "for authentication in client/server mode")
 	}
 	if f.TokenHeader != nil {
-		cmd.Flags().String(ServerTokenHeaderFlag, *f.Token, "specify a header name for token in client/server mode")
+		cmd.Flags().String(ServerTokenHeaderFlag, *f.TokenHeader, "specify a header name for token in client/server mode")
 	}
 	if f.Listen != nil {
 		cmd.Flags().String(ServerListenFlag, *f.Listen, "listen address")
@@ -86,9 +86,6 @@ func (f *RemoteFlags) ToOptions() RemoteOptions {
 	listen := viper.GetString(ServerListenFlag)
 	token := viper.GetString(ServerTokenFlag)
 	tokenHeader := viper.GetString(ServerTokenHeaderFlag)
-	if tokenHeader == "" {
-		tokenHeader = DefaultTokenHeader
-	}
 
 	if serverAddr == "" {
 		switch {
