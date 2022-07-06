@@ -280,6 +280,19 @@ func LoadAll() ([]Plugin, error) {
 	return plugins, nil
 }
 
+// RunWithArgs runs the plugin with arguments
+func RunWithArgs(ctx context.Context, url string, args []string) error {
+	pl, err := Install(ctx, url, false)
+	if err != nil {
+		return xerrors.Errorf("plugin install error: %w", err)
+	}
+
+	if err = pl.Run(ctx, args); err != nil {
+		return xerrors.Errorf("unable to run %s plugin: %w", pl.Name, err)
+	}
+	return nil
+}
+
 func loadMetadata(dir string) (Plugin, error) {
 	filePath := filepath.Join(dir, configFile)
 	f, err := os.Open(filePath)

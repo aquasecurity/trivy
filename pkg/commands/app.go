@@ -1,7 +1,6 @@
 package commands
 
 import (
-	"context"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -49,7 +48,7 @@ func NewApp(version string) *cobra.Command {
 
 	if runAsPlugin := os.Getenv("TRIVY_RUN_AS_PLUGIN"); runAsPlugin != "" {
 		rootCmd.RunE = func(cmd *cobra.Command, args []string) error {
-			return runPluginWithArgs(cmd.Context(), runAsPlugin, args)
+			return plugin.RunWithArgs(cmd.Context(), runAsPlugin, args)
 		}
 		rootCmd.DisableFlagParsing = true
 		return rootCmd
@@ -72,18 +71,6 @@ func NewApp(version string) *cobra.Command {
 	rootCmd.AddCommand(loadPluginCommands()...)
 
 	return rootCmd
-}
-
-func runPluginWithArgs(ctx context.Context, url string, args []string) error {
-	pl, err := plugin.Install(ctx, url, false)
-	if err != nil {
-		return xerrors.Errorf("plugin install error: %w", err)
-	}
-
-	if err = pl.Run(ctx, args); err != nil {
-		return xerrors.Errorf("unable to run %s plugin: %w", pl.Name, err)
-	}
-	return nil
 }
 
 func loadPluginCommands() []*cobra.Command {
@@ -482,7 +469,7 @@ func NewPluginCommand() *cobra.Command {
 			Short:                 "run a plugin on the fly",
 			Args:                  cobra.MinimumNArgs(1),
 			RunE: func(cmd *cobra.Command, args []string) error {
-				return runPluginWithArgs(cmd.Context(), args[0], args[1:])
+				return plugin.RunWithArgs(cmd.Context(), args[0], args[1:])
 			},
 		},
 		&cobra.Command{
