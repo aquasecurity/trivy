@@ -51,7 +51,7 @@ func Information(c *cli.Context) error {
 }
 
 // List displays a list of all of installed plugins
-func List(c *cli.Context) error {
+func List(_ *cobra.Command, _ []string) error {
 	info, err := plugin.List()
 	if err != nil {
 		return xerrors.Errorf("plugin list display error: %w", err)

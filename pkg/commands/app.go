@@ -394,7 +394,15 @@ func NewPluginCommand() *cobra.Command {
 			Short:   "uninstall a plugin",
 			Args:    cobra.ExactArgs(1),
 			RunE:    plugin.Uninstall,
-		})
+		},
+		&cobra.Command{
+			Use:     "list",
+			Aliases: []string{"l"},
+			Short:   "list installed plugin",
+			Args:    cobra.NoArgs,
+			RunE:    plugin.List,
+		},
+	)
 	return cmd
 }
 
