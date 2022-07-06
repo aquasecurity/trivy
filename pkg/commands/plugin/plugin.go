@@ -32,13 +32,8 @@ func Uninstall(_ *cobra.Command, args []string) error {
 }
 
 // Information displays information about the plugin
-func Information(c *cli.Context) error {
-	if c.NArg() != 1 {
-		cli.ShowSubcommandHelpAndExit(c, 1)
-	}
-
-	pluginName := c.Args().First()
-	info, err := plugin.Information(pluginName)
+func Information(_ *cobra.Command, args []string) error {
+	info, err := plugin.Information(args[0])
 	if err != nil {
 		return xerrors.Errorf("plugin information display error: %w", err)
 	}

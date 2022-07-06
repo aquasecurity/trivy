@@ -402,6 +402,12 @@ func NewPluginCommand() *cobra.Command {
 			Args:    cobra.NoArgs,
 			RunE:    plugin.List,
 		},
+		&cobra.Command{
+			Use:   "info PLUGIN_NAME",
+			Short: "information about a plugin",
+			Args:  cobra.ExactArgs(1),
+			RunE:  plugin.Information,
+		},
 	)
 	return cmd
 }
