@@ -57,10 +57,10 @@ func NewMisconfFlags() *MisconfFlags {
 
 func (f *MisconfFlags) AddFlags(cmd *cobra.Command) {
 	if f.FilePatterns != nil {
-		cmd.Flags().StringSlice(FilePatternsFlag, *f.FilePatterns, "specify file patterns")
+		cmd.Flags().StringSlice(FilePatternsFlag, *f.FilePatterns, "specify config file patterns, available with '--security-checks config'")
 	}
 	if f.IncludeNonFailures != nil {
-		cmd.Flags().Bool(IncludeNonFailuresFlag, *f.IncludeNonFailures, "include successes and exceptions")
+		cmd.Flags().Bool(IncludeNonFailuresFlag, *f.IncludeNonFailures, "include successes and exceptions, available with '--security-checks config'")
 	}
 	if f.SkipPolicyUpdate != nil {
 		cmd.Flags().Bool(SkipPolicyUpdateFlag, *f.SkipPolicyUpdate, "deprecated")
