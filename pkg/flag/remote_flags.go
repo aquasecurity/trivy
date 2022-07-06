@@ -57,7 +57,7 @@ func NewClientFlags() *RemoteFlags {
 func NewServerDefaultFlags() *RemoteFlags {
 	return &RemoteFlags{
 		Token:       lo.ToPtr(""),
-		TokenHeader: lo.ToPtr(""),
+		TokenHeader: lo.ToPtr(DefaultTokenHeader),
 		Listen:      lo.ToPtr("localhost:4954"),
 	}
 }
@@ -73,7 +73,7 @@ func (f *RemoteFlags) AddFlags(cmd *cobra.Command) {
 		cmd.Flags().String(ServerTokenFlag, *f.Token, "for authentication in client/server mode")
 	}
 	if f.TokenHeader != nil {
-		cmd.Flags().String(ServerTokenHeaderFlag, *f.Token, "specify a header name for token in client/server mode")
+		cmd.Flags().String(ServerTokenHeaderFlag, *f.TokenHeader, "specify a header name for token in client/server mode")
 	}
 	if f.Listen != nil {
 		cmd.Flags().String(ServerListenFlag, *f.Listen, "listen address")
@@ -83,6 +83,7 @@ func (f *RemoteFlags) AddFlags(cmd *cobra.Command) {
 func (f *RemoteFlags) ToOptions() RemoteOptions {
 	serverAddr := viper.GetString(ServerFlag)
 	customHeaders := splitCustomHeaders(viper.GetStringSlice(CustomHeadersFlag))
+	listen := viper.GetString(ServerListenFlag)
 	token := viper.GetString(ServerTokenFlag)
 	tokenHeader := viper.GetString(ServerTokenHeaderFlag)
 
@@ -90,7 +91,7 @@ func (f *RemoteFlags) ToOptions() RemoteOptions {
 		switch {
 		case len(lo.FromPtr(f.CustomHeaders)) > 0:
 			log.Logger.Warn(`"--custom-header"" can be used only with "--server"`)
-		case token != "":
+		case token != "" && listen == "":
 			log.Logger.Warn(`"--token" can be used only with "--server"`)
 		case tokenHeader != "" && tokenHeader != DefaultTokenHeader:
 			log.Logger.Warn(`'--token-header' can be used only with "--server"`)
@@ -106,7 +107,7 @@ func (f *RemoteFlags) ToOptions() RemoteOptions {
 		TokenHeader:   tokenHeader,
 		ServerAddr:    serverAddr,
 		CustomHeaders: customHeaders,
-		Listen:        viper.GetString(ServerListenFlag),
+		Listen:        listen,
 	}
 }
 
