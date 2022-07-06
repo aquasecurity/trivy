@@ -43,7 +43,7 @@ type MisconfOptions struct {
 	PolicyNamespaces []string
 }
 
-func NewMisconfDefaultFlags() *MisconfFlags {
+func NewMisconfFlags() *MisconfFlags {
 	return &MisconfFlags{
 		FilePatterns:       lo.ToPtr([]string{}),
 		IncludeNonFailures: lo.ToPtr(false),

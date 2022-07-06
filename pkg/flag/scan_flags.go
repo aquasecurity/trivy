@@ -14,7 +14,6 @@ import (
 )
 
 const (
-	InputFlag          = "input"
 	SkipDirsFlag       = "skip-dirs"
 	SkipFilesFlag      = "skip-files"
 	OfflineScanFlag    = "offline-scan"
@@ -23,7 +22,6 @@ const (
 )
 
 type ScanFlags struct {
-	Input          *string
 	SkipDirs       *[]string
 	SkipFiles      *[]string
 	OfflineScan    *bool
@@ -33,7 +31,6 @@ type ScanFlags struct {
 
 type ScanOptions struct {
 	Target         string
-	Input          string
 	SkipDirs       []string
 	SkipFiles      []string
 	OfflineScan    bool
@@ -41,9 +38,8 @@ type ScanOptions struct {
 	SecurityChecks []string
 }
 
-func NewDefaultScanFlags() *ScanFlags {
+func NewScanFlags() *ScanFlags {
 	return &ScanFlags{
-		Input:          lo.ToPtr(""),
 		SkipDirs:       lo.ToPtr([]string{}),
 		SkipFiles:      lo.ToPtr([]string{}),
 		OfflineScan:    lo.ToPtr(false),
@@ -53,9 +49,6 @@ func NewDefaultScanFlags() *ScanFlags {
 }
 
 func (f *ScanFlags) AddFlags(cmd *cobra.Command) {
-	if f.Input != nil {
-		cmd.Flags().String(InputFlag, *f.Input, "input file path instead of image name")
-	}
 	if f.SkipDirs != nil {
 		cmd.Flags().StringSlice(SkipDirsFlag, *f.SkipDirs, "specify the directories where the traversal is skipped")
 	}
@@ -74,15 +67,13 @@ func (f *ScanFlags) AddFlags(cmd *cobra.Command) {
 }
 
 func (f *ScanFlags) ToOptions(args []string) (ScanOptions, error) {
-	input := viper.GetString(InputFlag)
 	var target string
-	if input == "" && len(args) == 1 {
+	if len(args) == 1 {
 		target = args[0]
 	}
 
 	return ScanOptions{
 		Target:         target,
-		Input:          input,
 		SkipDirs:       viper.GetStringSlice(SkipDirsFlag),
 		SkipFiles:      viper.GetStringSlice(SkipFilesFlag),
 		OfflineScan:    viper.GetBool(OfflineScanFlag),

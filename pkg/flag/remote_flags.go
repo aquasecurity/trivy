@@ -45,7 +45,7 @@ type RemoteOptions struct {
 	CustomHeaders http.Header
 }
 
-func NewClientDefaultFlags() *RemoteFlags {
+func NewClientFlags() *RemoteFlags {
 	return &RemoteFlags{
 		ServerAddr:    lo.ToPtr(""),
 		CustomHeaders: lo.ToPtr([]string{}),

@@ -137,12 +137,12 @@ func NewImageCommand(globalFlags *flag.GlobalFlags) *cobra.Command {
 	imageFlags := &flag.Flags{
 		CacheFlags:   flag.NewCacheFlags(),
 		DBFlags:      flag.NewDBFlags(),
-		ImageFlags:   flag.NewImageDefaultFlags(), // container image specific
-		MisconfFlags: flag.NewMisconfDefaultFlags(),
-		RemoteFlags:  flag.NewClientDefaultFlags(), // for client/server mode
-		ReportFlags:  flag.NewReportDefaultFlags(),
-		ScanFlags:    flag.NewDefaultScanFlags(),
-		SecretFlags:  flag.NewSecretDefaultFlags(),
+		ImageFlags:   flag.NewImageFlags(), // container image specific
+		MisconfFlags: flag.NewMisconfFlags(),
+		RemoteFlags:  flag.NewClientFlags(), // for client/server mode
+		ReportFlags:  flag.NewReportFlags(),
+		ScanFlags:    flag.NewScanFlags(),
+		SecretFlags:  flag.NewSecretFlags(),
 	}
 
 	cmd := &cobra.Command{
@@ -174,11 +174,11 @@ func NewFilesystemCommand(globalFlags *flag.GlobalFlags) *cobra.Command {
 	fsFlags := &flag.Flags{
 		CacheFlags:   flag.NewCacheFlags(),
 		DBFlags:      flag.NewDBFlags(),
-		MisconfFlags: flag.NewMisconfDefaultFlags(),
-		RemoteFlags:  flag.NewClientDefaultFlags(), // for client/server mode
-		ReportFlags:  flag.NewReportDefaultFlags(),
-		ScanFlags:    flag.NewDefaultScanFlags(),
-		SecretFlags:  flag.NewSecretDefaultFlags(),
+		MisconfFlags: flag.NewMisconfFlags(),
+		RemoteFlags:  flag.NewClientFlags(), // for client/server mode
+		ReportFlags:  flag.NewReportFlags(),
+		ScanFlags:    flag.NewScanFlags(),
+		SecretFlags:  flag.NewSecretFlags(),
 	}
 
 	cmd := &cobra.Command{
@@ -204,10 +204,10 @@ func NewRootfsCommand(globalFlags *flag.GlobalFlags) *cobra.Command {
 	rootfsFlags := &flag.Flags{
 		CacheFlags:   flag.NewCacheFlags(),
 		DBFlags:      flag.NewDBFlags(),
-		MisconfFlags: flag.NewMisconfDefaultFlags(),
-		ReportFlags:  flag.NewReportDefaultFlags(),
-		ScanFlags:    flag.NewDefaultScanFlags(),
-		SecretFlags:  flag.NewSecretDefaultFlags(),
+		MisconfFlags: flag.NewMisconfFlags(),
+		ReportFlags:  flag.NewReportFlags(),
+		ScanFlags:    flag.NewScanFlags(),
+		SecretFlags:  flag.NewSecretFlags(),
 	}
 
 	cmd := &cobra.Command{
@@ -232,11 +232,11 @@ func NewRepositoryCommand(globalFlags *flag.GlobalFlags) *cobra.Command {
 	repoFlags := &flag.Flags{
 		CacheFlags:   flag.NewCacheFlags(),
 		DBFlags:      flag.NewDBFlags(),
-		MisconfFlags: flag.NewMisconfDefaultFlags(),
-		RemoteFlags:  flag.NewClientDefaultFlags(), // for client/server mode
-		ReportFlags:  flag.NewReportDefaultFlags(),
-		ScanFlags:    flag.NewDefaultScanFlags(),
-		SecretFlags:  flag.NewSecretDefaultFlags(),
+		MisconfFlags: flag.NewMisconfFlags(),
+		RemoteFlags:  flag.NewClientFlags(), // for client/server mode
+		ReportFlags:  flag.NewReportFlags(),
+		ScanFlags:    flag.NewScanFlags(),
+		SecretFlags:  flag.NewSecretFlags(),
 	}
 
 	cmd := &cobra.Command{
@@ -260,17 +260,17 @@ func NewRepositoryCommand(globalFlags *flag.GlobalFlags) *cobra.Command {
 
 // NewClientCommand returns the 'client' subcommand that is deprecated
 func NewClientCommand(globalFlags *flag.GlobalFlags) *cobra.Command {
-	remoteFlags := flag.NewClientDefaultFlags()
+	remoteFlags := flag.NewClientFlags()
 	remoteFlags.ServerAddr = nil // disable '--server' to use '--remote' instead.
 
 	clientFlags := &flag.Flags{
 		CacheFlags:   flag.NewCacheFlags(),
 		DBFlags:      flag.NewDBFlags(),
-		MisconfFlags: flag.NewMisconfDefaultFlags(),
+		MisconfFlags: flag.NewMisconfFlags(),
 		RemoteFlags:  remoteFlags,
-		ReportFlags:  flag.NewReportDefaultFlags(),
-		ScanFlags:    flag.NewDefaultScanFlags(),
-		SecretFlags:  flag.NewSecretDefaultFlags(),
+		ReportFlags:  flag.NewReportFlags(),
+		ScanFlags:    flag.NewScanFlags(),
+		SecretFlags:  flag.NewSecretFlags(),
 	}
 
 	cmd := &cobra.Command{
@@ -304,7 +304,7 @@ func NewServerCommand(globalFlags *flag.GlobalFlags) *cobra.Command {
 		CacheFlags:  flag.NewCacheFlags(),
 		DBFlags:     flag.NewDBFlags(),
 		RemoteFlags: flag.NewServerDefaultFlags(),
-		ReportFlags: flag.NewReportDefaultFlags(),
+		ReportFlags: flag.NewReportFlags(),
 	}
 
 	cmd := &cobra.Command{
@@ -335,8 +335,8 @@ func NewConfigCommand(globalFlags *flag.GlobalFlags) *cobra.Command {
 
 	configFlags := &flag.Flags{
 		CacheFlags:   flag.NewCacheFlags(),
-		MisconfFlags: flag.NewMisconfDefaultFlags(),
-		ReportFlags:  flag.NewReportDefaultFlags(),
+		MisconfFlags: flag.NewMisconfFlags(),
+		ReportFlags:  flag.NewReportFlags(),
 		ScanFlags:    scanFlags,
 	}
 
@@ -429,8 +429,7 @@ func NewModuleCommand(globalFlags *flag.GlobalFlags) *cobra.Command {
 }
 
 func NewKubernetesCommand(globalFlags *flag.GlobalFlags) *cobra.Command {
-	scanFlags := flag.NewDefaultScanFlags()
-	scanFlags.Input = nil                            // disable '--input'
+	scanFlags := flag.NewScanFlags()
 	scanFlags.SecurityChecks = lo.ToPtr(fmt.Sprintf( // overwrite the default value
 		"%s,%s,%s,%s",
 		types.SecurityCheckVulnerability,
@@ -442,10 +441,10 @@ func NewKubernetesCommand(globalFlags *flag.GlobalFlags) *cobra.Command {
 		CacheFlags:      flag.NewCacheFlags(),
 		DBFlags:         flag.NewDBFlags(),
 		KubernetesFlags: flag.NewKubernetesDefaultFlags(), // kubernetes-specific flags
-		MisconfFlags:    flag.NewMisconfDefaultFlags(),
-		ReportFlags:     flag.NewReportDefaultFlags(),
+		MisconfFlags:    flag.NewMisconfFlags(),
+		ReportFlags:     flag.NewReportFlags(),
 		ScanFlags:       scanFlags,
-		SecretFlags:     flag.NewSecretDefaultFlags(),
+		SecretFlags:     flag.NewSecretFlags(),
 	}
 	cmd := &cobra.Command{
 		Use:     "kubernetes [flags] { cluster | all | specific resources like kubectl. eg: pods, pod/NAME }",
@@ -479,16 +478,15 @@ func NewKubernetesCommand(globalFlags *flag.GlobalFlags) *cobra.Command {
 }
 
 func NewSBOMCommand(globalFlags *flag.GlobalFlags) *cobra.Command {
-	scanFlags := flag.NewDefaultScanFlags()
-	scanFlags.Input = nil          // TODO: disable '--input' in other subcommands
+	scanFlags := flag.NewScanFlags()
 	scanFlags.SecurityChecks = nil // disable '--security-checks' as it always scans for vulnerabilities
 
 	sbomFlags := &flag.Flags{
 		CacheFlags:  flag.NewCacheFlags(),
 		DBFlags:     flag.NewDBFlags(),
-		RemoteFlags: flag.NewClientDefaultFlags(), // for client/server mode
-		ReportFlags: flag.NewReportDefaultFlags(),
-		ScanFlags:   flag.NewDefaultScanFlags(),
+		RemoteFlags: flag.NewClientFlags(), // for client/server mode
+		ReportFlags: flag.NewReportFlags(),
+		ScanFlags:   flag.NewScanFlags(),
 		SBOMFlags:   flag.NewDefaultSBOMFlags(),
 	}
 
@@ -580,11 +578,19 @@ func validateArgs(cmd *cobra.Command, args []string) error {
 	}
 
 	if len(args) == 0 && viper.GetString(flag.InputFlag) == "" {
-		log.Logger.Error(`Require at least 1 argument or --input option`)
-		return cmd.Help()
+		if err := cmd.Help(); err != nil {
+			return err
+		}
+
+		if f := cmd.Flags().Lookup(flag.InputFlag); f != nil {
+			return xerrors.New(`Require at least 1 argument or --input option`)
+		}
+		return xerrors.New(`Require at least 1 argument`)
 	} else if len(args) > 1 {
-		log.Logger.Error(`multiple targets cannot be specified`)
-		return cmd.Help()
+		if err := cmd.Help(); err != nil {
+			return err
+		}
+		return xerrors.New(`multiple targets cannot be specified`)
 	}
 
 	return nil

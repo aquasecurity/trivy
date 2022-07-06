@@ -16,7 +16,7 @@ type SecretOptions struct {
 	SecretConfigPath string
 }
 
-func NewSecretDefaultFlags() *SecretFlags {
+func NewSecretFlags() *SecretFlags {
 	return &SecretFlags{
 		SecretConfigPath: lo.ToPtr("trivy-secret.yaml"),
 	}

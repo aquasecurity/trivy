@@ -60,7 +60,7 @@ type ReportOptions struct {
 	Severities []dbTypes.Severity
 }
 
-func NewReportDefaultFlags() *ReportFlags {
+func NewReportFlags() *ReportFlags {
 	return &ReportFlags{
 		Format:         lo.ToPtr(report.FormatTable),
 		Template:       lo.ToPtr(""),
