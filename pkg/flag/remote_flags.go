@@ -83,14 +83,18 @@ func (f *RemoteFlags) AddFlags(cmd *cobra.Command) {
 func (f *RemoteFlags) ToOptions() RemoteOptions {
 	serverAddr := viper.GetString(ServerFlag)
 	customHeaders := splitCustomHeaders(viper.GetStringSlice(CustomHeadersFlag))
+	listen := viper.GetString(ServerListenFlag)
 	token := viper.GetString(ServerTokenFlag)
 	tokenHeader := viper.GetString(ServerTokenHeaderFlag)
+	if tokenHeader == "" {
+		tokenHeader = DefaultTokenHeader
+	}
 
 	if serverAddr == "" {
 		switch {
 		case len(lo.FromPtr(f.CustomHeaders)) > 0:
 			log.Logger.Warn(`"--custom-header"" can be used only with "--server"`)
-		case token != "":
+		case token != "" && listen == "":
 			log.Logger.Warn(`"--token" can be used only with "--server"`)
 		case tokenHeader != "" && tokenHeader != DefaultTokenHeader:
 			log.Logger.Warn(`'--token-header' can be used only with "--server"`)
@@ -106,7 +110,7 @@ func (f *RemoteFlags) ToOptions() RemoteOptions {
 		TokenHeader:   tokenHeader,
 		ServerAddr:    serverAddr,
 		CustomHeaders: customHeaders,
-		Listen:        viper.GetString(ServerListenFlag),
+		Listen:        listen,
 	}
 }
 
