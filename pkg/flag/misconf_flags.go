@@ -71,15 +71,12 @@ func (f *MisconfFlags) AddFlags(cmd *cobra.Command) {
 	}
 	if f.PolicyPaths != nil {
 		cmd.Flags().StringSlice(ConfigPolicyFlag, *f.PolicyPaths, "specify paths to the Rego policy files directory, applying config files")
-		viper.RegisterAlias(ConfigPolicyFlag, "policy")
 	}
 	if f.DataPaths != nil {
 		cmd.Flags().StringSlice(ConfigDataFlag, *f.DataPaths, "specify paths from which data for the Rego policies will be recursively loaded")
-		viper.RegisterAlias(ConfigDataFlag, "data")
 	}
 	if f.PolicyNamespaces != nil {
 		cmd.Flags().StringSlice(PolicyNamespaceFlag, *f.PolicyNamespaces, "Rego namespaces")
-		viper.RegisterAlias(PolicyNamespaceFlag, "namespaces")
 	}
 }
 

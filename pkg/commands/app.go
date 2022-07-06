@@ -241,6 +241,7 @@ func NewRepositoryCommand(globalFlags *flag.GlobalFlags) *cobra.Command {
 
 	cmd := &cobra.Command{
 		Use:     "repository [flags] REPO_URL",
+		Aliases: []string{"repo"},
 		Short:   "scan remote repository",
 		PreRunE: validateArgs,
 		RunE: func(cmd *cobra.Command, args []string) error {

@@ -4,6 +4,7 @@ import (
 	"io"
 
 	"github.com/spf13/cobra"
+	"github.com/spf13/pflag"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
@@ -74,6 +75,8 @@ func (f *Flags) AddFlags(cmd *cobra.Command) {
 	if f.SecretFlags != nil {
 		f.SecretFlags.AddFlags(cmd)
 	}
+
+	cmd.Flags().SetNormalizeFunc(flagNameNormalize)
 }
 
 func (f *Flags) ToOptions(appVersion string, args []string, globalFlags *GlobalFlags, output io.Writer) (Options, error) {
@@ -142,4 +145,20 @@ func (f *Flags) ToOptions(appVersion string, args []string, globalFlags *GlobalF
 	}
 
 	return opts, nil
+}
+
+func flagNameNormalize(f *pflag.FlagSet, name string) pflag.NormalizedName {
+	switch name {
+	case "skip-update":
+		name = SkipDBUpdateFlag
+	case "policy":
+		name = ConfigPolicyFlag
+	case "data":
+		name = ConfigDataFlag
+	case "namespaces":
+		name = PolicyNamespaceFlag
+	case "ctx":
+		name = ClusterContextFlag
+	}
+	return pflag.NormalizedName(name)
 }

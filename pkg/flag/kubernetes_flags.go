@@ -8,7 +8,7 @@ import (
 
 const (
 	ClusterContextFlag = "context"
-	NamespaceFlag      = "namespace"
+	K8sNamespaceFlag   = "namespace"
 	ReportFormatFlag   = "report"
 )
 
@@ -35,10 +35,9 @@ func NewKubernetesDefaultFlags() *KubernetesFlags {
 func (f *KubernetesFlags) AddFlags(cmd *cobra.Command) {
 	if f.ClusterContext != nil {
 		cmd.Flags().String(ClusterContextFlag, *f.ClusterContext, "specify a context to scan")
-		viper.RegisterAlias(ClusterContextFlag, "ctx")
 	}
 	if f.Namespace != nil {
-		cmd.Flags().StringP(NamespaceFlag, "n", *f.Namespace, "specify a namespace to scan")
+		cmd.Flags().StringP(K8sNamespaceFlag, "n", *f.Namespace, "specify a namespace to scan")
 	}
 	if f.ReportFormat != nil {
 		cmd.Flags().String(ReportFormatFlag, *f.ReportFormat, "specify a report format for the output. (all,summary)")
@@ -48,7 +47,7 @@ func (f *KubernetesFlags) AddFlags(cmd *cobra.Command) {
 func (f *KubernetesFlags) ToOptions() KubernetesOptions {
 	return KubernetesOptions{
 		ClusterContext: viper.GetString(ClusterContextFlag),
-		Namespace:      viper.GetString(NamespaceFlag),
+		Namespace:      viper.GetString(K8sNamespaceFlag),
 		ReportFormat:   viper.GetString(ReportFormatFlag),
 	}
 }
