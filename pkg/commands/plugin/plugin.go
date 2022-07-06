@@ -6,7 +6,6 @@ import (
 	"os"
 
 	"github.com/spf13/cobra"
-	"github.com/urfave/cli/v2"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/log"
@@ -60,16 +59,10 @@ func List(_ *cobra.Command, _ []string) error {
 }
 
 // Update updates an existing plugin
-func Update(c *cli.Context) error {
-	if c.NArg() != 1 {
-		cli.ShowSubcommandHelpAndExit(c, 1)
-	}
-
-	pluginName := c.Args().First()
-	if err := plugin.Update(pluginName); err != nil {
+func Update(_ *cobra.Command, args []string) error {
+	if err := plugin.Update(args[0]); err != nil {
 		return xerrors.Errorf("plugin update error: %w", err)
 	}
-
 	return nil
 }
 

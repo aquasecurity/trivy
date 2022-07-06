@@ -415,6 +415,12 @@ func NewPluginCommand() *cobra.Command {
 			Args:    cobra.MinimumNArgs(1),
 			RunE:    plugin.Run,
 		},
+		&cobra.Command{
+			Use:   "update PLUGIN_NAME",
+			Short: "update an existing plugin",
+			Args:  cobra.ExactArgs(1),
+			RunE:  plugin.Update,
+		},
 	)
 	return cmd
 }
