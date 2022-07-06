@@ -407,6 +407,7 @@ func NewPluginCommand() *cobra.Command {
 			Use:                   "install URL | FILE_PATH",
 			Aliases:               []string{"i"},
 			Short:                 "install a plugin",
+			SilenceErrors:         true,
 			DisableFlagsInUseLine: true,
 			Args:                  cobra.ExactArgs(1),
 			RunE: func(cmd *cobra.Command, args []string) error {
@@ -419,6 +420,7 @@ func NewPluginCommand() *cobra.Command {
 		&cobra.Command{
 			Use:                   "uninstall PLUGIN_NAME",
 			Aliases:               []string{"u"},
+			SilenceErrors:         true,
 			DisableFlagsInUseLine: true,
 			Short:                 "uninstall a plugin",
 			Args:                  cobra.ExactArgs(1),
@@ -432,6 +434,7 @@ func NewPluginCommand() *cobra.Command {
 		&cobra.Command{
 			Use:                   "list",
 			Aliases:               []string{"l"},
+			SilenceErrors:         true,
 			DisableFlagsInUseLine: true,
 			Short:                 "list installed plugin",
 			Args:                  cobra.NoArgs,
@@ -449,6 +452,7 @@ func NewPluginCommand() *cobra.Command {
 		&cobra.Command{
 			Use:                   "info PLUGIN_NAME",
 			Short:                 "information about a plugin",
+			SilenceErrors:         true,
 			DisableFlagsInUseLine: true,
 			Args:                  cobra.ExactArgs(1),
 			RunE: func(_ *cobra.Command, args []string) error {
@@ -463,8 +467,9 @@ func NewPluginCommand() *cobra.Command {
 			},
 		},
 		&cobra.Command{
-			Use:                   "run PLUGIN_NAME",
+			Use:                   "run URL | FILE_PATH",
 			Aliases:               []string{"r"},
+			SilenceErrors:         true,
 			DisableFlagsInUseLine: true,
 			Short:                 "run a plugin on the fly",
 			Args:                  cobra.MinimumNArgs(1),
@@ -475,6 +480,7 @@ func NewPluginCommand() *cobra.Command {
 		&cobra.Command{
 			Use:                   "update PLUGIN_NAME",
 			Short:                 "update an existing plugin",
+			SilenceErrors:         true,
 			DisableFlagsInUseLine: true,
 			Args:                  cobra.ExactArgs(1),
 			RunE: func(_ *cobra.Command, args []string) error {
