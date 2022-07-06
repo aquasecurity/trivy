@@ -381,7 +381,6 @@ func NewPluginCommand() *cobra.Command {
 		SilenceUsage:  true,
 	}
 	cmd.AddCommand(
-		// TODO: add more subcommands
 		&cobra.Command{
 			Use:     "install [flags] URL | FILE_PATH",
 			Aliases: []string{"i"},
@@ -390,7 +389,7 @@ func NewPluginCommand() *cobra.Command {
 			RunE:    plugin.Install,
 		},
 		&cobra.Command{
-			Use:     "plugin uninstall PLUGIN_NAME",
+			Use:     "uninstall PLUGIN_NAME",
 			Aliases: []string{"u"},
 			Short:   "uninstall a plugin",
 			Args:    cobra.ExactArgs(1),
