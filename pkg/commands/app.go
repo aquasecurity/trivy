@@ -194,6 +194,7 @@ func NewFilesystemCommand(globalFlags *flag.GlobalFlags) *cobra.Command {
 			return artifact.Run(cmd.Context(), options, artifact.TargetFilesystem)
 		},
 		SilenceErrors: true,
+		SilenceUsage:  true,
 	}
 	fsFlags.AddFlags(cmd)
 
@@ -222,6 +223,7 @@ func NewRootfsCommand(globalFlags *flag.GlobalFlags) *cobra.Command {
 			return artifact.Run(cmd.Context(), options, artifact.TargetRootfs)
 		},
 		SilenceErrors: true,
+		SilenceUsage:  true,
 	}
 	rootfsFlags.AddFlags(cmd)
 
@@ -252,6 +254,7 @@ func NewRepositoryCommand(globalFlags *flag.GlobalFlags) *cobra.Command {
 			return artifact.Run(cmd.Context(), options, artifact.TargetRepository)
 		},
 		SilenceErrors: true,
+		SilenceUsage:  true,
 	}
 	repoFlags.AddFlags(cmd)
 
@@ -288,6 +291,7 @@ func NewClientCommand(globalFlags *flag.GlobalFlags) *cobra.Command {
 			return artifact.Run(cmd.Context(), options, artifact.TargetContainerImage)
 		},
 		SilenceErrors: true,
+		SilenceUsage:  true,
 	}
 	clientFlags.AddFlags(cmd)
 
@@ -320,6 +324,7 @@ func NewServerCommand(globalFlags *flag.GlobalFlags) *cobra.Command {
 			return server.Run(cmd.Context(), options)
 		},
 		SilenceErrors: true,
+		SilenceUsage:  true,
 	}
 	serverFlags.AddFlags(cmd)
 
@@ -360,6 +365,7 @@ func NewConfigCommand(globalFlags *flag.GlobalFlags) *cobra.Command {
 			return artifact.Run(cmd.Context(), options, artifact.TargetFilesystem)
 		},
 		SilenceErrors: true,
+		SilenceUsage:  true,
 	}
 	configFlags.AddFlags(cmd)
 
@@ -372,6 +378,7 @@ func NewPluginCommand() *cobra.Command {
 		Aliases:       []string{"p"},
 		Short:         "manage plugins",
 		SilenceErrors: true,
+		SilenceUsage:  true,
 	}
 	cmd.AddCommand(
 		// TODO: add more subcommands
@@ -391,6 +398,7 @@ func NewModuleCommand(globalFlags *flag.GlobalFlags) *cobra.Command {
 		Aliases:       []string{"m"},
 		Short:         "manage modules",
 		SilenceErrors: true,
+		SilenceUsage:  true,
 	}
 
 	// Add subcommands
@@ -460,7 +468,7 @@ func NewKubernetesCommand(globalFlags *flag.GlobalFlags) *cobra.Command {
   - resource scanning:
       $ trivy k8s deployment/orion
 `,
-		Args: cobra.MinimumNArgs(1),
+		PreRunE: validateArgs,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			opts, err := k8sFlags.ToOptions(cmd.Version, args, globalFlags, outputWriter)
 			if err != nil {
@@ -470,6 +478,7 @@ func NewKubernetesCommand(globalFlags *flag.GlobalFlags) *cobra.Command {
 			return k8scommands.Run(cmd.Context(), args, opts)
 		},
 		SilenceErrors: true,
+		SilenceUsage:  true,
 	}
 
 	k8sFlags.AddFlags(cmd)
@@ -493,7 +502,6 @@ func NewSBOMCommand(globalFlags *flag.GlobalFlags) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "sbom [flags] SBOM_PATH",
 		Short: "scan SBOM for vulnerabilities",
-		Args:  cobra.ExactArgs(1),
 		Example: `- Scan CycloneDX and show the result in tables:
       $ trivy sbom /path/to/report.cdx
 
@@ -509,6 +517,7 @@ func NewSBOMCommand(globalFlags *flag.GlobalFlags) *cobra.Command {
 			return artifact.Run(cmd.Context(), options, artifact.TargetSBOM)
 		},
 		SilenceErrors: true,
+		SilenceUsage:  true,
 	}
 	sbomFlags.AddFlags(cmd)
 
@@ -528,6 +537,7 @@ func NewVersionCommand(globalFlags *flag.GlobalFlags) *cobra.Command {
 			return nil
 		},
 		SilenceErrors: true,
+		SilenceUsage:  true,
 	}
 
 	// Add version format flag, only json is supported
@@ -586,7 +596,7 @@ func validateArgs(cmd *cobra.Command, args []string) error {
 			return xerrors.New(`Require at least 1 argument or --input option`)
 		}
 		return xerrors.New(`Require at least 1 argument`)
-	} else if len(args) > 1 {
+	} else if cmd.Name() != "kubernetes" && len(args) > 1 {
 		if err := cmd.Help(); err != nil {
 			return err
 		}
