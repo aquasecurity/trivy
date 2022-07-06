@@ -90,11 +90,11 @@ func (f *RemoteFlags) ToOptions() RemoteOptions {
 	if serverAddr == "" && listen == "" {
 		switch {
 		case len(lo.FromPtr(f.CustomHeaders)) > 0:
-			log.Logger.Warn(`"--custom-header"" can be used only with "--server" or with "server" subcommand`)
+			log.Logger.Warn(`"--custom-header" can be used only with "--server" or with "server" subcommand`)
 		case token != "":
 			log.Logger.Warn(`"--token" can be used only with "--server" or with "server" subcommand`)
 		case tokenHeader != "" && tokenHeader != DefaultTokenHeader:
-			log.Logger.Warn(`'--token-header' can be used only with "--server" or with "server" subcommand`)
+			log.Logger.Warn(`"--token-header" can be used only with "--server" or with "server" subcommand`)
 		}
 	}
 
