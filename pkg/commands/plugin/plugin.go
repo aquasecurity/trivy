@@ -24,16 +24,10 @@ func Install(cmd *cobra.Command, args []string) error {
 }
 
 // Uninstall uninstalls the plugin
-func Uninstall(c *cli.Context) error {
-	if c.NArg() != 1 {
-		cli.ShowSubcommandHelpAndExit(c, 1)
-	}
-
-	pluginName := c.Args().First()
-	if err := plugin.Uninstall(pluginName); err != nil {
+func Uninstall(_ *cobra.Command, args []string) error {
+	if err := plugin.Uninstall(args[0]); err != nil {
 		return xerrors.Errorf("plugin uninstall error: %w", err)
 	}
-
 	return nil
 }
 

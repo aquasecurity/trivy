@@ -388,6 +388,13 @@ func NewPluginCommand() *cobra.Command {
 			Short:   "install a plugin",
 			Args:    cobra.ExactArgs(1),
 			RunE:    plugin.Install,
+		},
+		&cobra.Command{
+			Use:     "plugin uninstall PLUGIN_NAME",
+			Aliases: []string{"u"},
+			Short:   "uninstall a plugin",
+			Args:    cobra.ExactArgs(1),
+			RunE:    plugin.Uninstall,
 		})
 	return cmd
 }
