@@ -87,14 +87,14 @@ func (f *RemoteFlags) ToOptions() RemoteOptions {
 	token := viper.GetString(ServerTokenFlag)
 	tokenHeader := viper.GetString(ServerTokenHeaderFlag)
 
-	if serverAddr == "" {
+	if serverAddr == "" && listen == "" {
 		switch {
 		case len(customHeaders) > 0:
-			log.Logger.Warn(`"--custom-header"" can be used only with "--server"`)
-		case token != "" && listen == "":
+			log.Logger.Warn(`"--custom-header" can be used only with "--server"`)
+		case token != "":
 			log.Logger.Warn(`"--token" can be used only with "--server"`)
 		case tokenHeader != "" && tokenHeader != DefaultTokenHeader:
-			log.Logger.Warn(`'--token-header' can be used only with "--server"`)
+			log.Logger.Warn(`"--token-header" can be used only with "--server"`)
 		}
 	}
 
