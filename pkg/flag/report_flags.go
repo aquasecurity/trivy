@@ -23,7 +23,7 @@ const (
 	DependencyTreeFlag = "dependency-tree"
 	ListAllPkgsFlag    = "list-all-pkgs"
 	IgnoreUnfixedFlag  = "ignore-unfixed"
-	IgnoreFileFlag     = "ignoreFile"
+	IgnoreFileFlag     = "ignorefile"
 	ExitCodeFlag       = "exit-code"
 	IgnorePolicyFlag   = "ignore-policy"
 	OutputFlag         = "output"
@@ -136,6 +136,11 @@ func (f *ReportFlags) ToOptions(out io.Writer) (ReportOptions, error) {
 	// "--dependency-tree" option is available only with "--format table".
 	if dependencyTree && format != report.FormatTable {
 		log.Logger.Warn(`"--dependency-tree" can be used only with "--format table".`)
+	}
+
+	// Enable '--list-all-pkgs' if needed
+	if f.forceListAllPkgs(format, listAllPkgs, dependencyTree) {
+		listAllPkgs = true
 	}
 
 	if output != "" {

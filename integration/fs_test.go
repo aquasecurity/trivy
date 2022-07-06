@@ -4,15 +4,13 @@
 package integration
 
 import (
-	"io"
 	"os"
 	"path/filepath"
 	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
-
-	"github.com/aquasecurity/trivy/pkg/commands"
+	"github.com/stretchr/testify/require"
 )
 
 func TestFilesystem(t *testing.T) {
@@ -145,7 +143,7 @@ func TestFilesystem(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			osArgs := []string{
-				"trivy", "--cache-dir", cacheDir, "fs", "--skip-db-update", "--skip-policy-update",
+				"-q", "--cache-dir", cacheDir, "fs", "--skip-db-update", "--skip-policy-update",
 				"--format", "json", "--offline-scan", "--security-checks", tt.args.securityChecks,
 			}
 
@@ -189,12 +187,9 @@ func TestFilesystem(t *testing.T) {
 			osArgs = append(osArgs, "--output", outputFile)
 			osArgs = append(osArgs, tt.args.input)
 
-			// Setup CLI App
-			app := commands.NewApp("dev")
-			app.Writer = io.Discard
-
 			// Run "trivy fs"
-			assert.Nil(t, app.Run(osArgs))
+			err := execute(osArgs)
+			require.NoError(t, err)
 
 			// Compare want and got
 			compareReports(t, tt.golden, outputFile)
