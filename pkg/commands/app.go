@@ -408,6 +408,13 @@ func NewPluginCommand() *cobra.Command {
 			Args:  cobra.ExactArgs(1),
 			RunE:  plugin.Information,
 		},
+		&cobra.Command{
+			Use:     "run PLUGIN_NAME",
+			Aliases: []string{"r"},
+			Short:   "run a plugin on the fly",
+			Args:    cobra.MinimumNArgs(1),
+			RunE:    plugin.Run,
+		},
 	)
 	return cmd
 }

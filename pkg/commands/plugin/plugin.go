@@ -74,14 +74,10 @@ func Update(c *cli.Context) error {
 }
 
 // Run runs the plugin
-func Run(c *cli.Context) error {
-	if c.NArg() < 1 {
-		cli.ShowSubcommandHelpAndExit(c, 1)
-	}
-
-	url := c.Args().First()
-	args := c.Args().Tail()
-	return RunWithArgs(c.Context, url, args)
+func Run(cmd *cobra.Command, args []string) error {
+	url := args[0]
+	pluginArgs := args[1:]
+	return RunWithArgs(cmd.Context(), url, pluginArgs)
 }
 
 // RunWithArgs runs the plugin with arguments
