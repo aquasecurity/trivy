@@ -25,6 +25,8 @@ func TestReportFlags_ToOptions(t *testing.T) {
 		ignorePolicy   string
 		output         string
 		severities     string
+
+		debug bool
 	}
 	tests := []struct {
 		name     string
@@ -58,8 +60,28 @@ func TestReportFlags_ToOptions(t *testing.T) {
 			name: "happy path with an cyclonedx",
 			fields: fields{
 				severities:  "CRITICAL",
-				format:      report.FormatCycloneDX,
+				format:      "cyclonedx",
 				listAllPkgs: true,
+			},
+			want: flag.ReportOptions{
+				Output:      os.Stdout,
+				Severities:  []dbTypes.Severity{dbTypes.SeverityCritical},
+				Format:      report.FormatCycloneDX,
+				ListAllPkgs: true,
+			},
+		},
+		{
+			name: "happy path with an cyclonedx option list-all-pkgs is false",
+			fields: fields{
+				severities:  "CRITICAL",
+				format:      "cyclonedx",
+				listAllPkgs: false,
+
+				debug: true,
+			},
+			wantLogs: []string{
+				`["cyclonedx" "spdx" "spdx-json" "github"] automatically enables '--list-all-pkgs'.`,
+				`Severities: ["CRITICAL"]`,
 			},
 			want: flag.ReportOptions{
 				Output: os.Stdout,
@@ -70,10 +92,28 @@ func TestReportFlags_ToOptions(t *testing.T) {
 				ListAllPkgs: true,
 			},
 		},
+		{
+			name: "invalid option combination: --template enabled without --format",
+			fields: fields{
+				template:   "@contrib/gitlab.tpl",
+				severities: "LOW",
+			},
+			wantLogs: []string{
+				"'--template' is ignored because '--format template' is not specified. Use '--template' option with '--format template' option.",
+			},
+			want: flag.ReportOptions{
+				Output:     os.Stdout,
+				Severities: []dbTypes.Severity{dbTypes.SeverityLow},
+				Template:   "@contrib/gitlab.tpl",
+			},
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			level := zap.WarnLevel
+			if tt.fields.debug {
+				level = zap.DebugLevel
+			}
 			core, obs := observer.New(level)
 			log.Logger = zap.New(core).Sugar()
 
