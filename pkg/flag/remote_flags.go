@@ -98,6 +98,10 @@ func (f *RemoteFlags) ToOptions() RemoteOptions {
 		}
 	}
 
+	if token == "" && tokenHeader != DefaultTokenHeader {
+		log.Logger.Warn(`"--token-header" should be used with "--token"`)
+	}
+
 	if token != "" && tokenHeader != "" {
 		customHeaders.Set(tokenHeader, token)
 	}
