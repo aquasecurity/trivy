@@ -243,13 +243,13 @@ func flagNameNormalize(f *pflag.FlagSet, name string) pflag.NormalizedName {
 	case "skip-update":
 		name = SkipDBUpdateFlag.Name
 	case "policy":
-		name = ConfigPolicyFlag
+		name = ConfigPolicyFlag.Name
 	case "data":
-		name = ConfigDataFlag
+		name = ConfigDataFlag.Name
 	case "namespaces":
-		name = PolicyNamespaceFlag
+		name = PolicyNamespaceFlag.Name
 	case "ctx":
-		name = ClusterContextFlag
+		name = ClusterContextFlag.Name
 	}
 	return pflag.NormalizedName(name)
 }
