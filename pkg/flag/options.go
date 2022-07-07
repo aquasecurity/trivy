@@ -203,7 +203,7 @@ func (f *Flags) ToOptions(appVersion string, args []string, globalFlags *GlobalF
 func flagNameNormalize(f *pflag.FlagSet, name string) pflag.NormalizedName {
 	switch name {
 	case "skip-update":
-		name = SkipDBUpdateFlag
+		name = SkipDBUpdateFlag.Name
 	case "policy":
 		name = ConfigPolicyFlag
 	case "data":
