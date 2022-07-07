@@ -41,9 +41,7 @@ func SetOut(out io.Writer) {
 
 // NewApp is the factory method to return Trivy CLI
 func NewApp(version string) *cobra.Command {
-	cobra.OnInitialize(initConfig)
-
-	globalFlags := flag.NewGlobalDefaultFlags()
+	globalFlags := flag.NewGlobalFlags()
 	rootCmd := NewRootCommand(version, globalFlags)
 
 	if runAsPlugin := os.Getenv("TRIVY_RUN_AS_PLUGIN"); runAsPlugin != "" {
@@ -97,18 +95,23 @@ func loadPluginCommands() []*cobra.Command {
 	return commands
 }
 
-func initConfig() {
-	// TODO get filepath from flag
-	viper.AddConfigPath(".")
-	viper.SetConfigName("trivy-config") // may contain extension, but still need to run SetConfigType
-	viper.SetConfigType("yaml")
-	if err := viper.ReadInConfig(); err != nil {
-		log.Logger.Warnf("unable to read config file: %w", err)
-	}
+func initConfig(configFile string) error {
 	// Configure environment variables
 	viper.SetEnvPrefix("trivy") // will be uppercased automatically
 	viper.SetEnvKeyReplacer(strings.NewReplacer("-", "_"))
 	viper.AutomaticEnv()
+
+	// Read from config
+	viper.SetConfigFile(configFile)
+	viper.SetConfigType("yaml")
+	if err := viper.ReadInConfig(); err != nil {
+		if _, ok := err.(viper.ConfigFileNotFoundError); ok {
+			log.Logger.Debugf("config file %q not found", configFile)
+			return nil
+		}
+		return xerrors.Errorf("config file %q loading error: %s", configFile, err)
+	}
+	return nil
 }
 
 func NewRootCommand(version string, globalFlags *flag.GlobalFlags) *cobra.Command {
@@ -133,18 +136,17 @@ func NewRootCommand(version string, globalFlags *flag.GlobalFlags) *cobra.Comman
 			if err := viper.BindPFlags(cmd.Flags()); err != nil {
 				return err
 			}
-			if err := viper.BindPFlags(cmd.PersistentFlags()); err != nil {
-				return err
-			}
 
-			if err := bindFlagsFromConfig(cmd); err != nil {
-				return err
-			}
-
-			// Initialize logger
 			globalOptions := globalFlags.ToOptions()
 
-			return log.InitLogger(globalOptions.Debug, globalOptions.Quiet)
+			// Initialize logger
+			if err := log.InitLogger(globalOptions.Debug, globalOptions.Quiet); err != nil {
+				return err
+			}
+
+			// Configure environment variables and config file
+			// It cannot be called in init() because it must be called after viper.BindPFlags.
+			return initConfig(globalOptions.ConfigFile)
 		},
 		RunE: func(cmd *cobra.Command, args []string) error {
 			globalOptions := globalFlags.ToOptions()
@@ -159,7 +161,7 @@ func NewRootCommand(version string, globalFlags *flag.GlobalFlags) *cobra.Comman
 	}
 
 	// Add version format flag, only json is supported
-	cmd.Flags().StringVarP(&versionFormat, flag.FormatFlag, "f", "", "version format (json)")
+	cmd.Flags().StringVarP(&versionFormat, flag.FormatFlag.Name, flag.FormatFlag.Shorthand, "", "version format (json)")
 
 	globalFlags.AddFlags(cmd)
 
@@ -189,6 +191,9 @@ func NewImageCommand(globalFlags *flag.GlobalFlags) *cobra.Command {
 		// cmd.RunE               -> run the command
 		PreRunE: validateArgs,
 		RunE: func(cmd *cobra.Command, args []string) error {
+			if err := imageFlags.Bind(cmd); err != nil {
+				return err
+			}
 			options, err := imageFlags.ToOptions(cmd.Version, args, globalFlags, outputWriter)
 			if err != nil {
 				return xerrors.Errorf("flag error: %w", err)
@@ -654,7 +659,7 @@ func NewVersionCommand(globalFlags *flag.GlobalFlags) *cobra.Command {
 	}
 
 	// Add version format flag, only json is supported
-	cmd.Flags().StringVarP(&versionFormat, flag.FormatFlag, "f", "", "version format (json)")
+	cmd.Flags().StringVarP(&versionFormat, flag.FormatFlag.Name, flag.FormatFlag.Shorthand, "", "version format (json)")
 
 	return cmd
 }

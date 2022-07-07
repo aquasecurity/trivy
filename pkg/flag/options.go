@@ -2,13 +2,33 @@ package flag
 
 import (
 	"io"
+	"time"
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
+	"github.com/spf13/viper"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 )
+
+type Flag struct {
+	// Name is for CLI flag and environment variable.
+	// If this field is empty, it will be available only in config file.
+	Name string
+
+	// ConfigName is a key in config file. It is also used as a key of viper.
+	ConfigName string
+
+	// Shorthand is a shorthand letter.
+	Shorthand string
+
+	// Value is the default value. It must be filled to determine the flag type.
+	Value interface{}
+
+	// Usage explains how to use the flag.
+	Usage string
+}
 
 type Flags struct {
 	CacheFlags      *CacheFlags
@@ -44,6 +64,44 @@ type Options struct {
 	DisabledAnalyzers []analyzer.Type
 }
 
+func addFlag(cmd *cobra.Command, flag *Flag) {
+	if flag == nil || flag.Name == "" {
+		return
+	}
+	switch v := flag.Value.(type) {
+	case int:
+		cmd.Flags().IntP(flag.Name, flag.Shorthand, v, flag.Usage)
+	case string:
+		cmd.Flags().StringP(flag.Name, flag.Shorthand, v, flag.Usage)
+	case bool:
+		cmd.Flags().BoolP(flag.Name, flag.Shorthand, v, flag.Usage)
+	case time.Duration:
+		cmd.Flags().DurationP(flag.Name, flag.Shorthand, v, flag.Usage)
+	}
+}
+
+func bind(cmd *cobra.Command, flag *Flag) error {
+	if flag == nil || flag.Name == "" {
+		return nil
+	}
+	if err := viper.BindPFlag(flag.ConfigName, cmd.Flags().Lookup(flag.Name)); err != nil {
+		return err
+	}
+	// We don't use viper.AutomaticEnv, so we need to add a prefix manually here.
+	if err := viper.BindEnv(flag.ConfigName, "trivy_"+flag.Name); err != nil {
+		return err
+	}
+	return nil
+}
+
+func get[T any](flag *Flag) T {
+	if flag == nil {
+		var zero T
+		return zero
+	}
+	return viper.Get(flag.ConfigName).(T)
+}
+
 func (f *Flags) AddFlags(cmd *cobra.Command) {
 	if f.CacheFlags != nil {
 		f.CacheFlags.AddFlags(cmd)
@@ -77,6 +135,13 @@ func (f *Flags) AddFlags(cmd *cobra.Command) {
 	}
 
 	cmd.Flags().SetNormalizeFunc(flagNameNormalize)
+}
+
+func (f *Flags) Bind(cmd *cobra.Command) error {
+	if err := f.ReportFlags.Bind(cmd); err != nil {
+		return err
+	}
+	return nil
 }
 
 func (f *Flags) ToOptions(appVersion string, args []string, globalFlags *GlobalFlags, output io.Writer) (Options, error) {
@@ -134,10 +199,7 @@ func (f *Flags) ToOptions(appVersion string, args []string, globalFlags *GlobalF
 	}
 
 	if f.ScanFlags != nil {
-		opts.ScanOptions, err = f.ScanFlags.ToOptions(args)
-		if err != nil {
-			return Options{}, xerrors.Errorf("scanning flag error: %w", err)
-		}
+		opts.ScanOptions = f.ScanFlags.ToOptions(args)
 	}
 
 	if f.SecretFlags != nil {

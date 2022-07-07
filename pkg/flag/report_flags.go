@@ -7,7 +7,6 @@ import (
 
 	"github.com/samber/lo"
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 	"golang.org/x/exp/slices"
 	"golang.org/x/xerrors"
 
@@ -17,33 +16,92 @@ import (
 	"github.com/aquasecurity/trivy/pkg/result"
 )
 
-const (
-	FormatFlag         = "format"
-	TemplateFlag       = "template"
-	DependencyTreeFlag = "dependency-tree"
-	ListAllPkgsFlag    = "list-all-pkgs"
-	IgnoreUnfixedFlag  = "ignore-unfixed"
-	IgnoreFileFlag     = "ignorefile"
-	ExitCodeFlag       = "exit-code"
-	IgnorePolicyFlag   = "ignore-policy"
-	OutputFlag         = "output"
-	SeverityFlag       = "severity"
+// e.g. config yaml
+// report:
+//   format: table
+//   dependency-tree: true
+//   exit-code: 1
+//   severity: HIGH,CRITICAL
+var (
+	FormatFlag = Flag{
+		Name:       "format",
+		ConfigName: "report.format",
+		Shorthand:  "f",
+		Value:      report.FormatTable,
+		Usage:      "format (table, json, sarif, template, cyclonedx, spdx, spdx-json, github)",
+	}
+	TemplateFlag = Flag{
+		Name:       "template",
+		ConfigName: "report.template",
+		Shorthand:  "t",
+		Value:      "",
+		Usage:      "output template",
+	}
+	DependencyTreeFlag = Flag{
+		Name:       "dependency-tree",
+		ConfigName: "report.dependency-tree",
+		Value:      false,
+		Usage:      "show dependency origin tree (EXPERIMENTAL)",
+	}
+	ListAllPkgsFlag = Flag{
+		Name:       "list-all-pkgs",
+		ConfigName: "report.list-all-pkgs",
+		Value:      false,
+		Usage:      "enabling the option will output all packages regardless of vulnerability",
+	}
+	IgnoreUnfixedFlag = Flag{
+		Name:       "ignore-unfixed",
+		ConfigName: "report.ignore-unfixed",
+		Value:      false,
+		Usage:      "display only fixed vulnerabilities",
+	}
+	IgnoreFileFlag = Flag{
+		Name:       "ignorefile",
+		ConfigName: "report.ignorefile",
+		Value:      result.DefaultIgnoreFile,
+		Usage:      "specify .trivyignore file",
+	}
+	IgnorePolicyFlag = Flag{
+		Name:       "ignore-policy",
+		ConfigName: "report.ignore-policy",
+		Value:      "",
+		Usage:      "specify the Rego file path to evaluate each vulnerability",
+	}
+	ExitCodeFlag = Flag{
+		Name:       "exit-code",
+		ConfigName: "report.exit-code",
+		Value:      0,
+		Usage:      "specify exit code when any security issues are found",
+	}
+	OutputFlag = Flag{
+		Name:       "output",
+		ConfigName: "report.output",
+		Shorthand:  "o",
+		Value:      "",
+		Usage:      "output file name",
+	}
+	SeverityFlag = Flag{
+		Name:       "severity",
+		ConfigName: "report.severity",
+		Shorthand:  "s",
+		Value:      strings.Join(dbTypes.SeverityNames, ","),
+		Usage:      "severities of security issues to be displayed (comma separated)",
+	}
 )
 
 // ReportFlags composes common printer flag structs
 // used for commands requiring reporting logic.
 type ReportFlags struct {
-	Format         *string
-	Template       *string
-	DependencyTree *bool
-	ListAllPkgs    *bool
-	IgnoreUnfixed  *bool
-	IgnoreFile     *string
-	ExitCode       *int
-	IgnorePolicy   *string
-
-	Output   *string
-	Severity *string
+	Format         *Flag
+	Template       *Flag
+	DependencyTree *Flag
+	ListAllPkgs    *Flag
+	IgnoreUnfixed  *Flag
+	IgnoreFile     *Flag
+	IgnorePolicy   *Flag
+	ExitCode       *Flag
+	Output         *Flag
+	Severity       *Flag
 }
 
 type ReportOptions struct {
@@ -55,65 +113,51 @@ type ReportOptions struct {
 	IgnoreFile     string
 	ExitCode       int
 	IgnorePolicy   string
-
-	Output     io.Writer
-	Severities []dbTypes.Severity
+	Output         io.Writer
+	Severities     []dbTypes.Severity
 }
 
 func NewReportFlags() *ReportFlags {
 	return &ReportFlags{
-		Format:         lo.ToPtr(report.FormatTable),
-		Template:       lo.ToPtr(""),
-		DependencyTree: lo.ToPtr(false),
-		ListAllPkgs:    lo.ToPtr(false),
-		IgnoreUnfixed:  lo.ToPtr(false),
-		IgnoreFile:     lo.ToPtr(result.DefaultIgnoreFile),
-		ExitCode:       lo.ToPtr(0),
-		IgnorePolicy:   lo.ToPtr(""),
-		Output:         lo.ToPtr(""),
-		Severity:       lo.ToPtr(strings.Join(dbTypes.SeverityNames, ",")),
+		Format:         lo.ToPtr(FormatFlag),
+		Template:       lo.ToPtr(TemplateFlag),
+		DependencyTree: lo.ToPtr(DependencyTreeFlag),
+		ListAllPkgs:    lo.ToPtr(ListAllPkgsFlag),
+		IgnoreUnfixed:  lo.ToPtr(IgnoreUnfixedFlag),
+		IgnoreFile:     lo.ToPtr(IgnoreFileFlag),
+		IgnorePolicy:   lo.ToPtr(IgnorePolicyFlag),
+		ExitCode:       lo.ToPtr(ExitCodeFlag),
+		Output:         lo.ToPtr(OutputFlag),
+		Severity:       lo.ToPtr(SeverityFlag),
 	}
+}
+
+func (f *ReportFlags) flags() []*Flag {
+	return []*Flag{f.Format, f.Template, f.DependencyTree, f.ListAllPkgs, f.IgnoreUnfixed, f.IgnoreFile, f.IgnorePolicy,
+		f.ExitCode, f.Output, f.Severity}
 }
 
 func (f *ReportFlags) AddFlags(cmd *cobra.Command) {
-	if f.Format != nil {
-		cmd.Flags().StringP(FormatFlag, "f", *f.Format, "format (table, json, sarif, template, cyclonedx, spdx, spdx-json, github)")
-	}
-	if f.Template != nil {
-		cmd.Flags().StringP(TemplateFlag, "t", *f.Template, "output template")
-	}
-	if f.DependencyTree != nil {
-		cmd.Flags().Bool(DependencyTreeFlag, *f.DependencyTree, "show dependency origin tree (EXPERIMENTAL)")
-	}
-	if f.ListAllPkgs != nil {
-		cmd.Flags().Bool(ListAllPkgsFlag, *f.ListAllPkgs, "enabling the option will output all packages regardless of vulnerability")
-	}
-	if f.IgnoreUnfixed != nil {
-		cmd.Flags().Bool(IgnoreUnfixedFlag, *f.IgnoreUnfixed, "display only fixed vulnerabilities")
-	}
-	if f.IgnoreFile != nil {
-		cmd.Flags().String(IgnoreFileFlag, *f.IgnoreFile, "specify .trivyignore file")
-	}
-	if f.ExitCode != nil {
-		cmd.Flags().Int(ExitCodeFlag, *f.ExitCode, "specify exit code when any security issues are found")
-	}
-	if f.IgnorePolicy != nil {
-		cmd.Flags().String(IgnorePolicyFlag, *f.IgnorePolicy, "specify the Rego file to evaluate each vulnerability")
-	}
-	if f.Output != nil {
-		cmd.Flags().StringP(OutputFlag, "o", *f.Output, "output file name")
-	}
-	if f.Severity != nil {
-		cmd.Flags().StringP(SeverityFlag, "s", *f.Severity, "severities of security issues to be displayed (comma separated)")
+	for _, flag := range f.flags() {
+		addFlag(cmd, flag)
 	}
 }
 
+func (f *ReportFlags) Bind(cmd *cobra.Command) error {
+	for _, flag := range f.flags() {
+		if err := bind(cmd, flag); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
 func (f *ReportFlags) ToOptions(out io.Writer) (ReportOptions, error) {
-	format := viper.GetString(FormatFlag)
-	template := viper.GetString(TemplateFlag)
-	listAllPkgs := viper.GetBool(ListAllPkgsFlag)
-	dependencyTree := viper.GetBool(DependencyTreeFlag)
-	output := viper.GetString(OutputFlag)
+	format := get[string](f.Format)
+	template := get[string](f.Template)
+	dependencyTree := get[bool](f.DependencyTree)
+	listAllPkgs := get[bool](f.ListAllPkgs)
+	output := get[string](f.Output)
 
 	if template != "" {
 		if format == "" {
@@ -155,12 +199,12 @@ func (f *ReportFlags) ToOptions(out io.Writer) (ReportOptions, error) {
 		Template:       template,
 		DependencyTree: dependencyTree,
 		ListAllPkgs:    listAllPkgs,
-		IgnoreUnfixed:  viper.GetBool(IgnoreUnfixedFlag),
-		IgnoreFile:     viper.GetString(IgnoreFileFlag),
-		ExitCode:       viper.GetInt(ExitCodeFlag),
-		IgnorePolicy:   viper.GetString(IgnorePolicyFlag),
+		IgnoreUnfixed:  get[bool](f.IgnoreUnfixed),
+		IgnoreFile:     get[string](f.IgnoreFile),
+		ExitCode:       get[int](f.ExitCode),
+		IgnorePolicy:   get[string](f.IgnorePolicy),
 		Output:         out,
-		Severities:     splitSeverity(viper.GetString(SeverityFlag)),
+		Severities:     splitSeverity(get[string](f.Severity)),
 	}, nil
 }
 
