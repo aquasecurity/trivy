@@ -2,6 +2,7 @@ package flag
 
 import (
 	"io"
+	"time"
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
@@ -12,11 +13,21 @@ import (
 )
 
 type Flag struct {
-	Name       string // for CLI flag and environment variable
-	ConfigName string // for config file
-	Shorthand  string
-	Value      interface{} // default value
-	Usage      string
+	// Name is for CLI flag and environment variable.
+	// If this field is empty, it will be available only in config file.
+	Name string
+
+	// ConfigName is a key in config file. It is also used as a key of viper.
+	ConfigName string
+
+	// Shorthand is a shorthand letter.
+	Shorthand string
+
+	// Value is the default value. It must be filled to determine the flag type.
+	Value interface{}
+
+	// Usage explains how to use the flag.
+	Usage string
 }
 
 type Flags struct {
@@ -54,19 +65,23 @@ type Options struct {
 }
 
 func addFlag(cmd *cobra.Command, flag *Flag) {
-	if flag == nil {
+	if flag == nil || flag.Name == "" {
 		return
 	}
 	switch v := flag.Value.(type) {
+	case int:
+		cmd.Flags().IntP(flag.Name, flag.Shorthand, v, flag.Usage)
 	case string:
 		cmd.Flags().StringP(flag.Name, flag.Shorthand, v, flag.Usage)
 	case bool:
 		cmd.Flags().BoolP(flag.Name, flag.Shorthand, v, flag.Usage)
+	case time.Duration:
+		cmd.Flags().DurationP(flag.Name, flag.Shorthand, v, flag.Usage)
 	}
 }
 
 func bind(cmd *cobra.Command, flag *Flag) error {
-	if flag == nil {
+	if flag == nil || flag.Name == "" {
 		return nil
 	}
 	if err := viper.BindPFlag(flag.ConfigName, cmd.Flags().Lookup(flag.Name)); err != nil {
@@ -123,7 +138,10 @@ func (f *Flags) AddFlags(cmd *cobra.Command) {
 }
 
 func (f *Flags) Bind(cmd *cobra.Command) error {
-	return f.ReportFlags.Bind(cmd)
+	if err := f.ReportFlags.Bind(cmd); err != nil {
+		return err
+	}
+	return nil
 }
 
 func (f *Flags) ToOptions(appVersion string, args []string, globalFlags *GlobalFlags, output io.Writer) (Options, error) {

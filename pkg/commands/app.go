@@ -144,7 +144,7 @@ func NewRootCommand(version string, globalFlags *flag.GlobalFlags) *cobra.Comman
 				return err
 			}
 
-			// Configure environmental variables and config file
+			// Configure environment variables and config file
 			// It cannot be called in init() because it must be called after viper.BindPFlags.
 			return initConfig(globalOptions.ConfigFile)
 		},
