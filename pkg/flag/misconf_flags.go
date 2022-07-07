@@ -15,7 +15,7 @@ const (
 	TraceFlag              = "trace"
 	ConfigPolicyFlag       = "config-policy"
 	ConfigDataFlag         = "config-data"
-	PolicyNamespaceFlag    = "policy-namespaces"
+	PolicyNamespaceFlag    = "misconfiguration.namespaces"
 )
 
 // MisconfFlags composes common printer flag structs used for commands providing misconfinguration scanning.

@@ -98,6 +98,13 @@ func loadPluginCommands() []*cobra.Command {
 }
 
 func initConfig() {
+	// TODO get filepath from flag
+	viper.AddConfigPath(".")
+	viper.SetConfigName("trivy-config") // may contain extension, but still need to run SetConfigType
+	viper.SetConfigType("yaml")
+	if err := viper.ReadInConfig(); err != nil {
+		log.Logger.Warnf("unable to read config file: %w", err)
+	}
 	// Configure environment variables
 	viper.SetEnvPrefix("trivy") // will be uppercased automatically
 	viper.SetEnvKeyReplacer(strings.NewReplacer("-", "_"))
@@ -127,6 +134,10 @@ func NewRootCommand(version string, globalFlags *flag.GlobalFlags) *cobra.Comman
 				return err
 			}
 			if err := viper.BindPFlags(cmd.PersistentFlags()); err != nil {
+				return err
+			}
+
+			if err := bindFlagsFromConfig(cmd); err != nil {
 				return err
 			}
 
@@ -706,4 +717,8 @@ func validateArgs(cmd *cobra.Command, args []string) error {
 	}
 
 	return nil
+}
+
+func bindFlagsFromConfig(cmd *cobra.Command) error {
+	return viper.BindPFlag(flag.PolicyNamespaceFlag, cmd.Flags().Lookup(flag.PolicyNamespaceFlag))
 }
