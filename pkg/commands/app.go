@@ -720,5 +720,5 @@ func validateArgs(cmd *cobra.Command, args []string) error {
 }
 
 func bindFlagsFromConfig(cmd *cobra.Command) error {
-	return viper.BindPFlag(flag.PolicyNamespaceFlag, cmd.Flags().Lookup(flag.PolicyNamespaceFlag))
+	return viper.BindPFlag(flag.PolicyNamespaceKey, cmd.Flags().Lookup(flag.PolicyNamespaceFlag))
 }

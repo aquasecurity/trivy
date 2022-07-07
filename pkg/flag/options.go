@@ -155,7 +155,7 @@ func flagNameNormalize(f *pflag.FlagSet, name string) pflag.NormalizedName {
 		name = ConfigPolicyFlag
 	case "data":
 		name = ConfigDataFlag
-	case "namespaces", "policy-namespaces":
+	case "namespaces":
 		name = PolicyNamespaceFlag
 	case "ctx":
 		name = ClusterContextFlag

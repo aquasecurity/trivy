@@ -15,7 +15,8 @@ const (
 	TraceFlag              = "trace"
 	ConfigPolicyFlag       = "config-policy"
 	ConfigDataFlag         = "config-data"
-	PolicyNamespaceFlag    = "misconfiguration.namespaces"
+	PolicyNamespaceFlag    = "policy-namespaces"
+	PolicyNamespaceKey     = "misconfiguration.namespaces" // key for get value from flag or config file
 )
 
 // MisconfFlags composes common printer flag structs used for commands providing misconfinguration scanning.
@@ -92,6 +93,6 @@ func (f *MisconfFlags) ToOptions() (MisconfOptions, error) {
 
 		PolicyPaths:      viper.GetStringSlice(ConfigPolicyFlag),
 		DataPaths:        viper.GetStringSlice(ConfigDataFlag),
-		PolicyNamespaces: viper.GetStringSlice(PolicyNamespaceFlag),
+		PolicyNamespaces: viper.GetStringSlice(PolicyNamespaceKey),
 	}, nil
 }
