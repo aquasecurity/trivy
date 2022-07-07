@@ -2,6 +2,7 @@ package commands
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"os"
@@ -105,7 +106,7 @@ func initConfig(configFile string) error {
 	viper.SetConfigFile(configFile)
 	viper.SetConfigType("yaml")
 	if err := viper.ReadInConfig(); err != nil {
-		if _, ok := err.(viper.ConfigFileNotFoundError); ok {
+		if errors.Is(err, os.ErrNotExist) {
 			log.Logger.Debugf("config file %q not found", configFile)
 			return nil
 		}
