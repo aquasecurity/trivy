@@ -145,14 +145,20 @@ func TestScanFlags_ToOptions(t *testing.T) {
 			core, obs := observer.New(level)
 			log.Logger = zap.New(core).Sugar()
 
-			viper.Set(flag.SkipDirsFlag, tt.fields.skipDirs)
-			viper.Set(flag.SkipFilesFlag, tt.fields.skipFiles)
-			viper.Set(flag.OfflineScanFlag, tt.fields.offlineScan)
-			viper.Set(flag.VulnTypeFlag, tt.fields.vulnType)
-			viper.Set(flag.SecurityChecksFlag, tt.fields.securityChecks)
+			viper.Set(flag.SkipDirsFlag.ConfigName, tt.fields.skipDirs)
+			viper.Set(flag.SkipFilesFlag.ConfigName, tt.fields.skipFiles)
+			viper.Set(flag.OfflineScanFlag.ConfigName, tt.fields.offlineScan)
+			viper.Set(flag.VulnTypeFlag.ConfigName, tt.fields.vulnType)
+			viper.Set(flag.SecurityChecksFlag.ConfigName, tt.fields.securityChecks)
 
 			// Assert options
-			f := &flag.ScanFlags{}
+			f := &flag.ScanFlags{
+				SkipDirs:       &flag.SkipDirsFlag,
+				SkipFiles:      &flag.SkipFilesFlag,
+				OfflineScan:    &flag.OfflineScanFlag,
+				VulnType:       &flag.VulnTypeFlag,
+				SecurityChecks: &flag.SecurityChecksFlag,
+			}
 
 			got := f.ToOptions(tt.args)
 			assert.Equalf(t, tt.want, got, "ToOptions()")
