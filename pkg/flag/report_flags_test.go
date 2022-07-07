@@ -107,6 +107,55 @@ func TestReportFlags_ToOptions(t *testing.T) {
 				Template:   "@contrib/gitlab.tpl",
 			},
 		},
+		{
+			name: "invalid option combination: --template and --format json",
+			fields: fields{
+				format:     "json",
+				template:   "@contrib/gitlab.tpl",
+				severities: "LOW",
+			},
+			wantLogs: []string{
+				"'--template' is ignored because '--format json' is specified. Use '--template' option with '--format template' option.",
+			},
+			want: flag.ReportOptions{
+				Output:     os.Stdout,
+				Format:     "json",
+				Severities: []dbTypes.Severity{dbTypes.SeverityLow},
+				Template:   "@contrib/gitlab.tpl",
+			},
+		},
+		{
+			name: "invalid option combination: --format template without --template",
+			fields: fields{
+				format:     "template",
+				severities: "LOW",
+			},
+			wantLogs: []string{
+				"'--format template' is ignored because '--template' is not specified. Specify '--template' option when you use '--format template'.",
+			},
+			want: flag.ReportOptions{
+				Output:     os.Stdout,
+				Format:     "template",
+				Severities: []dbTypes.Severity{dbTypes.SeverityLow},
+			},
+		},
+		{
+			name: "invalid option combination: --list-all-pkgs with --format table",
+			fields: fields{
+				format:      "table",
+				severities:  "LOW",
+				listAllPkgs: true,
+			},
+			wantLogs: []string{
+				`"--list-all-pkgs" cannot be used with "--format table". Try "--format json" or other formats.`,
+			},
+			want: flag.ReportOptions{
+				Format:      "table",
+				Output:      os.Stdout,
+				Severities:  []dbTypes.Severity{dbTypes.SeverityLow},
+				ListAllPkgs: true,
+			},
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
