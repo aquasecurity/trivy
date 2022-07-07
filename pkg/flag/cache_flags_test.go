@@ -86,14 +86,21 @@ func TestCacheFlags_ToOptions(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			f := &flag.CacheFlags{}
+			viper.Set(flag.ClearCacheFlag.ConfigName, tt.fields.ClearCache)
+			viper.Set(flag.CacheBackendFlag.ConfigName, tt.fields.CacheBackend)
+			viper.Set(flag.CacheTTLFlag.ConfigName, tt.fields.CacheTTL)
+			viper.Set(flag.RedisCACertFlag.ConfigName, tt.fields.RedisCACert)
+			viper.Set(flag.RedisCertFlag.ConfigName, tt.fields.RedisCert)
+			viper.Set(flag.RedisKeyFlag.ConfigName, tt.fields.RedisKey)
 
-			viper.Set(flag.ClearCacheFlag, tt.fields.ClearCache)
-			viper.Set(flag.CacheBackendFlag, tt.fields.CacheBackend)
-			viper.Set(flag.CacheTTLFlag, tt.fields.CacheTTL)
-			viper.Set(flag.RedisCACertFlag, tt.fields.RedisCACert)
-			viper.Set(flag.RedisCertFlag, tt.fields.RedisCert)
-			viper.Set(flag.RedisKeyFlag, tt.fields.RedisKey)
+			f := &flag.CacheFlags{
+				ClearCache:   &flag.ClearCacheFlag,
+				CacheBackend: &flag.CacheBackendFlag,
+				CacheTTL:     &flag.CacheTTLFlag,
+				RedisCACert:  &flag.RedisCACertFlag,
+				RedisCert:    &flag.RedisCertFlag,
+				RedisKey:     &flag.RedisKeyFlag,
+			}
 
 			got, err := f.ToOptions()
 			tt.assertion(t, err)

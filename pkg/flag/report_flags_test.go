@@ -168,16 +168,16 @@ func TestReportFlags_ToOptions(t *testing.T) {
 			core, obs := observer.New(level)
 			log.Logger = zap.New(core).Sugar()
 
-			viper.Set(flag.FormatFlag, tt.fields.format)
-			viper.Set(flag.TemplateFlag, tt.fields.template)
-			viper.Set(flag.DependencyTreeFlag, tt.fields.dependencyTree)
-			viper.Set(flag.ListAllPkgsFlag, tt.fields.listAllPkgs)
-			viper.Set(flag.IgnoreFileFlag, tt.fields.ignoreFile)
-			viper.Set(flag.IgnoreUnfixedFlag, tt.fields.ignoreUnfixed)
-			viper.Set(flag.ExitCodeFlag, tt.fields.exitCode)
-			viper.Set(flag.IgnorePolicyFlag, tt.fields.ignorePolicy)
-			viper.Set(flag.OutputFlag, tt.fields.output)
-			viper.Set(flag.SeverityFlag, tt.fields.severities)
+			viper.Set(flag.FormatFlag.ConfigName, tt.fields.format)
+			viper.Set(flag.TemplateFlag.ConfigName, tt.fields.template)
+			viper.Set(flag.DependencyTreeFlag.ConfigName, tt.fields.dependencyTree)
+			viper.Set(flag.ListAllPkgsFlag.ConfigName, tt.fields.listAllPkgs)
+			viper.Set(flag.IgnoreFileFlag.ConfigName, tt.fields.ignoreFile)
+			viper.Set(flag.IgnoreUnfixedFlag.ConfigName, tt.fields.ignoreUnfixed)
+			viper.Set(flag.ExitCodeFlag.ConfigName, tt.fields.exitCode)
+			viper.Set(flag.IgnorePolicyFlag.ConfigName, tt.fields.ignorePolicy)
+			viper.Set(flag.OutputFlag.ConfigName, tt.fields.output)
+			viper.Set(flag.SeverityFlag.ConfigName, tt.fields.severities)
 
 			// Assert options
 			f := &flag.ReportFlags{}

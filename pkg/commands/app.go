@@ -701,7 +701,7 @@ func showVersion(cacheDir, outputFormat, version string, outputWriter io.Writer)
 
 func validateArgs(cmd *cobra.Command, args []string) error {
 	// '--clear-cache', '--download-db-only' and '--reset' don't conduct the scan
-	if viper.GetBool(flag.ClearCacheFlag) || viper.GetBool(flag.DownloadDBOnlyFlag) || viper.GetBool(flag.ResetFlag) {
+	if flag.ClearCacheFlag.Value.(bool) || viper.GetBool(flag.DownloadDBOnlyFlag) || viper.GetBool(flag.ResetFlag) {
 		return nil
 	}
 
@@ -722,8 +722,4 @@ func validateArgs(cmd *cobra.Command, args []string) error {
 	}
 
 	return nil
-}
-
-func bindFlagsFromConfig(cmd *cobra.Command) error {
-	return viper.BindPFlag(flag.PolicyNamespaceKey, cmd.Flags().Lookup(flag.PolicyNamespaceFlag))
 }
