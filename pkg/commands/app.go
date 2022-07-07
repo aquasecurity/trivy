@@ -130,16 +130,23 @@ func NewRootCommand(version string, globalFlags *flag.GlobalFlags) *cobra.Comman
 			// Set the Trivy version here so that we can override version printer.
 			cmd.Version = version
 
-			if err := viper.BindPFlags(cmd.Flags()); err != nil {
-				return err
-			}
-
 			// viper.BindPFlag cannot be called in init().
 			// cf. https://github.com/spf13/cobra/issues/875
 			//     https://github.com/spf13/viper/issues/233
-			if err := globalFlags.Bind(cmd); err != nil {
+			if err := globalFlags.Bind(cmd.Root()); err != nil {
 				return xerrors.Errorf("flag bind error: %w", err)
 			}
+
+			// The config path is needed for config initialization.
+			// It needs to be obtained before ToOptions().
+			configPath := viper.GetString(flag.ConfigFileFlag.ConfigName)
+
+			// Configure environment variables and config file
+			// It cannot be called in init() because it must be called after viper.BindPFlags.
+			if err := initConfig(configPath); err != nil {
+				return err
+			}
+
 			globalOptions := globalFlags.ToOptions()
 
 			// Initialize logger
@@ -147,9 +154,7 @@ func NewRootCommand(version string, globalFlags *flag.GlobalFlags) *cobra.Comman
 				return err
 			}
 
-			// Configure environment variables and config file
-			// It cannot be called in init() because it must be called after viper.BindPFlags.
-			return initConfig(globalOptions.ConfigFile)
+			return nil
 		},
 		RunE: func(cmd *cobra.Command, args []string) error {
 			globalOptions := globalFlags.ToOptions()

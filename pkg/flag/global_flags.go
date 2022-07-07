@@ -125,7 +125,7 @@ func (f *GlobalFlags) ToOptions() GlobalOptions {
 		Quiet:       get[bool](f.Quiet),
 		Debug:       get[bool](f.Debug),
 		Insecure:    get[bool](f.Insecure),
-		Timeout:     viper.GetDuration(f.Timeout.ConfigName), // time.Duration needs cast
+		Timeout:     viper.GetDuration(f.Timeout.ConfigName), // time.Duration needs to be cast
 		CacheDir:    get[string](f.CacheDir),
 	}
 }

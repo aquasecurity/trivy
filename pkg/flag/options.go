@@ -112,8 +112,14 @@ func bind(cmd *cobra.Command, flag *Flag) error {
 	if flag == nil || flag.Name == "" {
 		return nil
 	}
-	if err := viper.BindPFlag(flag.ConfigName, cmd.Flags().Lookup(flag.Name)); err != nil {
-		return err
+	if flag.Persistent {
+		if err := viper.BindPFlag(flag.ConfigName, cmd.PersistentFlags().Lookup(flag.Name)); err != nil {
+			return err
+		}
+	} else {
+		if err := viper.BindPFlag(flag.ConfigName, cmd.Flags().Lookup(flag.Name)); err != nil {
+			return err
+		}
 	}
 	// We don't use viper.AutomaticEnv, so we need to add a prefix manually here.
 	if err := viper.BindEnv(flag.ConfigName, "trivy_"+flag.Name); err != nil {
