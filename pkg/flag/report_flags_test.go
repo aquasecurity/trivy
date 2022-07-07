@@ -174,13 +174,24 @@ func TestReportFlags_ToOptions(t *testing.T) {
 			viper.Set(flag.ListAllPkgsFlag.ConfigName, tt.fields.listAllPkgs)
 			viper.Set(flag.IgnoreFileFlag.ConfigName, tt.fields.ignoreFile)
 			viper.Set(flag.IgnoreUnfixedFlag.ConfigName, tt.fields.ignoreUnfixed)
-			viper.Set(flag.ExitCodeFlag.ConfigName, tt.fields.exitCode)
 			viper.Set(flag.IgnorePolicyFlag.ConfigName, tt.fields.ignorePolicy)
+			viper.Set(flag.ExitCodeFlag.ConfigName, tt.fields.exitCode)
 			viper.Set(flag.OutputFlag.ConfigName, tt.fields.output)
 			viper.Set(flag.SeverityFlag.ConfigName, tt.fields.severities)
 
 			// Assert options
-			f := &flag.ReportFlags{}
+			f := &flag.ReportFlags{
+				Format:         &flag.FormatFlag,
+				Template:       &flag.TemplateFlag,
+				DependencyTree: &flag.DependencyTreeFlag,
+				ListAllPkgs:    &flag.ListAllPkgsFlag,
+				IgnoreFile:     &flag.IgnoreFileFlag,
+				IgnoreUnfixed:  &flag.IgnoreUnfixedFlag,
+				IgnorePolicy:   &flag.IgnorePolicyFlag,
+				ExitCode:       &flag.ExitCodeFlag,
+				Output:         &flag.OutputFlag,
+				Severity:       &flag.SeverityFlag,
+			}
 
 			got, err := f.ToOptions(os.Stdout)
 			assert.NoError(t, err)
