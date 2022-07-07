@@ -3,31 +3,60 @@ package flag
 import (
 	"github.com/samber/lo"
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/log"
 )
 
-const (
-	ResetFlag          = "reset"
-	DownloadDBOnlyFlag = "download-db-only"
-	SkipDBUpdateFlag   = "skip-db-update"
-	LightFlag          = "light"
-	NoProgressFlag     = "no-progress"
-	DBRepositoryFlag   = "db-repository"
+const defaultDBRepository = "ghcr.io/aquasecurity/trivy-db"
 
-	defaultDBRepository = "ghcr.io/aquasecurity/trivy-db"
+var (
+	ResetFlag = Flag{
+		Name:       "reset",
+		ConfigName: "reset",
+		Value:      false,
+		Usage:      "remove all caches and database",
+	}
+	DownloadDBOnlyFlag = Flag{
+		Name:       "download-db-only",
+		ConfigName: "db.download-only",
+		Value:      false,
+		Usage:      "download/update vulnerability database but don't run a scan",
+	}
+	SkipDBUpdateFlag = Flag{
+		Name:       "skip-db-update",
+		ConfigName: "db.skip-update",
+		Value:      false,
+		Usage:      "skip updating vulnerability database",
+	}
+	NoProgressFlag = Flag{
+		Name:       "no-progress",
+		ConfigName: "db.no-progress",
+		Value:      false,
+		Usage:      "suppress progress bar",
+	}
+	DBRepositoryFlag = Flag{
+		Name:       "db-repository",
+		ConfigName: "db.repository",
+		Value:      defaultDBRepository,
+		Usage:      "OCI repository to retrieve trivy-db from\"",
+	}
+	LightFlag = Flag{
+		Name:       "light",
+		ConfigName: "db.light",
+		Value:      false,
+		Usage:      "deprecated",
+	}
 )
 
 // DBFlags composes common printer flag structs used for commands requiring DB logic.
 type DBFlags struct {
-	Reset          *bool
-	DownloadDBOnly *bool
-	SkipDBUpdate   *bool
-	NoProgress     *bool
-	DBRepository   *string
-	Light          *bool // deprecated
+	Reset          *Flag
+	DownloadDBOnly *Flag
+	SkipDBUpdate   *Flag
+	NoProgress     *Flag
+	DBRepository   *Flag
+	Light          *Flag // deprecated
 }
 
 type DBOptions struct {
@@ -42,42 +71,40 @@ type DBOptions struct {
 // NewDBFlags returns a default DBFlags
 func NewDBFlags() *DBFlags {
 	return &DBFlags{
-		Reset:          lo.ToPtr(false),
-		DownloadDBOnly: lo.ToPtr(false),
-		SkipDBUpdate:   lo.ToPtr(false),
-		Light:          lo.ToPtr(false),
-		NoProgress:     lo.ToPtr(false),
-		DBRepository:   lo.ToPtr(defaultDBRepository),
+		Reset:          lo.ToPtr(ResetFlag),
+		DownloadDBOnly: lo.ToPtr(DownloadDBOnlyFlag),
+		SkipDBUpdate:   lo.ToPtr(SkipDBUpdateFlag),
+		Light:          lo.ToPtr(LightFlag),
+		NoProgress:     lo.ToPtr(NoProgressFlag),
+		DBRepository:   lo.ToPtr(DBRepositoryFlag),
 	}
+}
+
+func (f *DBFlags) flags() []*Flag {
+	return []*Flag{f.Reset, f.DownloadDBOnly, f.SkipDBUpdate, f.NoProgress, f.DBRepository, f.Light}
 }
 
 func (f *DBFlags) AddFlags(cmd *cobra.Command) {
-	if f.Reset != nil {
-		cmd.Flags().Bool(ResetFlag, *f.Reset, "remove all caches and database")
-	}
-	if f.DownloadDBOnly != nil {
-		cmd.Flags().Bool(DownloadDBOnlyFlag, *f.DownloadDBOnly, "download/update vulnerability database but don't run a scan")
-	}
-	if f.SkipDBUpdate != nil {
-		cmd.Flags().Bool(SkipDBUpdateFlag, *f.SkipDBUpdate, "skip updating vulnerability database")
-	}
-	if f.NoProgress != nil {
-		cmd.Flags().Bool(NoProgressFlag, *f.NoProgress, "suppress progress bar")
-	}
-	if f.DBRepository != nil {
-		cmd.Flags().String(DBRepositoryFlag, *f.DBRepository, "OCI repository to retrieve trivy-db from")
-	}
-	if f.Light != nil {
-		cmd.Flags().Bool(LightFlag, *f.Light, "deprecated")
+	for _, flag := range f.flags() {
+		addFlag(cmd, flag)
 	}
 }
 
-func (f *DBFlags) ToOptions() (DBOptions, error) {
-	skipDBUpdate := viper.GetBool(SkipDBUpdateFlag)
-	downloadDBOnly := viper.GetBool(DownloadDBOnlyFlag)
-	light := viper.GetBool(LightFlag)
+func (f *DBFlags) Bind(cmd *cobra.Command) error {
+	for _, flag := range f.flags() {
+		if err := bind(cmd, flag); err != nil {
+			return err
+		}
+	}
+	return nil
+}
 
-	if skipDBUpdate && downloadDBOnly {
+func (f *DBFlags) ToOptions() (DBOptions, error) {
+	skipDBUpdate := getBool(f.SkipDBUpdate)
+	downloadDBOnly := getBool(f.DownloadDBOnly)
+	light := getBool(f.Light)
+
+	if downloadDBOnly && skipDBUpdate {
 		return DBOptions{}, xerrors.New("--skip-db-update and --download-db-only options can not be specified both")
 	}
 	if light {
@@ -85,11 +112,11 @@ func (f *DBFlags) ToOptions() (DBOptions, error) {
 	}
 
 	return DBOptions{
-		Reset:          viper.GetBool(ResetFlag),
+		Reset:          getBool(f.Reset),
 		DownloadDBOnly: downloadDBOnly,
 		SkipDBUpdate:   skipDBUpdate,
 		Light:          light,
-		NoProgress:     viper.GetBool(NoProgressFlag),
-		DBRepository:   viper.GetString(DBRepositoryFlag),
+		NoProgress:     getBool(f.NoProgress),
+		DBRepository:   getString(f.DBRepository),
 	}, nil
 }

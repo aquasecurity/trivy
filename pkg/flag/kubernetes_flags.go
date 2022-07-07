@@ -3,19 +3,33 @@ package flag
 import (
 	"github.com/samber/lo"
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 )
 
-const (
-	ClusterContextFlag = "context"
-	K8sNamespaceFlag   = "namespace"
-	ReportFormatFlag   = "report"
+var (
+	ClusterContextFlag = Flag{
+		Name:       "context",
+		ConfigName: "kubernetes.context",
+		Value:      "",
+		Usage:      "specify a context to scan",
+	}
+	K8sNamespaceFlag = Flag{
+		Name:       "namespace",
+		ConfigName: "kubernetes.namespace",
+		Value:      "",
+		Usage:      "specify a namespace to sca",
+	}
+	ReportFormatFlag = Flag{
+		Name:       "report",
+		ConfigName: "kubernetes.report",
+		Value:      "all",
+		Usage:      "specify a report format for the output. (all,summary)",
+	}
 )
 
 type KubernetesFlags struct {
-	ClusterContext *string
-	Namespace      *string
-	ReportFormat   *string
+	ClusterContext *Flag
+	Namespace      *Flag
+	ReportFormat   *Flag
 }
 
 type KubernetesOptions struct {
@@ -26,28 +40,35 @@ type KubernetesOptions struct {
 
 func NewKubernetesDefaultFlags() *KubernetesFlags {
 	return &KubernetesFlags{
-		ClusterContext: lo.ToPtr(""),
-		Namespace:      lo.ToPtr(""),
-		ReportFormat:   lo.ToPtr("all"),
+		ClusterContext: lo.ToPtr(ClusterContextFlag),
+		Namespace:      lo.ToPtr(K8sNamespaceFlag),
+		ReportFormat:   lo.ToPtr(ReportFormatFlag),
 	}
 }
 
+func (f *KubernetesFlags) flags() []*Flag {
+	return []*Flag{f.ClusterContext, f.Namespace, f.ReportFormat}
+}
+
 func (f *KubernetesFlags) AddFlags(cmd *cobra.Command) {
-	if f.ClusterContext != nil {
-		cmd.Flags().String(ClusterContextFlag, *f.ClusterContext, "specify a context to scan")
+	for _, flag := range f.flags() {
+		addFlag(cmd, flag)
 	}
-	if f.Namespace != nil {
-		cmd.Flags().StringP(K8sNamespaceFlag, "n", *f.Namespace, "specify a namespace to scan")
+}
+
+func (f *KubernetesFlags) Bind(cmd *cobra.Command) error {
+	for _, flag := range f.flags() {
+		if err := bind(cmd, flag); err != nil {
+			return err
+		}
 	}
-	if f.ReportFormat != nil {
-		cmd.Flags().String(ReportFormatFlag, *f.ReportFormat, "specify a report format for the output. (all,summary)")
-	}
+	return nil
 }
 
 func (f *KubernetesFlags) ToOptions() KubernetesOptions {
 	return KubernetesOptions{
-		ClusterContext: viper.GetString(ClusterContextFlag),
-		Namespace:      viper.GetString(K8sNamespaceFlag),
-		ReportFormat:   viper.GetString(ReportFormatFlag),
+		ClusterContext: getString(f.ClusterContext),
+		Namespace:      getString(f.Namespace),
+		ReportFormat:   getString(f.ReportFormat),
 	}
 }

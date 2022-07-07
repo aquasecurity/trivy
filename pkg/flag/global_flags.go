@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 
 	"github.com/aquasecurity/trivy/pkg/utils"
 )
@@ -15,6 +16,7 @@ var (
 		Shorthand:  "c",
 		Value:      "trivy.yaml",
 		Usage:      "config path",
+		Persistent: true,
 	}
 	ShowVersionFlag = Flag{
 		Name:       "version",
@@ -22,6 +24,7 @@ var (
 		Shorthand:  "v",
 		Value:      false,
 		Usage:      "show version",
+		Persistent: true,
 	}
 	QuietFlag = Flag{
 		Name:       "quiet",
@@ -29,6 +32,7 @@ var (
 		Shorthand:  "q",
 		Value:      false,
 		Usage:      "suppress progress bar and log output",
+		Persistent: true,
 	}
 	DebugFlag = Flag{
 		Name:       "debug",
@@ -36,24 +40,28 @@ var (
 		Shorthand:  "d",
 		Value:      false,
 		Usage:      "debug mode",
+		Persistent: true,
 	}
 	InsecureFlag = Flag{
 		Name:       "insecure",
 		ConfigName: "insecure",
 		Value:      false,
 		Usage:      "allow insecure server connections when using TLS",
+		Persistent: true,
 	}
 	TimeoutFlag = Flag{
 		Name:       "timeout",
 		ConfigName: "timeout",
 		Value:      time.Second * 300, // 5 mins
 		Usage:      "timeout",
+		Persistent: true,
 	}
 	CacheDirFlag = Flag{
 		Name:       "cache-dir",
 		ConfigName: "cache.dir",
 		Value:      utils.DefaultCacheDir(),
 		Usage:      "cache directory",
+		Persistent: true,
 	}
 )
 
@@ -92,7 +100,7 @@ func NewGlobalFlags() *GlobalFlags {
 }
 
 func (f *GlobalFlags) flags() []*Flag {
-	return []*Flag{}
+	return []*Flag{f.ConfigFile, f.ShowVersion, f.Quiet, f.Debug, f.Insecure, f.Timeout, f.CacheDir}
 }
 
 func (f *GlobalFlags) AddFlags(cmd *cobra.Command) {
@@ -112,12 +120,12 @@ func (f *GlobalFlags) Bind(cmd *cobra.Command) error {
 
 func (f *GlobalFlags) ToOptions() GlobalOptions {
 	return GlobalOptions{
-		ConfigFile:  get[string](f.ConfigFile),
-		ShowVersion: get[bool](f.ShowVersion),
-		Quiet:       get[bool](f.Quiet),
-		Debug:       get[bool](f.Debug),
-		Insecure:    get[bool](f.Insecure),
-		Timeout:     get[time.Duration](f.Timeout),
-		CacheDir:    get[string](f.CacheDir),
+		ConfigFile:  getString(f.ConfigFile),
+		ShowVersion: getBool(f.ShowVersion),
+		Quiet:       getBool(f.Quiet),
+		Debug:       getBool(f.Debug),
+		Insecure:    getBool(f.Insecure),
+		Timeout:     viper.GetDuration(f.Timeout.ConfigName),
+		CacheDir:    getString(f.CacheDir),
 	}
 }
