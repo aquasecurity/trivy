@@ -5,10 +5,19 @@ import (
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
+	"github.com/spf13/viper"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 )
+
+type Flag struct {
+	Name       string // for CLI flag and environment variable
+	ConfigName string // for config file
+	Shorthand  string
+	Value      interface{} // default value
+	Usage      string
+}
 
 type Flags struct {
 	CacheFlags      *CacheFlags
@@ -44,6 +53,40 @@ type Options struct {
 	DisabledAnalyzers []analyzer.Type
 }
 
+func addFlag(cmd *cobra.Command, flag *Flag) {
+	if flag == nil {
+		return
+	}
+	switch v := flag.Value.(type) {
+	case string:
+		cmd.Flags().StringP(flag.Name, flag.Shorthand, v, flag.Usage)
+	case bool:
+		cmd.Flags().BoolP(flag.Name, flag.Shorthand, v, flag.Usage)
+	}
+}
+
+func bind(cmd *cobra.Command, flag *Flag) error {
+	if flag == nil {
+		return nil
+	}
+	if err := viper.BindPFlag(flag.ConfigName, cmd.Flags().Lookup(flag.Name)); err != nil {
+		return err
+	}
+	// We don't use viper.AutomaticEnv, so we need to add a prefix manually here.
+	if err := viper.BindEnv(flag.ConfigName, "trivy_"+flag.Name); err != nil {
+		return err
+	}
+	return nil
+}
+
+func get[T any](flag *Flag) T {
+	if flag == nil {
+		var zero T
+		return zero
+	}
+	return viper.Get(flag.ConfigName).(T)
+}
+
 func (f *Flags) AddFlags(cmd *cobra.Command) {
 	if f.CacheFlags != nil {
 		f.CacheFlags.AddFlags(cmd)
@@ -77,6 +120,10 @@ func (f *Flags) AddFlags(cmd *cobra.Command) {
 	}
 
 	cmd.Flags().SetNormalizeFunc(flagNameNormalize)
+}
+
+func (f *Flags) Bind(cmd *cobra.Command) error {
+	return f.ReportFlags.Bind(cmd)
 }
 
 func (f *Flags) ToOptions(appVersion string, args []string, globalFlags *GlobalFlags, output io.Writer) (Options, error) {

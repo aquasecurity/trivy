@@ -11,6 +11,7 @@ import (
 )
 
 const (
+	ConfigFlag   = "config"
 	VersionFlag  = "version"
 	QuietFlag    = "quiet"
 	DebugFlag    = "debug"
@@ -21,6 +22,7 @@ const (
 
 // GlobalFlags composes global flags
 type GlobalFlags struct {
+	ConfigFile  *string
 	ShowVersion *bool // spf13/cobra doesn't have something like VersionPrinter in urfave/cli. -v needs to be defined ourselves.
 	Quiet       *bool
 	Debug       *bool
@@ -31,6 +33,7 @@ type GlobalFlags struct {
 
 // GlobalOptions defines flags and other configuration parameters for all the subcommands
 type GlobalOptions struct {
+	ConfigFile  string
 	ShowVersion bool
 	Quiet       bool
 	Debug       bool
@@ -39,8 +42,9 @@ type GlobalOptions struct {
 	CacheDir    string
 }
 
-func NewGlobalDefaultFlags() *GlobalFlags {
+func NewGlobalFlags() *GlobalFlags {
 	return &GlobalFlags{
+		ConfigFile:  lo.ToPtr("trivy.yaml"),
 		ShowVersion: lo.ToPtr(false),
 		Quiet:       lo.ToPtr(false),
 		Debug:       lo.ToPtr(false),
@@ -51,6 +55,10 @@ func NewGlobalDefaultFlags() *GlobalFlags {
 }
 
 func (f *GlobalFlags) AddFlags(cmd *cobra.Command) {
+	if f.ConfigFile != nil {
+		cmd.PersistentFlags().StringP(ConfigFlag, "c", *f.ConfigFile, "config path")
+	}
+
 	if f.ShowVersion != nil {
 		cmd.PersistentFlags().BoolP(VersionFlag, "v", *f.ShowVersion, "show version")
 	}
@@ -78,6 +86,7 @@ func (f *GlobalFlags) AddFlags(cmd *cobra.Command) {
 
 func (f *GlobalFlags) ToOptions() GlobalOptions {
 	return GlobalOptions{
+		ConfigFile:  viper.GetString(ConfigFlag),
 		ShowVersion: viper.GetBool(VersionFlag),
 		Quiet:       viper.GetBool(QuietFlag),
 		Debug:       viper.GetBool(DebugFlag),

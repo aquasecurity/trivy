@@ -18,24 +18,48 @@ import (
 )
 
 const (
-	FormatFlag         = "format"
-	TemplateFlag       = "template"
-	DependencyTreeFlag = "dependency-tree"
-	ListAllPkgsFlag    = "list-all-pkgs"
-	IgnoreUnfixedFlag  = "ignore-unfixed"
-	IgnoreFileFlag     = "ignorefile"
-	ExitCodeFlag       = "exit-code"
-	IgnorePolicyFlag   = "ignore-policy"
-	OutputFlag         = "output"
-	SeverityFlag       = "severity"
+	ListAllPkgsFlag   = "list-all-pkgs"
+	IgnoreUnfixedFlag = "ignore-unfixed"
+	IgnoreFileFlag    = "ignorefile"
+	ExitCodeFlag      = "exit-code"
+	IgnorePolicyFlag  = "ignore-policy"
+	OutputFlag        = "output"
+	SeverityFlag      = "severity"
+)
+
+// e.g. config yaml
+// report:
+//   format: table
+//   dependency-tree: true
+var (
+	FormatFlag = Flag{
+		Name:       "format",
+		ConfigName: "report.format",
+		Shorthand:  "f",
+		Value:      report.FormatTable,
+		Usage:      "format (table, json, sarif, template, cyclonedx, spdx, spdx-json, github)",
+	}
+	TemplateFlag = Flag{
+		Name:       "template",
+		ConfigName: "report.template",
+		Shorthand:  "t",
+		Value:      "",
+		Usage:      "output template",
+	}
+	DependencyTreeFlag = Flag{
+		Name:       "dependency-tree",
+		ConfigName: "report.dependency-tree",
+		Value:      false,
+		Usage:      "show dependency origin tree (EXPERIMENTAL)",
+	}
 )
 
 // ReportFlags composes common printer flag structs
 // used for commands requiring reporting logic.
 type ReportFlags struct {
-	Format         *string
-	Template       *string
-	DependencyTree *bool
+	Format         *Flag
+	Template       *Flag
+	DependencyTree *Flag
 	ListAllPkgs    *bool
 	IgnoreUnfixed  *bool
 	IgnoreFile     *string
@@ -62,9 +86,9 @@ type ReportOptions struct {
 
 func NewReportFlags() *ReportFlags {
 	return &ReportFlags{
-		Format:         lo.ToPtr(report.FormatTable),
-		Template:       lo.ToPtr(""),
-		DependencyTree: lo.ToPtr(false),
+		Format:         lo.ToPtr(FormatFlag),
+		Template:       lo.ToPtr(TemplateFlag),
+		DependencyTree: lo.ToPtr(DependencyTreeFlag),
 		ListAllPkgs:    lo.ToPtr(false),
 		IgnoreUnfixed:  lo.ToPtr(false),
 		IgnoreFile:     lo.ToPtr(result.DefaultIgnoreFile),
@@ -76,15 +100,10 @@ func NewReportFlags() *ReportFlags {
 }
 
 func (f *ReportFlags) AddFlags(cmd *cobra.Command) {
-	if f.Format != nil {
-		cmd.Flags().StringP(FormatFlag, "f", *f.Format, "format (table, json, sarif, template, cyclonedx, spdx, spdx-json, github)")
-	}
-	if f.Template != nil {
-		cmd.Flags().StringP(TemplateFlag, "t", *f.Template, "output template")
-	}
-	if f.DependencyTree != nil {
-		cmd.Flags().Bool(DependencyTreeFlag, *f.DependencyTree, "show dependency origin tree (EXPERIMENTAL)")
-	}
+	addFlag(cmd, f.Format)
+	addFlag(cmd, f.Template)
+	addFlag(cmd, f.DependencyTree)
+
 	if f.ListAllPkgs != nil {
 		cmd.Flags().Bool(ListAllPkgsFlag, *f.ListAllPkgs, "enabling the option will output all packages regardless of vulnerability")
 	}
@@ -108,11 +127,21 @@ func (f *ReportFlags) AddFlags(cmd *cobra.Command) {
 	}
 }
 
+func (f *ReportFlags) Bind(cmd *cobra.Command) error {
+	flags := []*Flag{f.Format, f.Template, f.DependencyTree}
+	for _, flag := range flags {
+		if err := bind(cmd, flag); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
 func (f *ReportFlags) ToOptions(out io.Writer) (ReportOptions, error) {
-	format := viper.GetString(FormatFlag)
-	template := viper.GetString(TemplateFlag)
+	format := get[string](f.Format)
+	template := get[string](f.Template)
+	dependencyTree := get[bool](f.DependencyTree)
 	listAllPkgs := viper.GetBool(ListAllPkgsFlag)
-	dependencyTree := viper.GetBool(DependencyTreeFlag)
 	output := viper.GetString(OutputFlag)
 
 	if template != "" {
