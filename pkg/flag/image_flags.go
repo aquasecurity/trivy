@@ -3,17 +3,26 @@ package flag
 import (
 	"github.com/samber/lo"
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 )
 
-const (
-	ScanRemovedPkgsFlag = "removed-pkgs"
-	InputFlag           = "input"
+var (
+	ScanRemovedPkgsFlag = Flag{
+		Name:       "removed-pkgs",
+		ConfigName: "image.removed-pkgs",
+		Value:      false,
+		Usage:      "detect vulnerabilities of removed packages (only for Alpine)",
+	}
+	InputFlag = Flag{
+		Name:       "input",
+		ConfigName: "image.input",
+		Value:      "",
+		Usage:      "input file path instead of image name",
+	}
 )
 
 type ImageFlags struct {
-	Input           *string // local image archive
-	ScanRemovedPkgs *bool
+	Input           *Flag // local image archive
+	ScanRemovedPkgs *Flag
 }
 
 type ImageOptions struct {
@@ -23,23 +32,33 @@ type ImageOptions struct {
 
 func NewImageFlags() *ImageFlags {
 	return &ImageFlags{
-		Input:           lo.ToPtr(""),
-		ScanRemovedPkgs: lo.ToPtr(false),
+		Input:           lo.ToPtr(ScanRemovedPkgsFlag),
+		ScanRemovedPkgs: lo.ToPtr(InputFlag),
 	}
 }
 
+func (f *ImageFlags) flags() []*Flag {
+	return []*Flag{f.Input, f.ScanRemovedPkgs}
+}
+
 func (f *ImageFlags) AddFlags(cmd *cobra.Command) {
-	if f.Input != nil {
-		cmd.Flags().String(InputFlag, *f.Input, "input file path instead of image name")
+	for _, flag := range f.flags() {
+		addFlag(cmd, flag)
 	}
-	if f.ScanRemovedPkgs != nil {
-		cmd.Flags().Bool(ScanRemovedPkgsFlag, *f.ScanRemovedPkgs, "detect vulnerabilities of removed packages (only for Alpine)")
+}
+
+func (f *ImageFlags) Bind(cmd *cobra.Command) error {
+	for _, flag := range f.flags() {
+		if err := bind(cmd, flag); err != nil {
+			return err
+		}
 	}
+	return nil
 }
 
 func (f *ImageFlags) ToOptions() ImageOptions {
 	return ImageOptions{
-		Input:           viper.GetString(InputFlag),
-		ScanRemovedPkgs: viper.GetBool(ScanRemovedPkgsFlag),
+		Input:           get[string](f.Input),
+		ScanRemovedPkgs: get[bool](f.ScanRemovedPkgs),
 	}
 }
