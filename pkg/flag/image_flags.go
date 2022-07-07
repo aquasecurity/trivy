@@ -5,6 +5,11 @@ import (
 	"github.com/spf13/cobra"
 )
 
+// e.g. config yaml
+// image:
+//   removed-pkgs: true
+//   input: "/path/to/alpine"
+
 var (
 	ScanRemovedPkgsFlag = Flag{
 		Name:       "removed-pkgs",
