@@ -702,12 +702,12 @@ func validateArgs(cmd *cobra.Command, args []string) error {
 		return nil
 	}
 
-	if len(args) == 0 && viper.GetString(flag.InputFlag) == "" {
+	if len(args) == 0 && viper.GetString(flag.InputFlag.ConfigName) == "" {
 		if err := cmd.Help(); err != nil {
 			return err
 		}
 
-		if f := cmd.Flags().Lookup(flag.InputFlag); f != nil {
+		if f := cmd.Flags().Lookup(flag.InputFlag.ConfigName); f != nil {
 			return xerrors.New(`Require at least 1 argument or --input option`)
 		}
 		return xerrors.New(`Require at least 1 argument`)
