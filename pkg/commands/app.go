@@ -633,7 +633,7 @@ func NewSBOMCommand(globalFlags *flag.GlobalFlags) *cobra.Command {
 		RemoteFlags: flag.NewClientFlags(), // for client/server mode
 		ReportFlags: flag.NewReportFlags(),
 		ScanFlags:   flag.NewScanFlags(),
-		SBOMFlags:   flag.NewDefaultSBOMFlags(),
+		SBOMFlags:   flag.NewSBOMFlags(),
 	}
 
 	cmd := &cobra.Command{
