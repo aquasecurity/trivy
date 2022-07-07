@@ -101,13 +101,18 @@ func TestRemoteFlags_ToOptions(t *testing.T) {
 			core, obs := observer.New(level)
 			log.Logger = zap.New(core).Sugar()
 
-			viper.Set(flag.ServerFlag, tt.fields.Server)
-			viper.Set(flag.CustomHeadersFlag, tt.fields.CustomHeaders)
-			viper.Set(flag.ServerTokenFlag, tt.fields.Token)
-			viper.Set(flag.ServerTokenHeaderFlag, tt.fields.TokenHeader)
+			viper.Set(flag.ServerAddrFlag.ConfigName, tt.fields.Server)
+			viper.Set(flag.ServerCustomHeadersFlag.ConfigName, tt.fields.CustomHeaders)
+			viper.Set(flag.ServerTokenFlag.ConfigName, tt.fields.Token)
+			viper.Set(flag.ServerTokenHeaderFlag.ConfigName, tt.fields.TokenHeader)
 
 			// Assert options
-			f := &flag.RemoteFlags{}
+			f := &flag.RemoteFlags{
+				ServerAddr:    &flag.ServerAddrFlag,
+				CustomHeaders: &flag.ServerCustomHeadersFlag,
+				Token:         &flag.ServerTokenFlag,
+				TokenHeader:   &flag.ServerTokenHeaderFlag,
+			}
 			got := f.ToOptions()
 			assert.Equalf(t, tt.want, got, "ToOptions()")
 
