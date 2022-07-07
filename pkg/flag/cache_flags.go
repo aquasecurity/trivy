@@ -28,7 +28,7 @@ var (
 	CacheBackendFlag = Flag{
 		Name:       "cache-backend",
 		ConfigName: "cache.backend",
-		Value:      "",
+		Value:      "fs",
 		Usage:      "cache backend (e.g. redis://localhost:6379)",
 	}
 	CacheTTLFlag = Flag{
