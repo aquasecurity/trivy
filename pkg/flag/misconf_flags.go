@@ -1,9 +1,10 @@
 package flag
 
 import (
-	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/samber/lo"
 	"github.com/spf13/cobra"
+
+	"github.com/aquasecurity/trivy/pkg/log"
 )
 
 // e.g. config yaml

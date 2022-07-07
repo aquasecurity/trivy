@@ -34,6 +34,7 @@ type Flag struct {
 }
 
 type FlagGroup interface {
+	AddFlags(cmd *cobra.Command)
 	Bind(cmd *cobra.Command) error
 }
 
@@ -130,36 +131,16 @@ func get[T any](flag *Flag) T {
 }
 
 func (f *Flags) groups() []FlagGroup {
-	return []FlagGroup{f.RemoteFlags, f.ReportFlags, f.ScanFlags}
+	return []FlagGroup{f.CacheFlags, f.DBFlags, f.ImageFlags, f.KubernetesFlags, f.MisconfFlags,
+		f.RemoteFlags, f.ReportFlags, f.SBOMFlags, f.ScanFlags}
 }
 
 func (f *Flags) AddFlags(cmd *cobra.Command) {
-	if f.CacheFlags != nil {
-		f.CacheFlags.AddFlags(cmd)
-	}
-	if f.DBFlags != nil {
-		f.DBFlags.AddFlags(cmd)
-	}
-	if f.ImageFlags != nil {
-		f.ImageFlags.AddFlags(cmd)
-	}
-	if f.KubernetesFlags != nil {
-		f.KubernetesFlags.AddFlags(cmd)
-	}
-	if f.MisconfFlags != nil {
-		f.MisconfFlags.AddFlags(cmd)
-	}
-	if f.RemoteFlags != nil {
-		f.RemoteFlags.AddFlags(cmd)
-	}
-	if f.ReportFlags != nil {
-		f.ReportFlags.AddFlags(cmd)
-	}
-	if f.SBOMFlags != nil {
-		f.SBOMFlags.AddFlags(cmd)
-	}
-	if f.ScanFlags != nil {
-		f.ScanFlags.AddFlags(cmd)
+	for _, group := range f.groups() {
+		if group == nil {
+			continue
+		}
+		group.AddFlags(cmd)
 	}
 
 	cmd.Flags().SetNormalizeFunc(flagNameNormalize)
