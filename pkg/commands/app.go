@@ -701,7 +701,7 @@ func showVersion(cacheDir, outputFormat, version string, outputWriter io.Writer)
 
 func validateArgs(cmd *cobra.Command, args []string) error {
 	// '--clear-cache', '--download-db-only' and '--reset' don't conduct the scan
-	if flag.ClearCacheFlag.Value.(bool) || viper.GetBool(flag.DownloadDBOnlyFlag) || viper.GetBool(flag.ResetFlag) {
+	if viper.GetBool(flag.ClearCacheFlag.ConfigName) || viper.GetBool(flag.DownloadDBOnlyFlag) || viper.GetBool(flag.ResetFlag) {
 		return nil
 	}
 

@@ -34,7 +34,7 @@ var (
 	CacheTTLFlag = Flag{
 		Name:       "cache-ttl",
 		ConfigName: "cache.ttl",
-		Value:      "",
+		Value:      time.Duration(0),
 		Usage:      "cache TTL when using redis as cache backend",
 	}
 	RedisCACertFlag = Flag{
