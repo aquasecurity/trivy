@@ -2,6 +2,7 @@ package flag
 
 import (
 	"io"
+	"strings"
 	"time"
 
 	"github.com/spf13/cobra"
@@ -122,7 +123,7 @@ func bind(cmd *cobra.Command, flag *Flag) error {
 		}
 	}
 	// We don't use viper.AutomaticEnv, so we need to add a prefix manually here.
-	if err := viper.BindEnv(flag.ConfigName, "trivy_"+flag.Name); err != nil {
+	if err := viper.BindEnv(flag.ConfigName, strings.ToUpper("trivy_"+flag.Name)); err != nil {
 		return err
 	}
 	return nil
