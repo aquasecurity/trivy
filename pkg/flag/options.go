@@ -134,10 +134,7 @@ func (f *Flags) ToOptions(appVersion string, args []string, globalFlags *GlobalF
 	}
 
 	if f.ScanFlags != nil {
-		opts.ScanOptions, err = f.ScanFlags.ToOptions(args)
-		if err != nil {
-			return Options{}, xerrors.Errorf("scanning flag error: %w", err)
-		}
+		opts.ScanOptions = f.ScanFlags.ToOptions(args)
 	}
 
 	if f.SecretFlags != nil {

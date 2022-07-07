@@ -154,8 +154,7 @@ func TestScanFlags_ToOptions(t *testing.T) {
 			// Assert options
 			f := &flag.ScanFlags{}
 
-			got, err := f.ToOptions(tt.args)
-			assert.NoError(t, err)
+			got := f.ToOptions(tt.args)
 			assert.Equalf(t, tt.want, got, "ToOptions()")
 
 			// Assert log messages

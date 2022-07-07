@@ -66,7 +66,7 @@ func (f *ScanFlags) AddFlags(cmd *cobra.Command) {
 	}
 }
 
-func (f *ScanFlags) ToOptions(args []string) (ScanOptions, error) {
+func (f *ScanFlags) ToOptions(args []string) ScanOptions {
 	var target string
 	if len(args) == 1 {
 		target = args[0]
@@ -79,7 +79,7 @@ func (f *ScanFlags) ToOptions(args []string) (ScanOptions, error) {
 		OfflineScan:    viper.GetBool(OfflineScanFlag),
 		VulnType:       parseVulnType(viper.GetString(VulnTypeFlag)),
 		SecurityChecks: parseSecurityCheck(viper.GetString(SecurityChecksFlag)),
-	}, nil
+	}
 }
 
 func parseVulnType(vulnType string) []string {
