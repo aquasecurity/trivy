@@ -153,11 +153,11 @@ func (f *ReportFlags) Bind(cmd *cobra.Command) error {
 }
 
 func (f *ReportFlags) ToOptions(out io.Writer) (ReportOptions, error) {
-	format := get[string](f.Format)
-	template := get[string](f.Template)
-	dependencyTree := get[bool](f.DependencyTree)
-	listAllPkgs := get[bool](f.ListAllPkgs)
-	output := get[string](f.Output)
+	format := getString(f.Format)
+	template := getString(f.Template)
+	dependencyTree := getBool(f.DependencyTree)
+	listAllPkgs := getBool(f.ListAllPkgs)
+	output := getString(f.Output)
 
 	if template != "" {
 		if format == "" {
@@ -199,12 +199,12 @@ func (f *ReportFlags) ToOptions(out io.Writer) (ReportOptions, error) {
 		Template:       template,
 		DependencyTree: dependencyTree,
 		ListAllPkgs:    listAllPkgs,
-		IgnoreUnfixed:  get[bool](f.IgnoreUnfixed),
-		IgnoreFile:     get[string](f.IgnoreFile),
-		ExitCode:       get[int](f.ExitCode),
-		IgnorePolicy:   get[string](f.IgnorePolicy),
+		IgnoreUnfixed:  getBool(f.IgnoreUnfixed),
+		IgnoreFile:     getString(f.IgnoreFile),
+		ExitCode:       getInt(f.ExitCode),
+		IgnorePolicy:   getString(f.IgnorePolicy),
 		Output:         out,
-		Severities:     splitSeverity(get[string](f.Severity)),
+		Severities:     splitSeverity(getString(f.Severity)),
 	}, nil
 }
 

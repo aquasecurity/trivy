@@ -129,12 +129,39 @@ func bind(cmd *cobra.Command, flag *Flag) error {
 	return nil
 }
 
-func get[T any](flag *Flag) T {
+func getString(flag *Flag) string {
 	if flag == nil {
-		var zero T
-		return zero
+		return ""
 	}
-	return viper.Get(flag.ConfigName).(T)
+	return viper.GetString(flag.ConfigName)
+}
+
+func getStringSlice(flag *Flag) []string {
+	if flag == nil {
+		return nil
+	}
+	return viper.GetStringSlice(flag.ConfigName)
+}
+
+func getInt(flag *Flag) int {
+	if flag == nil {
+		return 0
+	}
+	return viper.GetInt(flag.ConfigName)
+}
+
+func getBool(flag *Flag) bool {
+	if flag == nil {
+		return false
+	}
+	return viper.GetBool(flag.ConfigName)
+}
+
+func getDuration(flag *Flag) time.Duration {
+	if flag == nil {
+		return 0
+	}
+	return viper.GetDuration(flag.ConfigName)
 }
 
 func (f *Flags) groups() []FlagGroup {

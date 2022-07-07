@@ -100,9 +100,9 @@ func (f *DBFlags) Bind(cmd *cobra.Command) error {
 }
 
 func (f *DBFlags) ToOptions() (DBOptions, error) {
-	skipDBUpdate := get[bool](f.SkipDBUpdate)
-	downloadDBOnly := get[bool](f.DownloadDBOnly)
-	light := get[bool](f.Light)
+	skipDBUpdate := getBool(f.SkipDBUpdate)
+	downloadDBOnly := getBool(f.DownloadDBOnly)
+	light := getBool(f.Light)
 
 	if downloadDBOnly && skipDBUpdate {
 		return DBOptions{}, xerrors.New("--skip-db-update and --download-db-only options can not be specified both")
@@ -112,11 +112,11 @@ func (f *DBFlags) ToOptions() (DBOptions, error) {
 	}
 
 	return DBOptions{
-		Reset:          get[bool](f.Reset),
+		Reset:          getBool(f.Reset),
 		DownloadDBOnly: downloadDBOnly,
 		SkipDBUpdate:   skipDBUpdate,
 		Light:          light,
-		NoProgress:     get[bool](f.NoProgress),
-		DBRepository:   get[string](f.DBRepository),
+		NoProgress:     getBool(f.NoProgress),
+		DBRepository:   getString(f.DBRepository),
 	}, nil
 }

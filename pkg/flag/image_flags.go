@@ -62,7 +62,7 @@ func (f *ImageFlags) Bind(cmd *cobra.Command) error {
 
 func (f *ImageFlags) ToOptions() ImageOptions {
 	return ImageOptions{
-		Input:           get[string](f.Input),
-		ScanRemovedPkgs: get[bool](f.ScanRemovedPkgs),
+		Input:           getString(f.Input),
+		ScanRemovedPkgs: getBool(f.ScanRemovedPkgs),
 	}
 }

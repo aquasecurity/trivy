@@ -7,7 +7,6 @@ import (
 
 	"github.com/samber/lo"
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 	"golang.org/x/xerrors"
 )
 
@@ -115,11 +114,11 @@ func (f *CacheFlags) Bind(cmd *cobra.Command) error {
 }
 
 func (f *CacheFlags) ToOptions() (CacheOptions, error) {
-	cacheBackend := get[string](f.CacheBackend)
+	cacheBackend := getString(f.CacheBackend)
 	redisOptions := RedisOptions{
-		RedisCACert: get[string](f.RedisCACert),
-		RedisCert:   get[string](f.RedisCert),
-		RedisKey:    get[string](f.RedisKey),
+		RedisCACert: getString(f.RedisCACert),
+		RedisCert:   getString(f.RedisCert),
+		RedisKey:    getString(f.RedisKey),
 	}
 
 	// "redis://" or "fs" are allowed for now
@@ -135,14 +134,10 @@ func (f *CacheFlags) ToOptions() (CacheOptions, error) {
 		}
 	}
 
-	var cacheTTL time.Duration
-	if f.CacheTTL != nil {
-		viper.GetDuration(f.CacheTTL.ConfigName)
-	}
 	return CacheOptions{
-		ClearCache:   get[bool](f.ClearCache),
+		ClearCache:   getBool(f.ClearCache),
 		CacheBackend: cacheBackend,
-		CacheTTL:     cacheTTL,
+		CacheTTL:     getDuration(f.CacheTTL),
 		RedisOptions: redisOptions,
 	}, nil
 }

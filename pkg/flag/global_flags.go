@@ -120,12 +120,12 @@ func (f *GlobalFlags) Bind(cmd *cobra.Command) error {
 
 func (f *GlobalFlags) ToOptions() GlobalOptions {
 	return GlobalOptions{
-		ConfigFile:  get[string](f.ConfigFile),
-		ShowVersion: get[bool](f.ShowVersion),
-		Quiet:       get[bool](f.Quiet),
-		Debug:       get[bool](f.Debug),
-		Insecure:    get[bool](f.Insecure),
-		Timeout:     viper.GetDuration(f.Timeout.ConfigName), // time.Duration needs to be cast
-		CacheDir:    get[string](f.CacheDir),
+		ConfigFile:  getString(f.ConfigFile),
+		ShowVersion: getBool(f.ShowVersion),
+		Quiet:       getBool(f.Quiet),
+		Debug:       getBool(f.Debug),
+		Insecure:    getBool(f.Insecure),
+		Timeout:     viper.GetDuration(f.Timeout.ConfigName),
+		CacheDir:    getString(f.CacheDir),
 	}
 }

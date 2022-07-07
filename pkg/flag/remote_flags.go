@@ -107,11 +107,11 @@ func (f *RemoteFlags) AddFlags(cmd *cobra.Command) {
 }
 
 func (f *RemoteFlags) ToOptions() RemoteOptions {
-	serverAddr := get[string](f.ServerAddr)
-	customHeaders := splitCustomHeaders(get[[]string](f.CustomHeaders))
-	listen := get[string](f.Listen)
-	token := get[string](f.Token)
-	tokenHeader := get[string](f.TokenHeader)
+	serverAddr := getString(f.ServerAddr)
+	customHeaders := splitCustomHeaders(getStringSlice(f.CustomHeaders))
+	listen := getString(f.Listen)
+	token := getString(f.Token)
+	tokenHeader := getString(f.TokenHeader)
 
 	if serverAddr == "" && listen == "" {
 		switch {

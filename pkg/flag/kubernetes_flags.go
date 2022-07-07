@@ -67,8 +67,8 @@ func (f *KubernetesFlags) Bind(cmd *cobra.Command) error {
 
 func (f *KubernetesFlags) ToOptions() KubernetesOptions {
 	return KubernetesOptions{
-		ClusterContext: get[string](f.ClusterContext),
-		Namespace:      get[string](f.Namespace),
-		ReportFormat:   get[string](f.ReportFormat),
+		ClusterContext: getString(f.ClusterContext),
+		Namespace:      getString(f.Namespace),
+		ReportFormat:   getString(f.ReportFormat),
 	}
 }

@@ -6,7 +6,6 @@ import (
 
 	"github.com/samber/lo"
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 	"golang.org/x/exp/slices"
 
 	"github.com/aquasecurity/trivy/pkg/log"
@@ -112,22 +111,14 @@ func (f *ScanFlags) ToOptions(args []string) ScanOptions {
 		target = args[0]
 	}
 
-	var skipDirs, skipFiles []string
-	if f.SkipDirs != nil {
-		viper.GetStringSlice(f.SkipDirs.ConfigName)
-	}
-	if f.SkipFiles != nil {
-		viper.GetStringSlice(f.SkipFiles.ConfigName)
-	}
-
 	return ScanOptions{
 		Target:           target,
-		SkipDirs:         skipDirs,
-		SkipFiles:        skipFiles,
-		OfflineScan:      get[bool](f.OfflineScan),
-		VulnType:         parseVulnType(get[string](f.VulnType)),
-		SecurityChecks:   parseSecurityCheck(get[string](f.SecurityChecks)),
-		SecretConfigPath: get[string](f.SecretConfig),
+		SkipDirs:         getStringSlice(f.SkipDirs),
+		SkipFiles:        getStringSlice(f.SkipFiles),
+		OfflineScan:      getBool(f.OfflineScan),
+		VulnType:         parseVulnType(getString(f.VulnType)),
+		SecurityChecks:   parseSecurityCheck(getString(f.SecurityChecks)),
+		SecretConfigPath: getString(f.SecretConfig),
 	}
 }
 

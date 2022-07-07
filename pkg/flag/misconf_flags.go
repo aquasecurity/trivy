@@ -114,17 +114,17 @@ func (f *MisconfFlags) Bind(cmd *cobra.Command) error {
 }
 
 func (f *MisconfFlags) ToOptions() (MisconfOptions, error) {
-	skipPolicyUpdateFlag := get[bool](f.SkipPolicyUpdate)
+	skipPolicyUpdateFlag := getBool(f.SkipPolicyUpdate)
 	if skipPolicyUpdateFlag {
 		log.Logger.Warn("'--skip-policy-update' is no longer necessary as the built-in policies are embedded into the binary")
 	}
 	return MisconfOptions{
-		FilePatterns:       get[[]string](f.FilePatterns),
-		IncludeNonFailures: get[bool](f.IncludeNonFailures),
-		Trace:              get[bool](f.Trace),
+		FilePatterns:       getStringSlice(f.FilePatterns),
+		IncludeNonFailures: getBool(f.IncludeNonFailures),
+		Trace:              getBool(f.Trace),
 
-		PolicyPaths:      get[[]string](f.PolicyPaths),
-		DataPaths:        get[[]string](f.DataPaths),
-		PolicyNamespaces: get[[]string](f.PolicyNamespaces),
+		PolicyPaths:      getStringSlice(f.PolicyPaths),
+		DataPaths:        getStringSlice(f.DataPaths),
+		PolicyNamespaces: getStringSlice(f.PolicyNamespaces),
 	}, nil
 }
