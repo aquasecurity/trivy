@@ -187,15 +187,20 @@ func NewImageCommand(globalFlags *flag.GlobalFlags) *cobra.Command {
 		Aliases: []string{"i"},
 		Short:   "scan a container image",
 
-		// 'Args' cannot be used since it is called before PersistentPreRunE and viper is not configured yet.
-		// root.PersistentPreRunE -> configure viper
-		// cmd.PreRunE            -> validate args
-		// cmd.RunE               -> run the command
-		PreRunE: validateArgs,
-		RunE: func(cmd *cobra.Command, args []string) error {
+		// 'Args' cannot be used since it is called before PreRunE and viper is not configured yet.
+		// cmd.Args     -> cannot validate args here
+		// cmd.PreRunE  -> configure viper && validate args
+		// cmd.RunE     -> run the command
+		PreRunE: func(cmd *cobra.Command, args []string) error {
+			// viper.BindPFlag cannot be called in init(), so it is called in PreRunE.
+			// cf. https://github.com/spf13/cobra/issues/875
+			//     https://github.com/spf13/viper/issues/233
 			if err := imageFlags.Bind(cmd); err != nil {
 				return xerrors.Errorf("flag bind error: %w", err)
 			}
+			return validateArgs(cmd, args)
+		},
+		RunE: func(cmd *cobra.Command, args []string) error {
 			options, err := imageFlags.ToOptions(cmd.Version, args, globalFlags, outputWriter)
 			if err != nil {
 				return xerrors.Errorf("flag error: %w", err)
@@ -224,7 +229,12 @@ func NewFilesystemCommand(globalFlags *flag.GlobalFlags) *cobra.Command {
 		Use:     "filesystem [flags] PATH",
 		Aliases: []string{"fs"},
 		Short:   "scan local filesystem",
-		PreRunE: validateArgs,
+		PreRunE: func(cmd *cobra.Command, args []string) error {
+			if err := fsFlags.Bind(cmd); err != nil {
+				return xerrors.Errorf("flag bind error: %w", err)
+			}
+			return validateArgs(cmd, args)
+		},
 		RunE: func(cmd *cobra.Command, args []string) error {
 			if err := fsFlags.Bind(cmd); err != nil {
 				return xerrors.Errorf("flag bind error: %w", err)
@@ -253,9 +263,14 @@ func NewRootfsCommand(globalFlags *flag.GlobalFlags) *cobra.Command {
 	}
 
 	cmd := &cobra.Command{
-		Use:     "rootfs [flags] ROOTDIR",
-		Short:   "scan rootfs",
-		PreRunE: validateArgs,
+		Use:   "rootfs [flags] ROOTDIR",
+		Short: "scan rootfs",
+		PreRunE: func(cmd *cobra.Command, args []string) error {
+			if err := rootfsFlags.Bind(cmd); err != nil {
+				return xerrors.Errorf("flag bind error: %w", err)
+			}
+			return validateArgs(cmd, args)
+		},
 		RunE: func(cmd *cobra.Command, args []string) error {
 			if err := rootfsFlags.Bind(cmd); err != nil {
 				return xerrors.Errorf("flag bind error: %w", err)
@@ -288,7 +303,12 @@ func NewRepositoryCommand(globalFlags *flag.GlobalFlags) *cobra.Command {
 		Use:     "repository [flags] REPO_URL",
 		Aliases: []string{"repo"},
 		Short:   "scan remote repository",
-		PreRunE: validateArgs,
+		PreRunE: func(cmd *cobra.Command, args []string) error {
+			if err := repoFlags.Bind(cmd); err != nil {
+				return xerrors.Errorf("flag bind error: %w", err)
+			}
+			return validateArgs(cmd, args)
+		},
 		RunE: func(cmd *cobra.Command, args []string) error {
 			if err := repoFlags.Bind(cmd); err != nil {
 				return xerrors.Errorf("flag bind error: %w", err)
@@ -332,7 +352,12 @@ func NewClientCommand(globalFlags *flag.GlobalFlags) *cobra.Command {
 		Use:     "client [flags] IMAGE_NAME",
 		Aliases: []string{"c"},
 		Hidden:  true, // 'client' command is deprecated
-		PreRunE: validateArgs,
+		PreRunE: func(cmd *cobra.Command, args []string) error {
+			if err := clientFlags.Bind(cmd); err != nil {
+				return xerrors.Errorf("flag bind error: %w", err)
+			}
+			return validateArgs(cmd, args)
+		},
 		RunE: func(cmd *cobra.Command, args []string) error {
 			log.Logger.Warn("'client' subcommand is deprecated now. See https://github.com/aquasecurity/trivy/discussions/2119")
 
@@ -402,7 +427,12 @@ func NewConfigCommand(globalFlags *flag.GlobalFlags) *cobra.Command {
 		Use:     "config [flags] DIR",
 		Aliases: []string{"conf"},
 		Short:   "scan config files for misconfigurations",
-		PreRunE: validateArgs,
+		PreRunE: func(cmd *cobra.Command, args []string) error {
+			if err := configFlags.Bind(cmd); err != nil {
+				return xerrors.Errorf("flag bind error: %w", err)
+			}
+			return validateArgs(cmd, args)
+		},
 		RunE: func(cmd *cobra.Command, args []string) error {
 			if err := configFlags.Bind(cmd); err != nil {
 				return xerrors.Errorf("flag bind error: %w", err)
@@ -605,7 +635,12 @@ func NewKubernetesCommand(globalFlags *flag.GlobalFlags) *cobra.Command {
   - resource scanning:
       $ trivy k8s deployment/orion
 `,
-		PreRunE: validateArgs,
+		PreRunE: func(cmd *cobra.Command, args []string) error {
+			if err := k8sFlags.Bind(cmd); err != nil {
+				return xerrors.Errorf("flag bind error: %w", err)
+			}
+			return validateArgs(cmd, args)
+		},
 		RunE: func(cmd *cobra.Command, args []string) error {
 			if err := k8sFlags.Bind(cmd); err != nil {
 				return xerrors.Errorf("flag bind error: %w", err)
@@ -648,7 +683,12 @@ func NewSBOMCommand(globalFlags *flag.GlobalFlags) *cobra.Command {
   - Scan CycloneDX and generate a CycloneDX report:
       $ trivy sbom --format cyclonedx /path/to/report.cdx
 `,
-		PreRunE: validateArgs,
+		PreRunE: func(cmd *cobra.Command, args []string) error {
+			if err := scanFlags.Bind(cmd); err != nil {
+				return xerrors.Errorf("flag bind error: %w", err)
+			}
+			return validateArgs(cmd, args)
+		},
 		RunE: func(cmd *cobra.Command, args []string) error {
 			if err := sbomFlags.Bind(cmd); err != nil {
 				return xerrors.Errorf("flag bind error: %w", err)

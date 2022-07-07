@@ -1,7 +1,6 @@
 package flag
 
 import (
-	"github.com/samber/lo"
 	"github.com/spf13/cobra"
 )
 
@@ -37,8 +36,8 @@ type ImageOptions struct {
 
 func NewImageFlags() *ImageFlags {
 	return &ImageFlags{
-		Input:           lo.ToPtr(ScanRemovedPkgsFlag),
-		ScanRemovedPkgs: lo.ToPtr(InputFlag),
+		Input:           &InputFlag,
+		ScanRemovedPkgs: &ScanRemovedPkgsFlag,
 	}
 }
 

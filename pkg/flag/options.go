@@ -131,8 +131,35 @@ func get[T any](flag *Flag) T {
 }
 
 func (f *Flags) groups() []FlagGroup {
-	return []FlagGroup{f.CacheFlags, f.DBFlags, f.ImageFlags, f.KubernetesFlags, f.MisconfFlags,
-		f.RemoteFlags, f.ReportFlags, f.SBOMFlags, f.ScanFlags}
+	var groups []FlagGroup
+	if f.CacheFlags != nil {
+		groups = append(groups, f.CacheFlags)
+	}
+	if f.DBFlags != nil {
+		groups = append(groups, f.DBFlags)
+	}
+	if f.ImageFlags != nil {
+		groups = append(groups, f.ImageFlags)
+	}
+	if f.KubernetesFlags != nil {
+		groups = append(groups, f.KubernetesFlags)
+	}
+	if f.MisconfFlags != nil {
+		groups = append(groups, f.MisconfFlags)
+	}
+	if f.RemoteFlags != nil {
+		groups = append(groups, f.RemoteFlags)
+	}
+	if f.ReportFlags != nil {
+		groups = append(groups, f.ReportFlags)
+	}
+	if f.SBOMFlags != nil {
+		groups = append(groups, f.SBOMFlags)
+	}
+	if f.ScanFlags != nil {
+		groups = append(groups, f.ScanFlags)
+	}
+	return groups
 }
 
 func (f *Flags) AddFlags(cmd *cobra.Command) {

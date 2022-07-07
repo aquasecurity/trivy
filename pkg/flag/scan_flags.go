@@ -6,6 +6,7 @@ import (
 
 	"github.com/samber/lo"
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 	"golang.org/x/exp/slices"
 
 	"github.com/aquasecurity/trivy/pkg/log"
@@ -39,13 +40,13 @@ var (
 	}
 	VulnTypeFlag = Flag{
 		Name:       "vuln-type",
-		ConfigName: "scan.vulnerability.type",
+		ConfigName: "vulnerability.type",
 		Value:      strings.Join([]string{types.VulnTypeOS, types.VulnTypeLibrary}, ","),
 		Usage:      "comma-separated list of vulnerability types (os,library)",
 	}
 	SecretConfigFlag = Flag{
 		Name:       "secret-config",
-		ConfigName: "scan.secret.config",
+		ConfigName: "secret.config",
 		Value:      "trivy-secret.yaml",
 		Usage:      "specify a path to config file for secret scanning",
 	}
@@ -111,10 +112,18 @@ func (f *ScanFlags) ToOptions(args []string) ScanOptions {
 		target = args[0]
 	}
 
+	var skipDirs, skipFiles []string
+	if f.SkipDirs != nil {
+		viper.GetStringSlice(f.SkipDirs.ConfigName)
+	}
+	if f.SkipFiles != nil {
+		viper.GetStringSlice(f.SkipFiles.ConfigName)
+	}
+
 	return ScanOptions{
 		Target:         target,
-		SkipDirs:       get[[]string](f.SkipDirs),
-		SkipFiles:      get[[]string](f.SkipFiles),
+		SkipDirs:       skipDirs,
+		SkipFiles:      skipFiles,
 		OfflineScan:    get[bool](f.OfflineScan),
 		VulnType:       parseVulnType(get[string](f.VulnType)),
 		SecurityChecks: parseSecurityCheck(get[string](f.SecurityChecks)),

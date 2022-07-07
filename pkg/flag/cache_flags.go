@@ -7,6 +7,7 @@ import (
 
 	"github.com/samber/lo"
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 	"golang.org/x/xerrors"
 )
 
@@ -133,10 +134,15 @@ func (f *CacheFlags) ToOptions() (CacheOptions, error) {
 			return CacheOptions{}, xerrors.Errorf("you must provide Redis CA, cert and key file path when using TLS")
 		}
 	}
+
+	var cacheTTL time.Duration
+	if f.CacheTTL != nil {
+		viper.GetDuration(f.CacheTTL.ConfigName)
+	}
 	return CacheOptions{
 		ClearCache:   get[bool](f.ClearCache),
 		CacheBackend: cacheBackend,
-		CacheTTL:     get[time.Duration](f.CacheTTL),
+		CacheTTL:     cacheTTL,
 		RedisOptions: redisOptions,
 	}, nil
 }
