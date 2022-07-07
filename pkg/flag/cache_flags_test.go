@@ -86,7 +86,6 @@ func TestCacheFlags_ToOptions(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-
 			f := &flag.CacheFlags{}
 
 			viper.Set(flag.ClearCacheFlag, tt.fields.ClearCache)
