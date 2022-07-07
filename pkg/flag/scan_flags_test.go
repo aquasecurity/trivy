@@ -109,6 +109,33 @@ func TestScanFlags_ToOptions(t *testing.T) {
 			fields: fields{},
 			want:   flag.ScanOptions{},
 		},
+		{
+			name: "skip two files",
+			fields: fields{
+				skipFiles: []string{"file1", "file2"},
+			},
+			want: flag.ScanOptions{
+				SkipFiles: []string{"file1", "file2"},
+			},
+		},
+		{
+			name: "skip two folders",
+			fields: fields{
+				skipDirs: []string{"dir1", "dir2"},
+			},
+			want: flag.ScanOptions{
+				SkipDirs: []string{"dir1", "dir2"},
+			},
+		},
+		{
+			name: "offline scan",
+			fields: fields{
+				offlineScan: true,
+			},
+			want: flag.ScanOptions{
+				OfflineScan: true,
+			},
+		},
 	}
 
 	for _, tt := range tests {
