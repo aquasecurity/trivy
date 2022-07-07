@@ -10,15 +10,16 @@ import (
 
 	"github.com/aquasecurity/trivy/pkg/flag"
 	"github.com/aquasecurity/trivy/pkg/log"
+	"github.com/aquasecurity/trivy/pkg/types"
 )
 
 func TestScanFlags_ToOptions(t *testing.T) {
 	type fields struct {
-		SkipDirs       []string
-		SkipFiles      []string
-		OfflineScan    bool
-		VulnType       string
-		SecurityChecks string
+		skipDirs       []string
+		skipFiles      []string
+		offlineScan    bool
+		vulnType       string
+		securityChecks string
 	}
 	tests := []struct {
 		name     string
@@ -36,8 +37,69 @@ func TestScanFlags_ToOptions(t *testing.T) {
 			},
 		},
 		{
+			name: "happy path for OS vulnerabilities",
+			args: []string{"alpine:latest"},
+			fields: fields{
+				vulnType:       "os",
+				securityChecks: "vuln",
+			},
+			want: flag.ScanOptions{
+				Target:         "alpine:latest",
+				VulnType:       []string{types.VulnTypeOS},
+				SecurityChecks: []string{types.SecurityCheckVulnerability},
+			},
+		},
+		{
+			name: "happy path for library vulnerabilities",
+			args: []string{"alpine:latest"},
+			fields: fields{
+				vulnType:       "library",
+				securityChecks: "vuln",
+			},
+			want: flag.ScanOptions{
+				Target:         "alpine:latest",
+				VulnType:       []string{types.VulnTypeLibrary},
+				SecurityChecks: []string{types.SecurityCheckVulnerability},
+			},
+		},
+		{
+			name: "happy path for configs",
+			args: []string{"alpine:latest"},
+			fields: fields{
+				securityChecks: "config",
+			},
+			want: flag.ScanOptions{
+				Target:         "alpine:latest",
+				SecurityChecks: []string{types.SecurityCheckConfig},
+			},
+		},
+		{
+			name: "with wrong security check",
+			fields: fields{
+				securityChecks: "vuln,WRONG-CHECK",
+			},
+			want: flag.ScanOptions{
+				SecurityChecks: []string{types.SecurityCheckVulnerability},
+			},
+			wantLogs: []string{
+				`unknown security check: WRONG-CHECK`,
+			},
+		},
+		{
+			name: "with wrong vuln type",
+			fields: fields{
+				vulnType: "os,nonevuln",
+			},
+			want: flag.ScanOptions{
+				VulnType: []string{types.VulnTypeOS},
+			},
+			wantLogs: []string{
+				`unknown vulnerability type: nonevuln`,
+			},
+		},
+		{
 			name:   "without target (args)",
-			args:   []string{"alpine:latest"},
+			args:   []string{},
 			fields: fields{},
 			want:   flag.ScanOptions{},
 		},
@@ -56,11 +118,11 @@ func TestScanFlags_ToOptions(t *testing.T) {
 			core, obs := observer.New(level)
 			log.Logger = zap.New(core).Sugar()
 
-			viper.Set(flag.SkipDirsFlag, tt.fields.SkipDirs)
-			viper.Set(flag.SkipFilesFlag, tt.fields.SkipFiles)
-			viper.Set(flag.OfflineScanFlag, tt.fields.OfflineScan)
-			viper.Set(flag.VulnTypeFlag, tt.fields.VulnType)
-			viper.Set(flag.SecurityChecksFlag, tt.fields.SecurityChecks)
+			viper.Set(flag.SkipDirsFlag, tt.fields.skipDirs)
+			viper.Set(flag.SkipFilesFlag, tt.fields.skipFiles)
+			viper.Set(flag.OfflineScanFlag, tt.fields.offlineScan)
+			viper.Set(flag.VulnTypeFlag, tt.fields.vulnType)
+			viper.Set(flag.SecurityChecksFlag, tt.fields.securityChecks)
 
 			// Assert options
 			f := &flag.ScanFlags{}
