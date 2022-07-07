@@ -121,12 +121,13 @@ func (f *ScanFlags) ToOptions(args []string) ScanOptions {
 	}
 
 	return ScanOptions{
-		Target:         target,
-		SkipDirs:       skipDirs,
-		SkipFiles:      skipFiles,
-		OfflineScan:    get[bool](f.OfflineScan),
-		VulnType:       parseVulnType(get[string](f.VulnType)),
-		SecurityChecks: parseSecurityCheck(get[string](f.SecurityChecks)),
+		Target:           target,
+		SkipDirs:         skipDirs,
+		SkipFiles:        skipFiles,
+		OfflineScan:      get[bool](f.OfflineScan),
+		VulnType:         parseVulnType(get[string](f.VulnType)),
+		SecurityChecks:   parseSecurityCheck(get[string](f.SecurityChecks)),
+		SecretConfigPath: get[string](f.SecretConfig),
 	}
 }
 
