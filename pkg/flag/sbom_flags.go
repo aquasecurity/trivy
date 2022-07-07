@@ -48,9 +48,14 @@ func (f *SBOMFlags) AddFlags(cmd *cobra.Command) {
 	}
 }
 
+func (f *SBOMFlags) Bind(cmd *cobra.Command) error {
+	// All the flags are deprecated
+	return nil
+}
+
 func (f *SBOMFlags) ToOptions() (SBOMOptions, error) {
-	artifactType := get[string](f.ArtifactType)
-	sbomFormat := get[string](f.SBOMFormat)
+	artifactType := getString(f.ArtifactType)
+	sbomFormat := getString(f.SBOMFormat)
 
 	if artifactType != "" || sbomFormat != "" {
 		log.Logger.Error("'trivy sbom' is now for scanning SBOM. " +

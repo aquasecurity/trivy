@@ -69,12 +69,16 @@ func TestDBFlags_ToOptions(t *testing.T) {
 			core, obs := observer.New(level)
 			log.Logger = zap.New(core).Sugar()
 
-			viper.Set(flag.SkipDBUpdateFlag, tt.fields.SkipDBUpdate)
-			viper.Set(flag.DownloadDBOnlyFlag, tt.fields.DownloadDBOnly)
-			viper.Set(flag.LightFlag, tt.fields.Light)
+			viper.Set(flag.SkipDBUpdateFlag.ConfigName, tt.fields.SkipDBUpdate)
+			viper.Set(flag.DownloadDBOnlyFlag.ConfigName, tt.fields.DownloadDBOnly)
+			viper.Set(flag.LightFlag.ConfigName, tt.fields.Light)
 
 			// Assert options
-			f := &flag.DBFlags{}
+			f := &flag.DBFlags{
+				DownloadDBOnly: &flag.DownloadDBOnlyFlag,
+				SkipDBUpdate:   &flag.SkipDBUpdateFlag,
+				Light:          &flag.LightFlag,
+			}
 			got, err := f.ToOptions()
 			tt.assertion(t, err)
 			assert.Equalf(t, tt.want, got, "ToOptions()")

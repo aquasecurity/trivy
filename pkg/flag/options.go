@@ -2,6 +2,7 @@ package flag
 
 import (
 	"io"
+	"strings"
 	"time"
 
 	"github.com/spf13/cobra"
@@ -34,6 +35,7 @@ type Flag struct {
 }
 
 type FlagGroup interface {
+	AddFlags(cmd *cobra.Command)
 	Bind(cmd *cobra.Command) error
 }
 
@@ -111,55 +113,95 @@ func bind(cmd *cobra.Command, flag *Flag) error {
 	if flag == nil || flag.Name == "" {
 		return nil
 	}
-	if err := viper.BindPFlag(flag.ConfigName, cmd.Flags().Lookup(flag.Name)); err != nil {
-		return err
+	if flag.Persistent {
+		if err := viper.BindPFlag(flag.ConfigName, cmd.PersistentFlags().Lookup(flag.Name)); err != nil {
+			return err
+		}
+	} else {
+		if err := viper.BindPFlag(flag.ConfigName, cmd.Flags().Lookup(flag.Name)); err != nil {
+			return err
+		}
 	}
 	// We don't use viper.AutomaticEnv, so we need to add a prefix manually here.
-	if err := viper.BindEnv(flag.ConfigName, "trivy_"+flag.Name); err != nil {
+	if err := viper.BindEnv(flag.ConfigName, strings.ToUpper("trivy_"+flag.Name)); err != nil {
 		return err
 	}
 	return nil
 }
 
-func get[T any](flag *Flag) T {
+func getString(flag *Flag) string {
 	if flag == nil {
-		var zero T
-		return zero
+		return ""
 	}
-	return viper.Get(flag.ConfigName).(T)
+	return viper.GetString(flag.ConfigName)
+}
+
+func getStringSlice(flag *Flag) []string {
+	if flag == nil {
+		return nil
+	}
+	return viper.GetStringSlice(flag.ConfigName)
+}
+
+func getInt(flag *Flag) int {
+	if flag == nil {
+		return 0
+	}
+	return viper.GetInt(flag.ConfigName)
+}
+
+func getBool(flag *Flag) bool {
+	if flag == nil {
+		return false
+	}
+	return viper.GetBool(flag.ConfigName)
+}
+
+func getDuration(flag *Flag) time.Duration {
+	if flag == nil {
+		return 0
+	}
+	return viper.GetDuration(flag.ConfigName)
 }
 
 func (f *Flags) groups() []FlagGroup {
-	return []FlagGroup{f.RemoteFlags, f.ReportFlags, f.ScanFlags}
+	var groups []FlagGroup
+	if f.CacheFlags != nil {
+		groups = append(groups, f.CacheFlags)
+	}
+	if f.DBFlags != nil {
+		groups = append(groups, f.DBFlags)
+	}
+	if f.ImageFlags != nil {
+		groups = append(groups, f.ImageFlags)
+	}
+	if f.KubernetesFlags != nil {
+		groups = append(groups, f.KubernetesFlags)
+	}
+	if f.MisconfFlags != nil {
+		groups = append(groups, f.MisconfFlags)
+	}
+	if f.RemoteFlags != nil {
+		groups = append(groups, f.RemoteFlags)
+	}
+	if f.ReportFlags != nil {
+		groups = append(groups, f.ReportFlags)
+	}
+	if f.SBOMFlags != nil {
+		groups = append(groups, f.SBOMFlags)
+	}
+	if f.ScanFlags != nil {
+		groups = append(groups, f.ScanFlags)
+	}
+	return groups
 }
 
 func (f *Flags) AddFlags(cmd *cobra.Command) {
-	if f.CacheFlags != nil {
-		f.CacheFlags.AddFlags(cmd)
-	}
-	if f.DBFlags != nil {
-		f.DBFlags.AddFlags(cmd)
-	}
-	if f.ImageFlags != nil {
-		f.ImageFlags.AddFlags(cmd)
-	}
-	if f.KubernetesFlags != nil {
-		f.KubernetesFlags.AddFlags(cmd)
-	}
-	if f.MisconfFlags != nil {
-		f.MisconfFlags.AddFlags(cmd)
-	}
-	if f.RemoteFlags != nil {
-		f.RemoteFlags.AddFlags(cmd)
-	}
-	if f.ReportFlags != nil {
-		f.ReportFlags.AddFlags(cmd)
-	}
-	if f.SBOMFlags != nil {
-		f.SBOMFlags.AddFlags(cmd)
-	}
-	if f.ScanFlags != nil {
-		f.ScanFlags.AddFlags(cmd)
+	for _, group := range f.groups() {
+		if group == nil {
+			continue
+		}
+		group.AddFlags(cmd)
 	}
 
 	cmd.Flags().SetNormalizeFunc(flagNameNormalize)
@@ -241,15 +283,15 @@ func (f *Flags) ToOptions(appVersion string, args []string, globalFlags *GlobalF
 func flagNameNormalize(f *pflag.FlagSet, name string) pflag.NormalizedName {
 	switch name {
 	case "skip-update":
-		name = SkipDBUpdateFlag
+		name = SkipDBUpdateFlag.Name
 	case "policy":
-		name = ConfigPolicyFlag
+		name = ConfigPolicyFlag.Name
 	case "data":
-		name = ConfigDataFlag
+		name = ConfigDataFlag.Name
 	case "namespaces":
-		name = PolicyNamespaceFlag
+		name = PolicyNamespaceFlag.Name
 	case "ctx":
-		name = ClusterContextFlag
+		name = ClusterContextFlag.Name
 	}
 	return pflag.NormalizedName(name)
 }

@@ -39,13 +39,13 @@ var (
 	}
 	VulnTypeFlag = Flag{
 		Name:       "vuln-type",
-		ConfigName: "scan.vulnerability.type",
+		ConfigName: "vulnerability.type",
 		Value:      strings.Join([]string{types.VulnTypeOS, types.VulnTypeLibrary}, ","),
 		Usage:      "comma-separated list of vulnerability types (os,library)",
 	}
 	SecretConfigFlag = Flag{
 		Name:       "secret-config",
-		ConfigName: "scan.secret.config",
+		ConfigName: "secret.config",
 		Value:      "trivy-secret.yaml",
 		Usage:      "specify a path to config file for secret scanning",
 	}
@@ -112,12 +112,13 @@ func (f *ScanFlags) ToOptions(args []string) ScanOptions {
 	}
 
 	return ScanOptions{
-		Target:         target,
-		SkipDirs:       get[[]string](f.SkipDirs),
-		SkipFiles:      get[[]string](f.SkipFiles),
-		OfflineScan:    get[bool](f.OfflineScan),
-		VulnType:       parseVulnType(get[string](f.VulnType)),
-		SecurityChecks: parseSecurityCheck(get[string](f.SecurityChecks)),
+		Target:           target,
+		SkipDirs:         getStringSlice(f.SkipDirs),
+		SkipFiles:        getStringSlice(f.SkipFiles),
+		OfflineScan:      getBool(f.OfflineScan),
+		VulnType:         parseVulnType(getString(f.VulnType)),
+		SecurityChecks:   parseSecurityCheck(getString(f.SecurityChecks)),
+		SecretConfigPath: getString(f.SecretConfig),
 	}
 }
 
