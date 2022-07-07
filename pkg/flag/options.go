@@ -28,6 +28,13 @@ type Flag struct {
 
 	// Usage explains how to use the flag.
 	Usage string
+
+	// Persistent represents if the flag is persistent
+	Persistent bool
+}
+
+type FlagGroup interface {
+	Bind(cmd *cobra.Command) error
 }
 
 type Flags struct {
@@ -68,13 +75,35 @@ func addFlag(cmd *cobra.Command, flag *Flag) {
 	}
 	switch v := flag.Value.(type) {
 	case int:
-		cmd.Flags().IntP(flag.Name, flag.Shorthand, v, flag.Usage)
+		if flag.Persistent {
+			cmd.PersistentFlags().IntP(flag.Name, flag.Shorthand, v, flag.Usage)
+		} else {
+			cmd.Flags().IntP(flag.Name, flag.Shorthand, v, flag.Usage)
+		}
 	case string:
-		cmd.Flags().StringP(flag.Name, flag.Shorthand, v, flag.Usage)
+		if flag.Persistent {
+			cmd.PersistentFlags().StringP(flag.Name, flag.Shorthand, v, flag.Usage)
+		} else {
+			cmd.Flags().StringP(flag.Name, flag.Shorthand, v, flag.Usage)
+		}
+	case []string:
+		if flag.Persistent {
+			cmd.PersistentFlags().StringSliceP(flag.Name, flag.Shorthand, v, flag.Usage)
+		} else {
+			cmd.Flags().StringSliceP(flag.Name, flag.Shorthand, v, flag.Usage)
+		}
 	case bool:
-		cmd.Flags().BoolP(flag.Name, flag.Shorthand, v, flag.Usage)
+		if flag.Persistent {
+			cmd.PersistentFlags().BoolP(flag.Name, flag.Shorthand, v, flag.Usage)
+		} else {
+			cmd.Flags().BoolP(flag.Name, flag.Shorthand, v, flag.Usage)
+		}
 	case time.Duration:
-		cmd.Flags().DurationP(flag.Name, flag.Shorthand, v, flag.Usage)
+		if flag.Persistent {
+			cmd.PersistentFlags().DurationP(flag.Name, flag.Shorthand, v, flag.Usage)
+		} else {
+			cmd.PersistentFlags().DurationP(flag.Name, flag.Shorthand, v, flag.Usage)
+		}
 	}
 }
 
@@ -98,6 +127,10 @@ func get[T any](flag *Flag) T {
 		return zero
 	}
 	return viper.Get(flag.ConfigName).(T)
+}
+
+func (f *Flags) groups() []FlagGroup {
+	return []FlagGroup{f.RemoteFlags, f.ReportFlags, f.ScanFlags}
 }
 
 func (f *Flags) AddFlags(cmd *cobra.Command) {
@@ -133,8 +166,13 @@ func (f *Flags) AddFlags(cmd *cobra.Command) {
 }
 
 func (f *Flags) Bind(cmd *cobra.Command) error {
-	if err := f.ReportFlags.Bind(cmd); err != nil {
-		return err
+	for _, group := range f.groups() {
+		if group == nil {
+			continue
+		}
+		if err := group.Bind(cmd); err != nil {
+			return xerrors.Errorf("flag groups: %w", err)
+		}
 	}
 	return nil
 }

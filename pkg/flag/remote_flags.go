@@ -4,36 +4,61 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/samber/lo"
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 
 	"github.com/aquasecurity/trivy/pkg/log"
 )
 
 const (
 	DefaultTokenHeader = "Trivy-Token"
+)
 
-	ServerFlag            = "server"
-	CustomHeadersFlag     = "custom-headers"
-	ServerTokenFlag       = "token"
-	ServerTokenHeaderFlag = "token-header"
-	ServerListenFlag      = "listen"
+var (
+	ServerTokenFlag = Flag{
+		Name:       "token",
+		ConfigName: "server.token",
+		Value:      "",
+		Usage:      "for authentication in client/server mode",
+	}
+	ServerTokenHeaderFlag = Flag{
+		Name:       "token-header",
+		ConfigName: "server.token-header",
+		Value:      DefaultTokenHeader,
+		Usage:      "specify a header name for token in client/server mode",
+	}
+	ServerAddrFlag = Flag{
+		Name:       "server",
+		ConfigName: "server.addr",
+		Value:      "",
+		Usage:      "server address in client mode",
+	}
+	ServerCustomHeadersFlag = Flag{
+		Name:       "custom-headers",
+		ConfigName: "server.custom-headers",
+		Value:      []string{},
+		Usage:      "custom headers in client mode",
+	}
+	ServerListenFlag = Flag{
+		Name:       "listen",
+		ConfigName: "server.listen",
+		Value:      "localhost:4954",
+		Usage:      "listen address in server mode",
+	}
 )
 
 // RemoteFlags composes common printer flag structs
 // used for commands requiring reporting logic.
 type RemoteFlags struct {
 	// for client/server
-	Token       *string
-	TokenHeader *string
+	Token       *Flag
+	TokenHeader *Flag
 
 	// for client
-	ServerAddr    *string
-	CustomHeaders *[]string
+	ServerAddr    *Flag
+	CustomHeaders *Flag
 
 	// for server
-	Listen *string
+	Listen *Flag
 }
 
 type RemoteOptions struct {
@@ -47,45 +72,46 @@ type RemoteOptions struct {
 
 func NewClientFlags() *RemoteFlags {
 	return &RemoteFlags{
-		ServerAddr:    lo.ToPtr(""),
-		CustomHeaders: lo.ToPtr([]string{}),
-		Token:         lo.ToPtr(""),
-		TokenHeader:   lo.ToPtr(DefaultTokenHeader),
+		Token:         &ServerTokenFlag,
+		TokenHeader:   &ServerTokenHeaderFlag,
+		ServerAddr:    &ServerAddrFlag,
+		CustomHeaders: &ServerCustomHeadersFlag,
 	}
 }
 
 func NewServerDefaultFlags() *RemoteFlags {
 	return &RemoteFlags{
-		Token:       lo.ToPtr(""),
-		TokenHeader: lo.ToPtr(DefaultTokenHeader),
-		Listen:      lo.ToPtr("localhost:4954"),
+		Token:       &ServerTokenFlag,
+		TokenHeader: &ServerTokenHeaderFlag,
+		Listen:      &ServerListenFlag,
 	}
 }
 
+func (f *RemoteFlags) flags() []*Flag {
+	return []*Flag{f.Token, f.TokenHeader, f.ServerAddr, f.CustomHeaders, f.Listen}
+}
+
+func (f *RemoteFlags) Bind(cmd *cobra.Command) error {
+	for _, flag := range f.flags() {
+		if err := bind(cmd, flag); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
 func (f *RemoteFlags) AddFlags(cmd *cobra.Command) {
-	if f.ServerAddr != nil {
-		cmd.Flags().String(ServerFlag, *f.ServerAddr, "server address")
-	}
-	if f.CustomHeaders != nil {
-		cmd.Flags().StringSlice(CustomHeadersFlag, *f.CustomHeaders, "custom headers in client/server mode")
-	}
-	if f.Token != nil {
-		cmd.Flags().String(ServerTokenFlag, *f.Token, "for authentication in client/server mode")
-	}
-	if f.TokenHeader != nil {
-		cmd.Flags().String(ServerTokenHeaderFlag, *f.TokenHeader, "specify a header name for token in client/server mode")
-	}
-	if f.Listen != nil {
-		cmd.Flags().String(ServerListenFlag, *f.Listen, "listen address")
+	for _, flag := range f.flags() {
+		addFlag(cmd, flag)
 	}
 }
 
 func (f *RemoteFlags) ToOptions() RemoteOptions {
-	serverAddr := viper.GetString(ServerFlag)
-	customHeaders := splitCustomHeaders(viper.GetStringSlice(CustomHeadersFlag))
-	listen := viper.GetString(ServerListenFlag)
-	token := viper.GetString(ServerTokenFlag)
-	tokenHeader := viper.GetString(ServerTokenHeaderFlag)
+	serverAddr := get[string](f.ServerAddr)
+	customHeaders := splitCustomHeaders(get[[]string](f.CustomHeaders))
+	listen := get[string](f.Listen)
+	token := get[string](f.Token)
+	tokenHeader := get[string](f.TokenHeader)
 
 	if serverAddr == "" && listen == "" {
 		switch {

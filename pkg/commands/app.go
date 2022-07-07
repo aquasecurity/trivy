@@ -8,7 +8,6 @@ import (
 	"os"
 	"strings"
 
-	"github.com/samber/lo"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	"golang.org/x/xerrors"
@@ -192,7 +191,7 @@ func NewImageCommand(globalFlags *flag.GlobalFlags) *cobra.Command {
 		PreRunE: validateArgs,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			if err := imageFlags.Bind(cmd); err != nil {
-				return err
+				return xerrors.Errorf("flag bind error: %w", err)
 			}
 			options, err := imageFlags.ToOptions(cmd.Version, args, globalFlags, outputWriter)
 			if err != nil {
@@ -224,6 +223,9 @@ func NewFilesystemCommand(globalFlags *flag.GlobalFlags) *cobra.Command {
 		Short:   "scan local filesystem",
 		PreRunE: validateArgs,
 		RunE: func(cmd *cobra.Command, args []string) error {
+			if err := fsFlags.Bind(cmd); err != nil {
+				return xerrors.Errorf("flag bind error: %w", err)
+			}
 			options, err := fsFlags.ToOptions(cmd.Version, args, globalFlags, outputWriter)
 			if err != nil {
 				return xerrors.Errorf("flag error: %w", err)
@@ -252,6 +254,9 @@ func NewRootfsCommand(globalFlags *flag.GlobalFlags) *cobra.Command {
 		Short:   "scan rootfs",
 		PreRunE: validateArgs,
 		RunE: func(cmd *cobra.Command, args []string) error {
+			if err := rootfsFlags.Bind(cmd); err != nil {
+				return xerrors.Errorf("flag bind error: %w", err)
+			}
 			options, err := rootfsFlags.ToOptions(cmd.Version, args, globalFlags, outputWriter)
 			if err != nil {
 				return xerrors.Errorf("flag error: %w", err)
@@ -282,6 +287,9 @@ func NewRepositoryCommand(globalFlags *flag.GlobalFlags) *cobra.Command {
 		Short:   "scan remote repository",
 		PreRunE: validateArgs,
 		RunE: func(cmd *cobra.Command, args []string) error {
+			if err := repoFlags.Bind(cmd); err != nil {
+				return xerrors.Errorf("flag bind error: %w", err)
+			}
 			options, err := repoFlags.ToOptions(cmd.Version, args, globalFlags, outputWriter)
 			if err != nil {
 				return xerrors.Errorf("flag error: %w", err)
@@ -299,7 +307,14 @@ func NewRepositoryCommand(globalFlags *flag.GlobalFlags) *cobra.Command {
 // NewClientCommand returns the 'client' subcommand that is deprecated
 func NewClientCommand(globalFlags *flag.GlobalFlags) *cobra.Command {
 	remoteFlags := flag.NewClientFlags()
-	remoteFlags.ServerAddr = nil // disable '--server' to use '--remote' instead.
+	remoteAddr := flag.Flag{
+		Name:       "remote",
+		ConfigName: "server.addr",
+		Shorthand:  "",
+		Value:      "http://localhost:4954",
+		Usage:      "server address",
+	}
+	remoteFlags.ServerAddr = &remoteAddr // disable '--server' and enable '--remote' instead.
 
 	clientFlags := &flag.Flags{
 		CacheFlags:   flag.NewCacheFlags(),
@@ -318,6 +333,9 @@ func NewClientCommand(globalFlags *flag.GlobalFlags) *cobra.Command {
 		RunE: func(cmd *cobra.Command, args []string) error {
 			log.Logger.Warn("'client' subcommand is deprecated now. See https://github.com/aquasecurity/trivy/discussions/2119")
 
+			if err := clientFlags.Bind(cmd); err != nil {
+				return xerrors.Errorf("flag bind error: %w", err)
+			}
 			options, err := clientFlags.ToOptions(cmd.Version, args, globalFlags, outputWriter)
 			if err != nil {
 				return xerrors.Errorf("flag error: %w", err)
@@ -328,11 +346,6 @@ func NewClientCommand(globalFlags *flag.GlobalFlags) *cobra.Command {
 		SilenceUsage:  true,
 	}
 	clientFlags.AddFlags(cmd)
-
-	// deprecated flags
-	remoteFlags.ServerAddr = lo.ToPtr("")
-	cmd.Flags().StringVar(remoteFlags.ServerAddr, "remote", "http://localhost:4954", "server address")
-	viper.BindPFlag("remote", cmd.Flags().Lookup("remote")) // nolint: gosec
 
 	return cmd
 }
@@ -351,6 +364,9 @@ func NewServerCommand(globalFlags *flag.GlobalFlags) *cobra.Command {
 		Short:   "server mode",
 		Args:    cobra.ExactArgs(0),
 		RunE: func(cmd *cobra.Command, args []string) error {
+			if err := serverFlags.Bind(cmd); err != nil {
+				return xerrors.Errorf("flag bind error: %w", err)
+			}
 			options, err := serverFlags.ToOptions(cmd.Version, args, globalFlags, outputWriter)
 			if err != nil {
 				return xerrors.Errorf("flag error: %w", err)
@@ -385,6 +401,9 @@ func NewConfigCommand(globalFlags *flag.GlobalFlags) *cobra.Command {
 		Short:   "scan config files for misconfigurations",
 		PreRunE: validateArgs,
 		RunE: func(cmd *cobra.Command, args []string) error {
+			if err := configFlags.Bind(cmd); err != nil {
+				return xerrors.Errorf("flag bind error: %w", err)
+			}
 			options, err := configFlags.ToOptions(cmd.Version, args, globalFlags, outputWriter)
 			if err != nil {
 				return xerrors.Errorf("flag error: %w", err)
@@ -585,6 +604,9 @@ func NewKubernetesCommand(globalFlags *flag.GlobalFlags) *cobra.Command {
 `,
 		PreRunE: validateArgs,
 		RunE: func(cmd *cobra.Command, args []string) error {
+			if err := k8sFlags.Bind(cmd); err != nil {
+				return xerrors.Errorf("flag bind error: %w", err)
+			}
 			opts, err := k8sFlags.ToOptions(cmd.Version, args, globalFlags, outputWriter)
 			if err != nil {
 				return xerrors.Errorf("flag error: %w", err)
@@ -611,7 +633,7 @@ func NewSBOMCommand(globalFlags *flag.GlobalFlags) *cobra.Command {
 		RemoteFlags: flag.NewClientFlags(), // for client/server mode
 		ReportFlags: flag.NewReportFlags(),
 		ScanFlags:   flag.NewScanFlags(),
-		SBOMFlags:   flag.NewDefaultSBOMFlags(),
+		SBOMFlags:   flag.NewSBOMFlags(),
 	}
 
 	cmd := &cobra.Command{
@@ -625,6 +647,9 @@ func NewSBOMCommand(globalFlags *flag.GlobalFlags) *cobra.Command {
 `,
 		PreRunE: validateArgs,
 		RunE: func(cmd *cobra.Command, args []string) error {
+			if err := sbomFlags.Bind(cmd); err != nil {
+				return xerrors.Errorf("flag bind error: %w", err)
+			}
 			options, err := sbomFlags.ToOptions(cmd.Version, args, globalFlags, outputWriter)
 			if err != nil {
 				return xerrors.Errorf("flag error: %w", err)
