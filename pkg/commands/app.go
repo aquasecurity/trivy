@@ -178,7 +178,6 @@ func NewImageCommand(globalFlags *flag.GlobalFlags) *cobra.Command {
 		RemoteFlags:  flag.NewClientFlags(), // for client/server mode
 		ReportFlags:  flag.NewReportFlags(),
 		ScanFlags:    flag.NewScanFlags(),
-		SecretFlags:  flag.NewSecretFlags(),
 	}
 
 	cmd := &cobra.Command{
@@ -217,7 +216,6 @@ func NewFilesystemCommand(globalFlags *flag.GlobalFlags) *cobra.Command {
 		RemoteFlags:  flag.NewClientFlags(), // for client/server mode
 		ReportFlags:  flag.NewReportFlags(),
 		ScanFlags:    flag.NewScanFlags(),
-		SecretFlags:  flag.NewSecretFlags(),
 	}
 
 	cmd := &cobra.Command{
@@ -247,7 +245,6 @@ func NewRootfsCommand(globalFlags *flag.GlobalFlags) *cobra.Command {
 		MisconfFlags: flag.NewMisconfFlags(),
 		ReportFlags:  flag.NewReportFlags(),
 		ScanFlags:    flag.NewScanFlags(),
-		SecretFlags:  flag.NewSecretFlags(),
 	}
 
 	cmd := &cobra.Command{
@@ -277,7 +274,6 @@ func NewRepositoryCommand(globalFlags *flag.GlobalFlags) *cobra.Command {
 		RemoteFlags:  flag.NewClientFlags(), // for client/server mode
 		ReportFlags:  flag.NewReportFlags(),
 		ScanFlags:    flag.NewScanFlags(),
-		SecretFlags:  flag.NewSecretFlags(),
 	}
 
 	cmd := &cobra.Command{
@@ -312,7 +308,6 @@ func NewClientCommand(globalFlags *flag.GlobalFlags) *cobra.Command {
 		RemoteFlags:  remoteFlags,
 		ReportFlags:  flag.NewReportFlags(),
 		ScanFlags:    flag.NewScanFlags(),
-		SecretFlags:  flag.NewSecretFlags(),
 	}
 
 	cmd := &cobra.Command{
@@ -373,8 +368,8 @@ func NewServerCommand(globalFlags *flag.GlobalFlags) *cobra.Command {
 func NewConfigCommand(globalFlags *flag.GlobalFlags) *cobra.Command {
 	scanFlags := &flag.ScanFlags{
 		// Enable only '--skip-dirs' and '--skip-files' and disable other flags
-		SkipDirs:  lo.ToPtr([]string{}),
-		SkipFiles: lo.ToPtr([]string{}),
+		SkipDirs:  &flag.SkipDirsFlag,
+		SkipFiles: &flag.SkipFilesFlag,
 	}
 
 	configFlags := &flag.Flags{
@@ -557,12 +552,14 @@ func NewModuleCommand(globalFlags *flag.GlobalFlags) *cobra.Command {
 
 func NewKubernetesCommand(globalFlags *flag.GlobalFlags) *cobra.Command {
 	scanFlags := flag.NewScanFlags()
-	scanFlags.SecurityChecks = lo.ToPtr(fmt.Sprintf( // overwrite the default value
+	securityChecks := flag.SecurityChecksFlag
+	securityChecks.Value = fmt.Sprintf( // overwrite the default value
 		"%s,%s,%s,%s",
 		types.SecurityCheckVulnerability,
 		types.SecurityCheckConfig,
-		types.SecurityCheckSecret, types.SecurityCheckRbac),
+		types.SecurityCheckSecret, types.SecurityCheckRbac,
 	)
+	scanFlags.SecurityChecks = &securityChecks
 
 	k8sFlags := &flag.Flags{
 		CacheFlags:      flag.NewCacheFlags(),
@@ -571,7 +568,6 @@ func NewKubernetesCommand(globalFlags *flag.GlobalFlags) *cobra.Command {
 		MisconfFlags:    flag.NewMisconfFlags(),
 		ReportFlags:     flag.NewReportFlags(),
 		ScanFlags:       scanFlags,
-		SecretFlags:     flag.NewSecretFlags(),
 	}
 	cmd := &cobra.Command{
 		Use:     "kubernetes [flags] { cluster | all | specific resources like kubectl. eg: pods, pod/NAME }",

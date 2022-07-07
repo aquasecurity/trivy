@@ -40,7 +40,6 @@ type Flags struct {
 	ReportFlags     *ReportFlags
 	SBOMFlags       *SBOMFlags
 	ScanFlags       *ScanFlags
-	SecretFlags     *SecretFlags
 }
 
 // Options holds all the runtime configuration
@@ -55,7 +54,6 @@ type Options struct {
 	ReportOptions
 	SBOMOptions
 	ScanOptions
-	SecretOptions
 
 	// Trivy's version, not populated via CLI flags
 	AppVersion string
@@ -130,9 +128,6 @@ func (f *Flags) AddFlags(cmd *cobra.Command) {
 	if f.ScanFlags != nil {
 		f.ScanFlags.AddFlags(cmd)
 	}
-	if f.SecretFlags != nil {
-		f.SecretFlags.AddFlags(cmd)
-	}
 
 	cmd.Flags().SetNormalizeFunc(flagNameNormalize)
 }
@@ -200,10 +195,6 @@ func (f *Flags) ToOptions(appVersion string, args []string, globalFlags *GlobalF
 
 	if f.ScanFlags != nil {
 		opts.ScanOptions = f.ScanFlags.ToOptions(args)
-	}
-
-	if f.SecretFlags != nil {
-		opts.SecretOptions = f.SecretFlags.ToOptions()
 	}
 
 	return opts, nil

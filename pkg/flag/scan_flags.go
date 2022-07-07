@@ -31,17 +31,23 @@ var (
 		Value:      false,
 		Usage:      "do not issue API requests to identify dependencies",
 	}
+	SecurityChecksFlag = Flag{
+		Name:       "security-checks",
+		ConfigName: "scan.security-checks",
+		Value:      fmt.Sprintf("%s,%s", types.SecurityCheckVulnerability, types.SecurityCheckSecret),
+		Usage:      "comma-separated list of vulnerability types (os,library)",
+	}
 	VulnTypeFlag = Flag{
 		Name:       "vuln-type",
 		ConfigName: "scan.vulnerability.type",
 		Value:      strings.Join([]string{types.VulnTypeOS, types.VulnTypeLibrary}, ","),
 		Usage:      "comma-separated list of vulnerability types (os,library)",
 	}
-	SecurityChecksFlag = Flag{
-		Name:       "security-checks",
-		ConfigName: "scan.security-checks",
-		Value:      fmt.Sprintf("%s,%s", types.SecurityCheckVulnerability, types.SecurityCheckSecret),
-		Usage:      "comma-separated list of vulnerability types (os,library)",
+	SecretConfigFlag = Flag{
+		Name:       "secret-config",
+		ConfigName: "scan.secret.config",
+		Value:      "trivy-secret.yaml",
+		Usage:      "specify a path to config file for secret scanning",
 	}
 )
 
@@ -49,8 +55,10 @@ type ScanFlags struct {
 	SkipDirs       *Flag
 	SkipFiles      *Flag
 	OfflineScan    *Flag
-	VulnType       *Flag
 	SecurityChecks *Flag
+
+	VulnType     *Flag
+	SecretConfig *Flag
 }
 
 type ScanOptions struct {
@@ -58,8 +66,13 @@ type ScanOptions struct {
 	SkipDirs       []string
 	SkipFiles      []string
 	OfflineScan    bool
-	VulnType       []string
 	SecurityChecks []string
+
+	// Vulnerabilities
+	VulnType []string
+
+	// Secrets
+	SecretConfigPath string
 }
 
 func NewScanFlags() *ScanFlags {
@@ -67,13 +80,14 @@ func NewScanFlags() *ScanFlags {
 		SkipDirs:       lo.ToPtr(SkipDirsFlag),
 		SkipFiles:      lo.ToPtr(SkipFilesFlag),
 		OfflineScan:    lo.ToPtr(OfflineScanFlag),
-		VulnType:       lo.ToPtr(VulnTypeFlag),
 		SecurityChecks: lo.ToPtr(SecurityChecksFlag),
+		VulnType:       lo.ToPtr(VulnTypeFlag),
+		SecretConfig:   lo.ToPtr(SecretConfigFlag),
 	}
 }
 
 func (f *ScanFlags) flags() []*Flag {
-	return []*Flag{f.SkipDirs, f.SkipFiles, f.OfflineScan, f.VulnType, f.SecurityChecks}
+	return []*Flag{f.SkipDirs, f.SkipFiles, f.OfflineScan, f.SecurityChecks, f.VulnType, f.SecretConfig}
 }
 
 func (f *ScanFlags) Bind(cmd *cobra.Command) error {
