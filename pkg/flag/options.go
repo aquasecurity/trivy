@@ -133,7 +133,14 @@ func (f *Flags) AddFlags(cmd *cobra.Command) {
 }
 
 func (f *Flags) Bind(cmd *cobra.Command) error {
+	// TODO: define interface and refactor them
+	if err := f.RemoteFlags.Bind(cmd); err != nil {
+		return err
+	}
 	if err := f.ReportFlags.Bind(cmd); err != nil {
+		return err
+	}
+	if err := f.ScanFlags.Bind(cmd); err != nil {
 		return err
 	}
 	return nil
