@@ -33,6 +33,10 @@ type Flag struct {
 	Persistent bool
 }
 
+type FlagGroup interface {
+	Bind(cmd *cobra.Command) error
+}
+
 type Flags struct {
 	CacheFlags      *CacheFlags
 	DBFlags         *DBFlags
@@ -125,6 +129,10 @@ func get[T any](flag *Flag) T {
 	return viper.Get(flag.ConfigName).(T)
 }
 
+func (f *Flags) groups() []FlagGroup {
+	return []FlagGroup{f.RemoteFlags, f.ReportFlags, f.ScanFlags}
+}
+
 func (f *Flags) AddFlags(cmd *cobra.Command) {
 	if f.CacheFlags != nil {
 		f.CacheFlags.AddFlags(cmd)
@@ -158,15 +166,13 @@ func (f *Flags) AddFlags(cmd *cobra.Command) {
 }
 
 func (f *Flags) Bind(cmd *cobra.Command) error {
-	// TODO: define interface and refactor them
-	if err := f.RemoteFlags.Bind(cmd); err != nil {
-		return err
-	}
-	if err := f.ReportFlags.Bind(cmd); err != nil {
-		return err
-	}
-	if err := f.ScanFlags.Bind(cmd); err != nil {
-		return err
+	for _, group := range f.groups() {
+		if group == nil {
+			continue
+		}
+		if err := group.Bind(cmd); err != nil {
+			return xerrors.Errorf("flag groups: %w", err)
+		}
 	}
 	return nil
 }
