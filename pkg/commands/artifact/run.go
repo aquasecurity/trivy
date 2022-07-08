@@ -108,13 +108,13 @@ func NewRunner(ctx context.Context, cliOptions flag.Options, opts ...runnerOptio
 		opt(r)
 	}
 
+	if err := r.initCache(cliOptions); err != nil {
+		return nil, xerrors.Errorf("cache error: %w", err)
+	}
+
 	// Update the vulnerability database if needed.
 	if err := r.initDB(cliOptions); err != nil {
 		return nil, xerrors.Errorf("DB error: %w", err)
-	}
-
-	if err := r.initCache(cliOptions); err != nil {
-		return nil, xerrors.Errorf("cache error: %w", err)
 	}
 
 	// Initialize WASM modules
