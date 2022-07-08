@@ -120,14 +120,17 @@ func NewRootCommand(version string, globalFlags *flag.GlobalFlags) *cobra.Comman
 		Use:   "trivy [global flags] command [flags] target",
 		Short: "Unified security scanner",
 		Long:  "Scanner for vulnerabilities in container images, file systems, and Git repositories, as well as for configuration issues and hard-coded secrets",
-		Example: `  - scan an image:
-      $ trivy image python:3.4-alpine
-  - scan an image from a tar archive:
-      $ trivy image --input ruby-3.1.tar
-  - scan local filesystem:
-      $ trivy fs .
-  - run in server mode:
-      $ trivy server`,
+		Example: `  # Scan a container image:
+  $ trivy image python:3.4-alpine
+
+  # Scan a container image from a tar archive:
+  $ trivy image --input ruby-3.1.tar
+
+  # Scan local filesystem:
+  $ trivy fs .
+
+  # Run in server mode:
+  $ trivy server`,
 		CompletionOptions: cobra.CompletionOptions{
 			DisableDefaultCmd: true,
 		},
@@ -198,17 +201,27 @@ func NewImageCommand(globalFlags *flag.GlobalFlags) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:     "image [flags] IMAGE_NAME",
 		Aliases: []string{"i"},
-		Short:   "scan a container image",
-		Example: `  - scan an image:
-      $ trivy image python:3.4-alpine
-  - scan an image from a tar archive:
-      $ trivy image --input ruby-3.1.tar
-  - scan an image in client mode:
-      $ trivy image --server http://127.0.0.1:4954 alpine:latest
-  - scan an image and generate json result:
-      $ trivy image --format json --output result.json alpine:3.15
-  - scan an image and generate a report in the SPDX format:
-      $ trivy image --format spdx --output result.spdx alpine:3.15`,
+		Short:   "Scan a container image",
+		Example: `  # Scan a container image:
+  $ trivy image python:3.4-alpine
+
+  # Scan a container image from a tar archive:
+  $ trivy image --input ruby-3.1.tar
+
+  # Filter by severities
+  $ trivy image --severity HIGH,CRITICAL alpine:3.15
+
+  # Ignore unfixed/unpatched vulnerabilities
+  $ trivy image --ignore-unfixed alpine:3.15
+
+  # Scan a container image in client mode:
+  $ trivy image --server http://127.0.0.1:4954 alpine:latest
+
+  # Generate json result:
+  $ trivy image --format json --output result.json alpine:3.15
+
+  # Generate a report in the CycloneDX format:
+  $ trivy image --format cyclonedx --output result.cdx alpine:3.15`,
 
 		// 'Args' cannot be used since it is called before PreRunE and viper is not configured yet.
 		// cmd.Args     -> cannot validate args here
@@ -253,13 +266,12 @@ func NewFilesystemCommand(globalFlags *flag.GlobalFlags) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:     "filesystem [flags] PATH",
 		Aliases: []string{"fs"},
-		Short:   "scan local filesystem",
-		Example: `  - scan local filesystem: 
-    $ trivy fs .
-  - scan a local project including language-specific files:
-    $ trivy fs /path/to/project
-  - scan a single file:
-    $ trivy fs ~/src/github.com/aquasecurity/trivy-ci-test/Pipfile.lock`,
+		Short:   "Scan local filesystem",
+		Example: `  # Scan a local project including language-specific files: 
+  $ trivy fs /path/to/your_project
+
+  # Scan a single file:
+  $ trivy fs ./trivy-ci-test/Pipfile.lock`,
 		PreRunE: func(cmd *cobra.Command, args []string) error {
 			if err := fsFlags.Bind(cmd); err != nil {
 				return xerrors.Errorf("flag bind error: %w", err)
@@ -297,13 +309,15 @@ func NewRootfsCommand(globalFlags *flag.GlobalFlags) *cobra.Command {
 
 	cmd := &cobra.Command{
 		Use:   "rootfs [flags] ROOTDIR",
-		Short: "scan rootfs",
-		Example: `  - scan a root filesystem:
-    $ trivy rootfs /path/to/rootfs
-  - scan a container from inside the container:
-    $ docker run --rm -it alpine:3.11
-      / # curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh -s -- -b /usr/local/bin
-      / # trivy rootfs /`,
+		Short: "Scan rootfs",
+		Example: `  # Scan unpacked filesystem:
+  $ docker export $(docker create alpine:3.10.2) | tar -C /tmp/rootfs -xvf -
+  $ trivy rootfs /tmp/rootfs
+
+  # Scan from inside a container:
+  $ docker run --rm -it alpine:3.11
+  / # curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh -s -- -b /usr/local/bin
+  / # trivy rootfs /`,
 		PreRunE: func(cmd *cobra.Command, args []string) error {
 			if err := rootfsFlags.Bind(cmd); err != nil {
 				return xerrors.Errorf("flag bind error: %w", err)
@@ -342,9 +356,9 @@ func NewRepositoryCommand(globalFlags *flag.GlobalFlags) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:     "repository [flags] REPO_URL",
 		Aliases: []string{"repo"},
-		Short:   "scan remote repository",
-		Example: `  - scan your remote git repository:
-    $ trivy repo https://github.com/knqyf263/trivy-ci-test`,
+		Short:   "Scan a remote repository",
+		Example: `  # Scan your remote git repository:
+  $ trivy repo https://github.com/knqyf263/trivy-ci-test`,
 		PreRunE: func(cmd *cobra.Command, args []string) error {
 			if err := repoFlags.Bind(cmd); err != nil {
 				return xerrors.Errorf("flag bind error: %w", err)
@@ -433,7 +447,7 @@ func NewServerCommand(globalFlags *flag.GlobalFlags) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:     "server [flags]",
 		Aliases: []string{"s"},
-		Short:   "server mode",
+		Short:   "Server mode",
 		Args:    cobra.ExactArgs(0),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			if err := serverFlags.Bind(cmd); err != nil {
@@ -471,7 +485,7 @@ func NewConfigCommand(globalFlags *flag.GlobalFlags) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:     "config [flags] DIR",
 		Aliases: []string{"conf"},
-		Short:   "scan config files for misconfigurations",
+		Short:   "Scan config files for misconfigurations",
 		PreRunE: func(cmd *cobra.Command, args []string) error {
 			if err := configFlags.Bind(cmd); err != nil {
 				return xerrors.Errorf("flag bind error: %w", err)
@@ -508,7 +522,7 @@ func NewPluginCommand() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:           "plugin subcommand",
 		Aliases:       []string{"p"},
-		Short:         "manage plugins",
+		Short:         "Manage plugins",
 		SilenceErrors: true,
 		SilenceUsage:  true,
 	}
@@ -516,7 +530,7 @@ func NewPluginCommand() *cobra.Command {
 		&cobra.Command{
 			Use:                   "install URL | FILE_PATH",
 			Aliases:               []string{"i"},
-			Short:                 "install a plugin",
+			Short:                 "Install a plugin",
 			SilenceErrors:         true,
 			DisableFlagsInUseLine: true,
 			Args:                  cobra.ExactArgs(1),
@@ -528,7 +542,7 @@ func NewPluginCommand() *cobra.Command {
 			},
 		},
 		&cobra.Command{
-			Use:                   "uninstall PLUGIN_NAME",
+			Use:                   "Uninstall PLUGIN_NAME",
 			Aliases:               []string{"u"},
 			SilenceErrors:         true,
 			DisableFlagsInUseLine: true,
@@ -546,7 +560,7 @@ func NewPluginCommand() *cobra.Command {
 			Aliases:               []string{"l"},
 			SilenceErrors:         true,
 			DisableFlagsInUseLine: true,
-			Short:                 "list installed plugin",
+			Short:                 "List installed plugin",
 			Args:                  cobra.NoArgs,
 			RunE: func(cmd *cobra.Command, args []string) error {
 				info, err := plugin.List()
@@ -561,7 +575,7 @@ func NewPluginCommand() *cobra.Command {
 		},
 		&cobra.Command{
 			Use:                   "info PLUGIN_NAME",
-			Short:                 "information about a plugin",
+			Short:                 "Show information about the specified plugin",
 			SilenceErrors:         true,
 			DisableFlagsInUseLine: true,
 			Args:                  cobra.ExactArgs(1),
@@ -581,7 +595,7 @@ func NewPluginCommand() *cobra.Command {
 			Aliases:               []string{"r"},
 			SilenceErrors:         true,
 			DisableFlagsInUseLine: true,
-			Short:                 "run a plugin on the fly",
+			Short:                 "Run a plugin on the fly",
 			Args:                  cobra.MinimumNArgs(1),
 			RunE: func(cmd *cobra.Command, args []string) error {
 				return plugin.RunWithArgs(cmd.Context(), args[0], args[1:])
@@ -589,7 +603,7 @@ func NewPluginCommand() *cobra.Command {
 		},
 		&cobra.Command{
 			Use:                   "update PLUGIN_NAME",
-			Short:                 "update an existing plugin",
+			Short:                 "Update an existing plugin",
 			SilenceErrors:         true,
 			DisableFlagsInUseLine: true,
 			Args:                  cobra.ExactArgs(1),
@@ -609,7 +623,7 @@ func NewModuleCommand(globalFlags *flag.GlobalFlags) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:           "module subcommand",
 		Aliases:       []string{"m"},
-		Short:         "manage modules",
+		Short:         "Manage modules",
 		SilenceErrors: true,
 		SilenceUsage:  true,
 	}
@@ -619,7 +633,7 @@ func NewModuleCommand(globalFlags *flag.GlobalFlags) *cobra.Command {
 		&cobra.Command{
 			Use:     "install [flags] REPOSITORY",
 			Aliases: []string{"i"},
-			Short:   "install a module",
+			Short:   "Install a module",
 			Args:    cobra.ExactArgs(1),
 			RunE: func(cmd *cobra.Command, args []string) error {
 				if len(args) != 1 {
@@ -634,7 +648,7 @@ func NewModuleCommand(globalFlags *flag.GlobalFlags) *cobra.Command {
 		&cobra.Command{
 			Use:     "uninstall [flags] REPOSITORY",
 			Aliases: []string{"u"},
-			Short:   "uninstall a module",
+			Short:   "Uninstall a module",
 			Args:    cobra.ExactArgs(1),
 			RunE: func(cmd *cobra.Command, args []string) error {
 				if len(args) != 1 {
@@ -673,15 +687,18 @@ func NewKubernetesCommand(globalFlags *flag.GlobalFlags) *cobra.Command {
 		Use:     "kubernetes [flags] { cluster | all | specific resources like kubectl. eg: pods, pod/NAME }",
 		Aliases: []string{"k8s"},
 		Short:   "scan kubernetes cluster",
-		Example: `- cluster scanning:
-      $ trivy k8s --report summary cluster
-  - namespace scanning:
-      $ trivy k8s -n kube-system --report summary all
-  - resources scanning:
-      $ trivy k8s --report=summary deploy
-      $ trivy k8s --namespace=kube-system --report=summary deploy,configmaps
-  - resource scanning:
-      $ trivy k8s deployment/orion
+		Example: `  # cluster scanning:
+  $ trivy k8s --report summary cluster
+
+  # namespace scanning:
+  $ trivy k8s -n kube-system --report summary all
+
+  # resources scanning:
+  $ trivy k8s --report=summary deploy
+  $ trivy k8s --namespace=kube-system --report=summary deploy,configmaps
+
+  # resource scanning:
+  $ trivy k8s deployment/orion
 `,
 		PreRunE: func(cmd *cobra.Command, args []string) error {
 			if err := k8sFlags.Bind(cmd); err != nil {
@@ -724,12 +741,12 @@ func NewSBOMCommand(globalFlags *flag.GlobalFlags) *cobra.Command {
 
 	cmd := &cobra.Command{
 		Use:   "sbom [flags] SBOM_PATH",
-		Short: "scan SBOM for vulnerabilities",
-		Example: `- Scan CycloneDX and show the result in tables:
-      $ trivy sbom /path/to/report.cdx
+		Short: "Scan SBOM for vulnerabilities",
+		Example: `  # Scan CycloneDX and show the result in tables:
+  $ trivy sbom /path/to/report.cdx
 
-  - Scan CycloneDX and generate a CycloneDX report:
-      $ trivy sbom --format cyclonedx /path/to/report.cdx
+  # Scan CycloneDX and generate a CycloneDX report:
+  $ trivy sbom --format cyclonedx /path/to/report.cdx
 `,
 		PreRunE: func(cmd *cobra.Command, args []string) error {
 			if err := scanFlags.Bind(cmd); err != nil {
@@ -764,7 +781,7 @@ func NewVersionCommand(globalFlags *flag.GlobalFlags) *cobra.Command {
 	var versionFormat string
 	cmd := &cobra.Command{
 		Use:   "version [flags]",
-		Short: "print the version",
+		Short: "Print the version",
 		Args:  cobra.NoArgs,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			options := globalFlags.ToOptions()
