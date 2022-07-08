@@ -5,8 +5,6 @@ import (
 	"errors"
 	"os"
 
-	"github.com/aquasecurity/trivy/pkg/flag"
-
 	"github.com/hashicorp/go-multierror"
 	"golang.org/x/exp/slices"
 	"golang.org/x/xerrors"
@@ -19,6 +17,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer/secret"
 	"github.com/aquasecurity/trivy/pkg/fanal/artifact"
 	"github.com/aquasecurity/trivy/pkg/fanal/cache"
+	"github.com/aquasecurity/trivy/pkg/flag"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/module"
 	pkgReport "github.com/aquasecurity/trivy/pkg/report"
@@ -107,6 +106,11 @@ func NewRunner(ctx context.Context, cliOptions flag.Options, opts ...runnerOptio
 	r := &runner{}
 	for _, opt := range opts {
 		opt(r)
+	}
+
+	// Update the vulnerability database if needed.
+	if err := r.initDB(cliOptions); err != nil {
+		return nil, xerrors.Errorf("DB error: %w", err)
 	}
 
 	if err := r.initCache(cliOptions); err != nil {
@@ -204,10 +208,6 @@ func (r *runner) ScanRepository(ctx context.Context, opts flag.Options) (types.R
 }
 
 func (r *runner) ScanSBOM(ctx context.Context, opts flag.Options) (types.Report, error) {
-	// Scan vulnerabilities
-	opts.VulnType = []string{types.VulnTypeOS, types.VulnTypeLibrary}
-	opts.SecurityChecks = []string{types.SecurityCheckVulnerability}
-
 	var s InitializeScanner
 	if opts.ServerAddr == "" {
 		// Scan cycloneDX in standalone mode
@@ -221,10 +221,6 @@ func (r *runner) ScanSBOM(ctx context.Context, opts flag.Options) (types.Report,
 }
 
 func (r *runner) scanArtifact(ctx context.Context, opts flag.Options, initializeScanner InitializeScanner) (types.Report, error) {
-	// Update the vulnerability database if needed.
-	if err := r.initDB(opts); err != nil {
-		return types.Report{}, xerrors.Errorf("DB error: %w", err)
-	}
 
 	report, err := scan(ctx, opts, initializeScanner, r.cache)
 	if err != nil {

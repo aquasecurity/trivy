@@ -713,6 +713,10 @@ func NewSBOMCommand(globalFlags *flag.GlobalFlags) *cobra.Command {
 			if err != nil {
 				return xerrors.Errorf("flag error: %w", err)
 			}
+
+			// Scan vulnerabilities
+			options.SecurityChecks = []string{types.SecurityCheckVulnerability}
+
 			return artifact.Run(cmd.Context(), options, artifact.TargetSBOM)
 		},
 		SilenceErrors: true,
