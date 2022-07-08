@@ -222,6 +222,9 @@ func (r *runner) ScanSBOM(ctx context.Context, opts flag.Options) (types.Report,
 func (r *runner) scanArtifact(ctx context.Context, opts flag.Options, initializeScanner InitializeScanner) (types.Report, error) {
 	// Update the vulnerability database if needed.
 	if err := r.initDB(opts); err != nil {
+		if errors.Is(err, SkipScan) {
+			return types.Report{}, nil
+		}
 		return types.Report{}, xerrors.Errorf("DB error: %w", err)
 	}
 
