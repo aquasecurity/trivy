@@ -18,36 +18,27 @@ var (
 		Value:      "",
 		Usage:      "specify a namespace to sca",
 	}
-	ReportFormatFlag = Flag{
-		Name:       "report",
-		ConfigName: "kubernetes.report",
-		Value:      "all",
-		Usage:      "specify a report format for the output. (all,summary)",
-	}
 )
 
 type KubernetesFlags struct {
 	ClusterContext *Flag
 	Namespace      *Flag
-	ReportFormat   *Flag
 }
 
 type KubernetesOptions struct {
 	ClusterContext string
 	Namespace      string
-	ReportFormat   string
 }
 
 func NewKubernetesDefaultFlags() *KubernetesFlags {
 	return &KubernetesFlags{
 		ClusterContext: lo.ToPtr(ClusterContextFlag),
 		Namespace:      lo.ToPtr(K8sNamespaceFlag),
-		ReportFormat:   lo.ToPtr(ReportFormatFlag),
 	}
 }
 
 func (f *KubernetesFlags) flags() []*Flag {
-	return []*Flag{f.ClusterContext, f.Namespace, f.ReportFormat}
+	return []*Flag{f.ClusterContext, f.Namespace}
 }
 
 func (f *KubernetesFlags) AddFlags(cmd *cobra.Command) {
@@ -69,6 +60,5 @@ func (f *KubernetesFlags) ToOptions() KubernetesOptions {
 	return KubernetesOptions{
 		ClusterContext: getString(f.ClusterContext),
 		Namespace:      getString(f.Namespace),
-		ReportFormat:   getString(f.ReportFormat),
 	}
 }

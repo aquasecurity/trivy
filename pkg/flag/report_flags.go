@@ -25,21 +25,27 @@ import (
 var (
 	FormatFlag = Flag{
 		Name:       "format",
-		ConfigName: "report.format",
+		ConfigName: "format",
 		Shorthand:  "f",
 		Value:      report.FormatTable,
 		Usage:      "format (table, json, sarif, template, cyclonedx, spdx, spdx-json, github)",
 	}
+	ReportFormatFlag = Flag{
+		Name:       "report",
+		ConfigName: "report",
+		Value:      "all",
+		Usage:      "specify a report format for the output. (all,summary)",
+	}
 	TemplateFlag = Flag{
 		Name:       "template",
-		ConfigName: "report.template",
+		ConfigName: "template",
 		Shorthand:  "t",
 		Value:      "",
 		Usage:      "output template",
 	}
 	DependencyTreeFlag = Flag{
 		Name:       "dependency-tree",
-		ConfigName: "report.dependency-tree",
+		ConfigName: "dependency-tree",
 		Value:      false,
 		Usage:      "show dependency origin tree (EXPERIMENTAL)",
 	}
@@ -51,13 +57,13 @@ var (
 	}
 	IgnoreUnfixedFlag = Flag{
 		Name:       "ignore-unfixed",
-		ConfigName: "report.ignore-unfixed",
+		ConfigName: "vulnerability.ignore-unfixed",
 		Value:      false,
 		Usage:      "display only fixed vulnerabilities",
 	}
 	IgnoreFileFlag = Flag{
 		Name:       "ignorefile",
-		ConfigName: "report.ignorefile",
+		ConfigName: "ignorefile",
 		Value:      result.DefaultIgnoreFile,
 		Usage:      "specify .trivyignore file",
 	}
@@ -69,20 +75,20 @@ var (
 	}
 	ExitCodeFlag = Flag{
 		Name:       "exit-code",
-		ConfigName: "report.exit-code",
+		ConfigName: "exit-code",
 		Value:      0,
 		Usage:      "specify exit code when any security issues are found",
 	}
 	OutputFlag = Flag{
 		Name:       "output",
-		ConfigName: "report.output",
+		ConfigName: "output",
 		Shorthand:  "o",
 		Value:      "",
 		Usage:      "output file name",
 	}
 	SeverityFlag = Flag{
 		Name:       "severity",
-		ConfigName: "report.severity",
+		ConfigName: "severity",
 		Shorthand:  "s",
 		Value:      strings.Join(dbTypes.SeverityNames, ","),
 		Usage:      "severities of security issues to be displayed (comma separated)",
@@ -93,6 +99,7 @@ var (
 // used for commands requiring reporting logic.
 type ReportFlags struct {
 	Format         *Flag
+	ReportFormat   *Flag
 	Template       *Flag
 	DependencyTree *Flag
 	ListAllPkgs    *Flag
@@ -106,6 +113,7 @@ type ReportFlags struct {
 
 type ReportOptions struct {
 	Format         string
+	ReportFormat   string
 	Template       string
 	DependencyTree bool
 	ListAllPkgs    bool
@@ -120,6 +128,7 @@ type ReportOptions struct {
 func NewReportFlags() *ReportFlags {
 	return &ReportFlags{
 		Format:         lo.ToPtr(FormatFlag),
+		ReportFormat:   lo.ToPtr(ReportFormatFlag),
 		Template:       lo.ToPtr(TemplateFlag),
 		DependencyTree: lo.ToPtr(DependencyTreeFlag),
 		ListAllPkgs:    lo.ToPtr(ListAllPkgsFlag),
@@ -133,7 +142,7 @@ func NewReportFlags() *ReportFlags {
 }
 
 func (f *ReportFlags) flags() []*Flag {
-	return []*Flag{f.Format, f.Template, f.DependencyTree, f.ListAllPkgs, f.IgnoreUnfixed, f.IgnoreFile, f.IgnorePolicy,
+	return []*Flag{f.Format, f.ReportFormat, f.Template, f.DependencyTree, f.ListAllPkgs, f.IgnoreUnfixed, f.IgnoreFile, f.IgnorePolicy,
 		f.ExitCode, f.Output, f.Severity}
 }
 
@@ -196,6 +205,7 @@ func (f *ReportFlags) ToOptions(out io.Writer) (ReportOptions, error) {
 
 	return ReportOptions{
 		Format:         format,
+		ReportFormat:   getString(f.ReportFormat),
 		Template:       template,
 		DependencyTree: dependencyTree,
 		ListAllPkgs:    listAllPkgs,
