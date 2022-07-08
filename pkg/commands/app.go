@@ -215,6 +215,8 @@ func NewImageCommand(globalFlags *flag.GlobalFlags) *cobra.Command {
 		SilenceErrors: true,
 		SilenceUsage:  true,
 	}
+
+	cmd.SetFlagErrorFunc(flagErrorFunc)
 	imageFlags.AddFlags(cmd)
 
 	return cmd
@@ -253,6 +255,8 @@ func NewFilesystemCommand(globalFlags *flag.GlobalFlags) *cobra.Command {
 		SilenceErrors: true,
 		SilenceUsage:  true,
 	}
+
+	cmd.SetFlagErrorFunc(flagErrorFunc)
 	fsFlags.AddFlags(cmd)
 
 	return cmd
@@ -289,6 +293,7 @@ func NewRootfsCommand(globalFlags *flag.GlobalFlags) *cobra.Command {
 		SilenceErrors: true,
 		SilenceUsage:  true,
 	}
+	cmd.SetFlagErrorFunc(flagErrorFunc)
 	rootfsFlags.AddFlags(cmd)
 
 	return cmd
@@ -327,6 +332,7 @@ func NewRepositoryCommand(globalFlags *flag.GlobalFlags) *cobra.Command {
 		SilenceErrors: true,
 		SilenceUsage:  true,
 	}
+	cmd.SetFlagErrorFunc(flagErrorFunc)
 	repoFlags.AddFlags(cmd)
 
 	return cmd
@@ -378,6 +384,7 @@ func NewClientCommand(globalFlags *flag.GlobalFlags) *cobra.Command {
 		SilenceErrors: true,
 		SilenceUsage:  true,
 	}
+	cmd.SetFlagErrorFunc(flagErrorFunc)
 	clientFlags.AddFlags(cmd)
 
 	return cmd
@@ -409,6 +416,7 @@ func NewServerCommand(globalFlags *flag.GlobalFlags) *cobra.Command {
 		SilenceErrors: true,
 		SilenceUsage:  true,
 	}
+	cmd.SetFlagErrorFunc(flagErrorFunc)
 	serverFlags.AddFlags(cmd)
 
 	return cmd
@@ -458,6 +466,7 @@ func NewConfigCommand(globalFlags *flag.GlobalFlags) *cobra.Command {
 		SilenceErrors: true,
 		SilenceUsage:  true,
 	}
+	cmd.SetFlagErrorFunc(flagErrorFunc)
 	configFlags.AddFlags(cmd)
 
 	return cmd
@@ -560,6 +569,7 @@ func NewPluginCommand() *cobra.Command {
 			},
 		},
 	)
+	cmd.SetFlagErrorFunc(flagErrorFunc)
 	return cmd
 }
 
@@ -604,6 +614,7 @@ func NewModuleCommand(globalFlags *flag.GlobalFlags) *cobra.Command {
 			},
 		},
 	)
+	cmd.SetFlagErrorFunc(flagErrorFunc)
 	return cmd
 }
 
@@ -660,7 +671,7 @@ func NewKubernetesCommand(globalFlags *flag.GlobalFlags) *cobra.Command {
 		SilenceErrors: true,
 		SilenceUsage:  true,
 	}
-
+	cmd.SetFlagErrorFunc(flagErrorFunc)
 	k8sFlags.AddFlags(cmd)
 
 	return cmd
@@ -707,6 +718,7 @@ func NewSBOMCommand(globalFlags *flag.GlobalFlags) *cobra.Command {
 		SilenceErrors: true,
 		SilenceUsage:  true,
 	}
+	cmd.SetFlagErrorFunc(flagErrorFunc)
 	sbomFlags.AddFlags(cmd)
 
 	return cmd
@@ -727,6 +739,7 @@ func NewVersionCommand(globalFlags *flag.GlobalFlags) *cobra.Command {
 		SilenceErrors: true,
 		SilenceUsage:  true,
 	}
+	cmd.SetFlagErrorFunc(flagErrorFunc)
 
 	// Add version format flag, only json is supported
 	cmd.Flags().StringVarP(&versionFormat, flag.FormatFlag.Name, flag.FormatFlag.Shorthand, "", "version format (json)")
@@ -792,4 +805,13 @@ func validateArgs(cmd *cobra.Command, args []string) error {
 	}
 
 	return nil
+}
+
+// show help on using the command when an invalid flag is encountered
+func flagErrorFunc(command *cobra.Command, err error) error {
+	if err := command.Help(); err != nil {
+		return err
+	}
+	command.Println() //add empty line after list of flags
+	return err
 }
