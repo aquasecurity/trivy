@@ -133,7 +133,7 @@ func parseVulnType(vulnType []string) []string {
 	var vulnTypes []string
 	for _, v := range vulnType {
 		if !slices.Contains(types.VulnTypes, v) {
-			log.Logger.Warnf("unknown security check: %s", v)
+			log.Logger.Warnf("unknown vulnerability type: %s", v)
 			continue
 		}
 		vulnTypes = append(vulnTypes, v)
