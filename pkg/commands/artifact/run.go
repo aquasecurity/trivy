@@ -94,6 +94,7 @@ type runner struct {
 type runnerOption func(*runner)
 
 // WithCacheClient takes a custom cache implementation
+// It is useful when Trivy is imported as a library.
 func WithCacheClient(c cache.Cache) runnerOption {
 	return func(r *runner) {
 		r.cache = c
