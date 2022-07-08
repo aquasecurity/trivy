@@ -116,21 +116,24 @@ func (f *ScanFlags) ToOptions(args []string) ScanOptions {
 		SkipDirs:         getStringSlice(f.SkipDirs),
 		SkipFiles:        getStringSlice(f.SkipFiles),
 		OfflineScan:      getBool(f.OfflineScan),
-		VulnType:         parseVulnType(getString(f.VulnType)),
+		VulnType:         parseVulnType(getStringSlice(f.VulnType)),
 		SecurityChecks:   parseSecurityCheck(getStringSlice(f.SecurityChecks)),
 		SecretConfigPath: getString(f.SecretConfig),
 	}
 }
 
-func parseVulnType(vulnType string) []string {
-	if vulnType == "" {
+func parseVulnType(vulnType []string) []string {
+	switch {
+	case len(vulnType) == 0: // no types
 		return nil
+	case len(vulnType) == 1 && strings.Contains(vulnType[0], ","): // get checks from flag
+		vulnType = strings.Split(vulnType[0], ",")
 	}
 
 	var vulnTypes []string
-	for _, v := range strings.Split(vulnType, ",") {
+	for _, v := range vulnType {
 		if !slices.Contains(types.VulnTypes, v) {
-			log.Logger.Warnf("unknown vulnerability type: %s", v)
+			log.Logger.Warnf("unknown security check: %s", v)
 			continue
 		}
 		vulnTypes = append(vulnTypes, v)
@@ -138,21 +141,21 @@ func parseVulnType(vulnType string) []string {
 	return vulnTypes
 }
 
-func parseSecurityCheck(securityChecks []string) []string {
+func parseSecurityCheck(securityCheck []string) []string {
 	switch {
-	case len(securityChecks) == 0: // checks don't use
+	case len(securityCheck) == 0: // no checks
 		return nil
-	case len(securityChecks) == 1 && strings.Contains(securityChecks[0], ","): // get checks from flag
-		securityChecks = strings.Split(securityChecks[0], ",")
+	case len(securityCheck) == 1 && strings.Contains(securityCheck[0], ","): // get checks from flag
+		securityCheck = strings.Split(securityCheck[0], ",")
 	}
 
-	var checks []string
-	for _, v := range securityChecks {
+	var securityChecks []string
+	for _, v := range securityCheck {
 		if !slices.Contains(types.SecurityChecks, v) {
 			log.Logger.Warnf("unknown security check: %s", v)
 			continue
 		}
-		checks = append(checks, v)
+		securityChecks = append(securityChecks, v)
 	}
-	return checks
+	return securityChecks
 }
