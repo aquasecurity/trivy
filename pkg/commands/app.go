@@ -812,5 +812,6 @@ func flagErrorFunc(command *cobra.Command, err error) error {
 	if err := command.Help(); err != nil {
 		return err
 	}
+	command.Println() //add empty line after list of flags
 	return err
 }
