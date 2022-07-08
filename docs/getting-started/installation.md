@@ -228,6 +228,31 @@ podAnnotations: {}
 
 > **Tip**: List all releases using `helm list`.
 
+## pre-commit hook
+
+Add this to your [pre-commit](https://pre-commit.com/) `.pre-commit-config.yaml` config.
+
+You can use [trivy fs flags](../../docs/references/cli/fs/) to configure Trivy.
+Insert the required flags in the `args` field.
+
+There are mechanisms to run trivy via pre-commit hook.
+- `trivy-go`: pre-commit will use go (required) to compile trivy and execute it.
+- `trivy-docker`: pre-commit will use the latest `aquasecurity/trivy` docker image and run it inside a docker container
+
+```yaml
+repos:
+-   repo: https://github.com/aquasecurity/trivy.git
+    rev: {{ git.tag }}
+    hooks:
+    -   id: trivyfs-go # or trivy-docker
+        args:
+          - --skip-dirs
+          - ./tests
+          - . # last arg indicates the path to scan
+```
+
+According to [pre-commit](https://pre-commit.com/#golang) you will require [go](https://go.dev/) to be installed
+
 ## Other Tools to use and deploy Trivy
 
 For additional tools and ways to install and use Trivy in different envrionments such as in Docker Desktop and Kubernetes clusters, see the links in the [Ecosystem section](../ecosystem/tools.md).

@@ -1,0 +1,11 @@
+- id: trivyfs-go
+  name: trivyfs-go
+  entry: trivy fs --exit-code 1
+  language: golang
+  pass_filenames: false
+
+- id: trivyfs-docker
+  name: trivyfs-docker
+  entry: aquasec/trivy fs --cache-dir /tmp/.cache --exit-code 1
+  language: docker_image
+  pass_filenames: false
