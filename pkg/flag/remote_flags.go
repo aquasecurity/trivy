@@ -46,9 +46,9 @@ var (
 	}
 )
 
-// RemoteFlags composes common printer flag structs
+// RemoteFlagGroup composes common printer flag structs
 // used for commands requiring reporting logic.
-type RemoteFlags struct {
+type RemoteFlagGroup struct {
 	// for client/server
 	Token       *Flag
 	TokenHeader *Flag
@@ -70,8 +70,8 @@ type RemoteOptions struct {
 	CustomHeaders http.Header
 }
 
-func NewClientFlags() *RemoteFlags {
-	return &RemoteFlags{
+func NewClientFlags() *RemoteFlagGroup {
+	return &RemoteFlagGroup{
 		Token:         &ServerTokenFlag,
 		TokenHeader:   &ServerTokenHeaderFlag,
 		ServerAddr:    &ServerAddrFlag,
@@ -79,19 +79,19 @@ func NewClientFlags() *RemoteFlags {
 	}
 }
 
-func NewServerDefaultFlags() *RemoteFlags {
-	return &RemoteFlags{
+func NewServerFlags() *RemoteFlagGroup {
+	return &RemoteFlagGroup{
 		Token:       &ServerTokenFlag,
 		TokenHeader: &ServerTokenHeaderFlag,
 		Listen:      &ServerListenFlag,
 	}
 }
 
-func (f *RemoteFlags) flags() []*Flag {
+func (f *RemoteFlagGroup) flags() []*Flag {
 	return []*Flag{f.Token, f.TokenHeader, f.ServerAddr, f.CustomHeaders, f.Listen}
 }
 
-func (f *RemoteFlags) Bind(cmd *cobra.Command) error {
+func (f *RemoteFlagGroup) Bind(cmd *cobra.Command) error {
 	for _, flag := range f.flags() {
 		if err := bind(cmd, flag); err != nil {
 			return err
@@ -100,13 +100,13 @@ func (f *RemoteFlags) Bind(cmd *cobra.Command) error {
 	return nil
 }
 
-func (f *RemoteFlags) AddFlags(cmd *cobra.Command) {
+func (f *RemoteFlagGroup) AddFlags(cmd *cobra.Command) {
 	for _, flag := range f.flags() {
 		addFlag(cmd, flag)
 	}
 }
 
-func (f *RemoteFlags) ToOptions() RemoteOptions {
+func (f *RemoteFlagGroup) ToOptions() RemoteOptions {
 	serverAddr := getString(f.ServerAddr)
 	customHeaders := splitCustomHeaders(getStringSlice(f.CustomHeaders))
 	listen := getString(f.Listen)

@@ -13,7 +13,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/types"
 )
 
-func TestScanFlags_ToOptions(t *testing.T) {
+func TestScanFlagGroup_ToOptions(t *testing.T) {
 	type fields struct {
 		skipDirs       []string
 		skipFiles      []string
@@ -152,7 +152,7 @@ func TestScanFlags_ToOptions(t *testing.T) {
 			viper.Set(flag.SecurityChecksFlag.ConfigName, tt.fields.securityChecks)
 
 			// Assert options
-			f := &flag.ScanFlags{
+			f := &flag.ScanFlagGroup{
 				SkipDirs:       &flag.SkipDirsFlag,
 				SkipFiles:      &flag.SkipFilesFlag,
 				OfflineScan:    &flag.OfflineScanFlag,

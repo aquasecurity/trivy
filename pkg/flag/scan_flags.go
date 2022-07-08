@@ -51,7 +51,7 @@ var (
 	}
 )
 
-type ScanFlags struct {
+type ScanFlagGroup struct {
 	SkipDirs       *Flag
 	SkipFiles      *Flag
 	OfflineScan    *Flag
@@ -75,8 +75,8 @@ type ScanOptions struct {
 	SecretConfigPath string
 }
 
-func NewScanFlags() *ScanFlags {
-	return &ScanFlags{
+func NewScanFlagGroup() *ScanFlagGroup {
+	return &ScanFlagGroup{
 		SkipDirs:       lo.ToPtr(SkipDirsFlag),
 		SkipFiles:      lo.ToPtr(SkipFilesFlag),
 		OfflineScan:    lo.ToPtr(OfflineScanFlag),
@@ -86,11 +86,11 @@ func NewScanFlags() *ScanFlags {
 	}
 }
 
-func (f *ScanFlags) flags() []*Flag {
+func (f *ScanFlagGroup) flags() []*Flag {
 	return []*Flag{f.SkipDirs, f.SkipFiles, f.OfflineScan, f.SecurityChecks, f.VulnType, f.SecretConfig}
 }
 
-func (f *ScanFlags) Bind(cmd *cobra.Command) error {
+func (f *ScanFlagGroup) Bind(cmd *cobra.Command) error {
 	for _, flag := range f.flags() {
 		if err := bind(cmd, flag); err != nil {
 			return err
@@ -99,13 +99,13 @@ func (f *ScanFlags) Bind(cmd *cobra.Command) error {
 	return nil
 }
 
-func (f *ScanFlags) AddFlags(cmd *cobra.Command) {
+func (f *ScanFlagGroup) AddFlags(cmd *cobra.Command) {
 	for _, flag := range f.flags() {
 		addFlag(cmd, flag)
 	}
 }
 
-func (f *ScanFlags) ToOptions(args []string) ScanOptions {
+func (f *ScanFlagGroup) ToOptions(args []string) ScanOptions {
 	var target string
 	if len(args) == 1 {
 		target = args[0]

@@ -57,8 +57,8 @@ var (
 	}
 )
 
-// MisconfFlags composes common printer flag structs used for commands providing misconfinguration scanning.
-type MisconfFlags struct {
+// MisconfFlagGroup composes common printer flag structs used for commands providing misconfinguration scanning.
+type MisconfFlagGroup struct {
 	FilePatterns       *Flag
 	IncludeNonFailures *Flag
 	SkipPolicyUpdate   *Flag // deprecated
@@ -82,8 +82,8 @@ type MisconfOptions struct {
 	PolicyNamespaces []string
 }
 
-func NewMisconfFlags() *MisconfFlags {
-	return &MisconfFlags{
+func NewMisconfFlagGroup() *MisconfFlagGroup {
+	return &MisconfFlagGroup{
 		FilePatterns:       lo.ToPtr(FilePatternsFlag),
 		IncludeNonFailures: lo.ToPtr(IncludeNonFailuresFlag),
 		SkipPolicyUpdate:   lo.ToPtr(SkipPolicyUpdateFlag),
@@ -94,17 +94,17 @@ func NewMisconfFlags() *MisconfFlags {
 	}
 }
 
-func (f *MisconfFlags) flags() []*Flag {
+func (f *MisconfFlagGroup) flags() []*Flag {
 	return []*Flag{f.FilePatterns, f.IncludeNonFailures, f.SkipPolicyUpdate, f.Trace, f.PolicyPaths, f.DataPaths, f.PolicyNamespaces}
 }
 
-func (f *MisconfFlags) AddFlags(cmd *cobra.Command) {
+func (f *MisconfFlagGroup) AddFlags(cmd *cobra.Command) {
 	for _, flag := range f.flags() {
 		addFlag(cmd, flag)
 	}
 }
 
-func (f *MisconfFlags) Bind(cmd *cobra.Command) error {
+func (f *MisconfFlagGroup) Bind(cmd *cobra.Command) error {
 	for _, flag := range f.flags() {
 		if err := bind(cmd, flag); err != nil {
 			return err
@@ -113,7 +113,7 @@ func (f *MisconfFlags) Bind(cmd *cobra.Command) error {
 	return nil
 }
 
-func (f *MisconfFlags) ToOptions() (MisconfOptions, error) {
+func (f *MisconfFlagGroup) ToOptions() (MisconfOptions, error) {
 	skipPolicyUpdateFlag := getBool(f.SkipPolicyUpdate)
 	if skipPolicyUpdateFlag {
 		log.Logger.Warn("'--skip-policy-update' is no longer necessary as the built-in policies are embedded into the binary")

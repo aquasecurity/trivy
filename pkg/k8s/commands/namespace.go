@@ -28,8 +28,8 @@ func namespaceRun(ctx context.Context, opts flag.Options, cluster k8s.Cluster) e
 }
 
 func getNamespace(opts flag.Options, currentNamespace string) string {
-	if len(opts.KubernetesOptions.Namespace) > 0 {
-		return opts.KubernetesOptions.Namespace
+	if len(opts.K8sOptions.Namespace) > 0 {
+		return opts.K8sOptions.Namespace
 	}
 
 	return currentNamespace

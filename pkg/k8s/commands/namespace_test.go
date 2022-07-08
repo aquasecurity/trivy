@@ -20,7 +20,7 @@ func Test_getNamespace(t *testing.T) {
 			name:             "--namespace=custom",
 			currentNamespace: "default",
 			opts: flag.Options{
-				KubernetesOptions: flag.KubernetesOptions{
+				K8sOptions: flag.K8sOptions{
 					Namespace: "custom",
 				},
 			},
@@ -30,7 +30,7 @@ func Test_getNamespace(t *testing.T) {
 			name:             "no namespaces passed",
 			currentNamespace: "default",
 			opts: flag.Options{
-				KubernetesOptions: flag.KubernetesOptions{
+				K8sOptions: flag.K8sOptions{
 					Namespace: "",
 				},
 			},

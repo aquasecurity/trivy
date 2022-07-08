@@ -11,7 +11,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/flag"
 )
 
-func TestCacheFlags_ToOptions(t *testing.T) {
+func TestCacheFlagGroup_ToOptions(t *testing.T) {
 	type fields struct {
 		ClearCache   bool
 		CacheBackend string
@@ -93,7 +93,7 @@ func TestCacheFlags_ToOptions(t *testing.T) {
 			viper.Set(flag.RedisCertFlag.ConfigName, tt.fields.RedisCert)
 			viper.Set(flag.RedisKeyFlag.ConfigName, tt.fields.RedisKey)
 
-			f := &flag.CacheFlags{
+			f := &flag.CacheFlagGroup{
 				ClearCache:   &flag.ClearCacheFlag,
 				CacheBackend: &flag.CacheBackendFlag,
 				CacheTTL:     &flag.CacheTTLFlag,

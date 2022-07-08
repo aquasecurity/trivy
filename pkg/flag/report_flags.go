@@ -95,9 +95,9 @@ var (
 	}
 )
 
-// ReportFlags composes common printer flag structs
+// ReportFlagGroup composes common printer flag structs
 // used for commands requiring reporting logic.
-type ReportFlags struct {
+type ReportFlagGroup struct {
 	Format         *Flag
 	ReportFormat   *Flag
 	Template       *Flag
@@ -125,8 +125,8 @@ type ReportOptions struct {
 	Severities     []dbTypes.Severity
 }
 
-func NewReportFlags() *ReportFlags {
-	return &ReportFlags{
+func NewReportFlagGroup() *ReportFlagGroup {
+	return &ReportFlagGroup{
 		Format:         lo.ToPtr(FormatFlag),
 		ReportFormat:   lo.ToPtr(ReportFormatFlag),
 		Template:       lo.ToPtr(TemplateFlag),
@@ -141,18 +141,18 @@ func NewReportFlags() *ReportFlags {
 	}
 }
 
-func (f *ReportFlags) flags() []*Flag {
+func (f *ReportFlagGroup) flags() []*Flag {
 	return []*Flag{f.Format, f.ReportFormat, f.Template, f.DependencyTree, f.ListAllPkgs, f.IgnoreUnfixed, f.IgnoreFile, f.IgnorePolicy,
 		f.ExitCode, f.Output, f.Severity}
 }
 
-func (f *ReportFlags) AddFlags(cmd *cobra.Command) {
+func (f *ReportFlagGroup) AddFlags(cmd *cobra.Command) {
 	for _, flag := range f.flags() {
 		addFlag(cmd, flag)
 	}
 }
 
-func (f *ReportFlags) Bind(cmd *cobra.Command) error {
+func (f *ReportFlagGroup) Bind(cmd *cobra.Command) error {
 	for _, flag := range f.flags() {
 		if err := bind(cmd, flag); err != nil {
 			return err
@@ -161,7 +161,7 @@ func (f *ReportFlags) Bind(cmd *cobra.Command) error {
 	return nil
 }
 
-func (f *ReportFlags) ToOptions(out io.Writer) (ReportOptions, error) {
+func (f *ReportFlagGroup) ToOptions(out io.Writer) (ReportOptions, error) {
 	format := getString(f.Format)
 	template := getString(f.Template)
 	dependencyTree := getBool(f.DependencyTree)
@@ -218,7 +218,7 @@ func (f *ReportFlags) ToOptions(out io.Writer) (ReportOptions, error) {
 	}, nil
 }
 
-func (f *ReportFlags) forceListAllPkgs(format string, listAllPkgs, dependencyTree bool) bool {
+func (f *ReportFlagGroup) forceListAllPkgs(format string, listAllPkgs, dependencyTree bool) bool {
 	if slices.Contains(report.SupportedSBOMFormats, format) && !listAllPkgs {
 		log.Logger.Debugf("%q automatically enables '--list-all-pkgs'.", report.SupportedSBOMFormats)
 		return true

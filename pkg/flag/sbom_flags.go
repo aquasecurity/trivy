@@ -20,7 +20,7 @@ var (
 	}
 )
 
-type SBOMFlags struct {
+type SBOMFlagGroup struct {
 	ArtifactType *Flag // deprecated
 	SBOMFormat   *Flag // deprecated
 }
@@ -30,14 +30,14 @@ type SBOMOptions struct {
 	SBOMFormat   string // deprecated
 }
 
-func NewSBOMFlags() *SBOMFlags {
-	return &SBOMFlags{
+func NewSBOMFlagGroup() *SBOMFlagGroup {
+	return &SBOMFlagGroup{
 		ArtifactType: &ArtifactTypeFlag,
 		SBOMFormat:   &SBOMFormatFlag,
 	}
 }
 
-func (f *SBOMFlags) AddFlags(cmd *cobra.Command) {
+func (f *SBOMFlagGroup) AddFlags(cmd *cobra.Command) {
 	if f.ArtifactType != nil {
 		cmd.Flags().String(ArtifactTypeFlag.Name, "", "deprecated")
 		cmd.Flags().MarkHidden(ArtifactTypeFlag.Name) // nolint: gosec
@@ -48,12 +48,12 @@ func (f *SBOMFlags) AddFlags(cmd *cobra.Command) {
 	}
 }
 
-func (f *SBOMFlags) Bind(cmd *cobra.Command) error {
+func (f *SBOMFlagGroup) Bind(cmd *cobra.Command) error {
 	// All the flags are deprecated
 	return nil
 }
 
-func (f *SBOMFlags) ToOptions() (SBOMOptions, error) {
+func (f *SBOMFlagGroup) ToOptions() (SBOMOptions, error) {
 	artifactType := getString(f.ArtifactType)
 	sbomFormat := getString(f.SBOMFormat)
 

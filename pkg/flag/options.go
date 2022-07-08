@@ -40,15 +40,15 @@ type FlagGroup interface {
 }
 
 type Flags struct {
-	CacheFlags      *CacheFlags
-	DBFlags         *DBFlags
-	ImageFlags      *ImageFlags
-	KubernetesFlags *KubernetesFlags
-	MisconfFlags    *MisconfFlags
-	RemoteFlags     *RemoteFlags
-	ReportFlags     *ReportFlags
-	SBOMFlags       *SBOMFlags
-	ScanFlags       *ScanFlags
+	CacheFlagGroup   *CacheFlagGroup
+	DBFlagGroup      *DBFlagGroup
+	ImageFlagGroup   *ImageFlagGroup
+	K8sFlagGroup     *K8sFlagGroup
+	MisconfFlagGroup *MisconfFlagGroup
+	RemoteFlagGroup  *RemoteFlagGroup
+	ReportFlagGroup  *ReportFlagGroup
+	SBOMFlagGroup    *SBOMFlagGroup
+	ScanFlagGroup    *ScanFlagGroup
 }
 
 // Options holds all the runtime configuration
@@ -57,7 +57,7 @@ type Options struct {
 	CacheOptions
 	DBOptions
 	ImageOptions
-	KubernetesOptions
+	K8sOptions
 	MisconfOptions
 	RemoteOptions
 	ReportOptions
@@ -166,32 +166,32 @@ func getDuration(flag *Flag) time.Duration {
 
 func (f *Flags) groups() []FlagGroup {
 	var groups []FlagGroup
-	if f.CacheFlags != nil {
-		groups = append(groups, f.CacheFlags)
+	if f.CacheFlagGroup != nil {
+		groups = append(groups, f.CacheFlagGroup)
 	}
-	if f.DBFlags != nil {
-		groups = append(groups, f.DBFlags)
+	if f.DBFlagGroup != nil {
+		groups = append(groups, f.DBFlagGroup)
 	}
-	if f.ImageFlags != nil {
-		groups = append(groups, f.ImageFlags)
+	if f.ImageFlagGroup != nil {
+		groups = append(groups, f.ImageFlagGroup)
 	}
-	if f.KubernetesFlags != nil {
-		groups = append(groups, f.KubernetesFlags)
+	if f.K8sFlagGroup != nil {
+		groups = append(groups, f.K8sFlagGroup)
 	}
-	if f.MisconfFlags != nil {
-		groups = append(groups, f.MisconfFlags)
+	if f.MisconfFlagGroup != nil {
+		groups = append(groups, f.MisconfFlagGroup)
 	}
-	if f.RemoteFlags != nil {
-		groups = append(groups, f.RemoteFlags)
+	if f.RemoteFlagGroup != nil {
+		groups = append(groups, f.RemoteFlagGroup)
 	}
-	if f.ReportFlags != nil {
-		groups = append(groups, f.ReportFlags)
+	if f.ReportFlagGroup != nil {
+		groups = append(groups, f.ReportFlagGroup)
 	}
-	if f.SBOMFlags != nil {
-		groups = append(groups, f.SBOMFlags)
+	if f.SBOMFlagGroup != nil {
+		groups = append(groups, f.SBOMFlagGroup)
 	}
-	if f.ScanFlags != nil {
-		groups = append(groups, f.ScanFlags)
+	if f.ScanFlagGroup != nil {
+		groups = append(groups, f.ScanFlagGroup)
 	}
 	return groups
 }
@@ -219,62 +219,62 @@ func (f *Flags) Bind(cmd *cobra.Command) error {
 	return nil
 }
 
-func (f *Flags) ToOptions(appVersion string, args []string, globalFlags *GlobalFlags, output io.Writer) (Options, error) {
+func (f *Flags) ToOptions(appVersion string, args []string, globalFlags *GlobalFlagGroup, output io.Writer) (Options, error) {
 	var err error
 	opts := Options{
 		AppVersion:    appVersion,
 		GlobalOptions: globalFlags.ToOptions(),
 	}
 
-	if f.CacheFlags != nil {
-		opts.CacheOptions, err = f.CacheFlags.ToOptions()
+	if f.CacheFlagGroup != nil {
+		opts.CacheOptions, err = f.CacheFlagGroup.ToOptions()
 		if err != nil {
 			return Options{}, xerrors.Errorf("cache flag error: %w", err)
 		}
 	}
 
-	if f.DBFlags != nil {
-		opts.DBOptions, err = f.DBFlags.ToOptions()
+	if f.DBFlagGroup != nil {
+		opts.DBOptions, err = f.DBFlagGroup.ToOptions()
 		if err != nil {
 			return Options{}, xerrors.Errorf("flag error: %w", err)
 		}
 	}
 
-	if f.ImageFlags != nil {
-		opts.ImageOptions = f.ImageFlags.ToOptions()
+	if f.ImageFlagGroup != nil {
+		opts.ImageOptions = f.ImageFlagGroup.ToOptions()
 	}
 
-	if f.KubernetesFlags != nil {
-		opts.KubernetesOptions = f.KubernetesFlags.ToOptions()
+	if f.K8sFlagGroup != nil {
+		opts.K8sOptions = f.K8sFlagGroup.ToOptions()
 	}
 
-	if f.MisconfFlags != nil {
-		opts.MisconfOptions, err = f.MisconfFlags.ToOptions()
+	if f.MisconfFlagGroup != nil {
+		opts.MisconfOptions, err = f.MisconfFlagGroup.ToOptions()
 		if err != nil {
 			return Options{}, xerrors.Errorf("misconfiguration flag error: %w", err)
 		}
 	}
 
-	if f.RemoteFlags != nil {
-		opts.RemoteOptions = f.RemoteFlags.ToOptions()
+	if f.RemoteFlagGroup != nil {
+		opts.RemoteOptions = f.RemoteFlagGroup.ToOptions()
 	}
 
-	if f.ReportFlags != nil {
-		opts.ReportOptions, err = f.ReportFlags.ToOptions(output)
+	if f.ReportFlagGroup != nil {
+		opts.ReportOptions, err = f.ReportFlagGroup.ToOptions(output)
 		if err != nil {
 			return Options{}, xerrors.Errorf("report flag error: %w", err)
 		}
 	}
 
-	if f.SBOMFlags != nil {
-		opts.SBOMOptions, err = f.SBOMFlags.ToOptions()
+	if f.SBOMFlagGroup != nil {
+		opts.SBOMOptions, err = f.SBOMFlagGroup.ToOptions()
 		if err != nil {
 			return Options{}, xerrors.Errorf("sbom flag error: %w", err)
 		}
 	}
 
-	if f.ScanFlags != nil {
-		opts.ScanOptions = f.ScanFlags.ToOptions(args)
+	if f.ScanFlagGroup != nil {
+		opts.ScanOptions = f.ScanFlagGroup.ToOptions(args)
 	}
 
 	return opts, nil

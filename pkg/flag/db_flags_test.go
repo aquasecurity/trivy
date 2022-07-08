@@ -14,7 +14,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/log"
 )
 
-func TestDBFlags_ToOptions(t *testing.T) {
+func TestDBFlagGroup_ToOptions(t *testing.T) {
 	type fields struct {
 		SkipDBUpdate   bool
 		DownloadDBOnly bool
@@ -74,7 +74,7 @@ func TestDBFlags_ToOptions(t *testing.T) {
 			viper.Set(flag.LightFlag.ConfigName, tt.fields.Light)
 
 			// Assert options
-			f := &flag.DBFlags{
+			f := &flag.DBFlagGroup{
 				DownloadDBOnly: &flag.DownloadDBOnlyFlag,
 				SkipDBUpdate:   &flag.SkipDBUpdateFlag,
 				Light:          &flag.LightFlag,

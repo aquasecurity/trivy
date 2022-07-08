@@ -65,8 +65,8 @@ var (
 	}
 )
 
-// GlobalFlags composes global flags
-type GlobalFlags struct {
+// GlobalFlagGroup composes global flags
+type GlobalFlagGroup struct {
 	ConfigFile  *Flag
 	ShowVersion *Flag // spf13/cobra can't override the logic of version printing like VersionPrinter in urfave/cli. -v needs to be defined ourselves.
 	Quiet       *Flag
@@ -87,8 +87,8 @@ type GlobalOptions struct {
 	CacheDir    string
 }
 
-func NewGlobalFlags() *GlobalFlags {
-	return &GlobalFlags{
+func NewGlobalFlagGroup() *GlobalFlagGroup {
+	return &GlobalFlagGroup{
 		ConfigFile:  &ConfigFileFlag,
 		ShowVersion: &ShowVersionFlag,
 		Quiet:       &QuietFlag,
@@ -99,17 +99,17 @@ func NewGlobalFlags() *GlobalFlags {
 	}
 }
 
-func (f *GlobalFlags) flags() []*Flag {
+func (f *GlobalFlagGroup) flags() []*Flag {
 	return []*Flag{f.ConfigFile, f.ShowVersion, f.Quiet, f.Debug, f.Insecure, f.Timeout, f.CacheDir}
 }
 
-func (f *GlobalFlags) AddFlags(cmd *cobra.Command) {
+func (f *GlobalFlagGroup) AddFlags(cmd *cobra.Command) {
 	for _, flag := range f.flags() {
 		addFlag(cmd, flag)
 	}
 }
 
-func (f *GlobalFlags) Bind(cmd *cobra.Command) error {
+func (f *GlobalFlagGroup) Bind(cmd *cobra.Command) error {
 	for _, flag := range f.flags() {
 		if err := bind(cmd, flag); err != nil {
 			return err
@@ -118,7 +118,7 @@ func (f *GlobalFlags) Bind(cmd *cobra.Command) error {
 	return nil
 }
 
-func (f *GlobalFlags) ToOptions() GlobalOptions {
+func (f *GlobalFlagGroup) ToOptions() GlobalOptions {
 	return GlobalOptions{
 		ConfigFile:  getString(f.ConfigFile),
 		ShowVersion: getBool(f.ShowVersion),

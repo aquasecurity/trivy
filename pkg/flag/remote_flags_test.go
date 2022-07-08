@@ -13,7 +13,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/log"
 )
 
-func TestRemoteFlags_ToOptions(t *testing.T) {
+func TestRemoteFlagGroup_ToOptions(t *testing.T) {
 	type fields struct {
 		Server        string
 		CustomHeaders []string
@@ -107,7 +107,7 @@ func TestRemoteFlags_ToOptions(t *testing.T) {
 			viper.Set(flag.ServerTokenHeaderFlag.ConfigName, tt.fields.TokenHeader)
 
 			// Assert options
-			f := &flag.RemoteFlags{
+			f := &flag.RemoteFlagGroup{
 				ServerAddr:    &flag.ServerAddrFlag,
 				CustomHeaders: &flag.ServerCustomHeadersFlag,
 				Token:         &flag.ServerTokenFlag,

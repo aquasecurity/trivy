@@ -57,8 +57,8 @@ var (
 	}
 )
 
-// CacheFlags composes common printer flag structs used for commands requiring cache logic.
-type CacheFlags struct {
+// CacheFlagGroup composes common printer flag structs used for commands requiring cache logic.
+type CacheFlagGroup struct {
 	ClearCache   *Flag
 	CacheBackend *Flag
 	CacheTTL     *Flag
@@ -82,9 +82,9 @@ type RedisOptions struct {
 	RedisKey    string
 }
 
-// NewCacheFlags returns a default CacheFlags
-func NewCacheFlags() *CacheFlags {
-	return &CacheFlags{
+// NewCacheFlagGroup returns a default CacheFlagGroup
+func NewCacheFlagGroup() *CacheFlagGroup {
+	return &CacheFlagGroup{
 		ClearCache:   lo.ToPtr(ClearCacheFlag),
 		CacheBackend: lo.ToPtr(CacheBackendFlag),
 		CacheTTL:     lo.ToPtr(CacheTTLFlag),
@@ -94,17 +94,17 @@ func NewCacheFlags() *CacheFlags {
 	}
 }
 
-func (f *CacheFlags) flags() []*Flag {
+func (f *CacheFlagGroup) flags() []*Flag {
 	return []*Flag{f.ClearCache, f.CacheBackend, f.CacheTTL, f.RedisCACert, f.RedisCert, f.RedisKey}
 }
 
-func (f *CacheFlags) AddFlags(cmd *cobra.Command) {
+func (f *CacheFlagGroup) AddFlags(cmd *cobra.Command) {
 	for _, flag := range f.flags() {
 		addFlag(cmd, flag)
 	}
 }
 
-func (f *CacheFlags) Bind(cmd *cobra.Command) error {
+func (f *CacheFlagGroup) Bind(cmd *cobra.Command) error {
 	for _, flag := range f.flags() {
 		if err := bind(cmd, flag); err != nil {
 			return err
@@ -113,7 +113,7 @@ func (f *CacheFlags) Bind(cmd *cobra.Command) error {
 	return nil
 }
 
-func (f *CacheFlags) ToOptions() (CacheOptions, error) {
+func (f *CacheFlagGroup) ToOptions() (CacheOptions, error) {
 	cacheBackend := getString(f.CacheBackend)
 	redisOptions := RedisOptions{
 		RedisCACert: getString(f.RedisCACert),

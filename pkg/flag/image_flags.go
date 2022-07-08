@@ -24,7 +24,7 @@ var (
 	}
 )
 
-type ImageFlags struct {
+type ImageFlagGroup struct {
 	Input           *Flag // local image archive
 	ScanRemovedPkgs *Flag
 }
@@ -34,24 +34,24 @@ type ImageOptions struct {
 	ScanRemovedPkgs bool
 }
 
-func NewImageFlags() *ImageFlags {
-	return &ImageFlags{
+func NewImageFlagGroup() *ImageFlagGroup {
+	return &ImageFlagGroup{
 		Input:           &InputFlag,
 		ScanRemovedPkgs: &ScanRemovedPkgsFlag,
 	}
 }
 
-func (f *ImageFlags) flags() []*Flag {
+func (f *ImageFlagGroup) flags() []*Flag {
 	return []*Flag{f.Input, f.ScanRemovedPkgs}
 }
 
-func (f *ImageFlags) AddFlags(cmd *cobra.Command) {
+func (f *ImageFlagGroup) AddFlags(cmd *cobra.Command) {
 	for _, flag := range f.flags() {
 		addFlag(cmd, flag)
 	}
 }
 
-func (f *ImageFlags) Bind(cmd *cobra.Command) error {
+func (f *ImageFlagGroup) Bind(cmd *cobra.Command) error {
 	for _, flag := range f.flags() {
 		if err := bind(cmd, flag); err != nil {
 			return err
@@ -60,7 +60,7 @@ func (f *ImageFlags) Bind(cmd *cobra.Command) error {
 	return nil
 }
 
-func (f *ImageFlags) ToOptions() ImageOptions {
+func (f *ImageFlagGroup) ToOptions() ImageOptions {
 	return ImageOptions{
 		Input:           getString(f.Input),
 		ScanRemovedPkgs: getBool(f.ScanRemovedPkgs),

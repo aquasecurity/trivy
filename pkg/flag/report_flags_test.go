@@ -15,7 +15,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/report"
 )
 
-func TestReportFlags_ToOptions(t *testing.T) {
+func TestReportFlagGroup_ToOptions(t *testing.T) {
 	type fields struct {
 		format         string
 		template       string
@@ -180,7 +180,7 @@ func TestReportFlags_ToOptions(t *testing.T) {
 			viper.Set(flag.SeverityFlag.ConfigName, tt.fields.severities)
 
 			// Assert options
-			f := &flag.ReportFlags{
+			f := &flag.ReportFlagGroup{
 				Format:         &flag.FormatFlag,
 				Template:       &flag.TemplateFlag,
 				DependencyTree: &flag.DependencyTreeFlag,

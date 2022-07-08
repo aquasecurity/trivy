@@ -49,8 +49,8 @@ var (
 	}
 )
 
-// DBFlags composes common printer flag structs used for commands requiring DB logic.
-type DBFlags struct {
+// DBFlagGroup composes common printer flag structs used for commands requiring DB logic.
+type DBFlagGroup struct {
 	Reset          *Flag
 	DownloadDBOnly *Flag
 	SkipDBUpdate   *Flag
@@ -68,9 +68,9 @@ type DBOptions struct {
 	Light          bool // deprecated
 }
 
-// NewDBFlags returns a default DBFlags
-func NewDBFlags() *DBFlags {
-	return &DBFlags{
+// NewDBFlagGroup returns a default DBFlagGroup
+func NewDBFlagGroup() *DBFlagGroup {
+	return &DBFlagGroup{
 		Reset:          lo.ToPtr(ResetFlag),
 		DownloadDBOnly: lo.ToPtr(DownloadDBOnlyFlag),
 		SkipDBUpdate:   lo.ToPtr(SkipDBUpdateFlag),
@@ -80,17 +80,17 @@ func NewDBFlags() *DBFlags {
 	}
 }
 
-func (f *DBFlags) flags() []*Flag {
+func (f *DBFlagGroup) flags() []*Flag {
 	return []*Flag{f.Reset, f.DownloadDBOnly, f.SkipDBUpdate, f.NoProgress, f.DBRepository, f.Light}
 }
 
-func (f *DBFlags) AddFlags(cmd *cobra.Command) {
+func (f *DBFlagGroup) AddFlags(cmd *cobra.Command) {
 	for _, flag := range f.flags() {
 		addFlag(cmd, flag)
 	}
 }
 
-func (f *DBFlags) Bind(cmd *cobra.Command) error {
+func (f *DBFlagGroup) Bind(cmd *cobra.Command) error {
 	for _, flag := range f.flags() {
 		if err := bind(cmd, flag); err != nil {
 			return err
@@ -99,7 +99,7 @@ func (f *DBFlags) Bind(cmd *cobra.Command) error {
 	return nil
 }
 
-func (f *DBFlags) ToOptions() (DBOptions, error) {
+func (f *DBFlagGroup) ToOptions() (DBOptions, error) {
 	skipDBUpdate := getBool(f.SkipDBUpdate)
 	downloadDBOnly := getBool(f.DownloadDBOnly)
 	light := getBool(f.Light)
