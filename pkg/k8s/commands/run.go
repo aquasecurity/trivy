@@ -73,7 +73,7 @@ func run(ctx context.Context, opts flag.Options, cluster string, artifacts []*ar
 	}
 	if err := report.Write(r, report.Option{
 		Format:     opts.Format,
-		Report:     opts.K8sOptions.ReportFormat,
+		Report:     opts.ReportFormat,
 		Output:     opts.Output,
 		Severities: opts.Severities,
 	}, opts.ScanOptions.SecurityChecks); err != nil {

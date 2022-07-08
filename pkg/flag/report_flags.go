@@ -51,15 +51,9 @@ var (
 	}
 	ListAllPkgsFlag = Flag{
 		Name:       "list-all-pkgs",
-		ConfigName: "report.list-all-pkgs",
+		ConfigName: "list-all-pkgs",
 		Value:      false,
 		Usage:      "enabling the option will output all packages regardless of vulnerability",
-	}
-	IgnoreUnfixedFlag = Flag{
-		Name:       "ignore-unfixed",
-		ConfigName: "vulnerability.ignore-unfixed",
-		Value:      false,
-		Usage:      "display only fixed vulnerabilities",
 	}
 	IgnoreFileFlag = Flag{
 		Name:       "ignorefile",
@@ -69,7 +63,7 @@ var (
 	}
 	IgnorePolicyFlag = Flag{
 		Name:       "ignore-policy",
-		ConfigName: "report.ignore-policy",
+		ConfigName: "ignore-policy",
 		Value:      "",
 		Usage:      "specify the Rego file path to evaluate each vulnerability",
 	}
@@ -92,6 +86,14 @@ var (
 		Shorthand:  "s",
 		Value:      strings.Join(dbTypes.SeverityNames, ","),
 		Usage:      "severities of security issues to be displayed (comma separated)",
+	}
+
+	// Vulnerabilities
+	IgnoreUnfixedFlag = Flag{
+		Name:       "ignore-unfixed",
+		ConfigName: "vulnerability.ignore-unfixed",
+		Value:      false,
+		Usage:      "display only fixed vulnerabilities",
 	}
 )
 

@@ -120,16 +120,16 @@ func NewRootCommand(version string, globalFlags *flag.GlobalFlagGroup) *cobra.Co
 		Use:   "trivy [global flags] command [flags] target",
 		Short: "Unified security scanner",
 		Long:  "Scanner for vulnerabilities in container images, file systems, and Git repositories, as well as for configuration issues and hard-coded secrets",
-		Example: `  # Scan a container image:
+		Example: `  # Scan a container image
   $ trivy image python:3.4-alpine
 
-  # Scan a container image from a tar archive:
+  # Scan a container image from a tar archive
   $ trivy image --input ruby-3.1.tar
 
-  # Scan local filesystem:
+  # Scan local filesystem
   $ trivy fs .
 
-  # Run in server mode:
+  # Run in server mode
   $ trivy server`,
 		CompletionOptions: cobra.CompletionOptions{
 			DisableDefaultCmd: true,
@@ -205,10 +205,10 @@ func NewImageCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 		Use:     "image [flags] IMAGE_NAME",
 		Aliases: []string{"i"},
 		Short:   "Scan a container image",
-		Example: `  # Scan a container image:
+		Example: `  # Scan a container image
   $ trivy image python:3.4-alpine
 
-  # Scan a container image from a tar archive:
+  # Scan a container image from a tar archive
   $ trivy image --input ruby-3.1.tar
 
   # Filter by severities
@@ -217,13 +217,13 @@ func NewImageCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
   # Ignore unfixed/unpatched vulnerabilities
   $ trivy image --ignore-unfixed alpine:3.15
 
-  # Scan a container image in client mode:
+  # Scan a container image in client mode
   $ trivy image --server http://127.0.0.1:4954 alpine:latest
 
-  # Generate json result:
+  # Generate json result
   $ trivy image --format json --output result.json alpine:3.15
 
-  # Generate a report in the CycloneDX format:
+  # Generate a report in the CycloneDX format
   $ trivy image --format cyclonedx --output result.cdx alpine:3.15`,
 
 		// 'Args' cannot be used since it is called before PreRunE and viper is not configured yet.
@@ -273,10 +273,10 @@ func NewFilesystemCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 		Use:     "filesystem [flags] PATH",
 		Aliases: []string{"fs"},
 		Short:   "Scan local filesystem",
-		Example: `  # Scan a local project including language-specific files: 
+		Example: `  # Scan a local project including language-specific files
   $ trivy fs /path/to/your_project
 
-  # Scan a single file:
+  # Scan a single file
   $ trivy fs ./trivy-ci-test/Pipfile.lock`,
 		PreRunE: func(cmd *cobra.Command, args []string) error {
 			if err := fsFlags.Bind(cmd); err != nil {
@@ -319,11 +319,11 @@ func NewRootfsCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "rootfs [flags] ROOTDIR",
 		Short: "Scan rootfs",
-		Example: `  # Scan unpacked filesystem:
+		Example: `  # Scan unpacked filesystem
   $ docker export $(docker create alpine:3.10.2) | tar -C /tmp/rootfs -xvf -
   $ trivy rootfs /tmp/rootfs
 
-  # Scan from inside a container:
+  # Scan from inside a container
   $ docker run --rm -it alpine:3.11
   / # curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh -s -- -b /usr/local/bin
   / # trivy rootfs /`,
@@ -369,7 +369,7 @@ func NewRepositoryCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 		Use:     "repository [flags] REPO_URL",
 		Aliases: []string{"repo"},
 		Short:   "Scan a remote repository",
-		Example: `  # Scan your remote git repository:
+		Example: `  # Scan your remote git repository
   $ trivy repo https://github.com/knqyf263/trivy-ci-test`,
 		PreRunE: func(cmd *cobra.Command, args []string) error {
 			if err := repoFlags.Bind(cmd); err != nil {
@@ -701,7 +701,7 @@ func NewKubernetesCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 		Use:     "kubernetes [flags] { cluster | all | specific resources like kubectl. eg: pods, pod/NAME }",
 		Aliases: []string{"k8s"},
 		Short:   "scan kubernetes cluster",
-		Example: `  # cluster scanning:
+		Example: `  # cluster scanning
   $ trivy k8s --report summary cluster
 
   # namespace scanning:
@@ -759,10 +759,10 @@ func NewSBOMCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "sbom [flags] SBOM_PATH",
 		Short: "Scan SBOM for vulnerabilities",
-		Example: `  # Scan CycloneDX and show the result in tables:
+		Example: `  # Scan CycloneDX and show the result in tables
   $ trivy sbom /path/to/report.cdx
 
-  # Scan CycloneDX and generate a CycloneDX report:
+  # Scan CycloneDX and generate a CycloneDX report
   $ trivy sbom --format cyclonedx /path/to/report.cdx
 `,
 		PreRunE: func(cmd *cobra.Command, args []string) error {
