@@ -120,6 +120,11 @@ func NewRootCommand(version string, globalFlags *flag.GlobalFlags) *cobra.Comman
 		Use:   "trivy [global flags] command [flags] target",
 		Short: "Unified security scanner",
 		Long:  "Scanner for vulnerabilities in container images, file systems, and Git repositories, as well as for configuration issues and hard-coded secrets",
+		Example: `
+  trivy image python:3.4-alpine
+  trivy image --input ruby-3.1.tar
+  trivy fs .
+  trivy server`,
 		CompletionOptions: cobra.CompletionOptions{
 			DisableDefaultCmd: true,
 		},
@@ -191,6 +196,9 @@ func NewImageCommand(globalFlags *flag.GlobalFlags) *cobra.Command {
 		Use:     "image [flags] IMAGE_NAME",
 		Aliases: []string{"i"},
 		Short:   "scan a container image",
+		Example: `
+  trivy image python:3.4-alpine
+  trivy image --input ruby-3.1.tar`,
 
 		// 'Args' cannot be used since it is called before PreRunE and viper is not configured yet.
 		// cmd.Args     -> cannot validate args here
@@ -236,6 +244,9 @@ func NewFilesystemCommand(globalFlags *flag.GlobalFlags) *cobra.Command {
 		Use:     "filesystem [flags] PATH",
 		Aliases: []string{"fs"},
 		Short:   "scan local filesystem",
+		Example: `
+  trivy filesystem .
+  trivy fs ~/src/`,
 		PreRunE: func(cmd *cobra.Command, args []string) error {
 			if err := fsFlags.Bind(cmd); err != nil {
 				return xerrors.Errorf("flag bind error: %w", err)
@@ -274,6 +285,8 @@ func NewRootfsCommand(globalFlags *flag.GlobalFlags) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "rootfs [flags] ROOTDIR",
 		Short: "scan rootfs",
+		Example: `
+  trivy rootfs /path/to/rootfs`,
 		PreRunE: func(cmd *cobra.Command, args []string) error {
 			if err := rootfsFlags.Bind(cmd); err != nil {
 				return xerrors.Errorf("flag bind error: %w", err)
@@ -313,6 +326,8 @@ func NewRepositoryCommand(globalFlags *flag.GlobalFlags) *cobra.Command {
 		Use:     "repository [flags] REPO_URL",
 		Aliases: []string{"repo"},
 		Short:   "scan remote repository",
+		Example: `
+  trivy repo https://github.com/knqyf263/trivy-ci-test`,
 		PreRunE: func(cmd *cobra.Command, args []string) error {
 			if err := repoFlags.Bind(cmd); err != nil {
 				return xerrors.Errorf("flag bind error: %w", err)
