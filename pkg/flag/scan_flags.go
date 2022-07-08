@@ -117,7 +117,7 @@ func (f *ScanFlags) ToOptions(args []string) ScanOptions {
 		SkipFiles:        getStringSlice(f.SkipFiles),
 		OfflineScan:      getBool(f.OfflineScan),
 		VulnType:         parseVulnType(getString(f.VulnType)),
-		SecurityChecks:   parseSecurityCheck(f.SecurityChecks),
+		SecurityChecks:   parseSecurityCheck(getStringSlice(f.SecurityChecks)),
 		SecretConfigPath: getString(f.SecretConfig),
 	}
 }
@@ -138,22 +138,21 @@ func parseVulnType(vulnType string) []string {
 	return vulnTypes
 }
 
-func parseSecurityCheck(securityCheckFlag *Flag) []string {
-	receivedChecks := getStringSlice(securityCheckFlag) // get checks from config
+func parseSecurityCheck(securityChecks []string) []string {
 	switch {
-	case len(receivedChecks) == 0: // checks don't use
+	case len(securityChecks) == 0: // checks don't use
 		return nil
-	case len(receivedChecks) == 1 && strings.Contains(receivedChecks[0], ","): // get checks from flag
-		receivedChecks = strings.Split(receivedChecks[0], ",")
+	case len(securityChecks) == 1 && strings.Contains(securityChecks[0], ","): // get checks from flag
+		securityChecks = strings.Split(securityChecks[0], ",")
 	}
 
-	var securityChecks []string
-	for _, v := range receivedChecks {
+	var checks []string
+	for _, v := range securityChecks {
 		if !slices.Contains(types.SecurityChecks, v) {
 			log.Logger.Warnf("unknown security check: %s", v)
 			continue
 		}
-		securityChecks = append(securityChecks, v)
+		checks = append(checks, v)
 	}
-	return securityChecks
+	return checks
 }
