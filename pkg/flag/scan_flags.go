@@ -35,7 +35,7 @@ var (
 		Name:       "security-checks",
 		ConfigName: "scan.security-checks",
 		Value:      fmt.Sprintf("%s,%s", types.SecurityCheckVulnerability, types.SecurityCheckSecret),
-		Usage:      "comma-separated list of vulnerability types (os,library)",
+		Usage:      "comma-separated list of what security issues to detect (vuln,config,secret)",
 	}
 	VulnTypeFlag = Flag{
 		Name:       "vuln-type",
@@ -116,19 +116,22 @@ func (f *ScanFlags) ToOptions(args []string) ScanOptions {
 		SkipDirs:         getStringSlice(f.SkipDirs),
 		SkipFiles:        getStringSlice(f.SkipFiles),
 		OfflineScan:      getBool(f.OfflineScan),
-		VulnType:         parseVulnType(getString(f.VulnType)),
-		SecurityChecks:   parseSecurityCheck(getString(f.SecurityChecks)),
+		VulnType:         parseVulnType(getStringSlice(f.VulnType)),
+		SecurityChecks:   parseSecurityCheck(getStringSlice(f.SecurityChecks)),
 		SecretConfigPath: getString(f.SecretConfig),
 	}
 }
 
-func parseVulnType(vulnType string) []string {
-	if vulnType == "" {
+func parseVulnType(vulnType []string) []string {
+	switch {
+	case len(vulnType) == 0: // no types
 		return nil
+	case len(vulnType) == 1 && strings.Contains(vulnType[0], ","): // get checks from flag
+		vulnType = strings.Split(vulnType[0], ",")
 	}
 
 	var vulnTypes []string
-	for _, v := range strings.Split(vulnType, ",") {
+	for _, v := range vulnType {
 		if !slices.Contains(types.VulnTypes, v) {
 			log.Logger.Warnf("unknown vulnerability type: %s", v)
 			continue
@@ -138,13 +141,16 @@ func parseVulnType(vulnType string) []string {
 	return vulnTypes
 }
 
-func parseSecurityCheck(securityCheck string) []string {
-	if securityCheck == "" {
+func parseSecurityCheck(securityCheck []string) []string {
+	switch {
+	case len(securityCheck) == 0: // no checks
 		return nil
+	case len(securityCheck) == 1 && strings.Contains(securityCheck[0], ","): // get checks from flag
+		securityCheck = strings.Split(securityCheck[0], ",")
 	}
 
 	var securityChecks []string
-	for _, v := range strings.Split(securityCheck, ",") {
+	for _, v := range securityCheck {
 		if !slices.Contains(types.SecurityChecks, v) {
 			log.Logger.Warnf("unknown security check: %s", v)
 			continue
