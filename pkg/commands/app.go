@@ -120,10 +120,14 @@ func NewRootCommand(version string, globalFlags *flag.GlobalFlags) *cobra.Comman
 		Use:   "trivy [global flags] command [flags] target",
 		Short: "Unified security scanner",
 		Long:  "Scanner for vulnerabilities in container images, file systems, and Git repositories, as well as for configuration issues and hard-coded secrets",
-		Example: `  trivy image python:3.4-alpine
-  trivy image --input ruby-3.1.tar
-  trivy fs .
-  trivy server`,
+		Example: `  - scan an image:
+      $ trivy image python:3.4-alpine
+  - scan an image from a tar archive:
+      $ trivy image --input ruby-3.1.tar
+  - scan local filesystem:
+      $ trivy fs .
+  - run in server mode:
+      $ trivy server`,
 		CompletionOptions: cobra.CompletionOptions{
 			DisableDefaultCmd: true,
 		},
@@ -195,8 +199,16 @@ func NewImageCommand(globalFlags *flag.GlobalFlags) *cobra.Command {
 		Use:     "image [flags] IMAGE_NAME",
 		Aliases: []string{"i"},
 		Short:   "scan a container image",
-		Example: `  trivy image python:3.4-alpine
-  trivy image --input ruby-3.1.tar`,
+		Example: `  - scan an image:
+      $ trivy image python:3.4-alpine
+  - scan an image from a tar archive:
+      $ trivy image --input ruby-3.1.tar
+  - scan an image in client mode:
+      $ trivy image --server http://127.0.0.1:4954 alpine:latest
+  - scan an image and generate json result:
+      $ trivy image --format json --output result.json alpine:3.15
+  - scan an image and generate a report in the SPDX format:
+      $ trivy image --format spdx --output result.spdx alpine:3.15`,
 
 		// 'Args' cannot be used since it is called before PreRunE and viper is not configured yet.
 		// cmd.Args     -> cannot validate args here
@@ -242,8 +254,12 @@ func NewFilesystemCommand(globalFlags *flag.GlobalFlags) *cobra.Command {
 		Use:     "filesystem [flags] PATH",
 		Aliases: []string{"fs"},
 		Short:   "scan local filesystem",
-		Example: `  trivy filesystem .
-  trivy fs ~/src/`,
+		Example: `  - scan local filesystem: 
+    $ trivy fs .
+  - scan a local project including language-specific files:
+    $ trivy fs /path/to/project
+  - scan a single file:
+    $ trivy fs ~/src/github.com/aquasecurity/trivy-ci-test/Pipfile.lock`,
 		PreRunE: func(cmd *cobra.Command, args []string) error {
 			if err := fsFlags.Bind(cmd); err != nil {
 				return xerrors.Errorf("flag bind error: %w", err)
@@ -280,9 +296,14 @@ func NewRootfsCommand(globalFlags *flag.GlobalFlags) *cobra.Command {
 	}
 
 	cmd := &cobra.Command{
-		Use:     "rootfs [flags] ROOTDIR",
-		Short:   "scan rootfs",
-		Example: `  trivy rootfs .`,
+		Use:   "rootfs [flags] ROOTDIR",
+		Short: "scan rootfs",
+		Example: `  - scan a root filesystem:
+    $ trivy rootfs /path/to/rootfs
+  - scan a container from inside the container:
+    $ docker run --rm -it alpine:3.11
+      / # curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh -s -- -b /usr/local/bin
+      / # trivy rootfs /`,
 		PreRunE: func(cmd *cobra.Command, args []string) error {
 			if err := rootfsFlags.Bind(cmd); err != nil {
 				return xerrors.Errorf("flag bind error: %w", err)
@@ -322,7 +343,8 @@ func NewRepositoryCommand(globalFlags *flag.GlobalFlags) *cobra.Command {
 		Use:     "repository [flags] REPO_URL",
 		Aliases: []string{"repo"},
 		Short:   "scan remote repository",
-		Example: `  trivy repo https://github.com/knqyf263/trivy-ci-test`,
+		Example: `  - scan your remote git repository:
+    $ trivy repo https://github.com/knqyf263/trivy-ci-test`,
 		PreRunE: func(cmd *cobra.Command, args []string) error {
 			if err := repoFlags.Bind(cmd); err != nil {
 				return xerrors.Errorf("flag bind error: %w", err)
