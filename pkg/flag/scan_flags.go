@@ -35,7 +35,7 @@ var (
 		Name:       "security-checks",
 		ConfigName: "scan.security-checks",
 		Value:      fmt.Sprintf("%s,%s", types.SecurityCheckVulnerability, types.SecurityCheckSecret),
-		Usage:      "comma-separated list of vulnerability types (os,library)",
+		Usage:      "comma-separated list of what security issues to detect (vuln,config,secret)",
 	}
 	VulnTypeFlag = Flag{
 		Name:       "vuln-type",
@@ -117,7 +117,7 @@ func (f *ScanFlags) ToOptions(args []string) ScanOptions {
 		SkipFiles:        getStringSlice(f.SkipFiles),
 		OfflineScan:      getBool(f.OfflineScan),
 		VulnType:         parseVulnType(getString(f.VulnType)),
-		SecurityChecks:   parseSecurityCheck(getString(f.SecurityChecks)),
+		SecurityChecks:   parseSecurityCheck(f.SecurityChecks),
 		SecretConfigPath: getString(f.SecretConfig),
 	}
 }
@@ -138,13 +138,17 @@ func parseVulnType(vulnType string) []string {
 	return vulnTypes
 }
 
-func parseSecurityCheck(securityCheck string) []string {
-	if securityCheck == "" {
+func parseSecurityCheck(securityCheckFlag *Flag) []string {
+	receivedChecks := getStringSlice(securityCheckFlag) // get checks from config
+	switch {
+	case len(receivedChecks) == 0: // checks don't use
 		return nil
+	case len(receivedChecks) == 1 && strings.Contains(receivedChecks[0], ","): // get checks from flag
+		receivedChecks = strings.Split(receivedChecks[0], ",")
 	}
 
 	var securityChecks []string
-	for _, v := range strings.Split(securityCheck, ",") {
+	for _, v := range receivedChecks {
 		if !slices.Contains(types.SecurityChecks, v) {
 			log.Logger.Warnf("unknown security check: %s", v)
 			continue
