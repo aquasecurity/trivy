@@ -15,8 +15,6 @@ import (
 	"github.com/docker/docker/client"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-
-	"github.com/aquasecurity/trivy/pkg/commands"
 )
 
 func TestDockerEngine(t *testing.T) {
@@ -233,16 +231,14 @@ func TestDockerEngine(t *testing.T) {
 			tmpDir := t.TempDir()
 			output := filepath.Join(tmpDir, "result.json")
 
-			// run trivy
-			app := commands.NewApp("dev")
-			trivyArgs := []string{"trivy", "--cache-dir", cacheDir, "image",
+			osArgs := []string{"--cache-dir", cacheDir, "image",
 				"--skip-update", "--format=json", "--output", output}
 
 			if tt.ignoreUnfixed {
-				trivyArgs = append(trivyArgs, "--ignore-unfixed")
+				osArgs = append(osArgs, "--ignore-unfixed")
 			}
 			if len(tt.severity) != 0 {
-				trivyArgs = append(trivyArgs,
+				osArgs = append(osArgs,
 					[]string{"--severity", strings.Join(tt.severity, ",")}...,
 				)
 			}
@@ -252,11 +248,12 @@ func TestDockerEngine(t *testing.T) {
 				assert.NoError(t, err, "failed to write .trivyignore")
 				defer os.Remove(trivyIgnore)
 			}
-			trivyArgs = append(trivyArgs, tt.input)
+			osArgs = append(osArgs, tt.input)
 
-			err = app.Run(trivyArgs)
+			// Run Trivy
+			err = execute(osArgs)
 			if tt.wantErr != "" {
-				require.NotNil(t, err)
+				require.Error(t, err)
 				assert.Contains(t, err.Error(), tt.wantErr, tt.name)
 				return
 			}

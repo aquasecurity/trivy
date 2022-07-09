@@ -1,35 +1,35 @@
 package commands
 
 import (
-	"github.com/urfave/cli/v2"
-	"golang.org/x/xerrors"
+	"context"
 
-	cmd "github.com/aquasecurity/trivy/pkg/commands/artifact"
-	"github.com/aquasecurity/trivy/pkg/log"
+	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy-kubernetes/pkg/k8s"
 	"github.com/aquasecurity/trivy-kubernetes/pkg/trivyk8s"
+	"github.com/aquasecurity/trivy/pkg/flag"
+	"github.com/aquasecurity/trivy/pkg/log"
 )
 
 // namespaceRun runs scan on kubernetes cluster
-func namespaceRun(cliCtx *cli.Context, opt cmd.Option, cluster k8s.Cluster) error {
-	if err := validateReportArguments(cliCtx); err != nil {
+func namespaceRun(ctx context.Context, opts flag.Options, cluster k8s.Cluster) error {
+	if err := validateReportArguments(opts); err != nil {
 		return err
 	}
 
-	trivyk8s := trivyk8s.New(cluster, log.Logger).Namespace(getNamespace(opt, cluster.GetCurrentNamespace()))
+	trivyk8s := trivyk8s.New(cluster, log.Logger).Namespace(getNamespace(opts, cluster.GetCurrentNamespace()))
 
-	artifacts, err := trivyk8s.ListArtifacts(cliCtx.Context)
+	artifacts, err := trivyk8s.ListArtifacts(ctx)
 	if err != nil {
 		return xerrors.Errorf("get k8s artifacts error: %w", err)
 	}
 
-	return run(cliCtx.Context, opt, cluster.GetCurrentContext(), artifacts)
+	return run(ctx, opts, cluster.GetCurrentContext(), artifacts)
 }
 
-func getNamespace(opt cmd.Option, currentNamespace string) string {
-	if len(opt.KubernetesOption.Namespace) > 0 {
-		return opt.KubernetesOption.Namespace
+func getNamespace(opts flag.Options, currentNamespace string) string {
+	if len(opts.K8sOptions.Namespace) > 0 {
+		return opts.K8sOptions.Namespace
 	}
 
 	return currentNamespace

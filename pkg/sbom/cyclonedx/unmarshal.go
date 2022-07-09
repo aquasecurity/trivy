@@ -97,12 +97,12 @@ func (u *Unmarshaler) Unmarshal(r io.Reader) (sbom.SBOM, error) {
 	if bom.Metadata != nil {
 		metadata.Timestamp = bom.Metadata.Timestamp
 		if bom.Metadata.Component != nil {
-			metadata.Component = toTrivyCdxComponent(fromPtr(bom.Metadata.Component))
+			metadata.Component = toTrivyCdxComponent(lo.FromPtr(bom.Metadata.Component))
 		}
 	}
 
 	var components []ftypes.Component
-	for _, c := range fromPtr(bom.Components) {
+	for _, c := range lo.FromPtr(bom.Components) {
 		components = append(components, toTrivyCdxComponent(c))
 	}
 
@@ -196,7 +196,7 @@ func (u *Unmarshaler) walkDependencies(rootRef string) []cdx.Component {
 func componentMap(metadata *cdx.Metadata, components *[]cdx.Component) map[string]cdx.Component {
 	cmap := make(map[string]cdx.Component)
 
-	for _, component := range fromPtr(components) {
+	for _, component := range lo.FromPtr(components) {
 		cmap[component.BOMRef] = component
 	}
 	if metadata != nil {
@@ -208,13 +208,13 @@ func componentMap(metadata *cdx.Metadata, components *[]cdx.Component) map[strin
 func dependencyMap(deps *[]cdx.Dependency) map[string][]string {
 	depMap := make(map[string][]string)
 
-	for _, dep := range fromPtr(deps) {
+	for _, dep := range lo.FromPtr(deps) {
 		if _, ok := depMap[dep.Ref]; ok {
 			continue
 		}
 
 		var refs []string
-		for _, d := range fromPtr(dep.Dependencies) {
+		for _, d := range lo.FromPtr(dep.Dependencies) {
 			refs = append(refs, d.Ref)
 		}
 
@@ -270,11 +270,11 @@ func toPackage(component cdx.Component) (string, *ftypes.Package, error) {
 	pkg := p.Package()
 	pkg.Ref = component.BOMRef
 
-	for _, license := range fromPtr(component.Licenses) {
+	for _, license := range lo.FromPtr(component.Licenses) {
 		pkg.Licenses = append(pkg.Licenses, license.Expression)
 	}
 
-	for _, prop := range fromPtr(component.Properties) {
+	for _, prop := range lo.FromPtr(component.Properties) {
 		if strings.HasPrefix(prop.Name, Namespace) {
 			switch strings.TrimPrefix(prop.Name, Namespace) {
 			case PropertySrcName:
@@ -311,18 +311,10 @@ func toTrivyCdxComponent(component cdx.Component) ftypes.Component {
 }
 
 func lookupProperty(properties *[]cdx.Property, key string) string {
-	for _, p := range fromPtr(properties) {
+	for _, p := range lo.FromPtr(properties) {
 		if p.Name == Namespace+key {
 			return p.Value
 		}
 	}
 	return ""
-}
-
-func fromPtr[T any](ptr *T) T {
-	if ptr == nil {
-		var t T
-		return t
-	}
-	return *ptr
 }
