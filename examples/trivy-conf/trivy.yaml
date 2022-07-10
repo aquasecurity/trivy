@@ -21,4 +21,4 @@ vulnerability:
   type:
     - os
     - library
-  ignore-ufnxied: true
+  ignore-unfixed: true
