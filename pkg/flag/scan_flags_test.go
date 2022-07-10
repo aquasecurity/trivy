@@ -37,32 +37,6 @@ func TestScanFlagGroup_ToOptions(t *testing.T) {
 			},
 		},
 		{
-			name: "happy path for OS vulnerabilities",
-			args: []string{"alpine:latest"},
-			fields: fields{
-				vulnType:       "os",
-				securityChecks: "vuln",
-			},
-			want: flag.ScanOptions{
-				Target:         "alpine:latest",
-				VulnType:       []string{types.VulnTypeOS},
-				SecurityChecks: []string{types.SecurityCheckVulnerability},
-			},
-		},
-		{
-			name: "happy path for library vulnerabilities",
-			args: []string{"alpine:latest"},
-			fields: fields{
-				vulnType:       "library",
-				securityChecks: "vuln",
-			},
-			want: flag.ScanOptions{
-				Target:         "alpine:latest",
-				VulnType:       []string{types.VulnTypeLibrary},
-				SecurityChecks: []string{types.SecurityCheckVulnerability},
-			},
-		},
-		{
 			name: "happy path for configs",
 			args: []string{"alpine:latest"},
 			fields: fields{
@@ -83,18 +57,6 @@ func TestScanFlagGroup_ToOptions(t *testing.T) {
 			},
 			wantLogs: []string{
 				`unknown security check: WRONG-CHECK`,
-			},
-		},
-		{
-			name: "with wrong vuln type",
-			fields: fields{
-				vulnType: "os,nonevuln",
-			},
-			want: flag.ScanOptions{
-				VulnType: []string{types.VulnTypeOS},
-			},
-			wantLogs: []string{
-				`unknown vulnerability type: nonevuln`,
 			},
 		},
 		{
@@ -156,7 +118,6 @@ func TestScanFlagGroup_ToOptions(t *testing.T) {
 				SkipDirs:       &flag.SkipDirsFlag,
 				SkipFiles:      &flag.SkipFilesFlag,
 				OfflineScan:    &flag.OfflineScanFlag,
-				VulnType:       &flag.VulnTypeFlag,
 				SecurityChecks: &flag.SecurityChecksFlag,
 			}
 
