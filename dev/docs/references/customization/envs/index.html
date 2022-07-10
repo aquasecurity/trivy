@@ -10,14 +10,14 @@
       
       
       
-        <link rel="canonical" href="https://aquasecurity.github.io/trivy/dev/docs/references/cli/sbom/">
+        <link rel="canonical" href="https://aquasecurity.github.io/trivy/dev/docs/references/customization/envs/">
       
       <link rel="icon" href="../../../../assets/images/favicon.png">
       <meta name="generator" content="mkdocs-1.3.0, mkdocs-material-8.2.10">
     
     
       
-        <title>SBOM - Trivy</title>
+        <title>Environment variables - Trivy</title>
       
     
     
@@ -63,7 +63,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#sbom" class="md-skip">
+        <a href="#environment-variables" class="md-skip">
           Skip to content
         </a>
       
@@ -103,7 +103,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              SBOM
+              Environment variables
             
           </span>
         </div>
@@ -1969,12 +1969,14 @@
               
   
   
+    
+  
   
     
-    <li class="md-nav__item md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_9_1" type="checkbox" id="__nav_3_9_1" >
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_9_1" type="checkbox" id="__nav_3_9_1" checked>
       
       
       
@@ -1995,11 +1997,21 @@
               
   
   
+    
   
-    <li class="md-nav__item">
-      <a href="../../customization/envs/" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
         Environment variables
       </a>
+      
     </li>
   
 
@@ -2011,7 +2023,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../customization/config-file/" class="md-nav__link">
+      <a href="../config-file/" class="md-nav__link">
         Config file
       </a>
     </li>
@@ -2030,14 +2042,12 @@
               
   
   
-    
-  
   
     
-    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_9_2" type="checkbox" id="__nav_3_9_2" checked>
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_9_2" type="checkbox" id="__nav_3_9_2" >
       
       
       
@@ -2060,7 +2070,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../" class="md-nav__link">
+      <a href="../../cli/" class="md-nav__link">
         Overview
       </a>
     </li>
@@ -2074,7 +2084,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../image/" class="md-nav__link">
+      <a href="../../cli/image/" class="md-nav__link">
         Image
       </a>
     </li>
@@ -2088,7 +2098,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../config/" class="md-nav__link">
+      <a href="../../cli/config/" class="md-nav__link">
         Config
       </a>
     </li>
@@ -2102,7 +2112,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../fs/" class="md-nav__link">
+      <a href="../../cli/fs/" class="md-nav__link">
         Filesystem
       </a>
     </li>
@@ -2116,7 +2126,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../rootfs/" class="md-nav__link">
+      <a href="../../cli/rootfs/" class="md-nav__link">
         Rootfs
       </a>
     </li>
@@ -2130,7 +2140,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../repo/" class="md-nav__link">
+      <a href="../../cli/repo/" class="md-nav__link">
         Repository
       </a>
     </li>
@@ -2144,7 +2154,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../client/" class="md-nav__link">
+      <a href="../../cli/client/" class="md-nav__link">
         Client
       </a>
     </li>
@@ -2158,7 +2168,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../server/" class="md-nav__link">
+      <a href="../../cli/server/" class="md-nav__link">
         Server
       </a>
     </li>
@@ -2172,7 +2182,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../plugin/" class="md-nav__link">
+      <a href="../../cli/plugin/" class="md-nav__link">
         Plugin
       </a>
     </li>
@@ -2184,21 +2194,11 @@
               
   
   
-    
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
-      
-      
-        
-      
-      
-      <a href="./" class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href="../../cli/sbom/" class="md-nav__link">
         SBOM
       </a>
-      
     </li>
   
 
@@ -2547,70 +2547,20 @@
                 
 
 
-<h1 id="sbom">SBOM</h1>
-<div class="highlight"><pre><span></span><code>Scan SBOM <span class="k">for</span> vulnerabilities
-
-Usage:
-  trivy sbom <span class="o">[</span>flags<span class="o">]</span> SBOM_PATH
-
-Examples:
-  <span class="c1"># Scan CycloneDX and show the result in tables</span>
-  $ trivy sbom /path/to/report.cdx
-
-  <span class="c1"># Scan CycloneDX and generate a CycloneDX report</span>
-  $ trivy sbom --format cyclonedx /path/to/report.cdx
-
-
-Scan Flags
-      --offline-scan             <span class="k">do</span> not issue API requests to identify dependencies
-      --security-checks string   comma-separated list of what security issues to detect <span class="o">(</span>vuln,config,secret<span class="o">)</span> <span class="o">(</span>default <span class="s2">&quot;vuln,secret&quot;</span><span class="o">)</span>
-      --skip-dirs string         specify the directories where the traversal is skipped
-      --skip-files string        specify the file paths to skip traversal
-
-Report Flags
-      --dependency-tree        show dependency origin tree <span class="o">(</span>EXPERIMENTAL<span class="o">)</span>
-      --exit-code int          specify <span class="nb">exit</span> code when any security issues are found
-  -f, --format string          format <span class="o">(</span>table, json, sarif, template, cyclonedx, spdx, spdx-json, github<span class="o">)</span> <span class="o">(</span>default <span class="s2">&quot;table&quot;</span><span class="o">)</span>
-      --ignore-policy string   specify the Rego file path to evaluate each vulnerability
-      --ignorefile string      specify .trivyignore file <span class="o">(</span>default <span class="s2">&quot;.trivyignore&quot;</span><span class="o">)</span>
-      --list-all-pkgs          enabling the option will output all packages regardless of vulnerability
-  -o, --output string          output file name
-  -s, --severity string        severities of security issues to be displayed <span class="o">(</span>comma separated<span class="o">)</span> <span class="o">(</span>default <span class="s2">&quot;UNKNOWN,LOW,MEDIUM,HIGH,CRITICAL&quot;</span><span class="o">)</span>
-  -t, --template string        output template
-
-Cache Flags
-      --cache-backend string   cache backend <span class="o">(</span>e.g. redis://localhost:6379<span class="o">)</span> <span class="o">(</span>default <span class="s2">&quot;fs&quot;</span><span class="o">)</span>
-      --cache-ttl duration     cache TTL when using redis as cache backend
-      --clear-cache            clear image caches without scanning
-      --redis-ca string        redis ca file location, <span class="k">if</span> using redis as cache backend
-      --redis-cert string      redis certificate file location, <span class="k">if</span> using redis as cache backend
-      --redis-key string       redis key file location, <span class="k">if</span> using redis as cache backend
-
-DB Flags
-      --db-repository string   OCI repository to retrieve trivy-db from<span class="s2">&quot; (default &quot;</span>ghcr.io/aquasecurity/trivy-db<span class="s2">&quot;)</span>
-<span class="s2">      --download-db-only       download/update vulnerability database but don&#39;t run a scan</span>
-<span class="s2">      --no-progress            suppress progress bar</span>
-<span class="s2">      --reset                  remove all caches and database</span>
-<span class="s2">      --skip-db-update         skip updating vulnerability database</span>
-
-<span class="s2">Vulnerability Flags</span>
-<span class="s2">      --ignore-unfixed     display only fixed vulnerabilities</span>
-<span class="s2">      --vuln-type string   comma-separated list of vulnerability types (os,library) (default &quot;</span>os,library<span class="s2">&quot;)</span>
-
-<span class="s2">Client/Server Flags</span>
-<span class="s2">      --custom-headers strings   custom headers in client mode</span>
-<span class="s2">      --server string            server address in client mode</span>
-<span class="s2">      --token string             for authentication in client/server mode</span>
-<span class="s2">      --token-header string      specify a header name for token in client/server mode (default &quot;</span>Trivy-Token<span class="s2">&quot;)</span>
-
-<span class="s2">Global Flags:</span>
-<span class="s2">      --cache-dir string   cache directory (default &quot;</span>/Users/teppei/Library/Caches/trivy<span class="s2">&quot;)</span>
-<span class="s2">  -c, --config string      config path (default &quot;</span>trivy.yaml<span class="s2">&quot;)</span>
-<span class="s2">  -d, --debug              debug mode</span>
-<span class="s2">      --insecure           allow insecure server connections when using TLS</span>
-<span class="s2">  -q, --quiet              suppress progress bar and log output</span>
-<span class="s2">      --timeout duration   timeout (default 5m0s)</span>
-<span class="s2">  -v, --version            show version</span>
+<h1 id="environment-variables">Environment variables</h1>
+<p>Trivy can be customized by environment variables.
+The environment variable key is the flag name converted by the following procedure.</p>
+<ul>
+<li>Add <code>TRIVY_</code> prefix</li>
+<li>Make it all uppercase</li>
+<li>Replace <code>-</code> with <code>_</code></li>
+</ul>
+<p>For example, </p>
+<ul>
+<li><code>--debug</code> =&gt; <code>TRIVY_DEBUG</code></li>
+<li><code>--cache-dir</code> =&gt; <code>TRIVY_CACHE_DIR</code></li>
+</ul>
+<div class="highlight"><pre><span></span><code>$ TRIVY_DEBUG=true TRIVY_SEVERITY=CRITICAL trivy image alpine:3.15
 </code></pre></div>
 
               
@@ -2625,7 +2575,7 @@ DB Flags
     <nav class="md-footer__inner md-grid" aria-label="Footer">
       
         
-        <a href="../plugin/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Plugin" rel="prev">
+        <a href="../../../advanced/private-registries/self/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Self-Hosted" rel="prev">
           <div class="md-footer__button md-icon">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
           </div>
@@ -2634,20 +2584,20 @@ DB Flags
               <span class="md-footer__direction">
                 Previous
               </span>
-              Plugin
+              Self-Hosted
             </div>
           </div>
         </a>
       
       
         
-        <a href="../../modes/standalone/" class="md-footer__link md-footer__link--next" aria-label="Next: Standalone" rel="next">
+        <a href="../config-file/" class="md-footer__link md-footer__link--next" aria-label="Next: Config file" rel="next">
           <div class="md-footer__title">
             <div class="md-ellipsis">
               <span class="md-footer__direction">
                 Next
               </span>
-              Standalone
+              Config file
             </div>
           </div>
           <div class="md-footer__button md-icon">

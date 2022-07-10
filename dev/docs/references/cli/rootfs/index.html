@@ -1969,6 +1969,67 @@
               
   
   
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_9_1" type="checkbox" id="__nav_3_9_1" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_3_9_1">
+          Customization
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Customization" data-md-level="3">
+        <label class="md-nav__title" for="__nav_3_9_1">
+          <span class="md-nav__icon md-icon"></span>
+          Customization
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../customization/envs/" class="md-nav__link">
+        Environment variables
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../customization/config-file/" class="md-nav__link">
+        Config file
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
     
   
   
@@ -1976,18 +2037,18 @@
     <li class="md-nav__item md-nav__item--active md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_9_1" type="checkbox" id="__nav_3_9_1" checked>
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_9_2" type="checkbox" id="__nav_3_9_2" checked>
       
       
       
       
-        <label class="md-nav__link" for="__nav_3_9_1">
+        <label class="md-nav__link" for="__nav_3_9_2">
           CLI
           <span class="md-nav__icon md-icon"></span>
         </label>
       
       <nav class="md-nav" aria-label="CLI" data-md-level="3">
-        <label class="md-nav__title" for="__nav_3_9_1">
+        <label class="md-nav__title" for="__nav_3_9_2">
           <span class="md-nav__icon md-icon"></span>
           CLI
         </label>
@@ -2159,18 +2220,18 @@
     <li class="md-nav__item md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_9_2" type="checkbox" id="__nav_3_9_2" >
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_9_3" type="checkbox" id="__nav_3_9_3" >
       
       
       
       
-        <label class="md-nav__link" for="__nav_3_9_2">
+        <label class="md-nav__link" for="__nav_3_9_3">
           Modes
           <span class="md-nav__icon md-icon"></span>
         </label>
       
       <nav class="md-nav" aria-label="Modes" data-md-level="3">
-        <label class="md-nav__title" for="__nav_3_9_2">
+        <label class="md-nav__title" for="__nav_3_9_3">
           <span class="md-nav__icon md-icon"></span>
           Modes
         </label>
@@ -2487,38 +2548,76 @@
 
 
 <h1 id="rootfs">Rootfs</h1>
-<div class="highlight"><pre><span></span><code>NAME:
-   trivy rootfs - scan rootfs
+<div class="highlight"><pre><span></span><code>Scan rootfs
 
-USAGE:
-   trivy rootfs <span class="o">[</span><span class="nb">command</span> options<span class="o">]</span> dir
+Usage:
+  trivy rootfs <span class="o">[</span>flags<span class="o">]</span> ROOTDIR
 
-OPTIONS:
-   --template value, -t value                     output template <span class="o">[</span><span class="nv">$TRIVY_TEMPLATE</span><span class="o">]</span>
-   --format value, -f value                       format <span class="o">(</span>table, json, sarif, template<span class="o">)</span> <span class="o">(</span>default: <span class="s2">&quot;table&quot;</span><span class="o">)</span> <span class="o">[</span><span class="nv">$TRIVY_FORMAT</span><span class="o">]</span>
-   --severity value, -s value                     severities of vulnerabilities to be displayed <span class="o">(</span>comma separated<span class="o">)</span> <span class="o">(</span>default: <span class="s2">&quot;UNKNOWN,LOW,MEDIUM,HIGH,CRITICAL&quot;</span><span class="o">)</span> <span class="o">[</span><span class="nv">$TRIVY_SEVERITY</span><span class="o">]</span>
-   --output value, -o value                       output file name <span class="o">[</span><span class="nv">$TRIVY_OUTPUT</span><span class="o">]</span>
-   --exit-code value                              Exit code when vulnerabilities were found <span class="o">(</span>default: <span class="m">0</span><span class="o">)</span> <span class="o">[</span><span class="nv">$TRIVY_EXIT_CODE</span><span class="o">]</span>
-   --skip-db-update, --skip-update                skip updating vulnerability database <span class="o">(</span>default: <span class="nb">false</span><span class="o">)</span> <span class="o">[</span><span class="nv">$TRIVY_SKIP_UPDATE</span>, <span class="nv">$TRIVY_SKIP_DB_UPDATE</span><span class="o">]</span>
-   --insecure                                     allow insecure server connections when using SSL <span class="o">(</span>default: <span class="nb">false</span><span class="o">)</span> <span class="o">[</span><span class="nv">$TRIVY_INSECURE</span><span class="o">]</span>
-   --skip-policy-update                           skip updating built-in policies <span class="o">(</span>default: <span class="nb">false</span><span class="o">)</span> <span class="o">[</span><span class="nv">$TRIVY_SKIP_POLICY_UPDATE</span><span class="o">]</span>
-   --clear-cache, -c                              clear image caches without scanning <span class="o">(</span>default: <span class="nb">false</span><span class="o">)</span> <span class="o">[</span><span class="nv">$TRIVY_CLEAR_CACHE</span><span class="o">]</span>
-   --ignore-unfixed                               display only fixed vulnerabilities <span class="o">(</span>default: <span class="nb">false</span><span class="o">)</span> <span class="o">[</span><span class="nv">$TRIVY_IGNORE_UNFIXED</span><span class="o">]</span>
-   --vuln-type value                              comma-separated list of vulnerability types <span class="o">(</span>os,library<span class="o">)</span> <span class="o">(</span>default: <span class="s2">&quot;os,library&quot;</span><span class="o">)</span> <span class="o">[</span><span class="nv">$TRIVY_VULN_TYPE</span><span class="o">]</span>
-   --security-checks value                        comma-separated list of what security issues to detect <span class="o">(</span>vuln,config<span class="o">)</span> <span class="o">(</span>default: <span class="s2">&quot;vuln&quot;</span><span class="o">)</span> <span class="o">[</span><span class="nv">$TRIVY_SECURITY_CHECKS</span><span class="o">]</span>
-   --ignorefile value                             specify .trivyignore file <span class="o">(</span>default: <span class="s2">&quot;.trivyignore&quot;</span><span class="o">)</span> <span class="o">[</span><span class="nv">$TRIVY_IGNOREFILE</span><span class="o">]</span>
-   --cache-backend value                          cache backend <span class="o">(</span>e.g. redis://localhost:6379<span class="o">)</span> <span class="o">(</span>default: <span class="s2">&quot;fs&quot;</span><span class="o">)</span> <span class="o">[</span><span class="nv">$TRIVY_CACHE_BACKEND</span><span class="o">]</span>
-   --timeout value                                timeout <span class="o">(</span>default: 5m0s<span class="o">)</span> <span class="o">[</span><span class="nv">$TRIVY_TIMEOUT</span><span class="o">]</span>
-   --no-progress                                  suppress progress bar <span class="o">(</span>default: <span class="nb">false</span><span class="o">)</span> <span class="o">[</span><span class="nv">$TRIVY_NO_PROGRESS</span><span class="o">]</span>
-   --ignore-policy value                          specify the Rego file to evaluate each vulnerability <span class="o">[</span><span class="nv">$TRIVY_IGNORE_POLICY</span><span class="o">]</span>
-   --list-all-pkgs                                enabling the option will output all packages regardless of vulnerability <span class="o">(</span>default: <span class="nb">false</span><span class="o">)</span> <span class="o">[</span><span class="nv">$TRIVY_LIST_ALL_PKGS</span><span class="o">]</span>
-   --offline-scan                                 <span class="k">do</span> not issue API requests to identify dependencies <span class="o">(</span>default: <span class="nb">false</span><span class="o">)</span> <span class="o">[</span><span class="nv">$TRIVY_OFFLINE_SCAN</span><span class="o">]</span>
-   --skip-files value                             specify the file paths to skip traversal <span class="o">[</span><span class="nv">$TRIVY_SKIP_FILES</span><span class="o">]</span>
-   --skip-dirs value                              specify the directories where the traversal is skipped <span class="o">[</span><span class="nv">$TRIVY_SKIP_DIRS</span><span class="o">]</span>
-   --config-policy value                          specify paths to the Rego policy files directory, applying config files <span class="o">[</span><span class="nv">$TRIVY_CONFIG_POLICY</span><span class="o">]</span>
-   --config-data value                            specify paths from which data <span class="k">for</span> the Rego policies will be recursively loaded <span class="o">[</span><span class="nv">$TRIVY_CONFIG_DATA</span><span class="o">]</span>
-   --policy-namespaces value, --namespaces value  Rego namespaces <span class="o">(</span>default: <span class="s2">&quot;users&quot;</span><span class="o">)</span> <span class="o">[</span><span class="nv">$TRIVY_POLICY_NAMESPACES</span><span class="o">]</span>
-   --help, -h                                     show <span class="nb">help</span> <span class="o">(</span>default: <span class="nb">false</span><span class="o">)</span>
+Examples:
+  <span class="c1"># Scan unpacked filesystem</span>
+  $ docker <span class="nb">export</span> <span class="k">$(</span>docker create alpine:3.10.2<span class="k">)</span> <span class="p">|</span> tar -C /tmp/rootfs -xvf -
+  $ trivy rootfs /tmp/rootfs
+
+  <span class="c1"># Scan from inside a container</span>
+  $ docker run --rm -it alpine:3.11
+  / <span class="c1"># curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh -s -- -b /usr/local/bin</span>
+  / <span class="c1"># trivy rootfs /</span>
+
+Scan Flags
+      --offline-scan             <span class="k">do</span> not issue API requests to identify dependencies
+      --security-checks string   comma-separated list of what security issues to detect <span class="o">(</span>vuln,config,secret<span class="o">)</span> <span class="o">(</span>default <span class="s2">&quot;vuln,secret&quot;</span><span class="o">)</span>
+      --skip-dirs string         specify the directories where the traversal is skipped
+      --skip-files string        specify the file paths to skip traversal
+
+Report Flags
+      --dependency-tree        show dependency origin tree <span class="o">(</span>EXPERIMENTAL<span class="o">)</span>
+      --exit-code int          specify <span class="nb">exit</span> code when any security issues are found
+  -f, --format string          format <span class="o">(</span>table, json, sarif, template, cyclonedx, spdx, spdx-json, github<span class="o">)</span> <span class="o">(</span>default <span class="s2">&quot;table&quot;</span><span class="o">)</span>
+      --ignore-policy string   specify the Rego file path to evaluate each vulnerability
+      --ignorefile string      specify .trivyignore file <span class="o">(</span>default <span class="s2">&quot;.trivyignore&quot;</span><span class="o">)</span>
+      --list-all-pkgs          enabling the option will output all packages regardless of vulnerability
+  -o, --output string          output file name
+  -s, --severity string        severities of security issues to be displayed <span class="o">(</span>comma separated<span class="o">)</span> <span class="o">(</span>default <span class="s2">&quot;UNKNOWN,LOW,MEDIUM,HIGH,CRITICAL&quot;</span><span class="o">)</span>
+  -t, --template string        output template
+
+Cache Flags
+      --cache-backend string   cache backend <span class="o">(</span>e.g. redis://localhost:6379<span class="o">)</span> <span class="o">(</span>default <span class="s2">&quot;fs&quot;</span><span class="o">)</span>
+      --cache-ttl duration     cache TTL when using redis as cache backend
+      --clear-cache            clear image caches without scanning
+      --redis-ca string        redis ca file location, <span class="k">if</span> using redis as cache backend
+      --redis-cert string      redis certificate file location, <span class="k">if</span> using redis as cache backend
+      --redis-key string       redis key file location, <span class="k">if</span> using redis as cache backend
+
+DB Flags
+      --db-repository string   OCI repository to retrieve trivy-db from<span class="s2">&quot; (default &quot;</span>ghcr.io/aquasecurity/trivy-db<span class="s2">&quot;)</span>
+<span class="s2">      --download-db-only       download/update vulnerability database but don&#39;t run a scan</span>
+<span class="s2">      --no-progress            suppress progress bar</span>
+<span class="s2">      --reset                  remove all caches and database</span>
+<span class="s2">      --skip-db-update         skip updating vulnerability database</span>
+
+<span class="s2">Vulnerability Flags</span>
+<span class="s2">      --ignore-unfixed     display only fixed vulnerabilities</span>
+<span class="s2">      --vuln-type string   comma-separated list of vulnerability types (os,library) (default &quot;</span>os,library<span class="s2">&quot;)</span>
+
+<span class="s2">Misconfiguration Flags</span>
+<span class="s2">      --config-data strings         specify paths from which data for the Rego policies will be recursively loaded</span>
+<span class="s2">      --config-policy strings       specify paths to the Rego policy files directory, applying config files</span>
+<span class="s2">      --file-patterns strings       specify config file patterns, available with &#39;--security-checks config&#39;</span>
+<span class="s2">      --include-non-failures        include successes and exceptions, available with &#39;--security-checks config&#39;</span>
+<span class="s2">      --policy-namespaces strings   Rego namespaces</span>
+<span class="s2">      --trace                       enable more verbose trace output for custom queries</span>
+
+<span class="s2">Secret Flags</span>
+<span class="s2">      --secret-config string   specify a path to config file for secret scanning (default &quot;</span>trivy-secret.yaml<span class="s2">&quot;)</span>
+
+<span class="s2">Global Flags:</span>
+<span class="s2">      --cache-dir string   cache directory (default &quot;</span>/Users/teppei/Library/Caches/trivy<span class="s2">&quot;)</span>
+<span class="s2">  -c, --config string      config path (default &quot;</span>trivy.yaml<span class="s2">&quot;)</span>
+<span class="s2">  -d, --debug              debug mode</span>
+<span class="s2">      --insecure           allow insecure server connections when using TLS</span>
+<span class="s2">  -q, --quiet              suppress progress bar and log output</span>
+<span class="s2">      --timeout duration   timeout (default 5m0s)</span>
+<span class="s2">  -v, --version            show version</span>
 </code></pre></div>
 
               

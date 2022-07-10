@@ -1969,6 +1969,67 @@
               
   
   
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_9_1" type="checkbox" id="__nav_3_9_1" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_3_9_1">
+          Customization
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Customization" data-md-level="3">
+        <label class="md-nav__title" for="__nav_3_9_1">
+          <span class="md-nav__icon md-icon"></span>
+          Customization
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../customization/envs/" class="md-nav__link">
+        Environment variables
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../customization/config-file/" class="md-nav__link">
+        Config file
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
     
   
   
@@ -1976,18 +2037,18 @@
     <li class="md-nav__item md-nav__item--active md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_9_1" type="checkbox" id="__nav_3_9_1" checked>
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_9_2" type="checkbox" id="__nav_3_9_2" checked>
       
       
       
       
-        <label class="md-nav__link" for="__nav_3_9_1">
+        <label class="md-nav__link" for="__nav_3_9_2">
           CLI
           <span class="md-nav__icon md-icon"></span>
         </label>
       
       <nav class="md-nav" aria-label="CLI" data-md-level="3">
-        <label class="md-nav__title" for="__nav_3_9_1">
+        <label class="md-nav__title" for="__nav_3_9_2">
           <span class="md-nav__icon md-icon"></span>
           CLI
         </label>
@@ -2159,18 +2220,18 @@
     <li class="md-nav__item md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_9_2" type="checkbox" id="__nav_3_9_2" >
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_9_3" type="checkbox" id="__nav_3_9_3" >
       
       
       
       
-        <label class="md-nav__link" for="__nav_3_9_2">
+        <label class="md-nav__link" for="__nav_3_9_3">
           Modes
           <span class="md-nav__icon md-icon"></span>
         </label>
       
       <nav class="md-nav" aria-label="Modes" data-md-level="3">
-        <label class="md-nav__title" for="__nav_3_9_2">
+        <label class="md-nav__title" for="__nav_3_9_3">
           <span class="md-nav__icon md-icon"></span>
           Modes
         </label>
@@ -2487,23 +2548,33 @@
 
 
 <h1 id="plugin">Plugin</h1>
-<div class="highlight"><pre><span></span><code>NAME:
-   trivy plugin - manage plugins
+<div class="highlight"><pre><span></span><code>Manage plugins
 
-USAGE:
-   trivy plugin <span class="nb">command</span> <span class="o">[</span><span class="nb">command</span> options<span class="o">]</span> plugin_uri
+Usage:
+  trivy plugin <span class="o">[</span>command<span class="o">]</span>
 
-COMMANDS:
-   install, i    install a plugin
-   uninstall, u  uninstall a plugin
-   list, l       list installed plugin
-   info          information about a plugin
-   run, r        run a plugin on the fly
-   update        update an existing plugin
-   help, h       Shows a list of commands or <span class="nb">help</span> <span class="k">for</span> one <span class="nb">command</span>
+Aliases:
+  plugin, p
 
-OPTIONS:
-   --help, -h  show <span class="nb">help</span> <span class="o">(</span>default: <span class="nb">false</span><span class="o">)</span>
+Available Commands:
+  Uninstall   uninstall a plugin
+  info        Show information about the specified plugin
+  install     Install a plugin
+  list        List installed plugin
+  run         Run a plugin on the fly
+  update      Update an existing plugin
+
+Flags:
+  -h, --help   <span class="nb">help</span> <span class="k">for</span> plugin
+
+Global Flags:
+      --cache-dir string   cache directory <span class="o">(</span>default <span class="s2">&quot;/Users/teppei/Library/Caches/trivy&quot;</span><span class="o">)</span>
+  -c, --config string      config path <span class="o">(</span>default <span class="s2">&quot;trivy.yaml&quot;</span><span class="o">)</span>
+  -d, --debug              debug mode
+      --insecure           allow insecure server connections when using TLS
+  -q, --quiet              suppress progress bar and log output
+      --timeout duration   timeout <span class="o">(</span>default 5m0s<span class="o">)</span>
+  -v, --version            show version
 </code></pre></div>
 
               

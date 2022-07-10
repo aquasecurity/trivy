@@ -2030,12 +2030,73 @@
       
       
         <label class="md-nav__link" for="__nav_3_9_1">
+          Customization
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Customization" data-md-level="3">
+        <label class="md-nav__title" for="__nav_3_9_1">
+          <span class="md-nav__icon md-icon"></span>
+          Customization
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../references/customization/envs/" class="md-nav__link">
+        Environment variables
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../references/customization/config-file/" class="md-nav__link">
+        Config file
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_9_2" type="checkbox" id="__nav_3_9_2" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_3_9_2">
           CLI
           <span class="md-nav__icon md-icon"></span>
         </label>
       
       <nav class="md-nav" aria-label="CLI" data-md-level="3">
-        <label class="md-nav__title" for="__nav_3_9_1">
+        <label class="md-nav__title" for="__nav_3_9_2">
           <span class="md-nav__icon md-icon"></span>
           CLI
         </label>
@@ -2197,18 +2258,18 @@
     <li class="md-nav__item md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_9_2" type="checkbox" id="__nav_3_9_2" >
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_9_3" type="checkbox" id="__nav_3_9_3" >
       
       
       
       
-        <label class="md-nav__link" for="__nav_3_9_2">
+        <label class="md-nav__link" for="__nav_3_9_3">
           Modes
           <span class="md-nav__icon md-icon"></span>
         </label>
       
       <nav class="md-nav" aria-label="Modes" data-md-level="3">
-        <label class="md-nav__title" for="__nav_3_9_2">
+        <label class="md-nav__title" for="__nav_3_9_3">
           <span class="md-nav__icon md-icon"></span>
           Modes
         </label>
@@ -2572,7 +2633,7 @@ exception[ns] {
 </code></pre></div>
 </div>
 <p>This example exempts all built-in policies for Kubernetes.</p>
-<p>For more details, see <a href="https://github.com/aquasecurity/trivy/tree/64854fc85084ee631192f09b1e446845ed530826/examples/misconf/namespace-exception">an example</a>.</p>
+<p>For more details, see <a href="https://github.com/aquasecurity/trivy/tree/e98bde339674f1c26c6f932bac83b55cadd58445/examples/misconf/namespace-exception">an example</a>.</p>
 <h2 id="rule-based-exceptions">Rule-based exceptions</h2>
 <p>There are some cases where you need more flexibility and granularity in defining which cases to exempt.
 Rule-based exceptions lets you granularly choose which individual rules to exempt, while also declaring under which conditions to exempt them.</p>
@@ -2624,7 +2685,7 @@ exception[rules] {
 </div>
 <p>This exception is applied to <a href="https://github.com/aquasecurity/defsec/blob/master/internal/rules/kubernetes/policies/pss/restricted/3_runs_as_root.rego">KSV012</a> in defsec.
 You can get the package names in the <a href="https://github.com/aquasecurity/defsec/">defsec repository</a> or the JSON output from Trivy.</p>
-<p>For more details, see <a href="https://github.com/aquasecurity/trivy/tree/64854fc85084ee631192f09b1e446845ed530826/examples/misconf/rule-exception">an example</a>.</p>
+<p>For more details, see <a href="https://github.com/aquasecurity/trivy/tree/e98bde339674f1c26c6f932bac83b55cadd58445/examples/misconf/rule-exception">an example</a>.</p>
 
               
             </article>

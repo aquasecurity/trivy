@@ -1969,6 +1969,67 @@
               
   
   
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_9_1" type="checkbox" id="__nav_3_9_1" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_3_9_1">
+          Customization
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Customization" data-md-level="3">
+        <label class="md-nav__title" for="__nav_3_9_1">
+          <span class="md-nav__icon md-icon"></span>
+          Customization
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../customization/envs/" class="md-nav__link">
+        Environment variables
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../customization/config-file/" class="md-nav__link">
+        Config file
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
     
   
   
@@ -1976,18 +2037,18 @@
     <li class="md-nav__item md-nav__item--active md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_9_1" type="checkbox" id="__nav_3_9_1" checked>
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_9_2" type="checkbox" id="__nav_3_9_2" checked>
       
       
       
       
-        <label class="md-nav__link" for="__nav_3_9_1">
+        <label class="md-nav__link" for="__nav_3_9_2">
           CLI
           <span class="md-nav__icon md-icon"></span>
         </label>
       
       <nav class="md-nav" aria-label="CLI" data-md-level="3">
-        <label class="md-nav__title" for="__nav_3_9_1">
+        <label class="md-nav__title" for="__nav_3_9_2">
           <span class="md-nav__icon md-icon"></span>
           CLI
         </label>
@@ -2159,18 +2220,18 @@
     <li class="md-nav__item md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_9_2" type="checkbox" id="__nav_3_9_2" >
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_9_3" type="checkbox" id="__nav_3_9_3" >
       
       
       
       
-        <label class="md-nav__link" for="__nav_3_9_2">
+        <label class="md-nav__link" for="__nav_3_9_3">
           Modes
           <span class="md-nav__icon md-icon"></span>
         </label>
       
       <nav class="md-nav" aria-label="Modes" data-md-level="3">
-        <label class="md-nav__title" for="__nav_3_9_2">
+        <label class="md-nav__title" for="__nav_3_9_3">
           <span class="md-nav__icon md-icon"></span>
           Modes
         </label>
@@ -2487,24 +2548,50 @@
 
 
 <h1 id="server">Server</h1>
-<div class="highlight"><pre><span></span><code>NAME:
-   trivy server - server mode
+<div class="highlight"><pre><span></span><code>Server mode
 
-USAGE:
-   trivy server <span class="o">[</span><span class="nb">command</span> options<span class="o">]</span> <span class="o">[</span>arguments...<span class="o">]</span>
+Usage:
+  trivy server <span class="o">[</span>flags<span class="o">]</span>
 
-OPTIONS:
-   --skip-db-update, --skip-update  skip updating vulnerability database <span class="o">(</span>default: <span class="nb">false</span><span class="o">)</span> <span class="o">[</span><span class="nv">$TRIVY_SKIP_UPDATE</span>, <span class="nv">$TRIVY_SKIP_DB_UPDATE</span><span class="o">]</span>
-   --download-db-only               download/update vulnerability database but don<span class="err">&#39;</span>t run a scan <span class="o">(</span>default: <span class="nb">false</span><span class="o">)</span> <span class="o">[</span><span class="nv">$TRIVY_DOWNLOAD_DB_ONLY</span><span class="o">]</span>
-   --insecure                       allow insecure server connections when using SSL <span class="o">(</span>default: <span class="nb">false</span><span class="o">)</span> <span class="o">[</span><span class="nv">$TRIVY_INSECURE</span><span class="o">]</span>
-   --reset                          remove all caches and database <span class="o">(</span>default: <span class="nb">false</span><span class="o">)</span> <span class="o">[</span><span class="nv">$TRIVY_RESET</span><span class="o">]</span>
-   --cache-backend value            cache backend <span class="o">(</span>e.g. redis://localhost:6379<span class="o">)</span> <span class="o">(</span>default: <span class="s2">&quot;fs&quot;</span><span class="o">)</span> <span class="o">[</span><span class="nv">$TRIVY_CACHE_BACKEND</span><span class="o">]</span>
-   --cache-ttl value                cache TTL when using redis as cache backend <span class="o">(</span>default: 0s<span class="o">)</span> <span class="o">[</span><span class="nv">$TRIVY_CACHE_TTL</span><span class="o">]</span>
-   --db-repository value            OCI repository to retrieve trivy-db from <span class="o">(</span>default: <span class="s2">&quot;ghcr.io/aquasecurity/trivy-db&quot;</span><span class="o">)</span> <span class="o">[</span><span class="nv">$TRIVY_DB_REPOSITORY</span><span class="o">]</span>
-   --token value                    <span class="k">for</span> authentication <span class="k">in</span> client/server mode <span class="o">[</span><span class="nv">$TRIVY_TOKEN</span><span class="o">]</span>
-   --token-header value             specify a header name <span class="k">for</span> token <span class="k">in</span> client/server mode <span class="o">(</span>default: <span class="s2">&quot;Trivy-Token&quot;</span><span class="o">)</span> <span class="o">[</span><span class="nv">$TRIVY_TOKEN_HEADER</span><span class="o">]</span>
-   --listen value                   listen address <span class="o">(</span>default: <span class="s2">&quot;localhost:4954&quot;</span><span class="o">)</span> <span class="o">[</span><span class="nv">$TRIVY_LISTEN</span><span class="o">]</span>
-   --help, -h                       show <span class="nb">help</span> <span class="o">(</span>default: <span class="nb">false</span><span class="o">)</span>
+Aliases:
+  server, s
+
+Examples:
+  <span class="c1"># Run a server</span>
+  $ trivy server
+
+  <span class="c1"># Listen on 0.0.0.0:10000</span>
+  $ trivy server --listen <span class="m">0</span>.0.0.0:10000
+
+
+Cache Flags
+      --cache-backend string   cache backend <span class="o">(</span>e.g. redis://localhost:6379<span class="o">)</span> <span class="o">(</span>default <span class="s2">&quot;fs&quot;</span><span class="o">)</span>
+      --cache-ttl duration     cache TTL when using redis as cache backend
+      --clear-cache            clear image caches without scanning
+      --redis-ca string        redis ca file location, <span class="k">if</span> using redis as cache backend
+      --redis-cert string      redis certificate file location, <span class="k">if</span> using redis as cache backend
+      --redis-key string       redis key file location, <span class="k">if</span> using redis as cache backend
+
+DB Flags
+      --db-repository string   OCI repository to retrieve trivy-db from<span class="s2">&quot; (default &quot;</span>ghcr.io/aquasecurity/trivy-db<span class="s2">&quot;)</span>
+<span class="s2">      --download-db-only       download/update vulnerability database but don&#39;t run a scan</span>
+<span class="s2">      --no-progress            suppress progress bar</span>
+<span class="s2">      --reset                  remove all caches and database</span>
+<span class="s2">      --skip-db-update         skip updating vulnerability database</span>
+
+<span class="s2">Client/Server Flags</span>
+<span class="s2">      --listen string         listen address in server mode (default &quot;</span>localhost:4954<span class="s2">&quot;)</span>
+<span class="s2">      --token string          for authentication in client/server mode</span>
+<span class="s2">      --token-header string   specify a header name for token in client/server mode (default &quot;</span>Trivy-Token<span class="s2">&quot;)</span>
+
+<span class="s2">Global Flags:</span>
+<span class="s2">      --cache-dir string   cache directory (default &quot;</span>/Users/teppei/Library/Caches/trivy<span class="s2">&quot;)</span>
+<span class="s2">  -c, --config string      config path (default &quot;</span>trivy.yaml<span class="s2">&quot;)</span>
+<span class="s2">  -d, --debug              debug mode</span>
+<span class="s2">      --insecure           allow insecure server connections when using TLS</span>
+<span class="s2">  -q, --quiet              suppress progress bar and log output</span>
+<span class="s2">      --timeout duration   timeout (default 5m0s)</span>
+<span class="s2">  -v, --version            show version</span>
 </code></pre></div>
 
               
