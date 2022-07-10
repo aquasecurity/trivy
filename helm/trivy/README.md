@@ -102,5 +102,5 @@ This chart uses a PersistentVolumeClaim to reduce the number of database downloa
 
 ## Caching
 
-You can specify a Redis server as cache backend. This Redis server has to be already present. You can use the [bitname chart](https://bitnami.com/stack/redis/helm).
+You can specify a Redis server as cache backend. This Redis server has to be already present. You can use the [bitnami chart](https://bitnami.com/stack/redis/helm).
 More Information about the caching backends can be found [here](https://github.com/aquasecurity/trivy#specify-cache-backend).
