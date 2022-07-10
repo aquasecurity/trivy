@@ -528,7 +528,10 @@ func NewServerCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 
 func NewConfigCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	reportFlagGroup := flag.NewReportFlagGroup()
-	reportFlagGroup.ReportFormat = nil // TODO: support --format summary
+	reportFlagGroup.DependencyTree = nil // disable '--dependency-tree'
+	reportFlagGroup.IgnorePolicy = nil   // disable '--ignore-policy'
+	reportFlagGroup.ListAllPkgs = nil    // disable '--list-all-pkgs'
+	reportFlagGroup.ReportFormat = nil   // TODO: support --format summary
 
 	scanFlags := &flag.ScanFlagGroup{
 		// Enable only '--skip-dirs' and '--skip-files' and disable other flags

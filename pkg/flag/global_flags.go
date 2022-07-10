@@ -4,7 +4,6 @@ import (
 	"time"
 
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 
 	"github.com/aquasecurity/trivy/pkg/utils"
 )
@@ -125,7 +124,7 @@ func (f *GlobalFlagGroup) ToOptions() GlobalOptions {
 		Quiet:       getBool(f.Quiet),
 		Debug:       getBool(f.Debug),
 		Insecure:    getBool(f.Insecure),
-		Timeout:     viper.GetDuration(f.Timeout.ConfigName),
+		Timeout:     getDuration(f.Timeout),
 		CacheDir:    getString(f.CacheDir),
 	}
 }
