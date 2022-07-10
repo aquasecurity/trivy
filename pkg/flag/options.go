@@ -1,6 +1,7 @@
 package flag
 
 import (
+	"fmt"
 	"io"
 	"strings"
 	"time"
@@ -32,23 +33,28 @@ type Flag struct {
 
 	// Persistent represents if the flag is persistent
 	Persistent bool
+
+	// Deprecated represents if the flag is deprecated
+	Deprecated bool
 }
 
 type FlagGroup interface {
-	AddFlags(cmd *cobra.Command)
-	Bind(cmd *cobra.Command) error
+	Name() string
+	Flags() []*Flag
 }
 
 type Flags struct {
-	CacheFlagGroup   *CacheFlagGroup
-	DBFlagGroup      *DBFlagGroup
-	ImageFlagGroup   *ImageFlagGroup
-	K8sFlagGroup     *K8sFlagGroup
-	MisconfFlagGroup *MisconfFlagGroup
-	RemoteFlagGroup  *RemoteFlagGroup
-	ReportFlagGroup  *ReportFlagGroup
-	SBOMFlagGroup    *SBOMFlagGroup
-	ScanFlagGroup    *ScanFlagGroup
+	CacheFlagGroup         *CacheFlagGroup
+	DBFlagGroup            *DBFlagGroup
+	ImageFlagGroup         *ImageFlagGroup
+	K8sFlagGroup           *K8sFlagGroup
+	MisconfFlagGroup       *MisconfFlagGroup
+	RemoteFlagGroup        *RemoteFlagGroup
+	ReportFlagGroup        *ReportFlagGroup
+	SBOMFlagGroup          *SBOMFlagGroup
+	ScanFlagGroup          *ScanFlagGroup
+	SecretFlagGroup        *SecretFlagGroup
+	VulnerabilityFlagGroup *VulnerabilityFlagGroup
 }
 
 // Options holds all the runtime configuration
@@ -63,6 +69,8 @@ type Options struct {
 	ReportOptions
 	SBOMOptions
 	ScanOptions
+	SecretOptions
+	VulnerabilityOptions
 
 	// Trivy's version, not populated via CLI flags
 	AppVersion string
@@ -75,37 +83,28 @@ func addFlag(cmd *cobra.Command, flag *Flag) {
 	if flag == nil || flag.Name == "" {
 		return
 	}
+	var flags *pflag.FlagSet
+	if flag.Persistent {
+		flags = cmd.PersistentFlags()
+	} else {
+		flags = cmd.Flags()
+	}
+
 	switch v := flag.Value.(type) {
 	case int:
-		if flag.Persistent {
-			cmd.PersistentFlags().IntP(flag.Name, flag.Shorthand, v, flag.Usage)
-		} else {
-			cmd.Flags().IntP(flag.Name, flag.Shorthand, v, flag.Usage)
-		}
+		flags.IntP(flag.Name, flag.Shorthand, v, flag.Usage)
 	case string:
-		if flag.Persistent {
-			cmd.PersistentFlags().StringP(flag.Name, flag.Shorthand, v, flag.Usage)
-		} else {
-			cmd.Flags().StringP(flag.Name, flag.Shorthand, v, flag.Usage)
-		}
+		flags.StringP(flag.Name, flag.Shorthand, v, flag.Usage)
 	case []string:
-		if flag.Persistent {
-			cmd.PersistentFlags().StringSliceP(flag.Name, flag.Shorthand, v, flag.Usage)
-		} else {
-			cmd.Flags().StringSliceP(flag.Name, flag.Shorthand, v, flag.Usage)
-		}
+		flags.StringSliceP(flag.Name, flag.Shorthand, v, flag.Usage)
 	case bool:
-		if flag.Persistent {
-			cmd.PersistentFlags().BoolP(flag.Name, flag.Shorthand, v, flag.Usage)
-		} else {
-			cmd.Flags().BoolP(flag.Name, flag.Shorthand, v, flag.Usage)
-		}
+		flags.BoolP(flag.Name, flag.Shorthand, v, flag.Usage)
 	case time.Duration:
-		if flag.Persistent {
-			cmd.PersistentFlags().DurationP(flag.Name, flag.Shorthand, v, flag.Usage)
-		} else {
-			cmd.PersistentFlags().DurationP(flag.Name, flag.Shorthand, v, flag.Usage)
-		}
+		flags.DurationP(flag.Name, flag.Shorthand, v, flag.Usage)
+	}
+
+	if flag.Deprecated {
+		flags.MarkHidden(flag.Name) // nolint: gosec
 	}
 }
 
@@ -166,6 +165,13 @@ func getDuration(flag *Flag) time.Duration {
 
 func (f *Flags) groups() []FlagGroup {
 	var groups []FlagGroup
+	// This order affects the usage message, so they are sorted by frequency of use.
+	if f.ScanFlagGroup != nil {
+		groups = append(groups, f.ScanFlagGroup)
+	}
+	if f.ReportFlagGroup != nil {
+		groups = append(groups, f.ReportFlagGroup)
+	}
 	if f.CacheFlagGroup != nil {
 		groups = append(groups, f.CacheFlagGroup)
 	}
@@ -175,36 +181,57 @@ func (f *Flags) groups() []FlagGroup {
 	if f.ImageFlagGroup != nil {
 		groups = append(groups, f.ImageFlagGroup)
 	}
-	if f.K8sFlagGroup != nil {
-		groups = append(groups, f.K8sFlagGroup)
+	if f.SBOMFlagGroup != nil {
+		groups = append(groups, f.SBOMFlagGroup)
+	}
+	if f.VulnerabilityFlagGroup != nil {
+		groups = append(groups, f.VulnerabilityFlagGroup)
 	}
 	if f.MisconfFlagGroup != nil {
 		groups = append(groups, f.MisconfFlagGroup)
 	}
+	if f.SecretFlagGroup != nil {
+		groups = append(groups, f.SecretFlagGroup)
+	}
+	if f.K8sFlagGroup != nil {
+		groups = append(groups, f.K8sFlagGroup)
+	}
 	if f.RemoteFlagGroup != nil {
 		groups = append(groups, f.RemoteFlagGroup)
-	}
-	if f.ReportFlagGroup != nil {
-		groups = append(groups, f.ReportFlagGroup)
-	}
-	if f.SBOMFlagGroup != nil {
-		groups = append(groups, f.SBOMFlagGroup)
-	}
-	if f.ScanFlagGroup != nil {
-		groups = append(groups, f.ScanFlagGroup)
 	}
 	return groups
 }
 
 func (f *Flags) AddFlags(cmd *cobra.Command) {
 	for _, group := range f.groups() {
-		if group == nil {
-			continue
+		for _, flag := range group.Flags() {
+			addFlag(cmd, flag)
 		}
-		group.AddFlags(cmd)
 	}
 
 	cmd.Flags().SetNormalizeFunc(flagNameNormalize)
+}
+
+func (f *Flags) Usages(cmd *cobra.Command) string {
+	var usages string
+	for _, group := range f.groups() {
+
+		flags := pflag.NewFlagSet(cmd.Name(), pflag.ContinueOnError)
+		lflags := cmd.LocalFlags()
+		for _, flag := range group.Flags() {
+			if flag == nil {
+				continue
+			}
+			flags.AddFlag(lflags.Lookup(flag.Name))
+		}
+		if !flags.HasAvailableFlags() {
+			continue
+		}
+
+		usages += fmt.Sprintf("%s Flags\n", group.Name())
+		usages += flags.FlagUsages() + "\n"
+	}
+	return strings.TrimSpace(usages)
 }
 
 func (f *Flags) Bind(cmd *cobra.Command) error {
@@ -212,8 +239,10 @@ func (f *Flags) Bind(cmd *cobra.Command) error {
 		if group == nil {
 			continue
 		}
-		if err := group.Bind(cmd); err != nil {
-			return xerrors.Errorf("flag groups: %w", err)
+		for _, flag := range group.Flags() {
+			if err := bind(cmd, flag); err != nil {
+				return xerrors.Errorf("flag groups: %w", err)
+			}
 		}
 	}
 	return nil
@@ -275,6 +304,14 @@ func (f *Flags) ToOptions(appVersion string, args []string, globalFlags *GlobalF
 
 	if f.ScanFlagGroup != nil {
 		opts.ScanOptions = f.ScanFlagGroup.ToOptions(args)
+	}
+
+	if f.SecretFlagGroup != nil {
+		opts.SecretOptions = f.SecretFlagGroup.ToOptions()
+	}
+
+	if f.VulnerabilityFlagGroup != nil {
+		opts.VulnerabilityOptions = f.VulnerabilityFlagGroup.ToOptions()
 	}
 
 	return opts, nil

@@ -1,7 +1,6 @@
 package flag
 
 import (
-	"github.com/spf13/cobra"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/log"
@@ -9,14 +8,18 @@ import (
 
 var (
 	ArtifactTypeFlag = Flag{
-		Name:  "artifact-type",
-		Value: "",
-		Usage: "deprecated",
+		Name:       "artifact-type",
+		ConfigName: "sbom.artifact-type",
+		Value:      "",
+		Usage:      "deprecated",
+		Deprecated: true,
 	}
 	SBOMFormatFlag = Flag{
-		Name:  "sbom-format",
-		Value: "",
-		Usage: "deprecated",
+		Name:       "sbom-format",
+		ConfigName: "sbom.format",
+		Value:      "",
+		Usage:      "deprecated",
+		Deprecated: true,
 	}
 )
 
@@ -37,20 +40,12 @@ func NewSBOMFlagGroup() *SBOMFlagGroup {
 	}
 }
 
-func (f *SBOMFlagGroup) AddFlags(cmd *cobra.Command) {
-	if f.ArtifactType != nil {
-		cmd.Flags().String(ArtifactTypeFlag.Name, "", "deprecated")
-		cmd.Flags().MarkHidden(ArtifactTypeFlag.Name) // nolint: gosec
-	}
-	if f.SBOMFormat != nil {
-		cmd.Flags().String(SBOMFormatFlag.Name, "", "deprecated")
-		cmd.Flags().MarkHidden(SBOMFormatFlag.Name) // nolint: gosec
-	}
+func (f *SBOMFlagGroup) Name() string {
+	return "SBOM"
 }
 
-func (f *SBOMFlagGroup) Bind(cmd *cobra.Command) error {
-	// All the flags are deprecated
-	return nil
+func (f *SBOMFlagGroup) Flags() []*Flag {
+	return []*Flag{f.ArtifactType, f.SBOMFormat}
 }
 
 func (f *SBOMFlagGroup) ToOptions() (SBOMOptions, error) {

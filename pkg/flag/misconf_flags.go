@@ -1,9 +1,6 @@
 package flag
 
 import (
-	"github.com/samber/lo"
-	"github.com/spf13/cobra"
-
 	"github.com/aquasecurity/trivy/pkg/log"
 )
 
@@ -30,6 +27,7 @@ var (
 		ConfigName: "misconfiguration.skip-policy-update",
 		Value:      false,
 		Usage:      "deprecated",
+		Deprecated: true,
 	}
 	TraceFlag = Flag{
 		Name:       "trace",
@@ -84,33 +82,22 @@ type MisconfOptions struct {
 
 func NewMisconfFlagGroup() *MisconfFlagGroup {
 	return &MisconfFlagGroup{
-		FilePatterns:       lo.ToPtr(FilePatternsFlag),
-		IncludeNonFailures: lo.ToPtr(IncludeNonFailuresFlag),
-		SkipPolicyUpdate:   lo.ToPtr(SkipPolicyUpdateFlag),
-		Trace:              lo.ToPtr(TraceFlag),
-		PolicyPaths:        lo.ToPtr(ConfigPolicyFlag),
-		DataPaths:          lo.ToPtr(ConfigDataFlag),
-		PolicyNamespaces:   lo.ToPtr(PolicyNamespaceFlag),
+		FilePatterns:       &FilePatternsFlag,
+		IncludeNonFailures: &IncludeNonFailuresFlag,
+		SkipPolicyUpdate:   &SkipPolicyUpdateFlag,
+		Trace:              &TraceFlag,
+		PolicyPaths:        &ConfigPolicyFlag,
+		DataPaths:          &ConfigDataFlag,
+		PolicyNamespaces:   &PolicyNamespaceFlag,
 	}
 }
 
-func (f *MisconfFlagGroup) flags() []*Flag {
+func (f *MisconfFlagGroup) Name() string {
+	return "Misconfiguration"
+}
+
+func (f *MisconfFlagGroup) Flags() []*Flag {
 	return []*Flag{f.FilePatterns, f.IncludeNonFailures, f.SkipPolicyUpdate, f.Trace, f.PolicyPaths, f.DataPaths, f.PolicyNamespaces}
-}
-
-func (f *MisconfFlagGroup) AddFlags(cmd *cobra.Command) {
-	for _, flag := range f.flags() {
-		addFlag(cmd, flag)
-	}
-}
-
-func (f *MisconfFlagGroup) Bind(cmd *cobra.Command) error {
-	for _, flag := range f.flags() {
-		if err := bind(cmd, flag); err != nil {
-			return err
-		}
-	}
-	return nil
 }
 
 func (f *MisconfFlagGroup) ToOptions() (MisconfOptions, error) {

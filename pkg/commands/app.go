@@ -30,6 +30,32 @@ type VersionInfo struct {
 	VulnerabilityDB *metadata.Metadata `json:",omitempty"`
 }
 
+const (
+	usageTemplate = `Usage:{{if .Runnable}}
+  {{.UseLine}}{{end}}{{if .HasAvailableSubCommands}}
+  {{.CommandPath}} [command]{{end}}{{if gt (len .Aliases) 0}}
+
+Aliases:
+  {{.NameAndAliases}}{{end}}{{if .HasExample}}
+
+Examples:
+{{.Example}}{{end}}{{if .HasAvailableSubCommands}}
+
+Available Commands:{{range .Commands}}{{if (or .IsAvailableCommand (eq .Name "help"))}}
+  {{rpad .Name .NamePadding }} {{.Short}}{{end}}{{end}}{{end}}{{if .HasAvailableLocalFlags}}
+
+%s
+
+Global Flags:
+{{.InheritedFlags.FlagUsages | trimTrailingWhitespaces}}{{end}}{{if .HasHelpSubCommands}}
+
+Additional help topics:{{range .Commands}}{{if .IsAdditionalHelpTopicCommand}}
+  {{rpad .CommandPath .CommandPathPadding}} {{.Short}}{{end}}{{end}}{{end}}{{if .HasAvailableSubCommands}}
+
+Use "{{.CommandPath}} [command] --help" for more information about a command.{{end}}
+`
+)
+
 var (
 	outputWriter io.Writer = os.Stdout
 )
@@ -192,13 +218,15 @@ func NewImageCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	reportFlagGroup.ReportFormat = nil // TODO: support --format summary
 
 	imageFlags := &flag.Flags{
-		CacheFlagGroup:   flag.NewCacheFlagGroup(),
-		DBFlagGroup:      flag.NewDBFlagGroup(),
-		ImageFlagGroup:   flag.NewImageFlagGroup(), // container image specific
-		MisconfFlagGroup: flag.NewMisconfFlagGroup(),
-		RemoteFlagGroup:  flag.NewClientFlags(), // for client/server mode
-		ReportFlagGroup:  reportFlagGroup,
-		ScanFlagGroup:    flag.NewScanFlagGroup(),
+		CacheFlagGroup:         flag.NewCacheFlagGroup(),
+		DBFlagGroup:            flag.NewDBFlagGroup(),
+		ImageFlagGroup:         flag.NewImageFlagGroup(), // container image specific
+		MisconfFlagGroup:       flag.NewMisconfFlagGroup(),
+		RemoteFlagGroup:        flag.NewClientFlags(), // for client/server mode
+		ReportFlagGroup:        reportFlagGroup,
+		ScanFlagGroup:          flag.NewScanFlagGroup(),
+		SecretFlagGroup:        flag.NewSecretFlagGroup(),
+		VulnerabilityFlagGroup: flag.NewVulnerabilityFlagGroup(),
 	}
 
 	cmd := &cobra.Command{
@@ -250,8 +278,9 @@ func NewImageCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 		SilenceUsage:  true,
 	}
 
-	cmd.SetFlagErrorFunc(flagErrorFunc)
 	imageFlags.AddFlags(cmd)
+	cmd.SetFlagErrorFunc(flagErrorFunc)
+	cmd.SetUsageTemplate(fmt.Sprintf(usageTemplate, imageFlags.Usages(cmd)))
 
 	return cmd
 }
@@ -261,12 +290,14 @@ func NewFilesystemCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	reportFlagGroup.ReportFormat = nil // TODO: support --format summary
 
 	fsFlags := &flag.Flags{
-		CacheFlagGroup:   flag.NewCacheFlagGroup(),
-		DBFlagGroup:      flag.NewDBFlagGroup(),
-		MisconfFlagGroup: flag.NewMisconfFlagGroup(),
-		RemoteFlagGroup:  flag.NewClientFlags(), // for client/server mode
-		ReportFlagGroup:  reportFlagGroup,
-		ScanFlagGroup:    flag.NewScanFlagGroup(),
+		CacheFlagGroup:         flag.NewCacheFlagGroup(),
+		DBFlagGroup:            flag.NewDBFlagGroup(),
+		MisconfFlagGroup:       flag.NewMisconfFlagGroup(),
+		RemoteFlagGroup:        flag.NewClientFlags(), // for client/server mode
+		ReportFlagGroup:        reportFlagGroup,
+		ScanFlagGroup:          flag.NewScanFlagGroup(),
+		SecretFlagGroup:        flag.NewSecretFlagGroup(),
+		VulnerabilityFlagGroup: flag.NewVulnerabilityFlagGroup(),
 	}
 
 	cmd := &cobra.Command{
@@ -300,6 +331,7 @@ func NewFilesystemCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 
 	cmd.SetFlagErrorFunc(flagErrorFunc)
 	fsFlags.AddFlags(cmd)
+	cmd.SetUsageTemplate(fmt.Sprintf(usageTemplate, fsFlags.Usages(cmd)))
 
 	return cmd
 }
@@ -309,11 +341,13 @@ func NewRootfsCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	reportFlagGroup.ReportFormat = nil // TODO: support --format summary
 
 	rootfsFlags := &flag.Flags{
-		CacheFlagGroup:   flag.NewCacheFlagGroup(),
-		DBFlagGroup:      flag.NewDBFlagGroup(),
-		MisconfFlagGroup: flag.NewMisconfFlagGroup(),
-		ReportFlagGroup:  reportFlagGroup,
-		ScanFlagGroup:    flag.NewScanFlagGroup(),
+		CacheFlagGroup:         flag.NewCacheFlagGroup(),
+		DBFlagGroup:            flag.NewDBFlagGroup(),
+		MisconfFlagGroup:       flag.NewMisconfFlagGroup(),
+		ReportFlagGroup:        reportFlagGroup,
+		ScanFlagGroup:          flag.NewScanFlagGroup(),
+		SecretFlagGroup:        flag.NewSecretFlagGroup(),
+		VulnerabilityFlagGroup: flag.NewVulnerabilityFlagGroup(),
 	}
 
 	cmd := &cobra.Command{
@@ -348,6 +382,7 @@ func NewRootfsCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	}
 	cmd.SetFlagErrorFunc(flagErrorFunc)
 	rootfsFlags.AddFlags(cmd)
+	cmd.SetUsageTemplate(fmt.Sprintf(usageTemplate, rootfsFlags.Usages(cmd)))
 
 	return cmd
 }
@@ -357,12 +392,14 @@ func NewRepositoryCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	reportFlagGroup.ReportFormat = nil // TODO: support --format summary
 
 	repoFlags := &flag.Flags{
-		CacheFlagGroup:   flag.NewCacheFlagGroup(),
-		DBFlagGroup:      flag.NewDBFlagGroup(),
-		MisconfFlagGroup: flag.NewMisconfFlagGroup(),
-		RemoteFlagGroup:  flag.NewClientFlags(), // for client/server mode
-		ReportFlagGroup:  reportFlagGroup,
-		ScanFlagGroup:    flag.NewScanFlagGroup(),
+		CacheFlagGroup:         flag.NewCacheFlagGroup(),
+		DBFlagGroup:            flag.NewDBFlagGroup(),
+		MisconfFlagGroup:       flag.NewMisconfFlagGroup(),
+		RemoteFlagGroup:        flag.NewClientFlags(), // for client/server mode
+		ReportFlagGroup:        reportFlagGroup,
+		ScanFlagGroup:          flag.NewScanFlagGroup(),
+		SecretFlagGroup:        flag.NewSecretFlagGroup(),
+		VulnerabilityFlagGroup: flag.NewVulnerabilityFlagGroup(),
 	}
 
 	cmd := &cobra.Command{
@@ -392,6 +429,7 @@ func NewRepositoryCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	}
 	cmd.SetFlagErrorFunc(flagErrorFunc)
 	repoFlags.AddFlags(cmd)
+	cmd.SetUsageTemplate(fmt.Sprintf(usageTemplate, repoFlags.Usages(cmd)))
 
 	return cmd
 }
@@ -409,12 +447,13 @@ func NewClientCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	remoteFlags.ServerAddr = &remoteAddr // disable '--server' and enable '--remote' instead.
 
 	clientFlags := &flag.Flags{
-		CacheFlagGroup:   flag.NewCacheFlagGroup(),
-		DBFlagGroup:      flag.NewDBFlagGroup(),
-		MisconfFlagGroup: flag.NewMisconfFlagGroup(),
-		RemoteFlagGroup:  remoteFlags,
-		ReportFlagGroup:  flag.NewReportFlagGroup(),
-		ScanFlagGroup:    flag.NewScanFlagGroup(),
+		CacheFlagGroup:         flag.NewCacheFlagGroup(),
+		DBFlagGroup:            flag.NewDBFlagGroup(),
+		MisconfFlagGroup:       flag.NewMisconfFlagGroup(),
+		RemoteFlagGroup:        remoteFlags,
+		ReportFlagGroup:        flag.NewReportFlagGroup(),
+		ScanFlagGroup:          flag.NewScanFlagGroup(),
+		VulnerabilityFlagGroup: flag.NewVulnerabilityFlagGroup(),
 	}
 
 	cmd := &cobra.Command{
@@ -444,6 +483,7 @@ func NewClientCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	}
 	cmd.SetFlagErrorFunc(flagErrorFunc)
 	clientFlags.AddFlags(cmd)
+	cmd.SetUsageTemplate(fmt.Sprintf(usageTemplate, clientFlags.Usages(cmd)))
 
 	return cmd
 }
@@ -459,7 +499,13 @@ func NewServerCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 		Use:     "server [flags]",
 		Aliases: []string{"s"},
 		Short:   "Server mode",
-		Args:    cobra.ExactArgs(0),
+		Example: `  # Run a server
+  $ trivy server
+
+  # Listen on 0.0.0.0:10000
+  $ trivy server --listen 0.0.0.0:10000
+`,
+		Args: cobra.ExactArgs(0),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			if err := serverFlags.Bind(cmd); err != nil {
 				return xerrors.Errorf("flag bind error: %w", err)
@@ -475,6 +521,7 @@ func NewServerCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	}
 	cmd.SetFlagErrorFunc(flagErrorFunc)
 	serverFlags.AddFlags(cmd)
+	cmd.SetUsageTemplate(fmt.Sprintf(usageTemplate, serverFlags.Usages(cmd)))
 
 	return cmd
 }
@@ -528,6 +575,7 @@ func NewConfigCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	}
 	cmd.SetFlagErrorFunc(flagErrorFunc)
 	configFlags.AddFlags(cmd)
+	cmd.SetUsageTemplate(fmt.Sprintf(usageTemplate, configFlags.Usages(cmd)))
 
 	return cmd
 }
@@ -690,12 +738,14 @@ func NewKubernetesCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	scanFlags.SecurityChecks = &securityChecks
 
 	k8sFlags := &flag.Flags{
-		CacheFlagGroup:   flag.NewCacheFlagGroup(),
-		DBFlagGroup:      flag.NewDBFlagGroup(),
-		K8sFlagGroup:     flag.NewK8sFlagGroup(), // kubernetes-specific flags
-		MisconfFlagGroup: flag.NewMisconfFlagGroup(),
-		ReportFlagGroup:  flag.NewReportFlagGroup(),
-		ScanFlagGroup:    scanFlags,
+		CacheFlagGroup:         flag.NewCacheFlagGroup(),
+		DBFlagGroup:            flag.NewDBFlagGroup(),
+		K8sFlagGroup:           flag.NewK8sFlagGroup(), // kubernetes-specific flags
+		MisconfFlagGroup:       flag.NewMisconfFlagGroup(),
+		ReportFlagGroup:        flag.NewReportFlagGroup(),
+		ScanFlagGroup:          scanFlags,
+		SecretFlagGroup:        flag.NewSecretFlagGroup(),
+		VulnerabilityFlagGroup: flag.NewVulnerabilityFlagGroup(),
 	}
 	cmd := &cobra.Command{
 		Use:     "kubernetes [flags] { cluster | all | specific resources like kubectl. eg: pods, pod/NAME }",
@@ -736,6 +786,7 @@ func NewKubernetesCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	}
 	cmd.SetFlagErrorFunc(flagErrorFunc)
 	k8sFlags.AddFlags(cmd)
+	cmd.SetUsageTemplate(fmt.Sprintf(usageTemplate, k8sFlags.Usages(cmd)))
 
 	return cmd
 }
@@ -748,12 +799,13 @@ func NewSBOMCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	scanFlags.SecurityChecks = nil // disable '--security-checks' as it always scans for vulnerabilities
 
 	sbomFlags := &flag.Flags{
-		CacheFlagGroup:  flag.NewCacheFlagGroup(),
-		DBFlagGroup:     flag.NewDBFlagGroup(),
-		RemoteFlagGroup: flag.NewClientFlags(), // for client/server mode
-		ReportFlagGroup: reportFlagGroup,
-		ScanFlagGroup:   flag.NewScanFlagGroup(),
-		SBOMFlagGroup:   flag.NewSBOMFlagGroup(),
+		CacheFlagGroup:         flag.NewCacheFlagGroup(),
+		DBFlagGroup:            flag.NewDBFlagGroup(),
+		RemoteFlagGroup:        flag.NewClientFlags(), // for client/server mode
+		ReportFlagGroup:        reportFlagGroup,
+		ScanFlagGroup:          flag.NewScanFlagGroup(),
+		SBOMFlagGroup:          flag.NewSBOMFlagGroup(),
+		VulnerabilityFlagGroup: flag.NewVulnerabilityFlagGroup(),
 	}
 
 	cmd := &cobra.Command{
@@ -766,7 +818,7 @@ func NewSBOMCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
   $ trivy sbom --format cyclonedx /path/to/report.cdx
 `,
 		PreRunE: func(cmd *cobra.Command, args []string) error {
-			if err := scanFlags.Bind(cmd); err != nil {
+			if err := sbomFlags.Bind(cmd); err != nil {
 				return xerrors.Errorf("flag bind error: %w", err)
 			}
 			return validateArgs(cmd, args)
@@ -790,6 +842,7 @@ func NewSBOMCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	}
 	cmd.SetFlagErrorFunc(flagErrorFunc)
 	sbomFlags.AddFlags(cmd)
+	cmd.SetUsageTemplate(fmt.Sprintf(usageTemplate, sbomFlags.Usages(cmd)))
 
 	return cmd
 }

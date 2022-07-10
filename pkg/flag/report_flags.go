@@ -5,8 +5,6 @@ import (
 	"os"
 	"strings"
 
-	"github.com/samber/lo"
-	"github.com/spf13/cobra"
 	"golang.org/x/exp/slices"
 	"golang.org/x/xerrors"
 
@@ -87,14 +85,6 @@ var (
 		Value:      strings.Join(dbTypes.SeverityNames, ","),
 		Usage:      "severities of security issues to be displayed (comma separated)",
 	}
-
-	// Vulnerabilities
-	IgnoreUnfixedFlag = Flag{
-		Name:       "ignore-unfixed",
-		ConfigName: "vulnerability.ignore-unfixed",
-		Value:      false,
-		Usage:      "display only fixed vulnerabilities",
-	}
 )
 
 // ReportFlagGroup composes common printer flag structs
@@ -105,7 +95,6 @@ type ReportFlagGroup struct {
 	Template       *Flag
 	DependencyTree *Flag
 	ListAllPkgs    *Flag
-	IgnoreUnfixed  *Flag
 	IgnoreFile     *Flag
 	IgnorePolicy   *Flag
 	ExitCode       *Flag
@@ -119,7 +108,6 @@ type ReportOptions struct {
 	Template       string
 	DependencyTree bool
 	ListAllPkgs    bool
-	IgnoreUnfixed  bool
 	IgnoreFile     string
 	ExitCode       int
 	IgnorePolicy   string
@@ -129,38 +117,26 @@ type ReportOptions struct {
 
 func NewReportFlagGroup() *ReportFlagGroup {
 	return &ReportFlagGroup{
-		Format:         lo.ToPtr(FormatFlag),
-		ReportFormat:   lo.ToPtr(ReportFormatFlag),
-		Template:       lo.ToPtr(TemplateFlag),
-		DependencyTree: lo.ToPtr(DependencyTreeFlag),
-		ListAllPkgs:    lo.ToPtr(ListAllPkgsFlag),
-		IgnoreUnfixed:  lo.ToPtr(IgnoreUnfixedFlag),
-		IgnoreFile:     lo.ToPtr(IgnoreFileFlag),
-		IgnorePolicy:   lo.ToPtr(IgnorePolicyFlag),
-		ExitCode:       lo.ToPtr(ExitCodeFlag),
-		Output:         lo.ToPtr(OutputFlag),
-		Severity:       lo.ToPtr(SeverityFlag),
+		Format:         &FormatFlag,
+		ReportFormat:   &ReportFormatFlag,
+		Template:       &TemplateFlag,
+		DependencyTree: &DependencyTreeFlag,
+		ListAllPkgs:    &ListAllPkgsFlag,
+		IgnoreFile:     &IgnoreFileFlag,
+		IgnorePolicy:   &IgnorePolicyFlag,
+		ExitCode:       &ExitCodeFlag,
+		Output:         &OutputFlag,
+		Severity:       &SeverityFlag,
 	}
 }
 
-func (f *ReportFlagGroup) flags() []*Flag {
-	return []*Flag{f.Format, f.ReportFormat, f.Template, f.DependencyTree, f.ListAllPkgs, f.IgnoreUnfixed, f.IgnoreFile, f.IgnorePolicy,
-		f.ExitCode, f.Output, f.Severity}
+func (f *ReportFlagGroup) Name() string {
+	return "Report"
 }
 
-func (f *ReportFlagGroup) AddFlags(cmd *cobra.Command) {
-	for _, flag := range f.flags() {
-		addFlag(cmd, flag)
-	}
-}
-
-func (f *ReportFlagGroup) Bind(cmd *cobra.Command) error {
-	for _, flag := range f.flags() {
-		if err := bind(cmd, flag); err != nil {
-			return err
-		}
-	}
-	return nil
+func (f *ReportFlagGroup) Flags() []*Flag {
+	return []*Flag{f.Format, f.ReportFormat, f.Template, f.DependencyTree, f.ListAllPkgs, f.IgnoreFile,
+		f.IgnorePolicy, f.ExitCode, f.Output, f.Severity}
 }
 
 func (f *ReportFlagGroup) ToOptions(out io.Writer) (ReportOptions, error) {
@@ -211,12 +187,11 @@ func (f *ReportFlagGroup) ToOptions(out io.Writer) (ReportOptions, error) {
 		Template:       template,
 		DependencyTree: dependencyTree,
 		ListAllPkgs:    listAllPkgs,
-		IgnoreUnfixed:  getBool(f.IgnoreUnfixed),
 		IgnoreFile:     getString(f.IgnoreFile),
 		ExitCode:       getInt(f.ExitCode),
 		IgnorePolicy:   getString(f.IgnorePolicy),
 		Output:         out,
-		Severities:     splitSeverity(getString(f.Severity)),
+		Severities:     splitSeverity(getStringSlice(f.Severity)),
 	}, nil
 }
 
@@ -232,13 +207,16 @@ func (f *ReportFlagGroup) forceListAllPkgs(format string, listAllPkgs, dependenc
 	return false
 }
 
-func splitSeverity(severity string) []dbTypes.Severity {
-	if severity == "" {
+func splitSeverity(severity []string) []dbTypes.Severity {
+	switch {
+	case len(severity) == 0:
 		return nil
+	case len(severity) == 1 && strings.Contains(severity[0], ","): // get severities from flag
+		severity = strings.Split(severity[0], ",")
 	}
 
 	var severities []dbTypes.Severity
-	for _, s := range strings.Split(severity, ",") {
+	for _, s := range severity {
 		sev, err := dbTypes.NewSeverity(s)
 		if err != nil {
 			log.Logger.Warnf("unknown severity option: %s", err)

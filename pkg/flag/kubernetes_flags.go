@@ -1,10 +1,5 @@
 package flag
 
-import (
-	"github.com/samber/lo"
-	"github.com/spf13/cobra"
-)
-
 var (
 	ClusterContextFlag = Flag{
 		Name:       "context",
@@ -32,28 +27,17 @@ type K8sOptions struct {
 
 func NewK8sFlagGroup() *K8sFlagGroup {
 	return &K8sFlagGroup{
-		ClusterContext: lo.ToPtr(ClusterContextFlag),
-		Namespace:      lo.ToPtr(K8sNamespaceFlag),
+		ClusterContext: &ClusterContextFlag,
+		Namespace:      &K8sNamespaceFlag,
 	}
 }
 
-func (f *K8sFlagGroup) flags() []*Flag {
+func (f *K8sFlagGroup) Name() string {
+	return "Kubernetes"
+}
+
+func (f *K8sFlagGroup) Flags() []*Flag {
 	return []*Flag{f.ClusterContext, f.Namespace}
-}
-
-func (f *K8sFlagGroup) AddFlags(cmd *cobra.Command) {
-	for _, flag := range f.flags() {
-		addFlag(cmd, flag)
-	}
-}
-
-func (f *K8sFlagGroup) Bind(cmd *cobra.Command) error {
-	for _, flag := range f.flags() {
-		if err := bind(cmd, flag); err != nil {
-			return err
-		}
-	}
-	return nil
 }
 
 func (f *K8sFlagGroup) ToOptions() K8sOptions {

@@ -1,9 +1,5 @@
 package flag
 
-import (
-	"github.com/spf13/cobra"
-)
-
 // e.g. config yaml
 // image:
 //   removed-pkgs: true
@@ -41,23 +37,12 @@ func NewImageFlagGroup() *ImageFlagGroup {
 	}
 }
 
-func (f *ImageFlagGroup) flags() []*Flag {
+func (f *ImageFlagGroup) Name() string {
+	return "Image"
+}
+
+func (f *ImageFlagGroup) Flags() []*Flag {
 	return []*Flag{f.Input, f.ScanRemovedPkgs}
-}
-
-func (f *ImageFlagGroup) AddFlags(cmd *cobra.Command) {
-	for _, flag := range f.flags() {
-		addFlag(cmd, flag)
-	}
-}
-
-func (f *ImageFlagGroup) Bind(cmd *cobra.Command) error {
-	for _, flag := range f.flags() {
-		if err := bind(cmd, flag); err != nil {
-			return err
-		}
-	}
-	return nil
 }
 
 func (f *ImageFlagGroup) ToOptions() ImageOptions {

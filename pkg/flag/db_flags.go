@@ -1,8 +1,6 @@
 package flag
 
 import (
-	"github.com/samber/lo"
-	"github.com/spf13/cobra"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/log"
@@ -46,6 +44,7 @@ var (
 		ConfigName: "db.light",
 		Value:      false,
 		Usage:      "deprecated",
+		Deprecated: true,
 	}
 )
 
@@ -71,32 +70,21 @@ type DBOptions struct {
 // NewDBFlagGroup returns a default DBFlagGroup
 func NewDBFlagGroup() *DBFlagGroup {
 	return &DBFlagGroup{
-		Reset:          lo.ToPtr(ResetFlag),
-		DownloadDBOnly: lo.ToPtr(DownloadDBOnlyFlag),
-		SkipDBUpdate:   lo.ToPtr(SkipDBUpdateFlag),
-		Light:          lo.ToPtr(LightFlag),
-		NoProgress:     lo.ToPtr(NoProgressFlag),
-		DBRepository:   lo.ToPtr(DBRepositoryFlag),
+		Reset:          &ResetFlag,
+		DownloadDBOnly: &DownloadDBOnlyFlag,
+		SkipDBUpdate:   &SkipDBUpdateFlag,
+		Light:          &LightFlag,
+		NoProgress:     &NoProgressFlag,
+		DBRepository:   &DBRepositoryFlag,
 	}
 }
 
-func (f *DBFlagGroup) flags() []*Flag {
+func (f *DBFlagGroup) Name() string {
+	return "DB"
+}
+
+func (f *DBFlagGroup) Flags() []*Flag {
 	return []*Flag{f.Reset, f.DownloadDBOnly, f.SkipDBUpdate, f.NoProgress, f.DBRepository, f.Light}
-}
-
-func (f *DBFlagGroup) AddFlags(cmd *cobra.Command) {
-	for _, flag := range f.flags() {
-		addFlag(cmd, flag)
-	}
-}
-
-func (f *DBFlagGroup) Bind(cmd *cobra.Command) error {
-	for _, flag := range f.flags() {
-		if err := bind(cmd, flag); err != nil {
-			return err
-		}
-	}
-	return nil
 }
 
 func (f *DBFlagGroup) ToOptions() (DBOptions, error) {

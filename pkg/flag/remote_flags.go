@@ -4,8 +4,6 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/spf13/cobra"
-
 	"github.com/aquasecurity/trivy/pkg/log"
 )
 
@@ -87,23 +85,12 @@ func NewServerFlags() *RemoteFlagGroup {
 	}
 }
 
-func (f *RemoteFlagGroup) flags() []*Flag {
+func (f *RemoteFlagGroup) Name() string {
+	return "Client/Server"
+}
+
+func (f *RemoteFlagGroup) Flags() []*Flag {
 	return []*Flag{f.Token, f.TokenHeader, f.ServerAddr, f.CustomHeaders, f.Listen}
-}
-
-func (f *RemoteFlagGroup) Bind(cmd *cobra.Command) error {
-	for _, flag := range f.flags() {
-		if err := bind(cmd, flag); err != nil {
-			return err
-		}
-	}
-	return nil
-}
-
-func (f *RemoteFlagGroup) AddFlags(cmd *cobra.Command) {
-	for _, flag := range f.flags() {
-		addFlag(cmd, flag)
-	}
 }
 
 func (f *RemoteFlagGroup) ToOptions() RemoteOptions {
