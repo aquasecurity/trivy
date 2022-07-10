@@ -218,13 +218,15 @@ func NewImageCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	reportFlagGroup.ReportFormat = nil // TODO: support --format summary
 
 	imageFlags := &flag.Flags{
-		CacheFlagGroup:   flag.NewCacheFlagGroup(),
-		DBFlagGroup:      flag.NewDBFlagGroup(),
-		ImageFlagGroup:   flag.NewImageFlagGroup(), // container image specific
-		MisconfFlagGroup: flag.NewMisconfFlagGroup(),
-		RemoteFlagGroup:  flag.NewClientFlags(), // for client/server mode
-		ReportFlagGroup:  reportFlagGroup,
-		ScanFlagGroup:    flag.NewScanFlagGroup(),
+		CacheFlagGroup:         flag.NewCacheFlagGroup(),
+		DBFlagGroup:            flag.NewDBFlagGroup(),
+		ImageFlagGroup:         flag.NewImageFlagGroup(), // container image specific
+		MisconfFlagGroup:       flag.NewMisconfFlagGroup(),
+		RemoteFlagGroup:        flag.NewClientFlags(), // for client/server mode
+		ReportFlagGroup:        reportFlagGroup,
+		ScanFlagGroup:          flag.NewScanFlagGroup(),
+		SecretFlagGroup:        flag.NewSecretFlagGroup(),
+		VulnerabilityFlagGroup: flag.NewVulnerabilityFlagGroup(),
 	}
 
 	cmd := &cobra.Command{
@@ -288,12 +290,14 @@ func NewFilesystemCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	reportFlagGroup.ReportFormat = nil // TODO: support --format summary
 
 	fsFlags := &flag.Flags{
-		CacheFlagGroup:   flag.NewCacheFlagGroup(),
-		DBFlagGroup:      flag.NewDBFlagGroup(),
-		MisconfFlagGroup: flag.NewMisconfFlagGroup(),
-		RemoteFlagGroup:  flag.NewClientFlags(), // for client/server mode
-		ReportFlagGroup:  reportFlagGroup,
-		ScanFlagGroup:    flag.NewScanFlagGroup(),
+		CacheFlagGroup:         flag.NewCacheFlagGroup(),
+		DBFlagGroup:            flag.NewDBFlagGroup(),
+		MisconfFlagGroup:       flag.NewMisconfFlagGroup(),
+		RemoteFlagGroup:        flag.NewClientFlags(), // for client/server mode
+		ReportFlagGroup:        reportFlagGroup,
+		ScanFlagGroup:          flag.NewScanFlagGroup(),
+		SecretFlagGroup:        flag.NewSecretFlagGroup(),
+		VulnerabilityFlagGroup: flag.NewVulnerabilityFlagGroup(),
 	}
 
 	cmd := &cobra.Command{
@@ -337,11 +341,13 @@ func NewRootfsCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	reportFlagGroup.ReportFormat = nil // TODO: support --format summary
 
 	rootfsFlags := &flag.Flags{
-		CacheFlagGroup:   flag.NewCacheFlagGroup(),
-		DBFlagGroup:      flag.NewDBFlagGroup(),
-		MisconfFlagGroup: flag.NewMisconfFlagGroup(),
-		ReportFlagGroup:  reportFlagGroup,
-		ScanFlagGroup:    flag.NewScanFlagGroup(),
+		CacheFlagGroup:         flag.NewCacheFlagGroup(),
+		DBFlagGroup:            flag.NewDBFlagGroup(),
+		MisconfFlagGroup:       flag.NewMisconfFlagGroup(),
+		ReportFlagGroup:        reportFlagGroup,
+		ScanFlagGroup:          flag.NewScanFlagGroup(),
+		SecretFlagGroup:        flag.NewSecretFlagGroup(),
+		VulnerabilityFlagGroup: flag.NewVulnerabilityFlagGroup(),
 	}
 
 	cmd := &cobra.Command{
@@ -386,12 +392,14 @@ func NewRepositoryCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	reportFlagGroup.ReportFormat = nil // TODO: support --format summary
 
 	repoFlags := &flag.Flags{
-		CacheFlagGroup:   flag.NewCacheFlagGroup(),
-		DBFlagGroup:      flag.NewDBFlagGroup(),
-		MisconfFlagGroup: flag.NewMisconfFlagGroup(),
-		RemoteFlagGroup:  flag.NewClientFlags(), // for client/server mode
-		ReportFlagGroup:  reportFlagGroup,
-		ScanFlagGroup:    flag.NewScanFlagGroup(),
+		CacheFlagGroup:         flag.NewCacheFlagGroup(),
+		DBFlagGroup:            flag.NewDBFlagGroup(),
+		MisconfFlagGroup:       flag.NewMisconfFlagGroup(),
+		RemoteFlagGroup:        flag.NewClientFlags(), // for client/server mode
+		ReportFlagGroup:        reportFlagGroup,
+		ScanFlagGroup:          flag.NewScanFlagGroup(),
+		SecretFlagGroup:        flag.NewSecretFlagGroup(),
+		VulnerabilityFlagGroup: flag.NewVulnerabilityFlagGroup(),
 	}
 
 	cmd := &cobra.Command{
@@ -439,12 +447,13 @@ func NewClientCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	remoteFlags.ServerAddr = &remoteAddr // disable '--server' and enable '--remote' instead.
 
 	clientFlags := &flag.Flags{
-		CacheFlagGroup:   flag.NewCacheFlagGroup(),
-		DBFlagGroup:      flag.NewDBFlagGroup(),
-		MisconfFlagGroup: flag.NewMisconfFlagGroup(),
-		RemoteFlagGroup:  remoteFlags,
-		ReportFlagGroup:  flag.NewReportFlagGroup(),
-		ScanFlagGroup:    flag.NewScanFlagGroup(),
+		CacheFlagGroup:         flag.NewCacheFlagGroup(),
+		DBFlagGroup:            flag.NewDBFlagGroup(),
+		MisconfFlagGroup:       flag.NewMisconfFlagGroup(),
+		RemoteFlagGroup:        remoteFlags,
+		ReportFlagGroup:        flag.NewReportFlagGroup(),
+		ScanFlagGroup:          flag.NewScanFlagGroup(),
+		VulnerabilityFlagGroup: flag.NewVulnerabilityFlagGroup(),
 	}
 
 	cmd := &cobra.Command{
@@ -723,12 +732,14 @@ func NewKubernetesCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	scanFlags.SecurityChecks = &securityChecks
 
 	k8sFlags := &flag.Flags{
-		CacheFlagGroup:   flag.NewCacheFlagGroup(),
-		DBFlagGroup:      flag.NewDBFlagGroup(),
-		K8sFlagGroup:     flag.NewK8sFlagGroup(), // kubernetes-specific flags
-		MisconfFlagGroup: flag.NewMisconfFlagGroup(),
-		ReportFlagGroup:  flag.NewReportFlagGroup(),
-		ScanFlagGroup:    scanFlags,
+		CacheFlagGroup:         flag.NewCacheFlagGroup(),
+		DBFlagGroup:            flag.NewDBFlagGroup(),
+		K8sFlagGroup:           flag.NewK8sFlagGroup(), // kubernetes-specific flags
+		MisconfFlagGroup:       flag.NewMisconfFlagGroup(),
+		ReportFlagGroup:        flag.NewReportFlagGroup(),
+		ScanFlagGroup:          scanFlags,
+		SecretFlagGroup:        flag.NewSecretFlagGroup(),
+		VulnerabilityFlagGroup: flag.NewVulnerabilityFlagGroup(),
 	}
 	cmd := &cobra.Command{
 		Use:     "kubernetes [flags] { cluster | all | specific resources like kubectl. eg: pods, pod/NAME }",
@@ -782,12 +793,14 @@ func NewSBOMCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	scanFlags.SecurityChecks = nil // disable '--security-checks' as it always scans for vulnerabilities
 
 	sbomFlags := &flag.Flags{
-		CacheFlagGroup:  flag.NewCacheFlagGroup(),
-		DBFlagGroup:     flag.NewDBFlagGroup(),
-		RemoteFlagGroup: flag.NewClientFlags(), // for client/server mode
-		ReportFlagGroup: reportFlagGroup,
-		ScanFlagGroup:   flag.NewScanFlagGroup(),
-		SBOMFlagGroup:   flag.NewSBOMFlagGroup(),
+		CacheFlagGroup:         flag.NewCacheFlagGroup(),
+		DBFlagGroup:            flag.NewDBFlagGroup(),
+		RemoteFlagGroup:        flag.NewClientFlags(), // for client/server mode
+		ReportFlagGroup:        reportFlagGroup,
+		ScanFlagGroup:          flag.NewScanFlagGroup(),
+		SBOMFlagGroup:          flag.NewSBOMFlagGroup(),
+		SecretFlagGroup:        flag.NewSecretFlagGroup(),
+		VulnerabilityFlagGroup: flag.NewVulnerabilityFlagGroup(),
 	}
 
 	cmd := &cobra.Command{

@@ -86,14 +86,6 @@ var (
 		Value:      strings.Join(dbTypes.SeverityNames, ","),
 		Usage:      "severities of security issues to be displayed (comma separated)",
 	}
-
-	// Vulnerabilities
-	IgnoreUnfixedFlag = Flag{
-		Name:       "ignore-unfixed",
-		ConfigName: "vulnerability.ignore-unfixed",
-		Value:      false,
-		Usage:      "display only fixed vulnerabilities",
-	}
 )
 
 // ReportFlagGroup composes common printer flag structs
@@ -104,7 +96,6 @@ type ReportFlagGroup struct {
 	Template       *Flag
 	DependencyTree *Flag
 	ListAllPkgs    *Flag
-	IgnoreUnfixed  *Flag
 	IgnoreFile     *Flag
 	IgnorePolicy   *Flag
 	ExitCode       *Flag
@@ -118,7 +109,6 @@ type ReportOptions struct {
 	Template       string
 	DependencyTree bool
 	ListAllPkgs    bool
-	IgnoreUnfixed  bool
 	IgnoreFile     string
 	ExitCode       int
 	IgnorePolicy   string
@@ -133,7 +123,6 @@ func NewReportFlagGroup() *ReportFlagGroup {
 		Template:       lo.ToPtr(TemplateFlag),
 		DependencyTree: lo.ToPtr(DependencyTreeFlag),
 		ListAllPkgs:    lo.ToPtr(ListAllPkgsFlag),
-		IgnoreUnfixed:  lo.ToPtr(IgnoreUnfixedFlag),
 		IgnoreFile:     lo.ToPtr(IgnoreFileFlag),
 		IgnorePolicy:   lo.ToPtr(IgnorePolicyFlag),
 		ExitCode:       lo.ToPtr(ExitCodeFlag),
@@ -147,7 +136,7 @@ func (f *ReportFlagGroup) Name() string {
 }
 
 func (f *ReportFlagGroup) Flags() []*Flag {
-	return []*Flag{f.Format, f.ReportFormat, f.Template, f.DependencyTree, f.ListAllPkgs, f.IgnoreUnfixed, f.IgnoreFile,
+	return []*Flag{f.Format, f.ReportFormat, f.Template, f.DependencyTree, f.ListAllPkgs, f.IgnoreFile,
 		f.IgnorePolicy, f.ExitCode, f.Output, f.Severity}
 }
 
@@ -199,7 +188,6 @@ func (f *ReportFlagGroup) ToOptions(out io.Writer) (ReportOptions, error) {
 		Template:       template,
 		DependencyTree: dependencyTree,
 		ListAllPkgs:    listAllPkgs,
-		IgnoreUnfixed:  getBool(f.IgnoreUnfixed),
 		IgnoreFile:     getString(f.IgnoreFile),
 		ExitCode:       getInt(f.ExitCode),
 		IgnorePolicy:   getString(f.IgnorePolicy),

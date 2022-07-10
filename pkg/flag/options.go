@@ -44,15 +44,17 @@ type FlagGroup interface {
 }
 
 type Flags struct {
-	CacheFlagGroup   *CacheFlagGroup
-	DBFlagGroup      *DBFlagGroup
-	ImageFlagGroup   *ImageFlagGroup
-	K8sFlagGroup     *K8sFlagGroup
-	MisconfFlagGroup *MisconfFlagGroup
-	RemoteFlagGroup  *RemoteFlagGroup
-	ReportFlagGroup  *ReportFlagGroup
-	SBOMFlagGroup    *SBOMFlagGroup
-	ScanFlagGroup    *ScanFlagGroup
+	CacheFlagGroup         *CacheFlagGroup
+	DBFlagGroup            *DBFlagGroup
+	ImageFlagGroup         *ImageFlagGroup
+	K8sFlagGroup           *K8sFlagGroup
+	MisconfFlagGroup       *MisconfFlagGroup
+	RemoteFlagGroup        *RemoteFlagGroup
+	ReportFlagGroup        *ReportFlagGroup
+	SBOMFlagGroup          *SBOMFlagGroup
+	ScanFlagGroup          *ScanFlagGroup
+	SecretFlagGroup        *SecretFlagGroup
+	VulnerabilityFlagGroup *VulnerabilityFlagGroup
 }
 
 // Options holds all the runtime configuration
@@ -67,6 +69,8 @@ type Options struct {
 	ReportOptions
 	SBOMOptions
 	ScanOptions
+	SecretOptions
+	VulnerabilityOptions
 
 	// Trivy's version, not populated via CLI flags
 	AppVersion string
@@ -161,6 +165,13 @@ func getDuration(flag *Flag) time.Duration {
 
 func (f *Flags) groups() []FlagGroup {
 	var groups []FlagGroup
+	// This order affects the usage message, so they are sorted by frequency of use.
+	if f.ScanFlagGroup != nil {
+		groups = append(groups, f.ScanFlagGroup)
+	}
+	if f.ReportFlagGroup != nil {
+		groups = append(groups, f.ReportFlagGroup)
+	}
 	if f.CacheFlagGroup != nil {
 		groups = append(groups, f.CacheFlagGroup)
 	}
@@ -170,23 +181,23 @@ func (f *Flags) groups() []FlagGroup {
 	if f.ImageFlagGroup != nil {
 		groups = append(groups, f.ImageFlagGroup)
 	}
-	if f.K8sFlagGroup != nil {
-		groups = append(groups, f.K8sFlagGroup)
+	if f.SBOMFlagGroup != nil {
+		groups = append(groups, f.SBOMFlagGroup)
+	}
+	if f.VulnerabilityFlagGroup != nil {
+		groups = append(groups, f.VulnerabilityFlagGroup)
 	}
 	if f.MisconfFlagGroup != nil {
 		groups = append(groups, f.MisconfFlagGroup)
 	}
+	if f.SecretFlagGroup != nil {
+		groups = append(groups, f.SecretFlagGroup)
+	}
+	if f.K8sFlagGroup != nil {
+		groups = append(groups, f.K8sFlagGroup)
+	}
 	if f.RemoteFlagGroup != nil {
 		groups = append(groups, f.RemoteFlagGroup)
-	}
-	if f.ReportFlagGroup != nil {
-		groups = append(groups, f.ReportFlagGroup)
-	}
-	if f.SBOMFlagGroup != nil {
-		groups = append(groups, f.SBOMFlagGroup)
-	}
-	if f.ScanFlagGroup != nil {
-		groups = append(groups, f.ScanFlagGroup)
 	}
 	return groups
 }
@@ -293,6 +304,14 @@ func (f *Flags) ToOptions(appVersion string, args []string, globalFlags *GlobalF
 
 	if f.ScanFlagGroup != nil {
 		opts.ScanOptions = f.ScanFlagGroup.ToOptions(args)
+	}
+
+	if f.SecretFlagGroup != nil {
+		opts.SecretOptions = f.SecretFlagGroup.ToOptions()
+	}
+
+	if f.VulnerabilityFlagGroup != nil {
+		opts.VulnerabilityOptions = f.VulnerabilityFlagGroup.ToOptions()
 	}
 
 	return opts, nil

@@ -36,18 +36,6 @@ var (
 		Value:      fmt.Sprintf("%s,%s", types.SecurityCheckVulnerability, types.SecurityCheckSecret),
 		Usage:      "comma-separated list of what security issues to detect (vuln,config,secret)",
 	}
-	VulnTypeFlag = Flag{
-		Name:       "vuln-type",
-		ConfigName: "vulnerability.type",
-		Value:      strings.Join([]string{types.VulnTypeOS, types.VulnTypeLibrary}, ","),
-		Usage:      "comma-separated list of vulnerability types (os,library)",
-	}
-	SecretConfigFlag = Flag{
-		Name:       "secret-config",
-		ConfigName: "secret.config",
-		Value:      "trivy-secret.yaml",
-		Usage:      "specify a path to config file for secret scanning",
-	}
 )
 
 type ScanFlagGroup struct {
@@ -55,9 +43,6 @@ type ScanFlagGroup struct {
 	SkipFiles      *Flag
 	OfflineScan    *Flag
 	SecurityChecks *Flag
-
-	VulnType     *Flag
-	SecretConfig *Flag
 }
 
 type ScanOptions struct {
@@ -66,12 +51,6 @@ type ScanOptions struct {
 	SkipFiles      []string
 	OfflineScan    bool
 	SecurityChecks []string
-
-	// Vulnerabilities
-	VulnType []string
-
-	// Secrets
-	SecretConfigPath string
 }
 
 func NewScanFlagGroup() *ScanFlagGroup {
@@ -80,8 +59,6 @@ func NewScanFlagGroup() *ScanFlagGroup {
 		SkipFiles:      lo.ToPtr(SkipFilesFlag),
 		OfflineScan:    lo.ToPtr(OfflineScanFlag),
 		SecurityChecks: lo.ToPtr(SecurityChecksFlag),
-		VulnType:       lo.ToPtr(VulnTypeFlag),
-		SecretConfig:   lo.ToPtr(SecretConfigFlag),
 	}
 }
 
@@ -90,7 +67,7 @@ func (f *ScanFlagGroup) Name() string {
 }
 
 func (f *ScanFlagGroup) Flags() []*Flag {
-	return []*Flag{f.SkipDirs, f.SkipFiles, f.OfflineScan, f.SecurityChecks, f.VulnType, f.SecretConfig}
+	return []*Flag{f.SkipDirs, f.SkipFiles, f.OfflineScan, f.SecurityChecks}
 }
 
 func (f *ScanFlagGroup) ToOptions(args []string) ScanOptions {
@@ -100,33 +77,12 @@ func (f *ScanFlagGroup) ToOptions(args []string) ScanOptions {
 	}
 
 	return ScanOptions{
-		Target:           target,
-		SkipDirs:         getStringSlice(f.SkipDirs),
-		SkipFiles:        getStringSlice(f.SkipFiles),
-		OfflineScan:      getBool(f.OfflineScan),
-		VulnType:         parseVulnType(getStringSlice(f.VulnType)),
-		SecurityChecks:   parseSecurityCheck(getStringSlice(f.SecurityChecks)),
-		SecretConfigPath: getString(f.SecretConfig),
+		Target:         target,
+		SkipDirs:       getStringSlice(f.SkipDirs),
+		SkipFiles:      getStringSlice(f.SkipFiles),
+		OfflineScan:    getBool(f.OfflineScan),
+		SecurityChecks: parseSecurityCheck(getStringSlice(f.SecurityChecks)),
 	}
-}
-
-func parseVulnType(vulnType []string) []string {
-	switch {
-	case len(vulnType) == 0: // no types
-		return nil
-	case len(vulnType) == 1 && strings.Contains(vulnType[0], ","): // get checks from flag
-		vulnType = strings.Split(vulnType[0], ",")
-	}
-
-	var vulnTypes []string
-	for _, v := range vulnType {
-		if !slices.Contains(types.VulnTypes, v) {
-			log.Logger.Warnf("unknown vulnerability type: %s", v)
-			continue
-		}
-		vulnTypes = append(vulnTypes, v)
-	}
-	return vulnTypes
 }
 
 func parseSecurityCheck(securityCheck []string) []string {
