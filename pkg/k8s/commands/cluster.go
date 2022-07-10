@@ -1,25 +1,26 @@
 package commands
 
 import (
+	"context"
+
 	"github.com/aquasecurity/trivy-kubernetes/pkg/k8s"
 	"github.com/aquasecurity/trivy-kubernetes/pkg/trivyk8s"
-	cmd "github.com/aquasecurity/trivy/pkg/commands/artifact"
+	"github.com/aquasecurity/trivy/pkg/flag"
 	"github.com/aquasecurity/trivy/pkg/log"
 
-	"github.com/urfave/cli/v2"
 	"golang.org/x/xerrors"
 )
 
 // clusterRun runs scan on kubernetes cluster
-func clusterRun(cliCtx *cli.Context, opt cmd.Option, cluster k8s.Cluster) error {
-	if err := validateReportArguments(cliCtx); err != nil {
+func clusterRun(ctx context.Context, opts flag.Options, cluster k8s.Cluster) error {
+	if err := validateReportArguments(opts); err != nil {
 		return err
 	}
 
-	artifacts, err := trivyk8s.New(cluster, log.Logger).ListArtifacts(cliCtx.Context)
+	artifacts, err := trivyk8s.New(cluster, log.Logger).ListArtifacts(ctx)
 	if err != nil {
 		return xerrors.Errorf("get k8s artifacts error: %w", err)
 	}
 
-	return run(cliCtx.Context, opt, cluster.GetCurrentContext(), artifacts)
+	return run(ctx, opts, cluster.GetCurrentContext(), artifacts)
 }

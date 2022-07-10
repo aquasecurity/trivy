@@ -3,7 +3,6 @@
 package integration
 
 import (
-	"io"
 	"os"
 	"path/filepath"
 	"testing"
@@ -11,7 +10,6 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/aquasecurity/trivy/pkg/commands"
 	"github.com/aquasecurity/trivy/pkg/module"
 	"github.com/aquasecurity/trivy/pkg/utils"
 )
@@ -48,13 +46,9 @@ func TestModule(t *testing.T) {
 		filepath.Join(moduleDir, "spring4shell.wasm"))
 	require.NoError(t, err)
 
-	// Setup CLI App
-	app := commands.NewApp("dev")
-	app.Writer = io.Discard
-
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			osArgs := []string{"trivy", "--cache-dir", cacheDir, "image", "--ignore-unfixed", "--format", "json",
+			osArgs := []string{"--cache-dir", cacheDir, "image", "--ignore-unfixed", "--format", "json",
 				"--skip-update", "--offline-scan", "--input", tt.input}
 
 			// Set up the output file
@@ -66,7 +60,8 @@ func TestModule(t *testing.T) {
 			osArgs = append(osArgs, []string{"--output", outputFile}...)
 
 			// Run Trivy
-			assert.Nil(t, app.Run(osArgs))
+			err = execute(osArgs)
+			assert.NoError(t, err)
 
 			// Compare want and got
 			compareReports(t, tt.golden, outputFile)

@@ -94,6 +94,7 @@ const (
 	ArtifactContainerImage   ArtifactType = "container_image"
 	ArtifactFilesystem       ArtifactType = "filesystem"
 	ArtifactRemoteRepository ArtifactType = "repository"
+	ArtifactCycloneDX        ArtifactType = "cyclonedx"
 )
 
 // ArtifactReference represents a reference of container image, local filesystem and repository
@@ -103,6 +104,9 @@ type ArtifactReference struct {
 	ID            string
 	BlobIDs       []string
 	ImageMetadata ImageMetadata
+
+	// SBOM
+	CycloneDX *CycloneDX
 }
 
 type ImageMetadata struct {

@@ -90,7 +90,7 @@ func newURL(rawurl string) (*url.URL, error) {
 		return nil, xerrors.Errorf("url parse error: %w", err)
 	}
 	// "https://" can be omitted
-	// e.g. github.com/aquasecurity/fanal
+	// e.g. github.com/aquasecurity/trivy
 	if u.Scheme == "" {
 		u.Scheme = "https"
 	}

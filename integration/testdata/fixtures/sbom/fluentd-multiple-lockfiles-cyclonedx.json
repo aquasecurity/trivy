@@ -1,0 +1,169 @@
+{
+  "bomFormat": "CycloneDX",
+  "specVersion": "1.4",
+  "serialNumber": "urn:uuid:31ee662c-480e-4f63-9765-23ea8afc754d",
+  "version": 1,
+  "metadata": {
+    "timestamp": "2022-06-14T15:10:14+00:00",
+    "tools": [
+      {
+        "vendor": "aquasecurity",
+        "name": "trivy",
+        "version": "dev"
+      }
+    ],
+    "component": {
+      "bom-ref": "95de56ee-980c-413d-8f68-6c674dc3e9d1",
+      "type": "container",
+      "name": "integration/testdata/fixtures/images/fluentd-multiple-lockfiles.tar.gz",
+      "properties": [
+        {
+          "name": "aquasecurity:trivy:SchemaVersion",
+          "value": "2"
+        },
+        {
+          "name": "aquasecurity:trivy:ImageID",
+          "value": "sha256:5a992077baba51b97f27591a10d54d2f2723dc9c81a3fe419e261023f2554933"
+        },
+        {
+          "name": "aquasecurity:trivy:DiffID",
+          "value": "sha256:831c5620387fb9efec59fc82a42b948546c6be601e3ab34a87108ecf852aa15f"
+        },
+        {
+          "name": "aquasecurity:trivy:DiffID",
+          "value": "sha256:02874b2b269dea8dde0f7edb4c9906904dfe38a09de1a214f20c650cfb15c60e"
+        },
+        {
+          "name": "aquasecurity:trivy:DiffID",
+          "value": "sha256:3752e1f6fd759c795c13aff2c93c081529366e27635ba6621e849b0f9cfc77f0"
+        },
+        {
+          "name": "aquasecurity:trivy:DiffID",
+          "value": "sha256:75e43d55939745950bc3f8fad56c5834617c4339f0f54755e69a0dd5372624e9"
+        },
+        {
+          "name": "aquasecurity:trivy:DiffID",
+          "value": "sha256:788c00e2cfc8f2a018ae4344ccf0b2c226ebd756d7effd1ce50eea1a4252cd89"
+        },
+        {
+          "name": "aquasecurity:trivy:DiffID",
+          "value": "sha256:25165eb51d15842f870f97873e0a58409d5e860e6108e3dd829bd10e484c0065"
+        }
+      ]
+    }
+  },
+  "components": [
+    {
+      "bom-ref": "pkg:deb/debian/bash@5.0-4?distro=debian-10.2",
+      "type": "library",
+      "name": "bash",
+      "version": "5.0-4",
+      "purl": "pkg:deb/debian/bash@5.0-4?distro=debian-10.2",
+      "properties": [
+        {
+          "name": "aquasecurity:trivy:SrcName",
+          "value": "bash"
+        },
+        {
+          "name": "aquasecurity:trivy:SrcVersion",
+          "value": "5.0-4"
+        },
+        {
+          "name": "aquasecurity:trivy:LayerDigest",
+          "value": "sha256:000eee12ec04cc914bf96e8f5dee7767510c2aca3816af6078bd9fbe3150920c"
+        },
+        {
+          "name": "aquasecurity:trivy:LayerDiffID",
+          "value": "sha256:831c5620387fb9efec59fc82a42b948546c6be601e3ab34a87108ecf852aa15f"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:deb/debian/libidn2-0@2.0.5-1?distro=debian-10.2",
+      "type": "library",
+      "name": "libidn2-0",
+      "version": "2.0.5-1",
+      "purl": "pkg:deb/debian/libidn2-0@2.0.5-1?distro=debian-10.2",
+      "properties": [
+        {
+          "name": "aquasecurity:trivy:SrcName",
+          "value": "libidn2"
+        },
+        {
+          "name": "aquasecurity:trivy:SrcVersion",
+          "value": "2.0.5-1"
+        },
+        {
+          "name": "aquasecurity:trivy:LayerDigest",
+          "value": "sha256:000eee12ec04cc914bf96e8f5dee7767510c2aca3816af6078bd9fbe3150920c"
+        },
+        {
+          "name": "aquasecurity:trivy:LayerDiffID",
+          "value": "sha256:831c5620387fb9efec59fc82a42b948546c6be601e3ab34a87108ecf852aa15f"
+        }
+      ]
+    },
+    {
+      "bom-ref": "353f2470-9c8b-4647-9d0d-96d893838dc8",
+      "type": "operating-system",
+      "name": "debian",
+      "version": "10.2",
+      "properties": [
+        {
+          "name": "aquasecurity:trivy:Type",
+          "value": "debian"
+        },
+        {
+          "name": "aquasecurity:trivy:Class",
+          "value": "os-pkgs"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:gem/activesupport@6.0.2.1?file_path=var%2Flib%2Fgems%2F2.5.0%2Fspecifications%2Factivesupport-6.0.2.1.gemspec",
+      "type": "library",
+      "name": "activesupport",
+      "version": "6.0.2.1",
+      "licenses": [
+        {
+          "expression": "MIT"
+        }
+      ],
+      "purl": "pkg:gem/activesupport@6.0.2.1",
+      "properties": [
+        {
+          "name": "aquasecurity:trivy:FilePath",
+          "value": "var/lib/gems/2.5.0/specifications/activesupport-6.0.2.1.gemspec"
+        },
+        {
+          "name": "aquasecurity:trivy:LayerDigest",
+          "value": "sha256:a8877cad19f14a7044524a145ce33170085441a7922458017db1631dcd5f7602"
+        },
+        {
+          "name": "aquasecurity:trivy:LayerDiffID",
+          "value": "sha256:75e43d55939745950bc3f8fad56c5834617c4339f0f54755e69a0dd5372624e9"
+        },
+        {
+          "name": "aquasecurity:trivy:Type",
+          "value": "gemspec"
+        }
+      ]
+    }
+  ],
+  "dependencies": [
+    {
+      "ref": "353f2470-9c8b-4647-9d0d-96d893838dc8",
+      "dependsOn": [
+        "pkg:deb/debian/bash@5.0-4?distro=debian-10.2",
+        "pkg:deb/debian/libidn2-0@2.0.5-1?distro=debian-10.2"
+      ]
+    },
+    {
+      "ref": "95de56ee-980c-413d-8f68-6c674dc3e9d1",
+      "dependsOn": [
+        "353f2470-9c8b-4647-9d0d-96d893838dc8",
+        "pkg:gem/activesupport@6.0.2.1?file_path=var%2Flib%2Fgems%2F2.5.0%2Fspecifications%2Factivesupport-6.0.2.1.gemspec"
+      ]
+    }
+  ]
+}

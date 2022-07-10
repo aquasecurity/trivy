@@ -1,0 +1,140 @@
+{
+  "bomFormat": "CycloneDX",
+  "specVersion": "1.4",
+  "serialNumber": "urn:uuid:1455c02d-64ca-453e-a5df-ddfb70a7c804",
+  "version": 1,
+  "metadata": {
+    "timestamp": "2022-06-14T15:08:48+00:00",
+    "tools": [
+      {
+        "vendor": "aquasecurity",
+        "name": "trivy",
+        "version": "dev"
+      }
+    ],
+    "component": {
+      "bom-ref": "d0d41e30-9650-489d-948d-425ff2ed63d2",
+      "type": "container",
+      "name": "integration/testdata/fixtures/images/centos-7.tar.gz",
+      "properties": [
+        {
+          "name": "aquasecurity:trivy:SchemaVersion",
+          "value": "2"
+        },
+        {
+          "name": "aquasecurity:trivy:ImageID",
+          "value": "sha256:f1cb7c7d58b73eac859c395882eec49d50651244e342cd6c68a5c7809785f427"
+        },
+        {
+          "name": "aquasecurity:trivy:DiffID",
+          "value": "sha256:89169d87dbe2b72ba42bfbb3579c957322baca28e03a1e558076542a1c1b2b4a"
+        }
+      ]
+    }
+  },
+  "components": [
+    {
+      "bom-ref": "pkg:rpm/centos/bash@4.2.46-31.el7?arch=x86_64&distro=centos-7.6.1810",
+      "type": "library",
+      "name": "bash",
+      "version": "4.2.46-31.el7",
+      "licenses": [
+        {
+          "expression": "GPLv3+"
+        }
+      ],
+      "purl": "pkg:rpm/centos/bash@4.2.46-31.el7?arch=x86_64&distro=centos-7.6.1810",
+      "properties": [
+        {
+          "name": "aquasecurity:trivy:SrcName",
+          "value": "bash"
+        },
+        {
+          "name": "aquasecurity:trivy:SrcVersion",
+          "value": "4.2.46"
+        },
+        {
+          "name": "aquasecurity:trivy:SrcRelease",
+          "value": "31.el7"
+        },
+        {
+          "name": "aquasecurity:trivy:LayerDigest",
+          "value": "sha256:ac9208207adaac3a48e54a4dc6b49c69e78c3072d2b3add7efdabf814db2133b"
+        },
+        {
+          "name": "aquasecurity:trivy:LayerDiffID",
+          "value": "sha256:89169d87dbe2b72ba42bfbb3579c957322baca28e03a1e558076542a1c1b2b4a"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:rpm/centos/openssl-libs@1:1.0.2k-16.el7?arch=x86_64&distro=centos-7.6.1810",
+      "type": "library",
+      "name": "openssl-libs",
+      "version": "1:1.0.2k-16.el7",
+      "licenses": [
+        {
+          "expression": "OpenSSL"
+        }
+      ],
+      "purl": "pkg:rpm/centos/openssl-libs@1:1.0.2k-16.el7?arch=x86_64&distro=centos-7.6.1810",
+      "properties": [
+        {
+          "name": "aquasecurity:trivy:SrcName",
+          "value": "openssl"
+        },
+        {
+          "name": "aquasecurity:trivy:SrcVersion",
+          "value": "1.0.2k"
+        },
+        {
+          "name": "aquasecurity:trivy:SrcRelease",
+          "value": "16.el7"
+        },
+        {
+          "name": "aquasecurity:trivy:SrcEpoch",
+          "value": "1"
+        },
+        {
+          "name": "aquasecurity:trivy:LayerDigest",
+          "value": "sha256:ac9208207adaac3a48e54a4dc6b49c69e78c3072d2b3add7efdabf814db2133b"
+        },
+        {
+          "name": "aquasecurity:trivy:LayerDiffID",
+          "value": "sha256:89169d87dbe2b72ba42bfbb3579c957322baca28e03a1e558076542a1c1b2b4a"
+        }
+      ]
+    },
+    {
+      "bom-ref": "0175f732-df9d-4bb8-9f56-870898e3ff89",
+      "type": "operating-system",
+      "name": "centos",
+      "version": "7.6.1810",
+      "properties": [
+        {
+          "name": "aquasecurity:trivy:Type",
+          "value": "centos"
+        },
+        {
+          "name": "aquasecurity:trivy:Class",
+          "value": "os-pkgs"
+        }
+      ]
+    }
+  ],
+  "dependencies": [
+    {
+      "ref": "0175f732-df9d-4bb8-9f56-870898e3ff89",
+      "dependsOn": [
+        "pkg:rpm/centos/bash@4.2.46-31.el7?arch=x86_64&distro=centos-7.6.1810",
+        "pkg:rpm/centos/openssl-libs@1:1.0.2k-16.el7?arch=x86_64&distro=centos-7.6.1810"
+      ]
+    },
+    {
+      "ref": "d0d41e30-9650-489d-948d-425ff2ed63d2",
+      "dependsOn": [
+        "0175f732-df9d-4bb8-9f56-870898e3ff89"
+      ]
+    }
+  ]
+}

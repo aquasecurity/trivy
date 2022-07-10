@@ -6,12 +6,15 @@ import (
 	"os"
 	"strings"
 
+	"github.com/samber/lo"
+
+	"github.com/aquasecurity/trivy/pkg/flag"
+
 	"github.com/go-redis/redis/v8"
 	"github.com/google/wire"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy-db/pkg/metadata"
-	"github.com/aquasecurity/trivy/pkg/commands/option"
 	"github.com/aquasecurity/trivy/pkg/db"
 	"github.com/aquasecurity/trivy/pkg/fanal/cache"
 	"github.com/aquasecurity/trivy/pkg/log"
@@ -31,7 +34,7 @@ type Cache struct {
 }
 
 // NewCache is the factory method for Cache
-func NewCache(c option.CacheOption) (Cache, error) {
+func NewCache(c flag.CacheOptions) (Cache, error) {
 	if strings.HasPrefix(c.CacheBackend, "redis://") {
 		log.Logger.Infof("Redis cache: %s", c.CacheBackendMasked())
 		options, err := redis.ParseURL(c.CacheBackend)
@@ -39,7 +42,7 @@ func NewCache(c option.CacheOption) (Cache, error) {
 			return Cache{}, err
 		}
 
-		if (option.RedisOption{}) != c.RedisOption {
+		if !lo.IsEmpty(c.RedisOptions) {
 			caCert, cert, err := utils.GetTLSConfig(c.RedisCACert, c.RedisCert, c.RedisKey)
 			if err != nil {
 				return Cache{}, err

@@ -1,33 +1,48 @@
 package commands
 
 import (
+	"context"
 	"strings"
 
-	"github.com/urfave/cli/v2"
+	"github.com/aquasecurity/trivy/pkg/flag"
+
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy-kubernetes/pkg/artifacts"
 	"github.com/aquasecurity/trivy-kubernetes/pkg/k8s"
 	"github.com/aquasecurity/trivy-kubernetes/pkg/trivyk8s"
-	cmd "github.com/aquasecurity/trivy/pkg/commands/artifact"
 	"github.com/aquasecurity/trivy/pkg/log"
 )
 
 // resourceRun runs scan on kubernetes cluster
-func resourceRun(cliCtx *cli.Context, opt cmd.Option, cluster k8s.Cluster) error {
-	kind, name, err := extractKindAndName(cliCtx.Args().Slice())
+func resourceRun(ctx context.Context, args []string, opts flag.Options, cluster k8s.Cluster) error {
+	kind, name, err := extractKindAndName(args)
 	if err != nil {
 		return err
 	}
 
-	trivyk8s := trivyk8s.New(cluster, log.Logger).Namespace(getNamespace(opt, cluster.GetCurrentNamespace()))
+	trivyk8s := trivyk8s.New(cluster, log.Logger).Namespace(getNamespace(opts, cluster.GetCurrentNamespace()))
 
-	artifact, err := trivyk8s.GetArtifact(cliCtx.Context, kind, name)
+	if len(name) == 0 { // pods or configmaps etc
+		if err = validateReportArguments(opts); err != nil {
+			return err
+		}
+
+		targets, err := trivyk8s.Resources(kind).ListArtifacts(ctx)
+		if err != nil {
+			return err
+		}
+
+		return run(ctx, opts, cluster.GetCurrentContext(), targets)
+	}
+
+	// pod/NAME or pod NAME etc
+	artifact, err := trivyk8s.GetArtifact(ctx, kind, name)
 	if err != nil {
 		return err
 	}
 
-	return run(cliCtx.Context, opt, cluster.GetCurrentContext(), []*artifacts.Artifact{artifact})
+	return run(ctx, opts, cluster.GetCurrentContext(), []*artifacts.Artifact{artifact})
 }
 
 func extractKindAndName(args []string) (string, string, error) {
@@ -35,7 +50,7 @@ func extractKindAndName(args []string) (string, string, error) {
 	case 1:
 		s := strings.Split(args[0], "/")
 		if len(s) != 2 {
-			return "", "", xerrors.Errorf("can't parse arguments %v. Please run `trivy k8s` for usage.", args)
+			return args[0], "", nil
 		}
 
 		return s[0], s[1], nil

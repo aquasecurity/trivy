@@ -28,6 +28,10 @@ const (
 	FormatGitHub    = "github"
 )
 
+var (
+	SupportedSBOMFormats = []string{FormatCycloneDX, FormatSPDX, FormatSPDXJSON, FormatGitHub}
+)
+
 type Option struct {
 	AppVersion string
 

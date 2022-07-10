@@ -5,7 +5,8 @@
   "Metadata": {
     "OS": {
       "Family": "debian",
-      "Name": "9.9"
+      "Name": "9.9",
+      "Eosl": true
     },
     "ImageID": "sha256:f26939cc87ef44a6fc554eedd0a976ab30b5bc2769d65d2e986b6c5f1fd4053d",
     "DiffIDs": [

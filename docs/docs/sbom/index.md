@@ -1,6 +1,7 @@
 # SBOM
 
-Trivy currently supports the following SBOM formats.
+## Reporting
+Trivy can generate the following SBOM formats.
 
 - [CycloneDX][cyclonedx]
 - [SPDX][spdx]
@@ -174,6 +175,38 @@ $ trivy fs --format cyclonedx --output result.json /app/myproject
 ```
 
 </details>
+
+## Scanning
+Trivy also can take the following SBOM formats as an input and scan for vulnerabilities.
+
+- CycloneDX
+
+To scan SBOM, you can use the `sbom` subcommand and pass the path to the SBOM.
+
+```bash
+$ trivy sbom /path/to/cyclonedx.json
+
+cyclonedx.json (alpine 3.7.1)
+=========================
+Total: 3 (CRITICAL: 3)
+
+┌─────────────┬────────────────┬──────────┬───────────────────┬───────────────┬──────────────────────────────────────────────────────────────┐
+│   Library   │ Vulnerability  │ Severity │ Installed Version │ Fixed Version │                            Title                             │
+├─────────────┼────────────────┼──────────┼───────────────────┼───────────────┼──────────────────────────────────────────────────────────────┤
+│ curl        │ CVE-2018-14618 │ CRITICAL │ 7.61.0-r0         │ 7.61.1-r0     │ curl: NTLM password overflow via integer overflow            │
+│             │                │          │                   │               │ https://avd.aquasec.com/nvd/cve-2018-14618                   │
+├─────────────┼────────────────┼──────────┼───────────────────┼───────────────┼──────────────────────────────────────────────────────────────┤
+│ libbz2      │ CVE-2019-12900 │ CRITICAL │ 1.0.6-r6          │ 1.0.6-r7      │ bzip2: out-of-bounds write in function BZ2_decompress        │
+│             │                │          │                   │               │ https://avd.aquasec.com/nvd/cve-2019-12900                   │
+├─────────────┼────────────────┼──────────┼───────────────────┼───────────────┼──────────────────────────────────────────────────────────────┤
+│ sqlite-libs │ CVE-2019-8457  │ CRITICAL │ 3.21.0-r1         │ 3.25.3-r1     │ sqlite: heap out-of-bound read in function rtreenode()       │
+│             │                │          │                   │               │ https://avd.aquasec.com/nvd/cve-2019-8457                    │
+└─────────────┴────────────────┴──────────┴───────────────────┴───────────────┴──────────────────────────────────────────────────────────────┘
+```
+
+
+!!! note
+    CycloneDX XML and SPDX are not supported at the moment.
 
 [cyclonedx]: cyclonedx.md
 [spdx]: spdx.md

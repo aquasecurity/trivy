@@ -3,40 +3,26 @@
 
 package cache
 
-import (
-	context "context"
-	fmt "fmt"
+import context "context"
+import fmt "fmt"
+import http "net/http"
+import ioutil "io/ioutil"
+import json "encoding/json"
+import strconv "strconv"
+import strings "strings"
 
-	http "net/http"
+import protojson "google.golang.org/protobuf/encoding/protojson"
+import proto "google.golang.org/protobuf/proto"
+import twirp "github.com/twitchtv/twirp"
+import ctxsetters "github.com/twitchtv/twirp/ctxsetters"
 
-	ioutil "io/ioutil"
+import google_protobuf2 "google.golang.org/protobuf/types/known/emptypb"
 
-	json "encoding/json"
-
-	strconv "strconv"
-
-	strings "strings"
-
-	protojson "google.golang.org/protobuf/encoding/protojson"
-
-	proto "google.golang.org/protobuf/proto"
-
-	twirp "github.com/twitchtv/twirp"
-
-	ctxsetters "github.com/twitchtv/twirp/ctxsetters"
-
-	google_protobuf2 "google.golang.org/protobuf/types/known/emptypb"
-
-	bytes "bytes"
-
-	errors "errors"
-
-	io "io"
-
-	path "path"
-
-	url "net/url"
-)
+import bytes "bytes"
+import errors "errors"
+import io "io"
+import path "path"
+import url "net/url"
 
 // Version compatibility assertion.
 // If the constant is not defined in the package, that likely means
