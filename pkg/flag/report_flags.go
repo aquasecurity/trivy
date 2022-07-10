@@ -6,7 +6,6 @@ import (
 	"strings"
 
 	"github.com/samber/lo"
-	"github.com/spf13/cobra"
 	"golang.org/x/exp/slices"
 	"golang.org/x/xerrors"
 
@@ -143,24 +142,13 @@ func NewReportFlagGroup() *ReportFlagGroup {
 	}
 }
 
-func (f *ReportFlagGroup) flags() []*Flag {
-	return []*Flag{f.Format, f.ReportFormat, f.Template, f.DependencyTree, f.ListAllPkgs, f.IgnoreUnfixed, f.IgnoreFile, f.IgnorePolicy,
-		f.ExitCode, f.Output, f.Severity}
+func (f *ReportFlagGroup) Name() string {
+	return "Report"
 }
 
-func (f *ReportFlagGroup) AddFlags(cmd *cobra.Command) {
-	for _, flag := range f.flags() {
-		addFlag(cmd, flag)
-	}
-}
-
-func (f *ReportFlagGroup) Bind(cmd *cobra.Command) error {
-	for _, flag := range f.flags() {
-		if err := bind(cmd, flag); err != nil {
-			return err
-		}
-	}
-	return nil
+func (f *ReportFlagGroup) Flags() []*Flag {
+	return []*Flag{f.Format, f.ReportFormat, f.Template, f.DependencyTree, f.ListAllPkgs, f.IgnoreUnfixed, f.IgnoreFile,
+		f.IgnorePolicy, f.ExitCode, f.Output, f.Severity}
 }
 
 func (f *ReportFlagGroup) ToOptions(out io.Writer) (ReportOptions, error) {

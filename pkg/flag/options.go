@@ -1,6 +1,7 @@
 package flag
 
 import (
+	"fmt"
 	"io"
 	"strings"
 	"time"
@@ -32,11 +33,14 @@ type Flag struct {
 
 	// Persistent represents if the flag is persistent
 	Persistent bool
+
+	// Deprecated represents if the flag is deprecated
+	Deprecated bool
 }
 
 type FlagGroup interface {
-	AddFlags(cmd *cobra.Command)
-	Bind(cmd *cobra.Command) error
+	Name() string
+	Flags() []*Flag
 }
 
 type Flags struct {
@@ -75,37 +79,28 @@ func addFlag(cmd *cobra.Command, flag *Flag) {
 	if flag == nil || flag.Name == "" {
 		return
 	}
+	var flags *pflag.FlagSet
+	if flag.Persistent {
+		flags = cmd.PersistentFlags()
+	} else {
+		flags = cmd.Flags()
+	}
+
 	switch v := flag.Value.(type) {
 	case int:
-		if flag.Persistent {
-			cmd.PersistentFlags().IntP(flag.Name, flag.Shorthand, v, flag.Usage)
-		} else {
-			cmd.Flags().IntP(flag.Name, flag.Shorthand, v, flag.Usage)
-		}
+		flags.IntP(flag.Name, flag.Shorthand, v, flag.Usage)
 	case string:
-		if flag.Persistent {
-			cmd.PersistentFlags().StringP(flag.Name, flag.Shorthand, v, flag.Usage)
-		} else {
-			cmd.Flags().StringP(flag.Name, flag.Shorthand, v, flag.Usage)
-		}
+		flags.StringP(flag.Name, flag.Shorthand, v, flag.Usage)
 	case []string:
-		if flag.Persistent {
-			cmd.PersistentFlags().StringSliceP(flag.Name, flag.Shorthand, v, flag.Usage)
-		} else {
-			cmd.Flags().StringSliceP(flag.Name, flag.Shorthand, v, flag.Usage)
-		}
+		flags.StringSliceP(flag.Name, flag.Shorthand, v, flag.Usage)
 	case bool:
-		if flag.Persistent {
-			cmd.PersistentFlags().BoolP(flag.Name, flag.Shorthand, v, flag.Usage)
-		} else {
-			cmd.Flags().BoolP(flag.Name, flag.Shorthand, v, flag.Usage)
-		}
+		flags.BoolP(flag.Name, flag.Shorthand, v, flag.Usage)
 	case time.Duration:
-		if flag.Persistent {
-			cmd.PersistentFlags().DurationP(flag.Name, flag.Shorthand, v, flag.Usage)
-		} else {
-			cmd.PersistentFlags().DurationP(flag.Name, flag.Shorthand, v, flag.Usage)
-		}
+		flags.DurationP(flag.Name, flag.Shorthand, v, flag.Usage)
+	}
+
+	if flag.Deprecated {
+		flags.MarkHidden(flag.Name) // nolint: gosec
 	}
 }
 
@@ -198,13 +193,34 @@ func (f *Flags) groups() []FlagGroup {
 
 func (f *Flags) AddFlags(cmd *cobra.Command) {
 	for _, group := range f.groups() {
-		if group == nil {
-			continue
+		for _, flag := range group.Flags() {
+			addFlag(cmd, flag)
 		}
-		group.AddFlags(cmd)
 	}
 
 	cmd.Flags().SetNormalizeFunc(flagNameNormalize)
+}
+
+func (f *Flags) Usages(cmd *cobra.Command) string {
+	var usages string
+	for _, group := range f.groups() {
+
+		flags := pflag.NewFlagSet(cmd.Name(), pflag.ContinueOnError)
+		lflags := cmd.LocalFlags()
+		for _, flag := range group.Flags() {
+			if flag == nil {
+				continue
+			}
+			flags.AddFlag(lflags.Lookup(flag.Name))
+		}
+		if !lflags.HasAvailableFlags() {
+			continue
+		}
+
+		usages += fmt.Sprintf("%s Flags\n", group.Name())
+		usages += flags.FlagUsages() + "\n"
+	}
+	return strings.TrimSpace(usages)
 }
 
 func (f *Flags) Bind(cmd *cobra.Command) error {
@@ -212,8 +228,10 @@ func (f *Flags) Bind(cmd *cobra.Command) error {
 		if group == nil {
 			continue
 		}
-		if err := group.Bind(cmd); err != nil {
-			return xerrors.Errorf("flag groups: %w", err)
+		for _, flag := range group.Flags() {
+			if err := bind(cmd, flag); err != nil {
+				return xerrors.Errorf("flag groups: %w", err)
+			}
 		}
 	}
 	return nil

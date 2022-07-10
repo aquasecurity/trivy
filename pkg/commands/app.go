@@ -30,6 +30,32 @@ type VersionInfo struct {
 	VulnerabilityDB *metadata.Metadata `json:",omitempty"`
 }
 
+const (
+	usageTemplate = `Usage:{{if .Runnable}}
+  {{.UseLine}}{{end}}{{if .HasAvailableSubCommands}}
+  {{.CommandPath}} [command]{{end}}{{if gt (len .Aliases) 0}}
+
+Aliases:
+  {{.NameAndAliases}}{{end}}{{if .HasExample}}
+
+Examples:
+{{.Example}}{{end}}{{if .HasAvailableSubCommands}}
+
+Available Commands:{{range .Commands}}{{if (or .IsAvailableCommand (eq .Name "help"))}}
+  {{rpad .Name .NamePadding }} {{.Short}}{{end}}{{end}}{{end}}{{if .HasAvailableLocalFlags}}
+
+%s
+
+Global Flags:
+{{.InheritedFlags.FlagUsages | trimTrailingWhitespaces}}{{end}}{{if .HasHelpSubCommands}}
+
+Additional help topics:{{range .Commands}}{{if .IsAdditionalHelpTopicCommand}}
+  {{rpad .CommandPath .CommandPathPadding}} {{.Short}}{{end}}{{end}}{{end}}{{if .HasAvailableSubCommands}}
+
+Use "{{.CommandPath}} [command] --help" for more information about a command.{{end}}
+`
+)
+
 var (
 	outputWriter io.Writer = os.Stdout
 )
@@ -250,8 +276,9 @@ func NewImageCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 		SilenceUsage:  true,
 	}
 
-	cmd.SetFlagErrorFunc(flagErrorFunc)
 	imageFlags.AddFlags(cmd)
+	cmd.SetFlagErrorFunc(flagErrorFunc)
+	cmd.SetUsageTemplate(fmt.Sprintf(usageTemplate, imageFlags.Usages(cmd)))
 
 	return cmd
 }
@@ -300,6 +327,7 @@ func NewFilesystemCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 
 	cmd.SetFlagErrorFunc(flagErrorFunc)
 	fsFlags.AddFlags(cmd)
+	cmd.SetUsageTemplate(fmt.Sprintf(usageTemplate, fsFlags.Usages(cmd)))
 
 	return cmd
 }
@@ -348,6 +376,7 @@ func NewRootfsCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	}
 	cmd.SetFlagErrorFunc(flagErrorFunc)
 	rootfsFlags.AddFlags(cmd)
+	cmd.SetUsageTemplate(fmt.Sprintf(usageTemplate, rootfsFlags.Usages(cmd)))
 
 	return cmd
 }
@@ -392,6 +421,7 @@ func NewRepositoryCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	}
 	cmd.SetFlagErrorFunc(flagErrorFunc)
 	repoFlags.AddFlags(cmd)
+	cmd.SetUsageTemplate(fmt.Sprintf(usageTemplate, repoFlags.Usages(cmd)))
 
 	return cmd
 }
@@ -444,6 +474,7 @@ func NewClientCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	}
 	cmd.SetFlagErrorFunc(flagErrorFunc)
 	clientFlags.AddFlags(cmd)
+	cmd.SetUsageTemplate(fmt.Sprintf(usageTemplate, clientFlags.Usages(cmd)))
 
 	return cmd
 }
@@ -475,6 +506,7 @@ func NewServerCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	}
 	cmd.SetFlagErrorFunc(flagErrorFunc)
 	serverFlags.AddFlags(cmd)
+	cmd.SetUsageTemplate(fmt.Sprintf(usageTemplate, serverFlags.Usages(cmd)))
 
 	return cmd
 }
@@ -528,6 +560,7 @@ func NewConfigCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	}
 	cmd.SetFlagErrorFunc(flagErrorFunc)
 	configFlags.AddFlags(cmd)
+	cmd.SetUsageTemplate(fmt.Sprintf(usageTemplate, configFlags.Usages(cmd)))
 
 	return cmd
 }
@@ -736,6 +769,7 @@ func NewKubernetesCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	}
 	cmd.SetFlagErrorFunc(flagErrorFunc)
 	k8sFlags.AddFlags(cmd)
+	cmd.SetUsageTemplate(fmt.Sprintf(usageTemplate, k8sFlags.Usages(cmd)))
 
 	return cmd
 }
@@ -766,7 +800,7 @@ func NewSBOMCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
   $ trivy sbom --format cyclonedx /path/to/report.cdx
 `,
 		PreRunE: func(cmd *cobra.Command, args []string) error {
-			if err := scanFlags.Bind(cmd); err != nil {
+			if err := sbomFlags.Bind(cmd); err != nil {
 				return xerrors.Errorf("flag bind error: %w", err)
 			}
 			return validateArgs(cmd, args)
@@ -790,6 +824,7 @@ func NewSBOMCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	}
 	cmd.SetFlagErrorFunc(flagErrorFunc)
 	sbomFlags.AddFlags(cmd)
+	cmd.SetUsageTemplate(fmt.Sprintf(usageTemplate, sbomFlags.Usages(cmd)))
 
 	return cmd
 }

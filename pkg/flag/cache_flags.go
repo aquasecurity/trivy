@@ -6,7 +6,6 @@ import (
 	"time"
 
 	"github.com/samber/lo"
-	"github.com/spf13/cobra"
 	"golang.org/x/xerrors"
 )
 
@@ -94,31 +93,20 @@ func NewCacheFlagGroup() *CacheFlagGroup {
 	}
 }
 
-func (f *CacheFlagGroup) flags() []*Flag {
-	return []*Flag{f.ClearCache, f.CacheBackend, f.CacheTTL, f.RedisCACert, f.RedisCert, f.RedisKey}
+func (fg *CacheFlagGroup) Name() string {
+	return "Cache"
 }
 
-func (f *CacheFlagGroup) AddFlags(cmd *cobra.Command) {
-	for _, flag := range f.flags() {
-		addFlag(cmd, flag)
-	}
+func (fg *CacheFlagGroup) Flags() []*Flag {
+	return []*Flag{fg.ClearCache, fg.CacheBackend, fg.CacheTTL, fg.RedisCACert, fg.RedisCert, fg.RedisKey}
 }
 
-func (f *CacheFlagGroup) Bind(cmd *cobra.Command) error {
-	for _, flag := range f.flags() {
-		if err := bind(cmd, flag); err != nil {
-			return err
-		}
-	}
-	return nil
-}
-
-func (f *CacheFlagGroup) ToOptions() (CacheOptions, error) {
-	cacheBackend := getString(f.CacheBackend)
+func (fg *CacheFlagGroup) ToOptions() (CacheOptions, error) {
+	cacheBackend := getString(fg.CacheBackend)
 	redisOptions := RedisOptions{
-		RedisCACert: getString(f.RedisCACert),
-		RedisCert:   getString(f.RedisCert),
-		RedisKey:    getString(f.RedisKey),
+		RedisCACert: getString(fg.RedisCACert),
+		RedisCert:   getString(fg.RedisCert),
+		RedisKey:    getString(fg.RedisKey),
 	}
 
 	// "redis://" or "fs" are allowed for now
@@ -135,9 +123,9 @@ func (f *CacheFlagGroup) ToOptions() (CacheOptions, error) {
 	}
 
 	return CacheOptions{
-		ClearCache:   getBool(f.ClearCache),
+		ClearCache:   getBool(fg.ClearCache),
 		CacheBackend: cacheBackend,
-		CacheTTL:     getDuration(f.CacheTTL),
+		CacheTTL:     getDuration(fg.CacheTTL),
 		RedisOptions: redisOptions,
 	}, nil
 }

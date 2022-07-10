@@ -5,7 +5,6 @@ import (
 	"strings"
 
 	"github.com/samber/lo"
-	"github.com/spf13/cobra"
 	"golang.org/x/exp/slices"
 
 	"github.com/aquasecurity/trivy/pkg/log"
@@ -86,23 +85,12 @@ func NewScanFlagGroup() *ScanFlagGroup {
 	}
 }
 
-func (f *ScanFlagGroup) flags() []*Flag {
+func (f *ScanFlagGroup) Name() string {
+	return "Scan"
+}
+
+func (f *ScanFlagGroup) Flags() []*Flag {
 	return []*Flag{f.SkipDirs, f.SkipFiles, f.OfflineScan, f.SecurityChecks, f.VulnType, f.SecretConfig}
-}
-
-func (f *ScanFlagGroup) Bind(cmd *cobra.Command) error {
-	for _, flag := range f.flags() {
-		if err := bind(cmd, flag); err != nil {
-			return err
-		}
-	}
-	return nil
-}
-
-func (f *ScanFlagGroup) AddFlags(cmd *cobra.Command) {
-	for _, flag := range f.flags() {
-		addFlag(cmd, flag)
-	}
 }
 
 func (f *ScanFlagGroup) ToOptions(args []string) ScanOptions {
