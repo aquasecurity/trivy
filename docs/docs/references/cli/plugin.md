@@ -1,21 +1,31 @@
 # Plugin
 
 ```bash
-NAME:
-   trivy plugin - manage plugins
+Manage plugins
 
-USAGE:
-   trivy plugin command [command options] plugin_uri
+Usage:
+  trivy plugin [command]
 
-COMMANDS:
-   install, i    install a plugin
-   uninstall, u  uninstall a plugin
-   list, l       list installed plugin
-   info          information about a plugin
-   run, r        run a plugin on the fly
-   update        update an existing plugin
-   help, h       Shows a list of commands or help for one command
+Aliases:
+  plugin, p
 
-OPTIONS:
-   --help, -h  show help (default: false)
+Available Commands:
+  Uninstall   uninstall a plugin
+  info        Show information about the specified plugin
+  install     Install a plugin
+  list        List installed plugin
+  run         Run a plugin on the fly
+  update      Update an existing plugin
+
+Flags:
+  -h, --help   help for plugin
+
+Global Flags:
+      --cache-dir string   cache directory (default "/Users/teppei/Library/Caches/trivy")
+  -c, --config string      config path (default "trivy.yaml")
+  -d, --debug              debug mode
+      --insecure           allow insecure server connections when using TLS
+  -q, --quiet              suppress progress bar and log output
+      --timeout duration   timeout (default 5m0s)
+  -v, --version            show version
 ```
