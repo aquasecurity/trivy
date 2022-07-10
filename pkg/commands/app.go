@@ -799,7 +799,6 @@ func NewSBOMCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 		ReportFlagGroup:        reportFlagGroup,
 		ScanFlagGroup:          flag.NewScanFlagGroup(),
 		SBOMFlagGroup:          flag.NewSBOMFlagGroup(),
-		SecretFlagGroup:        flag.NewSecretFlagGroup(),
 		VulnerabilityFlagGroup: flag.NewVulnerabilityFlagGroup(),
 	}
 
