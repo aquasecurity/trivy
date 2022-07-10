@@ -1,4 +1,4 @@
-timeout: 10min
+timeout: 10m
 format: json
 dependency-tree: true
 list-all-pkgs: true
