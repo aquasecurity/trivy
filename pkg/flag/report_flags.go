@@ -191,7 +191,7 @@ func (f *ReportFlagGroup) ToOptions(out io.Writer) (ReportOptions, error) {
 		ExitCode:       getInt(f.ExitCode),
 		IgnorePolicy:   getString(f.IgnorePolicy),
 		Output:         out,
-		Severities:     splitSeverity(getString(f.Severity)),
+		Severities:     splitSeverity(getStringSlice(f.Severity)),
 	}, nil
 }
 
@@ -207,13 +207,16 @@ func (f *ReportFlagGroup) forceListAllPkgs(format string, listAllPkgs, dependenc
 	return false
 }
 
-func splitSeverity(severity string) []dbTypes.Severity {
-	if severity == "" {
+func splitSeverity(severity []string) []dbTypes.Severity {
+	switch {
+	case len(severity) == 0:
 		return nil
+	case len(severity) == 1 && strings.Contains(severity[0], ","): // get severities from flag
+		severity = strings.Split(severity[0], ",")
 	}
 
 	var severities []dbTypes.Severity
-	for _, s := range strings.Split(severity, ",") {
+	for _, s := range severity {
 		sev, err := dbTypes.NewSeverity(s)
 		if err != nil {
 			log.Logger.Warnf("unknown severity option: %s", err)
