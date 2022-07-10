@@ -499,7 +499,13 @@ func NewServerCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 		Use:     "server [flags]",
 		Aliases: []string{"s"},
 		Short:   "Server mode",
-		Args:    cobra.ExactArgs(0),
+		Example: `  # Run a server
+  $ trivy server
+
+  # Listen on 0.0.0.0:10000
+  $ trivy server --listen 0.0.0.0:10000
+`,
+		Args: cobra.ExactArgs(0),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			if err := serverFlags.Bind(cmd); err != nil {
 				return xerrors.Errorf("flag bind error: %w", err)
