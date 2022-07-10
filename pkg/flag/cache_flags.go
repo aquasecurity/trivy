@@ -84,12 +84,12 @@ type RedisOptions struct {
 // NewCacheFlagGroup returns a default CacheFlagGroup
 func NewCacheFlagGroup() *CacheFlagGroup {
 	return &CacheFlagGroup{
-		ClearCache:   lo.ToPtr(ClearCacheFlag),
-		CacheBackend: lo.ToPtr(CacheBackendFlag),
-		CacheTTL:     lo.ToPtr(CacheTTLFlag),
-		RedisCACert:  lo.ToPtr(RedisCACertFlag),
-		RedisCert:    lo.ToPtr(RedisCertFlag),
-		RedisKey:     lo.ToPtr(RedisKeyFlag),
+		ClearCache:   &ClearCacheFlag,
+		CacheBackend: &CacheBackendFlag,
+		CacheTTL:     &CacheTTLFlag,
+		RedisCACert:  &RedisCACertFlag,
+		RedisCert:    &RedisCertFlag,
+		RedisKey:     &RedisKeyFlag,
 	}
 }
 

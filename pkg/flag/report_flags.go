@@ -5,7 +5,6 @@ import (
 	"os"
 	"strings"
 
-	"github.com/samber/lo"
 	"golang.org/x/exp/slices"
 	"golang.org/x/xerrors"
 
@@ -118,16 +117,16 @@ type ReportOptions struct {
 
 func NewReportFlagGroup() *ReportFlagGroup {
 	return &ReportFlagGroup{
-		Format:         lo.ToPtr(FormatFlag),
-		ReportFormat:   lo.ToPtr(ReportFormatFlag),
-		Template:       lo.ToPtr(TemplateFlag),
-		DependencyTree: lo.ToPtr(DependencyTreeFlag),
-		ListAllPkgs:    lo.ToPtr(ListAllPkgsFlag),
-		IgnoreFile:     lo.ToPtr(IgnoreFileFlag),
-		IgnorePolicy:   lo.ToPtr(IgnorePolicyFlag),
-		ExitCode:       lo.ToPtr(ExitCodeFlag),
-		Output:         lo.ToPtr(OutputFlag),
-		Severity:       lo.ToPtr(SeverityFlag),
+		Format:         &FormatFlag,
+		ReportFormat:   &ReportFormatFlag,
+		Template:       &TemplateFlag,
+		DependencyTree: &DependencyTreeFlag,
+		ListAllPkgs:    &ListAllPkgsFlag,
+		IgnoreFile:     &IgnoreFileFlag,
+		IgnorePolicy:   &IgnorePolicyFlag,
+		ExitCode:       &ExitCodeFlag,
+		Output:         &OutputFlag,
+		Severity:       &SeverityFlag,
 	}
 }
 

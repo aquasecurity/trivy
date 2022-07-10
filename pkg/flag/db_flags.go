@@ -1,7 +1,6 @@
 package flag
 
 import (
-	"github.com/samber/lo"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/log"
@@ -71,12 +70,12 @@ type DBOptions struct {
 // NewDBFlagGroup returns a default DBFlagGroup
 func NewDBFlagGroup() *DBFlagGroup {
 	return &DBFlagGroup{
-		Reset:          lo.ToPtr(ResetFlag),
-		DownloadDBOnly: lo.ToPtr(DownloadDBOnlyFlag),
-		SkipDBUpdate:   lo.ToPtr(SkipDBUpdateFlag),
-		Light:          lo.ToPtr(LightFlag),
-		NoProgress:     lo.ToPtr(NoProgressFlag),
-		DBRepository:   lo.ToPtr(DBRepositoryFlag),
+		Reset:          &ResetFlag,
+		DownloadDBOnly: &DownloadDBOnlyFlag,
+		SkipDBUpdate:   &SkipDBUpdateFlag,
+		Light:          &LightFlag,
+		NoProgress:     &NoProgressFlag,
+		DBRepository:   &DBRepositoryFlag,
 	}
 }
 

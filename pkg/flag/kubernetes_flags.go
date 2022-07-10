@@ -1,9 +1,5 @@
 package flag
 
-import (
-	"github.com/samber/lo"
-)
-
 var (
 	ClusterContextFlag = Flag{
 		Name:       "context",
@@ -31,8 +27,8 @@ type K8sOptions struct {
 
 func NewK8sFlagGroup() *K8sFlagGroup {
 	return &K8sFlagGroup{
-		ClusterContext: lo.ToPtr(ClusterContextFlag),
-		Namespace:      lo.ToPtr(K8sNamespaceFlag),
+		ClusterContext: &ClusterContextFlag,
+		Namespace:      &K8sNamespaceFlag,
 	}
 }
 

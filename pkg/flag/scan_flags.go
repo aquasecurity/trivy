@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/samber/lo"
 	"golang.org/x/exp/slices"
 
 	"github.com/aquasecurity/trivy/pkg/log"
@@ -55,10 +54,10 @@ type ScanOptions struct {
 
 func NewScanFlagGroup() *ScanFlagGroup {
 	return &ScanFlagGroup{
-		SkipDirs:       lo.ToPtr(SkipDirsFlag),
-		SkipFiles:      lo.ToPtr(SkipFilesFlag),
-		OfflineScan:    lo.ToPtr(OfflineScanFlag),
-		SecurityChecks: lo.ToPtr(SecurityChecksFlag),
+		SkipDirs:       &SkipDirsFlag,
+		SkipFiles:      &SkipFilesFlag,
+		OfflineScan:    &OfflineScanFlag,
+		SecurityChecks: &SecurityChecksFlag,
 	}
 }
 

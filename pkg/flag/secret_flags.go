@@ -1,9 +1,5 @@
 package flag
 
-import (
-	"github.com/samber/lo"
-)
-
 var (
 	SecretConfigFlag = Flag{
 		Name:       "secret-config",
@@ -23,7 +19,7 @@ type SecretOptions struct {
 
 func NewSecretFlagGroup() *SecretFlagGroup {
 	return &SecretFlagGroup{
-		SecretConfig: lo.ToPtr(SecretConfigFlag),
+		SecretConfig: &SecretConfigFlag,
 	}
 }
 

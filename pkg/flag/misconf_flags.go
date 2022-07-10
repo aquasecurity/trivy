@@ -2,7 +2,6 @@ package flag
 
 import (
 	"github.com/aquasecurity/trivy/pkg/log"
-	"github.com/samber/lo"
 )
 
 // e.g. config yaml
@@ -83,13 +82,13 @@ type MisconfOptions struct {
 
 func NewMisconfFlagGroup() *MisconfFlagGroup {
 	return &MisconfFlagGroup{
-		FilePatterns:       lo.ToPtr(FilePatternsFlag),
-		IncludeNonFailures: lo.ToPtr(IncludeNonFailuresFlag),
-		SkipPolicyUpdate:   lo.ToPtr(SkipPolicyUpdateFlag),
-		Trace:              lo.ToPtr(TraceFlag),
-		PolicyPaths:        lo.ToPtr(ConfigPolicyFlag),
-		DataPaths:          lo.ToPtr(ConfigDataFlag),
-		PolicyNamespaces:   lo.ToPtr(PolicyNamespaceFlag),
+		FilePatterns:       &FilePatternsFlag,
+		IncludeNonFailures: &IncludeNonFailuresFlag,
+		SkipPolicyUpdate:   &SkipPolicyUpdateFlag,
+		Trace:              &TraceFlag,
+		PolicyPaths:        &ConfigPolicyFlag,
+		DataPaths:          &ConfigDataFlag,
+		PolicyNamespaces:   &PolicyNamespaceFlag,
 	}
 }
 
