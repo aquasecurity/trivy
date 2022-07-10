@@ -224,7 +224,7 @@ func (f *Flags) Usages(cmd *cobra.Command) string {
 			}
 			flags.AddFlag(lflags.Lookup(flag.Name))
 		}
-		if !lflags.HasAvailableFlags() {
+		if !flags.HasAvailableFlags() {
 			continue
 		}
 
