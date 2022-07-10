@@ -37,19 +37,19 @@ var (
 	}
 	ConfigPolicyFlag = Flag{
 		Name:       "config-policy",
-		ConfigName: "misconfiguration.config-policy",
+		ConfigName: "misconfiguration.policy",
 		Value:      []string{},
 		Usage:      "specify paths to the Rego policy files directory, applying config files",
 	}
 	ConfigDataFlag = Flag{
 		Name:       "config-data",
-		ConfigName: "misconfiguration.config-data",
+		ConfigName: "misconfiguration.data",
 		Value:      []string{},
 		Usage:      "specify paths from which data for the Rego policies will be recursively loaded",
 	}
 	PolicyNamespaceFlag = Flag{
 		Name:       "policy-namespaces",
-		ConfigName: "misconfiguration.policy-namespaces",
+		ConfigName: "misconfiguration.namespaces",
 		Value:      []string{},
 		Usage:      "Rego namespaces",
 	}
