@@ -20,6 +20,6 @@ Requirements
 How to add a tutorial
 1. Simply create a new `.md` file in the [tutorials](tutorials) folder of the docs
 2. Add your content 
-3. Create a new index in the [mkdocs.yaml file](../../mkdocs.yml) within the tutorials section
+3. Create a new index in the mkdocs.yaml file which is in the root directory of the repository
 4. Create a PR
 
