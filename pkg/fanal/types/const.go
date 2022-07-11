@@ -13,6 +13,7 @@ const (
 	Composer   = "composer"
 	Npm        = "npm"
 	NuGet      = "nuget"
+	DotNetCore = "dotnet-core"
 	Pip        = "pip"
 	Pipenv     = "pipenv"
 	Poetry     = "poetry"

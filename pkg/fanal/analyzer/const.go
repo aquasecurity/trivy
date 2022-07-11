@@ -56,7 +56,8 @@ const (
 	TypePnpm       Type = "pnpm"
 
 	// .NET
-	TypeNuget Type = "nuget"
+	TypeNuget      Type = "nuget"
+	TypeDotNetDeps Type = "dotnet-deps"
 
 	// Python
 	TypePythonPkg Type = "python-pkg"
