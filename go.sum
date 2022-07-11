@@ -788,8 +788,6 @@ github.com/google/gofuzz v1.0.0/go.mod h1:dBl0BpW6vV/+mYPU4Po3pmUjxk6FQPldtuIdl/
 github.com/google/gofuzz v1.1.0/go.mod h1:dBl0BpW6vV/+mYPU4Po3pmUjxk6FQPldtuIdl/M65Eg=
 github.com/google/gofuzz v1.2.0 h1:xRy4A+RhZaiKjJ1bPfwQ8sedCA+YS2YcCHW6ec7JMi0=
 github.com/google/gofuzz v1.2.0/go.mod h1:dBl0BpW6vV/+mYPU4Po3pmUjxk6FQPldtuIdl/M65Eg=
-github.com/google/licenseclassifier v0.0.0-20210722185704-9369ededc590 h1:XmNiKLSxtVLFrcOVj15BTuEqnasY6I5U0lvt09XDN4g=
-github.com/google/licenseclassifier v0.0.0-20210722185704-9369ededc590/go.mod h1:rq9F0RSpNKlrefnf6ZYMHKUnEJBCNzf6AcCXMYBeYvE=
 github.com/google/licenseclassifier/v2 v2.0.0-pre5 h1:glsMqvBI3S7ZZ58FGrEZubz+0W6N/8MJS5HYVWxZH3M=
 github.com/google/licenseclassifier/v2 v2.0.0-pre5/go.mod h1:cOjbdH0kyC9R22sdQbYsFkto4NGCAc+ZSwbeThazEtM=
 github.com/google/martian v2.1.0+incompatible h1:/CP5g8u/VJHijgedC/Legn3BAbAaWPgecwXBIDzw5no=
