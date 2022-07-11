@@ -5,6 +5,7 @@ import (
 	"strings"
 	"sync"
 
+	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"golang.org/x/xerrors"
 
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
@@ -51,6 +52,9 @@ func Write(report types.Report, option Option) error {
 	var writer Writer
 	switch option.Format {
 	case FormatTable:
+		if option.Tree && report.ArtifactType != ftypes.ArtifactFilesystem && report.ArtifactType != ftypes.ArtifactRemoteRepository {
+			log.Logger.Warn(`"--dependency-tree" can be used only with "fs" or "repo" commands.`)
+		}
 		writer = &TableWriter{
 			Output:             option.Output,
 			Severities:         option.Severities,
