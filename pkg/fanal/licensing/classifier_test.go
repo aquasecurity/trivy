@@ -25,8 +25,9 @@ func TestClassifier_Classify(t *testing.T) {
 				FilePath: "testdata/licensed.c",
 				Findings: []types.LicenseFinding{
 					{
-						License:    "AGPL-3.0",
-						Confidence: 0.98,
+						License:     "AGPL-3.0",
+						Confidence:  1,
+						LicenseLink: "https://spdx.org/licenses/AGPL-3.0.html",
 					},
 				},
 			},
@@ -45,8 +46,9 @@ func TestClassifier_Classify(t *testing.T) {
 				FilePath: "testdata/LICENSE_creativecommons",
 				Findings: []types.LicenseFinding{
 					{
-						License:    "Commons-Clause",
-						Confidence: 0.98,
+						License:     "Commons-Clause",
+						Confidence:  1,
+						LicenseLink: "https://spdx.org/licenses/Commons-Clause.html",
 					},
 				},
 			},
@@ -58,8 +60,9 @@ func TestClassifier_Classify(t *testing.T) {
 				FilePath: "testdata/styles.css",
 				Findings: []types.LicenseFinding{
 					{
-						License:    "Apache-2.0",
-						Confidence: 1,
+						License:     "Apache-2.0",
+						Confidence:  1,
+						LicenseLink: "https://spdx.org/licenses/Apache-2.0.html",
 					},
 				},
 			},
@@ -68,11 +71,12 @@ func TestClassifier_Classify(t *testing.T) {
 			name:     "Apache 2 License file",
 			filePath: "testdata/LICENSE_apache2",
 			want: types.LicenseFile{
-				FilePath: "testdata/styles.css",
+				FilePath: "testdata/LICENSE_apache2",
 				Findings: []types.LicenseFinding{
 					{
-						License:    "Apache-2.0",
-						Confidence: 1,
+						License:     "Apache-2.0",
+						Confidence:  1,
+						LicenseLink: "https://spdx.org/licenses/Apache-2.0.html",
 					},
 				},
 			},
