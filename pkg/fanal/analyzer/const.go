@@ -56,7 +56,8 @@ const (
 	TypePnpm       Type = "pnpm"
 
 	// .NET
-	TypeNuget Type = "nuget"
+	TypeNuget      Type = "nuget"
+	TypeDotNetDeps Type = "dotnet-deps"
 
 	// Python
 	TypePythonPkg Type = "python-pkg"
@@ -117,5 +118,5 @@ var (
 	TypeIndividualPkgs = []Type{TypeGemSpec, TypeNodePkg, TypePythonPkg, TypeGoBinary, TypeJar}
 
 	// TypeConfigFiles has all config file analyzers
-	TypeConfigFiles = []Type{TypeYaml, TypeJSON, TypeDockerfile, TypeTerraform, TypeCloudFormation}
+	TypeConfigFiles = []Type{TypeYaml, TypeJSON, TypeDockerfile, TypeTerraform, TypeCloudFormation, TypeHelm}
 )

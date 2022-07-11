@@ -10,6 +10,7 @@ import (
 	aimage "github.com/aquasecurity/trivy/pkg/fanal/artifact/image"
 	flocal "github.com/aquasecurity/trivy/pkg/fanal/artifact/local"
 	"github.com/aquasecurity/trivy/pkg/fanal/artifact/remote"
+	"github.com/aquasecurity/trivy/pkg/fanal/artifact/sbom"
 	"github.com/aquasecurity/trivy/pkg/fanal/image"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
@@ -32,6 +33,7 @@ var StandaloneSuperSet = wire.NewSet(
 
 // StandaloneDockerSet binds docker dependencies
 var StandaloneDockerSet = wire.NewSet(
+	wire.Value([]image.Option(nil)), // optional functions
 	image.NewContainerImage,
 	aimage.NewArtifact,
 	StandaloneSuperSet,
@@ -56,6 +58,12 @@ var StandaloneRepositorySet = wire.NewSet(
 	StandaloneSuperSet,
 )
 
+// StandaloneSBOMSet binds sbom dependencies
+var StandaloneSBOMSet = wire.NewSet(
+	sbom.NewArtifact,
+	StandaloneSuperSet,
+)
+
 /////////////////
 // Client/Server
 /////////////////
@@ -74,9 +82,16 @@ var RemoteFilesystemSet = wire.NewSet(
 	RemoteSuperSet,
 )
 
+// RemoteSBOMSet binds sbom dependencies for client/server mode
+var RemoteSBOMSet = wire.NewSet(
+	sbom.NewArtifact,
+	RemoteSuperSet,
+)
+
 // RemoteDockerSet binds remote docker dependencies
 var RemoteDockerSet = wire.NewSet(
 	aimage.NewArtifact,
+	wire.Value([]image.Option(nil)), // optional functions
 	image.NewContainerImage,
 	RemoteSuperSet,
 )
@@ -137,14 +152,17 @@ func (s Scanner) ScanArtifact(ctx context.Context, options types.ScanOptions) (t
 		ArtifactName:  artifactInfo.Name,
 		ArtifactType:  artifactInfo.Type,
 		Metadata: types.Metadata{
-			OS:          osFound,
+			OS: osFound,
+
+			// Container image
 			ImageID:     artifactInfo.ImageMetadata.ID,
 			DiffIDs:     artifactInfo.ImageMetadata.DiffIDs,
 			RepoTags:    artifactInfo.ImageMetadata.RepoTags,
 			RepoDigests: artifactInfo.ImageMetadata.RepoDigests,
 			ImageConfig: artifactInfo.ImageMetadata.ConfigFile,
 		},
-		Results: results,
+		CycloneDX: artifactInfo.CycloneDX,
+		Results:   results,
 	}, nil
 }
 

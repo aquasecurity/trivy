@@ -49,6 +49,12 @@ func initializeRepositoryScanner(ctx context.Context, url string, artifactCache 
 	return scanner.Scanner{}, nil, nil
 }
 
+func initializeSBOMScanner(ctx context.Context, filePath string, artifactCache cache.ArtifactCache,
+	localArtifactCache cache.LocalArtifactCache, artifactOption artifact.Option) (scanner.Scanner, func(), error) {
+	wire.Build(scanner.StandaloneSBOMSet)
+	return scanner.Scanner{}, nil, nil
+}
+
 /////////////////
 // Client/Server
 /////////////////
@@ -74,5 +80,12 @@ func initializeRemoteArchiveScanner(ctx context.Context, filePath string, artifa
 func initializeRemoteFilesystemScanner(ctx context.Context, path string, artifactCache cache.ArtifactCache,
 	remoteScanOptions client.ScannerOption, artifactOption artifact.Option) (scanner.Scanner, func(), error) {
 	wire.Build(scanner.RemoteFilesystemSet)
+	return scanner.Scanner{}, nil, nil
+}
+
+// initializeRemoteSBOMScanner is for sbom scanning in client/server mode
+func initializeRemoteSBOMScanner(ctx context.Context, path string, artifactCache cache.ArtifactCache,
+	remoteScanOptions client.ScannerOption, artifactOption artifact.Option) (scanner.Scanner, func(), error) {
+	wire.Build(scanner.RemoteSBOMSet)
 	return scanner.Scanner{}, nil, nil
 }

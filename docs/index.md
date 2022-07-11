@@ -31,12 +31,16 @@ Much more scanners and targets are coming up. [Join the Slack][slack] channel to
 Please see [LICENSE][license] for Trivy licensing information.
 
 <figure style="text-align: center">
-  <img src="imgs/vuln-demo.gif" width="1000">
+  <video width="1000">
+    <source src="https://user-images.githubusercontent.com/1161307/171013513-95f18734-233d-45d3-aaf5-d6aec687db0e.mov" type="video/mp4" />
+  </video>
   <figcaption>Demo: Vulnerability Detection</figcaption>
 </figure>
 
 <figure style="text-align: center">
-  <img src="imgs/misconf-demo.gif" width="1000">
+  <video width="1000">
+    <source src="https://user-images.githubusercontent.com/1161307/171013917-b1f37810-f434-465c-b01a-22de036bd9b3.mov" type="video/mp4" />
+  </video>
   <figcaption>Demo: Misconfiguration Detection</figcaption>
 </figure>
 

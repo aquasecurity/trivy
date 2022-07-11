@@ -6,43 +6,46 @@ import (
 
 	"github.com/stretchr/testify/assert"
 
-	"github.com/aquasecurity/trivy/pkg/commands/option"
+	"github.com/aquasecurity/trivy/pkg/flag"
+	"github.com/aquasecurity/trivy/pkg/types"
 )
 
 func TestReport_ColumnHeading(t *testing.T) {
 	tests := []struct {
 		name             string
-		rp               option.ReportOption
+		opts             flag.ScanOptions
 		availableColumns []string
 		want             []string
 	}{
 		{
-			name:             "all workload columns",
-			rp:               option.ReportOption{SecurityChecks: []string{"vuln", "config", "secret", "rbac"}},
+			name: "all workload columns",
+			opts: flag.ScanOptions{SecurityChecks: []string{types.SecurityCheckVulnerability,
+				types.SecurityCheckConfig, types.SecurityCheckSecret, types.SecurityCheckRbac}},
 			availableColumns: WorkloadColumns(),
 			want:             []string{NamespaceColumn, ResourceColumn, VulnerabilitiesColumn, MisconfigurationsColumn, SecretsColumn},
 		},
 		{
-			name:             "all rbac columns",
-			rp:               option.ReportOption{SecurityChecks: []string{"vuln", "config", "secret", "rbac"}},
+			name: "all rbac columns",
+			opts: flag.ScanOptions{SecurityChecks: []string{types.SecurityCheckVulnerability,
+				types.SecurityCheckConfig, types.SecurityCheckSecret, types.SecurityCheckRbac}},
 			availableColumns: RoleColumns(),
 			want:             []string{NamespaceColumn, ResourceColumn, RbacAssessmentColumn},
 		},
 		{
 			name:             "config column only",
-			rp:               option.ReportOption{SecurityChecks: []string{"config"}},
+			opts:             flag.ScanOptions{SecurityChecks: []string{types.SecurityCheckConfig}},
 			availableColumns: WorkloadColumns(),
 			want:             []string{NamespaceColumn, ResourceColumn, MisconfigurationsColumn},
 		},
 		{
 			name:             "secret column only",
-			rp:               option.ReportOption{SecurityChecks: []string{"secret"}},
+			opts:             flag.ScanOptions{SecurityChecks: []string{types.SecurityCheckSecret}},
 			availableColumns: WorkloadColumns(),
 			want:             []string{NamespaceColumn, ResourceColumn, SecretsColumn},
 		},
 		{
 			name:             "vuln column only",
-			rp:               option.ReportOption{SecurityChecks: []string{"vuln"}},
+			opts:             flag.ScanOptions{SecurityChecks: []string{types.SecurityCheckVulnerability}},
 			availableColumns: WorkloadColumns(),
 			want:             []string{NamespaceColumn, ResourceColumn, VulnerabilitiesColumn},
 		},
@@ -50,7 +53,7 @@ func TestReport_ColumnHeading(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			column := ColumnHeading(tt.rp.SecurityChecks, tt.availableColumns)
+			column := ColumnHeading(tt.opts.SecurityChecks, tt.availableColumns)
 			if !assert.Equal(t, column, tt.want) {
 				t.Error(fmt.Errorf("TestReport_ColumnHeading want %v got %v", tt.want, column))
 			}

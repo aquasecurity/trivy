@@ -1,32 +1,49 @@
 Trivy has several sub commands, image, fs, repo, client and server.
 
 ``` bash
-NAME:
-   trivy - Scanner for vulnerabilities in container images, file systems, and Git repositories, as well as for configuration issues and hard-coded secrets
+Scanner for vulnerabilities in container images, file systems, and Git repositories, as well as for configuration issues and hard-coded secrets
 
-USAGE:
-   trivy [global options] command [command options] target
+Usage:
+  trivy [command]
 
-VERSION:
-   dev
+Examples:
+  # Scan a container image
+  $ trivy image python:3.4-alpine
 
-COMMANDS:
-   image, i          scan an image
-   filesystem, fs    scan local filesystem for language-specific dependencies and config files
-   rootfs            scan rootfs
-   repository, repo  scan remote repository
-   server, s         server mode
-   config, conf      scan config files
-   plugin, p         manage plugins
-   kubernetes, k8s   scan kubernetes vulnerabilities and misconfigurations
-   sbom              generate SBOM for an artifact
-   version           print the version
-   help, h           Shows a list of commands or help for one command
+  # Scan a container image from a tar archive
+  $ trivy image --input ruby-3.1.tar
 
-GLOBAL OPTIONS:
-   --quiet, -q        suppress progress bar and log output (default: false) [$TRIVY_QUIET]
-   --debug, -d        debug mode (default: false) [$TRIVY_DEBUG]
-   --cache-dir value  cache directory (default: "/Users/teppei/Library/Caches/trivy") [$TRIVY_CACHE_DIR]
-   --help, -h         show help (default: false)
-   --version, -v      print the version (default: false)
+  # Scan local filesystem
+  $ trivy fs .
+
+  # Run in server mode
+  $ trivy server
+
+Available Commands:
+  config      Scan config files for misconfigurations
+  filesystem  Scan local filesystem
+  help        Help about any command
+  image       Scan a container image
+  kubectl     scan kubectl resources
+  kubernetes  scan kubernetes cluster
+  module      Manage modules
+  plugin      Manage plugins
+  repository  Scan a remote repository
+  rootfs      Scan rootfs
+  sbom        Scan SBOM for vulnerabilities
+  server      Server mode
+  version     Print the version
+
+Flags:
+      --cache-dir string   cache directory (default "/Users/teppei/Library/Caches/trivy")
+  -c, --config string      config path (default "trivy.yaml")
+  -d, --debug              debug mode
+  -f, --format string      version format (json)
+  -h, --help               help for trivy
+      --insecure           allow insecure server connections when using TLS
+  -q, --quiet              suppress progress bar and log output
+      --timeout duration   timeout (default 5m0s)
+  -v, --version            show version
+
+Use "trivy [command] --help" for more information about a command.
 ```

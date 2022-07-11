@@ -3,7 +3,6 @@ package amazonlinux
 import (
 	"bufio"
 	"context"
-	"fmt"
 	"io"
 	"os"
 	"strings"
@@ -25,7 +24,10 @@ func init() {
 
 const version = 1
 
-var requiredFiles = []string{"etc/system-release"}
+var requiredFiles = []string{
+	"etc/system-release",     // for 1 and 2 versions
+	"usr/lib/system-release", // for 2022 version
+}
 
 type amazonlinuxOSAnalyzer struct{}
 
@@ -51,7 +53,7 @@ func (a amazonlinuxOSAnalyzer) parseRelease(r io.Reader) (types.OS, error) {
 			}
 			return types.OS{
 				Family: aos.Amazon,
-				Name:   fmt.Sprintf("%s %s", fields[3], fields[4]),
+				Name:   strings.Join(fields[3:], " "),
 			}, nil
 		} else if strings.HasPrefix(line, "Amazon Linux") {
 			return types.OS{

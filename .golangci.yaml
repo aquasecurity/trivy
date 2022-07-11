@@ -31,7 +31,6 @@ linters:
     - ineffassign
     - typecheck
     - govet
-    - errcheck
     - varcheck
     - deadcode
     - revive
