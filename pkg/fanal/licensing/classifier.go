@@ -2,6 +2,7 @@ package licensing
 
 import (
 	"fmt"
+	"log"
 
 	"github.com/go-enry/go-license-detector/v4/licensedb"
 	classifier "github.com/google/licenseclassifier/v2"
@@ -10,52 +11,62 @@ import (
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 )
 
-type Classifier struct {
-	classifier *classifier.Classifier
-}
+var cf *classifier.Classifier
 
-func NewClassifier() (*Classifier, error) {
-	licensedb.Preload()
-
-	c, err := assets.DefaultClassifier()
+func init() {
+	var err error
+	cf, err = assets.DefaultClassifier()
 	if err != nil {
-		return nil, err
+		// It never reaches here.
+		log.Fatal(err)
 	}
-	return &Classifier{
-		classifier: c,
-	}, nil
+
+	licensedb.Preload()
 }
 
 // Classify detects and classifies the licensedFile found in a file
-func (c *Classifier) Classify(filePath string, contents []byte) types.LicenseFile {
-	licFile := c.googleClassifierLicense(filePath, contents)
+func Classify(filePath string, contents []byte) types.LicenseFile {
+	licFile := googleClassifierLicense(filePath, contents)
 
 	if len(licFile.Findings) == 0 {
-		return c.fallbackClassifyLicense(filePath, contents)
+		return fallbackClassifyLicense(filePath, contents)
 	}
 
 	return licFile
 }
 
-func (c *Classifier) googleClassifierLicense(filePath string, contents []byte) types.LicenseFile {
-	license := types.LicenseFile{FilePath: filePath}
-	matcher := c.classifier.Match(c.classifier.Normalize(contents))
-
+func googleClassifierLicense(filePath string, contents []byte) types.LicenseFile {
+	var matchType types.LicenseType
+	var findings []types.LicenseFinding
+	matcher := cf.Match(cf.Normalize(contents))
 	for _, m := range matcher.Matches {
+		switch m.MatchType {
+		case "Header":
+			matchType = types.LicenseTypeHeader
+		case "License":
+			matchType = types.LicenseTypeFile
+		}
 		licenseLink := fmt.Sprintf("https://spdx.org/licenses/%s.html", m.Name)
 
-		license.Findings = append(license.Findings, types.LicenseFinding{
+		findings = append(findings, types.LicenseFinding{
 			License:     m.Name,
 			Confidence:  m.Confidence,
 			LicenseLink: licenseLink,
 		})
 	}
 
-	return license
+	return types.LicenseFile{
+		Type:     matchType,
+		FilePath: filePath,
+		Findings: findings,
+	}
 }
 
-func (c *Classifier) fallbackClassifyLicense(filePath string, contents []byte) types.LicenseFile {
-	license := types.LicenseFile{FilePath: filePath}
+func fallbackClassifyLicense(filePath string, contents []byte) types.LicenseFile {
+	license := types.LicenseFile{
+		Type:     types.LicenseTypeFile,
+		FilePath: filePath,
+	}
 
 	matcher := licensedb.InvestigateLicenseText(contents)
 	for l, confidence := range matcher {

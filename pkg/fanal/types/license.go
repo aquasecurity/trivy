@@ -3,7 +3,9 @@ package types
 type LicenseType string
 
 const (
-	LicenseTypeDpkg LicenseType = "dpkg" // From /usr/share/doc/*/copyright
+	LicenseTypeDpkg   LicenseType = "dpkg"         // From /usr/share/doc/*/copyright
+	LicenseTypeHeader LicenseType = "header"       // From file headers
+	LicenseTypeFile   LicenseType = "license-file" // From LICENSE, COPYRIGHT, etc.
 )
 
 type LicenseFile struct {

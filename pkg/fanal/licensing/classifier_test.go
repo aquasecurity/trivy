@@ -22,6 +22,7 @@ func TestClassifier_Classify(t *testing.T) {
 			name:     "C file with AGPL-3.0",
 			filePath: "testdata/licensed.c",
 			want: types.LicenseFile{
+				Type:     types.LicenseTypeHeader,
 				FilePath: "testdata/licensed.c",
 				Findings: []types.LicenseFinding{
 					{
@@ -43,6 +44,7 @@ func TestClassifier_Classify(t *testing.T) {
 			name:     "Creative commons License file",
 			filePath: "testdata/LICENSE_creativecommons",
 			want: types.LicenseFile{
+				Type:     types.LicenseTypeFile,
 				FilePath: "testdata/LICENSE_creativecommons",
 				Findings: []types.LicenseFinding{
 					{
@@ -57,6 +59,7 @@ func TestClassifier_Classify(t *testing.T) {
 			name:     "Apache-2.0 CSS File",
 			filePath: "testdata/styles.css",
 			want: types.LicenseFile{
+				Type:     types.LicenseTypeFile,
 				FilePath: "testdata/styles.css",
 				Findings: []types.LicenseFinding{
 					{
@@ -84,13 +87,10 @@ func TestClassifier_Classify(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			c, err := licensing.NewClassifier()
-			require.NoError(t, err)
-
 			contents, err := os.ReadFile(tt.filePath)
 			require.NoError(t, err)
 
-			got := c.Classify(tt.filePath, contents)
+			got := licensing.Classify(tt.filePath, contents)
 			assert.Equal(t, tt.want, got)
 		})
 	}
