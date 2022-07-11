@@ -9,62 +9,42 @@ import (
 	"path/filepath"
 	"strings"
 
+	"golang.org/x/exp/slices"
+	"golang.org/x/xerrors"
+
 	dio "github.com/aquasecurity/go-dep-parser/pkg/io"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/licensing"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
-
-	"golang.org/x/exp/slices"
-	"golang.org/x/xerrors"
 )
 
 const version = 1
 
-var skipDirs = []string{
-	"node_modules/",  // node scan will pick these up
-	"usr/share/doc/", // dpkg will pick these up
-}
-
-var acceptedExtensions = []string{
-	".asp", ".aspx", ".bas", ".bat", ".b", ".c", ".cue", ".cgi", ".cs", ".css", ".fish", ".html", ".h", ".ini",
-	".java", ".js", ".jsx", ".markdown", ".md", ".py", ".php", ".pl", ".r", ".rb", ".sh", ".sql", ".ts",
-	".tsx", ".txt", ".vue", ".zsh",
-}
-
-var acceptedFileNames = []string{
-	// nolint
-	"license", "licence", "copyright",
-}
-
-type ScannerOption struct {
-	IgnoredLicenses []string
-}
-
-// LicenseAnalyzer is an analyzer for licenses
-type LicenseAnalyzer struct {
-	scanner licensing.Scanner
-}
-
-func RegisterLicenseScanner(opt ScannerOption) error {
-	a, err := newLicenseScanner(opt)
-	if err != nil {
-		return xerrors.Errorf("license scanner init error: %w", err)
+var (
+	skipDirs = []string{
+		"node_modules/",  // node scan will pick these up
+		"usr/share/doc/", // dpkg will pick these up
 	}
-	analyzer.RegisterAnalyzer(a)
-	return nil
-}
 
-func newLicenseScanner(opt ScannerOption) (LicenseAnalyzer, error) {
-	s, err := licensing.NewScanner(opt.IgnoredLicenses)
-	if err != nil {
-		return LicenseAnalyzer{}, xerrors.Errorf("license scanner error: %w", err)
+	acceptedExtensions = []string{
+		".asp", ".aspx", ".bas", ".bat", ".b", ".c", ".cue", ".cgi", ".cs", ".css", ".fish", ".html", ".h", ".ini",
+		".java", ".js", ".jsx", ".markdown", ".md", ".py", ".php", ".pl", ".r", ".rb", ".sh", ".sql", ".ts",
+		".tsx", ".txt", ".vue", ".zsh",
 	}
-	return LicenseAnalyzer{
-		scanner: s,
-	}, nil
+
+	acceptedFileNames = []string{
+		"license", "licence", "copyright", // nolint: misspell
+	}
+)
+
+func init() {
+	analyzer.RegisterAnalyzer(licenseAnalyzer{})
 }
 
-func (a LicenseAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInput) (*analyzer.AnalysisResult, error) {
+// licenseAnalyzer is an analyzer for licenses
+type licenseAnalyzer struct{}
+
+func (a licenseAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInput) (*analyzer.AnalysisResult, error) {
 
 	// need files to be text based, readable files
 	readable, err := isHumanReadable(input.Content, input.Info.Size())
@@ -85,10 +65,7 @@ func (a LicenseAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInput
 		filePath = fmt.Sprintf("/%s", filePath)
 	}
 
-	lf := a.scanner.Scan(licensing.ScanArgs{
-		FilePath: filePath,
-		Content:  content,
-	})
+	lf := licensing.Classify(filePath, content)
 	if len(lf.Findings) == 0 {
 		return nil, nil
 	}
@@ -98,7 +75,7 @@ func (a LicenseAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInput
 	}, nil
 }
 
-func (a LicenseAnalyzer) Required(filePath string, _ os.FileInfo) bool {
+func (a licenseAnalyzer) Required(filePath string, _ os.FileInfo) bool {
 	for _, skipDir := range skipDirs {
 		if strings.HasPrefix(filePath, skipDir) {
 			return false
@@ -133,10 +110,10 @@ func isHumanReadable(content dio.ReadSeekerAt, fileSize int64) (bool, error) {
 	return true, nil
 }
 
-func (a LicenseAnalyzer) Type() analyzer.Type {
+func (a licenseAnalyzer) Type() analyzer.Type {
 	return analyzer.TypeLicense
 }
 
-func (a LicenseAnalyzer) Version() int {
+func (a licenseAnalyzer) Version() int {
 	return version
 }

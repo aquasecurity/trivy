@@ -19,7 +19,6 @@ import (
 	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/all"
 	"github.com/aquasecurity/trivy/pkg/fanal/applier"
 	_ "github.com/aquasecurity/trivy/pkg/fanal/handler/all"
-	"github.com/aquasecurity/trivy/pkg/fanal/licensing/classification"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/scanner/post"
@@ -359,16 +358,12 @@ func (s Scanner) packageLicensesToResults(apps []ftypes.Application) types.Resul
 
 		for _, lib := range app.Libraries {
 			for _, license := range lib.Licenses {
-				if !classification.LicenseIgnored(license) {
-					classificationIndex, class := classification.GoogleClassification(license)
-					findings = append(findings, ftypes.LicenseFinding{
-						PackageName:                      lib.Name,
-						License:                          license,
-						Confidence:                       1,
-						GoogleLicenseClassificationIndex: classificationIndex,
-						GoogleLicenseClassification:      class,
-					})
-				}
+				// TODO: add auditing
+				findings = append(findings, ftypes.LicenseFinding{
+					PackageName: lib.Name,
+					License:     license,
+					Confidence:  1,
+				})
 			}
 		}
 

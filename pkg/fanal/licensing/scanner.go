@@ -2,12 +2,9 @@ package licensing
 
 import (
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
-
-	"golang.org/x/xerrors"
 )
 
 type Scanner struct {
-	classifier *Classifier
 }
 
 type ScanArgs struct {
@@ -16,11 +13,7 @@ type ScanArgs struct {
 }
 
 func NewScanner(ignoredLicenses []string) (Scanner, error) {
-	classifier, err := NewClassifier()
-	if err != nil {
-		return Scanner{}, xerrors.Errorf("classifier could not be created: %w", err)
-	}
-	return Scanner{classifier: classifier}, nil
+	return Scanner{}, nil
 }
 
 func (s Scanner) Scan() types.LicenseFile {
