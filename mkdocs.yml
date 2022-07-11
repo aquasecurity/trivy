@@ -69,6 +69,8 @@ nav:
               - Scanning: docs/kubernetes/cli/scanning.md
           - Operator:
               - Overview: docs/kubernetes/operator/index.md
+      - Cloud:
+          - AWS: docs/cloud/aws/scanning.md
       - SBOM:
           - Overview: docs/sbom/index.md
           - CycloneDX: docs/sbom/cyclonedx.md

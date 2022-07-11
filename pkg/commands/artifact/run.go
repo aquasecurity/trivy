@@ -533,7 +533,7 @@ func scan(ctx context.Context, opts flag.Options, initializeScanner InitializeSc
 
 	report, err := s.ScanArtifact(ctx, scanOptions)
 	if err != nil {
-		return types.Report{}, xerrors.Errorf("image scan failed: %w", err)
+		return types.Report{}, xerrors.Errorf("scan failed: %w", err)
 	}
 	return report, nil
 }

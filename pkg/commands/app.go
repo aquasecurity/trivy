@@ -6,12 +6,14 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"time"
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy-db/pkg/metadata"
+	awscommands "github.com/aquasecurity/trivy/pkg/cloud/aws/commands"
 	"github.com/aquasecurity/trivy/pkg/commands/artifact"
 	"github.com/aquasecurity/trivy/pkg/commands/server"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
@@ -81,6 +83,7 @@ func NewApp(version string) *cobra.Command {
 		NewKubernetesCommand(globalFlags),
 		NewSBOMCommand(globalFlags),
 		NewVersionCommand(globalFlags),
+		NewAWSCommand(globalFlags),
 	)
 	rootCmd.AddCommand(loadPluginCommands()...)
 
@@ -783,6 +786,61 @@ func NewKubernetesCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	cmd.SetFlagErrorFunc(flagErrorFunc)
 	k8sFlags.AddFlags(cmd)
 	cmd.SetUsageTemplate(fmt.Sprintf(usageTemplate, k8sFlags.Usages(cmd)))
+
+	return cmd
+}
+
+func NewAWSCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
+
+	awsFlags := &flag.Flags{
+		AWSFlagGroup:     flag.NewAWSFlagGroup(),
+		CloudFlagGroup:   flag.NewCloudFlagGroup(),
+		MisconfFlagGroup: flag.NewMisconfFlagGroup(),
+		ReportFlagGroup:  flag.NewReportFlagGroup(),
+	}
+	cmd := &cobra.Command{
+		Use:     "aws [flags]",
+		Aliases: []string{},
+		Args:    cobra.ExactArgs(0),
+		Short:   "scan aws account",
+		Long:    "Scan an AWS account for misconfigurations. Trivy uses the same authentication methods as the AWS CLI. See https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-configure.html",
+		Example: `  # basic scanning
+  $ trivy aws --region us-east-1
+
+  # limit scan to a single service:
+  $ trivy aws --region us-east-1 --service s3
+
+  # limit scan to multiple services:
+  $ trivy aws --region us-east-1 --service s3 --service ec2
+
+  # force refresh of cache for fresh results
+  $ trivy aws --region us-east-1 --update-cache
+`,
+		PreRunE: func(cmd *cobra.Command, args []string) error {
+			if err := awsFlags.Bind(cmd); err != nil {
+				return xerrors.Errorf("flag bind error: %w", err)
+			}
+			return nil
+		},
+		RunE: func(cmd *cobra.Command, args []string) error {
+			if err := awsFlags.Bind(cmd); err != nil {
+				return xerrors.Errorf("flag bind error: %w", err)
+			}
+			opts, err := awsFlags.ToOptions(cmd.Version, args, globalFlags, outputWriter)
+			if err != nil {
+				return xerrors.Errorf("flag error: %w", err)
+			}
+			if opts.Timeout < time.Minute*10 {
+				_, _ = fmt.Fprintf(cmd.ErrOrStderr(), "WARNING: You have set a low timeout value of %s - AWS scans generally require use of a higher --timeout value.\n", opts.Timeout)
+			}
+			return awscommands.Run(cmd.Context(), opts)
+		},
+		SilenceErrors: true,
+		SilenceUsage:  true,
+	}
+	cmd.SetFlagErrorFunc(flagErrorFunc)
+	awsFlags.AddFlags(cmd)
+	cmd.SetUsageTemplate(fmt.Sprintf(usageTemplate, awsFlags.Usages(cmd)))
 
 	return cmd
 }
