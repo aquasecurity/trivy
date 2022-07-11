@@ -84,6 +84,21 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.ORG_REPO_TOKEN }}
 
+      ## push images to registries
+      ## only for canary build
+      - name: Build and push
+        if: ${{ inputs.goreleaser_config == 'goreleaser-canary.yml' }}
+        uses: docker/build-push-action@v3
+        with:
+          platforms: linux/amd64, linux/arm64
+          file: ./Dockerfile.canary # path to Dockerfile
+          context: .
+          push: true
+          tags: |
+            aquasec/trivy:canary
+            ghcr.io/aquasecurity/trivy:canary
+            public.ecr.aws/aquasecurity/trivy:canary
+
       - name: Cache Trivy binaries
         uses: actions/cache@v3.0.4
         with:
