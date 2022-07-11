@@ -320,7 +320,7 @@ func (f *Flags) ToOptions(appVersion string, args []string, globalFlags *GlobalF
 	}
 
 	if f.VulnerabilityFlagGroup != nil {
-		opts.LicenseOptions = f.VulnerabilityFlagGroup.ToOptions()
+		opts.VulnerabilityOptions = f.VulnerabilityFlagGroup.ToOptions()
 	}
 
 	return opts, nil
