@@ -5,10 +5,10 @@ import (
 	"strings"
 	"sync"
 
-	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"golang.org/x/xerrors"
 
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
+	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/report/cyclonedx"
 	"github.com/aquasecurity/trivy/pkg/report/github"
