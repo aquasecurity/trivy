@@ -177,3 +177,132 @@ func Test_newURL(t *testing.T) {
 		})
 	}
 }
+
+func Test_branch(t *testing.T) {
+	type args struct {
+		rawurl      string
+		c           cache.ArtifactCache
+		FetchBranch string
+	}
+	tests := []struct {
+		name    string
+		args    args
+		wantErr string
+	}{
+		{
+			name: "happy branch",
+			args: args{
+				rawurl:      "https://github.com/aquasecurity/trivy-plugin-aqua",
+				c:           nil,
+				FetchBranch: "use_urfave",
+			},
+		},
+		{
+			name: "sad invalid branch",
+			args: args{
+				rawurl:      "https://github.com/aquasecurity/trivy-plugin-aqua",
+				c:           nil,
+				FetchBranch: "Invalid_use_urfave",
+			},
+			wantErr: "couldn't find remote ref \"refs/heads/Invalid_use_urfave\"",
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			_, cleanup, err := NewArtifact(tt.args.rawurl, tt.args.c, artifact.Option{FetchBranch: tt.args.FetchBranch})
+			if tt.wantErr != "" {
+				require.NotNil(t, err)
+				assert.Contains(t, err.Error(), tt.wantErr)
+			} else {
+				require.NoError(t, err)
+			}
+			defer cleanup()
+		})
+	}
+}
+
+func Test_Tag(t *testing.T) {
+	type args struct {
+		rawurl   string
+		c        cache.ArtifactCache
+		FetchTag string
+	}
+	tests := []struct {
+		name    string
+		args    args
+		wantErr string
+	}{
+		{
+			name: "happy tag",
+			args: args{
+				rawurl:   "https://github.com/aquasecurity/trivy-plugin-aqua",
+				c:        nil,
+				FetchTag: "v0.50.0",
+			},
+		},
+		{
+			name: "sad invalid tag",
+			args: args{
+				rawurl:   "https://github.com/aquasecurity/trivy-plugin-aqua",
+				c:        nil,
+				FetchTag: "v50.0.0",
+			},
+			wantErr: "git clone error: couldn't find remote ref \"refs/tags/v50.0.0\"",
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			_, cleanup, err := NewArtifact(tt.args.rawurl, tt.args.c, artifact.Option{FetchTag: tt.args.FetchTag})
+			if tt.wantErr != "" {
+				require.NotNil(t, err)
+				assert.Contains(t, err.Error(), tt.wantErr)
+			} else {
+				require.NoError(t, err)
+			}
+			defer cleanup()
+		})
+	}
+}
+
+func Test_Commit(t *testing.T) {
+	type args struct {
+		rawurl      string
+		c           cache.ArtifactCache
+		FetchCommit string
+	}
+	tests := []struct {
+		name    string
+		args    args
+		wantErr string
+	}{
+		{
+			name: "happy tag",
+			args: args{
+				rawurl:      "https://github.com/aquasecurity/trivy-plugin-aqua",
+				c:           nil,
+				FetchCommit: "70d5f75b1def3fca1f3b2e19d5aecdad6290d0a1",
+			},
+		},
+		{
+			name: "sad invalid tag",
+			args: args{
+				rawurl:      "https://github.com/aquasecurity/trivy-plugin-aqua",
+				c:           nil,
+				FetchCommit: "70d5f75b1def3fca1f3b2e19d5aecdad6290d0a0",
+			},
+			wantErr: "git checkout error: object not found",
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			_, cleanup, err := NewArtifact(tt.args.rawurl, tt.args.c, artifact.Option{FetchCommit: tt.args.FetchCommit})
+			if tt.wantErr != "" {
+				require.NotNil(t, err)
+				assert.Contains(t, err.Error(), tt.wantErr)
+			} else {
+				require.NoError(t, err)
+			}
+			defer cleanup()
+		})
+	}
+}

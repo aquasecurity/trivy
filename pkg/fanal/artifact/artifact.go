@@ -20,6 +20,9 @@ type Option struct {
 	Offline           bool
 	InsecureSkipTLS   bool
 	AppDirs           []string
+	FetchBranch       string
+	FetchCommit       string
+	FetchTag          string
 
 	MisconfScannerOption misconf.ScannerOption
 	SecretScannerOption  secret.ScannerOption

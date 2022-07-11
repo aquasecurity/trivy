@@ -51,6 +51,7 @@ type Flags struct {
 	LicenseFlagGroup       *LicenseFlagGroup
 	MisconfFlagGroup       *MisconfFlagGroup
 	RemoteFlagGroup        *RemoteFlagGroup
+	RepoFlagGroup          *RepoFlagGroup
 	ReportFlagGroup        *ReportFlagGroup
 	SBOMFlagGroup          *SBOMFlagGroup
 	ScanFlagGroup          *ScanFlagGroup
@@ -68,6 +69,7 @@ type Options struct {
 	LicenseOptions
 	MisconfOptions
 	RemoteOptions
+	RepoOptions
 	ReportOptions
 	SBOMOptions
 	ScanOptions
@@ -209,6 +211,9 @@ func (f *Flags) groups() []FlagGroup {
 	if f.RemoteFlagGroup != nil {
 		groups = append(groups, f.RemoteFlagGroup)
 	}
+	if f.RepoFlagGroup != nil {
+		groups = append(groups, f.RepoFlagGroup)
+	}
 	return groups
 }
 
@@ -300,6 +305,10 @@ func (f *Flags) ToOptions(appVersion string, args []string, globalFlags *GlobalF
 
 	if f.RemoteFlagGroup != nil {
 		opts.RemoteOptions = f.RemoteFlagGroup.ToOptions()
+	}
+
+	if f.RepoFlagGroup != nil {
+		opts.RepoOptions = f.RepoFlagGroup.ToOptions()
 	}
 
 	if f.ReportFlagGroup != nil {
