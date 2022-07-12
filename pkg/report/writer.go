@@ -8,7 +8,6 @@ import (
 	"golang.org/x/xerrors"
 
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
-	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/report/cyclonedx"
 	"github.com/aquasecurity/trivy/pkg/report/github"
@@ -52,19 +51,6 @@ func Write(report types.Report, option Option) error {
 	var writer Writer
 	switch option.Format {
 	case FormatTable:
-		if option.Tree {
-			switch report.ArtifactType {
-			case ftypes.ArtifactFilesystem, ftypes.ArtifactRemoteRepository: // only `fs` and `repo` commands support `--dependency-tree` flag
-				for _, result := range report.Results {
-					if !strings.HasSuffix(result.Target, "package-lock.json") { // Only package-lock.json files are supported at the moment.
-						log.Logger.Warn(`"--dependency-tree" can be used only with nodejs (package-lock.json) dependencies"`)
-						break // Warning should be once
-					}
-				}
-			default: // other commands don't support `--dependency-tree` flag
-				log.Logger.Warn(`"--dependency-tree" can be used only with "fs" or "repo" commands.`)
-			}
-		}
 		writer = &TableWriter{
 			Output:             option.Output,
 			Severities:         option.Severities,

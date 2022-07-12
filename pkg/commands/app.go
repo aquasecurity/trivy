@@ -215,7 +215,8 @@ func NewRootCommand(version string, globalFlags *flag.GlobalFlagGroup) *cobra.Co
 
 func NewImageCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	reportFlagGroup := flag.NewReportFlagGroup()
-	reportFlagGroup.ReportFormat = nil // TODO: support --format summary
+	reportFlagGroup.DependencyTree = nil // disable '--dependency-tree'
+	reportFlagGroup.ReportFormat = nil   // TODO: support --format summary
 
 	imageFlags := &flag.Flags{
 		CacheFlagGroup:         flag.NewCacheFlagGroup(),
@@ -796,7 +797,8 @@ func NewKubernetesCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 
 func NewSBOMCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	reportFlagGroup := flag.NewReportFlagGroup()
-	reportFlagGroup.ReportFormat = nil // TODO: support --format summary
+	reportFlagGroup.DependencyTree = nil // disable '--dependency-tree'
+	reportFlagGroup.ReportFormat = nil   // TODO: support --format summary
 
 	scanFlags := flag.NewScanFlagGroup()
 	scanFlags.SecurityChecks = nil // disable '--security-checks' as it always scans for vulnerabilities
