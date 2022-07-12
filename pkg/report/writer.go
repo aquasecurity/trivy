@@ -52,8 +52,18 @@ func Write(report types.Report, option Option) error {
 	var writer Writer
 	switch option.Format {
 	case FormatTable:
-		if option.Tree && report.ArtifactType != ftypes.ArtifactFilesystem && report.ArtifactType != ftypes.ArtifactRemoteRepository {
-			log.Logger.Warn(`"--dependency-tree" can be used only with "fs" or "repo" commands.`)
+		if option.Tree {
+			switch report.ArtifactType {
+			case ftypes.ArtifactFilesystem, ftypes.ArtifactRemoteRepository: // only `fs` and `repo` commands support `--dependency-tree` flag
+				for _, result := range report.Results {
+					if !strings.HasSuffix(result.Target, "package-lock.json") { // Only package-lock.json files are supported at the moment.
+						log.Logger.Warn(`"--dependency-tree" can be used only with nodejs (package-lock.json) dependencies"`)
+						break // Warning should be once
+					}
+				}
+			default: // other commands don't support `--dependency-tree` flag
+				log.Logger.Warn(`"--dependency-tree" can be used only with "fs" or "repo" commands.`)
+			}
 		}
 		writer = &TableWriter{
 			Output:             option.Output,
