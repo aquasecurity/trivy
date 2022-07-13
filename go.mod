@@ -118,6 +118,8 @@ require (
 	github.com/aws/aws-sdk-go-v2/service/sqs v1.19.1 // indirect
 	github.com/aws/aws-sdk-go-v2/service/sso v1.11.13 // indirect
 	github.com/aws/aws-sdk-go-v2/service/workspaces v1.22.0 // indirect
+	github.com/emicklei/go-restful/v3 v3.8.0 // indirect
+	github.com/shibumi/go-pathspec v1.3.0 // indirect
 	github.com/aws/smithy-go v1.12.0 // indirect
 	github.com/cpuguy83/go-md2man/v2 v2.0.2 // indirect
 	github.com/emicklei/go-restful/v3 v3.8.0 // indirect
@@ -164,6 +166,7 @@ require (
 	github.com/aquasecurity/defsec v0.70.2
 	github.com/asaskevich/govalidator v0.0.0-20200428143746-21a406dcc535 // indirect
 	github.com/aws/aws-sdk-go v1.44.66
+	github.com/asaskevich/govalidator v0.0.0-20200428143746-21a406dcc535 // indirect
 	github.com/beorn7/perks v1.0.1 // indirect
 	github.com/bgentry/go-netrc v0.0.0-20140422174119-9fd32a8b3d3d // indirect
 	github.com/bmatcuk/doublestar v1.3.4 // indirect
@@ -379,5 +382,4 @@ replace github.com/docker/docker => github.com/docker/docker v20.10.3-0.20220224
 // v1.2.0 is taken from github.com/open-policy-agent/opa v0.42.0
 // v1.2.0 incompatible with github.com/docker/docker v20.10.3-0.20220224222438-c78f6963a1c0+incompatible
 replace oras.land/oras-go => oras.land/oras-go v1.1.1
-
 replace github.com/elgohr/go-localstack => github.com/aquasecurity/go-localstack v0.0.0-20220706080605-1ec0e9b8753c
