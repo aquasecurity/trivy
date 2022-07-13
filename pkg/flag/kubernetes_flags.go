@@ -10,8 +10,9 @@ var (
 	K8sNamespaceFlag = Flag{
 		Name:       "namespace",
 		ConfigName: "kubernetes.namespace",
+		Shorthand:  "n",
 		Value:      "",
-		Usage:      "specify a namespace to sca",
+		Usage:      "specify a namespace to scan",
 	}
 )
 
