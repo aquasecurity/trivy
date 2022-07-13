@@ -9,6 +9,7 @@ import (
 	"regexp"
 	"strings"
 
+	"github.com/aquasecurity/trivy/pkg/licensing"
 	classifier "github.com/google/licenseclassifier/v2"
 	"github.com/google/licenseclassifier/v2/assets"
 	"github.com/samber/lo"
@@ -51,7 +52,7 @@ func (a dpkgLicenseAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisI
 	}
 
 	findings := lo.Map(licenses, func(license string, _ int) types.LicenseFinding {
-		return types.LicenseFinding{Name: license}
+		return types.LicenseFinding{Name: licensing.Normalize(license)}
 	})
 
 	// e.g. "usr/share/doc/zlib1g/copyright" => "zlib1g"
