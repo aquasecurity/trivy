@@ -35,11 +35,6 @@ func NewArtifact(rawurl string, c cache.ArtifactCache, artifactOpt artifact.Opti
 	if err != nil {
 		return nil, cleanup, err
 	}
-	println(artifactOpt.FetchBranch)
-	println(artifactOpt.FetchCommit)
-	println(artifactOpt.FetchTag)
-
-	println(tmpDir)
 
 	cloneOptions := git.CloneOptions{
 		URL:             u.String(),
@@ -58,12 +53,12 @@ func NewArtifact(rawurl string, c cache.ArtifactCache, artifactOpt artifact.Opti
 	}
 
 	if len(artifactOpt.FetchBranch) != 0 {
-		cloneOptions.ReferenceName = plumbing.ReferenceName("refs/heads/" + artifactOpt.FetchBranch)
+		cloneOptions.ReferenceName = plumbing.NewBranchReferenceName(artifactOpt.FetchBranch)
 		cloneOptions.SingleBranch = true
 	}
 
 	if len(artifactOpt.FetchTag) != 0 {
-		cloneOptions.ReferenceName = plumbing.ReferenceName("refs/tags/" + artifactOpt.FetchTag)
+		cloneOptions.ReferenceName = plumbing.NewTagReferenceName(artifactOpt.FetchTag)
 		cloneOptions.SingleBranch = true
 	}
 
