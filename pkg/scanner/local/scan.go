@@ -20,6 +20,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/fanal/applier"
 	_ "github.com/aquasecurity/trivy/pkg/fanal/handler/all"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
+	"github.com/aquasecurity/trivy/pkg/licensing"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/scanner/post"
 	"github.com/aquasecurity/trivy/pkg/types"
@@ -130,15 +131,9 @@ func (s Scanner) Scan(ctx context.Context, target, artifactKey string, blobKeys 
 		})
 	}
 
-	// Scan package licenses
-	if slices.Contains(options.SecurityChecks, types.SecurityCheckLicense) {
-		licenseResults := s.packageLicensesToResults(artifactDetail.Applications)
-		results = append(results, licenseResults...)
-	}
-
 	// Scan licenses
 	if slices.Contains(options.SecurityChecks, types.SecurityCheckLicense) {
-		licenseResults := s.licensesToResults(artifactDetail.Licenses)
+		licenseResults := s.scanLicenses(artifactDetail, options.LicenseCategories)
 		results = append(results, licenseResults...)
 	}
 
@@ -335,49 +330,83 @@ func (s Scanner) secretsToResults(secrets []ftypes.Secret) types.Results {
 	return results
 }
 
-func (s Scanner) licensesToResults(licenses []ftypes.LicenseFile) types.Results {
-	var results types.Results
-	for _, license := range licenses {
-		log.Logger.Debugf("Secret file: %s", license.FilePath)
+func (s Scanner) scanLicenses(detail ftypes.ArtifactDetail,
+	categories map[ftypes.LicenseCategory][]string) types.Results {
+	scanner := licensing.NewScanner(categories)
 
-		results = append(results, types.Result{
-			Target:  license.FilePath,
-			Class:   types.ClassLicense,
-			License: license,
-		})
+	var results types.Results
+
+	// License - OS packages
+	var osPkgLicenses []types.DetectedLicense
+	for _, pkg := range detail.Packages {
+		for _, license := range pkg.Licenses {
+			category, severity := scanner.Scan(license)
+			osPkgLicenses = append(osPkgLicenses, types.DetectedLicense{
+				Severity:   severity,
+				Category:   category,
+				PkgName:    pkg.Name,
+				Name:       license,
+				Confidence: 1.0,
+			})
+		}
+
 	}
-	return results
-}
+	results = append(results, types.Result{
+		Target:   "OS packages",
+		Class:    types.ClassLicense,
+		Licenses: osPkgLicenses,
+	})
 
-func (s Scanner) packageLicensesToResults(apps []ftypes.Application) types.Results {
-	var results types.Results
-	for _, app := range apps {
-		log.Logger.Debugf("Package file: %s", app.FilePath)
-
-		var findings []ftypes.LicenseFinding
-
+	// License - language-specific packages
+	for _, app := range detail.Applications {
+		var langLicenses []types.DetectedLicense
 		for _, lib := range app.Libraries {
 			for _, license := range lib.Licenses {
-				// TODO: add auditing
-				findings = append(findings, ftypes.LicenseFinding{
-					PackageName: lib.Name,
-					License:     license,
-					Confidence:  1,
+				category, severity := scanner.Scan(license)
+				langLicenses = append(langLicenses, types.DetectedLicense{
+					Severity:   severity,
+					Category:   category,
+					PkgName:    lib.Name,
+					Name:       license,
+					Confidence: 1.0,
 				})
 			}
 		}
 
-		license := &ftypes.PackageLicense{
-			PackageName: app.FilePath,
-			Findings:    findings,
+		target := app.FilePath
+		if t, ok := pkgTargets[app.Type]; ok && target == "" {
+			// When the file path is empty, we will overwrite it with the pre-defined value.
+			target = t
 		}
-
 		results = append(results, types.Result{
-			Target:         app.FilePath,
-			Class:          types.ClassLicense,
-			PackageLicense: license,
+			Target:   target,
+			Class:    types.ClassLicense,
+			Licenses: langLicenses,
 		})
 	}
+
+	// License - file header or license file
+	var fileLicenses []types.DetectedLicense
+	for _, license := range detail.Licenses {
+		for _, finding := range license.Findings {
+			category, severity := scanner.Scan(finding.Name)
+			fileLicenses = append(fileLicenses, types.DetectedLicense{
+				Severity:   severity,
+				Category:   category,
+				FilePath:   license.FilePath,
+				Name:       finding.Name,
+				Confidence: finding.Confidence,
+				Link:       finding.Link,
+			})
+
+		}
+	}
+	results = append(results, types.Result{
+		Target:   "File Licenses",
+		Class:    types.ClassLicenseFile,
+		Licenses: fileLicenses,
+	})
+
 	return results
 }
 
