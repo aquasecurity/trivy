@@ -237,15 +237,11 @@ func (r *runner) Filter(ctx context.Context, opts flag.Options, report types.Rep
 
 	// Filter results
 	for i := range results {
-		vulns, misconfSummary, misconfs, secrets, err := result.Filter(ctx, results[i].Vulnerabilities, results[i].Misconfigurations, results[i].Secrets,
-			opts.Severities, opts.IgnoreUnfixed, opts.IncludeNonFailures, opts.IgnoreFile, opts.IgnorePolicy)
+		err := result.Filter(ctx, &results[i], opts.Severities, opts.IgnoreUnfixed, opts.IncludeNonFailures,
+			opts.IgnoreFile, opts.IgnorePolicy, opts.IgnoredLicenses)
 		if err != nil {
 			return types.Report{}, xerrors.Errorf("unable to filter vulnerabilities: %w", err)
 		}
-		results[i].Vulnerabilities = vulns
-		results[i].Misconfigurations = misconfs
-		results[i].MisconfSummary = misconfSummary
-		results[i].Secrets = secrets
 	}
 	return report, nil
 }
