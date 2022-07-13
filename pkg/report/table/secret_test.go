@@ -1,10 +1,10 @@
-package report_test
+package table_test
 
 import (
 	"strings"
 	"testing"
 
-	"github.com/aquasecurity/trivy/pkg/report"
+	"github.com/aquasecurity/trivy/pkg/report/table"
 
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 
@@ -125,7 +125,7 @@ this is a title
 
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			renderer := report.NewSecretRenderer("my-file", test.input, false)
+			renderer := table.NewSecretRenderer("my-file", test.input, false)
 			assert.Equal(t, test.want, strings.ReplaceAll(renderer.Render(), "\r\n", "\n"))
 		})
 	}

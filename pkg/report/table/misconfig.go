@@ -1,9 +1,13 @@
-package report
+package table
 
 import (
 	"bytes"
 	"fmt"
 	"strings"
+
+	"github.com/fatih/color"
+
+	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 
 	"github.com/liamg/tml"
 	"golang.org/x/crypto/ssh/terminal"
@@ -19,15 +23,16 @@ const (
 )
 
 type misconfigRenderer struct {
-	target             string
-	misconfs           []types.DetectedMisconfiguration
-	includeNonFailures bool
 	w                  *bytes.Buffer
+	result             types.Result
+	severities         []dbTypes.Severity
+	trace              bool
+	includeNonFailures bool
 	width              int
 	ansi               bool
 }
 
-func NewMisconfigRenderer(target string, misconfs []types.DetectedMisconfiguration, includeNonFailures bool, ansi bool) *misconfigRenderer {
+func NewMisconfigRenderer(result types.Result, severities []dbTypes.Severity, trace, includeNonFailures bool, ansi bool) *misconfigRenderer {
 	width, _, err := terminal.GetSize(0)
 	if err != nil || width == 0 {
 		width = 40
@@ -37,8 +42,9 @@ func NewMisconfigRenderer(target string, misconfs []types.DetectedMisconfigurati
 	}
 	return &misconfigRenderer{
 		w:                  bytes.NewBuffer([]byte{}),
-		target:             target,
-		misconfs:           misconfs,
+		result:             result,
+		severities:         severities,
+		trace:              trace,
 		includeNonFailures: includeNonFailures,
 		width:              width,
 		ansi:               ansi,
@@ -46,15 +52,49 @@ func NewMisconfigRenderer(target string, misconfs []types.DetectedMisconfigurati
 }
 
 func (r *misconfigRenderer) Render() string {
-	for _, m := range r.misconfs {
+	if len(r.result.Misconfigurations) == 0 {
+		return ""
+	}
+
+	target := fmt.Sprintf("%s (%s)", r.result.Target, r.result.Type)
+	renderTarget(r.w, target, r.ansi)
+
+	total, summaries := summarize(r.severities, r.countSeverities())
+
+	summary := r.result.MisconfSummary
+	r.printf("Tests: %d (SUCCESSES: %d, FAILURES: %d, EXCEPTIONS: %d)\n",
+		summary.Successes+summary.Failures+summary.Exceptions, summary.Successes, summary.Failures, summary.Exceptions)
+	r.printf("Failures: %d (%s)\n\n", total, strings.Join(summaries, ", "))
+
+	for _, m := range r.result.Misconfigurations {
 		r.renderSingle(m)
 	}
+
+	// For debugging
+	if r.trace {
+		r.outputTrace()
+	}
 	return r.w.String()
+}
+
+func (r *misconfigRenderer) countSeverities() map[string]int {
+	severityCount := map[string]int{}
+	for _, misconf := range r.result.Misconfigurations {
+		if misconf.Status == types.StatusFailure {
+			severityCount[misconf.Severity]++
+		}
+	}
+	return severityCount
 }
 
 func (r *misconfigRenderer) printf(format string, args ...interface{}) {
 	// nolint
 	_ = tml.Fprintf(r.w, format, args...)
+}
+
+func (r *misconfigRenderer) println(input string) {
+	// nolint
+	tml.Fprintln(r.w, input)
 }
 
 func (r *misconfigRenderer) printDoubleDivider() {
@@ -125,7 +165,7 @@ func (r *misconfigRenderer) renderCode(misconf types.DetectedMisconfiguration) {
 				lineInfo = tml.Sprintf("%s<blue>-%d", lineInfo, misconf.CauseMetadata.EndLine)
 			}
 		}
-		r.printf(" <blue>%s%s\r\n", r.target, lineInfo)
+		r.printf(" <blue>%s%s\r\n", r.result.Target, lineInfo)
 		r.printSingleDivider()
 		for i, line := range lines {
 			if line.Truncated {
@@ -152,5 +192,32 @@ func (r *misconfigRenderer) renderCode(misconf types.DetectedMisconfiguration) {
 			}
 		}
 		r.printSingleDivider()
+	}
+}
+
+func (r *misconfigRenderer) outputTrace() {
+	blue := color.New(color.FgBlue).SprintFunc()
+	green := color.New(color.FgGreen).SprintfFunc()
+	red := color.New(color.FgRed).SprintfFunc()
+
+	for _, misconf := range r.result.Misconfigurations {
+		if len(misconf.Traces) == 0 {
+			continue
+		}
+
+		c := green
+		if misconf.Status == types.StatusFailure {
+			c = red
+		}
+
+		r.println(c("\nID: %s", misconf.ID))
+		r.println(c("File: %s", r.result.Target))
+		r.println(c("Namespace: %s", misconf.Namespace))
+		r.println(c("Query: %s", misconf.Query))
+		r.println(c("Message: %s", misconf.Message))
+		for _, t := range misconf.Traces {
+			r.println(blue("TRACE ") + t)
+		}
+		r.println("")
 	}
 }

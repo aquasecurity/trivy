@@ -5,6 +5,8 @@ import (
 	"strings"
 	"sync"
 
+	"github.com/aquasecurity/trivy/pkg/report/table"
+
 	"golang.org/x/xerrors"
 
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
@@ -55,7 +57,7 @@ func Write(report types.Report, option Option) error {
 	var writer Writer
 	switch option.Format {
 	case FormatTable:
-		writer = &TableWriter{
+		writer = &table.Writer{
 			Output:               option.Output,
 			Severities:           option.Severities,
 			Tree:                 option.Tree,

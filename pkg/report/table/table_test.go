@@ -1,4 +1,4 @@
-package report_test
+package table_test
 
 import (
 	"bytes"
