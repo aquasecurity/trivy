@@ -12,8 +12,10 @@ var mapping = map[string]string{
 	"GPL-2.0-OR-LATER": GPL20,
 	"GPL3":             GPL30,
 	"GPL-3":            GPL30,
+	"GPL-3.0-ONLY":     GPL30,
 	"GPL3+":            GPL30,
 	"GPL-3+":           GPL30,
+	"GPL-3.0-OR-LATER": GPL30,
 	"GPL":              GPL30, // 2? 3?
 
 	// LGPL

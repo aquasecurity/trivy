@@ -81,7 +81,10 @@ func (a alpinePkgAnalyzer) parseApkInfo(scanner *bufio.Scanner) ([]types.Package
 				var licenses []string
 				// e.g. MPL 2.0 GPL2+ => {"MPL2.0", "GPL2+"}
 				for i, s := range strings.Fields(line[2:]) {
-					if i > 0 && (s == "1.0" || s == "2.0" || s == "3.0") {
+					s = strings.Trim(s, "()")
+					if s == "AND" || s == "OR" {
+						continue
+					} else if i > 0 && (s == "1.0" || s == "2.0" || s == "3.0") {
 						licenses[i-1] = licensing.Normalize(licenses[i-1] + s)
 					} else {
 						licenses = append(licenses, licensing.Normalize(s))
