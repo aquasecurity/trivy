@@ -2356,6 +2356,13 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#multiple-trivy-servers" class="md-nav__link">
+    Multiple Trivy servers
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -2729,6 +2736,13 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#multiple-trivy-servers" class="md-nav__link">
+    Multiple Trivy servers
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -2882,7 +2896,17 @@ This is because of a limitation of boltdb.</p>
 <p class="admonition-title">Error</p>
 <p>--skip-update cannot be specified with the old DB schema.</p>
 </div>
-<p>Trivy v0.23.0 or later requires Trivy DB v2. Please update your local database or follow [the instruction of air-gapped environment][../advanced/air-gap.md].</p>
+<p>Trivy v0.23.0 or later requires Trivy DB v2. Please update your local database or follow <a href="../../advanced/air-gap/">the instruction of air-gapped environment</a>.</p>
+<h3 id="multiple-trivy-servers">Multiple Trivy servers</h3>
+<div class="admonition error">
+<p class="admonition-title">Error</p>
+<div class="highlight"><pre><span></span><code>$ trivy image --server http://xxx.com:xxxx test-image
+...
+- twirp error internal: failed scan, test-image: failed to apply layers: layer cache missing: sha256:*****
+</code></pre></div>
+</div>
+<p>To run multiple Trivy servers, you need to use Redis as the cache backend so that those servers can share the cache. 
+Follow <a href="../../vulnerability/examples/cache/#cache-backend">this instruction</a> to do so.</p>
 <h2 id="homebrew">Homebrew</h2>
 <h3 id="scope-error">Scope error</h3>
 <div class="admonition error">
