@@ -4,6 +4,7 @@ import (
 	"strings"
 	"testing"
 
+	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/report/table"
 
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
@@ -47,7 +48,11 @@ func TestSecretRenderer(t *testing.T) {
 					Match: "secret",
 				},
 			},
-			want: `HIGH: category (rule-id)
+			want: `
+my-file (secrets)
+=================Total: 1 (MEDIUM: 0, HIGH: 1)
+
+HIGH: category (rule-id)
 ════════════════════════════════════════
 this is a title
 ────────────────────────────────────────
@@ -104,7 +109,11 @@ this is a title
 					Match: "secret",
 				},
 			},
-			want: `HIGH: category (rule-id)
+			want: `
+my-file (secrets)
+=================Total: 1 (MEDIUM: 0, HIGH: 1)
+
+HIGH: category (rule-id)
 ════════════════════════════════════════
 this is a title
 ────────────────────────────────────────
@@ -125,7 +134,7 @@ this is a title
 
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			renderer := table.NewSecretRenderer("my-file", test.input, false)
+			renderer := table.NewSecretRenderer("my-file", test.input, false, []dbTypes.Severity{dbTypes.SeverityHigh, dbTypes.SeverityMedium})
 			assert.Equal(t, test.want, strings.ReplaceAll(renderer.Render(), "\r\n", "\n"))
 		})
 	}

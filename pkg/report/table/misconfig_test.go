@@ -29,7 +29,8 @@ func TestMisconfigRenderer(t *testing.T) {
 		{
 			name: "single result",
 			input: types.Result{
-				Target: "my-file",
+				Target:         "my-file",
+				MisconfSummary: &types.MisconfSummary{Successes: 0, Failures: 1, Exceptions: 0},
 				Misconfigurations: []types.DetectedMisconfiguration{
 					{
 						ID:          "AVD-XYZ-0123",
@@ -43,7 +44,12 @@ func TestMisconfigRenderer(t *testing.T) {
 				},
 			},
 			includeNonFailures: false,
-			want: `HIGH: Oh no, a bad config.
+			want: `
+my-file ()
+==========Tests: 1 (SUCCESSES: 0, FAILURES: 1, EXCEPTIONS: 0)
+Failures: 1 (LOW: 0, MEDIUM: 0, HIGH: 1, CRITICAL: 0)
+
+HIGH: Oh no, a bad config.
 ════════════════════════════════════════
 Your config file is not good.
 
@@ -56,7 +62,8 @@ See https://google.com/search?q=bad%20config
 		{
 			name: "single result with code",
 			input: types.Result{
-				Target: "my-file",
+				Target:         "my-file",
+				MisconfSummary: &types.MisconfSummary{Successes: 0, Failures: 1, Exceptions: 0},
 				Misconfigurations: []types.DetectedMisconfiguration{
 					{
 						ID:          "AVD-XYZ-0123",
@@ -95,7 +102,12 @@ See https://google.com/search?q=bad%20config
 				},
 			},
 			includeNonFailures: false,
-			want: `HIGH: Oh no, a bad config.
+			want: `
+my-file ()
+==========Tests: 1 (SUCCESSES: 0, FAILURES: 1, EXCEPTIONS: 0)
+Failures: 1 (LOW: 0, MEDIUM: 0, HIGH: 1, CRITICAL: 0)
+
+HIGH: Oh no, a bad config.
 ════════════════════════════════════════
 Your config file is not good.
 
@@ -114,7 +126,8 @@ See https://google.com/search?q=bad%20config
 		{
 			name: "multiple results",
 			input: types.Result{
-				Target: "my-file",
+				Target:         "my-file",
+				MisconfSummary: &types.MisconfSummary{Successes: 1, Failures: 1, Exceptions: 0},
 				Misconfigurations: []types.DetectedMisconfiguration{
 					{
 						ID:          "AVD-XYZ-0123",
@@ -159,7 +172,12 @@ See https://google.com/search?q=bad%20config
 				},
 			},
 			includeNonFailures: true,
-			want: `FAIL: HIGH: Oh no, a bad config.
+			want: `
+my-file ()
+==========Tests: 2 (SUCCESSES: 1, FAILURES: 1, EXCEPTIONS: 0)
+Failures: 1 (LOW: 0, MEDIUM: 0, HIGH: 1, CRITICAL: 0)
+
+FAIL: HIGH: Oh no, a bad config.
 ════════════════════════════════════════
 Your config file is not good.
 

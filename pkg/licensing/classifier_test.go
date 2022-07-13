@@ -38,6 +38,7 @@ func TestClassifier_Classify(t *testing.T) {
 			name:     "C file with no license",
 			filePath: "testdata/unlicensed.c",
 			want: types.LicenseFile{
+				Type:     types.LicenseTypeFile,
 				FilePath: "testdata/unlicensed.c",
 			},
 		},
