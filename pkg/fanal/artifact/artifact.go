@@ -6,7 +6,6 @@ import (
 
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	misconf "github.com/aquasecurity/trivy/pkg/fanal/analyzer/config"
-	"github.com/aquasecurity/trivy/pkg/fanal/analyzer/licensing"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer/secret"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 )
@@ -22,9 +21,8 @@ type Option struct {
 	InsecureSkipTLS   bool
 	AppDirs           []string
 
-	MisconfScannerOption   misconf.ScannerOption
-	SecretScannerOption    secret.ScannerOption
-	LicensingScannerOption licensing.ScannerOption
+	MisconfScannerOption misconf.ScannerOption
+	SecretScannerOption  secret.ScannerOption
 }
 
 func (o *Option) Sort() {

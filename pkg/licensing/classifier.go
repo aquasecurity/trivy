@@ -49,9 +49,9 @@ func googleClassifierLicense(filePath string, contents []byte) types.LicenseFile
 		licenseLink := fmt.Sprintf("https://spdx.org/licenses/%s.html", m.Name)
 
 		findings = append(findings, types.LicenseFinding{
-			License:     m.Name,
-			Confidence:  m.Confidence,
-			LicenseLink: licenseLink,
+			Name:       m.Name,
+			Confidence: m.Confidence,
+			Link:       licenseLink,
 		})
 	}
 
@@ -73,9 +73,9 @@ func fallbackClassifyLicense(filePath string, contents []byte) types.LicenseFile
 		licenseLink := fmt.Sprintf("https://spdx.org/licenses/%s.html", l)
 
 		license.Findings = append(license.Findings, types.LicenseFinding{
-			License:     l,
-			Confidence:  float64(confidence),
-			LicenseLink: licenseLink,
+			Name:       l,
+			Confidence: float64(confidence),
+			Link:       licenseLink,
 		})
 	}
 

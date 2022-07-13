@@ -111,7 +111,11 @@ func addFlag(cmd *cobra.Command, flag *Flag) {
 }
 
 func bind(cmd *cobra.Command, flag *Flag) error {
-	if flag == nil || flag.Name == "" {
+	if flag == nil {
+		return nil
+	} else if flag.Name == "" {
+		// This flag is available only in trivy.yaml
+		viper.SetDefault(flag.ConfigName, flag.Value)
 		return nil
 	}
 	if flag.Persistent {
@@ -127,6 +131,7 @@ func bind(cmd *cobra.Command, flag *Flag) error {
 	if err := viper.BindEnv(flag.ConfigName, strings.ToUpper("trivy_"+flag.Name)); err != nil {
 		return err
 	}
+
 	return nil
 }
 
@@ -224,7 +229,7 @@ func (f *Flags) Usages(cmd *cobra.Command) string {
 		flags := pflag.NewFlagSet(cmd.Name(), pflag.ContinueOnError)
 		lflags := cmd.LocalFlags()
 		for _, flag := range group.Flags() {
-			if flag == nil {
+			if flag == nil || flag.Name == "" {
 				continue
 			}
 			flags.AddFlag(lflags.Lookup(flag.Name))

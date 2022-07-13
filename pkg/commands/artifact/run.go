@@ -438,6 +438,7 @@ func initScannerConfig(opts flag.Options, cacheClient cache.Cache) (ScannerConfi
 		SecurityChecks:      opts.SecurityChecks,
 		ScanRemovedPackages: opts.ScanRemovedPkgs, // this is valid only for 'image' subcommand
 		ListAllPackages:     opts.ListAllPkgs,
+		LicenseCategories:   opts.LicenseCategories,
 	}
 
 	if slices.Contains(opts.SecurityChecks, types.SecurityCheckVulnerability) {
@@ -494,11 +495,6 @@ func initScannerConfig(opts flag.Options, cacheClient cache.Cache) (ScannerConfi
 			// For secret scanning
 			SecretScannerOption: secret.ScannerOption{
 				ConfigPath: opts.SecretConfigPath,
-			},
-
-			// For license scanning
-			LicensingScannerOption: licensing.ScannerOption{
-				IgnoredLicenses: opts.IgnoredLicenses,
 			},
 		},
 	}, scanOptions, nil

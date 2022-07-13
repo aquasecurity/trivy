@@ -8,24 +8,29 @@ const (
 	LicenseTypeFile   LicenseType = "license-file" // From LICENSE, COPYRIGHT, etc.
 )
 
+type LicenseCategory string
+
+const (
+	CategoryForbidden    LicenseCategory = "forbidden"
+	CategoryRestricted   LicenseCategory = "restricted"
+	CategoryReciprocal   LicenseCategory = "reciprocal"
+	CategoryNotice       LicenseCategory = "notice"
+	CategoryPermissive   LicenseCategory = "permissive"
+	CategoryUnencumbered LicenseCategory = "unencumbered"
+	CategoryUnknown      LicenseCategory = "unknown"
+)
+
 type LicenseFile struct {
 	Type     LicenseType
 	FilePath string
+	PkgName  string
 	Findings []LicenseFinding
-	Layer    Layer  `json:",omitempty"`
-	Package  string `json:"package,omitempty"`
+	Layer    Layer `json:",omitempty"`
 }
 
 type LicenseFinding struct {
-	License                          string  `json:"license"`
-	Confidence                       float64 `json:"match_confidence"`
-	GoogleLicenseClassificationIndex int     `json:"classification_index"`
-	GoogleLicenseClassification      string  `json:"google_license_classification"`
-	LicenseLink                      string  `json:"license_link,omitempty"`
-	PackageName                      string  `json:"package_name,omitempty"`
-}
-
-type PackageLicense struct {
-	PackageName string
-	Findings    []LicenseFinding
+	Category   LicenseCategory // such as "forbidden"
+	Name       string
+	Confidence float64
+	Link       string
 }

@@ -1,23 +1,43 @@
 package licensing
 
 import (
+	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
+	"golang.org/x/exp/slices"
 )
 
+type ScannerOption struct {
+	IgnoredLicenses   []string
+	LicenseCategories map[types.LicenseCategory][]string
+}
+
 type Scanner struct {
+	categories map[types.LicenseCategory][]string
 }
 
-type ScanArgs struct {
-	FilePath string
-	Content  []byte
+func NewScanner(categories map[types.LicenseCategory][]string) Scanner {
+	return Scanner{categories: categories}
 }
 
-func NewScanner(ignoredLicenses []string) (Scanner, error) {
-	return Scanner{}, nil
+func (s *Scanner) Scan(licenseName string) (types.LicenseCategory, string) {
+	for category, names := range s.categories {
+		if slices.Contains(names, licenseName) {
+			return category, categoryToSeverity(category).String()
+		}
+	}
+	return types.CategoryUnknown, dbTypes.SeverityCritical.String()
 }
 
-func (s Scanner) Scan() types.LicenseFile {
-	// TODO: license type detection
-	// https://github.com/google/licenseclassifier/blob/7c62d6fe8d3aa2f39c4affb58c9781d9dc951a2d/license_type.go#L377-L394
-	return types.LicenseFile{}
+func categoryToSeverity(category types.LicenseCategory) dbTypes.Severity {
+	switch category {
+	case types.CategoryForbidden:
+		return dbTypes.SeverityCritical
+	case types.CategoryRestricted:
+		return dbTypes.SeverityHigh
+	case types.CategoryReciprocal:
+		return dbTypes.SeverityMedium
+	case types.CategoryNotice, types.CategoryPermissive, types.CategoryUnencumbered:
+		return dbTypes.SeverityLow
+	}
+	return dbTypes.SeverityCritical
 }

@@ -894,9 +894,7 @@ func showVersion(cacheDir, outputFormat, version string, outputWriter io.Writer)
 
 	switch outputFormat {
 	case "json":
-		// nolint
 		b, _ := json.Marshal(VersionInfo{
-			// nolint: errcheck
 			Version:         version,
 			VulnerabilityDB: dbMeta,
 		})
