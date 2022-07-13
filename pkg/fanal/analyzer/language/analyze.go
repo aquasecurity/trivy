@@ -7,6 +7,7 @@ import (
 	godeptypes "github.com/aquasecurity/go-dep-parser/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
+	"github.com/aquasecurity/trivy/pkg/licensing"
 )
 
 func Analyze(fileType, filePath string, r dio.ReadSeekerAt, parser godeptypes.Parser) (*analyzer.AnalysisResult, error) {
@@ -34,7 +35,7 @@ func ToAnalysisResult(fileType, filePath, libFilePath string, libs []godeptypes.
 	for _, lib := range libs {
 		var licenses []string
 		if lib.License != "" {
-			licenses = []string{lib.License}
+			licenses = []string{licensing.Normalize(lib.License)}
 		}
 		pkgs = append(pkgs, types.Package{
 			ID:        lib.ID,

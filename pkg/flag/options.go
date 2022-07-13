@@ -48,6 +48,7 @@ type Flags struct {
 	DBFlagGroup            *DBFlagGroup
 	ImageFlagGroup         *ImageFlagGroup
 	K8sFlagGroup           *K8sFlagGroup
+	LicenseFlagGroup       *LicenseFlagGroup
 	MisconfFlagGroup       *MisconfFlagGroup
 	RemoteFlagGroup        *RemoteFlagGroup
 	ReportFlagGroup        *ReportFlagGroup
@@ -64,6 +65,7 @@ type Options struct {
 	DBOptions
 	ImageOptions
 	K8sOptions
+	LicenseOptions
 	MisconfOptions
 	RemoteOptions
 	ReportOptions
@@ -109,7 +111,11 @@ func addFlag(cmd *cobra.Command, flag *Flag) {
 }
 
 func bind(cmd *cobra.Command, flag *Flag) error {
-	if flag == nil || flag.Name == "" {
+	if flag == nil {
+		return nil
+	} else if flag.Name == "" {
+		// This flag is available only in trivy.yaml
+		viper.SetDefault(flag.ConfigName, flag.Value)
 		return nil
 	}
 	if flag.Persistent {
@@ -125,6 +131,7 @@ func bind(cmd *cobra.Command, flag *Flag) error {
 	if err := viper.BindEnv(flag.ConfigName, strings.ToUpper("trivy_"+flag.Name)); err != nil {
 		return err
 	}
+
 	return nil
 }
 
@@ -193,6 +200,9 @@ func (f *Flags) groups() []FlagGroup {
 	if f.SecretFlagGroup != nil {
 		groups = append(groups, f.SecretFlagGroup)
 	}
+	if f.LicenseFlagGroup != nil {
+		groups = append(groups, f.LicenseFlagGroup)
+	}
 	if f.K8sFlagGroup != nil {
 		groups = append(groups, f.K8sFlagGroup)
 	}
@@ -219,7 +229,7 @@ func (f *Flags) Usages(cmd *cobra.Command) string {
 		flags := pflag.NewFlagSet(cmd.Name(), pflag.ContinueOnError)
 		lflags := cmd.LocalFlags()
 		for _, flag := range group.Flags() {
-			if flag == nil {
+			if flag == nil || flag.Name == "" {
 				continue
 			}
 			flags.AddFlag(lflags.Lookup(flag.Name))
@@ -275,6 +285,10 @@ func (f *Flags) ToOptions(appVersion string, args []string, globalFlags *GlobalF
 
 	if f.K8sFlagGroup != nil {
 		opts.K8sOptions = f.K8sFlagGroup.ToOptions()
+	}
+
+	if f.LicenseFlagGroup != nil {
+		opts.LicenseOptions = f.LicenseFlagGroup.ToOptions()
 	}
 
 	if f.MisconfFlagGroup != nil {

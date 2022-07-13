@@ -5,7 +5,7 @@
     "SrcName": "alpine-baselayout",
     "SrcVersion": "3.1.2-r0",
     "Licenses": [
-      "GPL-2.0-only"
+      "GPL-2.0"
     ],
     "Layer": {
       "Digest": "sha256:9d48c3bd43c520dc2784e868a780e976b207cbf493eaff8c6596eb871cbd9609",
@@ -31,7 +31,7 @@
     "SrcName": "apk-tools",
     "SrcVersion": "2.10.4-r2",
     "Licenses": [
-      "GPL2"
+      "GPL-2.0"
     ],
     "Layer": {
       "Digest": "sha256:9d48c3bd43c520dc2784e868a780e976b207cbf493eaff8c6596eb871cbd9609",
@@ -57,7 +57,8 @@
     "SrcName": "ca-certificates",
     "SrcVersion": "20190108-r0",
     "Licenses": [
-      "MPL-2.0 GPL-2.0-or-later"
+      "MPL-2.0",
+      "GPL-2.0"
     ],
     "Layer": {
       "Digest": "sha256:9d48c3bd43c520dc2784e868a780e976b207cbf493eaff8c6596eb871cbd9609",
@@ -70,7 +71,7 @@
     "SrcName": "libc-dev",
     "SrcVersion": "0.7.1-r0",
     "Licenses": [
-      "BSD"
+      "BSD-3-Clause"
     ],
     "Layer": {
       "Digest": "sha256:9d48c3bd43c520dc2784e868a780e976b207cbf493eaff8c6596eb871cbd9609",
@@ -135,7 +136,9 @@
     "SrcName": "musl",
     "SrcVersion": "1.1.22-r3",
     "Licenses": [
-      "MIT BSD GPL2+"
+      "MIT",
+      "BSD-3-Clause",
+      "GPL-2.0"
     ],
     "Layer": {
       "Digest": "sha256:9d48c3bd43c520dc2784e868a780e976b207cbf493eaff8c6596eb871cbd9609",
@@ -174,7 +177,7 @@
     "SrcName": "zlib",
     "SrcVersion": "1.2.11-r1",
     "Licenses": [
-      "zlib"
+      "Zlib"
     ],
     "Layer": {
       "Digest": "sha256:9d48c3bd43c520dc2784e868a780e976b207cbf493eaff8c6596eb871cbd9609",

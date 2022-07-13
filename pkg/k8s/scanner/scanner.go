@@ -131,7 +131,6 @@ func (s *Scanner) scanMisconfigs(ctx context.Context, artifact *artifacts.Artifa
 
 	return s.filter(ctx, configReport, artifact)
 }
-
 func (s *Scanner) filter(ctx context.Context, r types.Report, artifact *artifacts.Artifact) (report.Resource, error) {
 	r, err := s.runner.Filter(ctx, s.opts, r)
 	if err != nil {

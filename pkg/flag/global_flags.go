@@ -62,44 +62,54 @@ var (
 		Usage:      "cache directory",
 		Persistent: true,
 	}
+	GenerateDefaultConfigFlag = Flag{
+		Name:       "generate-default-config",
+		ConfigName: "generate-default-config",
+		Value:      false,
+		Usage:      "write the default config to trivy-default.yaml",
+		Persistent: true,
+	}
 )
 
 // GlobalFlagGroup composes global flags
 type GlobalFlagGroup struct {
-	ConfigFile  *Flag
-	ShowVersion *Flag // spf13/cobra can't override the logic of version printing like VersionPrinter in urfave/cli. -v needs to be defined ourselves.
-	Quiet       *Flag
-	Debug       *Flag
-	Insecure    *Flag
-	Timeout     *Flag
-	CacheDir    *Flag
+	ConfigFile            *Flag
+	ShowVersion           *Flag // spf13/cobra can't override the logic of version printing like VersionPrinter in urfave/cli. -v needs to be defined ourselves.
+	Quiet                 *Flag
+	Debug                 *Flag
+	Insecure              *Flag
+	Timeout               *Flag
+	CacheDir              *Flag
+	GenerateDefaultConfig *Flag
 }
 
 // GlobalOptions defines flags and other configuration parameters for all the subcommands
 type GlobalOptions struct {
-	ConfigFile  string
-	ShowVersion bool
-	Quiet       bool
-	Debug       bool
-	Insecure    bool
-	Timeout     time.Duration
-	CacheDir    string
+	ConfigFile            string
+	ShowVersion           bool
+	Quiet                 bool
+	Debug                 bool
+	Insecure              bool
+	Timeout               time.Duration
+	CacheDir              string
+	GenerateDefaultConfig bool
 }
 
 func NewGlobalFlagGroup() *GlobalFlagGroup {
 	return &GlobalFlagGroup{
-		ConfigFile:  &ConfigFileFlag,
-		ShowVersion: &ShowVersionFlag,
-		Quiet:       &QuietFlag,
-		Debug:       &DebugFlag,
-		Insecure:    &InsecureFlag,
-		Timeout:     &TimeoutFlag,
-		CacheDir:    &CacheDirFlag,
+		ConfigFile:            &ConfigFileFlag,
+		ShowVersion:           &ShowVersionFlag,
+		Quiet:                 &QuietFlag,
+		Debug:                 &DebugFlag,
+		Insecure:              &InsecureFlag,
+		Timeout:               &TimeoutFlag,
+		CacheDir:              &CacheDirFlag,
+		GenerateDefaultConfig: &GenerateDefaultConfigFlag,
 	}
 }
 
 func (f *GlobalFlagGroup) flags() []*Flag {
-	return []*Flag{f.ConfigFile, f.ShowVersion, f.Quiet, f.Debug, f.Insecure, f.Timeout, f.CacheDir}
+	return []*Flag{f.ConfigFile, f.ShowVersion, f.Quiet, f.Debug, f.Insecure, f.Timeout, f.CacheDir, f.GenerateDefaultConfig}
 }
 
 func (f *GlobalFlagGroup) AddFlags(cmd *cobra.Command) {
@@ -119,12 +129,13 @@ func (f *GlobalFlagGroup) Bind(cmd *cobra.Command) error {
 
 func (f *GlobalFlagGroup) ToOptions() GlobalOptions {
 	return GlobalOptions{
-		ConfigFile:  getString(f.ConfigFile),
-		ShowVersion: getBool(f.ShowVersion),
-		Quiet:       getBool(f.Quiet),
-		Debug:       getBool(f.Debug),
-		Insecure:    getBool(f.Insecure),
-		Timeout:     getDuration(f.Timeout),
-		CacheDir:    getString(f.CacheDir),
+		ConfigFile:            getString(f.ConfigFile),
+		ShowVersion:           getBool(f.ShowVersion),
+		Quiet:                 getBool(f.Quiet),
+		Debug:                 getBool(f.Debug),
+		Insecure:              getBool(f.Insecure),
+		Timeout:               getDuration(f.Timeout),
+		CacheDir:              getString(f.CacheDir),
+		GenerateDefaultConfig: getBool(f.GenerateDefaultConfig),
 	}
 }

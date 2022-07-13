@@ -15,6 +15,7 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	dtypes "github.com/docker/docker/api/types"
 	"github.com/docker/docker/client"
 	"github.com/stretchr/testify/assert"
@@ -126,7 +127,10 @@ func TestFanal_Library_DockerLessMode(t *testing.T) {
 			require.NoError(t, err)
 			defer cleanup()
 
-			ar, err := aimage.NewArtifact(img, c, artifact.Option{})
+			// don't scan licenses in the test - in parallel it will fail
+			ar, err := aimage.NewArtifact(img, c, artifact.Option{
+				DisabledAnalyzers: []analyzer.Type{analyzer.TypeLicenseFile},
+			})
 			require.NoError(t, err)
 
 			applier := applier.NewApplier(c)
@@ -169,7 +173,10 @@ func TestFanal_Library_DockerMode(t *testing.T) {
 			require.NoError(t, err, tt.name)
 			defer cleanup()
 
-			ar, err := aimage.NewArtifact(img, c, artifact.Option{})
+			ar, err := aimage.NewArtifact(img, c, artifact.Option{
+				// disable license checking in the test - in parallel it will fail because of resource requirement
+				DisabledAnalyzers: []analyzer.Type{analyzer.TypeLicenseFile},
+			})
 			require.NoError(t, err)
 
 			applier := applier.NewApplier(c)
@@ -182,14 +189,10 @@ func TestFanal_Library_DockerMode(t *testing.T) {
 			// clear Cache
 			require.NoError(t, c.Clear(), tt.name)
 
-			_, err = cli.ImageRemove(ctx, tt.remoteImageName, dtypes.ImageRemoveOptions{
+			_, _ = cli.ImageRemove(ctx, tt.remoteImageName, dtypes.ImageRemoveOptions{
 				Force:         true,
 				PruneChildren: true,
 			})
-			assert.NoError(t, err, tt.name)
-
-			// clear Cache
-			require.NoError(t, c.Clear(), tt.name)
 		})
 	}
 }
@@ -207,7 +210,9 @@ func TestFanal_Library_TarMode(t *testing.T) {
 			img, err := image.NewArchiveImage(tt.imageFile)
 			require.NoError(t, err, tt.name)
 
-			ar, err := aimage.NewArtifact(img, c, artifact.Option{})
+			ar, err := aimage.NewArtifact(img, c, artifact.Option{
+				DisabledAnalyzers: []analyzer.Type{analyzer.TypeLicenseFile},
+			})
 			require.NoError(t, err)
 
 			applier := applier.NewApplier(c)

@@ -6,6 +6,7 @@ import (
 	"os"
 
 	"github.com/hashicorp/go-multierror"
+	"github.com/spf13/viper"
 	"golang.org/x/exp/slices"
 	"golang.org/x/xerrors"
 
@@ -221,7 +222,6 @@ func (r *runner) ScanSBOM(ctx context.Context, opts flag.Options) (types.Report,
 }
 
 func (r *runner) scanArtifact(ctx context.Context, opts flag.Options, initializeScanner InitializeScanner) (types.Report, error) {
-
 	report, err := scan(ctx, opts, initializeScanner, r.cache)
 	if err != nil {
 		return types.Report{}, xerrors.Errorf("scan error: %w", err)
@@ -235,15 +235,11 @@ func (r *runner) Filter(ctx context.Context, opts flag.Options, report types.Rep
 
 	// Filter results
 	for i := range results {
-		vulns, misconfSummary, misconfs, secrets, err := result.Filter(ctx, results[i].Vulnerabilities, results[i].Misconfigurations, results[i].Secrets,
-			opts.Severities, opts.IgnoreUnfixed, opts.IncludeNonFailures, opts.IgnoreFile, opts.IgnorePolicy)
+		err := result.Filter(ctx, &results[i], opts.Severities, opts.IgnoreUnfixed, opts.IncludeNonFailures,
+			opts.IgnoreFile, opts.IgnorePolicy, opts.IgnoredLicenses)
 		if err != nil {
 			return types.Report{}, xerrors.Errorf("unable to filter vulnerabilities: %w", err)
 		}
-		results[i].Vulnerabilities = vulns
-		results[i].Misconfigurations = misconfs
-		results[i].MisconfSummary = misconfSummary
-		results[i].Secrets = secrets
 	}
 	return report, nil
 }
@@ -350,6 +346,11 @@ func Run(ctx context.Context, opts flag.Options, targetKind TargetKind) (err err
 		}
 	}()
 
+	if opts.GenerateDefaultConfig {
+		log.Logger.Info("Writing the default config to trivy-default.yaml...")
+		return viper.SafeWriteConfigAs("trivy-default.yaml")
+	}
+
 	r, err := NewRunner(ctx, opts)
 	if err != nil {
 		if errors.Is(err, SkipScan) {
@@ -407,7 +408,7 @@ func disabledAnalyzers(opts flag.Options) []analyzer.Type {
 		analyzers = append(analyzers, analyzer.TypeApkCommand)
 	}
 
-	// Do not analyze programming language packages when not running in 'library' mode
+	// Do not analyze programming language packages when not running in 'library'
 	if !slices.Contains(opts.VulnType, types.VulnTypeLibrary) {
 		analyzers = append(analyzers, analyzer.TypeLanguages...)
 	}
@@ -420,6 +421,12 @@ func disabledAnalyzers(opts flag.Options) []analyzer.Type {
 	// Do not perform misconfiguration scanning when it is not specified.
 	if !slices.Contains(opts.SecurityChecks, types.SecurityCheckConfig) {
 		analyzers = append(analyzers, analyzer.TypeConfigFiles...)
+	}
+
+	// Scanning file headers and license files is expensive.
+	// It is performed only when '--security-checks license' and '--license-full' are specified.
+	if !slices.Contains(opts.SecurityChecks, types.SecurityCheckLicense) || !opts.LicenseFull {
+		analyzers = append(analyzers, analyzer.TypeLicenseFile)
 	}
 
 	return analyzers
@@ -436,6 +443,7 @@ func initScannerConfig(opts flag.Options, cacheClient cache.Cache) (ScannerConfi
 		SecurityChecks:      opts.SecurityChecks,
 		ScanRemovedPackages: opts.ScanRemovedPkgs, // this is valid only for 'image' subcommand
 		ListAllPackages:     opts.ListAllPkgs,
+		LicenseCategories:   opts.LicenseCategories,
 	}
 
 	if slices.Contains(opts.SecurityChecks, types.SecurityCheckVulnerability) {
@@ -463,6 +471,14 @@ func initScannerConfig(opts flag.Options, cacheClient cache.Cache) (ScannerConfi
 		log.Logger.Infof("Please see also https://aquasecurity.github.io/trivy/%s/docs/secret/scanning/#recommendation for faster secret detection", opts.AppVersion)
 	} else {
 		opts.SecretConfigPath = ""
+	}
+
+	if slices.Contains(opts.SecurityChecks, types.SecurityCheckLicense) {
+		if opts.LicenseFull {
+			log.Logger.Info("Full license scanning is enabled")
+		} else {
+			log.Logger.Info("License scanning is enabled")
+		}
 	}
 
 	return ScannerConfig{

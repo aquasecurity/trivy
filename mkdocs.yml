@@ -61,6 +61,8 @@ nav:
           - Scanning: docs/secret/scanning.md
           - Configuration: docs/secret/configuration.md
           - Examples: docs/secret/examples.md
+      - License:
+            - Scanning: docs/licenses/scanning.md
       - Kubernetes:
           - CLI:
               - Scanning: docs/kubernetes/cli/scanning.md
