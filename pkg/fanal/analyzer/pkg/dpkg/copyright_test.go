@@ -46,7 +46,7 @@ func Test_dpkgLicenseAnalyzer_Analyze(t *testing.T) {
 						Type:     types.LicenseTypeDpkg,
 						FilePath: "usr/share/doc/adduser/copyright",
 						Findings: []types.LicenseFinding{
-							{Name: "GPL-2"},
+							{Name: "GPL-2.0"},
 						},
 						PkgName: "adduser",
 					},
@@ -63,8 +63,8 @@ func Test_dpkgLicenseAnalyzer_Analyze(t *testing.T) {
 						Type:     types.LicenseTypeDpkg,
 						FilePath: "usr/share/doc/apt/copyright",
 						Findings: []types.LicenseFinding{
-							{Name: "GPLv2+"},
-							{Name: "GPL-2"},
+							{Name: "GPL-2.0"},
+							{Name: "GPL-2.0"},
 						},
 						PkgName: "apt",
 					},

@@ -308,7 +308,7 @@ func TestArtifact_Inspect(t *testing.T) {
 									Type:     types.LicenseTypeDpkg,
 									FilePath: "usr/share/doc/base-files/copyright",
 									Findings: []types.LicenseFinding{
-										{Name: "GPL"},
+										{Name: "GPL-3.0"},
 									},
 									PkgName: "base-files",
 								},
@@ -316,8 +316,8 @@ func TestArtifact_Inspect(t *testing.T) {
 									Type:     types.LicenseTypeDpkg,
 									FilePath: "usr/share/doc/ca-certificates/copyright",
 									Findings: []types.LicenseFinding{
-										{Name: "GPL-2+"},
-										{Name: "GPL-2"},
+										{Name: "GPL-2.0"},
+										{Name: "GPL-2.0"},
 										{Name: "MPL-2.0"},
 									},
 									PkgName: "ca-certificates",
@@ -326,7 +326,7 @@ func TestArtifact_Inspect(t *testing.T) {
 									Type:     types.LicenseTypeDpkg,
 									FilePath: "usr/share/doc/netbase/copyright",
 									Findings: []types.LicenseFinding{
-										{Name: "GPL-2"},
+										{Name: "GPL-2.0"},
 									},
 									PkgName: "netbase",
 								},
@@ -376,7 +376,7 @@ func TestArtifact_Inspect(t *testing.T) {
 									FilePath: "usr/share/doc/libc6/copyright",
 									Findings: []types.LicenseFinding{
 										{Name: "LGPL-2.1"},
-										{Name: "GPL-2"},
+										{Name: "GPL-2.0"},
 									},
 									PkgName: "libc6",
 								},
