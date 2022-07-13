@@ -44,7 +44,7 @@ func TestArtifact_Inspect(t *testing.T) {
 			},
 			putBlobExpectation: cache.ArtifactCachePutBlobExpectation{
 				Args: cache.ArtifactCachePutBlobArgs{
-					BlobID: "sha256:41b5c8d66a6b5e5158ac1682e4e85afca4e25ac45e64aa12b279945543396fc0",
+					BlobID: "sha256:e29d5c9d3e152cc092c072a2327247c5877b67ef32fa57fe5e809e610581eee8",
 					BlobInfo: types.BlobInfo{
 						SchemaVersion: types.BlobJSONSchemaVersion,
 						OS: &types.OS{
@@ -69,9 +69,9 @@ func TestArtifact_Inspect(t *testing.T) {
 			want: types.ArtifactReference{
 				Name: "host",
 				Type: types.ArtifactFilesystem,
-				ID:   "sha256:41b5c8d66a6b5e5158ac1682e4e85afca4e25ac45e64aa12b279945543396fc0",
+				ID:   "sha256:e29d5c9d3e152cc092c072a2327247c5877b67ef32fa57fe5e809e610581eee8",
 				BlobIDs: []string{
-					"sha256:41b5c8d66a6b5e5158ac1682e4e85afca4e25ac45e64aa12b279945543396fc0",
+					"sha256:e29d5c9d3e152cc092c072a2327247c5877b67ef32fa57fe5e809e610581eee8",
 				},
 			},
 		},
@@ -108,7 +108,7 @@ func TestArtifact_Inspect(t *testing.T) {
 			},
 			putBlobExpectation: cache.ArtifactCachePutBlobExpectation{
 				Args: cache.ArtifactCachePutBlobArgs{
-					BlobID: "sha256:41b5c8d66a6b5e5158ac1682e4e85afca4e25ac45e64aa12b279945543396fc0",
+					BlobID: "sha256:e29d5c9d3e152cc092c072a2327247c5877b67ef32fa57fe5e809e610581eee8",
 					BlobInfo: types.BlobInfo{
 						SchemaVersion: types.BlobJSONSchemaVersion,
 						OS: &types.OS{
@@ -997,7 +997,7 @@ func TestDockerfileMisconfigurationScan(t *testing.T) {
 									DiffID: "",
 								},
 							},
-						}, Secrets: []types.Secret(nil),
+						}, Secrets:      []types.Secret(nil),
 						OpaqueDirs:      []string(nil),
 						WhiteoutFiles:   []string(nil),
 						BuildInfo:       (*types.BuildInfo)(nil),
@@ -1085,7 +1085,7 @@ func TestDockerfileMisconfigurationScan(t *testing.T) {
 									DiffID: "",
 								},
 							},
-						}, Secrets: []types.Secret(nil),
+						}, Secrets:      []types.Secret(nil),
 						OpaqueDirs:      []string(nil),
 						WhiteoutFiles:   []string(nil),
 						BuildInfo:       (*types.BuildInfo)(nil),
