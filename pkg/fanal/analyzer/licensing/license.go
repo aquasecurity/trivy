@@ -14,6 +14,7 @@ import (
 
 	dio "github.com/aquasecurity/go-dep-parser/pkg/io"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
+	"github.com/aquasecurity/trivy/pkg/fanal/log"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/licensing"
 )
@@ -55,6 +56,7 @@ func init() {
 type licenseFileAnalyzer struct{}
 
 func (a licenseFileAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInput) (*analyzer.AnalysisResult, error) {
+	log.Logger.Debugf("License scanning: %s", input.FilePath)
 
 	// need files to be text based, readable files
 	readable, err := isHumanReadable(input.Content, input.Info.Size())
