@@ -16,7 +16,6 @@ import (
 	"github.com/aquasecurity/trivy/pkg/commands/operation"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer/config"
-	"github.com/aquasecurity/trivy/pkg/fanal/analyzer/licensing"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer/secret"
 	"github.com/aquasecurity/trivy/pkg/fanal/artifact"
 	"github.com/aquasecurity/trivy/pkg/fanal/cache"
@@ -223,7 +222,6 @@ func (r *runner) ScanSBOM(ctx context.Context, opts flag.Options) (types.Report,
 }
 
 func (r *runner) scanArtifact(ctx context.Context, opts flag.Options, initializeScanner InitializeScanner) (types.Report, error) {
-
 	report, err := scan(ctx, opts, initializeScanner, r.cache)
 	if err != nil {
 		return types.Report{}, xerrors.Errorf("scan error: %w", err)
@@ -420,8 +418,10 @@ func disabledAnalyzers(opts flag.Options) []analyzer.Type {
 		analyzers = append(analyzers, analyzer.TypeConfigFiles...)
 	}
 
-	if !slices.Contains(opts.SecurityChecks, types.SecurityCheckLicense) {
-		analyzers = append(analyzers, analyzer.TypeLicense)
+	// Scanning file headers and license files is expensive.
+	// It is performed only when '--license-full' is specified.
+	if !opts.LicenseFull {
+		analyzers = append(analyzers, analyzer.TypeLicenseFile)
 	}
 
 	return analyzers

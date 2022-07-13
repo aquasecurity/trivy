@@ -6,6 +6,12 @@ import (
 )
 
 var (
+	LicenseFull = Flag{
+		Name:       "license-full",
+		ConfigName: "license.full",
+		Value:      false,
+		Usage:      "eagerly look for licenses in source code headers and license files",
+	}
 	IgnoredLicenses = Flag{
 		Name:       "ignored-licenses",
 		ConfigName: "license.ignored",
@@ -52,6 +58,7 @@ var (
 )
 
 type LicenseFlagGroup struct {
+	LicenseFull     *Flag
 	IgnoredLicenses *Flag
 
 	// License Categories
@@ -64,6 +71,7 @@ type LicenseFlagGroup struct {
 }
 
 type LicenseOptions struct {
+	LicenseFull          bool
 	IgnoredLicenses      []string
 	LicenseRiskThreshold int
 	LicenseCategories    map[types.LicenseCategory][]string
@@ -71,6 +79,7 @@ type LicenseOptions struct {
 
 func NewLicenseFlagGroup() *LicenseFlagGroup {
 	return &LicenseFlagGroup{
+		LicenseFull:         &LicenseFull,
 		IgnoredLicenses:     &IgnoredLicenses,
 		LicenseForbidden:    &LicenseForbidden,
 		LicenseRestricted:   &LicenseRestricted,
@@ -100,6 +109,7 @@ func (f *LicenseFlagGroup) ToOptions() LicenseOptions {
 	licenseCategories[types.CategoryUnencumbered] = getStringSlice(f.LicenseUnencumbered)
 
 	return LicenseOptions{
+		LicenseFull:       getBool(f.LicenseFull),
 		IgnoredLicenses:   getStringSlice(f.IgnoredLicenses),
 		LicenseCategories: licenseCategories,
 	}
