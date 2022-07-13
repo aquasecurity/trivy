@@ -6,12 +6,14 @@ import (
 	"log"
 	"os"
 	"path/filepath"
+	"strings"
 
 	apkVersion "github.com/knqyf263/go-apk-version"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/fanal/utils"
+	"github.com/aquasecurity/trivy/pkg/licensing"
 )
 
 func init() {
@@ -76,7 +78,16 @@ func (a alpinePkgAnalyzer) parseApkInfo(scanner *bufio.Scanner) ([]types.Package
 			pkg.SrcVersion = version
 		case "L:":
 			if line[2:] != "" {
-				pkg.Licenses = []string{line[2:]}
+				var licenses []string
+				// e.g. MPL 2.0 GPL2+ => {"MPL2.0", "GPL2+"}
+				for i, s := range strings.Fields(line[2:]) {
+					if i > 0 && (s == "1.0" || s == "2.0" || s == "3.0") {
+						licenses[i-1] = licensing.Normalize(licenses[i-1] + s)
+					} else {
+						licenses = append(licenses, licensing.Normalize(s))
+					}
+				}
+				pkg.Licenses = licenses
 			}
 		case "F:":
 			dir = line[2:]
