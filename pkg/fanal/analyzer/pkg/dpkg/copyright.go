@@ -9,7 +9,6 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/aquasecurity/trivy/pkg/licensing"
 	classifier "github.com/google/licenseclassifier/v2"
 	"github.com/google/licenseclassifier/v2/assets"
 	"github.com/samber/lo"
@@ -19,6 +18,7 @@ import (
 	dio "github.com/aquasecurity/go-dep-parser/pkg/io"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
+	"github.com/aquasecurity/trivy/pkg/licensing"
 )
 
 func init() {
