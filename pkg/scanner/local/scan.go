@@ -352,7 +352,7 @@ func (s Scanner) scanLicenses(detail ftypes.ArtifactDetail,
 
 	}
 	results = append(results, types.Result{
-		Target:   "OS packages",
+		Target:   "OS Packages",
 		Class:    types.ClassLicense,
 		Licenses: osPkgLicenses,
 	})
@@ -402,7 +402,7 @@ func (s Scanner) scanLicenses(detail ftypes.ArtifactDetail,
 		}
 	}
 	results = append(results, types.Result{
-		Target:   "File Licenses",
+		Target:   "Loose File License(s)",
 		Class:    types.ClassLicenseFile,
 		Licenses: fileLicenses,
 	})
