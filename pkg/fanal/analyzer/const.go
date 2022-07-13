@@ -86,7 +86,7 @@ const (
 	// ========
 	// License
 	// ========
-	TypeLicense Type = "license"
+	TypeLicenseFile Type = "license-file"
 
 	// ========
 	// Secrets
