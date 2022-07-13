@@ -50,7 +50,8 @@ func TestSecretRenderer(t *testing.T) {
 			},
 			want: `
 my-file (secrets)
-=================Total: 1 (MEDIUM: 0, HIGH: 1)
+=================
+Total: 1 (MEDIUM: 0, HIGH: 1)
 
 HIGH: category (rule-id)
 ════════════════════════════════════════
@@ -111,7 +112,8 @@ this is a title
 			},
 			want: `
 my-file (secrets)
-=================Total: 1 (MEDIUM: 0, HIGH: 1)
+=================
+Total: 1 (MEDIUM: 0, HIGH: 1)
 
 HIGH: category (rule-id)
 ════════════════════════════════════════

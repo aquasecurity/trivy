@@ -142,7 +142,7 @@ func renderTarget(w io.Writer, target string, isTerminal bool) {
 		_ = tml.Fprintf(w, "\n<underline><bold>%s</bold></underline>\n\n", target)
 	} else {
 		_, _ = fmt.Fprintf(w, "\n%s\n", target)
-		_, _ = fmt.Fprintf(w, strings.Repeat("=", len(target)))
+		_, _ = fmt.Fprintf(w, "%s\n", strings.Repeat("=", len(target)))
 	}
 }
 

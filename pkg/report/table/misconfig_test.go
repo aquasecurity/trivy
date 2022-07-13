@@ -46,7 +46,8 @@ func TestMisconfigRenderer(t *testing.T) {
 			includeNonFailures: false,
 			want: `
 my-file ()
-==========Tests: 1 (SUCCESSES: 0, FAILURES: 1, EXCEPTIONS: 0)
+==========
+Tests: 1 (SUCCESSES: 0, FAILURES: 1, EXCEPTIONS: 0)
 Failures: 1 (LOW: 0, MEDIUM: 0, HIGH: 1, CRITICAL: 0)
 
 HIGH: Oh no, a bad config.
@@ -104,7 +105,8 @@ See https://google.com/search?q=bad%20config
 			includeNonFailures: false,
 			want: `
 my-file ()
-==========Tests: 1 (SUCCESSES: 0, FAILURES: 1, EXCEPTIONS: 0)
+==========
+Tests: 1 (SUCCESSES: 0, FAILURES: 1, EXCEPTIONS: 0)
 Failures: 1 (LOW: 0, MEDIUM: 0, HIGH: 1, CRITICAL: 0)
 
 HIGH: Oh no, a bad config.
@@ -174,7 +176,8 @@ See https://google.com/search?q=bad%20config
 			includeNonFailures: true,
 			want: `
 my-file ()
-==========Tests: 2 (SUCCESSES: 1, FAILURES: 1, EXCEPTIONS: 0)
+==========
+Tests: 2 (SUCCESSES: 1, FAILURES: 1, EXCEPTIONS: 0)
 Failures: 1 (LOW: 0, MEDIUM: 0, HIGH: 1, CRITICAL: 0)
 
 FAIL: HIGH: Oh no, a bad config.
