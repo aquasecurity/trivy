@@ -28,9 +28,9 @@ func Test_licenseAnalyzer_Analyze(t *testing.T) {
 						FilePath: "/testdata/licensed.c",
 						Findings: []types.LicenseFinding{
 							{
-								License:     "AGPL-3.0",
-								Confidence:  1,
-								LicenseLink: "https://spdx.org/licenses/AGPL-3.0.html",
+								Name:       "AGPL-3.0",
+								Confidence: 1,
+								Link:       "https://spdx.org/licenses/AGPL-3.0.html",
 							},
 						},
 					},
@@ -53,7 +53,7 @@ func Test_licenseAnalyzer_Analyze(t *testing.T) {
 			fi, err := f.Stat()
 			require.NoError(t, err)
 
-			a := licenseAnalyzer{}
+			a := licenseFileAnalyzer{}
 			got, err := a.Analyze(context.TODO(), analyzer.AnalysisInput{
 				FilePath: tt.filePath,
 				Content:  f,
@@ -90,7 +90,7 @@ func Test_licenseAnalyzer_Required(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			a := licenseAnalyzer{}
+			a := licenseFileAnalyzer{}
 			got := a.Required(tt.filePath, nil)
 			assert.Equal(t, tt.want, got)
 		})

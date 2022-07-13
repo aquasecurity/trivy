@@ -51,7 +51,7 @@ func (a dpkgLicenseAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisI
 	}
 
 	findings := lo.Map(licenses, func(license string, _ int) types.LicenseFinding {
-		return types.LicenseFinding{License: license}
+		return types.LicenseFinding{Name: license}
 	})
 
 	// e.g. "usr/share/doc/zlib1g/copyright" => "zlib1g"
@@ -63,7 +63,7 @@ func (a dpkgLicenseAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisI
 				Type:     types.LicenseTypeDpkg,
 				FilePath: input.FilePath,
 				Findings: findings,
-				Package:  pkgName,
+				PkgName:  pkgName,
 			},
 		},
 	}, nil

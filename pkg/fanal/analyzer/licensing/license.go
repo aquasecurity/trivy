@@ -38,13 +38,13 @@ var (
 )
 
 func init() {
-	analyzer.RegisterAnalyzer(licenseAnalyzer{})
+	analyzer.RegisterAnalyzer(licenseFileAnalyzer{})
 }
 
-// licenseAnalyzer is an analyzer for licenses
-type licenseAnalyzer struct{}
+// licenseFileAnalyzer is an analyzer for file headers and license files
+type licenseFileAnalyzer struct{}
 
-func (a licenseAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInput) (*analyzer.AnalysisResult, error) {
+func (a licenseFileAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInput) (*analyzer.AnalysisResult, error) {
 
 	// need files to be text based, readable files
 	readable, err := isHumanReadable(input.Content, input.Info.Size())
@@ -75,7 +75,7 @@ func (a licenseAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInput
 	}, nil
 }
 
-func (a licenseAnalyzer) Required(filePath string, _ os.FileInfo) bool {
+func (a licenseFileAnalyzer) Required(filePath string, _ os.FileInfo) bool {
 	for _, skipDir := range skipDirs {
 		if strings.HasPrefix(filePath, skipDir) {
 			return false
@@ -110,10 +110,10 @@ func isHumanReadable(content dio.ReadSeekerAt, fileSize int64) (bool, error) {
 	return true, nil
 }
 
-func (a licenseAnalyzer) Type() analyzer.Type {
-	return analyzer.TypeLicense
+func (a licenseFileAnalyzer) Type() analyzer.Type {
+	return analyzer.TypeLicenseFile
 }
 
-func (a licenseAnalyzer) Version() int {
+func (a licenseFileAnalyzer) Version() int {
 	return version
 }

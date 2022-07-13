@@ -191,8 +191,8 @@ func ApplyLayers(layers []types.BlobInfo) types.ArtifactDetail {
 		// e.g.
 		//	"adduser" => {"GPL-2"}
 		//  "openssl" => {"MIT", "BSD"}
-		dpkgLicenses[license.Package] = lo.Map(license.Findings, func(finding types.LicenseFinding, _ int) string {
-			return finding.License
+		dpkgLicenses[license.PkgName] = lo.Map(license.Findings, func(finding types.LicenseFinding, _ int) string {
+			return finding.Name
 		})
 		// Remove this license in the merged result as it is merged into the package information.
 		return true

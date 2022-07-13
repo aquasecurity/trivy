@@ -129,7 +129,7 @@ func TestFanal_Library_DockerLessMode(t *testing.T) {
 
 			// don't scan licenses in the test - in parallel it will fail
 			ar, err := aimage.NewArtifact(img, c, artifact.Option{
-				DisabledAnalyzers: []analyzer.Type{analyzer.TypeLicense},
+				DisabledAnalyzers: []analyzer.Type{analyzer.TypeLicenseFile},
 			})
 			require.NoError(t, err)
 
@@ -175,7 +175,7 @@ func TestFanal_Library_DockerMode(t *testing.T) {
 
 			ar, err := aimage.NewArtifact(img, c, artifact.Option{
 				// disable license checking in the test - in parallel it will fail because of resource requirement
-				DisabledAnalyzers: []analyzer.Type{analyzer.TypeLicense},
+				DisabledAnalyzers: []analyzer.Type{analyzer.TypeLicenseFile},
 			})
 			require.NoError(t, err)
 
@@ -211,7 +211,7 @@ func TestFanal_Library_TarMode(t *testing.T) {
 			require.NoError(t, err, tt.name)
 
 			ar, err := aimage.NewArtifact(img, c, artifact.Option{
-				DisabledAnalyzers: []analyzer.Type{analyzer.TypeLicense},
+				DisabledAnalyzers: []analyzer.Type{analyzer.TypeLicenseFile},
 			})
 			require.NoError(t, err)
 

@@ -142,11 +142,9 @@ func TestArtifact_Inspect(t *testing.T) {
 									FilePath: "/etc/ssl/misc/CA.pl",
 									Findings: []types.LicenseFinding{
 										{
-											License:                          "OpenSSL",
-											Confidence:                       1,
-											GoogleLicenseClassificationIndex: 5,
-											GoogleLicenseClassification:      "notice",
-											LicenseLink:                      "https://spdx.org/licenses/OpenSSL.html",
+											Name:       "OpenSSL",
+											Confidence: 1,
+											Link:       "https://spdx.org/licenses/OpenSSL.html",
 										},
 									},
 									Layer: types.Layer{
@@ -159,11 +157,9 @@ func TestArtifact_Inspect(t *testing.T) {
 									FilePath: "/etc/ssl/misc/tsget.pl",
 									Findings: []types.LicenseFinding{
 										{
-											License:                          "OpenSSL",
-											Confidence:                       1,
-											GoogleLicenseClassificationIndex: 5,
-											GoogleLicenseClassification:      "notice",
-											LicenseLink:                      "https://spdx.org/licenses/OpenSSL.html",
+											Name:       "OpenSSL",
+											Confidence: 1,
+											Link:       "https://spdx.org/licenses/OpenSSL.html",
 										},
 									},
 									Layer: types.Layer{
@@ -312,27 +308,27 @@ func TestArtifact_Inspect(t *testing.T) {
 									Type:     types.LicenseTypeDpkg,
 									FilePath: "usr/share/doc/base-files/copyright",
 									Findings: []types.LicenseFinding{
-										{License: "GPL"},
+										{Name: "GPL"},
 									},
-									Package: "base-files",
+									PkgName: "base-files",
 								},
 								{
 									Type:     types.LicenseTypeDpkg,
 									FilePath: "usr/share/doc/ca-certificates/copyright",
 									Findings: []types.LicenseFinding{
-										{License: "GPL-2+"},
-										{License: "GPL-2"},
-										{License: "MPL-2.0"},
+										{Name: "GPL-2+"},
+										{Name: "GPL-2"},
+										{Name: "MPL-2.0"},
 									},
-									Package: "ca-certificates",
+									PkgName: "ca-certificates",
 								},
 								{
 									Type:     types.LicenseTypeDpkg,
 									FilePath: "usr/share/doc/netbase/copyright",
 									Findings: []types.LicenseFinding{
-										{License: "GPL-2"},
+										{Name: "GPL-2"},
 									},
-									Package: "netbase",
+									PkgName: "netbase",
 								},
 							},
 						},
@@ -379,11 +375,9 @@ func TestArtifact_Inspect(t *testing.T) {
 									FilePath: "/usr/lib/ssl/misc/CA.pl",
 									Findings: []types.LicenseFinding{
 										{
-											License:                          "OpenSSL",
-											Confidence:                       1,
-											GoogleLicenseClassificationIndex: 5,
-											GoogleLicenseClassification:      "notice",
-											LicenseLink:                      "https://spdx.org/licenses/OpenSSL.html",
+											Name:       "OpenSSL",
+											Confidence: 1,
+											Link:       "https://spdx.org/licenses/OpenSSL.html",
 										},
 									},
 								},
@@ -391,26 +385,26 @@ func TestArtifact_Inspect(t *testing.T) {
 									Type:     types.LicenseTypeDpkg,
 									FilePath: "usr/share/doc/libc6/copyright",
 									Findings: []types.LicenseFinding{
-										{License: "LGPL-2.1"},
-										{License: "GPL-2"},
+										{Name: "LGPL-2.1"},
+										{Name: "GPL-2"},
 									},
-									Package: "libc6",
+									PkgName: "libc6",
 								},
 								{
 									Type:     types.LicenseTypeDpkg,
 									FilePath: "usr/share/doc/libssl1.1/copyright",
 									Findings: []types.LicenseFinding{
-										{License: "OpenSSL"},
+										{Name: "OpenSSL"},
 									},
-									Package: "libssl1.1",
+									PkgName: "libssl1.1",
 								},
 								{
 									Type:     types.LicenseTypeDpkg,
 									FilePath: "usr/share/doc/openssl/copyright",
 									Findings: []types.LicenseFinding{
-										{License: "OpenSSL"},
+										{Name: "OpenSSL"},
 									},
-									Package: "openssl",
+									PkgName: "openssl",
 								},
 							},
 						},
@@ -610,7 +604,7 @@ func TestArtifact_Inspect(t *testing.T) {
 			artifactOpt: artifact.Option{
 				DisabledAnalyzers: []analyzer.Type{
 					analyzer.TypeDebian, analyzer.TypeDpkg, analyzer.TypeDpkgLicense, analyzer.TypeComposer,
-					analyzer.TypeBundler, analyzer.TypeLicense,
+					analyzer.TypeBundler, analyzer.TypeLicenseFile,
 				},
 			},
 			missingBlobsExpectation: cache.ArtifactCacheMissingBlobsExpectation{
@@ -874,11 +868,9 @@ func TestArtifact_Inspect(t *testing.T) {
 									FilePath: "/etc/ssl/misc/CA.pl",
 									Findings: []types.LicenseFinding{
 										{
-											License:                          "OpenSSL",
-											Confidence:                       1,
-											GoogleLicenseClassificationIndex: 5,
-											GoogleLicenseClassification:      "notice",
-											LicenseLink:                      "https://spdx.org/licenses/OpenSSL.html",
+											Name:       "OpenSSL",
+											Confidence: 1,
+											Link:       "https://spdx.org/licenses/OpenSSL.html",
 										},
 									},
 								},
@@ -886,11 +878,9 @@ func TestArtifact_Inspect(t *testing.T) {
 									FilePath: "/etc/ssl/misc/tsget.pl",
 									Findings: []types.LicenseFinding{
 										{
-											License:                          "OpenSSL",
-											Confidence:                       1,
-											GoogleLicenseClassificationIndex: 5,
-											GoogleLicenseClassification:      "notice",
-											LicenseLink:                      "https://spdx.org/licenses/OpenSSL.html",
+											Name:       "OpenSSL",
+											Confidence: 1,
+											Link:       "https://spdx.org/licenses/OpenSSL.html",
 										},
 									},
 								},
@@ -1007,11 +997,9 @@ func TestArtifact_Inspect(t *testing.T) {
 									FilePath: "/etc/ssl/misc/CA.pl",
 									Findings: []types.LicenseFinding{
 										{
-											License:                          "OpenSSL",
-											Confidence:                       1,
-											GoogleLicenseClassificationIndex: 5,
-											GoogleLicenseClassification:      "notice",
-											LicenseLink:                      "https://spdx.org/licenses/OpenSSL.html",
+											Name:       "OpenSSL",
+											Confidence: 1,
+											Link:       "https://spdx.org/licenses/OpenSSL.html",
 										},
 									},
 								},
@@ -1019,11 +1007,9 @@ func TestArtifact_Inspect(t *testing.T) {
 									FilePath: "/etc/ssl/misc/tsget.pl",
 									Findings: []types.LicenseFinding{
 										{
-											License:                          "OpenSSL",
-											Confidence:                       1,
-											GoogleLicenseClassificationIndex: 5,
-											GoogleLicenseClassification:      "notice",
-											LicenseLink:                      "https://spdx.org/licenses/OpenSSL.html",
+											Name:       "OpenSSL",
+											Confidence: 1,
+											Link:       "https://spdx.org/licenses/OpenSSL.html",
 										},
 									},
 								},
