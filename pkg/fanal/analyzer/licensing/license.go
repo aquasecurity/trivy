@@ -14,8 +14,8 @@ import (
 
 	dio "github.com/aquasecurity/go-dep-parser/pkg/io"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
-	"github.com/aquasecurity/trivy/pkg/fanal/licensing"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
+	"github.com/aquasecurity/trivy/pkg/licensing"
 )
 
 const version = 1
@@ -24,6 +24,16 @@ var (
 	skipDirs = []string{
 		"node_modules/",  // node scan will pick these up
 		"usr/share/doc/", // dpkg will pick these up
+
+		// Some heuristic exclusion
+		"usr/lib",
+		"usr/local/include",
+		"usr/include",
+		"usr/lib/python",
+		"usr/local/go",
+		"opt/yarn",
+		"usr/lib/gems",
+		"usr/src/wordpress",
 	}
 
 	acceptedExtensions = []string{
@@ -77,7 +87,7 @@ func (a licenseFileAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisI
 
 func (a licenseFileAnalyzer) Required(filePath string, _ os.FileInfo) bool {
 	for _, skipDir := range skipDirs {
-		if strings.HasPrefix(filePath, skipDir) {
+		if strings.Contains(filePath, skipDir) {
 			return false
 		}
 	}
