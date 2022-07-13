@@ -4,19 +4,19 @@ Trivy scans any container image for license files and offers an opinionated view
 
 License are classified using the [Google License Classification][google-license-classification] -
 
- - forbidden
- - restricted 
- - reciprocal
- - notice
- - permissive
- - unencumbered
- - unknown
+ - Forbidden
+ - Restricted 
+ - Reciprocal
+ - Notice
+ - Permissive
+ - Unencumbered
+ - Unknown
 
 !!! tip
     Licenses that Trivy fails to recognize are classified as UNKNOWN.
     As those licenses may be in violation, it is recommended to check those unknown licenses as well.    
 
-By default, Trivy scans licenses for packages installed by `apk`, `apt`, `yum`, `npm`, `pip`, `gem`, etc.
+By default, Trivy scans licenses for packages installed by `apk`, `apt-get`, `dnf`, `npm`, `pip`, `gem`, etc.
 To enable extended license scanning, you can use `--license-full`.
 In addition to package licenses, Trivy scans source code files, Markdown documents, text files and `LICENSE` documents to identify license usage within the image or filesystem.
 
@@ -29,6 +29,19 @@ Currently, the standard license scanning doesn't support filesystem and reposito
 |:---------------------:|:-----:|:---------:|:----------:|:----------:|
 |       Standard        |  ✅   |     ✅    |   -        |      -     |
 | Full (--license-full) |  ✅   |     ✅    |     ✅     |     ✅     |
+
+
+License checking classifies the identified licenses and map the classification to severity.
+
+| Classification | Severity |
+|----------------|----------|
+| Forbidden      | CRITICAL |
+| Restricted     | HIGH     |
+| Reciprocal     | MEDIUM   |
+| Notice         | LOW      |
+| Permissive     | LOW      |
+| Unencumbered   | LOW      |
+| Unknown        | UNKNOWN  |
 
 ## Quick start
 This section shows how to scan license in container image and filesystem.
@@ -128,516 +141,180 @@ Trivy has number of configuration flags for use with license scanning;
 Trivy license scanning can ignore licenses that are identified to explicitly remove them from the results using the `--ignored-licenses` flag;
 
 ```shell
+$ trivy image --security-checks license --ignored-licenses MPL-2.0,MIT --severity LOW grafana/grafana:latest
+2022-07-13T18:15:28.605Z        INFO    License scanning is enabled
+
+OS Packages (license)
+=====================
+Total: 2 (HIGH: 2, CRITICAL: 0)
+
+┌───────────────────┬─────────┬────────────────┬──────────┐
+│      Package      │ License │ Classification │ Severity │
+├───────────────────┼─────────┼────────────────┼──────────┤
+│ alpine-baselayout │ GPL-2.0 │ Restricted     │ HIGH     │
+├───────────────────┤         │                │          │
+│ ssl_client        │         │                │          │
+└───────────────────┴─────────┴────────────────┴──────────┘
 
 ```
 
-### License Risk Threshold
+### Custom Classification
+You can generate the default config by the `--generate-default-config` flag and customize the license classification.
+For example, if you want to forbid only AGPL-3.0, you can leave it under `forbidden` and move other licenses to another classification.
 
-License checking classifies the identified licenses;
-
-| Classification | Level |
-|----------------|-------|
-| unknown        | 1     |
- | forbidden      | 2     |
- | restricted     | 3     |
- | reciprocal     | 4     |
- | notice         | 5     |
- | permissive     | 6     |
- | unencumbered   | 7     |
-
-By default, Trivy will report licenses that are identified with a level of 4 or less - That is to say `unknown`, `forbidden`, `restricted`, and `reciprocal`.
-
-The threshold can be changed to include more or less results using the `--license-risk-threshold` flag
-                          
 ```shell
-$ trivy fs --security-checks license --license-risk-threshold 7 /home/owen/code/github/aquasecurity/vscode-tfsec
-2022-06-29T10:46:06.015+0100	INFO	License scanning is enabled
+$ trivy image --generate-default-config
+$ vim trivy.yaml
+license:
+  forbidden:
+  - AGPL-3.0
+  
+  restricted:
+  - AGPL-1.0
+  - CC-BY-NC-1.0
+  - CC-BY-NC-2.0
+  - CC-BY-NC-2.5
+  - CC-BY-NC-3.0
+  - CC-BY-NC-4.0
+  - CC-BY-NC-ND-1.0
+  - CC-BY-NC-ND-2.0
+  - CC-BY-NC-ND-2.5
+  - CC-BY-NC-ND-3.0
+  - CC-BY-NC-ND-4.0
+  - CC-BY-NC-SA-1.0
+  - CC-BY-NC-SA-2.0
+  - CC-BY-NC-SA-2.5
+  - CC-BY-NC-SA-3.0
+  - CC-BY-NC-SA-4.0
+  - Commons-Clause
+  - Facebook-2-Clause
+  - Facebook-3-Clause
+  - Facebook-Examples
+  - WTFPL
+  - BCL
+  - CC-BY-ND-1.0
+  - CC-BY-ND-2.0
+  - CC-BY-ND-2.5
+  - CC-BY-ND-3.0
+  - CC-BY-ND-4.0
+  - CC-BY-SA-1.0
+  - CC-BY-SA-2.0
+  - CC-BY-SA-2.5
+  - CC-BY-SA-3.0
+  - CC-BY-SA-4.0
+  - GPL-1.0
+  - GPL-2.0
+  - GPL-2.0-with-autoconf-exception
+  - GPL-2.0-with-bison-exception
+  - GPL-2.0-with-classpath-exception
+  - GPL-2.0-with-font-exception
+  - GPL-2.0-with-GCC-exception
+  - GPL-3.0
+  - GPL-3.0-with-autoconf-exception
+  - GPL-3.0-with-GCC-exception
+  - LGPL-2.0
+  - LGPL-2.1
+  - LGPL-3.0
+  - NPL-1.0
+  - NPL-1.1
+  - OSL-1.0
+  - OSL-1.1
+  - OSL-2.0
+  - OSL-2.1
+  - OSL-3.0
+  - QPL-1.0
+  - Sleepycat
+  
+  reciprocal:
+  - APSL-1.0
+  - APSL-1.1
+  - APSL-1.2
+  - APSL-2.0
+  - CDDL-1.0
+  - CDDL-1.1
+  - CPL-1.0
+  - EPL-1.0
+  - EPL-2.0
+  - FreeImage
+  - IPL-1.0
+  - MPL-1.0
+  - MPL-1.1
+  - MPL-2.0
+  - Ruby
+  
+  notice:
+  - AFL-1.1
+  - AFL-1.2
+  - AFL-2.0
+  - AFL-2.1
+  - AFL-3.0
+  - Apache-1.0
+  - Apache-1.1
+  - Apache-2.0
+  - Artistic-1.0-cl8
+  - Artistic-1.0-Perl
+  - Artistic-1.0
+  - Artistic-2.0
+  - BSL-1.0
+  - BSD-2-Clause-FreeBSD
+  - BSD-2-Clause-NetBSD
+  - BSD-2-Clause
+  - BSD-3-Clause-Attribution
+  - BSD-3-Clause-Clear
+  - BSD-3-Clause-LBNL
+  - BSD-3-Clause
+  - BSD-4-Clause
+  - BSD-4-Clause-UC
+  - BSD-Protection
+  - CC-BY-1.0
+  - CC-BY-2.0
+  - CC-BY-2.5
+  - CC-BY-3.0
+  - CC-BY-4.0
+  - FTL
+  - ISC
+  - ImageMagick
+  - Libpng
+  - Lil-1.0
+  - Linux-OpenIB
+  - LPL-1.02
+  - LPL-1.0
+  - MS-PL
+  - MIT
+  - NCSA
+  - OpenSSL
+  - PHP-3.01
+  - PHP-3.0
+  - PIL
+  - Python-2.0
+  - Python-2.0-complete
+  - PostgreSQL
+  - SGI-B-1.0
+  - SGI-B-1.1
+  - SGI-B-2.0
+  - Unicode-DFS-2015
+  - Unicode-DFS-2016
+  - Unicode-TOU
+  - UPL-1.0
+  - W3C-19980720
+  - W3C-20150513
+  - W3C
+  - X11
+  - Xnet
+  - Zend-2.0
+  - zlib-acknowledgement
+  - Zlib
+  - ZPL-1.1
+  - ZPL-2.0
+  - ZPL-2.1
+  
+  unencumbered:
+  - CC0-1.0
+  - Unlicense
+  - 0BSD
+  
+  permissive: []
+```
 
-Package License(s)
-
-┌───────────────────────┬──────────────────┬───────────────────────────────────────┐
-│ Google Classification │ License          │ Package Name                          │
-├───────────────────────┼──────────────────┼───────────────────────────────────────┤
-│ Non Standard          │ (MIT OR CC0-1.0) │ type-fest                             │
-│                       ├──────────────────┼───────────────────────────────────────┤
-│                       │ MIT/X11          │ chainsaw                              │
-│                       │                  ├───────────────────────────────────────┤
-│                       │                  │ traverse                              │
-├───────────────────────┼──────────────────┼───────────────────────────────────────┤
-│ Notice                │ Apache-2.0       │ @humanwhocodes/config-array           │
-│                       │                  ├───────────────────────────────────────┤
-│                       │                  │ doctrine                              │
-│                       │                  ├───────────────────────────────────────┤
-│                       │                  │ eslint-visitor-keys                   │
-│                       │                  │                                       │
-│                       │                  │                                       │
-│                       │                  │                                       │
-│                       │                  │                                       │
-│                       │                  ├───────────────────────────────────────┤
-│                       │                  │ typescript                            │
-│                       │                  ├───────────────────────────────────────┤
-│                       │                  │ workerpool                            │
-│                       ├──────────────────┼───────────────────────────────────────┤
-│                       │ BSD-2-Clause     │ @typescript-eslint/parser             │
-│                       │                  ├───────────────────────────────────────┤
-│                       │                  │ @typescript-eslint/typescript-estree  │
-│                       │                  ├───────────────────────────────────────┤
-│                       │                  │ eslint-scope                          │
-│                       │                  ├───────────────────────────────────────┤
-│                       │                  │ espree                                │
-│                       │                  ├───────────────────────────────────────┤
-│                       │                  │ esprima                               │
-│                       │                  ├───────────────────────────────────────┤
-│                       │                  │ esrecurse                             │
-│                       │                  ├───────────────────────────────────────┤
-│                       │                  │ estraverse                            │
-│                       │                  │                                       │
-│                       │                  │                                       │
-│                       │                  │                                       │
-│                       │                  │                                       │
-│                       │                  ├───────────────────────────────────────┤
-│                       │                  │ esutils                               │
-│                       │                  ├───────────────────────────────────────┤
-│                       │                  │ uri-js                                │
-│                       ├──────────────────┼───────────────────────────────────────┤
-│                       │ BSD-3-Clause     │ @humanwhocodes/object-schema          │
-│                       │                  ├───────────────────────────────────────┤
-│                       │                  │ diff                                  │
-│                       │                  ├───────────────────────────────────────┤
-│                       │                  │ duplexer2                             │
-│                       │                  ├───────────────────────────────────────┤
-│                       │                  │ esquery                               │
-│                       │                  ├───────────────────────────────────────┤
-│                       │                  │ flat                                  │
-│                       │                  ├───────────────────────────────────────┤
-│                       │                  │ serialize-javascript                  │
-│                       │                  ├───────────────────────────────────────┤
-│                       │                  │ sprintf-js                            │
-│                       │                  ├───────────────────────────────────────┤
-│                       │                  │ table                                 │
-│                       ├──────────────────┼───────────────────────────────────────┤
-│                       │ ISC              │ @ungap/promise-all-settled            │
-│                       │                  ├───────────────────────────────────────┤
-│                       │                  │ anymatch                              │
-│                       │                  ├───────────────────────────────────────┤
-│                       │                  │ browser-stdout                        │
-│                       │                  ├───────────────────────────────────────┤
-│                       │                  │ cliui                                 │
-│                       │                  ├───────────────────────────────────────┤
-│                       │                  │ fastq                                 │
-│                       │                  ├───────────────────────────────────────┤
-│                       │                  │ flatted                               │
-│                       │                  ├───────────────────────────────────────┤
-│                       │                  │ fs.realpath                           │
-│                       │                  ├───────────────────────────────────────┤
-│                       │                  │ fstream                               │
-│                       │                  ├───────────────────────────────────────┤
-│                       │                  │ get-caller-file                       │
-│                       │                  ├───────────────────────────────────────┤
-│                       │                  │ glob                                  │
-│                       │                  ├───────────────────────────────────────┤
-│                       │                  │ glob-parent                           │
-│                       │                  ├───────────────────────────────────────┤
-│                       │                  │ graceful-fs                           │
-│                       │                  ├───────────────────────────────────────┤
-│                       │                  │ inflight                              │
-│                       │                  ├───────────────────────────────────────┤
-│                       │                  │ inherits                              │
-│                       │                  ├───────────────────────────────────────┤
-│                       │                  │ isexe                                 │
-│                       │                  ├───────────────────────────────────────┤
-│                       │                  │ listenercount                         │
-│                       │                  ├───────────────────────────────────────┤
-│                       │                  │ lru-cache                             │
-│                       │                  ├───────────────────────────────────────┤
-│                       │                  │ minimatch                             │
-│                       │                  │                                       │
-│                       │                  │                                       │
-│                       │                  ├───────────────────────────────────────┤
-│                       │                  │ once                                  │
-│                       │                  ├───────────────────────────────────────┤
-│                       │                  │ rimraf                                │
-│                       │                  │                                       │
-│                       │                  │                                       │
-│                       │                  ├───────────────────────────────────────┤
-│                       │                  │ semver                                │
-│                       │                  ├───────────────────────────────────────┤
-│                       │                  │ typescipt                             │
-│                       │                  ├───────────────────────────────────────┤
-│                       │                  │ which                                 │
-│                       │                  ├───────────────────────────────────────┤
-│                       │                  │ wide-align                            │
-│                       │                  ├───────────────────────────────────────┤
-│                       │                  │ wrappy                                │
-│                       │                  ├───────────────────────────────────────┤
-│                       │                  │ y18n                                  │
-│                       │                  ├───────────────────────────────────────┤
-│                       │                  │ yallist                               │
-│                       │                  ├───────────────────────────────────────┤
-│                       │                  │ yargs-parser                          │
-│                       ├──────────────────┼───────────────────────────────────────┤
-│                       │ MIT              │ @babel/code-frame                     │
-│                       │                  ├───────────────────────────────────────┤
-│                       │                  │ @babel/helper-validator-identifier    │
-│                       │                  ├───────────────────────────────────────┤
-│                       │                  │ @babel/highlight                      │
-│                       │                  ├───────────────────────────────────────┤
-│                       │                  │ @eslint/eslintrc                      │
-│                       │                  ├───────────────────────────────────────┤
-│                       │                  │ @nodelib/fs.scandir                   │
-│                       │                  ├───────────────────────────────────────┤
-│                       │                  │ @nodelib/fs.stat                      │
-│                       │                  ├───────────────────────────────────────┤
-│                       │                  │ @nodelib/fs.walk                      │
-│                       │                  ├───────────────────────────────────────┤
-│                       │                  │ @tootallnate/once                     │
-│                       │                  ├───────────────────────────────────────┤
-│                       │                  │ @types/json-schema                    │
-│                       │                  ├───────────────────────────────────────┤
-│                       │                  │ @types/mocha                          │
-│                       │                  ├───────────────────────────────────────┤
-│                       │                  │ @types/node                           │
-│                       │                  ├───────────────────────────────────────┤
-│                       │                  │ @types/semver                         │
-│                       │                  ├───────────────────────────────────────┤
-│                       │                  │ @types/uuid                           │
-│                       │                  ├───────────────────────────────────────┤
-│                       │                  │ @types/vscode                         │
-│                       │                  ├───────────────────────────────────────┤
-│                       │                  │ @typescript-eslint/eslint-plugin      │
-│                       │                  ├───────────────────────────────────────┤
-│                       │                  │ @typescript-eslint/experimental-utils │
-│                       │                  ├───────────────────────────────────────┤
-│                       │                  │ @typescript-eslint/scope-manager      │
-│                       │                  ├───────────────────────────────────────┤
-│                       │                  │ @typescript-eslint/types              │
-│                       │                  ├───────────────────────────────────────┤
-│                       │                  │ @typescript-eslint/visitor-keys       │
-│                       │                  ├───────────────────────────────────────┤
-│                       │                  │ acorn                                 │
-│                       │                  ├───────────────────────────────────────┤
-│                       │                  │ acorn-jsx                             │
-│                       │                  ├───────────────────────────────────────┤
-│                       │                  │ agent-base                            │
-│                       │                  ├───────────────────────────────────────┤
-│                       │                  │ ajv                                   │
-│                       │                  │                                       │
-│                       │                  │                                       │
-│                       │                  ├───────────────────────────────────────┤
-│                       │                  │ ansi-colors                           │
-│                       │                  │                                       │
-│                       │                  │                                       │
-│                       │                  ├───────────────────────────────────────┤
-│                       │                  │ ansi-regex                            │
-│                       │                  │                                       │
-│                       │                  │                                       │
-│                       │                  ├───────────────────────────────────────┤
-│                       │                  │ ansi-styles                           │
-│                       │                  │                                       │
-│                       │                  │                                       │
-│                       │                  ├───────────────────────────────────────┤
-│                       │                  │ argparse                              │
-│                       │                  ├───────────────────────────────────────┤
-│                       │                  │ array-union                           │
-│                       │                  ├───────────────────────────────────────┤
-│                       │                  │ astral-regex                          │
-│                       │                  ├───────────────────────────────────────┤
-│                       │                  │ balanced-match                        │
-│                       │                  ├───────────────────────────────────────┤
-│                       │                  │ binary                                │
-│                       │                  ├───────────────────────────────────────┤
-│                       │                  │ binary-extensions                     │
-│                       │                  ├───────────────────────────────────────┤
-│                       │                  │ bluebird                              │
-│                       │                  ├───────────────────────────────────────┤
-│                       │                  │ brace-expansion                       │
-│                       │                  ├───────────────────────────────────────┤
-│                       │                  │ braces                                │
-│                       │                  ├───────────────────────────────────────┤
-│                       │                  │ buffer-indexof-polyfill               │
-│                       │                  ├───────────────────────────────────────┤
-│                       │                  │ callsites                             │
-│                       │                  ├───────────────────────────────────────┤
-│                       │                  │ camelcase                             │
-│                       │                  ├───────────────────────────────────────┤
-│                       │                  │ chalk                                 │
-│                       │                  │                                       │
-│                       │                  │                                       │
-│                       │                  ├───────────────────────────────────────┤
-│                       │                  │ chokidar                              │
-│                       │                  ├───────────────────────────────────────┤
-│                       │                  │ color-convert                         │
-│                       │                  │                                       │
-│                       │                  │                                       │
-│                       │                  ├───────────────────────────────────────┤
-│                       │                  │ color-name                            │
-│                       │                  │                                       │
-│                       │                  │                                       │
-│                       │                  ├───────────────────────────────────────┤
-│                       │                  │ concat-map                            │
-│                       │                  ├───────────────────────────────────────┤
-│                       │                  │ core-util-is                          │
-│                       │                  ├───────────────────────────────────────┤
-│                       │                  │ cross-spawn                           │
-│                       │                  ├───────────────────────────────────────┤
-│                       │                  │ debug                                 │
-│                       │                  │                                       │
-│                       │                  │                                       │
-│                       │                  ├───────────────────────────────────────┤
-│                       │                  │ decamelize                            │
-│                       │                  ├───────────────────────────────────────┤
-│                       │                  │ deep-is                               │
-│                       │                  ├───────────────────────────────────────┤
-│                       │                  │ dir-glob                              │
-│                       │                  ├───────────────────────────────────────┤
-│                       │                  │ emoji-regex                           │
-│                       │                  ├───────────────────────────────────────┤
-│                       │                  │ enquirer                              │
-│                       │                  ├───────────────────────────────────────┤
-│                       │                  │ esbuild                               │
-│                       │                  ├───────────────────────────────────────┤
-│                       │                  │ esbuild-linux-64                      │
-│                       │                  ├───────────────────────────────────────┤
-│                       │                  │ escalade                              │
-│                       │                  ├───────────────────────────────────────┤
-│                       │                  │ escape-string-regexp                  │
-│                       │                  │                                       │
-│                       │                  │                                       │
-│                       │                  ├───────────────────────────────────────┤
-│                       │                  │ eslint                                │
-│                       │                  ├───────────────────────────────────────┤
-│                       │                  │ eslint-utils                          │
-│                       │                  │                                       │
-│                       │                  │                                       │
-│                       │                  ├───────────────────────────────────────┤
-│                       │                  │ fast-deep-equal                       │
-│                       │                  ├───────────────────────────────────────┤
-│                       │                  │ fast-glob                             │
-│                       │                  ├───────────────────────────────────────┤
-│                       │                  │ fast-json-stable-stringify            │
-│                       │                  ├───────────────────────────────────────┤
-│                       │                  │ fast-levenshtein                      │
-│                       │                  ├───────────────────────────────────────┤
-│                       │                  │ file-entry-cache                      │
-│                       │                  ├───────────────────────────────────────┤
-│                       │                  │ fill-range                            │
-│                       │                  ├───────────────────────────────────────┤
-│                       │                  │ find-up                               │
-│                       │                  ├───────────────────────────────────────┤
-│                       │                  │ flat-cache                            │
-│                       │                  ├───────────────────────────────────────┤
-│                       │                  │ functional-red-black-tree             │
-│                       │                  ├───────────────────────────────────────┤
-│                       │                  │ globals                               │
-│                       │                  ├───────────────────────────────────────┤
-│                       │                  │ globby                                │
-│                       │                  ├───────────────────────────────────────┤
-│                       │                  │ growl                                 │
-│                       │                  ├───────────────────────────────────────┤
-│                       │                  │ has-flag                              │
-│                       │                  │                                       │
-│                       │                  │                                       │
-│                       │                  ├───────────────────────────────────────┤
-│                       │                  │ he                                    │
-│                       │                  ├───────────────────────────────────────┤
-│                       │                  │ http-proxy-agent                      │
-│                       │                  ├───────────────────────────────────────┤
-│                       │                  │ https-proxy-agent                     │
-│                       │                  ├───────────────────────────────────────┤
-│                       │                  │ ignore                                │
-│                       │                  │                                       │
-│                       │                  │                                       │
-│                       │                  │                                       │
-│                       │                  │                                       │
-│                       │                  ├───────────────────────────────────────┤
-│                       │                  │ import-fresh                          │
-│                       │                  ├───────────────────────────────────────┤
-│                       │                  │ imurmurhash                           │
-│                       │                  ├───────────────────────────────────────┤
-│                       │                  │ is-binary-path                        │
-│                       │                  ├───────────────────────────────────────┤
-│                       │                  │ is-extglob                            │
-│                       │                  ├───────────────────────────────────────┤
-│                       │                  │ is-fullwidth-code-point               │
-│                       │                  │                                       │
-│                       │                  │                                       │
-│                       │                  ├───────────────────────────────────────┤
-│                       │                  │ is-glob                               │
-│                       │                  ├───────────────────────────────────────┤
-│                       │                  │ is-number                             │
-│                       │                  ├───────────────────────────────────────┤
-│                       │                  │ is-plain-obj                          │
-│                       │                  ├───────────────────────────────────────┤
-│                       │                  │ isarray                               │
-│                       │                  ├───────────────────────────────────────┤
-│                       │                  │ js-tokens                             │
-│                       │                  ├───────────────────────────────────────┤
-│                       │                  │ js-yaml                               │
-│                       │                  │                                       │
-│                       │                  │                                       │
-│                       │                  ├───────────────────────────────────────┤
-│                       │                  │ json-schema-traverse                  │
-│                       │                  │                                       │
-│                       │                  │                                       │
-│                       │                  ├───────────────────────────────────────┤
-│                       │                  │ json-stable-stringify-without-jsonify │
-│                       │                  ├───────────────────────────────────────┤
-│                       │                  │ levn                                  │
-│                       │                  ├───────────────────────────────────────┤
-│                       │                  │ locate-path                           │
-│                       │                  ├───────────────────────────────────────┤
-│                       │                  │ lodash.merge                          │
-│                       │                  ├───────────────────────────────────────┤
-│                       │                  │ lodash.truncate                       │
-│                       │                  ├───────────────────────────────────────┤
-│                       │                  │ log-symbols                           │
-│                       │                  ├───────────────────────────────────────┤
-│                       │                  │ merge2                                │
-│                       │                  ├───────────────────────────────────────┤
-│                       │                  │ micromatch                            │
-│                       │                  ├───────────────────────────────────────┤
-│                       │                  │ minimist                              │
-│                       │                  ├───────────────────────────────────────┤
-│                       │                  │ mkdirp                                │
-│                       │                  ├───────────────────────────────────────┤
-│                       │                  │ mocha                                 │
-│                       │                  ├───────────────────────────────────────┤
-│                       │                  │ ms                                    │
-│                       │                  │                                       │
-│                       │                  │                                       │
-│                       │                  │                                       │
-│                       │                  │                                       │
-│                       │                  ├───────────────────────────────────────┤
-│                       │                  │ nanoid                                │
-│                       │                  ├───────────────────────────────────────┤
-│                       │                  │ natural-compare                       │
-│                       │                  ├───────────────────────────────────────┤
-│                       │                  │ normalize-path                        │
-│                       │                  ├───────────────────────────────────────┤
-│                       │                  │ optionator                            │
-│                       │                  ├───────────────────────────────────────┤
-│                       │                  │ p-limit                               │
-│                       │                  ├───────────────────────────────────────┤
-│                       │                  │ p-locate                              │
-│                       │                  ├───────────────────────────────────────┤
-│                       │                  │ parent-module                         │
-│                       │                  ├───────────────────────────────────────┤
-│                       │                  │ path-exists                           │
-│                       │                  ├───────────────────────────────────────┤
-│                       │                  │ path-is-absolute                      │
-│                       │                  ├───────────────────────────────────────┤
-│                       │                  │ path-key                              │
-│                       │                  ├───────────────────────────────────────┤
-│                       │                  │ path-type                             │
-│                       │                  ├───────────────────────────────────────┤
-│                       │                  │ picomatch                             │
-│                       │                  ├───────────────────────────────────────┤
-│                       │                  │ prelude-ls                            │
-│                       │                  ├───────────────────────────────────────┤
-│                       │                  │ process-nextick-args                  │
-│                       │                  ├───────────────────────────────────────┤
-│                       │                  │ progress                              │
-│                       │                  ├───────────────────────────────────────┤
-│                       │                  │ punycode                              │
-│                       │                  ├───────────────────────────────────────┤
-│                       │                  │ queue-microtask                       │
-│                       │                  ├───────────────────────────────────────┤
-│                       │                  │ randombytes                           │
-│                       │                  ├───────────────────────────────────────┤
-│                       │                  │ readable-stream                       │
-│                       │                  ├───────────────────────────────────────┤
-│                       │                  │ readdirp                              │
-│                       │                  ├───────────────────────────────────────┤
-│                       │                  │ regexpp                               │
-│                       │                  ├───────────────────────────────────────┤
-│                       │                  │ require-directory                     │
-│                       │                  ├───────────────────────────────────────┤
-│                       │                  │ require-from-string                   │
-│                       │                  ├───────────────────────────────────────┤
-│                       │                  │ resolve-from                          │
-│                       │                  ├───────────────────────────────────────┤
-│                       │                  │ reusify                               │
-│                       │                  ├───────────────────────────────────────┤
-│                       │                  │ run-parallel                          │
-│                       │                  ├───────────────────────────────────────┤
-│                       │                  │ safe-buffer                           │
-│                       │                  │                                       │
-│                       │                  │                                       │
-│                       │                  │                                       │
-│                       │                  │                                       │
-│                       │                  ├───────────────────────────────────────┤
-│                       │                  │ setimmediate                          │
-│                       │                  ├───────────────────────────────────────┤
-│                       │                  │ shebang-command                       │
-│                       │                  ├───────────────────────────────────────┤
-│                       │                  │ shebang-regex                         │
-│                       │                  ├───────────────────────────────────────┤
-│                       │                  │ slash                                 │
-│                       │                  ├───────────────────────────────────────┤
-│                       │                  │ slice-ansi                            │
-│                       │                  ├───────────────────────────────────────┤
-│                       │                  │ string-width                          │
-│                       │                  │                                       │
-│                       │                  │                                       │
-│                       │                  ├───────────────────────────────────────┤
-│                       │                  │ string_decoder                        │
-│                       │                  ├───────────────────────────────────────┤
-│                       │                  │ strip-ansi                            │
-│                       │                  │                                       │
-│                       │                  │                                       │
-│                       │                  ├───────────────────────────────────────┤
-│                       │                  │ strip-json-comments                   │
-│                       │                  ├───────────────────────────────────────┤
-│                       │                  │ supports-color                        │
-│                       │                  │                                       │
-│                       │                  │                                       │
-│                       │                  │                                       │
-│                       │                  │                                       │
-│                       │                  ├───────────────────────────────────────┤
-│                       │                  │ text-table                            │
-│                       │                  ├───────────────────────────────────────┤
-│                       │                  │ to-regex-range                        │
-│                       │                  ├───────────────────────────────────────┤
-│                       │                  │ tsutils                               │
-│                       │                  ├───────────────────────────────────────┤
-│                       │                  │ type-check                            │
-│                       │                  ├───────────────────────────────────────┤
-│                       │                  │ unzipper                              │
-│                       │                  ├───────────────────────────────────────┤
-│                       │                  │ util-deprecate                        │
-│                       │                  ├───────────────────────────────────────┤
-│                       │                  │ uuid                                  │
-│                       │                  ├───────────────────────────────────────┤
-│                       │                  │ v8-compile-cache                      │
-│                       │                  ├───────────────────────────────────────┤
-│                       │                  │ vscode-test                           │
-│                       │                  ├───────────────────────────────────────┤
-│                       │                  │ word-wrap                             │
-│                       │                  ├───────────────────────────────────────┤
-│                       │                  │ wrap-ansi                             │
-│                       │                  ├───────────────────────────────────────┤
-│                       │                  │ yargs                                 │
-│                       │                  ├───────────────────────────────────────┤
-│                       │                  │ yargs-unparser                        │
-│                       │                  ├───────────────────────────────────────┤
-│                       │                  │ yocto-queue                           │
-│                       ├──────────────────┼───────────────────────────────────────┤
-│                       │ Python-2.0       │ argparse                              │
-├───────────────────────┼──────────────────┼───────────────────────────────────────┤
-│ Unencumbered          │ 0BSD             │ tslib                                 │
-│                       ├──────────────────┼───────────────────────────────────────┤
-│                       │ Unlicense        │ big-integer                           │
-└───────────────────────┴──────────────────┴───────────────────────────────────────┘
-
-Loose File License(s)
-
-┌───────────────────────┬─────────┬───────────────┐
-│ Google Classification │ License │ File Location │
-├───────────────────────┼─────────┼───────────────┤
-│ Non Standard          │ MIT-0   │ LICENSE       │
-├───────────────────────┼─────────┤               │
-│ Notice                │ MIT     │               │
-└───────────────────────┴─────────┴───────────────┘
-```  
 
 [google-license-classification]: https://opensource.google/documentation/reference/thirdparty/licenses

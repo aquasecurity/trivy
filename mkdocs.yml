@@ -61,6 +61,8 @@ nav:
           - Scanning: docs/secret/scanning.md
           - Configuration: docs/secret/configuration.md
           - Examples: docs/secret/examples.md
+      - License:
+            - Scanning: docs/licenses/scanning.md
       - Kubernetes:
           - CLI:
               - Scanning: docs/kubernetes/cli/scanning.md
@@ -70,8 +72,6 @@ nav:
           - Overview: docs/sbom/index.md
           - CycloneDX: docs/sbom/cyclonedx.md
           - SPDX: docs/sbom/spdx.md
-      - License:
-            - Scanning: docs/licenses/scanning.md
       - Integrations:
           - Overview: docs/integrations/index.md
           - GitHub Actions: docs/integrations/github-actions.md
