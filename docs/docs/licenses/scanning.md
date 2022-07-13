@@ -1,70 +1,122 @@
 # License Scanning
 
-Trivy scans any container image or filesystem for license files and offers an opinionated view on the risk associated with the license.
+Trivy scans any container image for license files and offers an opinionated view on the risk associated with the license.
 
 License are classified using the [Google License Classification][google-license-classification] -
 
- - unknown
  - forbidden
  - restricted 
  - reciprocal
  - notice
  - permissive
  - unencumbered
-
-Trivy with scan source code files, Markdown documents, text files and `LICENSE` documents to identify license usage within the image or filesystem.
+ - unknown
 
 !!! tip
-    The default risk threshold is set to `reciprocal` - any licenses lower on the list above will be reported in the Trivy output.
+    Licenses that Trivy fails to recognize are classified as UNKNOWN.
+    As those licenses may be in violation, it is recommended to check those unknown licenses as well.    
+
+By default, Trivy scans licenses for packages installed by `apk`, `apt`, `yum`, `npm`, `pip`, `gem`, etc.
+To enable extended license scanning, you can use `--license-full`.
+In addition to package licenses, Trivy scans source code files, Markdown documents, text files and `LICENSE` documents to identify license usage within the image or filesystem.
+
+!!! note
+    The full license scanning is expensive. It takes a while.
+
+Currently, the standard license scanning doesn't support filesystem and repository scanning.
+
+|   License scnanning   | Image | Rootfs    | Filesystem | Repository |
+|:---------------------:|:-----:|:---------:|:----------:|:----------:|
+|       Standard        |  ✅   |     ✅    |   -        |      -     |
+| Full (--license-full) |  ✅   |     ✅    |     ✅     |     ✅     |
 
 ## Quick start
 This section shows how to scan license in container image and filesystem.
 
-### Container image
-Specify an image name
+### Standard scanning
+Specify an image name with `--security-cheks license`.
 
 ``` shell
-$ trivy image --security-checks license  grafana/grafana:latest 
-2022-06-29T10:36:30.144+0100	INFO	License scanning is enabled
+$ trivy image --security-checks license --severity UNKNOWN,HIGH,CRITICAL alpine:3.15
+2022-07-13T17:28:39.526+0300    INFO    License scanning is enabled
 
-Loose File License(s)
+OS Packages (license)
+=====================
+Total: 6 (UNKNOWN: 0, HIGH: 6, CRITICAL: 0)
 
-┌───────────────────────┬─────────────────────┬────────────────────────────┐
-│ Google Classification │ License             │ File Location              │
-├───────────────────────┼─────────────────────┼────────────────────────────┤
-│ Non Standard          │ AGPL-3.0-only       │ /usr/share/grafana/LICENSE │
-│                       ├─────────────────────┤                            │
-│                       │ AGPL-3.0-or-later   │                            │
-│                       ├─────────────────────┤                            │
-│                       │ deprecated_AGPL-3.0 │                            │
-└───────────────────────┴─────────────────────┴────────────────────────────┘
+┌───────────────────┬─────────┬────────────────┬──────────┐
+│      Package      │ License │ Classification │ Severity │
+├───────────────────┼─────────┼────────────────┼──────────┤
+│ alpine-baselayout │ GPL-2.0 │ Restricted     │ HIGH     │
+├───────────────────┤         │                │          │
+│ apk-tools         │         │                │          │
+├───────────────────┤         │                │          │
+│ busybox           │         │                │          │
+├───────────────────┤         │                │          │
+│ musl-utils        │         │                │          │
+├───────────────────┤         │                │          │
+│ scanelf           │         │                │          │
+├───────────────────┤         │                │          │
+│ ssl_client        │         │                │          │
+└───────────────────┴─────────┴────────────────┴──────────┘
 ```
 
-### Filesystem
+### Full scanning
+Specify `--license-full`
 
 ``` shell
-$ trivy fs --security-checks license /path/to/project 
-2022-06-29T10:37:23.341+0100	INFO	License scanning is enabled
+$ trivy image --security-checks license --severity UNKNOWN,HIGH,CRITICAL --license-full grafana/grafana
+2022-07-13T17:48:40.905+0300    INFO    Full license scanning is enabled
 
-Package License(s)
+OS Packages (license)
+=====================
+Total: 20 (UNKNOWN: 9, HIGH: 11, CRITICAL: 0)
 
-┌───────────────────────┬──────────────────┬──────────────┐
-│ Google Classification │ License          │ Package Name │
-├───────────────────────┼──────────────────┼──────────────┤
-│ Non Standard          │ (MIT OR CC0-1.0) │ type-fest    │
-│                       ├──────────────────┼──────────────┤
-│                       │ MIT/X11          │ chainsaw     │
-│                       │                  ├──────────────┤
-│                       │                  │ traverse     │
-└───────────────────────┴──────────────────┴──────────────┘
+┌───────────────────┬───────────────────┬────────────────┬──────────┐
+│      Package      │      License      │ Classification │ Severity │
+├───────────────────┼───────────────────┼────────────────┼──────────┤
+│ alpine-baselayout │ GPL-2.0           │ Restricted     │ HIGH     │
+├───────────────────┤                   │                │          │
+│ apk-tools         │                   │                │          │
+├───────────────────┼───────────────────┤                │          │
+│ bash              │ GPL-3.0           │                │          │
+├───────────────────┼───────────────────┼────────────────┼──────────┤
+│ keyutils-libs     │ GPL-2.0           │ Restricted     │ HIGH     │
+│                   ├───────────────────┼────────────────┼──────────┤
+│                   │ LGPL-2.0-or-later │ Non Standard   │ UNKNOWN  │
+├───────────────────┼───────────────────┤                │          │
+│ libaio            │ LGPL-2.1-or-later │                │          │
+├───────────────────┼───────────────────┼────────────────┼──────────┤
+│ libcom_err        │ GPL-2.0           │ Restricted     │ HIGH     │
+│                   ├───────────────────┼────────────────┼──────────┤
+│                   │ LGPL-2.0-or-later │ Non Standard   │ UNKNOWN  │
+├───────────────────┼───────────────────┼────────────────┼──────────┤
+│ tzdata            │ Public-Domain     │ Non Standard   │ UNKNOWN  │
+└───────────────────┴───────────────────┴────────────────┴──────────┘
 
-Loose File License(s)
+Loose File License(s) (license)
+===============================
+Total: 6 (UNKNOWN: 4, HIGH: 0, CRITICAL: 2)
 
-┌───────────────────────┬─────────┬───────────────┐
-│ Google Classification │ License │ File Location │
-├───────────────────────┼─────────┼───────────────┤
-│ Non Standard          │ MIT-0   │ LICENSE       │
-└───────────────────────┴─────────┴───────────────┘
+┌────────────────┬──────────┬──────────────┬──────────────────────────────────────────────────────────────┐
+│ Classification │ Severity │   License    │                        File Location                         │
+├────────────────┼──────────┼──────────────┼──────────────────────────────────────────────────────────────┤
+│ Forbidden      │ CRITICAL │ AGPL-3.0     │ /usr/share/grafana/LICENSE                                   │
+│                │          │              │                                                              │
+│                │          │              │                                                              │
+├────────────────┼──────────┼──────────────┼──────────────────────────────────────────────────────────────┤
+│ Non Standard   │ UNKNOWN  │ BSD-0-Clause │ /usr/share/grafana/public/build/5069.d6aae9dd11d49c741a80.j- │
+│                │          │              │ s.LICENSE.txt                                                │
+│                │          │              ├──────────────────────────────────────────────────────────────┤
+│                │          │              │ /usr/share/grafana/public/build/6444.d6aae9dd11d49c741a80.j- │
+│                │          │              │ s.LICENSE.txt                                                │
+│                │          │              ├──────────────────────────────────────────────────────────────┤
+│                │          │              │ /usr/share/grafana/public/build/7889.d6aae9dd11d49c741a80.j- │
+│                │          │              │ s.LICENSE.txt                                                │
+│                │          │              ├──────────────────────────────────────────────────────────────┤
+│                │          │              │ /usr/share/grafana/public/build/canvasPanel.d6aae9dd11d49c7- │
+│                │          │              │ 41a80.js.LICENSE.txt                                         │
+└────────────────┴──────────┴──────────────┴──────────────────────────────────────────────────────────────┘
 ```
 
 ## Configuration
@@ -76,18 +128,7 @@ Trivy has number of configuration flags for use with license scanning;
 Trivy license scanning can ignore licenses that are identified to explicitly remove them from the results using the `--ignored-licenses` flag;
 
 ```shell
-$ trivy image --security-checks license --ignored-licenses AGPL-3.0-only  grafana/grafana:latest
-2022-06-29T10:51:28.458+0100	INFO	License scanning is enabled
 
-Loose File License(s)
-
-┌───────────────────────┬─────────────────────┬────────────────────────────┐
-│ Google Classification │ License             │ File Location              │
-├───────────────────────┼─────────────────────┼────────────────────────────┤
-│ Non Standard          │ AGPL-3.0-or-later   │ /usr/share/grafana/LICENSE │
-│                       ├─────────────────────┤                            │
-│                       │ deprecated_AGPL-3.0 │                            │
-└───────────────────────┴─────────────────────┴────────────────────────────┘
 ```
 
 ### License Risk Threshold
