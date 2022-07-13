@@ -24,6 +24,7 @@ func TestReportWriter_Table(t *testing.T) {
 			results: types.Results{
 				{
 					Target: "test",
+					Class:  types.ClassLangPkg,
 					Vulnerabilities: []types.DetectedVulnerability{
 						{
 							VulnerabilityID:  "CVE-2020-0001",
@@ -40,7 +41,12 @@ func TestReportWriter_Table(t *testing.T) {
 					},
 				},
 			},
-			expectedOutput: `┌─────────┬───────────────┬──────────┬───────────────────┬───────────────┬───────────────────────────────────────────┐
+			expectedOutput: `
+test ()
+=======
+Total: 1 (MEDIUM: 0, HIGH: 1)
+
+┌─────────┬───────────────┬──────────┬───────────────────┬───────────────┬───────────────────────────────────────────┐
 │ Library │ Vulnerability │ Severity │ Installed Version │ Fixed Version │                   Title                   │
 ├─────────┼───────────────┼──────────┼───────────────────┼───────────────┼───────────────────────────────────────────┤
 │ foo     │ CVE-2020-0001 │ HIGH     │ 1.2.3             │ 3.4.5         │ foobar                                    │
@@ -53,6 +59,7 @@ func TestReportWriter_Table(t *testing.T) {
 			results: types.Results{
 				{
 					Target: "test",
+					Class:  types.ClassLangPkg,
 					Vulnerabilities: []types.DetectedVulnerability{
 						{
 							VulnerabilityID:  "CVE-2020-0001",
@@ -70,7 +77,12 @@ func TestReportWriter_Table(t *testing.T) {
 					},
 				},
 			},
-			expectedOutput: `┌───────────┬───────────────┬──────────┬───────────────────┬───────────────┬───────────────────────────────────────────┐
+			expectedOutput: `
+test ()
+=======
+Total: 1 (MEDIUM: 0, HIGH: 1)
+
+┌───────────┬───────────────┬──────────┬───────────────────┬───────────────┬───────────────────────────────────────────┐
 │  Library  │ Vulnerability │ Severity │ Installed Version │ Fixed Version │                   Title                   │
 ├───────────┼───────────────┼──────────┼───────────────────┼───────────────┼───────────────────────────────────────────┤
 │ foo (bar) │ CVE-2020-0001 │ HIGH     │ 1.2.3             │ 3.4.5         │ foobar                                    │
@@ -83,6 +95,7 @@ func TestReportWriter_Table(t *testing.T) {
 			results: types.Results{
 				{
 					Target: "test",
+					Class:  types.ClassLangPkg,
 					Vulnerabilities: []types.DetectedVulnerability{
 						{
 							VulnerabilityID:  "CVE-2020-0001",
@@ -97,7 +110,12 @@ func TestReportWriter_Table(t *testing.T) {
 					},
 				},
 			},
-			expectedOutput: `┌─────────┬───────────────┬──────────┬───────────────────┬───────────────┬────────┐
+			expectedOutput: `
+test ()
+=======
+Total: 1 (MEDIUM: 0, HIGH: 1)
+
+┌─────────┬───────────────┬──────────┬───────────────────┬───────────────┬────────┐
 │ Library │ Vulnerability │ Severity │ Installed Version │ Fixed Version │ Title  │
 ├─────────┼───────────────┼──────────┼───────────────────┼───────────────┼────────┤
 │ foo     │ CVE-2020-0001 │ HIGH     │ 1.2.3             │ 3.4.5         │ foobar │
@@ -109,6 +127,7 @@ func TestReportWriter_Table(t *testing.T) {
 			results: types.Results{
 				{
 					Target: "test",
+					Class:  types.ClassLangPkg,
 					Vulnerabilities: []types.DetectedVulnerability{
 						{
 							VulnerabilityID:  "CVE-2020-1234",
@@ -125,7 +144,12 @@ func TestReportWriter_Table(t *testing.T) {
 					},
 				},
 			},
-			expectedOutput: `┌─────────┬───────────────┬──────────┬───────────────────┬───────────────┬───────────────────────────────────────────┐
+			expectedOutput: `
+test ()
+=======
+Total: 1 (MEDIUM: 0, HIGH: 1)
+
+┌─────────┬───────────────┬──────────┬───────────────────┬───────────────┬───────────────────────────────────────────┐
 │ Library │ Vulnerability │ Severity │ Installed Version │ Fixed Version │                   Title                   │
 ├─────────┼───────────────┼──────────┼───────────────────┼───────────────┼───────────────────────────────────────────┤
 │ foo     │ CVE-2020-1234 │ HIGH     │ 1.2.3             │ 3.4.5         │ a b c d e f g h i j k l...                │
@@ -203,7 +227,12 @@ func TestReportWriter_Table(t *testing.T) {
 					},
 				},
 			},
-			expectedOutput: `┌───────────────┬────────────────┬──────────┬───────────────────┬───────────────┬────────┐
+			expectedOutput: `
+package-lock.json (npm)
+=======================
+Total: 2 (MEDIUM: 1, HIGH: 1)
+
+┌───────────────┬────────────────┬──────────┬───────────────────┬───────────────┬────────┐
 │    Library    │ Vulnerability  │ Severity │ Installed Version │ Fixed Version │ Title  │
 ├───────────────┼────────────────┼──────────┼───────────────────┼───────────────┼────────┤
 │ node-fetch    │ CVE-2022-0235  │ HIGH     │ 1.7.3             │ 2.6.7, 3.1.1  │ foobar │
@@ -219,7 +248,6 @@ package-lock.json
 │       └── fbjs@0.8.18
 │           └── styled-components@3.1.3
 └── sanitize-html@1.20.0, (MEDIUM: 1, HIGH: 0)
-
 `,
 		},
 	}
