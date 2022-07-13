@@ -72,7 +72,7 @@ const (
 	CommonsClause               = "Commons-Clause"
 	CPAL10                      = "CPAL-1.0"
 	CPL10                       = "CPL-1.0"
-	eGenix                      = "eGenix"
+	EGenix                      = "eGenix"
 	EPL10                       = "EPL-1.0"
 	EPL20                       = "EPL-2.0"
 	EUPL10                      = "EUPL-1.0"
