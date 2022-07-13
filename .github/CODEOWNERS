@@ -4,6 +4,12 @@
 # Helm chart
 helm/trivy/ @krol3
 
+# Misconfiguration scanning
+examples/misconf/           @owenrumney @liamg @knqyf263
+docs/docs/misconfiguration  @owenrumney @liamg @knqyf263
+pkg/fanal/analyzer/config   @owenrumney @liamg @knqyf263
+pkg/fanal/handler/misconf   @owenrumney @liamg @knqyf263
+
 # Kubernetes scanning
-pkg/k8s/                @josedonizetti @chen-keinan
-docs/docs/kubernetes/   @josedonizetti @chen-keinan
+pkg/k8s/                @josedonizetti @chen-keinan @knqyf263
+docs/docs/kubernetes/   @josedonizetti @chen-keinan @knqyf263
