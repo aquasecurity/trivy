@@ -419,8 +419,8 @@ func disabledAnalyzers(opts flag.Options) []analyzer.Type {
 	}
 
 	// Scanning file headers and license files is expensive.
-	// It is performed only when '--license-full' is specified.
-	if !opts.LicenseFull {
+	// It is performed only when '--security-checks license' and '--license-full' are specified.
+	if !slices.Contains(opts.SecurityChecks, types.SecurityCheckLicense) || !opts.LicenseFull {
 		analyzers = append(analyzers, analyzer.TypeLicenseFile)
 	}
 
@@ -469,7 +469,11 @@ func initScannerConfig(opts flag.Options, cacheClient cache.Cache) (ScannerConfi
 	}
 
 	if slices.Contains(opts.SecurityChecks, types.SecurityCheckLicense) {
-		log.Logger.Info("License scanning is enabled")
+		if opts.LicenseFull {
+			log.Logger.Info("Full license scanning is enabled")
+		} else {
+			log.Logger.Info("License scanning is enabled")
+		}
 	}
 
 	return ScannerConfig{
