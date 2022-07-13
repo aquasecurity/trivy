@@ -5,9 +5,8 @@ import (
 	"errors"
 	"os"
 
-	"github.com/aquasecurity/trivy/pkg/utils"
-
 	"github.com/hashicorp/go-multierror"
+	"github.com/spf13/viper"
 	"golang.org/x/exp/slices"
 	"golang.org/x/xerrors"
 
@@ -27,6 +26,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/rpc/client"
 	"github.com/aquasecurity/trivy/pkg/scanner"
 	"github.com/aquasecurity/trivy/pkg/types"
+	"github.com/aquasecurity/trivy/pkg/utils"
 )
 
 // TargetKind represents what kind of artifact Trivy scans
@@ -345,6 +345,11 @@ func Run(ctx context.Context, opts flag.Options, targetKind TargetKind) (err err
 			log.Logger.Warn("Increase --timeout value")
 		}
 	}()
+
+	if opts.GenerateDefaultConfig {
+		log.Logger.Info("Writing the default config to trivy-default.yaml...")
+		return viper.SafeWriteConfigAs("trivy-default.yaml")
+	}
 
 	r, err := NewRunner(ctx, opts)
 	if err != nil {
