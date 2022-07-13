@@ -49,7 +49,7 @@ func TestScanner_Scan(t *testing.T) {
 			categories:   map[types.LicenseCategory][]string{},
 			licenseName:  licensing.BSD3Clause,
 			wantCategory: types.CategoryUnknown,
-			wantSeverity: "CRITICAL",
+			wantSeverity: "UNKNOWN",
 		},
 	}
 	for _, tt := range tests {

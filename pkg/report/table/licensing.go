@@ -176,11 +176,11 @@ func (r *fileLicenseRenderer) printf(format string, args ...interface{}) {
 func colorizeLicenseCategory(category ftypes.LicenseCategory) string {
 	switch category {
 	case ftypes.CategoryForbidden:
-		return color.New(color.FgHiRed).Sprintf("Forbidden")
-	case ftypes.CategoryUnknown:
-		return color.New(color.FgHiRed).Sprintf("Non Standard")
+		return color.New(color.FgRed).Sprintf("Forbidden")
 	case ftypes.CategoryRestricted:
-		return color.New(color.FgRed).Sprintf("Restricted")
+		return color.New(color.FgHiRed).Sprintf("Restricted")
+	case ftypes.CategoryUnknown:
+		return color.New(color.FgCyan).Sprintf("Non Standard")
 	}
 	return cases.Title(language.AmericanEnglish).String(string(category))
 }

@@ -26,7 +26,7 @@ func (s *Scanner) Scan(licenseName string) (types.LicenseCategory, string) {
 			return category, categoryToSeverity(category).String()
 		}
 	}
-	return types.CategoryUnknown, dbTypes.SeverityCritical.String()
+	return types.CategoryUnknown, dbTypes.SeverityUnknown.String()
 }
 
 func categoryToSeverity(category types.LicenseCategory) dbTypes.Severity {
@@ -40,5 +40,5 @@ func categoryToSeverity(category types.LicenseCategory) dbTypes.Severity {
 	case types.CategoryNotice, types.CategoryPermissive, types.CategoryUnencumbered:
 		return dbTypes.SeverityLow
 	}
-	return dbTypes.SeverityCritical
+	return dbTypes.SeverityUnknown
 }
