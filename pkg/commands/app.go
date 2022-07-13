@@ -137,6 +137,7 @@ func initConfig(configFile string) error {
 		}
 		return xerrors.Errorf("config file %q loading error: %s", configFile, err)
 	}
+	log.Logger.Infof("Loaded %s", configFile)
 	return nil
 }
 
