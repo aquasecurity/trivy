@@ -317,7 +317,6 @@ func TestArtifact_Inspect(t *testing.T) {
 									FilePath: "usr/share/doc/ca-certificates/copyright",
 									Findings: []types.LicenseFinding{
 										{Name: "GPL-2.0"},
-										{Name: "GPL-2.0"},
 										{Name: "MPL-2.0"},
 									},
 									PkgName: "ca-certificates",

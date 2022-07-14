@@ -52,7 +52,7 @@ func (a dpkgLicenseAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisI
 	}
 
 	findings := lo.Map(licenses, func(license string, _ int) types.LicenseFinding {
-		return types.LicenseFinding{Name: licensing.Normalize(license)}
+		return types.LicenseFinding{Name: license}
 	})
 
 	// e.g. "usr/share/doc/zlib1g/copyright" => "zlib1g"
@@ -82,14 +82,22 @@ func (a dpkgLicenseAnalyzer) parseCopyright(r dio.ReadSeekerAt) ([]string, error
 			// Machine-readable format
 			// cf. https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/#:~:text=The%20debian%2Fcopyright%20file%20must,in%20the%20Debian%20Policy%20Manual.
 			l := strings.TrimSpace(line[8:])
-			if len(l) > 0 && !slices.Contains(licenses, l) {
-				licenses = append(licenses, l)
+			if len(l) > 0 {
+				lics := splitLicenses(l) //
+				for _, lic := range lics {
+					if !slices.Contains(licenses, lic) {
+						licenses = append(licenses, lic)
+					}
+				}
 			}
 		case strings.Contains(line, "/usr/share/common-licenses/"):
 			// Common license pattern
 			license := commonLicenseReferenceRegexp.FindStringSubmatch(line)
-			if len(license) == 2 && !slices.Contains(licenses, license[1]) {
-				licenses = append(licenses, license[1])
+			if len(license) == 2 {
+				l := licensing.Normalize(license[1])
+				if !slices.Contains(licenses, l) {
+					licenses = append(licenses, l)
+				}
 			}
 		}
 	}
@@ -111,8 +119,11 @@ func (a dpkgLicenseAnalyzer) parseCopyright(r dio.ReadSeekerAt) ([]string, error
 	}
 
 	for _, match := range result.Matches {
-		if match.Confidence > 0.9 && !slices.Contains(licenses, match.Name) {
-			licenses = append(licenses, match.Name)
+		if match.Confidence > 0.9 {
+			l := licensing.Normalize(match.Name)
+			if !slices.Contains(licenses, l) {
+				licenses = append(licenses, l)
+			}
 		}
 	}
 
@@ -129,4 +140,17 @@ func (a dpkgLicenseAnalyzer) Type() analyzer.Type {
 
 func (a dpkgLicenseAnalyzer) Version() int {
 	return dpkgLicenseAnalyzerVersion
+}
+
+func splitLicenses(line string) []string {
+	line = strings.ReplaceAll(line, ",", "")      // e.g. GPL-1+ or Artistic, and BSD-4-clause-POWERDOG
+	line = strings.ReplaceAll(line, " or ", ",")  // e.g. LGPL-2.1+ or BSD-3-clause
+	line = strings.ReplaceAll(line, "_or_", ",")  // e.g. LGPLv3+_or_GPLv2+
+	line = strings.ReplaceAll(line, " and ", ",") // BSD-3-clause and GPL-2
+	licenses := strings.Split(line, ",")
+
+	for i, license := range licenses {
+		licenses[i] = licensing.Normalize(license)
+	}
+	return licenses
 }
