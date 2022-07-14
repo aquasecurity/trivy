@@ -156,7 +156,7 @@ func Test_dpkgLicenseAnalyzer_splitLicenses(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			licenses := splitLicenses(tt.input)
+			licenses := licensesSeparation(tt.input)
 			assert.Equal(t, tt.wantLicenses, licenses)
 		})
 	}
