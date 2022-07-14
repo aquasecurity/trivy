@@ -33,7 +33,7 @@ func resourceRun(ctx context.Context, args []string, opts flag.Options, cluster 
 			return err
 		}
 
-		return run(ctx, opts, cluster.GetCurrentContext(), targets)
+		return run(ctx, opts, cluster.GetCurrentContext(), targets, false)
 	}
 
 	// pod/NAME or pod NAME etc
@@ -42,7 +42,7 @@ func resourceRun(ctx context.Context, args []string, opts flag.Options, cluster 
 		return err
 	}
 
-	return run(ctx, opts, cluster.GetCurrentContext(), []*artifacts.Artifact{artifact})
+	return run(ctx, opts, cluster.GetCurrentContext(), []*artifacts.Artifact{artifact}, false)
 }
 
 func extractKindAndName(args []string) (string, string, error) {
