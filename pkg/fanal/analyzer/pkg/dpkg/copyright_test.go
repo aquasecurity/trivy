@@ -157,6 +157,11 @@ func Test_dpkgLicenseAnalyzer_splitLicenses(t *testing.T) {
 			input:        "GPL-1+ or Artistic, and BSD-4-clause-POWERDOG",
 			wantLicenses: []string{"GPL-1.0", "Artistic", "BSD-4-clause-POWERDOG"},
 		},
+		{
+			name:         "without split",
+			input:        "GPL 2.0",
+			wantLicenses: []string{"GPL-2.0"},
+		},
 	}
 
 	for _, tt := range tests {
