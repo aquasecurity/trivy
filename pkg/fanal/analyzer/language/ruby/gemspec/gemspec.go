@@ -6,13 +6,13 @@ import (
 	"path/filepath"
 	"regexp"
 
-	"github.com/aquasecurity/trivy/pkg/licensing"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/go-dep-parser/pkg/ruby/gemspec"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer/language"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
+	"github.com/aquasecurity/trivy/pkg/licensing"
 )
 
 func init() {
