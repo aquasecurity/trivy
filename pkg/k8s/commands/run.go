@@ -41,7 +41,7 @@ func Run(ctx context.Context, args []string, opts flag.Options) error {
 	}
 }
 
-func run(ctx context.Context, opts flag.Options, cluster string, artifacts []*artifacts.Artifact) error {
+func run(ctx context.Context, opts flag.Options, cluster string, artifacts []*artifacts.Artifact, showEmpty bool) error {
 	ctx, cancel := context.WithTimeout(ctx, opts.Timeout)
 	defer cancel()
 
@@ -76,7 +76,7 @@ func run(ctx context.Context, opts flag.Options, cluster string, artifacts []*ar
 		Report:     opts.ReportFormat,
 		Output:     opts.Output,
 		Severities: opts.Severities,
-	}, opts.ScanOptions.SecurityChecks); err != nil {
+	}, opts.ScanOptions.SecurityChecks, showEmpty); err != nil {
 		return xerrors.Errorf("unable to write results: %w", err)
 	}
 
