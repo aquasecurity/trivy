@@ -115,15 +115,13 @@ func Run(ctx context.Context, opt flag.Options) error {
 
 	var cached *report.Report
 
-	if !opt.UpdateCache {
-		log.Logger.Debugf("Attempting to load results from cache (%s)...", opt.CacheDir)
-		cached, err = report.LoadReport(opt.CacheDir, provider, accountID, region, nil)
-		if err != nil {
-			if err != report.ErrCacheNotFound {
-				return err
-			}
-			log.Logger.Debug("Cached results not found.")
+	log.Logger.Debugf("Attempting to load results from cache (%s)...", opt.CacheDir)
+	cached, err = report.LoadReport(opt.CacheDir, provider, accountID, region, nil)
+	if err != nil {
+		if err != report.ErrCacheNotFound {
+			return err
 		}
+		log.Logger.Debug("Cached results not found.")
 	}
 
 	var remaining []string
@@ -138,7 +136,7 @@ func Run(ctx context.Context, opt flag.Options) error {
 					break
 				}
 			}
-			if inCache {
+			if inCache && !opt.UpdateCache {
 				cachedServices = append(cachedServices, service)
 				continue
 			}
