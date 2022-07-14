@@ -64,8 +64,9 @@ var mapping = map[string]string{
 	"BSD-3-CLAUSE": BSD3Clause,
 	"BSD-4-CLAUSE": BSD4Clause,
 
-	"APACHE": Apache20, // 1? 2?
-	"ZLIB":   Zlib,
+	"APACHE":     Apache20, // 1? 2?
+	"APACHE 2.0": Apache20,
+	"ZLIB":       Zlib,
 }
 
 func Normalize(name string) string {

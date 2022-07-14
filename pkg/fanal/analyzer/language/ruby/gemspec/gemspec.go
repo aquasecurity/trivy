@@ -6,6 +6,7 @@ import (
 	"path/filepath"
 	"regexp"
 
+	"github.com/aquasecurity/trivy/pkg/licensing"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/go-dep-parser/pkg/ruby/gemspec"
@@ -29,6 +30,10 @@ func (a gemspecLibraryAnalyzer) Analyze(_ context.Context, input analyzer.Analys
 	libs, deps, err := p.Parse(input.Content)
 	if err != nil {
 		return nil, xerrors.Errorf("%s parse error: %w", input.FilePath, err)
+	}
+
+	for i, lib := range libs {
+		libs[i].License = licensing.Normalize(lib.License)
 	}
 
 	return language.ToAnalysisResult(types.GemSpec, input.FilePath, input.FilePath, libs, deps), nil
