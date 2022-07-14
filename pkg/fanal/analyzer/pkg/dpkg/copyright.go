@@ -83,7 +83,7 @@ func (a dpkgLicenseAnalyzer) parseCopyright(r dio.ReadSeekerAt) ([]string, error
 			// cf. https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/#:~:text=The%20debian%2Fcopyright%20file%20must,in%20the%20Debian%20Policy%20Manual.
 			l := strings.TrimSpace(line[8:])
 			if len(l) > 0 {
-				lics := licensesSeparation(l) // splitting lines containing "or" or "and"
+				lics := splitLicenses(l) // splitting lines containing "or" or "and"
 				for _, lic := range lics {
 					if !slices.Contains(licenses, lic) {
 						licenses = append(licenses, lic)
@@ -142,12 +142,14 @@ func (a dpkgLicenseAnalyzer) Version() int {
 	return dpkgLicenseAnalyzerVersion
 }
 
-func licensesSeparation(line string) []string {
-	line = strings.ReplaceAll(line, ",", "")      // e.g. GPL-1+ or Artistic, and BSD-4-clause-POWERDOG
-	line = strings.ReplaceAll(line, " or ", ",")  // e.g. LGPL-2.1+ or BSD-3-clause
-	line = strings.ReplaceAll(line, "_or_", ",")  // e.g. LGPLv3+_or_GPLv2+
-	line = strings.ReplaceAll(line, " and ", ",") // BSD-3-clause and GPL-2
-	licenses := strings.Split(line, ",")
+// examples:
+// 'GPL-1+,GPL-2', 'GPL-1+, GPL-2'.
+// 'GPL-1+ or Artistic or Artistic-dist', 'LGPLv3+_or_GPLv2+', 'LGPL-2.1+    or     BSD-3-clause'
+// 'BSD-3-CLAUSE and GPL-2', 'GPL-1+ or Artistic, and BSD-4-clause-POWERDOG'
+// splitLicenses returns a list of licenses if the string contains multiple licenses
+func splitLicenses(line string) []string {
+	re := regexp.MustCompile("(,?[_ ]+or[_ ]+)|(,?[_ ]+and[_ ])|(,[ ]*)")
+	licenses := re.Split(line, -1)
 
 	for i, license := range licenses {
 		licenses[i] = licensing.Normalize(license)

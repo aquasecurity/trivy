@@ -133,6 +133,11 @@ func Test_dpkgLicenseAnalyzer_splitLicenses(t *testing.T) {
 		wantLicenses []string
 	}{
 		{
+			name:         "comma",
+			input:        "GPL-1+, GPL-2",
+			wantLicenses: []string{"GPL-1.0", "GPL-2.0"},
+		},
+		{
 			name:         "or with spaces",
 			input:        "GPL-1+ or Artistic or Artistic-dist",
 			wantLicenses: []string{"GPL-1.0", "Artistic", "Artistic-dist"},
@@ -156,7 +161,7 @@ func Test_dpkgLicenseAnalyzer_splitLicenses(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			licenses := licensesSeparation(tt.input)
+			licenses := splitLicenses(tt.input)
 			assert.Equal(t, tt.wantLicenses, licenses)
 		})
 	}
