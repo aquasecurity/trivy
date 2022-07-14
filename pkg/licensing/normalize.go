@@ -52,6 +52,7 @@ var mapping = map[string]string{
 
 	"APACHE": Apache20, // 1? 2?
 	"ZLIB":   Zlib,
+	"RUBY":   Ruby,
 }
 
 func Normalize(name string) string {
