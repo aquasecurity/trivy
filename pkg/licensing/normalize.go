@@ -66,6 +66,7 @@ var mapping = map[string]string{
 
 	"APACHE":     Apache20, // 1? 2?
 	"APACHE 2.0": Apache20,
+	"RUBY":       Ruby,
 	"ZLIB":       Zlib,
 }
 
