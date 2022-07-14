@@ -2,6 +2,7 @@ package report
 
 import (
 	"encoding/json"
+	"fmt"
 	"io"
 
 	"golang.org/x/xerrors"
@@ -78,7 +79,7 @@ func Write(report *Report, option Option) error {
 		case LevelResult:
 			return writeResultsForARN(report, option)
 		default:
-			panic("bad level: " + string(option.ReportLevel))
+			return fmt.Errorf("invalid level: %s", option.ReportLevel)
 		}
 
 	default:

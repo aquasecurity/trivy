@@ -830,8 +830,9 @@ func NewAWSCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 			if err != nil {
 				return xerrors.Errorf("flag error: %w", err)
 			}
-			if opts.Timeout < time.Minute*10 {
-				_, _ = fmt.Fprintf(cmd.ErrOrStderr(), "WARNING: You have set a low timeout value of %s - AWS scans generally require use of a higher --timeout value.\n", opts.Timeout)
+			if opts.Timeout < time.Hour {
+				opts.Timeout = time.Hour
+				log.Logger.Debug("Timeout is set to less than 1 hour - upgrading to 1 hour for this command.")
 			}
 			return awscommands.Run(cmd.Context(), opts)
 		},

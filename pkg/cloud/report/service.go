@@ -23,6 +23,10 @@ func writeServiceTable(report *Report, option Option) error {
 
 	// map service -> severity -> count
 	grouped := make(map[string]map[string]int)
+	// set zero counts for all services
+	for _, service := range report.ServicesInScope {
+		grouped[service] = make(map[string]int)
+	}
 	for _, result := range report.Results {
 		for _, misconfiguration := range result.Misconfigurations {
 			if _, ok := grouped[misconfiguration.CauseMetadata.Service]; !ok {
