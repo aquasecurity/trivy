@@ -48,17 +48,17 @@ func NewArtifact(rawurl string, c cache.ArtifactCache, artifactOpt artifact.Opti
 		cloneOptions.Progress = nil
 	}
 
-	if len(artifactOpt.FetchCommit) == 0 {
+	if len(artifactOpt.RepoCommit) == 0 {
 		cloneOptions.Depth = 1
 	}
 
-	if len(artifactOpt.FetchBranch) != 0 {
-		cloneOptions.ReferenceName = plumbing.NewBranchReferenceName(artifactOpt.FetchBranch)
+	if len(artifactOpt.RepoBranch) != 0 {
+		cloneOptions.ReferenceName = plumbing.NewBranchReferenceName(artifactOpt.RepoBranch)
 		cloneOptions.SingleBranch = true
 	}
 
-	if len(artifactOpt.FetchTag) != 0 {
-		cloneOptions.ReferenceName = plumbing.NewTagReferenceName(artifactOpt.FetchTag)
+	if len(artifactOpt.RepoTag) != 0 {
+		cloneOptions.ReferenceName = plumbing.NewTagReferenceName(artifactOpt.RepoTag)
 		cloneOptions.SingleBranch = true
 	}
 
@@ -67,14 +67,14 @@ func NewArtifact(rawurl string, c cache.ArtifactCache, artifactOpt artifact.Opti
 		return nil, cleanup, xerrors.Errorf("git clone error: %w", err)
 	}
 
-	if len(artifactOpt.FetchCommit) != 0 {
+	if len(artifactOpt.RepoCommit) != 0 {
 		w, err := r.Worktree()
 		if err != nil {
 			return nil, cleanup, xerrors.Errorf("git worktree error: %w", err)
 		}
 
 		err = w.Checkout(&git.CheckoutOptions{
-			Hash: plumbing.NewHash(artifactOpt.FetchCommit),
+			Hash: plumbing.NewHash(artifactOpt.RepoCommit),
 		})
 		if err != nil {
 			return nil, cleanup, xerrors.Errorf("git checkout error: %w", err)

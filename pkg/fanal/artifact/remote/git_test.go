@@ -180,9 +180,9 @@ func Test_newURL(t *testing.T) {
 
 func Test_branch(t *testing.T) {
 	type args struct {
-		rawurl      string
-		c           cache.ArtifactCache
-		FetchBranch string
+		rawurl     string
+		c          cache.ArtifactCache
+		RepoBranch string
 	}
 	tests := []struct {
 		name    string
@@ -192,24 +192,24 @@ func Test_branch(t *testing.T) {
 		{
 			name: "happy branch",
 			args: args{
-				rawurl:      "https://github.com/aquasecurity/trivy-plugin-aqua",
-				c:           nil,
-				FetchBranch: "use_urfave",
+				rawurl:     "https://github.com/aquasecurity/trivy-plugin-aqua",
+				c:          nil,
+				RepoBranch: "use_urfave",
 			},
 		},
 		{
 			name: "sad invalid branch",
 			args: args{
-				rawurl:      "https://github.com/aquasecurity/trivy-plugin-aqua",
-				c:           nil,
-				FetchBranch: "Invalid_use_urfave",
+				rawurl:     "https://github.com/aquasecurity/trivy-plugin-aqua",
+				c:          nil,
+				RepoBranch: "Invalid_use_urfave",
 			},
 			wantErr: "couldn't find remote ref \"refs/heads/Invalid_use_urfave\"",
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			_, cleanup, err := NewArtifact(tt.args.rawurl, tt.args.c, artifact.Option{FetchBranch: tt.args.FetchBranch})
+			_, cleanup, err := NewArtifact(tt.args.rawurl, tt.args.c, artifact.Option{RepoBranch: tt.args.RepoBranch})
 			if tt.wantErr != "" {
 				require.NotNil(t, err)
 				assert.Contains(t, err.Error(), tt.wantErr)
@@ -223,9 +223,9 @@ func Test_branch(t *testing.T) {
 
 func Test_Tag(t *testing.T) {
 	type args struct {
-		rawurl   string
-		c        cache.ArtifactCache
-		FetchTag string
+		rawurl  string
+		c       cache.ArtifactCache
+		RepoTag string
 	}
 	tests := []struct {
 		name    string
@@ -235,24 +235,24 @@ func Test_Tag(t *testing.T) {
 		{
 			name: "happy tag",
 			args: args{
-				rawurl:   "https://github.com/aquasecurity/trivy-plugin-aqua",
-				c:        nil,
-				FetchTag: "v0.50.0",
+				rawurl:  "https://github.com/aquasecurity/trivy-plugin-aqua",
+				c:       nil,
+				RepoTag: "v0.50.0",
 			},
 		},
 		{
 			name: "sad invalid tag",
 			args: args{
-				rawurl:   "https://github.com/aquasecurity/trivy-plugin-aqua",
-				c:        nil,
-				FetchTag: "v50.0.0",
+				rawurl:  "https://github.com/aquasecurity/trivy-plugin-aqua",
+				c:       nil,
+				RepoTag: "v50.0.0",
 			},
 			wantErr: "git clone error: couldn't find remote ref \"refs/tags/v50.0.0\"",
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			_, cleanup, err := NewArtifact(tt.args.rawurl, tt.args.c, artifact.Option{FetchTag: tt.args.FetchTag})
+			_, cleanup, err := NewArtifact(tt.args.rawurl, tt.args.c, artifact.Option{RepoTag: tt.args.RepoTag})
 			if tt.wantErr != "" {
 				require.NotNil(t, err)
 				assert.Contains(t, err.Error(), tt.wantErr)
@@ -266,9 +266,9 @@ func Test_Tag(t *testing.T) {
 
 func Test_Commit(t *testing.T) {
 	type args struct {
-		rawurl      string
-		c           cache.ArtifactCache
-		FetchCommit string
+		rawurl     string
+		c          cache.ArtifactCache
+		RepoCommit string
 	}
 	tests := []struct {
 		name    string
@@ -278,24 +278,24 @@ func Test_Commit(t *testing.T) {
 		{
 			name: "happy tag",
 			args: args{
-				rawurl:      "https://github.com/aquasecurity/trivy-plugin-aqua",
-				c:           nil,
-				FetchCommit: "70d5f75b1def3fca1f3b2e19d5aecdad6290d0a1",
+				rawurl:     "https://github.com/aquasecurity/trivy-plugin-aqua",
+				c:          nil,
+				RepoCommit: "70d5f75b1def3fca1f3b2e19d5aecdad6290d0a1",
 			},
 		},
 		{
 			name: "sad invalid tag",
 			args: args{
-				rawurl:      "https://github.com/aquasecurity/trivy-plugin-aqua",
-				c:           nil,
-				FetchCommit: "70d5f75b1def3fca1f3b2e19d5aecdad6290d0a0",
+				rawurl:     "https://github.com/aquasecurity/trivy-plugin-aqua",
+				c:          nil,
+				RepoCommit: "70d5f75b1def3fca1f3b2e19d5aecdad6290d0a0",
 			},
 			wantErr: "git checkout error: object not found",
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			_, cleanup, err := NewArtifact(tt.args.rawurl, tt.args.c, artifact.Option{FetchCommit: tt.args.FetchCommit})
+			_, cleanup, err := NewArtifact(tt.args.rawurl, tt.args.c, artifact.Option{RepoCommit: tt.args.RepoCommit})
 			if tt.wantErr != "" {
 				require.NotNil(t, err)
 				assert.Contains(t, err.Error(), tt.wantErr)
