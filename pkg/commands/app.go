@@ -613,7 +613,7 @@ func NewPluginCommand() *cobra.Command {
 			},
 		},
 		&cobra.Command{
-			Use:                   "Uninstall PLUGIN_NAME",
+			Use:                   "uninstall PLUGIN_NAME",
 			Aliases:               []string{"u"},
 			SilenceErrors:         true,
 			DisableFlagsInUseLine: true,
