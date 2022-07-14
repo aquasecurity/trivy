@@ -179,6 +179,10 @@ func Test_newURL(t *testing.T) {
 }
 
 func Test_branch(t *testing.T) {
+	ts, err := setupGitServer()
+	require.NoError(t, err)
+	defer ts.Close()
+
 	type args struct {
 		rawurl     string
 		c          cache.ArtifactCache
@@ -192,19 +196,19 @@ func Test_branch(t *testing.T) {
 		{
 			name: "happy branch",
 			args: args{
-				rawurl:     "https://github.com/aquasecurity/trivy-plugin-aqua",
+				rawurl:     ts.URL + "/test.git",
 				c:          nil,
-				RepoBranch: "use_urfave",
+				RepoBranch: "valid-branch",
 			},
 		},
 		{
 			name: "sad invalid branch",
 			args: args{
-				rawurl:     "https://github.com/aquasecurity/trivy-plugin-aqua",
+				rawurl:     ts.URL + "/test.git",
 				c:          nil,
-				RepoBranch: "Invalid_use_urfave",
+				RepoBranch: "invalid-branch",
 			},
-			wantErr: "couldn't find remote ref \"refs/heads/Invalid_use_urfave\"",
+			wantErr: "couldn't find remote ref \"refs/heads/invalid-branch\"",
 		},
 	}
 	for _, tt := range tests {
@@ -222,6 +226,10 @@ func Test_branch(t *testing.T) {
 }
 
 func Test_Tag(t *testing.T) {
+	ts, err := setupGitServer()
+	require.NoError(t, err)
+	defer ts.Close()
+
 	type args struct {
 		rawurl  string
 		c       cache.ArtifactCache
@@ -235,19 +243,19 @@ func Test_Tag(t *testing.T) {
 		{
 			name: "happy tag",
 			args: args{
-				rawurl:  "https://github.com/aquasecurity/trivy-plugin-aqua",
+				rawurl:  ts.URL + "/test.git",
 				c:       nil,
-				RepoTag: "v0.50.0",
+				RepoTag: "v1.0.0",
 			},
 		},
 		{
 			name: "sad invalid tag",
 			args: args{
-				rawurl:  "https://github.com/aquasecurity/trivy-plugin-aqua",
+				rawurl:  ts.URL + "/test.git",
 				c:       nil,
-				RepoTag: "v50.0.0",
+				RepoTag: "v1.0.9",
 			},
-			wantErr: "git clone error: couldn't find remote ref \"refs/tags/v50.0.0\"",
+			wantErr: "git clone error: couldn't find remote ref \"refs/tags/v1.0.9\"",
 		},
 	}
 	for _, tt := range tests {
@@ -265,6 +273,10 @@ func Test_Tag(t *testing.T) {
 }
 
 func Test_Commit(t *testing.T) {
+	ts, err := setupGitServer()
+	require.NoError(t, err)
+	defer ts.Close()
+
 	type args struct {
 		rawurl     string
 		c          cache.ArtifactCache
@@ -278,17 +290,17 @@ func Test_Commit(t *testing.T) {
 		{
 			name: "happy tag",
 			args: args{
-				rawurl:     "https://github.com/aquasecurity/trivy-plugin-aqua",
+				rawurl:     ts.URL + "/test.git",
 				c:          nil,
-				RepoCommit: "70d5f75b1def3fca1f3b2e19d5aecdad6290d0a1",
+				RepoCommit: "6ac152fe2b87cb5e243414df71790a32912e778d",
 			},
 		},
 		{
 			name: "sad invalid tag",
 			args: args{
-				rawurl:     "https://github.com/aquasecurity/trivy-plugin-aqua",
+				rawurl:     ts.URL + "/test.git",
 				c:          nil,
-				RepoCommit: "70d5f75b1def3fca1f3b2e19d5aecdad6290d0a0",
+				RepoCommit: "6ac152fe2b87cb5e243414df71790a32912e778e",
 			},
 			wantErr: "git checkout error: object not found",
 		},
