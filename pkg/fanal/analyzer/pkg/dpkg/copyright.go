@@ -37,6 +37,7 @@ var (
 	licenseClassifier *classifier.Classifier
 
 	commonLicenseReferenceRegexp = regexp.MustCompile(`/?usr/share/common-licenses/([0-9A-Za-z_.+-]+[0-9A-Za-z+])`)
+	licenseSplitRegexp           = regexp.MustCompile("(,?[_ ]+or[_ ]+)|(,?[_ ]+and[_ ])|(,[ ]*)")
 )
 
 // dpkgLicenseAnalyzer parses copyright files and detect licenses
@@ -119,11 +120,8 @@ func (a dpkgLicenseAnalyzer) parseCopyright(r dio.ReadSeekerAt) ([]string, error
 	}
 
 	for _, match := range result.Matches {
-		if match.Confidence > 0.9 {
-			l := licensing.Normalize(match.Name)
-			if !slices.Contains(licenses, l) {
-				licenses = append(licenses, l)
-			}
+		if match.Confidence > 0.9 && !slices.Contains(licenses, match.Name) {
+			licenses = append(licenses, match.Name)
 		}
 	}
 
@@ -148,9 +146,7 @@ func (a dpkgLicenseAnalyzer) Version() int {
 // 'BSD-3-CLAUSE and GPL-2', 'GPL-1+ or Artistic, and BSD-4-clause-POWERDOG'
 // splitLicenses returns a list of licenses if the string contains multiple licenses
 func splitLicenses(line string) []string {
-	re := regexp.MustCompile("(,?[_ ]+or[_ ]+)|(,?[_ ]+and[_ ])|(,[ ]*)")
-	licenses := re.Split(line, -1)
-
+	licenses := licenseSplitRegexp.Split(line, -1)
 	for i, license := range licenses {
 		licenses[i] = licensing.Normalize(license)
 	}
