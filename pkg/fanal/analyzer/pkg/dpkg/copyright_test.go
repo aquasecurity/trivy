@@ -29,6 +29,9 @@ func Test_dpkgLicenseAnalyzer_Analyze(t *testing.T) {
 						Type:     types.LicenseTypeDpkg,
 						FilePath: "usr/share/doc/zlib1g/copyright",
 						Findings: []types.LicenseFinding{
+							{Name: "GPL-1.0"},
+							{Name: "Artistic"},
+							{Name: "BSD-4-clause-POWERDOG"},
 							{Name: "Zlib"},
 						},
 						PkgName: "zlib1g",
@@ -63,7 +66,6 @@ func Test_dpkgLicenseAnalyzer_Analyze(t *testing.T) {
 						Type:     types.LicenseTypeDpkg,
 						FilePath: "usr/share/doc/apt/copyright",
 						Findings: []types.LicenseFinding{
-							{Name: "GPL-2.0"},
 							{Name: "GPL-2.0"},
 						},
 						PkgName: "apt",

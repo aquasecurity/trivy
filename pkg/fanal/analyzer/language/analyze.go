@@ -1,6 +1,8 @@
 package language
 
 import (
+	"strings"
+
 	"golang.org/x/xerrors"
 
 	dio "github.com/aquasecurity/go-dep-parser/pkg/io"
@@ -35,7 +37,10 @@ func ToAnalysisResult(fileType, filePath, libFilePath string, libs []godeptypes.
 	for _, lib := range libs {
 		var licenses []string
 		if lib.License != "" {
-			licenses = []string{licensing.Normalize(lib.License)}
+			licenses = strings.Split(lib.License, ",")
+			for i, license := range licenses {
+				licenses[i] = licensing.Normalize(strings.TrimSpace(license))
+			}
 		}
 		pkgs = append(pkgs, types.Package{
 			ID:        lib.ID,
