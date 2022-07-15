@@ -220,3 +220,21 @@ func CreateResource(artifact *artifacts.Artifact, report types.Report, err error
 
 	return r
 }
+
+func (r Report) GetErrors() []string {
+	var errors []string
+
+	for _, resource := range r.Vulnerabilities {
+		if resource.Error != "" {
+			errors = append(errors, resource.Error)
+		}
+	}
+
+	for _, resource := range r.Misconfigurations {
+		if resource.Error != "" {
+			errors = append(errors, resource.Error)
+		}
+	}
+
+	return errors
+}

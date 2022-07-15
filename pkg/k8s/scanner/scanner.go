@@ -37,7 +37,7 @@ func (s *Scanner) Scan(ctx context.Context, artifacts []*artifacts.Artifact) (re
 	var vulns, misconfigs []report.Resource
 
 	// disable logs before scanning
-	err := log.InitLogger(s.opts.Debug, false)
+	err := log.InitLogger(s.opts.Debug, true)
 	if err != nil {
 		return report.Report{}, xerrors.Errorf("logger error: %w", err)
 	}
