@@ -37,7 +37,7 @@ Files-Excluded:
 
 Files: *
 Copyright: 1995-2013 Jean-loup Gailly and Mark Adler
-License: Zlib
+License: GPL-1+ or Artistic, and BSD-4-clause-POWERDOG
 
 Files: amiga/Makefile.pup
 Copyright: 1998 by Andreas R. Kleinert

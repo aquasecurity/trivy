@@ -29,6 +29,9 @@ func Test_dpkgLicenseAnalyzer_Analyze(t *testing.T) {
 						Type:     types.LicenseTypeDpkg,
 						FilePath: "usr/share/doc/zlib1g/copyright",
 						Findings: []types.LicenseFinding{
+							{Name: "GPL-1.0"},
+							{Name: "Artistic"},
+							{Name: "BSD-4-clause-POWERDOG"},
 							{Name: "Zlib"},
 						},
 						PkgName: "zlib1g",
@@ -122,52 +125,6 @@ func Test_dpkgLicenseAnalyzer_Required(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			a := dpkgLicenseAnalyzer{}
 			assert.Equal(t, tt.want, a.Required(tt.filePath, nil))
-		})
-	}
-}
-
-func Test_dpkgLicenseAnalyzer_splitLicenses(t *testing.T) {
-	tests := []struct {
-		name         string
-		input        string
-		wantLicenses []string
-	}{
-		{
-			name:         "comma",
-			input:        "GPL-1+, GPL-2",
-			wantLicenses: []string{"GPL-1.0", "GPL-2.0"},
-		},
-		{
-			name:         "or with spaces",
-			input:        "GPL-1+ or Artistic or Artistic-dist",
-			wantLicenses: []string{"GPL-1.0", "Artistic", "Artistic-dist"},
-		},
-		{
-			name:         "or with '_'",
-			input:        "LGPLv3+_or_GPLv2+",
-			wantLicenses: []string{"LGPLv3+", "GPL-2.0"},
-		},
-		{
-			name:         "and with spaces",
-			input:        "BSD-3-CLAUSE and GPL-2",
-			wantLicenses: []string{"BSD-3-Clause", "GPL-2.0"},
-		},
-		{
-			name:         "or + and",
-			input:        "GPL-1+ or Artistic, and BSD-4-clause-POWERDOG",
-			wantLicenses: []string{"GPL-1.0", "Artistic", "BSD-4-clause-POWERDOG"},
-		},
-		{
-			name:         "without split",
-			input:        "GPL 2.0",
-			wantLicenses: []string{"GPL-2.0"},
-		},
-	}
-
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			licenses := splitLicenses(tt.input)
-			assert.Equal(t, tt.wantLicenses, licenses)
 		})
 	}
 }
