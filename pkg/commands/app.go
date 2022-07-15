@@ -613,11 +613,11 @@ func NewPluginCommand() *cobra.Command {
 			},
 		},
 		&cobra.Command{
-			Use:                   "Uninstall PLUGIN_NAME",
+			Use:                   "uninstall PLUGIN_NAME",
 			Aliases:               []string{"u"},
 			SilenceErrors:         true,
 			DisableFlagsInUseLine: true,
-			Short:                 "uninstall a plugin",
+			Short:                 "Uninstall a plugin",
 			Args:                  cobra.ExactArgs(1),
 			RunE: func(_ *cobra.Command, args []string) error {
 				if err := plugin.Uninstall(args[0]); err != nil {
