@@ -22,12 +22,12 @@ func Test_nugetibraryAnalyzer_Analyze(t *testing.T) {
 	}{
 		{
 			name:      "happy path config file",
-			inputFile: "testdata/packages.config",
+			inputFile: "../../../../../../integration/testdata/fanal/dotnet/nuget/packages.config",
 			want: &analyzer.AnalysisResult{
 				Applications: []types.Application{
 					{
 						Type:     types.NuGet,
-						FilePath: "testdata/packages.config",
+						FilePath: "../../../../../../integration/testdata/fanal/dotnet/nuget/packages.config",
 						Libraries: []types.Package{
 							{
 								Name:    "Microsoft.AspNet.WebApi",
@@ -44,12 +44,12 @@ func Test_nugetibraryAnalyzer_Analyze(t *testing.T) {
 		},
 		{
 			name:      "happy path lock file",
-			inputFile: "testdata/packages.lock.json",
+			inputFile: "../../../../../../integration/testdata/fanal/dotnet/nuget/packages.lock.json",
 			want: &analyzer.AnalysisResult{
 				Applications: []types.Application{
 					{
 						Type:     types.NuGet,
-						FilePath: "testdata/packages.lock.json",
+						FilePath: "../../../../../../integration/testdata/fanal/dotnet/nuget/packages.lock.json",
 						Libraries: []types.Package{
 							{
 								Name:    "Newtonsoft.Json",
@@ -66,7 +66,7 @@ func Test_nugetibraryAnalyzer_Analyze(t *testing.T) {
 		},
 		{
 			name:      "sad path",
-			inputFile: "testdata/invalid.txt",
+			inputFile: "../../../../../../integration/testdata/fanal/dotnet/nuget/invalid.txt",
 			wantErr:   "NuGet analysis error",
 		},
 	}

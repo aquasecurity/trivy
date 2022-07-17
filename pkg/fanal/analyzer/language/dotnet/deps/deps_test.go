@@ -21,12 +21,12 @@ func Test_depsLibraryAnalyzer_Analyze(t *testing.T) {
 	}{
 		{
 			name:      "happy path",
-			inputFile: "testdata/datacollector.deps.json",
+			inputFile: "../../../../../../integration/testdata/fanal/dotnet/deps/datacollector.deps.json",
 			want: &analyzer.AnalysisResult{
 				Applications: []types.Application{
 					{
 						Type:     types.DotNetCore,
-						FilePath: "testdata/datacollector.deps.json",
+						FilePath: "../../../../../../integration/testdata/fanal/dotnet/deps/datacollector.deps.json",
 						Libraries: []types.Package{
 							{
 								Name:    "Newtonsoft.Json",
@@ -39,7 +39,7 @@ func Test_depsLibraryAnalyzer_Analyze(t *testing.T) {
 		},
 		{
 			name:      "sad path",
-			inputFile: "testdata/invalid.txt",
+			inputFile: "../../../../../../integration/testdata/fanal/dotnet/deps/invalid.txt",
 			wantErr:   ".Net Core dependencies analysis error",
 		},
 	}
