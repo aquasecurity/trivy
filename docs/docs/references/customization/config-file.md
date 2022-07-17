@@ -240,6 +240,24 @@ kubernetes:
   namespace:
 ```
 
+## Repository Options
+Available with git repository scanning (`trivy repo`) 
+
+```
+repository:
+  # Same as '--branch'
+  # Default is empty
+  branch:
+  
+  # Same as '--commit'
+  # Default is empty
+  commit:
+  
+  # Same as '--tag'
+  # Default is empty
+  tag:
+```
+
 ## Client/Server Options
 Available in client/server mode
 

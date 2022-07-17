@@ -7,6 +7,7 @@ import (
 	"os"
 
 	git "github.com/go-git/go-git/v5"
+	"github.com/go-git/go-git/v5/plumbing"
 	"github.com/go-git/go-git/v5/plumbing/transport/http"
 	"golang.org/x/xerrors"
 
@@ -39,7 +40,6 @@ func NewArtifact(rawurl string, c cache.ArtifactCache, artifactOpt artifact.Opti
 		URL:             u.String(),
 		Auth:            gitAuth(),
 		Progress:        os.Stdout,
-		Depth:           1,
 		InsecureSkipTLS: artifactOpt.InsecureSkipTLS,
 	}
 
@@ -48,9 +48,37 @@ func NewArtifact(rawurl string, c cache.ArtifactCache, artifactOpt artifact.Opti
 		cloneOptions.Progress = nil
 	}
 
-	_, err = git.PlainClone(tmpDir, false, &cloneOptions)
+	if artifactOpt.RepoCommit == "" {
+		cloneOptions.Depth = 1
+	}
+
+	if artifactOpt.RepoBranch != "" {
+		cloneOptions.ReferenceName = plumbing.NewBranchReferenceName(artifactOpt.RepoBranch)
+		cloneOptions.SingleBranch = true
+	}
+
+	if artifactOpt.RepoTag != "" {
+		cloneOptions.ReferenceName = plumbing.NewTagReferenceName(artifactOpt.RepoTag)
+		cloneOptions.SingleBranch = true
+	}
+
+	r, err := git.PlainClone(tmpDir, false, &cloneOptions)
 	if err != nil {
-		return nil, cleanup, xerrors.Errorf("git error: %w", err)
+		return nil, cleanup, xerrors.Errorf("git clone error: %w", err)
+	}
+
+	if artifactOpt.RepoCommit != "" {
+		w, err := r.Worktree()
+		if err != nil {
+			return nil, cleanup, xerrors.Errorf("git worktree error: %w", err)
+		}
+
+		err = w.Checkout(&git.CheckoutOptions{
+			Hash: plumbing.NewHash(artifactOpt.RepoCommit),
+		})
+		if err != nil {
+			return nil, cleanup, xerrors.Errorf("git checkout error: %w", err)
+		}
 	}
 
 	cleanup = func() {

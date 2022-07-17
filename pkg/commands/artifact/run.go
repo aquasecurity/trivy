@@ -497,6 +497,9 @@ func initScannerConfig(opts flag.Options, cacheClient cache.Cache) (ScannerConfi
 			InsecureSkipTLS:   opts.Insecure,
 			Offline:           opts.OfflineScan,
 			NoProgress:        opts.NoProgress || opts.Quiet,
+			RepoBranch:        opts.RepoBranch,
+			RepoCommit:        opts.RepoCommit,
+			RepoTag:           opts.RepoTag,
 
 			// For misconfiguration scanning
 			MisconfScannerOption: configScannerOptions,
