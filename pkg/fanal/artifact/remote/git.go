@@ -48,16 +48,16 @@ func NewArtifact(rawurl string, c cache.ArtifactCache, artifactOpt artifact.Opti
 		cloneOptions.Progress = nil
 	}
 
-	if len(artifactOpt.RepoCommit) == 0 {
+	if artifactOpt.RepoCommit == "" {
 		cloneOptions.Depth = 1
 	}
 
-	if len(artifactOpt.RepoBranch) != 0 {
+	if artifactOpt.RepoBranch != "" {
 		cloneOptions.ReferenceName = plumbing.NewBranchReferenceName(artifactOpt.RepoBranch)
 		cloneOptions.SingleBranch = true
 	}
 
-	if len(artifactOpt.RepoTag) != 0 {
+	if artifactOpt.RepoTag != "" {
 		cloneOptions.ReferenceName = plumbing.NewTagReferenceName(artifactOpt.RepoTag)
 		cloneOptions.SingleBranch = true
 	}
@@ -67,7 +67,7 @@ func NewArtifact(rawurl string, c cache.ArtifactCache, artifactOpt artifact.Opti
 		return nil, cleanup, xerrors.Errorf("git clone error: %w", err)
 	}
 
-	if len(artifactOpt.RepoCommit) != 0 {
+	if artifactOpt.RepoCommit != "" {
 		w, err := r.Worktree()
 		if err != nil {
 			return nil, cleanup, xerrors.Errorf("git worktree error: %w", err)
