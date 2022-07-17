@@ -38,11 +38,14 @@ func TestNewArtifact(t *testing.T) {
 		rawurl     string
 		c          cache.ArtifactCache
 		noProgress bool
+		repoBranch string
+		repoTag    string
+		repoCommit string
 	}
 	tests := []struct {
-		name    string
-		args    args
-		wantErr bool
+		name      string
+		args      args
+		assertion assert.ErrorAssertionFunc
 	}{
 		{
 			name: "happy path",
@@ -51,6 +54,7 @@ func TestNewArtifact(t *testing.T) {
 				c:          nil,
 				noProgress: false,
 			},
+			assertion: assert.NoError,
 		},
 		{
 			name: "happy noProgress",
@@ -59,6 +63,34 @@ func TestNewArtifact(t *testing.T) {
 				c:          nil,
 				noProgress: true,
 			},
+			assertion: assert.NoError,
+		},
+		{
+			name: "branch",
+			args: args{
+				rawurl:     ts.URL + "/test.git",
+				c:          nil,
+				repoBranch: "valid-branch",
+			},
+			assertion: assert.NoError,
+		},
+		{
+			name: "tag",
+			args: args{
+				rawurl:  ts.URL + "/test.git",
+				c:       nil,
+				repoTag: "v1.0.0",
+			},
+			assertion: assert.NoError,
+		},
+		{
+			name: "commit",
+			args: args{
+				rawurl:     ts.URL + "/test.git",
+				c:          nil,
+				repoCommit: "6ac152fe2b87cb5e243414df71790a32912e778d",
+			},
+			assertion: assert.NoError,
 		},
 		{
 			name: "sad path",
@@ -67,7 +99,9 @@ func TestNewArtifact(t *testing.T) {
 				c:          nil,
 				noProgress: false,
 			},
-			wantErr: true,
+			assertion: func(t assert.TestingT, err error, args ...interface{}) bool {
+				return assert.ErrorContains(t, err, "repository not found")
+			},
 		},
 		{
 			name: "invalid url",
@@ -76,14 +110,54 @@ func TestNewArtifact(t *testing.T) {
 				c:          nil,
 				noProgress: false,
 			},
-			wantErr: true,
+			assertion: func(t assert.TestingT, err error, args ...interface{}) bool {
+				return assert.ErrorContains(t, err, "url parse error")
+			},
+		},
+		{
+			name: "invalid branch",
+			args: args{
+				rawurl:     ts.URL + "/test.git",
+				c:          nil,
+				repoBranch: "invalid-branch",
+			},
+			assertion: func(t assert.TestingT, err error, args ...interface{}) bool {
+				return assert.ErrorContains(t, err, `couldn't find remote ref "refs/heads/invalid-branch"`)
+			},
+		},
+		{
+			name: "invalid tag",
+			args: args{
+				rawurl:  ts.URL + "/test.git",
+				c:       nil,
+				repoTag: "v1.0.9",
+			},
+			assertion: func(t assert.TestingT, err error, args ...interface{}) bool {
+				return assert.ErrorContains(t, err, `couldn't find remote ref "refs/tags/v1.0.9"`)
+			},
+		},
+		{
+			name: "invalid commit",
+			args: args{
+				rawurl:     ts.URL + "/test.git",
+				c:          nil,
+				repoCommit: "6ac152fe2b87cb5e243414df71790a32912e778e",
+			},
+			assertion: func(t assert.TestingT, err error, args ...interface{}) bool {
+				return assert.ErrorContains(t, err, "git checkout error: object not found")
+			},
 		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			_, cleanup, err := NewArtifact(tt.args.rawurl, tt.args.c, artifact.Option{NoProgress: tt.args.noProgress})
-			assert.Equal(t, tt.wantErr, err != nil)
+			_, cleanup, err := NewArtifact(tt.args.rawurl, tt.args.c, artifact.Option{
+				NoProgress: tt.args.noProgress,
+				RepoBranch: tt.args.repoBranch,
+				RepoTag:    tt.args.repoTag,
+				RepoCommit: tt.args.repoCommit,
+			})
+			tt.assertion(t, err)
 			defer cleanup()
 		})
 	}
@@ -174,147 +248,6 @@ func Test_newURL(t *testing.T) {
 			}
 
 			assert.Equal(t, tt.want, got.String())
-		})
-	}
-}
-
-func Test_branch(t *testing.T) {
-	ts, err := setupGitServer()
-	require.NoError(t, err)
-	defer ts.Close()
-
-	type args struct {
-		rawurl     string
-		c          cache.ArtifactCache
-		RepoBranch string
-	}
-	tests := []struct {
-		name    string
-		args    args
-		wantErr string
-	}{
-		{
-			name: "happy branch",
-			args: args{
-				rawurl:     ts.URL + "/test.git",
-				c:          nil,
-				RepoBranch: "valid-branch",
-			},
-		},
-		{
-			name: "sad invalid branch",
-			args: args{
-				rawurl:     ts.URL + "/test.git",
-				c:          nil,
-				RepoBranch: "invalid-branch",
-			},
-			wantErr: "couldn't find remote ref \"refs/heads/invalid-branch\"",
-		},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			_, cleanup, err := NewArtifact(tt.args.rawurl, tt.args.c, artifact.Option{RepoBranch: tt.args.RepoBranch})
-			if tt.wantErr != "" {
-				require.NotNil(t, err)
-				assert.Contains(t, err.Error(), tt.wantErr)
-			} else {
-				require.NoError(t, err)
-			}
-			defer cleanup()
-		})
-	}
-}
-
-func Test_Tag(t *testing.T) {
-	ts, err := setupGitServer()
-	require.NoError(t, err)
-	defer ts.Close()
-
-	type args struct {
-		rawurl  string
-		c       cache.ArtifactCache
-		RepoTag string
-	}
-	tests := []struct {
-		name    string
-		args    args
-		wantErr string
-	}{
-		{
-			name: "happy tag",
-			args: args{
-				rawurl:  ts.URL + "/test.git",
-				c:       nil,
-				RepoTag: "v1.0.0",
-			},
-		},
-		{
-			name: "sad invalid tag",
-			args: args{
-				rawurl:  ts.URL + "/test.git",
-				c:       nil,
-				RepoTag: "v1.0.9",
-			},
-			wantErr: "git clone error: couldn't find remote ref \"refs/tags/v1.0.9\"",
-		},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			_, cleanup, err := NewArtifact(tt.args.rawurl, tt.args.c, artifact.Option{RepoTag: tt.args.RepoTag})
-			if tt.wantErr != "" {
-				require.NotNil(t, err)
-				assert.Contains(t, err.Error(), tt.wantErr)
-			} else {
-				require.NoError(t, err)
-			}
-			defer cleanup()
-		})
-	}
-}
-
-func Test_Commit(t *testing.T) {
-	ts, err := setupGitServer()
-	require.NoError(t, err)
-	defer ts.Close()
-
-	type args struct {
-		rawurl     string
-		c          cache.ArtifactCache
-		RepoCommit string
-	}
-	tests := []struct {
-		name    string
-		args    args
-		wantErr string
-	}{
-		{
-			name: "happy tag",
-			args: args{
-				rawurl:     ts.URL + "/test.git",
-				c:          nil,
-				RepoCommit: "6ac152fe2b87cb5e243414df71790a32912e778d",
-			},
-		},
-		{
-			name: "sad invalid tag",
-			args: args{
-				rawurl:     ts.URL + "/test.git",
-				c:          nil,
-				RepoCommit: "6ac152fe2b87cb5e243414df71790a32912e778e",
-			},
-			wantErr: "git checkout error: object not found",
-		},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			_, cleanup, err := NewArtifact(tt.args.rawurl, tt.args.c, artifact.Option{RepoCommit: tt.args.RepoCommit})
-			if tt.wantErr != "" {
-				require.NotNil(t, err)
-				assert.Contains(t, err.Error(), tt.wantErr)
-			} else {
-				require.NoError(t, err)
-			}
-			defer cleanup()
 		})
 	}
 }
