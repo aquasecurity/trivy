@@ -2166,6 +2166,13 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#repository-options" class="md-nav__link">
+    Repository Options
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#clientserver-options" class="md-nav__link">
     Client/Server Options
   </a>
@@ -2762,6 +2769,13 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#repository-options" class="md-nav__link">
+    Repository Options
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#clientserver-options" class="md-nav__link">
     Client/Server Options
   </a>
@@ -2784,7 +2798,7 @@
 
 <h1 id="config-file">Config file</h1>
 <p>Trivy can be customized by tweaking a <code>trivy.yaml</code> file. The config path can be overridden by the <code>--config</code> flag.</p>
-<p>An example is <a href="https://github.com/aquasecurity/trivy/tree/v0.29.2/examples/trivy-conf/trivy.yaml">here</a>.</p>
+<p>An example is <a href="https://github.com/aquasecurity/trivy/tree/v0.30.0/examples/trivy-conf/trivy.yaml">here</a>.</p>
 <h2 id="global-options">Global Options</h2>
 <div class="highlight"><pre><span></span><code># Same as &#39;--quiet&#39;
 # Default is false
@@ -2989,6 +3003,21 @@ severity:
   # Same as &#39;--namespace&#39;
   # Default is empty
   namespace:
+</code></pre></div>
+<h2 id="repository-options">Repository Options</h2>
+<p>Available with git repository scanning (<code>trivy repo</code>) </p>
+<div class="highlight"><pre><span></span><code>repository:
+  # Same as &#39;--branch&#39;
+  # Default is empty
+  branch:
+
+  # Same as &#39;--commit&#39;
+  # Default is empty
+  commit:
+
+  # Same as &#39;--tag&#39;
+  # Default is empty
+  tag:
 </code></pre></div>
 <h2 id="clientserver-options">Client/Server Options</h2>
 <p>Available in client/server mode</p>
