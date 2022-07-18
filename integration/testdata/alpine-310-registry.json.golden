@@ -56,7 +56,7 @@
   "Results": [
     {
       "Target": "localhost:63577/alpine:3.10 (alpine 3.10.2)",
-      "Class": "os-pkgs",
+      "Class": "vuln-os-pkgs",
       "Type": "alpine",
       "Vulnerabilities": [
         {

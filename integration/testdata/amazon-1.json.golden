@@ -49,7 +49,7 @@
   "Results": [
     {
       "Target": "testdata/fixtures/images/amazon-1.tar.gz (amazon AMI release 2018.03)",
-      "Class": "os-pkgs",
+      "Class": "vuln-os-pkgs",
       "Type": "amazon",
       "Vulnerabilities": [
         {
