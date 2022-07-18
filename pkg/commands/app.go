@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"io"
 	"os"
-	"strings"
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -122,11 +121,6 @@ func loadPluginCommands() []*cobra.Command {
 }
 
 func initConfig(configFile string) error {
-	// Configure environment variables
-	viper.SetEnvPrefix("trivy") // will be uppercased automatically
-	viper.SetEnvKeyReplacer(strings.NewReplacer("-", "_"))
-	viper.AutomaticEnv()
-
 	// Read from config
 	viper.SetConfigFile(configFile)
 	viper.SetConfigType("yaml")
@@ -406,6 +400,7 @@ func NewRepositoryCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 		ScanFlagGroup:          flag.NewScanFlagGroup(),
 		SecretFlagGroup:        flag.NewSecretFlagGroup(),
 		VulnerabilityFlagGroup: flag.NewVulnerabilityFlagGroup(),
+		RepoFlagGroup:          flag.NewRepoFlagGroup(),
 	}
 
 	cmd := &cobra.Command{
