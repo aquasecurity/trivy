@@ -4,8 +4,6 @@ import (
 	"sort"
 )
 
-const separator = ":"
-
 type ScannerOption struct {
 	Trace                   bool
 	RegoOnly                bool
