@@ -249,7 +249,7 @@ func NewImageCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
   $ trivy image --format json --output result.json alpine:3.15
 
   # Generate a report in the CycloneDX format
-  $ trivy image --format cyclonedx --output result.cdx alpine:3.15`,
+  $ trivy image --format cyclonedx --output result.cdx --security-checks none alpine:3.15`,
 
 		// 'Args' cannot be used since it is called before PreRunE and viper is not configured yet.
 		// cmd.Args     -> cannot validate args here

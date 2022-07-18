@@ -19,6 +19,9 @@ const (
 	// SecurityCheckUnknown is a security check of unknown
 	SecurityCheckUnknown = SecurityCheck("unknown")
 
+	// SecurityCheckNone means no scanning
+	SecurityCheckNone = SecurityCheck("none")
+
 	// SecurityCheckVulnerability is a security check of vulnerabilities
 	SecurityCheckVulnerability = SecurityCheck("vuln")
 
@@ -38,7 +41,7 @@ const (
 var (
 	VulnTypes      = []string{VulnTypeOS, VulnTypeLibrary}
 	SecurityChecks = []string{
-		SecurityCheckVulnerability, SecurityCheckConfig,
+		SecurityCheckNone, SecurityCheckVulnerability, SecurityCheckConfig,
 		SecurityCheckRbac, SecurityCheckSecret, SecurityCheckLicense,
 	}
 )

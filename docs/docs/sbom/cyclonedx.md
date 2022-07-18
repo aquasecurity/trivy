@@ -6,6 +6,13 @@ Note that XML format is not supported at the moment.
 
 You can use the regular subcommands (like `image`, `fs` and `rootfs`) and specify `cyclonedx` with the `--format` option.
 
+CycloneDX can represent either or both SBOM or BOV.
+
+- [Software Bill of Materials (SBOM)][sbom]
+- [Bill of Vulnerabilities (BOV)][bov]
+
+By default, Trivy includes both.
+
 ```
 $ trivy image --format cyclonedx --output result.json alpine:3.15
 ```
@@ -231,6 +238,12 @@ $ cat result.json | jq .
 
 </details>
 
+If you don't need vulnerabilities, you can disable it via `--security-checks none`.
+
+```
+$ trivy image --security-checks none --format cyclonedx --output result.json alpine:3.15
+```
+
 ## Scanning
 Trivy can take CycloneDX as an input and scan for vulnerabilities.
 To scan SBOM, you can use the `sbom` subcommand and pass the path to your CycloneDX report. 
@@ -260,3 +273,5 @@ Total: 3 (CRITICAL: 3)
     If you want to generate a CycloneDX report from a CycloneDX input, please be aware that the output stores references to your original CycloneDX report and contains only detected vulnerabilities, not components.
 
 [cyclonedx]: https://cyclonedx.org/
+[sbom]: https://cyclonedx.org/capabilities/sbom/
+[bov]: https://cyclonedx.org/capabilities/bov/

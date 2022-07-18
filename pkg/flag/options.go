@@ -12,6 +12,9 @@ import (
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
+	"github.com/aquasecurity/trivy/pkg/log"
+	"github.com/aquasecurity/trivy/pkg/report"
+	"github.com/aquasecurity/trivy/pkg/types"
 )
 
 type Flag struct {
@@ -81,6 +84,14 @@ type Options struct {
 
 	// We don't want to allow disabled analyzers to be passed by users, but it is necessary for internal use.
 	DisabledAnalyzers []analyzer.Type
+}
+
+// Align takes consistency of options
+func (o *Options) Align() {
+	if o.Format == report.FormatSPDX || o.Format == report.FormatSPDXJSON {
+		log.Logger.Debug(`"--format spdx" and "--format spdx-json" disable security checks`)
+		o.SecurityChecks = []string{types.SecurityCheckNone}
+	}
 }
 
 func addFlag(cmd *cobra.Command, flag *Flag) {
@@ -336,6 +347,8 @@ func (f *Flags) ToOptions(appVersion string, args []string, globalFlags *GlobalF
 	if f.VulnerabilityFlagGroup != nil {
 		opts.VulnerabilityOptions = f.VulnerabilityFlagGroup.ToOptions()
 	}
+
+	opts.Align()
 
 	return opts, nil
 }
