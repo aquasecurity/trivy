@@ -124,6 +124,14 @@ func TestFilesystem(t *testing.T) {
 			golden: "testdata/helm_testchart.json.golden",
 		},
 		{
+			name: "helm chart directory scanning with builtin policies and non string Chart name",
+			args: args{
+				securityChecks: "config",
+				input:          "testdata/fixtures/fs/helm_badname",
+			},
+			golden: "testdata/helm_badname.json.golden",
+		},
+		{
 			name: "secrets",
 			args: args{
 				securityChecks: "vuln,secret",
