@@ -2,16 +2,18 @@ package json
 
 import (
 	"context"
+	"golang.org/x/xerrors"
 	"io"
 	"os"
 	"path/filepath"
-	"regexp"
-
-	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 )
+
+func init() {
+	analyzer.RegisterAnalyzer(&jsonConfigAnalyzer{})
+}
 
 const version = 1
 
@@ -20,17 +22,9 @@ var (
 	excludedFiles = []string{types.NpmPkgLock, types.NuGetPkgsLock, types.NuGetPkgsConfig}
 )
 
-type ConfigAnalyzer struct {
-	filePattern *regexp.Regexp
-}
+type jsonConfigAnalyzer struct{}
 
-func NewConfigAnalyzer(filePattern *regexp.Regexp) ConfigAnalyzer {
-	return ConfigAnalyzer{
-		filePattern: filePattern,
-	}
-}
-
-func (a ConfigAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInput) (*analyzer.AnalysisResult, error) {
+func (a jsonConfigAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInput) (*analyzer.AnalysisResult, error) {
 	b, err := io.ReadAll(input.Content)
 	if err != nil {
 		return nil, xerrors.Errorf("failed to read %s: %w", input.FilePath, err)
@@ -50,11 +44,7 @@ func (a ConfigAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInput)
 	}, nil
 }
 
-func (a ConfigAnalyzer) Required(filePath string, _ os.FileInfo) bool {
-	if a.filePattern != nil && a.filePattern.MatchString(filePath) {
-		return true
-	}
-
+func (a jsonConfigAnalyzer) Required(filePath string, _ os.FileInfo) bool {
 	filename := filepath.Base(filePath)
 	for _, excludedFile := range excludedFiles {
 		if filename == excludedFile {
@@ -65,10 +55,10 @@ func (a ConfigAnalyzer) Required(filePath string, _ os.FileInfo) bool {
 	return filepath.Ext(filePath) == requiredExt
 }
 
-func (ConfigAnalyzer) Type() analyzer.Type {
+func (jsonConfigAnalyzer) Type() analyzer.Type {
 	return analyzer.TypeJSON
 }
 
-func (ConfigAnalyzer) Version() int {
+func (jsonConfigAnalyzer) Version() int {
 	return version
 }

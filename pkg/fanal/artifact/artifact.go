@@ -16,6 +16,7 @@ type Option struct {
 	DisabledHandlers  []types.HandlerType
 	SkipFiles         []string
 	SkipDirs          []string
+	FilePatterns      []string
 	NoProgress        bool
 	Offline           bool
 	InsecureSkipTLS   bool
@@ -31,6 +32,7 @@ func (o *Option) Sort() {
 	})
 	sort.Strings(o.SkipFiles)
 	sort.Strings(o.SkipDirs)
+	sort.Strings(o.FilePatterns)
 }
 
 type Artifact interface {

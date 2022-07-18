@@ -444,6 +444,7 @@ func initScannerConfig(opts flag.Options, cacheClient cache.Cache) (ScannerConfi
 		ScanRemovedPackages: opts.ScanRemovedPkgs, // this is valid only for 'image' subcommand
 		ListAllPackages:     opts.ListAllPkgs,
 		LicenseCategories:   opts.LicenseCategories,
+		FilePatterns:        opts.FilePatterns,
 	}
 
 	if slices.Contains(opts.SecurityChecks, types.SecurityCheckVulnerability) {
@@ -456,11 +457,10 @@ func initScannerConfig(opts flag.Options, cacheClient cache.Cache) (ScannerConfi
 	if slices.Contains(opts.SecurityChecks, types.SecurityCheckConfig) {
 		log.Logger.Info("Misconfiguration scanning is enabled")
 		configScannerOptions = config.ScannerOption{
-			Trace:        opts.Trace,
-			Namespaces:   append(opts.PolicyNamespaces, defaultPolicyNamespaces...),
-			PolicyPaths:  opts.PolicyPaths,
-			DataPaths:    opts.DataPaths,
-			FilePatterns: opts.FilePatterns,
+			Trace:       opts.Trace,
+			Namespaces:  append(opts.PolicyNamespaces, defaultPolicyNamespaces...),
+			PolicyPaths: opts.PolicyPaths,
+			DataPaths:   opts.DataPaths,
 		}
 	}
 
