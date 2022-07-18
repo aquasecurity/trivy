@@ -5,6 +5,7 @@ import (
 	"os"
 	"testing"
 
+	"github.com/aquasecurity/trivy/pkg/licensing"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
@@ -54,6 +55,7 @@ func Test_licenseAnalyzer_Analyze(t *testing.T) {
 			require.NoError(t, err)
 
 			a := licenseFileAnalyzer{}
+			licensing.NewClassifier()
 			got, err := a.Analyze(context.TODO(), analyzer.AnalysisInput{
 				FilePath: tt.filePath,
 				Content:  f,

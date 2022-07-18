@@ -13,7 +13,7 @@ import (
 
 var cf *classifier.Classifier
 
-func init() {
+func NewClassifier() {
 	var err error
 	cf, err = assets.DefaultClassifier()
 	if err != nil {

@@ -90,6 +90,7 @@ func TestClassifier_Classify(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			licensing.NewClassifier()
 			contents, err := os.ReadFile(tt.filePath)
 			require.NoError(t, err)
 

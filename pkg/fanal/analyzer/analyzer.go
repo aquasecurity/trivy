@@ -9,6 +9,7 @@ import (
 	"strings"
 	"sync"
 
+	"github.com/aquasecurity/trivy/pkg/licensing"
 	"golang.org/x/exp/slices"
 	"golang.org/x/sync/semaphore"
 	"golang.org/x/xerrors"
@@ -284,6 +285,11 @@ func NewAnalyzerGroup(groupName Group, disabledAnalyzers []Type) AnalyzerGroup {
 			continue
 		}
 		group.configAnalyzers = append(group.configAnalyzers, a)
+	}
+
+	// load classifier when scanning licenses
+	if !slices.Contains(disabledAnalyzers, TypeLicenseFile) {
+		licensing.NewClassifier()
 	}
 
 	return group
