@@ -9,7 +9,7 @@ Trivy can generate the following SBOM formats.
 To generate SBOM, you can use the `--format` option for each subcommand such as `image` and `fs`.
 
 ```
-$ trivy image --format spdx --output result.json alpine:3.15
+$ trivy image --format spdx-json --output result.json alpine:3.15
 ```
 
 
