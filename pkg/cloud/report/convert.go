@@ -3,14 +3,15 @@ package report
 import (
 	"fmt"
 	"strings"
+	"time"
 
 	"github.com/aquasecurity/defsec/pkg/scan"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
 
-func convertResults(results scan.Results) types.Results {
-	var convertedResults types.Results
+func convertResults(results scan.Results) map[string]ResultAtTime {
+	convertedResults := make(map[string]ResultAtTime)
 	resultsByService := make(map[string]scan.Results)
 	for _, result := range results {
 		resultsByService[result.Rule().Service] = append(resultsByService[result.Rule().Service], result)
@@ -56,18 +57,18 @@ func convertResults(results scan.Results) types.Results {
 					Service:   flat.RuleService,
 					StartLine: flat.Location.StartLine,
 					EndLine:   flat.Location.EndLine,
-					Code:      ftypes.Code{
-						// TODO: add json from aws api?
-					},
 				},
 			})
 		}
-		convertedResults = append(convertedResults, types.Result{
-			Target:            service,
-			Class:             types.ClassConfig,
-			Type:              ftypes.Cloud,
-			Misconfigurations: converted,
-		})
+		convertedResults[service] = ResultAtTime{
+			Result: types.Result{
+				Target:            service,
+				Class:             types.ClassConfig,
+				Type:              ftypes.Cloud,
+				Misconfigurations: converted,
+			},
+			CreationTime: time.Now(),
+		}
 	}
 	return convertedResults
 }

@@ -4,8 +4,9 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"time"
 
-	"golang.org/x/xerrors"
+	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 
 	"github.com/aquasecurity/defsec/pkg/scan"
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
@@ -13,13 +14,8 @@ import (
 )
 
 const (
-	allReport     = "all"
-	summaryReport = "summary"
-
 	tableFormat = "table"
 	jsonFormat  = "json"
-
-	schemaVersion = 0
 )
 
 type Option struct {
@@ -43,16 +39,21 @@ const (
 
 // Report represents a kubernetes scan report
 type Report struct {
-	SchemaVersion   int           `json:"schema_version"`
-	AccountID       string        `json:"account_id"`
-	Results         types.Results `json:"results"`
-	ServicesInScope []string      `json:"services"`
-	Region          string        `json:"region"`
+	Provider        string
+	AccountID       string
+	Region          string
+	Results         map[string]ResultAtTime
+	ServicesInScope []string
 }
 
-func New(accountID string, region string, defsecResults scan.Results, scopedServices []string) *Report {
+type ResultAtTime struct {
+	Result       types.Result
+	CreationTime time.Time
+}
+
+func New(provider, accountID, region string, defsecResults scan.Results, scopedServices []string) *Report {
 	return &Report{
-		SchemaVersion:   schemaVersion,
+		Provider:        provider,
 		AccountID:       accountID,
 		Results:         convertResults(defsecResults),
 		ServicesInScope: scopedServices,
@@ -61,8 +62,13 @@ func New(accountID string, region string, defsecResults scan.Results, scopedServ
 }
 
 // Failed returns whether the aws report includes any "failed" results
-func (r Report) Failed() bool {
-	return r.Results.Failed()
+func (r *Report) Failed() bool {
+	for _, set := range r.Results {
+		if (types.Results{set.Result}).Failed() {
+			return true
+		}
+	}
+	return false
 }
 
 // Write writes the results in the give format
@@ -79,38 +85,37 @@ func Write(report *Report, option Option) error {
 		case LevelResult:
 			return writeResultsForARN(report, option)
 		default:
-			return fmt.Errorf("invalid level: %s", option.ReportLevel)
+			return fmt.Errorf("invalid level: %d", option.ReportLevel)
 		}
 
 	default:
-		return xerrors.Errorf(`unknown format %q. Use "json" or "table"`, option.Format)
+		return fmt.Errorf(`unknown format %q. Use "json" or "table"`, option.Format)
 	}
 }
 
-func (r *Report) ForServices(services ...string) *Report {
-	if len(services) == 0 {
-		return r
+func (r *Report) GetResultForService(service string) (*ResultAtTime, error) {
+	if set, ok := r.Results[service]; ok {
+		return &set, nil
 	}
-	var results types.Results
-	for _, result := range r.Results {
-		var misconfigurations []types.DetectedMisconfiguration
-		for _, misconfig := range result.Misconfigurations {
-			for _, service := range services {
-				if misconfig.CauseMetadata.Service == service {
-					misconfigurations = append(misconfigurations, misconfig)
-				}
-			}
-		}
-		if len(misconfigurations) > 0 {
-			copied := result
-			copied.Misconfigurations = misconfigurations
-			results = append(results, copied)
+	for _, scoped := range r.ServicesInScope {
+		if scoped == service {
+			return &ResultAtTime{
+				Result: types.Result{
+					Target: service,
+					Class:  types.ClassConfig,
+					Type:   ftypes.Cloud,
+				},
+				CreationTime: time.Now(),
+			}, nil
 		}
 	}
-	return &Report{
-		SchemaVersion:   schemaVersion,
-		AccountID:       r.AccountID,
-		Results:         results,
-		ServicesInScope: services,
+	return nil, fmt.Errorf("service %q not found", service)
+}
+
+func (r *Report) AddResultForService(service string, result types.Result, creation time.Time) {
+	r.Results[service] = ResultAtTime{
+		Result:       result,
+		CreationTime: creation,
 	}
+	r.ServicesInScope = append(r.ServicesInScope, service)
 }

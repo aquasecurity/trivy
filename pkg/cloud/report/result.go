@@ -22,20 +22,19 @@ func writeResultsForARN(report *Report, option Option) error {
 	// render scan title
 	_, _ = fmt.Fprintf(w, "\n\x1b[1mResults for '%s' (AWS Account %s)\x1b[0m\n\n", option.ARN, report.AccountID)
 
-	for _, result := range report.Results {
-		var filtered []types.DetectedMisconfiguration
-		for _, misconfiguration := range result.Misconfigurations {
-			if option.ARN != "" && misconfiguration.CauseMetadata.Resource != option.ARN {
-				continue
-			}
-			if option.Service != "" && misconfiguration.CauseMetadata.Service != option.Service {
-				continue
-			}
-			filtered = append(filtered, misconfiguration)
+	result := report.Results[option.Service].Result
+	var filtered []types.DetectedMisconfiguration
+	for _, misconfiguration := range result.Misconfigurations {
+		if option.ARN != "" && misconfiguration.CauseMetadata.Resource != option.ARN {
+			continue
 		}
-		if len(filtered) > 0 {
-			_, _ = fmt.Fprint(w, renderer.NewMisconfigRenderer(result.Target, filtered, false, true).Render())
+		if option.Service != "" && misconfiguration.CauseMetadata.Service != option.Service {
+			continue
 		}
+		filtered = append(filtered, misconfiguration)
+	}
+	if len(filtered) > 0 {
+		_, _ = fmt.Fprint(w, renderer.NewMisconfigRenderer(result.Target, filtered, false, true).Render())
 	}
 
 	// render cache info

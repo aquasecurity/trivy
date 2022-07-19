@@ -40,13 +40,12 @@ func writeResourceTable(report *Report, option Option) error {
 
 	// map resource -> severity -> count
 	grouped := make(map[string]map[string]int)
-	for _, result := range report.Results {
-		for _, misconfiguration := range result.Misconfigurations {
-			if _, ok := grouped[misconfiguration.CauseMetadata.Resource]; !ok {
-				grouped[misconfiguration.CauseMetadata.Resource] = make(map[string]int)
-			}
-			grouped[misconfiguration.CauseMetadata.Resource][misconfiguration.Severity]++
+	result := report.Results[option.Service].Result
+	for _, misconfiguration := range result.Misconfigurations {
+		if _, ok := grouped[misconfiguration.CauseMetadata.Resource]; !ok {
+			grouped[misconfiguration.CauseMetadata.Resource] = make(map[string]int)
 		}
+		grouped[misconfiguration.CauseMetadata.Resource][misconfiguration.Severity]++
 	}
 
 	var sortable []sortableRow

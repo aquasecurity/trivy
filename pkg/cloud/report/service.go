@@ -27,12 +27,13 @@ func writeServiceTable(report *Report, option Option) error {
 	for _, service := range report.ServicesInScope {
 		grouped[service] = make(map[string]int)
 	}
-	for _, result := range report.Results {
+	for service, resultAtTime := range report.Results {
+		result := resultAtTime.Result
 		for _, misconfiguration := range result.Misconfigurations {
-			if _, ok := grouped[misconfiguration.CauseMetadata.Service]; !ok {
-				grouped[misconfiguration.CauseMetadata.Service] = make(map[string]int)
+			if _, ok := grouped[service]; !ok {
+				grouped[service] = make(map[string]int)
 			}
-			grouped[misconfiguration.CauseMetadata.Service][misconfiguration.Severity]++
+			grouped[service][misconfiguration.Severity]++
 		}
 	}
 

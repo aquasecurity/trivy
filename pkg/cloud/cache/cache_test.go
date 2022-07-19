@@ -1,0 +1,114 @@
+package cache
+
+import (
+	"testing"
+	"time"
+
+	"github.com/stretchr/testify/assert"
+
+	"github.com/stretchr/testify/require"
+
+	"github.com/aquasecurity/trivy/pkg/cloud/report"
+	"github.com/aquasecurity/trivy/pkg/types"
+)
+
+func TestCache(t *testing.T) {
+
+	tests := []struct {
+		name     string
+		input    report.Report
+		services []string
+	}{
+		{
+			name: "no services",
+			input: report.Report{
+				Provider:        "AWS",
+				AccountID:       "1234567890",
+				Region:          "us-east-1",
+				Results:         make(map[string]report.ResultAtTime),
+				ServicesInScope: nil,
+			},
+			services: nil,
+		},
+		{
+			name: "all services",
+			input: report.Report{
+				Provider:  "AWS",
+				AccountID: "1234567890",
+				Region:    "us-east-1",
+				Results: map[string]report.ResultAtTime{
+					"s3": {
+						Result:       types.Result{},
+						CreationTime: time.Now(),
+					},
+					"ec2": {
+						Result:       types.Result{},
+						CreationTime: time.Now(),
+					},
+				},
+				ServicesInScope: []string{"ec2", "s3"},
+			},
+			services: []string{"ec2", "s3"},
+		},
+		{
+			name: "partial services",
+			input: report.Report{
+				Provider:  "AWS",
+				AccountID: "1234567890",
+				Region:    "us-east-1",
+				Results: map[string]report.ResultAtTime{
+					"s3": {
+						Result:       types.Result{},
+						CreationTime: time.Now(),
+					},
+					"ec2": {
+						Result:       types.Result{},
+						CreationTime: time.Now(),
+					},
+				},
+				ServicesInScope: []string{"ec2", "s3"},
+			},
+			services: []string{"ec2"},
+		},
+	}
+
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+
+			baseDir := t.TempDir()
+
+			// ensure saving doesn't error
+			cache := New(baseDir, test.input.Provider, test.input.AccountID, test.input.Region)
+			require.NoError(t, cache.Save(&test.input))
+
+			// ensure all scoped services were cached
+			available := cache.ListAvailableServices()
+			assert.Equal(t, test.input.ServicesInScope, available)
+
+			// ensure all cached services are really available
+			fullReport, err := cache.LoadReport(available...)
+			require.NoError(t, err)
+			assert.Equal(t, available, fullReport.ServicesInScope)
+
+			// ensure loading restores all (specified) data
+			loaded, err := cache.LoadReport(test.services...)
+			require.NoError(t, err)
+
+			assert.Equal(t, test.input.Provider, loaded.Provider)
+			assert.Equal(t, test.input.AccountID, loaded.AccountID)
+			assert.Equal(t, test.input.Region, loaded.Region)
+			assert.Equal(t, test.services, loaded.ServicesInScope)
+
+			var actualServices []string
+			for service := range loaded.Results {
+				actualServices = append(actualServices, service)
+			}
+			assert.Equal(t, test.services, actualServices)
+
+			for _, service := range test.services {
+				assert.Equal(t, test.input.Results[service].CreationTime.Format(time.RFC3339), loaded.Results[service].CreationTime.Format(time.RFC3339))
+				assert.Equal(t, test.input.Results[service].Result, loaded.Results[service].Result)
+			}
+		})
+	}
+}
