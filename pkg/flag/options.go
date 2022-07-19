@@ -93,7 +93,7 @@ func (o *Options) Align() {
 	}
 
 	// Vulnerability scanning is disabled by default for CycloneDX.
-	if !viper.IsSet(SecurityChecksFlag.ConfigName) && o.Format == report.FormatCycloneDX {
+	if o.Format == report.FormatCycloneDX && !viper.IsSet(SecurityChecksFlag.ConfigName) {
 		log.Logger.Info(`"--format cyclonedx" disables security checks. Specify "--security-checks vuln" explicitly if you want to include vulnerabilities in the CycloneDX report.`)
 		o.SecurityChecks = nil
 	}
