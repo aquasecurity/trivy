@@ -12,7 +12,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 )
 
-func TestClassifier_Classify(t *testing.T) {
+func TestClassifier_FullClassify(t *testing.T) {
 	tests := []struct {
 		name     string
 		filePath string
@@ -93,7 +93,8 @@ func TestClassifier_Classify(t *testing.T) {
 			contents, err := os.ReadFile(tt.filePath)
 			require.NoError(t, err)
 
-			got := licensing.Classify(tt.filePath, contents)
+			got, err := licensing.FullClassify(tt.filePath, contents)
+			require.NoError(t, err)
 			assert.Equal(t, tt.want, got)
 		})
 	}
