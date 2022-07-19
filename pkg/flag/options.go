@@ -88,7 +88,7 @@ type Options struct {
 // Align takes consistency of options
 func (o *Options) Align() {
 	if o.Format == report.FormatSPDX || o.Format == report.FormatSPDXJSON {
-		log.Logger.Debug(`"--format spdx" and "--format spdx-json" disable security checks`)
+		log.Logger.Info(`"--format spdx" and "--format spdx-json" disable security checks`)
 		o.SecurityChecks = nil
 	}
 
