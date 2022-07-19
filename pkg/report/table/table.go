@@ -53,6 +53,7 @@ type Renderer interface {
 
 // Write writes the result on standard output
 func (tw Writer) Write(report types.Report) error {
+	// Iterate results to extract packages first, then write tables for each result
 	pkgs := map[string][]ftypes.Package{}
 	for _, result := range report.Results {
 		if result.Class == types.ClassOSPkg || result.Class == types.ClassLangPkg {
