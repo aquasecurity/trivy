@@ -14,7 +14,7 @@ $ trivy image --format spdx --output result.json alpine:3.15
 
 
 ```
-$ trivy fs --format cyclonedx --output result.json --security-checks none /app/myproject
+$ trivy fs --format cyclonedx --output result.json /app/myproject
 ```
 
 <details>

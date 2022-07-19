@@ -11,10 +11,11 @@ CycloneDX can represent either or both SBOM or BOV.
 - [Software Bill of Materials (SBOM)][sbom]
 - [Bill of Vulnerabilities (BOV)][bov]
 
-By default, Trivy includes both.
+By default, `--format cyclonedx` represents SBOM and doesn't include vulnerabilities in the CycloneDX output.
 
 ```
 $ trivy image --format cyclonedx --output result.json alpine:3.15
+2022-07-19T07:47:27.624Z        INFO    "--format cyclonedx" disables security checks. Specify "--security-checks vuln" explicitly if you want to include vulnerabilities in the CycloneDX report.
 ```
 
 <details>
@@ -238,10 +239,10 @@ $ cat result.json | jq .
 
 </details>
 
-If you don't need vulnerabilities, you can disable it via `--security-checks none`.
+If you want to include vulnerabilities, you can enable vulnerability scanning via `--security-checks vuln`.
 
 ```
-$ trivy image --security-checks none --format cyclonedx --output result.json alpine:3.15
+$ trivy image --security-checks vuln --format cyclonedx --output result.json alpine:3.15
 ```
 
 ## Scanning
@@ -271,6 +272,7 @@ Total: 3 (CRITICAL: 3)
 
 !!! note
     If you want to generate a CycloneDX report from a CycloneDX input, please be aware that the output stores references to your original CycloneDX report and contains only detected vulnerabilities, not components.
+    The report is called [BOV][bov].
 
 [cyclonedx]: https://cyclonedx.org/
 [sbom]: https://cyclonedx.org/capabilities/sbom/

@@ -14,7 +14,6 @@ import (
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/report"
-	"github.com/aquasecurity/trivy/pkg/types"
 )
 
 type Flag struct {
@@ -90,7 +89,13 @@ type Options struct {
 func (o *Options) Align() {
 	if o.Format == report.FormatSPDX || o.Format == report.FormatSPDXJSON {
 		log.Logger.Debug(`"--format spdx" and "--format spdx-json" disable security checks`)
-		o.SecurityChecks = []string{types.SecurityCheckNone}
+		o.SecurityChecks = nil
+	}
+
+	// Vulnerability scanning is disabled by default for CycloneDX.
+	if !viper.IsSet(SecurityChecksFlag.ConfigName) && o.Format == report.FormatCycloneDX {
+		log.Logger.Info(`"--format cyclonedx" disables security checks. Specify "--security-checks vuln" explicitly if you want to include vulnerabilities in the CycloneDX report.`)
+		o.SecurityChecks = nil
 	}
 }
 
