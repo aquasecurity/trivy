@@ -5,6 +5,7 @@
 !!! note
     In the following examples, the `cosign` command will write an attestation to a target OCI registry, so you must have permission to write.
     If you want to avoid writing an OCI registry and only want to see an attestation, add the `--no-upload` option to the `cosign` command.
+
 ## Sign with a local key pair
 
 Cosign can generate key pairs and use them for signing and verification. Read more about [how to generate key pairs](https://docs.sigstore.dev/cosign/key-generation).
