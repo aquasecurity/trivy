@@ -5,6 +5,7 @@ import (
 	"os"
 	"testing"
 
+	"github.com/aquasecurity/trivy/pkg/licensing"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
@@ -83,6 +84,7 @@ func Test_dpkgLicenseAnalyzer_Analyze(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			licensing.NewClassifier()
 			f, err := os.Open(tt.testFile)
 			require.NoError(t, err)
 

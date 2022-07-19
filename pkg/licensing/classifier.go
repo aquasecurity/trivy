@@ -2,26 +2,35 @@ package licensing
 
 import (
 	"fmt"
-	"log"
-
-	"github.com/go-enry/go-license-detector/v4/licensedb"
-	classifier "github.com/google/licenseclassifier/v2"
-	"github.com/google/licenseclassifier/v2/assets"
+	"io"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
+	"github.com/go-enry/go-license-detector/v4/licensedb"
+	classifier "github.com/google/licenseclassifier/v2"
 )
 
-var cf *classifier.Classifier
+var LicenseClassifier Classifier
+
+type Classifier struct {
+	cf *classifier.Classifier
+}
 
 func NewClassifier() {
-	var err error
-	cf, err = assets.DefaultClassifier()
-	if err != nil {
-		// It never reaches here.
-		log.Fatal(err)
-	}
+	LicenseClassifier = Classifier{cf: classifier.NewDefaultClassifier()}
 
 	licensedb.Preload()
+}
+
+func (c Classifier) Match(in []byte) classifier.Results {
+	return c.cf.Match(in)
+}
+
+func (c *Classifier) MatchFrom(in io.Reader) (classifier.Results, error) {
+	return c.cf.MatchFrom(in)
+}
+
+func (c Classifier) Normalize(in []byte) []byte {
+	return c.cf.Normalize(in)
 }
 
 // Classify detects and classifies the licensedFile found in a file
@@ -38,7 +47,7 @@ func Classify(filePath string, contents []byte) types.LicenseFile {
 func googleClassifierLicense(filePath string, contents []byte) types.LicenseFile {
 	var matchType types.LicenseType
 	var findings []types.LicenseFinding
-	matcher := cf.Match(cf.Normalize(contents))
+	matcher := LicenseClassifier.Match(LicenseClassifier.Normalize(contents))
 	for _, m := range matcher.Matches {
 		switch m.MatchType {
 		case "Header":

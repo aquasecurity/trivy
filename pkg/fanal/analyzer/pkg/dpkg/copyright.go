@@ -9,8 +9,6 @@ import (
 	"regexp"
 	"strings"
 
-	classifier "github.com/google/licenseclassifier/v2"
-	"github.com/google/licenseclassifier/v2/assets"
 	"github.com/samber/lo"
 	"golang.org/x/exp/slices"
 	"golang.org/x/xerrors"
@@ -23,18 +21,10 @@ import (
 
 func init() {
 	analyzer.RegisterAnalyzer(&dpkgLicenseAnalyzer{})
-
-	var err error
-	licenseClassifier, err = assets.DefaultClassifier()
-	if err != nil {
-		panic(err)
-	}
 }
 
 var (
 	dpkgLicenseAnalyzerVersion = 1
-
-	licenseClassifier *classifier.Classifier
 
 	commonLicenseReferenceRegexp = regexp.MustCompile(`/?usr/share/common-licenses/([0-9A-Za-z_.+-]+[0-9A-Za-z+])`)
 	licenseSplitRegexp           = regexp.MustCompile("(,?[_ ]+or[_ ]+)|(,?[_ ]+and[_ ])|(,[ ]*)")
@@ -121,7 +111,7 @@ func (a dpkgLicenseAnalyzer) parseCopyright(r dio.ReadSeekerAt) ([]string, error
 	}
 
 	// Use 'github.com/google/licenseclassifier' to find licenses
-	result, err := licenseClassifier.MatchFrom(r)
+	result, err := licensing.LicenseClassifier.MatchFrom(r)
 	if err != nil {
 		return nil, xerrors.Errorf("unable to match licenses: %w", err)
 	}
