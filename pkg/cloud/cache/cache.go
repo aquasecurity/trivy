@@ -5,6 +5,7 @@ import (
 	"path"
 	"path/filepath"
 	"strings"
+	"time"
 )
 
 const (
@@ -21,23 +22,37 @@ type Cache struct {
 	provider  string
 	accountID string
 	region    string
+	maxAge    time.Duration
 }
 
-func New(basePath string, provider, accountID string, region string) *Cache {
+func New(basePath string, maxAge time.Duration, provider string, accountID string, region string) *Cache {
 	return &Cache{
 		path:      path.Join(basePath, cacheSubDir, strings.ToLower(provider), accountID, strings.ToLower(region)),
 		provider:  provider,
 		accountID: accountID,
 		region:    region,
+		maxAge:    maxAge,
 	}
 }
 
-func (c *Cache) ListAvailableServices() []string {
+func (c *Cache) ListAvailableServices(includeExpired bool) []string {
 	metadata, err := c.loadMetadata()
 	if err != nil {
 		return nil
 	}
-	return metadata.ServicesInScope
+	r, err := c.LoadReport(metadata.ServicesInScope...)
+	if err != nil {
+		return nil
+	}
+	var available []string
+	for _, service := range metadata.ServicesInScope {
+		if entry, ok := r.Results[service]; ok {
+			if includeExpired || entry.CreationTime.Add(c.maxAge).After(time.Now()) {
+				available = append(available, service)
+			}
+		}
+	}
+	return available
 }
 
 func (c *Cache) getServicePath(service string) string {

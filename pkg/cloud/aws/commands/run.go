@@ -72,6 +72,14 @@ func Run(ctx context.Context, opt flag.Options) error {
 		Severities:  opt.Severities,
 		ReportLevel: report.LevelService,
 	}
+
+	// support comma separated services too
+	var splitServices []string
+	for _, service := range opt.Services {
+		splitServices = append(splitServices, strings.Split(service, ",")...)
+	}
+	opt.Services = splitServices
+
 	if len(opt.Services) == 1 {
 		reportOptions.ReportLevel = report.LevelResource
 		reportOptions.Service = opt.Services[0]
@@ -114,8 +122,8 @@ func Run(ctx context.Context, opt flag.Options) error {
 		}
 	}
 
-	cached := cache.New(opt.CacheDir, cloud.ProviderAWS, accountID, region)
-	servicesInCache := cached.ListAvailableServices()
+	cached := cache.New(opt.CacheDir, opt.MaxCacheAge, cloud.ProviderAWS, accountID, region)
+	servicesInCache := cached.ListAvailableServices(false)
 	var servicesToLoadFromCache []string
 	var servicesToScan []string
 	for _, service := range allSelectedServices {

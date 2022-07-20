@@ -78,11 +78,11 @@ func TestCache(t *testing.T) {
 			baseDir := t.TempDir()
 
 			// ensure saving doesn't error
-			cache := New(baseDir, test.input.Provider, test.input.AccountID, test.input.Region)
+			cache := New(baseDir, time.Hour, test.input.Provider, test.input.AccountID, test.input.Region)
 			require.NoError(t, cache.Save(&test.input))
 
 			// ensure all scoped services were cached
-			available := cache.ListAvailableServices()
+			available := cache.ListAvailableServices(false)
 			assert.Equal(t, test.input.ServicesInScope, available)
 
 			// ensure all cached services are really available
@@ -111,4 +111,57 @@ func TestCache(t *testing.T) {
 			}
 		})
 	}
+}
+
+func TestPartialCacheOverwrite(t *testing.T) {
+	baseDir := t.TempDir()
+
+	r1 := report.Report{
+		Provider:  "AWS",
+		AccountID: "1234567890",
+		Region:    "us-east-1",
+		Results: map[string]report.ResultAtTime{
+			"a": {
+				Result:       types.Result{},
+				CreationTime: time.Now(),
+			},
+			"b": {
+				Result:       types.Result{},
+				CreationTime: time.Now(),
+			},
+			"c": {
+				Result:       types.Result{},
+				CreationTime: time.Now(),
+			},
+			"d": {
+				Result:       types.Result{},
+				CreationTime: time.Now(),
+			},
+		},
+		ServicesInScope: []string{"a", "b", "c", "d"},
+	}
+
+	// ensure saving doesn't error
+	cache := New(baseDir, time.Hour, "AWS", "1234567890", "us-east-1")
+	require.NoError(t, cache.Save(&r1))
+
+	r2 := report.Report{
+		Provider:  "AWS",
+		AccountID: "1234567890",
+		Region:    "us-east-1",
+		Results: map[string]report.ResultAtTime{
+			"a": {
+				Result:       types.Result{},
+				CreationTime: time.Now(),
+			},
+			"b": {
+				Result:       types.Result{},
+				CreationTime: time.Now(),
+			},
+		},
+		ServicesInScope: []string{"a", "b"},
+	}
+	require.NoError(t, cache.Save(&r2))
+
+	assert.Equal(t, []string{"a", "b", "c", "d"}, cache.ListAvailableServices(false))
 }

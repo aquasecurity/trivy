@@ -32,6 +32,7 @@ func writeResourceTable(report *Report, option Option) error {
 	t.SetColumnMaxWidth(maxWidth)
 	t.SetHeaders("Resource", "Misconfigurations")
 	t.AddHeaders("Resource", "Critical", "High", "Medium", "Low", "Unknown")
+	t.SetHeaderVerticalAlignment(table.AlignBottom)
 	t.SetHeaderAlignment(table.AlignLeft, table.AlignCenter, table.AlignCenter, table.AlignCenter, table.AlignCenter, table.AlignCenter)
 	t.SetAlignment(table.AlignLeft, table.AlignRight, table.AlignRight, table.AlignRight, table.AlignRight, table.AlignRight)
 	t.SetRowLines(false)
@@ -68,7 +69,7 @@ func writeResourceTable(report *Report, option Option) error {
 	}
 
 	// render scan title
-	_, _ = fmt.Fprintf(option.Output, "\n\x1b[1mResource Summary for Service '%s' (AWS Account %s)\x1b[0m\n", option.Service, report.AccountID)
+	_, _ = fmt.Fprintf(option.Output, "\n\x1b[1mResource Summary for Service '%s' (%s Account %s)\x1b[0m\n", option.Service, report.Provider, report.AccountID)
 
 	// render table
 	t.Render()

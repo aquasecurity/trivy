@@ -10,7 +10,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/types"
 )
 
-func convertResults(results scan.Results) map[string]ResultAtTime {
+func convertResults(results scan.Results, provider string) map[string]ResultAtTime {
 	convertedResults := make(map[string]ResultAtTime)
 	resultsByService := make(map[string]scan.Results)
 	for _, result := range results {
@@ -39,7 +39,7 @@ func convertResults(results scan.Results) map[string]ResultAtTime {
 			flat := result.Flatten()
 
 			converted = append(converted, types.DetectedMisconfiguration{
-				Type:        "AWS Cloud",
+				Type:        provider,
 				ID:          result.Rule().AVDID,
 				Title:       result.Rule().Summary,
 				Description: strings.TrimSpace(result.Rule().Explanation),

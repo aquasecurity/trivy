@@ -10,7 +10,7 @@ import (
 
 func (c *Cache) Save(r *report.Report) error {
 
-	existingServices := c.ListAvailableServices()
+	existingServices := c.ListAvailableServices(true)
 
 	if err := os.MkdirAll(
 		filepath.Dir(c.getMetadataPath()),

@@ -55,7 +55,7 @@ func New(provider, accountID, region string, defsecResults scan.Results, scopedS
 	return &Report{
 		Provider:        provider,
 		AccountID:       accountID,
-		Results:         convertResults(defsecResults),
+		Results:         convertResults(defsecResults, provider),
 		ServicesInScope: scopedServices,
 		Region:          region,
 	}

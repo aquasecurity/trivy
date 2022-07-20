@@ -8,6 +8,8 @@ import (
 	"os"
 	"time"
 
+	awsScanner "github.com/aquasecurity/defsec/pkg/scanners/cloud/aws"
+
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	"golang.org/x/xerrors"
@@ -798,12 +800,19 @@ func NewAWSCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 		MisconfFlagGroup: flag.NewMisconfFlagGroup(),
 		ReportFlagGroup:  flag.NewReportFlagGroup(),
 	}
+
+	services := awsScanner.AllSupportedServices()
+
 	cmd := &cobra.Command{
 		Use:     "aws [flags]",
 		Aliases: []string{},
 		Args:    cobra.ExactArgs(0),
 		Short:   "scan aws account",
-		Long:    "Scan an AWS account for misconfigurations. Trivy uses the same authentication methods as the AWS CLI. See https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-configure.html",
+		Long: fmt.Sprintf(`Scan an AWS account for misconfigurations. Trivy uses the same authentication methods as the AWS CLI. See https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-configure.html
+
+The following services are supported:
+- %s
+`, strings.Join(services, "\n- ")),
 		Example: `  # basic scanning
   $ trivy aws --region us-east-1
 

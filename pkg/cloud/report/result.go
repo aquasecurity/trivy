@@ -20,7 +20,7 @@ func writeResultsForARN(report *Report, option Option) error {
 	w := option.Output
 
 	// render scan title
-	_, _ = fmt.Fprintf(w, "\n\x1b[1mResults for '%s' (AWS Account %s)\x1b[0m\n\n", option.ARN, report.AccountID)
+	_, _ = fmt.Fprintf(w, "\n\x1b[1mResults for '%s' (%s Account %s)\x1b[0m\n\n", option.ARN, report.Provider, report.AccountID)
 
 	result := report.Results[option.Service].Result
 	var filtered []types.DetectedMisconfiguration
