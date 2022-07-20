@@ -16,7 +16,7 @@ require (
 	github.com/aquasecurity/table v1.6.0
 	github.com/aquasecurity/testdocker v0.0.0-20210911155206-e1e85f5a1516
 	github.com/aquasecurity/trivy-db v0.0.0-20220627104749-930461748b63
-	github.com/aquasecurity/trivy-kubernetes v0.3.1-0.20220623094029-353ad52f879b
+	github.com/aquasecurity/trivy-kubernetes v0.3.1-0.20220719205641-79488fbb4710
 	github.com/caarlos0/env/v6 v6.9.3
 	github.com/cenkalti/backoff v2.2.1+incompatible
 	github.com/cheggaaa/pb/v3 v3.0.8
@@ -281,12 +281,12 @@ require (
 	k8s.io/apiextensions-apiserver v0.24.0 // indirect
 	k8s.io/apimachinery v0.25.0-alpha.2 // indirect
 	k8s.io/apiserver v0.24.1 // indirect
-	k8s.io/cli-runtime v0.24.2 // indirect
-	k8s.io/client-go v0.24.2 // indirect
-	k8s.io/component-base v0.24.2 // indirect
+	k8s.io/cli-runtime v0.24.3 // indirect
+	k8s.io/client-go v0.25.0-alpha.2 // indirect
+	k8s.io/component-base v0.24.3 // indirect
 	k8s.io/klog/v2 v2.70.0 // indirect
 	k8s.io/kube-openapi v0.0.0-20220603121420-31174f50af60 // indirect
-	k8s.io/kubectl v0.24.2 // indirect
+	k8s.io/kubectl v0.24.3 // indirect
 	lukechampine.com/uint128 v1.1.1 // indirect
 	modernc.org/cc/v3 v3.36.0 // indirect
 	modernc.org/ccgo/v3 v3.16.6 // indirect
@@ -311,7 +311,3 @@ replace github.com/docker/docker => github.com/docker/docker v20.10.3-0.20220224
 // v1.2.0 is taken from github.com/open-policy-agent/opa v0.42.0
 // v1.2.0 incompatible with github.com/docker/docker v20.10.3-0.20220224222438-c78f6963a1c0+incompatible
 replace oras.land/oras-go => oras.land/oras-go v1.1.1
-
-// k8s.io/client-go v0.24.2 is using github.com/emicklei/go-restful v2.9.5 with critical vulnerability
-// replace k8s.io/client-go until stable version v0.25.0 is released
-replace k8s.io/client-go => k8s.io/client-go v0.25.0-alpha.2
