@@ -16,7 +16,7 @@ require (
 	github.com/aquasecurity/table v1.6.0
 	github.com/aquasecurity/testdocker v0.0.0-20210911155206-e1e85f5a1516
 	github.com/aquasecurity/trivy-db v0.0.0-20220627104749-930461748b63
-	github.com/aquasecurity/trivy-kubernetes v0.3.1-0.20220623094029-353ad52f879b
+	github.com/aquasecurity/trivy-kubernetes v0.3.1-0.20220719205641-79488fbb4710
 	github.com/caarlos0/env/v6 v6.9.3
 	github.com/cenkalti/backoff v2.2.1+incompatible
 	github.com/cheggaaa/pb/v3 v3.0.8
@@ -63,6 +63,8 @@ require (
 	gopkg.in/yaml.v3 v3.0.1
 	k8s.io/utils v0.0.0-20220210201930-3a6ce19ff2f9
 )
+
+require github.com/emicklei/go-restful/v3 v3.8.0 // indirect
 
 require (
 	cloud.google.com/go v0.100.2 // indirect
@@ -129,7 +131,6 @@ require (
 	github.com/docker/go-metrics v0.0.1 // indirect
 	github.com/docker/go-units v0.4.0 // indirect
 	github.com/ekzhu/minhash-lsh v0.0.0-20171225071031-5c06ee8586a1 // indirect
-	github.com/emicklei/go-restful v2.9.5+incompatible // indirect
 	github.com/emirpasic/gods v1.12.0 // indirect
 	github.com/evanphx/json-patch v4.12.0+incompatible // indirect
 	github.com/exponent-io/jsonpath v0.0.0-20151013193312-d6023ce2651d // indirect
@@ -286,16 +287,16 @@ require (
 	gotest.tools v2.2.0+incompatible
 	gotest.tools/v3 v3.2.0 // indirect
 	helm.sh/helm/v3 v3.9.0 // indirect
-	k8s.io/api v0.24.2 // indirect
+	k8s.io/api v0.25.0-alpha.2 // indirect
 	k8s.io/apiextensions-apiserver v0.24.0 // indirect
-	k8s.io/apimachinery v0.24.2 // indirect
+	k8s.io/apimachinery v0.25.0-alpha.2 // indirect
 	k8s.io/apiserver v0.24.1 // indirect
-	k8s.io/cli-runtime v0.24.2 // indirect
-	k8s.io/client-go v0.24.2 // indirect
-	k8s.io/component-base v0.24.2 // indirect
-	k8s.io/klog/v2 v2.60.1 // indirect
-	k8s.io/kube-openapi v0.0.0-20220328201542-3ee0da9b0b42 // indirect
-	k8s.io/kubectl v0.24.2 // indirect
+	k8s.io/cli-runtime v0.24.3 // indirect
+	k8s.io/client-go v0.25.0-alpha.2 // indirect
+	k8s.io/component-base v0.24.3 // indirect
+	k8s.io/klog/v2 v2.70.0 // indirect
+	k8s.io/kube-openapi v0.0.0-20220603121420-31174f50af60 // indirect
+	k8s.io/kubectl v0.24.3 // indirect
 	lukechampine.com/uint128 v1.1.1 // indirect
 	modernc.org/cc/v3 v3.36.0 // indirect
 	modernc.org/ccgo/v3 v3.16.6 // indirect
