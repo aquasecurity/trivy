@@ -165,8 +165,11 @@ func (f *ReportFlagGroup) ToOptions(out io.Writer) (ReportOptions, error) {
 	}
 
 	// "--dependency-tree" option is available only with "--format table".
-	if dependencyTree && format != report.FormatTable {
-		log.Logger.Warn(`"--dependency-tree" can be used only with "--format table".`)
+	if dependencyTree {
+		log.Logger.Infof(`"--dependency-tree" only shows dependencies for "package-lock.json" files`)
+		if format != report.FormatTable {
+			log.Logger.Warn(`"--dependency-tree" can be used only with "--format table".`)
+		}
 	}
 
 	// Enable '--list-all-pkgs' if needed

@@ -20,6 +20,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/fanal/applier"
 	_ "github.com/aquasecurity/trivy/pkg/fanal/handler/all"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
+	"github.com/aquasecurity/trivy/pkg/licensing"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/scanner/post"
 	"github.com/aquasecurity/trivy/pkg/types"
@@ -67,7 +68,8 @@ func NewScanner(applier Applier, ospkgDetector OspkgDetector, vulnClient vulnera
 	return Scanner{
 		applier:       applier,
 		ospkgDetector: ospkgDetector,
-		vulnClient:    vulnClient}
+		vulnClient:    vulnClient,
+	}
 }
 
 // Scan scans the artifact and return results.
@@ -127,6 +129,12 @@ func (s Scanner) Scan(ctx context.Context, target, artifactKey string, blobKeys 
 			Class:           types.ClassCustom,
 			CustomResources: artifactDetail.CustomResources,
 		})
+	}
+
+	// Scan licenses
+	if slices.Contains(options.SecurityChecks, types.SecurityCheckLicense) {
+		licenseResults := s.scanLicenses(artifactDetail, options.LicenseCategories)
+		results = append(results, licenseResults...)
 	}
 
 	for i := range results {
@@ -319,6 +327,86 @@ func (s Scanner) secretsToResults(secrets []ftypes.Secret) types.Results {
 			Secrets: secret.Findings,
 		})
 	}
+	return results
+}
+
+func (s Scanner) scanLicenses(detail ftypes.ArtifactDetail,
+	categories map[ftypes.LicenseCategory][]string) types.Results {
+	scanner := licensing.NewScanner(categories)
+
+	var results types.Results
+
+	// License - OS packages
+	var osPkgLicenses []types.DetectedLicense
+	for _, pkg := range detail.Packages {
+		for _, license := range pkg.Licenses {
+			category, severity := scanner.Scan(license)
+			osPkgLicenses = append(osPkgLicenses, types.DetectedLicense{
+				Severity:   severity,
+				Category:   category,
+				PkgName:    pkg.Name,
+				Name:       license,
+				Confidence: 1.0,
+			})
+		}
+
+	}
+	results = append(results, types.Result{
+		Target:   "OS Packages",
+		Class:    types.ClassLicense,
+		Licenses: osPkgLicenses,
+	})
+
+	// License - language-specific packages
+	for _, app := range detail.Applications {
+		var langLicenses []types.DetectedLicense
+		for _, lib := range app.Libraries {
+			for _, license := range lib.Licenses {
+				category, severity := scanner.Scan(license)
+				langLicenses = append(langLicenses, types.DetectedLicense{
+					Severity:   severity,
+					Category:   category,
+					PkgName:    lib.Name,
+					Name:       license,
+					Confidence: 1.0,
+				})
+			}
+		}
+
+		target := app.FilePath
+		if t, ok := pkgTargets[app.Type]; ok && target == "" {
+			// When the file path is empty, we will overwrite it with the pre-defined value.
+			target = t
+		}
+		results = append(results, types.Result{
+			Target:   target,
+			Class:    types.ClassLicense,
+			Licenses: langLicenses,
+		})
+	}
+
+	// License - file header or license file
+	var fileLicenses []types.DetectedLicense
+	for _, license := range detail.Licenses {
+		for _, finding := range license.Findings {
+			category, severity := scanner.Scan(finding.Name)
+			fileLicenses = append(fileLicenses, types.DetectedLicense{
+				Severity:   severity,
+				Category:   category,
+				FilePath:   license.FilePath,
+				Name:       finding.Name,
+				Confidence: finding.Confidence,
+				Link:       finding.Link,
+			})
+
+		}
+	}
+	results = append(results, types.Result{
+		Target:   "Loose File License(s)",
+		Class:    types.ClassLicenseFile,
+		Licenses: fileLicenses,
+	})
+
 	return results
 }
 

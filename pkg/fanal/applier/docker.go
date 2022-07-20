@@ -93,7 +93,7 @@ func ApplyLayers(layers []types.BlobInfo) types.ArtifactDetail {
 
 	for _, layer := range layers {
 		for _, opqDir := range layer.OpaqueDirs {
-			opqDir = strings.TrimSuffix(opqDir, sep)  //this is necessary so that an empty element is not contribute into the array of the DeleteByString function
+			opqDir = strings.TrimSuffix(opqDir, sep)  // this is necessary so that an empty element is not contribute into the array of the DeleteByString function
 			_ = nestedMap.DeleteByString(opqDir, sep) // nolint
 		}
 		for _, whFile := range layer.WhiteoutFiles {
@@ -191,8 +191,8 @@ func ApplyLayers(layers []types.BlobInfo) types.ArtifactDetail {
 		// e.g.
 		//	"adduser" => {"GPL-2"}
 		//  "openssl" => {"MIT", "BSD"}
-		dpkgLicenses[license.Package] = lo.Map(license.Findings, func(finding types.LicenseFinding, _ int) string {
-			return finding.License
+		dpkgLicenses[license.PkgName] = lo.Map(license.Findings, func(finding types.LicenseFinding, _ int) string {
+			return finding.Name
 		})
 		// Remove this license in the merged result as it is merged into the package information.
 		return true

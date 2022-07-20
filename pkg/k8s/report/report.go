@@ -83,6 +83,10 @@ func (r Report) Failed() bool {
 	return false
 }
 
+func (r Report) empty() bool {
+	return len(r.Misconfigurations) == 0 && len(r.Vulnerabilities) == 0
+}
+
 func (r Report) consolidate() ConsolidatedReport {
 	consolidated := ConsolidatedReport{
 		SchemaVersion: r.SchemaVersion,
@@ -124,30 +128,38 @@ type Writer interface {
 }
 
 // Write writes the results in the give format
-func Write(report Report, option Option, securityChecks []string) error {
+func Write(report Report, option Option, securityChecks []string, showEmpty bool) error {
 	switch option.Format {
 	case jsonFormat:
 		jwriter := JSONWriter{Output: option.Output, Report: option.Report}
 		return jwriter.Write(report)
 	case tableFormat:
 		workloadReport, rbacReport := separateMisConfigRoleAssessment(report, securityChecks)
-		WorkloadWriter := &TableWriter{
-			Output:        option.Output,
-			Report:        option.Report,
-			Severities:    option.Severities,
-			ColumnHeading: ColumnHeading(securityChecks, WorkloadColumns()),
+
+		if !workloadReport.empty() || showEmpty {
+			WorkloadWriter := &TableWriter{
+				Output:        option.Output,
+				Report:        option.Report,
+				Severities:    option.Severities,
+				ColumnHeading: ColumnHeading(securityChecks, WorkloadColumns()),
+			}
+			err := WorkloadWriter.Write(workloadReport)
+			if err != nil {
+				return err
+			}
 		}
-		err := WorkloadWriter.Write(workloadReport)
-		if err != nil {
-			return err
+
+		if !rbacReport.empty() || showEmpty {
+			rbacWriter := &TableWriter{
+				Output:        option.Output,
+				Report:        option.Report,
+				Severities:    option.Severities,
+				ColumnHeading: ColumnHeading(securityChecks, RoleColumns()),
+			}
+			return rbacWriter.Write(rbacReport)
 		}
-		rbacWriter := &TableWriter{
-			Output:        option.Output,
-			Report:        option.Report,
-			Severities:    option.Severities,
-			ColumnHeading: ColumnHeading(securityChecks, RoleColumns()),
-		}
-		return rbacWriter.Write(rbacReport)
+
+		return nil
 	default:
 		return xerrors.Errorf(`unknown format %q. Use "json" or "table"`, option.Format)
 	}

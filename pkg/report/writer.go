@@ -5,6 +5,8 @@ import (
 	"strings"
 	"sync"
 
+	"github.com/aquasecurity/trivy/pkg/report/table"
+
 	"golang.org/x/xerrors"
 
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
@@ -44,6 +46,10 @@ type Option struct {
 	// For misconfigurations
 	IncludeNonFailures bool
 	Trace              bool
+
+	// For licenses
+	LicenseRiskThreshold int
+	IgnoredLicenses      []string
 }
 
 // Write writes the result to output, format as passed in argument
@@ -51,13 +57,15 @@ func Write(report types.Report, option Option) error {
 	var writer Writer
 	switch option.Format {
 	case FormatTable:
-		writer = &TableWriter{
-			Output:             option.Output,
-			Severities:         option.Severities,
-			Tree:               option.Tree,
-			ShowMessageOnce:    &sync.Once{},
-			IncludeNonFailures: option.IncludeNonFailures,
-			Trace:              option.Trace,
+		writer = &table.Writer{
+			Output:               option.Output,
+			Severities:           option.Severities,
+			Tree:                 option.Tree,
+			ShowMessageOnce:      &sync.Once{},
+			IncludeNonFailures:   option.IncludeNonFailures,
+			Trace:                option.Trace,
+			LicenseRiskThreshold: option.LicenseRiskThreshold,
+			IgnoredLicenses:      option.IgnoredLicenses,
 		}
 	case FormatJSON:
 		writer = &JSONWriter{Output: option.Output}
