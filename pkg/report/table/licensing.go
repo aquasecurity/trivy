@@ -55,6 +55,9 @@ func (r pkgLicenseRenderer) Render() string {
 }
 
 func (r pkgLicenseRenderer) setHeaders() {
+	if r.result.IsEmpty() {
+		return
+	}
 	header := []string{"Package", "License", "Classification", "Severity"}
 	r.tableWriter.SetHeaders(header...)
 }
@@ -125,6 +128,9 @@ func (r fileLicenseRenderer) Render() string {
 }
 
 func (r fileLicenseRenderer) setHeaders() {
+	if r.result.IsEmpty() {
+		return
+	}
 	header := []string{"Classification", "Severity", "License", "File Location"}
 	r.tableWriter.SetHeaders(header...)
 }
