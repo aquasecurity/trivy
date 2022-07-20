@@ -77,8 +77,10 @@ func (a licenseFileAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisI
 		filePath = fmt.Sprintf("/%s", filePath)
 	}
 
-	lf := licensing.Classify(filePath, content)
-	if len(lf.Findings) == 0 {
+	lf, err := licensing.FullClassify(filePath, content)
+	if err != nil {
+		return nil, xerrors.Errorf("license classification error: %w", err)
+	} else if len(lf.Findings) == 0 {
 		return nil, nil
 	}
 
