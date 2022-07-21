@@ -5,6 +5,7 @@ import (
 	"strings"
 	"sync"
 
+	"github.com/aquasecurity/trivy/pkg/report/predicate"
 	"github.com/aquasecurity/trivy/pkg/report/table"
 
 	"golang.org/x/xerrors"
@@ -20,14 +21,15 @@ import (
 const (
 	SchemaVersion = 2
 
-	FormatTable     = "table"
-	FormatJSON      = "json"
-	FormatTemplate  = "template"
-	FormatSarif     = "sarif"
-	FormatCycloneDX = "cyclonedx"
-	FormatSPDX      = "spdx"
-	FormatSPDXJSON  = "spdx-json"
-	FormatGitHub    = "github"
+	FormatTable      = "table"
+	FormatJSON       = "json"
+	FormatTemplate   = "template"
+	FormatSarif      = "sarif"
+	FormatCycloneDX  = "cyclonedx"
+	FormatSPDX       = "spdx"
+	FormatSPDXJSON   = "spdx-json"
+	FormatGitHub     = "github"
+	FormatCosignVuln = "cosign-vuln"
 )
 
 var (
@@ -89,6 +91,8 @@ func Write(report types.Report, option Option) error {
 		}
 	case FormatSarif:
 		writer = SarifWriter{Output: option.Output, Version: option.AppVersion}
+	case FormatCosignVuln:
+		writer = predicate.NewWriter(option.Output, option.AppVersion)
 	default:
 		return xerrors.Errorf("unknown format: %v", option.Format)
 	}

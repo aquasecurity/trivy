@@ -26,7 +26,7 @@ var (
 		ConfigName: "format",
 		Shorthand:  "f",
 		Value:      report.FormatTable,
-		Usage:      "format (table, json, sarif, template, cyclonedx, spdx, spdx-json, github)",
+		Usage:      "format (table, json, sarif, template, cyclonedx, spdx, spdx-json, github, cosign-vuln)",
 	}
 	ReportFormatFlag = Flag{
 		Name:       "report",
