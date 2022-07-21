@@ -130,7 +130,7 @@ func bind(cmd *cobra.Command, flag *Flag) error {
 		}
 	}
 	// We don't use viper.AutomaticEnv, so we need to add a prefix manually here.
-	if err := viper.BindEnv(flag.ConfigName, strings.ToUpper("trivy_"+flag.Name)); err != nil {
+	if err := viper.BindEnv(flag.ConfigName, strings.ToUpper("trivy_"+strings.ReplaceAll(flag.Name, "-", "_"))); err != nil {
 		return err
 	}
 
@@ -202,9 +202,9 @@ func (f *Flags) groups() []FlagGroup {
 	if f.SecretFlagGroup != nil {
 		groups = append(groups, f.SecretFlagGroup)
 	}
-	if f.LicenseFlagGroup != nil {
-		groups = append(groups, f.LicenseFlagGroup)
-	}
+	//if f.LicenseFlagGroup != nil {
+	//	groups = append(groups, f.LicenseFlagGroup)
+	//}
 	if f.K8sFlagGroup != nil {
 		groups = append(groups, f.K8sFlagGroup)
 	}
