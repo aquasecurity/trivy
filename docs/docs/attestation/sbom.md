@@ -13,8 +13,8 @@ Cosign can generate key pairs and use them for signing and verification. Read mo
 In the following example, Trivy generates an SBOM in the spdx format, and then Cosign attaches an attestation of the SBOM to a container image with a local key pair.
 
 ```
-$ trivy image --format spdx -o predicate <IMAGE>
-$ cosign attest --key /path/to/cosign.key --type spdx --predicate predicate <IMAGE>
+$ trivy image --format spdx -o sbom.spdx <IMAGE>
+$ cosign attest --key /path/to/cosign.key --type spdx --predicate sbom.spdx <IMAGE>
 ```
 
 Then, you can verify attestations on the image.
@@ -27,12 +27,12 @@ You can also create attestations of other formatted SBOM.
 
 ```
 # spdx-json
-$ trivy image --format spdx-json -o predicate <IMAGE>
-$ cosign attest --key /path/to/cosign.key --type spdx --predicate predicate <IMAGE>
+$ trivy image --format spdx-json -o sbom.spdx.json <IMAGE>
+$ cosign attest --key /path/to/cosign.key --type spdx --predicate sbom.spdx.json <IMAGE>
 
 # cyclonedx
-$ trivy image --format cyclonedx -o predicate <IMAGE>
-$ cosign attest --key /path/to/cosign.key --type https://cyclonedx.org/schema --predicate predicate <IMAGE>
+$ trivy image --format cyclonedx -o sbom.cdx.json <IMAGE>
+$ cosign attest --key /path/to/cosign.key --type https://cyclonedx.org/schema --predicate sbom.cdx.json <IMAGE>
 ```
 
 ## Keyless signing
@@ -40,8 +40,8 @@ $ cosign attest --key /path/to/cosign.key --type https://cyclonedx.org/schema --
 You can use Cosign to sign without keys by authenticating with an OpenID Connect protocol supported by sigstore (Google, GitHub, or Microsoft).
 
 ```
-$ trivy image --format spdx -o predicate <IMAGE>
-$ COSIGN_EXPERIMENTAL=1 cosign attest --type spdx --predicate predicate <IMAGE>
+$ trivy image --format spdx -o sbom.spdx <IMAGE>
+$ COSIGN_EXPERIMENTAL=1 cosign attest --type spdx --predicate sbom.spdx <IMAGE>
 ```
 
 You can verify attestations.
