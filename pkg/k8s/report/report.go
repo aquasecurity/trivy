@@ -14,6 +14,7 @@ import (
 	"github.com/aquasecurity/trivy-kubernetes/pkg/artifacts"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 
+	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
 
@@ -129,6 +130,8 @@ type Writer interface {
 
 // Write writes the results in the give format
 func Write(report Report, option Option, securityChecks []string, showEmpty bool) error {
+	report.printErrors()
+
 	switch option.Format {
 	case jsonFormat:
 		jwriter := JSONWriter{Output: option.Output, Report: option.Report}
@@ -221,20 +224,16 @@ func CreateResource(artifact *artifacts.Artifact, report types.Report, err error
 	return r
 }
 
-func (r Report) GetErrors() []string {
-	var errors []string
-
+func (r Report) printErrors() {
 	for _, resource := range r.Vulnerabilities {
 		if resource.Error != "" {
-			errors = append(errors, resource.Error)
+			log.Logger.Warnf("Error during vulnerabilities scan: %s", resource.Error)
 		}
 	}
 
 	for _, resource := range r.Misconfigurations {
 		if resource.Error != "" {
-			errors = append(errors, resource.Error)
+			log.Logger.Warnf("Error during misconfiguration scan: %s", resource.Error)
 		}
 	}
-
-	return errors
 }

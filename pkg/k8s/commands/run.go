@@ -72,10 +72,6 @@ func run(ctx context.Context, opts flag.Options, cluster string, artifacts []*ar
 		return xerrors.Errorf("k8s scan error: %w", err)
 	}
 
-	for _, err := range r.GetErrors() {
-		log.Logger.Warnf("Failures during scan: %s", err)
-	}
-
 	if err := report.Write(r, report.Option{
 		Format:     opts.Format,
 		Report:     opts.ReportFormat,
