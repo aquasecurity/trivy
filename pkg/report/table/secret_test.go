@@ -20,11 +20,6 @@ func TestSecretRenderer(t *testing.T) {
 		want  string
 	}{
 		{
-			name:  "no results",
-			input: nil,
-			want:  "",
-		},
-		{
 			name: "single line",
 			input: []ftypes.SecretFinding{
 				{
