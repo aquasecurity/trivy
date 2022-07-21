@@ -2,6 +2,7 @@ package image
 
 import (
 	"context"
+	"strings"
 
 	"github.com/google/go-containerregistry/pkg/name"
 	v1 "github.com/google/go-containerregistry/pkg/v1"
@@ -60,7 +61,12 @@ func NewContainerImage(ctx context.Context, imageName string, option types.Docke
 	if option.NonSSL {
 		nameOpts = append(nameOpts, name.Insecure)
 	}
-	ref, err := name.ParseReference(imageName, nameOpts...)
+
+	// Docker image name can only contain lowercase letters
+	// Github user can contain upper case in username
+	// Users mistakenly use it in the image name
+	// We need to transform image name to lowercase.
+	ref, err := name.ParseReference(strings.ToLower(imageName), nameOpts...)
 	if err != nil {
 		return nil, func() {}, xerrors.Errorf("failed to parse the image name: %w", err)
 	}

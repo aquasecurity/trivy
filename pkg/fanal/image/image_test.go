@@ -159,7 +159,7 @@ func TestNewDockerImage(t *testing.T) {
 		{
 			name: "happy path with Docker Registry",
 			args: args{
-				imageName: fmt.Sprintf("%s/library/alpine:3.10", serverAddr),
+				imageName: fmt.Sprintf("%s/library/Alpine:3.10", serverAddr),
 			},
 			wantID:       "sha256:af341ccd2df8b0e2d67cf8dd32e087bfda4e5756ebd1c76bbf3efa0dc246590e",
 			wantLayerIDs: []string{"sha256:531743b7098cb2aaf615641007a129173f63ed86ca32fe7b5a246a1c47286028"},
