@@ -227,13 +227,13 @@ func CreateResource(artifact *artifacts.Artifact, report types.Report, err error
 func (r Report) printErrors() {
 	for _, resource := range r.Vulnerabilities {
 		if resource.Error != "" {
-			log.Logger.Warnf("Error during vulnerabilities scan: %s", resource.Error)
+			log.Logger.Errorf("Error during vulnerabilities scan: %s", resource.Error)
 		}
 	}
 
 	for _, resource := range r.Misconfigurations {
 		if resource.Error != "" {
-			log.Logger.Warnf("Error during misconfiguration scan: %s", resource.Error)
+			log.Logger.Errorf("Error during misconfiguration scan: %s", resource.Error)
 		}
 	}
 }
