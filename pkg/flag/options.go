@@ -202,9 +202,9 @@ func (f *Flags) groups() []FlagGroup {
 	if f.SecretFlagGroup != nil {
 		groups = append(groups, f.SecretFlagGroup)
 	}
-	//if f.LicenseFlagGroup != nil {
-	//	groups = append(groups, f.LicenseFlagGroup)
-	//}
+	if f.LicenseFlagGroup != nil {
+		groups = append(groups, f.LicenseFlagGroup)
+	}
 	if f.K8sFlagGroup != nil {
 		groups = append(groups, f.K8sFlagGroup)
 	}
