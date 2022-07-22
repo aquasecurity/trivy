@@ -9,8 +9,6 @@ import (
 	"regexp"
 	"strings"
 
-	classifier "github.com/google/licenseclassifier/v2"
-	"github.com/google/licenseclassifier/v2/assets"
 	"github.com/samber/lo"
 	"golang.org/x/exp/slices"
 	"golang.org/x/xerrors"
@@ -18,24 +16,18 @@ import (
 	dio "github.com/aquasecurity/go-dep-parser/pkg/io"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
+	"github.com/aquasecurity/trivy/pkg/licensing"
 )
 
 func init() {
 	analyzer.RegisterAnalyzer(&dpkgLicenseAnalyzer{})
-
-	var err error
-	licenseClassifier, err = assets.DefaultClassifier()
-	if err != nil {
-		panic(err)
-	}
 }
 
 var (
 	dpkgLicenseAnalyzerVersion = 1
 
-	licenseClassifier *classifier.Classifier
-
 	commonLicenseReferenceRegexp = regexp.MustCompile(`/?usr/share/common-licenses/([0-9A-Za-z_.+-]+[0-9A-Za-z+])`)
+	licenseSplitRegexp           = regexp.MustCompile("(,?[_ ]+or[_ ]+)|(,?[_ ]+and[_ ])|(,[ ]*)")
 )
 
 // dpkgLicenseAnalyzer parses copyright files and detect licenses
@@ -43,16 +35,27 @@ type dpkgLicenseAnalyzer struct{}
 
 // Analyze parses /usr/share/doc/*/copyright files
 func (a dpkgLicenseAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInput) (*analyzer.AnalysisResult, error) {
-	licenses, err := a.parseCopyright(input.Content)
+	findings, err := a.parseCopyright(input.Content)
 	if err != nil {
 		return nil, xerrors.Errorf("parse copyright %s: %w", input.FilePath, err)
-	} else if len(licenses) == 0 {
-		return nil, nil
 	}
 
-	findings := lo.Map(licenses, func(license string, _ int) types.LicenseFinding {
-		return types.LicenseFinding{License: license}
-	})
+	// If licenses are not found, fallback to the classifier
+	if len(findings) == 0 {
+		// Rewind the reader to the beginning of the stream after saving
+		if _, err = input.Content.Seek(0, io.SeekStart); err != nil {
+			return nil, xerrors.Errorf("seek error: %w", err)
+		}
+
+		findings, err = licensing.Classify(input.Content)
+		if err != nil {
+			return nil, xerrors.Errorf("license classification error: %w", err)
+		}
+	}
+
+	if len(findings) == 0 {
+		return nil, nil
+	}
 
 	// e.g. "usr/share/doc/zlib1g/copyright" => "zlib1g"
 	pkgName := strings.Split(input.FilePath, "/")[3]
@@ -63,14 +66,14 @@ func (a dpkgLicenseAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisI
 				Type:     types.LicenseTypeDpkg,
 				FilePath: input.FilePath,
 				Findings: findings,
-				Package:  pkgName,
+				PkgName:  pkgName,
 			},
 		},
 	}, nil
 }
 
 // parseCopyright parses /usr/share/doc/*/copyright files
-func (a dpkgLicenseAnalyzer) parseCopyright(r dio.ReadSeekerAt) ([]string, error) {
+func (a dpkgLicenseAnalyzer) parseCopyright(r dio.ReadSeekerAt) ([]types.LicenseFinding, error) {
 	scanner := bufio.NewScanner(r)
 	var licenses []string
 	for scanner.Scan() {
@@ -81,41 +84,37 @@ func (a dpkgLicenseAnalyzer) parseCopyright(r dio.ReadSeekerAt) ([]string, error
 			// Machine-readable format
 			// cf. https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/#:~:text=The%20debian%2Fcopyright%20file%20must,in%20the%20Debian%20Policy%20Manual.
 			l := strings.TrimSpace(line[8:])
-			if len(l) > 0 && !slices.Contains(licenses, l) {
-				licenses = append(licenses, l)
+			if len(l) > 0 {
+				// Split licenses without considering "and"/"or"
+				// examples:
+				// 'GPL-1+,GPL-2' => {"GPL-1", "GPL-2"}
+				// 'GPL-1+ or Artistic or Artistic-dist' => {"GPL-1", "Artistic", "Artistic-dist"}
+				// 'LGPLv3+_or_GPLv2+' => {"LGPLv3", "GPLv2"}
+				// 'BSD-3-CLAUSE and GPL-2' => {"BSD-3-CLAUSE", "GPL-2"}
+				// 'GPL-1+ or Artistic, and BSD-4-clause-POWERDOG' => {"GPL-1+", "Artistic", "BSD-4-clause-POWERDOG"}
+				for _, lic := range licenseSplitRegexp.Split(l, -1) {
+					lic = licensing.Normalize(lic)
+					if !slices.Contains(licenses, lic) {
+						licenses = append(licenses, lic)
+					}
+				}
 			}
 		case strings.Contains(line, "/usr/share/common-licenses/"):
 			// Common license pattern
 			license := commonLicenseReferenceRegexp.FindStringSubmatch(line)
-			if len(license) == 2 && !slices.Contains(licenses, license[1]) {
-				licenses = append(licenses, license[1])
+			if len(license) == 2 {
+				l := licensing.Normalize(license[1])
+				if !slices.Contains(licenses, l) {
+					licenses = append(licenses, l)
+				}
 			}
 		}
 	}
 
-	// If licenses are already found, they will be returned.
-	if len(licenses) > 0 {
-		return licenses, nil
-	}
+	return lo.Map(licenses, func(license string, _ int) types.LicenseFinding {
+		return types.LicenseFinding{Name: license}
+	}), nil
 
-	// Rewind the reader to the beginning of the stream after saving
-	if _, err := r.Seek(0, io.SeekStart); err != nil {
-		return nil, xerrors.Errorf("seek error: %w", err)
-	}
-
-	// Use 'github.com/google/licenseclassifier' to find licenses
-	result, err := licenseClassifier.MatchFrom(r)
-	if err != nil {
-		return nil, xerrors.Errorf("unable to match licenses: %w", err)
-	}
-
-	for _, match := range result.Matches {
-		if match.Confidence > 0.9 && !slices.Contains(licenses, match.Name) {
-			licenses = append(licenses, match.Name)
-		}
-	}
-
-	return licenses, nil
 }
 
 func (a dpkgLicenseAnalyzer) Required(filePath string, _ os.FileInfo) bool {

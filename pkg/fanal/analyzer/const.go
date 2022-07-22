@@ -56,7 +56,8 @@ const (
 	TypePnpm       Type = "pnpm"
 
 	// .NET
-	TypeNuget Type = "nuget"
+	TypeNuget      Type = "nuget"
+	TypeDotNetDeps Type = "dotnet-deps"
 
 	// Python
 	TypePythonPkg Type = "python-pkg"
@@ -84,6 +85,11 @@ const (
 	TypeHelm           Type = "helm"
 
 	// ========
+	// License
+	// ========
+	TypeLicenseFile Type = "license-file"
+
+	// ========
 	// Secrets
 	// ========
 	TypeSecret Type = "secret"
@@ -97,19 +103,22 @@ const (
 
 var (
 	// TypeOSes has all OS-related analyzers
-	TypeOSes = []Type{TypeAlpine, TypeAmazon, TypeDebian, TypePhoton, TypeCentOS,
+	TypeOSes = []Type{
+		TypeAlpine, TypeAmazon, TypeDebian, TypePhoton, TypeCentOS,
 		TypeRocky, TypeAlma, TypeFedora, TypeOracle, TypeRedHatBase, TypeSUSE, TypeUbuntu,
 		TypeApk, TypeDpkg, TypeRpm,
 	}
 
 	// TypeLanguages has all language analyzers
-	TypeLanguages = []Type{TypeBundler, TypeGemSpec, TypeCargo, TypeComposer, TypeJar, TypePom,
+	TypeLanguages = []Type{
+		TypeBundler, TypeGemSpec, TypeCargo, TypeComposer, TypeJar, TypePom,
 		TypeNpmPkgLock, TypeNodePkg, TypeYarn, TypePnpm, TypeNuget, TypePythonPkg, TypePip, TypePipenv,
 		TypePoetry, TypeGoBinary, TypeGoMod,
 	}
 
 	// TypeLockfiles has all lock file analyzers
-	TypeLockfiles = []Type{TypeBundler, TypeNpmPkgLock, TypeYarn,
+	TypeLockfiles = []Type{
+		TypeBundler, TypeNpmPkgLock, TypeYarn,
 		TypePnpm, TypePip, TypePipenv, TypePoetry, TypeGoMod, TypePom,
 	}
 

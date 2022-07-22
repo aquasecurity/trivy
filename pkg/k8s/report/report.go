@@ -14,6 +14,7 @@ import (
 	"github.com/aquasecurity/trivy-kubernetes/pkg/artifacts"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 
+	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
 
@@ -83,6 +84,10 @@ func (r Report) Failed() bool {
 	return false
 }
 
+func (r Report) empty() bool {
+	return len(r.Misconfigurations) == 0 && len(r.Vulnerabilities) == 0
+}
+
 func (r Report) consolidate() ConsolidatedReport {
 	consolidated := ConsolidatedReport{
 		SchemaVersion: r.SchemaVersion,
@@ -124,30 +129,40 @@ type Writer interface {
 }
 
 // Write writes the results in the give format
-func Write(report Report, option Option, securityChecks []string) error {
+func Write(report Report, option Option, securityChecks []string, showEmpty bool) error {
+	report.printErrors()
+
 	switch option.Format {
 	case jsonFormat:
 		jwriter := JSONWriter{Output: option.Output, Report: option.Report}
 		return jwriter.Write(report)
 	case tableFormat:
 		workloadReport, rbacReport := separateMisConfigRoleAssessment(report, securityChecks)
-		WorkloadWriter := &TableWriter{
-			Output:        option.Output,
-			Report:        option.Report,
-			Severities:    option.Severities,
-			ColumnHeading: ColumnHeading(securityChecks, WorkloadColumns()),
+
+		if !workloadReport.empty() || showEmpty {
+			WorkloadWriter := &TableWriter{
+				Output:        option.Output,
+				Report:        option.Report,
+				Severities:    option.Severities,
+				ColumnHeading: ColumnHeading(securityChecks, WorkloadColumns()),
+			}
+			err := WorkloadWriter.Write(workloadReport)
+			if err != nil {
+				return err
+			}
 		}
-		err := WorkloadWriter.Write(workloadReport)
-		if err != nil {
-			return err
+
+		if !rbacReport.empty() || showEmpty {
+			rbacWriter := &TableWriter{
+				Output:        option.Output,
+				Report:        option.Report,
+				Severities:    option.Severities,
+				ColumnHeading: ColumnHeading(securityChecks, RoleColumns()),
+			}
+			return rbacWriter.Write(rbacReport)
 		}
-		rbacWriter := &TableWriter{
-			Output:        option.Output,
-			Report:        option.Report,
-			Severities:    option.Severities,
-			ColumnHeading: ColumnHeading(securityChecks, RoleColumns()),
-		}
-		return rbacWriter.Write(rbacReport)
+
+		return nil
 	default:
 		return xerrors.Errorf(`unknown format %q. Use "json" or "table"`, option.Format)
 	}
@@ -207,4 +222,18 @@ func CreateResource(artifact *artifacts.Artifact, report types.Report, err error
 	}
 
 	return r
+}
+
+func (r Report) printErrors() {
+	for _, resource := range r.Vulnerabilities {
+		if resource.Error != "" {
+			log.Logger.Errorf("Error during vulnerabilities scan: %s", resource.Error)
+		}
+	}
+
+	for _, resource := range r.Misconfigurations {
+		if resource.Error != "" {
+			log.Logger.Errorf("Error during misconfiguration scan: %s", resource.Error)
+		}
+	}
 }

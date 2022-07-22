@@ -4,11 +4,10 @@ import (
 	"io"
 	"sync"
 
-	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
-
 	"golang.org/x/xerrors"
 
-	pkgReport "github.com/aquasecurity/trivy/pkg/report"
+	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
+	pkgReport "github.com/aquasecurity/trivy/pkg/report/table"
 )
 
 type TableWriter struct {
@@ -37,7 +36,7 @@ func RoleColumns() []string {
 func (tw TableWriter) Write(report Report) error {
 	switch tw.Report {
 	case allReport:
-		t := pkgReport.TableWriter{Output: tw.Output, Severities: tw.Severities, ShowMessageOnce: &sync.Once{}}
+		t := pkgReport.Writer{Output: tw.Output, Severities: tw.Severities, ShowMessageOnce: &sync.Once{}}
 		for _, r := range report.Vulnerabilities {
 			if r.Report.Results.Failed() {
 				err := t.Write(r.Report)

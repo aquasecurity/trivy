@@ -15,6 +15,6 @@ type SecretFinding struct {
 	Title     string
 	StartLine int
 	EndLine   int
-	Code      Code `json:"-"`
+	Code      Code
 	Match     string
 }

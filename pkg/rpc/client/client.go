@@ -61,8 +61,14 @@ func NewScanner(scannerOptions ScannerOption, opts ...Option) Scanner {
 }
 
 // Scan scans the image
-func (s Scanner) Scan(ctx context.Context, target, artifactKey string, blobKeys []string, options types.ScanOptions) (types.Results, *ftypes.OS, error) {
+func (s Scanner) Scan(ctx context.Context, target, artifactKey string, blobKeys []string, opts types.ScanOptions) (types.Results, *ftypes.OS, error) {
 	ctx = WithCustomHeaders(ctx, s.customHeaders)
+
+	// Convert to the rpc struct
+	licenseCategories := map[string]*rpc.License{}
+	for category, names := range opts.LicenseCategories {
+		licenseCategories[string(category)] = &rpc.License{Names: names}
+	}
 
 	var res *rpc.ScanResponse
 	err := r.Retry(func() error {
@@ -72,9 +78,10 @@ func (s Scanner) Scan(ctx context.Context, target, artifactKey string, blobKeys 
 			ArtifactId: artifactKey,
 			BlobIds:    blobKeys,
 			Options: &rpc.ScanOptions{
-				VulnType:        options.VulnType,
-				SecurityChecks:  options.SecurityChecks,
-				ListAllPackages: options.ListAllPackages,
+				VulnType:          opts.VulnType,
+				SecurityChecks:    opts.SecurityChecks,
+				ListAllPackages:   opts.ListAllPackages,
+				LicenseCategories: licenseCategories,
 			},
 		})
 		return err

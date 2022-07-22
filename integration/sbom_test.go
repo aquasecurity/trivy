@@ -1,10 +1,8 @@
 //go:build integration
-// +build integration
 
 package integration
 
 import (
-	"io"
 	"os"
 	"path/filepath"
 	"testing"
@@ -12,8 +10,6 @@ import (
 	cdx "github.com/CycloneDX/cyclonedx-go"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-
-	"github.com/aquasecurity/trivy/pkg/commands"
 )
 
 func TestCycloneDX(t *testing.T) {
@@ -53,7 +49,7 @@ func TestCycloneDX(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			osArgs := []string{
-				"trivy", "--cache-dir", cacheDir, "sbom", "--skip-db-update", "--format", tt.args.format,
+				"--cache-dir", cacheDir, "sbom", "-q", "--skip-db-update", "--format", tt.args.format,
 			}
 
 			// Setup the output file
@@ -65,12 +61,9 @@ func TestCycloneDX(t *testing.T) {
 			osArgs = append(osArgs, "--output", outputFile)
 			osArgs = append(osArgs, tt.args.input)
 
-			// Setup CLI App
-			app := commands.NewApp("dev")
-			app.Writer = io.Discard
-
 			// Run "trivy sbom"
-			assert.Nil(t, app.Run(osArgs))
+			err := execute(osArgs)
+			assert.NoError(t, err)
 
 			// Compare want and got
 			want := decodeCycloneDX(t, tt.golden)

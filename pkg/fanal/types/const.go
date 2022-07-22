@@ -13,6 +13,7 @@ const (
 	Composer   = "composer"
 	Npm        = "npm"
 	NuGet      = "nuget"
+	DotNetCore = "dotnet-core"
 	Pip        = "pip"
 	Pipenv     = "pipenv"
 	Poetry     = "poetry"
@@ -36,6 +37,9 @@ const (
 	Ansible        = "ansible"
 	Helm           = "helm"
 	Rbac           = "rbac"
+
+	// Licensing
+	License = "license"
 
 	// Language-specific file names
 	NuGetPkgsLock   = "packages.lock.json"
