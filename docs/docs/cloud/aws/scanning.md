@@ -21,8 +21,6 @@ $ trivy aws --region us-east-1
 
 You can allow Trivy to determine the AWS region etc. by using the standard AWS configuration files and environment variables. The `--region` flag overrides these.
 
-// TODO: Add an image for this!
-
 ![AWS Summary Report](../../../imgs/trivy-aws.png)
 
 The summary view is the default when scanning multiple services.
