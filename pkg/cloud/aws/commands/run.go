@@ -166,6 +166,7 @@ func Run(ctx context.Context, opt flag.Options) error {
 			return err
 		}
 		for service, results := range cachedReport.Results {
+			log.Logger.Debugf("Adding cached results for '%s'...", service)
 			r.AddResultForService(service, results.Result, results.CreationTime)
 		}
 		reportOptions.FromCache = true

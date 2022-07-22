@@ -10,9 +10,12 @@ import (
 	"github.com/aquasecurity/trivy/pkg/types"
 )
 
-func convertResults(results scan.Results, provider string) map[string]ResultAtTime {
+func convertResults(results scan.Results, provider string, scoped []string) map[string]ResultAtTime {
 	convertedResults := make(map[string]ResultAtTime)
 	resultsByService := make(map[string]scan.Results)
+	for _, service := range scoped {
+		resultsByService[service] = nil
+	}
 	for _, result := range results {
 		resultsByService[result.Rule().Service] = append(resultsByService[result.Rule().Service], result)
 	}

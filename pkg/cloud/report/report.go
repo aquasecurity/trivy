@@ -55,7 +55,7 @@ func New(provider, accountID, region string, defsecResults scan.Results, scopedS
 	return &Report{
 		Provider:        provider,
 		AccountID:       accountID,
-		Results:         convertResults(defsecResults, provider),
+		Results:         convertResults(defsecResults, provider, scopedServices),
 		ServicesInScope: scopedServices,
 		Region:          region,
 	}
@@ -116,6 +116,11 @@ func (r *Report) AddResultForService(service string, result types.Result, creati
 	r.Results[service] = ResultAtTime{
 		Result:       result,
 		CreationTime: creation,
+	}
+	for _, exists := range r.ServicesInScope {
+		if exists == service {
+			return
+		}
 	}
 	r.ServicesInScope = append(r.ServicesInScope, service)
 }
