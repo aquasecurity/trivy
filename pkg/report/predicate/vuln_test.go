@@ -4,6 +4,7 @@ import (
 	"bytes"
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/vulnerability"
+	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	reportCosignVuln "github.com/aquasecurity/trivy/pkg/report/predicate"
 	fake "k8s.io/utils/clock/testing"
 	"time"
@@ -53,37 +54,35 @@ func TestWriter_Write(t *testing.T) {
 						URI:     "",
 						Version: "",
 					},
-					// TODO:
-					//Result: nil,
-				},
-				Metadata: attestation.Metadata{
-					ScanStartedOn:  time.Date(2022, time.July, 22, 12, 20, 30, 5, time.UTC),
-					ScanFinishedOn: time.Date(2022, time.July, 22, 12, 20, 30, 5, time.UTC),
-				},
-			},
-			wantResult: types.Report{
-				SchemaVersion: 2,
-				ArtifactName:  "alpine:3.14",
-				ArtifactType:  "",
-				Metadata:      types.Metadata{},
-				Results: []types.Result{
-					{
-						Target: "foojson",
-						Vulnerabilities: []types.DetectedVulnerability{
+					Result: map[string]interface{}{
+						"SchemaVersion": 2,
+						"ArtifactName":  "alpine:3.14",
+						"ArtifactType":  ftypes.ArtifactType(""),
+						"Metadata":      types.Metadata{},
+						"Results": types.Results{
 							{
-								VulnerabilityID:  "CVE-2020-0001",
-								PkgName:          "foo",
-								InstalledVersion: "1.2.3",
-								FixedVersion:     "3.4.5",
-								PrimaryURL:       "https://avd.aquasec.com/nvd/cve-2020-0001",
-								Vulnerability: dbTypes.Vulnerability{
-									Title:       "foobar",
-									Description: "baz",
-									Severity:    "HIGH",
+								Target: "foojson",
+								Vulnerabilities: []types.DetectedVulnerability{
+									{
+										VulnerabilityID:  "CVE-2020-0001",
+										PkgName:          "foo",
+										InstalledVersion: "1.2.3",
+										FixedVersion:     "3.4.5",
+										PrimaryURL:       "https://avd.aquasec.com/nvd/cve-2020-0001",
+										Vulnerability: dbTypes.Vulnerability{
+											Title:       "foobar",
+											Description: "baz",
+											Severity:    "HIGH",
+										},
+									},
 								},
 							},
 						},
 					},
+				},
+				Metadata: attestation.Metadata{
+					ScanStartedOn:  time.Date(2022, time.July, 22, 12, 20, 30, 5, time.UTC),
+					ScanFinishedOn: time.Date(2022, time.July, 22, 12, 20, 30, 5, time.UTC),
 				},
 			},
 		},
@@ -123,7 +122,20 @@ func TestWriter_Write(t *testing.T) {
 			j, _ := json.Marshal(got.Scanner.Result)
 			_ = json.Unmarshal(j, &gotResult)
 
-			assert.Equal(t, tc.wantResult, gotResult, tc.name)
+			wantResult := types.Report{
+				SchemaVersion: tc.want.Scanner.Result["SchemaVersion"].(int),
+				ArtifactName:  tc.want.Scanner.Result["ArtifactName"].(string),
+				ArtifactType:  tc.want.Scanner.Result["ArtifactType"].(ftypes.ArtifactType),
+				Metadata:      tc.want.Scanner.Result["Metadata"].(types.Metadata),
+				Results:       tc.want.Scanner.Result["Results"].(types.Results),
+			}
+
+			assert.Equal(t, wantResult, gotResult, tc.name)
+
+			tc.want.Scanner.Result = nil
+			got.Scanner.Result = nil
+			assert.Equal(t, tc.want, got, tc.name)
+
 		})
 	}
 }
