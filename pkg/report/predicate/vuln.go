@@ -8,18 +8,40 @@ import (
 	"github.com/sigstore/cosign/pkg/cosign/attestation"
 	"golang.org/x/xerrors"
 	"io"
-	"time"
+	"k8s.io/utils/clock"
 )
+
+type options struct {
+	clock clock.Clock
+}
+
+type option func(*options)
+
+func WithClock(clock clock.Clock) option {
+	return func(opts *options) {
+		opts.clock = clock
+	}
+}
 
 type Writer struct {
 	output  io.Writer
 	version string
+	*options
 }
 
-func NewWriter(output io.Writer, version string) Writer {
+func NewWriter(output io.Writer, version string, opts ...option) Writer {
+	o := &options{
+		clock: clock.RealClock{},
+	}
+
+	for _, opt := range opts {
+		opt(o)
+	}
+
 	return Writer{
 		output:  output,
 		version: version,
+		options: o,
 	}
 }
 
@@ -38,7 +60,7 @@ func (w Writer) Write(report types.Report) error {
 		Result:  result,
 	}
 
-	now := time.Now()
+	now := w.options.clock.Now()
 	predicate.Metadata = attestation.Metadata{
 		ScanStartedOn:  now,
 		ScanFinishedOn: now,

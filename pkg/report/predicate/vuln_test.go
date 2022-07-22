@@ -4,6 +4,10 @@ import (
 	"bytes"
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/vulnerability"
+	reportCosignVuln "github.com/aquasecurity/trivy/pkg/report/predicate"
+	fake "k8s.io/utils/clock/testing"
+	"time"
+
 	"github.com/aquasecurity/trivy/pkg/types"
 	"github.com/sigstore/cosign/pkg/cosign/attestation"
 )
@@ -13,8 +17,6 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
-
-	"github.com/aquasecurity/trivy/pkg/report"
 )
 
 func TestWriter_Write(t *testing.T) {
@@ -45,20 +47,19 @@ func TestWriter_Write(t *testing.T) {
 			},
 			want: attestation.CosignVulnPredicate{
 				Scanner: attestation.Scanner{
-					URI:     "pkg:github/aquasecurity/trivy@test",
-					Version: "test",
+					URI:     "pkg:github/aquasecurity/trivy@dev",
+					Version: "dev",
 					DB: attestation.DB{
 						URI:     "",
 						Version: "",
 					},
-					//
+					// TODO:
 					//Result: nil,
 				},
-				// TODO: need test about time？
-				//Metadata: attestation.Metadata{
-				//	ScanStartedOn:  time.Time{},
-				//	ScanFinishedOn: time.Time{},
-				//},
+				Metadata: attestation.Metadata{
+					ScanStartedOn:  time.Date(2022, time.July, 22, 12, 20, 30, 5, time.UTC),
+					ScanFinishedOn: time.Date(2022, time.July, 22, 12, 20, 30, 5, time.UTC),
+				},
 			},
 			wantResult: types.Report{
 				SchemaVersion: 2,
@@ -90,9 +91,6 @@ func TestWriter_Write(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			jw := report.JSONWriter{}
-			jsonWritten := bytes.Buffer{}
-			jw.Output = &jsonWritten
 
 			inputResults := types.Report{
 				SchemaVersion: 2,
@@ -105,19 +103,21 @@ func TestWriter_Write(t *testing.T) {
 				},
 			}
 
-			err := report.Write(inputResults, report.Option{
-				AppVersion: "test", // TODO: is this ok?
-				Format:     "cosign-vuln",
-				Output:     &jsonWritten,
-			})
+			output := bytes.NewBuffer(nil)
+
+			clock := fake.NewFakeClock(time.Date(2022, 7, 22, 12, 20, 30, 5, time.UTC))
+			writer := reportCosignVuln.NewWriter(output, "dev", reportCosignVuln.WithClock(clock))
+
+			err := writer.Write(inputResults)
 			assert.NoError(t, err)
 
 			var got attestation.CosignVulnPredicate
-			err = json.Unmarshal(jsonWritten.Bytes(), &got)
+			err = json.Unmarshal(output.Bytes(), &got)
 			assert.NoError(t, err, "invalid json written")
 
 			assert.Equal(t, tc.want.Scanner.URI, got.Scanner.URI, tc.name)
 			assert.Equal(t, tc.want.Scanner.Version, got.Scanner.Version, tc.name)
+			assert.Equal(t, tc.want.Metadata, got.Metadata, tc.name)
 
 			var gotResult types.Report
 			j, _ := json.Marshal(got.Scanner.Result)
