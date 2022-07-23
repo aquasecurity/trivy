@@ -5,11 +5,11 @@ import (
 	"encoding/json"
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/vulnerability"
+	"github.com/aquasecurity/trivy/pkg/clock"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/report/predicate"
 	"github.com/aquasecurity/trivy/pkg/types"
 	"github.com/stretchr/testify/assert"
-	fake "k8s.io/utils/clock/testing"
 	"testing"
 	"time"
 )
@@ -94,8 +94,8 @@ func TestWriter_Write(t *testing.T) {
 
 			output := bytes.NewBuffer(nil)
 
-			clock := fake.NewFakeClock(time.Date(2022, 7, 22, 12, 20, 30, 5, time.UTC))
-			writer := predicate.NewWriter(output, "dev", predicate.WithClock(clock))
+			clock.SetFakeTime(t, time.Date(2022, 7, 22, 12, 20, 30, 5, time.UTC))
+			writer := predicate.NewWriter(output, "dev")
 
 			err := writer.Write(inputResults)
 			assert.NoError(t, err)

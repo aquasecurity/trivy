@@ -3,11 +3,11 @@ package predicate
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/aquasecurity/trivy/pkg/clock"
 	"github.com/aquasecurity/trivy/pkg/types"
 	"github.com/package-url/packageurl-go"
 	"golang.org/x/xerrors"
 	"io"
-	"k8s.io/utils/clock"
 	"time"
 )
 
@@ -41,37 +41,15 @@ type Metadata struct {
 	ScanFinishedOn time.Time `json:"scanFinishedOn"`
 }
 
-type options struct {
-	clock clock.Clock
-}
-
-type option func(*options)
-
-func WithClock(clock clock.Clock) option {
-	return func(opts *options) {
-		opts.clock = clock
-	}
-}
-
 type Writer struct {
 	output  io.Writer
 	version string
-	*options
 }
 
-func NewWriter(output io.Writer, version string, opts ...option) Writer {
-	o := &options{
-		clock: clock.RealClock{},
-	}
-
-	for _, opt := range opts {
-		opt(o)
-	}
-
+func NewWriter(output io.Writer, version string) Writer {
 	return Writer{
 		output:  output,
 		version: version,
-		options: o,
 	}
 }
 
@@ -86,7 +64,7 @@ func (w Writer) Write(report types.Report) error {
 		Result:  report,
 	}
 
-	now := w.options.clock.Now()
+	now := clock.Now()
 	predicate.Metadata = Metadata{
 		ScanStartedOn:  now,
 		ScanFinishedOn: now,
