@@ -1,10 +1,11 @@
 package spdx
 
 import (
+	"io"
+
 	"github.com/spdx/tools-golang/jsonsaver"
 	"github.com/spdx/tools-golang/tvsaver"
 	"golang.org/x/xerrors"
-	"io"
 
 	"github.com/aquasecurity/trivy/pkg/sbom/spdx"
 	"github.com/aquasecurity/trivy/pkg/types"

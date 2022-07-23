@@ -2,23 +2,23 @@ package spdx_test
 
 import (
 	"fmt"
-	"github.com/aquasecurity/trivy/pkg/report"
-	"github.com/stretchr/testify/assert"
 	"hash/fnv"
 	"testing"
 	"time"
 
+	v1 "github.com/google/go-containerregistry/pkg/v1"
+	"github.com/google/uuid"
 	"github.com/mitchellh/hashstructure/v2"
+	"github.com/spdx/tools-golang/spdx"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
+	fake "k8s.io/utils/clock/testing"
 
 	fos "github.com/aquasecurity/trivy/pkg/fanal/analyzer/os"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
+	"github.com/aquasecurity/trivy/pkg/report"
 	tspdx "github.com/aquasecurity/trivy/pkg/sbom/spdx"
 	"github.com/aquasecurity/trivy/pkg/types"
-	v1 "github.com/google/go-containerregistry/pkg/v1"
-	"github.com/google/uuid"
-	"github.com/spdx/tools-golang/spdx"
-	"github.com/stretchr/testify/require"
-	fake "k8s.io/utils/clock/testing"
 )
 
 func TestMarshaler_Marshal(t *testing.T) {
@@ -115,6 +115,13 @@ func TestMarshaler_Marshal(t *testing.T) {
 						PackageVersion:          "7.0.1",
 						PackageLicenseConcluded: "NONE",
 						PackageLicenseDeclared:  "NONE",
+						PackageExternalReferences: []*spdx.PackageExternalReference2_2{
+							{
+								Category: tspdx.CategoryPackageManager,
+								RefType:  tspdx.RefTypePurl,
+								Locator:  "pkg:gem/actioncontroller@7.0.1",
+							},
+						},
 					},
 					spdx.ElementID("826226d056ff30c0"): {
 						PackageSPDXIdentifier:   spdx.ElementID("826226d056ff30c0"),
@@ -122,6 +129,13 @@ func TestMarshaler_Marshal(t *testing.T) {
 						PackageVersion:          "7.0.1",
 						PackageLicenseConcluded: "NONE",
 						PackageLicenseDeclared:  "NONE",
+						PackageExternalReferences: []*spdx.PackageExternalReference2_2{
+							{
+								Category: tspdx.CategoryPackageManager,
+								RefType:  tspdx.RefTypePurl,
+								Locator:  "pkg:gem/actionpack@7.0.1",
+							},
+						},
 					},
 					spdx.ElementID("fd0dc3cf913d5bc3"): {
 						PackageSPDXIdentifier:   spdx.ElementID("fd0dc3cf913d5bc3"),
@@ -129,6 +143,13 @@ func TestMarshaler_Marshal(t *testing.T) {
 						PackageVersion:          "2.30",
 						PackageLicenseConcluded: "GPLv3+",
 						PackageLicenseDeclared:  "GPLv3+",
+						PackageExternalReferences: []*spdx.PackageExternalReference2_2{
+							{
+								Category: tspdx.CategoryPackageManager,
+								RefType:  tspdx.RefTypePurl,
+								Locator:  "pkg:rpm/centos/binutils@2.30-93.el8?arch=aarch64&distro=centos-8.3.2011",
+							},
+						},
 					},
 				},
 				UnpackagedFiles: nil,
@@ -222,6 +243,13 @@ func TestMarshaler_Marshal(t *testing.T) {
 						PackageVersion:          "2.2.53",
 						PackageLicenseConcluded: "GPLv2+",
 						PackageLicenseDeclared:  "GPLv2+",
+						PackageExternalReferences: []*spdx.PackageExternalReference2_2{
+							{
+								Category: tspdx.CategoryPackageManager,
+								RefType:  tspdx.RefTypePurl,
+								Locator:  "pkg:rpm/centos/acl@1:2.2.53-1.el8?arch=aarch64&distro=centos-8.3.2011",
+							},
+						},
 					},
 					spdx.ElementID("826226d056ff30c0"): {
 						PackageSPDXIdentifier:   spdx.ElementID("826226d056ff30c0"),
@@ -229,6 +257,13 @@ func TestMarshaler_Marshal(t *testing.T) {
 						PackageVersion:          "7.0.1",
 						PackageLicenseConcluded: "NONE",
 						PackageLicenseDeclared:  "NONE",
+						PackageExternalReferences: []*spdx.PackageExternalReference2_2{
+							{
+								Category: tspdx.CategoryPackageManager,
+								RefType:  tspdx.RefTypePurl,
+								Locator:  "pkg:gem/actionpack@7.0.1",
+							},
+						},
 					},
 				},
 				UnpackagedFiles: nil,
@@ -276,6 +311,13 @@ func TestMarshaler_Marshal(t *testing.T) {
 						PackageVersion:          "6.1.4.1",
 						PackageLicenseConcluded: "NONE",
 						PackageLicenseDeclared:  "NONE",
+						PackageExternalReferences: []*spdx.PackageExternalReference2_2{
+							{
+								Category: tspdx.CategoryPackageManager,
+								RefType:  tspdx.RefTypePurl,
+								Locator:  "pkg:gem/actioncable@6.1.4.1",
+							},
+						},
 					},
 				},
 			},
@@ -323,6 +365,13 @@ func TestMarshaler_Marshal(t *testing.T) {
 						PackageVersion:          "0.20.1",
 						PackageLicenseConcluded: "MIT",
 						PackageLicenseDeclared:  "MIT",
+						PackageExternalReferences: []*spdx.PackageExternalReference2_2{
+							{
+								Category: tspdx.CategoryPackageManager,
+								RefType:  tspdx.RefTypePurl,
+								Locator:  "pkg:npm/ruby-typeprof@0.20.1",
+							},
+						},
 					},
 				},
 			},
@@ -346,7 +395,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 					CreatorTools:         []string{"trivy"},
 					Created:              "2021-08-25T12:20:30.000000005Z",
 				},
-				Packages: nil,
+				Packages: map[spdx.ElementID]*spdx.Package2_2{},
 			},
 		},
 	}

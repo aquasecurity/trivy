@@ -2,15 +2,17 @@ package spdx
 
 import (
 	"fmt"
+	"strings"
+	"time"
+
 	"github.com/google/uuid"
 	"github.com/mitchellh/hashstructure/v2"
 	"github.com/spdx/tools-golang/spdx"
 	"golang.org/x/xerrors"
 	"k8s.io/utils/clock"
-	"strings"
-	"time"
 
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
+	"github.com/aquasecurity/trivy/pkg/purl"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
 
@@ -21,6 +23,11 @@ const (
 	DocumentNamespace   = "http://aquasecurity.github.io/trivy"
 	CreatorOrganization = "aquasecurity"
 	CreatorTool         = "trivy"
+)
+
+const (
+	CategoryPackageManager = "PACKAGE-MANAGER"
+	RefTypePurl            = "purl"
 )
 
 type Marshaler struct {
@@ -74,7 +81,7 @@ func (e *Marshaler) Marshal(r types.Report) (*spdx.Document2_2, error) {
 
 	for _, result := range r.Results {
 		for _, pkg := range result.Packages {
-			spdxPackage, err := e.pkgToSpdxPackage(pkg)
+			spdxPackage, err := e.pkgToSpdxPackage(result.Type, r.Metadata, pkg)
 			if err != nil {
 				return nil, xerrors.Errorf("failed to parse pkg: %w", err)
 			}
@@ -97,7 +104,7 @@ func (e *Marshaler) Marshal(r types.Report) (*spdx.Document2_2, error) {
 	}, nil
 }
 
-func (e *Marshaler) pkgToSpdxPackage(pkg ftypes.Package) (spdx.Package2_2, error) {
+func (e *Marshaler) pkgToSpdxPackage(t string, metadata types.Metadata, pkg ftypes.Package) (spdx.Package2_2, error) {
 	var spdxPackage spdx.Package2_2
 	license := getLicense(pkg)
 
@@ -109,7 +116,11 @@ func (e *Marshaler) pkgToSpdxPackage(pkg ftypes.Package) (spdx.Package2_2, error
 	spdxPackage.PackageSPDXIdentifier = spdx.ElementID(pkgID)
 	spdxPackage.PackageName = pkg.Name
 	spdxPackage.PackageVersion = pkg.Version
-
+	packageURL, err := purl.NewPackageURL(t, metadata, pkg)
+	if err != nil {
+		return spdx.Package2_2{}, xerrors.Errorf("failed to parse purl (%s): %w", pkg.Name, err)
+	}
+	spdxPackage.PackageExternalReferences = packageExternalReference(packageURL.String())
 	// The Declared License is what the authors of a project believe govern the package
 	spdxPackage.PackageLicenseConcluded = license
 
@@ -117,6 +128,16 @@ func (e *Marshaler) pkgToSpdxPackage(pkg ftypes.Package) (spdx.Package2_2, error
 	spdxPackage.PackageLicenseDeclared = license
 
 	return spdxPackage, nil
+}
+
+func packageExternalReference(packageURL string) []*spdx.PackageExternalReference2_2 {
+	return []*spdx.PackageExternalReference2_2{
+		{
+			Category: CategoryPackageManager,
+			RefType:  RefTypePurl,
+			Locator:  packageURL,
+		},
+	}
 }
 
 func getLicense(p ftypes.Package) string {
