@@ -46,7 +46,6 @@ require (
 	github.com/owenrumney/go-sarif/v2 v2.1.2
 	github.com/package-url/packageurl-go v0.1.1-0.20220203205134-d70459300c8a
 	github.com/samber/lo v1.24.0
-	github.com/sigstore/cosign v1.9.0
 	github.com/sosedoff/gitkit v0.3.0
 	github.com/spf13/cobra v1.5.0
 	github.com/spf13/pflag v1.0.5
@@ -68,12 +67,10 @@ require (
 require github.com/emicklei/go-restful/v3 v3.8.0 // indirect
 
 require (
+	github.com/go-playground/universal-translator v0.18.0 // indirect
 	github.com/googleapis/go-type-adapters v1.0.0 // indirect
-	github.com/in-toto/in-toto-golang v0.3.4-0.20211211042327-af1f9fb822bf // indirect
+	github.com/leodido/go-urn v1.2.1 // indirect
 	github.com/pelletier/go-toml/v2 v2.0.1 // indirect
-	github.com/rakyll/gotest v0.0.6 // indirect
-	github.com/secure-systems-lab/go-securesystemslib v0.4.0 // indirect
-	github.com/shibumi/go-pathspec v1.3.0 // indirect
 )
 
 require (
