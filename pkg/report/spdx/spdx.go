@@ -13,7 +13,6 @@ import (
 
 type Writer struct {
 	output    io.Writer
-	version   string
 	format    string
 	marshaler *spdx.Marshaler
 }
@@ -21,9 +20,8 @@ type Writer struct {
 func NewWriter(output io.Writer, version string, spdxFormat string) Writer {
 	return Writer{
 		output:    output,
-		version:   version,
 		format:    spdxFormat,
-		marshaler: spdx.NewMarshaler(),
+		marshaler: spdx.NewMarshaler(version),
 	}
 }
 

@@ -31,10 +31,11 @@ const (
 )
 
 type Marshaler struct {
-	format  spdx.Document2_1
-	clock   clock.Clock
-	newUUID newUUID
-	hasher  Hash
+	appVersion string
+	format     spdx.Document2_1
+	clock      clock.Clock
+	newUUID    newUUID
+	hasher     Hash
 }
 
 type Hash func(v interface{}, format hashstructure.Format, opts *hashstructure.HashOptions) (uint64, error)
@@ -61,12 +62,13 @@ func WithHasher(hasher Hash) marshalOption {
 	}
 }
 
-func NewMarshaler(opts ...marshalOption) *Marshaler {
+func NewMarshaler(version string, opts ...marshalOption) *Marshaler {
 	e := &Marshaler{
-		format:  spdx.Document2_1{},
-		clock:   clock.RealClock{},
-		newUUID: uuid.New,
-		hasher:  hashstructure.Hash,
+		appVersion: version,
+		format:     spdx.Document2_1{},
+		clock:      clock.RealClock{},
+		newUUID:    uuid.New,
+		hasher:     hashstructure.Hash,
 	}
 
 	for _, opt := range opts {
@@ -97,7 +99,7 @@ func (e *Marshaler) Marshal(r types.Report) (*spdx.Document2_2, error) {
 			DocumentName:         r.ArtifactName,
 			DocumentNamespace:    getDocumentNamespace(r, e),
 			CreatorOrganizations: []string{CreatorOrganization},
-			CreatorTools:         []string{CreatorTool},
+			CreatorTools:         []string{fmt.Sprintf("%s-%s", CreatorTool, e.appVersion)},
 			Created:              e.clock.Now().UTC().Format(time.RFC3339Nano),
 		},
 		Packages: packages,
