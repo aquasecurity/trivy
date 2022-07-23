@@ -5,11 +5,41 @@ import (
 	"fmt"
 	"github.com/aquasecurity/trivy/pkg/types"
 	"github.com/package-url/packageurl-go"
-	"github.com/sigstore/cosign/pkg/cosign/attestation"
 	"golang.org/x/xerrors"
 	"io"
 	"k8s.io/utils/clock"
+	"time"
 )
+
+type CosignVulnPredicate struct {
+	Invocation Invocation `json:"invocation"`
+	Scanner    Scanner    `json:"scanner"`
+	Metadata   Metadata   `json:"metadata"`
+}
+
+type Invocation struct {
+	Parameters interface{} `json:"parameters"`
+	URI        string      `json:"uri"`
+	EventID    string      `json:"event_id"`
+	BuilderID  string      `json:"builder.id"`
+}
+
+type DB struct {
+	URI     string `json:"uri"`
+	Version string `json:"version"`
+}
+
+type Scanner struct {
+	URI     string       `json:"uri"`
+	Version string       `json:"version"`
+	DB      DB           `json:"db"`
+	Result  types.Report `json:"result"`
+}
+
+type Metadata struct {
+	ScanStartedOn  time.Time `json:"scanStartedOn"`
+	ScanFinishedOn time.Time `json:"scanFinishedOn"`
+}
 
 type options struct {
 	clock clock.Clock
@@ -47,21 +77,17 @@ func NewWriter(output io.Writer, version string, opts ...option) Writer {
 
 func (w Writer) Write(report types.Report) error {
 
-	predicate := attestation.CosignVulnPredicate{}
-
-	var result map[string]interface{}
-	reportJson, _ := json.Marshal(report)   // nolint: errcheck
-	_ = json.Unmarshal(reportJson, &result) // nolint: errcheck
+	predicate := CosignVulnPredicate{}
 
 	purl := packageurl.NewPackageURL("github", "aquasecurity", "trivy", w.version, nil, "")
-	predicate.Scanner = attestation.Scanner{
+	predicate.Scanner = Scanner{
 		URI:     purl.ToString(),
 		Version: w.version,
-		Result:  result,
+		Result:  report,
 	}
 
 	now := w.options.clock.Now()
-	predicate.Metadata = attestation.Metadata{
+	predicate.Metadata = Metadata{
 		ScanStartedOn:  now,
 		ScanFinishedOn: now,
 	}

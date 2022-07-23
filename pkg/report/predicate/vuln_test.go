@@ -2,29 +2,23 @@ package predicate_test
 
 import (
 	"bytes"
+	"encoding/json"
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/vulnerability"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
-	reportCosignVuln "github.com/aquasecurity/trivy/pkg/report/predicate"
-	fake "k8s.io/utils/clock/testing"
-	"time"
-
+	"github.com/aquasecurity/trivy/pkg/report/predicate"
 	"github.com/aquasecurity/trivy/pkg/types"
-	"github.com/sigstore/cosign/pkg/cosign/attestation"
-)
-
-import (
-	"encoding/json"
-	"testing"
-
 	"github.com/stretchr/testify/assert"
+	fake "k8s.io/utils/clock/testing"
+	"testing"
+	"time"
 )
 
 func TestWriter_Write(t *testing.T) {
 	testCases := []struct {
 		name          string
 		detectedVulns []types.DetectedVulnerability
-		want          attestation.CosignVulnPredicate
+		want          predicate.CosignVulnPredicate
 		wantResult    types.Report
 	}{
 		{
@@ -46,20 +40,16 @@ func TestWriter_Write(t *testing.T) {
 					},
 				},
 			},
-			want: attestation.CosignVulnPredicate{
-				Scanner: attestation.Scanner{
+			want: predicate.CosignVulnPredicate{
+				Scanner: predicate.Scanner{
 					URI:     "pkg:github/aquasecurity/trivy@dev",
 					Version: "dev",
-					DB: attestation.DB{
-						URI:     "",
-						Version: "",
-					},
-					Result: map[string]interface{}{
-						"SchemaVersion": 2,
-						"ArtifactName":  "alpine:3.14",
-						"ArtifactType":  ftypes.ArtifactType(""),
-						"Metadata":      types.Metadata{},
-						"Results": types.Results{
+					Result: types.Report{
+						SchemaVersion: 2,
+						ArtifactName:  "alpine:3.14",
+						ArtifactType:  ftypes.ArtifactType(""),
+						Metadata:      types.Metadata{},
+						Results: types.Results{
 							{
 								Target: "foojson",
 								Vulnerabilities: []types.DetectedVulnerability{
@@ -80,7 +70,7 @@ func TestWriter_Write(t *testing.T) {
 						},
 					},
 				},
-				Metadata: attestation.Metadata{
+				Metadata: predicate.Metadata{
 					ScanStartedOn:  time.Date(2022, time.July, 22, 12, 20, 30, 5, time.UTC),
 					ScanFinishedOn: time.Date(2022, time.July, 22, 12, 20, 30, 5, time.UTC),
 				},
@@ -105,35 +95,15 @@ func TestWriter_Write(t *testing.T) {
 			output := bytes.NewBuffer(nil)
 
 			clock := fake.NewFakeClock(time.Date(2022, 7, 22, 12, 20, 30, 5, time.UTC))
-			writer := reportCosignVuln.NewWriter(output, "dev", reportCosignVuln.WithClock(clock))
+			writer := predicate.NewWriter(output, "dev", predicate.WithClock(clock))
 
 			err := writer.Write(inputResults)
 			assert.NoError(t, err)
 
-			var got attestation.CosignVulnPredicate
+			var got predicate.CosignVulnPredicate
 			err = json.Unmarshal(output.Bytes(), &got)
 			assert.NoError(t, err, "invalid json written")
 
-			assert.Equal(t, tc.want.Scanner.URI, got.Scanner.URI, tc.name)
-			assert.Equal(t, tc.want.Scanner.Version, got.Scanner.Version, tc.name)
-			assert.Equal(t, tc.want.Metadata, got.Metadata, tc.name)
-
-			var gotResult types.Report
-			j, _ := json.Marshal(got.Scanner.Result)
-			_ = json.Unmarshal(j, &gotResult)
-
-			wantResult := types.Report{
-				SchemaVersion: tc.want.Scanner.Result["SchemaVersion"].(int),
-				ArtifactName:  tc.want.Scanner.Result["ArtifactName"].(string),
-				ArtifactType:  tc.want.Scanner.Result["ArtifactType"].(ftypes.ArtifactType),
-				Metadata:      tc.want.Scanner.Result["Metadata"].(types.Metadata),
-				Results:       tc.want.Scanner.Result["Results"].(types.Results),
-			}
-
-			assert.Equal(t, wantResult, gotResult, tc.name)
-
-			tc.want.Scanner.Result = nil
-			got.Scanner.Result = nil
 			assert.Equal(t, tc.want, got, tc.name)
 
 		})
