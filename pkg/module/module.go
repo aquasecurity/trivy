@@ -84,8 +84,15 @@ type Manager struct {
 func NewManager(ctx context.Context) (*Manager, error) {
 	m := &Manager{}
 
+	// The runtime must enable the following features because Tinygo uses these features to build.
+	// cf. https://github.com/tinygo-org/tinygo/blob/b65447c7d567eea495805656f45472cc3c483e03/targets/wasi.json#L4
+	c := wazero.NewRuntimeConfig().
+		WithFeatureBulkMemoryOperations(true).
+		WithFeatureNonTrappingFloatToIntConversion(true).
+		WithFeatureSignExtensionOps(true)
+
 	// Create a new WebAssembly Runtime.
-	m.runtime = wazero.NewRuntime()
+	m.runtime = wazero.NewRuntimeWithConfig(c)
 
 	// Load WASM modules in local
 	if err := m.loadModules(ctx); err != nil {
