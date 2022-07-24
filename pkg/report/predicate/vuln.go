@@ -13,7 +13,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/types"
 )
 
-// CosignVulnPredicate represents the Cosign Vulnerability Scan Record.
+// CosignVulnPredicate represents the Cosign Vulnerability predicate.
 // Cosign provides the CosignVulnPredicate structure in their repository.
 // But the type of Scanner.Result is defined as map[string]interface{}, which is difficult to use,
 // so we define our own.
