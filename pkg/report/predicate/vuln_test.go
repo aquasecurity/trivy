@@ -3,15 +3,17 @@ package predicate_test
 import (
 	"bytes"
 	"encoding/json"
+	"testing"
+	"time"
+
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/vulnerability"
+	"github.com/stretchr/testify/assert"
+
 	"github.com/aquasecurity/trivy/pkg/clock"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/report/predicate"
 	"github.com/aquasecurity/trivy/pkg/types"
-	"github.com/stretchr/testify/assert"
-	"testing"
-	"time"
 )
 
 func TestWriter_Write(t *testing.T) {

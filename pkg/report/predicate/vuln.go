@@ -3,12 +3,14 @@ package predicate
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/aquasecurity/trivy/pkg/clock"
-	"github.com/aquasecurity/trivy/pkg/types"
-	"github.com/package-url/packageurl-go"
-	"golang.org/x/xerrors"
 	"io"
 	"time"
+
+	"github.com/package-url/packageurl-go"
+	"golang.org/x/xerrors"
+
+	"github.com/aquasecurity/trivy/pkg/clock"
+	"github.com/aquasecurity/trivy/pkg/types"
 )
 
 // CosignVulnPredicate represents the Cosign Vulnerability Scan Record.
