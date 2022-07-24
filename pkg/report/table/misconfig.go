@@ -52,10 +52,6 @@ func NewMisconfigRenderer(result types.Result, severities []dbTypes.Severity, tr
 }
 
 func (r *misconfigRenderer) Render() string {
-	if len(r.result.Misconfigurations) == 0 {
-		return ""
-	}
-
 	target := fmt.Sprintf("%s (%s)", r.result.Target, r.result.Type)
 	renderTarget(r.w, target, r.ansi)
 

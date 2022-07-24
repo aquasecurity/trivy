@@ -41,9 +41,6 @@ func NewSecretRenderer(target string, secrets []types.SecretFinding, ansi bool, 
 }
 
 func (r *secretRenderer) Render() string {
-	if len(r.secrets) == 0 {
-		return ""
-	}
 	target := r.target + " (secrets)"
 	renderTarget(r.w, target, r.ansi)
 

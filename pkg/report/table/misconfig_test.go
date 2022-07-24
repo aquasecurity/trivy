@@ -21,12 +21,6 @@ func TestMisconfigRenderer(t *testing.T) {
 		want               string
 	}{
 		{
-			name:               "no results",
-			input:              types.Result{},
-			includeNonFailures: false,
-			want:               "",
-		},
-		{
 			name: "single result",
 			input: types.Result{
 				Target:         "my-file",

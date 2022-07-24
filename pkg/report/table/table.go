@@ -63,7 +63,7 @@ func (tw Writer) Write(report types.Report) error {
 }
 
 func (tw Writer) write(result types.Result) {
-	if result.IsEmpty() {
+	if result.IsEmpty() && result.Class != types.ClassOSPkg {
 		return
 	}
 
