@@ -1,4 +1,6 @@
-# Cosign Vulnerability Predicate
+# Cosign Vulnerability Attestation
+
+## Generate Cosign Vulnerability Predicate 
 
 Trivy generates reports in the [Cosign vulnerability predicate format](https://github.com/sigstore/cosign/blob/95b74db89941e8ec85e768f639efd4d948db06cd/specs/COSIGN_VULN_ATTESTATION_SPEC.md).
 
@@ -139,3 +141,27 @@ $ trivy image --format cosign-vuln --output vuln.json alpine:3.10
 ```
 
 </details>
+
+## Create Cosign Vulnerability Attestation
+
+[Cosign](https://github.com/sigstore/cosign) supports generating and verifying [in-toto attestations](https://github.com/in-toto/attestation). This tool enables you to sign and verify Cosign vulnerability attestation.
+
+!!! note
+    In the following examples, the `cosign` command will write an attestation to a target OCI registry, so you must have permission to write.
+    If you want to avoid writing an OCI registry and only want to see an attestation, add the `--no-upload` option to the `cosign` command.
+
+
+Cosign can generate key pairs and use them for signing and verification. Read more about [how to generate key pairs](https://docs.sigstore.dev/cosign/key-generation).
+
+In the following example, Trivy generates a cosign vulnerability predicate, and then Cosign attaches an attestation of it to a container image with a local key pair.
+
+```
+$ trivy image --format cosign-vuln --output vuln.json <IMAGE>
+$ cosign attest --key /path/to/cosign.key --type vuln --predicate vuln.json <IMAGE>
+```
+
+Then, you can verify attestations on the image.
+
+```
+$ cosign verify-attestation --key /path/to/cosign.pub <IMAGE>
+```
