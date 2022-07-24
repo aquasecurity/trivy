@@ -11,6 +11,10 @@ import (
 	"time"
 )
 
+// CosignVulnPredicate represents the Cosign Vulnerability Scan Record.
+// Cosign provides the CosignVulnPredicate structure in their repository.
+// But the type of Scanner.Result is defined as map[string]interface{}, which is difficult to use,
+// so we define our own.
 type CosignVulnPredicate struct {
 	Invocation Invocation `json:"invocation"`
 	Scanner    Scanner    `json:"scanner"`
