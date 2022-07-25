@@ -23,7 +23,7 @@ const (
 // Operation defines the DB operations
 type Operation interface {
 	NeedsUpdate(cliVersion string, skip bool) (need bool, err error)
-	Download(ctx context.Context, dst string, force bool) (err error)
+	Download(ctx context.Context, dst string) (err error)
 }
 
 type options struct {
@@ -143,13 +143,13 @@ func (c *Client) isNewDB(meta metadata.Metadata) bool {
 }
 
 // Download downloads the DB file
-func (c *Client) Download(ctx context.Context, dst string, force bool) error {
+func (c *Client) Download(ctx context.Context, dst string) error {
 	// Remove the metadata file under the cache directory before downloading DB
 	if err := c.metadata.Delete(); err != nil {
 		log.Logger.Debug("no metadata file")
 	}
 
-	if err := c.populateOCIArtifact(force); err != nil {
+	if err := c.populateOCIArtifact(); err != nil {
 		return xerrors.Errorf("OCI artifact error: %w", err)
 	}
 
@@ -182,14 +182,12 @@ func (c *Client) updateDownloadedAt(dst string) error {
 	return nil
 }
 
-func (c *Client) populateOCIArtifact(force bool) error {
-	if c.artifact == nil || force {
-		repo := fmt.Sprintf("%s:%d", c.dbRepository, db.SchemaVersion)
-		art, err := oci.NewArtifact(repo, dbMediaType, c.quiet, c.insecureSkipTLSVerify)
-		if err != nil {
-			return xerrors.Errorf("OCI artifact error: %w", err)
-		}
-		c.artifact = art
+func (c *Client) populateOCIArtifact() error {
+	repo := fmt.Sprintf("%s:%d", c.dbRepository, db.SchemaVersion)
+	art, err := oci.NewArtifact(repo, dbMediaType, c.quiet, c.insecureSkipTLSVerify)
+	if err != nil {
+		return xerrors.Errorf("OCI artifact error: %w", err)
 	}
+	c.artifact = art
 	return nil
 }

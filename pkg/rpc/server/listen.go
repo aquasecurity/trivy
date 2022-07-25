@@ -144,7 +144,7 @@ func (w dbWorker) hotUpdate(ctx context.Context, cacheDir string, dbUpdateWg, re
 	}
 	defer os.RemoveAll(tmpDir)
 
-	if err = w.dbClient.Download(ctx, tmpDir, true); err != nil {
+	if err = w.dbClient.Download(ctx, tmpDir); err != nil {
 		return xerrors.Errorf("failed to download vulnerability DB: %w", err)
 	}
 
