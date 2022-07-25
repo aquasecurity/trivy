@@ -54,36 +54,37 @@ The command removes all the Kubernetes components associated with the chart and 
 
 The following table lists the configurable parameters of the Trivy chart and their default values.
 
-|                 Parameter             |                                Description                              |    Default     |
-|---------------------------------------|-------------------------------------------------------------------------|----------------|
-| `image.registry`                      | Image registry                                                          | `docker.io`    |
-| `image.repository`                    | Image name                                                              | `aquasec/trivy` |
-| `image.tag`                           | Image tag                                                               | `{TAG_NAME}`   |
-| `image.pullPolicy`                    | Image pull policy                                                       | `IfNotPresent` |
-| `image.pullSecret`                    | The name of an imagePullSecret used to pull trivy image from e.g. Docker Hub or a private registry  | |
-| `replicaCount`                        | Number of Trivy Pods to run                                   | `1`            |
-| `trivy.debugMode`                     | The flag to enable or disable Trivy debug mode                          | `false` |
-| `trivy.gitHubToken`                   | The GitHub access token to download Trivy DB. More info: https://github.com/aquasecurity/trivy#github-rate-limiting                          |      |
-| `trivy.registryUsername`              | The username used to log in at dockerhub. More info: https://aquasecurity.github.io/trivy/dev/advanced/private-registries/docker-hub/ |      |
-| `trivy.registryPassword`              | The password used to log in at dockerhub. More info: https://aquasecurity.github.io/trivy/dev/advanced/private-registries/docker-hub/ |      |
-| `trivy.registryCredentialsExistingSecret` | Name of Secret containing dockerhub credentials. Alternative to the 2 parameters above, has precedence if set.                    |      |
-| `trivy.serviceAccount.annotations`        | Additional annotations to add to the Kubernetes service account resource |     |
-| `trivy.skipUpdate`                    | The flag to enable or disable Trivy DB downloads from GitHub            | `false`        |
-| `trivy.dbRepository`                  | OCI repository to retrieve the trivy vulnerability database from        | `ghcr.io/aquasecurity/trivy-db`        |
-| `trivy.cache.redis.enabled`           | Enable Redis as caching backend                                         | `false` |
-| `trivy.cache.redis.url`               | Specify redis connection url, e.g. redis://redis.redis.svc:6379         | `` |
-| `trivy.serverToken`                   | The token to authenticate Trivy client with Trivy server                | `` |
-| `trivy.podAnnotations`                | Annotations for pods created by statefulset                             | `{}` |
-| `service.name`                        | If specified, the name used for the Trivy service                       |     |
-| `service.type`                        | Kubernetes service type                                                 | `ClusterIP` |
-| `service.port`                        | Kubernetes service port                                                 | `4954`      |
-| `httpProxy`                           | The URL of the HTTP proxy server                                        |     |
-| `httpsProxy`                          | The URL of the HTTPS proxy server                                       |     |
-| `noProxy`                             | The URLs that the proxy settings do not apply to                        |     |
-| `nodeSelector`                        | Node labels for pod assignment                                              |     |
-| `affinity`                            | Affinity settings for pod assignment                                              |     |
-| `tolerations`                         | Tolerations for pod assignment                                              |     |
-| `podAnnotations`                      | Annotations for pods created by statefulset                             | `{}` |
+|                 Parameter             | Description                                                                                                                           |    Default   |
+|---------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------|--------------|
+| `image.registry`                      | Image registry                                                                                                                        | `docker.io`  |
+| `image.repository`                    | Image name                                                                                                                            | `aquasec/trivy` |
+| `image.tag`                           | Image tag                                                                                                                             | `{TAG_NAME}` |
+| `image.pullPolicy`                    | Image pull policy                                                                                                                     | `IfNotPresent` |
+| `image.pullSecret`                    | The name of an imagePullSecret used to pull trivy image from e.g. Docker Hub or a private registry                                    | |
+| `replicaCount`                        | Number of Trivy Pods to run                                                                                                           | `1`          |
+| `trivy.debugMode`                     | The flag to enable or disable Trivy debug mode                                                                                        | `false` |
+| `trivy.gitHubToken`                   | The GitHub access token to download Trivy DB. More info: https://github.com/aquasecurity/trivy#github-rate-limiting                   |    |
+| `trivy.registryUsername`              | The username used to log in at dockerhub. More info: https://aquasecurity.github.io/trivy/dev/advanced/private-registries/docker-hub/ |    |
+| `trivy.registryPassword`              | The password used to log in at dockerhub. More info: https://aquasecurity.github.io/trivy/dev/advanced/private-registries/docker-hub/ |    |
+| `trivy.registryCredentialsExistingSecret` | Name of Secret containing dockerhub credentials. Alternative to the 2 parameters above, has precedence if set.                        |    |
+| `trivy.serviceAccount.annotations`        | Additional annotations to add to the Kubernetes service account resource                                                              |    |
+| `trivy.skipUpdate`                    | The flag to enable or disable Trivy DB downloads from GitHub                                                                          | `false`      |
+| `trivy.dbRepository`                  | OCI repository to retrieve the trivy vulnerability database from                                                                      | `ghcr.io/aquasecurity/trivy-db`      |
+| `trivy.cache.redis.enabled`           | Enable Redis as caching backend                                                                                                       | `false` |
+| `trivy.cache.redis.url`               | Specify redis connection url, e.g. redis://redis.redis.svc:6379                                                                       | `` |
+| `trivy.serverToken`                   | The token to authenticate Trivy client with Trivy server                                                                              | `` |
+| `trivy.podAnnotations`                | Annotations for pods created by statefulset                                                                                           | `{}` |
+| `trivy.existingSecret`                | existingSecret if an existing secret has been created outside the chart. Overrides gitHubToken, registryUsername, registryPassword, serverToken | `` |
+| `service.name`                        | If specified, the name used for the Trivy service                                                                                     |     |
+| `service.type`                        | Kubernetes service type                                                                                                               | `ClusterIP` |
+| `service.port`                        | Kubernetes service port                                                                                                               | `4954`      |
+| `httpProxy`                           | The URL of the HTTP proxy server                                                                                                      |     |
+| `httpsProxy`                          | The URL of the HTTPS proxy server                                                                                                     |     |
+| `noProxy`                             | The URLs that the proxy settings do not apply to                                                                                      |     |
+| `nodeSelector`                        | Node labels for pod assignment                                                                                                        |     |
+| `affinity`                            | Affinity settings for pod assignment                                                                                                  |     |
+| `tolerations`                         | Tolerations for pod assignment                                                                                                        |     |
+| `podAnnotations`                      | Annotations for pods created by statefulset                                                                                           | `{}` |
 
 The above parameters map to the env variables defined in [trivy](https://github.com/aquasecurity/trivy#configuration).
 
