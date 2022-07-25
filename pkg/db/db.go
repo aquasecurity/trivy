@@ -149,15 +149,16 @@ func (c *Client) Download(ctx context.Context, dst string) error {
 		log.Logger.Debug("no metadata file")
 	}
 
-	if err := c.populateOCIArtifact(); err != nil {
+	art, err := c.initOCIArtifact()
+	if err != nil {
 		return xerrors.Errorf("OCI artifact error: %w", err)
 	}
 
-	if err := c.artifact.Download(ctx, db.Dir(dst)); err != nil {
+	if err = art.Download(ctx, db.Dir(dst)); err != nil {
 		return xerrors.Errorf("database download error: %w", err)
 	}
 
-	if err := c.updateDownloadedAt(dst); err != nil {
+	if err = c.updateDownloadedAt(dst); err != nil {
 		return xerrors.Errorf("failed to update downloaded_at: %w", err)
 	}
 	return nil
@@ -182,12 +183,15 @@ func (c *Client) updateDownloadedAt(dst string) error {
 	return nil
 }
 
-func (c *Client) populateOCIArtifact() error {
+func (c *Client) initOCIArtifact() (*oci.Artifact, error) {
+	if c.artifact != nil {
+		return c.artifact, nil
+	}
+
 	repo := fmt.Sprintf("%s:%d", c.dbRepository, db.SchemaVersion)
 	art, err := oci.NewArtifact(repo, dbMediaType, c.quiet, c.insecureSkipTLSVerify)
 	if err != nil {
-		return xerrors.Errorf("OCI artifact error: %w", err)
+		return nil, xerrors.Errorf("OCI artifact error: %w", err)
 	}
-	c.artifact = art
-	return nil
+	return art, nil
 }
