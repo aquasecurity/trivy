@@ -9,6 +9,8 @@ import (
 	"strings"
 	"time"
 
+	"github.com/samber/lo"
+
 	"github.com/open-policy-agent/opa/rego"
 	"golang.org/x/exp/maps"
 	"golang.org/x/exp/slices"
@@ -26,25 +28,29 @@ const (
 )
 
 // Filter filters out the vulnerabilities
-func Filter(ctx context.Context, vulns []types.DetectedVulnerability, misconfs []types.DetectedMisconfiguration, secrets []ftypes.SecretFinding,
-	severities []dbTypes.Severity, ignoreUnfixed, includeNonFailures bool, ignoreFile, policyFile string) (
-	[]types.DetectedVulnerability, *types.MisconfSummary, []types.DetectedMisconfiguration, []ftypes.SecretFinding, error) {
+func Filter(ctx context.Context, result *types.Result, severities []dbTypes.Severity, ignoreUnfixed, includeNonFailures bool,
+	ignoreFile, policyFile string, ignoreLicenses []string) error {
 	ignoredIDs := getIgnoredIDs(ignoreFile)
 
-	filteredVulns := filterVulnerabilities(vulns, severities, ignoreUnfixed, ignoredIDs)
-	misconfSummary, filteredMisconfs := filterMisconfigurations(misconfs, severities, includeNonFailures, ignoredIDs)
-	filteredSecrets := filterSecrets(secrets, severities)
+	filteredVulns := filterVulnerabilities(result.Vulnerabilities, severities, ignoreUnfixed, ignoredIDs)
+	misconfSummary, filteredMisconfs := filterMisconfigurations(result.Misconfigurations, severities, includeNonFailures, ignoredIDs)
+	result.Secrets = filterSecrets(result.Secrets, severities)
+	result.Licenses = filterLicenses(result.Licenses, severities, ignoreLicenses)
 
 	if policyFile != "" {
 		var err error
 		filteredVulns, filteredMisconfs, err = applyPolicy(ctx, filteredVulns, filteredMisconfs, policyFile)
 		if err != nil {
-			return nil, nil, nil, nil, xerrors.Errorf("failed to apply the policy: %w", err)
+			return xerrors.Errorf("failed to apply the policy: %w", err)
 		}
 	}
 	sort.Sort(types.BySeverity(filteredVulns))
 
-	return filteredVulns, misconfSummary, filteredMisconfs, filteredSecrets, nil
+	result.Vulnerabilities = filteredVulns
+	result.Misconfigurations = filteredMisconfs
+	result.MisconfSummary = misconfSummary
+
+	return nil
 }
 
 func filterVulnerabilities(vulns []types.DetectedVulnerability, severities []dbTypes.Severity,
@@ -123,6 +129,23 @@ func filterSecrets(secrets []ftypes.SecretFinding, severities []dbTypes.Severity
 		}
 	}
 	return filtered
+}
+
+func filterLicenses(licenses []types.DetectedLicense, severities []dbTypes.Severity, ignoredLicenses []string) []types.DetectedLicense {
+	return lo.Filter(licenses, func(l types.DetectedLicense, _ int) bool {
+		// Skip the license if it is included in ignored licenses.
+		if slices.Contains(ignoredLicenses, l.Name) {
+			return false
+		}
+
+		// Filter secrets by severity
+		for _, s := range severities {
+			if s.String() == l.Severity {
+				return true
+			}
+		}
+		return false
+	})
 }
 
 func summarize(status types.MisconfStatus, summary *types.MisconfSummary) {

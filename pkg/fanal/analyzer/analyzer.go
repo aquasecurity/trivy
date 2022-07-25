@@ -100,6 +100,7 @@ type AnalysisResult struct {
 	PackageInfos         []types.PackageInfo
 	Applications         []types.Application
 	Secrets              []types.Secret
+	Licenses             []types.LicenseFile
 	SystemInstalledFiles []string // A list of files installed by OS package manager
 
 	Files map[types.HandlerType][]types.File
@@ -120,10 +121,12 @@ func NewAnalysisResult() *AnalysisResult {
 
 func (r *AnalysisResult) isEmpty() bool {
 	return r.OS == nil && r.Repository == nil && len(r.PackageInfos) == 0 && len(r.Applications) == 0 &&
-		len(r.Secrets) == 0 && len(r.SystemInstalledFiles) == 0 && r.BuildInfo == nil && len(r.Files) == 0 && len(r.CustomResources) == 0
+		len(r.Secrets) == 0 && len(r.Licenses) == 0 && len(r.SystemInstalledFiles) == 0 &&
+		r.BuildInfo == nil && len(r.Files) == 0 && len(r.CustomResources) == 0
 }
 
 func (r *AnalysisResult) Sort() {
+	// OS packages
 	sort.Slice(r.PackageInfos, func(i, j int) bool {
 		return r.PackageInfos[i].FilePath < r.PackageInfos[j].FilePath
 	})
@@ -134,6 +137,7 @@ func (r *AnalysisResult) Sort() {
 		})
 	}
 
+	// Language-specific packages
 	sort.Slice(r.Applications, func(i, j int) bool {
 		return r.Applications[i].FilePath < r.Applications[j].FilePath
 	})
@@ -146,6 +150,11 @@ func (r *AnalysisResult) Sort() {
 			return app.Libraries[i].Version < app.Libraries[j].Version
 		})
 	}
+
+	// Custom resources
+	sort.Slice(r.CustomResources, func(i, j int) bool {
+		return r.CustomResources[i].FilePath < r.CustomResources[j].FilePath
+	})
 
 	for _, files := range r.Files {
 		sort.Slice(files, func(i, j int) bool {
@@ -165,6 +174,19 @@ func (r *AnalysisResult) Sort() {
 			return sec.Findings[i].StartLine < sec.Findings[j].StartLine
 		})
 	}
+
+	// License files
+	sort.Slice(r.Licenses, func(i, j int) bool {
+		if r.Licenses[i].Type == r.Licenses[j].Type {
+			if r.Licenses[i].FilePath == r.Licenses[j].FilePath {
+				return r.Licenses[i].Layer.DiffID < r.Licenses[j].Layer.DiffID
+			} else {
+				return r.Licenses[i].FilePath < r.Licenses[j].FilePath
+			}
+		}
+
+		return r.Licenses[i].Type < r.Licenses[j].Type
+	})
 }
 
 func (r *AnalysisResult) Merge(new *AnalysisResult) {
@@ -201,6 +223,7 @@ func (r *AnalysisResult) Merge(new *AnalysisResult) {
 	}
 
 	r.Secrets = append(r.Secrets, new.Secrets...)
+	r.Licenses = append(r.Licenses, new.Licenses...)
 	r.SystemInstalledFiles = append(r.SystemInstalledFiles, new.SystemInstalledFiles...)
 
 	if new.BuildInfo != nil {

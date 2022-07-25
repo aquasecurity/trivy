@@ -3,76 +3,37 @@ on:
   push:
     tags:
       - "v*"
-env:
-  GO_VERSION: "1.18"
-  GH_USER: "aqua-bot"
+
 jobs:
   release:
     name: Release
+    uses: ./.github/workflows/reusable-release.yaml
+    with:
+      goreleaser_config: goreleaser.yml
+      goreleaser_options: '--rm-dist --timeout 60m'
+    secrets: inherit
+
+  deploy-packages:
+    name: Deploy rpm/dep packages
+    needs: release # run this job after 'release' job completes
     runs-on: ubuntu-18.04 # 20.04 doesn't provide createrepo for now
-    env:
-      DOCKER_CLI_EXPERIMENTAL: "enabled"
-    permissions:
-      id-token: write # For cosign
-      packages: write # For GHCR
-      contents: read  # Not required for public repositories, but for clarity
     steps:
-      - name: Install dependencies
-        run: |
-          sudo apt-get -y update
-          sudo apt-get -y install rpm reprepro createrepo distro-info
-      - uses: sigstore/cosign-installer@536b37ec5d5b543420bdfd9b744c5965bd4d8730
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@v2
-      - name: Set up Docker Buildx
-        id: buildx
-        uses: docker/setup-buildx-action@v2
-      - name: Show available Docker Buildx platforms
-        run: echo ${{ steps.buildx.outputs.platforms }}
-      - name: Setup Go
-        uses: actions/setup-go@v3
-        with:
-          go-version: ${{ env.GO_VERSION }}
       - name: Checkout code
         uses: actions/checkout@v3
         with:
           fetch-depth: 0
-      - name: Cache Go modules
-        uses: actions/cache@v3.0.2
+
+      - name: Restore Trivy binaries from cache
+        uses: actions/cache@v3.0.4
         with:
-          path: ~/go/pkg/mod
-          key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
-          restore-keys: |
-            ${{ runner.os }}-go-
-      - name: Login to docker.io registry
-        uses: docker/login-action@v2
-        with:
-          username: ${{ secrets.DOCKERHUB_USER }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
-      - name: Login to ghcr.io registry
-        uses: docker/login-action@v2
-        with:
-          registry: ghcr.io
-          username: ${{ env.GH_USER }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-      - name: Login to ECR
-        uses: docker/login-action@v2
-        with:
-          registry: public.ecr.aws
-          username: ${{ secrets.ECR_ACCESS_KEY_ID }}
-          password: ${{ secrets.ECR_SECRET_ACCESS_KEY }}
-      - name: Generate SBOM
-        uses: CycloneDX/gh-gomod-generate-sbom@v1
-        with:
-          args: mod -licenses -json -output bom.json
-          version: ^v1
-      - name: Release
-        uses: goreleaser/goreleaser-action@v3
-        with:
-          version: v1.4.1
-          args: release --rm-dist --timeout 60m
-        env:
-          GITHUB_TOKEN: ${{ secrets.ORG_REPO_TOKEN }}
+          path: dist/
+          key: ${{ runner.os }}-bins-${{github.workflow}}-${{github.sha}}
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get -y update
+          sudo apt-get -y install rpm reprepro createrepo distro-info
+
       - name: Checkout trivy-repo
         uses: actions/checkout@v3
         with:
@@ -80,13 +41,17 @@ jobs:
           path: trivy-repo
           fetch-depth: 0
           token: ${{ secrets.ORG_REPO_TOKEN }}
+
       - name: Setup git settings
         run: |
           git config --global user.email "knqyf263@gmail.com"
           git config --global user.name "Teppei Fukuda"
+
       - name: Create rpm repository
         run: ci/deploy-rpm.sh
+
       - name: Import GPG key
         run: echo -e "${{ secrets.GPG_KEY }}" | gpg --import
+
       - name: Create deb repository
         run: ci/deploy-deb.sh

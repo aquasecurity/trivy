@@ -13,12 +13,14 @@ const (
 	Composer   = "composer"
 	Npm        = "npm"
 	NuGet      = "nuget"
+	DotNetCore = "dotnet-core"
 	Pip        = "pip"
 	Pipenv     = "pipenv"
 	Poetry     = "poetry"
 	PythonPkg  = "python-pkg"
 	NodePkg    = "node-pkg"
 	Yarn       = "yarn"
+	Pnpm       = "pnpm"
 	Jar        = "jar"
 	Pom        = "pom"
 	GoBinary   = "gobinary"
@@ -36,6 +38,9 @@ const (
 	Helm           = "helm"
 	Rbac           = "rbac"
 
+	// Licensing
+	License = "license"
+
 	// Language-specific file names
 	NuGetPkgsLock   = "packages.lock.json"
 	NuGetPkgsConfig = "packages.config"
@@ -47,6 +52,7 @@ const (
 
 	NpmPkgLock = "package-lock.json"
 	YarnLock   = "yarn.lock"
+	PnpmLock   = "pnpm-lock.yaml"
 
 	ComposerLock = "composer.lock"
 

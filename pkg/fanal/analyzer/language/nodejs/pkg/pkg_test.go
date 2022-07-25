@@ -31,7 +31,7 @@ func Test_nodePkgLibraryAnalyzer_Analyze(t *testing.T) {
 							{
 								Name:     "lodash",
 								Version:  "5.0.0",
-								License:  "MIT",
+								Licenses: []string{"MIT"},
 								FilePath: "testdata/package.json",
 							},
 						},

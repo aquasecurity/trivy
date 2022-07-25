@@ -4,7 +4,10 @@ import (
 	"context"
 	"errors"
 
-	"github.com/urfave/cli/v2"
+	"github.com/spf13/viper"
+
+	"github.com/aquasecurity/trivy/pkg/flag"
+
 	"golang.org/x/xerrors"
 
 	cmd "github.com/aquasecurity/trivy/pkg/commands/artifact"
@@ -22,29 +25,24 @@ const (
 )
 
 // Run runs a k8s scan
-func Run(cliCtx *cli.Context) error {
-	opt, err := cmd.InitOption(cliCtx)
-	if err != nil {
-		return xerrors.Errorf("option error: %w", err)
-	}
-
-	cluster, err := k8s.GetCluster(opt.KubernetesOption.ClusterContext)
+func Run(ctx context.Context, args []string, opts flag.Options) error {
+	cluster, err := k8s.GetCluster(opts.K8sOptions.ClusterContext)
 	if err != nil {
 		return xerrors.Errorf("failed getting k8s cluster: %w", err)
 	}
 
-	switch cliCtx.Args().Get(0) {
+	switch args[0] {
 	case clusterArtifact:
-		return clusterRun(cliCtx, opt, cluster)
+		return clusterRun(ctx, opts, cluster)
 	case allArtifact:
-		return namespaceRun(cliCtx, opt, cluster)
+		return namespaceRun(ctx, opts, cluster)
 	default: // resourceArtifact
-		return resourceRun(cliCtx, opt, cluster)
+		return resourceRun(ctx, args, opts, cluster)
 	}
 }
 
-func run(ctx context.Context, opt cmd.Option, cluster string, artifacts []*artifacts.Artifact) error {
-	ctx, cancel := context.WithTimeout(ctx, opt.Timeout)
+func run(ctx context.Context, opts flag.Options, cluster string, artifacts []*artifacts.Artifact, showEmpty bool) error {
+	ctx, cancel := context.WithTimeout(ctx, opts.Timeout)
 	defer cancel()
 
 	var err error
@@ -54,7 +52,7 @@ func run(ctx context.Context, opt cmd.Option, cluster string, artifacts []*artif
 		}
 	}()
 
-	runner, err := cmd.NewRunner(opt)
+	runner, err := cmd.NewRunner(ctx, opts)
 	if err != nil {
 		if errors.Is(err, cmd.SkipScan) {
 			return nil
@@ -67,22 +65,23 @@ func run(ctx context.Context, opt cmd.Option, cluster string, artifacts []*artif
 		}
 	}()
 
-	s := scanner.NewScanner(cluster, runner, opt)
+	s := scanner.NewScanner(cluster, runner, opts)
 
 	r, err := s.Scan(ctx, artifacts)
 	if err != nil {
 		return xerrors.Errorf("k8s scan error: %w", err)
 	}
+
 	if err := report.Write(r, report.Option{
-		Format:     opt.Format,
-		Report:     opt.KubernetesOption.ReportFormat,
-		Output:     opt.Output,
-		Severities: opt.Severities,
-	}, opt.ReportOption.SecurityChecks); err != nil {
+		Format:     opts.Format,
+		Report:     opts.ReportFormat,
+		Output:     opts.Output,
+		Severities: opts.Severities,
+	}, opts.ScanOptions.SecurityChecks, showEmpty); err != nil {
 		return xerrors.Errorf("unable to write results: %w", err)
 	}
 
-	cmd.Exit(opt, r.Failed())
+	cmd.Exit(opts, r.Failed())
 
 	return nil
 }
@@ -101,10 +100,10 @@ func run(ctx context.Context, opt cmd.Option, cluster string, artifacts []*artif
 // Single resource scanning is allowed with implicit "--report all".
 //
 // e.g. $ trivy k8s pod myapp
-func validateReportArguments(cliCtx *cli.Context) error {
-	if cliCtx.String("report") == "all" &&
-		!cliCtx.IsSet("report") &&
-		cliCtx.String("format") == "table" {
+func validateReportArguments(opts flag.Options) error {
+	if opts.ReportFormat == "all" &&
+		!viper.IsSet("report") &&
+		opts.Format == "table" {
 
 		m := "All the results in the table format can mess up your terminal. Use \"--report all\" to tell Trivy to output it to your terminal anyway, or consider \"--report summary\" to show the summary output."
 

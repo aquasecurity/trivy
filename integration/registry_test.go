@@ -27,8 +27,6 @@ import (
 	"github.com/stretchr/testify/require"
 	testcontainers "github.com/testcontainers/testcontainers-go"
 	"github.com/testcontainers/testcontainers-go/wait"
-
-	"github.com/aquasecurity/trivy/pkg/commands"
 )
 
 const (
@@ -235,15 +233,11 @@ func scan(t *testing.T, imageRef name.Reference, baseDir, goldenFile string, opt
 		return "", err
 	}
 
-	// Setup CLI App
-	app := commands.NewApp("dev")
-	app.Writer = io.Discard
-
-	osArgs := []string{"trivy", "--cache-dir", cacheDir, "image", "--format", "json", "--skip-update",
+	osArgs := []string{"-q", "--cache-dir", cacheDir, "image", "--format", "json", "--skip-update",
 		"--output", outputFile, imageRef.Name()}
 
 	// Run Trivy
-	if err := app.Run(osArgs); err != nil {
+	if err := execute(osArgs); err != nil {
 		return "", err
 	}
 	return outputFile, nil

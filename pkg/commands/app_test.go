@@ -70,37 +70,36 @@ Vulnerability DB:
 		name      string
 		arguments []string // 1st argument is path to trivy binaries
 		want      string
-		wantErr   string
 	}{
 		{
 			name:      "happy path. '-v' flag is used",
-			arguments: []string{"trivy", "-v", "--cache-dir", "testdata"},
+			arguments: []string{"-v", "--cache-dir", "testdata"},
 			want:      tableOutput,
 		},
 		{
 			name:      "happy path. '-version' flag is used",
-			arguments: []string{"trivy", "-version", "--cache-dir", "testdata"},
+			arguments: []string{"--version", "--cache-dir", "testdata"},
 			want:      tableOutput,
 		},
 		{
 			name:      "happy path. 'version' command is used",
-			arguments: []string{"trivy", "--cache-dir", "testdata", "version"},
+			arguments: []string{"--cache-dir", "testdata", "version"},
 			want:      tableOutput,
 		},
 		{
 			name:      "happy path. 'version', '--format json' flags are used",
-			arguments: []string{"trivy", "--cache-dir", "testdata", "version", "--format", "json"},
+			arguments: []string{"--cache-dir", "testdata", "version", "--format", "json"},
 			want:      jsonOutput,
 		},
 		{
-			name:      "sad path. '-v', '--format json' flags are used",
-			arguments: []string{"trivy", "-v", "--format", "json"},
-			wantErr:   "flag provided but not defined: -format",
+			name:      "happy path. '-v', '--format json' flags are used",
+			arguments: []string{"--cache-dir", "testdata", "-v", "--format", "json"},
+			want:      jsonOutput,
 		},
 		{
-			name:      "sad path. '-version', '--format json' flags are used",
-			arguments: []string{"trivy", "-version", "--format", "json"},
-			wantErr:   "flag provided but not defined: -format",
+			name:      "happy path. '--version', '--format json' flags are used",
+			arguments: []string{"--cache-dir", "testdata", "--version", "--format", "json"},
+			want:      jsonOutput,
 		},
 	}
 
@@ -108,24 +107,12 @@ Vulnerability DB:
 		t.Run(test.name, func(t *testing.T) {
 			got := new(bytes.Buffer)
 			app := NewApp("test")
-			app.Writer = got
+			SetOut(got)
+			app.SetArgs(test.arguments)
 
-			err := app.Run(test.arguments)
-			if test.wantErr != "" {
-				require.Error(t, err)
-				assert.Contains(t, err.Error(), test.wantErr)
-				return
-			}
+			err := app.Execute()
+			require.NoError(t, err)
 			assert.Equal(t, test.want, got.String())
 		})
 	}
-}
-
-func TestNewCommands(t *testing.T) {
-	NewApp("test")
-	NewClientCommand()
-	NewFilesystemCommand()
-	NewImageCommand()
-	NewRepositoryCommand()
-	NewServerCommand()
 }

@@ -3,6 +3,7 @@ package all
 import (
 	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/buildinfo"
 	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/command/apk"
+	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/language/dotnet/deps"
 	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/language/dotnet/nuget"
 	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/language/golang/binary"
 	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/language/golang/mod"
@@ -10,6 +11,7 @@ import (
 	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/language/java/pom"
 	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/language/nodejs/npm"
 	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/language/nodejs/pkg"
+	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/language/nodejs/pnpm"
 	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/language/nodejs/yarn"
 	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/language/php/composer"
 	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/language/python/packaging"
@@ -19,6 +21,7 @@ import (
 	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/language/ruby/bundler"
 	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/language/ruby/gemspec"
 	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/language/rust/cargo"
+	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/licensing"
 	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/os/alpine"
 	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/os/amazonlinux"
 	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/os/debian"

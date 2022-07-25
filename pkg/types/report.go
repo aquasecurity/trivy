@@ -15,6 +15,9 @@ type Report struct {
 	ArtifactType  ftypes.ArtifactType `json:",omitempty"`
 	Metadata      Metadata            `json:",omitempty"`
 	Results       Results             `json:",omitempty"`
+
+	// SBOM
+	CycloneDX *ftypes.CycloneDX `json:"-"` // Just for internal usage, not exported in JSON
 }
 
 // Metadata represents a metadata of artifact
@@ -36,11 +39,13 @@ type Results []Result
 type ResultClass string
 
 const (
-	ClassOSPkg   = "os-pkgs"
-	ClassLangPkg = "lang-pkgs"
-	ClassConfig  = "config"
-	ClassSecret  = "secret"
-	ClassCustom  = "custom"
+	ClassOSPkg       = "os-pkgs"
+	ClassLangPkg     = "lang-pkgs"
+	ClassConfig      = "config"
+	ClassSecret      = "secret"
+	ClassLicense     = "license"
+	ClassLicenseFile = "license-file"
+	ClassCustom      = "custom"
 )
 
 // Result holds a target and detected vulnerabilities
@@ -53,6 +58,7 @@ type Result struct {
 	MisconfSummary    *MisconfSummary            `json:"MisconfSummary,omitempty"`
 	Misconfigurations []DetectedMisconfiguration `json:"Misconfigurations,omitempty"`
 	Secrets           []ftypes.SecretFinding     `json:"Secrets,omitempty"`
+	Licenses          []DetectedLicense          `json:"Licenses,omitempty"`
 	CustomResources   []ftypes.CustomResource    `json:"CustomResources,omitempty"`
 }
 
@@ -77,6 +83,11 @@ func (r *Result) MarshalJSON() ([]byte, error) {
 	}{
 		ResultAlias: (*ResultAlias)(r),
 	})
+}
+
+func (r *Result) IsEmpty() bool {
+	return len(r.Packages) == 0 && len(r.Vulnerabilities) == 0 && len(r.Misconfigurations) == 0 &&
+		len(r.Secrets) == 0 && len(r.Licenses) == 0 && len(r.CustomResources) == 0
 }
 
 type MisconfSummary struct {

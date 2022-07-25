@@ -73,6 +73,37 @@ func TestNewPackageURL(t *testing.T) {
 			},
 		},
 		{
+			name: "pnpm package",
+			typ:  string(analyzer.TypePnpm),
+			pkg: ftypes.Package{
+				Name:    "@xtuc/ieee754",
+				Version: "1.2.0",
+			},
+			want: purl.PackageURL{
+				PackageURL: packageurl.PackageURL{
+					Type:      packageurl.TypeNPM,
+					Namespace: "@xtuc",
+					Name:      "ieee754",
+					Version:   "1.2.0",
+				},
+			},
+		},
+		{
+			name: "pnpm package with non-namespace",
+			typ:  string(analyzer.TypePnpm),
+			pkg: ftypes.Package{
+				Name:    "lodash",
+				Version: "4.17.21",
+			},
+			want: purl.PackageURL{
+				PackageURL: packageurl.PackageURL{
+					Type:    packageurl.TypeNPM,
+					Name:    "lodash",
+					Version: "4.17.21",
+				},
+			},
+		},
+		{
 			name: "pypi package",
 			typ:  string(analyzer.TypePip),
 			pkg: ftypes.Package{
@@ -274,6 +305,105 @@ func TestNewPackageURL(t *testing.T) {
 			}
 			assert.NoError(t, err)
 			assert.Equal(t, tc.want, packageURL, tc.name)
+		})
+	}
+}
+
+func TestFromString(t *testing.T) {
+
+	testCases := []struct {
+		name    string
+		purl    string
+		want    purl.PackageURL
+		wantErr string
+	}{
+		{
+			name: "happy path for maven",
+			purl: "pkg:maven/org.springframework/spring-core@5.0.4.RELEASE",
+			want: purl.PackageURL{
+				PackageURL: packageurl.PackageURL{
+					Type:       packageurl.TypeMaven,
+					Namespace:  "org.springframework",
+					Version:    "5.0.4.RELEASE",
+					Name:       "spring-core",
+					Qualifiers: packageurl.Qualifiers{},
+				},
+				FilePath: "",
+			},
+		},
+		{
+			name: "happy path for npm",
+			purl: "pkg:npm/bootstrap@5.0.2?file_path=app%2Fapp%2Fpackage.json",
+			want: purl.PackageURL{
+				PackageURL: packageurl.PackageURL{
+					Type:    packageurl.TypeNPM,
+					Name:    "bootstrap",
+					Version: "5.0.2",
+					Qualifiers: packageurl.Qualifiers{
+						{
+							Key:   "file_path",
+							Value: "app/app/package.json",
+						},
+					},
+				},
+			},
+		},
+		{
+			name: "happy path for apk",
+			purl: "pkg:apk/alpine/alpine-baselayout@3.2.0-r16?distro=3.14.2",
+			want: purl.PackageURL{
+				PackageURL: packageurl.PackageURL{
+					Type:      string(analyzer.TypeApk),
+					Namespace: "alpine",
+					Name:      "alpine-baselayout",
+					Version:   "3.2.0-r16",
+					Qualifiers: packageurl.Qualifiers{
+						{
+							Key:   "distro",
+							Value: "3.14.2",
+						},
+					},
+				},
+			},
+		},
+		{
+			name: "happy path for rpm",
+			purl: "pkg:rpm/redhat/containers-common@0.1.14",
+			want: purl.PackageURL{
+				PackageURL: packageurl.PackageURL{
+					Type:       packageurl.TypeRPM,
+					Namespace:  "redhat",
+					Name:       "containers-common",
+					Version:    "0.1.14",
+					Qualifiers: packageurl.Qualifiers{},
+				},
+			},
+		},
+		{
+			name: "bad rpm",
+			purl: "pkg:rpm/redhat/a--@1.0.0",
+			want: purl.PackageURL{
+				PackageURL: packageurl.PackageURL{
+					Type:       packageurl.TypeRPM,
+					Namespace:  "redhat",
+					Name:       "a--",
+					Version:    "1.0.0",
+					Qualifiers: packageurl.Qualifiers{},
+				},
+			},
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			pkg, err := purl.FromString(tc.purl)
+			if tc.wantErr != "" {
+				require.Error(t, err)
+				assert.Contains(t, err.Error(), tc.wantErr)
+				return
+			}
+			assert.NoError(t, err)
+			assert.Equal(t, tc.want, *pkg, tc.name)
 		})
 	}
 }

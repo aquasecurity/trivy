@@ -40,10 +40,10 @@ func NewDriver(libType string) (Driver, error) {
 	case ftypes.Jar, ftypes.Pom:
 		ecosystem = vulnerability.Maven
 		comparer = maven.Comparer{}
-	case ftypes.Npm, ftypes.Yarn, ftypes.NodePkg, ftypes.JavaScript:
+	case ftypes.Npm, ftypes.Yarn, ftypes.Pnpm, ftypes.NodePkg, ftypes.JavaScript:
 		ecosystem = vulnerability.Npm
 		comparer = npm.Comparer{}
-	case ftypes.NuGet:
+	case ftypes.NuGet, ftypes.DotNetCore:
 		ecosystem = vulnerability.NuGet
 		comparer = compare.GenericComparer{}
 	case ftypes.Pipenv, ftypes.Poetry, ftypes.Pip, ftypes.PythonPkg:

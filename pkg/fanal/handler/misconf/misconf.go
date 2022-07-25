@@ -10,8 +10,6 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/aquasecurity/defsec/pkg/scanners/rbac"
-
 	"github.com/liamg/memoryfs"
 	"github.com/samber/lo"
 	"golang.org/x/xerrors"
@@ -20,15 +18,18 @@ import (
 	"github.com/aquasecurity/defsec/pkg/scan"
 	"github.com/aquasecurity/defsec/pkg/scanners"
 	cfscanner "github.com/aquasecurity/defsec/pkg/scanners/cloudformation"
+	cfparser "github.com/aquasecurity/defsec/pkg/scanners/cloudformation/parser"
 	dfscanner "github.com/aquasecurity/defsec/pkg/scanners/dockerfile"
 	"github.com/aquasecurity/defsec/pkg/scanners/helm"
 	k8sscanner "github.com/aquasecurity/defsec/pkg/scanners/kubernetes"
 	"github.com/aquasecurity/defsec/pkg/scanners/options"
+	"github.com/aquasecurity/defsec/pkg/scanners/rbac"
 	tfscanner "github.com/aquasecurity/defsec/pkg/scanners/terraform"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/artifact"
 	"github.com/aquasecurity/trivy/pkg/fanal/handler"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
+	"github.com/aquasecurity/trivy/pkg/log"
 )
 
 func init() {
@@ -236,6 +237,10 @@ func (h misconfPostHandler) Handle(ctx context.Context, result *analyzer.Analysi
 	for t, scanner := range h.scanners {
 		results, err := scanner.ScanFS(ctx, mapMemoryFS[t], ".")
 		if err != nil {
+			if _, ok := err.(*cfparser.InvalidContentError); ok {
+				log.Logger.Errorf("scan %q was broken with InvalidContentError: %v", scanner.Name(), err)
+				continue
+			}
 			return xerrors.Errorf("scan config error: %w", err)
 		}
 

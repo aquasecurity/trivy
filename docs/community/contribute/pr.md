@@ -42,6 +42,7 @@ checks:
 - vuln
 - misconf
 - secret
+- license
 
 mode:
 

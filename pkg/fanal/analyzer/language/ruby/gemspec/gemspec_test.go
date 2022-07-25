@@ -31,7 +31,7 @@ func Test_gemspecLibraryAnalyzer_Analyze(t *testing.T) {
 							{
 								Name:     "test-unit",
 								Version:  "3.3.7",
-								License:  "Ruby, BSDL, PSFL",
+								Licenses: []string{"Ruby", "BSDL", "PSFL"},
 								FilePath: "testdata/multiple_licenses.gemspec",
 							},
 						},

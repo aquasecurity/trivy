@@ -1,5 +1,6 @@
 # CycloneDX
 
+## Reporting
 Trivy generates JSON reports in the [CycloneDX][cyclonedx] format.
 Note that XML format is not supported at the moment.
 
@@ -229,5 +230,33 @@ $ cat result.json | jq .
 ```
 
 </details>
+
+## Scanning
+Trivy can take CycloneDX as an input and scan for vulnerabilities.
+To scan SBOM, you can use the `sbom` subcommand and pass the path to your CycloneDX report. 
+
+```bash
+$ trivy sbom /path/to/cyclonedx.json
+
+cyclonedx.json (alpine 3.7.1)
+=========================
+Total: 3 (CRITICAL: 3)
+
+┌─────────────┬────────────────┬──────────┬───────────────────┬───────────────┬──────────────────────────────────────────────────────────────┐
+│   Library   │ Vulnerability  │ Severity │ Installed Version │ Fixed Version │                            Title                             │
+├─────────────┼────────────────┼──────────┼───────────────────┼───────────────┼──────────────────────────────────────────────────────────────┤
+│ curl        │ CVE-2018-14618 │ CRITICAL │ 7.61.0-r0         │ 7.61.1-r0     │ curl: NTLM password overflow via integer overflow            │
+│             │                │          │                   │               │ https://avd.aquasec.com/nvd/cve-2018-14618                   │
+├─────────────┼────────────────┼──────────┼───────────────────┼───────────────┼──────────────────────────────────────────────────────────────┤
+│ libbz2      │ CVE-2019-12900 │ CRITICAL │ 1.0.6-r6          │ 1.0.6-r7      │ bzip2: out-of-bounds write in function BZ2_decompress        │
+│             │                │          │                   │               │ https://avd.aquasec.com/nvd/cve-2019-12900                   │
+├─────────────┼────────────────┼──────────┼───────────────────┼───────────────┼──────────────────────────────────────────────────────────────┤
+│ sqlite-libs │ CVE-2019-8457  │ CRITICAL │ 3.21.0-r1         │ 3.25.3-r1     │ sqlite: heap out-of-bound read in function rtreenode()       │
+│             │                │          │                   │               │ https://avd.aquasec.com/nvd/cve-2019-8457                    │
+└─────────────┴────────────────┴──────────┴───────────────────┴───────────────┴──────────────────────────────────────────────────────────────┘
+```
+
+!!! note
+    If you want to generate a CycloneDX report from a CycloneDX input, please be aware that the output stores references to your original CycloneDX report and contains only detected vulnerabilities, not components.
 
 [cyclonedx]: https://cyclonedx.org/

@@ -9,7 +9,7 @@ import (
 	"strings"
 	"sync"
 
-	digest "github.com/opencontainers/go-digest"
+	"github.com/opencontainers/go-digest"
 	"golang.org/x/sync/semaphore"
 	"golang.org/x/xerrors"
 
@@ -119,6 +119,7 @@ func (a Artifact) Inspect(ctx context.Context) (types.ArtifactReference, error) 
 		PackageInfos:    result.PackageInfos,
 		Applications:    result.Applications,
 		Secrets:         result.Secrets,
+		Licenses:        result.Licenses,
 		CustomResources: result.CustomResources,
 	}
 

@@ -11,7 +11,7 @@ on:
   pull_request:
 env:
   GO_VERSION: "1.18"
-  TINYGO_VERSION: "0.23.0"
+  TINYGO_VERSION: "0.24.0"
 jobs:
   test:
     name: Test
@@ -124,7 +124,7 @@ jobs:
       with:
         fetch-depth: 0
         persist-credentials: true
-    - uses: actions/setup-python@v3
+    - uses: actions/setup-python@v4
       with:
         python-version: 3.x
     - name: Install dependencies

@@ -1,12 +1,15 @@
 package language
 
 import (
+	"strings"
+
 	"golang.org/x/xerrors"
 
 	dio "github.com/aquasecurity/go-dep-parser/pkg/io"
 	godeptypes "github.com/aquasecurity/go-dep-parser/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
+	"github.com/aquasecurity/trivy/pkg/licensing"
 )
 
 func Analyze(fileType, filePath string, r dio.ReadSeekerAt, parser godeptypes.Parser) (*analyzer.AnalysisResult, error) {
@@ -32,13 +35,20 @@ func ToAnalysisResult(fileType, filePath, libFilePath string, libs []godeptypes.
 
 	var pkgs []types.Package
 	for _, lib := range libs {
+		var licenses []string
+		if lib.License != "" {
+			licenses = strings.Split(lib.License, ",")
+			for i, license := range licenses {
+				licenses[i] = licensing.Normalize(strings.TrimSpace(license))
+			}
+		}
 		pkgs = append(pkgs, types.Package{
 			ID:        lib.ID,
 			Name:      lib.Name,
 			Version:   lib.Version,
 			FilePath:  libFilePath,
 			Indirect:  lib.Indirect,
-			License:   lib.License,
+			Licenses:  licenses,
 			DependsOn: deps[lib.ID],
 		})
 	}

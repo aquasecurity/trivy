@@ -6,6 +6,7 @@ import (
 	"context"
 	"encoding/json"
 	"flag"
+	"io"
 	"net"
 	"os"
 	"path/filepath"
@@ -18,6 +19,7 @@ import (
 
 	"github.com/aquasecurity/trivy-db/pkg/db"
 	"github.com/aquasecurity/trivy-db/pkg/metadata"
+	"github.com/aquasecurity/trivy/pkg/commands"
 	"github.com/aquasecurity/trivy/pkg/dbtest"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
@@ -118,6 +120,16 @@ func readReport(t *testing.T, filePath string) types.Report {
 	}
 
 	return report
+}
+
+func execute(osArgs []string) error {
+	// Setup CLI App
+	app := commands.NewApp("dev")
+	app.SetOut(io.Discard)
+
+	// Run Trivy
+	app.SetArgs(osArgs)
+	return app.Execute()
 }
 
 func compareReports(t *testing.T, wantFile, gotFile string) {

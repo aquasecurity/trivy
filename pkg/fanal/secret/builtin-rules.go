@@ -149,7 +149,7 @@ var builtinRules = []Rule{
 		Category:        CategoryAsymmetricPrivateKey,
 		Title:           "Asymmetric Private Key",
 		Severity:        "HIGH",
-		Regex:           MustCompile(`(?i)-----\s*?BEGIN[ A-Z0-9_-]*?PRIVATE KEY( BLOCK)?\s*?-----(?P<secret>[A-Za-z0-9=+/\s]*?)-----\s*?END[ A-Z0-9_-]*? PRIVATE KEY( BLOCK)?\s*?-----`),
+		Regex:           MustCompile(`(?i)-----\s*?BEGIN[ A-Z0-9_-]*?PRIVATE KEY( BLOCK)?\s*?-----[\s]*?(?P<secret>[A-Za-z0-9=+/\r\n]+)[\s]*?-----\s*?END[ A-Z0-9_-]*? PRIVATE KEY( BLOCK)?\s*?-----`),
 		SecretGroupName: "secret",
 		Keywords:        []string{"-----"},
 	},
@@ -166,7 +166,7 @@ var builtinRules = []Rule{
 		Category: CategorySlack,
 		Title:    "Slack token",
 		Severity: "HIGH",
-		Regex:    MustCompile(`xox[baprs]-([0-9a-zA-Z]{10,48})?`),
+		Regex:    MustCompile(`xox[baprs]-([0-9a-zA-Z]{10,48})`),
 		Keywords: []string{"xoxb-", "xoxa-", "xoxp-", "xoxr-", "xoxs-"},
 	},
 	{

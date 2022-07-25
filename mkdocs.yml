@@ -61,6 +61,8 @@ nav:
           - Scanning: docs/secret/scanning.md
           - Configuration: docs/secret/configuration.md
           - Examples: docs/secret/examples.md
+      - License:
+            - Scanning: docs/licenses/scanning.md
       - Kubernetes:
           - CLI:
               - Scanning: docs/kubernetes/cli/scanning.md
@@ -70,6 +72,8 @@ nav:
           - Overview: docs/sbom/index.md
           - CycloneDX: docs/sbom/cyclonedx.md
           - SPDX: docs/sbom/spdx.md
+      - Attestation:
+          - SBOM: docs/attestation/sbom.md
       - Integrations:
           - Overview: docs/integrations/index.md
           - GitHub Actions: docs/integrations/github-actions.md
@@ -97,6 +101,9 @@ nav:
                   - ACR (Azure Container Registry): docs/advanced/private-registries/acr.md
                   - Self-Hosted: docs/advanced/private-registries/self.md
       - References:
+          - Customization:
+              - Environment variables: docs/references/customization/envs.md
+              - Config file: docs/references/customization/config-file.md
           - CLI:
               - Overview: docs/references/cli/index.md
               - Image: docs/references/cli/image.md
