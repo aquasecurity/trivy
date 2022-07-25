@@ -2,8 +2,9 @@ package main
 
 import (
 	"context"
-	"fmt"
 	"os"
+
+	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/commands"
 	"github.com/aquasecurity/trivy/pkg/log"
@@ -15,18 +16,26 @@ var (
 )
 
 func main() {
+	if err := run(); err != nil {
+		log.Fatal(err)
+	}
+}
+
+func run() error {
 	// Trivy behaves as the specified plugin.
 	if runAsPlugin := os.Getenv("TRIVY_RUN_AS_PLUGIN"); runAsPlugin != "" {
 		if !plugin.IsPredefined(runAsPlugin) {
-			log.Fatal(fmt.Errorf("unknown plugin: %s", runAsPlugin))
+			return xerrors.Errorf("unknown plugin: %s", runAsPlugin)
 		}
 		if err := plugin.RunWithArgs(context.Background(), runAsPlugin, os.Args); err != nil {
-			log.Fatal(err)
+			return xerrors.Errorf("plugin error: %w", err)
 		}
+		return nil
 	}
 
 	app := commands.NewApp(version)
 	if err := app.Execute(); err != nil {
-		log.Fatal(err)
+		return err
 	}
+	return nil
 }
