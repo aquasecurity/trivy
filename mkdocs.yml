@@ -138,6 +138,7 @@ theme:
     - navigation.tabs
     - navigation.tabs.sticky
     - navigation.sections
+    - content.tabs.link
 
 markdown_extensions:
   - pymdownx.highlight
@@ -145,7 +146,8 @@ markdown_extensions:
   - admonition
   - footnotes
   - attr_list
-  - pymdownx.tabbed
+  - pymdownx.tabbed:
+      alternate_style: true
   - def_list
   - pymdownx.details
   - pymdownx.emoji:

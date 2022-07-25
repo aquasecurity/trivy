@@ -10,9 +10,17 @@ Please follow [oras installation instruction][oras].
 
 Download `db.tar.gz`:
 
-```
-$ oras pull ghcr.io/aquasecurity/trivy-db:2 -a
-```
+=== "oras >= v0.13.0"
+
+    ```
+    $ oras pull ghcr.io/aquasecurity/trivy-db:2
+    ```
+
+=== "oras < v0.13.0"
+
+    ```
+    $ oras pull -a ghcr.io/aquasecurity/trivy-db:2
+    ```
 
 ### Transfer the DB file into the air-gapped environment
 The way of transfer depends on the environment.
