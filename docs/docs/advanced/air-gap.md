@@ -9,14 +9,18 @@ At first, you need to download the vulnerability database for use in air-gapped 
 Please follow [oras installation instruction][oras].
 
 Download `db.tar.gz`:
-```
-$ oras pull ghcr.io/aquasecurity/trivy-db:2
-```
 
-for `oras` v0.12.0 or earlier, `-a` flag must be used:
-```
-$ oras pull ghcr.io/aquasecurity/trivy-db:2 -a
-```
+=== "oras >= v0.13.0"
+
+    ```
+    $ oras pull ghcr.io/aquasecurity/trivy-db:2
+    ```
+
+=== "oras < v0.13.0"
+
+    ```
+    $ oras pull -a ghcr.io/aquasecurity/trivy-db:2
+    ```
 
 ### Transfer the DB file into the air-gapped environment
 The way of transfer depends on the environment.
