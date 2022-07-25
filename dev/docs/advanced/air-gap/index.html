@@ -3732,16 +3732,26 @@
 <p>Trivy can be used in air-gapped environments. Note that an allowlist is <a href="../../references/troubleshooting/">here</a>.</p>
 <h2 id="air-gapped-environment-for-vulnerabilities">Air-Gapped Environment for vulnerabilities</h2>
 <h3 id="download-the-vulnerability-database">Download the vulnerability database</h3>
+<div class="tabbed-set tabbed-alternate" data-tabs="1:3"><input checked="checked" id="__tabbed_1_1" name="__tabbed_1" type="radio" /><input id="__tabbed_1_2" name="__tabbed_1" type="radio" /><input id="__tabbed_1_3" name="__tabbed_1" type="radio" /><div class="tabbed-labels"><label for="__tabbed_1_1">Trivy</label><label for="__tabbed_1_2">oras &gt;= v0.13.0</label><label for="__tabbed_1_3">oras &lt; v0.13.0</label></div>
+<div class="tabbed-content">
+<div class="tabbed-block">
+<div class="highlight"><pre><span></span><code>TRIVY_TEMP_DIR=$(mktemp -d)
+trivy --cache-dir $TRIVY_TEMP_DIR image --download-db-only
+tar -cf ./db.tar.gz -C $TRIVY_TEMP_DIR/db metadata.json trivy.db
+rm -rf $TRIVY_TEMP_DIR
+</code></pre></div>
+</div>
+<div class="tabbed-block">
 <p>At first, you need to download the vulnerability database for use in air-gapped environments.
 Please follow <a href="https://oras.land/cli/">oras installation instruction</a>.</p>
 <p>Download <code>db.tar.gz</code>:</p>
-<div class="tabbed-set tabbed-alternate" data-tabs="1:2"><input checked="checked" id="__tabbed_1_1" name="__tabbed_1" type="radio" /><input id="__tabbed_1_2" name="__tabbed_1" type="radio" /><div class="tabbed-labels"><label for="__tabbed_1_1">oras &gt;= v0.13.0</label><label for="__tabbed_1_2">oras &lt; v0.13.0</label></div>
-<div class="tabbed-content">
-<div class="tabbed-block">
 <div class="highlight"><pre><span></span><code>$ oras pull ghcr.io/aquasecurity/trivy-db:2
 </code></pre></div>
 </div>
 <div class="tabbed-block">
+<p>At first, you need to download the vulnerability database for use in air-gapped environments.
+Please follow <a href="https://oras.land/cli/">oras installation instruction</a>.</p>
+<p>Download <code>db.tar.gz</code>:</p>
 <div class="highlight"><pre><span></span><code>$ oras pull -a ghcr.io/aquasecurity/trivy-db:2
 </code></pre></div>
 </div>
