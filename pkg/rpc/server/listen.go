@@ -52,10 +52,10 @@ func (s Server) ListenAndServe(serverCache cache.Cache, insecure bool) error {
 	dbUpdateWg := &sync.WaitGroup{}
 
 	go func() {
+		worker := newDBWorker(dbc.NewClient(s.cacheDir, true, insecure, dbc.WithDBRepository(s.dbRepository)))
 		ctx := context.Background()
 		for {
 			time.Sleep(updateInterval)
-			worker := newDBWorker(dbc.NewClient(s.cacheDir, true, insecure, dbc.WithDBRepository(s.dbRepository)))
 			if err := worker.update(ctx, s.appVersion, s.cacheDir, dbUpdateWg, requestWg); err != nil {
 				log.Logger.Errorf("%+v\n", err)
 			}
@@ -144,7 +144,7 @@ func (w dbWorker) hotUpdate(ctx context.Context, cacheDir string, dbUpdateWg, re
 	}
 	defer os.RemoveAll(tmpDir)
 
-	if err = w.dbClient.Download(ctx, tmpDir); err != nil {
+	if err = w.dbClient.Download(ctx, tmpDir, true); err != nil {
 		return xerrors.Errorf("failed to download vulnerability DB: %w", err)
 	}
 
