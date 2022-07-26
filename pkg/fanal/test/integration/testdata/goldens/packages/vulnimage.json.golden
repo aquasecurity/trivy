@@ -29,7 +29,7 @@
     "SrcName": "alpine-baselayout",
     "SrcVersion": "3.0.5-r2",
     "Licenses": [
-      "GPL2"
+      "GPL-2.0"
     ],
     "Layer": {
       "Digest": "sha256:c67f3896b22c1378881cbbb9c9d1edfe881fd07f713371835ef46d93c649684d",
@@ -55,7 +55,7 @@
     "SrcName": "apk-tools",
     "SrcVersion": "2.10.1-r0",
     "Licenses": [
-      "GPL2"
+      "GPL-2.0"
     ],
     "Layer": {
       "Digest": "sha256:c67f3896b22c1378881cbbb9c9d1edfe881fd07f713371835ef46d93c649684d",
@@ -68,7 +68,7 @@
     "SrcName": "apr",
     "SrcVersion": "1.6.3-r0",
     "Licenses": [
-      "ASL 2.0"
+      "ASL2.0"
     ],
     "Layer": {
       "Digest": "sha256:c191915691a422a1b0230c9010165ff655204a9fd95e3b43151132bcb237826b",
@@ -81,7 +81,7 @@
     "SrcName": "apr-util",
     "SrcVersion": "1.6.1-r1",
     "Licenses": [
-      "ASL 2.0"
+      "ASL2.0"
     ],
     "Layer": {
       "Digest": "sha256:c191915691a422a1b0230c9010165ff655204a9fd95e3b43151132bcb237826b",
@@ -94,7 +94,7 @@
     "SrcName": "bash",
     "SrcVersion": "4.4.19-r1",
     "Licenses": [
-      "GPL3+"
+      "GPL-3.0"
     ],
     "Layer": {
       "Digest": "sha256:c191915691a422a1b0230c9010165ff655204a9fd95e3b43151132bcb237826b",
@@ -107,7 +107,7 @@
     "SrcName": "busybox",
     "SrcVersion": "1.27.2-r11",
     "Licenses": [
-      "GPL2"
+      "GPL-2.0"
     ],
     "Layer": {
       "Digest": "sha256:c67f3896b22c1378881cbbb9c9d1edfe881fd07f713371835ef46d93c649684d",
@@ -120,7 +120,8 @@
     "SrcName": "ca-certificates",
     "SrcVersion": "20171114-r0",
     "Licenses": [
-      "MPL 2.0 GPL2+"
+      "MPL-2.0",
+      "GPL-2.0"
     ],
     "Layer": {
       "Digest": "sha256:88777455d910410652665cec0149a02db3584d6dc26e306788a3532d480b00ae",
@@ -172,7 +173,7 @@
     "SrcName": "gdbm",
     "SrcVersion": "1.13-r1",
     "Licenses": [
-      "GPL"
+      "GPL-3.0"
     ],
     "Layer": {
       "Digest": "sha256:c191915691a422a1b0230c9010165ff655204a9fd95e3b43151132bcb237826b",
@@ -185,7 +186,7 @@
     "SrcName": "git",
     "SrcVersion": "2.15.2-r0",
     "Licenses": [
-      "GPL2+"
+      "GPL-2.0"
     ],
     "Layer": {
       "Digest": "sha256:c191915691a422a1b0230c9010165ff655204a9fd95e3b43151132bcb237826b",
@@ -198,7 +199,7 @@
     "SrcName": "bzip2",
     "SrcVersion": "1.0.6-r6",
     "Licenses": [
-      "BSD"
+      "BSD-3-Clause"
     ],
     "Layer": {
       "Digest": "sha256:c191915691a422a1b0230c9010165ff655204a9fd95e3b43151132bcb237826b",
@@ -211,7 +212,7 @@
     "SrcName": "libc-dev",
     "SrcVersion": "0.7.1-r0",
     "Licenses": [
-      "BSD"
+      "BSD-3-Clause"
     ],
     "Layer": {
       "Digest": "sha256:c67f3896b22c1378881cbbb9c9d1edfe881fd07f713371835ef46d93c649684d",
@@ -237,7 +238,7 @@
     "SrcName": "libedit",
     "SrcVersion": "20170329.3.1-r3",
     "Licenses": [
-      "BSD"
+      "BSD-3-Clause"
     ],
     "Layer": {
       "Digest": "sha256:3d6152f6ac208640f9fb494d1c379fe508db1fc5754cd08fefec200bddd13e0e",
@@ -341,7 +342,7 @@
     "SrcName": "libssh2",
     "SrcVersion": "1.8.0-r2",
     "Licenses": [
-      "BSD"
+      "BSD-3-Clause"
     ],
     "Layer": {
       "Digest": "sha256:88777455d910410652665cec0149a02db3584d6dc26e306788a3532d480b00ae",
@@ -354,7 +355,12 @@
     "SrcName": "util-linux",
     "SrcVersion": "2.31-r0",
     "Licenses": [
-      "GPL2 GPL2+ LGPL2+ BSD Public Domain"
+      "GPL-2.0",
+      "GPL-2.0",
+      "LGPL-2.0",
+      "BSD-3-Clause",
+      "Public",
+      "Domain"
     ],
     "Layer": {
       "Digest": "sha256:c191915691a422a1b0230c9010165ff655204a9fd95e3b43151132bcb237826b",
@@ -380,7 +386,7 @@
     "SrcName": "mercurial",
     "SrcVersion": "4.5.2-r0",
     "Licenses": [
-      "GPL2+"
+      "GPL-2.0"
     ],
     "Layer": {
       "Digest": "sha256:c191915691a422a1b0230c9010165ff655204a9fd95e3b43151132bcb237826b",
@@ -406,7 +412,9 @@
     "SrcName": "musl",
     "SrcVersion": "1.1.18-r3",
     "Licenses": [
-      "MIT BSD GPL2+"
+      "MIT",
+      "BSD-3-Clause",
+      "GPL-2.0"
     ],
     "Layer": {
       "Digest": "sha256:c67f3896b22c1378881cbbb9c9d1edfe881fd07f713371835ef46d93c649684d",
@@ -536,7 +544,7 @@
     "SrcName": "patch",
     "SrcVersion": "2.7.5-r2",
     "Licenses": [
-      "GPL"
+      "GPL-3.0"
     ],
     "Layer": {
       "Digest": "sha256:c191915691a422a1b0230c9010165ff655204a9fd95e3b43151132bcb237826b",
@@ -549,7 +557,7 @@
     "SrcName": "pcre2",
     "SrcVersion": "10.30-r0",
     "Licenses": [
-      "BSD"
+      "BSD-3-Clause"
     ],
     "Layer": {
       "Digest": "sha256:c191915691a422a1b0230c9010165ff655204a9fd95e3b43151132bcb237826b",
@@ -588,7 +596,7 @@
     "SrcName": "readline",
     "SrcVersion": "7.0.003-r0",
     "Licenses": [
-      "GPL"
+      "GPL-3.0"
     ],
     "Layer": {
       "Digest": "sha256:c191915691a422a1b0230c9010165ff655204a9fd95e3b43151132bcb237826b",
@@ -601,7 +609,7 @@
     "SrcName": "pax-utils",
     "SrcVersion": "1.2.2-r1",
     "Licenses": [
-      "GPL2"
+      "GPL-2.0"
     ],
     "Layer": {
       "Digest": "sha256:c67f3896b22c1378881cbbb9c9d1edfe881fd07f713371835ef46d93c649684d",
@@ -614,7 +622,7 @@
     "SrcName": "serf",
     "SrcVersion": "1.3.9-r3",
     "Licenses": [
-      "ASL 2.0"
+      "ASL2.0"
     ],
     "Layer": {
       "Digest": "sha256:c191915691a422a1b0230c9010165ff655204a9fd95e3b43151132bcb237826b",
@@ -640,7 +648,7 @@
     "SrcName": "busybox",
     "SrcVersion": "1.27.2-r11",
     "Licenses": [
-      "GPL2"
+      "GPL-2.0"
     ],
     "Layer": {
       "Digest": "sha256:c67f3896b22c1378881cbbb9c9d1edfe881fd07f713371835ef46d93c649684d",
@@ -653,7 +661,8 @@
     "SrcName": "subversion",
     "SrcVersion": "1.9.7-r0",
     "Licenses": [
-      "apache bsd"
+      "Apache-2.0",
+      "BSD-3-Clause"
     ],
     "Layer": {
       "Digest": "sha256:c191915691a422a1b0230c9010165ff655204a9fd95e3b43151132bcb237826b",
@@ -666,7 +675,8 @@
     "SrcName": "subversion",
     "SrcVersion": "1.9.7-r0",
     "Licenses": [
-      "apache bsd"
+      "Apache-2.0",
+      "BSD-3-Clause"
     ],
     "Layer": {
       "Digest": "sha256:c191915691a422a1b0230c9010165ff655204a9fd95e3b43151132bcb237826b",
@@ -679,7 +689,7 @@
     "SrcName": "tar",
     "SrcVersion": "1.29-r1",
     "Licenses": [
-      "GPL"
+      "GPL-3.0"
     ],
     "Layer": {
       "Digest": "sha256:88777455d910410652665cec0149a02db3584d6dc26e306788a3532d480b00ae",
@@ -731,7 +741,7 @@
     "SrcName": "zlib",
     "SrcVersion": "1.2.11-r1",
     "Licenses": [
-      "zlib"
+      "Zlib"
     ],
     "Layer": {
       "Digest": "sha256:c67f3896b22c1378881cbbb9c9d1edfe881fd07f713371835ef46d93c649684d",

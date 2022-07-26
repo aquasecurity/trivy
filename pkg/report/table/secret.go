@@ -1,9 +1,11 @@
-package report
+package table
 
 import (
 	"bytes"
 	"fmt"
 	"strings"
+
+	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 
 	"github.com/liamg/tml"
 	"golang.org/x/crypto/ssh/terminal"
@@ -12,14 +14,15 @@ import (
 )
 
 type secretRenderer struct {
-	target  string
-	secrets []types.SecretFinding
-	w       *bytes.Buffer
-	width   int
-	ansi    bool
+	w          *bytes.Buffer
+	target     string
+	secrets    []types.SecretFinding
+	severities []dbTypes.Severity
+	width      int
+	ansi       bool
 }
 
-func NewSecretRenderer(target string, secrets []types.SecretFinding, ansi bool) *secretRenderer {
+func NewSecretRenderer(target string, secrets []types.SecretFinding, ansi bool, severities []dbTypes.Severity) *secretRenderer {
 	width, _, err := terminal.GetSize(0)
 	if err != nil || width == 0 {
 		width = 40
@@ -28,19 +31,37 @@ func NewSecretRenderer(target string, secrets []types.SecretFinding, ansi bool) 
 		tml.DisableFormatting()
 	}
 	return &secretRenderer{
-		w:       bytes.NewBuffer([]byte{}),
-		target:  target,
-		secrets: secrets,
-		width:   width,
-		ansi:    ansi,
+		w:          bytes.NewBuffer([]byte{}),
+		target:     target,
+		secrets:    secrets,
+		severities: severities,
+		width:      width,
+		ansi:       ansi,
 	}
 }
 
 func (r *secretRenderer) Render() string {
+	target := r.target + " (secrets)"
+	renderTarget(r.w, target, r.ansi)
+
+	severityCount := r.countSeverities()
+	total, summaries := summarize(r.severities, severityCount)
+
+	r.printf("Total: %d (%s)\n\n", total, strings.Join(summaries, ", "))
+
 	for _, m := range r.secrets {
 		r.renderSingle(m)
 	}
 	return r.w.String()
+}
+
+func (r *secretRenderer) countSeverities() map[string]int {
+	severityCount := map[string]int{}
+	for _, secret := range r.secrets {
+		severity := secret.Severity
+		severityCount[severity]++
+	}
+	return severityCount
 }
 
 func (r *secretRenderer) printf(format string, args ...interface{}) {

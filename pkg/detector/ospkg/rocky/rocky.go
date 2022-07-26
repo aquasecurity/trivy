@@ -20,6 +20,7 @@ var (
 		// Source:
 		// https://endoflife.date/rocky-linux
 		"8": time.Date(2029, 5, 31, 23, 59, 59, 0, time.UTC),
+		"9": time.Date(2032, 5, 31, 23, 59, 59, 0, time.UTC),
 	}
 )
 

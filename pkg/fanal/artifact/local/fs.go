@@ -9,7 +9,7 @@ import (
 	"strings"
 	"sync"
 
-	digest "github.com/opencontainers/go-digest"
+	"github.com/opencontainers/go-digest"
 	"golang.org/x/sync/semaphore"
 	"golang.org/x/xerrors"
 

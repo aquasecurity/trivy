@@ -34,6 +34,7 @@ jobs:
             vuln
             misconf
             secret
+            license
 
             image
             fs

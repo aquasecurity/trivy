@@ -14,13 +14,13 @@ var (
 	SkipDirsFlag = Flag{
 		Name:       "skip-dirs",
 		ConfigName: "scan.skip-dirs",
-		Value:      "",
+		Value:      []string{},
 		Usage:      "specify the directories where the traversal is skipped",
 	}
 	SkipFilesFlag = Flag{
 		Name:       "skip-files",
 		ConfigName: "scan.skip-files",
-		Value:      "",
+		Value:      []string{},
 		Usage:      "specify the file paths to skip traversal",
 	}
 	OfflineScanFlag = Flag{

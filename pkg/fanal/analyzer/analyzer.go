@@ -177,10 +177,15 @@ func (r *AnalysisResult) Sort() {
 
 	// License files
 	sort.Slice(r.Licenses, func(i, j int) bool {
-		if r.Licenses[i].Type != r.Licenses[j].Type {
-			return r.Licenses[i].Type < r.Licenses[j].Type
+		if r.Licenses[i].Type == r.Licenses[j].Type {
+			if r.Licenses[i].FilePath == r.Licenses[j].FilePath {
+				return r.Licenses[i].Layer.DiffID < r.Licenses[j].Layer.DiffID
+			} else {
+				return r.Licenses[i].FilePath < r.Licenses[j].FilePath
+			}
 		}
-		return r.Licenses[i].FilePath < r.Licenses[j].FilePath
+
+		return r.Licenses[i].Type < r.Licenses[j].Type
 	})
 }
 

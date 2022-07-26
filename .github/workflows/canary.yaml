@@ -3,6 +3,10 @@ on:
   push:
     branches:
       - 'main'
+    paths:
+      - '**.go'
+      - 'Dockerfile.canary'
+      - '.github/workflows/canary.yaml'
   workflow_dispatch:
 
 jobs:

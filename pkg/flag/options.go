@@ -48,8 +48,10 @@ type Flags struct {
 	DBFlagGroup            *DBFlagGroup
 	ImageFlagGroup         *ImageFlagGroup
 	K8sFlagGroup           *K8sFlagGroup
+	LicenseFlagGroup       *LicenseFlagGroup
 	MisconfFlagGroup       *MisconfFlagGroup
 	RemoteFlagGroup        *RemoteFlagGroup
+	RepoFlagGroup          *RepoFlagGroup
 	ReportFlagGroup        *ReportFlagGroup
 	SBOMFlagGroup          *SBOMFlagGroup
 	ScanFlagGroup          *ScanFlagGroup
@@ -64,8 +66,10 @@ type Options struct {
 	DBOptions
 	ImageOptions
 	K8sOptions
+	LicenseOptions
 	MisconfOptions
 	RemoteOptions
+	RepoOptions
 	ReportOptions
 	SBOMOptions
 	ScanOptions
@@ -109,7 +113,11 @@ func addFlag(cmd *cobra.Command, flag *Flag) {
 }
 
 func bind(cmd *cobra.Command, flag *Flag) error {
-	if flag == nil || flag.Name == "" {
+	if flag == nil {
+		return nil
+	} else if flag.Name == "" {
+		// This flag is available only in trivy.yaml
+		viper.SetDefault(flag.ConfigName, flag.Value)
 		return nil
 	}
 	if flag.Persistent {
@@ -122,9 +130,10 @@ func bind(cmd *cobra.Command, flag *Flag) error {
 		}
 	}
 	// We don't use viper.AutomaticEnv, so we need to add a prefix manually here.
-	if err := viper.BindEnv(flag.ConfigName, strings.ToUpper("trivy_"+flag.Name)); err != nil {
+	if err := viper.BindEnv(flag.ConfigName, strings.ToUpper("trivy_"+strings.ReplaceAll(flag.Name, "-", "_"))); err != nil {
 		return err
 	}
+
 	return nil
 }
 
@@ -193,11 +202,17 @@ func (f *Flags) groups() []FlagGroup {
 	if f.SecretFlagGroup != nil {
 		groups = append(groups, f.SecretFlagGroup)
 	}
+	if f.LicenseFlagGroup != nil {
+		groups = append(groups, f.LicenseFlagGroup)
+	}
 	if f.K8sFlagGroup != nil {
 		groups = append(groups, f.K8sFlagGroup)
 	}
 	if f.RemoteFlagGroup != nil {
 		groups = append(groups, f.RemoteFlagGroup)
+	}
+	if f.RepoFlagGroup != nil {
+		groups = append(groups, f.RepoFlagGroup)
 	}
 	return groups
 }
@@ -219,7 +234,7 @@ func (f *Flags) Usages(cmd *cobra.Command) string {
 		flags := pflag.NewFlagSet(cmd.Name(), pflag.ContinueOnError)
 		lflags := cmd.LocalFlags()
 		for _, flag := range group.Flags() {
-			if flag == nil {
+			if flag == nil || flag.Name == "" {
 				continue
 			}
 			flags.AddFlag(lflags.Lookup(flag.Name))
@@ -277,6 +292,10 @@ func (f *Flags) ToOptions(appVersion string, args []string, globalFlags *GlobalF
 		opts.K8sOptions = f.K8sFlagGroup.ToOptions()
 	}
 
+	if f.LicenseFlagGroup != nil {
+		opts.LicenseOptions = f.LicenseFlagGroup.ToOptions()
+	}
+
 	if f.MisconfFlagGroup != nil {
 		opts.MisconfOptions, err = f.MisconfFlagGroup.ToOptions()
 		if err != nil {
@@ -286,6 +305,10 @@ func (f *Flags) ToOptions(appVersion string, args []string, globalFlags *GlobalF
 
 	if f.RemoteFlagGroup != nil {
 		opts.RemoteOptions = f.RemoteFlagGroup.ToOptions()
+	}
+
+	if f.RepoFlagGroup != nil {
+		opts.RepoOptions = f.RepoFlagGroup.ToOptions()
 	}
 
 	if f.ReportFlagGroup != nil {

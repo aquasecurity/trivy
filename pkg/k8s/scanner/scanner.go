@@ -97,7 +97,7 @@ func (s *Scanner) scanVulns(ctx context.Context, artifact *artifacts.Artifact) (
 		imageReport, err := s.runner.ScanImage(ctx, s.opts)
 
 		if err != nil {
-			log.Logger.Debugf("failed to scan image %s: %s", image, err)
+			log.Logger.Warnf("failed to scan image %s: %s", image, err)
 			resources = append(resources, report.CreateResource(artifact, imageReport, err))
 			continue
 		}
@@ -131,7 +131,6 @@ func (s *Scanner) scanMisconfigs(ctx context.Context, artifact *artifacts.Artifa
 
 	return s.filter(ctx, configReport, artifact)
 }
-
 func (s *Scanner) filter(ctx context.Context, r types.Report, artifact *artifacts.Artifact) (report.Resource, error) {
 	r, err := s.runner.Filter(ctx, s.opts, r)
 	if err != nil {

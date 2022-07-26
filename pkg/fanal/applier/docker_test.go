@@ -368,9 +368,9 @@ func TestApplyLayers(t *testing.T) {
 							Type:     types.LicenseTypeDpkg,
 							FilePath: "usr/share/doc/openssl/copyright",
 							Findings: []types.LicenseFinding{
-								{License: "OpenSSL"},
+								{Name: "OpenSSL"},
 							},
-							Package: "openssl",
+							PkgName: "openssl",
 						},
 					},
 				},
@@ -395,9 +395,9 @@ func TestApplyLayers(t *testing.T) {
 							Type:     types.LicenseTypeDpkg,
 							FilePath: "usr/share/doc/libc/copyright",
 							Findings: []types.LicenseFinding{
-								{License: "GPL-2"},
+								{Name: "GPL-2"},
 							},
-							Package: "libc",
+							PkgName: "libc",
 						},
 					},
 					OpaqueDirs: []string{"app"},

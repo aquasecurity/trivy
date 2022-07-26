@@ -10,7 +10,7 @@ nav:
   - Getting Started: 
       - Overview: index.md
       - Quick Start: home/quickstart.md
-      - Insgtallagtion: home/installation.md
+      - Installation: home/installation.md
   - Tutorials:
       - Trivy Kubernetes: 
           - Trivy K8s: tutorials/kubernetes/trivy-kubernetes.md
@@ -77,6 +77,8 @@ nav:
           - Scanning: docs/secret/scanning.md
           - Configuration: docs/secret/configuration.md
           - Examples: docs/secret/examples.md
+      - License:
+            - Scanning: docs/licenses/scanning.md
       - Kubernetes:
           - CLI:
               - Scanning: docs/kubernetes/cli/scanning.md
@@ -86,6 +88,8 @@ nav:
           - Overview: docs/sbom/index.md
           - CycloneDX: docs/sbom/cyclonedx.md
           - SPDX: docs/sbom/spdx.md
+      - Attestation:
+          - SBOM: docs/attestation/sbom.md
       - Advanced:
           - Modules: docs/advanced/modules.md
           - Plugins: docs/advanced/plugins.md
@@ -138,6 +142,7 @@ theme:
     - navigation.tabs
     - navigation.tabs.sticky
     - navigation.sections
+    - content.tabs.link
 
 markdown_extensions:
   - pymdownx.highlight
@@ -145,7 +150,8 @@ markdown_extensions:
   - admonition
   - footnotes
   - attr_list
-  - pymdownx.tabbed
+  - pymdownx.tabbed:
+      alternate_style: true
   - def_list
   - pymdownx.details
   - pymdownx.emoji:

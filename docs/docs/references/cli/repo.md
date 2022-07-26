@@ -65,6 +65,11 @@ Client/Server Flags
       --server string            server address in client mode
       --token string             for authentication in client/server mode
       --token-header string      specify a header name for token in client/server mode (default "Trivy-Token")
+      
+Repository Flags
+      --branch string   pass the branch name to be scanned
+      --commit string   pass the commit hash to be scanned
+      --tag string      pass the tag name to be scanned
 
 Global Flags:
       --cache-dir string   cache directory (default "/Users/teppei/Library/Caches/trivy")

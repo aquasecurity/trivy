@@ -85,6 +85,11 @@ const (
 	TypeHelm           Type = "helm"
 
 	// ========
+	// License
+	// ========
+	TypeLicenseFile Type = "license-file"
+
+	// ========
 	// Secrets
 	// ========
 	TypeSecret Type = "secret"
@@ -98,19 +103,23 @@ const (
 
 var (
 	// TypeOSes has all OS-related analyzers
-	TypeOSes = []Type{TypeAlpine, TypeAmazon, TypeDebian, TypePhoton, TypeCentOS,
+	TypeOSes = []Type{
+		TypeOSRelease, TypeAlpine, TypeAmazon, TypeCBLMariner, TypeDebian, TypePhoton, TypeCentOS,
 		TypeRocky, TypeAlma, TypeFedora, TypeOracle, TypeRedHatBase, TypeSUSE, TypeUbuntu,
-		TypeApk, TypeDpkg, TypeRpm,
+		TypeApk, TypeDpkg, TypeDpkgLicense, TypeRpm, TypeRpmqa,
+		TypeApkRepo,
 	}
 
 	// TypeLanguages has all language analyzers
-	TypeLanguages = []Type{TypeBundler, TypeGemSpec, TypeCargo, TypeComposer, TypeJar, TypePom,
-		TypeNpmPkgLock, TypeNodePkg, TypeYarn, TypePnpm, TypeNuget, TypePythonPkg, TypePip, TypePipenv,
-		TypePoetry, TypeGoBinary, TypeGoMod,
+	TypeLanguages = []Type{
+		TypeBundler, TypeGemSpec, TypeCargo, TypeComposer, TypeJar, TypePom,
+		TypeNpmPkgLock, TypeNodePkg, TypeYarn, TypePnpm, TypeNuget, TypeDotNetDeps,
+		TypePythonPkg, TypePip, TypePipenv, TypePoetry, TypeGoBinary, TypeGoMod,
 	}
 
 	// TypeLockfiles has all lock file analyzers
-	TypeLockfiles = []Type{TypeBundler, TypeNpmPkgLock, TypeYarn,
+	TypeLockfiles = []Type{
+		TypeBundler, TypeNpmPkgLock, TypeYarn,
 		TypePnpm, TypePip, TypePipenv, TypePoetry, TypeGoMod, TypePom,
 	}
 

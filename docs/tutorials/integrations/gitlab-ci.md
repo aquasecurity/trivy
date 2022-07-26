@@ -11,7 +11,7 @@ include:
 
 If you're a GitLab 14.x Ultimate customer, you can use the same configuration above.
 
-Alternatively, you can always use the example configurations below. Note that the examples use [`contrib/gitlab.tpl`](https://github.com/aquasecurity/trivy/blob/main/contrib/gitlab.tpl), which does not work with GitLab 15.0 and above (for details, see [issue 1598](https://github.com/aquasecurity/trivy/issues/1598)).
+Alternatively, you can always use the example configurations below.
 
 ```yaml
 stages:

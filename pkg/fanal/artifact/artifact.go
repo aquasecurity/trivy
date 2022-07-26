@@ -19,6 +19,10 @@ type Option struct {
 	NoProgress        bool
 	Offline           bool
 	InsecureSkipTLS   bool
+	AppDirs           []string
+	RepoBranch        string
+	RepoCommit        string
+	RepoTag           string
 
 	MisconfScannerOption misconf.ScannerOption
 	SecretScannerOption  secret.ScannerOption
