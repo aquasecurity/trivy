@@ -741,7 +741,8 @@ func NewKubernetesCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 		"%s,%s,%s,%s",
 		types.SecurityCheckVulnerability,
 		types.SecurityCheckConfig,
-		types.SecurityCheckSecret, types.SecurityCheckRbac,
+		types.SecurityCheckSecret,
+		types.SecurityCheckRbac,
 	)
 	scanFlags.SecurityChecks = &securityChecks
 
