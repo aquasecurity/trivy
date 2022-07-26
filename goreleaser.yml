@@ -12,6 +12,7 @@ builds:
     goos:
       - darwin
       - linux
+      - windows
       - freebsd
     goarch:
       - amd64
@@ -30,6 +31,17 @@ builds:
         goarch: arm
       - goos: freebsd
         goarch: arm64
+      # only amd64 is supported on Windows
+      - goos: 386
+        goarch: windows
+      - goos: arm
+        goarch: windows
+      - goos: arm64
+        goarch: windows
+      - goos: s390x
+        goarch: windows
+      - goos: ppc64le
+        goarch: windows
 
 release:
     extra_files:
@@ -55,6 +67,7 @@ nfpms:
       ppc64le: PPC64LE
       darwin: macOS
       linux: Linux
+      windows: Windows
       openbsd: OpenBSD
       netbsd: NetBSD
       freebsd: FreeBSD
@@ -66,6 +79,9 @@ nfpms:
 archives:
   -
     format: tar.gz
+    format_overrides:
+      - goos: windows
+        format: zip
     name_template: "{{.ProjectName}}_{{.Version}}_{{.Os}}-{{.Arch}}"
     replacements:
       amd64: 64bit
@@ -75,6 +91,7 @@ archives:
       ppc64le: PPC64LE
       darwin: macOS
       linux: Linux
+      windows: Windows
       openbsd: OpenBSD
       netbsd: NetBSD
       freebsd: FreeBSD
