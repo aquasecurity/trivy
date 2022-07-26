@@ -3,7 +3,6 @@ package secret
 import (
 	"bytes"
 	"errors"
-	"fmt"
 	"os"
 	"regexp"
 	"strings"
@@ -386,9 +385,6 @@ func (s Scanner) Scan(args ScanArgs) types.Secret {
 				copy(censored, args.Content)
 			})
 			censored = censorLocation(loc, censored)
-			fmt.Println()
-			fmt.Println(string(censored))
-			fmt.Println()
 		}
 	}
 
@@ -407,12 +403,10 @@ func (s Scanner) Scan(args ScanArgs) types.Secret {
 }
 
 func censorLocation(loc Location, input []byte) []byte {
-	fmt.Println(string(input))
 	return append(
 		input[:loc.Start],
 		append(
-			// Mask credentials
-			bytes.Repeat([]byte("*"), 5),
+			bytes.Repeat([]byte("*"), loc.End-loc.Start),
 			input[loc.End:]...,
 		)...,
 	)
