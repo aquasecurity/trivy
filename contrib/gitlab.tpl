@@ -1,10 +1,11 @@
 {{- /* Template based on https://docs.gitlab.com/ee/user/application_security/container_scanning/#reports-json-format */ -}}
 {
-  "version": "2.3",
+  "version": "14.0.6",
   "vulnerabilities": [
   {{- $t_first := true }}
   {{- range . }}
   {{- $target := .Target }}
+    {{- $image := $target | regexFind "[^\\s]+" }}
     {{- range .Vulnerabilities -}}
     {{- if $t_first -}}
       {{- $t_first = false -}}
@@ -31,8 +32,6 @@
                   {{-  else -}}
                     "{{ .Severity }}"
                   {{- end }},
-      {{- /* TODO: Define confidence */}}
-      "confidence": "Unknown",
       "solution": {{ if .FixedVersion -}}
                     "Upgrade {{ .PkgName }} to {{ .FixedVersion }}"
                   {{- else -}}
@@ -51,7 +50,7 @@
         },
         {{- /* TODO: No mapping available - https://github.com/aquasecurity/trivy/issues/332 */}}
         "operating_system": "Unknown",
-        "image": "{{ $target }}"
+        "image": "{{ $image }}"
       },
       "identifiers": [
         {
