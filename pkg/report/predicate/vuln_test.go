@@ -8,7 +8,7 @@ import (
 
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/vulnerability"
-	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 
 	"github.com/aquasecurity/trivy/pkg/clock"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
@@ -17,11 +17,10 @@ import (
 )
 
 func TestWriter_Write(t *testing.T) {
-	testCases := []struct {
+	tests := []struct {
 		name          string
 		detectedVulns []types.DetectedVulnerability
 		want          predicate.CosignVulnPredicate
-		wantResult    types.Report
 	}{
 		{
 			name: "happy path",
@@ -80,8 +79,8 @@ func TestWriter_Write(t *testing.T) {
 		},
 	}
 
-	for _, tc := range testCases {
-		t.Run(tc.name, func(t *testing.T) {
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
 
 			inputResults := types.Report{
 				SchemaVersion: 2,
@@ -89,7 +88,7 @@ func TestWriter_Write(t *testing.T) {
 				Results: types.Results{
 					{
 						Target:          "foojson",
-						Vulnerabilities: tc.detectedVulns,
+						Vulnerabilities: tt.detectedVulns,
 					},
 				},
 			}
@@ -100,13 +99,13 @@ func TestWriter_Write(t *testing.T) {
 			writer := predicate.NewWriter(output, "dev")
 
 			err := writer.Write(inputResults)
-			assert.NoError(t, err)
+			require.NoError(t, err)
 
 			var got predicate.CosignVulnPredicate
 			err = json.Unmarshal(output.Bytes(), &got)
-			assert.NoError(t, err, "invalid json written")
+			require.NoError(t, err, "invalid json written")
 
-			assert.Equal(t, tc.want, got, tc.name)
+			require.Equal(t, tt.want, got, tt.name)
 
 		})
 	}
