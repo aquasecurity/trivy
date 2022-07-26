@@ -17,6 +17,8 @@ import (
 // Cosign provides the CosignVulnPredicate structure in their repository.
 // But the type of Scanner.Result is defined as map[string]interface{}, which is difficult to use,
 // so we define our own.
+// The PR is in progress to replace Scanner.Result type to interface{}.
+// https://github.com/sigstore/cosign/pull/2096
 type CosignVulnPredicate struct {
 	Invocation Invocation `json:"invocation"`
 	Scanner    Scanner    `json:"scanner"`
