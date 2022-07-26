@@ -12,6 +12,7 @@ nav:
       - Quick Start: home/quickstart.md
       - Installation: home/installation.md
   - Tutorials:
+      - Overview: tutorials/overview.md
       - Trivy Kubernetes: 
           - Trivy K8s: tutorials/kubernetes/trivy-kubernetes.md
           - OVHcloud: tutorials/kubernetes/ovhcloud.md
@@ -122,6 +123,7 @@ nav:
               - Server: docs/references/cli/server.md
               - Plugin: docs/references/cli/plugin.md
               - SBOM: docs/references/cli/sbom.md
+              - SBOM: docs/references/cli/module.md
           - Modes:
               - Standalone: docs/references/modes/standalone.md
               - Client/Server: docs/references/modes/client-server.md

@@ -84,7 +84,7 @@ See https://avd.aquasec.com/misconfig/ds001
 
 For more details, see [here][misconf].
 
-[installation]: ../docs/index.md
+[installation]: ./installation.md
 [vulnerability]: ../docs/vulnerability/scanning/index.md
 [misconf]: ../docs/misconfiguration/scanning.md
 [secret]: ../docs/secret/scanning.md
