@@ -1,0 +1,29 @@
+name: ClusterFuzzLite PR fuzzing
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - '**'
+permissions: read-all
+jobs:
+  PR:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        sanitizer: [address]
+    steps:
+    - name: Build Fuzzers (${{ matrix.sanitizer }})
+      id: build
+      uses: google/clusterfuzzlite/actions/build_fuzzers@v1
+      with:
+        sanitizer: ${{ matrix.sanitizer }}
+        language: go
+    - name: Run Fuzzers (${{ matrix.sanitizer }})
+      id: run
+      uses: google/clusterfuzzlite/actions/run_fuzzers@v1
+      with:
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        fuzz-seconds: 400
+        mode: 'code-change'
+        sanitizer: ${{ matrix.sanitizer }}
