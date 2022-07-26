@@ -7,7 +7,6 @@ Below is a list of additional resources from the community.
 
 - [Trivy Vulnerability Scanner Joins the Aqua Open-source Family](https://blog.aquasec.com/trivy-vulnerability-scanner-joins-aqua-family)
 - [Trivy Image Vulnerability Scanner Now Under Apache 2.0 License](https://blog.aquasec.com/trivy-open-source-vulnerability-scanner-apache2.0-license)
--
 
 ## Vulnderability Scanning
 
