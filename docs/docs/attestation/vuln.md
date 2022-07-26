@@ -2,7 +2,7 @@
 
 ## Generate Cosign Vulnerability Predicate 
 
-Trivy generates reports in the [Cosign vulnerability predicate format](https://github.com/sigstore/cosign/blob/95b74db89941e8ec85e768f639efd4d948db06cd/specs/COSIGN_VULN_ATTESTATION_SPEC.md).
+Trivy generates reports in the [Cosign vulnerability predicate format][vuln-attest-spec].
 
 You can use the regular subcommands (like image, fs and rootfs) and specify `cosign-vuln` with the --format option.
 
@@ -151,6 +151,8 @@ $ trivy image --format cosign-vuln --output vuln.json alpine:3.10
     If you want to avoid writing an OCI registry and only want to see an attestation, add the `--no-upload` option to the `cosign` command.
 
 
+### Sign with a local key pair
+
 Cosign can generate key pairs and use them for signing and verification. Read more about [how to generate key pairs](https://docs.sigstore.dev/cosign/key-generation).
 
 In the following example, Trivy generates a cosign vulnerability predicate, and then Cosign attaches an attestation of it to a container image with a local key pair.
@@ -165,3 +167,20 @@ Then, you can verify attestations on the image.
 ```
 $ cosign verify-attestation --key /path/to/cosign.pub <IMAGE>
 ```
+
+### Keyless signing
+
+You can use Cosign to sign without keys by authenticating with an OpenID Connect protocol supported by sigstore (Google, GitHub, or Microsoft).
+
+```
+$ trivy image --format cosign-vuln -o vuln.json <IMAGE>
+$ COSIGN_EXPERIMENTAL=1 cosign attest --type vuln --predicate vuln.json <IMAGE>
+```
+
+You can verify attestations.
+
+```
+$ COSIGN_EXPERIMENTAL=1 cosign verify-attestation <IMAGE>
+```
+
+[vuln-attest-spec]: https://github.com/sigstore/cosign/blob/95b74db89941e8ec85e768f639efd4d948db06cd/specs/COSIGN_VULN_ATTESTATION_SPEC.md
