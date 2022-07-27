@@ -92,7 +92,7 @@ func Write(report types.Report, option Option) error {
 	case FormatSarif:
 		writer = SarifWriter{Output: option.Output, Version: option.AppVersion}
 	case FormatCosignVuln:
-		writer = predicate.NewWriter(option.Output, option.AppVersion)
+		writer = predicate.NewVulnWriter(option.Output, option.AppVersion)
 	default:
 		return xerrors.Errorf("unknown format: %v", option.Format)
 	}

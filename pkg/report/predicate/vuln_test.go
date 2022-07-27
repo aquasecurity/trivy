@@ -96,7 +96,7 @@ func TestWriter_Write(t *testing.T) {
 			output := bytes.NewBuffer(nil)
 
 			clock.SetFakeTime(t, time.Date(2022, 7, 22, 12, 20, 30, 5, time.UTC))
-			writer := predicate.NewWriter(output, "dev")
+			writer := predicate.NewVulnWriter(output, "dev")
 
 			err := writer.Write(inputResults)
 			require.NoError(t, err)

@@ -49,19 +49,19 @@ type Metadata struct {
 	ScanFinishedOn time.Time `json:"scanFinishedOn"`
 }
 
-type Writer struct {
+type VulnWriter struct {
 	output  io.Writer
 	version string
 }
 
-func NewWriter(output io.Writer, version string) Writer {
-	return Writer{
+func NewVulnWriter(output io.Writer, version string) VulnWriter {
+	return VulnWriter{
 		output:  output,
 		version: version,
 	}
 }
 
-func (w Writer) Write(report types.Report) error {
+func (w VulnWriter) Write(report types.Report) error {
 
 	predicate := CosignVulnPredicate{}
 
