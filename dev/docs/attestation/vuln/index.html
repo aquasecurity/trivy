@@ -10,24 +10,24 @@
       
       
       
-        <link rel="canonical" href="https://aquasecurity.github.io/trivy/dev/docs/misconfiguration/custom/data/">
+        <link rel="canonical" href="https://aquasecurity.github.io/trivy/dev/docs/attestation/vuln/">
       
       
         
       
-      <link rel="icon" href="../../../../assets/images/favicon.png">
+      <link rel="icon" href="../../../assets/images/favicon.png">
       <meta name="generator" content="mkdocs-1.3.0, mkdocs-material-8.3.9+insiders-4.21.0">
     
     
       
-        <title>Data - Trivy</title>
+        <title>Cosign Vulnerability Scan Record - Trivy</title>
       
     
     
-      <link rel="stylesheet" href="../../../../assets/stylesheets/main.846d444e.min.css">
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.846d444e.min.css">
       
         
-        <link rel="stylesheet" href="../../../../assets/stylesheets/palette.cbb835fc.min.css">
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.cbb835fc.min.css">
         
       
       
@@ -44,7 +44,7 @@
       
     
     
-    <script>__md_scope=new URL("../../../..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
       
 
@@ -260,7 +260,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#custom-data" class="md-skip">
+        <a href="#cosign-vulnerability-attestation" class="md-skip">
           Skip to content
         </a>
       
@@ -280,9 +280,9 @@
 
 <header class="md-header md-header--lifted" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
-    <a href="../../../.." title="Trivy" class="md-header__button md-logo" aria-label="Trivy" data-md-component="logo">
+    <a href="../../.." title="Trivy" class="md-header__button md-logo" aria-label="Trivy" data-md-component="logo">
       
-  <img src="../../../../imgs/logo-white.svg" alt="logo">
+  <img src="../../../imgs/logo-white.svg" alt="logo">
 
     </a>
     <label class="md-header__button md-icon" for="__drawer">
@@ -298,7 +298,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Data
+              Cosign Vulnerability Scan Record
             
           </span>
         </div>
@@ -368,7 +368,7 @@
 
   
     <li class="md-tabs__item">
-      <a href="../../../.." class="md-tabs__link">
+      <a href="../../.." class="md-tabs__link">
         
   
   HOME
@@ -388,7 +388,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../../../getting-started/overview/" class="md-tabs__link">
+        <a href="../../../getting-started/overview/" class="md-tabs__link">
           
   
   Getting started
@@ -411,7 +411,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../../" class="md-tabs__link md-tabs__link--active">
+        <a href="../../" class="md-tabs__link md-tabs__link--active">
           
   
     
@@ -434,7 +434,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../../../community/tools/" class="md-tabs__link">
+        <a href="../../../community/tools/" class="md-tabs__link">
           
   
   Community
@@ -472,9 +472,9 @@
 
 <nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href="../../../.." title="Trivy" class="md-nav__button md-logo" aria-label="Trivy" data-md-component="logo">
+    <a href="../../.." title="Trivy" class="md-nav__button md-logo" aria-label="Trivy" data-md-component="logo">
       
-  <img src="../../../../imgs/logo-white.svg" alt="logo">
+  <img src="../../../imgs/logo-white.svg" alt="logo">
 
     </a>
     Trivy
@@ -504,7 +504,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../.." class="md-nav__link">
+      <a href="../../.." class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -558,7 +558,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../getting-started/overview/" class="md-nav__link">
+      <a href="../../../getting-started/overview/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -577,7 +577,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../getting-started/installation/" class="md-nav__link">
+      <a href="../../../getting-started/installation/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -596,7 +596,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../getting-started/quickstart/" class="md-nav__link">
+      <a href="../../../getting-started/quickstart/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -615,7 +615,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../getting-started/further/" class="md-nav__link">
+      <a href="../../../getting-started/further/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -679,7 +679,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../" class="md-nav__link">
+      <a href="../../" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -764,7 +764,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../vulnerability/scanning/" class="md-nav__link">
+      <a href="../../vulnerability/scanning/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -783,7 +783,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../vulnerability/scanning/image/" class="md-nav__link">
+      <a href="../../vulnerability/scanning/image/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -802,7 +802,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../vulnerability/scanning/filesystem/" class="md-nav__link">
+      <a href="../../vulnerability/scanning/filesystem/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -821,7 +821,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../vulnerability/scanning/rootfs/" class="md-nav__link">
+      <a href="../../vulnerability/scanning/rootfs/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -840,7 +840,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../vulnerability/scanning/git-repository/" class="md-nav__link">
+      <a href="../../vulnerability/scanning/git-repository/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -899,7 +899,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../vulnerability/detection/os/" class="md-nav__link">
+      <a href="../../vulnerability/detection/os/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -918,7 +918,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../vulnerability/detection/language/" class="md-nav__link">
+      <a href="../../vulnerability/detection/language/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -937,7 +937,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../vulnerability/detection/data-source/" class="md-nav__link">
+      <a href="../../vulnerability/detection/data-source/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -956,7 +956,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../vulnerability/detection/supported/" class="md-nav__link">
+      <a href="../../vulnerability/detection/supported/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1015,7 +1015,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../vulnerability/examples/filter/" class="md-nav__link">
+      <a href="../../vulnerability/examples/filter/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1034,7 +1034,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../vulnerability/examples/report/" class="md-nav__link">
+      <a href="../../vulnerability/examples/report/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1053,7 +1053,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../vulnerability/examples/db/" class="md-nav__link">
+      <a href="../../vulnerability/examples/db/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1072,7 +1072,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../vulnerability/examples/cache/" class="md-nav__link">
+      <a href="../../vulnerability/examples/cache/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1091,7 +1091,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../vulnerability/examples/others/" class="md-nav__link">
+      <a href="../../vulnerability/examples/others/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1118,7 +1118,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../vulnerability/distributions/" class="md-nav__link">
+      <a href="../../vulnerability/distributions/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1169,7 +1169,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../vulnerability/languages/golang/" class="md-nav__link">
+      <a href="../../vulnerability/languages/golang/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1202,19 +1202,17 @@
                 
   
   
-    
-  
   
     
     
     
       
     
-    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
       
         
         
-          <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_3" type="checkbox" id="__nav_3_3" checked>
+          <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_3" type="checkbox" id="__nav_3_3" >
         
         
           <label class="md-nav__link" for="__nav_3_3">
@@ -1240,7 +1238,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../scanning/" class="md-nav__link">
+      <a href="../../misconfiguration/scanning/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1291,7 +1289,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../policy/builtin/" class="md-nav__link">
+      <a href="../../misconfiguration/policy/builtin/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1310,7 +1308,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../policy/exceptions/" class="md-nav__link">
+      <a href="../../misconfiguration/policy/exceptions/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1335,17 +1333,15 @@
                 
   
   
-    
-  
   
     
     
     
-    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--nested">
       
         
         
-          <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_3_3" type="checkbox" id="__nav_3_3_3" checked>
+          <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_3_3" type="checkbox" id="__nav_3_3_3" >
         
         
           <label class="md-nav__link" for="__nav_3_3_3">
@@ -1371,7 +1367,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../" class="md-nav__link">
+      <a href="../../misconfiguration/custom/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1388,18 +1384,9 @@
                 
   
   
-    
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
-      
-      
-        
-      
-      
-      <a href="./" class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href="../../misconfiguration/custom/data/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1407,7 +1394,6 @@
   </span>
 
       </a>
-      
     </li>
   
 
@@ -1419,7 +1405,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../combine/" class="md-nav__link">
+      <a href="../../misconfiguration/custom/combine/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1438,7 +1424,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../testing/" class="md-nav__link">
+      <a href="../../misconfiguration/custom/testing/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1457,7 +1443,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../debug/" class="md-nav__link">
+      <a href="../../misconfiguration/custom/debug/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1476,7 +1462,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../examples/" class="md-nav__link">
+      <a href="../../misconfiguration/custom/examples/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1535,7 +1521,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../options/policy/" class="md-nav__link">
+      <a href="../../misconfiguration/options/policy/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1554,7 +1540,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../options/filter/" class="md-nav__link">
+      <a href="../../misconfiguration/options/filter/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1573,7 +1559,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../options/report/" class="md-nav__link">
+      <a href="../../misconfiguration/options/report/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1592,7 +1578,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../options/others/" class="md-nav__link">
+      <a href="../../misconfiguration/options/others/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1651,7 +1637,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../comparison/conftest/" class="md-nav__link">
+      <a href="../../misconfiguration/comparison/conftest/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1670,7 +1656,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../comparison/tfsec/" class="md-nav__link">
+      <a href="../../misconfiguration/comparison/tfsec/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1689,7 +1675,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../comparison/cfsec/" class="md-nav__link">
+      <a href="../../misconfiguration/comparison/cfsec/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1758,7 +1744,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../secret/scanning/" class="md-nav__link">
+      <a href="../../secret/scanning/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1777,7 +1763,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../secret/configuration/" class="md-nav__link">
+      <a href="../../secret/configuration/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1796,7 +1782,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../secret/examples/" class="md-nav__link">
+      <a href="../../secret/examples/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1857,7 +1843,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../licenses/scanning/" class="md-nav__link">
+      <a href="../../licenses/scanning/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1950,7 +1936,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../kubernetes/cli/scanning/" class="md-nav__link">
+      <a href="../../kubernetes/cli/scanning/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2009,7 +1995,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../kubernetes/operator/" class="md-nav__link">
+      <a href="../../kubernetes/operator/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2078,7 +2064,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../sbom/" class="md-nav__link">
+      <a href="../../sbom/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2097,7 +2083,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../sbom/cyclonedx/" class="md-nav__link">
+      <a href="../../sbom/cyclonedx/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2116,7 +2102,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../sbom/spdx/" class="md-nav__link">
+      <a href="../../sbom/spdx/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2141,17 +2127,19 @@
                 
   
   
+    
+  
   
     
     
     
       
     
-    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
       
         
         
-          <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_8" type="checkbox" id="__nav_3_8" >
+          <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_8" type="checkbox" id="__nav_3_8" checked>
         
         
           <label class="md-nav__link" for="__nav_3_8">
@@ -2177,7 +2165,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../attestation/sbom/" class="md-nav__link">
+      <a href="../sbom/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2194,9 +2182,28 @@
                 
   
   
+    
   
-    <li class="md-nav__item">
-      <a href="../../../attestation/vuln/" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    Cosign Vulnerability Scan Record
+  </span>
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
         
   
   <span class="md-ellipsis">
@@ -2204,6 +2211,68 @@
   </span>
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#generate-cosign-vulnerability-scan-record" class="md-nav__link">
+    <span class="md-ellipsis">
+      Generate Cosign Vulnerability Scan Record
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#create-cosign-vulnerability-attestation" class="md-nav__link">
+    <span class="md-ellipsis">
+      Create Cosign Vulnerability Attestation
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Create Cosign Vulnerability Attestation">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#sign-with-a-local-key-pair" class="md-nav__link">
+    <span class="md-ellipsis">
+      Sign with a local key pair
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#keyless-signing" class="md-nav__link">
+    <span class="md-ellipsis">
+      Keyless signing
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -2257,7 +2326,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../integrations/" class="md-nav__link">
+      <a href="../../integrations/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2276,7 +2345,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../integrations/github-actions/" class="md-nav__link">
+      <a href="../../integrations/github-actions/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2295,7 +2364,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../integrations/circleci/" class="md-nav__link">
+      <a href="../../integrations/circleci/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2314,7 +2383,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../integrations/travis-ci/" class="md-nav__link">
+      <a href="../../integrations/travis-ci/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2333,7 +2402,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../integrations/gitlab-ci/" class="md-nav__link">
+      <a href="../../integrations/gitlab-ci/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2352,7 +2421,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../integrations/bitbucket/" class="md-nav__link">
+      <a href="../../integrations/bitbucket/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2371,7 +2440,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../integrations/aws-codepipeline/" class="md-nav__link">
+      <a href="../../integrations/aws-codepipeline/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2390,7 +2459,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../integrations/aws-security-hub/" class="md-nav__link">
+      <a href="../../integrations/aws-security-hub/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2451,7 +2520,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../advanced/modules/" class="md-nav__link">
+      <a href="../../advanced/modules/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2470,7 +2539,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../advanced/plugins/" class="md-nav__link">
+      <a href="../../advanced/plugins/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2489,7 +2558,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../advanced/air-gap/" class="md-nav__link">
+      <a href="../../advanced/air-gap/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2540,7 +2609,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../advanced/container/embed-in-dockerfile/" class="md-nav__link">
+      <a href="../../advanced/container/embed-in-dockerfile/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2559,7 +2628,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../advanced/container/unpacked-filesystem/" class="md-nav__link">
+      <a href="../../advanced/container/unpacked-filesystem/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2578,7 +2647,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../advanced/container/oci/" class="md-nav__link">
+      <a href="../../advanced/container/oci/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2597,7 +2666,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../advanced/container/podman/" class="md-nav__link">
+      <a href="../../advanced/container/podman/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2616,7 +2685,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../advanced/container/containerd/" class="md-nav__link">
+      <a href="../../advanced/container/containerd/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2667,7 +2736,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../advanced/private-registries/" class="md-nav__link">
+      <a href="../../advanced/private-registries/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2686,7 +2755,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../advanced/private-registries/docker-hub/" class="md-nav__link">
+      <a href="../../advanced/private-registries/docker-hub/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2705,7 +2774,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../advanced/private-registries/ecr/" class="md-nav__link">
+      <a href="../../advanced/private-registries/ecr/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2724,7 +2793,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../advanced/private-registries/gcr/" class="md-nav__link">
+      <a href="../../advanced/private-registries/gcr/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2743,7 +2812,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../advanced/private-registries/acr/" class="md-nav__link">
+      <a href="../../advanced/private-registries/acr/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2762,7 +2831,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../advanced/private-registries/self/" class="md-nav__link">
+      <a href="../../advanced/private-registries/self/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2871,7 +2940,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../references/customization/envs/" class="md-nav__link">
+      <a href="../../references/customization/envs/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2890,7 +2959,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../references/customization/config-file/" class="md-nav__link">
+      <a href="../../references/customization/config-file/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2949,7 +3018,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../references/cli/" class="md-nav__link">
+      <a href="../../references/cli/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2968,7 +3037,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../references/cli/image/" class="md-nav__link">
+      <a href="../../references/cli/image/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2987,7 +3056,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../references/cli/config/" class="md-nav__link">
+      <a href="../../references/cli/config/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -3006,7 +3075,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../references/cli/fs/" class="md-nav__link">
+      <a href="../../references/cli/fs/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -3025,7 +3094,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../references/cli/rootfs/" class="md-nav__link">
+      <a href="../../references/cli/rootfs/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -3044,7 +3113,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../references/cli/repo/" class="md-nav__link">
+      <a href="../../references/cli/repo/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -3063,7 +3132,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../references/cli/client/" class="md-nav__link">
+      <a href="../../references/cli/client/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -3082,7 +3151,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../references/cli/server/" class="md-nav__link">
+      <a href="../../references/cli/server/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -3101,7 +3170,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../references/cli/plugin/" class="md-nav__link">
+      <a href="../../references/cli/plugin/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -3120,7 +3189,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../references/cli/sbom/" class="md-nav__link">
+      <a href="../../references/cli/sbom/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -3179,7 +3248,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../references/modes/standalone/" class="md-nav__link">
+      <a href="../../references/modes/standalone/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -3198,7 +3267,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../references/modes/client-server/" class="md-nav__link">
+      <a href="../../references/modes/client-server/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -3225,7 +3294,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../references/troubleshooting/" class="md-nav__link">
+      <a href="../../references/troubleshooting/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -3295,7 +3364,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../community/tools/" class="md-nav__link">
+      <a href="../../../community/tools/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -3314,7 +3383,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../community/references/" class="md-nav__link">
+      <a href="../../../community/references/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -3333,7 +3402,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../community/cks/" class="md-nav__link">
+      <a href="../../../community/cks/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -3352,7 +3421,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../community/credit/" class="md-nav__link">
+      <a href="../../../community/credit/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -3405,7 +3474,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../community/contribute/issue/" class="md-nav__link">
+      <a href="../../../community/contribute/issue/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -3424,7 +3493,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../community/contribute/pr/" class="md-nav__link">
+      <a href="../../../community/contribute/pr/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -3485,7 +3554,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../community/maintainer/help-wanted/" class="md-nav__link">
+      <a href="../../../community/maintainer/help-wanted/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -3504,7 +3573,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../community/maintainer/triage/" class="md-nav__link">
+      <a href="../../../community/maintainer/triage/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -3552,6 +3621,56 @@
     
   
   
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#generate-cosign-vulnerability-scan-record" class="md-nav__link">
+    <span class="md-ellipsis">
+      Generate Cosign Vulnerability Scan Record
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#create-cosign-vulnerability-attestation" class="md-nav__link">
+    <span class="md-ellipsis">
+      Create Cosign Vulnerability Attestation
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Create Cosign Vulnerability Attestation">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#sign-with-a-local-key-pair" class="md-nav__link">
+    <span class="md-ellipsis">
+      Sign with a local key pair
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#keyless-signing" class="md-nav__link">
+    <span class="md-ellipsis">
+      Keyless signing
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
 </nav>
                   </div>
                 </div>
@@ -3564,29 +3683,166 @@
                 
 
 
-<h1 id="custom-data">Custom Data</h1>
-<p>Custom policies may require additional data in order to determine an answer.</p>
-<p>For example, an allowed list of resources that can be created. 
-Instead of hardcoding this information inside of your policy, Trivy allows passing paths to data files with the <code>--data</code> flag.</p>
-<p>Given the following yaml file:</p>
-<div class="highlight"><pre><span></span><code>$ <span class="nb">cd</span> examples/misconf/custom-data
-$ cat data/ports.yaml                                                                                                                                                                      <span class="o">[</span>~/src/github.com/aquasecurity/trivy/examples/misconf/custom-data<span class="o">]</span>
-services:
-  ports:
-    - <span class="s2">&quot;20&quot;</span>
-    - <span class="s2">&quot;20/tcp&quot;</span>
-    - <span class="s2">&quot;20/udp&quot;</span>
-    - <span class="s2">&quot;23&quot;</span>
-    - <span class="s2">&quot;23/tcp&quot;</span>
+<h1 id="cosign-vulnerability-attestation">Cosign Vulnerability Attestation</h1>
+<h2 id="generate-cosign-vulnerability-scan-record">Generate Cosign Vulnerability Scan Record</h2>
+<p>Trivy generates reports in the <a href="https://github.com/sigstore/cosign/blob/95b74db89941e8ec85e768f639efd4d948db06cd/specs/COSIGN_VULN_ATTESTATION_SPEC.md">Cosign vulnerability scan record format</a>.</p>
+<p>You can use the regular subcommands (like image, fs and rootfs) and specify <code>cosign-vuln</code> with the --format option.</p>
+<div class="highlight"><pre><span></span><code>$ trivy image --format cosign-vuln --output vuln.json alpine:3.10
 </code></pre></div>
-<p>This can be imported into your policy:</p>
-<div class="highlight"><pre><span></span><code>import data.services
+<details>
+<summary>Result</summary>
 
-ports := services.ports
+<div class="highlight"><pre><span></span><code><span class="p">{</span><span class="w"></span>
+<span class="w">  </span><span class="nt">&quot;invocation&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="nt">&quot;parameters&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span><span class="w"></span>
+<span class="w">    </span><span class="nt">&quot;uri&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">    </span><span class="nt">&quot;event_id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">    </span><span class="nt">&quot;builder.id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;&quot;</span><span class="w"></span>
+<span class="w">  </span><span class="p">},</span><span class="w"></span>
+<span class="w">  </span><span class="nt">&quot;scanner&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="nt">&quot;uri&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;pkg:github/aquasecurity/trivy@v0.30.1-8-gf9cb8a28&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">    </span><span class="nt">&quot;version&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;v0.30.1-8-gf9cb8a28&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">    </span><span class="nt">&quot;db&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">      </span><span class="nt">&quot;uri&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">      </span><span class="nt">&quot;version&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;&quot;</span><span class="w"></span>
+<span class="w">    </span><span class="p">},</span><span class="w"></span>
+<span class="w">    </span><span class="nt">&quot;result&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">      </span><span class="nt">&quot;SchemaVersion&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"></span>
+<span class="w">      </span><span class="nt">&quot;ArtifactName&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;alpine:3.10&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">      </span><span class="nt">&quot;ArtifactType&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;container_image&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">      </span><span class="nt">&quot;Metadata&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">        </span><span class="nt">&quot;OS&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">          </span><span class="nt">&quot;Family&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;alpine&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">          </span><span class="nt">&quot;Name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;3.10.9&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">          </span><span class="nt">&quot;EOSL&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="w"></span>
+<span class="w">        </span><span class="p">},</span><span class="w"></span>
+<span class="w">        </span><span class="nt">&quot;ImageID&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;sha256:e7b300aee9f9bf3433d32bc9305bfdd22183beb59d933b48d77ab56ba53a197a&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">        </span><span class="nt">&quot;DiffIDs&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"></span>
+<span class="w">          </span><span class="s2">&quot;sha256:9fb3aa2f8b8023a4bebbf92aa567caf88e38e969ada9f0ac12643b2847391635&quot;</span><span class="w"></span>
+<span class="w">        </span><span class="p">],</span><span class="w"></span>
+<span class="w">        </span><span class="nt">&quot;RepoTags&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"></span>
+<span class="w">          </span><span class="s2">&quot;alpine:3.10&quot;</span><span class="w"></span>
+<span class="w">        </span><span class="p">],</span><span class="w"></span>
+<span class="w">        </span><span class="nt">&quot;RepoDigests&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"></span>
+<span class="w">          </span><span class="s2">&quot;alpine@sha256:451eee8bedcb2f029756dc3e9d73bab0e7943c1ac55cff3a4861c52a0fdd3e98&quot;</span><span class="w"></span>
+<span class="w">        </span><span class="p">],</span><span class="w"></span>
+<span class="w">        </span><span class="nt">&quot;ImageConfig&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">          </span><span class="nt">&quot;architecture&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;amd64&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">          </span><span class="nt">&quot;container&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;fdb7e80e3339e8d0599282e606c907aa5881ee4c668a68136119e6dfac6ce3a4&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">          </span><span class="nt">&quot;created&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2021-04-14T19:20:05.338397761Z&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">          </span><span class="nt">&quot;docker_version&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;19.03.12&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">          </span><span class="nt">&quot;history&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"></span>
+<span class="w">            </span><span class="p">{</span><span class="w"></span>
+<span class="w">              </span><span class="nt">&quot;created&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2021-04-14T19:20:04.987219124Z&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">              </span><span class="nt">&quot;created_by&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;/bin/sh -c #(nop) ADD file:c5377eaa926bf412dd8d4a08b0a1f2399cfd708743533b0aa03b53d14cb4bb4e in / &quot;</span><span class="w"></span>
+<span class="w">            </span><span class="p">},</span><span class="w"></span>
+<span class="w">            </span><span class="p">{</span><span class="w"></span>
+<span class="w">              </span><span class="nt">&quot;created&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2021-04-14T19:20:05.338397761Z&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">              </span><span class="nt">&quot;created_by&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;/bin/sh -c #(nop)  CMD [\&quot;/bin/sh\&quot;]&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">              </span><span class="nt">&quot;empty_layer&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="w"></span>
+<span class="w">            </span><span class="p">}</span><span class="w"></span>
+<span class="w">          </span><span class="p">],</span><span class="w"></span>
+<span class="w">          </span><span class="nt">&quot;os&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;linux&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">          </span><span class="nt">&quot;rootfs&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">            </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;layers&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">            </span><span class="nt">&quot;diff_ids&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"></span>
+<span class="w">              </span><span class="s2">&quot;sha256:9fb3aa2f8b8023a4bebbf92aa567caf88e38e969ada9f0ac12643b2847391635&quot;</span><span class="w"></span>
+<span class="w">            </span><span class="p">]</span><span class="w"></span>
+<span class="w">          </span><span class="p">},</span><span class="w"></span>
+<span class="w">          </span><span class="nt">&quot;config&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">            </span><span class="nt">&quot;Cmd&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"></span>
+<span class="w">              </span><span class="s2">&quot;/bin/sh&quot;</span><span class="w"></span>
+<span class="w">            </span><span class="p">],</span><span class="w"></span>
+<span class="w">            </span><span class="nt">&quot;Env&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"></span>
+<span class="w">              </span><span class="s2">&quot;PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin&quot;</span><span class="w"></span>
+<span class="w">            </span><span class="p">],</span><span class="w"></span>
+<span class="w">            </span><span class="nt">&quot;Image&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;sha256:eb2080c455e94c22ae35b3aef9e078c492a00795412e026e4d6b41ef64bc7dd8&quot;</span><span class="w"></span>
+<span class="w">          </span><span class="p">}</span><span class="w"></span>
+<span class="w">        </span><span class="p">}</span><span class="w"></span>
+<span class="w">      </span><span class="p">},</span><span class="w"></span>
+<span class="w">      </span><span class="nt">&quot;Results&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"></span>
+<span class="w">        </span><span class="p">{</span><span class="w"></span>
+<span class="w">          </span><span class="nt">&quot;Target&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;alpine:3.10 (alpine 3.10.9)&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">          </span><span class="nt">&quot;Class&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;os-pkgs&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">          </span><span class="nt">&quot;Type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;alpine&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">          </span><span class="nt">&quot;Vulnerabilities&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"></span>
+<span class="w">            </span><span class="p">{</span><span class="w"></span>
+<span class="w">              </span><span class="nt">&quot;VulnerabilityID&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;CVE-2021-36159&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">              </span><span class="nt">&quot;PkgName&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;apk-tools&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">              </span><span class="nt">&quot;InstalledVersion&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2.10.6-r0&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">              </span><span class="nt">&quot;FixedVersion&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2.10.7-r0&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">              </span><span class="nt">&quot;Layer&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">                </span><span class="nt">&quot;Digest&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;sha256:396c31837116ac290458afcb928f68b6cc1c7bdd6963fc72f52f365a2a89c1b5&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">                </span><span class="nt">&quot;DiffID&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;sha256:9fb3aa2f8b8023a4bebbf92aa567caf88e38e969ada9f0ac12643b2847391635&quot;</span><span class="w"></span>
+<span class="w">              </span><span class="p">},</span><span class="w"></span>
+<span class="w">              </span><span class="nt">&quot;SeveritySource&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;nvd&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">              </span><span class="nt">&quot;PrimaryURL&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;https://avd.aquasec.com/nvd/cve-2021-36159&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">              </span><span class="nt">&quot;DataSource&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">                </span><span class="nt">&quot;ID&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;alpine&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">                </span><span class="nt">&quot;Name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Alpine Secdb&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">                </span><span class="nt">&quot;URL&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;https://secdb.alpinelinux.org/&quot;</span><span class="w"></span>
+<span class="w">              </span><span class="p">},</span><span class="w"></span>
+<span class="w">              </span><span class="nt">&quot;Description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;libfetch before 2021-07-26, as used in apk-tools, xbps, and other products, mishandles numeric strings for the FTP and HTTP protocols. The FTP passive mode implementation allows an out-of-bounds read because strtol is used to parse the relevant numbers into address bytes. It does not check if the line ends prematurely. If it does, the for-loop condition checks for the &#39;\\0&#39; terminator one byte too late.&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">              </span><span class="nt">&quot;Severity&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;CRITICAL&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">              </span><span class="nt">&quot;CweIDs&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"></span>
+<span class="w">                </span><span class="s2">&quot;CWE-125&quot;</span><span class="w"></span>
+<span class="w">              </span><span class="p">],</span><span class="w"></span>
+<span class="w">              </span><span class="nt">&quot;CVSS&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">                </span><span class="nt">&quot;nvd&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">                  </span><span class="nt">&quot;V2Vector&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;AV:N/AC:L/Au:N/C:P/I:N/A:P&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">                  </span><span class="nt">&quot;V3Vector&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:N/A:H&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">                  </span><span class="nt">&quot;V2Score&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">6.4</span><span class="p">,</span><span class="w"></span>
+<span class="w">                  </span><span class="nt">&quot;V3Score&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">9.1</span><span class="w"></span>
+<span class="w">                </span><span class="p">}</span><span class="w"></span>
+<span class="w">              </span><span class="p">},</span><span class="w"></span>
+<span class="w">              </span><span class="nt">&quot;References&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"></span>
+<span class="w">                </span><span class="s2">&quot;https://github.com/freebsd/freebsd-src/commits/main/lib/libfetch&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">                </span><span class="s2">&quot;https://gitlab.alpinelinux.org/alpine/apk-tools/-/issues/10749&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">                </span><span class="s2">&quot;https://lists.apache.org/thread.html/r61db8e7dcb56dc000a5387a88f7a473bacec5ee01b9ff3f55308aacc@%3Cdev.kafka.apache.org%3E&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">                </span><span class="s2">&quot;https://lists.apache.org/thread.html/r61db8e7dcb56dc000a5387a88f7a473bacec5ee01b9ff3f55308aacc@%3Cusers.kafka.apache.org%3E&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">                </span><span class="s2">&quot;https://lists.apache.org/thread.html/rbf4ce74b0d1fa9810dec50ba3ace0caeea677af7c27a97111c06ccb7@%3Cdev.kafka.apache.org%3E&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">                </span><span class="s2">&quot;https://lists.apache.org/thread.html/rbf4ce74b0d1fa9810dec50ba3ace0caeea677af7c27a97111c06ccb7@%3Cusers.kafka.apache.org%3E&quot;</span><span class="w"></span>
+<span class="w">              </span><span class="p">],</span><span class="w"></span>
+<span class="w">              </span><span class="nt">&quot;PublishedDate&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2021-08-03T14:15:00Z&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">              </span><span class="nt">&quot;LastModifiedDate&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2021-10-18T12:19:00Z&quot;</span><span class="w"></span>
+<span class="w">            </span><span class="p">}</span><span class="w"></span>
+<span class="w">          </span><span class="p">]</span><span class="w"></span>
+<span class="w">        </span><span class="p">}</span><span class="w"></span>
+<span class="w">      </span><span class="p">]</span><span class="w"></span>
+<span class="w">    </span><span class="p">}</span><span class="w"></span>
+<span class="w">  </span><span class="p">},</span><span class="w"></span>
+<span class="w">  </span><span class="nt">&quot;metadata&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="nt">&quot;scanStartedOn&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2022-07-24T17:14:04.864682+09:00&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">    </span><span class="nt">&quot;scanFinishedOn&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2022-07-24T17:14:04.864682+09:00&quot;</span><span class="w"></span>
+<span class="w">  </span><span class="p">}</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
 </code></pre></div>
-<p>Then, you need to pass data paths through <code>--data</code> option.
-Trivy recursively searches the specified paths for JSON (<code>*.json</code>) and YAML (<code>*.yaml</code>) files.</p>
-<div class="highlight"><pre><span></span><code>$ trivy conf --policy ./policy --data data --namespaces user ./configs
+
+</details>
+
+<h2 id="create-cosign-vulnerability-attestation">Create Cosign Vulnerability Attestation</h2>
+<p><a href="https://github.com/sigstore/cosign">Cosign</a> supports generating and verifying <a href="https://github.com/in-toto/attestation">in-toto attestations</a>. This tool enables you to sign and verify Cosign vulnerability attestation.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>In the following examples, the <code>cosign</code> command will write an attestation to a target OCI registry, so you must have permission to write.
+If you want to avoid writing an OCI registry and only want to see an attestation, add the <code>--no-upload</code> option to the <code>cosign</code> command.</p>
+</div>
+<h3 id="sign-with-a-local-key-pair">Sign with a local key pair</h3>
+<p>Cosign can generate key pairs and use them for signing and verification. Read more about <a href="https://docs.sigstore.dev/cosign/key-generation">how to generate key pairs</a>.</p>
+<p>In the following example, Trivy generates a cosign vulnerability scan record, and then Cosign attaches an attestation of it to a container image with a local key pair.</p>
+<div class="highlight"><pre><span></span><code>$ trivy image --format cosign-vuln --output vuln.json &lt;IMAGE&gt;
+$ cosign attest --key /path/to/cosign.key --type vuln --predicate vuln.json &lt;IMAGE&gt;
+</code></pre></div>
+<p>Then, you can verify attestations on the image.</p>
+<div class="highlight"><pre><span></span><code>$ cosign verify-attestation --key /path/to/cosign.pub &lt;IMAGE&gt;
+</code></pre></div>
+<h3 id="keyless-signing">Keyless signing</h3>
+<p>You can use Cosign to sign without keys by authenticating with an OpenID Connect protocol supported by sigstore (Google, GitHub, or Microsoft).</p>
+<div class="highlight"><pre><span></span><code>$ trivy image --format cosign-vuln -o vuln.json &lt;IMAGE&gt;
+$ COSIGN_EXPERIMENTAL=1 cosign attest --type vuln --predicate vuln.json &lt;IMAGE&gt;
+</code></pre></div>
+<p>You can verify attestations.</p>
+<div class="highlight"><pre><span></span><code>$ COSIGN_EXPERIMENTAL=1 cosign verify-attestation &lt;IMAGE&gt;
 </code></pre></div>
 
 
@@ -3610,7 +3866,7 @@ Trivy recursively searches the specified paths for JSON (<code>*.json</code>) an
     <nav class="md-footer__inner md-grid" aria-label="Footer" >
       
         
-        <a href="../" class="md-footer__link md-footer__link--prev" aria-label="Previous: Overview" rel="prev">
+        <a href="../sbom/" class="md-footer__link md-footer__link--prev" aria-label="Previous: SBOM" rel="prev">
           <div class="md-footer__button md-icon">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
           </div>
@@ -3619,20 +3875,20 @@ Trivy recursively searches the specified paths for JSON (<code>*.json</code>) an
               <span class="md-footer__direction">
                 Previous
               </span>
-              Overview
+              SBOM
             </div>
           </div>
         </a>
       
       
         
-        <a href="../combine/" class="md-footer__link md-footer__link--next" aria-label="Next: Combine" rel="next">
+        <a href="../../integrations/" class="md-footer__link md-footer__link--next" aria-label="Next: Overview" rel="next">
           <div class="md-footer__title">
             <div class="md-ellipsis">
               <span class="md-footer__direction">
                 Next
               </span>
-              Combine
+              Overview
             </div>
           </div>
           <div class="md-footer__button md-icon">
@@ -3658,10 +3914,10 @@ Trivy recursively searches the specified paths for JSON (<code>*.json</code>) an
       <div class="md-dialog__inner md-typeset"></div>
     </div>
     
-    <script id="__config" type="application/json">{"base": "../../../..", "features": ["navigation.tabs", "navigation.tabs.sticky", "navigation.sections", "content.tabs.link"], "search": "../../../../assets/javascripts/workers/search.720157f5.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.config.lang": "en", "search.config.pipeline": "stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "version": {"method": "mike", "provider": "mike"}}</script>
+    <script id="__config" type="application/json">{"base": "../../..", "features": ["navigation.tabs", "navigation.tabs.sticky", "navigation.sections", "content.tabs.link"], "search": "../../../assets/javascripts/workers/search.720157f5.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.config.lang": "en", "search.config.pipeline": "stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "version": {"method": "mike", "provider": "mike"}}</script>
     
     
-      <script src="../../../../assets/javascripts/bundle.15234abc.min.js"></script>
+      <script src="../../../assets/javascripts/bundle.15234abc.min.js"></script>
       
     
   </body>

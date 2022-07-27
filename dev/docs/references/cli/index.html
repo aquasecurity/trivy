@@ -252,6 +252,8 @@
     
       
     
+      
+    
     <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
     <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
     <label class="md-overlay" for="__drawer"></label>
@@ -2169,6 +2171,25 @@
 
               
             
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../attestation/vuln/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Cosign Vulnerability Scan Record
+  </span>
+
+      </a>
+    </li>
+  
+
+              
+            
           </ul>
         </nav>
       
@@ -3540,6 +3561,7 @@
 <div class="highlight"><pre><span></span><code>Scanner <span class="k">for</span> vulnerabilities <span class="k">in</span> container images, file systems, and Git repositories, as well as <span class="k">for</span> configuration issues and hard-coded secrets
 
 Usage:
+  trivy <span class="o">[</span>global flags<span class="o">]</span> <span class="nb">command</span> <span class="o">[</span>flags<span class="o">]</span> target
   trivy <span class="o">[</span>command<span class="o">]</span>
 
 Examples:
@@ -3560,7 +3582,6 @@ Available Commands:
   filesystem  Scan <span class="nb">local</span> filesystem
   <span class="nb">help</span>        Help about any <span class="nb">command</span>
   image       Scan a container image
-  kubectl     scan kubectl resources
   kubernetes  scan kubernetes cluster
   module      Manage modules
   plugin      Manage plugins
@@ -3571,15 +3592,16 @@ Available Commands:
   version     Print the version
 
 Flags:
-      --cache-dir string   cache directory <span class="o">(</span>default <span class="s2">&quot;/Users/teppei/Library/Caches/trivy&quot;</span><span class="o">)</span>
-  -c, --config string      config path <span class="o">(</span>default <span class="s2">&quot;trivy.yaml&quot;</span><span class="o">)</span>
-  -d, --debug              debug mode
-  -f, --format string      version format <span class="o">(</span>json<span class="o">)</span>
-  -h, --help               <span class="nb">help</span> <span class="k">for</span> trivy
-      --insecure           allow insecure server connections when using TLS
-  -q, --quiet              suppress progress bar and log output
-      --timeout duration   timeout <span class="o">(</span>default 5m0s<span class="o">)</span>
-  -v, --version            show version
+      --cache-dir string          cache directory <span class="o">(</span>default <span class="s2">&quot;/Users/teppei/Library/Caches/trivy&quot;</span><span class="o">)</span>
+  -c, --config string             config path <span class="o">(</span>default <span class="s2">&quot;trivy.yaml&quot;</span><span class="o">)</span>
+  -d, --debug                     debug mode
+  -f, --format string             version format <span class="o">(</span>json<span class="o">)</span>
+      --generate-default-config   write the default config to trivy-default.yaml
+  -h, --help                      <span class="nb">help</span> <span class="k">for</span> trivy
+      --insecure                  allow insecure server connections when using TLS
+  -q, --quiet                     suppress progress bar and log output
+      --timeout duration          timeout <span class="o">(</span>default 5m0s<span class="o">)</span>
+  -v, --version                   show version
 
 Use <span class="s2">&quot;trivy [command] --help&quot;</span> <span class="k">for</span> more information about a command.
 </code></pre></div>

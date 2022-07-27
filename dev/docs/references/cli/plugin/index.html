@@ -252,6 +252,8 @@
     
       
     
+      
+    
     <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
     <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
     <label class="md-overlay" for="__drawer"></label>
@@ -2174,6 +2176,25 @@
 
               
             
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../attestation/vuln/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Cosign Vulnerability Scan Record
+  </span>
+
+      </a>
+    </li>
+  
+
+              
+            
           </ul>
         </nav>
       
@@ -3553,24 +3574,27 @@ Aliases:
   plugin, p
 
 Available Commands:
-  Uninstall   uninstall a plugin
   info        Show information about the specified plugin
   install     Install a plugin
   list        List installed plugin
   run         Run a plugin on the fly
+  uninstall   Uninstall a plugin
   update      Update an existing plugin
 
 Flags:
   -h, --help   <span class="nb">help</span> <span class="k">for</span> plugin
 
 Global Flags:
-      --cache-dir string   cache directory <span class="o">(</span>default <span class="s2">&quot;/Users/teppei/Library/Caches/trivy&quot;</span><span class="o">)</span>
-  -c, --config string      config path <span class="o">(</span>default <span class="s2">&quot;trivy.yaml&quot;</span><span class="o">)</span>
-  -d, --debug              debug mode
-      --insecure           allow insecure server connections when using TLS
-  -q, --quiet              suppress progress bar and log output
-      --timeout duration   timeout <span class="o">(</span>default 5m0s<span class="o">)</span>
-  -v, --version            show version
+      --cache-dir string          cache directory <span class="o">(</span>default <span class="s2">&quot;/Users/teppei/Library/Caches/trivy&quot;</span><span class="o">)</span>
+  -c, --config string             config path <span class="o">(</span>default <span class="s2">&quot;trivy.yaml&quot;</span><span class="o">)</span>
+  -d, --debug                     debug mode
+      --generate-default-config   write the default config to trivy-default.yaml
+      --insecure                  allow insecure server connections when using TLS
+  -q, --quiet                     suppress progress bar and log output
+      --timeout duration          timeout <span class="o">(</span>default 5m0s<span class="o">)</span>
+  -v, --version                   show version
+
+Use <span class="s2">&quot;trivy plugin [command] --help&quot;</span> <span class="k">for</span> more information about a command.
 </code></pre></div>
 
 

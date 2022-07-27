@@ -252,6 +252,8 @@
     
       
     
+      
+    
     <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
     <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
     <label class="md-overlay" for="__drawer"></label>
@@ -2174,6 +2176,25 @@
 
               
             
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../attestation/vuln/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Cosign Vulnerability Scan Record
+  </span>
+
+      </a>
+    </li>
+  
+
+              
+            
           </ul>
         </nav>
       
@@ -3562,13 +3583,13 @@ Examples:
 Scan Flags
       --offline-scan             <span class="k">do</span> not issue API requests to identify dependencies
       --security-checks string   comma-separated list of what security issues to detect <span class="o">(</span>vuln,config,secret<span class="o">)</span> <span class="o">(</span>default <span class="s2">&quot;vuln,secret&quot;</span><span class="o">)</span>
-      --skip-dirs string         specify the directories where the traversal is skipped
-      --skip-files string        specify the file paths to skip traversal
+      --skip-dirs strings        specify the directories where the traversal is skipped
+      --skip-files strings       specify the file paths to skip traversal
 
 Report Flags
       --dependency-tree        show dependency origin tree <span class="o">(</span>EXPERIMENTAL<span class="o">)</span>
       --exit-code int          specify <span class="nb">exit</span> code when any security issues are found
-  -f, --format string          format <span class="o">(</span>table, json, sarif, template, cyclonedx, spdx, spdx-json, github<span class="o">)</span> <span class="o">(</span>default <span class="s2">&quot;table&quot;</span><span class="o">)</span>
+  -f, --format string          format <span class="o">(</span>table, json, sarif, template, cyclonedx, spdx, spdx-json, github, cosign-vuln<span class="o">)</span> <span class="o">(</span>default <span class="s2">&quot;table&quot;</span><span class="o">)</span>
       --ignore-policy string   specify the Rego file path to evaluate each vulnerability
       --ignorefile string      specify .trivyignore file <span class="o">(</span>default <span class="s2">&quot;.trivyignore&quot;</span><span class="o">)</span>
       --list-all-pkgs          enabling the option will output all packages regardless of vulnerability
@@ -3606,14 +3627,19 @@ DB Flags
 <span class="s2">Secret Flags</span>
 <span class="s2">      --secret-config string   specify a path to config file for secret scanning (default &quot;</span>trivy-secret.yaml<span class="s2">&quot;)</span>
 
+<span class="s2">License Flags</span>
+<span class="s2">      --ignored-licenses strings   specify a list of license to ignore</span>
+<span class="s2">      --license-full               eagerly look for licenses in source code headers and license files</span>
+
 <span class="s2">Global Flags:</span>
-<span class="s2">      --cache-dir string   cache directory (default &quot;</span>/Users/teppei/Library/Caches/trivy<span class="s2">&quot;)</span>
-<span class="s2">  -c, --config string      config path (default &quot;</span>trivy.yaml<span class="s2">&quot;)</span>
-<span class="s2">  -d, --debug              debug mode</span>
-<span class="s2">      --insecure           allow insecure server connections when using TLS</span>
-<span class="s2">  -q, --quiet              suppress progress bar and log output</span>
-<span class="s2">      --timeout duration   timeout (default 5m0s)</span>
-<span class="s2">  -v, --version            show version</span>
+<span class="s2">      --cache-dir string          cache directory (default &quot;</span>/Users/teppei/Library/Caches/trivy<span class="s2">&quot;)</span>
+<span class="s2">  -c, --config string             config path (default &quot;</span>trivy.yaml<span class="s2">&quot;)</span>
+<span class="s2">  -d, --debug                     debug mode</span>
+<span class="s2">      --generate-default-config   write the default config to trivy-default.yaml</span>
+<span class="s2">      --insecure                  allow insecure server connections when using TLS</span>
+<span class="s2">  -q, --quiet                     suppress progress bar and log output</span>
+<span class="s2">      --timeout duration          timeout (default 5m0s)</span>
+<span class="s2">  -v, --version                   show version</span>
 </code></pre></div>
 
 
