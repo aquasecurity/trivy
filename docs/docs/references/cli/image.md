@@ -56,7 +56,7 @@ Cache Flags
       --redis-key string       redis key file location, if using redis as cache backend
 
 DB Flags
-      --db-repository string   OCI repository to retrieve trivy-db from" (default "ghcr.io/aquasecurity/trivy-db")
+      --db-repository string   OCI repository to retrieve trivy-db from (default "ghcr.io/aquasecurity/trivy-db")
       --download-db-only       download/update vulnerability database but don't run a scan
       --no-progress            suppress progress bar
       --reset                  remove all caches and database

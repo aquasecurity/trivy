@@ -37,7 +37,7 @@ var (
 		Name:       "db-repository",
 		ConfigName: "db.repository",
 		Value:      defaultDBRepository,
-		Usage:      "OCI repository to retrieve trivy-db from\"",
+		Usage:      "OCI repository to retrieve trivy-db from",
 	}
 	LightFlag = Flag{
 		Name:       "light",
