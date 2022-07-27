@@ -1,8 +1,8 @@
 # Cosign Vulnerability Attestation
 
-## Generate Cosign Vulnerability Predicate 
+## Generate Cosign Vulnerability Scan Record
 
-Trivy generates reports in the [Cosign vulnerability predicate format][vuln-attest-spec].
+Trivy generates reports in the [Cosign vulnerability scan record format][vuln-attest-spec].
 
 You can use the regular subcommands (like image, fs and rootfs) and specify `cosign-vuln` with the --format option.
 
@@ -155,7 +155,7 @@ $ trivy image --format cosign-vuln --output vuln.json alpine:3.10
 
 Cosign can generate key pairs and use them for signing and verification. Read more about [how to generate key pairs](https://docs.sigstore.dev/cosign/key-generation).
 
-In the following example, Trivy generates a cosign vulnerability predicate, and then Cosign attaches an attestation of it to a container image with a local key pair.
+In the following example, Trivy generates a cosign vulnerability scan record, and then Cosign attaches an attestation of it to a container image with a local key pair.
 
 ```
 $ trivy image --format cosign-vuln --output vuln.json <IMAGE>
