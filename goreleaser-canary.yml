@@ -6,7 +6,7 @@ builds:
     ldflags:
       - -s -w
       - "-extldflags '-static'"
-      - -X main.version={{.Version}}
+      - -X main.version=v{{.Version}}
     env:
       - CGO_ENABLED=0
     goos:
