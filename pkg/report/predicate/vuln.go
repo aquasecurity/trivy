@@ -13,12 +13,10 @@ import (
 	"github.com/aquasecurity/trivy/pkg/types"
 )
 
-// CosignVulnPredicate represents the Cosign Vulnerability predicate.
-// Cosign provides the CosignVulnPredicate structure in their repository.
-// But the type of Scanner.Result is defined as map[string]interface{}, which is difficult to use,
-// so we define our own.
-// The PR is in progress to replace Scanner.Result type to interface{}.
-// https://github.com/sigstore/cosign/pull/2096
+// CosignVulnPredicate represents the Cosign Vulnerability Scan Record.
+// CosignVulnPredicate is based on structures in the Cosign repository.
+// We defined them ourselves to reduce our dependence on the repository.
+// cf. https://github.com/sigstore/cosign/blob/e0547cff64f98585a837a524ff77ff6b47ff5609/pkg/cosign/attestation/attestation.go#L45-L50
 type CosignVulnPredicate struct {
 	Invocation Invocation `json:"invocation"`
 	Scanner    Scanner    `json:"scanner"`
