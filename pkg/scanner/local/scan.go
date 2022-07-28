@@ -324,6 +324,7 @@ func (s Scanner) secretsToResults(secrets []ftypes.Secret) types.Results {
 		results = append(results, types.Result{
 			Target:  secret.FilePath,
 			Class:   types.ClassSecret,
+			Layer:   secret.Layer.DiffID,
 			Secrets: secret.Findings,
 		})
 	}

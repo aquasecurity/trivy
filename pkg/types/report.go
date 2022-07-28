@@ -53,6 +53,7 @@ type Result struct {
 	Target            string                     `json:"Target"`
 	Class             ResultClass                `json:"Class,omitempty"`
 	Type              string                     `json:"Type,omitempty"`
+	Layer             string                     `json:"Layer,omitempty"` // Used only for secrets, as Trivy keeps secrets from all layers.
 	Packages          []ftypes.Package           `json:"Packages,omitempty"`
 	Vulnerabilities   []DetectedVulnerability    `json:"Vulnerabilities,omitempty"`
 	MisconfSummary    *MisconfSummary            `json:"MisconfSummary,omitempty"`

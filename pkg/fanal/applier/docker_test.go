@@ -329,6 +329,144 @@ func TestApplyLayers(t *testing.T) {
 			},
 		},
 		{
+			name: "happy path with removed and updated secret",
+			inputLayers: []types.BlobInfo{
+				{
+					SchemaVersion: 2,
+					DiffID:        "sha256:a187dde48cd289ac374ad8539930628314bc581a481cdb41409c9289419ddb72",
+					Secrets: []types.Secret{
+						{
+							FilePath: "usr/secret.txt",
+							Findings: []types.SecretFinding{
+								{
+									RuleID:    "aws-access-key-id",
+									Category:  "AWS",
+									Severity:  "CRITICAL",
+									Title:     "AWS Access Key ID",
+									StartLine: 1,
+									EndLine:   1,
+									Match:     "AWS_ACCESS_KEY_ID=********************",
+									Code: types.Code{
+										Lines: []types.Line{
+											{
+												Number:      1,
+												Content:     "AWS_ACCESS_KEY_ID=********************",
+												IsCause:     true,
+												Highlighted: "AWS_ACCESS_KEY_ID=********************",
+												FirstCause:  true,
+												LastCause:   true,
+											},
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+				{
+					SchemaVersion: 2,
+					DiffID:        "sha256:aad63a9339440e7c3e1fff2b988991b9bfb81280042fa7f39a5e327023056819",
+					Secrets: []types.Secret{
+						{
+							FilePath: "usr/secret.txt",
+							Findings: []types.SecretFinding{
+								{
+									RuleID:    "github-pat",
+									Category:  "GitHub",
+									Severity:  "CRITICAL",
+									Title:     "GitHub Personal Access Token",
+									StartLine: 1,
+									EndLine:   1,
+									Match:     "GITHUB_PAT=****************************************",
+									Code: types.Code{
+										Lines: []types.Line{
+											{
+												Number:      1,
+												Content:     "GITHUB_PAT=****************************************",
+												IsCause:     true,
+												Highlighted: "GITHUB_PAT=****************************************",
+												FirstCause:  true,
+												LastCause:   true,
+											},
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+				{
+					SchemaVersion: 2,
+					DiffID:        "sha256:a187dde48cd289ac374ad8539930628314bc581a481cdb41409c9289419ddb72",
+					WhiteoutFiles: []string{
+						"usr/secret.txt",
+					},
+				},
+			},
+			want: types.ArtifactDetail{
+				Secrets: []types.Secret{
+					{
+						FilePath: "usr/secret.txt",
+						Findings: []types.SecretFinding{
+							{
+								RuleID:    "aws-access-key-id",
+								Category:  "AWS",
+								Severity:  "CRITICAL",
+								Title:     "AWS Access Key ID",
+								StartLine: 1,
+								EndLine:   1,
+								Match:     "AWS_ACCESS_KEY_ID=********************",
+								Code: types.Code{
+									Lines: []types.Line{
+										{
+											Number:      1,
+											Content:     "AWS_ACCESS_KEY_ID=********************",
+											IsCause:     true,
+											Highlighted: "AWS_ACCESS_KEY_ID=********************",
+											FirstCause:  true,
+											LastCause:   true,
+										},
+									},
+								},
+							},
+						},
+						Layer: types.Layer{
+							DiffID: "sha256:a187dde48cd289ac374ad8539930628314bc581a481cdb41409c9289419ddb72",
+						},
+					},
+					{
+						FilePath: "usr/secret.txt",
+						Findings: []types.SecretFinding{
+							{
+								RuleID:    "github-pat",
+								Category:  "GitHub",
+								Severity:  "CRITICAL",
+								Title:     "GitHub Personal Access Token",
+								StartLine: 1,
+								EndLine:   1,
+								Match:     "GITHUB_PAT=****************************************",
+								Code: types.Code{
+									Lines: []types.Line{
+										{
+											Number:      1,
+											Content:     "GITHUB_PAT=****************************************",
+											IsCause:     true,
+											Highlighted: "GITHUB_PAT=****************************************",
+											FirstCause:  true,
+											LastCause:   true,
+										},
+									},
+								},
+							},
+						},
+						Layer: types.Layer{
+							DiffID: "sha256:aad63a9339440e7c3e1fff2b988991b9bfb81280042fa7f39a5e327023056819",
+						},
+					},
+				},
+			},
+		},
+		{
 			name: "happy path with status.d and opaque dirs without the trailing slash",
 			inputLayers: []types.BlobInfo{
 				{

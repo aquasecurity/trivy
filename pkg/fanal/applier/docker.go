@@ -136,8 +136,8 @@ func ApplyLayers(layers []types.BlobInfo) types.ArtifactDetail {
 				Digest: layer.Digest,
 				DiffID: layer.DiffID,
 			}
-			key := fmt.Sprintf("%s/type:secret", secret.FilePath)
-			nestedMap.SetByString(key, sep, secret)
+			// we must save secrets from all layers
+			mergedLayer.Secrets = append(mergedLayer.Secrets, secret)
 		}
 
 		// Apply license files
@@ -170,8 +170,6 @@ func ApplyLayers(layers []types.BlobInfo) types.ArtifactDetail {
 			mergedLayer.Applications = append(mergedLayer.Applications, v)
 		case types.Misconfiguration:
 			mergedLayer.Misconfigurations = append(mergedLayer.Misconfigurations, v)
-		case types.Secret:
-			mergedLayer.Secrets = append(mergedLayer.Secrets, v)
 		case types.LicenseFile:
 			mergedLayer.Licenses = append(mergedLayer.Licenses, v)
 		case types.CustomResource:
