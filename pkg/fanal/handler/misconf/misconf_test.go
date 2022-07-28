@@ -1,15 +1,70 @@
 package misconf
 
 import (
+	"context"
 	"fmt"
 	"testing"
 
+	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
+	"github.com/aquasecurity/trivy/pkg/fanal/artifact"
+	"github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
 
-func Test_FindingFSTarget(t *testing.T) {
+func Test_Handle(t *testing.T) {
+	tests := []struct {
+		name         string
+		files        map[types.HandlerType][]types.File
+		wantFilePath string
+		wantFileType string
+	}{
+		{
+			name: "happy path. Dockerfile",
+			files: map[types.HandlerType][]types.File{
+				types.MisconfPostHandler: {
+					{
+						Path:    "Dockerfile",
+						Type:    types.Dockerfile,
+						Content: []byte(`FROM alpine`),
+					},
+				},
+			},
+			wantFilePath: "Dockerfile",
+			wantFileType: types.Dockerfile,
+		},
+		{
+			name: "happy path. Dockerfile with custom file name",
+			files: map[types.HandlerType][]types.File{
+				types.MisconfPostHandler: {
+					{
+						Path:    "dockerf",
+						Type:    types.Dockerfile,
+						Content: []byte(`FROM alpine`),
+					},
+				},
+			},
+			wantFilePath: "dockerf",
+			wantFileType: types.Dockerfile,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			result := &analyzer.AnalysisResult{Files: tt.files}
+			misconfHandler, err := newMisconfPostHandler(artifact.Option{})
+			assert.NoError(t, err)
+			blobInfo := &types.BlobInfo{}
 
+			err = misconfHandler.Handle(context.Background(), result, blobInfo)
+			assert.NoError(t, err)
+			assert.Equal(t, 1, len(blobInfo.Misconfigurations), "wrong number of misconfigurations found")
+			assert.Equal(t, tt.wantFilePath, blobInfo.Misconfigurations[0].FilePath, "filePaths don't equal")
+			assert.Equal(t, tt.wantFileType, blobInfo.Misconfigurations[0].FileType, "fileTypes don't equal")
+		})
+	}
+}
+
+func Test_FindingFSTarget(t *testing.T) {
 	tests := []struct {
 		input      []string
 		wantTarget string
