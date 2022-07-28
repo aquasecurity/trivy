@@ -32,16 +32,16 @@ builds:
       - goos: freebsd
         goarch: arm64
       # only amd64 is supported on Windows
-      - goos: 386
-        goarch: windows
-      - goos: arm
-        goarch: windows
-      - goos: arm64
-        goarch: windows
-      - goos: s390x
-        goarch: windows
-      - goos: ppc64le
-        goarch: windows
+      - goos: windows
+        goarch: 386
+      - goos: windows
+        goarch: arm
+      - goos: windows
+        goarch: arm64
+      - goos: windows
+        goarch: s390x
+      - goos: windows
+        goarch: ppc64le
 
 release:
     extra_files:
