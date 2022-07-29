@@ -39,8 +39,8 @@ func init() {
 const version = 1
 
 type misconfPostHandler struct {
-	options  artifact.Option
-	scanners map[string]scanners.Scanner
+	filePatterns []string
+	scanners     map[string]scanners.Scanner
 }
 
 // for a given set of paths, find the most specific filesystem path that contains all the descendants
@@ -178,7 +178,7 @@ func newMisconfPostHandler(artifactOpt artifact.Option) (handler.PostHandler, er
 	}
 
 	return misconfPostHandler{
-		options: artifactOpt,
+		filePatterns: artifactOpt.MisconfScannerOption.FilePatterns,
 		scanners: map[string]scanners.Scanner{
 			types.Terraform:      tfscanner.New(opts...),
 			types.CloudFormation: cfscanner.New(opts...),
@@ -200,7 +200,7 @@ var enabledDefsecTypes = map[detection.FileType]string{
 }
 
 func (h misconfPostHandler) hasCustomPatternForType(t string) bool {
-	for _, pattern := range h.options.MisconfScannerOption.FilePatterns {
+	for _, pattern := range h.filePatterns {
 		if strings.HasPrefix(pattern, t+":") {
 			return true
 		}
