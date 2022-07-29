@@ -14,7 +14,7 @@ var (
 		Name:       "file-patterns",
 		ConfigName: "misconfiguration.file-patterns",
 		Value:      []string{},
-		Usage:      "specify config file patterns, available with '--security-checks config'",
+		Usage:      "specify additional config file mathcing in regex format, available with '--security-checks config'",
 	}
 	IncludeNonFailuresFlag = Flag{
 		Name:       "include-non-failures",

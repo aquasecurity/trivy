@@ -79,7 +79,7 @@ func (a ConfigAnalyzer) Required(filePath string, info os.FileInfo) bool {
 	}
 
 	name := filepath.Base(filePath)
-	for _, acceptable := range []string{"Chart.yaml", ".helmignore"} {
+	for _, acceptable := range []string{".helmignore"} {
 		if strings.EqualFold(name, acceptable) {
 			return true
 		}

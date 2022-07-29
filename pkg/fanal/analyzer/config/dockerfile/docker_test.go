@@ -119,6 +119,11 @@ func Test_dockerConfigAnalyzer_Required(t *testing.T) {
 			want:     true,
 		},
 		{
+			name:     "Containerfile in dir",
+			filePath: "docker/Containerfile",
+			want:     true,
+		},
+		{
 			name:     "Dockerfile as prefix",
 			filePath: "Dockerfilebuild",
 			want:     false,

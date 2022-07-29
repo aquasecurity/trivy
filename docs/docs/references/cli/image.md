@@ -73,7 +73,7 @@ Vulnerability Flags
 Misconfiguration Flags
       --config-data strings         specify paths from which data for the Rego policies will be recursively loaded
       --config-policy strings       specify paths to the Rego policy files directory, applying config files
-      --file-patterns strings       specify config file patterns, available with '--security-checks config'
+      --file-patterns strings       specify additional config file mathcing in regex format, available with '--security-checks config'
       --include-non-failures        include successes and exceptions, available with '--security-checks config'
       --policy-namespaces strings   Rego namespaces
       --trace                       enable more verbose trace output for custom queries

@@ -37,7 +37,7 @@ func (o *ScannerOption) Sort() {
 }
 
 func RegisterConfigAnalyzers(filePatterns []string) error {
-	var dockerRegexp, jsonRegexp, yamlRegexp, helmRegexp *regexp.Regexp
+	var dockerRegexp, jsonRegexp, yamlRegexp, helmRegexp, terraformRegexp *regexp.Regexp
 	for _, p := range filePatterns {
 		// e.g. "dockerfile:my_dockerfile_*"
 		s := strings.SplitN(p, separator, 2)
@@ -59,13 +59,15 @@ func RegisterConfigAnalyzers(filePatterns []string) error {
 			yamlRegexp = r
 		case types.Helm:
 			helmRegexp = r
+		case types.Terraform:
+			terraformRegexp = r
 		default:
 			return xerrors.Errorf("unknown file type: %s, pattern: %s", fileType, pattern)
 		}
 	}
 
 	analyzer.RegisterAnalyzer(dockerfile.NewConfigAnalyzer(dockerRegexp))
-	analyzer.RegisterAnalyzer(terraform.NewConfigAnalyzer())
+	analyzer.RegisterAnalyzer(terraform.NewConfigAnalyzer(terraformRegexp))
 	analyzer.RegisterAnalyzer(json.NewConfigAnalyzer(jsonRegexp))
 	analyzer.RegisterAnalyzer(yaml.NewConfigAnalyzer(yamlRegexp))
 	analyzer.RegisterAnalyzer(helm.NewConfigAnalyzer(helmRegexp))

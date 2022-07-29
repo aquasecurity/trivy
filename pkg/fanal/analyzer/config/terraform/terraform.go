@@ -5,6 +5,7 @@ import (
 	"io"
 	"os"
 	"path/filepath"
+	"regexp"
 
 	"golang.org/x/exp/slices"
 	"golang.org/x/xerrors"
@@ -18,10 +19,13 @@ const version = 1
 var requiredExts = []string{".tf", ".tf.json"}
 
 type ConfigAnalyzer struct {
+	filePattern *regexp.Regexp
 }
 
-func NewConfigAnalyzer() ConfigAnalyzer {
-	return ConfigAnalyzer{}
+func NewConfigAnalyzer(filePattern *regexp.Regexp) ConfigAnalyzer {
+	return ConfigAnalyzer{
+		filePattern: filePattern,
+	}
 }
 
 // Analyze returns a name of Terraform file

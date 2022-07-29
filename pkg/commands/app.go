@@ -542,6 +542,7 @@ func NewConfigCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 		Use:     "config [flags] DIR",
 		Aliases: []string{"conf"},
 		Short:   "Scan config files for misconfigurations",
+		Long:    "Support: Dockerfile/Containerfile, Yaml, JSON, Helm, Terraform, CloudFormation",
 		PreRunE: func(cmd *cobra.Command, args []string) error {
 			if err := configFlags.Bind(cmd); err != nil {
 				return xerrors.Errorf("flag bind error: %w", err)
