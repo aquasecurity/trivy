@@ -39,6 +39,7 @@ func init() {
 const version = 1
 
 type misconfPostHandler struct {
+	options  artifact.Option
 	scanners map[string]scanners.Scanner
 }
 
@@ -177,6 +178,7 @@ func newMisconfPostHandler(artifactOpt artifact.Option) (handler.PostHandler, er
 	}
 
 	return misconfPostHandler{
+		options: artifactOpt,
 		scanners: map[string]scanners.Scanner{
 			types.Terraform:      tfscanner.New(opts...),
 			types.CloudFormation: cfscanner.New(opts...),
@@ -197,6 +199,15 @@ var enabledDefsecTypes = map[detection.FileType]string{
 	detection.FileTypeRbac:           types.Rbac,
 }
 
+func (h misconfPostHandler) hasCustomPatternForType(t string) bool {
+	for _, pattern := range h.options.MisconfScannerOption.FilePatterns {
+		if strings.HasPrefix(pattern, t+":") {
+			return true
+		}
+	}
+	return false
+}
+
 // Handle detects misconfigurations.
 func (h misconfPostHandler) Handle(ctx context.Context, result *analyzer.AnalysisResult, blob *types.BlobInfo) error {
 	files, ok := result.Files[h.Type()]
@@ -214,7 +225,7 @@ func (h misconfPostHandler) Handle(ctx context.Context, result *analyzer.Analysi
 		for defsecType, localType := range enabledDefsecTypes {
 
 			buffer := bytes.NewReader(file.Content)
-			if !detection.IsType(file.Path, buffer, defsecType) {
+			if !h.hasCustomPatternForType(localType) && !detection.IsType(file.Path, buffer, defsecType) {
 				continue
 			}
 			// Replace with more detailed config type
