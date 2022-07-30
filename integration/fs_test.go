@@ -23,6 +23,7 @@ func TestFilesystem(t *testing.T) {
 		listAllPkgs    bool
 		input          string
 		secretConfig   string
+		filePatterns   []string
 	}
 	tests := []struct {
 		name   string
@@ -78,6 +79,16 @@ func TestFilesystem(t *testing.T) {
 				namespaces:     []string{"testing"},
 			},
 			golden: "testdata/dockerfile.json.golden",
+		},
+		{
+			name: "dockerfile with custom file pattern",
+			args: args{
+				securityChecks: "config",
+				input:          "testdata/fixtures/fs/dockerfile_file_pattern",
+				namespaces:     []string{"testing"},
+				filePatterns:   []string{"dockerfile:Customfile"},
+			},
+			golden: "testdata/dockerfile_file_pattern.json.golden",
 		},
 		{
 			name: "dockerfile with rule exception",
@@ -176,6 +187,12 @@ func TestFilesystem(t *testing.T) {
 				err := os.WriteFile(trivyIgnore, []byte(strings.Join(tt.args.ignoreIDs, "\n")), 0444)
 				assert.NoError(t, err, "failed to write .trivyignore")
 				defer os.Remove(trivyIgnore)
+			}
+
+			if len(tt.args.filePatterns) != 0 {
+				for _, filePattern := range tt.args.filePatterns {
+					osArgs = append(osArgs, "--file-patterns", filePattern)
+				}
 			}
 
 			// Setup the output file

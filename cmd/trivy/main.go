@@ -27,7 +27,7 @@ func run() error {
 		if !plugin.IsPredefined(runAsPlugin) {
 			return xerrors.Errorf("unknown plugin: %s", runAsPlugin)
 		}
-		if err := plugin.RunWithArgs(context.Background(), runAsPlugin, os.Args); err != nil {
+		if err := plugin.RunWithArgs(context.Background(), runAsPlugin, os.Args[1:]); err != nil {
 			return xerrors.Errorf("plugin error: %w", err)
 		}
 		return nil
