@@ -3640,7 +3640,14 @@
 <p>Trivy generates JSON reports in the <a href="https://cyclonedx.org/">CycloneDX</a> format.
 Note that XML format is not supported at the moment.</p>
 <p>You can use the regular subcommands (like <code>image</code>, <code>fs</code> and <code>rootfs</code>) and specify <code>cyclonedx</code> with the <code>--format</code> option.</p>
+<p>CycloneDX can represent either or both SBOM or BOV.</p>
+<ul>
+<li><a href="https://cyclonedx.org/capabilities/sbom/">Software Bill of Materials (SBOM)</a></li>
+<li><a href="https://cyclonedx.org/capabilities/bov/">Bill of Vulnerabilities (BOV)</a></li>
+</ul>
+<p>By default, <code>--format cyclonedx</code> represents SBOM and doesn't include vulnerabilities in the CycloneDX output.</p>
 <div class="highlight"><pre><span></span><code>$ trivy image --format cyclonedx --output result.json alpine:3.15
+2022-07-19T07:47:27.624Z        INFO    &quot;--format cyclonedx&quot; disables security checks. Specify &quot;--security-checks vuln&quot; explicitly if you want to include vulnerabilities in the CycloneDX report.
 </code></pre></div>
 <details>
 <summary>Result</summary>
@@ -3861,6 +3868,9 @@ Note that XML format is not supported at the moment.</p>
 
 </details>
 
+<p>If you want to include vulnerabilities, you can enable vulnerability scanning via <code>--security-checks vuln</code>.</p>
+<div class="highlight"><pre><span></span><code>$ trivy image --security-checks vuln --format cyclonedx --output result.json alpine:3.15
+</code></pre></div>
 <h2 id="scanning">Scanning</h2>
 <p>Trivy can take CycloneDX as an input and scan for vulnerabilities.
 To scan SBOM, you can use the <code>sbom</code> subcommand and pass the path to your CycloneDX report. </p>
@@ -3885,7 +3895,8 @@ Total: <span class="m">3</span> <span class="o">(</span>CRITICAL: <span class="m
 </code></pre></div>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>If you want to generate a CycloneDX report from a CycloneDX input, please be aware that the output stores references to your original CycloneDX report and contains only detected vulnerabilities, not components.</p>
+<p>If you want to generate a CycloneDX report from a CycloneDX input, please be aware that the output stores references to your original CycloneDX report and contains only detected vulnerabilities, not components.
+The report is called <a href="https://cyclonedx.org/capabilities/bov/">BOV</a>.</p>
 </div>
 
 

@@ -3643,7 +3643,7 @@
 <li><a href="spdx/">SPDX</a></li>
 </ul>
 <p>To generate SBOM, you can use the <code>--format</code> option for each subcommand such as <code>image</code> and <code>fs</code>.</p>
-<div class="highlight"><pre><span></span><code>$ trivy image --format cyclonedx --output result.json alpine:3.15
+<div class="highlight"><pre><span></span><code>$ trivy image --format spdx-json --output result.json alpine:3.15
 </code></pre></div>
 <div class="highlight"><pre><span></span><code>$ trivy fs --format cyclonedx --output result.json /app/myproject
 </code></pre></div>
