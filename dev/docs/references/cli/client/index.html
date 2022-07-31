@@ -3598,39 +3598,39 @@ Cache Flags
       --redis-key string       redis key file location, <span class="k">if</span> using redis as cache backend
 
 DB Flags
-      --db-repository string   OCI repository to retrieve trivy-db from<span class="s2">&quot; (default &quot;</span>ghcr.io/aquasecurity/trivy-db<span class="s2">&quot;)</span>
-<span class="s2">      --download-db-only       download/update vulnerability database but don&#39;t run a scan</span>
-<span class="s2">      --no-progress            suppress progress bar</span>
-<span class="s2">      --reset                  remove all caches and database</span>
-<span class="s2">      --skip-db-update         skip updating vulnerability database</span>
+      --db-repository string   OCI repository to retrieve trivy-db from <span class="o">(</span>default <span class="s2">&quot;ghcr.io/aquasecurity/trivy-db&quot;</span><span class="o">)</span>
+      --download-db-only       download/update vulnerability database but don<span class="s1">&#39;t run a scan</span>
+<span class="s1">      --no-progress            suppress progress bar</span>
+<span class="s1">      --reset                  remove all caches and database</span>
+<span class="s1">      --skip-db-update         skip updating vulnerability database</span>
 
-<span class="s2">Vulnerability Flags</span>
-<span class="s2">      --ignore-unfixed     display only fixed vulnerabilities</span>
-<span class="s2">      --vuln-type string   comma-separated list of vulnerability types (os,library) (default &quot;</span>os,library<span class="s2">&quot;)</span>
+<span class="s1">Vulnerability Flags</span>
+<span class="s1">      --ignore-unfixed     display only fixed vulnerabilities</span>
+<span class="s1">      --vuln-type string   comma-separated list of vulnerability types (os,library) (default &quot;os,library&quot;)</span>
 
-<span class="s2">Misconfiguration Flags</span>
-<span class="s2">      --config-data strings         specify paths from which data for the Rego policies will be recursively loaded</span>
-<span class="s2">      --config-policy strings       specify paths to the Rego policy files directory, applying config files</span>
-<span class="s2">      --file-patterns strings       specify config file patterns, available with &#39;--security-checks config&#39;</span>
-<span class="s2">      --include-non-failures        include successes and exceptions, available with &#39;--security-checks config&#39;</span>
-<span class="s2">      --policy-namespaces strings   Rego namespaces</span>
-<span class="s2">      --trace                       enable more verbose trace output for custom queries</span>
+<span class="s1">Misconfiguration Flags</span>
+<span class="s1">      --config-data strings         specify paths from which data for the Rego policies will be recursively loaded</span>
+<span class="s1">      --config-policy strings       specify paths to the Rego policy files directory, applying config files</span>
+<span class="s1">      --file-patterns strings       specify config file patterns, available with &#39;</span>--security-checks config<span class="s1">&#39;</span>
+<span class="s1">      --include-non-failures        include successes and exceptions, available with &#39;</span>--security-checks config<span class="err">&#39;</span>
+      --policy-namespaces strings   Rego namespaces
+      --trace                       <span class="nb">enable</span> more verbose trace output <span class="k">for</span> custom queries
 
-<span class="s2">Client/Server Flags</span>
-<span class="s2">      --custom-headers strings   custom headers in client mode</span>
-<span class="s2">      --remote string            server address (default &quot;</span>http://localhost:4954<span class="s2">&quot;)</span>
-<span class="s2">      --token string             for authentication in client/server mode</span>
-<span class="s2">      --token-header string      specify a header name for token in client/server mode (default &quot;</span>Trivy-Token<span class="s2">&quot;)</span>
+Client/Server Flags
+      --custom-headers strings   custom headers <span class="k">in</span> client mode
+      --remote string            server address <span class="o">(</span>default <span class="s2">&quot;http://localhost:4954&quot;</span><span class="o">)</span>
+      --token string             <span class="k">for</span> authentication <span class="k">in</span> client/server mode
+      --token-header string      specify a header name <span class="k">for</span> token <span class="k">in</span> client/server mode <span class="o">(</span>default <span class="s2">&quot;Trivy-Token&quot;</span><span class="o">)</span>
 
-<span class="s2">Global Flags:</span>
-<span class="s2">      --cache-dir string          cache directory (default &quot;</span>/Users/teppei/Library/Caches/trivy<span class="s2">&quot;)</span>
-<span class="s2">  -c, --config string             config path (default &quot;</span>trivy.yaml<span class="s2">&quot;)</span>
-<span class="s2">  -d, --debug                     debug mode</span>
-<span class="s2">      --generate-default-config   write the default config to trivy-default.yaml</span>
-<span class="s2">      --insecure                  allow insecure server connections when using TLS</span>
-<span class="s2">  -q, --quiet                     suppress progress bar and log output</span>
-<span class="s2">      --timeout duration          timeout (default 5m0s)</span>
-<span class="s2">  -v, --version                   show version</span>
+Global Flags:
+      --cache-dir string          cache directory <span class="o">(</span>default <span class="s2">&quot;/Users/teppei/Library/Caches/trivy&quot;</span><span class="o">)</span>
+  -c, --config string             config path <span class="o">(</span>default <span class="s2">&quot;trivy.yaml&quot;</span><span class="o">)</span>
+  -d, --debug                     debug mode
+      --generate-default-config   write the default config to trivy-default.yaml
+      --insecure                  allow insecure server connections when using TLS
+  -q, --quiet                     suppress progress bar and log output
+      --timeout duration          timeout <span class="o">(</span>default 5m0s<span class="o">)</span>
+  -v, --version                   show version
 </code></pre></div>
 
 

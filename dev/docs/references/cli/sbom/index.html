@@ -3603,31 +3603,31 @@ Cache Flags
       --redis-key string       redis key file location, <span class="k">if</span> using redis as cache backend
 
 DB Flags
-      --db-repository string   OCI repository to retrieve trivy-db from<span class="s2">&quot; (default &quot;</span>ghcr.io/aquasecurity/trivy-db<span class="s2">&quot;)</span>
-<span class="s2">      --download-db-only       download/update vulnerability database but don&#39;t run a scan</span>
-<span class="s2">      --no-progress            suppress progress bar</span>
-<span class="s2">      --reset                  remove all caches and database</span>
-<span class="s2">      --skip-db-update         skip updating vulnerability database</span>
+      --db-repository string   OCI repository to retrieve trivy-db from <span class="o">(</span>default <span class="s2">&quot;ghcr.io/aquasecurity/trivy-db&quot;</span><span class="o">)</span>
+      --download-db-only       download/update vulnerability database but don<span class="err">&#39;</span>t run a scan
+      --no-progress            suppress progress bar
+      --reset                  remove all caches and database
+      --skip-db-update         skip updating vulnerability database
 
-<span class="s2">Vulnerability Flags</span>
-<span class="s2">      --ignore-unfixed     display only fixed vulnerabilities</span>
-<span class="s2">      --vuln-type string   comma-separated list of vulnerability types (os,library) (default &quot;</span>os,library<span class="s2">&quot;)</span>
+Vulnerability Flags
+      --ignore-unfixed     display only fixed vulnerabilities
+      --vuln-type string   comma-separated list of vulnerability types <span class="o">(</span>os,library<span class="o">)</span> <span class="o">(</span>default <span class="s2">&quot;os,library&quot;</span><span class="o">)</span>
 
-<span class="s2">Client/Server Flags</span>
-<span class="s2">      --custom-headers strings   custom headers in client mode</span>
-<span class="s2">      --server string            server address in client mode</span>
-<span class="s2">      --token string             for authentication in client/server mode</span>
-<span class="s2">      --token-header string      specify a header name for token in client/server mode (default &quot;</span>Trivy-Token<span class="s2">&quot;)</span>
+Client/Server Flags
+      --custom-headers strings   custom headers <span class="k">in</span> client mode
+      --server string            server address <span class="k">in</span> client mode
+      --token string             <span class="k">for</span> authentication <span class="k">in</span> client/server mode
+      --token-header string      specify a header name <span class="k">for</span> token <span class="k">in</span> client/server mode <span class="o">(</span>default <span class="s2">&quot;Trivy-Token&quot;</span><span class="o">)</span>
 
-<span class="s2">Global Flags:</span>
-<span class="s2">      --cache-dir string          cache directory (default &quot;</span>/Users/teppei/Library/Caches/trivy<span class="s2">&quot;)</span>
-<span class="s2">  -c, --config string             config path (default &quot;</span>trivy.yaml<span class="s2">&quot;)</span>
-<span class="s2">  -d, --debug                     debug mode</span>
-<span class="s2">      --generate-default-config   write the default config to trivy-default.yaml</span>
-<span class="s2">      --insecure                  allow insecure server connections when using TLS</span>
-<span class="s2">  -q, --quiet                     suppress progress bar and log output</span>
-<span class="s2">      --timeout duration          timeout (default 5m0s)</span>
-<span class="s2">  -v, --version                   show version</span>
+Global Flags:
+      --cache-dir string          cache directory <span class="o">(</span>default <span class="s2">&quot;/Users/teppei/Library/Caches/trivy&quot;</span><span class="o">)</span>
+  -c, --config string             config path <span class="o">(</span>default <span class="s2">&quot;trivy.yaml&quot;</span><span class="o">)</span>
+  -d, --debug                     debug mode
+      --generate-default-config   write the default config to trivy-default.yaml
+      --insecure                  allow insecure server connections when using TLS
+  -q, --quiet                     suppress progress bar and log output
+      --timeout duration          timeout <span class="o">(</span>default 5m0s<span class="o">)</span>
+  -v, --version                   show version
 </code></pre></div>
 
 
