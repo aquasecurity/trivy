@@ -12,6 +12,8 @@ import (
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
+	"github.com/aquasecurity/trivy/pkg/log"
+	"github.com/aquasecurity/trivy/pkg/report"
 )
 
 type Flag struct {
@@ -81,6 +83,20 @@ type Options struct {
 
 	// We don't want to allow disabled analyzers to be passed by users, but it is necessary for internal use.
 	DisabledAnalyzers []analyzer.Type
+}
+
+// Align takes consistency of options
+func (o *Options) Align() {
+	if o.Format == report.FormatSPDX || o.Format == report.FormatSPDXJSON {
+		log.Logger.Info(`"--format spdx" and "--format spdx-json" disable security checks`)
+		o.SecurityChecks = nil
+	}
+
+	// Vulnerability scanning is disabled by default for CycloneDX.
+	if o.Format == report.FormatCycloneDX && !viper.IsSet(SecurityChecksFlag.ConfigName) {
+		log.Logger.Info(`"--format cyclonedx" disables security checks. Specify "--security-checks vuln" explicitly if you want to include vulnerabilities in the CycloneDX report.`)
+		o.SecurityChecks = nil
+	}
 }
 
 func addFlag(cmd *cobra.Command, flag *Flag) {
@@ -336,6 +352,8 @@ func (f *Flags) ToOptions(appVersion string, args []string, globalFlags *GlobalF
 	if f.VulnerabilityFlagGroup != nil {
 		opts.VulnerabilityOptions = f.VulnerabilityFlagGroup.ToOptions()
 	}
+
+	opts.Align()
 
 	return opts, nil
 }

@@ -50,7 +50,7 @@
   "Results": [
     {
       "Target": "testdata/fixtures/images/alpine-310.tar.gz (alpine 3.10.2)",
-      "Class": "os-pkgs",
+      "Class": "vuln-os-pkgs",
       "Type": "alpine",
       "Vulnerabilities": [
         {

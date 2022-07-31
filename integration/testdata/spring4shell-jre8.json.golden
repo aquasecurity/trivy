@@ -185,12 +185,12 @@
   "Results": [
     {
       "Target": "testdata/fixtures/images/spring4shell-jre8.tar.gz (debian 11.3)",
-      "Class": "os-pkgs",
+      "Class": "vuln-os-pkgs",
       "Type": "debian"
     },
     {
       "Target": "Java",
-      "Class": "lang-pkgs",
+      "Class": "vuln-lang-pkgs",
       "Type": "jar",
       "Vulnerabilities": [
         {

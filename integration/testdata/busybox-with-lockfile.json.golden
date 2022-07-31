@@ -49,7 +49,7 @@
   "Results": [
     {
       "Target": "Cargo.lock",
-      "Class": "lang-pkgs",
+      "Class": "vuln-lang-pkgs",
       "Type": "cargo",
       "Vulnerabilities": [
         {

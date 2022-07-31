@@ -34,7 +34,7 @@
   "Results": [
     {
       "Target": "testdata/fixtures/images/mariner-1.0.tar.gz (cbl-mariner 1.0.20220122)",
-      "Class": "os-pkgs",
+      "Class": "vuln-os-pkgs",
       "Type": "cbl-mariner",
       "Vulnerabilities": [
         {

@@ -13,6 +13,7 @@ import (
 
 	"github.com/aquasecurity/table"
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
+	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
 
@@ -52,17 +53,25 @@ type Renderer interface {
 
 // Write writes the result on standard output
 func (tw Writer) Write(report types.Report) error {
+	// Iterate results to extract packages first, then write tables for each result
+	pkgs := map[string][]ftypes.Package{}
+	for _, result := range report.Results {
+		if result.Class == types.ClassOSPkg || result.Class == types.ClassLangPkg {
+			pkgs[result.Target] = result.Packages
+		}
+	}
+
 	for _, result := range report.Results {
 		// Not display a table of custom resources
 		if result.Class == types.ClassCustom {
 			continue
 		}
-		tw.write(result)
+		tw.write(result, pkgs)
 	}
 	return nil
 }
 
-func (tw Writer) write(result types.Result) {
+func (tw Writer) write(result types.Result, pkgs map[string][]ftypes.Package) {
 	if result.IsEmpty() && result.Class != types.ClassOSPkg {
 		return
 	}
@@ -70,8 +79,8 @@ func (tw Writer) write(result types.Result) {
 	var renderer Renderer
 	switch {
 	// vulnerability
-	case result.Class == types.ClassOSPkg || result.Class == types.ClassLangPkg:
-		renderer = NewVulnerabilityRenderer(result, tw.isOutputToTerminal(), tw.Tree, tw.Severities)
+	case result.Class == types.ClassVulnOSPkg || result.Class == types.ClassVulnLangPkg:
+		renderer = NewVulnerabilityRenderer(result, pkgs, tw.isOutputToTerminal(), tw.Tree, tw.Severities)
 	// misconfiguration
 	case result.Class == types.ClassConfig:
 		renderer = NewMisconfigRenderer(result, tw.Severities, tw.Trace, tw.IncludeNonFailures, tw.isOutputToTerminal())
