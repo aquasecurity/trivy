@@ -116,6 +116,9 @@ func (results Results) Failed() bool {
 		if len(r.Secrets) > 0 {
 			return true
 		}
+		if len(r.Licenses) > 0 {
+			return true
+		}
 	}
 	return false
 }

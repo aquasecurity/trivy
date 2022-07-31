@@ -68,15 +68,6 @@ func SetOut(out io.Writer) {
 func NewApp(version string) *cobra.Command {
 	globalFlags := flag.NewGlobalFlagGroup()
 	rootCmd := NewRootCommand(version, globalFlags)
-
-	if runAsPlugin := os.Getenv("TRIVY_RUN_AS_PLUGIN"); runAsPlugin != "" {
-		rootCmd.RunE = func(cmd *cobra.Command, args []string) error {
-			return plugin.RunWithArgs(cmd.Context(), runAsPlugin, args)
-		}
-		rootCmd.DisableFlagParsing = true
-		return rootCmd
-	}
-
 	rootCmd.AddCommand(
 		NewImageCommand(globalFlags),
 		NewFilesystemCommand(globalFlags),

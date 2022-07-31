@@ -72,6 +72,9 @@ nav:
           - Overview: docs/sbom/index.md
           - CycloneDX: docs/sbom/cyclonedx.md
           - SPDX: docs/sbom/spdx.md
+      - Attestation:
+          - SBOM: docs/attestation/sbom.md
+          - Cosign Vulnerability Scan Record: docs/attestation/vuln.md
       - Integrations:
           - Overview: docs/integrations/index.md
           - GitHub Actions: docs/integrations/github-actions.md
@@ -136,6 +139,7 @@ theme:
     - navigation.tabs
     - navigation.tabs.sticky
     - navigation.sections
+    - content.tabs.link
 
 markdown_extensions:
   - pymdownx.highlight
@@ -143,7 +147,8 @@ markdown_extensions:
   - admonition
   - footnotes
   - attr_list
-  - pymdownx.tabbed
+  - pymdownx.tabbed:
+      alternate_style: true
   - def_list
   - pymdownx.details
   - pymdownx.emoji:

@@ -73,6 +73,7 @@ The following table lists the configurable parameters of the Trivy chart and the
 | `trivy.cache.redis.enabled`           | Enable Redis as caching backend                                         | `false` |
 | `trivy.cache.redis.url`               | Specify redis connection url, e.g. redis://redis.redis.svc:6379         | `` |
 | `trivy.serverToken`                   | The token to authenticate Trivy client with Trivy server                | `` |
+| `trivy.existingSecret`                | existingSecret if an existing secret has been created outside the chart. Overrides gitHubToken, registryUsername, registryPassword, serverToken | `` |
 | `trivy.podAnnotations`                | Annotations for pods created by statefulset                             | `{}` |
 | `service.name`                        | If specified, the name used for the Trivy service                       |     |
 | `service.type`                        | Kubernetes service type                                                 | `ClusterIP` |

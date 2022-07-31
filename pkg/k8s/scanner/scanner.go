@@ -97,7 +97,7 @@ func (s *Scanner) scanVulns(ctx context.Context, artifact *artifacts.Artifact) (
 		imageReport, err := s.runner.ScanImage(ctx, s.opts)
 
 		if err != nil {
-			log.Logger.Debugf("failed to scan image %s: %s", image, err)
+			log.Logger.Warnf("failed to scan image %s: %s", image, err)
 			resources = append(resources, report.CreateResource(artifact, imageReport, err))
 			continue
 		}
