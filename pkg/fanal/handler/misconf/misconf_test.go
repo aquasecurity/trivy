@@ -6,6 +6,7 @@ import (
 	"testing"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
+	misconf "github.com/aquasecurity/trivy/pkg/fanal/analyzer/config"
 	"github.com/aquasecurity/trivy/pkg/fanal/artifact"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/stretchr/testify/assert"
@@ -16,6 +17,7 @@ func Test_Handle(t *testing.T) {
 	tests := []struct {
 		name         string
 		files        map[types.HandlerType][]types.File
+		filePatterns []string
 		wantFilePath string
 		wantFileType string
 	}{
@@ -44,14 +46,17 @@ func Test_Handle(t *testing.T) {
 					},
 				},
 			},
+			filePatterns: []string{"dockerfile:dockerf"},
 			wantFilePath: "dockerf",
 			wantFileType: types.Dockerfile,
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			result := &analyzer.AnalysisResult{Files: tt.files}
-			misconfHandler, err := newMisconfPostHandler(artifact.Option{})
+			result := &analyzer.AnalysisResult{
+				Files: tt.files,
+			}
+			misconfHandler, err := newMisconfPostHandler(artifact.Option{MisconfScannerOption: misconf.ScannerOption{FilePatterns: tt.filePatterns}})
 			assert.NoError(t, err)
 			blobInfo := &types.BlobInfo{}
 
