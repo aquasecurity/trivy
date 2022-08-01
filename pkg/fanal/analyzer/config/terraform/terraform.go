@@ -6,6 +6,7 @@ import (
 	"os"
 	"path/filepath"
 	"regexp"
+	"strings"
 
 	"golang.org/x/exp/slices"
 	"golang.org/x/xerrors"
@@ -49,7 +50,17 @@ func (a ConfigAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInput)
 }
 
 func (a ConfigAnalyzer) Required(filePath string, _ os.FileInfo) bool {
-	return slices.Contains(requiredExts, filepath.Ext(filePath))
+	// with --file-patterns
+	if a.filePattern != nil && a.filePattern.MatchString(filePath) {
+		return true
+	}
+
+	for _, acceptable := range requiredExts {
+		if strings.HasSuffix(strings.ToLower(filePath), acceptable) {
+			return true
+		}
+	}
+	return false
 }
 
 func (ConfigAnalyzer) Type() analyzer.Type {
