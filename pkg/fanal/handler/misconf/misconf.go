@@ -40,7 +40,7 @@ const version = 1
 
 type misconfPostHandler struct {
 	filePatterns []string
-	scanners     map[string]scanners.Scanner
+	scanners     map[string]scanners.FSScanner
 }
 
 // for a given set of paths, find the most specific filesystem path that contains all the descendants
@@ -179,7 +179,7 @@ func newMisconfPostHandler(artifactOpt artifact.Option) (handler.PostHandler, er
 
 	return misconfPostHandler{
 		filePatterns: artifactOpt.MisconfScannerOption.FilePatterns,
-		scanners: map[string]scanners.Scanner{
+		scanners: map[string]scanners.FSScanner{
 			types.Terraform:      tfscanner.New(opts...),
 			types.CloudFormation: cfscanner.New(opts...),
 			types.Dockerfile:     dfscanner.NewScanner(opts...),
@@ -284,9 +284,9 @@ func resultsToMisconf(configType string, scannerName string, results scan.Result
 
 		query := fmt.Sprintf("data.%s.%s", result.RegoNamespace(), result.RegoRule())
 
-		ruleID := result.Rule().LegacyID
-		if ruleID == "" {
-			ruleID = result.Rule().AVDID
+		ruleID := result.Rule().AVDID
+		if result.RegoNamespace() != "" && len(result.Rule().Aliases) > 0 {
+			ruleID = result.Rule().Aliases[0]
 		}
 
 		cause := NewCauseWithCode(result)
