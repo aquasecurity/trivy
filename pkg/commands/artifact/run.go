@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"os"
+	"regexp"
 
 	"github.com/hashicorp/go-multierror"
 	"github.com/spf13/viper"
@@ -473,12 +474,13 @@ func initScannerConfig(opts flag.Options, cacheClient cache.Cache) (ScannerConfi
 
 	// Do not load config file for secret scanning
 	if slices.Contains(opts.SecurityChecks, types.SecurityCheckSecret) {
-		var ver string
-		if opts.AppVersion == "dev" {
-			ver = opts.AppVersion
-		} else {
-			ver = fmt.Sprintf("v%s", opts.AppVersion)
+		VersionRegexpRaw := `^v?([0-9A-Za-z-]+(\.[0-9A-Za-z]+)*)`
+		r := regexp.MustCompile(VersionRegexpRaw)
+		ver := r.FindAllStringSubmatch(opts.AppVersion, -1)[0][1]
+		if ver != "dev" {
+			ver = fmt.Sprintf("v%s", ver)
 		}
+
 		log.Logger.Info("Secret scanning is enabled")
 		log.Logger.Info("If your scanning is slow, please try '--security-checks vuln' to disable secret scanning")
 		log.Logger.Infof("Please see also https://aquasecurity.github.io/trivy/%s/docs/secret/scanning/#recommendation for faster secret detection", ver)

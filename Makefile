@@ -1,4 +1,4 @@
-VERSION := $(subst v,,$(shell git describe --tags --abbrev=0))
+VERSION := $(patsubst v%,%,$(shell git describe --tags --always)) #Strips the v prefix from the tag
 LDFLAGS := -ldflags "-s -w -X=main.version=$(VERSION)"
 
 GOPATH := $(shell go env GOPATH)
