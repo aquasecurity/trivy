@@ -3,7 +3,6 @@ package walker
 import (
 	"archive/tar"
 	"bytes"
-	"fmt"
 	"io"
 	"io/fs"
 	"os"
@@ -45,10 +44,6 @@ func (w LayerTar) Walk(layer io.Reader, analyzeFn WalkFunc) ([]string, []string,
 		filePath := hdr.Name
 		filePath = strings.TrimLeft(filepath.Clean(filePath), "/")
 		fileDir, fileName := filepath.Split(filePath)
-
-		if fileName == "packages.config" {
-			fmt.Println()
-		}
 
 		// e.g. etc/.wh..wh..opq
 		if opq == fileName {
