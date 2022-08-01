@@ -187,16 +187,17 @@ func (e *Marshaler) marshalComponents(r types.Report, bomRef string) (*[]cdx.Com
 	var metadataDependencies []cdx.Dependency
 	libraryUniqMap := map[string]struct{}{}
 	vulnMap := map[string]cdx.Vulnerability{}
+	bomRefMap := map[string]string{}
 	for _, result := range r.Results {
 		var componentDependencies []cdx.Dependency
-		bomRefMap := map[string]string{}
 		for _, pkg := range result.Packages {
 			pkgComponent, err := pkgToCdxComponent(result.Type, r.Metadata, pkg)
 			if err != nil {
 				return nil, nil, nil, xerrors.Errorf("failed to parse pkg: %w", err)
 			}
-			if _, ok := bomRefMap[pkg.Name+utils.FormatVersion(pkg)+pkg.FilePath]; !ok {
-				bomRefMap[pkg.Name+utils.FormatVersion(pkg)+pkg.FilePath] = pkgComponent.BOMRef
+			pkgID := packageID(result.Target, pkg.Name, utils.FormatVersion(pkg), pkg.FilePath)
+			if _, ok := bomRefMap[pkgID]; !ok {
+				bomRefMap[pkgID] = pkgComponent.BOMRef
 			}
 
 			// When multiple lock files have the same dependency with the same name and version,
@@ -222,9 +223,11 @@ func (e *Marshaler) marshalComponents(r types.Report, bomRef string) (*[]cdx.Com
 
 			componentDependencies = append(componentDependencies, cdx.Dependency{Ref: pkgComponent.BOMRef})
 		}
+
 		for _, vuln := range result.Vulnerabilities {
 			// Take a bom-ref
-			ref := bomRefMap[vuln.PkgName+vuln.InstalledVersion+vuln.PkgPath]
+			pkgID := packageID(result.Target, vuln.PkgName, vuln.InstalledVersion, vuln.PkgPath)
+			ref := bomRefMap[pkgID]
 			if v, ok := vulnMap[vuln.VulnerabilityID]; ok {
 				// If a vulnerability depends on multiple packages,
 				// it will be commonised into a single vulnerability.
@@ -250,7 +253,7 @@ func (e *Marshaler) marshalComponents(r types.Report, bomRef string) (*[]cdx.Com
 
 			// Dependency graph from #1 to #2
 			metadataDependencies = append(metadataDependencies, componentDependencies...)
-		} else {
+		} else if result.Class == types.ClassOSPkg || result.Class == types.ClassLangPkg {
 			// If a package is OS package, it will be a dependency of "Operating System" component.
 			// e.g.
 			//   Container component (alpine:3.15) --------------------- #1
@@ -289,6 +292,10 @@ func (e *Marshaler) marshalComponents(r types.Report, bomRef string) (*[]cdx.Com
 		cdx.Dependency{Ref: bomRef, Dependencies: &metadataDependencies},
 	)
 	return &components, &dependencies, &vulns, nil
+}
+
+func packageID(target, pkgName, pkgVersion, pkgFilePath string) string {
+	return fmt.Sprintf("%s/%s/%s/%s", target, pkgName, pkgVersion, pkgFilePath)
 }
 
 func toCdxVulnerability(bomRef string, vuln types.DetectedVulnerability) cdx.Vulnerability {

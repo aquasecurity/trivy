@@ -24,7 +24,7 @@ func TestReportWriter_Table(t *testing.T) {
 			results: types.Results{
 				{
 					Target: "test",
-					Class:  types.ClassLangPkg,
+					Class:  types.ClassVulnLangPkg,
 					Vulnerabilities: []types.DetectedVulnerability{
 						{
 							VulnerabilityID:  "CVE-2020-0001",
@@ -59,7 +59,7 @@ Total: 1 (MEDIUM: 0, HIGH: 1)
 			results: types.Results{
 				{
 					Target: "test",
-					Class:  types.ClassLangPkg,
+					Class:  types.ClassVulnLangPkg,
 					Vulnerabilities: []types.DetectedVulnerability{
 						{
 							VulnerabilityID:  "CVE-2020-0001",
@@ -95,7 +95,7 @@ Total: 1 (MEDIUM: 0, HIGH: 1)
 			results: types.Results{
 				{
 					Target: "test",
-					Class:  types.ClassLangPkg,
+					Class:  types.ClassVulnLangPkg,
 					Vulnerabilities: []types.DetectedVulnerability{
 						{
 							VulnerabilityID:  "CVE-2020-0001",
@@ -127,7 +127,7 @@ Total: 1 (MEDIUM: 0, HIGH: 1)
 			results: types.Results{
 				{
 					Target: "test",
-					Class:  types.ClassLangPkg,
+					Class:  types.ClassVulnLangPkg,
 					Vulnerabilities: []types.DetectedVulnerability{
 						{
 							VulnerabilityID:  "CVE-2020-1234",
@@ -166,7 +166,7 @@ Total: 1 (MEDIUM: 0, HIGH: 1)
 			results: types.Results{
 				{
 					Target: "package-lock.json",
-					Class:  "lang-pkgs",
+					Class:  types.ClassLangPkg,
 					Type:   "npm",
 					Packages: []ftypes.Package{
 						{
@@ -199,6 +199,11 @@ Total: 1 (MEDIUM: 0, HIGH: 1)
 							},
 						},
 					},
+				},
+				{
+					Target: "package-lock.json",
+					Class:  types.ClassVulnLangPkg,
+					Type:   "npm",
 					Vulnerabilities: []types.DetectedVulnerability{
 						{
 							VulnerabilityID: "CVE-2022-0235",
@@ -256,7 +261,7 @@ package-lock.json
 		t.Run(tc.name, func(t *testing.T) {
 			tableWritten := bytes.Buffer{}
 			err := report.Write(types.Report{Results: tc.results}, report.Option{
-				Format:             "table",
+				Format:             report.FormatTable,
 				Output:             &tableWritten,
 				Tree:               true,
 				IncludeNonFailures: tc.includeNonFailures,

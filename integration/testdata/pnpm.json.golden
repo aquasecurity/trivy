@@ -5,7 +5,7 @@
   "Results": [
     {
       "Target": "pnpm-lock.yaml",
-      "Class": "lang-pkgs",
+      "Class": "vuln-lang-pkgs",
       "Type": "pnpm",
       "Vulnerabilities": [
         {

@@ -187,9 +187,9 @@ func (sw SarifWriter) Write(report types.Report) error {
 
 func toSarifRuleName(class string) string {
 	switch class {
-	case types.ClassOSPkg:
+	case types.ClassVulnOSPkg:
 		return sarifOsPackageVulnerability
-	case types.ClassLangPkg:
+	case types.ClassVulnLangPkg:
 		return sarifLanguageSpecificVulnerability
 	case types.ClassConfig:
 		return sarifConfigFiles
