@@ -64,7 +64,12 @@ require (
 	k8s.io/utils v0.0.0-20220210201930-3a6ce19ff2f9
 )
 
-require github.com/emicklei/go-restful/v3 v3.8.0 // indirect
+require (
+	github.com/emicklei/go-restful/v3 v3.8.0 // indirect
+	github.com/in-toto/in-toto-golang v0.3.4-0.20220709202702-fa494aaa0add // indirect
+	github.com/secure-systems-lab/go-securesystemslib v0.4.0 // indirect
+	github.com/shibumi/go-pathspec v1.3.0 // indirect
+)
 
 require (
 	cloud.google.com/go v0.100.2 // indirect

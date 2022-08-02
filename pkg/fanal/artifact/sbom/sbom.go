@@ -4,6 +4,7 @@ import (
 	"context"
 	"crypto/sha256"
 	"encoding/json"
+	"github.com/aquasecurity/trivy/pkg/sbom/attestation"
 	"io"
 	"os"
 	"path/filepath"
@@ -63,6 +64,8 @@ func (a Artifact) Inspect(_ context.Context) (types.ArtifactReference, error) {
 	switch format {
 	case sbom.FormatCycloneDXJSON:
 		unmarshaler = cyclonedx.NewJSONUnmarshaler()
+	case sbom.FormatAttestCycloneDXJSON:
+		unmarshaler = attestation.NewUnmarshaler(cyclonedx.NewJSONUnmarshaler())
 	default:
 		return types.ArtifactReference{}, xerrors.Errorf("%s scanning is not yet supported", format)
 

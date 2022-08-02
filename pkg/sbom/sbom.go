@@ -3,6 +3,8 @@ package sbom
 import (
 	"encoding/json"
 	"encoding/xml"
+	"github.com/aquasecurity/trivy/pkg/attestation"
+	"github.com/in-toto/in-toto-golang/in_toto"
 	"io"
 	"strings"
 
@@ -26,11 +28,13 @@ type Unmarshaler interface {
 type Format string
 
 const (
-	FormatCycloneDXJSON = "cyclonedx-json"
-	FormatCycloneDXXML  = "cyclonedx-xml"
-	FormatSPDXJSON      = "spdx-json"
-	FormatSPDXXML       = "spdx-xml"
-	FormatUnknown       = "unknown"
+	FormatCycloneDXJSON       = "cyclonedx-json"
+	FormatCycloneDXXML        = "cyclonedx-xml"
+	FormatSPDXJSON            = "spdx-json"
+	FormatSPDXXML             = "spdx-xml"
+	FormatAttestCycloneDXJSON = "attest-cyclonedx-json"
+	FormatAttestCycloneDXXML  = "attest-cyclonedx-xml"
+	FormatUnknown             = "unknown"
 )
 
 func DetectFormat(r io.ReadSeeker) (Format, error) {
@@ -61,7 +65,25 @@ func DetectFormat(r io.ReadSeeker) (Format, error) {
 		}
 	}
 
+	if _, err := r.Seek(0, io.SeekStart); err != nil {
+		return FormatUnknown, xerrors.Errorf("seek error: %w", err)
+	}
+
 	// TODO: implement SPDX
+
+	// Try Attestation
+	if attest, err := attestation.Decode(r); err == nil {
+		if attest.PredicateType == in_toto.PredicateCycloneDX {
+			switch attest.Predicate.(type) {
+			case map[string]interface{}:
+				return FormatAttestCycloneDXJSON, nil
+
+				// cosign command cannot create an attestation from xml format
+				//case string:
+				//	return FormatAttestCycloneDXXML, nil
+			}
+		}
+	}
 
 	return FormatUnknown, nil
 }
