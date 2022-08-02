@@ -23,13 +23,9 @@ func (u Unmarshaler) Unmarshal(r io.Reader) (sbom.SBOM, error) {
 
 	var predicateByte []byte
 
-	// When cosign creates an attestation, it stores the predicate under a "Data" key.
-	// https://github.com/sigstore/cosign/blob/938ad43f84aa183850014c8cc6d999f4b7ec5e8d/pkg/cosign/attestation/attestation.go#L39-L43
-	predicate := attest.Predicate.(map[string]interface{})["Data"]
-
-	switch predicate.(type) {
+	switch attest.Predicate.(type) {
 	case map[string]interface{}:
-		predicateByte, err = json.Marshal(predicate)
+		predicateByte, err = json.Marshal(attest.Predicate)
 		if err != nil {
 			return sbom.SBOM{}, xerrors.Errorf("failed to marshal predicate: %w", err)
 		}

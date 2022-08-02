@@ -74,10 +74,7 @@ func DetectFormat(r io.ReadSeeker) (Format, error) {
 	// Try Attestation
 	if attest, err := attestation.Decode(r); err == nil {
 		if attest.PredicateType == in_toto.PredicateCycloneDX {
-			// When cosign creates an attestation, it stores the predicate under a "Data" key.
-			// https://github.com/sigstore/cosign/blob/938ad43f84aa183850014c8cc6d999f4b7ec5e8d/pkg/cosign/attestation/attestation.go#L39-L43
-			data := attest.Predicate.(map[string]interface{})["Data"]
-			switch data.(type) {
+			switch attest.Predicate.(type) {
 			case map[string]interface{}:
 				return FormatAttestCycloneDXJSON, nil
 			case string:
