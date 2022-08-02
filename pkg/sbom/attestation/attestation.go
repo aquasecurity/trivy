@@ -3,10 +3,12 @@ package attestation
 import (
 	"bytes"
 	"encoding/json"
+	"io"
+
+	"golang.org/x/xerrors"
+
 	"github.com/aquasecurity/trivy/pkg/attestation"
 	"github.com/aquasecurity/trivy/pkg/sbom"
-	"golang.org/x/xerrors"
-	"io"
 )
 
 type Unmarshaler struct {

@@ -4,7 +4,6 @@ import (
 	"context"
 	"crypto/sha256"
 	"encoding/json"
-	"github.com/aquasecurity/trivy/pkg/sbom/attestation"
 	"io"
 	"os"
 	"path/filepath"
@@ -20,6 +19,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/sbom"
+	"github.com/aquasecurity/trivy/pkg/sbom/attestation"
 	"github.com/aquasecurity/trivy/pkg/sbom/cyclonedx"
 )
 

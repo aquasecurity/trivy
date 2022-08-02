@@ -3,13 +3,13 @@ package sbom
 import (
 	"encoding/json"
 	"encoding/xml"
-	"github.com/aquasecurity/trivy/pkg/attestation"
-	"github.com/in-toto/in-toto-golang/in_toto"
 	"io"
 	"strings"
 
+	"github.com/in-toto/in-toto-golang/in_toto"
 	"golang.org/x/xerrors"
 
+	"github.com/aquasecurity/trivy/pkg/attestation"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 )
 

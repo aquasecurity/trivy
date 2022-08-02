@@ -4,10 +4,11 @@ import (
 	"bytes"
 	"encoding/base64"
 	"encoding/json"
+	"io"
+
 	"github.com/in-toto/in-toto-golang/in_toto"
 	"github.com/secure-systems-lab/go-securesystemslib/dsse"
 	"golang.org/x/xerrors"
-	"io"
 )
 
 // Decode returns the in-toto statement from the in-toto attestation.
