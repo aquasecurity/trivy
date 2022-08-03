@@ -5,10 +5,9 @@ import (
 	"strings"
 	"time"
 
+	"github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/knqyf263/nested"
 	"github.com/samber/lo"
-
-	"github.com/aquasecurity/trivy/pkg/fanal/types"
 )
 
 type Config struct {
@@ -89,6 +88,7 @@ func lookupOriginLayerForLib(filePath string, lib types.Package, layers []types.
 func ApplyLayers(layers []types.BlobInfo) types.ArtifactDetail {
 	sep := "/"
 	nestedMap := nested.Nested{}
+	secretsMap := map[string]types.Secret{}
 	var mergedLayer types.ArtifactDetail
 
 	for _, layer := range layers {
@@ -132,12 +132,13 @@ func ApplyLayers(layers []types.BlobInfo) types.ArtifactDetail {
 
 		// Apply secrets
 		for _, secret := range layer.Secrets {
-			secret.Layer = types.Layer{
+			layer := types.Layer{
 				Digest: layer.Digest,
 				DiffID: layer.DiffID,
 			}
-			// we must save secrets from all layers
-			mergedLayer.Secrets = append(mergedLayer.Secrets, secret)
+			secretsMap = mergeSecrets(secretsMap, secret, layer)
+			//// we must save secrets from all layers
+			//mergedLayer.Secrets = append(mergedLayer.Secrets, secret)
 		}
 
 		// Apply license files
@@ -177,6 +178,10 @@ func ApplyLayers(layers []types.BlobInfo) types.ArtifactDetail {
 		}
 		return nil
 	})
+
+	for _, v := range secretsMap {
+		mergedLayer.Secrets = append(mergedLayer.Secrets, v)
+	}
 
 	// Extract dpkg licenses
 	// The license information is not stored in the dpkg database and in a separate file,
@@ -257,4 +262,32 @@ func aggregate(detail *types.ArtifactDetail) {
 
 	// Overwrite Applications
 	detail.Applications = apps
+}
+
+func mergeSecrets(secretsMap map[string]types.Secret, newSecret types.Secret, layer types.Layer) map[string]types.Secret {
+	for i := range newSecret.Findings { // add layer to the Findings from the new secret
+		newSecret.Findings[i].Layer = layer
+	}
+	// find new Secret in saved Secrets
+	secret, ok := secretsMap[newSecret.FilePath]
+	if !ok { // add new secret if its file doesn't exist before
+		secretsMap[newSecret.FilePath] = newSecret
+	} else { // if saved and new secrets have same `RuleID` and lines - use new Secret
+		for _, savedFinding := range secret.Findings { // secrets from previous layers
+			if !secretsFindingsContains(newSecret.Findings, savedFinding) {
+				newSecret.Findings = append(newSecret.Findings, savedFinding)
+			}
+		}
+		secretsMap[newSecret.FilePath] = newSecret
+	}
+	return secretsMap
+}
+
+func secretsFindingsContains(findings []types.SecretFinding, finding types.SecretFinding) bool {
+	for _, f := range findings {
+		if f.RuleID == finding.RuleID && f.StartLine == finding.StartLine && f.EndLine == finding.EndLine {
+			return true
+		}
+	}
+	return false
 }
