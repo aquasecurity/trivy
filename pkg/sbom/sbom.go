@@ -74,7 +74,7 @@ func DetectFormat(r io.ReadSeeker) (Format, error) {
 	// Try Attestation
 	if attest, err := attestation.Decode(r); err == nil {
 		if attest.PredicateType == in_toto.PredicateCycloneDX {
-			switch attest.Predicate.(type) {
+			switch attest.CosignPredicateData.(type) {
 			case map[string]interface{}:
 				return FormatAttestCycloneDXJSON, nil
 			case string:

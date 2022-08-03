@@ -23,14 +23,14 @@ func (u Unmarshaler) Unmarshal(r io.Reader) (sbom.SBOM, error) {
 
 	var predicateByte []byte
 
-	switch attest.Predicate.(type) {
+	switch attest.CosignPredicateData.(type) {
 	case map[string]interface{}:
-		predicateByte, err = json.Marshal(attest.Predicate)
+		predicateByte, err = json.Marshal(attest.CosignPredicateData)
 		if err != nil {
 			return sbom.SBOM{}, xerrors.Errorf("failed to marshal predicate: %w", err)
 		}
 	case string:
-		predicateByte = []byte(attest.Predicate.(string))
+		predicateByte = []byte(attest.CosignPredicateData.(string))
 	}
 
 	return u.predicateUnmarshaler.Unmarshal(bytes.NewReader(predicateByte))

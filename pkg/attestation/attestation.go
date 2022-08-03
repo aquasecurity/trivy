@@ -12,9 +12,8 @@ import (
 )
 
 type Statement struct {
-	in_toto.StatementHeader
-	Predicate    interface{} `json:"-"`
-	RawPredicate interface{} `json:"predicate"`
+	in_toto.Statement
+	CosignPredicateData interface{} `json:"-"`
 }
 
 // Decode returns the in-toto statement from the in-toto attestation.
@@ -42,10 +41,8 @@ func Decode(r io.Reader) (Statement, error) {
 
 	// When cosign creates an SBOM attestation, it stores the predicate under a "Data" key.
 	// https://github.com/sigstore/cosign/blob/938ad43f84aa183850014c8cc6d999f4b7ec5e8d/pkg/cosign/attestation/attestation.go#L39-L43
-	if _, found := st.RawPredicate.(map[string]interface{})["Data"]; found {
-		st.Predicate = st.RawPredicate.(map[string]interface{})["Data"]
-	} else {
-		st.Predicate = st.RawPredicate
+	if _, found := st.Predicate.(map[string]interface{})["Data"]; found {
+		st.CosignPredicateData = st.Predicate.(map[string]interface{})["Data"]
 	}
 
 	return st, nil
