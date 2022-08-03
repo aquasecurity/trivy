@@ -11,6 +11,10 @@ import (
 	"golang.org/x/xerrors"
 )
 
+const (
+	xdgDataHome = "XDG_DATA_HOME"
+)
+
 var cacheDir string
 
 // DefaultCacheDir returns/creates the cache-dir to be used for trivy operations
@@ -32,14 +36,14 @@ func SetCacheDir(dir string) {
 	cacheDir = dir
 }
 
-// StringInSlice checks if strings exist in list of strings
-func StringInSlice(a string, list []string) bool {
-	for _, b := range list {
-		if b == a {
-			return true
-		}
+func HomeDir() string {
+	dataHome := os.Getenv(xdgDataHome)
+	if dataHome != "" {
+		return dataHome
 	}
-	return false
+
+	homeDir, _ := os.UserHomeDir()
+	return homeDir
 }
 
 // CopyFile copies the file content from scr to dst
@@ -68,7 +72,7 @@ func CopyFile(src, dst string) (int64, error) {
 	return n, err
 }
 
-// getTLSConfig get tls config from CA, Cert and Key file
+// GetTLSConfig get tls config from CA, Cert and Key file
 func GetTLSConfig(caCertPath, certPath, keyPath string) (*x509.CertPool, tls.Certificate, error) {
 	cert, err := tls.LoadX509KeyPair(certPath, keyPath)
 	if err != nil {

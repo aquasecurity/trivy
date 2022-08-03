@@ -1,9 +1,11 @@
 package types
 
 import (
+	"encoding/json"
+
 	v1 "github.com/google/go-containerregistry/pkg/v1" // nolint: goimports
 
-	ftypes "github.com/aquasecurity/fanal/types"
+	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 )
 
 // Report represents a scan result
@@ -13,6 +15,9 @@ type Report struct {
 	ArtifactType  ftypes.ArtifactType `json:",omitempty"`
 	Metadata      Metadata            `json:",omitempty"`
 	Results       Results             `json:",omitempty"`
+
+	// SBOM
+	CycloneDX *ftypes.CycloneDX `json:"-"` // Just for internal usage, not exported in JSON
 }
 
 // Metadata represents a metadata of artifact
@@ -34,9 +39,15 @@ type Results []Result
 type ResultClass string
 
 const (
-	ClassOSPkg   = "os-pkgs"
-	ClassLangPkg = "lang-pkgs"
-	ClassConfig  = "config"
+	ClassOSPkg       = "os-pkgs"        // For OS packages
+	ClassLangPkg     = "lang-pkgs"      // For language-specific packages
+	ClassVulnOSPkg   = "vuln-os-pkgs"   // For detected vulnerabilities in OS packages
+	ClassVulnLangPkg = "vuln-lang-pkgs" // For detected vulnerabilities in language-specific packages
+	ClassConfig      = "config"         // For detected misconfigurations
+	ClassSecret      = "secret"         // For detected secrets
+	ClassLicense     = "license"        // For detected package licenses
+	ClassLicenseFile = "license-file"   // For detected licenses in files
+	ClassCustom      = "custom"
 )
 
 // Result holds a target and detected vulnerabilities
@@ -48,7 +59,37 @@ type Result struct {
 	Vulnerabilities   []DetectedVulnerability    `json:"Vulnerabilities,omitempty"`
 	MisconfSummary    *MisconfSummary            `json:"MisconfSummary,omitempty"`
 	Misconfigurations []DetectedMisconfiguration `json:"Misconfigurations,omitempty"`
+	Secrets           []ftypes.SecretFinding     `json:"Secrets,omitempty"`
+	Licenses          []DetectedLicense          `json:"Licenses,omitempty"`
 	CustomResources   []ftypes.CustomResource    `json:"CustomResources,omitempty"`
+}
+
+func (r *Result) MarshalJSON() ([]byte, error) {
+	// VendorSeverity includes all vendor severities.
+	// It would be noisy to users, so it should be removed from the JSON output.
+	for i := range r.Vulnerabilities {
+		r.Vulnerabilities[i].VendorSeverity = nil
+	}
+
+	// remove the Highlighted attribute from the json results
+	for i := range r.Misconfigurations {
+		for li := range r.Misconfigurations[i].CauseMetadata.Code.Lines {
+			r.Misconfigurations[i].CauseMetadata.Code.Lines[li].Highlighted = ""
+		}
+	}
+
+	// Notice the Alias struct prevents MarshalJSON being called infinitely
+	type ResultAlias Result
+	return json.Marshal(&struct {
+		*ResultAlias
+	}{
+		ResultAlias: (*ResultAlias)(r),
+	})
+}
+
+func (r *Result) IsEmpty() bool {
+	return len(r.Packages) == 0 && len(r.Vulnerabilities) == 0 && len(r.Misconfigurations) == 0 &&
+		len(r.Secrets) == 0 && len(r.Licenses) == 0 && len(r.CustomResources) == 0
 }
 
 type MisconfSummary struct {
@@ -61,7 +102,7 @@ func (s MisconfSummary) Empty() bool {
 	return s.Successes == 0 && s.Failures == 0 && s.Exceptions == 0
 }
 
-// Failed returns whether the result includes any vulnerabilities or misconfigurations
+// Failed returns whether the result includes any vulnerabilities, misconfigurations or secrets
 func (results Results) Failed() bool {
 	for _, r := range results {
 		if len(r.Vulnerabilities) > 0 {
@@ -71,6 +112,12 @@ func (results Results) Failed() bool {
 			if m.Status == StatusFailure {
 				return true
 			}
+		}
+		if len(r.Secrets) > 0 {
+			return true
+		}
+		if len(r.Licenses) > 0 {
+			return true
 		}
 	}
 	return false

@@ -1,4 +1,4 @@
-package appshield.dockerfile.DS002
+package builtin.dockerfile.DS002
 
 exception[rules] {
 	instruction := input.stages[_][_]

@@ -31,7 +31,6 @@ linters:
     - ineffassign
     - typecheck
     - govet
-    - errcheck
     - varcheck
     - deadcode
     - revive
@@ -44,10 +43,12 @@ linters:
     - misspell
 
 run:
+  go: 1.18
   skip-files:
     - ".*._mock.go$"
     - ".*._test.go$"
     - "integration/*"
+    - "examples/*"
 
 issues:
   exclude-rules:

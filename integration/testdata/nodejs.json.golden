@@ -17,11 +17,12 @@
   "Results": [
     {
       "Target": "package-lock.json",
-      "Class": "lang-pkgs",
+      "Class": "vuln-lang-pkgs",
       "Type": "npm",
       "Vulnerabilities": [
         {
           "VulnerabilityID": "CVE-2019-11358",
+          "PkgID": "jquery@3.3.9",
           "PkgName": "jquery",
           "InstalledVersion": "3.3.9",
           "FixedVersion": "3.4.0",
@@ -137,6 +138,7 @@
         },
         {
           "VulnerabilityID": "CVE-2019-10744",
+          "PkgID": "lodash@4.17.4",
           "PkgName": "lodash",
           "InstalledVersion": "4.17.4",
           "FixedVersion": "4.17.12",

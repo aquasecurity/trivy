@@ -1,18 +1,15 @@
 //go:build integration
-// +build integration
 
 package integration
 
 import (
-	"io"
 	"os"
 	"path/filepath"
 	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
-
-	"github.com/aquasecurity/trivy/pkg/commands"
+	"github.com/stretchr/testify/require"
 )
 
 func TestTar(t *testing.T) {
@@ -65,6 +62,14 @@ func TestTar(t *testing.T) {
 				Input:  "testdata/fixtures/images/alpine-310.tar.gz",
 			},
 			golden: "testdata/alpine-310.json.golden",
+		},
+		{
+			name: "alpine distroless",
+			testArgs: args{
+				Format: "json",
+				Input:  "testdata/fixtures/images/alpine-distroless.tar.gz",
+			},
+			golden: "testdata/alpine-distroless.json.golden",
 		},
 		{
 			name: "amazon linux 1",
@@ -203,9 +208,9 @@ func TestTar(t *testing.T) {
 			name: "oracle linux 8",
 			testArgs: args{
 				Format: "json",
-				Input:  "testdata/fixtures/images/oraclelinux-8-slim.tar.gz",
+				Input:  "testdata/fixtures/images/oraclelinux-8.tar.gz",
 			},
-			golden: "testdata/oraclelinux-8-slim.json.golden",
+			golden: "testdata/oraclelinux-8.json.golden",
 		},
 		{
 			name: "opensuse leap 15.1",
@@ -232,7 +237,7 @@ func TestTar(t *testing.T) {
 			golden: "testdata/mariner-1.0.json.golden",
 		},
 		{
-			name: "buxybox with Cargo.lock integration",
+			name: "busybox with Cargo.lock integration",
 			testArgs: args{
 				Format: "json",
 				Input:  "testdata/fixtures/images/busybox-with-lockfile.tar.gz",
@@ -253,13 +258,12 @@ func TestTar(t *testing.T) {
 	// Set up testing DB
 	cacheDir := initDB(t)
 
-	// Setup CLI App
-	app := commands.NewApp("dev")
-	app.Writer = io.Discard
+	// Set a temp dir so that modules will not be loaded
+	t.Setenv("XDG_DATA_HOME", cacheDir)
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			osArgs := []string{"trivy", "--cache-dir", cacheDir, "image", "--format", tt.testArgs.Format, "--skip-update"}
+			osArgs := []string{"--cache-dir", cacheDir, "image", "-q", "--format", tt.testArgs.Format, "--skip-update"}
 
 			if tt.testArgs.IgnoreUnfixed {
 				osArgs = append(osArgs, "--ignore-unfixed")
@@ -299,7 +303,8 @@ func TestTar(t *testing.T) {
 			osArgs = append(osArgs, []string{"--output", outputFile}...)
 
 			// Run Trivy
-			assert.Nil(t, app.Run(osArgs))
+			err := execute(osArgs)
+			require.NoError(t, err)
 
 			// Compare want and got
 			compareReports(t, tt.golden, outputFile)

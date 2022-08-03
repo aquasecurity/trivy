@@ -5,12 +5,13 @@ import (
 	"strings"
 
 	cn "github.com/google/go-containerregistry/pkg/name"
-	"github.com/package-url/packageurl-go"
+	version "github.com/knqyf263/go-rpm-version"
+	packageurl "github.com/package-url/packageurl-go"
 	"golang.org/x/xerrors"
 
-	"github.com/aquasecurity/fanal/analyzer"
-	"github.com/aquasecurity/fanal/analyzer/os"
-	ftypes "github.com/aquasecurity/fanal/types"
+	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
+	"github.com/aquasecurity/trivy/pkg/fanal/analyzer/os"
+	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/scanner/utils"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
@@ -22,6 +23,75 @@ const (
 type PackageURL struct {
 	packageurl.PackageURL
 	FilePath string
+}
+
+func FromString(purl string) (*PackageURL, error) {
+	p, err := packageurl.FromString(purl)
+	if err != nil {
+		return nil, xerrors.Errorf("failed to parse purl: %w", err)
+	}
+
+	return &PackageURL{
+		PackageURL: p,
+	}, nil
+}
+
+func (p *PackageURL) Package() *ftypes.Package {
+	pkg := &ftypes.Package{
+		Name:    p.Name,
+		Version: p.Version,
+	}
+	for _, q := range p.Qualifiers {
+		switch q.Key {
+		case "arch":
+			pkg.Arch = q.Value
+		case "modularitylabel":
+			pkg.Modularitylabel = q.Value
+		}
+	}
+
+	if p.Type == packageurl.TypeRPM {
+		rpmVer := version.NewVersion(p.Version)
+		pkg.Release = rpmVer.Release()
+		pkg.Version = rpmVer.Version()
+		pkg.Epoch = rpmVer.Epoch()
+	}
+
+	// TODO: replace with packageurl.TypeApk once they add it.
+	// Return of packages without Namespace.
+	// OS packages does not have namespace.
+	if p.Namespace == "" || p.Type == packageurl.TypeRPM || p.Type == packageurl.TypeDebian || p.Type == string(analyzer.TypeApk) {
+		return pkg
+	}
+
+	if p.Type == packageurl.TypeMaven {
+		// Maven package separate ":"
+		// e.g. org.springframework:spring-core
+		pkg.Name = strings.Join([]string{p.Namespace, p.Name}, ":")
+	} else {
+		pkg.Name = strings.Join([]string{p.Namespace, p.Name}, "/")
+	}
+
+	return pkg
+}
+
+// AppType returns an application type in Trivy
+func (p *PackageURL) AppType() string {
+	switch p.Type {
+	case packageurl.TypeComposer:
+		return string(analyzer.TypeComposer)
+	case packageurl.TypeMaven:
+		return string(analyzer.TypeJar)
+	case packageurl.TypeGem:
+		return string(analyzer.TypeGemSpec)
+	case packageurl.TypePyPi:
+		return string(analyzer.TypePythonPkg)
+	case packageurl.TypeGolang:
+		return string(analyzer.TypeGoBinary)
+	case packageurl.TypeNPM:
+		return string(analyzer.TypeNodePkg)
+	}
+	return p.Type
 }
 
 func (purl PackageURL) BOMRef() string {
@@ -50,7 +120,7 @@ func NewPackageURL(t string, metadata types.Metadata, pkg ftypes.Package) (Packa
 
 	ptype := purlType(t)
 	name := pkg.Name
-	version := utils.FormatVersion(pkg)
+	ver := utils.FormatVersion(pkg)
 	namespace := ""
 
 	switch ptype {
@@ -60,10 +130,14 @@ func NewPackageURL(t string, metadata types.Metadata, pkg ftypes.Package) (Packa
 		qualifiers = append(qualifiers, qs...)
 	case packageurl.TypeDebian:
 		qualifiers = append(qualifiers, parseDeb(metadata.OS)...)
-		namespace = metadata.OS.Family
+		if metadata.OS != nil {
+			namespace = metadata.OS.Family
+		}
 	case string(analyzer.TypeApk): // TODO: replace with packageurl.TypeApk once they add it.
 		qualifiers = append(qualifiers, parseApk(metadata.OS)...)
-		namespace = metadata.OS.Family
+		if metadata.OS != nil {
+			namespace = metadata.OS.Family
+		}
 	case packageurl.TypeMaven:
 		namespace, name = parseMaven(name)
 	case packageurl.TypePyPi:
@@ -83,7 +157,7 @@ func NewPackageURL(t string, metadata types.Metadata, pkg ftypes.Package) (Packa
 	}
 
 	return PackageURL{
-		PackageURL: *packageurl.NewPackageURL(ptype, namespace, name, version, qualifiers, ""),
+		PackageURL: *packageurl.NewPackageURL(ptype, namespace, name, ver, qualifiers, ""),
 		FilePath:   pkg.FilePath,
 	}, nil
 }
@@ -119,6 +193,10 @@ func parseOCI(metadata types.Metadata) (packageurl.PackageURL, error) {
 }
 
 func parseApk(fos *ftypes.OS) packageurl.Qualifiers {
+	if fos == nil {
+		return packageurl.Qualifiers{}
+	}
+
 	return packageurl.Qualifiers{
 		{
 			Key:   "distro",
@@ -129,6 +207,11 @@ func parseApk(fos *ftypes.OS) packageurl.Qualifiers {
 
 // ref. https://github.com/package-url/purl-spec/blob/a748c36ad415c8aeffe2b8a4a5d8a50d16d6d85f/PURL-TYPES.rst#deb
 func parseDeb(fos *ftypes.OS) packageurl.Qualifiers {
+
+	if fos == nil {
+		return packageurl.Qualifiers{}
+	}
+
 	distro := fmt.Sprintf("%s-%s", fos.Family, fos.Name)
 	return packageurl.Qualifiers{
 		{
@@ -140,17 +223,20 @@ func parseDeb(fos *ftypes.OS) packageurl.Qualifiers {
 
 // ref. https://github.com/package-url/purl-spec/blob/a748c36ad415c8aeffe2b8a4a5d8a50d16d6d85f/PURL-TYPES.rst#rpm
 func parseRPM(fos *ftypes.OS, modularityLabel string) (string, packageurl.Qualifiers) {
+	if fos == nil {
+		return "", packageurl.Qualifiers{}
+	}
+
 	// SLES string has whitespace
 	family := fos.Family
 	if fos.Family == os.SLES {
 		family = "sles"
 	}
 
-	distro := fmt.Sprintf("%s-%s", family, fos.Name)
 	qualifiers := packageurl.Qualifiers{
 		{
 			Key:   "distro",
-			Value: distro,
+			Value: fmt.Sprintf("%s-%s", family, fos.Name),
 		},
 	}
 
@@ -205,7 +291,7 @@ func purlType(t string) string {
 		return packageurl.TypePyPi
 	case string(analyzer.TypeGoBinary), string(analyzer.TypeGoMod):
 		return packageurl.TypeGolang
-	case string(analyzer.TypeNpmPkgLock), string(analyzer.TypeNodePkg), string(analyzer.TypeYarn):
+	case string(analyzer.TypeNpmPkgLock), string(analyzer.TypeNodePkg), string(analyzer.TypeYarn), string(analyzer.TypePnpm):
 		return packageurl.TypeNPM
 	case os.Alpine:
 		return string(analyzer.TypeApk)

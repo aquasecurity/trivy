@@ -1,0 +1,22 @@
+[
+	{
+		"apiVersion": "apps/v1",
+		"kind": "Deployment",
+		"metadata": {
+			"name": "hello-kubernetes"
+		},
+		"spec": {
+			"replicas": 4
+		}
+	},
+	{
+		"apiVersion": "apps/v2",
+		"kind": "Deployment",
+		"metadata": {
+			"name": "hello-kubernetes"
+		},
+		"spec": {
+			"replicas": 5
+		}
+	}
+]

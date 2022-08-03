@@ -8,8 +8,8 @@ import (
 	"golang.org/x/xerrors"
 	"k8s.io/utils/clock"
 
-	ftypes "github.com/aquasecurity/fanal/types"
 	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/rocky"
+	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/scanner/utils"
 	"github.com/aquasecurity/trivy/pkg/types"
@@ -20,6 +20,7 @@ var (
 		// Source:
 		// https://endoflife.date/rocky-linux
 		"8": time.Date(2029, 5, 31, 23, 59, 59, 0, time.UTC),
+		"9": time.Date(2032, 5, 31, 23, 59, 59, 0, time.UTC),
 	}
 )
 
@@ -57,7 +58,7 @@ func NewScanner(opts ...option) *Scanner {
 }
 
 // Detect vulnerabilities in package using Rocky Linux scanner
-func (s *Scanner) Detect(osVer string, pkgs []ftypes.Package) ([]types.DetectedVulnerability, error) {
+func (s *Scanner) Detect(osVer string, _ *ftypes.Repository, pkgs []ftypes.Package) ([]types.DetectedVulnerability, error) {
 	log.Logger.Info("Detecting Rocky Linux vulnerabilities...")
 	if strings.Count(osVer, ".") > 0 {
 		osVer = osVer[:strings.Index(osVer, ".")]
@@ -89,6 +90,7 @@ func (s *Scanner) Detect(osVer string, pkgs []ftypes.Package) ([]types.DetectedV
 					PkgName:          pkg.Name,
 					InstalledVersion: installed,
 					FixedVersion:     fixedVersion.String(),
+					Ref:              pkg.Ref,
 					Layer:            pkg.Layer,
 					DataSource:       adv.DataSource,
 				}

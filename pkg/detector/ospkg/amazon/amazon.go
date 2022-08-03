@@ -10,8 +10,8 @@ import (
 	"go.uber.org/zap"
 	"golang.org/x/xerrors"
 
-	ftypes "github.com/aquasecurity/fanal/types"
 	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/amazon"
+	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/scanner/utils"
 	"github.com/aquasecurity/trivy/pkg/types"
@@ -20,8 +20,9 @@ import (
 var (
 	eolDates = map[string]time.Time{
 		"1": time.Date(2023, 6, 30, 23, 59, 59, 0, time.UTC),
+		"2": time.Date(2024, 6, 30, 23, 59, 59, 0, time.UTC),
 		// N/A
-		"2": time.Date(3000, 1, 1, 23, 59, 59, 0, time.UTC),
+		"2022": time.Date(3000, 1, 1, 23, 59, 59, 0, time.UTC),
 	}
 )
 
@@ -61,11 +62,11 @@ func NewScanner(opts ...option) *Scanner {
 }
 
 // Detect scans the packages using amazon scanner
-func (s *Scanner) Detect(osVer string, pkgs []ftypes.Package) ([]types.DetectedVulnerability, error) {
+func (s *Scanner) Detect(osVer string, _ *ftypes.Repository, pkgs []ftypes.Package) ([]types.DetectedVulnerability, error) {
 	log.Logger.Info("Detecting Amazon Linux vulnerabilities...")
 
 	osVer = strings.Fields(osVer)[0]
-	if osVer != "2" {
+	if osVer != "2" && osVer != "2022" {
 		osVer = "1"
 	}
 	log.Logger.Debugf("amazon: os version: %s", osVer)
@@ -102,6 +103,7 @@ func (s *Scanner) Detect(osVer string, pkgs []ftypes.Package) ([]types.DetectedV
 					PkgName:          pkg.Name,
 					InstalledVersion: installed,
 					FixedVersion:     adv.FixedVersion,
+					Ref:              pkg.Ref,
 					Layer:            pkg.Layer,
 					Custom:           adv.Custom,
 					DataSource:       adv.DataSource,

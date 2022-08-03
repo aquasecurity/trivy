@@ -8,9 +8,9 @@ import (
 	"golang.org/x/xerrors"
 	"k8s.io/utils/clock"
 
-	ftypes "github.com/aquasecurity/fanal/types"
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/alpine"
+	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/scanner/utils"
 	"github.com/aquasecurity/trivy/pkg/types"
@@ -42,6 +42,8 @@ var (
 		"3.13": time.Date(2022, 11, 1, 23, 59, 59, 0, time.UTC),
 		"3.14": time.Date(2023, 5, 1, 23, 59, 59, 0, time.UTC),
 		"3.15": time.Date(2023, 11, 1, 23, 59, 59, 0, time.UTC),
+		"3.16": time.Date(2024, 5, 23, 23, 59, 59, 0, time.UTC),
+		"edge": time.Date(9999, 1, 1, 0, 0, 0, 0, time.UTC),
 	}
 )
 
@@ -79,17 +81,29 @@ func NewScanner(opts ...option) *Scanner {
 }
 
 // Detect vulnerabilities in package using Alpine scanner
-func (s *Scanner) Detect(osVer string, pkgs []ftypes.Package) ([]types.DetectedVulnerability, error) {
+func (s *Scanner) Detect(osVer string, repo *ftypes.Repository, pkgs []ftypes.Package) ([]types.DetectedVulnerability, error) {
 	log.Logger.Info("Detecting Alpine vulnerabilities...")
 	if strings.Count(osVer, ".") > 1 {
 		osVer = osVer[:strings.LastIndex(osVer, ".")]
 	}
+	repoRelease := s.repoRelease(repo)
+
 	log.Logger.Debugf("alpine: os version: %s", osVer)
+	log.Logger.Debugf("alpine: package repository: %s", repoRelease)
 	log.Logger.Debugf("alpine: the number of packages: %d", len(pkgs))
+
+	stream := osVer
+	if repoRelease != "" && osVer != repoRelease {
+		// Prefer the repository release. Use OS version only when the repository is not detected.
+		stream = repoRelease
+		if repoRelease != "edge" { // TODO: we should detect the current edge version.
+			log.Logger.Warnf("Mixing Alpine versions is unsupported, OS: '%s', repository: '%s'", osVer, repoRelease)
+		}
+	}
 
 	var vulns []types.DetectedVulnerability
 	for _, pkg := range pkgs {
-		advisories, err := s.vs.Get(osVer, pkg.SrcName)
+		advisories, err := s.vs.Get(stream, pkg.SrcName)
 		if err != nil {
 			return nil, xerrors.Errorf("failed to get alpine advisories: %w", err)
 		}
@@ -111,6 +125,7 @@ func (s *Scanner) Detect(osVer string, pkgs []ftypes.Package) ([]types.DetectedV
 				InstalledVersion: installed,
 				FixedVersion:     adv.FixedVersion,
 				Layer:            pkg.Layer,
+				Ref:              pkg.Ref,
 				Custom:           adv.Custom,
 				DataSource:       adv.DataSource,
 			})
@@ -160,9 +175,20 @@ func (s *Scanner) IsSupportedVersion(osFamily, osVer string) bool {
 
 	eol, ok := eolDates[osVer]
 	if !ok {
-		log.Logger.Warnf("This OS version is not on the EOL list: %s %s", osFamily, osVer)
-		return false
+		log.Logger.Infof("This OS version is not on the EOL list: %s %s", osFamily, osVer)
+		return true // may be the latest version
 	}
 
 	return s.clock.Now().Before(eol)
+}
+
+func (s *Scanner) repoRelease(repo *ftypes.Repository) string {
+	if repo == nil {
+		return ""
+	}
+	release := repo.Release
+	if strings.Count(release, ".") > 1 {
+		release = release[:strings.LastIndex(release, ".")]
+	}
+	return release
 }

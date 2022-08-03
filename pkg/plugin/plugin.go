@@ -18,8 +18,7 @@ import (
 )
 
 const (
-	configFile  = "plugin.yaml"
-	xdgDataHome = "XDG_DATA_HOME"
+	configFile = "plugin.yaml"
 )
 
 var (
@@ -281,6 +280,24 @@ func LoadAll() ([]Plugin, error) {
 	return plugins, nil
 }
 
+// RunWithArgs runs the plugin with arguments
+func RunWithArgs(ctx context.Context, url string, args []string) error {
+	pl, err := Install(ctx, url, false)
+	if err != nil {
+		return xerrors.Errorf("plugin install error: %w", err)
+	}
+
+	if err = pl.Run(ctx, args); err != nil {
+		return xerrors.Errorf("unable to run %s plugin: %w", pl.Name, err)
+	}
+	return nil
+}
+
+func IsPredefined(name string) bool {
+	_, ok := officialPlugins[name]
+	return ok
+}
+
 func loadMetadata(dir string) (Plugin, error) {
 	filePath := filepath.Join(dir, configFile)
 	f, err := os.Open(filePath)
@@ -297,13 +314,7 @@ func loadMetadata(dir string) (Plugin, error) {
 }
 
 func dir() string {
-	dataHome := os.Getenv(xdgDataHome)
-	if dataHome != "" {
-		return filepath.Join(dataHome, pluginsRelativeDir)
-	}
-
-	homeDir, _ := os.UserHomeDir()
-	return filepath.Join(homeDir, pluginsRelativeDir)
+	return filepath.Join(utils.HomeDir(), pluginsRelativeDir)
 }
 
 func isInstalled(url string) (Plugin, bool) {

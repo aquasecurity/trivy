@@ -16,8 +16,8 @@ import (
 )
 
 const (
-	dbRepository = "ghcr.io/aquasecurity/trivy-db"
-	dbMediaType  = "application/vnd.aquasec.trivy.db.layer.v1.tar+gzip"
+	dbMediaType         = "application/vnd.aquasec.trivy.db.layer.v1.tar+gzip"
+	defaultDBRepository = "ghcr.io/aquasecurity/trivy-db"
 )
 
 // Operation defines the DB operations
@@ -27,8 +27,9 @@ type Operation interface {
 }
 
 type options struct {
-	artifact *oci.Artifact
-	clock    clock.Clock
+	artifact     *oci.Artifact
+	clock        clock.Clock
+	dbRepository string
 }
 
 // Option is a functional option
@@ -38,6 +39,13 @@ type Option func(*options)
 func WithOCIArtifact(art *oci.Artifact) Option {
 	return func(opts *options) {
 		opts.artifact = art
+	}
+}
+
+// WithDBRepository takes a dbRepository
+func WithDBRepository(dbRepository string) Option {
+	return func(opts *options) {
+		opts.dbRepository = dbRepository
 	}
 }
 
@@ -52,15 +60,17 @@ func WithClock(clock clock.Clock) Option {
 type Client struct {
 	*options
 
-	cacheDir string
-	metadata metadata.Client
-	quiet    bool
+	cacheDir              string
+	metadata              metadata.Client
+	quiet                 bool
+	insecureSkipTLSVerify bool
 }
 
 // NewClient is the factory method for DB client
-func NewClient(cacheDir string, quiet bool, opts ...Option) *Client {
+func NewClient(cacheDir string, quiet, insecure bool, opts ...Option) *Client {
 	o := &options{
-		clock: clock.RealClock{},
+		clock:        clock.RealClock{},
+		dbRepository: defaultDBRepository,
 	}
 
 	for _, opt := range opts {
@@ -68,10 +78,11 @@ func NewClient(cacheDir string, quiet bool, opts ...Option) *Client {
 	}
 
 	return &Client{
-		options:  o,
-		cacheDir: cacheDir,
-		metadata: metadata.NewClient(cacheDir),
-		quiet:    quiet,
+		options:               o,
+		cacheDir:              cacheDir,
+		metadata:              metadata.NewClient(cacheDir),
+		quiet:                 quiet,
+		insecureSkipTLSVerify: insecure, // insecure skip for download DB
 	}
 }
 
@@ -94,6 +105,7 @@ func (c *Client) NeedsUpdate(cliVersion string, skip bool) (bool, error) {
 	}
 
 	if skip {
+		log.Logger.Debug("Skipping DB update...")
 		if err = c.validate(meta); err != nil {
 			return false, xerrors.Errorf("validate error: %w", err)
 		}
@@ -101,6 +113,7 @@ func (c *Client) NeedsUpdate(cliVersion string, skip bool) (bool, error) {
 	}
 
 	if db.SchemaVersion != meta.Version {
+		log.Logger.Debugf("The local DB schema version (%d) does not match with supported version schema (%d).", meta.Version, db.SchemaVersion)
 		return true, nil
 	}
 
@@ -109,8 +122,9 @@ func (c *Client) NeedsUpdate(cliVersion string, skip bool) (bool, error) {
 
 func (c *Client) validate(meta metadata.Metadata) error {
 	if db.SchemaVersion != meta.Version {
-		log.Logger.Error("The local DB has an old schema version which is not supported by the current version of Trivy CLI. It needs to be updated.")
-		return xerrors.New("--skip-update cannot be specified with the old DB schema")
+		log.Logger.Error("The local DB has an old schema version which is not supported by the current version of Trivy CLI. DB needs to be updated.")
+		return xerrors.Errorf("--skip-update cannot be specified with the old DB schema. Local DB: %d, Expected: %d",
+			meta.Version, db.SchemaVersion)
 	}
 	return nil
 }
@@ -135,15 +149,16 @@ func (c *Client) Download(ctx context.Context, dst string) error {
 		log.Logger.Debug("no metadata file")
 	}
 
-	if err := c.populateOCIArtifact(); err != nil {
+	art, err := c.initOCIArtifact()
+	if err != nil {
 		return xerrors.Errorf("OCI artifact error: %w", err)
 	}
 
-	if err := c.artifact.Download(ctx, db.Dir(dst)); err != nil {
+	if err = art.Download(ctx, db.Dir(dst)); err != nil {
 		return xerrors.Errorf("database download error: %w", err)
 	}
 
-	if err := c.updateDownloadedAt(dst); err != nil {
+	if err = c.updateDownloadedAt(dst); err != nil {
 		return xerrors.Errorf("failed to update downloaded_at: %w", err)
 	}
 	return nil
@@ -168,14 +183,15 @@ func (c *Client) updateDownloadedAt(dst string) error {
 	return nil
 }
 
-func (c *Client) populateOCIArtifact() error {
-	if c.artifact == nil {
-		repo := fmt.Sprintf("%s:%d", dbRepository, db.SchemaVersion)
-		art, err := oci.NewArtifact(repo, dbMediaType, c.quiet)
-		if err != nil {
-			return xerrors.Errorf("OCI artifact error: %w", err)
-		}
-		c.artifact = art
+func (c *Client) initOCIArtifact() (*oci.Artifact, error) {
+	if c.artifact != nil {
+		return c.artifact, nil
 	}
-	return nil
+
+	repo := fmt.Sprintf("%s:%d", c.dbRepository, db.SchemaVersion)
+	art, err := oci.NewArtifact(repo, dbMediaType, c.quiet, c.insecureSkipTLSVerify)
+	if err != nil {
+		return nil, xerrors.Errorf("OCI artifact error: %w", err)
+	}
+	return art, nil
 }

@@ -1,57 +1,59 @@
 package server
 
 import (
-	"github.com/urfave/cli/v2"
+	"context"
+
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy-db/pkg/db"
 	"github.com/aquasecurity/trivy/pkg/commands/operation"
+	"github.com/aquasecurity/trivy/pkg/flag"
 	"github.com/aquasecurity/trivy/pkg/log"
+	"github.com/aquasecurity/trivy/pkg/module"
 	rpcServer "github.com/aquasecurity/trivy/pkg/rpc/server"
 	"github.com/aquasecurity/trivy/pkg/utils"
 )
 
 // Run runs the scan
-func Run(ctx *cli.Context) error {
-	return run(NewConfig(ctx))
-}
-
-func run(c Config) (err error) {
-	if err = log.InitLogger(c.Debug, c.Quiet); err != nil {
+func Run(ctx context.Context, opts flag.Options) (err error) {
+	if err = log.InitLogger(opts.Debug, opts.Quiet); err != nil {
 		return xerrors.Errorf("failed to initialize a logger: %w", err)
 	}
 
-	// initialize config
-	if err = c.Init(); err != nil {
-		return xerrors.Errorf("failed to initialize options: %w", err)
-	}
-
 	// configure cache dir
-	utils.SetCacheDir(c.CacheDir)
-	cache, err := operation.NewCache(c.CacheOption)
+	utils.SetCacheDir(opts.CacheDir)
+	cache, err := operation.NewCache(opts.CacheOptions)
 	if err != nil {
 		return xerrors.Errorf("server cache error: %w", err)
 	}
 	defer cache.Close()
 	log.Logger.Debugf("cache dir:  %s", utils.CacheDir())
 
-	if c.Reset {
+	if opts.Reset {
 		return cache.ClearDB()
 	}
 
 	// download the database file
-	if err = operation.DownloadDB(c.AppVersion, c.CacheDir, true, c.SkipDBUpdate); err != nil {
+	if err = operation.DownloadDB(opts.AppVersion, opts.CacheDir, opts.DBRepository,
+		true, opts.Insecure, opts.SkipDBUpdate); err != nil {
 		return err
 	}
 
-	if c.DownloadDBOnly {
+	if opts.DownloadDBOnly {
 		return nil
 	}
 
-	if err = db.Init(c.CacheDir); err != nil {
+	if err = db.Init(opts.CacheDir); err != nil {
 		return xerrors.Errorf("error in vulnerability DB initialize: %w", err)
 	}
 
-	server := rpcServer.NewServer(c.AppVersion, c.Listen, c.CacheDir, c.Token, c.TokenHeader)
-	return server.ListenAndServe(cache)
+	// Initialize WASM modules
+	m, err := module.NewManager(ctx)
+	if err != nil {
+		return xerrors.Errorf("WASM module error: %w", err)
+	}
+	m.Register()
+
+	server := rpcServer.NewServer(opts.AppVersion, opts.Listen, opts.CacheDir, opts.Token, opts.TokenHeader, opts.DBRepository)
+	return server.ListenAndServe(cache, opts.Insecure)
 }
