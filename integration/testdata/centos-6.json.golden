@@ -71,7 +71,7 @@
   "Results": [
     {
       "Target": "testdata/fixtures/images/centos-6.tar.gz (centos 6.10)",
-      "Class": "os-pkgs",
+      "Class": "vuln-os-pkgs",
       "Type": "centos",
       "Vulnerabilities": [
         {

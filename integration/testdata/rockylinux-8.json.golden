@@ -48,7 +48,7 @@
   "Results": [
     {
       "Target": "testdata/fixtures/images/rockylinux-8.tar.gz (rocky 8.5)",
-      "Class": "os-pkgs",
+      "Class": "vuln-os-pkgs",
       "Type": "rocky",
       "Vulnerabilities": [
         {
@@ -118,11 +118,6 @@
           "LastModifiedDate": "2022-01-06T09:15:00Z"
         }
       ]
-    },
-    {
-      "Target": "Python",
-      "Class": "lang-pkgs",
-      "Type": "python-pkg"
     }
   ]
 }

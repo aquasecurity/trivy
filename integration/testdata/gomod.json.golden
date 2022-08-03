@@ -17,7 +17,7 @@
   "Results": [
     {
       "Target": "go.mod",
-      "Class": "lang-pkgs",
+      "Class": "vuln-lang-pkgs",
       "Type": "gomod",
       "Vulnerabilities": [
         {
@@ -103,7 +103,7 @@
     },
     {
       "Target": "submod/go.mod",
-      "Class": "lang-pkgs",
+      "Class": "vuln-lang-pkgs",
       "Type": "gomod",
       "Vulnerabilities": [
         {
@@ -131,7 +131,7 @@
     },
     {
       "Target": "submod2/go.mod",
-      "Class": "lang-pkgs",
+      "Class": "vuln-lang-pkgs",
       "Type": "gomod",
       "Vulnerabilities": [
         {

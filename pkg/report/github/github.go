@@ -102,7 +102,7 @@ func (w Writer) Write(report types.Report) error {
 
 		manifest := Manifest{}
 		manifest.Name = result.Type
-		//show path for languages only
+		// show path for language-specific packages only
 		if result.Class == types.ClassLangPkg {
 			manifest.File = &File{
 				SrcLocation: result.Target,

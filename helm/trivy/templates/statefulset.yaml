@@ -90,7 +90,11 @@ spec:
             - configMapRef:
                 name: {{ include "trivy.fullname" . }}
             - secretRef:
+                {{- if not .Values.trivy.existingSecret }}
                 name: {{ include "trivy.fullname" . }}
+                {{- else }}
+                name: {{ .Values.trivy.existingSecret }}
+                {{- end }}
           ports:
             - name: trivy-http
               containerPort: {{ .Values.service.port }}
