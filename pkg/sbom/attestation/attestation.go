@@ -2,7 +2,6 @@ package attestation
 
 import (
 	"bytes"
-	"encoding/json"
 	"io"
 
 	"golang.org/x/xerrors"
@@ -21,19 +20,7 @@ func (u Unmarshaler) Unmarshal(r io.Reader) (sbom.SBOM, error) {
 		return sbom.SBOM{}, xerrors.Errorf("failed to decode attestation: %w", err)
 	}
 
-	var predicateByte []byte
-
-	switch attest.CosignPredicateData.(type) {
-	case map[string]interface{}:
-		predicateByte, err = json.Marshal(attest.CosignPredicateData)
-		if err != nil {
-			return sbom.SBOM{}, xerrors.Errorf("failed to marshal predicate: %w", err)
-		}
-	case string:
-		predicateByte = []byte(attest.CosignPredicateData.(string))
-	}
-
-	return u.predicateUnmarshaler.Unmarshal(bytes.NewReader(predicateByte))
+	return u.predicateUnmarshaler.Unmarshal(bytes.NewReader(attest.Predicate.Data))
 }
 
 func NewUnmarshaler(predicateUnmarshaler sbom.Unmarshaler) sbom.Unmarshaler {

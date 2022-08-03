@@ -33,7 +33,6 @@ const (
 	FormatSPDXJSON            = "spdx-json"
 	FormatSPDXXML             = "spdx-xml"
 	FormatAttestCycloneDXJSON = "attest-cyclonedx-json"
-	FormatAttestCycloneDXXML  = "attest-cyclonedx-xml"
 	FormatUnknown             = "unknown"
 )
 
@@ -74,12 +73,7 @@ func DetectFormat(r io.ReadSeeker) (Format, error) {
 	// Try Attestation
 	if attest, err := attestation.Decode(r); err == nil {
 		if attest.PredicateType == in_toto.PredicateCycloneDX {
-			switch attest.CosignPredicateData.(type) {
-			case map[string]interface{}:
-				return FormatAttestCycloneDXJSON, nil
-			case string:
-				return FormatAttestCycloneDXXML, nil
-			}
+			return FormatAttestCycloneDXJSON, nil
 		}
 	}
 

@@ -11,12 +11,21 @@ import (
 	"golang.org/x/xerrors"
 )
 
-type Statement struct {
-	in_toto.Statement
-	CosignPredicateData interface{} `json:"-"`
+// CosignPredicate specifies the format of the Custom Predicate.
+// Cosign uses this structure when creating an SBOM attestation.
+type CosignPredicate struct {
+	Data json.RawMessage
 }
 
-// Decode returns the in-toto statement from the in-toto attestation.
+// Statement holds statement headers and the predicate.
+type Statement struct {
+	PredicateType string `json:"predicateType"`
+
+	// Predicate contains type specific metadata.
+	Predicate CosignPredicate `json:"predicate"`
+}
+
+// Decode returns the statement from the attestation.
 func Decode(r io.Reader) (Statement, error) {
 
 	var envelope dsse.Envelope
@@ -37,12 +46,6 @@ func Decode(r io.Reader) (Statement, error) {
 	err = json.NewDecoder(bytes.NewReader(decoded)).Decode(&st)
 	if err != nil {
 		return Statement{}, xerrors.Errorf("failed to decode attestation payload as in-toto statement: %w", err)
-	}
-
-	// When cosign creates an SBOM attestation, it stores the predicate under a "Data" key.
-	// https://github.com/sigstore/cosign/blob/938ad43f84aa183850014c8cc6d999f4b7ec5e8d/pkg/cosign/attestation/attestation.go#L39-L43
-	if _, found := st.Predicate.(map[string]interface{})["Data"]; found {
-		st.CosignPredicateData = st.Predicate.(map[string]interface{})["Data"]
 	}
 
 	return st, nil
