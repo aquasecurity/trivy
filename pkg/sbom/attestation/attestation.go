@@ -20,7 +20,11 @@ func (u Unmarshaler) Unmarshal(r io.Reader) (sbom.SBOM, error) {
 		return sbom.SBOM{}, xerrors.Errorf("failed to decode attestation: %w", err)
 	}
 
-	return u.predicateUnmarshaler.Unmarshal(bytes.NewReader(attest.Predicate.Data))
+	bom, err := u.predicateUnmarshaler.Unmarshal(bytes.NewReader(attest.Predicate.Data))
+	if err != nil {
+		return sbom.SBOM{}, xerrors.Errorf("failed to unmarshal: %w", err)
+	}
+	return bom, nil
 }
 
 func NewUnmarshaler(predicateUnmarshaler sbom.Unmarshaler) sbom.Unmarshaler {
