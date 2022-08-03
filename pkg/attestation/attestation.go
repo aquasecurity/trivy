@@ -25,7 +25,7 @@ type Statement struct {
 	Predicate CosignPredicate `json:"predicate"`
 }
 
-// Decode returns the statement from the attestation.
+// Decode returns the in-toto statement from the in-toto attestation.
 func Decode(r io.Reader) (Statement, error) {
 
 	var envelope dsse.Envelope
