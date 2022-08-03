@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
+
 	"github.com/knqyf263/nested"
 	"github.com/samber/lo"
 )
@@ -132,13 +133,11 @@ func ApplyLayers(layers []types.BlobInfo) types.ArtifactDetail {
 
 		// Apply secrets
 		for _, secret := range layer.Secrets {
-			layer := types.Layer{
+			l := types.Layer{
 				Digest: layer.Digest,
 				DiffID: layer.DiffID,
 			}
-			secretsMap = mergeSecrets(secretsMap, secret, layer)
-			//// we must save secrets from all layers
-			//mergedLayer.Secrets = append(mergedLayer.Secrets, secret)
+			secretsMap = mergeSecrets(secretsMap, secret, l)
 		}
 
 		// Apply license files
@@ -264,6 +263,8 @@ func aggregate(detail *types.ArtifactDetail) {
 	detail.Applications = apps
 }
 
+// We must save secrets from all layers
+// If the secret was changed at the top level, we need to overwrite it
 func mergeSecrets(secretsMap map[string]types.Secret, newSecret types.Secret, layer types.Layer) map[string]types.Secret {
 	for i := range newSecret.Findings { // add layer to the Findings from the new secret
 		newSecret.Findings[i].Layer = layer
@@ -274,7 +275,7 @@ func mergeSecrets(secretsMap map[string]types.Secret, newSecret types.Secret, la
 		secretsMap[newSecret.FilePath] = newSecret
 	} else { // if saved and new secrets have same `RuleID` and lines - use new Secret
 		for _, savedFinding := range secret.Findings { // secrets from previous layers
-			if !secretsFindingsContains(newSecret.Findings, savedFinding) {
+			if !secretFindingsContains(newSecret.Findings, savedFinding) {
 				newSecret.Findings = append(newSecret.Findings, savedFinding)
 			}
 		}
@@ -283,7 +284,7 @@ func mergeSecrets(secretsMap map[string]types.Secret, newSecret types.Secret, la
 	return secretsMap
 }
 
-func secretsFindingsContains(findings []types.SecretFinding, finding types.SecretFinding) bool {
+func secretFindingsContains(findings []types.SecretFinding, finding types.SecretFinding) bool {
 	for _, f := range findings {
 		if f.RuleID == finding.RuleID && f.StartLine == finding.StartLine && f.EndLine == finding.EndLine {
 			return true

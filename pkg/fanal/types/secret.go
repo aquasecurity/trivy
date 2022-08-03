@@ -14,7 +14,7 @@ type SecretFinding struct {
 	Title     string
 	StartLine int
 	EndLine   int
-	Code      Code `json:",omitempty"`
+	Code      Code
 	Match     string
 	Layer     Layer `json:",omitempty"`
 }
