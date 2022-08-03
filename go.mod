@@ -29,7 +29,7 @@ require (
 	github.com/golang-jwt/jwt v3.2.2+incompatible
 	github.com/golang/protobuf v1.5.2
 	github.com/google/go-containerregistry v0.7.1-0.20211214010025-a65b7844a475
-	github.com/google/licenseclassifier/v2 v2.0.0-pre5
+	github.com/google/licenseclassifier/v2 v2.0.0-pre6
 	github.com/google/uuid v1.3.0
 	github.com/google/wire v0.5.0
 	github.com/hashicorp/go-getter v1.6.2
