@@ -48,7 +48,7 @@
   "Results": [
     {
       "Target": "testdata/fixtures/images/almalinux-8.tar.gz (alma 8.5)",
-      "Class": "os-pkgs",
+      "Class": "vuln-os-pkgs",
       "Type": "alma",
       "Vulnerabilities": [
         {
