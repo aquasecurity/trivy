@@ -19,18 +19,14 @@ type SBOM struct {
 	CycloneDX *types.CycloneDX
 }
 
-type Unmarshaler interface {
-	Unmarshal(io.Reader) (SBOM, error)
-}
-
 type Format string
 
 const (
-	FormatCycloneDXJSON = "cyclonedx-json"
-	FormatCycloneDXXML  = "cyclonedx-xml"
-	FormatSPDXJSON      = "spdx-json"
-	FormatSPDXXML       = "spdx-xml"
-	FormatUnknown       = "unknown"
+	FormatCycloneDXJSON Format = "cyclonedx-json"
+	FormatCycloneDXXML  Format = "cyclonedx-xml"
+	FormatSPDXJSON      Format = "spdx-json"
+	FormatSPDXXML       Format = "spdx-xml"
+	FormatUnknown       Format = "unknown"
 )
 
 func DetectFormat(r io.ReadSeeker) (Format, error) {

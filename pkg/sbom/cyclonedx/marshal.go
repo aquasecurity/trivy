@@ -367,7 +367,7 @@ func (e *Marshaler) reportToCdxComponent(r types.Report) (*cdx.Component, error)
 	return component, nil
 }
 
-func (e Marshaler) resultToCdxComponent(r types.Result, osFound *ftypes.OS) cdx.Component {
+func (e *Marshaler) resultToCdxComponent(r types.Result, osFound *ftypes.OS) cdx.Component {
 	component := cdx.Component{
 		Name: r.Target,
 		Properties: &[]cdx.Property{
