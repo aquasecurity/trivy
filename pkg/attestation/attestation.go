@@ -17,7 +17,7 @@ type CosignPredicate struct {
 	Data interface{}
 }
 
-// Statement holds statement headers and the predicate.
+// Statement holds in-toto statement headers and the predicate.
 type Statement in_toto.Statement
 
 func (s *Statement) UnmarshalJSON(b []byte) error {

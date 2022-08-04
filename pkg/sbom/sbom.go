@@ -6,8 +6,6 @@ import (
 	"io"
 	"strings"
 
-	"github.com/aquasecurity/trivy/pkg/log"
-
 	"github.com/in-toto/in-toto-golang/in_toto"
 	"golang.org/x/xerrors"
 
@@ -68,14 +66,12 @@ func DetectFormat(r io.ReadSeeker) (Format, error) {
 
 	// TODO: implement SPDX
 
-	// Try Attestation
+	// Try in-toto attestation
 	var s attestation.Statement
 	if err := json.NewDecoder(r).Decode(&s); err == nil {
 		if s.PredicateType == in_toto.PredicateCycloneDX {
 			return FormatAttestCycloneDXJSON, nil
 		}
-	} else {
-		log.Logger.Fatal(err)
 	}
 
 	return FormatUnknown, nil
