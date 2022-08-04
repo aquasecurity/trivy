@@ -106,7 +106,7 @@ func (a Artifact) Decode(f io.Reader, format sbom.Format) (sbom.SBOM, error) {
 
 	switch format {
 	case sbom.FormatCycloneDXJSON:
-		v = cyclonedx.CycloneDX{SBOM: &bom}
+		v = &cyclonedx.CycloneDX{SBOM: &bom}
 		decoder = json.NewDecoder(f)
 	default:
 		return sbom.SBOM{}, xerrors.Errorf("%s scanning is not yet supported", format)
