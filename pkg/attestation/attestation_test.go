@@ -1,9 +1,12 @@
 package attestation_test
 
 import (
+	"encoding/json"
 	"os"
 	"testing"
 
+	"github.com/in-toto/in-toto-golang/in_toto"
+	slsa "github.com/in-toto/in-toto-golang/in_toto/slsa_provenance/v0.2"
 	"github.com/stretchr/testify/require"
 
 	"github.com/aquasecurity/trivy/pkg/attestation"
@@ -19,9 +22,20 @@ func TestDecode(t *testing.T) {
 			name:      "happy path",
 			inputFile: "testdata/attestation.json",
 			want: attestation.Statement{
-				PredicateType: "cosign.sigstore.dev/attestation/v1",
-				Predicate: attestation.CosignPredicate{
-					Data: []byte(`"foo\n"`),
+				StatementHeader: in_toto.StatementHeader{
+					Type:          "https://in-toto.io/Statement/v0.1",
+					PredicateType: "cosign.sigstore.dev/attestation/v1",
+					Subject: []in_toto.Subject{
+						{
+							Name: "ghcr.io/aquasecurity/trivy-test-images",
+							Digest: slsa.DigestSet{
+								"sha256": "72c42ed48c3a2db31b7dafe17d275b634664a708d901ec9fd57b1529280f01fb",
+							},
+						},
+					},
+				},
+				Predicate: &attestation.CosignPredicate{
+					Data: "foo\n",
 				},
 			},
 		},
@@ -32,9 +46,9 @@ func TestDecode(t *testing.T) {
 			require.NoError(t, err)
 			defer f.Close()
 
-			got, err := attestation.Decode(f)
+			got := attestation.Statement{Predicate: &attestation.CosignPredicate{}}
+			err = json.NewDecoder(f).Decode(&got)
 			require.NoError(t, err)
-
 			require.Equal(t, tt.want, got)
 		})
 	}
