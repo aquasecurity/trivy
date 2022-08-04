@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"encoding/base64"
 	"encoding/json"
-	"io"
 
 	"github.com/in-toto/in-toto-golang/in_toto"
 	"github.com/secure-systems-lab/go-securesystemslib/dsse"
@@ -13,40 +12,33 @@ import (
 
 // CosignPredicate specifies the format of the Custom Predicate.
 // Cosign uses this structure when creating an SBOM attestation.
+// cf. https://github.com/sigstore/cosign/blob/e0547cff64f98585a837a524ff77ff6b47ff5609/pkg/cosign/attestation/attestation.go#L39-L43
 type CosignPredicate struct {
-	Data json.RawMessage
+	Data interface{}
 }
 
 // Statement holds statement headers and the predicate.
-type Statement struct {
-	PredicateType string `json:"predicateType"`
+type Statement in_toto.Statement
 
-	// Predicate contains type specific metadata.
-	Predicate CosignPredicate `json:"predicate"`
-}
-
-// Decode returns the in-toto statement from the in-toto attestation.
-func Decode(r io.Reader) (Statement, error) {
-
+func (s *Statement) UnmarshalJSON(b []byte) error {
 	var envelope dsse.Envelope
-	err := json.NewDecoder(r).Decode(&envelope)
+	err := json.NewDecoder(bytes.NewReader(b)).Decode(&envelope)
 	if err != nil {
-		return Statement{}, xerrors.Errorf("failed to decode as a dsse envelope: %w", err)
+		return xerrors.Errorf("failed to decode as a dsse envelope: %w", err)
 	}
 	if envelope.PayloadType != in_toto.PayloadType {
-		return Statement{}, xerrors.Errorf("invalid attestation payload type: %s", envelope.PayloadType)
+		return xerrors.Errorf("invalid attestation payload type: %s", envelope.PayloadType)
 	}
 
 	decoded, err := base64.StdEncoding.DecodeString(envelope.Payload)
 	if err != nil {
-		return Statement{}, xerrors.Errorf("failed to decode attestation payload: %w", err)
+		return xerrors.Errorf("failed to decode attestation payload: %w", err)
 	}
 
-	var st Statement
-	err = json.NewDecoder(bytes.NewReader(decoded)).Decode(&st)
-	if err != nil {
-		return Statement{}, xerrors.Errorf("failed to decode attestation payload as in-toto statement: %w", err)
+	statement := (*in_toto.Statement)(s)
+	if err = json.NewDecoder(bytes.NewReader(decoded)).Decode(statement); err != nil {
+		return xerrors.Errorf("failed to decode attestation payload as in-toto statement: %w", err)
 	}
 
-	return st, nil
+	return nil
 }

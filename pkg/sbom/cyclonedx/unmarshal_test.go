@@ -1,6 +1,7 @@
 package cyclonedx_test
 
 import (
+	"encoding/json"
 	"os"
 	"testing"
 
@@ -196,8 +197,8 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 			require.NoError(t, err)
 			defer f.Close()
 
-			unmarshaler := cyclonedx.NewJSONUnmarshaler()
-			got, err := unmarshaler.Unmarshal(f)
+			var cdx cyclonedx.CycloneDX
+			err = json.NewDecoder(f).Decode(&cdx)
 			if tt.wantErr != "" {
 				require.Error(t, err)
 				assert.Contains(t, err.Error(), tt.wantErr)
@@ -205,6 +206,7 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 			}
 
 			// Not compare the CycloneDX field
+			got := *cdx.SBOM
 			got.CycloneDX = nil
 
 			require.NoError(t, err)
