@@ -32,7 +32,7 @@ $ cosign attest --key /path/to/cosign.key --type spdx --predicate sbom.spdx.json
 
 # cyclonedx
 $ trivy image --format cyclonedx -o sbom.cdx.json <IMAGE>
-$ cosign attest --key /path/to/cosign.key --type https://cyclonedx.org/schema --predicate sbom.cdx.json <IMAGE>
+$ cosign attest --key /path/to/cosign.key --type cyclonedx --predicate sbom.cdx.json <IMAGE>
 ```
 
 ## Keyless signing
