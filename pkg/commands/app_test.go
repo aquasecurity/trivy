@@ -142,7 +142,7 @@ func TestConfigFileAndEnv(t *testing.T) {
 			want: wantValues{
 				timeout:  time.Second * 300,
 				skipDirs: []string{},
-				vulnType: []string{types.VulnTypeOS + "," + types.VulnTypeLibrary},
+				vulnType: []string{types.VulnTypeOS, types.VulnTypeLibrary},
 			},
 		},
 		{
