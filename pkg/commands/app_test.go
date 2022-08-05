@@ -68,7 +68,6 @@ Vulnerability DB:
   NextUpdate: 2022-03-02 12:07:07.99504023 +0000 UTC
   DownloadedAt: 2022-03-02 10:03:38.383312 +0000 UTC
 `
-
 	jsonOutput := `{"Version":"test","VulnerabilityDB":{"Version":2,"NextUpdate":"2022-03-02T12:07:07.99504023Z","UpdatedAt":"2022-03-02T06:07:07.99504083Z","DownloadedAt":"2022-03-02T10:03:38.383312Z"}}
 `
 	tests := []struct {
@@ -225,7 +224,7 @@ func TestConfigFileAndEnv(t *testing.T) {
 					err := os.Setenv(k, v)
 					assert.NoError(t, err)
 				}
-				// reset viper after each test
+				// reset viper after each test because it keeps the values from the previous config file
 				viper.Reset()
 			}()
 
@@ -235,7 +234,7 @@ func TestConfigFileAndEnv(t *testing.T) {
 			SetOut(got)
 			app.SetArgs(test.arguments)
 
-			// subcommands run without commands
+			// subcommands are executed without target
 			// this error is expected
 			err := app.Execute()
 			require.NotNil(t, err)
