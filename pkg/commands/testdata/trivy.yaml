@@ -1,2 +1,12 @@
+debug: false
+timeout: "20m"
+scan:
+  skip-dirs:
+    - "dir1"
+    - "dir2"
+vulnerability:
+  type:
+    - os
 cache:
-  dir: testdata/config
+  redis:
+    cert: "ca-conf-cert.pem"
