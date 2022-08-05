@@ -2,6 +2,7 @@ package commands
 
 import (
 	"bytes"
+	"os"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -63,9 +64,9 @@ Vulnerability DB:
   NextUpdate: 2022-03-02 12:07:07.99504023 +0000 UTC
   DownloadedAt: 2022-03-02 10:03:38.383312 +0000 UTC
 `
+
 	jsonOutput := `{"Version":"test","VulnerabilityDB":{"Version":2,"NextUpdate":"2022-03-02T12:07:07.99504023Z","UpdatedAt":"2022-03-02T06:07:07.99504083Z","DownloadedAt":"2022-03-02T10:03:38.383312Z"}}
 `
-
 	tests := []struct {
 		name      string
 		arguments []string // 1st argument is path to trivy binaries
@@ -105,6 +106,89 @@ Vulnerability DB:
 
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
+			got := new(bytes.Buffer)
+			app := NewApp("test")
+			SetOut(got)
+			app.SetArgs(test.arguments)
+
+			err := app.Execute()
+			require.NoError(t, err)
+			assert.Equal(t, test.want, got.String())
+		})
+	}
+}
+
+//Check that options from config file and envs work correctly
+func TestConfigFileAndEnv(t *testing.T) {
+	commandOutput := `Version: test
+Vulnerability DB:
+  Version: 2
+  UpdatedAt: 2022-03-02 06:07:07.99504083 +0000 UTC
+  NextUpdate: 2022-03-02 12:07:07.99504023 +0000 UTC
+  DownloadedAt: 2022-03-02 10:03:38.383312 +0000 UTC
+`
+	envOutput := `Version: test
+Vulnerability DB:
+  Version: 2
+  UpdatedAt: 2022-04-02 06:07:07.99504083 +0000 UTC
+  NextUpdate: 2022-04-02 12:07:07.99504023 +0000 UTC
+  DownloadedAt: 2022-04-02 10:03:38.383312 +0000 UTC
+`
+	configOutput := `Version: test
+Vulnerability DB:
+  Version: 2
+  UpdatedAt: 2022-05-02 06:07:07.99504083 +0000 UTC
+  NextUpdate: 2022-05-02 12:07:07.99504023 +0000 UTC
+  DownloadedAt: 2022-05-02 10:03:38.383312 +0000 UTC
+`
+
+	tests := []struct {
+		name        string
+		arguments   []string
+		cacheDirEnv string
+		want        string
+	}{
+		{
+			name:      "happy path.",
+			arguments: []string{"-v", "--cache-dir", "testdata"},
+			want:      commandOutput,
+		},
+		{
+			name:        "happy path.Used env",
+			arguments:   []string{"-v"},
+			cacheDirEnv: "testdata/env",
+			want:        envOutput,
+		},
+		{
+			name:      "happy path. Used config file",
+			arguments: []string{"-v", "--config", "./testdata/trivy.yaml"},
+			want:      configOutput,
+		},
+		{
+			name:        "happy path.Used env and config file", // env takes precedence over config file
+			arguments:   []string{"-v", "--config", "./testdata/trivy.yaml"},
+			cacheDirEnv: "testdata/env",
+			want:        envOutput,
+		},
+		{
+			name:        "happy path.Used command and env", // command takes precedence over env or config file
+			arguments:   []string{"-v", "--cache-dir", "testdata"},
+			cacheDirEnv: "testdata/env",
+			want:        commandOutput,
+		},
+	}
+
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			if test.cacheDirEnv != "" {
+				oldCacheDir := os.Getenv("TRIVY_CACHE_DIR")
+				err := os.Setenv("TRIVY_CACHE_DIR", test.cacheDirEnv)
+				assert.NoError(t, err)
+				defer func() {
+					err = os.Setenv("TRIVY_CACHE_DIR", oldCacheDir)
+					assert.NoError(t, err)
+				}()
+			}
 			got := new(bytes.Buffer)
 			app := NewApp("test")
 			SetOut(got)
