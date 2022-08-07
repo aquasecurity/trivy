@@ -11,6 +11,7 @@ import (
 
 	dio "github.com/aquasecurity/go-dep-parser/pkg/io"
 	"github.com/aquasecurity/go-dep-parser/pkg/log"
+	"github.com/aquasecurity/go-dep-parser/pkg/utils"
 
 	"github.com/aquasecurity/go-dep-parser/pkg/types"
 )
@@ -24,6 +25,7 @@ type Dependency struct {
 	Dev          bool
 	Dependencies map[string]Dependency
 	Requires     map[string]string
+	Resolved     string
 }
 
 type Package struct {
@@ -53,7 +55,7 @@ func (p *Parser) Parse(r dio.ReadSeekerAt) ([]types.Library, []types.Dependency,
 	dircetDeps := lockFile.Packages[""].Dependencies
 	libs, deps := p.parse(lockFile.Dependencies, dircetDeps, map[string]string{})
 
-	return unique(libs), uniqueDeps(deps), nil
+	return utils.UniqueLibraries(libs), uniqueDeps(deps), nil
 }
 
 func (p *Parser) parse(dependencies map[string]Dependency, dircetDeps map[string]string, versions map[string]string) ([]types.Library, []types.Dependency) {
@@ -71,10 +73,11 @@ func (p *Parser) parse(dependencies map[string]Dependency, dircetDeps map[string
 		}
 
 		lib := types.Library{
-			ID:       p.ID(pkgName, dependency.Version),
-			Name:     pkgName,
-			Version:  dependency.Version,
-			Indirect: isIndirectLib(pkgName, dircetDeps),
+			ID:                 p.ID(pkgName, dependency.Version),
+			Name:               pkgName,
+			Version:            dependency.Version,
+			Indirect:           isIndirectLib(pkgName, dircetDeps),
+			ExternalReferences: []types.ExternalRef{{Type: types.RefOther, URL: dependency.Resolved}},
 		}
 		libs = append(libs, lib)
 
@@ -112,17 +115,6 @@ func (p *Parser) parse(dependencies map[string]Dependency, dircetDeps map[string
 	return libs, deps
 }
 
-func unique(libs []types.Library) []types.Library {
-	var uniqLibs []types.Library
-	unique := map[types.Library]struct{}{}
-	for _, lib := range libs {
-		if _, ok := unique[lib]; !ok {
-			unique[lib] = struct{}{}
-			uniqLibs = append(uniqLibs, lib)
-		}
-	}
-	return uniqLibs
-}
 func uniqueDeps(deps []types.Dependency) []types.Dependency {
 	var uniqDeps []types.Dependency
 	unique := make(map[string]struct{})

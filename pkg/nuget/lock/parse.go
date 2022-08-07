@@ -7,6 +7,7 @@ import (
 
 	dio "github.com/aquasecurity/go-dep-parser/pkg/io"
 	"github.com/aquasecurity/go-dep-parser/pkg/types"
+	"github.com/aquasecurity/go-dep-parser/pkg/utils"
 )
 
 type LockFile struct {
@@ -35,7 +36,7 @@ func (p *Parser) Parse(r dio.ReadSeekerAt) ([]types.Library, []types.Dependency,
 		return nil, nil, xerrors.Errorf("failed to decode packages.lock.json: %w", err)
 	}
 
-	uniqueLibs := map[types.Library]struct{}{}
+	libs := make([]types.Library, 0)
 	for _, targetContent := range lockFile.Targets {
 		for packageName, packageContent := range targetContent {
 			// If package type is "project", it is the actual project, and we skip it.
@@ -47,14 +48,8 @@ func (p *Parser) Parse(r dio.ReadSeekerAt) ([]types.Library, []types.Dependency,
 				Name:    packageName,
 				Version: packageContent.Resolved,
 			}
-			uniqueLibs[lib] = struct{}{}
+			libs = append(libs, lib)
 		}
 	}
-
-	var libraries []types.Library
-	for lib := range uniqueLibs {
-		libraries = append(libraries, lib)
-	}
-
-	return libraries, nil, nil
+	return utils.UniqueLibraries(libs), nil, nil
 }

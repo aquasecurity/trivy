@@ -7,6 +7,7 @@ import (
 
 	dio "github.com/aquasecurity/go-dep-parser/pkg/io"
 	"github.com/aquasecurity/go-dep-parser/pkg/types"
+	"github.com/aquasecurity/go-dep-parser/pkg/utils"
 )
 
 type cfgPackageReference struct {
@@ -34,7 +35,7 @@ func (p *Parser) Parse(r dio.ReadSeekerAt) ([]types.Library, []types.Dependency,
 		return nil, nil, xerrors.Errorf("failed to decode .config file: %w", err)
 	}
 
-	uniqueLibs := map[types.Library]struct{}{}
+	libs := make([]types.Library, 0)
 	for _, pkg := range cfgData.Packages {
 		if pkg.ID == "" || pkg.DevDependency {
 			continue
@@ -44,13 +45,9 @@ func (p *Parser) Parse(r dio.ReadSeekerAt) ([]types.Library, []types.Dependency,
 			Name:    pkg.ID,
 			Version: pkg.Version,
 		}
-		uniqueLibs[lib] = struct{}{}
-	}
 
-	var libs []types.Library
-	for lib := range uniqueLibs {
 		libs = append(libs, lib)
 	}
 
-	return libs, nil, nil
+	return utils.UniqueLibraries(libs), nil, nil
 }
