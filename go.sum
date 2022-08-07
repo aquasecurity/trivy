@@ -210,6 +210,8 @@ github.com/aquasecurity/defsec v0.69.1 h1:K1Ir7iq8LHY+O2S1iXKl8beyclBGpXZ078S80w
 github.com/aquasecurity/defsec v0.69.1/go.mod h1:ePeucB2upo/aOqvsks1ML6xflQRxokf4Qol16u0+IQs=
 github.com/aquasecurity/go-dep-parser v0.0.0-20220626060741-179d0b167e5f h1:ObiLf3DY/Mr3hfqWHNgQ4vjVo/fFni216otahWzQXIE=
 github.com/aquasecurity/go-dep-parser v0.0.0-20220626060741-179d0b167e5f/go.mod h1:MDQj3aeTQHSRbM1ZOGQVFziHvJtwf7moK+f9gYlUdeE=
+github.com/aquasecurity/go-dep-parser v0.0.0-20220807122629-b5a21d267b03 h1:Axx5KwV0c83IlPLIIsi/Ht6sGsSJBzABUngXjFHFg4I=
+github.com/aquasecurity/go-dep-parser v0.0.0-20220807122629-b5a21d267b03/go.mod h1:SONYN1M+sYu6VIJsZnltmVfcGOCvp09HWbhpnHDn3aY=
 github.com/aquasecurity/go-gem-version v0.0.0-20201115065557-8eed6fe000ce h1:QgBRgJvtEOBtUXilDb1MLi1p1MWoyFDXAu5DEUl5nwM=
 github.com/aquasecurity/go-gem-version v0.0.0-20201115065557-8eed6fe000ce/go.mod h1:HXgVzOPvXhVGLJs4ZKO817idqr/xhwsTcj17CLYY74s=
 github.com/aquasecurity/go-npm-version v0.0.0-20201110091526-0b796d180798 h1:eveqE9ivrt30CJ7dOajOfBavhZ4zPqHcZe/4tKp0alc=
@@ -1089,6 +1091,8 @@ github.com/matttproud/golang_protobuf_extensions v1.0.1/go.mod h1:D8He9yQNgCq6Z5
 github.com/matttproud/golang_protobuf_extensions v1.0.2-0.20181231171920-c182affec369 h1:I0XW9+e1XWDxdcEniV4rQAIOPUGDq67JSCiRCgGCZLI=
 github.com/matttproud/golang_protobuf_extensions v1.0.2-0.20181231171920-c182affec369/go.mod h1:BSXmuO+STAnVfrANrmjBb36TMTDstsz7MSK+HVaYKv4=
 github.com/maxbrunsfeld/counterfeiter/v6 v6.2.2/go.mod h1:eD9eIE7cdwcMi9rYluz88Jz2VyhSmden33/aXg4oVIY=
+github.com/microsoft/go-rustaudit v0.0.0-20220805122630-097fff025e34 h1:W/tuIksfbU5I1xVm2zxi0afcIhDvmnebpdq+tA3OPAE=
+github.com/microsoft/go-rustaudit v0.0.0-20220805122630-097fff025e34/go.mod h1:vYT9HE7WCvL64iVeZylKmCsWKfE+JZ8105iuh2Trk8g=
 github.com/miekg/dns v1.0.14/go.mod h1:W1PPwlIAgtquWBMBEV9nkV9Cazfe8ScdGz/Lj7v3Nrg=
 github.com/miekg/dns v1.1.25/go.mod h1:bPDLeHnStXmXAq1m/Ch/hvfNHr14JKNPMBo3VZKjuso=
 github.com/miekg/dns v1.1.43 h1:JKfpVSCB84vrAmHzyrsxB5NAr5kLoMXZArPSw7Qlgyg=

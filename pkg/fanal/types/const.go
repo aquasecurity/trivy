@@ -26,6 +26,7 @@ const (
 	GoBinary   = "gobinary"
 	GoModule   = "gomod"
 	JavaScript = "javascript"
+	RustBinary = "rustbinary"
 
 	// Config files
 	YAML           = "yaml"
