@@ -214,10 +214,10 @@ You can also scan an SBOM attestation.
 In the following example, [Cosign][Cosign] can get an attestation and trivy scan it.
 To learn more about how to create an SBOM attestation and attach it to an image, see the [SBOM attestation page][sbom_attestation].
 ```bash
-$ cosign verify-attestation --key /path/to/cosign.pub --type cyclonedx <IMAGE> > sbom.attest.cdx.json
-$ trivy sbom ./sbom.attest.cdx.json
+$ cosign verify-attestation --key /path/to/cosign.pub --type cyclonedx <IMAGE> > sbom.cdx.intoto.jsonl
+$ trivy sbom ./sbom.cdx.intoto.jsonl
 
-sbom.attest.cdx.json (alpine 3.7.3)
+sbom.cdx.intoto.jsonl (alpine 3.7.3)
 
 Total: 2 (UNKNOWN: 0, LOW: 0, MEDIUM: 0, HIGH: 0, CRITICAL: 2)
 

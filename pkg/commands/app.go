@@ -815,7 +815,7 @@ func NewSBOMCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
   $ trivy sbom --format cyclonedx /path/to/report.cdx
 
   # Scan CycloneDX-type attestation and show the result in tables
-  $ trivy sbom /path/to/report.attestation.cdx.json
+  $ trivy sbom /path/to/report.cdx.intoto.jsonl
 `,
 		PreRunE: func(cmd *cobra.Command, args []string) error {
 			if err := sbomFlags.Bind(cmd); err != nil {
