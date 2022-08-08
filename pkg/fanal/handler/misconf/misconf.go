@@ -25,7 +25,9 @@ import (
 	"github.com/aquasecurity/defsec/pkg/scanners/options"
 	"github.com/aquasecurity/defsec/pkg/scanners/rbac"
 	tfscanner "github.com/aquasecurity/defsec/pkg/scanners/terraform"
+
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
+	"github.com/aquasecurity/trivy/pkg/fanal/analyzer/config"
 	"github.com/aquasecurity/trivy/pkg/fanal/artifact"
 	"github.com/aquasecurity/trivy/pkg/fanal/handler"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
@@ -177,17 +179,48 @@ func newMisconfPostHandler(artifactOpt artifact.Option) (handler.PostHandler, er
 		opts = append(opts, options.ScannerWithPolicyNamespaces(opt.Namespaces...))
 	}
 
+	helmOpts := addHelmOpts(opts, artifactOpt.MisconfScannerOption)
+	tfOpts := addTFOpts(opts, artifactOpt.MisconfScannerOption)
+
 	return misconfPostHandler{
 		filePatterns: artifactOpt.MisconfScannerOption.FilePatterns,
 		scanners: map[string]scanners.FSScanner{
-			types.Terraform:      tfscanner.New(opts...),
+			types.Terraform:      tfscanner.New(tfOpts...),
 			types.CloudFormation: cfscanner.New(opts...),
 			types.Dockerfile:     dfscanner.NewScanner(opts...),
 			types.Kubernetes:     k8sscanner.NewScanner(opts...),
-			types.Helm:           helm.New(opts...),
+			types.Helm:           helm.New(helmOpts...),
 			types.Rbac:           rbac.NewScanner(opts...),
 		},
 	}, nil
+}
+
+func addTFOpts(opts []options.ScannerOption, scannerOption config.ScannerOption) []options.ScannerOption {
+	if len(scannerOption.TerraformTFVars) > 0 {
+		opts = append(opts, tfscanner.ScannerWithTFVarsPaths(scannerOption.TerraformTFVars...))
+	}
+
+	return opts
+}
+
+func addHelmOpts(opts []options.ScannerOption, scannerOption config.ScannerOption) []options.ScannerOption {
+	if len(scannerOption.HelmValueFiles) > 0 {
+		opts = append(opts, helm.ScannerWithValuesFile(scannerOption.HelmValueFiles...))
+	}
+
+	if len(scannerOption.HelmValues) > 0 {
+		opts = append(opts, helm.ScannerWithValues(scannerOption.HelmValues...))
+	}
+
+	if len(scannerOption.HelmFileValues) > 0 {
+		opts = append(opts, helm.ScannerWithFileValues(scannerOption.HelmFileValues...))
+	}
+
+	if len(scannerOption.HelmStringValues) > 0 {
+		opts = append(opts, helm.ScannerWithStringValues(scannerOption.HelmStringValues...))
+	}
+
+	return opts
 }
 
 var enabledDefsecTypes = map[detection.FileType]string{

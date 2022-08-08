@@ -456,11 +456,16 @@ func initScannerConfig(opts flag.Options, cacheClient cache.Cache) (ScannerConfi
 	if slices.Contains(opts.SecurityChecks, types.SecurityCheckConfig) {
 		log.Logger.Info("Misconfiguration scanning is enabled")
 		configScannerOptions = config.ScannerOption{
-			Trace:        opts.Trace,
-			Namespaces:   append(opts.PolicyNamespaces, defaultPolicyNamespaces...),
-			PolicyPaths:  opts.PolicyPaths,
-			DataPaths:    opts.DataPaths,
-			FilePatterns: opts.FilePatterns,
+			Trace:            opts.Trace,
+			Namespaces:       append(opts.PolicyNamespaces, defaultPolicyNamespaces...),
+			PolicyPaths:      opts.PolicyPaths,
+			DataPaths:        opts.DataPaths,
+			FilePatterns:     opts.FilePatterns,
+			HelmValues:       opts.HelmValues,
+			HelmValueFiles:   opts.HelmValueFiles,
+			HelmFileValues:   opts.HelmFileValues,
+			HelmStringValues: opts.HelmStringValues,
+			TerraformTFVars:  opts.TerraformTFVars,
 		}
 	}
 
