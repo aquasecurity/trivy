@@ -186,7 +186,7 @@ func componentMap(metadata *cdx.Metadata, components *[]cdx.Component) map[strin
 	for _, component := range lo.FromPtr(components) {
 		cmap[component.BOMRef] = component
 	}
-	if metadata != nil {
+	if metadata != nil && metadata.Component != nil {
 		cmap[metadata.Component.BOMRef] = *metadata.Component
 	}
 	return cmap
