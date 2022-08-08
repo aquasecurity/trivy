@@ -71,6 +71,15 @@ func DeregisterAnalyzer(t Type) {
 	delete(analyzers, t)
 }
 
+// ListAnalyzers returns all registered types
+func ListAnalyzers() []Type {
+	list := []Type{}
+	for t, _ := range analyzers {
+		list = append(list, t)
+	}
+	return list
+}
+
 func RegisterConfigAnalyzer(analyzer configAnalyzer) {
 	configAnalyzers[analyzer.Type()] = analyzer
 }
