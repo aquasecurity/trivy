@@ -256,6 +256,11 @@
          <changefreq>daily</changefreq>
     </url>
     <url>
+         <loc>https://aquasecurity.github.io/trivy/dev/docs/misconfiguration/options/values/</loc>
+         <lastmod>2022-08-08</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
          <loc>https://aquasecurity.github.io/trivy/dev/docs/misconfiguration/policy/builtin/</loc>
          <lastmod>2022-08-08</lastmod>
          <changefreq>daily</changefreq>
