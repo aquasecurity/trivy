@@ -6,6 +6,8 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/aquasecurity/trivy/pkg/log"
+
 	cdx "github.com/CycloneDX/cyclonedx-go"
 	"github.com/samber/lo"
 	"golang.org/x/xerrors"
@@ -23,6 +25,7 @@ type CycloneDX struct {
 }
 
 func (c *CycloneDX) UnmarshalJSON(b []byte) error {
+	log.Logger.Debug("Unmarshaling CycloneDX JSON...")
 	if c.SBOM == nil {
 		c.SBOM = &sbom.SBOM{}
 	}

@@ -31,8 +31,9 @@ $ trivy image --format spdx-json -o sbom.spdx.json <IMAGE>
 $ cosign attest --key /path/to/cosign.key --type spdx --predicate sbom.spdx.json <IMAGE>
 
 # cyclonedx
+# The cyclonedx type is supported in Cosign v1.10.0 or later.
 $ trivy image --format cyclonedx -o sbom.cdx.json <IMAGE>
-$ cosign attest --key /path/to/cosign.key --type https://cyclonedx.org/schema --predicate sbom.cdx.json <IMAGE>
+$ cosign attest --key /path/to/cosign.key --type cyclonedx --predicate sbom.cdx.json <IMAGE>
 ```
 
 ## Keyless signing
