@@ -3809,6 +3809,7 @@
 <p>Trivy also can take the following SBOM formats as an input and scan for vulnerabilities.</p>
 <ul>
 <li>CycloneDX</li>
+<li>CycloneDX-type attestation</li>
 </ul>
 <p>To scan SBOM, you can use the <code>sbom</code> subcommand and pass the path to the SBOM.</p>
 <div class="highlight"><pre><span></span><code>$ trivy sbom /path/to/cyclonedx.json
@@ -3834,6 +3835,28 @@ Total: <span class="m">3</span> <span class="o">(</span>CRITICAL: <span class="m
 <p class="admonition-title">Note</p>
 <p>CycloneDX XML and SPDX are not supported at the moment.</p>
 </div>
+<p>You can also scan an SBOM attestation.
+In the following example, <a href="https://github.com/sigstore/cosign">Cosign</a> can get an attestation and trivy scan it.
+To learn more about how to create an SBOM attestation and attach it to an image, see the <a href="../attestation/sbom/">SBOM attestation page</a>.
+<div class="highlight"><pre><span></span><code>$ cosign verify-attestation --key /path/to/cosign.pub --type cyclonedx &lt;IMAGE&gt; &gt; sbom.cdx.intoto.jsonl
+$ trivy sbom ./sbom.cdx.intoto.jsonl
+
+sbom.cdx.intoto.jsonl <span class="o">(</span>alpine <span class="m">3</span>.7.3<span class="o">)</span>
+<span class="o">=========================</span>
+Total: <span class="m">2</span> <span class="o">(</span>UNKNOWN: <span class="m">0</span>, LOW: <span class="m">0</span>, MEDIUM: <span class="m">0</span>, HIGH: <span class="m">0</span>, CRITICAL: <span class="m">2</span><span class="o">)</span>
+
+┌────────────┬────────────────┬──────────┬───────────────────┬───────────────┬──────────────────────────────────────────────────────────┐
+│  Library   │ Vulnerability  │ Severity │ Installed Version │ Fixed Version │                          Title                           │
+├────────────┼────────────────┼──────────┼───────────────────┼───────────────┼──────────────────────────────────────────────────────────┤
+│ musl       │ CVE-2019-14697 │ CRITICAL │ <span class="m">1</span>.1.18-r3         │ <span class="m">1</span>.1.18-r4     │ musl libc through <span class="m">1</span>.1.23 has an x87 floating-point stack │
+│            │                │          │                   │               │ adjustment im ......                                     │
+│            │                │          │                   │               │ https://avd.aquasec.com/nvd/cve-2019-14697               │
+├────────────┤                │          │                   │               │                                                          │
+│ musl-utils │                │          │                   │               │                                                          │
+│            │                │          │                   │               │                                                          │
+│            │                │          │                   │               │                                                          │
+└────────────┴────────────────┴──────────┴───────────────────┴───────────────┴──────────────────────────────────────────────────────────┘
+</code></pre></div></p>
 
 
 

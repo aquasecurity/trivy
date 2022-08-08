@@ -3577,6 +3577,9 @@ Examples:
   <span class="c1"># Scan CycloneDX and generate a CycloneDX report</span>
   $ trivy sbom --format cyclonedx /path/to/report.cdx
 
+  <span class="c1"># Scan CycloneDX-type attestation and show the result in tables</span>
+  $ trivy sbom /path/to/report.cdx.intoto.jsonl
+
 
 Scan Flags
       --offline-scan             <span class="k">do</span> not issue API requests to identify dependencies
