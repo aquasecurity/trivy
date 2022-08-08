@@ -3,7 +3,7 @@ module github.com/aquasecurity/go-dep-parser
 go 1.18
 
 require (
-	github.com/BurntSushi/toml v1.1.0
+	github.com/BurntSushi/toml v1.2.0
 	github.com/hashicorp/go-multierror v1.1.1
 	github.com/hashicorp/go-retryablehttp v0.7.1
 	github.com/stretchr/testify v1.8.0
