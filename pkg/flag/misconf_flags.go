@@ -55,31 +55,31 @@ var (
 	}
 	HelmValuesFileFlag = Flag{
 		Name:       "helm-values",
-		ConfigName: "misconfiguration.helm-values",
+		ConfigName: "misconfiguration.helm.values",
 		Value:      []string{},
 		Usage:      "specify paths to override the Helm values.yaml files",
 	}
 	HelmSetFlag = Flag{
 		Name:       "helm-set",
-		ConfigName: "misconfiguration.helm-set",
+		ConfigName: "misconfiguration.helm.set",
 		Value:      []string{},
 		Usage:      "specify Helm values on the command line (can specify multiple or separate values with commas: key1=val1,key2=val2)",
 	}
 	HelmSetFileFlag = Flag{
 		Name:       "helm-set-file",
-		ConfigName: "misconfiguration.helm-set-file",
+		ConfigName: "misconfiguration.helm.set-file",
 		Value:      []string{},
 		Usage:      "specify Helm values from respective files specified via the command line (can specify multiple or separate values with commas: key1=path1,key2=path2)",
 	}
 	HelmSetStringFlag = Flag{
 		Name:       "helm-set-string",
-		ConfigName: "misconfiguration.helm-set-string",
+		ConfigName: "misconfiguration.helm.set-string",
 		Value:      []string{},
 		Usage:      "specify Helm string values on the command line (can specify multiple or separate values with commas: key1=val1,key2=val2)",
 	}
 	TfVarsFlag = Flag{
 		Name:       "tf-vars",
-		ConfigName: "misconfiguration.tf-vars",
+		ConfigName: "misconfiguration.terraform.vars",
 		Value:      []string{},
 		Usage:      "specify paths to override the Terraform tfvars files",
 	}
