@@ -52,6 +52,7 @@ nav:
               - Policy: docs/misconfiguration/options/policy.md
               - Filtering: docs/misconfiguration/options/filter.md
               - Report Formats: docs/misconfiguration/options/report.md
+              - Value Overrides: docs/misconfiguration/options/values.md
               - Others: docs/misconfiguration/options/others.md
           - Comparison:
               - vs Conftest: docs/misconfiguration/comparison/conftest.md
