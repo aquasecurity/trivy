@@ -44,7 +44,7 @@ func TestCycloneDX(t *testing.T) {
 		{
 			name: "centos7-bom in in-toto attestation",
 			args: args{
-				input:        "testdata/fixtures/sbom/centos-7-attestation-cyclonedx.json",
+				input:        "testdata/fixtures/sbom/centos-7-cyclonedx.intoto.jsonl",
 				format:       "cyclonedx",
 				artifactType: "cyclonedx",
 			},

@@ -130,7 +130,7 @@ func TestArtifact_Inspect(t *testing.T) {
 		},
 		{
 			name:     "happy path for sbom attestation",
-			filePath: "testdata/attest.sbom.cdx.json",
+			filePath: "testdata/sbom.cdx.intoto.jsonl",
 			putBlobExpectation: cache.ArtifactCachePutBlobExpectation{
 				Args: cache.ArtifactCachePutBlobArgs{
 					BlobID: "sha256:21f10e5ab97c37f6c4d6a45815cd5db10e9539d5db8614d3b1d8890111d7a2b8",
@@ -226,7 +226,7 @@ func TestArtifact_Inspect(t *testing.T) {
 				Returns: cache.ArtifactCachePutBlobReturns{},
 			},
 			want: types.ArtifactReference{
-				Name: "testdata/attest.sbom.cdx.json",
+				Name: "testdata/sbom.cdx.intoto.jsonl",
 				Type: types.ArtifactCycloneDX,
 				ID:   "sha256:21f10e5ab97c37f6c4d6a45815cd5db10e9539d5db8614d3b1d8890111d7a2b8",
 				BlobIDs: []string{
