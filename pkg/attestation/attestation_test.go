@@ -12,7 +12,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/attestation"
 )
 
-func TestDecode(t *testing.T) {
+func TestStatement_UnmarshalJSON(t *testing.T) {
 	tests := []struct {
 		name      string
 		inputFile string
