@@ -137,6 +137,6 @@ disable-allow-rules:
 ```
 
 
-[builtin]: https://github.com/aquasecurity/fanal/blob/main/secret/builtin-rules.go
-[builtin]: https://github.com/aquasecurity/fanal/blob/main/secret/builtin-allow-rules.go
+[builtin]: https://github.com/aquasecurity/trivy/blob/main/pkg/fanal/secret/builtin-rules.go
+[builtin-allow]: https://github.com/aquasecurity/trivy/blob/main/pkg/fanal/secret/builtin-allow-rules.go
 [examples]: ./examples.md
