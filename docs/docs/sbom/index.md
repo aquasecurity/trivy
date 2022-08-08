@@ -218,7 +218,7 @@ $ cosign verify-attestation --key /path/to/cosign.pub --type cyclonedx <IMAGE> >
 $ trivy sbom ./sbom.cdx.intoto.jsonl
 
 sbom.cdx.intoto.jsonl (alpine 3.7.3)
-
+=========================
 Total: 2 (UNKNOWN: 0, LOW: 0, MEDIUM: 0, HIGH: 0, CRITICAL: 2)
 
 ┌────────────┬────────────────┬──────────┬───────────────────┬───────────────┬──────────────────────────────────────────────────────────┐
