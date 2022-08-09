@@ -1,6 +1,7 @@
 # SBOM attestation
 
 [Cosign](https://github.com/sigstore/cosign) supports generating and verifying [in-toto attestations](https://github.com/in-toto/attestation). This tool enables you to sign and verify SBOM attestation.
+And, Trivy can take an SBOM attestation as input and scan for vulnerabilities
 
 !!! note
     In the following examples, the `cosign` command will write an attestation to a target OCI registry, so you must have permission to write.
@@ -48,4 +49,31 @@ $ COSIGN_EXPERIMENTAL=1 cosign attest --type spdx --predicate sbom.spdx <IMAGE>
 You can verify attestations.
 ```
 $ COSIGN_EXPERIMENTAL=1 cosign verify-attestation <IMAGE>
+```
+
+## Scanning
+
+Trivy can take an SBOM attestation as input and scan for vulnerabilities. Currently, Trivy supports CycloneDX-type attestation.
+
+In the following example, Cosign can get an attestation and trivy scan it.
+
+```bash
+$ cosign verify-attestation --key /path/to/cosign.pub --type cyclonedx <IMAGE> > sbom.cdx.intoto.jsonl
+$ trivy sbom ./sbom.cdx.intoto.jsonl
+
+sbom.cdx.intoto.jsonl (alpine 3.7.3)
+=========================
+Total: 2 (UNKNOWN: 0, LOW: 0, MEDIUM: 0, HIGH: 0, CRITICAL: 2)
+
+┌────────────┬────────────────┬──────────┬───────────────────┬───────────────┬──────────────────────────────────────────────────────────┐
+│  Library   │ Vulnerability  │ Severity │ Installed Version │ Fixed Version │                          Title                           │
+├────────────┼────────────────┼──────────┼───────────────────┼───────────────┼──────────────────────────────────────────────────────────┤
+│ musl       │ CVE-2019-14697 │ CRITICAL │ 1.1.18-r3         │ 1.1.18-r4     │ musl libc through 1.1.23 has an x87 floating-point stack │
+│            │                │          │                   │               │ adjustment im ......                                     │
+│            │                │          │                   │               │ https://avd.aquasec.com/nvd/cve-2019-14697               │
+├────────────┤                │          │                   │               │                                                          │
+│ musl-utils │                │          │                   │               │                                                          │
+│            │                │          │                   │               │                                                          │
+│            │                │          │                   │               │                                                          │
+└────────────┴────────────────┴──────────┴───────────────────┴───────────────┴──────────────────────────────────────────────────────────┘
 ```
