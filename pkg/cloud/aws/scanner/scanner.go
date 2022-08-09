@@ -23,8 +23,6 @@ func NewScanner() *AWSScanner {
 
 func (s *AWSScanner) Scan(ctx context.Context, option flag.Options) (scan.Results, error) {
 
-	// TODO: check if misconfigurations should be scanned for
-
 	var scannerOpts []options.ScannerOption
 	if !option.NoProgress {
 		tracker := newProgressTracker()

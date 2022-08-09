@@ -9,7 +9,6 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/aquasecurity/trivy/pkg/cloud/report"
-	"github.com/aquasecurity/trivy/pkg/types"
 )
 
 func TestCache(t *testing.T) {
@@ -38,11 +37,11 @@ func TestCache(t *testing.T) {
 				Region:    "us-east-1",
 				Results: map[string]report.ResultsAtTime{
 					"s3": {
-						Result:       types.Result{},
+						Results:      nil,
 						CreationTime: time.Now(),
 					},
 					"ec2": {
-						Result:       types.Result{},
+						Results:      nil,
 						CreationTime: time.Now(),
 					},
 				},
@@ -58,11 +57,11 @@ func TestCache(t *testing.T) {
 				Region:    "us-east-1",
 				Results: map[string]report.ResultsAtTime{
 					"s3": {
-						Result:       types.Result{},
+						Results:      nil,
 						CreationTime: time.Now(),
 					},
 					"ec2": {
-						Result:       types.Result{},
+						Results:      nil,
 						CreationTime: time.Now(),
 					},
 				},
@@ -107,7 +106,7 @@ func TestCache(t *testing.T) {
 
 			for _, service := range test.services {
 				assert.Equal(t, test.input.Results[service].CreationTime.Format(time.RFC3339), loaded.Results[service].CreationTime.Format(time.RFC3339))
-				assert.Equal(t, test.input.Results[service].Result, loaded.Results[service].Result)
+				assert.Equal(t, test.input.Results[service].Results, loaded.Results[service].Results)
 			}
 		})
 	}
@@ -122,19 +121,19 @@ func TestPartialCacheOverwrite(t *testing.T) {
 		Region:    "us-east-1",
 		Results: map[string]report.ResultsAtTime{
 			"a": {
-				Result:       types.Result{},
+				Results:      nil,
 				CreationTime: time.Now(),
 			},
 			"b": {
-				Result:       types.Result{},
+				Results:      nil,
 				CreationTime: time.Now(),
 			},
 			"c": {
-				Result:       types.Result{},
+				Results:      nil,
 				CreationTime: time.Now(),
 			},
 			"d": {
-				Result:       types.Result{},
+				Results:      nil,
 				CreationTime: time.Now(),
 			},
 		},
@@ -151,11 +150,11 @@ func TestPartialCacheOverwrite(t *testing.T) {
 		Region:    "us-east-1",
 		Results: map[string]report.ResultsAtTime{
 			"a": {
-				Result:       types.Result{},
+				Results:      nil,
 				CreationTime: time.Now(),
 			},
 			"b": {
-				Result:       types.Result{},
+				Results:      nil,
 				CreationTime: time.Now(),
 			},
 		},
