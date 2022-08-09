@@ -2,44 +2,38 @@ package report
 
 import (
 	"fmt"
+	"io"
 
 	renderer "github.com/aquasecurity/trivy/pkg/report/table"
-	"github.com/aquasecurity/trivy/pkg/types"
 
-	"golang.org/x/term"
+	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
+	"github.com/aquasecurity/trivy/pkg/types"
 )
 
-func writeResultsForARN(report *Report, option Option) error {
-
-	width, _, err := term.GetSize(0)
-	if err != nil {
-		width = 80
-	}
-	_ = width
-
-	w := option.Output
+func writeResultsForARN(report *Report, results types.Results, output io.Writer, fromCache bool, service, arn string, severities []dbTypes.Severity) error {
 
 	// render scan title
-	_, _ = fmt.Fprintf(w, "\n\x1b[1mResults for '%s' (%s Account %s)\x1b[0m\n\n", option.ARN, report.Provider, report.AccountID)
+	_, _ = fmt.Fprintf(output, "\n\x1b[1mResults for '%s' (%s Account %s)\x1b[0m\n\n", arn, report.Provider, report.AccountID)
 
-	result := report.Results[option.Service].Result
-	var filtered []types.DetectedMisconfiguration
-	for _, misconfiguration := range result.Misconfigurations {
-		if option.ARN != "" && misconfiguration.CauseMetadata.Resource != option.ARN {
-			continue
+	for _, result := range results {
+		var filtered []types.DetectedMisconfiguration
+		for _, misconfiguration := range result.Misconfigurations {
+			if arn != "" && misconfiguration.CauseMetadata.Resource != arn {
+				continue
+			}
+			if service != "" && misconfiguration.CauseMetadata.Service != service {
+				continue
+			}
+			filtered = append(filtered, misconfiguration)
 		}
-		if option.Service != "" && misconfiguration.CauseMetadata.Service != option.Service {
-			continue
+		if len(filtered) > 0 {
+			_, _ = fmt.Fprint(output, renderer.NewMisconfigRenderer(result, severities, false, false, true).Render())
 		}
-		filtered = append(filtered, misconfiguration)
-	}
-	if len(filtered) > 0 {
-		_, _ = fmt.Fprint(w, renderer.NewMisconfigRenderer(result, option.Severities, false, false, true).Render())
 	}
 
 	// render cache info
-	if option.FromCache {
-		_, _ = fmt.Fprintf(w, "\x1b[34mThis scan report was loaded from cached results. If you'd like to run a fresh scan, use --update-cache.\x1b[0m\n")
+	if fromCache {
+		_, _ = fmt.Fprintf(output, "\x1b[34mThis scan report was loaded from cached results. If you'd like to run a fresh scan, use --update-cache.\x1b[0m\n")
 	}
 
 	return nil

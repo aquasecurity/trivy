@@ -43,7 +43,7 @@ func (c *Cache) LoadReport(services ...string) (*report.Report, error) {
 		if err := json.NewDecoder(s).Decode(&serviceRecord); err != nil {
 			return nil, err
 		}
-		base.AddResultForService(service, serviceRecord.Result, serviceRecord.CreationTime)
+		base.AddResultsForService(service, serviceRecord.Results, serviceRecord.CreationTime)
 	}
 
 	return base, nil

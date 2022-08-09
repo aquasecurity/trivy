@@ -2,17 +2,19 @@ package report
 
 import (
 	"fmt"
+	"io"
 	"sort"
 	"strconv"
 	"time"
 
 	"github.com/aquasecurity/table"
 	pkgReport "github.com/aquasecurity/trivy/pkg/report/table"
+	"github.com/aquasecurity/trivy/pkg/types"
 )
 
-func writeServiceTable(report *Report, option Option) error {
+func writeServiceTable(report *Report, results types.Results, output io.Writer, fromCache bool) error {
 
-	t := table.New(option.Output)
+	t := table.New(output)
 
 	t.SetHeaders("Service", "Misconfigurations", "Last Scanned")
 	t.AddHeaders("Service", "Critical", "High", "Medium", "Low", "Unknown", "Last Scanned")
@@ -29,9 +31,9 @@ func writeServiceTable(report *Report, option Option) error {
 	for _, service := range report.ServicesInScope {
 		grouped[service] = make(map[string]int)
 	}
-	for service, resultAtTime := range report.Results {
-		result := resultAtTime.Result
+	for _, result := range results {
 		for _, misconfiguration := range result.Misconfigurations {
+			service := misconfiguration.CauseMetadata.Service
 			if _, ok := grouped[service]; !ok {
 				grouped[service] = make(map[string]int)
 			}
@@ -73,16 +75,14 @@ func writeServiceTable(report *Report, option Option) error {
 	}
 
 	// render scan title
-	_, _ = fmt.Fprintf(option.Output, "\n\x1b[1mScan Overview for %s Account %s\x1b[0m\n", report.Provider, report.AccountID)
+	_, _ = fmt.Fprintf(output, "\n\x1b[1mScan Overview for %s Account %s\x1b[0m\n", report.Provider, report.AccountID)
 
 	// render table
 	t.Render()
 
-	// TODO: render individual results if necessary
-
 	// render cache info
-	if option.FromCache {
-		_, _ = fmt.Fprintf(option.Output, "\n\x1b[34mThis scan report was loaded from cached results. If you'd like to run a fresh scan, use --update-cache.\x1b[0m\n")
+	if fromCache {
+		_, _ = fmt.Fprintf(output, "\n\x1b[34mThis scan report was loaded from cached results. If you'd like to run a fresh scan, use --update-cache.\x1b[0m\n")
 	}
 
 	return nil

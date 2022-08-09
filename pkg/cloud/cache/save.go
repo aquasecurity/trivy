@@ -42,7 +42,7 @@ func (c *Cache) Save(r *report.Report) error {
 		); err != nil {
 			return err
 		}
-		resultSet, err := r.GetResultForService(service)
+		resultSet, err := r.GetResultsForService(service)
 		if err != nil {
 			return err
 		}
@@ -53,7 +53,7 @@ func (c *Cache) Save(r *report.Report) error {
 		record := Record{
 			SchemaVersion: SchemaVersion,
 			Service:       service,
-			Result:        resultSet.Result,
+			Results:       resultSet.Results,
 			CreationTime:  resultSet.CreationTime,
 		}
 		if err := json.NewEncoder(s).Encode(record); err != nil {

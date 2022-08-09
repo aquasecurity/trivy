@@ -17,8 +17,8 @@ type Metadata struct {
 }
 
 type Record struct {
-	SchemaVersion int          `json:"schema_version"`
-	Service       string       `json:"service"`
-	Result        types.Result `json:"result"`
-	CreationTime  time.Time    `json:"creation_time"`
+	SchemaVersion int           `json:"schema_version"`
+	Service       string        `json:"service"`
+	Results       types.Results `json:"results"`
+	CreationTime  time.Time     `json:"creation_time"`
 }

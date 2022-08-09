@@ -4,7 +4,6 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"io"
 	"time"
 
 	"github.com/aquasecurity/trivy/pkg/flag"
@@ -13,10 +12,7 @@ import (
 
 	"github.com/aquasecurity/trivy/pkg/result"
 
-	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
-
 	"github.com/aquasecurity/defsec/pkg/scan"
-	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	pkgReport "github.com/aquasecurity/trivy/pkg/report"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
@@ -26,36 +22,17 @@ const (
 	jsonFormat  = "json"
 )
 
-type Option struct {
-	Format      string
-	Type        string
-	Output      io.Writer
-	Severities  []dbTypes.Severity
-	FromCache   bool
-	ReportLevel Level
-	Service     string
-	ARN         string
-}
-
-type Level uint8
-
-const (
-	LevelService Level = iota
-	LevelResource
-	LevelResult
-)
-
 // Report represents a kubernetes scan report
 type Report struct {
 	Provider        string
 	AccountID       string
 	Region          string
-	Results         map[string]ResultAtTime
+	Results         map[string]ResultsAtTime
 	ServicesInScope []string
 }
 
-type ResultAtTime struct {
-	Result       types.Result
+type ResultsAtTime struct {
+	Results      types.Results
 	CreationTime time.Time
 }
 
@@ -72,7 +49,7 @@ func New(provider, accountID, region string, defsecResults scan.Results, scopedS
 // Failed returns whether the aws report includes any "failed" results
 func (r *Report) Failed() bool {
 	for _, set := range r.Results {
-		if (types.Results{set.Result}).Failed() {
+		if set.Results.Failed() {
 			return true
 		}
 	}
@@ -80,71 +57,68 @@ func (r *Report) Failed() bool {
 }
 
 // Write writes the results in the give format
-func Write(rep *Report, baseOptions flag.Options, reportOptions Option) error {
+func Write(rep *Report, opt flag.Options, fromCache bool) error {
 
 	var filtered []types.Result
 
 	ctx := context.Background()
 
 	// filter results
-	for _, res := range rep.Results {
-		resCopy := res.Result
-		if err := result.Filter(
-			ctx,
-			&resCopy,
-			reportOptions.Severities,
-			false,
-			false,
-			"",
-			"",
-			nil,
-		); err != nil {
-			return err
+	for _, resultsAtTime := range rep.Results {
+		for _, res := range resultsAtTime.Results {
+			resCopy := res
+			if err := result.Filter(
+				ctx,
+				&resCopy,
+				opt.Severities,
+				false,
+				false,
+				"",
+				"",
+				nil,
+			); err != nil {
+				return err
+			}
+			filtered = append(filtered, resCopy)
 		}
-		filtered = append(filtered, resCopy)
 	}
 
 	base := types.Report{
 		Results: filtered,
 	}
 
-	switch reportOptions.Format {
+	switch opt.Format {
 	case jsonFormat:
-		return json.NewEncoder(reportOptions.Output).Encode(rep)
+		return json.NewEncoder(opt.Output).Encode(rep)
 	case tableFormat:
-		switch reportOptions.ReportLevel {
-		case LevelService:
-			return writeServiceTable(rep, reportOptions)
-		case LevelResource:
-			return writeResourceTable(rep, reportOptions)
-		case LevelResult:
-			return writeResultsForARN(rep, reportOptions)
+		switch {
+		case len(opt.Services) == 1 && opt.ARN == "":
+			return writeResourceTable(rep, filtered, opt.Output, fromCache, opt.Services[0])
+		case len(opt.Services) == 1 && opt.ARN != "":
+			return writeResultsForARN(rep, filtered, opt.Output, fromCache, opt.Services[0], opt.ARN, opt.Severities)
 		default:
-			return fmt.Errorf("invalid level: %d", reportOptions.ReportLevel)
+			return writeServiceTable(rep, filtered, opt.Output, fromCache)
 		}
 	default:
 		return report.Write(base, pkgReport.Option{
-			Output:             baseOptions.Output,
-			Severities:         baseOptions.Severities,
-			IncludeNonFailures: baseOptions.IncludeNonFailures,
-			Trace:              baseOptions.Trace,
-			OutputTemplate:     baseOptions.Template,
+			Format:             opt.Format,
+			Output:             opt.Output,
+			Severities:         opt.Severities,
+			OutputTemplate:     opt.Template,
+			IncludeNonFailures: opt.IncludeNonFailures,
+			Trace:              opt.Trace,
 		})
 	}
 }
 
-func (r *Report) GetResultForService(service string) (*ResultAtTime, error) {
+func (r *Report) GetResultsForService(service string) (*ResultsAtTime, error) {
 	if set, ok := r.Results[service]; ok {
 		return &set, nil
 	}
 	for _, scoped := range r.ServicesInScope {
 		if scoped == service {
-			return &ResultAtTime{
-				Result: types.Result{
-					Target: service,
-					Class:  types.ClassConfig,
-					Type:   ftypes.Cloud,
-				},
+			return &ResultsAtTime{
+				Results:      nil,
 				CreationTime: time.Now(),
 			}, nil
 		}
@@ -152,9 +126,9 @@ func (r *Report) GetResultForService(service string) (*ResultAtTime, error) {
 	return nil, fmt.Errorf("service %q not found", service)
 }
 
-func (r *Report) AddResultForService(service string, result types.Result, creation time.Time) {
-	r.Results[service] = ResultAtTime{
-		Result:       result,
+func (r *Report) AddResultsForService(service string, results types.Results, creation time.Time) {
+	r.Results[service] = ResultsAtTime{
+		Results:      results,
 		CreationTime: creation,
 	}
 	for _, exists := range r.ServicesInScope {

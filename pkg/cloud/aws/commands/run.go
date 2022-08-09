@@ -66,13 +66,6 @@ func Run(ctx context.Context, opt flag.Options) error {
 		}
 	}()
 
-	reportOptions := report.Option{
-		Format:      opt.Format,
-		Output:      opt.Output,
-		Severities:  opt.Severities,
-		ReportLevel: report.LevelService,
-	}
-
 	// support comma separated services too
 	var splitServices []string
 	for _, service := range opt.Services {
@@ -80,14 +73,7 @@ func Run(ctx context.Context, opt flag.Options) error {
 	}
 	opt.Services = splitServices
 
-	if len(opt.Services) == 1 {
-		reportOptions.ReportLevel = report.LevelResource
-		reportOptions.Service = opt.Services[0]
-		if opt.ARN != "" {
-			reportOptions.ReportLevel = report.LevelResult
-			reportOptions.ARN = opt.ARN
-		}
-	} else if opt.ARN != "" {
+	if len(opt.Services) != 1 && opt.ARN != "" {
 		return fmt.Errorf("you must specify the single --service which the --arn relates to")
 	}
 
@@ -145,6 +131,7 @@ func Run(ctx context.Context, opt flag.Options) error {
 	}
 
 	var r *report.Report
+	var fromCache bool
 
 	// if there is anything we need that wasn't in the cache, scan it now
 	if len(servicesToScan) > 0 {
@@ -168,9 +155,9 @@ func Run(ctx context.Context, opt flag.Options) error {
 		}
 		for service, results := range cachedReport.Results {
 			log.Logger.Debugf("Adding cached results for '%s'...", service)
-			r.AddResultForService(service, results.Result, results.CreationTime)
+			r.AddResultsForService(service, results.Results, results.CreationTime)
 		}
-		reportOptions.FromCache = true
+		fromCache = true
 	}
 
 	if len(servicesToScan) > 0 { // don't write cache if we didn't scan anything new
@@ -181,7 +168,7 @@ func Run(ctx context.Context, opt flag.Options) error {
 	}
 
 	log.Logger.Debug("Writing report to output...")
-	if err := report.Write(r, opt, reportOptions); err != nil {
+	if err := report.Write(r, opt, fromCache); err != nil {
 		return fmt.Errorf("unable to write results: %w", err)
 	}
 

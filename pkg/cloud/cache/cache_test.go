@@ -25,7 +25,7 @@ func TestCache(t *testing.T) {
 				Provider:        "AWS",
 				AccountID:       "1234567890",
 				Region:          "us-east-1",
-				Results:         make(map[string]report.ResultAtTime),
+				Results:         make(map[string]report.ResultsAtTime),
 				ServicesInScope: nil,
 			},
 			services: nil,
@@ -36,7 +36,7 @@ func TestCache(t *testing.T) {
 				Provider:  "AWS",
 				AccountID: "1234567890",
 				Region:    "us-east-1",
-				Results: map[string]report.ResultAtTime{
+				Results: map[string]report.ResultsAtTime{
 					"s3": {
 						Result:       types.Result{},
 						CreationTime: time.Now(),
@@ -56,7 +56,7 @@ func TestCache(t *testing.T) {
 				Provider:  "AWS",
 				AccountID: "1234567890",
 				Region:    "us-east-1",
-				Results: map[string]report.ResultAtTime{
+				Results: map[string]report.ResultsAtTime{
 					"s3": {
 						Result:       types.Result{},
 						CreationTime: time.Now(),
@@ -120,7 +120,7 @@ func TestPartialCacheOverwrite(t *testing.T) {
 		Provider:  "AWS",
 		AccountID: "1234567890",
 		Region:    "us-east-1",
-		Results: map[string]report.ResultAtTime{
+		Results: map[string]report.ResultsAtTime{
 			"a": {
 				Result:       types.Result{},
 				CreationTime: time.Now(),
@@ -149,7 +149,7 @@ func TestPartialCacheOverwrite(t *testing.T) {
 		Provider:  "AWS",
 		AccountID: "1234567890",
 		Region:    "us-east-1",
-		Results: map[string]report.ResultAtTime{
+		Results: map[string]report.ResultsAtTime{
 			"a": {
 				Result:       types.Result{},
 				CreationTime: time.Now(),

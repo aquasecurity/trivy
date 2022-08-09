@@ -2,6 +2,7 @@ package report
 
 import (
 	"fmt"
+	"io"
 	"sort"
 	"strconv"
 
@@ -9,6 +10,7 @@ import (
 
 	"github.com/aquasecurity/table"
 	pkgReport "github.com/aquasecurity/trivy/pkg/report/table"
+	"github.com/aquasecurity/trivy/pkg/types"
 )
 
 type sortableRow struct {
@@ -16,19 +18,18 @@ type sortableRow struct {
 	counts map[string]int
 }
 
-func writeResourceTable(report *Report, option Option) error {
+func writeResourceTable(report *Report, results types.Results, output io.Writer, fromCache bool, service string) error {
 
-	t := table.New(option.Output)
-
-	w, _, err := term.GetSize(0)
+	termWidth, _, err := term.GetSize(0)
 	if err != nil {
-		w = 80
+		termWidth = 80
 	}
-	maxWidth := w - 60
+	maxWidth := termWidth - 48
 	if maxWidth < 20 {
 		maxWidth = 20
 	}
 
+	t := table.New(output)
 	t.SetColumnMaxWidth(maxWidth)
 	t.SetHeaders("Resource", "Misconfigurations")
 	t.AddHeaders("Resource", "Critical", "High", "Medium", "Low", "Unknown")
@@ -41,12 +42,16 @@ func writeResourceTable(report *Report, option Option) error {
 
 	// map resource -> severity -> count
 	grouped := make(map[string]map[string]int)
-	result := report.Results[option.Service].Result
-	for _, misconfiguration := range result.Misconfigurations {
-		if _, ok := grouped[misconfiguration.CauseMetadata.Resource]; !ok {
-			grouped[misconfiguration.CauseMetadata.Resource] = make(map[string]int)
+	for _, result := range results {
+		for _, misconfiguration := range result.Misconfigurations {
+			if misconfiguration.CauseMetadata.Service != service {
+				continue
+			}
+			if _, ok := grouped[misconfiguration.CauseMetadata.Resource]; !ok {
+				grouped[misconfiguration.CauseMetadata.Resource] = make(map[string]int)
+			}
+			grouped[misconfiguration.CauseMetadata.Resource][misconfiguration.Severity]++
 		}
-		grouped[misconfiguration.CauseMetadata.Resource][misconfiguration.Severity]++
 	}
 
 	var sortable []sortableRow
@@ -69,16 +74,18 @@ func writeResourceTable(report *Report, option Option) error {
 	}
 
 	// render scan title
-	_, _ = fmt.Fprintf(option.Output, "\n\x1b[1mResource Summary for Service '%s' (%s Account %s)\x1b[0m\n", option.Service, report.Provider, report.AccountID)
+	_, _ = fmt.Fprintf(output, "\n\x1b[1mResource Summary for Service '%s' (%s Account %s)\x1b[0m\n", service, report.Provider, report.AccountID)
 
 	// render table
-	t.Render()
-
-	// TODO: render individual results if necessary
+	if len(sortable) > 0 {
+		t.Render()
+	} else {
+		_, _ = fmt.Fprint(output, "\nNo problems detected.\n")
+	}
 
 	// render cache info
-	if option.FromCache {
-		_, _ = fmt.Fprintf(option.Output, "\n\x1b[34mThis scan report was loaded from cached results. If you'd like to run a fresh scan, use --update-cache.\x1b[0m\n")
+	if fromCache {
+		_, _ = fmt.Fprintf(output, "\n\x1b[34mThis scan report was loaded from cached results. If you'd like to run a fresh scan, use --update-cache.\x1b[0m\n")
 	}
 
 	return nil
