@@ -7,7 +7,7 @@ import (
 	"time"
 
 	"github.com/aquasecurity/table"
-	pkgReport "github.com/aquasecurity/trivy/pkg/report"
+	pkgReport "github.com/aquasecurity/trivy/pkg/report/table"
 )
 
 func writeServiceTable(report *Report, option Option) error {

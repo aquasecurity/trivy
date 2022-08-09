@@ -155,6 +155,7 @@ func Run(ctx context.Context, opt flag.Options) error {
 			return fmt.Errorf("aws scan error: %w", err)
 		}
 		r = report.New(cloud.ProviderAWS, accountID, region, results.GetFailed(), allSelectedServices)
+
 	} else {
 		log.Logger.Debug("No more services to scan - everything was found in the cache.")
 		r = report.New(cloud.ProviderAWS, accountID, region, nil, allSelectedServices)
@@ -180,7 +181,7 @@ func Run(ctx context.Context, opt flag.Options) error {
 	}
 
 	log.Logger.Debug("Writing report to output...")
-	if err := report.Write(r, reportOptions); err != nil {
+	if err := report.Write(r, opt, reportOptions); err != nil {
 		return fmt.Errorf("unable to write results: %w", err)
 	}
 

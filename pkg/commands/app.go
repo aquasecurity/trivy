@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"strings"
 	"time"
 
 	awsScanner "github.com/aquasecurity/defsec/pkg/scanners/cloud/aws"

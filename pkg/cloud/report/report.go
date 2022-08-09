@@ -1,15 +1,23 @@
 package report
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"io"
 	"time"
 
+	"github.com/aquasecurity/trivy/pkg/flag"
+
+	"github.com/aquasecurity/trivy/pkg/report"
+
+	"github.com/aquasecurity/trivy/pkg/result"
+
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 
 	"github.com/aquasecurity/defsec/pkg/scan"
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
+	pkgReport "github.com/aquasecurity/trivy/pkg/report"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
 
@@ -72,24 +80,56 @@ func (r *Report) Failed() bool {
 }
 
 // Write writes the results in the give format
-func Write(report *Report, option Option) error {
-	switch option.Format {
-	case jsonFormat:
-		return json.NewEncoder(option.Output).Encode(report)
-	case tableFormat:
-		switch option.ReportLevel {
-		case LevelService:
-			return writeServiceTable(report, option)
-		case LevelResource:
-			return writeResourceTable(report, option)
-		case LevelResult:
-			return writeResultsForARN(report, option)
-		default:
-			return fmt.Errorf("invalid level: %d", option.ReportLevel)
-		}
+func Write(rep *Report, baseOptions flag.Options, reportOptions Option) error {
 
+	var filtered []types.Result
+
+	ctx := context.Background()
+
+	// filter results
+	for _, res := range rep.Results {
+		resCopy := res.Result
+		if err := result.Filter(
+			ctx,
+			&resCopy,
+			reportOptions.Severities,
+			false,
+			false,
+			"",
+			"",
+			nil,
+		); err != nil {
+			return err
+		}
+		filtered = append(filtered, resCopy)
+	}
+
+	base := types.Report{
+		Results: filtered,
+	}
+
+	switch reportOptions.Format {
+	case jsonFormat:
+		return json.NewEncoder(reportOptions.Output).Encode(rep)
+	case tableFormat:
+		switch reportOptions.ReportLevel {
+		case LevelService:
+			return writeServiceTable(rep, reportOptions)
+		case LevelResource:
+			return writeResourceTable(rep, reportOptions)
+		case LevelResult:
+			return writeResultsForARN(rep, reportOptions)
+		default:
+			return fmt.Errorf("invalid level: %d", reportOptions.ReportLevel)
+		}
 	default:
-		return fmt.Errorf(`unknown format %q. Use "json" or "table"`, option.Format)
+		return report.Write(base, pkgReport.Option{
+			Output:             baseOptions.Output,
+			Severities:         baseOptions.Severities,
+			IncludeNonFailures: baseOptions.IncludeNonFailures,
+			Trace:              baseOptions.Trace,
+			OutputTemplate:     baseOptions.Template,
+		})
 	}
 }
 

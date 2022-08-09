@@ -8,7 +8,7 @@ import (
 	"golang.org/x/term"
 
 	"github.com/aquasecurity/table"
-	pkgReport "github.com/aquasecurity/trivy/pkg/report"
+	pkgReport "github.com/aquasecurity/trivy/pkg/report/table"
 )
 
 type sortableRow struct {

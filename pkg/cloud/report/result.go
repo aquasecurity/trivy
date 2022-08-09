@@ -3,7 +3,7 @@ package report
 import (
 	"fmt"
 
-	renderer "github.com/aquasecurity/trivy/pkg/report"
+	renderer "github.com/aquasecurity/trivy/pkg/report/table"
 	"github.com/aquasecurity/trivy/pkg/types"
 
 	"golang.org/x/term"
@@ -34,7 +34,7 @@ func writeResultsForARN(report *Report, option Option) error {
 		filtered = append(filtered, misconfiguration)
 	}
 	if len(filtered) > 0 {
-		_, _ = fmt.Fprint(w, renderer.NewMisconfigRenderer(result.Target, filtered, false, true).Render())
+		_, _ = fmt.Fprint(w, renderer.NewMisconfigRenderer(result, option.Severities, false, false, true).Render())
 	}
 
 	// render cache info
