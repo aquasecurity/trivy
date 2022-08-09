@@ -40,6 +40,26 @@ func ConvertToRPCPkgs(pkgs []ftypes.Package) []*common.Package {
 	return rpcPkgs
 }
 
+func ConvertToRPCCustomResources(resources []ftypes.CustomResource) []*common.CustomResource {
+	var rpcResources []*common.CustomResource
+	for _, r := range resources {
+		data, err := structpb.NewValue(r.Data)
+		if err != nil {
+			log.Logger.Warn(err)
+		}
+		rpcResources = append(rpcResources, &common.CustomResource{
+			Type:     r.Type,
+			FilePath: r.FilePath,
+			Layer: &common.Layer{
+				Digest: r.Layer.Digest,
+				DiffId: r.Layer.DiffID,
+			},
+			Data: data,
+		})
+	}
+	return rpcResources
+}
+
 // ConvertFromRPCPkgs returns list of Fanal package objects
 func ConvertFromRPCPkgs(rpcPkgs []*common.Package) []ftypes.Package {
 	var pkgs []ftypes.Package
@@ -575,6 +595,7 @@ func ConvertToRPCScanResponse(results types.Results, fos *ftypes.OS) *scanner.Sc
 			Vulnerabilities:   ConvertToRPCVulns(result.Vulnerabilities),
 			Misconfigurations: ConvertToRPCMisconfs(result.Misconfigurations),
 			Packages:          ConvertToRPCPkgs(result.Packages),
+			CustomResources:   ConvertToRPCCustomResources(result.CustomResources),
 		})
 	}
 
