@@ -6,6 +6,8 @@ import (
 	"sort"
 	"strconv"
 
+	"github.com/liamg/tml"
+
 	"golang.org/x/term"
 
 	"github.com/aquasecurity/table"
@@ -18,7 +20,7 @@ type sortableRow struct {
 	counts map[string]int
 }
 
-func writeResourceTable(report *Report, results types.Results, output io.Writer, fromCache bool, service string) error {
+func writeResourceTable(report *Report, results types.Results, output io.Writer, service string) error {
 
 	termWidth, _, err := term.GetSize(0)
 	if err != nil {
@@ -74,18 +76,13 @@ func writeResourceTable(report *Report, results types.Results, output io.Writer,
 	}
 
 	// render scan title
-	_, _ = fmt.Fprintf(output, "\n\x1b[1mResource Summary for Service '%s' (%s Account %s)\x1b[0m\n", service, report.Provider, report.AccountID)
+	_ = tml.Fprintf(output, "\n<bold>Resource Summary for Service '%s' (%s Account %s)</bold>\n", service, report.Provider, report.AccountID)
 
 	// render table
 	if len(sortable) > 0 {
 		t.Render()
 	} else {
 		_, _ = fmt.Fprint(output, "\nNo problems detected.\n")
-	}
-
-	// render cache info
-	if fromCache {
-		_, _ = fmt.Fprintf(output, "\n\x1b[34mThis scan report was loaded from cached results. If you'd like to run a fresh scan, use --update-cache.\x1b[0m\n")
 	}
 
 	return nil

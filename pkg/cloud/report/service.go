@@ -7,12 +7,14 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/liamg/tml"
+
 	"github.com/aquasecurity/table"
 	pkgReport "github.com/aquasecurity/trivy/pkg/report/table"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
 
-func writeServiceTable(report *Report, results types.Results, output io.Writer, fromCache bool) error {
+func writeServiceTable(report *Report, results types.Results, output io.Writer) error {
 
 	t := table.New(output)
 
@@ -75,15 +77,10 @@ func writeServiceTable(report *Report, results types.Results, output io.Writer, 
 	}
 
 	// render scan title
-	_, _ = fmt.Fprintf(output, "\n\x1b[1mScan Overview for %s Account %s\x1b[0m\n", report.Provider, report.AccountID)
+	_ = tml.Fprintf(output, "\n<bold>Scan Overview for %s Account %s</bold>\n", report.Provider, report.AccountID)
 
 	// render table
 	t.Render()
-
-	// render cache info
-	if fromCache {
-		_, _ = fmt.Fprintf(output, "\n\x1b[34mThis scan report was loaded from cached results. If you'd like to run a fresh scan, use --update-cache.\x1b[0m\n")
-	}
 
 	return nil
 }

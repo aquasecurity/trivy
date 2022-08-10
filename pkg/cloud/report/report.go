@@ -2,9 +2,11 @@ package report
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
+	"os"
 	"time"
+
+	"github.com/liamg/tml"
 
 	"github.com/aquasecurity/trivy/pkg/flag"
 
@@ -88,17 +90,40 @@ func Write(rep *Report, opt flag.Options, fromCache bool) error {
 	}
 
 	switch opt.Format {
-	case jsonFormat:
-		return json.NewEncoder(opt.Output).Encode(rep)
 	case tableFormat:
+
+		// ensure colour/formatting is disabled for pipes/non-pty
+		var useANSI bool
+		if opt.Output == os.Stdout {
+			if o, err := os.Stdout.Stat(); err == nil {
+				useANSI = (o.Mode() & os.ModeCharDevice) == os.ModeCharDevice
+			}
+		}
+		if !useANSI {
+			tml.DisableFormatting()
+		}
+
 		switch {
 		case len(opt.Services) == 1 && opt.ARN == "":
-			return writeResourceTable(rep, filtered, opt.Output, fromCache, opt.Services[0])
+			if err := writeResourceTable(rep, filtered, opt.Output, opt.Services[0]); err != nil {
+				return err
+			}
 		case len(opt.Services) == 1 && opt.ARN != "":
-			return writeResultsForARN(rep, filtered, opt.Output, fromCache, opt.Services[0], opt.ARN, opt.Severities)
+			if err := writeResultsForARN(rep, filtered, opt.Output, opt.Services[0], opt.ARN, opt.Severities); err != nil {
+				return err
+			}
 		default:
-			return writeServiceTable(rep, filtered, opt.Output, fromCache)
+			if err := writeServiceTable(rep, filtered, opt.Output); err != nil {
+				return err
+			}
 		}
+
+		// render cache info
+		if fromCache {
+			_ = tml.Fprintf(opt.Output, "\n<blue>This scan report was loaded from cached results. If you'd like to run a fresh scan, use --update-cache.</blue>\n")
+		}
+
+		return nil
 	default:
 		return report.Write(base, pkgReport.Option{
 			Format:             opt.Format,
