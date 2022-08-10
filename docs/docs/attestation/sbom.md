@@ -9,11 +9,15 @@ And, Trivy can take an SBOM attestation as input and scan for vulnerabilities
 
 ## Sign with a local key pair
 
-Cosign can generate key pairs and use them for signing and verification. Read more about [how to generate key pairs](https://docs.sigstore.dev/cosign/key-generation).
+Cosign can generate key pairs and use them for signing and verification. After you run the following command, you will get a public and private key pair. Read more about [how to generate key pairs](https://docs.sigstore.dev/cosign/key-generation).
+
+```bash
+$ cosign generate-key-pair
+```
 
 In the following example, Trivy generates an SBOM in the CycloneDX format, and then Cosign attaches an attestation of the SBOM to a container image with a local key pair.
 
-```
+```bash
 # The cyclonedx type is supported in Cosign v1.10.0 or later.
 $ trivy image --format cyclonedx -o sbom.cdx.json <IMAGE>
 $ cosign attest --key /path/to/cosign.key --type cyclonedx --predicate sbom.cdx.json <IMAGE>
@@ -21,13 +25,13 @@ $ cosign attest --key /path/to/cosign.key --type cyclonedx --predicate sbom.cdx.
 
 Then, you can verify attestations on the image.
 
-```
+```bash
 $ cosign verify-attestation --key /path/to/cosign.pub --type cyclonedx <IMAGE>
 ```
 
 You can also create attestations of other formatted SBOM.
 
-```
+```bash
 # spdx
 $ trivy image --format spdx -o sbom.spdx <IMAGE>
 $ cosign attest --key /path/to/cosign.key --type spdx --predicate sbom.spdx <IMAGE>
@@ -41,14 +45,14 @@ $ cosign attest --key /path/to/cosign.key --type spdx --predicate sbom.spdx.json
 
 You can use Cosign to sign without keys by authenticating with an OpenID Connect protocol supported by sigstore (Google, GitHub, or Microsoft).
 
-```
+```bash
 # The cyclonedx type is supported in Cosign v1.10.0 or later.
 $ trivy image --format cyclonedx -o sbom.cdx.json <IMAGE>
 $ COSIGN_EXPERIMENTAL=1 cosign attest --type cyclonedx --predicate sbom.cdx.json <IMAGE>
 ```
 
 You can verify attestations.
-```
+```bash
 $ COSIGN_EXPERIMENTAL=1 cosign verify-attestation --type cyclonedx <IMAGE>
 ```
 
