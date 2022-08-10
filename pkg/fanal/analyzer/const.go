@@ -128,4 +128,11 @@ var (
 
 	// TypeConfigFiles has all config file analyzers
 	TypeConfigFiles = []Type{TypeYaml, TypeJSON, TypeDockerfile, TypeTerraform, TypeCloudFormation, TypeHelm}
+
+	// TypeVulnFilesWithoutLicenseInfo has all language and lock file analyzers without files which contains information about licenses
+	TypeVulnFilesWithoutLicenseInfo = []Type{TypeRpm, TypeRpmqa,
+		TypeApkRepo, TypeBundler, TypeCargo, TypeComposer, TypeJar, TypePom,
+		TypeNpmPkgLock, TypeYarn, TypePnpm, TypeNuget, TypeDotNetDeps, TypePip, TypePipenv, TypePoetry,
+		TypeGoBinary, TypeGoMod, TypeBundler, TypeNpmPkgLock, TypeYarn,
+		TypePnpm, TypePip, TypePipenv, TypePoetry, TypeGoMod, TypePom}
 )

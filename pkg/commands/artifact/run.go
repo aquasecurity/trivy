@@ -413,6 +413,20 @@ func disabledAnalyzers(opts flag.Options) []analyzer.Type {
 		analyzers = append(analyzers, analyzer.TypeLanguages...)
 	}
 
+	// Do not perform vuln scanning when it is not specified.
+	if !slices.Contains(opts.SecurityChecks, types.SecurityCheckVulnerability) {
+		// license scanning use some language and lock file analyzers
+		// e.g. `dpkgLicenseAnalyzer`, 'gemspecLibraryAnalyzer'
+		if slices.Contains(opts.SecurityChecks, types.SecurityCheckLicense) {
+			analyzers = append(analyzers, analyzer.TypeVulnFilesWithoutLicenseInfo...)
+		} else { // disable all vuln analyzers
+			analyzers = append(analyzers, analyzer.TypeOSes...)
+			analyzers = append(analyzers, analyzer.TypeLanguages...)
+			analyzers = append(analyzers, analyzer.TypeLockfiles...)
+			analyzers = append(analyzers, analyzer.TypeConfigFiles...)
+		}
+	}
+
 	// Do not perform secret scanning when it is not specified.
 	if !slices.Contains(opts.SecurityChecks, types.SecurityCheckSecret) {
 		analyzers = append(analyzers, analyzer.TypeSecret)
