@@ -414,7 +414,8 @@ func disabledAnalyzers(opts flag.Options) []analyzer.Type {
 	}
 
 	// Do not perform vuln scanning when it is not specified.
-	if !slices.Contains(opts.SecurityChecks, types.SecurityCheckVulnerability) {
+	// We need these analyzers to find packages for `cyclonedx` format. Vulns will be excluded in `Report` package
+	if !slices.Contains(opts.SecurityChecks, types.SecurityCheckVulnerability) && opts.Format != "cyclonedx" {
 		// license scanning use some language and lock file analyzers
 		// e.g. `dpkgLicenseAnalyzer`, 'gemspecLibraryAnalyzer'
 		if slices.Contains(opts.SecurityChecks, types.SecurityCheckLicense) {
