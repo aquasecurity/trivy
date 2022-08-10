@@ -45,3 +45,7 @@ trivy aws --service s3 --arn arn:aws:s3:::example-bucket
 ```
 
 All ARNs with detected issues will be displayed when showing results for their associated service.
+
+## Cached Results
+
+By default, Trivy will cache results for each service for 24 hours. This means you can filter and view results for a service without having to wait for the scan to run again. If you want to force the cache to be refreshed with the latest data, you can use `--update-cache`. Or if you'd like to use cached data for a different timeframe, you can specify `--max-cache-age` (e.g. `--max-cache-age 2h`.)
