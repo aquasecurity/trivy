@@ -14,10 +14,9 @@ var (
 		Usage:      "AWS Endpoint override",
 	}
 	awsServiceFlag = Flag{
-		Name:       "service",
-		ConfigName: "cloud.aws.service",
-		Value:      []string{},
-		Usage:      "Only scan AWS Service(s) specified with this flag. Can specify multiple services using --service A --service B etc.",
+		Name:  "service",
+		Value: []string{},
+		Usage: "Only scan AWS Service(s) specified with this flag. Can specify multiple services using --service A --service B etc.",
 	}
 	awsAccountFlag = Flag{
 		Name:       "account",
@@ -26,10 +25,9 @@ var (
 		Usage:      "The AWS account to scan. It's useful to specify this when reviewing cached results for multipel accounts.",
 	}
 	awsARNFlag = Flag{
-		Name:       "arn",
-		ConfigName: "cloud.aws.arn",
-		Value:      "",
-		Usage:      "The AWS ARN to show results for. Useful to filter results once a scan is cached.",
+		Name:  "arn",
+		Value: "",
+		Usage: "The AWS ARN to show results for. Useful to filter results once a scan is cached.",
 	}
 )
 
