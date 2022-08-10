@@ -6,6 +6,8 @@ import (
 	"os"
 	"time"
 
+	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
+
 	"github.com/liamg/tml"
 
 	"github.com/aquasecurity/trivy/pkg/flag"
@@ -86,7 +88,9 @@ func Write(rep *Report, opt flag.Options, fromCache bool) error {
 	}
 
 	base := types.Report{
-		Results: filtered,
+		ArtifactName: rep.AccountID,
+		ArtifactType: ftypes.ArtifactAWSAccount,
+		Results:      filtered,
 	}
 
 	switch opt.Format {

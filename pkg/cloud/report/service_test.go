@@ -150,6 +150,7 @@ Scan Overview for AWS Account
 			},
 			fromCache: false,
 			expected: `{
+  "ArtifactType": "aws_account",
   "Metadata": {
     "ImageConfig": {
       "architecture": "",

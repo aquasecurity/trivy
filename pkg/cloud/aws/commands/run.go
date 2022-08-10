@@ -131,7 +131,6 @@ func Run(ctx context.Context, opt flag.Options) error {
 	}
 
 	var r *report.Report
-	var fromCache bool
 
 	// if there is anything we need that wasn't in the cache, scan it now
 	if len(servicesToScan) > 0 {
@@ -142,7 +141,6 @@ func Run(ctx context.Context, opt flag.Options) error {
 			return fmt.Errorf("aws scan error: %w", err)
 		}
 		r = report.New(cloud.ProviderAWS, accountID, region, results.GetFailed(), allSelectedServices)
-
 	} else {
 		log.Logger.Debug("No more services to scan - everything was found in the cache.")
 		r = report.New(cloud.ProviderAWS, accountID, region, nil, allSelectedServices)
@@ -157,7 +155,6 @@ func Run(ctx context.Context, opt flag.Options) error {
 			log.Logger.Debugf("Adding cached results for '%s'...", service)
 			r.AddResultsForService(service, results.Results, results.CreationTime)
 		}
-		fromCache = true
 	}
 
 	if len(servicesToScan) > 0 { // don't write cache if we didn't scan anything new
@@ -168,7 +165,7 @@ func Run(ctx context.Context, opt flag.Options) error {
 	}
 
 	log.Logger.Debug("Writing report to output...")
-	if err := report.Write(r, opt, fromCache); err != nil {
+	if err := report.Write(r, opt, len(servicesToLoadFromCache) > 0); err != nil {
 		return fmt.Errorf("unable to write results: %w", err)
 	}
 
