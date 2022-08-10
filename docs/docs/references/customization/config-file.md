@@ -224,6 +224,33 @@ misconfiguration:
   namespaces:
     - opa.examples
     - users
+
+  # helm value override configurations
+  # set individual values
+  helm:
+    set:
+      - securityContext.runAsUser=10001
+
+  # set values with file
+  helm:
+    values:
+      - overrides.yaml
+
+  # set specific values from specific files
+  helm:
+    set-file:
+      - image=dev-overrides.yaml
+
+  # set as string and preserve type
+  helm:
+    set-string:
+      - name=true
+
+  # terraform tfvars overrrides
+  terraform:
+    vars:
+      - dev-terraform.tfvars
+      - common-terraform.tfvars
 ```
 
 ## Kubernetes Options

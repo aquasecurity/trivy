@@ -13,6 +13,9 @@ Examples:
   # Scan CycloneDX and generate a CycloneDX report
   $ trivy sbom --format cyclonedx /path/to/report.cdx
 
+  # Scan CycloneDX-type attestation and show the result in tables
+  $ trivy sbom /path/to/report.cdx.intoto.jsonl
+
 
 Scan Flags
       --offline-scan             do not issue API requests to identify dependencies

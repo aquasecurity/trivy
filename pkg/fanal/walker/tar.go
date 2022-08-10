@@ -64,10 +64,11 @@ func (w LayerTar) Walk(layer io.Reader, analyzeFn WalkFunc) ([]string, []string,
 				skipDirs = append(skipDirs, filePath)
 				continue
 			}
-		case tar.TypeSymlink, tar.TypeLink, tar.TypeReg:
+		case tar.TypeReg:
 			if w.shouldSkipFile(filePath) {
 				continue
 			}
+		// symlinks and hardlinks have no content in reader, skip them
 		default:
 			continue
 		}

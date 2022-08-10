@@ -185,6 +185,11 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 			want:      sbom.SBOM{},
 		},
 		{
+			name:      "happy path empty metadata component",
+			inputFile: "testdata/happy/empty-metadata-component-bom.json",
+			want:      sbom.SBOM{},
+		},
+		{
 			name:      "sad path invalid purl",
 			inputFile: "testdata/sad/invalid-purl.json",
 			wantErr:   "failed to parse purl",

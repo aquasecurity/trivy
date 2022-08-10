@@ -11,6 +11,7 @@ import (
 	digest "github.com/opencontainers/go-digest"
 	"golang.org/x/xerrors"
 
+	"github.com/aquasecurity/trivy/pkg/attestation"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer/config"
 	"github.com/aquasecurity/trivy/pkg/fanal/artifact"
@@ -82,7 +83,7 @@ func (a Artifact) Inspect(_ context.Context) (types.ArtifactReference, error) {
 
 	var artifactType types.ArtifactType
 	switch format {
-	case sbom.FormatCycloneDXJSON, sbom.FormatCycloneDXXML:
+	case sbom.FormatCycloneDXJSON, sbom.FormatCycloneDXXML, sbom.FormatAttestCycloneDXJSON:
 		artifactType = types.ArtifactCycloneDX
 	}
 
@@ -107,6 +108,16 @@ func (a Artifact) Decode(f io.Reader, format sbom.Format) (sbom.SBOM, error) {
 	switch format {
 	case sbom.FormatCycloneDXJSON:
 		v = &cyclonedx.CycloneDX{SBOM: &bom}
+		decoder = json.NewDecoder(f)
+	case sbom.FormatAttestCycloneDXJSON:
+		// in-toto attestation
+		//   => cosign predicate
+		//     => CycloneDX JSON
+		v = &attestation.Statement{
+			Predicate: &attestation.CosignPredicate{
+				Data: &cyclonedx.CycloneDX{SBOM: &bom},
+			},
+		}
 		decoder = json.NewDecoder(f)
 	default:
 		return sbom.SBOM{}, xerrors.Errorf("%s scanning is not yet supported", format)
