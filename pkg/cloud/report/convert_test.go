@@ -236,6 +236,6 @@ func assertConvertedResultsMatch(t *testing.T, expected, actual map[string]Resul
 		sort.Slice(actual[service].Results, func(i, j int) bool {
 			return actual[service].Results[i].Target < actual[service].Results[j].Target
 		})
-		assert.Equal(t, resultsAtTime.Results, actual[service].Results)
+		assert.ElementsMatch(t, resultsAtTime.Results, actual[service].Results)
 	}
 }

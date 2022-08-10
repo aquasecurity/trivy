@@ -96,13 +96,13 @@ func TestCache(t *testing.T) {
 			assert.Equal(t, test.input.Provider, loaded.Provider)
 			assert.Equal(t, test.input.AccountID, loaded.AccountID)
 			assert.Equal(t, test.input.Region, loaded.Region)
-			assert.Equal(t, test.services, loaded.ServicesInScope)
+			assert.ElementsMatch(t, test.services, loaded.ServicesInScope)
 
 			var actualServices []string
 			for service := range loaded.Results {
 				actualServices = append(actualServices, service)
 			}
-			assert.Equal(t, test.services, actualServices)
+			assert.ElementsMatch(t, test.services, actualServices)
 
 			for _, service := range test.services {
 				assert.Equal(t, test.input.Results[service].CreationTime.Format(time.RFC3339), loaded.Results[service].CreationTime.Format(time.RFC3339))
@@ -162,5 +162,5 @@ func TestPartialCacheOverwrite(t *testing.T) {
 	}
 	require.NoError(t, cache.Save(&r2))
 
-	assert.Equal(t, []string{"a", "b", "c", "d"}, cache.ListAvailableServices(false))
+	assert.ElementsMatch(t, []string{"a", "b", "c", "d"}, cache.ListAvailableServices(false))
 }

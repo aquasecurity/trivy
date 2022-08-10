@@ -116,7 +116,7 @@ No problems detected.
 			assert.Equal(t, "AWS", report.Provider)
 			assert.Equal(t, tt.options.AWSOptions.Account, report.AccountID)
 			assert.Equal(t, tt.options.AWSOptions.Region, report.Region)
-			assert.Equal(t, tt.options.AWSOptions.Services, report.ServicesInScope)
+			assert.ElementsMatch(t, tt.options.AWSOptions.Services, report.ServicesInScope)
 			assert.Equal(t, tt.expected, buffer.String())
 		})
 	}

@@ -323,7 +323,7 @@ Scan Overview for AWS Account
 			assert.Equal(t, "AWS", report.Provider)
 			assert.Equal(t, tt.options.AWSOptions.Account, report.AccountID)
 			assert.Equal(t, tt.options.AWSOptions.Region, report.Region)
-			assert.Equal(t, tt.options.AWSOptions.Services, report.ServicesInScope)
+			assert.ElementsMatch(t, tt.options.AWSOptions.Services, report.ServicesInScope)
 			if tt.options.Format == "json" {
 				// json output can be formatted/ordered differently - we just care that the data matches
 				assert.JSONEq(t, tt.expected, buffer.String())
