@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"os"
+	"sort"
 	"time"
 
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
@@ -82,9 +83,15 @@ func Write(rep *Report, opt flag.Options, fromCache bool) error {
 			); err != nil {
 				return err
 			}
+			sort.Slice(resCopy.Misconfigurations, func(i, j int) bool {
+				return resCopy.Misconfigurations[i].CauseMetadata.Resource < resCopy.Misconfigurations[i].CauseMetadata.Resource
+			})
 			filtered = append(filtered, resCopy)
 		}
 	}
+	sort.Slice(filtered, func(i, j int) bool {
+		return filtered[i].Target < filtered[j].Target
+	})
 
 	base := types.Report{
 		ArtifactName: rep.AccountID,

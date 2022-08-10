@@ -165,6 +165,41 @@ Scan Overview for AWS Account
   },
   "Results": [
     {
+      "Target": "arn:aws:ec2:us-east-1:1234567890:instance1",
+      "Class": "config",
+      "Type": "cloud",
+      "MisconfSummary": {
+        "Successes": 0,
+        "Failures": 1,
+        "Exceptions": 0
+      },
+      "Misconfigurations": [
+        {
+          "Type": "AWS",
+          "ID": "AVD-AWS-9999",
+          "Title": "Do not use bad stuff",
+          "Description": "Bad stuff is... bad",
+          "Message": "instance is bad",
+          "Resolution": "Remove bad stuff",
+          "Severity": "HIGH",
+          "PrimaryURL": "https://avd.aquasec.com/misconfig/avd-aws-9999",
+          "References": [
+            "https://avd.aquasec.com/misconfig/avd-aws-9999"
+          ],
+          "Status": "FAIL",
+          "Layer": {},
+          "CauseMetadata": {
+            "Resource": "arn:aws:ec2:us-east-1:1234567890:instance1",
+            "Provider": "AWS",
+            "Service": "ec2",
+            "Code": {
+              "Lines": null
+            }
+          }
+        }
+      ]
+    },
+    {
       "Target": "arn:aws:s3:us-east-1:1234567890:bucket1",
       "Class": "config",
       "Type": "cloud",
@@ -266,41 +301,6 @@ Scan Overview for AWS Account
         "Failures": 0,
         "Exceptions": 0
       }
-    },
-    {
-      "Target": "arn:aws:ec2:us-east-1:1234567890:instance1",
-      "Class": "config",
-      "Type": "cloud",
-      "MisconfSummary": {
-        "Successes": 0,
-        "Failures": 1,
-        "Exceptions": 0
-      },
-      "Misconfigurations": [
-        {
-          "Type": "AWS",
-          "ID": "AVD-AWS-9999",
-          "Title": "Do not use bad stuff",
-          "Description": "Bad stuff is... bad",
-          "Message": "instance is bad",
-          "Resolution": "Remove bad stuff",
-          "Severity": "HIGH",
-          "PrimaryURL": "https://avd.aquasec.com/misconfig/avd-aws-9999",
-          "References": [
-            "https://avd.aquasec.com/misconfig/avd-aws-9999"
-          ],
-          "Status": "FAIL",
-          "Layer": {},
-          "CauseMetadata": {
-            "Resource": "arn:aws:ec2:us-east-1:1234567890:instance1",
-            "Provider": "AWS",
-            "Service": "ec2",
-            "Code": {
-              "Lines": null
-            }
-          }
-        }
-      ]
     }
   ]
 }`,
