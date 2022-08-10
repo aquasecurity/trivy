@@ -74,7 +74,7 @@ func processOptions(ctx context.Context, opt *flag.Options) error {
 		log.Logger.Debug("No service(s) specified, scanning all services...")
 		opt.Services = awsScanner.AllSupportedServices()
 	} else {
-		log.Logger.Debugf("Specific services were requested: [%s]...", strings.Join(allSelectedServices, ", "))
+		log.Logger.Debugf("Specific services were requested: [%s]...", strings.Join(opt.Services, ", "))
 		for _, service := range opt.Services {
 			var found bool
 			supported := awsScanner.AllSupportedServices()
@@ -113,11 +113,11 @@ func Run(ctx context.Context, opt flag.Options) error {
 		return err
 	}
 
-	cached := cache.New(opt.CacheDir, opt.MaxCacheAge, cloud.ProviderAWS, accountID, region)
+	cached := cache.New(opt.CacheDir, opt.MaxCacheAge, cloud.ProviderAWS, opt.Account, opt.Region)
 	servicesInCache := cached.ListAvailableServices(false)
 	var servicesToLoadFromCache []string
 	var servicesToScan []string
-	for _, service := range allSelectedServices {
+	for _, service := range opt.Services {
 		if cached != nil {
 			var inCache bool
 			for _, cacheSvc := range servicesInCache {
@@ -145,10 +145,10 @@ func Run(ctx context.Context, opt flag.Options) error {
 		if err != nil {
 			return fmt.Errorf("aws scan error: %w", err)
 		}
-		r = report.New(cloud.ProviderAWS, accountID, region, results.GetFailed(), allSelectedServices)
+		r = report.New(cloud.ProviderAWS, opt.Account, opt.Region, results.GetFailed(), opt.Services)
 	} else {
 		log.Logger.Debug("No more services to scan - everything was found in the cache.")
-		r = report.New(cloud.ProviderAWS, accountID, region, nil, allSelectedServices)
+		r = report.New(cloud.ProviderAWS, opt.Account, opt.Region, nil, opt.Services)
 	}
 	if len(servicesToLoadFromCache) > 0 {
 		log.Logger.Debug("Loading cached results...")
