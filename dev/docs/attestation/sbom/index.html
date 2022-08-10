@@ -2247,6 +2247,15 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#scanning" class="md-nav__link">
+    <span class="md-ellipsis">
+      Scanning
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -3642,6 +3651,15 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#scanning" class="md-nav__link">
+    <span class="md-ellipsis">
+      Scanning
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -3657,39 +3675,65 @@
 
 
 <h1 id="sbom-attestation">SBOM attestation</h1>
-<p><a href="https://github.com/sigstore/cosign">Cosign</a> supports generating and verifying <a href="https://github.com/in-toto/attestation">in-toto attestations</a>. This tool enables you to sign and verify SBOM attestation.</p>
+<p><a href="https://github.com/sigstore/cosign">Cosign</a> supports generating and verifying <a href="https://github.com/in-toto/attestation">in-toto attestations</a>. This tool enables you to sign and verify SBOM attestation.
+And, Trivy can take an SBOM attestation as input and scan for vulnerabilities</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>In the following examples, the <code>cosign</code> command will write an attestation to a target OCI registry, so you must have permission to write.
 If you want to avoid writing an OCI registry and only want to see an attestation, add the <code>--no-upload</code> option to the <code>cosign</code> command.</p>
 </div>
 <h2 id="sign-with-a-local-key-pair">Sign with a local key pair</h2>
-<p>Cosign can generate key pairs and use them for signing and verification. Read more about <a href="https://docs.sigstore.dev/cosign/key-generation">how to generate key pairs</a>.</p>
-<p>In the following example, Trivy generates an SBOM in the spdx format, and then Cosign attaches an attestation of the SBOM to a container image with a local key pair.</p>
-<div class="highlight"><pre><span></span><code>$ trivy image --format spdx -o sbom.spdx &lt;IMAGE&gt;
-$ cosign attest --key /path/to/cosign.key --type spdx --predicate sbom.spdx &lt;IMAGE&gt;
+<p>Cosign can generate key pairs and use them for signing and verification. After you run the following command, you will get a public and private key pair. Read more about <a href="https://docs.sigstore.dev/cosign/key-generation">how to generate key pairs</a>.</p>
+<div class="highlight"><pre><span></span><code>$ cosign generate-key-pair
 </code></pre></div>
-<p>Then, you can verify attestations on the image.</p>
-<div class="highlight"><pre><span></span><code>$ cosign verify-attestation --key /path/to/cosign.pub &lt;IMAGE&gt;
-</code></pre></div>
-<p>You can also create attestations of other formatted SBOM.</p>
-<div class="highlight"><pre><span></span><code># spdx-json
-$ trivy image --format spdx-json -o sbom.spdx.json &lt;IMAGE&gt;
-$ cosign attest --key /path/to/cosign.key --type spdx --predicate sbom.spdx.json &lt;IMAGE&gt;
-
-# cyclonedx
-# The cyclonedx type is supported in Cosign v1.10.0 or later.
+<p>In the following example, Trivy generates an SBOM in the CycloneDX format, and then Cosign attaches an attestation of the SBOM to a container image with a local key pair.</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># The cyclonedx type is supported in Cosign v1.10.0 or later.</span>
 $ trivy image --format cyclonedx -o sbom.cdx.json &lt;IMAGE&gt;
 $ cosign attest --key /path/to/cosign.key --type cyclonedx --predicate sbom.cdx.json &lt;IMAGE&gt;
 </code></pre></div>
+<p>Then, you can verify attestations on the image.</p>
+<div class="highlight"><pre><span></span><code>$ cosign verify-attestation --key /path/to/cosign.pub --type cyclonedx &lt;IMAGE&gt;
+</code></pre></div>
+<p>You can also create attestations of other formatted SBOM.</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># spdx</span>
+$ trivy image --format spdx -o sbom.spdx &lt;IMAGE&gt;
+$ cosign attest --key /path/to/cosign.key --type spdx --predicate sbom.spdx &lt;IMAGE&gt;
+
+<span class="c1"># spdx-json</span>
+$ trivy image --format spdx-json -o sbom.spdx.json &lt;IMAGE&gt;
+$ cosign attest --key /path/to/cosign.key --type spdx --predicate sbom.spdx.json &lt;IMAGE&gt;
+</code></pre></div>
 <h2 id="keyless-signing">Keyless signing</h2>
 <p>You can use Cosign to sign without keys by authenticating with an OpenID Connect protocol supported by sigstore (Google, GitHub, or Microsoft).</p>
-<div class="highlight"><pre><span></span><code>$ trivy image --format spdx -o sbom.spdx &lt;IMAGE&gt;
-$ COSIGN_EXPERIMENTAL=1 cosign attest --type spdx --predicate sbom.spdx &lt;IMAGE&gt;
+<div class="highlight"><pre><span></span><code><span class="c1"># The cyclonedx type is supported in Cosign v1.10.0 or later.</span>
+$ trivy image --format cyclonedx -o sbom.cdx.json &lt;IMAGE&gt;
+$ <span class="nv">COSIGN_EXPERIMENTAL</span><span class="o">=</span><span class="m">1</span> cosign attest --type cyclonedx --predicate sbom.cdx.json &lt;IMAGE&gt;
 </code></pre></div>
 <p>You can verify attestations.
-<div class="highlight"><pre><span></span><code>$ COSIGN_EXPERIMENTAL=1 cosign verify-attestation &lt;IMAGE&gt;
+<div class="highlight"><pre><span></span><code>$ <span class="nv">COSIGN_EXPERIMENTAL</span><span class="o">=</span><span class="m">1</span> cosign verify-attestation --type cyclonedx &lt;IMAGE&gt;
 </code></pre></div></p>
+<h2 id="scanning">Scanning</h2>
+<p>Trivy can take an SBOM attestation as input and scan for vulnerabilities. Currently, Trivy supports CycloneDX-type attestation.</p>
+<p>In the following example, Cosign can get an CycloneDX-type attestation and trivy scan it. You must create CycloneDX-type attestation before trying the example. To learn more about how to create an CycloneDX-Type attestation and attach it to an image, see the <a href="#sign-with-a-local-key-pair">Sign with a local key pair</a> section.</p>
+<div class="highlight"><pre><span></span><code>$ cosign verify-attestation --key /path/to/cosign.pub --type cyclonedx &lt;IMAGE&gt; &gt; sbom.cdx.intoto.jsonl
+$ trivy sbom ./sbom.cdx.intoto.jsonl
+
+sbom.cdx.intoto.jsonl <span class="o">(</span>alpine <span class="m">3</span>.7.3<span class="o">)</span>
+<span class="o">=========================</span>
+Total: <span class="m">2</span> <span class="o">(</span>UNKNOWN: <span class="m">0</span>, LOW: <span class="m">0</span>, MEDIUM: <span class="m">0</span>, HIGH: <span class="m">0</span>, CRITICAL: <span class="m">2</span><span class="o">)</span>
+
+┌────────────┬────────────────┬──────────┬───────────────────┬───────────────┬──────────────────────────────────────────────────────────┐
+│  Library   │ Vulnerability  │ Severity │ Installed Version │ Fixed Version │                          Title                           │
+├────────────┼────────────────┼──────────┼───────────────────┼───────────────┼──────────────────────────────────────────────────────────┤
+│ musl       │ CVE-2019-14697 │ CRITICAL │ <span class="m">1</span>.1.18-r3         │ <span class="m">1</span>.1.18-r4     │ musl libc through <span class="m">1</span>.1.23 has an x87 floating-point stack │
+│            │                │          │                   │               │ adjustment im ......                                     │
+│            │                │          │                   │               │ https://avd.aquasec.com/nvd/cve-2019-14697               │
+├────────────┤                │          │                   │               │                                                          │
+│ musl-utils │                │          │                   │               │                                                          │
+│            │                │          │                   │               │                                                          │
+│            │                │          │                   │               │                                                          │
+└────────────┴────────────────┴──────────┴───────────────────┴───────────────┴──────────────────────────────────────────────────────────┘
+</code></pre></div>
 
 
 

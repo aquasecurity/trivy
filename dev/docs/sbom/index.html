@@ -3857,8 +3857,7 @@ Total: <span class="m">3</span> <span class="o">(</span>CRITICAL: <span class="m
 <p>CycloneDX XML and SPDX are not supported at the moment.</p>
 </div>
 <p>You can also scan an SBOM attestation.
-In the following example, <a href="https://github.com/sigstore/cosign">Cosign</a> can get an attestation and trivy scan it.
-To learn more about how to create an SBOM attestation and attach it to an image, see the <a href="../attestation/sbom/">SBOM attestation page</a>.
+In the following example, <a href="https://github.com/sigstore/cosign">Cosign</a> can get an attestation and trivy scan it. You must create CycloneDX-type attestation before trying the example. To learn more about how to create an CycloneDX-Type attestation and attach it to an image, see the <a href="../attestation/sbom/#sign-with-a-local-key-pair">SBOM attestation page</a>.
 <div class="highlight"><pre><span></span><code>$ cosign verify-attestation --key /path/to/cosign.pub --type cyclonedx &lt;IMAGE&gt; &gt; sbom.cdx.intoto.jsonl
 $ trivy sbom ./sbom.cdx.intoto.jsonl
 
