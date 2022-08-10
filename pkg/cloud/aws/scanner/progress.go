@@ -51,5 +51,5 @@ func (m *progressTracker) StartService(name string) {
 		bar.OptionWithAutoComplete(false),
 		bar.OptionWithRenderFunc(bar.RenderColoured(0xff, 0x66, 0x00)),
 	)
-	m.SetServiceLabel("Initialising...")
+	m.SetServiceLabel("Initializing...")
 }

@@ -23,7 +23,6 @@ import (
 
 const (
 	tableFormat = "table"
-	jsonFormat  = "json"
 )
 
 // Report represents a kubernetes scan report
@@ -96,7 +95,7 @@ func Write(rep *Report, opt flag.Options, fromCache bool) error {
 	switch opt.Format {
 	case tableFormat:
 
-		// ensure colour/formatting is disabled for pipes/non-pty
+		// ensure color/formatting is disabled for pipes/non-pty
 		var useANSI bool
 		if opt.Output == os.Stdout {
 			if o, err := os.Stdout.Stat(); err == nil {

@@ -289,6 +289,7 @@ func (f *Flags) Bind(cmd *cobra.Command) error {
 	return nil
 }
 
+//nolint: gocyclo
 func (f *Flags) ToOptions(appVersion string, args []string, globalFlags *GlobalFlagGroup, output io.Writer) (Options, error) {
 	var err error
 	opts := Options{

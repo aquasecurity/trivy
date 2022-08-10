@@ -50,6 +50,49 @@ func getAccountIDAndRegion(ctx context.Context, region string) (string, string, 
 	return *result.Account, cfg.Region, nil
 }
 
+func processOptions(ctx context.Context, opt *flag.Options) error {
+	// support comma separated services too
+	var splitServices []string
+	for _, service := range opt.Services {
+		splitServices = append(splitServices, strings.Split(service, ",")...)
+	}
+	opt.Services = splitServices
+
+	if len(opt.Services) != 1 && opt.ARN != "" {
+		return fmt.Errorf("you must specify the single --service which the --arn relates to")
+	}
+
+	if opt.Account == "" || opt.Region == "" {
+		var err error
+		opt.Account, opt.Region, err = getAccountIDAndRegion(ctx, opt.Region)
+		if err != nil {
+			return err
+		}
+	}
+
+	if len(opt.Services) == 0 {
+		log.Logger.Debug("No service(s) specified, scanning all services...")
+		opt.Services = awsScanner.AllSupportedServices()
+	} else {
+		log.Logger.Debugf("Specific services were requested: [%s]...", strings.Join(allSelectedServices, ", "))
+		for _, service := range opt.Services {
+			var found bool
+			supported := awsScanner.AllSupportedServices()
+			for _, allowed := range supported {
+				if allowed == service {
+					found = true
+					break
+				}
+			}
+			if !found {
+				return fmt.Errorf("service '%s' is not currently supported - supported services are: %s", service, strings.Join(supported, ", "))
+			}
+		}
+	}
+
+	return nil
+}
+
 func Run(ctx context.Context, opt flag.Options) error {
 
 	ctx, cancel := context.WithTimeout(ctx, opt.GlobalOptions.Timeout)
@@ -66,46 +109,8 @@ func Run(ctx context.Context, opt flag.Options) error {
 		}
 	}()
 
-	// support comma separated services too
-	var splitServices []string
-	for _, service := range opt.Services {
-		splitServices = append(splitServices, strings.Split(service, ",")...)
-	}
-	opt.Services = splitServices
-
-	if len(opt.Services) != 1 && opt.ARN != "" {
-		return fmt.Errorf("you must specify the single --service which the --arn relates to")
-	}
-
-	accountID := opt.Account
-	region := opt.Region
-	if accountID == "" || region == "" {
-		accountID, region, err = getAccountIDAndRegion(ctx, opt.Region)
-		if err != nil {
-			return err
-		}
-	}
-
-	allSelectedServices := opt.Services
-
-	if len(allSelectedServices) == 0 {
-		log.Logger.Debug("No service(s) specified, scanning all services...")
-		allSelectedServices = awsScanner.AllSupportedServices()
-	} else {
-		log.Logger.Debugf("Specific services were requested: [%s]...", strings.Join(allSelectedServices, ", "))
-		for _, service := range allSelectedServices {
-			var found bool
-			supported := awsScanner.AllSupportedServices()
-			for _, allowed := range supported {
-				if allowed == service {
-					found = true
-					break
-				}
-			}
-			if !found {
-				return fmt.Errorf("service '%s' is not currently supported - supported services are: %s", service, strings.Join(supported, ", "))
-			}
-		}
+	if err := processOptions(ctx, &opt); err != nil {
+		return err
 	}
 
 	cached := cache.New(opt.CacheDir, opt.MaxCacheAge, cloud.ProviderAWS, accountID, region)
