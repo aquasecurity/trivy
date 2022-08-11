@@ -60,7 +60,6 @@ require (
 	github.com/testcontainers/testcontainers-go v0.13.0
 	github.com/tetratelabs/wazero v0.0.0-20220701105919-891761ac1ee2
 	github.com/twitchtv/twirp v8.1.2+incompatible
-	github.com/urfave/cli/v2 v2.3.0
 	github.com/xlab/treeprint v1.1.0
 	go.etcd.io/bbolt v1.3.6
 	go.uber.org/zap v1.21.0
@@ -119,7 +118,6 @@ require (
 	github.com/aws/aws-sdk-go-v2/service/sso v1.11.13 // indirect
 	github.com/aws/aws-sdk-go-v2/service/workspaces v1.22.0 // indirect
 	github.com/aws/smithy-go v1.12.0 // indirect
-	github.com/cpuguy83/go-md2man/v2 v2.0.2 // indirect
 	github.com/emicklei/go-restful/v3 v3.8.0 // indirect
 	github.com/hashicorp/hcl v1.0.0 // indirect
 	github.com/russross/blackfriday/v2 v2.1.0 // indirect
