@@ -100,11 +100,6 @@ const (
 	// =======
 	TypeRedHatContentManifestType Type = "redhat-content-manifest"
 	TypeRedHatDockerfileType      Type = "redhat-dockerfile"
-
-	// =====
-	// Cloud
-	// =====
-	TypeCloudAWS Type = "cloud-aws"
 )
 
 var (
