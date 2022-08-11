@@ -3849,13 +3849,15 @@
 If you want to avoid writing an OCI registry and only want to see an attestation, add the <code>--no-upload</code> option to the <code>cosign</code> command.</p>
 </div>
 <h3 id="sign-with-a-local-key-pair">Sign with a local key pair</h3>
-<p>Cosign can generate key pairs and use them for signing and verification. Read more about <a href="https://docs.sigstore.dev/cosign/key-generation">how to generate key pairs</a>.</p>
+<p>Cosign can generate key pairs and use them for signing and verification. After you run the following command, you will get a public and private key pair. Read more about <a href="https://docs.sigstore.dev/cosign/key-generation">how to generate key pairs</a>.</p>
+<div class="highlight"><pre><span></span><code>$ cosign generate-key-pair
+</code></pre></div>
 <p>In the following example, Trivy generates a cosign vulnerability scan record, and then Cosign attaches an attestation of it to a container image with a local key pair.</p>
 <div class="highlight"><pre><span></span><code>$ trivy image --format cosign-vuln --output vuln.json &lt;IMAGE&gt;
 $ cosign attest --key /path/to/cosign.key --type vuln --predicate vuln.json &lt;IMAGE&gt;
 </code></pre></div>
 <p>Then, you can verify attestations on the image.</p>
-<div class="highlight"><pre><span></span><code>$ cosign verify-attestation --key /path/to/cosign.pub &lt;IMAGE&gt;
+<div class="highlight"><pre><span></span><code>$ cosign verify-attestation --key /path/to/cosign.pub --type vuln &lt;IMAGE&gt;
 </code></pre></div>
 <h3 id="keyless-signing">Keyless signing</h3>
 <p>You can use Cosign to sign without keys by authenticating with an OpenID Connect protocol supported by sigstore (Google, GitHub, or Microsoft).</p>
@@ -3863,7 +3865,7 @@ $ cosign attest --key /path/to/cosign.key --type vuln --predicate vuln.json &lt;
 $ COSIGN_EXPERIMENTAL=1 cosign attest --type vuln --predicate vuln.json &lt;IMAGE&gt;
 </code></pre></div>
 <p>You can verify attestations.</p>
-<div class="highlight"><pre><span></span><code>$ COSIGN_EXPERIMENTAL=1 cosign verify-attestation &lt;IMAGE&gt;
+<div class="highlight"><pre><span></span><code>$ COSIGN_EXPERIMENTAL=1 cosign verify-attestation --type vuln &lt;IMAGE&gt;
 </code></pre></div>
 
 
