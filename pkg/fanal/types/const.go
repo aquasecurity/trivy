@@ -38,6 +38,7 @@ const (
 	Ansible        = "ansible"
 	Helm           = "helm"
 	Rbac           = "rbac"
+	Cloud          = "cloud"
 
 	// Licensing
 	License = "license"

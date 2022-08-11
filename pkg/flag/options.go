@@ -46,7 +46,9 @@ type FlagGroup interface {
 }
 
 type Flags struct {
+	AWSFlagGroup           *AWSFlagGroup
 	CacheFlagGroup         *CacheFlagGroup
+	CloudFlagGroup         *CloudFlagGroup
 	DBFlagGroup            *DBFlagGroup
 	ImageFlagGroup         *ImageFlagGroup
 	K8sFlagGroup           *K8sFlagGroup
@@ -64,7 +66,9 @@ type Flags struct {
 // Options holds all the runtime configuration
 type Options struct {
 	GlobalOptions
+	AWSOptions
 	CacheOptions
+	CloudOptions
 	DBOptions
 	ImageOptions
 	K8sOptions
@@ -221,6 +225,12 @@ func (f *Flags) groups() []FlagGroup {
 	if f.LicenseFlagGroup != nil {
 		groups = append(groups, f.LicenseFlagGroup)
 	}
+	if f.CloudFlagGroup != nil {
+		groups = append(groups, f.CloudFlagGroup)
+	}
+	if f.AWSFlagGroup != nil {
+		groups = append(groups, f.AWSFlagGroup)
+	}
 	if f.K8sFlagGroup != nil {
 		groups = append(groups, f.K8sFlagGroup)
 	}
@@ -279,11 +289,20 @@ func (f *Flags) Bind(cmd *cobra.Command) error {
 	return nil
 }
 
+//nolint: gocyclo
 func (f *Flags) ToOptions(appVersion string, args []string, globalFlags *GlobalFlagGroup, output io.Writer) (Options, error) {
 	var err error
 	opts := Options{
 		AppVersion:    appVersion,
 		GlobalOptions: globalFlags.ToOptions(),
+	}
+
+	if f.AWSFlagGroup != nil {
+		opts.AWSOptions = f.AWSFlagGroup.ToOptions()
+	}
+
+	if f.CloudFlagGroup != nil {
+		opts.CloudOptions = f.CloudFlagGroup.ToOptions()
 	}
 
 	if f.CacheFlagGroup != nil {
