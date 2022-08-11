@@ -6,6 +6,8 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/aquasecurity/defsec/pkg/errs"
+
 	cmd "github.com/aquasecurity/trivy/pkg/commands/artifact"
 
 	"github.com/aquasecurity/trivy/pkg/cloud"
@@ -143,6 +145,12 @@ func Run(ctx context.Context, opt flag.Options) error {
 		opt.Services = servicesToScan
 		results, err := scanner.NewScanner().Scan(ctx, opt)
 		if err != nil {
+			var aerr errs.AdapterError
+			if errors.As(err, &aerr) {
+				for _, e := range aerr.Errors() {
+					log.Logger.Warnf("Adapter error: %s", e)
+				}
+			}
 			return fmt.Errorf("aws scan error: %w", err)
 		}
 		r = report.New(cloud.ProviderAWS, opt.Account, opt.Region, results.GetFailed(), opt.Services)
