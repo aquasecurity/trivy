@@ -133,6 +133,5 @@ var (
 	TypeVulnFilesWithoutLicenseInfo = []Type{TypeRpm, TypeRpmqa,
 		TypeApkRepo, TypeBundler, TypeCargo, TypeComposer, TypeJar, TypePom,
 		TypeNpmPkgLock, TypeYarn, TypePnpm, TypeNuget, TypeDotNetDeps, TypePip, TypePipenv, TypePoetry,
-		TypeGoBinary, TypeGoMod, TypeBundler, TypeNpmPkgLock, TypeYarn,
-		TypePnpm, TypePip, TypePipenv, TypePoetry, TypeGoMod, TypePom}
+		TypeGoBinary, TypeGoMod}
 )

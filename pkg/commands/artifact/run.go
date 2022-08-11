@@ -423,8 +423,6 @@ func disabledAnalyzers(opts flag.Options) []analyzer.Type {
 		} else { // disable all vuln analyzers
 			analyzers = append(analyzers, analyzer.TypeOSes...)
 			analyzers = append(analyzers, analyzer.TypeLanguages...)
-			analyzers = append(analyzers, analyzer.TypeLockfiles...)
-			analyzers = append(analyzers, analyzer.TypeIndividualPkgs...)
 		}
 	}
 
