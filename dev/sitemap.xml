@@ -131,6 +131,11 @@
          <changefreq>daily</changefreq>
     </url>
     <url>
+         <loc>https://aquasecurity.github.io/trivy/dev/docs/cloud/aws/scanning/</loc>
+         <lastmod>2022-08-11</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
          <loc>https://aquasecurity.github.io/trivy/dev/docs/integrations/</loc>
          <lastmod>2022-08-11</lastmod>
          <changefreq>daily</changefreq>
