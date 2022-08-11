@@ -41,7 +41,7 @@ require (
 	github.com/knqyf263/go-deb-version v0.0.0-20190517075300-09fca494f03d
 	github.com/knqyf263/go-rpm-version v0.0.0-20220614171824-631e686d1075
 	github.com/kylelemons/godebug v1.1.0
-	github.com/liamg/loading v0.0.2
+	github.com/liamg/loading v0.0.3
 	github.com/liamg/memoryfs v1.4.2
 	github.com/liamg/tml v0.6.0
 	github.com/mailru/easyjson v0.7.7
