@@ -11,7 +11,7 @@ The included checks cover all of the aspects of the [AWS CIS 1.2](https://docs.a
 
 Trivy uses the same [authentication methods](https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-configure.html) as the AWS CLI to configure and authenticate your access to the AWS platform.
 
-You will need permissions configured to read all AWS resources - we recommend using a role with the `ReadOnlyAccess` and `SecurityAudit` policies attached.
+You will need permissions configured to read all AWS resources - we recommend using a group/role with the `ReadOnlyAccess` and `SecurityAudit` policies attached.
 
 Once you've scanned your account, you can run additional commands to filter the results without having to run the entire scan again - results are cached locally per AWS account/region.
 
