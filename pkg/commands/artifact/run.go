@@ -3,11 +3,10 @@ package artifact
 import (
 	"context"
 	"errors"
-	"fmt"
 	"os"
-	"regexp"
 
 	"github.com/hashicorp/go-multierror"
+	"github.com/hashicorp/go-version"
 	"github.com/spf13/viper"
 	"golang.org/x/exp/slices"
 	"golang.org/x/xerrors"
@@ -474,13 +473,21 @@ func initScannerConfig(opts flag.Options, cacheClient cache.Cache) (ScannerConfi
 
 	// Do not load config file for secret scanning
 	if slices.Contains(opts.SecurityChecks, types.SecurityCheckSecret) {
-		VersionRegexpRaw := `^v?([0-9A-Za-z-]+(\.[0-9A-Za-z]+)*)`
-		r := regexp.MustCompile(VersionRegexpRaw)
-		ver := r.FindAllStringSubmatch(opts.AppVersion, -1)[0][1]
+		ver := opts.AppVersion
 		if ver != "dev" {
-			ver = fmt.Sprintf("v%s", ver)
+			v, err := version.NewSemver(opts.AppVersion)
+			if err != nil {
+				return ScannerConfig{}, scanOptions, xerrors.Errorf("invalid app version: %w %s", err, opts.AppVersion)
+			}
+			// Replace pre-release with "dev"
+			// e.g. v0.34.0-beta1+snapshot-1
+			if v.Prerelease() != "" || v.Metadata() != "" {
+				ver = "dev"
+			} else {
+				// Add "v" prefix, "0.34.0" => "v0.34.0" for the url
+				ver = "v" + v.String()
+			}
 		}
-
 		log.Logger.Info("Secret scanning is enabled")
 		log.Logger.Info("If your scanning is slow, please try '--security-checks vuln' to disable secret scanning")
 		log.Logger.Infof("Please see also https://aquasecurity.github.io/trivy/%s/docs/secret/scanning/#recommendation for faster secret detection", ver)
