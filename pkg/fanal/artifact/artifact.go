@@ -23,6 +23,7 @@ type Option struct {
 	RepoBranch        string
 	RepoCommit        string
 	RepoTag           string
+	TargetType        string
 
 	MisconfScannerOption misconf.ScannerOption
 	SecretScannerOption  secret.ScannerOption

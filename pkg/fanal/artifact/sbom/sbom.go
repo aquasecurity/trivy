@@ -1,13 +1,18 @@
 package sbom
 
 import (
+	"bytes"
 	"context"
 	"crypto/sha256"
 	"encoding/json"
+	"fmt"
 	"io"
 	"os"
 	"path/filepath"
+	"strings"
 
+	"github.com/aquasecurity/trivy/pkg/fanal/image"
+	"github.com/aquasecurity/trivy/pkg/rekor"
 	digest "github.com/opencontainers/go-digest"
 	"golang.org/x/xerrors"
 
@@ -21,6 +26,11 @@ import (
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/sbom"
 	"github.com/aquasecurity/trivy/pkg/sbom/cyclonedx"
+)
+
+const (
+	TargetTypeFile       = "file"
+	TargetTypeRekorImage = "rekor-image"
 )
 
 type Artifact struct {
@@ -41,18 +51,96 @@ func NewArtifact(filePath string, c cache.ArtifactCache, opt artifact.Option) (a
 	}, nil
 }
 
-func (a Artifact) Inspect(_ context.Context) (types.ArtifactReference, error) {
-	f, err := os.Open(a.filePath)
-	if err != nil {
-		return types.ArtifactReference{}, xerrors.Errorf("failed to open sbom file error: %w", err)
-	}
-	defer f.Close()
+func fetchRepoDigest(refname string) (string, error) {
 
-	// Format auto-detection
-	format, err := sbom.DetectFormat(f)
+	// TODO: need docker option and other options?
+	img, cleanup, err := image.NewContainerImage(context.TODO(), refname, types.DockerOption{})
+	defer cleanup()
+
 	if err != nil {
-		return types.ArtifactReference{}, xerrors.Errorf("failed to detect SBOM format: %w", err)
+		panic(err)
 	}
+
+	// TODO: when do we get multiple digests?
+	for _, rd := range img.RepoDigests() {
+		if _, d, found := strings.Cut(rd, "@"); found {
+			return d, nil
+		} else {
+			return "", fmt.Errorf("invalid repo digest")
+		}
+	}
+	return "", fmt.Errorf("repo digest not found")
+
+}
+
+func (a Artifact) Inspect(_ context.Context) (types.ArtifactReference, error) {
+	var (
+		f      io.ReadSeeker
+		format sbom.Format
+		err    error
+	)
+
+	// TODO: use switch(a.artifactOption.TargetType) {}
+	if a.artifactOption.TargetType == TargetTypeRekorImage {
+		// TODO: rename a.filePath. artifactName, artifactPath
+		d, err := fetchRepoDigest(a.filePath)
+		if err != nil {
+			return types.ArtifactReference{}, xerrors.Errorf("failed to get repo digest: %w", err)
+		}
+		log.Logger.Debugf("Repo digest: %s", d)
+
+		client, err := rekor.NewClient()
+		if err != nil {
+			return types.ArtifactReference{}, xerrors.Errorf("failed to create rekor client: %w", err)
+		}
+
+		uuids, err := client.Search(d)
+		if err != nil {
+			return types.ArtifactReference{}, xerrors.Errorf("failed to search rekor records: %w", err)
+		}
+		log.Logger.Debugf("Found matching entries: %s", uuids)
+
+		for _, u := range uuids {
+			log.Logger.Debugf("Fetching rekor record: %s", u)
+
+			record, err := client.GetByUUID(u)
+			if err != nil {
+				return types.ArtifactReference{}, xerrors.Errorf("failed to get rekor record: %w", err)
+			}
+			f = strings.NewReader(record.Attestation())
+
+			format, err = sbom.DetectFormat(f)
+			if err != nil {
+				log.Logger.Debugf("failed to detect SBOM format")
+				continue
+			}
+			if format == sbom.FormatUnknown {
+				continue
+			}
+			log.Logger.Infof("Recor record: %s", u)
+			break
+		}
+
+		if format == sbom.FormatUnknown {
+			return types.ArtifactReference{}, xerrors.Errorf("failed to detect type")
+		}
+
+	} else if a.artifactOption.TargetType == TargetTypeFile {
+		ff, err := os.ReadFile(a.filePath)
+		if err != nil {
+			return types.ArtifactReference{}, xerrors.Errorf("failed to read sbom file error: %w", err)
+		}
+		f = bytes.NewReader(ff)
+
+		// Format auto-detection
+		format, err = sbom.DetectFormat(f)
+		if err != nil {
+			return types.ArtifactReference{}, xerrors.Errorf("failed to detect SBOM format: %w", err)
+		}
+	} else {
+		return types.ArtifactReference{}, xerrors.Errorf("unknown target type: %s", a.artifactOption.TargetType)
+	}
+
 	log.Logger.Infof("Detected SBOM format: %s", format)
 
 	// Rewind the SBOM file

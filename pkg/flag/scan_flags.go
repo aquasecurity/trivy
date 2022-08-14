@@ -35,6 +35,18 @@ var (
 		Value:      fmt.Sprintf("%s,%s", types.SecurityCheckVulnerability, types.SecurityCheckSecret),
 		Usage:      "comma-separated list of what security issues to detect (vuln,config,secret)",
 	}
+	TargetTypeFlag = Flag{
+		Name:       "target-type",
+		ConfigName: "scan.target-type",
+		Value:      "file",
+		// TODO: more description.
+		//       alternative name: rekor, rekor-oci,
+		//       considerable other options:
+		//      	rekor-indexid
+		//     		rekor-uuid
+		//    		rekor-digest or rekor-sha256,
+		Usage: "target type(file, rekor-image)",
+	}
 )
 
 type ScanFlagGroup struct {
@@ -42,6 +54,7 @@ type ScanFlagGroup struct {
 	SkipFiles      *Flag
 	OfflineScan    *Flag
 	SecurityChecks *Flag
+	TargetType     *Flag
 }
 
 type ScanOptions struct {
@@ -50,6 +63,7 @@ type ScanOptions struct {
 	SkipFiles      []string
 	OfflineScan    bool
 	SecurityChecks []string
+	TargetType     string
 }
 
 func NewScanFlagGroup() *ScanFlagGroup {
@@ -58,6 +72,7 @@ func NewScanFlagGroup() *ScanFlagGroup {
 		SkipFiles:      &SkipFilesFlag,
 		OfflineScan:    &OfflineScanFlag,
 		SecurityChecks: &SecurityChecksFlag,
+		TargetType:     &TargetTypeFlag,
 	}
 }
 
@@ -66,7 +81,7 @@ func (f *ScanFlagGroup) Name() string {
 }
 
 func (f *ScanFlagGroup) Flags() []*Flag {
-	return []*Flag{f.SkipDirs, f.SkipFiles, f.OfflineScan, f.SecurityChecks}
+	return []*Flag{f.SkipDirs, f.SkipFiles, f.OfflineScan, f.SecurityChecks, f.TargetType}
 }
 
 func (f *ScanFlagGroup) ToOptions(args []string) ScanOptions {
@@ -81,6 +96,7 @@ func (f *ScanFlagGroup) ToOptions(args []string) ScanOptions {
 		SkipFiles:      getStringSlice(f.SkipFiles),
 		OfflineScan:    getBool(f.OfflineScan),
 		SecurityChecks: parseSecurityCheck(getStringSlice(f.SecurityChecks)),
+		TargetType:     getString(f.TargetType),
 	}
 }
 
