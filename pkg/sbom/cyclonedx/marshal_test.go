@@ -470,11 +470,6 @@ func TestMarshaler_Marshal(t *testing.T) {
 								FilePath: "tools/project-doe/specifications/actionpack.gemspec",
 							},
 						},
-					},
-					{
-						Target: "Ruby",
-						Class:  types.ClassOSPkg,
-						Type:   ftypes.GemSpec,
 						Vulnerabilities: []types.DetectedVulnerability{
 							{
 								VulnerabilityID:  "CVE-2022-23633",
