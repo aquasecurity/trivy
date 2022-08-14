@@ -48,7 +48,7 @@
   "Results": [
     {
       "Target": "testdata/fixtures/images/rockylinux-8.tar.gz (rocky 8.5)",
-      "Class": "vuln-os-pkgs",
+      "Class": "os-pkgs",
       "Type": "rocky",
       "Vulnerabilities": [
         {

@@ -1,6 +1,6 @@
 {
   "SchemaVersion": 2,
-  "ArtifactName": "localhost:63577/alpine:3.10",
+  "ArtifactName": "localhost:57584/alpine:3.10",
   "ArtifactType": "container_image",
   "Metadata": {
     "OS": {
@@ -13,10 +13,10 @@
       "sha256:03901b4a2ea88eeaad62dbe59b072b28b6efa00491962b8741081c5df50c65e0"
     ],
     "RepoTags": [
-      "localhost:63577/alpine:3.10"
+      "localhost:57584/alpine:3.10"
     ],
     "RepoDigests": [
-      "localhost:63577/alpine@sha256:d9b1a0d4fab413443a22e550cb8720de487295cebca3f9b2fcbf8882192a9bf9"
+      "localhost:57584/alpine@sha256:b1c5a500182b21d0bfa5a584a8526b56d8be316f89e87d951be04abed2446e60"
     ],
     "ImageConfig": {
       "architecture": "amd64",
@@ -55,8 +55,8 @@
   },
   "Results": [
     {
-      "Target": "localhost:63577/alpine:3.10 (alpine 3.10.2)",
-      "Class": "vuln-os-pkgs",
+      "Target": "localhost:57584/alpine:3.10 (alpine 3.10.2)",
+      "Class": "os-pkgs",
       "Type": "alpine",
       "Vulnerabilities": [
         {
@@ -65,7 +65,7 @@
           "InstalledVersion": "1.1.1c-r0",
           "FixedVersion": "1.1.1d-r0",
           "Layer": {
-            "Digest": "sha256:3489774ebf88fb1f0b08e0abb45826a3cbd9d0eb6458d5fc54729197feddffb9",
+            "Digest": "sha256:9d48c3bd43c520dc2784e868a780e976b207cbf493eaff8c6596eb871cbd9609",
             "DiffID": "sha256:03901b4a2ea88eeaad62dbe59b072b28b6efa00491962b8741081c5df50c65e0"
           },
           "SeveritySource": "nvd",
@@ -124,7 +124,7 @@
           "InstalledVersion": "1.1.1c-r0",
           "FixedVersion": "1.1.1d-r2",
           "Layer": {
-            "Digest": "sha256:3489774ebf88fb1f0b08e0abb45826a3cbd9d0eb6458d5fc54729197feddffb9",
+            "Digest": "sha256:9d48c3bd43c520dc2784e868a780e976b207cbf493eaff8c6596eb871cbd9609",
             "DiffID": "sha256:03901b4a2ea88eeaad62dbe59b072b28b6efa00491962b8741081c5df50c65e0"
           },
           "SeveritySource": "nvd",
@@ -193,7 +193,7 @@
           "InstalledVersion": "1.1.1c-r0",
           "FixedVersion": "1.1.1d-r0",
           "Layer": {
-            "Digest": "sha256:3489774ebf88fb1f0b08e0abb45826a3cbd9d0eb6458d5fc54729197feddffb9",
+            "Digest": "sha256:9d48c3bd43c520dc2784e868a780e976b207cbf493eaff8c6596eb871cbd9609",
             "DiffID": "sha256:03901b4a2ea88eeaad62dbe59b072b28b6efa00491962b8741081c5df50c65e0"
           },
           "SeveritySource": "nvd",
@@ -252,7 +252,7 @@
           "InstalledVersion": "1.1.1c-r0",
           "FixedVersion": "1.1.1d-r2",
           "Layer": {
-            "Digest": "sha256:3489774ebf88fb1f0b08e0abb45826a3cbd9d0eb6458d5fc54729197feddffb9",
+            "Digest": "sha256:9d48c3bd43c520dc2784e868a780e976b207cbf493eaff8c6596eb871cbd9609",
             "DiffID": "sha256:03901b4a2ea88eeaad62dbe59b072b28b6efa00491962b8741081c5df50c65e0"
           },
           "SeveritySource": "nvd",

@@ -30,7 +30,7 @@ func TestReportWriter_Sarif(t *testing.T) {
 			input: types.Results{
 				{
 					Target: "library/test",
-					Class:  types.ClassVulnOSPkg,
+					Class:  types.ClassOSPkg,
 					Vulnerabilities: []types.DetectedVulnerability{
 						{
 							VulnerabilityID:  "CVE-2020-0001",
