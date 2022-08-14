@@ -3,12 +3,14 @@ package image
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"io"
 	"os"
 	"reflect"
 	"strings"
 	"sync"
 
+	fsbom "github.com/aquasecurity/trivy/pkg/fanal/artifact/sbom"
 	v1 "github.com/google/go-containerregistry/pkg/v1"
 	"golang.org/x/exp/slices"
 	"golang.org/x/sync/semaphore"
@@ -68,6 +70,20 @@ func NewArtifact(img types.Image, c cache.ArtifactCache, opt artifact.Option) (a
 	}, nil
 }
 
+// TODO: shoud add types.Image function?
+func repoDigest(img types.Image) (string, error) {
+	repoNameFull := img.Name()
+	repoName, _, _ := strings.Cut(repoNameFull, ":")
+
+	for _, rd := range img.RepoDigests() {
+		if name, d, found := strings.Cut(rd, "@"); found && name == repoName {
+			return d, nil
+		}
+	}
+	return "", fmt.Errorf("repo digest not found")
+
+}
+
 func (a Artifact) Inspect(ctx context.Context) (types.ArtifactReference, error) {
 	imageID, err := a.image.ID()
 	if err != nil {
@@ -88,6 +104,21 @@ func (a Artifact) Inspect(ctx context.Context) (types.ArtifactReference, error) 
 	log.Logger.Debugf("Image ID: %s", imageID)
 	log.Logger.Debugf("Diff IDs: %v", diffIDs)
 
+	if a.artifactOption.Attestation {
+		d, err := repoDigest(a.image)
+		if err != nil {
+			return types.ArtifactReference{}, xerrors.Errorf("failed to get repo digest: %w", err)
+		}
+		ar, err := fsbom.NewArtifact(d, a.cache, a.artifactOption)
+		if err != nil {
+			return types.ArtifactReference{}, xerrors.Errorf("failed to new artifact: %w", err)
+		}
+		results, err := ar.Inspect(ctx)
+		if err == nil {
+			return results, nil
+		}
+		log.Logger.Debugf("failed to inspect attestation: %s", err)
+	}
 	// Try to detect base layers.
 	baseDiffIDs := a.guessBaseLayers(diffIDs, configFile)
 	log.Logger.Debugf("Base Layers: %v", baseDiffIDs)

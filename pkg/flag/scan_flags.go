@@ -35,17 +35,11 @@ var (
 		Value:      fmt.Sprintf("%s,%s", types.SecurityCheckVulnerability, types.SecurityCheckSecret),
 		Usage:      "comma-separated list of what security issues to detect (vuln,config,secret)",
 	}
-	TargetTypeFlag = Flag{
-		Name:       "target-type",
-		ConfigName: "scan.target-type",
-		Value:      "file",
-		// TODO: more description.
-		//       alternative name: rekor, rekor-oci,
-		//       considerable other options:
-		//      	rekor-indexid
-		//     		rekor-uuid
-		//    		rekor-digest or rekor-sha256,
-		Usage: "target type(file, rekor-image)",
+	AttestationFlag = Flag{
+		Name:       "attestation",
+		ConfigName: "scan.attestation",
+		Value:      false,
+		Usage:      "try to use an SBOM attestation from OCI registry or rekor", // TODO: OCI registry? OCI registry attestation tag?
 	}
 )
 
@@ -54,7 +48,7 @@ type ScanFlagGroup struct {
 	SkipFiles      *Flag
 	OfflineScan    *Flag
 	SecurityChecks *Flag
-	TargetType     *Flag
+	Attestation    *Flag
 }
 
 type ScanOptions struct {
@@ -63,7 +57,7 @@ type ScanOptions struct {
 	SkipFiles      []string
 	OfflineScan    bool
 	SecurityChecks []string
-	TargetType     string
+	Attestation    bool
 }
 
 func NewScanFlagGroup() *ScanFlagGroup {
@@ -72,7 +66,7 @@ func NewScanFlagGroup() *ScanFlagGroup {
 		SkipFiles:      &SkipFilesFlag,
 		OfflineScan:    &OfflineScanFlag,
 		SecurityChecks: &SecurityChecksFlag,
-		TargetType:     &TargetTypeFlag,
+		Attestation:    &AttestationFlag,
 	}
 }
 
@@ -81,7 +75,7 @@ func (f *ScanFlagGroup) Name() string {
 }
 
 func (f *ScanFlagGroup) Flags() []*Flag {
-	return []*Flag{f.SkipDirs, f.SkipFiles, f.OfflineScan, f.SecurityChecks, f.TargetType}
+	return []*Flag{f.SkipDirs, f.SkipFiles, f.OfflineScan, f.SecurityChecks, f.Attestation}
 }
 
 func (f *ScanFlagGroup) ToOptions(args []string) ScanOptions {
@@ -96,7 +90,7 @@ func (f *ScanFlagGroup) ToOptions(args []string) ScanOptions {
 		SkipFiles:      getStringSlice(f.SkipFiles),
 		OfflineScan:    getBool(f.OfflineScan),
 		SecurityChecks: parseSecurityCheck(getStringSlice(f.SecurityChecks)),
-		TargetType:     getString(f.TargetType),
+		Attestation:    getBool(f.Attestation),
 	}
 }
 

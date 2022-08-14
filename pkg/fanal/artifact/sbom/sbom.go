@@ -5,13 +5,11 @@ import (
 	"context"
 	"crypto/sha256"
 	"encoding/json"
-	"fmt"
 	"io"
 	"os"
 	"path/filepath"
 	"strings"
 
-	"github.com/aquasecurity/trivy/pkg/fanal/image"
 	"github.com/aquasecurity/trivy/pkg/rekor"
 	digest "github.com/opencontainers/go-digest"
 	"golang.org/x/xerrors"
@@ -26,11 +24,6 @@ import (
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/sbom"
 	"github.com/aquasecurity/trivy/pkg/sbom/cyclonedx"
-)
-
-const (
-	TargetTypeFile       = "file"
-	TargetTypeRekorImage = "rekor-image"
 )
 
 type Artifact struct {
@@ -51,28 +44,6 @@ func NewArtifact(filePath string, c cache.ArtifactCache, opt artifact.Option) (a
 	}, nil
 }
 
-func fetchRepoDigest(refname string) (string, error) {
-
-	// TODO: need docker option and other options?
-	img, cleanup, err := image.NewContainerImage(context.TODO(), refname, types.DockerOption{})
-	defer cleanup()
-
-	if err != nil {
-		panic(err)
-	}
-
-	// TODO: when do we get multiple digests?
-	for _, rd := range img.RepoDigests() {
-		if _, d, found := strings.Cut(rd, "@"); found {
-			return d, nil
-		} else {
-			return "", fmt.Errorf("invalid repo digest")
-		}
-	}
-	return "", fmt.Errorf("repo digest not found")
-
-}
-
 func (a Artifact) Inspect(_ context.Context) (types.ArtifactReference, error) {
 	var (
 		f      io.ReadSeeker
@@ -81,12 +52,9 @@ func (a Artifact) Inspect(_ context.Context) (types.ArtifactReference, error) {
 	)
 
 	// TODO: use switch(a.artifactOption.TargetType) {}
-	if a.artifactOption.TargetType == TargetTypeRekorImage {
+	if a.artifactOption.Attestation {
 		// TODO: rename a.filePath. artifactName, artifactPath
-		d, err := fetchRepoDigest(a.filePath)
-		if err != nil {
-			return types.ArtifactReference{}, xerrors.Errorf("failed to get repo digest: %w", err)
-		}
+		d := a.filePath
 		log.Logger.Debugf("Repo digest: %s", d)
 
 		client, err := rekor.NewClient()
@@ -125,7 +93,7 @@ func (a Artifact) Inspect(_ context.Context) (types.ArtifactReference, error) {
 			return types.ArtifactReference{}, xerrors.Errorf("failed to detect type")
 		}
 
-	} else if a.artifactOption.TargetType == TargetTypeFile {
+	} else {
 		ff, err := os.ReadFile(a.filePath)
 		if err != nil {
 			return types.ArtifactReference{}, xerrors.Errorf("failed to read sbom file error: %w", err)
@@ -137,8 +105,6 @@ func (a Artifact) Inspect(_ context.Context) (types.ArtifactReference, error) {
 		if err != nil {
 			return types.ArtifactReference{}, xerrors.Errorf("failed to detect SBOM format: %w", err)
 		}
-	} else {
-		return types.ArtifactReference{}, xerrors.Errorf("unknown target type: %s", a.artifactOption.TargetType)
 	}
 
 	log.Logger.Infof("Detected SBOM format: %s", format)
