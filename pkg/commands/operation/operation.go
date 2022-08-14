@@ -24,7 +24,7 @@ import (
 // SuperSet binds cache dependencies
 var SuperSet = wire.NewSet(
 	cache.NewFSCache,
-	wire.Bind(new(cache.LocalArtifactCache), new(cache.FSCache)),
+	wire.Bind(new(cache.Cache), new(cache.FSCache)),
 	NewCache,
 )
 

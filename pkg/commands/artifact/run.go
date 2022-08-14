@@ -55,7 +55,7 @@ type ScannerConfig struct {
 
 	// Cache
 	ArtifactCache      cache.ArtifactCache
-	LocalArtifactCache cache.LocalArtifactCache
+	LocalArtifactCache cache.Cache
 
 	// Client/Server options
 	RemoteOption client.ScannerOption
