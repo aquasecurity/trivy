@@ -3,7 +3,8 @@
 Tutorials are a great way to learn about use cases and integrations. We highly encourage community members to share their Trivy use cases with us in the documentation.
 
 There are two ways to contributor to the tutorials section
-1. If you are creating any external content on Trivy, we would love to have it as part of our list of [external resources](./other-resources/references.md).
+
+1. If you are creating any external content on Trivy, we would love to have it as part of our list of [external community resources](./other-resources/references.md).
 2. If you are creating an end-to-end tutorial on a specific Trivy use-case, we would love to feature it in our tutorial section. Read below how you can contribute tutorials to the docs.
 
 ## Process for adding new tutorials

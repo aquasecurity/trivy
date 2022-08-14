@@ -15,7 +15,6 @@ nav:
       - Overview: tutorials/overview.md
       - Trivy Kubernetes: 
           - Trivy K8s: tutorials/kubernetes/trivy-kubernetes.md
-          - OVHcloud: tutorials/kubernetes/ovhcloud.md
       - CI/CD:
           - Overview: tutorials/integrations/index.md
           - GitHub Actions: tutorials/integrations/github-actions.md
@@ -28,7 +27,7 @@ nav:
           - GitOps: tutorials/integrations/gitops.md       
       - Additional Resources: 
           - Tools: tutorials/other-resources/tools.md
-          - References: tutorials/other-resources/references.md
+          - Community Tutorials: tutorials/other-resources/references.md
           - CKS Reference: tutorials/other-resources/cks.md
   - Trivy CLI:
       - Overview: docs/index.md

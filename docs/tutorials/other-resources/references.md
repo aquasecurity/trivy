@@ -29,6 +29,7 @@ Below is a list of additional resources from the community.
 
 - [Kubernetes Security through GitOps Best Practices: ArgoCD and Starboard](https://youtu.be/YvMY8to9aHI)
 - [Get started with Kubernetes Security and Starboard](https://youtu.be/QgctrpTpJec)
+- [Using Trivy Kubernetes in OVHCloud documentation.](https://docs.ovh.com/gb/en/kubernetes/installing-trivy/)
 
 ## Trivy Operator 
 

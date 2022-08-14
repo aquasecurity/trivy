@@ -1,16 +1,18 @@
 # CKS preparation resources
 
-Community Resources
+The [Certified Kubernetes Security Specialist (CKS) Exam](https://training.linuxfoundation.org/certification/certified-kubernetes-security-specialist/) is offered by The Linux Foundation. It provides assurance that a CKS has the skills, knowledge, and competence on a broad range of best practices for securing container-based applications and Kubernetes platforms during build, deployment and runtime. CKA certification is required to sit for this exam.
+
+### Community Resources
 
 - [Trivy Video overview (short)][overview]
 - [Example questions from the exam][exam]
 - [More example questions][questions]
 
-Aqua Security Blog posts
+### Aqua Security Blog posts
 
 - Supply chain security best [practices][supply-chain-best-practices]
 - Supply chain [attacks][supply-chain-attacks]
-- 
+
 If you know of interesting resources, please start a PR to add those to the list.
 
 [overview]: https://youtu.be/2cjH6Zkieys
