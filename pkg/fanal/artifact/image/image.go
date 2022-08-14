@@ -10,7 +10,6 @@ import (
 	"strings"
 	"sync"
 
-	fsbom "github.com/aquasecurity/trivy/pkg/fanal/artifact/sbom"
 	v1 "github.com/google/go-containerregistry/pkg/v1"
 	"golang.org/x/exp/slices"
 	"golang.org/x/sync/semaphore"
@@ -20,6 +19,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer/config"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer/secret"
 	"github.com/aquasecurity/trivy/pkg/fanal/artifact"
+	fsbom "github.com/aquasecurity/trivy/pkg/fanal/artifact/sbom"
 	"github.com/aquasecurity/trivy/pkg/fanal/cache"
 	"github.com/aquasecurity/trivy/pkg/fanal/handler"
 	"github.com/aquasecurity/trivy/pkg/fanal/log"

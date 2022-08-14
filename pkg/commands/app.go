@@ -872,7 +872,7 @@ func NewSBOMCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	}
 
 	cmd := &cobra.Command{
-		Use:   "sbom [flags] SBOM_PATH", // TODO: rename SBOM_PATH
+		Use:   "sbom [flags] SBOM_PATH",
 		Short: "Scan SBOM for vulnerabilities",
 		Example: `  # Scan CycloneDX and show the result in tables
   $ trivy sbom /path/to/report.cdx

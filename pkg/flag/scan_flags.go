@@ -35,38 +35,38 @@ var (
 		Value:      fmt.Sprintf("%s,%s", types.SecurityCheckVulnerability, types.SecurityCheckSecret),
 		Usage:      "comma-separated list of what security issues to detect (vuln,config,secret)",
 	}
-	AttestationFlag = Flag{
-		Name:       "attestation",
-		ConfigName: "scan.attestation",
+	SbomAttestationFlag = Flag{
+		Name:       "sbom-attestation",
+		ConfigName: "scan.sbom-attestation",
 		Value:      false,
 		Usage:      "try to use an SBOM attestation from OCI registry or rekor", // TODO: OCI registry? OCI registry attestation tag?
 	}
 )
 
 type ScanFlagGroup struct {
-	SkipDirs       *Flag
-	SkipFiles      *Flag
-	OfflineScan    *Flag
-	SecurityChecks *Flag
-	Attestation    *Flag
+	SkipDirs        *Flag
+	SkipFiles       *Flag
+	OfflineScan     *Flag
+	SecurityChecks  *Flag
+	SbomAttestation *Flag
 }
 
 type ScanOptions struct {
-	Target         string
-	SkipDirs       []string
-	SkipFiles      []string
-	OfflineScan    bool
-	SecurityChecks []string
-	Attestation    bool
+	Target          string
+	SkipDirs        []string
+	SkipFiles       []string
+	OfflineScan     bool
+	SecurityChecks  []string
+	SbomAttestation bool
 }
 
 func NewScanFlagGroup() *ScanFlagGroup {
 	return &ScanFlagGroup{
-		SkipDirs:       &SkipDirsFlag,
-		SkipFiles:      &SkipFilesFlag,
-		OfflineScan:    &OfflineScanFlag,
-		SecurityChecks: &SecurityChecksFlag,
-		Attestation:    &AttestationFlag,
+		SkipDirs:        &SkipDirsFlag,
+		SkipFiles:       &SkipFilesFlag,
+		OfflineScan:     &OfflineScanFlag,
+		SecurityChecks:  &SecurityChecksFlag,
+		SbomAttestation: &SbomAttestationFlag,
 	}
 }
 
@@ -75,7 +75,7 @@ func (f *ScanFlagGroup) Name() string {
 }
 
 func (f *ScanFlagGroup) Flags() []*Flag {
-	return []*Flag{f.SkipDirs, f.SkipFiles, f.OfflineScan, f.SecurityChecks, f.Attestation}
+	return []*Flag{f.SkipDirs, f.SkipFiles, f.OfflineScan, f.SecurityChecks, f.SbomAttestation}
 }
 
 func (f *ScanFlagGroup) ToOptions(args []string) ScanOptions {
@@ -85,12 +85,12 @@ func (f *ScanFlagGroup) ToOptions(args []string) ScanOptions {
 	}
 
 	return ScanOptions{
-		Target:         target,
-		SkipDirs:       getStringSlice(f.SkipDirs),
-		SkipFiles:      getStringSlice(f.SkipFiles),
-		OfflineScan:    getBool(f.OfflineScan),
-		SecurityChecks: parseSecurityCheck(getStringSlice(f.SecurityChecks)),
-		Attestation:    getBool(f.Attestation),
+		Target:          target,
+		SkipDirs:        getStringSlice(f.SkipDirs),
+		SkipFiles:       getStringSlice(f.SkipFiles),
+		OfflineScan:     getBool(f.OfflineScan),
+		SecurityChecks:  parseSecurityCheck(getStringSlice(f.SecurityChecks)),
+		SbomAttestation: getBool(f.SbomAttestation),
 	}
 }
 
