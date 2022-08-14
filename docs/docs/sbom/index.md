@@ -181,6 +181,7 @@ $ trivy fs --format cyclonedx --output result.json /app/myproject
 Trivy also can take the following SBOM formats as an input and scan for vulnerabilities.
 
 - CycloneDX
+- CycloneDX-type attestation
 
 To scan SBOM, you can use the `sbom` subcommand and pass the path to the SBOM.
 
@@ -209,5 +210,30 @@ Total: 3 (CRITICAL: 3)
 !!! note
     CycloneDX XML and SPDX are not supported at the moment.
 
+You can also scan an SBOM attestation.
+In the following example, [Cosign][Cosign] can get an attestation and trivy scan it. You must create CycloneDX-type attestation before trying the example. To learn more about how to create an CycloneDX-Type attestation and attach it to an image, see the [SBOM attestation page][sbom_attestation].
+```bash
+$ cosign verify-attestation --key /path/to/cosign.pub --type cyclonedx <IMAGE> > sbom.cdx.intoto.jsonl
+$ trivy sbom ./sbom.cdx.intoto.jsonl
+
+sbom.cdx.intoto.jsonl (alpine 3.7.3)
+=========================
+Total: 2 (UNKNOWN: 0, LOW: 0, MEDIUM: 0, HIGH: 0, CRITICAL: 2)
+
+┌────────────┬────────────────┬──────────┬───────────────────┬───────────────┬──────────────────────────────────────────────────────────┐
+│  Library   │ Vulnerability  │ Severity │ Installed Version │ Fixed Version │                          Title                           │
+├────────────┼────────────────┼──────────┼───────────────────┼───────────────┼──────────────────────────────────────────────────────────┤
+│ musl       │ CVE-2019-14697 │ CRITICAL │ 1.1.18-r3         │ 1.1.18-r4     │ musl libc through 1.1.23 has an x87 floating-point stack │
+│            │                │          │                   │               │ adjustment im ......                                     │
+│            │                │          │                   │               │ https://avd.aquasec.com/nvd/cve-2019-14697               │
+├────────────┤                │          │                   │               │                                                          │
+│ musl-utils │                │          │                   │               │                                                          │
+│            │                │          │                   │               │                                                          │
+│            │                │          │                   │               │                                                          │
+└────────────┴────────────────┴──────────┴───────────────────┴───────────────┴──────────────────────────────────────────────────────────┘
+```
+
 [cyclonedx]: cyclonedx.md
 [spdx]: spdx.md
+[Cosign]: https://github.com/sigstore/cosign
+[sbom_attestation]: ../attestation/sbom.md#sign-with-a-local-key-pair

@@ -456,11 +456,16 @@ func initScannerConfig(opts flag.Options, cacheClient cache.Cache) (ScannerConfi
 	if slices.Contains(opts.SecurityChecks, types.SecurityCheckConfig) {
 		log.Logger.Info("Misconfiguration scanning is enabled")
 		configScannerOptions = config.ScannerOption{
-			Trace:        opts.Trace,
-			Namespaces:   append(opts.PolicyNamespaces, defaultPolicyNamespaces...),
-			PolicyPaths:  opts.PolicyPaths,
-			DataPaths:    opts.DataPaths,
-			FilePatterns: opts.FilePatterns,
+			Trace:            opts.Trace,
+			Namespaces:       append(opts.PolicyNamespaces, defaultPolicyNamespaces...),
+			PolicyPaths:      opts.PolicyPaths,
+			DataPaths:        opts.DataPaths,
+			FilePatterns:     opts.FilePatterns,
+			HelmValues:       opts.HelmValues,
+			HelmValueFiles:   opts.HelmValueFiles,
+			HelmFileValues:   opts.HelmFileValues,
+			HelmStringValues: opts.HelmStringValues,
+			TerraformTFVars:  opts.TerraformTFVars,
 		}
 	}
 
@@ -528,7 +533,7 @@ func scan(ctx context.Context, opts flag.Options, initializeScanner InitializeSc
 
 	report, err := s.ScanArtifact(ctx, scanOptions)
 	if err != nil {
-		return types.Report{}, xerrors.Errorf("image scan failed: %w", err)
+		return types.Report{}, xerrors.Errorf("scan failed: %w", err)
 	}
 	return report, nil
 }

@@ -153,7 +153,11 @@ $ trivy image --format cosign-vuln --output vuln.json alpine:3.10
 
 ### Sign with a local key pair
 
-Cosign can generate key pairs and use them for signing and verification. Read more about [how to generate key pairs](https://docs.sigstore.dev/cosign/key-generation).
+Cosign can generate key pairs and use them for signing and verification. After you run the following command, you will get a public and private key pair. Read more about [how to generate key pairs](https://docs.sigstore.dev/cosign/key-generation).
+
+```bash
+$ cosign generate-key-pair
+```
 
 In the following example, Trivy generates a cosign vulnerability scan record, and then Cosign attaches an attestation of it to a container image with a local key pair.
 
@@ -165,7 +169,7 @@ $ cosign attest --key /path/to/cosign.key --type vuln --predicate vuln.json <IMA
 Then, you can verify attestations on the image.
 
 ```
-$ cosign verify-attestation --key /path/to/cosign.pub <IMAGE>
+$ cosign verify-attestation --key /path/to/cosign.pub --type vuln <IMAGE>
 ```
 
 ### Keyless signing
@@ -180,7 +184,7 @@ $ COSIGN_EXPERIMENTAL=1 cosign attest --type vuln --predicate vuln.json <IMAGE>
 You can verify attestations.
 
 ```
-$ COSIGN_EXPERIMENTAL=1 cosign verify-attestation <IMAGE>
+$ COSIGN_EXPERIMENTAL=1 cosign verify-attestation --type vuln <IMAGE>
 ```
 
 [vuln-attest-spec]: https://github.com/sigstore/cosign/blob/95b74db89941e8ec85e768f639efd4d948db06cd/specs/COSIGN_VULN_ATTESTATION_SPEC.md

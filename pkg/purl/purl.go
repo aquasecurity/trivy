@@ -90,6 +90,8 @@ func (p *PackageURL) AppType() string {
 		return string(analyzer.TypeGoBinary)
 	case packageurl.TypeNPM:
 		return string(analyzer.TypeNodePkg)
+	case packageurl.TypeCargo:
+		return string(analyzer.TypeRustBinary)
 	}
 	return p.Type
 }

@@ -41,6 +41,15 @@ func TestCycloneDX(t *testing.T) {
 			},
 			golden: "testdata/fluentd-multiple-lockfiles-cyclonedx.json.golden",
 		},
+		{
+			name: "centos7-bom in in-toto attestation",
+			args: args{
+				input:        "testdata/fixtures/sbom/centos-7-cyclonedx.intoto.jsonl",
+				format:       "cyclonedx",
+				artifactType: "cyclonedx",
+			},
+			golden: "testdata/centos-7-cyclonedx.json.golden",
+		},
 	}
 
 	// Set up testing DB

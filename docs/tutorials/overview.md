@@ -11,6 +11,7 @@ There are two ways to contributor to the tutorials section
 Requirements
 - The tutorial has to provide an end-to-end set of instructions
 - Ideally, tutorials should focus on a specific use case
+- If the tutorial is featuring other tools, those should be open source, too
 - Make sure to describe the expected outcome after each instruction
 
 **Tip:** Make sure that your tutorial is concise about a specific use case or integration. 
