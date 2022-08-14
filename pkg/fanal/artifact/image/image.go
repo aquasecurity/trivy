@@ -104,7 +104,7 @@ func (a Artifact) Inspect(ctx context.Context) (types.ArtifactReference, error) 
 	log.Logger.Debugf("Image ID: %s", imageID)
 	log.Logger.Debugf("Diff IDs: %v", diffIDs)
 
-	if a.artifactOption.Attestation {
+	if a.artifactOption.SbomAttestation {
 		d, err := repoDigest(a.image)
 		if err != nil {
 			return types.ArtifactReference{}, xerrors.Errorf("failed to get repo digest: %w", err)

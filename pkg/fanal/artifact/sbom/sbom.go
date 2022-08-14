@@ -52,7 +52,7 @@ func (a Artifact) Inspect(_ context.Context) (types.ArtifactReference, error) {
 	)
 
 	// TODO: use switch(a.artifactOption.TargetType) {}
-	if a.artifactOption.Attestation {
+	if a.artifactOption.SbomAttestation {
 		// TODO: rename a.filePath. artifactName, artifactPath
 		d := a.filePath
 		log.Logger.Debugf("Repo digest: %s", d)
