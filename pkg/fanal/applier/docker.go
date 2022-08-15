@@ -5,10 +5,10 @@ import (
 	"strings"
 	"time"
 
-	"github.com/aquasecurity/trivy/pkg/fanal/types"
-
 	"github.com/knqyf263/nested"
 	"github.com/samber/lo"
+
+	"github.com/aquasecurity/trivy/pkg/fanal/types"
 )
 
 type Config struct {
@@ -178,8 +178,14 @@ func ApplyLayers(layers []types.BlobInfo) types.ArtifactDetail {
 		return nil
 	})
 
-	for _, v := range secretsMap {
-		mergedLayer.Secrets = append(mergedLayer.Secrets, v)
+	lastDiffID := layers[len(layers)-1].DiffID
+	for _, s := range secretsMap {
+		for i, finding := range s.Findings {
+			if finding.Layer.DiffID != lastDiffID {
+				s.Findings[i].Deleted = true // This secret is deleted in the upper layer
+			}
+		}
+		mergedLayer.Secrets = append(mergedLayer.Secrets, s)
 	}
 
 	// Extract dpkg licenses
@@ -263,20 +269,22 @@ func aggregate(detail *types.ArtifactDetail) {
 	detail.Applications = apps
 }
 
-// We must save secrets from all layers
-// If the secret was changed at the top level, we need to overwrite it
+// We must save secrets from all layers even though they are removed in the uppler layer.
+// If the secret was changed at the top level, we need to overwrite it.
 func mergeSecrets(secretsMap map[string]types.Secret, newSecret types.Secret, layer types.Layer) map[string]types.Secret {
 	for i := range newSecret.Findings { // add layer to the Findings from the new secret
 		newSecret.Findings[i].Layer = layer
 	}
-	// find new Secret in saved Secrets
+
 	secret, ok := secretsMap[newSecret.FilePath]
-	if !ok { // add new secret if its file doesn't exist before
+	if !ok {
+		// Add the new finding if its file doesn't exist before
 		secretsMap[newSecret.FilePath] = newSecret
-	} else { // if saved and new secrets have same `RuleID` and lines - use new Secret
-		for _, savedFinding := range secret.Findings { // secrets from previous layers
-			if !secretFindingsContains(newSecret.Findings, savedFinding) {
-				newSecret.Findings = append(newSecret.Findings, savedFinding)
+	} else {
+		// If the new finding has the same `RuleID` as the finding in the previous layers - use the new finding
+		for _, previousFinding := range secret.Findings { // secrets from previous layers
+			if !secretFindingsContains(newSecret.Findings, previousFinding) {
+				newSecret.Findings = append(newSecret.Findings, previousFinding)
 			}
 		}
 		secretsMap[newSecret.FilePath] = newSecret
@@ -286,7 +294,7 @@ func mergeSecrets(secretsMap map[string]types.Secret, newSecret types.Secret, la
 
 func secretFindingsContains(findings []types.SecretFinding, finding types.SecretFinding) bool {
 	for _, f := range findings {
-		if f.RuleID == finding.RuleID && f.StartLine == finding.StartLine && f.EndLine == finding.EndLine {
+		if f.RuleID == finding.RuleID {
 			return true
 		}
 	}
