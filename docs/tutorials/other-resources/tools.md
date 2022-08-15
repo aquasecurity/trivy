@@ -47,9 +47,9 @@ Have you created a tool that’s not listed? Add the name and description of you
 
 ## Trivy Azure DevOps
 
-| Orb                          | Description                                                      |
-| ---------------------------- | ---------------------------------------------------------------- |
-| [azure-devops][azure-devops] | An Azure DevOps Pipelines Task for Trivy, with an integrated UI. |
+| Orb                          | Description                                                     |
+| ---------------------------- | --------------------------------------------------------------- |
+| [azure-devops][azure-devops] | An Azure DevOps Pipelines Task for Trivy, with an integrated UI |
 
 
 ## Trivy Operator
