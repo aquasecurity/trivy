@@ -15,6 +15,7 @@ Below is a list of additional resources from the community.
 
 ## CI/CD Pipelines
 
+- [How to use Tekton to set up a CI pipeline with OpenShift Pipelines](https://www.redhat.com/architect/cicd-pipeline-openshift-tekton)
 - [DevSecOps with Trivy and GitHub Actions](https://blog.aquasec.com/devsecops-with-trivy-github-actions)
 - [Continuous Container Vulnerability Testing with Trivy](https://semaphoreci.com/blog/continuous-container-vulnerability-testing-with-trivy)
 - [Find Image Vulnerabilities Using GitHub and Aqua Security Trivy Action](https://blog.aquasec.com/github-vulnerability-scanner-trivy)
