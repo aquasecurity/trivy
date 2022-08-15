@@ -311,11 +311,24 @@ func TestScanner_Scan(t *testing.T) {
 						OS: &ftypes.OS{},
 						Applications: []ftypes.Application{
 							{
-								Type:     "bundler",
+								Type:     ftypes.Bundler,
 								FilePath: "/app/Gemfile.lock",
 								Libraries: []ftypes.Package{
 									{
-										Name:    "rails",
+										Name:    "innocent", // no vulnerability
+										Version: "1.2.3",
+										Layer: ftypes.Layer{
+											DiffID: "sha256:9922bc15eeefe1637b803ef2106f178152ce19a391f24aec838cbe2e48e73303",
+										},
+									},
+								},
+							},
+							{
+								Type:     ftypes.Bundler,
+								FilePath: "/app/Gemfile.lock",
+								Libraries: []ftypes.Package{
+									{
+										Name:    "rails", // one vulnerability
 										Version: "4.0.2",
 										Layer: ftypes.Layer{
 											DiffID: "sha256:9922bc15eeefe1637b803ef2106f178152ce19a391f24aec838cbe2e48e73303",
