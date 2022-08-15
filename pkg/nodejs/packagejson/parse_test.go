@@ -3,7 +3,6 @@ package packagejson_test
 import (
 	"os"
 	"path"
-	"sort"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -29,10 +28,9 @@ func TestParse(t *testing.T) {
 			// npm install --save promise jquery
 			// npm ls | grep -E -o "\S+@\S+" | awk -F@ 'NR>0 {printf("{\""$1"\", \""$2"\"},\n")}'
 			want: []types.Library{{
-				Name:               "bootstrap",
-				Version:            "5.0.2",
-				License:            "MIT",
-				ExternalReferences: []types.ExternalRef{{Type: types.RefWebsite, URL: "https://getbootstrap.com/"}, {Type: types.RefVCS, URL: "git+https://github.com/twbs/bootstrap.git"}, {Type: types.RefIssueTracker, URL: "https://github.com/twbs/bootstrap/issues"}},
+				Name:    "bootstrap",
+				Version: "5.0.2",
+				License: "MIT",
 			}},
 			wantErr: "",
 		},
@@ -40,10 +38,9 @@ func TestParse(t *testing.T) {
 			name:      "happy path - legacy license",
 			inputFile: "testdata/legacy_package.json",
 			want: []types.Library{{
-				Name:               "angular",
-				Version:            "4.1.2",
-				License:            "ISC",
-				ExternalReferences: []types.ExternalRef{{Type: types.RefWebsite, URL: "https://getbootstrap.com/"}, {Type: types.RefVCS, URL: "git+https://github.com/twbs/bootstrap.git"}, {Type: types.RefIssueTracker, URL: "https://github.com/twbs/bootstrap/issues"}, {Type: types.RefLicense, URL: "https://opensource.org/licenses/ISC"}},
+				Name:    "angular",
+				Version: "4.1.2",
+				License: "ISC",
 			}},
 			wantErr: "",
 		},
@@ -72,22 +69,8 @@ func TestParse(t *testing.T) {
 				return
 			}
 
-			for _, lib := range v.want {
-				sortExternalRefs(lib.ExternalReferences)
-			}
-
-			for _, lib := range got {
-				sortExternalRefs(lib.ExternalReferences)
-			}
-
 			require.NoError(t, err)
 			assert.Equal(t, v.want, got)
 		})
 	}
-}
-
-func sortExternalRefs(refs []types.ExternalRef) {
-	sort.Slice(refs, func(i, j int) bool {
-		return refs[i].URL < refs[j].URL
-	})
 }

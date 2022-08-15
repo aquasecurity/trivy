@@ -8,46 +8,15 @@ import (
 	"golang.org/x/xerrors"
 )
 
-type packageRef struct {
-	Type string
-	Url  string
-}
 type packageJSON struct {
-	Name       string      `json:"name"`
-	Version    string      `json:"version"`
-	License    interface{} `json:"license"`
-	Homepage   string      `json:"homepage,omitempty"`
-	Repository packageRef  `json:"repository,omitempty"`
-	Bugs       packageRef  `json:"bugs,omitempty"`
-	Funding    packageRef  `json:"funding,omitempty"`
+	Name    string      `json:"name"`
+	Version string      `json:"version"`
+	License interface{} `json:"license"`
 }
 type Parser struct{}
 
 func NewParser() types.Parser {
 	return &Parser{}
-}
-
-func (p *Parser) GetExternalRefs(packageJson packageJSON) []types.ExternalRef {
-	externalRefs := []types.ExternalRef{}
-	if packageJson.Homepage != "" {
-		externalRefs = append(externalRefs, types.ExternalRef{Type: types.RefWebsite, URL: packageJson.Homepage})
-	}
-	switch v := packageJson.License.(type) {
-	case map[string]interface{}:
-		if licenseUrl, ok := v["url"]; ok {
-			externalRefs = append(externalRefs, types.ExternalRef{Type: types.RefLicense, URL: licenseUrl.(string)})
-		}
-	}
-
-	if (packageJson.Repository != packageRef{}) {
-		externalRefs = append(externalRefs, types.ExternalRef{Type: types.RefVCS, URL: packageJson.Repository.Url})
-	}
-
-	if (packageJson.Bugs != packageRef{}) {
-		externalRefs = append(externalRefs, types.ExternalRef{Type: types.RefIssueTracker, URL: packageJson.Bugs.Url})
-	}
-
-	return externalRefs
 }
 
 func (p *Parser) Parse(r dio.ReadSeekerAt) ([]types.Library, []types.Dependency, error) {
@@ -62,10 +31,9 @@ func (p *Parser) Parse(r dio.ReadSeekerAt) ([]types.Library, []types.Dependency,
 	}
 
 	return []types.Library{{
-		Name:               data.Name,
-		Version:            data.Version,
-		License:            parseLicense(data.License),
-		ExternalReferences: p.GetExternalRefs(data),
+		Name:    data.Name,
+		Version: data.Version,
+		License: parseLicense(data.License),
 	}}, nil, nil
 }
 
