@@ -17,7 +17,7 @@
   "Results": [
     {
       "Target": "package-lock.json",
-      "Class": "vuln-lang-pkgs",
+      "Class": "lang-pkgs",
       "Type": "npm",
       "Vulnerabilities": [
         {

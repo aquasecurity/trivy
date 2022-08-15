@@ -187,8 +187,8 @@ func (e *Marshaler) marshalComponents(r types.Report, bomRef string) (*[]cdx.Com
 	var metadataDependencies []cdx.Dependency
 	libraryUniqMap := map[string]struct{}{}
 	vulnMap := map[string]cdx.Vulnerability{}
-	bomRefMap := map[string]string{}
 	for _, result := range r.Results {
+		bomRefMap := map[string]string{}
 		var componentDependencies []cdx.Dependency
 		for _, pkg := range result.Packages {
 			pkgComponent, err := pkgToCdxComponent(result.Type, r.Metadata, pkg)
