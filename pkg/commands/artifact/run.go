@@ -40,6 +40,8 @@ const (
 	TargetRepository     TargetKind = "repo"
 	TargetImageArchive   TargetKind = "archive"
 	TargetSBOM           TargetKind = "sbom"
+
+	devVersion = "dev"
 )
 
 var (
@@ -547,17 +549,17 @@ func Exit(opts flag.Options, failedResults bool) {
 }
 
 func canonicalVersion(ver string) string {
-	if ver == "dev" {
+	if ver == devVersion {
 		return ver
 	}
 	v, err := semver.Parse(ver)
 	if err != nil {
-		return "dev"
+		return devVersion
 	}
 	// Replace pre-release with "dev"
 	// e.g. v0.34.0-beta1+snapshot-1
 	if v.IsPreRelease() || v.Metadata() != "" {
-		return "dev"
+		return devVersion
 	}
 
 	// Add "v" prefix, "0.34.0" => "v0.34.0" for the url
