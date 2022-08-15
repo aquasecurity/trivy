@@ -23,6 +23,49 @@ Have you created a tool that’s not listed? Add the name and description of you
 | -----------------------------------------| ----------------------------------------- |
 | [fifteen5/trivy-orb][fifteen5/trivy-orb] | Orb for running Trivy, a security scanner |
 
+
+## Trivy VSCode
+
+| Orb                | Description                 |
+| ------------------ | --------------------------- |
+| [vs-code][vs-code] | VS Code extension for trivy |
+
+
+## Vim Trivy
+
+| Orb                    | Description             |
+| ---------------------- | ----------------------- |
+| [vim-trivy][vim-trivy] | Vim extension for trivy |
+
+
+## Trivy Docker Desktop
+
+| Orb                              | Description                                                                                           |
+| ---------------------------------| ----------------------------------------------------------------------------------------------------- |
+| [docker-desktop][docker-desktop] | Trivy Docker Desktop extension for scanning container images for vulnerabilities and generating SBOMs |
+
+
+## Trivy Azure DevOps
+
+| Orb                          | Description                                                      |
+| ---------------------------- | ---------------------------------------------------------------- |
+| [azure-devops][azure-devops] | An Azure DevOps Pipelines Task for Trivy, with an integrated UI. |
+
+
+## Trivy Operator
+
+| Orb                              | Description                              |
+| ---------------------------------| ---------------------------------------- |
+| [trivy-operator][trivy-operator] | Kubernetes Operator for installing Trivy |
+
+
+## Trivy Kubernetes Lens Extension
+
+| Orb                          | Description                         |
+| ---------------------------- | ----------------------------------- |
+| [lens-extension][trivy-lens] | Trivy Extension for Kubernetes Lens |
+
+
 ## Others
 
 | Name                                     | Description                               |
@@ -35,3 +78,9 @@ Have you created a tool that’s not listed? Add the name and description of you
 [gitrivy]: https://github.com/marketplace/actions/trivy-action
 [explorer]: https://dbsystel.github.io/trivy-vulnerability-explorer/
 [semaphore-tutorial]: https://semaphoreci.com/blog/continuous-container-vulnerability-testing-with-trivy
+[vs-code]: https://github.com/aquasecurity/trivy-vscode-extension
+[vim-trivy]: https://github.com/aquasecurity/vim-trivy
+[docker-desktop]: https://github.com/aquasecurity/trivy-docker-extension
+[azure-devops]: https://github.com/aquasecurity/trivy-azure-pipelines-task
+[trivy-operator]: https://github.com/aquasecurity/trivy-operator
+[trivy-lens]: https://github.com/aquasecurity/trivy-operator-lens-extension

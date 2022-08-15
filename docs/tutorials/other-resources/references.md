@@ -1,7 +1,5 @@
-# Additional References
+# Additional Resources and Tutorials
 Below is a list of additional resources from the community.
-
-# Further Reading
 
 ## Announcements
 
@@ -13,17 +11,19 @@ Below is a list of additional resources from the community.
 - [Using Trivy to Discover Vulnerabilities in VS Code Projects](https://blog.aquasec.com/trivy-open-source-vulnerability-scanner-vs-code)
 - [the vulnerability remediation lifecycle of Alpine containers](https://ariadne.space/2021/06/08/the-vulnerability-remediation-lifecycle-of-alpine-containers/)
 - [How does a vulnerability scanner identify packages?](https://youtu.be/PaMnzeHBa8M)
+- [Detecting Spring4Shell with Trivy and Grype](https://youtu.be/mOfBcpJWwSs)
 
 ## CI/CD Pipelines
 
 - [DevSecOps with Trivy and GitHub Actions](https://blog.aquasec.com/devsecops-with-trivy-github-actions)
 - [Continuous Container Vulnerability Testing with Trivy](https://semaphoreci.com/blog/continuous-container-vulnerability-testing-with-trivy)
 - [Find Image Vulnerabilities Using GitHub and Aqua Security Trivy Action](https://blog.aquasec.com/github-vulnerability-scanner-trivy)
-- [Tweaking Trivy output to fit your workflow]()
+- [Getting Started With Trivy and Jenkins](https://youtu.be/MWe01VdwuMA)
 
 ## Misconfiguration Scanning
 
 - [Identifying Misconfigurations in your Terraform](https://youtu.be/cps1V5fOHtE)
+- [How to write custom policies for Trivy](https://blog.ediri.io/how-to-write-custom-policies-for-trivy)
 
 ## Trivy Kubernetes
 

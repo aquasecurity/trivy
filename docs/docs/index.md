@@ -63,7 +63,7 @@ Please see [LICENSE][license] for Trivy licensing information.
 [lang]: ../docs/vulnerability/detection/language.md
 
 [builtin]: ../docs/misconfiguration/policy/builtin.md
-[quickstart]: ../home/quickstart.md
+[quickstart]: ../getting-started/quickstart.md
 [podman]: ../docs/advanced/container/podman.md
 
 [sbom]: ../docs/sbom/index.md

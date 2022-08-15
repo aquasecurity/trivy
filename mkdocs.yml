@@ -9,12 +9,13 @@ edit_uri: ""
 nav:
   - Getting Started: 
       - Overview: index.md
-      - Quick Start: home/quickstart.md
-      - Installation: home/installation.md
+      - Installation: getting-started/installation.md
+      - Quick Start: getting-started/quickstart.md
   - Tutorials:
       - Overview: tutorials/overview.md
       - Trivy Kubernetes: 
           - Trivy K8s: tutorials/kubernetes/trivy-kubernetes.md
+          - GitOps: tutorials/kubernetes/gitops.md       
       - CI/CD:
           - Overview: tutorials/integrations/index.md
           - GitHub Actions: tutorials/integrations/github-actions.md
@@ -24,10 +25,9 @@ nav:
           - Bitbucket Pipelines: tutorials/integrations/bitbucket.md
           - AWS CodePipeline: tutorials/integrations/aws-codepipeline.md
           - AWS Security Hub: tutorials/integrations/aws-security-hub.md
-          - GitOps: tutorials/integrations/gitops.md       
       - Additional Resources: 
           - Tools: tutorials/other-resources/tools.md
-          - Community Tutorials: tutorials/other-resources/references.md
+          - Additional Resources: tutorials/other-resources/references.md
           - CKS Reference: tutorials/other-resources/cks.md
   - Trivy CLI:
       - Overview: docs/index.md
@@ -126,12 +126,12 @@ nav:
               - Server: docs/references/cli/server.md
               - Plugin: docs/references/cli/plugin.md
               - SBOM: docs/references/cli/sbom.md
-              - SBOM: docs/references/cli/module.md
+              - Module: docs/references/cli/module.md
           - Modes:
               - Standalone: docs/references/modes/standalone.md
               - Client/Server: docs/references/modes/client-server.md
           - Troubleshooting: docs/references/troubleshooting.md
-  - Trivy Operator: docs/kubernetes/operator/index.md
+  - Trivy Tools: tutorials/other-resources/tools.md
   - Contributing:
       - How to contribute:
           - Issues: community/contribute/issue.md

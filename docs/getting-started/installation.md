@@ -193,9 +193,12 @@ The same image is hosted on [Amazon ECR Public][ecr] as well.
 docker pull public.ecr.aws/aquasecurity/trivy:{{ git.tag[1:] }}
 ```
 
-## Helm
+## Trivy Operator Installation
 
-### Installing from the Aqua Chart Repository
+The Trivy Operator can be installed through kubectl as Kubernetes manifests or as a Helm Chart.
+For installation options and further information, please refer to the Trivy [Operator Documentation.][operator-docs]
+
+### Installing from the Aqua Helm Chart Repository
 
 ```
 helm repo add aquasecurity https://aquasecurity.github.io/helm-charts/
@@ -248,11 +251,17 @@ podAnnotations: {}
 
 > **Tip**: List all releases using `helm list`.
 
-# Trivy Operator Installation
+## Docker Desktop Extension
 
-The Trivy Operator can be installed through kubectl as Kubernetes manifests or as a Helm Chart.
-For installation options and further information, please refer to the Trivy [Operator Documentation.][operator-docs]
+Install the Trivy Docker Desktop Extension through the Extension Marketplace in Docker Desktop:
+<img src="docs/imgs/docker-desktop.png">
 
+Once installed, you can 
+
+- Scan public and private images that are either locally or in the Docker Hub.
+- Generate an SBOM for your container images.
+
+Watch the [tutorial for further information.](https://youtu.be/99tiVZLMujs)
 
 [ecr]: https://gallery.ecr.aws/aquasecurity/trivy
 [registry]: https://github.com/orgs/aquasecurity/packages/container/package/trivy
@@ -276,7 +285,7 @@ For installation options and further information, please refer to the Trivy [Ope
 [os]: ./docs/vulnerability/detection/os.md
 [lang]: ./docs/vulnerability/detection/language.md
 [builtin]: ./docs/misconfiguration/policy/builtin.md
-[quickstart]: ./home/quickstart.md
+[quickstart]: ./getting-started/quickstart.md
 [podman]: ./docs/advanced/container/podman.md
 
 [sbom]: ./docs/sbom/index.md
