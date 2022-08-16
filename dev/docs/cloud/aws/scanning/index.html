@@ -2790,7 +2790,7 @@
 <p>Whilst you can already scan the infrastructure-as-code that defines your AWS resources with <code>trivy config</code>, you can now scan your live AWS account(s) directly too.</p>
 <p>The included checks cover all of the aspects of the <a href="https://docs.aws.amazon.com/securityhub/latest/userguide/securityhub-standards-cis.html">AWS CIS 1.2</a> automated benchmarks.</p>
 <p>Trivy uses the same <a href="https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-configure.html">authentication methods</a> as the AWS CLI to configure and authenticate your access to the AWS platform.</p>
-<p>You will need permissions configured to read all AWS resources - we recommend using a group/role with the <code>ReadOnlyAccess</code> and <code>SecurityAudit</code> policies attached.</p>
+<p>You will need permissions configured to read all AWS resources - we recommend using a group/role with the <code>ReadOnlyAccess</code> policy attached.</p>
 <p>Once you've scanned your account, you can run additional commands to filter the results without having to run the entire scan again - results are cached locally per AWS account/region.</p>
 <h2 id="cli-commands">CLI Commands</h2>
 <p>Scan a full AWS account (all supported services):</p>
