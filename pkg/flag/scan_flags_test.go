@@ -29,11 +29,14 @@ func TestScanFlagGroup_ToOptions(t *testing.T) {
 		wantLogs []string
 	}{
 		{
-			name:   "happy path",
-			args:   []string{"alpine:latest"},
-			fields: fields{},
+			name: "happy path",
+			args: []string{"alpine:latest"},
+			fields: fields{
+				securityChecks: "vuln,secret",
+			},
 			want: flag.ScanOptions{
-				Target: "alpine:latest",
+				Target:         "alpine:latest",
+				SecurityChecks: []string{"vuln", "secret"},
 			},
 		},
 		{
@@ -74,28 +77,34 @@ func TestScanFlagGroup_ToOptions(t *testing.T) {
 		{
 			name: "skip two files",
 			fields: fields{
-				skipFiles: []string{"file1", "file2"},
+				securityChecks: "vuln,secret",
+				skipFiles:      []string{"file1", "file2"},
 			},
 			want: flag.ScanOptions{
-				SkipFiles: []string{"file1", "file2"},
+				SecurityChecks: []string{"vuln", "secret"},
+				SkipFiles:      []string{"file1", "file2"},
 			},
 		},
 		{
 			name: "skip two folders",
 			fields: fields{
-				skipDirs: []string{"dir1", "dir2"},
+				securityChecks: "vuln,secret",
+				skipDirs:       []string{"dir1", "dir2"},
 			},
 			want: flag.ScanOptions{
-				SkipDirs: []string{"dir1", "dir2"},
+				SecurityChecks: []string{"vuln", "secret"},
+				SkipDirs:       []string{"dir1", "dir2"},
 			},
 		},
 		{
 			name: "offline scan",
 			fields: fields{
-				offlineScan: true,
+				securityChecks: "vuln,secret",
+				offlineScan:    true,
 			},
 			want: flag.ScanOptions{
-				OfflineScan: true,
+				SecurityChecks: []string{"vuln", "secret"},
+				OfflineScan:    true,
 			},
 		},
 	}
@@ -121,7 +130,7 @@ func TestScanFlagGroup_ToOptions(t *testing.T) {
 				SecurityChecks: &flag.SecurityChecksFlag,
 			}
 
-			got := f.ToOptions(tt.args)
+			got, _ := f.ToOptions(tt.args)
 			assert.Equalf(t, tt.want, got, "ToOptions()")
 
 			// Assert log messages
