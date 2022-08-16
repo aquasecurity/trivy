@@ -131,7 +131,7 @@ nav:
               - Standalone: docs/references/modes/standalone.md
               - Client/Server: docs/references/modes/client-server.md
           - Troubleshooting: docs/references/troubleshooting.md
-  - Trivy Tools: tutorials/other-resources/tools.md
+  - Trivy Ecosystem: tutorials/other-resources/tools.md
   - Contributing:
       - How to contribute:
           - Issues: community/contribute/issue.md
