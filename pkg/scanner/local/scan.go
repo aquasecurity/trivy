@@ -290,7 +290,7 @@ func (s Scanner) scanLangPkgs(apps []ftypes.Application) (types.Results, error) 
 		if err != nil {
 			return nil, xerrors.Errorf("failed vulnerability detection of libraries: %w", err)
 		} else if len(vulns) == 0 {
-			return nil, nil
+			continue
 		}
 
 		target := app.FilePath
