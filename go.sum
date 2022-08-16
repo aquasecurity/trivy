@@ -20,8 +20,8 @@ github.com/kr/pretty v0.1.0/go.mod h1:dAy3ld7l9f0ibDNOQOHHMYYIIbhfbHSm3C4ZsoJORN
 github.com/kr/pty v1.1.1/go.mod h1:pFQYn66WHrOpPYNljwOMqo10TkYh1fy3cYio2l3bCsQ=
 github.com/kr/text v0.1.0 h1:45sCR5RtlFHMR4UwH9sdQ5TC8v0qDQCHnXt+kaKSTVE=
 github.com/kr/text v0.1.0/go.mod h1:4Jbv+DJW3UT/LiOwJeYQe1efqtUx/iVham/4vfdArNI=
-github.com/microsoft/go-rustaudit v0.0.0-20220805122630-097fff025e34 h1:W/tuIksfbU5I1xVm2zxi0afcIhDvmnebpdq+tA3OPAE=
-github.com/microsoft/go-rustaudit v0.0.0-20220805122630-097fff025e34/go.mod h1:vYT9HE7WCvL64iVeZylKmCsWKfE+JZ8105iuh2Trk8g=
+github.com/microsoft/go-rustaudit v0.0.0-20220808201409-204dfee52032 h1:TLygBUBxikNJJfLwgm+Qwdgq1FtfV8Uh7bcxRyTzK8s=
+github.com/microsoft/go-rustaudit v0.0.0-20220808201409-204dfee52032/go.mod h1:vYT9HE7WCvL64iVeZylKmCsWKfE+JZ8105iuh2Trk8g=
 github.com/pkg/errors v0.8.1 h1:iURUrRGxPUNPdy5/HRSm+Yj6okJ6UtLINN0Q9M4+h3I=
 github.com/pkg/errors v0.8.1/go.mod h1:bwawxfHBFNV+L2hUp1rHADufV3IMtnDRdf1r5NINEl0=
 github.com/pmezard/go-difflib v1.0.0 h1:4DBwDE0NGyQoBHbLQYPwSUPoCMWR5BEzIk/f1lZbAQM=

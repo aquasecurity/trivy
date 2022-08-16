@@ -6,6 +6,7 @@ import (
 
 	dio "github.com/aquasecurity/go-dep-parser/pkg/io"
 	"github.com/aquasecurity/go-dep-parser/pkg/types"
+	"github.com/aquasecurity/go-dep-parser/pkg/utils"
 	rustaudit "github.com/microsoft/go-rustaudit"
 )
 
@@ -42,14 +43,27 @@ func (p *Parser) Parse(r dio.ReadSeekerAt) ([]types.Library, []types.Dependency,
 	}
 
 	var libs []types.Library
-	for _, dep := range info.Packages {
-		if dep.Kind == rustaudit.Runtime {
+	var deps []types.Dependency
+	for _, pkg := range info.Packages {
+		if pkg.Kind == rustaudit.Runtime {
 			libs = append(libs, types.Library{
-				Name:    dep.Name,
-				Version: dep.Version,
+				Name:     pkg.Name,
+				Version:  pkg.Version,
+				Indirect: !pkg.Root,
 			})
+
+			var childDeps []string
+			for _, dep_idx := range pkg.Dependencies {
+				dep := info.Packages[dep_idx]
+				if dep.Kind == rustaudit.Runtime {
+					childDeps = append(childDeps, utils.PackageID(dep.Name, dep.Version))
+				}
+			}
+			if len(childDeps) > 0 {
+				deps = append(deps, types.Dependency{ID: utils.PackageID(pkg.Name, pkg.Version), DependsOn: childDeps})
+			}
 		}
 	}
 
-	return libs, nil, nil
+	return libs, deps, nil
 }

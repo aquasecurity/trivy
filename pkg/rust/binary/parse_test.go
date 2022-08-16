@@ -13,55 +13,53 @@ import (
 
 // Test binaries generated from cargo-auditable test fixture
 // https://github.com/rust-secure-code/cargo-auditable/tree/6b77151/cargo-auditable/tests/fixtures/workspace
+var (
+	libs = []types.Library{
+		{
+			Name:     "crate_with_features",
+			Version:  "0.1.0",
+			Indirect: false,
+		},
+		{
+			Name:     "library_crate",
+			Version:  "0.1.0",
+			Indirect: true,
+		},
+	}
+
+	deps = []types.Dependency{
+		{
+			ID:        "crate_with_features@0.1.0",
+			DependsOn: []string{"library_crate@0.1.0"},
+		},
+	}
+)
 
 func TestParse(t *testing.T) {
 	tests := []struct {
 		name      string
 		inputFile string
 		want      []types.Library
+		wantDeps  []types.Dependency
 		wantErr   string
 	}{
 		{
 			name:      "ELF",
 			inputFile: "testdata/test.elf",
-			want: []types.Library{
-				{
-					Name:    "crate_with_features",
-					Version: "0.1.0",
-				},
-				{
-					Name:    "library_crate",
-					Version: "0.1.0",
-				},
-			},
+			want:      libs,
+			wantDeps:  deps,
 		},
 		{
 			name:      "PE",
 			inputFile: "testdata/test.exe",
-			want: []types.Library{
-				{
-					Name:    "crate_with_features",
-					Version: "0.1.0",
-				},
-				{
-					Name:    "library_crate",
-					Version: "0.1.0",
-				},
-			},
+			want:      libs,
+			wantDeps:  deps,
 		},
 		{
 			name:      "Mach-O",
 			inputFile: "testdata/test.macho",
-			want: []types.Library{
-				{
-					Name:    "crate_with_features",
-					Version: "0.1.0",
-				},
-				{
-					Name:    "library_crate",
-					Version: "0.1.0",
-				},
-			},
+			want:      libs,
+			wantDeps:  deps,
 		},
 		{
 			name:      "sad path",
@@ -75,7 +73,7 @@ func TestParse(t *testing.T) {
 			require.NoError(t, err)
 			defer f.Close()
 
-			got, _, err := binary.NewParser().Parse(f)
+			got, gotDeps, err := binary.NewParser().Parse(f)
 			if tt.wantErr != "" {
 				require.NotNil(t, err)
 				assert.Contains(t, err.Error(), tt.wantErr)
@@ -84,6 +82,7 @@ func TestParse(t *testing.T) {
 
 			assert.NoError(t, err)
 			assert.Equal(t, tt.want, got)
+			assert.Equal(t, tt.wantDeps, gotDeps)
 		})
 	}
 }

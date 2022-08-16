@@ -40,10 +40,6 @@ func NewParser() types.Parser {
 	return &Parser{}
 }
 
-func (p *Parser) ID(name, version string) string {
-	return fmt.Sprintf("%s@%s", name, version)
-}
-
 func (p *Parser) Parse(r dio.ReadSeekerAt) ([]types.Library, []types.Dependency, error) {
 	var lockFile LockFile
 	decoder := json.NewDecoder(r)
@@ -73,7 +69,7 @@ func (p *Parser) parse(dependencies map[string]Dependency, dircetDeps map[string
 		}
 
 		lib := types.Library{
-			ID:                 p.ID(pkgName, dependency.Version),
+			ID:                 utils.PackageID(pkgName, dependency.Version),
 			Name:               pkgName,
 			Version:            dependency.Version,
 			Indirect:           isIndirectLib(pkgName, dircetDeps),
@@ -85,14 +81,14 @@ func (p *Parser) parse(dependencies map[string]Dependency, dircetDeps map[string
 		for libName, requiredVer := range dependency.Requires {
 			// Try to resolve the version with nested dependencies first
 			if resolvedDep, ok := dependency.Dependencies[libName]; ok {
-				libID := p.ID(libName, resolvedDep.Version)
+				libID := utils.PackageID(libName, resolvedDep.Version)
 				dependsOn = append(dependsOn, libID)
 				continue
 			}
 
 			// Try to resolve the version with the higher level dependencies
 			if ver, ok := versions[libName]; ok {
-				dependsOn = append(dependsOn, p.ID(libName, ver))
+				dependsOn = append(dependsOn, utils.PackageID(libName, ver))
 				continue
 			}
 
@@ -101,7 +97,7 @@ func (p *Parser) parse(dependencies map[string]Dependency, dircetDeps map[string
 		}
 
 		if len(dependsOn) > 0 {
-			deps = append(deps, types.Dependency{ID: p.ID(lib.Name, lib.Version), DependsOn: dependsOn})
+			deps = append(deps, types.Dependency{ID: utils.PackageID(lib.Name, lib.Version), DependsOn: dependsOn})
 		}
 
 		if dependency.Dependencies != nil {
