@@ -5,6 +5,7 @@ import (
 
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zaptest/observer"
 
@@ -22,11 +23,12 @@ func TestScanFlagGroup_ToOptions(t *testing.T) {
 		securityChecks string
 	}
 	tests := []struct {
-		name     string
-		args     []string
-		fields   fields
-		want     flag.ScanOptions
-		wantLogs []string
+		name      string
+		args      []string
+		fields    fields
+		want      flag.ScanOptions
+		wantLogs  []string
+		assertion require.ErrorAssertionFunc
 	}{
 		{
 			name: "happy path",
@@ -38,6 +40,7 @@ func TestScanFlagGroup_ToOptions(t *testing.T) {
 				Target:         "alpine:latest",
 				SecurityChecks: []string{"vuln", "secret"},
 			},
+			assertion: require.NoError,
 		},
 		{
 			name: "happy path for configs",
@@ -49,6 +52,7 @@ func TestScanFlagGroup_ToOptions(t *testing.T) {
 				Target:         "alpine:latest",
 				SecurityChecks: []string{types.SecurityCheckConfig},
 			},
+			assertion: require.NoError,
 		},
 		{
 			name: "with wrong security check",
@@ -61,18 +65,42 @@ func TestScanFlagGroup_ToOptions(t *testing.T) {
 			wantLogs: []string{
 				`unknown security check: WRONG-CHECK`,
 			},
+			assertion: require.NoError,
 		},
 		{
-			name:   "without target (args)",
-			args:   []string{},
-			fields: fields{},
-			want:   flag.ScanOptions{},
+			name: "without supported security check",
+			fields: fields{
+				securityChecks: "WRONG-CHECK",
+			},
+			want: flag.ScanOptions{},
+			wantLogs: []string{
+				`unknown security check: WRONG-CHECK`,
+			},
+			assertion: func(t require.TestingT, err error, msgs ...interface{}) {
+				require.ErrorContains(t, err, "--security-check flag doesn't contain supported values")
+			},
 		},
 		{
-			name:   "with two or more targets (args)",
-			args:   []string{"alpine:latest", "nginx:latest"},
-			fields: fields{},
-			want:   flag.ScanOptions{},
+			name: "without target (args)",
+			args: []string{},
+			fields: fields{
+				securityChecks: "vuln,secret",
+			},
+			want: flag.ScanOptions{
+				SecurityChecks: []string{"vuln", "secret"},
+			},
+			assertion: require.NoError,
+		},
+		{
+			name: "with two or more targets (args)",
+			args: []string{"alpine:latest", "nginx:latest"},
+			fields: fields{
+				securityChecks: "vuln,secret",
+			},
+			want: flag.ScanOptions{
+				SecurityChecks: []string{"vuln", "secret"},
+			},
+			assertion: require.NoError,
 		},
 		{
 			name: "skip two files",
@@ -84,6 +112,7 @@ func TestScanFlagGroup_ToOptions(t *testing.T) {
 				SecurityChecks: []string{"vuln", "secret"},
 				SkipFiles:      []string{"file1", "file2"},
 			},
+			assertion: require.NoError,
 		},
 		{
 			name: "skip two folders",
@@ -95,6 +124,7 @@ func TestScanFlagGroup_ToOptions(t *testing.T) {
 				SecurityChecks: []string{"vuln", "secret"},
 				SkipDirs:       []string{"dir1", "dir2"},
 			},
+			assertion: require.NoError,
 		},
 		{
 			name: "offline scan",
@@ -106,6 +136,7 @@ func TestScanFlagGroup_ToOptions(t *testing.T) {
 				SecurityChecks: []string{"vuln", "secret"},
 				OfflineScan:    true,
 			},
+			assertion: require.NoError,
 		},
 	}
 
@@ -130,7 +161,8 @@ func TestScanFlagGroup_ToOptions(t *testing.T) {
 				SecurityChecks: &flag.SecurityChecksFlag,
 			}
 
-			got, _ := f.ToOptions(tt.args)
+			got, err := f.ToOptions(tt.args)
+			tt.assertion(t, err)
 			assert.Equalf(t, tt.want, got, "ToOptions()")
 
 			// Assert log messages
