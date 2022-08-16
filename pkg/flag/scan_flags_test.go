@@ -26,14 +26,11 @@ func TestScanFlagGroup_ToOptions(t *testing.T) {
 		assertion require.ErrorAssertionFunc
 	}{
 		{
-			name: "happy path",
-			args: []string{"alpine:latest"},
-			fields: fields{
-				securityChecks: "vuln,secret",
-			},
+			name:   "happy path",
+			args:   []string{"alpine:latest"},
+			fields: fields{},
 			want: flag.ScanOptions{
-				Target:         "alpine:latest",
-				SecurityChecks: []string{"vuln", "secret"},
+				Target: "alpine:latest",
 			},
 			assertion: require.NoError,
 		},
@@ -50,14 +47,6 @@ func TestScanFlagGroup_ToOptions(t *testing.T) {
 			assertion: require.NoError,
 		},
 		{
-			name:   "no security checks",
-			fields: fields{},
-			want:   flag.ScanOptions{},
-			assertion: func(t require.TestingT, err error, msgs ...interface{}) {
-				require.ErrorContains(t, err, "no security checks")
-			},
-		},
-		{
 			name: "with wrong security check",
 			fields: fields{
 				securityChecks: "vuln,WRONG-CHECK",
@@ -68,60 +57,46 @@ func TestScanFlagGroup_ToOptions(t *testing.T) {
 			},
 		},
 		{
-			name: "without target (args)",
-			args: []string{},
-			fields: fields{
-				securityChecks: "vuln,secret",
-			},
-			want: flag.ScanOptions{
-				SecurityChecks: []string{"vuln", "secret"},
-			},
+			name:      "without target (args)",
+			args:      []string{},
+			fields:    fields{},
+			want:      flag.ScanOptions{},
 			assertion: require.NoError,
 		},
 		{
-			name: "with two or more targets (args)",
-			args: []string{"alpine:latest", "nginx:latest"},
-			fields: fields{
-				securityChecks: "vuln,secret",
-			},
-			want: flag.ScanOptions{
-				SecurityChecks: []string{"vuln", "secret"},
-			},
+			name:      "with two or more targets (args)",
+			args:      []string{"alpine:latest", "nginx:latest"},
+			fields:    fields{},
+			want:      flag.ScanOptions{},
 			assertion: require.NoError,
 		},
 		{
 			name: "skip two files",
 			fields: fields{
-				securityChecks: "vuln,secret",
-				skipFiles:      []string{"file1", "file2"},
+				skipFiles: []string{"file1", "file2"},
 			},
 			want: flag.ScanOptions{
-				SecurityChecks: []string{"vuln", "secret"},
-				SkipFiles:      []string{"file1", "file2"},
+				SkipFiles: []string{"file1", "file2"},
 			},
 			assertion: require.NoError,
 		},
 		{
 			name: "skip two folders",
 			fields: fields{
-				securityChecks: "vuln,secret",
-				skipDirs:       []string{"dir1", "dir2"},
+				skipDirs: []string{"dir1", "dir2"},
 			},
 			want: flag.ScanOptions{
-				SecurityChecks: []string{"vuln", "secret"},
-				SkipDirs:       []string{"dir1", "dir2"},
+				SkipDirs: []string{"dir1", "dir2"},
 			},
 			assertion: require.NoError,
 		},
 		{
 			name: "offline scan",
 			fields: fields{
-				securityChecks: "vuln,secret",
-				offlineScan:    true,
+				offlineScan: true,
 			},
 			want: flag.ScanOptions{
-				SecurityChecks: []string{"vuln", "secret"},
-				OfflineScan:    true,
+				OfflineScan: true,
 			},
 			assertion: require.NoError,
 		},

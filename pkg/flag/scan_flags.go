@@ -90,8 +90,8 @@ func (f *ScanFlagGroup) ToOptions(args []string) (ScanOptions, error) {
 
 func parseSecurityCheck(securityCheck []string) ([]string, error) {
 	switch {
-	case len(securityCheck) == 0: // no checks
-		return nil, xerrors.New("no security checks")
+	case len(securityCheck) == 0: // no checks. Can be empty when generating SBOM
+		return nil, nil
 	case len(securityCheck) == 1 && strings.Contains(securityCheck[0], ","): // get checks from flag
 		securityCheck = strings.Split(securityCheck[0], ",")
 	}
@@ -99,7 +99,7 @@ func parseSecurityCheck(securityCheck []string) ([]string, error) {
 	var securityChecks []string
 	for _, v := range securityCheck {
 		if !slices.Contains(types.SecurityChecks, v) {
-			return nil, xerrors.New(fmt.Sprintf("unknown security check: %s", v))
+			return nil, xerrors.Errorf("unknown security check: %s", v)
 		}
 		securityChecks = append(securityChecks, v)
 	}
