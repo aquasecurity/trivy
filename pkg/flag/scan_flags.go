@@ -5,8 +5,8 @@ import (
 	"strings"
 
 	"golang.org/x/exp/slices"
+	"golang.org/x/xerrors"
 
-	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
 
@@ -69,10 +69,14 @@ func (f *ScanFlagGroup) Flags() []*Flag {
 	return []*Flag{f.SkipDirs, f.SkipFiles, f.OfflineScan, f.SecurityChecks}
 }
 
-func (f *ScanFlagGroup) ToOptions(args []string) ScanOptions {
+func (f *ScanFlagGroup) ToOptions(args []string) (ScanOptions, error) {
 	var target string
 	if len(args) == 1 {
 		target = args[0]
+	}
+	securityChecks, err := parseSecurityCheck(getStringSlice(f.SecurityChecks))
+	if err != nil {
+		return ScanOptions{}, xerrors.Errorf("unable to parse security checks: %w", err)
 	}
 
 	return ScanOptions{
@@ -80,14 +84,14 @@ func (f *ScanFlagGroup) ToOptions(args []string) ScanOptions {
 		SkipDirs:       getStringSlice(f.SkipDirs),
 		SkipFiles:      getStringSlice(f.SkipFiles),
 		OfflineScan:    getBool(f.OfflineScan),
-		SecurityChecks: parseSecurityCheck(getStringSlice(f.SecurityChecks)),
-	}
+		SecurityChecks: securityChecks,
+	}, nil
 }
 
-func parseSecurityCheck(securityCheck []string) []string {
+func parseSecurityCheck(securityCheck []string) ([]string, error) {
 	switch {
-	case len(securityCheck) == 0: // no checks
-		return nil
+	case len(securityCheck) == 0: // no checks. Can be empty when generating SBOM
+		return nil, nil
 	case len(securityCheck) == 1 && strings.Contains(securityCheck[0], ","): // get checks from flag
 		securityCheck = strings.Split(securityCheck[0], ",")
 	}
@@ -95,10 +99,9 @@ func parseSecurityCheck(securityCheck []string) []string {
 	var securityChecks []string
 	for _, v := range securityCheck {
 		if !slices.Contains(types.SecurityChecks, v) {
-			log.Logger.Warnf("unknown security check: %s", v)
-			continue
+			return nil, xerrors.Errorf("unknown security check: %s", v)
 		}
 		securityChecks = append(securityChecks, v)
 	}
-	return securityChecks
+	return securityChecks, nil
 }
