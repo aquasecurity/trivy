@@ -3,15 +3,11 @@ package flag_test
 import (
 	"testing"
 
+	"github.com/aquasecurity/trivy/pkg/flag"
+	"github.com/aquasecurity/trivy/pkg/types"
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"go.uber.org/zap"
-	"go.uber.org/zap/zaptest/observer"
-
-	"github.com/aquasecurity/trivy/pkg/flag"
-	"github.com/aquasecurity/trivy/pkg/log"
-	"github.com/aquasecurity/trivy/pkg/types"
 )
 
 func TestScanFlagGroup_ToOptions(t *testing.T) {
@@ -27,7 +23,6 @@ func TestScanFlagGroup_ToOptions(t *testing.T) {
 		args      []string
 		fields    fields
 		want      flag.ScanOptions
-		wantLogs  []string
 		assertion require.ErrorAssertionFunc
 	}{
 		{
@@ -55,29 +50,21 @@ func TestScanFlagGroup_ToOptions(t *testing.T) {
 			assertion: require.NoError,
 		},
 		{
+			name:   "no security checks",
+			fields: fields{},
+			want:   flag.ScanOptions{},
+			assertion: func(t require.TestingT, err error, msgs ...interface{}) {
+				require.ErrorContains(t, err, "no security checks")
+			},
+		},
+		{
 			name: "with wrong security check",
 			fields: fields{
 				securityChecks: "vuln,WRONG-CHECK",
 			},
-			want: flag.ScanOptions{
-				SecurityChecks: []string{types.SecurityCheckVulnerability},
-			},
-			wantLogs: []string{
-				`unknown security check: WRONG-CHECK`,
-			},
-			assertion: require.NoError,
-		},
-		{
-			name: "without supported security check",
-			fields: fields{
-				securityChecks: "WRONG-CHECK",
-			},
 			want: flag.ScanOptions{},
-			wantLogs: []string{
-				`unknown security check: WRONG-CHECK`,
-			},
 			assertion: func(t require.TestingT, err error, msgs ...interface{}) {
-				require.ErrorContains(t, err, "--security-check flag doesn't contain supported values")
+				require.ErrorContains(t, err, "unknown security check")
 			},
 		},
 		{
@@ -142,11 +129,6 @@ func TestScanFlagGroup_ToOptions(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			level := zap.WarnLevel
-
-			core, obs := observer.New(level)
-			log.Logger = zap.New(core).Sugar()
-
 			viper.Set(flag.SkipDirsFlag.ConfigName, tt.fields.skipDirs)
 			viper.Set(flag.SkipFilesFlag.ConfigName, tt.fields.skipFiles)
 			viper.Set(flag.OfflineScanFlag.ConfigName, tt.fields.offlineScan)
@@ -164,13 +146,6 @@ func TestScanFlagGroup_ToOptions(t *testing.T) {
 			got, err := f.ToOptions(tt.args)
 			tt.assertion(t, err)
 			assert.Equalf(t, tt.want, got, "ToOptions()")
-
-			// Assert log messages
-			var gotMessages []string
-			for _, entry := range obs.AllUntimed() {
-				gotMessages = append(gotMessages, entry.Message)
-			}
-			assert.Equal(t, tt.wantLogs, gotMessages, tt.name)
 		})
 
 	}
