@@ -135,6 +135,11 @@ require (
 	github.com/google/trillian v1.4.1 // indirect
 	github.com/googleapis/go-type-adapters v1.0.0 // indirect
 	github.com/hashicorp/hcl v1.0.0 // indirect
+	github.com/leodido/go-urn v1.2.1 // indirect
+	github.com/letsencrypt/boulder v0.0.0-20220331220046-b23ab962616e // indirect
+	github.com/oklog/ulid v1.3.1 // indirect
+	github.com/opentracing/opentracing-go v1.2.0 // indirect
+	github.com/pelletier/go-toml/v2 v2.0.1 // indirect
 	github.com/russross/blackfriday/v2 v2.1.0 // indirect
 	github.com/shibumi/go-pathspec v1.3.0 // indirect
 	github.com/sigstore/sigstore v1.2.1-0.20220526001230-8dc4fa90a468 // indirect
@@ -180,7 +185,7 @@ require (
 	github.com/apparentlymart/go-cidr v1.1.0 // indirect
 	github.com/apparentlymart/go-textseg/v13 v13.0.0 // indirect
 	github.com/aquasecurity/defsec v0.71.9
-	github.com/asaskevich/govalidator v0.0.0-20200428143746-21a406dcc535 // indirect
+	github.com/asaskevich/govalidator v0.0.0-20210307081110-f21760c49a8d // indirect
 	github.com/aws/aws-sdk-go v1.44.77
 	github.com/beorn7/perks v1.0.1 // indirect
 	github.com/bgentry/go-netrc v0.0.0-20140422174119-9fd32a8b3d3d // indirect
