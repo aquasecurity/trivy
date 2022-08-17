@@ -46,62 +46,32 @@ func NewArtifact(filePath string, c cache.ArtifactCache, opt artifact.Option) (a
 
 func (a Artifact) Inspect(_ context.Context) (types.ArtifactReference, error) {
 	var (
-		f      io.ReadSeeker
+		r      io.ReadSeeker
 		format sbom.Format
 		err    error
 	)
 
-	// TODO: use switch(a.artifactOption.TargetType) {}
 	if a.artifactOption.SbomAttestation {
 		// TODO: rename a.filePath. artifactName, artifactPath
 		d := a.filePath
 		log.Logger.Debugf("Repo digest: %s", d)
 
-		client, err := rekor.NewClient()
+		var att string
+		att, format, err = detectFormatSbomAttestation(d)
 		if err != nil {
-			return types.ArtifactReference{}, xerrors.Errorf("failed to create rekor client: %w", err)
+			return types.ArtifactReference{}, xerrors.Errorf("failed to detect SBOM attestation: %w", err)
 		}
-
-		uuids, err := client.Search(d)
-		if err != nil {
-			return types.ArtifactReference{}, xerrors.Errorf("failed to search rekor records: %w", err)
-		}
-		log.Logger.Debugf("Found matching entries: %s", uuids)
-
-		for _, u := range uuids {
-			log.Logger.Debugf("Fetching rekor record: %s", u)
-
-			record, err := client.GetByUUID(u)
-			if err != nil {
-				return types.ArtifactReference{}, xerrors.Errorf("failed to get rekor record: %w", err)
-			}
-			f = strings.NewReader(record.Attestation())
-
-			format, err = sbom.DetectFormat(f)
-			if err != nil {
-				log.Logger.Debugf("failed to detect SBOM format")
-				continue
-			}
-			if format == sbom.FormatUnknown {
-				continue
-			}
-			log.Logger.Infof("Recor record: %s", u)
-			break
-		}
-
-		if format == sbom.FormatUnknown {
-			return types.ArtifactReference{}, xerrors.Errorf("failed to detect type")
-		}
+		r = strings.NewReader(att)
 
 	} else {
-		ff, err := os.ReadFile(a.filePath)
+		f, err := os.ReadFile(a.filePath)
 		if err != nil {
-			return types.ArtifactReference{}, xerrors.Errorf("failed to read sbom file error: %w", err)
+			return types.ArtifactReference{}, xerrors.Errorf("failed to read SBOM file error: %w", err)
 		}
-		f = bytes.NewReader(ff)
+		r = bytes.NewReader(f)
 
 		// Format auto-detection
-		format, err = sbom.DetectFormat(f)
+		format, err = sbom.DetectFormat(r)
 		if err != nil {
 			return types.ArtifactReference{}, xerrors.Errorf("failed to detect SBOM format: %w", err)
 		}
@@ -110,11 +80,11 @@ func (a Artifact) Inspect(_ context.Context) (types.ArtifactReference, error) {
 	log.Logger.Infof("Detected SBOM format: %s", format)
 
 	// Rewind the SBOM file
-	if _, err = f.Seek(0, io.SeekStart); err != nil {
+	if _, err = r.Seek(0, io.SeekStart); err != nil {
 		return types.ArtifactReference{}, xerrors.Errorf("seek error: %w", err)
 	}
 
-	bom, err := a.Decode(f, format)
+	bom, err := a.Decode(r, format)
 	if err != nil {
 		return types.ArtifactReference{}, xerrors.Errorf("SBOM decode error: %w", err)
 	}
@@ -150,6 +120,40 @@ func (a Artifact) Inspect(_ context.Context) (types.ArtifactReference, error) {
 		// Keep an original report
 		CycloneDX: bom.CycloneDX,
 	}, nil
+}
+
+func detectFormatSbomAttestation(d string) (string, sbom.Format, error) {
+	client, err := rekor.NewClient()
+	if err != nil {
+		return "", "", xerrors.Errorf("failed to create rekor client: %w", err)
+	}
+
+	uuids, err := client.Search(d)
+	if err != nil {
+		return "", "", xerrors.Errorf("failed to search rekor records: %w", err)
+	}
+	log.Logger.Debugf("Found matching entries: %s", uuids)
+
+	for _, u := range uuids {
+		log.Logger.Debugf("Fetching rekor record: %s", u)
+
+		record, err := client.GetByUUID(u)
+		if err != nil {
+			return "", "", xerrors.Errorf("failed to get rekor record: %w", err)
+		}
+		r := strings.NewReader(record.Attestation())
+
+		format, err := sbom.DetectFormat(r)
+		if err != nil {
+			return "", "", xerrors.Errorf("failed to detect SBOM format: %w", err)
+		}
+		if format != sbom.FormatUnknown {
+			log.Logger.Infof("Recor record: %s", u)
+			return record.Attestation(), format, nil
+		}
+	}
+
+	return "", "", xerrors.Errorf("failed to detect type")
 }
 
 func (a Artifact) Decode(f io.Reader, format sbom.Format) (sbom.SBOM, error) {
