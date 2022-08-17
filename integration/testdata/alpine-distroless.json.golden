@@ -45,7 +45,7 @@
   "Results": [
     {
       "Target": "testdata/fixtures/images/alpine-distroless.tar.gz (alpine 3.16)",
-      "Class": "vuln-os-pkgs",
+      "Class": "os-pkgs",
       "Type": "alpine",
       "Vulnerabilities": [
         {

@@ -59,7 +59,7 @@
   "Results": [
     {
       "Target": "testdata/fixtures/images/photon-30.tar.gz (photon 3.0)",
-      "Class": "vuln-os-pkgs",
+      "Class": "os-pkgs",
       "Type": "photon",
       "Vulnerabilities": [
         {

@@ -388,7 +388,7 @@ func (a Artifact) guessBaseLayers(diffIDs []string, configFile *v1.ConfigFile) [
 		return nil
 	}
 
-	var baseImageIndex int
+	baseImageIndex := -1
 	var foundNonEmpty bool
 	for i := len(configFile.History) - 1; i >= 0; i-- {
 		h := configFile.History[i]

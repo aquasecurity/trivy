@@ -150,8 +150,9 @@ func Run(ctx context.Context, opt flag.Options) error {
 				for _, e := range aerr.Errors() {
 					log.Logger.Warnf("Adapter error: %s", e)
 				}
+			} else {
+				return fmt.Errorf("aws scan error: %w", err)
 			}
-			return fmt.Errorf("aws scan error: %w", err)
 		}
 		r = report.New(cloud.ProviderAWS, opt.Account, opt.Region, results.GetFailed(), opt.Services)
 	} else {

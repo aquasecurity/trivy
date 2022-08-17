@@ -55,12 +55,7 @@
           "Version": "2.0.0",
           "Layer": {}
         }
-      ]
-    },
-    {
-      "Target": "requirements.txt",
-      "Class": "vuln-lang-pkgs",
-      "Type": "pip",
+      ],
       "Vulnerabilities": [
         {
           "VulnerabilityID": "CVE-2019-14806",

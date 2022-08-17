@@ -68,6 +68,7 @@ this is a title
 					Category:  ftypes.SecretRuleCategory("category"),
 					Title:     "this is a title",
 					Severity:  "HIGH",
+					Deleted:   true,
 					StartLine: 3,
 					EndLine:   4,
 					Code: ftypes.Code{
@@ -114,7 +115,7 @@ HIGH: category (rule-id)
 ════════════════════════════════════════
 this is a title
 ────────────────────────────────────────
- my-file:3-4
+ my-file:3-4 (deleted in the intermediate layer)
 ────────────────────────────────────────
    1   #!/bin/bash
    2   

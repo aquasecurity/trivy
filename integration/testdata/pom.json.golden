@@ -17,7 +17,7 @@
   "Results": [
     {
       "Target": "pom.xml",
-      "Class": "vuln-lang-pkgs",
+      "Class": "lang-pkgs",
       "Type": "pom",
       "Vulnerabilities": [
         {
