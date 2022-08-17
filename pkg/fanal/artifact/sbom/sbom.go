@@ -10,7 +10,6 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/aquasecurity/trivy/pkg/rekor"
 	digest "github.com/opencontainers/go-digest"
 	"golang.org/x/xerrors"
 
@@ -22,6 +21,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/fanal/handler"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
+	"github.com/aquasecurity/trivy/pkg/rekor"
 	"github.com/aquasecurity/trivy/pkg/sbom"
 	"github.com/aquasecurity/trivy/pkg/sbom/cyclonedx"
 )
