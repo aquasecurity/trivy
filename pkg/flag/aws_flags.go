@@ -23,7 +23,7 @@ var (
 		Name:       "account",
 		ConfigName: "cloud.aws.account",
 		Value:      "",
-		Usage:      "The AWS account to scan. It's useful to specify this when reviewing cached results for multipel accounts.",
+		Usage:      "The AWS account to scan. It's useful to specify this when reviewing cached results for multiple accounts.",
 	}
 	awsARNFlag = Flag{
 		Name:       "arn",
