@@ -23,10 +23,6 @@ const (
 	timeOut = 30 * time.Second
 )
 
-type Client struct {
-	c rclient.Rekor
-}
-
 type Record struct {
 	payload string
 }
@@ -35,9 +31,12 @@ func (r Record) Attestation() string {
 	return `{"payloadType":"application/vnd.in-toto+json","payload":"` + r.payload + `"}"`
 }
 
+type Client struct {
+	c rclient.Rekor
+}
+
 func NewClient() (*Client, error) {
-	// TODO: user agent name
-	c, err := sclient.GetRekorClient(rekorServer, sclient.WithUserAgent("goclient"))
+	c, err := sclient.GetRekorClient(rekorServer)
 	if err != nil {
 		return nil, xerrors.Errorf("failed to create rekor client: %w", err)
 	}
@@ -78,6 +77,8 @@ func (c *Client) GetByUUID(uuid string) (Record, error) {
 
 	// TODO: understand this flow
 	// cf. https://github.com/sigstore/rekor/blob/f9f283ecab17c14d9a3d5aac5084cc95aabd30e0/cmd/rekor-cli/app/get.go#L130-L138
+	// https://github.com/sigstore/cosign/issues/1406
+	// https://github.com/sigstore/rekor/pull/671
 	u, err := sharding.GetUUIDFromIDString(params.EntryUUID)
 	if err != nil {
 		return Record{}, xerrors.Errorf("failed to get uuid from ID string: %w", err)
