@@ -26,21 +26,6 @@ var requiredFiles = []string{types.ComposerLock}
 type composerLibraryAnalyzer struct{}
 
 func (a composerLibraryAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInput) (*analyzer.AnalysisResult, error) {
-	// we should skip `composer.lock` inside `vendor` folder
-	if sep := string(os.PathSeparator); strings.Contains(input.FilePath, "vendor"+sep) {
-		file := filepath.Base(input.FilePath)
-		subDirs := strings.Split(input.FilePath, sep)
-		for i, s := range subDirs {
-			if s == "vendor" {
-				path := filepath.Join(subDirs[:i]...)
-				f := filepath.Join(path, file)
-				if _, err := os.Stat(f); err == os.ErrNotExist {
-					continue
-				}
-				return nil, nil
-			}
-		}
-	}
 	res, err := language.Analyze(types.Composer, input.FilePath, input.Content, composer.NewParser())
 
 	if err != nil {
@@ -51,6 +36,20 @@ func (a composerLibraryAnalyzer) Analyze(_ context.Context, input analyzer.Analy
 
 func (a composerLibraryAnalyzer) Required(filePath string, _ os.FileInfo) bool {
 	fileName := filepath.Base(filePath)
+	// we should skip `composer.lock` inside `vendor` folder
+	if sep := string(os.PathSeparator); strings.Contains(filePath, "vendor"+sep) {
+		subDirs := strings.Split(filePath, sep)
+		for i, s := range subDirs {
+			if s == "vendor" {
+				path := filepath.Join(subDirs[:i]...)
+				f := filepath.Join(path, fileName)
+				if _, err := os.Stat(f); err == os.ErrNotExist {
+					continue
+				}
+				return false
+			}
+		}
+	}
 	return utils.StringInSlice(fileName, requiredFiles)
 }
 
