@@ -97,6 +97,9 @@ func filterMisconfigurations(misconfs []types.DetectedMisconfiguration, severiti
 				if slices.Contains(ignoredIDs, misconf.ID) {
 					continue
 				}
+				if slices.Contains(ignoredIDs, misconf.AVDID) {
+					continue
+				}
 
 				// Count successes, failures, and exceptions
 				summarize(misconf.Status, summary)
