@@ -311,6 +311,7 @@ func TestTerraformMisconfigurationScan(t *testing.T) {
 										Message:   "No buckets allowed!",
 										PolicyMetadata: types.PolicyMetadata{
 											ID:                 "TEST001",
+											AVDID:              "AVD-TEST-0001",
 											Type:               "Terraform Security Check",
 											Title:              "Test policy",
 											Description:        "This is a test policy.",
@@ -385,6 +386,7 @@ func TestTerraformMisconfigurationScan(t *testing.T) {
 										Message:   "No buckets allowed!",
 										PolicyMetadata: types.PolicyMetadata{
 											ID:                 "TEST001",
+											AVDID:              "AVD-TEST-0001",
 											Type:               "Terraform Security Check",
 											Title:              "Test policy",
 											Description:        "This is a test policy.",
@@ -409,6 +411,7 @@ func TestTerraformMisconfigurationScan(t *testing.T) {
 										Message:   "No buckets allowed!",
 										PolicyMetadata: types.PolicyMetadata{
 											ID:                 "TEST001",
+											AVDID:              "AVD-TEST-0001",
 											Type:               "Terraform Security Check",
 											Title:              "Test policy",
 											Description:        "This is a test policy.",
@@ -443,6 +446,7 @@ func TestTerraformMisconfigurationScan(t *testing.T) {
 										Message:   "No buckets allowed!",
 										PolicyMetadata: types.PolicyMetadata{
 											ID:                 "TEST001",
+											AVDID:              "AVD-TEST-0001",
 											Type:               "Terraform Security Check",
 											Title:              "Test policy",
 											Description:        "This is a test policy.",
@@ -553,6 +557,7 @@ func TestTerraformMisconfigurationScan(t *testing.T) {
 										Message:   "",
 										PolicyMetadata: types.PolicyMetadata{
 											ID:                 "TEST001",
+											AVDID:              "AVD-TEST-0001",
 											Type:               "Terraform Security Check",
 											Title:              "Test policy",
 											Description:        "This is a test policy.",
@@ -655,6 +660,7 @@ func TestCloudFormationMisconfigurationScan(t *testing.T) {
 										Message:   "No buckets allowed!",
 										PolicyMetadata: types.PolicyMetadata{
 											ID:                 "TEST001",
+											AVDID:              "AVD-TEST-0001",
 											Type:               "CloudFormation Security Check",
 											Title:              "Test policy",
 											Description:        "This is a test policy.",
@@ -729,6 +735,7 @@ func TestCloudFormationMisconfigurationScan(t *testing.T) {
 										Message:   "No buckets allowed!",
 										PolicyMetadata: types.PolicyMetadata{
 											ID:                 "TEST001",
+											AVDID:              "AVD-TEST-0001",
 											Type:               "CloudFormation Security Check",
 											Title:              "Test policy",
 											Description:        "This is a test policy.",
@@ -753,6 +760,7 @@ func TestCloudFormationMisconfigurationScan(t *testing.T) {
 										Message:   "No buckets allowed!",
 										PolicyMetadata: types.PolicyMetadata{
 											ID:                 "TEST001",
+											AVDID:              "AVD-TEST-0001",
 											Type:               "CloudFormation Security Check",
 											Title:              "Test policy",
 											Description:        "This is a test policy.",
@@ -863,6 +871,7 @@ func TestCloudFormationMisconfigurationScan(t *testing.T) {
 										Message:   "",
 										PolicyMetadata: types.PolicyMetadata{
 											ID:                 "TEST001",
+											AVDID:              "AVD-TEST-0001",
 											Type:               "CloudFormation Security Check",
 											Title:              "Test policy",
 											Description:        "This is a test policy.",
@@ -970,6 +979,7 @@ func TestDockerfileMisconfigurationScan(t *testing.T) {
 										Message:   "",
 										PolicyMetadata: types.PolicyMetadata{
 											ID:                 "TEST001",
+											AVDID:              "AVD-TEST-0001",
 											Type:               "Dockerfile Security Check",
 											Title:              "Test policy",
 											Description:        "This is a test policy.",
@@ -1058,6 +1068,7 @@ func TestDockerfileMisconfigurationScan(t *testing.T) {
 										Message:   "",
 										PolicyMetadata: types.PolicyMetadata{
 											ID:                 "TEST001",
+											AVDID:              "AVD-TEST-0001",
 											Type:               "Dockerfile Security Check",
 											Title:              "Test policy",
 											Description:        "This is a test policy.",
@@ -1178,6 +1189,7 @@ func TestDockerfileMisconfigurationScan(t *testing.T) {
 										Message:   "",
 										PolicyMetadata: types.PolicyMetadata{
 											ID:                 "TEST001",
+											AVDID:              "AVD-TEST-0001",
 											Type:               "Dockerfile Security Check",
 											Title:              "Test policy",
 											Description:        "This is a test policy.",
@@ -1282,6 +1294,7 @@ func TestKubernetesMisconfigurationScan(t *testing.T) {
 										Message:   "No evil containers allowed!",
 										PolicyMetadata: types.PolicyMetadata{
 											ID:                 "TEST001",
+											AVDID:              "AVD-TEST-0001",
 											Type:               "Kubernetes Security Check",
 											Title:              "Test policy",
 											Description:        "This is a test policy.",
@@ -1356,6 +1369,7 @@ func TestKubernetesMisconfigurationScan(t *testing.T) {
 										Message:   "No evil containers allowed!",
 										PolicyMetadata: types.PolicyMetadata{
 											ID:                 "TEST001",
+											AVDID:              "AVD-TEST-0001",
 											Type:               "Kubernetes Security Check",
 											Title:              "Test policy",
 											Description:        "This is a test policy.",
@@ -1379,6 +1393,7 @@ func TestKubernetesMisconfigurationScan(t *testing.T) {
 										Message:   "No evil containers allowed!",
 										PolicyMetadata: types.PolicyMetadata{
 											ID:                 "TEST001",
+											AVDID:              "AVD-TEST-0001",
 											Type:               "Kubernetes Security Check",
 											Title:              "Test policy",
 											Description:        "This is a test policy.",
@@ -1489,6 +1504,7 @@ func TestKubernetesMisconfigurationScan(t *testing.T) {
 										Message:   "",
 										PolicyMetadata: types.PolicyMetadata{
 											ID:                 "TEST001",
+											AVDID:              "AVD-TEST-0001",
 											Type:               "Kubernetes Security Check",
 											Title:              "Test policy",
 											Description:        "This is a test policy.",
