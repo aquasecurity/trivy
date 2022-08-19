@@ -206,8 +206,6 @@ github.com/aquasecurity/bolt-fixtures v0.0.0-20200903104109-d34e7f983986 h1:2a30
 github.com/aquasecurity/bolt-fixtures v0.0.0-20200903104109-d34e7f983986/go.mod h1:NT+jyeCzXk6vXR5MTkdn4z64TgGfE5HMLC8qfj5unl8=
 github.com/aquasecurity/defsec v0.71.9 h1:eo244v1RQzziClY9xXyVftPibE0fddXbTtkvH52/slU=
 github.com/aquasecurity/defsec v0.71.9/go.mod h1:2jYgkIi3UFbkrbtpnr3Cu49JZ3MGuLMJAhyh63jV1I4=
-github.com/aquasecurity/go-dep-parser v0.0.0-20220815163410-fcf26eb92b86 h1:sc8hDjSxO3aiG0R7HvaAVnY6329NTtv9AqDGpVQxAPQ=
-github.com/aquasecurity/go-dep-parser v0.0.0-20220815163410-fcf26eb92b86/go.mod h1:wwxn1SyOEY8W5hy8aDQDoExX+ybVsi+xfIllXz93+Fk=
 github.com/aquasecurity/go-dep-parser v0.0.0-20220819065825-29e1e04fb7ae h1:1WdRZrDTkXHC5deeJhatiP3IUHHqdIo/dZlagTtlU8g=
 github.com/aquasecurity/go-dep-parser v0.0.0-20220819065825-29e1e04fb7ae/go.mod h1:6G1Y5nht5TL9kr1SzmrdE8PrmbNXo9nHx3qFR3qURg0=
 github.com/aquasecurity/go-gem-version v0.0.0-20201115065557-8eed6fe000ce h1:QgBRgJvtEOBtUXilDb1MLi1p1MWoyFDXAu5DEUl5nwM=
@@ -1193,8 +1191,6 @@ github.com/matttproud/golang_protobuf_extensions v1.0.1/go.mod h1:D8He9yQNgCq6Z5
 github.com/matttproud/golang_protobuf_extensions v1.0.2-0.20181231171920-c182affec369 h1:I0XW9+e1XWDxdcEniV4rQAIOPUGDq67JSCiRCgGCZLI=
 github.com/matttproud/golang_protobuf_extensions v1.0.2-0.20181231171920-c182affec369/go.mod h1:BSXmuO+STAnVfrANrmjBb36TMTDstsz7MSK+HVaYKv4=
 github.com/maxbrunsfeld/counterfeiter/v6 v6.2.2/go.mod h1:eD9eIE7cdwcMi9rYluz88Jz2VyhSmden33/aXg4oVIY=
-github.com/microsoft/go-rustaudit v0.0.0-20220805122630-097fff025e34 h1:W/tuIksfbU5I1xVm2zxi0afcIhDvmnebpdq+tA3OPAE=
-github.com/microsoft/go-rustaudit v0.0.0-20220805122630-097fff025e34/go.mod h1:vYT9HE7WCvL64iVeZylKmCsWKfE+JZ8105iuh2Trk8g=
 github.com/microsoft/go-rustaudit v0.0.0-20220808201409-204dfee52032 h1:TLygBUBxikNJJfLwgm+Qwdgq1FtfV8Uh7bcxRyTzK8s=
 github.com/microsoft/go-rustaudit v0.0.0-20220808201409-204dfee52032/go.mod h1:vYT9HE7WCvL64iVeZylKmCsWKfE+JZ8105iuh2Trk8g=
 github.com/miekg/dns v1.0.14/go.mod h1:W1PPwlIAgtquWBMBEV9nkV9Cazfe8ScdGz/Lj7v3Nrg=
