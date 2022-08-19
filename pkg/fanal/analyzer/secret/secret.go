@@ -39,6 +39,7 @@ var (
 
 type ScannerOption struct {
 	ConfigPath string
+	Config     *secret.Config
 }
 
 // SecretAnalyzer is an analyzer for secrets
@@ -48,7 +49,7 @@ type SecretAnalyzer struct {
 }
 
 func RegisterSecretAnalyzer(opt ScannerOption) error {
-	a, err := newSecretAnalyzer(opt.ConfigPath)
+	a, err := newSecretAnalyzer(opt)
 	if err != nil {
 		return xerrors.Errorf("secret scanner init error: %w", err)
 	}
@@ -56,14 +57,21 @@ func RegisterSecretAnalyzer(opt ScannerOption) error {
 	return nil
 }
 
-func newSecretAnalyzer(configPath string) (SecretAnalyzer, error) {
-	s, err := secret.NewScanner(configPath)
+func newSecretAnalyzer(opt ScannerOption) (SecretAnalyzer, error) {
+	if opt.Config != nil {
+		s, err := secret.NewScannerByConfig(*opt.Config)
+		if err != nil {
+			return SecretAnalyzer{}, xerrors.Errorf("secret scanner error: %w", err)
+		}
+		return SecretAnalyzer{scanner: s}, nil
+	}
+	s, err := secret.NewScanner(opt.ConfigPath)
 	if err != nil {
 		return SecretAnalyzer{}, xerrors.Errorf("secret scanner error: %w", err)
 	}
 	return SecretAnalyzer{
 		scanner:    s,
-		configPath: configPath,
+		configPath: opt.ConfigPath,
 	}, nil
 }
 

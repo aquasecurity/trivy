@@ -287,13 +287,16 @@ func NewScanner(configPath string) (Scanner, error) {
 
 	log.Logger.Infof("Loading %s for secret scanning...", configPath)
 
-	// reset global
-	global = Global{}
-
 	var config Config
 	if err = yaml.NewDecoder(f).Decode(&config); err != nil {
 		return Scanner{}, xerrors.Errorf("secrets config decode error: %w", err)
 	}
+
+	return NewScannerByConfig(config)
+}
+
+func NewScannerByConfig(config Config) (Scanner, error) {
+	global := &Global{}
 
 	enabledRules := builtinRules
 	if len(config.EnableBuiltinRuleIDs) != 0 {
@@ -319,7 +322,7 @@ func NewScanner(configPath string) (Scanner, error) {
 
 	global.ExcludeBlock = config.ExcludeBlock
 
-	return Scanner{Global: &global}, nil
+	return Scanner{Global: global}, nil
 }
 
 type ScanArgs struct {
