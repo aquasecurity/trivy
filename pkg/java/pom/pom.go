@@ -200,7 +200,7 @@ func (d pomDependency) Resolve(props map[string]string, depManagement map[string
 
 // ToArtifact converts dependency to artifact.
 // It should be called after calling Resolve() so that variables can be evaluated.
-func (d pomDependency) ToArtifact(exclusions map[string]struct{}) artifact {
+func (d pomDependency) ToArtifact(exclusions map[string]struct{}, depManagement map[string]pomDependency) artifact {
 	if exclusions == nil {
 		exclusions = map[string]struct{}{}
 	}
@@ -208,10 +208,11 @@ func (d pomDependency) ToArtifact(exclusions map[string]struct{}) artifact {
 		exclusions[fmt.Sprintf("%s:%s", e.Exclusion.GroupID, e.Exclusion.ArtifactID)] = struct{}{}
 	}
 	return artifact{
-		GroupID:    d.GroupID,
-		ArtifactID: d.ArtifactID,
-		Version:    newVersion(d.Version),
-		Exclusions: exclusions,
+		GroupID:              d.GroupID,
+		ArtifactID:           d.ArtifactID,
+		Version:              newVersion(d.Version),
+		Exclusions:           exclusions,
+		DependencyManagement: depManagement,
 	}
 }
 
