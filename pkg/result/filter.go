@@ -94,10 +94,7 @@ func filterMisconfigurations(misconfs []types.DetectedMisconfiguration, severiti
 		// Filter misconfigurations by severity
 		for _, s := range severities {
 			if s.String() == misconf.Severity {
-				if slices.Contains(ignoredIDs, misconf.ID) {
-					continue
-				}
-				if slices.Contains(ignoredIDs, misconf.AVDID) {
+				if slices.Contains(ignoredIDs, misconf.ID) || slices.Contains(ignoredIDs, misconf.AVDID) {
 					continue
 				}
 
