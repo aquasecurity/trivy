@@ -9,6 +9,7 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
+	"github.com/aquasecurity/trivy/pkg/fanal/secret"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 )
 
@@ -97,15 +98,42 @@ func TestSecretAnalyzer(t *testing.T) {
 	tests := []struct {
 		name       string
 		configPath string
+		config     *secret.Config
 		filePath   string
 		dir        string
 		want       *analyzer.AnalysisResult
 	}{
 		{
-			name:       "return results",
+			name:       "return results with config file",
 			configPath: "testdata/config.yaml",
 			filePath:   "testdata/secret.txt",
 			dir:        ".",
+			want: &analyzer.AnalysisResult{
+				Secrets: []types.Secret{
+					{
+						FilePath: "testdata/secret.txt",
+						Findings: []types.SecretFinding{wantFinding1, wantFinding2},
+					},
+				},
+			},
+		},
+		{
+			name:       "return results with config",
+			configPath: "",
+			config: &secret.Config{
+				CustomRules: []secret.Rule{
+					{
+						ID:              "rule1",
+						Category:        "general",
+						Title:           "Generic Rule",
+						Severity:        "HIGH",
+						Regex:           secret.MustCompile("(?i)(?P<key>(secret))(=|:).{0,5}['\"](?P<secret>[0-9a-zA-Z\\-_=]{8,64})['\"]"),
+						SecretGroupName: "secret",
+					},
+				},
+			},
+			filePath: "testdata/secret.txt",
+			dir:      ".",
 			want: &analyzer.AnalysisResult{
 				Secrets: []types.Secret{
 					{
@@ -150,7 +178,7 @@ func TestSecretAnalyzer(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			a, err := newSecretAnalyzer(tt.configPath)
+			a, err := newSecretAnalyzer(ScannerOption{tt.configPath, tt.config})
 			require.NoError(t, err)
 			content, err := os.Open(tt.filePath)
 			require.NoError(t, err)
@@ -205,7 +233,7 @@ func TestSecretRequire(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			a, err := newSecretAnalyzer("")
+			a, err := newSecretAnalyzer(ScannerOption{"", nil})
 			require.NoError(t, err)
 
 			fi, err := os.Stat(tt.filePath)
