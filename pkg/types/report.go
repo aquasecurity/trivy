@@ -39,12 +39,12 @@ type Results []Result
 type ResultClass string
 
 const (
-	ClassOSPkg       = "os-pkgs"
-	ClassLangPkg     = "lang-pkgs"
-	ClassConfig      = "config"
-	ClassSecret      = "secret"
-	ClassLicense     = "license"
-	ClassLicenseFile = "license-file"
+	ClassOSPkg       = "os-pkgs"      // For detected packages and vulnerabilities in OS packages
+	ClassLangPkg     = "lang-pkgs"    // For detected packages and vulnerabilities in language-specific packages
+	ClassConfig      = "config"       // For detected misconfigurations
+	ClassSecret      = "secret"       // For detected secrets
+	ClassLicense     = "license"      // For detected package licenses
+	ClassLicenseFile = "license-file" // For detected licenses in files
 	ClassCustom      = "custom"
 )
 

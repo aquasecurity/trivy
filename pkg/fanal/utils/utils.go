@@ -50,3 +50,16 @@ func Keys(m map[string]struct{}) []string {
 	}
 	return keys
 }
+
+func IsExecutable(fileInfo os.FileInfo) bool {
+	mode := fileInfo.Mode()
+	if !mode.IsRegular() {
+		return false
+	}
+
+	// Check executable file
+	if mode.Perm()&0111 != 0 {
+		return true
+	}
+	return false
+}

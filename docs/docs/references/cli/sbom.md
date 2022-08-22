@@ -13,6 +13,9 @@ Examples:
   # Scan CycloneDX and generate a CycloneDX report
   $ trivy sbom --format cyclonedx /path/to/report.cdx
 
+  # Scan CycloneDX-type attestation and show the result in tables
+  $ trivy sbom /path/to/report.cdx.intoto.jsonl
+
 
 Scan Flags
       --offline-scan             do not issue API requests to identify dependencies
@@ -39,7 +42,7 @@ Cache Flags
       --redis-key string       redis key file location, if using redis as cache backend
 
 DB Flags
-      --db-repository string   OCI repository to retrieve trivy-db from" (default "ghcr.io/aquasecurity/trivy-db")
+      --db-repository string   OCI repository to retrieve trivy-db from (default "ghcr.io/aquasecurity/trivy-db")
       --download-db-only       download/update vulnerability database but don't run a scan
       --no-progress            suppress progress bar
       --reset                  remove all caches and database

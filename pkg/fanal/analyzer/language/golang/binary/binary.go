@@ -11,6 +11,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer/language"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
+	"github.com/aquasecurity/trivy/pkg/fanal/utils"
 )
 
 func init() {
@@ -34,16 +35,7 @@ func (a gobinaryLibraryAnalyzer) Analyze(_ context.Context, input analyzer.Analy
 }
 
 func (a gobinaryLibraryAnalyzer) Required(_ string, fileInfo os.FileInfo) bool {
-	mode := fileInfo.Mode()
-	if !mode.IsRegular() {
-		return false
-	}
-
-	// Check executable file
-	if mode.Perm()&0111 != 0 {
-		return true
-	}
-	return false
+	return utils.IsExecutable(fileInfo)
 }
 
 func (a gobinaryLibraryAnalyzer) Type() analyzer.Type {

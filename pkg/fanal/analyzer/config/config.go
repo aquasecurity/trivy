@@ -27,6 +27,12 @@ type ScannerOption struct {
 	PolicyPaths             []string
 	DataPaths               []string
 	DisableEmbeddedPolicies bool
+
+	HelmValues       []string
+	HelmValueFiles   []string
+	HelmFileValues   []string
+	HelmStringValues []string
+	TerraformTFVars  []string
 }
 
 func (o *ScannerOption) Sort() {

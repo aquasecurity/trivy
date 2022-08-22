@@ -228,6 +228,7 @@ func TestScanner_Scan(t *testing.T) {
 							},
 						},
 					},
+					// For backward compatibility, will be removed
 					Vulnerabilities: []types.DetectedVulnerability{
 						{
 							VulnerabilityID:  "CVE-2020-9999",
@@ -259,6 +260,7 @@ func TestScanner_Scan(t *testing.T) {
 							},
 						},
 					},
+					// For backward compatibility, will be removed
 					Vulnerabilities: []types.DetectedVulnerability{
 						{
 							VulnerabilityID:  "CVE-2014-0081",
@@ -309,11 +311,24 @@ func TestScanner_Scan(t *testing.T) {
 						OS: &ftypes.OS{},
 						Applications: []ftypes.Application{
 							{
-								Type:     "bundler",
+								Type:     ftypes.Bundler,
 								FilePath: "/app/Gemfile.lock",
 								Libraries: []ftypes.Package{
 									{
-										Name:    "rails",
+										Name:    "innocent", // no vulnerability
+										Version: "1.2.3",
+										Layer: ftypes.Layer{
+											DiffID: "sha256:9922bc15eeefe1637b803ef2106f178152ce19a391f24aec838cbe2e48e73303",
+										},
+									},
+								},
+							},
+							{
+								Type:     ftypes.Bundler,
+								FilePath: "/app/Gemfile.lock",
+								Libraries: []ftypes.Package{
+									{
+										Name:    "rails", // one vulnerability
 										Version: "4.0.2",
 										Layer: ftypes.Layer{
 											DiffID: "sha256:9922bc15eeefe1637b803ef2106f178152ce19a391f24aec838cbe2e48e73303",
@@ -328,6 +343,8 @@ func TestScanner_Scan(t *testing.T) {
 			wantResults: types.Results{
 				{
 					Target: "/app/Gemfile.lock",
+					Class:  types.ClassLangPkg,
+					Type:   "bundler",
 					Vulnerabilities: []types.DetectedVulnerability{
 						{
 							VulnerabilityID:  "CVE-2014-0081",
@@ -350,8 +367,6 @@ func TestScanner_Scan(t *testing.T) {
 							},
 						},
 					},
-					Class: types.ClassLangPkg,
-					Type:  "bundler",
 				},
 			},
 			wantOS: &ftypes.OS{},
@@ -404,6 +419,8 @@ func TestScanner_Scan(t *testing.T) {
 				},
 				{
 					Target: "/app/Gemfile.lock",
+					Class:  types.ClassLangPkg,
+					Type:   ftypes.Bundler,
 					Vulnerabilities: []types.DetectedVulnerability{
 						{
 							VulnerabilityID:  "CVE-2014-0081",
@@ -426,8 +443,6 @@ func TestScanner_Scan(t *testing.T) {
 							},
 						},
 					},
-					Class: types.ClassLangPkg,
-					Type:  "bundler",
 				},
 			},
 			wantOS: &ftypes.OS{
@@ -478,6 +493,8 @@ func TestScanner_Scan(t *testing.T) {
 			wantResults: types.Results{
 				{
 					Target: "/app/Gemfile.lock",
+					Class:  types.ClassLangPkg,
+					Type:   ftypes.Bundler,
 					Vulnerabilities: []types.DetectedVulnerability{
 						{
 							VulnerabilityID:  "CVE-2014-0081",
@@ -500,8 +517,6 @@ func TestScanner_Scan(t *testing.T) {
 							},
 						},
 					},
-					Class: types.ClassLangPkg,
-					Type:  ftypes.Bundler,
 				},
 			},
 			wantOS: &ftypes.OS{
@@ -535,7 +550,7 @@ func TestScanner_Scan(t *testing.T) {
 			wantOS:      nil,
 		},
 		{
-			name: "happy path with only library detection",
+			name: "happy path with only language-specific package detection",
 			args: args{
 				target:   "alpine:latest",
 				layerIDs: []string{"sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10"},
@@ -597,6 +612,8 @@ func TestScanner_Scan(t *testing.T) {
 			wantResults: types.Results{
 				{
 					Target: "/app/Gemfile.lock",
+					Class:  types.ClassLangPkg,
+					Type:   ftypes.Bundler,
 					Vulnerabilities: []types.DetectedVulnerability{
 						{
 							VulnerabilityID:  "CVE-2014-0081",
@@ -619,11 +636,11 @@ func TestScanner_Scan(t *testing.T) {
 							},
 						},
 					},
-					Class: types.ClassLangPkg,
-					Type:  ftypes.Bundler,
 				},
 				{
 					Target: "/app/composer-lock.json",
+					Class:  types.ClassLangPkg,
+					Type:   ftypes.Composer,
 					Vulnerabilities: []types.DetectedVulnerability{
 						{
 							VulnerabilityID:  "CVE-2021-21263",
@@ -635,8 +652,6 @@ func TestScanner_Scan(t *testing.T) {
 							},
 						},
 					},
-					Class: types.ClassLangPkg,
-					Type:  ftypes.Composer,
 				},
 			},
 			wantOS: &ftypes.OS{

@@ -54,6 +54,7 @@ type Line struct {
 
 type PolicyMetadata struct {
 	ID                 string   `json:",omitempty"`
+	AVDID              string   `json:",omitempty"`
 	Type               string   `json:",omitempty"`
 	Title              string   `json:",omitempty"`
 	Description        string   `json:",omitempty"`
