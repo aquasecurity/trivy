@@ -422,7 +422,8 @@ func disabledAnalyzers(opts flag.Options) []analyzer.Type {
 	}
 
 	// Do not perform misconfiguration scanning when it is not specified.
-	if !slices.Contains(opts.SecurityChecks, types.SecurityCheckConfig) {
+	if !slices.Contains(opts.SecurityChecks, types.SecurityCheckConfig) &&
+		!slices.Contains(opts.SecurityChecks, types.SecurityCheckRbac) {
 		analyzers = append(analyzers, analyzer.TypeConfigFiles...)
 	}
 
