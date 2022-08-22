@@ -68,6 +68,16 @@ You can use homebrew on macOS and Linux.
 brew install aquasecurity/trivy/trivy
 ```
 
+## MacPorts
+
+You can also install `trivy` via [MacPorts](https://www.macports.org) on macOS:
+
+```bash
+sudo port install trivy
+```
+
+More info [here](https://ports.macports.org/port/trivy/).
+
 ## Nix/NixOS
 
 Direct issues installing `trivy` via `nix` through the channels mentioned [here](https://nixos.wiki/wiki/Support)
