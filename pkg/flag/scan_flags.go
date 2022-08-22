@@ -93,7 +93,7 @@ func (f *ScanFlagGroup) ToOptions(args []string) (ScanOptions, error) {
 		SkipDirs:       getStringSlice(f.SkipDirs),
 		SkipFiles:      getStringSlice(f.SkipFiles),
 		OfflineScan:    getBool(f.OfflineScan),
-                SecurityChecks: securityChecks,
+		SecurityChecks: securityChecks,
 		FilePatterns:   getStringSlice(f.FilePatterns),
 	}, nil
 }
