@@ -311,6 +311,7 @@ func TestTerraformMisconfigurationScan(t *testing.T) {
 										Message:   "No buckets allowed!",
 										PolicyMetadata: types.PolicyMetadata{
 											ID:                 "TEST001",
+											AVDID:              "AVD-TEST-0001",
 											Type:               "Terraform Security Check",
 											Title:              "Test policy",
 											Description:        "This is a test policy.",
@@ -341,9 +342,9 @@ func TestTerraformMisconfigurationScan(t *testing.T) {
 			want: types.ArtifactReference{
 				Name: "testdata/misconfig/terraform/single-failure/src",
 				Type: types.ArtifactFilesystem,
-				ID:   "sha256:1ea9fa11310ca80c7f6fbd0a83f27a8e6496d4cc626c40628e91a76dd2f42eb4",
+				ID:   "sha256:1defea0dd3834fe20d307d25aae0c9edc0054a99403b55e4ac9a380866f5eac7",
 				BlobIDs: []string{
-					"sha256:1ea9fa11310ca80c7f6fbd0a83f27a8e6496d4cc626c40628e91a76dd2f42eb4",
+					"sha256:1defea0dd3834fe20d307d25aae0c9edc0054a99403b55e4ac9a380866f5eac7",
 				},
 			},
 		},
@@ -385,6 +386,7 @@ func TestTerraformMisconfigurationScan(t *testing.T) {
 										Message:   "No buckets allowed!",
 										PolicyMetadata: types.PolicyMetadata{
 											ID:                 "TEST001",
+											AVDID:              "AVD-TEST-0001",
 											Type:               "Terraform Security Check",
 											Title:              "Test policy",
 											Description:        "This is a test policy.",
@@ -409,6 +411,7 @@ func TestTerraformMisconfigurationScan(t *testing.T) {
 										Message:   "No buckets allowed!",
 										PolicyMetadata: types.PolicyMetadata{
 											ID:                 "TEST001",
+											AVDID:              "AVD-TEST-0001",
 											Type:               "Terraform Security Check",
 											Title:              "Test policy",
 											Description:        "This is a test policy.",
@@ -443,6 +446,7 @@ func TestTerraformMisconfigurationScan(t *testing.T) {
 										Message:   "No buckets allowed!",
 										PolicyMetadata: types.PolicyMetadata{
 											ID:                 "TEST001",
+											AVDID:              "AVD-TEST-0001",
 											Type:               "Terraform Security Check",
 											Title:              "Test policy",
 											Description:        "This is a test policy.",
@@ -473,9 +477,9 @@ func TestTerraformMisconfigurationScan(t *testing.T) {
 			want: types.ArtifactReference{
 				Name: "testdata/misconfig/terraform/multiple-failures/src",
 				Type: types.ArtifactFilesystem,
-				ID:   "sha256:fe835f0c3a5c3535f712afb95a0e9ca5d8834f364a9a0cad0b9c04878028d4b7",
+				ID:   "sha256:2c8264334e81fbf9bb33f470f1d1c636fa3ccd1bf50f078836e4aa2d816a7d7f",
 				BlobIDs: []string{
-					"sha256:fe835f0c3a5c3535f712afb95a0e9ca5d8834f364a9a0cad0b9c04878028d4b7",
+					"sha256:2c8264334e81fbf9bb33f470f1d1c636fa3ccd1bf50f078836e4aa2d816a7d7f",
 				},
 			},
 		},
@@ -553,6 +557,7 @@ func TestTerraformMisconfigurationScan(t *testing.T) {
 										Message:   "",
 										PolicyMetadata: types.PolicyMetadata{
 											ID:                 "TEST001",
+											AVDID:              "AVD-TEST-0001",
 											Type:               "Terraform Security Check",
 											Title:              "Test policy",
 											Description:        "This is a test policy.",
@@ -581,9 +586,9 @@ func TestTerraformMisconfigurationScan(t *testing.T) {
 			want: types.ArtifactReference{
 				Name: "testdata/misconfig/terraform/passed/src",
 				Type: types.ArtifactFilesystem,
-				ID:   "sha256:c1b5f1bd53a1c7429c59b33de14ef1c6d43e42a84c3963ef77f80f79cbd048c0",
+				ID:   "sha256:e03b7145ba62e9fd03692132e49ce27420eed532a5de4cf896e3c6a6239c9157",
 				BlobIDs: []string{
-					"sha256:c1b5f1bd53a1c7429c59b33de14ef1c6d43e42a84c3963ef77f80f79cbd048c0",
+					"sha256:e03b7145ba62e9fd03692132e49ce27420eed532a5de4cf896e3c6a6239c9157",
 				},
 			},
 		},
@@ -655,6 +660,7 @@ func TestCloudFormationMisconfigurationScan(t *testing.T) {
 										Message:   "No buckets allowed!",
 										PolicyMetadata: types.PolicyMetadata{
 											ID:                 "TEST001",
+											AVDID:              "AVD-TEST-0001",
 											Type:               "CloudFormation Security Check",
 											Title:              "Test policy",
 											Description:        "This is a test policy.",
@@ -685,9 +691,9 @@ func TestCloudFormationMisconfigurationScan(t *testing.T) {
 			want: types.ArtifactReference{
 				Name: "testdata/misconfig/cloudformation/single-failure/src",
 				Type: types.ArtifactFilesystem,
-				ID:   "sha256:1e6bf1c6b2c5894e1c1727eaacb59404fffe55a8e5d429469698ea23d3e3c568",
+				ID:   "sha256:23b2611b7fbd0cb171930ccb6890210ded0120124bfeccbee97e04b03a63c457",
 				BlobIDs: []string{
-					"sha256:1e6bf1c6b2c5894e1c1727eaacb59404fffe55a8e5d429469698ea23d3e3c568",
+					"sha256:23b2611b7fbd0cb171930ccb6890210ded0120124bfeccbee97e04b03a63c457",
 				},
 			},
 		},
@@ -729,6 +735,7 @@ func TestCloudFormationMisconfigurationScan(t *testing.T) {
 										Message:   "No buckets allowed!",
 										PolicyMetadata: types.PolicyMetadata{
 											ID:                 "TEST001",
+											AVDID:              "AVD-TEST-0001",
 											Type:               "CloudFormation Security Check",
 											Title:              "Test policy",
 											Description:        "This is a test policy.",
@@ -753,6 +760,7 @@ func TestCloudFormationMisconfigurationScan(t *testing.T) {
 										Message:   "No buckets allowed!",
 										PolicyMetadata: types.PolicyMetadata{
 											ID:                 "TEST001",
+											AVDID:              "AVD-TEST-0001",
 											Type:               "CloudFormation Security Check",
 											Title:              "Test policy",
 											Description:        "This is a test policy.",
@@ -783,9 +791,9 @@ func TestCloudFormationMisconfigurationScan(t *testing.T) {
 			want: types.ArtifactReference{
 				Name: "testdata/misconfig/cloudformation/multiple-failures/src",
 				Type: types.ArtifactFilesystem,
-				ID:   "sha256:747a6c263f75bc9b729110ca7797c5937f0f31e79c935ba1be35fe5de1a72cd7",
+				ID:   "sha256:1c0e4b1be84008155bcb261ce13dcb33dd2fcb15464e436f5e386c21c88de002",
 				BlobIDs: []string{
-					"sha256:747a6c263f75bc9b729110ca7797c5937f0f31e79c935ba1be35fe5de1a72cd7",
+					"sha256:1c0e4b1be84008155bcb261ce13dcb33dd2fcb15464e436f5e386c21c88de002",
 				},
 			},
 		},
@@ -863,6 +871,7 @@ func TestCloudFormationMisconfigurationScan(t *testing.T) {
 										Message:   "",
 										PolicyMetadata: types.PolicyMetadata{
 											ID:                 "TEST001",
+											AVDID:              "AVD-TEST-0001",
 											Type:               "CloudFormation Security Check",
 											Title:              "Test policy",
 											Description:        "This is a test policy.",
@@ -892,9 +901,9 @@ func TestCloudFormationMisconfigurationScan(t *testing.T) {
 			want: types.ArtifactReference{
 				Name: "testdata/misconfig/cloudformation/passed/src",
 				Type: types.ArtifactFilesystem,
-				ID:   "sha256:1bccd5153ec0e83cf0790ba24b80e726f157784695e981d6c6dcdcf84d8218ea",
+				ID:   "sha256:e0843d89e0c2d1b75aac46619f6b205e723f53a8d78535cc4da9e5e675118d65",
 				BlobIDs: []string{
-					"sha256:1bccd5153ec0e83cf0790ba24b80e726f157784695e981d6c6dcdcf84d8218ea",
+					"sha256:e0843d89e0c2d1b75aac46619f6b205e723f53a8d78535cc4da9e5e675118d65",
 				},
 			},
 		},
@@ -970,6 +979,7 @@ func TestDockerfileMisconfigurationScan(t *testing.T) {
 										Message:   "",
 										PolicyMetadata: types.PolicyMetadata{
 											ID:                 "TEST001",
+											AVDID:              "AVD-TEST-0001",
 											Type:               "Dockerfile Security Check",
 											Title:              "Test policy",
 											Description:        "This is a test policy.",
@@ -1009,9 +1019,9 @@ func TestDockerfileMisconfigurationScan(t *testing.T) {
 			want: types.ArtifactReference{
 				Name: "testdata/misconfig/dockerfile/single-failure/src",
 				Type: types.ArtifactFilesystem,
-				ID:   "sha256:c328a989d1f08b96d499174d215c267aa9f78ab73f524439ce9a919eb39dfc34",
+				ID:   "sha256:4b0783905a99a1e645fc00945a008c0d42424a87366dbf99833d8efeafe70361",
 				BlobIDs: []string{
-					"sha256:c328a989d1f08b96d499174d215c267aa9f78ab73f524439ce9a919eb39dfc34",
+					"sha256:4b0783905a99a1e645fc00945a008c0d42424a87366dbf99833d8efeafe70361",
 				},
 			},
 		},
@@ -1058,6 +1068,7 @@ func TestDockerfileMisconfigurationScan(t *testing.T) {
 										Message:   "",
 										PolicyMetadata: types.PolicyMetadata{
 											ID:                 "TEST001",
+											AVDID:              "AVD-TEST-0001",
 											Type:               "Dockerfile Security Check",
 											Title:              "Test policy",
 											Description:        "This is a test policy.",
@@ -1097,9 +1108,9 @@ func TestDockerfileMisconfigurationScan(t *testing.T) {
 			want: types.ArtifactReference{
 				Name: "testdata/misconfig/dockerfile/multiple-failures/src",
 				Type: types.ArtifactFilesystem,
-				ID:   "sha256:c328a989d1f08b96d499174d215c267aa9f78ab73f524439ce9a919eb39dfc34",
+				ID:   "sha256:4b0783905a99a1e645fc00945a008c0d42424a87366dbf99833d8efeafe70361",
 				BlobIDs: []string{
-					"sha256:c328a989d1f08b96d499174d215c267aa9f78ab73f524439ce9a919eb39dfc34",
+					"sha256:4b0783905a99a1e645fc00945a008c0d42424a87366dbf99833d8efeafe70361",
 				},
 			},
 		},
@@ -1178,6 +1189,7 @@ func TestDockerfileMisconfigurationScan(t *testing.T) {
 										Message:   "",
 										PolicyMetadata: types.PolicyMetadata{
 											ID:                 "TEST001",
+											AVDID:              "AVD-TEST-0001",
 											Type:               "Dockerfile Security Check",
 											Title:              "Test policy",
 											Description:        "This is a test policy.",
@@ -1207,9 +1219,9 @@ func TestDockerfileMisconfigurationScan(t *testing.T) {
 			want: types.ArtifactReference{
 				Name: "testdata/misconfig/dockerfile/passed/src",
 				Type: types.ArtifactFilesystem,
-				ID:   "sha256:dd3e447d692c1587109a80d6794c5cc097390b076392cdec7f9f59cb8d09e336",
+				ID:   "sha256:92a2a8fb73136f4f1d5ec38bf66d9b38fd5db288869e727aed5f7516f60633db",
 				BlobIDs: []string{
-					"sha256:dd3e447d692c1587109a80d6794c5cc097390b076392cdec7f9f59cb8d09e336",
+					"sha256:92a2a8fb73136f4f1d5ec38bf66d9b38fd5db288869e727aed5f7516f60633db",
 				},
 			},
 		},
@@ -1282,6 +1294,7 @@ func TestKubernetesMisconfigurationScan(t *testing.T) {
 										Message:   "No evil containers allowed!",
 										PolicyMetadata: types.PolicyMetadata{
 											ID:                 "TEST001",
+											AVDID:              "AVD-TEST-0001",
 											Type:               "Kubernetes Security Check",
 											Title:              "Test policy",
 											Description:        "This is a test policy.",
@@ -1311,9 +1324,9 @@ func TestKubernetesMisconfigurationScan(t *testing.T) {
 			want: types.ArtifactReference{
 				Name: "testdata/misconfig/kubernetes/single-failure/src",
 				Type: types.ArtifactFilesystem,
-				ID:   "sha256:ee5a46b784822f0537d9c73f3de567d4d788bdd25dd2c793a226a8ee8414db00",
+				ID:   "sha256:af6a4b3a5906ea8495a21a315bc4accd97effb249ccb3e0c75d8720c386e5bfb",
 				BlobIDs: []string{
-					"sha256:ee5a46b784822f0537d9c73f3de567d4d788bdd25dd2c793a226a8ee8414db00",
+					"sha256:af6a4b3a5906ea8495a21a315bc4accd97effb249ccb3e0c75d8720c386e5bfb",
 				},
 			},
 		},
@@ -1356,6 +1369,7 @@ func TestKubernetesMisconfigurationScan(t *testing.T) {
 										Message:   "No evil containers allowed!",
 										PolicyMetadata: types.PolicyMetadata{
 											ID:                 "TEST001",
+											AVDID:              "AVD-TEST-0001",
 											Type:               "Kubernetes Security Check",
 											Title:              "Test policy",
 											Description:        "This is a test policy.",
@@ -1379,6 +1393,7 @@ func TestKubernetesMisconfigurationScan(t *testing.T) {
 										Message:   "No evil containers allowed!",
 										PolicyMetadata: types.PolicyMetadata{
 											ID:                 "TEST001",
+											AVDID:              "AVD-TEST-0001",
 											Type:               "Kubernetes Security Check",
 											Title:              "Test policy",
 											Description:        "This is a test policy.",
@@ -1408,9 +1423,9 @@ func TestKubernetesMisconfigurationScan(t *testing.T) {
 			want: types.ArtifactReference{
 				Name: "testdata/misconfig/kubernetes/multiple-failures/src",
 				Type: types.ArtifactFilesystem,
-				ID:   "sha256:e075c36688ab63ae245cbd7a1f5b795328242e412d06190c4ac745439f83deb0",
+				ID:   "sha256:e681637468d8a07c867602047c84b2acceb7da1b36dbc96b6edb3df3fa711788",
 				BlobIDs: []string{
-					"sha256:e075c36688ab63ae245cbd7a1f5b795328242e412d06190c4ac745439f83deb0",
+					"sha256:e681637468d8a07c867602047c84b2acceb7da1b36dbc96b6edb3df3fa711788",
 				},
 			},
 		},
@@ -1489,6 +1504,7 @@ func TestKubernetesMisconfigurationScan(t *testing.T) {
 										Message:   "",
 										PolicyMetadata: types.PolicyMetadata{
 											ID:                 "TEST001",
+											AVDID:              "AVD-TEST-0001",
 											Type:               "Kubernetes Security Check",
 											Title:              "Test policy",
 											Description:        "This is a test policy.",
@@ -1518,9 +1534,9 @@ func TestKubernetesMisconfigurationScan(t *testing.T) {
 			want: types.ArtifactReference{
 				Name: "testdata/misconfig/kubernetes/passed/src",
 				Type: types.ArtifactFilesystem,
-				ID:   "sha256:e380f14df6c5a6aa44c40c5538d98e1882889564d297033709f9dfe19927a9f0",
+				ID:   "sha256:0e2a1bd08e49eba4ba3f829b87ab9021b949d4c3983d8c494cd0febfa7adc0cb",
 				BlobIDs: []string{
-					"sha256:e380f14df6c5a6aa44c40c5538d98e1882889564d297033709f9dfe19927a9f0",
+					"sha256:0e2a1bd08e49eba4ba3f829b87ab9021b949d4c3983d8c494cd0febfa7adc0cb",
 				},
 			},
 		},
