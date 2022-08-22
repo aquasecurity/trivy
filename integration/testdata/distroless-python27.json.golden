@@ -6,7 +6,7 @@
     "OS": {
       "Family": "debian",
       "Name": "9.9",
-      "Eosl": true
+      "EOSL": true
     },
     "ImageID": "sha256:6fcac2cc8a710f21577b5bbd534e0bfc841c0cca569b57182ba19054696cddda",
     "DiffIDs": [

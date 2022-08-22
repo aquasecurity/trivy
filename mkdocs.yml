@@ -52,6 +52,7 @@ nav:
               - Policy: docs/misconfiguration/options/policy.md
               - Filtering: docs/misconfiguration/options/filter.md
               - Report Formats: docs/misconfiguration/options/report.md
+              - Value Overrides: docs/misconfiguration/options/values.md
               - Others: docs/misconfiguration/options/others.md
           - Comparison:
               - vs Conftest: docs/misconfiguration/comparison/conftest.md
@@ -68,10 +69,15 @@ nav:
               - Scanning: docs/kubernetes/cli/scanning.md
           - Operator:
               - Overview: docs/kubernetes/operator/index.md
+      - Cloud:
+          - AWS: docs/cloud/aws/scanning.md
       - SBOM:
           - Overview: docs/sbom/index.md
           - CycloneDX: docs/sbom/cyclonedx.md
           - SPDX: docs/sbom/spdx.md
+      - Attestation:
+          - SBOM: docs/attestation/sbom.md
+          - Cosign Vulnerability Scan Record: docs/attestation/vuln.md
       - Integrations:
           - Overview: docs/integrations/index.md
           - GitHub Actions: docs/integrations/github-actions.md
@@ -136,6 +142,7 @@ theme:
     - navigation.tabs
     - navigation.tabs.sticky
     - navigation.sections
+    - content.tabs.link
 
 markdown_extensions:
   - pymdownx.highlight
@@ -143,7 +150,8 @@ markdown_extensions:
   - admonition
   - footnotes
   - attr_list
-  - pymdownx.tabbed
+  - pymdownx.tabbed:
+      alternate_style: true
   - def_list
   - pymdownx.details
   - pymdownx.emoji:

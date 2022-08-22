@@ -26,6 +26,7 @@ const (
 	GoBinary   = "gobinary"
 	GoModule   = "gomod"
 	JavaScript = "javascript"
+	RustBinary = "rustbinary"
 
 	// Config files
 	YAML           = "yaml"
@@ -37,6 +38,7 @@ const (
 	Ansible        = "ansible"
 	Helm           = "helm"
 	Rbac           = "rbac"
+	Cloud          = "cloud"
 
 	// Licensing
 	License = "license"

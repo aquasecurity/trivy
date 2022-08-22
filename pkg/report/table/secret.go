@@ -5,11 +5,10 @@ import (
 	"fmt"
 	"strings"
 
-	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
-
 	"github.com/liamg/tml"
 	"golang.org/x/crypto/ssh/terminal"
 
+	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 )
 
@@ -41,9 +40,6 @@ func NewSecretRenderer(target string, secrets []types.SecretFinding, ansi bool, 
 }
 
 func (r *secretRenderer) Render() string {
-	if len(r.secrets) == 0 {
-		return ""
-	}
 	target := r.target + " (secrets)"
 	renderTarget(r.w, target, r.ansi)
 
@@ -123,7 +119,11 @@ func (r *secretRenderer) renderCode(secret types.SecretFinding) {
 				lineInfo = tml.Sprintf("%s<blue>-%d", lineInfo, secret.EndLine)
 			}
 		}
-		r.printf(" <blue>%s%s\r\n", r.target, lineInfo)
+		var note string
+		if secret.Deleted {
+			note = " (deleted in the intermediate layer)"
+		}
+		r.printf(" <blue>%s%s<magenta>%s\r\n", r.target, lineInfo, note)
 		r.printSingleDivider()
 		for i, line := range lines {
 			if line.Truncated {

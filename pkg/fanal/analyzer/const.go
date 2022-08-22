@@ -40,7 +40,8 @@ const (
 	TypeGemSpec Type = "gemspec"
 
 	// Rust
-	TypeCargo Type = "cargo"
+	TypeRustBinary Type = "rustbinary"
+	TypeCargo      Type = "cargo"
 
 	// PHP
 	TypeComposer Type = "composer"
@@ -104,16 +105,17 @@ const (
 var (
 	// TypeOSes has all OS-related analyzers
 	TypeOSes = []Type{
-		TypeAlpine, TypeAmazon, TypeDebian, TypePhoton, TypeCentOS,
+		TypeOSRelease, TypeAlpine, TypeAmazon, TypeCBLMariner, TypeDebian, TypePhoton, TypeCentOS,
 		TypeRocky, TypeAlma, TypeFedora, TypeOracle, TypeRedHatBase, TypeSUSE, TypeUbuntu,
-		TypeApk, TypeDpkg, TypeRpm,
+		TypeApk, TypeDpkg, TypeDpkgLicense, TypeRpm, TypeRpmqa,
+		TypeApkRepo,
 	}
 
 	// TypeLanguages has all language analyzers
 	TypeLanguages = []Type{
 		TypeBundler, TypeGemSpec, TypeCargo, TypeComposer, TypeJar, TypePom,
-		TypeNpmPkgLock, TypeNodePkg, TypeYarn, TypePnpm, TypeNuget, TypePythonPkg, TypePip, TypePipenv,
-		TypePoetry, TypeGoBinary, TypeGoMod,
+		TypeNpmPkgLock, TypeNodePkg, TypeYarn, TypePnpm, TypeNuget, TypeDotNetDeps,
+		TypePythonPkg, TypePip, TypePipenv, TypePoetry, TypeGoBinary, TypeGoMod, TypeRustBinary,
 	}
 
 	// TypeLockfiles has all lock file analyzers
@@ -123,7 +125,7 @@ var (
 	}
 
 	// TypeIndividualPkgs has all analyzers for individual packages
-	TypeIndividualPkgs = []Type{TypeGemSpec, TypeNodePkg, TypePythonPkg, TypeGoBinary, TypeJar}
+	TypeIndividualPkgs = []Type{TypeGemSpec, TypeNodePkg, TypePythonPkg, TypeGoBinary, TypeJar, TypeRustBinary}
 
 	// TypeConfigFiles has all config file analyzers
 	TypeConfigFiles = []Type{TypeYaml, TypeJSON, TypeDockerfile, TypeTerraform, TypeCloudFormation, TypeHelm}

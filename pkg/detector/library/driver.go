@@ -28,7 +28,7 @@ func NewDriver(libType string) (Driver, error) {
 	case ftypes.Bundler, ftypes.GemSpec:
 		ecosystem = vulnerability.RubyGems
 		comparer = rubygems.Comparer{}
-	case ftypes.Cargo:
+	case ftypes.RustBinary, ftypes.Cargo:
 		ecosystem = vulnerability.Cargo
 		comparer = compare.GenericComparer{}
 	case ftypes.Composer:

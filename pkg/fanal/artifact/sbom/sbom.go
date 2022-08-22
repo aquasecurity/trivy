@@ -11,6 +11,7 @@ import (
 	digest "github.com/opencontainers/go-digest"
 	"golang.org/x/xerrors"
 
+	"github.com/aquasecurity/trivy/pkg/attestation"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer/config"
 	"github.com/aquasecurity/trivy/pkg/fanal/artifact"
@@ -59,18 +60,11 @@ func (a Artifact) Inspect(_ context.Context) (types.ArtifactReference, error) {
 		return types.ArtifactReference{}, xerrors.Errorf("seek error: %w", err)
 	}
 
-	var unmarshaler sbom.Unmarshaler
-	switch format {
-	case sbom.FormatCycloneDXJSON:
-		unmarshaler = cyclonedx.NewJSONUnmarshaler()
-	default:
-		return types.ArtifactReference{}, xerrors.Errorf("%s scanning is not yet supported", format)
-
-	}
-	bom, err := unmarshaler.Unmarshal(f)
+	bom, err := a.Decode(f, format)
 	if err != nil {
-		return types.ArtifactReference{}, xerrors.Errorf("failed to unmarshal: %w", err)
+		return types.ArtifactReference{}, xerrors.Errorf("SBOM decode error: %w", err)
 	}
+
 	blobInfo := types.BlobInfo{
 		SchemaVersion: types.BlobJSONSchemaVersion,
 		OS:            bom.OS,
@@ -89,7 +83,7 @@ func (a Artifact) Inspect(_ context.Context) (types.ArtifactReference, error) {
 
 	var artifactType types.ArtifactType
 	switch format {
-	case sbom.FormatCycloneDXJSON, sbom.FormatCycloneDXXML:
+	case sbom.FormatCycloneDXJSON, sbom.FormatCycloneDXXML, sbom.FormatAttestCycloneDXJSON:
 		artifactType = types.ArtifactCycloneDX
 	}
 
@@ -102,6 +96,40 @@ func (a Artifact) Inspect(_ context.Context) (types.ArtifactReference, error) {
 		// Keep an original report
 		CycloneDX: bom.CycloneDX,
 	}, nil
+}
+
+func (a Artifact) Decode(f io.Reader, format sbom.Format) (sbom.SBOM, error) {
+	var (
+		v       interface{}
+		bom     sbom.SBOM
+		decoder interface{ Decode(any) error }
+	)
+
+	switch format {
+	case sbom.FormatCycloneDXJSON:
+		v = &cyclonedx.CycloneDX{SBOM: &bom}
+		decoder = json.NewDecoder(f)
+	case sbom.FormatAttestCycloneDXJSON:
+		// in-toto attestation
+		//   => cosign predicate
+		//     => CycloneDX JSON
+		v = &attestation.Statement{
+			Predicate: &attestation.CosignPredicate{
+				Data: &cyclonedx.CycloneDX{SBOM: &bom},
+			},
+		}
+		decoder = json.NewDecoder(f)
+	default:
+		return sbom.SBOM{}, xerrors.Errorf("%s scanning is not yet supported", format)
+
+	}
+
+	// Decode a file content into sbom.SBOM
+	if err := decoder.Decode(v); err != nil {
+		return sbom.SBOM{}, xerrors.Errorf("failed to decode: %w", err)
+	}
+
+	return bom, nil
 }
 
 func (a Artifact) Clean(reference types.ArtifactReference) error {

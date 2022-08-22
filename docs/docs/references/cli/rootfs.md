@@ -19,13 +19,13 @@ Examples:
 Scan Flags
       --offline-scan             do not issue API requests to identify dependencies
       --security-checks string   comma-separated list of what security issues to detect (vuln,config,secret) (default "vuln,secret")
-      --skip-dirs string         specify the directories where the traversal is skipped
-      --skip-files string        specify the file paths to skip traversal
+      --skip-dirs strings        specify the directories where the traversal is skipped
+      --skip-files strings       specify the file paths to skip traversal
 
 Report Flags
       --dependency-tree        show dependency origin tree (EXPERIMENTAL)
       --exit-code int          specify exit code when any security issues are found
-  -f, --format string          format (table, json, sarif, template, cyclonedx, spdx, spdx-json, github) (default "table")
+  -f, --format string          format (table, json, sarif, template, cyclonedx, spdx, spdx-json, github, cosign-vuln) (default "table")
       --ignore-policy string   specify the Rego file path to evaluate each vulnerability
       --ignorefile string      specify .trivyignore file (default ".trivyignore")
       --list-all-pkgs          enabling the option will output all packages regardless of vulnerability
@@ -42,7 +42,7 @@ Cache Flags
       --redis-key string       redis key file location, if using redis as cache backend
 
 DB Flags
-      --db-repository string   OCI repository to retrieve trivy-db from" (default "ghcr.io/aquasecurity/trivy-db")
+      --db-repository string   OCI repository to retrieve trivy-db from (default "ghcr.io/aquasecurity/trivy-db")
       --download-db-only       download/update vulnerability database but don't run a scan
       --no-progress            suppress progress bar
       --reset                  remove all caches and database
@@ -63,12 +63,17 @@ Misconfiguration Flags
 Secret Flags
       --secret-config string   specify a path to config file for secret scanning (default "trivy-secret.yaml")
 
+License Flags
+      --ignored-licenses strings   specify a list of license to ignore
+      --license-full               eagerly look for licenses in source code headers and license files
+
 Global Flags:
-      --cache-dir string   cache directory (default "/Users/teppei/Library/Caches/trivy")
-  -c, --config string      config path (default "trivy.yaml")
-  -d, --debug              debug mode
-      --insecure           allow insecure server connections when using TLS
-  -q, --quiet              suppress progress bar and log output
-      --timeout duration   timeout (default 5m0s)
-  -v, --version            show version
+      --cache-dir string          cache directory (default "/Users/teppei/Library/Caches/trivy")
+  -c, --config string             config path (default "trivy.yaml")
+  -d, --debug                     debug mode
+      --generate-default-config   write the default config to trivy-default.yaml
+      --insecure                  allow insecure server connections when using TLS
+  -q, --quiet                     suppress progress bar and log output
+      --timeout duration          timeout (default 5m0s)
+  -v, --version                   show version
 ```

@@ -12,6 +12,8 @@ import (
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
+	"github.com/aquasecurity/trivy/pkg/log"
+	"github.com/aquasecurity/trivy/pkg/report"
 )
 
 type Flag struct {
@@ -44,7 +46,9 @@ type FlagGroup interface {
 }
 
 type Flags struct {
+	AWSFlagGroup           *AWSFlagGroup
 	CacheFlagGroup         *CacheFlagGroup
+	CloudFlagGroup         *CloudFlagGroup
 	DBFlagGroup            *DBFlagGroup
 	ImageFlagGroup         *ImageFlagGroup
 	K8sFlagGroup           *K8sFlagGroup
@@ -62,7 +66,9 @@ type Flags struct {
 // Options holds all the runtime configuration
 type Options struct {
 	GlobalOptions
+	AWSOptions
 	CacheOptions
+	CloudOptions
 	DBOptions
 	ImageOptions
 	K8sOptions
@@ -81,6 +87,20 @@ type Options struct {
 
 	// We don't want to allow disabled analyzers to be passed by users, but it is necessary for internal use.
 	DisabledAnalyzers []analyzer.Type
+}
+
+// Align takes consistency of options
+func (o *Options) Align() {
+	if o.Format == report.FormatSPDX || o.Format == report.FormatSPDXJSON {
+		log.Logger.Info(`"--format spdx" and "--format spdx-json" disable security checks`)
+		o.SecurityChecks = nil
+	}
+
+	// Vulnerability scanning is disabled by default for CycloneDX.
+	if o.Format == report.FormatCycloneDX && !viper.IsSet(SecurityChecksFlag.ConfigName) {
+		log.Logger.Info(`"--format cyclonedx" disables security checks. Specify "--security-checks vuln" explicitly if you want to include vulnerabilities in the CycloneDX report.`)
+		o.SecurityChecks = nil
+	}
 }
 
 func addFlag(cmd *cobra.Command, flag *Flag) {
@@ -130,7 +150,7 @@ func bind(cmd *cobra.Command, flag *Flag) error {
 		}
 	}
 	// We don't use viper.AutomaticEnv, so we need to add a prefix manually here.
-	if err := viper.BindEnv(flag.ConfigName, strings.ToUpper("trivy_"+flag.Name)); err != nil {
+	if err := viper.BindEnv(flag.ConfigName, strings.ToUpper("trivy_"+strings.ReplaceAll(flag.Name, "-", "_"))); err != nil {
 		return err
 	}
 
@@ -205,6 +225,12 @@ func (f *Flags) groups() []FlagGroup {
 	if f.LicenseFlagGroup != nil {
 		groups = append(groups, f.LicenseFlagGroup)
 	}
+	if f.CloudFlagGroup != nil {
+		groups = append(groups, f.CloudFlagGroup)
+	}
+	if f.AWSFlagGroup != nil {
+		groups = append(groups, f.AWSFlagGroup)
+	}
 	if f.K8sFlagGroup != nil {
 		groups = append(groups, f.K8sFlagGroup)
 	}
@@ -263,11 +289,20 @@ func (f *Flags) Bind(cmd *cobra.Command) error {
 	return nil
 }
 
+//nolint: gocyclo
 func (f *Flags) ToOptions(appVersion string, args []string, globalFlags *GlobalFlagGroup, output io.Writer) (Options, error) {
 	var err error
 	opts := Options{
 		AppVersion:    appVersion,
 		GlobalOptions: globalFlags.ToOptions(),
+	}
+
+	if f.AWSFlagGroup != nil {
+		opts.AWSOptions = f.AWSFlagGroup.ToOptions()
+	}
+
+	if f.CloudFlagGroup != nil {
+		opts.CloudOptions = f.CloudFlagGroup.ToOptions()
 	}
 
 	if f.CacheFlagGroup != nil {
@@ -326,7 +361,10 @@ func (f *Flags) ToOptions(appVersion string, args []string, globalFlags *GlobalF
 	}
 
 	if f.ScanFlagGroup != nil {
-		opts.ScanOptions = f.ScanFlagGroup.ToOptions(args)
+		opts.ScanOptions, err = f.ScanFlagGroup.ToOptions(args)
+		if err != nil {
+			return Options{}, xerrors.Errorf("scan flag error: %w", err)
+		}
 	}
 
 	if f.SecretFlagGroup != nil {
@@ -336,6 +374,8 @@ func (f *Flags) ToOptions(appVersion string, args []string, globalFlags *GlobalF
 	if f.VulnerabilityFlagGroup != nil {
 		opts.VulnerabilityOptions = f.VulnerabilityFlagGroup.ToOptions()
 	}
+
+	opts.Align()
 
 	return opts, nil
 }

@@ -5,7 +5,6 @@ type SecretRuleCategory string
 type Secret struct {
 	FilePath string
 	Findings []SecretFinding
-	Layer    Layer `json:",omitempty"`
 }
 
 type SecretFinding struct {
@@ -17,4 +16,6 @@ type SecretFinding struct {
 	EndLine   int
 	Code      Code
 	Match     string
+	Deleted   bool
+	Layer     Layer `json:",omitempty"`
 }

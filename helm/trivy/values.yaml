@@ -120,6 +120,9 @@ trivy:
   labels: {}
   # serverToken is the token to authenticate Trivy client with Trivy server.
   serverToken: ""
+  # existingSecret if an existing secret has been created outside the chart.
+  # Overrides gitHubToken, registryUsername, registryPassword, serverToken
+  existingSecret: ""
 
 service:
   # If specified, the name used for the Trivy service.

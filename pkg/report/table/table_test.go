@@ -166,7 +166,7 @@ Total: 1 (MEDIUM: 0, HIGH: 1)
 			results: types.Results{
 				{
 					Target: "package-lock.json",
-					Class:  "lang-pkgs",
+					Class:  types.ClassLangPkg,
 					Type:   "npm",
 					Packages: []ftypes.Package{
 						{
@@ -256,7 +256,7 @@ package-lock.json
 		t.Run(tc.name, func(t *testing.T) {
 			tableWritten := bytes.Buffer{}
 			err := report.Write(types.Report{Results: tc.results}, report.Option{
-				Format:             "table",
+				Format:             report.FormatTable,
 				Output:             &tableWritten,
 				Tree:               true,
 				IncludeNonFailures: tc.includeNonFailures,

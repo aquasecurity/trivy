@@ -12,6 +12,8 @@ import (
 	"testing"
 	"time"
 
+	"github.com/samber/lo"
+
 	cdx "github.com/CycloneDX/cyclonedx-go"
 	"github.com/docker/go-connections/nat"
 	"github.com/stretchr/testify/assert"
@@ -399,10 +401,10 @@ func TestClientServerWithCycloneDX(t *testing.T) {
 			err = json.NewDecoder(f).Decode(&got)
 			require.NoError(t, err)
 
-			assert.EqualValues(t, tt.wantComponentsCount, len(*got.Components))
-			assert.EqualValues(t, tt.wantDependenciesCount, len(*got.Dependencies))
+			assert.EqualValues(t, tt.wantComponentsCount, len(lo.FromPtr(got.Components)))
+			assert.EqualValues(t, tt.wantDependenciesCount, len(lo.FromPtr(got.Dependencies)))
 			for i, dep := range *got.Dependencies {
-				assert.EqualValues(t, tt.wantDependsOnCount[i], len(*dep.Dependencies))
+				assert.EqualValues(t, tt.wantDependsOnCount[i], len(lo.FromPtr(dep.Dependencies)))
 			}
 		})
 	}
