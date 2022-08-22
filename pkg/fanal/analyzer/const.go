@@ -47,8 +47,9 @@ const (
 	TypeComposer Type = "composer"
 
 	// Java
-	TypeJar Type = "jar"
-	TypePom Type = "pom"
+	TypeJar        Type = "jar"
+	TypePom        Type = "pom"
+	TypeGradleLock Type = "gradle-lockfile"
 
 	// Node.js
 	TypeNpmPkgLock Type = "npm"
