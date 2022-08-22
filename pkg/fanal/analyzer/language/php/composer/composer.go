@@ -36,21 +36,15 @@ func (a composerLibraryAnalyzer) Analyze(_ context.Context, input analyzer.Analy
 
 func (a composerLibraryAnalyzer) Required(filePath string, _ os.FileInfo) bool {
 	fileName := filepath.Base(filePath)
-	// we should skip `composer.lock` inside `vendor` folder
-	if sep := string(os.PathSeparator); strings.Contains(filePath, "vendor"+sep) {
-		subDirs := strings.Split(filePath, sep)
-		for i, s := range subDirs {
-			if s == "vendor" {
-				path := filepath.Join(subDirs[:i]...)
-				f := filepath.Join(path, fileName)
-				if _, err := os.Stat(f); err == os.ErrNotExist {
-					continue
-				}
-				return false
-			}
-		}
+	if !utils.StringInSlice(fileName, requiredFiles) {
+		return false
 	}
-	return utils.StringInSlice(fileName, requiredFiles)
+
+	// we should skip `composer.lock` inside `vendor` folder
+	if sep := string(os.PathSeparator); strings.Contains(filePath, sep+"vendor"+sep) || strings.HasPrefix(filePath, "vendor"+sep) {
+		return false
+	}
+	return true
 }
 
 func (a composerLibraryAnalyzer) Type() analyzer.Type {
