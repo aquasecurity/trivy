@@ -41,7 +41,11 @@ func (a composerLibraryAnalyzer) Required(filePath string, _ os.FileInfo) bool {
 	}
 
 	// we should skip `composer.lock` inside `vendor` folder
-	if sep := string(os.PathSeparator); strings.Contains(filePath, sep+"vendor"+sep) || strings.HasPrefix(filePath, "vendor"+sep) {
+	for _, p := range strings.Split(filepath.ToSlash(filePath), "/") {
+		if p == "vendor" {
+			return false
+		}
+	}
 		return false
 	}
 	return true
