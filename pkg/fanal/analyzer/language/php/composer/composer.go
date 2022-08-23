@@ -46,8 +46,6 @@ func (a composerLibraryAnalyzer) Required(filePath string, _ os.FileInfo) bool {
 			return false
 		}
 	}
-		return false
-	}
 	return true
 }
 
