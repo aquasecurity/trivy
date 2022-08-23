@@ -79,6 +79,17 @@ func ConvertToRPCCode(code ftypes.Code) *common.Code {
 	}
 }
 
+func ConvertToRPCSecrets(secrets []ftypes.Secret) []*common.Secret {
+	var rpcSecrets []*common.Secret
+	for _, s := range secrets {
+		rpcSecrets = append(rpcSecrets, &common.Secret{
+			Filepath: s.FilePath,
+			Findings: ConvertToRPCSecretFindings(s.Findings),
+		})
+	}
+	return rpcSecrets
+}
+
 func ConvertToRPCSecretFindings(findings []ftypes.SecretFinding) []*common.SecretFinding {
 	var rpcFindings []*common.SecretFinding
 	for _, f := range findings {
@@ -248,6 +259,7 @@ func ConvertFromRPCResults(rpcResults []*scanner.Result) []types.Result {
 			Type:              result.Type,
 			Packages:          ConvertFromRPCPkgs(result.Packages),
 			CustomResources:   ConvertFromRPCCustomResources(result.CustomResources),
+			Secrets:           ConvertFromRPCSecretFindings(result.Secrets),
 		})
 	}
 	return results
@@ -647,6 +659,7 @@ func ConvertToRPCBlobInfo(diffID string, blobInfo ftypes.BlobInfo) *cache.PutBlo
 			OpaqueDirs:        blobInfo.OpaqueDirs,
 			WhiteoutFiles:     blobInfo.WhiteoutFiles,
 			CustomResources:   customResources,
+			Secrets:           ConvertToRPCSecrets(blobInfo.Secrets),
 		},
 	}
 }
