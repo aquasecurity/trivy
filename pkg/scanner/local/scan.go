@@ -170,8 +170,10 @@ func (s Scanner) osPkgsToResult(target string, detail ftypes.ArtifactDetail, opt
 	if len(detail.Packages) == 0 {
 		return nil
 	}
+	var osFamily string
 	if detail.OS != nil {
-		target = fmt.Sprintf("%s (%s %s)", target, detail.OS.Family, detail.OS.Name)
+		osFamily = detail.OS.Family
+		target = fmt.Sprintf("%s (%s %s)", target, osFamily, detail.OS.Name)
 	}
 	pkgs := detail.Packages
 	if options.ScanRemovedPackages {
@@ -183,7 +185,7 @@ func (s Scanner) osPkgsToResult(target string, detail ftypes.ArtifactDetail, opt
 	return &types.Result{
 		Target:   target,
 		Class:    types.ClassOSPkg,
-		Type:     detail.OS.Family,
+		Type:     osFamily,
 		Packages: pkgs,
 	}
 }
