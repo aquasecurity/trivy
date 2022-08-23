@@ -118,9 +118,9 @@ func (s Scanner) Scan(ctx context.Context, target, artifactKey string, blobKeys 
 			artifactDetail.OS.Eosl = eosl
 		}
 		// Merge package results into vulnerability results
-		fillResults := s.fillPkgsInVulns(pkgResults, vulnResults)
+		mergedResults := s.fillPkgsInVulns(pkgResults, vulnResults)
 
-		results = append(results, fillResults...)
+		results = append(results, mergedResults...)
 	} else {
 		// If vulnerability scanning is not enabled, it just adds package results.
 		results = append(results, pkgResults...)
@@ -314,7 +314,7 @@ func (s Scanner) scanLangPkgs(apps []ftypes.Application) (types.Results, error) 
 
 func (s Scanner) fillPkgsInVulns(pkgResults, vulnResults types.Results) types.Results {
 	var results types.Results
-	if len(pkgResults) == 0 { // '--list-all-pkgs' == false
+	if len(pkgResults) == 0 { // '--list-all-pkgs' == false or packages not found
 		return vulnResults
 	}
 	for _, result := range pkgResults {
