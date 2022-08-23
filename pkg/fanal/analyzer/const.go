@@ -114,7 +114,7 @@ var (
 
 	// TypeLanguages has all language analyzers
 	TypeLanguages = []Type{
-		TypeBundler, TypeGemSpec, TypeCargo, TypeComposer, TypeJar, TypePom,
+		TypeBundler, TypeGemSpec, TypeCargo, TypeComposer, TypeJar, TypePom, TypeGradleLock,
 		TypeNpmPkgLock, TypeNodePkg, TypeYarn, TypePnpm, TypeNuget, TypeDotNetDeps,
 		TypePythonPkg, TypePip, TypePipenv, TypePoetry, TypeGoBinary, TypeGoMod, TypeRustBinary,
 	}
@@ -122,7 +122,7 @@ var (
 	// TypeLockfiles has all lock file analyzers
 	TypeLockfiles = []Type{
 		TypeBundler, TypeNpmPkgLock, TypeYarn,
-		TypePnpm, TypePip, TypePipenv, TypePoetry, TypeGoMod, TypePom,
+		TypePnpm, TypePip, TypePipenv, TypePoetry, TypeGoMod, TypePom, TypeGradleLock,
 	}
 
 	// TypeIndividualPkgs has all analyzers for individual packages
