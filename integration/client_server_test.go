@@ -238,6 +238,15 @@ func TestClientServer(t *testing.T) {
 			},
 			golden: "testdata/pom.json.golden",
 		},
+		{
+			name: "scan sample.pem with fs command in client/server mode",
+			args: csArgs{
+				Command:          "fs",
+				RemoteAddrOption: "--server",
+				Target:           "testdata/fixtures/fs/secrets/",
+			},
+			golden: "testdata/secrets-rpc.json.golden",
+		},
 	}
 
 	addr, cacheDir := setup(t, setupOptions{})
