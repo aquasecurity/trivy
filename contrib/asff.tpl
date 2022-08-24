@@ -33,7 +33,7 @@
             "Severity": {
                 "Label": "{{ $severity }}"
             },
-            "Title": "Trivy found a vulnerability to {{ .VulnerabilityID }} in container {{ $target }}",
+            "Title": "Trivy found a vulnerability in {{ .PkgName }} to {{ .VulnerabilityID }} in container {{ $target }}",
             "Description": {{ escapeString $description | printf "%q" }},
             {{ if not (empty .PrimaryURL) -}}
             "Remediation": {
