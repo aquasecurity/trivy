@@ -3,7 +3,6 @@ package gradle
 import (
 	"context"
 	"os"
-	"path/filepath"
 	"strings"
 
 	"github.com/aquasecurity/go-dep-parser/pkg/gradle/lockfile"
@@ -35,8 +34,8 @@ func (a gradleLockAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisIn
 	return res, nil
 }
 
-func (a gradleLockAnalyzer) Required(filePath string, _ os.FileInfo) bool {
-	return strings.HasSuffix(filepath.Base(filePath), fileNameSuffix)
+func (a gradleLockAnalyzer) Required(_ string, fileInfo os.FileInfo) bool {
+	return strings.HasSuffix(fileInfo.Name(), fileNameSuffix)
 }
 
 func (a gradleLockAnalyzer) Type() analyzer.Type {
