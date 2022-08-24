@@ -37,6 +37,7 @@ type csArgs struct {
 	ClientTokenHeader string
 	ListAllPackages   bool
 	Target            string
+	secretConfig      string
 }
 
 func TestClientServer(t *testing.T) {
@@ -243,9 +244,10 @@ func TestClientServer(t *testing.T) {
 			args: csArgs{
 				Command:          "fs",
 				RemoteAddrOption: "--server",
+				secretConfig:     "testdata/fixtures/fs/secrets/trivy-secret.yaml",
 				Target:           "testdata/fixtures/fs/secrets/",
 			},
-			golden: "testdata/secrets-rpc.json.golden",
+			golden: "testdata/secrets.json.golden",
 		},
 	}
 
@@ -254,6 +256,10 @@ func TestClientServer(t *testing.T) {
 	for _, c := range tests {
 		t.Run(c.name, func(t *testing.T) {
 			osArgs, outputFile := setupClient(t, c.args, addr, cacheDir, c.golden)
+
+			if c.args.secretConfig != "" {
+				osArgs = append(osArgs, "--secret-config", c.args.secretConfig)
+			}
 
 			//
 			err := execute(osArgs)
