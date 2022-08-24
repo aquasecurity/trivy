@@ -27,6 +27,7 @@ const (
 	GoModule   = "gomod"
 	JavaScript = "javascript"
 	RustBinary = "rustbinary"
+	ConanLock  = "conanlock"
 
 	// Config files
 	YAML           = "yaml"

@@ -49,6 +49,9 @@ func NewDriver(libType string) (Driver, error) {
 	case ftypes.Pipenv, ftypes.Poetry, ftypes.Pip, ftypes.PythonPkg:
 		ecosystem = vulnerability.Pip
 		comparer = pep440.Comparer{}
+	case ftypes.ConanLock:
+		ecosystem = vulnerability.Conan
+		comparer = compare.GenericComparer{}
 	default:
 		return Driver{}, xerrors.Errorf("unsupported type %s", libType)
 	}

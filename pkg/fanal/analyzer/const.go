@@ -70,6 +70,9 @@ const (
 	TypeGoBinary Type = "gobinary"
 	TypeGoMod    Type = "gomod"
 
+	// C/C++
+	TypeConanLock Type = "conan-lock"
+
 	// ============
 	// Image Config
 	// ============
