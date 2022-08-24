@@ -16,11 +16,13 @@ import (
 var (
 	libs = []types.Library{
 		{
+			ID:       "crate_with_features@0.1.0",
 			Name:     "crate_with_features",
 			Version:  "0.1.0",
 			Indirect: false,
 		},
 		{
+			ID:       "library_crate@0.1.0",
 			Name:     "library_crate",
 			Version:  "0.1.0",
 			Indirect: true,
