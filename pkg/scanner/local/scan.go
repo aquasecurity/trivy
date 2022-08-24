@@ -480,6 +480,7 @@ func toDetectedMisconfiguration(res ftypes.MisconfResult, defaultSeverity dbType
 
 	return types.DetectedMisconfiguration{
 		ID:          res.ID,
+		AVDID:       res.AVDID,
 		Type:        res.Type,
 		Title:       res.Title,
 		Description: res.Description,

@@ -28,6 +28,7 @@
         {
           "Type": "Helm Security Check",
           "ID": "KSV001",
+          "AVDID": "AVD-KSV-0001",
           "Title": "Process can elevate its own privileges",
           "Description": "A program inside the container can elevate its own privileges and run as root, which might give the program control over the container and node.",
           "Message": "Container 'testchart' of Deployment 'testchart' should set 'securityContext.allowPrivilegeEscalation' to false",
@@ -146,6 +147,7 @@
         {
           "Type": "Helm Security Check",
           "ID": "KSV020",
+          "AVDID": "AVD-KSV-0020",
           "Title": "Runs with low user ID",
           "Description": "Force the container to run with user ID \u003e 10000 to avoid conflicts with the host’s user table.",
           "Message": "Container 'testchart' of Deployment 'testchart' should set 'securityContext.runAsUser' \u003e 10000",
@@ -264,6 +266,7 @@
         {
           "Type": "Helm Security Check",
           "ID": "KSV030",
+          "AVDID": "AVD-KSV-0030",
           "Title": "Default Seccomp profile not set",
           "Description": "The RuntimeDefault/Localhost seccomp profile must be required, or allow specific additional profiles.",
           "Message": "Either Pod or Container should set 'securityContext.seccompProfile.type' to 'RuntimeDefault'",
@@ -382,6 +385,7 @@
         {
           "Type": "Helm Security Check",
           "ID": "KSV105",
+          "AVDID": "AVD-KSV-0105",
           "Title": "Containers must not set runAsUser to 0",
           "Description": "Containers should be forbidden from running with a root UID.",
           "Message": "securityContext.runAsUser should be set to a value greater than 0",
