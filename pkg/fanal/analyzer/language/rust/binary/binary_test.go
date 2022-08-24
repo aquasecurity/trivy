@@ -28,7 +28,7 @@ func Test_rustBinaryLibraryAnalyzer_Analyze(t *testing.T) {
 						FilePath: "testdata/executable_rust",
 						Libraries: []types.Package{
 							{Name: "crate_with_features", Version: "0.1.0"},
-							{Name: "library_crate", Version: "0.1.0"},
+							{Name: "library_crate", Version: "0.1.0", Indirect: true},
 						},
 					},
 				},
