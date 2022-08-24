@@ -241,8 +241,8 @@ func (s Scanner) scanVulnerabilities(target string, detail ftypes.ArtifactDetail
 func (s Scanner) scanOSPkgs(target string, detail ftypes.ArtifactDetail, options types.ScanOptions) (
 	*types.Result, bool, error) {
 	if detail.OS == nil || detail.OS.Family == "" {
-		log.Logger.Debug("Detected OS: unknown")
-		return nil, false, nil
+		// Scan even unknown OS for vulnerabilities since "Packages" may contain OS-agnostic binaries.
+		detail.OS = &ftypes.OS{Family: "unknown"}
 	}
 	log.Logger.Infof("Detected OS: %s", detail.OS.Family)
 
