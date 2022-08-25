@@ -292,6 +292,112 @@ func TestScanner_Scan(t *testing.T) {
 			},
 		},
 		{
+			name: "happy path with list all packages and without vulnerabilities",
+			args: args{
+				target:   "alpine:latest",
+				layerIDs: []string{"sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10"},
+				options: types.ScanOptions{
+					VulnType:        []string{types.VulnTypeOS, types.VulnTypeLibrary},
+					SecurityChecks:  []string{types.SecurityCheckVulnerability},
+					ListAllPackages: true,
+				},
+			},
+			applyLayersExpectation: ApplierApplyLayersExpectation{
+				Args: ApplierApplyLayersArgs{
+					BlobIDs: []string{"sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10"},
+				},
+				Returns: ApplierApplyLayersReturns{
+					Detail: ftypes.ArtifactDetail{
+						OS: &ftypes.OS{
+							Family: "alpine",
+							Name:   "3.11",
+						},
+						Packages: []ftypes.Package{
+							{
+								Name:       "musl",
+								Version:    "1.2.3",
+								SrcName:    "musl",
+								SrcVersion: "1.2.3",
+								Layer: ftypes.Layer{
+									DiffID: "sha256:ebf12965380b39889c99a9c02e82ba465f887b45975b6e389d42e9e6a3857888",
+								},
+							},
+							{
+								Name:       "ausl",
+								Version:    "1.2.3",
+								SrcName:    "ausl",
+								SrcVersion: "1.2.3",
+								Layer: ftypes.Layer{
+									DiffID: "sha256:bbf12965380b39889c99a9c02e82ba465f887b45975b6e389d42e9e6a3857888",
+								},
+							},
+						},
+						Applications: []ftypes.Application{
+							{
+								Type:     "bundler",
+								FilePath: "/app/Gemfile.lock",
+								Libraries: []ftypes.Package{
+									{
+										Name:    "rails",
+										Version: "4.0.2",
+										Layer: ftypes.Layer{
+											DiffID: "sha256:0ea33a93585cf1917ba522b2304634c3073654062d5282c1346322967790ef33",
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+			wantResults: types.Results{
+				{
+					Target: "alpine:latest (alpine 3.11)",
+					Class:  types.ClassOSPkg,
+					Type:   fos.Alpine,
+					Packages: []ftypes.Package{
+						{
+							Name:       "ausl",
+							Version:    "1.2.3",
+							SrcName:    "ausl",
+							SrcVersion: "1.2.3",
+							Layer: ftypes.Layer{
+								DiffID: "sha256:bbf12965380b39889c99a9c02e82ba465f887b45975b6e389d42e9e6a3857888",
+							},
+						},
+						{
+							Name:       "musl",
+							Version:    "1.2.3",
+							SrcName:    "musl",
+							SrcVersion: "1.2.3",
+							Layer: ftypes.Layer{
+								DiffID: "sha256:ebf12965380b39889c99a9c02e82ba465f887b45975b6e389d42e9e6a3857888",
+							},
+						},
+					},
+				},
+				{
+					Target: "/app/Gemfile.lock",
+					Class:  types.ClassLangPkg,
+					Type:   ftypes.Bundler,
+					Packages: []ftypes.Package{
+						{
+							Name:    "rails",
+							Version: "4.0.2",
+							Layer: ftypes.Layer{
+								DiffID: "sha256:0ea33a93585cf1917ba522b2304634c3073654062d5282c1346322967790ef33",
+							},
+						},
+					},
+				},
+			},
+			wantOS: &ftypes.OS{
+				Family: "alpine",
+				Name:   "3.11",
+				Eosl:   true,
+			},
+		},
+		{
 			name: "happy path with empty os",
 			args: args{
 				target:   "alpine:latest",
