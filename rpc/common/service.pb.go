@@ -1252,6 +1252,330 @@ func (x *CustomResource) GetData() *structpb.Value {
 	return nil
 }
 
+type Line struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Number      int32  `protobuf:"varint,1,opt,name=number,proto3" json:"number,omitempty"`
+	Content     string `protobuf:"bytes,2,opt,name=content,proto3" json:"content,omitempty"`
+	IsCause     bool   `protobuf:"varint,3,opt,name=is_cause,json=isCause,proto3" json:"is_cause,omitempty"`
+	Annotation  string `protobuf:"bytes,4,opt,name=annotation,proto3" json:"annotation,omitempty"`
+	Truncated   bool   `protobuf:"varint,5,opt,name=truncated,proto3" json:"truncated,omitempty"`
+	Highlighted string `protobuf:"bytes,6,opt,name=highlighted,proto3" json:"highlighted,omitempty"`
+	FirstCause  bool   `protobuf:"varint,7,opt,name=first_cause,json=firstCause,proto3" json:"first_cause,omitempty"`
+	LastCause   bool   `protobuf:"varint,8,opt,name=last_cause,json=lastCause,proto3" json:"last_cause,omitempty"`
+}
+
+func (x *Line) Reset() {
+	*x = Line{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_rpc_common_service_proto_msgTypes[13]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *Line) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*Line) ProtoMessage() {}
+
+func (x *Line) ProtoReflect() protoreflect.Message {
+	mi := &file_rpc_common_service_proto_msgTypes[13]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use Line.ProtoReflect.Descriptor instead.
+func (*Line) Descriptor() ([]byte, []int) {
+	return file_rpc_common_service_proto_rawDescGZIP(), []int{13}
+}
+
+func (x *Line) GetNumber() int32 {
+	if x != nil {
+		return x.Number
+	}
+	return 0
+}
+
+func (x *Line) GetContent() string {
+	if x != nil {
+		return x.Content
+	}
+	return ""
+}
+
+func (x *Line) GetIsCause() bool {
+	if x != nil {
+		return x.IsCause
+	}
+	return false
+}
+
+func (x *Line) GetAnnotation() string {
+	if x != nil {
+		return x.Annotation
+	}
+	return ""
+}
+
+func (x *Line) GetTruncated() bool {
+	if x != nil {
+		return x.Truncated
+	}
+	return false
+}
+
+func (x *Line) GetHighlighted() string {
+	if x != nil {
+		return x.Highlighted
+	}
+	return ""
+}
+
+func (x *Line) GetFirstCause() bool {
+	if x != nil {
+		return x.FirstCause
+	}
+	return false
+}
+
+func (x *Line) GetLastCause() bool {
+	if x != nil {
+		return x.LastCause
+	}
+	return false
+}
+
+type Code struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Lines []*Line `protobuf:"bytes,1,rep,name=lines,proto3" json:"lines,omitempty"`
+}
+
+func (x *Code) Reset() {
+	*x = Code{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_rpc_common_service_proto_msgTypes[14]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *Code) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*Code) ProtoMessage() {}
+
+func (x *Code) ProtoReflect() protoreflect.Message {
+	mi := &file_rpc_common_service_proto_msgTypes[14]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use Code.ProtoReflect.Descriptor instead.
+func (*Code) Descriptor() ([]byte, []int) {
+	return file_rpc_common_service_proto_rawDescGZIP(), []int{14}
+}
+
+func (x *Code) GetLines() []*Line {
+	if x != nil {
+		return x.Lines
+	}
+	return nil
+}
+
+type SecretFinding struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	RuleId    string `protobuf:"bytes,1,opt,name=rule_id,json=ruleId,proto3" json:"rule_id,omitempty"`
+	Category  string `protobuf:"bytes,2,opt,name=category,proto3" json:"category,omitempty"`
+	Severity  string `protobuf:"bytes,3,opt,name=severity,proto3" json:"severity,omitempty"`
+	Title     string `protobuf:"bytes,4,opt,name=title,proto3" json:"title,omitempty"`
+	StartLine int32  `protobuf:"varint,5,opt,name=start_line,json=startLine,proto3" json:"start_line,omitempty"`
+	EndLine   int32  `protobuf:"varint,6,opt,name=end_line,json=endLine,proto3" json:"end_line,omitempty"`
+	Code      *Code  `protobuf:"bytes,7,opt,name=code,proto3" json:"code,omitempty"`
+	Match     string `protobuf:"bytes,8,opt,name=match,proto3" json:"match,omitempty"`
+	Deleted   bool   `protobuf:"varint,9,opt,name=deleted,proto3" json:"deleted,omitempty"`
+	Layer     *Layer `protobuf:"bytes,10,opt,name=layer,proto3" json:"layer,omitempty"`
+}
+
+func (x *SecretFinding) Reset() {
+	*x = SecretFinding{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_rpc_common_service_proto_msgTypes[15]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *SecretFinding) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*SecretFinding) ProtoMessage() {}
+
+func (x *SecretFinding) ProtoReflect() protoreflect.Message {
+	mi := &file_rpc_common_service_proto_msgTypes[15]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use SecretFinding.ProtoReflect.Descriptor instead.
+func (*SecretFinding) Descriptor() ([]byte, []int) {
+	return file_rpc_common_service_proto_rawDescGZIP(), []int{15}
+}
+
+func (x *SecretFinding) GetRuleId() string {
+	if x != nil {
+		return x.RuleId
+	}
+	return ""
+}
+
+func (x *SecretFinding) GetCategory() string {
+	if x != nil {
+		return x.Category
+	}
+	return ""
+}
+
+func (x *SecretFinding) GetSeverity() string {
+	if x != nil {
+		return x.Severity
+	}
+	return ""
+}
+
+func (x *SecretFinding) GetTitle() string {
+	if x != nil {
+		return x.Title
+	}
+	return ""
+}
+
+func (x *SecretFinding) GetStartLine() int32 {
+	if x != nil {
+		return x.StartLine
+	}
+	return 0
+}
+
+func (x *SecretFinding) GetEndLine() int32 {
+	if x != nil {
+		return x.EndLine
+	}
+	return 0
+}
+
+func (x *SecretFinding) GetCode() *Code {
+	if x != nil {
+		return x.Code
+	}
+	return nil
+}
+
+func (x *SecretFinding) GetMatch() string {
+	if x != nil {
+		return x.Match
+	}
+	return ""
+}
+
+func (x *SecretFinding) GetDeleted() bool {
+	if x != nil {
+		return x.Deleted
+	}
+	return false
+}
+
+func (x *SecretFinding) GetLayer() *Layer {
+	if x != nil {
+		return x.Layer
+	}
+	return nil
+}
+
+type Secret struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Filepath string           `protobuf:"bytes,1,opt,name=filepath,proto3" json:"filepath,omitempty"`
+	Findings []*SecretFinding `protobuf:"bytes,2,rep,name=findings,proto3" json:"findings,omitempty"`
+}
+
+func (x *Secret) Reset() {
+	*x = Secret{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_rpc_common_service_proto_msgTypes[16]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *Secret) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*Secret) ProtoMessage() {}
+
+func (x *Secret) ProtoReflect() protoreflect.Message {
+	mi := &file_rpc_common_service_proto_msgTypes[16]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use Secret.ProtoReflect.Descriptor instead.
+func (*Secret) Descriptor() ([]byte, []int) {
+	return file_rpc_common_service_proto_rawDescGZIP(), []int{16}
+}
+
+func (x *Secret) GetFilepath() string {
+	if x != nil {
+		return x.Filepath
+	}
+	return ""
+}
+
+func (x *Secret) GetFindings() []*SecretFinding {
+	if x != nil {
+		return x.Findings
+	}
+	return nil
+}
+
 var File_rpc_common_service_proto protoreflect.FileDescriptor
 
 var file_rpc_common_service_proto_rawDesc = []byte{
@@ -1461,15 +1785,59 @@ var file_rpc_common_service_proto_rawDesc = []byte{
 	0x65, 0x72, 0x52, 0x05, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x12, 0x2a, 0x0a, 0x04, 0x64, 0x61, 0x74,
 	0x61, 0x18, 0x04, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x16, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65,
 	0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66, 0x2e, 0x56, 0x61, 0x6c, 0x75, 0x65, 0x52,
-	0x04, 0x64, 0x61, 0x74, 0x61, 0x2a, 0x44, 0x0a, 0x08, 0x53, 0x65, 0x76, 0x65, 0x72, 0x69, 0x74,
-	0x79, 0x12, 0x0b, 0x0a, 0x07, 0x55, 0x4e, 0x4b, 0x4e, 0x4f, 0x57, 0x4e, 0x10, 0x00, 0x12, 0x07,
-	0x0a, 0x03, 0x4c, 0x4f, 0x57, 0x10, 0x01, 0x12, 0x0a, 0x0a, 0x06, 0x4d, 0x45, 0x44, 0x49, 0x55,
-	0x4d, 0x10, 0x02, 0x12, 0x08, 0x0a, 0x04, 0x48, 0x49, 0x47, 0x48, 0x10, 0x03, 0x12, 0x0c, 0x0a,
-	0x08, 0x43, 0x52, 0x49, 0x54, 0x49, 0x43, 0x41, 0x4c, 0x10, 0x04, 0x42, 0x31, 0x5a, 0x2f, 0x67,
-	0x69, 0x74, 0x68, 0x75, 0x62, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x61, 0x71, 0x75, 0x61, 0x73, 0x65,
-	0x63, 0x75, 0x72, 0x69, 0x74, 0x79, 0x2f, 0x74, 0x72, 0x69, 0x76, 0x79, 0x2f, 0x72, 0x70, 0x63,
-	0x2f, 0x63, 0x6f, 0x6d, 0x6d, 0x6f, 0x6e, 0x3b, 0x63, 0x6f, 0x6d, 0x6d, 0x6f, 0x6e, 0x62, 0x06,
-	0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
+	0x04, 0x64, 0x61, 0x74, 0x61, 0x22, 0xf3, 0x01, 0x0a, 0x04, 0x4c, 0x69, 0x6e, 0x65, 0x12, 0x16,
+	0x0a, 0x06, 0x6e, 0x75, 0x6d, 0x62, 0x65, 0x72, 0x18, 0x01, 0x20, 0x01, 0x28, 0x05, 0x52, 0x06,
+	0x6e, 0x75, 0x6d, 0x62, 0x65, 0x72, 0x12, 0x18, 0x0a, 0x07, 0x63, 0x6f, 0x6e, 0x74, 0x65, 0x6e,
+	0x74, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x07, 0x63, 0x6f, 0x6e, 0x74, 0x65, 0x6e, 0x74,
+	0x12, 0x19, 0x0a, 0x08, 0x69, 0x73, 0x5f, 0x63, 0x61, 0x75, 0x73, 0x65, 0x18, 0x03, 0x20, 0x01,
+	0x28, 0x08, 0x52, 0x07, 0x69, 0x73, 0x43, 0x61, 0x75, 0x73, 0x65, 0x12, 0x1e, 0x0a, 0x0a, 0x61,
+	0x6e, 0x6e, 0x6f, 0x74, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x18, 0x04, 0x20, 0x01, 0x28, 0x09, 0x52,
+	0x0a, 0x61, 0x6e, 0x6e, 0x6f, 0x74, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x12, 0x1c, 0x0a, 0x09, 0x74,
+	0x72, 0x75, 0x6e, 0x63, 0x61, 0x74, 0x65, 0x64, 0x18, 0x05, 0x20, 0x01, 0x28, 0x08, 0x52, 0x09,
+	0x74, 0x72, 0x75, 0x6e, 0x63, 0x61, 0x74, 0x65, 0x64, 0x12, 0x20, 0x0a, 0x0b, 0x68, 0x69, 0x67,
+	0x68, 0x6c, 0x69, 0x67, 0x68, 0x74, 0x65, 0x64, 0x18, 0x06, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0b,
+	0x68, 0x69, 0x67, 0x68, 0x6c, 0x69, 0x67, 0x68, 0x74, 0x65, 0x64, 0x12, 0x1f, 0x0a, 0x0b, 0x66,
+	0x69, 0x72, 0x73, 0x74, 0x5f, 0x63, 0x61, 0x75, 0x73, 0x65, 0x18, 0x07, 0x20, 0x01, 0x28, 0x08,
+	0x52, 0x0a, 0x66, 0x69, 0x72, 0x73, 0x74, 0x43, 0x61, 0x75, 0x73, 0x65, 0x12, 0x1d, 0x0a, 0x0a,
+	0x6c, 0x61, 0x73, 0x74, 0x5f, 0x63, 0x61, 0x75, 0x73, 0x65, 0x18, 0x08, 0x20, 0x01, 0x28, 0x08,
+	0x52, 0x09, 0x6c, 0x61, 0x73, 0x74, 0x43, 0x61, 0x75, 0x73, 0x65, 0x22, 0x30, 0x0a, 0x04, 0x43,
+	0x6f, 0x64, 0x65, 0x12, 0x28, 0x0a, 0x05, 0x6c, 0x69, 0x6e, 0x65, 0x73, 0x18, 0x01, 0x20, 0x03,
+	0x28, 0x0b, 0x32, 0x12, 0x2e, 0x74, 0x72, 0x69, 0x76, 0x79, 0x2e, 0x63, 0x6f, 0x6d, 0x6d, 0x6f,
+	0x6e, 0x2e, 0x4c, 0x69, 0x6e, 0x65, 0x52, 0x05, 0x6c, 0x69, 0x6e, 0x65, 0x73, 0x22, 0xb3, 0x02,
+	0x0a, 0x0d, 0x53, 0x65, 0x63, 0x72, 0x65, 0x74, 0x46, 0x69, 0x6e, 0x64, 0x69, 0x6e, 0x67, 0x12,
+	0x17, 0x0a, 0x07, 0x72, 0x75, 0x6c, 0x65, 0x5f, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09,
+	0x52, 0x06, 0x72, 0x75, 0x6c, 0x65, 0x49, 0x64, 0x12, 0x1a, 0x0a, 0x08, 0x63, 0x61, 0x74, 0x65,
+	0x67, 0x6f, 0x72, 0x79, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x08, 0x63, 0x61, 0x74, 0x65,
+	0x67, 0x6f, 0x72, 0x79, 0x12, 0x1a, 0x0a, 0x08, 0x73, 0x65, 0x76, 0x65, 0x72, 0x69, 0x74, 0x79,
+	0x18, 0x03, 0x20, 0x01, 0x28, 0x09, 0x52, 0x08, 0x73, 0x65, 0x76, 0x65, 0x72, 0x69, 0x74, 0x79,
+	0x12, 0x14, 0x0a, 0x05, 0x74, 0x69, 0x74, 0x6c, 0x65, 0x18, 0x04, 0x20, 0x01, 0x28, 0x09, 0x52,
+	0x05, 0x74, 0x69, 0x74, 0x6c, 0x65, 0x12, 0x1d, 0x0a, 0x0a, 0x73, 0x74, 0x61, 0x72, 0x74, 0x5f,
+	0x6c, 0x69, 0x6e, 0x65, 0x18, 0x05, 0x20, 0x01, 0x28, 0x05, 0x52, 0x09, 0x73, 0x74, 0x61, 0x72,
+	0x74, 0x4c, 0x69, 0x6e, 0x65, 0x12, 0x19, 0x0a, 0x08, 0x65, 0x6e, 0x64, 0x5f, 0x6c, 0x69, 0x6e,
+	0x65, 0x18, 0x06, 0x20, 0x01, 0x28, 0x05, 0x52, 0x07, 0x65, 0x6e, 0x64, 0x4c, 0x69, 0x6e, 0x65,
+	0x12, 0x26, 0x0a, 0x04, 0x63, 0x6f, 0x64, 0x65, 0x18, 0x07, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x12,
+	0x2e, 0x74, 0x72, 0x69, 0x76, 0x79, 0x2e, 0x63, 0x6f, 0x6d, 0x6d, 0x6f, 0x6e, 0x2e, 0x43, 0x6f,
+	0x64, 0x65, 0x52, 0x04, 0x63, 0x6f, 0x64, 0x65, 0x12, 0x14, 0x0a, 0x05, 0x6d, 0x61, 0x74, 0x63,
+	0x68, 0x18, 0x08, 0x20, 0x01, 0x28, 0x09, 0x52, 0x05, 0x6d, 0x61, 0x74, 0x63, 0x68, 0x12, 0x18,
+	0x0a, 0x07, 0x64, 0x65, 0x6c, 0x65, 0x74, 0x65, 0x64, 0x18, 0x09, 0x20, 0x01, 0x28, 0x08, 0x52,
+	0x07, 0x64, 0x65, 0x6c, 0x65, 0x74, 0x65, 0x64, 0x12, 0x29, 0x0a, 0x05, 0x6c, 0x61, 0x79, 0x65,
+	0x72, 0x18, 0x0a, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x13, 0x2e, 0x74, 0x72, 0x69, 0x76, 0x79, 0x2e,
+	0x63, 0x6f, 0x6d, 0x6d, 0x6f, 0x6e, 0x2e, 0x4c, 0x61, 0x79, 0x65, 0x72, 0x52, 0x05, 0x6c, 0x61,
+	0x79, 0x65, 0x72, 0x22, 0x5d, 0x0a, 0x06, 0x53, 0x65, 0x63, 0x72, 0x65, 0x74, 0x12, 0x1a, 0x0a,
+	0x08, 0x66, 0x69, 0x6c, 0x65, 0x70, 0x61, 0x74, 0x68, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52,
+	0x08, 0x66, 0x69, 0x6c, 0x65, 0x70, 0x61, 0x74, 0x68, 0x12, 0x37, 0x0a, 0x08, 0x66, 0x69, 0x6e,
+	0x64, 0x69, 0x6e, 0x67, 0x73, 0x18, 0x02, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x1b, 0x2e, 0x74, 0x72,
+	0x69, 0x76, 0x79, 0x2e, 0x63, 0x6f, 0x6d, 0x6d, 0x6f, 0x6e, 0x2e, 0x53, 0x65, 0x63, 0x72, 0x65,
+	0x74, 0x46, 0x69, 0x6e, 0x64, 0x69, 0x6e, 0x67, 0x52, 0x08, 0x66, 0x69, 0x6e, 0x64, 0x69, 0x6e,
+	0x67, 0x73, 0x2a, 0x44, 0x0a, 0x08, 0x53, 0x65, 0x76, 0x65, 0x72, 0x69, 0x74, 0x79, 0x12, 0x0b,
+	0x0a, 0x07, 0x55, 0x4e, 0x4b, 0x4e, 0x4f, 0x57, 0x4e, 0x10, 0x00, 0x12, 0x07, 0x0a, 0x03, 0x4c,
+	0x4f, 0x57, 0x10, 0x01, 0x12, 0x0a, 0x0a, 0x06, 0x4d, 0x45, 0x44, 0x49, 0x55, 0x4d, 0x10, 0x02,
+	0x12, 0x08, 0x0a, 0x04, 0x48, 0x49, 0x47, 0x48, 0x10, 0x03, 0x12, 0x0c, 0x0a, 0x08, 0x43, 0x52,
+	0x49, 0x54, 0x49, 0x43, 0x41, 0x4c, 0x10, 0x04, 0x42, 0x31, 0x5a, 0x2f, 0x67, 0x69, 0x74, 0x68,
+	0x75, 0x62, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x61, 0x71, 0x75, 0x61, 0x73, 0x65, 0x63, 0x75, 0x72,
+	0x69, 0x74, 0x79, 0x2f, 0x74, 0x72, 0x69, 0x76, 0x79, 0x2f, 0x72, 0x70, 0x63, 0x2f, 0x63, 0x6f,
+	0x6d, 0x6d, 0x6f, 0x6e, 0x3b, 0x63, 0x6f, 0x6d, 0x6d, 0x6f, 0x6e, 0x62, 0x06, 0x70, 0x72, 0x6f,
+	0x74, 0x6f, 0x33,
 }
 
 var (
@@ -1485,7 +1853,7 @@ func file_rpc_common_service_proto_rawDescGZIP() []byte {
 }
 
 var file_rpc_common_service_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
-var file_rpc_common_service_proto_msgTypes = make([]protoimpl.MessageInfo, 15)
+var file_rpc_common_service_proto_msgTypes = make([]protoimpl.MessageInfo, 19)
 var file_rpc_common_service_proto_goTypes = []interface{}{
 	(Severity)(0),                    // 0: trivy.common.Severity
 	(*OS)(nil),                       // 1: trivy.common.OS
@@ -1501,10 +1869,14 @@ var file_rpc_common_service_proto_goTypes = []interface{}{
 	(*Layer)(nil),                    // 11: trivy.common.Layer
 	(*CVSS)(nil),                     // 12: trivy.common.CVSS
 	(*CustomResource)(nil),           // 13: trivy.common.CustomResource
-	nil,                              // 14: trivy.common.Vulnerability.CvssEntry
-	nil,                              // 15: trivy.common.Vulnerability.VendorSeverityEntry
-	(*timestamppb.Timestamp)(nil),    // 16: google.protobuf.Timestamp
-	(*structpb.Value)(nil),           // 17: google.protobuf.Value
+	(*Line)(nil),                     // 14: trivy.common.Line
+	(*Code)(nil),                     // 15: trivy.common.Code
+	(*SecretFinding)(nil),            // 16: trivy.common.SecretFinding
+	(*Secret)(nil),                   // 17: trivy.common.Secret
+	nil,                              // 18: trivy.common.Vulnerability.CvssEntry
+	nil,                              // 19: trivy.common.Vulnerability.VendorSeverityEntry
+	(*timestamppb.Timestamp)(nil),    // 20: google.protobuf.Timestamp
+	(*structpb.Value)(nil),           // 21: google.protobuf.Value
 }
 var file_rpc_common_service_proto_depIdxs = []int32{
 	5,  // 0: trivy.common.PackageInfo.packages:type_name -> trivy.common.Package
@@ -1518,22 +1890,26 @@ var file_rpc_common_service_proto_depIdxs = []int32{
 	11, // 8: trivy.common.DetectedMisconfiguration.layer:type_name -> trivy.common.Layer
 	0,  // 9: trivy.common.Vulnerability.severity:type_name -> trivy.common.Severity
 	11, // 10: trivy.common.Vulnerability.layer:type_name -> trivy.common.Layer
-	14, // 11: trivy.common.Vulnerability.cvss:type_name -> trivy.common.Vulnerability.CvssEntry
-	16, // 12: trivy.common.Vulnerability.published_date:type_name -> google.protobuf.Timestamp
-	16, // 13: trivy.common.Vulnerability.last_modified_date:type_name -> google.protobuf.Timestamp
-	17, // 14: trivy.common.Vulnerability.custom_advisory_data:type_name -> google.protobuf.Value
-	17, // 15: trivy.common.Vulnerability.custom_vuln_data:type_name -> google.protobuf.Value
+	18, // 11: trivy.common.Vulnerability.cvss:type_name -> trivy.common.Vulnerability.CvssEntry
+	20, // 12: trivy.common.Vulnerability.published_date:type_name -> google.protobuf.Timestamp
+	20, // 13: trivy.common.Vulnerability.last_modified_date:type_name -> google.protobuf.Timestamp
+	21, // 14: trivy.common.Vulnerability.custom_advisory_data:type_name -> google.protobuf.Value
+	21, // 15: trivy.common.Vulnerability.custom_vuln_data:type_name -> google.protobuf.Value
 	10, // 16: trivy.common.Vulnerability.data_source:type_name -> trivy.common.DataSource
-	15, // 17: trivy.common.Vulnerability.vendor_severity:type_name -> trivy.common.Vulnerability.VendorSeverityEntry
+	19, // 17: trivy.common.Vulnerability.vendor_severity:type_name -> trivy.common.Vulnerability.VendorSeverityEntry
 	11, // 18: trivy.common.CustomResource.layer:type_name -> trivy.common.Layer
-	17, // 19: trivy.common.CustomResource.data:type_name -> google.protobuf.Value
-	12, // 20: trivy.common.Vulnerability.CvssEntry.value:type_name -> trivy.common.CVSS
-	0,  // 21: trivy.common.Vulnerability.VendorSeverityEntry.value:type_name -> trivy.common.Severity
-	22, // [22:22] is the sub-list for method output_type
-	22, // [22:22] is the sub-list for method input_type
-	22, // [22:22] is the sub-list for extension type_name
-	22, // [22:22] is the sub-list for extension extendee
-	0,  // [0:22] is the sub-list for field type_name
+	21, // 19: trivy.common.CustomResource.data:type_name -> google.protobuf.Value
+	14, // 20: trivy.common.Code.lines:type_name -> trivy.common.Line
+	15, // 21: trivy.common.SecretFinding.code:type_name -> trivy.common.Code
+	11, // 22: trivy.common.SecretFinding.layer:type_name -> trivy.common.Layer
+	16, // 23: trivy.common.Secret.findings:type_name -> trivy.common.SecretFinding
+	12, // 24: trivy.common.Vulnerability.CvssEntry.value:type_name -> trivy.common.CVSS
+	0,  // 25: trivy.common.Vulnerability.VendorSeverityEntry.value:type_name -> trivy.common.Severity
+	26, // [26:26] is the sub-list for method output_type
+	26, // [26:26] is the sub-list for method input_type
+	26, // [26:26] is the sub-list for extension type_name
+	26, // [26:26] is the sub-list for extension extendee
+	0,  // [0:26] is the sub-list for field type_name
 }
 
 func init() { file_rpc_common_service_proto_init() }
@@ -1698,6 +2074,54 @@ func file_rpc_common_service_proto_init() {
 				return nil
 			}
 		}
+		file_rpc_common_service_proto_msgTypes[13].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*Line); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_rpc_common_service_proto_msgTypes[14].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*Code); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_rpc_common_service_proto_msgTypes[15].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*SecretFinding); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_rpc_common_service_proto_msgTypes[16].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*Secret); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
@@ -1705,7 +2129,7 @@ func file_rpc_common_service_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_rpc_common_service_proto_rawDesc,
 			NumEnums:      1,
-			NumMessages:   15,
+			NumMessages:   19,
 			NumExtensions: 0,
 			NumServices:   0,
 		},
