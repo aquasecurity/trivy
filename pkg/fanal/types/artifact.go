@@ -135,6 +135,7 @@ type BlobInfo struct {
 	SchemaVersion     int
 	Digest            string             `json:",omitempty"`
 	DiffID            string             `json:",omitempty"`
+	CreatedBy         string             `json:",omitempty"`
 	OS                *OS                `json:",omitempty"`
 	Repository        *Repository        `json:",omitempty"`
 	PackageInfos      []PackageInfo      `json:",omitempty"`

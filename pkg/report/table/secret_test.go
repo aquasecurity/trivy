@@ -68,7 +68,7 @@ this is a title
 					Category:  ftypes.SecretRuleCategory("category"),
 					Title:     "this is a title",
 					Severity:  "HIGH",
-					Deleted:   true,
+					CreatedBy: "COPY my-file my-file",
 					StartLine: 3,
 					EndLine:   4,
 					Code: ftypes.Code{
@@ -115,7 +115,9 @@ HIGH: category (rule-id)
 ════════════════════════════════════════
 this is a title
 ────────────────────────────────────────
- my-file:3-4 (deleted in the intermediate layer)
+ my-file:3-4
+────────────────────────────────────────
+ This secret is added in 'COPY my-file my-file'
 ────────────────────────────────────────
    1   #!/bin/bash
    2   

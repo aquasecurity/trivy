@@ -137,7 +137,7 @@ func ApplyLayers(layers []types.BlobInfo) types.ArtifactDetail {
 				Digest: layer.Digest,
 				DiffID: layer.DiffID,
 			}
-			secretsMap = mergeSecrets(secretsMap, secret, l)
+			secretsMap = mergeSecrets(secretsMap, secret, l, layer.CreatedBy)
 		}
 
 		// Apply license files
@@ -178,13 +178,7 @@ func ApplyLayers(layers []types.BlobInfo) types.ArtifactDetail {
 		return nil
 	})
 
-	lastDiffID := layers[len(layers)-1].DiffID
 	for _, s := range secretsMap {
-		for i, finding := range s.Findings {
-			if finding.Layer.DiffID != lastDiffID {
-				s.Findings[i].Deleted = true // This secret is deleted in the upper layer
-			}
-		}
 		mergedLayer.Secrets = append(mergedLayer.Secrets, s)
 	}
 
@@ -271,9 +265,10 @@ func aggregate(detail *types.ArtifactDetail) {
 
 // We must save secrets from all layers even though they are removed in the uppler layer.
 // If the secret was changed at the top level, we need to overwrite it.
-func mergeSecrets(secretsMap map[string]types.Secret, newSecret types.Secret, layer types.Layer) map[string]types.Secret {
+func mergeSecrets(secretsMap map[string]types.Secret, newSecret types.Secret, layer types.Layer, createdBy string) map[string]types.Secret {
 	for i := range newSecret.Findings { // add layer to the Findings from the new secret
 		newSecret.Findings[i].Layer = layer
+		newSecret.Findings[i].CreatedBy = createdBy
 	}
 
 	secret, ok := secretsMap[newSecret.FilePath]

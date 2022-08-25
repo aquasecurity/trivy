@@ -119,12 +119,14 @@ func (r *secretRenderer) renderCode(secret types.SecretFinding) {
 				lineInfo = tml.Sprintf("%s<blue>-%d", lineInfo, secret.EndLine)
 			}
 		}
-		var note string
-		if secret.Deleted {
-			note = " (deleted in the intermediate layer)"
-		}
-		r.printf(" <blue>%s%s<magenta>%s\r\n", r.target, lineInfo, note)
+
+		r.printf(" <blue>%s%s<magenta>\r\n", r.target, lineInfo)
 		r.printSingleDivider()
+		if secret.CreatedBy != "" {
+			r.printf(" <magenta>This secret is added in '%s'\r\n", secret.CreatedBy)
+			r.printSingleDivider()
+		}
+
 		for i, line := range lines {
 			if line.Truncated {
 				r.printf("<dim>%4s   ", strings.Repeat(".", len(fmt.Sprintf("%d", line.Number))))

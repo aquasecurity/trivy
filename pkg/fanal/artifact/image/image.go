@@ -39,6 +39,11 @@ type Artifact struct {
 	artifactOption artifact.Option
 }
 
+type LayerInfo struct {
+	DiffID    string
+	CreatedBy string
+}
+
 func NewArtifact(img types.Image, c cache.ArtifactCache, opt artifact.Option) (artifact.Artifact, error) {
 	misconf := opt.MisconfScannerOption
 	// Register config analyzers
@@ -93,7 +98,7 @@ func (a Artifact) Inspect(ctx context.Context) (types.ArtifactReference, error) 
 	log.Logger.Debugf("Base Layers: %v", baseDiffIDs)
 
 	// Convert image ID and layer IDs to cache keys
-	imageKey, layerKeys, layerKeyMap, err := a.calcCacheKeys(imageID, diffIDs)
+	imageKey, layerKeys, layerKeyMap, err := a.calcCacheKeys(imageID, diffIDs, configFile)
 	if err != nil {
 		return types.ArtifactReference{}, err
 	}
@@ -133,45 +138,66 @@ func (Artifact) Clean(_ types.ArtifactReference) error {
 	return nil
 }
 
-func (a Artifact) calcCacheKeys(imageID string, diffIDs []string) (string, []string, map[string]string, error) {
+func (a Artifact) calcCacheKeys(imageID string, diffIDs []string, configFile *v1.ConfigFile) (string, []string, map[string]LayerInfo, error) {
 	// Pass an empty config scanner option so that the cache key can be the same, even when policies are updated.
 	imageKey, err := cache.CalcKey(imageID, a.analyzer.ImageConfigAnalyzerVersions(), nil, artifact.Option{})
 	if err != nil {
 		return "", nil, nil, err
 	}
 
-	layerKeyMap := map[string]string{}
+	var createdBy []string
+	// save createdBy fields in order of layers
+	for i := 0; i < len(configFile.History); i++ {
+		h := configFile.History[i]
+		// Detect and skip CMD instruction in base image
+		if strings.HasPrefix(h.CreatedBy, "/bin/sh -c #(nop)  CMD") ||
+			strings.HasPrefix(h.CreatedBy, "ENTRYPOINT") ||
+			strings.HasPrefix(h.CreatedBy, "CMD") { // BuildKit
+			continue
+		}
+		c := strings.TrimPrefix(strings.TrimPrefix(h.CreatedBy, "/bin/sh -c "), "#(nop) ")
+		createdBy = append(createdBy, c)
+	}
+
+	if len(createdBy) != len(diffIDs) {
+		return "", nil, nil, xerrors.Errorf("incorrect definition of layer history")
+	}
+
+	layerKeyMap := map[string]LayerInfo{}
 	hookVersions := a.handlerManager.Versions()
 	var layerKeys []string
-	for _, diffID := range diffIDs {
+	for i, diffID := range diffIDs {
 		blobKey, err := cache.CalcKey(diffID, a.analyzer.AnalyzerVersions(), hookVersions, a.artifactOption)
 		if err != nil {
 			return "", nil, nil, err
 		}
 		layerKeys = append(layerKeys, blobKey)
-		layerKeyMap[blobKey] = diffID
+		layerKeyMap[blobKey] = LayerInfo{
+			DiffID:    diffID,
+			CreatedBy: createdBy[i],
+		}
 	}
 	return imageKey, layerKeys, layerKeyMap, nil
 }
 
-func (a Artifact) inspect(ctx context.Context, missingImage string, layerKeys, baseDiffIDs []string, layerKeyMap map[string]string) error {
+func (a Artifact) inspect(ctx context.Context, missingImage string, layerKeys, baseDiffIDs []string, layerKeyMap map[string]LayerInfo) error {
 	done := make(chan struct{})
 	errCh := make(chan error)
 
 	var osFound types.OS
 	for _, k := range layerKeys {
 		go func(ctx context.Context, layerKey string) {
-			diffID := layerKeyMap[layerKey]
+			lInfo := layerKeyMap[layerKey]
 
 			// If it is a base layer, secret scanning should not be performed.
 			var disabledAnalyers []analyzer.Type
-			if slices.Contains(baseDiffIDs, diffID) {
+			if slices.Contains(baseDiffIDs, lInfo.DiffID) {
 				disabledAnalyers = append(disabledAnalyers, analyzer.TypeSecret)
 			}
 
-			layerInfo, err := a.inspectLayer(ctx, diffID, disabledAnalyers)
+			layerInfo, err := a.inspectLayer(ctx, lInfo, disabledAnalyers)
 			if err != nil {
-				errCh <- xerrors.Errorf("failed to analyze layer: %s : %w", diffID, err)
+				errCh <- xerrors.Errorf("failed to analyze layer: %s : %w", layerInfo.DiffID, err)
 				return
 			}
 			if err = a.cache.PutBlob(layerKey, layerInfo); err != nil {
@@ -205,12 +231,12 @@ func (a Artifact) inspect(ctx context.Context, missingImage string, layerKeys, b
 
 }
 
-func (a Artifact) inspectLayer(ctx context.Context, diffID string, disabled []analyzer.Type) (types.BlobInfo, error) {
-	log.Logger.Debugf("Missing diff ID in cache: %s", diffID)
+func (a Artifact) inspectLayer(ctx context.Context, layerInfo LayerInfo, disabled []analyzer.Type) (types.BlobInfo, error) {
+	log.Logger.Debugf("Missing diff ID in cache: %s", layerInfo.DiffID)
 
-	layerDigest, r, err := a.uncompressedLayer(diffID)
+	layerDigest, r, err := a.uncompressedLayer(layerInfo.DiffID)
 	if err != nil {
-		return types.BlobInfo{}, xerrors.Errorf("unable to get uncompressed layer %s: %w", diffID, err)
+		return types.BlobInfo{}, xerrors.Errorf("unable to get uncompressed layer %s: %w", layerInfo.DiffID, err)
 	}
 
 	// Prepare variables
@@ -239,7 +265,8 @@ func (a Artifact) inspectLayer(ctx context.Context, diffID string, disabled []an
 	blobInfo := types.BlobInfo{
 		SchemaVersion:   types.BlobJSONSchemaVersion,
 		Digest:          layerDigest,
-		DiffID:          diffID,
+		DiffID:          layerInfo.DiffID,
+		CreatedBy:       layerInfo.CreatedBy,
 		OS:              result.OS,
 		Repository:      result.Repository,
 		PackageInfos:    result.PackageInfos,
