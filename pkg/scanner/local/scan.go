@@ -80,9 +80,9 @@ func (s Scanner) Scan(ctx context.Context, target, artifactKey string, blobKeys 
 	case errors.Is(err, analyzer.ErrUnknownOS):
 		log.Logger.Debug("OS is not detected.")
 
-		// Packages may contain OS-independent binary information even though OS is empty.
+		// Packages may contain OS-independent binary information even though OS is not detected.
 		if len(artifactDetail.Packages) != 0 {
-			artifactDetail.OS = &ftypes.OS{Family: "unknown"}
+			artifactDetail.OS = &ftypes.OS{Family: "none"}
 		}
 
 		// If OS is not detected and repositories are detected, we'll try to use repositories as OS.
@@ -241,7 +241,6 @@ func (s Scanner) scanVulnerabilities(target string, detail ftypes.ArtifactDetail
 
 func (s Scanner) scanOSPkgs(target string, detail ftypes.ArtifactDetail, options types.ScanOptions) (
 	*types.Result, bool, error) {
-
 	if detail.OS == nil || detail.OS.Family == "" {
 		log.Logger.Debug("Detected OS: unknown")
 		return nil, false, nil
