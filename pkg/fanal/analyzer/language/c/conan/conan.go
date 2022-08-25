@@ -17,8 +17,8 @@ func init() {
 
 const (
 	version = 1
-	// Name of lock file can be any name (https://docs.conan.io/en/latest/versioning/lockfiles/introduction.html#locking-dependencies)
-	// Now we only check default filename - conan.lock
+	// Lock file name can be anything (https://docs.conan.io/en/latest/versioning/lockfiles/introduction.html#locking-dependencies)
+	// Now we only check default filename - `conan.lock`
 	fileName = "conan.lock"
 )
 
