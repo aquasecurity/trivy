@@ -80,6 +80,11 @@ func (s Scanner) Scan(ctx context.Context, target, artifactKey string, blobKeys 
 	case errors.Is(err, analyzer.ErrUnknownOS):
 		log.Logger.Debug("OS is not detected.")
 
+		// Packages may contain OS-independent binary information even though OS is empty.
+		if len(artifactDetail.Packages) != 0 {
+			artifactDetail.OS = &ftypes.OS{Family: "unknown"}
+		}
+
 		// If OS is not detected and repositories are detected, we'll try to use repositories as OS.
 		if artifactDetail.Repository != nil {
 			log.Logger.Debugf("Package repository: %s %s", artifactDetail.Repository.Family, artifactDetail.Repository.Release)
@@ -167,14 +172,10 @@ func (s Scanner) Scan(ctx context.Context, target, artifactKey string, blobKeys 
 }
 
 func (s Scanner) osPkgsToResult(target string, detail ftypes.ArtifactDetail, options types.ScanOptions) *types.Result {
-	if len(detail.Packages) == 0 {
+	if len(detail.Packages) == 0 || detail.OS == nil {
 		return nil
 	}
-	var osFamily string
-	if detail.OS != nil {
-		osFamily = detail.OS.Family
-		target = fmt.Sprintf("%s (%s %s)", target, osFamily, detail.OS.Name)
-	}
+
 	pkgs := detail.Packages
 	if options.ScanRemovedPackages {
 		pkgs = mergePkgs(pkgs, detail.HistoryPackages)
@@ -183,9 +184,9 @@ func (s Scanner) osPkgsToResult(target string, detail ftypes.ArtifactDetail, opt
 		return strings.Compare(pkgs[i].Name, pkgs[j].Name) <= 0
 	})
 	return &types.Result{
-		Target:   target,
+		Target:   fmt.Sprintf("%s (%s %s)", target, detail.OS.Family, detail.OS.Name),
 		Class:    types.ClassOSPkg,
-		Type:     osFamily,
+		Type:     detail.OS.Family,
 		Packages: pkgs,
 	}
 }
@@ -240,9 +241,10 @@ func (s Scanner) scanVulnerabilities(target string, detail ftypes.ArtifactDetail
 
 func (s Scanner) scanOSPkgs(target string, detail ftypes.ArtifactDetail, options types.ScanOptions) (
 	*types.Result, bool, error) {
+
 	if detail.OS == nil || detail.OS.Family == "" {
-		// Scan even unknown OS for vulnerabilities since "Packages" may contain OS-agnostic binaries.
-		detail.OS = &ftypes.OS{Family: "unknown"}
+		log.Logger.Debug("Detected OS: unknown")
+		return nil, false, nil
 	}
 	log.Logger.Infof("Detected OS: %s", detail.OS.Family)
 
