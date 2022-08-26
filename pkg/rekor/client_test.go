@@ -58,7 +58,7 @@ func TestClient_GetByUUID(t *testing.T) {
 
 			client.c.Entries = &mockEntriesClient{logEntryResponseFile: tt.mockResponseFile}
 
-			got, err := client.GetByUUID(tt.args.uuid)
+			got, err := client.GetByEntryUUID(tt.args.uuid)
 			require.NoError(t, err)
 			require.Equal(t, tt.want, got)
 		})

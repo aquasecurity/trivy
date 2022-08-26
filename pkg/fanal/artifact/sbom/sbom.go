@@ -137,7 +137,7 @@ func detectFormatSbomAttestation(d string) ([]byte, sbom.Format, error) {
 	for _, u := range uuids {
 		log.Logger.Debugf("Fetching rekor record: %s", u)
 
-		record, err := client.GetByUUID(u)
+		record, err := client.GetByEntryUUID(u)
 		if err != nil {
 			return nil, "", xerrors.Errorf("failed to get rekor record: %w", err)
 		}

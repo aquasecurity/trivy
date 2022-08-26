@@ -11,13 +11,10 @@ import (
 	"github.com/sigstore/rekor/pkg/generated/models"
 	"github.com/sigstore/rekor/pkg/sharding"
 	"golang.org/x/xerrors"
-
-	"github.com/aquasecurity/trivy/pkg/log"
 )
 
 const (
 	rekorServer = "https://rekor.sigstore.dev"
-
 	// rekor-cli use 30s as the default value
 	// cf. https://github.com/sigstore/rekor/blob/f9f283ecab17c14d9a3d5aac5084cc95aabd30e0/cmd/rekor-cli/app/root.go#L65
 	timeOut = 30 * time.Second
@@ -60,33 +57,28 @@ func (c *Client) Search(hash string) ([]string, error) {
 	return resp.Payload, nil
 }
 
-func (c *Client) GetByUUID(uuid string) (Record, error) {
+func (c *Client) GetByEntryUUID(entryUUID string) (Record, error) {
 	params := entries.NewGetLogEntryByUUIDParams()
 
 	params.SetTimeout(timeOut)
-	params.EntryUUID = uuid
+	params.EntryUUID = entryUUID
 
 	resp, err := c.c.Entries.GetLogEntryByUUID(params)
 	if err != nil {
 		return Record{}, xerrors.Errorf("failed to get log entry by UUID: %w", err)
 	}
 
-	// TODO: understand this flow
-	// cf. https://github.com/sigstore/rekor/blob/f9f283ecab17c14d9a3d5aac5084cc95aabd30e0/cmd/rekor-cli/app/get.go#L130-L138
-	// https://github.com/sigstore/cosign/issues/1406
-	// https://github.com/sigstore/rekor/pull/671
-	u, err := sharding.GetUUIDFromIDString(params.EntryUUID)
+	// Entry UUID is TreeID(8 bytes) + UUID(32 bytes) or UUID(32 bytes)
+	// cf. https://github.com/sigstore/rekor/blob/4923f60f4ae55ccd4baf28d182e8f55c2d8097d3/pkg/sharding/sharding.go#L25-L36
+	uuid, err := sharding.GetUUIDFromIDString(params.EntryUUID)
 	if err != nil {
-		return Record{}, xerrors.Errorf("failed to get uuid from ID string: %w", err)
+		return Record{}, xerrors.Errorf("failed to get UUID from Entry UUID: %w", err)
 	}
 
 	for k, entry := range resp.Payload {
-		if k != u {
-			continue
+		if k == uuid {
+			return Record{Statement: entry.Attestation.Data}, nil
 		}
-		log.Logger.Debugf("Log Index: %d", *entry.LogIndex)
-
-		return Record{Statement: entry.Attestation.Data}, nil
 	}
 
 	return Record{}, fmt.Errorf("record not found")
