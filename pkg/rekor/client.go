@@ -24,15 +24,11 @@ const (
 )
 
 type Record struct {
-	payload string
-}
-
-func (r Record) Attestation() string {
-	return `{"payloadType":"application/vnd.in-toto+json","payload":"` + r.payload + `"}"`
+	Statement []byte
 }
 
 type Client struct {
-	c rclient.Rekor
+	c *rclient.Rekor
 }
 
 func NewClient() (*Client, error) {
@@ -41,7 +37,7 @@ func NewClient() (*Client, error) {
 		return nil, xerrors.Errorf("failed to create rekor client: %w", err)
 	}
 
-	return &Client{c: *c}, nil
+	return &Client{c: c}, nil
 }
 
 func (c *Client) Search(hash string) ([]string, error) {
@@ -90,7 +86,7 @@ func (c *Client) GetByUUID(uuid string) (Record, error) {
 		}
 		log.Logger.Debugf("Log Index: %d", *entry.LogIndex)
 
-		return Record{payload: entry.Attestation.Data.String()}, nil
+		return Record{Statement: entry.Attestation.Data}, nil
 	}
 
 	return Record{}, fmt.Errorf("record not found")

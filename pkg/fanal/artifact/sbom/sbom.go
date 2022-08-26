@@ -8,8 +8,8 @@ import (
 	"io"
 	"os"
 	"path/filepath"
-	"strings"
 
+	"github.com/in-toto/in-toto-golang/in_toto"
 	digest "github.com/opencontainers/go-digest"
 	"golang.org/x/xerrors"
 
@@ -56,12 +56,12 @@ func (a Artifact) Inspect(_ context.Context) (types.ArtifactReference, error) {
 		d := a.filePath
 		log.Logger.Debugf("Repo digest: %s", d)
 
-		var att string
+		var att []byte
 		att, format, err = detectFormatSbomAttestation(d)
 		if err != nil {
 			return types.ArtifactReference{}, xerrors.Errorf("failed to detect SBOM attestation: %w", err)
 		}
-		r = strings.NewReader(att)
+		r = bytes.NewReader(att)
 
 	} else {
 		f, err := os.ReadFile(a.filePath)
@@ -122,15 +122,15 @@ func (a Artifact) Inspect(_ context.Context) (types.ArtifactReference, error) {
 	}, nil
 }
 
-func detectFormatSbomAttestation(d string) (string, sbom.Format, error) {
+func detectFormatSbomAttestation(d string) ([]byte, sbom.Format, error) {
 	client, err := rekor.NewClient()
 	if err != nil {
-		return "", "", xerrors.Errorf("failed to create rekor client: %w", err)
+		return nil, "", xerrors.Errorf("failed to create rekor client: %w", err)
 	}
 
 	uuids, err := client.Search(d)
 	if err != nil {
-		return "", "", xerrors.Errorf("failed to search rekor records: %w", err)
+		return nil, "", xerrors.Errorf("failed to search rekor records: %w", err)
 	}
 	log.Logger.Debugf("Found matching entries: %s", uuids)
 
@@ -139,21 +139,21 @@ func detectFormatSbomAttestation(d string) (string, sbom.Format, error) {
 
 		record, err := client.GetByUUID(u)
 		if err != nil {
-			return "", "", xerrors.Errorf("failed to get rekor record: %w", err)
+			return nil, "", xerrors.Errorf("failed to get rekor record: %w", err)
 		}
-		r := strings.NewReader(record.Attestation())
+		r := bytes.NewReader(record.Statement)
 
 		format, err := sbom.DetectFormat(r)
 		if err != nil {
-			return "", "", xerrors.Errorf("failed to detect SBOM format: %w", err)
+			return nil, "", xerrors.Errorf("failed to detect SBOM format: %w", err)
 		}
 		if format != sbom.FormatUnknown {
 			log.Logger.Infof("Recor record: %s", u)
-			return record.Attestation(), format, nil
+			return record.Statement, format, nil
 		}
 	}
 
-	return "", "", xerrors.Errorf("failed to detect type")
+	return nil, "", xerrors.Errorf("failed to detect type")
 }
 
 func (a Artifact) Decode(f io.Reader, format sbom.Format) (sbom.SBOM, error) {
@@ -168,10 +168,23 @@ func (a Artifact) Decode(f io.Reader, format sbom.Format) (sbom.SBOM, error) {
 		v = &cyclonedx.CycloneDX{SBOM: &bom}
 		decoder = json.NewDecoder(f)
 	case sbom.FormatAttestCycloneDXJSON:
+		// dsse envelope
+		//   => in-toto attestation
+		//     => cosign predicate
+		//       => CycloneDX JSON
+		v = &attestation.Envelope{
+			Payload: &in_toto.Statement{
+				Predicate: &attestation.CosignPredicate{
+					Data: &cyclonedx.CycloneDX{SBOM: &bom},
+				},
+			},
+		}
+		decoder = json.NewDecoder(f)
+	case sbom.FormatDecodedAttestCycloneDXJSON:
 		// in-toto attestation
 		//   => cosign predicate
 		//     => CycloneDX JSON
-		v = &attestation.Statement{
+		v = &in_toto.Statement{
 			Predicate: &attestation.CosignPredicate{
 				Data: &cyclonedx.CycloneDX{SBOM: &bom},
 			},

@@ -1891,6 +1891,7 @@ github.com/tmc/grpc-websocket-proxy v0.0.0-20190109142713-0ad062ec5ee5/go.mod h1
 github.com/tmc/grpc-websocket-proxy v0.0.0-20200427203606-3cfed13b9966/go.mod h1:ncp9v5uamzpCO7NfCPTXjqaC+bZgJeR0sMTm6dMHP7U=
 github.com/tmc/grpc-websocket-proxy v0.0.0-20201229170055-e5319fda7802/go.mod h1:ncp9v5uamzpCO7NfCPTXjqaC+bZgJeR0sMTm6dMHP7U=
 github.com/tomasen/realip v0.0.0-20180522021738-f0c99a92ddce/go.mod h1:o8v6yHRoik09Xen7gje4m9ERNah1d1PPsVq1VEx9vE4=
+github.com/transparency-dev/merkle v0.0.1 h1:T9/9gYB8uZl7VOJIhdwjALeRWlxUxSfDEysjfmx+L9E=
 github.com/transparency-dev/merkle v0.0.1/go.mod h1:B8FIw5LTq6DaULoHsVFRzYIUDkl8yuSwCdZnOZGKL/A=
 github.com/tv42/httpunix v0.0.0-20191220191345-2ba4b9c3382c/go.mod h1:hzIxponao9Kjc7aWznkXaL4U4TWaDSs8zcsY4Ka08nM=
 github.com/twitchtv/twirp v8.1.2+incompatible h1:0O6TfzZW09ZP5r+ORA90XQEE3PTgA6C7MBbl2KxvVgE=

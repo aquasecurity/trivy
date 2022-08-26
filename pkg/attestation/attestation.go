@@ -17,27 +17,35 @@ type CosignPredicate struct {
 	Data interface{}
 }
 
-// Statement holds in-toto statement headers and the predicate.
-type Statement in_toto.Statement
+// Envelope captures an envelope as described by the Secure Systems Lab
+// Signing Specification.
+// cf. https://github.com/secure-systems-lab/signing-spec/blob/master/envelope.md
+type Envelope struct {
+	dsse.Envelope
+	// Base64-decoded payload
+	Payload interface{}
+}
 
-func (s *Statement) UnmarshalJSON(b []byte) error {
-	var envelope dsse.Envelope
-	err := json.NewDecoder(bytes.NewReader(b)).Decode(&envelope)
+func (e *Envelope) UnmarshalJSON(b []byte) error {
+	var env dsse.Envelope
+	err := json.NewDecoder(bytes.NewReader(b)).Decode(&env)
 	if err != nil {
 		return xerrors.Errorf("failed to decode as a dsse envelope: %w", err)
 	}
-	if envelope.PayloadType != in_toto.PayloadType {
-		return xerrors.Errorf("invalid attestation payload type: %s", envelope.PayloadType)
+	if env.PayloadType != in_toto.PayloadType {
+		return xerrors.Errorf("invalid attestation payload type: %s", env.PayloadType)
 	}
 
-	decoded, err := base64.StdEncoding.DecodeString(envelope.Payload)
+	e.Envelope = env
+
+	decoded, err := base64.StdEncoding.DecodeString(e.Envelope.Payload)
 	if err != nil {
 		return xerrors.Errorf("failed to decode attestation payload: %w", err)
 	}
 
-	statement := (*in_toto.Statement)(s)
-	if err = json.NewDecoder(bytes.NewReader(decoded)).Decode(statement); err != nil {
-		return xerrors.Errorf("failed to decode attestation payload as in-toto statement: %w", err)
+	err = json.Unmarshal(decoded, &e.Payload)
+	if err != nil {
+		return err
 	}
 
 	return nil

@@ -28,6 +28,8 @@ require (
 	github.com/docker/go-connections v0.4.0
 	github.com/fatih/color v1.13.0
 	github.com/go-enry/go-license-detector/v4 v4.3.0
+	github.com/go-openapi/runtime v0.24.1
+	github.com/go-openapi/strfmt v0.21.3
 	github.com/go-redis/redis/v8 v8.11.5
 	github.com/golang-jwt/jwt v3.2.2+incompatible
 	github.com/golang/protobuf v1.5.2
@@ -60,6 +62,7 @@ require (
 	github.com/stretchr/testify v1.8.0
 	github.com/testcontainers/testcontainers-go v0.13.0
 	github.com/tetratelabs/wazero v0.0.0-20220701105919-891761ac1ee2
+	github.com/transparency-dev/merkle v0.0.1
 	github.com/twitchtv/twirp v8.1.2+incompatible
 	github.com/xlab/treeprint v1.1.0
 	go.etcd.io/bbolt v1.3.6
@@ -124,9 +127,7 @@ require (
 	github.com/go-openapi/analysis v0.21.2 // indirect
 	github.com/go-openapi/errors v0.20.2 // indirect
 	github.com/go-openapi/loads v0.21.1 // indirect
-	github.com/go-openapi/runtime v0.24.1 // indirect
 	github.com/go-openapi/spec v0.20.6 // indirect
-	github.com/go-openapi/strfmt v0.21.3 // indirect
 	github.com/go-openapi/validate v0.22.0 // indirect
 	github.com/go-playground/locales v0.14.0 // indirect
 	github.com/go-playground/universal-translator v0.18.0 // indirect
