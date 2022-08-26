@@ -157,10 +157,6 @@ func (a Artifact) calcCacheKeys(imageID string, diffIDs []string, configFile *v1
 		createdBy = append(createdBy, c)
 	}
 
-	if len(createdBy) != len(diffIDs) {
-		return "", nil, nil, xerrors.Errorf("incorrect detection of layer history")
-	}
-
 	layerKeyMap := map[string]LayerInfo{}
 	hookVersions := a.handlerManager.Versions()
 	var layerKeys []string
