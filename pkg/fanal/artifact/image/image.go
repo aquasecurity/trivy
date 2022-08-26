@@ -149,10 +149,8 @@ func (a Artifact) calcCacheKeys(imageID string, diffIDs []string, configFile *v1
 	// save createdBy fields in order of layers
 	for i := 0; i < len(configFile.History); i++ {
 		h := configFile.History[i]
-		// Detect and skip CMD instruction in base image
-		if strings.HasPrefix(h.CreatedBy, "/bin/sh -c #(nop)  CMD") ||
-			strings.HasPrefix(h.CreatedBy, "ENTRYPOINT") ||
-			strings.HasPrefix(h.CreatedBy, "CMD") { // BuildKit
+		// skip histories for empty layers
+		if h.EmptyLayer {
 			continue
 		}
 		c := strings.TrimPrefix(strings.TrimPrefix(h.CreatedBy, "/bin/sh -c "), "#(nop) ")
@@ -160,7 +158,7 @@ func (a Artifact) calcCacheKeys(imageID string, diffIDs []string, configFile *v1
 	}
 
 	if len(createdBy) != len(diffIDs) {
-		return "", nil, nil, xerrors.Errorf("incorrect definition of layer history")
+		return "", nil, nil, xerrors.Errorf("incorrect detection of layer history")
 	}
 
 	layerKeyMap := map[string]LayerInfo{}
