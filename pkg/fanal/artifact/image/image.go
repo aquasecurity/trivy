@@ -166,9 +166,14 @@ func (a Artifact) calcCacheKeys(imageID string, diffIDs []string, configFile *v1
 			return "", nil, nil, err
 		}
 		layerKeys = append(layerKeys, blobKey)
+
+		c := ""
+		if len(createdBy) > 0 {
+			c = createdBy[i]
+		}
 		layerKeyMap[blobKey] = LayerInfo{
 			DiffID:    diffID,
-			CreatedBy: createdBy[i],
+			CreatedBy: c,
 		}
 	}
 	return imageKey, layerKeys, layerKeyMap, nil
