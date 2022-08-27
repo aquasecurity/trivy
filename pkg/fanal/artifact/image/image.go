@@ -10,7 +10,6 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/aquasecurity/trivy/pkg/rekor"
 	v1 "github.com/google/go-containerregistry/pkg/v1"
 	"golang.org/x/exp/slices"
 	"golang.org/x/sync/semaphore"
@@ -20,12 +19,13 @@ import (
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer/config"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer/secret"
 	"github.com/aquasecurity/trivy/pkg/fanal/artifact"
-	fsbom "github.com/aquasecurity/trivy/pkg/fanal/artifact/sbom"
+	"github.com/aquasecurity/trivy/pkg/fanal/artifact/sbom"
 	"github.com/aquasecurity/trivy/pkg/fanal/cache"
 	"github.com/aquasecurity/trivy/pkg/fanal/handler"
 	"github.com/aquasecurity/trivy/pkg/fanal/log"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/fanal/walker"
+	"github.com/aquasecurity/trivy/pkg/rekor"
 )
 
 const (
@@ -448,7 +448,7 @@ func (a Artifact) inspectRekorRecord(ctx context.Context, client *rekor.Client, 
 		return types.ArtifactReference{}, xerrors.Errorf("failed to close: %w", err)
 	}
 
-	ar, err := fsbom.NewArtifact(f.Name(), a.cache, a.artifactOption)
+	ar, err := sbom.NewArtifact(f.Name(), a.cache, a.artifactOption)
 	if err != nil {
 		return types.ArtifactReference{}, xerrors.Errorf("failed to new artifact: %w", err)
 	}
