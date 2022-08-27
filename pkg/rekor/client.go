@@ -1,10 +1,13 @@
 package rekor
 
 import (
+	"context"
 	"fmt"
+	"net/url"
 
-	sclient "github.com/sigstore/rekor/pkg/client"
-	rclient "github.com/sigstore/rekor/pkg/generated/client"
+	httptransport "github.com/go-openapi/runtime/client"
+	"github.com/go-openapi/strfmt"
+	"github.com/sigstore/rekor/pkg/generated/client"
 	"github.com/sigstore/rekor/pkg/generated/client/entries"
 	"github.com/sigstore/rekor/pkg/generated/client/index"
 	"github.com/sigstore/rekor/pkg/generated/models"
@@ -21,20 +24,24 @@ type Entry struct {
 }
 
 type Client struct {
-	c *rclient.Rekor
+	c *client.Rekor
 }
 
 func NewClient() (*Client, error) {
-	c, err := sclient.GetRekorClient(rekorServer)
+	u, err := url.Parse(rekorServer)
 	if err != nil {
-		return nil, xerrors.Errorf("failed to create rekor client: %w", err)
+		return nil, xerrors.Errorf("failed to parse url: %w", err)
 	}
 
+	c := client.New(
+		httptransport.New(u.Host, client.DefaultBasePath, []string{u.Scheme}),
+		strfmt.Default,
+	)
 	return &Client{c: c}, nil
 }
 
-func (c *Client) Search(hash string) ([]string, error) {
-	params := index.NewSearchIndexParams().WithQuery(&models.SearchIndex{Hash: hash})
+func (c *Client) Search(ctx context.Context, hash string) ([]string, error) {
+	params := index.NewSearchIndexParamsWithContext(ctx).WithQuery(&models.SearchIndex{Hash: hash})
 
 	resp, err := c.c.Index.SearchIndex(params)
 	if err != nil {
@@ -47,8 +54,8 @@ func (c *Client) Search(hash string) ([]string, error) {
 	return resp.Payload, nil
 }
 
-func (c *Client) GetByEntryUUID(entryUUID string) (Entry, error) {
-	params := entries.NewGetLogEntryByUUIDParams().WithEntryUUID(entryUUID)
+func (c *Client) GetByEntryUUID(ctx context.Context, entryUUID string) (Entry, error) {
+	params := entries.NewGetLogEntryByUUIDParamsWithContext(ctx).WithEntryUUID(entryUUID)
 
 	resp, err := c.c.Entries.GetLogEntryByUUID(params)
 	if err != nil {

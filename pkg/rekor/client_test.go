@@ -1,6 +1,7 @@
 package rekor
 
 import (
+	"context"
 	"encoding/json"
 	"os"
 	"testing"
@@ -58,7 +59,7 @@ func TestClient_GetByUUID(t *testing.T) {
 
 			client.c.Entries = &mockEntriesClient{logEntryResponseFile: tt.mockResponseFile}
 
-			got, err := client.GetByEntryUUID(tt.args.uuid)
+			got, err := client.GetByEntryUUID(context.Background(), tt.args.uuid)
 			require.NoError(t, err)
 			require.Equal(t, tt.want, got)
 		})
@@ -116,7 +117,7 @@ func TestClient_Search(t *testing.T) {
 				searchIndexResponseFile: tt.mockResponseFile,
 			}
 
-			got, err := c.Search(tt.args.hash)
+			got, err := c.Search(context.Background(), tt.args.hash)
 			require.NoError(t, err)
 			require.Equal(t, tt.want, got)
 		})
