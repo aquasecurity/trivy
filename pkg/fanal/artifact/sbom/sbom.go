@@ -1,7 +1,6 @@
 package sbom
 
 import (
-	"bytes"
 	"context"
 	"crypto/sha256"
 	"encoding/json"
@@ -21,7 +20,6 @@ import (
 	"github.com/aquasecurity/trivy/pkg/fanal/handler"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
-	"github.com/aquasecurity/trivy/pkg/rekor"
 	"github.com/aquasecurity/trivy/pkg/sbom"
 	"github.com/aquasecurity/trivy/pkg/sbom/cyclonedx"
 )
@@ -45,46 +43,25 @@ func NewArtifact(filePath string, c cache.ArtifactCache, opt artifact.Option) (a
 }
 
 func (a Artifact) Inspect(_ context.Context) (types.ArtifactReference, error) {
-	var (
-		r      io.ReadSeeker
-		format sbom.Format
-		err    error
-	)
-
-	if a.artifactOption.SbomAttestation {
-		// TODO: rename a.filePath. artifactName, artifactPath
-		d := a.filePath
-		log.Logger.Debugf("Repo digest: %s", d)
-
-		var att []byte
-		att, format, err = detectFormatSbomAttestation(d)
-		if err != nil {
-			return types.ArtifactReference{}, xerrors.Errorf("failed to detect SBOM attestation: %w", err)
-		}
-		r = bytes.NewReader(att)
-
-	} else {
-		f, err := os.ReadFile(a.filePath)
-		if err != nil {
-			return types.ArtifactReference{}, xerrors.Errorf("failed to read SBOM file error: %w", err)
-		}
-		r = bytes.NewReader(f)
-
-		// Format auto-detection
-		format, err = sbom.DetectFormat(r)
-		if err != nil {
-			return types.ArtifactReference{}, xerrors.Errorf("failed to detect SBOM format: %w", err)
-		}
+	f, err := os.Open(a.filePath)
+	if err != nil {
+		return types.ArtifactReference{}, xerrors.Errorf("failed to open sbom file error: %w", err)
 	}
+	defer f.Close()
 
+	// Format auto-detection
+	format, err := sbom.DetectFormat(f)
+	if err != nil {
+		return types.ArtifactReference{}, xerrors.Errorf("failed to detect SBOM format: %w", err)
+	}
 	log.Logger.Infof("Detected SBOM format: %s", format)
 
 	// Rewind the SBOM file
-	if _, err = r.Seek(0, io.SeekStart); err != nil {
+	if _, err = f.Seek(0, io.SeekStart); err != nil {
 		return types.ArtifactReference{}, xerrors.Errorf("seek error: %w", err)
 	}
 
-	bom, err := a.Decode(r, format)
+	bom, err := a.Decode(f, format)
 	if err != nil {
 		return types.ArtifactReference{}, xerrors.Errorf("SBOM decode error: %w", err)
 	}
@@ -120,40 +97,6 @@ func (a Artifact) Inspect(_ context.Context) (types.ArtifactReference, error) {
 		// Keep an original report
 		CycloneDX: bom.CycloneDX,
 	}, nil
-}
-
-func detectFormatSbomAttestation(d string) ([]byte, sbom.Format, error) {
-	client, err := rekor.NewClient()
-	if err != nil {
-		return nil, "", xerrors.Errorf("failed to create rekor client: %w", err)
-	}
-
-	uuids, err := client.Search(d)
-	if err != nil {
-		return nil, "", xerrors.Errorf("failed to search rekor records: %w", err)
-	}
-	log.Logger.Debugf("Found matching entries: %s", uuids)
-
-	for _, u := range uuids {
-		log.Logger.Debugf("Fetching rekor record: %s", u)
-
-		record, err := client.GetByEntryUUID(u)
-		if err != nil {
-			return nil, "", xerrors.Errorf("failed to get rekor record: %w", err)
-		}
-		r := bytes.NewReader(record.Statement)
-
-		format, err := sbom.DetectFormat(r)
-		if err != nil {
-			return nil, "", xerrors.Errorf("failed to detect SBOM format: %w", err)
-		}
-		if format != sbom.FormatUnknown {
-			log.Logger.Infof("Recor record: %s", u)
-			return record.Statement, format, nil
-		}
-	}
-
-	return nil, "", xerrors.Errorf("failed to detect type")
 }
 
 func (a Artifact) Decode(f io.Reader, format sbom.Format) (sbom.SBOM, error) {

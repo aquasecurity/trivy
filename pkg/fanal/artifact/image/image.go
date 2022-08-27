@@ -10,6 +10,7 @@ import (
 	"strings"
 	"sync"
 
+	"github.com/aquasecurity/trivy/pkg/rekor"
 	v1 "github.com/google/go-containerregistry/pkg/v1"
 	"golang.org/x/exp/slices"
 	"golang.org/x/sync/semaphore"
@@ -70,7 +71,6 @@ func NewArtifact(img types.Image, c cache.ArtifactCache, opt artifact.Option) (a
 	}, nil
 }
 
-// TODO: shoud add types.Image function?
 func repoDigest(img types.Image) (string, error) {
 	repoNameFull := img.Name()
 	repoName, _, _ := strings.Cut(repoNameFull, ":")
@@ -105,20 +105,13 @@ func (a Artifact) Inspect(ctx context.Context) (types.ArtifactReference, error) 
 	log.Logger.Debugf("Diff IDs: %v", diffIDs)
 
 	if a.artifactOption.SbomAttestation {
-		d, err := repoDigest(a.image)
-		if err != nil {
-			return types.ArtifactReference{}, xerrors.Errorf("failed to get repo digest: %w", err)
-		}
-		ar, err := fsbom.NewArtifact(d, a.cache, a.artifactOption)
-		if err != nil {
-			return types.ArtifactReference{}, xerrors.Errorf("failed to new artifact: %w", err)
-		}
-		results, err := ar.Inspect(ctx)
+		results, err := a.inspectSbomAttestation(ctx)
 		if err == nil {
 			return results, nil
 		}
-		log.Logger.Debugf("failed to inspect attestation: %s", err)
+		log.Logger.Debugf("Failed to inspect SBOM Attestation")
 	}
+
 	// Try to detect base layers.
 	baseDiffIDs := a.guessBaseLayers(diffIDs, configFile)
 	log.Logger.Debugf("Base Layers: %v", baseDiffIDs)
@@ -434,4 +427,64 @@ func (a Artifact) guessBaseLayers(diffIDs []string, configFile *v1.ConfigFile) [
 		diffIDIndex++
 	}
 	return baseDiffIDs
+}
+
+func (a Artifact) inspectRekorRecord(ctx context.Context, client *rekor.Client, u string) (types.ArtifactReference, error) {
+	entry, err := client.GetByEntryUUID(ctx, u)
+	if err != nil {
+		return types.ArtifactReference{}, xerrors.Errorf("failed to get rekor entry: %w", err)
+	}
+
+	f, err := os.CreateTemp("", "sbom-*")
+	if err != nil {
+		return types.ArtifactReference{}, xerrors.Errorf("failed to create a temporary file: %w", err)
+	}
+	defer os.Remove(f.Name())
+
+	if _, err = f.Write(entry.Statement); err != nil {
+		return types.ArtifactReference{}, xerrors.Errorf("failed to write statement: %w", err)
+	}
+	if err := f.Close(); err != nil {
+		return types.ArtifactReference{}, xerrors.Errorf("failed to close: %w", err)
+	}
+
+	ar, err := fsbom.NewArtifact(f.Name(), a.cache, a.artifactOption)
+	if err != nil {
+		return types.ArtifactReference{}, xerrors.Errorf("failed to new artifact: %w", err)
+	}
+
+	results, err := ar.Inspect(ctx)
+	if err != nil {
+		return types.ArtifactReference{}, xerrors.Errorf("failed to inspect: %w", err)
+	}
+
+	return results, nil
+}
+
+func (a Artifact) inspectSbomAttestation(ctx context.Context) (types.ArtifactReference, error) {
+	d, err := repoDigest(a.image)
+	if err != nil {
+		return types.ArtifactReference{}, xerrors.Errorf("failed to get repo digest: %w", err)
+	}
+
+	client, err := rekor.NewClient()
+	if err != nil {
+		return types.ArtifactReference{}, xerrors.Errorf("failed to create rekor client: %w", err)
+	}
+
+	uuids, err := client.Search(ctx, d)
+	if err != nil {
+		return types.ArtifactReference{}, xerrors.Errorf("failed to search rekor records: %w", err)
+	}
+
+	log.Logger.Debugf("Found matching entries: %s", uuids)
+
+	for _, u := range uuids {
+		log.Logger.Debugf("Inspecting rekor entry: %s", u)
+		results, err := a.inspectRekorRecord(ctx, client, u)
+		if err == nil {
+			return results, nil
+		}
+	}
+	return types.ArtifactReference{}, xerrors.Errorf("failed to inspect SBOM attestation: %w", err)
 }
