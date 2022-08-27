@@ -118,9 +118,9 @@ func (s Scanner) Scan(ctx context.Context, target, artifactKey string, blobKeys 
 			artifactDetail.OS.Eosl = eosl
 		}
 		// Merge package results into vulnerability results
-		s.fillPkgsInVulns(pkgResults, vulnResults)
+		mergedResults := s.fillPkgsInVulns(pkgResults, vulnResults)
 
-		results = append(results, vulnResults...)
+		results = append(results, mergedResults...)
 	} else {
 		// If vulnerability scanning is not enabled, it just adds package results.
 		results = append(results, pkgResults...)
@@ -312,15 +312,22 @@ func (s Scanner) scanLangPkgs(apps []ftypes.Application) (types.Results, error) 
 	return results, nil
 }
 
-func (s Scanner) fillPkgsInVulns(pkgResults, vulnResults types.Results) {
-	// Fill vulnerability results in package results
-	for i := range vulnResults {
-		if r, found := lo.Find(pkgResults, func(r types.Result) bool {
-			return r.Class == vulnResults[i].Class && r.Target == vulnResults[i].Target
+func (s Scanner) fillPkgsInVulns(pkgResults, vulnResults types.Results) types.Results {
+	var results types.Results
+	if len(pkgResults) == 0 { // '--list-all-pkgs' == false or packages not found
+		return vulnResults
+	}
+	for _, result := range pkgResults {
+		if r, found := lo.Find(vulnResults, func(r types.Result) bool {
+			return r.Class == result.Class && r.Target == result.Target
 		}); found {
-			vulnResults[i].Packages = r.Packages
+			r.Packages = result.Packages
+			results = append(results, r)
+		} else { // when package result has no vulnerabilities we still need to add it to result(for 'list-all-pkgs')
+			results = append(results, result)
 		}
 	}
+	return results
 }
 
 func (s Scanner) misconfsToResults(misconfs []ftypes.Misconfiguration) types.Results {
@@ -480,6 +487,7 @@ func toDetectedMisconfiguration(res ftypes.MisconfResult, defaultSeverity dbType
 
 	return types.DetectedMisconfiguration{
 		ID:          res.ID,
+		AVDID:       res.AVDID,
 		Type:        res.Type,
 		Title:       res.Title,
 		Description: res.Description,
