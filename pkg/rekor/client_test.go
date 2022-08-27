@@ -38,7 +38,7 @@ func TestClient_GetByUUID(t *testing.T) {
 		name             string
 		mockResponseFile string
 		args             args
-		want             Record
+		want             Entry
 	}{
 		{
 			name:             "happy path",
@@ -46,7 +46,7 @@ func TestClient_GetByUUID(t *testing.T) {
 			args: args{
 				uuid: "8b5b2debb565fd5cb05ae0d3935351fa3faabce558bede72e197b5722a742b1e",
 			},
-			want: Record{
+			want: Entry{
 				Statement: []byte(`{"_type":"https://in-toto.io/Statement/v0.1","predicateType":"cosign.sigstore.dev/attestation/v1","subject":[{"name":"ghcr.io/aquasecurity/trivy-test-images","digest":{"sha256":"20d3f693dcffa44d6b24eae88783324d25cc132c22089f70e4fbfb858625b062"}}],"predicate":{"Data":"\"foo\\n\"\n","Timestamp":"2022-08-26T01:17:17Z"}}`),
 			},
 		},
