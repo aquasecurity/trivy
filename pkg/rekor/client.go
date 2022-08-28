@@ -16,9 +16,9 @@ import (
 
 const (
 	rekorServer = "https://rekor.sigstore.dev"
+	treeIDLen   = 16
+	uuidLen     = 64
 )
-const TreeIDLen = 16
-const UUIDLen = 64
 
 // EntryID is a hex-format string. The length of the string is 80.
 // It consists of two elements, the TreeID and the UUID.
@@ -26,14 +26,14 @@ const UUIDLen = 64
 type EntryID string
 
 func NewEntryID(entryID string) (EntryID, error) {
-	if len(entryID) == TreeIDLen+UUIDLen {
+	if len(entryID) == treeIDLen+uuidLen {
 		return EntryID(entryID), nil
 	}
 	return "", xerrors.Errorf("invalid Entry ID length")
 }
 
 func (e EntryID) UUID() string {
-	return string(e)[TreeIDLen:]
+	return string(e)[treeIDLen:]
 }
 
 type Entry struct {
