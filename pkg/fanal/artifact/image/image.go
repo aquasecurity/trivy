@@ -429,8 +429,8 @@ func (a Artifact) guessBaseLayers(diffIDs []string, configFile *v1.ConfigFile) [
 	return baseDiffIDs
 }
 
-func (a Artifact) inspectRekorRecord(ctx context.Context, client *rekor.Client, u rekor.EntryID) (types.ArtifactReference, error) {
-	entry, err := client.GetEntry(ctx, u)
+func (a Artifact) inspectRekorRecord(ctx context.Context, client *rekor.Client, entryID rekor.EntryID) (types.ArtifactReference, error) {
+	entry, err := client.GetEntry(ctx, entryID)
 	if err != nil {
 		return types.ArtifactReference{}, xerrors.Errorf("failed to get rekor entry: %w", err)
 	}
@@ -441,7 +441,7 @@ func (a Artifact) inspectRekorRecord(ctx context.Context, client *rekor.Client, 
 	}
 	defer os.Remove(f.Name())
 
-	if _, err = f.Write(entry.Statement); err != nil {
+	if _, err := f.Write(entry.Statement); err != nil {
 		return types.ArtifactReference{}, xerrors.Errorf("failed to write statement: %w", err)
 	}
 	if err := f.Close(); err != nil {
@@ -472,16 +472,16 @@ func (a Artifact) inspectSbomAttestation(ctx context.Context) (types.ArtifactRef
 		return types.ArtifactReference{}, xerrors.Errorf("failed to create rekor client: %w", err)
 	}
 
-	uuids, err := client.Search(ctx, d)
+	entryIDs, err := client.Search(ctx, d)
 	if err != nil {
 		return types.ArtifactReference{}, xerrors.Errorf("failed to search rekor records: %w", err)
 	}
 
-	log.Logger.Debugf("Found matching entries: %s", uuids)
+	log.Logger.Debugf("Found matching entries: %s", entryIDs)
 
-	for _, u := range uuids {
-		log.Logger.Debugf("Inspecting rekor entry: %s", u)
-		results, err := a.inspectRekorRecord(ctx, client, u)
+	for _, id := range entryIDs {
+		log.Logger.Debugf("Inspecting rekor entry: %s", id)
+		results, err := a.inspectRekorRecord(ctx, client, id)
 		if err == nil {
 			return results, nil
 		}
