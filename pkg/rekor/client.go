@@ -11,13 +11,30 @@ import (
 	"github.com/sigstore/rekor/pkg/generated/client/entries"
 	"github.com/sigstore/rekor/pkg/generated/client/index"
 	"github.com/sigstore/rekor/pkg/generated/models"
-	"github.com/sigstore/rekor/pkg/sharding"
 	"golang.org/x/xerrors"
 )
 
 const (
 	rekorServer = "https://rekor.sigstore.dev"
 )
+const TreeIDLen = 16
+const UUIDLen = 64
+
+// EntryID is a hex-format string. The length of the string is 80.
+// It consists of two elements, the TreeID and the UUID.
+// cf. https://github.com/sigstore/rekor/blob/4923f60f4ae55ccd4baf28d182e8f55c2d8097d3/pkg/sharding/sharding.go#L25-L36
+type EntryID string
+
+func NewEntryID(entryID string) (EntryID, error) {
+	if len(entryID) == TreeIDLen+UUIDLen {
+		return EntryID(entryID), nil
+	}
+	return "", xerrors.Errorf("invalid Entry ID length")
+}
+
+func (e EntryID) UUID() string {
+	return string(e)[TreeIDLen:]
+}
 
 type Entry struct {
 	Statement []byte
@@ -40,7 +57,7 @@ func NewClient() (*Client, error) {
 	return &Client{c: c}, nil
 }
 
-func (c *Client) Search(ctx context.Context, hash string) ([]string, error) {
+func (c *Client) Search(ctx context.Context, hash string) ([]EntryID, error) {
 	params := index.NewSearchIndexParamsWithContext(ctx).WithQuery(&models.SearchIndex{Hash: hash})
 
 	resp, err := c.c.Index.SearchIndex(params)
@@ -51,25 +68,26 @@ func (c *Client) Search(ctx context.Context, hash string) ([]string, error) {
 		return nil, fmt.Errorf("entries not found")
 	}
 
-	return resp.Payload, nil
+	ids := make([]EntryID, len(resp.Payload))
+	for i, id := range resp.Payload {
+		ids[i], err = NewEntryID(id)
+		if err != nil {
+			return nil, xerrors.Errorf("invalidate entry UUID: %w", err)
+		}
+	}
+
+	return ids, nil
 }
 
-func (c *Client) GetByEntryUUID(ctx context.Context, entryUUID string) (Entry, error) {
-	params := entries.NewGetLogEntryByUUIDParamsWithContext(ctx).WithEntryUUID(entryUUID)
+func (c *Client) GetEntry(ctx context.Context, entryID EntryID) (Entry, error) {
+	params := entries.NewGetLogEntryByUUIDParamsWithContext(ctx).WithEntryUUID(string(entryID))
 
 	resp, err := c.c.Entries.GetLogEntryByUUID(params)
 	if err != nil {
 		return Entry{}, xerrors.Errorf("failed to get log entry by UUID: %w", err)
 	}
 
-	// EntryUUID is TreeID(8 bytes)+UUID(32 bytes) or UUID(32 bytes)
-	// cf. https://github.com/sigstore/rekor/blob/4923f60f4ae55ccd4baf28d182e8f55c2d8097d3/pkg/sharding/sharding.go#L25-L36
-	uuid, err := sharding.GetUUIDFromIDString(params.EntryUUID)
-	if err != nil {
-		return Entry{}, xerrors.Errorf("failed to get UUID from Entry UUID: %w", err)
-	}
-
-	entry, found := resp.Payload[uuid]
+	entry, found := resp.Payload[entryID.UUID()]
 	if !found {
 		return Entry{}, fmt.Errorf("entry not found")
 	}

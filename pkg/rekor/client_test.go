@@ -21,6 +21,7 @@ func (c *mockEntriesClient) GetLogEntryByUUID(_ *entries.GetLogEntryByUUIDParams
 	if err != nil {
 		return nil, err
 	}
+	defer f.Close()
 
 	var resp entries.GetLogEntryByUUIDOK
 	err = json.NewDecoder(f).Decode(&resp)
@@ -31,9 +32,8 @@ func (c *mockEntriesClient) GetLogEntryByUUID(_ *entries.GetLogEntryByUUIDParams
 }
 
 func TestClient_GetByUUID(t *testing.T) {
-
 	type args struct {
-		uuid string
+		uuid EntryID
 	}
 	tests := []struct {
 		name             string
@@ -59,7 +59,7 @@ func TestClient_GetByUUID(t *testing.T) {
 
 			client.c.Entries = &mockEntriesClient{logEntryResponseFile: tt.mockResponseFile}
 
-			got, err := client.GetByEntryUUID(context.Background(), tt.args.uuid)
+			got, err := client.GetEntry(context.Background(), tt.args.uuid)
 			require.NoError(t, err)
 			require.Equal(t, tt.want, got)
 		})
@@ -76,6 +76,7 @@ func (c *mockIndexClient) SearchIndex(_ *index.SearchIndexParams, _ ...index.Cli
 	if err != nil {
 		return nil, err
 	}
+	defer f.Close()
 
 	var resp index.SearchIndexOK
 	err = json.NewDecoder(f).Decode(&resp)
@@ -94,7 +95,7 @@ func TestClient_Search(t *testing.T) {
 		name             string
 		mockResponseFile string
 		args             args
-		want             []string
+		want             []EntryID
 	}{
 		{
 			name:             "happy path",
@@ -102,7 +103,7 @@ func TestClient_Search(t *testing.T) {
 			args: args{
 				hash: "92251458088c638061cda8fd8b403b76d661a4dc6b7ee71b6affcf1872557b2b",
 			},
-			want: []string{
+			want: []EntryID{
 				"392f8ecba72f4326eb624a7403756250b5f2ad58842a99d1653cd6f147f4ce9eda2da350bd908a55",
 				"392f8ecba72f4326414eaca77bd19bf5f378725d7fd79309605a81b69cc0101f5cd3119d0a216523",
 			},

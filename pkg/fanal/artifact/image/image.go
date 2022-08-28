@@ -429,8 +429,8 @@ func (a Artifact) guessBaseLayers(diffIDs []string, configFile *v1.ConfigFile) [
 	return baseDiffIDs
 }
 
-func (a Artifact) inspectRekorRecord(ctx context.Context, client *rekor.Client, u string) (types.ArtifactReference, error) {
-	entry, err := client.GetByEntryUUID(ctx, u)
+func (a Artifact) inspectRekorRecord(ctx context.Context, client *rekor.Client, u rekor.EntryID) (types.ArtifactReference, error) {
+	entry, err := client.GetEntry(ctx, u)
 	if err != nil {
 		return types.ArtifactReference{}, xerrors.Errorf("failed to get rekor entry: %w", err)
 	}
