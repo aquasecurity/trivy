@@ -31,7 +31,7 @@ func (c *mockEntriesClient) GetLogEntryByUUID(_ *entries.GetLogEntryByUUIDParams
 	return &resp, nil
 }
 
-func TestClient_GetByUUID(t *testing.T) {
+func TestClient_GetEntry(t *testing.T) {
 	type args struct {
 		uuid EntryID
 	}
@@ -45,7 +45,7 @@ func TestClient_GetByUUID(t *testing.T) {
 			name:             "happy path",
 			mockResponseFile: "testdata/logEntryResponse.json",
 			args: args{
-				uuid: "8b5b2debb565fd5cb05ae0d3935351fa3faabce558bede72e197b5722a742b1e",
+				uuid: "392f8ecba72f43268b5b2debb565fd5cb05ae0d3935351fa3faabce558bede72e197b5722a742b1e",
 			},
 			want: Entry{
 				Statement: []byte(`{"_type":"https://in-toto.io/Statement/v0.1","predicateType":"cosign.sigstore.dev/attestation/v1","subject":[{"name":"ghcr.io/aquasecurity/trivy-test-images","digest":{"sha256":"20d3f693dcffa44d6b24eae88783324d25cc132c22089f70e4fbfb858625b062"}}],"predicate":{"Data":"\"foo\\n\"\n","Timestamp":"2022-08-26T01:17:17Z"}}`),
