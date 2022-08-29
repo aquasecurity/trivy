@@ -2,6 +2,7 @@ package scanner
 
 import (
 	"context"
+	"github.com/aquasecurity/trivy/pkg/k8s/db"
 	"io"
 
 	"github.com/cheggaaa/pb/v3"
@@ -52,7 +53,12 @@ func (s *Scanner) Scan(ctx context.Context, artifacts []*artifacts.Artifact) (re
 			log.Fatal(xerrors.Errorf("can't enable logger error: %w", err))
 		}
 	}()
-
+	policyDir, err := createDynamicPolicyFolder(db.GetOutDatedAPIPolicy(), db.FetchOutdatedApiData())
+	if err != nil {
+		return report.Report{}, xerrors.Errorf("logger error: %w", err)
+	}
+	defer removeDir(policyDir)
+	s.opts.PolicyPaths = []string{policyDir}
 	// Loops once over all artifacts, and execute scanners as necessary. Not every artifacts has an image,
 	// so image scanner is not always executed.
 	for _, artifact := range artifacts {
