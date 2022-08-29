@@ -11,11 +11,13 @@ import (
 	"path/filepath"
 
 	api "github.com/docker/docker/api/types"
+	dimage "github.com/docker/docker/api/types/image"
 	"golang.org/x/xerrors"
 )
 
 var (
 	inspectURL = "http://podman/images/%s/json"
+	historyURL = "http://podman/images/%s/history"
 	saveURL    = "http://podman/images/%s/get"
 )
 
@@ -70,6 +72,29 @@ func (p podmanClient) imageInspect(imageName string) (api.ImageInspect, error) {
 	return inspect, nil
 }
 
+func (p podmanClient) imageHistoryInspect(imageName string) ([]dimage.HistoryResponseItem, error) {
+	url := fmt.Sprintf(historyURL, imageName)
+	resp, err := p.c.Get(url)
+	if err != nil {
+		return []dimage.HistoryResponseItem{}, xerrors.Errorf("http error: %w", err)
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		var res errResponse
+		if err = json.NewDecoder(resp.Body).Decode(&res); err != nil {
+			return []dimage.HistoryResponseItem{}, xerrors.Errorf("unknown status code from Podman: %d", resp.StatusCode)
+		}
+		return []dimage.HistoryResponseItem{}, xerrors.New(res.Message)
+	}
+
+	var history []dimage.HistoryResponseItem
+	if err = json.NewDecoder(resp.Body).Decode(&history); err != nil {
+		return []dimage.HistoryResponseItem{}, xerrors.Errorf("unable to decode JSON: %w", err)
+	}
+	return history, nil
+}
+
 func (p podmanClient) imageSave(_ context.Context, imageNames []string) (io.ReadCloser, error) {
 	if len(imageNames) < 1 {
 		return nil, xerrors.Errorf("no specified image")
@@ -96,6 +121,11 @@ func PodmanImage(ref string) (Image, func(), error) {
 		return nil, cleanup, xerrors.Errorf("unable to inspect the image (%s): %w", ref, err)
 	}
 
+	history, err := c.imageHistoryInspect(ref)
+	if err != nil {
+		return nil, cleanup, xerrors.Errorf("unable to inspect the image (%s): %w", ref, err)
+	}
+
 	f, err := os.CreateTemp("", "fanal-*")
 	if err != nil {
 		return nil, cleanup, xerrors.Errorf("failed to create a temporary file")
@@ -109,5 +139,6 @@ func PodmanImage(ref string) (Image, func(), error) {
 	return &image{
 		opener:  imageOpener(context.Background(), ref, f, c.imageSave),
 		inspect: inspect,
+		history: history,
 	}, cleanup, nil
 }

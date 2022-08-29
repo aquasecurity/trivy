@@ -4,6 +4,7 @@ import (
 	"context"
 	"io"
 	"os"
+	"strings"
 	"sync"
 	"time"
 
@@ -56,9 +57,10 @@ func imageOpener(ctx context.Context, ref string, f *os.File, imageSave imageSav
 // To avoid entire loading, this wrapper uses ImageInspectWithRaw and checks image ID and layer IDs.
 type image struct {
 	v1.Image
-	opener  opener
-	inspect types.ImageInspect
-	history []dimage.HistoryResponseItem
+	opener           opener
+	inspect          types.ImageInspect
+	history          []dimage.HistoryResponseItem
+	convertedHistory []v1.History
 }
 
 // populateImage initializes an "image" struct.
@@ -145,6 +147,10 @@ func (img *image) RepoDigests() []string {
 func (img *image) configHistory() []v1.History {
 	// Fill only required metadata
 	var history []v1.History
+
+	if len(img.convertedHistory) > 0 {
+		return img.convertedHistory
+	}
 	for i := len(img.history) - 1; i >= 0; i-- {
 		h := img.history[i]
 		history = append(history, v1.History{
@@ -153,7 +159,7 @@ func (img *image) configHistory() []v1.History {
 			},
 			CreatedBy:  h.CreatedBy,
 			Comment:    h.Comment,
-			EmptyLayer: h.Size == 0,
+			EmptyLayer: h.Size == 0 && !strings.HasPrefix(h.CreatedBy, "/bin/sh -c mkdir"),
 		})
 	}
 	return history

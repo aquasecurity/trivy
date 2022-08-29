@@ -43,7 +43,7 @@ type testCase struct {
 }
 
 var tests = []testCase{
-	{
+	/*{
 		name:            "happy path, alpine:3.10",
 		remoteImageName: "ghcr.io/aquasecurity/trivy-test-images:alpine-310",
 		imageFile:       "../../../../integration/testdata/fixtures/images/alpine-310.tar.gz",
@@ -91,7 +91,7 @@ var tests = []testCase{
 		remoteImageName: "ghcr.io/aquasecurity/trivy-test-images:fedora-35",
 		imageFile:       "../../../../integration/testdata/fixtures/images/fedora-35.tar.gz",
 		wantOS:          types.OS{Name: "35", Family: "fedora"},
-	},
+	},*/
 	{
 		name:                "happy path, vulnimage with lock files",
 		remoteImageName:     "ghcr.io/aquasecurity/trivy-test-images:vulnimage",
