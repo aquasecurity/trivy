@@ -18,8 +18,9 @@ type Repository struct {
 }
 
 type Layer struct {
-	Digest string `json:",omitempty"`
-	DiffID string `json:",omitempty"`
+	Digest    string `json:",omitempty"`
+	DiffID    string `json:",omitempty"`
+	CreatedBy string `json:",omitempty"`
 }
 
 type Package struct {

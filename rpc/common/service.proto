@@ -115,8 +115,9 @@ message DataSource {
 }
 
 message Layer {
-  string digest  = 1;
-  string diff_id = 2;
+  string digest     = 1;
+  string diff_id    = 2;
+  string created_by = 3;
 }
 
 enum Severity {
@@ -165,8 +166,7 @@ message SecretFinding {
   int32  end_line   = 6;
   Code   code       = 7;
   string match      = 8;
-  string created_by = 9;
-  Layer  layer      = 10;
+  Layer  layer      = 9;
 }
 
 message Secret {

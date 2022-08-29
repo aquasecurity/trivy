@@ -120,12 +120,16 @@ func (r *secretRenderer) renderCode(secret types.SecretFinding) {
 			}
 		}
 
-		r.printf(" <blue>%s%s<magenta>\r\n", r.target, lineInfo)
-		r.printSingleDivider()
-		if secret.CreatedBy != "" {
-			r.printf(" <magenta>This secret is added in '%s'\r\n", secret.CreatedBy)
-			r.printSingleDivider()
+		var note string
+		if c := secret.Layer.CreatedBy; c != "" {
+			if len(c) < 40 {
+				note = fmt.Sprintf(" (added by '%s')", c)
+			} else {
+				note = fmt.Sprintf(" (added by '%s')", c[:40])
+			}
 		}
+		r.printf(" <blue>%s%s<magenta>%s\r\n", r.target, lineInfo, note)
+		r.printSingleDivider()
 
 		for i, line := range lines {
 			if line.Truncated {

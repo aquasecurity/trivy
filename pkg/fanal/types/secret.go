@@ -17,5 +17,4 @@ type SecretFinding struct {
 	Code      Code
 	Match     string
 	Layer     Layer `json:",omitempty"`
-	CreatedBy string
 }

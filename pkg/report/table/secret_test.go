@@ -64,11 +64,13 @@ this is a title
 			name: "multiple line",
 			input: []ftypes.SecretFinding{
 				{
-					RuleID:    "rule-id",
-					Category:  ftypes.SecretRuleCategory("category"),
-					Title:     "this is a title",
-					Severity:  "HIGH",
-					CreatedBy: "COPY my-file my-file",
+					RuleID:   "rule-id",
+					Category: ftypes.SecretRuleCategory("category"),
+					Title:    "this is a title",
+					Severity: "HIGH",
+					Layer: ftypes.Layer{
+						CreatedBy: "COPY my-file my-file",
+					},
 					StartLine: 3,
 					EndLine:   4,
 					Code: ftypes.Code{
@@ -115,9 +117,7 @@ HIGH: category (rule-id)
 ════════════════════════════════════════
 this is a title
 ────────────────────────────────────────
- my-file:3-4
-────────────────────────────────────────
- This secret is added in 'COPY my-file my-file'
+ my-file:3-4 (added by 'COPY my-file my-file')
 ────────────────────────────────────────
    1   #!/bin/bash
    2   

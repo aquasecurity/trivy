@@ -147,8 +147,7 @@ func (a Artifact) calcCacheKeys(imageID string, diffIDs []string, configFile *v1
 
 	var createdBy []string
 	// save createdBy fields in order of layers
-	for i := 0; i < len(configFile.History); i++ {
-		h := configFile.History[i]
+	for _, h := range configFile.History {
 		// skip histories for empty layers
 		if h.EmptyLayer {
 			continue
