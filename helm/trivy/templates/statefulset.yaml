@@ -29,6 +29,11 @@ spec:
   {{- end }}
   template:
     metadata:
+      annotations:
+        checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
+      {{- with .Values.podAnnotations }}
+        {{- . | toYaml | nindent 8 }}
+      {{- end }}
       labels:
         app.kubernetes.io/name: {{ include "trivy.name" . }}
         app.kubernetes.io/instance: {{ .Release.Name }}
@@ -85,7 +90,11 @@ spec:
             - configMapRef:
                 name: {{ include "trivy.fullname" . }}
             - secretRef:
+                {{- if not .Values.trivy.existingSecret }}
                 name: {{ include "trivy.fullname" . }}
+                {{- else }}
+                name: {{ .Values.trivy.existingSecret }}
+                {{- end }}
           ports:
             - name: trivy-http
               containerPort: {{ .Values.service.port }}

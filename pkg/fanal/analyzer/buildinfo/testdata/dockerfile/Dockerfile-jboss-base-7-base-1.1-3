@@ -1,0 +1,35 @@
+# registry.redhat.io/openshift3/metrics-cassandra:3.1.0
+FROM 82ad5fa11820c2889c60f7f748d67aab04400700c581843db0d1e68735327443
+MAINTAINER JBoss Cloud Enablement Feedback <cloud-enablement-feedback@redhat.com>
+
+ENV base jboss-base
+
+LABEL BZComponent="${base}-7-docker" \
+      Architecture="x86_64" \
+      Name="jboss-base-7/base" \
+      Version="1.1" \
+      Release="3"
+
+# Explicitly set the $HOME env variable so it can be referenced in Dockerfiles
+ENV HOME /home/jboss
+
+ADD jboss.repo /etc/yum.repos.d/jboss.repo
+
+# Install unzip and tar package which is required to unpack product distributions
+# Cleanup the YUM metadata
+RUN yum -y --disablerepo \* --enablerepo=jboss install yum-utils unzip tar && \
+    yum clean all
+
+RUN rm /etc/yum.repos.d/jboss.repo
+
+# Create a user and group used to launch processes
+# We use the ID 185 fot the group as well as for the user.
+# This ID is registered static ID for the JBoss EAP product
+# on RHEL which makes it safe to use.
+RUN groupadd -r jboss -g 185 && useradd -u 185 -r -g jboss -m -d /home/jboss -s /sbin/nologin -c "JBoss user" jboss
+
+# Set the working directory to jboss' user home directory
+WORKDIR /home/jboss
+
+# Specify the user which should be used to execute all commands below
+USER jboss

@@ -8,10 +8,10 @@ import (
 	"golang.org/x/xerrors"
 	"k8s.io/utils/clock"
 
-	ftypes "github.com/aquasecurity/fanal/types"
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/debian"
 	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/vulnerability"
+	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/scanner/utils"
 	"github.com/aquasecurity/trivy/pkg/types"
@@ -104,6 +104,7 @@ func (s *Scanner) Detect(osVer string, _ *ftypes.Repository, pkgs []ftypes.Packa
 				PkgName:          pkg.Name,
 				InstalledVersion: installed,
 				FixedVersion:     adv.FixedVersion,
+				Ref:              pkg.Ref,
 				Layer:            pkg.Layer,
 				Custom:           adv.Custom,
 				DataSource:       adv.DataSource,

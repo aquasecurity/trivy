@@ -1,6 +1,7 @@
 # SBOM
 
-Trivy currently supports the following SBOM formats.
+## Reporting
+Trivy can generate the following SBOM formats.
 
 - [CycloneDX][cyclonedx]
 - [SPDX][spdx]
@@ -8,13 +9,12 @@ Trivy currently supports the following SBOM formats.
 To generate SBOM, you can use the `--format` option for each subcommand such as `image` and `fs`.
 
 ```
-$ trivy image --format cyclonedx --output result.json alpine:3.15
+$ trivy image --format spdx-json --output result.json alpine:3.15
 ```
 
-In addition, you can use the `trivy sbom` subcommand.
 
 ```
-$ trivy sbom alpine:3.15
+$ trivy fs --format cyclonedx --output result.json /app/myproject
 ```
 
 <details>
@@ -177,18 +177,63 @@ $ trivy sbom alpine:3.15
 
 </details>
 
-`fs`, `repo` and `archive` also work with `sbom` subcommand.
+## Scanning
+Trivy also can take the following SBOM formats as an input and scan for vulnerabilities.
 
+- CycloneDX
+- CycloneDX-type attestation
+
+To scan SBOM, you can use the `sbom` subcommand and pass the path to the SBOM.
+
+```bash
+$ trivy sbom /path/to/cyclonedx.json
+
+cyclonedx.json (alpine 3.7.1)
+=========================
+Total: 3 (CRITICAL: 3)
+
+┌─────────────┬────────────────┬──────────┬───────────────────┬───────────────┬──────────────────────────────────────────────────────────────┐
+│   Library   │ Vulnerability  │ Severity │ Installed Version │ Fixed Version │                            Title                             │
+├─────────────┼────────────────┼──────────┼───────────────────┼───────────────┼──────────────────────────────────────────────────────────────┤
+│ curl        │ CVE-2018-14618 │ CRITICAL │ 7.61.0-r0         │ 7.61.1-r0     │ curl: NTLM password overflow via integer overflow            │
+│             │                │          │                   │               │ https://avd.aquasec.com/nvd/cve-2018-14618                   │
+├─────────────┼────────────────┼──────────┼───────────────────┼───────────────┼──────────────────────────────────────────────────────────────┤
+│ libbz2      │ CVE-2019-12900 │ CRITICAL │ 1.0.6-r6          │ 1.0.6-r7      │ bzip2: out-of-bounds write in function BZ2_decompress        │
+│             │                │          │                   │               │ https://avd.aquasec.com/nvd/cve-2019-12900                   │
+├─────────────┼────────────────┼──────────┼───────────────────┼───────────────┼──────────────────────────────────────────────────────────────┤
+│ sqlite-libs │ CVE-2019-8457  │ CRITICAL │ 3.21.0-r1         │ 3.25.3-r1     │ sqlite: heap out-of-bound read in function rtreenode()       │
+│             │                │          │                   │               │ https://avd.aquasec.com/nvd/cve-2019-8457                    │
+└─────────────┴────────────────┴──────────┴───────────────────┴───────────────┴──────────────────────────────────────────────────────────────┘
 ```
-# filesystem
-$ trivy sbom --artifact-type fs /path/to/project
 
-# repository
-$ trivy sbom --artifact-type repo github.com/aquasecurity/trivy-ci-test
 
-# container image archive
-$ trivy sbom --artifact-type archive alpine.tar
+!!! note
+    CycloneDX XML and SPDX are not supported at the moment.
+
+You can also scan an SBOM attestation.
+In the following example, [Cosign][Cosign] can get an attestation and trivy scan it. You must create CycloneDX-type attestation before trying the example. To learn more about how to create an CycloneDX-Type attestation and attach it to an image, see the [SBOM attestation page][sbom_attestation].
+```bash
+$ cosign verify-attestation --key /path/to/cosign.pub --type cyclonedx <IMAGE> > sbom.cdx.intoto.jsonl
+$ trivy sbom ./sbom.cdx.intoto.jsonl
+
+sbom.cdx.intoto.jsonl (alpine 3.7.3)
+=========================
+Total: 2 (UNKNOWN: 0, LOW: 0, MEDIUM: 0, HIGH: 0, CRITICAL: 2)
+
+┌────────────┬────────────────┬──────────┬───────────────────┬───────────────┬──────────────────────────────────────────────────────────┐
+│  Library   │ Vulnerability  │ Severity │ Installed Version │ Fixed Version │                          Title                           │
+├────────────┼────────────────┼──────────┼───────────────────┼───────────────┼──────────────────────────────────────────────────────────┤
+│ musl       │ CVE-2019-14697 │ CRITICAL │ 1.1.18-r3         │ 1.1.18-r4     │ musl libc through 1.1.23 has an x87 floating-point stack │
+│            │                │          │                   │               │ adjustment im ......                                     │
+│            │                │          │                   │               │ https://avd.aquasec.com/nvd/cve-2019-14697               │
+├────────────┤                │          │                   │               │                                                          │
+│ musl-utils │                │          │                   │               │                                                          │
+│            │                │          │                   │               │                                                          │
+│            │                │          │                   │               │                                                          │
+└────────────┴────────────────┴──────────┴───────────────────┴───────────────┴──────────────────────────────────────────────────────────┘
 ```
 
 [cyclonedx]: cyclonedx.md
 [spdx]: spdx.md
+[Cosign]: https://github.com/sigstore/cosign
+[sbom_attestation]: ../attestation/sbom.md#sign-with-a-local-key-pair

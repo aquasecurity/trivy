@@ -8,9 +8,9 @@ import (
 
 	version "github.com/knqyf263/go-rpm-version"
 
-	fos "github.com/aquasecurity/fanal/analyzer/os"
-	ftypes "github.com/aquasecurity/fanal/types"
 	susecvrf "github.com/aquasecurity/trivy-db/pkg/vulnsrc/suse-cvrf"
+	fos "github.com/aquasecurity/trivy/pkg/fanal/analyzer/os"
+	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/scanner/utils"
 	"github.com/aquasecurity/trivy/pkg/types"
@@ -38,10 +38,10 @@ var (
 		"15":   time.Date(2019, 12, 31, 23, 59, 59, 0, time.UTC),
 		"15.1": time.Date(2021, 1, 31, 23, 59, 59, 0, time.UTC),
 		"15.2": time.Date(2021, 12, 31, 23, 59, 59, 0, time.UTC),
-		// 6 months after SLES 15 SP4 release
-		"15.3": time.Date(2028, 7, 31, 23, 59, 59, 0, time.UTC),
+		"15.3": time.Date(2022, 12, 31, 23, 59, 59, 0, time.UTC),
 		// 6 months after SLES 15 SP5 release
-		// "15.4":   time.Date(2028, 7, 31, 23, 59, 59, 0, time.UTC),
+		"15.4": time.Date(2028, 12, 31, 23, 59, 59, 0, time.UTC),
+		//"15.5": time.Date(2028, 12, 31, 23, 59, 59, 0, time.UTC),
 	}
 
 	opensuseEolDates = map[string]time.Time{
@@ -53,6 +53,7 @@ var (
 		"15.1": time.Date(2020, 11, 30, 23, 59, 59, 0, time.UTC),
 		"15.2": time.Date(2021, 11, 30, 23, 59, 59, 0, time.UTC),
 		"15.3": time.Date(2022, 11, 30, 23, 59, 59, 0, time.UTC),
+		"15.4": time.Date(2023, 11, 30, 23, 59, 59, 0, time.UTC),
 	}
 )
 
@@ -78,7 +79,7 @@ const (
 	OpenSUSE
 )
 
-// Scanner implements the Alpine scanner
+// Scanner implements the SUSE scanner
 type Scanner struct {
 	vs susecvrf.VulnSrc
 	*options
@@ -130,6 +131,7 @@ func (s *Scanner) Detect(osVer string, _ *ftypes.Repository, pkgs []ftypes.Packa
 				VulnerabilityID:  adv.VulnerabilityID,
 				PkgName:          pkg.Name,
 				InstalledVersion: installed,
+				Ref:              pkg.Ref,
 				Layer:            pkg.Layer,
 				Custom:           adv.Custom,
 				DataSource:       adv.DataSource,

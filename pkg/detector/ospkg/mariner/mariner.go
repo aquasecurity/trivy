@@ -6,8 +6,8 @@ import (
 	version "github.com/knqyf263/go-rpm-version"
 	"golang.org/x/xerrors"
 
-	ftypes "github.com/aquasecurity/fanal/types"
 	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/mariner"
+	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/scanner/utils"
 	"github.com/aquasecurity/trivy/pkg/types"
@@ -53,6 +53,7 @@ func (s *Scanner) Detect(osVer string, _ *ftypes.Repository, pkgs []ftypes.Packa
 				VulnerabilityID:  adv.VulnerabilityID,
 				PkgName:          pkg.Name,
 				InstalledVersion: installed,
+				Ref:              pkg.Ref,
 				Layer:            pkg.Layer,
 				DataSource:       adv.DataSource,
 			}

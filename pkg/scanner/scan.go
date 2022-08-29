@@ -6,12 +6,13 @@ import (
 	"github.com/google/wire"
 	"golang.org/x/xerrors"
 
-	"github.com/aquasecurity/fanal/artifact"
-	aimage "github.com/aquasecurity/fanal/artifact/image"
-	flocal "github.com/aquasecurity/fanal/artifact/local"
-	"github.com/aquasecurity/fanal/artifact/remote"
-	"github.com/aquasecurity/fanal/image"
-	ftypes "github.com/aquasecurity/fanal/types"
+	"github.com/aquasecurity/trivy/pkg/fanal/artifact"
+	aimage "github.com/aquasecurity/trivy/pkg/fanal/artifact/image"
+	flocal "github.com/aquasecurity/trivy/pkg/fanal/artifact/local"
+	"github.com/aquasecurity/trivy/pkg/fanal/artifact/remote"
+	"github.com/aquasecurity/trivy/pkg/fanal/artifact/sbom"
+	"github.com/aquasecurity/trivy/pkg/fanal/image"
+	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/report"
 	"github.com/aquasecurity/trivy/pkg/rpc/client"
@@ -32,7 +33,8 @@ var StandaloneSuperSet = wire.NewSet(
 
 // StandaloneDockerSet binds docker dependencies
 var StandaloneDockerSet = wire.NewSet(
-	image.NewDockerImage,
+	wire.Value([]image.Option(nil)), // optional functions
+	image.NewContainerImage,
 	aimage.NewArtifact,
 	StandaloneSuperSet,
 )
@@ -56,6 +58,12 @@ var StandaloneRepositorySet = wire.NewSet(
 	StandaloneSuperSet,
 )
 
+// StandaloneSBOMSet binds sbom dependencies
+var StandaloneSBOMSet = wire.NewSet(
+	sbom.NewArtifact,
+	StandaloneSuperSet,
+)
+
 /////////////////
 // Client/Server
 /////////////////
@@ -74,10 +82,17 @@ var RemoteFilesystemSet = wire.NewSet(
 	RemoteSuperSet,
 )
 
+// RemoteSBOMSet binds sbom dependencies for client/server mode
+var RemoteSBOMSet = wire.NewSet(
+	sbom.NewArtifact,
+	RemoteSuperSet,
+)
+
 // RemoteDockerSet binds remote docker dependencies
 var RemoteDockerSet = wire.NewSet(
 	aimage.NewArtifact,
-	image.NewDockerImage,
+	wire.Value([]image.Option(nil)), // optional functions
+	image.NewContainerImage,
 	RemoteSuperSet,
 )
 
@@ -96,7 +111,7 @@ type Scanner struct {
 
 // Driver defines operations of scanner
 type Driver interface {
-	Scan(target string, artifactKey string, blobKeys []string, options types.ScanOptions) (
+	Scan(ctx context.Context, target, artifactKey string, blobKeys []string, options types.ScanOptions) (
 		results types.Results, osFound *ftypes.OS, err error)
 }
 
@@ -117,7 +132,7 @@ func (s Scanner) ScanArtifact(ctx context.Context, options types.ScanOptions) (t
 		}
 	}()
 
-	results, osFound, err := s.driver.Scan(artifactInfo.Name, artifactInfo.ID, artifactInfo.BlobIDs, options)
+	results, osFound, err := s.driver.Scan(ctx, artifactInfo.Name, artifactInfo.ID, artifactInfo.BlobIDs, options)
 	if err != nil {
 		return types.Report{}, xerrors.Errorf("scan failed: %w", err)
 	}
@@ -137,14 +152,17 @@ func (s Scanner) ScanArtifact(ctx context.Context, options types.ScanOptions) (t
 		ArtifactName:  artifactInfo.Name,
 		ArtifactType:  artifactInfo.Type,
 		Metadata: types.Metadata{
-			OS:          osFound,
+			OS: osFound,
+
+			// Container image
 			ImageID:     artifactInfo.ImageMetadata.ID,
 			DiffIDs:     artifactInfo.ImageMetadata.DiffIDs,
 			RepoTags:    artifactInfo.ImageMetadata.RepoTags,
 			RepoDigests: artifactInfo.ImageMetadata.RepoDigests,
 			ImageConfig: artifactInfo.ImageMetadata.ConfigFile,
 		},
-		Results: results,
+		CycloneDX: artifactInfo.CycloneDX,
+		Results:   results,
 	}, nil
 }
 

@@ -8,8 +8,8 @@ import (
 	"golang.org/x/xerrors"
 	"k8s.io/utils/clock"
 
-	ftypes "github.com/aquasecurity/fanal/types"
 	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/alma"
+	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/scanner/utils"
 	"github.com/aquasecurity/trivy/pkg/types"
@@ -18,8 +18,9 @@ import (
 var (
 	eolDates = map[string]time.Time{
 		// Source:
-		// https://wiki.almalinux.org/FAQ.html#how-long-will-cloudlinux-support-almalinux
-		"8": time.Date(2029, 12, 31, 23, 59, 59, 0, time.UTC),
+		// https://endoflife.date/almalinux
+		"8": time.Date(2029, 3, 1, 23, 59, 59, 0, time.UTC),
+		"9": time.Date(2032, 5, 31, 23, 59, 59, 0, time.UTC),
 	}
 )
 
@@ -68,7 +69,7 @@ func (s *Scanner) Detect(osVer string, _ *ftypes.Repository, pkgs []ftypes.Packa
 	var vulns []types.DetectedVulnerability
 	var skipPkgs []string
 	for _, pkg := range pkgs {
-		if strings.Contains(pkg.Release, ".module_el") {
+		if strings.Contains(pkg.Release, ".module_el") && pkg.Modularitylabel == "" {
 			skipPkgs = append(skipPkgs, pkg.Name)
 			continue
 		}
@@ -89,6 +90,7 @@ func (s *Scanner) Detect(osVer string, _ *ftypes.Repository, pkgs []ftypes.Packa
 					PkgName:          pkg.Name,
 					InstalledVersion: installed,
 					FixedVersion:     fixedVersion.String(),
+					Ref:              pkg.Ref,
 					Layer:            pkg.Layer,
 					DataSource:       adv.DataSource,
 				}

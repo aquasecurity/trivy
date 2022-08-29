@@ -7,6 +7,7 @@ import (
 	"regexp"
 	"strings"
 
+	containerName "github.com/google/go-containerregistry/pkg/name"
 	"github.com/owenrumney/go-sarif/v2/sarif"
 	"golang.org/x/xerrors"
 
@@ -87,10 +88,11 @@ func (sw *SarifWriter) addSarifRule(data *sarifData) {
 func (sw *SarifWriter) addSarifResult(data *sarifData) {
 	sw.addSarifRule(data)
 
-	region := sarif.NewRegion().WithStartLine(1)
+	region := sarif.NewRegion().WithStartLine(1).WithEndLine(1)
 	if data.startLine > 0 {
 		region = sarif.NewSimpleRegion(data.startLine, data.endLine)
 	}
+	region.WithStartColumn(1).WithEndColumn(1)
 
 	location := sarif.NewPhysicalLocation().
 		WithArtifactLocation(sarif.NewSimpleArtifactLocation(data.artifactLocation).WithUriBaseId("ROOTPATH")).
@@ -124,14 +126,16 @@ func (sw SarifWriter) Write(report types.Report) error {
 
 	ruleIndexes := map[string]int{}
 	for _, res := range report.Results {
+		target := ToPathUri(res.Target)
+
 		for _, vuln := range res.Vulnerabilities {
 			fullDescription := vuln.Description
 			if fullDescription == "" {
 				fullDescription = vuln.Title
 			}
-			path := vuln.PkgPath
-			if path == "" {
-				path = res.Target
+			path := target
+			if vuln.PkgPath != "" {
+				path = ToPathUri(vuln.PkgPath)
 			}
 			sw.addSarifResult(&sarifData{
 				title:            "vulnerability",
@@ -140,7 +144,7 @@ func (sw SarifWriter) Write(report types.Report) error {
 				cvssScore:        getCVSSScore(vuln),
 				url:              vuln.PrimaryURL,
 				resourceClass:    string(res.Class),
-				artifactLocation: toPathUri(path),
+				artifactLocation: path,
 				resultIndex:      getRuleIndex(vuln.VulnerabilityID, ruleIndexes),
 				fullDescription:  html.EscapeString(fullDescription),
 				helpText: fmt.Sprintf("Vulnerability %v\nSeverity: %v\nPackage: %v\nFixed Version: %v\nLink: [%v](%v)\n%v",
@@ -159,7 +163,7 @@ func (sw SarifWriter) Write(report types.Report) error {
 				cvssScore:        severityToScore(misconf.Severity),
 				url:              misconf.PrimaryURL,
 				resourceClass:    string(res.Class),
-				artifactLocation: toPathUri(res.Target),
+				artifactLocation: target,
 				startLine:        misconf.CauseMetadata.StartLine,
 				endLine:          misconf.CauseMetadata.EndLine,
 				resultIndex:      getRuleIndex(misconf.ID, ruleIndexes),
@@ -207,11 +211,16 @@ func toSarifErrorLevel(severity string) string {
 	}
 }
 
-func toPathUri(input string) string {
+func ToPathUri(input string) string {
 	var matches = pathRegex.FindStringSubmatch(input)
 	if matches != nil {
 		input = matches[pathRegex.SubexpIndex("path")]
 	}
+	ref, err := containerName.ParseReference(input)
+	if err == nil {
+		input = ref.Context().RepositoryStr()
+	}
+
 	return strings.ReplaceAll(input, "\\", "/")
 }
 

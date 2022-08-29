@@ -1,0 +1,235 @@
+{
+  "bomFormat": "CycloneDX",
+  "specVersion": "1.4",
+  "serialNumber": "urn:uuid:c986ba94-e37d-49c8-9e30-96daccd0415b",
+  "version": 1,
+  "metadata": {
+    "timestamp": "2022-05-28T10:20:03.79527Z",
+    "tools": [
+      {
+        "vendor": "aquasecurity",
+        "name": "trivy",
+        "version": "dev"
+      }
+    ],
+    "component": {
+      "bom-ref": "0f585d64-4815-4b72-92c5-97dae191fa4a",
+      "type": "container",
+      "name": "maven-test-project",
+      "properties": [
+        {
+          "name": "aquasecurity:trivy:SchemaVersion",
+          "value": "2"
+        },
+        {
+          "name": "aquasecurity:trivy:ImageID",
+          "value": "sha256:49193a2310dbad4c02382da87ac624a80a92387a4f7536235f9ba590e5bcd7b5"
+        },
+        {
+          "name": "aquasecurity:trivy:DiffID",
+          "value": "sha256:dd565ff850e7003356e2b252758f9bdc1ff2803f61e995e24c7844f6297f8fc3"
+        },
+        {
+          "name": "aquasecurity:trivy:DiffID",
+          "value": "sha256:3c79e832b1b4891a1cb4a326ef8524e0bd14a2537150ac0e203a5677176c1ca1"
+        },
+        {
+          "name": "aquasecurity:trivy:RepoTag",
+          "value": "maven-test-project:latest"
+        }
+      ]
+    }
+  },
+  "components": [
+    {
+      "bom-ref": "pkg:apk/alpine/musl@1.2.3-r0?distro=3.16.0",
+      "type": "library",
+      "name": "musl",
+      "version": "1.2.3-r0",
+      "licenses": [
+        {
+          "expression": "MIT"
+        }
+      ],
+      "purl": "pkg:apk/alpine/musl@1.2.3-r0?distro=3.16.0",
+      "properties": [
+        {
+          "name": "aquasecurity:trivy:SrcName",
+          "value": "musl"
+        },
+        {
+          "name": "aquasecurity:trivy:SrcVersion",
+          "value": "1.2.3-r0"
+        },
+        {
+          "name": "aquasecurity:trivy:LayerDiffID",
+          "value": "sha256:dd565ff850e7003356e2b252758f9bdc1ff2803f61e995e24c7844f6297f8fc3"
+        }
+      ]
+    },
+    {
+      "bom-ref": "60e9f57b-d4a6-4f71-ad14-0893ac609182",
+      "type": "operating-system",
+      "name": "alpine",
+      "version": "3.16.0",
+      "properties": [
+        {
+          "name": "aquasecurity:trivy:Type",
+          "value": "alpine"
+        },
+        {
+          "name": "aquasecurity:trivy:Class",
+          "value": "os-pkgs"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:maven/org.codehaus.mojo/child-project@1.0?file_path=app%2Fmaven%2Ftarget%2Fchild-project-1.0.jar",
+      "type": "library",
+      "name": "org.codehaus.mojo:child-project",
+      "version": "1.0",
+      "purl": "pkg:maven/org.codehaus.mojo/child-project@1.0",
+      "properties": [
+        {
+          "name": "aquasecurity:trivy:FilePath",
+          "value": "app/maven/target/child-project-1.0.jar"
+        },
+        {
+          "name": "aquasecurity:trivy:LayerDiffID",
+          "value": "sha256:3c79e832b1b4891a1cb4a326ef8524e0bd14a2537150ac0e203a5677176c1ca1"
+        },
+        {
+          "name": "aquasecurity:trivy:Type",
+          "value": "jar"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:npm/bootstrap@5.0.2?file_path=app%2Fapp%2Fpackage.json",
+      "type": "library",
+      "name": "bootstrap",
+      "version": "5.0.2",
+      "licenses": [
+        {
+          "expression": "MIT"
+        }
+      ],
+      "purl": "pkg:npm/bootstrap@5.0.2",
+      "properties": [
+        {
+          "name": "aquasecurity:trivy:FilePath",
+          "value": "app/app/package.json"
+        },
+        {
+          "name": "aquasecurity:trivy:LayerDiffID",
+          "value": "sha256:3c79e832b1b4891a1cb4a326ef8524e0bd14a2537150ac0e203a5677176c1ca1"
+        },
+        {
+          "name": "aquasecurity:trivy:Type",
+          "value": "node-pkg"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:composer/pear/log@1.13.1",
+      "type": "library",
+      "name": "pear/log",
+      "version": "1.13.1",
+      "purl": "pkg:composer/pear/log@1.13.1",
+      "properties": [
+        {
+          "name": "aquasecurity:trivy:LayerDiffID",
+          "value": "sha256:3c79e832b1b4891a1cb4a326ef8524e0bd14a2537150ac0e203a5677176c1ca1"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:composer/pear/pear_exception@v1.0.0",
+      "type": "library",
+      "name": "pear/pear_exception",
+      "version": "v1.0.0",
+      "purl": "pkg:composer/pear/pear_exception@v1.0.0",
+      "properties": [
+        {
+          "name": "aquasecurity:trivy:LayerDiffID",
+          "value": "sha256:3c79e832b1b4891a1cb4a326ef8524e0bd14a2537150ac0e203a5677176c1ca1"
+        }
+      ]
+    },
+    {
+      "bom-ref": "100925ff-7c0a-470f-a725-8fb973b40e7b",
+      "type": "application",
+      "name": "app/composer/composer.lock",
+      "properties": [
+        {
+          "name": "aquasecurity:trivy:Type",
+          "value": "composer"
+        },
+        {
+          "name": "aquasecurity:trivy:Class",
+          "value": "lang-pkgs"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:golang/github.com/package-url/packageurl-go@v0.1.1-0.20220203205134-d70459300c8a",
+      "type": "library",
+      "name": "github.com/package-url/packageurl-go",
+      "version": "v0.1.1-0.20220203205134-d70459300c8a",
+      "purl": "pkg:golang/github.com/package-url/packageurl-go@v0.1.1-0.20220203205134-d70459300c8a",
+      "properties": [
+        {
+          "name": "aquasecurity:trivy:LayerDiffID",
+          "value": "sha256:3c79e832b1b4891a1cb4a326ef8524e0bd14a2537150ac0e203a5677176c1ca1"
+        }
+      ]
+    },
+    {
+      "bom-ref": "1a111e6b-a682-470e-8b0e-aaa49d93cd39",
+      "type": "application",
+      "name": "app/gobinary/gobinary",
+      "properties": [
+        {
+          "name": "aquasecurity:trivy:Type",
+          "value": "gobinary"
+        },
+        {
+          "name": "aquasecurity:trivy:Class",
+          "value": "lang-pkgs"
+        }
+      ]
+    }
+  ],
+  "dependencies": [
+    {
+      "ref": "60e9f57b-d4a6-4f71-ad14-0893ac609182",
+      "dependsOn": [
+        "pkg:apk/alpine/musl@1.2.3-r0?distro=3.16.0"
+      ]
+    },
+    {
+      "ref": "100925ff-7c0a-470f-a725-8fb973b40e7b",
+      "dependsOn": [
+        "pkg:composer/pear/log@1.13.1",
+        "pkg:composer/pear/pear_exception@v1.0.0"
+      ]
+    },
+    {
+      "ref": "1a111e6b-a682-470e-8b0e-aaa49d93cd39",
+      "dependsOn": [
+        "pkg:golang/github.com/package-url/packageurl-go@v0.1.1-0.20220203205134-d70459300c8a"
+      ]
+    },
+    {
+      "ref": "0f585d64-4815-4b72-92c5-97dae191fa4a",
+      "dependsOn": [
+        "60e9f57b-d4a6-4f71-ad14-0893ac609182",
+        "pkg:maven/org.codehaus.mojo/child-project@1.0?file_path=app%2Fmaven%2Ftarget%2Fchild-project-1.0.jar",
+        "pkg:npm/bootstrap@5.0.2?file_path=app%2Fapp%2Fpackage.json",
+        "100925ff-7c0a-470f-a725-8fb973b40e7b",
+        "1a111e6b-a682-470e-8b0e-aaa49d93cd39"
+      ]
+    }
+  ],
+  "vulnerabilities": []
+}

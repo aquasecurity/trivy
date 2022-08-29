@@ -7,7 +7,7 @@ import (
 
 	"golang.org/x/xerrors"
 
-	ftypes "github.com/aquasecurity/fanal/types"
+	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	r "github.com/aquasecurity/trivy/pkg/rpc"
 	"github.com/aquasecurity/trivy/pkg/types"
 	rpc "github.com/aquasecurity/trivy/rpc/scanner"
@@ -61,8 +61,14 @@ func NewScanner(scannerOptions ScannerOption, opts ...Option) Scanner {
 }
 
 // Scan scans the image
-func (s Scanner) Scan(target, artifactKey string, blobKeys []string, options types.ScanOptions) (types.Results, *ftypes.OS, error) {
-	ctx := WithCustomHeaders(context.Background(), s.customHeaders)
+func (s Scanner) Scan(ctx context.Context, target, artifactKey string, blobKeys []string, opts types.ScanOptions) (types.Results, *ftypes.OS, error) {
+	ctx = WithCustomHeaders(ctx, s.customHeaders)
+
+	// Convert to the rpc struct
+	licenseCategories := map[string]*rpc.Licenses{}
+	for category, names := range opts.LicenseCategories {
+		licenseCategories[string(category)] = &rpc.Licenses{Names: names}
+	}
 
 	var res *rpc.ScanResponse
 	err := r.Retry(func() error {
@@ -72,9 +78,10 @@ func (s Scanner) Scan(target, artifactKey string, blobKeys []string, options typ
 			ArtifactId: artifactKey,
 			BlobIds:    blobKeys,
 			Options: &rpc.ScanOptions{
-				VulnType:        options.VulnType,
-				SecurityChecks:  options.SecurityChecks,
-				ListAllPackages: options.ListAllPackages,
+				VulnType:          opts.VulnType,
+				SecurityChecks:    opts.SecurityChecks,
+				ListAllPackages:   opts.ListAllPackages,
+				LicenseCategories: licenseCategories,
 			},
 		})
 		return err

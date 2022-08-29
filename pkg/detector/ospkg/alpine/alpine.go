@@ -8,9 +8,9 @@ import (
 	"golang.org/x/xerrors"
 	"k8s.io/utils/clock"
 
-	ftypes "github.com/aquasecurity/fanal/types"
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/alpine"
+	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/scanner/utils"
 	"github.com/aquasecurity/trivy/pkg/types"
@@ -42,6 +42,7 @@ var (
 		"3.13": time.Date(2022, 11, 1, 23, 59, 59, 0, time.UTC),
 		"3.14": time.Date(2023, 5, 1, 23, 59, 59, 0, time.UTC),
 		"3.15": time.Date(2023, 11, 1, 23, 59, 59, 0, time.UTC),
+		"3.16": time.Date(2024, 5, 23, 23, 59, 59, 0, time.UTC),
 		"edge": time.Date(9999, 1, 1, 0, 0, 0, 0, time.UTC),
 	}
 )
@@ -124,6 +125,7 @@ func (s *Scanner) Detect(osVer string, repo *ftypes.Repository, pkgs []ftypes.Pa
 				InstalledVersion: installed,
 				FixedVersion:     adv.FixedVersion,
 				Layer:            pkg.Layer,
+				Ref:              pkg.Ref,
 				Custom:           adv.Custom,
 				DataSource:       adv.DataSource,
 			})

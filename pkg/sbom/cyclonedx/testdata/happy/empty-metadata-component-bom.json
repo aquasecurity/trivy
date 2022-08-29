@@ -1,0 +1,17 @@
+{
+  "bomFormat": "CycloneDX",
+  "specVersion": "1.4",
+  "serialNumber": "urn:uuid:c986ba94-e37d-49c8-9e30-96daccd0415b",
+  "version": 1,
+  "metadata": {
+    "timestamp": "2022-05-28T10:20:03.79527Z",
+    "tools": [
+      {
+        "vendor": "aquasecurity",
+        "name": "trivy",
+        "version": "dev"
+      }
+    ]
+  },
+  "dependencies": []
+}

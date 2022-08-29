@@ -1,0 +1,31 @@
+project_name: trivy_canary_build
+builds:
+  -
+    main: cmd/trivy/main.go
+    binary: trivy
+    ldflags:
+      - -s -w
+      - "-extldflags '-static'"
+      - -X main.version={{.Version}}
+    env:
+      - CGO_ENABLED=0
+    goos:
+      - darwin
+      - linux
+    goarch:
+      - amd64
+      - arm64
+
+archives:
+  -
+    format: tar.gz
+    name_template: "{{.ProjectName}}_{{.Version}}_{{.Os}}-{{.Arch}}"
+    replacements:
+      amd64: 64bit
+      arm64: ARM64
+      darwin: macOS
+      linux: Linux
+    files:
+      - README.md
+      - LICENSE
+      - contrib/*.tpl

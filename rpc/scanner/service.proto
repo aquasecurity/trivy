@@ -16,10 +16,16 @@ message ScanRequest {
   ScanOptions     options     = 4;
 }
 
+// cf. https://stackoverflow.com/questions/38886789/protobuf3-how-to-describe-map-of-repeated-string
+message Licenses {
+  repeated string names = 1;
+}
+
 message ScanOptions {
-  repeated string vuln_type         = 1;
-  repeated string security_checks   = 2;
-  bool            list_all_packages = 3;
+  repeated string       vuln_type          = 1;
+  repeated string       security_checks    = 2;
+  bool                  list_all_packages  = 3;
+  map<string, Licenses> license_categories = 4;
 }
 
 message ScanResponse {
@@ -36,4 +42,5 @@ message Result {
   string   type                                              = 3;
   repeated common.Package packages                           = 5;
   repeated common.CustomResource custom_resources            = 7;
+  repeated common.SecretFinding secrets                             = 8;
 }

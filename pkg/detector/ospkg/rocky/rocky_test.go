@@ -8,12 +8,12 @@ import (
 	"github.com/stretchr/testify/require"
 	fake "k8s.io/utils/clock/testing"
 
-	ftypes "github.com/aquasecurity/fanal/types"
 	"github.com/aquasecurity/trivy-db/pkg/db"
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/vulnerability"
 	"github.com/aquasecurity/trivy/pkg/dbtest"
 	"github.com/aquasecurity/trivy/pkg/detector/ospkg/rocky"
+	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
 
@@ -46,7 +46,7 @@ func TestScanner_Detect(t *testing.T) {
 						SrcVersion:      "4.18.0",
 						SrcRelease:      "348.el8.0.3",
 						Modularitylabel: "",
-						License:         "GPLv2",
+						Licenses:        []string{"GPLv2"},
 						Layer:           ftypes.Layer{},
 					},
 				},
@@ -83,7 +83,7 @@ func TestScanner_Detect(t *testing.T) {
 						SrcVersion:      "1.16.1",
 						SrcRelease:      "2.module+el8.4.0+543+efbf198b.0",
 						Modularitylabel: "nginx:1.16:8040020210610090125:9f9e2e7e",
-						License:         "BSD",
+						Licenses:        []string{"BSD"},
 						Layer:           ftypes.Layer{},
 					},
 				},

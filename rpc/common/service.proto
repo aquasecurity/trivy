@@ -32,6 +32,7 @@ message Application {
 message Package {
   // binary package
   // e.g. bind-utils
+  string id      = 13;
   string name    = 1;
   string version = 2;
   string release = 3;
@@ -39,13 +40,14 @@ message Package {
   string arch    = 5;
   // src package containing some binary packages
   // e.g. bind
-  string src_name    = 6;
-  string src_version = 7;
-  string src_release = 8;
-  int32  src_epoch   = 9;
-  string license     = 10;
-  Layer  layer       = 11;
-  string file_path   = 12;
+  string          src_name    = 6;
+  string          src_version = 7;
+  string          src_release = 8;
+  int32           src_epoch   = 9;
+  repeated string licenses    = 15;
+  Layer           layer       = 11;
+  string          file_path   = 12;
+  repeated string depends_on  = 14;
 }
 
 message Misconfiguration {
@@ -103,6 +105,7 @@ message Vulnerability {
   DataSource                data_source          = 20;
   map<string, Severity>     vendor_severity      = 21;
   string                    pkg_path             = 22;
+  string                    pkg_id               = 23;
 }
 
 message DataSource {
@@ -136,4 +139,37 @@ message CustomResource {
   string                file_path = 2;
   Layer                 layer     = 3;
   google.protobuf.Value data      = 4;
+}
+
+message Line {
+  int32  number      = 1;
+  string content     = 2;
+  bool   is_cause    = 3;
+  string annotation  = 4;
+  bool   truncated   = 5;
+  string highlighted = 6;
+  bool   first_cause = 7;
+  bool   last_cause  = 8;
+}
+
+message Code {
+  repeated Line lines = 1;
+}
+
+message SecretFinding {
+  string rule_id    = 1;
+  string category   = 2;
+  string severity   = 3;
+  string title      = 4;
+  int32  start_line = 5;
+  int32  end_line   = 6;
+  Code   code       = 7;
+  string match      = 8;
+  bool   deleted    = 9;
+  Layer  layer      = 10;
+}
+
+message Secret {
+  string                 filepath = 1;
+  repeated SecretFinding findings = 2;
 }

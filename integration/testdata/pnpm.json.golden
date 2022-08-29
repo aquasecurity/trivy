@@ -1,0 +1,187 @@
+{
+  "SchemaVersion": 2,
+  "ArtifactName": "testdata/fixtures/fs/pnpm",
+  "ArtifactType": "filesystem",
+  "Metadata": {
+    "ImageConfig": {
+      "architecture": "",
+      "created": "0001-01-01T00:00:00Z",
+      "os": "",
+      "rootfs": {
+        "type": "",
+        "diff_ids": null
+      },
+      "config": {}
+    }
+  },
+  "Results": [
+    {
+      "Target": "pnpm-lock.yaml",
+      "Class": "lang-pkgs",
+      "Type": "pnpm",
+      "Vulnerabilities": [
+        {
+          "VulnerabilityID": "CVE-2019-11358",
+          "PkgID": "jquery@3.3.9",
+          "PkgName": "jquery",
+          "InstalledVersion": "3.3.9",
+          "FixedVersion": "3.4.0",
+          "Layer": {},
+          "SeveritySource": "ghsa",
+          "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-11358",
+          "DataSource": {
+            "ID": "ghsa",
+            "Name": "GitHub Security Advisory Npm",
+            "URL": "https://github.com/advisories?query=type%3Areviewed+ecosystem%3Anpm"
+          },
+          "Title": "jquery: Prototype pollution in object's prototype leading to denial of service, remote code execution, or property injection",
+          "Description": "jQuery before 3.4.0, as used in Drupal, Backdrop CMS, and other products, mishandles jQuery.extend(true, {}, ...) because of Object.prototype pollution. If an unsanitized source object contained an enumerable __proto__ property, it could extend the native Object.prototype.",
+          "Severity": "MEDIUM",
+          "CweIDs": [
+            "CWE-79"
+          ],
+          "CVSS": {
+            "nvd": {
+              "V2Vector": "AV:N/AC:M/Au:N/C:N/I:P/A:N",
+              "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:R/S:C/C:L/I:L/A:N",
+              "V2Score": 4.3,
+              "V3Score": 6.1
+            },
+            "redhat": {
+              "V3Vector": "CVSS:3.0/AV:N/AC:H/PR:N/UI:N/S:U/C:L/I:L/A:L",
+              "V3Score": 5.6
+            }
+          },
+          "References": [
+            "http://lists.opensuse.org/opensuse-security-announce/2019-08/msg00006.html",
+            "http://lists.opensuse.org/opensuse-security-announce/2019-08/msg00025.html",
+            "http://packetstormsecurity.com/files/152787/dotCMS-5.1.1-Vulnerable-Dependencies.html",
+            "http://packetstormsecurity.com/files/153237/RetireJS-CORS-Issue-Script-Execution.html",
+            "http://packetstormsecurity.com/files/156743/OctoberCMS-Insecure-Dependencies.html",
+            "http://seclists.org/fulldisclosure/2019/May/10",
+            "http://seclists.org/fulldisclosure/2019/May/11",
+            "http://seclists.org/fulldisclosure/2019/May/13",
+            "http://www.openwall.com/lists/oss-security/2019/06/03/2",
+            "http://www.securityfocus.com/bid/108023",
+            "https://access.redhat.com/errata/RHBA-2019:1570",
+            "https://access.redhat.com/errata/RHSA-2019:1456",
+            "https://access.redhat.com/errata/RHSA-2019:2587",
+            "https://access.redhat.com/errata/RHSA-2019:3023",
+            "https://access.redhat.com/errata/RHSA-2019:3024",
+            "https://access.redhat.com/security/cve/CVE-2019-11358",
+            "https://backdropcms.org/security/backdrop-sa-core-2019-009",
+            "https://blog.jquery.com/2019/04/10/jquery-3-4-0-released/",
+            "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-11358",
+            "https://github.com/DanielRuf/snyk-js-jquery-174006?files=1",
+            "https://github.com/advisories/GHSA-6c3j-c64m-qhgq",
+            "https://github.com/jquery/jquery/commit/753d591aea698e57d6db58c9f722cd0808619b1b",
+            "https://github.com/jquery/jquery/pull/4333",
+            "https://github.com/rails/jquery-rails/blob/master/CHANGELOG.md#434",
+            "https://hackerone.com/reports/454365",
+            "https://kb.pulsesecure.net/articles/Pulse_Security_Advisories/SA44601",
+            "https://linux.oracle.com/cve/CVE-2019-11358.html",
+            "https://linux.oracle.com/errata/ELSA-2020-4847.html",
+            "https://lists.apache.org/thread.html/08720ef215ee7ab3386c05a1a90a7d1c852bf0706f176a7816bf65fc@%3Ccommits.airflow.apache.org%3E",
+            "https://lists.apache.org/thread.html/519eb0fd45642dcecd9ff74cb3e71c20a4753f7d82e2f07864b5108f@%3Cdev.drill.apache.org%3E",
+            "https://lists.apache.org/thread.html/5928aa293e39d248266472210c50f176cac1535220f2486e6a7fa844@%3Ccommits.airflow.apache.org%3E",
+            "https://lists.apache.org/thread.html/6097cdbd6f0a337bedd9bb5cc441b2d525ff002a96531de367e4259f@%3Ccommits.airflow.apache.org%3E",
+            "https://lists.apache.org/thread.html/88fb0362fd40e5b605ea8149f63241537b8b6fb5bfa315391fc5cbb7@%3Ccommits.airflow.apache.org%3E",
+            "https://lists.apache.org/thread.html/b0656d359c7d40ec9f39c8cc61bca66802ef9a2a12ee199f5b0c1442@%3Cdev.drill.apache.org%3E",
+            "https://lists.apache.org/thread.html/b736d0784cf02f5a30fbb4c5902762a15ad6d47e17e2c5a17b7d6205@%3Ccommits.airflow.apache.org%3E",
+            "https://lists.apache.org/thread.html/ba79cf1658741e9f146e4c59b50aee56656ea95d841d358d006c18b6@%3Ccommits.roller.apache.org%3E",
+            "https://lists.apache.org/thread.html/bcce5a9c532b386c68dab2f6b3ce8b0cc9b950ec551766e76391caa3@%3Ccommits.nifi.apache.org%3E",
+            "https://lists.apache.org/thread.html/f9bc3e55f4e28d1dcd1a69aae6d53e609a758e34d2869b4d798e13cc@%3Cissues.drill.apache.org%3E",
+            "https://lists.apache.org/thread.html/r2041a75d3fc09dec55adfd95d598b38d22715303f65c997c054844c9@%3Cissues.flink.apache.org%3E",
+            "https://lists.apache.org/thread.html/r2baacab6e0acb5a2092eb46ae04fd6c3e8277b4fd79b1ffb7f3254fa@%3Cissues.flink.apache.org%3E",
+            "https://lists.apache.org/thread.html/r38f0d1aa3c923c22977fe7376508f030f22e22c1379fbb155bf29766@%3Cdev.syncope.apache.org%3E",
+            "https://lists.apache.org/thread.html/r41b5bfe009c845f67d4f68948cc9419ac2d62e287804aafd72892b08@%3Cissues.flink.apache.org%3E",
+            "https://lists.apache.org/thread.html/r7aac081cbddb6baa24b75e74abf0929bf309b176755a53e3ed810355@%3Cdev.flink.apache.org%3E",
+            "https://lists.apache.org/thread.html/r7d64895cc4dff84d0becfc572b20c0e4bf9bfa7b10c6f5f73e783734@%3Cdev.storm.apache.org%3E",
+            "https://lists.apache.org/thread.html/r7e8ebccb7c022e41295f6fdb7b971209b83702339f872ddd8cf8bf73@%3Cissues.flink.apache.org%3E",
+            "https://lists.apache.org/thread.html/rac25da84ecdcd36f6de5ad0d255f4e967209bbbebddb285e231da37d@%3Cissues.flink.apache.org%3E",
+            "https://lists.apache.org/thread.html/rca37935d661f4689cb4119f1b3b224413b22be161b678e6e6ce0c69b@%3Ccommits.nifi.apache.org%3E",
+            "https://lists.debian.org/debian-lts-announce/2019/05/msg00006.html",
+            "https://lists.debian.org/debian-lts-announce/2019/05/msg00029.html",
+            "https://lists.debian.org/debian-lts-announce/2020/02/msg00024.html",
+            "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/4UOAZIFCSZ3ENEFOR5IXX6NFAD3HV7FA/",
+            "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/5IABSKTYZ5JUGL735UKGXL5YPRYOPUYI/",
+            "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/KYH3OAGR2RTCHRA5NOKX2TES7SNQMWGO/",
+            "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/QV3PKZC3PQCO3273HAT76PAQZFBEO4KP/",
+            "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/RLXRX23725JL366CNZGJZ7AQQB7LHQ6F/",
+            "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/WZW27UCJ5CYFL4KFFFMYMIBNMIU2ALG5/",
+            "https://nvd.nist.gov/vuln/detail/CVE-2019-11358",
+            "https://seclists.org/bugtraq/2019/Apr/32",
+            "https://seclists.org/bugtraq/2019/Jun/12",
+            "https://seclists.org/bugtraq/2019/May/18",
+            "https://security.netapp.com/advisory/ntap-20190919-0001/",
+            "https://snyk.io/vuln/SNYK-JS-JQUERY-174006",
+            "https://www.debian.org/security/2019/dsa-4434",
+            "https://www.debian.org/security/2019/dsa-4460",
+            "https://www.drupal.org/sa-core-2019-006",
+            "https://www.oracle.com//security-alerts/cpujul2021.html",
+            "https://www.oracle.com/security-alerts/cpuApr2021.html",
+            "https://www.oracle.com/security-alerts/cpuapr2020.html",
+            "https://www.oracle.com/security-alerts/cpujan2020.html",
+            "https://www.oracle.com/security-alerts/cpujan2021.html",
+            "https://www.oracle.com/security-alerts/cpujul2020.html",
+            "https://www.oracle.com/security-alerts/cpuoct2020.html",
+            "https://www.oracle.com/security-alerts/cpuoct2021.html",
+            "https://www.oracle.com/technetwork/security-advisory/cpujul2019-5072835.html",
+            "https://www.oracle.com/technetwork/security-advisory/cpuoct2019-5072832.html",
+            "https://www.privacy-wise.com/mitigating-cve-2019-11358-in-old-versions-of-jquery/",
+            "https://www.synology.com/security/advisory/Synology_SA_19_19",
+            "https://www.tenable.com/security/tns-2019-08",
+            "https://www.tenable.com/security/tns-2020-02"
+          ],
+          "PublishedDate": "2019-04-20T00:29:00Z",
+          "LastModifiedDate": "2021-10-20T11:15:00Z"
+        },
+        {
+          "VulnerabilityID": "CVE-2019-10744",
+          "PkgID": "lodash@4.17.4",
+          "PkgName": "lodash",
+          "InstalledVersion": "4.17.4",
+          "FixedVersion": "4.17.12",
+          "Layer": {},
+          "SeveritySource": "ghsa",
+          "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-10744",
+          "DataSource": {
+            "ID": "ghsa",
+            "Name": "GitHub Security Advisory Npm",
+            "URL": "https://github.com/advisories?query=type%3Areviewed+ecosystem%3Anpm"
+          },
+          "Title": "nodejs-lodash: prototype pollution in defaultsDeep function leading to modifying properties",
+          "Description": "Versions of lodash lower than 4.17.12 are vulnerable to Prototype Pollution. The function defaultsDeep could be tricked into adding or modifying properties of Object.prototype using a constructor payload.",
+          "Severity": "CRITICAL",
+          "CVSS": {
+            "nvd": {
+              "V2Vector": "AV:N/AC:L/Au:N/C:N/I:P/A:P",
+              "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:H/A:H",
+              "V2Score": 6.4,
+              "V3Score": 9.1
+            },
+            "redhat": {
+              "V3Vector": "CVSS:3.0/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:H/A:H",
+              "V3Score": 9.1
+            }
+          },
+          "References": [
+            "https://access.redhat.com/errata/RHSA-2019:3024",
+            "https://access.redhat.com/security/cve/CVE-2019-10744",
+            "https://github.com/advisories/GHSA-jf85-cpcp-j695",
+            "https://github.com/lodash/lodash/pull/4336",
+            "https://nvd.nist.gov/vuln/detail/CVE-2019-10744",
+            "https://security.netapp.com/advisory/ntap-20191004-0005/",
+            "https://snyk.io/vuln/SNYK-JS-LODASH-450202",
+            "https://support.f5.com/csp/article/K47105354?utm_source=f5support\u0026amp;utm_medium=RSS",
+            "https://www.npmjs.com/advisories/1065",
+            "https://www.oracle.com/security-alerts/cpujan2021.html",
+            "https://www.oracle.com/security-alerts/cpuoct2020.html"
+          ],
+          "PublishedDate": "2019-07-26T00:15:00Z",
+          "LastModifiedDate": "2021-03-16T13:57:00Z"
+        }
+      ]
+    }
+  ]
+}

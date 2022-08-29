@@ -5,6 +5,9 @@ import (
 	"strings"
 	"sync"
 
+	"github.com/aquasecurity/trivy/pkg/report/predicate"
+	"github.com/aquasecurity/trivy/pkg/report/table"
+
 	"golang.org/x/xerrors"
 
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
@@ -18,26 +21,37 @@ import (
 const (
 	SchemaVersion = 2
 
-	FormatTable     = "table"
-	FormatJSON      = "json"
-	FormatTemplate  = "template"
-	FormatSarif     = "sarif"
-	FormatCycloneDX = "cyclonedx"
-	FormatSPDX      = "spdx"
-	FormatSPDXJSON  = "spdx-json"
-	FormatGitHub    = "github"
+	FormatTable      = "table"
+	FormatJSON       = "json"
+	FormatTemplate   = "template"
+	FormatSarif      = "sarif"
+	FormatCycloneDX  = "cyclonedx"
+	FormatSPDX       = "spdx"
+	FormatSPDXJSON   = "spdx-json"
+	FormatGitHub     = "github"
+	FormatCosignVuln = "cosign-vuln"
+)
+
+var (
+	SupportedSBOMFormats = []string{FormatCycloneDX, FormatSPDX, FormatSPDXJSON, FormatGitHub}
 )
 
 type Option struct {
+	AppVersion string
+
 	Format         string
 	Output         io.Writer
+	Tree           bool
 	Severities     []dbTypes.Severity
 	OutputTemplate string
-	AppVersion     string
 
 	// For misconfigurations
 	IncludeNonFailures bool
 	Trace              bool
+
+	// For licenses
+	LicenseRiskThreshold int
+	IgnoredLicenses      []string
 }
 
 // Write writes the result to output, format as passed in argument
@@ -45,12 +59,15 @@ func Write(report types.Report, option Option) error {
 	var writer Writer
 	switch option.Format {
 	case FormatTable:
-		writer = &TableWriter{
-			Output:             option.Output,
-			Severities:         option.Severities,
-			ShowMessageOnce:    &sync.Once{},
-			IncludeNonFailures: option.IncludeNonFailures,
-			Trace:              option.Trace,
+		writer = &table.Writer{
+			Output:               option.Output,
+			Severities:           option.Severities,
+			Tree:                 option.Tree,
+			ShowMessageOnce:      &sync.Once{},
+			IncludeNonFailures:   option.IncludeNonFailures,
+			Trace:                option.Trace,
+			LicenseRiskThreshold: option.LicenseRiskThreshold,
+			IgnoredLicenses:      option.IgnoredLicenses,
 		}
 	case FormatJSON:
 		writer = &JSONWriter{Output: option.Output}
@@ -74,6 +91,8 @@ func Write(report types.Report, option Option) error {
 		}
 	case FormatSarif:
 		writer = SarifWriter{Output: option.Output, Version: option.AppVersion}
+	case FormatCosignVuln:
+		writer = predicate.NewVulnWriter(option.Output, option.AppVersion)
 	default:
 		return xerrors.Errorf("unknown format: %v", option.Format)
 	}

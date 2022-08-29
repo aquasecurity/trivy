@@ -1,0 +1,64 @@
+{
+  "bomFormat": "CycloneDX",
+  "specVersion": "1.4",
+  "serialNumber": "urn:uuid:c986ba94-e37d-49c8-9e30-96daccd0415b",
+  "version": 1,
+  "metadata": {
+    "timestamp": "2022-05-28T10:20:03.79527Z",
+    "tools": [
+      {
+        "vendor": "aquasecurity",
+        "name": "trivy",
+        "version": "dev"
+      }
+    ],
+    "component": {
+      "bom-ref": "0f585d64-4815-4b72-92c5-97dae191fa4a",
+      "type": "application",
+      "name": "maven-test-project",
+      "properties": [
+        {
+          "name": "aquasecurity:trivy:SchemaVersion",
+          "value": "2"
+        }
+      ]
+    }
+  },
+  "components": [
+    {
+      "bom-ref": "pkg:composer/pear/log@1.13.1",
+      "type": "library",
+      "name": "pear/log",
+      "version": "1.13.1",
+      "purl": "pkg:composer/pear/log@1.13.1"
+    },
+    {
+      "bom-ref": "pkg:composer/pear/pear_exception@v1.0.0",
+      "type": "library",
+      "name": "pear/pear_exception",
+      "version": "v1.0.0",
+      "purl": "pkg:composer/pear/pear_exception@v1.0.0"
+    },
+    {
+      "bom-ref": "100925ff-7c0a-470f-a725-8fb973b40e7b",
+      "type": "application",
+      "name": "app/composer/composer.lock"
+    }
+  ],
+  "dependencies": [
+    {
+      "ref": "100925ff-7c0a-470f-a725-8fb973b40e7b",
+      "dependsOn": [
+        "pkg:composer/pear/log@1.13.1",
+        "pkg:composer/pear/pear_exception@v1.0.0"
+      ]
+    },
+    {
+      "ref": "pkg:composer/pear/log@1.13.1"
+    },
+    {
+      "ref": "pkg:composer/pear/pear_exception@v1.0.0"
+    }
+  ],
+  "vulnerabilities": []
+}

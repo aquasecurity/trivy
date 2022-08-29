@@ -52,39 +52,32 @@ nav:
               - Policy: docs/misconfiguration/options/policy.md
               - Filtering: docs/misconfiguration/options/filter.md
               - Report Formats: docs/misconfiguration/options/report.md
+              - Value Overrides: docs/misconfiguration/options/values.md
               - Others: docs/misconfiguration/options/others.md
           - Comparison:
               - vs Conftest: docs/misconfiguration/comparison/conftest.md
               - vs tfsec: docs/misconfiguration/comparison/tfsec.md
               - vs cfsec: docs/misconfiguration/comparison/cfsec.md
+      - Secret:
+          - Scanning: docs/secret/scanning.md
+          - Configuration: docs/secret/configuration.md
+          - Examples: docs/secret/examples.md
+      - License:
+            - Scanning: docs/licenses/scanning.md
       - Kubernetes:
           - CLI:
               - Scanning: docs/kubernetes/cli/scanning.md
           - Operator:
               - Overview: docs/kubernetes/operator/index.md
-              - Installation:
-                    - kubectl: docs/kubernetes/operator/installation/kubectl.md
-                    - Helm: docs/kubernetes/operator/installation/helm.md
-                    - Upgrade: docs/kubernetes/operator/installation/upgrade.md
-              - Getting Started: docs/kubernetes/operator/getting-started.md
-              - Configuration: docs/kubernetes/operator/configuration.md
-              - Vulnerability Scanning:
-                    - Overview: docs/kubernetes/operator/vulnerability-scanning/index.md 
-                    - Scan Configuration: docs/kubernetes/operator/vulnerability-scanning/configuration.md 
-                    - Managed registries: docs/kubernetes/operator/vulnerability-scanning/managed-registries.md 
-                    - FAQ: docs/kubernetes/operator/vulnerability-scanning/faq.md 
-              - Configuration Auditing:
-                    - Overview: docs/kubernetes/operator/configuration-auditing/index.md
-                    - Built-in Configuration Audit Policies: docs/kubernetes/operator/configuration-auditing/built-in-policies.md
-              - Troubleshooting: docs/kubernetes/operator/troubleshooting.md
-      - Secret:
-          - Scanning: docs/secret/scanning.md
-          - Configuration: docs/secret/configuration.md
-          - Examples: docs/secret/examples.md
+      - Cloud:
+          - AWS: docs/cloud/aws/scanning.md
       - SBOM:
           - Overview: docs/sbom/index.md
           - CycloneDX: docs/sbom/cyclonedx.md
           - SPDX: docs/sbom/spdx.md
+      - Attestation:
+          - SBOM: docs/attestation/sbom.md
+          - Cosign Vulnerability Scan Record: docs/attestation/vuln.md
       - Integrations:
           - Overview: docs/integrations/index.md
           - GitHub Actions: docs/integrations/github-actions.md
@@ -95,6 +88,7 @@ nav:
           - AWS CodePipeline: docs/integrations/aws-codepipeline.md
           - AWS Security Hub: docs/integrations/aws-security-hub.md
       - Advanced:
+          - Modules: docs/advanced/modules.md
           - Plugins: docs/advanced/plugins.md
           - Air-Gapped Environment: docs/advanced/air-gap.md
           - Container Image:
@@ -102,6 +96,7 @@ nav:
               - Unpacked container image filesystem: docs/advanced/container/unpacked-filesystem.md
               - OCI Image: docs/advanced/container/oci.md
               - Podman: docs/advanced/container/podman.md
+              - containerd: docs/advanced/container/containerd.md
               - Private Docker Registries:
                   - Overview: docs/advanced/private-registries/index.md
                   - Docker Hub: docs/advanced/private-registries/docker-hub.md
@@ -110,6 +105,9 @@ nav:
                   - ACR (Azure Container Registry): docs/advanced/private-registries/acr.md
                   - Self-Hosted: docs/advanced/private-registries/self.md
       - References:
+          - Customization:
+              - Environment variables: docs/references/customization/envs.md
+              - Config file: docs/references/customization/config-file.md
           - CLI:
               - Overview: docs/references/cli/index.md
               - Image: docs/references/cli/image.md
@@ -119,7 +117,7 @@ nav:
               - Repository: docs/references/cli/repo.md
               - Client: docs/references/cli/client.md
               - Server: docs/references/cli/server.md
-              - Plugins: docs/references/cli/plugins.md
+              - Plugin: docs/references/cli/plugin.md
               - SBOM: docs/references/cli/sbom.md
           - Modes:
               - Standalone: docs/references/modes/standalone.md
@@ -144,6 +142,7 @@ theme:
     - navigation.tabs
     - navigation.tabs.sticky
     - navigation.sections
+    - content.tabs.link
 
 markdown_extensions:
   - pymdownx.highlight
@@ -151,7 +150,8 @@ markdown_extensions:
   - admonition
   - footnotes
   - attr_list
-  - pymdownx.tabbed
+  - pymdownx.tabbed:
+      alternate_style: true
   - def_list
   - pymdownx.details
   - pymdownx.emoji:
@@ -163,10 +163,8 @@ extra:
   version:
     method: mike
     provider: mike
-  var:
-    prev_git_tag: "v0.0.0"
-    operator_version: "v0.0.5"
 
 plugins:
   - search
   - macros
+

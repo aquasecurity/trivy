@@ -1,3 +1,10 @@
+- bucket: alpine 3.11
+  pairs:
+    - bucket: musl
+      pairs:
+        - key: CVE-2020-9999
+          value:
+            FixedVersion: 1.2.4
 - bucket: "rubygems::GitHub Security Advisory RubyGems"
   pairs:
     - bucket: rails
@@ -25,4 +32,19 @@
               - ">= 8.0.0, < 8.22.1"
               - ">= 7.0.0, < 7.30.3"
               - "< 6.20.12"
-
+- bucket: vulnerability
+  pairs:
+    - key: CVE-2020-9999
+      value:
+        Title: dos
+        Description: dos vulnerability
+        Severity: HIGH
+    - key: CVE-2014-0081
+      value:
+        Title: xss
+        Description: xss vulnerability
+        Severity: MEDIUM
+        References:
+          - http://example.com
+        LastModifiedDate: "2020-02-01T01:01:00Z"
+        PublishedDate: "2020-01-01T01:01:00Z"

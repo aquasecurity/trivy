@@ -106,7 +106,19 @@ If trivy is running behind corporate firewall, you have to add the following url
 !!! error
     --skip-update cannot be specified with the old DB schema.
 
-Trivy v0.23.0 or later requires Trivy DB v2. Please update your local database or follow [the instruction of air-gapped environment][../advanced/air-gap.md].
+Trivy v0.23.0 or later requires Trivy DB v2. Please update your local database or follow [the instruction of air-gapped environment][air-gapped].
+
+### Multiple Trivy servers
+
+!!! error
+    ```
+    $ trivy image --server http://xxx.com:xxxx test-image
+    ...
+    - twirp error internal: failed scan, test-image: failed to apply layers: layer cache missing: sha256:*****
+    ```
+To run multiple Trivy servers, you need to use Redis as the cache backend so that those servers can share the cache. 
+Follow [this instruction][redis-cache] to do so.
+
 
 ## Homebrew
 ### Scope error
@@ -157,4 +169,5 @@ Try again with `--reset` option:
 $ trivy image --reset
 ```
 
-[air-gapped]: ../how-to-guides/air-gap.md
+[air-gapped]: ../advanced/air-gap.md
+[redis-cache]: ../../vulnerability/examples/cache/#cache-backend

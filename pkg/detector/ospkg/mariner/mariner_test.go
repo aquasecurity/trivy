@@ -6,12 +6,12 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	ftypes "github.com/aquasecurity/fanal/types"
 	"github.com/aquasecurity/trivy-db/pkg/db"
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/vulnerability"
 	"github.com/aquasecurity/trivy/pkg/dbtest"
 	"github.com/aquasecurity/trivy/pkg/detector/ospkg/mariner"
+	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
 
@@ -46,7 +46,7 @@ func TestScanner_Detect(t *testing.T) {
 						SrcEpoch:   0,
 						SrcVersion: "9.16.14",
 						SrcRelease: "1.cm1",
-						License:    "ISC",
+						Licenses:   []string{"ISC"},
 						Layer:      ftypes.Layer{},
 					},
 				},
@@ -85,7 +85,7 @@ func TestScanner_Detect(t *testing.T) {
 						SrcEpoch:   0,
 						SrcVersion: "8.2.4081",
 						SrcRelease: "1.cm1",
-						License:    "Vim",
+						Licenses:   []string{"Vim"},
 						Layer:      ftypes.Layer{},
 					},
 				},
@@ -120,7 +120,7 @@ func TestScanner_Detect(t *testing.T) {
 						SrcEpoch:   0,
 						SrcVersion: "9.16.14",
 						SrcRelease: "1.cm1",
-						License:    "ISC",
+						Licenses:   []string{"ISC"},
 						Layer:      ftypes.Layer{},
 					},
 				},

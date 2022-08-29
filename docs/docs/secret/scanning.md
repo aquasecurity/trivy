@@ -89,11 +89,6 @@ Total: 1 (UNKNOWN: 0, LOW: 0, MEDIUM: 0, HIGH: 1, CRITICAL: 0)
 ## Configuration
 Trivy has a set of builtin rules for secret scanning, which can be extended or modified by a configuration file.
 
-If you don't need secret scanning, you can disable it via the `--security-checks` flag.
-
-```shell
-$ trivy image --security-checks vuln alpine:3.15
-```
 
 ## Recommendation
 We would recommend specifying `--skip-dirs` for faster secret scanning.
@@ -111,11 +106,18 @@ All rules are disabled except for the ones you specify, so it runs very fast.
 On the other hand, you should use `disable-rules` if you just want to disable some built-in rules.
 See the [enable-rules][enable-rules] and [disable-rules][disable-rules] sections for the detail.
 
+If you don't need secret scanning, you can disable it via the `--security-checks` flag.
+
+```shell
+$ trivy image --security-checks vuln alpine:3.15
+```
+
+
 ## Credit
 This feature is inspired by [gitleaks][gitleaks]. 
 
-[builtin]: https://github.com/aquasecurity/fanal/blob/main/secret/builtin-rules.go
-[builtin-allow]: https://github.com/aquasecurity/fanal/blob/main/secret/builtin-allow-rules.go
+[builtin]: https://github.com/aquasecurity/trivy/blob/main/pkg/fanal/secret/builtin-rules.go
+[builtin-allow]: https://github.com/aquasecurity/trivy/blob/main/pkg/fanal/secret/builtin-allow-rules.go
 [configuration]: ./configuration.md
 [allow-rules]: ./configuration.md#allow-rules
 [enable-rules]: ./configuration.md#enable-rules

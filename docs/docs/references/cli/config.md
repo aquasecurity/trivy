@@ -1,29 +1,49 @@
 # Config
 
 ``` bash
-NAME:
-   trivy config - scan config files
+Scan config files for misconfigurations
 
-USAGE:
-   trivy config [command options] dir
+Usage:
+  trivy config [flags] DIR
 
-OPTIONS:
-   --template value, -t value                     output template [$TRIVY_TEMPLATE]
-   --format value, -f value                       format (table, json, sarif, template) (default: "table") [$TRIVY_FORMAT]
-   --severity value, -s value                     severities of vulnerabilities to be displayed (comma separated) (default: "UNKNOWN,LOW,MEDIUM,HIGH,CRITICAL") [$TRIVY_SEVERITY]
-   --output value, -o value                       output file name [$TRIVY_OUTPUT]
-   --exit-code value                              Exit code when vulnerabilities were found (default: 0) [$TRIVY_EXIT_CODE]
-   --skip-policy-update                           skip updating built-in policies (default: false) [$TRIVY_SKIP_POLICY_UPDATE]
-   --reset                                        remove all caches and database (default: false) [$TRIVY_RESET]
-   --clear-cache, -c                              clear image caches without scanning (default: false) [$TRIVY_CLEAR_CACHE]
-   --ignorefile value                             specify .trivyignore file (default: ".trivyignore") [$TRIVY_IGNOREFILE]
-   --timeout value                                timeout (default: 5m0s) [$TRIVY_TIMEOUT]
-   --skip-files value                             specify the file paths to skip traversal [$TRIVY_SKIP_FILES]
-   --skip-dirs value                              specify the directories where the traversal is skipped [$TRIVY_SKIP_DIRS]
-   --policy value, --config-policy value          specify paths to the Rego policy files directory, applying config files [$TRIVY_POLICY]
-   --data value, --config-data value              specify paths from which data for the Rego policies will be recursively loaded [$TRIVY_DATA]
-   --policy-namespaces value, --namespaces value  Rego namespaces (default: "users") [$TRIVY_POLICY_NAMESPACES]
-   --file-patterns value                          specify file patterns [$TRIVY_FILE_PATTERNS]
-   --include-successes                            include successes of misconfigurations (default: false) [$TRIVY_INCLUDE_SUCCESSES]
-   --help, -h                                     show help (default: false)
+Aliases:
+  config, conf
+
+Scan Flags
+      --skip-dirs strings    specify the directories where the traversal is skipped
+      --skip-files strings   specify the file paths to skip traversal
+
+Report Flags
+      --exit-code int       specify exit code when any security issues are found
+  -f, --format string       format (table, json, sarif, template, cyclonedx, spdx, spdx-json, github, cosign-vuln) (default "table")
+      --ignorefile string   specify .trivyignore file (default ".trivyignore")
+  -o, --output string       output file name
+  -s, --severity string     severities of security issues to be displayed (comma separated) (default "UNKNOWN,LOW,MEDIUM,HIGH,CRITICAL")
+  -t, --template string     output template
+
+Cache Flags
+      --cache-backend string   cache backend (e.g. redis://localhost:6379) (default "fs")
+      --cache-ttl duration     cache TTL when using redis as cache backend
+      --clear-cache            clear image caches without scanning
+      --redis-ca string        redis ca file location, if using redis as cache backend
+      --redis-cert string      redis certificate file location, if using redis as cache backend
+      --redis-key string       redis key file location, if using redis as cache backend
+
+Misconfiguration Flags
+      --config-data strings         specify paths from which data for the Rego policies will be recursively loaded
+      --config-policy strings       specify paths to the Rego policy files directory, applying config files
+      --file-patterns strings       specify config file patterns, available with '--security-checks config'
+      --include-non-failures        include successes and exceptions, available with '--security-checks config'
+      --policy-namespaces strings   Rego namespaces
+      --trace                       enable more verbose trace output for custom queries
+
+Global Flags:
+      --cache-dir string          cache directory (default "/Users/teppei/Library/Caches/trivy")
+  -c, --config string             config path (default "trivy.yaml")
+  -d, --debug                     debug mode
+      --generate-default-config   write the default config to trivy-default.yaml
+      --insecure                  allow insecure server connections when using TLS
+  -q, --quiet                     suppress progress bar and log output
+      --timeout duration          timeout (default 5m0s)
+  -v, --version                   show version
 ```

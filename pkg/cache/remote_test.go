@@ -16,9 +16,9 @@ import (
 	"github.com/twitchtv/twirp"
 	"golang.org/x/xerrors"
 
-	fcache "github.com/aquasecurity/fanal/cache"
-	"github.com/aquasecurity/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/cache"
+	fcache "github.com/aquasecurity/trivy/pkg/fanal/cache"
+	"github.com/aquasecurity/trivy/pkg/fanal/types"
 	rpcCache "github.com/aquasecurity/trivy/rpc/cache"
 )
 
@@ -328,7 +328,7 @@ func TestRemoteCache_PutArtifactInsecure(t *testing.T) {
 				imageInfo: types.ArtifactInfo{},
 				insecure:  false,
 			},
-			wantErr: "certificate signed by unknown authority",
+			wantErr: "failed to do request",
 		},
 	}
 	for _, tt := range tests {

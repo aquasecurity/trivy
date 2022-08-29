@@ -1,5 +1,4 @@
 //go:build integration
-// +build integration
 
 package integration
 
@@ -7,22 +6,21 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"io"
 	"os"
 	"path/filepath"
 	"strings"
 	"testing"
 	"time"
 
+	"github.com/samber/lo"
+
 	cdx "github.com/CycloneDX/cyclonedx-go"
 	"github.com/docker/go-connections/nat"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	testcontainers "github.com/testcontainers/testcontainers-go"
-	"github.com/urfave/cli/v2"
 
 	"github.com/aquasecurity/trivy/pkg/clock"
-	"github.com/aquasecurity/trivy/pkg/commands"
 	"github.com/aquasecurity/trivy/pkg/report"
 )
 
@@ -39,6 +37,7 @@ type csArgs struct {
 	ClientTokenHeader string
 	ListAllPackages   bool
 	Target            string
+	secretConfig      string
 }
 
 func TestClientServer(t *testing.T) {
@@ -199,9 +198,9 @@ func TestClientServer(t *testing.T) {
 		{
 			name: "oracle 8",
 			args: csArgs{
-				Input: "testdata/fixtures/images/oraclelinux-8-slim.tar.gz",
+				Input: "testdata/fixtures/images/oraclelinux-8.tar.gz",
 			},
-			golden: "testdata/oraclelinux-8-slim.json.golden",
+			golden: "testdata/oraclelinux-8.json.golden",
 		},
 		{
 			name: "opensuse leap 15.1",
@@ -225,7 +224,7 @@ func TestClientServer(t *testing.T) {
 			golden: "testdata/mariner-1.0.json.golden",
 		},
 		{
-			name: "buxybox with Cargo.lock",
+			name: "busybox with Cargo.lock",
 			args: csArgs{
 				Input: "testdata/fixtures/images/busybox-with-lockfile.tar.gz",
 			},
@@ -240,16 +239,30 @@ func TestClientServer(t *testing.T) {
 			},
 			golden: "testdata/pom.json.golden",
 		},
+		{
+			name: "scan sample.pem with fs command in client/server mode",
+			args: csArgs{
+				Command:          "fs",
+				RemoteAddrOption: "--server",
+				secretConfig:     "testdata/fixtures/fs/secrets/trivy-secret.yaml",
+				Target:           "testdata/fixtures/fs/secrets/",
+			},
+			golden: "testdata/secrets.json.golden",
+		},
 	}
 
-	app, addr, cacheDir := setup(t, setupOptions{})
+	addr, cacheDir := setup(t, setupOptions{})
 
 	for _, c := range tests {
 		t.Run(c.name, func(t *testing.T) {
 			osArgs, outputFile := setupClient(t, c.args, addr, cacheDir, c.golden)
 
-			// Run Trivy client
-			err := app.Run(osArgs)
+			if c.args.secretConfig != "" {
+				osArgs = append(osArgs, "--secret-config", c.args.secretConfig)
+			}
+
+			//
+			err := execute(osArgs)
 			require.NoError(t, err)
 
 			compareReports(t, c.golden, outputFile)
@@ -340,7 +353,7 @@ func TestClientServerWithFormat(t *testing.T) {
 		report.CustomTemplateFuncMap = map[string]interface{}{}
 	})
 
-	app, addr, cacheDir := setup(t, setupOptions{})
+	addr, cacheDir := setup(t, setupOptions{})
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -349,7 +362,7 @@ func TestClientServerWithFormat(t *testing.T) {
 			osArgs, outputFile := setupClient(t, tt.args, addr, cacheDir, tt.golden)
 
 			// Run Trivy client
-			err := app.Run(osArgs)
+			err := execute(osArgs)
 			require.NoError(t, err)
 
 			want, err := os.ReadFile(tt.golden)
@@ -386,13 +399,13 @@ func TestClientServerWithCycloneDX(t *testing.T) {
 		},
 	}
 
-	app, addr, cacheDir := setup(t, setupOptions{})
+	addr, cacheDir := setup(t, setupOptions{})
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			osArgs, outputFile := setupClient(t, tt.args, addr, cacheDir, "")
 
 			// Run Trivy client
-			err := app.Run(osArgs)
+			err := execute(osArgs)
 			require.NoError(t, err)
 
 			f, err := os.Open(outputFile)
@@ -403,10 +416,10 @@ func TestClientServerWithCycloneDX(t *testing.T) {
 			err = json.NewDecoder(f).Decode(&got)
 			require.NoError(t, err)
 
-			assert.EqualValues(t, tt.wantComponentsCount, len(*got.Components))
-			assert.EqualValues(t, tt.wantDependenciesCount, len(*got.Dependencies))
+			assert.EqualValues(t, tt.wantComponentsCount, len(lo.FromPtr(got.Components)))
+			assert.EqualValues(t, tt.wantDependenciesCount, len(lo.FromPtr(got.Dependencies)))
 			for i, dep := range *got.Dependencies {
-				assert.EqualValues(t, tt.wantDependsOnCount[i], len(*dep.Dependencies))
+				assert.EqualValues(t, tt.wantDependsOnCount[i], len(lo.FromPtr(dep.Dependencies)))
 			}
 		})
 	}
@@ -450,7 +463,7 @@ func TestClientServerWithToken(t *testing.T) {
 
 	serverToken := "token"
 	serverTokenHeader := "Trivy-Token"
-	app, addr, cacheDir := setup(t, setupOptions{
+	addr, cacheDir := setup(t, setupOptions{
 		token:       serverToken,
 		tokenHeader: serverTokenHeader,
 	})
@@ -460,16 +473,14 @@ func TestClientServerWithToken(t *testing.T) {
 			osArgs, outputFile := setupClient(t, c.args, addr, cacheDir, c.golden)
 
 			// Run Trivy client
-			err := app.Run(osArgs)
-
+			err := execute(osArgs)
 			if c.wantErr != "" {
-				require.NotNil(t, err, c.name)
+				require.Error(t, err, c.name)
 				assert.Contains(t, err.Error(), c.wantErr, c.name)
 				return
-			} else {
-				assert.NoError(t, err, c.name)
 			}
 
+			require.NoError(t, err, c.name)
 			compareReports(t, c.golden, outputFile)
 		})
 	}
@@ -481,7 +492,7 @@ func TestClientServerWithRedis(t *testing.T) {
 	redisC, addr := setupRedis(t, ctx)
 
 	// Set up Trivy server
-	app, addr, cacheDir := setup(t, setupOptions{cacheBackend: addr})
+	addr, cacheDir := setup(t, setupOptions{cacheBackend: addr})
 	t.Cleanup(func() { os.RemoveAll(cacheDir) })
 
 	// Test parameters
@@ -494,7 +505,7 @@ func TestClientServerWithRedis(t *testing.T) {
 		osArgs, outputFile := setupClient(t, testArgs, addr, cacheDir, golden)
 
 		// Run Trivy client
-		err := app.Run(osArgs)
+		err := execute(osArgs)
 		require.NoError(t, err)
 
 		compareReports(t, golden, outputFile)
@@ -507,8 +518,8 @@ func TestClientServerWithRedis(t *testing.T) {
 		osArgs, _ := setupClient(t, testArgs, addr, cacheDir, golden)
 
 		// Run Trivy client
-		err := app.Run(osArgs)
-		require.NotNil(t, err)
+		err := execute(osArgs)
+		require.Error(t, err)
 		assert.Contains(t, err.Error(), "connect: connection refused")
 	})
 }
@@ -519,40 +530,35 @@ type setupOptions struct {
 	cacheBackend string
 }
 
-func setup(t *testing.T, options setupOptions) (*cli.App, string, string) {
+func setup(t *testing.T, options setupOptions) (string, string) {
 	t.Helper()
-	version := "dev"
 
 	// Set up testing DB
 	cacheDir := initDB(t)
+
+	// Set a temp dir so that modules will not be loaded
+	t.Setenv("XDG_DATA_HOME", cacheDir)
 
 	port, err := getFreePort()
 	assert.NoError(t, err)
 	addr := fmt.Sprintf("localhost:%d", port)
 
 	go func() {
-		// Setup CLI App
-		app := commands.NewApp(version)
-		app.Writer = io.Discard
 		osArgs := setupServer(addr, options.token, options.tokenHeader, cacheDir, options.cacheBackend)
 
 		// Run Trivy server
-		app.Run(osArgs)
+		require.NoError(t, execute(osArgs))
 	}()
 
 	ctx, _ := context.WithTimeout(context.Background(), 5*time.Second)
 	err = waitPort(ctx, addr)
 	assert.NoError(t, err)
 
-	// Setup CLI App
-	app := commands.NewApp(version)
-	app.Writer = io.Discard
-
-	return app, addr, cacheDir
+	return addr, cacheDir
 }
 
 func setupServer(addr, token, tokenHeader, cacheDir, cacheBackend string) []string {
-	osArgs := []string{"trivy", "--cache-dir", cacheDir, "server", "--skip-update", "--listen", addr}
+	osArgs := []string{"--cache-dir", cacheDir, "server", "--skip-update", "--listen", addr}
 	if token != "" {
 		osArgs = append(osArgs, []string{"--token", token, "--token-header", tokenHeader}...)
 	}
@@ -564,13 +570,13 @@ func setupServer(addr, token, tokenHeader, cacheDir, cacheBackend string) []stri
 
 func setupClient(t *testing.T, c csArgs, addr string, cacheDir string, golden string) ([]string, string) {
 	if c.Command == "" {
-		c.Command = "client"
+		c.Command = "image"
 	}
 	if c.RemoteAddrOption == "" {
-		c.RemoteAddrOption = "--remote"
+		c.RemoteAddrOption = "--server"
 	}
 	t.Helper()
-	osArgs := []string{"trivy", "--cache-dir", cacheDir, c.Command, c.RemoteAddrOption, "http://" + addr}
+	osArgs := []string{"--cache-dir", cacheDir, c.Command, c.RemoteAddrOption, "http://" + addr}
 
 	if c.Format != "" {
 		osArgs = append(osArgs, "--format", c.Format)

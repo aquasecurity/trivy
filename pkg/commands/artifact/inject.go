@@ -8,10 +8,9 @@ import (
 
 	"github.com/google/wire"
 
-	"github.com/aquasecurity/fanal/artifact"
-	"github.com/aquasecurity/fanal/cache"
-	"github.com/aquasecurity/fanal/types"
-	"github.com/aquasecurity/trivy/pkg/result"
+	"github.com/aquasecurity/trivy/pkg/fanal/artifact"
+	"github.com/aquasecurity/trivy/pkg/fanal/cache"
+	"github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/rpc/client"
 	"github.com/aquasecurity/trivy/pkg/scanner"
 )
@@ -50,9 +49,10 @@ func initializeRepositoryScanner(ctx context.Context, url string, artifactCache 
 	return scanner.Scanner{}, nil, nil
 }
 
-func initializeResultClient() result.Client {
-	wire.Build(result.SuperSet)
-	return result.Client{}
+func initializeSBOMScanner(ctx context.Context, filePath string, artifactCache cache.ArtifactCache,
+	localArtifactCache cache.LocalArtifactCache, artifactOption artifact.Option) (scanner.Scanner, func(), error) {
+	wire.Build(scanner.StandaloneSBOMSet)
+	return scanner.Scanner{}, nil, nil
 }
 
 /////////////////
@@ -83,7 +83,9 @@ func initializeRemoteFilesystemScanner(ctx context.Context, path string, artifac
 	return scanner.Scanner{}, nil, nil
 }
 
-func initializeRemoteResultClient() result.Client {
-	wire.Build(result.SuperSet)
-	return result.Client{}
+// initializeRemoteSBOMScanner is for sbom scanning in client/server mode
+func initializeRemoteSBOMScanner(ctx context.Context, path string, artifactCache cache.ArtifactCache,
+	remoteScanOptions client.ScannerOption, artifactOption artifact.Option) (scanner.Scanner, func(), error) {
+	wire.Build(scanner.RemoteSBOMSet)
+	return scanner.Scanner{}, nil, nil
 }

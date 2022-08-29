@@ -1,33 +1,70 @@
 # Client
 
 ```bash
-NAME:
-   trivy client - DEPRECATED client mode, use `trivy image` with `--server` option for remote scans now.
+Usage:
+  trivy client [flags] IMAGE_NAME
 
-USAGE:
-   trivy image --server value
+Aliases:
+  client, c
 
-   trivy client [deprecated command options] image_name
+Scan Flags
+      --offline-scan             do not issue API requests to identify dependencies
+      --security-checks string   comma-separated list of what security issues to detect (vuln,config,secret) (default "vuln,secret")
+      --skip-dirs strings        specify the directories where the traversal is skipped
+      --skip-files strings       specify the file paths to skip traversal
 
-DEPRECATED OPTIONS:
-   --template value, -t value  output template [$TRIVY_TEMPLATE]
-   --format value, -f value    format (table, json, sarif, template) (default: "table") [$TRIVY_FORMAT]
-   --input value, -i value     input file path instead of image name [$TRIVY_INPUT]
-   --severity value, -s value  severities of vulnerabilities to be displayed (comma separated) (default: "UNKNOWN,LOW,MEDIUM,HIGH,CRITICAL") [$TRIVY_SEVERITY]
-   --output value, -o value    output file name [$TRIVY_OUTPUT]
-   --exit-code value           Exit code when vulnerabilities were found (default: 0) [$TRIVY_EXIT_CODE]
-   --clear-cache, -c           clear image caches without scanning (default: false) [$TRIVY_CLEAR_CACHE]
-   --ignore-unfixed            display only fixed vulnerabilities (default: false) [$TRIVY_IGNORE_UNFIXED]
-   --removed-pkgs              detect vulnerabilities of removed packages (only for Alpine) (default: false) [$TRIVY_REMOVED_PKGS]
-   --vuln-type value           comma-separated list of vulnerability types (os,library) (default: "os,library") [$TRIVY_VULN_TYPE]
-   --ignorefile value          specify .trivyignore file (default: ".trivyignore") [$TRIVY_IGNOREFILE]
-   --timeout value             timeout (default: 5m0s) [$TRIVY_TIMEOUT]
-   --ignore-policy value       specify the Rego file to evaluate each vulnerability [$TRIVY_IGNORE_POLICY]
-   --list-all-pkgs             enabling the option will output all packages regardless of vulnerability (default: false) [$TRIVY_LIST_ALL_PKGS]
-   --offline-scan              do not issue API requests to identify dependencies (default: false) [$TRIVY_OFFLINE_SCAN]
-   --token value               for authentication [$TRIVY_TOKEN]
-   --token-header value        specify a header name for token (default: "Trivy-Token") [$TRIVY_TOKEN_HEADER]
-   --remote value              server address (default: "http://localhost:4954") [$TRIVY_REMOTE]
-   --custom-headers value      custom headers [$TRIVY_CUSTOM_HEADERS]
-   --help, -h                  show help (default: false)
+Report Flags
+      --dependency-tree        show dependency origin tree (EXPERIMENTAL)
+      --exit-code int          specify exit code when any security issues are found
+  -f, --format string          format (table, json, sarif, template, cyclonedx, spdx, spdx-json, github, cosign-vuln) (default "table")
+      --ignore-policy string   specify the Rego file path to evaluate each vulnerability
+      --ignorefile string      specify .trivyignore file (default ".trivyignore")
+      --list-all-pkgs          enabling the option will output all packages regardless of vulnerability
+  -o, --output string          output file name
+      --report string          specify a report format for the output. (all,summary) (default "all")
+  -s, --severity string        severities of security issues to be displayed (comma separated) (default "UNKNOWN,LOW,MEDIUM,HIGH,CRITICAL")
+  -t, --template string        output template
+
+Cache Flags
+      --cache-backend string   cache backend (e.g. redis://localhost:6379) (default "fs")
+      --cache-ttl duration     cache TTL when using redis as cache backend
+      --clear-cache            clear image caches without scanning
+      --redis-ca string        redis ca file location, if using redis as cache backend
+      --redis-cert string      redis certificate file location, if using redis as cache backend
+      --redis-key string       redis key file location, if using redis as cache backend
+
+DB Flags
+      --db-repository string   OCI repository to retrieve trivy-db from (default "ghcr.io/aquasecurity/trivy-db")
+      --download-db-only       download/update vulnerability database but don't run a scan
+      --no-progress            suppress progress bar
+      --reset                  remove all caches and database
+      --skip-db-update         skip updating vulnerability database
+
+Vulnerability Flags
+      --ignore-unfixed     display only fixed vulnerabilities
+      --vuln-type string   comma-separated list of vulnerability types (os,library) (default "os,library")
+
+Misconfiguration Flags
+      --config-data strings         specify paths from which data for the Rego policies will be recursively loaded
+      --config-policy strings       specify paths to the Rego policy files directory, applying config files
+      --file-patterns strings       specify config file patterns, available with '--security-checks config'
+      --include-non-failures        include successes and exceptions, available with '--security-checks config'
+      --policy-namespaces strings   Rego namespaces
+      --trace                       enable more verbose trace output for custom queries
+
+Client/Server Flags
+      --custom-headers strings   custom headers in client mode
+      --remote string            server address (default "http://localhost:4954")
+      --token string             for authentication in client/server mode
+      --token-header string      specify a header name for token in client/server mode (default "Trivy-Token")
+
+Global Flags:
+      --cache-dir string          cache directory (default "/Users/teppei/Library/Caches/trivy")
+  -c, --config string             config path (default "trivy.yaml")
+  -d, --debug                     debug mode
+      --generate-default-config   write the default config to trivy-default.yaml
+      --insecure                  allow insecure server connections when using TLS
+  -q, --quiet                     suppress progress bar and log output
+      --timeout duration          timeout (default 5m0s)
+  -v, --version                   show version
 ```

@@ -1,0 +1,48 @@
+{
+  "bomFormat": "CycloneDX",
+  "specVersion": "1.4",
+  "serialNumber": "urn:uuid:c986ba94-e37d-49c8-9e30-96daccd0415b",
+  "version": 1,
+  "metadata": {
+    "timestamp": "2022-05-28T10:20:03.79527Z",
+    "tools": [
+      {
+        "vendor": "aquasecurity",
+        "name": "trivy",
+        "version": "dev"
+      }
+    ],
+    "component": {
+      "bom-ref": "0f585d64-4815-4b72-92c5-97dae191fa4a",
+      "type": "container",
+      "name": "maven-test-project",
+      "properties": [
+        {
+          "name": "aquasecurity:trivy:SchemaVersion",
+          "value": "2"
+        },
+        {
+          "name": "aquasecurity:trivy:ImageID",
+          "value": "sha256:49193a2310dbad4c02382da87ac624a80a92387a4f7536235f9ba590e5bcd7b5"
+        },
+        {
+          "name": "aquasecurity:trivy:DiffID",
+          "value": "sha256:dd565ff850e7003356e2b252758f9bdc1ff2803f61e995e24c7844f6297f8fc3"
+        },
+        {
+          "name": "aquasecurity:trivy:DiffID",
+          "value": "sha256:3c79e832b1b4891a1cb4a326ef8524e0bd14a2537150ac0e203a5677176c1ca1"
+        },
+        {
+          "name": "aquasecurity:trivy:RepoTag",
+          "value": "maven-test-project:latest"
+        }
+      ]
+    }
+  },
+  "dependencies": [
+    {
+      "ref": "0f585d64-4815-4b72-92c5-97dae191fa4a"
+    }
+  ]
+}

@@ -12,6 +12,7 @@ data:
 {{- end }}
   TRIVY_DEBUG: {{ .Values.trivy.debugMode | quote }}
   TRIVY_SKIP_UPDATE: {{ .Values.trivy.skipUpdate | quote }}
+  TRIVY_DB_REPOSITORY: {{ .Values.trivy.dbRepository | quote }}
 {{- if .Values.httpProxy }}
   HTTP_PROXY: {{ .Values.httpProxy | quote }}
 {{- end }}

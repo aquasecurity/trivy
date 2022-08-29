@@ -51,6 +51,10 @@ affinity: {}
 ## Ref: https://kubernetes.io/docs/concepts/configuration/taint-and-toleration/
 tolerations: []
 
+## Annotations for pods created by statefulset
+## Ref: https://kubernetes.io/docs/concepts/overview/working-with-objects/annotations/
+podAnnotations: {}
+
 trivy:
   # debugMode the flag to enable Trivy debug mode
   debugMode: false
@@ -70,6 +74,7 @@ trivy:
   # You can create a GitHub token by following the instructions in
   # https://help.github.com/en/github/authenticating-to-github/creating-a-personal-access-token-for-the-command-line
   gitHubToken: ""
+
   # Docker registry credentials
   # See also: https://aquasecurity.github.io/trivy/dev/advanced/private-registries/docker-hub/
   #
@@ -94,6 +99,8 @@ trivy:
   # If the flag is enabled you have to manually download the `trivy.db` file and mount it in the
   # `/home/scanner/.cache/trivy/db/trivy.db` path (see `cacheDir`).
   skipUpdate: false
+  # OCI repository to retrieve the trivy vulnerability database from
+  dbRepository: ghcr.io/aquasecurity/trivy-db
   # Trivy supports filesystem and redis as caching backend
   # https://github.com/aquasecurity/trivy#specify-cache-backend
   # This location is only used for the cache, not the db storage: https://github.com/aquasecurity/trivy/issues/765#issue-756010345
@@ -113,6 +120,9 @@ trivy:
   labels: {}
   # serverToken is the token to authenticate Trivy client with Trivy server.
   serverToken: ""
+  # existingSecret if an existing secret has been created outside the chart.
+  # Overrides gitHubToken, registryUsername, registryPassword, serverToken
+  existingSecret: ""
 
 service:
   # If specified, the name used for the Trivy service.

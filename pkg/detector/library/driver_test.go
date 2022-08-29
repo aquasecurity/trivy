@@ -6,12 +6,12 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	ftypes "github.com/aquasecurity/fanal/types"
 	"github.com/aquasecurity/trivy-db/pkg/db"
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/vulnerability"
 	"github.com/aquasecurity/trivy/pkg/dbtest"
 	"github.com/aquasecurity/trivy/pkg/detector/library"
+	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
 
@@ -45,6 +45,31 @@ func TestDriver_Detect(t *testing.T) {
 					PkgName:          "symfony/symfony",
 					InstalledVersion: "4.2.6",
 					FixedVersion:     "4.2.7",
+					DataSource: &dbTypes.DataSource{
+						ID:   vulnerability.GLAD,
+						Name: "GitLab Advisory Database Community",
+						URL:  "https://gitlab.com/gitlab-org/advisories-community",
+					},
+				},
+			},
+		},
+		{
+			name: "case-sensitive go package",
+			fixtures: []string{
+				"testdata/fixtures/go.yaml",
+				"testdata/fixtures/data-source.yaml",
+			},
+			libType: ftypes.GoModule,
+			args: args{
+				pkgName: "github.com/Masterminds/vcs",
+				pkgVer:  "v1.13.1",
+			},
+			want: []types.DetectedVulnerability{
+				{
+					VulnerabilityID:  "CVE-2022-21235",
+					PkgName:          "github.com/Masterminds/vcs",
+					InstalledVersion: "v1.13.1",
+					FixedVersion:     "v1.13.2",
 					DataSource: &dbTypes.DataSource{
 						ID:   vulnerability.GLAD,
 						Name: "GitLab Advisory Database Community",
@@ -142,7 +167,7 @@ func TestDriver_Detect(t *testing.T) {
 			driver, err := library.NewDriver(tt.libType)
 			require.NoError(t, err)
 
-			got, err := driver.DetectVulnerabilities(tt.args.pkgName, tt.args.pkgVer)
+			got, err := driver.DetectVulnerabilities("", tt.args.pkgName, tt.args.pkgVer)
 			if tt.wantErr != "" {
 				require.Error(t, err)
 				assert.Contains(t, err.Error(), tt.wantErr)

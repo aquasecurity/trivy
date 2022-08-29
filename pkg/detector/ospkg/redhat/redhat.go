@@ -12,12 +12,12 @@ import (
 	"golang.org/x/xerrors"
 	"k8s.io/utils/clock"
 
-	"github.com/aquasecurity/fanal/analyzer/os"
-	ftypes "github.com/aquasecurity/fanal/types"
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	ustrings "github.com/aquasecurity/trivy-db/pkg/utils/strings"
 	redhat "github.com/aquasecurity/trivy-db/pkg/vulnsrc/redhat-oval"
 	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/vulnerability"
+	"github.com/aquasecurity/trivy/pkg/fanal/analyzer/os"
+	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/scanner/utils"
 	"github.com/aquasecurity/trivy/pkg/types"
@@ -76,7 +76,7 @@ func WithClock(clock clock.Clock) option {
 	}
 }
 
-// Scanner implements the Alpine scanner
+// Scanner implements the RedHat scanner
 type Scanner struct {
 	vs redhat.VulnSrc
 	*options
@@ -97,7 +97,7 @@ func NewScanner(opts ...option) *Scanner {
 	}
 }
 
-// Detect scans and returns redhat vulenrabilities
+// Detect scans and returns redhat vulnerabilities
 func (s *Scanner) Detect(osVer string, _ *ftypes.Repository, pkgs []ftypes.Package) ([]types.DetectedVulnerability, error) {
 	log.Logger.Info("Detecting RHEL/CentOS vulnerabilities...")
 	if strings.Count(osVer, ".") > 0 {
@@ -157,6 +157,7 @@ func (s *Scanner) detect(osVer string, pkg ftypes.Package) ([]types.DetectedVuln
 			VulnerabilityID:  vulnID,
 			PkgName:          pkg.Name,
 			InstalledVersion: utils.FormatVersion(pkg),
+			Ref:              pkg.Ref,
 			Layer:            pkg.Layer,
 			SeveritySource:   vulnerability.RedHat,
 			Vulnerability: dbTypes.Vulnerability{

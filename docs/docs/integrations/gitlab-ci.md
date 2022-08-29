@@ -11,7 +11,7 @@ include:
 
 If you're a GitLab 14.x Ultimate customer, you can use the same configuration above.
 
-Alternatively, you can always use the example configurations below. Note that the examples use [`contrib/gitlab.tpl`](https://github.com/aquasecurity/trivy/blob/main/contrib/gitlab.tpl), which does not work with GitLab 15.0 and above (for details, see [issue 1598](https://github.com/aquasecurity/trivy/issues/1598)).
+Alternatively, you can always use the example configurations below.
 
 ```yaml
 stages:
@@ -111,7 +111,7 @@ container_scanning:
 [example]: https://gitlab.com/aquasecurity/trivy-ci-test/pipelines
 [repository]: https://github.com/aquasecurity/trivy-ci-test
 
-### Gitlab CI alternative template
+### GitLab CI alternative template
 
 Depending on the edition of gitlab you have or your desired workflow, the
 container scanning template may not meet your needs. As an addition to the
@@ -174,8 +174,8 @@ be necessary to rename the artifact if you want to reuse the name. To then
 combine the previous artifact with the output of trivy, the following `jq`
 command can be used, `jq -s 'add' prev-codeclimate.json trivy-codeclimate.json > gl-codeclimate.json`.
 
-### Gitlab CI alternative template example report
+### GitLab CI alternative template example report
 
-You'll be able to see a full report in the Gitlab pipeline code quality UI, where filesystem vulnerabilities and misconfigurations include links to the flagged files and image vulnerabilities report the image/os or runtime/library that the vulnerability originates from instead.
+You'll be able to see a full report in the GitLab pipeline code quality UI, where filesystem vulnerabilities and misconfigurations include links to the flagged files and image vulnerabilities report the image/os or runtime/library that the vulnerability originates from instead.
 
 ![codequality](../../imgs/gitlab-codequality.png)
