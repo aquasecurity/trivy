@@ -156,6 +156,9 @@ func (a Artifact) calcCacheKeys(imageID string, diffIDs []string, configFile *v1
 		createdBy = append(createdBy, c)
 	}
 
+	// If history detected incorrect - use only diffID
+	useCreatedBy := len(diffIDs) == len(createdBy)
+
 	layerKeyMap := map[string]LayerInfo{}
 	hookVersions := a.handlerManager.Versions()
 	var layerKeys []string
@@ -167,7 +170,7 @@ func (a Artifact) calcCacheKeys(imageID string, diffIDs []string, configFile *v1
 		layerKeys = append(layerKeys, blobKey)
 
 		c := ""
-		if len(createdBy) > 0 {
+		if useCreatedBy {
 			c = createdBy[i]
 		}
 		layerKeyMap[blobKey] = LayerInfo{

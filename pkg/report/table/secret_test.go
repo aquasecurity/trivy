@@ -27,6 +27,7 @@ func TestSecretRenderer(t *testing.T) {
 					Category:  ftypes.SecretRuleCategory("category"),
 					Title:     "this is a title",
 					Severity:  "HIGH",
+					Layer:     ftypes.Layer{DiffID: "sha256:beee9f30bc1f711043e78d4a2be0668955d4b761d587d6f60c2c8dc081efb203"},
 					StartLine: 1,
 					EndLine:   1,
 					Code: ftypes.Code{
@@ -52,7 +53,7 @@ HIGH: category (rule-id)
 ════════════════════════════════════════
 this is a title
 ────────────────────────────────────────
- my-file:1
+ my-file:1 (added by 'beee9f30' layer)
 ────────────────────────────────────────
    1 [ password=secret
 ────────────────────────────────────────
@@ -69,6 +70,7 @@ this is a title
 					Title:    "this is a title",
 					Severity: "HIGH",
 					Layer: ftypes.Layer{
+						DiffID:    "sha256:beee9f30bc1f711043e78d4a2be0668955d4b761d587d6f60c2c8dc081efb203",
 						CreatedBy: "COPY my-file my-file",
 					},
 					StartLine: 3,

@@ -127,6 +127,8 @@ func (r *secretRenderer) renderCode(secret types.SecretFinding) {
 			} else {
 				note = fmt.Sprintf(" (added by '%s')", c[:40])
 			}
+		} else {
+			note = fmt.Sprintf(" (added by '%s' layer)", strings.TrimPrefix(secret.Layer.DiffID, "sha256:")[:8])
 		}
 		r.printf(" <blue>%s%s<magenta>%s\r\n", r.target, lineInfo, note)
 		r.printSingleDivider()
