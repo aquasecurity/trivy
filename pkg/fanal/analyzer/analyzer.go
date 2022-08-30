@@ -348,15 +348,7 @@ func (ag AnalyzerGroup) AnalyzeFile(ctx context.Context, wg *sync.WaitGroup, lim
 			continue
 		}
 
-		filePatternMatch := false
-		for _, pattern := range ag.filePatterns[a.Type()] {
-			if pattern.MatchString(cleanPath) {
-				filePatternMatch = true
-				break
-			}
-		}
-
-		if !filePatternMatch && !a.Required(cleanPath, info) {
+		if !ag.filePatternMatch(a.Type(), cleanPath) && !a.Required(cleanPath, info) {
 			continue
 		}
 		rc, err := opener()
@@ -410,4 +402,13 @@ func (ag AnalyzerGroup) AnalyzeImageConfig(targetOS types.OS, configBlob []byte)
 		return pkgs
 	}
 	return nil
+}
+
+func (ag AnalyzerGroup) filePatternMatch(analyzerType Type, filePath string) bool {
+	for _, pattern := range ag.filePatterns[analyzerType] {
+		if pattern.MatchString(filePath) {
+			return true
+		}
+	}
+	return false
 }
