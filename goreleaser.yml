@@ -235,6 +235,21 @@ docker_manifests:
     - 'public.ecr.aws/aquasecurity/trivy:{{ .Version }}-s390x'
     - 'public.ecr.aws/aquasecurity/trivy:{{ .Version }}-ppc64le'
 
+signs:
+- cmd: cosign
+  env:
+  - COSIGN_EXPERIMENTAL=1
+  signature: "${artifact}.sig"
+  certificate: "${artifact}.pem"
+  args:
+    - "sign-blob"
+    - "--oidc-issuer=https://token.actions.githubusercontent.com"
+    - "--output-certificate=${certificate}"
+    - "--output-signature=${signature}"
+    - "${artifact}"
+  artifacts: all
+  output: true
+
 docker_signs:
 - cmd: cosign
   env:
