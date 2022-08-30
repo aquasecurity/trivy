@@ -82,6 +82,11 @@ Available in client/server mode
 
 ```yaml
 scan:
+  # Same as '--file-patterns'
+  # Default is empty
+  file-patterns:
+    -
+
   # Same as '--skip-dirs'
   # Default is empty
   skip-dirs:
@@ -195,11 +200,6 @@ Available with misconfiguration scanning
 
 ```yaml
 misconfiguration:
-  # Same as '--file-patterns'
-  # Default is empty
-  file-patterns:
-    -
-  
   # Same as '--include-non-failures'
   # Default is false
   include-non-failures: false
