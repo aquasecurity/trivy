@@ -4,6 +4,7 @@ import (
 	"context"
 	"io"
 	"os"
+	"strings"
 	"sync"
 	"time"
 
@@ -153,10 +154,37 @@ func (img *image) configHistory() []v1.History {
 			},
 			CreatedBy:  h.CreatedBy,
 			Comment:    h.Comment,
-			EmptyLayer: h.Size == 0,
+			EmptyLayer: emptyLayer(h),
 		})
 	}
 	return history
+}
+
+func emptyLayer(history dimage.HistoryResponseItem) bool {
+	if history.Size != 0 {
+		return false
+	}
+	createdBy := strings.TrimSpace(strings.TrimLeft(history.CreatedBy, "/bin/sh -c #(nop)"))
+	// This logic is taken from https://github.com/moby/buildkit/blob/2942d13ff489a2a49082c99e6104517e357e53ad/frontend/dockerfile/dockerfile2llb/convert.go
+	if strings.HasPrefix(createdBy, "ENV") ||
+		strings.HasPrefix(createdBy, "MAINTAINER") ||
+		strings.HasPrefix(createdBy, "LABEL") ||
+		strings.HasPrefix(createdBy, "CMD") ||
+		strings.HasPrefix(createdBy, "ENTRYPOINT") ||
+		strings.HasPrefix(createdBy, "HEALTHCHECK") ||
+		strings.HasPrefix(createdBy, "EXPOSE") ||
+		strings.HasPrefix(createdBy, "USER") ||
+		strings.HasPrefix(createdBy, "VOLUME") ||
+		strings.HasPrefix(createdBy, "STOPSIGNAL") ||
+		strings.HasPrefix(createdBy, "SHELL") ||
+		strings.HasPrefix(createdBy, "ARG") ||
+		createdBy == "WORKDIR /" { // only when workdir == "/" then layer is empty
+		return true
+	}
+	// commands here: 'ADD', COPY, RUN and WORKDIR != "/"
+	// Also RUN command may don't include 'RUN' prefix
+	// e.g. '/bin/sh -c mkdir test '
+	return false
 }
 
 func (img *image) diffIDs() ([]v1.Hash, error) {
