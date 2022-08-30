@@ -182,7 +182,7 @@ func emptyLayer(history dimage.HistoryResponseItem) bool {
 		return true
 	}
 	// commands here: 'ADD', COPY, RUN and WORKDIR != "/"
-	// Also RUN command may don't include 'RUN' prefix
+	// Also RUN command may not include 'RUN' prefix
 	// e.g. '/bin/sh -c mkdir test '
 	return false
 }

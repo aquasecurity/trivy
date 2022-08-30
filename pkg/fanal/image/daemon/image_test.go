@@ -270,6 +270,21 @@ func Test_image_emptyLayer(t *testing.T) {
 			want: true,
 		},
 		{
+			name: "ENV created with buildkit",
+			history: dimage.HistoryResponseItem{
+				CreatedBy: "ENV BUILDKIT_ENV=TEST",
+				Comment:   "buildkit.dockerfile.v0",
+			},
+			want: true,
+		},
+		{
+			name: "ENV",
+			history: dimage.HistoryResponseItem{
+				CreatedBy: "/bin/sh -c #(nop) ENV TESTENV=TEST",
+			},
+			want: true,
+		},
+		{
 			name: "CMD",
 			history: dimage.HistoryResponseItem{
 				CreatedBy: "/bin/sh -c #(nop)  CMD [\"/bin/sh\"]",
