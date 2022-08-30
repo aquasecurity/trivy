@@ -23,7 +23,7 @@ func Test_gradleLockAnalyzer_Analyze(t *testing.T) {
 			want: &analyzer.AnalysisResult{
 				Applications: []types.Application{
 					{
-						Type:     types.GradleLock,
+						Type:     types.Gradle,
 						FilePath: "testdata/happy.lockfile",
 						Libraries: []types.Package{
 							{

@@ -27,7 +27,7 @@ type gradleLockAnalyzer struct{}
 
 func (a gradleLockAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInput) (*analyzer.AnalysisResult, error) {
 	p := lockfile.NewParser()
-	res, err := language.Analyze(types.GradleLock, input.FilePath, input.Content, p)
+	res, err := language.Analyze(types.Gradle, input.FilePath, input.Content, p)
 	if err != nil {
 		return nil, xerrors.Errorf("%s parse error: %w", input.FilePath, err)
 	}
