@@ -293,6 +293,11 @@ func RunWithArgs(ctx context.Context, url string, args []string) error {
 	return nil
 }
 
+func IsPredefined(name string) bool {
+	_, ok := officialPlugins[name]
+	return ok
+}
+
 func loadMetadata(dir string) (Plugin, error) {
 	filePath := filepath.Join(dir, configFile)
 	f, err := os.Open(filePath)

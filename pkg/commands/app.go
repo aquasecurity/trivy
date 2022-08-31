@@ -6,12 +6,17 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"strings"
+	"time"
+
+	awsScanner "github.com/aquasecurity/defsec/pkg/scanners/cloud/aws"
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy-db/pkg/metadata"
+	awscommands "github.com/aquasecurity/trivy/pkg/cloud/aws/commands"
 	"github.com/aquasecurity/trivy/pkg/commands/artifact"
 	"github.com/aquasecurity/trivy/pkg/commands/server"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
@@ -68,15 +73,6 @@ func SetOut(out io.Writer) {
 func NewApp(version string) *cobra.Command {
 	globalFlags := flag.NewGlobalFlagGroup()
 	rootCmd := NewRootCommand(version, globalFlags)
-
-	if runAsPlugin := os.Getenv("TRIVY_RUN_AS_PLUGIN"); runAsPlugin != "" {
-		rootCmd.RunE = func(cmd *cobra.Command, args []string) error {
-			return plugin.RunWithArgs(cmd.Context(), runAsPlugin, args)
-		}
-		rootCmd.DisableFlagParsing = true
-		return rootCmd
-	}
-
 	rootCmd.AddCommand(
 		NewImageCommand(globalFlags),
 		NewFilesystemCommand(globalFlags),
@@ -90,6 +86,7 @@ func NewApp(version string) *cobra.Command {
 		NewKubernetesCommand(globalFlags),
 		NewSBOMCommand(globalFlags),
 		NewVersionCommand(globalFlags),
+		NewAWSCommand(globalFlags),
 	)
 	rootCmd.AddCommand(loadPluginCommands()...)
 
@@ -249,7 +246,7 @@ func NewImageCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
   $ trivy image --format json --output result.json alpine:3.15
 
   # Generate a report in the CycloneDX format
-  $ trivy image --format cyclonedx --output result.cdx alpine:3.15`,
+  $ trivy image --format cyclonedx --output result.cdx --security-checks none alpine:3.15`,
 
 		// 'Args' cannot be used since it is called before PreRunE and viper is not configured yet.
 		// cmd.Args     -> cannot validate args here
@@ -796,6 +793,66 @@ func NewKubernetesCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	return cmd
 }
 
+func NewAWSCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
+
+	awsFlags := &flag.Flags{
+		AWSFlagGroup:     flag.NewAWSFlagGroup(),
+		CloudFlagGroup:   flag.NewCloudFlagGroup(),
+		MisconfFlagGroup: flag.NewMisconfFlagGroup(),
+		ReportFlagGroup:  flag.NewReportFlagGroup(),
+	}
+
+	services := awsScanner.AllSupportedServices()
+
+	cmd := &cobra.Command{
+		Use:     "aws [flags]",
+		Aliases: []string{},
+		Args:    cobra.ExactArgs(0),
+		Short:   "scan aws account",
+		Long: fmt.Sprintf(`Scan an AWS account for misconfigurations. Trivy uses the same authentication methods as the AWS CLI. See https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-configure.html
+
+The following services are supported:
+- %s
+`, strings.Join(services, "\n- ")),
+		Example: `  # basic scanning
+  $ trivy aws --region us-east-1
+
+  # limit scan to a single service:
+  $ trivy aws --region us-east-1 --service s3
+
+  # limit scan to multiple services:
+  $ trivy aws --region us-east-1 --service s3 --service ec2
+
+  # force refresh of cache for fresh results
+  $ trivy aws --region us-east-1 --update-cache
+`,
+		PreRunE: func(cmd *cobra.Command, args []string) error {
+			if err := awsFlags.Bind(cmd); err != nil {
+				return xerrors.Errorf("flag bind error: %w", err)
+			}
+			return nil
+		},
+		RunE: func(cmd *cobra.Command, args []string) error {
+			opts, err := awsFlags.ToOptions(cmd.Version, args, globalFlags, outputWriter)
+			if err != nil {
+				return xerrors.Errorf("flag error: %w", err)
+			}
+			if opts.Timeout < time.Hour {
+				opts.Timeout = time.Hour
+				log.Logger.Debug("Timeout is set to less than 1 hour - upgrading to 1 hour for this command.")
+			}
+			return awscommands.Run(cmd.Context(), opts)
+		},
+		SilenceErrors: true,
+		SilenceUsage:  true,
+	}
+	cmd.SetFlagErrorFunc(flagErrorFunc)
+	awsFlags.AddFlags(cmd)
+	cmd.SetUsageTemplate(fmt.Sprintf(usageTemplate, awsFlags.Usages(cmd)))
+
+	return cmd
+}
+
 func NewSBOMCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	reportFlagGroup := flag.NewReportFlagGroup()
 	reportFlagGroup.DependencyTree = nil // disable '--dependency-tree'
@@ -822,6 +879,9 @@ func NewSBOMCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 
   # Scan CycloneDX and generate a CycloneDX report
   $ trivy sbom --format cyclonedx /path/to/report.cdx
+
+  # Scan CycloneDX-type attestation and show the result in tables
+  $ trivy sbom /path/to/report.cdx.intoto.jsonl
 `,
 		PreRunE: func(cmd *cobra.Command, args []string) error {
 			if err := sbomFlags.Bind(cmd); err != nil {

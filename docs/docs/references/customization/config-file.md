@@ -6,7 +6,7 @@ An example is [here][example].
 
 ## Global Options
 
-```
+```yaml
 # Same as '--quiet'
 # Default is false
 quiet: false
@@ -30,7 +30,7 @@ cache-dir: $HOME/.cache/trivy
 
 ## Report Options
 
-```
+```yaml
 # Same as '--format'
 # Default is 'table'
 format: table
@@ -80,7 +80,7 @@ severity:
 ## Scan Options
 Available in client/server mode
 
-```
+```yaml
 scan:
   # Same as '--skip-dirs'
   # Default is empty
@@ -107,7 +107,7 @@ scan:
 
 ## Cache Options
 
-```
+```yaml
 cache:
   # Same as '--cache-backend'
   # Default is 'fs' 
@@ -134,7 +134,7 @@ cache:
 
 ## DB Options
 
-```
+```yaml
 db:
   # Same as '--skip-db-update'
   # Default is false
@@ -152,7 +152,7 @@ db:
 ## Image Options
 Available with container image scanning
 
-```
+```yaml
 image:
   # Same as '--input' (available with 'trivy image')
   # Default is empty
@@ -166,7 +166,7 @@ image:
 ## Vulnerability Options
 Available with vulnerability scanning
 
-```
+```yaml
 vulnerability:
   # Same as '--vuln-type'
   # Default is 'os,library'
@@ -182,7 +182,7 @@ vulnerability:
 ## Secret Options
 Available with secret scanning
 
-```
+```yaml
 secret:
   # Same as '--secret-config'
   # Default is 'trivy-secret.yaml'
@@ -193,7 +193,7 @@ secret:
 ## Misconfiguration Options
 Available with misconfiguration scanning
 
-```
+```yaml
 misconfiguration:
   # Same as '--file-patterns'
   # Default is empty
@@ -224,12 +224,39 @@ misconfiguration:
   namespaces:
     - opa.examples
     - users
+
+  # helm value override configurations
+  # set individual values
+  helm:
+    set:
+      - securityContext.runAsUser=10001
+
+  # set values with file
+  helm:
+    values:
+      - overrides.yaml
+
+  # set specific values from specific files
+  helm:
+    set-file:
+      - image=dev-overrides.yaml
+
+  # set as string and preserve type
+  helm:
+    set-string:
+      - name=true
+
+  # terraform tfvars overrrides
+  terraform:
+    vars:
+      - dev-terraform.tfvars
+      - common-terraform.tfvars
 ```
 
 ## Kubernetes Options
 Available with Kubernetes scanning
 
-```
+```yaml
 kubernetes:
   # Same as '--context'
   # Default is empty
@@ -243,7 +270,7 @@ kubernetes:
 ## Repository Options
 Available with git repository scanning (`trivy repo`) 
 
-```
+```yaml
 repository:
   # Same as '--branch'
   # Default is empty
@@ -261,7 +288,7 @@ repository:
 ## Client/Server Options
 Available in client/server mode
 
-```
+```yaml
 server:
   # Same as '--server' (available in client mode)
   # Default is empty
@@ -284,6 +311,30 @@ server:
   # Same as '--listen' (available in server mode)
   # Default is 'localhost:4954'
   listen: 0.0.0.0:10000
+```
+
+## Cloud Options
+
+Available for cloud scanning (currently only `trivy aws`)
+
+```yaml
+cloud:
+  # whether to force a cache update for every scan
+  update-cache: false
+  
+  # how old cached results can be before being invalidated
+  max-cache-age: 24h
+  
+  # aws-specific cloud settings
+  aws:
+    # the aws region to use
+    region: us-east-1
+    
+    # the aws endpoint to use (not required for general use)
+    endpoint: https://my.custom.aws.endpoint
+    
+    # the aws account to use (this will be determined from your environment when not set)
+    account: 123456789012
 ```
 
 [example]: https://github.com/aquasecurity/trivy/tree/{{ git.tag }}/examples/trivy-conf/trivy.yaml

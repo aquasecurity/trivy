@@ -41,6 +41,12 @@ Scan a specific namespace:
 $ trivy k8s -n kube-system --report=summary all
 ```
 
+Use a specific kubeconfig file:
+
+```
+$ trivy k8s --kubeconfig ~/.kube/config2 -n kube-system --report=summary all
+```
+
 Scan a specific resource and get all the output:
 
 ```

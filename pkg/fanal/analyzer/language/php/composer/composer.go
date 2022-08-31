@@ -4,6 +4,7 @@ import (
 	"context"
 	"os"
 	"path/filepath"
+	"strings"
 
 	"golang.org/x/xerrors"
 
@@ -35,7 +36,17 @@ func (a composerLibraryAnalyzer) Analyze(_ context.Context, input analyzer.Analy
 
 func (a composerLibraryAnalyzer) Required(filePath string, _ os.FileInfo) bool {
 	fileName := filepath.Base(filePath)
-	return utils.StringInSlice(fileName, requiredFiles)
+	if !utils.StringInSlice(fileName, requiredFiles) {
+		return false
+	}
+
+	// we should skip `composer.lock` inside `vendor` folder
+	for _, p := range strings.Split(filepath.ToSlash(filePath), "/") {
+		if p == "vendor" {
+			return false
+		}
+	}
+	return true
 }
 
 func (a composerLibraryAnalyzer) Type() analyzer.Type {

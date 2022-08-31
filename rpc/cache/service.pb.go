@@ -181,6 +181,7 @@ type BlobInfo struct {
 	Digest            string                     `protobuf:"bytes,7,opt,name=digest,proto3" json:"digest,omitempty"`
 	DiffId            string                     `protobuf:"bytes,8,opt,name=diff_id,json=diffId,proto3" json:"diff_id,omitempty"`
 	CustomResources   []*common.CustomResource   `protobuf:"bytes,10,rep,name=custom_resources,json=customResources,proto3" json:"custom_resources,omitempty"`
+	Secrets           []*common.Secret           `protobuf:"bytes,12,rep,name=secrets,proto3" json:"secrets,omitempty"`
 }
 
 func (x *BlobInfo) Reset() {
@@ -288,6 +289,13 @@ func (x *BlobInfo) GetDiffId() string {
 func (x *BlobInfo) GetCustomResources() []*common.CustomResource {
 	if x != nil {
 		return x.CustomResources
+	}
+	return nil
+}
+
+func (x *BlobInfo) GetSecrets() []*common.Secret {
+	if x != nil {
+		return x.Secrets
 	}
 	return nil
 }
@@ -594,7 +602,7 @@ var file_rpc_cache_service_proto_rawDesc = []byte{
 	0x69, 0x6e, 0x66, 0x6f, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x1c, 0x2e, 0x74, 0x72, 0x69,
 	0x76, 0x79, 0x2e, 0x63, 0x61, 0x63, 0x68, 0x65, 0x2e, 0x76, 0x31, 0x2e, 0x41, 0x72, 0x74, 0x69,
 	0x66, 0x61, 0x63, 0x74, 0x49, 0x6e, 0x66, 0x6f, 0x52, 0x0c, 0x61, 0x72, 0x74, 0x69, 0x66, 0x61,
-	0x63, 0x74, 0x49, 0x6e, 0x66, 0x6f, 0x22, 0x9c, 0x04, 0x0a, 0x08, 0x42, 0x6c, 0x6f, 0x62, 0x49,
+	0x63, 0x74, 0x49, 0x6e, 0x66, 0x6f, 0x22, 0xcc, 0x04, 0x0a, 0x08, 0x42, 0x6c, 0x6f, 0x62, 0x49,
 	0x6e, 0x66, 0x6f, 0x12, 0x25, 0x0a, 0x0e, 0x73, 0x63, 0x68, 0x65, 0x6d, 0x61, 0x5f, 0x76, 0x65,
 	0x72, 0x73, 0x69, 0x6f, 0x6e, 0x18, 0x01, 0x20, 0x01, 0x28, 0x05, 0x52, 0x0d, 0x73, 0x63, 0x68,
 	0x65, 0x6d, 0x61, 0x56, 0x65, 0x72, 0x73, 0x69, 0x6f, 0x6e, 0x12, 0x20, 0x0a, 0x02, 0x6f, 0x73,
@@ -628,7 +636,10 @@ var file_rpc_cache_service_proto_rawDesc = []byte{
 	0x18, 0x0a, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x1c, 0x2e, 0x74, 0x72, 0x69, 0x76, 0x79, 0x2e, 0x63,
 	0x6f, 0x6d, 0x6d, 0x6f, 0x6e, 0x2e, 0x43, 0x75, 0x73, 0x74, 0x6f, 0x6d, 0x52, 0x65, 0x73, 0x6f,
 	0x75, 0x72, 0x63, 0x65, 0x52, 0x0f, 0x63, 0x75, 0x73, 0x74, 0x6f, 0x6d, 0x52, 0x65, 0x73, 0x6f,
-	0x75, 0x72, 0x63, 0x65, 0x73, 0x22, 0x60, 0x0a, 0x0e, 0x50, 0x75, 0x74, 0x42, 0x6c, 0x6f, 0x62,
+	0x75, 0x72, 0x63, 0x65, 0x73, 0x12, 0x2e, 0x0a, 0x07, 0x73, 0x65, 0x63, 0x72, 0x65, 0x74, 0x73,
+	0x18, 0x0c, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x14, 0x2e, 0x74, 0x72, 0x69, 0x76, 0x79, 0x2e, 0x63,
+	0x6f, 0x6d, 0x6d, 0x6f, 0x6e, 0x2e, 0x53, 0x65, 0x63, 0x72, 0x65, 0x74, 0x52, 0x07, 0x73, 0x65,
+	0x63, 0x72, 0x65, 0x74, 0x73, 0x22, 0x60, 0x0a, 0x0e, 0x50, 0x75, 0x74, 0x42, 0x6c, 0x6f, 0x62,
 	0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x17, 0x0a, 0x07, 0x64, 0x69, 0x66, 0x66, 0x5f,
 	0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x06, 0x64, 0x69, 0x66, 0x66, 0x49, 0x64,
 	0x12, 0x35, 0x0a, 0x09, 0x62, 0x6c, 0x6f, 0x62, 0x5f, 0x69, 0x6e, 0x66, 0x6f, 0x18, 0x03, 0x20,
@@ -710,7 +721,8 @@ var file_rpc_cache_service_proto_goTypes = []interface{}{
 	(*common.Application)(nil),      // 13: trivy.common.Application
 	(*common.Misconfiguration)(nil), // 14: trivy.common.Misconfiguration
 	(*common.CustomResource)(nil),   // 15: trivy.common.CustomResource
-	(*emptypb.Empty)(nil),           // 16: google.protobuf.Empty
+	(*common.Secret)(nil),           // 16: trivy.common.Secret
+	(*emptypb.Empty)(nil),           // 17: google.protobuf.Empty
 }
 var file_rpc_cache_service_proto_depIdxs = []int32{
 	8,  // 0: trivy.cache.v1.ArtifactInfo.created:type_name -> google.protobuf.Timestamp
@@ -722,21 +734,22 @@ var file_rpc_cache_service_proto_depIdxs = []int32{
 	13, // 6: trivy.cache.v1.BlobInfo.applications:type_name -> trivy.common.Application
 	14, // 7: trivy.cache.v1.BlobInfo.misconfigurations:type_name -> trivy.common.Misconfiguration
 	15, // 8: trivy.cache.v1.BlobInfo.custom_resources:type_name -> trivy.common.CustomResource
-	2,  // 9: trivy.cache.v1.PutBlobRequest.blob_info:type_name -> trivy.cache.v1.BlobInfo
-	10, // 10: trivy.cache.v1.PutResponse.os:type_name -> trivy.common.OS
-	1,  // 11: trivy.cache.v1.Cache.PutArtifact:input_type -> trivy.cache.v1.PutArtifactRequest
-	3,  // 12: trivy.cache.v1.Cache.PutBlob:input_type -> trivy.cache.v1.PutBlobRequest
-	5,  // 13: trivy.cache.v1.Cache.MissingBlobs:input_type -> trivy.cache.v1.MissingBlobsRequest
-	7,  // 14: trivy.cache.v1.Cache.DeleteBlobs:input_type -> trivy.cache.v1.DeleteBlobsRequest
-	16, // 15: trivy.cache.v1.Cache.PutArtifact:output_type -> google.protobuf.Empty
-	16, // 16: trivy.cache.v1.Cache.PutBlob:output_type -> google.protobuf.Empty
-	6,  // 17: trivy.cache.v1.Cache.MissingBlobs:output_type -> trivy.cache.v1.MissingBlobsResponse
-	16, // 18: trivy.cache.v1.Cache.DeleteBlobs:output_type -> google.protobuf.Empty
-	15, // [15:19] is the sub-list for method output_type
-	11, // [11:15] is the sub-list for method input_type
-	11, // [11:11] is the sub-list for extension type_name
-	11, // [11:11] is the sub-list for extension extendee
-	0,  // [0:11] is the sub-list for field type_name
+	16, // 9: trivy.cache.v1.BlobInfo.secrets:type_name -> trivy.common.Secret
+	2,  // 10: trivy.cache.v1.PutBlobRequest.blob_info:type_name -> trivy.cache.v1.BlobInfo
+	10, // 11: trivy.cache.v1.PutResponse.os:type_name -> trivy.common.OS
+	1,  // 12: trivy.cache.v1.Cache.PutArtifact:input_type -> trivy.cache.v1.PutArtifactRequest
+	3,  // 13: trivy.cache.v1.Cache.PutBlob:input_type -> trivy.cache.v1.PutBlobRequest
+	5,  // 14: trivy.cache.v1.Cache.MissingBlobs:input_type -> trivy.cache.v1.MissingBlobsRequest
+	7,  // 15: trivy.cache.v1.Cache.DeleteBlobs:input_type -> trivy.cache.v1.DeleteBlobsRequest
+	17, // 16: trivy.cache.v1.Cache.PutArtifact:output_type -> google.protobuf.Empty
+	17, // 17: trivy.cache.v1.Cache.PutBlob:output_type -> google.protobuf.Empty
+	6,  // 18: trivy.cache.v1.Cache.MissingBlobs:output_type -> trivy.cache.v1.MissingBlobsResponse
+	17, // 19: trivy.cache.v1.Cache.DeleteBlobs:output_type -> google.protobuf.Empty
+	16, // [16:20] is the sub-list for method output_type
+	12, // [12:16] is the sub-list for method input_type
+	12, // [12:12] is the sub-list for extension type_name
+	12, // [12:12] is the sub-list for extension extendee
+	0,  // [0:12] is the sub-list for field type_name
 }
 
 func init() { file_rpc_cache_service_proto_init() }
