@@ -7,6 +7,7 @@ import (
 	"strconv"
 	"strings"
 
+	"golang.org/x/exp/slices"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/table"
@@ -89,13 +90,14 @@ func (s SummaryWriter) Write(report Report) error {
 		vCount, mCount, sCount := accumulateSeverityCounts(finding)
 		name := fmt.Sprintf("%s/%s", finding.Kind, finding.Name)
 		rowParts := []string{finding.Namespace, name}
-		if len(vCount) > 0 {
+
+		if slices.Contains(s.ColumnsHeading, VulnerabilitiesColumn) {
 			rowParts = append(rowParts, s.generateSummary(vCount)...)
 		}
-		if len(mCount) > 0 {
+		if slices.Contains(s.ColumnsHeading, MisconfigurationsColumn) || slices.Contains(s.ColumnsHeading, RbacAssessmentColumn) {
 			rowParts = append(rowParts, s.generateSummary(mCount)...)
 		}
-		if len(sCount) > 0 {
+		if slices.Contains(s.ColumnsHeading, SecretsColumn) {
 			rowParts = append(rowParts, s.generateSummary(sCount)...)
 		}
 		t.AddRow(rowParts...)
