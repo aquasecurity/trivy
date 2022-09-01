@@ -102,7 +102,7 @@
   "Results": [
     {
       "Target": "testdata/fixtures/images/fluentd-multiple-lockfiles.tar.gz (debian 10.2)",
-      "Class": "vuln-os-pkgs",
+      "Class": "os-pkgs",
       "Type": "debian",
       "Vulnerabilities": [
         {
@@ -165,7 +165,7 @@
     },
     {
       "Target": "Ruby",
-      "Class": "vuln-lang-pkgs",
+      "Class": "lang-pkgs",
       "Type": "gemspec",
       "Vulnerabilities": [
         {

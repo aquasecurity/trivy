@@ -67,7 +67,7 @@
   "Results": [
     {
       "Target": "testdata/fixtures/images/ubuntu-1804.tar.gz (ubuntu 18.04)",
-      "Class": "vuln-os-pkgs",
+      "Class": "os-pkgs",
       "Type": "ubuntu",
       "Vulnerabilities": [
         {

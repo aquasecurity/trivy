@@ -58,7 +58,7 @@
   "Results": [
     {
       "Target": "testdata/fixtures/images/oraclelinux-8.tar.gz (oracle 8.0)",
-      "Class": "vuln-os-pkgs",
+      "Class": "os-pkgs",
       "Type": "oracle",
       "Vulnerabilities": [
         {

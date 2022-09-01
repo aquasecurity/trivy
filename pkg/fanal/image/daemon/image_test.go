@@ -7,6 +7,7 @@ import (
 	"testing"
 	"time"
 
+	dimage "github.com/docker/docker/api/types/image"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
@@ -244,6 +245,79 @@ func Test_image_RawConfigFile(t *testing.T) {
 			require.NoError(t, err)
 
 			require.JSONEq(t, string(want), string(got))
+		})
+	}
+}
+
+func Test_image_emptyLayer(t *testing.T) {
+	tests := []struct {
+		name    string
+		history dimage.HistoryResponseItem
+		want    bool
+	}{
+		{
+			name: "size != 0",
+			history: dimage.HistoryResponseItem{
+				Size: 10,
+			},
+			want: false,
+		},
+		{
+			name: "ENV",
+			history: dimage.HistoryResponseItem{
+				CreatedBy: "/bin/sh -c #(nop) ENV TESTENV=TEST",
+			},
+			want: true,
+		},
+		{
+			name: "ENV created with buildkit",
+			history: dimage.HistoryResponseItem{
+				CreatedBy: "ENV BUILDKIT_ENV=TEST",
+				Comment:   "buildkit.dockerfile.v0",
+			},
+			want: true,
+		},
+		{
+			name: "ENV",
+			history: dimage.HistoryResponseItem{
+				CreatedBy: "/bin/sh -c #(nop) ENV TESTENV=TEST",
+			},
+			want: true,
+		},
+		{
+			name: "CMD",
+			history: dimage.HistoryResponseItem{
+				CreatedBy: "/bin/sh -c #(nop)  CMD [\"/bin/sh\"]",
+			},
+			want: true,
+		},
+		{
+			name: "WORKDIR == '/'",
+			history: dimage.HistoryResponseItem{
+				CreatedBy: "/bin/sh -c #(nop) WORKDIR /",
+			},
+			want: true,
+		},
+		{
+			name: "WORKDIR != '/'",
+			history: dimage.HistoryResponseItem{
+				CreatedBy: "/bin/sh -c #(nop)  WORKDIR /app",
+			},
+			want: false,
+		},
+		{
+			name: "without command",
+			history: dimage.HistoryResponseItem{
+				CreatedBy: "/bin/sh -c mkdir test",
+			},
+			want: false,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			empty := emptyLayer(tt.history)
+			assert.Equal(t, tt.want, empty)
 		})
 	}
 }

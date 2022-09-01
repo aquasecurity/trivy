@@ -6,7 +6,6 @@ import (
 	"testing"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
-	misconf "github.com/aquasecurity/trivy/pkg/fanal/analyzer/config"
 	"github.com/aquasecurity/trivy/pkg/fanal/artifact"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/stretchr/testify/assert"
@@ -56,7 +55,7 @@ func Test_Handle(t *testing.T) {
 			result := &analyzer.AnalysisResult{
 				Files: tt.files,
 			}
-			misconfHandler, err := newMisconfPostHandler(artifact.Option{MisconfScannerOption: misconf.ScannerOption{FilePatterns: tt.filePatterns}})
+			misconfHandler, err := newMisconfPostHandler(artifact.Option{FilePatterns: tt.filePatterns})
 			assert.NoError(t, err)
 			blobInfo := &types.BlobInfo{}
 

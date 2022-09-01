@@ -70,11 +70,6 @@ func TestMarshaler_Marshal(t *testing.T) {
 								Licenses:        []string{"GPLv3+"},
 							},
 						},
-					},
-					{
-						Target: "rails:latest (centos 8.3.2011)",
-						Class:  types.ClassVulnOSPkg,
-						Type:   fos.CentOS,
 						Vulnerabilities: []types.DetectedVulnerability{
 							{
 								VulnerabilityID:  "CVE-2018-20623",
@@ -475,11 +470,6 @@ func TestMarshaler_Marshal(t *testing.T) {
 								FilePath: "tools/project-doe/specifications/actionpack.gemspec",
 							},
 						},
-					},
-					{
-						Target: "Ruby",
-						Class:  types.ClassVulnOSPkg,
-						Type:   ftypes.GemSpec,
 						Vulnerabilities: []types.DetectedVulnerability{
 							{
 								VulnerabilityID:  "CVE-2022-23633",
@@ -1118,7 +1108,7 @@ func TestMarshaler_MarshalVulnerabilities(t *testing.T) {
 					},
 					{
 						Target: "rails:latest (centos 8.3.2011)",
-						Class:  types.ClassVulnOSPkg,
+						Class:  types.ClassOSPkg,
 						Type:   fos.CentOS,
 						Vulnerabilities: []types.DetectedVulnerability{
 							{

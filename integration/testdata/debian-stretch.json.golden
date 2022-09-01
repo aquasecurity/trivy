@@ -50,7 +50,7 @@
   "Results": [
     {
       "Target": "testdata/fixtures/images/debian-stretch.tar.gz (debian 9.9)",
-      "Class": "vuln-os-pkgs",
+      "Class": "os-pkgs",
       "Type": "debian",
       "Vulnerabilities": [
         {

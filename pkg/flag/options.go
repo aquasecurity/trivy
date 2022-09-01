@@ -361,7 +361,10 @@ func (f *Flags) ToOptions(appVersion string, args []string, globalFlags *GlobalF
 	}
 
 	if f.ScanFlagGroup != nil {
-		opts.ScanOptions = f.ScanFlagGroup.ToOptions(args)
+		opts.ScanOptions, err = f.ScanFlagGroup.ToOptions(args)
+		if err != nil {
+			return Options{}, xerrors.Errorf("scan flag error: %w", err)
+		}
 	}
 
 	if f.SecretFlagGroup != nil {

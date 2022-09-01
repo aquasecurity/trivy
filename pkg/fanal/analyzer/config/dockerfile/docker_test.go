@@ -1,16 +1,14 @@
-package dockerfile_test
+package dockerfile
 
 import (
 	"context"
 	"os"
-	"regexp"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
-	"github.com/aquasecurity/trivy/pkg/fanal/analyzer/config/dockerfile"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 )
 
@@ -68,7 +66,7 @@ COPY --from=build /bar /bar
 			require.NoError(t, err)
 			defer f.Close()
 
-			a := dockerfile.NewConfigAnalyzer(nil)
+			a := dockerConfigAnalyzer{}
 			ctx := context.Background()
 			got, err := a.Analyze(ctx, analyzer.AnalysisInput{
 				FilePath: tt.inputFile,
@@ -88,10 +86,9 @@ COPY --from=build /bar /bar
 
 func Test_dockerConfigAnalyzer_Required(t *testing.T) {
 	tests := []struct {
-		name        string
-		filePattern *regexp.Regexp
-		filePath    string
-		want        bool
+		name     string
+		filePath string
+		want     bool
 	}{
 		{
 			name:     "dockerfile",
@@ -143,16 +140,10 @@ func Test_dockerConfigAnalyzer_Required(t *testing.T) {
 			filePath: "deployment.json",
 			want:     false,
 		},
-		{
-			name:        "file pattern",
-			filePattern: regexp.MustCompile(`foo*`),
-			filePath:    "foo_file",
-			want:        true,
-		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			s := dockerfile.NewConfigAnalyzer(tt.filePattern)
+			s := dockerConfigAnalyzer{}
 			got := s.Required(tt.filePath, nil)
 			assert.Equal(t, tt.want, got)
 		})
@@ -160,7 +151,7 @@ func Test_dockerConfigAnalyzer_Required(t *testing.T) {
 }
 
 func Test_dockerConfigAnalyzer_Type(t *testing.T) {
-	s := dockerfile.NewConfigAnalyzer(nil)
+	s := dockerConfigAnalyzer{}
 	want := analyzer.TypeDockerfile
 	got := s.Type()
 	assert.Equal(t, want, got)

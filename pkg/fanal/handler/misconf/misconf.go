@@ -183,7 +183,7 @@ func newMisconfPostHandler(artifactOpt artifact.Option) (handler.PostHandler, er
 	tfOpts := addTFOpts(opts, artifactOpt.MisconfScannerOption)
 
 	return misconfPostHandler{
-		filePatterns: artifactOpt.MisconfScannerOption.FilePatterns,
+		filePatterns: artifactOpt.FilePatterns,
 		scanners: map[string]scanners.FSScanner{
 			types.Terraform:      tfscanner.New(tfOpts...),
 			types.CloudFormation: cfscanner.New(opts...),
@@ -330,6 +330,7 @@ func resultsToMisconf(configType string, scannerName string, results scan.Result
 			Message:   flattened.Description,
 			PolicyMetadata: types.PolicyMetadata{
 				ID:                 ruleID,
+				AVDID:              result.Rule().AVDID,
 				Type:               fmt.Sprintf("%s Security Check", scannerName),
 				Title:              result.Rule().Summary,
 				Description:        result.Rule().Explanation,

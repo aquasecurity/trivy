@@ -140,3 +140,36 @@ message CustomResource {
   Layer                 layer     = 3;
   google.protobuf.Value data      = 4;
 }
+
+message Line {
+  int32  number      = 1;
+  string content     = 2;
+  bool   is_cause    = 3;
+  string annotation  = 4;
+  bool   truncated   = 5;
+  string highlighted = 6;
+  bool   first_cause = 7;
+  bool   last_cause  = 8;
+}
+
+message Code {
+  repeated Line lines = 1;
+}
+
+message SecretFinding {
+  string rule_id    = 1;
+  string category   = 2;
+  string severity   = 3;
+  string title      = 4;
+  int32  start_line = 5;
+  int32  end_line   = 6;
+  Code   code       = 7;
+  string match      = 8;
+  bool   deleted    = 9;
+  Layer  layer      = 10;
+}
+
+message Secret {
+  string                 filepath = 1;
+  repeated SecretFinding findings = 2;
+}
