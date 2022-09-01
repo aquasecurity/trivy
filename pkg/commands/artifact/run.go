@@ -448,6 +448,7 @@ func initScannerConfig(opts flag.Options, cacheClient cache.Cache) (ScannerConfi
 		ScanRemovedPackages: opts.ScanRemovedPkgs, // this is valid only for 'image' subcommand
 		ListAllPackages:     opts.ListAllPkgs,
 		LicenseCategories:   opts.LicenseCategories,
+		FilePatterns:        opts.FilePatterns,
 	}
 
 	if slices.Contains(opts.SecurityChecks, types.SecurityCheckVulnerability) {
@@ -464,7 +465,6 @@ func initScannerConfig(opts flag.Options, cacheClient cache.Cache) (ScannerConfi
 			Namespaces:       append(opts.PolicyNamespaces, defaultPolicyNamespaces...),
 			PolicyPaths:      opts.PolicyPaths,
 			DataPaths:        opts.DataPaths,
-			FilePatterns:     opts.FilePatterns,
 			HelmValues:       opts.HelmValues,
 			HelmValueFiles:   opts.HelmValueFiles,
 			HelmFileValues:   opts.HelmFileValues,
@@ -504,6 +504,7 @@ func initScannerConfig(opts flag.Options, cacheClient cache.Cache) (ScannerConfi
 			DisabledAnalyzers: disabledAnalyzers(opts),
 			SkipFiles:         opts.SkipFiles,
 			SkipDirs:          opts.SkipDirs,
+			FilePatterns:      opts.FilePatterns,
 			InsecureSkipTLS:   opts.Insecure,
 			Offline:           opts.OfflineScan,
 			NoProgress:        opts.NoProgress || opts.Quiet,
