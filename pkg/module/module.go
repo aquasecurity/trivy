@@ -15,7 +15,7 @@ import (
 	"github.com/tetratelabs/wazero"
 	"github.com/tetratelabs/wazero/api"
 	"github.com/tetratelabs/wazero/experimental"
-	wasi "github.com/tetratelabs/wazero/wasi_snapshot_preview1"
+	wasi "github.com/tetratelabs/wazero/imports/wasi_snapshot_preview1"
 	"golang.org/x/exp/slices"
 	"golang.org/x/xerrors"
 
@@ -84,15 +84,11 @@ type Manager struct {
 func NewManager(ctx context.Context) (*Manager, error) {
 	m := &Manager{}
 
-	// The runtime must enable the following features because Tinygo uses these features to build.
-	// cf. https://github.com/tinygo-org/tinygo/blob/b65447c7d567eea495805656f45472cc3c483e03/targets/wasi.json#L4
-	c := wazero.NewRuntimeConfig().
-		WithFeatureBulkMemoryOperations(true).
-		WithFeatureNonTrappingFloatToIntConversion(true).
-		WithFeatureSignExtensionOps(true)
+	// WebAssembly 2.0 allows use of any version of TinyGo, including 0.24+.
+	c := wazero.NewRuntimeConfig().WithWasmCore2()
 
 	// Create a new WebAssembly Runtime.
-	m.runtime = wazero.NewRuntimeWithConfig(c)
+	m.runtime = wazero.NewRuntimeWithConfig(ctx, c)
 
 	// Load WASM modules in local
 	if err := m.loadModules(ctx); err != nil {
@@ -610,7 +606,7 @@ func moduleVersion(ctx context.Context, mod api.Module) (int, error) {
 		return 0, xerrors.New("invalid signature: version")
 	}
 
-	return int(versionRes[0]), nil
+	return int(uint32(versionRes[0])), nil
 }
 
 func moduleAPIVersion(ctx context.Context, mod api.Module) (int, error) {
@@ -626,7 +622,7 @@ func moduleAPIVersion(ctx context.Context, mod api.Module) (int, error) {
 		return 0, xerrors.New("invalid signature: api_version")
 	}
 
-	return int(versionRes[0]), nil
+	return int(uint32(versionRes[0])), nil
 }
 
 func moduleRequiredFiles(ctx context.Context, mod api.Module) ([]*regexp.Regexp, error) {
