@@ -203,31 +203,6 @@ The same image is hosted on [Amazon ECR Public][ecr] as well.
 docker pull public.ecr.aws/aquasecurity/trivy:{{ git.tag[1:] }}
 ```
 
-## Trivy Operator Installation
-
-The Trivy Operator can be installed through kubectl as Kubernetes manifests or as a Helm Chart.
-For installation options and further information, please refer to the Trivy [Operator Documentation.][operator-docs]
-
-### Installing from the Aqua Helm Chart Repository
-
-```
-helm repo add aquasecurity https://aquasecurity.github.io/helm-charts/
-helm repo update
-helm search repo trivy
-helm install my-trivy aquasecurity/trivy
-```
-
-### Installing the Chart
-
-To install the chart with the release name `my-release`:
-
-```
-helm install my-release .
-```
-
-The command deploys Trivy on the Kubernetes cluster in the default configuration. The [Parameters][helm]
-section lists the parameters that can be configured during installation.
-
 ### AWS private registry permissions
 
 You may need to grant permissions to allow trivy to pull images from private registry (AWS ECR).
@@ -261,17 +236,10 @@ podAnnotations: {}
 
 > **Tip**: List all releases using `helm list`.
 
-## Docker Desktop Extension
+## Other Tools to use and deploy Trivy
 
-Install the Trivy Docker Desktop Extension through the Extension Marketplace in Docker Desktop:
-<img src="docs/imgs/docker-desktop.png">
+For additional tools and ways to install and use Trivy in different envrionments such as in Docker Desktop and Kubernetes clusters, see the links in the [Ecosystem section](../ecosystem/tools.md).
 
-Once installed, you can 
-
-- Scan public and private images that are either locally or in the Docker Hub.
-- Generate an SBOM for your container images.
-
-Watch the [tutorial for further information.](https://youtu.be/99tiVZLMujs)
 
 [ecr]: https://gallery.ecr.aws/aquasecurity/trivy
 [registry]: https://github.com/orgs/aquasecurity/packages/container/package/trivy

@@ -1,36 +1,6 @@
 #  Tools
 This section includes several tools either added by the core maintainers from Aqua Security or the open source community.
 
-## Community Tools
-
-### GitHub Actions
-
-| Actions                                    | Description                                                                      |
-| ------------------------------------------ | -------------------------------------------------------------------------------- |
-| [gitrivy][gitrivy]                         | GitHub Issue + Trivy                                                             |
-| [trivy-github-issues][trivy-github-issues] | GitHub Actions for creating GitHub Issues according to the Trivy scanning result |
-
-### Semaphore
-
-| Name                                                   | Description                               |
-| -------------------------------------------------------| ----------------------------------------- |
-| [Continuous Vulnerability Testing with Trivy][semaphore-tutorial] | Tutorial on scanning code, containers, infrastructure, and Kubernetes with Semaphore CI/CD. |
-
-
-### CircleCI
-
-| Orb                                      | Description                               |
-| -----------------------------------------| ----------------------------------------- |
-| [fifteen5/trivy-orb][fifteen5/trivy-orb] | Orb for running Trivy, a security scanner |
-
-
-### Others
-
-| Name                                     | Description                               |
-| -----------------------------------------| ----------------------------------------- |
-| [Trivy Vulnerability Explorer][explorer] | Explore trivy vulnerability reports in your browser and create .trivyignore files interactively. Can be integrated in your CI/CD tooling with deep links.   |
-
-
 ## Official Trivy Tools
 
 ### GitHub Actions
@@ -80,7 +50,34 @@ This section includes several tools either added by the core maintainers from Aq
 | ---------------------------- | ----------------------------------- |
 | [lens-extension][trivy-lens] | Trivy Extension for Kubernetes Lens |
 
+## Community Tools
 
+### GitHub Actions
+
+| Actions                                    | Description                                                                      |
+| ------------------------------------------ | -------------------------------------------------------------------------------- |
+| [gitrivy][gitrivy]                         | GitHub Issue + Trivy                                                             |
+| [trivy-github-issues][trivy-github-issues] | GitHub Actions for creating GitHub Issues according to the Trivy scanning result |
+
+### Semaphore
+
+| Name                                                   | Description                               |
+| -------------------------------------------------------| ----------------------------------------- |
+| [Continuous Vulnerability Testing with Trivy][semaphore-tutorial] | Tutorial on scanning code, containers, infrastructure, and Kubernetes with Semaphore CI/CD. |
+
+
+### CircleCI
+
+| Orb                                      | Description                               |
+| -----------------------------------------| ----------------------------------------- |
+| [fifteen5/trivy-orb][fifteen5/trivy-orb] | Orb for running Trivy, a security scanner |
+
+
+### Others
+
+| Name                                     | Description                               |
+| -----------------------------------------| ----------------------------------------- |
+| [Trivy Vulnerability Explorer][explorer] | Explore trivy vulnerability reports in your browser and create .trivyignore files interactively. Can be integrated in your CI/CD tooling with deep links.   |
 
 [trivy-github-issues]: https://github.com/marketplace/actions/trivy-github-issues
 [fifteen5/trivy-orb]: https://circleci.com/developer/orbs/orb/fifteen5/trivy-orb

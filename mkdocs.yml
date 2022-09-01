@@ -12,10 +12,7 @@ nav:
       - Installation: getting-started/installation.md
       - Quick Start: getting-started/quickstart.md
   - Tutorials:
-      - Overview: tutorials/overview.md
-      - Trivy Kubernetes: 
-          - Trivy K8s: tutorials/kubernetes/trivy-kubernetes.md
-          - GitOps: tutorials/kubernetes/gitops.md       
+      - Overview: tutorials/overview.md   
       - CI/CD:
           - Overview: tutorials/integrations/index.md
           - GitHub Actions: tutorials/integrations/github-actions.md
@@ -25,8 +22,12 @@ nav:
           - Bitbucket Pipelines: tutorials/integrations/bitbucket.md
           - AWS CodePipeline: tutorials/integrations/aws-codepipeline.md
           - AWS Security Hub: tutorials/integrations/aws-security-hub.md
+      - CLI:
+          - Attesting Image Scans With Cosign and Kyverno: tutorials/cli/cosign.md
+      - Trivy Kubernetes: 
+          - Trivy K8s: tutorials/kubernetes/trivy-kubernetes.md
+          - GitOps: tutorials/kubernetes/gitops.md    
       - Additional Resources: 
-          - Tools: tutorials/other-resources/tools.md
           - Additional Resources: tutorials/other-resources/references.md
           - CKS Reference: tutorials/other-resources/cks.md
   - Trivy CLI:
@@ -131,7 +132,7 @@ nav:
               - Standalone: docs/references/modes/standalone.md
               - Client/Server: docs/references/modes/client-server.md
           - Troubleshooting: docs/references/troubleshooting.md
-  - Trivy Ecosystem: tutorials/other-resources/tools.md
+  - Trivy Ecosystem: ecosystem/tools.md
   - Contributing:
       - How to contribute:
           - Issues: community/contribute/issue.md
