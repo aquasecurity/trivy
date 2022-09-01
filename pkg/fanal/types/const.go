@@ -23,6 +23,7 @@ const (
 	Pnpm       = "pnpm"
 	Jar        = "jar"
 	Pom        = "pom"
+	Gradle     = "gradle"
 	GoBinary   = "gobinary"
 	GoModule   = "gomod"
 	JavaScript = "javascript"
