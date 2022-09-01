@@ -8,7 +8,6 @@ import (
 	"io"
 	"os"
 	"path/filepath"
-	"regexp"
 	"strings"
 
 	"golang.org/x/xerrors"
@@ -18,21 +17,17 @@ import (
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 )
 
+func init() {
+	analyzer.RegisterAnalyzer(&helmConfigAnalyzer{})
+}
+
 const version = 1
 
 const maxTarSize = 209_715_200 // 200MB
 
-type ConfigAnalyzer struct {
-	filePattern *regexp.Regexp
-}
+type helmConfigAnalyzer struct{}
 
-func NewConfigAnalyzer(filePattern *regexp.Regexp) ConfigAnalyzer {
-	return ConfigAnalyzer{
-		filePattern: filePattern,
-	}
-}
-
-func (a ConfigAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInput) (*analyzer.AnalysisResult, error) {
+func (a helmConfigAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInput) (*analyzer.AnalysisResult, error) {
 	if isArchive(input.FilePath) {
 		if !isHelmChart(input.FilePath, input.Content) {
 			return nil, nil
@@ -62,11 +57,7 @@ func (a ConfigAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInput)
 	}, nil
 }
 
-func (a ConfigAnalyzer) Required(filePath string, info os.FileInfo) bool {
-	if a.filePattern != nil && a.filePattern.MatchString(filePath) {
-		return true
-	}
-
+func (a helmConfigAnalyzer) Required(filePath string, info os.FileInfo) bool {
 	if info.Size() > maxTarSize {
 		// tarball is too big to be Helm chart - move on
 		return false
@@ -88,11 +79,11 @@ func (a ConfigAnalyzer) Required(filePath string, info os.FileInfo) bool {
 	return false
 }
 
-func (ConfigAnalyzer) Type() analyzer.Type {
+func (helmConfigAnalyzer) Type() analyzer.Type {
 	return analyzer.TypeHelm
 }
 
-func (ConfigAnalyzer) Version() int {
+func (helmConfigAnalyzer) Version() int {
 	return version
 }
 

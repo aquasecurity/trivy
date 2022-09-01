@@ -11,4 +11,5 @@ type ScanOptions struct {
 	ScanRemovedPackages bool
 	ListAllPackages     bool
 	LicenseCategories   map[types.LicenseCategory][]string
+	FilePatterns        []string
 }

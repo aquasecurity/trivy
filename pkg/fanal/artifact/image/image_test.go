@@ -19,6 +19,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 
 	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/command/apk"
+	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/config/all"
 	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/language/php/composer"
 	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/language/ruby/bundler"
 	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/licensing"

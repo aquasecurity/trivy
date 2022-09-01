@@ -206,8 +206,8 @@ github.com/aquasecurity/bolt-fixtures v0.0.0-20200903104109-d34e7f983986 h1:2a30
 github.com/aquasecurity/bolt-fixtures v0.0.0-20200903104109-d34e7f983986/go.mod h1:NT+jyeCzXk6vXR5MTkdn4z64TgGfE5HMLC8qfj5unl8=
 github.com/aquasecurity/defsec v0.71.9 h1:eo244v1RQzziClY9xXyVftPibE0fddXbTtkvH52/slU=
 github.com/aquasecurity/defsec v0.71.9/go.mod h1:2jYgkIi3UFbkrbtpnr3Cu49JZ3MGuLMJAhyh63jV1I4=
-github.com/aquasecurity/go-dep-parser v0.0.0-20220824115155-600849a106bd h1:jgYzIraCXhabEhYOmQRb73/YlyWGaGOktA5ZsZ7+6RE=
-github.com/aquasecurity/go-dep-parser v0.0.0-20220824115155-600849a106bd/go.mod h1:6G1Y5nht5TL9kr1SzmrdE8PrmbNXo9nHx3qFR3qURg0=
+github.com/aquasecurity/go-dep-parser v0.0.0-20220830123424-46cde9383d60 h1:lBkhapZtunGpC8yu2fjGvGXUNbB2pNgmn5XPuHrPxnw=
+github.com/aquasecurity/go-dep-parser v0.0.0-20220830123424-46cde9383d60/go.mod h1:6G1Y5nht5TL9kr1SzmrdE8PrmbNXo9nHx3qFR3qURg0=
 github.com/aquasecurity/go-gem-version v0.0.0-20201115065557-8eed6fe000ce h1:QgBRgJvtEOBtUXilDb1MLi1p1MWoyFDXAu5DEUl5nwM=
 github.com/aquasecurity/go-gem-version v0.0.0-20201115065557-8eed6fe000ce/go.mod h1:HXgVzOPvXhVGLJs4ZKO817idqr/xhwsTcj17CLYY74s=
 github.com/aquasecurity/go-mock-aws v0.0.0-20220726154943-99847deb62b0 h1:tihCUjLWkF0b1SAjAKcFltUs3SpsqGrLtI+Frye0D10=
@@ -1556,8 +1556,8 @@ github.com/syndtr/gocapability v0.0.0-20200815063812-42c35b437635/go.mod h1:hkRG
 github.com/tchap/go-patricia v2.2.6+incompatible/go.mod h1:bmLyhP68RS6kStMGxByiQ23RP/odRBOTVjwp2cDyi6I=
 github.com/testcontainers/testcontainers-go v0.13.0 h1:OUujSlEGsXVo/ykPVZk3KanBNGN0TYb/7oKIPVn15JA=
 github.com/testcontainers/testcontainers-go v0.13.0/go.mod h1:z1abufU633Eb/FmSBTzV6ntZAC1eZBYPtaFsn4nPuDk=
-github.com/tetratelabs/wazero v0.0.0-20220701105919-891761ac1ee2 h1:mm9H2anFWwJE64jUuvKr6CbJzupcUcec+AScrdgxtbY=
-github.com/tetratelabs/wazero v0.0.0-20220701105919-891761ac1ee2/go.mod h1:Y4X/zO4sC2dJjZG9GDYNRbJGogfqFYJY/BbyKlOxXGI=
+github.com/tetratelabs/wazero v1.0.0-pre.1 h1:bUZ4vf21c36RmgA3enNOlLgPElEVDYoRJJ9+McRGF6Q=
+github.com/tetratelabs/wazero v1.0.0-pre.1/go.mod h1:M8UDNECGm/HVjOfq0EOe4QfCY9Les1eq54IChMLETbc=
 github.com/thoas/go-funk v0.9.1 h1:O549iLZqPpTUQ10ykd26sZhzD+rmR5pWhuElrhbC20M=
 github.com/tmc/grpc-websocket-proxy v0.0.0-20170815181823-89b8d40f7ca8/go.mod h1:ncp9v5uamzpCO7NfCPTXjqaC+bZgJeR0sMTm6dMHP7U=
 github.com/tmc/grpc-websocket-proxy v0.0.0-20190109142713-0ad062ec5ee5/go.mod h1:ncp9v5uamzpCO7NfCPTXjqaC+bZgJeR0sMTm6dMHP7U=
