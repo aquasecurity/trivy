@@ -78,7 +78,7 @@ func TestCalcKey(t *testing.T) {
 				},
 				patterns: []string{""},
 			},
-			want: "sha256:d69f13df33f4c159b4ea54c1967384782fcefb5e2a19af35f4cd6d2896e9285e",
+			want: "sha256:9b81e0bf3aa7809a0f41bc696f353fca5645bcb63b975ab30e23d81886df2e61",
 		},
 		{
 			name: "with single non empty string in file patterns",
@@ -90,7 +90,7 @@ func TestCalcKey(t *testing.T) {
 				},
 				patterns: []string{"test"},
 			},
-			want: "sha256:d69f13df33f4c159b4ea54c1967384782fcefb5e2a19af35f4cd6d2896e9285e",
+			want: "sha256:7d91b2623ae4b5641a1f36efa59c774231efe8c28c27a03869894fd49b047fe8",
 		},
 		{
 			name: "with non empty followed by empty string in file patterns",
@@ -102,7 +102,7 @@ func TestCalcKey(t *testing.T) {
 				},
 				patterns: []string{"test", ""},
 			},
-			want: "sha256:d69f13df33f4c159b4ea54c1967384782fcefb5e2a19af35f4cd6d2896e9285e",
+			want: "sha256:5c7f1555e95fc60cdaa7e92e99aee15ee7be356fad9e83f1c24a3be06713a5a8",
 		},
 		{
 			name: "with non empty preceded by empty string in file patterns",
@@ -114,7 +114,7 @@ func TestCalcKey(t *testing.T) {
 				},
 				patterns: []string{"", "test"},
 			},
-			want: "sha256:d69f13df33f4c159b4ea54c1967384782fcefb5e2a19af35f4cd6d2896e9285e",
+			want: "sha256:5c7f1555e95fc60cdaa7e92e99aee15ee7be356fad9e83f1c24a3be06713a5a8",
 		},
 		{
 			name: "with policy",
@@ -158,13 +158,13 @@ func TestCalcKey(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			artifactOpt := artifact.Option{
-				SkipFiles: tt.args.skipFiles,
-				SkipDirs:  tt.args.skipDirs,
+				SkipFiles:    tt.args.skipFiles,
+				SkipDirs:     tt.args.skipDirs,
+				FilePatterns: tt.args.patterns,
 
 				MisconfScannerOption: config.ScannerOption{
-					FilePatterns: tt.args.patterns,
-					PolicyPaths:  tt.args.policy,
-					DataPaths:    tt.args.data,
+					PolicyPaths: tt.args.policy,
+					DataPaths:   tt.args.data,
 				},
 			}
 			got, err := CalcKey(tt.args.key, tt.args.analyzerVersions, tt.args.hookVersions, artifactOpt)

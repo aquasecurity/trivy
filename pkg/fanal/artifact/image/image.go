@@ -15,7 +15,6 @@ import (
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
-	"github.com/aquasecurity/trivy/pkg/fanal/analyzer/config"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer/secret"
 	"github.com/aquasecurity/trivy/pkg/fanal/artifact"
 	"github.com/aquasecurity/trivy/pkg/fanal/cache"
@@ -40,12 +39,6 @@ type Artifact struct {
 }
 
 func NewArtifact(img types.Image, c cache.ArtifactCache, opt artifact.Option) (artifact.Artifact, error) {
-	misconf := opt.MisconfScannerOption
-	// Register config analyzers
-	if err := config.RegisterConfigAnalyzers(misconf.FilePatterns); err != nil {
-		return nil, xerrors.Errorf("config scanner error: %w", err)
-	}
-
 	// Initialize handlers
 	handlerManager, err := handler.NewManager(opt)
 	if err != nil {
@@ -57,11 +50,16 @@ func NewArtifact(img types.Image, c cache.ArtifactCache, opt artifact.Option) (a
 		return nil, xerrors.Errorf("secret scanner error: %w", err)
 	}
 
+	a, err := analyzer.NewAnalyzerGroup(opt.AnalyzerGroup, opt.DisabledAnalyzers, opt.FilePatterns)
+	if err != nil {
+		return nil, xerrors.Errorf("analyzer group error: %w", err)
+	}
+
 	return Artifact{
 		image:          img,
 		cache:          c,
 		walker:         walker.NewLayerTar(opt.SkipFiles, opt.SkipDirs),
-		analyzer:       analyzer.NewAnalyzerGroup(opt.AnalyzerGroup, opt.DisabledAnalyzers),
+		analyzer:       a,
 		handlerManager: handlerManager,
 
 		artifactOption: opt,

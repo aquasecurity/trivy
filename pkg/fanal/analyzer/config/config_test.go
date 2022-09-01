@@ -10,10 +10,9 @@ import (
 
 func TestScannerOption_Sort(t *testing.T) {
 	type fields struct {
-		Namespaces   []string
-		FilePatterns []string
-		PolicyPaths  []string
-		DataPaths    []string
+		Namespaces  []string
+		PolicyPaths []string
+		DataPaths   []string
 	}
 	tests := []struct {
 		name   string
@@ -23,25 +22,22 @@ func TestScannerOption_Sort(t *testing.T) {
 		{
 			name: "happy path",
 			fields: fields{
-				Namespaces:   []string{"main", "custom", "default"},
-				FilePatterns: []string{"dockerfile:foo*", "yaml:yml_*"},
-				PolicyPaths:  []string{"policy"},
-				DataPaths:    []string{"data/b", "data/c", "data/a"},
+				Namespaces:  []string{"main", "custom", "default"},
+				PolicyPaths: []string{"policy"},
+				DataPaths:   []string{"data/b", "data/c", "data/a"},
 			},
 			want: config.ScannerOption{
-				Namespaces:   []string{"custom", "default", "main"},
-				FilePatterns: []string{"dockerfile:foo*", "yaml:yml_*"},
-				PolicyPaths:  []string{"policy"},
-				DataPaths:    []string{"data/a", "data/b", "data/c"},
+				Namespaces:  []string{"custom", "default", "main"},
+				PolicyPaths: []string{"policy"},
+				DataPaths:   []string{"data/a", "data/b", "data/c"},
 			},
 		},
 		{
 			name: "missing some fields",
 			fields: fields{
-				Namespaces:   []string{"main"},
-				FilePatterns: nil,
-				PolicyPaths:  nil,
-				DataPaths:    nil,
+				Namespaces:  []string{"main"},
+				PolicyPaths: nil,
+				DataPaths:   nil,
 			},
 			want: config.ScannerOption{
 				Namespaces: []string{"main"},
@@ -51,10 +47,9 @@ func TestScannerOption_Sort(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			o := config.ScannerOption{
-				Namespaces:   tt.fields.Namespaces,
-				FilePatterns: tt.fields.FilePatterns,
-				PolicyPaths:  tt.fields.PolicyPaths,
-				DataPaths:    tt.fields.DataPaths,
+				Namespaces:  tt.fields.Namespaces,
+				PolicyPaths: tt.fields.PolicyPaths,
+				DataPaths:   tt.fields.DataPaths,
 			}
 			o.Sort()
 
