@@ -1139,40 +1139,9 @@
         
       
       
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          Others
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
       <a href="./" class="md-nav__link md-nav__link--active">
         Others
       </a>
-      
-        
-
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#file-patterns" class="md-nav__link">
-    File patterns
-  </a>
-  
-</li>
-      
-    </ul>
-  
-</nav>
       
     </li>
   
@@ -2742,21 +2711,6 @@
     
   
   
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#file-patterns" class="md-nav__link">
-    File patterns
-  </a>
-  
-</li>
-      
-    </ul>
-  
 </nav>
                   </div>
                 </div>
@@ -2774,21 +2728,6 @@
 <p class="admonition-title">Hint</p>
 <p>See also <a href="../../../vulnerability/examples/others/">Others</a> in Vulnerability section.</p>
 </div>
-<h2 id="file-patterns">File patterns</h2>
-<p>When a directory is given as an input, Trivy will recursively look for and test all files based on file patterns.
-The default file patterns are <a href="../../custom/">here</a>.</p>
-<p>In addition to the default file patterns, the <code>--file-patterns</code> option takes regexp patterns to look for your files.
-For example, it may be useful when your file name of Dockerfile doesn't match the default patterns.</p>
-<p>This can be repeated for specifying multiple file patterns.
-Allowed values are here:</p>
-<ul>
-<li>dockerfile</li>
-<li>yaml</li>
-<li>json</li>
-<li>toml</li>
-<li>hcl</li>
-</ul>
-<p>For more details, see <a href="https://github.com/aquasecurity/trivy/tree/9d018d44b9592dd6bbfbb939b9be3e54a16fa8f2/examples/misconf/file-patterns">an example</a></p>
 
               
             </article>
