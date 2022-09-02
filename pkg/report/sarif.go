@@ -18,6 +18,7 @@ const (
 	sarifOsPackageVulnerability        = "OsPackageVulnerability"
 	sarifLanguageSpecificVulnerability = "LanguageSpecificPackageVulnerability"
 	sarifConfigFiles                   = "Misconfiguration"
+	sarifSecretFiles                   = "Secret"
 	sarifUnknownIssue                  = "UnknownIssue"
 
 	sarifError   = "error"
@@ -26,6 +27,8 @@ const (
 	sarifNone    = "none"
 
 	columnKind = "utf16CodeUnits"
+
+	secretBuiltinRulesUrl = "https://github.com/aquasecurity/trivy/blob/main/pkg/fanal/secret/builtin-rules.go"
 )
 
 var (
@@ -176,6 +179,27 @@ func (sw SarifWriter) Write(report types.Report) error {
 					res.Target, res.Type, misconf.ID, misconf.Severity, misconf.Message, misconf.ID, misconf.PrimaryURL),
 			})
 		}
+		for _, secret := range res.Secrets {
+			sw.addSarifResult(&sarifData{
+				title:            "secret",
+				vulnerabilityId:  secret.RuleID,
+				severity:         secret.Severity,
+				cvssScore:        severityToScore(secret.Severity),
+				url:              secretBuiltinRulesUrl,
+				resourceClass:    string(res.Class),
+				artifactLocation: target,
+				startLine:        secret.StartLine,
+				endLine:          secret.EndLine,
+				resultIndex:      getRuleIndex(secret.RuleID, ruleIndexes),
+				fullDescription:  html.EscapeString(secret.Match),
+				helpText: fmt.Sprintf("Secret %v\nSeverity: %v\nMatch: %s",
+					secret.Title, secret.Severity, secret.Match),
+				helpMarkdown: fmt.Sprintf("**Secret %v**\n| Severity | Match |\n| --- | --- |\n|%v|%v|",
+					secret.Title, secret.Severity, secret.Match),
+				message: fmt.Sprintf("Artifact: %v\nType: %v\nSecret %v\nSeverity: %v\nMatch: %v",
+					res.Target, res.Type, secret.Title, secret.Severity, secret.Match),
+			})
+		}
 	}
 	sw.run.ColumnKind = columnKind
 	sw.run.OriginalUriBaseIDs = map[string]*sarif.ArtifactLocation{
@@ -193,6 +217,8 @@ func toSarifRuleName(class string) string {
 		return sarifLanguageSpecificVulnerability
 	case types.ClassConfig:
 		return sarifConfigFiles
+	case types.ClassSecret:
+		return sarifSecretFiles
 	default:
 		return sarifUnknownIssue
 	}
