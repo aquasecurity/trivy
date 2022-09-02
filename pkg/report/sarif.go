@@ -28,7 +28,7 @@ const (
 
 	columnKind = "utf16CodeUnits"
 
-	secretBuiltinRulesUrl = "https://github.com/aquasecurity/trivy/blob/main/pkg/fanal/secret/builtin-rules.go"
+	builtinRulesUrl = "https://github.com/aquasecurity/trivy/blob/main/pkg/fanal/secret/builtin-rules.go" // list all secrets
 )
 
 var (
@@ -185,7 +185,7 @@ func (sw SarifWriter) Write(report types.Report) error {
 				vulnerabilityId:  secret.RuleID,
 				severity:         secret.Severity,
 				cvssScore:        severityToScore(secret.Severity),
-				url:              secretBuiltinRulesUrl,
+				url:              builtinRulesUrl,
 				resourceClass:    string(res.Class),
 				artifactLocation: target,
 				startLine:        secret.StartLine,
