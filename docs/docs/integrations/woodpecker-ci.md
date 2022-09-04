@@ -12,7 +12,7 @@ pipeline:
       - trivy fs --exit-code 1 --skip-dirs web/ --skip-dirs docs/ --severity MEDIUM,HIGH,CRITICAL .
 ```
 
-Woodpecker does use trivy itsleve so you can see an [Example][example] run at it's [Repository][repository] and how it was [added](https://github.com/woodpecker-ci/woodpecker/pull/1163).
+Woodpecker does use Trivy itself so you can see an [Example][example] run at its [Repository][repository] and how it was [added](https://github.com/woodpecker-ci/woodpecker/pull/1163).
 
 [example]: https://ci.woodpecker-ci.org/woodpecker-ci/woodpecker/build/3520/37
 [repository]: https://github.com/woodpecker-ci/woodpecker
