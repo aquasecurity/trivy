@@ -5,7 +5,6 @@ This is a simple example configuration `.woodpecker/trivy.yml` that shows how yo
 ```yml
 pipeline:
   securitycheck:
-    group: test
     image: aquasec/trivy:latest
     commands:
       - trivy fs --exit-code 0 --skip-dirs web/ --skip-dirs docs/ --severity UNKNOWN,LOW .
