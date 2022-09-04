@@ -67,36 +67,32 @@ func Test_conanLockAnalyzer_Required(t *testing.T) {
 	}{
 		{
 			name:     "default name",
-			filePath: "test/conan.lock",
+			filePath: "conan.lock",
 			want:     true,
 		},
 		{
 			name:     "name with prefix",
-			filePath: "test/pkga_deps.lock",
+			filePath: "pkga_deps.lock",
 			want:     false,
 		},
 		{
 			name:     "txt",
-			filePath: "test/test.txt",
+			filePath: "test.txt",
 			want:     false,
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			err := os.MkdirAll(filepath.Dir(tt.filePath), 0700)
-			assert.NoError(t, err)
-			_, err = os.Create(tt.filePath)
-			assert.NoError(t, err)
-			defer func() {
-				err = os.RemoveAll(filepath.Dir(tt.filePath))
-				assert.NoError(t, err)
-			}()
+			dir := t.TempDir()
+			f, err := os.Create(filepath.Join(dir, tt.filePath))
+			require.NoError(t, err)
+			defer f.Close()
 
-			fileInfo, err := os.Stat(tt.filePath)
-			assert.NoError(t, err)
+			fi, err := f.Stat()
+			require.NoError(t, err)
 
 			a := conanLockAnalyzer{}
-			got := a.Required("", fileInfo)
+			got := a.Required("", fi)
 			assert.Equal(t, tt.want, got)
 		})
 	}
