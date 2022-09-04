@@ -23,7 +23,7 @@ func Test_conanLockAnalyzer_Analyze(t *testing.T) {
 			want: &analyzer.AnalysisResult{
 				Applications: []types.Application{
 					{
-						Type:     types.ConanLock,
+						Type:     types.Conan,
 						FilePath: "testdata/happy.lock",
 						Libraries: []types.Package{
 							{

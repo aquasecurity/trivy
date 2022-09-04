@@ -18,9 +18,6 @@ func init() {
 
 const (
 	version = 1
-	// Lock file name can be anything (https://docs.conan.io/en/latest/versioning/lockfiles/introduction.html#locking-dependencies)
-	// By default, we only check default filename - `conan.lock`
-	fileName = "conan.lock"
 )
 
 // conanLockAnalyzer analyzes conan.lock
@@ -28,7 +25,7 @@ type conanLockAnalyzer struct{}
 
 func (a conanLockAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInput) (*analyzer.AnalysisResult, error) {
 	p := conan.NewParser()
-	res, err := language.Analyze(types.ConanLock, input.FilePath, input.Content, p)
+	res, err := language.Analyze(types.Conan, input.FilePath, input.Content, p)
 	if err != nil {
 		return nil, xerrors.Errorf("%s parse error: %w", input.FilePath, err)
 	}
@@ -36,7 +33,10 @@ func (a conanLockAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInp
 }
 
 func (a conanLockAnalyzer) Required(_ string, fileInfo os.FileInfo) bool {
-	return fileInfo.Name() == fileName
+	// Lock file name can be anything
+	// cf. https://docs.conan.io/en/latest/versioning/lockfiles/introduction.html#locking-dependencies
+	// By default, we only check the default filename - `conan.lock`.
+	return fileInfo.Name() == types.ConanLock
 }
 
 func (a conanLockAnalyzer) Type() analyzer.Type {
