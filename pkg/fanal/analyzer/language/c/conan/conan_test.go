@@ -45,10 +45,7 @@ func Test_conanLockAnalyzer_Analyze(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			f, err := os.Open(tt.inputFile)
 			require.NoError(t, err)
-			defer func() {
-				err = f.Close()
-				assert.NoError(t, err)
-			}()
+			defer f.Close()
 
 			a := conanLockAnalyzer{}
 			got, err := a.Analyze(nil, analyzer.AnalysisInput{
@@ -62,7 +59,7 @@ func Test_conanLockAnalyzer_Analyze(t *testing.T) {
 	}
 }
 
-func Test_nugetLibraryAnalyzer_Required(t *testing.T) {
+func Test_conanLockAnalyzer_Required(t *testing.T) {
 	tests := []struct {
 		name     string
 		filePath string

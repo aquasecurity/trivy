@@ -4,12 +4,12 @@ import (
 	"context"
 	"os"
 
-	"github.com/aquasecurity/go-dep-parser/pkg/c/conan/lock"
+	"golang.org/x/xerrors"
+
+	"github.com/aquasecurity/go-dep-parser/pkg/c/conan"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer/language"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
-
-	"golang.org/x/xerrors"
 )
 
 func init() {
@@ -19,7 +19,7 @@ func init() {
 const (
 	version = 1
 	// Lock file name can be anything (https://docs.conan.io/en/latest/versioning/lockfiles/introduction.html#locking-dependencies)
-	// Now we only check default filename - `conan.lock`
+	// By default, we only check default filename - `conan.lock`
 	fileName = "conan.lock"
 )
 
@@ -27,7 +27,7 @@ const (
 type conanLockAnalyzer struct{}
 
 func (a conanLockAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInput) (*analyzer.AnalysisResult, error) {
-	p := lock.NewParser()
+	p := conan.NewParser()
 	res, err := language.Analyze(types.ConanLock, input.FilePath, input.Content, p)
 	if err != nil {
 		return nil, xerrors.Errorf("%s parse error: %w", input.FilePath, err)

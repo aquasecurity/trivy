@@ -8,7 +8,7 @@ require (
 	github.com/NYTimes/gziphandler v1.1.1
 	github.com/alicebob/miniredis/v2 v2.22.0
 	github.com/aquasecurity/bolt-fixtures v0.0.0-20200903104109-d34e7f983986
-	github.com/aquasecurity/go-dep-parser v0.0.0-20220830123424-46cde9383d60
+	github.com/aquasecurity/go-dep-parser v0.0.0-20220904090510-d2cb7a409fe8
 	github.com/aquasecurity/go-gem-version v0.0.0-20201115065557-8eed6fe000ce
 	github.com/aquasecurity/go-npm-version v0.0.0-20201110091526-0b796d180798
 	github.com/aquasecurity/go-pep440-version v0.0.0-20210121094942-22b2f8951d46
@@ -379,5 +379,3 @@ replace github.com/docker/docker => github.com/docker/docker v20.10.3-0.20220224
 // v1.2.0 is taken from github.com/open-policy-agent/opa v0.42.0
 // v1.2.0 incompatible with github.com/docker/docker v20.10.3-0.20220224222438-c78f6963a1c0+incompatible
 replace oras.land/oras-go => oras.land/oras-go v1.1.1
-
-replace github.com/aquasecurity/go-dep-parser => github.com/aquasecurity/go-dep-parser v0.0.0-20220831103547-672c5701c2bf
