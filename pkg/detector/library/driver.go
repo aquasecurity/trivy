@@ -51,6 +51,8 @@ func NewDriver(libType string) (Driver, error) {
 		comparer = pep440.Comparer{}
 	case ftypes.ConanLock:
 		ecosystem = vulnerability.Conan
+		// Only semver can be used for version ranges
+		// https://docs.conan.io/en/latest/versioning/version_ranges.html
 		comparer = compare.GenericComparer{}
 	default:
 		return Driver{}, xerrors.Errorf("unsupported type %s", libType)
