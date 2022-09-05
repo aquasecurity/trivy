@@ -23,7 +23,7 @@ type Option struct {
 	RepoBranch        string
 	RepoCommit        string
 	RepoTag           string
-	SbomAttestation   bool
+	SbomFroms         []string
 
 	MisconfScannerOption misconf.ScannerOption
 	SecretScannerOption  secret.ScannerOption

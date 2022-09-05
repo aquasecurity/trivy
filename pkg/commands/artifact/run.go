@@ -510,7 +510,7 @@ func initScannerConfig(opts flag.Options, cacheClient cache.Cache) (ScannerConfi
 			RepoBranch:        opts.RepoBranch,
 			RepoCommit:        opts.RepoCommit,
 			RepoTag:           opts.RepoTag,
-			SbomAttestation:   opts.SbomAttestation,
+			SbomFroms:         opts.SbomFrom,
 
 			// For misconfiguration scanning
 			MisconfScannerOption: configScannerOptions,

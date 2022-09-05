@@ -35,38 +35,38 @@ var (
 		Value:      fmt.Sprintf("%s,%s", types.SecurityCheckVulnerability, types.SecurityCheckSecret),
 		Usage:      "comma-separated list of what security issues to detect (vuln,config,secret)",
 	}
-	SbomAttestationFlag = Flag{
-		Name:       "sbom-attestation",
-		ConfigName: "scan.sbom-attestation",
-		Value:      false,
-		Usage:      "try to use an SBOM attestation from OCI registry or rekor", // TODO: OCI registry? OCI registry attestation tag?
+	SbomFromFlag = Flag{
+		Name:       "sbom-from",
+		ConfigName: "scan.sbom-from",
+		Value:      "",
+		Usage:      "comma-separated list of SBOM source (rekor)", // TODO: OCI registry? OCI registry attestation tag?
 	}
 )
 
 type ScanFlagGroup struct {
-	SkipDirs        *Flag
-	SkipFiles       *Flag
-	OfflineScan     *Flag
-	SecurityChecks  *Flag
-	SbomAttestation *Flag
+	SkipDirs       *Flag
+	SkipFiles      *Flag
+	OfflineScan    *Flag
+	SecurityChecks *Flag
+	SbomFrom       *Flag
 }
 
 type ScanOptions struct {
-	Target          string
-	SkipDirs        []string
-	SkipFiles       []string
-	OfflineScan     bool
-	SecurityChecks  []string
-	SbomAttestation bool
+	Target         string
+	SkipDirs       []string
+	SkipFiles      []string
+	OfflineScan    bool
+	SecurityChecks []string
+	SbomFrom       []string
 }
 
 func NewScanFlagGroup() *ScanFlagGroup {
 	return &ScanFlagGroup{
-		SkipDirs:        &SkipDirsFlag,
-		SkipFiles:       &SkipFilesFlag,
-		OfflineScan:     &OfflineScanFlag,
-		SecurityChecks:  &SecurityChecksFlag,
-		SbomAttestation: &SbomAttestationFlag,
+		SkipDirs:       &SkipDirsFlag,
+		SkipFiles:      &SkipFilesFlag,
+		OfflineScan:    &OfflineScanFlag,
+		SecurityChecks: &SecurityChecksFlag,
+		SbomFrom:       &SbomFromFlag,
 	}
 }
 
@@ -75,7 +75,7 @@ func (f *ScanFlagGroup) Name() string {
 }
 
 func (f *ScanFlagGroup) Flags() []*Flag {
-	return []*Flag{f.SkipDirs, f.SkipFiles, f.OfflineScan, f.SecurityChecks, f.SbomAttestation}
+	return []*Flag{f.SkipDirs, f.SkipFiles, f.OfflineScan, f.SecurityChecks, f.SbomFrom}
 }
 
 func (f *ScanFlagGroup) ToOptions(args []string) (ScanOptions, error) {
@@ -88,13 +88,18 @@ func (f *ScanFlagGroup) ToOptions(args []string) (ScanOptions, error) {
 		return ScanOptions{}, xerrors.Errorf("unable to parse security checks: %w", err)
 	}
 
+	sbomFroms, err := parseSbomFrom(getStringSlice(f.SbomFrom))
+	if err != nil {
+		return ScanOptions{}, xerrors.Errorf("unable to parse sbom froms: %w", err)
+	}
+
 	return ScanOptions{
-		Target:          target,
-		SkipDirs:        getStringSlice(f.SkipDirs),
-		SkipFiles:       getStringSlice(f.SkipFiles),
-		OfflineScan:     getBool(f.OfflineScan),
-		SecurityChecks:  securityChecks,
-		SbomAttestation: getBool(f.SbomAttestation),
+		Target:         target,
+		SkipDirs:       getStringSlice(f.SkipDirs),
+		SkipFiles:      getStringSlice(f.SkipFiles),
+		OfflineScan:    getBool(f.OfflineScan),
+		SecurityChecks: securityChecks,
+		SbomFrom:       sbomFroms,
 	}, nil
 }
 
@@ -114,4 +119,22 @@ func parseSecurityCheck(securityCheck []string) ([]string, error) {
 		securityChecks = append(securityChecks, v)
 	}
 	return securityChecks, nil
+}
+
+func parseSbomFrom(sbomFrom []string) ([]string, error) {
+	switch {
+	case len(sbomFrom) == 0:
+		return nil, nil
+	case len(sbomFrom) == 1 && strings.Contains(sbomFrom[0], ","): // get checks from flag
+		sbomFrom = strings.Split(sbomFrom[0], ",")
+	}
+
+	var sbomFroms []string
+	for _, v := range sbomFrom {
+		if !slices.Contains(types.SbomFroms, v) {
+			return nil, xerrors.Errorf("unknown sbom-from type: %s", v)
+		}
+		sbomFroms = append(sbomFroms, v)
+	}
+	return sbomFroms, nil
 }

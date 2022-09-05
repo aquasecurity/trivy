@@ -26,6 +26,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/fanal/walker"
 	"github.com/aquasecurity/trivy/pkg/rekor"
+	ttypes "github.com/aquasecurity/trivy/pkg/types"
 )
 
 const (
@@ -104,12 +105,15 @@ func (a Artifact) Inspect(ctx context.Context) (types.ArtifactReference, error) 
 	log.Logger.Debugf("Image ID: %s", imageID)
 	log.Logger.Debugf("Diff IDs: %v", diffIDs)
 
-	if a.artifactOption.SbomAttestation {
-		results, err := a.inspectSbomAttestation(ctx)
-		if err == nil {
-			return results, nil
+	for _, sbomFrom := range a.artifactOption.SbomFroms {
+		switch sbomFrom {
+		case ttypes.SbomFromTypeRekor:
+			results, err := a.inspectSbomAttestation(ctx)
+			if err == nil {
+				return results, nil
+			}
+			log.Logger.Debugf("Failed to inspect SBOM Attestation from rekor")
 		}
-		log.Logger.Debugf("Failed to inspect SBOM Attestation")
 	}
 
 	// Try to detect base layers.
