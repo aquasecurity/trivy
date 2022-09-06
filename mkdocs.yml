@@ -87,6 +87,7 @@ nav:
           - Bitbucket Pipelines: docs/integrations/bitbucket.md
           - AWS CodePipeline: docs/integrations/aws-codepipeline.md
           - AWS Security Hub: docs/integrations/aws-security-hub.md
+          - Azure: docs/integrations/azure-devops.md
       - Advanced:
           - Modules: docs/advanced/modules.md
           - Plugins: docs/advanced/plugins.md
