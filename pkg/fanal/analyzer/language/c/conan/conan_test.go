@@ -64,13 +64,12 @@ func Test_conanLockAnalyzer_Analyze(t *testing.T) {
 				Content:  f,
 			})
 
-			if got == nil {
-				got = &analyzer.AnalysisResult{}
-			}
-			for _, app := range got.Applications {
-				sort.Slice(app.Libraries, func(i, j int) bool {
-					return app.Libraries[i].ID < app.Libraries[j].ID
-				})
+			if got != nil {
+				for _, app := range got.Applications {
+					sort.Slice(app.Libraries, func(i, j int) bool {
+						return app.Libraries[i].ID < app.Libraries[j].ID
+					})
+				}
 			}
 
 			assert.NoError(t, err)
