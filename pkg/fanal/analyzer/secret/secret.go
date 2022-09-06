@@ -44,12 +44,12 @@ type ScannerOption struct {
 
 // SecretAnalyzer is an analyzer for secrets
 type SecretAnalyzer struct {
-	scanner    secret.Scanner
+	Scanner    secret.Scanner
 	configPath string
 }
 
 func RegisterSecretAnalyzer(opt ScannerOption) error {
-	a, err := newSecretAnalyzer(opt)
+	a, err := newSecretAnalyzer(opt.ConfigPath)
 	if err != nil {
 		return xerrors.Errorf("secret scanner init error: %w", err)
 	}
@@ -57,21 +57,14 @@ func RegisterSecretAnalyzer(opt ScannerOption) error {
 	return nil
 }
 
-func newSecretAnalyzer(opt ScannerOption) (SecretAnalyzer, error) {
-	if opt.Config != nil {
-		s, err := secret.NewScannerByConfig(*opt.Config)
-		if err != nil {
-			return SecretAnalyzer{}, xerrors.Errorf("secret scanner error: %w", err)
-		}
-		return SecretAnalyzer{scanner: s}, nil
-	}
-	s, err := secret.NewScanner(opt.ConfigPath)
+func newSecretAnalyzer(configPath string) (SecretAnalyzer, error) {
+	s, err := secret.NewScanner(configPath)
 	if err != nil {
 		return SecretAnalyzer{}, xerrors.Errorf("secret scanner error: %w", err)
 	}
 	return SecretAnalyzer{
-		scanner:    s,
-		configPath: opt.ConfigPath,
+		Scanner:    s,
+		configPath: configPath,
 	}, nil
 }
 
@@ -95,7 +88,7 @@ func (a SecretAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInput)
 		filePath = fmt.Sprintf("/%s", filePath)
 	}
 
-	result := a.scanner.Scan(secret.ScanArgs{
+	result := a.Scanner.Scan(secret.ScanArgs{
 		FilePath: filePath,
 		Content:  content,
 	})
@@ -162,7 +155,7 @@ func (a SecretAnalyzer) Required(filePath string, fi os.FileInfo) bool {
 		return false
 	}
 
-	if a.scanner.AllowPath(filePath) {
+	if a.Scanner.AllowPath(filePath) {
 		return false
 	}
 

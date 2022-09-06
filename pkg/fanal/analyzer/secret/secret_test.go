@@ -118,32 +118,6 @@ func TestSecretAnalyzer(t *testing.T) {
 			},
 		},
 		{
-			name:       "return results with config",
-			configPath: "",
-			config: &secret.Config{
-				CustomRules: []secret.Rule{
-					{
-						ID:              "rule1",
-						Category:        "general",
-						Title:           "Generic Rule",
-						Severity:        "HIGH",
-						Regex:           secret.MustCompile("(?i)(?P<key>(secret))(=|:).{0,5}['\"](?P<secret>[0-9a-zA-Z\\-_=]{8,64})['\"]"),
-						SecretGroupName: "secret",
-					},
-				},
-			},
-			filePath: "testdata/secret.txt",
-			dir:      ".",
-			want: &analyzer.AnalysisResult{
-				Secrets: []types.Secret{
-					{
-						FilePath: "testdata/secret.txt",
-						Findings: []types.SecretFinding{wantFinding1, wantFinding2},
-					},
-				},
-			},
-		},
-		{
 			name:       "image scan return result",
 			configPath: "testdata/image-config.yaml",
 			filePath:   "testdata/secret.txt",
@@ -178,7 +152,7 @@ func TestSecretAnalyzer(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			a, err := newSecretAnalyzer(ScannerOption{tt.configPath, tt.config})
+			a, err := newSecretAnalyzer(tt.configPath)
 			require.NoError(t, err)
 			content, err := os.Open(tt.filePath)
 			require.NoError(t, err)
@@ -233,7 +207,7 @@ func TestSecretRequire(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			a, err := newSecretAnalyzer(ScannerOption{"", nil})
+			a, err := newSecretAnalyzer("")
 			require.NoError(t, err)
 
 			fi, err := os.Stat(tt.filePath)
