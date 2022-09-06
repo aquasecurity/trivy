@@ -44,11 +44,18 @@ jobs:
           skip-cache: true # https://github.com/golangci/golangci-lint-action/issues/244#issuecomment-1052197778
 
 
-      - name: Install TinyGo
+      - name: Install TinyGo - macOS
+        run: |
+          wget https://github.com/tinygo-org/tinygo/releases/download/v${TINYGO_VERSION}/tinygo${TINYGO_VERSION}.darwin-amd64.tar.gz
+          tar -xzf tinygo${TINYGO_VERSION}.darwin-amd64.tar.gz
+          ln -s $(pwd)/tinygo/bin/tinygo /usr/local/bin/tinygo
+        if: matrix.os == 'macos-latest'
+
+      - name: Install TinyGo - linux
         run: |
           wget https://github.com/tinygo-org/tinygo/releases/download/v${TINYGO_VERSION}/tinygo_${TINYGO_VERSION}_amd64.deb
           sudo dpkg -i tinygo_${TINYGO_VERSION}_amd64.deb
-        if: matrix.os != 'windows-latest'
+        if: matrix.os == 'ubuntu-latest'
 
       - name: Run unit tests
         run: make test
