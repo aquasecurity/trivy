@@ -82,6 +82,15 @@ func TestFilesystem(t *testing.T) {
 			golden: "testdata/gradle.json.golden",
 		},
 		{
+			name: "conan",
+			args: args{
+				securityChecks: "vuln",
+				listAllPkgs:    true,
+				input:          "testdata/fixtures/fs/conan",
+			},
+			golden: "testdata/conan.json.golden",
+		},
+		{
 			name: "dockerfile",
 			args: args{
 				securityChecks: "config",
