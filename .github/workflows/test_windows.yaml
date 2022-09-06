@@ -1,4 +1,4 @@
-name: Test macOS
+name: Test Windows
 on:
   push:
     branches:
@@ -14,8 +14,8 @@ env:
   TINYGO_VERSION: "0.24.0"
 jobs:
   test:
-    name: Test - macOS
-    runs-on: macos-latest
+    name: Test - Windows
+    runs-on: windows-latest
     steps:
       - uses: actions/checkout@v3
 
@@ -24,17 +24,16 @@ jobs:
         with:
           go-version: ${{ env.GO_VERSION }}
 
-      - name: Install TinyGo - macOS
+      - name: Install TinyGo - Windows
         run: |
-          brew tap tinygo-org/tools
-          brew install tinygo
+          scoop install tinygo
 
       - name: Run unit tests
         run: make test
 
   integration:
-    name: Integration Test - macOS
-    runs-on: macos-latest
+    name: Integration Test - Windows
+    runs-on: windows-latest
     steps:
     - name: Set up Go
       uses: actions/setup-go@v3
@@ -49,8 +48,8 @@ jobs:
       run: make test-integration
 
   module-test:
-    name: Module Integration Test - macOS
-    runs-on: macos-latest
+    name: Module Integration Test - Windows
+    runs-on: windows-latest
     steps:
       - name: Set up Go
         uses: actions/setup-go@v3
@@ -58,10 +57,9 @@ jobs:
           go-version: ${{ env.GO_VERSION }}
         id: go
 
-      - name: Install TinyGo - macOS
+      - name: Install TinyGo - Windows
         run: |
-          brew tap tinygo-org/tools
-          brew install tinygo
+          scoop install tinygo
 
       - name: Checkout
         uses: actions/checkout@v3
