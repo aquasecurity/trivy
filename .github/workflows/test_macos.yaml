@@ -1,4 +1,12 @@
+<<<<<<< HEAD
 name: Test macOS
+=======
+<<<<<<<< HEAD:.github/workflows/test_linux.yaml
+name: Test Linux
+========
+name: Test macOS
+>>>>>>>> ed771dbe (fix: adding in a dedicated workflow for mac os):.github/workflows/test_macos.yaml
+>>>>>>> ed771dbe (fix: adding in a dedicated workflow for mac os)
 on:
   push:
     branches:
@@ -14,8 +22,18 @@ env:
   TINYGO_VERSION: "0.24.0"
 jobs:
   test:
+<<<<<<< HEAD
     name: Test - macOS
     runs-on: macos-latest
+=======
+<<<<<<<< HEAD:.github/workflows/test_linux.yaml
+    name: Test Linux
+    runs-on: ubuntu-latest
+========
+    name: Test macOS
+    runs-on: macos-latest
+>>>>>>>> ed771dbe (fix: adding in a dedicated workflow for mac os):.github/workflows/test_macos.yaml
+>>>>>>> ed771dbe (fix: adding in a dedicated workflow for mac os)
     steps:
       - uses: actions/checkout@v3
 
@@ -24,6 +42,7 @@ jobs:
         with:
           go-version: ${{ env.GO_VERSION }}
 
+<<<<<<< HEAD
       - name: Install TinyGo - macOS
         run: |
           brew tap tinygo-org/tools
@@ -35,6 +54,44 @@ jobs:
   module-test:
     name: Module Integration Test - macOS
     runs-on: macos-latest
+=======
+      - name: go mod tidy
+        run: |
+          go mod tidy
+          if [ -n "$(git status --porcelain)" ]; then
+            echo "Run 'go mod tidy' and push it"
+            exit 1
+          fi
+
+      - name: Lint
+        uses: golangci/golangci-lint-action@v3.2.0
+        with:
+          version: v1.45
+          args: --deadline=30m
+          skip-cache: true # https://github.com/golangci/golangci-lint-action/issues/244#issuecomment-1052197778
+
+<<<<<<<< HEAD:.github/workflows/test_linux.yaml
+      - name: Install TinyGo - linux
+        run: |
+          wget https://github.com/tinygo-org/tinygo/releases/download/v${TINYGO_VERSION}/tinygo_${TINYGO_VERSION}_amd64.deb
+          sudo dpkg -i tinygo_${TINYGO_VERSION}_amd64.deb
+========
+      - name: Install TinyGo - macOS
+        run: |
+          wget -nv https://github.com/tinygo-org/tinygo/releases/download/v${TINYGO_VERSION}/tinygo${TINYGO_VERSION}.darwin-amd64.tar.gz
+          mkdir -p /usr/local/tinygo
+          tar -xzf tinygo${TINYGO_VERSION}.darwin-amd64.tar.gz -C /usr/local/tinygo
+>>>>>>>> ed771dbe (fix: adding in a dedicated workflow for mac os):.github/workflows/test_macos.yaml
+
+      - name: Run unit tests
+        run: make test
+        env:
+          TINYGOROOT: /usr/local/tinygo
+
+  integration:
+    name: Integration Test
+    runs-on: ubuntu-latest
+>>>>>>> ed771dbe (fix: adding in a dedicated workflow for mac os)
     steps:
       - name: Set up Go
         uses: actions/setup-go@v3
@@ -42,10 +99,33 @@ jobs:
           go-version: ${{ env.GO_VERSION }}
         id: go
 
+<<<<<<< HEAD
       - name: Install TinyGo - macOS
         run: |
           brew tap tinygo-org/tools
           brew install tinygo
+=======
+      - name: Check out code into the Go module directory
+        uses: actions/checkout@v3
+
+      - name: Run integration tests
+        run: make test-integration
+
+  module-test:
+    name: Module Integration Test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set up Go
+        uses: actions/setup-go@v3
+        with:
+          go-version: ${{ env.GO_VERSION }}
+        id: go
+
+      - name: Install TinyGo
+        run: |
+          wget https://github.com/tinygo-org/tinygo/releases/download/v${TINYGO_VERSION}/tinygo_${TINYGO_VERSION}_amd64.deb
+          sudo dpkg -i tinygo_${TINYGO_VERSION}_amd64.deb
+>>>>>>> ed771dbe (fix: adding in a dedicated workflow for mac os)
 
       - name: Checkout
         uses: actions/checkout@v3
@@ -54,4 +134,59 @@ jobs:
         run: |
           make test-module-integration
 
+<<<<<<< HEAD
 
+=======
+  build-test:
+    name: Build Test
+    runs-on: ubuntu-latest
+    env:
+      DOCKER_CLI_EXPERIMENTAL: "enabled"
+    steps:
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v2
+
+      - name: Set up Docker Buildx
+        id: buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Show available Docker Buildx platforms
+        run: echo ${{ steps.buildx.outputs.platforms }}
+
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Set up Go
+        uses: actions/setup-go@v3
+        with:
+          go-version: ${{ env.GO_VERSION }}
+
+      - name: Run GoReleaser
+        uses: goreleaser/goreleaser-action@v3
+        with:
+          version: v1.4.1
+          args: release --skip-sign --snapshot --rm-dist --skip-publish --timeout 90m
+
+
+  build-documents:
+    name: Documentation Test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+          persist-credentials: true
+      - uses: actions/setup-python@v4
+        with:
+          python-version: 3.x
+      - name: Install dependencies
+        run: |
+          pip install -r docs/build/requirements.txt
+      - name: Configure the git user
+        run: |
+          git config user.name "knqyf263"
+          git config user.email "knqyf263@gmail.com"
+      - name: Deploy the dev documents
+        run: mike deploy test
+>>>>>>> ed771dbe (fix: adding in a dedicated workflow for mac os)

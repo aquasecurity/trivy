@@ -1,4 +1,12 @@
+<<<<<<< HEAD
+<<<<<<<< HEAD:.github/workflows/test_linux.yaml
 name: Test Linux
+========
+name: Test macOS
+>>>>>>>> ed771dbe (fix: adding in a dedicated workflow for mac os):.github/workflows/test_macos.yaml
+=======
+name: Test Linux
+>>>>>>> ed771dbe (fix: adding in a dedicated workflow for mac os)
 on:
   push:
     branches:
@@ -14,8 +22,18 @@ env:
   TINYGO_VERSION: "0.24.0"
 jobs:
   test:
+<<<<<<< HEAD
+<<<<<<<< HEAD:.github/workflows/test_linux.yaml
     name: Test Linux
     runs-on: ubuntu-latest
+========
+    name: Test macOS
+    runs-on: macos-latest
+>>>>>>>> ed771dbe (fix: adding in a dedicated workflow for mac os):.github/workflows/test_macos.yaml
+=======
+    name: Test Linux
+    runs-on: ubuntu-latest
+>>>>>>> ed771dbe (fix: adding in a dedicated workflow for mac os)
     steps:
       - uses: actions/checkout@v3
 
@@ -39,13 +57,32 @@ jobs:
           args: --deadline=30m
           skip-cache: true # https://github.com/golangci/golangci-lint-action/issues/244#issuecomment-1052197778
 
+<<<<<<< HEAD
+<<<<<<<< HEAD:.github/workflows/test_linux.yaml
+=======
+>>>>>>> ed771dbe (fix: adding in a dedicated workflow for mac os)
       - name: Install TinyGo - linux
         run: |
           wget https://github.com/tinygo-org/tinygo/releases/download/v${TINYGO_VERSION}/tinygo_${TINYGO_VERSION}_amd64.deb
           sudo dpkg -i tinygo_${TINYGO_VERSION}_amd64.deb
+<<<<<<< HEAD
+========
+      - name: Install TinyGo - macOS
+        run: |
+          wget -nv https://github.com/tinygo-org/tinygo/releases/download/v${TINYGO_VERSION}/tinygo${TINYGO_VERSION}.darwin-amd64.tar.gz
+          mkdir -p /usr/local/tinygo
+          tar -xzf tinygo${TINYGO_VERSION}.darwin-amd64.tar.gz -C /usr/local/tinygo
+>>>>>>>> ed771dbe (fix: adding in a dedicated workflow for mac os):.github/workflows/test_macos.yaml
 
       - name: Run unit tests
         run: make test
+        env:
+          TINYGOROOT: /usr/local/tinygo
+=======
+
+      - name: Run unit tests
+        run: make test
+>>>>>>> ed771dbe (fix: adding in a dedicated workflow for mac os)
 
   integration:
     name: Integration Test
@@ -113,8 +150,12 @@ jobs:
         uses: goreleaser/goreleaser-action@v3
         with:
           version: v1.4.1
+<<<<<<< HEAD
           args: release --skip-sign --snapshot --rm-dist --skip-publish --timeout 90m
 
+=======
+          args: release --snapshot --rm-dist --skip-publish --timeout 90m
+>>>>>>> ed771dbe (fix: adding in a dedicated workflow for mac os)
 
   build-documents:
     name: Documentation Test
