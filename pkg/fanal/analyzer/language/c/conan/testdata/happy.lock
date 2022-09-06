@@ -10,7 +10,17 @@
     "context": "host"
    },
    "1": {
-    "ref": "openssl/1.1.1k",
+    "ref": "openssl/3.0.5",
+    "options": "",
+    "requires": [
+     "2"
+    ],
+    "package_id": "",
+    "prev": "0",
+    "context": "host"
+   },
+   "2": {
+    "ref": "zlib/1.2.12",
     "options": "",
     "package_id": "",
     "prev": "0",

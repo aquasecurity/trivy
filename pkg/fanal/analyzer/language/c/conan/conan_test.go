@@ -27,8 +27,18 @@ func Test_conanLockAnalyzer_Analyze(t *testing.T) {
 						FilePath: "testdata/happy.lock",
 						Libraries: []types.Package{
 							{
+								ID:      "openssl/3.0.5",
 								Name:    "openssl",
-								Version: "1.1.1k",
+								Version: "3.0.5",
+								DependsOn: []string{
+									"zlib/1.2.12",
+								},
+							},
+							{
+								ID:       "zlib/1.2.12",
+								Name:     "zlib",
+								Version:  "1.2.12",
+								Indirect: true,
 							},
 						},
 					},
