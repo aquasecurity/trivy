@@ -3,6 +3,7 @@ package conan
 import (
 	"os"
 	"path/filepath"
+	"sort"
 	"testing"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
@@ -62,6 +63,15 @@ func Test_conanLockAnalyzer_Analyze(t *testing.T) {
 				FilePath: tt.inputFile,
 				Content:  f,
 			})
+
+			if got == nil {
+				got = &analyzer.AnalysisResult{}
+			}
+			for _, app := range got.Applications {
+				sort.Slice(app.Libraries, func(i, j int) bool {
+					return app.Libraries[i].ID < app.Libraries[j].ID
+				})
+			}
 
 			assert.NoError(t, err)
 			assert.Equal(t, tt.want, got)
