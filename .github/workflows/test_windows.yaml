@@ -27,12 +27,11 @@ jobs:
       - name: Install Scoop
         run: |
           Set-ExecutionPolicy RemoteSigned -scope CurrentUser
-          Invoke-Expression (New-Object System.Net.WebClient).DownloadString('https://get.scoop.sh')
-          scoop update
+          iex "& {$(irm get.scoop.sh)} -RunAsAdmin"
 
       - name: Install TinyGo - Windows
         run: |
-          scoop install tinygo@${TINYGO_VERSION}
+          scoop install tinygo
 
       - name: Run unit tests
         run: make test
@@ -50,12 +49,11 @@ jobs:
       - name: Install Scoop
         run: |
           Set-ExecutionPolicy RemoteSigned -scope CurrentUser
-          Invoke-Expression (New-Object System.Net.WebClient).DownloadString('https://get.scoop.sh')
-          scoop update
+          iex "& {$(irm get.scoop.sh)} -RunAsAdmin"
 
       - name: Install TinyGo - Windows
         run: |
-          scoop install tinygo@${TINYGO_VERSION}
+          scoop install tinygo
 
       - name: Checkout
         uses: actions/checkout@v3
