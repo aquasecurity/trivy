@@ -32,6 +32,8 @@ jobs:
       - name: Install TinyGo - Windows
         run: |
           scoop install tinygo
+        env:
+          PATH: $PATH:C:\Users\runneradmin\scoop\shims
 
       - name: Run unit tests
         run: make test
@@ -54,6 +56,8 @@ jobs:
       - name: Install TinyGo - Windows
         run: |
           scoop install tinygo
+        env:
+          PATH: $PATH:C:\Users\runneradmin\scoop\shims
 
       - name: Checkout
         uses: actions/checkout@v3
