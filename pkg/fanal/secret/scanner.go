@@ -5,6 +5,7 @@ import (
 	"errors"
 	"os"
 	"regexp"
+	"sort"
 	"strings"
 	"sync"
 
@@ -337,7 +338,7 @@ type Match struct {
 	Location Location
 }
 
-func (s Scanner) Scan(args ScanArgs) types.Secret {
+func (s *Scanner) Scan(args ScanArgs) types.Secret {
 	// Global allowed paths
 	if s.AllowPath(args.FilePath) {
 		return types.Secret{
@@ -400,6 +401,13 @@ func (s Scanner) Scan(args ScanArgs) types.Secret {
 	if len(findings) == 0 {
 		return types.Secret{}
 	}
+
+	sort.Slice(findings, func(i, j int) bool {
+		if findings[i].RuleID != findings[j].RuleID {
+			return findings[i].RuleID < findings[j].RuleID
+		}
+		return findings[i].Match < findings[j].Match
+	})
 
 	return types.Secret{
 		FilePath: args.FilePath,
