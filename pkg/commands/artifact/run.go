@@ -16,7 +16,6 @@ import (
 	"github.com/aquasecurity/trivy/pkg/commands/operation"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer/config"
-	"github.com/aquasecurity/trivy/pkg/fanal/analyzer/secret"
 	"github.com/aquasecurity/trivy/pkg/fanal/artifact"
 	"github.com/aquasecurity/trivy/pkg/fanal/cache"
 	"github.com/aquasecurity/trivy/pkg/flag"
@@ -516,7 +515,7 @@ func initScannerConfig(opts flag.Options, cacheClient cache.Cache) (ScannerConfi
 			MisconfScannerOption: configScannerOptions,
 
 			// For secret scanning
-			SecretScannerOption: secret.ScannerOption{
+			SecretScannerOption: analyzer.SecretScannerOption{
 				ConfigPath: opts.SecretConfigPath,
 			},
 		},

@@ -441,7 +441,10 @@ func TestAnalyzeFile(t *testing.T) {
 			limit := semaphore.NewWeighted(3)
 
 			got := new(analyzer.AnalysisResult)
-			a, err := analyzer.NewAnalyzerGroup(analyzer.GroupBuiltin, tt.args.disabledAnalyzers, tt.args.filePatterns)
+			a, err := analyzer.NewAnalyzerGroup(analyzer.AnalyzerOptions{
+				FilePatterns:      tt.args.filePatterns,
+				DisabledAnalyzers: tt.args.disabledAnalyzers,
+			})
 			if err != nil && tt.wantErr != "" {
 				require.NotNil(t, err)
 				assert.Contains(t, err.Error(), tt.wantErr)
@@ -530,7 +533,10 @@ func TestAnalyzeConfig(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			a, err := analyzer.NewAnalyzerGroup(analyzer.GroupBuiltin, tt.args.disabledAnalyzers, tt.args.filePatterns)
+			a, err := analyzer.NewAnalyzerGroup(analyzer.AnalyzerOptions{
+				FilePatterns:      tt.args.filePatterns,
+				DisabledAnalyzers: tt.args.disabledAnalyzers,
+			})
 			require.NoError(t, err)
 			got := a.AnalyzeImageConfig(tt.args.targetOS, tt.args.configBlob)
 			assert.Equal(t, tt.want, got)
@@ -566,7 +572,9 @@ func TestAnalyzer_AnalyzerVersions(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			a, err := analyzer.NewAnalyzerGroup(analyzer.GroupBuiltin, tt.disabled, nil)
+			a, err := analyzer.NewAnalyzerGroup(analyzer.AnalyzerOptions{
+				DisabledAnalyzers: tt.disabled,
+			})
 			require.NoError(t, err)
 			got := a.AnalyzerVersions()
 			fmt.Printf("%v\n", got)
@@ -599,7 +607,9 @@ func TestAnalyzer_ImageConfigAnalyzerVersions(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			a, err := analyzer.NewAnalyzerGroup(analyzer.GroupBuiltin, tt.disabled, nil)
+			a, err := analyzer.NewAnalyzerGroup(analyzer.AnalyzerOptions{
+				DisabledAnalyzers: tt.disabled,
+			})
 			require.NoError(t, err)
 			got := a.ImageConfigAnalyzerVersions()
 			assert.Equal(t, tt.want, got)

@@ -1,4 +1,4 @@
-package secret
+package secret_test
 
 import (
 	"context"
@@ -9,6 +9,7 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
+	"github.com/aquasecurity/trivy/pkg/fanal/analyzer/secret"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 )
 
@@ -150,7 +151,10 @@ func TestSecretAnalyzer(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			a, err := newSecretAnalyzer(tt.configPath)
+			a := &secret.SecretAnalyzer{}
+			err := a.Init(analyzer.AnalyzerOptions{
+				SecretScannerOption: analyzer.SecretScannerOption{ConfigPath: tt.configPath},
+			})
 			require.NoError(t, err)
 			content, err := os.Open(tt.filePath)
 			require.NoError(t, err)
@@ -205,7 +209,8 @@ func TestSecretRequire(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			a, err := newSecretAnalyzer("")
+			a := secret.SecretAnalyzer{}
+			err := a.Init(analyzer.AnalyzerOptions{})
 			require.NoError(t, err)
 
 			fi, err := os.Stat(tt.filePath)

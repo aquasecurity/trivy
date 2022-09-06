@@ -6,7 +6,6 @@ import (
 
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	misconf "github.com/aquasecurity/trivy/pkg/fanal/analyzer/config"
-	"github.com/aquasecurity/trivy/pkg/fanal/analyzer/secret"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 )
 
@@ -26,7 +25,7 @@ type Option struct {
 	RepoTag           string
 
 	MisconfScannerOption misconf.ScannerOption
-	SecretScannerOption  secret.ScannerOption
+	SecretScannerOption  analyzer.SecretScannerOption
 }
 
 func (o *Option) Sort() {
