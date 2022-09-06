@@ -27,7 +27,7 @@ jobs:
       - name: Install TinyGo - macOS
         run: |
           brew tap tinygo-org/tools
-          brew install tinygo
+          brew install tinygo@${TINYGO_VERSION}
 
       - name: Run unit tests
         run: make test
@@ -45,7 +45,7 @@ jobs:
       - name: Install TinyGo - macOS
         run: |
           brew tap tinygo-org/tools
-          brew install tinygo
+          brew install tinygo@${TINYGO_VERSION}
 
       - name: Checkout
         uses: actions/checkout@v3
