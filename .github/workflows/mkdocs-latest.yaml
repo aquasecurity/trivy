@@ -35,7 +35,7 @@ jobs:
         if: ${{ github.event.inputs.version == '' }}
         run: |
           VERSION=$(echo ${{ github.ref }} | sed -e "s#refs/tags/##g")
-          mike deploy --push --update-aliases $VERSION latest
+          mike deploy --push --update-aliases ${VERSION%.*} latest
       - name: Deploy the latest documents from manual trigger
         if: ${{ github.event.inputs.version != '' }}
         run: mike deploy --push --update-aliases ${{ github.event.inputs.version }} latest
