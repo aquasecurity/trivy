@@ -489,6 +489,10 @@ func toDetectedMisconfiguration(res ftypes.MisconfResult, defaultSeverity dbType
 		res.References = append(res.References, primaryURL)
 	}
 
+	if len(primaryURL) == 0 && len(res.References) > 0 {
+		primaryURL = res.References[0]
+	}
+
 	return types.DetectedMisconfiguration{
 		ID:          res.ID,
 		AVDID:       res.AVDID,
