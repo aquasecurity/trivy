@@ -1,0 +1,82 @@
+name: Test macOS
+on:
+  push:
+    branches:
+      - main
+    paths-ignore:
+      - '*.md'
+      - 'docs/**'
+      - 'mkdocs.yml'
+      - 'LICENSE'
+  pull_request:
+env:
+  GO_VERSION: "1.18"
+  TINYGO_VERSION: "0.24.0"
+jobs:
+  test:
+    name: Test - macOS
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up Go
+        uses: actions/setup-go@v3
+        with:
+          go-version: ${{ env.GO_VERSION }}
+
+      - name: Install TinyGo - macOS
+        run: |
+          brew tap tinygo-org/tools
+          brew install tinygo
+
+      - name: Run unit tests
+        run: make test
+
+  module-test:
+    name: Module Integration Test - macOS
+    runs-on: macos-latest
+    steps:
+      - name: go mod tidy
+        run: |
+          go mod tidy
+          if [ -n "$(git status --porcelain)" ]; then
+            echo "Run 'go mod tidy' and push it"
+            exit 1
+          fi
+
+      - name: Lint
+        uses: golangci/golangci-lint-action@v3.2.0
+        with:
+          version: v1.45
+          args: --deadline=30m
+          skip-cache: true # https://github.com/golangci/golangci-lint-action/issues/244#issuecomment-1052197778
+
+      - name: Install TinyGo - macOS
+        run: |
+          brew tap tinygo-org/tools
+          brew install tinygo
+
+
+      - name: Run unit tests
+        run: make test
+
+  integration:
+    name: Integration Test - macOS
+    runs-on: macos-latest
+    steps:
+      - name: Set up Go
+        uses: actions/setup-go@v3
+        with:
+          go-version: ${{ env.GO_VERSION }}
+        id: go
+
+      - name: Install TinyGo - macOS
+        run: |
+          brew tap tinygo-org/tools
+          brew install tinygo
+
+      - name: Check out code into the Go module directory
+        uses: actions/checkout@v3
+
+      - name: Run integration tests
+        run: make test-integration
