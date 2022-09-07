@@ -6,21 +6,21 @@ require (
 	github.com/CycloneDX/cyclonedx-go v0.6.0
 	github.com/Masterminds/sprig/v3 v3.2.2
 	github.com/NYTimes/gziphandler v1.1.1
-	github.com/alicebob/miniredis/v2 v2.22.0
+	github.com/alicebob/miniredis/v2 v2.23.0
 	github.com/aquasecurity/bolt-fixtures v0.0.0-20200903104109-d34e7f983986
-	github.com/aquasecurity/go-dep-parser v0.0.0-20220830123424-46cde9383d60
+	github.com/aquasecurity/go-dep-parser v0.0.0-20220904090510-d2cb7a409fe8
 	github.com/aquasecurity/go-gem-version v0.0.0-20201115065557-8eed6fe000ce
 	github.com/aquasecurity/go-npm-version v0.0.0-20201110091526-0b796d180798
 	github.com/aquasecurity/go-pep440-version v0.0.0-20210121094942-22b2f8951d46
 	github.com/aquasecurity/go-version v0.0.0-20210121072130-637058cfe492
-	github.com/aquasecurity/table v1.7.2
+	github.com/aquasecurity/table v1.8.0
 	github.com/aquasecurity/testdocker v0.0.0-20210911155206-e1e85f5a1516
 	github.com/aquasecurity/trivy-db v0.0.0-20220627104749-930461748b63
 	github.com/aquasecurity/trivy-kubernetes v0.3.1-0.20220823151349-b90b48958b91
 	github.com/aws/aws-sdk-go-v2 v1.16.11
 	github.com/aws/aws-sdk-go-v2/config v1.17.0
 	github.com/aws/aws-sdk-go-v2/service/sts v1.16.13
-	github.com/caarlos0/env/v6 v6.9.3
+	github.com/caarlos0/env/v6 v6.10.0
 	github.com/cenkalti/backoff v2.2.1+incompatible
 	github.com/cheggaaa/pb/v3 v3.1.0
 	github.com/containerd/containerd v1.6.6
@@ -50,7 +50,7 @@ require (
 	github.com/open-policy-agent/opa v0.43.0
 	github.com/owenrumney/go-sarif/v2 v2.1.2
 	github.com/package-url/packageurl-go v0.1.1-0.20220203205134-d70459300c8a
-	github.com/samber/lo v1.27.0
+	github.com/samber/lo v1.27.1
 	github.com/secure-systems-lab/go-securesystemslib v0.4.0
 	github.com/sosedoff/gitkit v0.3.0
 	github.com/spf13/cobra v1.5.0

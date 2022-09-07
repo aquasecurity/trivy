@@ -189,8 +189,8 @@ github.com/alexflint/go-filemutex v0.0.0-20171022225611-72bdc8eae2ae/go.mod h1:C
 github.com/alexflint/go-filemutex v1.1.0/go.mod h1:7P4iRhttt/nUvUOrYIhcpMzv2G6CY9UnI16Z+UJqRyk=
 github.com/alicebob/gopher-json v0.0.0-20200520072559-a9ecdc9d1d3a h1:HbKu58rmZpUGpz5+4FfNmIU+FmZg2P3Xaj2v2bfNWmk=
 github.com/alicebob/gopher-json v0.0.0-20200520072559-a9ecdc9d1d3a/go.mod h1:SGnFV6hVsYE877CKEZ6tDNTjaSXYUk6QqoIK6PrAtcc=
-github.com/alicebob/miniredis/v2 v2.22.0 h1:lIHHiSkEyS1MkKHCHzN+0mWrA4YdbGdimE5iZ2sHSzo=
-github.com/alicebob/miniredis/v2 v2.22.0/go.mod h1:XNqvJdQJv5mSuVMc0ynneafpnL/zv52acZ6kqeS0t88=
+github.com/alicebob/miniredis/v2 v2.23.0 h1:+lwAJYjvvdIVg6doFHuotFjueJ/7KY10xo/vm3X3Scw=
+github.com/alicebob/miniredis/v2 v2.23.0/go.mod h1:XNqvJdQJv5mSuVMc0ynneafpnL/zv52acZ6kqeS0t88=
 github.com/andreyvit/diff v0.0.0-20170406064948-c7f18ee00883 h1:bvNMNQO63//z+xNgfBlViaCIJKLlCJ6/fmUseuG0wVQ=
 github.com/andreyvit/diff v0.0.0-20170406064948-c7f18ee00883/go.mod h1:rCTlJbsFo29Kk6CurOXKm700vrz8f0KW0JNfpkRJY/8=
 github.com/anmitsu/go-shlex v0.0.0-20161002113705-648efa622239 h1:kFOfPq6dUM1hTo4JG6LR5AXSUEsOjtdm0kw0FtQtMJA=
@@ -206,8 +206,8 @@ github.com/aquasecurity/bolt-fixtures v0.0.0-20200903104109-d34e7f983986 h1:2a30
 github.com/aquasecurity/bolt-fixtures v0.0.0-20200903104109-d34e7f983986/go.mod h1:NT+jyeCzXk6vXR5MTkdn4z64TgGfE5HMLC8qfj5unl8=
 github.com/aquasecurity/defsec v0.71.9 h1:eo244v1RQzziClY9xXyVftPibE0fddXbTtkvH52/slU=
 github.com/aquasecurity/defsec v0.71.9/go.mod h1:2jYgkIi3UFbkrbtpnr3Cu49JZ3MGuLMJAhyh63jV1I4=
-github.com/aquasecurity/go-dep-parser v0.0.0-20220830123424-46cde9383d60 h1:lBkhapZtunGpC8yu2fjGvGXUNbB2pNgmn5XPuHrPxnw=
-github.com/aquasecurity/go-dep-parser v0.0.0-20220830123424-46cde9383d60/go.mod h1:6G1Y5nht5TL9kr1SzmrdE8PrmbNXo9nHx3qFR3qURg0=
+github.com/aquasecurity/go-dep-parser v0.0.0-20220904090510-d2cb7a409fe8 h1:8jcz2qlLrsNDT/406nXMsi87Hsv/v1fw8SMbSpRhVP0=
+github.com/aquasecurity/go-dep-parser v0.0.0-20220904090510-d2cb7a409fe8/go.mod h1:6G1Y5nht5TL9kr1SzmrdE8PrmbNXo9nHx3qFR3qURg0=
 github.com/aquasecurity/go-gem-version v0.0.0-20201115065557-8eed6fe000ce h1:QgBRgJvtEOBtUXilDb1MLi1p1MWoyFDXAu5DEUl5nwM=
 github.com/aquasecurity/go-gem-version v0.0.0-20201115065557-8eed6fe000ce/go.mod h1:HXgVzOPvXhVGLJs4ZKO817idqr/xhwsTcj17CLYY74s=
 github.com/aquasecurity/go-mock-aws v0.0.0-20220726154943-99847deb62b0 h1:tihCUjLWkF0b1SAjAKcFltUs3SpsqGrLtI+Frye0D10=
@@ -218,8 +218,8 @@ github.com/aquasecurity/go-pep440-version v0.0.0-20210121094942-22b2f8951d46/go.
 github.com/aquasecurity/go-version v0.0.0-20201107203531-5e48ac5d022a/go.mod h1:9Beu8XsUNNfzml7WBf3QmyPToP1wm1Gj/Vc5UJKqTzU=
 github.com/aquasecurity/go-version v0.0.0-20210121072130-637058cfe492 h1:rcEG5HI490FF0a7zuvxOxen52ddygCfNVjP0XOCMl+M=
 github.com/aquasecurity/go-version v0.0.0-20210121072130-637058cfe492/go.mod h1:9Beu8XsUNNfzml7WBf3QmyPToP1wm1Gj/Vc5UJKqTzU=
-github.com/aquasecurity/table v1.7.2 h1:mextUtadM4WdDRtwmUVYPKaDSRCDDSvTam+aPMQg9eE=
-github.com/aquasecurity/table v1.7.2/go.mod h1:eqOmvjjB7AhXFgFqpJUEE/ietg7RrMSJZXyTN8E/wZw=
+github.com/aquasecurity/table v1.8.0 h1:9ntpSwrUfjrM6/YviArlx/ZBGd6ix8W+MtojQcM7tv0=
+github.com/aquasecurity/table v1.8.0/go.mod h1:eqOmvjjB7AhXFgFqpJUEE/ietg7RrMSJZXyTN8E/wZw=
 github.com/aquasecurity/testdocker v0.0.0-20210911155206-e1e85f5a1516 h1:moQmzbpLo5dxHQCyEhqzizsDSNrNhn/7uRTCZzo4A1o=
 github.com/aquasecurity/testdocker v0.0.0-20210911155206-e1e85f5a1516/go.mod h1:gTd97VdQ0rg8Mkiic3rPgNOQdprZ7feTAhiD5mGQjgM=
 github.com/aquasecurity/trivy-db v0.0.0-20220627104749-930461748b63 h1:hgGD7zqlNe6sWJZPFFv1Z6T1EuYW8XD/hqx/dxjNp3Q=
@@ -378,8 +378,8 @@ github.com/bugsnag/panicwrap v0.0.0-20151223152923-e2c28503fcd0 h1:nvj0OLI3YqYXe
 github.com/bugsnag/panicwrap v0.0.0-20151223152923-e2c28503fcd0/go.mod h1:D/8v3kj0zr8ZAKg1AQ6crr+5VwKN5eIywRkfhyM/+dE=
 github.com/bytecodealliance/wasmtime-go v0.36.0 h1:B6thr7RMM9xQmouBtUqm1RpkJjuLS37m6nxX+iwsQSc=
 github.com/bytecodealliance/wasmtime-go v0.36.0/go.mod h1:q320gUxqyI8yB+ZqRuaJOEnGkAnHh6WtJjMaT2CW4wI=
-github.com/caarlos0/env/v6 v6.9.3 h1:Tyg69hoVXDnpO5Qvpsu8EoquarbPyQb+YwExWHP8wWU=
-github.com/caarlos0/env/v6 v6.9.3/go.mod h1:hvp/ryKXKipEkcuYjs9mI4bBCg+UI0Yhgm5Zu0ddvwc=
+github.com/caarlos0/env/v6 v6.10.0 h1:lA7sxiGArZ2KkiqpOQNf8ERBRWI+v8MWIH+eGjSN22I=
+github.com/caarlos0/env/v6 v6.10.0/go.mod h1:hvp/ryKXKipEkcuYjs9mI4bBCg+UI0Yhgm5Zu0ddvwc=
 github.com/cenkalti/backoff v2.2.1+incompatible h1:tNowT99t7UNflLxfYYSlKYsBpXdEet03Pg2g16Swow4=
 github.com/cenkalti/backoff v2.2.1+incompatible/go.mod h1:90ReRw6GdpyfrHakVjL/QHaoyV4aDUVVkXQJJJ3NXXM=
 github.com/cenkalti/backoff/v4 v4.1.1/go.mod h1:scbssz8iZGpm3xbr14ovlUdkxfGXNInqkPWOWmG2CLw=
@@ -1450,8 +1450,8 @@ github.com/russross/blackfriday/v2 v2.1.0/go.mod h1:+Rmxgy9KzJVeS9/2gXHxylqXiyQD
 github.com/ryanuber/columnize v0.0.0-20160712163229-9b3edd62028f/go.mod h1:sm1tb6uqfes/u+d4ooFouqFdy9/2g9QGwK3SQygK0Ts=
 github.com/safchain/ethtool v0.0.0-20190326074333-42ed695e3de8/go.mod h1:Z0q5wiBQGYcxhMZ6gUqHn6pYNLypFAvaL3UvgZLR0U4=
 github.com/safchain/ethtool v0.0.0-20210803160452-9aa261dae9b1/go.mod h1:Z0q5wiBQGYcxhMZ6gUqHn6pYNLypFAvaL3UvgZLR0U4=
-github.com/samber/lo v1.27.0 h1:GOyDWxsblvqYobqsmUuMddPa2/mMzkKyojlXol4+LaQ=
-github.com/samber/lo v1.27.0/go.mod h1:it33p9UtPMS7z72fP4gw/EIfQB2eI8ke7GR2wc6+Rhg=
+github.com/samber/lo v1.27.1 h1:sTXwkRiIFIQG+G0HeAvOEnGjqWeWtI9cg5/n51KrxPg=
+github.com/samber/lo v1.27.1/go.mod h1:it33p9UtPMS7z72fP4gw/EIfQB2eI8ke7GR2wc6+Rhg=
 github.com/saracen/walker v0.0.0-20191201085201-324a081bae7e h1:NO86zOn5ScSKW8wRbMaSIcjDZUFpWdCQQnexRqZ9h9A=
 github.com/saracen/walker v0.0.0-20191201085201-324a081bae7e/go.mod h1:G0Z6yVPru183i2MuRJx1DcR4dgIZtLcTdaaE/pC1BJU=
 github.com/satori/go.uuid v1.2.0/go.mod h1:dA0hQrYB0VpLJoorglMZABFdXlWrHn1NEOzdhQKdks0=

@@ -71,6 +71,9 @@ const (
 	TypeGoBinary Type = "gobinary"
 	TypeGoMod    Type = "gomod"
 
+	// C/C++
+	TypeConanLock Type = "conan-lock"
+
 	// ============
 	// Image Config
 	// ============
@@ -116,13 +119,13 @@ var (
 	TypeLanguages = []Type{
 		TypeBundler, TypeGemSpec, TypeCargo, TypeComposer, TypeJar, TypePom, TypeGradleLock,
 		TypeNpmPkgLock, TypeNodePkg, TypeYarn, TypePnpm, TypeNuget, TypeDotNetDeps,
-		TypePythonPkg, TypePip, TypePipenv, TypePoetry, TypeGoBinary, TypeGoMod, TypeRustBinary,
+		TypePythonPkg, TypePip, TypePipenv, TypePoetry, TypeGoBinary, TypeGoMod, TypeRustBinary, TypeConanLock,
 	}
 
 	// TypeLockfiles has all lock file analyzers
 	TypeLockfiles = []Type{
 		TypeBundler, TypeNpmPkgLock, TypeYarn,
-		TypePnpm, TypePip, TypePipenv, TypePoetry, TypeGoMod, TypePom, TypeGradleLock,
+		TypePnpm, TypePip, TypePipenv, TypePoetry, TypeGoMod, TypePom, TypeConanLock, TypeGradleLock,
 	}
 
 	// TypeIndividualPkgs has all analyzers for individual packages
