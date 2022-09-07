@@ -145,7 +145,12 @@ func Test_image_ConfigFile(t *testing.T) {
 						{Algorithm: "sha256", Hex: "f47163e8de57e3e3ccfe89d5dfbd9c252d9eca53dc7906b8db60eddcb876c592"},
 					},
 				},
-				Config:    v1.Config{Env: []string{"PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin", "SSL_CERT_FILE=/etc/ssl/certs/ca-certificates.crt"}},
+				Config: v1.Config{
+					Env: []string{
+						"PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin",
+						"SSL_CERT_FILE=/etc/ssl/certs/ca-certificates.crt",
+					},
+				},
 				OSVersion: "",
 			},
 			wantErr: false,
@@ -180,19 +185,23 @@ func Test_image_LayerByDiffID(t *testing.T) {
 		{
 			name:      "happy path",
 			imageName: "alpine:3.10",
-			args: args{h: v1.Hash{
-				Algorithm: "sha256",
-				Hex:       "531743b7098cb2aaf615641007a129173f63ed86ca32fe7b5a246a1c47286028",
-			}},
+			args: args{
+				h: v1.Hash{
+					Algorithm: "sha256",
+					Hex:       "531743b7098cb2aaf615641007a129173f63ed86ca32fe7b5a246a1c47286028",
+				},
+			},
 			wantErr: false,
 		},
 		{
 			name:      "ImageSave returns 404",
 			imageName: "alpine:3.11",
-			args: args{h: v1.Hash{
-				Algorithm: "sha256",
-				Hex:       "531743b7098cb2aaf615641007a129173f63ed86ca32fe7b5a246a1c47286028",
-			}},
+			args: args{
+				h: v1.Hash{
+					Algorithm: "sha256",
+					Hex:       "531743b7098cb2aaf615641007a129173f63ed86ca32fe7b5a246a1c47286028",
+				},
+			},
 			wantErr: true,
 		},
 	}

@@ -1,7 +1,8 @@
 # test
 
 ## Directory structure
+
 - integration
-  - Integration test
+    - Integration test
 - testdata
-  - This directory contains test images that are used in multiple unit tests
+    - This directory contains test images that are used in multiple unit tests

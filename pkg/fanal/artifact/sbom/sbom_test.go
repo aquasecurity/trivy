@@ -3,6 +3,7 @@ package sbom_test
 import (
 	"context"
 	"errors"
+	"path/filepath"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -24,7 +25,7 @@ func TestArtifact_Inspect(t *testing.T) {
 	}{
 		{
 			name:     "happy path",
-			filePath: "testdata/bom.json",
+			filePath: filepath.Join("testdata", "bom.json"),
 			putBlobExpectation: cache.ArtifactCachePutBlobExpectation{
 				Args: cache.ArtifactCachePutBlobArgs{
 					BlobID: "sha256:21f10e5ab97c37f6c4d6a45815cd5db10e9539d5db8614d3b1d8890111d7a2b8",
@@ -38,8 +39,9 @@ func TestArtifact_Inspect(t *testing.T) {
 							{
 								Packages: []types.Package{
 									{
-										Name: "musl", Version: "1.2.3-r0", SrcName: "musl", SrcVersion: "1.2.3-r0", Licenses: []string{"MIT"},
-										Ref: "pkg:apk/alpine/musl@1.2.3-r0?distro=3.16.0",
+										Name: "musl", Version: "1.2.3-r0", SrcName: "musl", SrcVersion: "1.2.3-r0",
+										Licenses: []string{"MIT"},
+										Ref:      "pkg:apk/alpine/musl@1.2.3-r0?distro=3.16.0",
 										Layer: types.Layer{
 											DiffID: "sha256:dd565ff850e7003356e2b252758f9bdc1ff2803f61e995e24c7844f6297f8fc3",
 										},
@@ -120,7 +122,7 @@ func TestArtifact_Inspect(t *testing.T) {
 				Returns: cache.ArtifactCachePutBlobReturns{},
 			},
 			want: types.ArtifactReference{
-				Name: "testdata/bom.json",
+				Name: filepath.Join("testdata", "bom.json"),
 				Type: types.ArtifactCycloneDX,
 				ID:   "sha256:21f10e5ab97c37f6c4d6a45815cd5db10e9539d5db8614d3b1d8890111d7a2b8",
 				BlobIDs: []string{
@@ -130,7 +132,7 @@ func TestArtifact_Inspect(t *testing.T) {
 		},
 		{
 			name:     "happy path for sbom attestation",
-			filePath: "testdata/sbom.cdx.intoto.jsonl",
+			filePath: filepath.Join("testdata", "sbom.cdx.intoto.jsonl"),
 			putBlobExpectation: cache.ArtifactCachePutBlobExpectation{
 				Args: cache.ArtifactCachePutBlobArgs{
 					BlobID: "sha256:21f10e5ab97c37f6c4d6a45815cd5db10e9539d5db8614d3b1d8890111d7a2b8",
@@ -144,8 +146,9 @@ func TestArtifact_Inspect(t *testing.T) {
 							{
 								Packages: []types.Package{
 									{
-										Name: "musl", Version: "1.2.3-r0", SrcName: "musl", SrcVersion: "1.2.3-r0", Licenses: []string{"MIT"},
-										Ref: "pkg:apk/alpine/musl@1.2.3-r0?distro=3.16.0",
+										Name: "musl", Version: "1.2.3-r0", SrcName: "musl", SrcVersion: "1.2.3-r0",
+										Licenses: []string{"MIT"},
+										Ref:      "pkg:apk/alpine/musl@1.2.3-r0?distro=3.16.0",
 										Layer: types.Layer{
 											DiffID: "sha256:dd565ff850e7003356e2b252758f9bdc1ff2803f61e995e24c7844f6297f8fc3",
 										},
@@ -226,7 +229,7 @@ func TestArtifact_Inspect(t *testing.T) {
 				Returns: cache.ArtifactCachePutBlobReturns{},
 			},
 			want: types.ArtifactReference{
-				Name: "testdata/sbom.cdx.intoto.jsonl",
+				Name: filepath.Join("testdata", "sbom.cdx.intoto.jsonl"),
 				Type: types.ArtifactCycloneDX,
 				ID:   "sha256:21f10e5ab97c37f6c4d6a45815cd5db10e9539d5db8614d3b1d8890111d7a2b8",
 				BlobIDs: []string{

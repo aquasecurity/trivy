@@ -52,11 +52,13 @@ func ToAnalysisResult(fileType, filePath, libFilePath string, libs []godeptypes.
 			DependsOn: deps[lib.ID],
 		})
 	}
-	apps := []types.Application{{
-		Type:      fileType,
-		FilePath:  filePath,
-		Libraries: pkgs,
-	}}
+	apps := []types.Application{
+		{
+			Type:      fileType,
+			FilePath:  filePath,
+			Libraries: pkgs,
+		},
+	}
 
 	return &analyzer.AnalysisResult{Applications: apps}
 }

@@ -10,6 +10,7 @@ import (
 func (c *Cache) loadMetadata() (*Metadata, error) {
 	metadataFile := c.getMetadataPath()
 	m, err := os.Open(metadataFile)
+	defer func() { _ = m.Close() }()
 	if err != nil {
 		return nil, ErrCacheNotFound
 	}
@@ -43,6 +44,7 @@ func (c *Cache) LoadReport(services ...string) (*report.Report, error) {
 		if err := json.NewDecoder(s).Decode(&serviceRecord); err != nil {
 			return nil, err
 		}
+		_ = s.Close()
 		base.AddResultsForService(service, serviceRecord.Results, serviceRecord.CreationTime)
 	}
 

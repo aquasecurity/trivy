@@ -71,7 +71,8 @@ func TestS3Cache_PutBlob(t *testing.T) {
 						Family: "alpine",
 						Name:   "3.10",
 					},
-				}},
+				},
+			},
 		},
 	}
 	for _, tt := range tests {
@@ -124,7 +125,8 @@ func TestS3Cache_PutArtifact(t *testing.T) {
 							Version: "1.2.3",
 						},
 					},
-				}},
+				},
+			},
 		},
 	}
 	for _, tt := range tests {
@@ -214,21 +216,22 @@ func TestS3Cache_MissingBlobs(t *testing.T) {
 		want            bool
 		wantStringSlice []string
 		wantErr         bool
-	}{{
-		name: "happy path",
-		fields: fields{
-			S3:         mockSvc,
-			BucketName: "test",
-			Prefix:     "prefix",
+	}{
+		{
+			name: "happy path",
+			fields: fields{
+				S3:         mockSvc,
+				BucketName: "test",
+				Prefix:     "prefix",
+			},
+			args: args{
+				artifactID: "sha256:58701fd185bda36cab0557bb6438661831267aa4a9e0b54211c4d5317a48aff4/1",
+				blobIDs:    []string{"sha256:24df0d4e20c0f42d3703bf1f1db2bdd77346c7956f74f423603d651e8e5ae8a7/10011"},
+			},
+			want:            true,
+			wantStringSlice: []string{"sha256:24df0d4e20c0f42d3703bf1f1db2bdd77346c7956f74f423603d651e8e5ae8a7/10011"},
+			wantErr:         false,
 		},
-		args: args{
-			artifactID: "sha256:58701fd185bda36cab0557bb6438661831267aa4a9e0b54211c4d5317a48aff4/1",
-			blobIDs:    []string{"sha256:24df0d4e20c0f42d3703bf1f1db2bdd77346c7956f74f423603d651e8e5ae8a7/10011"},
-		},
-		want:            true,
-		wantStringSlice: []string{"sha256:24df0d4e20c0f42d3703bf1f1db2bdd77346c7956f74f423603d651e8e5ae8a7/10011"},
-		wantErr:         false,
-	},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {

@@ -3,6 +3,7 @@ package debian
 import (
 	"context"
 	"os"
+	"path/filepath"
 	"testing"
 
 	aos "github.com/aquasecurity/trivy/pkg/fanal/analyzer/os"
@@ -43,7 +44,7 @@ func Test_debianOSAnalyzer_Analyze(t *testing.T) {
 		},
 		{
 			name:      "sad path with empty file",
-			inputFile: "testdata/empty",
+			inputFile: filepath.Join("testdata", "empty"),
 			wantErr:   "debian: unable to analyze OS information",
 		},
 	}

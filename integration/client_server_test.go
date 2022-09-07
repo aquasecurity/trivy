@@ -18,7 +18,7 @@ import (
 	"github.com/docker/go-connections/nat"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	testcontainers "github.com/testcontainers/testcontainers-go"
+	"github.com/testcontainers/testcontainers-go"
 
 	"github.com/aquasecurity/trivy/pkg/clock"
 	"github.com/aquasecurity/trivy/pkg/report"
@@ -237,7 +237,7 @@ func TestClientServer(t *testing.T) {
 				RemoteAddrOption: "--server",
 				Target:           "testdata/fixtures/fs/pom/",
 			},
-			golden: "testdata/pom.json.golden",
+			golden: filepath.Join("testdata", "pom.json.golden"),
 		},
 		{
 			name: "scan sample.pem with fs command in client/server mode",
@@ -247,7 +247,7 @@ func TestClientServer(t *testing.T) {
 				secretConfig:     "testdata/fixtures/fs/secrets/trivy-secret.yaml",
 				Target:           "testdata/fixtures/fs/secrets/",
 			},
-			golden: "testdata/secrets.json.golden",
+			golden: filepath.Join("testdata", "secrets.json.golden"),
 		},
 	}
 

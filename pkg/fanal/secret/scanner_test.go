@@ -2,6 +2,7 @@ package secret_test
 
 import (
 	"os"
+	"path/filepath"
 	"testing"
 
 	"go.uber.org/zap"
@@ -482,16 +483,16 @@ func TestSecretScanner(t *testing.T) {
 	}{
 		{
 			name:          "find match",
-			configPath:    "testdata/config.yaml",
-			inputFilePath: "testdata/secret.txt",
+			configPath:    filepath.Join("testdata", "config.yaml"),
+			inputFilePath: filepath.Join("testdata", "secret.txt"),
 			want: types.Secret{
-				FilePath: "testdata/secret.txt",
+				FilePath: filepath.Join("testdata", "secret.txt"),
 				Findings: []types.SecretFinding{wantFinding1, wantFinding2},
 			},
 		},
 		{
 			name:          "find aws secrets",
-			configPath:    "testdata/config.yaml",
+			configPath:    filepath.Join("testdata", "config.yaml"),
 			inputFilePath: "testdata/aws-secrets.txt",
 			want: types.Secret{
 				FilePath: "testdata/aws-secrets.txt",
@@ -517,32 +518,32 @@ func TestSecretScanner(t *testing.T) {
 		{
 			name:          "include when keyword found",
 			configPath:    "testdata/config-happy-keywords.yaml",
-			inputFilePath: "testdata/secret.txt",
+			inputFilePath: filepath.Join("testdata", "secret.txt"),
 			want: types.Secret{
-				FilePath: "testdata/secret.txt",
+				FilePath: filepath.Join("testdata", "secret.txt"),
 				Findings: []types.SecretFinding{wantFinding1, wantFinding2},
 			},
 		},
 		{
 			name:          "exclude when no keyword found",
 			configPath:    "testdata/config-sad-keywords.yaml",
-			inputFilePath: "testdata/secret.txt",
+			inputFilePath: filepath.Join("testdata", "secret.txt"),
 			want:          types.Secret{},
 		},
 		{
 			name:          "should ignore .md files by default",
-			configPath:    "testdata/config.yaml",
-			inputFilePath: "testdata/secret.md",
+			configPath:    filepath.Join("testdata", "config.yaml"),
+			inputFilePath: filepath.Join("testdata", "secret.md"),
 			want: types.Secret{
-				FilePath: "testdata/secret.md",
+				FilePath: filepath.Join("testdata", "secret.md"),
 			},
 		},
 		{
 			name:          "should disable .md allow rule",
 			configPath:    "testdata/config-disable-allow-rule-md.yaml",
-			inputFilePath: "testdata/secret.md",
+			inputFilePath: filepath.Join("testdata", "secret.md"),
 			want: types.Secret{
-				FilePath: "testdata/secret.md",
+				FilePath: filepath.Join("testdata", "secret.md"),
 				Findings: []types.SecretFinding{wantFinding1, wantFinding2},
 			},
 		},
@@ -576,36 +577,36 @@ func TestSecretScanner(t *testing.T) {
 		{
 			name:          "should disable custom rule",
 			configPath:    "testdata/config-disable-rule1.yaml",
-			inputFilePath: "testdata/secret.txt",
+			inputFilePath: filepath.Join("testdata", "secret.txt"),
 			want:          types.Secret{},
 		},
 		{
 			name:          "allow-rule path",
 			configPath:    "testdata/allow-path.yaml",
-			inputFilePath: "testdata/secret.txt",
+			inputFilePath: filepath.Join("testdata", "secret.txt"),
 			want:          types.Secret{},
 		},
 		{
 			name:          "allow-rule regex inside group",
 			configPath:    "testdata/allow-regex.yaml",
-			inputFilePath: "testdata/secret.txt",
+			inputFilePath: filepath.Join("testdata", "secret.txt"),
 			want: types.Secret{
-				FilePath: "testdata/secret.txt",
+				FilePath: filepath.Join("testdata", "secret.txt"),
 				Findings: []types.SecretFinding{wantFinding1},
 			},
 		},
 		{
 			name:          "allow-rule regex outside group",
 			configPath:    "testdata/allow-regex-outside-group.yaml",
-			inputFilePath: "testdata/secret.txt",
+			inputFilePath: filepath.Join("testdata", "secret.txt"),
 			want:          types.Secret{},
 		},
 		{
 			name:          "exclude-block regexes",
 			configPath:    "testdata/exclude-block.yaml",
-			inputFilePath: "testdata/secret.txt",
+			inputFilePath: filepath.Join("testdata", "secret.txt"),
 			want: types.Secret{
-				FilePath: "testdata/secret.txt",
+				FilePath: filepath.Join("testdata", "secret.txt"),
 				Findings: []types.SecretFinding{wantFindingRegexDisabled},
 			},
 		},
@@ -619,36 +620,36 @@ func TestSecretScanner(t *testing.T) {
 		{
 			name:          "global allow-rule path",
 			configPath:    "testdata/global-allow-path.yaml",
-			inputFilePath: "testdata/secret.txt",
+			inputFilePath: filepath.Join("testdata", "secret.txt"),
 			want: types.Secret{
-				FilePath: "testdata/secret.txt",
+				FilePath: filepath.Join("testdata", "secret.txt"),
 				Findings: nil,
 			},
 		},
 		{
 			name:          "global allow-rule regex",
 			configPath:    "testdata/global-allow-regex.yaml",
-			inputFilePath: "testdata/secret.txt",
+			inputFilePath: filepath.Join("testdata", "secret.txt"),
 			want: types.Secret{
-				FilePath: "testdata/secret.txt",
+				FilePath: filepath.Join("testdata", "secret.txt"),
 				Findings: []types.SecretFinding{wantFinding1},
 			},
 		},
 		{
 			name:          "global exclude-block regexes",
 			configPath:    "testdata/global-exclude-block.yaml",
-			inputFilePath: "testdata/secret.txt",
+			inputFilePath: filepath.Join("testdata", "secret.txt"),
 			want: types.Secret{
-				FilePath: "testdata/secret.txt",
+				FilePath: filepath.Join("testdata", "secret.txt"),
 				Findings: []types.SecretFinding{wantFindingRegexDisabled},
 			},
 		},
 		{
 			name:          "multiple secret groups",
 			configPath:    "testdata/multiple-secret-groups.yaml",
-			inputFilePath: "testdata/secret.txt",
+			inputFilePath: filepath.Join("testdata", "secret.txt"),
 			want: types.Secret{
-				FilePath: "testdata/secret.txt",
+				FilePath: filepath.Join("testdata", "secret.txt"),
 				Findings: []types.SecretFinding{wantFinding3, wantFinding4},
 			},
 		},
@@ -663,9 +664,9 @@ func TestSecretScanner(t *testing.T) {
 		{
 			name:          "add unknown severity when rule has no severity",
 			configPath:    "testdata/config-without-severity.yaml",
-			inputFilePath: "testdata/secret.txt",
+			inputFilePath: filepath.Join("testdata", "secret.txt"),
 			want: types.Secret{
-				FilePath: "testdata/secret.txt",
+				FilePath: filepath.Join("testdata", "secret.txt"),
 				Findings: []types.SecretFinding{wantFinding8},
 			},
 		},
@@ -686,7 +687,8 @@ func TestSecretScanner(t *testing.T) {
 
 			got := s.Scan(secret.ScanArgs{
 				FilePath: tt.inputFilePath,
-				Content:  content},
+				Content:  content,
+			},
 			)
 			assert.Equal(t, tt.want, got)
 		})

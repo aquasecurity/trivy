@@ -4,6 +4,7 @@ import (
 	"context"
 	"os"
 	"path/filepath"
+	"runtime"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -14,6 +15,10 @@ import (
 )
 
 func TestPlugin_Run(t *testing.T) {
+	if runtime.GOOS == "windows" {
+		t.Skip("Skip test on Windows")
+	}
+
 	type fields struct {
 		Name        string
 		Repository  string
@@ -170,11 +175,12 @@ func TestPlugin_Run(t *testing.T) {
 
 func TestInstall(t *testing.T) {
 	tests := []struct {
-		name     string
-		url      string
-		want     plugin.Plugin
-		wantFile string
-		wantErr  string
+		name           string
+		url            string
+		want           plugin.Plugin
+		wantFile       string
+		wantErr        string
+		wantErrWindows string
 	}{
 		{
 			name: "happy path",
@@ -202,7 +208,7 @@ func TestInstall(t *testing.T) {
 		},
 		{
 			name: "plugin not found",
-			url:  "testdata/not_found",
+			url:  filepath.Join("testdata", "not_found"),
 			want: plugin.Plugin{
 				Name:        "test_plugin",
 				Repository:  "github.com/aquasecurity/trivy-plugin-test",
@@ -222,7 +228,8 @@ func TestInstall(t *testing.T) {
 				GOOS:   "linux",
 				GOARCH: "amd64",
 			},
-			wantErr: "no such file or directory",
+			wantErr:        "no such file or directory",
+			wantErrWindows: "The system cannot find the file specified",
 		},
 		{
 			name: "no plugin.yaml",
@@ -260,7 +267,11 @@ func TestInstall(t *testing.T) {
 			got, err := plugin.Install(context.Background(), tt.url, false)
 			if tt.wantErr != "" {
 				require.NotNil(t, err)
-				assert.Contains(t, err.Error(), tt.wantErr)
+				if runtime.GOOS == "windows" {
+					assert.Contains(t, err.Error(), tt.wantErrWindows)
+				} else {
+					assert.Contains(t, err.Error(), tt.wantErr)
+				}
 				return
 			}
 			assert.NoError(t, err)
@@ -326,10 +337,11 @@ description: A simple test plugin`
 
 func TestLoadAll1(t *testing.T) {
 	tests := []struct {
-		name    string
-		dir     string
-		want    []plugin.Plugin
-		wantErr string
+		name           string
+		dir            string
+		want           []plugin.Plugin
+		wantErr        string
+		wantErrWindows string
 	}{
 		{
 			name: "happy path",
@@ -357,9 +369,10 @@ func TestLoadAll1(t *testing.T) {
 			},
 		},
 		{
-			name:    "sad path",
-			dir:     "sad",
-			wantErr: "no such file or directory",
+			name:           "sad path",
+			dir:            "sad",
+			wantErr:        "no such file or directory",
+			wantErrWindows: "The system cannot find the path specified",
 		},
 	}
 	for _, tt := range tests {
@@ -370,7 +383,11 @@ func TestLoadAll1(t *testing.T) {
 			got, err := plugin.LoadAll()
 			if tt.wantErr != "" {
 				require.NotNil(t, err)
-				assert.Contains(t, err.Error(), tt.wantErr)
+				if runtime.GOOS == "windows" {
+					assert.Contains(t, err.Error(), tt.wantErrWindows)
+				} else {
+					assert.Contains(t, err.Error(), tt.wantErr)
+				}
 				return
 			}
 			assert.NoError(t, err)

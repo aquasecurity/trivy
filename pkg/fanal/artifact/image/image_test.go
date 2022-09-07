@@ -121,7 +121,8 @@ func TestArtifact_Inspect(t *testing.T) {
 										},
 										{
 											Name: "musl-utils", Version: "1.1.24-r2", SrcName: "musl",
-											SrcVersion: "1.1.24-r2", Licenses: []string{"MIT", "BSD-3-Clause", "GPL-2.0"},
+											SrcVersion: "1.1.24-r2",
+											Licenses:   []string{"MIT", "BSD-3-Clause", "GPL-2.0"},
 										},
 										{
 											Name: "scanelf", Version: "1.2.4-r0", SrcName: "pax-utils",
@@ -836,7 +837,8 @@ func TestArtifact_Inspect(t *testing.T) {
 										},
 										{
 											Name: "musl-utils", Version: "1.1.24-r2", SrcName: "musl",
-											SrcVersion: "1.1.24-r2", Licenses: []string{"MIT", "BSD-3-Clause", "GPL-2.0"},
+											SrcVersion: "1.1.24-r2",
+											Licenses:   []string{"MIT", "BSD-3-Clause", "GPL-2.0"},
 										},
 										{
 											Name: "scanelf", Version: "1.2.4-r0", SrcName: "pax-utils",
@@ -967,7 +969,8 @@ func TestArtifact_Inspect(t *testing.T) {
 										},
 										{
 											Name: "musl-utils", Version: "1.1.24-r2", SrcName: "musl",
-											SrcVersion: "1.1.24-r2", Licenses: []string{"MIT", "BSD-3-Clause", "GPL-2.0"},
+											SrcVersion: "1.1.24-r2",
+											Licenses:   []string{"MIT", "BSD-3-Clause", "GPL-2.0"},
 										},
 										{
 											Name: "scanelf", Version: "1.2.4-r0", SrcName: "pax-utils",

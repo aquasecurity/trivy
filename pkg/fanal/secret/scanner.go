@@ -122,7 +122,8 @@ func (s *Scanner) FindSubmatchLocations(r Rule, content []byte) []Location {
 	var submatchLocations []Location
 	matchsIndices := r.Regex.FindAllSubmatchIndex(content, -1)
 	for _, matchIndices := range matchsIndices {
-		matchLocation := Location{ // first two indexes are always start and end of the whole match
+		matchLocation := Location{
+			// first two indexes are always start and end of the whole match
 			Start: matchIndices[0],
 			End:   matchIndices[1],
 		}

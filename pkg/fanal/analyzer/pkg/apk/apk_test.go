@@ -19,20 +19,62 @@ func TestParseApkInfo(t *testing.T) {
 		"Valid": {
 			path: "./testdata/apk",
 			wantPkgs: []types.Package{
-				{Name: "musl", Version: "1.1.14-r10", SrcName: "musl", SrcVersion: "1.1.14-r10", Licenses: []string{"MIT"}},
-				{Name: "busybox", Version: "1.24.2-r9", SrcName: "busybox", SrcVersion: "1.24.2-r9", Licenses: []string{"GPL-2.0"}},
-				{Name: "alpine-baselayout", Version: "3.0.3-r0", SrcName: "alpine-baselayout", SrcVersion: "3.0.3-r0", Licenses: []string{"GPL-2.0"}},
-				{Name: "alpine-keys", Version: "1.1-r0", SrcName: "alpine-keys", SrcVersion: "1.1-r0", Licenses: []string{"GPL-3.0"}},
-				{Name: "zlib", Version: "1.2.8-r2", SrcName: "zlib", SrcVersion: "1.2.8-r2", Licenses: []string{"Zlib"}},
-				{Name: "libcrypto1.0", Version: "1.0.2h-r1", SrcName: "openssl", SrcVersion: "1.0.2h-r1", Licenses: []string{"openssl"}},
-				{Name: "libssl1.0", Version: "1.0.2h-r1", SrcName: "openssl", SrcVersion: "1.0.2h-r1", Licenses: []string{"openssl"}},
-				{Name: "apk-tools", Version: "2.6.7-r0", SrcName: "apk-tools", SrcVersion: "2.6.7-r0", Licenses: []string{"GPL-2.0"}},
-				{Name: "scanelf", Version: "1.1.6-r0", SrcName: "pax-utils", SrcVersion: "1.1.6-r0", Licenses: []string{"GPL-2.0"}},
-				{Name: "musl-utils", Version: "1.1.14-r10", SrcName: "musl", SrcVersion: "1.1.14-r10", Licenses: []string{"MIT", "BSD-3-Clause", "GPL-2.0"}},
-				{Name: "libc-utils", Version: "0.7-r0", SrcName: "libc-dev", SrcVersion: "0.7-r0", Licenses: []string{"GPL-3.0"}},
-				{Name: "pkgconf", Version: "1.6.0-r0", SrcName: "pkgconf", SrcVersion: "1.6.0-r0", Licenses: []string{"ISC"}},
-				{Name: "sqlite-libs", Version: "3.26.0-r3", SrcName: "sqlite", SrcVersion: "3.26.0-r3", Licenses: []string{"Public-Domain"}},
-				{Name: "test", Version: "2.9.11_pre20061021-r2", SrcName: "test-parent", SrcVersion: "2.9.11_pre20061021-r2", Licenses: []string{"Public-Domain"}},
+				{
+					Name: "musl", Version: "1.1.14-r10", SrcName: "musl", SrcVersion: "1.1.14-r10",
+					Licenses: []string{"MIT"},
+				},
+				{
+					Name: "busybox", Version: "1.24.2-r9", SrcName: "busybox", SrcVersion: "1.24.2-r9",
+					Licenses: []string{"GPL-2.0"},
+				},
+				{
+					Name: "alpine-baselayout", Version: "3.0.3-r0", SrcName: "alpine-baselayout",
+					SrcVersion: "3.0.3-r0", Licenses: []string{"GPL-2.0"},
+				},
+				{
+					Name: "alpine-keys", Version: "1.1-r0", SrcName: "alpine-keys", SrcVersion: "1.1-r0",
+					Licenses: []string{"GPL-3.0"},
+				},
+				{
+					Name: "zlib", Version: "1.2.8-r2", SrcName: "zlib", SrcVersion: "1.2.8-r2",
+					Licenses: []string{"Zlib"},
+				},
+				{
+					Name: "libcrypto1.0", Version: "1.0.2h-r1", SrcName: "openssl", SrcVersion: "1.0.2h-r1",
+					Licenses: []string{"openssl"},
+				},
+				{
+					Name: "libssl1.0", Version: "1.0.2h-r1", SrcName: "openssl", SrcVersion: "1.0.2h-r1",
+					Licenses: []string{"openssl"},
+				},
+				{
+					Name: "apk-tools", Version: "2.6.7-r0", SrcName: "apk-tools", SrcVersion: "2.6.7-r0",
+					Licenses: []string{"GPL-2.0"},
+				},
+				{
+					Name: "scanelf", Version: "1.1.6-r0", SrcName: "pax-utils", SrcVersion: "1.1.6-r0",
+					Licenses: []string{"GPL-2.0"},
+				},
+				{
+					Name: "musl-utils", Version: "1.1.14-r10", SrcName: "musl", SrcVersion: "1.1.14-r10",
+					Licenses: []string{"MIT", "BSD-3-Clause", "GPL-2.0"},
+				},
+				{
+					Name: "libc-utils", Version: "0.7-r0", SrcName: "libc-dev", SrcVersion: "0.7-r0",
+					Licenses: []string{"GPL-3.0"},
+				},
+				{
+					Name: "pkgconf", Version: "1.6.0-r0", SrcName: "pkgconf", SrcVersion: "1.6.0-r0",
+					Licenses: []string{"ISC"},
+				},
+				{
+					Name: "sqlite-libs", Version: "3.26.0-r3", SrcName: "sqlite", SrcVersion: "3.26.0-r3",
+					Licenses: []string{"Public-Domain"},
+				},
+				{
+					Name: "test", Version: "2.9.11_pre20061021-r2", SrcName: "test-parent",
+					SrcVersion: "2.9.11_pre20061021-r2", Licenses: []string{"Public-Domain"},
+				},
 			},
 			wantFiles: []string{
 				// musl-1.1.14-r10

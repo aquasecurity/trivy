@@ -38,7 +38,7 @@ func TestFilesystem(t *testing.T) {
 				securityChecks: "vuln",
 				input:          "testdata/fixtures/fs/gomod",
 			},
-			golden: "testdata/gomod.json.golden",
+			golden: filepath.Join("testdata", "gomod.json.golden"),
 		},
 		{
 			name: "nodejs",
@@ -46,7 +46,7 @@ func TestFilesystem(t *testing.T) {
 				securityChecks: "vuln",
 				input:          "testdata/fixtures/fs/nodejs",
 			},
-			golden: "testdata/nodejs.json.golden",
+			golden: filepath.Join("testdata", "nodejs.json.golden"),
 		},
 		{
 			name: "pnpm",
@@ -54,7 +54,7 @@ func TestFilesystem(t *testing.T) {
 				securityChecks: "vuln",
 				input:          "testdata/fixtures/fs/pnpm",
 			},
-			golden: "testdata/pnpm.json.golden",
+			golden: filepath.Join("testdata", "pnpm.json.golden"),
 		},
 		{
 			name: "pip",
@@ -63,7 +63,7 @@ func TestFilesystem(t *testing.T) {
 				listAllPkgs:    true,
 				input:          "testdata/fixtures/fs/pip",
 			},
-			golden: "testdata/pip.json.golden",
+			golden: filepath.Join("testdata", "pip.json.golden"),
 		},
 		{
 			name: "pom",
@@ -71,7 +71,7 @@ func TestFilesystem(t *testing.T) {
 				securityChecks: "vuln",
 				input:          "testdata/fixtures/fs/pom",
 			},
-			golden: "testdata/pom.json.golden",
+			golden: filepath.Join("testdata", "pom.json.golden"),
 		},
 		{
 			name: "gradle",
@@ -79,7 +79,7 @@ func TestFilesystem(t *testing.T) {
 				securityChecks: "vuln",
 				input:          "testdata/fixtures/fs/gradle",
 			},
-			golden: "testdata/gradle.json.golden",
+			golden: filepath.Join("testdata", "gradle.json.golden"),
 		},
 		{
 			name: "conan",
@@ -97,7 +97,7 @@ func TestFilesystem(t *testing.T) {
 				input:          "testdata/fixtures/fs/dockerfile",
 				namespaces:     []string{"testing"},
 			},
-			golden: "testdata/dockerfile.json.golden",
+			golden: filepath.Join("testdata", "dockerfile.json.golden"),
 		},
 		{
 			name: "dockerfile with custom file pattern",
@@ -143,7 +143,7 @@ func TestFilesystem(t *testing.T) {
 				securityChecks: "config",
 				input:          "testdata/fixtures/fs/helm",
 			},
-			golden: "testdata/helm.json.golden",
+			golden: filepath.Join("testdata", "helm.json.golden"),
 		},
 		{
 			name: "helm chart directory scanning with builtin policies",
@@ -186,7 +186,7 @@ func TestFilesystem(t *testing.T) {
 				input:          "testdata/fixtures/fs/secrets",
 				secretConfig:   "testdata/fixtures/fs/secrets/trivy-secret.yaml",
 			},
-			golden: "testdata/secrets.json.golden",
+			golden: filepath.Join("testdata", "secrets.json.golden"),
 		},
 	}
 

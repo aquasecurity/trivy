@@ -41,7 +41,7 @@ func Test_pomAnalyzer_Analyze(t *testing.T) {
 		},
 		{
 			name:      "happy dir path",
-			inputDir:  "testdata/happy",
+			inputDir:  filepath.Join("testdata", "happy"),
 			inputFile: "pom.xml",
 			want: &analyzer.AnalysisResult{
 				Applications: []types.Application{
@@ -83,7 +83,7 @@ func Test_pomAnalyzer_Analyze(t *testing.T) {
 		},
 		{
 			name:      "sad dir path",
-			inputDir:  "testdata/broken",
+			inputDir:  filepath.Join("testdata", "broken"),
 			inputFile: "pom.xml",
 			wantErr:   "xml decode error",
 		},

@@ -3,6 +3,7 @@ package mod
 import (
 	"context"
 	"os"
+	"path/filepath"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -23,13 +24,13 @@ func Test_gomodAnalyzer_Analyze(t *testing.T) {
 	}{
 		{
 			name:      "go.mod",
-			filePath:  "testdata/go.mod",
+			filePath:  filepath.Join("testdata", "go.mod"),
 			inputFile: "testdata/normal_go.mod",
 			want: &analyzer.AnalysisResult{
 				Applications: []types.Application{
 					{
 						Type:     types.GoModule,
-						FilePath: "testdata/go.mod",
+						FilePath: filepath.Join("testdata", "go.mod"),
 						Libraries: []types.Package{
 							{
 								Name:    "github.com/aquasecurity/go-dep-parser",
@@ -46,13 +47,13 @@ func Test_gomodAnalyzer_Analyze(t *testing.T) {
 		},
 		{
 			name:      "go.sum",
-			filePath:  "testdata/go.sum",
+			filePath:  filepath.Join("testdata", "go.sum"),
 			inputFile: "testdata/normal_go.sum",
 			want: &analyzer.AnalysisResult{
 				Applications: []types.Application{
 					{
 						Type:     types.GoModule,
-						FilePath: "testdata/go.sum",
+						FilePath: filepath.Join("testdata", "go.sum"),
 						Libraries: []types.Package{
 							{Name: "github.com/BurntSushi/toml", Version: "0.3.1"},
 							{Name: "github.com/cpuguy83/go-md2man/v2", Version: "2.0.0-20190314233015-f79a8a8ca69d"},
@@ -74,13 +75,13 @@ func Test_gomodAnalyzer_Analyze(t *testing.T) {
 		},
 		{
 			name:      "sad go.mod",
-			filePath:  "testdata/go.mod",
+			filePath:  filepath.Join("testdata", "go.mod"),
 			inputFile: "testdata/sad_go.mod",
 			wantErr:   "unknown directive",
 		},
 		{
 			name:      "sad go.sum",
-			filePath:  "testdata/go.sum",
+			filePath:  filepath.Join("testdata", "go.sum"),
 			inputFile: "testdata/sad_go.sum",
 			want:      nil,
 		},

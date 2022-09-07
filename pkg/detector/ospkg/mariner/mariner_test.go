@@ -1,6 +1,7 @@
 package mariner_test
 
 import (
+	"path/filepath"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -30,7 +31,7 @@ func TestScanner_Detect(t *testing.T) {
 		{
 			name: "happy path 1.0 SrcName and Name are different",
 			fixtures: []string{
-				"testdata/fixtures/mariner.yaml",
+				filepath.Join("testdata", "fixtures", "mariner.yaml"),
 				"testdata/fixtures/data-source.yaml",
 			},
 			args: args{
@@ -69,7 +70,7 @@ func TestScanner_Detect(t *testing.T) {
 		{
 			name: "happy path 2.0",
 			fixtures: []string{
-				"testdata/fixtures/mariner.yaml",
+				filepath.Join("testdata", "fixtures", "mariner.yaml"),
 				"testdata/fixtures/data-source.yaml",
 			},
 			args: args{
@@ -105,8 +106,10 @@ func TestScanner_Detect(t *testing.T) {
 			},
 		},
 		{
-			name:     "broken advisory",
-			fixtures: []string{"testdata/fixtures/invalid.yaml", "testdata/fixtures/data-source.yaml"},
+			name: "broken advisory",
+			fixtures: []string{
+				filepath.Join("testdata", "fixtures", "invalid.yaml"), "testdata/fixtures/data-source.yaml",
+			},
 			args: args{
 				osVer: "1.0",
 				pkgs: []ftypes.Package{

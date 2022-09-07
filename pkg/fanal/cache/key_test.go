@@ -1,6 +1,7 @@
 package cache
 
 import (
+	"path/filepath"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -124,7 +125,7 @@ func TestCalcKey(t *testing.T) {
 					"alpine": 1,
 					"debian": 1,
 				},
-				policy: []string{"testdata/policy"},
+				policy: []string{filepath.Join("testdata", "policy")},
 			},
 			want: "sha256:96e90ded238ad2ea8e1fd53a4202247aa65b69ad5e2f9f60d883104865ca4821",
 		},
@@ -138,7 +139,7 @@ func TestCalcKey(t *testing.T) {
 				},
 				skipFiles: []string{"app/deployment.yaml"},
 				skipDirs:  []string{"usr/java"},
-				policy:    []string{"testdata/policy"},
+				policy:    []string{filepath.Join("testdata", "policy")},
 			},
 			want: "sha256:b92c36d74172cbe3b7c07e169d9f594cd7822e8e95cb7bc1cd957ac17be62a4a",
 		},

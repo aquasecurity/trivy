@@ -3,6 +3,7 @@ package local
 import (
 	"context"
 	"errors"
+	"path/filepath"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -145,7 +146,7 @@ func TestArtifact_Inspect(t *testing.T) {
 		{
 			name: "happy path with single file",
 			fields: fields{
-				dir: "testdata/requirements.txt",
+				dir: filepath.Join("testdata", "requirements.txt"),
 			},
 			putBlobExpectation: cache.ArtifactCachePutBlobExpectation{
 				Args: cache.ArtifactCachePutBlobArgs{
@@ -169,7 +170,7 @@ func TestArtifact_Inspect(t *testing.T) {
 				Returns: cache.ArtifactCachePutBlobReturns{},
 			},
 			want: types.ArtifactReference{
-				Name: "testdata/requirements.txt",
+				Name: filepath.Join("testdata", "requirements.txt"),
 				Type: types.ArtifactFilesystem,
 				ID:   "sha256:f7c8f14888e2908b613769b9e98816fa40d84980872f3777b656d11b8fb544fb",
 				BlobIDs: []string{
@@ -204,7 +205,7 @@ func TestArtifact_Inspect(t *testing.T) {
 				Returns: cache.ArtifactCachePutBlobReturns{},
 			},
 			want: types.ArtifactReference{
-				Name: "testdata/requirements.txt",
+				Name: filepath.Join("testdata", "requirements.txt"),
 				Type: types.ArtifactFilesystem,
 				ID:   "sha256:f7c8f14888e2908b613769b9e98816fa40d84980872f3777b656d11b8fb544fb",
 				BlobIDs: []string{

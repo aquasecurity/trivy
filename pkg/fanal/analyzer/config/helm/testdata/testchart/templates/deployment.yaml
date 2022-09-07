@@ -1,38 +1,38 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "testchart.fullname" . }}
+  name: { { include "testchart.fullname" . } }
   labels:
-    {{- include "testchart.labels" . | nindent 4 }}
+    { { - include "testchart.labels" . | nindent 4 } }
 spec:
-  {{- if not .Values.autoscaling.enabled }}
-  replicas: {{ .Values.replicaCount }}
-  {{- end }}
+  { { - if not .Values.autoscaling.enabled } }
+  replicas: { { .Values.replicaCount } }
+  { { - end } }
   selector:
     matchLabels:
-      {{- include "testchart.selectorLabels" . | nindent 6 }}
+      { { - include "testchart.selectorLabels" . | nindent 6 } }
   template:
     metadata:
-      {{- with .Values.podAnnotations }}
+      { { - with .Values.podAnnotations } }
       annotations:
-        {{- toYaml . | nindent 8 }}
-      {{- end }}
+        { { - toYaml . | nindent 8 } }
+      { { - end } }
       labels:
-        {{- include "testchart.selectorLabels" . | nindent 8 }}
+        { { - include "testchart.selectorLabels" . | nindent 8 } }
     spec:
-      {{- with .Values.imagePullSecrets }}
+      { { - with .Values.imagePullSecrets } }
       imagePullSecrets:
-        {{- toYaml . | nindent 8 }}
-      {{- end }}
-      serviceAccountName: {{ include "testchart.serviceAccountName" . }}
+        { { - toYaml . | nindent 8 } }
+      { { - end } }
+      serviceAccountName: { { include "testchart.serviceAccountName" . } }
       securityContext:
-        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+        { { - toYaml .Values.podSecurityContext | nindent 8 } }
       containers:
-        - name: {{ .Chart.Name }}
+        - name: { { .Chart.Name } }
           securityContext:
-            {{- toYaml .Values.securityContext | nindent 12 }}
+            { { - toYaml .Values.securityContext | nindent 12 } }
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
-          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          imagePullPolicy: { { .Values.image.pullPolicy } }
           ports:
             - name: http
               containerPort: 80
@@ -46,16 +46,16 @@ spec:
               path: /
               port: http
           resources:
-            {{- toYaml .Values.resources | nindent 12 }}
-      {{- with .Values.nodeSelector }}
+            { { - toYaml .Values.resources | nindent 12 } }
+      { { - with .Values.nodeSelector } }
       nodeSelector:
-        {{- toYaml . | nindent 8 }}
-      {{- end }}
-      {{- with .Values.affinity }}
+        { { - toYaml . | nindent 8 } }
+      { { - end } }
+      { { - with .Values.affinity } }
       affinity:
-        {{- toYaml . | nindent 8 }}
-      {{- end }}
-      {{- with .Values.tolerations }}
+        { { - toYaml . | nindent 8 } }
+      { { - end } }
+      { { - with .Values.tolerations } }
       tolerations:
-        {{- toYaml . | nindent 8 }}
-      {{- end }}
+        { { - toYaml . | nindent 8 } }
+      { { - end } }

@@ -3,6 +3,7 @@ package binary
 import (
 	"context"
 	"os"
+	"path/filepath"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -74,17 +75,17 @@ func Test_gobinaryLibraryAnalyzer_Required(t *testing.T) {
 	}{
 		{
 			name:     "file perm 0755",
-			filePath: "testdata/0755",
+			filePath: filepath.Join("testdata", "0755"),
 			want:     true,
 		},
 		{
 			name:     "file perm 0644",
-			filePath: "testdata/0644",
+			filePath: filepath.Join("testdata", "0644"),
 			want:     false,
 		},
 		{
 			name:     "symlink",
-			filePath: "testdata/symlink",
+			filePath: filepath.Join("testdata", "symlink"),
 			want:     false,
 		},
 	}

@@ -33,7 +33,9 @@ func CalcKey(id string, analyzerVersions, hookVersions map[string]int, artifactO
 	}
 
 	// Write policy and data contents
-	for _, paths := range [][]string{artifactOpt.MisconfScannerOption.PolicyPaths, artifactOpt.MisconfScannerOption.DataPaths} {
+	for _, paths := range [][]string{
+		artifactOpt.MisconfScannerOption.PolicyPaths, artifactOpt.MisconfScannerOption.DataPaths,
+	} {
 		for _, p := range paths {
 			s, err := dirhash.HashDir(p, "", dirhash.DefaultHash)
 			if err != nil {

@@ -195,7 +195,8 @@ func TestNewDockerImage(t *testing.T) {
 						},
 					},
 				},
-				Config: v1.Config{Env: []string{"PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"},
+				Config: v1.Config{
+					Env:         []string{"PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"},
 					Cmd:         []string{"/bin/sh"},
 					Image:       "sha256:7c41e139ba64dd2eba852a2e963ee86f2e8da3a5bbfaf10cf4349535dbf0ff08",
 					ArgsEscaped: true,
@@ -245,10 +246,12 @@ func TestNewDockerImage(t *testing.T) {
 					DiffIDs: []v1.Hash{
 						{
 							Algorithm: "sha256",
-							Hex:       "531743b7098cb2aaf615641007a129173f63ed86ca32fe7b5a246a1c47286028"},
+							Hex:       "531743b7098cb2aaf615641007a129173f63ed86ca32fe7b5a246a1c47286028",
+						},
 					},
 				},
-				Config: v1.Config{Env: []string{"PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"},
+				Config: v1.Config{
+					Env:         []string{"PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"},
 					Cmd:         []string{"/bin/sh"},
 					Image:       "sha256:7c41e139ba64dd2eba852a2e963ee86f2e8da3a5bbfaf10cf4349535dbf0ff08",
 					ArgsEscaped: true,

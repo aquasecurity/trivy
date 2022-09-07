@@ -301,6 +301,7 @@ func IsPredefined(name string) bool {
 func loadMetadata(dir string) (Plugin, error) {
 	filePath := filepath.Join(dir, configFile)
 	f, err := os.Open(filePath)
+	defer func() { _ = f.Close() }()
 	if err != nil {
 		return Plugin{}, xerrors.Errorf("file open error: %w", err)
 	}

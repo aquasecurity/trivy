@@ -1,6 +1,7 @@
 package amazon_test
 
 import (
+	"path/filepath"
 	"testing"
 	"time"
 
@@ -30,8 +31,10 @@ func TestScanner_Detect(t *testing.T) {
 		wantErr  string
 	}{
 		{
-			name:     "amazon linux 1",
-			fixtures: []string{"testdata/fixtures/amazon.yaml", "testdata/fixtures/data-source.yaml"},
+			name: "amazon linux 1",
+			fixtures: []string{
+				filepath.Join("testdata", "fixtures", "amazon.yaml"), "testdata/fixtures/data-source.yaml",
+			},
 			args: args{
 				osVer: "1.2",
 				pkgs: []ftypes.Package{
@@ -64,8 +67,10 @@ func TestScanner_Detect(t *testing.T) {
 			},
 		},
 		{
-			name:     "amazon linux 2",
-			fixtures: []string{"testdata/fixtures/amazon.yaml", "testdata/fixtures/data-source.yaml"},
+			name: "amazon linux 2",
+			fixtures: []string{
+				filepath.Join("testdata", "fixtures", "amazon.yaml"), "testdata/fixtures/data-source.yaml",
+			},
 			args: args{
 				osVer: "2",
 				pkgs: []ftypes.Package{
@@ -96,8 +101,10 @@ func TestScanner_Detect(t *testing.T) {
 			},
 		},
 		{
-			name:     "amazon linux 2022",
-			fixtures: []string{"testdata/fixtures/amazon.yaml", "testdata/fixtures/data-source.yaml"},
+			name: "amazon linux 2022",
+			fixtures: []string{
+				filepath.Join("testdata", "fixtures", "amazon.yaml"), "testdata/fixtures/data-source.yaml",
+			},
 			args: args{
 				osVer: "2022",
 				pkgs: []ftypes.Package{
@@ -128,8 +135,10 @@ func TestScanner_Detect(t *testing.T) {
 			},
 		},
 		{
-			name:     "empty version",
-			fixtures: []string{"testdata/fixtures/amazon.yaml", "testdata/fixtures/data-source.yaml"},
+			name: "empty version",
+			fixtures: []string{
+				filepath.Join("testdata", "fixtures", "amazon.yaml"), "testdata/fixtures/data-source.yaml",
+			},
 			args: args{
 				osVer: "2",
 				pkgs: []ftypes.Package{
@@ -140,8 +149,10 @@ func TestScanner_Detect(t *testing.T) {
 			},
 		},
 		{
-			name:     "Get returns an error",
-			fixtures: []string{"testdata/fixtures/invalid.yaml", "testdata/fixtures/data-source.yaml"},
+			name: "Get returns an error",
+			fixtures: []string{
+				filepath.Join("testdata", "fixtures", "invalid.yaml"), "testdata/fixtures/data-source.yaml",
+			},
 			args: args{
 				osVer: "1",
 				pkgs: []ftypes.Package{

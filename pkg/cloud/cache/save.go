@@ -59,6 +59,7 @@ func (c *Cache) Save(r *report.Report) error {
 		if err := json.NewEncoder(s).Encode(record); err != nil {
 			return err
 		}
+		_ = s.Close()
 	}
 
 	metadataFile := c.getMetadataPath()
@@ -70,6 +71,7 @@ func (c *Cache) Save(r *report.Report) error {
 		ServicesInScope: append(r.ServicesInScope, retainedServices...),
 	}
 	m, err := os.Create(metadataFile)
+	defer func() { _ = m.Close() }()
 	if err != nil {
 		return err
 	}

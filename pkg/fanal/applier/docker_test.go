@@ -86,7 +86,8 @@ func TestApplyLayers(t *testing.T) {
 									Version: "1.2.3",
 									Release: "4.5.6",
 								},
-								{ // added
+								{
+									// added
 									Name:    "musl",
 									Version: "1.2.4",
 									Release: "4.5.7",

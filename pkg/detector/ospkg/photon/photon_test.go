@@ -1,6 +1,7 @@
 package photon_test
 
 import (
+	"path/filepath"
 	"testing"
 	"time"
 
@@ -30,8 +31,10 @@ func TestScanner_Detect(t *testing.T) {
 		wantErr  string
 	}{
 		{
-			name:     "happy path",
-			fixtures: []string{"testdata/fixtures/photon.yaml", "testdata/fixtures/data-source.yaml"},
+			name: "happy path",
+			fixtures: []string{
+				filepath.Join("testdata", "fixtures", "photon.yaml"), "testdata/fixtures/data-source.yaml",
+			},
 			args: args{
 				osVer: "1.0",
 				pkgs: []ftypes.Package{
@@ -66,8 +69,10 @@ func TestScanner_Detect(t *testing.T) {
 			},
 		},
 		{
-			name:     "invalid bucket",
-			fixtures: []string{"testdata/fixtures/invalid.yaml", "testdata/fixtures/data-source.yaml"},
+			name: "invalid bucket",
+			fixtures: []string{
+				filepath.Join("testdata", "fixtures", "invalid.yaml"), "testdata/fixtures/data-source.yaml",
+			},
 			args: args{
 				osVer: "1.0",
 				pkgs: []ftypes.Package{

@@ -3,6 +3,7 @@ package attestation_test
 import (
 	"encoding/json"
 	"os"
+	"path/filepath"
 	"testing"
 
 	"github.com/in-toto/in-toto-golang/in_toto"
@@ -20,7 +21,7 @@ func TestStatement_UnmarshalJSON(t *testing.T) {
 	}{
 		{
 			name:      "happy path",
-			inputFile: "testdata/attestation.json",
+			inputFile: filepath.Join("testdata", "attestation.json"),
 			want: attestation.Statement{
 				StatementHeader: in_toto.StatementHeader{
 					Type:          "https://in-toto.io/Statement/v0.1",

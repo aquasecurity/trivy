@@ -1,6 +1,7 @@
 package alpine_test
 
 import (
+	"path/filepath"
 	"sort"
 	"testing"
 	"time"
@@ -34,8 +35,10 @@ func TestScanner_Detect(t *testing.T) {
 		wantErr  string
 	}{
 		{
-			name:     "happy path",
-			fixtures: []string{"testdata/fixtures/alpine.yaml", "testdata/fixtures/data-source.yaml"},
+			name: "happy path",
+			fixtures: []string{
+				filepath.Join("testdata", "fixtures", "alpine.yaml"), "testdata/fixtures/data-source.yaml",
+			},
 			args: args{
 				osVer: "3.10.2",
 				pkgs: []ftypes.Package{
@@ -88,8 +91,10 @@ func TestScanner_Detect(t *testing.T) {
 			},
 		},
 		{
-			name:     "contain rc",
-			fixtures: []string{"testdata/fixtures/alpine.yaml", "testdata/fixtures/data-source.yaml"},
+			name: "contain rc",
+			fixtures: []string{
+				filepath.Join("testdata", "fixtures", "alpine.yaml"), "testdata/fixtures/data-source.yaml",
+			},
 			args: args{
 				osVer: "3.10",
 				pkgs: []ftypes.Package{
@@ -116,8 +121,10 @@ func TestScanner_Detect(t *testing.T) {
 			},
 		},
 		{
-			name:     "contain pre",
-			fixtures: []string{"testdata/fixtures/alpine.yaml", "testdata/fixtures/data-source.yaml"},
+			name: "contain pre",
+			fixtures: []string{
+				filepath.Join("testdata", "fixtures", "alpine.yaml"), "testdata/fixtures/data-source.yaml",
+			},
 			args: args{
 				osVer: "3.10",
 				pkgs: []ftypes.Package{
@@ -150,8 +157,10 @@ func TestScanner_Detect(t *testing.T) {
 			},
 		},
 		{
-			name:     "repository is newer than OS version",
-			fixtures: []string{"testdata/fixtures/alpine.yaml", "testdata/fixtures/data-source.yaml"},
+			name: "repository is newer than OS version",
+			fixtures: []string{
+				filepath.Join("testdata", "fixtures", "alpine.yaml"), "testdata/fixtures/data-source.yaml",
+			},
 			args: args{
 				osVer: "3.9.3",
 				repo: &ftypes.Repository{
@@ -182,8 +191,10 @@ func TestScanner_Detect(t *testing.T) {
 			},
 		},
 		{
-			name:     "Get returns an error",
-			fixtures: []string{"testdata/fixtures/invalid.yaml", "testdata/fixtures/data-source.yaml"},
+			name: "Get returns an error",
+			fixtures: []string{
+				filepath.Join("testdata", "fixtures", "invalid.yaml"), "testdata/fixtures/data-source.yaml",
+			},
 			args: args{
 				osVer: "3.10.2",
 				pkgs: []ftypes.Package{

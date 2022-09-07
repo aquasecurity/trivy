@@ -18,7 +18,7 @@ import (
 	v1 "github.com/google/go-containerregistry/pkg/v1"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	testcontainers "github.com/testcontainers/testcontainers-go"
+	"github.com/testcontainers/testcontainers-go"
 	"github.com/testcontainers/testcontainers-go/wait"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/applier"
@@ -154,26 +154,86 @@ func TestContainerd_LocalImage(t *testing.T) {
 					RootFS: v1.RootFS{
 						Type: "layers",
 						DiffIDs: []v1.Hash{
-							{Algorithm: "sha256", Hex: "ebf12965380b39889c99a9c02e82ba465f887b45975b6e389d42e9e6a3857888"},
-							{Algorithm: "sha256", Hex: "0ea33a93585cf1917ba522b2304634c3073654062d5282c1346322967790ef33"},
-							{Algorithm: "sha256", Hex: "9922bc15eeefe1637b803ef2106f178152ce19a391f24aec838cbe2e48e73303"},
-							{Algorithm: "sha256", Hex: "dc00fbef458ad3204bbb548e2d766813f593d857b845a940a0de76aed94c94d1"},
-							{Algorithm: "sha256", Hex: "5cb2a5009179b1e78ecfef81a19756328bb266456cf9a9dbbcf9af8b83b735f0"},
-							{Algorithm: "sha256", Hex: "9bdb2c849099a99c8ab35f6fd7469c623635e8f4479a0a5a3df61e22bae509f6"},
-							{Algorithm: "sha256", Hex: "6408527580eade39c2692dbb6b0f6a9321448d06ea1c2eef06bb7f37da9c5013"},
-							{Algorithm: "sha256", Hex: "83abef706f5ae199af65d1c13d737d0eb36219f0d18e36c6d8ff06159df39a63"},
-							{Algorithm: "sha256", Hex: "c03283c257abd289a30b4f5e9e1345da0e9bfdc6ca398ee7e8fac6d2c1456227"},
-							{Algorithm: "sha256", Hex: "2da3602d664dd3f71fae83cbc566d4e80b432c6ee8bb4efd94c8e85122f503d4"},
-							{Algorithm: "sha256", Hex: "82c59ac8ee582542648e634ca5aff9a464c68ff8a054f105a58689fb52209e34"},
-							{Algorithm: "sha256", Hex: "2f4a5c9187c249834ebc28783bd3c65bdcbacaa8baa6620ddaa27846dd3ef708"},
-							{Algorithm: "sha256", Hex: "6ca56f561e677ae06c3bc87a70792642d671a4416becb9a101577c1a6e090e36"},
-							{Algorithm: "sha256", Hex: "154ad0735c360b212b167f424d33a62305770a1fcfb6363882f5c436cfbd9812"},
-							{Algorithm: "sha256", Hex: "b2a1a2d80bf0c747a4f6b0ca6af5eef23f043fcdb1ed4f3a3e750aef2dc68079"},
-							{Algorithm: "sha256", Hex: "4d116f47cb2cc77a88d609b9805f2b011a5d42339b67300166654b3922685ac9"},
-							{Algorithm: "sha256", Hex: "9b1326af1cf81505fd8e596b7f622b679ae5d290e46b25214ba26e4f7c661d60"},
-							{Algorithm: "sha256", Hex: "a66245f885f2a210071e415f0f8ac4f21f5e4eab6c0435b4082e5c3637c411cb"},
-							{Algorithm: "sha256", Hex: "ba17950e91742d6ac7055ea3a053fe764486658ca1ce8188f1e427b1fe2bc4da"},
-							{Algorithm: "sha256", Hex: "6ef42db7800507577383edf1937cb203b9b85f619feed6046594208748ceb52c"},
+							{
+								Algorithm: "sha256",
+								Hex:       "ebf12965380b39889c99a9c02e82ba465f887b45975b6e389d42e9e6a3857888",
+							},
+							{
+								Algorithm: "sha256",
+								Hex:       "0ea33a93585cf1917ba522b2304634c3073654062d5282c1346322967790ef33",
+							},
+							{
+								Algorithm: "sha256",
+								Hex:       "9922bc15eeefe1637b803ef2106f178152ce19a391f24aec838cbe2e48e73303",
+							},
+							{
+								Algorithm: "sha256",
+								Hex:       "dc00fbef458ad3204bbb548e2d766813f593d857b845a940a0de76aed94c94d1",
+							},
+							{
+								Algorithm: "sha256",
+								Hex:       "5cb2a5009179b1e78ecfef81a19756328bb266456cf9a9dbbcf9af8b83b735f0",
+							},
+							{
+								Algorithm: "sha256",
+								Hex:       "9bdb2c849099a99c8ab35f6fd7469c623635e8f4479a0a5a3df61e22bae509f6",
+							},
+							{
+								Algorithm: "sha256",
+								Hex:       "6408527580eade39c2692dbb6b0f6a9321448d06ea1c2eef06bb7f37da9c5013",
+							},
+							{
+								Algorithm: "sha256",
+								Hex:       "83abef706f5ae199af65d1c13d737d0eb36219f0d18e36c6d8ff06159df39a63",
+							},
+							{
+								Algorithm: "sha256",
+								Hex:       "c03283c257abd289a30b4f5e9e1345da0e9bfdc6ca398ee7e8fac6d2c1456227",
+							},
+							{
+								Algorithm: "sha256",
+								Hex:       "2da3602d664dd3f71fae83cbc566d4e80b432c6ee8bb4efd94c8e85122f503d4",
+							},
+							{
+								Algorithm: "sha256",
+								Hex:       "82c59ac8ee582542648e634ca5aff9a464c68ff8a054f105a58689fb52209e34",
+							},
+							{
+								Algorithm: "sha256",
+								Hex:       "2f4a5c9187c249834ebc28783bd3c65bdcbacaa8baa6620ddaa27846dd3ef708",
+							},
+							{
+								Algorithm: "sha256",
+								Hex:       "6ca56f561e677ae06c3bc87a70792642d671a4416becb9a101577c1a6e090e36",
+							},
+							{
+								Algorithm: "sha256",
+								Hex:       "154ad0735c360b212b167f424d33a62305770a1fcfb6363882f5c436cfbd9812",
+							},
+							{
+								Algorithm: "sha256",
+								Hex:       "b2a1a2d80bf0c747a4f6b0ca6af5eef23f043fcdb1ed4f3a3e750aef2dc68079",
+							},
+							{
+								Algorithm: "sha256",
+								Hex:       "4d116f47cb2cc77a88d609b9805f2b011a5d42339b67300166654b3922685ac9",
+							},
+							{
+								Algorithm: "sha256",
+								Hex:       "9b1326af1cf81505fd8e596b7f622b679ae5d290e46b25214ba26e4f7c661d60",
+							},
+							{
+								Algorithm: "sha256",
+								Hex:       "a66245f885f2a210071e415f0f8ac4f21f5e4eab6c0435b4082e5c3637c411cb",
+							},
+							{
+								Algorithm: "sha256",
+								Hex:       "ba17950e91742d6ac7055ea3a053fe764486658ca1ce8188f1e427b1fe2bc4da",
+							},
+							{
+								Algorithm: "sha256",
+								Hex:       "6ef42db7800507577383edf1937cb203b9b85f619feed6046594208748ceb52c",
+							},
 						},
 					},
 					Config: v1.Config{

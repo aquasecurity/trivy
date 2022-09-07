@@ -9,7 +9,7 @@ fred: &F
 main:
   <<: *default
   name:
-    <<: [*J, *F]
+    <<: [ *J, *F ]
   comment: |
     multi
     line

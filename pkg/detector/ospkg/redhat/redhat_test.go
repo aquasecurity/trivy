@@ -2,9 +2,11 @@ package redhat_test
 
 import (
 	"os"
+	"path/filepath"
 	"testing"
 	"time"
 
+	"github.com/aquasecurity/trivy-db/pkg/db"
 	"github.com/stretchr/testify/require"
 	fake "k8s.io/utils/clock/testing"
 
@@ -38,8 +40,8 @@ func TestScanner_Detect(t *testing.T) {
 		{
 			name: "happy path",
 			fixtures: []string{
-				"testdata/fixtures/redhat.yaml",
-				"testdata/fixtures/cpe.yaml",
+				filepath.Join("testdata", "fixtures", "redhat.yaml"),
+				filepath.Join("testdata", "fixtures", "cpe.yaml"),
 			},
 			args: args{
 				osVer: "7.6",
@@ -95,8 +97,8 @@ func TestScanner_Detect(t *testing.T) {
 		{
 			name: "happy path: multiple RHSA-IDs",
 			fixtures: []string{
-				"testdata/fixtures/redhat.yaml",
-				"testdata/fixtures/cpe.yaml",
+				filepath.Join("testdata", "fixtures", "redhat.yaml"),
+				filepath.Join("testdata", "fixtures", "cpe.yaml"),
 			},
 			args: args{
 				osVer: "7.5",
@@ -154,8 +156,8 @@ func TestScanner_Detect(t *testing.T) {
 		{
 			name: "happy path: package without architecture",
 			fixtures: []string{
-				"testdata/fixtures/redhat.yaml",
-				"testdata/fixtures/cpe.yaml",
+				filepath.Join("testdata", "fixtures", "redhat.yaml"),
+				filepath.Join("testdata", "fixtures", "cpe.yaml"),
 			},
 			args: args{
 				osVer: "7.6",
@@ -199,8 +201,8 @@ func TestScanner_Detect(t *testing.T) {
 		{
 			name: "happy path: advisories have different arches",
 			fixtures: []string{
-				"testdata/fixtures/redhat.yaml",
-				"testdata/fixtures/cpe.yaml",
+				filepath.Join("testdata", "fixtures", "redhat.yaml"),
+				filepath.Join("testdata", "fixtures", "cpe.yaml"),
 			},
 			args: args{
 				osVer: "7.6",
@@ -244,8 +246,8 @@ func TestScanner_Detect(t *testing.T) {
 		{
 			name: "no build info",
 			fixtures: []string{
-				"testdata/fixtures/redhat.yaml",
-				"testdata/fixtures/cpe.yaml",
+				filepath.Join("testdata", "fixtures", "redhat.yaml"),
+				filepath.Join("testdata", "fixtures", "cpe.yaml"),
 			},
 			args: args{
 				osVer: "8.3",
@@ -276,8 +278,8 @@ func TestScanner_Detect(t *testing.T) {
 		{
 			name: "modular packages",
 			fixtures: []string{
-				"testdata/fixtures/redhat.yaml",
-				"testdata/fixtures/cpe.yaml",
+				filepath.Join("testdata", "fixtures", "redhat.yaml"),
+				filepath.Join("testdata", "fixtures", "cpe.yaml"),
 			},
 			args: args{
 				osVer: "8.3",
@@ -340,7 +342,7 @@ func TestScanner_Detect(t *testing.T) {
 			name: "broken value",
 			fixtures: []string{
 				"testdata/fixtures/invalid-type.yaml",
-				"testdata/fixtures/cpe.yaml",
+				filepath.Join("testdata", "fixtures", "cpe.yaml"),
 			},
 			args: args{
 				osVer: "7",
@@ -362,6 +364,8 @@ func TestScanner_Detect(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			dbtest.InitDB(t, tt.fixtures)
+
+			defer func() { _ = db.Close() }()
 
 			s := redhat.NewScanner()
 			got, err := s.Detect(tt.args.osVer, nil, tt.args.pkgs)
