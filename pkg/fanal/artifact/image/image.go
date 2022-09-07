@@ -471,7 +471,7 @@ func (a Artifact) inspectSbomAttestation(ctx context.Context) (types.ArtifactRef
 		return types.ArtifactReference{}, xerrors.Errorf("failed to get repo digest: %w", err)
 	}
 
-	client, err := rekor.NewClient()
+	client, err := rekor.NewClient(a.artifactOption.RekorUrl)
 	if err != nil {
 		return types.ArtifactReference{}, xerrors.Errorf("failed to create rekor client: %w", err)
 	}

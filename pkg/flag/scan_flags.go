@@ -39,7 +39,13 @@ var (
 		Name:       "sbom-from",
 		ConfigName: "scan.sbom-from",
 		Value:      "",
-		Usage:      "comma-separated list of SBOM source (rekor)", // TODO: OCI registry? OCI registry attestation tag?
+		Usage:      "comma-separated list of SBOM source (rekor)",
+	}
+	RekorUrlFlag = Flag{
+		Name:       "rekor-url",
+		ConfigName: "scan.rekor-url",
+		Value:      "https://rekor.sigstore.dev",
+		Usage:      "URL of rekor server (default \"https://rekor.sigstore.dev\")",
 	}
 )
 
@@ -49,6 +55,7 @@ type ScanFlagGroup struct {
 	OfflineScan    *Flag
 	SecurityChecks *Flag
 	SbomFrom       *Flag
+	RekorUrl       *Flag
 }
 
 type ScanOptions struct {
@@ -58,6 +65,7 @@ type ScanOptions struct {
 	OfflineScan    bool
 	SecurityChecks []string
 	SbomFrom       []string
+	RekorUrl       string
 }
 
 func NewScanFlagGroup() *ScanFlagGroup {
@@ -67,6 +75,7 @@ func NewScanFlagGroup() *ScanFlagGroup {
 		OfflineScan:    &OfflineScanFlag,
 		SecurityChecks: &SecurityChecksFlag,
 		SbomFrom:       &SbomFromFlag,
+		RekorUrl:       &RekorUrlFlag,
 	}
 }
 
@@ -100,6 +109,7 @@ func (f *ScanFlagGroup) ToOptions(args []string) (ScanOptions, error) {
 		OfflineScan:    getBool(f.OfflineScan),
 		SecurityChecks: securityChecks,
 		SbomFrom:       sbomFroms,
+		RekorUrl:       getString(f.RekorUrl),
 	}, nil
 }
 

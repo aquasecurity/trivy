@@ -24,6 +24,7 @@ type Option struct {
 	RepoCommit        string
 	RepoTag           string
 	SbomFroms         []string
+	RekorUrl          string
 
 	MisconfScannerOption misconf.ScannerOption
 	SecretScannerOption  secret.ScannerOption
