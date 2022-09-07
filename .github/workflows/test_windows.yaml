@@ -24,16 +24,13 @@ jobs:
         with:
           go-version: ${{ env.GO_VERSION }}
 
-      - name: Install Scoop
+      - name: Install TinyGo - Windows
         run: |
           Set-ExecutionPolicy RemoteSigned -scope CurrentUser
           iex "& {$(irm get.scoop.sh)} -RunAsAdmin"
-
-      - name: Install TinyGo - Windows
-        run: |
+          Join-Path (Resolve-Path ~).Path "scoop\shims" >> $Env:GITHUB_PATH
           scoop install tinygo
-        env:
-          PATH: $PATH:C:\Users\runneradmin\scoop\shims
+          
 
       - name: Run unit tests
         run: make test
@@ -48,16 +45,12 @@ jobs:
           go-version: ${{ env.GO_VERSION }}
         id: go
 
-      - name: Install Scoop
+      - name: Install TinyGo - Windows
         run: |
           Set-ExecutionPolicy RemoteSigned -scope CurrentUser
           iex "& {$(irm get.scoop.sh)} -RunAsAdmin"
-
-      - name: Install TinyGo - Windows
-        run: |
+          Join-Path (Resolve-Path ~).Path "scoop\shims" >> $Env:GITHUB_PATH
           scoop install tinygo
-        env:
-          PATH: $PATH:C:\Users\runneradmin\scoop\shims
 
       - name: Checkout
         uses: actions/checkout@v3
