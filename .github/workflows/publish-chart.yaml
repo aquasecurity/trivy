@@ -15,8 +15,8 @@ env:
   HELM_REP: helm-charts
   GH_OWNER: aquasecurity
   CHART_DIR: helm/trivy
-  KIND_VERSION: "v0.11.1"
-  KIND_IMAGE: "kindest/node:v1.21.1@sha256:69860bda5563ac81e3c0057d654b5253219618a22ec3a346306239bba8cfa1a6"
+  KIND_VERSION: "v0.14.0"
+  KIND_IMAGE: "kindest/node:v1.23.6@sha256:b1fa224cc6c7ff32455e0b1fd9cbfd3d3bc87ecaa8fcb06961ed1afb3db0f9ae"
 jobs:
   test-chart:
     runs-on: ubuntu-20.04
@@ -45,7 +45,7 @@ jobs:
         run: ct lint-and-install --validate-maintainers=false --charts helm/trivy
       - name: Run chart-testing (Ingress enabled)
         run: |
-          sed -i -e '117s,false,'true',g' ./helm/trivy/values.yaml
+          sed -i -e '133s,false,'true',g' ./helm/trivy/values.yaml
           ct lint-and-install --validate-maintainers=false --charts helm/trivy
 
   publish-chart:
