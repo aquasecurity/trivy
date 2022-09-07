@@ -36,21 +36,6 @@ jobs:
     name: Module Integration Test - macOS
     runs-on: macos-latest
     steps:
-      - name: go mod tidy
-        run: |
-          go mod tidy
-          if [ -n "$(git status --porcelain)" ]; then
-            echo "Run 'go mod tidy' and push it"
-            exit 1
-          fi
-
-      - name: Lint
-        uses: golangci/golangci-lint-action@v3.2.0
-        with:
-          version: v1.45
-          args: --deadline=30m
-          skip-cache: true # https://github.com/golangci/golangci-lint-action/issues/244#issuecomment-1052197778
-
       - name: Install TinyGo - macOS
         run: |
           brew tap tinygo-org/tools
