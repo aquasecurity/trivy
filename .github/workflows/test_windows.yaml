@@ -29,11 +29,12 @@ jobs:
           Set-ExecutionPolicy RemoteSigned -scope CurrentUser
           iex "& {$(irm get.scoop.sh)} -RunAsAdmin"
           Join-Path (Resolve-Path ~).Path "scoop\shims" >> $Env:GITHUB_PATH
-          scoop install tinygo
+          scoop install tinygo@${{ env.TINYGO_VERSION }}
           
 
       - name: Run unit tests
-        run: make test
+        run: |
+          go test -v -short -coverprofile=coverage.txt -covermode=atomic ./...
 
   module-test:
     name: Module Integration Test - Windows
@@ -50,13 +51,13 @@ jobs:
           Set-ExecutionPolicy RemoteSigned -scope CurrentUser
           iex "& {$(irm get.scoop.sh)} -RunAsAdmin"
           Join-Path (Resolve-Path ~).Path "scoop\shims" >> $Env:GITHUB_PATH
-          scoop install tinygo
+          scoop install tinygo@${{ env.TINYGO_VERSION }}
 
       - name: Checkout
         uses: actions/checkout@v3
 
       - name: Run module integration tests
         run: |
-          make test-module-integration
+          go test -v -tags=module_integration .\integration\...
 
 
