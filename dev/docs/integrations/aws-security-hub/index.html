@@ -64,7 +64,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#aws-security-hub" class="md-skip">
+        <a href="#macro-syntax-error" class="md-skip">
           Skip to content
         </a>
       
@@ -1810,54 +1810,9 @@
         
       
       
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          AWS Security Hub
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
       <a href="./" class="md-nav__link md-nav__link--active">
         AWS Security Hub
       </a>
-      
-        
-
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#upload-findings-to-security-hub" class="md-nav__link">
-    Upload findings to Security Hub
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#customize" class="md-nav__link">
-    Customize
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#reference" class="md-nav__link">
-    Reference
-  </a>
-  
-</li>
-      
-    </ul>
-  
-</nav>
       
     </li>
   
@@ -2768,35 +2723,6 @@
     
   
   
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#upload-findings-to-security-hub" class="md-nav__link">
-    Upload findings to Security Hub
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#customize" class="md-nav__link">
-    Customize
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#reference" class="md-nav__link">
-    Reference
-  </a>
-  
-</li>
-      
-    </ul>
-  
 </nav>
                   </div>
                 </div>
@@ -2809,23 +2735,10 @@
                 
 
 
-<h1 id="aws-security-hub">AWS Security Hub</h1>
-<h2 id="upload-findings-to-security-hub">Upload findings to Security Hub</h2>
-<p>In the following example using the template <code>asff.tpl</code>, <a href="https://docs.aws.amazon.com/securityhub/latest/userguide/securityhub-findings-format.html">ASFF</a> file can be generated.</p>
-<div class="highlight"><pre><span></span><code>$ AWS_REGION=us-west-1 AWS_ACCOUNT_ID=123456789012 trivy image --format template --template &quot;@contrib/asff.tpl&quot; -o report.asff golang:1.12-alpine
-</code></pre></div>
-<p>ASFF template needs AWS_REGION and AWS_ACCOUNT_ID from environment variables.</p>
-<p>Then, you can upload it with AWS CLI.</p>
-<div class="highlight"><pre><span></span><code>$ aws securityhub batch-import-findings --findings file://report.asff
-</code></pre></div>
-<h2 id="customize">Customize</h2>
-<p>You can customize <a href="https://github.com/aquasecurity/trivy/blob/main/contrib/asff.tpl">asff.tpl</a></p>
-<div class="highlight"><pre><span></span><code>$ export AWS_REGION=us-west-1
-$ export AWS_ACCOUNT_ID=123456789012
-$ trivy image --format template --template &quot;@your-asff.tpl&quot; -o report.asff golang:1.12-alpine
-</code></pre></div>
-<h2 id="reference">Reference</h2>
-<p>https://aws.amazon.com/blogs/security/how-to-build-ci-cd-pipeline-container-vulnerability-scanning-trivy-and-aws-security-hub/</p>
+<h1 id="macro-syntax-error"><em>Macro Syntax Error</em></h1>
+<p><em>Line 16 in Markdown file:</em> <strong>expected token 'end of print statement', got 'string'</strong> 
+<div class="highlight"><pre><span></span><code><span class="s2">&quot;ProductArn&quot;</span><span class="p">:</span> <span class="s2">&quot;arn:aws:securityhub:{{ env &quot;</span><span class="n">AWS_REGION</span><span class="s2">&quot; }}:{{ env &quot;</span><span class="n">AWS_ACCOUNT_ID</span><span class="s2">&quot; }}:product/aquasecurity/trivy&quot;</span><span class="p">,</span>
+</code></pre></div></p>
 
               
             </article>
