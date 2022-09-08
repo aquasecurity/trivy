@@ -2,7 +2,7 @@
 
 ## Upload findings to Security Hub
 
-In the following example using the template `asff.tpl`, [ASFF](https://docs.aws.amazon.com/securityhub/latest/userguide/securityhub-findings-format.html) file can be generated.
+In the following example using the template [asff.tpl](/contrib/asff.tpl), a list of [ASFFs](https://docs.aws.amazon.com/securityhub/latest/userguide/securityhub-findings-format.html) are generated.
 
 ```
 $ AWS_REGION=us-west-1 AWS_ACCOUNT_ID=123456789012 trivy image --format template --template "@contrib/asff.tpl" -o report.asff golang:1.12-alpine
