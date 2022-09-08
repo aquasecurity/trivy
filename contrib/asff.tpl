@@ -1,5 +1,4 @@
-{
-    "Findings": [
+[
     {{- $t_first := true -}}
     {{- range . -}}
     {{- $target := .Target -}}
@@ -121,4 +120,3 @@
         {{- end -}}
       {{- end }}
     ]
-}
