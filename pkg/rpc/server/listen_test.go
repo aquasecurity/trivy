@@ -6,6 +6,7 @@ import (
 	"net/http/httptest"
 	"os"
 	"path"
+	"path/filepath"
 	"sync"
 	"testing"
 	"time"
@@ -108,6 +109,7 @@ func Test_dbWorker_update(t *testing.T) {
 			cacheDir := t.TempDir()
 
 			require.NoError(t, db.Init(cacheDir), tt.name)
+			defer func() { _ = db.Close() }()
 
 			mockDBClient := new(dbFile.MockOperation)
 			mockDBClient.On("NeedsUpdate",
@@ -122,11 +124,11 @@ func Test_dbWorker_update(t *testing.T) {
 						err := os.MkdirAll(db.Dir(tmpDir), 0744)
 						require.NoError(t, err)
 
-						_, err = utils.CopyFile("testdata/new.db", db.Path(tmpDir))
+						_, err = utils.CopyFile(filepath.Join("testdata", "new.db"), db.Path(tmpDir))
 						require.NoError(t, err)
 
 						// fake download: copy testdata/metadata.json to tmpDir/db/metadata.json
-						_, err = utils.CopyFile("testdata/metadata.json", metadata.Path(tmpDir))
+						_, err = utils.CopyFile(filepath.Join("testdata", "metadata.json"), metadata.Path(tmpDir))
 						require.NoError(t, err)
 					}).Return(tt.download.err)
 			}
@@ -222,6 +224,8 @@ func Test_newServeMux(t *testing.T) {
 
 			c, err := cache.NewFSCache(t.TempDir())
 			require.NoError(t, err)
+
+			defer func() { _ = c.Close() }()
 
 			ts := httptest.NewServer(newServeMux(
 				c, dbUpdateWg, requestWg, tt.args.token, tt.args.tokenHeader),

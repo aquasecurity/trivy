@@ -3,6 +3,7 @@ package local
 import (
 	"context"
 	"errors"
+	"path/filepath"
 	"testing"
 	"time"
 
@@ -46,7 +47,7 @@ func TestScanner_Scan(t *testing.T) {
 					SecurityChecks: []string{types.SecurityCheckVulnerability},
 				},
 			},
-			fixtures: []string{"testdata/fixtures/happy.yaml"},
+			fixtures: []string{filepath.Join("testdata", "fixtures", "happy.yaml")},
 			applyLayersExpectation: ApplierApplyLayersExpectation{
 				Args: ApplierApplyLayersArgs{
 					BlobIDs: []string{"sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10"},
@@ -154,7 +155,7 @@ func TestScanner_Scan(t *testing.T) {
 					ListAllPackages: true,
 				},
 			},
-			fixtures: []string{"testdata/fixtures/happy.yaml"},
+			fixtures: []string{filepath.Join("testdata", "fixtures", "happy.yaml")},
 			applyLayersExpectation: ApplierApplyLayersExpectation{
 				Args: ApplierApplyLayersArgs{
 					BlobIDs: []string{"sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10"},
@@ -407,7 +408,7 @@ func TestScanner_Scan(t *testing.T) {
 					SecurityChecks: []string{types.SecurityCheckVulnerability},
 				},
 			},
-			fixtures: []string{"testdata/fixtures/happy.yaml"},
+			fixtures: []string{filepath.Join("testdata", "fixtures", "happy.yaml")},
 			applyLayersExpectation: ApplierApplyLayersExpectation{
 				Args: ApplierApplyLayersArgs{
 					BlobIDs: []string{"sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10"},
@@ -487,7 +488,7 @@ func TestScanner_Scan(t *testing.T) {
 					SecurityChecks: []string{types.SecurityCheckVulnerability},
 				},
 			},
-			fixtures: []string{"testdata/fixtures/happy.yaml"},
+			fixtures: []string{filepath.Join("testdata", "fixtures", "happy.yaml")},
 			applyLayersExpectation: ApplierApplyLayersExpectation{
 				Args: ApplierApplyLayersArgs{
 					BlobIDs: []string{"sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10"},
@@ -567,7 +568,7 @@ func TestScanner_Scan(t *testing.T) {
 					SecurityChecks: []string{types.SecurityCheckVulnerability},
 				},
 			},
-			fixtures: []string{"testdata/fixtures/happy.yaml"},
+			fixtures: []string{filepath.Join("testdata", "fixtures", "happy.yaml")},
 			applyLayersExpectation: ApplierApplyLayersExpectation{
 				Args: ApplierApplyLayersArgs{
 					BlobIDs: []string{"sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10"},
@@ -640,7 +641,7 @@ func TestScanner_Scan(t *testing.T) {
 					SecurityChecks: []string{types.SecurityCheckVulnerability},
 				},
 			},
-			fixtures: []string{"testdata/fixtures/happy.yaml"},
+			fixtures: []string{filepath.Join("testdata", "fixtures", "happy.yaml")},
 			applyLayersExpectation: ApplierApplyLayersExpectation{
 				Args: ApplierApplyLayersArgs{
 					BlobIDs: []string{"sha256:a6d503001157aedc826853f9b67f26d35966221b158bff03849868ae4a821116"},
@@ -665,7 +666,7 @@ func TestScanner_Scan(t *testing.T) {
 					SecurityChecks: []string{types.SecurityCheckVulnerability},
 				},
 			},
-			fixtures: []string{"testdata/fixtures/happy.yaml"},
+			fixtures: []string{filepath.Join("testdata", "fixtures", "happy.yaml")},
 			applyLayersExpectation: ApplierApplyLayersExpectation{
 				Args: ApplierApplyLayersArgs{
 					BlobIDs: []string{"sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10"},
@@ -774,7 +775,7 @@ func TestScanner_Scan(t *testing.T) {
 					SecurityChecks: []string{types.SecurityCheckConfig},
 				},
 			},
-			fixtures: []string{"testdata/fixtures/happy.yaml"},
+			fixtures: []string{filepath.Join("testdata", "fixtures", "happy.yaml")},
 			applyLayersExpectation: ApplierApplyLayersExpectation{
 				Args: ApplierApplyLayersArgs{
 					BlobIDs: []string{"sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10"},
@@ -924,7 +925,7 @@ func TestScanner_Scan(t *testing.T) {
 					SecurityChecks: []string{types.SecurityCheckVulnerability},
 				},
 			},
-			fixtures: []string{"testdata/fixtures/happy.yaml"},
+			fixtures: []string{filepath.Join("testdata", "fixtures", "happy.yaml")},
 			applyLayersExpectation: ApplierApplyLayersExpectation{
 				Args: ApplierApplyLayersArgs{
 					BlobIDs: []string{"sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10"},
@@ -945,7 +946,7 @@ func TestScanner_Scan(t *testing.T) {
 					SecurityChecks: []string{types.SecurityCheckVulnerability},
 				},
 			},
-			fixtures: []string{"testdata/fixtures/sad.yaml"},
+			fixtures: []string{filepath.Join("testdata", "fixtures", "sad.yaml")},
 			applyLayersExpectation: ApplierApplyLayersExpectation{
 				Args: ApplierApplyLayersArgs{
 					BlobIDs: []string{"sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10"},

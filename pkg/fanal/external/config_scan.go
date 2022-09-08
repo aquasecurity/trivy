@@ -72,3 +72,7 @@ func (s ConfigScanner) Scan(dir string) ([]types.Misconfiguration, error) {
 
 	return mergedLayer.Misconfigurations, nil
 }
+
+func (s *ConfigScanner) Close() error {
+	return s.cache.Close()
+}

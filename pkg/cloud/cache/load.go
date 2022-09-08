@@ -13,6 +13,7 @@ func (c *Cache) loadMetadata() (*Metadata, error) {
 	if err != nil {
 		return nil, ErrCacheNotFound
 	}
+	defer func() { _ = m.Close() }()
 
 	var metadata Metadata
 	if err := json.NewDecoder(m).Decode(&metadata); err != nil {
@@ -34,19 +35,27 @@ func (c *Cache) LoadReport(services ...string) (*report.Report, error) {
 		if !contains(metadata.ServicesInScope, service) {
 			continue
 		}
-		serviceFile := c.getServicePath(service)
-		s, err := os.Open(serviceFile)
-		if err != nil {
-			return nil, err
+		if r, err := c.loadService(service, base); err != nil {
+			return r, err
 		}
-		var serviceRecord Record
-		if err := json.NewDecoder(s).Decode(&serviceRecord); err != nil {
-			return nil, err
-		}
-		base.AddResultsForService(service, serviceRecord.Results, serviceRecord.CreationTime)
 	}
 
 	return base, nil
+}
+
+func (c *Cache) loadService(service string, base *report.Report) (*report.Report, error) {
+	serviceFile := c.getServicePath(service)
+	s, err := os.Open(serviceFile)
+	if err != nil {
+		return nil, err
+	}
+	defer func() { _ = s.Close() }()
+	var serviceRecord Record
+	if err := json.NewDecoder(s).Decode(&serviceRecord); err != nil {
+		return nil, err
+	}
+	base.AddResultsForService(service, serviceRecord.Results, serviceRecord.CreationTime)
+	return nil, nil
 }
 
 func contains(s []string, e string) bool {

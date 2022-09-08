@@ -1,6 +1,7 @@
 package rocky_test
 
 import (
+	"path/filepath"
 	"testing"
 	"time"
 
@@ -30,8 +31,10 @@ func TestScanner_Detect(t *testing.T) {
 		wantErr  string
 	}{
 		{
-			name:     "happy path",
-			fixtures: []string{"testdata/fixtures/rocky.yaml", "testdata/fixtures/data-source.yaml"},
+			name: "happy path",
+			fixtures: []string{
+				filepath.Join("testdata", "fixtures", "rocky.yaml"), "testdata/fixtures/data-source.yaml",
+			},
 			args: args{
 				osVer: "8.5",
 				pkgs: []ftypes.Package{
@@ -67,8 +70,10 @@ func TestScanner_Detect(t *testing.T) {
 			},
 		},
 		{
-			name:     "skip modular package",
-			fixtures: []string{"testdata/fixtures/modular.yaml", "testdata/fixtures/data-source.yaml"},
+			name: "skip modular package",
+			fixtures: []string{
+				filepath.Join("testdata", "fixtures", "modular.yaml"), "testdata/fixtures/data-source.yaml",
+			},
 			args: args{
 				osVer: "8.5",
 				pkgs: []ftypes.Package{
@@ -91,8 +96,10 @@ func TestScanner_Detect(t *testing.T) {
 			want: nil,
 		},
 		{
-			name:     "Get returns an error",
-			fixtures: []string{"testdata/fixtures/invalid.yaml", "testdata/fixtures/data-source.yaml"},
+			name: "Get returns an error",
+			fixtures: []string{
+				filepath.Join("testdata", "fixtures", "invalid.yaml"), "testdata/fixtures/data-source.yaml",
+			},
 			args: args{
 				osVer: "8.5",
 				pkgs: []ftypes.Package{

@@ -26,7 +26,7 @@ func (f fakeLayer) MediaType() (types.MediaType, error) {
 }
 
 func TestNewArtifact(t *testing.T) {
-	layer, err := tarball.LayerFromFile("testdata/test.tar.gz")
+	layer, err := tarball.LayerFromFile(filepath.Join("testdata", "test.tar.gz"))
 	require.NoError(t, err)
 
 	flayer := fakeLayer{layer}
@@ -89,7 +89,8 @@ func TestNewArtifact(t *testing.T) {
 						Size:      100,
 						Digest: v1.Hash{
 							Algorithm: "sha256",
-							Hex:       "cba33656188782852f58993f45b68bfb8577f64cdcf02a604e3fc2afbeb5f2d8"},
+							Hex:       "cba33656188782852f58993f45b68bfb8577f64cdcf02a604e3fc2afbeb5f2d8",
+						},
 						Annotations: map[string]string{
 							"org.opencontainers.image.title": "bundle.tar.gz",
 						},
@@ -117,12 +118,12 @@ func TestArtifact_Download(t *testing.T) {
 	}{
 		{
 			name:  "happy path",
-			input: "testdata/test.tar.gz",
+			input: filepath.Join("testdata", "test.tar.gz"),
 			want:  "Hello, world",
 		},
 		{
 			name:    "invalid gzip",
-			input:   "testdata/test.txt",
+			input:   filepath.Join("testdata", "test.txt"),
 			wantErr: "unexpected EOF",
 		},
 	}
@@ -147,7 +148,8 @@ func TestArtifact_Download(t *testing.T) {
 						Size:      100,
 						Digest: v1.Hash{
 							Algorithm: "sha256",
-							Hex:       "cba33656188782852f58993f45b68bfb8577f64cdcf02a604e3fc2afbeb5f2d8"},
+							Hex:       "cba33656188782852f58993f45b68bfb8577f64cdcf02a604e3fc2afbeb5f2d8",
+						},
 						Annotations: map[string]string{
 							"org.opencontainers.image.title": "bundle.tar.gz",
 						},

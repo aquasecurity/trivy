@@ -4,6 +4,7 @@ import (
 	"errors"
 	"io"
 	"os"
+	"path/filepath"
 	"strings"
 	"testing"
 
@@ -28,7 +29,7 @@ func TestDir_Walk(t *testing.T) {
 	}{
 		{
 			name:    "happy path",
-			rootDir: "testdata/fs",
+			rootDir: filepath.Join("testdata", "fs"),
 			analyzeFn: func(filePath string, info os.FileInfo, opener analyzer.Opener) error {
 				if filePath == "testdata/fs/bar" {
 					got, err := opener()
@@ -44,7 +45,7 @@ func TestDir_Walk(t *testing.T) {
 		},
 		{
 			name:    "skip file",
-			rootDir: "testdata/fs",
+			rootDir: filepath.Join("testdata", "fs"),
 			fields: fields{
 				skipFiles: []string{"testdata/fs/bar"},
 			},
@@ -70,7 +71,7 @@ func TestDir_Walk(t *testing.T) {
 		},
 		{
 			name:    "sad path",
-			rootDir: "testdata/fs",
+			rootDir: filepath.Join("testdata", "fs"),
 			analyzeFn: func(filePath string, info os.FileInfo, opener analyzer.Opener) error {
 				return errors.New("error")
 			},

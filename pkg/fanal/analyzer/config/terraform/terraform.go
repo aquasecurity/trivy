@@ -1,6 +1,7 @@
 package terraform
 
 import (
+	"bytes"
 	"context"
 	"io"
 	"os"
@@ -29,6 +30,8 @@ func (a terraformConfigAnalyzer) Analyze(_ context.Context, input analyzer.Analy
 	if err != nil {
 		return nil, xerrors.Errorf("read error (%s): %w", input.FilePath, err)
 	}
+	b = bytes.Replace(b, []byte("\r"), []byte(""), -1)
+
 	return &analyzer.AnalysisResult{
 		Files: map[types.HandlerType][]types.File{
 			// It will be passed to misconf post handler

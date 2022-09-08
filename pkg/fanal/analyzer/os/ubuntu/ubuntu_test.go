@@ -3,6 +3,7 @@ package ubuntu
 import (
 	"context"
 	"os"
+	"path/filepath"
 	"testing"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
@@ -29,7 +30,7 @@ func Test_ubuntuOSAnalyzer_Analyze(t *testing.T) {
 		},
 		{
 			name:      "sad path",
-			inputFile: "testdata/invalid",
+			inputFile: filepath.Join("testdata", "invalid"),
 			wantErr:   "ubuntu: unable to analyze OS information",
 		},
 	}

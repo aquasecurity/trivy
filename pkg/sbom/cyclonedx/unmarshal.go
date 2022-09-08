@@ -159,12 +159,12 @@ func parsePkgs(components []cdx.Component, seen map[string]struct{}) ([]ftypes.P
 // e.g. Library A, B, C, D and E will be returned as dependencies of Application 1.
 // type: Application 1
 //   - type: Library A
-//     - type: Library B
+//   - type: Library B
 //   - type: Application 2
-//     - type: Library C
-//     - type: Application 3
-//       - type: Library D
-//       - type: Library E
+//   - type: Library C
+//   - type: Application 3
+//   - type: Library D
+//   - type: Library E
 func (c *CycloneDX) walkDependencies(rootRef string) []cdx.Component {
 	var components []cdx.Component
 	for _, dep := range c.dependencies[rootRef] {

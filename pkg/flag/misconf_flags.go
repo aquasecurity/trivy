@@ -6,9 +6,10 @@ import (
 
 // e.g. config yaml
 // misconfiguration:
-//   trace: true
-//   config-policy: "custom-policy/policy"
-//   policy-namespaces: "user"
+//
+//	trace: true
+//	config-policy: "custom-policy/policy"
+//	policy-namespaces: "user"
 var (
 	IncludeNonFailuresFlag = Flag{
 		Name:       "include-non-failures",

@@ -19,12 +19,12 @@ func Test_gradleLockAnalyzer_Analyze(t *testing.T) {
 	}{
 		{
 			name:      "happy path",
-			inputFile: "testdata/happy.lockfile",
+			inputFile: filepath.Join("testdata", "happy.lockfile"),
 			want: &analyzer.AnalysisResult{
 				Applications: []types.Application{
 					{
 						Type:     types.Gradle,
-						FilePath: "testdata/happy.lockfile",
+						FilePath: filepath.Join("testdata", "happy.lockfile"),
 						Libraries: []types.Package{
 							{
 								Name:    "com.example:example",
@@ -37,7 +37,7 @@ func Test_gradleLockAnalyzer_Analyze(t *testing.T) {
 		},
 		{
 			name:      "empty file",
-			inputFile: "testdata/empty.lockfile",
+			inputFile: filepath.Join("testdata", "empty.lockfile"),
 		},
 	}
 

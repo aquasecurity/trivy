@@ -16,10 +16,11 @@ import (
 
 // e.g. config yaml
 // report:
-//   format: table
-//   dependency-tree: true
-//   exit-code: 1
-//   severity: HIGH,CRITICAL
+//
+//	format: table
+//	dependency-tree: true
+//	exit-code: 1
+//	severity: HIGH,CRITICAL
 var (
 	FormatFlag = Flag{
 		Name:       "format",

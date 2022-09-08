@@ -4,6 +4,7 @@ import (
 	"context"
 	"os"
 	"path/filepath"
+	"runtime"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -16,6 +17,10 @@ import (
 )
 
 func TestManager_Register(t *testing.T) {
+	if runtime.GOOS == "windows" {
+		t.Skip("skipping test in Windows for now - wasm complicated")
+	}
+
 	tests := []struct {
 		name                    string
 		noModuleDir             bool

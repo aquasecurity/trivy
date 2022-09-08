@@ -31,10 +31,9 @@ jobs:
           Join-Path (Resolve-Path ~).Path "scoop\shims" >> $Env:GITHUB_PATH
           scoop install tinygo@${{ env.TINYGO_VERSION }}
 
-
       - name: Run unit tests
         run: |
-          go test -v -short -coverprofile=coverage.txt -covermode=atomic ./...
+          go test -v -short -coverprofile="coverage.txt" -covermode=atomic .\...
 
   module-test:
     name: Module Integration Test - Windows

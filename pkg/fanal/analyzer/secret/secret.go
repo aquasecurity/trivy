@@ -1,6 +1,7 @@
 package secret
 
 import (
+	"bytes"
 	"context"
 	"fmt"
 	"io"
@@ -78,6 +79,7 @@ func (a SecretAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInput)
 	if err != nil {
 		return nil, xerrors.Errorf("read error %s: %w", input.FilePath, err)
 	}
+	content = bytes.Replace(content, []byte("\r"), []byte(""), -1)
 
 	filePath := input.FilePath
 	// Files extracted from the image have an empty input.Dir.

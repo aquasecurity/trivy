@@ -3,6 +3,7 @@ package helm
 import (
 	"context"
 	"os"
+	"path/filepath"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -30,13 +31,13 @@ func Test_helmConfigAnalyzer_Analyze(t *testing.T) {
 				namespaces:  []string{"main"},
 				policyPaths: []string{"../testdata/kubernetes.rego"},
 			},
-			inputFile: "testdata/Chart.yaml",
+			inputFile: filepath.Join("testdata", "Chart.yaml"),
 			want: &analyzer.AnalysisResult{
 				Files: map[types.HandlerType][]types.File{
 					types.MisconfPostHandler: {
 						{
 							Type: "helm",
-							Path: "testdata/Chart.yaml",
+							Path: filepath.Join("testdata", "Chart.yaml"),
 							Content: []byte(`apiVersion: v2
 name: testchart
 description: A Helm chart for Kubernetes
@@ -73,13 +74,13 @@ appVersion: "1.16.0"
 				namespaces:  []string{"main"},
 				policyPaths: []string{"../testdata/kubernetes.rego"},
 			},
-			inputFile: "testdata/values.yaml",
+			inputFile: filepath.Join("testdata", "values.yaml"),
 			want: &analyzer.AnalysisResult{
 				Files: map[types.HandlerType][]types.File{
 					types.MisconfPostHandler: {
 						{
 							Type: "helm",
-							Path: "testdata/values.yaml",
+							Path: filepath.Join("testdata", "values.yaml"),
 							Content: []byte(`# Default values for testchart.
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
@@ -178,13 +179,13 @@ affinity: {}
 				namespaces:  []string{"main"},
 				policyPaths: []string{"../testdata/kubernetes.rego"},
 			},
-			inputFile: "testdata/testchart.tgz",
+			inputFile: filepath.Join("testdata", "testchart.tgz"),
 			want: &analyzer.AnalysisResult{
 				Files: map[types.HandlerType][]types.File{
 					types.MisconfPostHandler: {
 						{
 							Type: "helm",
-							Path: "testdata/testchart.tgz",
+							Path: filepath.Join("testdata", "testchart.tgz"),
 							Content: []uint8{
 								0x1f, 0x8b, 0x8, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x3, 0xed, 0x58, 0x5b,
 								0x6f, 0xdb, 0x36, 0x14, 0xce, 0xb3, 0x7e, 0x5, 0xd7, 0x3c, 0xa4, 0x2d, 0x1a, 0xd9,
@@ -324,7 +325,7 @@ affinity: {}
 				namespaces:  []string{"main"},
 				policyPaths: []string{"../testdata/kubernetes.rego"},
 			},
-			inputFile: "testdata/nope.tgz",
+			inputFile: filepath.Join("testdata", "nope.tgz"),
 			want:      nil,
 		},
 	}
@@ -391,17 +392,17 @@ func Test_helmConfigAnalyzer_Required(t *testing.T) {
 		},
 		{
 			name:     "testchart.tgz",
-			filePath: "testdata/testchart.tgz",
+			filePath: filepath.Join("testdata", "testchart.tgz"),
 			want:     true,
 		},
 		{
 			name:     "testchart.tar.gz",
-			filePath: "testdata/testchart.tar.gz",
+			filePath: filepath.Join("testdata", "testchart.tar.gz"),
 			want:     true,
 		},
 		{
 			name:     "nope.tgz",
-			filePath: "testdata/nope.tgz",
+			filePath: filepath.Join("testdata", "nope.tgz"),
 			want:     true, // its a tarball after all
 		},
 	}

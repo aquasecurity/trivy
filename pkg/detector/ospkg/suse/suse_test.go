@@ -1,6 +1,7 @@
 package suse_test
 
 import (
+	"path/filepath"
 	"testing"
 	"time"
 
@@ -31,8 +32,10 @@ func TestScanner_Detect(t *testing.T) {
 		wantErr      string
 	}{
 		{
-			name:         "happy path",
-			fixtures:     []string{"testdata/fixtures/suse.yaml", "testdata/fixtures/data-source.yaml"},
+			name: "happy path",
+			fixtures: []string{
+				filepath.Join("testdata", "fixtures", "suse.yaml"), "testdata/fixtures/data-source.yaml",
+			},
 			distribution: suse.OpenSUSE,
 			args: args{
 				osVer: "15.3",
@@ -68,8 +71,10 @@ func TestScanner_Detect(t *testing.T) {
 			},
 		},
 		{
-			name:         "broken bucket",
-			fixtures:     []string{"testdata/fixtures/invalid.yaml", "testdata/fixtures/data-source.yaml"},
+			name: "broken bucket",
+			fixtures: []string{
+				filepath.Join("testdata", "fixtures", "invalid.yaml"), "testdata/fixtures/data-source.yaml",
+			},
 			distribution: suse.SUSEEnterpriseLinux,
 			args: args{
 				osVer: "15.3",

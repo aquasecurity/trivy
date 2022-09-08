@@ -3,6 +3,7 @@ package json
 import (
 	"context"
 	"os"
+	"path/filepath"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -30,13 +31,13 @@ func Test_jsonConfigAnalyzer_Analyze(t *testing.T) {
 				namespaces:  []string{"main"},
 				policyPaths: []string{"../testdata/kubernetes.rego"},
 			},
-			inputFile: "testdata/deployment.json",
+			inputFile: filepath.Join("testdata", "deployment.json"),
 			want: &analyzer.AnalysisResult{
 				Files: map[types.HandlerType][]types.File{
 					types.MisconfPostHandler: {
 						{
 							Type: "json",
-							Path: "testdata/deployment.json",
+							Path: filepath.Join("testdata", "deployment.json"),
 							Content: []byte(`{
 	"apiVersion": "apps/v1",
 	"kind": "Deployment",
@@ -88,13 +89,13 @@ func Test_jsonConfigAnalyzer_Analyze(t *testing.T) {
 				namespaces:  []string{"main"},
 				policyPaths: []string{"../testdata/kubernetes.rego"},
 			},
-			inputFile: "testdata/array.json",
+			inputFile: filepath.Join("testdata", "array.json"),
 			want: &analyzer.AnalysisResult{
 				Files: map[types.HandlerType][]types.File{
 					types.MisconfPostHandler: {
 						{
 							Type: "json",
-							Path: "testdata/array.json",
+							Path: filepath.Join("testdata", "array.json"),
 							Content: []byte(`[
 	{
 		"apiVersion": "apps/v1",

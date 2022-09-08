@@ -20,12 +20,12 @@ func Test_conanLockAnalyzer_Analyze(t *testing.T) {
 	}{
 		{
 			name:      "happy path",
-			inputFile: "testdata/happy.lock",
+			inputFile: filepath.Join("testdata", "happy.lock"),
 			want: &analyzer.AnalysisResult{
 				Applications: []types.Application{
 					{
 						Type:     types.Conan,
-						FilePath: "testdata/happy.lock",
+						FilePath: filepath.Join("testdata", "happy.lock"),
 						Libraries: []types.Package{
 							{
 								ID:      "openssl/3.0.5",
@@ -48,7 +48,7 @@ func Test_conanLockAnalyzer_Analyze(t *testing.T) {
 		},
 		{
 			name:      "empty file",
-			inputFile: "testdata/empty.lock",
+			inputFile: filepath.Join("testdata", "empty.lock"),
 		},
 	}
 

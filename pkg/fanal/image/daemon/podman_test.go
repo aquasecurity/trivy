@@ -5,6 +5,7 @@ import (
 	"net/http/httptest"
 	"os"
 	"path/filepath"
+	"runtime"
 	"testing"
 
 	"github.com/aquasecurity/testdocker/engine"
@@ -43,6 +44,9 @@ func setupPodmanSock(t *testing.T) *httptest.Server {
 }
 
 func TestPodmanImage(t *testing.T) {
+	if runtime.GOOS == "windows" {
+		t.Skip("podman is not supported on Windows")
+	}
 	type fields struct {
 		Image   v1.Image
 		opener  opener

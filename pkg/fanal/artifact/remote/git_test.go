@@ -1,8 +1,12 @@
+//go:build linux || bsd || darwin || freebsd
+// +build linux bsd darwin freebsd
+
 package remote
 
 import (
 	"context"
 	"net/http/httptest"
+	"runtime"
 	"testing"
 
 	"github.com/sosedoff/gitkit"
@@ -31,6 +35,9 @@ func setupGitServer() (*httptest.Server, error) {
 }
 
 func TestNewArtifact(t *testing.T) {
+	if runtime.GOOS == "windows" {
+		t.Skip("skipping test on windows, git server not appropriate here")
+	}
 	ts, err := setupGitServer()
 	require.NoError(t, err)
 	defer ts.Close()
@@ -165,6 +172,9 @@ func TestNewArtifact(t *testing.T) {
 }
 
 func TestArtifact_Inspect(t *testing.T) {
+	if runtime.GOOS == "windows" {
+		t.Skip("skipping test on windows, git server not appropriate here")
+	}
 	ts, err := setupGitServer()
 	require.NoError(t, err)
 	defer ts.Close()

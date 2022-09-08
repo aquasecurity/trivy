@@ -2,7 +2,9 @@ package walker_test
 
 import (
 	"errors"
+	"fmt"
 	"os"
+	"path/filepath"
 	"strings"
 	"testing"
 
@@ -31,33 +33,33 @@ func TestLayerTar_Walk(t *testing.T) {
 	}{
 		{
 			name:      "happy path",
-			inputFile: "testdata/test.tar",
+			inputFile: filepath.Join("testdata", "test.tar"),
 			analyzeFn: func(filePath string, info os.FileInfo, opener analyzer.Opener) error {
 				return nil
 			},
-			wantOpqDirs: []string{"etc/"},
-			wantWhFiles: []string{"foo/foo"},
+			wantOpqDirs: []string{fmt.Sprintf("etc%c", os.PathSeparator)},
+			wantWhFiles: []string{filepath.Join("foo", "foo")},
 		},
 		{
 			name:      "skip file",
-			inputFile: "testdata/test.tar",
+			inputFile: filepath.Join("testdata", "test.tar"),
 			fields: fields{
-				skipFiles: []string{"/app/myweb/index.html"},
+				skipFiles: []string{filepath.Join("app", "myweb", "index.html")},
 			},
 			analyzeFn: func(filePath string, info os.FileInfo, opener analyzer.Opener) error {
-				if filePath == "app/myweb/index.html" {
+				if filePath == filepath.Join("app", "myweb", "index.html") {
 					assert.Fail(t, "skip files error", "%s should be skipped", filePath)
 				}
 				return nil
 			},
-			wantOpqDirs: []string{"etc/"},
-			wantWhFiles: []string{"foo/foo"},
+			wantOpqDirs: []string{fmt.Sprintf("etc%c", os.PathSeparator)},
+			wantWhFiles: []string{filepath.Join("foo", "foo")},
 		},
 		{
 			name:      "skip dir",
-			inputFile: "testdata/test.tar",
+			inputFile: filepath.Join("testdata", "test.tar"),
 			fields: fields{
-				skipDirs: []string{"/app/"},
+				skipDirs: []string{filepath.Join(fmt.Sprintf("%c", os.PathSeparator), "app")},
 			},
 			analyzeFn: func(filePath string, info os.FileInfo, opener analyzer.Opener) error {
 				if strings.HasPrefix(filePath, "app") {
@@ -65,12 +67,12 @@ func TestLayerTar_Walk(t *testing.T) {
 				}
 				return nil
 			},
-			wantOpqDirs: []string{"etc/"},
-			wantWhFiles: []string{"foo/foo"},
+			wantOpqDirs: []string{fmt.Sprintf("etc%c", os.PathSeparator)},
+			wantWhFiles: []string{filepath.Join("foo", "foo")},
 		},
 		{
 			name:      "sad path",
-			inputFile: "testdata/test.tar",
+			inputFile: filepath.Join("testdata", "test.tar"),
 			analyzeFn: func(filePath string, info os.FileInfo, opener analyzer.Opener) error {
 				return errors.New("error")
 			},
@@ -79,7 +81,7 @@ func TestLayerTar_Walk(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			f, err := os.Open("testdata/test.tar")
+			f, err := os.Open(filepath.Join("testdata", "test.tar"))
 			require.NoError(t, err)
 
 			w := walker.NewLayerTar(tt.fields.skipFiles, tt.fields.skipDirs)

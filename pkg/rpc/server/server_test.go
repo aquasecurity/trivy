@@ -544,10 +544,18 @@ func TestCacheServer_MissingBlobs(t *testing.T) {
 			},
 			getArtifactCacheMissingBlobsExpectations: []cache.ArtifactCacheMissingBlobsExpectation{
 				{
-					Args: cache.ArtifactCacheMissingBlobsArgs{ArtifactID: "sha256:e7d92cdc71feacf90708cb59182d0df1b911f8ae022d29e8e95d75ca6a99776a",
-						BlobIDs: []string{"sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02", "sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5"}},
+					Args: cache.ArtifactCacheMissingBlobsArgs{
+						ArtifactID: "sha256:e7d92cdc71feacf90708cb59182d0df1b911f8ae022d29e8e95d75ca6a99776a",
+						BlobIDs: []string{
+							"sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
+							"sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5",
+						},
+					},
 					Returns: cache.ArtifactCacheMissingBlobsReturns{
-						MissingArtifact: false, MissingBlobIDs: []string{"sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5"}, Err: nil},
+						MissingArtifact: false,
+						MissingBlobIDs:  []string{"sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5"},
+						Err:             nil,
+					},
 				},
 			},
 			want: &rpcCache.MissingBlobsResponse{

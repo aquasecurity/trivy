@@ -3,6 +3,7 @@ package dockerfile
 import (
 	"context"
 	"os"
+	"path/filepath"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -21,13 +22,13 @@ func Test_dockerConfigAnalyzer_Analyze(t *testing.T) {
 	}{
 		{
 			name:      "happy path",
-			inputFile: "testdata/Dockerfile.deployment",
+			inputFile: filepath.Join("testdata", "Dockerfile.deployment"),
 			want: &analyzer.AnalysisResult{
 				Files: map[types.HandlerType][]types.File{
 					types.MisconfPostHandler: {
 						{
 							Type: types.Dockerfile,
-							Path: "testdata/Dockerfile.deployment",
+							Path: filepath.Join("testdata", "Dockerfile.deployment"),
 							Content: []byte(`FROM foo
 COPY . /
 RUN echo hello
@@ -39,13 +40,13 @@ RUN echo hello
 		},
 		{
 			name:      "happy path with multi-stage",
-			inputFile: "testdata/Dockerfile.multistage",
+			inputFile: filepath.Join("testdata", "Dockerfile.multistage"),
 			want: &analyzer.AnalysisResult{
 				Files: map[types.HandlerType][]types.File{
 					types.MisconfPostHandler: {
 						{
 							Type: types.Dockerfile,
-							Path: "testdata/Dockerfile.multistage",
+							Path: filepath.Join("testdata", "Dockerfile.multistage"),
 							Content: []byte(`FROM foo AS build
 COPY . /
 RUN echo hello

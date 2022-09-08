@@ -1,6 +1,7 @@
 package library_test
 
 import (
+	"path/filepath"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -31,7 +32,7 @@ func TestDriver_Detect(t *testing.T) {
 		{
 			name: "happy path",
 			fixtures: []string{
-				"testdata/fixtures/php.yaml",
+				filepath.Join("testdata", "fixtures", "php.yaml"),
 				"testdata/fixtures/data-source.yaml",
 			},
 			libType: ftypes.Composer,
@@ -56,7 +57,7 @@ func TestDriver_Detect(t *testing.T) {
 		{
 			name: "case-sensitive go package",
 			fixtures: []string{
-				"testdata/fixtures/go.yaml",
+				filepath.Join("testdata", "fixtures", "go.yaml"),
 				"testdata/fixtures/data-source.yaml",
 			},
 			libType: ftypes.GoModule,
@@ -91,7 +92,7 @@ func TestDriver_Detect(t *testing.T) {
 		{
 			name: "no patched versions in the advisory",
 			fixtures: []string{
-				"testdata/fixtures/php.yaml",
+				filepath.Join("testdata", "fixtures", "php.yaml"),
 				"testdata/fixtures/data-source.yaml",
 			},
 			libType: ftypes.Composer,
@@ -116,7 +117,7 @@ func TestDriver_Detect(t *testing.T) {
 		{
 			name: "no vulnerable versions in the advisory",
 			fixtures: []string{
-				"testdata/fixtures/ruby.yaml",
+				filepath.Join("testdata", "fixtures", "ruby.yaml"),
 				"testdata/fixtures/data-source.yaml",
 			},
 			libType: ftypes.Bundler,
@@ -140,7 +141,7 @@ func TestDriver_Detect(t *testing.T) {
 		},
 		{
 			name:     "no vulnerability",
-			fixtures: []string{"testdata/fixtures/php.yaml"},
+			fixtures: []string{filepath.Join("testdata", "fixtures", "php.yaml")},
 			libType:  ftypes.Composer,
 			args: args{
 				pkgName: "symfony/symfony",

@@ -1,6 +1,8 @@
 package cache
 
 import (
+	"path/filepath"
+	"runtime"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -22,10 +24,11 @@ func TestCalcKey(t *testing.T) {
 		data             []string
 	}
 	tests := []struct {
-		name    string
-		args    args
-		want    string
-		wantErr string
+		name           string
+		args           args
+		want           string
+		wantErr        string
+		wantWindowserr string
 	}{
 		{
 			name: "happy path",
@@ -124,7 +127,7 @@ func TestCalcKey(t *testing.T) {
 					"alpine": 1,
 					"debian": 1,
 				},
-				policy: []string{"testdata/policy"},
+				policy: []string{filepath.Join("testdata", "policy")},
 			},
 			want: "sha256:96e90ded238ad2ea8e1fd53a4202247aa65b69ad5e2f9f60d883104865ca4821",
 		},
@@ -138,7 +141,7 @@ func TestCalcKey(t *testing.T) {
 				},
 				skipFiles: []string{"app/deployment.yaml"},
 				skipDirs:  []string{"usr/java"},
-				policy:    []string{"testdata/policy"},
+				policy:    []string{filepath.Join("testdata", "policy")},
 			},
 			want: "sha256:b92c36d74172cbe3b7c07e169d9f594cd7822e8e95cb7bc1cd957ac17be62a4a",
 		},
@@ -152,7 +155,8 @@ func TestCalcKey(t *testing.T) {
 				},
 				policy: []string{"policydir"},
 			},
-			wantErr: "no such file or directory",
+			wantErr:        "no such file or directory",
+			wantWindowserr: "The system cannot find the file specified",
 		},
 	}
 	for _, tt := range tests {
@@ -170,7 +174,11 @@ func TestCalcKey(t *testing.T) {
 			got, err := CalcKey(tt.args.key, tt.args.analyzerVersions, tt.args.hookVersions, artifactOpt)
 			if tt.wantErr != "" {
 				require.Error(t, err)
-				assert.Contains(t, err.Error(), tt.wantErr)
+				if runtime.GOOS == "windows" {
+					require.Contains(t, err.Error(), tt.wantWindowserr)
+				} else {
+					require.Contains(t, err.Error(), tt.wantErr)
+				}
 				return
 			}
 			assert.NoError(t, err)

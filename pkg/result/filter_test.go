@@ -2,6 +2,7 @@ package result_test
 
 import (
 	"context"
+	"path/filepath"
 	"testing"
 
 	"github.com/aquasecurity/trivy/pkg/result"
@@ -16,9 +17,9 @@ import (
 func TestClient_Filter(t *testing.T) {
 	type args struct {
 		result types.Result
-		//vulns         []types.DetectedVulnerability
-		//misconfs      []types.DetectedMisconfiguration
-		//secrets       []ftypes.SecretFinding
+		// vulns         []types.DetectedVulnerability
+		// misconfs      []types.DetectedMisconfiguration
+		// secrets       []ftypes.SecretFinding
 		severities     []dbTypes.Severity
 		ignoreUnfixed  bool
 		ignoreFile     string
@@ -121,7 +122,9 @@ func TestClient_Filter(t *testing.T) {
 						},
 					},
 				},
-				severities:    []dbTypes.Severity{dbTypes.SeverityCritical, dbTypes.SeverityHigh, dbTypes.SeverityUnknown},
+				severities: []dbTypes.Severity{
+					dbTypes.SeverityCritical, dbTypes.SeverityHigh, dbTypes.SeverityUnknown,
+				},
 				ignoreUnfixed: false,
 			},
 			wantVulns: []types.DetectedVulnerability{
@@ -295,7 +298,7 @@ func TestClient_Filter(t *testing.T) {
 				},
 				severities:    []dbTypes.Severity{dbTypes.SeverityLow},
 				ignoreUnfixed: false,
-				ignoreFile:    "testdata/.trivyignore",
+				ignoreFile:    filepath.Join("testdata", ".trivyignore"),
 			},
 
 			wantVulns: []types.DetectedVulnerability{
@@ -450,7 +453,9 @@ func TestClient_Filter(t *testing.T) {
 						},
 					},
 				},
-				severities:    []dbTypes.Severity{dbTypes.SeverityCritical, dbTypes.SeverityHigh, dbTypes.SeverityUnknown},
+				severities: []dbTypes.Severity{
+					dbTypes.SeverityCritical, dbTypes.SeverityHigh, dbTypes.SeverityUnknown,
+				},
 				ignoreUnfixed: false,
 			},
 			wantVulns: []types.DetectedVulnerability{

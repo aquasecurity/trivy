@@ -74,7 +74,7 @@ func (a licenseFileAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisI
 	// Also, paths to these files do not have "/" prefix.
 	// We need to add a "/" prefix to properly filter paths from the config file.
 	if input.Dir == "" { // add leading `/` for files extracted from image
-		filePath = fmt.Sprintf("/%s", filePath)
+		filePath = fmt.Sprintf("%c%s", os.PathSeparator, filePath)
 	}
 
 	lf, err := licensing.FullClassify(filePath, content)

@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"os"
+	"path/filepath"
 	"sync"
 	"testing"
 
@@ -322,7 +323,10 @@ func TestAnalyzeFile(t *testing.T) {
 					{
 						FilePath: "/lib/apk/db/installed",
 						Packages: []types.Package{
-							{Name: "musl", Version: "1.1.24-r2", SrcName: "musl", SrcVersion: "1.1.24-r2", Licenses: []string{"MIT"}},
+							{
+								Name: "musl", Version: "1.1.24-r2", SrcName: "musl", SrcVersion: "1.1.24-r2",
+								Licenses: []string{"MIT"},
+							},
 						},
 					},
 				},
@@ -374,7 +378,7 @@ func TestAnalyzeFile(t *testing.T) {
 			name: "happy path with a directory",
 			args: args{
 				filePath:     "/etc/lsb-release",
-				testFilePath: "testdata/etc",
+				testFilePath: filepath.Join("testdata", "etc"),
 			},
 			want: &analyzer.AnalysisResult{},
 		},
@@ -412,7 +416,7 @@ func TestAnalyzeFile(t *testing.T) {
 			name: "sad path with opener error",
 			args: args{
 				filePath:     "/lib/apk/db/installed",
-				testFilePath: "testdata/error",
+				testFilePath: filepath.Join("testdata", "error"),
 			},
 			wantErr: "unable to open /lib/apk/db/installed",
 		},
@@ -455,7 +459,7 @@ func TestAnalyzeFile(t *testing.T) {
 			ctx := context.Background()
 			err = a.AnalyzeFile(ctx, &wg, limit, got, "", tt.args.filePath, info,
 				func() (dio.ReadSeekCloserAt, error) {
-					if tt.args.testFilePath == "testdata/error" {
+					if tt.args.testFilePath == filepath.Join("testdata", "error") {
 						return nil, xerrors.New("error")
 					} else if tt.args.testFilePath == "testdata/no-permission" {
 						os.Chmod(tt.args.testFilePath, 0000)

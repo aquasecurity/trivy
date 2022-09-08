@@ -42,21 +42,7 @@ func (c *Cache) Save(r *report.Report) error {
 		); err != nil {
 			return err
 		}
-		resultSet, err := r.GetResultsForService(service)
-		if err != nil {
-			return err
-		}
-		s, err := os.Create(serviceFile)
-		if err != nil {
-			return err
-		}
-		record := Record{
-			SchemaVersion: SchemaVersion,
-			Service:       service,
-			Results:       resultSet.Results,
-			CreationTime:  resultSet.CreationTime,
-		}
-		if err := json.NewEncoder(s).Encode(record); err != nil {
+		if err := c.saveServiceFile(r, service, serviceFile); err != nil {
 			return err
 		}
 	}
@@ -73,5 +59,29 @@ func (c *Cache) Save(r *report.Report) error {
 	if err != nil {
 		return err
 	}
+	defer func() { _ = m.Close() }()
 	return json.NewEncoder(m).Encode(metadata)
+}
+
+func (c *Cache) saveServiceFile(r *report.Report, service string, serviceFile string) error {
+	resultSet, err := r.GetResultsForService(service)
+	if err != nil {
+		return err
+	}
+	s, err := os.Create(serviceFile)
+	if err != nil {
+		return err
+	}
+	defer func() { _ = s.Close() }()
+
+	record := Record{
+		SchemaVersion: SchemaVersion,
+		Service:       service,
+		Results:       resultSet.Results,
+		CreationTime:  resultSet.CreationTime,
+	}
+	if err := json.NewEncoder(s).Encode(record); err != nil {
+		return err
+	}
+	return nil
 }

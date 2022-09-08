@@ -2,6 +2,7 @@ package secret_test
 
 import (
 	"os"
+	"path/filepath"
 	"testing"
 
 	"go.uber.org/zap"
@@ -482,196 +483,196 @@ func TestSecretScanner(t *testing.T) {
 	}{
 		{
 			name:          "find match",
-			configPath:    "testdata/config.yaml",
-			inputFilePath: "testdata/secret.txt",
+			configPath:    filepath.Join("testdata", "config.yaml"),
+			inputFilePath: filepath.Join("testdata", "secret.txt"),
 			want: types.Secret{
-				FilePath: "testdata/secret.txt",
+				FilePath: filepath.Join("testdata", "secret.txt"),
 				Findings: []types.SecretFinding{wantFinding1, wantFinding2},
 			},
 		},
 		{
 			name:          "find aws secrets",
-			configPath:    "testdata/config.yaml",
-			inputFilePath: "testdata/aws-secrets.txt",
+			configPath:    filepath.Join("testdata", "config.yaml"),
+			inputFilePath: filepath.Join("testdata", "aws-secrets.txt"),
 			want: types.Secret{
-				FilePath: "testdata/aws-secrets.txt",
+				FilePath: filepath.Join("testdata", "aws-secrets.txt"),
 				Findings: []types.SecretFinding{wantFinding5, wantFinding9, wantFinding10},
 			},
 		},
 		{
 			name:          "find Asymmetric Private Key secrets",
-			inputFilePath: "testdata/asymmetric-private-secret.txt",
+			inputFilePath: filepath.Join("testdata", "asymmetric-private-secret.txt"),
 			want: types.Secret{
-				FilePath: "testdata/asymmetric-private-secret.txt",
+				FilePath: filepath.Join("testdata", "asymmetric-private-secret.txt"),
 				Findings: []types.SecretFinding{wantFindingAsymmetricPrivateKey},
 			},
 		},
 		{
 			name:          "find Asymmetric Private Key secrets json",
-			inputFilePath: "testdata/asymmetric-private-secret.json",
+			inputFilePath: filepath.Join("testdata", "asymmetric-private-secret.json"),
 			want: types.Secret{
-				FilePath: "testdata/asymmetric-private-secret.json",
+				FilePath: filepath.Join("testdata", "asymmetric-private-secret.json"),
 				Findings: []types.SecretFinding{wantFindingAsymmetricPrivateKeyJson},
 			},
 		},
 		{
 			name:          "include when keyword found",
-			configPath:    "testdata/config-happy-keywords.yaml",
-			inputFilePath: "testdata/secret.txt",
+			configPath:    filepath.Join("testdata", "config-happy-keywords.yaml"),
+			inputFilePath: filepath.Join("testdata", "secret.txt"),
 			want: types.Secret{
-				FilePath: "testdata/secret.txt",
+				FilePath: filepath.Join("testdata", "secret.txt"),
 				Findings: []types.SecretFinding{wantFinding1, wantFinding2},
 			},
 		},
 		{
 			name:          "exclude when no keyword found",
-			configPath:    "testdata/config-sad-keywords.yaml",
-			inputFilePath: "testdata/secret.txt",
+			configPath:    filepath.Join("testdata", "config-sad-keywords.yaml"),
+			inputFilePath: filepath.Join("testdata", "secret.txt"),
 			want:          types.Secret{},
 		},
 		{
 			name:          "should ignore .md files by default",
-			configPath:    "testdata/config.yaml",
-			inputFilePath: "testdata/secret.md",
+			configPath:    filepath.Join("testdata", "config.yaml"),
+			inputFilePath: filepath.Join("testdata", "secret.md"),
 			want: types.Secret{
-				FilePath: "testdata/secret.md",
+				FilePath: filepath.Join("testdata", "secret.md"),
 			},
 		},
 		{
 			name:          "should disable .md allow rule",
-			configPath:    "testdata/config-disable-allow-rule-md.yaml",
-			inputFilePath: "testdata/secret.md",
+			configPath:    filepath.Join("testdata", "config-disable-allow-rule-md.yaml"),
+			inputFilePath: filepath.Join("testdata", "secret.md"),
 			want: types.Secret{
-				FilePath: "testdata/secret.md",
+				FilePath: filepath.Join("testdata", "secret.md"),
 				Findings: []types.SecretFinding{wantFinding1, wantFinding2},
 			},
 		},
 		{
 			name:          "should find ghp builtin secret",
 			configPath:    "",
-			inputFilePath: "testdata/builtin-rule-secret.txt",
+			inputFilePath: filepath.Join("testdata", "builtin-rule-secret.txt"),
 			want: types.Secret{
-				FilePath: "testdata/builtin-rule-secret.txt",
+				FilePath: filepath.Join("testdata", "builtin-rule-secret.txt"),
 				Findings: []types.SecretFinding{wantFinding5a, wantFinding6},
 			},
 		},
 		{
 			name:          "should enable github-pat builtin rule, but disable aws-access-key-id rule",
-			configPath:    "testdata/config-enable-ghp.yaml",
-			inputFilePath: "testdata/builtin-rule-secret.txt",
+			configPath:    filepath.Join("testdata", "config-enable-ghp.yaml"),
+			inputFilePath: filepath.Join("testdata", "builtin-rule-secret.txt"),
 			want: types.Secret{
-				FilePath: "testdata/builtin-rule-secret.txt",
+				FilePath: filepath.Join("testdata", "builtin-rule-secret.txt"),
 				Findings: []types.SecretFinding{wantFindingGHButDisableAWS},
 			},
 		},
 		{
 			name:          "should disable github-pat builtin rule",
-			configPath:    "testdata/config-disable-ghp.yaml",
-			inputFilePath: "testdata/builtin-rule-secret.txt",
+			configPath:    filepath.Join("testdata", "config-disable-ghp.yaml"),
+			inputFilePath: filepath.Join("testdata", "builtin-rule-secret.txt"),
 			want: types.Secret{
-				FilePath: "testdata/builtin-rule-secret.txt",
+				FilePath: filepath.Join("testdata", "builtin-rule-secret.txt"),
 				Findings: []types.SecretFinding{wantFindingPATDisabled},
 			},
 		},
 		{
 			name:          "should disable custom rule",
-			configPath:    "testdata/config-disable-rule1.yaml",
-			inputFilePath: "testdata/secret.txt",
+			configPath:    filepath.Join("testdata", "config-disable-rule1.yaml"),
+			inputFilePath: filepath.Join("testdata", "secret.txt"),
 			want:          types.Secret{},
 		},
 		{
 			name:          "allow-rule path",
-			configPath:    "testdata/allow-path.yaml",
-			inputFilePath: "testdata/secret.txt",
+			configPath:    filepath.Join("testdata", "allow-path.yaml"),
+			inputFilePath: filepath.Join("testdata", "secret.txt"),
 			want:          types.Secret{},
 		},
 		{
 			name:          "allow-rule regex inside group",
-			configPath:    "testdata/allow-regex.yaml",
-			inputFilePath: "testdata/secret.txt",
+			configPath:    filepath.Join("testdata", "allow-regex.yaml"),
+			inputFilePath: filepath.Join("testdata", "secret.txt"),
 			want: types.Secret{
-				FilePath: "testdata/secret.txt",
+				FilePath: filepath.Join("testdata", "secret.txt"),
 				Findings: []types.SecretFinding{wantFinding1},
 			},
 		},
 		{
 			name:          "allow-rule regex outside group",
-			configPath:    "testdata/allow-regex-outside-group.yaml",
-			inputFilePath: "testdata/secret.txt",
+			configPath:    filepath.Join("testdata", "allow-regex-outside-group.yaml"),
+			inputFilePath: filepath.Join("testdata", "secret.txt"),
 			want:          types.Secret{},
 		},
 		{
 			name:          "exclude-block regexes",
-			configPath:    "testdata/exclude-block.yaml",
-			inputFilePath: "testdata/secret.txt",
+			configPath:    filepath.Join("testdata", "exclude-block.yaml"),
+			inputFilePath: filepath.Join("testdata", "secret.txt"),
 			want: types.Secret{
-				FilePath: "testdata/secret.txt",
+				FilePath: filepath.Join("testdata", "secret.txt"),
 				Findings: []types.SecretFinding{wantFindingRegexDisabled},
 			},
 		},
 		{
 			name:          "skip examples file",
-			inputFilePath: "testdata/example-secret.txt",
+			inputFilePath: filepath.Join("testdata", "example-secret.txt"),
 			want: types.Secret{
-				FilePath: "testdata/example-secret.txt",
+				FilePath: filepath.Join("testdata", "example-secret.txt"),
 			},
 		},
 		{
 			name:          "global allow-rule path",
-			configPath:    "testdata/global-allow-path.yaml",
-			inputFilePath: "testdata/secret.txt",
+			configPath:    filepath.Join("testdata", "global-allow-path.yaml"),
+			inputFilePath: filepath.Join("testdata", "secret.txt"),
 			want: types.Secret{
-				FilePath: "testdata/secret.txt",
+				FilePath: filepath.Join("testdata", "secret.txt"),
 				Findings: nil,
 			},
 		},
 		{
 			name:          "global allow-rule regex",
-			configPath:    "testdata/global-allow-regex.yaml",
-			inputFilePath: "testdata/secret.txt",
+			configPath:    filepath.Join("testdata", "global-allow-regex.yaml"),
+			inputFilePath: filepath.Join("testdata", "secret.txt"),
 			want: types.Secret{
-				FilePath: "testdata/secret.txt",
+				FilePath: filepath.Join("testdata", "secret.txt"),
 				Findings: []types.SecretFinding{wantFinding1},
 			},
 		},
 		{
 			name:          "global exclude-block regexes",
-			configPath:    "testdata/global-exclude-block.yaml",
-			inputFilePath: "testdata/secret.txt",
+			configPath:    filepath.Join("testdata", "global-exclude-block.yaml"),
+			inputFilePath: filepath.Join("testdata", "secret.txt"),
 			want: types.Secret{
-				FilePath: "testdata/secret.txt",
+				FilePath: filepath.Join("testdata", "secret.txt"),
 				Findings: []types.SecretFinding{wantFindingRegexDisabled},
 			},
 		},
 		{
 			name:          "multiple secret groups",
-			configPath:    "testdata/multiple-secret-groups.yaml",
-			inputFilePath: "testdata/secret.txt",
+			configPath:    filepath.Join("testdata", "multiple-secret-groups.yaml"),
+			inputFilePath: filepath.Join("testdata", "secret.txt"),
 			want: types.Secret{
-				FilePath: "testdata/secret.txt",
+				FilePath: filepath.Join("testdata", "secret.txt"),
 				Findings: []types.SecretFinding{wantFinding3, wantFinding4},
 			},
 		},
 		{
 			name:          "truncate long line",
-			inputFilePath: "testdata/long-line-secret.txt",
+			inputFilePath: filepath.Join("testdata", "long-line-secret.txt"),
 			want: types.Secret{
-				FilePath: "testdata/long-line-secret.txt",
+				FilePath: filepath.Join("testdata", "long-line-secret.txt"),
 				Findings: []types.SecretFinding{wantFinding7},
 			},
 		},
 		{
 			name:          "add unknown severity when rule has no severity",
-			configPath:    "testdata/config-without-severity.yaml",
-			inputFilePath: "testdata/secret.txt",
+			configPath:    filepath.Join("testdata", "config-without-severity.yaml"),
+			inputFilePath: filepath.Join("testdata", "secret.txt"),
 			want: types.Secret{
-				FilePath: "testdata/secret.txt",
+				FilePath: filepath.Join("testdata", "secret.txt"),
 				Findings: []types.SecretFinding{wantFinding8},
 			},
 		},
 		{
 			name:          "invalid aws secrets",
-			inputFilePath: "testdata/invalid-aws-secrets.txt",
+			inputFilePath: filepath.Join("testdata", "invalid-aws-secrets.txt"),
 			want:          types.Secret{},
 		},
 	}
@@ -686,7 +687,8 @@ func TestSecretScanner(t *testing.T) {
 
 			got := s.Scan(secret.ScanArgs{
 				FilePath: tt.inputFilePath,
-				Content:  content},
+				Content:  content,
+			},
 			)
 			assert.Equal(t, tt.want, got)
 		})

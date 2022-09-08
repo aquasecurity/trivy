@@ -1,6 +1,7 @@
 package external_test
 
 import (
+	"path/filepath"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -26,10 +27,10 @@ func TestConfigScanner_Scan(t *testing.T) {
 		{
 			name: "deny",
 			fields: fields{
-				policyPaths: []string{"testdata/deny"},
+				policyPaths: []string{filepath.Join("testdata", "deny")},
 				namespaces:  []string{"testdata"},
 			},
-			inputDir: "testdata/deny",
+			inputDir: filepath.Join("testdata", "deny"),
 			want: []types.Misconfiguration{
 				{
 					FileType: "dockerfile",
@@ -93,10 +94,10 @@ func TestConfigScanner_Scan(t *testing.T) {
 		{
 			name: "allow",
 			fields: fields{
-				policyPaths: []string{"testdata/allow"},
+				policyPaths: []string{filepath.Join("testdata", "allow")},
 				namespaces:  []string{"testdata"},
 			},
-			inputDir: "testdata/allow",
+			inputDir: filepath.Join("testdata", "allow"),
 			want: []types.Misconfiguration{
 				{
 					FileType: "dockerfile",
@@ -130,6 +131,10 @@ func TestConfigScanner_Scan(t *testing.T) {
 			s, err := external.NewConfigScanner(t.TempDir(),
 				tt.fields.policyPaths, tt.fields.dataPaths, tt.fields.namespaces, false)
 			require.NoError(t, err)
+
+			defer func() {
+				_ = s.Close()
+			}()
 
 			got, err := s.Scan(tt.inputDir)
 			require.NoError(t, err)

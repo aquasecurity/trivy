@@ -3,6 +3,8 @@ package binary
 import (
 	"context"
 	"os"
+	"path/filepath"
+	"runtime"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -68,6 +70,9 @@ func Test_rustBinaryLibraryAnalyzer_Analyze(t *testing.T) {
 }
 
 func Test_rustBinaryLibraryAnalyzer_Required(t *testing.T) {
+	if runtime.GOOS == "windows" {
+		t.Skip("Skip test on Windows, unix permissions not applicable here")
+	}
 	tests := []struct {
 		name     string
 		filePath string
@@ -75,17 +80,17 @@ func Test_rustBinaryLibraryAnalyzer_Required(t *testing.T) {
 	}{
 		{
 			name:     "file perm 0755",
-			filePath: "testdata/0755",
+			filePath: filepath.Join("testdata", "0755"),
 			want:     true,
 		},
 		{
 			name:     "file perm 0644",
-			filePath: "testdata/0644",
+			filePath: filepath.Join("testdata", "0644"),
 			want:     false,
 		},
 		{
 			name:     "symlink",
-			filePath: "testdata/symlink",
+			filePath: filepath.Join("testdata", "symlink"),
 			want:     false,
 		},
 	}

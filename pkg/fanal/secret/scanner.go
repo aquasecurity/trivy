@@ -122,7 +122,8 @@ func (s *Scanner) FindSubmatchLocations(r Rule, content []byte) []Location {
 	var submatchLocations []Location
 	matchsIndices := r.Regex.FindAllSubmatchIndex(content, -1)
 	for _, matchIndices := range matchsIndices {
-		matchLocation := Location{ // first two indexes are always start and end of the whole match
+		matchLocation := Location{
+			// first two indexes are always start and end of the whole match
 			Start: matchIndices[0],
 			End:   matchIndices[1],
 		}
@@ -413,6 +414,9 @@ func censorLocation(loc Location, input []byte) []byte {
 }
 
 func toFinding(rule Rule, loc Location, content []byte) types.SecretFinding {
+	// clean content
+	content = bytes.Replace(content, []byte("\r"), []byte(""), -1)
+
 	startLine, endLine, code, matchLine := findLocation(loc.Start, loc.End, content)
 
 	return types.SecretFinding{

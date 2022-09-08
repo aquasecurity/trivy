@@ -3,6 +3,7 @@ package db_test
 import (
 	"context"
 	"fmt"
+	"path/filepath"
 	"testing"
 	"time"
 
@@ -179,7 +180,7 @@ func TestClient_Download(t *testing.T) {
 	}{
 		{
 			name:  "happy path",
-			input: "testdata/db.tar.gz",
+			input: filepath.Join("testdata", "db.tar.gz"),
 			want: metadata.Metadata{
 				Version:      1,
 				NextUpdate:   time.Date(3000, 1, 1, 18, 5, 43, 198355188, time.UTC),
@@ -189,7 +190,7 @@ func TestClient_Download(t *testing.T) {
 		},
 		{
 			name:    "invalid gzip",
-			input:   "testdata/trivy.db",
+			input:   filepath.Join("testdata", "trivy.db"),
 			wantErr: "unexpected EOF",
 		},
 	}
@@ -208,7 +209,8 @@ func TestClient_Download(t *testing.T) {
 						Size:      100,
 						Digest: v1.Hash{
 							Algorithm: "sha256",
-							Hex:       "aec482bc254b5dd025d3eaf5bb35997d3dba783e394e8f91d5a415963151bfb8"},
+							Hex:       "aec482bc254b5dd025d3eaf5bb35997d3dba783e394e8f91d5a415963151bfb8",
+						},
 						Annotations: map[string]string{
 							"org.opencontainers.image.title": "db.tar.gz",
 						},

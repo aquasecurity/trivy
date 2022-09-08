@@ -2,6 +2,7 @@ package licensing_test
 
 import (
 	"os"
+	"path/filepath"
 	"testing"
 
 	"github.com/aquasecurity/trivy/pkg/licensing"
@@ -21,10 +22,10 @@ func TestClassifier_FullClassify(t *testing.T) {
 	}{
 		{
 			name:     "C file with AGPL-3.0",
-			filePath: "testdata/licensed.c",
+			filePath: filepath.Join("testdata", "licensed.c"),
 			want: types.LicenseFile{
 				Type:     types.LicenseTypeHeader,
-				FilePath: "testdata/licensed.c",
+				FilePath: filepath.Join("testdata", "licensed.c"),
 				Findings: []types.LicenseFinding{
 					{
 						Name:       "AGPL-3.0",
@@ -36,10 +37,10 @@ func TestClassifier_FullClassify(t *testing.T) {
 		},
 		{
 			name:     "C file with no license",
-			filePath: "testdata/unlicensed.c",
+			filePath: filepath.Join("testdata", "unlicensed.c"),
 			want: types.LicenseFile{
 				Type:     types.LicenseTypeFile,
-				FilePath: "testdata/unlicensed.c",
+				FilePath: filepath.Join("testdata", "unlicensed.c"),
 			},
 		},
 		{
@@ -59,10 +60,10 @@ func TestClassifier_FullClassify(t *testing.T) {
 		},
 		{
 			name:     "Apache-2.0 CSS File",
-			filePath: "testdata/styles.css",
+			filePath: filepath.Join("testdata", "styles.css"),
 			want: types.LicenseFile{
 				Type:     types.LicenseTypeFile,
-				FilePath: "testdata/styles.css",
+				FilePath: filepath.Join("testdata", "styles.css"),
 				Findings: []types.LicenseFinding{
 					{
 						Name:       "Apache-2.0",
