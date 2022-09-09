@@ -24,7 +24,7 @@
         {
             "SchemaVersion": "2018-10-08",
             "Id": "{{ $target }}/{{ .VulnerabilityID }}",
-            "ProductArn": "arn:aws:securityhub:{{ env "AWS_REGION" }}:{{ env "AWS_ACCOUNT_ID" }}:product/{{ env "AWS_ACCOUNT_ID" }}/default",
+            "ProductArn": "arn:aws:securityhub:{{ env "AWS_REGION" }}::product/aquasecurity/aquasecurity",
             "GeneratorId": "Trivy/{{ .VulnerabilityID }}",
             "AwsAccountId": "{{ env "AWS_ACCOUNT_ID" }}",
             "Types": [ "Software and Configuration Checks/Vulnerabilities/CVE" ],
@@ -82,7 +82,7 @@
         {
             "SchemaVersion": "2018-10-08",
             "Id": "{{ $target }}/{{ .ID }}",
-            "ProductArn": "arn:aws:securityhub:{{ env "AWS_REGION" }}:{{ env "AWS_ACCOUNT_ID" }}:product/{{ env "AWS_ACCOUNT_ID" }}/default",
+            "ProductArn": "arn:aws:securityhub:{{ env "AWS_REGION" }}::product/aquasecurity/aquasecurity",
             "GeneratorId": "Trivy/{{ .ID }}",
             "AwsAccountId": "{{ env "AWS_ACCOUNT_ID" }}",
             "Types": [ "Software and Configuration Checks" ],
