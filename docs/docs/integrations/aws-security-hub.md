@@ -16,7 +16,11 @@ The Product [ARN](https://docs.aws.amazon.com/general/latest/gr/aws-arns-and-nam
 "ProductArn": "arn:aws:securityhub:{{ env "AWS_REGION" }}::product/aquasecurity/aquasecurity",
 ```
 
-In order to upload results you must first run [enable-import-findings-for-product](https://docs.aws.amazon.com/cli/latest/reference/securityhub/enable-import-findings-for-product.html) with `--product-arn` set to `arn:aws:securityhub:$AWS_DEFAULT_REGION::product/aquasecurity/aquasecurity`
+In order to upload results you must first run [enable-import-findings-for-product](https://docs.aws.amazon.com/cli/latest/reference/securityhub/enable-import-findings-for-product.html) like:
+
+```
+aws securityhub enable-import-findings-for-product --product-arn arn:aws:securityhub:<AWS_REGION>::product/aquasecurity/aquasecurity
+```
 
 Then, you can upload it with AWS CLI.
 
