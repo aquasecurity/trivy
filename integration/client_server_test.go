@@ -312,6 +312,15 @@ func TestClientServerWithFormat(t *testing.T) {
 			golden: "testdata/alpine-310.asff.golden",
 		},
 		{
+			name: "alpine 3.10 with ASFF CLI template",
+			args: csArgs{
+				Format:       "template",
+				TemplatePath: "@../contrib/asff-cli.tpl",
+				Input:        "testdata/fixtures/images/alpine-310.tar.gz",
+			},
+			golden: "testdata/alpine-310.asff-cli.golden",
+		},
+		{
 			name: "alpine 3.10 with html template",
 			args: csArgs{
 				Format:       "template",
