@@ -109,10 +109,9 @@ func TestMarshaler_Marshal(t *testing.T) {
 					Created:              "2021-08-25T12:20:30.000000005Z",
 				},
 				Packages: map[spdx.ElementID]*spdx.Package2_2{
-					spdx.ElementID("RootPackage-9396d894cd0cb6cb"): {
-						PackageSPDXIdentifier: spdx.ElementID("RootPackage-9396d894cd0cb6cb"),
+					spdx.ElementID("ContainerImage-9396d894cd0cb6cb"): {
+						PackageSPDXIdentifier: spdx.ElementID("ContainerImage-9396d894cd0cb6cb"),
 						PackageName:           "rails:latest",
-						PackageVersion:        "container_image",
 						PackageExternalReferences: []*spdx.PackageExternalReference2_2{
 							{
 								Category: tspdx.CategoryPackageManager,
@@ -192,11 +191,11 @@ func TestMarshaler_Marshal(t *testing.T) {
 				Relationships: []*spdx.Relationship2_2{
 					{
 						RefA:         spdx.DocElementID{ElementRefID: "DOCUMENT"},
-						RefB:         spdx.DocElementID{ElementRefID: "RootPackage-9396d894cd0cb6cb"},
+						RefB:         spdx.DocElementID{ElementRefID: "ContainerImage-9396d894cd0cb6cb"},
 						Relationship: "DESCRIBE",
 					},
 					{
-						RefA:         spdx.DocElementID{ElementRefID: "RootPackage-9396d894cd0cb6cb"},
+						RefA:         spdx.DocElementID{ElementRefID: "ContainerImage-9396d894cd0cb6cb"},
 						RefB:         spdx.DocElementID{ElementRefID: "OperatingSystem-197f9a00ebcb51f0"},
 						Relationship: "CONTAINS",
 					},
@@ -206,7 +205,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 						Relationship: "DEPENDS_ON",
 					},
 					{
-						RefA:         spdx.DocElementID{ElementRefID: "RootPackage-9396d894cd0cb6cb"},
+						RefA:         spdx.DocElementID{ElementRefID: "ContainerImage-9396d894cd0cb6cb"},
 						RefB:         spdx.DocElementID{ElementRefID: "Application-73c871d73f3c8248"},
 						Relationship: "CONTAINS",
 					},
@@ -221,7 +220,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 						Relationship: "DEPENDS_ON",
 					},
 					{
-						RefA:         spdx.DocElementID{ElementRefID: "RootPackage-9396d894cd0cb6cb"},
+						RefA:         spdx.DocElementID{ElementRefID: "ContainerImage-9396d894cd0cb6cb"},
 						RefB:         spdx.DocElementID{ElementRefID: "Application-c3fac92c1ac0a9fa"},
 						Relationship: "CONTAINS",
 					},
@@ -315,10 +314,9 @@ func TestMarshaler_Marshal(t *testing.T) {
 					Created:              "2021-08-25T12:20:30.000000005Z",
 				},
 				Packages: map[spdx.ElementID]*spdx.Package2_2{
-					spdx.ElementID("RootPackage-413bfede37ad01fc"): {
+					spdx.ElementID("ContainerImage-413bfede37ad01fc"): {
 						PackageName:           "centos:latest",
-						PackageSPDXIdentifier: "RootPackage-413bfede37ad01fc",
-						PackageVersion:        "container_image",
+						PackageSPDXIdentifier: "ContainerImage-413bfede37ad01fc",
 						PackageAttributionTexts: []string{
 							"SchemaVersion: 2",
 							"ImageID: sha256:5d0da3dc976460b72c77d94c8a1ad043720b0416bfc16c52c45d4847e53fadb6",
@@ -401,11 +399,11 @@ func TestMarshaler_Marshal(t *testing.T) {
 				Relationships: []*spdx.Relationship2_2{
 					{
 						RefA:         spdx.DocElementID{ElementRefID: "DOCUMENT"},
-						RefB:         spdx.DocElementID{ElementRefID: "RootPackage-413bfede37ad01fc"},
+						RefB:         spdx.DocElementID{ElementRefID: "ContainerImage-413bfede37ad01fc"},
 						Relationship: "DESCRIBE",
 					},
 					{
-						RefA:         spdx.DocElementID{ElementRefID: "RootPackage-413bfede37ad01fc"},
+						RefA:         spdx.DocElementID{ElementRefID: "ContainerImage-413bfede37ad01fc"},
 						RefB:         spdx.DocElementID{ElementRefID: "OperatingSystem-197f9a00ebcb51f0"},
 						Relationship: "CONTAINS",
 					},
@@ -415,7 +413,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 						Relationship: "DEPENDS_ON",
 					},
 					{
-						RefA:         spdx.DocElementID{ElementRefID: "RootPackage-413bfede37ad01fc"},
+						RefA:         spdx.DocElementID{ElementRefID: "ContainerImage-413bfede37ad01fc"},
 						RefB:         spdx.DocElementID{ElementRefID: "Application-441a648f2aeeee72"},
 						Relationship: "CONTAINS",
 					},
@@ -469,10 +467,9 @@ func TestMarshaler_Marshal(t *testing.T) {
 					Created:              "2021-08-25T12:20:30.000000005Z",
 				},
 				Packages: map[spdx.ElementID]*spdx.Package2_2{
-					spdx.ElementID("RootPackage-5af0f1f08c20909a"): {
-						PackageSPDXIdentifier: spdx.ElementID("RootPackage-5af0f1f08c20909a"),
+					spdx.ElementID("Filesystem-5af0f1f08c20909a"): {
+						PackageSPDXIdentifier: spdx.ElementID("Filesystem-5af0f1f08c20909a"),
 						PackageName:           "masahiro331/CVE-2021-41098",
-						PackageVersion:        "filesystem",
 						PackageAttributionTexts: []string{
 							"SchemaVersion: 2",
 						},
@@ -500,11 +497,11 @@ func TestMarshaler_Marshal(t *testing.T) {
 				Relationships: []*spdx.Relationship2_2{
 					{
 						RefA:         spdx.DocElementID{ElementRefID: "DOCUMENT"},
-						RefB:         spdx.DocElementID{ElementRefID: "RootPackage-5af0f1f08c20909a"},
+						RefB:         spdx.DocElementID{ElementRefID: "Filesystem-5af0f1f08c20909a"},
 						Relationship: "DESCRIBE",
 					},
 					{
-						RefA:         spdx.DocElementID{ElementRefID: "RootPackage-5af0f1f08c20909a"},
+						RefA:         spdx.DocElementID{ElementRefID: "Filesystem-5af0f1f08c20909a"},
 						RefB:         spdx.DocElementID{ElementRefID: "Application-9dd4a4ba7077cc5a"},
 						Relationship: "CONTAINS",
 					},
@@ -553,10 +550,9 @@ func TestMarshaler_Marshal(t *testing.T) {
 					Created:              "2021-08-25T12:20:30.000000005Z",
 				},
 				Packages: map[spdx.ElementID]*spdx.Package2_2{
-					spdx.ElementID("RootPackage-7cb7a269a391a798"): {
+					spdx.ElementID("Repository-7cb7a269a391a798"): {
 						PackageName:           "test-aggregate",
-						PackageSPDXIdentifier: "RootPackage-7cb7a269a391a798",
-						PackageVersion:        "repository",
+						PackageSPDXIdentifier: "Repository-7cb7a269a391a798",
 						PackageAttributionTexts: []string{
 							"SchemaVersion: 2",
 						},
@@ -593,11 +589,11 @@ func TestMarshaler_Marshal(t *testing.T) {
 				Relationships: []*spdx.Relationship2_2{
 					{
 						RefA:         spdx.DocElementID{ElementRefID: "DOCUMENT"},
-						RefB:         spdx.DocElementID{ElementRefID: "RootPackage-7cb7a269a391a798"},
+						RefB:         spdx.DocElementID{ElementRefID: "Repository-7cb7a269a391a798"},
 						Relationship: "DESCRIBE",
 					},
 					{
-						RefA:         spdx.DocElementID{ElementRefID: "RootPackage-7cb7a269a391a798"},
+						RefA:         spdx.DocElementID{ElementRefID: "Repository-7cb7a269a391a798"},
 						RefB:         spdx.DocElementID{ElementRefID: "Application-24f8a80152e2c0fc"},
 						Relationship: "CONTAINS",
 					},
@@ -629,10 +625,9 @@ func TestMarshaler_Marshal(t *testing.T) {
 					Created:              "2021-08-25T12:20:30.000000005Z",
 				},
 				Packages: map[spdx.ElementID]*spdx.Package2_2{
-					spdx.ElementID("RootPackage-70f34983067dba86"): {
+					spdx.ElementID("Filesystem-70f34983067dba86"): {
 						PackageName:           "empty/path",
-						PackageSPDXIdentifier: "RootPackage-70f34983067dba86",
-						PackageVersion:        "filesystem",
+						PackageSPDXIdentifier: "Filesystem-70f34983067dba86",
 						PackageAttributionTexts: []string{
 							"SchemaVersion: 2",
 						},
@@ -641,7 +636,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 				Relationships: []*spdx.Relationship2_2{
 					{
 						RefA:         spdx.DocElementID{ElementRefID: "DOCUMENT"},
-						RefB:         spdx.DocElementID{ElementRefID: "RootPackage-70f34983067dba86"},
+						RefB:         spdx.DocElementID{ElementRefID: "Filesystem-70f34983067dba86"},
 						Relationship: "DESCRIBE",
 					},
 				},

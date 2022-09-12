@@ -50,7 +50,6 @@ const (
 
 	ElementOperatingSystem = "OperatingSystem"
 	ElementApplication     = "Application"
-	ElementRootPackage     = "RootPackage"
 )
 
 var (
@@ -253,9 +252,8 @@ func (m *Marshaler) reportPackage(r types.Report) (spdx.Package2_2, error) {
 	if err != nil {
 		return spdx.Package2_2{}, xerrors.Errorf("failed to get %s package ID: %w", err)
 	}
-	spdxPackage.PackageSPDXIdentifier = spdx.ElementID(fmt.Sprintf("%s-%s", ElementRootPackage, pkgID))
+	spdxPackage.PackageSPDXIdentifier = spdx.ElementID(fmt.Sprintf("%s-%s", camelCase(string(r.ArtifactType)), pkgID))
 	spdxPackage.PackageName = r.ArtifactName
-	spdxPackage.PackageVersion = string(r.ArtifactType)
 
 	return spdxPackage, nil
 }
@@ -356,4 +354,25 @@ func getPackageID(h Hash, v interface{}) (string, error) {
 	}
 
 	return fmt.Sprintf("%x", f), nil
+}
+
+func camelCase(inputUnderScoreStr string) (camelCase string) {
+	isToUpper := false
+	for k, v := range inputUnderScoreStr {
+		if k == 0 {
+			camelCase = strings.ToUpper(string(inputUnderScoreStr[0]))
+		} else {
+			if isToUpper {
+				camelCase += strings.ToUpper(string(v))
+				isToUpper = false
+			} else {
+				if v == '_' {
+					isToUpper = true
+				} else {
+					camelCase += string(v)
+				}
+			}
+		}
+	}
+	return
 }
