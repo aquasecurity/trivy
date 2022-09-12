@@ -109,8 +109,44 @@ func TestMarshaler_Marshal(t *testing.T) {
 					Created:              "2021-08-25T12:20:30.000000005Z",
 				},
 				Packages: map[spdx.ElementID]*spdx.Package2_2{
-					spdx.ElementID("eb0263038c3b445b"): {
-						PackageSPDXIdentifier:   spdx.ElementID("eb0263038c3b445b"),
+					spdx.ElementID("RootPackage-9396d894cd0cb6cb"): {
+						PackageSPDXIdentifier: spdx.ElementID("RootPackage-9396d894cd0cb6cb"),
+						PackageName:           "rails:latest",
+						PackageVersion:        "container_image",
+						PackageExternalReferences: []*spdx.PackageExternalReference2_2{
+							{
+								Category: tspdx.CategoryPackageManager,
+								RefType:  tspdx.RefTypePurl,
+								Locator:  "pkg:oci/rails@sha256:a27fd8080b517143cbbbab9dfb7c8571c40d67d534bbdee55bd6c473f432b177?repository_url=index.docker.io%2Flibrary%2Frails&arch=arm64",
+							},
+						},
+						PackageAttributionTexts: []string{
+							"SchemaVersion: 2",
+							"ImageID: sha256:5d0da3dc976460b72c77d94c8a1ad043720b0416bfc16c52c45d4847e53fadb6",
+							"Size: 1024",
+							"RepoDigest: rails@sha256:a27fd8080b517143cbbbab9dfb7c8571c40d67d534bbdee55bd6c473f432b177",
+							"DiffID: sha256:d871dadfb37b53ef1ca45be04fc527562b91989991a8f545345ae3be0b93f92a",
+							"RepoTag: rails:latest",
+						},
+					},
+					spdx.ElementID("Application-73c871d73f3c8248"): {
+						PackageSPDXIdentifier: spdx.ElementID("Application-73c871d73f3c8248"),
+						PackageName:           "app/subproject/Gemfile.lock",
+						PackageVersion:        "bundler",
+					},
+					spdx.ElementID("Application-c3fac92c1ac0a9fa"): {
+						PackageSPDXIdentifier: spdx.ElementID("Application-c3fac92c1ac0a9fa"),
+						PackageName:           "app/Gemfile.lock",
+						PackageVersion:        "bundler",
+					},
+					spdx.ElementID("OperatingSystem-197f9a00ebcb51f0"): {
+						PackageSPDXIdentifier: spdx.ElementID("OperatingSystem-197f9a00ebcb51f0"),
+						PackageName:           "centos",
+						PackageVersion:        "8.3.2011",
+					},
+
+					spdx.ElementID("Package-eb0263038c3b445b"): {
+						PackageSPDXIdentifier:   spdx.ElementID("Package-eb0263038c3b445b"),
 						PackageName:             "actioncontroller",
 						PackageVersion:          "7.0.1",
 						PackageLicenseConcluded: "NONE",
@@ -123,8 +159,8 @@ func TestMarshaler_Marshal(t *testing.T) {
 							},
 						},
 					},
-					spdx.ElementID("826226d056ff30c0"): {
-						PackageSPDXIdentifier:   spdx.ElementID("826226d056ff30c0"),
+					spdx.ElementID("Package-826226d056ff30c0"): {
+						PackageSPDXIdentifier:   spdx.ElementID("Package-826226d056ff30c0"),
 						PackageName:             "actionpack",
 						PackageVersion:          "7.0.1",
 						PackageLicenseConcluded: "NONE",
@@ -137,8 +173,8 @@ func TestMarshaler_Marshal(t *testing.T) {
 							},
 						},
 					},
-					spdx.ElementID("fd0dc3cf913d5bc3"): {
-						PackageSPDXIdentifier:   spdx.ElementID("fd0dc3cf913d5bc3"),
+					spdx.ElementID("Package-fd0dc3cf913d5bc3"): {
+						PackageSPDXIdentifier:   spdx.ElementID("Package-fd0dc3cf913d5bc3"),
 						PackageName:             "binutils",
 						PackageVersion:          "2.30",
 						PackageLicenseConcluded: "GPLv3+",
@@ -150,11 +186,53 @@ func TestMarshaler_Marshal(t *testing.T) {
 								Locator:  "pkg:rpm/centos/binutils@2.30-93.el8?arch=aarch64&distro=centos-8.3.2011",
 							},
 						},
+						PackageSourceInfo: "built package from: binutils-2.30-93.el8",
+					},
+				},
+				Relationships: []*spdx.Relationship2_2{
+					{
+						RefA:         spdx.DocElementID{ElementRefID: "DOCUMENT"},
+						RefB:         spdx.DocElementID{ElementRefID: "RootPackage-9396d894cd0cb6cb"},
+						Relationship: "DESCRIBE",
+					},
+					{
+						RefA:         spdx.DocElementID{ElementRefID: "RootPackage-9396d894cd0cb6cb"},
+						RefB:         spdx.DocElementID{ElementRefID: "OperatingSystem-197f9a00ebcb51f0"},
+						Relationship: "CONTAINS",
+					},
+					{
+						RefA:         spdx.DocElementID{ElementRefID: "OperatingSystem-197f9a00ebcb51f0"},
+						RefB:         spdx.DocElementID{ElementRefID: "Package-fd0dc3cf913d5bc3"},
+						Relationship: "DEPENDS_ON",
+					},
+					{
+						RefA:         spdx.DocElementID{ElementRefID: "RootPackage-9396d894cd0cb6cb"},
+						RefB:         spdx.DocElementID{ElementRefID: "Application-73c871d73f3c8248"},
+						Relationship: "CONTAINS",
+					},
+					{
+						RefA:         spdx.DocElementID{ElementRefID: "Application-73c871d73f3c8248"},
+						RefB:         spdx.DocElementID{ElementRefID: "Package-826226d056ff30c0"},
+						Relationship: "DEPENDS_ON",
+					},
+					{
+						RefA:         spdx.DocElementID{ElementRefID: "Application-73c871d73f3c8248"},
+						RefB:         spdx.DocElementID{ElementRefID: "Package-eb0263038c3b445b"},
+						Relationship: "DEPENDS_ON",
+					},
+					{
+						RefA:         spdx.DocElementID{ElementRefID: "RootPackage-9396d894cd0cb6cb"},
+						RefB:         spdx.DocElementID{ElementRefID: "Application-c3fac92c1ac0a9fa"},
+						Relationship: "CONTAINS",
+					},
+					{
+						RefA:         spdx.DocElementID{ElementRefID: "Application-c3fac92c1ac0a9fa"},
+						RefB:         spdx.DocElementID{ElementRefID: "Package-826226d056ff30c0"},
+						Relationship: "DEPENDS_ON",
 					},
 				},
 				UnpackagedFiles: nil,
 				OtherLicenses:   nil,
-				Relationships:   nil,
 				Annotations:     nil,
 				Reviews:         nil,
 			},
@@ -237,8 +315,29 @@ func TestMarshaler_Marshal(t *testing.T) {
 					Created:              "2021-08-25T12:20:30.000000005Z",
 				},
 				Packages: map[spdx.ElementID]*spdx.Package2_2{
-					spdx.ElementID("d8dccb186bafaf37"): {
-						PackageSPDXIdentifier:   spdx.ElementID("d8dccb186bafaf37"),
+					spdx.ElementID("RootPackage-413bfede37ad01fc"): {
+						PackageName:           "centos:latest",
+						PackageSPDXIdentifier: "RootPackage-413bfede37ad01fc",
+						PackageVersion:        "container_image",
+						PackageAttributionTexts: []string{
+							"SchemaVersion: 2",
+							"ImageID: sha256:5d0da3dc976460b72c77d94c8a1ad043720b0416bfc16c52c45d4847e53fadb6",
+							"Size: 1024",
+							"RepoTag: centos:latest",
+						},
+					},
+					spdx.ElementID("Application-441a648f2aeeee72"): {
+						PackageSPDXIdentifier: spdx.ElementID("Application-441a648f2aeeee72"),
+						PackageName:           "Ruby",
+						PackageVersion:        "gemspec",
+					},
+					spdx.ElementID("OperatingSystem-197f9a00ebcb51f0"): {
+						PackageSPDXIdentifier: spdx.ElementID("OperatingSystem-197f9a00ebcb51f0"),
+						PackageName:           "centos",
+						PackageVersion:        "8.3.2011",
+					},
+					spdx.ElementID("Package-d8dccb186bafaf37"): {
+						PackageSPDXIdentifier:   spdx.ElementID("Package-d8dccb186bafaf37"),
 						PackageName:             "acl",
 						PackageVersion:          "2.2.53",
 						PackageLicenseConcluded: "GPLv2+",
@@ -250,9 +349,10 @@ func TestMarshaler_Marshal(t *testing.T) {
 								Locator:  "pkg:rpm/centos/acl@1:2.2.53-1.el8?arch=aarch64&distro=centos-8.3.2011",
 							},
 						},
+						PackageSourceInfo: "built package from: 1:acl-2.2.53-1.el8",
 					},
-					spdx.ElementID("826226d056ff30c0"): {
-						PackageSPDXIdentifier:   spdx.ElementID("826226d056ff30c0"),
+					spdx.ElementID("Package-826226d056ff30c0"): {
+						PackageSPDXIdentifier:   spdx.ElementID("Package-826226d056ff30c0"),
 						PackageName:             "actionpack",
 						PackageVersion:          "7.0.1",
 						PackageLicenseConcluded: "NONE",
@@ -264,11 +364,56 @@ func TestMarshaler_Marshal(t *testing.T) {
 								Locator:  "pkg:gem/actionpack@7.0.1",
 							},
 						},
+						PackageAttributionTexts: []string{
+							"LayerDiffID: sha256:ccb64cf0b7ba2e50741d0b64cae324eb5de3b1e2f580bbf177e721b67df38488",
+						},
+						Files: map[spdx.ElementID]*spdx.File2_2{
+							"File-fa42187221d0d0a8": {
+								FileSPDXIdentifier: "File-fa42187221d0d0a8",
+								FileName:           "tools/project-doe/specifications/actionpack.gemspec",
+							},
+							"File-6a540784b0dc6d55": {
+								FileName:           "tools/project-john/specifications/actionpack.gemspec",
+								FileSPDXIdentifier: "File-6a540784b0dc6d55",
+							},
+						},
 					},
 				},
+				Relationships: []*spdx.Relationship2_2{
+					{
+						RefA:         spdx.DocElementID{ElementRefID: "DOCUMENT"},
+						RefB:         spdx.DocElementID{ElementRefID: "RootPackage-413bfede37ad01fc"},
+						Relationship: "DESCRIBE",
+					},
+					{
+						RefA:         spdx.DocElementID{ElementRefID: "RootPackage-413bfede37ad01fc"},
+						RefB:         spdx.DocElementID{ElementRefID: "OperatingSystem-197f9a00ebcb51f0"},
+						Relationship: "CONTAINS",
+					},
+					{
+						RefA:         spdx.DocElementID{ElementRefID: "OperatingSystem-197f9a00ebcb51f0"},
+						RefB:         spdx.DocElementID{ElementRefID: "Package-d8dccb186bafaf37"},
+						Relationship: "DEPENDS_ON",
+					},
+					{
+						RefA:         spdx.DocElementID{ElementRefID: "RootPackage-413bfede37ad01fc"},
+						RefB:         spdx.DocElementID{ElementRefID: "Application-441a648f2aeeee72"},
+						Relationship: "CONTAINS",
+					},
+					{
+						RefA:         spdx.DocElementID{ElementRefID: "Application-441a648f2aeeee72"},
+						RefB:         spdx.DocElementID{ElementRefID: "Package-826226d056ff30c0"},
+						Relationship: "DEPENDS_ON",
+					},
+					{
+						RefA:         spdx.DocElementID{ElementRefID: "Application-441a648f2aeeee72"},
+						RefB:         spdx.DocElementID{ElementRefID: "Package-826226d056ff30c0"},
+						Relationship: "DEPENDS_ON",
+					},
+				},
+
 				UnpackagedFiles: nil,
 				OtherLicenses:   nil,
-				Relationships:   nil,
 				Annotations:     nil,
 				Reviews:         nil,
 			},
@@ -305,8 +450,21 @@ func TestMarshaler_Marshal(t *testing.T) {
 					Created:              "2021-08-25T12:20:30.000000005Z",
 				},
 				Packages: map[spdx.ElementID]*spdx.Package2_2{
-					spdx.ElementID("3da61e86d0530402"): {
-						PackageSPDXIdentifier:   spdx.ElementID("3da61e86d0530402"),
+					spdx.ElementID("RootPackage-5af0f1f08c20909a"): {
+						PackageSPDXIdentifier: spdx.ElementID("RootPackage-5af0f1f08c20909a"),
+						PackageName:           "masahiro331/CVE-2021-41098",
+						PackageVersion:        "filesystem",
+						PackageAttributionTexts: []string{
+							"SchemaVersion: 2",
+						},
+					},
+					spdx.ElementID("Application-9dd4a4ba7077cc5a"): {
+						PackageSPDXIdentifier: spdx.ElementID("Application-9dd4a4ba7077cc5a"),
+						PackageName:           "Gemfile.lock",
+						PackageVersion:        "bundler",
+					},
+					spdx.ElementID("Package-3da61e86d0530402"): {
+						PackageSPDXIdentifier:   spdx.ElementID("Package-3da61e86d0530402"),
 						PackageName:             "actioncable",
 						PackageVersion:          "6.1.4.1",
 						PackageLicenseConcluded: "NONE",
@@ -318,6 +476,23 @@ func TestMarshaler_Marshal(t *testing.T) {
 								Locator:  "pkg:gem/actioncable@6.1.4.1",
 							},
 						},
+					},
+				},
+				Relationships: []*spdx.Relationship2_2{
+					{
+						RefA:         spdx.DocElementID{ElementRefID: "DOCUMENT"},
+						RefB:         spdx.DocElementID{ElementRefID: "RootPackage-5af0f1f08c20909a"},
+						Relationship: "DESCRIBE",
+					},
+					{
+						RefA:         spdx.DocElementID{ElementRefID: "RootPackage-5af0f1f08c20909a"},
+						RefB:         spdx.DocElementID{ElementRefID: "Application-9dd4a4ba7077cc5a"},
+						Relationship: "CONTAINS",
+					},
+					{
+						RefA:         spdx.DocElementID{ElementRefID: "Application-9dd4a4ba7077cc5a"},
+						RefB:         spdx.DocElementID{ElementRefID: "Package-3da61e86d0530402"},
+						Relationship: "DEPENDS_ON",
 					},
 				},
 			},
@@ -359,8 +534,21 @@ func TestMarshaler_Marshal(t *testing.T) {
 					Created:              "2021-08-25T12:20:30.000000005Z",
 				},
 				Packages: map[spdx.ElementID]*spdx.Package2_2{
-					spdx.ElementID("9f3d92e5ae2cadfb"): {
-						PackageSPDXIdentifier:   spdx.ElementID("9f3d92e5ae2cadfb"),
+					spdx.ElementID("RootPackage-7cb7a269a391a798"): {
+						PackageName:           "test-aggregate",
+						PackageSPDXIdentifier: "RootPackage-7cb7a269a391a798",
+						PackageVersion:        "repository",
+						PackageAttributionTexts: []string{
+							"SchemaVersion: 2",
+						},
+					},
+					spdx.ElementID("Application-24f8a80152e2c0fc"): {
+						PackageSPDXIdentifier: "Application-24f8a80152e2c0fc",
+						PackageName:           "Node.js",
+						PackageVersion:        "node-pkg",
+					},
+					spdx.ElementID("Package-9f3d92e5ae2cadfb"): {
+						PackageSPDXIdentifier:   spdx.ElementID("Package-9f3d92e5ae2cadfb"),
 						PackageName:             "ruby-typeprof",
 						PackageVersion:          "0.20.1",
 						PackageLicenseConcluded: "MIT",
@@ -372,6 +560,32 @@ func TestMarshaler_Marshal(t *testing.T) {
 								Locator:  "pkg:npm/ruby-typeprof@0.20.1",
 							},
 						},
+						PackageAttributionTexts: []string{
+							"LayerDiffID: sha256:661c3fd3cc16b34c070f3620ca6b03b6adac150f9a7e5d0e3c707a159990f88e",
+						},
+						Files: map[spdx.ElementID]*spdx.File2_2{
+							"File-a52825a3e5bc6dfe": {
+								FileName:           "usr/local/lib/ruby/gems/3.1.0/gems/typeprof-0.21.1/vscode/package.json",
+								FileSPDXIdentifier: "File-a52825a3e5bc6dfe",
+							},
+						},
+					},
+				},
+				Relationships: []*spdx.Relationship2_2{
+					{
+						RefA:         spdx.DocElementID{ElementRefID: "DOCUMENT"},
+						RefB:         spdx.DocElementID{ElementRefID: "RootPackage-7cb7a269a391a798"},
+						Relationship: "DESCRIBE",
+					},
+					{
+						RefA:         spdx.DocElementID{ElementRefID: "RootPackage-7cb7a269a391a798"},
+						RefB:         spdx.DocElementID{ElementRefID: "Application-24f8a80152e2c0fc"},
+						Relationship: "CONTAINS",
+					},
+					{
+						RefA:         spdx.DocElementID{ElementRefID: "Application-24f8a80152e2c0fc"},
+						RefB:         spdx.DocElementID{ElementRefID: "Package-9f3d92e5ae2cadfb"},
+						Relationship: "DEPENDS_ON",
 					},
 				},
 			},
@@ -395,7 +609,23 @@ func TestMarshaler_Marshal(t *testing.T) {
 					CreatorTools:         []string{"trivy"},
 					Created:              "2021-08-25T12:20:30.000000005Z",
 				},
-				Packages: map[spdx.ElementID]*spdx.Package2_2{},
+				Packages: map[spdx.ElementID]*spdx.Package2_2{
+					spdx.ElementID("RootPackage-70f34983067dba86"): {
+						PackageName:           "empty/path",
+						PackageSPDXIdentifier: "RootPackage-70f34983067dba86",
+						PackageVersion:        "filesystem",
+						PackageAttributionTexts: []string{
+							"SchemaVersion: 2",
+						},
+					},
+				},
+				Relationships: []*spdx.Relationship2_2{
+					{
+						RefA:         spdx.DocElementID{ElementRefID: "DOCUMENT"},
+						RefB:         spdx.DocElementID{ElementRefID: "RootPackage-70f34983067dba86"},
+						Relationship: "DESCRIBE",
+					},
+				},
 			},
 		},
 	}
@@ -413,13 +643,21 @@ func TestMarshaler_Marshal(t *testing.T) {
 			// Fake function calculating the hash value
 			h := fnv.New64()
 			hasher := func(v interface{}, format hashstructure.Format, opts *hashstructure.HashOptions) (uint64, error) {
-				pkg, ok := v.(ftypes.Package)
-				if !ok {
+				h.Reset()
+
+				var str string
+				switch v.(type) {
+				case ftypes.Package:
+					str = v.(ftypes.Package).Name
+				case string:
+					str = v.(string)
+				case *ftypes.OS:
+					str = v.(*ftypes.OS).Name
+				default:
 					require.Failf(t, "unknown type", "%T", v)
 				}
 
-				h.Reset()
-				if _, err := h.Write([]byte(pkg.Name)); err != nil {
+				if _, err := h.Write([]byte(str)); err != nil {
 					return 0, err
 				}
 

@@ -2,6 +2,8 @@ package spdx
 
 import (
 	"fmt"
+	"github.com/aquasecurity/trivy/pkg/scanner/utils"
+	"strconv"
 	"strings"
 	"time"
 
@@ -28,6 +30,27 @@ const (
 const (
 	CategoryPackageManager = "PACKAGE-MANAGER"
 	RefTypePurl            = "purl"
+
+	PropertySchemaVersion = "SchemaVersion"
+
+	// Image properties
+	PropertySize       = "Size"
+	PropertyImageID    = "ImageID"
+	PropertyRepoDigest = "RepoDigest"
+	PropertyDiffID     = "DiffID"
+	PropertyRepoTag    = "RepoTag"
+
+	// Package properties
+	PropertyLayerDiffID = "LayerDiffID"
+	PropertyLayerDigest = "LayerDigest"
+
+	RelationShipContains  = "CONTAINS"
+	RelationShipDescribe  = "DESCRIBE"
+	RelationShipDependsOn = "DEPENDS_ON"
+)
+
+var (
+	SourcePackageFormat = "built package from: %s"
 )
 
 type Marshaler struct {
@@ -62,7 +85,7 @@ func WithHasher(hasher Hash) marshalOption {
 }
 
 func NewMarshaler(opts ...marshalOption) *Marshaler {
-	e := &Marshaler{
+	m := &Marshaler{
 		format:  spdx.Document2_1{},
 		clock:   clock.RealClock{},
 		newUUID: uuid.New,
@@ -70,22 +93,97 @@ func NewMarshaler(opts ...marshalOption) *Marshaler {
 	}
 
 	for _, opt := range opts {
-		opt(e)
+		opt(m)
 	}
 
-	return e
+	return m
 }
 
-func (e *Marshaler) Marshal(r types.Report) (*spdx.Document2_2, error) {
+func relationShip(refA, refB spdx.ElementID, operator string) *spdx.Relationship2_2 {
+	ref := spdx.Relationship2_2{
+		RefA:         spdx.MakeDocElementID("", string(refA)),
+		RefB:         spdx.MakeDocElementID("", string(refB)),
+		Relationship: operator,
+	}
+	return &ref
+}
+
+func (m *Marshaler) Marshal(r types.Report) (*spdx.Document2_2, error) {
+	var relationShips []*spdx.Relationship2_2
 	packages := make(map[spdx.ElementID]*spdx.Package2_2)
 
+	reportPackage, err := m.reportPackage(r)
+	if err != nil {
+		return nil, xerrors.Errorf("failed to parse report package: %w", err)
+	}
+	packages[reportPackage.PackageSPDXIdentifier] = &reportPackage
+	relationShips = append(relationShips,
+		relationShip(SPDXIdentifier, reportPackage.PackageSPDXIdentifier, RelationShipDescribe),
+	)
+
 	for _, result := range r.Results {
-		for _, pkg := range result.Packages {
-			spdxPackage, err := e.pkgToSpdxPackage(result.Type, r.Metadata, pkg)
-			if err != nil {
-				return nil, xerrors.Errorf("failed to parse pkg: %w", err)
+		var (
+			parentIdentifier spdx.ElementID
+			parentPackage    spdx.Package2_2
+			err              error
+
+			operator = RelationShipContains
+		)
+
+		switch result.Class {
+		case types.ClassOSPkg:
+			if r.Metadata.OS == nil {
+				continue
 			}
-			packages[spdxPackage.PackageSPDXIdentifier] = &spdxPackage
+			parentPackage, err = m.operatingSystemPackage(r.Metadata.OS)
+			if err != nil {
+				return nil, xerrors.Errorf("failed to parse operating system package: %w", err)
+			}
+			parentIdentifier = parentPackage.PackageSPDXIdentifier
+		case types.ClassLangPkg:
+			parentPackage, err = m.applicationPackage(result.Target, result.Type)
+			if err != nil {
+				return nil, xerrors.Errorf("failed to parse application package: %w", err)
+			}
+			parentIdentifier = parentPackage.PackageSPDXIdentifier
+		}
+
+		packages[parentIdentifier] = &parentPackage
+		relationShips = append(relationShips,
+			relationShip(reportPackage.PackageSPDXIdentifier, parentIdentifier, operator),
+		)
+		operator = RelationShipDependsOn
+
+		for _, pkg := range result.Packages {
+			spdxPackage, err := m.pkgToSpdxPackage(result.Type, result.Class, r.Metadata, pkg)
+			if err != nil {
+				return nil, xerrors.Errorf("failed to parse os package: %w", err)
+			}
+			var file spdx.File2_2
+			if pkg.FilePath != "" {
+				pkgID, err := getPackageID(m.hasher, pkg.FilePath)
+				if err != nil {
+					return nil, xerrors.Errorf("failed to get %s package ID: %w", pkg.FilePath, err)
+				}
+				file = spdx.File2_2{
+					FileSPDXIdentifier: spdx.ElementID(fmt.Sprintf("File-%s", pkgID)),
+					FileName:           pkg.FilePath,
+				}
+				spdxPackage.Files = map[spdx.ElementID]*spdx.File2_2{
+					file.FileSPDXIdentifier: &file,
+				}
+			}
+			pkg, ok := packages[spdxPackage.PackageSPDXIdentifier]
+			if ok {
+				if file.FileSPDXIdentifier != "" {
+					pkg.Files[file.FileSPDXIdentifier] = &file
+				}
+			} else {
+				packages[spdxPackage.PackageSPDXIdentifier] = &spdxPackage
+			}
+			relationShips = append(relationShips,
+				relationShip(parentIdentifier, spdxPackage.PackageSPDXIdentifier, operator),
+			)
 		}
 	}
 
@@ -95,39 +193,126 @@ func (e *Marshaler) Marshal(r types.Report) (*spdx.Document2_2, error) {
 			DataLicense:          DataLicense,
 			SPDXIdentifier:       SPDXIdentifier,
 			DocumentName:         r.ArtifactName,
-			DocumentNamespace:    getDocumentNamespace(r, e),
+			DocumentNamespace:    getDocumentNamespace(r, m),
 			CreatorOrganizations: []string{CreatorOrganization},
 			CreatorTools:         []string{CreatorTool},
-			Created:              e.clock.Now().UTC().Format(time.RFC3339Nano),
+			Created:              m.clock.Now().UTC().Format(time.RFC3339Nano),
 		},
-		Packages: packages,
+		Packages:      packages,
+		Relationships: relationShips,
 	}, nil
 }
 
-func (e *Marshaler) pkgToSpdxPackage(t string, metadata types.Metadata, pkg ftypes.Package) (spdx.Package2_2, error) {
+func (m *Marshaler) operatingSystemPackage(osFound *ftypes.OS) (spdx.Package2_2, error) {
+	var spdxPackage spdx.Package2_2
+	pkgID, err := getPackageID(m.hasher, osFound)
+	if err != nil {
+		return spdx.Package2_2{}, xerrors.Errorf("failed to get os metadata package ID: %w", err)
+	}
+	spdxPackage.PackageSPDXIdentifier = spdx.ElementID(fmt.Sprintf("OperatingSystem-%s", pkgID))
+	spdxPackage.PackageName = osFound.Family
+	spdxPackage.PackageVersion = osFound.Name
+	return spdxPackage, nil
+}
+
+func (m *Marshaler) reportPackage(r types.Report) (spdx.Package2_2, error) {
+	var spdxPackage spdx.Package2_2
+
+	attributionTexts := []string{attributionText(PropertySchemaVersion, strconv.Itoa(r.SchemaVersion))}
+	if r.Metadata.OS != nil {
+		p, err := purl.NewPackageURL(purl.TypeOCI, r.Metadata, ftypes.Package{})
+		if err != nil {
+			return spdx.Package2_2{}, xerrors.Errorf("failed to new package url for oci: %w", err)
+		}
+		if p.Type != "" {
+			spdxPackage.PackageExternalReferences = packageExternalReference(p.ToString())
+		}
+		attributionTexts = appendAttributionText(attributionTexts, PropertyImageID, r.Metadata.ImageID)
+	}
+
+	if r.Metadata.Size != 0 {
+		attributionTexts = appendAttributionText(attributionTexts, PropertySize, strconv.FormatInt(r.Metadata.Size, 10))
+	}
+
+	for _, d := range r.Metadata.RepoDigests {
+		attributionTexts = appendAttributionText(attributionTexts, PropertyRepoDigest, d)
+	}
+	for _, d := range r.Metadata.DiffIDs {
+		attributionTexts = appendAttributionText(attributionTexts, PropertyDiffID, d)
+	}
+	for _, t := range r.Metadata.RepoTags {
+		attributionTexts = appendAttributionText(attributionTexts, PropertyRepoTag, t)
+	}
+
+	spdxPackage.PackageAttributionTexts = attributionTexts
+	pkgID, err := getPackageID(m.hasher, fmt.Sprintf("%s-%s", r.ArtifactName, r.ArtifactType))
+	if err != nil {
+		return spdx.Package2_2{}, xerrors.Errorf("failed to get %s package ID: %w", err)
+	}
+	spdxPackage.PackageSPDXIdentifier = spdx.ElementID(fmt.Sprintf("RootPackage-%s", pkgID))
+	spdxPackage.PackageName = r.ArtifactName
+	spdxPackage.PackageVersion = string(r.ArtifactType)
+
+	return spdxPackage, nil
+}
+
+func (m *Marshaler) applicationPackage(target, typ string) (spdx.Package2_2, error) {
+	var spdxPackage spdx.Package2_2
+
+	spdxPackage.PackageName = target
+	spdxPackage.PackageVersion = typ
+	pkgID, err := getPackageID(m.hasher, fmt.Sprintf("%s-%s", target, typ))
+	if err != nil {
+		return spdx.Package2_2{}, xerrors.Errorf("failed to get %s package ID: %w", target, err)
+	}
+	spdxPackage.PackageSPDXIdentifier = spdx.ElementID(fmt.Sprintf("Application-%s", pkgID))
+
+	return spdxPackage, nil
+}
+
+func (m *Marshaler) pkgToSpdxPackage(t string, class types.ResultClass, metadata types.Metadata, pkg ftypes.Package) (spdx.Package2_2, error) {
 	var spdxPackage spdx.Package2_2
 	license := getLicense(pkg)
 
-	pkgID, err := getPackageID(e.hasher, pkg)
+	pkgID, err := getPackageID(m.hasher, pkg)
 	if err != nil {
 		return spdx.Package2_2{}, xerrors.Errorf("failed to get %s package ID: %w", pkg.Name, err)
 	}
 
-	spdxPackage.PackageSPDXIdentifier = spdx.ElementID(pkgID)
+	spdxPackage.PackageSPDXIdentifier = spdx.ElementID(fmt.Sprintf("Package-%s", pkgID))
 	spdxPackage.PackageName = pkg.Name
 	spdxPackage.PackageVersion = pkg.Version
+
+	if class == types.ClassOSPkg {
+		spdxPackage.PackageSourceInfo = fmt.Sprintf(SourcePackageFormat, utils.FormatSrcPackage(pkg))
+	}
+
 	packageURL, err := purl.NewPackageURL(t, metadata, pkg)
 	if err != nil {
 		return spdx.Package2_2{}, xerrors.Errorf("failed to parse purl (%s): %w", pkg.Name, err)
 	}
 	spdxPackage.PackageExternalReferences = packageExternalReference(packageURL.String())
+
 	// The Declared License is what the authors of a project believe govern the package
 	spdxPackage.PackageLicenseConcluded = license
 
 	// The Concluded License field is the license the SPDX file creator believes governs the package
 	spdxPackage.PackageLicenseDeclared = license
 
+	spdxPackage.PackageAttributionTexts = appendAttributionText(spdxPackage.PackageAttributionTexts, PropertyLayerDigest, pkg.Layer.Digest)
+	spdxPackage.PackageAttributionTexts = appendAttributionText(spdxPackage.PackageAttributionTexts, PropertyLayerDiffID, pkg.Layer.DiffID)
+
 	return spdxPackage, nil
+}
+func appendAttributionText(attributionTexts []string, key, value string) []string {
+	if value == "" {
+		return attributionTexts
+	}
+	return append(attributionTexts, attributionText(key, value))
+}
+
+func attributionText(key, value string) string {
+	return fmt.Sprintf("%s: %s", key, value)
 }
 
 func packageExternalReference(packageURL string) []*spdx.PackageExternalReference2_2 {
@@ -148,21 +333,25 @@ func getLicense(p ftypes.Package) string {
 	return strings.Join(p.Licenses, ", ")
 }
 
-func getDocumentNamespace(r types.Report, e *Marshaler) string {
+func getDocumentNamespace(r types.Report, m *Marshaler) string {
 	return fmt.Sprintf("%s/%s/%s-%s",
 		DocumentNamespace,
 		string(r.ArtifactType),
 		r.ArtifactName,
-		e.newUUID().String(),
+		m.newUUID().String(),
 	)
 }
 
-func getPackageID(h Hash, p ftypes.Package) (string, error) {
+func getPackageID(h Hash, v interface{}) (string, error) {
 	// Not use these values for the hash
-	p.Layer = ftypes.Layer{}
-	p.FilePath = ""
+	p, ok := v.(ftypes.Package)
+	if ok {
+		p.Layer = ftypes.Layer{}
+		p.FilePath = ""
+		v = p
+	}
 
-	f, err := h(p, hashstructure.FormatV2, &hashstructure.HashOptions{
+	f, err := h(v, hashstructure.FormatV2, &hashstructure.HashOptions{
 		ZeroNil:      true,
 		SlicesAsSets: true,
 	})
