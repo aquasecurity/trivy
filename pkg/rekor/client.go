@@ -15,9 +15,8 @@ import (
 )
 
 const (
-	defaultRekorURL = "https://rekor.sigstore.dev"
-	treeIDLen       = 16
-	uuidLen         = 64
+	treeIDLen = 16
+	uuidLen   = 64
 )
 
 // EntryID is a hex-format string. The length of the string is 80.
@@ -45,9 +44,6 @@ type Client struct {
 }
 
 func NewClient(rekorUrl string) (*Client, error) {
-	if rekorUrl == "" {
-		rekorUrl = defaultRekorURL
-	}
 	u, err := url.Parse(rekorUrl)
 	if err != nil {
 		return nil, xerrors.Errorf("failed to parse url: %w", err)

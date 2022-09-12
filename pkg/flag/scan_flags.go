@@ -84,7 +84,7 @@ func (f *ScanFlagGroup) Name() string {
 }
 
 func (f *ScanFlagGroup) Flags() []*Flag {
-	return []*Flag{f.SkipDirs, f.SkipFiles, f.OfflineScan, f.SecurityChecks, f.SbomFrom}
+	return []*Flag{f.SkipDirs, f.SkipFiles, f.OfflineScan, f.SecurityChecks, f.SbomFrom, f.RekorUrl}
 }
 
 func (f *ScanFlagGroup) ToOptions(args []string) (ScanOptions, error) {

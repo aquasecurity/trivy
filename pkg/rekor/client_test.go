@@ -11,6 +11,8 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
+const rekorURL = "https://rekor.sigstore.dev"
+
 type mockEntriesClient struct {
 	entries.ClientService
 	logEntryResponseFile string
@@ -54,7 +56,7 @@ func TestClient_GetEntry(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			client, err := NewClient()
+			client, err := NewClient(rekorURL)
 			require.NoError(t, err)
 
 			client.c.Entries = &mockEntriesClient{logEntryResponseFile: tt.mockResponseFile}
@@ -111,7 +113,7 @@ func TestClient_Search(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			c, err := NewClient()
+			c, err := NewClient(rekorURL)
 			require.NoError(t, err)
 
 			c.c.Index = &mockIndexClient{
