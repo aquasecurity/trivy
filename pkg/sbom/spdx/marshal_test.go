@@ -351,8 +351,8 @@ func TestMarshaler_Marshal(t *testing.T) {
 						},
 						PackageSourceInfo: "built package from: 1:acl-2.2.53-1.el8",
 					},
-					spdx.ElementID("Package-826226d056ff30c0"): {
-						PackageSPDXIdentifier:   spdx.ElementID("Package-826226d056ff30c0"),
+					spdx.ElementID("Package-13fe667a0805e6b7"): {
+						PackageSPDXIdentifier:   spdx.ElementID("Package-13fe667a0805e6b7"),
 						PackageName:             "actionpack",
 						PackageVersion:          "7.0.1",
 						PackageLicenseConcluded: "NONE",
@@ -372,9 +372,28 @@ func TestMarshaler_Marshal(t *testing.T) {
 								FileSPDXIdentifier: "File-fa42187221d0d0a8",
 								FileName:           "tools/project-doe/specifications/actionpack.gemspec",
 							},
+						},
+					},
+					spdx.ElementID("Package-d5443dbcbba0dbd4"): {
+						PackageSPDXIdentifier:   spdx.ElementID("Package-d5443dbcbba0dbd4"),
+						PackageName:             "actionpack",
+						PackageVersion:          "7.0.1",
+						PackageLicenseConcluded: "NONE",
+						PackageLicenseDeclared:  "NONE",
+						PackageExternalReferences: []*spdx.PackageExternalReference2_2{
+							{
+								Category: tspdx.CategoryPackageManager,
+								RefType:  tspdx.RefTypePurl,
+								Locator:  "pkg:gem/actionpack@7.0.1",
+							},
+						},
+						PackageAttributionTexts: []string{
+							"LayerDiffID: sha256:ccb64cf0b7ba2e50741d0b64cae324eb5de3b1e2f580bbf177e721b67df38488",
+						},
+						Files: map[spdx.ElementID]*spdx.File2_2{
 							"File-6a540784b0dc6d55": {
-								FileName:           "tools/project-john/specifications/actionpack.gemspec",
 								FileSPDXIdentifier: "File-6a540784b0dc6d55",
+								FileName:           "tools/project-john/specifications/actionpack.gemspec",
 							},
 						},
 					},
@@ -402,12 +421,12 @@ func TestMarshaler_Marshal(t *testing.T) {
 					},
 					{
 						RefA:         spdx.DocElementID{ElementRefID: "Application-441a648f2aeeee72"},
-						RefB:         spdx.DocElementID{ElementRefID: "Package-826226d056ff30c0"},
+						RefB:         spdx.DocElementID{ElementRefID: "Package-d5443dbcbba0dbd4"},
 						Relationship: "DEPENDS_ON",
 					},
 					{
 						RefA:         spdx.DocElementID{ElementRefID: "Application-441a648f2aeeee72"},
-						RefB:         spdx.DocElementID{ElementRefID: "Package-826226d056ff30c0"},
+						RefB:         spdx.DocElementID{ElementRefID: "Package-13fe667a0805e6b7"},
 						Relationship: "DEPENDS_ON",
 					},
 				},
@@ -547,8 +566,8 @@ func TestMarshaler_Marshal(t *testing.T) {
 						PackageName:           "Node.js",
 						PackageVersion:        "node-pkg",
 					},
-					spdx.ElementID("Package-9f3d92e5ae2cadfb"): {
-						PackageSPDXIdentifier:   spdx.ElementID("Package-9f3d92e5ae2cadfb"),
+					spdx.ElementID("Package-daedb173cfd43058"): {
+						PackageSPDXIdentifier:   spdx.ElementID("Package-daedb173cfd43058"),
 						PackageName:             "ruby-typeprof",
 						PackageVersion:          "0.20.1",
 						PackageLicenseConcluded: "MIT",
@@ -584,7 +603,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 					},
 					{
 						RefA:         spdx.DocElementID{ElementRefID: "Application-24f8a80152e2c0fc"},
-						RefB:         spdx.DocElementID{ElementRefID: "Package-9f3d92e5ae2cadfb"},
+						RefB:         spdx.DocElementID{ElementRefID: "Package-daedb173cfd43058"},
 						Relationship: "DEPENDS_ON",
 					},
 				},
@@ -648,7 +667,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 				var str string
 				switch v.(type) {
 				case ftypes.Package:
-					str = v.(ftypes.Package).Name
+					str = v.(ftypes.Package).Name + v.(ftypes.Package).FilePath
 				case string:
 					str = v.(string)
 				case *ftypes.OS:

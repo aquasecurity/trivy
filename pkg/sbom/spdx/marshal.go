@@ -47,10 +47,14 @@ const (
 	RelationShipContains  = "CONTAINS"
 	RelationShipDescribe  = "DESCRIBE"
 	RelationShipDependsOn = "DEPENDS_ON"
+
+	ElementOperatingSystem = "OperatingSystem"
+	ElementApplication     = "Application"
+	ElementRootPackage     = "RootPackage"
 )
 
 var (
-	SourcePackageFormat = "built package from: %s"
+	SourcePackagePrefix = "built package from"
 )
 
 type Marshaler struct {
@@ -209,7 +213,7 @@ func (m *Marshaler) operatingSystemPackage(osFound *ftypes.OS) (spdx.Package2_2,
 	if err != nil {
 		return spdx.Package2_2{}, xerrors.Errorf("failed to get os metadata package ID: %w", err)
 	}
-	spdxPackage.PackageSPDXIdentifier = spdx.ElementID(fmt.Sprintf("OperatingSystem-%s", pkgID))
+	spdxPackage.PackageSPDXIdentifier = spdx.ElementID(fmt.Sprintf("%s-%s", ElementOperatingSystem, pkgID))
 	spdxPackage.PackageName = osFound.Family
 	spdxPackage.PackageVersion = osFound.Name
 	return spdxPackage, nil
@@ -249,7 +253,7 @@ func (m *Marshaler) reportPackage(r types.Report) (spdx.Package2_2, error) {
 	if err != nil {
 		return spdx.Package2_2{}, xerrors.Errorf("failed to get %s package ID: %w", err)
 	}
-	spdxPackage.PackageSPDXIdentifier = spdx.ElementID(fmt.Sprintf("RootPackage-%s", pkgID))
+	spdxPackage.PackageSPDXIdentifier = spdx.ElementID(fmt.Sprintf("%s-%s", ElementRootPackage, pkgID))
 	spdxPackage.PackageName = r.ArtifactName
 	spdxPackage.PackageVersion = string(r.ArtifactType)
 
@@ -265,7 +269,7 @@ func (m *Marshaler) applicationPackage(target, typ string) (spdx.Package2_2, err
 	if err != nil {
 		return spdx.Package2_2{}, xerrors.Errorf("failed to get %s package ID: %w", target, err)
 	}
-	spdxPackage.PackageSPDXIdentifier = spdx.ElementID(fmt.Sprintf("Application-%s", pkgID))
+	spdxPackage.PackageSPDXIdentifier = spdx.ElementID(fmt.Sprintf("%s-%s", ElementApplication, pkgID))
 
 	return spdxPackage, nil
 }
@@ -284,7 +288,7 @@ func (m *Marshaler) pkgToSpdxPackage(t string, class types.ResultClass, metadata
 	spdxPackage.PackageVersion = pkg.Version
 
 	if class == types.ClassOSPkg {
-		spdxPackage.PackageSourceInfo = fmt.Sprintf(SourcePackageFormat, utils.FormatSrcPackage(pkg))
+		spdxPackage.PackageSourceInfo = fmt.Sprintf("%s: %s", SourcePackagePrefix, utils.FormatSrcPackage(pkg))
 	}
 
 	packageURL, err := purl.NewPackageURL(t, metadata, pkg)
@@ -343,20 +347,12 @@ func getDocumentNamespace(r types.Report, m *Marshaler) string {
 }
 
 func getPackageID(h Hash, v interface{}) (string, error) {
-	// Not use these values for the hash
-	p, ok := v.(ftypes.Package)
-	if ok {
-		p.Layer = ftypes.Layer{}
-		p.FilePath = ""
-		v = p
-	}
-
 	f, err := h(v, hashstructure.FormatV2, &hashstructure.HashOptions{
 		ZeroNil:      true,
 		SlicesAsSets: true,
 	})
 	if err != nil {
-		return "", xerrors.Errorf("could not build package ID for package=%+v: %+v", p, err)
+		return "", xerrors.Errorf("could not build package ID for %+v: %w", v, err)
 	}
 
 	return fmt.Sprintf("%x", f), nil
