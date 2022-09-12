@@ -461,6 +461,7 @@ func (a Artifact) inspectRekorRecord(ctx context.Context, client *rekor.Client, 
 	if err != nil {
 		return types.ArtifactReference{}, xerrors.Errorf("failed to inspect: %w", err)
 	}
+	results.Name = a.image.Name()
 
 	return results, nil
 }
