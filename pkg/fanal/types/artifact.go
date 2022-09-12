@@ -95,6 +95,7 @@ const (
 	ArtifactFilesystem       ArtifactType = "filesystem"
 	ArtifactRemoteRepository ArtifactType = "repository"
 	ArtifactCycloneDX        ArtifactType = "cyclonedx"
+	ArtifactSPDX             ArtifactType = "spdx"
 )
 
 // ArtifactReference represents a reference of container image, local filesystem and repository

@@ -4,6 +4,7 @@ import (
 	"context"
 	"crypto/sha256"
 	"encoding/json"
+	"github.com/aquasecurity/trivy/pkg/sbom/spdx"
 	"io"
 	"os"
 	"path/filepath"
@@ -63,14 +64,19 @@ func (a Artifact) Inspect(_ context.Context) (types.ArtifactReference, error) {
 	switch format {
 	case sbom.FormatCycloneDXJSON:
 		unmarshaler = cyclonedx.NewJSONUnmarshaler()
+	case sbom.FormatSPDXJSON:
+		unmarshaler = spdx.NewJSONUnmarshaler()
+	case sbom.FormatSPDXTV:
+		unmarshaler = spdx.NewUnmarshaler()
 	default:
 		return types.ArtifactReference{}, xerrors.Errorf("%s scanning is not yet supported", format)
-
 	}
+
 	bom, err := unmarshaler.Unmarshal(f)
 	if err != nil {
 		return types.ArtifactReference{}, xerrors.Errorf("failed to unmarshal: %w", err)
 	}
+
 	blobInfo := types.BlobInfo{
 		SchemaVersion: types.BlobJSONSchemaVersion,
 		OS:            bom.OS,
@@ -91,6 +97,8 @@ func (a Artifact) Inspect(_ context.Context) (types.ArtifactReference, error) {
 	switch format {
 	case sbom.FormatCycloneDXJSON, sbom.FormatCycloneDXXML:
 		artifactType = types.ArtifactCycloneDX
+	case sbom.FormatSPDXTV, sbom.FormatSPDXJSON:
+		artifactType = types.ArtifactSPDX
 	}
 
 	return types.ArtifactReference{
