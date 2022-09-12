@@ -14,8 +14,9 @@ import (
 
 func TestCycloneDX(t *testing.T) {
 	type args struct {
-		input  string
-		format string
+		input        string
+		format       string
+		artifactType string
 	}
 	tests := []struct {
 		name   string
@@ -25,16 +26,18 @@ func TestCycloneDX(t *testing.T) {
 		{
 			name: "centos7-bom by trivy",
 			args: args{
-				input:  "testdata/fixtures/sbom/centos-7-cyclonedx.json",
-				format: "cyclonedx",
+				input:        "testdata/fixtures/sbom/centos-7-cyclonedx.json",
+				format:       "cyclonedx",
+				artifactType: "cyclonedx",
 			},
 			golden: "testdata/centos-7-cyclonedx.json.golden",
 		},
 		{
 			name: "fluentd-multiple-lockfiles-bom by trivy",
 			args: args{
-				input:  "testdata/fixtures/sbom/fluentd-multiple-lockfiles-cyclonedx.json",
-				format: "cyclonedx",
+				input:        "testdata/fixtures/sbom/fluentd-multiple-lockfiles-cyclonedx.json",
+				format:       "cyclonedx",
+				artifactType: "cyclonedx",
 			},
 			golden: "testdata/fluentd-multiple-lockfiles-cyclonedx.json.golden",
 		},

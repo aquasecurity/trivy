@@ -2,7 +2,6 @@ package spdx
 
 import (
 	"fmt"
-	"github.com/aquasecurity/trivy/pkg/scanner/utils"
 	"strconv"
 	"strings"
 	"time"
@@ -15,6 +14,7 @@ import (
 
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/purl"
+	"github.com/aquasecurity/trivy/pkg/scanner/utils"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
 
