@@ -38,7 +38,12 @@
 		{
 			"SPDXID": "SPDXRef-ContainerImage-b5d81cde5f95c8fc",
 			"attributionTexts": [
-				"SchemaVersion: 2"
+				"SchemaVersion: 2",
+				"ImageID: sha256:49193a2310dbad4c02382da87ac624a80a92387a4f7536235f9ba590e5bcd7b5",
+				"DiffID: sha256:dd565ff850e7003356e2b252758f9bdc1ff2803f61e995e24c7844f6297f8fc3",
+				"DiffID: sha256:3c79e832b1b4891a1cb4a326ef8524e0bd14a2537150ac0e203a5677176c1ca1",
+				"RepoTag: maven-test-project:latest",
+				"RepoTag: tmp-test:latest"
 			],
 			"filesAnalyzed": false,
 			"name": "meven-test-project"
@@ -51,6 +56,9 @@
 		},
 		{
 			"SPDXID": "SPDXRef-Package-2906575950df652b",
+			"attributionTexts": [
+				"LayerDiffID: sha256:3c79e832b1b4891a1cb4a326ef8524e0bd14a2537150ac0e203a5677176c1ca1"
+			],
 			"externalRefs": [
 				{
 					"referenceCategory": "PACKAGE-MANAGER",
@@ -66,6 +74,9 @@
 		},
 		{
 			"SPDXID": "SPDXRef-Package-2a53baa495b9ddaf",
+			"attributionTexts": [
+				"LayerDiffID: sha256:3c79e832b1b4891a1cb4a326ef8524e0bd14a2537150ac0e203a5677176c1ca1"
+			],
 			"externalRefs": [
 				{
 					"referenceCategory": "PACKAGE-MANAGER",
@@ -81,6 +92,9 @@
 		},
 		{
 			"SPDXID": "SPDXRef-Package-5e2e255ac76747ef",
+			"attributionTexts": [
+				"LayerDiffID: sha256:3c79e832b1b4891a1cb4a326ef8524e0bd14a2537150ac0e203a5677176c1ca1"
+			],
 			"externalRefs": [
 				{
 					"referenceCategory": "PACKAGE-MANAGER",
@@ -96,6 +110,9 @@
 		},
 		{
 			"SPDXID": "SPDXRef-Package-5f1dbaff8de5eb06",
+			"attributionTexts": [
+				"LayerDiffID: sha256:3c79e832b1b4891a1cb4a326ef8524e0bd14a2537150ac0e203a5677176c1ca1"
+			],
 			"externalRefs": [
 				{
 					"referenceCategory": "PACKAGE-MANAGER",
@@ -111,6 +128,9 @@
 		},
 		{
 			"SPDXID": "SPDXRef-Package-84ebffe38343d949",
+			"attributionTexts": [
+				"LayerDiffID: sha256:3c79e832b1b4891a1cb4a326ef8524e0bd14a2537150ac0e203a5677176c1ca1"
+			],
 			"externalRefs": [
 				{
 					"referenceCategory": "PACKAGE-MANAGER",
@@ -126,6 +146,9 @@
 		},
 		{
 			"SPDXID": "SPDXRef-Package-b7ebaf0233f1ef7b",
+			"attributionTexts": [
+				"LayerDiffID: sha256:dd565ff850e7003356e2b252758f9bdc1ff2803f61e995e24c7844f6297f8fc3"
+			],
 			"externalRefs": [
 				{
 					"referenceCategory": "PACKAGE-MANAGER",
@@ -137,7 +160,7 @@
 			"licenseConcluded": "MIT",
 			"licenseDeclared": "MIT",
 			"name": "musl",
-			"sourceInfo": "built package from: musl-1.2.3-r0",
+			"sourceInfo": "built package from: musl 1.2.3-r0",
 			"versionInfo": "1.2.3-r0"
 		}
 	],

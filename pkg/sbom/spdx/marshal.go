@@ -286,7 +286,7 @@ func (m *Marshaler) pkgToSpdxPackage(t string, class types.ResultClass, metadata
 	spdxPackage.PackageVersion = pkg.Version
 
 	if class == types.ClassOSPkg {
-		spdxPackage.PackageSourceInfo = fmt.Sprintf("%s: %s", SourcePackagePrefix, utils.FormatSrcPackage(pkg))
+		spdxPackage.PackageSourceInfo = fmt.Sprintf("%s: %s %s", SourcePackagePrefix, pkg.Name, utils.FormatSrcVersion(pkg))
 	}
 
 	packageURL, err := purl.NewPackageURL(t, metadata, pkg)

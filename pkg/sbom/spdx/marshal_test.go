@@ -185,7 +185,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 								Locator:  "pkg:rpm/centos/binutils@2.30-93.el8?arch=aarch64&distro=centos-8.3.2011",
 							},
 						},
-						PackageSourceInfo: "built package from: binutils-2.30-93.el8",
+						PackageSourceInfo: "built package from: binutils 2.30-93.el8",
 					},
 				},
 				Relationships: []*spdx.Relationship2_2{
@@ -347,7 +347,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 								Locator:  "pkg:rpm/centos/acl@1:2.2.53-1.el8?arch=aarch64&distro=centos-8.3.2011",
 							},
 						},
-						PackageSourceInfo: "built package from: 1:acl-2.2.53-1.el8",
+						PackageSourceInfo: "built package from: acl 1:2.2.53-1.el8",
 					},
 					spdx.ElementID("Package-13fe667a0805e6b7"): {
 						PackageSPDXIdentifier:   spdx.ElementID("Package-13fe667a0805e6b7"),

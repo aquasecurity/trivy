@@ -2,6 +2,7 @@ package spdx_test
 
 import (
 	"os"
+	"sort"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -83,7 +84,7 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 						Libraries: []ftypes.Package{
 							{
 								Name:    "org.codehaus.mojo:child-project",
-								Ref:     "pkg:maven/org.codehaus.mojo/child-project@1.0?file_path=app%2Fmaven%2Ftarget%2Fchild-project-1.0.jar",
+								Ref:     "pkg:maven/org.codehaus.mojo/child-project@1.0",
 								Version: "1.0",
 								Layer: ftypes.Layer{
 									DiffID: "sha256:3c79e832b1b4891a1cb4a326ef8524e0bd14a2537150ac0e203a5677176c1ca1",
@@ -92,13 +93,12 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 						},
 					},
 					{
-						Type:     "node-pkg",
-						FilePath: "",
+						Type: "node-pkg",
 						Libraries: []ftypes.Package{
 							{
 								Name:     "bootstrap",
 								Version:  "5.0.2",
-								Ref:      "pkg:npm/bootstrap@5.0.2?file_path=app%2Fapp%2Fpackage.json",
+								Ref:      "pkg:npm/bootstrap@5.0.2",
 								Licenses: []string{"MIT"},
 								Layer: ftypes.Layer{
 									DiffID: "sha256:3c79e832b1b4891a1cb4a326ef8524e0bd14a2537150ac0e203a5677176c1ca1",
@@ -172,9 +172,6 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 					Family: "alpine",
 					Name:   "3.16.0",
 				},
-				Packages: []ftypes.PackageInfo{
-					{},
-				},
 			},
 		},
 		{
@@ -184,8 +181,8 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 		},
 		{
 			name:      "sad path invalid purl",
-			inputFile: "testdata/sad/invalid-purl.json",
-			wantErr:   "failed to parse purl",
+			inputFile: "testdata/sad/invalid-source-info.json",
+			wantErr:   "failed to parse source info:",
 		},
 	}
 
@@ -206,6 +203,9 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 			// Not compare the CycloneDX field
 			got.SPDX = nil
 
+			sort.Slice(got.Applications, func(i, j int) bool {
+				return got.Applications[i].Type < got.Applications[j].Type
+			})
 			require.NoError(t, err)
 			assert.Equal(t, tt.want, got)
 		})

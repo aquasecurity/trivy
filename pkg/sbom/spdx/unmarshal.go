@@ -3,9 +3,10 @@ package spdx
 import (
 	"fmt"
 	"io"
-	"strconv"
 	"strings"
 
+	version "github.com/knqyf263/go-rpm-version"
+	"github.com/package-url/packageurl-go"
 	"github.com/spdx/tools-golang/jsonloader"
 	"github.com/spdx/tools-golang/spdx"
 	"github.com/spdx/tools-golang/tvloader"
@@ -79,9 +80,11 @@ func (u *Unmarshaler) Unmarshal(r io.Reader) (sbom.SBOM, error) {
 			osInfo = parseOS(pkg)
 			pkgs, err := u.parsePkgs(pkg.PackageSPDXIdentifier)
 			if err != nil {
-
+				return sbom.SBOM{}, xerrors.Errorf("failed to parse os packages: %w", err)
 			}
-			pkgInfos = []ftypes.PackageInfo{{Packages: pkgs}}
+			if len(pkgs) != 0 {
+				pkgInfos = []ftypes.PackageInfo{{Packages: pkgs}}
+			}
 
 		case strings.HasPrefix(string(pkg.PackageSPDXIdentifier), ElementApplication):
 			app, err := u.parseApplication(pkg)
@@ -104,11 +107,16 @@ func (u *Unmarshaler) parseApplication(pkg *spdx.Package2_2) (*ftypes.Applicatio
 	if err != nil {
 		return nil, xerrors.Errorf("failed to parse language packages: %w", err)
 	}
-	return &ftypes.Application{
+	app := &ftypes.Application{
 		Type:      pkg.PackageVersion,
 		FilePath:  pkg.PackageName,
 		Libraries: pkgs,
-	}, nil
+	}
+	if pkg.PackageVersion == ftypes.NodePkg || pkg.PackageVersion == ftypes.PythonPkg ||
+		pkg.PackageVersion == ftypes.GemSpec || pkg.PackageVersion == ftypes.Jar {
+		app.FilePath = ""
+	}
+	return app, nil
 
 }
 
@@ -136,8 +144,10 @@ func parseOS(pkg *spdx.Package2_2) *ftypes.OS {
 }
 
 func parsePkg(package2_2 *spdx.Package2_2) (*ftypes.Package, error) {
-	var pkg *ftypes.Package
-	var t string
+	var (
+		pkg *ftypes.Package
+		typ string
+	)
 	for _, ref := range package2_2.PackageExternalReferences {
 		if ref.RefType == RefTypePurl && ref.Category == CategoryPackageManager {
 			packageURL, err := purl.FromString(ref.Locator)
@@ -145,7 +155,8 @@ func parsePkg(package2_2 *spdx.Package2_2) (*ftypes.Package, error) {
 				return nil, xerrors.Errorf("failed to parse purl from string: %w", err)
 			}
 			pkg = packageURL.Package()
-			t = packageURL.Type
+			pkg.Ref = ref.Locator
+			typ = packageURL.Type
 			break
 		}
 	}
@@ -153,20 +164,19 @@ func parsePkg(package2_2 *spdx.Package2_2) (*ftypes.Package, error) {
 		return nil, errInvalidPackageFormat
 	}
 
-	pkg.Licenses = strings.Split(package2_2.PackageLicenseDeclared, ",")
+	if package2_2.PackageLicenseDeclared != "NONE" {
+		pkg.Licenses = strings.Split(package2_2.PackageLicenseDeclared, ",")
+	}
 	pkg.Name = package2_2.PackageName
 	pkg.Version = package2_2.PackageVersion
 
 	if strings.HasPrefix(package2_2.PackageSourceInfo, SourcePackagePrefix) {
+		var err error
 		srcPkgName := strings.TrimPrefix(package2_2.PackageSourceInfo, fmt.Sprintf("%s: ", SourcePackagePrefix))
-		epoch, name, ver, rel, err := parseSourceInfo(t, srcPkgName)
+		pkg.SrcEpoch, pkg.SrcName, pkg.SrcVersion, pkg.SrcRelease, err = parseSourceInfo(typ, srcPkgName)
 		if err != nil {
 			return nil, xerrors.Errorf("failed to parse source info: %w", err)
 		}
-		pkg.SrcName = name
-		pkg.SrcVersion = ver
-		pkg.SrcRelease = rel
-		pkg.SrcEpoch = epoch
 	}
 	for _, f := range package2_2.Files {
 		pkg.FilePath = f.FileName
@@ -180,7 +190,7 @@ func parsePkg(package2_2 *spdx.Package2_2) (*ftypes.Package, error) {
 
 func lookupAttributionTexts(attributionTexts []string, key string) (value string) {
 	for _, text := range attributionTexts {
-		if strings.HasSuffix(text, key) {
+		if strings.HasPrefix(text, key) {
 			return strings.TrimPrefix(text, fmt.Sprintf("%s: ", key))
 		}
 	}
@@ -188,42 +198,43 @@ func lookupAttributionTexts(attributionTexts []string, key string) (value string
 	return ""
 }
 
-func parseSourceInfo(typ, srcPURL string) (epoch int, name, ver, rel string, err error) {
-	relIndex := strings.LastIndex(srcPURL, "-")
-	if relIndex == -1 {
-		return 0, "", "", "", errUnexpectedSourceNameFormat
+func parseSourceInfo(typ, sourceInfo string) (epoch int, name, ver, rel string, err error) {
+	srcNameVersion := strings.TrimPrefix(sourceInfo, fmt.Sprintf("%s: ", SourcePackagePrefix))
+	ss := strings.Split(srcNameVersion, " ")
+	if len(ss) != 2 {
+		return 0, "", "", "", xerrors.Errorf("invalid source info (%s)", sourceInfo)
 	}
-	rel = srcPURL[relIndex+1:]
-
-	verIndex := strings.LastIndex(srcPURL[:relIndex], "-")
-	if verIndex == -1 {
-		return 0, "", "", "", errUnexpectedSourceNameFormat
-	}
-	ver = srcPURL[verIndex+1 : relIndex]
-
-	epochIndex := strings.LastIndex(srcPURL, ":")
-	if epochIndex == -1 {
-		name = srcPURL[:verIndex]
+	name = ss[0]
+	if typ == packageurl.TypeRPM {
+		v := version.NewVersion(ss[1])
+		epoch = v.Epoch()
+		ver = v.Version()
+		rel = v.Release()
 	} else {
-		name = srcPURL[epochIndex:verIndex]
-		epochStr := srcPURL[:epochIndex]
-		epoch, err = strconv.Atoi(epochStr)
-		if err != nil {
-			return 0, "", "", "", xerrors.Errorf("failed to parse epoch: %w", err)
-		}
+		ver = ss[1]
 	}
-
 	return epoch, name, ver, rel, nil
 }
 
 func relationshipMap(relationships []*spdx.Relationship2_2) map[spdx.ElementID][]spdx.ElementID {
 	relationshipMap := make(map[spdx.ElementID][]spdx.ElementID)
+	var rootElement spdx.ElementID
+	for _, relationship := range relationships {
+		if relationship.Relationship == RelationShipDescribe {
+			rootElement = relationship.RefB.ElementRefID
+		}
+	}
+	for _, relationship := range relationships {
+		if relationship.Relationship == RelationShipContains {
+			if relationship.RefA.ElementRefID == rootElement {
+				relationshipMap[relationship.RefB.ElementRefID] = []spdx.ElementID{}
+			}
+		}
+	}
 	for _, relationship := range relationships {
 		if relationship.Relationship == RelationShipDependsOn {
 			if array, ok := relationshipMap[relationship.RefA.ElementRefID]; ok {
 				relationshipMap[relationship.RefA.ElementRefID] = append(array, relationship.RefB.ElementRefID)
-			} else {
-				relationshipMap[relationship.RefA.ElementRefID] = []spdx.ElementID{relationship.RefB.ElementRefID}
 			}
 		}
 	}
