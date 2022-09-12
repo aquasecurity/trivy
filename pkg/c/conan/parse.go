@@ -91,10 +91,13 @@ func (p *Parser) Parse(r dio.ReadSeekerAt) ([]types.Library, []types.Dependency,
 }
 
 func parseRef(ref string) (types.Library, error) {
-	// ref format examples: 'pkga/0.1@user/testing'
+	// full ref format: package/version@user/channel#rrev:package_id#prev
+	// various examples:
+	// 'pkga/0.1@user/testing'
 	// 'pkgb/0.1.0'
 	// 'pkgc/system'
-	ss := strings.Split(strings.Split(ref, "@")[0], "/")
+	// 'pkgd/0.1.0#7dcb50c43a5a50d984c2e8fa5898bf18'
+	ss := strings.Split(strings.Split(strings.Split(ref, "@")[0], "#")[0], "/")
 	if len(ss) != 2 {
 		return types.Library{}, xerrors.Errorf("Unable to determine conan dependency: %q", ref)
 	}

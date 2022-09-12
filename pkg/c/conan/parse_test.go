@@ -51,6 +51,31 @@ func TestParse(t *testing.T) {
 			},
 		},
 		{
+			name:      "happy path. lock file with revisions support",
+			inputFile: "testdata/happy2.lock",
+			wantLibs: []types.Library{
+				{
+					ID:      "openssl/3.0.3",
+					Name:    "openssl",
+					Version: "3.0.3",
+				},
+				{
+					ID:       "zlib/1.2.12",
+					Name:     "zlib",
+					Version:  "1.2.12",
+					Indirect: true,
+				},
+			},
+			wantDeps: []types.Dependency{
+				{
+					ID: "openssl/3.0.3",
+					DependsOn: []string{
+						"zlib/1.2.12",
+					},
+				},
+			},
+		},
+		{
 			name:      "happy path. lock file without dependencies",
 			inputFile: "testdata/empty.lock",
 		},
