@@ -92,7 +92,7 @@ func TestManager_Register(t *testing.T) {
 			}()
 
 			// Confirm the analyzer is registered
-			a, err := analyzer.NewAnalyzerGroup("", nil, nil)
+			a, err := analyzer.NewAnalyzerGroup(analyzer.AnalyzerOptions{})
 			require.NoError(t, err)
 
 			got := a.AnalyzerVersions()

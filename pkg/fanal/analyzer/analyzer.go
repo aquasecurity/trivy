@@ -32,17 +32,29 @@ var (
 	ErrNoPkgsDetected = xerrors.New("no packages detected")
 )
 
-type AnalysisInput struct {
-	Dir      string
-	FilePath string
-	Info     os.FileInfo
-	Content  dio.ReadSeekerAt
+//////////////////////
+// Analyzer options //
+//////////////////////
 
-	Options AnalysisOptions
+// AnalyzerOptions is used to initialize analyzers
+type AnalyzerOptions struct {
+	Group               Group
+	FilePatterns        []string
+	DisabledAnalyzers   []Type
+	SecretScannerOption SecretScannerOption
 }
 
-type AnalysisOptions struct {
-	Offline bool
+type SecretScannerOption struct {
+	ConfigPath string
+}
+
+////////////////
+// Interfaces //
+////////////////
+
+// Initializer represents analyzers that need to take parameters from users
+type Initializer interface {
+	Init(AnalyzerOptions) error
 }
 
 type analyzer interface {
@@ -58,6 +70,10 @@ type configAnalyzer interface {
 	Analyze(targetOS types.OS, content []byte) ([]types.Package, error)
 	Required(osFound types.OS) bool
 }
+
+////////////////////
+// Analyzer group //
+////////////////////
 
 type Group string
 
@@ -93,6 +109,23 @@ type AnalyzerGroup struct {
 	analyzers       []analyzer
 	configAnalyzers []configAnalyzer
 	filePatterns    map[Type][]*regexp.Regexp
+}
+
+///////////////////////////
+// Analyzer input/output //
+///////////////////////////
+
+type AnalysisInput struct {
+	Dir      string
+	FilePath string
+	Info     os.FileInfo
+	Content  dio.ReadSeekerAt
+
+	Options AnalysisOptions
+}
+
+type AnalysisOptions struct {
+	Offline bool
 }
 
 type AnalysisResult struct {
@@ -270,7 +303,8 @@ func belongToGroup(groupName Group, analyzerType Type, disabledAnalyzers []Type,
 
 const separator = ":"
 
-func NewAnalyzerGroup(groupName Group, disabledAnalyzers []Type, filePatterns []string) (AnalyzerGroup, error) {
+func NewAnalyzerGroup(opt AnalyzerOptions) (AnalyzerGroup, error) {
+	groupName := opt.Group
 	if groupName == "" {
 		groupName = GroupBuiltin
 	}
@@ -278,7 +312,7 @@ func NewAnalyzerGroup(groupName Group, disabledAnalyzers []Type, filePatterns []
 	group := AnalyzerGroup{
 		filePatterns: map[Type][]*regexp.Regexp{},
 	}
-	for _, p := range filePatterns {
+	for _, p := range opt.FilePatterns {
 		// e.g. "dockerfile:my_dockerfile_*"
 		s := strings.SplitN(p, separator, 2)
 		if len(s) != 2 {
@@ -299,14 +333,20 @@ func NewAnalyzerGroup(groupName Group, disabledAnalyzers []Type, filePatterns []
 	}
 
 	for analyzerType, a := range analyzers {
-		if !belongToGroup(groupName, analyzerType, disabledAnalyzers, a) {
+		if !belongToGroup(groupName, analyzerType, opt.DisabledAnalyzers, a) {
 			continue
+		}
+		// Initialize only scanners that have Init()
+		if ini, ok := a.(Initializer); ok {
+			if err := ini.Init(opt); err != nil {
+				return AnalyzerGroup{}, xerrors.Errorf("analyzer initialization error: %w", err)
+			}
 		}
 		group.analyzers = append(group.analyzers, a)
 	}
 
 	for analyzerType, a := range configAnalyzers {
-		if slices.Contains(disabledAnalyzers, analyzerType) {
+		if slices.Contains(opt.DisabledAnalyzers, analyzerType) {
 			continue
 		}
 		group.configAnalyzers = append(group.configAnalyzers, a)
