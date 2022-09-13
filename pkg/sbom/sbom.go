@@ -1,6 +1,7 @@
 package sbom
 
 import (
+	"bufio"
 	"encoding/json"
 	"encoding/xml"
 	"io"
@@ -27,19 +28,26 @@ const (
 	FormatCycloneDXJSON       Format = "cyclonedx-json"
 	FormatCycloneDXXML        Format = "cyclonedx-xml"
 	FormatSPDXJSON            Format = "spdx-json"
+	FormatSPDXTV              Format = "spdx-tv"
 	FormatSPDXXML             Format = "spdx-xml"
 	FormatAttestCycloneDXJSON Format = "attest-cyclonedx-json"
 	FormatUnknown             Format = "unknown"
 )
 
 func DetectFormat(r io.ReadSeeker) (Format, error) {
-	type cyclonedx struct {
-		// XML specific field
-		XMLNS string `json:"-" xml:"xmlns,attr"`
+	type (
+		cyclonedx struct {
+			// XML specific field
+			XMLNS string `json:"-" xml:"xmlns,attr"`
 
-		// JSON specific field
-		BOMFormat string `json:"bomFormat" xml:"-"`
-	}
+			// JSON specific field
+			BOMFormat string `json:"bomFormat" xml:"-"`
+		}
+
+		spdx struct {
+			SpdxID string `json:"SPDXID"`
+		}
+	)
 
 	// Try CycloneDX JSON
 	var cdxBom cyclonedx
@@ -64,7 +72,28 @@ func DetectFormat(r io.ReadSeeker) (Format, error) {
 		return FormatUnknown, xerrors.Errorf("seek error: %w", err)
 	}
 
-	// TODO: implement SPDX
+	// Try SPDX json
+	var spdxBom spdx
+	if err := json.NewDecoder(r).Decode(&spdxBom); err == nil {
+		if strings.HasPrefix(spdxBom.SpdxID, "SPDX") {
+			return FormatSPDXJSON, nil
+		}
+	}
+
+	if _, err := r.Seek(0, io.SeekStart); err != nil {
+		return FormatUnknown, xerrors.Errorf("seek error: %w", err)
+	}
+
+	// Try SPDX tag-value
+	if scanner := bufio.NewScanner(r); scanner.Scan() {
+		if strings.HasPrefix(scanner.Text(), "SPDX") {
+			return FormatSPDXTV, nil
+		}
+	}
+
+	if _, err := r.Seek(0, io.SeekStart); err != nil {
+		return FormatUnknown, xerrors.Errorf("seek error: %w", err)
+	}
 
 	// Try in-toto attestation
 	var s attestation.Statement
