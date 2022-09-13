@@ -122,7 +122,7 @@ func (r *secretRenderer) renderCode(secret types.SecretFinding) {
 
 		var note string
 		if c := secret.Layer.CreatedBy; c != "" {
-			if len(c) < 40 {
+			if len(c) > 40 {
 				// Too long
 				c = c[:40]
 			}
