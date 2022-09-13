@@ -166,7 +166,9 @@ message SecretFinding {
   int32  end_line   = 6;
   Code   code       = 7;
   string match      = 8;
-  Layer  layer      = 9;
+  Layer  layer      = 10;
+
+  reserved 9; // deprecated 'deleted'
 }
 
 message Secret {
