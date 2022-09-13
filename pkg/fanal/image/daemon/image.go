@@ -57,10 +57,9 @@ func imageOpener(ctx context.Context, ref string, f *os.File, imageSave imageSav
 // To avoid entire loading, this wrapper uses ImageInspectWithRaw and checks image ID and layer IDs.
 type image struct {
 	v1.Image
-	opener           opener
-	inspect          types.ImageInspect
-	history          []dimage.HistoryResponseItem
-	convertedHistory []v1.History
+	opener  opener
+	inspect types.ImageInspect
+	history []v1.History
 }
 
 // populateImage initializes an "image" struct.
@@ -113,7 +112,7 @@ func (img *image) ConfigFile() (*v1.ConfigFile, error) {
 		Created:       v1.Time{Time: created},
 		DockerVersion: img.inspect.DockerVersion,
 		Config:        img.imageConfig(img.inspect.Config),
-		History:       img.configHistory(),
+		History:       img.history,
 		OS:            img.inspect.Os,
 		RootFS: v1.RootFS{
 			Type:    img.inspect.RootFS.Type,
@@ -142,54 +141,6 @@ func (img *image) RepoTags() []string {
 
 func (img *image) RepoDigests() []string {
 	return img.inspect.RepoDigests
-}
-
-func (img *image) configHistory() []v1.History {
-	// Fill only required metadata
-	var history []v1.History
-
-	if len(img.convertedHistory) > 0 {
-		return img.convertedHistory
-	}
-	for i := len(img.history) - 1; i >= 0; i-- {
-		h := img.history[i]
-		history = append(history, v1.History{
-			Created: v1.Time{
-				Time: time.Unix(h.Created, 0).UTC(),
-			},
-			CreatedBy:  h.CreatedBy,
-			Comment:    h.Comment,
-			EmptyLayer: emptyLayer(h),
-		})
-	}
-	return history
-}
-
-func emptyLayer(history dimage.HistoryResponseItem) bool {
-	if history.Size != 0 {
-		return false
-	}
-	createdBy := strings.TrimSpace(strings.TrimLeft(history.CreatedBy, "/bin/sh -c #(nop)"))
-	// This logic is taken from https://github.com/moby/buildkit/blob/2942d13ff489a2a49082c99e6104517e357e53ad/frontend/dockerfile/dockerfile2llb/convert.go
-	if strings.HasPrefix(createdBy, "ENV") ||
-		strings.HasPrefix(createdBy, "MAINTAINER") ||
-		strings.HasPrefix(createdBy, "LABEL") ||
-		strings.HasPrefix(createdBy, "CMD") ||
-		strings.HasPrefix(createdBy, "ENTRYPOINT") ||
-		strings.HasPrefix(createdBy, "HEALTHCHECK") ||
-		strings.HasPrefix(createdBy, "EXPOSE") ||
-		strings.HasPrefix(createdBy, "USER") ||
-		strings.HasPrefix(createdBy, "VOLUME") ||
-		strings.HasPrefix(createdBy, "STOPSIGNAL") ||
-		strings.HasPrefix(createdBy, "SHELL") ||
-		strings.HasPrefix(createdBy, "ARG") ||
-		createdBy == "WORKDIR /" { // only when workdir == "/" then layer is empty
-		return true
-	}
-	// commands here: 'ADD', COPY, RUN and WORKDIR != "/"
-	// Also RUN command may not include 'RUN' prefix
-	// e.g. '/bin/sh -c mkdir test '
-	return false
 }
 
 func (img *image) diffIDs() ([]v1.Hash, error) {
@@ -252,4 +203,49 @@ func (img *image) imageConfig(config *container.Config) v1.Config {
 	}
 
 	return c
+}
+
+func configHistory(dhistory []dimage.HistoryResponseItem) []v1.History {
+	// Fill only required metadata
+	var history []v1.History
+
+	for i := len(dhistory) - 1; i >= 0; i-- {
+		h := dhistory[i]
+		history = append(history, v1.History{
+			Created: v1.Time{
+				Time: time.Unix(h.Created, 0).UTC(),
+			},
+			CreatedBy:  h.CreatedBy,
+			Comment:    h.Comment,
+			EmptyLayer: emptyLayer(h),
+		})
+	}
+	return history
+}
+
+func emptyLayer(history dimage.HistoryResponseItem) bool {
+	if history.Size != 0 {
+		return false
+	}
+	createdBy := strings.TrimSpace(strings.TrimLeft(history.CreatedBy, "/bin/sh -c #(nop)"))
+	// This logic is taken from https://github.com/moby/buildkit/blob/2942d13ff489a2a49082c99e6104517e357e53ad/frontend/dockerfile/dockerfile2llb/convert.go
+	if strings.HasPrefix(createdBy, "ENV") ||
+		strings.HasPrefix(createdBy, "MAINTAINER") ||
+		strings.HasPrefix(createdBy, "LABEL") ||
+		strings.HasPrefix(createdBy, "CMD") ||
+		strings.HasPrefix(createdBy, "ENTRYPOINT") ||
+		strings.HasPrefix(createdBy, "HEALTHCHECK") ||
+		strings.HasPrefix(createdBy, "EXPOSE") ||
+		strings.HasPrefix(createdBy, "USER") ||
+		strings.HasPrefix(createdBy, "VOLUME") ||
+		strings.HasPrefix(createdBy, "STOPSIGNAL") ||
+		strings.HasPrefix(createdBy, "SHELL") ||
+		strings.HasPrefix(createdBy, "ARG") ||
+		createdBy == "WORKDIR /" { // only when workdir == "/" then layer is empty
+		return true
+	}
+	// commands here: 'ADD', COPY, RUN and WORKDIR != "/"
+	// Also RUN command may not include 'RUN' prefix
+	// e.g. '/bin/sh -c mkdir test '
+	return false
 }

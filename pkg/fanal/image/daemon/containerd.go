@@ -97,9 +97,9 @@ func ContainerdImage(ctx context.Context, imageName string) (Image, func(), erro
 	}
 
 	return &image{
-		opener:           imageOpener(ctx, ref.String(), f, imageWriter(client, img)),
-		inspect:          insp,
-		convertedHistory: history,
+		opener:  imageOpener(ctx, ref.String(), f, imageWriter(client, img)),
+		inspect: insp,
+		history: history,
 	}, cleanup, nil
 }
 
