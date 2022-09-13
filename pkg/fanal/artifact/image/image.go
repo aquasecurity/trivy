@@ -39,7 +39,7 @@ type Artifact struct {
 
 type LayerInfo struct {
 	DiffID    string
-	CreatedBy string
+	CreatedBy string // can be empty
 }
 
 func NewArtifact(img types.Image, c cache.ArtifactCache, opt artifact.Option) (artifact.Artifact, error) {
@@ -95,10 +95,13 @@ func (a Artifact) Inspect(ctx context.Context) (types.ArtifactReference, error) 
 	log.Logger.Debugf("Base Layers: %v", baseDiffIDs)
 
 	// Convert image ID and layer IDs to cache keys
-	imageKey, layerKeys, layerKeyMap, err := a.calcCacheKeys(imageID, diffIDs, configFile)
+	imageKey, layerKeys, err := a.calcCacheKeys(imageID, diffIDs)
 	if err != nil {
 		return types.ArtifactReference{}, err
 	}
+
+	// Parse histories and extract a list of "created_by"
+	layerKeyMap := a.consolidateCreatedBy(diffIDs, layerKeys, configFile)
 
 	missingImage, missingLayers, err := a.cache.MissingBlobs(imageKey, layerKeys)
 	if err != nil {
@@ -135,47 +138,57 @@ func (Artifact) Clean(_ types.ArtifactReference) error {
 	return nil
 }
 
-func (a Artifact) calcCacheKeys(imageID string, diffIDs []string, configFile *v1.ConfigFile) (string, []string, map[string]LayerInfo, error) {
+func (a Artifact) calcCacheKeys(imageID string, diffIDs []string) (string, []string, error) {
 	// Pass an empty config scanner option so that the cache key can be the same, even when policies are updated.
 	imageKey, err := cache.CalcKey(imageID, a.analyzer.ImageConfigAnalyzerVersions(), nil, artifact.Option{})
 	if err != nil {
-		return "", nil, nil, err
+		return "", nil, err
 	}
 
-	var createdBy []string
+	hookVersions := a.handlerManager.Versions()
+	var layerKeys []string
+	for _, diffID := range diffIDs {
+		blobKey, err := cache.CalcKey(diffID, a.analyzer.AnalyzerVersions(), hookVersions, a.artifactOption)
+		if err != nil {
+			return "", nil, err
+		}
+		layerKeys = append(layerKeys, blobKey)
+	}
+	return imageKey, layerKeys, nil
+}
+
+func (a Artifact) consolidateCreatedBy(diffIDs, layerKeys []string, configFile *v1.ConfigFile) map[string]LayerInfo {
 	// save createdBy fields in order of layers
+	var createdBy []string
 	for _, h := range configFile.History {
 		// skip histories for empty layers
 		if h.EmptyLayer {
 			continue
 		}
-		c := strings.TrimPrefix(strings.TrimPrefix(h.CreatedBy, "/bin/sh -c "), "#(nop) ")
+		c := strings.TrimPrefix(h.CreatedBy, "/bin/sh -c ")
+		c = strings.TrimPrefix(c, "#(nop) ")
 		createdBy = append(createdBy, c)
 	}
 
 	// If history detected incorrect - use only diffID
-	useCreatedBy := len(diffIDs) == len(createdBy)
+	// TODO: our current logic may not detect empty layers correctly in rare cases.
+	validCreatedBy := len(diffIDs) == len(createdBy)
 
 	layerKeyMap := map[string]LayerInfo{}
-	hookVersions := a.handlerManager.Versions()
-	var layerKeys []string
 	for i, diffID := range diffIDs {
-		blobKey, err := cache.CalcKey(diffID, a.analyzer.AnalyzerVersions(), hookVersions, a.artifactOption)
-		if err != nil {
-			return "", nil, nil, err
-		}
-		layerKeys = append(layerKeys, blobKey)
 
 		c := ""
-		if useCreatedBy {
+		if validCreatedBy {
 			c = createdBy[i]
 		}
-		layerKeyMap[blobKey] = LayerInfo{
+
+		layerKey := layerKeys[i]
+		layerKeyMap[layerKey] = LayerInfo{
 			DiffID:    diffID,
 			CreatedBy: c,
 		}
 	}
-	return imageKey, layerKeys, layerKeyMap, nil
+	return layerKeyMap
 }
 
 func (a Artifact) inspect(ctx context.Context, missingImage string, layerKeys, baseDiffIDs []string, layerKeyMap map[string]LayerInfo) error {
@@ -185,15 +198,15 @@ func (a Artifact) inspect(ctx context.Context, missingImage string, layerKeys, b
 	var osFound types.OS
 	for _, k := range layerKeys {
 		go func(ctx context.Context, layerKey string) {
-			lInfo := layerKeyMap[layerKey]
+			layer := layerKeyMap[layerKey]
 
 			// If it is a base layer, secret scanning should not be performed.
 			var disabledAnalyers []analyzer.Type
-			if slices.Contains(baseDiffIDs, lInfo.DiffID) {
+			if slices.Contains(baseDiffIDs, layer.DiffID) {
 				disabledAnalyers = append(disabledAnalyers, analyzer.TypeSecret)
 			}
 
-			layerInfo, err := a.inspectLayer(ctx, lInfo, disabledAnalyers)
+			layerInfo, err := a.inspectLayer(ctx, layer, disabledAnalyers)
 			if err != nil {
 				errCh <- xerrors.Errorf("failed to analyze layer: %s : %w", layerInfo.DiffID, err)
 				return
@@ -265,14 +278,14 @@ func (a Artifact) inspectLayer(ctx context.Context, layerInfo LayerInfo, disable
 		Digest:          layerDigest,
 		DiffID:          layerInfo.DiffID,
 		CreatedBy:       layerInfo.CreatedBy,
+		OpaqueDirs:      opqDirs,
+		WhiteoutFiles:   whFiles,
 		OS:              result.OS,
 		Repository:      result.Repository,
 		PackageInfos:    result.PackageInfos,
 		Applications:    result.Applications,
 		Secrets:         result.Secrets,
 		Licenses:        result.Licenses,
-		OpaqueDirs:      opqDirs,
-		WhiteoutFiles:   whFiles,
 		CustomResources: result.CustomResources,
 
 		// For Red Hat
