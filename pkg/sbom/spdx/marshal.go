@@ -115,9 +115,9 @@ func (m *Marshaler) Marshal(r types.Report) (*spdx.Document2_2, error) {
 	var relationShips []*spdx.Relationship2_2
 	packages := make(map[spdx.ElementID]*spdx.Package2_2)
 
-	reportPackage, err := m.reportPackage(r)
+	reportPackage, err := m.reportToSpdxPackage(r)
 	if err != nil {
-		return nil, xerrors.Errorf("failed to parse report package: %w", err)
+		return nil, xerrors.Errorf("failed to parse report: %w", err)
 	}
 	packages[reportPackage.PackageSPDXIdentifier] = reportPackage
 	relationShips = append(relationShips,
@@ -125,7 +125,7 @@ func (m *Marshaler) Marshal(r types.Report) (*spdx.Document2_2, error) {
 	)
 
 	for _, result := range r.Results {
-		parentPackage, err := m.parseResult(result, r.Metadata.OS)
+		parentPackage, err := m.resultToSpdxPackage(result, r.Metadata.OS)
 		if err != nil {
 			return nil, xerrors.Errorf("failed to parse result: %w", err)
 		}
@@ -137,7 +137,7 @@ func (m *Marshaler) Marshal(r types.Report) (*spdx.Document2_2, error) {
 		for _, pkg := range result.Packages {
 			spdxPackage, err := m.pkgToSpdxPackage(result.Type, result.Class, r.Metadata, pkg)
 			if err != nil {
-				return nil, xerrors.Errorf("failed to parse os package: %w", err)
+				return nil, xerrors.Errorf("failed to parse package: %w", err)
 			}
 			packages[spdxPackage.PackageSPDXIdentifier] = &spdxPackage
 			relationShips = append(relationShips,
@@ -162,7 +162,7 @@ func (m *Marshaler) Marshal(r types.Report) (*spdx.Document2_2, error) {
 	}, nil
 }
 
-func (m *Marshaler) parseResult(result types.Result, os *ftypes.OS) (spdx.Package2_2, error) {
+func (m *Marshaler) resultToSpdxPackage(result types.Result, os *ftypes.OS) (spdx.Package2_2, error) {
 	var pkg spdx.Package2_2
 	var err error
 	switch result.Class {
@@ -206,7 +206,7 @@ func (m *Marshaler) operatingSystemPackage(osFound *ftypes.OS) (spdx.Package2_2,
 	return spdxPackage, nil
 }
 
-func (m *Marshaler) reportPackage(r types.Report) (*spdx.Package2_2, error) {
+func (m *Marshaler) reportToSpdxPackage(r types.Report) (*spdx.Package2_2, error) {
 	var spdxPackage spdx.Package2_2
 
 	attributionTexts := []string{attributionText(PropertySchemaVersion, strconv.Itoa(r.SchemaVersion))}
