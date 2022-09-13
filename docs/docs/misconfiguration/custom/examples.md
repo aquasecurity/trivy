@@ -293,4 +293,3 @@ See [here][go-testing].
 [data]: https://github.com/aquasecurity/trivy/tree/{{ git.commit }}/examples/misconf/custom-data
 [combine]: https://github.com/aquasecurity/trivy/tree/{{ git.commit }}/examples/misconf/combine
 [go-testing]: https://github.com/aquasecurity/trivy/tree/{{ git.commit }}/examples/misconf/go-testing
-

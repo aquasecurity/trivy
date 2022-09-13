@@ -230,4 +230,3 @@ $ trivy k8s --format json -o results.json cluster
 ```
 
 </details>
-

@@ -28,4 +28,3 @@ If you find a problem, it'll be nice to fix it: [Create an issue to GitLab Advis
  
 ### Red Hat CVE Database
 Visit [here](https://access.redhat.com/security/security-updates/?cwe=476#/cve) and search CVE-ID.
-

@@ -2141,5 +2141,3 @@ Multi-Arch: foreign
 Version: 1:2.20.1-2+deb10u3
 Config-Version: 1:2.20.1-2+deb10u3
 Replaces: git-core (<< 1:1.7.0.4-1.), gitweb (<< 1:1.7.4~rc1)
-
-

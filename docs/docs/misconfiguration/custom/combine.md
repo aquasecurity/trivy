@@ -41,4 +41,3 @@ In "combine" mode, the `deny` entrypoint must return an object with two keys
     	}
     }
     ```
-

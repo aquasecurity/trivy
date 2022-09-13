@@ -29,5 +29,3 @@ Briefly describe the CVE that aren't detected and information about artifacts wi
 ```
 
 ## Additional details (base image name, container registry info...):
-
-

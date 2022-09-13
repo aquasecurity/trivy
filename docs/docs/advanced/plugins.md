@@ -170,4 +170,3 @@ https://github.com/aquasecurity/trivy-plugin-kubectl
 [conftest]: https://www.conftest.dev/plugins/
 [go-getter]: https://github.com/hashicorp/go-getter
 [trivy-plugin-kubectl]: https://github.com/aquasecurity/trivy-plugin-kubectl
-

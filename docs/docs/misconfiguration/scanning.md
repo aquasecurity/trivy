@@ -318,4 +318,3 @@ See [here](https://github.com/aquasecurity/trivy/tree/{{ git.tag }}/examples/mis
 
 [rego]: https://www.openpolicyagent.org/docs/latest/policy-language/
 [conftest]: https://github.com/open-policy-agent/conftest/
-

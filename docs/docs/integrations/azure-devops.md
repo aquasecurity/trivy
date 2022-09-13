@@ -14,4 +14,3 @@ The findings of the CI/CD scans are an enrichment to the existing registry scan 
 
 [action]: https://github.com/aquasecurity/trivy-azure-pipelines-task
 [azure]: https://docs.microsoft.com/en-us/azure/defender-for-cloud/defender-for-containers-cicd
-

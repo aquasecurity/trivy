@@ -188,4 +188,3 @@ $ trivy image --server http://localhost:8080 --token dummy alpine:3.10
 ## Architecture
 
 ![architecture](../../../imgs/client-server.png)
-

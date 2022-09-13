@@ -85,4 +85,3 @@ variables.tf (terraform)
 Tests: 1 (SUCCESSES: 1, FAILURES: 0, EXCEPTIONS: 0)
 Failures: 0 (HIGH: 0, CRITICAL: 0)
 ```
-
