@@ -162,6 +162,7 @@ func (s Scanner) ScanArtifact(ctx context.Context, options types.ScanOptions) (t
 			ImageConfig: artifactInfo.ImageMetadata.ConfigFile,
 		},
 		CycloneDX: artifactInfo.CycloneDX,
+		SPDX:      artifactInfo.SPDX,
 		Results:   results,
 	}, nil
 }

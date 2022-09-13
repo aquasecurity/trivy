@@ -31,6 +31,3 @@ type Component struct {
 }
 
 type ComponentType string
-
-type SPDX struct {
-}

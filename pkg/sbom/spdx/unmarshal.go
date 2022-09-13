@@ -92,6 +92,7 @@ func (s *SPDX) unmarshal(spdxDocument *spdx.Document2_2) error {
 			s.SBOM.Applications = append(s.SBOM.Applications, *app)
 		}
 	}
+	s.SPDX = spdxDocument
 
 	return nil
 }
