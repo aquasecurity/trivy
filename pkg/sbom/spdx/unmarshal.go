@@ -19,8 +19,7 @@ import (
 )
 
 var (
-	errUnexpectedSourceNameFormat = xerrors.New("unexpected source name format")
-	errInvalidPackageFormat       = xerrors.New("invalid package format")
+	errInvalidPackageFormat = xerrors.New("invalid package format")
 )
 
 type SPDX struct {
