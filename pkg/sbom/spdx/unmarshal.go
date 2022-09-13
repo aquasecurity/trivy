@@ -93,6 +93,7 @@ func (s *SPDX) unmarshal(spdxDocument *spdx.Document2_2) error {
 		}
 	}
 
+	s.SPDX = spdxDocument
 	return nil
 }
 

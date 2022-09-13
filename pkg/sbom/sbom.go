@@ -8,6 +8,7 @@ import (
 	"strings"
 
 	"github.com/in-toto/in-toto-golang/in_toto"
+	stypes "github.com/spdx/tools-golang/spdx"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/attestation"
@@ -20,6 +21,7 @@ type SBOM struct {
 	Applications []types.Application
 
 	CycloneDX *types.CycloneDX
+	SPDX      *stypes.Document2_2
 }
 
 type Format string

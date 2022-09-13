@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 
 	v1 "github.com/google/go-containerregistry/pkg/v1" // nolint: goimports
+	"github.com/spdx/tools-golang/spdx"
 
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 )
@@ -18,6 +19,8 @@ type Report struct {
 
 	// SBOM
 	CycloneDX *ftypes.CycloneDX `json:"-"` // Just for internal usage, not exported in JSON
+	SPDX      *spdx.Document2_2 `json:"-"` // Just for internal usage, not exported in JSON
+
 }
 
 // Metadata represents a metadata of artifact
