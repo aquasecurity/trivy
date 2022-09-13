@@ -21,18 +21,17 @@ linters-settings:
     local-prefixes: github.com/aquasecurity
   gosec:
     excludes:
+      - G114
       - G204
       - G402
 
 linters:
   disable-all: true
   enable:
-    - structcheck
+    - unused
     - ineffassign
     - typecheck
     - govet
-    - varcheck
-    - deadcode
     - revive
     - gosec
     - unconvert
