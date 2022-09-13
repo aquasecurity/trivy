@@ -14,7 +14,8 @@
 		{
 			"SPDXID": "SPDXRef-Application-193be12e25033404",
 			"filesAnalyzed": false,
-			"versionInfo": "composer"
+			"name": "composer",
+			"sourceInfo": "app/composer/composer.lock"
 		},
 		{
 			"SPDXID": "SPDXRef-Filesystem-12d960c003a8275b",

@@ -14,26 +14,26 @@
 		{
 			"SPDXID": "SPDXRef-Application-150e605f5f17224d",
 			"filesAnalyzed": false,
-			"name": "Java",
-			"versionInfo": "jar"
+			"name": "jar",
+			"sourceInfo": "Java"
 		},
 		{
 			"SPDXID": "SPDXRef-Application-24f8a80152e2c0fc",
 			"filesAnalyzed": false,
-			"name": "Node.js",
-			"versionInfo": "node-pkg"
+			"name": "node-pkg",
+			"sourceInfo": "Node.js"
 		},
 		{
 			"SPDXID": "SPDXRef-Application-36324ee492e03f0a",
 			"filesAnalyzed": false,
-			"name": "app/gobinary/gobinary",
-			"versionInfo": "gobinary"
+			"name": "gobinary",
+			"sourceInfo": "app/gobinary/gobinary"
 		},
 		{
 			"SPDXID": "SPDXRef-Application-4af197c15114fb0e",
 			"filesAnalyzed": false,
-			"name": "app/composer/composer.lock",
-			"versionInfo": "composer"
+			"name": "composer",
+			"sourceInfo": "app/composer/composer.lock"
 		},
 		{
 			"SPDXID": "SPDXRef-ContainerImage-b5d81cde5f95c8fc",

@@ -130,13 +130,13 @@ func TestMarshaler_Marshal(t *testing.T) {
 					},
 					spdx.ElementID("Application-73c871d73f3c8248"): {
 						PackageSPDXIdentifier: spdx.ElementID("Application-73c871d73f3c8248"),
-						PackageName:           "app/subproject/Gemfile.lock",
-						PackageVersion:        "bundler",
+						PackageName:           "bundler",
+						PackageSourceInfo:     "app/subproject/Gemfile.lock",
 					},
 					spdx.ElementID("Application-c3fac92c1ac0a9fa"): {
 						PackageSPDXIdentifier: spdx.ElementID("Application-c3fac92c1ac0a9fa"),
-						PackageName:           "app/Gemfile.lock",
-						PackageVersion:        "bundler",
+						PackageName:           "bundler",
+						PackageSourceInfo:     "app/Gemfile.lock",
 					},
 					spdx.ElementID("OperatingSystem-197f9a00ebcb51f0"): {
 						PackageSPDXIdentifier: spdx.ElementID("OperatingSystem-197f9a00ebcb51f0"),
@@ -326,8 +326,8 @@ func TestMarshaler_Marshal(t *testing.T) {
 					},
 					spdx.ElementID("Application-441a648f2aeeee72"): {
 						PackageSPDXIdentifier: spdx.ElementID("Application-441a648f2aeeee72"),
-						PackageName:           "Ruby",
-						PackageVersion:        "gemspec",
+						PackageName:           "gemspec",
+						PackageSourceInfo:     "Ruby",
 					},
 					spdx.ElementID("OperatingSystem-197f9a00ebcb51f0"): {
 						PackageSPDXIdentifier: spdx.ElementID("OperatingSystem-197f9a00ebcb51f0"),
@@ -476,8 +476,8 @@ func TestMarshaler_Marshal(t *testing.T) {
 					},
 					spdx.ElementID("Application-9dd4a4ba7077cc5a"): {
 						PackageSPDXIdentifier: spdx.ElementID("Application-9dd4a4ba7077cc5a"),
-						PackageName:           "Gemfile.lock",
-						PackageVersion:        "bundler",
+						PackageName:           "bundler",
+						PackageSourceInfo:     "Gemfile.lock",
 					},
 					spdx.ElementID("Package-3da61e86d0530402"): {
 						PackageSPDXIdentifier:   spdx.ElementID("Package-3da61e86d0530402"),
@@ -559,8 +559,8 @@ func TestMarshaler_Marshal(t *testing.T) {
 					},
 					spdx.ElementID("Application-24f8a80152e2c0fc"): {
 						PackageSPDXIdentifier: "Application-24f8a80152e2c0fc",
-						PackageName:           "Node.js",
-						PackageVersion:        "node-pkg",
+						PackageName:           "node-pkg",
+						PackageSourceInfo:     "Node.js",
 					},
 					spdx.ElementID("Package-daedb173cfd43058"): {
 						PackageSPDXIdentifier:   spdx.ElementID("Package-daedb173cfd43058"),

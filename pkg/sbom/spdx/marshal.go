@@ -249,8 +249,8 @@ func (m *Marshaler) reportToSpdxPackage(r types.Report) (*spdx.Package2_2, error
 func (m *Marshaler) applicationPackage(target, typ string) (spdx.Package2_2, error) {
 	var spdxPackage spdx.Package2_2
 
-	spdxPackage.PackageName = target
-	spdxPackage.PackageVersion = typ
+	spdxPackage.PackageName = typ
+	spdxPackage.PackageSourceInfo = target
 	pkgID, err := getPackageID(m.hasher, fmt.Sprintf("%s-%s", target, typ))
 	if err != nil {
 		return spdx.Package2_2{}, xerrors.Errorf("failed to get %s package ID: %w", target, err)

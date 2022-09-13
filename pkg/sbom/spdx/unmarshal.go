@@ -103,12 +103,12 @@ func (s *SPDX) parseApplication(pkg *spdx.Package2_2) (*ftypes.Application, erro
 		return nil, xerrors.Errorf("failed to parse language packages: %w", err)
 	}
 	app := &ftypes.Application{
-		Type:      pkg.PackageVersion,
-		FilePath:  pkg.PackageName,
+		Type:      pkg.PackageName,
+		FilePath:  pkg.PackageSourceInfo,
 		Libraries: pkgs,
 	}
-	if pkg.PackageVersion == ftypes.NodePkg || pkg.PackageVersion == ftypes.PythonPkg ||
-		pkg.PackageVersion == ftypes.GemSpec || pkg.PackageVersion == ftypes.Jar {
+	if pkg.PackageName == ftypes.NodePkg || pkg.PackageName == ftypes.PythonPkg ||
+		pkg.PackageName == ftypes.GemSpec || pkg.PackageName == ftypes.Jar {
 		app.FilePath = ""
 	}
 	return app, nil

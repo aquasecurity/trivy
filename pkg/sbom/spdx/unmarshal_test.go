@@ -117,38 +117,8 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 				Applications: []ftypes.Application{
 					{
 						Type:     "composer",
-						FilePath: "",
+						FilePath: "app/composer/composer.lock",
 						Libraries: []ftypes.Package{
-							{
-								Name:    "pear/log",
-								Version: "1.13.1",
-								Ref:     "pkg:composer/pear/log@1.13.1",
-							},
-							{
-
-								Name:    "pear/pear_exception",
-								Version: "v1.0.0",
-								Ref:     "pkg:composer/pear/pear_exception@v1.0.0",
-							},
-						},
-					},
-				},
-			},
-		},
-		{
-			name:      "happy path for independent library bom",
-			inputFile: "testdata/happy/independent-library-bom.json",
-			want: sbom.SBOM{
-				Applications: []ftypes.Application{
-					{
-						Type:     "composer",
-						FilePath: "",
-						Libraries: []ftypes.Package{
-							{
-								Name:    "pear/core",
-								Version: "1.13.1",
-								Ref:     "pkg:composer/pear/core@1.13.1",
-							},
 							{
 								Name:    "pear/log",
 								Version: "1.13.1",
