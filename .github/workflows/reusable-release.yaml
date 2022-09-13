@@ -62,7 +62,7 @@ jobs:
       - name: Setup Go
         uses: actions/setup-go@v3
         with:
-          go-version-file: go.mod
+          go-version-file: './go.mod'
 
       - name: Checkout code
         uses: actions/checkout@v3

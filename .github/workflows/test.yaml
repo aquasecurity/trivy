@@ -21,7 +21,7 @@ jobs:
       - name: Set up Go
         uses: actions/setup-go@v3
         with:
-          go-version-file: go.mod
+          go-version-file: './go.mod'
 
       - name: go mod tidy
         run: |
@@ -53,7 +53,7 @@ jobs:
     - name: Set up Go
       uses: actions/setup-go@v3
       with:
-        go-version-file: go.mod
+        go-version-file: './go.mod'
 
     - name: Check out code into the Go module directory
       uses: actions/checkout@v3
@@ -68,7 +68,7 @@ jobs:
       - name: Set up Go
         uses: actions/setup-go@v3
         with:
-          go-version-file: go.mod
+          go-version-file: './go.mod'
 
       - name: Install TinyGo
         run: |
@@ -104,7 +104,7 @@ jobs:
     - name: Set up Go
       uses: actions/setup-go@v3
       with:
-        go-version-file: go.mod
+        go-version-file: './go.mod'
 
     - name: Run GoReleaser
       uses: goreleaser/goreleaser-action@v3
