@@ -118,11 +118,6 @@
           "LastModifiedDate": "2022-01-06T09:15:00Z"
         }
       ]
-    },
-    {
-      "Target": "Python",
-      "Class": "lang-pkgs",
-      "Type": "python-pkg"
     }
   ]
 }

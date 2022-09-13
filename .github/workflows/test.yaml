@@ -11,7 +11,7 @@ on:
   pull_request:
 env:
   GO_VERSION: "1.18"
-  TINYGO_VERSION: "0.23.0"
+  TINYGO_VERSION: "0.24.0"
 jobs:
   test:
     name: Test
@@ -113,7 +113,7 @@ jobs:
       uses: goreleaser/goreleaser-action@v3
       with:
         version: v1.4.1
-        args: release --snapshot --rm-dist --skip-publish --timeout 60m
+        args: release --skip-sign --snapshot --rm-dist --skip-publish --timeout 90m
 
   build-documents:
     name: Documentation Test

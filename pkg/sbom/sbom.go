@@ -7,8 +7,10 @@ import (
 	"io"
 	"strings"
 
+	"github.com/in-toto/in-toto-golang/in_toto"
 	"golang.org/x/xerrors"
 
+	"github.com/aquasecurity/trivy/pkg/attestation"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 )
 
@@ -21,18 +23,16 @@ type SBOM struct {
 	SPDX      *types.SPDX
 }
 
-type Unmarshaler interface {
-	Unmarshal(io.Reader) (SBOM, error)
-}
-
 type Format string
 
 const (
-	FormatCycloneDXJSON = "cyclonedx-json"
-	FormatCycloneDXXML  = "cyclonedx-xml"
-	FormatSPDXJSON      = "spdx-json"
-	FormatSPDXTV        = "spdx-tv"
-	FormatUnknown       = "unknown"
+	FormatCycloneDXJSON       Format = "cyclonedx-json"
+	FormatCycloneDXXML        Format = "cyclonedx-xml"
+	FormatSPDXJSON            Format = "spdx-json"
+	FormatSPDXTV              Format = "spdx-tv"
+	FormatSPDXXML             Format = "spdx-xml"
+	FormatAttestCycloneDXJSON Format = "attest-cyclonedx-json"
+	FormatUnknown             Format = "unknown"
 )
 
 func DetectFormat(r io.ReadSeeker) (Format, error) {
@@ -91,5 +91,17 @@ func DetectFormat(r io.ReadSeeker) (Format, error) {
 			return FormatSPDXTV, nil
 		}
 	}
+	if _, err := r.Seek(0, io.SeekStart); err != nil {
+		return FormatUnknown, xerrors.Errorf("seek error: %w", err)
+	}
+
+	// Try in-toto attestation
+	var s attestation.Statement
+	if err := json.NewDecoder(r).Decode(&s); err == nil {
+		if s.PredicateType == in_toto.PredicateCycloneDX {
+			return FormatAttestCycloneDXJSON, nil
+		}
+	}
+
 	return FormatUnknown, nil
 }

@@ -15,8 +15,6 @@ import (
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
-	"github.com/aquasecurity/trivy/pkg/fanal/analyzer/config"
-	"github.com/aquasecurity/trivy/pkg/fanal/analyzer/secret"
 	"github.com/aquasecurity/trivy/pkg/fanal/artifact"
 	"github.com/aquasecurity/trivy/pkg/fanal/cache"
 	"github.com/aquasecurity/trivy/pkg/fanal/handler"
@@ -40,28 +38,27 @@ type Artifact struct {
 }
 
 func NewArtifact(img types.Image, c cache.ArtifactCache, opt artifact.Option) (artifact.Artifact, error) {
-	misconf := opt.MisconfScannerOption
-	// Register config analyzers
-	if err := config.RegisterConfigAnalyzers(misconf.FilePatterns); err != nil {
-		return nil, xerrors.Errorf("config scanner error: %w", err)
-	}
-
 	// Initialize handlers
 	handlerManager, err := handler.NewManager(opt)
 	if err != nil {
 		return nil, xerrors.Errorf("handler init error: %w", err)
 	}
 
-	// Register secret analyzer
-	if err = secret.RegisterSecretAnalyzer(opt.SecretScannerOption); err != nil {
-		return nil, xerrors.Errorf("secret scanner error: %w", err)
+	a, err := analyzer.NewAnalyzerGroup(analyzer.AnalyzerOptions{
+		Group:               opt.AnalyzerGroup,
+		FilePatterns:        opt.FilePatterns,
+		DisabledAnalyzers:   opt.DisabledAnalyzers,
+		SecretScannerOption: opt.SecretScannerOption,
+	})
+	if err != nil {
+		return nil, xerrors.Errorf("analyzer group error: %w", err)
 	}
 
 	return Artifact{
 		image:          img,
 		cache:          c,
 		walker:         walker.NewLayerTar(opt.SkipFiles, opt.SkipDirs),
-		analyzer:       analyzer.NewAnalyzerGroup(opt.AnalyzerGroup, opt.DisabledAnalyzers),
+		analyzer:       a,
 		handlerManager: handlerManager,
 
 		artifactOption: opt,
@@ -329,35 +326,38 @@ func (a Artifact) inspectConfig(imageID string, osFound types.OS) error {
 // Guess layers in base image (call base layers).
 //
 // e.g. In the following example, we should detect layers in debian:8.
-//   FROM debian:8
-//   RUN apt-get update
-//   COPY mysecret /
-//   ENTRYPOINT ["entrypoint.sh"]
-//   CMD ["somecmd"]
+//
+//	FROM debian:8
+//	RUN apt-get update
+//	COPY mysecret /
+//	ENTRYPOINT ["entrypoint.sh"]
+//	CMD ["somecmd"]
 //
 // debian:8 may be like
-//   ADD file:5d673d25da3a14ce1f6cf66e4c7fd4f4b85a3759a9d93efb3fd9ff852b5b56e4 in /
-//   CMD ["/bin/sh"]
+//
+//	ADD file:5d673d25da3a14ce1f6cf66e4c7fd4f4b85a3759a9d93efb3fd9ff852b5b56e4 in /
+//	CMD ["/bin/sh"]
 //
 // In total, it would be like:
-//   ADD file:5d673d25da3a14ce1f6cf66e4c7fd4f4b85a3759a9d93efb3fd9ff852b5b56e4 in /
-//   CMD ["/bin/sh"]              # empty layer (detected)
-//   RUN apt-get update
-//   COPY mysecret /
-//   ENTRYPOINT ["entrypoint.sh"] # empty layer (skipped)
-//   CMD ["somecmd"]              # empty layer (skipped)
+//
+//	ADD file:5d673d25da3a14ce1f6cf66e4c7fd4f4b85a3759a9d93efb3fd9ff852b5b56e4 in /
+//	CMD ["/bin/sh"]              # empty layer (detected)
+//	RUN apt-get update
+//	COPY mysecret /
+//	ENTRYPOINT ["entrypoint.sh"] # empty layer (skipped)
+//	CMD ["somecmd"]              # empty layer (skipped)
 //
 // This method tries to detect CMD in the second line and assume the first line is a base layer.
-//   1. Iterate histories from the bottom.
-//   2. Skip all the empty layers at the bottom. In the above example, "entrypoint.sh" and "somecmd" will be skipped
-//   3. If it finds CMD, it assumes that it is the end of base layers.
-//   4. It gets all the layers as base layers above the CMD found in #3.
+//  1. Iterate histories from the bottom.
+//  2. Skip all the empty layers at the bottom. In the above example, "entrypoint.sh" and "somecmd" will be skipped
+//  3. If it finds CMD, it assumes that it is the end of base layers.
+//  4. It gets all the layers as base layers above the CMD found in #3.
 func (a Artifact) guessBaseLayers(diffIDs []string, configFile *v1.ConfigFile) []string {
 	if configFile == nil {
 		return nil
 	}
 
-	var baseImageIndex int
+	baseImageIndex := -1
 	var foundNonEmpty bool
 	for i := len(configFile.History) - 1; i >= 0; i-- {
 		h := configFile.History[i]

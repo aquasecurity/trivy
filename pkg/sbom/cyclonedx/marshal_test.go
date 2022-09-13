@@ -1105,6 +1105,11 @@ func TestMarshaler_MarshalVulnerabilities(t *testing.T) {
 								Licenses:        []string{"GPLv3+"},
 							},
 						},
+					},
+					{
+						Target: "rails:latest (centos 8.3.2011)",
+						Class:  types.ClassOSPkg,
+						Type:   fos.CentOS,
 						Vulnerabilities: []types.DetectedVulnerability{
 							{
 								VulnerabilityID:  "CVE-2018-20623",

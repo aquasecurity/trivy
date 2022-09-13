@@ -10,6 +10,12 @@ $ AWS_REGION=us-west-1 AWS_ACCOUNT_ID=123456789012 trivy image --format template
 
 ASFF template needs AWS_REGION and AWS_ACCOUNT_ID from environment variables.
 
+The Product [ARN](https://docs.aws.amazon.com/general/latest/gr/aws-arns-and-namespaces.html) field follows the pattern below to match what AWS requires for the [product resource type](https://docs.aws.amazon.com/service-authorization/latest/reference/list_awssecurityhub.html).
+
+```
+"ProductArn": "arn:aws:securityhub:{{ env "AWS_REGION" }}:{{ env "AWS_ACCOUNT_ID" }}:product/aquasecurity/trivy",
+```
+
 Then, you can upload it with AWS CLI.
 
 ```

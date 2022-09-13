@@ -431,6 +431,48 @@ func TestSecretScanner(t *testing.T) {
 			},
 		},
 	}
+	wantFindingAsymmetricPrivateKeyJson := types.SecretFinding{
+		RuleID:    "private-key",
+		Category:  secret.CategoryAsymmetricPrivateKey,
+		Title:     "Asymmetric Private Key",
+		Severity:  "HIGH",
+		StartLine: 1,
+		EndLine:   1,
+		Match:     "----BEGIN RSA PRIVATE KEY-----**************************************************************************************************************************-----END RSA PRIVATE",
+		Code: types.Code{
+			Lines: []types.Line{
+				{
+					Number:      1,
+					Content:     "{\"key\": \"-----BEGIN RSA PRIVATE KEY-----**************************************************************************************************************************-----END RSA PRIVATE KEY-----\\n\"}",
+					Highlighted: "{\"key\": \"-----BEGIN RSA PRIVATE KEY-----**************************************************************************************************************************-----END RSA PRIVATE KEY-----\\n\"}",
+					IsCause:     true,
+					FirstCause:  true,
+					LastCause:   true,
+				},
+			},
+		},
+	}
+	wantFindingAsymmetricPrivateKey := types.SecretFinding{
+		RuleID:    "private-key",
+		Category:  secret.CategoryAsymmetricPrivateKey,
+		Title:     "Asymmetric Private Key",
+		Severity:  "HIGH",
+		StartLine: 1,
+		EndLine:   1,
+		Match:     "----BEGIN RSA PRIVATE KEY-----****************************************************************************************************************************************************************************************-----END RSA PRIVATE",
+		Code: types.Code{
+			Lines: []types.Line{
+				{
+					Number:      1,
+					Content:     "-----BEGIN RSA PRIVATE KEY-----****************************************************************************************************************************************************************************************-----END RSA PRIVATE KEY-----",
+					Highlighted: "-----BEGIN RSA PRIVATE KEY-----****************************************************************************************************************************************************************************************-----END RSA PRIVATE KEY-----",
+					IsCause:     true,
+					FirstCause:  true,
+					LastCause:   true,
+				},
+			},
+		},
+	}
 
 	tests := []struct {
 		name          string
@@ -453,7 +495,23 @@ func TestSecretScanner(t *testing.T) {
 			inputFilePath: "testdata/aws-secrets.txt",
 			want: types.Secret{
 				FilePath: "testdata/aws-secrets.txt",
-				Findings: []types.SecretFinding{wantFinding5, wantFinding9, wantFinding10},
+				Findings: []types.SecretFinding{wantFinding5, wantFinding10, wantFinding9},
+			},
+		},
+		{
+			name:          "find Asymmetric Private Key secrets",
+			inputFilePath: "testdata/asymmetric-private-secret.txt",
+			want: types.Secret{
+				FilePath: "testdata/asymmetric-private-secret.txt",
+				Findings: []types.SecretFinding{wantFindingAsymmetricPrivateKey},
+			},
+		},
+		{
+			name:          "find Asymmetric Private Key secrets json",
+			inputFilePath: "testdata/asymmetric-private-secret.json",
+			want: types.Secret{
+				FilePath: "testdata/asymmetric-private-secret.json",
+				Findings: []types.SecretFinding{wantFindingAsymmetricPrivateKeyJson},
 			},
 		},
 		{
@@ -620,15 +678,17 @@ func TestSecretScanner(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			s, err := secret.NewScanner(tt.configPath)
-			require.NoError(t, err)
-
 			content, err := os.ReadFile(tt.inputFilePath)
 			require.NoError(t, err)
 
+			c, err := secret.ParseConfig(tt.configPath)
+			require.NoError(t, err)
+
+			s := secret.NewScanner(c)
 			got := s.Scan(secret.ScanArgs{
 				FilePath: tt.inputFilePath,
-				Content:  content},
+				Content:  content,
+			},
 			)
 			assert.Equal(t, tt.want, got)
 		})

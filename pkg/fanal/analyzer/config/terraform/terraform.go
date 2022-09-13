@@ -13,19 +13,18 @@ import (
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 )
 
+func init() {
+	analyzer.RegisterAnalyzer(&terraformConfigAnalyzer{})
+}
+
 const version = 1
 
 var requiredExts = []string{".tf", ".tf.json"}
 
-type ConfigAnalyzer struct {
-}
-
-func NewConfigAnalyzer() ConfigAnalyzer {
-	return ConfigAnalyzer{}
-}
+type terraformConfigAnalyzer struct{}
 
 // Analyze returns a name of Terraform file
-func (a ConfigAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInput) (*analyzer.AnalysisResult, error) {
+func (a terraformConfigAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInput) (*analyzer.AnalysisResult, error) {
 	b, err := io.ReadAll(input.Content)
 	if err != nil {
 		return nil, xerrors.Errorf("read error (%s): %w", input.FilePath, err)
@@ -44,14 +43,14 @@ func (a ConfigAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInput)
 	}, nil
 }
 
-func (a ConfigAnalyzer) Required(filePath string, _ os.FileInfo) bool {
+func (a terraformConfigAnalyzer) Required(filePath string, _ os.FileInfo) bool {
 	return slices.Contains(requiredExts, filepath.Ext(filePath))
 }
 
-func (ConfigAnalyzer) Type() analyzer.Type {
+func (terraformConfigAnalyzer) Type() analyzer.Type {
 	return analyzer.TypeTerraform
 }
 
-func (ConfigAnalyzer) Version() int {
+func (terraformConfigAnalyzer) Version() int {
 	return version
 }

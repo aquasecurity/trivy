@@ -28,7 +28,7 @@ func NewDriver(libType string) (Driver, error) {
 	case ftypes.Bundler, ftypes.GemSpec:
 		ecosystem = vulnerability.RubyGems
 		comparer = rubygems.Comparer{}
-	case ftypes.Cargo:
+	case ftypes.RustBinary, ftypes.Cargo:
 		ecosystem = vulnerability.Cargo
 		comparer = compare.GenericComparer{}
 	case ftypes.Composer:
@@ -37,7 +37,7 @@ func NewDriver(libType string) (Driver, error) {
 	case ftypes.GoBinary, ftypes.GoModule:
 		ecosystem = vulnerability.Go
 		comparer = compare.GenericComparer{}
-	case ftypes.Jar, ftypes.Pom:
+	case ftypes.Jar, ftypes.Pom, ftypes.Gradle:
 		ecosystem = vulnerability.Maven
 		comparer = maven.Comparer{}
 	case ftypes.Npm, ftypes.Yarn, ftypes.Pnpm, ftypes.NodePkg, ftypes.JavaScript:
@@ -49,6 +49,11 @@ func NewDriver(libType string) (Driver, error) {
 	case ftypes.Pipenv, ftypes.Poetry, ftypes.Pip, ftypes.PythonPkg:
 		ecosystem = vulnerability.Pip
 		comparer = pep440.Comparer{}
+	case ftypes.Conan:
+		ecosystem = vulnerability.Conan
+		// Only semver can be used for version ranges
+		// https://docs.conan.io/en/latest/versioning/version_ranges.html
+		comparer = compare.GenericComparer{}
 	default:
 		return Driver{}, xerrors.Errorf("unsupported type %s", libType)
 	}

@@ -10,12 +10,12 @@ import (
 	"golang.org/x/exp/slices"
 	"golang.org/x/xerrors"
 
+	"github.com/aquasecurity/go-version/pkg/semver"
 	"github.com/aquasecurity/trivy-db/pkg/db"
 	tcache "github.com/aquasecurity/trivy/pkg/cache"
 	"github.com/aquasecurity/trivy/pkg/commands/operation"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer/config"
-	"github.com/aquasecurity/trivy/pkg/fanal/analyzer/secret"
 	"github.com/aquasecurity/trivy/pkg/fanal/artifact"
 	"github.com/aquasecurity/trivy/pkg/fanal/cache"
 	"github.com/aquasecurity/trivy/pkg/flag"
@@ -39,6 +39,8 @@ const (
 	TargetRepository     TargetKind = "repo"
 	TargetImageArchive   TargetKind = "archive"
 	TargetSBOM           TargetKind = "sbom"
+
+	devVersion = "dev"
 )
 
 var (
@@ -55,7 +57,7 @@ type ScannerConfig struct {
 
 	// Cache
 	ArtifactCache      cache.ArtifactCache
-	LocalArtifactCache cache.LocalArtifactCache
+	LocalArtifactCache cache.Cache
 
 	// Client/Server options
 	RemoteOption client.ScannerOption
@@ -419,7 +421,8 @@ func disabledAnalyzers(opts flag.Options) []analyzer.Type {
 	}
 
 	// Do not perform misconfiguration scanning when it is not specified.
-	if !slices.Contains(opts.SecurityChecks, types.SecurityCheckConfig) {
+	if !slices.Contains(opts.SecurityChecks, types.SecurityCheckConfig) &&
+		!slices.Contains(opts.SecurityChecks, types.SecurityCheckRbac) {
 		analyzers = append(analyzers, analyzer.TypeConfigFiles...)
 	}
 
@@ -444,6 +447,7 @@ func initScannerConfig(opts flag.Options, cacheClient cache.Cache) (ScannerConfi
 		ScanRemovedPackages: opts.ScanRemovedPkgs, // this is valid only for 'image' subcommand
 		ListAllPackages:     opts.ListAllPkgs,
 		LicenseCategories:   opts.LicenseCategories,
+		FilePatterns:        opts.FilePatterns,
 	}
 
 	if slices.Contains(opts.SecurityChecks, types.SecurityCheckVulnerability) {
@@ -456,19 +460,24 @@ func initScannerConfig(opts flag.Options, cacheClient cache.Cache) (ScannerConfi
 	if slices.Contains(opts.SecurityChecks, types.SecurityCheckConfig) {
 		log.Logger.Info("Misconfiguration scanning is enabled")
 		configScannerOptions = config.ScannerOption{
-			Trace:        opts.Trace,
-			Namespaces:   append(opts.PolicyNamespaces, defaultPolicyNamespaces...),
-			PolicyPaths:  opts.PolicyPaths,
-			DataPaths:    opts.DataPaths,
-			FilePatterns: opts.FilePatterns,
+			Trace:            opts.Trace,
+			Namespaces:       append(opts.PolicyNamespaces, defaultPolicyNamespaces...),
+			PolicyPaths:      opts.PolicyPaths,
+			DataPaths:        opts.DataPaths,
+			HelmValues:       opts.HelmValues,
+			HelmValueFiles:   opts.HelmValueFiles,
+			HelmFileValues:   opts.HelmFileValues,
+			HelmStringValues: opts.HelmStringValues,
+			TerraformTFVars:  opts.TerraformTFVars,
 		}
 	}
 
 	// Do not load config file for secret scanning
 	if slices.Contains(opts.SecurityChecks, types.SecurityCheckSecret) {
+		ver := canonicalVersion(opts.AppVersion)
 		log.Logger.Info("Secret scanning is enabled")
 		log.Logger.Info("If your scanning is slow, please try '--security-checks vuln' to disable secret scanning")
-		log.Logger.Infof("Please see also https://aquasecurity.github.io/trivy/%s/docs/secret/scanning/#recommendation for faster secret detection", opts.AppVersion)
+		log.Logger.Infof("Please see also https://aquasecurity.github.io/trivy/%s/docs/secret/scanning/#recommendation for faster secret detection", ver)
 	} else {
 		opts.SecretConfigPath = ""
 	}
@@ -494,6 +503,7 @@ func initScannerConfig(opts flag.Options, cacheClient cache.Cache) (ScannerConfi
 			DisabledAnalyzers: disabledAnalyzers(opts),
 			SkipFiles:         opts.SkipFiles,
 			SkipDirs:          opts.SkipDirs,
+			FilePatterns:      opts.FilePatterns,
 			InsecureSkipTLS:   opts.Insecure,
 			Offline:           opts.OfflineScan,
 			NoProgress:        opts.NoProgress || opts.Quiet,
@@ -505,7 +515,7 @@ func initScannerConfig(opts flag.Options, cacheClient cache.Cache) (ScannerConfi
 			MisconfScannerOption: configScannerOptions,
 
 			// For secret scanning
-			SecretScannerOption: secret.ScannerOption{
+			SecretScannerOption: analyzer.SecretScannerOption{
 				ConfigPath: opts.SecretConfigPath,
 			},
 		},
@@ -528,7 +538,7 @@ func scan(ctx context.Context, opts flag.Options, initializeScanner InitializeSc
 
 	report, err := s.ScanArtifact(ctx, scanOptions)
 	if err != nil {
-		return types.Report{}, xerrors.Errorf("image scan failed: %w", err)
+		return types.Report{}, xerrors.Errorf("scan failed: %w", err)
 	}
 	return report, nil
 }
@@ -537,4 +547,22 @@ func Exit(opts flag.Options, failedResults bool) {
 	if opts.ExitCode != 0 && failedResults {
 		os.Exit(opts.ExitCode)
 	}
+}
+
+func canonicalVersion(ver string) string {
+	if ver == devVersion {
+		return ver
+	}
+	v, err := semver.Parse(ver)
+	if err != nil {
+		return devVersion
+	}
+	// Replace pre-release with "dev"
+	// e.g. v0.34.0-beta1+snapshot-1
+	if v.IsPreRelease() || v.Metadata() != "" {
+		return devVersion
+	}
+
+	// Add "v" prefix, "0.34.0" => "v0.34.0" for the url
+	return "v" + ver
 }
