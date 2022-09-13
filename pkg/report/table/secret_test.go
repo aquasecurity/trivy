@@ -53,7 +53,7 @@ HIGH: category (rule-id)
 ════════════════════════════════════════
 this is a title
 ────────────────────────────────────────
- my-file:1 (added by 'beee9f30' layer)
+ my-file:1 (added in layer 'beee9f30bc1f')
 ────────────────────────────────────────
    1 [ password=secret
 ────────────────────────────────────────

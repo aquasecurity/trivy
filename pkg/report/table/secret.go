@@ -123,12 +123,12 @@ func (r *secretRenderer) renderCode(secret types.SecretFinding) {
 		var note string
 		if c := secret.Layer.CreatedBy; c != "" {
 			if len(c) < 40 {
-				note = fmt.Sprintf(" (added by '%s')", c)
-			} else {
-				note = fmt.Sprintf(" (added by '%s')", c[:40])
+				// Too long
+				c = c[:40]
 			}
-		} else {
-			note = fmt.Sprintf(" (added by '%s' layer)", strings.TrimPrefix(secret.Layer.DiffID, "sha256:")[:8])
+			note = fmt.Sprintf(" (added by '%s')", c)
+		} else if secret.Layer.DiffID != "" {
+			note = fmt.Sprintf(" (added in layer '%s')", strings.TrimPrefix(secret.Layer.DiffID, "sha256:")[:12])
 		}
 		r.printf(" <blue>%s%s<magenta>%s\r\n", r.target, lineInfo, note)
 		r.printSingleDivider()
