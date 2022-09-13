@@ -1,6 +1,7 @@
 package spdx
 
 import (
+	"bytes"
 	"fmt"
 	"io"
 	"strings"
@@ -22,88 +23,82 @@ var (
 	errInvalidPackageFormat       = xerrors.New("invalid package format")
 )
 
-type Unmarshaler struct {
+type SPDX struct {
+	*sbom.SBOM
+
 	relationships map[spdx.ElementID][]spdx.ElementID
 	packages      map[spdx.ElementID]*spdx.Package2_2
-	format        string
 }
 
-const (
-	FormatTV   = "tv"
-	FormatJSON = "json"
-)
-
-func NewUnmarshaler() sbom.Unmarshaler {
-	return &Unmarshaler{format: FormatTV}
-}
-func NewJSONUnmarshaler() sbom.Unmarshaler {
-	return &Unmarshaler{format: FormatJSON}
+func NewTVDecoder(r io.Reader) *TVDecoder {
+	return &TVDecoder{r: r}
 }
 
-func (u *Unmarshaler) parseDocument(r io.Reader) (*spdx.Document2_2, error) {
-	switch u.format {
-	case FormatTV:
-		spdxDocument, err := tvloader.Load2_2(r)
-		if err != nil {
-			return nil, xerrors.Errorf("failed to load spdx tag-value: %w", err)
-		}
-		return spdxDocument, nil
-	case FormatJSON:
-		spdxDocument, err := jsonloader.Load2_2(r)
-		if err != nil {
-			return nil, xerrors.Errorf("failed to load spdx json: %w", err)
-		}
-		return spdxDocument, nil
-	default:
-		return nil, xerrors.New("invalid spdx format")
-	}
+type TVDecoder struct {
+	r io.Reader
 }
 
-func (u *Unmarshaler) Unmarshal(r io.Reader) (sbom.SBOM, error) {
-	spdxDocument, err := u.parseDocument(r)
+func (tv *TVDecoder) Decode(v interface{}) error {
+	spdxDocument, err := tvloader.Load2_2(tv.r)
 	if err != nil {
-		return sbom.SBOM{}, xerrors.Errorf("failed to parse spdx document: %w", err)
+		return xerrors.Errorf("failed to load tag-value spdx: %w", err)
 	}
 
-	u.relationships = relationshipMap(spdxDocument.Relationships)
-	u.packages = spdxDocument.Packages
-	var (
-		osInfo   *ftypes.OS
-		apps     []ftypes.Application
-		pkgInfos []ftypes.PackageInfo
-	)
+	a, ok := v.(*SPDX)
+	if !ok {
+		return xerrors.Errorf("invalid struct type tag-value decoder needed SPDX struct")
+	}
+	err = a.unmarshal(spdxDocument)
+	if err != nil {
+		return xerrors.Errorf("failed to unmarshal spdx: %w", err)
+	}
 
-	for pkgID := range u.relationships {
-		pkg := u.packages[pkgID]
+	return nil
+}
+
+func (s *SPDX) UnmarshalJSON(b []byte) error {
+	spdxDocument, err := jsonloader.Load2_2(bytes.NewReader(b))
+	if err != nil {
+		return xerrors.Errorf("failed to load spdx json: %w", err)
+	}
+	err = s.unmarshal(spdxDocument)
+	if err != nil {
+		return xerrors.Errorf("failed to unmarshal spdx: %w", err)
+	}
+	return nil
+}
+
+func (s *SPDX) unmarshal(spdxDocument *spdx.Document2_2) error {
+	s.relationships = relationshipMap(spdxDocument.Relationships)
+	s.packages = spdxDocument.Packages
+
+	for pkgID := range s.relationships {
+		pkg := s.packages[pkgID]
 		switch {
 		case strings.HasPrefix(string(pkg.PackageSPDXIdentifier), ElementOperatingSystem):
-			osInfo = parseOS(pkg)
-			pkgs, err := u.parsePkgs(pkg.PackageSPDXIdentifier)
+			s.SBOM.OS = parseOS(pkg)
+			pkgs, err := s.parsePkgs(pkg.PackageSPDXIdentifier)
 			if err != nil {
-				return sbom.SBOM{}, xerrors.Errorf("failed to parse os packages: %w", err)
+				return xerrors.Errorf("failed to parse os packages: %w", err)
 			}
 			if len(pkgs) != 0 {
-				pkgInfos = []ftypes.PackageInfo{{Packages: pkgs}}
+				s.SBOM.Packages = []ftypes.PackageInfo{{Packages: pkgs}}
 			}
 
 		case strings.HasPrefix(string(pkg.PackageSPDXIdentifier), ElementApplication):
-			app, err := u.parseApplication(pkg)
+			app, err := s.parseApplication(pkg)
 			if err != nil {
-				return sbom.SBOM{}, xerrors.Errorf("failed to parse application: %w", err)
+				return xerrors.Errorf("failed to parse application: %w", err)
 			}
-			apps = append(apps, *app)
+			s.SBOM.Applications = append(s.SBOM.Applications, *app)
 		}
 	}
 
-	return sbom.SBOM{
-		OS:           osInfo,
-		Applications: apps,
-		Packages:     pkgInfos,
-	}, nil
+	return nil
 }
 
-func (u *Unmarshaler) parseApplication(pkg *spdx.Package2_2) (*ftypes.Application, error) {
-	pkgs, err := u.parsePkgs(pkg.PackageSPDXIdentifier)
+func (s *SPDX) parseApplication(pkg *spdx.Package2_2) (*ftypes.Application, error) {
+	pkgs, err := s.parsePkgs(pkg.PackageSPDXIdentifier)
 	if err != nil {
 		return nil, xerrors.Errorf("failed to parse language packages: %w", err)
 	}
@@ -120,12 +115,12 @@ func (u *Unmarshaler) parseApplication(pkg *spdx.Package2_2) (*ftypes.Applicatio
 
 }
 
-func (u *Unmarshaler) parsePkgs(id spdx.ElementID) ([]ftypes.Package, error) {
-	pkgIDs := u.relationships[id]
+func (s *SPDX) parsePkgs(id spdx.ElementID) ([]ftypes.Package, error) {
+	pkgIDs := s.relationships[id]
 
 	var pkgs []ftypes.Package
 	for _, id := range pkgIDs {
-		spdxPkg := u.packages[id]
+		spdxPkg := s.packages[id]
 		pkg, err := parsePkg(spdxPkg)
 		if err != nil {
 			return nil, xerrors.Errorf("failed to parse package: %w", err)

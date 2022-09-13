@@ -1,6 +1,7 @@
 package spdx_test
 
 import (
+	"encoding/json"
 	"os"
 	"sort"
 	"testing"
@@ -192,8 +193,8 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 			require.NoError(t, err)
 			defer f.Close()
 
-			unmarshaler := spdx.NewJSONUnmarshaler()
-			got, err := unmarshaler.Unmarshal(f)
+			v := &spdx.SPDX{SBOM: &sbom.SBOM{}}
+			err = json.NewDecoder(f).Decode(v)
 			if tt.wantErr != "" {
 				require.Error(t, err)
 				assert.Contains(t, err.Error(), tt.wantErr)
@@ -201,13 +202,13 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 			}
 
 			// Not compare the CycloneDX field
-			got.SPDX = nil
+			v.SPDX = nil
 
-			sort.Slice(got.Applications, func(i, j int) bool {
-				return got.Applications[i].Type < got.Applications[j].Type
+			sort.Slice(v.Applications, func(i, j int) bool {
+				return v.Applications[i].Type < v.Applications[j].Type
 			})
 			require.NoError(t, err)
-			assert.Equal(t, tt.want, got)
+			assert.Equal(t, tt.want, *v.SBOM)
 		})
 	}
 }

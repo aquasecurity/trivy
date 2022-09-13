@@ -91,6 +91,7 @@ func DetectFormat(r io.ReadSeeker) (Format, error) {
 			return FormatSPDXTV, nil
 		}
 	}
+
 	if _, err := r.Seek(0, io.SeekStart); err != nil {
 		return FormatUnknown, xerrors.Errorf("seek error: %w", err)
 	}

@@ -4,6 +4,7 @@ import (
 	"context"
 	"crypto/sha256"
 	"encoding/json"
+	"github.com/aquasecurity/trivy/pkg/sbom/spdx"
 	"io"
 	"os"
 	"path/filepath"
@@ -122,9 +123,11 @@ func (a Artifact) Decode(f io.Reader, format sbom.Format) (sbom.SBOM, error) {
 		}
 		decoder = json.NewDecoder(f)
 	case sbom.FormatSPDXJSON:
-		// unmarshaler = spdx.NewJSONUnmarshaler()
+		v = &spdx.SPDX{SBOM: &bom}
+		decoder = json.NewDecoder(f)
 	case sbom.FormatSPDXTV:
-		// unmarshaler = spdx.NewUnmarshaler()
+		v = &spdx.SPDX{SBOM: &bom}
+		decoder = spdx.NewTVDecoder(f)
 	default:
 		return sbom.SBOM{}, xerrors.Errorf("%s scanning is not yet supported", format)
 

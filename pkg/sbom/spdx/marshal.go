@@ -119,73 +119,29 @@ func (m *Marshaler) Marshal(r types.Report) (*spdx.Document2_2, error) {
 	if err != nil {
 		return nil, xerrors.Errorf("failed to parse report package: %w", err)
 	}
-	packages[reportPackage.PackageSPDXIdentifier] = &reportPackage
+	packages[reportPackage.PackageSPDXIdentifier] = reportPackage
 	relationShips = append(relationShips,
 		relationShip(SPDXIdentifier, reportPackage.PackageSPDXIdentifier, RelationShipDescribe),
 	)
 
 	for _, result := range r.Results {
-		var (
-			parentIdentifier spdx.ElementID
-			parentPackage    spdx.Package2_2
-			err              error
-
-			operator = RelationShipContains
-		)
-
-		switch result.Class {
-		case types.ClassOSPkg:
-			if r.Metadata.OS == nil {
-				continue
-			}
-			parentPackage, err = m.operatingSystemPackage(r.Metadata.OS)
-			if err != nil {
-				return nil, xerrors.Errorf("failed to parse operating system package: %w", err)
-			}
-			parentIdentifier = parentPackage.PackageSPDXIdentifier
-		case types.ClassLangPkg:
-			parentPackage, err = m.applicationPackage(result.Target, result.Type)
-			if err != nil {
-				return nil, xerrors.Errorf("failed to parse application package: %w", err)
-			}
-			parentIdentifier = parentPackage.PackageSPDXIdentifier
+		parentPackage, err := m.parseResult(result, r.Metadata.OS)
+		if err != nil {
+			return nil, xerrors.Errorf("failed to parse result: %w", err)
 		}
-
-		packages[parentIdentifier] = &parentPackage
+		packages[parentPackage.PackageSPDXIdentifier] = &parentPackage
 		relationShips = append(relationShips,
-			relationShip(reportPackage.PackageSPDXIdentifier, parentIdentifier, operator),
+			relationShip(reportPackage.PackageSPDXIdentifier, parentPackage.PackageSPDXIdentifier, RelationShipContains),
 		)
-		operator = RelationShipDependsOn
 
 		for _, pkg := range result.Packages {
 			spdxPackage, err := m.pkgToSpdxPackage(result.Type, result.Class, r.Metadata, pkg)
 			if err != nil {
 				return nil, xerrors.Errorf("failed to parse os package: %w", err)
 			}
-			var file spdx.File2_2
-			if pkg.FilePath != "" {
-				pkgID, err := getPackageID(m.hasher, pkg.FilePath)
-				if err != nil {
-					return nil, xerrors.Errorf("failed to get %s package ID: %w", pkg.FilePath, err)
-				}
-				file = spdx.File2_2{
-					FileSPDXIdentifier: spdx.ElementID(fmt.Sprintf("File-%s", pkgID)),
-					FileName:           pkg.FilePath,
-				}
-				spdxPackage.Files = map[spdx.ElementID]*spdx.File2_2{
-					file.FileSPDXIdentifier: &file,
-				}
-			}
-			pkg, ok := packages[spdxPackage.PackageSPDXIdentifier]
-			if ok {
-				if file.FileSPDXIdentifier != "" {
-					pkg.Files[file.FileSPDXIdentifier] = &file
-				}
-			} else {
-				packages[spdxPackage.PackageSPDXIdentifier] = &spdxPackage
-			}
+			packages[spdxPackage.PackageSPDXIdentifier] = &spdxPackage
 			relationShips = append(relationShips,
-				relationShip(parentIdentifier, spdxPackage.PackageSPDXIdentifier, operator),
+				relationShip(parentPackage.PackageSPDXIdentifier, spdxPackage.PackageSPDXIdentifier, RelationShipDependsOn),
 			)
 		}
 	}
@@ -206,6 +162,38 @@ func (m *Marshaler) Marshal(r types.Report) (*spdx.Document2_2, error) {
 	}, nil
 }
 
+func (m *Marshaler) parseResult(result types.Result, os *ftypes.OS) (spdx.Package2_2, error) {
+	var pkg spdx.Package2_2
+	var err error
+	switch result.Class {
+	case types.ClassOSPkg:
+		if os == nil {
+		}
+		pkg, err = m.operatingSystemPackage(os)
+		if err != nil {
+			return spdx.Package2_2{}, xerrors.Errorf("failed to parse operating system package: %w", err)
+		}
+	case types.ClassLangPkg:
+		pkg, err = m.applicationPackage(result.Target, result.Type)
+		if err != nil {
+			return spdx.Package2_2{}, xerrors.Errorf("failed to parse application package: %w", err)
+		}
+	}
+	return pkg, nil
+}
+
+func (m *Marshaler) parseFile(filePath string) (spdx.File2_2, error) {
+	pkgID, err := getPackageID(m.hasher, filePath)
+	if err != nil {
+		return spdx.File2_2{}, xerrors.Errorf("failed to get %s package ID: %w", filePath, err)
+	}
+	file := spdx.File2_2{
+		FileSPDXIdentifier: spdx.ElementID(fmt.Sprintf("File-%s", pkgID)),
+		FileName:           filePath,
+	}
+	return file, nil
+}
+
 func (m *Marshaler) operatingSystemPackage(osFound *ftypes.OS) (spdx.Package2_2, error) {
 	var spdxPackage spdx.Package2_2
 	pkgID, err := getPackageID(m.hasher, osFound)
@@ -218,14 +206,14 @@ func (m *Marshaler) operatingSystemPackage(osFound *ftypes.OS) (spdx.Package2_2,
 	return spdxPackage, nil
 }
 
-func (m *Marshaler) reportPackage(r types.Report) (spdx.Package2_2, error) {
+func (m *Marshaler) reportPackage(r types.Report) (*spdx.Package2_2, error) {
 	var spdxPackage spdx.Package2_2
 
 	attributionTexts := []string{attributionText(PropertySchemaVersion, strconv.Itoa(r.SchemaVersion))}
 	if r.Metadata.OS != nil {
 		p, err := purl.NewPackageURL(purl.TypeOCI, r.Metadata, ftypes.Package{})
 		if err != nil {
-			return spdx.Package2_2{}, xerrors.Errorf("failed to new package url for oci: %w", err)
+			return nil, xerrors.Errorf("failed to new package url for oci: %w", err)
 		}
 		if p.Type != "" {
 			spdxPackage.PackageExternalReferences = packageExternalReference(p.ToString())
@@ -250,12 +238,12 @@ func (m *Marshaler) reportPackage(r types.Report) (spdx.Package2_2, error) {
 	spdxPackage.PackageAttributionTexts = attributionTexts
 	pkgID, err := getPackageID(m.hasher, fmt.Sprintf("%s-%s", r.ArtifactName, r.ArtifactType))
 	if err != nil {
-		return spdx.Package2_2{}, xerrors.Errorf("failed to get %s package ID: %w", err)
+		return nil, xerrors.Errorf("failed to get %s package ID: %w", err)
 	}
 	spdxPackage.PackageSPDXIdentifier = spdx.ElementID(fmt.Sprintf("%s-%s", camelCase(string(r.ArtifactType)), pkgID))
 	spdxPackage.PackageName = r.ArtifactName
 
-	return spdxPackage, nil
+	return &spdxPackage, nil
 }
 
 func (m *Marshaler) applicationPackage(target, typ string) (spdx.Package2_2, error) {
@@ -303,6 +291,16 @@ func (m *Marshaler) pkgToSpdxPackage(t string, class types.ResultClass, metadata
 
 	spdxPackage.PackageAttributionTexts = appendAttributionText(spdxPackage.PackageAttributionTexts, PropertyLayerDigest, pkg.Layer.Digest)
 	spdxPackage.PackageAttributionTexts = appendAttributionText(spdxPackage.PackageAttributionTexts, PropertyLayerDiffID, pkg.Layer.DiffID)
+
+	if pkg.FilePath != "" {
+		file, err := m.parseFile(pkg.FilePath)
+		if err != nil {
+			return spdx.Package2_2{}, xerrors.Errorf("failed to parse file: %w")
+		}
+		spdxPackage.Files = map[spdx.ElementID]*spdx.File2_2{
+			file.FileSPDXIdentifier: &file,
+		}
+	}
 
 	return spdxPackage, nil
 }
