@@ -10,7 +10,7 @@ on:
       - 'LICENSE'
   pull_request:
 env:
-  TINYGO_VERSION: "0.24.0"
+  TINYGO_VERSION: "0.25.0"
 jobs:
   test:
     name: Test
