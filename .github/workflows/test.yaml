@@ -21,7 +21,7 @@ jobs:
       - name: Set up Go
         uses: actions/setup-go@v3
         with:
-          go-version-file: './go.mod'
+          go-version-file: go.mod
 
       - name: go mod tidy
         run: |
@@ -50,33 +50,33 @@ jobs:
     name: Integration Test
     runs-on: ubuntu-latest
     steps:
-    - name: Set up Go
-      uses: actions/setup-go@v3
-      with:
-        go-version-file: './go.mod'
+      - name: Check out code into the Go module directory
+        uses: actions/checkout@v3
 
-    - name: Check out code into the Go module directory
-      uses: actions/checkout@v3
+      - name: Set up Go
+        uses: actions/setup-go@v3
+        with:
+          go-version-file: go.mod
 
-    - name: Run integration tests
-      run: make test-integration
+      - name: Run integration tests
+        run: make test-integration
 
   module-test:
     name: Module Integration Test
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
       - name: Set up Go
         uses: actions/setup-go@v3
         with:
-          go-version-file: './go.mod'
+          go-version-file: go.mod
 
       - name: Install TinyGo
         run: |
           wget https://github.com/tinygo-org/tinygo/releases/download/v${TINYGO_VERSION}/tinygo_${TINYGO_VERSION}_amd64.deb
           sudo dpkg -i tinygo_${TINYGO_VERSION}_amd64.deb
-
-      - name: Checkout
-        uses: actions/checkout@v3
 
       - name: Run module integration tests
         run: |
@@ -104,7 +104,7 @@ jobs:
     - name: Set up Go
       uses: actions/setup-go@v3
       with:
-        go-version-file: './go.mod'
+        go-version-file: go.mod
 
     - name: Run GoReleaser
       uses: goreleaser/goreleaser-action@v3
