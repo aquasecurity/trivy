@@ -61,7 +61,7 @@ func TestSBOM(t *testing.T) {
 				format:       "json",
 				artifactType: "spdx",
 			},
-			golden: "testdata/centos-7-spdx-tv.json.golden",
+			golden: "testdata/centos-7-spdx.json.golden",
 		},
 		{
 			name: "centos7 spdx type json by trivy",
