@@ -15,8 +15,8 @@ env:
   HELM_REP: helm-charts
   GH_OWNER: aquasecurity
   CHART_DIR: helm/trivy
-  KIND_VERSION: "v0.11.1"
-  KIND_IMAGE: "kindest/node:v1.21.1@sha256:69860bda5563ac81e3c0057d654b5253219618a22ec3a346306239bba8cfa1a6"
+  KIND_VERSION: "v0.14.0"
+  KIND_IMAGE: "kindest/node:v1.23.6@sha256:b1fa224cc6c7ff32455e0b1fd9cbfd3d3bc87ecaa8fcb06961ed1afb3db0f9ae"
 jobs:
   test-chart:
     runs-on: ubuntu-20.04
@@ -26,7 +26,7 @@ jobs:
         with:
           fetch-depth: 0
       - name: Install Helm
-        uses: azure/setup-helm@18bc76811624f360dbd7f18c2d4ecb32c7b87bab
+        uses: azure/setup-helm@b5b231a831f96336bbfeccc1329990f0005c5bb1
         with:
           version: v3.5.0
       - name: Set up python
@@ -35,7 +35,7 @@ jobs:
           python-version: 3.7
       - name: Setup Chart Linting
         id: lint
-        uses: helm/chart-testing-action@dae259e86a35ff09145c0805e2d7dd3f7207064a
+        uses: helm/chart-testing-action@09ed88797198755e5031f25be13da255e7e33aad
       - name: Setup Kubernetes cluster (KIND)
         uses: helm/kind-action@d08cf6ff1575077dee99962540d77ce91c62387d
         with:
@@ -45,7 +45,7 @@ jobs:
         run: ct lint-and-install --validate-maintainers=false --charts helm/trivy
       - name: Run chart-testing (Ingress enabled)
         run: |
-          sed -i -e '117s,false,'true',g' ./helm/trivy/values.yaml
+          sed -i -e '136s,false,'true',g' ./helm/trivy/values.yaml
           ct lint-and-install --validate-maintainers=false --charts helm/trivy
 
   publish-chart:

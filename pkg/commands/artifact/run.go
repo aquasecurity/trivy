@@ -16,7 +16,6 @@ import (
 	"github.com/aquasecurity/trivy/pkg/commands/operation"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer/config"
-	"github.com/aquasecurity/trivy/pkg/fanal/analyzer/secret"
 	"github.com/aquasecurity/trivy/pkg/fanal/artifact"
 	"github.com/aquasecurity/trivy/pkg/fanal/cache"
 	"github.com/aquasecurity/trivy/pkg/flag"
@@ -58,7 +57,7 @@ type ScannerConfig struct {
 
 	// Cache
 	ArtifactCache      cache.ArtifactCache
-	LocalArtifactCache cache.LocalArtifactCache
+	LocalArtifactCache cache.Cache
 
 	// Client/Server options
 	RemoteOption client.ScannerOption
@@ -448,6 +447,7 @@ func initScannerConfig(opts flag.Options, cacheClient cache.Cache) (ScannerConfi
 		ScanRemovedPackages: opts.ScanRemovedPkgs, // this is valid only for 'image' subcommand
 		ListAllPackages:     opts.ListAllPkgs,
 		LicenseCategories:   opts.LicenseCategories,
+		FilePatterns:        opts.FilePatterns,
 	}
 
 	if slices.Contains(opts.SecurityChecks, types.SecurityCheckVulnerability) {
@@ -464,7 +464,6 @@ func initScannerConfig(opts flag.Options, cacheClient cache.Cache) (ScannerConfi
 			Namespaces:       append(opts.PolicyNamespaces, defaultPolicyNamespaces...),
 			PolicyPaths:      opts.PolicyPaths,
 			DataPaths:        opts.DataPaths,
-			FilePatterns:     opts.FilePatterns,
 			HelmValues:       opts.HelmValues,
 			HelmValueFiles:   opts.HelmValueFiles,
 			HelmFileValues:   opts.HelmFileValues,
@@ -504,6 +503,7 @@ func initScannerConfig(opts flag.Options, cacheClient cache.Cache) (ScannerConfi
 			DisabledAnalyzers: disabledAnalyzers(opts),
 			SkipFiles:         opts.SkipFiles,
 			SkipDirs:          opts.SkipDirs,
+			FilePatterns:      opts.FilePatterns,
 			InsecureSkipTLS:   opts.Insecure,
 			Offline:           opts.OfflineScan,
 			NoProgress:        opts.NoProgress || opts.Quiet,
@@ -515,7 +515,7 @@ func initScannerConfig(opts flag.Options, cacheClient cache.Cache) (ScannerConfi
 			MisconfScannerOption: configScannerOptions,
 
 			// For secret scanning
-			SecretScannerOption: secret.ScannerOption{
+			SecretScannerOption: analyzer.SecretScannerOption{
 				ConfigPath: opts.SecretConfigPath,
 			},
 		},

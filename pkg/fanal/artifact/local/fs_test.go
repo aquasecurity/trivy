@@ -6,7 +6,6 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
-
 	"github.com/stretchr/testify/require"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
@@ -15,9 +14,11 @@ import (
 	"github.com/aquasecurity/trivy/pkg/fanal/cache"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 
+	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/config/all"
 	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/language/python/pip"
 	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/os/alpine"
 	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/pkg/apk"
+	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/secret"
 	_ "github.com/aquasecurity/trivy/pkg/fanal/handler/misconf"
 	_ "github.com/aquasecurity/trivy/pkg/fanal/handler/sysfile"
 )

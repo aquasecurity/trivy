@@ -5,6 +5,7 @@ import (
 	"errors"
 	"io/fs"
 	"os"
+	"regexp"
 	"sort"
 	"strings"
 	"sync"
@@ -31,17 +32,29 @@ var (
 	ErrNoPkgsDetected = xerrors.New("no packages detected")
 )
 
-type AnalysisInput struct {
-	Dir      string
-	FilePath string
-	Info     os.FileInfo
-	Content  dio.ReadSeekerAt
+//////////////////////
+// Analyzer options //
+//////////////////////
 
-	Options AnalysisOptions
+// AnalyzerOptions is used to initialize analyzers
+type AnalyzerOptions struct {
+	Group               Group
+	FilePatterns        []string
+	DisabledAnalyzers   []Type
+	SecretScannerOption SecretScannerOption
 }
 
-type AnalysisOptions struct {
-	Offline bool
+type SecretScannerOption struct {
+	ConfigPath string
+}
+
+////////////////
+// Interfaces //
+////////////////
+
+// Initializer represents analyzers that need to take parameters from users
+type Initializer interface {
+	Init(AnalyzerOptions) error
 }
 
 type analyzer interface {
@@ -57,6 +70,10 @@ type configAnalyzer interface {
 	Analyze(targetOS types.OS, content []byte) ([]types.Package, error)
 	Required(osFound types.OS) bool
 }
+
+////////////////////
+// Analyzer group //
+////////////////////
 
 type Group string
 
@@ -91,6 +108,24 @@ type Opener func() (dio.ReadSeekCloserAt, error)
 type AnalyzerGroup struct {
 	analyzers       []analyzer
 	configAnalyzers []configAnalyzer
+	filePatterns    map[Type][]*regexp.Regexp
+}
+
+///////////////////////////
+// Analyzer input/output //
+///////////////////////////
+
+type AnalysisInput struct {
+	Dir      string
+	FilePath string
+	Info     os.FileInfo
+	Content  dio.ReadSeekerAt
+
+	Options AnalysisOptions
+}
+
+type AnalysisOptions struct {
+	Offline bool
 }
 
 type AnalysisResult struct {
@@ -266,27 +301,58 @@ func belongToGroup(groupName Group, analyzerType Type, disabledAnalyzers []Type,
 	return true
 }
 
-func NewAnalyzerGroup(groupName Group, disabledAnalyzers []Type) AnalyzerGroup {
+const separator = ":"
+
+func NewAnalyzerGroup(opt AnalyzerOptions) (AnalyzerGroup, error) {
+	groupName := opt.Group
 	if groupName == "" {
 		groupName = GroupBuiltin
 	}
 
-	var group AnalyzerGroup
+	group := AnalyzerGroup{
+		filePatterns: map[Type][]*regexp.Regexp{},
+	}
+	for _, p := range opt.FilePatterns {
+		// e.g. "dockerfile:my_dockerfile_*"
+		s := strings.SplitN(p, separator, 2)
+		if len(s) != 2 {
+			return group, xerrors.Errorf("invalid file pattern (%s)", p)
+		}
+
+		fileType, pattern := s[0], s[1]
+		r, err := regexp.Compile(pattern)
+		if err != nil {
+			return group, xerrors.Errorf("invalid file regexp (%s): %w", p, err)
+		}
+
+		if _, ok := group.filePatterns[Type(fileType)]; !ok {
+			group.filePatterns[Type(fileType)] = []*regexp.Regexp{}
+		}
+
+		group.filePatterns[Type(fileType)] = append(group.filePatterns[Type(fileType)], r)
+	}
+
 	for analyzerType, a := range analyzers {
-		if !belongToGroup(groupName, analyzerType, disabledAnalyzers, a) {
+		if !belongToGroup(groupName, analyzerType, opt.DisabledAnalyzers, a) {
 			continue
+		}
+		// Initialize only scanners that have Init()
+		if ini, ok := a.(Initializer); ok {
+			if err := ini.Init(opt); err != nil {
+				return AnalyzerGroup{}, xerrors.Errorf("analyzer initialization error: %w", err)
+			}
 		}
 		group.analyzers = append(group.analyzers, a)
 	}
 
 	for analyzerType, a := range configAnalyzers {
-		if slices.Contains(disabledAnalyzers, analyzerType) {
+		if slices.Contains(opt.DisabledAnalyzers, analyzerType) {
 			continue
 		}
 		group.configAnalyzers = append(group.configAnalyzers, a)
 	}
 
-	return group
+	return group, nil
 }
 
 // AnalyzerVersions returns analyzer version identifier used for cache keys.
@@ -313,14 +379,16 @@ func (ag AnalyzerGroup) AnalyzeFile(ctx context.Context, wg *sync.WaitGroup, lim
 		return nil
 	}
 
+	// filepath extracted from tar file doesn't have the prefix "/"
+	cleanPath := strings.TrimLeft(filePath, "/")
+
 	for _, a := range ag.analyzers {
 		// Skip disabled analyzers
 		if slices.Contains(disabled, a.Type()) {
 			continue
 		}
 
-		// filepath extracted from tar file doesn't have the prefix "/"
-		if !a.Required(strings.TrimLeft(filePath, "/"), info) {
+		if !ag.filePatternMatch(a.Type(), cleanPath) && !a.Required(cleanPath, info) {
 			continue
 		}
 		rc, err := opener()
@@ -374,4 +442,13 @@ func (ag AnalyzerGroup) AnalyzeImageConfig(targetOS types.OS, configBlob []byte)
 		return pkgs
 	}
 	return nil
+}
+
+func (ag AnalyzerGroup) filePatternMatch(analyzerType Type, filePath string) bool {
+	for _, pattern := range ag.filePatterns[analyzerType] {
+		if pattern.MatchString(filePath) {
+			return true
+		}
+	}
+	return false
 }

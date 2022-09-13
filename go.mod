@@ -6,21 +6,21 @@ require (
 	github.com/CycloneDX/cyclonedx-go v0.6.0
 	github.com/Masterminds/sprig/v3 v3.2.2
 	github.com/NYTimes/gziphandler v1.1.1
-	github.com/alicebob/miniredis/v2 v2.22.0
+	github.com/alicebob/miniredis/v2 v2.23.0
 	github.com/aquasecurity/bolt-fixtures v0.0.0-20200903104109-d34e7f983986
-	github.com/aquasecurity/go-dep-parser v0.0.0-20220824115155-600849a106bd
+	github.com/aquasecurity/go-dep-parser v0.0.0-20220904090510-d2cb7a409fe8
 	github.com/aquasecurity/go-gem-version v0.0.0-20201115065557-8eed6fe000ce
 	github.com/aquasecurity/go-npm-version v0.0.0-20201110091526-0b796d180798
 	github.com/aquasecurity/go-pep440-version v0.0.0-20210121094942-22b2f8951d46
 	github.com/aquasecurity/go-version v0.0.0-20210121072130-637058cfe492
-	github.com/aquasecurity/table v1.7.2
+	github.com/aquasecurity/table v1.8.0
 	github.com/aquasecurity/testdocker v0.0.0-20210911155206-e1e85f5a1516
 	github.com/aquasecurity/trivy-db v0.0.0-20220627104749-930461748b63
 	github.com/aquasecurity/trivy-kubernetes v0.3.1-0.20220823151349-b90b48958b91
-	github.com/aws/aws-sdk-go-v2 v1.16.11
+	github.com/aws/aws-sdk-go-v2 v1.16.14
 	github.com/aws/aws-sdk-go-v2/config v1.17.0
-	github.com/aws/aws-sdk-go-v2/service/sts v1.16.13
-	github.com/caarlos0/env/v6 v6.9.3
+	github.com/aws/aws-sdk-go-v2/service/sts v1.16.17
+	github.com/caarlos0/env/v6 v6.10.0
 	github.com/cenkalti/backoff v2.2.1+incompatible
 	github.com/cheggaaa/pb/v3 v3.1.0
 	github.com/containerd/containerd v1.6.6
@@ -50,7 +50,7 @@ require (
 	github.com/open-policy-agent/opa v0.43.0
 	github.com/owenrumney/go-sarif/v2 v2.1.2
 	github.com/package-url/packageurl-go v0.1.1-0.20220203205134-d70459300c8a
-	github.com/samber/lo v1.27.0
+	github.com/samber/lo v1.27.1
 	github.com/secure-systems-lab/go-securesystemslib v0.4.0
 	github.com/sosedoff/gitkit v0.3.0
 	github.com/spf13/cobra v1.5.0
@@ -58,13 +58,13 @@ require (
 	github.com/spf13/viper v1.12.0
 	github.com/stretchr/testify v1.8.0
 	github.com/testcontainers/testcontainers-go v0.13.0
-	github.com/tetratelabs/wazero v0.0.0-20220701105919-891761ac1ee2
+	github.com/tetratelabs/wazero v1.0.0-pre.1
 	github.com/twitchtv/twirp v8.1.2+incompatible
 	github.com/xlab/treeprint v1.1.0
 	go.etcd.io/bbolt v1.3.6
 	go.uber.org/zap v1.22.0
 	golang.org/x/exp v0.0.0-20220407100705-7b9b53b0aca4
-	golang.org/x/xerrors v0.0.0-20220517211312-f3a8303e98df
+	golang.org/x/xerrors v0.0.0-20220609144429-65e65417b02f
 	google.golang.org/protobuf v1.28.1
 	gopkg.in/yaml.v3 v3.0.1
 	k8s.io/utils v0.0.0-20220210201930-3a6ce19ff2f9
@@ -74,10 +74,11 @@ require (
 	github.com/aws/aws-sdk-go-v2/aws/protocol/eventstream v1.4.4 // indirect
 	github.com/aws/aws-sdk-go-v2/credentials v1.12.13 // indirect
 	github.com/aws/aws-sdk-go-v2/feature/ec2/imds v1.12.12 // indirect
-	github.com/aws/aws-sdk-go-v2/internal/configsources v1.1.18 // indirect
-	github.com/aws/aws-sdk-go-v2/internal/endpoints/v2 v2.4.12 // indirect
+	github.com/aws/aws-sdk-go-v2/internal/configsources v1.1.21 // indirect
+	github.com/aws/aws-sdk-go-v2/internal/endpoints/v2 v2.4.15 // indirect
 	github.com/aws/aws-sdk-go-v2/internal/ini v1.3.19 // indirect
 	github.com/aws/aws-sdk-go-v2/internal/v4a v1.0.9 // indirect
+	github.com/aws/aws-sdk-go-v2/service/accessanalyzer v1.15.14 // indirect
 	github.com/aws/aws-sdk-go-v2/service/apigateway v1.15.14 // indirect
 	github.com/aws/aws-sdk-go-v2/service/apigatewayv2 v1.12.12 // indirect
 	github.com/aws/aws-sdk-go-v2/service/athena v1.18.4 // indirect
@@ -101,7 +102,7 @@ require (
 	github.com/aws/aws-sdk-go-v2/service/internal/accept-encoding v1.9.5 // indirect
 	github.com/aws/aws-sdk-go-v2/service/internal/checksum v1.1.13 // indirect
 	github.com/aws/aws-sdk-go-v2/service/internal/endpoint-discovery v1.7.12 // indirect
-	github.com/aws/aws-sdk-go-v2/service/internal/presigned-url v1.9.12 // indirect
+	github.com/aws/aws-sdk-go-v2/service/internal/presigned-url v1.9.15 // indirect
 	github.com/aws/aws-sdk-go-v2/service/internal/s3shared v1.13.12 // indirect
 	github.com/aws/aws-sdk-go-v2/service/kafka v1.17.13 // indirect
 	github.com/aws/aws-sdk-go-v2/service/kinesis v1.15.13 // indirect
@@ -117,7 +118,7 @@ require (
 	github.com/aws/aws-sdk-go-v2/service/sqs v1.19.4 // indirect
 	github.com/aws/aws-sdk-go-v2/service/sso v1.11.16 // indirect
 	github.com/aws/aws-sdk-go-v2/service/workspaces v1.22.3 // indirect
-	github.com/aws/smithy-go v1.12.1 // indirect
+	github.com/aws/smithy-go v1.13.2 // indirect
 	github.com/emicklei/go-restful/v3 v3.8.0 // indirect
 	github.com/hashicorp/hcl v1.0.0 // indirect
 	github.com/pelletier/go-toml/v2 v2.0.1 // indirect
@@ -162,9 +163,9 @@ require (
 	github.com/alicebob/gopher-json v0.0.0-20200520072559-a9ecdc9d1d3a // indirect
 	github.com/apparentlymart/go-cidr v1.1.0 // indirect
 	github.com/apparentlymart/go-textseg/v13 v13.0.0 // indirect
-	github.com/aquasecurity/defsec v0.71.9
+	github.com/aquasecurity/defsec v0.74.2
 	github.com/asaskevich/govalidator v0.0.0-20200428143746-21a406dcc535 // indirect
-	github.com/aws/aws-sdk-go v1.44.77
+	github.com/aws/aws-sdk-go v1.44.92
 	github.com/beorn7/perks v1.0.1 // indirect
 	github.com/bgentry/go-netrc v0.0.0-20140422174119-9fd32a8b3d3d // indirect
 	github.com/bmatcuk/doublestar v1.3.4 // indirect
