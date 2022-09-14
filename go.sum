@@ -208,6 +208,8 @@ github.com/aquasecurity/defsec v0.74.2 h1:2R2T/ICV4uF9W2uCYbcNVwK33vIis5pZbd5JQr
 github.com/aquasecurity/defsec v0.74.2/go.mod h1:qZVjZjWAlKyD6tTLztvm17DlMDt3+vcfpO0zhFytxz4=
 github.com/aquasecurity/go-dep-parser v0.0.0-20220904090510-d2cb7a409fe8 h1:8jcz2qlLrsNDT/406nXMsi87Hsv/v1fw8SMbSpRhVP0=
 github.com/aquasecurity/go-dep-parser v0.0.0-20220904090510-d2cb7a409fe8/go.mod h1:6G1Y5nht5TL9kr1SzmrdE8PrmbNXo9nHx3qFR3qURg0=
+github.com/aquasecurity/go-dep-parser v0.0.0-20220912084514-9d42a63ca964 h1:Ilqo8EEvGV2K8HVZwHCapLcQOyY/DhV5wcIZ1Xh6wwg=
+github.com/aquasecurity/go-dep-parser v0.0.0-20220912084514-9d42a63ca964/go.mod h1:6G1Y5nht5TL9kr1SzmrdE8PrmbNXo9nHx3qFR3qURg0=
 github.com/aquasecurity/go-gem-version v0.0.0-20201115065557-8eed6fe000ce h1:QgBRgJvtEOBtUXilDb1MLi1p1MWoyFDXAu5DEUl5nwM=
 github.com/aquasecurity/go-gem-version v0.0.0-20201115065557-8eed6fe000ce/go.mod h1:HXgVzOPvXhVGLJs4ZKO817idqr/xhwsTcj17CLYY74s=
 github.com/aquasecurity/go-mock-aws v0.0.0-20220726154943-99847deb62b0 h1:tihCUjLWkF0b1SAjAKcFltUs3SpsqGrLtI+Frye0D10=
