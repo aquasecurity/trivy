@@ -22,6 +22,14 @@ Then, you can upload it with AWS CLI.
 $ aws securityhub batch-import-findings --findings file://report.asff
 ```
 
+### Note
+
+The [batch-import-findings](https://docs.aws.amazon.com/cli/latest/reference/securityhub/batch-import-findings.html#options) command limits the number of findings uploaded to 100 per request. The best known workaround to this problem is using [jq](https://stedolan.github.io/jq/) to run the following command
+
+```
+jq '.[:100]' report.asff 1> short_report.asff
+```
+
 ## Customize
 You can customize [asff.tpl](https://github.com/aquasecurity/trivy/blob/main/contrib/asff.tpl)
 
