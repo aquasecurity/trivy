@@ -99,7 +99,6 @@ func (a Artifact) Inspect(_ context.Context) (types.ArtifactReference, error) {
 
 		// Keep an original report
 		CycloneDX: bom.CycloneDX,
-		SPDX:      bom.SPDX,
 	}, nil
 }
 

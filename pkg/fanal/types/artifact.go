@@ -4,7 +4,6 @@ import (
 	"time"
 
 	v1 "github.com/google/go-containerregistry/pkg/v1"
-	"github.com/spdx/tools-golang/spdx"
 )
 
 type OS struct {
@@ -110,7 +109,6 @@ type ArtifactReference struct {
 
 	// SBOM
 	CycloneDX *CycloneDX
-	SPDX      *spdx.Document2_2
 }
 
 type ImageMetadata struct {
