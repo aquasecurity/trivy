@@ -9,14 +9,15 @@ import (
 	"golang.org/x/xerrors"
 )
 
-// e.g. config yaml
-// cache:
-//   clear: true
-//   backend: "redis://localhost:6379"
-//   redis:
-//    ca: ca-cert.pem
-//    cert: cert.pem
-//    key: key.pem
+// e.g. config yaml:
+//
+//	cache:
+//	  clear: true
+//	  backend: "redis://localhost:6379"
+//	redis:
+//	  ca: ca-cert.pem
+//	  cert: cert.pem
+//	  key: key.pem
 var (
 	ClearCacheFlag = Flag{
 		Name:       "clear-cache",

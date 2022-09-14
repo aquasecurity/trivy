@@ -13,7 +13,6 @@ import (
 
 	"github.com/aquasecurity/trivy/pkg/attestation"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
-	"github.com/aquasecurity/trivy/pkg/fanal/analyzer/config"
 	"github.com/aquasecurity/trivy/pkg/fanal/artifact"
 	"github.com/aquasecurity/trivy/pkg/fanal/cache"
 	"github.com/aquasecurity/trivy/pkg/fanal/handler"
@@ -30,8 +29,7 @@ type Artifact struct {
 	analyzer       analyzer.AnalyzerGroup
 	handlerManager handler.Manager
 
-	artifactOption      artifact.Option
-	configScannerOption config.ScannerOption
+	artifactOption artifact.Option
 }
 
 func NewArtifact(filePath string, c cache.ArtifactCache, opt artifact.Option) (artifact.Artifact, error) {
