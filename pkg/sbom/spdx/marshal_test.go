@@ -202,7 +202,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 					{
 						RefA:         spdx.DocElementID{ElementRefID: "OperatingSystem-197f9a00ebcb51f0"},
 						RefB:         spdx.DocElementID{ElementRefID: "Package-fd0dc3cf913d5bc3"},
-						Relationship: "DEPENDS_ON",
+						Relationship: "CONTAINS",
 					},
 					{
 						RefA:         spdx.DocElementID{ElementRefID: "ContainerImage-9396d894cd0cb6cb"},
@@ -212,12 +212,12 @@ func TestMarshaler_Marshal(t *testing.T) {
 					{
 						RefA:         spdx.DocElementID{ElementRefID: "Application-73c871d73f3c8248"},
 						RefB:         spdx.DocElementID{ElementRefID: "Package-826226d056ff30c0"},
-						Relationship: "DEPENDS_ON",
+						Relationship: "CONTAINS",
 					},
 					{
 						RefA:         spdx.DocElementID{ElementRefID: "Application-73c871d73f3c8248"},
 						RefB:         spdx.DocElementID{ElementRefID: "Package-eb0263038c3b445b"},
-						Relationship: "DEPENDS_ON",
+						Relationship: "CONTAINS",
 					},
 					{
 						RefA:         spdx.DocElementID{ElementRefID: "ContainerImage-9396d894cd0cb6cb"},
@@ -227,7 +227,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 					{
 						RefA:         spdx.DocElementID{ElementRefID: "Application-c3fac92c1ac0a9fa"},
 						RefB:         spdx.DocElementID{ElementRefID: "Package-826226d056ff30c0"},
-						Relationship: "DEPENDS_ON",
+						Relationship: "CONTAINS",
 					},
 				},
 				UnpackagedFiles: nil,
@@ -410,7 +410,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 					{
 						RefA:         spdx.DocElementID{ElementRefID: "OperatingSystem-197f9a00ebcb51f0"},
 						RefB:         spdx.DocElementID{ElementRefID: "Package-d8dccb186bafaf37"},
-						Relationship: "DEPENDS_ON",
+						Relationship: "CONTAINS",
 					},
 					{
 						RefA:         spdx.DocElementID{ElementRefID: "ContainerImage-413bfede37ad01fc"},
@@ -420,12 +420,12 @@ func TestMarshaler_Marshal(t *testing.T) {
 					{
 						RefA:         spdx.DocElementID{ElementRefID: "Application-441a648f2aeeee72"},
 						RefB:         spdx.DocElementID{ElementRefID: "Package-d5443dbcbba0dbd4"},
-						Relationship: "DEPENDS_ON",
+						Relationship: "CONTAINS",
 					},
 					{
 						RefA:         spdx.DocElementID{ElementRefID: "Application-441a648f2aeeee72"},
 						RefB:         spdx.DocElementID{ElementRefID: "Package-13fe667a0805e6b7"},
-						Relationship: "DEPENDS_ON",
+						Relationship: "CONTAINS",
 					},
 				},
 
@@ -508,7 +508,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 					{
 						RefA:         spdx.DocElementID{ElementRefID: "Application-9dd4a4ba7077cc5a"},
 						RefB:         spdx.DocElementID{ElementRefID: "Package-3da61e86d0530402"},
-						Relationship: "DEPENDS_ON",
+						Relationship: "CONTAINS",
 					},
 				},
 			},
@@ -600,7 +600,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 					{
 						RefA:         spdx.DocElementID{ElementRefID: "Application-24f8a80152e2c0fc"},
 						RefB:         spdx.DocElementID{ElementRefID: "Package-daedb173cfd43058"},
-						Relationship: "DEPENDS_ON",
+						Relationship: "CONTAINS",
 					},
 				},
 			},

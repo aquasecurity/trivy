@@ -135,7 +135,7 @@ func (m *Marshaler) Marshal(r types.Report) (*spdx.Document2_2, error) {
 			}
 			packages[spdxPackage.PackageSPDXIdentifier] = &spdxPackage
 			relationShips = append(relationShips,
-				relationShip(parentPackage.PackageSPDXIdentifier, spdxPackage.PackageSPDXIdentifier, RelationShipDependsOn),
+				relationShip(parentPackage.PackageSPDXIdentifier, spdxPackage.PackageSPDXIdentifier, RelationShipContains),
 			)
 		}
 	}
