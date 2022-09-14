@@ -39,6 +39,7 @@ Get Trivy by your favorite installation method. See [installation] section in th
 
 - `apt-get install trivy`
 - `yum install trivy`
+- `pacman -S trivy`
 - `brew install aquasecurity/trivy/trivy`
 - `sudo port install trivy`
 - `docker run aquasec/trivy`
