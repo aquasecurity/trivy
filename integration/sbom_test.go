@@ -8,9 +8,6 @@ import (
 	"testing"
 
 	cdx "github.com/CycloneDX/cyclonedx-go"
-	"github.com/spdx/tools-golang/jsonloader"
-	"github.com/spdx/tools-golang/spdx"
-	"github.com/spdx/tools-golang/tvloader"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -27,7 +24,7 @@ func TestSBOM(t *testing.T) {
 		golden string
 	}{
 		{
-			name: "centos7 cyclonedx by trivy",
+			name: "centos7 cyclonedx",
 			args: args{
 				input:        "testdata/fixtures/sbom/centos-7-cyclonedx.json",
 				format:       "cyclonedx",
@@ -36,7 +33,7 @@ func TestSBOM(t *testing.T) {
 			golden: "testdata/centos-7-cyclonedx.json.golden",
 		},
 		{
-			name: "fluentd-multiple-lockfiles-bom by trivy",
+			name: "fluentd-multiple-lockfiles cyclonedx",
 			args: args{
 				input:        "testdata/fixtures/sbom/fluentd-multiple-lockfiles-cyclonedx.json",
 				format:       "cyclonedx",
@@ -45,7 +42,7 @@ func TestSBOM(t *testing.T) {
 			golden: "testdata/fluentd-multiple-lockfiles-cyclonedx.json.golden",
 		},
 		{
-			name: "centos7-bom in in-toto attestation",
+			name: "centos7 in in-toto attestation",
 			args: args{
 				input:        "testdata/fixtures/sbom/centos-7-cyclonedx.intoto.jsonl",
 				format:       "cyclonedx",
@@ -54,7 +51,7 @@ func TestSBOM(t *testing.T) {
 			golden: "testdata/centos-7-cyclonedx.json.golden",
 		},
 		{
-			name: "centos7 spdx tag-value by trivy",
+			name: "centos7 spdx tag-value",
 			args: args{
 				input:        "testdata/fixtures/sbom/centos-7-spdx.txt",
 				format:       "json",
@@ -63,7 +60,7 @@ func TestSBOM(t *testing.T) {
 			golden: "testdata/centos-7-spdx.json.golden",
 		},
 		{
-			name: "centos7 spdx json by trivy",
+			name: "centos7 spdx json",
 			args: args{
 				input:        "testdata/fixtures/sbom/centos-7-spdx.json",
 				format:       "json",
@@ -82,7 +79,7 @@ func TestSBOM(t *testing.T) {
 				"--cache-dir", cacheDir, "sbom", "-q", "--skip-db-update", "--format", tt.args.format,
 			}
 
-			// Setup the output file
+			// Set up the output file
 			outputFile := filepath.Join(t.TempDir(), "output.json")
 			if *update {
 				outputFile = tt.golden
@@ -96,37 +93,18 @@ func TestSBOM(t *testing.T) {
 			assert.NoError(t, err)
 
 			// Compare want and got
-			switch tt.args.artifactType {
+			switch tt.args.format {
 			case "cyclonedx":
 				want := decodeCycloneDX(t, tt.golden)
 				got := decodeCycloneDX(t, outputFile)
 				assert.Equal(t, want, got)
-			case "spdx", "spdx-json":
-				want := decodeSPDX(t, tt.args.format, tt.golden)
-				got := decodeSPDX(t, tt.args.format, outputFile)
-				assert.Equal(t, want, got)
+			case "json":
+				compareReports(t, tt.golden, outputFile)
 			default:
-				t.Fatalf("invalid arguments format: %q", tt.args.format)
+				require.Fail(t, "invalid format", "format: %s", tt.args.format)
 			}
 		})
 	}
-}
-
-func decodeSPDX(t *testing.T, format string, filePath string) *spdx.Document2_2 {
-	f, err := os.Open(filePath)
-	require.NoError(t, err)
-	defer f.Close()
-
-	var spdxDocument *spdx.Document2_2
-	switch format {
-	case "spdx-json":
-		spdxDocument, err = jsonloader.Load2_2(f)
-		require.NoError(t, err)
-	case "spdx":
-		spdxDocument, err = tvloader.Load2_2(f)
-		require.NoError(t, err)
-	}
-	return spdxDocument
 }
 
 func decodeCycloneDX(t *testing.T, filePath string) *cdx.BOM {

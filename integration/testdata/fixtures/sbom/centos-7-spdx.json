@@ -81,12 +81,12 @@
 		},
 		{
 			"relatedSpdxElement": "SPDXRef-Package-5a18334f22149877",
-			"relationshipType": "DEPENDS_ON",
+			"relationshipType": "CONTAINS",
 			"spdxElementId": "SPDXRef-OperatingSystem-2e91c856c499a371"
 		},
 		{
 			"relatedSpdxElement": "SPDXRef-Package-e16b1cbaa5186199",
-			"relationshipType": "DEPENDS_ON",
+			"relationshipType": "CONTAINS",
 			"spdxElementId": "SPDXRef-OperatingSystem-2e91c856c499a371"
 		}
 	],
