@@ -3,7 +3,6 @@
 package integration
 
 import (
-	"fmt"
 	"os"
 	"path/filepath"
 	"testing"
@@ -28,7 +27,7 @@ func TestSBOM(t *testing.T) {
 		golden string
 	}{
 		{
-			name: "centos7-bom by trivy",
+			name: "centos7 cyclonedx by trivy",
 			args: args{
 				input:        "testdata/fixtures/sbom/centos-7-cyclonedx.json",
 				format:       "cyclonedx",
@@ -55,7 +54,7 @@ func TestSBOM(t *testing.T) {
 			golden: "testdata/centos-7-cyclonedx.json.golden",
 		},
 		{
-			name: "centos7 spdx type tag-value by trivy",
+			name: "centos7 spdx tag-value by trivy",
 			args: args{
 				input:        "testdata/fixtures/sbom/centos-7-spdx.txt",
 				format:       "json",
@@ -64,7 +63,7 @@ func TestSBOM(t *testing.T) {
 			golden: "testdata/centos-7-spdx.json.golden",
 		},
 		{
-			name: "centos7 spdx type json by trivy",
+			name: "centos7 spdx json by trivy",
 			args: args{
 				input:        "testdata/fixtures/sbom/centos-7-spdx.json",
 				format:       "json",
@@ -121,11 +120,9 @@ func decodeSPDX(t *testing.T, format string, filePath string) *spdx.Document2_2 
 	var spdxDocument *spdx.Document2_2
 	switch format {
 	case "spdx-json":
-		fmt.Println(filePath)
 		spdxDocument, err = jsonloader.Load2_2(f)
 		require.NoError(t, err)
 	case "spdx":
-		fmt.Println(filePath)
 		spdxDocument, err = tvloader.Load2_2(f)
 		require.NoError(t, err)
 	}
