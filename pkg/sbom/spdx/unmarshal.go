@@ -8,6 +8,7 @@ import (
 
 	version "github.com/knqyf263/go-rpm-version"
 	"github.com/package-url/packageurl-go"
+	"github.com/samber/lo"
 	"github.com/spdx/tools-golang/jsonloader"
 	"github.com/spdx/tools-golang/spdx"
 	"github.com/spdx/tools-golang/tvloader"
@@ -19,14 +20,11 @@ import (
 )
 
 var (
-	errInvalidPackageFormat = xerrors.New("invalid package format")
+	errUnknownPackageFormat = xerrors.New("unknown package format")
 )
 
 type SPDX struct {
 	*sbom.SBOM
-
-	relationships map[spdx.ElementID][]spdx.ElementID
-	packages      map[spdx.ElementID]*spdx.Package2_2
 }
 
 func NewTVDecoder(r io.Reader) *TVDecoder {
@@ -68,139 +66,157 @@ func (s *SPDX) UnmarshalJSON(b []byte) error {
 }
 
 func (s *SPDX) unmarshal(spdxDocument *spdx.Document2_2) error {
-	s.relationships = relationshipMap(spdxDocument.Relationships)
-	s.packages = spdxDocument.Packages
+	var osPkgs []ftypes.Package
+	apps := map[spdx.ElementID]*ftypes.Application{}
 
-	for pkgID := range s.relationships {
-		pkg := s.packages[pkgID]
+	// Package relationships would be as belows:
+	// - Root (container image, filesystem, etc.)
+	//   - Operating System (debian 10)
+	//     - OS package A
+	//     - OS package B
+	//   - Application 1 (package-lock.json)
+	//     - Node.js package A
+	//     - Node.js package B
+	//   - Application 2 (Pipfile.lock)
+	//     - Python package A
+	//     - Python package B
+	for _, rel := range spdxDocument.Relationships {
+		pkgA := lo.FromPtr(spdxDocument.Packages[rel.RefA.ElementRefID])
+		pkgB := lo.FromPtr(spdxDocument.Packages[rel.RefB.ElementRefID])
+
 		switch {
-		case strings.HasPrefix(string(pkg.PackageSPDXIdentifier), ElementOperatingSystem):
-			s.SBOM.OS = parseOS(pkg)
-			pkgs, err := s.parsePkgs(pkg.PackageSPDXIdentifier)
+		// Relationship: root package => OS
+		case isOperatingSystem(pkgB.PackageSPDXIdentifier):
+			s.SBOM.OS = parseOS(pkgB)
+		// Relationship: OS => OS package
+		case isOperatingSystem(pkgA.PackageSPDXIdentifier):
+			pkg, err := parsePkg(pkgB)
 			if err != nil {
-				return xerrors.Errorf("failed to parse os packages: %w", err)
+				return xerrors.Errorf("failed to parse os package: %w", err)
 			}
-			if len(pkgs) != 0 {
-				s.SBOM.Packages = []ftypes.PackageInfo{{Packages: pkgs}}
+			osPkgs = append(osPkgs, *pkg)
+		// Relationship: root package => application
+		case isApplication(pkgB.PackageSPDXIdentifier):
+			// pass
+		// Relationship: application => language-specific package
+		case isApplication(pkgA.PackageSPDXIdentifier):
+			app, ok := apps[pkgA.PackageSPDXIdentifier]
+			if !ok {
+				app = initApplication(pkgA)
+				apps[pkgA.PackageSPDXIdentifier] = app
 			}
 
-		case strings.HasPrefix(string(pkg.PackageSPDXIdentifier), ElementApplication):
-			app, err := s.parseApplication(pkg)
+			lib, err := parsePkg(pkgB)
 			if err != nil {
-				return xerrors.Errorf("failed to parse application: %w", err)
+				return xerrors.Errorf("failed to parse language-specific package: %w", err)
 			}
-			s.SBOM.Applications = append(s.SBOM.Applications, *app)
+			app.Libraries = append(app.Libraries, *lib)
 		}
 	}
 
+	// Fill OS packages
+	if len(osPkgs) > 0 {
+		s.Packages = []ftypes.PackageInfo{{Packages: osPkgs}}
+	}
+
+	// Fill applications
+	for _, app := range apps {
+		s.SBOM.Applications = append(s.SBOM.Applications, *app)
+	}
+
+	// Keep the original document
 	s.SPDX = spdxDocument
 	return nil
 }
 
-func (s *SPDX) parseApplication(pkg *spdx.Package2_2) (*ftypes.Application, error) {
-	pkgs, err := s.parsePkgs(pkg.PackageSPDXIdentifier)
-	if err != nil {
-		return nil, xerrors.Errorf("failed to parse language packages: %w", err)
-	}
+func isOperatingSystem(elementID spdx.ElementID) bool {
+	return strings.HasPrefix(string(elementID), ElementOperatingSystem)
+}
+
+func isApplication(elementID spdx.ElementID) bool {
+	return strings.HasPrefix(string(elementID), ElementApplication)
+}
+
+func initApplication(pkg spdx.Package2_2) *ftypes.Application {
 	app := &ftypes.Application{
-		Type:      pkg.PackageName,
-		FilePath:  pkg.PackageSourceInfo,
-		Libraries: pkgs,
+		Type:     pkg.PackageName,
+		FilePath: pkg.PackageSourceInfo,
 	}
 	if pkg.PackageName == ftypes.NodePkg || pkg.PackageName == ftypes.PythonPkg ||
 		pkg.PackageName == ftypes.GemSpec || pkg.PackageName == ftypes.Jar {
 		app.FilePath = ""
 	}
-	return app, nil
-
+	return app
 }
 
-func (s *SPDX) parsePkgs(id spdx.ElementID) ([]ftypes.Package, error) {
-	pkgIDs := s.relationships[id]
-
-	var pkgs []ftypes.Package
-	for _, id := range pkgIDs {
-		spdxPkg := s.packages[id]
-		pkg, err := parsePkg(spdxPkg)
-		if err != nil {
-			return nil, xerrors.Errorf("failed to parse package: %w", err)
-		}
-
-		pkgs = append(pkgs, *pkg)
-	}
-	return pkgs, nil
-}
-
-func parseOS(pkg *spdx.Package2_2) *ftypes.OS {
+func parseOS(pkg spdx.Package2_2) *ftypes.OS {
 	return &ftypes.OS{
 		Family: pkg.PackageName,
 		Name:   pkg.PackageVersion,
 	}
 }
 
-func parsePkg(package2_2 *spdx.Package2_2) (*ftypes.Package, error) {
-	var (
-		pkg *ftypes.Package
-		typ string
-	)
-	for _, ref := range package2_2.PackageExternalReferences {
-		if ref.RefType == RefTypePurl && ref.Category == CategoryPackageManager {
-			packageURL, err := purl.FromString(ref.Locator)
-			if err != nil {
-				return nil, xerrors.Errorf("failed to parse purl from string: %w", err)
-			}
-			pkg = packageURL.Package()
-			pkg.Ref = ref.Locator
-			typ = packageURL.Type
-			break
-		}
-	}
-	if pkg == nil {
-		return nil, errInvalidPackageFormat
+func parsePkg(spdxPkg spdx.Package2_2) (*ftypes.Package, error) {
+	pkg, pkgType, err := parseExternalReferences(spdxPkg.PackageExternalReferences)
+	if err != nil {
+		return nil, xerrors.Errorf("external references error: %w", err)
 	}
 
-	if package2_2.PackageLicenseDeclared != "NONE" {
-		pkg.Licenses = strings.Split(package2_2.PackageLicenseDeclared, ",")
+	if spdxPkg.PackageLicenseDeclared != "NONE" {
+		pkg.Licenses = strings.Split(spdxPkg.PackageLicenseDeclared, ",")
 	}
-	pkg.Name = package2_2.PackageName
-	pkg.Version = package2_2.PackageVersion
 
-	if strings.HasPrefix(package2_2.PackageSourceInfo, SourcePackagePrefix) {
-		var err error
-		srcPkgName := strings.TrimPrefix(package2_2.PackageSourceInfo, fmt.Sprintf("%s: ", SourcePackagePrefix))
-		pkg.SrcEpoch, pkg.SrcName, pkg.SrcVersion, pkg.SrcRelease, err = parseSourceInfo(typ, srcPkgName)
+	if strings.HasPrefix(spdxPkg.PackageSourceInfo, SourcePackagePrefix) {
+		srcPkgName := strings.TrimPrefix(spdxPkg.PackageSourceInfo, fmt.Sprintf("%s: ", SourcePackagePrefix))
+		pkg.SrcEpoch, pkg.SrcName, pkg.SrcVersion, pkg.SrcRelease, err = parseSourceInfo(pkgType, srcPkgName)
 		if err != nil {
 			return nil, xerrors.Errorf("failed to parse source info: %w", err)
 		}
 	}
-	for _, f := range package2_2.Files {
+	for _, f := range spdxPkg.Files {
 		pkg.FilePath = f.FileName
+		break // Take the first file name
 	}
 
-	pkg.Layer.Digest = lookupAttributionTexts(package2_2.PackageAttributionTexts, PropertyLayerDigest)
-	pkg.Layer.DiffID = lookupAttributionTexts(package2_2.PackageAttributionTexts, PropertyLayerDiffID)
+	pkg.Layer.Digest = lookupAttributionTexts(spdxPkg.PackageAttributionTexts, PropertyLayerDigest)
+	pkg.Layer.DiffID = lookupAttributionTexts(spdxPkg.PackageAttributionTexts, PropertyLayerDiffID)
 
 	return pkg, nil
 }
 
-func lookupAttributionTexts(attributionTexts []string, key string) (value string) {
+func parseExternalReferences(refs []*spdx.PackageExternalReference2_2) (*ftypes.Package, string, error) {
+	for _, ref := range refs {
+		// Extract the package information from PURL
+		if ref.RefType == RefTypePurl && ref.Category == CategoryPackageManager {
+			packageURL, err := purl.FromString(ref.Locator)
+			if err != nil {
+				return nil, "", xerrors.Errorf("failed to parse purl from string: %w", err)
+			}
+			pkg := packageURL.Package()
+			pkg.Ref = ref.Locator
+			return pkg, packageURL.Type, nil
+		}
+	}
+	return nil, "", errUnknownPackageFormat
+}
+
+func lookupAttributionTexts(attributionTexts []string, key string) string {
 	for _, text := range attributionTexts {
 		if strings.HasPrefix(text, key) {
 			return strings.TrimPrefix(text, fmt.Sprintf("%s: ", key))
 		}
 	}
-
 	return ""
 }
 
-func parseSourceInfo(typ, sourceInfo string) (epoch int, name, ver, rel string, err error) {
+func parseSourceInfo(pkgType, sourceInfo string) (epoch int, name, ver, rel string, err error) {
 	srcNameVersion := strings.TrimPrefix(sourceInfo, fmt.Sprintf("%s: ", SourcePackagePrefix))
 	ss := strings.Split(srcNameVersion, " ")
 	if len(ss) != 2 {
 		return 0, "", "", "", xerrors.Errorf("invalid source info (%s)", sourceInfo)
 	}
 	name = ss[0]
-	if typ == packageurl.TypeRPM {
+	if pkgType == packageurl.TypeRPM {
 		v := version.NewVersion(ss[1])
 		epoch = v.Epoch()
 		ver = v.Version()
@@ -209,30 +225,4 @@ func parseSourceInfo(typ, sourceInfo string) (epoch int, name, ver, rel string, 
 		ver = ss[1]
 	}
 	return epoch, name, ver, rel, nil
-}
-
-func relationshipMap(relationships []*spdx.Relationship2_2) map[spdx.ElementID][]spdx.ElementID {
-	relationshipMap := make(map[spdx.ElementID][]spdx.ElementID)
-	var rootElement spdx.ElementID
-	for _, relationship := range relationships {
-		if relationship.Relationship == RelationShipDescribe {
-			rootElement = relationship.RefB.ElementRefID
-		}
-	}
-	for _, relationship := range relationships {
-		if relationship.Relationship == RelationShipContains {
-			if relationship.RefA.ElementRefID == rootElement {
-				relationshipMap[relationship.RefB.ElementRefID] = []spdx.ElementID{}
-			}
-		}
-	}
-	for _, relationship := range relationships {
-		if relationship.Relationship == RelationShipDependsOn {
-			if array, ok := relationshipMap[relationship.RefA.ElementRefID]; ok {
-				relationshipMap[relationship.RefA.ElementRefID] = append(array, relationship.RefB.ElementRefID)
-			}
-		}
-	}
-
-	return relationshipMap
 }
