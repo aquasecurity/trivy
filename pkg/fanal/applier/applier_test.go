@@ -24,8 +24,8 @@ func TestApplier_ApplyLayers(t *testing.T) {
 	tests := []struct {
 		name                 string
 		args                 args
-		getLayerExpectations []cache.LocalArtifactCacheGetBlobExpectation
-		getImageExpectations []cache.LocalArtifactCacheGetArtifactExpectation
+		getLayerExpectations []cache.CacheGetBlobExpectation
+		getImageExpectations []cache.CacheGetArtifactExpectation
 		want                 types.ArtifactDetail
 		wantErr              string
 	}{
@@ -39,12 +39,12 @@ func TestApplier_ApplyLayers(t *testing.T) {
 					"sha256:24df0d4e20c0f42d3703bf1f1db2bdd77346c7956f74f423603d651e8e5ae8a7",
 				},
 			},
-			getLayerExpectations: []cache.LocalArtifactCacheGetBlobExpectation{
+			getLayerExpectations: []cache.CacheGetBlobExpectation{
 				{
-					Args: cache.LocalArtifactCacheGetBlobArgs{
+					Args: cache.CacheGetBlobArgs{
 						BlobID: "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
 					},
-					Returns: cache.LocalArtifactCacheGetBlobReturns{
+					Returns: cache.CacheGetBlobReturns{
 						BlobInfo: types.BlobInfo{
 							SchemaVersion: 1,
 							Digest:        "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
@@ -70,10 +70,10 @@ func TestApplier_ApplyLayers(t *testing.T) {
 					},
 				},
 				{
-					Args: cache.LocalArtifactCacheGetBlobArgs{
+					Args: cache.CacheGetBlobArgs{
 						BlobID: "sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5",
 					},
-					Returns: cache.LocalArtifactCacheGetBlobReturns{
+					Returns: cache.CacheGetBlobReturns{
 						BlobInfo: types.BlobInfo{
 							SchemaVersion: 1,
 							Digest:        "sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5",
@@ -98,10 +98,10 @@ func TestApplier_ApplyLayers(t *testing.T) {
 					},
 				},
 				{
-					Args: cache.LocalArtifactCacheGetBlobArgs{
+					Args: cache.CacheGetBlobArgs{
 						BlobID: "sha256:24df0d4e20c0f42d3703bf1f1db2bdd77346c7956f74f423603d651e8e5ae8a7",
 					},
-					Returns: cache.LocalArtifactCacheGetBlobReturns{
+					Returns: cache.CacheGetBlobReturns{
 						BlobInfo: types.BlobInfo{
 							SchemaVersion: 1,
 							Digest:        "sha256:beee9f30bc1f711043e78d4a2be0668955d4b761d587d6f60c2c8dc081efb203",
@@ -126,12 +126,12 @@ func TestApplier_ApplyLayers(t *testing.T) {
 					},
 				},
 			},
-			getImageExpectations: []cache.LocalArtifactCacheGetArtifactExpectation{
+			getImageExpectations: []cache.CacheGetArtifactExpectation{
 				{
-					Args: cache.LocalArtifactCacheGetArtifactArgs{
+					Args: cache.CacheGetArtifactArgs{
 						ArtifactID: "sha256:4791503518dff090d6a82f7a5c1fd71c41146920e2562fb64308e17ab6834b7e",
 					},
-					Returns: cache.LocalArtifactCacheGetArtifactReturns{
+					Returns: cache.CacheGetArtifactReturns{
 						ArtifactInfo: types.ArtifactInfo{
 							SchemaVersion: 1,
 						},
@@ -193,12 +193,12 @@ func TestApplier_ApplyLayers(t *testing.T) {
 					"sha256:531743b7098cb2aaf615641007a129173f63ed86ca32fe7b5a246a1c47286028",
 				},
 			},
-			getLayerExpectations: []cache.LocalArtifactCacheGetBlobExpectation{
+			getLayerExpectations: []cache.CacheGetBlobExpectation{
 				{
-					Args: cache.LocalArtifactCacheGetBlobArgs{
+					Args: cache.CacheGetBlobArgs{
 						BlobID: "sha256:531743b7098cb2aaf615641007a129173f63ed86ca32fe7b5a246a1c47286028",
 					},
-					Returns: cache.LocalArtifactCacheGetBlobReturns{
+					Returns: cache.CacheGetBlobReturns{
 						BlobInfo: types.BlobInfo{
 							SchemaVersion: 1,
 							Digest:        "sha256:a187dde48cd289ac374ad8539930628314bc581a481cdb41409c9289419ddb72",
@@ -223,12 +223,12 @@ func TestApplier_ApplyLayers(t *testing.T) {
 					},
 				},
 			},
-			getImageExpectations: []cache.LocalArtifactCacheGetArtifactExpectation{
+			getImageExpectations: []cache.CacheGetArtifactExpectation{
 				{
-					Args: cache.LocalArtifactCacheGetArtifactArgs{
+					Args: cache.CacheGetArtifactArgs{
 						ArtifactID: "sha256:3bb70bd5fb37e05b8ecaaace5d6a6b5ec7834037c07ecb5907355c23ab70352d",
 					},
-					Returns: cache.LocalArtifactCacheGetArtifactReturns{
+					Returns: cache.CacheGetArtifactReturns{
 						ArtifactInfo: types.ArtifactInfo{
 							SchemaVersion: 1,
 							HistoryPackages: []types.Package{
@@ -311,12 +311,12 @@ func TestApplier_ApplyLayers(t *testing.T) {
 					"sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
 				},
 			},
-			getLayerExpectations: []cache.LocalArtifactCacheGetBlobExpectation{
+			getLayerExpectations: []cache.CacheGetBlobExpectation{
 				{
-					Args: cache.LocalArtifactCacheGetBlobArgs{
+					Args: cache.CacheGetBlobArgs{
 						BlobID: "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
 					},
-					Returns: cache.LocalArtifactCacheGetBlobReturns{BlobInfo: types.BlobInfo{}},
+					Returns: cache.CacheGetBlobReturns{BlobInfo: types.BlobInfo{}},
 				},
 			},
 			wantErr: "layer cache missing",
@@ -328,12 +328,12 @@ func TestApplier_ApplyLayers(t *testing.T) {
 					"sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
 				},
 			},
-			getLayerExpectations: []cache.LocalArtifactCacheGetBlobExpectation{
+			getLayerExpectations: []cache.CacheGetBlobExpectation{
 				{
-					Args: cache.LocalArtifactCacheGetBlobArgs{
+					Args: cache.CacheGetBlobArgs{
 						BlobID: "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
 					},
-					Returns: cache.LocalArtifactCacheGetBlobReturns{BlobInfo: types.BlobInfo{}},
+					Returns: cache.CacheGetBlobReturns{BlobInfo: types.BlobInfo{}},
 				},
 			},
 			wantErr: "layer cache missing",
@@ -348,12 +348,12 @@ func TestApplier_ApplyLayers(t *testing.T) {
 					"sha256:24df0d4e20c0f42d3703bf1f1db2bdd77346c7956f74f423603d651e8e5ae8a7",
 				},
 			},
-			getLayerExpectations: []cache.LocalArtifactCacheGetBlobExpectation{
+			getLayerExpectations: []cache.CacheGetBlobExpectation{
 				{
-					Args: cache.LocalArtifactCacheGetBlobArgs{
+					Args: cache.CacheGetBlobArgs{
 						BlobID: "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
 					},
-					Returns: cache.LocalArtifactCacheGetBlobReturns{
+					Returns: cache.CacheGetBlobReturns{
 						BlobInfo: types.BlobInfo{
 							SchemaVersion: 1,
 							Digest:        "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
@@ -375,10 +375,10 @@ func TestApplier_ApplyLayers(t *testing.T) {
 					},
 				},
 				{
-					Args: cache.LocalArtifactCacheGetBlobArgs{
+					Args: cache.CacheGetBlobArgs{
 						BlobID: "sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5",
 					},
-					Returns: cache.LocalArtifactCacheGetBlobReturns{
+					Returns: cache.CacheGetBlobReturns{
 						BlobInfo: types.BlobInfo{
 							SchemaVersion: 1,
 							Digest:        "sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5",
@@ -403,10 +403,10 @@ func TestApplier_ApplyLayers(t *testing.T) {
 					},
 				},
 				{
-					Args: cache.LocalArtifactCacheGetBlobArgs{
+					Args: cache.CacheGetBlobArgs{
 						BlobID: "sha256:24df0d4e20c0f42d3703bf1f1db2bdd77346c7956f74f423603d651e8e5ae8a7",
 					},
-					Returns: cache.LocalArtifactCacheGetBlobReturns{
+					Returns: cache.CacheGetBlobReturns{
 						BlobInfo: types.BlobInfo{
 							SchemaVersion: 1,
 							Digest:        "sha256:beee9f30bc1f711043e78d4a2be0668955d4b761d587d6f60c2c8dc081efb203",
@@ -482,12 +482,12 @@ func TestApplier_ApplyLayers(t *testing.T) {
 					"sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
 				},
 			},
-			getLayerExpectations: []cache.LocalArtifactCacheGetBlobExpectation{
+			getLayerExpectations: []cache.CacheGetBlobExpectation{
 				{
-					Args: cache.LocalArtifactCacheGetBlobArgs{
+					Args: cache.CacheGetBlobArgs{
 						BlobID: "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
 					},
-					Returns: cache.LocalArtifactCacheGetBlobReturns{
+					Returns: cache.CacheGetBlobReturns{
 						BlobInfo: types.BlobInfo{
 							SchemaVersion: 1,
 							OS: &types.OS{
@@ -515,12 +515,12 @@ func TestApplier_ApplyLayers(t *testing.T) {
 					"sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5",
 				},
 			},
-			getLayerExpectations: []cache.LocalArtifactCacheGetBlobExpectation{
+			getLayerExpectations: []cache.CacheGetBlobExpectation{
 				{
-					Args: cache.LocalArtifactCacheGetBlobArgs{
+					Args: cache.CacheGetBlobArgs{
 						BlobID: "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
 					},
-					Returns: cache.LocalArtifactCacheGetBlobReturns{
+					Returns: cache.CacheGetBlobReturns{
 						BlobInfo: types.BlobInfo{
 							SchemaVersion: 1,
 							Digest:        "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
@@ -558,10 +558,10 @@ func TestApplier_ApplyLayers(t *testing.T) {
 					},
 				},
 				{
-					Args: cache.LocalArtifactCacheGetBlobArgs{
+					Args: cache.CacheGetBlobArgs{
 						BlobID: "sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5",
 					},
-					Returns: cache.LocalArtifactCacheGetBlobReturns{
+					Returns: cache.CacheGetBlobReturns{
 						BlobInfo: types.BlobInfo{
 							SchemaVersion: 1,
 							Digest:        "sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5",
@@ -677,7 +677,7 @@ func TestApplier_ApplyLayers(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			c := new(cache.MockLocalArtifactCache)
+			c := new(cache.MockCache)
 			c.ApplyGetBlobExpectations(tt.getLayerExpectations)
 			c.ApplyGetArtifactExpectations(tt.getImageExpectations)
 

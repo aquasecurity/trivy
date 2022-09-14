@@ -14,12 +14,11 @@ import (
 	"github.com/aquasecurity/trivy/pkg/result"
 )
 
-// e.g. config yaml
-// report:
-//   format: table
-//   dependency-tree: true
-//   exit-code: 1
-//   severity: HIGH,CRITICAL
+// e.g. config yaml:
+//
+//	format: table
+//	dependency-tree: true
+//	severity: HIGH,CRITICAL
 var (
 	FormatFlag = Flag{
 		Name:       "format",

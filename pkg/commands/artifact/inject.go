@@ -22,7 +22,7 @@ import (
 // initializeDockerScanner is for container image scanning in standalone mode
 // e.g. dockerd, container registry, podman, etc.
 func initializeDockerScanner(ctx context.Context, imageName string, artifactCache cache.ArtifactCache,
-	localArtifactCache cache.LocalArtifactCache, dockerOpt types.DockerOption, artifactOption artifact.Option) (
+	localArtifactCache cache.Cache, dockerOpt types.DockerOption, artifactOption artifact.Option) (
 	scanner.Scanner, func(), error) {
 	wire.Build(scanner.StandaloneDockerSet)
 	return scanner.Scanner{}, nil, nil
@@ -31,26 +31,28 @@ func initializeDockerScanner(ctx context.Context, imageName string, artifactCach
 // initializeArchiveScanner is for container image archive scanning in standalone mode
 // e.g. docker save -o alpine.tar alpine:3.15
 func initializeArchiveScanner(ctx context.Context, filePath string, artifactCache cache.ArtifactCache,
-	localArtifactCache cache.LocalArtifactCache, artifactOption artifact.Option) (scanner.Scanner, error) {
+	localArtifactCache cache.Cache, artifactOption artifact.Option) (scanner.Scanner, error) {
 	wire.Build(scanner.StandaloneArchiveSet)
 	return scanner.Scanner{}, nil
 }
 
 // initializeFilesystemScanner is for filesystem scanning in standalone mode
 func initializeFilesystemScanner(ctx context.Context, path string, artifactCache cache.ArtifactCache,
-	localArtifactCache cache.LocalArtifactCache, artifactOption artifact.Option) (scanner.Scanner, func(), error) {
+	localArtifactCache cache.Cache, artifactOption artifact.Option) (scanner.Scanner, func(), error) {
 	wire.Build(scanner.StandaloneFilesystemSet)
 	return scanner.Scanner{}, nil, nil
 }
 
 func initializeRepositoryScanner(ctx context.Context, url string, artifactCache cache.ArtifactCache,
-	localArtifactCache cache.LocalArtifactCache, artifactOption artifact.Option) (scanner.Scanner, func(), error) {
+	localArtifactCache cache.Cache, artifactOption artifact.Option) (
+	scanner.Scanner, func(), error) {
 	wire.Build(scanner.StandaloneRepositorySet)
 	return scanner.Scanner{}, nil, nil
 }
 
 func initializeSBOMScanner(ctx context.Context, filePath string, artifactCache cache.ArtifactCache,
-	localArtifactCache cache.LocalArtifactCache, artifactOption artifact.Option) (scanner.Scanner, func(), error) {
+	localArtifactCache cache.Cache, artifactOption artifact.Option) (
+	scanner.Scanner, func(), error) {
 	wire.Build(scanner.StandaloneSBOMSet)
 	return scanner.Scanner{}, nil, nil
 }

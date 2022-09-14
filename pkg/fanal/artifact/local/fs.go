@@ -14,7 +14,6 @@ import (
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
-	"github.com/aquasecurity/trivy/pkg/fanal/analyzer/secret"
 	"github.com/aquasecurity/trivy/pkg/fanal/artifact"
 	"github.com/aquasecurity/trivy/pkg/fanal/cache"
 	"github.com/aquasecurity/trivy/pkg/fanal/handler"
@@ -42,12 +41,12 @@ func NewArtifact(rootPath string, c cache.ArtifactCache, opt artifact.Option) (a
 		return nil, xerrors.Errorf("handler initialize error: %w", err)
 	}
 
-	// Register secret analyzer
-	if err = secret.RegisterSecretAnalyzer(opt.SecretScannerOption); err != nil {
-		return nil, xerrors.Errorf("secret scanner error: %w", err)
-	}
-
-	a, err := analyzer.NewAnalyzerGroup(opt.AnalyzerGroup, opt.DisabledAnalyzers, opt.FilePatterns)
+	a, err := analyzer.NewAnalyzerGroup(analyzer.AnalyzerOptions{
+		Group:               opt.AnalyzerGroup,
+		FilePatterns:        opt.FilePatterns,
+		DisabledAnalyzers:   opt.DisabledAnalyzers,
+		SecretScannerOption: opt.SecretScannerOption,
+	})
 	if err != nil {
 		return nil, xerrors.Errorf("analyzer group error: %w", err)
 	}

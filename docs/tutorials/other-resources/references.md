@@ -20,21 +20,22 @@ Below is a list of additional resources from the community.
 - [Continuous Container Vulnerability Testing with Trivy](https://semaphoreci.com/blog/continuous-container-vulnerability-testing-with-trivy)
 - [Find Image Vulnerabilities Using GitHub and Aqua Security Trivy Action](https://blog.aquasec.com/github-vulnerability-scanner-trivy)
 - [Getting Started With Trivy and Jenkins](https://youtu.be/MWe01VdwuMA)
+- [How to use Tekton to set up a CI pipeline with OpenShift Pipelines](https://www.redhat.com/architect/cicd-pipeline-openshift-tekton)
 
 ## Misconfiguration Scanning
 
 - [Identifying Misconfigurations in your Terraform](https://youtu.be/cps1V5fOHtE)
 - [How to write custom policies for Trivy](https://blog.ediri.io/how-to-write-custom-policies-for-trivy)
 
+## SBOM, Attestation & related
+
+- [Attesting Image Scans With Kyverno](https://neonmirrors.net/post/2022-07/attesting-image-scans-kyverno/)
+
 ## Trivy Kubernetes
 
 - [Kubernetes Security through GitOps Best Practices: ArgoCD and Starboard](https://youtu.be/YvMY8to9aHI)
 - [Get started with Kubernetes Security and Starboard](https://youtu.be/QgctrpTpJec)
 - [Using Trivy Kubernetes in OVHCloud documentation.](https://docs.ovh.com/gb/en/kubernetes/installing-trivy/)
-
-## Trivy Operator 
-
-- TBD
 
 ## Comparisons
 

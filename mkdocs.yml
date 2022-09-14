@@ -22,6 +22,7 @@ nav:
           - Bitbucket Pipelines: tutorials/integrations/bitbucket.md
           - AWS CodePipeline: tutorials/integrations/aws-codepipeline.md
           - AWS Security Hub: tutorials/integrations/aws-security-hub.md
+          - Azure: tutorials/integrations/azure-devops.md
       - CLI:
           - Attesting Image Scans With Cosign and Kyverno: tutorials/cli/cosign.md
       - Trivy Kubernetes: 

@@ -40,6 +40,7 @@ var (
 // SuperSet binds dependencies for Local scan
 var SuperSet = wire.NewSet(
 	vulnerability.SuperSet,
+	wire.Value([]applier.Option(nil)), // functional options
 	applier.NewApplier,
 	wire.Bind(new(Applier), new(applier.Applier)),
 	wire.Struct(new(ospkgDetector.Detector)),

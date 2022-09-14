@@ -72,6 +72,7 @@ The following table lists the configurable parameters of the Trivy chart and the
 | `trivy.dbRepository`                  | OCI repository to retrieve the trivy vulnerability database from        | `ghcr.io/aquasecurity/trivy-db`        |
 | `trivy.cache.redis.enabled`           | Enable Redis as caching backend                                         | `false` |
 | `trivy.cache.redis.url`               | Specify redis connection url, e.g. redis://redis.redis.svc:6379         | `` |
+| `trivy.cache.redis.ttl`               | Specify redis TTL, e.g. 3600s or 24h                                    | `` |
 | `trivy.serverToken`                   | The token to authenticate Trivy client with Trivy server                | `` |
 | `trivy.existingSecret`                | existingSecret if an existing secret has been created outside the chart. Overrides gitHubToken, registryUsername, registryPassword, serverToken | `` |
 | `trivy.podAnnotations`                | Annotations for pods created by statefulset                             | `{}` |

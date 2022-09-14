@@ -11,7 +11,7 @@ import (
 func Detect(libType string, pkgs []ftypes.Package) ([]types.DetectedVulnerability, error) {
 	driver, err := NewDriver(libType)
 	if err != nil {
-		return nil, xerrors.Errorf("failed to new driver: %w", err)
+		return nil, xerrors.Errorf("failed to initialize a driver: %w", err)
 	}
 
 	vulns, err := detect(driver, pkgs)

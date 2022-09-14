@@ -495,7 +495,7 @@ func TestSecretScanner(t *testing.T) {
 			inputFilePath: "testdata/aws-secrets.txt",
 			want: types.Secret{
 				FilePath: "testdata/aws-secrets.txt",
-				Findings: []types.SecretFinding{wantFinding5, wantFinding9, wantFinding10},
+				Findings: []types.SecretFinding{wantFinding5, wantFinding10, wantFinding9},
 			},
 		},
 		{
@@ -678,15 +678,17 @@ func TestSecretScanner(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			s, err := secret.NewScanner(tt.configPath)
-			require.NoError(t, err)
-
 			content, err := os.ReadFile(tt.inputFilePath)
 			require.NoError(t, err)
 
+			c, err := secret.ParseConfig(tt.configPath)
+			require.NoError(t, err)
+
+			s := secret.NewScanner(c)
 			got := s.Scan(secret.ScanArgs{
 				FilePath: tt.inputFilePath,
-				Content:  content},
+				Content:  content,
+			},
 			)
 			assert.Equal(t, tt.want, got)
 		})
