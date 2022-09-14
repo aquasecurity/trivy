@@ -13,7 +13,6 @@ on:
         type: string
 
 env:
-  GO_VERSION: "1.18"
   GH_USER: "aqua-bot"
 
 jobs:
@@ -63,7 +62,7 @@ jobs:
       - name: Setup Go
         uses: actions/setup-go@v3
         with:
-          go-version: ${{ env.GO_VERSION }}
+          go-version-file: go.mod
 
       - name: Checkout code
         uses: actions/checkout@v3

@@ -4,11 +4,12 @@ import (
 	"github.com/aquasecurity/trivy/pkg/log"
 )
 
-// e.g. config yaml
-// misconfiguration:
-//   trace: true
-//   config-policy: "custom-policy/policy"
-//   policy-namespaces: "user"
+// e.g. config yaml:
+//
+//	misconfiguration:
+//	  trace: true
+//	  config-policy: "custom-policy/policy"
+//	  policy-namespaces: "user"
 var (
 	IncludeNonFailuresFlag = Flag{
 		Name:       "include-non-failures",

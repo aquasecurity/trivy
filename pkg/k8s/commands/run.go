@@ -93,8 +93,9 @@ func run(ctx context.Context, opts flag.Options, cluster string, artifacts []*ar
 // To show all the results, user needs to specify "--report all" explicitly
 // even though the default value of "--report" is "all".
 //
-// e.g. $ trivy k8s --report all cluster
-//      $ trivy k8s --report all all
+// e.g.
+// $ trivy k8s --report all cluster
+// $ trivy k8s --report all all
 //
 // Or they can use "--format json" with implicit "--report all".
 //
