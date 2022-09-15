@@ -1,13 +1,13 @@
 package types
 
-type SbomFromType = string
+type SBOMSource = string
 
 const (
-	SbomFromTypeRekor = SbomFromType("rekor")
+	SBOMSourceRekor = SBOMSource("rekor")
 )
 
 var (
-	SbomFroms = []string{
-		SbomFromTypeRekor,
+	SBOMSources = []string{
+		SBOMSourceRekor,
 	}
 )

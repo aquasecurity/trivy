@@ -2,6 +2,7 @@ package flag
 
 import (
 	"fmt"
+
 	"golang.org/x/exp/slices"
 	"golang.org/x/xerrors"
 
@@ -39,13 +40,13 @@ var (
 		Value:      []string{},
 		Usage:      "specify config file patterns",
 	}
-	SBOMFromFlag = Flag{
-		Name:       "sbom-from",
-		ConfigName: "scan.sbom-from",
+	SBOMSourcesFlag = Flag{
+		Name:       "sbom-sources",
+		ConfigName: "scan.sbom-sources",
 		Value:      []string{},
 		Usage:      "EXPERIMENTAL: SBOM sources (rekor)",
 	}
-	RekorUrlFlag = Flag{
+	RekorURLFlag = Flag{
 		Name:       "rekor-url",
 		ConfigName: "scan.rekor-url",
 		Value:      "https://rekor.sigstore.dev",
@@ -59,8 +60,8 @@ type ScanFlagGroup struct {
 	OfflineScan    *Flag
 	SecurityChecks *Flag
 	FilePatterns   *Flag
-	SbomFrom       *Flag
-	RekorUrl       *Flag
+	SBOMSources    *Flag
+	RekorURL       *Flag
 }
 
 type ScanOptions struct {
@@ -70,8 +71,8 @@ type ScanOptions struct {
 	OfflineScan    bool
 	SecurityChecks []string
 	FilePatterns   []string
-	SbomFrom       []string
-	RekorUrl       string
+	SBOMSources    []string
+	RekorURL       string
 }
 
 func NewScanFlagGroup() *ScanFlagGroup {
@@ -81,8 +82,8 @@ func NewScanFlagGroup() *ScanFlagGroup {
 		OfflineScan:    &OfflineScanFlag,
 		SecurityChecks: &SecurityChecksFlag,
 		FilePatterns:   &FilePatternsFlag,
-		SbomFrom:       &SBOMFromFlag,
-		RekorUrl:       &RekorUrlFlag,
+		SBOMSources:    &SBOMSourcesFlag,
+		RekorURL:       &RekorURLFlag,
 	}
 }
 
@@ -91,7 +92,7 @@ func (f *ScanFlagGroup) Name() string {
 }
 
 func (f *ScanFlagGroup) Flags() []*Flag {
-	return []*Flag{f.SkipDirs, f.SkipFiles, f.OfflineScan, f.SecurityChecks, f.FilePatterns, f.SbomFrom, f.RekorUrl}
+	return []*Flag{f.SkipDirs, f.SkipFiles, f.OfflineScan, f.SecurityChecks, f.FilePatterns, f.SBOMSources, f.RekorURL}
 }
 
 func (f *ScanFlagGroup) ToOptions(args []string) (ScanOptions, error) {
@@ -104,9 +105,9 @@ func (f *ScanFlagGroup) ToOptions(args []string) (ScanOptions, error) {
 		return ScanOptions{}, xerrors.Errorf("unable to parse security checks: %w", err)
 	}
 
-	sbomFroms, err := parseSbomFrom(getStringSlice(f.SbomFrom))
-	if err != nil {
-		return ScanOptions{}, xerrors.Errorf("unable to parse sbom froms: %w", err)
+	sbomSources := getStringSlice(f.SBOMSources)
+	if err = validateSBOMSources(sbomSources); err != nil {
+		return ScanOptions{}, xerrors.Errorf("unable to parse SBOM sources: %w", err)
 	}
 
 	return ScanOptions{
@@ -116,8 +117,8 @@ func (f *ScanFlagGroup) ToOptions(args []string) (ScanOptions, error) {
 		OfflineScan:    getBool(f.OfflineScan),
 		SecurityChecks: securityChecks,
 		FilePatterns:   getStringSlice(f.FilePatterns),
-		SbomFrom:       sbomFroms,
-		RekorUrl:       getString(f.RekorUrl),
+		SBOMSources:    sbomSources,
+		RekorURL:       getString(f.RekorURL),
 	}, nil
 }
 

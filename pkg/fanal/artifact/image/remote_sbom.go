@@ -21,9 +21,9 @@ import (
 var errNoSBOMFound = xerrors.New("remote SBOM not found")
 
 func (a Artifact) fetchRemoteSBOM(ctx context.Context) (ftypes.ArtifactReference, error) {
-	for _, sbomFrom := range a.artifactOption.SbomFroms {
+	for _, sbomFrom := range a.artifactOption.SbomSources {
 		switch sbomFrom {
-		case types.SbomFromTypeRekor:
+		case types.SBOMSourceRekor:
 			ref, err := a.inspectSBOMAttestation(ctx)
 			if errors.Is(err, errNoSBOMFound) {
 				// Try the next SBOM source
@@ -45,7 +45,7 @@ func (a Artifact) inspectSBOMAttestation(ctx context.Context) (ftypes.ArtifactRe
 		return ftypes.ArtifactReference{}, xerrors.Errorf("repo digest error: %w", err)
 	}
 
-	client, err := rekor.NewClient(a.artifactOption.RekorUrl)
+	client, err := rekor.NewClient(a.artifactOption.RekorURL)
 	if err != nil {
 		return ftypes.ArtifactReference{}, xerrors.Errorf("failed to create rekor client: %w", err)
 	}
