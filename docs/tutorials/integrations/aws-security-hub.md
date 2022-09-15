@@ -12,9 +12,11 @@ ASFF template needs AWS_REGION and AWS_ACCOUNT_ID from environment variables.
 
 The Product [ARN](https://docs.aws.amazon.com/general/latest/gr/aws-arns-and-namespaces.html) field follows the pattern below to match what AWS requires for the [product resource type](https://github.com/awsdocs/aws-security-hub-user-guide/blob/master/doc_source/securityhub-partner-providers.md#aqua-security--aqua-cloud-native-security-platform-sends-findings).
 
+{% raw %}
 ```
 "ProductArn": "arn:aws:securityhub:{{ env "AWS_REGION" }}::product/aquasecurity/aquasecurity",
 ```
+{% endraw %}
 
 In order to upload results you must first run [enable-import-findings-for-product](https://docs.aws.amazon.com/cli/latest/reference/securityhub/enable-import-findings-for-product.html) like:
 

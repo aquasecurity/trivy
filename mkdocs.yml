@@ -7,13 +7,33 @@ repo_url: https://github.com/aquasecurity/trivy
 edit_uri: ""
 
 nav:
-  - HOME: index.md
-  - Getting started:
-      - Overview: getting-started/overview.md
+  - Getting Started: 
+      - Overview: index.md
       - Installation: getting-started/installation.md
       - Quick Start: getting-started/quickstart.md
-      - Further Reading: getting-started/further.md
-  - Docs:
+  - Tutorials:
+      - Overview: tutorials/overview.md   
+      - CI/CD:
+          - Overview: tutorials/integrations/index.md
+          - GitHub Actions: tutorials/integrations/github-actions.md
+          - CircleCI: tutorials/integrations/circleci.md
+          - Travis CI: tutorials/integrations/travis-ci.md
+          - GitLab CI: tutorials/integrations/gitlab-ci.md
+          - Bitbucket Pipelines: tutorials/integrations/bitbucket.md
+          - AWS CodePipeline: tutorials/integrations/aws-codepipeline.md
+          - AWS Security Hub: tutorials/integrations/aws-security-hub.md
+          - Azure: tutorials/integrations/azure-devops.md
+      - Signing:
+          - Vulnerability Scan Record Attestation: tutorials/signing/vuln-attestation.md
+      - Kubernetes:
+          - Cluster Scanning: tutorials/kubernetes/cluster-scanning.md
+          - Kyverno: tutorials/kubernetes/kyverno.md
+          - GitOps: tutorials/kubernetes/gitops.md
+      - Additional Resources: 
+          - Additional Resources: tutorials/additional-resources/references.md
+          - Community References: tutorials/additional-resources/community.md
+          - CKS Reference: tutorials/additional-resources/cks.md
+  - CLI:
       - Overview: docs/index.md
       - Vulnerability:
           - Scanning:
@@ -78,16 +98,6 @@ nav:
       - Attestation:
           - SBOM: docs/attestation/sbom.md
           - Cosign Vulnerability Scan Record: docs/attestation/vuln.md
-      - Integrations:
-          - Overview: docs/integrations/index.md
-          - GitHub Actions: docs/integrations/github-actions.md
-          - CircleCI: docs/integrations/circleci.md
-          - Travis CI: docs/integrations/travis-ci.md
-          - GitLab CI: docs/integrations/gitlab-ci.md
-          - Bitbucket Pipelines: docs/integrations/bitbucket.md
-          - AWS CodePipeline: docs/integrations/aws-codepipeline.md
-          - AWS Security Hub: docs/integrations/aws-security-hub.md
-          - Azure: docs/integrations/azure-devops.md
       - Advanced:
           - Modules: docs/advanced/modules.md
           - Plugins: docs/advanced/plugins.md
@@ -120,15 +130,13 @@ nav:
               - Server: docs/references/cli/server.md
               - Plugin: docs/references/cli/plugin.md
               - SBOM: docs/references/cli/sbom.md
+              - Module: docs/references/cli/module.md
           - Modes:
               - Standalone: docs/references/modes/standalone.md
               - Client/Server: docs/references/modes/client-server.md
           - Troubleshooting: docs/references/troubleshooting.md
-  - Community:
-      - Tools: community/tools.md
-      - References: community/references.md
-      - CKS Reference: community/cks.md
-      - Credits: community/credit.md
+  - Ecosystem: ecosystem/tools.md
+  - Contributing:
       - How to contribute:
           - Issues: community/contribute/issue.md
           - Pull Requests: community/contribute/pr.md
