@@ -7,8 +7,9 @@ import (
 	"io"
 	"strings"
 
+	"github.com/aquasecurity/trivy/pkg/attestation"
+	"github.com/in-toto/in-toto-golang/in_toto"
 	stypes "github.com/spdx/tools-golang/spdx"
-
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
@@ -96,6 +97,14 @@ func DetectFormat(r io.ReadSeeker) (Format, error) {
 
 	if _, err := r.Seek(0, io.SeekStart); err != nil {
 		return FormatUnknown, xerrors.Errorf("seek error: %w", err)
+	}
+
+	// Try in-toto attestation
+	var s attestation.Statement
+	if err := json.NewDecoder(r).Decode(&s); err == nil {
+		if s.PredicateType == in_toto.PredicateCycloneDX {
+			return FormatAttestCycloneDXJSON, nil
+		}
 	}
 
 	return FormatUnknown, nil
