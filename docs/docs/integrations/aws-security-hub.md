@@ -1,5 +1,7 @@
 # AWS Security Hub
 
+<img src="../../imgs/Security-Hub.jpeg" alt="security-hub" width=30 height=30 />
+
 ## Upload findings to Security Hub
 
 In the following example using the template `asff.tpl`, [ASFF](https://docs.aws.amazon.com/securityhub/latest/userguide/securityhub-findings-format.html) file can be generated.
@@ -20,6 +22,12 @@ In order to upload results you must first run [enable-import-findings-for-produc
 
 ```
 aws securityhub enable-import-findings-for-product --product-arn arn:aws:securityhub:<AWS_REGION>::product/aquasecurity/aquasecurity
+```
+
+The findings are [formatted for the API](https://docs.aws.amazon.com/securityhub/latest/userguide/securityhub-findings-format-syntax.html) with a key of `Findings` and a value of the array of findings. In order to upload via the CLI the outer wrapping must be removed being left with only the array of findings. The easiest way of doing this is with the [jq library](https://stedolan.github.io/jq/) using the command 
+
+```
+cat report.asff | jq '.Findings'
 ```
 
 Then, you can upload it with AWS CLI.
