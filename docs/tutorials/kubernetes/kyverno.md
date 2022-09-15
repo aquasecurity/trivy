@@ -8,7 +8,7 @@ This tutorial details
 
 ### Prerequisites
 1. [Attestation of the vulnerability scan uploaded][vuln-attestation]
-3. A running Kubernetes cluster that kubectl is connected to
+2. A running Kubernetes cluster that kubectl is connected to
 
 ### Kyverno Policy to check attestation
 
