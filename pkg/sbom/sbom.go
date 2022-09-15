@@ -7,11 +7,10 @@ import (
 	"io"
 	"strings"
 
-	"github.com/in-toto/in-toto-golang/in_toto"
 	stypes "github.com/spdx/tools-golang/spdx"
+
 	"golang.org/x/xerrors"
 
-	"github.com/aquasecurity/trivy/pkg/attestation"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 )
 
@@ -27,14 +26,13 @@ type SBOM struct {
 type Format string
 
 const (
-	FormatCycloneDXJSON                Format = "cyclonedx-json"
-	FormatCycloneDXXML                 Format = "cyclonedx-xml"
-	FormatSPDXJSON                     Format = "spdx-json"
-	FormatSPDXTV                       Format = "spdx-tv"
-	FormatSPDXXML                      Format = "spdx-xml"
-	FormatAttestCycloneDXJSON          Format = "attest-cyclonedx-json"
-	FormatAttestStatementCycloneDXJSON Format = "attest-statement-cyclonedx-json"
-	FormatUnknown                      Format = "unknown"
+	FormatCycloneDXJSON       Format = "cyclonedx-json"
+	FormatCycloneDXXML        Format = "cyclonedx-xml"
+	FormatSPDXJSON            Format = "spdx-json"
+	FormatSPDXTV              Format = "spdx-tv"
+	FormatSPDXXML             Format = "spdx-xml"
+	FormatAttestCycloneDXJSON Format = "attest-cyclonedx-json"
+	FormatUnknown             Format = "unknown"
 )
 
 var ErrUnknownFormat = xerrors.New("Unknown SBOM format")
@@ -98,25 +96,6 @@ func DetectFormat(r io.ReadSeeker) (Format, error) {
 
 	if _, err := r.Seek(0, io.SeekStart); err != nil {
 		return FormatUnknown, xerrors.Errorf("seek error: %w", err)
-	}
-
-	// Try in-toto attestation
-	s := attestation.Statement{}
-	if err := json.NewDecoder(r).Decode(&s); err == nil {
-		if s.PredicateType == in_toto.PredicateCycloneDX {
-			return FormatAttestCycloneDXJSON, nil
-		}
-	}
-	if _, err := r.Seek(0, io.SeekStart); err != nil {
-		return FormatUnknown, xerrors.Errorf("seek error: %w", err)
-	}
-
-	// Try statement of in-toto attestation
-	var is in_toto.Statement
-	if err := json.NewDecoder(r).Decode(&is); err == nil {
-		if is.PredicateType == in_toto.PredicateCycloneDX {
-			return FormatAttestStatementCycloneDXJSON, nil
-		}
 	}
 
 	return FormatUnknown, nil

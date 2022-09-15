@@ -11,6 +11,8 @@ import (
 	"github.com/sigstore/rekor/pkg/generated/client/index"
 	"github.com/sigstore/rekor/pkg/generated/models"
 	"golang.org/x/xerrors"
+
+	"github.com/aquasecurity/trivy/pkg/log"
 )
 
 const (
@@ -61,8 +63,8 @@ func NewClient(rekorURL string) (*Client, error) {
 }
 
 func (c *Client) Search(ctx context.Context, hash string) ([]EntryID, error) {
+	log.Logger.Debugf("Search for %s in Rekor", hash)
 	params := index.NewSearchIndexParamsWithContext(ctx).WithQuery(&models.SearchIndex{Hash: hash})
-
 	resp, err := c.Index.SearchIndex(params)
 	if err != nil {
 		return nil, xerrors.Errorf("failed to search: %w", err)

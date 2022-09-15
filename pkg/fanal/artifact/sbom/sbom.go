@@ -8,7 +8,6 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/in-toto/in-toto-golang/in_toto"
 	digest "github.com/opencontainers/go-digest"
 	"golang.org/x/xerrors"
 
@@ -83,7 +82,7 @@ func (a Artifact) Inspect(_ context.Context) (types.ArtifactReference, error) {
 
 	var artifactType types.ArtifactType
 	switch format {
-	case sbom.FormatCycloneDXJSON, sbom.FormatCycloneDXXML, sbom.FormatAttestCycloneDXJSON, sbom.FormatAttestStatementCycloneDXJSON:
+	case sbom.FormatCycloneDXJSON, sbom.FormatCycloneDXXML, sbom.FormatAttestCycloneDXJSON:
 		artifactType = types.ArtifactCycloneDX
 	case sbom.FormatSPDXTV, sbom.FormatSPDXJSON:
 		artifactType = types.ArtifactSPDX
@@ -118,16 +117,6 @@ func (a Artifact) Decode(f io.Reader, format sbom.Format) (sbom.SBOM, error) {
 		//     => cosign predicate
 		//       => CycloneDX JSON
 		v = &attestation.Statement{
-			Predicate: &attestation.CosignPredicate{
-				Data: &cyclonedx.CycloneDX{SBOM: &bom},
-			},
-		}
-		decoder = json.NewDecoder(f)
-	case sbom.FormatAttestStatementCycloneDXJSON:
-		// in-toto attestation
-		//   => cosign predicate
-		//     => CycloneDX JSON
-		v = &in_toto.Statement{
 			Predicate: &attestation.CosignPredicate{
 				Data: &cyclonedx.CycloneDX{SBOM: &bom},
 			},
