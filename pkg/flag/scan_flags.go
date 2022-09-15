@@ -2,8 +2,6 @@ package flag
 
 import (
 	"fmt"
-	"strings"
-
 	"golang.org/x/exp/slices"
 	"golang.org/x/xerrors"
 
@@ -41,11 +39,11 @@ var (
 		Value:      []string{},
 		Usage:      "specify config file patterns",
 	}
-	SbomFromFlag = Flag{
+	SBOMFromFlag = Flag{
 		Name:       "sbom-from",
 		ConfigName: "scan.sbom-from",
-		Value:      "",
-		Usage:      "comma-separated list of SBOM source (rekor)",
+		Value:      []string{},
+		Usage:      "EXPERIMENTAL: SBOM sources (rekor)",
 	}
 	RekorUrlFlag = Flag{
 		Name:       "rekor-url",
@@ -83,7 +81,7 @@ func NewScanFlagGroup() *ScanFlagGroup {
 		OfflineScan:    &OfflineScanFlag,
 		SecurityChecks: &SecurityChecksFlag,
 		FilePatterns:   &FilePatternsFlag,
-		SbomFrom:       &SbomFromFlag,
+		SbomFrom:       &SBOMFromFlag,
 		RekorUrl:       &RekorUrlFlag,
 	}
 }
@@ -124,13 +122,6 @@ func (f *ScanFlagGroup) ToOptions(args []string) (ScanOptions, error) {
 }
 
 func parseSecurityCheck(securityCheck []string) ([]string, error) {
-	switch {
-	case len(securityCheck) == 0: // no checks. Can be empty when generating SBOM
-		return nil, nil
-	case len(securityCheck) == 1 && strings.Contains(securityCheck[0], ","): // get checks from flag
-		securityCheck = strings.Split(securityCheck[0], ",")
-	}
-
 	var securityChecks []string
 	for _, v := range securityCheck {
 		if !slices.Contains(types.SecurityChecks, v) {
@@ -142,13 +133,6 @@ func parseSecurityCheck(securityCheck []string) ([]string, error) {
 }
 
 func parseSbomFrom(sbomFrom []string) ([]string, error) {
-	switch {
-	case len(sbomFrom) == 0:
-		return nil, nil
-	case len(sbomFrom) == 1 && strings.Contains(sbomFrom[0], ","): // get checks from flag
-		sbomFrom = strings.Split(sbomFrom[0], ",")
-	}
-
 	var sbomFroms []string
 	for _, v := range sbomFrom {
 		if !slices.Contains(types.SbomFroms, v) {
