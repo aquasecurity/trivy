@@ -95,6 +95,7 @@ const (
 	ArtifactFilesystem       ArtifactType = "filesystem"
 	ArtifactRemoteRepository ArtifactType = "repository"
 	ArtifactCycloneDX        ArtifactType = "cyclonedx"
+	ArtifactSPDX             ArtifactType = "spdx"
 	ArtifactAWSAccount       ArtifactType = "aws_account"
 )
 
