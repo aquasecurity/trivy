@@ -77,6 +77,7 @@ func (a Artifact) inspectRekorRecord(ctx context.Context, client *rekor.Client, 
 		return ftypes.ArtifactReference{}, xerrors.Errorf("failed to get rekor entry: %w", err)
 	}
 
+	// TODO: Trivy SBOM should take precedence
 	raw, err := a.parseStatement(entry)
 	if err != nil {
 		return ftypes.ArtifactReference{}, err
