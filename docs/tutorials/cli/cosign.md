@@ -38,6 +38,9 @@ Note: Replace the container image with the container image that you would like t
 The following policy ensures that the attestation is no older than 168h:
 
 vuln-attestation.yaml
+
+{% raw %}
+
 ```bash
 apiVersion: kyverno.io/v1
 kind: ClusterPolicy
@@ -65,6 +68,8 @@ spec:
               operator: LessThanOrEquals
               value: "168h"
 ```
+
+{% endraw %}
 
 #### Apply the policy to your Kubernetes cluster
 
