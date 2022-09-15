@@ -7,11 +7,11 @@ import (
 	"io"
 	"strings"
 
-	"github.com/aquasecurity/trivy/pkg/attestation"
 	"github.com/in-toto/in-toto-golang/in_toto"
 	stypes "github.com/spdx/tools-golang/spdx"
 	"golang.org/x/xerrors"
 
+	"github.com/aquasecurity/trivy/pkg/attestation"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 )
 
