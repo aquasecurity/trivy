@@ -112,9 +112,10 @@ func (a Artifact) Decode(f io.Reader, format sbom.Format) (sbom.SBOM, error) {
 		v = &cyclonedx.CycloneDX{SBOM: &bom}
 		decoder = json.NewDecoder(f)
 	case sbom.FormatAttestCycloneDXJSON:
-		// in-toto attestation
-		//   => cosign predicate
-		//     => CycloneDX JSON
+		// dsse envelope
+		//   => in-toto attestation
+		//     => cosign predicate
+		//       => CycloneDX JSON
 		v = &attestation.Statement{
 			Predicate: &attestation.CosignPredicate{
 				Data: &cyclonedx.CycloneDX{SBOM: &bom},

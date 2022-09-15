@@ -3,6 +3,7 @@ package image
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"io"
 	"os"
 	"reflect"
@@ -89,6 +90,15 @@ func (a Artifact) Inspect(ctx context.Context) (types.ArtifactReference, error) 
 	// Debug
 	log.Logger.Debugf("Image ID: %s", imageID)
 	log.Logger.Debugf("Diff IDs: %v", diffIDs)
+
+	// Try retrieving a remote SBOM document
+	if res, err := a.retrieveRemoteSBOM(ctx); err == nil {
+		// Found SBOM
+		return res, nil
+	} else if !errors.Is(err, errNoSBOMFound) {
+		// Fail on unexpected error, otherwise it falls into the usual scanning.
+		return types.ArtifactReference{}, xerrors.Errorf("remote SBOM fetching error: %w", err)
+	}
 
 	// Try to detect base layers.
 	baseDiffIDs := a.guessBaseLayers(diffIDs, configFile)

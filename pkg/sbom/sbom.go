@@ -36,6 +36,8 @@ const (
 	FormatUnknown             Format = "unknown"
 )
 
+var ErrUnknownFormat = xerrors.New("Unknown SBOM format")
+
 func DetectFormat(r io.ReadSeeker) (Format, error) {
 	type (
 		cyclonedx struct {

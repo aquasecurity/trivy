@@ -1,9 +1,6 @@
 package flag
 
 import (
-	"fmt"
-	"strings"
-
 	"golang.org/x/exp/slices"
 	"golang.org/x/xerrors"
 
@@ -32,14 +29,26 @@ var (
 	SecurityChecksFlag = Flag{
 		Name:       "security-checks",
 		ConfigName: "scan.security-checks",
-		Value:      fmt.Sprintf("%s,%s", types.SecurityCheckVulnerability, types.SecurityCheckSecret),
-		Usage:      "comma-separated list of what security issues to detect (vuln,config,secret)",
+		Value:      []string{types.SecurityCheckVulnerability, types.SecurityCheckSecret},
+		Usage:      "comma-separated list of what security issues to detect (vuln,config,secret,license)",
 	}
 	FilePatternsFlag = Flag{
 		Name:       "file-patterns",
 		ConfigName: "scan.file-patterns",
 		Value:      []string{},
 		Usage:      "specify config file patterns",
+	}
+	SBOMSourcesFlag = Flag{
+		Name:       "sbom-sources",
+		ConfigName: "scan.sbom-sources",
+		Value:      []string{},
+		Usage:      "EXPERIMENTAL: SBOM sources (rekor)",
+	}
+	RekorURLFlag = Flag{
+		Name:       "rekor-url",
+		ConfigName: "scan.rekor-url",
+		Value:      "https://rekor.sigstore.dev",
+		Usage:      "EXPERIMENTAL: URL of Rekor server",
 	}
 )
 
@@ -49,6 +58,8 @@ type ScanFlagGroup struct {
 	OfflineScan    *Flag
 	SecurityChecks *Flag
 	FilePatterns   *Flag
+	SBOMSources    *Flag
+	RekorURL       *Flag
 }
 
 type ScanOptions struct {
@@ -58,6 +69,8 @@ type ScanOptions struct {
 	OfflineScan    bool
 	SecurityChecks []string
 	FilePatterns   []string
+	SBOMSources    []string
+	RekorURL       string
 }
 
 func NewScanFlagGroup() *ScanFlagGroup {
@@ -67,6 +80,8 @@ func NewScanFlagGroup() *ScanFlagGroup {
 		OfflineScan:    &OfflineScanFlag,
 		SecurityChecks: &SecurityChecksFlag,
 		FilePatterns:   &FilePatternsFlag,
+		SBOMSources:    &SBOMSourcesFlag,
+		RekorURL:       &RekorURLFlag,
 	}
 }
 
@@ -75,7 +90,7 @@ func (f *ScanFlagGroup) Name() string {
 }
 
 func (f *ScanFlagGroup) Flags() []*Flag {
-	return []*Flag{f.SkipDirs, f.SkipFiles, f.OfflineScan, f.SecurityChecks, f.FilePatterns}
+	return []*Flag{f.SkipDirs, f.SkipFiles, f.OfflineScan, f.SecurityChecks, f.FilePatterns, f.SBOMSources, f.RekorURL}
 }
 
 func (f *ScanFlagGroup) ToOptions(args []string) (ScanOptions, error) {
@@ -88,6 +103,11 @@ func (f *ScanFlagGroup) ToOptions(args []string) (ScanOptions, error) {
 		return ScanOptions{}, xerrors.Errorf("unable to parse security checks: %w", err)
 	}
 
+	sbomSources := getStringSlice(f.SBOMSources)
+	if err = validateSBOMSources(sbomSources); err != nil {
+		return ScanOptions{}, xerrors.Errorf("unable to parse SBOM sources: %w", err)
+	}
+
 	return ScanOptions{
 		Target:         target,
 		SkipDirs:       getStringSlice(f.SkipDirs),
@@ -95,17 +115,12 @@ func (f *ScanFlagGroup) ToOptions(args []string) (ScanOptions, error) {
 		OfflineScan:    getBool(f.OfflineScan),
 		SecurityChecks: securityChecks,
 		FilePatterns:   getStringSlice(f.FilePatterns),
+		SBOMSources:    sbomSources,
+		RekorURL:       getString(f.RekorURL),
 	}, nil
 }
 
 func parseSecurityCheck(securityCheck []string) ([]string, error) {
-	switch {
-	case len(securityCheck) == 0: // no checks. Can be empty when generating SBOM
-		return nil, nil
-	case len(securityCheck) == 1 && strings.Contains(securityCheck[0], ","): // get checks from flag
-		securityCheck = strings.Split(securityCheck[0], ",")
-	}
-
 	var securityChecks []string
 	for _, v := range securityCheck {
 		if !slices.Contains(types.SecurityChecks, v) {
@@ -114,4 +129,13 @@ func parseSecurityCheck(securityCheck []string) ([]string, error) {
 		securityChecks = append(securityChecks, v)
 	}
 	return securityChecks, nil
+}
+
+func validateSBOMSources(sbomSources []string) error {
+	for _, v := range sbomSources {
+		if !slices.Contains(types.SBOMSources, v) {
+			return xerrors.Errorf("unknown SBOM source: %s", v)
+		}
+	}
+	return nil
 }
