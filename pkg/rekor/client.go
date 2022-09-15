@@ -71,7 +71,7 @@ func (c *Client) Search(ctx context.Context, hash string) ([]EntryID, error) {
 	for i, id := range resp.Payload {
 		ids[i], err = NewEntryID(id)
 		if err != nil {
-			return nil, xerrors.Errorf("invalidate entry UUID: %w", err)
+			return nil, xerrors.Errorf("invalid entry UUID: %w", err)
 		}
 	}
 
