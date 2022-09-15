@@ -3111,19 +3111,9 @@ sudo dpkg -i trivy_0.31.3_Linux-64bit.deb
 </div>
 </div>
 <h2 id="arch-linux">Arch Linux</h2>
-<p>Package trivy-bin can be installed from the Arch User Repository.</p>
-<div class="tabbed-set tabbed-alternate" data-tabs="3:2"><input checked="checked" id="__tabbed_3_1" name="__tabbed_3" type="radio" /><input id="__tabbed_3_2" name="__tabbed_3" type="radio" /><div class="tabbed-labels"><label for="__tabbed_3_1">pikaur</label><label for="__tabbed_3_2">yay</label></div>
-<div class="tabbed-content">
-<div class="tabbed-block">
-<div class="highlight"><pre><span></span><code>pikaur -Sy trivy-bin
+<p>Package trivy can be installed from the Arch Community Package Manager.</p>
+<div class="highlight"><pre><span></span><code>pacman -S trivy
 </code></pre></div>
-</div>
-<div class="tabbed-block">
-<div class="highlight"><pre><span></span><code>yay -Sy trivy-bin
-</code></pre></div>
-</div>
-</div>
-</div>
 <h2 id="homebrew">Homebrew</h2>
 <p>You can use homebrew on macOS and Linux.</p>
 <div class="highlight"><pre><span></span><code>brew install aquasecurity/trivy/trivy
@@ -3174,7 +3164,7 @@ go install
 <div class="highlight"><pre><span></span><code>docker pull aquasec/trivy:0.31.3
 </code></pre></div>
 <p>Example:</p>
-<div class="tabbed-set tabbed-alternate" data-tabs="4:2"><input checked="checked" id="__tabbed_4_1" name="__tabbed_4" type="radio" /><input id="__tabbed_4_2" name="__tabbed_4" type="radio" /><div class="tabbed-labels"><label for="__tabbed_4_1">Linux</label><label for="__tabbed_4_2">macOS</label></div>
+<div class="tabbed-set tabbed-alternate" data-tabs="3:2"><input checked="checked" id="__tabbed_3_1" name="__tabbed_3" type="radio" /><input id="__tabbed_3_2" name="__tabbed_3" type="radio" /><div class="tabbed-labels"><label for="__tabbed_3_1">Linux</label><label for="__tabbed_3_2">macOS</label></div>
 <div class="tabbed-content">
 <div class="tabbed-block">
 <div class="highlight"><pre><span></span><code>docker run --rm -v <span class="o">[</span>YOUR_CACHE_DIR<span class="o">]</span>:/root/.cache/ aquasec/trivy:0.31.3 image <span class="o">[</span>YOUR_IMAGE_NAME<span class="o">]</span>
