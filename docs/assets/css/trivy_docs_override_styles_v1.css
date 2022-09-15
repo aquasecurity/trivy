@@ -48,6 +48,7 @@ header.md-header.md-header--lifted.md-header--shadow {
 }
 
 header.md-header.md-header--lifted.md-header--shadow .md-header__inner a.md-header__button.md-logo {
+  margin-left: 0.8rem;
   width: 160px;
   height: 88px;
   background-image: url("../images/logo_trivy_noborder_dark.svg");
@@ -72,6 +73,10 @@ header.md-header.md-header--lifted.md-header--shadow .md-header__inner .md-searc
 
 header.md-header.md-header--lifted.md-header--shadow nav.md-tabs {
   background-color: #0a0b23;
+}
+
+header.md-header.md-header--lifted.md-header--shadow nav.md-tabs .md-tabs__inner ul.md-tabs__list {
+  margin-left: 0.8rem;
 }
 
 header.md-header.md-header--lifted.md-header--shadow nav.md-tabs .md-tabs__inner ul.md-tabs__list li.md-tabs__item {
