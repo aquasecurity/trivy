@@ -1,6 +1,6 @@
 # AWS Security Hub
 
-<img src="../../imgs/Security-Hub.jpeg" alt="security-hub" width=30 height=30 />
+<img src="../../imgs/Security-Hub.jpeg" alt="security-hub" width=50 height=50 />
 
 ## Upload findings to Security Hub
 
