@@ -17,7 +17,7 @@
     
     
       
-        <title>Trivy</title>
+        <title>Overview - Trivy</title>
       
     
     
@@ -99,7 +99,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              HOME
+              Overview
             
           </span>
         </div>
@@ -169,11 +169,15 @@
   
 
 
-  <li class="md-tabs__item">
-    <a href="." class="md-tabs__link md-tabs__link--active">
-      HOME
-    </a>
-  </li>
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="." class="md-tabs__link md-tabs__link--active">
+        Getting Started
+      </a>
+    </li>
+  
 
       
         
@@ -185,8 +189,8 @@
   
   
     <li class="md-tabs__item">
-      <a href="getting-started/overview/" class="md-tabs__link">
-        Getting started
+      <a href="tutorials/overview/" class="md-tabs__link">
+        Tutorials
       </a>
     </li>
   
@@ -202,7 +206,7 @@
   
     <li class="md-tabs__item">
       <a href="docs/" class="md-tabs__link">
-        Docs
+        CLI
       </a>
     </li>
   
@@ -213,14 +217,33 @@
   
 
 
+  <li class="md-tabs__item">
+    <a href="ecosystem/tools/" class="md-tabs__link">
+      Ecosystem
+    </a>
+  </li>
+
+      
+        
+  
+  
+
+
+  
+  
+  
+    
+
   
   
   
     <li class="md-tabs__item">
-      <a href="community/tools/" class="md-tabs__link">
-        Community
+      <a href="community/contribute/issue/" class="md-tabs__link">
+        Contributing
       </a>
     </li>
+  
+
   
 
       
@@ -243,7 +266,7 @@
               
                 
               
-              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" hidden>
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
                 <div class="md-sidebar__scrollwrap">
                   <div class="md-sidebar__inner">
                     
@@ -284,45 +307,24 @@
     
   
   
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
-      
-      
-      
-      <a href="." class="md-nav__link md-nav__link--active">
-        HOME
-      </a>
-      
-    </li>
-  
-
     
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
       
       
-      
-
-  
-  
-  
-    
-    <li class="md-nav__item md-nav__item--nested">
-      
-      
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_2" type="checkbox" id="__nav_2" >
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_1" type="checkbox" id="__nav_1" checked>
       
       
       
       
-        <label class="md-nav__link" for="__nav_2">
-          Getting started
+        <label class="md-nav__link" for="__nav_1">
+          Getting Started
           <span class="md-nav__icon md-icon"></span>
         </label>
       
-      <nav class="md-nav" aria-label="Getting started" data-md-level="1">
-        <label class="md-nav__title" for="__nav_2">
+      <nav class="md-nav" aria-label="Getting Started" data-md-level="1">
+        <label class="md-nav__title" for="__nav_1">
           <span class="md-nav__icon md-icon"></span>
-          Getting started
+          Getting Started
         </label>
         <ul class="md-nav__list" data-md-scrollfix>
           
@@ -330,11 +332,19 @@
               
   
   
+    
   
-    <li class="md-nav__item">
-      <a href="getting-started/overview/" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+      
+      
+      
+      <a href="." class="md-nav__link md-nav__link--active">
         Overview
       </a>
+      
     </li>
   
 
@@ -368,15 +378,413 @@
 
             
           
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_2" type="checkbox" id="__nav_2" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_2">
+          Tutorials
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Tutorials" data-md-level="1">
+        <label class="md-nav__title" for="__nav_2">
+          <span class="md-nav__icon md-icon"></span>
+          Tutorials
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
             
               
   
   
   
     <li class="md-nav__item">
-      <a href="getting-started/further/" class="md-nav__link">
-        Further Reading
+      <a href="tutorials/overview/" class="md-nav__link">
+        Overview
       </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_2_2" type="checkbox" id="__nav_2_2" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_2_2">
+          CI/CD
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="CI/CD" data-md-level="2">
+        <label class="md-nav__title" for="__nav_2_2">
+          <span class="md-nav__icon md-icon"></span>
+          CI/CD
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="tutorials/integrations/" class="md-nav__link">
+        Overview
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="tutorials/integrations/github-actions/" class="md-nav__link">
+        GitHub Actions
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="tutorials/integrations/circleci/" class="md-nav__link">
+        CircleCI
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="tutorials/integrations/travis-ci/" class="md-nav__link">
+        Travis CI
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="tutorials/integrations/gitlab-ci/" class="md-nav__link">
+        GitLab CI
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="tutorials/integrations/bitbucket/" class="md-nav__link">
+        Bitbucket Pipelines
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="tutorials/integrations/aws-codepipeline/" class="md-nav__link">
+        AWS CodePipeline
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="tutorials/integrations/aws-security-hub/" class="md-nav__link">
+        AWS Security Hub
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="tutorials/integrations/azure-devops/" class="md-nav__link">
+        Azure
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_2_3" type="checkbox" id="__nav_2_3" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_2_3">
+          Signing
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Signing" data-md-level="2">
+        <label class="md-nav__title" for="__nav_2_3">
+          <span class="md-nav__icon md-icon"></span>
+          Signing
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="tutorials/signing/vuln-attestation/" class="md-nav__link">
+        Vulnerability Scan Record Attestation
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_2_4" type="checkbox" id="__nav_2_4" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_2_4">
+          Kubernetes
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Kubernetes" data-md-level="2">
+        <label class="md-nav__title" for="__nav_2_4">
+          <span class="md-nav__icon md-icon"></span>
+          Kubernetes
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="tutorials/kubernetes/cluster-scanning/" class="md-nav__link">
+        Cluster Scanning
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="tutorials/kubernetes/kyverno/" class="md-nav__link">
+        Kyverno
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="tutorials/kubernetes/gitops/" class="md-nav__link">
+        GitOps
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_2_5" type="checkbox" id="__nav_2_5" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_2_5">
+          Additional Resources
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Additional Resources" data-md-level="2">
+        <label class="md-nav__title" for="__nav_2_5">
+          <span class="md-nav__icon md-icon"></span>
+          Additional Resources
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="tutorials/additional-resources/references/" class="md-nav__link">
+        Additional Resources
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="tutorials/additional-resources/community/" class="md-nav__link">
+        Community References
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="tutorials/additional-resources/cks/" class="md-nav__link">
+        CKS Reference
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
     </li>
   
 
@@ -405,14 +813,14 @@
       
       
         <label class="md-nav__link" for="__nav_3">
-          Docs
+          CLI
           <span class="md-nav__icon md-icon"></span>
         </label>
       
-      <nav class="md-nav" aria-label="Docs" data-md-level="1">
+      <nav class="md-nav" aria-label="CLI" data-md-level="1">
         <label class="md-nav__title" for="__nav_3">
           <span class="md-nav__icon md-icon"></span>
-          Docs
+          CLI
         </label>
         <ul class="md-nav__list" data-md-scrollfix>
           
@@ -1687,173 +2095,12 @@
       
       
         <label class="md-nav__link" for="__nav_3_10">
-          Integrations
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <nav class="md-nav" aria-label="Integrations" data-md-level="2">
-        <label class="md-nav__title" for="__nav_3_10">
-          <span class="md-nav__icon md-icon"></span>
-          Integrations
-        </label>
-        <ul class="md-nav__list" data-md-scrollfix>
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="docs/integrations/" class="md-nav__link">
-        Overview
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="docs/integrations/github-actions/" class="md-nav__link">
-        GitHub Actions
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="docs/integrations/circleci/" class="md-nav__link">
-        CircleCI
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="docs/integrations/travis-ci/" class="md-nav__link">
-        Travis CI
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="docs/integrations/gitlab-ci/" class="md-nav__link">
-        GitLab CI
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="docs/integrations/bitbucket/" class="md-nav__link">
-        Bitbucket Pipelines
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="docs/integrations/aws-codepipeline/" class="md-nav__link">
-        AWS CodePipeline
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="docs/integrations/aws-security-hub/" class="md-nav__link">
-        AWS Security Hub
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="docs/integrations/azure-devops/" class="md-nav__link">
-        Azure
-      </a>
-    </li>
-  
-
-            
-          
-        </ul>
-      </nav>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    
-      
-    
-    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
-      
-      
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_11" type="checkbox" id="__nav_3_11" >
-      
-      
-      
-      
-        <label class="md-nav__link" for="__nav_3_11">
           Advanced
           <span class="md-nav__icon md-icon"></span>
         </label>
       
       <nav class="md-nav" aria-label="Advanced" data-md-level="2">
-        <label class="md-nav__title" for="__nav_3_11">
+        <label class="md-nav__title" for="__nav_3_10">
           <span class="md-nav__icon md-icon"></span>
           Advanced
         </label>
@@ -1910,18 +2157,18 @@
     <li class="md-nav__item md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_11_4" type="checkbox" id="__nav_3_11_4" >
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_10_4" type="checkbox" id="__nav_3_10_4" >
       
       
       
       
-        <label class="md-nav__link" for="__nav_3_11_4">
+        <label class="md-nav__link" for="__nav_3_10_4">
           Container Image
           <span class="md-nav__icon md-icon"></span>
         </label>
       
       <nav class="md-nav" aria-label="Container Image" data-md-level="3">
-        <label class="md-nav__title" for="__nav_3_11_4">
+        <label class="md-nav__title" for="__nav_3_10_4">
           <span class="md-nav__icon md-icon"></span>
           Container Image
         </label>
@@ -2006,18 +2253,18 @@
     <li class="md-nav__item md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_11_4_6" type="checkbox" id="__nav_3_11_4_6" >
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_10_4_6" type="checkbox" id="__nav_3_10_4_6" >
       
       
       
       
-        <label class="md-nav__link" for="__nav_3_11_4_6">
+        <label class="md-nav__link" for="__nav_3_10_4_6">
           Private Docker Registries
           <span class="md-nav__icon md-icon"></span>
         </label>
       
       <nav class="md-nav" aria-label="Private Docker Registries" data-md-level="4">
-        <label class="md-nav__title" for="__nav_3_11_4_6">
+        <label class="md-nav__title" for="__nav_3_10_4_6">
           <span class="md-nav__icon md-icon"></span>
           Private Docker Registries
         </label>
@@ -2139,18 +2386,18 @@
     <li class="md-nav__item md-nav__item--section md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_12" type="checkbox" id="__nav_3_12" >
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_11" type="checkbox" id="__nav_3_11" >
       
       
       
       
-        <label class="md-nav__link" for="__nav_3_12">
+        <label class="md-nav__link" for="__nav_3_11">
           References
           <span class="md-nav__icon md-icon"></span>
         </label>
       
       <nav class="md-nav" aria-label="References" data-md-level="2">
-        <label class="md-nav__title" for="__nav_3_12">
+        <label class="md-nav__title" for="__nav_3_11">
           <span class="md-nav__icon md-icon"></span>
           References
         </label>
@@ -2165,18 +2412,18 @@
     <li class="md-nav__item md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_12_1" type="checkbox" id="__nav_3_12_1" >
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_11_1" type="checkbox" id="__nav_3_11_1" >
       
       
       
       
-        <label class="md-nav__link" for="__nav_3_12_1">
+        <label class="md-nav__link" for="__nav_3_11_1">
           Customization
           <span class="md-nav__icon md-icon"></span>
         </label>
       
       <nav class="md-nav" aria-label="Customization" data-md-level="3">
-        <label class="md-nav__title" for="__nav_3_12_1">
+        <label class="md-nav__title" for="__nav_3_11_1">
           <span class="md-nav__icon md-icon"></span>
           Customization
         </label>
@@ -2226,18 +2473,18 @@
     <li class="md-nav__item md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_12_2" type="checkbox" id="__nav_3_12_2" >
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_11_2" type="checkbox" id="__nav_3_11_2" >
       
       
       
       
-        <label class="md-nav__link" for="__nav_3_12_2">
+        <label class="md-nav__link" for="__nav_3_11_2">
           CLI
           <span class="md-nav__icon md-icon"></span>
         </label>
       
       <nav class="md-nav" aria-label="CLI" data-md-level="3">
-        <label class="md-nav__title" for="__nav_3_12_2">
+        <label class="md-nav__title" for="__nav_3_11_2">
           <span class="md-nav__icon md-icon"></span>
           CLI
         </label>
@@ -2383,6 +2630,20 @@
 
             
           
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="docs/references/cli/module/" class="md-nav__link">
+        Module
+      </a>
+    </li>
+  
+
+            
+          
         </ul>
       </nav>
     </li>
@@ -2399,18 +2660,18 @@
     <li class="md-nav__item md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_12_3" type="checkbox" id="__nav_3_12_3" >
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_11_3" type="checkbox" id="__nav_3_11_3" >
       
       
       
       
-        <label class="md-nav__link" for="__nav_3_12_3">
+        <label class="md-nav__link" for="__nav_3_11_3">
           Modes
           <span class="md-nav__icon md-icon"></span>
         </label>
       
       <nav class="md-nav" aria-label="Modes" data-md-level="3">
-        <label class="md-nav__title" for="__nav_3_12_3">
+        <label class="md-nav__title" for="__nav_3_11_3">
           <span class="md-nav__icon md-icon"></span>
           Modes
         </label>
@@ -2485,82 +2746,41 @@
   
   
   
+    <li class="md-nav__item">
+      <a href="ecosystem/tools/" class="md-nav__link">
+        Ecosystem
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
     
     <li class="md-nav__item md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4" type="checkbox" id="__nav_4" >
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_5" type="checkbox" id="__nav_5" >
       
       
       
       
-        <label class="md-nav__link" for="__nav_4">
-          Community
+        <label class="md-nav__link" for="__nav_5">
+          Contributing
           <span class="md-nav__icon md-icon"></span>
         </label>
       
-      <nav class="md-nav" aria-label="Community" data-md-level="1">
-        <label class="md-nav__title" for="__nav_4">
+      <nav class="md-nav" aria-label="Contributing" data-md-level="1">
+        <label class="md-nav__title" for="__nav_5">
           <span class="md-nav__icon md-icon"></span>
-          Community
+          Contributing
         </label>
         <ul class="md-nav__list" data-md-scrollfix>
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="community/tools/" class="md-nav__link">
-        Tools
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="community/references/" class="md-nav__link">
-        References
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="community/cks/" class="md-nav__link">
-        CKS Reference
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="community/credit/" class="md-nav__link">
-        Credits
-      </a>
-    </li>
-  
-
-            
           
             
               
@@ -2573,18 +2793,18 @@
     <li class="md-nav__item md-nav__item--section md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_5" type="checkbox" id="__nav_4_5" >
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_5_1" type="checkbox" id="__nav_5_1" >
       
       
       
       
-        <label class="md-nav__link" for="__nav_4_5">
+        <label class="md-nav__link" for="__nav_5_1">
           How to contribute
           <span class="md-nav__icon md-icon"></span>
         </label>
       
       <nav class="md-nav" aria-label="How to contribute" data-md-level="2">
-        <label class="md-nav__title" for="__nav_4_5">
+        <label class="md-nav__title" for="__nav_5_1">
           <span class="md-nav__icon md-icon"></span>
           How to contribute
         </label>
@@ -2636,18 +2856,18 @@
     <li class="md-nav__item md-nav__item--section md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_6" type="checkbox" id="__nav_4_6" >
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_5_2" type="checkbox" id="__nav_5_2" >
       
       
       
       
-        <label class="md-nav__link" for="__nav_4_6">
+        <label class="md-nav__link" for="__nav_5_2">
           Maintainer
           <span class="md-nav__icon md-icon"></span>
         </label>
       
       <nav class="md-nav" aria-label="Maintainer" data-md-level="2">
-        <label class="md-nav__title" for="__nav_4_6">
+        <label class="md-nav__title" for="__nav_5_2">
           <span class="md-nav__icon md-icon"></span>
           Maintainer
         </label>
@@ -2726,21 +2946,29 @@
                 
 
 
-<p><img align="left" alt="logo" src="imgs/logo.png" /></p>
-<p><code>Trivy</code> (<code>tri</code> pronounced like <strong>tri</strong>gger, <code>vy</code> pronounced like en<strong>vy</strong>) is a simple and comprehensive <a href="docs/vulnerability/scanning/">vulnerability</a>/<a href="docs/misconfiguration/scanning/">misconfiguration</a>/<a href="docs/secret/scanning/">secret</a> scanner for containers and other artifacts.
-<code>Trivy</code> detects vulnerabilities of <a href="docs/vulnerability/detection/os/">OS packages</a> (Alpine, RHEL, CentOS, etc.) and <a href="docs/vulnerability/detection/language/">language-specific packages</a> (Bundler, Composer, npm, yarn, etc.).
-In addition, <code>Trivy</code> scans <a href="docs/misconfiguration/scanning/">Infrastructure as Code (IaC) files</a> such as Terraform and Kubernetes, to detect potential configuration issues that expose your deployments to the risk of attack.
-<code>Trivy</code> also scans <a href="docs/secret/scanning/">hardcoded secrets</a> like passwords, API keys and tokens.
-<code>Trivy</code> is easy to use. Just install the binary and you're ready to scan.
-All you need to do for scanning is to specify a target such as an image name of the container.</p>
-<div style="text-align: center">
-    <img src="imgs/overview.png" width="800">
-</div>
+  <h1>Overview</h1>
 
-<div style="text-align: center; margin-top: 150px">
-    <h1 id="demo">Demo</h1>
-</div>
-
+<p><img align="right" alt="logo" src="imgs/logo.png" /></p>
+<p>Trivy (tri pronounced like trigger, vy pronounced like envy) is a comprehensive security scanner. It is reliable, fast, extremely easy to use, and it works wherever you need it.</p>
+<p>Trivy has different scanners that look for different security issues, and different targets where it can find those issues.</p>
+<p>Targets:</p>
+<ul>
+<li>Container Image</li>
+<li>Filesystem</li>
+<li>Git repository (remote)</li>
+<li>Kubernetes cluster or resource</li>
+</ul>
+<p>Scanners:</p>
+<ul>
+<li>OS packages and software dependencies in use (SBOM)</li>
+<li>Known vulnerabilities (CVEs)</li>
+<li>IaC misconfigurations</li>
+<li>Sensitive information and secrets</li>
+</ul>
+<p>It is designed to be used in CI. Before pushing to a container registry or deploying your application, you can scan your local container image and other artifacts easily.
+See <a href="tutorials/integrations/">Integrations</a> for details.</p>
+<p>Much more scanners and targets are coming up. <a href="https://slack.aquasec.com">Join the Slack</a> channel to stay up to date, ask questions, and let us know what features you would like to see.</p>
+<p>Please see <a href="https://github.com/aquasecurity/trivy/blob/main/LICENSE">LICENSE</a> for Trivy licensing information.</p>
 <figure style="text-align: center">
   <video width="1000" autoplay muted controls loop>
     <source src="https://user-images.githubusercontent.com/1161307/171013513-95f18734-233d-45d3-aaf5-d6aec687db0e.mov" type="video/mp4" />
@@ -2759,11 +2987,6 @@ All you need to do for scanning is to specify a target such as an image name of 
   <img src="imgs/secret-demo.gif" width="1000">
   <figcaption>Demo: Secret Detection</figcaption>
 </figure>
-
-<hr />
-<p>Trivy is an <a href="https://aquasec.com">Aqua Security</a> open source project.<br />
-Learn about our open source work and portfolio <a href="https://www.aquasec.com/products/open-source-projects/">here</a>.<br />
-Contact us about any matter by opening a GitHub Discussion <a href="https://github.com/aquasecurity/trivy/discussions">here</a></p>
 
               
             </article>
@@ -2784,13 +3007,13 @@ Contact us about any matter by opening a GitHub Discussion <a href="https://gith
       
       
         
-        <a href="getting-started/overview/" class="md-footer__link md-footer__link--next" aria-label="Next: Overview" rel="next">
+        <a href="getting-started/installation/" class="md-footer__link md-footer__link--next" aria-label="Next: Installation" rel="next">
           <div class="md-footer__title">
             <div class="md-ellipsis">
               <span class="md-footer__direction">
                 Next
               </span>
-              Overview
+              Installation
             </div>
           </div>
           <div class="md-footer__button md-icon">

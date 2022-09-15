@@ -6,26 +6,6 @@
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>https://aquasecurity.github.io/trivy/dev/community/cks/</loc>
-         <lastmod>2022-09-15</lastmod>
-         <changefreq>daily</changefreq>
-    </url>
-    <url>
-         <loc>https://aquasecurity.github.io/trivy/dev/community/credit/</loc>
-         <lastmod>2022-09-15</lastmod>
-         <changefreq>daily</changefreq>
-    </url>
-    <url>
-         <loc>https://aquasecurity.github.io/trivy/dev/community/references/</loc>
-         <lastmod>2022-09-15</lastmod>
-         <changefreq>daily</changefreq>
-    </url>
-    <url>
-         <loc>https://aquasecurity.github.io/trivy/dev/community/tools/</loc>
-         <lastmod>2022-09-15</lastmod>
-         <changefreq>daily</changefreq>
-    </url>
-    <url>
          <loc>https://aquasecurity.github.io/trivy/dev/community/contribute/issue/</loc>
          <lastmod>2022-09-15</lastmod>
          <changefreq>daily</changefreq>
@@ -132,51 +112,6 @@
     </url>
     <url>
          <loc>https://aquasecurity.github.io/trivy/dev/docs/cloud/aws/scanning/</loc>
-         <lastmod>2022-09-15</lastmod>
-         <changefreq>daily</changefreq>
-    </url>
-    <url>
-         <loc>https://aquasecurity.github.io/trivy/dev/docs/integrations/</loc>
-         <lastmod>2022-09-15</lastmod>
-         <changefreq>daily</changefreq>
-    </url>
-    <url>
-         <loc>https://aquasecurity.github.io/trivy/dev/docs/integrations/aws-codepipeline/</loc>
-         <lastmod>2022-09-15</lastmod>
-         <changefreq>daily</changefreq>
-    </url>
-    <url>
-         <loc>https://aquasecurity.github.io/trivy/dev/docs/integrations/aws-security-hub/</loc>
-         <lastmod>2022-09-15</lastmod>
-         <changefreq>daily</changefreq>
-    </url>
-    <url>
-         <loc>https://aquasecurity.github.io/trivy/dev/docs/integrations/azure-devops/</loc>
-         <lastmod>2022-09-15</lastmod>
-         <changefreq>daily</changefreq>
-    </url>
-    <url>
-         <loc>https://aquasecurity.github.io/trivy/dev/docs/integrations/bitbucket/</loc>
-         <lastmod>2022-09-15</lastmod>
-         <changefreq>daily</changefreq>
-    </url>
-    <url>
-         <loc>https://aquasecurity.github.io/trivy/dev/docs/integrations/circleci/</loc>
-         <lastmod>2022-09-15</lastmod>
-         <changefreq>daily</changefreq>
-    </url>
-    <url>
-         <loc>https://aquasecurity.github.io/trivy/dev/docs/integrations/github-actions/</loc>
-         <lastmod>2022-09-15</lastmod>
-         <changefreq>daily</changefreq>
-    </url>
-    <url>
-         <loc>https://aquasecurity.github.io/trivy/dev/docs/integrations/gitlab-ci/</loc>
-         <lastmod>2022-09-15</lastmod>
-         <changefreq>daily</changefreq>
-    </url>
-    <url>
-         <loc>https://aquasecurity.github.io/trivy/dev/docs/integrations/travis-ci/</loc>
          <lastmod>2022-09-15</lastmod>
          <changefreq>daily</changefreq>
     </url>
@@ -471,7 +406,7 @@
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>https://aquasecurity.github.io/trivy/dev/getting-started/further/</loc>
+         <loc>https://aquasecurity.github.io/trivy/dev/ecosystem/tools/</loc>
          <lastmod>2022-09-15</lastmod>
          <changefreq>daily</changefreq>
     </url>
@@ -481,12 +416,92 @@
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>https://aquasecurity.github.io/trivy/dev/getting-started/overview/</loc>
+         <loc>https://aquasecurity.github.io/trivy/dev/getting-started/quickstart/</loc>
          <lastmod>2022-09-15</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>https://aquasecurity.github.io/trivy/dev/getting-started/quickstart/</loc>
+         <loc>https://aquasecurity.github.io/trivy/dev/tutorials/overview/</loc>
+         <lastmod>2022-09-15</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://aquasecurity.github.io/trivy/dev/tutorials/additional-resources/cks/</loc>
+         <lastmod>2022-09-15</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://aquasecurity.github.io/trivy/dev/tutorials/additional-resources/community/</loc>
+         <lastmod>2022-09-15</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://aquasecurity.github.io/trivy/dev/tutorials/additional-resources/references/</loc>
+         <lastmod>2022-09-15</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://aquasecurity.github.io/trivy/dev/tutorials/integrations/</loc>
+         <lastmod>2022-09-15</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://aquasecurity.github.io/trivy/dev/tutorials/integrations/aws-codepipeline/</loc>
+         <lastmod>2022-09-15</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://aquasecurity.github.io/trivy/dev/tutorials/integrations/aws-security-hub/</loc>
+         <lastmod>2022-09-15</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://aquasecurity.github.io/trivy/dev/tutorials/integrations/azure-devops/</loc>
+         <lastmod>2022-09-15</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://aquasecurity.github.io/trivy/dev/tutorials/integrations/bitbucket/</loc>
+         <lastmod>2022-09-15</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://aquasecurity.github.io/trivy/dev/tutorials/integrations/circleci/</loc>
+         <lastmod>2022-09-15</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://aquasecurity.github.io/trivy/dev/tutorials/integrations/github-actions/</loc>
+         <lastmod>2022-09-15</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://aquasecurity.github.io/trivy/dev/tutorials/integrations/gitlab-ci/</loc>
+         <lastmod>2022-09-15</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://aquasecurity.github.io/trivy/dev/tutorials/integrations/travis-ci/</loc>
+         <lastmod>2022-09-15</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://aquasecurity.github.io/trivy/dev/tutorials/kubernetes/cluster-scanning/</loc>
+         <lastmod>2022-09-15</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://aquasecurity.github.io/trivy/dev/tutorials/kubernetes/gitops/</loc>
+         <lastmod>2022-09-15</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://aquasecurity.github.io/trivy/dev/tutorials/kubernetes/kyverno/</loc>
+         <lastmod>2022-09-15</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://aquasecurity.github.io/trivy/dev/tutorials/signing/vuln-attestation/</loc>
          <lastmod>2022-09-15</lastmod>
          <changefreq>daily</changefreq>
     </url>
