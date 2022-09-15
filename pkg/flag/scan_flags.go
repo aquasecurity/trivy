@@ -133,13 +133,11 @@ func parseSecurityCheck(securityCheck []string) ([]string, error) {
 	return securityChecks, nil
 }
 
-func parseSbomFrom(sbomFrom []string) ([]string, error) {
-	var sbomFroms []string
-	for _, v := range sbomFrom {
-		if !slices.Contains(types.SbomFroms, v) {
-			return nil, xerrors.Errorf("unknown sbom-from type: %s", v)
+func validateSBOMSources(sbomSources []string) error {
+	for _, v := range sbomSources {
+		if !slices.Contains(types.SBOMSources, v) {
+			return xerrors.Errorf("unknown SBOM source: %s", v)
 		}
-		sbomFroms = append(sbomFroms, v)
 	}
-	return sbomFroms, nil
+	return nil
 }
