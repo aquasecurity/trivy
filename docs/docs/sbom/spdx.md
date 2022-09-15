@@ -1,5 +1,6 @@
 # SPDX
 
+## Reporting
 Trivy generates reports in the [SPDX][spdx] format.
 
 You can use the regular subcommands (like `image`, `fs` and `rootfs`) and specify `spdx` with the `--format` option.
@@ -293,5 +294,51 @@ $ cat result.spdx.json | jq .
 ```
 
 </details>
+
+## Scanning
+Trivy can take the SPDX report as an input and scan for vulnerabilities.
+To scan SBOM, you can use the `sbom` subcommand and pass the path to your SPDX report.
+The input format is automatically detected.
+
+The following formats are supported:
+
+- Tag-value (`--format spdx`)
+- JSON (`--format spdx-json`)
+
+```bash
+$ trivy image --format spdx-json --output spdx.json alpine:3.16.0
+$ trivy sbom spdx.json
+2022-09-15T21:32:27.168+0300    INFO    Vulnerability scanning is enabled
+2022-09-15T21:32:27.169+0300    INFO    Detected SBOM format: spdx-json
+2022-09-15T21:32:27.210+0300    INFO    Detected OS: alpine
+2022-09-15T21:32:27.210+0300    INFO    Detecting Alpine vulnerabilities...
+2022-09-15T21:32:27.211+0300    INFO    Number of language-specific files: 0
+
+spdx.json (alpine 3.16.0)
+=========================
+Total: 5 (UNKNOWN: 0, LOW: 0, MEDIUM: 2, HIGH: 2, CRITICAL: 1)
+
+┌──────────────┬────────────────┬──────────┬───────────────────┬───────────────┬────────────────────────────────────────────────────────────┐
+│   Library    │ Vulnerability  │ Severity │ Installed Version │ Fixed Version │                           Title                            │
+├──────────────┼────────────────┼──────────┼───────────────────┼───────────────┼────────────────────────────────────────────────────────────┤
+│ busybox      │ CVE-2022-30065 │ HIGH     │ 1.35.0-r13        │ 1.35.0-r15    │ busybox: A use-after-free in Busybox's awk applet leads to │
+│              │                │          │                   │               │ denial of service...                                       │
+│              │                │          │                   │               │ https://avd.aquasec.com/nvd/cve-2022-30065                 │
+├──────────────┼────────────────┼──────────┼───────────────────┼───────────────┼────────────────────────────────────────────────────────────┤
+│ libcrypto1.1 │ CVE-2022-2097  │ MEDIUM   │ 1.1.1o-r0         │ 1.1.1q-r0     │ openssl: AES OCB fails to encrypt some bytes               │
+│              │                │          │                   │               │ https://avd.aquasec.com/nvd/cve-2022-2097                  │
+├──────────────┤                │          │                   │               │                                                            │
+│ libssl1.1    │                │          │                   │               │                                                            │
+│              │                │          │                   │               │                                                            │
+├──────────────┼────────────────┼──────────┼───────────────────┼───────────────┼────────────────────────────────────────────────────────────┤
+│ ssl_client   │ CVE-2022-30065 │ HIGH     │ 1.35.0-r13        │ 1.35.0-r15    │ busybox: A use-after-free in Busybox's awk applet leads to │
+│              │                │          │                   │               │ denial of service...                                       │
+│              │                │          │                   │               │ https://avd.aquasec.com/nvd/cve-2022-30065                 │
+├──────────────┼────────────────┼──────────┼───────────────────┼───────────────┼────────────────────────────────────────────────────────────┤
+│ zlib         │ CVE-2022-37434 │ CRITICAL │ 1.2.12-r1         │ 1.2.12-r2     │ zlib: a heap-based buffer over-read or buffer overflow in  │
+│              │                │          │                   │               │ inflate in inflate.c...                                    │
+│              │                │          │                   │               │ https://avd.aquasec.com/nvd/cve-2022-37434                 │
+└──────────────┴────────────────┴──────────┴───────────────────┴───────────────┴────────────────────────────────────────────────────────────┘
+```
 
 [spdx]: https://spdx.dev/wp-content/uploads/sites/41/2020/08/SPDX-specification-2-2.pdf

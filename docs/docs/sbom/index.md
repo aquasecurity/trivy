@@ -181,34 +181,27 @@ $ trivy fs --format cyclonedx --output result.json /app/myproject
 Trivy also can take the following SBOM formats as an input and scan for vulnerabilities.
 
 - CycloneDX
+- SPDX
+- SPDX JSON
 - CycloneDX-type attestation
 
 To scan SBOM, you can use the `sbom` subcommand and pass the path to the SBOM.
 
 ```bash
 $ trivy sbom /path/to/cyclonedx.json
-
-cyclonedx.json (alpine 3.7.1)
-=========================
-Total: 3 (CRITICAL: 3)
-
-┌─────────────┬────────────────┬──────────┬───────────────────┬───────────────┬──────────────────────────────────────────────────────────────┐
-│   Library   │ Vulnerability  │ Severity │ Installed Version │ Fixed Version │                            Title                             │
-├─────────────┼────────────────┼──────────┼───────────────────┼───────────────┼──────────────────────────────────────────────────────────────┤
-│ curl        │ CVE-2018-14618 │ CRITICAL │ 7.61.0-r0         │ 7.61.1-r0     │ curl: NTLM password overflow via integer overflow            │
-│             │                │          │                   │               │ https://avd.aquasec.com/nvd/cve-2018-14618                   │
-├─────────────┼────────────────┼──────────┼───────────────────┼───────────────┼──────────────────────────────────────────────────────────────┤
-│ libbz2      │ CVE-2019-12900 │ CRITICAL │ 1.0.6-r6          │ 1.0.6-r7      │ bzip2: out-of-bounds write in function BZ2_decompress        │
-│             │                │          │                   │               │ https://avd.aquasec.com/nvd/cve-2019-12900                   │
-├─────────────┼────────────────┼──────────┼───────────────────┼───────────────┼──────────────────────────────────────────────────────────────┤
-│ sqlite-libs │ CVE-2019-8457  │ CRITICAL │ 3.21.0-r1         │ 3.25.3-r1     │ sqlite: heap out-of-bound read in function rtreenode()       │
-│             │                │          │                   │               │ https://avd.aquasec.com/nvd/cve-2019-8457                    │
-└─────────────┴────────────────┴──────────┴───────────────────┴───────────────┴──────────────────────────────────────────────────────────────┘
 ```
 
+See [here][cyclonedx] for the detail.
 
 !!! note
-    CycloneDX XML and SPDX are not supported at the moment.
+    CycloneDX XML is not supported at the moment.
+
+```bash
+$ trivy sbom /path/to/spdx.json
+```
+
+See [here][spdx] for the detail.
+
 
 You can also scan an SBOM attestation.
 In the following example, [Cosign][Cosign] can get an attestation and trivy scan it. You must create CycloneDX-type attestation before trying the example. To learn more about how to create an CycloneDX-Type attestation and attach it to an image, see the [SBOM attestation page][sbom_attestation].
