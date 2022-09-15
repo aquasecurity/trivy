@@ -51,10 +51,10 @@ func (a Artifact) inspectSBOMAttestation(ctx context.Context) (ftypes.ArtifactRe
 	}
 
 	entryIDs, err := client.Search(ctx, digest)
-	if len(entryIDs) == 0 {
-		return ftypes.ArtifactReference{}, errNoSBOMFound
-	} else if err != nil {
+	if err != nil {
 		return ftypes.ArtifactReference{}, xerrors.Errorf("failed to search rekor records: %w", err)
+	} else if len(entryIDs) == 0 {
+		return ftypes.ArtifactReference{}, errNoSBOMFound
 	}
 
 	log.Logger.Debugf("Found matching Rekor entries: %s", entryIDs)
