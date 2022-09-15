@@ -82,7 +82,7 @@ func (a Artifact) Inspect(_ context.Context) (types.ArtifactReference, error) {
 
 	var artifactType types.ArtifactType
 	switch format {
-	case sbom.FormatCycloneDXJSON, sbom.FormatCycloneDXXML, sbom.FormatAttestCycloneDXJSON, sbom.FormatDecodedAttestCycloneDXJSON:
+	case sbom.FormatCycloneDXJSON, sbom.FormatCycloneDXXML, sbom.FormatAttestCycloneDXJSON, sbom.FormatAttestStatementCycloneDXJSON:
 		artifactType = types.ArtifactCycloneDX
 	}
 
@@ -113,15 +113,13 @@ func (a Artifact) Decode(f io.Reader, format sbom.Format) (sbom.SBOM, error) {
 		//   => in-toto attestation
 		//     => cosign predicate
 		//       => CycloneDX JSON
-		v = &attestation.Envelope{
-			Payload: &in_toto.Statement{
-				Predicate: &attestation.CosignPredicate{
-					Data: &cyclonedx.CycloneDX{SBOM: &bom},
-				},
+		v = &attestation.Statement{
+			Predicate: &attestation.CosignPredicate{
+				Data: &cyclonedx.CycloneDX{SBOM: &bom},
 			},
 		}
 		decoder = json.NewDecoder(f)
-	case sbom.FormatDecodedAttestCycloneDXJSON:
+	case sbom.FormatAttestStatementCycloneDXJSON:
 		// in-toto attestation
 		//   => cosign predicate
 		//     => CycloneDX JSON

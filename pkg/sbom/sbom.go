@@ -24,12 +24,12 @@ type SBOM struct {
 type Format string
 
 const (
-	FormatCycloneDXJSON              Format = "cyclonedx-json"
-	FormatCycloneDXXML               Format = "cyclonedx-xml"
-	FormatSPDXJSON                   Format = "spdx-json"
-	FormatSPDXXML                    Format = "spdx-xml"
-	FormatAttestCycloneDXJSON        Format = "attest-cyclonedx-json"
-	FormatDecodedAttestCycloneDXJSON Format = "attest-decoded-cyclonedx-json"
+	FormatCycloneDXJSON                Format = "cyclonedx-json"
+	FormatCycloneDXXML                 Format = "cyclonedx-xml"
+	FormatSPDXJSON                     Format = "spdx-json"
+	FormatSPDXXML                      Format = "spdx-xml"
+	FormatAttestCycloneDXJSON          Format = "attest-cyclonedx-json"
+	FormatAttestStatementCycloneDXJSON Format = "attest-statement-cyclonedx-json"
 
 	FormatUnknown Format = "unknown"
 )
@@ -69,23 +69,21 @@ func DetectFormat(r io.ReadSeeker) (Format, error) {
 	// TODO: implement SPDX
 
 	// Try in-toto attestation
-	e := attestation.Envelope{Payload: &in_toto.Statement{}}
-	if err := json.NewDecoder(r).Decode(&e); err == nil {
-		if s, ok := e.Payload.(*in_toto.Statement); ok {
-			if s.PredicateType == in_toto.PredicateCycloneDX {
-				return FormatAttestCycloneDXJSON, nil
-			}
+	s := attestation.Statement{}
+	if err := json.NewDecoder(r).Decode(&s); err == nil {
+		if s.PredicateType == in_toto.PredicateCycloneDX {
+			return FormatAttestCycloneDXJSON, nil
 		}
 	}
 	if _, err := r.Seek(0, io.SeekStart); err != nil {
 		return FormatUnknown, xerrors.Errorf("seek error: %w", err)
 	}
 
-	// Try decoded in-toto statement
-	var s in_toto.Statement
-	if err := json.NewDecoder(r).Decode(&s); err == nil {
-		if s.PredicateType == in_toto.PredicateCycloneDX {
-			return FormatDecodedAttestCycloneDXJSON, nil
+	// Try statement of in-toto attestation
+	var is in_toto.Statement
+	if err := json.NewDecoder(r).Decode(&is); err == nil {
+		if is.PredicateType == in_toto.PredicateCycloneDX {
+			return FormatAttestStatementCycloneDXJSON, nil
 		}
 	}
 
