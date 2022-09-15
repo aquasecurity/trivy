@@ -10,6 +10,7 @@ import (
 
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/vulnerability"
+	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/report"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
@@ -231,6 +232,75 @@ func TestReportWriter_Sarif(t *testing.T) {
 					Help: &sarif.MultiformatMessageString{
 						Text:     toPtr("Misconfiguration KSV002\nType: Kubernetes Security Check\nSeverity: CRITICAL\nCheck: SYS_ADMIN capability added\nMessage: Message\nLink: [KSV002](https://avd.aquasec.com/appshield/ksv002)\n"),
 						Markdown: toPtr("**Misconfiguration KSV002**\n| Type | Severity | Check | Message | Link |\n| --- | --- | --- | --- | --- |\n|Kubernetes Security Check|CRITICAL|SYS_ADMIN capability added|Message|[KSV002](https://avd.aquasec.com/appshield/ksv002)|\n\n"),
+					},
+				},
+			},
+		},
+		{
+			name: "report with secrets",
+			input: types.Results{
+				{
+					Target: "library/test",
+					Class:  types.ClassSecret,
+					Secrets: []ftypes.SecretFinding{
+						{
+							RuleID:    "aws-secret-access-key",
+							Category:  "AWS",
+							Severity:  "CRITICAL",
+							Title:     "AWS Secret Access Key",
+							StartLine: 1,
+							EndLine:   1,
+							Match:     "'AWS_secret_KEY'=\"****************************************\"",
+						},
+					},
+				},
+			},
+			wantResults: []*sarif.Result{
+				{
+					RuleID:    toPtr("aws-secret-access-key"),
+					RuleIndex: toPtr[uint](0),
+					Level:     toPtr("error"),
+					Message:   sarif.Message{Text: toPtr("Artifact: library/test\nType: \nSecret AWS Secret Access Key\nSeverity: CRITICAL\nMatch: 'AWS_secret_KEY'=\"****************************************\"")},
+					Locations: []*sarif.Location{
+						{
+							PhysicalLocation: &sarif.PhysicalLocation{
+								ArtifactLocation: &sarif.ArtifactLocation{
+									URI:       toPtr("library/test"),
+									URIBaseId: toPtr("ROOTPATH"),
+								},
+								Region: &sarif.Region{
+									StartLine:   toPtr(1),
+									EndLine:     toPtr(1),
+									StartColumn: toPtr(1),
+									EndColumn:   toPtr(1),
+								},
+							},
+						},
+					},
+				},
+			},
+			wantRules: []*sarif.ReportingDescriptor{
+				{
+					ID:               "aws-secret-access-key",
+					Name:             toPtr("Secret"),
+					ShortDescription: &sarif.MultiformatMessageString{Text: toPtr("aws-secret-access-key")},
+					FullDescription:  &sarif.MultiformatMessageString{Text: toPtr("\u0026#39;AWS_secret_KEY\u0026#39;=\u0026#34;****************************************\u0026#34;")},
+					DefaultConfiguration: &sarif.ReportingConfiguration{
+						Level: "error",
+					},
+					HelpURI: toPtr("https://github.com/aquasecurity/trivy/blob/main/pkg/fanal/secret/builtin-rules.go"),
+					Properties: map[string]interface{}{
+						"tags": []interface{}{
+							"secret",
+							"security",
+							"CRITICAL",
+						},
+						"precision":         "very-high",
+						"security-severity": "9.5",
+					},
+					Help: &sarif.MultiformatMessageString{
+						Text:     toPtr("Secret AWS Secret Access Key\nSeverity: CRITICAL\nMatch: 'AWS_secret_KEY'=\"****************************************\""),
+						Markdown: toPtr("**Secret AWS Secret Access Key**\n| Severity | Match |\n| --- | --- |\n|CRITICAL|'AWS_secret_KEY'=\"****************************************\"|"),
 					},
 				},
 			},

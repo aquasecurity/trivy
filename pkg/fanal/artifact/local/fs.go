@@ -14,8 +14,6 @@ import (
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
-	"github.com/aquasecurity/trivy/pkg/fanal/analyzer/config"
-	"github.com/aquasecurity/trivy/pkg/fanal/analyzer/secret"
 	"github.com/aquasecurity/trivy/pkg/fanal/artifact"
 	"github.com/aquasecurity/trivy/pkg/fanal/cache"
 	"github.com/aquasecurity/trivy/pkg/fanal/handler"
@@ -38,26 +36,26 @@ type Artifact struct {
 }
 
 func NewArtifact(rootPath string, c cache.ArtifactCache, opt artifact.Option) (artifact.Artifact, error) {
-	// Register config analyzers
-	if err := config.RegisterConfigAnalyzers(opt.MisconfScannerOption.FilePatterns); err != nil {
-		return nil, xerrors.Errorf("config analyzer error: %w", err)
-	}
-
 	handlerManager, err := handler.NewManager(opt)
 	if err != nil {
 		return nil, xerrors.Errorf("handler initialize error: %w", err)
 	}
 
-	// Register secret analyzer
-	if err = secret.RegisterSecretAnalyzer(opt.SecretScannerOption); err != nil {
-		return nil, xerrors.Errorf("secret scanner error: %w", err)
+	a, err := analyzer.NewAnalyzerGroup(analyzer.AnalyzerOptions{
+		Group:               opt.AnalyzerGroup,
+		FilePatterns:        opt.FilePatterns,
+		DisabledAnalyzers:   opt.DisabledAnalyzers,
+		SecretScannerOption: opt.SecretScannerOption,
+	})
+	if err != nil {
+		return nil, xerrors.Errorf("analyzer group error: %w", err)
 	}
 
 	return Artifact{
 		rootPath:       filepath.Clean(rootPath),
 		cache:          c,
 		walker:         walker.NewFS(buildAbsPaths(rootPath, opt.SkipFiles), buildAbsPaths(rootPath, opt.SkipDirs)),
-		analyzer:       analyzer.NewAnalyzerGroup(opt.AnalyzerGroup, opt.DisabledAnalyzers),
+		analyzer:       a,
 		handlerManager: handlerManager,
 
 		artifactOption: opt,

@@ -4,18 +4,13 @@ import (
 	"github.com/aquasecurity/trivy/pkg/log"
 )
 
-// e.g. config yaml
-// misconfiguration:
-//   trace: true
-//   config-policy: "custom-policy/policy"
-//   policy-namespaces: "user"
+// e.g. config yaml:
+//
+//	misconfiguration:
+//	  trace: true
+//	  config-policy: "custom-policy/policy"
+//	  policy-namespaces: "user"
 var (
-	FilePatternsFlag = Flag{
-		Name:       "file-patterns",
-		ConfigName: "misconfiguration.file-patterns",
-		Value:      []string{},
-		Usage:      "specify config file patterns, available with '--security-checks config'",
-	}
 	IncludeNonFailuresFlag = Flag{
 		Name:       "include-non-failures",
 		ConfigName: "misconfiguration.include-non-failures",
@@ -87,7 +82,6 @@ var (
 
 // MisconfFlagGroup composes common printer flag structs used for commands providing misconfinguration scanning.
 type MisconfFlagGroup struct {
-	FilePatterns       *Flag
 	IncludeNonFailures *Flag
 	SkipPolicyUpdate   *Flag // deprecated
 	Trace              *Flag
@@ -106,7 +100,6 @@ type MisconfFlagGroup struct {
 }
 
 type MisconfOptions struct {
-	FilePatterns       []string
 	IncludeNonFailures bool
 	SkipPolicyUpdate   bool // deprecated
 	Trace              bool
@@ -126,7 +119,6 @@ type MisconfOptions struct {
 
 func NewMisconfFlagGroup() *MisconfFlagGroup {
 	return &MisconfFlagGroup{
-		FilePatterns:       &FilePatternsFlag,
 		IncludeNonFailures: &IncludeNonFailuresFlag,
 		SkipPolicyUpdate:   &SkipPolicyUpdateFlag,
 		Trace:              &TraceFlag,
@@ -147,7 +139,6 @@ func (f *MisconfFlagGroup) Name() string {
 
 func (f *MisconfFlagGroup) Flags() []*Flag {
 	return []*Flag{
-		f.FilePatterns,
 		f.IncludeNonFailures,
 		f.SkipPolicyUpdate,
 		f.Trace,
@@ -168,7 +159,6 @@ func (f *MisconfFlagGroup) ToOptions() (MisconfOptions, error) {
 		log.Logger.Warn("'--skip-policy-update' is no longer necessary as the built-in policies are embedded into the binary")
 	}
 	return MisconfOptions{
-		FilePatterns:       getStringSlice(f.FilePatterns),
 		IncludeNonFailures: getBool(f.IncludeNonFailures),
 		Trace:              getBool(f.Trace),
 

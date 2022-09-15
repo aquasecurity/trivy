@@ -35,6 +35,12 @@ var (
 		Value:      fmt.Sprintf("%s,%s", types.SecurityCheckVulnerability, types.SecurityCheckSecret),
 		Usage:      "comma-separated list of what security issues to detect (vuln,config,secret)",
 	}
+	FilePatternsFlag = Flag{
+		Name:       "file-patterns",
+		ConfigName: "scan.file-patterns",
+		Value:      []string{},
+		Usage:      "specify config file patterns",
+	}
 	SbomFromFlag = Flag{
 		Name:       "sbom-from",
 		ConfigName: "scan.sbom-from",
@@ -54,6 +60,7 @@ type ScanFlagGroup struct {
 	SkipFiles      *Flag
 	OfflineScan    *Flag
 	SecurityChecks *Flag
+	FilePatterns   *Flag
 	SbomFrom       *Flag
 	RekorUrl       *Flag
 }
@@ -64,6 +71,7 @@ type ScanOptions struct {
 	SkipFiles      []string
 	OfflineScan    bool
 	SecurityChecks []string
+	FilePatterns   []string
 	SbomFrom       []string
 	RekorUrl       string
 }
@@ -74,6 +82,7 @@ func NewScanFlagGroup() *ScanFlagGroup {
 		SkipFiles:      &SkipFilesFlag,
 		OfflineScan:    &OfflineScanFlag,
 		SecurityChecks: &SecurityChecksFlag,
+		FilePatterns:   &FilePatternsFlag,
 		SbomFrom:       &SbomFromFlag,
 		RekorUrl:       &RekorUrlFlag,
 	}
@@ -84,7 +93,7 @@ func (f *ScanFlagGroup) Name() string {
 }
 
 func (f *ScanFlagGroup) Flags() []*Flag {
-	return []*Flag{f.SkipDirs, f.SkipFiles, f.OfflineScan, f.SecurityChecks, f.SbomFrom, f.RekorUrl}
+	return []*Flag{f.SkipDirs, f.SkipFiles, f.OfflineScan, f.SecurityChecks, f.FilePatterns, f.SbomFrom, f.RekorUrl}
 }
 
 func (f *ScanFlagGroup) ToOptions(args []string) (ScanOptions, error) {
@@ -108,6 +117,7 @@ func (f *ScanFlagGroup) ToOptions(args []string) (ScanOptions, error) {
 		SkipFiles:      getStringSlice(f.SkipFiles),
 		OfflineScan:    getBool(f.OfflineScan),
 		SecurityChecks: securityChecks,
+		FilePatterns:   getStringSlice(f.FilePatterns),
 		SbomFrom:       sbomFroms,
 		RekorUrl:       getString(f.RekorUrl),
 	}, nil

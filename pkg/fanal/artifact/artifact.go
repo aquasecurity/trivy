@@ -6,7 +6,6 @@ import (
 
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	misconf "github.com/aquasecurity/trivy/pkg/fanal/analyzer/config"
-	"github.com/aquasecurity/trivy/pkg/fanal/analyzer/secret"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 )
 
@@ -16,6 +15,7 @@ type Option struct {
 	DisabledHandlers  []types.HandlerType
 	SkipFiles         []string
 	SkipDirs          []string
+	FilePatterns      []string
 	NoProgress        bool
 	Offline           bool
 	InsecureSkipTLS   bool
@@ -27,7 +27,7 @@ type Option struct {
 	RekorUrl          string
 
 	MisconfScannerOption misconf.ScannerOption
-	SecretScannerOption  secret.ScannerOption
+	SecretScannerOption  analyzer.SecretScannerOption
 }
 
 func (o *Option) Sort() {
@@ -36,6 +36,7 @@ func (o *Option) Sort() {
 	})
 	sort.Strings(o.SkipFiles)
 	sort.Strings(o.SkipDirs)
+	sort.Strings(o.FilePatterns)
 }
 
 type Artifact interface {

@@ -183,7 +183,7 @@ func newMisconfPostHandler(artifactOpt artifact.Option) (handler.PostHandler, er
 	tfOpts := addTFOpts(opts, artifactOpt.MisconfScannerOption)
 
 	return misconfPostHandler{
-		filePatterns: artifactOpt.MisconfScannerOption.FilePatterns,
+		filePatterns: artifactOpt.FilePatterns,
 		scanners: map[string]scanners.FSScanner{
 			types.Terraform:      tfscanner.New(tfOpts...),
 			types.CloudFormation: cfscanner.New(opts...),
