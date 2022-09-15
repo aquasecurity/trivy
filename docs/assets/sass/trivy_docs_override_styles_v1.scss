@@ -1,0 +1,91 @@
+//colors start
+
+//aqua brand colors
+$aq-royal-blue: #1904da;
+$aq-legacy-blue: #08b1d5;
+$aq-coral-red: #ff445f;
+$aq-starfish-yellow: #ffc900;
+$aq-dark-abyss: #07242d;
+$aq-deep-sea-blue: #183278;
+$aq-ocean-ash: #405a75;
+$aq-sea-foam: #00ffe4;
+
+$aq-neo-background: #ebf3fa;
+$aq-neo-background-hover: #f0f8ff;
+
+
+$aq-royal-blue-dark: #1503ba;
+
+$aq-trivy-dark: #0a0b23;
+
+// Color Elements
+
+$white: #ffffff;
+//$black: $aq-dark-abyss; // hsl(0, 0%, 4%);
+//$light: $white-ter;
+//$dark: $grey-darker;
+$primary: $aq-royal-blue;
+$text: $aq-dark-abyss;
+
+$link: $aq-sea-foam; //$aq-legacy-blue; //#009590; // //$legacy-blue;
+$link-hover: $aq-sea-foam; //$aq-royal-blue; //findDarkColor($aq-legacy-blue); //powerNumber(7,7); 
+
+//colors ends
+
+
+
+
+// Import a Google Font
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+
+* {
+	font-family: 'Inter', sans-serif;
+	outline: 0;
+}
+
+html {
+	font-size: 16px;
+}
+
+body {
+	background-color: $aq-trivy-dark;
+	color: #ffffff;
+	font-size: 1em;
+	font-weight: 400;
+	line-height: 1.5;
+}
+
+.md-grid {
+	max-width: 1440px;
+}
+
+.md-typeset {
+	font-size: 1rem;
+	line-height: 1.6;
+
+	a {
+		color: rgba($link,0.7); //$link
+		transition: all 0.3s ease;
+
+		&:hover {
+			color: $link-hover;
+			//text-decoration: underline;
+		} //hover
+	} //a
+
+	h1 {
+		color: $aq-sea-foam;
+		font-weight: 700;
+	}
+
+	h2 {
+
+	}
+} //md-typeset
+
+@import "template-parts/_docs_header";
+@import "template-parts/_docs_main";
+@import "template-parts/_docs_main_content";
+@import "template-parts/_docs_main_sidebar";
+@import "template-parts/_docs_footer";
+@import "template-parts/_docs_tables";

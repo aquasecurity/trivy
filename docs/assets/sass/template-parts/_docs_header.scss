@@ -1,0 +1,88 @@
+/* trivy docs header */
+
+
+header.md-header.md-header--lifted.md-header--shadow {
+	background-color: $aq-trivy-dark;
+	box-shadow: rgba(#ffffff,0.08) 0px 2px 8px;
+
+
+	.md-header__inner {
+		a.md-header__button.md-logo {
+			width: 160px;
+			height: 88px;
+			background-image: url('../images/logo_trivy_noborder_dark.svg');
+			background-repeat: no-repeat;
+			background-position: center left;
+			background-size: contain;
+			opacity: 1;
+			margin-right: 24px;
+
+			img {
+				//hide the old logo
+				display: none;
+			}
+
+		} //a.md-header__button.md-logo
+
+
+		.md-header__title {
+
+
+		} //md-header__title
+
+		.md-search__inner {
+			.md-search__form {
+				background-color: rgba(#ffffff,0.08);
+				input {
+					color: #ffffff;
+				}
+
+			} //md-search__form
+		}
+
+	} //md-header__inner
+
+	nav.header__inner {
+		
+		
+	} //nav.header_inner
+	
+	nav.md-tabs {
+		background-color: $aq-trivy-dark;
+
+		.md-tabs__inner {
+
+			ul.md-tabs__list {
+
+				li.md-tabs__item {
+					height: auto;
+					padding: 0px;
+					margin-right: 30px;
+					
+
+					a.md-tabs__link {
+						font-size: 1.125rem;
+						color: #ffffff;
+						opacity: 1;
+						font-weight: 700;
+						padding: 20px 0px;
+						transition: all 0.3s ease;
+
+						&:hover {
+							color: $aq-sea-foam;
+						}
+
+						&.md-tabs__link--active {
+							color: $aq-sea-foam;
+						} //md-tabs__link--active
+
+					} //a.md-tabs__link
+
+				} //li.md-tabs__item
+
+			} //ul.md-tabs__list
+		} //md-tabs__inner
+
+	}
+
+} //header

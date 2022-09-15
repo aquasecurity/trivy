@@ -1,0 +1,41 @@
+/* trivy docs tables */
+
+.md-typeset .md-typeset__table {
+	display: block;
+
+	.md-typeset__scrollwrap {
+		margin-top: 0px;
+
+		table {
+			background-color: rgba($aq-ocean-ash,0.1);
+			border-color: $aq-ocean-ash;
+			width: 100%;
+			font-size: 0.9375rem;
+	
+			thead {
+				th {
+					padding: 10px 20px;
+				} //th
+			}//thead
+	
+			tbody {
+	
+				tr {
+					td {
+						padding: 10px 20px;
+					} //td
+	
+					&:hover {
+						background-color: rgba($aq-ocean-ash,0.2);
+						box-shadow: none;
+					}
+	
+				} //tr
+	
+			}//tbody
+		} //table
+		
+	} //md-typeset__scrollwrap
+
+
+} //md-typeset__table

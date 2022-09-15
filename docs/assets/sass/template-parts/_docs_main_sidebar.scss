@@ -1,0 +1,109 @@
+/* trivy docs main sidebar */
+
+.md-sidebar {
+	
+	nav.md-nav {
+		.md-nav__title {
+			font-size: 0.75rem;
+			color: #ffffff;
+		}
+
+		ul.md-nav__list {
+
+			li.md-nav__item {
+
+				.md-nav__link {
+					font-size: 0.9375rem;
+					color: rgba(#ffffff,0.85);
+					transition: all 0.3s ease;
+
+					&:hover {
+						color: #ffffff;
+					}
+
+					&.md-nav__link--active {
+						font-weight: 700;
+						color: $aq-sea-foam;
+					}
+				}
+
+				&.md-nav__item--section {
+					margin-top: 40px;		
+				} //md-nav__item--section
+
+			} //li.md-nav__item
+			
+	
+		} //ul.md-nav__list
+
+
+	} //nav.md-nav
+
+
+	@media screen and (max-width:76.1875em) {
+		background-color: $aq-trivy-dark;
+
+		.md-sidebar__scrollwrap {
+
+			.md-sidebar__inner {
+
+				nav.md-nav {
+					background-color: $aq-trivy-dark;
+
+						.md-nav__title {
+							background-color: rgba(#ffffff,0.1);
+						} //md-nav__title
+
+						.md-nav__source {
+							background-color: rgba(#ffffff,0.05);
+						} //md-nav__source
+
+
+						ul.md-nav__list {
+							background-color: $aq-trivy-dark;
+
+							li.md-nav__item {
+								border-bottom: 1px solid rgba(#ffffff,0.1);
+				
+								.md-nav__link {
+									background-color: $aq-trivy-dark;
+									color: rgba(#ffffff,0.85);
+									font-size: 0.875rem;
+							
+									&:hover {
+										color: #ffffff;
+									}
+				
+									&.md-nav__link--active {
+										color: $aq-sea-foam;
+										
+										& > .md-nav__link {
+											color: $aq-sea-foam;
+										}
+									}
+								}
+				
+								&.md-nav__item--section {
+									margin-top: 0px;
+									&:hover {
+										color: #ffffff;
+									}
+								} //md-nav__item--section
+				
+							} //li.md-nav__item
+							
+					
+						} //ul.md-nav__list
+				
+				
+
+				} //nav.md-nav
+
+
+			} //md-sidebar__inner
+
+		} //md-sidebar__scrollwrap
+	} //max-width 76.1875em
+
+	
+} //md-sidebar

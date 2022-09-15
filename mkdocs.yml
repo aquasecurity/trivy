@@ -169,3 +169,5 @@ plugins:
   - search
   - macros
 
+extra_css:
+  - assets/css/trivy_docs_override_styles_v1.min.css
