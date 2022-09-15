@@ -204,8 +204,8 @@ github.com/apparentlymart/go-textseg/v13 v13.0.0 h1:Y+KvPE1NYz0xl601PVImeQfFyEy6
 github.com/apparentlymart/go-textseg/v13 v13.0.0/go.mod h1:ZK2fH7c4NqDTLtiYLvIkEghdlcqw7yxLeM89kiTRPUo=
 github.com/aquasecurity/bolt-fixtures v0.0.0-20200903104109-d34e7f983986 h1:2a30xLN2sUZcMXl50hg+PJCIDdJgIvIbVcKqLJ/ZrtM=
 github.com/aquasecurity/bolt-fixtures v0.0.0-20200903104109-d34e7f983986/go.mod h1:NT+jyeCzXk6vXR5MTkdn4z64TgGfE5HMLC8qfj5unl8=
-github.com/aquasecurity/defsec v0.74.2 h1:2R2T/ICV4uF9W2uCYbcNVwK33vIis5pZbd5JQrIo60w=
-github.com/aquasecurity/defsec v0.74.2/go.mod h1:qZVjZjWAlKyD6tTLztvm17DlMDt3+vcfpO0zhFytxz4=
+github.com/aquasecurity/defsec v0.75.3 h1:mQ4ihStPsibq9zcTxq5Qz2pT23EAVJALO5b5KYTQWiY=
+github.com/aquasecurity/defsec v0.75.3/go.mod h1:XvXJkw8wiN7/rH913qAT4OoaPMoJeTIqZcevjZjUh3M=
 github.com/aquasecurity/go-dep-parser v0.0.0-20220912084514-9d42a63ca964 h1:Ilqo8EEvGV2K8HVZwHCapLcQOyY/DhV5wcIZ1Xh6wwg=
 github.com/aquasecurity/go-dep-parser v0.0.0-20220912084514-9d42a63ca964/go.mod h1:6G1Y5nht5TL9kr1SzmrdE8PrmbNXo9nHx3qFR3qURg0=
 github.com/aquasecurity/go-gem-version v0.0.0-20201115065557-8eed6fe000ce h1:QgBRgJvtEOBtUXilDb1MLi1p1MWoyFDXAu5DEUl5nwM=
@@ -238,8 +238,8 @@ github.com/asaskevich/govalidator v0.0.0-20200428143746-21a406dcc535/go.mod h1:o
 github.com/aws/aws-sdk-go v1.15.11/go.mod h1:mFuSZ37Z9YOHbQEwBWztmVzqXrEkub65tZoCYDt7FT0=
 github.com/aws/aws-sdk-go v1.15.78/go.mod h1:E3/ieXAlvM0XWO57iftYVDLLvQ824smPP3ATZkfNZeM=
 github.com/aws/aws-sdk-go v1.34.9/go.mod h1:5zCpMtNQVjRREroY7sYe8lOMRSxkhG6MZveU8YkpAk0=
-github.com/aws/aws-sdk-go v1.44.92 h1:ayc8sQntRMX84Ib9Eqntar7knfNsWHJY7wnZUk5018w=
-github.com/aws/aws-sdk-go v1.44.92/go.mod h1:y4AeaBuwd2Lk+GepC1E9v0qOiTws0MIWAX4oIKwKHZo=
+github.com/aws/aws-sdk-go v1.44.95 h1:QwmA+PeR6v4pF0f/dPHVPWGAshAhb9TnGZBTM5uKuI8=
+github.com/aws/aws-sdk-go v1.44.95/go.mod h1:y4AeaBuwd2Lk+GepC1E9v0qOiTws0MIWAX4oIKwKHZo=
 github.com/aws/aws-sdk-go-v2 v1.16.11/go.mod h1:WTACcleLz6VZTp7fak4EO5b9Q4foxbn+8PIz3PmyKlo=
 github.com/aws/aws-sdk-go-v2 v1.16.12/go.mod h1:C+Ym0ag2LIghJbXhfXZ0YEEp49rBWowxKzJLUoob0ts=
 github.com/aws/aws-sdk-go-v2 v1.16.14 h1:db6GvO4Z2UqHt5gvT0lr6J5x5P+oQ7bdRzczVaRekMU=
