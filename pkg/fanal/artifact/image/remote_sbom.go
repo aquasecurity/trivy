@@ -20,8 +20,8 @@ import (
 
 var errNoSBOMFound = xerrors.New("remote SBOM not found")
 
-func (a Artifact) fetchRemoteSBOM(ctx context.Context) (ftypes.ArtifactReference, error) {
-	for _, sbomFrom := range a.artifactOption.SbomSources {
+func (a Artifact) retrieveRemoteSBOM(ctx context.Context) (ftypes.ArtifactReference, error) {
+	for _, sbomFrom := range a.artifactOption.SBOMSources {
 		switch sbomFrom {
 		case types.SBOMSourceRekor:
 			ref, err := a.inspectSBOMAttestation(ctx)

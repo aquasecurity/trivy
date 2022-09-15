@@ -91,8 +91,8 @@ func (a Artifact) Inspect(ctx context.Context) (types.ArtifactReference, error) 
 	log.Logger.Debugf("Image ID: %s", imageID)
 	log.Logger.Debugf("Diff IDs: %v", diffIDs)
 
-	// Try fetching a remote SBOM document
-	if res, err := a.fetchRemoteSBOM(ctx); err == nil {
+	// Try retrieving a remote SBOM document
+	if res, err := a.retrieveRemoteSBOM(ctx); err == nil {
 		// Found SBOM
 		return res, nil
 	} else if !errors.Is(err, errNoSBOMFound) {
