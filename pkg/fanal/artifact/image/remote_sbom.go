@@ -2,6 +2,7 @@ package image
 
 import (
 	"context"
+	"errors"
 	"os"
 	"strings"
 
@@ -47,13 +48,15 @@ func (a Artifact) inspectSbomAttestation(ctx context.Context) (ftypes.ArtifactRe
 
 	entryIDs, err := client.Search(ctx, digest)
 	if err != nil {
+		if errors.Is(err, rekor.ErrNoEntry) {
+			return ftypes.ArtifactReference{}, errSBOMNotFound
+		}
 		return ftypes.ArtifactReference{}, xerrors.Errorf("failed to search rekor records: %w", err)
 	}
 
-	log.Logger.Debugf("Found matching entries: %s", entryIDs)
-
+	log.Logger.Debugf("Found matching Rekor entries: %s", entryIDs)
 	for _, id := range entryIDs {
-		log.Logger.Debugf("Inspecting rekor entry: %s", id)
+		log.Logger.Debugf("Inspecting Rekor entry: %s", id)
 		results, err := a.inspectRekorRecord(ctx, client, id)
 		if err == nil {
 			return results, nil
@@ -65,6 +68,9 @@ func (a Artifact) inspectSbomAttestation(ctx context.Context) (ftypes.ArtifactRe
 func (a Artifact) inspectRekorRecord(ctx context.Context, client *rekor.Client, entryID rekor.EntryID) (ftypes.ArtifactReference, error) {
 	entry, err := client.GetEntry(ctx, entryID)
 	if err != nil {
+		if errors.Is(err, rekor.ErrNoEntry) || errors.Is(err, rekor.ErrNoAttestation) {
+			return ftypes.ArtifactReference{}, errSBOMNotFound
+		}
 		return ftypes.ArtifactReference{}, xerrors.Errorf("failed to get rekor entry: %w", err)
 	}
 
@@ -78,7 +84,7 @@ func (a Artifact) inspectRekorRecord(ctx context.Context, client *rekor.Client, 
 		return ftypes.ArtifactReference{}, xerrors.Errorf("failed to write statement: %w", err)
 	}
 	if err = f.Close(); err != nil {
-		return ftypes.ArtifactReference{}, xerrors.Errorf("failed to close: %w", err)
+		return ftypes.ArtifactReference{}, xerrors.Errorf("failed to close %s: %w", f.Name(), err)
 	}
 
 	ar, err := sbom.NewArtifact(f.Name(), a.cache, a.artifactOption)
