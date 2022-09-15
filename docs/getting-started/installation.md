@@ -46,19 +46,11 @@
 
 ## Arch Linux
 
-Package trivy-bin can be installed from the Arch User Repository.
+Package trivy can be installed from the Arch Community Package Manager.
 
-=== "pikaur"
-
-    ``` bash
-    pikaur -Sy trivy-bin
-    ```
-
-=== "yay"
-
-    ``` bash
-    yay -Sy trivy-bin
-    ```
+```bash
+pacman -S trivy
+```
 
 ## Homebrew
 
