@@ -1,8 +1,6 @@
 package flag
 
 import (
-	"fmt"
-
 	"golang.org/x/exp/slices"
 	"golang.org/x/xerrors"
 
@@ -31,8 +29,8 @@ var (
 	SecurityChecksFlag = Flag{
 		Name:       "security-checks",
 		ConfigName: "scan.security-checks",
-		Value:      fmt.Sprintf("%s,%s", types.SecurityCheckVulnerability, types.SecurityCheckSecret),
-		Usage:      "comma-separated list of what security issues to detect (vuln,config,secret)",
+		Value:      []string{types.SecurityCheckVulnerability, types.SecurityCheckSecret},
+		Usage:      "comma-separated list of what security issues to detect (vuln,config,secret,license)",
 	}
 	FilePatternsFlag = Flag{
 		Name:       "file-patterns",
