@@ -3,37 +3,14 @@
 This tutorial is based on the following blog post by Chip Zoller: [Attesting Image Scans With Kyverno](https://neonmirrors.net/post/2022-07/attesting-image-scans-kyverno/)
 
 This tutorial details 
-- Scan your container image for vulnerabilities
-- Generate an attestation with Cosign
+
 - Verify the container image has an attestation with Kyverno
 
-#### Prerequisites
-1. Trivy CLI installed
-2. Cosign installed 
+### Prerequisites
+1. [Attestation of the vulnerability scan uploaded][vuln-attestation]
 3. A running Kubernetes cluster that kubectl is connected to
 
-#### Scan Container Image for vulnerabilities
-
-Scan your container image for vulnerabilities and save the scan result to a scan.json file:
-```
-trivy image --ignore-unfixed --format json --output scan.json anaisurlichs/cns-website:0.0.6
-```
-
-* --ignore-unfixed: Ensures that only the vulnerabilities are displayed that have a already a fix available
-* --output scan.json: The scan output is scaved to a scan.json file instead of being displayed in the terminal.
-
-Note: Replace the container image with the container image that you would like to scan.
-
-#### Attestation of the vulnerability scan with Cosign
-
-The following command generates an attestation for the vulnerability scan and uploads it to our container image:
-```
-cosign attest --replace --predicate scan.json --type vuln anaisurlichs/cns-website:0.0.6
-```
-
-Note: Replace the container image with the container image that you would like to scan.
-
-#### Kyverno Policy to check attestation
+### Kyverno Policy to check attestation
 
 The following policy ensures that the attestation is no older than 168h:
 
@@ -71,7 +48,7 @@ spec:
 
 {% endraw %}
 
-#### Apply the policy to your Kubernetes cluster
+### Apply the policy to your Kubernetes cluster
 
 Ensure that you have Kyverno already deployed and running on your cluster -- for instance throught he Kyverno Helm Chart.
 
@@ -134,3 +111,4 @@ check-image:
     failed to verify signature for docker.io/anaisurlichs/cns-website:0.0.5: .attestors[0].entries[0].keys: no matching signatures:
 ```
 
+[vuln-attestation]: ../signing/vuln-attestation.md
