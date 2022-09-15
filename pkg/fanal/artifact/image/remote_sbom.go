@@ -35,7 +35,7 @@ func (a Artifact) fetchRemoteSBOM(ctx context.Context) (ftypes.ArtifactReference
 }
 
 func (a Artifact) inspectSbomAttestation(ctx context.Context) (ftypes.ArtifactReference, error) {
-	d, err := repoDigest(a.image)
+	digest, err := repoDigest(a.image)
 	if err != nil {
 		return ftypes.ArtifactReference{}, xerrors.Errorf("failed to get repo digest: %w", err)
 	}
@@ -45,7 +45,7 @@ func (a Artifact) inspectSbomAttestation(ctx context.Context) (ftypes.ArtifactRe
 		return ftypes.ArtifactReference{}, xerrors.Errorf("failed to create rekor client: %w", err)
 	}
 
-	entryIDs, err := client.Search(ctx, d)
+	entryIDs, err := client.Search(ctx, digest)
 	if err != nil {
 		return ftypes.ArtifactReference{}, xerrors.Errorf("failed to search rekor records: %w", err)
 	}

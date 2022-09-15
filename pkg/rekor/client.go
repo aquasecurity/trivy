@@ -2,7 +2,6 @@ package rekor
 
 import (
 	"context"
-	"fmt"
 	"net/url"
 
 	httptransport "github.com/go-openapi/runtime/client"
@@ -17,6 +16,11 @@ import (
 const (
 	treeIDLen = 16
 	uuidLen   = 64
+)
+
+var (
+	ErrNoEntry       = xerrors.Errorf("Rekor entries not found")
+	ErrNoAttestation = xerrors.Errorf("Rekor attestations not found")
 )
 
 // EntryID is a hex-format string. The length of the string is 80.
@@ -40,11 +44,11 @@ type Entry struct {
 }
 
 type Client struct {
-	c *client.Rekor
+	*client.Rekor
 }
 
-func NewClient(rekorUrl string) (*Client, error) {
-	u, err := url.Parse(rekorUrl)
+func NewClient(rekorURL string) (*Client, error) {
+	u, err := url.Parse(rekorURL)
 	if err != nil {
 		return nil, xerrors.Errorf("failed to parse url: %w", err)
 	}
@@ -53,18 +57,18 @@ func NewClient(rekorUrl string) (*Client, error) {
 		httptransport.New(u.Host, client.DefaultBasePath, []string{u.Scheme}),
 		strfmt.Default,
 	)
-	return &Client{c: c}, nil
+	return &Client{Rekor: c}, nil
 }
 
 func (c *Client) Search(ctx context.Context, hash string) ([]EntryID, error) {
 	params := index.NewSearchIndexParamsWithContext(ctx).WithQuery(&models.SearchIndex{Hash: hash})
 
-	resp, err := c.c.Index.SearchIndex(params)
+	resp, err := c.Index.SearchIndex(params)
 	if err != nil {
 		return nil, xerrors.Errorf("failed to search: %w", err)
 	}
 	if len(resp.Payload) == 0 {
-		return nil, fmt.Errorf("entries not found")
+		return nil, ErrNoEntry
 	}
 
 	ids := make([]EntryID, len(resp.Payload))
@@ -81,18 +85,18 @@ func (c *Client) Search(ctx context.Context, hash string) ([]EntryID, error) {
 func (c *Client) GetEntry(ctx context.Context, entryID EntryID) (Entry, error) {
 	params := entries.NewGetLogEntryByUUIDParamsWithContext(ctx).WithEntryUUID(string(entryID))
 
-	resp, err := c.c.Entries.GetLogEntryByUUID(params)
+	resp, err := c.Entries.GetLogEntryByUUID(params)
 	if err != nil {
 		return Entry{}, xerrors.Errorf("failed to get log entry by UUID: %w", err)
 	}
 
 	entry, found := resp.Payload[entryID.UUID()]
 	if !found {
-		return Entry{}, fmt.Errorf("entry not found")
+		return Entry{}, ErrNoEntry
 	}
 
 	if entry.Attestation == nil {
-		return Entry{}, fmt.Errorf("attestation not found")
+		return Entry{}, ErrNoAttestation
 	}
 
 	return Entry{Statement: entry.Attestation.Data}, nil
