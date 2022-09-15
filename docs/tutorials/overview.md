@@ -4,7 +4,7 @@ Tutorials are a great way to learn about use cases and integrations. We highly e
 
 There are two ways to contributor to the tutorials section
 
-1. If you are creating any external content on Trivy, we would love to have it as part of our list of [external community resources](./other-resources/references.md).
+1. If you are creating any external content on Trivy, we would love to have it as part of our list of [external community resources][community-resources]
 2. If you are creating an end-to-end tutorial on a specific Trivy use-case, we would love to feature it in our tutorial section. Read below how you can contribute tutorials to the docs.
 
 ## Process for adding new tutorials
@@ -24,3 +24,4 @@ How to add a tutorial
 3. Create a new index in the mkdocs.yaml file which is in the [root directory](https://github.com/aquasecurity/trivy) of the repository
 4. Create a PR
 
+[community-resources]: additional-resources/community.md

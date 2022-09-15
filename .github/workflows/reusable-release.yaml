@@ -59,15 +59,15 @@ jobs:
           username: ${{ secrets.ECR_ACCESS_KEY_ID }}
           password: ${{ secrets.ECR_SECRET_ACCESS_KEY }}
 
-      - name: Setup Go
-        uses: actions/setup-go@v3
-        with:
-          go-version-file: go.mod
-
       - name: Checkout code
         uses: actions/checkout@v3
         with:
           fetch-depth: 0
+
+      - name: Setup Go
+        uses: actions/setup-go@v3
+        with:
+          go-version-file: go.mod
 
       - name: Generate SBOM
         uses: CycloneDX/gh-gomod-generate-sbom@v1

@@ -23,15 +23,17 @@ nav:
           - AWS CodePipeline: tutorials/integrations/aws-codepipeline.md
           - AWS Security Hub: tutorials/integrations/aws-security-hub.md
           - Azure: tutorials/integrations/azure-devops.md
-      - CLI:
-          - Attesting Image Scans With Cosign and Kyverno: tutorials/cli/cosign.md
-      - Trivy Kubernetes: 
-          - Trivy K8s: tutorials/kubernetes/trivy-kubernetes.md
-          - GitOps: tutorials/kubernetes/gitops.md    
+      - Signing:
+          - Vulnerability Scan Record Attestation: tutorials/signing/vuln-attestation.md
+      - Kubernetes:
+          - Cluster Scanning: tutorials/kubernetes/cluster-scanning.md
+          - Kyverno: tutorials/kubernetes/kyverno.md
+          - GitOps: tutorials/kubernetes/gitops.md
       - Additional Resources: 
-          - Additional Resources: tutorials/other-resources/references.md
-          - CKS Reference: tutorials/other-resources/cks.md
-  - Trivy CLI:
+          - Additional Resources: tutorials/additional-resources/references.md
+          - Community References: tutorials/additional-resources/community.md
+          - CKS Reference: tutorials/additional-resources/cks.md
+  - CLI:
       - Overview: docs/index.md
       - Vulnerability:
           - Scanning:
@@ -133,7 +135,7 @@ nav:
               - Standalone: docs/references/modes/standalone.md
               - Client/Server: docs/references/modes/client-server.md
           - Troubleshooting: docs/references/troubleshooting.md
-  - Trivy Ecosystem: ecosystem/tools.md
+  - Ecosystem: ecosystem/tools.md
   - Contributing:
       - How to contribute:
           - Issues: community/contribute/issue.md

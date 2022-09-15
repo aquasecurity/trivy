@@ -1,4 +1,4 @@
-# Trivy Kuberentes Tutorial
+# Kubernetes Scanning Tutorial
 
 ## Prerequisites 
 
@@ -6,7 +6,7 @@ To test the following commands yourself, make sure that you’re connected to a 
  
 Pro tip: The output of the commands will be even more interesting if you have some workloads running in your cluster. 
 
-## Trivy K8s 
+## Cluster Scanning
 
 Trivy K8s is great to get an overview of all the vulnerabilities and misconfiguration issues or to scan specific workloads that are running in your cluster. You would want to use the Trivy K8s command either on your own local cluster or in your CI/CD pipeline post deployments.  
 
