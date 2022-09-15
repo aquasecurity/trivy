@@ -49,7 +49,7 @@ var (
 		Name:       "rekor-url",
 		ConfigName: "scan.rekor-url",
 		Value:      "https://rekor.sigstore.dev",
-		Usage:      "URL of rekor server (default \"https://rekor.sigstore.dev\")",
+		Usage:      "EXPERIMENTAL: URL of Rekor server",
 	}
 )
 
