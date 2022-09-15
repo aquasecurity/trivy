@@ -18,8 +18,9 @@ type Repository struct {
 }
 
 type Layer struct {
-	Digest string `json:",omitempty"`
-	DiffID string `json:",omitempty"`
+	Digest    string `json:",omitempty"`
+	DiffID    string `json:",omitempty"`
+	CreatedBy string `json:",omitempty"`
 }
 
 type Package struct {
@@ -133,9 +134,16 @@ type ArtifactInfo struct {
 
 // BlobInfo is stored in cache
 type BlobInfo struct {
-	SchemaVersion     int
-	Digest            string             `json:",omitempty"`
-	DiffID            string             `json:",omitempty"`
+	SchemaVersion int
+
+	// Layer information
+	Digest        string   `json:",omitempty"`
+	DiffID        string   `json:",omitempty"`
+	CreatedBy     string   `json:",omitempty"`
+	OpaqueDirs    []string `json:",omitempty"`
+	WhiteoutFiles []string `json:",omitempty"`
+
+	// Analysis result
 	OS                *OS                `json:",omitempty"`
 	Repository        *Repository        `json:",omitempty"`
 	PackageInfos      []PackageInfo      `json:",omitempty"`
@@ -143,8 +151,6 @@ type BlobInfo struct {
 	Misconfigurations []Misconfiguration `json:",omitempty"`
 	Secrets           []Secret           `json:",omitempty"`
 	Licenses          []LicenseFile      `json:",omitempty"`
-	OpaqueDirs        []string           `json:",omitempty"`
-	WhiteoutFiles     []string           `json:",omitempty"`
 
 	// Red Hat distributions have build info per layer.
 	// This information will be embedded into packages when applying layers.
