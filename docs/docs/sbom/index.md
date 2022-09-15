@@ -1,6 +1,6 @@
 # SBOM
 
-## Reporting
+## Generating
 Trivy can generate the following SBOM formats.
 
 - [CycloneDX][cyclonedx]

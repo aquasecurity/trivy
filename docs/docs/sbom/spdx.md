@@ -1,7 +1,7 @@
 # SPDX
 
-## Reporting
-Trivy generates reports in the [SPDX][spdx] format.
+## Generating
+Trivy can generate SBOM in the [SPDX][spdx] format.
 
 You can use the regular subcommands (like `image`, `fs` and `rootfs`) and specify `spdx` with the `--format` option.
 
@@ -296,7 +296,7 @@ $ cat result.spdx.json | jq .
 </details>
 
 ## Scanning
-Trivy can take the SPDX report as an input and scan for vulnerabilities.
+Trivy can take the SPDX SBOM as an input and scan for vulnerabilities.
 To scan SBOM, you can use the `sbom` subcommand and pass the path to your SPDX report.
 The input format is automatically detected.
 
