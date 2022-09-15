@@ -30,8 +30,7 @@ const (
 	FormatSPDXXML                      Format = "spdx-xml"
 	FormatAttestCycloneDXJSON          Format = "attest-cyclonedx-json"
 	FormatAttestStatementCycloneDXJSON Format = "attest-statement-cyclonedx-json"
-
-	FormatUnknown Format = "unknown"
+	FormatUnknown                      Format = "unknown"
 )
 
 func DetectFormat(r io.ReadSeeker) (Format, error) {
