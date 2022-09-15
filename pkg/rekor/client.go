@@ -20,10 +20,7 @@ const (
 	uuidLen   = 64
 )
 
-var (
-	ErrNoEntry       = xerrors.Errorf("Rekor entries not found")
-	ErrNoAttestation = xerrors.Errorf("Rekor attestations not found")
-)
+var ErrNoAttestation = xerrors.Errorf("Rekor attestations not found")
 
 // EntryID is a hex-format string. The length of the string is 80.
 // It consists of two elements, the TreeID and the UUID.
@@ -69,9 +66,6 @@ func (c *Client) Search(ctx context.Context, hash string) ([]EntryID, error) {
 	if err != nil {
 		return nil, xerrors.Errorf("failed to search: %w", err)
 	}
-	if len(resp.Payload) == 0 {
-		return nil, ErrNoEntry
-	}
 
 	ids := make([]EntryID, len(resp.Payload))
 	for i, id := range resp.Payload {
@@ -87,6 +81,7 @@ func (c *Client) Search(ctx context.Context, hash string) ([]EntryID, error) {
 func (c *Client) GetEntry(ctx context.Context, entryID EntryID) (Entry, error) {
 	params := entries.NewGetLogEntryByUUIDParamsWithContext(ctx).WithEntryUUID(string(entryID))
 
+	// TODO: bulk search
 	resp, err := c.Entries.GetLogEntryByUUID(params)
 	if err != nil {
 		return Entry{}, xerrors.Errorf("failed to get log entry by UUID: %w", err)
@@ -94,7 +89,7 @@ func (c *Client) GetEntry(ctx context.Context, entryID EntryID) (Entry, error) {
 
 	entry, found := resp.Payload[entryID.UUID()]
 	if !found {
-		return Entry{}, ErrNoEntry
+		return Entry{}, ErrNoAttestation
 	}
 
 	if entry.Attestation == nil {

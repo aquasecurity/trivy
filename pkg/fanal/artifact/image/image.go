@@ -90,7 +90,7 @@ func (a Artifact) Inspect(ctx context.Context) (types.ArtifactReference, error) 
 	if res, err := a.fetchRemoteSBOM(ctx); err == nil {
 		// Found SBOM
 		return res, nil
-	} else if !errors.Is(err, errSBOMNotFound) && !errors.Is(err, errNoRepoDigest) {
+	} else if !errors.Is(err, errNoSBOMFound) {
 		// Fail on unexpected error, otherwise it falls into the usual scanning.
 		return types.ArtifactReference{}, xerrors.Errorf("remote SBOM fetching error: %w", err)
 	}

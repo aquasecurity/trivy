@@ -18,30 +18,31 @@ import (
 	"github.com/aquasecurity/trivy/pkg/types"
 )
 
-var (
-	errSBOMNotFound = xerrors.New("remote SBOM not found")
-	errNoRepoDigest = xerrors.New("no repo digest")
-)
+var errNoSBOMFound = xerrors.New("remote SBOM not found")
 
 func (a Artifact) fetchRemoteSBOM(ctx context.Context) (ftypes.ArtifactReference, error) {
 	for _, sbomFrom := range a.artifactOption.SbomFroms {
 		switch sbomFrom {
 		case types.SbomFromTypeRekor:
-			ref, err := a.inspectSbomAttestation(ctx)
-			if err == nil {
-				return ref, nil
+			ref, err := a.inspectSBOMAttestation(ctx)
+			if errors.Is(err, errNoSBOMFound) {
+				// Try the next SBOM source
+				continue
+			} else if err != nil {
+				return ftypes.ArtifactReference{}, xerrors.Errorf("Rekor attestation searching error: %w", err)
 			}
-			log.Logger.Debugf("Failed to inspect SBOM Attestation from rekor")
+			// Found SBOM
+			log.Logger.Infof("Found SBOM (%s) attestation in Rekor", ref.Type)
+			return ref, nil
 		}
 	}
-	return ftypes.ArtifactReference{}, errSBOMNotFound
-
+	return ftypes.ArtifactReference{}, errNoSBOMFound
 }
 
-func (a Artifact) inspectSbomAttestation(ctx context.Context) (ftypes.ArtifactReference, error) {
+func (a Artifact) inspectSBOMAttestation(ctx context.Context) (ftypes.ArtifactReference, error) {
 	digest, err := repoDigest(a.image)
 	if err != nil {
-		return ftypes.ArtifactReference{}, xerrors.Errorf("failed to get repo digest: %w", err)
+		return ftypes.ArtifactReference{}, xerrors.Errorf("repo digest error: %w", err)
 	}
 
 	client, err := rekor.NewClient(a.artifactOption.RekorUrl)
@@ -50,35 +51,29 @@ func (a Artifact) inspectSbomAttestation(ctx context.Context) (ftypes.ArtifactRe
 	}
 
 	entryIDs, err := client.Search(ctx, digest)
-	if err != nil {
-		if errors.Is(err, rekor.ErrNoEntry) {
-			return ftypes.ArtifactReference{}, errSBOMNotFound
-		}
+	if len(entryIDs) == 0 {
+		return ftypes.ArtifactReference{}, errNoSBOMFound
+	} else if err != nil {
 		return ftypes.ArtifactReference{}, xerrors.Errorf("failed to search rekor records: %w", err)
 	}
 
 	log.Logger.Debugf("Found matching Rekor entries: %s", entryIDs)
 	for _, id := range entryIDs {
 		log.Logger.Debugf("Inspecting Rekor entry: %s", id)
-		results, err := a.inspectRekorRecord(ctx, client, id)
-		if err != nil {
-			if errors.Is(err, errSBOMNotFound) {
-				continue
-			}
+		ref, err := a.inspectRekorRecord(ctx, client, id)
+		if errors.Is(err, rekor.ErrNoAttestation) {
+			continue
+		} else if err != nil {
 			return ftypes.ArtifactReference{}, xerrors.Errorf("rekor rekord inspection error: %w", err)
 		}
-		// Found SBOM
-		return results, nil
+		return ref, nil
 	}
-	return ftypes.ArtifactReference{}, xerrors.Errorf("failed to inspect SBOM attestation: %w", err)
+	return ftypes.ArtifactReference{}, errNoSBOMFound
 }
 
 func (a Artifact) inspectRekorRecord(ctx context.Context, client *rekor.Client, entryID rekor.EntryID) (ftypes.ArtifactReference, error) {
 	entry, err := client.GetEntry(ctx, entryID)
 	if err != nil {
-		if errors.Is(err, rekor.ErrNoEntry) || errors.Is(err, rekor.ErrNoAttestation) {
-			return ftypes.ArtifactReference{}, errSBOMNotFound
-		}
 		return ftypes.ArtifactReference{}, xerrors.Errorf("failed to get rekor entry: %w", err)
 	}
 
@@ -128,7 +123,7 @@ func (a Artifact) parseStatement(entry rekor.Entry) (json.RawMessage, error) {
 
 	// TODO: add support for SPDX
 	if statement.PredicateType != in_toto.PredicateCycloneDX {
-		return nil, xerrors.Errorf("unsupported predicate type %s: %w", statement.PredicateType, errSBOMNotFound)
+		return nil, xerrors.Errorf("unsupported predicate type %s: %w", statement.PredicateType, errNoSBOMFound)
 	}
 	return raw, nil
 }
@@ -142,6 +137,6 @@ func repoDigest(img ftypes.Image) (string, error) {
 			return d, nil
 		}
 	}
-	return "", errNoRepoDigest
+	return "", xerrors.Errorf("no repo digest found: %w", errNoSBOMFound)
 
 }
