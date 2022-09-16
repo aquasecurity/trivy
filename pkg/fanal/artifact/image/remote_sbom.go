@@ -1,6 +1,7 @@
 package image
 
 import (
+	"bytes"
 	"context"
 	"encoding/json"
 	"errors"
@@ -61,10 +62,10 @@ func (a Artifact) inspectSBOMAttestation(ctx context.Context) (ftypes.ArtifactRe
 	for _, id := range entryIDs {
 		log.Logger.Debugf("Inspecting Rekor entry: %s", id)
 		ref, err := a.inspectRekorRecord(ctx, client, id)
-		if errors.Is(err, rekor.ErrNoAttestation) {
+		if errors.Is(err, rekor.ErrNoAttestation) || errors.Is(err, errNoSBOMFound) {
 			continue
 		} else if err != nil {
-			return ftypes.ArtifactReference{}, xerrors.Errorf("rekor rekord inspection error: %w", err)
+			return ftypes.ArtifactReference{}, xerrors.Errorf("rekor record inspection error: %w", err)
 		}
 		return ref, nil
 	}
@@ -111,6 +112,11 @@ func (a Artifact) inspectRekorRecord(ctx context.Context, client *rekor.Client, 
 }
 
 func (a Artifact) parseStatement(entry rekor.Entry) (json.RawMessage, error) {
+	// Skip base64-encoded attestation
+	if bytes.HasPrefix(entry.Statement, []byte(`eyJ`)) {
+		return nil, errNoSBOMFound
+	}
+
 	// Parse statement of in-toto attestation
 	var raw json.RawMessage
 	statement := &in_toto.Statement{
