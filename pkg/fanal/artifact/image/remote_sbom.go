@@ -61,10 +61,10 @@ func (a Artifact) inspectSBOMAttestation(ctx context.Context) (ftypes.ArtifactRe
 	for _, id := range entryIDs {
 		log.Logger.Debugf("Inspecting Rekor entry: %s", id)
 		ref, err := a.inspectRekorRecord(ctx, client, id)
-		if errors.Is(err, rekor.ErrNoAttestation) {
+		if errors.Is(err, rekor.ErrNoAttestation) || errors.Is(err, errNoSBOMFound) {
 			continue
 		} else if err != nil {
-			return ftypes.ArtifactReference{}, xerrors.Errorf("rekor rekord inspection error: %w", err)
+			return ftypes.ArtifactReference{}, xerrors.Errorf("rekor record inspection error: %w", err)
 		}
 		return ref, nil
 	}
