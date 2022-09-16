@@ -2006,9 +2006,47 @@
         
       
       
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          SPDX
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
       <a href="./" class="md-nav__link md-nav__link--active">
         SPDX
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#generating" class="md-nav__link">
+    Generating
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#scanning" class="md-nav__link">
+    Scanning
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
       
     </li>
   
@@ -2941,6 +2979,28 @@
     
   
   
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#generating" class="md-nav__link">
+    Generating
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#scanning" class="md-nav__link">
+    Scanning
+  </a>
+  
+</li>
+      
+    </ul>
+  
 </nav>
                   </div>
                 </div>
@@ -2954,7 +3014,8 @@
 
 
 <h1 id="spdx">SPDX</h1>
-<p>Trivy generates reports in the <a href="https://spdx.dev/wp-content/uploads/sites/41/2020/08/SPDX-specification-2-2.pdf">SPDX</a> format.</p>
+<h2 id="generating">Generating</h2>
+<p>Trivy can generate SBOM in the <a href="https://spdx.dev/wp-content/uploads/sites/41/2020/08/SPDX-specification-2-2.pdf">SPDX</a> format.</p>
 <p>You can use the regular subcommands (like <code>image</code>, <code>fs</code> and <code>rootfs</code>) and specify <code>spdx</code> with the <code>--format</code> option.</p>
 <div class="highlight"><pre><span></span><code>$ trivy image --format spdx --output result.spdx alpine:3.15
 </code></pre></div>
@@ -3238,6 +3299,50 @@ PackageLicenseDeclared: GPL-2.0-only
 </code></pre></div>
 
 </details>
+
+<h2 id="scanning">Scanning</h2>
+<p>Trivy can take the SPDX SBOM as an input and scan for vulnerabilities.
+To scan SBOM, you can use the <code>sbom</code> subcommand and pass the path to your SPDX report.
+The input format is automatically detected.</p>
+<p>The following formats are supported:</p>
+<ul>
+<li>Tag-value (<code>--format spdx</code>)</li>
+<li>JSON (<code>--format spdx-json</code>)</li>
+</ul>
+<div class="highlight"><pre><span></span><code>$ trivy image --format spdx-json --output spdx.json alpine:3.16.0
+$ trivy sbom spdx.json
+<span class="m">2022</span>-09-15T21:32:27.168+0300    INFO    Vulnerability scanning is enabled
+<span class="m">2022</span>-09-15T21:32:27.169+0300    INFO    Detected SBOM format: spdx-json
+<span class="m">2022</span>-09-15T21:32:27.210+0300    INFO    Detected OS: alpine
+<span class="m">2022</span>-09-15T21:32:27.210+0300    INFO    Detecting Alpine vulnerabilities...
+<span class="m">2022</span>-09-15T21:32:27.211+0300    INFO    Number of language-specific files: <span class="m">0</span>
+
+spdx.json <span class="o">(</span>alpine <span class="m">3</span>.16.0<span class="o">)</span>
+<span class="o">=========================</span>
+Total: <span class="m">5</span> <span class="o">(</span>UNKNOWN: <span class="m">0</span>, LOW: <span class="m">0</span>, MEDIUM: <span class="m">2</span>, HIGH: <span class="m">2</span>, CRITICAL: <span class="m">1</span><span class="o">)</span>
+
+┌──────────────┬────────────────┬──────────┬───────────────────┬───────────────┬────────────────────────────────────────────────────────────┐
+│   Library    │ Vulnerability  │ Severity │ Installed Version │ Fixed Version │                           Title                            │
+├──────────────┼────────────────┼──────────┼───────────────────┼───────────────┼────────────────────────────────────────────────────────────┤
+│ busybox      │ CVE-2022-30065 │ HIGH     │ <span class="m">1</span>.35.0-r13        │ <span class="m">1</span>.35.0-r15    │ busybox: A use-after-free <span class="k">in</span> Busybox<span class="s1">&#39;s awk applet leads to │</span>
+<span class="s1">│              │                │          │                   │               │ denial of service...                                       │</span>
+<span class="s1">│              │                │          │                   │               │ https://avd.aquasec.com/nvd/cve-2022-30065                 │</span>
+<span class="s1">├──────────────┼────────────────┼──────────┼───────────────────┼───────────────┼────────────────────────────────────────────────────────────┤</span>
+<span class="s1">│ libcrypto1.1 │ CVE-2022-2097  │ MEDIUM   │ 1.1.1o-r0         │ 1.1.1q-r0     │ openssl: AES OCB fails to encrypt some bytes               │</span>
+<span class="s1">│              │                │          │                   │               │ https://avd.aquasec.com/nvd/cve-2022-2097                  │</span>
+<span class="s1">├──────────────┤                │          │                   │               │                                                            │</span>
+<span class="s1">│ libssl1.1    │                │          │                   │               │                                                            │</span>
+<span class="s1">│              │                │          │                   │               │                                                            │</span>
+<span class="s1">├──────────────┼────────────────┼──────────┼───────────────────┼───────────────┼────────────────────────────────────────────────────────────┤</span>
+<span class="s1">│ ssl_client   │ CVE-2022-30065 │ HIGH     │ 1.35.0-r13        │ 1.35.0-r15    │ busybox: A use-after-free in Busybox&#39;</span>s awk applet leads to │
+│              │                │          │                   │               │ denial of service...                                       │
+│              │                │          │                   │               │ https://avd.aquasec.com/nvd/cve-2022-30065                 │
+├──────────────┼────────────────┼──────────┼───────────────────┼───────────────┼────────────────────────────────────────────────────────────┤
+│ zlib         │ CVE-2022-37434 │ CRITICAL │ <span class="m">1</span>.2.12-r1         │ <span class="m">1</span>.2.12-r2     │ zlib: a heap-based buffer over-read or buffer overflow <span class="k">in</span>  │
+│              │                │          │                   │               │ inflate <span class="k">in</span> inflate.c...                                    │
+│              │                │          │                   │               │ https://avd.aquasec.com/nvd/cve-2022-37434                 │
+└──────────────┴────────────────┴──────────┴───────────────────┴───────────────┴────────────────────────────────────────────────────────────┘
+</code></pre></div>
 
               
             </article>

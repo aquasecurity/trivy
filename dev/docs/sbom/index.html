@@ -2003,8 +2003,8 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#reporting" class="md-nav__link">
-    Reporting
+  <a href="#generating" class="md-nav__link">
+    Generating
   </a>
   
 </li>
@@ -2986,8 +2986,8 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#reporting" class="md-nav__link">
-    Reporting
+  <a href="#generating" class="md-nav__link">
+    Generating
   </a>
   
 </li>
@@ -3014,7 +3014,7 @@
 
 
 <h1 id="sbom">SBOM</h1>
-<h2 id="reporting">Reporting</h2>
+<h2 id="generating">Generating</h2>
 <p>Trivy can generate the following SBOM formats.</p>
 <ul>
 <li><a href="cyclonedx/">CycloneDX</a></li>
@@ -3187,32 +3187,21 @@
 <p>Trivy also can take the following SBOM formats as an input and scan for vulnerabilities.</p>
 <ul>
 <li>CycloneDX</li>
+<li>SPDX</li>
+<li>SPDX JSON</li>
 <li>CycloneDX-type attestation</li>
 </ul>
 <p>To scan SBOM, you can use the <code>sbom</code> subcommand and pass the path to the SBOM.</p>
 <div class="highlight"><pre><span></span><code>$ trivy sbom /path/to/cyclonedx.json
-
-cyclonedx.json <span class="o">(</span>alpine <span class="m">3</span>.7.1<span class="o">)</span>
-<span class="o">=========================</span>
-Total: <span class="m">3</span> <span class="o">(</span>CRITICAL: <span class="m">3</span><span class="o">)</span>
-
-┌─────────────┬────────────────┬──────────┬───────────────────┬───────────────┬──────────────────────────────────────────────────────────────┐
-│   Library   │ Vulnerability  │ Severity │ Installed Version │ Fixed Version │                            Title                             │
-├─────────────┼────────────────┼──────────┼───────────────────┼───────────────┼──────────────────────────────────────────────────────────────┤
-│ curl        │ CVE-2018-14618 │ CRITICAL │ <span class="m">7</span>.61.0-r0         │ <span class="m">7</span>.61.1-r0     │ curl: NTLM password overflow via integer overflow            │
-│             │                │          │                   │               │ https://avd.aquasec.com/nvd/cve-2018-14618                   │
-├─────────────┼────────────────┼──────────┼───────────────────┼───────────────┼──────────────────────────────────────────────────────────────┤
-│ libbz2      │ CVE-2019-12900 │ CRITICAL │ <span class="m">1</span>.0.6-r6          │ <span class="m">1</span>.0.6-r7      │ bzip2: out-of-bounds write <span class="k">in</span> <span class="k">function</span> BZ2_decompress        │
-│             │                │          │                   │               │ https://avd.aquasec.com/nvd/cve-2019-12900                   │
-├─────────────┼────────────────┼──────────┼───────────────────┼───────────────┼──────────────────────────────────────────────────────────────┤
-│ sqlite-libs │ CVE-2019-8457  │ CRITICAL │ <span class="m">3</span>.21.0-r1         │ <span class="m">3</span>.25.3-r1     │ sqlite: heap out-of-bound <span class="nb">read</span> <span class="k">in</span> <span class="k">function</span> rtreenode<span class="o">()</span>       │
-│             │                │          │                   │               │ https://avd.aquasec.com/nvd/cve-2019-8457                    │
-└─────────────┴────────────────┴──────────┴───────────────────┴───────────────┴──────────────────────────────────────────────────────────────┘
 </code></pre></div>
+<p>See <a href="cyclonedx/">here</a> for the detail.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>CycloneDX XML and SPDX are not supported at the moment.</p>
+<p>CycloneDX XML is not supported at the moment.</p>
 </div>
+<div class="highlight"><pre><span></span><code>$ trivy sbom /path/to/spdx.json
+</code></pre></div>
+<p>See <a href="spdx/">here</a> for the detail.</p>
 <p>You can also scan an SBOM attestation.
 In the following example, <a href="https://github.com/sigstore/cosign">Cosign</a> can get an attestation and trivy scan it. You must create CycloneDX-type attestation before trying the example. To learn more about how to create an CycloneDX-Type attestation and attach it to an image, see the <a href="../attestation/sbom/#sign-with-a-local-key-pair">SBOM attestation page</a>.
 <div class="highlight"><pre><span></span><code>$ cosign verify-attestation --key /path/to/cosign.pub --type cyclonedx &lt;IMAGE&gt; &gt; sbom.cdx.intoto.jsonl
