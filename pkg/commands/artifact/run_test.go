@@ -18,9 +18,9 @@ func TestCanonicalVersion(t *testing.T) {
 			want:  "v0.34",
 		},
 		{
-			title: "version with v",
+			title: "version with v - isn't right semver version",
 			input: "v0.34.0",
-			want:  "v0.34",
+			want:  devVersion,
 		},
 		{
 			title: "dev version",
