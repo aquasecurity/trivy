@@ -1,6 +1,7 @@
 package image
 
 import (
+	"bytes"
 	"context"
 	"encoding/json"
 	"errors"
@@ -111,6 +112,11 @@ func (a Artifact) inspectRekorRecord(ctx context.Context, client *rekor.Client, 
 }
 
 func (a Artifact) parseStatement(entry rekor.Entry) (json.RawMessage, error) {
+	// Skip base64-encoded attestation
+	if bytes.HasPrefix(entry.Statement, []byte(`eyJ`)) {
+		return nil, errNoSBOMFound
+	}
+
 	// Parse statement of in-toto attestation
 	var raw json.RawMessage
 	statement := &in_toto.Statement{
