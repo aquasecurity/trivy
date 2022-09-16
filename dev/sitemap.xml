@@ -101,6 +101,11 @@
          <changefreq>daily</changefreq>
     </url>
     <url>
+         <loc>https://aquasecurity.github.io/trivy/dev/docs/attestation/rekor/</loc>
+         <lastmod>2022-09-16</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
          <loc>https://aquasecurity.github.io/trivy/dev/docs/attestation/sbom/</loc>
          <lastmod>2022-09-16</lastmod>
          <changefreq>daily</changefreq>

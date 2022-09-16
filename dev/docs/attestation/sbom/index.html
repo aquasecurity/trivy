@@ -2123,6 +2123,20 @@
 
             
           
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../rekor/" class="md-nav__link">
+        SBOM Attestation in Rekor
+      </a>
+    </li>
+  
+
+            
+          
         </ul>
       </nav>
     </li>
@@ -3060,6 +3074,7 @@ $ cosign attest --key /path/to/cosign.key --type spdx --predicate sbom.spdx.json
 <p>You can use Cosign to sign without keys by authenticating with an OpenID Connect protocol supported by sigstore (Google, GitHub, or Microsoft).</p>
 <div class="highlight"><pre><span></span><code><span class="c1"># The cyclonedx type is supported in Cosign v1.10.0 or later.</span>
 $ trivy image --format cyclonedx -o sbom.cdx.json &lt;IMAGE&gt;
+<span class="c1"># The following command uploads SBOM attestation to the public Rekor instance.</span>
 $ <span class="nv">COSIGN_EXPERIMENTAL</span><span class="o">=</span><span class="m">1</span> cosign attest --type cyclonedx --predicate sbom.cdx.json &lt;IMAGE&gt;
 </code></pre></div>
 <p>You can verify attestations.
