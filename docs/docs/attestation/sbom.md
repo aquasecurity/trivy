@@ -48,6 +48,7 @@ You can use Cosign to sign without keys by authenticating with an OpenID Connect
 ```bash
 # The cyclonedx type is supported in Cosign v1.10.0 or later.
 $ trivy image --format cyclonedx -o sbom.cdx.json <IMAGE>
+# The following command uploads SBOM attestation to the public Rekor instance.
 $ COSIGN_EXPERIMENTAL=1 cosign attest --type cyclonedx --predicate sbom.cdx.json <IMAGE>
 ```
 

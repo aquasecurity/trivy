@@ -42,13 +42,13 @@ var (
 		Name:       "sbom-sources",
 		ConfigName: "scan.sbom-sources",
 		Value:      []string{},
-		Usage:      "EXPERIMENTAL: SBOM sources (rekor)",
+		Usage:      "[EXPERIMENTAL] try to retrieve SBOM from the specified sources (rekor)",
 	}
 	RekorURLFlag = Flag{
 		Name:       "rekor-url",
 		ConfigName: "scan.rekor-url",
 		Value:      "https://rekor.sigstore.dev",
-		Usage:      "EXPERIMENTAL: URL of Rekor server",
+		Usage:      "[EXPERIMENTAL] address of rekor STL server",
 	}
 )
 

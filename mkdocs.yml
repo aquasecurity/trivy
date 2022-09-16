@@ -98,6 +98,7 @@ nav:
       - Attestation:
           - SBOM: docs/attestation/sbom.md
           - Cosign Vulnerability Scan Record: docs/attestation/vuln.md
+          - SBOM Attestation in Rekor: docs/attestation/rekor.md
       - Advanced:
           - Modules: docs/advanced/modules.md
           - Plugins: docs/advanced/plugins.md
