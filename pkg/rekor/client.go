@@ -38,7 +38,7 @@ func NewEntryID(entryID string) (EntryID, error) {
 	case uuidLen:
 		return EntryID{TreeID: "", UUID: entryID}, nil
 	default:
-		return EntryID{}, xerrors.Errorf("invalid Entry ID length")
+		return EntryID{}, xerrors.New("invalid Entry ID length")
 	}
 }
 
