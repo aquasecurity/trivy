@@ -2,6 +2,7 @@ package scanner
 
 import (
 	"context"
+	"github.com/aquasecurity/trivy/pkg/fanal/artifact/vm"
 
 	"github.com/google/wire"
 	"golang.org/x/xerrors"
@@ -64,6 +65,12 @@ var StandaloneSBOMSet = wire.NewSet(
 	StandaloneSuperSet,
 )
 
+// StandaloneVMSet binds vm dependencies
+var StandaloneVMSet = wire.NewSet(
+	vm.NewArtifact,
+	StandaloneSuperSet,
+)
+
 /////////////////
 // Client/Server
 /////////////////
@@ -85,6 +92,12 @@ var RemoteFilesystemSet = wire.NewSet(
 // RemoteSBOMSet binds sbom dependencies for client/server mode
 var RemoteSBOMSet = wire.NewSet(
 	sbom.NewArtifact,
+	RemoteSuperSet,
+)
+
+// RemoteVMSet binds vm dependencies for client/server mode
+var RemoteVMSet = wire.NewSet(
+	vm.NewArtifact,
 	RemoteSuperSet,
 )
 

@@ -40,6 +40,7 @@ const (
 	TargetRepository     TargetKind = "repo"
 	TargetImageArchive   TargetKind = "archive"
 	TargetSBOM           TargetKind = "sbom"
+	TargetVM             TargetKind = "vm"
 
 	devVersion = "dev"
 )
@@ -78,6 +79,8 @@ type Runner interface {
 	ScanRepository(ctx context.Context, opts flag.Options) (types.Report, error)
 	// ScanSBOM scans SBOM
 	ScanSBOM(ctx context.Context, opts flag.Options) (types.Report, error)
+	// ScanVM scans VM
+	ScanVM(ctx context.Context, opts flag.Options) (types.Report, error)
 	// Filter filter a report
 	Filter(ctx context.Context, opts flag.Options, report types.Report) (types.Report, error)
 	// Report a writes a report
@@ -219,6 +222,19 @@ func (r *runner) ScanSBOM(ctx context.Context, opts flag.Options) (types.Report,
 	} else {
 		// Scan cycloneDX in client/server mode
 		s = sbomRemoteScanner
+	}
+
+	return r.scanArtifact(ctx, opts, s)
+}
+
+func (r *runner) ScanVM(ctx context.Context, opts flag.Options) (types.Report, error) {
+	var s InitializeScanner
+	if opts.ServerAddr == "" {
+		// Scan filesystem in standalone mode
+		s = vmStandaloneScanner
+	} else {
+		// Scan filesystem in client/server mode
+		s = vmRemoteScanner
 	}
 
 	return r.scanArtifact(ctx, opts, s)
@@ -383,6 +399,10 @@ func Run(ctx context.Context, opts flag.Options, targetKind TargetKind) (err err
 		}
 	case TargetSBOM:
 		if report, err = r.ScanSBOM(ctx, opts); err != nil {
+			return xerrors.Errorf("sbom scan error: %w", err)
+		}
+	case TargetVM:
+		if report, err = r.ScanVM(ctx, opts); err != nil {
 			return xerrors.Errorf("sbom scan error: %w", err)
 		}
 	}

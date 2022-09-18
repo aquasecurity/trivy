@@ -87,6 +87,7 @@ func NewApp(version string) *cobra.Command {
 		NewSBOMCommand(globalFlags),
 		NewVersionCommand(globalFlags),
 		NewAWSCommand(globalFlags),
+		NewVMCommand(globalFlags),
 	)
 	rootCmd.AddCommand(loadPluginCommands()...)
 
@@ -849,6 +850,55 @@ The following services are supported:
 	cmd.SetFlagErrorFunc(flagErrorFunc)
 	awsFlags.AddFlags(cmd)
 	cmd.SetUsageTemplate(fmt.Sprintf(usageTemplate, awsFlags.Usages(cmd)))
+
+	return cmd
+}
+
+func NewVMCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
+	reportFlagGroup := flag.NewReportFlagGroup()
+	reportFlagGroup.ReportFormat = nil // TODO: support --report summary
+	reportFlagGroup.DependencyTree = nil
+
+	vmFlags := &flag.Flags{
+		CacheFlagGroup:         flag.NewCacheFlagGroup(),
+		DBFlagGroup:            flag.NewDBFlagGroup(),
+		LicenseFlagGroup:       flag.NewLicenseFlagGroup(),
+		MisconfFlagGroup:       flag.NewMisconfFlagGroup(),
+		RemoteFlagGroup:        flag.NewClientFlags(), // for client/server mode
+		ReportFlagGroup:        reportFlagGroup,
+		ScanFlagGroup:          flag.NewScanFlagGroup(),
+		SecretFlagGroup:        flag.NewSecretFlagGroup(),
+		VulnerabilityFlagGroup: flag.NewVulnerabilityFlagGroup(),
+	}
+
+	cmd := &cobra.Command{
+		Use:     "vm [flags] VM_IMAGE",
+		Aliases: []string{"repo"},
+		Short:   "Scan a virtual machine image",
+		Example: `  # Scan your virtual machine image
+  $ trivy vm export-ami.vmdk`,
+		PreRunE: func(cmd *cobra.Command, args []string) error {
+			if err := vmFlags.Bind(cmd); err != nil {
+				return xerrors.Errorf("flag bind error: %w", err)
+			}
+			return validateArgs(cmd, args)
+		},
+		RunE: func(cmd *cobra.Command, args []string) error {
+			if err := vmFlags.Bind(cmd); err != nil {
+				return xerrors.Errorf("flag bind error: %w", err)
+			}
+			options, err := vmFlags.ToOptions(cmd.Version, args, globalFlags, outputWriter)
+			if err != nil {
+				return xerrors.Errorf("flag error: %w", err)
+			}
+			return artifact.Run(cmd.Context(), options, artifact.TargetVM)
+		},
+		SilenceErrors: true,
+		SilenceUsage:  true,
+	}
+	cmd.SetFlagErrorFunc(flagErrorFunc)
+	vmFlags.AddFlags(cmd)
+	cmd.SetUsageTemplate(fmt.Sprintf(usageTemplate, vmFlags.Usages(cmd)))
 
 	return cmd
 }
