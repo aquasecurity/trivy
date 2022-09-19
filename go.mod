@@ -49,7 +49,10 @@ require (
 	github.com/liamg/memoryfs v1.4.2
 	github.com/liamg/tml v0.6.0
 	github.com/mailru/easyjson v0.7.7
+	github.com/masahiro331/go-disk v0.0.0-20220919035250-c8da316f91ac
 	github.com/masahiro331/go-mvn-version v0.0.0-20210429150710-d3157d602a08
+	github.com/masahiro331/go-vmdk-parser v0.0.0-20220919025536-211539ca2806
+	github.com/masahiro331/go-xfs-filesystem v0.0.0-20220918133020-def5dd0df4f5
 	github.com/mitchellh/hashstructure/v2 v2.0.2
 	github.com/open-policy-agent/opa v0.43.0
 	github.com/owenrumney/go-sarif/v2 v2.1.2
@@ -69,7 +72,7 @@ require (
 	go.etcd.io/bbolt v1.3.6
 	go.uber.org/zap v1.23.0
 	golang.org/x/exp v0.0.0-20220823124025-807a23277127
-	golang.org/x/xerrors v0.0.0-20220609144429-65e65417b02f
+	golang.org/x/xerrors v0.0.0-20220907171357-04be3eba64a2
 	google.golang.org/protobuf v1.28.1
 	gopkg.in/yaml.v3 v3.0.1
 	k8s.io/utils v0.0.0-20220210201930-3a6ce19ff2f9

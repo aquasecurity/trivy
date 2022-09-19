@@ -228,6 +228,9 @@ func (r *runner) ScanSBOM(ctx context.Context, opts flag.Options) (types.Report,
 }
 
 func (r *runner) ScanVM(ctx context.Context, opts flag.Options) (types.Report, error) {
+	// TODO: Does VM scan disable lock file..?
+	opts.DisabledAnalyzers = analyzer.TypeLockfiles
+
 	var s InitializeScanner
 	if opts.ServerAddr == "" {
 		// Scan filesystem in standalone mode
@@ -403,7 +406,7 @@ func Run(ctx context.Context, opts flag.Options, targetKind TargetKind) (err err
 		}
 	case TargetVM:
 		if report, err = r.ScanVM(ctx, opts); err != nil {
-			return xerrors.Errorf("sbom scan error: %w", err)
+			return xerrors.Errorf("vm scan error: %w", err)
 		}
 	}
 

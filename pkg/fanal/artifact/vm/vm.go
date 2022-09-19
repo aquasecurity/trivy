@@ -4,10 +4,19 @@ import (
 	"context"
 	"crypto/sha256"
 	"encoding/json"
+	"github.com/aquasecurity/trivy/pkg/fanal/vm"
+	"golang.org/x/sync/semaphore"
+	"os"
 	"path/filepath"
+	"sync"
 
 	"github.com/opencontainers/go-digest"
 	"golang.org/x/xerrors"
+
+	// Register Filesystem
+	_ "github.com/aquasecurity/trivy/pkg/fanal/vm/filesystem/xfs"
+	// Register Reader
+	_ "github.com/aquasecurity/trivy/pkg/fanal/vm/vmdk"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/artifact"
@@ -15,6 +24,10 @@ import (
 	"github.com/aquasecurity/trivy/pkg/fanal/handler"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/fanal/walker"
+)
+
+const (
+	parallel = 5
 )
 
 type Artifact struct {
@@ -30,15 +43,25 @@ type Artifact struct {
 func (a Artifact) Inspect(ctx context.Context) (reference types.ArtifactReference, err error) {
 	result := analyzer.NewAnalysisResult()
 
-	// err = a.walker.Walk(a.filePath, func(filePath string, info os.FileInfo, opener analyzer.Opener) error {
-	// 	// opts := analyzer.AnalysisOptions{Offline: a.artifactOption.Offline}
-	// 	// if err = a.analyzer.AnalyzeFile(ctx, &wg, limit, result, directory, filePath, info, opener, nil, opts); err != nil {
-	// 	// 	return xerrors.Errorf("analyze file (%s): %w", filePath, err)
-	// 	// }
-	// 	return nil
-	// })
+	v, err := vm.New(a.filePath)
 	if err != nil {
-		return types.ArtifactReference{}, xerrors.Errorf("walk vm: %w", err)
+		return types.ArtifactReference{}, xerrors.Errorf("new virtual machine error: %w", err)
+	}
+	defer v.Close()
+
+	var wg sync.WaitGroup
+	limit := semaphore.NewWeighted(parallel)
+
+	// TODO: Always walk from the root directory. Consider whether there is a need to be able to set optional
+	err = a.walker.Walk(v.SectionReader, "/", func(filePath string, info os.FileInfo, opener analyzer.Opener) error {
+		opts := analyzer.AnalysisOptions{Offline: a.artifactOption.Offline}
+		if err = a.analyzer.AnalyzeFile(ctx, &wg, limit, result, "/", filePath, info, opener, nil, opts); err != nil {
+			return xerrors.Errorf("analyze file (%s): %w", filePath, err)
+		}
+		return nil
+	})
+	if err != nil {
+		return types.ArtifactReference{}, xerrors.Errorf("walk vm error: %w", err)
 	}
 	result.Sort()
 
@@ -57,6 +80,7 @@ func (a Artifact) Inspect(ctx context.Context) (reference types.ArtifactReferenc
 		return types.ArtifactReference{}, xerrors.Errorf("failed to call hooks: %w", err)
 	}
 
+	// TODO: use virtual machine image sha:256 key..?
 	cacheKey, err := a.calcCacheKey(blobInfo)
 	if err != nil {
 		return types.ArtifactReference{}, xerrors.Errorf("failed to calculate a cache key: %w", err)

@@ -2,29 +2,27 @@ package vmdk
 
 import (
 	"github.com/aquasecurity/trivy/pkg/fanal/vm"
-	"github.com/hashicorp/go-multierror"
 	"github.com/masahiro331/go-vmdk-parser/pkg/virtualization/vmdk"
 	"golang.org/x/xerrors"
 	"io"
 )
 
 func init() {
-	vm.RegisterVMParser(&VMDK{})
+	vm.RegisterVMReader(&VMDK{})
 }
 
 type VMDK struct{}
 
 func (V VMDK) Try(rs io.ReadSeeker) (bool, error) {
-	var errs error
+	defer rs.Seek(0, io.SeekStart)
 	ok, err := vmdk.Check(rs)
 	if err != nil {
-		errs = multierror.Append(errs, err)
+		return false, xerrors.Errorf("vmdk check error: %w", err)
 	}
-	rs.Seek(0, io.SeekStart)
-	return ok, errs
+	return ok, nil
 }
 
-func (V VMDK) Open(rs io.ReadSeeker) (*io.SectionReader, error) {
+func (V VMDK) NewVMReader(rs io.ReadSeeker) (*io.SectionReader, error) {
 	reader, err := vmdk.Open(rs)
 	if err != nil {
 		return nil, xerrors.Errorf("failed to open vmdk: %w", err)
