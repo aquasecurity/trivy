@@ -233,10 +233,10 @@ func (r *runner) ScanVM(ctx context.Context, opts flag.Options) (types.Report, e
 
 	var s InitializeScanner
 	if opts.ServerAddr == "" {
-		// Scan filesystem in standalone mode
+		// Scan virtual machine in standalone mode
 		s = vmStandaloneScanner
 	} else {
-		// Scan filesystem in client/server mode
+		// Scan virtual machine in client/server mode
 		s = vmRemoteScanner
 	}
 
