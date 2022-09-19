@@ -873,7 +873,7 @@ func NewVMCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 
 	cmd := &cobra.Command{
 		Use:     "vm [flags] VM_IMAGE",
-		Aliases: []string{"repo"},
+		Aliases: []string{},
 		Short:   "Scan a virtual machine image",
 		Example: `  # Scan your virtual machine image
   $ trivy vm export-ami.vmdk`,
