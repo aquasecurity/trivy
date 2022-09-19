@@ -2,18 +2,20 @@ package walker
 
 import (
 	"bytes"
-	dio "github.com/aquasecurity/go-dep-parser/pkg/io"
-	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
-	"github.com/aquasecurity/trivy/pkg/fanal/vm/filesystem"
-	"github.com/hashicorp/go-multierror"
-	"github.com/masahiro331/go-disk"
-	"github.com/masahiro331/go-disk/types"
-	"golang.org/x/xerrors"
 	"io"
 	"io/fs"
 	"os"
 	"path/filepath"
 	"sync"
+
+	"github.com/hashicorp/go-multierror"
+	"github.com/masahiro331/go-disk"
+	"github.com/masahiro331/go-disk/types"
+	"golang.org/x/xerrors"
+
+	dio "github.com/aquasecurity/go-dep-parser/pkg/io"
+	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
+	"github.com/aquasecurity/trivy/pkg/fanal/vm/filesystem"
 )
 
 type VM struct {

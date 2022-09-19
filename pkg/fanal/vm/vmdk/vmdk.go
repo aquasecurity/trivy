@@ -1,10 +1,12 @@
 package vmdk
 
 import (
-	"github.com/aquasecurity/trivy/pkg/fanal/vm"
+	"io"
+
 	"github.com/masahiro331/go-vmdk-parser/pkg/virtualization/vmdk"
 	"golang.org/x/xerrors"
-	"io"
+
+	"github.com/aquasecurity/trivy/pkg/fanal/vm"
 )
 
 func init() {

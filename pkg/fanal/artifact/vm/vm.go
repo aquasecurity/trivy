@@ -4,13 +4,12 @@ import (
 	"context"
 	"crypto/sha256"
 	"encoding/json"
-	"github.com/aquasecurity/trivy/pkg/fanal/vm"
-	"golang.org/x/sync/semaphore"
 	"os"
 	"path/filepath"
 	"sync"
 
 	"github.com/opencontainers/go-digest"
+	"golang.org/x/sync/semaphore"
 	"golang.org/x/xerrors"
 
 	// Register Filesystem
@@ -23,6 +22,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/fanal/cache"
 	"github.com/aquasecurity/trivy/pkg/fanal/handler"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
+	"github.com/aquasecurity/trivy/pkg/fanal/vm"
 	"github.com/aquasecurity/trivy/pkg/fanal/walker"
 )
 
