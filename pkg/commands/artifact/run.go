@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"os"
 
-	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/hashicorp/go-multierror"
 	"github.com/spf13/viper"
 	"golang.org/x/exp/slices"
@@ -20,6 +19,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer/config"
 	"github.com/aquasecurity/trivy/pkg/fanal/artifact"
 	"github.com/aquasecurity/trivy/pkg/fanal/cache"
+	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/flag"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/module"

@@ -112,6 +112,78 @@ func Test_Handle(t *testing.T) {
 				},
 			},
 		},
+		{
+			name: "happy path. No package.json files",
+			blob: &types.BlobInfo{
+				Applications: []types.Application{
+					{
+						Type:     types.Npm,
+						FilePath: "package-lock.json",
+						Libraries: []types.Package{
+							{
+								Name:    "@colors/colors",
+								Version: "1.5.0",
+							},
+						},
+					},
+					{
+						Type:     types.Npm,
+						FilePath: "app/package-lock.json",
+						Libraries: []types.Package{
+							{
+								Name:    "@colors/colors",
+								Version: "1.5.0",
+							},
+						},
+					},
+				},
+			},
+			want: &types.BlobInfo{
+				Applications: []types.Application{
+					{
+						Type:     types.Npm,
+						FilePath: "package-lock.json",
+						Libraries: []types.Package{
+							{
+								Name:    "@colors/colors",
+								Version: "1.5.0",
+							},
+						},
+					},
+					{
+						Type:     types.Npm,
+						FilePath: "app/package-lock.json",
+						Libraries: []types.Package{
+							{
+								Name:    "@colors/colors",
+								Version: "1.5.0",
+							},
+						},
+					},
+				},
+			},
+		},
+		{
+			name: "happy path. No package-lock.json files",
+			blob: &types.BlobInfo{
+				Applications: []types.Application{
+					{
+						Type:     types.NodePkg,
+						FilePath: "node_modules/@colors/colors/package.json",
+						Libraries: []types.Package{
+							{
+								Name:    "@colors/colors",
+								Version: "1.5.0",
+								Licenses: []string{
+									"Apache-2.0",
+								},
+							},
+						},
+					},
+				},
+			},
+			want: &types.BlobInfo{},
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
