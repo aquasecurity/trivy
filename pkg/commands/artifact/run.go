@@ -210,7 +210,6 @@ func (r *runner) ScanRepository(ctx context.Context, opts flag.Options) (types.R
 
 	// Disable the OS analyzers and individual package analyzers
 	opts.DisabledAnalyzers = append(analyzer.TypeIndividualPkgs, analyzer.TypeOSes...)
-	opts.DisabledHandlers = append(opts.DisabledHandlers, ftypes.NodeLicensesPostHandler)
 
 	return r.scanArtifact(ctx, opts, repositoryStandaloneScanner)
 }
