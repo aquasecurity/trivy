@@ -113,7 +113,7 @@ func Test_Handle(t *testing.T) {
 			},
 		},
 		{
-			name: "happy path. No package.json files",
+			name: "happy path. No node packages",
 			blob: &types.BlobInfo{
 				Applications: []types.Application{
 					{
@@ -164,7 +164,7 @@ func Test_Handle(t *testing.T) {
 			},
 		},
 		{
-			name: "happy path. No package-lock.json files",
+			name: "happy path. No npm packages",
 			blob: &types.BlobInfo{
 				Applications: []types.Application{
 					{
