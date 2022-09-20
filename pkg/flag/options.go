@@ -6,6 +6,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
 	"github.com/spf13/viper"
@@ -85,8 +86,9 @@ type Options struct {
 	// Trivy's version, not populated via CLI flags
 	AppVersion string
 
-	// We don't want to allow disabled analyzers to be passed by users, but it is necessary for internal use.
+	// We don't want to allow disabled analyzers or handlers to be passed by users, but it is necessary for internal use.
 	DisabledAnalyzers []analyzer.Type
+	DisabledHandlers  []types.HandlerType
 }
 
 // Align takes consistency of options

@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"os"
 
+	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/hashicorp/go-multierror"
 	"github.com/spf13/viper"
 	"golang.org/x/exp/slices"
@@ -184,6 +185,7 @@ func (r *runner) ScanFilesystem(ctx context.Context, opts flag.Options) (types.R
 func (r *runner) ScanRootfs(ctx context.Context, opts flag.Options) (types.Report, error) {
 	// Disable the lock file scanning
 	opts.DisabledAnalyzers = append(opts.DisabledAnalyzers, analyzer.TypeLockfiles...)
+	opts.DisabledHandlers = append(opts.DisabledHandlers, ftypes.NodeLicensesPostHandler)
 
 	return r.scanFS(ctx, opts)
 }
@@ -502,6 +504,7 @@ func initScannerConfig(opts flag.Options, cacheClient cache.Cache) (ScannerConfi
 		},
 		ArtifactOption: artifact.Option{
 			DisabledAnalyzers: disabledAnalyzers(opts),
+			DisabledHandlers:  opts.DisabledHandlers,
 			SkipFiles:         opts.SkipFiles,
 			SkipDirs:          opts.SkipDirs,
 			FilePatterns:      opts.FilePatterns,
