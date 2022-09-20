@@ -24,8 +24,8 @@ func (V VMDK) Try(rs io.ReadSeeker) (bool, error) {
 	return ok, nil
 }
 
-func (V VMDK) NewVMReader(rs io.ReadSeeker) (*io.SectionReader, error) {
-	reader, err := vmdk.Open(rs)
+func (V VMDK) NewVMReader(rs io.ReadSeeker, cache vm.Cache) (*io.SectionReader, error) {
+	reader, err := vmdk.Open(rs, cache)
 	if err != nil {
 		return nil, xerrors.Errorf("failed to open vmdk: %w", err)
 	}

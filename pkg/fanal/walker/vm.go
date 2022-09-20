@@ -15,6 +15,7 @@ import (
 
 	dio "github.com/aquasecurity/go-dep-parser/pkg/io"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
+	"github.com/aquasecurity/trivy/pkg/fanal/vm"
 	"github.com/aquasecurity/trivy/pkg/fanal/vm/filesystem"
 )
 
@@ -31,8 +32,8 @@ func NewVM(skipFiles, skipDirs []string) VM {
 type DiskWalker func(root string, partition types.Partition, fsfn FilesystemWalkDirFunc) error
 type FilesystemWalkDirFunc func(fsys fs.FS, path string, d fs.DirEntry, err error) error
 
-func (w VM) Walk(vreader *io.SectionReader, root string, fn WalkFunc) error {
-	err := walk(root, vreader, diskWalk, func(fsys fs.FS, path string, d fs.DirEntry, err error) error {
+func (w VM) Walk(vreader *io.SectionReader, cache vm.Cache, root string, fn WalkFunc) error {
+	err := walk(root, vreader, diskWalker(cache), func(fsys fs.FS, path string, d fs.DirEntry, err error) error {
 		if err != nil {
 			return xerrors.Errorf("fs.Walk error: %w", err)
 		}
@@ -89,43 +90,46 @@ func walk(root string, r *io.SectionReader, dfn DiskWalker, fsfn FilesystemWalkD
 }
 
 // Inject disk partitioning processes from externally with diskWalk.
-var diskWalk = func(root string, partition types.Partition, fn FilesystemWalkDirFunc) error {
-	if partition.Bootable() {
+func diskWalker(cache vm.Cache) DiskWalker {
+	return func(root string, partition types.Partition, fn FilesystemWalkDirFunc) error {
+		if partition.Bootable() {
+			return nil
+		}
+		// TODO: "Linux" is default root partition name in AmazonLinuxImage
+		if partition.Name() != "Linux" {
+			return nil
+		}
+
+		sr := partition.GetSectionReader()
+		var errs error
+		for _, fsys := range filesystem.Filesystems {
+			ok, err := fsys.Try(&sr)
+			if err != nil {
+				errs = multierror.Append(errs, err)
+				break
+			}
+			if !ok {
+				continue
+			}
+
+			// TODO: implement LVM handler
+
+			f, err := fsys.New(sr, cache)
+			if err != nil {
+				return xerrors.Errorf("new filesystem error: %w", err)
+			}
+			err = fs.WalkDir(f, root, func(path string, d fs.DirEntry, err error) error {
+				return fn(f, path, d, err)
+			})
+			if err != nil {
+				return xerrors.Errorf("filesystem walk error: %w", err)
+			}
+		}
+		if errs != nil {
+			return xerrors.Errorf("try filesystems error: %w", errs)
+		}
 		return nil
 	}
-	// TODO: "Linux" is default root partition name in AmazonLinuxImage
-	if partition.Name() != "Linux" {
-		return nil
-	}
-
-	sr := partition.GetSectionReader()
-	var errs error
-	for _, fsys := range filesystem.Filesystems {
-		ok, err := fsys.Try(&sr)
-		if err != nil {
-			errs = multierror.Append(errs, err)
-			break
-		}
-		if !ok {
-			continue
-		}
-		// TODO: implement LVM handler
-
-		f, err := fsys.New(sr)
-		if err != nil {
-			return xerrors.Errorf("new filesystem error: %w", err)
-		}
-		err = fs.WalkDir(f, root, func(path string, d fs.DirEntry, err error) error {
-			return fn(f, path, d, err)
-		})
-		if err != nil {
-			return xerrors.Errorf("filesystem walk error: %w", err)
-		}
-	}
-	if errs != nil {
-		return xerrors.Errorf("try filesystems error: %w", errs)
-	}
-	return nil
 }
 
 func (w VM) opener(fsys fs.FS, fi os.FileInfo, pathname string) analyzer.Opener {

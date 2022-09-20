@@ -7,6 +7,7 @@ import (
 	"github.com/masahiro331/go-xfs-filesystem/xfs"
 	"golang.org/x/xerrors"
 
+	"github.com/aquasecurity/trivy/pkg/fanal/vm"
 	"github.com/aquasecurity/trivy/pkg/fanal/vm/filesystem"
 )
 
@@ -26,8 +27,8 @@ func (x XFS) Try(rs io.ReadSeeker) (bool, error) {
 	return true, nil
 }
 
-func (x XFS) New(sr io.SectionReader) (fs.FS, error) {
-	f, err := xfs.NewFS(sr)
+func (x XFS) New(sr io.SectionReader, cache vm.Cache) (fs.FS, error) {
+	f, err := xfs.NewFS(sr, cache)
 	if err != nil {
 		return nil, xerrors.Errorf("new xfs filesystem error: %w", err)
 	}

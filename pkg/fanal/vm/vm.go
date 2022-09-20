@@ -12,7 +12,15 @@ var Readers []Reader
 
 type Reader interface {
 	Try(rs io.ReadSeeker) (bool, error)
-	NewVMReader(rs io.ReadSeeker) (*io.SectionReader, error)
+	NewVMReader(rs io.ReadSeeker, cache Cache) (*io.SectionReader, error)
+}
+
+type Cache interface {
+	// Add cache data
+	Add(key, value interface{}) bool
+
+	// Get returns key's value from the cache
+	Get(key interface{}) (value interface{}, ok bool)
 }
 
 func RegisterVMReader(vm Reader) {
@@ -28,7 +36,7 @@ func (v *VM) Close() error {
 	return v.f.Close()
 }
 
-func New(filePath string) (*VM, error) {
+func New(filePath string, cache Cache) (*VM, error) {
 	f, err := os.Open(filePath)
 	if err != nil {
 		return nil, xerrors.Errorf("open %s error: %w", filePath, err)
@@ -43,7 +51,7 @@ func New(filePath string) (*VM, error) {
 		if !ok {
 			continue
 		}
-		vreader, err := v.NewVMReader(f)
+		vreader, err := v.NewVMReader(f, cache)
 		if err != nil {
 			return nil, xerrors.Errorf("open virtual machine error: %w", err)
 		}

@@ -8,6 +8,7 @@ import (
 	"path/filepath"
 	"sync"
 
+	lru "github.com/hashicorp/golang-lru"
 	"github.com/opencontainers/go-digest"
 	"golang.org/x/sync/semaphore"
 	"golang.org/x/xerrors"
@@ -27,7 +28,8 @@ import (
 )
 
 const (
-	parallel = 5
+	parallel  = 5
+	cacheSize = 20 << 20 // 20 MB
 )
 
 type Artifact struct {
@@ -43,7 +45,12 @@ type Artifact struct {
 func (a Artifact) Inspect(ctx context.Context) (reference types.ArtifactReference, err error) {
 	result := analyzer.NewAnalysisResult()
 
-	v, err := vm.New(a.filePath)
+	lruCache, err := lru.New(cacheSize)
+	if err != nil {
+		return types.ArtifactReference{}, xerrors.Errorf("failed to create new lru cache: %w", err)
+	}
+	defer lruCache.Purge()
+	v, err := vm.New(a.filePath, lruCache)
 	if err != nil {
 		return types.ArtifactReference{}, xerrors.Errorf("new virtual machine error: %w", err)
 	}
@@ -53,7 +60,7 @@ func (a Artifact) Inspect(ctx context.Context) (reference types.ArtifactReferenc
 	limit := semaphore.NewWeighted(parallel)
 
 	// TODO: Always walk from the root directory. Consider whether there is a need to be able to set optional
-	err = a.walker.Walk(v.SectionReader, "/", func(filePath string, info os.FileInfo, opener analyzer.Opener) error {
+	err = a.walker.Walk(v.SectionReader, lruCache, "/", func(filePath string, info os.FileInfo, opener analyzer.Opener) error {
 		opts := analyzer.AnalysisOptions{Offline: a.artifactOption.Offline}
 		if err = a.analyzer.AnalyzeFile(ctx, &wg, limit, result, "/", filePath, info, opener, nil, opts); err != nil {
 			return xerrors.Errorf("analyze file (%s): %w", filePath, err)
