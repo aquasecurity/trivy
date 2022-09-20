@@ -50,7 +50,7 @@ func (h nodeLicensesMergeHandler) Handle(_ context.Context, _ *analyzer.Analysis
 			// take path to package-lock.json file
 			path := strings.TrimSuffix(app.FilePath, types.NpmPkgLock)
 			for j, lib := range app.Libraries {
-				// take only packets with the same paths
+				// take only packages with the same paths
 				// e.g. app/package-lock.json => app/node_modules/foo/package.json
 				for _, pkg := range nodePkgs[path] {
 					if lib.Name == pkg.Name || lib.Version == pkg.Version {

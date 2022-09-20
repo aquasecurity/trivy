@@ -155,6 +155,7 @@ func (r *runner) Close(ctx context.Context) error {
 func (r *runner) ScanImage(ctx context.Context, opts flag.Options) (types.Report, error) {
 	// Disable the lock file scanning
 	opts.DisabledAnalyzers = analyzer.TypeLockfiles
+	opts.DisabledHandlers = append(opts.DisabledHandlers, ftypes.NodeLicensesPostHandler)
 
 	var s InitializeScanner
 	switch {
@@ -209,6 +210,7 @@ func (r *runner) ScanRepository(ctx context.Context, opts flag.Options) (types.R
 
 	// Disable the OS analyzers and individual package analyzers
 	opts.DisabledAnalyzers = append(analyzer.TypeIndividualPkgs, analyzer.TypeOSes...)
+	opts.DisabledHandlers = append(opts.DisabledHandlers, ftypes.NodeLicensesPostHandler)
 
 	return r.scanArtifact(ctx, opts, repositoryStandaloneScanner)
 }
