@@ -12,53 +12,11 @@ on:
         required: false
         type: string
 
-env:
-  GH_USER: "aqua-bot"
-
 jobs:
   release:
     name: Release
     runs-on: ubuntu-latest
-    env:
-      DOCKER_CLI_EXPERIMENTAL: "enabled"
-    permissions:
-      id-token: write # For cosign
-      packages: write # For GHCR
-      contents: read  # Not required for public repositories, but for clarity
     steps:
-      - name: Cosign install
-        uses: sigstore/cosign-installer@b3413d484cc23cf8778c3d2aa361568d4eb54679
-
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@v2
-
-      - name: Set up Docker Buildx
-        id: buildx
-        uses: docker/setup-buildx-action@v2
-
-      - name: Show available Docker Buildx platforms
-        run: echo ${{ steps.buildx.outputs.platforms }}
-
-      - name: Login to docker.io registry
-        uses: docker/login-action@v2
-        with:
-          username: ${{ secrets.DOCKERHUB_USER }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
-
-      - name: Login to ghcr.io registry
-        uses: docker/login-action@v2
-        with:
-          registry: ghcr.io
-          username: ${{ env.GH_USER }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Login to ECR
-        uses: docker/login-action@v2
-        with:
-          registry: public.ecr.aws
-          username: ${{ secrets.ECR_ACCESS_KEY_ID }}
-          password: ${{ secrets.ECR_SECRET_ACCESS_KEY }}
-
       - name: Checkout code
         uses: actions/checkout@v3
         with:
@@ -69,12 +27,6 @@ jobs:
         with:
           go-version-file: go.mod
 
-      - name: Generate SBOM
-        uses: CycloneDX/gh-gomod-generate-sbom@v1
-        with:
-          args: mod -licenses -json -output bom.json
-          version: ^v1
-
       - name: GoReleaser
         uses: goreleaser/goreleaser-action@v3
         with:
@@ -82,27 +34,3 @@ jobs:
           args: release -f=${{ inputs.goreleaser_config}} ${{ inputs.goreleaser_options}}
         env:
           GITHUB_TOKEN: ${{ secrets.ORG_REPO_TOKEN }}
-
-      ## push images to registries
-      ## only for canary build
-      - name: Build and push
-        if: ${{ inputs.goreleaser_config == 'goreleaser-canary.yml' }}
-        uses: docker/build-push-action@v3
-        with:
-          platforms: linux/amd64, linux/arm64
-          file: ./Dockerfile.canary # path to Dockerfile
-          context: .
-          push: true
-          tags: |
-            aquasec/trivy:canary
-            ghcr.io/aquasecurity/trivy:canary
-            public.ecr.aws/aquasecurity/trivy:canary
-
-      - name: Cache Trivy binaries
-        uses: actions/cache@v3.0.8
-        with:
-          path: dist/
-          # use 'github.sha' to create a unique cache folder for each run.
-          # use 'github.workflow' to create a unique cache folder if some runs have same commit sha.
-          # e.g. build and release runs
-          key: ${{ runner.os }}-bins-${{github.workflow}}-${{github.sha}}

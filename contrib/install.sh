@@ -371,7 +371,7 @@ End of functions from https://github.com/client9/shlib
 EOF
 
 PROJECT_NAME="trivy"
-OWNER=aquasecurity
+OWNER=Mor-s-organization
 REPO="trivy"
 BINARY=trivy
 FORMAT=tar.gz

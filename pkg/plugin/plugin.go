@@ -147,6 +147,10 @@ func Install(ctx context.Context, url string, force bool) (Plugin, error) {
 			return p, nil
 		}
 	}
+	
+	if branchName := os.Getenv("PLUGIN_BRANCH"); branchName != "" {
+		url = fmt.Sprintf("%s/tree/%s", url, branchName)
+	}
 
 	log.Logger.Infof("Installing the plugin from %s...", url)
 	tempDir, err := downloader.DownloadToTempDir(ctx, url)
