@@ -42,6 +42,7 @@ nav:
               - Filesystem: docs/vulnerability/scanning/filesystem.md
               - Rootfs: docs/vulnerability/scanning/rootfs.md
               - Git Repository: docs/vulnerability/scanning/git-repository.md
+              - Virtual Machine: docs/vulnerability/scanning/virtual-machine.md
           - Detection:
               - OS Packages: docs/vulnerability/detection/os.md
               - Language-specific Packages: docs/vulnerability/detection/language.md
