@@ -289,6 +289,8 @@ func purlType(t string) string {
 		return packageurl.TypeMaven
 	case string(analyzer.TypeBundler), string(analyzer.TypeGemSpec):
 		return packageurl.TypeGem
+	case string(analyzer.TypeNuget), string(ftypes.DotNetCore):
+		return packageurl.TypeNuget
 	case string(analyzer.TypePythonPkg), string(analyzer.TypePip), string(analyzer.TypePipenv), string(analyzer.TypePoetry):
 		return packageurl.TypePyPi
 	case string(analyzer.TypeGoBinary), string(analyzer.TypeGoMod):
