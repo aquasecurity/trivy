@@ -40,6 +40,7 @@ require (
 	github.com/google/uuid v1.3.0
 	github.com/google/wire v0.5.0
 	github.com/hashicorp/go-getter v1.6.2
+	github.com/hashicorp/golang-lru v0.5.4
 	github.com/in-toto/in-toto-golang v0.3.4-0.20220709202702-fa494aaa0add
 	github.com/knqyf263/go-apk-version v0.0.0-20200609155635-041fdbb8563f
 	github.com/knqyf263/go-deb-version v0.0.0-20190517075300-09fca494f03d
@@ -51,8 +52,8 @@ require (
 	github.com/mailru/easyjson v0.7.7
 	github.com/masahiro331/go-disk v0.0.0-20220919035250-c8da316f91ac
 	github.com/masahiro331/go-mvn-version v0.0.0-20210429150710-d3157d602a08
-	github.com/masahiro331/go-vmdk-parser v0.0.0-20220919025536-211539ca2806
-	github.com/masahiro331/go-xfs-filesystem v0.0.0-20220918133020-def5dd0df4f5
+	github.com/masahiro331/go-vmdk-parser v0.0.0-20220920085928-e985b7990634
+	github.com/masahiro331/go-xfs-filesystem v0.0.0-20220920153948-42307125905b
 	github.com/mitchellh/hashstructure/v2 v2.0.2
 	github.com/open-policy-agent/opa v0.43.0
 	github.com/owenrumney/go-sarif/v2 v2.1.2

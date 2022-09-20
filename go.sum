@@ -1076,6 +1076,8 @@ github.com/hashicorp/go-version v1.6.0/go.mod h1:fltr4n8CU8Ke44wwGCBoEymUuxUHl09
 github.com/hashicorp/go.net v0.0.1/go.mod h1:hjKkEWcCURg++eb33jQU7oqQcI9XDCnUzHA0oac0k90=
 github.com/hashicorp/golang-lru v0.5.0/go.mod h1:/m3WP610KZHVQ1SGc6re/UDhFvYD7pJ4Ao+sR/qLZy8=
 github.com/hashicorp/golang-lru v0.5.1/go.mod h1:/m3WP610KZHVQ1SGc6re/UDhFvYD7pJ4Ao+sR/qLZy8=
+github.com/hashicorp/golang-lru v0.5.4 h1:YDjusn29QI/Das2iO9M0BHnIbxPeyuCHsjMW+lJfyTc=
+github.com/hashicorp/golang-lru v0.5.4/go.mod h1:iADmTwqILo4mZ8BN3D2Q6+9jd8WM5uGBxy+E8yxSoD4=
 github.com/hashicorp/hcl v1.0.0 h1:0Anlzjpi4vEasTeNFn2mLJgTSwt0+6sfsiTG8qcWGx4=
 github.com/hashicorp/hcl v1.0.0/go.mod h1:E5yfLk+7swimpb2L/Alb/PJmXilQ/rhwaUYs4T20WEQ=
 github.com/hashicorp/hcl/v2 v2.13.0 h1:0Apadu1w6M11dyGFxWnmhhcMjkbAiKCv7G1r/2QgCNc=
@@ -1240,10 +1242,10 @@ github.com/masahiro331/go-disk v0.0.0-20220919035250-c8da316f91ac h1:QyRucnGOLHJ
 github.com/masahiro331/go-disk v0.0.0-20220919035250-c8da316f91ac/go.mod h1:J7Vb0sf0JzOhT0uHTeCqO6dqP/ELVcQvQ6yQ/56ZRGw=
 github.com/masahiro331/go-mvn-version v0.0.0-20210429150710-d3157d602a08 h1:AevUBW4cc99rAF8q8vmddIP8qd/0J5s/UyltGbp66dg=
 github.com/masahiro331/go-mvn-version v0.0.0-20210429150710-d3157d602a08/go.mod h1:JOkBRrE1HvgTyjk6diFtNGgr8XJMtIfiBzkL5krqzVk=
-github.com/masahiro331/go-vmdk-parser v0.0.0-20220919025536-211539ca2806 h1:nGsZCyFYd0FfxsIlr1srcTm5DKKtX3tdBVISCWr0bsw=
-github.com/masahiro331/go-vmdk-parser v0.0.0-20220919025536-211539ca2806/go.mod h1:5f7mCJGW9cJb8SDn3z8qodGxpMCOo8d/2nls/tiwRrw=
-github.com/masahiro331/go-xfs-filesystem v0.0.0-20220918133020-def5dd0df4f5 h1:NAw2GaDtDyROlJ26KO+ziMt8vOBWdiRYZ+wwulpbois=
-github.com/masahiro331/go-xfs-filesystem v0.0.0-20220918133020-def5dd0df4f5/go.mod h1:QKBZqdn6teT0LK3QhAf3K6xakItd1LonOShOEC44idQ=
+github.com/masahiro331/go-vmdk-parser v0.0.0-20220920085928-e985b7990634 h1:+/dJTwRl1/HaWrB/U0+ZwJicDgnesaWV378r9hJPyjM=
+github.com/masahiro331/go-vmdk-parser v0.0.0-20220920085928-e985b7990634/go.mod h1:5f7mCJGW9cJb8SDn3z8qodGxpMCOo8d/2nls/tiwRrw=
+github.com/masahiro331/go-xfs-filesystem v0.0.0-20220920153948-42307125905b h1:4NFOrTkDVFaMo/H0IqkWPA41R+4RjFbYYArRvlc/NEw=
+github.com/masahiro331/go-xfs-filesystem v0.0.0-20220920153948-42307125905b/go.mod h1:QKBZqdn6teT0LK3QhAf3K6xakItd1LonOShOEC44idQ=
 github.com/matryer/is v1.2.0 h1:92UTHpy8CDwaJ08GqLDzhhuixiBUUD1p3AU6PHddz4A=
 github.com/matryer/is v1.2.0/go.mod h1:2fLPjFQM9rhQ15aVEtbuwhJinnOqrmgXPNdZsdwlWXA=
 github.com/mattn/go-colorable v0.0.9/go.mod h1:9vuHe8Xs5qXnSaW/c/ABM9alt+Vo+STaOChaDxuIBZU=
