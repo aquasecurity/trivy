@@ -33,11 +33,11 @@ func (h nodeLicensesMergeHandler) Handle(_ context.Context, _ *analyzer.Analysis
 	// separating node packages from other applications
 	for _, app := range blob.Applications {
 		if app.Type == types.NodePkg {
-			// take filepath to node_modules folder
-			filepath := strings.Split(app.FilePath, "node_modules")
-			if len(filepath) != 1 { // skip `package.json` not in node_modules folder
-				baseFilePath := filepath[0]
-				nodePkgs[baseFilePath] = append(nodePkgs[baseFilePath], app.Libraries...)
+			// take path to node_modules folder
+			path := strings.Split(app.FilePath, "node_modules")
+			if len(path) != 1 { // skip `package.json` not in node_modules folder
+				dir := path[0]
+				nodePkgs[dir] = append(nodePkgs[dir], app.Libraries...)
 			}
 		} else {
 			apps = append(apps, app) // save other applications
@@ -47,11 +47,12 @@ func (h nodeLicensesMergeHandler) Handle(_ context.Context, _ *analyzer.Analysis
 	// merge licenses from node packages to npm
 	for i, app := range apps {
 		if app.Type == types.Npm {
-			filepath := strings.TrimSuffix(app.FilePath, types.NpmPkgLock)
+			// take path to package-lock.json file
+			path := strings.TrimSuffix(app.FilePath, types.NpmPkgLock)
 			for j, lib := range app.Libraries {
-				// take only packets with the same base path
+				// take only packets with the same paths
 				// e.g. app/package-lock.json => app/node_modules/foo/package.json
-				for _, pkg := range nodePkgs[filepath] {
+				for _, pkg := range nodePkgs[path] {
 					if lib.Name == pkg.Name || lib.Version == pkg.Version {
 						apps[i].Libraries[j].Licenses = pkg.Licenses
 					}
