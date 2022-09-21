@@ -85,10 +85,6 @@ func (a Applier) ApplyLayers(imageID string, layerKeys []string) (types.Artifact
 }
 
 func calcMergedKey(layerKeys []string) (string, error) {
-	if len(layerKeys) == 1 {
-		return layerKeys[0], nil
-	}
-
 	h := sha256.New()
 	if err := json.NewEncoder(h).Encode(layerKeys); err != nil {
 		return "", xerrors.Errorf("json error: %w", err)
