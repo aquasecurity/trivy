@@ -47,6 +47,14 @@ type Package struct {
 
 	// Each package metadata have the file path, while the package from lock files does not have.
 	FilePath string `json:",omitempty"`
+
+	// lines from the lock file where the dependency is written
+	Locations []Location `json:",omitempty"`
+}
+
+type Location struct {
+	StartLine int `json:",omitempty"`
+	EndLine   int `json:",omitempty"`
 }
 
 // BuildInfo represents information under /root/buildinfo in RHEL
