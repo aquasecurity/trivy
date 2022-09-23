@@ -736,28 +736,52 @@
         "Name": "asap",
         "Version": "2.0.6",
         "Indirect": true,
-        "Layer": {}
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 6,
+            "EndLine": 10
+          }
+        ]
       },
       {
         "ID": "jquery@3.3.9",
         "Name": "jquery",
         "Version": "3.3.9",
         "Indirect": true,
-        "Layer": {}
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 16,
+            "EndLine": 20
+          }
+        ]
       },
       {
         "ID": "js-tokens@4.0.0",
         "Name": "js-tokens",
         "Version": "4.0.0",
         "Indirect": true,
-        "Layer": {}
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 21,
+            "EndLine": 25
+          }
+        ]
       },
       {
         "ID": "lodash@4.17.4",
         "Name": "lodash",
         "Version": "4.17.4",
         "Indirect": true,
-        "Layer": {}
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 11,
+            "EndLine": 15
+          }
+        ]
       },
       {
         "ID": "loose-envify@1.4.0",
@@ -765,6 +789,12 @@
         "Version": "1.4.0",
         "Indirect": true,
         "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 26,
+            "EndLine": 33
+          }
+        ],
         "DependsOn": ["js-tokens@4.0.0"]
       },
       {
@@ -772,7 +802,13 @@
         "Name": "object-assign",
         "Version": "4.1.1",
         "Indirect": true,
-        "Layer": {}
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 34,
+            "EndLine": 38
+          }
+        ]
       },
       {
         "ID": "promise@8.0.3",
@@ -780,6 +816,12 @@
         "Version": "8.0.3",
         "Indirect": true,
         "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 39,
+            "EndLine": 46
+          }
+        ],
         "DependsOn": ["asap@2.0.6"]
       },
       {
@@ -788,6 +830,12 @@
         "Version": "15.7.2",
         "Indirect": true,
         "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 47,
+            "EndLine": 56
+          }
+        ],
         "DependsOn": ["loose-envify@1.4.0", "object-assign@4.1.1", "react-is@16.8.6"]
       },
       {
@@ -796,6 +844,12 @@
         "Version": "16.8.6",
         "Indirect": true,
         "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 57,
+            "EndLine": 67
+          }
+        ],
         "DependsOn": ["loose-envify@1.4.0", "object-assign@4.1.1", "prop-types@15.7.2", "scheduler@0.13.6"]
       },
       {
@@ -803,6 +857,12 @@
         "Name": "react-is",
         "Version": "16.8.6",
         "Indirect": true,
+        "Locations": [
+          {
+            "StartLine": 68,
+            "EndLine": 72
+          }
+        ],
         "Layer": {}
       },
       {
@@ -811,6 +871,12 @@
         "Version": "4.0.1",
         "Indirect": true,
         "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 73,
+            "EndLine": 81
+          }
+        ],
         "DependsOn": ["loose-envify@1.4.0", "symbol-observable@1.2.0"]
       },
       {
@@ -819,6 +885,12 @@
         "Version": "0.13.6",
         "Indirect": true,
         "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 82,
+            "EndLine": 90
+          }
+        ],
         "DependsOn": ["loose-envify@1.4.0", "object-assign@4.1.1"]
       },
       {
@@ -826,7 +898,13 @@
         "Name": "symbol-observable",
         "Version": "1.2.0",
         "Indirect": true,
-        "Layer": {}
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 91,
+            "EndLine": 95
+          }
+        ]
       }
     ]
   },
