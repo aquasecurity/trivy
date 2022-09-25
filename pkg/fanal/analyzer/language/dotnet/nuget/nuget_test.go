@@ -21,6 +21,28 @@ func Test_nugetibraryAnalyzer_Analyze(t *testing.T) {
 		wantErr   string
 	}{
 		{
+			name:      "happy path proj file",
+			inputFile: "testdata/test.csproj",
+			want: &analyzer.AnalysisResult{
+				Applications: []types.Application{
+					{
+						Type:     types.NuGet,
+						FilePath: "testdata/test.csproj",
+						Libraries: []types.Package{
+							{
+								Name:    "Microsoft.AspNet.WebApi",
+								Version: "5.2.2",
+							},
+							{
+								Name:    "Newtonsoft.Json",
+								Version: "6.0.4",
+							},
+						},
+					},
+				},
+			},
+		},
+		{
 			name:      "happy path config file",
 			inputFile: "testdata/packages.config",
 			want: &analyzer.AnalysisResult{
@@ -108,6 +130,21 @@ func Test_nugetLibraryAnalyzer_Required(t *testing.T) {
 		filePath string
 		want     bool
 	}{
+		{
+			name:     "csproj",
+			filePath: "test/packages.csproj",
+			want:     true,
+		},
+		{
+			name:     "fsproj",
+			filePath: "test/packages.fsproj",
+			want:     true,
+		},
+		{
+			name:     "vbproj",
+			filePath: "test/packages.vbproj",
+			want:     true,
+		},
 		{
 			name:     "config",
 			filePath: "test/packages.config",
