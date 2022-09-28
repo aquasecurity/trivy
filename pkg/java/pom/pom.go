@@ -169,7 +169,7 @@ func (d pomDependency) Name() string {
 }
 
 // Resolve evaluates variables in the dependency and inherit some fields from dependencyManagement to the dependency.
-func (d pomDependency) Resolve(props map[string]string, depManagement map[string]pomDependency) pomDependency {
+func (d pomDependency) Resolve(props map[string]string, depManagement map[string]pomDependency, depManagementFromUpperPoms map[string]pomDependency) pomDependency {
 	// Evaluate variables
 	dep := pomDependency{
 		Text:       d.Text,
@@ -181,8 +181,26 @@ func (d pomDependency) Resolve(props map[string]string, depManagement map[string
 		Exclusions: d.Exclusions,
 	}
 
+	// if this dependency is in the upper pom.xml in `dependencyManagement`
+	// then we need to take non-empty fields from the upper pom.xml
+	if managed, ok := depManagementFromUpperPoms[d.Name()]; ok { // dependencyManagement from upper pom.xml
+		if managed.Version != "" {
+			dep.Version = evaluateVariable(managed.Version, props, nil)
+		}
+		if managed.Scope != "" {
+			dep.Scope = evaluateVariable(managed.Scope, props, nil)
+		}
+		if managed.Optional {
+			dep.Optional = managed.Optional
+		}
+		if len(managed.Exclusions) != 0 {
+			dep.Exclusions = managed.Exclusions
+		}
+		return dep
+	}
+
 	// Inherit version, scope and optional from dependencyManagement
-	if managed, ok := depManagement[d.Name()]; ok {
+	if managed, ok := depManagement[d.Name()]; ok { // dependencyManagement from parent
 		if dep.Version == "" {
 			dep.Version = evaluateVariable(managed.Version, props, nil)
 		}

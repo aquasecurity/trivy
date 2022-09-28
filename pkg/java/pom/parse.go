@@ -254,7 +254,7 @@ func (p *parser) analyze(pom *pom, exclusions map[string]struct{}, depManagement
 	depManagement = p.mergeDependencyManagements(depManagementFromUpperPoms, depManagement, parent.dependencyManagement)
 
 	// Merge dependencies. Child dependencies must be preferred than parent dependencies.
-	deps := p.parseDependencies(pom.content.Dependencies.Dependency, props, depManagement, exclusions)
+	deps := p.parseDependencies(pom.content.Dependencies.Dependency, props, depManagement, depManagementFromUpperPoms, exclusions)
 	deps = p.mergeDependencies(parent.dependencies, deps, exclusions)
 
 	return analysisResult{
@@ -271,7 +271,7 @@ func (p parser) dependencyManagement(deps []pomDependency, props properties) map
 	depManagement := map[string]pomDependency{}
 	for _, d := range deps {
 		// Evaluate variables
-		d = d.Resolve(props, nil)
+		d = d.Resolve(props, nil, nil)
 
 		// https://howtodoinjava.com/maven/maven-dependency-scopes/#import
 		if d.Scope == "import" {
@@ -299,11 +299,11 @@ func (p parser) mergeDependencyManagements(depManagements ...map[string]pomDepen
 }
 
 func (p parser) parseDependencies(deps []pomDependency, props map[string]string, depManagement map[string]pomDependency,
-	exclusions map[string]struct{}) []artifact {
+	depManagementFromUpperPoms map[string]pomDependency, exclusions map[string]struct{}) []artifact {
 	var dependencies []artifact
 	for _, d := range deps {
 		// Resolve dependencies
-		d = d.Resolve(props, depManagement)
+		d = d.Resolve(props, depManagement, depManagementFromUpperPoms)
 
 		if (d.Scope != "" && d.Scope != "compile") || d.Optional {
 			continue
