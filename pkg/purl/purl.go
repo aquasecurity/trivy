@@ -64,8 +64,9 @@ func (p *PackageURL) Package() *ftypes.Package {
 		return pkg
 	}
 
-	if p.Type == packageurl.TypeMaven {
-		// Maven package separate ":"
+	// TODO: replace with packageurl.TypeGradle once they add it.
+	if p.Type == packageurl.TypeMaven || p.Type == ftypes.Gradle {
+		// Maven and Gradle packages separate ":"
 		// e.g. org.springframework:spring-core
 		pkg.Name = strings.Join([]string{p.Namespace, p.Name}, ":")
 	} else {
@@ -140,7 +141,7 @@ func NewPackageURL(t string, metadata types.Metadata, pkg ftypes.Package) (Packa
 		if metadata.OS != nil {
 			namespace = metadata.OS.Family
 		}
-	case packageurl.TypeMaven:
+	case packageurl.TypeMaven, string(ftypes.Gradle): // TODO: replace with packageurl.TypeGradle once they add it.
 		namespace, name = parseMaven(name)
 	case packageurl.TypePyPi:
 		name = parsePyPI(name)
