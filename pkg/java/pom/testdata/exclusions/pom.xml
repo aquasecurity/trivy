@@ -20,6 +20,10 @@
                     <groupId>org.example</groupId>
                     <artifactId>example-api</artifactId>
                 </exclusion>
+                <exclusion>
+                    <groupId>org.example</groupId>
+                    <artifactId>example-api-common</artifactId>
+                </exclusion>
             </exclusions>
         </dependency>
     </dependencies>

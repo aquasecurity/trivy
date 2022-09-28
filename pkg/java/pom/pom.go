@@ -144,16 +144,18 @@ type pomDependencies struct {
 }
 
 type pomDependency struct {
-	Text       string `xml:",chardata"`
-	GroupID    string `xml:"groupId"`
-	ArtifactID string `xml:"artifactId"`
-	Version    string `xml:"version"`
-	Scope      string `xml:"scope"`
-	Optional   bool   `xml:"optional"`
-	Exclusions []struct {
-		Text      string       `xml:",chardata"`
-		Exclusion pomExclusion `xml:"exclusion"`
-	} `xml:"exclusions"`
+	Text       string        `xml:",chardata"`
+	GroupID    string        `xml:"groupId"`
+	ArtifactID string        `xml:"artifactId"`
+	Version    string        `xml:"version"`
+	Scope      string        `xml:"scope"`
+	Optional   bool          `xml:"optional"`
+	Exclusions pomExclusions `xml:"exclusions"`
+}
+
+type pomExclusions struct {
+	Text      string         `xml:",chardata"`
+	Exclusion []pomExclusion `xml:"exclusion"`
 }
 
 // ref. https://maven.apache.org/guides/introduction/introduction-to-optional-and-excludes-dependencies.html
@@ -191,7 +193,7 @@ func (d pomDependency) Resolve(props map[string]string, depManagement map[string
 		if !dep.Optional {
 			dep.Optional = managed.Optional
 		}
-		if len(dep.Exclusions) == 0 {
+		if len(dep.Exclusions.Exclusion) == 0 {
 			dep.Exclusions = managed.Exclusions
 		}
 	}
@@ -204,8 +206,8 @@ func (d pomDependency) ToArtifact(exclusions map[string]struct{}, depManagement 
 	if exclusions == nil {
 		exclusions = map[string]struct{}{}
 	}
-	for _, e := range d.Exclusions {
-		exclusions[fmt.Sprintf("%s:%s", e.Exclusion.GroupID, e.Exclusion.ArtifactID)] = struct{}{}
+	for _, e := range d.Exclusions.Exclusion {
+		exclusions[fmt.Sprintf("%s:%s", e.GroupID, e.ArtifactID)] = struct{}{}
 	}
 	return artifact{
 		GroupID:              d.GroupID,
