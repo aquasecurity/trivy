@@ -1,6 +1,6 @@
 FROM alpine:3.16.2
 RUN apk --no-cache add ca-certificates git
-RUN apk add --upgrade expat-dev
+
 # binaries were created with GoReleaser
 # need to copy binaries from folder with correct architecture
 # example architecture folder: dist/trivy_canary_build_linux_arm64/trivy
