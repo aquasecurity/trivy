@@ -245,7 +245,6 @@ func newWASMPlugin(ctx context.Context, r wazero.Runtime, code []byte) (*wasmMod
 
 	// Instantiate a Go-defined module named "env" that exports functions.
 	_, err := r.NewModuleBuilder("env").
-		ExportMemory("mem", 100).
 		ExportFunctions(exportFunctions).
 		Instantiate(ctx, ns)
 	if err != nil {
