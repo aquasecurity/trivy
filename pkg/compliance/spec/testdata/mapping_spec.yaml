@@ -1,0 +1,23 @@
+---
+spec:
+  id: "1234"
+  title: nsa
+  description: National Security Agency - Kubernetes Hardening Guidance
+  relatedResources : 
+    - http://related-resource/
+  version: "1.0"
+  controls:
+    - name: Non-root containers
+      description: 'Check that container is not running as root'
+      id: '1.0'
+      checks:
+        - id: AVD-KSV012
+      severity: 'MEDIUM'
+    - name: Immutable container file systems
+      description: 'Check that container root file system is immutable'
+      id: '1.1'
+      checks:
+        - id: CVE-KSV014
+      severity: 'LOW'
+   
+   
