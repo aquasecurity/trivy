@@ -492,20 +492,34 @@ func initScannerConfig(opts flag.Options, cacheClient cache.Cache) (ScannerConfi
 		log.Logger.Debugf("Vulnerability type:  %s", scanOptions.VulnType)
 	}
 
+	var downloadedPolicyPaths []string
+	var disableEmbedded bool
+	if !opts.SkipPolicyUpdate {
+		var err error
+		downloadedPolicyPaths, err = operation.InitBuiltinPolicies(context.Background(), opts.CacheDir, opts.Quiet, opts.SkipPolicyUpdate)
+		if err != nil {
+			log.Logger.Debug(err)
+		} else {
+			log.Logger.Debugf("Policies downloaded: %d", len(downloadedPolicyPaths))
+			disableEmbedded = true
+		}
+	}
+
 	// ScannerOption is filled only when config scanning is enabled.
 	var configScannerOptions config.ScannerOption
 	if slices.Contains(opts.SecurityChecks, types.SecurityCheckConfig) {
 		log.Logger.Info("Misconfiguration scanning is enabled")
 		configScannerOptions = config.ScannerOption{
-			Trace:            opts.Trace,
-			Namespaces:       append(opts.PolicyNamespaces, defaultPolicyNamespaces...),
-			PolicyPaths:      opts.PolicyPaths,
-			DataPaths:        opts.DataPaths,
-			HelmValues:       opts.HelmValues,
-			HelmValueFiles:   opts.HelmValueFiles,
-			HelmFileValues:   opts.HelmFileValues,
-			HelmStringValues: opts.HelmStringValues,
-			TerraformTFVars:  opts.TerraformTFVars,
+			Trace:                   opts.Trace,
+			Namespaces:              append(opts.PolicyNamespaces, defaultPolicyNamespaces...),
+			PolicyPaths:             append(opts.PolicyPaths, downloadedPolicyPaths...),
+			DataPaths:               opts.DataPaths,
+			HelmValues:              opts.HelmValues,
+			HelmValueFiles:          opts.HelmValueFiles,
+			HelmFileValues:          opts.HelmFileValues,
+			HelmStringValues:        opts.HelmStringValues,
+			TerraformTFVars:         opts.TerraformTFVars,
+			DisableEmbeddedPolicies: disableEmbedded,
 		}
 	}
 
