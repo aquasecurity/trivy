@@ -74,6 +74,9 @@ const (
 	// C/C++
 	TypeConanLock Type = "conan-lock"
 
+	// Swift
+	TypeCocoaPodsLock Type = "cocoaPods-lock"
+
 	// ============
 	// Image Config
 	// ============
@@ -120,12 +123,14 @@ var (
 		TypeBundler, TypeGemSpec, TypeCargo, TypeComposer, TypeJar, TypePom, TypeGradleLock,
 		TypeNpmPkgLock, TypeNodePkg, TypeYarn, TypePnpm, TypeNuget, TypeDotNetDeps,
 		TypePythonPkg, TypePip, TypePipenv, TypePoetry, TypeGoBinary, TypeGoMod, TypeRustBinary, TypeConanLock,
+		TypeCocoaPodsLock,
 	}
 
 	// TypeLockfiles has all lock file analyzers
 	TypeLockfiles = []Type{
 		TypeBundler, TypeNpmPkgLock, TypeYarn,
 		TypePnpm, TypePip, TypePipenv, TypePoetry, TypeGoMod, TypePom, TypeConanLock, TypeGradleLock,
+		TypeCocoaPodsLock,
 	}
 
 	// TypeIndividualPkgs has all analyzers for individual packages

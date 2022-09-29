@@ -54,6 +54,9 @@ func NewDriver(libType string) (Driver, error) {
 		// Only semver can be used for version ranges
 		// https://docs.conan.io/en/latest/versioning/version_ranges.html
 		comparer = compare.GenericComparer{}
+	case ftypes.Cocoapods:
+		ecosystem = "cocoapods" // TODO use const from Trivy-db after adding it
+		comparer = compare.GenericComparer{}
 	default:
 		return Driver{}, xerrors.Errorf("unsupported type %s", libType)
 	}
