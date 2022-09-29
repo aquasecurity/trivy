@@ -16,6 +16,5 @@ type SecretFinding struct {
 	EndLine   int
 	Code      Code
 	Match     string
-	Deleted   bool
 	Layer     Layer `json:",omitempty"`
 }

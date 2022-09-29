@@ -1,7 +1,7 @@
 # CycloneDX
 
-## Reporting
-Trivy generates JSON reports in the [CycloneDX][cyclonedx] format.
+## Generating
+Trivy can generate SBOM in the [CycloneDX][cyclonedx] format.
 Note that XML format is not supported at the moment.
 
 You can use the regular subcommands (like `image`, `fs` and `rootfs`) and specify `cyclonedx` with the `--format` option.

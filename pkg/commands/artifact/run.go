@@ -3,6 +3,7 @@ package artifact
 import (
 	"context"
 	"errors"
+	"fmt"
 	"os"
 
 	"github.com/hashicorp/go-multierror"
@@ -16,7 +17,6 @@ import (
 	"github.com/aquasecurity/trivy/pkg/commands/operation"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer/config"
-	"github.com/aquasecurity/trivy/pkg/fanal/analyzer/secret"
 	"github.com/aquasecurity/trivy/pkg/fanal/artifact"
 	"github.com/aquasecurity/trivy/pkg/fanal/cache"
 	"github.com/aquasecurity/trivy/pkg/flag"
@@ -58,7 +58,7 @@ type ScannerConfig struct {
 
 	// Cache
 	ArtifactCache      cache.ArtifactCache
-	LocalArtifactCache cache.LocalArtifactCache
+	LocalArtifactCache cache.Cache
 
 	// Client/Server options
 	RemoteOption client.ScannerOption
@@ -511,12 +511,14 @@ func initScannerConfig(opts flag.Options, cacheClient cache.Cache) (ScannerConfi
 			RepoBranch:        opts.RepoBranch,
 			RepoCommit:        opts.RepoCommit,
 			RepoTag:           opts.RepoTag,
+			SBOMSources:       opts.SBOMSources,
+			RekorURL:          opts.RekorURL,
 
 			// For misconfiguration scanning
 			MisconfScannerOption: configScannerOptions,
 
 			// For secret scanning
-			SecretScannerOption: secret.ScannerOption{
+			SecretScannerOption: analyzer.SecretScannerOption{
 				ConfigPath: opts.SecretConfigPath,
 			},
 		},
@@ -563,7 +565,6 @@ func canonicalVersion(ver string) string {
 	if v.IsPreRelease() || v.Metadata() != "" {
 		return devVersion
 	}
-
-	// Add "v" prefix, "0.34.0" => "v0.34.0" for the url
-	return "v" + ver
+	// Add "v" prefix and cut a patch number, "0.34.0" => "v0.34" for the url
+	return fmt.Sprintf("v%d.%d", v.Major(), v.Minor())
 }

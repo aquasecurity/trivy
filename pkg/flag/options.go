@@ -168,7 +168,18 @@ func getStringSlice(flag *Flag) []string {
 	if flag == nil {
 		return nil
 	}
-	return viper.GetStringSlice(flag.ConfigName)
+	// viper always returns a string for ENV
+	// https://github.com/spf13/viper/blob/419fd86e49ef061d0d33f4d1d56d5e2a480df5bb/viper.go#L545-L553
+	// and uses strings.Field to separate values (whitespace only)
+	// we need to separate env values with ','
+	v := viper.GetStringSlice(flag.ConfigName)
+	switch {
+	case len(v) == 0: // no strings
+		return nil
+	case len(v) == 1 && strings.Contains(v[0], ","): // unseparated string
+		v = strings.Split(v[0], ",")
+	}
+	return v
 }
 
 func getInt(flag *Flag) int {
@@ -289,7 +300,7 @@ func (f *Flags) Bind(cmd *cobra.Command) error {
 	return nil
 }
 
-//nolint: gocyclo
+// nolint: gocyclo
 func (f *Flags) ToOptions(appVersion string, args []string, globalFlags *GlobalFlagGroup, output io.Writer) (Options, error) {
 	var err error
 	opts := Options{

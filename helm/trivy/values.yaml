@@ -28,7 +28,7 @@ resources:
 
 rbac:
   create: true
-  pspEnabled: true
+  pspEnabled: false
 
 podSecurityContext:
   runAsUser: 65534
@@ -113,6 +113,7 @@ trivy:
     redis:
       enabled: false
       url: ""  # e.g. redis://redis.redis.svc:6379
+      ttl: ""  # e.g 3600s, 24h
   serviceAccount:
     annotations: {}
       # eks.amazonaws.com/role-arn: arn:aws:iam::ACCOUNT_ID:role/IAM_ROLE_NAME

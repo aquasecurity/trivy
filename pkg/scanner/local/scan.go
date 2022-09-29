@@ -40,6 +40,7 @@ var (
 // SuperSet binds dependencies for Local scan
 var SuperSet = wire.NewSet(
 	vulnerability.SuperSet,
+	wire.Value([]applier.Option(nil)), // functional options
 	applier.NewApplier,
 	wire.Bind(new(Applier), new(applier.Applier)),
 	wire.Struct(new(ospkgDetector.Detector)),
@@ -486,6 +487,10 @@ func toDetectedMisconfiguration(res ftypes.MisconfResult, defaultSeverity dbType
 	if res.Namespace == "" || strings.HasPrefix(res.Namespace, "builtin.") {
 		primaryURL = fmt.Sprintf("https://avd.aquasec.com/misconfig/%s", strings.ToLower(res.ID))
 		res.References = append(res.References, primaryURL)
+	}
+
+	if len(primaryURL) == 0 && len(res.References) > 0 {
+		primaryURL = res.References[0]
 	}
 
 	return types.DetectedMisconfiguration{

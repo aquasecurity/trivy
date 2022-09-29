@@ -241,6 +241,14 @@ func commonChecks(t *testing.T, detail types.ArtifactDetail, tc testCase) {
 }
 
 func checkOSPackages(t *testing.T, detail types.ArtifactDetail, tc testCase) {
+	// Sort OS packages for consistency
+	sort.Slice(detail.Packages, func(i, j int) bool {
+		if detail.Packages[i].Name != detail.Packages[j].Name {
+			return detail.Packages[i].Name < detail.Packages[j].Name
+		}
+		return detail.Packages[i].Version < detail.Packages[j].Version
+	})
+
 	splitted := strings.Split(tc.remoteImageName, ":")
 	goldenFile := fmt.Sprintf("testdata/goldens/packages/%s.json.golden", splitted[len(splitted)-1])
 

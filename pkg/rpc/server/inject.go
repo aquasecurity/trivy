@@ -8,7 +8,7 @@ import (
 	"github.com/google/wire"
 )
 
-func initializeScanServer(localArtifactCache cache.LocalArtifactCache) *ScanServer {
+func initializeScanServer(localArtifactCache cache.Cache) *ScanServer {
 	wire.Build(ScanSuperSet)
 	return &ScanServer{}
 }

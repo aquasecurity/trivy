@@ -64,6 +64,8 @@ jobs:
             dotnet
             java
             go
+            c
+            c++
             
             os
             lang
