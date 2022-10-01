@@ -132,6 +132,20 @@ func TestCacheOptions_CacheBackendMasked(t *testing.T) {
 			},
 			want: "redis://localhost:6379",
 		},
+		{
+			name: "redis cache backend cluster, masked",
+			fields: fields{
+				backend: "redis://root:password@localhost:6379,redis://root:password@localhost:6380",
+			},
+			want: "redis://****@localhost:6379,redis://****@localhost:6380",
+		},
+		{
+			name: "redis cache backend cluster, masked does nothing",
+			fields: fields{
+				backend: "redis://localhost:6379,redis://localhost:6380",
+			},
+			want: "redis://localhost:6379,redis://localhost:6380",
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {

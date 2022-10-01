@@ -133,12 +133,18 @@ func (fg *CacheFlagGroup) ToOptions() (CacheOptions, error) {
 
 // CacheBackendMasked returns the redis connection string masking credentials
 func (o *CacheOptions) CacheBackendMasked() string {
-	endIndex := strings.Index(o.CacheBackend, "@")
-	if endIndex == -1 {
-		return o.CacheBackend
+	split_chr := ","
+	clients := []string{}
+
+	for _, u := range strings.Split(o.CacheBackend, split_chr) {
+
+		endIndex := strings.Index(u, "@")
+		if endIndex == -1 {
+			clients = append(clients, u)
+		} else {
+			startIndex := strings.Index(u, "//")
+			clients = append(clients, fmt.Sprintf("%s****%s", u[:startIndex+2], u[endIndex:]))
+		}
 	}
-
-	startIndex := strings.Index(o.CacheBackend, "//")
-
-	return fmt.Sprintf("%s****%s", o.CacheBackend[:startIndex+2], o.CacheBackend[endIndex:])
+	return strings.Join(clients, split_chr)
 }
