@@ -2,7 +2,6 @@ package vm
 
 import (
 	"io"
-	"os"
 
 	"github.com/hashicorp/go-multierror"
 	"golang.org/x/xerrors"
@@ -28,22 +27,13 @@ func RegisterVMReader(vm Reader) {
 }
 
 type VM struct {
-	f *os.File
 	*io.SectionReader
 }
 
-func (v *VM) Close() error {
-	return v.f.Close()
-}
-
-func New(filePath string, cache Cache) (*VM, error) {
-	f, err := os.Open(filePath)
-	if err != nil {
-		return nil, xerrors.Errorf("open %s error: %w", filePath, err)
-	}
+func New(rs io.ReadSeeker, cache Cache) (*VM, error) {
 	var errs error
 	for _, v := range Readers {
-		ok, err := v.Try(f)
+		ok, err := v.Try(rs)
 		if err != nil {
 			errs = multierror.Append(errs, err)
 			continue
@@ -51,12 +41,12 @@ func New(filePath string, cache Cache) (*VM, error) {
 		if !ok {
 			continue
 		}
-		vreader, err := v.NewVMReader(f, cache)
+		vreader, err := v.NewVMReader(rs, cache)
 		if err != nil {
 			return nil, xerrors.Errorf("open virtual machine error: %w", err)
 		}
 
-		return &VM{f: f, SectionReader: vreader}, nil
+		return &VM{SectionReader: vreader}, nil
 	}
 	return nil, xerrors.Errorf("try open virtual machine error: %w", errs)
 }

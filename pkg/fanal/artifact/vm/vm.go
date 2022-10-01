@@ -9,6 +9,7 @@ import (
 	"sync"
 
 	lru "github.com/hashicorp/golang-lru"
+	ebsfile "github.com/masahiro331/go-ebs-file"
 	"github.com/opencontainers/go-digest"
 	"golang.org/x/sync/semaphore"
 	"golang.org/x/xerrors"
@@ -23,13 +24,13 @@ import (
 	"github.com/aquasecurity/trivy/pkg/fanal/cache"
 	"github.com/aquasecurity/trivy/pkg/fanal/handler"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
-	"github.com/aquasecurity/trivy/pkg/fanal/vm"
+	"github.com/aquasecurity/trivy/pkg/fanal/vm/storage"
 	"github.com/aquasecurity/trivy/pkg/fanal/walker"
 )
 
 const (
 	parallel  = 5
-	cacheSize = 20 << 20 // 20 MB
+	cacheSize = 40 << 20 // 40 MB
 )
 
 type Artifact struct {
@@ -50,17 +51,23 @@ func (a Artifact) Inspect(ctx context.Context) (reference types.ArtifactReferenc
 		return types.ArtifactReference{}, xerrors.Errorf("failed to create new lru cache: %w", err)
 	}
 	defer lruCache.Purge()
-	v, err := vm.New(a.filePath, lruCache)
+
+	s, err := storage.NewStorage(a.filePath, ebsfile.Option{}, ctx, lruCache)
 	if err != nil {
-		return types.ArtifactReference{}, xerrors.Errorf("new virtual machine error: %w", err)
+		return types.ArtifactReference{}, xerrors.Errorf("failed to new storage: %w", err)
 	}
-	defer v.Close()
+	defer s.Close()
+
+	sr, err := s.Open(a.filePath)
+	if err != nil {
+		return types.ArtifactReference{}, xerrors.Errorf("failed to open storage: %w", err)
+	}
 
 	var wg sync.WaitGroup
 	limit := semaphore.NewWeighted(parallel)
 
 	// TODO: Always walk from the root directory. Consider whether there is a need to be able to set optional
-	err = a.walker.Walk(v.SectionReader, lruCache, "/", func(filePath string, info os.FileInfo, opener analyzer.Opener) error {
+	err = a.walker.Walk(sr, lruCache, "/", func(filePath string, info os.FileInfo, opener analyzer.Opener) error {
 		opts := analyzer.AnalysisOptions{Offline: a.artifactOption.Offline}
 		if err = a.analyzer.AnalyzeFile(ctx, &wg, limit, result, "/", filePath, info, opener, nil, opts); err != nil {
 			return xerrors.Errorf("analyze file (%s): %w", filePath, err)

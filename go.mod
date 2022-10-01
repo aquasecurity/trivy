@@ -18,7 +18,7 @@ require (
 	github.com/aquasecurity/testdocker v0.0.0-20210911155206-e1e85f5a1516
 	github.com/aquasecurity/trivy-db v0.0.0-20220627104749-930461748b63
 	github.com/aquasecurity/trivy-kubernetes v0.3.1-0.20220823151349-b90b48958b91
-	github.com/aws/aws-sdk-go v1.44.95
+	github.com/aws/aws-sdk-go v1.44.108
 	github.com/aws/aws-sdk-go-v2 v1.16.14
 	github.com/aws/aws-sdk-go-v2/config v1.17.5
 	github.com/aws/aws-sdk-go-v2/service/sts v1.16.17
@@ -51,9 +51,10 @@ require (
 	github.com/liamg/tml v0.6.0
 	github.com/mailru/easyjson v0.7.7
 	github.com/masahiro331/go-disk v0.0.0-20220919035250-c8da316f91ac
+	github.com/masahiro331/go-ebs-file v0.0.0-20221001074953-29d8ae771890
 	github.com/masahiro331/go-mvn-version v0.0.0-20210429150710-d3157d602a08
 	github.com/masahiro331/go-vmdk-parser v0.0.0-20220920085928-e985b7990634
-	github.com/masahiro331/go-xfs-filesystem v0.0.0-20220924084255-72c129f91839
+	github.com/masahiro331/go-xfs-filesystem v0.0.0-20221001074709-85e8ad6352ea
 	github.com/mitchellh/hashstructure/v2 v2.0.2
 	github.com/open-policy-agent/opa v0.43.0
 	github.com/owenrumney/go-sarif/v2 v2.1.2

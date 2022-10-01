@@ -243,8 +243,8 @@ github.com/asaskevich/govalidator v0.0.0-20210307081110-f21760c49a8d/go.mod h1:W
 github.com/aws/aws-sdk-go v1.15.11/go.mod h1:mFuSZ37Z9YOHbQEwBWztmVzqXrEkub65tZoCYDt7FT0=
 github.com/aws/aws-sdk-go v1.15.78/go.mod h1:E3/ieXAlvM0XWO57iftYVDLLvQ824smPP3ATZkfNZeM=
 github.com/aws/aws-sdk-go v1.34.9/go.mod h1:5zCpMtNQVjRREroY7sYe8lOMRSxkhG6MZveU8YkpAk0=
-github.com/aws/aws-sdk-go v1.44.95 h1:QwmA+PeR6v4pF0f/dPHVPWGAshAhb9TnGZBTM5uKuI8=
-github.com/aws/aws-sdk-go v1.44.95/go.mod h1:y4AeaBuwd2Lk+GepC1E9v0qOiTws0MIWAX4oIKwKHZo=
+github.com/aws/aws-sdk-go v1.44.108 h1:L8N9GmP9UYDNqBtJO6OC4zSuEkQxAR770VkbRXAUmRk=
+github.com/aws/aws-sdk-go v1.44.108/go.mod h1:y4AeaBuwd2Lk+GepC1E9v0qOiTws0MIWAX4oIKwKHZo=
 github.com/aws/aws-sdk-go-v2 v1.16.11/go.mod h1:WTACcleLz6VZTp7fak4EO5b9Q4foxbn+8PIz3PmyKlo=
 github.com/aws/aws-sdk-go-v2 v1.16.12/go.mod h1:C+Ym0ag2LIghJbXhfXZ0YEEp49rBWowxKzJLUoob0ts=
 github.com/aws/aws-sdk-go-v2 v1.16.14 h1:db6GvO4Z2UqHt5gvT0lr6J5x5P+oQ7bdRzczVaRekMU=
@@ -1240,12 +1240,14 @@ github.com/markbates/safe v1.0.1/go.mod h1:nAqgmRi7cY2nqMc92/bSEeQA+R4OheNU2T1kN
 github.com/marstr/guid v1.1.0/go.mod h1:74gB1z2wpxxInTG6yaqA7KrtM0NZ+RbrcqDvYHefzho=
 github.com/masahiro331/go-disk v0.0.0-20220919035250-c8da316f91ac h1:QyRucnGOLHJag1eB9CtuZwZk+/LpvTSYr5mnFLLFlgA=
 github.com/masahiro331/go-disk v0.0.0-20220919035250-c8da316f91ac/go.mod h1:J7Vb0sf0JzOhT0uHTeCqO6dqP/ELVcQvQ6yQ/56ZRGw=
+github.com/masahiro331/go-ebs-file v0.0.0-20221001074953-29d8ae771890 h1:Zs4UO8QqCmKkm4ORGlAekqmK/z/c7f8I/VobtJ8hYRQ=
+github.com/masahiro331/go-ebs-file v0.0.0-20221001074953-29d8ae771890/go.mod h1:FlIy9xS0Urads8c1uiDRZYPk5hJbVIMf0ShkVhTEEVY=
 github.com/masahiro331/go-mvn-version v0.0.0-20210429150710-d3157d602a08 h1:AevUBW4cc99rAF8q8vmddIP8qd/0J5s/UyltGbp66dg=
 github.com/masahiro331/go-mvn-version v0.0.0-20210429150710-d3157d602a08/go.mod h1:JOkBRrE1HvgTyjk6diFtNGgr8XJMtIfiBzkL5krqzVk=
 github.com/masahiro331/go-vmdk-parser v0.0.0-20220920085928-e985b7990634 h1:+/dJTwRl1/HaWrB/U0+ZwJicDgnesaWV378r9hJPyjM=
 github.com/masahiro331/go-vmdk-parser v0.0.0-20220920085928-e985b7990634/go.mod h1:5f7mCJGW9cJb8SDn3z8qodGxpMCOo8d/2nls/tiwRrw=
-github.com/masahiro331/go-xfs-filesystem v0.0.0-20220924084255-72c129f91839 h1:7qNu/YnSXy1szBRyRX6oBPlweBKBSNgA1x6cMZE4Yuw=
-github.com/masahiro331/go-xfs-filesystem v0.0.0-20220924084255-72c129f91839/go.mod h1:QKBZqdn6teT0LK3QhAf3K6xakItd1LonOShOEC44idQ=
+github.com/masahiro331/go-xfs-filesystem v0.0.0-20221001074709-85e8ad6352ea h1:9ymjT3uCSFhbgRw9eNPreZyxa+tPqOjCWytEIjcPmDw=
+github.com/masahiro331/go-xfs-filesystem v0.0.0-20221001074709-85e8ad6352ea/go.mod h1:QKBZqdn6teT0LK3QhAf3K6xakItd1LonOShOEC44idQ=
 github.com/matryer/is v1.2.0 h1:92UTHpy8CDwaJ08GqLDzhhuixiBUUD1p3AU6PHddz4A=
 github.com/matryer/is v1.2.0/go.mod h1:2fLPjFQM9rhQ15aVEtbuwhJinnOqrmgXPNdZsdwlWXA=
 github.com/mattn/go-colorable v0.0.9/go.mod h1:9vuHe8Xs5qXnSaW/c/ABM9alt+Vo+STaOChaDxuIBZU=
