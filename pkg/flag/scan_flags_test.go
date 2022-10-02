@@ -15,7 +15,6 @@ func TestScanFlagGroup_ToOptions(t *testing.T) {
 		skipDirs       []string
 		skipFiles      []string
 		offlineScan    bool
-		vulnType       string
 		securityChecks string
 	}
 	tests := []struct {
@@ -53,7 +52,7 @@ func TestScanFlagGroup_ToOptions(t *testing.T) {
 			},
 			want: flag.ScanOptions{},
 			assertion: func(t require.TestingT, err error, msgs ...interface{}) {
-				require.ErrorContains(t, err, "unknown security check")
+				require.ErrorContains(t, err, "unknown security check: WRONG-CHECK")
 			},
 		},
 		{
@@ -107,7 +106,6 @@ func TestScanFlagGroup_ToOptions(t *testing.T) {
 			viper.Set(flag.SkipDirsFlag.ConfigName, tt.fields.skipDirs)
 			viper.Set(flag.SkipFilesFlag.ConfigName, tt.fields.skipFiles)
 			viper.Set(flag.OfflineScanFlag.ConfigName, tt.fields.offlineScan)
-			viper.Set(flag.VulnTypeFlag.ConfigName, tt.fields.vulnType)
 			viper.Set(flag.SecurityChecksFlag.ConfigName, tt.fields.securityChecks)
 
 			// Assert options

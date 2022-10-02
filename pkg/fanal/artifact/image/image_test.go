@@ -2,11 +2,16 @@ package image_test
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
+	"net/http"
+	"net/http/httptest"
 	"testing"
 	"time"
 
 	v1 "github.com/google/go-containerregistry/pkg/v1"
+	fakei "github.com/google/go-containerregistry/pkg/v1/fake"
+	"github.com/sigstore/rekor/pkg/generated/models"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"golang.org/x/xerrors"
@@ -17,6 +22,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/fanal/cache"
 	"github.com/aquasecurity/trivy/pkg/fanal/image"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
+	"github.com/aquasecurity/trivy/pkg/log"
 
 	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/command/apk"
 	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/config/all"
@@ -65,6 +71,7 @@ func TestArtifact_Inspect(t *testing.T) {
 							SchemaVersion: types.BlobJSONSchemaVersion,
 							Digest:        "",
 							DiffID:        "sha256:beee9f30bc1f711043e78d4a2be0668955d4b761d587d6f60c2c8dc081efb203",
+							CreatedBy:     "ADD file:0c4555f363c2672e350001f1293e689875a3760afe7b3f9146886afe67121cba in / ",
 							OS: &types.OS{
 								Family: "alpine",
 								Name:   "3.11.5",
@@ -275,6 +282,7 @@ func TestArtifact_Inspect(t *testing.T) {
 							SchemaVersion: types.BlobJSONSchemaVersion,
 							Digest:        "",
 							DiffID:        "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
+							CreatedBy:     "bazel build ...",
 							OS: &types.OS{
 								Family: "debian",
 								Name:   "9.9",
@@ -342,6 +350,7 @@ func TestArtifact_Inspect(t *testing.T) {
 							SchemaVersion: types.BlobJSONSchemaVersion,
 							Digest:        "",
 							DiffID:        "sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5",
+							CreatedBy:     "bazel build ...",
 							PackageInfos: []types.PackageInfo{
 								{
 									FilePath: "var/lib/dpkg/status.d/libc6",
@@ -408,6 +417,7 @@ func TestArtifact_Inspect(t *testing.T) {
 							SchemaVersion: types.BlobJSONSchemaVersion,
 							Digest:        "",
 							DiffID:        "sha256:24df0d4e20c0f42d3703bf1f1db2bdd77346c7956f74f423603d651e8e5ae8a7",
+							CreatedBy:     "COPY file:842584685f26edb24dc305d76894f51cfda2bad0c24a05e727f9d4905d184a70 in /php-app/composer.lock ",
 							Applications: []types.Application{
 								{
 									Type: "composer", FilePath: "php-app/composer.lock",
@@ -440,6 +450,7 @@ func TestArtifact_Inspect(t *testing.T) {
 							SchemaVersion: types.BlobJSONSchemaVersion,
 							Digest:        "",
 							DiffID:        "sha256:a4595c43a874856bf95f3bfc4fbf78bbaa04c92c726276d4f64193a47ced0566",
+							CreatedBy:     "COPY file:c6d0373d380252b91829a5bb3c81d5b1afa574c91cef7752d18170a231c31f6d in /ruby-app/Gemfile.lock ",
 							Applications: []types.Application{
 								{
 									Type: types.Bundler, FilePath: "ruby-app/Gemfile.lock",
@@ -625,6 +636,7 @@ func TestArtifact_Inspect(t *testing.T) {
 							SchemaVersion: types.BlobJSONSchemaVersion,
 							Digest:        "",
 							DiffID:        "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
+							CreatedBy:     "bazel build ...",
 						},
 					},
 				},
@@ -635,6 +647,7 @@ func TestArtifact_Inspect(t *testing.T) {
 							SchemaVersion: types.BlobJSONSchemaVersion,
 							Digest:        "",
 							DiffID:        "sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5",
+							CreatedBy:     "bazel build ...",
 						},
 					},
 				},
@@ -645,6 +658,7 @@ func TestArtifact_Inspect(t *testing.T) {
 							SchemaVersion: types.BlobJSONSchemaVersion,
 							Digest:        "",
 							DiffID:        "sha256:24df0d4e20c0f42d3703bf1f1db2bdd77346c7956f74f423603d651e8e5ae8a7",
+							CreatedBy:     "COPY file:842584685f26edb24dc305d76894f51cfda2bad0c24a05e727f9d4905d184a70 in /php-app/composer.lock ",
 							OpaqueDirs:    []string{"php-app/"},
 						},
 					},
@@ -656,6 +670,7 @@ func TestArtifact_Inspect(t *testing.T) {
 							SchemaVersion: types.BlobJSONSchemaVersion,
 							Digest:        "",
 							DiffID:        "sha256:a4595c43a874856bf95f3bfc4fbf78bbaa04c92c726276d4f64193a47ced0566",
+							CreatedBy:     "COPY file:c6d0373d380252b91829a5bb3c81d5b1afa574c91cef7752d18170a231c31f6d in /ruby-app/Gemfile.lock ",
 							OpaqueDirs:    []string{"ruby-app/"},
 						},
 					},
@@ -780,6 +795,7 @@ func TestArtifact_Inspect(t *testing.T) {
 							SchemaVersion: types.BlobJSONSchemaVersion,
 							Digest:        "",
 							DiffID:        "sha256:beee9f30bc1f711043e78d4a2be0668955d4b761d587d6f60c2c8dc081efb203",
+							CreatedBy:     "ADD file:0c4555f363c2672e350001f1293e689875a3760afe7b3f9146886afe67121cba in / ",
 							OS: &types.OS{
 								Family: "alpine",
 								Name:   "3.11.5",
@@ -911,6 +927,7 @@ func TestArtifact_Inspect(t *testing.T) {
 							SchemaVersion: types.BlobJSONSchemaVersion,
 							Digest:        "",
 							DiffID:        "sha256:beee9f30bc1f711043e78d4a2be0668955d4b761d587d6f60c2c8dc081efb203",
+							CreatedBy:     "ADD file:0c4555f363c2672e350001f1293e689875a3760afe7b3f9146886afe67121cba in / ",
 							OS: &types.OS{
 								Family: "alpine",
 								Name:   "3.11.5",
@@ -1057,6 +1074,165 @@ func TestArtifact_Inspect(t *testing.T) {
 			} else {
 				require.NoError(t, err, tt.name)
 			}
+			assert.Equal(t, tt.want, got)
+		})
+	}
+}
+
+type fakeImage struct {
+	name        string
+	repoDigests []string
+	fakei.FakeImage
+	types.ImageExtension
+}
+
+func (f fakeImage) ID() (string, error) {
+	return "", nil
+}
+
+func (f fakeImage) LayerIDs() ([]string, error) {
+	return nil, nil
+}
+
+func (f fakeImage) Name() string {
+	return f.name
+}
+
+func (f fakeImage) RepoDigests() []string {
+	return f.repoDigests
+}
+
+func TestArtifact_InspectRekorAttestation(t *testing.T) {
+	type fields struct {
+		imageName   string
+		repoDigests []string
+	}
+	tests := []struct {
+		name                string
+		fields              fields
+		artifactOpt         artifact.Option
+		searchFile          string
+		putBlobExpectations []cache.ArtifactCachePutBlobExpectation
+		want                types.ArtifactReference
+		wantErr             string
+	}{
+		{
+			name: "happy path",
+			fields: fields{
+				imageName: "test/image:10",
+				repoDigests: []string{
+					"test/image@sha256:bc41182d7ef5ffc53a40b044e725193bc10142a1243f395ee852a8d9730fc2ad",
+				},
+			},
+			searchFile: "testdata/rekor-search.json",
+			putBlobExpectations: []cache.ArtifactCachePutBlobExpectation{
+				{
+					Args: cache.ArtifactCachePutBlobArgs{
+						BlobID: "sha256:8c90c68f385a8067778a200fd3e56e257d4d6dd563e519a7be65902ee0b6e861",
+						BlobInfo: types.BlobInfo{
+							SchemaVersion: types.BlobJSONSchemaVersion,
+							OS: &types.OS{
+								Family: "alpine",
+								Name:   "3.16.2",
+							},
+							PackageInfos: []types.PackageInfo{
+								{
+									Packages: []types.Package{
+										{
+											Name:       "musl",
+											Version:    "1.2.3-r0",
+											SrcName:    "musl",
+											SrcVersion: "1.2.3-r0",
+											Licenses:   []string{"MIT"},
+											Ref:        "pkg:apk/alpine/musl@1.2.3-r0?distro=3.16.2",
+											Layer: types.Layer{
+												DiffID: "sha256:994393dc58e7931862558d06e46aa2bb17487044f670f310dffe1d24e4d1eec7",
+											},
+										},
+									},
+								},
+							},
+						},
+					},
+					Returns: cache.ArtifactCachePutBlobReturns{},
+				},
+			},
+			artifactOpt: artifact.Option{
+				SBOMSources: []string{"rekor"},
+			},
+			want: types.ArtifactReference{
+				Name: "test/image:10",
+				Type: types.ArtifactCycloneDX,
+				ID:   "sha256:8c90c68f385a8067778a200fd3e56e257d4d6dd563e519a7be65902ee0b6e861",
+				BlobIDs: []string{
+					"sha256:8c90c68f385a8067778a200fd3e56e257d4d6dd563e519a7be65902ee0b6e861",
+				},
+			},
+		},
+		{
+			name: "503",
+			fields: fields{
+				imageName: "test/image:10",
+				repoDigests: []string{
+					"test/image@sha256:unknown",
+				},
+			},
+			searchFile: "testdata/rekor-search.json",
+			artifactOpt: artifact.Option{
+				SBOMSources: []string{"rekor"},
+			},
+			wantErr: "remote SBOM fetching error",
+		},
+	}
+
+	log.InitLogger(false, true)
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				switch r.URL.Path {
+				case "/api/v1/index/retrieve":
+					var params models.SearchIndex
+					err := json.NewDecoder(r.Body).Decode(&params)
+					require.NoError(t, err)
+
+					if params.Hash == "sha256:bc41182d7ef5ffc53a40b044e725193bc10142a1243f395ee852a8d9730fc2ad" {
+						http.ServeFile(w, r, tt.searchFile)
+					} else {
+						http.Error(w, "something wrong", http.StatusInternalServerError)
+					}
+				case "/api/v1/log/entries/392f8ecba72f4326eb624a7403756250b5f2ad58842a99d1653cd6f147f4ce9eda2da350bd908a55":
+					http.ServeFile(w, r, "testdata/log-entry-no-attestation.json")
+				case "/api/v1/log/entries/392f8ecba72f4326414eaca77bd19bf5f378725d7fd79309605a81b69cc0101f5cd3119d0a216523":
+					http.ServeFile(w, r, "testdata/log-entry.json")
+				}
+				return
+			}))
+			defer ts.Close()
+
+			// Set the testing URL
+			tt.artifactOpt.RekorURL = ts.URL
+
+			mockCache := new(cache.MockArtifactCache)
+			mockCache.ApplyPutBlobExpectations(tt.putBlobExpectations)
+
+			fi := fakei.FakeImage{}
+			fi.ConfigFileReturns(nil, nil)
+
+			img := &fakeImage{
+				name:        tt.fields.imageName,
+				repoDigests: tt.fields.repoDigests,
+				FakeImage:   fi,
+			}
+			a, err := image2.NewArtifact(img, mockCache, tt.artifactOpt)
+			require.NoError(t, err)
+
+			got, err := a.Inspect(context.Background())
+			if tt.wantErr != "" {
+				assert.ErrorContains(t, err, tt.wantErr)
+				return
+			}
+			require.NoError(t, err, tt.name)
+			got.CycloneDX = nil
 			assert.Equal(t, tt.want, got)
 		})
 	}

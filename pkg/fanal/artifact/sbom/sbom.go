@@ -20,6 +20,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/sbom"
 	"github.com/aquasecurity/trivy/pkg/sbom/cyclonedx"
+	"github.com/aquasecurity/trivy/pkg/sbom/spdx"
 )
 
 type Artifact struct {
@@ -83,6 +84,9 @@ func (a Artifact) Inspect(_ context.Context) (types.ArtifactReference, error) {
 	switch format {
 	case sbom.FormatCycloneDXJSON, sbom.FormatCycloneDXXML, sbom.FormatAttestCycloneDXJSON:
 		artifactType = types.ArtifactCycloneDX
+	case sbom.FormatSPDXTV, sbom.FormatSPDXJSON:
+		artifactType = types.ArtifactSPDX
+
 	}
 
 	return types.ArtifactReference{
@@ -108,15 +112,23 @@ func (a Artifact) Decode(f io.Reader, format sbom.Format) (sbom.SBOM, error) {
 		v = &cyclonedx.CycloneDX{SBOM: &bom}
 		decoder = json.NewDecoder(f)
 	case sbom.FormatAttestCycloneDXJSON:
-		// in-toto attestation
-		//   => cosign predicate
-		//     => CycloneDX JSON
+		// dsse envelope
+		//   => in-toto attestation
+		//     => cosign predicate
+		//       => CycloneDX JSON
 		v = &attestation.Statement{
 			Predicate: &attestation.CosignPredicate{
 				Data: &cyclonedx.CycloneDX{SBOM: &bom},
 			},
 		}
 		decoder = json.NewDecoder(f)
+	case sbom.FormatSPDXJSON:
+		v = &spdx.SPDX{SBOM: &bom}
+		decoder = json.NewDecoder(f)
+	case sbom.FormatSPDXTV:
+		v = &spdx.SPDX{SBOM: &bom}
+		decoder = spdx.NewTVDecoder(f)
+
 	default:
 		return sbom.SBOM{}, xerrors.Errorf("%s scanning is not yet supported", format)
 
