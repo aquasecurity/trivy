@@ -49,7 +49,7 @@ func TestFilesystem(t *testing.T) {
 				input:          "testdata/fixtures/fs/gomod",
 				skipFiles:      []string{"/testdata/fixtures/fs/gomod/submod2/go.mod"},
 			},
-			golden: "testdata/gomod-skip-files.json.golden",
+			golden: "testdata/gomod-skip.json.golden",
 		},
 		{
 			name: "gomod with skip dirs",
@@ -58,7 +58,7 @@ func TestFilesystem(t *testing.T) {
 				input:          "testdata/fixtures/fs/gomod",
 				skipDirs:       []string{"/testdata/fixtures/fs/gomod/submod2"},
 			},
-			golden: "testdata/gomod-skip-dirs.json.golden",
+			golden: "testdata/gomod-skip.json.golden",
 		},
 		{
 			name: "nodejs",
