@@ -59,24 +59,32 @@ func (a Artifact) inspectSBOMAttestation(ctx context.Context) (ftypes.ArtifactRe
 	}
 
 	log.Logger.Debugf("Found matching Rekor entries: %s", entryIDs)
-	for _, id := range entryIDs {
-		log.Logger.Debugf("Inspecting Rekor entry: %s", id)
-		ref, err := a.inspectRekorRecord(ctx, client, id)
-		if errors.Is(err, rekor.ErrNoAttestation) || errors.Is(err, errNoSBOMFound) {
-			continue
-		} else if err != nil {
-			return ftypes.ArtifactReference{}, xerrors.Errorf("rekor record inspection error: %w", err)
+
+	for i := 0; i < len(entryIDs); i += rekor.MaxGetEntriesLimit {
+		end := i + rekor.MaxGetEntriesLimit
+		if end > len(entryIDs) {
+			end = len(entryIDs)
 		}
-		return ref, nil
+
+		entries, err := client.GetEntries(ctx, entryIDs[i:end])
+		if err != nil {
+			return ftypes.ArtifactReference{}, xerrors.Errorf("failed to get entries: %w", err)
+		}
+
+		for _, entry := range entries {
+			ref, err := a.inspectRekorRecord(ctx, entry)
+			if errors.Is(err, errNoSBOMFound) {
+				continue
+			} else if err != nil {
+				return ftypes.ArtifactReference{}, xerrors.Errorf("rekor record inspection error: %w", err)
+			}
+			return ref, nil
+		}
 	}
 	return ftypes.ArtifactReference{}, errNoSBOMFound
 }
 
-func (a Artifact) inspectRekorRecord(ctx context.Context, client *rekor.Client, entryID rekor.EntryID) (ftypes.ArtifactReference, error) {
-	entry, err := client.GetEntry(ctx, entryID)
-	if err != nil {
-		return ftypes.ArtifactReference{}, xerrors.Errorf("failed to get rekor entry: %w", err)
-	}
+func (a Artifact) inspectRekorRecord(ctx context.Context, entry rekor.Entry) (ftypes.ArtifactReference, error) {
 
 	// TODO: Trivy SBOM should take precedence
 	raw, err := a.parseStatement(entry)
