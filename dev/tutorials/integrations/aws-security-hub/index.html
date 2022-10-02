@@ -3068,6 +3068,7 @@
 
 
 <h1 id="aws-security-hub">AWS Security Hub</h1>
+<p><img src="../../imgs/Security-Hub.jpeg" alt="security-hub" width=50 height=50 /></p>
 <h2 id="upload-findings-to-security-hub">Upload findings to Security Hub</h2>
 <p>In the following example using the template <code>asff.tpl</code>, <a href="https://docs.aws.amazon.com/securityhub/latest/userguide/securityhub-findings-format.html">ASFF</a> file can be generated.</p>
 <div class="highlight"><pre><span></span><code>$ AWS_REGION=us-west-1 AWS_ACCOUNT_ID=123456789012 trivy image --format template --template &quot;@contrib/asff.tpl&quot; -o report.asff golang:1.12-alpine
@@ -3079,11 +3080,17 @@
 <p>In order to upload results you must first run <a href="https://docs.aws.amazon.com/cli/latest/reference/securityhub/enable-import-findings-for-product.html">enable-import-findings-for-product</a> like:</p>
 <div class="highlight"><pre><span></span><code>aws securityhub enable-import-findings-for-product --product-arn arn:aws:securityhub:&lt;AWS_REGION&gt;::product/aquasecurity/aquasecurity
 </code></pre></div>
+<p>The findings are <a href="https://docs.aws.amazon.com/securityhub/latest/userguide/securityhub-findings-format-syntax.html">formatted for the API</a> with a key of <code>Findings</code> and a value of the array of findings.
+In order to upload via the CLI the outer wrapping must be removed being left with only the array of findings.
+The easiest way of doing this is with the <a href="https://stedolan.github.io/jq/">jq library</a> using the command </p>
+<div class="highlight"><pre><span></span><code>cat report.asff | jq &#39;.Findings&#39;
+</code></pre></div>
 <p>Then, you can upload it with AWS CLI.</p>
 <div class="highlight"><pre><span></span><code>$ aws securityhub batch-import-findings --findings file://report.asff
 </code></pre></div>
 <h3 id="note">Note</h3>
-<p>The <a href="https://docs.aws.amazon.com/cli/latest/reference/securityhub/batch-import-findings.html#options">batch-import-findings</a> command limits the number of findings uploaded to 100 per request. The best known workaround to this problem is using <a href="https://stedolan.github.io/jq/">jq</a> to run the following command</p>
+<p>The <a href="https://docs.aws.amazon.com/cli/latest/reference/securityhub/batch-import-findings.html#options">batch-import-findings</a> command limits the number of findings uploaded to 100 per request.
+The best known workaround to this problem is using <a href="https://stedolan.github.io/jq/">jq</a> to run the following command</p>
 <div class="highlight"><pre><span></span><code>jq &#39;.[:100]&#39; report.asff 1&gt; short_report.asff
 </code></pre></div>
 <h2 id="customize">Customize</h2>
