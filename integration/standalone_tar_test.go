@@ -19,8 +19,6 @@ func TestTar(t *testing.T) {
 		IgnoreIDs     []string
 		Format        string
 		Input         string
-		SkipDirs      []string
-		SkipFiles     []string
 	}
 	tests := []struct {
 		name     string
@@ -279,19 +277,6 @@ func TestTar(t *testing.T) {
 			}
 			if tt.testArgs.Input != "" {
 				osArgs = append(osArgs, "--input", tt.testArgs.Input)
-			}
-
-			// TODO: test skip files/dirs
-			if len(tt.testArgs.SkipFiles) != 0 {
-				for _, skipFile := range tt.testArgs.SkipFiles {
-					osArgs = append(osArgs, "--skip-files", skipFile)
-				}
-			}
-
-			if len(tt.testArgs.SkipDirs) != 0 {
-				for _, skipDir := range tt.testArgs.SkipDirs {
-					osArgs = append(osArgs, "--skip-dirs", skipDir)
-				}
 			}
 
 			// Set up the output file
