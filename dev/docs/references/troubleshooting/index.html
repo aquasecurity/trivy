@@ -2826,6 +2826,13 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#problems-with-tmp-on-remote-git-repository-scans" class="md-nav__link">
+    Problems with /tmp on remote Git repository scans
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -3165,6 +3172,13 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#problems-with-tmp-on-remote-git-repository-scans" class="md-nav__link">
+    Problems with /tmp on remote Git repository scans
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -3329,6 +3343,15 @@ This is because of a limitation of boltdb.</p>
 </div>
 <p>To run multiple Trivy servers, you need to use Redis as the cache backend so that those servers can share the cache. 
 Follow <a href="../../vulnerability/examples/cache/#cache-backend">this instruction</a> to do so.</p>
+<h3 id="problems-with-tmp-on-remote-git-repository-scans">Problems with <code>/tmp</code> on remote Git repository scans</h3>
+<div class="admonition error">
+<p class="admonition-title">Error</p>
+<p>FATAL repository scan error: scan error: unable to initialize a scanner: unable to initialize a filesystem scanner: git clone error: write /tmp/fanal-remote...</p>
+</div>
+<p>Trivy clones remote Git repositories under the <code>/tmp</code> directory before scanning them. If <code>/tmp</code> doesn't work for you, you can change it by setting the <code>TMPDIR</code> environment variable.</p>
+<p>Try:</p>
+<div class="highlight"><pre><span></span><code>$ TMPDIR=/my/custom/path trivy repo ...
+</code></pre></div>
 <h2 id="homebrew">Homebrew</h2>
 <h3 id="scope-error">Scope error</h3>
 <div class="admonition error">
