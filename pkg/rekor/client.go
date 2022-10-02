@@ -23,10 +23,7 @@ const (
 	uuidLen   = 64
 )
 
-var (
-	ErrNoAttestation       = xerrors.Errorf("Rekor attestations not found")
-	ErrOverGetEntriesLimit = xerrors.Errorf("Over get entries limit")
-)
+var ErrOverGetEntriesLimit = xerrors.Errorf("Over get entries limit")
 
 // EntryID is a hex-format string. The length of the string is 80 or 64.
 // If the length is 80, it consists of two elements, the TreeID and the UUID. If the length is 64,
@@ -90,27 +87,6 @@ func (c *Client) Search(ctx context.Context, hash string) ([]EntryID, error) {
 	}
 
 	return ids, nil
-}
-
-func (c *Client) GetEntry(ctx context.Context, entryID EntryID) (Entry, error) {
-	params := eclient.NewGetLogEntryByUUIDParamsWithContext(ctx).WithEntryUUID(entryID.String())
-
-	// TODO: bulk search
-	resp, err := c.Entries.GetLogEntryByUUID(params)
-	if err != nil {
-		return Entry{}, xerrors.Errorf("failed to get log entry by UUID: %w", err)
-	}
-
-	entry, found := resp.Payload[entryID.UUID]
-	if !found {
-		return Entry{}, ErrNoAttestation
-	}
-
-	if entry.Attestation == nil {
-		return Entry{}, ErrNoAttestation
-	}
-
-	return Entry{Statement: entry.Attestation.Data}, nil
 }
 
 func (c *Client) GetEntries(ctx context.Context, entryIDs []EntryID) ([]Entry, error) {
