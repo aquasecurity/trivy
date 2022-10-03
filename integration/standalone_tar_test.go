@@ -52,7 +52,7 @@ func TestTar(t *testing.T) {
 				Format: "json",
 				Input:  "testdata/fixtures/images/alpine-39.tar.gz",
 				SkipFiles: []string{
-					"/etc",
+          "/etc",
           "/etc/TZ",
           "/etc/alpine-release",
           "/etc/apk",
@@ -61,7 +61,7 @@ func TestTar(t *testing.T) {
           "/etc/apk/keys/alpine-devel@lists.alpinelinux.org-4a6a0840.rsa.pub",
           "/etc/apk/keys/alpine-devel@lists.alpinelinux.org-5243ef4b.rsa.pub",
           "/etc/apk/keys/alpine-devel@lists.alpinelinux.org-5261cecb.rsa.pub",
-					"/etc/apk/protected_paths.d",
+          "/etc/apk/protected_paths.d",
           "/etc/apk/repositories",
           "/etc/apk/world",
           "/etc/conf.d",
