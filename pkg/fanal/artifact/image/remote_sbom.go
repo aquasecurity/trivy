@@ -9,6 +9,7 @@ import (
 	"strings"
 
 	"github.com/in-toto/in-toto-golang/in_toto"
+	"github.com/samber/lo"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/attestation"
@@ -60,13 +61,8 @@ func (a Artifact) inspectSBOMAttestation(ctx context.Context) (ftypes.ArtifactRe
 
 	log.Logger.Debugf("Found matching Rekor entries: %s", entryIDs)
 
-	for i := 0; i < len(entryIDs); i += rekor.MaxGetEntriesLimit {
-		end := i + rekor.MaxGetEntriesLimit
-		if end > len(entryIDs) {
-			end = len(entryIDs)
-		}
-
-		entries, err := client.GetEntries(ctx, entryIDs[i:end])
+	for _, ids := range lo.Chunk[rekor.EntryID](entryIDs, rekor.MaxGetEntriesLimit) {
+		entries, err := client.GetEntries(ctx, ids)
 		if err != nil {
 			return ftypes.ArtifactReference{}, xerrors.Errorf("failed to get entries: %w", err)
 		}
