@@ -104,7 +104,7 @@ func (c *CycloneDX) UnmarshalJSON(b []byte) error {
 	// Keep the original SBOM
 	c.CycloneDX = &ftypes.CycloneDX{
 		BOMFormat:    bom.BOMFormat,
-		SpecVersion:  bom.SpecVersion,
+		SpecVersion:  strconv.Itoa(int(bom.SpecVersion)),
 		SerialNumber: bom.SerialNumber,
 		Version:      bom.Version,
 		Metadata:     metadata,
@@ -201,13 +201,12 @@ func dependencyMap(deps *[]cdx.Dependency) map[string][]string {
 		if _, ok := depMap[dep.Ref]; ok {
 			continue
 		}
-
-		var refs []string
-		for _, d := range lo.FromPtr(dep.Dependencies) {
-			refs = append(refs, d.Ref)
+		var ref []string
+		if dep.Dependencies != nil {
+			ref = append(ref, *dep.Dependencies...)
 		}
 
-		depMap[dep.Ref] = refs
+		depMap[dep.Ref] = ref
 	}
 	return depMap
 }

@@ -184,12 +184,12 @@ func externalRef(bomLink string, bomRef string) (string, error) {
 func (e *Marshaler) marshalComponents(r types.Report, bomRef string) (*[]cdx.Component, *[]cdx.Dependency, *[]cdx.Vulnerability, error) {
 	var components []cdx.Component
 	var dependencies []cdx.Dependency
-	var metadataDependencies []cdx.Dependency
+	var metadataDependencies []string
 	libraryUniqMap := map[string]struct{}{}
 	vulnMap := map[string]cdx.Vulnerability{}
 	for _, result := range r.Results {
 		bomRefMap := map[string]string{}
-		var componentDependencies []cdx.Dependency
+		var componentDependencies []string
 		for _, pkg := range result.Packages {
 			pkgComponent, err := pkgToCdxComponent(result.Type, r.Metadata, pkg)
 			if err != nil {
@@ -221,7 +221,7 @@ func (e *Marshaler) marshalComponents(r types.Report, bomRef string) (*[]cdx.Com
 				components = append(components, pkgComponent)
 			}
 
-			componentDependencies = append(componentDependencies, cdx.Dependency{Ref: pkgComponent.BOMRef})
+			componentDependencies = append(componentDependencies, pkgComponent.BOMRef)
 		}
 
 		for _, vuln := range result.Vulnerabilities {
@@ -280,7 +280,7 @@ func (e *Marshaler) marshalComponents(r types.Report, bomRef string) (*[]cdx.Com
 			)
 
 			// Dependency graph from #1 to #2
-			metadataDependencies = append(metadataDependencies, cdx.Dependency{Ref: resultComponent.BOMRef})
+			metadataDependencies = append(metadataDependencies, resultComponent.BOMRef)
 		}
 	}
 	vulns := maps.Values(vulnMap)
