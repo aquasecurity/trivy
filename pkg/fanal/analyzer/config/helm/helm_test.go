@@ -370,6 +370,11 @@ func Test_helmConfigAnalyzer_Required(t *testing.T) {
 			want:     true,
 		},
 		{
+			name:     "yaml - shorthand",
+			filePath: "testdata/testchart/templates/deployment.yml",
+			want:     true,
+		},
+		{
 			name:     "tpl",
 			filePath: "testdata/testchart/templates/_helpers.tpl",
 			want:     true,

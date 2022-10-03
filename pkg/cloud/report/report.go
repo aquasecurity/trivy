@@ -84,7 +84,7 @@ func Write(rep *Report, opt flag.Options, fromCache bool) error {
 				return err
 			}
 			sort.Slice(resCopy.Misconfigurations, func(i, j int) bool {
-				return resCopy.Misconfigurations[i].CauseMetadata.Resource < resCopy.Misconfigurations[i].CauseMetadata.Resource
+				return resCopy.Misconfigurations[i].CauseMetadata.Resource < resCopy.Misconfigurations[j].CauseMetadata.Resource
 			})
 			filtered = append(filtered, resCopy)
 		}

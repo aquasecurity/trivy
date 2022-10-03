@@ -81,6 +81,19 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 						},
 					},
 					{
+						Type: "gradle",
+						Libraries: []ftypes.Package{
+							{
+								Name:    "com.example:example",
+								Ref:     "pkg:gradle/com.example/example@0.0.1",
+								Version: "0.0.1",
+								Layer: ftypes.Layer{
+									DiffID: "sha256:3c79e832b1b4891a1cb4a326ef8524e0bd14a2537150ac0e203a5677176c1ca1",
+								},
+							},
+						},
+					},
+					{
 						Type: "jar",
 						Libraries: []ftypes.Package{
 							{
