@@ -6,7 +6,7 @@ import (
 
 // e.g. config yaml:
 //
-//	misconfiguration:
+//	rego:
 //	  trace: true
 //	  config-policy: "custom-policy/policy"
 //	  policy-namespaces: "user"
