@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"path"
+	"path/filepath"
 	"strings"
 	"time"
 
@@ -119,6 +120,9 @@ func (c *Cache) AddServices(state *state.State, includedServices []string) error
 		}
 	}
 
+	if err := os.MkdirAll(filepath.Dir(c.path), 0700); err != nil {
+		return err
+	}
 	f, err := os.Create(c.path)
 	if err != nil {
 		return err
