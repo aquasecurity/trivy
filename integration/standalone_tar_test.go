@@ -36,7 +36,7 @@ func TestTar(t *testing.T) {
 			golden: "testdata/alpine-39.json.golden",
 		},
 		{
-			name: "alpine 3.9",
+			name: "alpine 3.9 with skip dirs",
 			testArgs: args{
 				Format: "json",
 				Input:  "testdata/fixtures/images/alpine-39.tar.gz",
@@ -47,7 +47,7 @@ func TestTar(t *testing.T) {
 			golden: "testdata/alpine-39-skip.json.golden",
 		},
 		{
-			name: "alpine 3.9",
+			name: "alpine 3.9 with skip files",
 			testArgs: args{
 				Format: "json",
 				Input:  "testdata/fixtures/images/alpine-39.tar.gz",
