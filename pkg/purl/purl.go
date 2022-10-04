@@ -93,6 +93,8 @@ func (p *PackageURL) AppType() string {
 		return string(analyzer.TypeNodePkg)
 	case packageurl.TypeCargo:
 		return string(analyzer.TypeRustBinary)
+	case packageurl.TypeNuget:
+		return string(analyzer.TypeNuget)
 	}
 	return p.Type
 }
@@ -290,7 +292,7 @@ func purlType(t string) string {
 		return packageurl.TypeMaven
 	case string(analyzer.TypeBundler), string(analyzer.TypeGemSpec):
 		return packageurl.TypeGem
-	case string(analyzer.TypeNuget), string(ftypes.DotNetCore):
+	case string(analyzer.TypeNuget), string(analyzer.TypeDotNetCore):
 		return packageurl.TypeNuget
 	case string(analyzer.TypePythonPkg), string(analyzer.TypePip), string(analyzer.TypePipenv), string(analyzer.TypePoetry):
 		return packageurl.TypePyPi
