@@ -29,8 +29,8 @@ type CacheData struct {
 }
 
 type ServiceMetadata struct {
-	Name    string
-	Updated time.Time
+	Name    string    `json:"name"`
+	Updated time.Time `json:"updated"`
 }
 
 var ErrCacheNotFound = fmt.Errorf("cache record not found")
