@@ -13,7 +13,7 @@ Trivy uses the same [authentication methods](https://docs.aws.amazon.com/cli/lat
 
 You will need permissions configured to read all AWS resources - we recommend using a group/role with the `ReadOnlyAccess` policy attached.
 
-Once you've scanned your account, you can run additional commands to filter the results without having to run the entire scan again - results are cached locally per AWS account/region.
+Once you've scanned your account, you can run additional commands to filter the results without having to run the entire scan again - infrastructure information is cached locally per AWS account/region.
 
 ## CLI Commands
 
@@ -52,4 +52,8 @@ All ARNs with detected issues will be displayed when showing results for their a
 
 ## Cached Results
 
-By default, Trivy will cache results for each service for 24 hours. This means you can filter and view results for a service without having to wait for the scan to run again. If you want to force the cache to be refreshed with the latest data, you can use `--update-cache`. Or if you'd like to use cached data for a different timeframe, you can specify `--max-cache-age` (e.g. `--max-cache-age 2h`.)
+By default, Trivy will cache a representation of each AWS service for 24 hours. This means you can filter and view results for a service without having to wait for the entire scan to run again. If you want to force the cache to be refreshed with the latest data, you can use `--update-cache`. Or if you'd like to use cached data for a different timeframe, you can specify `--max-cache-age` (e.g. `--max-cache-age 2h`.). Regardless of whether the cache is used or not, rules will be evaluated again with each run of `trivy aws`.
+
+## Custom Policies
+
+You can write custom policies for Trivy to evaluate against your AWS account. These policies are written in [Rego](https://www.openpolicyagent.org/docs/latest/policy-language/), the same language used by [Open Policy Agent](https://www.openpolicyagent.org/). See the [Custom Policies](../../misconfiguration/custom/index.md) page for more information.
