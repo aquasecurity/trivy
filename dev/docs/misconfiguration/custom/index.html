@@ -1459,6 +1459,13 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#schemas" class="md-nav__link">
+    Schemas
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -3118,6 +3125,13 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#schemas" class="md-nav__link">
+    Schemas
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -3189,27 +3203,23 @@ Once you finish writing custom policies, you can pass the directory where those 
 <p>A single package must contain only one policy.</p>
 <div class="admonition example">
 <p class="admonition-title">Example</p>
-<div class="highlight"><pre><span></span><code>package user.kubernetes.ID001
-
-import lib.result
-
-__rego_metadata__ := {
-    &quot;id&quot;: &quot;ID001&quot;,
-    &quot;title&quot;: &quot;Deployment not allowed&quot;,
-    &quot;severity&quot;: &quot;LOW&quot;,
-    &quot;description&quot;: &quot;Deployments are not allowed because of some reasons.&quot;,
-}
-
-__rego_input__ := {
-    &quot;selector&quot;: [
-        {&quot;type&quot;: &quot;kubernetes&quot;},
-    ],
-}
+<div class="highlight"><pre><span></span><code># METADATA
+# title: Deployment not allowed
+# description: Deployments are not allowed because of some reasons.
+# schemas:
+#   - input: schema.input
+# custom:
+#   id: ID001
+#   severity: LOW
+#   input:
+#     selector: 
+#     - type: kubernetes
+package user.kubernetes.ID001
 
 deny[res] {
     input.kind == &quot;Deployment&quot;
     msg := sprintf(&quot;Found deployment &#39;%s&#39; but deployments are not allowed&quot;, [input.metadata.name])
-    res := result.new(msg, input)
+    res := result.new(msg, input.kind)
 }
 </code></pre></div>
 </div>
@@ -3217,6 +3227,13 @@ deny[res] {
 If you add a new custom policy, it must be defined under a new package like <code>user.kubernetes.ID002</code>.</p>
 <h3 id="policy-structure">Policy structure</h3>
 <dl>
+<dt><code># METADATA</code> (optional)</dt>
+<dd>
+<ul>
+<li>SHOULD be defined for clarity since these values will be displayed in the scan results</li>
+<li><code>custom.input</code> SHOULD be set to indicate the input type the policy should be applied to. See <a href="https://github.com/aquasecurity/defsec/blob/418759b4dc97af25f30f32e0bd365be7984003a1/pkg/types/sources.go">list of available types</a></li>
+</ul>
+</dd>
 <dt><code>package</code> (required)</dt>
 <dd>
 <ul>
@@ -3227,24 +3244,6 @@ If you add a new custom policy, it must be defined under a new package like <cod
 <li>Group name has no effect on policy evaluation</li>
 </ul>
 </li>
-</ul>
-</dd>
-<dt><code>import data.lib.result</code> (optional)</dt>
-<dd>
-<ul>
-<li>MAY be defined if you would like to embellish your result(s) with line numbers and code highlighting</li>
-</ul>
-</dd>
-<dt><code>__rego_metadata__</code> (optional)</dt>
-<dd>
-<ul>
-<li>SHOULD be defined for clarity since these values will be displayed in the scan results</li>
-</ul>
-</dd>
-<dt><code>__rego_input__</code> (optional)</dt>
-<dd>
-<ul>
-<li>MAY be defined when you want to specify input format</li>
 </ul>
 </dd>
 <dt><code>deny</code> (required)</dt>
@@ -3281,19 +3280,24 @@ If you define custom packages, you have to specify the package prefix via <code>
 Any package prefixes such as <code>main</code> and <code>user</code> are allowed.</p>
 <h3 id="metadata">Metadata</h3>
 <p>Metadata helps enrich Trivy's scan results with useful information.</p>
+<p>The annotation format is described in the <a href="https://www.openpolicyagent.org/docs/latest/annotations/">OPA documentation</a>.</p>
+<p>Trivy supports extra fields in the <code>custom</code> section as described below.</p>
 <div class="admonition example">
 <p class="admonition-title">Example</p>
-<div class="highlight"><pre><span></span><code>__rego_metadata__ := {
-    &quot;id&quot;: &quot;ID001&quot;,
-    &quot;title&quot;: &quot;Deployment not allowed&quot;,
-    &quot;severity&quot;: &quot;LOW&quot;,
-    &quot;description&quot;: &quot;Deployments are not allowed because of some reasons.&quot;,
-    &quot;recommended_actions&quot;: &quot;Remove Deployment&quot;,
-    &quot;url&quot;: &quot;https://cloud.google.com/blog/products/containers-kubernetes/kubernetes-best-practices-resource-requests-and-limits&quot;,
-}
+<div class="highlight"><pre><span></span><code># METADATA
+# title: Deployment not allowed
+# description: Deployments are not allowed because of some reasons.
+# custom:
+#   id: ID001
+#   severity: LOW
+#   input:
+#     selector:
+#     - type: kubernetes
 </code></pre></div>
 </div>
-<p>All fields under <code>__rego_metadata__</code> are optional.</p>
+<p>All fields are optional. The <code>schemas</code> field should be used to enable policy validation using a built-in schema. The 
+schema that will be used is based on the input document type. It is recommended to use this to ensure your policies are 
+correct and do not reference incorrect properties/values.</p>
 <table>
 <thead>
 <tr>
@@ -3306,23 +3310,9 @@ Any package prefixes such as <code>main</code> and <code>user</code> are allowed
 </thead>
 <tbody>
 <tr>
-<td>id</td>
-<td>Any characters</td>
-<td align="center">N/A</td>
-<td align="center"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 7 9 19l-5.5-5.5 1.41-1.41L9 16.17 19.59 5.59 21 7Z"/></svg></span></td>
-<td align="center"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 7 9 19l-5.5-5.5 1.41-1.41L9 16.17 19.59 5.59 21 7Z"/></svg></span></td>
-</tr>
-<tr>
 <td>title</td>
 <td>Any characters</td>
 <td align="center">N/A</td>
-<td align="center"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 7 9 19l-5.5-5.5 1.41-1.41L9 16.17 19.59 5.59 21 7Z"/></svg></span></td>
-<td align="center"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 7 9 19l-5.5-5.5 1.41-1.41L9 16.17 19.59 5.59 21 7Z"/></svg></span></td>
-</tr>
-<tr>
-<td>severity</td>
-<td><code>LOW</code>, <code>MEDIUM</code>, <code>HIGH</code>, <code>CRITICAL</code></td>
-<td align="center">UNKNOWN</td>
 <td align="center"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 7 9 19l-5.5-5.5 1.41-1.41L9 16.17 19.59 5.59 21 7Z"/></svg></span></td>
 <td align="center"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 7 9 19l-5.5-5.5 1.41-1.41L9 16.17 19.59 5.59 21 7Z"/></svg></span></td>
 </tr>
@@ -3334,8 +3324,36 @@ Any package prefixes such as <code>main</code> and <code>user</code> are allowed
 <td align="center"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 7 9 19l-5.5-5.5 1.41-1.41L9 16.17 19.59 5.59 21 7Z"/></svg></span></td>
 </tr>
 <tr>
-<td>recommended_actions</td>
+<td>schemas.input</td>
+<td><code>schema.input</code></td>
+<td align="center">(applied to all input types)</td>
+<td align="center"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg></span></td>
+<td align="center"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg></span></td>
+</tr>
+<tr>
+<td>custom.id</td>
 <td>Any characters</td>
+<td align="center">N/A</td>
+<td align="center"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 7 9 19l-5.5-5.5 1.41-1.41L9 16.17 19.59 5.59 21 7Z"/></svg></span></td>
+<td align="center"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 7 9 19l-5.5-5.5 1.41-1.41L9 16.17 19.59 5.59 21 7Z"/></svg></span></td>
+</tr>
+<tr>
+<td>custom.severity</td>
+<td><code>LOW</code>, <code>MEDIUM</code>, <code>HIGH</code>, <code>CRITICAL</code></td>
+<td align="center">UNKNOWN</td>
+<td align="center"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 7 9 19l-5.5-5.5 1.41-1.41L9 16.17 19.59 5.59 21 7Z"/></svg></span></td>
+<td align="center"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 7 9 19l-5.5-5.5 1.41-1.41L9 16.17 19.59 5.59 21 7Z"/></svg></span></td>
+</tr>
+<tr>
+<td>custom.recommended_actions</td>
+<td>Any characters</td>
+<td align="center"></td>
+<td align="center"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg></span></td>
+<td align="center"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 7 9 19l-5.5-5.5 1.41-1.41L9 16.17 19.59 5.59 21 7Z"/></svg></span></td>
+</tr>
+<tr>
+<td>custom.input.selector.type</td>
+<td>Any item(s) in <a href="https://github.com/aquasecurity/defsec/blob/418759b4dc97af25f30f32e0bd365be7984003a1/pkg/types/sources.go)">this list</a></td>
 <td align="center"></td>
 <td align="center"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg></span></td>
 <td align="center"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 7 9 19l-5.5-5.5 1.41-1.41L9 16.17 19.59 5.59 21 7Z"/></svg></span></td>
@@ -3367,16 +3385,15 @@ Deployments are not allowed because of some reasons.
 ────────────────────────────────────────────────────────────────────────
 </code></pre></div>
 <h3 id="input">Input</h3>
-<p>You can specify input format via <code>__rego_input__</code>.
-All fields under <code>__rego_input</code> are optional.</p>
+<p>You can specify input format via the <code>custom.input</code> annotation.</p>
 <div class="admonition example">
 <p class="admonition-title">Example</p>
-<div class="highlight"><pre><span></span><code>__rego_input__ := {
-    &quot;combine&quot;: false,
-    &quot;selector&quot;: [
-        {&quot;type&quot;: &quot;kubernetes&quot;},
-    ],
-}
+<div class="highlight"><pre><span></span><code># METADATA
+# custom:
+#   input:
+#     combine: false
+#     selector:
+#     - type: kubernetes
 </code></pre></div>
 </div>
 <dl>
@@ -3387,6 +3404,14 @@ All fields under <code>__rego_input</code> are optional.</p>
 <p>This option filters the input by file format or configuration language. 
 In the above example, Trivy passes only Kubernetes files to this policy.
 Even if a Dockerfile exists in the specified directory, it will not be passed to the policy as input.</p>
+<p>Possible values for input types are:
+- <code>dockerfile</code> (Dockerfile)
+- <code>kubernetes</code> (Kubernetes YAML/JSON)
+- <code>rbac</code> (Kubernetes RBAC YAML/JSON)
+- <code>cloud</code> (Cloud format, as defined by defsec - this is used for Terraform, CloudFormation, and Cloud/AWS scanning)
+- <code>yaml</code> (Generic YAML)
+- <code>json</code> (Generic JSON)
+- <code>toml</code> (Generic TOML)</p>
 <p>When configuration languages such as Kubernetes are not identified, file formats such as JSON will be used as <code>type</code>.
 When a configuration language is identified, it will overwrite <code>type</code>.</p>
 <div class="admonition example">
@@ -3397,6 +3422,14 @@ When a configuration language is identified, it will overwrite <code>type</code>
 <p><code>type</code> accepts <code>kubernetes</code>, <code>dockerfile</code>, <code>cloudformation</code>, <code>terraform</code>, <code>terraformplan</code>, <code>json</code>, or <code>yaml</code>.</p>
 </dd>
 </dl>
+<h3 id="schemas">Schemas</h3>
+<p>You can explore the format of input documents by browsing the schema for the relevant input type:</p>
+<ul>
+<li><a href="https://github.com/aquasecurity/defsec/blob/master/pkg/rego/schemas/cloud.json">Cloud</a></li>
+<li><a href="https://github.com/aquasecurity/defsec/blob/master/pkg/rego/schemas/dockerfile.json">Dockerfile</a></li>
+<li><a href="https://github.com/aquasecurity/defsec/blob/master/pkg/rego/schemas/kubernetes.json">Kubernetes</a></li>
+<li><a href="https://github.com/aquasecurity/defsec/blob/master/pkg/rego/schemas/rbac.json">RBAC</a></li>
+</ul>
 
               
             </article>

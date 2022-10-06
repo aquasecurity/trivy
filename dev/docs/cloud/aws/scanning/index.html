@@ -1967,6 +1967,13 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#custom-policies" class="md-nav__link">
+    Custom Policies
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -3013,6 +3020,13 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#custom-policies" class="md-nav__link">
+    Custom Policies
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -3037,7 +3051,7 @@
 <p>The included checks cover all of the aspects of the <a href="https://docs.aws.amazon.com/securityhub/latest/userguide/securityhub-standards-cis.html">AWS CIS 1.2</a> automated benchmarks.</p>
 <p>Trivy uses the same <a href="https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-configure.html">authentication methods</a> as the AWS CLI to configure and authenticate your access to the AWS platform.</p>
 <p>You will need permissions configured to read all AWS resources - we recommend using a group/role with the <code>ReadOnlyAccess</code> policy attached.</p>
-<p>Once you've scanned your account, you can run additional commands to filter the results without having to run the entire scan again - results are cached locally per AWS account/region.</p>
+<p>Once you've scanned your account, you can run additional commands to filter the results without having to run the entire scan again - infrastructure information is cached locally per AWS account/region.</p>
 <h2 id="cli-commands">CLI Commands</h2>
 <p>Scan a full AWS account (all supported services):</p>
 <div class="highlight"><pre><span></span><code>trivy aws --region us-east-1
@@ -3057,7 +3071,9 @@ trivy aws --service s3 --service ec2
 </code></pre></div>
 <p>All ARNs with detected issues will be displayed when showing results for their associated service.</p>
 <h2 id="cached-results">Cached Results</h2>
-<p>By default, Trivy will cache results for each service for 24 hours. This means you can filter and view results for a service without having to wait for the scan to run again. If you want to force the cache to be refreshed with the latest data, you can use <code>--update-cache</code>. Or if you'd like to use cached data for a different timeframe, you can specify <code>--max-cache-age</code> (e.g. <code>--max-cache-age 2h</code>.)</p>
+<p>By default, Trivy will cache a representation of each AWS service for 24 hours. This means you can filter and view results for a service without having to wait for the entire scan to run again. If you want to force the cache to be refreshed with the latest data, you can use <code>--update-cache</code>. Or if you'd like to use cached data for a different timeframe, you can specify <code>--max-cache-age</code> (e.g. <code>--max-cache-age 2h</code>.). Regardless of whether the cache is used or not, rules will be evaluated again with each run of <code>trivy aws</code>.</p>
+<h2 id="custom-policies">Custom Policies</h2>
+<p>You can write custom policies for Trivy to evaluate against your AWS account. These policies are written in <a href="https://www.openpolicyagent.org/docs/latest/policy-language/">Rego</a>, the same language used by <a href="https://www.openpolicyagent.org/">Open Policy Agent</a>. See the <a href="../../../misconfiguration/custom/">Custom Policies</a> page for more information.</p>
 
               
             </article>
