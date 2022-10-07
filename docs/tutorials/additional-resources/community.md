@@ -35,3 +35,9 @@ Below is a list of additional resources from the community.
 
 - [Istio evaluating to use Trivy](https://github.com/istio/release-builder/pull/687#issuecomment-874938417)
 - [Research Spike: evaluate Trivy for scanning running containers](https://gitlab.com/gitlab-org/gitlab/-/issues/270888)
+
+## How companies are using Trivy
+
+- Percona -- [Making Percona Kubernetes Operators More Secure With Trivy](https://www.percona.com/blog/making-percona-kubernetes-operators-more-secure-with-trivy/)
+- Synaigy (German Blog) -- [Erhöhte Sicherheit durch Kubernetes: Praktische Tipps zur Absicherung von Containernetzwerken](https://blog.synaigy.com/erhoehte-sicherheit-durch-kubernetes)
+- Trivy in Schwarz Group use case -- [KubeHuddle presentation by Engin Diri](https://youtu.be/ZtY6irFWHpw?t=9179)
