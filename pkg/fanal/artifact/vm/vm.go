@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"os"
 	"path/filepath"
+	"strings"
 	"sync"
 
 	lru "github.com/hashicorp/golang-lru"
@@ -82,8 +83,9 @@ func (a Artifact) Inspect(ctx context.Context) (reference types.ArtifactReferenc
 			info.Mode()&0xc000 == 0xc000 {
 			return nil
 		}
-		if err = a.analyzer.AnalyzeFile(ctx, &wg, limit, result, "/", filePath, info, opener, nil, opts); err != nil {
-			return xerrors.Errorf("analyze file (%s): %w", filePath, err)
+		path := strings.TrimPrefix(filePath, "/")
+		if err = a.analyzer.AnalyzeFile(ctx, &wg, limit, result, "/", path, info, opener, nil, opts); err != nil {
+			return xerrors.Errorf("analyze file (%s): %w", path, err)
 		}
 		return nil
 	})

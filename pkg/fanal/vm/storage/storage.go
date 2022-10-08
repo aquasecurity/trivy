@@ -38,7 +38,7 @@ func (f *File) Open(filePath string) (*io.SectionReader, error) {
 
 	v, err := vm.New(f.File, f.cache)
 	if err != nil {
-		log.Logger.Debug("new virtual machine scan error: %v, treat as raw image.", err)
+		log.Logger.Debugf("new virtual machine scan error: %s, treat as raw image.", err.Error())
 		fi, err := f.Stat()
 		if err != nil {
 			return nil, err

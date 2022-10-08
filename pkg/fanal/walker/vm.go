@@ -6,6 +6,7 @@ import (
 	"io/fs"
 	"os"
 	"path/filepath"
+	"strings"
 	"sync"
 
 	"github.com/hashicorp/go-multierror"
@@ -41,7 +42,7 @@ func (w VM) Walk(vreader *io.SectionReader, cache vm.Cache, root string, fn Walk
 		if err != nil {
 			return xerrors.Errorf("dir entry info error: %w", err)
 		}
-		pathname := filepath.Clean(path)
+		pathname := strings.TrimPrefix(filepath.Clean(path), "/")
 		if fi.IsDir() {
 			if w.shouldSkipDir(pathname) {
 				return filepath.SkipDir

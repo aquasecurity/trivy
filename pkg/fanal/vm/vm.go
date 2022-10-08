@@ -48,5 +48,8 @@ func New(rs io.ReadSeeker, cache Cache) (*VM, error) {
 
 		return &VM{SectionReader: vreader}, nil
 	}
-	return nil, xerrors.Errorf("try open virtual machine error: %w", errs)
+	if errs != nil {
+		return nil, xerrors.Errorf("try open virtual machine error: %w", errs)
+	}
+	return nil, xerrors.New("virtual machine can not detected")
 }
