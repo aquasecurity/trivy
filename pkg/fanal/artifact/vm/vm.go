@@ -16,6 +16,7 @@ import (
 	"golang.org/x/xerrors"
 
 	// Register Filesystem
+	_ "github.com/aquasecurity/trivy/pkg/fanal/vm/filesystem/ext4"
 	_ "github.com/aquasecurity/trivy/pkg/fanal/vm/filesystem/xfs"
 	// Register Reader
 	_ "github.com/aquasecurity/trivy/pkg/fanal/vm/vmdk"

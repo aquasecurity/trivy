@@ -18,6 +18,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/vm"
 	"github.com/aquasecurity/trivy/pkg/fanal/vm/filesystem"
+	"github.com/aquasecurity/trivy/pkg/log"
 )
 
 type VM struct {
@@ -82,6 +83,7 @@ func walk(root string, r *io.SectionReader, dfn DiskWalker, fsfn FilesystemWalkD
 			}
 			return xerrors.Errorf("failed to next disk error: %w", err)
 		}
+
 		err = dfn(root, partition, fsfn)
 		if err != nil {
 			return xerrors.Errorf("walk function error: %w", err)
@@ -97,17 +99,19 @@ func diskWalker(cache vm.Cache) DiskWalker {
 			return nil
 		}
 		// TODO: "Linux" is default root partition name in AmazonLinuxImage
-		if partition.Name() != "Linux" {
+		log.Logger.Debugf("found partition: %s", partition.Name())
+		if partition.Name() != "Linux" && partition.Name() != "0" {
 			return nil
 		}
 
 		sr := partition.GetSectionReader()
 		var errs error
+		var f fs.FS
 		for _, fsys := range filesystem.Filesystems {
 			ok, err := fsys.Try(&sr)
 			if err != nil {
 				errs = multierror.Append(errs, err)
-				break
+				continue
 			}
 			if !ok {
 				continue
@@ -115,19 +119,19 @@ func diskWalker(cache vm.Cache) DiskWalker {
 
 			// TODO: implement LVM handler
 
-			f, err := fsys.New(sr, cache)
+			f, err = fsys.New(sr, cache)
 			if err != nil {
 				return xerrors.Errorf("new filesystem error: %w", err)
 			}
-			err = fs.WalkDir(f, root, func(path string, d fs.DirEntry, err error) error {
-				return fn(f, path, d, err)
-			})
-			if err != nil {
-				return xerrors.Errorf("filesystem walk error: %w", err)
-			}
 		}
-		if errs != nil {
+		if f == nil {
 			return xerrors.Errorf("try filesystems error: %w", errs)
+		}
+		err := fs.WalkDir(f, root, func(path string, d fs.DirEntry, err error) error {
+			return fn(f, path, d, err)
+		})
+		if err != nil {
+			return xerrors.Errorf("filesystem walk error: %w", err)
 		}
 		return nil
 	}

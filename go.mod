@@ -52,6 +52,7 @@ require (
 	github.com/mailru/easyjson v0.7.7
 	github.com/masahiro331/go-disk v0.0.0-20220919035250-c8da316f91ac
 	github.com/masahiro331/go-ebs-file v0.0.0-20221001074953-29d8ae771890
+	github.com/masahiro331/go-ext4-filesystem v0.0.0-20221009125752-23234c5809ff
 	github.com/masahiro331/go-mvn-version v0.0.0-20210429150710-d3157d602a08
 	github.com/masahiro331/go-vmdk-parser v0.0.0-20220920085928-e985b7990634
 	github.com/masahiro331/go-xfs-filesystem v0.0.0-20221009071317-ad8f99f58d06
@@ -140,6 +141,7 @@ require (
 	github.com/googleapis/enterprise-certificate-proxy v0.1.0 // indirect
 	github.com/googleapis/go-type-adapters v1.0.0 // indirect
 	github.com/hashicorp/hcl v1.0.0 // indirect
+	github.com/lunixbochs/struc v0.0.0-20200707160740-784aaebc1d40 // indirect
 	github.com/oklog/ulid v1.3.1 // indirect
 	github.com/opentracing/opentracing-go v1.2.0 // indirect
 	github.com/pelletier/go-toml/v2 v2.0.1 // indirect
