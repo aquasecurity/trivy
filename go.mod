@@ -54,7 +54,7 @@ require (
 	github.com/masahiro331/go-ebs-file v0.0.0-20221001074953-29d8ae771890
 	github.com/masahiro331/go-mvn-version v0.0.0-20210429150710-d3157d602a08
 	github.com/masahiro331/go-vmdk-parser v0.0.0-20220920085928-e985b7990634
-	github.com/masahiro331/go-xfs-filesystem v0.0.0-20221008091508-3845efa8df8b
+	github.com/masahiro331/go-xfs-filesystem v0.0.0-20221009071317-ad8f99f58d06
 	github.com/mitchellh/hashstructure/v2 v2.0.2
 	github.com/open-policy-agent/opa v0.43.0
 	github.com/owenrumney/go-sarif/v2 v2.1.2
