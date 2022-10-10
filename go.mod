@@ -51,7 +51,7 @@ require (
 	github.com/liamg/tml v0.6.0
 	github.com/mailru/easyjson v0.7.7
 	github.com/masahiro331/go-disk v0.0.0-20220919035250-c8da316f91ac
-	github.com/masahiro331/go-ebs-file v0.0.0-20221001074953-29d8ae771890
+	github.com/masahiro331/go-ebs-file v0.0.0-20221010054355-b2538debfb29
 	github.com/masahiro331/go-ext4-filesystem v0.0.0-20221009125752-23234c5809ff
 	github.com/masahiro331/go-mvn-version v0.0.0-20210429150710-d3157d602a08
 	github.com/masahiro331/go-vmdk-parser v0.0.0-20220920085928-e985b7990634
