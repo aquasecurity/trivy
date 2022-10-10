@@ -7,7 +7,7 @@ pipeline:
   securitycheck:
     image: aquasec/trivy:latest
     commands:
-      - trivy fs --exit-code 0 --skip-dirs web/ --skip-dirs docs/ --severity UNKNOWN,LOW .
+      # use any trivy command, if exit code is 0 woodpecker marks it as passed, else it assumes it failed
       - trivy fs --exit-code 1 --skip-dirs web/ --skip-dirs docs/ --severity MEDIUM,HIGH,CRITICAL .
 ```
 
