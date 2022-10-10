@@ -880,6 +880,9 @@ func NewVMCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 
   # Scan your AWS EBS snapshot
   $ trivy vm ebs:${your_ebs_snapshot_id}
+
+  # Scan your raw disk image
+  $ trivy vm snapshot_id.img
 `,
 		PreRunE: func(cmd *cobra.Command, args []string) error {
 			if err := vmFlags.Bind(cmd); err != nil {

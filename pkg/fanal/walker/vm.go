@@ -100,7 +100,7 @@ func diskWalker(cache vm.Cache) DiskWalker {
 		}
 		// TODO: "Linux" is default root partition name in AmazonLinuxImage
 		log.Logger.Debugf("found partition: %s", partition.Name())
-		if partition.Name() != "Linux" && partition.Name() != "0" {
+		if partition.Name() != "Linux" && partition.Name() != "0" && partition.Name() != "1" && partition.Name() != "p.lxroot" {
 			return nil
 		}
 
