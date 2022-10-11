@@ -17,13 +17,13 @@ nav:
           - Overview: tutorials/integrations/index.md
           - GitHub Actions: tutorials/integrations/github-actions.md
           - CircleCI: tutorials/integrations/circleci.md
-          - Woodpecker CI: docs/integrations/woodpecker-ci.md
           - Travis CI: tutorials/integrations/travis-ci.md
           - GitLab CI: tutorials/integrations/gitlab-ci.md
           - Bitbucket Pipelines: tutorials/integrations/bitbucket.md
           - AWS CodePipeline: tutorials/integrations/aws-codepipeline.md
           - AWS Security Hub: tutorials/integrations/aws-security-hub.md
           - Azure: tutorials/integrations/azure-devops.md
+          - Woodpecker CI: docs/integrations/woodpecker-ci.md
       - Signing:
           - Vulnerability Scan Record Attestation: tutorials/signing/vuln-attestation.md
       - Kubernetes:
