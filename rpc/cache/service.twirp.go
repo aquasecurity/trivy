@@ -1484,9 +1484,12 @@ func sanitizeBaseURL(baseURL string) string {
 
 // baseServicePath composes the path prefix for the service (without <Method>).
 // e.g.: baseServicePath("/twirp", "my.pkg", "MyService")
-//       returns => "/twirp/my.pkg.MyService/"
+//
+//	returns => "/twirp/my.pkg.MyService/"
+//
 // e.g.: baseServicePath("", "", "MyService")
-//       returns => "/MyService/"
+//
+//	returns => "/MyService/"
 func baseServicePath(prefix, pkg, service string) string {
 	fullServiceName := service
 	if pkg != "" {

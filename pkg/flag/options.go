@@ -55,6 +55,7 @@ type Flags struct {
 	LicenseFlagGroup       *LicenseFlagGroup
 	MisconfFlagGroup       *MisconfFlagGroup
 	RemoteFlagGroup        *RemoteFlagGroup
+	RegoFlagGroup          *RegoFlagGroup
 	RepoFlagGroup          *RepoFlagGroup
 	ReportFlagGroup        *ReportFlagGroup
 	SBOMFlagGroup          *SBOMFlagGroup
@@ -74,6 +75,7 @@ type Options struct {
 	K8sOptions
 	LicenseOptions
 	MisconfOptions
+	RegoOptions
 	RemoteOptions
 	RepoOptions
 	ReportOptions
@@ -236,6 +238,9 @@ func (f *Flags) groups() []FlagGroup {
 	if f.LicenseFlagGroup != nil {
 		groups = append(groups, f.LicenseFlagGroup)
 	}
+	if f.RegoFlagGroup != nil {
+		groups = append(groups, f.RegoFlagGroup)
+	}
 	if f.CloudFlagGroup != nil {
 		groups = append(groups, f.CloudFlagGroup)
 	}
@@ -346,6 +351,13 @@ func (f *Flags) ToOptions(appVersion string, args []string, globalFlags *GlobalF
 		opts.MisconfOptions, err = f.MisconfFlagGroup.ToOptions()
 		if err != nil {
 			return Options{}, xerrors.Errorf("misconfiguration flag error: %w", err)
+		}
+	}
+
+	if f.RegoFlagGroup != nil {
+		opts.RegoOptions, err = f.RegoFlagGroup.ToOptions()
+		if err != nil {
+			return Options{}, xerrors.Errorf("rego flag error: %w", err)
 		}
 	}
 
