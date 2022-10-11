@@ -12,8 +12,6 @@ import (
 
 	"github.com/aquasecurity/trivy/pkg/cloud"
 
-	"github.com/aquasecurity/trivy/pkg/cloud/cache"
-
 	"github.com/aquasecurity/trivy/pkg/flag"
 
 	"github.com/aws/aws-sdk-go-v2/config"
@@ -115,71 +113,21 @@ func Run(ctx context.Context, opt flag.Options) error {
 		return err
 	}
 
-	cached := cache.New(opt.CacheDir, opt.MaxCacheAge, cloud.ProviderAWS, opt.Account, opt.Region)
-	servicesInCache := cached.ListAvailableServices(false)
-	var servicesToLoadFromCache []string
-	var servicesToScan []string
-	for _, service := range opt.Services {
-		if cached != nil {
-			var inCache bool
-			for _, cacheSvc := range servicesInCache {
-				if cacheSvc == service {
-					log.Logger.Debugf("Results for service '%s' found in cache.", service)
-					inCache = true
-					break
-				}
+	results, cached, err := scanner.NewScanner().Scan(ctx, opt)
+	if err != nil {
+		var aerr errs.AdapterError
+		if errors.As(err, &aerr) {
+			for _, e := range aerr.Errors() {
+				log.Logger.Warnf("Adapter error: %s", e)
 			}
-			if inCache && !opt.UpdateCache {
-				servicesToLoadFromCache = append(servicesToLoadFromCache, service)
-				continue
-			}
-		}
-		servicesToScan = append(servicesToScan, service)
-	}
-
-	var r *report.Report
-
-	// if there is anything we need that wasn't in the cache, scan it now
-	if len(servicesToScan) > 0 {
-		log.Logger.Debugf("Scanning the following services using the AWS API: [%s]...", strings.Join(servicesToScan, ", "))
-		opt.Services = servicesToScan
-		results, err := scanner.NewScanner().Scan(ctx, opt)
-		if err != nil {
-			var aerr errs.AdapterError
-			if errors.As(err, &aerr) {
-				for _, e := range aerr.Errors() {
-					log.Logger.Warnf("Adapter error: %s", e)
-				}
-			} else {
-				return fmt.Errorf("aws scan error: %w", err)
-			}
-		}
-		r = report.New(cloud.ProviderAWS, opt.Account, opt.Region, results.GetFailed(), opt.Services)
-	} else {
-		log.Logger.Debug("No more services to scan - everything was found in the cache.")
-		r = report.New(cloud.ProviderAWS, opt.Account, opt.Region, nil, opt.Services)
-	}
-	if len(servicesToLoadFromCache) > 0 {
-		log.Logger.Debug("Loading cached results...")
-		cachedReport, err := cached.LoadReport(servicesToLoadFromCache...)
-		if err != nil {
-			return err
-		}
-		for service, results := range cachedReport.Results {
-			log.Logger.Debugf("Adding cached results for '%s'...", service)
-			r.AddResultsForService(service, results.Results, results.CreationTime)
+		} else {
+			return fmt.Errorf("aws scan error: %w", err)
 		}
 	}
-
-	if len(servicesToScan) > 0 { // don't write cache if we didn't scan anything new
-		log.Logger.Debugf("Writing results to cache for services [%s]...", strings.Join(r.ServicesInScope, ", "))
-		if err := cached.Save(r); err != nil {
-			return err
-		}
-	}
+	r := report.New(cloud.ProviderAWS, opt.Account, opt.Region, results.GetFailed(), opt.Services)
 
 	log.Logger.Debug("Writing report to output...")
-	if err := report.Write(r, opt, len(servicesToLoadFromCache) > 0); err != nil {
+	if err := report.Write(r, opt, cached); err != nil {
 		return fmt.Errorf("unable to write results: %w", err)
 	}
 
