@@ -49,6 +49,7 @@ type Flags struct {
 	AWSFlagGroup           *AWSFlagGroup
 	CacheFlagGroup         *CacheFlagGroup
 	CloudFlagGroup         *CloudFlagGroup
+	ConvertFlagGroup       *ConvertFlagGroup
 	DBFlagGroup            *DBFlagGroup
 	ImageFlagGroup         *ImageFlagGroup
 	K8sFlagGroup           *K8sFlagGroup
@@ -70,6 +71,7 @@ type Options struct {
 	AWSOptions
 	CacheOptions
 	CloudOptions
+	ConvertOptions
 	DBOptions
 	ImageOptions
 	K8sOptions
@@ -244,6 +246,9 @@ func (f *Flags) groups() []FlagGroup {
 	if f.CloudFlagGroup != nil {
 		groups = append(groups, f.CloudFlagGroup)
 	}
+	if f.ConvertFlagGroup != nil {
+		groups = append(groups, f.ConvertFlagGroup)
+	}
 	if f.AWSFlagGroup != nil {
 		groups = append(groups, f.AWSFlagGroup)
 	}
@@ -319,6 +324,13 @@ func (f *Flags) ToOptions(appVersion string, args []string, globalFlags *GlobalF
 
 	if f.CloudFlagGroup != nil {
 		opts.CloudOptions = f.CloudFlagGroup.ToOptions()
+	}
+
+	if f.ConvertFlagGroup != nil {
+		opts.ConvertOptions, err = f.ConvertFlagGroup.ToOptions(args)
+		if err != nil {
+			return Options{}, xerrors.Errorf("flag error: %w", err)
+		}
 	}
 
 	if f.CacheFlagGroup != nil {

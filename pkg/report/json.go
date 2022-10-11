@@ -27,3 +27,12 @@ func (jw JSONWriter) Write(report types.Report) error {
 	}
 	return nil
 }
+
+func Read(input []byte) (types.Report, error) {
+	var report types.Report
+	err := json.Unmarshal(input, &report)
+	if err != nil {
+		return report, xerrors.Errorf("failed to unmarshal json: %w", err)
+	}
+	return report, nil
+}

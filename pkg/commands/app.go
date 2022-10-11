@@ -18,6 +18,7 @@ import (
 	"github.com/aquasecurity/trivy-db/pkg/metadata"
 	awscommands "github.com/aquasecurity/trivy/pkg/cloud/aws/commands"
 	"github.com/aquasecurity/trivy/pkg/commands/artifact"
+	"github.com/aquasecurity/trivy/pkg/commands/convert"
 	"github.com/aquasecurity/trivy/pkg/commands/server"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/flag"
@@ -81,6 +82,7 @@ func NewApp(version string) *cobra.Command {
 		NewClientCommand(globalFlags),
 		NewServerCommand(globalFlags),
 		NewConfigCommand(globalFlags),
+		NewConvertCommand(globalFlags),
 		NewPluginCommand(),
 		NewModuleCommand(globalFlags),
 		NewKubernetesCommand(globalFlags),
@@ -432,6 +434,46 @@ func NewRepositoryCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	cmd.SetFlagErrorFunc(flagErrorFunc)
 	repoFlags.AddFlags(cmd)
 	cmd.SetUsageTemplate(fmt.Sprintf(usageTemplate, repoFlags.Usages(cmd)))
+
+	return cmd
+}
+
+func NewConvertCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
+	convertFlags := &flag.Flags{
+		ConvertFlagGroup: flag.NewConvertFlagGroup(),
+		ReportFlagGroup:  flag.NewReportFlagGroup(),
+	}
+	cmd := &cobra.Command{
+		Use:     "convert [flags] REPORT_FILENAME",
+		Aliases: []string{"conv"},
+		Short:   "convert json report",
+		Example: `  # report conversion
+  $ trivy convert --report summary result.json
+  $ trivy convert --format cyclonedx --output result.cdx result.json
+`,
+		PreRunE: func(cmd *cobra.Command, args []string) error {
+			if err := convertFlags.Bind(cmd); err != nil {
+				return xerrors.Errorf("flag bind error: %w", err)
+			}
+			return validateArgs(cmd, args)
+		},
+		RunE: func(cmd *cobra.Command, args []string) error {
+			if err := convertFlags.Bind(cmd); err != nil {
+				return xerrors.Errorf("flag bind error: %w", err)
+			}
+			opts, err := convertFlags.ToOptions(cmd.Version, args, globalFlags, outputWriter)
+			if err != nil {
+				return xerrors.Errorf("flag error: %w", err)
+			}
+
+			return convert.Run(cmd.Context(), opts)
+		},
+		SilenceErrors: true,
+		SilenceUsage:  true,
+	}
+	cmd.SetFlagErrorFunc(flagErrorFunc)
+	convertFlags.AddFlags(cmd)
+	cmd.SetUsageTemplate(fmt.Sprintf(usageTemplate, convertFlags.Usages(cmd)))
 
 	return cmd
 }
