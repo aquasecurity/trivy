@@ -27,7 +27,7 @@ jobs:
       contents: read  # Not required for public repositories, but for clarity
     steps:
       - name: Cosign install
-        uses: sigstore/cosign-installer@b3413d484cc23cf8778c3d2aa361568d4eb54679
+        uses: sigstore/cosign-installer@ced07f21fb1da67979f539bbc6304c16c0677e76
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v2
@@ -99,7 +99,7 @@ jobs:
             public.ecr.aws/aquasecurity/trivy:canary
 
       - name: Cache Trivy binaries
-        uses: actions/cache@v3.0.8
+        uses: actions/cache@v3.0.9
         with:
           path: dist/
           # use 'github.sha' to create a unique cache folder for each run.
