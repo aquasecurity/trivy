@@ -9,6 +9,13 @@ type Library struct {
 	Indirect           bool          `json:",omitempty"`
 	License            string        `json:",omitempty"`
 	ExternalReferences []ExternalRef `json:",omitempty"`
+	Locations          []Location    `json:",omitempty"`
+}
+
+// Location in lock file
+type Location struct {
+	StartLine int `json:",omitempty"`
+	EndLine   int `json:",omitempty"`
 }
 
 type ExternalRef struct {

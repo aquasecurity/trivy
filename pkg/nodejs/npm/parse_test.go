@@ -102,4 +102,13 @@ func sortLibs(libs []types.Library) {
 		}
 		return ret < 0
 	})
+	for _, lib := range libs {
+		sortLocations(lib.Locations)
+	}
+}
+
+func sortLocations(locs []types.Location) {
+	sort.Slice(locs, func(i, j int) bool {
+		return locs[i].StartLine < locs[j].StartLine
+	})
 }

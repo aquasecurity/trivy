@@ -1,11 +1,12 @@
 package npm
 
 import (
-	"encoding/json"
 	"fmt"
+	"io"
 	"sort"
 	"strings"
 
+	"github.com/liamg/jfather"
 	"golang.org/x/exp/maps"
 	"golang.org/x/xerrors"
 
@@ -17,21 +18,23 @@ import (
 )
 
 type LockFile struct {
-	Dependencies map[string]Dependency
-	Packages     map[string]Package
+	Dependencies map[string]Dependency `json:"dependencies"`
+	Packages     map[string]Package    `json:"packages"`
 }
 type Dependency struct {
-	Version      string
-	Dev          bool
-	Dependencies map[string]Dependency
-	Requires     map[string]string
-	Resolved     string
+	Version      string                `json:"version"`
+	Dev          bool                  `json:"dev"`
+	Dependencies map[string]Dependency `json:"dependencies"`
+	Requires     map[string]string     `json:"requires"`
+	Resolved     string                `json:"resolved"`
+	StartLine    int
+	EndLine      int
 }
 
 type Package struct {
-	Name         string
-	Version      string
-	Dependencies map[string]string
+	Name         string            `json:"name"`
+	Version      string            `json:"version"`
+	Dependencies map[string]string `json:"dependencies"`
 }
 
 type Parser struct{}
@@ -42,9 +45,11 @@ func NewParser() types.Parser {
 
 func (p *Parser) Parse(r dio.ReadSeekerAt) ([]types.Library, []types.Dependency, error) {
 	var lockFile LockFile
-	decoder := json.NewDecoder(r)
-	err := decoder.Decode(&lockFile)
+	input, err := io.ReadAll(r)
 	if err != nil {
+		return nil, nil, xerrors.Errorf("read error: %w", err)
+	}
+	if err := jfather.Unmarshal(input, &lockFile); err != nil {
 		return nil, nil, xerrors.Errorf("decode error: %w", err)
 	}
 
@@ -74,6 +79,12 @@ func (p *Parser) parse(dependencies map[string]Dependency, dircetDeps map[string
 			Version:            dependency.Version,
 			Indirect:           isIndirectLib(pkgName, dircetDeps),
 			ExternalReferences: []types.ExternalRef{{Type: types.RefOther, URL: dependency.Resolved}},
+			Locations: []types.Location{
+				{
+					StartLine: dependency.StartLine,
+					EndLine:   dependency.EndLine,
+				},
+			},
 		}
 		libs = append(libs, lib)
 
@@ -129,4 +140,15 @@ func uniqueDeps(deps []types.Dependency) []types.Dependency {
 func isIndirectLib(libName string, dircetDeps map[string]string) bool {
 	_, ok := dircetDeps[libName]
 	return !ok
+}
+
+// UnmarshalJSONWithMetadata needed to detect start and end lines of deps
+func (t *Dependency) UnmarshalJSONWithMetadata(node jfather.Node) error {
+	if err := node.Decode(&t); err != nil {
+		return err
+	}
+	// Decode func will overwrite line numbers if we save them first
+	t.StartLine = node.Range().Start.Line
+	t.EndLine = node.Range().End.Line
+	return nil
 }
