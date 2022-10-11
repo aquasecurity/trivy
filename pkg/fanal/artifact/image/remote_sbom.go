@@ -9,6 +9,7 @@ import (
 	"strings"
 
 	"github.com/in-toto/in-toto-golang/in_toto"
+	"github.com/samber/lo"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/attestation"
@@ -59,24 +60,27 @@ func (a Artifact) inspectSBOMAttestation(ctx context.Context) (ftypes.ArtifactRe
 	}
 
 	log.Logger.Debugf("Found matching Rekor entries: %s", entryIDs)
-	for _, id := range entryIDs {
-		log.Logger.Debugf("Inspecting Rekor entry: %s", id)
-		ref, err := a.inspectRekorRecord(ctx, client, id)
-		if errors.Is(err, rekor.ErrNoAttestation) || errors.Is(err, errNoSBOMFound) {
-			continue
-		} else if err != nil {
-			return ftypes.ArtifactReference{}, xerrors.Errorf("rekor record inspection error: %w", err)
+
+	for _, ids := range lo.Chunk[rekor.EntryID](entryIDs, rekor.MaxGetEntriesLimit) {
+		entries, err := client.GetEntries(ctx, ids)
+		if err != nil {
+			return ftypes.ArtifactReference{}, xerrors.Errorf("failed to get entries: %w", err)
 		}
-		return ref, nil
+
+		for _, entry := range entries {
+			ref, err := a.inspectRekorRecord(ctx, entry)
+			if errors.Is(err, errNoSBOMFound) {
+				continue
+			} else if err != nil {
+				return ftypes.ArtifactReference{}, xerrors.Errorf("rekor record inspection error: %w", err)
+			}
+			return ref, nil
+		}
 	}
 	return ftypes.ArtifactReference{}, errNoSBOMFound
 }
 
-func (a Artifact) inspectRekorRecord(ctx context.Context, client *rekor.Client, entryID rekor.EntryID) (ftypes.ArtifactReference, error) {
-	entry, err := client.GetEntry(ctx, entryID)
-	if err != nil {
-		return ftypes.ArtifactReference{}, xerrors.Errorf("failed to get rekor entry: %w", err)
-	}
+func (a Artifact) inspectRekorRecord(ctx context.Context, entry rekor.Entry) (ftypes.ArtifactReference, error) {
 
 	// TODO: Trivy SBOM should take precedence
 	raw, err := a.parseStatement(entry)
