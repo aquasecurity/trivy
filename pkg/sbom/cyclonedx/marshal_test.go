@@ -1298,6 +1298,198 @@ func TestMarshaler_MarshalVulnerabilities(t *testing.T) {
 				},
 			},
 		},
+		{
+			name: "happy path for cyclonedx scan without SerialNumber",
+			inputReport: types.Report{
+				SchemaVersion: report.SchemaVersion,
+				ArtifactName:  "cyclonedx.json",
+				ArtifactType:  ftypes.ArtifactCycloneDX,
+				Metadata: types.Metadata{
+					Size: 1024,
+					OS: &ftypes.OS{
+						Family: fos.CentOS,
+						Name:   "8.3.2011",
+						Eosl:   true,
+					},
+					ImageID:     "sha256:5d0da3dc976460b72c77d94c8a1ad043720b0416bfc16c52c45d4847e53fadb6",
+					RepoTags:    []string{"rails:latest"},
+					DiffIDs:     []string{"sha256:d871dadfb37b53ef1ca45be04fc527562b91989991a8f545345ae3be0b93f92a"},
+					RepoDigests: []string{"rails@sha256:a27fd8080b517143cbbbab9dfb7c8571c40d67d534bbdee55bd6c473f432b177"},
+					ImageConfig: v1.ConfigFile{
+						Architecture: "arm64",
+					},
+				},
+				CycloneDX: &ftypes.CycloneDX{
+					Version: 1,
+					Metadata: ftypes.Metadata{
+						Component: ftypes.Component{
+							Type: ftypes.ComponentType(cdx.ComponentTypeApplication),
+							Name: "centos:8",
+						},
+					},
+				},
+				Results: types.Results{
+					{
+						Target: "rails:latest (centos 8.3.2011)",
+						Class:  types.ClassOSPkg,
+						Type:   fos.CentOS,
+						Packages: []ftypes.Package{
+							{
+								Name:            "binutils",
+								Ref:             "pkg:rpm/centos/binutils@2.30-93.el8?arch=aarch64&distro=centos-8.3.2011",
+								Version:         "2.30",
+								Release:         "93.el8",
+								Epoch:           0,
+								Arch:            "aarch64",
+								SrcName:         "binutils",
+								SrcVersion:      "2.30",
+								SrcRelease:      "93.el8",
+								SrcEpoch:        0,
+								Modularitylabel: "",
+								Licenses:        []string{"GPLv3+"},
+							},
+						},
+					},
+					{
+						Target: "rails:latest (centos 8.3.2011)",
+						Class:  types.ClassOSPkg,
+						Type:   fos.CentOS,
+						Vulnerabilities: []types.DetectedVulnerability{
+							{
+								VulnerabilityID:  "CVE-2018-20623",
+								PkgName:          "binutils",
+								InstalledVersion: "2.30-93.el8",
+								Ref:              "pkg:rpm/centos/binutils@2.30-93.el8?arch=aarch64&distro=centos-8.3.2011",
+								Layer: ftypes.Layer{
+									DiffID: "sha256:d871dadfb37b53ef1ca45be04fc527562b91989991a8f545345ae3be0b93f92a",
+								},
+								SeveritySource: vulnerability.RedHatOVAL,
+								PrimaryURL:     "https://avd.aquasec.com/nvd/cve-2018-20623",
+								DataSource: &dtypes.DataSource{
+									ID:   vulnerability.RedHatOVAL,
+									Name: "Red Hat OVAL v2",
+									URL:  "https://www.redhat.com/security/data/oval/v2/",
+								},
+								Vulnerability: dtypes.Vulnerability{
+									Title:       "binutils: Use-after-free in the error function",
+									Description: "In GNU Binutils 2.31.1, there is a use-after-free in the error function in elfcomm.c when called from the process_archive function in readelf.c via a crafted ELF file.",
+									Severity:    dtypes.SeverityMedium.String(),
+									VendorSeverity: dtypes.VendorSeverity{
+										vulnerability.NVD:        dtypes.SeverityMedium,
+										vulnerability.RedHatOVAL: dtypes.SeverityMedium,
+									},
+									CweIDs: []string{"CWE-416"},
+									CVSS: dtypes.VendorCVSS{
+										vulnerability.NVD: dtypes.CVSS{
+											V2Vector: "AV:N/AC:M/Au:N/C:N/I:N/A:P",
+											V3Vector: "CVSS:3.0/AV:L/AC:L/PR:N/UI:R/S:U/C:N/I:N/A:H",
+											V2Score:  4.3,
+											V3Score:  5.5,
+										},
+										vulnerability.RedHatOVAL: dtypes.CVSS{
+											V3Vector: "CVSS:3.0/AV:L/AC:L/PR:L/UI:N/S:U/C:L/I:L/A:L",
+											V3Score:  5.3,
+										},
+									},
+									References: []string{
+										"http://lists.opensuse.org/opensuse-security-announce/2019-10/msg00072.html",
+										"http://lists.opensuse.org/opensuse-security-announce/2019-11/msg00008.html",
+									},
+									PublishedDate:    lo.ToPtr(time.Date(2018, 12, 31, 19, 29, 0, 0, time.UTC)),
+									LastModifiedDate: lo.ToPtr(time.Date(2019, 10, 31, 1, 15, 0, 0, time.UTC)),
+								},
+							},
+						},
+					},
+				},
+			},
+			want: &cdx.BOM{
+				XMLNS:       "http://cyclonedx.org/schema/bom/1.4",
+				BOMFormat:   "CycloneDX",
+				SpecVersion: "1.4",
+				Version:     1,
+				Metadata: &cdx.Metadata{
+					Timestamp: "2021-08-25T12:20:30+00:00",
+					Tools: &[]cdx.Tool{
+						{
+							Name:    "trivy",
+							Vendor:  "aquasecurity",
+							Version: "dev",
+						},
+					},
+					Component: &cdx.Component{
+						Name: "centos:8",
+						Type: cdx.ComponentTypeApplication,
+					},
+				},
+				Vulnerabilities: &[]cdx.Vulnerability{
+					{
+						ID: "CVE-2018-20623",
+						Source: &cdx.Source{
+							Name: string(vulnerability.RedHatOVAL),
+							URL:  "https://www.redhat.com/security/data/oval/v2/",
+						},
+						Ratings: &[]cdx.VulnerabilityRating{
+							{
+								Source: &cdx.Source{
+									Name: string(vulnerability.NVD),
+									URL:  "",
+								},
+								Score:    lo.ToPtr(4.3),
+								Severity: cdx.SeverityMedium,
+								Method:   cdx.ScoringMethodCVSSv2,
+								Vector:   "AV:N/AC:M/Au:N/C:N/I:N/A:P",
+							},
+							{
+								Source: &cdx.Source{
+									Name: string(vulnerability.NVD),
+									URL:  "",
+								},
+								Score:    lo.ToPtr(5.5),
+								Severity: cdx.SeverityMedium,
+								Method:   cdx.ScoringMethodCVSSv3,
+								Vector:   "CVSS:3.0/AV:L/AC:L/PR:N/UI:R/S:U/C:N/I:N/A:H",
+							},
+							{
+								Source: &cdx.Source{
+									Name: string(vulnerability.RedHatOVAL),
+									URL:  "",
+								},
+								Score:    lo.ToPtr(5.3),
+								Severity: cdx.SeverityMedium,
+								Method:   cdx.ScoringMethodCVSSv3,
+								Vector:   "CVSS:3.0/AV:L/AC:L/PR:L/UI:N/S:U/C:L/I:L/A:L",
+							},
+						},
+						CWEs: &[]int{
+							416,
+						},
+						Description: "In GNU Binutils 2.31.1, there is a use-after-free in the error function in elfcomm.c when called from the process_archive function in readelf.c via a crafted ELF file.",
+						Advisories: &[]cdx.Advisory{
+							{
+								URL: "http://lists.opensuse.org/opensuse-security-announce/2019-10/msg00072.html",
+							},
+							{
+								URL: "http://lists.opensuse.org/opensuse-security-announce/2019-11/msg00008.html",
+							},
+						},
+						Published: "2018-12-31T19:29:00+00:00",
+						Updated:   "2019-10-31T01:15:00+00:00",
+						Affects: &[]cdx.Affects{
+							{
+								Ref: "pkg:rpm/centos/binutils@2.30-93.el8?arch=aarch64&distro=centos-8.3.2011",
+								Range: &[]cdx.AffectedVersions{
+									{
+										Version: "2.30-93.el8",
+										Status:  cdx.VulnerabilityStatusAffected,
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
 	}
 
 	clock := fake.NewFakeClock(time.Date(2021, 8, 25, 12, 20, 30, 5, time.UTC))
