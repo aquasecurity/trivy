@@ -75,40 +75,73 @@ func TestClient_Search(t *testing.T) {
 	}
 }
 
-func TestClient_GetEntry(t *testing.T) {
+func TestClient_GetEntries(t *testing.T) {
 	type args struct {
-		uuid rekor.EntryID
+		uuids []rekor.EntryID
 	}
 	tests := []struct {
 		name             string
 		mockResponseFile string
 		args             args
-		want             rekor.Entry
+		want             []rekor.Entry
 		wantErr          error
 	}{
 		{
 			name:             "happy path",
-			mockResponseFile: "testdata/log-entry.json",
+			mockResponseFile: "testdata/log-entries.json",
 			args: args{
-				uuid: rekor.EntryID{
-					TreeID: "392f8ecba72f4326",
-					UUID:   "8b5b2debb565fd5cb05ae0d3935351fa3faabce558bede72e197b5722a742b1e",
+				uuids: []rekor.EntryID{
+					{
+						TreeID: "392f8ecba72f4326",
+						UUID:   "8b5b2debb565fd5cb05ae0d3935351fa3faabce558bede72e197b5722a742b1e",
+					},
+					{
+						TreeID: "392f8ecba72f4326",
+						UUID:   "8b5b2debb565fd5cb05ae0d3935351fa3faabce558bede72e197b5722a741a2f",
+					},
 				},
 			},
-			want: rekor.Entry{
-				Statement: []byte(`{"_type":"https://in-toto.io/Statement/v0.1","predicateType":"cosign.sigstore.dev/attestation/v1","subject":[{"name":"ghcr.io/aquasecurity/trivy-test-images","digest":{"sha256":"20d3f693dcffa44d6b24eae88783324d25cc132c22089f70e4fbfb858625b062"}}],"predicate":{"Data":"\"foo\\n\"\n","Timestamp":"2022-08-26T01:17:17Z"}}`),
+			want: []rekor.Entry{
+				{
+					Statement: []byte(`{"_type":"https://in-toto.io/Statement/v0.1","predicateType":"cosign.sigstore.dev/attestation/v1","subject":[{"name":"ghcr.io/aquasecurity/trivy-test-images","digest":{"sha256":"20d3f693dcffa44d6b24eae88783324d25cc132c22089f70e4fbfb858625b062"}}],"predicate":{"Data":"\"foo\\n\"\n","Timestamp":"2022-08-26T01:17:17Z"}}`),
+				},
+				{
+					Statement: []byte(`{"_type":"https://in-toto.io/Statement/v0.1","predicateType":"cosign.sigstore.dev/attestation/v1","subject":[{"name":"ghcr.io/aquasecurity/trivy-test-images","digest":{"sha256":"20d3f693dcffa44d6b24eae88783324d25cc132c22089f70e4fbfb858625b062"}}],"predicate":{"Data":"\"bar\\n\"\n","Timestamp":"2022-08-26T01:17:17Z"}}`),
+				},
 			},
 		},
 		{
 			name:             "no attestation",
-			mockResponseFile: "testdata/log-entry-no-attestation.json",
+			mockResponseFile: "testdata/log-entries-no-attestation.json",
 			args: args{
-				uuid: rekor.EntryID{
-					TreeID: "392f8ecba72f4326",
-					UUID:   "8b5b2debb565fd5cb05ae0d3935351fa3faabce558bede72e197b5722a742b1e",
+				uuids: []rekor.EntryID{
+					{
+						TreeID: "392f8ecba72f4326",
+						UUID:   "8b5b2debb565fd5cb05ae0d3935351fa3faabce558bede72e197b5722a742b1e",
+					},
 				},
 			},
-			wantErr: rekor.ErrNoAttestation,
+			want: []rekor.Entry{},
+		},
+		{
+			name: "over get entries limit",
+			args: args{
+				uuids: []rekor.EntryID{
+					{TreeID: "392f8ecba72f4326", UUID: "8b5b2debb565fd5cb05ae0d3935351fa3faabce558bede72e197b5722a742b10"},
+					{TreeID: "392f8ecba72f4326", UUID: "8b5b2debb565fd5cb05ae0d3935351fa3faabce558bede72e197b5722a742b11"},
+					{TreeID: "392f8ecba72f4326", UUID: "8b5b2debb565fd5cb05ae0d3935351fa3faabce558bede72e197b5722a742b12"},
+					{TreeID: "392f8ecba72f4326", UUID: "8b5b2debb565fd5cb05ae0d3935351fa3faabce558bede72e197b5722a742b13"},
+					{TreeID: "392f8ecba72f4326", UUID: "8b5b2debb565fd5cb05ae0d3935351fa3faabce558bede72e197b5722a742b14"},
+					{TreeID: "392f8ecba72f4326", UUID: "8b5b2debb565fd5cb05ae0d3935351fa3faabce558bede72e197b5722a742b15"},
+					{TreeID: "392f8ecba72f4326", UUID: "8b5b2debb565fd5cb05ae0d3935351fa3faabce558bede72e197b5722a742b16"},
+					{TreeID: "392f8ecba72f4326", UUID: "8b5b2debb565fd5cb05ae0d3935351fa3faabce558bede72e197b5722a742b17"},
+					{TreeID: "392f8ecba72f4326", UUID: "8b5b2debb565fd5cb05ae0d3935351fa3faabce558bede72e197b5722a742b18"},
+					{TreeID: "392f8ecba72f4326", UUID: "8b5b2debb565fd5cb05ae0d3935351fa3faabce558bede72e197b5722a742b19"},
+					{TreeID: "392f8ecba72f4326", UUID: "8b5b2debb565fd5cb05ae0d3935351fa3faabce558bede72e197b5722a742b1a"},
+				},
+			},
+			want:    []rekor.Entry{},
+			wantErr: rekor.ErrOverGetEntriesLimit,
 		},
 	}
 
@@ -123,7 +156,7 @@ func TestClient_GetEntry(t *testing.T) {
 			client, err := rekor.NewClient(ts.URL)
 			require.NoError(t, err)
 
-			got, err := client.GetEntry(context.Background(), tt.args.uuid)
+			got, err := client.GetEntries(context.Background(), tt.args.uuids)
 			require.Equal(t, tt.wantErr, err)
 			require.Equal(t, tt.want, got)
 		})

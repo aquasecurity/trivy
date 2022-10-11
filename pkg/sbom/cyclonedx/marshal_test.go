@@ -142,6 +142,17 @@ func TestMarshaler_Marshal(t *testing.T) {
 							},
 						},
 					},
+					{
+						Target: "app/datacollector.deps.json",
+						Class:  types.ClassLangPkg,
+						Type:   ftypes.DotNetCore,
+						Packages: []ftypes.Package{
+							{
+								Name:    "Newtonsoft.Json",
+								Version: "9.0.1",
+							},
+						},
+					},
 				},
 			},
 			want: &cdx.BOM{
@@ -295,6 +306,35 @@ func TestMarshaler_Marshal(t *testing.T) {
 							},
 						},
 					},
+					{
+						BOMRef:     "pkg:nuget/Newtonsoft.Json@9.0.1",
+						Type:       cdx.ComponentTypeLibrary,
+						Name:       "Newtonsoft.Json",
+						Version:    "9.0.1",
+						PackageURL: "pkg:nuget/Newtonsoft.Json@9.0.1",
+						Properties: &[]cdx.Property{
+							{
+								Name:  "aquasecurity:trivy:PkgType",
+								Value: "dotnet-core",
+							},
+						},
+					},
+					{
+						BOMRef:  "3ff14136-e09f-4df9-80ea-000000000005",
+						Type:    cdx.ComponentTypeApplication,
+						Name:    "app/datacollector.deps.json",
+						Version: "",
+						Properties: &[]cdx.Property{
+							{
+								Name:  "aquasecurity:trivy:Type",
+								Value: "dotnet-core",
+							},
+							{
+								Name:  "aquasecurity:trivy:Class",
+								Value: "lang-pkgs",
+							},
+						},
+					},
 				},
 				Dependencies: &[]cdx.Dependency{
 					{
@@ -317,11 +357,18 @@ func TestMarshaler_Marshal(t *testing.T) {
 						},
 					},
 					{
+						Ref: "3ff14136-e09f-4df9-80ea-000000000005",
+						Dependencies: &[]string{
+							"pkg:nuget/Newtonsoft.Json@9.0.1",
+						},
+					},
+					{
 						Ref: "pkg:oci/rails@sha256:a27fd8080b517143cbbbab9dfb7c8571c40d67d534bbdee55bd6c473f432b177?repository_url=index.docker.io%2Flibrary%2Frails&arch=arm64",
 						Dependencies: &[]string{
 							"3ff14136-e09f-4df9-80ea-000000000002",
 							"3ff14136-e09f-4df9-80ea-000000000003",
 							"3ff14136-e09f-4df9-80ea-000000000004",
+							"3ff14136-e09f-4df9-80ea-000000000005",
 						},
 					},
 				},
