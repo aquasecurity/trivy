@@ -67,7 +67,7 @@ func TestReportWriter_Sarif(t *testing.T) {
 				{
 					ID:               "CVE-2020-0001",
 					Name:             toPtr("OsPackageVulnerability"),
-					ShortDescription: &sarif.MultiformatMessageString{Text: toPtr("CVE-2020-0001")},
+					ShortDescription: &sarif.MultiformatMessageString{Text: toPtr("foobar")},
 					FullDescription:  &sarif.MultiformatMessageString{Text: toPtr("baz")},
 					DefaultConfiguration: &sarif.ReportingConfiguration{
 						Level: "error",
@@ -191,7 +191,7 @@ func TestReportWriter_Sarif(t *testing.T) {
 				{
 					ID:               "KSV001",
 					Name:             toPtr("Misconfiguration"),
-					ShortDescription: &sarif.MultiformatMessageString{Text: toPtr("KSV001")},
+					ShortDescription: &sarif.MultiformatMessageString{Text: toPtr("Image tag &#39;:latest&#39; used")},
 					FullDescription:  &sarif.MultiformatMessageString{Text: toPtr("")},
 					DefaultConfiguration: &sarif.ReportingConfiguration{
 						Level: "error",
@@ -214,7 +214,7 @@ func TestReportWriter_Sarif(t *testing.T) {
 				{
 					ID:               "KSV002",
 					Name:             toPtr("Misconfiguration"),
-					ShortDescription: &sarif.MultiformatMessageString{Text: toPtr("KSV002")},
+					ShortDescription: &sarif.MultiformatMessageString{Text: toPtr("SYS_ADMIN capability added")},
 					FullDescription:  &sarif.MultiformatMessageString{Text: toPtr("")},
 					DefaultConfiguration: &sarif.ReportingConfiguration{
 						Level: "error",
@@ -283,7 +283,7 @@ func TestReportWriter_Sarif(t *testing.T) {
 				{
 					ID:               "aws-secret-access-key",
 					Name:             toPtr("Secret"),
-					ShortDescription: &sarif.MultiformatMessageString{Text: toPtr("aws-secret-access-key")},
+					ShortDescription: &sarif.MultiformatMessageString{Text: toPtr("AWS Secret Access Key")},
 					FullDescription:  &sarif.MultiformatMessageString{Text: toPtr("\u0026#39;AWS_secret_KEY\u0026#39;=\u0026#34;****************************************\u0026#34;")},
 					DefaultConfiguration: &sarif.ReportingConfiguration{
 						Level: "error",

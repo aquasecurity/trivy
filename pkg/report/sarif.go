@@ -48,6 +48,7 @@ type SarifWriter struct {
 type sarifData struct {
 	title            string
 	vulnerabilityId  string
+	shortDescription string
 	fullDescription  string
 	helpText         string
 	helpMarkdown     string
@@ -66,6 +67,7 @@ func (sw *SarifWriter) addSarifRule(data *sarifData) {
 	r := sw.run.AddRule(data.vulnerabilityId).
 		WithName(toSarifRuleName(data.resourceClass)).
 		WithDescription(data.vulnerabilityId).
+		WithShortDescription(&sarif.MultiformatMessageString{Text: &data.shortDescription}).
 		WithFullDescription(&sarif.MultiformatMessageString{Text: &data.fullDescription}).
 		WithHelp(&sarif.MultiformatMessageString{
 			Text:     &data.helpText,
@@ -149,6 +151,7 @@ func (sw SarifWriter) Write(report types.Report) error {
 				resourceClass:    string(res.Class),
 				artifactLocation: path,
 				resultIndex:      getRuleIndex(vuln.VulnerabilityID, ruleIndexes),
+				shortDescription: html.EscapeString(vuln.Title),
 				fullDescription:  html.EscapeString(fullDescription),
 				helpText: fmt.Sprintf("Vulnerability %v\nSeverity: %v\nPackage: %v\nFixed Version: %v\nLink: [%v](%v)\n%v",
 					vuln.VulnerabilityID, vuln.Severity, vuln.PkgName, vuln.FixedVersion, vuln.VulnerabilityID, vuln.PrimaryURL, vuln.Description),
@@ -170,6 +173,7 @@ func (sw SarifWriter) Write(report types.Report) error {
 				startLine:        misconf.CauseMetadata.StartLine,
 				endLine:          misconf.CauseMetadata.EndLine,
 				resultIndex:      getRuleIndex(misconf.ID, ruleIndexes),
+				shortDescription: html.EscapeString(misconf.Title),
 				fullDescription:  html.EscapeString(misconf.Description),
 				helpText: fmt.Sprintf("Misconfiguration %v\nType: %s\nSeverity: %v\nCheck: %v\nMessage: %v\nLink: [%v](%v)\n%s",
 					misconf.ID, misconf.Type, misconf.Severity, misconf.Title, misconf.Message, misconf.ID, misconf.PrimaryURL, misconf.Description),
@@ -191,6 +195,7 @@ func (sw SarifWriter) Write(report types.Report) error {
 				startLine:        secret.StartLine,
 				endLine:          secret.EndLine,
 				resultIndex:      getRuleIndex(secret.RuleID, ruleIndexes),
+				shortDescription: html.EscapeString(secret.Title),
 				fullDescription:  html.EscapeString(secret.Match),
 				helpText: fmt.Sprintf("Secret %v\nSeverity: %v\nMatch: %s",
 					secret.Title, secret.Severity, secret.Match),
