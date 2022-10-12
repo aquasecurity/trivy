@@ -29,8 +29,8 @@ const (
 
 // Filter filters out the vulnerabilities
 func Filter(ctx context.Context, result *types.Result, severities []dbTypes.Severity, ignoreUnfixed, includeNonFailures bool,
-	ignoreFile, policyFile string, ignoreLicenses []string) error {
-	ignoredIDs := getIgnoredIDs(ignoreFile)
+	ignoredFile, policyFile string, ignoreLicenses []string) error {
+	ignoredIDs := getIgnoredIDs(ignoredFile)
 
 	filteredVulns := filterVulnerabilities(result.Vulnerabilities, severities, ignoreUnfixed, ignoredIDs)
 	misconfSummary, filteredMisconfs := filterMisconfigurations(result.Misconfigurations, severities, includeNonFailures, ignoredIDs)
