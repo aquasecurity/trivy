@@ -88,9 +88,6 @@
                   "endLine": 1,
                   "endColumn": 1
                 }
-              },
-              "message": {
-                "text": "testdata/fixtures/images/alpine-310.tar.gz: libcrypto1.1@1.1.1c-r0"
               }
             }
           ]
@@ -115,9 +112,6 @@
                   "endLine": 1,
                   "endColumn": 1
                 }
-              },
-              "message": {
-                "text": "testdata/fixtures/images/alpine-310.tar.gz: libcrypto1.1@1.1.1c-r0"
               }
             }
           ]
@@ -142,9 +136,6 @@
                   "endLine": 1,
                   "endColumn": 1
                 }
-              },
-              "message": {
-                "text": "testdata/fixtures/images/alpine-310.tar.gz: libssl1.1@1.1.1c-r0"
               }
             }
           ]
@@ -169,9 +160,6 @@
                   "endLine": 1,
                   "endColumn": 1
                 }
-              },
-              "message": {
-                "text": "testdata/fixtures/images/alpine-310.tar.gz: libssl1.1@1.1.1c-r0"
               }
             }
           ]

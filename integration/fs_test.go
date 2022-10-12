@@ -26,8 +26,6 @@ func TestFilesystem(t *testing.T) {
 		filePatterns   []string
 		helmSet        []string
 		helmValuesFile []string
-		skipFiles      []string
-		skipDirs       []string
 	}
 	tests := []struct {
 		name   string
@@ -43,29 +41,10 @@ func TestFilesystem(t *testing.T) {
 			golden: "testdata/gomod.json.golden",
 		},
 		{
-			name: "gomod with skip files",
-			args: args{
-				securityChecks: "vuln",
-				input:          "testdata/fixtures/fs/gomod",
-				skipFiles:      []string{"/testdata/fixtures/fs/gomod/submod2/go.mod"},
-			},
-			golden: "testdata/gomod-skip.json.golden",
-		},
-		{
-			name: "gomod with skip dirs",
-			args: args{
-				securityChecks: "vuln",
-				input:          "testdata/fixtures/fs/gomod",
-				skipDirs:       []string{"/testdata/fixtures/fs/gomod/submod2"},
-			},
-			golden: "testdata/gomod-skip.json.golden",
-		},
-		{
 			name: "nodejs",
 			args: args{
 				securityChecks: "vuln",
 				input:          "testdata/fixtures/fs/nodejs",
-				listAllPkgs:    true,
 			},
 			golden: "testdata/nodejs.json.golden",
 		},
@@ -262,18 +241,6 @@ func TestFilesystem(t *testing.T) {
 			if len(tt.args.helmValuesFile) != 0 {
 				for _, helmValuesFile := range tt.args.helmValuesFile {
 					osArgs = append(osArgs, "--helm-values", helmValuesFile)
-				}
-			}
-
-			if len(tt.args.skipFiles) != 0 {
-				for _, skipFile := range tt.args.skipFiles {
-					osArgs = append(osArgs, "--skip-files", skipFile)
-				}
-			}
-
-			if len(tt.args.skipDirs) != 0 {
-				for _, skipDir := range tt.args.skipDirs {
-					osArgs = append(osArgs, "--skip-dirs", skipDir)
 				}
 			}
 
