@@ -19,11 +19,7 @@ func TestClient_Filter(t *testing.T) {
 		//vulns         []types.DetectedVulnerability
 		//misconfs      []types.DetectedMisconfiguration
 		//secrets       []ftypes.SecretFinding
-		severities     []dbTypes.Severity
-		ignoreUnfixed  bool
-		ignoreFile     string
-		policyFile     string
-		ignoreLicenses []string
+		filters types.ResultFilters
 	}
 	tests := []struct {
 		name               string
@@ -121,8 +117,10 @@ func TestClient_Filter(t *testing.T) {
 						},
 					},
 				},
-				severities:    []dbTypes.Severity{dbTypes.SeverityCritical, dbTypes.SeverityHigh, dbTypes.SeverityUnknown},
-				ignoreUnfixed: false,
+				filters: types.ResultFilters{
+					Severities:    []dbTypes.Severity{dbTypes.SeverityCritical, dbTypes.SeverityHigh, dbTypes.SeverityUnknown},
+					IgnoreUnfixed: false,
+				},
 			},
 			wantVulns: []types.DetectedVulnerability{
 				{
@@ -213,8 +211,10 @@ func TestClient_Filter(t *testing.T) {
 						},
 					},
 				},
-				severities:    []dbTypes.Severity{dbTypes.SeverityHigh},
-				ignoreUnfixed: true,
+				filters: types.ResultFilters{
+					Severities:    []dbTypes.Severity{dbTypes.SeverityHigh},
+					IgnoreUnfixed: true,
+				},
 			},
 			wantVulns: []types.DetectedVulnerability{},
 		},
@@ -293,9 +293,11 @@ func TestClient_Filter(t *testing.T) {
 						},
 					},
 				},
-				severities:    []dbTypes.Severity{dbTypes.SeverityLow},
-				ignoreUnfixed: false,
-				ignoreFile:    "testdata/.trivyignore",
+				filters: types.ResultFilters{
+					Severities:    []dbTypes.Severity{dbTypes.SeverityLow},
+					IgnoreUnfixed: false,
+					IgnoredFile:   "testdata/.trivyignore",
+				},
 			},
 
 			wantVulns: []types.DetectedVulnerability{
@@ -355,9 +357,11 @@ func TestClient_Filter(t *testing.T) {
 						},
 					},
 				},
-				severities:    []dbTypes.Severity{dbTypes.SeverityLow},
-				ignoreUnfixed: false,
-				policyFile:    "./testdata/test.rego",
+				filters: types.ResultFilters{
+					Severities:    []dbTypes.Severity{dbTypes.SeverityLow},
+					IgnoreUnfixed: false,
+					PolicyFile:    "./testdata/test.rego",
+				},
 			},
 			wantVulns: []types.DetectedVulnerability{
 				{
@@ -450,8 +454,10 @@ func TestClient_Filter(t *testing.T) {
 						},
 					},
 				},
-				severities:    []dbTypes.Severity{dbTypes.SeverityCritical, dbTypes.SeverityHigh, dbTypes.SeverityUnknown},
-				ignoreUnfixed: false,
+				filters: types.ResultFilters{
+					Severities:    []dbTypes.Severity{dbTypes.SeverityCritical, dbTypes.SeverityHigh, dbTypes.SeverityUnknown},
+					IgnoreUnfixed: false,
+				},
 			},
 			wantVulns: []types.DetectedVulnerability{
 				{
@@ -505,7 +511,7 @@ func TestClient_Filter(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			err := result.Filter(context.Background(), &tt.args.result,
-				tt.args.severities, tt.args.ignoreUnfixed, false, tt.args.ignoreFile, tt.args.policyFile, tt.args.ignoreLicenses)
+				tt.args.filters)
 			require.NoError(t, err)
 			assert.Equal(t, tt.wantVulns, tt.args.result.Vulnerabilities)
 			assert.Equal(t, tt.wantMisconfSummary, tt.args.result.MisconfSummary)

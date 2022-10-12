@@ -73,13 +73,14 @@ func Write(rep *Report, opt flag.Options, fromCache bool) error {
 			if err := result.Filter(
 				ctx,
 				&resCopy,
-				opt.Severities,
-				false,
-				false,
-				"",
-				"",
-				nil,
-			); err != nil {
+				types.ResultFilters{
+					Severities:         opt.Severities,
+					IgnoreUnfixed:      false,
+					IncludeNonFailures: false,
+					IgnoredFile:        "",
+					PolicyFile:         "",
+					IgnoredLicenses:    nil,
+				}); err != nil {
 				return err
 			}
 			sort.Slice(resCopy.Misconfigurations, func(i, j int) bool {

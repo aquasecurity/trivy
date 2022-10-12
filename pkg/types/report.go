@@ -5,6 +5,7 @@ import (
 
 	v1 "github.com/google/go-containerregistry/pkg/v1" // nolint: goimports
 
+	"github.com/aquasecurity/trivy-db/pkg/types"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 )
 
@@ -60,6 +61,17 @@ type Result struct {
 	Secrets           []ftypes.SecretFinding     `json:"Secrets,omitempty"`
 	Licenses          []DetectedLicense          `json:"Licenses,omitempty"`
 	CustomResources   []ftypes.CustomResource    `json:"CustomResources,omitempty"`
+}
+
+type ResultFilters struct {
+	Severities         []types.Severity
+	IgnoreUnfixed      bool
+	IncludeNonFailures bool
+
+	IgnoredFile     string
+	IgnoredIDs      []string
+	PolicyFile      string
+	IgnoredLicenses []string
 }
 
 func (r *Result) MarshalJSON() ([]byte, error) {

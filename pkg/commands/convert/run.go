@@ -10,6 +10,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/flag"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/report"
+	"github.com/aquasecurity/trivy/pkg/types"
 )
 
 func Run(ctx context.Context, opts flag.Options) (err error) {
@@ -22,8 +23,14 @@ func Run(ctx context.Context, opts flag.Options) (err error) {
 	byteValue, _ := ioutil.ReadAll(jsonFile)
 	r, _ := report.Read(byteValue)
 	log.Logger.Debug("Filtering report")
-	r, err = report.Filter(ctx, r, opts.Severities, opts.IgnoreUnfixed, opts.IncludeNonFailures,
-		opts.IgnoreFile, opts.IgnorePolicy, opts.IgnoredLicenses)
+	r, err = report.Filter(ctx, r, types.ResultFilters{
+		Severities:         opts.Severities,
+		IgnoreUnfixed:      opts.IgnoreUnfixed,
+		IncludeNonFailures: opts.IncludeNonFailures,
+		IgnoredFile:        opts.IgnoreFile,
+		PolicyFile:         opts.IgnorePolicy,
+		IgnoredLicenses:    opts.IgnoredLicenses,
+	})
 	if err != nil {
 		return xerrors.Errorf("unable to filter vulnerabilities: %w", err)
 	}
