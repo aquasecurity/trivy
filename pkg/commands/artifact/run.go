@@ -23,7 +23,6 @@ import (
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/module"
 	pkgReport "github.com/aquasecurity/trivy/pkg/report"
-	"github.com/aquasecurity/trivy/pkg/result"
 	"github.com/aquasecurity/trivy/pkg/rpc/client"
 	"github.com/aquasecurity/trivy/pkg/scanner"
 	"github.com/aquasecurity/trivy/pkg/types"
@@ -234,15 +233,10 @@ func (r *runner) scanArtifact(ctx context.Context, opts flag.Options, initialize
 }
 
 func (r *runner) Filter(ctx context.Context, opts flag.Options, report types.Report) (types.Report, error) {
-	results := report.Results
-
-	// Filter results
-	for i := range results {
-		err := result.Filter(ctx, &results[i], opts.Severities, opts.IgnoreUnfixed, opts.IncludeNonFailures,
-			opts.IgnoreFile, opts.IgnorePolicy, opts.IgnoredLicenses)
-		if err != nil {
-			return types.Report{}, xerrors.Errorf("unable to filter vulnerabilities: %w", err)
-		}
+	report, err := pkgReport.Filter(ctx, report, opts.Severities, opts.IgnoreUnfixed, opts.IncludeNonFailures,
+		opts.IgnoreFile, opts.IgnorePolicy, opts.IgnoredLicenses)
+	if err != nil {
+		return types.Report{}, xerrors.Errorf("unable to filter vulnerabilities: %w", err)
 	}
 	return report, nil
 }
