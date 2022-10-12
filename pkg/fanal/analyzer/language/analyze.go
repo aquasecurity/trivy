@@ -43,14 +43,12 @@ func ToAnalysisResult(fileType, filePath, libFilePath string, libs []godeptypes.
 			}
 		}
 		var locs []types.Location
-		if len(lib.Locations) != 0 {
-			for _, loc := range lib.Locations {
-				l := types.Location{
-					StartLine: loc.StartLine,
-					EndLine:   loc.EndLine,
-				}
-				locs = append(locs, l)
+		for _, loc := range lib.Locations {
+			l := types.Location{
+				StartLine: loc.StartLine,
+				EndLine:   loc.EndLine,
 			}
+			locs = append(locs, l)
 		}
 		pkgs = append(pkgs, types.Package{
 			ID:        lib.ID,
