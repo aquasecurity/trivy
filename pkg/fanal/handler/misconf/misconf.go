@@ -10,6 +10,7 @@ import (
 	"path/filepath"
 	"strings"
 
+	"github.com/aquasecurity/defsec/pkg/scanners/azure/arm"
 	"github.com/liamg/memoryfs"
 	"github.com/samber/lo"
 	"golang.org/x/xerrors"
@@ -185,6 +186,7 @@ func newMisconfPostHandler(artifactOpt artifact.Option) (handler.PostHandler, er
 	return misconfPostHandler{
 		filePatterns: artifactOpt.FilePatterns,
 		scanners: map[string]scanners.FSScanner{
+			types.AzureARM:       arm.New(opts...),
 			types.Terraform:      tfscanner.New(tfOpts...),
 			types.CloudFormation: cfscanner.New(opts...),
 			types.Dockerfile:     dfscanner.NewScanner(opts...),
@@ -224,6 +226,7 @@ func addHelmOpts(opts []options.ScannerOption, scannerOption config.ScannerOptio
 }
 
 var enabledDefsecTypes = map[detection.FileType]string{
+	detection.FileTypeAzureARM:       types.AzureARM,
 	detection.FileTypeCloudFormation: types.CloudFormation,
 	detection.FileTypeTerraform:      types.Terraform,
 	detection.FileTypeDockerfile:     types.Dockerfile,
