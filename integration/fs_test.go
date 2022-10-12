@@ -65,6 +65,7 @@ func TestFilesystem(t *testing.T) {
 			args: args{
 				securityChecks: "vuln",
 				input:          "testdata/fixtures/fs/nodejs",
+				listAllPkgs:    true,
 			},
 			golden: "testdata/nodejs.json.golden",
 		},
