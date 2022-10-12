@@ -21,6 +21,12 @@ func Run(ctx context.Context, opts flag.Options) (err error) {
 	}
 	byteValue, _ := ioutil.ReadAll(jsonFile)
 	r, _ := report.Read(byteValue)
+	log.Logger.Debug("Filtering report")
+	r, err = report.Filter(ctx, r, opts.Severities, opts.IgnoreUnfixed, opts.IncludeNonFailures,
+		opts.IgnoreFile, opts.IgnorePolicy, opts.IgnoredLicenses)
+	if err != nil {
+		return xerrors.Errorf("unable to filter vulnerabilities: %w", err)
+	}
 	log.Logger.Debug("Writing report to output...")
 	if err := report.Write(r, report.Option{
 		AppVersion:         opts.AppVersion,
