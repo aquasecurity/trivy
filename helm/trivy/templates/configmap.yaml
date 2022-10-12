@@ -5,7 +5,7 @@ metadata:
   labels:
 {{ include "trivy.labels" . | indent 4 }}
 data:
-  TRIVY_LISTEN: "0.0.0.0:{{ .Values.service.port }}"
+  TRIVY_LISTEN: "0.0.0.0:4954"
   TRIVY_CACHE_DIR: "/home/scanner/.cache/trivy"
 {{- if .Values.trivy.cache.redis.enabled }}
   TRIVY_CACHE_BACKEND: {{ .Values.trivy.cache.redis.url | quote }}

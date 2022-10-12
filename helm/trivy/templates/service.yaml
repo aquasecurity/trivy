@@ -13,5 +13,5 @@ spec:
     - name: trivy-http
       protocol: TCP
       port: {{ .Values.service.port | default 4954 }}
-      targetPort: {{ .Values.service.port | default 4954 }}
+      targetPort: 4954
   sessionAffinity: ClientIP

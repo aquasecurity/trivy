@@ -97,7 +97,7 @@ spec:
                 {{- end }}
           ports:
             - name: trivy-http
-              containerPort: {{ .Values.service.port }}
+              containerPort: 4954
           livenessProbe:
             httpGet:
               scheme: HTTP
