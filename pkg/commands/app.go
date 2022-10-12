@@ -234,6 +234,9 @@ func NewImageCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
   # Scan a container image from a tar archive
   $ trivy image --input ruby-3.1.tar
 
+  # Scan a container image on a specific architecture and os
+  $ trivy image --platform=arm/linux python:3.4-alpine
+
   # Filter by severities
   $ trivy image --severity HIGH,CRITICAL alpine:3.15
 

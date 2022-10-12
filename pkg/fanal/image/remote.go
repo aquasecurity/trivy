@@ -3,6 +3,7 @@ package image
 import (
 	"context"
 	"crypto/tls"
+	"errors"
 	"fmt"
 	"net/http"
 	"strings"
@@ -23,6 +24,17 @@ func tryRemote(ctx context.Context, imageName string, ref name.Reference, option
 			TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
 		}
 		remoteOpts = append(remoteOpts, remote.WithTransport(t))
+	}
+
+	if option.Platform != "" {
+		platform := strings.Split(option.Platform, "/")
+		if len(platform) != 2 {
+			return nil, errors.New("pass the platform in the format architecture/os")
+		}
+		architecture := platform[0]
+		os := platform[1]
+
+		remoteOpts = append(remoteOpts, remote.WithPlatform(v1.Platform{Architecture: architecture, OS: os}))
 	}
 
 	domain := ref.Context().RegistryStr()
