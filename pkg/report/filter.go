@@ -3,9 +3,10 @@ package report
 import (
 	"context"
 
+	"golang.org/x/xerrors"
+
 	"github.com/aquasecurity/trivy/pkg/result"
 	"github.com/aquasecurity/trivy/pkg/types"
-	"golang.org/x/xerrors"
 )
 
 func Filter(ctx context.Context, report types.Report, filters types.ResultFilters) (types.Report, error) {
