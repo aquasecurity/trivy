@@ -48,5 +48,8 @@ func Run(ctx context.Context, opts flag.Options) (err error) {
 		return xerrors.Errorf("unable to write results: %w", err)
 	}
 
+	if opts.ExitCode != 0 && r.Results.Failed() {
+		os.Exit(opts.ExitCode)
+	}
 	return nil
 }
