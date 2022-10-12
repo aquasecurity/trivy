@@ -14,6 +14,7 @@ import (
 	"github.com/sigstore/rekor/pkg/generated/models"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"golang.org/x/exp/slices"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
@@ -1200,10 +1201,27 @@ func TestArtifact_InspectRekorAttestation(t *testing.T) {
 					} else {
 						http.Error(w, "something wrong", http.StatusInternalServerError)
 					}
-				case "/api/v1/log/entries/392f8ecba72f4326eb624a7403756250b5f2ad58842a99d1653cd6f147f4ce9eda2da350bd908a55":
-					http.ServeFile(w, r, "testdata/log-entry-no-attestation.json")
-				case "/api/v1/log/entries/392f8ecba72f4326414eaca77bd19bf5f378725d7fd79309605a81b69cc0101f5cd3119d0a216523":
-					http.ServeFile(w, r, "testdata/log-entry.json")
+				case "/api/v1/log/entries/retrieve":
+					var params models.SearchLogQuery
+					err := json.NewDecoder(r.Body).Decode(&params)
+					require.NoError(t, err)
+
+					if slices.Equal(
+						params.EntryUUIDs,
+						[]string{
+							"392f8ecba72f4326eb624a7403756250b5f2ad58842a99d1653cd6f147f4ce9eda2da350bd908a55",
+							"392f8ecba72f4326414eaca77bd19bf5f378725d7fd79309605a81b69cc0101f5cd3119d0a216523",
+						},
+					) {
+						http.ServeFile(w, r, "testdata/log-entries.json")
+					} else if slices.Equal(
+						params.EntryUUIDs,
+						[]string{"392f8ecba72f4326eb624a7403756250b5f2ad58842a99d1653cd6f147f4ce9eda2da350bd908a55"},
+					) {
+						http.ServeFile(w, r, "testdata/log-entries-no-attestation.json")
+					} else {
+						http.Error(w, "something wrong", http.StatusInternalServerError)
+					}
 				}
 				return
 			}))

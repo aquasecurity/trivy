@@ -210,8 +210,9 @@ type ArtifactDetail struct {
 // ToBlobInfo is used to store a merged layer in cache.
 func (a *ArtifactDetail) ToBlobInfo() BlobInfo {
 	return BlobInfo{
-		OS:         a.OS,
-		Repository: a.Repository,
+		SchemaVersion: BlobJSONSchemaVersion,
+		OS:            a.OS,
+		Repository:    a.Repository,
 		PackageInfos: []PackageInfo{
 			{
 				FilePath: "merged", // Set a dummy file path
