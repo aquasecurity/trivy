@@ -10,6 +10,7 @@ import (
 	"strings"
 	"sync"
 
+	"github.com/samber/lo"
 	"golang.org/x/exp/slices"
 	"golang.org/x/sync/semaphore"
 	"golang.org/x/xerrors"
@@ -138,7 +139,12 @@ type AnalysisResult struct {
 	Licenses             []types.LicenseFile
 	SystemInstalledFiles []string // A list of files installed by OS package manager
 
+	// Files holds necessary file contents for the respective post-handler
 	Files map[types.HandlerType][]types.File
+
+	// Digests contains SHA-256 digests of unpackaged files
+	// used to search for SBOM attestation.
+	Digests map[string]string
 
 	// For Red Hat
 	BuildInfo *types.BuildInfo
@@ -253,6 +259,9 @@ func (r *AnalysisResult) Merge(new *AnalysisResult) {
 	if len(new.Applications) > 0 {
 		r.Applications = append(r.Applications, new.Applications...)
 	}
+
+	// Merge SHA-256 digests of unpackaged files
+	r.Digests = lo.Assign(r.Digests, new.Digests)
 
 	for t, files := range new.Files {
 		if v, ok := r.Files[t]; ok {
