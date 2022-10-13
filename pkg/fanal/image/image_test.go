@@ -516,22 +516,9 @@ func TestDockerPlatformArguments(t *testing.T) {
 					Password:              "testpass",
 					NonSSL:                true,
 					InsecureSkipTLSVerify: true,
-					Platform:              "amd64/linux",
+					Platform:              "arm/linux",
 				},
 			},
-		},
-		{
-			name: "sad path with invalid formatted platform",
-			args: args{
-				option: types.DockerOption{
-					UserName:              "test",
-					Password:              "testpass",
-					NonSSL:                true,
-					InsecureSkipTLSVerify: true,
-					Platform:              "amd00linux",
-				},
-			},
-			wantErr: "pass the platform in the format architecture/os",
 		},
 	}
 	for _, tt := range tests {

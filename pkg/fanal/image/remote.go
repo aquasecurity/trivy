@@ -3,7 +3,6 @@ package image
 import (
 	"context"
 	"crypto/tls"
-	"errors"
 	"fmt"
 	"net/http"
 	"strings"
@@ -27,14 +26,11 @@ func tryRemote(ctx context.Context, imageName string, ref name.Reference, option
 	}
 
 	if option.Platform != "" {
-		platform := strings.Split(option.Platform, "/")
-		if len(platform) != 2 {
-			return nil, errors.New("pass the platform in the format architecture/os")
+		s, err := v1.ParsePlatform(option.Platform)
+		if err != nil {
+			return nil, err
 		}
-		architecture := platform[0]
-		os := platform[1]
-
-		remoteOpts = append(remoteOpts, remote.WithPlatform(v1.Platform{Architecture: architecture, OS: os}))
+		remoteOpts = append(remoteOpts, remote.WithPlatform(*s))
 	}
 
 	domain := ref.Context().RegistryStr()
