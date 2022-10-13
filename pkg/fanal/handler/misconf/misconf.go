@@ -8,6 +8,7 @@ import (
 	"io/fs"
 	"os"
 	"path/filepath"
+	"sort"
 	"strings"
 
 	"github.com/liamg/memoryfs"
@@ -165,8 +166,7 @@ func newMisconfPostHandler(artifactOpt artifact.Option) (handler.PostHandler, er
 	}
 
 	if opt.RegoOnly {
-		opts = append(opts, tfscanner.ScannerWithRegoOnly(true))
-		opts = append(opts, cfscanner.ScannerWithRegoOnly(true))
+		opts = append(opts, options.ScannerWithRegoOnly(true))
 	}
 
 	if len(policyPaths) > 0 {
@@ -296,6 +296,27 @@ func (h misconfPostHandler) Handle(ctx context.Context, result *analyzer.Analysi
 	}
 
 	// Add misconfigurations
+	for _, misconf := range misconfs {
+		sort.Slice(misconf.Successes, func(i, j int) bool {
+			if misconf.Successes[i].AVDID == misconf.Successes[j].AVDID {
+				return misconf.Successes[i].StartLine < misconf.Successes[j].StartLine
+			}
+			return misconf.Successes[i].AVDID < misconf.Successes[j].AVDID
+		})
+		sort.Slice(misconf.Warnings, func(i, j int) bool {
+			if misconf.Warnings[i].AVDID == misconf.Warnings[j].AVDID {
+				return misconf.Warnings[i].StartLine < misconf.Warnings[j].StartLine
+			}
+			return misconf.Warnings[i].AVDID < misconf.Warnings[j].AVDID
+		})
+		sort.Slice(misconf.Failures, func(i, j int) bool {
+			if misconf.Failures[i].AVDID == misconf.Failures[j].AVDID {
+				return misconf.Failures[i].StartLine < misconf.Failures[j].StartLine
+			}
+			return misconf.Failures[i].AVDID < misconf.Failures[j].AVDID
+		})
+	}
+
 	blob.Misconfigurations = misconfs
 
 	return nil
