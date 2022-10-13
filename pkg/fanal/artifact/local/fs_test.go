@@ -1663,7 +1663,7 @@ func TestAzureARMMisconfigurationScan(t *testing.T) {
 						PackageInfos: []types.PackageInfo(nil), Applications: []types.Application(nil),
 						Misconfigurations: []types.Misconfiguration{
 							types.Misconfiguration{
-								FileType: "Azure ARM", FilePath: "deploy.json", Successes: types.MisconfResults{
+								FileType: "azure-arm", FilePath: "deploy.json", Successes: types.MisconfResults{
 									types.MisconfResult{
 										Namespace: "builtin.aws.rds.aws0176",
 										Query:     "data.builtin.aws.rds.aws0176.deny", Message: "",
@@ -1718,9 +1718,9 @@ func TestAzureARMMisconfigurationScan(t *testing.T) {
 			want: types.ArtifactReference{
 				Name: "testdata/misconfig/azurearm/single-failure/src",
 				Type: types.ArtifactFilesystem,
-				ID:   "sha256:e5ddfd4e4cb3e8870bb38ab40caf67106d5fc7f298c497676c9a465600a35048",
+				ID:   "sha256:4a2b0992144ad47985149073e8807ea38a248da82a36342f78db16cf97254b68",
 				BlobIDs: []string{
-					"sha256:e5ddfd4e4cb3e8870bb38ab40caf67106d5fc7f298c497676c9a465600a35048",
+					"sha256:4a2b0992144ad47985149073e8807ea38a248da82a36342f78db16cf97254b68",
 				},
 			},
 		},
@@ -1753,7 +1753,7 @@ func TestAzureARMMisconfigurationScan(t *testing.T) {
 						PackageInfos: []types.PackageInfo(nil), Applications: []types.Application(nil),
 						Misconfigurations: []types.Misconfiguration{
 							types.Misconfiguration{
-								FileType: "Azure ARM", FilePath: "deploy.json", Successes: types.MisconfResults{
+								FileType: "azure-arm", FilePath: "deploy.json", Successes: types.MisconfResults{
 									types.MisconfResult{
 										Namespace: "builtin.aws.rds.aws0176",
 										Query:     "data.builtin.aws.rds.aws0176.deny", Message: "",
@@ -1819,9 +1819,9 @@ func TestAzureARMMisconfigurationScan(t *testing.T) {
 			want: types.ArtifactReference{
 				Name: "testdata/misconfig/azurearm/multiple-failures/src",
 				Type: types.ArtifactFilesystem,
-				ID:   "sha256:4699742ef0d934c25f6e9486fe5a00ebb632bbfeb5c9aede44ed5ad4e7afad47",
+				ID:   "sha256:8859b0de1cb155a38e27ecf9f26dd662f2e809fdce48f201f4c1e94d299c0f96",
 				BlobIDs: []string{
-					"sha256:4699742ef0d934c25f6e9486fe5a00ebb632bbfeb5c9aede44ed5ad4e7afad47",
+					"sha256:8859b0de1cb155a38e27ecf9f26dd662f2e809fdce48f201f4c1e94d299c0f96",
 				},
 			},
 		},
@@ -1892,7 +1892,7 @@ func TestAzureARMMisconfigurationScan(t *testing.T) {
 						PackageInfos: []types.PackageInfo(nil), Applications: []types.Application(nil),
 						Misconfigurations: []types.Misconfiguration{
 							types.Misconfiguration{
-								FileType: "Azure ARM", FilePath: "deploy.json", Successes: types.MisconfResults{
+								FileType: "azure-arm", FilePath: "deploy.json", Successes: types.MisconfResults{
 									types.MisconfResult{
 										Namespace: "builtin.aws.rds.aws0176",
 										Query:     "data.builtin.aws.rds.aws0176.deny", Message: "",
@@ -1946,9 +1946,9 @@ func TestAzureARMMisconfigurationScan(t *testing.T) {
 			want: types.ArtifactReference{
 				Name: "testdata/misconfig/azurearm/passed/src",
 				Type: types.ArtifactFilesystem,
-				ID:   "sha256:7e7df3fe10f93dcf1f025cd912f3659b75f2cffaa56a4c277d0f5880d9a6a9cf",
+				ID:   "sha256:11bfbe426d39efcefa0bd0ac16a1386967720e1efd00e92012d637b80330821c",
 				BlobIDs: []string{
-					"sha256:7e7df3fe10f93dcf1f025cd912f3659b75f2cffaa56a4c277d0f5880d9a6a9cf",
+					"sha256:11bfbe426d39efcefa0bd0ac16a1386967720e1efd00e92012d637b80330821c",
 				},
 			},
 		},
