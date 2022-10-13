@@ -336,7 +336,7 @@ func TestTerraformMisconfigurationScan(t *testing.T) {
 								}, Warnings: types.MisconfResults(nil), Failures: types.MisconfResults(nil),
 								Exceptions: types.MisconfResults(nil),
 								Layer:      types.Layer{Digest: "", DiffID: "", CreatedBy: ""},
-							}, {
+							}, types.Misconfiguration{
 								FileType: "terraform", FilePath: "main.tf", Successes: types.MisconfResults(nil),
 								Warnings: types.MisconfResults(nil), Failures: types.MisconfResults{
 									types.MisconfResult{
