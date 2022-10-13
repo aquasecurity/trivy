@@ -43,14 +43,14 @@ func (a Artifact) inspectSBOMAttestation(ctx context.Context) (ftypes.ArtifactRe
 	}
 
 	client, err := sbomatt.NewRekor(a.artifactOption.RekorURL)
-	if errors.Is(err, sbomatt.ErrNoSBOMAttestation) {
-		return ftypes.ArtifactReference{}, errNoSBOMFound
-	} else if err != nil {
+	if err != nil {
 		return ftypes.ArtifactReference{}, xerrors.Errorf("failed to create rekor client: %w", err)
 	}
 
 	raw, err := client.RetrieveSBOM(ctx, digest)
-	if err != nil {
+	if errors.Is(err, sbomatt.ErrNoSBOMAttestation) {
+		return ftypes.ArtifactReference{}, errNoSBOMFound
+	} else if err != nil {
 		return ftypes.ArtifactReference{}, xerrors.Errorf("failed to retrieve SBOM attestation: %w", err)
 	}
 

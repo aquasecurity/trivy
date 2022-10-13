@@ -13,6 +13,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/fanal/artifact"
 	"github.com/aquasecurity/trivy/pkg/fanal/handler"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
+	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/sbom"
 )
 
@@ -66,7 +67,13 @@ func (h unpackagedHook) Handle(ctx context.Context, res *analyzer.AnalysisResult
 			return err
 		}
 
-		blob.Applications = append(blob.Applications, bom.Applications...)
+		if len(bom.Applications) > 0 {
+			log.Logger.Infof("Found SBOM attestation in Rekor: %s", filePath)
+			// Take the first app since this SBOM should contain a single application.
+			app := bom.Applications[0]
+			app.FilePath = filePath
+			blob.Applications = append(blob.Applications, app)
+		}
 	}
 
 	return nil

@@ -19,9 +19,8 @@ func init() {
 
 const version = 1
 
-// executableAnalyzer calculates SHA-256 for each binaries
-// not managed by package managers (a.k.a. unpackaged binaries)
-// so that it can search for SBOM attestation.
+// executableAnalyzer calculates SHA-256 for each binary not managed by package managers (called unpackaged binaries)
+// so that it can search for SBOM attestation in post-handler.
 type executableAnalyzer struct{}
 
 func (a executableAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInput) (*analyzer.AnalysisResult, error) {
