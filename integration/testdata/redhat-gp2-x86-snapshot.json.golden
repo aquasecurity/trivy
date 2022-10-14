@@ -1,0 +1,58 @@
+{
+  "SchemaVersion": 2,
+  "ArtifactName": "/var/folders/t2/hdrqdzm947jdppdtc7y39xy40000gn/T/target.img",
+  "ArtifactType": "vm",
+  "Metadata": {
+    "OS": {
+      "Family": "redhat",
+      "Name": "8.6"
+    },
+    "ImageConfig": {
+      "architecture": "",
+      "created": "0001-01-01T00:00:00Z",
+      "os": "",
+      "rootfs": {
+        "type": "",
+        "diff_ids": null
+      },
+      "config": {}
+    }
+  },
+  "Results": [
+    {
+      "Target": "/var/folders/t2/hdrqdzm947jdppdtc7y39xy40000gn/T/target.img (redhat 8.6)",
+      "Class": "os-pkgs",
+      "Type": "redhat",
+      "Vulnerabilities": [
+        {
+          "VulnerabilityID": "CVE-2019-12900",
+          "PkgName": "bzip2-libs",
+          "InstalledVersion": "1.0.6-26.el8",
+          "Layer": {},
+          "SeveritySource": "redhat",
+          "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-12900",
+          "Title": "bzip2: out-of-bounds write in function BZ2_decompress",
+          "Description": "BZ2_decompress in decompress.c in bzip2 through 1.0.6 has an out-of-bounds write when there are many selectors.",
+          "Severity": "LOW",
+          "CweIDs": [
+            "CWE-787"
+          ],
+          "CVSS": {
+            "nvd": {
+              "V2Vector": "AV:N/AC:L/Au:N/C:P/I:P/A:P",
+              "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H",
+              "V2Score": 7.5,
+              "V3Score": 9.8
+            },
+            "redhat": {
+              "V3Vector": "CVSS:3.0/AV:L/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:L",
+              "V3Score": 4
+            }
+          },
+          "PublishedDate": "2019-06-19T23:15:00Z",
+          "LastModifiedDate": "2022-06-27T16:36:00Z"
+        }
+      ]
+    }
+  ]
+}

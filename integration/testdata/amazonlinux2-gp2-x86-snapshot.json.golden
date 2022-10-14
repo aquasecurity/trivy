@@ -1,0 +1,28 @@
+{
+  "SchemaVersion": 2,
+  "ArtifactName": "/var/folders/t2/hdrqdzm947jdppdtc7y39xy40000gn/T/target.img",
+  "ArtifactType": "vm",
+  "Metadata": {
+    "OS": {
+      "Family": "amazon",
+      "Name": "2 (Karoo)"
+    },
+    "ImageConfig": {
+      "architecture": "",
+      "created": "0001-01-01T00:00:00Z",
+      "os": "",
+      "rootfs": {
+        "type": "",
+        "diff_ids": null
+      },
+      "config": {}
+    }
+  },
+  "Results": [
+    {
+      "Target": "/var/folders/t2/hdrqdzm947jdppdtc7y39xy40000gn/T/target.img (amazon 2 (Karoo))",
+      "Class": "os-pkgs",
+      "Type": "amazon"
+    }
+  ]
+}
