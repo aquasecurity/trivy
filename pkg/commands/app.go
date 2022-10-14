@@ -342,6 +342,7 @@ func NewRootfsCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 		DBFlagGroup:            flag.NewDBFlagGroup(),
 		LicenseFlagGroup:       flag.NewLicenseFlagGroup(),
 		MisconfFlagGroup:       flag.NewMisconfFlagGroup(),
+                RemoteFlagGroup:        flag.NewClientFlags(), // for client/server mode
 		RegoFlagGroup:          flag.NewRegoFlagGroup(),
 		ReportFlagGroup:        reportFlagGroup,
 		ScanFlagGroup:          flag.NewScanFlagGroup(),
