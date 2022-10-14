@@ -1,6 +1,6 @@
 {
   "SchemaVersion": 2,
-  "ArtifactName": "/var/folders/t2/hdrqdzm947jdppdtc7y39xy40000gn/T/target.img",
+  "ArtifactName": "tmp-test-vm-integration-dir/target.img",
   "ArtifactType": "vm",
   "Metadata": {
     "OS": {
@@ -20,7 +20,7 @@
   },
   "Results": [
     {
-      "Target": "/var/folders/t2/hdrqdzm947jdppdtc7y39xy40000gn/T/target.img (suse linux enterprise server 15.4)",
+      "Target": "tmp-test-vm-integration-dir/target.img (suse linux enterprise server 15.4)",
       "Class": "os-pkgs",
       "Type": "suse linux enterprise server",
       "Vulnerabilities": [

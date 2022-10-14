@@ -6,7 +6,6 @@ import (
 	"archive/tar"
 	"compress/gzip"
 	"io"
-	"log"
 	"os"
 	"path/filepath"
 	"strings"
@@ -78,8 +77,11 @@ func TestVM(t *testing.T) {
 
 	// Set up testing DB
 	cacheDir := initDB(t)
-	log.Print(cacheDir)
 
+	dirName := "./tmp-test-vm-integration-dir"
+	err := os.Mkdir(dirName, 0700)
+	assert.NoError(t, err)
+	defer os.Remove(dirName)
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			osArgs := []string{
@@ -107,9 +109,8 @@ func TestVM(t *testing.T) {
 
 			gr, err := gzip.NewReader(tr)
 			assert.NoError(t, err)
-			tmpdir := os.TempDir()
 
-			testImagePath := filepath.Join(tmpdir, "target.img")
+			testImagePath := filepath.Join(dirName, "target.img")
 			tf, err := os.Create(testImagePath)
 			assert.NoError(t, err)
 			defer os.Remove(testImagePath)
