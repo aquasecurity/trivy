@@ -2,7 +2,6 @@ package storage
 
 import (
 	"context"
-	"github.com/aquasecurity/trivy/pkg/log"
 	"io"
 	"os"
 	"strings"
@@ -11,6 +10,7 @@ import (
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/vm"
+	"github.com/aquasecurity/trivy/pkg/log"
 )
 
 const (
