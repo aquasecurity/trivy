@@ -59,7 +59,7 @@ const (
 
 	// .NET
 	TypeNuget      Type = "nuget"
-	TypeDotNetDeps Type = "dotnet-deps"
+	TypeDotNetCore Type = "dotnet-core"
 
 	// Python
 	TypePythonPkg Type = "python-pkg"
@@ -118,7 +118,7 @@ var (
 	// TypeLanguages has all language analyzers
 	TypeLanguages = []Type{
 		TypeBundler, TypeGemSpec, TypeCargo, TypeComposer, TypeJar, TypePom, TypeGradleLock,
-		TypeNpmPkgLock, TypeNodePkg, TypeYarn, TypePnpm, TypeNuget, TypeDotNetDeps,
+		TypeNpmPkgLock, TypeNodePkg, TypeYarn, TypePnpm, TypeNuget, TypeDotNetCore,
 		TypePythonPkg, TypePip, TypePipenv, TypePoetry, TypeGoBinary, TypeGoMod, TypeRustBinary, TypeConanLock,
 	}
 

@@ -63,7 +63,7 @@ func (a helmConfigAnalyzer) Required(filePath string, info os.FileInfo) bool {
 		return false
 	}
 
-	for _, acceptable := range []string{".tpl", ".json", ".yaml", ".tar", ".tgz", ".tar.gz"} {
+	for _, acceptable := range []string{".tpl", ".json", ".yml", ".yaml", ".tar", ".tgz", ".tar.gz"} {
 		if strings.HasSuffix(strings.ToLower(filePath), acceptable) {
 			return true
 		}

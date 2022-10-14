@@ -42,6 +42,22 @@ func TestNewPackageURL(t *testing.T) {
 			},
 		},
 		{
+			name: "gradle package",
+			typ:  string(ftypes.Gradle),
+			pkg: ftypes.Package{
+				Name:    "org.springframework:spring-core",
+				Version: "5.3.14",
+			},
+			want: purl.PackageURL{
+				PackageURL: packageurl.PackageURL{
+					Type:      string(ftypes.Gradle),
+					Namespace: "org.springframework",
+					Name:      "spring-core",
+					Version:   "5.3.14",
+				},
+			},
+		},
+		{
 			name: "yarn package",
 			typ:  string(analyzer.TypeYarn),
 			pkg: ftypes.Package{

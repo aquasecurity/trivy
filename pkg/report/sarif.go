@@ -56,6 +56,7 @@ type sarifData struct {
 	url              string
 	resultIndex      int
 	artifactLocation string
+	locationMessage  string
 	message          string
 	cvssScore        string
 	startLine        int
@@ -104,7 +105,7 @@ func (sw *SarifWriter) addSarifResult(data *sarifData) {
 		WithRuleIndex(data.resultIndex).
 		WithMessage(sarif.NewTextMessage(data.message)).
 		WithLevel(toSarifErrorLevel(data.severity)).
-		WithLocations([]*sarif.Location{sarif.NewLocation().WithPhysicalLocation(location)})
+		WithLocations([]*sarif.Location{sarif.NewLocation().WithMessage(sarif.NewTextMessage(data.locationMessage)).WithPhysicalLocation(location)})
 	sw.run.AddResult(result)
 }
 
@@ -148,6 +149,7 @@ func (sw SarifWriter) Write(report types.Report) error {
 				url:              vuln.PrimaryURL,
 				resourceClass:    string(res.Class),
 				artifactLocation: path,
+				locationMessage:  fmt.Sprintf("%v: %v@%v", path, vuln.PkgName, vuln.InstalledVersion),
 				resultIndex:      getRuleIndex(vuln.VulnerabilityID, ruleIndexes),
 				fullDescription:  html.EscapeString(fullDescription),
 				helpText: fmt.Sprintf("Vulnerability %v\nSeverity: %v\nPackage: %v\nFixed Version: %v\nLink: [%v](%v)\n%v",
@@ -167,6 +169,7 @@ func (sw SarifWriter) Write(report types.Report) error {
 				url:              misconf.PrimaryURL,
 				resourceClass:    string(res.Class),
 				artifactLocation: target,
+				locationMessage:  target,
 				startLine:        misconf.CauseMetadata.StartLine,
 				endLine:          misconf.CauseMetadata.EndLine,
 				resultIndex:      getRuleIndex(misconf.ID, ruleIndexes),
@@ -188,6 +191,7 @@ func (sw SarifWriter) Write(report types.Report) error {
 				url:              builtinRulesUrl,
 				resourceClass:    string(res.Class),
 				artifactLocation: target,
+				locationMessage:  target,
 				startLine:        secret.StartLine,
 				endLine:          secret.EndLine,
 				resultIndex:      getRuleIndex(secret.RuleID, ruleIndexes),
