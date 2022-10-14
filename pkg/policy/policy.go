@@ -18,8 +18,8 @@ import (
 )
 
 const (
-	bundleVersion    = 1
-	bundleRepository = "localhost:5000/defsec" // TODO: Change to actual bundle GitHub URL
+	bundleVersion    = 0 // Latest released MAJOR version for defsec
+	bundleRepository = "ghcr.io/aquasecurity/defsec"
 	policyMediaType  = "application/vnd.cncf.openpolicyagent.layer.v1.tar+gzip"
 	updateInterval   = 24 * time.Hour
 )

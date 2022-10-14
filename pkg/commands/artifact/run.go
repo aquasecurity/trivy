@@ -498,9 +498,9 @@ func initScannerConfig(opts flag.Options, cacheClient cache.Cache) (ScannerConfi
 		var err error
 		downloadedPolicyPaths, err = operation.InitBuiltinPolicies(context.Background(), opts.CacheDir, opts.Quiet, opts.SkipPolicyUpdate)
 		if err != nil {
-			log.Logger.Debug(err)
+			log.Logger.Debug("Falling back to embedded policies: ", err)
 		} else {
-			log.Logger.Debugf("Policies downloaded: %d", len(downloadedPolicyPaths))
+			log.Logger.Debug("Policies successfully loaded from disk")
 			disableEmbedded = true
 		}
 	}

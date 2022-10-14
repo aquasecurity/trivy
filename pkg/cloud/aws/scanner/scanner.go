@@ -11,6 +11,7 @@ import (
 	"github.com/aquasecurity/defsec/pkg/scanners/options"
 	"github.com/aquasecurity/defsec/pkg/state"
 	"github.com/aquasecurity/trivy/pkg/cloud/aws/cache"
+	"github.com/aquasecurity/trivy/pkg/commands/operation"
 	"github.com/aquasecurity/trivy/pkg/flag"
 	"github.com/aquasecurity/trivy/pkg/log"
 )
@@ -60,12 +61,26 @@ func (s *AWSScanner) Scan(ctx context.Context, option flag.Options) (scan.Result
 		)
 	}
 
-	if len(option.RegoOptions.PolicyPaths) > 0 {
-		scannerOpts = append(
-			scannerOpts,
-			options.ScannerWithPolicyDirs(option.RegoOptions.PolicyPaths...),
-		)
+	var policyPaths []string
+	var downloadedPolicyPaths []string
+	if !option.SkipPolicyUpdate {
+		var err error
+		downloadedPolicyPaths, err = operation.InitBuiltinPolicies(context.Background(), option.CacheDir, option.Quiet, option.SkipPolicyUpdate)
+		if err != nil {
+			log.Logger.Debug("Falling back to embedded policies: ", err)
+		} else {
+			log.Logger.Debug("Policies successfully loaded from disk")
+			policyPaths = append(policyPaths, downloadedPolicyPaths...)
+			scannerOpts = append(scannerOpts,
+				options.ScannerWithEmbeddedPolicies(false))
+		}
 	}
+
+	if len(option.RegoOptions.PolicyPaths) > 0 { // override with custom policy from user
+		policyPaths = append(policyPaths, option.RegoOptions.PolicyPaths...)
+	}
+
+	scannerOpts = append(scannerOpts, options.ScannerWithPolicyDirs(policyPaths...))
 
 	if len(option.RegoOptions.PolicyNamespaces) > 0 {
 		scannerOpts = append(
