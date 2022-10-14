@@ -22,6 +22,6 @@ jobs:
         uses: actions/setup-go@v3
         with:
           go-version-file: go.mod
-      - name: Run module integration tests
+      - name: Run vm integration tests
         run: |
           make test-vm-integration
