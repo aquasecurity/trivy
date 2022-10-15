@@ -5,56 +5,59 @@
 [![Test][test-img]][test]
 [![Go Report Card][go-report-img]][go-report]
 [![License: Apache-2.0][license-img]][license]
-[![GitHub All Releases][github-all-releases-img]][release]
+[![GitHub Downloads][github-downloads-img]][release]
 ![Docker Pulls][docker-pulls]
 
 [📖 Documentation][docs]
 </div>
 
-Trivy (`tri` pronounced like **tri**gger, `vy` pronounced like en**vy**) is a comprehensive security scanner. It is reliable, fast, extremely easy to use, and it works wherever you need it.
+Trivy is a comprehensive and versatile security scanner. Trivy has *scanners* that look for security issues, and *targets* where it can find those issues.
 
-Trivy has different *scanners* that look for different security issues, and different *targets* where it can find those issues.
+Targets (what Trivy can scan):
 
-Targets:
 - Container Image
 - Filesystem
 - Git repository (remote)
-- Kubernetes cluster or resource
+- Kubernetes
+- AWS
 
-Scanners:
+Scanners (what Trivy can find there):
+
 - OS packages and software dependencies in use (SBOM)
 - Known vulnerabilities (CVEs)
-- IaC misconfigurations
+- IaC issues and misconfigurations
 - Sensitive information and secrets
-
-Much more scanners and targets are coming up. Missing something? Let us know!
-
-Read more in the [Trivy Documentation][docs]
+- Software licenses
 
 ## Quick Start
 
 ### Get Trivy
 
-Get Trivy by your favorite installation method. See [installation] section in the documentation for details. For example:
+Trivy is available in most common distribution methods. The full list of installation options is available in the [Installation] page, here are a few popular options:
 
 - `apt-get install trivy`
 - `yum install trivy`
-- `pacman -S trivy`
 - `brew install aquasecurity/trivy/trivy`
-- `sudo port install trivy`
 - `docker run aquasec/trivy`
-- Download binary from https://github.com/aquasecurity/trivy/releases/latest/
+- Download binary from <https://github.com/aquasecurity/trivy/releases/latest/>
+
+Trivy is integrated with many popular platforms and applications. The full list of integrations is available in the [Ecosystem] page. Here are a few popular options:
+
+- [GitHub Actions](https://github.com/aquasecurity/trivy-action)
+- [CircleCI](https://circleci.com/developer/orbs/orb/fifteen5/trivy-orb)
+- [Kubernetes operator](https://github.com/aquasecurity/trivy-operator)
+- [VS Code plugin](https://github.com/aquasecurity/trivy-vscode-extension)
 
 ### General usage
 
 ```bash
-trivy <target> [--security-checks <scanner1,scanner2>] TARGET_NAME
+trivy <target> [--security-checks <scanner1,scanner2>] <subject>
 ```
 
 Examples:
 
 ```bash
-$ trivy image python:3.4-alpine
+trivy image python:3.4-alpine
 ```
 
 <details>
@@ -65,7 +68,7 @@ https://user-images.githubusercontent.com/1161307/171013513-95f18734-233d-45d3-a
 </details>
 
 ```bash
-$ trivy fs --security-checks vuln,secret,config myproject/
+trivy fs --security-checks vuln,secret,config myproject/
 ```
 
 <details>
@@ -76,7 +79,7 @@ https://user-images.githubusercontent.com/1161307/171013917-b1f37810-f434-465c-b
 </details>
 
 ```bash
-$ trivy k8s --report summary cluster
+trivy k8s --report summary cluster
 ```
 
 <details>
@@ -85,11 +88,6 @@ $ trivy k8s --report summary cluster
 ![k8s summary](docs/imgs/trivy-k8s.png)
 
 </details>
-
-Note that you can also receive a detailed scan, scan only a specific namespace, resource and more.
-
-Find out more in the [Trivy Documentation][docs] - [Getting Started][getting-started]
-
 
 ## Highlights
 
@@ -100,6 +98,9 @@ Find out more in the [Trivy Documentation][docs] - [Getting Started][getting-sta
 - Supply chain security (SBOM support)
   - Support CycloneDX
   - Support SPDX
+  - Generating and Scanning SBOM
+  - Leveraging in-toto attestations
+  - Integrated with [Sigstore]
 - Misconfiguration detection (IaC scanning) 
   - Wide variety of security checks are provided **out of the box**
   - Kubernetes, Docker, Terraform, and more
@@ -116,7 +117,7 @@ Find out more in the [Trivy Documentation][docs] - [Getting Started][getting-sta
   - **Great for CI** such as GitHub Actions, Jenkins, GitLab CI, etc.
   - Available as extension for IDEs such as vscode, jetbrains, vim
   - Available as extension for Docker Desktop, Rancher Desktop
-  - See [integrations] section in the documentation.
+  - See [Ecosystem] section in the documentation.
 
 ---
 
@@ -130,19 +131,19 @@ Contact us about any matter by opening a GitHub Discussion [here][discussions]
 [go-report-img]: https://goreportcard.com/badge/github.com/aquasecurity/trivy
 [release]: https://github.com/aquasecurity/trivy/releases
 [release-img]: https://img.shields.io/github/release/aquasecurity/trivy.svg?logo=github
-[github-all-releases-img]: https://img.shields.io/github/downloads/aquasecurity/trivy/total?logo=github
+[github-downloads-img]: https://img.shields.io/github/downloads/aquasecurity/trivy/total?logo=github
 [docker-pulls]: https://img.shields.io/docker/pulls/aquasec/trivy?logo=docker&label=docker%20pulls%20%2F%20trivy
 [license]: https://github.com/aquasecurity/trivy/blob/main/LICENSE
 [license-img]: https://img.shields.io/badge/License-Apache%202.0-blue.svg
-
-
-[getting-started]: https://aquasecurity.github.io/trivy/latest/getting-started/installation/
 [docs]: https://aquasecurity.github.io/trivy
-[integrations]:https://aquasecurity.github.io/trivy/latest/tutorials/integrations/
-[installation]:https://aquasecurity.github.io/trivy/latest/getting-started/installation/
-[releases]: https://github.com/aquasecurity/trivy/releases
+
+[Installation]:https://aquasecurity.github.io/trivy/latest/getting-started/installation/
+[Ecosystem]: https://aquasecurity.github.io/trivy/latestecosystem/tools
+
 [alpine]: https://ariadne.space/2021/06/08/the-vulnerability-remediation-lifecycle-of-alpine-containers/
 [rego]: https://www.openpolicyagent.org/docs/latest/#rego
+[sigstore]: https://www.sigstore.dev/
+
 [aquasec]: https://aquasec.com
 [oss]: https://www.aquasec.com/products/open-source-projects/
 [discussions]: https://github.com/aquasecurity/trivy/discussions
