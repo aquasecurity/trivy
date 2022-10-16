@@ -47,7 +47,7 @@ func TestVM(t *testing.T) {
 			golden: "testdata/amazonlinux2-gp2-x86-snapshot.json.golden",
 		},
 		{
-			name: "RedHat in Snapshot, filesystem EXT4",
+			name: "RedHat in Snapshot, filesystem XFS",
 			args: args{
 				input:        "testdata/fixtures/vm/redhat-gp2-x86.img.gz",
 				format:       "json",
@@ -56,7 +56,7 @@ func TestVM(t *testing.T) {
 			golden: "testdata/redhat-gp2-x86-snapshot.json.golden",
 		},
 		{
-			name: "RedHat in VMDK, filesystem EXT4",
+			name: "RedHat in VMDK, filesystem XFS",
 			args: args{
 				input:        "testdata/fixtures/vm/redhat-gp2-x86.vmdk.img.gz",
 				format:       "json",
@@ -65,7 +65,7 @@ func TestVM(t *testing.T) {
 			golden: "testdata/redhat-gp2-x86-vmdk.json.golden",
 		},
 		{
-			name: "SUSE in Snapshot, filesystem EXT4",
+			name: "SUSE in Snapshot, filesystem XFS",
 			args: args{
 				input:        "testdata/fixtures/vm/suse-gp2-x86.img.gz",
 				format:       "json",
@@ -74,7 +74,7 @@ func TestVM(t *testing.T) {
 			golden: "testdata/suse-gp2-x86-snapshot.json.golden",
 		},
 		{
-			name: "Ubuntu in Snapshot, filesystem XFS",
+			name: "Ubuntu in Snapshot, filesystem EXT4",
 			args: args{
 				input:        "testdata/fixtures/vm/ubuntu-gp2-x86.img.gz",
 				format:       "json",
@@ -83,7 +83,7 @@ func TestVM(t *testing.T) {
 			golden: "testdata/ubuntu-gp2-x86-snapshot.json.golden",
 		},
 		{
-			name: "Ubuntu in VMDK, filesystem XFS",
+			name: "Ubuntu in VMDK, filesystem EXT4",
 			args: args{
 				input:        "testdata/fixtures/vm/ubuntu-gp2-x86.vmdk.img.gz",
 				format:       "json",

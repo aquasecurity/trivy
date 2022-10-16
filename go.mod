@@ -52,7 +52,7 @@ require (
 	github.com/mailru/easyjson v0.7.7
 	github.com/masahiro331/go-disk v0.0.0-20220919035250-c8da316f91ac
 	github.com/masahiro331/go-ebs-file v0.0.0-20221010054355-b2538debfb29
-	github.com/masahiro331/go-ext4-filesystem v0.0.0-20221016144319-0716361fd697
+	github.com/masahiro331/go-ext4-filesystem v0.0.0-20221016160854-4b40d7ee6193
 	github.com/masahiro331/go-mvn-version v0.0.0-20210429150710-d3157d602a08
 	github.com/masahiro331/go-vmdk-parser v0.0.0-20220920085928-e985b7990634
 	github.com/masahiro331/go-xfs-filesystem v0.0.0-20221009071317-ad8f99f58d06
