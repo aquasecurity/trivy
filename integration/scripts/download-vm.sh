@@ -15,6 +15,7 @@ do
   dir=${CURRENT}/../testdata/fixtures/vm/
   if [ ! -e "${dir}/${tag}.img.gz" ]; then
     echo "Downloading $tag..."
+    echo "crane pull ${TEST_VM}:${tag} ${dir}/${tag}"
     crane pull "${TEST_VM}:${tag}" "${dir}/${tag}"
   fi
 done
