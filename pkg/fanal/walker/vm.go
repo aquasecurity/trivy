@@ -86,7 +86,7 @@ func walk(root string, r *io.SectionReader, dfn DiskWalker, fsfn FilesystemWalkD
 
 		err = dfn(root, partition, fsfn)
 		if err != nil {
-			return xerrors.Errorf("walk function error: %w", err)
+			log.Logger.Debugf("walk partition error: %s", err.Error())
 		}
 	}
 	return nil
