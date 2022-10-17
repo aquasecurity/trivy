@@ -51,5 +51,5 @@ func New(rs io.ReadSeeker, cache Cache) (*VM, error) {
 	if errs != nil {
 		return nil, xerrors.Errorf("try open virtual machine error: %w", errs)
 	}
-	return nil, xerrors.New("virtual machine can not detected")
+	return nil, xerrors.New("virtual machine can not be detected")
 }

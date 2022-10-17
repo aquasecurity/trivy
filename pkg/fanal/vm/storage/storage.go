@@ -2,6 +2,9 @@ package storage
 
 import (
 	"context"
+	"crypto/md5"
+	"encoding/hex"
+	"fmt"
 	"io"
 	"os"
 	"strings"
@@ -19,7 +22,7 @@ const (
 )
 
 type Storage interface {
-	Open(string) (*io.SectionReader, error)
+	Open(string) (sr *io.SectionReader, cacheKey string, err error)
 	Close() error
 }
 
@@ -28,11 +31,27 @@ type File struct {
 	cache ebsfile.Cache
 }
 
-func (f *File) Open(filePath string) (*io.SectionReader, error) {
+func calculateFileHash(f *os.File) (string, error) {
+	defer f.Seek(0, io.SeekStart)
+
+	f.Seek(0, io.SeekStart)
+	h := md5.New()
+	if _, err := io.Copy(h, f); err != nil {
+		return "", err
+	}
+
+	return fmt.Sprintf("file:%s", hex.EncodeToString(h.Sum(nil))), nil
+}
+
+func (f *File) Open(filePath string) (*io.SectionReader, string, error) {
 	t := strings.TrimPrefix(filePath, FilePrefix)
 	fp, err := os.Open(t)
 	if err != nil {
-		return nil, err
+		return nil, "", err
+	}
+	cacheKey, err := calculateFileHash(fp)
+	if err != nil {
+		return nil, "", xerrors.Errorf("calculate file hash error: %w", err)
 	}
 	f.File = fp
 
@@ -41,12 +60,12 @@ func (f *File) Open(filePath string) (*io.SectionReader, error) {
 		log.Logger.Debugf("new virtual machine scan error: %s, treat as raw image.", err.Error())
 		fi, err := f.Stat()
 		if err != nil {
-			return nil, err
+			return nil, "", err
 		}
-		return io.NewSectionReader(f, 0, fi.Size()), nil
+		return io.NewSectionReader(f, 0, fi.Size()), cacheKey, nil
 	}
 
-	return v.SectionReader, nil
+	return v.SectionReader, cacheKey, nil
 }
 
 func (f *File) Close() error {
@@ -73,13 +92,13 @@ type EBS struct {
 	cache  ebsfile.Cache
 }
 
-func (e *EBS) Open(snapshotID string) (*io.SectionReader, error) {
+func (e *EBS) Open(snapshotID string) (*io.SectionReader, string, error) {
 	t := strings.TrimPrefix(snapshotID, EBSPrefix)
 	sr, err := ebsfile.Open(t, e.ctx, e.cache, ebsfile.New(e.option))
 	if err != nil {
-		return nil, xerrors.Errorf("failed to open EBS file: %w", err)
+		return nil, "", xerrors.Errorf("failed to open EBS file: %w", err)
 	}
-	return sr, nil
+	return sr, snapshotID, nil
 }
 
 func (e *EBS) Close() error {

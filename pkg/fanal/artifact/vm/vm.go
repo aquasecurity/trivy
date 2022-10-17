@@ -2,8 +2,7 @@ package vm
 
 import (
 	"context"
-	"crypto/sha256"
-	"encoding/json"
+	"fmt"
 	"os"
 	"path/filepath"
 	"strings"
@@ -11,7 +10,6 @@ import (
 
 	lru "github.com/hashicorp/golang-lru"
 	ebsfile "github.com/masahiro331/go-ebs-file"
-	"github.com/opencontainers/go-digest"
 	"golang.org/x/sync/semaphore"
 	"golang.org/x/xerrors"
 
@@ -22,11 +20,13 @@ import (
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/fanal/vm/storage"
 	"github.com/aquasecurity/trivy/pkg/fanal/walker"
+	"github.com/aquasecurity/trivy/pkg/log"
 )
 
 const (
-	parallel  = 5
-	cacheSize = 40 << 20 // 40 MB
+	parallel       = 5
+	cacheSize      = 40 << 20 // 40 MB
+	cacheKeyPrefix = "vm"
 )
 
 type Artifact struct {
@@ -54,9 +54,25 @@ func (a Artifact) Inspect(ctx context.Context) (reference types.ArtifactReferenc
 	}
 	defer s.Close()
 
-	sr, err := s.Open(a.filePath)
+	sr, cacheKey, err := s.Open(a.filePath)
 	if err != nil {
 		return types.ArtifactReference{}, xerrors.Errorf("failed to open storage: %w", err)
+	}
+	cacheKey = vmCacheKey(cacheKey)
+
+	missingVMCache, _, err := a.cache.MissingBlobs(cacheKey, []string{cacheKey})
+	if err != nil {
+		return types.ArtifactReference{}, xerrors.Errorf("failed to missing blobs from cache: %w", err)
+	}
+	if missingVMCache {
+		log.Logger.Debugf("Missing virtual machine cache: %s", cacheKey)
+	} else {
+		return types.ArtifactReference{
+			Name:    a.filePath,
+			Type:    types.ArtifactVM,
+			ID:      cacheKey, // use a cache key as pseudo artifact ID
+			BlobIDs: []string{cacheKey},
+		}, nil
 	}
 
 	var wg sync.WaitGroup
@@ -104,14 +120,14 @@ func (a Artifact) Inspect(ctx context.Context) (reference types.ArtifactReferenc
 		return types.ArtifactReference{}, xerrors.Errorf("failed to call hooks: %w", err)
 	}
 
-	// TODO: use virtual machine image sha:256 key..?
-	cacheKey, err := a.calcCacheKey(blobInfo)
-	if err != nil {
-		return types.ArtifactReference{}, xerrors.Errorf("failed to calculate a cache key: %w", err)
-	}
-
 	if err = a.cache.PutBlob(cacheKey, blobInfo); err != nil {
 		return types.ArtifactReference{}, xerrors.Errorf("failed to store blob (%s) in cache: %w", cacheKey, err)
+	}
+	info := types.ArtifactInfo{
+		SchemaVersion: types.ArtifactJSONSchemaVersion,
+	}
+	if err = a.cache.PutArtifact(cacheKey, info); err != nil {
+		return types.ArtifactReference{}, xerrors.Errorf("failed to put image info into the cache: %w", err)
 	}
 
 	return types.ArtifactReference{
@@ -122,8 +138,8 @@ func (a Artifact) Inspect(ctx context.Context) (reference types.ArtifactReferenc
 	}, nil
 }
 
-func (a Artifact) Clean(reference types.ArtifactReference) error {
-	return a.cache.DeleteBlobs(reference.BlobIDs)
+func (a Artifact) Clean(_ types.ArtifactReference) error {
+	return nil
 }
 
 func NewArtifact(filePath string, c cache.ArtifactCache, opt artifact.Option) (artifact.Artifact, error) {
@@ -152,18 +168,6 @@ func NewArtifact(filePath string, c cache.ArtifactCache, opt artifact.Option) (a
 	}, nil
 }
 
-func (a Artifact) calcCacheKey(blobInfo types.BlobInfo) (string, error) {
-	// calculate hash of JSON and use it as pseudo artifactID and blobID
-	h := sha256.New()
-	if err := json.NewEncoder(h).Encode(blobInfo); err != nil {
-		return "", xerrors.Errorf("json error: %w", err)
-	}
-
-	d := digest.NewDigest(digest.SHA256, h)
-	cacheKey, err := cache.CalcKey(d.String(), a.analyzer.AnalyzerVersions(), a.handlerManager.Versions(), a.artifactOption)
-	if err != nil {
-		return "", xerrors.Errorf("cache key: %w", err)
-	}
-
-	return cacheKey, nil
+func vmCacheKey(key string) string {
+	return fmt.Sprintf("%s:%s", cacheKeyPrefix, key)
 }
