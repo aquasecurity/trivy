@@ -8,6 +8,7 @@ import (
 
 var (
 	CategoryAWS                  = types.SecretRuleCategory("AWS")
+	CategoryAzure                = types.SecretRuleCategory("Azure")
 	CategoryGitHub               = types.SecretRuleCategory("GitHub")
 	CategoryGitLab               = types.SecretRuleCategory("GitLab")
 	CategoryAsymmetricPrivateKey = types.SecretRuleCategory("AsymmetricPrivateKey")
@@ -103,6 +104,15 @@ var builtinRules = []Rule{
 		Regex:           MustCompile(fmt.Sprintf(`(?i)%s%s%saccount_?(id)?%s%s%s(?P<secret>[0-9]{4}\-?[0-9]{4}\-?[0-9]{4})%s%s`, startSecret, quote, aws, quote, connect, quote, quote, endSecret)),
 		SecretGroupName: "secret",
 		Keywords:        []string{"account"},
+	},
+	{
+		ID:              "azure-client-secret",
+		Category:        CategoryAzure,
+		Severity:        "CRITICAL",
+		Title:           "Azure Client Secret",
+		Regex:           MustCompile(`(?P<secret>[a-zA-Z0-9-_.~]{5}~[a-zA-Z0-9-_.~]{34})`),
+		SecretGroupName: "secret",
+		Keywords:        []string{"client_secret", "ARM_CLIENT_SECRET"},
 	},
 	{
 		ID:       "github-pat",
