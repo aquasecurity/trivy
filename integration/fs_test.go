@@ -112,6 +112,15 @@ func TestFilesystem(t *testing.T) {
 			golden: "testdata/conan.json.golden",
 		},
 		{
+			name: "nuget",
+			args: args{
+				securityChecks: "vuln",
+				listAllPkgs:    true,
+				input:          "testdata/fixtures/fs/nuget",
+			},
+			golden: "testdata/nuget.json.golden",
+		},
+		{
 			name: "dockerfile",
 			args: args{
 				securityChecks: "config",
