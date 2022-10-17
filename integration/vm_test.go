@@ -35,7 +35,7 @@ func TestVM(t *testing.T) {
 				format:       "json",
 				artifactType: "vm",
 			},
-			golden: "testdata/amazonlinux2-gp2-x86-vmdk.json.golden",
+			golden: "testdata/amazonlinux2-gp2-x86-vm.json.golden",
 		},
 		{
 			name: "amazon linux 2 in Snapshot, filesystem XFS",
@@ -44,7 +44,7 @@ func TestVM(t *testing.T) {
 				format:       "json",
 				artifactType: "vm",
 			},
-			golden: "testdata/amazonlinux2-gp2-x86-snapshot.json.golden",
+			golden: "testdata/amazonlinux2-gp2-x86-vm.json.golden",
 		},
 		{
 			name: "RedHat in Snapshot, filesystem XFS",
@@ -53,7 +53,7 @@ func TestVM(t *testing.T) {
 				format:       "json",
 				artifactType: "vm",
 			},
-			golden: "testdata/redhat-gp2-x86-snapshot.json.golden",
+			golden: "testdata/redhat-gp2-x86-vm.json.golden",
 		},
 		{
 			name: "RedHat in VMDK, filesystem XFS",
@@ -62,7 +62,7 @@ func TestVM(t *testing.T) {
 				format:       "json",
 				artifactType: "vm",
 			},
-			golden: "testdata/redhat-gp2-x86-vmdk.json.golden",
+			golden: "testdata/redhat-gp2-x86-vm.json.golden",
 		},
 		{
 			name: "SUSE in Snapshot, filesystem XFS",
@@ -71,7 +71,7 @@ func TestVM(t *testing.T) {
 				format:       "json",
 				artifactType: "vm",
 			},
-			golden: "testdata/suse-gp2-x86-snapshot.json.golden",
+			golden: "testdata/suse-gp2-x86-vm.json.golden",
 		},
 		{
 			name: "Ubuntu in Snapshot, filesystem EXT4",
@@ -80,7 +80,7 @@ func TestVM(t *testing.T) {
 				format:       "json",
 				artifactType: "vm",
 			},
-			golden: "testdata/ubuntu-gp2-x86-snapshot.json.golden",
+			golden: "testdata/ubuntu-gp2-x86-vm.json.golden",
 		},
 		{
 			name: "Ubuntu in VMDK, filesystem EXT4",
@@ -89,7 +89,7 @@ func TestVM(t *testing.T) {
 				format:       "json",
 				artifactType: "vm",
 			},
-			golden: "testdata/ubuntu-gp2-x86-vmdk.json.golden",
+			golden: "testdata/ubuntu-gp2-x86-vm.json.golden",
 		},
 	}
 
