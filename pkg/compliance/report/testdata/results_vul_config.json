@@ -1,1600 +1,3077 @@
 [
-    {
-      "Target": "Deployment/metrics-server",
-      "Class": "config",
-      "Type": "kubernetes",
-      "MisconfSummary": {
-        "Successes": 66,
-        "Failures": 13,
-        "Exceptions": 0
-      },
-      "Misconfigurations": [
-        {
-          "Type": "Kubernetes Security Check",
-          "ID": "KSV001",
-          "AVDID": "AVD-KSV-0001",
-          "Title": "Process can elevate its own privileges",
-          "Description": "A program inside the container can elevate its own privileges and run as root, which might give the program control over the container and node.",
-          "Message": "Container 'metrics-server' of Deployment 'metrics-server' should set 'securityContext.allowPrivilegeEscalation' to false",
-          "Namespace": "builtin.kubernetes.KSV001",
-          "Query": "data.builtin.kubernetes.KSV001.deny",
-          "Resolution": "Set 'set containers[].securityContext.allowPrivilegeEscalation' to 'false'.",
-          "Severity": "MEDIUM",
-          "PrimaryURL": "https://avd.aquasec.com/misconfig/ksv001",
-          "References": [
-            "https://kubernetes.io/docs/concepts/security/pod-security-standards/#restricted",
-            "https://avd.aquasec.com/misconfig/ksv001"
-          ],
-          "Status": "FAIL",
-          "Layer": {
-  
-          },
-          "CauseMetadata": {
-            "Provider": "Kubernetes",
-            "Service": "general",
-            "StartLine": 132,
-            "EndLine": 140,
-            "Code": {
-              "Lines": [
-                {
-                  "Number": 132,
-                  "Content": "                - image: rancher/metrics-server:v0.3.6",
-                  "IsCause": true,
-                  "Annotation": "",
-                  "Truncated": false,
-                  "FirstCause": true,
-                  "LastCause": false
-                },
-                {
-                  "Number": 133,
-                  "Content": "                  imagePullPolicy: IfNotPresent",
-                  "IsCause": true,
-                  "Annotation": "",
-                  "Truncated": false,
-                  "FirstCause": false,
-                  "LastCause": false
-                },
-                {
-                  "Number": 134,
-                  "Content": "                  name: metrics-server",
-                  "IsCause": true,
-                  "Annotation": "",
-                  "Truncated": false,
-                  "FirstCause": false,
-                  "LastCause": false
-                },
-                {
-                  "Number": 135,
-                  "Content": "                  resources: {}",
-                  "IsCause": true,
-                  "Annotation": "",
-                  "Truncated": false,
-                  "FirstCause": false,
-                  "LastCause": false
-                },
-                {
-                  "Number": 136,
-                  "Content": "                  terminationMessagePath: /dev/termination-log",
-                  "IsCause": true,
-                  "Annotation": "",
-                  "Truncated": false,
-                  "FirstCause": false,
-                  "LastCause": false
-                },
-                {
-                  "Number": 137,
-                  "Content": "                  terminationMessagePolicy: File",
-                  "IsCause": true,
-                  "Annotation": "",
-                  "Truncated": false,
-                  "FirstCause": false,
-                  "LastCause": false
-                },
-                {
-                  "Number": 138,
-                  "Content": "                  volumeMounts:",
-                  "IsCause": true,
-                  "Annotation": "",
-                  "Truncated": false,
-                  "FirstCause": false,
-                  "LastCause": false
-                },
-                {
-                  "Number": 139,
-                  "Content": "                    - mountPath: /tmp",
-                  "IsCause": true,
-                  "Annotation": "",
-                  "Truncated": false,
-                  "FirstCause": false,
-                  "LastCause": false
-                },
-                {
-                  "Number": 140,
-                  "Content": "                      name: tmp-dir",
-                  "IsCause": true,
-                  "Annotation": "",
-                  "Truncated": false,
-                  "FirstCause": false,
-                  "LastCause": true
-                }
-              ]
-            }
-          }
-        },
-        {
-          "Type": "Kubernetes Security Check",
-          "ID": "KSV003",
-          "AVDID": "AVD-KSV-0003",
-          "Title": "Default capabilities not dropped",
-          "Description": "The container should drop all default capabilities and add only those that are needed for its execution.",
-          "Message": "Container 'metrics-server' of Deployment 'metrics-server' should add 'ALL' to 'securityContext.capabilities.drop'",
-          "Namespace": "builtin.kubernetes.KSV003",
-          "Query": "data.builtin.kubernetes.KSV003.deny",
-          "Resolution": "Add 'ALL' to containers[].securityContext.capabilities.drop.",
-          "Severity": "LOW",
-          "PrimaryURL": "https://avd.aquasec.com/misconfig/ksv003",
-          "References": [
-            "https://kubesec.io/basics/containers-securitycontext-capabilities-drop-index-all/",
-            "https://avd.aquasec.com/misconfig/ksv003"
-          ],
-          "Status": "FAIL",
-          "Layer": {
-  
-          },
-          "CauseMetadata": {
-            "Provider": "Kubernetes",
-            "Service": "general",
-            "StartLine": 132,
-            "EndLine": 140,
-            "Code": {
-              "Lines": [
-                {
-                  "Number": 132,
-                  "Content": "                - image: rancher/metrics-server:v0.3.6",
-                  "IsCause": true,
-                  "Annotation": "",
-                  "Truncated": false,
-                  "FirstCause": true,
-                  "LastCause": false
-                },
-                {
-                  "Number": 133,
-                  "Content": "                  imagePullPolicy: IfNotPresent",
-                  "IsCause": true,
-                  "Annotation": "",
-                  "Truncated": false,
-                  "FirstCause": false,
-                  "LastCause": false
-                },
-                {
-                  "Number": 134,
-                  "Content": "                  name: metrics-server",
-                  "IsCause": true,
-                  "Annotation": "",
-                  "Truncated": false,
-                  "FirstCause": false,
-                  "LastCause": false
-                },
-                {
-                  "Number": 135,
-                  "Content": "                  resources: {}",
-                  "IsCause": true,
-                  "Annotation": "",
-                  "Truncated": false,
-                  "FirstCause": false,
-                  "LastCause": false
-                },
-                {
-                  "Number": 136,
-                  "Content": "                  terminationMessagePath: /dev/termination-log",
-                  "IsCause": true,
-                  "Annotation": "",
-                  "Truncated": false,
-                  "FirstCause": false,
-                  "LastCause": false
-                },
-                {
-                  "Number": 137,
-                  "Content": "                  terminationMessagePolicy: File",
-                  "IsCause": true,
-                  "Annotation": "",
-                  "Truncated": false,
-                  "FirstCause": false,
-                  "LastCause": false
-                },
-                {
-                  "Number": 138,
-                  "Content": "                  volumeMounts:",
-                  "IsCause": true,
-                  "Annotation": "",
-                  "Truncated": false,
-                  "FirstCause": false,
-                  "LastCause": false
-                },
-                {
-                  "Number": 139,
-                  "Content": "                    - mountPath: /tmp",
-                  "IsCause": true,
-                  "Annotation": "",
-                  "Truncated": false,
-                  "FirstCause": false,
-                  "LastCause": false
-                },
-                {
-                  "Number": 140,
-                  "Content": "                      name: tmp-dir",
-                  "IsCause": true,
-                  "Annotation": "",
-                  "Truncated": false,
-                  "FirstCause": false,
-                  "LastCause": true
-                }
-              ]
-            }
-          }
-        },
-        {
-          "Type": "Kubernetes Security Check",
-          "ID": "KSV011",
-          "AVDID": "AVD-KSV-0011",
-          "Title": "CPU not limited",
-          "Description": "Enforcing CPU limits prevents DoS via resource exhaustion.",
-          "Message": "Container 'metrics-server' of Deployment 'metrics-server' should set 'resources.limits.cpu'",
-          "Namespace": "builtin.kubernetes.KSV011",
-          "Query": "data.builtin.kubernetes.KSV011.deny",
-          "Resolution": "Set a limit value under 'containers[].resources.limits.cpu'.",
-          "Severity": "LOW",
-          "PrimaryURL": "https://avd.aquasec.com/misconfig/ksv011",
-          "References": [
-            "https://cloud.google.com/blog/products/containers-kubernetes/kubernetes-best-practices-resource-requests-and-limits",
-            "https://avd.aquasec.com/misconfig/ksv011"
-          ],
-          "Status": "FAIL",
-          "Layer": {
-  
-          },
-          "CauseMetadata": {
-            "Provider": "Kubernetes",
-            "Service": "general",
-            "StartLine": 132,
-            "EndLine": 140,
-            "Code": {
-              "Lines": [
-                {
-                  "Number": 132,
-                  "Content": "                - image: rancher/metrics-server:v0.3.6",
-                  "IsCause": true,
-                  "Annotation": "",
-                  "Truncated": false,
-                  "FirstCause": true,
-                  "LastCause": false
-                },
-                {
-                  "Number": 133,
-                  "Content": "                  imagePullPolicy: IfNotPresent",
-                  "IsCause": true,
-                  "Annotation": "",
-                  "Truncated": false,
-                  "FirstCause": false,
-                  "LastCause": false
-                },
-                {
-                  "Number": 134,
-                  "Content": "                  name: metrics-server",
-                  "IsCause": true,
-                  "Annotation": "",
-                  "Truncated": false,
-                  "FirstCause": false,
-                  "LastCause": false
-                },
-                {
-                  "Number": 135,
-                  "Content": "                  resources: {}",
-                  "IsCause": true,
-                  "Annotation": "",
-                  "Truncated": false,
-                  "FirstCause": false,
-                  "LastCause": false
-                },
-                {
-                  "Number": 136,
-                  "Content": "                  terminationMessagePath: /dev/termination-log",
-                  "IsCause": true,
-                  "Annotation": "",
-                  "Truncated": false,
-                  "FirstCause": false,
-                  "LastCause": false
-                },
-                {
-                  "Number": 137,
-                  "Content": "                  terminationMessagePolicy: File",
-                  "IsCause": true,
-                  "Annotation": "",
-                  "Truncated": false,
-                  "FirstCause": false,
-                  "LastCause": false
-                },
-                {
-                  "Number": 138,
-                  "Content": "                  volumeMounts:",
-                  "IsCause": true,
-                  "Annotation": "",
-                  "Truncated": false,
-                  "FirstCause": false,
-                  "LastCause": false
-                },
-                {
-                  "Number": 139,
-                  "Content": "                    - mountPath: /tmp",
-                  "IsCause": true,
-                  "Annotation": "",
-                  "Truncated": false,
-                  "FirstCause": false,
-                  "LastCause": false
-                },
-                {
-                  "Number": 140,
-                  "Content": "                      name: tmp-dir",
-                  "IsCause": true,
-                  "Annotation": "",
-                  "Truncated": false,
-                  "FirstCause": false,
-                  "LastCause": true
-                }
-              ]
-            }
-          }
-        },
-        {
-          "Type": "Kubernetes Security Check",
-          "ID": "KSV012",
-          "AVDID": "AVD-KSV-0012",
-          "Title": "Runs as root user",
-          "Description": "'runAsNonRoot' forces the running image to run as a non-root user to ensure least privileges.",
-          "Message": "Container 'metrics-server' of Deployment 'metrics-server' should set 'securityContext.runAsNonRoot' to true",
-          "Namespace": "builtin.kubernetes.KSV012",
-          "Query": "data.builtin.kubernetes.KSV012.deny",
-          "Resolution": "Set 'containers[].securityContext.runAsNonRoot' to true.",
-          "Severity": "MEDIUM",
-          "PrimaryURL": "https://avd.aquasec.com/misconfig/ksv012",
-          "References": [
-            "https://kubernetes.io/docs/concepts/security/pod-security-standards/#restricted",
-            "https://avd.aquasec.com/misconfig/ksv012"
-          ],
-          "Status": "FAIL",
-          "Layer": {
-  
-          },
-          "CauseMetadata": {
-            "Provider": "Kubernetes",
-            "Service": "general",
-            "StartLine": 132,
-            "EndLine": 140,
-            "Code": {
-              "Lines": [
-                {
-                  "Number": 132,
-                  "Content": "                - image: rancher/metrics-server:v0.3.6",
-                  "IsCause": true,
-                  "Annotation": "",
-                  "Truncated": false,
-                  "FirstCause": true,
-                  "LastCause": false
-                },
-                {
-                  "Number": 133,
-                  "Content": "                  imagePullPolicy: IfNotPresent",
-                  "IsCause": true,
-                  "Annotation": "",
-                  "Truncated": false,
-                  "FirstCause": false,
-                  "LastCause": false
-                },
-                {
-                  "Number": 134,
-                  "Content": "                  name: metrics-server",
-                  "IsCause": true,
-                  "Annotation": "",
-                  "Truncated": false,
-                  "FirstCause": false,
-                  "LastCause": false
-                },
-                {
-                  "Number": 135,
-                  "Content": "                  resources: {}",
-                  "IsCause": true,
-                  "Annotation": "",
-                  "Truncated": false,
-                  "FirstCause": false,
-                  "LastCause": false
-                },
-                {
-                  "Number": 136,
-                  "Content": "                  terminationMessagePath: /dev/termination-log",
-                  "IsCause": true,
-                  "Annotation": "",
-                  "Truncated": false,
-                  "FirstCause": false,
-                  "LastCause": false
-                },
-                {
-                  "Number": 137,
-                  "Content": "                  terminationMessagePolicy: File",
-                  "IsCause": true,
-                  "Annotation": "",
-                  "Truncated": false,
-                  "FirstCause": false,
-                  "LastCause": false
-                },
-                {
-                  "Number": 138,
-                  "Content": "                  volumeMounts:",
-                  "IsCause": true,
-                  "Annotation": "",
-                  "Truncated": false,
-                  "FirstCause": false,
-                  "LastCause": false
-                },
-                {
-                  "Number": 139,
-                  "Content": "                    - mountPath: /tmp",
-                  "IsCause": true,
-                  "Annotation": "",
-                  "Truncated": false,
-                  "FirstCause": false,
-                  "LastCause": false
-                },
-                {
-                  "Number": 140,
-                  "Content": "                      name: tmp-dir",
-                  "IsCause": true,
-                  "Annotation": "",
-                  "Truncated": false,
-                  "FirstCause": false,
-                  "LastCause": true
-                }
-              ]
-            }
-          }
-        },
-        {
-          "Type": "Kubernetes Security Check",
-          "ID": "KSV014",
-          "AVDID": "AVD-KSV-0014",
-          "Title": "Root file system is not read-only",
-          "Description": "An immutable root file system prevents applications from writing to their local disk. This can limit intrusions, as attackers will not be able to tamper with the file system or write foreign executables to disk.",
-          "Message": "Container 'metrics-server' of Deployment 'metrics-server' should set 'securityContext.readOnlyRootFilesystem' to true",
-          "Namespace": "builtin.kubernetes.KSV014",
-          "Query": "data.builtin.kubernetes.KSV014.deny",
-          "Resolution": "Change 'containers[].securityContext.readOnlyRootFilesystem' to 'true'.",
-          "Severity": "LOW",
-          "PrimaryURL": "https://avd.aquasec.com/misconfig/ksv014",
-          "References": [
-            "https://kubesec.io/basics/containers-securitycontext-readonlyrootfilesystem-true/",
-            "https://avd.aquasec.com/misconfig/ksv014"
-          ],
-          "Status": "FAIL",
-          "Layer": {
-  
-          },
-          "CauseMetadata": {
-            "Provider": "Kubernetes",
-            "Service": "general",
-            "StartLine": 132,
-            "EndLine": 140,
-            "Code": {
-              "Lines": [
-                {
-                  "Number": 132,
-                  "Content": "                - image: rancher/metrics-server:v0.3.6",
-                  "IsCause": true,
-                  "Annotation": "",
-                  "Truncated": false,
-                  "FirstCause": true,
-                  "LastCause": false
-                },
-                {
-                  "Number": 133,
-                  "Content": "                  imagePullPolicy: IfNotPresent",
-                  "IsCause": true,
-                  "Annotation": "",
-                  "Truncated": false,
-                  "FirstCause": false,
-                  "LastCause": false
-                },
-                {
-                  "Number": 134,
-                  "Content": "                  name: metrics-server",
-                  "IsCause": true,
-                  "Annotation": "",
-                  "Truncated": false,
-                  "FirstCause": false,
-                  "LastCause": false
-                },
-                {
-                  "Number": 135,
-                  "Content": "                  resources: {}",
-                  "IsCause": true,
-                  "Annotation": "",
-                  "Truncated": false,
-                  "FirstCause": false,
-                  "LastCause": false
-                },
-                {
-                  "Number": 136,
-                  "Content": "                  terminationMessagePath: /dev/termination-log",
-                  "IsCause": true,
-                  "Annotation": "",
-                  "Truncated": false,
-                  "FirstCause": false,
-                  "LastCause": false
-                },
-                {
-                  "Number": 137,
-                  "Content": "                  terminationMessagePolicy: File",
-                  "IsCause": true,
-                  "Annotation": "",
-                  "Truncated": false,
-                  "FirstCause": false,
-                  "LastCause": false
-                },
-                {
-                  "Number": 138,
-                  "Content": "                  volumeMounts:",
-                  "IsCause": true,
-                  "Annotation": "",
-                  "Truncated": false,
-                  "FirstCause": false,
-                  "LastCause": false
-                },
-                {
-                  "Number": 139,
-                  "Content": "                    - mountPath: /tmp",
-                  "IsCause": true,
-                  "Annotation": "",
-                  "Truncated": false,
-                  "FirstCause": false,
-                  "LastCause": false
-                },
-                {
-                  "Number": 140,
-                  "Content": "                      name: tmp-dir",
-                  "IsCause": true,
-                  "Annotation": "",
-                  "Truncated": false,
-                  "FirstCause": false,
-                  "LastCause": true
-                }
-              ]
-            }
-          }
-        },
-        {
-          "Type": "Kubernetes Security Check",
-          "ID": "KSV015",
-          "AVDID": "AVD-KSV-0015",
-          "Title": "CPU requests not specified",
-          "Description": "When containers have resource requests specified, the scheduler can make better decisions about which nodes to place pods on, and how to deal with resource contention.",
-          "Message": "Container 'metrics-server' of Deployment 'metrics-server' should set 'resources.requests.cpu'",
-          "Namespace": "builtin.kubernetes.KSV015",
-          "Query": "data.builtin.kubernetes.KSV015.deny",
-          "Resolution": "Set 'containers[].resources.requests.cpu'.",
-          "Severity": "LOW",
-          "PrimaryURL": "https://avd.aquasec.com/misconfig/ksv015",
-          "References": [
-            "https://cloud.google.com/blog/products/containers-kubernetes/kubernetes-best-practices-resource-requests-and-limits",
-            "https://avd.aquasec.com/misconfig/ksv015"
-          ],
-          "Status": "FAIL",
-          "Layer": {
-  
-          },
-          "CauseMetadata": {
-            "Provider": "Kubernetes",
-            "Service": "general",
-            "StartLine": 132,
-            "EndLine": 140,
-            "Code": {
-              "Lines": [
-                {
-                  "Number": 132,
-                  "Content": "                - image: rancher/metrics-server:v0.3.6",
-                  "IsCause": true,
-                  "Annotation": "",
-                  "Truncated": false,
-                  "FirstCause": true,
-                  "LastCause": false
-                },
-                {
-                  "Number": 133,
-                  "Content": "                  imagePullPolicy: IfNotPresent",
-                  "IsCause": true,
-                  "Annotation": "",
-                  "Truncated": false,
-                  "FirstCause": false,
-                  "LastCause": false
-                },
-                {
-                  "Number": 134,
-                  "Content": "                  name: metrics-server",
-                  "IsCause": true,
-                  "Annotation": "",
-                  "Truncated": false,
-                  "FirstCause": false,
-                  "LastCause": false
-                },
-                {
-                  "Number": 135,
-                  "Content": "                  resources: {}",
-                  "IsCause": true,
-                  "Annotation": "",
-                  "Truncated": false,
-                  "FirstCause": false,
-                  "LastCause": false
-                },
-                {
-                  "Number": 136,
-                  "Content": "                  terminationMessagePath: /dev/termination-log",
-                  "IsCause": true,
-                  "Annotation": "",
-                  "Truncated": false,
-                  "FirstCause": false,
-                  "LastCause": false
-                },
-                {
-                  "Number": 137,
-                  "Content": "                  terminationMessagePolicy: File",
-                  "IsCause": true,
-                  "Annotation": "",
-                  "Truncated": false,
-                  "FirstCause": false,
-                  "LastCause": false
-                },
-                {
-                  "Number": 138,
-                  "Content": "                  volumeMounts:",
-                  "IsCause": true,
-                  "Annotation": "",
-                  "Truncated": false,
-                  "FirstCause": false,
-                  "LastCause": false
-                },
-                {
-                  "Number": 139,
-                  "Content": "                    - mountPath: /tmp",
-                  "IsCause": true,
-                  "Annotation": "",
-                  "Truncated": false,
-                  "FirstCause": false,
-                  "LastCause": false
-                },
-                {
-                  "Number": 140,
-                  "Content": "                      name: tmp-dir",
-                  "IsCause": true,
-                  "Annotation": "",
-                  "Truncated": false,
-                  "FirstCause": false,
-                  "LastCause": true
-                }
-              ]
-            }
-          }
-        },
-        {
-          "Type": "Kubernetes Security Check",
-          "ID": "KSV016",
-          "AVDID": "AVD-KSV-0016",
-          "Title": "Memory requests not specified",
-          "Description": "When containers have memory requests specified, the scheduler can make better decisions about which nodes to place pods on, and how to deal with resource contention.",
-          "Message": "Container 'metrics-server' of Deployment 'metrics-server' should set 'resources.requests.memory'",
-          "Namespace": "builtin.kubernetes.KSV016",
-          "Query": "data.builtin.kubernetes.KSV016.deny",
-          "Resolution": "Set 'containers[].resources.requests.memory'.",
-          "Severity": "LOW",
-          "PrimaryURL": "https://avd.aquasec.com/misconfig/ksv016",
-          "References": [
-            "https://kubesec.io/basics/containers-resources-limits-memory/",
-            "https://avd.aquasec.com/misconfig/ksv016"
-          ],
-          "Status": "FAIL",
-          "Layer": {
-  
-          },
-          "CauseMetadata": {
-            "Provider": "Kubernetes",
-            "Service": "general",
-            "StartLine": 132,
-            "EndLine": 140,
-            "Code": {
-              "Lines": [
-                {
-                  "Number": 132,
-                  "Content": "                - image: rancher/metrics-server:v0.3.6",
-                  "IsCause": true,
-                  "Annotation": "",
-                  "Truncated": false,
-                  "FirstCause": true,
-                  "LastCause": false
-                },
-                {
-                  "Number": 133,
-                  "Content": "                  imagePullPolicy: IfNotPresent",
-                  "IsCause": true,
-                  "Annotation": "",
-                  "Truncated": false,
-                  "FirstCause": false,
-                  "LastCause": false
-                },
-                {
-                  "Number": 134,
-                  "Content": "                  name: metrics-server",
-                  "IsCause": true,
-                  "Annotation": "",
-                  "Truncated": false,
-                  "FirstCause": false,
-                  "LastCause": false
-                },
-                {
-                  "Number": 135,
-                  "Content": "                  resources: {}",
-                  "IsCause": true,
-                  "Annotation": "",
-                  "Truncated": false,
-                  "FirstCause": false,
-                  "LastCause": false
-                },
-                {
-                  "Number": 136,
-                  "Content": "                  terminationMessagePath: /dev/termination-log",
-                  "IsCause": true,
-                  "Annotation": "",
-                  "Truncated": false,
-                  "FirstCause": false,
-                  "LastCause": false
-                },
-                {
-                  "Number": 137,
-                  "Content": "                  terminationMessagePolicy: File",
-                  "IsCause": true,
-                  "Annotation": "",
-                  "Truncated": false,
-                  "FirstCause": false,
-                  "LastCause": false
-                },
-                {
-                  "Number": 138,
-                  "Content": "                  volumeMounts:",
-                  "IsCause": true,
-                  "Annotation": "",
-                  "Truncated": false,
-                  "FirstCause": false,
-                  "LastCause": false
-                },
-                {
-                  "Number": 139,
-                  "Content": "                    - mountPath: /tmp",
-                  "IsCause": true,
-                  "Annotation": "",
-                  "Truncated": false,
-                  "FirstCause": false,
-                  "LastCause": false
-                },
-                {
-                  "Number": 140,
-                  "Content": "                      name: tmp-dir",
-                  "IsCause": true,
-                  "Annotation": "",
-                  "Truncated": false,
-                  "FirstCause": false,
-                  "LastCause": true
-                }
-              ]
-            }
-          }
-        },
-        {
-          "Type": "Kubernetes Security Check",
-          "ID": "KSV018",
-          "AVDID": "AVD-KSV-0018",
-          "Title": "Memory not limited",
-          "Description": "Enforcing memory limits prevents DoS via resource exhaustion.",
-          "Message": "Container 'metrics-server' of Deployment 'metrics-server' should set 'resources.limits.memory'",
-          "Namespace": "builtin.kubernetes.KSV018",
-          "Query": "data.builtin.kubernetes.KSV018.deny",
-          "Resolution": "Set a limit value under 'containers[].resources.limits.memory'.",
-          "Severity": "LOW",
-          "PrimaryURL": "https://avd.aquasec.com/misconfig/ksv018",
-          "References": [
-            "https://kubesec.io/basics/containers-resources-limits-memory/",
-            "https://avd.aquasec.com/misconfig/ksv018"
-          ],
-          "Status": "FAIL",
-          "Layer": {
-  
-          },
-          "CauseMetadata": {
-            "Provider": "Kubernetes",
-            "Service": "general",
-            "StartLine": 132,
-            "EndLine": 140,
-            "Code": {
-              "Lines": [
-                {
-                  "Number": 132,
-                  "Content": "                - image: rancher/metrics-server:v0.3.6",
-                  "IsCause": true,
-                  "Annotation": "",
-                  "Truncated": false,
-                  "FirstCause": true,
-                  "LastCause": false
-                },
-                {
-                  "Number": 133,
-                  "Content": "                  imagePullPolicy: IfNotPresent",
-                  "IsCause": true,
-                  "Annotation": "",
-                  "Truncated": false,
-                  "FirstCause": false,
-                  "LastCause": false
-                },
-                {
-                  "Number": 134,
-                  "Content": "                  name: metrics-server",
-                  "IsCause": true,
-                  "Annotation": "",
-                  "Truncated": false,
-                  "FirstCause": false,
-                  "LastCause": false
-                },
-                {
-                  "Number": 135,
-                  "Content": "                  resources: {}",
-                  "IsCause": true,
-                  "Annotation": "",
-                  "Truncated": false,
-                  "FirstCause": false,
-                  "LastCause": false
-                },
-                {
-                  "Number": 136,
-                  "Content": "                  terminationMessagePath: /dev/termination-log",
-                  "IsCause": true,
-                  "Annotation": "",
-                  "Truncated": false,
-                  "FirstCause": false,
-                  "LastCause": false
-                },
-                {
-                  "Number": 137,
-                  "Content": "                  terminationMessagePolicy: File",
-                  "IsCause": true,
-                  "Annotation": "",
-                  "Truncated": false,
-                  "FirstCause": false,
-                  "LastCause": false
-                },
-                {
-                  "Number": 138,
-                  "Content": "                  volumeMounts:",
-                  "IsCause": true,
-                  "Annotation": "",
-                  "Truncated": false,
-                  "FirstCause": false,
-                  "LastCause": false
-                },
-                {
-                  "Number": 139,
-                  "Content": "                    - mountPath: /tmp",
-                  "IsCause": true,
-                  "Annotation": "",
-                  "Truncated": false,
-                  "FirstCause": false,
-                  "LastCause": false
-                },
-                {
-                  "Number": 140,
-                  "Content": "                      name: tmp-dir",
-                  "IsCause": true,
-                  "Annotation": "",
-                  "Truncated": false,
-                  "FirstCause": false,
-                  "LastCause": true
-                }
-              ]
-            }
-          }
-        },
-        {
-          "Type": "Kubernetes Security Check",
-          "ID": "KSV020",
-          "AVDID": "AVD-KSV-0020",
-          "Title": "Runs with low user ID",
-          "Description": "Force the container to run with user ID > 10000 to avoid conflicts with the host’s user table.",
-          "Message": "Container 'metrics-server' of Deployment 'metrics-server' should set 'securityContext.runAsUser' > 10000",
-          "Namespace": "builtin.kubernetes.KSV020",
-          "Query": "data.builtin.kubernetes.KSV020.deny",
-          "Resolution": "Set 'containers[].securityContext.runAsUser' to an integer > 10000.",
-          "Severity": "LOW",
-          "PrimaryURL": "https://avd.aquasec.com/misconfig/ksv020",
-          "References": [
-            "https://kubesec.io/basics/containers-securitycontext-runasuser/",
-            "https://avd.aquasec.com/misconfig/ksv020"
-          ],
-          "Status": "FAIL",
-          "Layer": {
-  
-          },
-          "CauseMetadata": {
-            "Provider": "Kubernetes",
-            "Service": "general",
-            "StartLine": 132,
-            "EndLine": 140,
-            "Code": {
-              "Lines": [
-                {
-                  "Number": 132,
-                  "Content": "                - image: rancher/metrics-server:v0.3.6",
-                  "IsCause": true,
-                  "Annotation": "",
-                  "Truncated": false,
-                  "FirstCause": true,
-                  "LastCause": false
-                },
-                {
-                  "Number": 133,
-                  "Content": "                  imagePullPolicy: IfNotPresent",
-                  "IsCause": true,
-                  "Annotation": "",
-                  "Truncated": false,
-                  "FirstCause": false,
-                  "LastCause": false
-                },
-                {
-                  "Number": 134,
-                  "Content": "                  name: metrics-server",
-                  "IsCause": true,
-                  "Annotation": "",
-                  "Truncated": false,
-                  "FirstCause": false,
-                  "LastCause": false
-                },
-                {
-                  "Number": 135,
-                  "Content": "                  resources: {}",
-                  "IsCause": true,
-                  "Annotation": "",
-                  "Truncated": false,
-                  "FirstCause": false,
-                  "LastCause": false
-                },
-                {
-                  "Number": 136,
-                  "Content": "                  terminationMessagePath: /dev/termination-log",
-                  "IsCause": true,
-                  "Annotation": "",
-                  "Truncated": false,
-                  "FirstCause": false,
-                  "LastCause": false
-                },
-                {
-                  "Number": 137,
-                  "Content": "                  terminationMessagePolicy: File",
-                  "IsCause": true,
-                  "Annotation": "",
-                  "Truncated": false,
-                  "FirstCause": false,
-                  "LastCause": false
-                },
-                {
-                  "Number": 138,
-                  "Content": "                  volumeMounts:",
-                  "IsCause": true,
-                  "Annotation": "",
-                  "Truncated": false,
-                  "FirstCause": false,
-                  "LastCause": false
-                },
-                {
-                  "Number": 139,
-                  "Content": "                    - mountPath: /tmp",
-                  "IsCause": true,
-                  "Annotation": "",
-                  "Truncated": false,
-                  "FirstCause": false,
-                  "LastCause": false
-                },
-                {
-                  "Number": 140,
-                  "Content": "                      name: tmp-dir",
-                  "IsCause": true,
-                  "Annotation": "",
-                  "Truncated": false,
-                  "FirstCause": false,
-                  "LastCause": true
-                }
-              ]
-            }
-          }
-        },
-        {
-          "Type": "Kubernetes Security Check",
-          "ID": "KSV021",
-          "AVDID": "AVD-KSV-0021",
-          "Title": "Runs with low group ID",
-          "Description": "Force the container to run with group ID > 10000 to avoid conflicts with the host’s user table.",
-          "Message": "Container 'metrics-server' of Deployment 'metrics-server' should set 'securityContext.runAsGroup' > 10000",
-          "Namespace": "builtin.kubernetes.KSV021",
-          "Query": "data.builtin.kubernetes.KSV021.deny",
-          "Resolution": "Set 'containers[].securityContext.runAsGroup' to an integer > 10000.",
-          "Severity": "LOW",
-          "PrimaryURL": "https://avd.aquasec.com/misconfig/ksv021",
-          "References": [
-            "https://kubesec.io/basics/containers-securitycontext-runasuser/",
-            "https://avd.aquasec.com/misconfig/ksv021"
-          ],
-          "Status": "FAIL",
-          "Layer": {
-  
-          },
-          "CauseMetadata": {
-            "Provider": "Kubernetes",
-            "Service": "general",
-            "StartLine": 132,
-            "EndLine": 140,
-            "Code": {
-              "Lines": [
-                {
-                  "Number": 132,
-                  "Content": "                - image: rancher/metrics-server:v0.3.6",
-                  "IsCause": true,
-                  "Annotation": "",
-                  "Truncated": false,
-                  "FirstCause": true,
-                  "LastCause": false
-                },
-                {
-                  "Number": 133,
-                  "Content": "                  imagePullPolicy: IfNotPresent",
-                  "IsCause": true,
-                  "Annotation": "",
-                  "Truncated": false,
-                  "FirstCause": false,
-                  "LastCause": false
-                },
-                {
-                  "Number": 134,
-                  "Content": "                  name: metrics-server",
-                  "IsCause": true,
-                  "Annotation": "",
-                  "Truncated": false,
-                  "FirstCause": false,
-                  "LastCause": false
-                },
-                {
-                  "Number": 135,
-                  "Content": "                  resources: {}",
-                  "IsCause": true,
-                  "Annotation": "",
-                  "Truncated": false,
-                  "FirstCause": false,
-                  "LastCause": false
-                },
-                {
-                  "Number": 136,
-                  "Content": "                  terminationMessagePath: /dev/termination-log",
-                  "IsCause": true,
-                  "Annotation": "",
-                  "Truncated": false,
-                  "FirstCause": false,
-                  "LastCause": false
-                },
-                {
-                  "Number": 137,
-                  "Content": "                  terminationMessagePolicy: File",
-                  "IsCause": true,
-                  "Annotation": "",
-                  "Truncated": false,
-                  "FirstCause": false,
-                  "LastCause": false
-                },
-                {
-                  "Number": 138,
-                  "Content": "                  volumeMounts:",
-                  "IsCause": true,
-                  "Annotation": "",
-                  "Truncated": false,
-                  "FirstCause": false,
-                  "LastCause": false
-                },
-                {
-                  "Number": 139,
-                  "Content": "                    - mountPath: /tmp",
-                  "IsCause": true,
-                  "Annotation": "",
-                  "Truncated": false,
-                  "FirstCause": false,
-                  "LastCause": false
-                },
-                {
-                  "Number": 140,
-                  "Content": "                      name: tmp-dir",
-                  "IsCause": true,
-                  "Annotation": "",
-                  "Truncated": false,
-                  "FirstCause": false,
-                  "LastCause": true
-                }
-              ]
-            }
-          }
-        },
-        {
-          "Type": "Kubernetes Security Check",
-          "ID": "KSV030",
-          "AVDID": "AVD-KSV-0030",
-          "Title": "Default Seccomp profile not set",
-          "Description": "The RuntimeDefault/Localhost seccomp profile must be required, or allow specific additional profiles.",
-          "Message": "Either Pod or Container should set 'securityContext.seccompProfile.type' to 'RuntimeDefault'",
-          "Namespace": "builtin.kubernetes.KSV030",
-          "Query": "data.builtin.kubernetes.KSV030.deny",
-          "Resolution": "Set 'spec.securityContext.seccompProfile.type', 'spec.containers[*].securityContext.seccompProfile' and 'spec.initContainers[*].securityContext.seccompProfile' to 'RuntimeDefault' or undefined.",
-          "Severity": "LOW",
-          "PrimaryURL": "https://avd.aquasec.com/misconfig/ksv030",
-          "References": [
-            "https://kubernetes.io/docs/concepts/security/pod-security-standards/#restricted",
-            "https://avd.aquasec.com/misconfig/ksv030"
-          ],
-          "Status": "FAIL",
-          "Layer": {
-  
-          },
-          "CauseMetadata": {
-            "Provider": "Kubernetes",
-            "Service": "general",
-            "StartLine": 132,
-            "EndLine": 140,
-            "Code": {
-              "Lines": [
-                {
-                  "Number": 132,
-                  "Content": "                - image: rancher/metrics-server:v0.3.6",
-                  "IsCause": true,
-                  "Annotation": "",
-                  "Truncated": false,
-                  "FirstCause": true,
-                  "LastCause": false
-                },
-                {
-                  "Number": 133,
-                  "Content": "                  imagePullPolicy: IfNotPresent",
-                  "IsCause": true,
-                  "Annotation": "",
-                  "Truncated": false,
-                  "FirstCause": false,
-                  "LastCause": false
-                },
-                {
-                  "Number": 134,
-                  "Content": "                  name: metrics-server",
-                  "IsCause": true,
-                  "Annotation": "",
-                  "Truncated": false,
-                  "FirstCause": false,
-                  "LastCause": false
-                },
-                {
-                  "Number": 135,
-                  "Content": "                  resources: {}",
-                  "IsCause": true,
-                  "Annotation": "",
-                  "Truncated": false,
-                  "FirstCause": false,
-                  "LastCause": false
-                },
-                {
-                  "Number": 136,
-                  "Content": "                  terminationMessagePath: /dev/termination-log",
-                  "IsCause": true,
-                  "Annotation": "",
-                  "Truncated": false,
-                  "FirstCause": false,
-                  "LastCause": false
-                },
-                {
-                  "Number": 137,
-                  "Content": "                  terminationMessagePolicy: File",
-                  "IsCause": true,
-                  "Annotation": "",
-                  "Truncated": false,
-                  "FirstCause": false,
-                  "LastCause": false
-                },
-                {
-                  "Number": 138,
-                  "Content": "                  volumeMounts:",
-                  "IsCause": true,
-                  "Annotation": "",
-                  "Truncated": false,
-                  "FirstCause": false,
-                  "LastCause": false
-                },
-                {
-                  "Number": 139,
-                  "Content": "                    - mountPath: /tmp",
-                  "IsCause": true,
-                  "Annotation": "",
-                  "Truncated": false,
-                  "FirstCause": false,
-                  "LastCause": false
-                },
-                {
-                  "Number": 140,
-                  "Content": "                      name: tmp-dir",
-                  "IsCause": true,
-                  "Annotation": "",
-                  "Truncated": false,
-                  "FirstCause": false,
-                  "LastCause": true
-                }
-              ]
-            }
-          }
-        },
-        {
-          "Type": "Kubernetes Security Check",
-          "ID": "KSV037",
-          "AVDID": "AVD-KSV-0037",
-          "Title": "User Pods should not be placed in kube-system namespace",
-          "Description": "ensure that User pods are not placed in kube-system namespace",
-          "Message": "Deployment 'metrics-server' should not be set with 'kube-system' namespace",
-          "Namespace": "builtin.kubernetes.KSV037",
-          "Query": "data.builtin.kubernetes.KSV037.deny",
-          "Resolution": "Deploy the use pods into a designated namespace which is not kube-system.",
-          "Severity": "MEDIUM",
-          "PrimaryURL": "https://avd.aquasec.com/misconfig/ksv037",
-          "References": [
-            "https://kubernetes.io/docs/reference/setup-tools/kubeadm/implementation-details/",
-            "https://avd.aquasec.com/misconfig/ksv037"
-          ],
-          "Status": "FAIL",
-          "Layer": {
-  
-          },
-          "CauseMetadata": {
-            "Provider": "Kubernetes",
-            "Service": "general",
-            "StartLine": 113,
-            "EndLine": 160,
-            "Code": {
-              "Lines": [
-                {
-                  "Number": 113,
-                  "Content": "    progressDeadlineSeconds: 600",
-                  "IsCause": true,
-                  "Annotation": "",
-                  "Truncated": false,
-                  "FirstCause": true,
-                  "LastCause": false
-                },
-                {
-                  "Number": 114,
-                  "Content": "    replicas: 1",
-                  "IsCause": true,
-                  "Annotation": "",
-                  "Truncated": false,
-                  "FirstCause": false,
-                  "LastCause": false
-                },
-                {
-                  "Number": 115,
-                  "Content": "    revisionHistoryLimit: 10",
-                  "IsCause": true,
-                  "Annotation": "",
-                  "Truncated": false,
-                  "FirstCause": false,
-                  "LastCause": false
-                },
-                {
-                  "Number": 116,
-                  "Content": "    selector:",
-                  "IsCause": true,
-                  "Annotation": "",
-                  "Truncated": false,
-                  "FirstCause": false,
-                  "LastCause": false
-                },
-                {
-                  "Number": 117,
-                  "Content": "        matchLabels:",
-                  "IsCause": true,
-                  "Annotation": "",
-                  "Truncated": false,
-                  "FirstCause": false,
-                  "LastCause": false
-                },
-                {
-                  "Number": 118,
-                  "Content": "            k8s-app: metrics-server",
-                  "IsCause": true,
-                  "Annotation": "",
-                  "Truncated": false,
-                  "FirstCause": false,
-                  "LastCause": false
-                },
-                {
-                  "Number": 119,
-                  "Content": "    strategy:",
-                  "IsCause": true,
-                  "Annotation": "",
-                  "Truncated": false,
-                  "FirstCause": false,
-                  "LastCause": false
-                },
-                {
-                  "Number": 120,
-                  "Content": "        rollingUpdate:",
-                  "IsCause": true,
-                  "Annotation": "",
-                  "Truncated": false,
-                  "FirstCause": false,
-                  "LastCause": false
-                },
-                {
-                  "Number": 121,
-                  "Content": "            maxSurge: 25%",
-                  "IsCause": true,
-                  "Annotation": "",
-                  "Truncated": false,
-                  "FirstCause": false,
-                  "LastCause": true
-                },
-                {
-                  "Number": 122,
-                  "Content": "",
-                  "IsCause": false,
-                  "Annotation": "",
-                  "Truncated": true,
-                  "FirstCause": false,
-                  "LastCause": false
-                }
-              ]
-            }
-          }
-        },
-        {
-          "Type": "Kubernetes Security Check",
-          "ID": "KSV106",
-          "AVDID": "AVD-KSV-0106",
-          "Title": "Container capabilities must only include NET_BIND_SERVICE",
-          "Description": "Containers must drop ALL capabilities, and are only permitted to add back the NET_BIND_SERVICE capability.",
-          "Message": "container should drop all",
-          "Namespace": "builtin.kubernetes.KSV106",
-          "Query": "data.builtin.kubernetes.KSV106.deny",
-          "Resolution": "Set 'spec.containers[*].securityContext.capabilities.drop' to 'ALL' and only add 'NET_BIND_SERVICE' to 'spec.containers[*].securityContext.capabilities.add'.",
-          "Severity": "LOW",
-          "PrimaryURL": "https://avd.aquasec.com/misconfig/ksv106",
-          "References": [
-            "https://kubernetes.io/docs/concepts/security/pod-security-standards/#restricted",
-            "https://avd.aquasec.com/misconfig/ksv106"
-          ],
-          "Status": "FAIL",
-          "Layer": {
-  
-          },
-          "CauseMetadata": {
-            "Provider": "Kubernetes",
-            "Service": "general",
-            "StartLine": 132,
-            "EndLine": 140,
-            "Code": {
-              "Lines": [
-                {
-                  "Number": 132,
-                  "Content": "                - image: rancher/metrics-server:v0.3.6",
-                  "IsCause": true,
-                  "Annotation": "",
-                  "Truncated": false,
-                  "FirstCause": true,
-                  "LastCause": false
-                },
-                {
-                  "Number": 133,
-                  "Content": "                  imagePullPolicy: IfNotPresent",
-                  "IsCause": true,
-                  "Annotation": "",
-                  "Truncated": false,
-                  "FirstCause": false,
-                  "LastCause": false
-                },
-                {
-                  "Number": 134,
-                  "Content": "                  name: metrics-server",
-                  "IsCause": true,
-                  "Annotation": "",
-                  "Truncated": false,
-                  "FirstCause": false,
-                  "LastCause": false
-                },
-                {
-                  "Number": 135,
-                  "Content": "                  resources: {}",
-                  "IsCause": true,
-                  "Annotation": "",
-                  "Truncated": false,
-                  "FirstCause": false,
-                  "LastCause": false
-                },
-                {
-                  "Number": 136,
-                  "Content": "                  terminationMessagePath: /dev/termination-log",
-                  "IsCause": true,
-                  "Annotation": "",
-                  "Truncated": false,
-                  "FirstCause": false,
-                  "LastCause": false
-                },
-                {
-                  "Number": 137,
-                  "Content": "                  terminationMessagePolicy: File",
-                  "IsCause": true,
-                  "Annotation": "",
-                  "Truncated": false,
-                  "FirstCause": false,
-                  "LastCause": false
-                },
-                {
-                  "Number": 138,
-                  "Content": "                  volumeMounts:",
-                  "IsCause": true,
-                  "Annotation": "",
-                  "Truncated": false,
-                  "FirstCause": false,
-                  "LastCause": false
-                },
-                {
-                  "Number": 139,
-                  "Content": "                    - mountPath: /tmp",
-                  "IsCause": true,
-                  "Annotation": "",
-                  "Truncated": false,
-                  "FirstCause": false,
-                  "LastCause": false
-                },
-                {
-                  "Number": 140,
-                  "Content": "                      name: tmp-dir",
-                  "IsCause": true,
-                  "Annotation": "",
-                  "Truncated": false,
-                  "FirstCause": false,
-                  "LastCause": true
-                }
-              ]
-            }
-          }
-        }
-      ]
+  {
+    "Target": "Deployment/metrics-server",
+    "Class": "config",
+    "Type": "kubernetes",
+    "MisconfSummary": {
+      "Successes": 66,
+      "Failures": 13,
+      "Exceptions": 0
     },
-    {
-      "Target": "rancher/metrics-server:v0.3.6 (debian 9.9)",
-      "Class": "os-pkgs",
-      "Type": "debian",
-      "Vulnerabilities": [
-        {
-          "VulnerabilityID": "DLA-2424-1",
-          "VendorIDs": [
-            "DLA-2424-1"
-          ],
-          "PkgName": "tzdata",
-          "InstalledVersion": "2019a-0+deb9u1",
-          "FixedVersion": "2020d-0+deb9u1",
-          "Layer": {
-            "DiffID": "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02"
-          },
-          "DataSource": {
-            "ID": "debian",
-            "Name": "Debian Security Tracker",
-            "URL": "https://salsa.debian.org/security-tracker-team/security-tracker"
-          },
-          "Title": "tzdata - new upstream version",
-          "Severity": "UNKNOWN"
+    "Misconfigurations": [
+      {
+        "Type": "Kubernetes Security Check",
+        "ID": "KSV001",
+        "AVDID": "AVD-KSV-0001",
+        "Title": "Process can elevate its own privileges",
+        "Description": "A program inside the container can elevate its own privileges and run as root, which might give the program control over the container and node.",
+        "Message": "Container 'metrics-server' of Deployment 'metrics-server' should set 'securityContext.allowPrivilegeEscalation' to false",
+        "Namespace": "builtin.kubernetes.KSV001",
+        "Query": "data.builtin.kubernetes.KSV001.deny",
+        "Resolution": "Set 'set containers[].securityContext.allowPrivilegeEscalation' to 'false'.",
+        "Severity": "MEDIUM",
+        "PrimaryURL": "https://avd.aquasec.com/misconfig/ksv001",
+        "References": [
+          "https://kubernetes.io/docs/concepts/security/pod-security-standards/#restricted",
+          "https://avd.aquasec.com/misconfig/ksv001"
+        ],
+        "Status": "PASS",
+        "Layer": {
+
         },
-        {
-          "VulnerabilityID": "DLA-2509-1",
-          "VendorIDs": [
-            "DLA-2509-1"
-          ],
-          "PkgName": "tzdata",
-          "InstalledVersion": "2019a-0+deb9u1",
-          "FixedVersion": "2020e-0+deb9u1",
-          "Layer": {
-            "DiffID": "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02"
-          },
-          "DataSource": {
-            "ID": "debian",
-            "Name": "Debian Security Tracker",
-            "URL": "https://salsa.debian.org/security-tracker-team/security-tracker"
-          },
-          "Title": "tzdata - new upstream version",
-          "Severity": "UNKNOWN"
-        },
-        {
-          "VulnerabilityID": "DLA-2542-1",
-          "VendorIDs": [
-            "DLA-2542-1"
-          ],
-          "PkgName": "tzdata",
-          "InstalledVersion": "2019a-0+deb9u1",
-          "FixedVersion": "2021a-0+deb9u1",
-          "Layer": {
-            "DiffID": "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02"
-          },
-          "DataSource": {
-            "ID": "debian",
-            "Name": "Debian Security Tracker",
-            "URL": "https://salsa.debian.org/security-tracker-team/security-tracker"
-          },
-          "Title": "tzdata - new upstream version",
-          "Severity": "UNKNOWN"
-        },
-        {
-          "VulnerabilityID": "DLA-2797-1",
-          "VendorIDs": [
-            "DLA-2797-1"
-          ],
-          "PkgName": "tzdata",
-          "InstalledVersion": "2019a-0+deb9u1",
-          "FixedVersion": "2021a-0+deb9u2",
-          "Layer": {
-            "DiffID": "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02"
-          },
-          "DataSource": {
-            "ID": "debian",
-            "Name": "Debian Security Tracker",
-            "URL": "https://salsa.debian.org/security-tracker-team/security-tracker"
-          },
-          "Title": "tzdata - new upstream version",
-          "Severity": "UNKNOWN"
-        },
-        {
-          "VulnerabilityID": "DLA-2963-1",
-          "VendorIDs": [
-            "DLA-2963-1"
-          ],
-          "PkgName": "tzdata",
-          "InstalledVersion": "2019a-0+deb9u1",
-          "FixedVersion": "2021a-0+deb9u3",
-          "Layer": {
-            "DiffID": "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02"
-          },
-          "DataSource": {
-            "ID": "debian",
-            "Name": "Debian Security Tracker",
-            "URL": "https://salsa.debian.org/security-tracker-team/security-tracker"
-          },
-          "Title": "tzdata - new timezone database",
-          "Severity": "UNKNOWN"
-        },
-        {
-          "VulnerabilityID": "DLA-3051-1",
-          "VendorIDs": [
-            "DLA-3051-1"
-          ],
-          "PkgName": "tzdata",
-          "InstalledVersion": "2019a-0+deb9u1",
-          "FixedVersion": "2021a-0+deb9u4",
-          "Layer": {
-            "DiffID": "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02"
-          },
-          "DataSource": {
-            "ID": "debian",
-            "Name": "Debian Security Tracker",
-            "URL": "https://salsa.debian.org/security-tracker-team/security-tracker"
-          },
-          "Title": "tzdata - new timezone database",
-          "Severity": "UNKNOWN"
+        "CauseMetadata": {
+          "Provider": "Kubernetes",
+          "Service": "general",
+          "StartLine": 132,
+          "EndLine": 140,
+          "Code": {
+            "Lines": [
+              {
+                "Number": 132,
+                "Content": "                - image: rancher/metrics-server:v0.3.6",
+                "IsCause": true,
+                "Annotation": "",
+                "Truncated": false,
+                "FirstCause": true,
+                "LastCause": false
+              },
+              {
+                "Number": 133,
+                "Content": "                  imagePullPolicy: IfNotPresent",
+                "IsCause": true,
+                "Annotation": "",
+                "Truncated": false,
+                "FirstCause": false,
+                "LastCause": false
+              },
+              {
+                "Number": 134,
+                "Content": "                  name: metrics-server",
+                "IsCause": true,
+                "Annotation": "",
+                "Truncated": false,
+                "FirstCause": false,
+                "LastCause": false
+              },
+              {
+                "Number": 135,
+                "Content": "                  resources: {}",
+                "IsCause": true,
+                "Annotation": "",
+                "Truncated": false,
+                "FirstCause": false,
+                "LastCause": false
+              },
+              {
+                "Number": 136,
+                "Content": "                  terminationMessagePath: /dev/termination-log",
+                "IsCause": true,
+                "Annotation": "",
+                "Truncated": false,
+                "FirstCause": false,
+                "LastCause": false
+              },
+              {
+                "Number": 137,
+                "Content": "                  terminationMessagePolicy: File",
+                "IsCause": true,
+                "Annotation": "",
+                "Truncated": false,
+                "FirstCause": false,
+                "LastCause": false
+              },
+              {
+                "Number": 138,
+                "Content": "                  volumeMounts:",
+                "IsCause": true,
+                "Annotation": "",
+                "Truncated": false,
+                "FirstCause": false,
+                "LastCause": false
+              },
+              {
+                "Number": 139,
+                "Content": "                    - mountPath: /tmp",
+                "IsCause": true,
+                "Annotation": "",
+                "Truncated": false,
+                "FirstCause": false,
+                "LastCause": false
+              },
+              {
+                "Number": 140,
+                "Content": "                      name: tmp-dir",
+                "IsCause": true,
+                "Annotation": "",
+                "Truncated": false,
+                "FirstCause": false,
+                "LastCause": true
+              }
+            ]
+          }
         }
-      ]
-    }
-  ]
+      },
+      {
+        "Type": "Kubernetes Security Check",
+        "ID": "KSV003",
+        "AVDID": "AVD-KSV-0003",
+        "Title": "Default capabilities not dropped",
+        "Description": "The container should drop all default capabilities and add only those that are needed for its execution.",
+        "Message": "Container 'metrics-server' of Deployment 'metrics-server' should add 'ALL' to 'securityContext.capabilities.drop'",
+        "Namespace": "builtin.kubernetes.KSV003",
+        "Query": "data.builtin.kubernetes.KSV003.deny",
+        "Resolution": "Add 'ALL' to containers[].securityContext.capabilities.drop.",
+        "Severity": "LOW",
+        "PrimaryURL": "https://avd.aquasec.com/misconfig/ksv003",
+        "References": [
+          "https://kubesec.io/basics/containers-securitycontext-capabilities-drop-index-all/",
+          "https://avd.aquasec.com/misconfig/ksv003"
+        ],
+        "Status": "FAIL",
+        "Layer": {
+
+        },
+        "CauseMetadata": {
+          "Provider": "Kubernetes",
+          "Service": "general",
+          "StartLine": 132,
+          "EndLine": 140,
+          "Code": {
+            "Lines": [
+              {
+                "Number": 132,
+                "Content": "                - image: rancher/metrics-server:v0.3.6",
+                "IsCause": true,
+                "Annotation": "",
+                "Truncated": false,
+                "FirstCause": true,
+                "LastCause": false
+              },
+              {
+                "Number": 133,
+                "Content": "                  imagePullPolicy: IfNotPresent",
+                "IsCause": true,
+                "Annotation": "",
+                "Truncated": false,
+                "FirstCause": false,
+                "LastCause": false
+              },
+              {
+                "Number": 134,
+                "Content": "                  name: metrics-server",
+                "IsCause": true,
+                "Annotation": "",
+                "Truncated": false,
+                "FirstCause": false,
+                "LastCause": false
+              },
+              {
+                "Number": 135,
+                "Content": "                  resources: {}",
+                "IsCause": true,
+                "Annotation": "",
+                "Truncated": false,
+                "FirstCause": false,
+                "LastCause": false
+              },
+              {
+                "Number": 136,
+                "Content": "                  terminationMessagePath: /dev/termination-log",
+                "IsCause": true,
+                "Annotation": "",
+                "Truncated": false,
+                "FirstCause": false,
+                "LastCause": false
+              },
+              {
+                "Number": 137,
+                "Content": "                  terminationMessagePolicy: File",
+                "IsCause": true,
+                "Annotation": "",
+                "Truncated": false,
+                "FirstCause": false,
+                "LastCause": false
+              },
+              {
+                "Number": 138,
+                "Content": "                  volumeMounts:",
+                "IsCause": true,
+                "Annotation": "",
+                "Truncated": false,
+                "FirstCause": false,
+                "LastCause": false
+              },
+              {
+                "Number": 139,
+                "Content": "                    - mountPath: /tmp",
+                "IsCause": true,
+                "Annotation": "",
+                "Truncated": false,
+                "FirstCause": false,
+                "LastCause": false
+              },
+              {
+                "Number": 140,
+                "Content": "                      name: tmp-dir",
+                "IsCause": true,
+                "Annotation": "",
+                "Truncated": false,
+                "FirstCause": false,
+                "LastCause": true
+              }
+            ]
+          }
+        }
+      },
+      {
+        "Type": "Kubernetes Security Check",
+        "ID": "KSV011",
+        "AVDID": "AVD-KSV-0011",
+        "Title": "CPU not limited",
+        "Description": "Enforcing CPU limits prevents DoS via resource exhaustion.",
+        "Message": "Container 'metrics-server' of Deployment 'metrics-server' should set 'resources.limits.cpu'",
+        "Namespace": "builtin.kubernetes.KSV011",
+        "Query": "data.builtin.kubernetes.KSV011.deny",
+        "Resolution": "Set a limit value under 'containers[].resources.limits.cpu'.",
+        "Severity": "LOW",
+        "PrimaryURL": "https://avd.aquasec.com/misconfig/ksv011",
+        "References": [
+          "https://cloud.google.com/blog/products/containers-kubernetes/kubernetes-best-practices-resource-requests-and-limits",
+          "https://avd.aquasec.com/misconfig/ksv011"
+        ],
+        "Status": "FAIL",
+        "Layer": {
+
+        },
+        "CauseMetadata": {
+          "Provider": "Kubernetes",
+          "Service": "general",
+          "StartLine": 132,
+          "EndLine": 140,
+          "Code": {
+            "Lines": [
+              {
+                "Number": 132,
+                "Content": "                - image: rancher/metrics-server:v0.3.6",
+                "IsCause": true,
+                "Annotation": "",
+                "Truncated": false,
+                "FirstCause": true,
+                "LastCause": false
+              },
+              {
+                "Number": 133,
+                "Content": "                  imagePullPolicy: IfNotPresent",
+                "IsCause": true,
+                "Annotation": "",
+                "Truncated": false,
+                "FirstCause": false,
+                "LastCause": false
+              },
+              {
+                "Number": 134,
+                "Content": "                  name: metrics-server",
+                "IsCause": true,
+                "Annotation": "",
+                "Truncated": false,
+                "FirstCause": false,
+                "LastCause": false
+              },
+              {
+                "Number": 135,
+                "Content": "                  resources: {}",
+                "IsCause": true,
+                "Annotation": "",
+                "Truncated": false,
+                "FirstCause": false,
+                "LastCause": false
+              },
+              {
+                "Number": 136,
+                "Content": "                  terminationMessagePath: /dev/termination-log",
+                "IsCause": true,
+                "Annotation": "",
+                "Truncated": false,
+                "FirstCause": false,
+                "LastCause": false
+              },
+              {
+                "Number": 137,
+                "Content": "                  terminationMessagePolicy: File",
+                "IsCause": true,
+                "Annotation": "",
+                "Truncated": false,
+                "FirstCause": false,
+                "LastCause": false
+              },
+              {
+                "Number": 138,
+                "Content": "                  volumeMounts:",
+                "IsCause": true,
+                "Annotation": "",
+                "Truncated": false,
+                "FirstCause": false,
+                "LastCause": false
+              },
+              {
+                "Number": 139,
+                "Content": "                    - mountPath: /tmp",
+                "IsCause": true,
+                "Annotation": "",
+                "Truncated": false,
+                "FirstCause": false,
+                "LastCause": false
+              },
+              {
+                "Number": 140,
+                "Content": "                      name: tmp-dir",
+                "IsCause": true,
+                "Annotation": "",
+                "Truncated": false,
+                "FirstCause": false,
+                "LastCause": true
+              }
+            ]
+          }
+        }
+      },
+      {
+        "Type": "Kubernetes Security Check",
+        "ID": "KSV012",
+        "AVDID": "AVD-KSV-0012",
+        "Title": "Runs as root user",
+        "Description": "'runAsNonRoot' forces the running image to run as a non-root user to ensure least privileges.",
+        "Message": "Container 'metrics-server' of Deployment 'metrics-server' should set 'securityContext.runAsNonRoot' to true",
+        "Namespace": "builtin.kubernetes.KSV012",
+        "Query": "data.builtin.kubernetes.KSV012.deny",
+        "Resolution": "Set 'containers[].securityContext.runAsNonRoot' to true.",
+        "Severity": "MEDIUM",
+        "PrimaryURL": "https://avd.aquasec.com/misconfig/ksv012",
+        "References": [
+          "https://kubernetes.io/docs/concepts/security/pod-security-standards/#restricted",
+          "https://avd.aquasec.com/misconfig/ksv012"
+        ],
+        "Status": "FAIL",
+        "Layer": {
+
+        },
+        "CauseMetadata": {
+          "Provider": "Kubernetes",
+          "Service": "general",
+          "StartLine": 132,
+          "EndLine": 140,
+          "Code": {
+            "Lines": [
+              {
+                "Number": 132,
+                "Content": "                - image: rancher/metrics-server:v0.3.6",
+                "IsCause": true,
+                "Annotation": "",
+                "Truncated": false,
+                "FirstCause": true,
+                "LastCause": false
+              },
+              {
+                "Number": 133,
+                "Content": "                  imagePullPolicy: IfNotPresent",
+                "IsCause": true,
+                "Annotation": "",
+                "Truncated": false,
+                "FirstCause": false,
+                "LastCause": false
+              },
+              {
+                "Number": 134,
+                "Content": "                  name: metrics-server",
+                "IsCause": true,
+                "Annotation": "",
+                "Truncated": false,
+                "FirstCause": false,
+                "LastCause": false
+              },
+              {
+                "Number": 135,
+                "Content": "                  resources: {}",
+                "IsCause": true,
+                "Annotation": "",
+                "Truncated": false,
+                "FirstCause": false,
+                "LastCause": false
+              },
+              {
+                "Number": 136,
+                "Content": "                  terminationMessagePath: /dev/termination-log",
+                "IsCause": true,
+                "Annotation": "",
+                "Truncated": false,
+                "FirstCause": false,
+                "LastCause": false
+              },
+              {
+                "Number": 137,
+                "Content": "                  terminationMessagePolicy: File",
+                "IsCause": true,
+                "Annotation": "",
+                "Truncated": false,
+                "FirstCause": false,
+                "LastCause": false
+              },
+              {
+                "Number": 138,
+                "Content": "                  volumeMounts:",
+                "IsCause": true,
+                "Annotation": "",
+                "Truncated": false,
+                "FirstCause": false,
+                "LastCause": false
+              },
+              {
+                "Number": 139,
+                "Content": "                    - mountPath: /tmp",
+                "IsCause": true,
+                "Annotation": "",
+                "Truncated": false,
+                "FirstCause": false,
+                "LastCause": false
+              },
+              {
+                "Number": 140,
+                "Content": "                      name: tmp-dir",
+                "IsCause": true,
+                "Annotation": "",
+                "Truncated": false,
+                "FirstCause": false,
+                "LastCause": true
+              }
+            ]
+          }
+        }
+      },
+      {
+        "Type": "Kubernetes Security Check",
+        "ID": "KSV014",
+        "AVDID": "AVD-KSV-0014",
+        "Title": "Root file system is not read-only",
+        "Description": "An immutable root file system prevents applications from writing to their local disk. This can limit intrusions, as attackers will not be able to tamper with the file system or write foreign executables to disk.",
+        "Message": "Container 'metrics-server' of Deployment 'metrics-server' should set 'securityContext.readOnlyRootFilesystem' to true",
+        "Namespace": "builtin.kubernetes.KSV014",
+        "Query": "data.builtin.kubernetes.KSV014.deny",
+        "Resolution": "Change 'containers[].securityContext.readOnlyRootFilesystem' to 'true'.",
+        "Severity": "LOW",
+        "PrimaryURL": "https://avd.aquasec.com/misconfig/ksv014",
+        "References": [
+          "https://kubesec.io/basics/containers-securitycontext-readonlyrootfilesystem-true/",
+          "https://avd.aquasec.com/misconfig/ksv014"
+        ],
+        "Status": "FAIL",
+        "Layer": {
+
+        },
+        "CauseMetadata": {
+          "Provider": "Kubernetes",
+          "Service": "general",
+          "StartLine": 132,
+          "EndLine": 140,
+          "Code": {
+            "Lines": [
+              {
+                "Number": 132,
+                "Content": "                - image: rancher/metrics-server:v0.3.6",
+                "IsCause": true,
+                "Annotation": "",
+                "Truncated": false,
+                "FirstCause": true,
+                "LastCause": false
+              },
+              {
+                "Number": 133,
+                "Content": "                  imagePullPolicy: IfNotPresent",
+                "IsCause": true,
+                "Annotation": "",
+                "Truncated": false,
+                "FirstCause": false,
+                "LastCause": false
+              },
+              {
+                "Number": 134,
+                "Content": "                  name: metrics-server",
+                "IsCause": true,
+                "Annotation": "",
+                "Truncated": false,
+                "FirstCause": false,
+                "LastCause": false
+              },
+              {
+                "Number": 135,
+                "Content": "                  resources: {}",
+                "IsCause": true,
+                "Annotation": "",
+                "Truncated": false,
+                "FirstCause": false,
+                "LastCause": false
+              },
+              {
+                "Number": 136,
+                "Content": "                  terminationMessagePath: /dev/termination-log",
+                "IsCause": true,
+                "Annotation": "",
+                "Truncated": false,
+                "FirstCause": false,
+                "LastCause": false
+              },
+              {
+                "Number": 137,
+                "Content": "                  terminationMessagePolicy: File",
+                "IsCause": true,
+                "Annotation": "",
+                "Truncated": false,
+                "FirstCause": false,
+                "LastCause": false
+              },
+              {
+                "Number": 138,
+                "Content": "                  volumeMounts:",
+                "IsCause": true,
+                "Annotation": "",
+                "Truncated": false,
+                "FirstCause": false,
+                "LastCause": false
+              },
+              {
+                "Number": 139,
+                "Content": "                    - mountPath: /tmp",
+                "IsCause": true,
+                "Annotation": "",
+                "Truncated": false,
+                "FirstCause": false,
+                "LastCause": false
+              },
+              {
+                "Number": 140,
+                "Content": "                      name: tmp-dir",
+                "IsCause": true,
+                "Annotation": "",
+                "Truncated": false,
+                "FirstCause": false,
+                "LastCause": true
+              }
+            ]
+          }
+        }
+      },
+      {
+        "Type": "Kubernetes Security Check",
+        "ID": "KSV015",
+        "AVDID": "AVD-KSV-0015",
+        "Title": "CPU requests not specified",
+        "Description": "When containers have resource requests specified, the scheduler can make better decisions about which nodes to place pods on, and how to deal with resource contention.",
+        "Message": "Container 'metrics-server' of Deployment 'metrics-server' should set 'resources.requests.cpu'",
+        "Namespace": "builtin.kubernetes.KSV015",
+        "Query": "data.builtin.kubernetes.KSV015.deny",
+        "Resolution": "Set 'containers[].resources.requests.cpu'.",
+        "Severity": "LOW",
+        "PrimaryURL": "https://avd.aquasec.com/misconfig/ksv015",
+        "References": [
+          "https://cloud.google.com/blog/products/containers-kubernetes/kubernetes-best-practices-resource-requests-and-limits",
+          "https://avd.aquasec.com/misconfig/ksv015"
+        ],
+        "Status": "FAIL",
+        "Layer": {
+
+        },
+        "CauseMetadata": {
+          "Provider": "Kubernetes",
+          "Service": "general",
+          "StartLine": 132,
+          "EndLine": 140,
+          "Code": {
+            "Lines": [
+              {
+                "Number": 132,
+                "Content": "                - image: rancher/metrics-server:v0.3.6",
+                "IsCause": true,
+                "Annotation": "",
+                "Truncated": false,
+                "FirstCause": true,
+                "LastCause": false
+              },
+              {
+                "Number": 133,
+                "Content": "                  imagePullPolicy: IfNotPresent",
+                "IsCause": true,
+                "Annotation": "",
+                "Truncated": false,
+                "FirstCause": false,
+                "LastCause": false
+              },
+              {
+                "Number": 134,
+                "Content": "                  name: metrics-server",
+                "IsCause": true,
+                "Annotation": "",
+                "Truncated": false,
+                "FirstCause": false,
+                "LastCause": false
+              },
+              {
+                "Number": 135,
+                "Content": "                  resources: {}",
+                "IsCause": true,
+                "Annotation": "",
+                "Truncated": false,
+                "FirstCause": false,
+                "LastCause": false
+              },
+              {
+                "Number": 136,
+                "Content": "                  terminationMessagePath: /dev/termination-log",
+                "IsCause": true,
+                "Annotation": "",
+                "Truncated": false,
+                "FirstCause": false,
+                "LastCause": false
+              },
+              {
+                "Number": 137,
+                "Content": "                  terminationMessagePolicy: File",
+                "IsCause": true,
+                "Annotation": "",
+                "Truncated": false,
+                "FirstCause": false,
+                "LastCause": false
+              },
+              {
+                "Number": 138,
+                "Content": "                  volumeMounts:",
+                "IsCause": true,
+                "Annotation": "",
+                "Truncated": false,
+                "FirstCause": false,
+                "LastCause": false
+              },
+              {
+                "Number": 139,
+                "Content": "                    - mountPath: /tmp",
+                "IsCause": true,
+                "Annotation": "",
+                "Truncated": false,
+                "FirstCause": false,
+                "LastCause": false
+              },
+              {
+                "Number": 140,
+                "Content": "                      name: tmp-dir",
+                "IsCause": true,
+                "Annotation": "",
+                "Truncated": false,
+                "FirstCause": false,
+                "LastCause": true
+              }
+            ]
+          }
+        }
+      },
+      {
+        "Type": "Kubernetes Security Check",
+        "ID": "KSV016",
+        "AVDID": "AVD-KSV-0016",
+        "Title": "Memory requests not specified",
+        "Description": "When containers have memory requests specified, the scheduler can make better decisions about which nodes to place pods on, and how to deal with resource contention.",
+        "Message": "Container 'metrics-server' of Deployment 'metrics-server' should set 'resources.requests.memory'",
+        "Namespace": "builtin.kubernetes.KSV016",
+        "Query": "data.builtin.kubernetes.KSV016.deny",
+        "Resolution": "Set 'containers[].resources.requests.memory'.",
+        "Severity": "LOW",
+        "PrimaryURL": "https://avd.aquasec.com/misconfig/ksv016",
+        "References": [
+          "https://kubesec.io/basics/containers-resources-limits-memory/",
+          "https://avd.aquasec.com/misconfig/ksv016"
+        ],
+        "Status": "FAIL",
+        "Layer": {
+
+        },
+        "CauseMetadata": {
+          "Provider": "Kubernetes",
+          "Service": "general",
+          "StartLine": 132,
+          "EndLine": 140,
+          "Code": {
+            "Lines": [
+              {
+                "Number": 132,
+                "Content": "                - image: rancher/metrics-server:v0.3.6",
+                "IsCause": true,
+                "Annotation": "",
+                "Truncated": false,
+                "FirstCause": true,
+                "LastCause": false
+              },
+              {
+                "Number": 133,
+                "Content": "                  imagePullPolicy: IfNotPresent",
+                "IsCause": true,
+                "Annotation": "",
+                "Truncated": false,
+                "FirstCause": false,
+                "LastCause": false
+              },
+              {
+                "Number": 134,
+                "Content": "                  name: metrics-server",
+                "IsCause": true,
+                "Annotation": "",
+                "Truncated": false,
+                "FirstCause": false,
+                "LastCause": false
+              },
+              {
+                "Number": 135,
+                "Content": "                  resources: {}",
+                "IsCause": true,
+                "Annotation": "",
+                "Truncated": false,
+                "FirstCause": false,
+                "LastCause": false
+              },
+              {
+                "Number": 136,
+                "Content": "                  terminationMessagePath: /dev/termination-log",
+                "IsCause": true,
+                "Annotation": "",
+                "Truncated": false,
+                "FirstCause": false,
+                "LastCause": false
+              },
+              {
+                "Number": 137,
+                "Content": "                  terminationMessagePolicy: File",
+                "IsCause": true,
+                "Annotation": "",
+                "Truncated": false,
+                "FirstCause": false,
+                "LastCause": false
+              },
+              {
+                "Number": 138,
+                "Content": "                  volumeMounts:",
+                "IsCause": true,
+                "Annotation": "",
+                "Truncated": false,
+                "FirstCause": false,
+                "LastCause": false
+              },
+              {
+                "Number": 139,
+                "Content": "                    - mountPath: /tmp",
+                "IsCause": true,
+                "Annotation": "",
+                "Truncated": false,
+                "FirstCause": false,
+                "LastCause": false
+              },
+              {
+                "Number": 140,
+                "Content": "                      name: tmp-dir",
+                "IsCause": true,
+                "Annotation": "",
+                "Truncated": false,
+                "FirstCause": false,
+                "LastCause": true
+              }
+            ]
+          }
+        }
+      },
+      {
+        "Type": "Kubernetes Security Check",
+        "ID": "KSV018",
+        "AVDID": "AVD-KSV-0018",
+        "Title": "Memory not limited",
+        "Description": "Enforcing memory limits prevents DoS via resource exhaustion.",
+        "Message": "Container 'metrics-server' of Deployment 'metrics-server' should set 'resources.limits.memory'",
+        "Namespace": "builtin.kubernetes.KSV018",
+        "Query": "data.builtin.kubernetes.KSV018.deny",
+        "Resolution": "Set a limit value under 'containers[].resources.limits.memory'.",
+        "Severity": "LOW",
+        "PrimaryURL": "https://avd.aquasec.com/misconfig/ksv018",
+        "References": [
+          "https://kubesec.io/basics/containers-resources-limits-memory/",
+          "https://avd.aquasec.com/misconfig/ksv018"
+        ],
+        "Status": "FAIL",
+        "Layer": {
+
+        },
+        "CauseMetadata": {
+          "Provider": "Kubernetes",
+          "Service": "general",
+          "StartLine": 132,
+          "EndLine": 140,
+          "Code": {
+            "Lines": [
+              {
+                "Number": 132,
+                "Content": "                - image: rancher/metrics-server:v0.3.6",
+                "IsCause": true,
+                "Annotation": "",
+                "Truncated": false,
+                "FirstCause": true,
+                "LastCause": false
+              },
+              {
+                "Number": 133,
+                "Content": "                  imagePullPolicy: IfNotPresent",
+                "IsCause": true,
+                "Annotation": "",
+                "Truncated": false,
+                "FirstCause": false,
+                "LastCause": false
+              },
+              {
+                "Number": 134,
+                "Content": "                  name: metrics-server",
+                "IsCause": true,
+                "Annotation": "",
+                "Truncated": false,
+                "FirstCause": false,
+                "LastCause": false
+              },
+              {
+                "Number": 135,
+                "Content": "                  resources: {}",
+                "IsCause": true,
+                "Annotation": "",
+                "Truncated": false,
+                "FirstCause": false,
+                "LastCause": false
+              },
+              {
+                "Number": 136,
+                "Content": "                  terminationMessagePath: /dev/termination-log",
+                "IsCause": true,
+                "Annotation": "",
+                "Truncated": false,
+                "FirstCause": false,
+                "LastCause": false
+              },
+              {
+                "Number": 137,
+                "Content": "                  terminationMessagePolicy: File",
+                "IsCause": true,
+                "Annotation": "",
+                "Truncated": false,
+                "FirstCause": false,
+                "LastCause": false
+              },
+              {
+                "Number": 138,
+                "Content": "                  volumeMounts:",
+                "IsCause": true,
+                "Annotation": "",
+                "Truncated": false,
+                "FirstCause": false,
+                "LastCause": false
+              },
+              {
+                "Number": 139,
+                "Content": "                    - mountPath: /tmp",
+                "IsCause": true,
+                "Annotation": "",
+                "Truncated": false,
+                "FirstCause": false,
+                "LastCause": false
+              },
+              {
+                "Number": 140,
+                "Content": "                      name: tmp-dir",
+                "IsCause": true,
+                "Annotation": "",
+                "Truncated": false,
+                "FirstCause": false,
+                "LastCause": true
+              }
+            ]
+          }
+        }
+      },
+      {
+        "Type": "Kubernetes Security Check",
+        "ID": "KSV020",
+        "AVDID": "AVD-KSV-0020",
+        "Title": "Runs with low user ID",
+        "Description": "Force the container to run with user ID > 10000 to avoid conflicts with the host’s user table.",
+        "Message": "Container 'metrics-server' of Deployment 'metrics-server' should set 'securityContext.runAsUser' > 10000",
+        "Namespace": "builtin.kubernetes.KSV020",
+        "Query": "data.builtin.kubernetes.KSV020.deny",
+        "Resolution": "Set 'containers[].securityContext.runAsUser' to an integer > 10000.",
+        "Severity": "LOW",
+        "PrimaryURL": "https://avd.aquasec.com/misconfig/ksv020",
+        "References": [
+          "https://kubesec.io/basics/containers-securitycontext-runasuser/",
+          "https://avd.aquasec.com/misconfig/ksv020"
+        ],
+        "Status": "FAIL",
+        "Layer": {
+
+        },
+        "CauseMetadata": {
+          "Provider": "Kubernetes",
+          "Service": "general",
+          "StartLine": 132,
+          "EndLine": 140,
+          "Code": {
+            "Lines": [
+              {
+                "Number": 132,
+                "Content": "                - image: rancher/metrics-server:v0.3.6",
+                "IsCause": true,
+                "Annotation": "",
+                "Truncated": false,
+                "FirstCause": true,
+                "LastCause": false
+              },
+              {
+                "Number": 133,
+                "Content": "                  imagePullPolicy: IfNotPresent",
+                "IsCause": true,
+                "Annotation": "",
+                "Truncated": false,
+                "FirstCause": false,
+                "LastCause": false
+              },
+              {
+                "Number": 134,
+                "Content": "                  name: metrics-server",
+                "IsCause": true,
+                "Annotation": "",
+                "Truncated": false,
+                "FirstCause": false,
+                "LastCause": false
+              },
+              {
+                "Number": 135,
+                "Content": "                  resources: {}",
+                "IsCause": true,
+                "Annotation": "",
+                "Truncated": false,
+                "FirstCause": false,
+                "LastCause": false
+              },
+              {
+                "Number": 136,
+                "Content": "                  terminationMessagePath: /dev/termination-log",
+                "IsCause": true,
+                "Annotation": "",
+                "Truncated": false,
+                "FirstCause": false,
+                "LastCause": false
+              },
+              {
+                "Number": 137,
+                "Content": "                  terminationMessagePolicy: File",
+                "IsCause": true,
+                "Annotation": "",
+                "Truncated": false,
+                "FirstCause": false,
+                "LastCause": false
+              },
+              {
+                "Number": 138,
+                "Content": "                  volumeMounts:",
+                "IsCause": true,
+                "Annotation": "",
+                "Truncated": false,
+                "FirstCause": false,
+                "LastCause": false
+              },
+              {
+                "Number": 139,
+                "Content": "                    - mountPath: /tmp",
+                "IsCause": true,
+                "Annotation": "",
+                "Truncated": false,
+                "FirstCause": false,
+                "LastCause": false
+              },
+              {
+                "Number": 140,
+                "Content": "                      name: tmp-dir",
+                "IsCause": true,
+                "Annotation": "",
+                "Truncated": false,
+                "FirstCause": false,
+                "LastCause": true
+              }
+            ]
+          }
+        }
+      },
+      {
+        "Type": "Kubernetes Security Check",
+        "ID": "KSV021",
+        "AVDID": "AVD-KSV-0021",
+        "Title": "Runs with low group ID",
+        "Description": "Force the container to run with group ID > 10000 to avoid conflicts with the host’s user table.",
+        "Message": "Container 'metrics-server' of Deployment 'metrics-server' should set 'securityContext.runAsGroup' > 10000",
+        "Namespace": "builtin.kubernetes.KSV021",
+        "Query": "data.builtin.kubernetes.KSV021.deny",
+        "Resolution": "Set 'containers[].securityContext.runAsGroup' to an integer > 10000.",
+        "Severity": "LOW",
+        "PrimaryURL": "https://avd.aquasec.com/misconfig/ksv021",
+        "References": [
+          "https://kubesec.io/basics/containers-securitycontext-runasuser/",
+          "https://avd.aquasec.com/misconfig/ksv021"
+        ],
+        "Status": "FAIL",
+        "Layer": {
+
+        },
+        "CauseMetadata": {
+          "Provider": "Kubernetes",
+          "Service": "general",
+          "StartLine": 132,
+          "EndLine": 140,
+          "Code": {
+            "Lines": [
+              {
+                "Number": 132,
+                "Content": "                - image: rancher/metrics-server:v0.3.6",
+                "IsCause": true,
+                "Annotation": "",
+                "Truncated": false,
+                "FirstCause": true,
+                "LastCause": false
+              },
+              {
+                "Number": 133,
+                "Content": "                  imagePullPolicy: IfNotPresent",
+                "IsCause": true,
+                "Annotation": "",
+                "Truncated": false,
+                "FirstCause": false,
+                "LastCause": false
+              },
+              {
+                "Number": 134,
+                "Content": "                  name: metrics-server",
+                "IsCause": true,
+                "Annotation": "",
+                "Truncated": false,
+                "FirstCause": false,
+                "LastCause": false
+              },
+              {
+                "Number": 135,
+                "Content": "                  resources: {}",
+                "IsCause": true,
+                "Annotation": "",
+                "Truncated": false,
+                "FirstCause": false,
+                "LastCause": false
+              },
+              {
+                "Number": 136,
+                "Content": "                  terminationMessagePath: /dev/termination-log",
+                "IsCause": true,
+                "Annotation": "",
+                "Truncated": false,
+                "FirstCause": false,
+                "LastCause": false
+              },
+              {
+                "Number": 137,
+                "Content": "                  terminationMessagePolicy: File",
+                "IsCause": true,
+                "Annotation": "",
+                "Truncated": false,
+                "FirstCause": false,
+                "LastCause": false
+              },
+              {
+                "Number": 138,
+                "Content": "                  volumeMounts:",
+                "IsCause": true,
+                "Annotation": "",
+                "Truncated": false,
+                "FirstCause": false,
+                "LastCause": false
+              },
+              {
+                "Number": 139,
+                "Content": "                    - mountPath: /tmp",
+                "IsCause": true,
+                "Annotation": "",
+                "Truncated": false,
+                "FirstCause": false,
+                "LastCause": false
+              },
+              {
+                "Number": 140,
+                "Content": "                      name: tmp-dir",
+                "IsCause": true,
+                "Annotation": "",
+                "Truncated": false,
+                "FirstCause": false,
+                "LastCause": true
+              }
+            ]
+          }
+        }
+      },
+      {
+        "Type": "Kubernetes Security Check",
+        "ID": "KSV030",
+        "AVDID": "AVD-KSV-0030",
+        "Title": "Default Seccomp profile not set",
+        "Description": "The RuntimeDefault/Localhost seccomp profile must be required, or allow specific additional profiles.",
+        "Message": "Either Pod or Container should set 'securityContext.seccompProfile.type' to 'RuntimeDefault'",
+        "Namespace": "builtin.kubernetes.KSV030",
+        "Query": "data.builtin.kubernetes.KSV030.deny",
+        "Resolution": "Set 'spec.securityContext.seccompProfile.type', 'spec.containers[*].securityContext.seccompProfile' and 'spec.initContainers[*].securityContext.seccompProfile' to 'RuntimeDefault' or undefined.",
+        "Severity": "LOW",
+        "PrimaryURL": "https://avd.aquasec.com/misconfig/ksv030",
+        "References": [
+          "https://kubernetes.io/docs/concepts/security/pod-security-standards/#restricted",
+          "https://avd.aquasec.com/misconfig/ksv030"
+        ],
+        "Status": "FAIL",
+        "Layer": {
+
+        },
+        "CauseMetadata": {
+          "Provider": "Kubernetes",
+          "Service": "general",
+          "StartLine": 132,
+          "EndLine": 140,
+          "Code": {
+            "Lines": [
+              {
+                "Number": 132,
+                "Content": "                - image: rancher/metrics-server:v0.3.6",
+                "IsCause": true,
+                "Annotation": "",
+                "Truncated": false,
+                "FirstCause": true,
+                "LastCause": false
+              },
+              {
+                "Number": 133,
+                "Content": "                  imagePullPolicy: IfNotPresent",
+                "IsCause": true,
+                "Annotation": "",
+                "Truncated": false,
+                "FirstCause": false,
+                "LastCause": false
+              },
+              {
+                "Number": 134,
+                "Content": "                  name: metrics-server",
+                "IsCause": true,
+                "Annotation": "",
+                "Truncated": false,
+                "FirstCause": false,
+                "LastCause": false
+              },
+              {
+                "Number": 135,
+                "Content": "                  resources: {}",
+                "IsCause": true,
+                "Annotation": "",
+                "Truncated": false,
+                "FirstCause": false,
+                "LastCause": false
+              },
+              {
+                "Number": 136,
+                "Content": "                  terminationMessagePath: /dev/termination-log",
+                "IsCause": true,
+                "Annotation": "",
+                "Truncated": false,
+                "FirstCause": false,
+                "LastCause": false
+              },
+              {
+                "Number": 137,
+                "Content": "                  terminationMessagePolicy: File",
+                "IsCause": true,
+                "Annotation": "",
+                "Truncated": false,
+                "FirstCause": false,
+                "LastCause": false
+              },
+              {
+                "Number": 138,
+                "Content": "                  volumeMounts:",
+                "IsCause": true,
+                "Annotation": "",
+                "Truncated": false,
+                "FirstCause": false,
+                "LastCause": false
+              },
+              {
+                "Number": 139,
+                "Content": "                    - mountPath: /tmp",
+                "IsCause": true,
+                "Annotation": "",
+                "Truncated": false,
+                "FirstCause": false,
+                "LastCause": false
+              },
+              {
+                "Number": 140,
+                "Content": "                      name: tmp-dir",
+                "IsCause": true,
+                "Annotation": "",
+                "Truncated": false,
+                "FirstCause": false,
+                "LastCause": true
+              }
+            ]
+          }
+        }
+      },
+      {
+        "Type": "Kubernetes Security Check",
+        "ID": "KSV037",
+        "AVDID": "AVD-KSV-0037",
+        "Title": "User Pods should not be placed in kube-system namespace",
+        "Description": "ensure that User pods are not placed in kube-system namespace",
+        "Message": "Deployment 'metrics-server' should not be set with 'kube-system' namespace",
+        "Namespace": "builtin.kubernetes.KSV037",
+        "Query": "data.builtin.kubernetes.KSV037.deny",
+        "Resolution": "Deploy the use pods into a designated namespace which is not kube-system.",
+        "Severity": "MEDIUM",
+        "PrimaryURL": "https://avd.aquasec.com/misconfig/ksv037",
+        "References": [
+          "https://kubernetes.io/docs/reference/setup-tools/kubeadm/implementation-details/",
+          "https://avd.aquasec.com/misconfig/ksv037"
+        ],
+        "Status": "FAIL",
+        "Layer": {
+
+        },
+        "CauseMetadata": {
+          "Provider": "Kubernetes",
+          "Service": "general",
+          "StartLine": 113,
+          "EndLine": 160,
+          "Code": {
+            "Lines": [
+              {
+                "Number": 113,
+                "Content": "    progressDeadlineSeconds: 600",
+                "IsCause": true,
+                "Annotation": "",
+                "Truncated": false,
+                "FirstCause": true,
+                "LastCause": false
+              },
+              {
+                "Number": 114,
+                "Content": "    replicas: 1",
+                "IsCause": true,
+                "Annotation": "",
+                "Truncated": false,
+                "FirstCause": false,
+                "LastCause": false
+              },
+              {
+                "Number": 115,
+                "Content": "    revisionHistoryLimit: 10",
+                "IsCause": true,
+                "Annotation": "",
+                "Truncated": false,
+                "FirstCause": false,
+                "LastCause": false
+              },
+              {
+                "Number": 116,
+                "Content": "    selector:",
+                "IsCause": true,
+                "Annotation": "",
+                "Truncated": false,
+                "FirstCause": false,
+                "LastCause": false
+              },
+              {
+                "Number": 117,
+                "Content": "        matchLabels:",
+                "IsCause": true,
+                "Annotation": "",
+                "Truncated": false,
+                "FirstCause": false,
+                "LastCause": false
+              },
+              {
+                "Number": 118,
+                "Content": "            k8s-app: metrics-server",
+                "IsCause": true,
+                "Annotation": "",
+                "Truncated": false,
+                "FirstCause": false,
+                "LastCause": false
+              },
+              {
+                "Number": 119,
+                "Content": "    strategy:",
+                "IsCause": true,
+                "Annotation": "",
+                "Truncated": false,
+                "FirstCause": false,
+                "LastCause": false
+              },
+              {
+                "Number": 120,
+                "Content": "        rollingUpdate:",
+                "IsCause": true,
+                "Annotation": "",
+                "Truncated": false,
+                "FirstCause": false,
+                "LastCause": false
+              },
+              {
+                "Number": 121,
+                "Content": "            maxSurge: 25%",
+                "IsCause": true,
+                "Annotation": "",
+                "Truncated": false,
+                "FirstCause": false,
+                "LastCause": true
+              },
+              {
+                "Number": 122,
+                "Content": "",
+                "IsCause": false,
+                "Annotation": "",
+                "Truncated": true,
+                "FirstCause": false,
+                "LastCause": false
+              }
+            ]
+          }
+        }
+      },
+      {
+        "Type": "Kubernetes Security Check",
+        "ID": "KSV106",
+        "AVDID": "AVD-KSV-0106",
+        "Title": "Container capabilities must only include NET_BIND_SERVICE",
+        "Description": "Containers must drop ALL capabilities, and are only permitted to add back the NET_BIND_SERVICE capability.",
+        "Message": "container should drop all",
+        "Namespace": "builtin.kubernetes.KSV106",
+        "Query": "data.builtin.kubernetes.KSV106.deny",
+        "Resolution": "Set 'spec.containers[*].securityContext.capabilities.drop' to 'ALL' and only add 'NET_BIND_SERVICE' to 'spec.containers[*].securityContext.capabilities.add'.",
+        "Severity": "LOW",
+        "PrimaryURL": "https://avd.aquasec.com/misconfig/ksv106",
+        "References": [
+          "https://kubernetes.io/docs/concepts/security/pod-security-standards/#restricted",
+          "https://avd.aquasec.com/misconfig/ksv106"
+        ],
+        "Status": "FAIL",
+        "Layer": {
+
+        },
+        "CauseMetadata": {
+          "Provider": "Kubernetes",
+          "Service": "general",
+          "StartLine": 132,
+          "EndLine": 140,
+          "Code": {
+            "Lines": [
+              {
+                "Number": 132,
+                "Content": "                - image: rancher/metrics-server:v0.3.6",
+                "IsCause": true,
+                "Annotation": "",
+                "Truncated": false,
+                "FirstCause": true,
+                "LastCause": false
+              },
+              {
+                "Number": 133,
+                "Content": "                  imagePullPolicy: IfNotPresent",
+                "IsCause": true,
+                "Annotation": "",
+                "Truncated": false,
+                "FirstCause": false,
+                "LastCause": false
+              },
+              {
+                "Number": 134,
+                "Content": "                  name: metrics-server",
+                "IsCause": true,
+                "Annotation": "",
+                "Truncated": false,
+                "FirstCause": false,
+                "LastCause": false
+              },
+              {
+                "Number": 135,
+                "Content": "                  resources: {}",
+                "IsCause": true,
+                "Annotation": "",
+                "Truncated": false,
+                "FirstCause": false,
+                "LastCause": false
+              },
+              {
+                "Number": 136,
+                "Content": "                  terminationMessagePath: /dev/termination-log",
+                "IsCause": true,
+                "Annotation": "",
+                "Truncated": false,
+                "FirstCause": false,
+                "LastCause": false
+              },
+              {
+                "Number": 137,
+                "Content": "                  terminationMessagePolicy: File",
+                "IsCause": true,
+                "Annotation": "",
+                "Truncated": false,
+                "FirstCause": false,
+                "LastCause": false
+              },
+              {
+                "Number": 138,
+                "Content": "                  volumeMounts:",
+                "IsCause": true,
+                "Annotation": "",
+                "Truncated": false,
+                "FirstCause": false,
+                "LastCause": false
+              },
+              {
+                "Number": 139,
+                "Content": "                    - mountPath: /tmp",
+                "IsCause": true,
+                "Annotation": "",
+                "Truncated": false,
+                "FirstCause": false,
+                "LastCause": false
+              },
+              {
+                "Number": 140,
+                "Content": "                      name: tmp-dir",
+                "IsCause": true,
+                "Annotation": "",
+                "Truncated": false,
+                "FirstCause": false,
+                "LastCause": true
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  {
+    "Target": "rancher/metrics-server:v0.3.6 (debian 9.9)",
+    "Class": "os-pkgs",
+    "Type": "debian",
+    "Vulnerabilities": [
+      {
+        "VulnerabilityID": "DLA-2424-1",
+        "VendorIDs": [
+          "DLA-2424-1"
+        ],
+        "PkgName": "tzdata",
+        "InstalledVersion": "2019a-0+deb9u1",
+        "FixedVersion": "2020d-0+deb9u1",
+        "Layer": {
+          "DiffID": "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02"
+        },
+        "DataSource": {
+          "ID": "debian",
+          "Name": "Debian Security Tracker",
+          "URL": "https://salsa.debian.org/security-tracker-team/security-tracker"
+        },
+        "Title": "tzdata - new upstream version",
+        "Severity": "UNKNOWN"
+      },
+      {
+        "VulnerabilityID": "DLA-2509-1",
+        "VendorIDs": [
+          "DLA-2509-1"
+        ],
+        "PkgName": "tzdata",
+        "InstalledVersion": "2019a-0+deb9u1",
+        "FixedVersion": "2020e-0+deb9u1",
+        "Layer": {
+          "DiffID": "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02"
+        },
+        "DataSource": {
+          "ID": "debian",
+          "Name": "Debian Security Tracker",
+          "URL": "https://salsa.debian.org/security-tracker-team/security-tracker"
+        },
+        "Title": "tzdata - new upstream version",
+        "Severity": "UNKNOWN"
+      },
+      {
+        "VulnerabilityID": "DLA-2542-1",
+        "VendorIDs": [
+          "DLA-2542-1"
+        ],
+        "PkgName": "tzdata",
+        "InstalledVersion": "2019a-0+deb9u1",
+        "FixedVersion": "2021a-0+deb9u1",
+        "Layer": {
+          "DiffID": "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02"
+        },
+        "DataSource": {
+          "ID": "debian",
+          "Name": "Debian Security Tracker",
+          "URL": "https://salsa.debian.org/security-tracker-team/security-tracker"
+        },
+        "Title": "tzdata - new upstream version",
+        "Severity": "UNKNOWN"
+      },
+      {
+        "VulnerabilityID": "DLA-2797-1",
+        "VendorIDs": [
+          "DLA-2797-1"
+        ],
+        "PkgName": "tzdata",
+        "InstalledVersion": "2019a-0+deb9u1",
+        "FixedVersion": "2021a-0+deb9u2",
+        "Layer": {
+          "DiffID": "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02"
+        },
+        "DataSource": {
+          "ID": "debian",
+          "Name": "Debian Security Tracker",
+          "URL": "https://salsa.debian.org/security-tracker-team/security-tracker"
+        },
+        "Title": "tzdata - new upstream version",
+        "Severity": "UNKNOWN"
+      },
+      {
+        "VulnerabilityID": "DLA-2963-1",
+        "VendorIDs": [
+          "DLA-2963-1"
+        ],
+        "PkgName": "tzdata",
+        "InstalledVersion": "2019a-0+deb9u1",
+        "FixedVersion": "2021a-0+deb9u3",
+        "Layer": {
+          "DiffID": "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02"
+        },
+        "DataSource": {
+          "ID": "debian",
+          "Name": "Debian Security Tracker",
+          "URL": "https://salsa.debian.org/security-tracker-team/security-tracker"
+        },
+        "Title": "tzdata - new timezone database",
+        "Severity": "UNKNOWN"
+      },
+      {
+        "VulnerabilityID": "DLA-3051-1",
+        "VendorIDs": [
+          "DLA-3051-1"
+        ],
+        "PkgName": "tzdata",
+        "InstalledVersion": "2019a-0+deb9u1",
+        "FixedVersion": "2021a-0+deb9u4",
+        "Layer": {
+          "DiffID": "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02"
+        },
+        "DataSource": {
+          "ID": "debian",
+          "Name": "Debian Security Tracker",
+          "URL": "https://salsa.debian.org/security-tracker-team/security-tracker"
+        },
+        "Title": "tzdata - new timezone database",
+        "Severity": "UNKNOWN"
+      }
+    ]
+  },
+  {
+    "Target": "defaultt/metrics-2",
+    "Class": "config",
+    "Type": "kubernetes",
+    "MisconfSummary": {
+      "Successes": 66,
+      "Failures": 13,
+      "Exceptions": 0
+    },
+    "Misconfigurations": [
+      {
+        "Type": "Kubernetes Security Check",
+        "ID": "KSV001",
+        "AVDID": "AVD-KSV-0001",
+        "Title": "Process can elevate its own privileges",
+        "Description": "A program inside the container can elevate its own privileges and run as root, which might give the program control over the container and node.",
+        "Message": "Container 'metrics-server' of Deployment 'metrics-server' should set 'securityContext.allowPrivilegeEscalation' to false",
+        "Namespace": "builtin.kubernetes.KSV001",
+        "Query": "data.builtin.kubernetes.KSV001.deny",
+        "Resolution": "Set 'set containers[].securityContext.allowPrivilegeEscalation' to 'false'.",
+        "Severity": "MEDIUM",
+        "PrimaryURL": "https://avd.aquasec.com/misconfig/ksv001",
+        "References": [
+          "https://kubernetes.io/docs/concepts/security/pod-security-standards/#restricted",
+          "https://avd.aquasec.com/misconfig/ksv001"
+        ],
+        "Status": "FAIL",
+        "Layer": {
+
+        },
+        "CauseMetadata": {
+          "Provider": "Kubernetes",
+          "Service": "general",
+          "StartLine": 132,
+          "EndLine": 140,
+          "Code": {
+            "Lines": [
+              {
+                "Number": 132,
+                "Content": "                - image: rancher/metrics-server:v0.3.6",
+                "IsCause": true,
+                "Annotation": "",
+                "Truncated": false,
+                "FirstCause": true,
+                "LastCause": false
+              },
+              {
+                "Number": 133,
+                "Content": "                  imagePullPolicy: IfNotPresent",
+                "IsCause": true,
+                "Annotation": "",
+                "Truncated": false,
+                "FirstCause": false,
+                "LastCause": false
+              },
+              {
+                "Number": 134,
+                "Content": "                  name: metrics-server",
+                "IsCause": true,
+                "Annotation": "",
+                "Truncated": false,
+                "FirstCause": false,
+                "LastCause": false
+              },
+              {
+                "Number": 135,
+                "Content": "                  resources: {}",
+                "IsCause": true,
+                "Annotation": "",
+                "Truncated": false,
+                "FirstCause": false,
+                "LastCause": false
+              },
+              {
+                "Number": 136,
+                "Content": "                  terminationMessagePath: /dev/termination-log",
+                "IsCause": true,
+                "Annotation": "",
+                "Truncated": false,
+                "FirstCause": false,
+                "LastCause": false
+              },
+              {
+                "Number": 137,
+                "Content": "                  terminationMessagePolicy: File",
+                "IsCause": true,
+                "Annotation": "",
+                "Truncated": false,
+                "FirstCause": false,
+                "LastCause": false
+              },
+              {
+                "Number": 138,
+                "Content": "                  volumeMounts:",
+                "IsCause": true,
+                "Annotation": "",
+                "Truncated": false,
+                "FirstCause": false,
+                "LastCause": false
+              },
+              {
+                "Number": 139,
+                "Content": "                    - mountPath: /tmp",
+                "IsCause": true,
+                "Annotation": "",
+                "Truncated": false,
+                "FirstCause": false,
+                "LastCause": false
+              },
+              {
+                "Number": 140,
+                "Content": "                      name: tmp-dir",
+                "IsCause": true,
+                "Annotation": "",
+                "Truncated": false,
+                "FirstCause": false,
+                "LastCause": true
+              }
+            ]
+          }
+        }
+      },
+      {
+        "Type": "Kubernetes Security Check",
+        "ID": "KSV003",
+        "AVDID": "AVD-KSV-0003",
+        "Title": "Default capabilities not dropped",
+        "Description": "The container should drop all default capabilities and add only those that are needed for its execution.",
+        "Message": "Container 'metrics-server' of Deployment 'metrics-server' should add 'ALL' to 'securityContext.capabilities.drop'",
+        "Namespace": "builtin.kubernetes.KSV003",
+        "Query": "data.builtin.kubernetes.KSV003.deny",
+        "Resolution": "Add 'ALL' to containers[].securityContext.capabilities.drop.",
+        "Severity": "LOW",
+        "PrimaryURL": "https://avd.aquasec.com/misconfig/ksv003",
+        "References": [
+          "https://kubesec.io/basics/containers-securitycontext-capabilities-drop-index-all/",
+          "https://avd.aquasec.com/misconfig/ksv003"
+        ],
+        "Status": "PASS",
+        "Layer": {
+
+        },
+        "CauseMetadata": {
+          "Provider": "Kubernetes",
+          "Service": "general",
+          "StartLine": 132,
+          "EndLine": 140,
+          "Code": {
+            "Lines": [
+              {
+                "Number": 132,
+                "Content": "                - image: rancher/metrics-server:v0.3.6",
+                "IsCause": true,
+                "Annotation": "",
+                "Truncated": false,
+                "FirstCause": true,
+                "LastCause": false
+              },
+              {
+                "Number": 133,
+                "Content": "                  imagePullPolicy: IfNotPresent",
+                "IsCause": true,
+                "Annotation": "",
+                "Truncated": false,
+                "FirstCause": false,
+                "LastCause": false
+              },
+              {
+                "Number": 134,
+                "Content": "                  name: metrics-server",
+                "IsCause": true,
+                "Annotation": "",
+                "Truncated": false,
+                "FirstCause": false,
+                "LastCause": false
+              },
+              {
+                "Number": 135,
+                "Content": "                  resources: {}",
+                "IsCause": true,
+                "Annotation": "",
+                "Truncated": false,
+                "FirstCause": false,
+                "LastCause": false
+              },
+              {
+                "Number": 136,
+                "Content": "                  terminationMessagePath: /dev/termination-log",
+                "IsCause": true,
+                "Annotation": "",
+                "Truncated": false,
+                "FirstCause": false,
+                "LastCause": false
+              },
+              {
+                "Number": 137,
+                "Content": "                  terminationMessagePolicy: File",
+                "IsCause": true,
+                "Annotation": "",
+                "Truncated": false,
+                "FirstCause": false,
+                "LastCause": false
+              },
+              {
+                "Number": 138,
+                "Content": "                  volumeMounts:",
+                "IsCause": true,
+                "Annotation": "",
+                "Truncated": false,
+                "FirstCause": false,
+                "LastCause": false
+              },
+              {
+                "Number": 139,
+                "Content": "                    - mountPath: /tmp",
+                "IsCause": true,
+                "Annotation": "",
+                "Truncated": false,
+                "FirstCause": false,
+                "LastCause": false
+              },
+              {
+                "Number": 140,
+                "Content": "                      name: tmp-dir",
+                "IsCause": true,
+                "Annotation": "",
+                "Truncated": false,
+                "FirstCause": false,
+                "LastCause": true
+              }
+            ]
+          }
+        }
+      },
+      {
+        "Type": "Kubernetes Security Check",
+        "ID": "KSV011",
+        "AVDID": "AVD-KSV-0011",
+        "Title": "CPU not limited",
+        "Description": "Enforcing CPU limits prevents DoS via resource exhaustion.",
+        "Message": "Container 'metrics-server' of Deployment 'metrics-server' should set 'resources.limits.cpu'",
+        "Namespace": "builtin.kubernetes.KSV011",
+        "Query": "data.builtin.kubernetes.KSV011.deny",
+        "Resolution": "Set a limit value under 'containers[].resources.limits.cpu'.",
+        "Severity": "LOW",
+        "PrimaryURL": "https://avd.aquasec.com/misconfig/ksv011",
+        "References": [
+          "https://cloud.google.com/blog/products/containers-kubernetes/kubernetes-best-practices-resource-requests-and-limits",
+          "https://avd.aquasec.com/misconfig/ksv011"
+        ],
+        "Status": "FAIL",
+        "Layer": {
+
+        },
+        "CauseMetadata": {
+          "Provider": "Kubernetes",
+          "Service": "general",
+          "StartLine": 132,
+          "EndLine": 140,
+          "Code": {
+            "Lines": [
+              {
+                "Number": 132,
+                "Content": "                - image: rancher/metrics-server:v0.3.6",
+                "IsCause": true,
+                "Annotation": "",
+                "Truncated": false,
+                "FirstCause": true,
+                "LastCause": false
+              },
+              {
+                "Number": 133,
+                "Content": "                  imagePullPolicy: IfNotPresent",
+                "IsCause": true,
+                "Annotation": "",
+                "Truncated": false,
+                "FirstCause": false,
+                "LastCause": false
+              },
+              {
+                "Number": 134,
+                "Content": "                  name: metrics-server",
+                "IsCause": true,
+                "Annotation": "",
+                "Truncated": false,
+                "FirstCause": false,
+                "LastCause": false
+              },
+              {
+                "Number": 135,
+                "Content": "                  resources: {}",
+                "IsCause": true,
+                "Annotation": "",
+                "Truncated": false,
+                "FirstCause": false,
+                "LastCause": false
+              },
+              {
+                "Number": 136,
+                "Content": "                  terminationMessagePath: /dev/termination-log",
+                "IsCause": true,
+                "Annotation": "",
+                "Truncated": false,
+                "FirstCause": false,
+                "LastCause": false
+              },
+              {
+                "Number": 137,
+                "Content": "                  terminationMessagePolicy: File",
+                "IsCause": true,
+                "Annotation": "",
+                "Truncated": false,
+                "FirstCause": false,
+                "LastCause": false
+              },
+              {
+                "Number": 138,
+                "Content": "                  volumeMounts:",
+                "IsCause": true,
+                "Annotation": "",
+                "Truncated": false,
+                "FirstCause": false,
+                "LastCause": false
+              },
+              {
+                "Number": 139,
+                "Content": "                    - mountPath: /tmp",
+                "IsCause": true,
+                "Annotation": "",
+                "Truncated": false,
+                "FirstCause": false,
+                "LastCause": false
+              },
+              {
+                "Number": 140,
+                "Content": "                      name: tmp-dir",
+                "IsCause": true,
+                "Annotation": "",
+                "Truncated": false,
+                "FirstCause": false,
+                "LastCause": true
+              }
+            ]
+          }
+        }
+      },
+      {
+        "Type": "Kubernetes Security Check",
+        "ID": "KSV012",
+        "AVDID": "AVD-KSV-0012",
+        "Title": "Runs as root user",
+        "Description": "'runAsNonRoot' forces the running image to run as a non-root user to ensure least privileges.",
+        "Message": "Container 'metrics-server' of Deployment 'metrics-server' should set 'securityContext.runAsNonRoot' to true",
+        "Namespace": "builtin.kubernetes.KSV012",
+        "Query": "data.builtin.kubernetes.KSV012.deny",
+        "Resolution": "Set 'containers[].securityContext.runAsNonRoot' to true.",
+        "Severity": "MEDIUM",
+        "PrimaryURL": "https://avd.aquasec.com/misconfig/ksv012",
+        "References": [
+          "https://kubernetes.io/docs/concepts/security/pod-security-standards/#restricted",
+          "https://avd.aquasec.com/misconfig/ksv012"
+        ],
+        "Status": "FAIL",
+        "Layer": {
+
+        },
+        "CauseMetadata": {
+          "Provider": "Kubernetes",
+          "Service": "general",
+          "StartLine": 132,
+          "EndLine": 140,
+          "Code": {
+            "Lines": [
+              {
+                "Number": 132,
+                "Content": "                - image: rancher/metrics-server:v0.3.6",
+                "IsCause": true,
+                "Annotation": "",
+                "Truncated": false,
+                "FirstCause": true,
+                "LastCause": false
+              },
+              {
+                "Number": 133,
+                "Content": "                  imagePullPolicy: IfNotPresent",
+                "IsCause": true,
+                "Annotation": "",
+                "Truncated": false,
+                "FirstCause": false,
+                "LastCause": false
+              },
+              {
+                "Number": 134,
+                "Content": "                  name: metrics-server",
+                "IsCause": true,
+                "Annotation": "",
+                "Truncated": false,
+                "FirstCause": false,
+                "LastCause": false
+              },
+              {
+                "Number": 135,
+                "Content": "                  resources: {}",
+                "IsCause": true,
+                "Annotation": "",
+                "Truncated": false,
+                "FirstCause": false,
+                "LastCause": false
+              },
+              {
+                "Number": 136,
+                "Content": "                  terminationMessagePath: /dev/termination-log",
+                "IsCause": true,
+                "Annotation": "",
+                "Truncated": false,
+                "FirstCause": false,
+                "LastCause": false
+              },
+              {
+                "Number": 137,
+                "Content": "                  terminationMessagePolicy: File",
+                "IsCause": true,
+                "Annotation": "",
+                "Truncated": false,
+                "FirstCause": false,
+                "LastCause": false
+              },
+              {
+                "Number": 138,
+                "Content": "                  volumeMounts:",
+                "IsCause": true,
+                "Annotation": "",
+                "Truncated": false,
+                "FirstCause": false,
+                "LastCause": false
+              },
+              {
+                "Number": 139,
+                "Content": "                    - mountPath: /tmp",
+                "IsCause": true,
+                "Annotation": "",
+                "Truncated": false,
+                "FirstCause": false,
+                "LastCause": false
+              },
+              {
+                "Number": 140,
+                "Content": "                      name: tmp-dir",
+                "IsCause": true,
+                "Annotation": "",
+                "Truncated": false,
+                "FirstCause": false,
+                "LastCause": true
+              }
+            ]
+          }
+        }
+      },
+      {
+        "Type": "Kubernetes Security Check",
+        "ID": "KSV014",
+        "AVDID": "AVD-KSV-0014",
+        "Title": "Root file system is not read-only",
+        "Description": "An immutable root file system prevents applications from writing to their local disk. This can limit intrusions, as attackers will not be able to tamper with the file system or write foreign executables to disk.",
+        "Message": "Container 'metrics-server' of Deployment 'metrics-server' should set 'securityContext.readOnlyRootFilesystem' to true",
+        "Namespace": "builtin.kubernetes.KSV014",
+        "Query": "data.builtin.kubernetes.KSV014.deny",
+        "Resolution": "Change 'containers[].securityContext.readOnlyRootFilesystem' to 'true'.",
+        "Severity": "LOW",
+        "PrimaryURL": "https://avd.aquasec.com/misconfig/ksv014",
+        "References": [
+          "https://kubesec.io/basics/containers-securitycontext-readonlyrootfilesystem-true/",
+          "https://avd.aquasec.com/misconfig/ksv014"
+        ],
+        "Status": "FAIL",
+        "Layer": {
+
+        },
+        "CauseMetadata": {
+          "Provider": "Kubernetes",
+          "Service": "general",
+          "StartLine": 132,
+          "EndLine": 140,
+          "Code": {
+            "Lines": [
+              {
+                "Number": 132,
+                "Content": "                - image: rancher/metrics-server:v0.3.6",
+                "IsCause": true,
+                "Annotation": "",
+                "Truncated": false,
+                "FirstCause": true,
+                "LastCause": false
+              },
+              {
+                "Number": 133,
+                "Content": "                  imagePullPolicy: IfNotPresent",
+                "IsCause": true,
+                "Annotation": "",
+                "Truncated": false,
+                "FirstCause": false,
+                "LastCause": false
+              },
+              {
+                "Number": 134,
+                "Content": "                  name: metrics-server",
+                "IsCause": true,
+                "Annotation": "",
+                "Truncated": false,
+                "FirstCause": false,
+                "LastCause": false
+              },
+              {
+                "Number": 135,
+                "Content": "                  resources: {}",
+                "IsCause": true,
+                "Annotation": "",
+                "Truncated": false,
+                "FirstCause": false,
+                "LastCause": false
+              },
+              {
+                "Number": 136,
+                "Content": "                  terminationMessagePath: /dev/termination-log",
+                "IsCause": true,
+                "Annotation": "",
+                "Truncated": false,
+                "FirstCause": false,
+                "LastCause": false
+              },
+              {
+                "Number": 137,
+                "Content": "                  terminationMessagePolicy: File",
+                "IsCause": true,
+                "Annotation": "",
+                "Truncated": false,
+                "FirstCause": false,
+                "LastCause": false
+              },
+              {
+                "Number": 138,
+                "Content": "                  volumeMounts:",
+                "IsCause": true,
+                "Annotation": "",
+                "Truncated": false,
+                "FirstCause": false,
+                "LastCause": false
+              },
+              {
+                "Number": 139,
+                "Content": "                    - mountPath: /tmp",
+                "IsCause": true,
+                "Annotation": "",
+                "Truncated": false,
+                "FirstCause": false,
+                "LastCause": false
+              },
+              {
+                "Number": 140,
+                "Content": "                      name: tmp-dir",
+                "IsCause": true,
+                "Annotation": "",
+                "Truncated": false,
+                "FirstCause": false,
+                "LastCause": true
+              }
+            ]
+          }
+        }
+      },
+      {
+        "Type": "Kubernetes Security Check",
+        "ID": "KSV015",
+        "AVDID": "AVD-KSV-0015",
+        "Title": "CPU requests not specified",
+        "Description": "When containers have resource requests specified, the scheduler can make better decisions about which nodes to place pods on, and how to deal with resource contention.",
+        "Message": "Container 'metrics-server' of Deployment 'metrics-server' should set 'resources.requests.cpu'",
+        "Namespace": "builtin.kubernetes.KSV015",
+        "Query": "data.builtin.kubernetes.KSV015.deny",
+        "Resolution": "Set 'containers[].resources.requests.cpu'.",
+        "Severity": "LOW",
+        "PrimaryURL": "https://avd.aquasec.com/misconfig/ksv015",
+        "References": [
+          "https://cloud.google.com/blog/products/containers-kubernetes/kubernetes-best-practices-resource-requests-and-limits",
+          "https://avd.aquasec.com/misconfig/ksv015"
+        ],
+        "Status": "FAIL",
+        "Layer": {
+
+        },
+        "CauseMetadata": {
+          "Provider": "Kubernetes",
+          "Service": "general",
+          "StartLine": 132,
+          "EndLine": 140,
+          "Code": {
+            "Lines": [
+              {
+                "Number": 132,
+                "Content": "                - image: rancher/metrics-server:v0.3.6",
+                "IsCause": true,
+                "Annotation": "",
+                "Truncated": false,
+                "FirstCause": true,
+                "LastCause": false
+              },
+              {
+                "Number": 133,
+                "Content": "                  imagePullPolicy: IfNotPresent",
+                "IsCause": true,
+                "Annotation": "",
+                "Truncated": false,
+                "FirstCause": false,
+                "LastCause": false
+              },
+              {
+                "Number": 134,
+                "Content": "                  name: metrics-server",
+                "IsCause": true,
+                "Annotation": "",
+                "Truncated": false,
+                "FirstCause": false,
+                "LastCause": false
+              },
+              {
+                "Number": 135,
+                "Content": "                  resources: {}",
+                "IsCause": true,
+                "Annotation": "",
+                "Truncated": false,
+                "FirstCause": false,
+                "LastCause": false
+              },
+              {
+                "Number": 136,
+                "Content": "                  terminationMessagePath: /dev/termination-log",
+                "IsCause": true,
+                "Annotation": "",
+                "Truncated": false,
+                "FirstCause": false,
+                "LastCause": false
+              },
+              {
+                "Number": 137,
+                "Content": "                  terminationMessagePolicy: File",
+                "IsCause": true,
+                "Annotation": "",
+                "Truncated": false,
+                "FirstCause": false,
+                "LastCause": false
+              },
+              {
+                "Number": 138,
+                "Content": "                  volumeMounts:",
+                "IsCause": true,
+                "Annotation": "",
+                "Truncated": false,
+                "FirstCause": false,
+                "LastCause": false
+              },
+              {
+                "Number": 139,
+                "Content": "                    - mountPath: /tmp",
+                "IsCause": true,
+                "Annotation": "",
+                "Truncated": false,
+                "FirstCause": false,
+                "LastCause": false
+              },
+              {
+                "Number": 140,
+                "Content": "                      name: tmp-dir",
+                "IsCause": true,
+                "Annotation": "",
+                "Truncated": false,
+                "FirstCause": false,
+                "LastCause": true
+              }
+            ]
+          }
+        }
+      },
+      {
+        "Type": "Kubernetes Security Check",
+        "ID": "KSV016",
+        "AVDID": "AVD-KSV-0016",
+        "Title": "Memory requests not specified",
+        "Description": "When containers have memory requests specified, the scheduler can make better decisions about which nodes to place pods on, and how to deal with resource contention.",
+        "Message": "Container 'metrics-server' of Deployment 'metrics-server' should set 'resources.requests.memory'",
+        "Namespace": "builtin.kubernetes.KSV016",
+        "Query": "data.builtin.kubernetes.KSV016.deny",
+        "Resolution": "Set 'containers[].resources.requests.memory'.",
+        "Severity": "LOW",
+        "PrimaryURL": "https://avd.aquasec.com/misconfig/ksv016",
+        "References": [
+          "https://kubesec.io/basics/containers-resources-limits-memory/",
+          "https://avd.aquasec.com/misconfig/ksv016"
+        ],
+        "Status": "FAIL",
+        "Layer": {
+
+        },
+        "CauseMetadata": {
+          "Provider": "Kubernetes",
+          "Service": "general",
+          "StartLine": 132,
+          "EndLine": 140,
+          "Code": {
+            "Lines": [
+              {
+                "Number": 132,
+                "Content": "                - image: rancher/metrics-server:v0.3.6",
+                "IsCause": true,
+                "Annotation": "",
+                "Truncated": false,
+                "FirstCause": true,
+                "LastCause": false
+              },
+              {
+                "Number": 133,
+                "Content": "                  imagePullPolicy: IfNotPresent",
+                "IsCause": true,
+                "Annotation": "",
+                "Truncated": false,
+                "FirstCause": false,
+                "LastCause": false
+              },
+              {
+                "Number": 134,
+                "Content": "                  name: metrics-server",
+                "IsCause": true,
+                "Annotation": "",
+                "Truncated": false,
+                "FirstCause": false,
+                "LastCause": false
+              },
+              {
+                "Number": 135,
+                "Content": "                  resources: {}",
+                "IsCause": true,
+                "Annotation": "",
+                "Truncated": false,
+                "FirstCause": false,
+                "LastCause": false
+              },
+              {
+                "Number": 136,
+                "Content": "                  terminationMessagePath: /dev/termination-log",
+                "IsCause": true,
+                "Annotation": "",
+                "Truncated": false,
+                "FirstCause": false,
+                "LastCause": false
+              },
+              {
+                "Number": 137,
+                "Content": "                  terminationMessagePolicy: File",
+                "IsCause": true,
+                "Annotation": "",
+                "Truncated": false,
+                "FirstCause": false,
+                "LastCause": false
+              },
+              {
+                "Number": 138,
+                "Content": "                  volumeMounts:",
+                "IsCause": true,
+                "Annotation": "",
+                "Truncated": false,
+                "FirstCause": false,
+                "LastCause": false
+              },
+              {
+                "Number": 139,
+                "Content": "                    - mountPath: /tmp",
+                "IsCause": true,
+                "Annotation": "",
+                "Truncated": false,
+                "FirstCause": false,
+                "LastCause": false
+              },
+              {
+                "Number": 140,
+                "Content": "                      name: tmp-dir",
+                "IsCause": true,
+                "Annotation": "",
+                "Truncated": false,
+                "FirstCause": false,
+                "LastCause": true
+              }
+            ]
+          }
+        }
+      },
+      {
+        "Type": "Kubernetes Security Check",
+        "ID": "KSV018",
+        "AVDID": "AVD-KSV-0018",
+        "Title": "Memory not limited",
+        "Description": "Enforcing memory limits prevents DoS via resource exhaustion.",
+        "Message": "Container 'metrics-server' of Deployment 'metrics-server' should set 'resources.limits.memory'",
+        "Namespace": "builtin.kubernetes.KSV018",
+        "Query": "data.builtin.kubernetes.KSV018.deny",
+        "Resolution": "Set a limit value under 'containers[].resources.limits.memory'.",
+        "Severity": "LOW",
+        "PrimaryURL": "https://avd.aquasec.com/misconfig/ksv018",
+        "References": [
+          "https://kubesec.io/basics/containers-resources-limits-memory/",
+          "https://avd.aquasec.com/misconfig/ksv018"
+        ],
+        "Status": "FAIL",
+        "Layer": {
+
+        },
+        "CauseMetadata": {
+          "Provider": "Kubernetes",
+          "Service": "general",
+          "StartLine": 132,
+          "EndLine": 140,
+          "Code": {
+            "Lines": [
+              {
+                "Number": 132,
+                "Content": "                - image: rancher/metrics-server:v0.3.6",
+                "IsCause": true,
+                "Annotation": "",
+                "Truncated": false,
+                "FirstCause": true,
+                "LastCause": false
+              },
+              {
+                "Number": 133,
+                "Content": "                  imagePullPolicy: IfNotPresent",
+                "IsCause": true,
+                "Annotation": "",
+                "Truncated": false,
+                "FirstCause": false,
+                "LastCause": false
+              },
+              {
+                "Number": 134,
+                "Content": "                  name: metrics-server",
+                "IsCause": true,
+                "Annotation": "",
+                "Truncated": false,
+                "FirstCause": false,
+                "LastCause": false
+              },
+              {
+                "Number": 135,
+                "Content": "                  resources: {}",
+                "IsCause": true,
+                "Annotation": "",
+                "Truncated": false,
+                "FirstCause": false,
+                "LastCause": false
+              },
+              {
+                "Number": 136,
+                "Content": "                  terminationMessagePath: /dev/termination-log",
+                "IsCause": true,
+                "Annotation": "",
+                "Truncated": false,
+                "FirstCause": false,
+                "LastCause": false
+              },
+              {
+                "Number": 137,
+                "Content": "                  terminationMessagePolicy: File",
+                "IsCause": true,
+                "Annotation": "",
+                "Truncated": false,
+                "FirstCause": false,
+                "LastCause": false
+              },
+              {
+                "Number": 138,
+                "Content": "                  volumeMounts:",
+                "IsCause": true,
+                "Annotation": "",
+                "Truncated": false,
+                "FirstCause": false,
+                "LastCause": false
+              },
+              {
+                "Number": 139,
+                "Content": "                    - mountPath: /tmp",
+                "IsCause": true,
+                "Annotation": "",
+                "Truncated": false,
+                "FirstCause": false,
+                "LastCause": false
+              },
+              {
+                "Number": 140,
+                "Content": "                      name: tmp-dir",
+                "IsCause": true,
+                "Annotation": "",
+                "Truncated": false,
+                "FirstCause": false,
+                "LastCause": true
+              }
+            ]
+          }
+        }
+      },
+      {
+        "Type": "Kubernetes Security Check",
+        "ID": "KSV020",
+        "AVDID": "AVD-KSV-0020",
+        "Title": "Runs with low user ID",
+        "Description": "Force the container to run with user ID > 10000 to avoid conflicts with the host’s user table.",
+        "Message": "Container 'metrics-server' of Deployment 'metrics-server' should set 'securityContext.runAsUser' > 10000",
+        "Namespace": "builtin.kubernetes.KSV020",
+        "Query": "data.builtin.kubernetes.KSV020.deny",
+        "Resolution": "Set 'containers[].securityContext.runAsUser' to an integer > 10000.",
+        "Severity": "LOW",
+        "PrimaryURL": "https://avd.aquasec.com/misconfig/ksv020",
+        "References": [
+          "https://kubesec.io/basics/containers-securitycontext-runasuser/",
+          "https://avd.aquasec.com/misconfig/ksv020"
+        ],
+        "Status": "FAIL",
+        "Layer": {
+
+        },
+        "CauseMetadata": {
+          "Provider": "Kubernetes",
+          "Service": "general",
+          "StartLine": 132,
+          "EndLine": 140,
+          "Code": {
+            "Lines": [
+              {
+                "Number": 132,
+                "Content": "                - image: rancher/metrics-server:v0.3.6",
+                "IsCause": true,
+                "Annotation": "",
+                "Truncated": false,
+                "FirstCause": true,
+                "LastCause": false
+              },
+              {
+                "Number": 133,
+                "Content": "                  imagePullPolicy: IfNotPresent",
+                "IsCause": true,
+                "Annotation": "",
+                "Truncated": false,
+                "FirstCause": false,
+                "LastCause": false
+              },
+              {
+                "Number": 134,
+                "Content": "                  name: metrics-server",
+                "IsCause": true,
+                "Annotation": "",
+                "Truncated": false,
+                "FirstCause": false,
+                "LastCause": false
+              },
+              {
+                "Number": 135,
+                "Content": "                  resources: {}",
+                "IsCause": true,
+                "Annotation": "",
+                "Truncated": false,
+                "FirstCause": false,
+                "LastCause": false
+              },
+              {
+                "Number": 136,
+                "Content": "                  terminationMessagePath: /dev/termination-log",
+                "IsCause": true,
+                "Annotation": "",
+                "Truncated": false,
+                "FirstCause": false,
+                "LastCause": false
+              },
+              {
+                "Number": 137,
+                "Content": "                  terminationMessagePolicy: File",
+                "IsCause": true,
+                "Annotation": "",
+                "Truncated": false,
+                "FirstCause": false,
+                "LastCause": false
+              },
+              {
+                "Number": 138,
+                "Content": "                  volumeMounts:",
+                "IsCause": true,
+                "Annotation": "",
+                "Truncated": false,
+                "FirstCause": false,
+                "LastCause": false
+              },
+              {
+                "Number": 139,
+                "Content": "                    - mountPath: /tmp",
+                "IsCause": true,
+                "Annotation": "",
+                "Truncated": false,
+                "FirstCause": false,
+                "LastCause": false
+              },
+              {
+                "Number": 140,
+                "Content": "                      name: tmp-dir",
+                "IsCause": true,
+                "Annotation": "",
+                "Truncated": false,
+                "FirstCause": false,
+                "LastCause": true
+              }
+            ]
+          }
+        }
+      },
+      {
+        "Type": "Kubernetes Security Check",
+        "ID": "KSV021",
+        "AVDID": "AVD-KSV-0021",
+        "Title": "Runs with low group ID",
+        "Description": "Force the container to run with group ID > 10000 to avoid conflicts with the host’s user table.",
+        "Message": "Container 'metrics-server' of Deployment 'metrics-server' should set 'securityContext.runAsGroup' > 10000",
+        "Namespace": "builtin.kubernetes.KSV021",
+        "Query": "data.builtin.kubernetes.KSV021.deny",
+        "Resolution": "Set 'containers[].securityContext.runAsGroup' to an integer > 10000.",
+        "Severity": "LOW",
+        "PrimaryURL": "https://avd.aquasec.com/misconfig/ksv021",
+        "References": [
+          "https://kubesec.io/basics/containers-securitycontext-runasuser/",
+          "https://avd.aquasec.com/misconfig/ksv021"
+        ],
+        "Status": "FAIL",
+        "Layer": {
+
+        },
+        "CauseMetadata": {
+          "Provider": "Kubernetes",
+          "Service": "general",
+          "StartLine": 132,
+          "EndLine": 140,
+          "Code": {
+            "Lines": [
+              {
+                "Number": 132,
+                "Content": "                - image: rancher/metrics-server:v0.3.6",
+                "IsCause": true,
+                "Annotation": "",
+                "Truncated": false,
+                "FirstCause": true,
+                "LastCause": false
+              },
+              {
+                "Number": 133,
+                "Content": "                  imagePullPolicy: IfNotPresent",
+                "IsCause": true,
+                "Annotation": "",
+                "Truncated": false,
+                "FirstCause": false,
+                "LastCause": false
+              },
+              {
+                "Number": 134,
+                "Content": "                  name: metrics-server",
+                "IsCause": true,
+                "Annotation": "",
+                "Truncated": false,
+                "FirstCause": false,
+                "LastCause": false
+              },
+              {
+                "Number": 135,
+                "Content": "                  resources: {}",
+                "IsCause": true,
+                "Annotation": "",
+                "Truncated": false,
+                "FirstCause": false,
+                "LastCause": false
+              },
+              {
+                "Number": 136,
+                "Content": "                  terminationMessagePath: /dev/termination-log",
+                "IsCause": true,
+                "Annotation": "",
+                "Truncated": false,
+                "FirstCause": false,
+                "LastCause": false
+              },
+              {
+                "Number": 137,
+                "Content": "                  terminationMessagePolicy: File",
+                "IsCause": true,
+                "Annotation": "",
+                "Truncated": false,
+                "FirstCause": false,
+                "LastCause": false
+              },
+              {
+                "Number": 138,
+                "Content": "                  volumeMounts:",
+                "IsCause": true,
+                "Annotation": "",
+                "Truncated": false,
+                "FirstCause": false,
+                "LastCause": false
+              },
+              {
+                "Number": 139,
+                "Content": "                    - mountPath: /tmp",
+                "IsCause": true,
+                "Annotation": "",
+                "Truncated": false,
+                "FirstCause": false,
+                "LastCause": false
+              },
+              {
+                "Number": 140,
+                "Content": "                      name: tmp-dir",
+                "IsCause": true,
+                "Annotation": "",
+                "Truncated": false,
+                "FirstCause": false,
+                "LastCause": true
+              }
+            ]
+          }
+        }
+      },
+      {
+        "Type": "Kubernetes Security Check",
+        "ID": "KSV030",
+        "AVDID": "AVD-KSV-0030",
+        "Title": "Default Seccomp profile not set",
+        "Description": "The RuntimeDefault/Localhost seccomp profile must be required, or allow specific additional profiles.",
+        "Message": "Either Pod or Container should set 'securityContext.seccompProfile.type' to 'RuntimeDefault'",
+        "Namespace": "builtin.kubernetes.KSV030",
+        "Query": "data.builtin.kubernetes.KSV030.deny",
+        "Resolution": "Set 'spec.securityContext.seccompProfile.type', 'spec.containers[*].securityContext.seccompProfile' and 'spec.initContainers[*].securityContext.seccompProfile' to 'RuntimeDefault' or undefined.",
+        "Severity": "LOW",
+        "PrimaryURL": "https://avd.aquasec.com/misconfig/ksv030",
+        "References": [
+          "https://kubernetes.io/docs/concepts/security/pod-security-standards/#restricted",
+          "https://avd.aquasec.com/misconfig/ksv030"
+        ],
+        "Status": "FAIL",
+        "Layer": {
+
+        },
+        "CauseMetadata": {
+          "Provider": "Kubernetes",
+          "Service": "general",
+          "StartLine": 132,
+          "EndLine": 140,
+          "Code": {
+            "Lines": [
+              {
+                "Number": 132,
+                "Content": "                - image: rancher/metrics-server:v0.3.6",
+                "IsCause": true,
+                "Annotation": "",
+                "Truncated": false,
+                "FirstCause": true,
+                "LastCause": false
+              },
+              {
+                "Number": 133,
+                "Content": "                  imagePullPolicy: IfNotPresent",
+                "IsCause": true,
+                "Annotation": "",
+                "Truncated": false,
+                "FirstCause": false,
+                "LastCause": false
+              },
+              {
+                "Number": 134,
+                "Content": "                  name: metrics-server",
+                "IsCause": true,
+                "Annotation": "",
+                "Truncated": false,
+                "FirstCause": false,
+                "LastCause": false
+              },
+              {
+                "Number": 135,
+                "Content": "                  resources: {}",
+                "IsCause": true,
+                "Annotation": "",
+                "Truncated": false,
+                "FirstCause": false,
+                "LastCause": false
+              },
+              {
+                "Number": 136,
+                "Content": "                  terminationMessagePath: /dev/termination-log",
+                "IsCause": true,
+                "Annotation": "",
+                "Truncated": false,
+                "FirstCause": false,
+                "LastCause": false
+              },
+              {
+                "Number": 137,
+                "Content": "                  terminationMessagePolicy: File",
+                "IsCause": true,
+                "Annotation": "",
+                "Truncated": false,
+                "FirstCause": false,
+                "LastCause": false
+              },
+              {
+                "Number": 138,
+                "Content": "                  volumeMounts:",
+                "IsCause": true,
+                "Annotation": "",
+                "Truncated": false,
+                "FirstCause": false,
+                "LastCause": false
+              },
+              {
+                "Number": 139,
+                "Content": "                    - mountPath: /tmp",
+                "IsCause": true,
+                "Annotation": "",
+                "Truncated": false,
+                "FirstCause": false,
+                "LastCause": false
+              },
+              {
+                "Number": 140,
+                "Content": "                      name: tmp-dir",
+                "IsCause": true,
+                "Annotation": "",
+                "Truncated": false,
+                "FirstCause": false,
+                "LastCause": true
+              }
+            ]
+          }
+        }
+      },
+      {
+        "Type": "Kubernetes Security Check",
+        "ID": "KSV037",
+        "AVDID": "AVD-KSV-0037",
+        "Title": "User Pods should not be placed in kube-system namespace",
+        "Description": "ensure that User pods are not placed in kube-system namespace",
+        "Message": "Deployment 'metrics-server' should not be set with 'kube-system' namespace",
+        "Namespace": "builtin.kubernetes.KSV037",
+        "Query": "data.builtin.kubernetes.KSV037.deny",
+        "Resolution": "Deploy the use pods into a designated namespace which is not kube-system.",
+        "Severity": "MEDIUM",
+        "PrimaryURL": "https://avd.aquasec.com/misconfig/ksv037",
+        "References": [
+          "https://kubernetes.io/docs/reference/setup-tools/kubeadm/implementation-details/",
+          "https://avd.aquasec.com/misconfig/ksv037"
+        ],
+        "Status": "FAIL",
+        "Layer": {
+
+        },
+        "CauseMetadata": {
+          "Provider": "Kubernetes",
+          "Service": "general",
+          "StartLine": 113,
+          "EndLine": 160,
+          "Code": {
+            "Lines": [
+              {
+                "Number": 113,
+                "Content": "    progressDeadlineSeconds: 600",
+                "IsCause": true,
+                "Annotation": "",
+                "Truncated": false,
+                "FirstCause": true,
+                "LastCause": false
+              },
+              {
+                "Number": 114,
+                "Content": "    replicas: 1",
+                "IsCause": true,
+                "Annotation": "",
+                "Truncated": false,
+                "FirstCause": false,
+                "LastCause": false
+              },
+              {
+                "Number": 115,
+                "Content": "    revisionHistoryLimit: 10",
+                "IsCause": true,
+                "Annotation": "",
+                "Truncated": false,
+                "FirstCause": false,
+                "LastCause": false
+              },
+              {
+                "Number": 116,
+                "Content": "    selector:",
+                "IsCause": true,
+                "Annotation": "",
+                "Truncated": false,
+                "FirstCause": false,
+                "LastCause": false
+              },
+              {
+                "Number": 117,
+                "Content": "        matchLabels:",
+                "IsCause": true,
+                "Annotation": "",
+                "Truncated": false,
+                "FirstCause": false,
+                "LastCause": false
+              },
+              {
+                "Number": 118,
+                "Content": "            k8s-app: metrics-server",
+                "IsCause": true,
+                "Annotation": "",
+                "Truncated": false,
+                "FirstCause": false,
+                "LastCause": false
+              },
+              {
+                "Number": 119,
+                "Content": "    strategy:",
+                "IsCause": true,
+                "Annotation": "",
+                "Truncated": false,
+                "FirstCause": false,
+                "LastCause": false
+              },
+              {
+                "Number": 120,
+                "Content": "        rollingUpdate:",
+                "IsCause": true,
+                "Annotation": "",
+                "Truncated": false,
+                "FirstCause": false,
+                "LastCause": false
+              },
+              {
+                "Number": 121,
+                "Content": "            maxSurge: 25%",
+                "IsCause": true,
+                "Annotation": "",
+                "Truncated": false,
+                "FirstCause": false,
+                "LastCause": true
+              },
+              {
+                "Number": 122,
+                "Content": "",
+                "IsCause": false,
+                "Annotation": "",
+                "Truncated": true,
+                "FirstCause": false,
+                "LastCause": false
+              }
+            ]
+          }
+        }
+      },
+      {
+        "Type": "Kubernetes Security Check",
+        "ID": "KSV106",
+        "AVDID": "AVD-KSV-0106",
+        "Title": "Container capabilities must only include NET_BIND_SERVICE",
+        "Description": "Containers must drop ALL capabilities, and are only permitted to add back the NET_BIND_SERVICE capability.",
+        "Message": "container should drop all",
+        "Namespace": "builtin.kubernetes.KSV106",
+        "Query": "data.builtin.kubernetes.KSV106.deny",
+        "Resolution": "Set 'spec.containers[*].securityContext.capabilities.drop' to 'ALL' and only add 'NET_BIND_SERVICE' to 'spec.containers[*].securityContext.capabilities.add'.",
+        "Severity": "LOW",
+        "PrimaryURL": "https://avd.aquasec.com/misconfig/ksv106",
+        "References": [
+          "https://kubernetes.io/docs/concepts/security/pod-security-standards/#restricted",
+          "https://avd.aquasec.com/misconfig/ksv106"
+        ],
+        "Status": "FAIL",
+        "Layer": {
+
+        },
+        "CauseMetadata": {
+          "Provider": "Kubernetes",
+          "Service": "general",
+          "StartLine": 132,
+          "EndLine": 140,
+          "Code": {
+            "Lines": [
+              {
+                "Number": 132,
+                "Content": "                - image: rancher/metrics-server:v0.3.6",
+                "IsCause": true,
+                "Annotation": "",
+                "Truncated": false,
+                "FirstCause": true,
+                "LastCause": false
+              },
+              {
+                "Number": 133,
+                "Content": "                  imagePullPolicy: IfNotPresent",
+                "IsCause": true,
+                "Annotation": "",
+                "Truncated": false,
+                "FirstCause": false,
+                "LastCause": false
+              },
+              {
+                "Number": 134,
+                "Content": "                  name: metrics-server",
+                "IsCause": true,
+                "Annotation": "",
+                "Truncated": false,
+                "FirstCause": false,
+                "LastCause": false
+              },
+              {
+                "Number": 135,
+                "Content": "                  resources: {}",
+                "IsCause": true,
+                "Annotation": "",
+                "Truncated": false,
+                "FirstCause": false,
+                "LastCause": false
+              },
+              {
+                "Number": 136,
+                "Content": "                  terminationMessagePath: /dev/termination-log",
+                "IsCause": true,
+                "Annotation": "",
+                "Truncated": false,
+                "FirstCause": false,
+                "LastCause": false
+              },
+              {
+                "Number": 137,
+                "Content": "                  terminationMessagePolicy: File",
+                "IsCause": true,
+                "Annotation": "",
+                "Truncated": false,
+                "FirstCause": false,
+                "LastCause": false
+              },
+              {
+                "Number": 138,
+                "Content": "                  volumeMounts:",
+                "IsCause": true,
+                "Annotation": "",
+                "Truncated": false,
+                "FirstCause": false,
+                "LastCause": false
+              },
+              {
+                "Number": 139,
+                "Content": "                    - mountPath: /tmp",
+                "IsCause": true,
+                "Annotation": "",
+                "Truncated": false,
+                "FirstCause": false,
+                "LastCause": false
+              },
+              {
+                "Number": 140,
+                "Content": "                      name: tmp-dir",
+                "IsCause": true,
+                "Annotation": "",
+                "Truncated": false,
+                "FirstCause": false,
+                "LastCause": true
+              }
+            ]
+          }
+        }
+      }
+    ]
+  }
+]
