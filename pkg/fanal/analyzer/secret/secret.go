@@ -88,7 +88,7 @@ func (a *SecretAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInput
 		return nil, xerrors.Errorf("read error %s: %w", input.FilePath, err)
 	}
 
-	content = bytes.Replace(content, []byte("\r"), []byte(""), -1)
+	content = bytes.ReplaceAll(content, []byte("\r"), []byte(""))
 
 	filePath := input.FilePath
 	// Files extracted from the image have an empty input.Dir.

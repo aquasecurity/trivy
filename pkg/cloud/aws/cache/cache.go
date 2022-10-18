@@ -52,7 +52,6 @@ func (c *Cache) load() (*CacheData, error) {
 	if err != nil {
 		return nil, ErrCacheNotFound
 	}
-
 	defer func() { _ = m.Close() }()
 
 	var data CacheData

@@ -433,7 +433,6 @@ func TestScanner_IsSupportedVersion(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			s := redhat.NewScanner(redhat.WithClock(fake.NewFakeClock(tt.now)))
-
 			got := s.IsSupportedVersion(tt.args.osFamily, tt.args.osVer)
 			assert.Equal(t, tt.want, got)
 		})

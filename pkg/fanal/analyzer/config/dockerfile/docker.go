@@ -29,7 +29,7 @@ func (s dockerConfigAnalyzer) Analyze(_ context.Context, input analyzer.Analysis
 	if err != nil {
 		return nil, xerrors.Errorf("failed to read %s: %w", input.FilePath, err)
 	}
-	b = bytes.Replace(b, []byte("\r"), []byte(""), -1)
+	b = bytes.ReplaceAll(b, []byte("\r"), []byte(""))
 
 	return &analyzer.AnalysisResult{
 		Files: map[types.HandlerType][]types.File{
