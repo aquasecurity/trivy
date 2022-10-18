@@ -2,6 +2,7 @@ package cache
 
 import (
 	"path/filepath"
+	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -26,7 +27,7 @@ func TestCalcKey(t *testing.T) {
 		name    string
 		args    args
 		want    string
-		wantErr string
+		wantErr []string
 	}{
 		{
 			name: "happy path",
@@ -153,7 +154,7 @@ func TestCalcKey(t *testing.T) {
 				},
 				policy: []string{"policydir"},
 			},
-			wantErr: "no such file or directory",
+			wantErr: []string{"no such file or directory", "The system cannot find the file specified"},
 		},
 	}
 	for _, tt := range tests {
@@ -169,9 +170,16 @@ func TestCalcKey(t *testing.T) {
 				},
 			}
 			got, err := CalcKey(tt.args.key, tt.args.analyzerVersions, tt.args.hookVersions, artifactOpt)
-			if tt.wantErr != "" {
+			if len(tt.wantErr) > 0 {
 				require.Error(t, err)
-				assert.Contains(t, err.Error(), tt.wantErr)
+				found := false
+				for _, wantErr := range tt.wantErr {
+					if strings.Contains(err.Error(), wantErr) {
+						found = true
+						break
+					}
+				}
+				assert.True(t, found)
 				return
 			}
 			assert.NoError(t, err)

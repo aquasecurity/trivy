@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"path/filepath"
+	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -21,7 +22,7 @@ func TestArtifact_Inspect(t *testing.T) {
 		filePath           string
 		putBlobExpectation cache.ArtifactCachePutBlobExpectation
 		want               types.ArtifactReference
-		wantErr            string
+		wantErr            []string
 	}{
 		{
 			name:     "happy path",
@@ -52,7 +53,7 @@ func TestArtifact_Inspect(t *testing.T) {
 						Applications: []types.Application{
 							{
 								Type:     "composer",
-								FilePath: filepath.Join("app", "composer", "composer.lock"),
+								FilePath: "app/composer/composer.lock",
 								Libraries: []types.Package{
 									{
 										Name:    "pear/log",
@@ -75,7 +76,7 @@ func TestArtifact_Inspect(t *testing.T) {
 							},
 							{
 								Type:     "gobinary",
-								FilePath: filepath.Join("app", "gobinary", "gobinary"),
+								FilePath: "app/gobinary/gobinary",
 								Libraries: []types.Package{
 									{
 										Name:    "github.com/package-url/packageurl-go",
@@ -239,8 +240,8 @@ func TestArtifact_Inspect(t *testing.T) {
 		},
 		{
 			name:     "sad path with no such directory",
-			filePath: "./testdata/unknown.json",
-			wantErr:  "no such file or directory",
+			filePath: filepath.Join("testdata", "unknown.json"),
+			wantErr:  []string{"no such file or directory", "The system cannot find the file specified"},
 		},
 		{
 			name:     "sad path PutBlob returns an error",
@@ -263,7 +264,7 @@ func TestArtifact_Inspect(t *testing.T) {
 					Err: errors.New("error"),
 				},
 			},
-			wantErr: "failed to store blob",
+			wantErr: []string{"failed to store blob"},
 		},
 	}
 	for _, tt := range tests {
@@ -275,9 +276,16 @@ func TestArtifact_Inspect(t *testing.T) {
 			require.NoError(t, err)
 
 			got, err := a.Inspect(context.Background())
-			if tt.wantErr != "" {
+			if len(tt.wantErr) > 0 {
 				require.NotNil(t, err)
-				assert.Contains(t, err.Error(), tt.wantErr)
+				found := false
+				for _, wantErr := range tt.wantErr {
+					if strings.Contains(err.Error(), wantErr) {
+						found = true
+						break
+					}
+				}
+				assert.True(t, found)
 				return
 			}
 

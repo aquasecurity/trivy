@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"runtime"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -88,39 +89,59 @@ func Test_FindingFSTarget(t *testing.T) {
 			wantPaths:  []string{"."},
 		},
 		{
-			input:      []string{filepath.Join("home", "user")},
+			input:      []string{filepath.Join(string(os.PathSeparator), "home", "user")},
 			wantTarget: "/home/user",
 			wantPaths:  []string{"."},
 		},
 		{
-			input:      []string{filepath.Join("home", "user"), filepath.Join("home", "user", "something")},
-			wantTarget: "/home/user",
-			wantPaths:  []string{".", "something"},
+			input: []string{
+				filepath.Join(string(os.PathSeparator), "home", "user"),
+				filepath.Join(string(os.PathSeparator), "home", "user", "something"),
+			},
+			wantTarget: filepath.Join(string(os.PathSeparator), "home", "user"),
+			wantPaths:  []string{".", "/something"},
 		},
 		{
-			input:      []string{filepath.Join("home", "user"), filepath.Join("home", "user", "something", "else")},
-			wantTarget: "/home/user",
-			wantPaths:  []string{".", "something/else"},
+			input: []string{
+				filepath.Join(string(os.PathSeparator), "home", "user"),
+				filepath.Join(string(os.PathSeparator), "home", "user", "something", "else"),
+			},
+			wantTarget: filepath.Join(string(os.PathSeparator), "home", "user"),
+			wantPaths:  []string{".", "/something/else"},
 		},
 		{
-			input:      []string{filepath.Join("home", "user"), filepath.Join("home", "user2", "something", "else")},
-			wantTarget: "/home",
-			wantPaths:  []string{"user", "user2/something/else"},
+			input: []string{
+				filepath.Join(string(os.PathSeparator), "home", "user"),
+				filepath.Join(string(os.PathSeparator), "home", "user2", "something", "else"),
+			},
+			wantTarget: filepath.Join(string(os.PathSeparator), "home"),
+			wantPaths:  []string{"/user", "/user2/something/else"},
 		},
 		{
-			input:      []string{"/foo", "/bar"},
-			wantTarget: "/",
-			wantPaths:  []string{"foo", "bar"},
+			input: []string{
+				filepath.Join(string(os.PathSeparator), "foo"), filepath.Join(string(os.PathSeparator), "bar"),
+			},
+			wantTarget: "",
+			wantPaths:  []string{"/foo", "/bar"},
 		},
 		{
-			input:      []string{"/", "/bar"},
-			wantTarget: "/",
-			wantPaths:  []string{".", "bar"},
+			input:      []string{string(os.PathSeparator), filepath.Join(string(os.PathSeparator), "bar")},
+			wantTarget: "",
+			wantPaths:  []string{"/", "/bar"},
 		},
 	}
 
 	for _, test := range tests {
 		t.Run(fmt.Sprintf("%#v", test.input), func(t *testing.T) {
+
+			if runtime.GOOS == "windows" {
+				if test.wantTarget != "" {
+					test.wantTarget = filepath.Join("C:", test.wantTarget)
+				} else {
+					test.wantTarget = "C:"
+				}
+			}
+
 			target, paths, err := findFSTarget(test.input)
 			if test.wantErr {
 				require.Error(t, err)

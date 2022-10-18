@@ -129,5 +129,6 @@ func (c *Cache) AddServices(state *state.State, includedServices []string) error
 	if err != nil {
 		return err
 	}
+	defer func() { _ = f.Close() }()
 	return json.NewEncoder(f).Encode(data)
 }
