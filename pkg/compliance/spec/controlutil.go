@@ -25,7 +25,7 @@ func GetScannerTypes(complianceSpec string) ([]types.SecurityCheck, error) {
 			}
 		}
 	}
-	return scannerTypes,nil
+	return scannerTypes, nil
 }
 
 // ValidateScanners validate that scanner types are supported
