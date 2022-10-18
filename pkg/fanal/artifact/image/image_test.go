@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"path/filepath"
+	"runtime"
 	"testing"
 	"time"
 
@@ -36,6 +37,7 @@ import (
 )
 
 func TestArtifact_Inspect(t *testing.T) {
+<<<<<<< HEAD
 	alpinePkgs := []types.Package{
 		{
 			ID:   "alpine-baselayout@3.2.0-r3",
@@ -155,6 +157,11 @@ func TestArtifact_Inspect(t *testing.T) {
 		},
 	}
 
+=======
+	if runtime.GOOS == "windows" {
+		t.Skip("skipping test on Windows")
+	}
+>>>>>>> 480da748 (image test skipped for windows)
 	tests := []struct {
 		name                    string
 		imagePath               string
