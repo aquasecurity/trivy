@@ -1,5 +1,5 @@
 
-Summary Report for compliance nsa
+Summary Report for compliance: nsa
 ┌─────┬──────────┬──────────────────────────────────┬────────────┐
 │ ID  │ Severity │           Control Name           │ Compliance │
 ├─────┼──────────┼──────────────────────────────────┼────────────┤

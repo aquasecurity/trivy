@@ -38,11 +38,12 @@ type ComplianceReport struct {
 }
 
 type ControlCheckResult struct {
-	ControlCheckID     string        `json:"id"`
-	ControlName        string        `json:"name"`
-	ControlDescription string        `json:"description"`
-	ControlSeverity    string        `json:"severity"`
-	Checks             types.Results `json:"checksResults"`
+	ControlCheckID     string             `json:"id"`
+	ControlName        string             `json:"name"`
+	ControlDescription string             `json:"description"`
+	DefaultStatus      spec.ControlStatus `json:"defaultStatus,omitempty"`
+	ControlSeverity    string             `json:"severity"`
+	Checks             types.Results      `json:"checksResults"`
 }
 
 // ConsolidatedReport represents a kubernetes scan report with consolidated findings
@@ -103,6 +104,7 @@ func buildControlCheckResults(checksMap map[string]types.Results, controls []spe
 		cr.ControlCheckID = control.ID
 		cr.ControlDescription = control.Description
 		cr.ControlSeverity = string(control.Severity)
+		cr.DefaultStatus = control.DefaultStatus
 		for _, c := range control.Checks {
 			cr.Checks = append(cr.Checks, checksMap[c.ID]...)
 		}

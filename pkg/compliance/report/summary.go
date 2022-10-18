@@ -9,6 +9,7 @@ import (
 
 	"github.com/aquasecurity/table"
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
+	"github.com/aquasecurity/trivy/pkg/compliance/spec"
 	pkgReport "github.com/aquasecurity/trivy/pkg/report/table"
 )
 
@@ -18,7 +19,9 @@ func BuildSummary(cr *ComplianceReport) *SummaryReport {
 		ccm := ControlCheckSummary{ControlCheckID: control.ControlCheckID, ControlName: control.ControlName, ControlSeverity: control.ControlSeverity}
 		var totalFail, totalPass float32
 		if len(control.Checks) == 0 { // this validation is mainly for vuln type
-			ccm.TotalPass = 1
+			if control.DefaultStatus == spec.PassStatus {
+				ccm.TotalPass = 1
+			}
 			ccma = append(ccma, ccm)
 			continue
 		}
@@ -74,7 +77,7 @@ func (s SummaryWriter) Write(report *ComplianceReport) error {
 		return xerrors.Errorf("failed to write summary report: %w", err)
 	}
 
-	if _, err := fmt.Fprintf(s.Output, "Summary Report for compliance %s\n", report.Title); err != nil {
+	if _, err := fmt.Fprintf(s.Output, "Summary Report for compliance: %s\n", report.Title); err != nil {
 		return xerrors.Errorf("failed to write summary report: %w", err)
 	}
 	sr := BuildSummary(report)
@@ -107,7 +110,7 @@ func (s SummaryWriter) generateSummary(summaryControls ControlCheckSummary) []st
 
 func calculatePercentage(totalFail float32, totalPass float32) string {
 	if totalPass == 0 && totalFail == 0 {
-		return fmt.Sprintf("%.2f", 100.00) + "%"
+		return fmt.Sprintf("%.2f", 0.00) + "%"
 	}
 	relPass := totalPass / (totalFail + totalPass)
 	return fmt.Sprintf("%.2f", relPass*100.0) + "%"
