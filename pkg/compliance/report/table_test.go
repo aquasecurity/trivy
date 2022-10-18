@@ -15,7 +15,6 @@ func TestTableReport(t *testing.T) {
 		name                  string
 		specPath              string
 		resultPath            string
-		complainceReportPath  string
 		reportType            string
 		wantSummaryReportPath string
 	}{

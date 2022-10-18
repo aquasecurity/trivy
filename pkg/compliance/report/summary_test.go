@@ -14,7 +14,6 @@ func TestBuildSummary(t *testing.T) {
 		name                  string
 		specPath              string
 		resultPath            string
-		complainceReportPath  string
 		wantSummaryReportPath string
 	}{
 		{name: "build report summary config only", specPath: "./testdata/config_spec.yaml", resultPath: "./testdata/results_config.json", wantSummaryReportPath: "./testdata/report_summary.json"},

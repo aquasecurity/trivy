@@ -17,7 +17,6 @@ func TestReport(t *testing.T) {
 		name                  string
 		specPath              string
 		resultPath            string
-		complainceReportPath  string
 		Option                Option
 		wantSummaryReportPath string
 		expectError           bool
@@ -59,10 +58,10 @@ func TestBuildComplianceReportResults(t *testing.T) {
 		name                 string
 		specPath             string
 		resultPath           string
-		complainceReportPath string
+		complianceReportPath string
 	}{
-		{name: "build report test config only", specPath: "./testdata/config_spec.yaml", resultPath: "./testdata/results_config.json", complainceReportPath: "./testdata/compliance_report.json"},
-		{name: "build report test config and vuln", specPath: "./testdata/config_vuln_spec.yaml", resultPath: "./testdata/results_vul_config.json", complainceReportPath: "./testdata/vuln_config_compliance.json"}}
+		{name: "build report test config only", specPath: "./testdata/config_spec.yaml", resultPath: "./testdata/results_config.json", complianceReportPath: "./testdata/compliance_report.json"},
+		{name: "build report test config and vuln", specPath: "./testdata/config_vuln_spec.yaml", resultPath: "./testdata/results_vul_config.json", complianceReportPath: "./testdata/vuln_config_compliance.json"}}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -74,10 +73,10 @@ func TestBuildComplianceReportResults(t *testing.T) {
 			assert.NoError(t, err)
 			pp, err := BuildComplianceReport([]types.Results{res}, string(specFile))
 			assert.NoError(t, err)
-			complainceReport, err := os.ReadFile(tt.complainceReportPath)
+			complianceReport, err := os.ReadFile(tt.complianceReportPath)
 			assert.NoError(t, err)
 			var cp ComplianceReport
-			err = json.Unmarshal(complainceReport, &cp)
+			err = json.Unmarshal(complianceReport, &cp)
 			assert.NoError(t, err)
 			assert.True(t, reflect.DeepEqual(&cp, pp))
 

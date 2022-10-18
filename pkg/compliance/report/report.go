@@ -73,12 +73,12 @@ func Write(report *ComplianceReport, option Option, showEmpty bool) error {
 		return jwriter.Write(report)
 	case tableFormat:
 		if !report.empty() || showEmpty {
-			complainceWriter := &TableWriter{
+			complianceWriter := &TableWriter{
 				Output:     option.Output,
 				Report:     option.Report,
 				Severities: option.Severities,
 			}
-			err := complainceWriter.Write(report)
+			err := complianceWriter.Write(report)
 			if err != nil {
 				return err
 			}
@@ -124,7 +124,7 @@ func buildComplianceReportResults(checksMap map[string]types.Results, spec spec.
 }
 
 func BuildComplianceReport(scanResults []types.Results, complianceSpec string) (*ComplianceReport, error) {
-	// load complaince spec
+	// load compliance spec
 	cs := spec.ComplianceSpec{}
 	err := yaml.Unmarshal([]byte(complianceSpec), &cs)
 	if err != nil {

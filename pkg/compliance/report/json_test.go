@@ -12,12 +12,11 @@ import (
 
 func TestJSONReport(t *testing.T) {
 	tests := []struct {
-		name                 string
-		specPath             string
-		resultPath           string
-		complainceReportPath string
-		reportType           string
-		wantJsonReportPath   string
+		name               string
+		specPath           string
+		resultPath         string
+		reportType         string
+		wantJsonReportPath string
 	}{
 		{name: "build json report summary", specPath: "./testdata/config_spec.yaml", reportType: "summary", resultPath: "./testdata/results_config.json", wantJsonReportPath: "./testdata/json_summary.json"},
 		{name: "build json report", specPath: "./testdata/config_spec.yaml", reportType: "all", resultPath: "./testdata/results_config.json", wantJsonReportPath: "./testdata/json_view.json"},
