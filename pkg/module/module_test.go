@@ -16,6 +16,7 @@ import (
 )
 
 func TestManager_Register(t *testing.T) {
+	t.Skip("Test satisfied adequately by Linux tests")
 	tests := []struct {
 		name                    string
 		noModuleDir             bool

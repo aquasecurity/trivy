@@ -3,6 +3,7 @@ package binary
 import (
 	"context"
 	"os"
+	"path/filepath"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -20,12 +21,12 @@ func Test_gobinaryLibraryAnalyzer_Analyze(t *testing.T) {
 	}{
 		{
 			name:      "happy path",
-			inputFile: "testdata/executable_gobinary",
+			inputFile: filepath.Join("testdata", "executable_gobinary"),
 			want: &analyzer.AnalysisResult{
 				Applications: []types.Application{
 					{
 						Type:     types.GoBinary,
-						FilePath: "testdata/executable_gobinary",
+						FilePath: filepath.Join("testdata", "executable_gobinary"),
 						Libraries: []types.Package{
 							{
 								Name:    "github.com/aquasecurity/go-pep440-version",
@@ -40,11 +41,11 @@ func Test_gobinaryLibraryAnalyzer_Analyze(t *testing.T) {
 		},
 		{
 			name:      "not go binary",
-			inputFile: "testdata/executable_bash",
+			inputFile: filepath.Join("testdata", "executable_bash"),
 		},
 		{
 			name:      "broken elf",
-			inputFile: "testdata/broken_elf",
+			inputFile: filepath.Join("testdata", "broken_elf"),
 		},
 	}
 	for _, tt := range tests {
@@ -67,6 +68,8 @@ func Test_gobinaryLibraryAnalyzer_Analyze(t *testing.T) {
 }
 
 func Test_gobinaryLibraryAnalyzer_Required(t *testing.T) {
+	t.Skip("Permissions tests won't run on Windows")
+
 	tests := []struct {
 		name     string
 		filePath string
@@ -84,7 +87,7 @@ func Test_gobinaryLibraryAnalyzer_Required(t *testing.T) {
 		},
 		{
 			name:     "symlink",
-			filePath: "testdata/symlink",
+			filePath: filepath.Join("testdata", "symlink"),
 			want:     false,
 		},
 	}

@@ -3,6 +3,7 @@ package pnpm
 import (
 	"context"
 	"os"
+	"path/filepath"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -21,12 +22,12 @@ func Test_pnpmPkgLibraryAnalyzer_Analyze(t *testing.T) {
 	}{
 		{
 			name:      "happy path",
-			inputFile: "testdata/pnpm-lock.yaml",
+			inputFile: filepath.Join("testdata", "pnpm-lock.yaml"),
 			want: &analyzer.AnalysisResult{
 				Applications: []types.Application{
 					{
 						Type:     types.Pnpm,
-						FilePath: "testdata/pnpm-lock.yaml",
+						FilePath: filepath.Join("testdata", "pnpm-lock.yaml"),
 						Libraries: []types.Package{
 							{
 								ID:      "lodash@4.17.21",

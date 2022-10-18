@@ -3,6 +3,7 @@ package dpkg
 import (
 	"context"
 	"os"
+	"path/filepath"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -22,7 +23,7 @@ func Test_dpkgLicenseAnalyzer_Analyze(t *testing.T) {
 		{
 			name:     "machine-readable format",
 			filePath: "usr/share/doc/zlib1g/copyright",
-			testFile: "testdata/license-pattern-and-classifier-copyright",
+			testFile: filepath.Join("testdata", "license-pattern-and-classifier-copyright"),
 			want: &analyzer.AnalysisResult{
 				Licenses: []types.LicenseFile{
 					{
@@ -42,7 +43,7 @@ func Test_dpkgLicenseAnalyzer_Analyze(t *testing.T) {
 		{
 			name:     "common-licenses format",
 			filePath: "usr/share/doc/adduser/copyright",
-			testFile: "testdata/common-license-copyright",
+			testFile: filepath.Join("testdata", "common-license-copyright"),
 			want: &analyzer.AnalysisResult{
 				Licenses: []types.LicenseFile{
 					{
@@ -59,7 +60,7 @@ func Test_dpkgLicenseAnalyzer_Analyze(t *testing.T) {
 		{
 			name:     "machine-readable and common-licenses format",
 			filePath: "usr/share/doc/apt/copyright",
-			testFile: "testdata/all-patterns-copyright",
+			testFile: filepath.Join("testdata", "all-patterns-copyright"),
 			want: &analyzer.AnalysisResult{
 				Licenses: []types.LicenseFile{
 					{
@@ -76,7 +77,7 @@ func Test_dpkgLicenseAnalyzer_Analyze(t *testing.T) {
 		{
 			name:     "no license found",
 			filePath: "usr/share/doc/tzdata/copyright",
-			testFile: "testdata/no-license-copyright",
+			testFile: filepath.Join("testdata", "no-license-copyright"),
 			want:     nil,
 		},
 	}

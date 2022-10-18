@@ -3,6 +3,7 @@ package ubuntu
 import (
 	"context"
 	"os"
+	"path/filepath"
 	"testing"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
@@ -22,14 +23,14 @@ func Test_ubuntuOSAnalyzer_Analyze(t *testing.T) {
 	}{
 		{
 			name:      "happy path",
-			inputFile: "testdata/lsb-release",
+			inputFile: filepath.Join("testdata", "lsb-release"),
 			want: &analyzer.AnalysisResult{
 				OS: &types.OS{Family: "ubuntu", Name: "18.04"},
 			},
 		},
 		{
 			name:      "sad path",
-			inputFile: "testdata/invalid",
+			inputFile: filepath.Join("testdata", "invalid"),
 			wantErr:   "ubuntu: unable to analyze OS information",
 		},
 	}

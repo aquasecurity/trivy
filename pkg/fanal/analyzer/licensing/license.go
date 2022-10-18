@@ -1,6 +1,7 @@
 package licensing
 
 import (
+	"bytes"
 	"context"
 	"fmt"
 	"io"
@@ -68,13 +69,14 @@ func (a licenseFileAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisI
 	if err != nil {
 		return nil, xerrors.Errorf("read error %s: %w", input.FilePath, err)
 	}
+	content = bytes.Replace(content, []byte("\r"), []byte(""), -1)
 
 	filePath := input.FilePath
 	// Files extracted from the image have an empty input.Dir.
 	// Also, paths to these files do not have "/" prefix.
 	// We need to add a "/" prefix to properly filter paths from the config file.
-	if input.Dir == "" { // add leading `/` for files extracted from image
-		filePath = fmt.Sprintf("/%s", filePath)
+	if input.Dir == "" { // add leading path separator for files extracted from image
+		filePath = fmt.Sprintf("%c%s", os.PathSeparator, filePath)
 	}
 
 	lf, err := licensing.FullClassify(filePath, content)

@@ -3,6 +3,7 @@ package walker_test
 import (
 	"errors"
 	"os"
+	"runtime"
 	"strings"
 	"testing"
 
@@ -16,6 +17,9 @@ import (
 )
 
 func TestLayerTar_Walk(t *testing.T) {
+	if runtime.GOOS == "windows" {
+		t.Skip("skipping test on Windows")
+	}
 	type fields struct {
 		skipFiles []string
 		skipDirs  []string

@@ -3,6 +3,7 @@ package local
 import (
 	"context"
 	"errors"
+	"path/filepath"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -45,7 +46,7 @@ func TestArtifact_Inspect(t *testing.T) {
 			},
 			putBlobExpectation: cache.ArtifactCachePutBlobExpectation{
 				Args: cache.ArtifactCachePutBlobArgs{
-					BlobID: "sha256:7177f27ce94e21305ba8efe2ced3533ba9be66bd251aaa217615469a29ed86a9",
+					BlobID: "sha256:658c6963af963e5537c5330857d082fceeee4f916c3223b280c7b815d7be7787",
 					BlobInfo: types.BlobInfo{
 						SchemaVersion: types.BlobJSONSchemaVersion,
 						OS: &types.OS{
@@ -71,9 +72,10 @@ func TestArtifact_Inspect(t *testing.T) {
 			want: types.ArtifactReference{
 				Name: "host",
 				Type: types.ArtifactFilesystem,
-				ID:   "sha256:7177f27ce94e21305ba8efe2ced3533ba9be66bd251aaa217615469a29ed86a9",
+
+				ID: "sha256:658c6963af963e5537c5330857d082fceeee4f916c3223b280c7b815d7be7787",
 				BlobIDs: []string{
-					"sha256:7177f27ce94e21305ba8efe2ced3533ba9be66bd251aaa217615469a29ed86a9",
+					"sha256:658c6963af963e5537c5330857d082fceeee4f916c3223b280c7b815d7be7787",
 				},
 			},
 		},
@@ -147,7 +149,7 @@ func TestArtifact_Inspect(t *testing.T) {
 		{
 			name: "happy path with single file",
 			fields: fields{
-				dir: "testdata/requirements.txt",
+				dir: filepath.Join("testdata", "requirements.txt"),
 			},
 			putBlobExpectation: cache.ArtifactCachePutBlobExpectation{
 				Args: cache.ArtifactCachePutBlobArgs{
@@ -171,7 +173,7 @@ func TestArtifact_Inspect(t *testing.T) {
 				Returns: cache.ArtifactCachePutBlobReturns{},
 			},
 			want: types.ArtifactReference{
-				Name: "testdata/requirements.txt",
+				Name: filepath.Join("testdata", "requirements.txt"),
 				Type: types.ArtifactFilesystem,
 				ID:   "sha256:2d951e57cafb6f05f16ae0c70aad084bc613464d53beb2bfc448a7300f62dc7d",
 				BlobIDs: []string{
@@ -206,7 +208,7 @@ func TestArtifact_Inspect(t *testing.T) {
 				Returns: cache.ArtifactCachePutBlobReturns{},
 			},
 			want: types.ArtifactReference{
-				Name: "testdata/requirements.txt",
+				Name: filepath.Join("testdata", "requirements.txt"),
 				Type: types.ArtifactFilesystem,
 				ID:   "sha256:2d951e57cafb6f05f16ae0c70aad084bc613464d53beb2bfc448a7300f62dc7d",
 				BlobIDs: []string{

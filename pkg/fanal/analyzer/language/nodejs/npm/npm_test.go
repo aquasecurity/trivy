@@ -3,6 +3,7 @@ package npm
 import (
 	"context"
 	"os"
+	"path/filepath"
 	"sort"
 	"strings"
 	"testing"
@@ -23,12 +24,12 @@ func Test_npmLibraryAnalyzer_Analyze(t *testing.T) {
 	}{
 		{
 			name:      "happy path",
-			inputFile: "testdata/package-lock.json",
+			inputFile: filepath.Join("testdata", "package-lock.json"),
 			want: &analyzer.AnalysisResult{
 				Applications: []types.Application{
 					{
 						Type:     types.Npm,
-						FilePath: "testdata/package-lock.json",
+						FilePath: filepath.Join("testdata", "package-lock.json"),
 						Libraries: []types.Package{
 							{
 								ID:       "array-flatten@1.1.1",
@@ -120,7 +121,7 @@ func Test_npmLibraryAnalyzer_Analyze(t *testing.T) {
 		},
 		{
 			name:      "sad path",
-			inputFile: "testdata/wrong.json",
+			inputFile: filepath.Join("testdata", "wrong.json"),
 			wantErr:   "unable to parse testdata/wrong.json",
 		},
 	}

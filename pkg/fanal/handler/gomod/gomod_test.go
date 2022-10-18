@@ -2,6 +2,7 @@ package gomod
 
 import (
 	"context"
+	"path/filepath"
 	"testing"
 
 	"golang.org/x/exp/slices"
@@ -179,7 +180,7 @@ func Test_gomodMergeHook_Hook(t *testing.T) {
 				Applications: []types.Application{
 					{
 						Type:     types.GoModule,
-						FilePath: "/app/go.mod",
+						FilePath: filepath.Join("app", "go.mod"),
 						Libraries: []types.Package{
 							{
 								Name:    "github.com/aquasecurity/go-dep-parser",

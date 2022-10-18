@@ -5,6 +5,8 @@ import (
 	"errors"
 	"fmt"
 	"os"
+	"path/filepath"
+	"runtime"
 	"sync"
 	"testing"
 
@@ -284,16 +286,17 @@ func TestAnalyzeFile(t *testing.T) {
 		filePatterns      []string
 	}
 	tests := []struct {
-		name    string
-		args    args
-		want    *analyzer.AnalysisResult
-		wantErr string
+		name        string
+		args        args
+		want        *analyzer.AnalysisResult
+		wantErr     string
+		skipWindows bool
 	}{
 		{
 			name: "happy path with os analyzer",
 			args: args{
 				filePath:     "/etc/alpine-release",
-				testFilePath: "testdata/etc/alpine-release",
+				testFilePath: filepath.Join("testdata", "etc", "alpine-release"),
 			},
 			want: &analyzer.AnalysisResult{
 				OS: &types.OS{
@@ -306,7 +309,7 @@ func TestAnalyzeFile(t *testing.T) {
 			name: "happy path with disabled os analyzer",
 			args: args{
 				filePath:          "/etc/alpine-release",
-				testFilePath:      "testdata/etc/alpine-release",
+				testFilePath:      filepath.Join("testdata", "etc", "alpine-release"),
 				disabledAnalyzers: []analyzer.Type{analyzer.TypeAlpine},
 			},
 			want: &analyzer.AnalysisResult{},
@@ -315,7 +318,7 @@ func TestAnalyzeFile(t *testing.T) {
 			name: "happy path with package analyzer",
 			args: args{
 				filePath:     "/lib/apk/db/installed",
-				testFilePath: "testdata/lib/apk/db/installed",
+				testFilePath: filepath.Join("testdata", "lib", "apk", "db", "installed"),
 			},
 			want: &analyzer.AnalysisResult{
 				PackageInfos: []types.PackageInfo{
@@ -329,6 +332,7 @@ func TestAnalyzeFile(t *testing.T) {
 								SrcName:    "musl",
 								SrcVersion: "1.1.24-r2",
 								Licenses:   []string{"MIT"},
+
 							},
 						},
 					},
@@ -338,12 +342,13 @@ func TestAnalyzeFile(t *testing.T) {
 					"lib/ld-musl-x86_64.so.1",
 				},
 			},
+			skipWindows: true,
 		},
 		{
 			name: "happy path with disabled package analyzer",
 			args: args{
 				filePath:          "/lib/apk/db/installed",
-				testFilePath:      "testdata/lib/apk/db/installed",
+				testFilePath:      filepath.Join("testdata", "lib", "apk", "db", "installed"),
 				disabledAnalyzers: []analyzer.Type{analyzer.TypeApk},
 			},
 			want: &analyzer.AnalysisResult{},
@@ -352,7 +357,7 @@ func TestAnalyzeFile(t *testing.T) {
 			name: "happy path with library analyzer",
 			args: args{
 				filePath:     "/app/Gemfile.lock",
-				testFilePath: "testdata/app/Gemfile.lock",
+				testFilePath: filepath.Join("testdata", "app", "Gemfile.lock"),
 			},
 			want: &analyzer.AnalysisResult{
 				Applications: []types.Application{
@@ -381,7 +386,7 @@ func TestAnalyzeFile(t *testing.T) {
 			name: "happy path with a directory",
 			args: args{
 				filePath:     "/etc/lsb-release",
-				testFilePath: "testdata/etc",
+				testFilePath: filepath.Join("testdata", "etc"),
 			},
 			want: &analyzer.AnalysisResult{},
 		},
@@ -411,7 +416,7 @@ func TestAnalyzeFile(t *testing.T) {
 			name: "ignore permission error",
 			args: args{
 				filePath:     "/etc/alpine-release",
-				testFilePath: "testdata/no-permission",
+				testFilePath: filepath.Join("testdata", "no-permission"),
 			},
 			want: &analyzer.AnalysisResult{},
 		},
@@ -419,7 +424,7 @@ func TestAnalyzeFile(t *testing.T) {
 			name: "sad path with opener error",
 			args: args{
 				filePath:     "/lib/apk/db/installed",
-				testFilePath: "testdata/error",
+				testFilePath: filepath.Join("testdata", "error"),
 			},
 			wantErr: "unable to open /lib/apk/db/installed",
 		},
@@ -443,6 +448,9 @@ func TestAnalyzeFile(t *testing.T) {
 		},
 	}
 	for _, tt := range tests {
+		if tt.skipWindows && runtime.GOOS == "windows" {
+			t.Skip(fmt.Sprint("skipping test on windows: ", tt.name))
+		}
 		t.Run(tt.name, func(t *testing.T) {
 			var wg sync.WaitGroup
 			limit := semaphore.NewWeighted(3)
@@ -465,9 +473,9 @@ func TestAnalyzeFile(t *testing.T) {
 			ctx := context.Background()
 			err = a.AnalyzeFile(ctx, &wg, limit, got, "", tt.args.filePath, info,
 				func() (dio.ReadSeekCloserAt, error) {
-					if tt.args.testFilePath == "testdata/error" {
+					if tt.args.testFilePath == filepath.Join("testdata", "error") {
 						return nil, xerrors.New("error")
-					} else if tt.args.testFilePath == "testdata/no-permission" {
+					} else if tt.args.testFilePath == filepath.Join("testdata", "no-permission") {
 						os.Chmod(tt.args.testFilePath, 0000)
 						t.Cleanup(func() {
 							os.Chmod(tt.args.testFilePath, 0644)

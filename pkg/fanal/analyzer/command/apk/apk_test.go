@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"os"
+	"path/filepath"
 	"reflect"
 	"sort"
 	"testing"
@@ -20,7 +21,7 @@ import (
 
 func TestAnalyze(t *testing.T) {
 	testServer := httptest.NewServer(http.HandlerFunc(func(res http.ResponseWriter, req *http.Request) {
-		content, err := ioutil.ReadFile("testdata/history_v3.9.json")
+		content, err := ioutil.ReadFile(filepath.Join("testdata", "history_v3.9.json"))
 		if err != nil {
 			http.Error(res, err.Error(), http.StatusInternalServerError)
 			return

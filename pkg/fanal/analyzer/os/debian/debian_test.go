@@ -3,6 +3,7 @@ package debian
 import (
 	"context"
 	"os"
+	"path/filepath"
 	"testing"
 
 	aos "github.com/aquasecurity/trivy/pkg/fanal/analyzer/os"
@@ -23,7 +24,7 @@ func Test_debianOSAnalyzer_Analyze(t *testing.T) {
 	}{
 		{
 			name:      "happy path with debian 9",
-			inputFile: "testdata/debian_9/etc/debian_version",
+			inputFile: filepath.Join("testdata/debian_9/etc/debian_version"),
 			want: &analyzer.AnalysisResult{
 				OS: &types.OS{
 					Family: aos.Debian,
@@ -43,7 +44,7 @@ func Test_debianOSAnalyzer_Analyze(t *testing.T) {
 		},
 		{
 			name:      "sad path with empty file",
-			inputFile: "testdata/empty",
+			inputFile: filepath.Join("testdata", "empty"),
 			wantErr:   "debian: unable to analyze OS information",
 		},
 	}

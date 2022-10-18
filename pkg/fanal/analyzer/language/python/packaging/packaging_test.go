@@ -3,6 +3,7 @@ package packaging
 import (
 	"context"
 	"os"
+	"path/filepath"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -100,7 +101,7 @@ func Test_packagingAnalyzer_Analyze(t *testing.T) {
 		},
 		{
 			name:      "egg zip doesn't contain required files",
-			inputFile: "testdata/no-required-files.egg",
+			inputFile: filepath.Join("testdata", "no-required-files.egg"),
 			want:      nil,
 		},
 	}

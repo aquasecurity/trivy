@@ -3,6 +3,7 @@ package yaml
 import (
 	"context"
 	"os"
+	"path/filepath"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -30,13 +31,13 @@ func Test_yamlConfigAnalyzer_Analyze(t *testing.T) {
 				namespaces:  []string{"main"},
 				policyPaths: []string{"../testdata/kubernetes.rego"},
 			},
-			inputFile: "testdata/deployment.yaml",
+			inputFile: filepath.Join("testdata", "deployment.yaml"),
 			want: &analyzer.AnalysisResult{
 				Files: map[types.HandlerType][]types.File{
 					types.MisconfPostHandler: {
 						{
 							Type: "yaml",
-							Path: "testdata/deployment.yaml",
+							Path: filepath.Join("testdata", "deployment.yaml"),
 							Content: []byte(`apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -55,7 +56,7 @@ spec:
 				namespaces:  []string{"main"},
 				policyPaths: []string{"../testdata/kubernetes.rego"},
 			},
-			inputFile: "testdata/deployment_deny.yaml",
+			inputFile: filepath.Join("testdata", "deployment_deny.yaml"),
 			want: &analyzer.AnalysisResult{
 				OS:           (*types.OS)(nil),
 				PackageInfos: []types.PackageInfo(nil),
@@ -64,7 +65,7 @@ spec:
 					types.MisconfPostHandler: {
 						{
 							Type: "yaml",
-							Path: "testdata/deployment_deny.yaml",
+							Path: filepath.Join("testdata", "deployment_deny.yaml"),
 							Content: []byte(`apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -81,9 +82,9 @@ spec:
 			name: "happy path using anchors",
 			args: args{
 				namespaces:  []string{"main"},
-				policyPaths: []string{"testdata/deny.rego"},
+				policyPaths: []string{filepath.Join("testdata", "deny.rego")},
 			},
-			inputFile: "testdata/anchor.yaml",
+			inputFile: filepath.Join("testdata", "anchor.yaml"),
 			want: &analyzer.AnalysisResult{
 				OS:           (*types.OS)(nil),
 				PackageInfos: []types.PackageInfo(nil),
@@ -92,7 +93,7 @@ spec:
 					types.MisconfPostHandler: {
 						{
 							Type: "yaml",
-							Path: "testdata/anchor.yaml",
+							Path: filepath.Join("testdata", "anchor.yaml"),
 							Content: []byte(`default: &default
   line: single line
 
@@ -120,7 +121,7 @@ main:
 				namespaces:  []string{"main"},
 				policyPaths: []string{"../testdata/kubernetes.rego"},
 			},
-			inputFile: "testdata/multiple.yaml",
+			inputFile: filepath.Join("testdata", "multiple.yaml"),
 			want: &analyzer.AnalysisResult{
 				OS:           (*types.OS)(nil),
 				PackageInfos: []types.PackageInfo(nil),
@@ -129,7 +130,7 @@ main:
 					types.MisconfPostHandler: {
 						{
 							Type: "yaml",
-							Path: "testdata/multiple.yaml",
+							Path: filepath.Join("testdata", "multiple.yaml"),
 							Content: []byte(`apiVersion: apps/v1
 kind: Deployment
 metadata:

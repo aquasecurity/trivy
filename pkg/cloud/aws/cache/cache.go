@@ -53,6 +53,8 @@ func (c *Cache) load() (*CacheData, error) {
 		return nil, ErrCacheNotFound
 	}
 
+	defer func() { _ = m.Close() }()
+
 	var data CacheData
 	if err := json.NewDecoder(m).Decode(&data); err != nil {
 		return nil, err

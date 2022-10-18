@@ -71,7 +71,7 @@ func TestFSCache_GetBlob(t *testing.T) {
 	}{
 		{
 			name:   "happy path",
-			dbPath: "testdata/fanal.db",
+			dbPath: filepath.Join("testdata", "fanal.db"),
 			args: args{
 				layerID: "sha256:24df0d4e20c0f42d3703bf1f1db2bdd77346c7956f74f423603d651e8e5ae8a7/11101",
 			},
@@ -85,7 +85,7 @@ func TestFSCache_GetBlob(t *testing.T) {
 		},
 		{
 			name:   "sad path",
-			dbPath: "testdata/fanal.db",
+			dbPath: filepath.Join("testdata", "fanal.db"),
 			args: args{
 				layerID: "sha256:unknown",
 			},
@@ -99,7 +99,10 @@ func TestFSCache_GetBlob(t *testing.T) {
 
 			fs, err := NewFSCache(tmpDir)
 			require.NoError(t, err)
-			defer fs.Clear()
+			defer func() {
+				_ = fs.Clear()
+				_ = fs.Close()
+			}()
 
 			got, err := fs.GetBlob(tt.args.layerID)
 			assert.Equal(t, tt.wantErr, err != nil, err)
@@ -269,7 +272,10 @@ func TestFSCache_PutBlob(t *testing.T) {
 
 			fs, err := NewFSCache(tmpDir)
 			require.NoError(t, err)
-			defer fs.Clear()
+			defer func() {
+				_ = fs.Clear()
+				_ = fs.Close()
+			}()
 
 			if strings.HasPrefix(tt.name, "sad") {
 				require.NoError(t, fs.Close())
@@ -349,7 +355,10 @@ func TestFSCache_PutArtifact(t *testing.T) {
 
 			fs, err := NewFSCache(tmpDir)
 			require.NoError(t, err)
-			//defer fs.Clear()
+			defer func() {
+				_ = fs.Clear()
+				_ = fs.Close()
+			}()
 
 			err = fs.PutArtifact(tt.args.imageID, tt.args.imageConfig)
 			if tt.wantErr != "" {
@@ -387,7 +396,7 @@ func TestFSCache_MissingBlobs(t *testing.T) {
 	}{
 		{
 			name:   "happy path",
-			dbPath: "testdata/fanal.db",
+			dbPath: filepath.Join("testdata", "fanal.db"),
 			args: args{
 				imageID: "sha256:58701fd185bda36cab0557bb6438661831267aa4a9e0b54211c4d5317a48aff4/1",
 				layerIDs: []string{
@@ -404,7 +413,7 @@ func TestFSCache_MissingBlobs(t *testing.T) {
 		},
 		{
 			name:   "happy path: broken layer JSON",
-			dbPath: "testdata/broken-layer.db",
+			dbPath: filepath.Join("testdata", "broken-layer.db"),
 			args: args{
 				imageID: "sha256:58701fd185bda36cab0557bb6438661831267aa4a9e0b54211c4d5317a48aff4",
 				layerIDs: []string{
@@ -418,7 +427,7 @@ func TestFSCache_MissingBlobs(t *testing.T) {
 		},
 		{
 			name:   "happy path: broken image JSON",
-			dbPath: "testdata/broken-image.db",
+			dbPath: filepath.Join("testdata", "broken-image.db"),
 			args: args{
 				imageID: "sha256:58701fd185bda36cab0557bb6438661831267aa4a9e0b54211c4d5317a48aff4",
 				layerIDs: []string{
@@ -432,7 +441,7 @@ func TestFSCache_MissingBlobs(t *testing.T) {
 		},
 		{
 			name:   "happy path: the schema version of image JSON doesn't match",
-			dbPath: "testdata/different-image-schema.db",
+			dbPath: filepath.Join("testdata", "different-image-schema.db"),
 			args: args{
 				imageID: "sha256:58701fd185bda36cab0557bb6438661831267aa4a9e0b54211c4d5317a48aff4",
 				layerIDs: []string{
@@ -446,7 +455,7 @@ func TestFSCache_MissingBlobs(t *testing.T) {
 		},
 		{
 			name:   "happy path: new config analyzer",
-			dbPath: "testdata/fanal.db",
+			dbPath: filepath.Join("testdata", "fanal.db"),
 			args: args{
 				imageID: "sha256:58701fd185bda36cab0557bb6438661831267aa4a9e0b54211c4d5317a48aff4/2",
 				layerIDs: []string{
@@ -466,7 +475,10 @@ func TestFSCache_MissingBlobs(t *testing.T) {
 
 			fs, err := NewFSCache(tmpDir)
 			require.NoError(t, err)
-			defer fs.Clear()
+			defer func() {
+				_ = fs.Clear()
+				_ = fs.Close()
+			}()
 
 			gotMissingImage, gotMissingLayerIDs, err := fs.MissingBlobs(tt.args.imageID, tt.args.layerIDs)
 			if tt.wantErr != "" {

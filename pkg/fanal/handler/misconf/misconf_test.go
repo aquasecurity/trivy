@@ -3,6 +3,8 @@ package misconf
 import (
 	"context"
 	"fmt"
+	"os"
+	"path/filepath"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -81,27 +83,27 @@ func Test_FindingFSTarget(t *testing.T) {
 			wantErr: true,
 		},
 		{
-			input:      []string{"/"},
-			wantTarget: "/",
+			input:      []string{string(os.PathSeparator)},
+			wantTarget: string(os.PathSeparator),
 			wantPaths:  []string{"."},
 		},
 		{
-			input:      []string{"/home/user"},
+			input:      []string{filepath.Join("home", "user")},
 			wantTarget: "/home/user",
 			wantPaths:  []string{"."},
 		},
 		{
-			input:      []string{"/home/user", "/home/user/something"},
+			input:      []string{filepath.Join("home", "user"), filepath.Join("home", "user", "something")},
 			wantTarget: "/home/user",
 			wantPaths:  []string{".", "something"},
 		},
 		{
-			input:      []string{"/home/user", "/home/user/something/else"},
+			input:      []string{filepath.Join("home", "user"), filepath.Join("home", "user", "something", "else")},
 			wantTarget: "/home/user",
 			wantPaths:  []string{".", "something/else"},
 		},
 		{
-			input:      []string{"/home/user", "/home/user2/something/else"},
+			input:      []string{filepath.Join("home", "user"), filepath.Join("home", "user2", "something", "else")},
 			wantTarget: "/home",
 			wantPaths:  []string{"user", "user2/something/else"},
 		},

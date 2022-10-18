@@ -3,6 +3,7 @@ package binary
 import (
 	"context"
 	"os"
+	"path/filepath"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -20,12 +21,12 @@ func Test_rustBinaryLibraryAnalyzer_Analyze(t *testing.T) {
 	}{
 		{
 			name:      "happy path",
-			inputFile: "testdata/executable_rust",
+			inputFile: filepath.Join("testdata", "executable_rust"),
 			want: &analyzer.AnalysisResult{
 				Applications: []types.Application{
 					{
 						Type:     types.RustBinary,
-						FilePath: "testdata/executable_rust",
+						FilePath: filepath.Join("testdata", "executable_rust"),
 						Libraries: []types.Package{
 							{
 								ID:        "crate_with_features@0.1.0",
@@ -41,11 +42,11 @@ func Test_rustBinaryLibraryAnalyzer_Analyze(t *testing.T) {
 		},
 		{
 			name:      "not rust binary",
-			inputFile: "testdata/executable_bash",
+			inputFile: filepath.Join("testdata", "executable_bash"),
 		},
 		{
 			name:      "broken elf",
-			inputFile: "testdata/broken_elf",
+			inputFile: filepath.Join("testdata", "broken_elf"),
 		},
 	}
 	for _, tt := range tests {
@@ -68,6 +69,7 @@ func Test_rustBinaryLibraryAnalyzer_Analyze(t *testing.T) {
 }
 
 func Test_rustBinaryLibraryAnalyzer_Required(t *testing.T) {
+	t.Skip("Permissions tests won't run on Windows")
 	tests := []struct {
 		name     string
 		filePath string
@@ -85,7 +87,7 @@ func Test_rustBinaryLibraryAnalyzer_Required(t *testing.T) {
 		},
 		{
 			name:     "symlink",
-			filePath: "testdata/symlink",
+			filePath: filepath.Join("testdata", "symlink"),
 			want:     false,
 		},
 	}
