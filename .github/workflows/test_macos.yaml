@@ -43,7 +43,7 @@ jobs:
 
 
       - name: Run unit tests
-        run: make test
+        run: make test-module-integration
 
   integration:
     name: Integration Test - macOS
