@@ -103,8 +103,8 @@ spec:
     - name: Use CNI plugin that supports NetworkPolicy API
       description: 'Control check whether check cni plugin installed'
       id: '3.0'
+      defaultStatus: 'FAIL'
       checks:
-        - id: CVE-5.3.1
       severity: 'CRITICAL'
     - name: Use ResourceQuota policies to limit resources
       description: 'Control check the use of ResourceQuota policy to limit aggregate resource usage within namespace'
@@ -123,65 +123,62 @@ spec:
     - name: Control plan disable insecure port
       description: 'Control check whether control plan disable insecure port'
       id: '5.0'
+      defaultStatus: 'FAIL'
       checks:
-        - id: CVE-1.2.19
       severity: 'CRITICAL'
     - name: Encrypt etcd communication
       description: 'Control check whether etcd communication is encrypted'
       id: '5.1'
       checks:
-        - id: CVE-2.1
+        - id: AVD-KCV-0030
       severity: 'CRITICAL'
     - name: Ensure kube config file permission
       description: 'Control check whether kube config file permissions'
       id: '6.0'
+      defaultStatus: 'FAIL'
       checks:
-        - id: CVE-4.1.3
-        - id: CVE-4.1.4
       severity: 'CRITICAL'
     - name: Check that encryption resource has been set
       description: 'Control checks whether encryption resource has been set'
       id: '6.1'
       checks:
-        - id: CVE-1.2.31
-        - id: CVE-1.2.32
+        - id: AVD-KCV-0029
       severity: 'CRITICAL'
     - name: Check encryption provider
       description: 'Control checks whether encryption provider has been set'
       id: '6.2'
       checks:
-        - id: CVE-1.2.3
+        - id: AVD-KCV-0004
       severity: 'CRITICAL'
     - name: Make sure anonymous-auth is unset
       description: 'Control checks whether anonymous-auth is unset'
       id: '7.0'
       checks:
-        - id: CVE-1.2.1
+        - id: AVD-KCV-0001
       severity: 'CRITICAL'
     - name: Make sure -authorization-mode=RBAC
       description: 'Control check whether RBAC permission is in use'
       id: '7.1'
       checks:
-        - id: CVE-1.2.7
-        - id: CVE-1.2.8
+        - id: AVD-KCV-0008
       severity: 'CRITICAL'
     - name: Audit policy is configure
       description: 'Control check whether audit policy is configure'
       id: '8.0'
+      defaultStatus: 'FAIL'
       checks:
-        - id: CVE-3.2.1
       severity: 'HIGH'
     - name: Audit log path is configure
       description: 'Control check whether audit log path is configure'
       id: '8.1'
       checks:
-        - id: CVE-1.2.22
+        - id: AVD-KCV-0019
       severity: 'MEDIUM'
     - name: Audit log aging
       description: 'Control check whether audit log aging is configure'
       id: '8.2'
       checks:
-        - id: CVE-1.2.23
+        - id: AVD-KCV-0020
       severity: 'MEDIUM'
 `
 
