@@ -48,7 +48,7 @@ func TestCalculatePercentage(t *testing.T) {
 	}{
 		{name: "calcuale percentage pass bigger then fail", pass: 10.0, fail: 5.0, want: "66.67%"},
 		{name: "calcuale percentage pass smaller then fail", pass: 5.0, fail: 10.0, want: "33.33%"},
-		{name: "calcuale percentage pass zero and fail zero", pass: 0.0, fail: 0.0, want: "100.00%"},
+		{name: "calcuale percentage pass zero and fail zero", pass: 0.0, fail: 0.0, want: "0.00%"},
 	}
 
 	for _, tt := range tests {
