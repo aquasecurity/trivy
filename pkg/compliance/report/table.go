@@ -4,10 +4,11 @@ import (
 	"io"
 	"sync"
 
+	"golang.org/x/xerrors"
+
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	pkgReport "github.com/aquasecurity/trivy/pkg/report/table"
 	"github.com/aquasecurity/trivy/pkg/types"
-	"golang.org/x/xerrors"
 )
 
 type TableWriter struct {

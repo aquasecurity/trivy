@@ -4,9 +4,10 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/aquasecurity/trivy/pkg/types"
 	"golang.org/x/exp/slices"
 	"gopkg.in/yaml.v2"
+
+	"github.com/aquasecurity/trivy/pkg/types"
 )
 
 // GetScannerTypes read spec control and detremine the scanners by check ID prefix
@@ -33,7 +34,7 @@ func ValidateScanners(controls []Control) error {
 	for _, control := range controls {
 		for _, check := range control.Checks {
 			scannerType := scannersByCheckIDPrefix(check.ID)
-			if !slices.Contains(types.SecurityChecks, types.SecurityCheck(scannerType)) {
+			if !slices.Contains(types.SecurityChecks, scannerType) {
 				return fmt.Errorf("scanner type %v is not supported", scannerType)
 			}
 		}

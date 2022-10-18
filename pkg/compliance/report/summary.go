@@ -5,10 +5,11 @@ import (
 	"io"
 	"strings"
 
+	"golang.org/x/xerrors"
+
 	"github.com/aquasecurity/table"
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	pkgReport "github.com/aquasecurity/trivy/pkg/report/table"
-	"golang.org/x/xerrors"
 )
 
 func BuildSummary(cr *ComplianceReport) *SummaryReport {
