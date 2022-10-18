@@ -6,12 +6,18 @@ import (
 
 	"github.com/aquasecurity/trivy/pkg/types"
 	"golang.org/x/exp/slices"
+	"gopkg.in/yaml.v2"
 )
 
 // GetScannerTypes read spec control and detremine the scanners by check ID prefix
-func GetScannerTypes(controls []Control) []types.SecurityCheck {
+func GetScannerTypes(complianceSpec string) ([]types.SecurityCheck, error) {
+	cs := ComplianceSpec{}
+	err := yaml.Unmarshal([]byte(complianceSpec), &cs)
+	if err != nil {
+		return nil, err
+	}
 	scannerTypes := make([]types.SecurityCheck, 0)
-	for _, control := range controls {
+	for _, control := range cs.Spec.Controls {
 		for _, check := range control.Checks {
 			scannerType := scannersByCheckIDPrefix(check.ID)
 			if !slices.Contains(scannerTypes, scannerType) {
@@ -19,7 +25,7 @@ func GetScannerTypes(controls []Control) []types.SecurityCheck {
 			}
 		}
 	}
-	return scannerTypes
+	return scannerTypes,nil
 }
 
 // ValidateScanners validate that scanner types are supported

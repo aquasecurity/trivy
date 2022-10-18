@@ -6,6 +6,8 @@ type VulnType = string
 // SecurityCheck represents the type of security check
 type SecurityCheck = string
 
+type Compliance = string
+
 const (
 	// VulnTypeUnknown is a vulnerability type of unknown
 	VulnTypeUnknown = VulnType("unknown")
@@ -33,6 +35,9 @@ const (
 
 	// SecurityCheckLicense is the security check of licenses
 	SecurityCheckLicense = SecurityCheck("license")
+
+	// ComplianceNsa is the compliance checks for nsa
+	ComplianceNsa = SecurityCheck("nsa")
 )
 
 var (
@@ -41,4 +46,5 @@ var (
 		SecurityCheckVulnerability, SecurityCheckConfig, SecurityCheckRbac,
 		SecurityCheckSecret, SecurityCheckLicense,
 	}
+	Compliances = []string{ComplianceNsa}
 )

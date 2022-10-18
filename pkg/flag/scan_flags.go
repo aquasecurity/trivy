@@ -32,6 +32,12 @@ var (
 		Value:      []string{types.SecurityCheckVulnerability, types.SecurityCheckSecret},
 		Usage:      "comma-separated list of what security issues to detect (vuln,config,secret,license)",
 	}
+	ComplianceFlag = Flag{
+		Name:       "compliance",
+		ConfigName: "scan.compliance",
+		Value:      []string{},
+		Usage:      "comma-separated list of what compliance reports to generate (nsa)",
+	}
 	FilePatternsFlag = Flag{
 		Name:       "file-patterns",
 		ConfigName: "scan.file-patterns",
@@ -57,6 +63,7 @@ type ScanFlagGroup struct {
 	SkipFiles      *Flag
 	OfflineScan    *Flag
 	SecurityChecks *Flag
+	Compliance     *Flag
 	FilePatterns   *Flag
 	SBOMSources    *Flag
 	RekorURL       *Flag
@@ -68,6 +75,7 @@ type ScanOptions struct {
 	SkipFiles      []string
 	OfflineScan    bool
 	SecurityChecks []string
+	Compliance     []string
 	FilePatterns   []string
 	SBOMSources    []string
 	RekorURL       string
@@ -79,6 +87,7 @@ func NewScanFlagGroup() *ScanFlagGroup {
 		SkipFiles:      &SkipFilesFlag,
 		OfflineScan:    &OfflineScanFlag,
 		SecurityChecks: &SecurityChecksFlag,
+		Compliance:     &ComplianceFlag,
 		FilePatterns:   &FilePatternsFlag,
 		SBOMSources:    &SBOMSourcesFlag,
 		RekorURL:       &RekorURLFlag,
@@ -90,7 +99,7 @@ func (f *ScanFlagGroup) Name() string {
 }
 
 func (f *ScanFlagGroup) Flags() []*Flag {
-	return []*Flag{f.SkipDirs, f.SkipFiles, f.OfflineScan, f.SecurityChecks, f.FilePatterns, f.SBOMSources, f.RekorURL}
+	return []*Flag{f.SkipDirs, f.SkipFiles, f.OfflineScan, f.SecurityChecks,f.Compliance, f.FilePatterns, f.SBOMSources, f.RekorURL}
 }
 
 func (f *ScanFlagGroup) ToOptions(args []string) (ScanOptions, error) {
@@ -101,6 +110,10 @@ func (f *ScanFlagGroup) ToOptions(args []string) (ScanOptions, error) {
 	securityChecks, err := parseSecurityCheck(getStringSlice(f.SecurityChecks))
 	if err != nil {
 		return ScanOptions{}, xerrors.Errorf("unable to parse security checks: %w", err)
+	}
+	complianceTypes, err := parseComplianceTypes(getStringSlice(f.Compliance))
+	if err != nil {
+		return ScanOptions{}, xerrors.Errorf("unable to parse compliance types: %w", err)
 	}
 
 	sbomSources := getStringSlice(f.SBOMSources)
@@ -114,6 +127,7 @@ func (f *ScanFlagGroup) ToOptions(args []string) (ScanOptions, error) {
 		SkipFiles:      getStringSlice(f.SkipFiles),
 		OfflineScan:    getBool(f.OfflineScan),
 		SecurityChecks: securityChecks,
+		Compliance:     complianceTypes,
 		FilePatterns:   getStringSlice(f.FilePatterns),
 		SBOMSources:    sbomSources,
 		RekorURL:       getString(f.RekorURL),
@@ -129,6 +143,17 @@ func parseSecurityCheck(securityCheck []string) ([]string, error) {
 		securityChecks = append(securityChecks, v)
 	}
 	return securityChecks, nil
+}
+
+func parseComplianceTypes(compliance []string) ([]string, error) {
+	var complianceTypes []string
+	for _, v := range compliance {
+		if !slices.Contains(types.Compliances, v) {
+			return nil, xerrors.Errorf("unknown compliance: %s", v)
+		}
+		complianceTypes = append(complianceTypes, v)
+	}
+	return complianceTypes, nil
 }
 
 func validateSBOMSources(sbomSources []string) error {

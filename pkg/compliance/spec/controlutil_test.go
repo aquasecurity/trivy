@@ -1,6 +1,7 @@
 package spec_test
 
 import (
+	"os"
 	"testing"
 
 	"github.com/aquasecurity/trivy/pkg/compliance/spec"
@@ -19,9 +20,10 @@ func TestGetScannerTypes(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			cr, err := ReadSpecFile(tt.specPath)
+			b, err := os.ReadFile(tt.specPath)
 			assert.NoError(t, err)
-			got := spec.GetScannerTypes(cr.Spec.Controls)
+			got, err := spec.GetScannerTypes(string(b))
+			assert.NoError(t, err)
 			assert.Equal(t, got, tt.want)
 		})
 	}

@@ -4,6 +4,42 @@ import (
 	"github.com/mitchellh/mapstructure"
 )
 
+const NsaSpec = `
+---
+spec:
+  id: "1234"
+  title: nsa
+  description: National Security Agency - Kubernetes Hardening Guidance
+  relatedResources : 
+    - http://related-resource/
+  version: "1.0"
+  controls:
+    - name: Non-root containers
+      description: 'Check that container is not running as root'
+      id: '1.0'
+      checks:
+        - id: AVD-KSV-0001
+      severity: 'MEDIUM'
+    - name: Immutable container file systems
+      description: 'Check that container root file system is immutable'
+      id: '1.1'
+      checks:
+        - id: AVD-KSV-0003
+      severity: 'LOW'
+    - name: tzdata - new upstream version
+      description: 'Bad tzdata package'
+      id: '1.2'
+      checks:
+        - id: DLA-2424-1
+      severity: 'CRITICAL'
+    - name: test control check
+      description: 'check non valida check'
+      id: '1.3'
+      checks:
+        - id: AVD-2424-1
+      severity: 'CRITICAL'
+`
+
 type Severity string
 
 const (

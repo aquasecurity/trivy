@@ -17,7 +17,8 @@ func BuildSummary(cr *ComplianceReport) *SummaryReport {
 		ccm := ControlCheckSummary{ControlCheckID: control.ControlCheckID, ControlName: control.ControlName, ControlSeverity: control.ControlSeverity}
 		var totalFail, totalPass float32
 		if len(control.Checks) == 0 { // this validation is mainly for vuln type
-			totalPass = 1
+			ccm.TotalPass = 1
+			ccma = append(ccma, ccm)
 			continue
 		}
 		for _, check := range control.Checks {
