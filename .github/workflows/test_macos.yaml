@@ -32,19 +32,6 @@ jobs:
       - name: Run unit tests
         run: make test
 
-  module-test:
-    name: Module Integration Test - macOS
-    runs-on: macos-latest
-    steps:
-      - name: Install TinyGo - macOS
-        run: |
-          brew tap tinygo-org/tools
-          brew install tinygo
-
-      - name: Run module integration tests
-        run: |
-          make test-module-integration
-
   integration:
     name: Integration Test - macOS
     runs-on: macos-latest
