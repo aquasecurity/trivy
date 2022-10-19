@@ -29,7 +29,9 @@ const maxTarSize = 209_715_200 // 200MB
 type helmConfigAnalyzer struct{}
 
 func (a helmConfigAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInput) (*analyzer.AnalysisResult, error) {
+	isAnArchive := false
 	if isArchive(input.FilePath) {
+		isAnArchive = true
 		if !isHelmChart(input.FilePath, input.Content) {
 			return nil, nil
 		}
@@ -43,7 +45,10 @@ func (a helmConfigAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisIn
 	if err != nil {
 		return nil, xerrors.Errorf("failed to read %s: %w", input.FilePath, err)
 	}
-	b = bytes.ReplaceAll(b, []byte("\r"), []byte(""))
+	if !isAnArchive {
+		// if it's not an archive we need to remove the carriage returns
+		b = bytes.ReplaceAll(b, []byte("\r"), []byte(""))
+	}
 
 	return &analyzer.AnalysisResult{
 		Files: map[types.HandlerType][]types.File{
