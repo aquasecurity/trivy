@@ -34,6 +34,7 @@ import (
 	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/os/redhatbase"
 	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/os/release"
 	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/os/ubuntu"
+	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/os/wrlinux"
 	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/pkg/apk"
 	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/pkg/dpkg"
 	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/pkg/rpm"

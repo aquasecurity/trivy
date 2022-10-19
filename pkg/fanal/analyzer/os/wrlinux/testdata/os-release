@@ -1,0 +1,5 @@
+ID=wrlinux-graphics
+NAME="Wind River Linux Graphics LTS"
+VERSION="10.21.20.5"
+VERSION_ID=10.21.20.5
+PRETTY_NAME="Wind River Linux Graphics LTS 21.20 Update 5"

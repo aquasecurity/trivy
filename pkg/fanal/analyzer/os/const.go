@@ -57,6 +57,9 @@ const (
 
 	// Alpine is done
 	Alpine = "alpine"
+
+	// WRLinux is done
+	WRLinux = "wrlinux"
 )
 
 var AnalyzeOSError = xerrors.New("unable to analyze OS information")
