@@ -341,7 +341,7 @@ require (
 	golang.org/x/sync v0.0.0-20220722155255-886fb9371eb4
 	golang.org/x/sys v0.0.0-20220919091848-fb04ddd9f9c8 // indirect
 	golang.org/x/term v0.0.0-20220526004731-065cf7ba2467
-	golang.org/x/text v0.3.8-0.20211004125949-5bd84dd9b33b
+	golang.org/x/text v0.3.8
 	golang.org/x/time v0.0.0-20220609170525-579cf78fd858 // indirect
 	golang.org/x/tools v0.1.12 // indirect
 	google.golang.org/api v0.96.0 // indirect
