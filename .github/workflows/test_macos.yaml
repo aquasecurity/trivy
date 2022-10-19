@@ -49,10 +49,6 @@ jobs:
 
       - name: Setup Docker
         uses: docker-practice/actions-setup-docker@master
-        run: |
-          set -x         
-          docker version
-          docker run --rm hello-world
 
       - name: Check out code into the Go module directory
         uses: actions/checkout@v3
