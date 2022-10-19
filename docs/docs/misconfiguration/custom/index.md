@@ -128,7 +128,7 @@ correct and do not reference incorrect properties/values.
 |----------------------------|------------------------------------------|:----------------------------:|:----------------:|:----------------:|
 | title                      | Any characters                           |             N/A              | :material-check: | :material-check: |
 | description                | Any characters                           |                              | :material-close: | :material-check: |
- | schemas.input              | `schema.input`                           | (applied to all input types) | :material-close: | :material-close: |
+| schemas.input              | `schema.input`                           | (applied to all input types) | :material-close: | :material-close: |
 | custom.id                  | Any characters                           |             N/A              | :material-check: | :material-check: |
 | custom.severity            | `LOW`, `MEDIUM`, `HIGH`, `CRITICAL`      |           UNKNOWN            | :material-check: | :material-check: |
 | custom.recommended_actions | Any characters                           |                              | :material-close: | :material-check: | 
