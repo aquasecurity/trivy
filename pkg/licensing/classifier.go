@@ -3,6 +3,7 @@ package licensing
 import (
 	"fmt"
 	"io"
+	"sort"
 	"sync"
 
 	"github.com/go-enry/go-license-detector/v4/licensedb"
@@ -85,8 +86,8 @@ func FullClassify(filePath string, contents []byte) (types.LicenseFile, error) {
 
 func googleClassifierLicense(filePath string, contents []byte) types.LicenseFile {
 	var matchType types.LicenseType
-	var findings []types.LicenseFinding
-	matcher := cf.Match(cf.Normalize(contents))
+	findingsMap := make(map[types.LicenseFinding]bool)
+	matcher := cf.Match(contents)
 	for _, m := range matcher.Matches {
 		switch m.MatchType {
 		case "Header":
@@ -96,12 +97,25 @@ func googleClassifierLicense(filePath string, contents []byte) types.LicenseFile
 		}
 		licenseLink := fmt.Sprintf("https://spdx.org/licenses/%s.html", m.Name)
 
-		findings = append(findings, types.LicenseFinding{
+		finding := types.LicenseFinding{
 			Name:       m.Name,
 			Confidence: m.Confidence,
 			Link:       licenseLink,
-		})
+		}
+
+		if _, ok := findingsMap[finding]; !ok {
+			findingsMap[finding] = true
+		}
 	}
+
+	var findings []types.LicenseFinding
+	for finding := range findingsMap {
+		findings = append(findings, finding)
+	}
+
+	sort.Slice(findings, func(i, j int) bool {
+		return findings[i].Name < findings[j].Name
+	})
 
 	return types.LicenseFile{
 		Type:     matchType,
