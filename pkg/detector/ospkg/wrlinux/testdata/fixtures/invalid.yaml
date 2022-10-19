@@ -1,0 +1,9 @@
+- bucket: WRLinux OS 10.19
+  pairs:
+    - bucket: jq
+      pairs:
+        - key: CVE-2020-8177
+          value:
+            FixedVersion:
+              - foo
+              - bar

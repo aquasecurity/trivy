@@ -1,0 +1,12 @@
+- bucket: data-source
+  pairs:
+    - key: WRLinux OS 10.19
+      value:
+        ID: "wrlinux"
+        Name: "WRLinux OS CVE metadata"
+        URL: "https://support2.windriver.com"
+    - key: WRLinux OS 10.20
+      value:
+        ID: "wrlinux"
+        Name: "WRLinux OS CVE metadata"
+        URL: "https://support2.windriver.com"
