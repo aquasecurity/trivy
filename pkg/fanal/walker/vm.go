@@ -16,6 +16,7 @@ import (
 
 	dio "github.com/aquasecurity/go-dep-parser/pkg/io"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
+	"github.com/aquasecurity/trivy/pkg/fanal/utils"
 	"github.com/aquasecurity/trivy/pkg/fanal/vm"
 	"github.com/aquasecurity/trivy/pkg/fanal/vm/filesystem"
 	"github.com/aquasecurity/trivy/pkg/log"
@@ -23,6 +24,18 @@ import (
 
 type VM struct {
 	walker
+}
+
+var requiredDiskName = []string{
+	"Linux",    // AmazonLinux image name
+	"p.lxroot", // SLES image name
+	"primary",  // Common image name
+	"0",        // Common image name
+	"1",        // Common image name
+}
+
+func AppendPermitDiskName(s ...string) {
+	requiredDiskName = append(requiredDiskName, s...)
 }
 
 func NewVM(skipFiles, skipDirs []string) VM {
@@ -98,9 +111,9 @@ func diskWalker(cache vm.Cache) DiskWalker {
 		if partition.Bootable() {
 			return nil
 		}
-		// TODO: "Linux" is default root partition name in AmazonLinuxImage
+
 		log.Logger.Debugf("found partition: %s", partition.Name())
-		if partition.Name() != "Linux" && partition.Name() != "0" && partition.Name() != "1" && partition.Name() != "p.lxroot" && partition.Name() != "primary" {
+		if !utils.StringInSlice(partition.Name(), requiredDiskName) {
 			return nil
 		}
 
@@ -159,7 +172,6 @@ func (w VM) opener(fsys fs.FS, fi os.FileInfo, pathname string) analyzer.Opener 
 	}
 }
 
-// TODO: Refactoring almost identical to TarFile.
 type vmFile struct {
 	once sync.Once
 	err  error
