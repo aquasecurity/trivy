@@ -59,7 +59,7 @@ func (s *Scanner) Scan(ctx context.Context, artifacts []*artifacts.Artifact) (re
 	for _, artifact := range artifacts {
 		bar.Increment()
 
-		if shouldScanVulns(s.opts.SecurityChecks) {
+		if shouldScanVulnsOrSecrets(s.opts.SecurityChecks) {
 			resources, err := s.scanVulns(ctx, artifact)
 			if err != nil {
 				return report.Report{}, xerrors.Errorf("scanning vulnerabilities error: %w", err)
@@ -67,7 +67,7 @@ func (s *Scanner) Scan(ctx context.Context, artifacts []*artifacts.Artifact) (re
 			vulns = append(vulns, resources...)
 		}
 
-		if local.ShouldScanMisconfig(s.opts.SecurityChecks) {
+		if local.ShouldScanMisconfigOrRbac(s.opts.SecurityChecks) {
 			resource, err := s.scanMisconfigs(ctx, artifact)
 			if err != nil {
 				return report.Report{}, xerrors.Errorf("scanning misconfigurations error: %w", err)
@@ -137,7 +137,7 @@ func (s *Scanner) filter(ctx context.Context, r types.Report, artifact *artifact
 	return report.CreateResource(artifact, r, nil), nil
 }
 
-func shouldScanVulns(securityChecks []string) bool {
+func shouldScanVulnsOrSecrets(securityChecks []string) bool {
 	return slices.Contains(securityChecks, types.SecurityCheckVulnerability) ||
 		slices.Contains(securityChecks, types.SecurityCheckSecret)
 }
