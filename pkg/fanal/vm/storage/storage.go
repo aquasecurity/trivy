@@ -19,7 +19,7 @@ const (
 )
 
 type Storage interface {
-	Open(string) (sr *io.SectionReader, cacheKey string, err error)
+	Open(string, context.Context) (sr *io.SectionReader, cacheKey string, err error)
 	Close() error
 }
 
@@ -28,7 +28,7 @@ type File struct {
 	cache ebsfile.Cache
 }
 
-func (f *File) Open(filePath string) (*io.SectionReader, string, error) {
+func (f *File) Open(filePath string, _ context.Context) (*io.SectionReader, string, error) {
 	t := strings.TrimPrefix(filePath, FilePrefix)
 	fp, err := os.Open(t)
 	if err != nil {
@@ -59,23 +59,21 @@ func NewFile(cache ebsfile.Cache) *File {
 	}
 }
 
-func NewEBS(option ebsfile.Option, ctx context.Context, cache ebsfile.Cache) *EBS {
+func NewEBS(option ebsfile.Option, cache ebsfile.Cache) *EBS {
 	return &EBS{
 		option: option,
-		ctx:    ctx,
 		cache:  cache,
 	}
 }
 
 type EBS struct {
 	option ebsfile.Option
-	ctx    context.Context
 	cache  ebsfile.Cache
 }
 
-func (e *EBS) Open(snapshotID string) (*io.SectionReader, string, error) {
+func (e *EBS) Open(snapshotID string, ctx context.Context) (*io.SectionReader, string, error) {
 	t := strings.TrimPrefix(snapshotID, EBSPrefix)
-	sr, err := ebsfile.Open(t, e.ctx, e.cache, ebsfile.New(e.option))
+	sr, err := ebsfile.Open(t, ctx, e.cache, ebsfile.New(e.option))
 	if err != nil {
 		return nil, "", xerrors.Errorf("failed to open EBS file: %w", err)
 	}
@@ -86,11 +84,11 @@ func (e *EBS) Close() error {
 	return nil
 }
 
-func NewStorage(t string, option ebsfile.Option, ctx context.Context, c ebsfile.Cache) (Storage, error) {
+func NewStorage(t string, option ebsfile.Option, c ebsfile.Cache) (Storage, error) {
 	var s Storage
 	switch {
 	case strings.HasPrefix(t, EBSPrefix):
-		s = NewEBS(option, ctx, c)
+		s = NewEBS(option, c)
 	case strings.HasPrefix(t, FilePrefix):
 		s = NewFile(c)
 	default:

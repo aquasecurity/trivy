@@ -11,6 +11,7 @@ import (
 	"sync"
 
 	lru "github.com/hashicorp/golang-lru"
+	"github.com/hashicorp/golang-lru/simplelru"
 	ebsfile "github.com/masahiro331/go-ebs-file"
 	digest "github.com/opencontainers/go-digest"
 	"golang.org/x/sync/semaphore"
@@ -38,6 +39,8 @@ type Artifact struct {
 	analyzer       analyzer.AnalyzerGroup
 	handlerManager handler.Manager
 	walker         walker.VM
+	store          storage.Storage
+	lruCache       simplelru.LRUCache
 
 	artifactOption artifact.Option
 }
@@ -45,25 +48,16 @@ type Artifact struct {
 func (a Artifact) Inspect(ctx context.Context) (reference types.ArtifactReference, err error) {
 	result := analyzer.NewAnalysisResult()
 
-	lruCache, err := lru.New(cacheSize)
-	if err != nil {
-		return types.ArtifactReference{}, xerrors.Errorf("failed to create new lru cache: %w", err)
-	}
-	defer lruCache.Purge()
+	defer a.lruCache.Purge()
 
-	s, err := storage.NewStorage(a.filePath, ebsfile.Option{}, ctx, lruCache)
-	if err != nil {
-		return types.ArtifactReference{}, xerrors.Errorf("failed to new storage: %w", err)
-	}
-	defer s.Close()
-
-	sr, cacheKey, err := s.Open(a.filePath)
+	sr, cacheKey, err := a.store.Open(a.filePath, ctx)
 	if err != nil {
 		return types.ArtifactReference{}, xerrors.Errorf("failed to open storage: %w", err)
 	}
+	defer a.store.Close()
+
 	if cacheKey != "" {
 		cacheKey = vmCacheKey(cacheKey)
-	} else {
 		missingVMCache, _, err := a.cache.MissingBlobs(cacheKey, []string{cacheKey})
 		if err != nil {
 			return types.ArtifactReference{}, xerrors.Errorf("failed to missing blobs from cache: %w", err)
@@ -84,7 +78,7 @@ func (a Artifact) Inspect(ctx context.Context) (reference types.ArtifactReferenc
 	limit := semaphore.NewWeighted(parallel)
 
 	// TODO: Always walk from the root directory. Consider whether there is a need to be able to set optional
-	err = a.walker.Walk(sr, lruCache, "/", func(filePath string, info os.FileInfo, opener analyzer.Opener) error {
+	err = a.walker.Walk(sr, a.lruCache, "/", func(filePath string, info os.FileInfo, opener analyzer.Opener) error {
 		opts := analyzer.AnalysisOptions{Offline: a.artifactOption.Offline}
 		// Skip special files
 		// 	0x1000:	S_IFIFO (FIFO)
@@ -105,6 +99,10 @@ func (a Artifact) Inspect(ctx context.Context) (reference types.ArtifactReferenc
 		}
 		return nil
 	})
+
+	// Wait for all the goroutine to finish.
+	wg.Wait()
+
 	if err != nil {
 		return types.ArtifactReference{}, xerrors.Errorf("walk vm error: %w", err)
 	}
@@ -172,12 +170,22 @@ func NewArtifact(filePath string, c cache.ArtifactCache, opt artifact.Option) (a
 		return nil, xerrors.Errorf("analyzer group error: %w", err)
 	}
 
+	lruCache, err := lru.New(cacheSize)
+	if err != nil {
+		return nil, xerrors.Errorf("failed to create new lru cache: %w", err)
+	}
+	s, err := storage.NewStorage(filePath, ebsfile.Option{}, lruCache)
+	if err != nil {
+		return nil, xerrors.Errorf("failed to new storage: %w", err)
+	}
 	return Artifact{
 		filePath:       filepath.Clean(filePath),
 		cache:          c,
 		handlerManager: handlerManager,
 		analyzer:       a,
 		walker:         walker.NewVM(opt.SkipFiles, opt.SkipDirs),
+		lruCache:       lruCache,
+		store:          s,
 
 		artifactOption: opt,
 	}, nil
