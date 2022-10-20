@@ -168,9 +168,7 @@ func (a rpmPkgAnalyzer) parsePkgInfo(rc io.Reader) ([]types.Package, []string, e
 //
 // https://github.com/rpm-software-management/yum/blob/043e869b08126c1b24e392f809c9f6871344c60d/rpmUtils/miscutils.py#L301
 func splitFileName(filename string) (name, ver, rel string, err error) {
-	if strings.HasSuffix(filename, ".rpm") {
-		filename = filename[:len(filename)-4]
-	}
+	filename = strings.TrimSuffix(filename, ".rpm")
 
 	archIndex := strings.LastIndex(filename, ".")
 	if archIndex == -1 {
