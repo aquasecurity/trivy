@@ -63,7 +63,7 @@ func (s *AWSScanner) Scan(ctx context.Context, option flag.Options) (scan.Result
 
 	var policyPaths []string
 	var downloadedPolicyPaths []string
-	if !option.SkipPolicyUpdate {
+	if !option.SkipPolicyUpdate && len(option.RegoOptions.PolicyPaths) <= 0 {
 		var err error
 		downloadedPolicyPaths, err = operation.InitBuiltinPolicies(context.Background(), option.CacheDir, option.Quiet, option.SkipPolicyUpdate)
 		if err != nil {
