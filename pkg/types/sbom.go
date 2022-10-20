@@ -1,8 +1,9 @@
 package types
 
 import (
-	"github.com/aquasecurity/trivy/pkg/fanal/types"
 	stypes "github.com/spdx/tools-golang/spdx"
+
+	"github.com/aquasecurity/trivy/pkg/fanal/types"
 )
 
 type SBOM struct {
