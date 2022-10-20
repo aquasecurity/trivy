@@ -2,8 +2,6 @@ package image_test
 
 import (
 	"context"
-	"net/http"
-	"net/http/httptest"
 	"testing"
 
 	fakei "github.com/google/go-containerregistry/pkg/v1/fake"
@@ -124,11 +122,6 @@ func TestArtifact_InspectRekorAttestation(t *testing.T) {
 	require.NoError(t, log.InitLogger(false, true))
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			aa := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				w.Write([]byte("ok"))
-			}))
-			defer aa.Close()
-
 			ts := rekortest.NewServer(t)
 			defer ts.Close()
 
