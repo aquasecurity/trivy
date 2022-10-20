@@ -153,7 +153,7 @@ If you would like to scan the image on your host machine, you need to mount `doc
 
 ```bash
 docker run --rm -v /var/run/docker.sock:/var/run/docker.sock \
-    -v $HOME/Library/Caches:/root/.cache/ aquasec/trivy:{{ git.tag[1:] }} python:3.4-alpine
+    -v $HOME/Library/Caches:/root/.cache/ aquasec/trivy:{{ git.tag[1:] }} image python:3.4-alpine
 ```
 
 Please re-pull latest `aquasec/trivy` if an error occurred.
