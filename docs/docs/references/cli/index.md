@@ -21,6 +21,7 @@ Examples:
   $ trivy server
 
 Available Commands:
+  completion  Generate completion script
   config      Scan config files for misconfigurations
   filesystem  Scan local filesystem
   help        Help about any command
