@@ -3353,7 +3353,7 @@ sudo dpkg -i trivy_0.32.1_Linux-64bit.deb
 <div class="highlight"><pre><span></span><code>curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh <span class="p">|</span> sh -s -- -b /usr/local/bin v0.32.1
 </code></pre></div>
 <h2 id="binary">Binary</h2>
-<p>Download the archive file for your operating system/architecture from <a href="https://github.com/aquasecurity/trivy/releases/tag/v0.32.1">here</a>. 
+<p>Download the archive file for your operating system/architecture from <a href="https://github.com/aquasecurity/trivy/releases/tag/v0.32.1">here</a>.
 Unpack the archive, and put the binary somewhere in your <code>$PATH</code> (on UNIX-y systems, /usr/local/bin or the like).
 Make sure it has execution bits turned on.</p>
 <h2 id="from-source">From source</h2>
@@ -3377,14 +3377,14 @@ go install
 </code></pre></div>
 </div>
 <div class="tabbed-block">
-<div class="highlight"><pre><span></span><code>docker run --rm -v <span class="nv">$HOME</span>/Library/Caches:/root/.cache/ aquasec/trivy:0.32.1 image <span class="o">[</span>YOUR_IMAGE_NAME
+<div class="highlight"><pre><span></span><code>docker run --rm -v <span class="nv">$HOME</span>/Library/Caches:/root/.cache/ aquasec/trivy:0.32.1 image <span class="o">[</span>YOUR_IMAGE_NAME<span class="o">]</span>
 </code></pre></div>
 </div>
 </div>
 </div>
 <p>If you would like to scan the image on your host machine, you need to mount <code>docker.sock</code>.</p>
 <div class="highlight"><pre><span></span><code>docker run --rm -v /var/run/docker.sock:/var/run/docker.sock <span class="se">\</span>
-    -v <span class="nv">$HOME</span>/Library/Caches:/root/.cache/ aquasec/trivy:0.32.1 python:3.4-alpine
+    -v <span class="nv">$HOME</span>/Library/Caches:/root/.cache/ aquasec/trivy:0.32.1 image python:3.4-alpine
 </code></pre></div>
 <p>Please re-pull latest <code>aquasec/trivy</code> if an error occurred.</p>
 <details>
