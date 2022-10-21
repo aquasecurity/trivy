@@ -6,27 +6,215 @@ import (
 	"net/http/httptest"
 	"testing"
 
+	"github.com/CycloneDX/cyclonedx-go"
+	"github.com/in-toto/in-toto-golang/in_toto"
+	slsa "github.com/in-toto/in-toto-golang/in_toto/slsa_provenance/v0.2"
 	"github.com/samber/lo"
-
 	"github.com/sigstore/rekor/pkg/generated/models"
 	"github.com/stretchr/testify/require"
+
+	"github.com/aquasecurity/trivy/pkg/attestation"
 )
 
 var (
 	indexRes = map[string][]string{
+		// Contain a SBOM attestation for a container image
 		"sha256:782143e39f1e7a04e3f6da2d88b1c057e5657363c4f90679f3e8a071b7619e02": {
 			"392f8ecba72f4326eb624a7403756250b5f2ad58842a99d1653cd6f147f4ce9eda2da350bd908a55",
 			"392f8ecba72f4326414eaca77bd19bf5f378725d7fd79309605a81b69cc0101f5cd3119d0a216523",
 		},
-		// Contain a small SBOM
+		// Contain a SBOM attestation for go.mod
+		"sha256:23f4e10c43c7654e33a3c9570913c8c9c528292762f1a5c4a97253e9e4e4b238": {
+			"24296fb24b8ad77aa715cdfd264ce34c4d544375d7bd7cd029bf5a48ef25217a13fdba562e0889ca",
+		},
+		// Contain an empty SBOM attestation
 		"sha256:5891b5b522d5df086d0ff0b110fbd9d21bb4fc7163af34d08286a2e846f6be03": {
 			"24296fb24b8ad77a8d47be2e40bfe910f0ffc842e86b5685dd85d1c903ef78bb6362125816426fe9",
 		},
 	}
+
+	imageSBOMAttestation = in_toto.Statement{
+		StatementHeader: in_toto.StatementHeader{
+			Type:          "https://in-toto.io/Statement/v0.1",
+			PredicateType: "https://cyclonedx.org/schema",
+			Subject: []in_toto.Subject{
+				{
+					Name: "index.docker.io/knqyf263/cosign-test",
+					Digest: slsa.DigestSet{
+						"sha256": "a777c9c66ba177ccfea23f2a216ff6721e78a662cd17019488c417135299cd89",
+					},
+				},
+			},
+		},
+		Predicate: &attestation.CosignPredicate{
+			Data: &cyclonedx.BOM{
+				BOMFormat:    cyclonedx.BOMFormat,
+				SerialNumber: "urn:uuid:6453fd82-71f4-47c8-ad12-01775619c443",
+				SpecVersion:  "1.4",
+				Version:      1,
+				Metadata: &cyclonedx.Metadata{
+					Timestamp: "2022-09-15T13:53:49+00:00",
+					Tools: &[]cyclonedx.Tool{
+						{
+							Vendor:  "aquasecurity",
+							Name:    "trivy",
+							Version: "dev",
+						},
+					},
+					Component: &cyclonedx.Component{
+						BOMRef:     "pkg:oci/alpine@sha256:bc41182d7ef5ffc53a40b044e725193bc10142a1243f395ee852a8d9730fc2ad?repository_url=index.docker.io%2Flibrary%2Falpine\u0026arch=amd64",
+						Type:       cyclonedx.ComponentTypeContainer,
+						Name:       "alpine:3.16",
+						PackageURL: "pkg:oci/alpine@sha256:bc41182d7ef5ffc53a40b044e725193bc10142a1243f395ee852a8d9730fc2ad?repository_url=index.docker.io%2Flibrary%2Falpine\u0026arch=amd64",
+						Properties: &[]cyclonedx.Property{
+							{Name: "aquasecurity:trivy:SchemaVersion", Value: "2"},
+							{Name: "aquasecurity:trivy:ImageID", Value: "sha256:9c6f0724472873bb50a2ae67a9e7adcb57673a183cea8b06eb778dca859181b5"},
+							{Name: "aquasecurity:trivy:RepoDigest", Value: "alpine@sha256:bc41182d7ef5ffc53a40b044e725193bc10142a1243f395ee852a8d9730fc2ad"},
+							{Name: "aquasecurity:trivy:DiffID", Value: "sha256:994393dc58e7931862558d06e46aa2bb17487044f670f310dffe1d24e4d1eec7"},
+							{Name: "aquasecurity:trivy:RepoTag", Value: "alpine:3.16"},
+						},
+					},
+				},
+				Components: &[]cyclonedx.Component{
+					{
+						BOMRef:  "fad4eb97-3d2a-4499-ace7-2c94444148a7",
+						Type:    cyclonedx.ComponentTypeOS,
+						Name:    "alpine",
+						Version: "3.16.2",
+						Properties: &[]cyclonedx.Property{
+							{Name: "aquasecurity:trivy:Type", Value: "alpine"},
+							{Name: "aquasecurity:trivy:Class", Value: "os-pkgs"},
+						},
+					},
+					{
+						BOMRef:  "pkg:apk/alpine/musl@1.2.3-r0?distro=3.16.2",
+						Type:    cyclonedx.ComponentTypeLibrary,
+						Name:    "musl",
+						Version: "1.2.3-r0",
+						Licenses: &cyclonedx.Licenses{
+							{Expression: "MIT"},
+						},
+						PackageURL: "pkg:apk/alpine/musl@1.2.3-r0?distro=3.16.2",
+						Properties: &[]cyclonedx.Property{
+							{Name: "aquasecurity:trivy:PkgType", Value: "alpine"},
+							{Name: "aquasecurity:trivy:SrcName", Value: "musl"},
+							{Name: "aquasecurity:trivy:SrcVersion", Value: "1.2.3-r0"},
+							{Name: "aquasecurity:trivy:LayerDiffID", Value: "sha256:994393dc58e7931862558d06e46aa2bb17487044f670f310dffe1d24e4d1eec7"},
+						},
+					},
+				},
+				Dependencies: &[]cyclonedx.Dependency{
+					{
+						Ref: "pkg:oci/alpine@sha256:bc41182d7ef5ffc53a40b044e725193bc10142a1243f395ee852a8d9730fc2ad?repository_url=index.docker.io%2Flibrary%2Falpine&6arch=amd64",
+						Dependencies: &[]cyclonedx.Dependency{
+							{Ref: "fad4eb97-3d2a-4499-ace7-2c94444148a7"},
+						},
+					},
+					{
+						Ref: "fad4eb97-3d2a-4499-ace7-2c94444148a7",
+						Dependencies: &[]cyclonedx.Dependency{
+							{Ref: "pkg:apk/alpine/musl@1.2.3-r0?distro=3.16.2"},
+						},
+					},
+				},
+			},
+		},
+	}
+
+	gomodSBOMAttestation = in_toto.Statement{
+		StatementHeader: in_toto.StatementHeader{
+			Type:          "https://in-toto.io/Statement/v0.1",
+			PredicateType: "https://cyclonedx.org/schema",
+			Subject: []in_toto.Subject{
+				{
+					Name: "go.mod",
+					Digest: slsa.DigestSet{
+						"sha256": "23f4e10c43c7654e33a3c9570913c8c9c528292762f1a5c4a97253e9e4e4b238",
+					},
+				},
+			},
+		},
+		Predicate: &attestation.CosignPredicate{
+			Data: &cyclonedx.BOM{
+				BOMFormat:    cyclonedx.BOMFormat,
+				SerialNumber: "urn:uuid:8b16c9a3-e957-4c85-b43d-7dd05ea0421c",
+				SpecVersion:  "1.4",
+				Version:      1,
+				Metadata: &cyclonedx.Metadata{
+					Timestamp: "2022-10-21T09:50:08+00:00",
+					Tools: &[]cyclonedx.Tool{
+						{
+							Vendor:  "aquasecurity",
+							Name:    "trivy",
+							Version: "dev",
+						},
+					},
+					Component: &cyclonedx.Component{
+						BOMRef: "ef8385d7-a56f-495a-a220-7b0a2e940d39",
+						Type:   cyclonedx.ComponentTypeApplication,
+						Name:   "go.mod",
+						Properties: &[]cyclonedx.Property{
+							{Name: "aquasecurity:trivy:SchemaVersion", Value: "2"},
+						},
+					},
+				},
+				Components: &[]cyclonedx.Component{
+					{
+						BOMRef: "bb8b7541-2b08-4692-9363-8f79da5c1a31",
+						Type:   cyclonedx.ComponentTypeApplication,
+						Name:   "go.mod",
+						Properties: &[]cyclonedx.Property{
+							{Name: "aquasecurity:trivy:Type", Value: "gomod"},
+							{Name: "aquasecurity:trivy:Class", Value: "lang-pkgs"},
+						},
+					},
+					{
+						BOMRef:     "pkg:golang/github.com/spf13/cobra@1.5.0",
+						Type:       cyclonedx.ComponentTypeLibrary,
+						Name:       "github.com/spf13/cobra",
+						Version:    "1.5.0",
+						PackageURL: "pkg:golang/github.com/spf13/cobra@1.5.0",
+						Properties: &[]cyclonedx.Property{
+							{Name: "aquasecurity:trivy:PkgType", Value: "gomod"},
+						},
+					},
+				},
+				Dependencies: &[]cyclonedx.Dependency{
+					{
+						Ref: "ef8385d7-a56f-495a-a220-7b0a2e940d39",
+						Dependencies: &[]cyclonedx.Dependency{
+							{Ref: "bb8b7541-2b08-4692-9363-8f79da5c1a31"},
+						},
+					},
+					{
+						Ref: "bb8b7541-2b08-4692-9363-8f79da5c1a31",
+						Dependencies: &[]cyclonedx.Dependency{
+							{Ref: "pkg:golang/github.com/spf13/cobra@1.5.0"},
+						},
+					},
+				},
+			},
+		},
+	}
+
+	emptySBOMAttestation = in_toto.Statement{
+		StatementHeader: in_toto.StatementHeader{
+			Type:          "https://in-toto.io/Statement/v0.1",
+			PredicateType: "https://cyclonedx.org/schema",
+		},
+		Predicate: &attestation.CosignPredicate{
+			Data: &cyclonedx.BOM{
+				BOMFormat:   cyclonedx.BOMFormat,
+				SpecVersion: "1.4",
+				Version:     2,
+			},
+		},
+	}
+
 	entries = map[string]models.LogEntryAnon{
 		"392f8ecba72f4326414eaca77bd19bf5f378725d7fd79309605a81b69cc0101f5cd3119d0a216523": {
 			Attestation: &models.LogEntryAnonAttestation{
-				Data: []byte(`{"_type":"https://in-toto.io/Statement/v0.1","predicateType":"https://cyclonedx.org/schema","subject":[{"name":"index.docker.io/knqyf263/cosign-test","digest":{"sha256":"a777c9c66ba177ccfea23f2a216ff6721e78a662cd17019488c417135299cd89"}}],"predicate":{"Data":{"bomFormat":"CycloneDX","components":[{"bom-ref":"pkg:apk/alpine/musl@1.2.3-r0?distro=3.16.2","licenses":[{"expression":"MIT"}],"name":"musl","properties":[{"name":"aquasecurity:trivy:PkgType","value":"alpine"},{"name":"aquasecurity:trivy:SrcName","value":"musl"},{"name":"aquasecurity:trivy:SrcVersion","value":"1.2.3-r0"},{"name":"aquasecurity:trivy:LayerDiffID","value":"sha256:994393dc58e7931862558d06e46aa2bb17487044f670f310dffe1d24e4d1eec7"}],"purl":"pkg:apk/alpine/musl@1.2.3-r0?distro=3.16.2","type":"library","version":"1.2.3-r0"},{"bom-ref":"fad4eb97-3d2a-4499-ace7-2c94444148a7","name":"alpine","properties":[{"name":"aquasecurity:trivy:Type","value":"alpine"},{"name":"aquasecurity:trivy:Class","value":"os-pkgs"}],"type":"operating-system","version":"3.16.2"}],"dependencies":[{"dependsOn":["pkg:apk/alpine/musl@1.2.3-r0?distro=3.16.2"],"ref":"fad4eb97-3d2a-4499-ace7-2c94444148a7"},{"dependsOn":["fad4eb97-3d2a-4499-ace7-2c94444148a7"],"ref":"pkg:oci/alpine@sha256:bc41182d7ef5ffc53a40b044e725193bc10142a1243f395ee852a8d9730fc2ad?repository_url=index.docker.io%2Flibrary%2Falpine\u0026arch=amd64"}],"metadata":{"component":{"bom-ref":"pkg:oci/alpine@sha256:bc41182d7ef5ffc53a40b044e725193bc10142a1243f395ee852a8d9730fc2ad?repository_url=index.docker.io%2Flibrary%2Falpine\u0026arch=amd64","name":"alpine:3.16","properties":[{"name":"aquasecurity:trivy:SchemaVersion","value":"2"},{"name":"aquasecurity:trivy:ImageID","value":"sha256:9c6f0724472873bb50a2ae67a9e7adcb57673a183cea8b06eb778dca859181b5"},{"name":"aquasecurity:trivy:RepoDigest","value":"alpine@sha256:bc41182d7ef5ffc53a40b044e725193bc10142a1243f395ee852a8d9730fc2ad"},{"name":"aquasecurity:trivy:DiffID","value":"sha256:994393dc58e7931862558d06e46aa2bb17487044f670f310dffe1d24e4d1eec7"},{"name":"aquasecurity:trivy:RepoTag","value":"alpine:3.16"}],"purl":"pkg:oci/alpine@sha256:bc41182d7ef5ffc53a40b044e725193bc10142a1243f395ee852a8d9730fc2ad?repository_url=index.docker.io%2Flibrary%2Falpine\u0026arch=amd64","type":"container"},"timestamp":"2022-09-15T13:53:49+00:00","tools":[{"name":"trivy","vendor":"aquasecurity","version":"dev"}]},"serialNumber":"urn:uuid:6453fd82-71f4-47c8-ad12-01775619c443","specVersion":"1.4","version":1,"vulnerabilities":[]},"Timestamp":""}}`),
+				Data: mustMarshal(imageSBOMAttestation),
 			},
 			Body:           "eyJhcGlWZXJzaW9uIjoiMC4wLjEiLCJraW5kIjoiaW50b3RvIiwic3BlYyI6eyJjb250ZW50Ijp7Imhhc2giOnsiYWxnb3JpdGhtIjoic2hhMjU2IiwidmFsdWUiOiI3ODIxNDNlMzlmMWU3YTA0ZTNmNmRhMmQ4OGIxYzA1N2U1NjU3MzYzYzRmOTA2NzlmM2U4YTA3MWI3NjE5ZTAyIn0sInBheWxvYWRIYXNoIjp7ImFsZ29yaXRobSI6InNoYTI1NiIsInZhbHVlIjoiZWJiZmRkZGE2Mjc3YWYxOTllOTNjNWJiNWNmNTk5OGE3OTMxMWRlMjM4ZTQ5YmNjOGFjMjQxMDI2OTg3NjFiYiJ9fSwicHVibGljS2V5IjoiTFMwdExTMUNSVWRKVGlCRFJWSlVTVVpKUTBGVVJTMHRMUzB0Q2sxSlNVTndSRU5EUVdseFowRjNTVUpCWjBsVllXaHNPRUZSZDFsWlYwNVpiblY2ZGxGdk9FVnJOMWRNVFVSdmQwTm5XVWxMYjFwSmVtb3dSVUYzVFhjS1RucEZWazFDVFVkQk1WVkZRMmhOVFdNeWJHNWpNMUoyWTIxVmRWcEhWakpOVWpSM1NFRlpSRlpSVVVSRmVGWjZZVmRrZW1SSE9YbGFVekZ3WW01U2JBcGpiVEZzV2tkc2FHUkhWWGRJYUdOT1RXcEpkMDlFU1RKTlJFVjRUbnBGTTFkb1kwNU5ha2wzVDBSSk1rMUVSWGxPZWtVelYycEJRVTFHYTNkRmQxbElDa3R2V2tsNmFqQkRRVkZaU1V0dldrbDZhakJFUVZGalJGRm5RVVZMV21aRVF6bHBhbFZ5Y2xwQldFOWpXRllyUVhGSFJVbFRTbEV6VkhScVNuZEpkRUVLZFRFM1JtbDJhV3BuU2sxaFlVaEdORGNyVDNaMk9WUjFla0ZEUTNscFNVVjVVRFV5WlhJMlptRjVibVpLWVZWcU9FdFBRMEZWYTNkblowWkdUVUUwUndwQk1WVmtSSGRGUWk5M1VVVkJkMGxJWjBSQlZFSm5UbFpJVTFWRlJFUkJTMEpuWjNKQ1owVkdRbEZqUkVGNlFXUkNaMDVXU0ZFMFJVWm5VVlZIUWxkVUNrTXdkVVUzZFRSUWNVUlZSakZZVjBjMFFsVldWVXBCZDBoM1dVUldVakJxUWtKbmQwWnZRVlV6T1ZCd2VqRlphMFZhWWpWeFRtcHdTMFpYYVhocE5Ga0tXa1E0ZDBwUldVUldVakJTUVZGSUwwSkNjM2RIV1VWWVl6SkdlbUl5Um5KaFdFcG9UbXBGZUU1RlFtNWlWMFp3WWtNMWFtSXlNSGRMVVZsTFMzZFpRZ3BDUVVkRWRucEJRa0ZSVVdKaFNGSXdZMGhOTmt4NU9XaFpNazUyWkZjMU1HTjVOVzVpTWpsdVlrZFZkVmt5T1hSTlNVZE1RbWR2Y2tKblJVVkJaRm8xQ2tGblVVTkNTREJGWlhkQ05VRklZMEZEUjBOVE9FTm9VeTh5YUVZd1pFWnlTalJUWTFKWFkxbHlRbGs1ZDNwcVUySmxZVGhKWjFreVlqTkpRVUZCUjBNS01UZHRTbWhuUVVGQ1FVMUJVMFJDUjBGcFJVRm9TMDlCU2tkV1ZsaENiMWN4VERSNGFsazVlV0pXT0daVVVYTjVUU3R2VUVwSWVEazVTMjlMWVVwVlF3cEpVVVJDWkRsbGMxUTBNazFTVG5nM1ZtOUJNMXBhS3pWNGFraE5aV1I2YW1WeFEyWm9aVGN2ZDFweFlUbFVRVXRDWjJkeGFHdHFUMUJSVVVSQmQwNXZDa0ZFUW14QmFrVkJjbkJrZVhsRlJqYzNiMkp5VEVOTVVYcHpZbUl4TTJsc05qZDNkek00WTA1MGFtZE5RbWw2WTJWVWFrUmlZMlZMZVZGU04xUktOSE1LWkVOc2Nsa3hZMUJCYWtFNGFYQjZTVVE0VlUxQ2FHeGtTbVV2WlhKR2NHZHROMnN3TldGaWMybFBOM1Y1ZFZadVMyOVZOazByVFhKNlZWVXJaVGxHZHdwSlJHaENhblZSYTFkUll6MEtMUzB0TFMxRlRrUWdRMFZTVkVsR1NVTkJWRVV0TFMwdExRbz0ifX0=",
 			IntegratedTime: lo.ToPtr(int64(1661476639)),
@@ -44,9 +232,19 @@ var (
 			LogIndex:       lo.ToPtr(int64(3280165)),
 			Verification:   nil, // TODO
 		},
+		"24296fb24b8ad77aa715cdfd264ce34c4d544375d7bd7cd029bf5a48ef25217a13fdba562e0889ca": {
+			Attestation: &models.LogEntryAnonAttestation{
+				Data: mustMarshal(gomodSBOMAttestation),
+			},
+			Body:           nil, // not used at the moment
+			IntegratedTime: lo.ToPtr(int64(1664451604)),
+			LogID:          lo.ToPtr("c0d23d6ad406973f9559f3ba2d1ca01f84147d8ffc5b8445c224f98b9591801d"),
+			LogIndex:       lo.ToPtr(int64(4215471)),
+			Verification:   nil, // TODO
+		},
 		"24296fb24b8ad77a8d47be2e40bfe910f0ffc842e86b5685dd85d1c903ef78bb6362125816426fe9": {
 			Attestation: &models.LogEntryAnonAttestation{
-				Data: []byte(`{"_type":"https://in-toto.io/Statement/v0.1","predicateType":"https://cyclonedx.org/schema","subject":[{"name":"index.docker.io/knqyf263/cosign-test","digest":{"sha256":"a777c9c66ba177ccfea23f2a216ff6721e78a662cd17019488c417135299cd89"}}],"predicate":{"Data":{"bomFormat":"CycloneDX","specVersion":"1.4"}}}`),
+				Data: mustMarshal(emptySBOMAttestation),
 			},
 			Body:           "eyJhcGlWZXJzaW9uIjoiMC4wLjEiLCJraW5kIjoiaW50b3RvIiwic3BlYyI6eyJjb250ZW50Ijp7Imhhc2giOnsiYWxnb3JpdGhtIjoic2hhMjU2IiwidmFsdWUiOiI3ODIxNDNlMzlmMWU3YTA0ZTNmNmRhMmQ4OGIxYzA1N2U1NjU3MzYzYzRmOTA2NzlmM2U4YTA3MWI3NjE5ZTAyIn0sInBheWxvYWRIYXNoIjp7ImFsZ29yaXRobSI6InNoYTI1NiIsInZhbHVlIjoiZWJiZmRkZGE2Mjc3YWYxOTllOTNjNWJiNWNmNTk5OGE3OTMxMWRlMjM4ZTQ5YmNjOGFjMjQxMDI2OTg3NjFiYiJ9fSwicHVibGljS2V5IjoiTFMwdExTMUNSVWRKVGlCRFJWSlVTVVpKUTBGVVJTMHRMUzB0Q2sxSlNVTndSRU5EUVdseFowRjNTVUpCWjBsVllXaHNPRUZSZDFsWlYwNVpiblY2ZGxGdk9FVnJOMWRNVFVSdmQwTm5XVWxMYjFwSmVtb3dSVUYzVFhjS1RucEZWazFDVFVkQk1WVkZRMmhOVFdNeWJHNWpNMUoyWTIxVmRWcEhWakpOVWpSM1NFRlpSRlpSVVVSRmVGWjZZVmRrZW1SSE9YbGFVekZ3WW01U2JBcGpiVEZzV2tkc2FHUkhWWGRJYUdOT1RXcEpkMDlFU1RKTlJFVjRUbnBGTTFkb1kwNU5ha2wzVDBSSk1rMUVSWGxPZWtVelYycEJRVTFHYTNkRmQxbElDa3R2V2tsNmFqQkRRVkZaU1V0dldrbDZhakJFUVZGalJGRm5RVVZMV21aRVF6bHBhbFZ5Y2xwQldFOWpXRllyUVhGSFJVbFRTbEV6VkhScVNuZEpkRUVLZFRFM1JtbDJhV3BuU2sxaFlVaEdORGNyVDNaMk9WUjFla0ZEUTNscFNVVjVVRFV5WlhJMlptRjVibVpLWVZWcU9FdFBRMEZWYTNkblowWkdUVUUwUndwQk1WVmtSSGRGUWk5M1VVVkJkMGxJWjBSQlZFSm5UbFpJVTFWRlJFUkJTMEpuWjNKQ1owVkdRbEZqUkVGNlFXUkNaMDVXU0ZFMFJVWm5VVlZIUWxkVUNrTXdkVVUzZFRSUWNVUlZSakZZVjBjMFFsVldWVXBCZDBoM1dVUldVakJxUWtKbmQwWnZRVlV6T1ZCd2VqRlphMFZhWWpWeFRtcHdTMFpYYVhocE5Ga0tXa1E0ZDBwUldVUldVakJTUVZGSUwwSkNjM2RIV1VWWVl6SkdlbUl5Um5KaFdFcG9UbXBGZUU1RlFtNWlWMFp3WWtNMWFtSXlNSGRMVVZsTFMzZFpRZ3BDUVVkRWRucEJRa0ZSVVdKaFNGSXdZMGhOTmt4NU9XaFpNazUyWkZjMU1HTjVOVzVpTWpsdVlrZFZkVmt5T1hSTlNVZE1RbWR2Y2tKblJVVkJaRm8xQ2tGblVVTkNTREJGWlhkQ05VRklZMEZEUjBOVE9FTm9VeTh5YUVZd1pFWnlTalJUWTFKWFkxbHlRbGs1ZDNwcVUySmxZVGhKWjFreVlqTkpRVUZCUjBNS01UZHRTbWhuUVVGQ1FVMUJVMFJDUjBGcFJVRm9TMDlCU2tkV1ZsaENiMWN4VERSNGFsazVlV0pXT0daVVVYTjVUU3R2VUVwSWVEazVTMjlMWVVwVlF3cEpVVVJDWkRsbGMxUTBNazFTVG5nM1ZtOUJNMXBhS3pWNGFraE5aV1I2YW1WeFEyWm9aVGN2ZDFweFlUbFVRVXRDWjJkeGFHdHFUMUJSVVVSQmQwNXZDa0ZFUW14QmFrVkJjbkJrZVhsRlJqYzNiMkp5VEVOTVVYcHpZbUl4TTJsc05qZDNkek00WTA1MGFtZE5RbWw2WTJWVWFrUmlZMlZMZVZGU04xUktOSE1LWkVOc2Nsa3hZMUJCYWtFNGFYQjZTVVE0VlUxQ2FHeGtTbVV2WlhKR2NHZHROMnN3TldGaWMybFBOM1Y1ZFZadVMyOVZOazByVFhKNlZWVXJaVGxHZHdwSlJHaENhblZSYTFkUll6MEtMUzB0TFMxRlRrUWdRMFZTVkVsR1NVTkJWRVV0TFMwdExRbz0ifX0=",
 			IntegratedTime: lo.ToPtr(int64(1661476639)),
@@ -106,4 +304,12 @@ func (s *Server) URL() string {
 
 func (s *Server) Close() {
 	s.ts.Close()
+}
+
+func mustMarshal(v any) []byte {
+	b, err := json.Marshal(v)
+	if err != nil {
+		panic(err)
+	}
+	return b
 }

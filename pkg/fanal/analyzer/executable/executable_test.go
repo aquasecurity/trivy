@@ -22,7 +22,7 @@ func Test_executableAnalyzer_Analyze(t *testing.T) {
 			filePath: "testdata/binary",
 			want: &analyzer.AnalysisResult{
 				Digests: map[string]string{
-					"testdata/binary": "9f64a747e1b97f131fabb6b447296c9b6f0201e79fb3c5356e6c77e89b6a806a",
+					"testdata/binary": "sha256:9f64a747e1b97f131fabb6b447296c9b6f0201e79fb3c5356e6c77e89b6a806a",
 				},
 			},
 		},

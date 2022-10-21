@@ -18,7 +18,7 @@ import (
 )
 
 func init() {
-	handler.RegisterPostHandlerInit(types.UnpackagedPostHandler, newUnpackagedHandler)
+	handler.RegisterPostHandlerInit(types.UnpackagedPostHandler, NewUnpackagedHandler)
 }
 
 const version = 1
@@ -27,7 +27,7 @@ type unpackagedHook struct {
 	client sbomatt.Rekor
 }
 
-func newUnpackagedHandler(opt artifact.Option) (handler.PostHandler, error) {
+func NewUnpackagedHandler(opt artifact.Option) (handler.PostHandler, error) {
 	c, err := sbomatt.NewRekor(opt.RekorURL)
 	if err != nil {
 		return nil, xerrors.Errorf("rekor client error: %w", err)
@@ -71,7 +71,7 @@ func (h unpackagedHook) Handle(ctx context.Context, res *analyzer.AnalysisResult
 			log.Logger.Infof("Found SBOM attestation in Rekor: %s", filePath)
 			// Take the first app since this SBOM should contain a single application.
 			app := bom.Applications[0]
-			app.FilePath = filePath
+			app.FilePath = filePath // Use the original file path rather than the one in the SBOM.
 			blob.Applications = append(blob.Applications, app)
 		}
 	}

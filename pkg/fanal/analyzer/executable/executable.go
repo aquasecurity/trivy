@@ -38,7 +38,7 @@ func (a executableAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisIn
 
 	return &analyzer.AnalysisResult{
 		Digests: map[string]string{
-			input.FilePath: s,
+			input.FilePath: "sha256:" + s,
 		},
 	}, nil
 }
