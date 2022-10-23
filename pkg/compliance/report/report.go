@@ -34,7 +34,7 @@ type ComplianceReport struct {
 	Description      string                `json:"description"`
 	Version          string                `json:"severity"`
 	RelatedResources []string              `json:"relatedResources"`
-	ControlResults   []*ControlCheckResult `json:"checksResults"`
+	Results          []*ControlCheckResult `json:"results"`
 }
 
 type ControlCheckResult struct {
@@ -43,7 +43,7 @@ type ControlCheckResult struct {
 	ControlDescription string             `json:"description"`
 	DefaultStatus      spec.ControlStatus `json:"defaultStatus,omitempty"`
 	ControlSeverity    string             `json:"severity"`
-	Checks             types.Results      `json:"checksResults"`
+	Results            types.Results      `json:"results"`
 }
 
 // ConsolidatedReport represents a kubernetes scan report with consolidated findings
@@ -92,7 +92,7 @@ func Write(report *ComplianceReport, option Option, showEmpty bool) error {
 }
 
 func (r ComplianceReport) empty() bool {
-	return len(r.ControlResults) == 0
+	return len(r.Results) == 0
 }
 
 // buildControlCheckResults create compliance results data
@@ -106,7 +106,7 @@ func buildControlCheckResults(checksMap map[string]types.Results, controls []spe
 		cr.ControlSeverity = string(control.Severity)
 		cr.DefaultStatus = control.DefaultStatus
 		for _, c := range control.Checks {
-			cr.Checks = append(cr.Checks, checksMap[c.ID]...)
+			cr.Results = append(cr.Results, checksMap[c.ID]...)
 		}
 		complianceResults = append(complianceResults, &cr)
 	}
@@ -122,7 +122,7 @@ func buildComplianceReportResults(checksMap map[string]types.Results, spec spec.
 		Description:      spec.Description,
 		Version:          spec.Version,
 		RelatedResources: spec.RelatedResources,
-		ControlResults:   controlCheckResult,
+		Results:          controlCheckResult,
 	}
 }
 

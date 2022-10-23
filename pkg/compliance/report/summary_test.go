@@ -3,6 +3,7 @@ package report
 import (
 	"encoding/json"
 	"os"
+	"strings"
 	"testing"
 
 	"github.com/aquasecurity/trivy/pkg/types"
@@ -33,7 +34,7 @@ func TestBuildSummary(t *testing.T) {
 			assert.NoError(t, err)
 			r, err := os.ReadFile(tt.wantSummaryReportPath)
 			assert.NoError(t, err)
-			assert.Equal(t, string(o), string(r))
+			assert.Equal(t, strings.TrimSpace(string(o)), string(r))
 
 		})
 	}

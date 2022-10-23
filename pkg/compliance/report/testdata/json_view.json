@@ -6,13 +6,13 @@
   "relatedResources": [
     "http://related-resource/"
   ],
-  "checksResults": [
+  "results": [
     {
       "id": "1.0",
       "name": "Non-root containers",
       "description": "Check that container is not running as root",
       "severity": "MEDIUM",
-      "checksResults": [
+      "results": [
         {
           "Target": "Deployment/metrics-server",
           "Class": "config",
@@ -142,7 +142,7 @@
       "name": "Immutable container file systems",
       "description": "Check that container root file system is immutable",
       "severity": "LOW",
-      "checksResults": [
+      "results": [
         {
           "Target": "Deployment/metrics-server",
           "Class": "config",

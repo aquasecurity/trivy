@@ -60,7 +60,6 @@ func TestBuildComplianceReportResults(t *testing.T) {
 		resultPath           string
 		complianceReportPath string
 	}{
-		{name: "build report test config only", specPath: "./testdata/config_spec.yaml", resultPath: "./testdata/results_config.json", complianceReportPath: "./testdata/compliance_report.json"},
 		{name: "build report test config and vuln", specPath: "./testdata/config_vuln_spec.yaml", resultPath: "./testdata/results_vul_config.json", complianceReportPath: "./testdata/vuln_config_compliance.json"}}
 
 	for _, tt := range tests {

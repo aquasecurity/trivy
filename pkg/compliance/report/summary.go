@@ -15,16 +15,16 @@ import (
 
 func BuildSummary(cr *ComplianceReport) *SummaryReport {
 	ccma := make([]ControlCheckSummary, 0)
-	for _, control := range cr.ControlResults {
+	for _, control := range cr.Results {
 		ccm := ControlCheckSummary{ControlCheckID: control.ControlCheckID, ControlName: control.ControlName, ControlSeverity: control.ControlSeverity}
-		if len(control.Checks) == 0 { // this validation is mainly for vuln type
+		if len(control.Results) == 0 { // this validation is mainly for vuln type
 			if control.DefaultStatus == spec.PassStatus {
 				ccm.TotalPass = 1
 			}
 			ccma = append(ccma, ccm)
 			continue
 		}
-		for _, check := range control.Checks {
+		for _, check := range control.Results {
 			for _, cr := range check.Misconfigurations {
 				if cr.CheckPass() {
 					ccm.TotalPass++
