@@ -76,8 +76,8 @@ func (s SummaryWriter) Write(report Report) error {
 		return xerrors.Errorf("failed to write summary report: %w", err)
 	}
 
-	if _, err := fmt.Fprintf(s.Output, "Summary Report for %s\n", consolidated.ClusterName); err != nil {
-		return xerrors.Errorf("failed to write summary report: %w", err)
+	if _, err := fmt.Fprintln(s.Output, report.name); err != nil {
+		return xerrors.Errorf("failed to write summary report title: %w", err)
 	}
 
 	t := table.New(s.Output)

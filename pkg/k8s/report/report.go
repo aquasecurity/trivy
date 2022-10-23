@@ -45,6 +45,7 @@ type Report struct {
 	ClusterName       string
 	Vulnerabilities   []Resource `json:",omitempty"`
 	Misconfigurations []Resource `json:",omitempty"`
+	name              string
 }
 
 // ConsolidatedReport represents a kubernetes scan report with consolidated findings
@@ -140,6 +141,13 @@ func Write(report Report, option Option) error {
 	case tableFormat:
 		reports := separateMisconfigReports(report, option.SecurityChecks, option.Components)
 
+		if option.Report == summaryReport {
+			_, err := fmt.Fprintf(option.Output, "Summary Report for %s\n", report.ClusterName)
+			if err != nil {
+				return xerrors.Errorf("failed to write summary report: %w", err)
+			}
+		}
+
 		for _, r := range reports {
 			writer := &TableWriter{
 				Output:        option.Output,
@@ -204,6 +212,7 @@ func separateMisconfigReports(k8sReport Report, securityChecks, components []str
 			ClusterName:       k8sReport.ClusterName,
 			Misconfigurations: workloadMisconfig,
 			Vulnerabilities:   k8sReport.Vulnerabilities,
+			name:              "Workload Assessment",
 		}
 
 		if (slices.Contains(components, workloadComponent) &&
@@ -219,6 +228,7 @@ func separateMisconfigReports(k8sReport Report, securityChecks, components []str
 				SchemaVersion:     0,
 				ClusterName:       k8sReport.ClusterName,
 				Misconfigurations: rbacAssessment,
+				name:              "RBAC Assessment",
 			},
 			columns: RoleColumns(),
 		})
@@ -233,6 +243,7 @@ func separateMisconfigReports(k8sReport Report, securityChecks, components []str
 				SchemaVersion:     0,
 				ClusterName:       k8sReport.ClusterName,
 				Misconfigurations: infraMisconfig,
+				name:              "Infra Assessment",
 			},
 			columns: InfraColumns(),
 		})
