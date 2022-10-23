@@ -235,7 +235,7 @@ $ trivy k8s --format json -o results.json cluster
 
 ## Infra checks
 
-Trivy by default scans kubernetes infra components (apiserver, controller-manager, scheduler and etcd) by default
+Trivy by default scans kubernetes infra components (apiserver, controller-manager, scheduler and etcd)
 if they exist under the `kube-system` namespace. For example, if you run a full cluster scan, or scan all
 components under `kube-system` with commands:
 
