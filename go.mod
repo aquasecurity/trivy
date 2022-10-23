@@ -17,7 +17,7 @@ require (
 	github.com/aquasecurity/table v1.8.0
 	github.com/aquasecurity/testdocker v0.0.0-20210911155206-e1e85f5a1516
 	github.com/aquasecurity/trivy-db v0.0.0-20220627104749-930461748b63
-	github.com/aquasecurity/trivy-kubernetes v0.3.1-0.20220823151349-b90b48958b91
+	github.com/aquasecurity/trivy-kubernetes v0.3.1-0.20221021174315-8d74450b4506
 	github.com/aws/aws-sdk-go v1.44.114
 	github.com/aws/aws-sdk-go-v2 v1.16.16
 	github.com/aws/aws-sdk-go-v2/config v1.17.8
@@ -358,16 +358,16 @@ require (
 	gotest.tools v2.2.0+incompatible
 	gotest.tools/v3 v3.2.0 // indirect
 	helm.sh/helm/v3 v3.10.0 // indirect
-	k8s.io/api v0.25.0 // indirect
+	k8s.io/api v0.25.3 // indirect
 	k8s.io/apiextensions-apiserver v0.25.0 // indirect
-	k8s.io/apimachinery v0.25.0 // indirect
+	k8s.io/apimachinery v0.25.3 // indirect
 	k8s.io/apiserver v0.25.0 // indirect
-	k8s.io/cli-runtime v0.25.0 // indirect
-	k8s.io/client-go v0.25.0 // indirect
-	k8s.io/component-base v0.25.0 // indirect
+	k8s.io/cli-runtime v0.25.3 // indirect
+	k8s.io/client-go v0.25.3 // indirect
+	k8s.io/component-base v0.25.3 // indirect
 	k8s.io/klog/v2 v2.70.1 // indirect
 	k8s.io/kube-openapi v0.0.0-20220803162953-67bda5d908f1 // indirect
-	k8s.io/kubectl v0.25.0 // indirect
+	k8s.io/kubectl v0.25.3 // indirect
 	lukechampine.com/uint128 v1.1.1 // indirect
 	modernc.org/cc/v3 v3.36.0 // indirect
 	modernc.org/ccgo/v3 v3.16.6 // indirect
