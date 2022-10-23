@@ -34,6 +34,9 @@ const (
 	Pub        = "pub"
 	Hex        = "hex"
 
+	// Non-packaged dependencies
+	GitSubmodule = "git-submodule"
+
 	// Config files
 	YAML           = "yaml"
 	JSON           = "json"
@@ -83,4 +86,7 @@ const (
 	PubSpecLock = "pubspec.lock"
 
 	MixLock = "mix.lock"
+
+	// Non-packaged file names
+	GitModules = ".gitmodules"
 )

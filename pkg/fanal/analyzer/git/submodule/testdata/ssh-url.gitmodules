@@ -1,0 +1,3 @@
+[submodule "submodule"]
+	path = submodule
+	url = ssh://git@github.com/org/repository.git

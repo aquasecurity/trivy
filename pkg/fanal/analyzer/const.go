@@ -90,7 +90,8 @@ const (
 	// ============
 	// Non-packaged
 	// ============
-	TypeExecutable Type = "executable"
+	TypeExecutable   Type = "executable"
+	TypeGitSubmodule Type = "git-submodule"
 
 	// ============
 	// Image Config

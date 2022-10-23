@@ -62,8 +62,8 @@ func NewDriver(libType string) (Driver, error) {
 		// Only semver can be used for version ranges
 		// https://docs.conan.io/en/latest/versioning/version_ranges.html
 		comparer = compare.GenericComparer{}
-	case ftypes.Cocoapods:
-		log.Logger.Warn("CocoaPods is supported for SBOM, not for vulnerability scanning")
+	case ftypes.Cocoapods, ftypes.GitSubmodule:
+		log.Logger.Warnf("%s is supported for SBOM, not for vulnerability scanning", libType)
 		return Driver{}, ErrSBOMSupportOnly
 	case ftypes.CondaPkg:
 		log.Logger.Warn("Conda package is supported for SBOM, not for vulnerability scanning")
