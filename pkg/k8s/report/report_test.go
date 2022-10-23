@@ -396,6 +396,8 @@ func TestReportWrite_Summary(t *testing.T) {
 			components:     []string{workloadComponent},
 			severities:     allSeverities,
 			expectedOutput: `Summary Report for test
+
+Workload Assessment
 ┌───────────┬──────────────┬───────────────────┐
 │ Namespace │   Resource   │ Misconfigurations │
 │           │              ├───┬───┬───┬───┬───┤
@@ -414,6 +416,8 @@ Severities: C=CRITICAL H=HIGH M=MEDIUM L=LOW U=UNKNOWN`,
 			securityChecks: []string{types.SecurityCheckVulnerability},
 			severities:     allSeverities,
 			expectedOutput: `Summary Report for test
+
+Workload Assessment
 ┌───────────┬──────────────┬───────────────────┐
 │ Namespace │   Resource   │  Vulnerabilities  │
 │           │              ├───┬───┬───┬───┬───┤
@@ -432,6 +436,8 @@ Severities: C=CRITICAL H=HIGH M=MEDIUM L=LOW U=UNKNOWN`,
 			securityChecks: []string{types.SecurityCheckRbac},
 			severities:     allSeverities,
 			expectedOutput: `Summary Report for test
+
+RBAC Assessment
 ┌───────────┬─────────────────────────────────────────────────────┬───────────────────┐
 │ Namespace │                      Resource                       │  RBAC Assessment  │
 │           │                                                     ├───┬───┬───┬───┬───┤
@@ -450,6 +456,8 @@ Severities: C=CRITICAL H=HIGH M=MEDIUM L=LOW U=UNKNOWN`,
 			securityChecks: []string{types.SecurityCheckSecret},
 			severities:     allSeverities,
 			expectedOutput: `Summary Report for test
+
+Workload Assessment
 ┌───────────┬────────────┬───────────────────┐
 │ Namespace │  Resource  │      Secrets      │
 │           │            ├───┬───┬───┬───┬───┤
@@ -469,6 +477,8 @@ Severities: C=CRITICAL H=HIGH M=MEDIUM L=LOW U=UNKNOWN`,
 			components:     []string{infraComponent},
 			severities:     allSeverities,
 			expectedOutput: `Summary Report for test
+
+Infra Assessment
 ┌─────────────┬────────────────────┬─────────────────────────────┐
 │  Namespace  │      Resource      │ Kubernetes Infra Assessment │
 │             │                    ├─────┬─────┬─────┬─────┬─────┤
@@ -488,6 +498,8 @@ Severities: C=CRITICAL H=HIGH M=MEDIUM L=LOW U=UNKNOWN`,
 			components:     []string{workloadComponent},
 			severities:     allSeverities,
 			expectedOutput: `Summary Report for test
+
+Workload Assessment
 ┌─────────────┬────────────────────┬───────────────────┬───────────────────┬───────────────────┐
 │  Namespace  │      Resource      │  Vulnerabilities  │ Misconfigurations │      Secrets      │
 │             │                    ├───┬───┬───┬───┬───┼───┬───┬───┬───┬───┼───┬───┬───┬───┬───┤
@@ -508,6 +520,8 @@ Severities: C=CRITICAL H=HIGH M=MEDIUM L=LOW U=UNKNOWN`,
 			components: []string{workloadComponent, infraComponent},
 			severities: allSeverities,
 			expectedOutput: `Summary Report for test
+
+Workload Assessment
 ┌─────────────┬────────────────────┬───────────────────┬───────────────────┬───────────────────┐
 │  Namespace  │      Resource      │  Vulnerabilities  │ Misconfigurations │      Secrets      │
 │             │                    ├───┬───┬───┬───┬───┼───┬───┬───┬───┬───┼───┬───┬───┬───┬───┤
@@ -518,7 +532,7 @@ Severities: C=CRITICAL H=HIGH M=MEDIUM L=LOW U=UNKNOWN`,
 Severities: C=CRITICAL H=HIGH M=MEDIUM L=LOW U=UNKNOWN
 
 
-Summary Report for test
+Infra Assessment
 ┌─────────────┬────────────────────┬─────────────────────────────┐
 │  Namespace  │      Resource      │ Kubernetes Infra Assessment │
 │             │                    ├─────┬─────┬─────┬─────┬─────┤
