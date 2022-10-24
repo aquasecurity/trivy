@@ -74,14 +74,14 @@ func (r Resource) fullname() string {
 
 // Failed returns whether the k8s report includes any vulnerabilities or misconfigurations
 func (r Report) Failed() bool {
-	for _, r := range r.Vulnerabilities {
-		if r.Results.Failed() {
+	for _, v := range r.Vulnerabilities {
+		if v.Results.Failed() {
 			return true
 		}
 	}
 
-	for _, r := range r.Misconfigurations {
-		if r.Results.Failed() {
+	for _, m := range r.Misconfigurations {
+		if m.Results.Failed() {
 			return true
 		}
 	}
@@ -104,13 +104,13 @@ func (r Report) consolidate() ConsolidatedReport {
 	for _, v := range r.Vulnerabilities {
 		key := v.fullname()
 
-		if r, ok := index[key]; ok {
+		if res, ok := index[key]; ok {
 			index[key] = Resource{
-				Namespace: r.Namespace,
-				Kind:      r.Kind,
-				Name:      r.Name,
-				Results:   append(r.Results, v.Results...),
-				Error:     r.Error,
+				Namespace: res.Namespace,
+				Kind:      res.Kind,
+				Name:      res.Name,
+				Results:   append(res.Results, v.Results...),
+				Error:     res.Error,
 			}
 
 			continue
@@ -138,14 +138,14 @@ func Write(report Report, option Option) error {
 		jwriter := JSONWriter{Output: option.Output, Report: option.Report}
 		return jwriter.Write(report)
 	case tableFormat:
-		reports := separateMisconfigReports(report, option.SecurityChecks, option.Components)
+		separatedReports := separateMisconfigReports(report, option.SecurityChecks, option.Components)
 
 		if option.Report == summaryReport {
 			target := fmt.Sprintf("Summary Report for %s", report.ClusterName)
 			table.RenderTarget(option.Output, target, table.IsOutputToTerminal(option.Output))
 		}
 
-		for _, r := range reports {
+		for _, r := range separatedReports {
 			writer := &TableWriter{
 				Output:        option.Output,
 				Report:        option.Report,
