@@ -7,8 +7,8 @@ import (
 	"strings"
 	"sync"
 
+	"github.com/aquasecurity/tml"
 	"github.com/fatih/color"
-	"github.com/liamg/tml"
 	"golang.org/x/exp/slices"
 
 	"github.com/aquasecurity/table"

@@ -11,7 +11,7 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/liamg/memoryfs"
+	"github.com/aquasecurity/memoryfs"
 	"github.com/samber/lo"
 	"golang.org/x/xerrors"
 

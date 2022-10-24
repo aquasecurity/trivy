@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/liamg/tml"
+	"github.com/aquasecurity/tml"
 	"golang.org/x/crypto/ssh/terminal"
 
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
