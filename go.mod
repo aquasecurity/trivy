@@ -54,7 +54,7 @@ require (
 	github.com/open-policy-agent/opa v0.44.1-0.20220927105354-00e835a7cc15
 	github.com/owenrumney/go-sarif/v2 v2.1.2
 	github.com/package-url/packageurl-go v0.1.1-0.20220203205134-d70459300c8a
-	github.com/samber/lo v1.27.1
+	github.com/samber/lo v1.28.2
 	github.com/secure-systems-lab/go-securesystemslib v0.4.0
 	github.com/sigstore/rekor v0.12.2
 	github.com/sosedoff/gitkit v0.3.0
