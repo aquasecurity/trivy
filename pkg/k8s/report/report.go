@@ -5,16 +5,15 @@ import (
 	"io"
 	"strings"
 
-	"golang.org/x/exp/slices"
-
 	"golang.org/x/exp/maps"
+	"golang.org/x/exp/slices"
 	"golang.org/x/xerrors"
 
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy-kubernetes/pkg/artifacts"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
-
 	"github.com/aquasecurity/trivy/pkg/log"
+	"github.com/aquasecurity/trivy/pkg/report/table"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
 
@@ -142,10 +141,8 @@ func Write(report Report, option Option) error {
 		reports := separateMisconfigReports(report, option.SecurityChecks, option.Components)
 
 		if option.Report == summaryReport {
-			_, err := fmt.Fprintf(option.Output, "Summary Report for %s\n", report.ClusterName)
-			if err != nil {
-				return xerrors.Errorf("failed to write summary report: %w", err)
-			}
+			target := fmt.Sprintf("Summary Report for %s", report.ClusterName)
+			table.RenderTarget(option.Output, target, table.IsOutputToTerminal(option.Output))
 		}
 
 		for _, r := range reports {
