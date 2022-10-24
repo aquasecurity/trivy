@@ -71,7 +71,9 @@ func (p *Parser) Parse(r dio.ReadSeekerAt) (libs []types.Library, deps []types.D
 	unique := map[string]struct{}{}
 	var lib types.Library
 	var skipPackage bool
+	var lineNumber int // It is used to save dependency location
 	for scanner.Scan() {
+		lineNumber++
 		line := scanner.Text()
 		if len(line) < 1 {
 			continue
@@ -114,6 +116,12 @@ func (p *Parser) Parse(r dio.ReadSeekerAt) (libs []types.Library, deps []types.D
 				continue
 			}
 			lib.Name = name
+			lib.Locations = append(lib.Locations, types.Location{
+				// we only parse name and version fields for dependency
+				// use line number of dependency name for location
+				StartLine: lineNumber,
+				EndLine:   lineNumber,
+			})
 		}
 	}
 	return libs, nil, nil
