@@ -22,9 +22,9 @@ func TestReport(t *testing.T) {
 		expectError           bool
 	}{
 		{name: "build table report summary", Option: Option{Report: "summary", Format: "table"}, specPath: "./testdata/config_spec.yaml", resultPath: "./testdata/results_config.json", wantSummaryReportPath: "./testdata/table_summary.txt"},
-		{name: "build table report", Option: Option{Report: "all", Format: "table"}, specPath: "./testdata/config_spec.yaml", resultPath: "./testdata/results_config.json", wantSummaryReportPath: "./testdata/table.txt"},
+		{name: "build table report full", Option: Option{Report: "all", Format: "table"}, specPath: "./testdata/config_spec.yaml", resultPath: "./testdata/results_config.json", wantSummaryReportPath: "./testdata/table.txt"},
 		{name: "build json report summary", Option: Option{Report: "summary", Format: "json"}, specPath: "./testdata/config_spec.yaml", resultPath: "./testdata/results_config.json", wantSummaryReportPath: "./testdata/json_summary.json"},
-		{name: "build json report", Option: Option{Report: "all", Format: "json"}, specPath: "./testdata/config_spec.yaml", resultPath: "./testdata/results_config.json", wantSummaryReportPath: "./testdata/json_view.json"},
+		{name: "build json report full", Option: Option{Report: "all", Format: "json"}, specPath: "./testdata/config_spec.yaml", resultPath: "./testdata/results_config.json", wantSummaryReportPath: "./testdata/json_view.json"},
 		{name: "build report bad format", Option: Option{Report: "all", Format: "aaa"}, specPath: "./testdata/config_spec.yaml", resultPath: "./testdata/results_config.json", wantSummaryReportPath: "./testdata/json_view.json", expectError: true},
 	}
 	for _, tt := range tests {

@@ -8,16 +8,16 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestFilterCheckByID(t *testing.T) {
+func TestFilterScanResultsBySpecCheckIds(t *testing.T) {
 	tests := []struct {
 		name        string
 		specPath    string
 		trivyCheck  spec.TrivyCheck
 		wantMapping map[string][]spec.TrivyCheck
 	}{
-		{name: "check IDs list", specPath: "./testdata/mapping_spec.yaml", trivyCheck: types.DetectedMisconfiguration{AVDID: "KSV012"},
+		{name: "filter results by check ids for config", specPath: "./testdata/mapping_spec.yaml", trivyCheck: types.DetectedMisconfiguration{AVDID: "KSV012"},
 			wantMapping: map[string][]spec.TrivyCheck{"KSV012": {types.DetectedMisconfiguration{AVDID: "KSV012"}}}},
-		{name: "check IDs list", specPath: "./testdata/mapping_spec.yaml", trivyCheck: types.DetectedVulnerability{VulnerabilityID: "KSV014"},
+		{name: "filter results by check ids for vulns", specPath: "./testdata/mapping_spec.yaml", trivyCheck: types.DetectedVulnerability{VulnerabilityID: "KSV014"},
 			wantMapping: map[string][]spec.TrivyCheck{"KSV014": {types.DetectedVulnerability{VulnerabilityID: "KSV014"}}}},
 	}
 
@@ -27,7 +27,7 @@ func TestFilterCheckByID(t *testing.T) {
 			assert.NoError(t, err)
 			scannerIDMap := spec.ScannerCheckIDs(cr.Spec.Controls)
 			m := spec.NewMapper[spec.TrivyCheck]()
-			filteredResults := m.FilterCheckByID([]spec.TrivyCheck{tt.trivyCheck}, scannerIDMap)
+			filteredResults := m.FilterScanResultsBySpecCheckIds([]spec.TrivyCheck{tt.trivyCheck}, scannerIDMap)
 			for _, v := range filteredResults {
 				assert.Equal(t, len(tt.wantMapping[v.GetID()]), 1)
 			}
@@ -42,7 +42,7 @@ func TestFilterResults(t *testing.T) {
 		results      types.Results
 		wantFiltered types.Results
 	}{
-		{name: "check IDs list", specPath: "./testdata/mapping_spec.yaml",
+		{name: "filter results by check ids define in spec", specPath: "./testdata/mapping_spec.yaml",
 			results:      types.Results{{Misconfigurations: []types.DetectedMisconfiguration{{AVDID: "AVD-KSV012"}, {AVDID: "AVD-KSV017"}}, Vulnerabilities: []types.DetectedVulnerability{{VulnerabilityID: "CVE-KSV014"}}}},
 			wantFiltered: types.Results{{Misconfigurations: []types.DetectedMisconfiguration{{AVDID: "AVD-KSV012"}}, Vulnerabilities: []types.DetectedVulnerability{{VulnerabilityID: "CVE-KSV014"}}}}},
 	}
@@ -58,7 +58,7 @@ func TestFilterResults(t *testing.T) {
 	}
 }
 
-func TestMapCheckByID(t *testing.T) {
+func TestMapSpecCheckIDtoFilteredResults(t *testing.T) {
 	tests := []struct {
 		name        string
 		specPath    string
@@ -76,7 +76,7 @@ func TestMapCheckByID(t *testing.T) {
 			assert.NoError(t, err)
 			scannerIDMap := spec.ScannerCheckIDs(cr.Spec.Controls)
 			m := spec.NewMapper[spec.TrivyCheck]()
-			mapResults := m.MapCheckByID([]spec.TrivyCheck{tt.trivyCheck}, "target", "class", "typeN", scannerIDMap)
+			mapResults := m.MapSpecCheckIDToFilteredResults([]spec.TrivyCheck{tt.trivyCheck}, "target", "class", "typeN", scannerIDMap)
 			for key, val := range tt.wantMapping {
 				assert.Equal(t, mapResults[key], val)
 			}

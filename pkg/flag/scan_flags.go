@@ -35,7 +35,7 @@ var (
 	ComplianceFlag = Flag{
 		Name:       "compliance",
 		ConfigName: "scan.compliance",
-		Value:      []string{},
+		Value:      "",
 		Usage:      "comma-separated list of what compliance reports to generate (nsa)",
 	}
 	FilePatternsFlag = Flag{
@@ -75,7 +75,7 @@ type ScanOptions struct {
 	SkipFiles      []string
 	OfflineScan    bool
 	SecurityChecks []string
-	Compliance     []string
+	Compliance     string
 	FilePatterns   []string
 	SBOMSources    []string
 	RekorURL       string
@@ -111,7 +111,7 @@ func (f *ScanFlagGroup) ToOptions(args []string) (ScanOptions, error) {
 	if err != nil {
 		return ScanOptions{}, xerrors.Errorf("unable to parse security checks: %w", err)
 	}
-	complianceTypes, err := parseComplianceTypes(getStringSlice(f.Compliance))
+	complianceTypes, err := parseComplianceTypes(getString(f.Compliance))
 	if err != nil {
 		return ScanOptions{}, xerrors.Errorf("unable to parse compliance types: %w", err)
 	}
@@ -145,15 +145,12 @@ func parseSecurityCheck(securityCheck []string) ([]string, error) {
 	return securityChecks, nil
 }
 
-func parseComplianceTypes(compliance []string) ([]string, error) {
-	var complianceTypes []string
-	for _, v := range compliance {
-		if !slices.Contains(types.Compliances, v) {
-			return nil, xerrors.Errorf("unknown compliance: %s", v)
-		}
-		complianceTypes = append(complianceTypes, v)
+func parseComplianceTypes(compliance interface{}) (string, error) {
+	complianceString, ok := compliance.(string)
+	if !ok || (len(complianceString) > 0 && !slices.Contains(types.Compliances, complianceString)) {
+		return "", xerrors.Errorf("unknown compliance : %v", compliance)
 	}
-	return complianceTypes, nil
+	return complianceString, nil
 }
 
 func validateSBOMSources(sbomSources []string) error {

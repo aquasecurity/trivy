@@ -15,8 +15,8 @@ func TestGetScannerTypes(t *testing.T) {
 		specPath string
 		want     []types.SecurityCheck
 	}{
-		{name: "config scanner", specPath: "./testdata/spec.yaml", want: []types.SecurityCheck{types.SecurityCheckConfig}},
-		{name: "config and vuln scanners", specPath: "./testdata/multi_scanner_spec.yaml", want: []types.SecurityCheck{types.SecurityCheckConfig, types.SecurityCheckVulnerability}},
+		{name: "get config scanner type by check id prefix", specPath: "./testdata/spec.yaml", want: []types.SecurityCheck{types.SecurityCheckConfig}},
+		{name: "get config and vuln scanners types by check id prefix", specPath: "./testdata/multi_scanner_spec.yaml", want: []types.SecurityCheck{types.SecurityCheckConfig, types.SecurityCheckVulnerability}},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -35,8 +35,8 @@ func TestCheckIDs(t *testing.T) {
 		specPath   string
 		wantConfig int
 	}{
-		{name: "check IDs list", specPath: "./testdata/spec.yaml", wantConfig: 29},
-		{name: "check IDs list with dup values", specPath: "./testdata/spec_dup_id.yaml", wantConfig: 1},
+		{name: "get map of scannerType:checkIds array", specPath: "./testdata/spec.yaml", wantConfig: 29},
+		{name: "get map of scannerType:checkIds array when dup ids", specPath: "./testdata/spec_dup_id.yaml", wantConfig: 1},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {

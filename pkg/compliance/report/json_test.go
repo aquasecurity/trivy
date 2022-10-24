@@ -18,8 +18,8 @@ func TestJSONReport(t *testing.T) {
 		reportType         string
 		wantJsonReportPath string
 	}{
-		{name: "build summary json report", specPath: "./testdata/config_spec.yaml", reportType: "summary", resultPath: "./testdata/results_config.json", wantJsonReportPath: "./testdata/json_summary.json"},
-		{name: "build full json report", specPath: "./testdata/config_spec.yaml", reportType: "all", resultPath: "./testdata/results_config.json", wantJsonReportPath: "./testdata/json_view.json"},
+		{name: "build summary json output report", specPath: "./testdata/config_spec.yaml", reportType: "summary", resultPath: "./testdata/results_config.json", wantJsonReportPath: "./testdata/json_summary.json"},
+		{name: "build full json output report", specPath: "./testdata/config_spec.yaml", reportType: "all", resultPath: "./testdata/results_config.json", wantJsonReportPath: "./testdata/json_view.json"},
 	}
 
 	for _, tt := range tests {

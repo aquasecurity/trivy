@@ -134,7 +134,7 @@ func BuildComplianceReport(scanResults []types.Results, complianceSpec string) (
 		return nil, err
 	}
 	// aggregate checks by ID
-	aggregateChecksByID := spec.AggregateChecksByID(scanResults, cs.Spec.Controls)
+	aggregateChecksByID := spec.AggregateAllChecksBySpecID(scanResults, cs.Spec.Controls)
 
 	// build compliance report results
 	return buildComplianceReportResults(aggregateChecksByID, cs.Spec), nil

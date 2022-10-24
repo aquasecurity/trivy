@@ -11,22 +11,22 @@ type TrivyCheck interface {
 	CheckPass() bool
 }
 
-// Mapper represent checks  and ids mapper
+// Mapper represent scan checks to spec check ids mapper
 type Mapper[T TrivyCheck] interface {
-	FilterCheckByID(trivyChecks []T, scannerCheckIDs map[string][]string) []T
-	MapCheckByID(trivyChecks []TrivyCheck, target string, class types.ResultClass, typeN string, scannerCheckIDs map[string][]string) map[string]types.Results
+	FilterScanResultsBySpecCheckIds(trivyChecks []T, scannerCheckIDs map[string][]string) []T
+	MapSpecCheckIDToFilteredResults(trivyChecks []TrivyCheck, target string, class types.ResultClass, typeN string, scannerCheckIDs map[string][]string) map[string]types.Results
 }
 
 type mapper[T TrivyCheck] struct {
 }
 
-// NewMapper instansiate new Mapper for specific type
+// NewMapper instansiate new Mapper for specific scanner type
 func NewMapper[T TrivyCheck]() Mapper[T] {
 	return &mapper[T]{}
 }
 
-// FilterCheckByID create a array of filtered security checks
-func (m mapper[T]) FilterCheckByID(trivyChecks []T, scannerCheckIDs map[string][]string) []T {
+// FilterScanResultsBySpecCheckIds create a array of filtered security checks by spec checks ids
+func (m mapper[T]) FilterScanResultsBySpecCheckIds(trivyChecks []T, scannerCheckIDs map[string][]string) []T {
 	filteredSecurityCheck := make([]T, 0)
 	for _, tc := range trivyChecks {
 		for _, id := range scannerCheckIDs[tc.CheckType()] {
@@ -38,8 +38,8 @@ func (m mapper[T]) FilterCheckByID(trivyChecks []T, scannerCheckIDs map[string][
 	return filteredSecurityCheck
 }
 
-// MapCheckByID create a map of requested check ID to scan result
-func (m mapper[T]) MapCheckByID(trivyChecks []TrivyCheck, target string, class types.ResultClass, typeN string, scannerCheckIDs map[string][]string) map[string]types.Results {
+// MapSpecCheckIDToFilteredResults map spec check id to filterred scan results
+func (m mapper[T]) MapSpecCheckIDToFilteredResults(trivyChecks []TrivyCheck, target string, class types.ResultClass, typeN string, scannerCheckIDs map[string][]string) map[string]types.Results {
 	mapCheckByID := make(map[string]types.Results)
 	for _, tc := range trivyChecks {
 		if _, ok := mapCheckByID[tc.GetID()]; !ok {
@@ -72,16 +72,16 @@ func misconfigSummary(misconfig types.DetectedMisconfiguration) *types.MisconfSu
 	return &rms
 }
 
-// FilterResults filter results by spec scanner check Ids
+// FilterResults filter miconfiguration and vulnerabilities results by spec scanner check Ids
 func FilterResults(results types.Results, scannerCheckIDs map[string][]string) types.Results {
 	filteredResults := make(types.Results, 0)
 	for _, result := range results {
 		if len(result.Misconfigurations) > 0 {
-			filteredMisconfig := NewMapper[types.DetectedMisconfiguration]().FilterCheckByID(result.Misconfigurations, scannerCheckIDs)
+			filteredMisconfig := NewMapper[types.DetectedMisconfiguration]().FilterScanResultsBySpecCheckIds(result.Misconfigurations, scannerCheckIDs)
 			result.Misconfigurations = filteredMisconfig
 		}
 		if len(result.Vulnerabilities) > 0 {
-			filteredVuln := NewMapper[types.DetectedVulnerability]().FilterCheckByID(result.Vulnerabilities, scannerCheckIDs)
+			filteredVuln := NewMapper[types.DetectedVulnerability]().FilterScanResultsBySpecCheckIds(result.Vulnerabilities, scannerCheckIDs)
 			result.Vulnerabilities = filteredVuln
 		}
 		filteredResults = append(filteredResults, result)
@@ -89,15 +89,16 @@ func FilterResults(results types.Results, scannerCheckIDs map[string][]string) t
 	return filteredResults
 }
 
-// AggregateChecksByID aggregate all checks from all resources
-func AggregateChecksByID(multiResults []types.Results, controls []Control) map[string]types.Results {
+// AggregateAllChecksBySpecID aggregate all scan results and map it to spec ids
+func AggregateAllChecksBySpecID(multiResults []types.Results, controls []Control) map[string]types.Results {
 	scannerCheckIDs := ScannerCheckIDs(controls)
 	complianceArr := make(map[string]types.Results, 0)
 	for _, resResult := range multiResults {
 		filteredResults := FilterResults(resResult, scannerCheckIDs)
 		for _, result := range filteredResults {
 			if len(result.Misconfigurations) > 0 {
-				misconfigMap := NewMapper[types.DetectedMisconfiguration]().MapCheckByID(getTrivyChecks(result.Misconfigurations), result.Target, result.Class, result.Type, scannerCheckIDs)
+				cMapper := NewMapper[types.DetectedMisconfiguration]()
+				misconfigMap := cMapper.MapSpecCheckIDToFilteredResults(getTrivyChecks(result.Misconfigurations), result.Target, result.Class, result.Type, scannerCheckIDs)
 				for id, checks := range misconfigMap {
 					if _, ok := misconfigMap[id]; !ok {
 						complianceArr[id] = make(types.Results, 0)
@@ -106,7 +107,8 @@ func AggregateChecksByID(multiResults []types.Results, controls []Control) map[s
 				}
 			}
 			if len(result.Vulnerabilities) > 0 {
-				vulnsMap := NewMapper[types.DetectedMisconfiguration]().MapCheckByID(getTrivyChecks(result.Vulnerabilities), result.Target, result.Class, result.Type, scannerCheckIDs)
+				vMapper := NewMapper[types.DetectedMisconfiguration]()
+				vulnsMap := vMapper.MapSpecCheckIDToFilteredResults(getTrivyChecks(result.Vulnerabilities), result.Target, result.Class, result.Type, scannerCheckIDs)
 				for id, checks := range vulnsMap {
 					if _, ok := vulnsMap[id]; !ok {
 						complianceArr[id] = make(types.Results, 0)
