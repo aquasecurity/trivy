@@ -46,7 +46,7 @@ func (r pkgLicenseRenderer) Render() string {
 	total, summaries := summarize(r.severities, r.countSeverities())
 
 	target := r.result.Target + " (license)"
-	renderTarget(r.w, target, r.isTerminal)
+	RenderTarget(r.w, target, r.isTerminal)
 	r.printf("Total: %d (%s)\n\n", total, strings.Join(summaries, ", "))
 
 	r.tableWriter.Render()
@@ -116,7 +116,7 @@ func (r fileLicenseRenderer) Render() string {
 	total, summaries := summarize(r.severities, r.countSeverities())
 
 	target := r.result.Target + " (license)"
-	renderTarget(r.w, target, r.isTerminal)
+	RenderTarget(r.w, target, r.isTerminal)
 	r.printf("Total: %d (%s)\n\n", total, strings.Join(summaries, ", "))
 
 	r.tableWriter.Render()

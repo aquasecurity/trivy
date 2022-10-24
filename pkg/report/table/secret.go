@@ -41,7 +41,7 @@ func NewSecretRenderer(target string, secrets []types.SecretFinding, ansi bool, 
 
 func (r *secretRenderer) Render() string {
 	target := r.target + " (secrets)"
-	renderTarget(r.w, target, r.ansi)
+	RenderTarget(r.w, target, r.ansi)
 
 	severityCount := r.countSeverities()
 	total, summaries := summarize(r.severities, severityCount)
