@@ -77,7 +77,7 @@ func Write(report *ComplianceReport, option Option) error {
 		if !report.empty() {
 			complianceWriter := &TableWriter{
 				Output:     option.Output,
-				Report:     option.Report, 
+				Report:     option.Report,
 				Severities: option.Severities,
 			}
 			err := complianceWriter.Write(report)

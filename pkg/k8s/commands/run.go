@@ -9,6 +9,8 @@ import (
 	"github.com/aquasecurity/trivy/pkg/flag"
 	"github.com/aquasecurity/trivy/pkg/types"
 
+	"golang.org/x/xerrors"
+
 	sp "github.com/aquasecurity/defsec/pkg/spec"
 	"github.com/aquasecurity/trivy-kubernetes/pkg/artifacts"
 	"github.com/aquasecurity/trivy-kubernetes/pkg/k8s"
@@ -18,7 +20,6 @@ import (
 	"github.com/aquasecurity/trivy/pkg/k8s/report"
 	"github.com/aquasecurity/trivy/pkg/k8s/scanner"
 	"github.com/aquasecurity/trivy/pkg/log"
-	"golang.org/x/xerrors"
 )
 
 const (
