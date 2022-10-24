@@ -9,7 +9,6 @@ import (
 	"path/filepath"
 	"regexp"
 
-	"github.com/aquasecurity/memoryfs"
 	"github.com/mailru/easyjson"
 	"github.com/samber/lo"
 	"github.com/tetratelabs/wazero"
@@ -18,6 +17,8 @@ import (
 	wasi "github.com/tetratelabs/wazero/imports/wasi_snapshot_preview1"
 	"golang.org/x/exp/slices"
 	"golang.org/x/xerrors"
+
+	"github.com/aquasecurity/memoryfs"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/log"

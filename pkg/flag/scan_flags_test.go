@@ -3,11 +3,12 @@ package flag_test
 import (
 	"testing"
 
-	"github.com/aquasecurity/trivy/pkg/flag"
-	"github.com/aquasecurity/trivy/pkg/types"
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+
+	"github.com/aquasecurity/trivy/pkg/flag"
+	"github.com/aquasecurity/trivy/pkg/types"
 )
 
 func TestScanFlagGroup_ToOptions(t *testing.T) {
