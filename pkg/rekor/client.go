@@ -11,7 +11,7 @@ import (
 	"github.com/sigstore/rekor/pkg/generated/client/index"
 	"github.com/sigstore/rekor/pkg/generated/models"
 	"golang.org/x/exp/slices"
-	"golang.org/x/xerrors"
+	"golang.org/x/xerrors"clearclient
 
 	"github.com/aquasecurity/trivy/pkg/log"
 )

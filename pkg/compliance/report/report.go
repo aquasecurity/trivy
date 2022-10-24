@@ -68,16 +68,16 @@ type Writer interface {
 }
 
 // Write writes the results in the give format
-func Write(report *ComplianceReport, option Option, showEmpty bool) error {
+func Write(report *ComplianceReport, option Option) error {
 	switch option.Format {
 	case jsonFormat:
 		jwriter := JSONWriter{Output: option.Output, Report: option.Report}
 		return jwriter.Write(report)
 	case tableFormat:
-		if !report.empty() || showEmpty {
+		if !report.empty() {
 			complianceWriter := &TableWriter{
 				Output:     option.Output,
-				Report:     option.Report,
+				Report:     option.Report, 
 				Severities: option.Severities,
 			}
 			err := complianceWriter.Write(report)

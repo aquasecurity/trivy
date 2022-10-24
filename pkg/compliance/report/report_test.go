@@ -38,7 +38,7 @@ func TestReport(t *testing.T) {
 			complianceResults, err := BuildComplianceReport([]types.Results{res}, string(specfile))
 			ioWriter := new(bytes.Buffer)
 			tt.Option.Output = ioWriter
-			err = Write(complianceResults, tt.Option, false)
+			err = Write(complianceResults, tt.Option)
 			if tt.expectError {
 				assert.Error(t, err)
 			} else {
