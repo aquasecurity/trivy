@@ -1,0 +1,57 @@
+{
+  "id": "1234",
+  "title": "NSA",
+  "description": "",
+  "severity": "",
+  "relatedResources": [
+    "https://example.com"
+  ],
+  "results": [
+    {
+      "id": "1.0",
+      "name": "Non-root containers",
+      "description": "",
+      "severity": "MEDIUM",
+      "results": [
+        {
+          "Target": "",
+          "Misconfigurations": [
+            {
+              "AVDID": "AVD-KSV012",
+              "Status": "FAIL",
+              "Layer": {},
+              "CauseMetadata": {
+                "Code": {
+                  "Lines": null
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "1.1",
+      "name": "Immutable container file systems",
+      "description": "",
+      "severity": "LOW",
+      "results": [
+        {
+          "Target": "",
+          "Misconfigurations": [
+            {
+              "AVDID": "AVD-KSV013",
+              "Status": "FAIL",
+              "Layer": {},
+              "CauseMetadata": {
+                "Code": {
+                  "Lines": null
+                }
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
