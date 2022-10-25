@@ -7,16 +7,19 @@ import (
 	"github.com/spf13/viper"
 
 	"github.com/aquasecurity/trivy/pkg/flag"
+	"github.com/aquasecurity/trivy/pkg/types"
 
 	"golang.org/x/xerrors"
 
+	sp "github.com/aquasecurity/defsec/pkg/spec"
+	"github.com/aquasecurity/trivy-kubernetes/pkg/artifacts"
+	"github.com/aquasecurity/trivy-kubernetes/pkg/k8s"
 	cmd "github.com/aquasecurity/trivy/pkg/commands/artifact"
+	cr "github.com/aquasecurity/trivy/pkg/compliance/report"
+	"github.com/aquasecurity/trivy/pkg/compliance/spec"
 	"github.com/aquasecurity/trivy/pkg/k8s/report"
 	"github.com/aquasecurity/trivy/pkg/k8s/scanner"
 	"github.com/aquasecurity/trivy/pkg/log"
-
-	"github.com/aquasecurity/trivy-kubernetes/pkg/artifacts"
-	"github.com/aquasecurity/trivy-kubernetes/pkg/k8s"
 )
 
 const (
@@ -78,10 +81,39 @@ func (r *runner) run(ctx context.Context, artifacts []*artifacts.Artifact) error
 	}()
 
 	s := scanner.NewScanner(r.cluster, runner, r.flagOpts)
+	var complianceSpec string
+	// set scanners types by spec
+	if len(r.flagOpts.ReportOptions.Compliance) > 0 {
+		complianceSpec = sp.NewSpecLoader().GetSpecByName(r.flagOpts.ReportOptions.Compliance)
+		scannerTypes, err := spec.GetScannerTypes(complianceSpec)
+		if err != nil {
+			return err
+		}
+		r.flagOpts.ScanOptions.SecurityChecks = scannerTypes
+	}
 
 	rpt, err := s.Scan(ctx, artifacts)
 	if err != nil {
 		return xerrors.Errorf("k8s scan error: %w", err)
+	}
+
+	if len(r.flagOpts.ReportOptions.Compliance) > 0 {
+		scanResults := make([]types.Results, 0)
+
+		for _, rss := range rpt.Misconfigurations {
+			scanResults = append(scanResults, rss.Results)
+		}
+		for _, rss := range rpt.Vulnerabilities {
+			scanResults = append(scanResults, rss.Results)
+		}
+		complianceReport, err := cr.BuildComplianceReport(scanResults, complianceSpec)
+		if err != nil {
+			return err
+		}
+		return cr.Write(complianceReport, cr.Option{
+			Format: r.flagOpts.Format,
+			Report: r.flagOpts.ReportFormat,
+			Output: r.flagOpts.Output})
 	}
 
 	if err := report.Write(rpt, report.Option{

@@ -8,6 +8,8 @@ import (
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 )
 
+var Compliances = []string{ComplianceNsa}
+
 // Report represents a scan result
 type Report struct {
 	SchemaVersion int                 `json:",omitempty"`
@@ -37,6 +39,7 @@ type Metadata struct {
 type Results []Result
 
 type ResultClass string
+type Compliance = string
 
 const (
 	ClassOSPkg       = "os-pkgs"      // For detected packages and vulnerabilities in OS packages
@@ -46,6 +49,9 @@ const (
 	ClassLicense     = "license"      // For detected package licenses
 	ClassLicenseFile = "license-file" // For detected licenses in files
 	ClassCustom      = "custom"
+
+	// ComplianceNsa is the compliance checks for nsa
+	ComplianceNsa = Compliance("nsa")
 )
 
 // Result holds a target and detected vulnerabilities
