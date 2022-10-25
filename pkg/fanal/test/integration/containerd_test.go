@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"runtime"
 	"strings"
 	"testing"
 	"time"
@@ -385,6 +386,11 @@ func TestContainerd_LocalImage(t *testing.T) {
 			},
 		},
 	}
+	// Each architecture needs different images and test cases.
+	// Currently only amd64 architecture is supported
+	if runtime.GOARCH != "amd64" {
+		t.Skip("'Containerd' test only supports amd64 architecture")
+	}
 	ctx := namespaces.WithNamespace(context.Background(), "default")
 
 	tmpDir, socketPath := configureTestDataPaths(t)
@@ -519,6 +525,12 @@ func TestContainerd_PullImage(t *testing.T) {
 				},
 			},
 		},
+	}
+
+	// Each architecture needs different images and test cases.
+	// Currently only amd64 architecture is supported
+	if runtime.GOARCH != "amd64" {
+		t.Skip("'Containerd' test only supports amd64 architecture")
 	}
 
 	ctx := namespaces.WithNamespace(context.Background(), "default")
