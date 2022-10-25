@@ -3159,7 +3159,9 @@ $ <span class="nv">COSIGN_EXPERIMENTAL</span><span class="o">=</span><span class
 </code></pre></div></p>
 <h2 id="scanning">Scanning</h2>
 <p>Trivy can take an SBOM attestation as input and scan for vulnerabilities. Currently, Trivy supports CycloneDX-type attestation.</p>
-<p>In the following example, Cosign can get an CycloneDX-type attestation and trivy scan it. You must create CycloneDX-type attestation before trying the example. To learn more about how to create an CycloneDX-Type attestation and attach it to an image, see the <a href="#sign-with-a-local-key-pair">Sign with a local key pair</a> section.</p>
+<p>In the following example, Cosign can get an CycloneDX-type attestation and trivy scan it.
+You must create CycloneDX-type attestation before trying the example.
+To learn more about how to create an CycloneDX-Type attestation and attach it to an image, see the <a href="#sign-with-a-local-key-pair">Sign with a local key pair</a> section.</p>
 <div class="highlight"><pre><span></span><code>$ cosign verify-attestation --key /path/to/cosign.pub --type cyclonedx &lt;IMAGE&gt; &gt; sbom.cdx.intoto.jsonl
 $ trivy sbom ./sbom.cdx.intoto.jsonl
 

@@ -2185,16 +2185,56 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#container-images" class="md-nav__link">
+    Container images
+  </a>
+  
+    <nav class="md-nav" aria-label="Container images">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
   <a href="#prerequisites" class="md-nav__link">
     Prerequisites
   </a>
   
 </li>
-      
-        <li class="md-nav__item">
+        
+          <li class="md-nav__item">
   <a href="#scanning" class="md-nav__link">
     Scanning
   </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#non-packaged-binaries" class="md-nav__link">
+    Non-packaged binaries
+  </a>
+  
+    <nav class="md-nav" aria-label="Non-packaged binaries">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#prerequisites_1" class="md-nav__link">
+    Prerequisites
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#scan-a-non-packaged-binary" class="md-nav__link">
+    Scan a non-packaged binary
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -3077,16 +3117,56 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#container-images" class="md-nav__link">
+    Container images
+  </a>
+  
+    <nav class="md-nav" aria-label="Container images">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
   <a href="#prerequisites" class="md-nav__link">
     Prerequisites
   </a>
   
 </li>
-      
-        <li class="md-nav__item">
+        
+          <li class="md-nav__item">
   <a href="#scanning" class="md-nav__link">
     Scanning
   </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#non-packaged-binaries" class="md-nav__link">
+    Non-packaged binaries
+  </a>
+  
+    <nav class="md-nav" aria-label="Non-packaged binaries">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#prerequisites_1" class="md-nav__link">
+    Prerequisites
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#scan-a-non-packaged-binary" class="md-nav__link">
+    Scan a non-packaged binary
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -3109,15 +3189,16 @@
 <p class="admonition-title">EXPERIMENTAL</p>
 <p>This feature might change without preserving backwards compatibility.</p>
 </div>
+<h2 id="container-images">Container images</h2>
 <p>Trivy can retrieve SBOM attestation of the specified container image in the <a href="https://github.com/sigstore/rekor">Rekor</a> instance and scan it for vulnerabilities.</p>
-<h2 id="prerequisites">Prerequisites</h2>
+<h3 id="prerequisites">Prerequisites</h3>
 <ol>
 <li>SBOM attestation stored in Rekor<ul>
 <li>See <a href="../sbom/#keyless-signing">the "Keyless signing" section</a> if you want to upload your SBOM attestation to Rekor.</li>
 </ul>
 </li>
 </ol>
-<h2 id="scanning">Scanning</h2>
+<h3 id="scanning">Scanning</h3>
 <p>You need to pass <code>--sbom-sources rekor</code> so that Trivy will look for SBOM attestation in Rekor.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
@@ -3155,6 +3236,75 @@ Total: <span class="m">2</span> <span class="o">(</span>UNKNOWN: <span class="m"
 <p>If you have your own Rekor instance, you can specify the URL via <code>--rekor-url</code>.</p>
 <div class="highlight"><pre><span></span><code>$ trivy image --sbom-sources rekor --rekor-url https://my-rekor.dev otms61/alpine:3.7.3
 </code></pre></div>
+<h2 id="non-packaged-binaries">Non-packaged binaries</h2>
+<p>Trivy can retrieve SBOM attestation of non-packaged binaries in the <a href="https://github.com/sigstore/rekor">Rekor</a> instance and scan it for vulnerabilities.</p>
+<h3 id="prerequisites_1">Prerequisites</h3>
+<ol>
+<li>SBOM attestation stored in Rekor<ul>
+<li>See <a href="../sbom/#keyless-signing">the "Keyless signing" section</a> if you want to upload your SBOM attestation to Rekor.</li>
+</ul>
+</li>
+</ol>
+<p>Cosign currently does not support keyless signing for blob attestation, so use our plugin at the moment.
+This example uses a cat clone <a href="https://github.com/sharkdp/bat">bat</a> written in Rust.
+You need to generate SBOM from lock files like <code>Cargo.lock</code> at first.</p>
+<div class="highlight"><pre><span></span><code>$ git clone -b v0.20.0 https://github.com/sharkdp/bat
+$ trivy fs --format cyclonedx --output bat.cdx ./bat/Cargo.lock
+</code></pre></div>
+<p>Then <a href="https://github.com/aquasecurity/trivy-plugin-attest">our attestation plugin</a> allows you to store the SBOM attestation linking to a <code>bat</code> binary in the Rekor instance.</p>
+<div class="highlight"><pre><span></span><code>$ wget https://github.com/sharkdp/bat/releases/download/v0.20.0/bat-v0.20.0-x86_64-apple-darwin.tar.gz
+$ tar xvf bat-v0.20.0-x86_64-apple-darwin.tar.gz
+$ trivy plugin install github.com/aquasecurity/trivy-plugin-attest
+$ trivy attest --predicate ./bat.cdx --type cyclonedx ./bat-v0.20.0-x86_64-apple-darwin/bat
+</code></pre></div>
+<h3 id="scan-a-non-packaged-binary">Scan a non-packaged binary</h3>
+<p>Trivy calculates the digest of the <code>bat</code> binary and searches for the SBOM attestation by the digest in Rekor.
+If it is found, Trivy uses that for vulnerability scanning.</p>
+<div class="highlight"><pre><span></span><code>$ trivy fs --sbom-sources rekor ./bat-v0.20.0-x86_64-apple-darwin/bat
+<span class="m">2022</span>-10-25T13:27:25.950+0300    INFO    Found SBOM attestation <span class="k">in</span> Rekor: bat
+<span class="m">2022</span>-10-25T13:27:25.993+0300    INFO    Number of language-specific files: <span class="m">1</span>
+<span class="m">2022</span>-10-25T13:27:25.993+0300    INFO    Detecting cargo vulnerabilities...
+
+bat <span class="o">(</span>cargo<span class="o">)</span>
+<span class="o">===========</span>
+Total: <span class="m">1</span> <span class="o">(</span>UNKNOWN: <span class="m">0</span>, LOW: <span class="m">0</span>, MEDIUM: <span class="m">0</span>, HIGH: <span class="m">1</span>, CRITICAL: <span class="m">0</span><span class="o">)</span>
+
+┌───────────┬───────────────────┬──────────┬───────────────────┬───────────────┬────────────────────────────────────────────────────────────┐
+│  Library  │   Vulnerability   │ Severity │ Installed Version │ Fixed Version │                           Title                            │
+├───────────┼───────────────────┼──────────┼───────────────────┼───────────────┼────────────────────────────────────────────────────────────┤
+│ regex     │ CVE-2022-24713    │ HIGH     │ <span class="m">1</span>.5.4             │ <span class="m">1</span>.5.5         │ Mozilla: Denial of Service via complex regular expressions │
+│           │                   │          │                   │               │ https://avd.aquasec.com/nvd/cve-2022-24713                 │
+└───────────┴───────────────────┴──────────┴───────────────────┴───────────────┴────────────────────────────────────────────────────────────┘
+</code></pre></div>
+<p>Also, it is applied to non-packaged binaries even in container images.</p>
+<div class="highlight"><pre><span></span><code>$ trivy image --sbom-sources rekor --security-checks vuln alpine-with-bat
+<span class="m">2022</span>-10-25T13:40:14.920+0300    INFO    Vulnerability scanning is enabled
+<span class="m">2022</span>-10-25T13:40:18.047+0300    INFO    Found SBOM attestation <span class="k">in</span> Rekor: bat
+<span class="m">2022</span>-10-25T13:40:18.186+0300    INFO    Detected OS: alpine
+<span class="m">2022</span>-10-25T13:40:18.186+0300    INFO    Detecting Alpine vulnerabilities...
+<span class="m">2022</span>-10-25T13:40:18.199+0300    INFO    Number of language-specific files: <span class="m">1</span>
+<span class="m">2022</span>-10-25T13:40:18.199+0300    INFO    Detecting cargo vulnerabilities...
+
+alpine-with-bat <span class="o">(</span>alpine <span class="m">3</span>.15.6<span class="o">)</span>
+<span class="o">===============================</span>
+Total: <span class="m">0</span> <span class="o">(</span>UNKNOWN: <span class="m">0</span>, LOW: <span class="m">0</span>, MEDIUM: <span class="m">0</span>, HIGH: <span class="m">0</span>, CRITICAL: <span class="m">0</span><span class="o">)</span>
+
+
+bat <span class="o">(</span>cargo<span class="o">)</span>
+<span class="o">===========</span>
+Total: <span class="m">4</span> <span class="o">(</span>UNKNOWN: <span class="m">3</span>, LOW: <span class="m">0</span>, MEDIUM: <span class="m">0</span>, HIGH: <span class="m">1</span>, CRITICAL: <span class="m">0</span><span class="o">)</span>
+
+┌───────────┬───────────────────┬──────────┬───────────────────┬───────────────┬────────────────────────────────────────────────────────────┐
+│  Library  │   Vulnerability   │ Severity │ Installed Version │ Fixed Version │                           Title                            │
+├───────────┼───────────────────┼──────────┼───────────────────┼───────────────┼────────────────────────────────────────────────────────────┤
+│ regex     │ CVE-2022-24713    │ HIGH     │ <span class="m">1</span>.5.4             │ <span class="m">1</span>.5.5         │ Mozilla: Denial of Service via complex regular expressions │
+│           │                   │          │                   │               │ https://avd.aquasec.com/nvd/cve-2022-24713                 │
+└───────────┴───────────────────┴──────────┴───────────────────┴───────────────┴────────────────────────────────────────────────────────────┘
+</code></pre></div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The <code>--sbom-sources rekor</code> flag slows down the scanning as it queries Rekor on the Internet for all non-packaged binaries.</p>
+</div>
 
               
             </article>
