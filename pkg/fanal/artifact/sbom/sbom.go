@@ -4,7 +4,6 @@ import (
 	"context"
 	"crypto/sha256"
 	"encoding/json"
-	"io"
 	"os"
 	"path/filepath"
 
@@ -50,11 +49,6 @@ func (a Artifact) Inspect(_ context.Context) (types.ArtifactReference, error) {
 		return types.ArtifactReference{}, xerrors.Errorf("failed to detect SBOM format: %w", err)
 	}
 	log.Logger.Infof("Detected SBOM format: %s", format)
-
-	// Rewind the SBOM file
-	if _, err = f.Seek(0, io.SeekStart); err != nil {
-		return types.ArtifactReference{}, xerrors.Errorf("seek error: %w", err)
-	}
 
 	bom, err := sbom.Decode(f, format)
 	if err != nil {

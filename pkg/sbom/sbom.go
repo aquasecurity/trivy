@@ -31,6 +31,7 @@ const (
 var ErrUnknownFormat = xerrors.New("Unknown SBOM format")
 
 func DetectFormat(r io.ReadSeeker) (Format, error) {
+	// Rewind the SBOM file at the end
 	defer r.Seek(0, io.SeekStart)
 
 	type (
