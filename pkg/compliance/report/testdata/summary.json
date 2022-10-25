@@ -1,20 +1,20 @@
 {
-  "ReportID": "1234",
-  "ReportTitle": "NSA",
+  "ID": "1234",
+  "Title": "NSA",
   "SummaryControls": [
     {
-      "id": "1.0",
-      "name": "Non-root containers",
-      "severity": "MEDIUM",
-      "totalPass": 0,
-      "totalFail": 1
+      "ID": "1.0",
+      "Name": "Non-root containers",
+      "Severity": "MEDIUM",
+      "TotalPass": 0,
+      "TotalFail": 1
     },
     {
-      "id": "1.1",
-      "name": "Immutable container file systems",
-      "severity": "LOW",
-      "totalPass": 0,
-      "totalFail": 1
+      "ID": "1.1",
+      "Name": "Immutable container file systems",
+      "Severity": "LOW",
+      "TotalPass": 0,
+      "TotalFail": 1
     }
   ]
 }

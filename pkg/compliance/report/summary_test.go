@@ -24,9 +24,9 @@ func TestBuildSummary(t *testing.T) {
 				RelatedResources: []string{"https://example.com"},
 				Results: []*report.ControlCheckResult{
 					{
-						ControlCheckID:  "1.0",
-						ControlName:     "Non-root containers",
-						ControlSeverity: "MEDIUM",
+						ID:       "1.0",
+						Name:     "Non-root containers",
+						Severity: "MEDIUM",
 						Results: types.Results{
 							{
 								Misconfigurations: []types.DetectedMisconfiguration{
@@ -36,9 +36,9 @@ func TestBuildSummary(t *testing.T) {
 						},
 					},
 					{
-						ControlCheckID:  "1.1",
-						ControlName:     "Immutable container file systems",
-						ControlSeverity: "LOW",
+						ID:       "1.1",
+						Name:     "Immutable container file systems",
+						Severity: "LOW",
 						Results: types.Results{
 							{
 								Misconfigurations: []types.DetectedMisconfiguration{
@@ -51,22 +51,22 @@ func TestBuildSummary(t *testing.T) {
 			},
 			want: &report.SummaryReport{
 				SchemaVersion: 0,
-				ReportID:      "1234",
-				ReportTitle:   "NSA",
+				ID:            "1234",
+				Title:         "NSA",
 				SummaryControls: []report.ControlCheckSummary{
 					{
-						ControlCheckID:  "1.0",
-						ControlName:     "Non-root containers",
-						ControlSeverity: "MEDIUM",
-						TotalPass:       0,
-						TotalFail:       1,
+						ID:        "1.0",
+						Name:      "Non-root containers",
+						Severity:  "MEDIUM",
+						TotalPass: 0,
+						TotalFail: 1,
 					},
 					{
-						ControlCheckID:  "1.1",
-						ControlName:     "Immutable container file systems",
-						ControlSeverity: "LOW",
-						TotalPass:       0,
-						TotalFail:       1,
+						ID:        "1.1",
+						Name:      "Immutable container file systems",
+						Severity:  "LOW",
+						TotalPass: 0,
+						TotalFail: 1,
 					},
 				},
 			},
@@ -80,9 +80,9 @@ func TestBuildSummary(t *testing.T) {
 				RelatedResources: []string{"https://example.com"},
 				Results: []*report.ControlCheckResult{
 					{
-						ControlCheckID:  "1.0",
-						ControlName:     "Non-root containers",
-						ControlSeverity: "MEDIUM",
+						ID:       "1.0",
+						Name:     "Non-root containers",
+						Severity: "MEDIUM",
 						Results: types.Results{
 							{
 								Misconfigurations: []types.DetectedMisconfiguration{
@@ -92,9 +92,9 @@ func TestBuildSummary(t *testing.T) {
 						},
 					},
 					{
-						ControlCheckID:  "1.1",
-						ControlName:     "Immutable container file systems",
-						ControlSeverity: "LOW",
+						ID:       "1.1",
+						Name:     "Immutable container file systems",
+						Severity: "LOW",
 						Results: types.Results{
 							{
 								Misconfigurations: []types.DetectedMisconfiguration{
@@ -104,9 +104,9 @@ func TestBuildSummary(t *testing.T) {
 						},
 					},
 					{
-						ControlCheckID:  "1.2",
-						ControlName:     "tzdata - new upstream version",
-						ControlSeverity: "LOW",
+						ID:       "1.2",
+						Name:     "tzdata - new upstream version",
+						Severity: "LOW",
 						Results: types.Results{
 							{
 								Vulnerabilities: []types.DetectedVulnerability{
@@ -120,29 +120,29 @@ func TestBuildSummary(t *testing.T) {
 			},
 			want: &report.SummaryReport{
 				SchemaVersion: 0,
-				ReportID:      "1234",
-				ReportTitle:   "NSA",
+				ID:            "1234",
+				Title:         "NSA",
 				SummaryControls: []report.ControlCheckSummary{
 					{
-						ControlCheckID:  "1.0",
-						ControlName:     "Non-root containers",
-						ControlSeverity: "MEDIUM",
-						TotalPass:       0,
-						TotalFail:       1,
+						ID:        "1.0",
+						Name:      "Non-root containers",
+						Severity:  "MEDIUM",
+						TotalPass: 0,
+						TotalFail: 1,
 					},
 					{
-						ControlCheckID:  "1.1",
-						ControlName:     "Immutable container file systems",
-						ControlSeverity: "LOW",
-						TotalPass:       0,
-						TotalFail:       1,
+						ID:        "1.1",
+						Name:      "Immutable container file systems",
+						Severity:  "LOW",
+						TotalPass: 0,
+						TotalFail: 1,
 					},
 					{
-						ControlCheckID:  "1.2",
-						ControlName:     "tzdata - new upstream version",
-						ControlSeverity: "LOW",
-						TotalPass:       0,
-						TotalFail:       2,
+						ID:        "1.2",
+						Name:      "tzdata - new upstream version",
+						Severity:  "LOW",
+						TotalPass: 0,
+						TotalFail: 2,
 					},
 				},
 			},

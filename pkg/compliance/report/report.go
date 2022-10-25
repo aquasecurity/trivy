@@ -28,37 +28,37 @@ type Option struct {
 
 // ComplianceReport represents a kubernetes scan report
 type ComplianceReport struct {
-	ID               string                `json:"id"`
-	Title            string                `json:"title"`
-	Description      string                `json:"description"`
-	Version          string                `json:"severity"`
-	RelatedResources []string              `json:"relatedResources"`
-	Results          []*ControlCheckResult `json:"results"`
+	ID               string
+	Title            string
+	Description      string
+	Version          string
+	RelatedResources []string
+	Results          []*ControlCheckResult
 }
 
 type ControlCheckResult struct {
-	ControlCheckID     string             `json:"id"`
-	ControlName        string             `json:"name"`
-	ControlDescription string             `json:"description"`
-	DefaultStatus      spec.ControlStatus `json:"defaultStatus,omitempty"`
-	ControlSeverity    string             `json:"severity"`
-	Results            types.Results      `json:"results"`
+	ID            string
+	Name          string
+	Description   string
+	DefaultStatus spec.ControlStatus `json:",omitempty"`
+	Severity      string
+	Results       types.Results
 }
 
 // SummaryReport represents a kubernetes scan report with consolidated findings
 type SummaryReport struct {
 	SchemaVersion   int `json:",omitempty"`
-	ReportID        string
-	ReportTitle     string
+	ID              string
+	Title           string
 	SummaryControls []ControlCheckSummary `json:",omitempty"`
 }
 
 type ControlCheckSummary struct {
-	ControlCheckID  string  `json:"id"`
-	ControlName     string  `json:"name"`
-	ControlSeverity string  `json:"severity"`
-	TotalPass       float32 `json:"totalPass"`
-	TotalFail       float32 `json:"totalFail"`
+	ID        string
+	Name      string
+	Severity  string
+	TotalPass float32
+	TotalFail float32
 }
 
 // Writer defines the result write operation
@@ -103,12 +103,12 @@ func buildControlCheckResults(checksMap map[string]types.Results, controls []spe
 			results = append(results, checksMap[c.ID]...)
 		}
 		complianceResults = append(complianceResults, &ControlCheckResult{
-			ControlName:        control.Name,
-			ControlCheckID:     control.ID,
-			ControlDescription: control.Description,
-			ControlSeverity:    string(control.Severity),
-			DefaultStatus:      control.DefaultStatus,
-			Results:            results,
+			Name:          control.Name,
+			ID:            control.ID,
+			Description:   control.Description,
+			Severity:      string(control.Severity),
+			DefaultStatus: control.DefaultStatus,
+			Results:       results,
 		})
 	}
 	return complianceResults

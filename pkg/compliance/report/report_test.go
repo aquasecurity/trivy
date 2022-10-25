@@ -147,10 +147,10 @@ func TestBuildComplianceReport(t *testing.T) {
 				},
 				Results: []*report.ControlCheckResult{
 					{
-						ControlCheckID:     "1.0",
-						ControlName:        "Non-root containers",
-						ControlDescription: "Check that container is not running as root",
-						ControlSeverity:    "MEDIUM",
+						ID:          "1.0",
+						Name:        "Non-root containers",
+						Description: "Check that container is not running as root",
+						Severity:    "MEDIUM",
 						Results: types.Results{
 							{
 								Target: "Deployment/metrics-server",
@@ -185,17 +185,17 @@ func TestBuildComplianceReport(t *testing.T) {
 						},
 					},
 					{
-						ControlCheckID:     "1.1",
-						ControlName:        "Immutable container file systems",
-						ControlDescription: "Check that container root file system is immutable",
-						ControlSeverity:    "LOW",
-						Results:            nil,
+						ID:          "1.1",
+						Name:        "Immutable container file systems",
+						Description: "Check that container root file system is immutable",
+						Severity:    "LOW",
+						Results:     nil,
 					},
 					{
-						ControlCheckID:     "1.2",
-						ControlName:        "tzdata - new upstream version",
-						ControlDescription: "Bad tzdata package",
-						ControlSeverity:    "CRITICAL",
+						ID:          "1.2",
+						Name:        "tzdata - new upstream version",
+						Description: "Bad tzdata package",
+						Severity:    "CRITICAL",
 						Results: types.Results{
 							{
 								Target: "rancher/metrics-server:v0.3.6 (debian 9.9)",

@@ -6,10 +6,9 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/aquasecurity/trivy/pkg/compliance/report"
-
 	"github.com/stretchr/testify/require"
 
+	"github.com/aquasecurity/trivy/pkg/compliance/report"
 	"github.com/aquasecurity/trivy/pkg/types"
 	"github.com/stretchr/testify/assert"
 )
@@ -21,9 +20,9 @@ func TestJSONWriter_Write(t *testing.T) {
 		RelatedResources: []string{"https://example.com"},
 		Results: []*report.ControlCheckResult{
 			{
-				ControlCheckID:  "1.0",
-				ControlName:     "Non-root containers",
-				ControlSeverity: "MEDIUM",
+				ID:       "1.0",
+				Name:     "Non-root containers",
+				Severity: "MEDIUM",
 				Results: types.Results{
 					{
 						Misconfigurations: []types.DetectedMisconfiguration{
@@ -33,9 +32,9 @@ func TestJSONWriter_Write(t *testing.T) {
 				},
 			},
 			{
-				ControlCheckID:  "1.1",
-				ControlName:     "Immutable container file systems",
-				ControlSeverity: "LOW",
+				ID:       "1.1",
+				Name:     "Immutable container file systems",
+				Severity: "LOW",
 				Results: types.Results{
 					{
 						Misconfigurations: []types.DetectedMisconfiguration{

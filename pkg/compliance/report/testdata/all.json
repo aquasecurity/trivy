@@ -1,18 +1,18 @@
 {
-  "id": "1234",
-  "title": "NSA",
-  "description": "",
-  "severity": "",
-  "relatedResources": [
+  "ID": "1234",
+  "Title": "NSA",
+  "Description": "",
+  "Version": "",
+  "RelatedResources": [
     "https://example.com"
   ],
-  "results": [
+  "Results": [
     {
-      "id": "1.0",
-      "name": "Non-root containers",
-      "description": "",
-      "severity": "MEDIUM",
-      "results": [
+      "ID": "1.0",
+      "Name": "Non-root containers",
+      "Description": "",
+      "Severity": "MEDIUM",
+      "Results": [
         {
           "Target": "",
           "Misconfigurations": [
@@ -31,11 +31,11 @@
       ]
     },
     {
-      "id": "1.1",
-      "name": "Immutable container file systems",
-      "description": "",
-      "severity": "LOW",
-      "results": [
+      "ID": "1.1",
+      "Name": "Immutable container file systems",
+      "Description": "",
+      "Severity": "LOW",
+      "Results": [
         {
           "Target": "",
           "Misconfigurations": [

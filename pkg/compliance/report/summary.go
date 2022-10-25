@@ -18,9 +18,9 @@ func BuildSummary(cr *ComplianceReport) *SummaryReport {
 	var ccma []ControlCheckSummary
 	for _, control := range cr.Results {
 		ccm := ControlCheckSummary{
-			ControlCheckID:  control.ControlCheckID,
-			ControlName:     control.ControlName,
-			ControlSeverity: control.ControlSeverity,
+			ID:       control.ID,
+			Name:     control.Name,
+			Severity: control.Severity,
 		}
 		if len(control.Results) == 0 { // this validation is mainly for vuln type
 			if control.DefaultStatus == spec.PassStatus {
@@ -42,8 +42,9 @@ func BuildSummary(cr *ComplianceReport) *SummaryReport {
 		}
 		ccma = append(ccma, ccm)
 	}
-	return &SummaryReport{ReportID: cr.ID,
-		ReportTitle:     cr.Title,
+	return &SummaryReport{
+		ID:              cr.ID,
+		Title:           cr.Title,
 		SummaryControls: ccma,
 	}
 }
@@ -101,7 +102,7 @@ func (s SummaryWriter) Write(report *ComplianceReport) error {
 
 func (s SummaryWriter) generateSummary(summaryControls ControlCheckSummary) []string {
 	percentage := calculatePercentage(summaryControls.TotalFail, summaryControls.TotalPass)
-	return []string{summaryControls.ControlCheckID, summaryControls.ControlSeverity, summaryControls.ControlName, percentage}
+	return []string{summaryControls.ID, summaryControls.Severity, summaryControls.Name, percentage}
 }
 
 func calculatePercentage(totalFail float32, totalPass float32) string {
