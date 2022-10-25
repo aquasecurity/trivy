@@ -1,9 +1,5 @@
 package spec
 
-import (
-	"github.com/mitchellh/mapstructure"
-)
-
 type Severity string
 
 const (
@@ -62,16 +58,3 @@ const (
 	PassStatus ControlStatus = "PASS"
 	WarnStatus ControlStatus = "WARN"
 )
-
-// UnmarshalYAML over unmarshall to add logic
-func (r *ComplianceSpec) UnmarshalYAML(unmarshal func(interface{}) error) error {
-	var res map[string]interface{}
-	if err := unmarshal(&res); err != nil {
-		return err
-	}
-	err := mapstructure.Decode(res, &r)
-	if err != nil {
-		return err
-	}
-	return ValidateScanners(r.Spec.Controls)
-}

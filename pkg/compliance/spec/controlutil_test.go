@@ -7,6 +7,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/compliance/spec"
 	"github.com/aquasecurity/trivy/pkg/types"
 	"github.com/stretchr/testify/assert"
+	"gopkg.in/yaml.v2"
 )
 
 func TestGetScannerTypes(t *testing.T) {
@@ -46,4 +47,40 @@ func TestCheckIDs(t *testing.T) {
 			assert.Equal(t, len(got["config"]), tt.wantConfig)
 		})
 	}
+}
+
+func TestValidateScanners(t *testing.T) {
+	tests := []struct {
+		name        string
+		specPath    string
+		expectError bool
+	}{
+		//{name: "spec with valid scanner", specPath: "./testdata/spec.yaml", expectError: false},
+		{name: "spec with non valid scanner", specPath: "./testdata/bad_scanner_spec.yaml", expectError: true},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			compliance, err := ReadSpecFile(tt.specPath)
+			assert.NoError(t, err)
+			err = spec.ValidateScanners(compliance.Spec.Controls)
+			if tt.expectError {
+				assert.Error(t, err)
+			} else {
+				assert.NoError(t, err)
+			}
+		})
+	}
+}
+
+func ReadSpecFile(specFilePath string) (*spec.ComplianceSpec, error) {
+	b, err := os.ReadFile(specFilePath)
+	if err != nil {
+		return nil, err
+	}
+	cr := spec.ComplianceSpec{}
+	err = yaml.Unmarshal(b, &cr)
+	if err != nil {
+		return nil, err
+	}
+	return &cr, nil
 }
