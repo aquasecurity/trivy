@@ -57,7 +57,6 @@ type ScanFlagGroup struct {
 	SkipFiles      *Flag
 	OfflineScan    *Flag
 	SecurityChecks *Flag
-	Compliance     *Flag
 	FilePatterns   *Flag
 	SBOMSources    *Flag
 	RekorURL       *Flag
