@@ -2,6 +2,7 @@ package spec_test
 
 import (
 	"fmt"
+	"sort"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -123,6 +124,7 @@ func TestComplianceSpec_SecurityChecks(t *testing.T) {
 			if !tt.wantErr(t, err, fmt.Sprintf("SecurityChecks()")) {
 				return
 			}
+			sort.Strings(got) // for consistency
 			assert.Equalf(t, tt.want, got, "SecurityChecks()")
 		})
 	}
