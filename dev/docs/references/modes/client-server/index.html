@@ -2842,6 +2842,13 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#remote-scan-of-root-filesystem" class="md-nav__link">
+    Remote scan of root filesystem
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#authentication" class="md-nav__link">
     Authentication
   </a>
@@ -3121,6 +3128,13 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#remote-scan-of-root-filesystem" class="md-nav__link">
+    Remote scan of root filesystem
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#authentication" class="md-nav__link">
     Authentication
   </a>
@@ -3312,6 +3326,27 @@ Total: 24 (CRITICAL: 24)
 |                                             |                  |          |                   |                                | gadgets in anteros-core               |
 |                                             |                  |          |                   |                                | -->avd.aquasec.com/nvd/cve-2020-9548  |
 +---------------------------------------------+------------------+----------+-------------------+--------------------------------+---------------------------------------+
+</details>
+
+<h2 id="remote-scan-of-root-filesystem">Remote scan of root filesystem</h2>
+<p>Also, there is a way to scan root file system:
+<div class="highlight"><pre><span></span><code>$ trivy rootfs --server http://localhost:8080 --severity CRITICAL /tmp/rootfs
+</code></pre></div>
+<strong>Note</strong>: It's important to specify the protocol (http or https).</p>
+<details>
+<summary>Result</summary>
+/tmp/rootfs (alpine 3.10.2)
+
+Total: 1 (CRITICAL: 1)
+
+┌───────────┬────────────────┬──────────┬───────────────────┬───────────────┬─────────────────────────────────────────────────────────────┐
+│  Library  │ Vulnerability  │ Severity │ Installed Version │ Fixed Version │                            Title                            │
+├───────────┼────────────────┼──────────┼───────────────────┼───────────────┼─────────────────────────────────────────────────────────────┤
+│ apk-tools │ CVE-2021-36159 │ CRITICAL │ 2.10.4-r2         │ 2.10.7-r0     │ libfetch before 2021-07-26, as used in apk-tools, xbps, and │
+│           │                │          │                   │               │ other products, mishandles...                               │
+│           │                │          │                   │               │ https://avd.aquasec.com/nvd/cve-2021-36159                  │
+└───────────┴────────────────┴──────────┴───────────────────┴───────────────┴─────────────────────────────────────────────────────────────┘
+
 </details>
 
 <h2 id="authentication">Authentication</h2>
