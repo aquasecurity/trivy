@@ -145,7 +145,7 @@ func (f *ReportFlagGroup) Name() string {
 
 func (f *ReportFlagGroup) Flags() []*Flag {
 	return []*Flag{f.Format, f.ReportFormat, f.Template, f.DependencyTree, f.ListAllPkgs, f.IgnoreFile,
-		f.IgnorePolicy, f.ExitCode, f.Output, f.Severity}
+		f.IgnorePolicy, f.ExitCode, f.Output, f.Severity, f.Compliance}
 }
 
 func (f *ReportFlagGroup) ToOptions(out io.Writer) (ReportOptions, error) {
