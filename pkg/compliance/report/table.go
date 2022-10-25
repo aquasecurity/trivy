@@ -25,7 +25,7 @@ const (
 	ComplianceColumn  = "Compliance"
 )
 
-func (tw TableWriter) Columns() []string {
+func (tw TableWriter) columns() []string {
 	return []string{ControlIDColumn, SeverityColumn, ControlNameColumn, ComplianceColumn}
 }
 
@@ -41,7 +41,7 @@ func (tw TableWriter) Write(report *ComplianceReport) error {
 			}
 		}
 	case summaryReport:
-		writer := NewSummaryWriter(tw.Output, tw.Severities, tw.Columns())
+		writer := NewSummaryWriter(tw.Output, tw.Severities, tw.columns())
 		return writer.Write(report)
 	default:
 		return xerrors.Errorf(`report %q not supported. Use "summary" or "all"`, tw.Report)
