@@ -80,7 +80,6 @@ func NewScanFlagGroup() *ScanFlagGroup {
 		SkipFiles:      &SkipFilesFlag,
 		OfflineScan:    &OfflineScanFlag,
 		SecurityChecks: &SecurityChecksFlag,
-		Compliance:     &ComplianceFlag,
 		FilePatterns:   &FilePatternsFlag,
 		SBOMSources:    &SBOMSourcesFlag,
 		RekorURL:       &RekorURLFlag,
@@ -92,7 +91,7 @@ func (f *ScanFlagGroup) Name() string {
 }
 
 func (f *ScanFlagGroup) Flags() []*Flag {
-	return []*Flag{f.SkipDirs, f.SkipFiles, f.OfflineScan, f.SecurityChecks, f.Compliance, f.FilePatterns, f.SBOMSources, f.RekorURL}
+	return []*Flag{f.SkipDirs, f.SkipFiles, f.OfflineScan, f.SecurityChecks, f.FilePatterns, f.SBOMSources, f.RekorURL}
 }
 
 func (f *ScanFlagGroup) ToOptions(args []string) (ScanOptions, error) {
