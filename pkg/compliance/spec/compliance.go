@@ -1,16 +1,15 @@
 package spec
 
-type Severity string
+import (
+	"strings"
 
-const (
-	SeverityCritical Severity = "CRITICAL"
-	SeverityHigh     Severity = "HIGH"
-	SeverityMedium   Severity = "MEDIUM"
-	SeverityLow      Severity = "LOW"
+	"golang.org/x/exp/maps"
+	"golang.org/x/xerrors"
 
-	SeverityNone    Severity = "NONE"
-	SeverityUnknown Severity = "UNKNOWN"
+	"github.com/aquasecurity/trivy/pkg/types"
 )
+
+type Severity string
 
 // ComplianceSpec represent the compliance specification
 type ComplianceSpec struct {
@@ -58,3 +57,42 @@ const (
 	PassStatus ControlStatus = "PASS"
 	WarnStatus ControlStatus = "WARN"
 )
+
+// SecurityChecks reads spec control and determines the scanners by check ID prefix
+func (cs *ComplianceSpec) SecurityChecks() ([]types.SecurityCheck, error) {
+	scannerTypes := map[types.SecurityCheck]struct{}{}
+	for _, control := range cs.Spec.Controls {
+		for _, check := range control.Checks {
+			scannerType := securityCheckByCheckID(check.ID)
+			if scannerType == types.SecurityCheckUnknown {
+				return nil, xerrors.Errorf("unsupported check ID: %s", check.ID)
+			}
+			scannerTypes[scannerType] = struct{}{}
+		}
+	}
+	return maps.Keys(scannerTypes), nil
+}
+
+// CheckIDs return list of compliance check IDs
+func (cs *ComplianceSpec) CheckIDs() map[types.SecurityCheck][]string {
+	checkIDsMap := map[types.SecurityCheck][]string{}
+	for _, control := range cs.Spec.Controls {
+		for _, check := range control.Checks {
+			scannerType := securityCheckByCheckID(check.ID)
+			checkIDsMap[scannerType] = append(checkIDsMap[scannerType], check.ID)
+		}
+	}
+	return checkIDsMap
+}
+
+func securityCheckByCheckID(checkID string) types.SecurityCheck {
+	checkID = strings.ToLower(checkID)
+	switch {
+	case strings.HasPrefix(checkID, "cve-") || strings.HasPrefix(checkID, "dla-"):
+		return types.SecurityCheckVulnerability
+	case strings.HasPrefix(checkID, "avd-"):
+		return types.SecurityCheckConfig
+	default:
+		return types.SecurityCheckUnknown
+	}
+}
