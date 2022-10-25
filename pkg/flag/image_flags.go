@@ -23,7 +23,7 @@ var (
 		Name:       "platform",
 		ConfigName: "image.platform",
 		Value:      "",
-		Usage:      "specify the os and architecture for the image in the form os/arch",
+		Usage:      "set platform in the form os/arch if image is multi-platform capable",
 	}
 )
 
