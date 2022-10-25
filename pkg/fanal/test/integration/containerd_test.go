@@ -75,6 +75,161 @@ func startContainerd(t *testing.T, ctx context.Context, hostPath string) testcon
 	return containerdC
 }
 
+// Each of these tests imports an image and tags it with the name found in the
+// `imageName` field. Then, the containerd store is searched by the reference
+// provided in the `searchName` field.
+func TestContainerd_SearchLocalStoreByNameOrDigest(t *testing.T) {
+	type testInstance struct {
+		name       string
+		imageName  string
+		searchName string
+		digest     bool
+		expectErr  bool
+	}
+
+	tests := []testInstance{
+		{
+			name:       "familiarName:tag",
+			imageName:  "hello:world",
+			searchName: "hello:world",
+		},
+		{
+			name:       "compound/name:tag",
+			imageName:  "say/hello:world",
+			searchName: "say/hello:world",
+		},
+		{
+			name:       "docker.io/library/name:tag",
+			imageName:  "docker.io/library/hello:world",
+			searchName: "docker.io/library/hello:world",
+		},
+		{
+			name:       "other-registry.io/library/name:tag",
+			imageName:  "other-registry.io/library/hello:world",
+			searchName: "other-registry.io/library/hello:world",
+		},
+		{
+			name:       "other-registry.io/library/wrong:wrongTag should fail",
+			imageName:  "other-registry.io/library/hello:world",
+			searchName: "other-registry.io/library/hello:badtag",
+			expectErr:  true,
+		},
+		{
+			name:       "other-registry.io/library/wrongName:tag should fail",
+			imageName:  "other-registry.io/library/hello:world",
+			searchName: "other-registry.io/library/badname:world",
+			expectErr:  true,
+		},
+		{
+			digest:     true,
+			name:       "digest should succeed",
+			imageName:  "",
+			searchName: "sha256:63775b87d672bd68c667a244bf7664a5b26f1f8973662b7dd730e2170b1ff2bf",
+		},
+		{
+			digest:     true,
+			name:       "wrong digest should fail",
+			imageName:  "",
+			searchName: "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+			expectErr:  true,
+		},
+		{
+			name:       "name@digest",
+			imageName:  "hello@sha256:63775b87d672bd68c667a244bf7664a5b26f1f8973662b7dd730e2170b1ff2bf",
+			searchName: "hello@sha256:63775b87d672bd68c667a244bf7664a5b26f1f8973662b7dd730e2170b1ff2bf",
+		},
+		{
+			name:       "compound/name@digest",
+			imageName:  "hello@sha256:63775b87d672bd68c667a244bf7664a5b26f1f8973662b7dd730e2170b1ff2bf",
+			searchName: "hello@sha256:63775b87d672bd68c667a244bf7664a5b26f1f8973662b7dd730e2170b1ff2bf",
+		},
+		{
+			name:       "docker.io/library/name@digest",
+			imageName:  "docker.io/library/name@sha256:63775b87d672bd68c667a244bf7664a5b26f1f8973662b7dd730e2170b1ff2bf",
+			searchName: "docker.io/library/name@sha256:63775b87d672bd68c667a244bf7664a5b26f1f8973662b7dd730e2170b1ff2bf",
+		},
+		{
+			name:       "otherdomain.io/name@digest",
+			imageName:  "otherdomain.io/name@sha256:63775b87d672bd68c667a244bf7664a5b26f1f8973662b7dd730e2170b1ff2bf",
+			searchName: "otherdomain.io/name@sha256:63775b87d672bd68c667a244bf7664a5b26f1f8973662b7dd730e2170b1ff2bf",
+		},
+		{
+			name:       "wrongName@digest should fail",
+			imageName:  "hello@sha256:63775b87d672bd68c667a244bf7664a5b26f1f8973662b7dd730e2170b1ff2bf",
+			searchName: "badname@sha256:63775b87d672bd68c667a244bf7664a5b26f1f8973662b7dd730e2170b1ff2bf",
+			expectErr:  true,
+		},
+		{
+			name:       "compound/wrongName@digest should fail",
+			imageName:  "compound/name@sha256:63775b87d672bd68c667a244bf7664a5b26f1f8973662b7dd730e2170b1ff2bf",
+			searchName: "compound/badname@sha256:63775b87d672bd68c667a244bf7664a5b26f1f8973662b7dd730e2170b1ff2bf",
+			expectErr:  true,
+		},
+	}
+
+	digestTests := []testInstance{}
+	_ = digestTests
+
+	ctx := namespaces.WithNamespace(context.Background(), "default")
+
+	tmpDir, socketPath := configureTestDataPaths(t)
+	defer os.RemoveAll(tmpDir)
+
+	containerdC := startContainerd(t, ctx, tmpDir)
+	defer containerdC.Terminate(ctx)
+
+	client, err := containerd.New(socketPath)
+	require.NoError(t, err)
+	defer client.Close()
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			archive, err := os.Open("../../../../integration/testdata/fixtures/images/alpine-310.tar.gz")
+			require.NoError(t, err)
+
+			uncompressedArchive, err := gzip.NewReader(archive)
+			require.NoError(t, err)
+			defer archive.Close()
+
+			cacheDir := t.TempDir()
+			c, err := cache.NewFSCache(cacheDir)
+			require.NoError(t, err)
+
+			names := []containerd.ImportOpt{containerd.WithIndexName(tt.imageName)}
+			if tt.digest {
+				names = []containerd.ImportOpt{}
+			}
+
+			imgs, err := client.Import(ctx, uncompressedArchive, names...)
+			require.NoError(t, err)
+			_ = imgs
+
+			img, cleanup, err := image.NewContainerImage(ctx, tt.searchName, types.DockerOption{},
+				image.DisableDockerd(), image.DisablePodman(), image.DisableRemote())
+			defer cleanup()
+			if tt.expectErr {
+				require.Error(t, err)
+				return
+			}
+			require.NoError(t, err)
+
+			ar, err := aimage.NewArtifact(img, c, artifact.Option{})
+			require.NoError(t, err)
+
+			ref, err := ar.Inspect(ctx)
+			require.NoError(t, err)
+
+			if tt.digest {
+				actualDigest := strings.Split(ref.ImageMetadata.RepoDigests[0], "@")[1]
+				require.Equal(t, tt.searchName, actualDigest)
+				return
+			}
+
+			require.Equal(t, tt.searchName, ref.Name)
+		})
+	}
+}
+
 func TestContainerd_LocalImage(t *testing.T) {
 	localImageTestWithNamespace(t, "default")
 }
