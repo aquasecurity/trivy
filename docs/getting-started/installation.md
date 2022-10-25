@@ -110,7 +110,7 @@ curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/inst
 
 ## Binary
 
-Download the archive file for your operating system/architecture from [here](https://github.com/aquasecurity/trivy/releases/tag/{{ git.tag }}). 
+Download the archive file for your operating system/architecture from [here](https://github.com/aquasecurity/trivy/releases/tag/{{ git.tag }}).
 Unpack the archive, and put the binary somewhere in your `$PATH` (on UNIX-y systems, /usr/local/bin or the like).
 Make sure it has execution bits turned on.
 
@@ -146,14 +146,14 @@ Example:
 === "macOS"
 
     ``` bash
-    docker run --rm -v $HOME/Library/Caches:/root/.cache/ aquasec/trivy:{{ git.tag[1:] }} image [YOUR_IMAGE_NAME
+    docker run --rm -v $HOME/Library/Caches:/root/.cache/ aquasec/trivy:{{ git.tag[1:] }} image [YOUR_IMAGE_NAME]
     ```
 
 If you would like to scan the image on your host machine, you need to mount `docker.sock`.
 
 ```bash
 docker run --rm -v /var/run/docker.sock:/var/run/docker.sock \
-    -v $HOME/Library/Caches:/root/.cache/ aquasec/trivy:{{ git.tag[1:] }} python:3.4-alpine
+    -v $HOME/Library/Caches:/root/.cache/ aquasec/trivy:{{ git.tag[1:] }} image python:3.4-alpine
 ```
 
 Please re-pull latest `aquasec/trivy` if an error occurred.

@@ -53,7 +53,7 @@ func NewMisconfigRenderer(result types.Result, severities []dbTypes.Severity, tr
 
 func (r *misconfigRenderer) Render() string {
 	target := fmt.Sprintf("%s (%s)", r.result.Target, r.result.Type)
-	renderTarget(r.w, target, r.ansi)
+	RenderTarget(r.w, target, r.ansi)
 
 	total, summaries := summarize(r.severities, r.countSeverities())
 

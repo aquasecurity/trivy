@@ -44,8 +44,17 @@ func Run(ctx context.Context, args []string, opts flag.Options) error {
 	}
 }
 
-func run(ctx context.Context, opts flag.Options, cluster string, artifacts []*artifacts.Artifact, showEmpty bool) error {
-	ctx, cancel := context.WithTimeout(ctx, opts.Timeout)
+type runner struct {
+	flagOpts flag.Options
+	cluster  string
+}
+
+func newRunner(flagOpts flag.Options, cluster string) *runner {
+	return &runner{flagOpts, cluster}
+}
+
+func (r *runner) run(ctx context.Context, artifacts []*artifacts.Artifact) error {
+	ctx, cancel := context.WithTimeout(ctx, r.flagOpts.Timeout)
 	defer cancel()
 
 	var err error
@@ -55,7 +64,7 @@ func run(ctx context.Context, opts flag.Options, cluster string, artifacts []*ar
 		}
 	}()
 
-	runner, err := cmd.NewRunner(ctx, opts)
+	runner, err := cmd.NewRunner(ctx, r.flagOpts)
 	if err != nil {
 		if errors.Is(err, cmd.SkipScan) {
 			return nil
@@ -68,23 +77,25 @@ func run(ctx context.Context, opts flag.Options, cluster string, artifacts []*ar
 		}
 	}()
 
-	s := scanner.NewScanner(cluster, runner, opts)
+	s := scanner.NewScanner(r.cluster, runner, r.flagOpts)
 
-	r, err := s.Scan(ctx, artifacts)
+	rpt, err := s.Scan(ctx, artifacts)
 	if err != nil {
 		return xerrors.Errorf("k8s scan error: %w", err)
 	}
 
-	if err := report.Write(r, report.Option{
-		Format:     opts.Format,
-		Report:     opts.ReportFormat,
-		Output:     opts.Output,
-		Severities: opts.Severities,
-	}, opts.ScanOptions.SecurityChecks, showEmpty); err != nil {
+	if err := report.Write(rpt, report.Option{
+		Format:         r.flagOpts.Format,
+		Report:         r.flagOpts.ReportFormat,
+		Output:         r.flagOpts.Output,
+		Severities:     r.flagOpts.Severities,
+		Components:     r.flagOpts.Components,
+		SecurityChecks: r.flagOpts.ScanOptions.SecurityChecks,
+	}); err != nil {
 		return xerrors.Errorf("unable to write results: %w", err)
 	}
 
-	cmd.Exit(opts, r.Failed())
+	cmd.Exit(r.flagOpts, rpt.Failed())
 
 	return nil
 }

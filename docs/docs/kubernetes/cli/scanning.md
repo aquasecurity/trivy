@@ -231,3 +231,49 @@ $ trivy k8s --format json -o results.json cluster
 
 </details>
 
+
+
+## Infra checks
+
+Trivy by default scans kubernetes infra components (apiserver, controller-manager, scheduler and etcd)
+if they exist under the `kube-system` namespace. For example, if you run a full cluster scan, or scan all
+components under `kube-system` with commands:
+
+```
+$ trivy k8s cluster --report summary # full cluster scan
+$ trivy k8s all -n kube-system --report summary # scan all componetns under kube-system
+```
+
+A table will be printed about misconfigurations found on kubernetes core components:
+
+```
+Summary Report for minikube
+┌─────────────┬──────────────────────────────────────┬─────────────────────────────┐
+│  Namespace  │               Resource               │ Kubernetes Infra Assessment │
+│             │                                      ├────┬────┬────┬─────┬────────┤
+│             │                                      │ C  │ H  │ M  │ L   │   U    │
+├─────────────┼──────────────────────────────────────┼────┼────┼────┼─────┼────────┤
+│ kube-system │ Pod/kube-apiserver-minikube          │    │    │ 1  │ 10  │        │
+│ kube-system │ Pod/kube-controller-manager-minikube │    │    │    │ 3   │        │
+│ kube-system │ Pod/kube-scheduler-minikube          │    │    │    │ 1   │        │
+└─────────────┴──────────────────────────────────────┴────┴────┴────┴─────┴────────┘
+Severities: C=CRITICAL H=HIGH M=MEDIUM L=LOW U=UNKNOWN
+```
+
+The infra checks are based on CIS Benchmarks recommendations for kubernetes.
+
+
+If you want filter only for the infra checks, you can use the flag `--components` along with the `--security-checks=config`
+
+```
+$ trivy k8s cluster --report summary --components=infra --security-checks=config # scan only infra
+```
+
+Or, to filter for all other checks besides the infra checks, you can:
+
+```
+$ trivy k8s cluster --report summary --components=workload --security-checks=config # scan all components besides infra
+```
+
+	
+
