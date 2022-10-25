@@ -450,6 +450,7 @@ func initScannerConfig(opts flag.Options, cacheClient cache.Cache) (ScannerConfi
 		VulnType:            opts.VulnType,
 		SecurityChecks:      opts.SecurityChecks,
 		ScanRemovedPackages: opts.ScanRemovedPkgs, // this is valid only for 'image' subcommand
+		Platform:            opts.Platform,        // this is valid only for 'image' subcommand
 		ListAllPackages:     opts.ListAllPkgs,
 		LicenseCategories:   opts.LicenseCategories,
 		FilePatterns:        opts.FilePatterns,
@@ -517,6 +518,7 @@ func initScannerConfig(opts flag.Options, cacheClient cache.Cache) (ScannerConfi
 			RepoTag:           opts.RepoTag,
 			SBOMSources:       opts.SBOMSources,
 			RekorURL:          opts.RekorURL,
+			Platform:          opts.Platform,
 
 			// For misconfiguration scanning
 			MisconfScannerOption: configScannerOptions,

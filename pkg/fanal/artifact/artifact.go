@@ -25,6 +25,7 @@ type Option struct {
 	RepoTag           string
 	SBOMSources       []string
 	RekorURL          string
+	Platform          string
 
 	MisconfScannerOption misconf.ScannerOption
 	SecretScannerOption  analyzer.SecretScannerOption
