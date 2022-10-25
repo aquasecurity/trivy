@@ -1,46 +1,83 @@
-package report
+package report_test
 
 import (
 	"bytes"
-	"encoding/json"
+	"os"
+	"path/filepath"
+	"testing"
+
+	"github.com/aquasecurity/trivy/pkg/compliance/report"
+
+	"github.com/stretchr/testify/require"
+
 	"github.com/aquasecurity/trivy/pkg/types"
 	"github.com/stretchr/testify/assert"
-	"io"
-	"os"
-	"testing"
 )
 
-func TestJSONReport(t *testing.T) {
+func TestJSONWriter_Write(t *testing.T) {
+	input := &report.ComplianceReport{
+		ID:               "1234",
+		Title:            "NSA",
+		RelatedResources: []string{"https://example.com"},
+		Results: []*report.ControlCheckResult{
+			{
+				ControlCheckID:  "1.0",
+				ControlName:     "Non-root containers",
+				ControlSeverity: "MEDIUM",
+				Results: types.Results{
+					{
+						Misconfigurations: []types.DetectedMisconfiguration{
+							{AVDID: "AVD-KSV012", Status: types.StatusFailure},
+						},
+					},
+				},
+			},
+			{
+				ControlCheckID:  "1.1",
+				ControlName:     "Immutable container file systems",
+				ControlSeverity: "LOW",
+				Results: types.Results{
+					{
+						Misconfigurations: []types.DetectedMisconfiguration{
+							{AVDID: "AVD-KSV013", Status: types.StatusFailure},
+						},
+					},
+				},
+			},
+		},
+	}
+
 	tests := []struct {
-		name               string
-		specPath           string
-		resultPath         string
-		reportType         string
-		wantJsonReportPath string
+		name       string
+		reportType string
+		input      *report.ComplianceReport
+		want       string
 	}{
-		{name: "build summary json output report", specPath: "./testdata/config_spec.yaml", reportType: "summary", resultPath: "./testdata/results_config.json", wantJsonReportPath: "./testdata/json_summary.json"},
-		{name: "build full json output report", specPath: "./testdata/config_spec.yaml", reportType: "all", resultPath: "./testdata/results_config.json", wantJsonReportPath: "./testdata/json_view.json"},
+		{
+			name:       "build summary json output report",
+			reportType: "summary",
+			input:      input,
+			want:       filepath.Join("testdata", "summary.json"),
+		},
+		{
+			name:       "build full json output report",
+			reportType: "all",
+			input:      input,
+			want:       filepath.Join("testdata", "all.json"),
+		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			specfile, err := os.ReadFile(tt.specPath)
-			assert.NoError(t, err)
-			var res types.Results
-			resultByte, err := os.ReadFile(tt.resultPath)
-			err = json.Unmarshal(resultByte, &res)
-			assert.NoError(t, err)
-			complianceResults, err := BuildComplianceReport([]types.Results{res}, string(specfile))
-			assert.NoError(t, err)
-			ioWriter := new(bytes.Buffer)
-			tr := JSONWriter{Report: tt.reportType, Output: ioWriter}
-			err = tr.Write(complianceResults)
-			assert.NoError(t, err)
-			bt, err := io.ReadAll(ioWriter)
-			assert.NoError(t, err)
-			r, err := os.ReadFile(tt.wantJsonReportPath)
-			assert.NoError(t, err)
-			assert.Equal(t, string(bt), string(r))
+			buf := new(bytes.Buffer)
+			tr := report.JSONWriter{Report: tt.reportType, Output: buf}
+			err := tr.Write(tt.input)
+			require.NoError(t, err)
+
+			want, err := os.ReadFile(tt.want)
+			require.NoError(t, err)
+
+			assert.JSONEq(t, string(want), buf.String())
 		})
 	}
 }
