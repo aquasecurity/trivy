@@ -36,7 +36,7 @@ var (
 	imageSBOMAttestation = in_toto.Statement{
 		StatementHeader: in_toto.StatementHeader{
 			Type:          "https://in-toto.io/Statement/v0.1",
-			PredicateType: "https://cyclonedx.org/schema",
+			PredicateType: "https://cyclonedx.org/bom",
 			Subject: []in_toto.Subject{
 				{
 					Name: "index.docker.io/knqyf263/cosign-test",
@@ -124,7 +124,7 @@ var (
 	gomodSBOMAttestation = in_toto.Statement{
 		StatementHeader: in_toto.StatementHeader{
 			Type:          "https://in-toto.io/Statement/v0.1",
-			PredicateType: "https://cyclonedx.org/schema",
+			PredicateType: "https://cyclonedx.org/bom",
 			Subject: []in_toto.Subject{
 				{
 					Name: "go.mod",
@@ -200,7 +200,7 @@ var (
 	emptySBOMAttestation = in_toto.Statement{
 		StatementHeader: in_toto.StatementHeader{
 			Type:          "https://in-toto.io/Statement/v0.1",
-			PredicateType: "https://cyclonedx.org/schema",
+			PredicateType: "https://cyclonedx.org/bom",
 		},
 		Predicate: &attestation.CosignPredicate{
 			Data: &cyclonedx.BOM{
