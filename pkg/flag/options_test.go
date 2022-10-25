@@ -4,9 +4,10 @@ import (
 	"os"
 	"testing"
 
-	"github.com/aquasecurity/trivy/pkg/types"
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
+
+	"github.com/aquasecurity/trivy/pkg/types"
 )
 
 func Test_getStringSlice(t *testing.T) {

@@ -8,8 +8,9 @@ import (
 	"sync"
 
 	"github.com/fatih/color"
-	"github.com/liamg/tml"
 	"golang.org/x/exp/slices"
+
+	"github.com/aquasecurity/tml"
 
 	"github.com/aquasecurity/table"
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"

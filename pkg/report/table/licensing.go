@@ -15,7 +15,8 @@ import (
 	"github.com/aquasecurity/trivy/pkg/types"
 
 	"github.com/fatih/color"
-	"github.com/liamg/tml"
+
+	"github.com/aquasecurity/tml"
 )
 
 type pkgLicenseRenderer struct {
