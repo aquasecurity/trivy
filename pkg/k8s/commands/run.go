@@ -5,11 +5,8 @@ import (
 	"errors"
 
 	"github.com/spf13/viper"
-
-	"github.com/aquasecurity/trivy/pkg/flag"
-	"github.com/aquasecurity/trivy/pkg/types"
-
 	"golang.org/x/xerrors"
+	"gopkg.in/yaml.v3"
 
 	sp "github.com/aquasecurity/defsec/pkg/spec"
 	"github.com/aquasecurity/trivy-kubernetes/pkg/artifacts"
@@ -17,9 +14,11 @@ import (
 	cmd "github.com/aquasecurity/trivy/pkg/commands/artifact"
 	cr "github.com/aquasecurity/trivy/pkg/compliance/report"
 	"github.com/aquasecurity/trivy/pkg/compliance/spec"
+	"github.com/aquasecurity/trivy/pkg/flag"
 	"github.com/aquasecurity/trivy/pkg/k8s/report"
 	"github.com/aquasecurity/trivy/pkg/k8s/scanner"
 	"github.com/aquasecurity/trivy/pkg/log"
+	"github.com/aquasecurity/trivy/pkg/types"
 )
 
 const (
@@ -81,15 +80,20 @@ func (r *runner) run(ctx context.Context, artifacts []*artifacts.Artifact) error
 	}()
 
 	s := scanner.NewScanner(r.cluster, runner, r.flagOpts)
-	var complianceSpec string
+
+	var complianceSpec spec.ComplianceSpec
 	// set scanners types by spec
-	if len(r.flagOpts.ReportOptions.Compliance) > 0 {
-		complianceSpec = sp.NewSpecLoader().GetSpecByName(r.flagOpts.ReportOptions.Compliance)
-		scannerTypes, err := spec.GetScannerTypes(complianceSpec)
-		if err != nil {
-			return err
+	if r.flagOpts.ReportOptions.Compliance != "" {
+		cs := sp.NewSpecLoader().GetSpecByName(r.flagOpts.ReportOptions.Compliance)
+		if err = yaml.Unmarshal([]byte(cs), &complianceSpec); err != nil {
+			return xerrors.Errorf("yaml unmarshal error: %w", err)
 		}
-		r.flagOpts.ScanOptions.SecurityChecks = scannerTypes
+
+		securityChecks, err := complianceSpec.SecurityChecks()
+		if err != nil {
+			return xerrors.Errorf("security check error: %w", err)
+		}
+		r.flagOpts.ScanOptions.SecurityChecks = securityChecks
 	}
 
 	rpt, err := s.Scan(ctx, artifacts)
@@ -98,17 +102,16 @@ func (r *runner) run(ctx context.Context, artifacts []*artifacts.Artifact) error
 	}
 
 	if len(r.flagOpts.ReportOptions.Compliance) > 0 {
-		scanResults := make([]types.Results, 0)
-
-		for _, rss := range rpt.Misconfigurations {
+		var scanResults []types.Results
+		for _, rss := range rpt.Vulnerabilities {
 			scanResults = append(scanResults, rss.Results)
 		}
-		for _, rss := range rpt.Vulnerabilities {
+		for _, rss := range rpt.Misconfigurations {
 			scanResults = append(scanResults, rss.Results)
 		}
 		complianceReport, err := cr.BuildComplianceReport(scanResults, complianceSpec)
 		if err != nil {
-			return err
+			return xerrors.Errorf("compliance report build error: %w", err)
 		}
 		return cr.Write(complianceReport, cr.Option{
 			Format: r.flagOpts.Format,
