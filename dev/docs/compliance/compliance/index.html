@@ -10,14 +10,14 @@
       
       
       
-        <link rel="canonical" href="https://aquasecurity.github.io/trivy/dev/docs/advanced/private-registries/">
+        <link rel="canonical" href="https://aquasecurity.github.io/trivy/dev/docs/compliance/compliance/">
       
       <link rel="icon" href="../../../assets/images/favicon.png">
       <meta name="generator" content="mkdocs-1.3.0, mkdocs-material-8.3.9">
     
     
       
-        <title>Overview - Trivy</title>
+        <title>Reports - Trivy</title>
       
     
     
@@ -63,6 +63,11 @@
     <label class="md-overlay" for="__drawer"></label>
     <div data-md-component="skip">
       
+        
+        <a href="#compliance-reports" class="md-skip">
+          Skip to content
+        </a>
+      
     </div>
     <div data-md-component="announce">
       
@@ -99,7 +104,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Overview
+              Reports
             
           </span>
         </div>
@@ -1911,14 +1916,16 @@
               
   
   
+    
+  
   
     
       
     
-    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_7" type="checkbox" id="__nav_3_7" >
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_7" type="checkbox" id="__nav_3_7" checked>
       
       
       
@@ -1939,11 +1946,52 @@
               
   
   
+    
   
-    <li class="md-nav__item">
-      <a href="../../compliance/compliance/" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          Reports
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
         Reports
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#supported-reports" class="md-nav__link">
+    Supported reports
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -2163,16 +2211,14 @@
               
   
   
-    
-  
   
     
       
     
-    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_11" type="checkbox" id="__nav_3_11" checked>
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_11" type="checkbox" id="__nav_3_11" >
       
       
       
@@ -2195,7 +2241,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../modules/" class="md-nav__link">
+      <a href="../../advanced/modules/" class="md-nav__link">
         Modules
       </a>
     </li>
@@ -2209,7 +2255,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../plugins/" class="md-nav__link">
+      <a href="../../advanced/plugins/" class="md-nav__link">
         Plugins
       </a>
     </li>
@@ -2223,7 +2269,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../air-gap/" class="md-nav__link">
+      <a href="../../advanced/air-gap/" class="md-nav__link">
         Air-Gapped Environment
       </a>
     </li>
@@ -2235,14 +2281,12 @@
               
   
   
-    
-  
   
     
-    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_11_4" type="checkbox" id="__nav_3_11_4" checked>
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_11_4" type="checkbox" id="__nav_3_11_4" >
       
       
       
@@ -2265,7 +2309,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../container/embed-in-dockerfile/" class="md-nav__link">
+      <a href="../../advanced/container/embed-in-dockerfile/" class="md-nav__link">
         Embed in Dockerfile
       </a>
     </li>
@@ -2279,7 +2323,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../container/unpacked-filesystem/" class="md-nav__link">
+      <a href="../../advanced/container/unpacked-filesystem/" class="md-nav__link">
         Unpacked container image filesystem
       </a>
     </li>
@@ -2293,7 +2337,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../container/oci/" class="md-nav__link">
+      <a href="../../advanced/container/oci/" class="md-nav__link">
         OCI Image
       </a>
     </li>
@@ -2307,7 +2351,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../container/podman/" class="md-nav__link">
+      <a href="../../advanced/container/podman/" class="md-nav__link">
         Podman
       </a>
     </li>
@@ -2321,7 +2365,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../container/containerd/" class="md-nav__link">
+      <a href="../../advanced/container/containerd/" class="md-nav__link">
         containerd
       </a>
     </li>
@@ -2333,14 +2377,12 @@
               
   
   
-    
-  
   
     
-    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_11_4_6" type="checkbox" id="__nav_3_11_4_6" checked>
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_11_4_6" type="checkbox" id="__nav_3_11_4_6" >
       
       
       
@@ -2361,19 +2403,11 @@
               
   
   
-    
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
-      
-      
-      
-      <a href="./" class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href="../../advanced/private-registries/" class="md-nav__link">
         Overview
       </a>
-      
     </li>
   
 
@@ -2385,7 +2419,7 @@
   
   
     <li class="md-nav__item">
-      <a href="docker-hub/" class="md-nav__link">
+      <a href="../../advanced/private-registries/docker-hub/" class="md-nav__link">
         Docker Hub
       </a>
     </li>
@@ -2399,7 +2433,7 @@
   
   
     <li class="md-nav__item">
-      <a href="ecr/" class="md-nav__link">
+      <a href="../../advanced/private-registries/ecr/" class="md-nav__link">
         AWS ECR (Elastic Container Registry)
       </a>
     </li>
@@ -2413,7 +2447,7 @@
   
   
     <li class="md-nav__item">
-      <a href="gcr/" class="md-nav__link">
+      <a href="../../advanced/private-registries/gcr/" class="md-nav__link">
         GCR (Google Container Registry)
       </a>
     </li>
@@ -2427,7 +2461,7 @@
   
   
     <li class="md-nav__item">
-      <a href="acr/" class="md-nav__link">
+      <a href="../../advanced/private-registries/acr/" class="md-nav__link">
         ACR (Azure Container Registry)
       </a>
     </li>
@@ -2441,7 +2475,7 @@
   
   
     <li class="md-nav__item">
-      <a href="self/" class="md-nav__link">
+      <a href="../../advanced/private-registries/self/" class="md-nav__link">
         Self-Hosted
       </a>
     </li>
@@ -3026,6 +3060,23 @@
   
   
   
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#supported-reports" class="md-nav__link">
+    Supported reports
+  </a>
+  
+</li>
+      
+    </ul>
   
 </nav>
                   </div>
@@ -3039,11 +3090,12 @@
                 
 
 
-  <h1>Overview</h1>
-
-<p>Trivy can download images from a private registry, without installing <code>Docker</code> or any other 3rd party tools.
-That's because it's easy to run in a CI process.</p>
-<p>All you have to do is install <code>Trivy</code> and set ENV vars.</p>
+<h1 id="compliance-reports">Compliance Reports</h1>
+<p>Trivy support producing compliance reports.</p>
+<h2 id="supported-reports">Supported reports</h2>
+<ul>
+<li><a href="../../kubernetes/cli/compliance/">NSA, CISA Kubernetes Hardening Guidance v1.0</a> </li>
+</ul>
 
               
             </article>
@@ -3061,7 +3113,7 @@ That's because it's easy to run in a CI process.</p>
     <nav class="md-footer__inner md-grid" aria-label="Footer" >
       
         
-        <a href="../container/containerd/" class="md-footer__link md-footer__link--prev" aria-label="Previous: containerd" rel="prev">
+        <a href="../../kubernetes/operator/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Overview" rel="prev">
           <div class="md-footer__button md-icon">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
           </div>
@@ -3070,20 +3122,20 @@ That's because it's easy to run in a CI process.</p>
               <span class="md-footer__direction">
                 Previous
               </span>
-              containerd
+              Overview
             </div>
           </div>
         </a>
       
       
         
-        <a href="docker-hub/" class="md-footer__link md-footer__link--next" aria-label="Next: Docker Hub" rel="next">
+        <a href="../../cloud/aws/scanning/" class="md-footer__link md-footer__link--next" aria-label="Next: AWS" rel="next">
           <div class="md-footer__title">
             <div class="md-ellipsis">
               <span class="md-footer__direction">
                 Next
               </span>
-              Docker Hub
+              AWS
             </div>
           </div>
           <div class="md-footer__button md-icon">
