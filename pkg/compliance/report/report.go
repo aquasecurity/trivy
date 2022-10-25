@@ -4,7 +4,6 @@ import (
 	"io"
 
 	"golang.org/x/xerrors"
-	"gopkg.in/yaml.v2"
 
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/compliance/spec"
@@ -46,7 +45,7 @@ type ControlCheckResult struct {
 	Results            types.Results      `json:"results"`
 }
 
-// ConsolidatedReport represents a kubernetes scan report with consolidated findings
+// SummaryReport represents a kubernetes scan report with consolidated findings
 type SummaryReport struct {
 	SchemaVersion   int `json:",omitempty"`
 	ReportID        string
@@ -99,16 +98,18 @@ func (r ComplianceReport) empty() bool {
 func buildControlCheckResults(checksMap map[string]types.Results, controls []spec.Control) []*ControlCheckResult {
 	complianceResults := make([]*ControlCheckResult, 0)
 	for _, control := range controls {
-		cr := ControlCheckResult{}
-		cr.ControlName = control.Name
-		cr.ControlCheckID = control.ID
-		cr.ControlDescription = control.Description
-		cr.ControlSeverity = string(control.Severity)
-		cr.DefaultStatus = control.DefaultStatus
+		var results types.Results
 		for _, c := range control.Checks {
-			cr.Results = append(cr.Results, checksMap[c.ID]...)
+			results = append(results, checksMap[c.ID]...)
 		}
-		complianceResults = append(complianceResults, &cr)
+		complianceResults = append(complianceResults, &ControlCheckResult{
+			ControlName:        control.Name,
+			ControlCheckID:     control.ID,
+			ControlDescription: control.Description,
+			ControlSeverity:    string(control.Severity),
+			DefaultStatus:      control.DefaultStatus,
+			Results:            results,
+		})
 	}
 	return complianceResults
 }
@@ -126,20 +127,9 @@ func buildComplianceReportResults(checksMap map[string]types.Results, spec spec.
 	}
 }
 
-func BuildComplianceReport(scanResults []types.Results, complianceSpec string) (*ComplianceReport, error) {
-	// load compliance spec
-	cs := spec.ComplianceSpec{}
-	err := yaml.Unmarshal([]byte(complianceSpec), &cs)
-	if err != nil {
-		return nil, err
-	}
-	// validate scanners types (vuln and config) define in spec supported
-	err = spec.ValidateScanners(cs.Spec.Controls)
-	if err != nil {
-		return nil, err
-	}
+func BuildComplianceReport(scanResults []types.Results, cs spec.ComplianceSpec) (*ComplianceReport, error) {
 	// aggregate checks by ID
-	aggregateChecksByID := spec.AggregateAllChecksBySpecID(scanResults, cs.Spec.Controls)
+	aggregateChecksByID := spec.AggregateAllChecksBySpecID(scanResults, cs)
 
 	// build compliance report results
 	return buildComplianceReportResults(aggregateChecksByID, cs.Spec), nil
