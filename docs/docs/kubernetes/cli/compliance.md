@@ -7,7 +7,7 @@
 
 The Trivy K8s CLI allows you to scan your Kubernetes cluster resources and generate the `NSA, CISA Kubernetes Hardening Guidance` report
 
-NSA, CISA Kubernetes Hardening Guidance v1.0 cybersecurity technical report is produced by trivy and validate the following control checks :
+[NSA, CISA Kubernetes Hardening Guidance v1.2](https://media.defense.gov/2022/Aug/29/2003066362/-1/-1/0/CTR_KUBERNETES_HARDENING_GUIDANCE_1.2_20220829.PDF) cybersecurity technical report is produced by trivy and validate the following control checks :
 
 | NAME                                                     | DESCRIPTION                                                                                             |          |
 |----------------------------------------------------------|---------------------------------------------------------------------------------------------------------|---------------|
@@ -48,6 +48,10 @@ $ trivy k8s cluster --compliance=nsa --report summary
 ```
 
 ![k8s Summary Report](../../../imgs/trivy-nsa-summary.png)
+
+***Note*** : The `compliance` column represent the calculation of all tests pass vs. fail for all resources per control check in percentage format.
+
+Example: if I have two resources in cluster and one resource scan result show pass while the other one show fail for `1.0 Non-root Containers` then it compliance will show 50%
 
 An additional report is supported to get all of the detail the output contains, use `--report all`
 ```
