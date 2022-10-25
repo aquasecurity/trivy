@@ -133,6 +133,11 @@ func BuildComplianceReport(scanResults []types.Results, complianceSpec string) (
 	if err != nil {
 		return nil, err
 	}
+	// validate scanners types (vuln and config) supported
+	err = spec.ValidateScanners(cs.Spec.Controls)
+	if err != nil {
+		return nil, err
+	}
 	// aggregate checks by ID
 	aggregateChecksByID := spec.AggregateAllChecksBySpecID(scanResults, cs.Spec.Controls)
 
