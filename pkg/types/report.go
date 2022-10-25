@@ -51,7 +51,7 @@ const (
 	ClassCustom      = "custom"
 
 	// ComplianceNsa is the compliance checks for nsa
-	ComplianceNsa = SecurityCheck("nsa")
+	ComplianceNsa = Compliance("nsa")
 )
 
 // Result holds a target and detected vulnerabilities
