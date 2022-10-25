@@ -39,16 +39,6 @@ const (
 )
 
 // GetID retrun misconfig ID
-func (mc DetectedMisconfiguration) GetID() string {
+func (mc *DetectedMisconfiguration) GetID() string {
 	return mc.AVDID
-}
-
-// CheckType retrun misconfig check type
-func (mc DetectedMisconfiguration) CheckType() string {
-	return "config"
-}
-
-// CheckType retrun misconfig check pass
-func (mc DetectedMisconfiguration) CheckPass() bool {
-	return mc.Status == StatusPassed
 }
