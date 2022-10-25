@@ -7,7 +7,7 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/liamg/tml"
+	"github.com/aquasecurity/tml"
 
 	"github.com/aquasecurity/table"
 	pkgReport "github.com/aquasecurity/trivy/pkg/report/table"

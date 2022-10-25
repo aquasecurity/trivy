@@ -24,7 +24,8 @@ func namespaceRun(ctx context.Context, opts flag.Options, cluster k8s.Cluster) e
 		return xerrors.Errorf("get k8s artifacts error: %w", err)
 	}
 
-	return run(ctx, opts, cluster.GetCurrentContext(), artifacts, true)
+	runner := newRunner(opts, cluster.GetCurrentContext())
+	return runner.run(ctx, artifacts)
 }
 
 func getNamespace(opts flag.Options, currentNamespace string) string {

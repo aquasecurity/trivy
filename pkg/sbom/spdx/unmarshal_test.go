@@ -10,21 +10,21 @@ import (
 	"github.com/stretchr/testify/require"
 
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
-	"github.com/aquasecurity/trivy/pkg/sbom"
 	"github.com/aquasecurity/trivy/pkg/sbom/spdx"
+	"github.com/aquasecurity/trivy/pkg/types"
 )
 
 func TestUnmarshaler_Unmarshal(t *testing.T) {
 	tests := []struct {
 		name      string
 		inputFile string
-		want      sbom.SBOM
+		want      types.SBOM
 		wantErr   string
 	}{
 		{
 			name:      "happy path",
 			inputFile: "testdata/happy/bom.json",
-			want: sbom.SBOM{
+			want: types.SBOM{
 				OS: &ftypes.OS{
 					Family: "alpine",
 					Name:   "3.16.0",
@@ -113,7 +113,7 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 		{
 			name:      "happy path for unrelated bom",
 			inputFile: "testdata/happy/unrelated-bom.json",
-			want: sbom.SBOM{
+			want: types.SBOM{
 				Applications: []ftypes.Application{
 					{
 						Type:     "composer",
@@ -138,7 +138,7 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 		{
 			name:      "happy path only os component",
 			inputFile: "testdata/happy/os-only-bom.json",
-			want: sbom.SBOM{
+			want: types.SBOM{
 				OS: &ftypes.OS{
 					Family: "alpine",
 					Name:   "3.16.0",
@@ -148,7 +148,7 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 		{
 			name:      "happy path empty component",
 			inputFile: "testdata/happy/empty-bom.json",
-			want:      sbom.SBOM{},
+			want:      types.SBOM{},
 		},
 		{
 			name:      "sad path invalid purl",
@@ -163,7 +163,7 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 			require.NoError(t, err)
 			defer f.Close()
 
-			v := &spdx.SPDX{SBOM: &sbom.SBOM{}}
+			v := &spdx.SPDX{SBOM: &types.SBOM{}}
 			err = json.NewDecoder(f).Decode(v)
 			if tt.wantErr != "" {
 				require.Error(t, err)

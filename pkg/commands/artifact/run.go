@@ -433,6 +433,10 @@ func disabledAnalyzers(opts flag.Options) []analyzer.Type {
 		analyzers = append(analyzers, analyzer.TypeLicenseFile)
 	}
 
+	if len(opts.SBOMSources) == 0 {
+		analyzers = append(analyzers, analyzer.TypeExecutable)
+	}
+
 	return analyzers
 }
 

@@ -35,7 +35,7 @@ func NewSummaryWriter(output io.Writer, requiredSevs []dbTypes.Severity, columnH
 	}
 }
 
-func ColumnHeading(securityChecks []string, availableColumns []string) []string {
+func ColumnHeading(securityChecks, components, availableColumns []string) []string {
 	columns := []string{NamespaceColumn, ResourceColumn}
 	securityOptions := make(map[string]interface{}, 0)
 	//maintain column order (vuln,config,secret)
@@ -44,7 +44,12 @@ func ColumnHeading(securityChecks []string, availableColumns []string) []string 
 		case types.SecurityCheckVulnerability:
 			securityOptions[VulnerabilitiesColumn] = nil
 		case types.SecurityCheckConfig:
-			securityOptions[MisconfigurationsColumn] = nil
+			if slices.Contains(components, workloadComponent) {
+				securityOptions[MisconfigurationsColumn] = nil
+			}
+			if slices.Contains(components, infraComponent) {
+				securityOptions[InfraAssessmentColumn] = nil
+			}
 		case types.SecurityCheckSecret:
 			securityOptions[SecretsColumn] = nil
 		case types.SecurityCheckRbac:
@@ -71,8 +76,8 @@ func (s SummaryWriter) Write(report Report) error {
 		return xerrors.Errorf("failed to write summary report: %w", err)
 	}
 
-	if _, err := fmt.Fprintf(s.Output, "Summary Report for %s\n", consolidated.ClusterName); err != nil {
-		return xerrors.Errorf("failed to write summary report: %w", err)
+	if _, err := fmt.Fprintln(s.Output, report.name); err != nil {
+		return xerrors.Errorf("failed to write summary report title: %w", err)
 	}
 
 	t := table.New(s.Output)
@@ -94,12 +99,17 @@ func (s SummaryWriter) Write(report Report) error {
 		if slices.Contains(s.ColumnsHeading, VulnerabilitiesColumn) {
 			rowParts = append(rowParts, s.generateSummary(vCount)...)
 		}
-		if slices.Contains(s.ColumnsHeading, MisconfigurationsColumn) || slices.Contains(s.ColumnsHeading, RbacAssessmentColumn) {
+
+		if slices.Contains(s.ColumnsHeading, MisconfigurationsColumn) ||
+			slices.Contains(s.ColumnsHeading, RbacAssessmentColumn) ||
+			slices.Contains(s.ColumnsHeading, InfraAssessmentColumn) {
 			rowParts = append(rowParts, s.generateSummary(mCount)...)
 		}
+
 		if slices.Contains(s.ColumnsHeading, SecretsColumn) {
 			rowParts = append(rowParts, s.generateSummary(sCount)...)
 		}
+
 		t.AddRow(rowParts...)
 	}
 

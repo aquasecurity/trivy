@@ -4,13 +4,15 @@ package serialize
 
 import (
 	json "encoding/json"
-	types2 "github.com/aquasecurity/trivy-db/pkg/types"
-	types1 "github.com/aquasecurity/trivy/pkg/fanal/types"
-	types "github.com/aquasecurity/trivy/pkg/types"
+	time "time"
+
 	easyjson "github.com/mailru/easyjson"
 	jlexer "github.com/mailru/easyjson/jlexer"
 	jwriter "github.com/mailru/easyjson/jwriter"
-	time "time"
+
+	types2 "github.com/aquasecurity/trivy-db/pkg/types"
+	types1 "github.com/aquasecurity/trivy/pkg/fanal/types"
+	types "github.com/aquasecurity/trivy/pkg/types"
 )
 
 // suppress unused package warning

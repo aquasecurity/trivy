@@ -38,7 +38,7 @@ const (
 var (
 	VulnTypes      = []string{VulnTypeOS, VulnTypeLibrary}
 	SecurityChecks = []string{
-		SecurityCheckVulnerability, SecurityCheckConfig,
-		SecurityCheckRbac, SecurityCheckSecret, SecurityCheckLicense,
+		SecurityCheckVulnerability, SecurityCheckConfig, SecurityCheckRbac,
+		SecurityCheckSecret, SecurityCheckLicense,
 	}
 )
