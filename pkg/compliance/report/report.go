@@ -133,7 +133,7 @@ func BuildComplianceReport(scanResults []types.Results, complianceSpec string) (
 	if err != nil {
 		return nil, err
 	}
-	// validate scanners types (vuln and config) supported
+	// validate scanners types (vuln and config) define in spec supported
 	err = spec.ValidateScanners(cs.Spec.Controls)
 	if err != nil {
 		return nil, err
