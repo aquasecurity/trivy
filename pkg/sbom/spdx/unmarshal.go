@@ -16,7 +16,7 @@ import (
 
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/purl"
-	"github.com/aquasecurity/trivy/pkg/sbom"
+	"github.com/aquasecurity/trivy/pkg/types"
 )
 
 var (
@@ -24,7 +24,7 @@ var (
 )
 
 type SPDX struct {
-	*sbom.SBOM
+	*types.SBOM
 }
 
 func NewTVDecoder(r io.Reader) *TVDecoder {

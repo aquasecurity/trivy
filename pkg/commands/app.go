@@ -111,6 +111,7 @@ func loadPluginCommands() []*cobra.Command {
 				}
 				return nil
 			},
+			DisableFlagParsing: true,
 		}
 		commands = append(commands, cmd)
 	}
@@ -741,7 +742,8 @@ func NewKubernetesCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 		"%s,%s,%s,%s",
 		types.SecurityCheckVulnerability,
 		types.SecurityCheckConfig,
-		types.SecurityCheckSecret, types.SecurityCheckRbac,
+		types.SecurityCheckSecret,
+		types.SecurityCheckRbac,
 	)
 	scanFlags.SecurityChecks = &securityChecks
 
@@ -760,7 +762,7 @@ func NewKubernetesCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:     "kubernetes [flags] { cluster | all | specific resources like kubectl. eg: pods, pod/NAME }",
 		Aliases: []string{"k8s"},
-		Short:   "scan kubernetes cluster",
+		Short:   "[EXPERIMENTAL] Scan kubernetes cluster",
 		Example: `  # cluster scanning
   $ trivy k8s --report summary cluster
 

@@ -75,6 +75,11 @@ const (
 	TypeConanLock Type = "conan-lock"
 
 	// ============
+	// Non-packaged
+	// ============
+	TypeExecutable Type = "executable"
+
+	// ============
 	// Image Config
 	// ============
 	TypeApkCommand Type = "apk-command"
