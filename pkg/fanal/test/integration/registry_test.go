@@ -12,6 +12,8 @@ import (
 	"path/filepath"
 	"testing"
 
+	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
+
 	"github.com/docker/docker/client"
 	"github.com/docker/go-connections/nat"
 	"github.com/stretchr/testify/assert"
@@ -202,7 +204,12 @@ func analyze(ctx context.Context, imageRef string, opt types.DockerOption) (*typ
 	}
 	defer cleanup()
 
-	ar, err := aimage.NewArtifact(img, c, artifact.Option{})
+	ar, err := aimage.NewArtifact(img, c, artifact.Option{
+		DisabledAnalyzers: []analyzer.Type{
+			analyzer.TypeExecutable,
+			analyzer.TypeLicenseFile,
+		},
+	})
 	if err != nil {
 		return nil, err
 	}

@@ -13,6 +13,8 @@ import (
 	"testing"
 	"time"
 
+	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
+
 	"github.com/containerd/containerd"
 	"github.com/containerd/containerd/namespaces"
 	v1 "github.com/google/go-containerregistry/pkg/v1"
@@ -422,7 +424,12 @@ func TestContainerd_LocalImage(t *testing.T) {
 			require.NoError(t, err)
 			defer cleanup()
 
-			ar, err := aimage.NewArtifact(img, c, artifact.Option{})
+			ar, err := aimage.NewArtifact(img, c, artifact.Option{
+				DisabledAnalyzers: []analyzer.Type{
+					analyzer.TypeExecutable,
+					analyzer.TypeLicenseFile,
+				},
+			})
 			require.NoError(t, err)
 
 			ref, err := ar.Inspect(ctx)
@@ -545,7 +552,12 @@ func TestContainerd_PullImage(t *testing.T) {
 			require.NoError(t, err)
 			defer cleanup()
 
-			art, err := aimage.NewArtifact(img, c, artifact.Option{})
+			art, err := aimage.NewArtifact(img, c, artifact.Option{
+				DisabledAnalyzers: []analyzer.Type{
+					analyzer.TypeExecutable,
+					analyzer.TypeLicenseFile,
+				},
+			})
 			require.NoError(t, err)
 			require.NotNil(t, art)
 

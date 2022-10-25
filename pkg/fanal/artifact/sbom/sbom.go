@@ -4,14 +4,12 @@ import (
 	"context"
 	"crypto/sha256"
 	"encoding/json"
-	"io"
 	"os"
 	"path/filepath"
 
 	digest "github.com/opencontainers/go-digest"
 	"golang.org/x/xerrors"
 
-	"github.com/aquasecurity/trivy/pkg/attestation"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/artifact"
 	"github.com/aquasecurity/trivy/pkg/fanal/cache"
@@ -19,8 +17,6 @@ import (
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/sbom"
-	"github.com/aquasecurity/trivy/pkg/sbom/cyclonedx"
-	"github.com/aquasecurity/trivy/pkg/sbom/spdx"
 )
 
 type Artifact struct {
@@ -54,12 +50,7 @@ func (a Artifact) Inspect(_ context.Context) (types.ArtifactReference, error) {
 	}
 	log.Logger.Infof("Detected SBOM format: %s", format)
 
-	// Rewind the SBOM file
-	if _, err = f.Seek(0, io.SeekStart); err != nil {
-		return types.ArtifactReference{}, xerrors.Errorf("seek error: %w", err)
-	}
-
-	bom, err := a.Decode(f, format)
+	bom, err := sbom.Decode(f, format)
 	if err != nil {
 		return types.ArtifactReference{}, xerrors.Errorf("SBOM decode error: %w", err)
 	}
@@ -98,48 +89,6 @@ func (a Artifact) Inspect(_ context.Context) (types.ArtifactReference, error) {
 		// Keep an original report
 		CycloneDX: bom.CycloneDX,
 	}, nil
-}
-
-func (a Artifact) Decode(f io.Reader, format sbom.Format) (sbom.SBOM, error) {
-	var (
-		v       interface{}
-		bom     sbom.SBOM
-		decoder interface{ Decode(any) error }
-	)
-
-	switch format {
-	case sbom.FormatCycloneDXJSON:
-		v = &cyclonedx.CycloneDX{SBOM: &bom}
-		decoder = json.NewDecoder(f)
-	case sbom.FormatAttestCycloneDXJSON:
-		// dsse envelope
-		//   => in-toto attestation
-		//     => cosign predicate
-		//       => CycloneDX JSON
-		v = &attestation.Statement{
-			Predicate: &attestation.CosignPredicate{
-				Data: &cyclonedx.CycloneDX{SBOM: &bom},
-			},
-		}
-		decoder = json.NewDecoder(f)
-	case sbom.FormatSPDXJSON:
-		v = &spdx.SPDX{SBOM: &bom}
-		decoder = json.NewDecoder(f)
-	case sbom.FormatSPDXTV:
-		v = &spdx.SPDX{SBOM: &bom}
-		decoder = spdx.NewTVDecoder(f)
-
-	default:
-		return sbom.SBOM{}, xerrors.Errorf("%s scanning is not yet supported", format)
-
-	}
-
-	// Decode a file content into sbom.SBOM
-	if err := decoder.Decode(v); err != nil {
-		return sbom.SBOM{}, xerrors.Errorf("failed to decode: %w", err)
-	}
-
-	return bom, nil
 }
 
 func (a Artifact) Clean(reference types.ArtifactReference) error {
