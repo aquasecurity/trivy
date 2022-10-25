@@ -18,15 +18,17 @@ func (jw JSONWriter) Write(report *ComplianceReport) error {
 	var output []byte
 	var err error
 
+	var v interface{}
 	switch jw.Report {
 	case allReport:
-		output, err = json.MarshalIndent(report, "", "  ")
+		v = report
 	case summaryReport:
-		output, err = json.MarshalIndent(BuildSummary(report), "", "  ")
+		v = BuildSummary(report)
 	default:
 		return xerrors.Errorf(`report %q not supported. Use "summary" or "all"`, jw.Report)
 	}
 
+	output, err = json.MarshalIndent(v, "", "  ")
 	if err != nil {
 		return xerrors.Errorf("failed to marshal json: %w", err)
 	}

@@ -11,12 +11,17 @@ import (
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/compliance/spec"
 	pkgReport "github.com/aquasecurity/trivy/pkg/report/table"
+	"github.com/aquasecurity/trivy/pkg/types"
 )
 
 func BuildSummary(cr *ComplianceReport) *SummaryReport {
-	ccma := make([]ControlCheckSummary, 0)
+	var ccma []ControlCheckSummary
 	for _, control := range cr.Results {
-		ccm := ControlCheckSummary{ControlCheckID: control.ControlCheckID, ControlName: control.ControlName, ControlSeverity: control.ControlSeverity}
+		ccm := ControlCheckSummary{
+			ID:       control.ID,
+			Name:     control.Name,
+			Severity: control.Severity,
+		}
 		if len(control.Results) == 0 { // this validation is mainly for vuln type
 			if control.DefaultStatus == spec.PassStatus {
 				ccm.TotalPass = 1
@@ -25,27 +30,23 @@ func BuildSummary(cr *ComplianceReport) *SummaryReport {
 			continue
 		}
 		for _, check := range control.Results {
-			for _, cr := range check.Misconfigurations {
-				if cr.CheckPass() {
+			for _, m := range check.Misconfigurations {
+				if m.Status == types.StatusPassed {
 					ccm.TotalPass++
 					continue
 				}
 				ccm.TotalFail++
 			}
-			for _, cr := range check.Vulnerabilities {
-				if cr.CheckPass() {
-					ccm.TotalPass++
-					continue
-				}
-				ccm.TotalFail++
-			}
+			// Detected vulnerabilities are always failure.
+			ccm.TotalFail += float32(len(check.Vulnerabilities))
 		}
 		ccma = append(ccma, ccm)
-
 	}
-	return &SummaryReport{ReportID: cr.ID,
-		ReportTitle:     cr.Title,
-		SummaryControls: ccma}
+	return &SummaryReport{
+		ID:              cr.ID,
+		Title:           cr.Title,
+		SummaryControls: ccma,
+	}
 }
 
 type SummaryWriter struct {
@@ -69,7 +70,6 @@ func NewSummaryWriter(output io.Writer, requiredSevs []dbTypes.Severity, columnH
 
 // Write writes the results in a summarized table format
 func (s SummaryWriter) Write(report *ComplianceReport) error {
-
 	if _, err := fmt.Fprintln(s.Output); err != nil {
 		return xerrors.Errorf("failed to write summary report: %w", err)
 	}
@@ -102,7 +102,7 @@ func (s SummaryWriter) Write(report *ComplianceReport) error {
 
 func (s SummaryWriter) generateSummary(summaryControls ControlCheckSummary) []string {
 	percentage := calculatePercentage(summaryControls.TotalFail, summaryControls.TotalPass)
-	return []string{summaryControls.ControlCheckID, summaryControls.ControlSeverity, summaryControls.ControlName, percentage}
+	return []string{summaryControls.ID, summaryControls.Severity, summaryControls.Name, percentage}
 }
 
 func calculatePercentage(totalFail float32, totalPass float32) string {

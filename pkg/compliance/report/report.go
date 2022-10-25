@@ -4,7 +4,6 @@ import (
 	"io"
 
 	"golang.org/x/xerrors"
-	"gopkg.in/yaml.v2"
 
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/compliance/spec"
@@ -29,37 +28,37 @@ type Option struct {
 
 // ComplianceReport represents a kubernetes scan report
 type ComplianceReport struct {
-	ID               string                `json:"id"`
-	Title            string                `json:"title"`
-	Description      string                `json:"description"`
-	Version          string                `json:"severity"`
-	RelatedResources []string              `json:"relatedResources"`
-	Results          []*ControlCheckResult `json:"results"`
+	ID               string
+	Title            string
+	Description      string
+	Version          string
+	RelatedResources []string
+	Results          []*ControlCheckResult
 }
 
 type ControlCheckResult struct {
-	ControlCheckID     string             `json:"id"`
-	ControlName        string             `json:"name"`
-	ControlDescription string             `json:"description"`
-	DefaultStatus      spec.ControlStatus `json:"defaultStatus,omitempty"`
-	ControlSeverity    string             `json:"severity"`
-	Results            types.Results      `json:"results"`
+	ID            string
+	Name          string
+	Description   string
+	DefaultStatus spec.ControlStatus `json:",omitempty"`
+	Severity      string
+	Results       types.Results
 }
 
-// ConsolidatedReport represents a kubernetes scan report with consolidated findings
+// SummaryReport represents a kubernetes scan report with consolidated findings
 type SummaryReport struct {
 	SchemaVersion   int `json:",omitempty"`
-	ReportID        string
-	ReportTitle     string
+	ID              string
+	Title           string
 	SummaryControls []ControlCheckSummary `json:",omitempty"`
 }
 
 type ControlCheckSummary struct {
-	ControlCheckID  string  `json:"id"`
-	ControlName     string  `json:"name"`
-	ControlSeverity string  `json:"severity"`
-	TotalPass       float32 `json:"totalPass"`
-	TotalFail       float32 `json:"totalFail"`
+	ID        string
+	Name      string
+	Severity  string
+	TotalPass float32
+	TotalFail float32
 }
 
 // Writer defines the result write operation
@@ -99,16 +98,18 @@ func (r ComplianceReport) empty() bool {
 func buildControlCheckResults(checksMap map[string]types.Results, controls []spec.Control) []*ControlCheckResult {
 	complianceResults := make([]*ControlCheckResult, 0)
 	for _, control := range controls {
-		cr := ControlCheckResult{}
-		cr.ControlName = control.Name
-		cr.ControlCheckID = control.ID
-		cr.ControlDescription = control.Description
-		cr.ControlSeverity = string(control.Severity)
-		cr.DefaultStatus = control.DefaultStatus
+		var results types.Results
 		for _, c := range control.Checks {
-			cr.Results = append(cr.Results, checksMap[c.ID]...)
+			results = append(results, checksMap[c.ID]...)
 		}
-		complianceResults = append(complianceResults, &cr)
+		complianceResults = append(complianceResults, &ControlCheckResult{
+			Name:          control.Name,
+			ID:            control.ID,
+			Description:   control.Description,
+			Severity:      string(control.Severity),
+			DefaultStatus: control.DefaultStatus,
+			Results:       results,
+		})
 	}
 	return complianceResults
 }
@@ -126,20 +127,9 @@ func buildComplianceReportResults(checksMap map[string]types.Results, spec spec.
 	}
 }
 
-func BuildComplianceReport(scanResults []types.Results, complianceSpec string) (*ComplianceReport, error) {
-	// load compliance spec
-	cs := spec.ComplianceSpec{}
-	err := yaml.Unmarshal([]byte(complianceSpec), &cs)
-	if err != nil {
-		return nil, err
-	}
-	// validate scanners types (vuln and config) define in spec supported
-	err = spec.ValidateScanners(cs.Spec.Controls)
-	if err != nil {
-		return nil, err
-	}
+func BuildComplianceReport(scanResults []types.Results, cs spec.ComplianceSpec) (*ComplianceReport, error) {
 	// aggregate checks by ID
-	aggregateChecksByID := spec.AggregateAllChecksBySpecID(scanResults, cs.Spec.Controls)
+	aggregateChecksByID := spec.AggregateAllChecksBySpecID(scanResults, cs)
 
 	// build compliance report results
 	return buildComplianceReportResults(aggregateChecksByID, cs.Spec), nil
