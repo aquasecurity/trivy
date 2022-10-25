@@ -83,8 +83,8 @@ func (r *runner) run(ctx context.Context, artifacts []*artifacts.Artifact) error
 	s := scanner.NewScanner(r.cluster, runner, r.flagOpts)
 	var complianceSpec string
 	// set scanners types by spec
-	if len(r.flagOpts.ScanOptions.Compliance) > 0 {
-		complianceSpec = sp.NewSpecLoader().GetSpecByName(r.flagOpts.ScanOptions.Compliance)
+	if len(r.flagOpts.ReportOptions.Compliance) > 0 {
+		complianceSpec = sp.NewSpecLoader().GetSpecByName(r.flagOpts.ReportOptions.Compliance)
 		scannerTypes, err := spec.GetScannerTypes(complianceSpec)
 		if err != nil {
 			return err
@@ -97,7 +97,7 @@ func (r *runner) run(ctx context.Context, artifacts []*artifacts.Artifact) error
 		return xerrors.Errorf("k8s scan error: %w", err)
 	}
 
-	if len(r.flagOpts.ScanOptions.Compliance) > 0 {
+	if len(r.flagOpts.ReportOptions.Compliance) > 0 {
 		scanResults := make([]types.Results, 0)
 
 		for _, rss := range rpt.Misconfigurations {

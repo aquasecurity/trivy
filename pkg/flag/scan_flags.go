@@ -32,12 +32,6 @@ var (
 		Value:      []string{types.SecurityCheckVulnerability, types.SecurityCheckSecret},
 		Usage:      "comma-separated list of what security issues to detect (vuln,config,secret,license)",
 	}
-	ComplianceFlag = Flag{
-		Name:       "compliance",
-		ConfigName: "scan.compliance",
-		Value:      "",
-		Usage:      "comma-separated list of what compliance reports to generate (nsa)",
-	}
 	FilePatternsFlag = Flag{
 		Name:       "file-patterns",
 		ConfigName: "scan.file-patterns",
@@ -75,7 +69,6 @@ type ScanOptions struct {
 	SkipFiles      []string
 	OfflineScan    bool
 	SecurityChecks []string
-	Compliance     string
 	FilePatterns   []string
 	SBOMSources    []string
 	RekorURL       string
@@ -111,10 +104,6 @@ func (f *ScanFlagGroup) ToOptions(args []string) (ScanOptions, error) {
 	if err != nil {
 		return ScanOptions{}, xerrors.Errorf("unable to parse security checks: %w", err)
 	}
-	complianceTypes, err := parseComplianceTypes(getString(f.Compliance))
-	if err != nil {
-		return ScanOptions{}, xerrors.Errorf("unable to parse compliance types: %w", err)
-	}
 
 	sbomSources := getStringSlice(f.SBOMSources)
 	if err = validateSBOMSources(sbomSources); err != nil {
@@ -127,7 +116,6 @@ func (f *ScanFlagGroup) ToOptions(args []string) (ScanOptions, error) {
 		SkipFiles:      getStringSlice(f.SkipFiles),
 		OfflineScan:    getBool(f.OfflineScan),
 		SecurityChecks: securityChecks,
-		Compliance:     complianceTypes,
 		FilePatterns:   getStringSlice(f.FilePatterns),
 		SBOMSources:    sbomSources,
 		RekorURL:       getString(f.RekorURL),
@@ -143,14 +131,6 @@ func parseSecurityCheck(securityCheck []string) ([]string, error) {
 		securityChecks = append(securityChecks, v)
 	}
 	return securityChecks, nil
-}
-
-func parseComplianceTypes(compliance interface{}) (string, error) {
-	complianceString, ok := compliance.(string)
-	if !ok || (len(complianceString) > 0 && !slices.Contains(types.Compliances, complianceString)) {
-		return "", xerrors.Errorf("unknown compliance : %v", compliance)
-	}
-	return complianceString, nil
 }
 
 func validateSBOMSources(sbomSources []string) error {
