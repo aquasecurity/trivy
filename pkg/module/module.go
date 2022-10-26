@@ -9,7 +9,6 @@ import (
 	"path/filepath"
 	"regexp"
 
-	"github.com/liamg/memoryfs"
 	"github.com/mailru/easyjson"
 	"github.com/samber/lo"
 	"github.com/tetratelabs/wazero"
@@ -18,6 +17,8 @@ import (
 	wasi "github.com/tetratelabs/wazero/imports/wasi_snapshot_preview1"
 	"golang.org/x/exp/slices"
 	"golang.org/x/xerrors"
+
+	"github.com/aquasecurity/memoryfs"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/log"
@@ -84,11 +85,8 @@ type Manager struct {
 func NewManager(ctx context.Context) (*Manager, error) {
 	m := &Manager{}
 
-	// WebAssembly 2.0 allows use of any version of TinyGo, including 0.24+.
-	c := wazero.NewRuntimeConfig().WithWasmCore2()
-
 	// Create a new WebAssembly Runtime.
-	m.runtime = wazero.NewRuntimeWithConfig(ctx, c)
+	m.runtime = wazero.NewRuntime(ctx)
 
 	// Load WASM modules in local
 	if err := m.loadModules(ctx); err != nil {
@@ -244,8 +242,7 @@ func newWASMPlugin(ctx context.Context, r wazero.Runtime, code []byte) (*wasmMod
 	ns := r.NewNamespace(ctx)
 
 	// Instantiate a Go-defined module named "env" that exports functions.
-	_, err := r.NewModuleBuilder("env").
-		ExportMemory("mem", 100).
+	_, err := r.NewHostModuleBuilder("env").
 		ExportFunctions(exportFunctions).
 		Instantiate(ctx, ns)
 	if err != nil {
@@ -257,7 +254,7 @@ func newWASMPlugin(ctx context.Context, r wazero.Runtime, code []byte) (*wasmMod
 	}
 
 	// Compile the WebAssembly module using the default configuration.
-	compiled, err := r.CompileModule(ctx, code, wazero.NewCompileConfig())
+	compiled, err := r.CompileModule(ctx, code)
 	if err != nil {
 		return nil, xerrors.Errorf("module compile error: %w", err)
 	}

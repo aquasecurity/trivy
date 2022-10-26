@@ -120,6 +120,19 @@ To run multiple Trivy servers, you need to use Redis as the cache backend so tha
 Follow [this instruction][redis-cache] to do so.
 
 
+### Problems with `/tmp` on remote Git repository scans
+
+!!! error
+    FATAL repository scan error: scan error: unable to initialize a scanner: unable to initialize a filesystem scanner: git clone error: write /tmp/fanal-remote...
+
+Trivy clones remote Git repositories under the `/tmp` directory before scanning them. If `/tmp` doesn't work for you, you can change it by setting the `TMPDIR` environment variable.
+
+Try:
+
+```
+$ TMPDIR=/my/custom/path trivy repo ...
+```
+
 ## Homebrew
 ### Scope error
 !!! error

@@ -18,8 +18,9 @@ type Repository struct {
 }
 
 type Layer struct {
-	Digest string `json:",omitempty"`
-	DiffID string `json:",omitempty"`
+	Digest    string `json:",omitempty"`
+	DiffID    string `json:",omitempty"`
+	CreatedBy string `json:",omitempty"`
 }
 
 type Package struct {
@@ -46,6 +47,14 @@ type Package struct {
 
 	// Each package metadata have the file path, while the package from lock files does not have.
 	FilePath string `json:",omitempty"`
+
+	// lines from the lock file where the dependency is written
+	Locations []Location `json:",omitempty"`
+}
+
+type Location struct {
+	StartLine int `json:",omitempty"`
+	EndLine   int `json:",omitempty"`
 }
 
 // BuildInfo represents information under /root/buildinfo in RHEL
@@ -95,6 +104,7 @@ const (
 	ArtifactFilesystem       ArtifactType = "filesystem"
 	ArtifactRemoteRepository ArtifactType = "repository"
 	ArtifactCycloneDX        ArtifactType = "cyclonedx"
+	ArtifactSPDX             ArtifactType = "spdx"
 	ArtifactAWSAccount       ArtifactType = "aws_account"
 )
 
@@ -132,9 +142,16 @@ type ArtifactInfo struct {
 
 // BlobInfo is stored in cache
 type BlobInfo struct {
-	SchemaVersion     int
-	Digest            string             `json:",omitempty"`
-	DiffID            string             `json:",omitempty"`
+	SchemaVersion int
+
+	// Layer information
+	Digest        string   `json:",omitempty"`
+	DiffID        string   `json:",omitempty"`
+	CreatedBy     string   `json:",omitempty"`
+	OpaqueDirs    []string `json:",omitempty"`
+	WhiteoutFiles []string `json:",omitempty"`
+
+	// Analysis result
 	OS                *OS                `json:",omitempty"`
 	Repository        *Repository        `json:",omitempty"`
 	PackageInfos      []PackageInfo      `json:",omitempty"`
@@ -142,8 +159,6 @@ type BlobInfo struct {
 	Misconfigurations []Misconfiguration `json:",omitempty"`
 	Secrets           []Secret           `json:",omitempty"`
 	Licenses          []LicenseFile      `json:",omitempty"`
-	OpaqueDirs        []string           `json:",omitempty"`
-	WhiteoutFiles     []string           `json:",omitempty"`
 
 	// Red Hat distributions have build info per layer.
 	// This information will be embedded into packages when applying layers.
@@ -195,8 +210,9 @@ type ArtifactDetail struct {
 // ToBlobInfo is used to store a merged layer in cache.
 func (a *ArtifactDetail) ToBlobInfo() BlobInfo {
 	return BlobInfo{
-		OS:         a.OS,
-		Repository: a.Repository,
+		SchemaVersion: BlobJSONSchemaVersion,
+		OS:            a.OS,
+		Repository:    a.Repository,
 		PackageInfos: []PackageInfo{
 			{
 				FilePath: "merged", // Set a dummy file path

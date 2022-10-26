@@ -12,14 +12,14 @@ import (
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/report"
 	"github.com/aquasecurity/trivy/pkg/result"
+	"github.com/aquasecurity/trivy/pkg/types"
 )
 
-// e.g. config yaml
-// report:
-//   format: table
-//   dependency-tree: true
-//   exit-code: 1
-//   severity: HIGH,CRITICAL
+// e.g. config yaml:
+//
+//	format: table
+//	dependency-tree: true
+//	severity: HIGH,CRITICAL
 var (
 	FormatFlag = Flag{
 		Name:       "format",
@@ -85,6 +85,12 @@ var (
 		Value:      strings.Join(dbTypes.SeverityNames, ","),
 		Usage:      "severities of security issues to be displayed (comma separated)",
 	}
+	ComplianceFlag = Flag{
+		Name:       "compliance",
+		ConfigName: "scan.compliance",
+		Value:      "",
+		Usage:      "comma-separated list of what compliance reports to generate (nsa)",
+	}
 )
 
 // ReportFlagGroup composes common printer flag structs
@@ -100,6 +106,7 @@ type ReportFlagGroup struct {
 	ExitCode       *Flag
 	Output         *Flag
 	Severity       *Flag
+	Compliance     *Flag
 }
 
 type ReportOptions struct {
@@ -113,6 +120,7 @@ type ReportOptions struct {
 	IgnorePolicy   string
 	Output         io.Writer
 	Severities     []dbTypes.Severity
+	Compliance     string
 }
 
 func NewReportFlagGroup() *ReportFlagGroup {
@@ -127,6 +135,7 @@ func NewReportFlagGroup() *ReportFlagGroup {
 		ExitCode:       &ExitCodeFlag,
 		Output:         &OutputFlag,
 		Severity:       &SeverityFlag,
+		Compliance:     &ComplianceFlag,
 	}
 }
 
@@ -136,7 +145,7 @@ func (f *ReportFlagGroup) Name() string {
 
 func (f *ReportFlagGroup) Flags() []*Flag {
 	return []*Flag{f.Format, f.ReportFormat, f.Template, f.DependencyTree, f.ListAllPkgs, f.IgnoreFile,
-		f.IgnorePolicy, f.ExitCode, f.Output, f.Severity}
+		f.IgnorePolicy, f.ExitCode, f.Output, f.Severity, f.Compliance}
 }
 
 func (f *ReportFlagGroup) ToOptions(out io.Writer) (ReportOptions, error) {
@@ -184,6 +193,11 @@ func (f *ReportFlagGroup) ToOptions(out io.Writer) (ReportOptions, error) {
 		}
 	}
 
+	complianceTypes, err := parseComplianceTypes(getString(f.Compliance))
+	if err != nil {
+		return ReportOptions{}, xerrors.Errorf("unable to parse compliance types: %w", err)
+	}
+
 	return ReportOptions{
 		Format:         format,
 		ReportFormat:   getString(f.ReportFormat),
@@ -195,7 +209,16 @@ func (f *ReportFlagGroup) ToOptions(out io.Writer) (ReportOptions, error) {
 		IgnorePolicy:   getString(f.IgnorePolicy),
 		Output:         out,
 		Severities:     splitSeverity(getStringSlice(f.Severity)),
+		Compliance:     complianceTypes,
 	}, nil
+}
+
+func parseComplianceTypes(compliance interface{}) (string, error) {
+	complianceString, ok := compliance.(string)
+	if !ok || (len(complianceString) > 0 && !slices.Contains(types.Compliances, complianceString)) {
+		return "", xerrors.Errorf("unknown compliance : %v", compliance)
+	}
+	return complianceString, nil
 }
 
 func (f *ReportFlagGroup) forceListAllPkgs(format string, listAllPkgs, dependencyTree bool) bool {

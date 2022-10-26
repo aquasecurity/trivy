@@ -67,7 +67,7 @@ func TestReportWriter_Sarif(t *testing.T) {
 				{
 					ID:               "CVE-2020-0001",
 					Name:             toPtr("OsPackageVulnerability"),
-					ShortDescription: &sarif.MultiformatMessageString{Text: toPtr("CVE-2020-0001")},
+					ShortDescription: &sarif.MultiformatMessageString{Text: toPtr("foobar")},
 					FullDescription:  &sarif.MultiformatMessageString{Text: toPtr("baz")},
 					DefaultConfiguration: &sarif.ReportingConfiguration{
 						Level: "error",
@@ -96,6 +96,7 @@ func TestReportWriter_Sarif(t *testing.T) {
 					Message:   sarif.Message{Text: toPtr("Package: foo\nInstalled Version: 1.2.3\nVulnerability CVE-2020-0001\nSeverity: HIGH\nFixed Version: 3.4.5\nLink: [CVE-2020-0001](https://avd.aquasec.com/nvd/cve-2020-0001)")},
 					Locations: []*sarif.Location{
 						{
+							Message: &sarif.Message{Text: toPtr("library/test: foo@1.2.3")},
 							PhysicalLocation: &sarif.PhysicalLocation{
 								ArtifactLocation: &sarif.ArtifactLocation{
 									URI:       toPtr("library/test"),
@@ -149,6 +150,7 @@ func TestReportWriter_Sarif(t *testing.T) {
 					Message:   sarif.Message{Text: toPtr("Artifact: library/test\nType: \nVulnerability KSV001\nSeverity: HIGH\nMessage: Message\nLink: [KSV001](https://avd.aquasec.com/appshield/ksv001)")},
 					Locations: []*sarif.Location{
 						{
+							Message: &sarif.Message{Text: toPtr("library/test")},
 							PhysicalLocation: &sarif.PhysicalLocation{
 								ArtifactLocation: &sarif.ArtifactLocation{
 									URI:       toPtr("library/test"),
@@ -171,6 +173,7 @@ func TestReportWriter_Sarif(t *testing.T) {
 					Message:   sarif.Message{Text: toPtr("Artifact: library/test\nType: \nVulnerability KSV002\nSeverity: CRITICAL\nMessage: Message\nLink: [KSV002](https://avd.aquasec.com/appshield/ksv002)")},
 					Locations: []*sarif.Location{
 						{
+							Message: &sarif.Message{Text: toPtr("library/test")},
 							PhysicalLocation: &sarif.PhysicalLocation{
 								ArtifactLocation: &sarif.ArtifactLocation{
 									URI:       toPtr("library/test"),
@@ -191,7 +194,7 @@ func TestReportWriter_Sarif(t *testing.T) {
 				{
 					ID:               "KSV001",
 					Name:             toPtr("Misconfiguration"),
-					ShortDescription: &sarif.MultiformatMessageString{Text: toPtr("KSV001")},
+					ShortDescription: &sarif.MultiformatMessageString{Text: toPtr("Image tag &#39;:latest&#39; used")},
 					FullDescription:  &sarif.MultiformatMessageString{Text: toPtr("")},
 					DefaultConfiguration: &sarif.ReportingConfiguration{
 						Level: "error",
@@ -214,7 +217,7 @@ func TestReportWriter_Sarif(t *testing.T) {
 				{
 					ID:               "KSV002",
 					Name:             toPtr("Misconfiguration"),
-					ShortDescription: &sarif.MultiformatMessageString{Text: toPtr("KSV002")},
+					ShortDescription: &sarif.MultiformatMessageString{Text: toPtr("SYS_ADMIN capability added")},
 					FullDescription:  &sarif.MultiformatMessageString{Text: toPtr("")},
 					DefaultConfiguration: &sarif.ReportingConfiguration{
 						Level: "error",
@@ -263,6 +266,7 @@ func TestReportWriter_Sarif(t *testing.T) {
 					Message:   sarif.Message{Text: toPtr("Artifact: library/test\nType: \nSecret AWS Secret Access Key\nSeverity: CRITICAL\nMatch: 'AWS_secret_KEY'=\"****************************************\"")},
 					Locations: []*sarif.Location{
 						{
+							Message: &sarif.Message{Text: toPtr("library/test")},
 							PhysicalLocation: &sarif.PhysicalLocation{
 								ArtifactLocation: &sarif.ArtifactLocation{
 									URI:       toPtr("library/test"),
@@ -283,7 +287,7 @@ func TestReportWriter_Sarif(t *testing.T) {
 				{
 					ID:               "aws-secret-access-key",
 					Name:             toPtr("Secret"),
-					ShortDescription: &sarif.MultiformatMessageString{Text: toPtr("aws-secret-access-key")},
+					ShortDescription: &sarif.MultiformatMessageString{Text: toPtr("AWS Secret Access Key")},
 					FullDescription:  &sarif.MultiformatMessageString{Text: toPtr("\u0026#39;AWS_secret_KEY\u0026#39;=\u0026#34;****************************************\u0026#34;")},
 					DefaultConfiguration: &sarif.ReportingConfiguration{
 						Level: "error",

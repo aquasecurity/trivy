@@ -10,8 +10,7 @@ on:
       - 'LICENSE'
   pull_request:
 env:
-  GO_VERSION: "1.18"
-  TINYGO_VERSION: "0.24.0"
+  TINYGO_VERSION: "0.25.0"
 jobs:
   test:
     name: Test
@@ -22,7 +21,7 @@ jobs:
       - name: Set up Go
         uses: actions/setup-go@v3
         with:
-          go-version: ${{ env.GO_VERSION }}
+          go-version-file: go.mod
 
       - name: go mod tidy
         run: |
@@ -35,7 +34,7 @@ jobs:
       - name: Lint
         uses: golangci/golangci-lint-action@v3.2.0
         with:
-          version: v1.45
+          version: v1.49
           args: --deadline=30m
           skip-cache: true # https://github.com/golangci/golangci-lint-action/issues/244#issuecomment-1052197778
 
@@ -51,35 +50,33 @@ jobs:
     name: Integration Test
     runs-on: ubuntu-latest
     steps:
-    - name: Set up Go
-      uses: actions/setup-go@v3
-      with:
-        go-version: ${{ env.GO_VERSION }}
-      id: go
+      - name: Check out code into the Go module directory
+        uses: actions/checkout@v3
 
-    - name: Check out code into the Go module directory
-      uses: actions/checkout@v3
+      - name: Set up Go
+        uses: actions/setup-go@v3
+        with:
+          go-version-file: go.mod
 
-    - name: Run integration tests
-      run: make test-integration
+      - name: Run integration tests
+        run: make test-integration
 
   module-test:
     name: Module Integration Test
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
       - name: Set up Go
         uses: actions/setup-go@v3
         with:
-          go-version: ${{ env.GO_VERSION }}
-        id: go
+          go-version-file: go.mod
 
       - name: Install TinyGo
         run: |
           wget https://github.com/tinygo-org/tinygo/releases/download/v${TINYGO_VERSION}/tinygo_${TINYGO_VERSION}_amd64.deb
           sudo dpkg -i tinygo_${TINYGO_VERSION}_amd64.deb
-
-      - name: Checkout
-        uses: actions/checkout@v3
 
       - name: Run module integration tests
         run: |
@@ -107,7 +104,7 @@ jobs:
     - name: Set up Go
       uses: actions/setup-go@v3
       with:
-        go-version: ${{ env.GO_VERSION }}
+        go-version-file: go.mod
 
     - name: Run GoReleaser
       uses: goreleaser/goreleaser-action@v3

@@ -15,11 +15,12 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	dtypes "github.com/docker/docker/api/types"
 	"github.com/docker/docker/client"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+
+	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 
 	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/all"
 	"github.com/aquasecurity/trivy/pkg/fanal/applier"
@@ -129,7 +130,10 @@ func TestFanal_Library_DockerLessMode(t *testing.T) {
 
 			// don't scan licenses in the test - in parallel it will fail
 			ar, err := aimage.NewArtifact(img, c, artifact.Option{
-				DisabledAnalyzers: []analyzer.Type{analyzer.TypeLicenseFile},
+				DisabledAnalyzers: []analyzer.Type{
+					analyzer.TypeExecutable,
+					analyzer.TypeLicenseFile,
+				},
 			})
 			require.NoError(t, err)
 
@@ -175,7 +179,10 @@ func TestFanal_Library_DockerMode(t *testing.T) {
 
 			ar, err := aimage.NewArtifact(img, c, artifact.Option{
 				// disable license checking in the test - in parallel it will fail because of resource requirement
-				DisabledAnalyzers: []analyzer.Type{analyzer.TypeLicenseFile},
+				DisabledAnalyzers: []analyzer.Type{
+					analyzer.TypeExecutable,
+					analyzer.TypeLicenseFile,
+				},
 			})
 			require.NoError(t, err)
 
@@ -211,7 +218,10 @@ func TestFanal_Library_TarMode(t *testing.T) {
 			require.NoError(t, err, tt.name)
 
 			ar, err := aimage.NewArtifact(img, c, artifact.Option{
-				DisabledAnalyzers: []analyzer.Type{analyzer.TypeLicenseFile},
+				DisabledAnalyzers: []analyzer.Type{
+					analyzer.TypeExecutable,
+					analyzer.TypeLicenseFile,
+				},
 			})
 			require.NoError(t, err)
 
@@ -241,6 +251,14 @@ func commonChecks(t *testing.T, detail types.ArtifactDetail, tc testCase) {
 }
 
 func checkOSPackages(t *testing.T, detail types.ArtifactDetail, tc testCase) {
+	// Sort OS packages for consistency
+	sort.Slice(detail.Packages, func(i, j int) bool {
+		if detail.Packages[i].Name != detail.Packages[j].Name {
+			return detail.Packages[i].Name < detail.Packages[j].Name
+		}
+		return detail.Packages[i].Version < detail.Packages[j].Version
+	})
+
 	splitted := strings.Split(tc.remoteImageName, ":")
 	goldenFile := fmt.Sprintf("testdata/goldens/packages/%s.json.golden", splitted[len(splitted)-1])
 

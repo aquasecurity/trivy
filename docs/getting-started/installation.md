@@ -1,4 +1,4 @@
-# Installation
+# CLI Installation
 
 ## RHEL/CentOS
 
@@ -46,19 +46,11 @@
 
 ## Arch Linux
 
-Package trivy-bin can be installed from the Arch User Repository.
+Package trivy can be installed from the Arch Community Package Manager.
 
-=== "pikaur"
-
-    ``` bash
-    pikaur -Sy trivy-bin
-    ```
-
-=== "yay"
-
-    ``` bash
-    yay -Sy trivy-bin
-    ```
+```bash
+pacman -S trivy
+```
 
 ## Homebrew
 
@@ -118,7 +110,7 @@ curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/inst
 
 ## Binary
 
-Download the archive file for your operating system/architecture from [here](https://github.com/aquasecurity/trivy/releases/tag/{{ git.tag }}). 
+Download the archive file for your operating system/architecture from [here](https://github.com/aquasecurity/trivy/releases/tag/{{ git.tag }}).
 Unpack the archive, and put the binary somewhere in your `$PATH` (on UNIX-y systems, /usr/local/bin or the like).
 Make sure it has execution bits turned on.
 
@@ -154,14 +146,14 @@ Example:
 === "macOS"
 
     ``` bash
-    docker run --rm -v $HOME/Library/Caches:/root/.cache/ aquasec/trivy:{{ git.tag[1:] }} image [YOUR_IMAGE_NAME
+    docker run --rm -v $HOME/Library/Caches:/root/.cache/ aquasec/trivy:{{ git.tag[1:] }} image [YOUR_IMAGE_NAME]
     ```
 
 If you would like to scan the image on your host machine, you need to mount `docker.sock`.
 
 ```bash
 docker run --rm -v /var/run/docker.sock:/var/run/docker.sock \
-    -v $HOME/Library/Caches:/root/.cache/ aquasec/trivy:{{ git.tag[1:] }} python:3.4-alpine
+    -v $HOME/Library/Caches:/root/.cache/ aquasec/trivy:{{ git.tag[1:] }} image python:3.4-alpine
 ```
 
 Please re-pull latest `aquasec/trivy` if an error occurred.
@@ -203,28 +195,6 @@ The same image is hosted on [Amazon ECR Public][ecr] as well.
 docker pull public.ecr.aws/aquasecurity/trivy:{{ git.tag[1:] }}
 ```
 
-## Helm
-
-### Installing from the Aqua Chart Repository
-
-```
-helm repo add aquasecurity https://aquasecurity.github.io/helm-charts/
-helm repo update
-helm search repo trivy
-helm install my-trivy aquasecurity/trivy
-```
-
-### Installing the Chart
-
-To install the chart with the release name `my-release`:
-
-```
-helm install my-release .
-```
-
-The command deploys Trivy on the Kubernetes cluster in the default configuration. The [Parameters][helm]
-section lists the parameters that can be configured during installation.
-
 ### AWS private registry permissions
 
 You may need to grant permissions to allow trivy to pull images from private registry (AWS ECR).
@@ -258,6 +228,37 @@ podAnnotations: {}
 
 > **Tip**: List all releases using `helm list`.
 
+## Other Tools to use and deploy Trivy
+
+For additional tools and ways to install and use Trivy in different envrionments such as in Docker Desktop and Kubernetes clusters, see the links in the [Ecosystem section](../ecosystem/tools.md).
+
+
 [ecr]: https://gallery.ecr.aws/aquasecurity/trivy
 [registry]: https://github.com/orgs/aquasecurity/packages/container/package/trivy
 [helm]: https://github.com/aquasecurity/trivy/tree/{{ git.tag }}/helm/trivy
+[slack]: https://slack.aquasec.com
+[operator-docs]: https://aquasecurity.github.io/trivy-operator/latest/
+
+[vuln]: ./docs/vulnerability/scanning/index.md
+[misconf]: ./docs/misconfiguration/scanning.md
+[kubernetesoperator]: ./docs/kubernetes/operator/index.md
+[container]: ./docs/vulnerability/scanning/image.md
+[rootfs]: ./docs/vulnerability/scanning/rootfs.md
+[filesystem]: ./docs/vulnerability/scanning/filesystem.md
+[repo]: ./docs/vulnerability/scanning/git-repository.md
+[kubernetes]: ./docs/kubernetes/cli/scanning.md
+
+[standalone]: ./docs/references/modes/standalone.md
+[client-server]: ./docs/references/modes/client-server.md
+[integrations]: ./tutorials/integrations/index.md
+
+[os]: ./docs/vulnerability/detection/os.md
+[lang]: ./docs/vulnerability/detection/language.md
+[builtin]: ./docs/misconfiguration/policy/builtin.md
+[quickstart]: ./getting-started/quickstart.md
+[podman]: ./docs/advanced/container/podman.md
+
+[sbom]: ./docs/sbom/index.md
+
+[oci]: https://github.com/opencontainers/image-spec
+[license]:  https://github.com/aquasecurity/trivy/blob/main/LICENSE

@@ -160,15 +160,15 @@ func (a rpmPkgAnalyzer) parsePkgInfo(rc io.Reader) ([]types.Package, []string, e
 	return pkgs, installedFiles, nil
 }
 
-// splitFileName returns a name, version, release, epoch, arch
-// e.g.
-//    foo-1.0-1.i386.rpm returns foo, 1.0, 1, i386
-//    1:bar-9-123a.ia64.rpm returns bar, 9, 123a, 1, ia64
+// splitFileName returns a name, version, release, epoch, arch:
+//
+//	e.g.
+//		foo-1.0-1.i386.rpm => foo, 1.0, 1, i386
+//		1:bar-9-123a.ia64.rpm => bar, 9, 123a, 1, ia64
+//
 // https://github.com/rpm-software-management/yum/blob/043e869b08126c1b24e392f809c9f6871344c60d/rpmUtils/miscutils.py#L301
 func splitFileName(filename string) (name, ver, rel string, err error) {
-	if strings.HasSuffix(filename, ".rpm") {
-		filename = filename[:len(filename)-4]
-	}
+	filename = strings.TrimSuffix(filename, ".rpm")
 
 	archIndex := strings.LastIndex(filename, ".")
 	if archIndex == -1 {

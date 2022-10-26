@@ -12,12 +12,6 @@ import (
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
-	"github.com/aquasecurity/trivy/pkg/fanal/artifact"
-	image2 "github.com/aquasecurity/trivy/pkg/fanal/artifact/image"
-	"github.com/aquasecurity/trivy/pkg/fanal/cache"
-	"github.com/aquasecurity/trivy/pkg/fanal/image"
-	"github.com/aquasecurity/trivy/pkg/fanal/types"
-
 	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/command/apk"
 	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/config/all"
 	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/language/php/composer"
@@ -29,8 +23,13 @@ import (
 	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/pkg/dpkg"
 	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/repo/apk"
 	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/secret"
+	"github.com/aquasecurity/trivy/pkg/fanal/artifact"
+	image2 "github.com/aquasecurity/trivy/pkg/fanal/artifact/image"
+	"github.com/aquasecurity/trivy/pkg/fanal/cache"
 	_ "github.com/aquasecurity/trivy/pkg/fanal/handler/misconf"
 	_ "github.com/aquasecurity/trivy/pkg/fanal/handler/sysfile"
+	"github.com/aquasecurity/trivy/pkg/fanal/image"
+	"github.com/aquasecurity/trivy/pkg/fanal/types"
 )
 
 func TestArtifact_Inspect(t *testing.T) {
@@ -65,6 +64,7 @@ func TestArtifact_Inspect(t *testing.T) {
 							SchemaVersion: types.BlobJSONSchemaVersion,
 							Digest:        "",
 							DiffID:        "sha256:beee9f30bc1f711043e78d4a2be0668955d4b761d587d6f60c2c8dc081efb203",
+							CreatedBy:     "ADD file:0c4555f363c2672e350001f1293e689875a3760afe7b3f9146886afe67121cba in / ",
 							OS: &types.OS{
 								Family: "alpine",
 								Name:   "3.11.5",
@@ -275,6 +275,7 @@ func TestArtifact_Inspect(t *testing.T) {
 							SchemaVersion: types.BlobJSONSchemaVersion,
 							Digest:        "",
 							DiffID:        "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
+							CreatedBy:     "bazel build ...",
 							OS: &types.OS{
 								Family: "debian",
 								Name:   "9.9",
@@ -342,6 +343,7 @@ func TestArtifact_Inspect(t *testing.T) {
 							SchemaVersion: types.BlobJSONSchemaVersion,
 							Digest:        "",
 							DiffID:        "sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5",
+							CreatedBy:     "bazel build ...",
 							PackageInfos: []types.PackageInfo{
 								{
 									FilePath: "var/lib/dpkg/status.d/libc6",
@@ -408,6 +410,7 @@ func TestArtifact_Inspect(t *testing.T) {
 							SchemaVersion: types.BlobJSONSchemaVersion,
 							Digest:        "",
 							DiffID:        "sha256:24df0d4e20c0f42d3703bf1f1db2bdd77346c7956f74f423603d651e8e5ae8a7",
+							CreatedBy:     "COPY file:842584685f26edb24dc305d76894f51cfda2bad0c24a05e727f9d4905d184a70 in /php-app/composer.lock ",
 							Applications: []types.Application{
 								{
 									Type: "composer", FilePath: "php-app/composer.lock",
@@ -440,6 +443,7 @@ func TestArtifact_Inspect(t *testing.T) {
 							SchemaVersion: types.BlobJSONSchemaVersion,
 							Digest:        "",
 							DiffID:        "sha256:a4595c43a874856bf95f3bfc4fbf78bbaa04c92c726276d4f64193a47ced0566",
+							CreatedBy:     "COPY file:c6d0373d380252b91829a5bb3c81d5b1afa574c91cef7752d18170a231c31f6d in /ruby-app/Gemfile.lock ",
 							Applications: []types.Application{
 								{
 									Type: types.Bundler, FilePath: "ruby-app/Gemfile.lock",
@@ -625,6 +629,7 @@ func TestArtifact_Inspect(t *testing.T) {
 							SchemaVersion: types.BlobJSONSchemaVersion,
 							Digest:        "",
 							DiffID:        "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
+							CreatedBy:     "bazel build ...",
 						},
 					},
 				},
@@ -635,6 +640,7 @@ func TestArtifact_Inspect(t *testing.T) {
 							SchemaVersion: types.BlobJSONSchemaVersion,
 							Digest:        "",
 							DiffID:        "sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5",
+							CreatedBy:     "bazel build ...",
 						},
 					},
 				},
@@ -645,6 +651,7 @@ func TestArtifact_Inspect(t *testing.T) {
 							SchemaVersion: types.BlobJSONSchemaVersion,
 							Digest:        "",
 							DiffID:        "sha256:24df0d4e20c0f42d3703bf1f1db2bdd77346c7956f74f423603d651e8e5ae8a7",
+							CreatedBy:     "COPY file:842584685f26edb24dc305d76894f51cfda2bad0c24a05e727f9d4905d184a70 in /php-app/composer.lock ",
 							OpaqueDirs:    []string{"php-app/"},
 						},
 					},
@@ -656,6 +663,7 @@ func TestArtifact_Inspect(t *testing.T) {
 							SchemaVersion: types.BlobJSONSchemaVersion,
 							Digest:        "",
 							DiffID:        "sha256:a4595c43a874856bf95f3bfc4fbf78bbaa04c92c726276d4f64193a47ced0566",
+							CreatedBy:     "COPY file:c6d0373d380252b91829a5bb3c81d5b1afa574c91cef7752d18170a231c31f6d in /ruby-app/Gemfile.lock ",
 							OpaqueDirs:    []string{"ruby-app/"},
 						},
 					},
@@ -780,6 +788,7 @@ func TestArtifact_Inspect(t *testing.T) {
 							SchemaVersion: types.BlobJSONSchemaVersion,
 							Digest:        "",
 							DiffID:        "sha256:beee9f30bc1f711043e78d4a2be0668955d4b761d587d6f60c2c8dc081efb203",
+							CreatedBy:     "ADD file:0c4555f363c2672e350001f1293e689875a3760afe7b3f9146886afe67121cba in / ",
 							OS: &types.OS{
 								Family: "alpine",
 								Name:   "3.11.5",
@@ -911,6 +920,7 @@ func TestArtifact_Inspect(t *testing.T) {
 							SchemaVersion: types.BlobJSONSchemaVersion,
 							Digest:        "",
 							DiffID:        "sha256:beee9f30bc1f711043e78d4a2be0668955d4b761d587d6f60c2c8dc081efb203",
+							CreatedBy:     "ADD file:0c4555f363c2672e350001f1293e689875a3760afe7b3f9146886afe67121cba in / ",
 							OS: &types.OS{
 								Family: "alpine",
 								Name:   "3.11.5",

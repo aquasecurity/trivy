@@ -48,6 +48,7 @@ You can use Cosign to sign without keys by authenticating with an OpenID Connect
 ```bash
 # The cyclonedx type is supported in Cosign v1.10.0 or later.
 $ trivy image --format cyclonedx -o sbom.cdx.json <IMAGE>
+# The following command uploads SBOM attestation to the public Rekor instance.
 $ COSIGN_EXPERIMENTAL=1 cosign attest --type cyclonedx --predicate sbom.cdx.json <IMAGE>
 ```
 
@@ -60,7 +61,9 @@ $ COSIGN_EXPERIMENTAL=1 cosign verify-attestation --type cyclonedx <IMAGE>
 
 Trivy can take an SBOM attestation as input and scan for vulnerabilities. Currently, Trivy supports CycloneDX-type attestation.
 
-In the following example, Cosign can get an CycloneDX-type attestation and trivy scan it. You must create CycloneDX-type attestation before trying the example. To learn more about how to create an CycloneDX-Type attestation and attach it to an image, see the [Sign with a local key pair](#sign-with-a-local-key-pair) section.
+In the following example, Cosign can get an CycloneDX-type attestation and trivy scan it.
+You must create CycloneDX-type attestation before trying the example.
+To learn more about how to create an CycloneDX-Type attestation and attach it to an image, see the [Sign with a local key pair](#sign-with-a-local-key-pair) section.
 
 ```bash
 $ cosign verify-attestation --key /path/to/cosign.pub --type cyclonedx <IMAGE> > sbom.cdx.intoto.jsonl

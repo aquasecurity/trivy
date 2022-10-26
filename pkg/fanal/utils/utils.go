@@ -3,8 +3,12 @@ package utils
 import (
 	"bufio"
 	"fmt"
+	"io"
+	"math"
 	"os"
 	"os/exec"
+
+	dio "github.com/aquasecurity/go-dep-parser/pkg/io"
 )
 
 var (
@@ -57,9 +61,29 @@ func IsExecutable(fileInfo os.FileInfo) bool {
 		return false
 	}
 
-	// Check executable file
+	// Check unpackaged file
 	if mode.Perm()&0111 != 0 {
 		return true
 	}
 	return false
+}
+
+func IsBinary(content dio.ReadSeekerAt, fileSize int64) (bool, error) {
+	headSize := int(math.Min(float64(fileSize), 300))
+	head := make([]byte, headSize)
+	if _, err := content.Read(head); err != nil {
+		return false, err
+	}
+	if _, err := content.Seek(0, io.SeekStart); err != nil {
+		return false, err
+	}
+
+	// cf. https://github.com/file/file/blob/f2a6e7cb7db9b5fd86100403df6b2f830c7f22ba/src/encoding.c#L151-L228
+	for _, b := range head {
+		if b < 7 || b == 11 || (13 < b && b < 27) || (27 < b && b < 0x20) || b == 0x7f {
+			return true, nil
+		}
+	}
+
+	return false, nil
 }

@@ -3,6 +3,7 @@ package artifact
 import (
 	"context"
 	"errors"
+	"fmt"
 	"os"
 
 	"github.com/hashicorp/go-multierror"
@@ -432,6 +433,10 @@ func disabledAnalyzers(opts flag.Options) []analyzer.Type {
 		analyzers = append(analyzers, analyzer.TypeLicenseFile)
 	}
 
+	if len(opts.SBOMSources) == 0 {
+		analyzers = append(analyzers, analyzer.TypeExecutable)
+	}
+
 	return analyzers
 }
 
@@ -445,6 +450,7 @@ func initScannerConfig(opts flag.Options, cacheClient cache.Cache) (ScannerConfi
 		VulnType:            opts.VulnType,
 		SecurityChecks:      opts.SecurityChecks,
 		ScanRemovedPackages: opts.ScanRemovedPkgs, // this is valid only for 'image' subcommand
+		Platform:            opts.Platform,        // this is valid only for 'image' subcommand
 		ListAllPackages:     opts.ListAllPkgs,
 		LicenseCategories:   opts.LicenseCategories,
 		FilePatterns:        opts.FilePatterns,
@@ -510,6 +516,9 @@ func initScannerConfig(opts flag.Options, cacheClient cache.Cache) (ScannerConfi
 			RepoBranch:        opts.RepoBranch,
 			RepoCommit:        opts.RepoCommit,
 			RepoTag:           opts.RepoTag,
+			SBOMSources:       opts.SBOMSources,
+			RekorURL:          opts.RekorURL,
+			Platform:          opts.Platform,
 
 			// For misconfiguration scanning
 			MisconfScannerOption: configScannerOptions,
@@ -562,7 +571,6 @@ func canonicalVersion(ver string) string {
 	if v.IsPreRelease() || v.Metadata() != "" {
 		return devVersion
 	}
-
-	// Add "v" prefix, "0.34.0" => "v0.34.0" for the url
-	return "v" + ver
+	// Add "v" prefix and cut a patch number, "0.34.0" => "v0.34" for the url
+	return fmt.Sprintf("v%d.%d", v.Major(), v.Minor())
 }

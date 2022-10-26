@@ -2,14 +2,13 @@ package report
 
 import (
 	"context"
-	"fmt"
 	"os"
 	"sort"
 	"time"
 
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 
-	"github.com/liamg/tml"
+	"github.com/aquasecurity/tml"
 
 	"github.com/aquasecurity/trivy/pkg/flag"
 
@@ -84,7 +83,7 @@ func Write(rep *Report, opt flag.Options, fromCache bool) error {
 				return err
 			}
 			sort.Slice(resCopy.Misconfigurations, func(i, j int) bool {
-				return resCopy.Misconfigurations[i].CauseMetadata.Resource < resCopy.Misconfigurations[i].CauseMetadata.Resource
+				return resCopy.Misconfigurations[i].CauseMetadata.Resource < resCopy.Misconfigurations[j].CauseMetadata.Resource
 			})
 			filtered = append(filtered, resCopy)
 		}
@@ -144,32 +143,4 @@ func Write(rep *Report, opt flag.Options, fromCache bool) error {
 			Trace:              opt.Trace,
 		})
 	}
-}
-
-func (r *Report) GetResultsForService(service string) (*ResultsAtTime, error) {
-	if set, ok := r.Results[service]; ok {
-		return &set, nil
-	}
-	for _, scoped := range r.ServicesInScope {
-		if scoped == service {
-			return &ResultsAtTime{
-				Results:      nil,
-				CreationTime: time.Now(),
-			}, nil
-		}
-	}
-	return nil, fmt.Errorf("service %q not found", service)
-}
-
-func (r *Report) AddResultsForService(service string, results types.Results, creation time.Time) {
-	r.Results[service] = ResultsAtTime{
-		Results:      results,
-		CreationTime: creation,
-	}
-	for _, exists := range r.ServicesInScope {
-		if exists == service {
-			return
-		}
-	}
-	r.ServicesInScope = append(r.ServicesInScope, service)
 }

@@ -6,19 +6,18 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/aquasecurity/trivy/pkg/log"
-
 	cdx "github.com/CycloneDX/cyclonedx-go"
 	"github.com/samber/lo"
 	"golang.org/x/xerrors"
 
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
+	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/purl"
-	"github.com/aquasecurity/trivy/pkg/sbom"
+	"github.com/aquasecurity/trivy/pkg/types"
 )
 
 type CycloneDX struct {
-	*sbom.SBOM
+	*types.SBOM
 
 	dependencies map[string][]string
 	components   map[string]cdx.Component
@@ -27,7 +26,7 @@ type CycloneDX struct {
 func (c *CycloneDX) UnmarshalJSON(b []byte) error {
 	log.Logger.Debug("Unmarshaling CycloneDX JSON...")
 	if c.SBOM == nil {
-		c.SBOM = &sbom.SBOM{}
+		c.SBOM = &types.SBOM{}
 	}
 	bom := cdx.NewBOM()
 	decoder := cdx.NewBOMDecoder(bytes.NewReader(b), cdx.BOMFileFormatJSON)
@@ -155,17 +154,16 @@ func parsePkgs(components []cdx.Component, seen map[string]struct{}) ([]ftypes.P
 }
 
 // walkDependencies takes all nested dependencies of the root component.
-//
-// e.g. Library A, B, C, D and E will be returned as dependencies of Application 1.
-// type: Application 1
-//   - type: Library A
-//     - type: Library B
-//   - type: Application 2
-//     - type: Library C
-//     - type: Application 3
-//       - type: Library D
-//       - type: Library E
 func (c *CycloneDX) walkDependencies(rootRef string) []cdx.Component {
+	// e.g. Library A, B, C, D and E will be returned as dependencies of Application 1.
+	// type: Application 1
+	//   - type: Library A
+	//     - type: Library B
+	//   - type: Application 2
+	//     - type: Library C
+	//     - type: Application 3
+	//       - type: Library D
+	//       - type: Library E
 	var components []cdx.Component
 	for _, dep := range c.dependencies[rootRef] {
 		component, ok := c.components[dep]

@@ -23,6 +23,9 @@ type Option struct {
 	RepoBranch        string
 	RepoCommit        string
 	RepoTag           string
+	SBOMSources       []string
+	RekorURL          string
+	Platform          string
 
 	MisconfScannerOption misconf.ScannerOption
 	SecretScannerOption  analyzer.SecretScannerOption

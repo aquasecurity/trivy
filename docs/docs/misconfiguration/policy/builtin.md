@@ -11,6 +11,7 @@ Those policies are managed under [defsec repository][defsec].
 | Dockerfile, Containerfile | [defsec][docker]     |
 | Terraform                 | [defsec][defsec]     |
 | CloudFormation            | [defsec][defsec]     |
+| Azure ARM Template        | [defsec][defsec]     |
 | Helm Chart                | [defsec][kubernetes] |      
 | RBAC                      | [defsec][rbac]       |      
 

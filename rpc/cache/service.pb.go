@@ -7,13 +7,15 @@
 package cache
 
 import (
-	common "github.com/aquasecurity/trivy/rpc/common"
+	reflect "reflect"
+	sync "sync"
+
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	emptypb "google.golang.org/protobuf/types/known/emptypb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
-	reflect "reflect"
-	sync "sync"
+
+	common "github.com/aquasecurity/trivy/rpc/common"
 )
 
 const (
