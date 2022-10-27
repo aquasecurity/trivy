@@ -303,7 +303,7 @@ func Test_image_emptyLayer(t *testing.T) {
 			history: dimage.HistoryResponseItem{
 				CreatedBy: "/bin/sh -c #(nop)  WORKDIR /app",
 			},
-			want: false,
+			want: true,
 		},
 		{
 			name: "without command",
