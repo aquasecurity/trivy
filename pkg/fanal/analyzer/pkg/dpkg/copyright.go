@@ -3,6 +3,7 @@ package dpkg
 import (
 	"bufio"
 	"context"
+	"io"
 	"os"
 	"path/filepath"
 	"regexp"
@@ -40,18 +41,17 @@ func (a dpkgLicenseAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisI
 	}
 
 	// If licenses are not found, fallback to the classifier
-	// TODO: enable only with "--license-full"
-	//if len(findings) == 0 {
-	//	// Rewind the reader to the beginning of the stream after saving
-	//	if _, err = input.Content.Seek(0, io.SeekStart); err != nil {
-	//		return nil, xerrors.Errorf("seek error: %w", err)
-	//	}
-	//
-	//	findings, err = licensing.Classify(input.Content)
-	//	if err != nil {
-	//		return nil, xerrors.Errorf("license classification error: %w", err)
-	//	}
-	//}
+	if len(findings) == 0 {
+		// Rewind the reader to the beginning of the stream after saving
+		if _, err = input.Content.Seek(0, io.SeekStart); err != nil {
+			return nil, xerrors.Errorf("seek error: %w", err)
+		}
+
+		findings, err = licensing.Classify(input.Content)
+		if err != nil {
+			return nil, xerrors.Errorf("license classification error: %w", err)
+		}
+	}
 
 	if len(findings) == 0 {
 		return nil, nil
