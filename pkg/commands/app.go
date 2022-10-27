@@ -478,7 +478,7 @@ func NewClientCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 			}
 			return artifact.Run(cmd.Context(), options, artifact.TargetContainerImage)
 		},
-		SilenceErrors: false,
+		SilenceErrors: true,
 		SilenceUsage:  true,
 	}
 	cmd.SetFlagErrorFunc(flagErrorFunc)
