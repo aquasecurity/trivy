@@ -16,7 +16,7 @@ type FS struct {
 
 func NewFS(skipFiles, skipDirs []string) FS {
 	return FS{
-		walker: newWalker(skipFiles, skipDirs),
+		walker: newWalker(skipFiles, skipDirs, false),
 	}
 }
 
