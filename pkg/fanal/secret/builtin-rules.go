@@ -274,7 +274,7 @@ var builtinRules = []Rule{
 		Category:        CategoryAlibaba,
 		Title:           "Alibaba AccessKey ID",
 		Severity:        "HIGH",
-		Regex:           MustCompile(`([^0-9^a-z]|^)(?P<secret>(LTAI)(?i)[a-z0-9]{20})([^0-9^a-z]|$)`),
+		Regex:           MustCompile(`([^0-9a-z]|^)(?P<secret>(LTAI)(?i)[a-z0-9]{20})([^0-9a-z]|$)`),
 		SecretGroupName: "secret",
 		Keywords:        []string{"LTAI"},
 	},
