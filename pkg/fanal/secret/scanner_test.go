@@ -494,6 +494,37 @@ func TestSecretScanner(t *testing.T) {
 			},
 		},
 	}
+	wantFindingAlibabaAccessKeyId := types.SecretFinding{
+		RuleID:    "alibaba-access-key-id",
+		Category:  secret.CategoryAlibaba,
+		Title:     "Alibaba AccessKey ID",
+		Severity:  "HIGH",
+		StartLine: 2,
+		EndLine:   2,
+		Match:     "key = ************************,",
+		Code: types.Code{
+			Lines: []types.Line{
+				{
+					Number:      1,
+					Content:     "key : LTAI1234567890ABCDEFG123asd",
+					Highlighted: "key : LTAI1234567890ABCDEFG123asd",
+				},
+				{
+					Number:      2,
+					Content:     "key = ************************,",
+					Highlighted: "key = ************************,",
+					IsCause:     true,
+					FirstCause:  true,
+					LastCause:   true,
+				},
+				{
+					Number:      3,
+					Content:     "asdLTAI1234567890ABCDEFG123",
+					Highlighted: "asdLTAI1234567890ABCDEFG123",
+				},
+			},
+		},
+	}
 
 	tests := []struct {
 		name          string
@@ -525,6 +556,14 @@ func TestSecretScanner(t *testing.T) {
 			want: types.Secret{
 				FilePath: "testdata/asymmetric-private-secret.txt",
 				Findings: []types.SecretFinding{wantFindingAsymmetricPrivateKey},
+			},
+		},
+		{
+			name:          "find Alibaba AccessKey ID txt",
+			inputFilePath: "testdata/alibaba-access-key-id.txt",
+			want: types.Secret{
+				FilePath: "testdata/alibaba-access-key-id.txt",
+				Findings: []types.SecretFinding{wantFindingAlibabaAccessKeyId},
 			},
 		},
 		{
