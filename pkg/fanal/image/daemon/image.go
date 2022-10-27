@@ -241,7 +241,7 @@ func emptyLayer(history dimage.HistoryResponseItem) bool {
 		strings.HasPrefix(createdBy, "STOPSIGNAL") ||
 		strings.HasPrefix(createdBy, "SHELL") ||
 		strings.HasPrefix(createdBy, "ARG") ||
-		createdBy == "WORKDIR /" { // only when workdir == "/" then layer is empty
+		strings.HasPrefix(createdBy, "WORKDIR") {
 		return true
 	}
 	// commands here: 'ADD', COPY, RUN and WORKDIR != "/"
