@@ -167,12 +167,9 @@ func TestContainerd_SearchLocalStoreByNameOrDigest(t *testing.T) {
 		},
 	}
 
-	digestTests := []testInstance{}
-	_ = digestTests
-
-	ctx := namespaces.WithNamespace(context.Background(), "default")
-
-	tmpDir, socketPath := configureTestDataPaths(t)
+	namespace := "default"
+	ctx := namespaces.WithNamespace(context.Background(), namespace)
+	tmpDir, socketPath := configureTestDataPaths(t, namespace)
 	defer os.RemoveAll(tmpDir)
 
 	containerdC := startContainerd(t, ctx, tmpDir)
