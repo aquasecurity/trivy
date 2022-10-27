@@ -218,7 +218,10 @@ func (a Artifact) inspect(ctx context.Context, missingImage string, layerKeys, b
 		}
 
 		go func(ctx context.Context, layerKey string) {
-			defer limit.Release(1)
+			defer func() {
+				limit.Release(1)
+				done <- struct{}{}
+			}()
 
 			layer := layerKeyMap[layerKey]
 
@@ -240,7 +243,6 @@ func (a Artifact) inspect(ctx context.Context, missingImage string, layerKeys, b
 			if layerInfo.OS != nil {
 				osFound = *layerInfo.OS
 			}
-			done <- struct{}{}
 		}(ctx, k)
 	}
 
