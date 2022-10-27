@@ -9,9 +9,12 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"runtime"
 	"strings"
 	"testing"
 	"time"
+
+	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 
 	"github.com/containerd/containerd"
 	"github.com/containerd/containerd/namespaces"
@@ -383,6 +386,11 @@ func TestContainerd_LocalImage(t *testing.T) {
 			},
 		},
 	}
+	// Each architecture needs different images and test cases.
+	// Currently only amd64 architecture is supported
+	if runtime.GOARCH != "amd64" {
+		t.Skip("'Containerd' test only supports amd64 architecture")
+	}
 	ctx := namespaces.WithNamespace(context.Background(), "default")
 
 	tmpDir, socketPath := configureTestDataPaths(t)
@@ -422,7 +430,12 @@ func TestContainerd_LocalImage(t *testing.T) {
 			require.NoError(t, err)
 			defer cleanup()
 
-			ar, err := aimage.NewArtifact(img, c, artifact.Option{})
+			ar, err := aimage.NewArtifact(img, c, artifact.Option{
+				DisabledAnalyzers: []analyzer.Type{
+					analyzer.TypeExecutable,
+					analyzer.TypeLicenseFile,
+				},
+			})
 			require.NoError(t, err)
 
 			ref, err := ar.Inspect(ctx)
@@ -514,6 +527,12 @@ func TestContainerd_PullImage(t *testing.T) {
 		},
 	}
 
+	// Each architecture needs different images and test cases.
+	// Currently only amd64 architecture is supported
+	if runtime.GOARCH != "amd64" {
+		t.Skip("'Containerd' test only supports amd64 architecture")
+	}
+
 	ctx := namespaces.WithNamespace(context.Background(), "default")
 
 	tmpDir, socketPath := configureTestDataPaths(t)
@@ -545,7 +564,12 @@ func TestContainerd_PullImage(t *testing.T) {
 			require.NoError(t, err)
 			defer cleanup()
 
-			art, err := aimage.NewArtifact(img, c, artifact.Option{})
+			art, err := aimage.NewArtifact(img, c, artifact.Option{
+				DisabledAnalyzers: []analyzer.Type{
+					analyzer.TypeExecutable,
+					analyzer.TypeLicenseFile,
+				},
+			})
 			require.NoError(t, err)
 			require.NotNil(t, art)
 

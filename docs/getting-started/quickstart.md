@@ -51,7 +51,7 @@ For more details, see [vulnerability][vulnerability] and [secret][secret] pages.
 
 ## Scan directory for misconfigurations
 
-Simply specify a directory containing IaC files such as Terraform and Dockerfile.
+Simply specify a directory containing IaC files such as Terraform, CloudFormation, Azure ARM templates, Helm and Dockerfile.
 
 ```
 $ trivy config [YOUR_IAC_DIR]

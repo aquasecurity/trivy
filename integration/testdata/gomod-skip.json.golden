@@ -1,0 +1,133 @@
+{
+  "SchemaVersion": 2,
+  "ArtifactName": "testdata/fixtures/fs/gomod",
+  "ArtifactType": "filesystem",
+  "Metadata": {
+    "ImageConfig": {
+      "architecture": "",
+      "created": "0001-01-01T00:00:00Z",
+      "os": "",
+      "rootfs": {
+        "type": "",
+        "diff_ids": null
+      },
+      "config": {}
+    }
+  },
+  "Results": [
+    {
+      "Target": "go.mod",
+      "Class": "lang-pkgs",
+      "Type": "gomod",
+      "Vulnerabilities": [
+        {
+          "VulnerabilityID": "GMS-2022-20",
+          "PkgName": "github.com/docker/distribution",
+          "InstalledVersion": "2.7.1+incompatible",
+          "FixedVersion": "v2.8.0",
+          "Layer": {},
+          "DataSource": {
+            "ID": "glad",
+            "Name": "GitLab Advisory Database Community",
+            "URL": "https://gitlab.com/gitlab-org/advisories-community"
+          },
+          "Title": "OCI Manifest Type Confusion Issue",
+          "Description": "### Impact\n\nSystems that rely on digest equivalence for image attestations may be vulnerable to type confusion.",
+          "Severity": "UNKNOWN",
+          "References": [
+            "https://github.com/advisories/GHSA-qq97-vm5h-rrhg",
+            "https://github.com/distribution/distribution/commit/b59a6f827947f9e0e67df0cfb571046de4733586",
+            "https://github.com/distribution/distribution/security/advisories/GHSA-qq97-vm5h-rrhg",
+            "https://github.com/opencontainers/image-spec/pull/411"
+          ]
+        },
+        {
+          "VulnerabilityID": "CVE-2022-23628",
+          "PkgName": "github.com/open-policy-agent/opa",
+          "InstalledVersion": "0.35.0",
+          "FixedVersion": "0.37.0",
+          "Layer": {},
+          "SeveritySource": "nvd",
+          "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2022-23628",
+          "DataSource": {
+            "ID": "glad",
+            "Name": "GitLab Advisory Database Community",
+            "URL": "https://gitlab.com/gitlab-org/advisories-community"
+          },
+          "Title": "Incorrect Calculation",
+          "Description": "OPA is an open source, general-purpose policy engine. Under certain conditions, pretty-printing an abstract syntax tree (AST) that contains synthetic nodes could change the logic of some statements by reordering array literals. Example of policies impacted are those that parse and compare web paths. **All of these** three conditions have to be met to create an adverse effect: 1. An AST of Rego had to be **created programmatically** such that it ends up containing terms without a location (such as wildcard variables). 2. The AST had to be **pretty-printed** using the `github.com/open-policy-agent/opa/format` package. 3. The result of the pretty-printing had to be **parsed and evaluated again** via an OPA instance using the bundles, or the Golang packages. If any of these three conditions are not met, you are not affected. Notably, all three would be true if using **optimized bundles**, i.e. bundles created with `opa build -O=1` or higher. In that case, the optimizer would fulfil condition (1.), the result of that would be pretty-printed when writing the bundle to disk, fulfilling (2.). When the bundle was then used, we'd satisfy (3.). As a workaround users may disable optimization when creating bundles.",
+          "Severity": "MEDIUM",
+          "CweIDs": [
+            "CWE-682"
+          ],
+          "CVSS": {
+            "nvd": {
+              "V2Vector": "AV:N/AC:M/Au:N/C:N/I:P/A:N",
+              "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:L/A:N",
+              "V2Score": 4.3,
+              "V3Score": 5.3
+            }
+          },
+          "References": [
+            "https://github.com/advisories/GHSA-hcw3-j74m-qc58",
+            "https://github.com/open-policy-agent/opa/commit/932e4ffc37a590ace79e9b75ca4340288c220239",
+            "https://github.com/open-policy-agent/opa/commit/bfd984ddf93ef2c4963a08d4fdadae0bcf1a3717",
+            "https://github.com/open-policy-agent/opa/pull/3851",
+            "https://github.com/open-policy-agent/opa/security/advisories/GHSA-hcw3-j74m-qc58",
+            "https://nvd.nist.gov/vuln/detail/CVE-2022-23628"
+          ],
+          "PublishedDate": "2022-02-09T22:15:00Z",
+          "LastModifiedDate": "2022-02-17T02:37:00Z"
+        },
+        {
+          "VulnerabilityID": "CVE-2021-38561",
+          "PkgName": "golang.org/x/text",
+          "InstalledVersion": "0.3.6",
+          "FixedVersion": "0.3.7",
+          "Layer": {},
+          "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2021-38561",
+          "DataSource": {
+            "ID": "go-vulndb",
+            "Name": "The Go Vulnerability Database",
+            "URL": "https://github.com/golang/vulndb"
+          },
+          "Description": "Due to improper index calculation, an incorrectly formatted language tag can cause Parse\nto panic via an out of bounds read. If Parse is used to process untrusted user inputs,\nthis may be used as a vector for a denial of service attack.\n",
+          "Severity": "UNKNOWN",
+          "References": [
+            "https://go-review.googlesource.com/c/text/+/340830",
+            "https://go.googlesource.com/text/+/383b2e75a7a4198c42f8f87833eefb772868a56f",
+            "https://pkg.go.dev/vuln/GO-2021-0113"
+          ]
+        }
+      ]
+    },
+    {
+      "Target": "submod/go.mod",
+      "Class": "lang-pkgs",
+      "Type": "gomod",
+      "Vulnerabilities": [
+        {
+          "VulnerabilityID": "GMS-2022-20",
+          "PkgName": "github.com/docker/distribution",
+          "InstalledVersion": "2.7.1+incompatible",
+          "FixedVersion": "v2.8.0",
+          "Layer": {},
+          "DataSource": {
+            "ID": "glad",
+            "Name": "GitLab Advisory Database Community",
+            "URL": "https://gitlab.com/gitlab-org/advisories-community"
+          },
+          "Title": "OCI Manifest Type Confusion Issue",
+          "Description": "### Impact\n\nSystems that rely on digest equivalence for image attestations may be vulnerable to type confusion.",
+          "Severity": "UNKNOWN",
+          "References": [
+            "https://github.com/advisories/GHSA-qq97-vm5h-rrhg",
+            "https://github.com/distribution/distribution/commit/b59a6f827947f9e0e67df0cfb571046de4733586",
+            "https://github.com/distribution/distribution/security/advisories/GHSA-qq97-vm5h-rrhg",
+            "https://github.com/opencontainers/image-spec/pull/411"
+          ]
+        }
+      ]
+    }
+  ]
+}

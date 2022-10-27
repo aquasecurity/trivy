@@ -175,6 +175,30 @@ Total: 24 (CRITICAL: 24)
 +---------------------------------------------+------------------+----------+-------------------+--------------------------------+---------------------------------------+
 </details>
 
+## Remote scan of root filesystem
+Also, there is a way to scan root file system:
+```shell
+$ trivy rootfs --server http://localhost:8080 --severity CRITICAL /tmp/rootfs
+```
+**Note**: It's important to specify the protocol (http or https).
+<details>
+<summary>Result</summary>
+/tmp/rootfs (alpine 3.10.2)
+
+Total: 1 (CRITICAL: 1)
+
+┌───────────┬────────────────┬──────────┬───────────────────┬───────────────┬─────────────────────────────────────────────────────────────┐
+│  Library  │ Vulnerability  │ Severity │ Installed Version │ Fixed Version │                            Title                            │
+├───────────┼────────────────┼──────────┼───────────────────┼───────────────┼─────────────────────────────────────────────────────────────┤
+│ apk-tools │ CVE-2021-36159 │ CRITICAL │ 2.10.4-r2         │ 2.10.7-r0     │ libfetch before 2021-07-26, as used in apk-tools, xbps, and │
+│           │                │          │                   │               │ other products, mishandles...                               │
+│           │                │          │                   │               │ https://avd.aquasec.com/nvd/cve-2021-36159                  │
+└───────────┴────────────────┴──────────┴───────────────────┴───────────────┴─────────────────────────────────────────────────────────────┘
+
+</details>
+
+
+
 ## Authentication
 
 ```

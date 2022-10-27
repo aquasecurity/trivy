@@ -25,6 +25,14 @@ func tryRemote(ctx context.Context, imageName string, ref name.Reference, option
 		remoteOpts = append(remoteOpts, remote.WithTransport(t))
 	}
 
+	if option.Platform != "" {
+		s, err := v1.ParsePlatform(option.Platform)
+		if err != nil {
+			return nil, err
+		}
+		remoteOpts = append(remoteOpts, remote.WithPlatform(*s))
+	}
+
 	domain := ref.Context().RegistryStr()
 	auth := token.GetToken(ctx, domain, option)
 

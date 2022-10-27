@@ -5,6 +5,8 @@ import (
 	"strings"
 	"time"
 
+	"github.com/aws/aws-sdk-go-v2/aws/arn"
+
 	"github.com/aquasecurity/defsec/pkg/scan"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/types"
@@ -14,14 +16,22 @@ func convertResults(results scan.Results, provider string, scoped []string) map[
 	convertedResults := make(map[string]ResultsAtTime)
 	resultsByServiceAndARN := make(map[string]map[string]scan.Results)
 	for _, result := range results {
-		existingService, ok := resultsByServiceAndARN[result.Rule().Service]
+
+		service := result.Rule().Service
+		resource := result.Flatten().Resource
+		if service == "" || service == "general" {
+			if parsed, err := arn.Parse(resource); err == nil {
+				service = parsed.Service
+			}
+		}
+
+		existingService, ok := resultsByServiceAndARN[service]
 		if !ok {
 			existingService = make(map[string]scan.Results)
 		}
-		resource := result.Flatten().Resource
 
 		existingService[resource] = append(existingService[resource], result)
-		resultsByServiceAndARN[result.Rule().Service] = existingService
+		resultsByServiceAndARN[service] = existingService
 	}
 	// ensure we have entries for all scoped services, even if there are no results
 	for _, service := range scoped {
@@ -77,7 +87,7 @@ func convertResults(results scan.Results, provider string, scoped []string) map[
 					CauseMetadata: ftypes.CauseMetadata{
 						Resource:  flat.Resource,
 						Provider:  string(flat.RuleProvider),
-						Service:   flat.RuleService,
+						Service:   service,
 						StartLine: flat.Location.StartLine,
 						EndLine:   flat.Location.EndLine,
 					},

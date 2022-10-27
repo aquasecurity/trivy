@@ -5,18 +5,20 @@ import (
 	"errors"
 
 	"github.com/spf13/viper"
-
-	"github.com/aquasecurity/trivy/pkg/flag"
-
 	"golang.org/x/xerrors"
+	"gopkg.in/yaml.v3"
 
+	sp "github.com/aquasecurity/defsec/pkg/spec"
+	"github.com/aquasecurity/trivy-kubernetes/pkg/artifacts"
+	"github.com/aquasecurity/trivy-kubernetes/pkg/k8s"
 	cmd "github.com/aquasecurity/trivy/pkg/commands/artifact"
+	cr "github.com/aquasecurity/trivy/pkg/compliance/report"
+	"github.com/aquasecurity/trivy/pkg/compliance/spec"
+	"github.com/aquasecurity/trivy/pkg/flag"
 	"github.com/aquasecurity/trivy/pkg/k8s/report"
 	"github.com/aquasecurity/trivy/pkg/k8s/scanner"
 	"github.com/aquasecurity/trivy/pkg/log"
-
-	"github.com/aquasecurity/trivy-kubernetes/pkg/artifacts"
-	"github.com/aquasecurity/trivy-kubernetes/pkg/k8s"
+	"github.com/aquasecurity/trivy/pkg/types"
 )
 
 const (
@@ -44,8 +46,17 @@ func Run(ctx context.Context, args []string, opts flag.Options) error {
 	}
 }
 
-func run(ctx context.Context, opts flag.Options, cluster string, artifacts []*artifacts.Artifact, showEmpty bool) error {
-	ctx, cancel := context.WithTimeout(ctx, opts.Timeout)
+type runner struct {
+	flagOpts flag.Options
+	cluster  string
+}
+
+func newRunner(flagOpts flag.Options, cluster string) *runner {
+	return &runner{flagOpts, cluster}
+}
+
+func (r *runner) run(ctx context.Context, artifacts []*artifacts.Artifact) error {
+	ctx, cancel := context.WithTimeout(ctx, r.flagOpts.Timeout)
 	defer cancel()
 
 	var err error
@@ -55,7 +66,7 @@ func run(ctx context.Context, opts flag.Options, cluster string, artifacts []*ar
 		}
 	}()
 
-	runner, err := cmd.NewRunner(ctx, opts)
+	runner, err := cmd.NewRunner(ctx, r.flagOpts)
 	if err != nil {
 		if errors.Is(err, cmd.SkipScan) {
 			return nil
@@ -68,23 +79,58 @@ func run(ctx context.Context, opts flag.Options, cluster string, artifacts []*ar
 		}
 	}()
 
-	s := scanner.NewScanner(cluster, runner, opts)
+	s := scanner.NewScanner(r.cluster, runner, r.flagOpts)
 
-	r, err := s.Scan(ctx, artifacts)
+	var complianceSpec spec.ComplianceSpec
+	// set scanners types by spec
+	if r.flagOpts.ReportOptions.Compliance != "" {
+		cs := sp.NewSpecLoader().GetSpecByName(r.flagOpts.ReportOptions.Compliance)
+		if err = yaml.Unmarshal([]byte(cs), &complianceSpec); err != nil {
+			return xerrors.Errorf("yaml unmarshal error: %w", err)
+		}
+
+		securityChecks, err := complianceSpec.SecurityChecks()
+		if err != nil {
+			return xerrors.Errorf("security check error: %w", err)
+		}
+		r.flagOpts.ScanOptions.SecurityChecks = securityChecks
+	}
+
+	rpt, err := s.Scan(ctx, artifacts)
 	if err != nil {
 		return xerrors.Errorf("k8s scan error: %w", err)
 	}
 
-	if err := report.Write(r, report.Option{
-		Format:     opts.Format,
-		Report:     opts.ReportFormat,
-		Output:     opts.Output,
-		Severities: opts.Severities,
-	}, opts.ScanOptions.SecurityChecks, showEmpty); err != nil {
+	if len(r.flagOpts.ReportOptions.Compliance) > 0 {
+		var scanResults []types.Results
+		for _, rss := range rpt.Vulnerabilities {
+			scanResults = append(scanResults, rss.Results)
+		}
+		for _, rss := range rpt.Misconfigurations {
+			scanResults = append(scanResults, rss.Results)
+		}
+		complianceReport, err := cr.BuildComplianceReport(scanResults, complianceSpec)
+		if err != nil {
+			return xerrors.Errorf("compliance report build error: %w", err)
+		}
+		return cr.Write(complianceReport, cr.Option{
+			Format: r.flagOpts.Format,
+			Report: r.flagOpts.ReportFormat,
+			Output: r.flagOpts.Output})
+	}
+
+	if err := report.Write(rpt, report.Option{
+		Format:         r.flagOpts.Format,
+		Report:         r.flagOpts.ReportFormat,
+		Output:         r.flagOpts.Output,
+		Severities:     r.flagOpts.Severities,
+		Components:     r.flagOpts.Components,
+		SecurityChecks: r.flagOpts.ScanOptions.SecurityChecks,
+	}); err != nil {
 		return xerrors.Errorf("unable to write results: %w", err)
 	}
 
-	cmd.Exit(opts, r.Failed())
+	cmd.Exit(r.flagOpts, rpt.Failed())
 
 	return nil
 }

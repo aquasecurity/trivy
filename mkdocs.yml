@@ -23,6 +23,7 @@ nav:
           - AWS CodePipeline: tutorials/integrations/aws-codepipeline.md
           - AWS Security Hub: tutorials/integrations/aws-security-hub.md
           - Azure: tutorials/integrations/azure-devops.md
+          - Woodpecker CI: docs/integrations/woodpecker-ci.md
       - Signing:
           - Vulnerability Scan Record Attestation: tutorials/signing/vuln-attestation.md
       - Kubernetes:
@@ -87,8 +88,11 @@ nav:
       - Kubernetes:
           - CLI:
               - Scanning: docs/kubernetes/cli/scanning.md
+              - Compliance: docs/kubernetes/cli/compliance.md
           - Operator:
               - Overview: docs/kubernetes/operator/index.md
+      - Compliance:
+          - Reports:  docs/compliance/compliance.md
       - Cloud:
           - AWS: docs/cloud/aws/scanning.md
       - SBOM:

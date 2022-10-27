@@ -105,6 +105,27 @@
       ]
     },
     {
+      "bom-ref": "pkg:gradle/com.example/example@0.0.1",
+      "type": "library",
+      "name": "com.example:example",
+      "version": "0.0.1",
+      "purl": "pkg:gradle/com.example/example@0.0.1",
+      "properties": [
+        {
+          "name": "aquasecurity:trivy:FilePath",
+          "value": "app/gradle/target/gradle.lockfile"
+        },
+        {
+          "name": "aquasecurity:trivy:LayerDiffID",
+          "value": "sha256:3c79e832b1b4891a1cb4a326ef8524e0bd14a2537150ac0e203a5677176c1ca1"
+        },
+        {
+          "name": "aquasecurity:trivy:PkgType",
+          "value": "gradle"
+        }
+      ]
+    },
+    {
       "bom-ref": "pkg:npm/bootstrap@5.0.2?file_path=app%2Fapp%2Fpackage.json",
       "type": "library",
       "name": "bootstrap",
@@ -225,6 +246,7 @@
       "dependsOn": [
         "60e9f57b-d4a6-4f71-ad14-0893ac609182",
         "pkg:maven/org.codehaus.mojo/child-project@1.0?file_path=app%2Fmaven%2Ftarget%2Fchild-project-1.0.jar",
+        "pkg:gradle/com.example/example@0.0.1",
         "pkg:npm/bootstrap@5.0.2?file_path=app%2Fapp%2Fpackage.json",
         "100925ff-7c0a-470f-a725-8fb973b40e7b",
         "1a111e6b-a682-470e-8b0e-aaa49d93cd39"
