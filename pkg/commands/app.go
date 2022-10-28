@@ -118,21 +118,6 @@ func loadPluginCommands() []*cobra.Command {
 	return commands
 }
 
-func initConfig(configFile string) error {
-	// Read from config
-	viper.SetConfigFile(configFile)
-	viper.SetConfigType("yaml")
-	if err := viper.ReadInConfig(); err != nil {
-		if errors.Is(err, os.ErrNotExist) {
-			log.Logger.Debugf("config file %q not found", configFile)
-			return nil
-		}
-		return xerrors.Errorf("config file %q loading error: %s", configFile, err)
-	}
-	log.Logger.Infof("Loaded %s", configFile)
-	return nil
-}
-
 func NewRootCommand(version string, globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	var versionFormat string
 	cmd := &cobra.Command{
@@ -173,9 +158,10 @@ func NewRootCommand(version string, globalFlags *flag.GlobalFlagGroup) *cobra.Co
 
 			// Configure environment variables and config file
 			// It cannot be called in init() because it must be called after viper.BindPFlags.
-			if err := initConfig(configPath); err != nil {
-				return err
-			}
+			viper.SetConfigFile(configPath)
+			viper.SetConfigType("yaml")
+			// Postpone error handling until logging is initialized to ensure quiet config is respected.
+			configError := viper.ReadInConfig()
 
 			globalOptions := globalFlags.ToOptions()
 
@@ -184,6 +170,15 @@ func NewRootCommand(version string, globalFlags *flag.GlobalFlagGroup) *cobra.Co
 				return err
 			}
 
+			// Delayed handling of config initialization
+			if configError != nil {
+				if errors.Is(configError, os.ErrNotExist) {
+					log.Logger.Debugf("config file %q not found", configPath)
+					return nil
+				}
+				return xerrors.Errorf("config file %q loading error: %s", configPath, configError)
+			}
+			log.Logger.Infof("Loaded %s", configPath)
 			return nil
 		},
 		RunE: func(cmd *cobra.Command, args []string) error {
