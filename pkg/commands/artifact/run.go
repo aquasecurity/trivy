@@ -527,6 +527,11 @@ func initScannerConfig(opts flag.Options, cacheClient cache.Cache) (ScannerConfi
 			SecretScannerOption: analyzer.SecretScannerOption{
 				ConfigPath: opts.SecretConfigPath,
 			},
+
+			// For license scanning
+			LicenseScannerOption: analyzer.LicenseScannerOption{
+				Full: opts.LicenseFull,
+			},
 		},
 	}, scanOptions, nil
 }
