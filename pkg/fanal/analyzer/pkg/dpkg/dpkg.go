@@ -251,11 +251,10 @@ func (a dpkgAnalyzer) consolidateDependencies(pkgs map[string]*types.Package, pk
 			}
 			return "", false
 		})
+		sort.Strings(pkg.DependsOn)
 		if len(pkg.DependsOn) == 0 {
 			pkg.DependsOn = nil
-			continue
 		}
-		sort.Strings(pkg.DependsOn)
 	}
 }
 

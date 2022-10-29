@@ -3,16 +3,19 @@ package apk
 import (
 	"bufio"
 	"context"
+	"fmt"
 	"log"
 	"os"
 	"path/filepath"
+	"sort"
 	"strings"
 
 	apkVersion "github.com/knqyf263/go-apk-version"
+	"github.com/samber/lo"
+	"golang.org/x/exp/slices"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
-	"github.com/aquasecurity/trivy/pkg/fanal/utils"
 	"github.com/aquasecurity/trivy/pkg/licensing"
 )
 
@@ -20,7 +23,7 @@ func init() {
 	analyzer.RegisterAnalyzer(&alpinePkgAnalyzer{})
 }
 
-const version = 1
+const analyzerVersion = 1
 
 var requiredFiles = []string{"lib/apk/db/installed"}
 
@@ -48,6 +51,7 @@ func (a alpinePkgAnalyzer) parseApkInfo(scanner *bufio.Scanner) ([]types.Package
 		version        string
 		dir            string
 		installedFiles []string
+		provides       = map[string]string{} // for dependency graph
 	)
 
 	for scanner.Scan() {
@@ -62,6 +66,7 @@ func (a alpinePkgAnalyzer) parseApkInfo(scanner *bufio.Scanner) ([]types.Package
 			continue
 		}
 
+		// ref. https://wiki.alpinelinux.org/wiki/Apk_spec
 		switch line[:2] {
 		case "P:":
 			pkg.Name = line[2:]
@@ -96,6 +101,25 @@ func (a alpinePkgAnalyzer) parseApkInfo(scanner *bufio.Scanner) ([]types.Package
 			dir = line[2:]
 		case "R:":
 			installedFiles = append(installedFiles, filepath.Join(dir, line[2:]))
+		case "p:": // provides (corresponds to provides in PKGINFO, concatenated by spaces into a single line)
+			for _, p := range strings.Fields(line[2:]) {
+				p = a.trimRequirement(p)
+
+				// Assume name ("P:") and version ("V:") are defined before provides ("p:")
+				provides[p] = pkg.ID
+
+				// Dependencies could be package names or provides.
+				// e.g. D:scanelf so:libc.musl-x86_64.so.1
+				provides[pkg.Name] = pkg.ID
+			}
+		case "D:": // dependencies (corresponds to depend in PKGINFO, concatenated by spaces into a single line)
+			pkg.DependsOn = lo.Map(strings.Fields(line[2:]), func(d string, _ int) string {
+				return a.trimRequirement(d)
+			})
+		}
+
+		if pkg.Name != "" && pkg.Version != "" {
+			pkg.ID = fmt.Sprintf("%s-%s", pkg.Name, pkg.Version)
 		}
 	}
 	// in case of last paragraph
@@ -103,7 +127,41 @@ func (a alpinePkgAnalyzer) parseApkInfo(scanner *bufio.Scanner) ([]types.Package
 		pkgs = append(pkgs, pkg)
 	}
 
-	return a.uniquePkgs(pkgs), installedFiles
+	pkgs = a.uniquePkgs(pkgs)
+
+	// Replace dependencies with package IDs
+	a.consolidateDependencies(pkgs, provides)
+
+	return pkgs, installedFiles
+}
+
+func (a alpinePkgAnalyzer) trimRequirement(s string) string {
+	// Trim version requirements
+	// e.g.
+	//   so:libssl.so.1.1=1.1 => so:libssl.so.1.1
+	//   musl>=1.2 => musl
+	if strings.ContainsAny(s, "<>=") {
+		s = s[:strings.IndexAny(s, "><=")]
+	}
+	return s
+}
+
+func (a alpinePkgAnalyzer) consolidateDependencies(pkgs []types.Package, provides map[string]string) {
+	for i := range pkgs {
+		// e.g. libc6 => libc6@2.31-13+deb11u4
+		pkgs[i].DependsOn = lo.FilterMap(pkgs[i].DependsOn, func(d string, _ int) (string, bool) {
+			if pkgID, ok := provides[d]; ok {
+				return pkgID, true
+			}
+			return "", false
+		})
+		sort.Strings(pkgs[i].DependsOn)
+		pkgs[i].DependsOn = slices.Compact(pkgs[i].DependsOn)
+
+		if len(pkgs[i].DependsOn) == 0 {
+			pkgs[i].DependsOn = nil
+		}
+	}
 }
 
 func (a alpinePkgAnalyzer) uniquePkgs(pkgs []types.Package) (uniqPkgs []types.Package) {
@@ -119,7 +177,7 @@ func (a alpinePkgAnalyzer) uniquePkgs(pkgs []types.Package) (uniqPkgs []types.Pa
 }
 
 func (a alpinePkgAnalyzer) Required(filePath string, _ os.FileInfo) bool {
-	return utils.StringInSlice(filePath, requiredFiles)
+	return slices.Contains(requiredFiles, filePath)
 }
 
 func (a alpinePkgAnalyzer) Type() analyzer.Type {
@@ -127,5 +185,5 @@ func (a alpinePkgAnalyzer) Type() analyzer.Type {
 }
 
 func (a alpinePkgAnalyzer) Version() int {
-	return version
+	return analyzerVersion
 }
