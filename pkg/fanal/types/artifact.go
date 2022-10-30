@@ -43,7 +43,7 @@ type Package struct {
 	Indirect bool   `json:",omitempty"` // this package is direct dependency of the project or not
 
 	// Dependencies of this package
-	// Note:　only RPM may have interdependencies, which may lead to infinite loops.
+	// Note:　it may have interdependencies, which may lead to infinite loops.
 	DependsOn []string `json:",omitempty"`
 
 	Layer Layer `json:",omitempty"`
