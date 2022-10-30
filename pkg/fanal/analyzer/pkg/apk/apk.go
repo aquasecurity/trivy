@@ -77,6 +77,7 @@ func (a alpinePkgAnalyzer) parseApkInfo(scanner *bufio.Scanner) ([]types.Package
 				continue
 			}
 			pkg.Version = version
+
 		case "o:":
 			origin := line[2:]
 			pkg.SrcName = origin
@@ -108,18 +109,23 @@ func (a alpinePkgAnalyzer) parseApkInfo(scanner *bufio.Scanner) ([]types.Package
 				// Assume name ("P:") and version ("V:") are defined before provides ("p:")
 				provides[p] = pkg.ID
 
-				// Dependencies could be package names or provides.
-				// e.g. D:scanelf so:libc.musl-x86_64.so.1
-				provides[pkg.Name] = pkg.ID
 			}
 		case "D:": // dependencies (corresponds to depend in PKGINFO, concatenated by spaces into a single line)
-			pkg.DependsOn = lo.Map(strings.Fields(line[2:]), func(d string, _ int) string {
-				return a.trimRequirement(d)
+			pkg.DependsOn = lo.FilterMap(strings.Fields(line[2:]), func(d string, _ int) (string, bool) {
+				// e.g. D:!uclibc-utils scanelf musl=1.1.14-r10 so:libc.musl-x86_64.so.1
+				if strings.HasPrefix(d, "!") {
+					return "", false
+				}
+				return a.trimRequirement(d), true
 			})
 		}
 
 		if pkg.Name != "" && pkg.Version != "" {
 			pkg.ID = fmt.Sprintf("%s-%s", pkg.Name, pkg.Version)
+
+			// Dependencies could be package names or provides, so package names are stored as provides here.
+			// e.g. D:scanelf so:libc.musl-x86_64.so.1
+			provides[pkg.Name] = pkg.ID
 		}
 	}
 	// in case of last paragraph
