@@ -265,6 +265,8 @@ func toPackage(component cdx.Component) (string, *ftypes.Package, error) {
 	for _, prop := range lo.FromPtr(component.Properties) {
 		if strings.HasPrefix(prop.Name, Namespace) {
 			switch strings.TrimPrefix(prop.Name, Namespace) {
+			case PropertyPkgID:
+				pkg.ID = prop.Value
 			case PropertySrcName:
 				pkg.SrcName = prop.Value
 			case PropertySrcVersion:
