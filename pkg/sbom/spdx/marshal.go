@@ -41,6 +41,7 @@ const (
 	PropertyRepoTag    = "RepoTag"
 
 	// Package properties
+	PropertyPkgID       = "PkgID"
 	PropertyLayerDiffID = "LayerDiffID"
 	PropertyLayerDigest = "LayerDigest"
 
@@ -279,6 +280,7 @@ func (m *Marshaler) pkgToSpdxPackage(t string, class types.ResultClass, metadata
 	pkgExtRefs := []*spdx.PackageExternalReference2_2{purlExternalReference(packageURL.String())}
 
 	var attrTexts []string
+	attrTexts = appendAttributionText(attrTexts, PropertyPkgID, pkg.ID)
 	attrTexts = appendAttributionText(attrTexts, PropertyLayerDigest, pkg.Layer.Digest)
 	attrTexts = appendAttributionText(attrTexts, PropertyLayerDiffID, pkg.Layer.DiffID)
 
