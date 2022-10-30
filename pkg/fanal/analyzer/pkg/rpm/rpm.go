@@ -130,7 +130,7 @@ func (a rpmPkgAnalyzer) parsePkgInfo(rc io.Reader) ([]types.Package, []string, e
 		}
 
 		p := types.Package{
-			ID:              fmt.Sprintf("%s-%s-%s.%s", pkg.Name, pkg.Version, pkg.Release, pkg.Arch),
+			ID:              fmt.Sprintf("%s@%s-%s.%s", pkg.Name, pkg.Version, pkg.Release, pkg.Arch),
 			Name:            pkg.Name,
 			Epoch:           pkg.EpochNum(),
 			Version:         pkg.Version,

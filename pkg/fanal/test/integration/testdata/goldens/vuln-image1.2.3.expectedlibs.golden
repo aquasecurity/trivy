@@ -788,14 +788,16 @@
         "Name": "loose-envify",
         "Version": "1.4.0",
         "Indirect": true,
+        "DependsOn": [
+          "js-tokens@4.0.0"
+        ],
         "Layer": {},
         "Locations": [
           {
             "StartLine": 26,
             "EndLine": 33
           }
-        ],
-        "DependsOn": ["js-tokens@4.0.0"]
+        ]
       },
       {
         "ID": "object-assign@4.1.1",
@@ -815,83 +817,100 @@
         "Name": "promise",
         "Version": "8.0.3",
         "Indirect": true,
+        "DependsOn": [
+          "asap@2.0.6"
+        ],
         "Layer": {},
         "Locations": [
           {
             "StartLine": 39,
             "EndLine": 46
           }
-        ],
-        "DependsOn": ["asap@2.0.6"]
+        ]
       },
       {
         "ID": "prop-types@15.7.2",
         "Name": "prop-types",
         "Version": "15.7.2",
         "Indirect": true,
+        "DependsOn": [
+          "loose-envify@1.4.0",
+          "object-assign@4.1.1",
+          "react-is@16.8.6"
+        ],
         "Layer": {},
         "Locations": [
           {
             "StartLine": 47,
             "EndLine": 56
           }
-        ],
-        "DependsOn": ["loose-envify@1.4.0", "object-assign@4.1.1", "react-is@16.8.6"]
+        ]
       },
       {
         "ID": "react@16.8.6",
         "Name": "react",
         "Version": "16.8.6",
         "Indirect": true,
+        "DependsOn": [
+          "loose-envify@1.4.0",
+          "object-assign@4.1.1",
+          "prop-types@15.7.2",
+          "scheduler@0.13.6"
+        ],
         "Layer": {},
         "Locations": [
           {
             "StartLine": 57,
             "EndLine": 67
           }
-        ],
-        "DependsOn": ["loose-envify@1.4.0", "object-assign@4.1.1", "prop-types@15.7.2", "scheduler@0.13.6"]
+        ]
       },
       {
         "ID": "react-is@16.8.6",
         "Name": "react-is",
         "Version": "16.8.6",
         "Indirect": true,
+        "Layer": {},
         "Locations": [
           {
             "StartLine": 68,
             "EndLine": 72
           }
-        ],
-        "Layer": {}
+        ]
       },
       {
         "ID": "redux@4.0.1",
         "Name": "redux",
         "Version": "4.0.1",
         "Indirect": true,
+        "DependsOn": [
+          "loose-envify@1.4.0",
+          "symbol-observable@1.2.0"
+        ],
         "Layer": {},
         "Locations": [
           {
             "StartLine": 73,
             "EndLine": 81
           }
-        ],
-        "DependsOn": ["loose-envify@1.4.0", "symbol-observable@1.2.0"]
+        ]
       },
       {
         "ID": "scheduler@0.13.6",
         "Name": "scheduler",
         "Version": "0.13.6",
         "Indirect": true,
+        "DependsOn": [
+          "loose-envify@1.4.0",
+          "object-assign@4.1.1"
+        ],
         "Layer": {},
         "Locations": [
           {
             "StartLine": 82,
             "EndLine": 90
           }
-        ],
-        "DependsOn": ["loose-envify@1.4.0", "object-assign@4.1.1"]
+        ]
       },
       {
         "ID": "symbol-observable@1.2.0",

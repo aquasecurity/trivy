@@ -596,7 +596,7 @@ func TestParseRpmInfo(t *testing.T) {
 			})
 
 			for i := range got {
-				got[i].ID = nil
+				got[i].ID = ""
 				got[i].DependsOn = nil // TODO: add tests
 			}
 
