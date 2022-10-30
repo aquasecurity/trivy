@@ -20,8 +20,8 @@
           "package_url": "pkg:apk/alpine-baselayout@3.1.2-r0",
           "relationship": "direct",
           "dependencies": [
-            "busybox-1.30.1-r2",
-            "musl-1.1.22-r3"
+            "busybox@1.30.1-r2",
+            "musl@1.1.22-r3"
           ],
           "scope": "runtime"
         },
@@ -34,10 +34,10 @@
           "package_url": "pkg:apk/apk-tools@2.10.4-r2",
           "relationship": "direct",
           "dependencies": [
-            "libcrypto1.1-1.1.1c-r0",
-            "libssl1.1-1.1.1c-r0",
-            "musl-1.1.22-r3",
-            "zlib-1.2.11-r1"
+            "libcrypto1.1@1.1.1c-r0",
+            "libssl1.1@1.1.1c-r0",
+            "musl@1.1.22-r3",
+            "zlib@1.2.11-r1"
           ],
           "scope": "runtime"
         },
@@ -45,7 +45,7 @@
           "package_url": "pkg:apk/busybox@1.30.1-r2",
           "relationship": "direct",
           "dependencies": [
-            "musl-1.1.22-r3"
+            "musl@1.1.22-r3"
           ],
           "scope": "runtime"
         },
@@ -58,7 +58,7 @@
           "package_url": "pkg:apk/libc-utils@0.7.1-r0",
           "relationship": "direct",
           "dependencies": [
-            "musl-utils-1.1.22-r3"
+            "musl-utils@1.1.22-r3"
           ],
           "scope": "runtime"
         },
@@ -66,7 +66,7 @@
           "package_url": "pkg:apk/libcrypto1.1@1.1.1c-r0",
           "relationship": "direct",
           "dependencies": [
-            "musl-1.1.22-r3"
+            "musl@1.1.22-r3"
           ],
           "scope": "runtime"
         },
@@ -74,8 +74,8 @@
           "package_url": "pkg:apk/libssl1.1@1.1.1c-r0",
           "relationship": "direct",
           "dependencies": [
-            "libcrypto1.1-1.1.1c-r0",
-            "musl-1.1.22-r3"
+            "libcrypto1.1@1.1.1c-r0",
+            "musl@1.1.22-r3"
           ],
           "scope": "runtime"
         },
@@ -83,10 +83,10 @@
           "package_url": "pkg:apk/libtls-standalone@2.9.1-r0",
           "relationship": "direct",
           "dependencies": [
-            "ca-certificates-cacert-20190108-r0",
-            "libcrypto1.1-1.1.1c-r0",
-            "libssl1.1-1.1.1c-r0",
-            "musl-1.1.22-r3"
+            "ca-certificates-cacert@20190108-r0",
+            "libcrypto1.1@1.1.1c-r0",
+            "libssl1.1@1.1.1c-r0",
+            "musl@1.1.22-r3"
           ],
           "scope": "runtime"
         },
@@ -99,8 +99,8 @@
           "package_url": "pkg:apk/musl-utils@1.1.22-r3",
           "relationship": "direct",
           "dependencies": [
-            "musl-1.1.22-r3",
-            "scanelf-1.2.3-r0"
+            "musl@1.1.22-r3",
+            "scanelf@1.2.3-r0"
           ],
           "scope": "runtime"
         },
@@ -108,7 +108,7 @@
           "package_url": "pkg:apk/scanelf@1.2.3-r0",
           "relationship": "direct",
           "dependencies": [
-            "musl-1.1.22-r3"
+            "musl@1.1.22-r3"
           ],
           "scope": "runtime"
         },
@@ -116,8 +116,8 @@
           "package_url": "pkg:apk/ssl_client@1.30.1-r2",
           "relationship": "direct",
           "dependencies": [
-            "libtls-standalone-2.9.1-r0",
-            "musl-1.1.22-r3"
+            "libtls-standalone@2.9.1-r0",
+            "musl@1.1.22-r3"
           ],
           "scope": "runtime"
         },
@@ -125,7 +125,7 @@
           "package_url": "pkg:apk/zlib@1.2.11-r1",
           "relationship": "direct",
           "dependencies": [
-            "musl-1.1.22-r3"
+            "musl@1.1.22-r3"
           ],
           "scope": "runtime"
         }
