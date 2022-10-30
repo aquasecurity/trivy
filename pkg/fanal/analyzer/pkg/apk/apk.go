@@ -4,7 +4,6 @@ import (
 	"bufio"
 	"context"
 	"fmt"
-	"log"
 	"os"
 	"path/filepath"
 	"sort"
@@ -17,6 +16,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/licensing"
+	"github.com/aquasecurity/trivy/pkg/log"
 )
 
 func init() {
@@ -73,51 +73,24 @@ func (a alpinePkgAnalyzer) parseApkInfo(scanner *bufio.Scanner) ([]types.Package
 		case "V:":
 			version = line[2:]
 			if !apkVersion.Valid(version) {
-				log.Printf("Invalid Version Found : OS %s, Package %s, Version %s", "alpine", pkg.Name, version)
+				log.Logger.Warnf("Invalid Version Found : OS %s, Package %s, Version %s", "alpine", pkg.Name, version)
 				continue
 			}
 			pkg.Version = version
-
 		case "o:":
 			origin := line[2:]
 			pkg.SrcName = origin
 			pkg.SrcVersion = version
 		case "L:":
-			if line[2:] != "" {
-				var licenses []string
-				// e.g. MPL 2.0 GPL2+ => {"MPL2.0", "GPL2+"}
-				for i, s := range strings.Fields(line[2:]) {
-					s = strings.Trim(s, "()")
-					if s == "AND" || s == "OR" {
-						continue
-					} else if i > 0 && (s == "1.0" || s == "2.0" || s == "3.0") {
-						licenses[i-1] = licensing.Normalize(licenses[i-1] + s)
-					} else {
-						licenses = append(licenses, licensing.Normalize(s))
-					}
-				}
-				pkg.Licenses = licenses
-			}
+			pkg.Licenses = a.parseLicense(line)
 		case "F:":
 			dir = line[2:]
 		case "R:":
 			installedFiles = append(installedFiles, filepath.Join(dir, line[2:]))
 		case "p:": // provides (corresponds to provides in PKGINFO, concatenated by spaces into a single line)
-			for _, p := range strings.Fields(line[2:]) {
-				p = a.trimRequirement(p)
-
-				// Assume name ("P:") and version ("V:") are defined before provides ("p:")
-				provides[p] = pkg.ID
-
-			}
+			a.parseProvides(line, pkg.ID, provides)
 		case "D:": // dependencies (corresponds to depend in PKGINFO, concatenated by spaces into a single line)
-			pkg.DependsOn = lo.FilterMap(strings.Fields(line[2:]), func(d string, _ int) (string, bool) {
-				// e.g. D:!uclibc-utils scanelf musl=1.1.14-r10 so:libc.musl-x86_64.so.1
-				if strings.HasPrefix(d, "!") {
-					return "", false
-				}
-				return a.trimRequirement(d), true
-			})
+			pkg.DependsOn = a.parseDependencies(line)
 		}
 
 		if pkg.Name != "" && pkg.Version != "" {
@@ -150,6 +123,46 @@ func (a alpinePkgAnalyzer) trimRequirement(s string) string {
 		s = s[:strings.IndexAny(s, "><=")]
 	}
 	return s
+}
+
+func (a alpinePkgAnalyzer) parseLicense(line string) []string {
+	line = line[2:] // Remove "L:"
+	if line == "" {
+		return nil
+	}
+	var licenses []string
+	// e.g. MPL 2.0 GPL2+ => {"MPL2.0", "GPL2+"}
+	for i, s := range strings.Fields(line) {
+		s = strings.Trim(s, "()")
+		if s == "AND" || s == "OR" {
+			continue
+		} else if i > 0 && (s == "1.0" || s == "2.0" || s == "3.0") {
+			licenses[i-1] = licensing.Normalize(licenses[i-1] + s)
+		} else {
+			licenses = append(licenses, licensing.Normalize(s))
+		}
+	}
+	return licenses
+}
+
+func (a alpinePkgAnalyzer) parseProvides(line, pkgID string, provides map[string]string) {
+	for _, p := range strings.Fields(line[2:]) {
+		p = a.trimRequirement(p)
+
+		// Assume name ("P:") and version ("V:") are defined before provides ("p:")
+		provides[p] = pkgID
+	}
+}
+
+func (a alpinePkgAnalyzer) parseDependencies(line string) []string {
+	line = line[2:] // Remove "D:"
+	return lo.FilterMap(strings.Fields(line), func(d string, _ int) (string, bool) {
+		// e.g. D:!uclibc-utils scanelf musl=1.1.14-r10 so:libc.musl-x86_64.so.1
+		if strings.HasPrefix(d, "!") {
+			return "", false
+		}
+		return a.trimRequirement(d), true
+	})
 }
 
 func (a alpinePkgAnalyzer) consolidateDependencies(pkgs []types.Package, provides map[string]string) {

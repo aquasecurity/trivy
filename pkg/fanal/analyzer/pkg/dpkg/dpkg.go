@@ -154,25 +154,9 @@ func (a dpkgAnalyzer) parseDpkgPkg(scanner *bufio.Scanner) (pkg *types.Package) 
 		case strings.HasPrefix(line, "Version: "):
 			version = strings.TrimPrefix(line, "Version: ")
 		case strings.HasPrefix(line, "Status: "):
-			for _, ss := range strings.Fields(strings.TrimPrefix(line, "Status: ")) {
-				if ss == "deinstall" || ss == "purge" {
-					isInstalled = false
-					break
-				}
-			}
+			isInstalled = a.parseStatus(line)
 		case strings.HasPrefix(line, "Depends: "):
-			line = strings.TrimPrefix(line, "Depends: ")
-			// e.g. Depends: passwd, debconf (>= 0.5) | debconf-2.0
-			depends := strings.Split(line, ",")
-			for _, dep := range depends {
-				// e.g. gpgv | gpgv2 | gpgv1
-				for _, d := range strings.Split(dep, "|") {
-					d = a.trimVersionRequirement(d)
-
-					// Store only package names here
-					dependencies = append(dependencies, strings.TrimSpace(d))
-				}
-			}
+			dependencies = a.parseDepends(line)
 		}
 		if !scanner.Scan() {
 			break
@@ -230,6 +214,33 @@ func (a dpkgAnalyzer) Required(filePath string, _ os.FileInfo) bool {
 
 func (a dpkgAnalyzer) pkgID(name, version string) string {
 	return fmt.Sprintf("%s@%s", name, version)
+}
+
+func (a dpkgAnalyzer) parseStatus(line string) bool {
+	for _, ss := range strings.Fields(strings.TrimPrefix(line, "Status: ")) {
+		if ss == "deinstall" || ss == "purge" {
+			return false
+		}
+	}
+	return true
+}
+
+func (a dpkgAnalyzer) parseDepends(line string) []string {
+	line = strings.TrimPrefix(line, "Depends: ")
+	// e.g. Depends: passwd, debconf (>= 0.5) | debconf-2.0
+
+	var dependencies []string
+	depends := strings.Split(line, ",")
+	for _, dep := range depends {
+		// e.g. gpgv | gpgv2 | gpgv1
+		for _, d := range strings.Split(dep, "|") {
+			d = a.trimVersionRequirement(d)
+
+			// Store only package names here
+			dependencies = append(dependencies, strings.TrimSpace(d))
+		}
+	}
+	return dependencies
 }
 
 func (a dpkgAnalyzer) trimVersionRequirement(s string) string {
