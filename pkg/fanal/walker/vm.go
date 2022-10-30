@@ -66,8 +66,16 @@ func (w VM) Walk(vreader *io.SectionReader, cache vm.Cache, root string, fn Walk
 			return nil
 		} else if w.shouldSkipFile(pathname) {
 			return nil
-		} else if uint32(fi.Mode())&0xA000 == 0xA000 {
-			// skip symbolic link
+		} else if fi.Mode()&0x1000 == 0x1000 ||
+			fi.Mode()&0x2000 == 0x2000 ||
+			fi.Mode()&0x6000 == 0x6000 ||
+			fi.Mode()&0xA000 == 0xA000 ||
+			fi.Mode()&0xc000 == 0xc000 {
+			// 	0x1000:	S_IFIFO (FIFO)
+			// 	0x2000:	S_IFCHR (Character device)
+			// 	0x6000:	S_IFBLK (Block device)
+			// 	0xA000:	S_IFLNK (Symbolic link)
+			// 	0xC000:	S_IFSOCK (Socket)
 			return nil
 		}
 

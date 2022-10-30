@@ -81,18 +81,6 @@ func (a Artifact) Inspect(ctx context.Context) (reference types.ArtifactReferenc
 	err = a.walker.Walk(sr, a.lruCache, "/", func(filePath string, info os.FileInfo, opener analyzer.Opener) error {
 		opts := analyzer.AnalysisOptions{Offline: a.artifactOption.Offline}
 		// Skip special files
-		// 	0x1000:	S_IFIFO (FIFO)
-		// 	0x2000:	S_IFCHR (Character device)
-		// 	0x6000:	S_IFBLK (Block device)
-		// 	0xA000:	S_IFLNK (Symbolic link)
-		// 	0xC000:	S_IFSOCK (Socket)
-		if info.Mode()&0x1000 == 0x1000 ||
-			info.Mode()&0x2000 == 0x2000 ||
-			info.Mode()&0x6000 == 0x6000 ||
-			info.Mode()&0xA000 == 0xA000 ||
-			info.Mode()&0xc000 == 0xc000 {
-			return nil
-		}
 		path := strings.TrimPrefix(filePath, "/")
 		if err = a.analyzer.AnalyzeFile(ctx, &wg, limit, result, "/", path, info, opener, nil, opts); err != nil {
 			return xerrors.Errorf("analyze file (%s): %w", path, err)
