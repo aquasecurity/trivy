@@ -24,7 +24,7 @@ func init() {
 	analyzer.RegisterAnalyzer(&rpmPkgAnalyzer{})
 }
 
-const version = 2
+const version = 3
 
 var (
 	requiredFiles = []string{
