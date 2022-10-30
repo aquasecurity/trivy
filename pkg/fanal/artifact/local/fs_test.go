@@ -45,7 +45,7 @@ func TestArtifact_Inspect(t *testing.T) {
 			},
 			putBlobExpectation: cache.ArtifactCachePutBlobExpectation{
 				Args: cache.ArtifactCachePutBlobArgs{
-					BlobID: "sha256:5fec4b9464ae3fc66dc2b9ebd373fefd98e970e2fe3c536ac45d9baa5796e7ae",
+					BlobID: "sha256:0357dd589420d7515de20241eba6d44b76c8bc96e408d313d8dde4d9f689cb6b",
 					BlobInfo: types.BlobInfo{
 						SchemaVersion: types.BlobJSONSchemaVersion,
 						OS: &types.OS{
@@ -57,7 +57,7 @@ func TestArtifact_Inspect(t *testing.T) {
 								FilePath: "lib/apk/db/installed",
 								Packages: []types.Package{
 									{
-										ID:   "musl-1.1.24-r2",
+										ID:   "musl@1.1.24-r2",
 										Name: "musl", Version: "1.1.24-r2", SrcName: "musl", SrcVersion: "1.1.24-r2",
 										Licenses: []string{"MIT"},
 									},
@@ -71,9 +71,9 @@ func TestArtifact_Inspect(t *testing.T) {
 			want: types.ArtifactReference{
 				Name: "host",
 				Type: types.ArtifactFilesystem,
-				ID:   "sha256:5fec4b9464ae3fc66dc2b9ebd373fefd98e970e2fe3c536ac45d9baa5796e7ae",
+				ID:   "sha256:0357dd589420d7515de20241eba6d44b76c8bc96e408d313d8dde4d9f689cb6b",
 				BlobIDs: []string{
-					"sha256:5fec4b9464ae3fc66dc2b9ebd373fefd98e970e2fe3c536ac45d9baa5796e7ae",
+					"sha256:0357dd589420d7515de20241eba6d44b76c8bc96e408d313d8dde4d9f689cb6b",
 				},
 			},
 		},
@@ -110,7 +110,7 @@ func TestArtifact_Inspect(t *testing.T) {
 			},
 			putBlobExpectation: cache.ArtifactCachePutBlobExpectation{
 				Args: cache.ArtifactCachePutBlobArgs{
-					BlobID: "sha256:5fec4b9464ae3fc66dc2b9ebd373fefd98e970e2fe3c536ac45d9baa5796e7ae",
+					BlobID: "sha256:0357dd589420d7515de20241eba6d44b76c8bc96e408d313d8dde4d9f689cb6b",
 					BlobInfo: types.BlobInfo{
 						SchemaVersion: types.BlobJSONSchemaVersion,
 						OS: &types.OS{
@@ -122,7 +122,7 @@ func TestArtifact_Inspect(t *testing.T) {
 								FilePath: "lib/apk/db/installed",
 								Packages: []types.Package{
 									{
-										ID:   "musl-1.1.24-r2",
+										ID:   "musl@1.1.24-r2",
 										Name: "musl", Version: "1.1.24-r2", SrcName: "musl", SrcVersion: "1.1.24-r2",
 										Licenses: []string{"MIT"},
 									},

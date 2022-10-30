@@ -323,7 +323,7 @@ func TestAnalyzeFile(t *testing.T) {
 						FilePath: "/lib/apk/db/installed",
 						Packages: []types.Package{
 							{
-								ID:         "musl-1.1.24-r2",
+								ID:         "musl@1.1.24-r2",
 								Name:       "musl",
 								Version:    "1.1.24-r2",
 								SrcName:    "musl",

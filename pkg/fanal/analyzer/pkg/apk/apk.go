@@ -94,7 +94,7 @@ func (a alpinePkgAnalyzer) parseApkInfo(scanner *bufio.Scanner) ([]types.Package
 		}
 
 		if pkg.Name != "" && pkg.Version != "" {
-			pkg.ID = fmt.Sprintf("%s-%s", pkg.Name, pkg.Version)
+			pkg.ID = fmt.Sprintf("%s@%s", pkg.Name, pkg.Version)
 
 			// Dependencies could be package names or provides, so package names are stored as provides here.
 			// e.g. D:scanelf so:libc.musl-x86_64.so.1
