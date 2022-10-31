@@ -178,6 +178,7 @@ func parsePkg(spdxPkg spdx.Package2_2) (*ftypes.Package, error) {
 		break // Take the first file name
 	}
 
+	pkg.ID = lookupAttributionTexts(spdxPkg.PackageAttributionTexts, PropertyPkgID)
 	pkg.Layer.Digest = lookupAttributionTexts(spdxPkg.PackageAttributionTexts, PropertyLayerDigest)
 	pkg.Layer.DiffID = lookupAttributionTexts(spdxPkg.PackageAttributionTexts, PropertyLayerDiffID)
 
