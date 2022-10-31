@@ -64,6 +64,7 @@
       "Vulnerabilities": [
         {
           "VulnerabilityID": "CVE-2019-18276",
+          "PkgID": "bash@4.4.18-1.ph3.x86_64",
           "PkgName": "bash",
           "InstalledVersion": "4.4.18-1.ph3",
           "FixedVersion": "4.4.18-2.ph3",
@@ -114,6 +115,7 @@
         },
         {
           "VulnerabilityID": "CVE-2019-5481",
+          "PkgID": "curl@7.61.1-4.ph3.x86_64",
           "PkgName": "curl",
           "InstalledVersion": "7.61.1-4.ph3",
           "FixedVersion": "7.61.1-5.ph3",
@@ -171,6 +173,7 @@
         },
         {
           "VulnerabilityID": "CVE-2019-5481",
+          "PkgID": "curl-libs@7.61.1-4.ph3.x86_64",
           "PkgName": "curl-libs",
           "InstalledVersion": "7.61.1-4.ph3",
           "FixedVersion": "7.61.1-5.ph3",
