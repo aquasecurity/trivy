@@ -45,7 +45,7 @@ var (
 		Name:       "dependency-tree",
 		ConfigName: "dependency-tree",
 		Value:      false,
-		Usage:      "show dependency origin tree (EXPERIMENTAL)",
+		Usage:      "[EXPERIMENTAL] show dependency origin tree of vulnerable packages",
 	}
 	ListAllPkgsFlag = Flag{
 		Name:       "list-all-pkgs",
@@ -175,7 +175,7 @@ func (f *ReportFlagGroup) ToOptions(out io.Writer) (ReportOptions, error) {
 
 	// "--dependency-tree" option is available only with "--format table".
 	if dependencyTree {
-		log.Logger.Infof(`"--dependency-tree" only shows dependencies of "package-lock.json", "Cargo.lock" and OS packages`)
+		log.Logger.Infof(`"--dependency-tree" only shows vulnerable package dependencies of "package-lock.json", "Cargo.lock" and OS packages`)
 		if format != report.FormatTable {
 			log.Logger.Warn(`"--dependency-tree" can be used only with "--format table".`)
 		}
