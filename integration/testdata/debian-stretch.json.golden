@@ -55,6 +55,7 @@
       "Vulnerabilities": [
         {
           "VulnerabilityID": "CVE-2019-18276",
+          "PkgID": "bash@4.4-5",
           "PkgName": "bash",
           "InstalledVersion": "4.4-5",
           "Layer": {
@@ -107,6 +108,7 @@
           "VendorIDs": [
             "DSA-4535-1"
           ],
+          "PkgID": "e2fslibs@1.43.4-2",
           "PkgName": "e2fslibs",
           "InstalledVersion": "1.43.4-2",
           "FixedVersion": "1.43.4-2+deb9u1",
@@ -166,6 +168,7 @@
           "VendorIDs": [
             "DSA-4535-1"
           ],
+          "PkgID": "e2fsprogs@1.43.4-2",
           "PkgName": "e2fsprogs",
           "InstalledVersion": "1.43.4-2",
           "FixedVersion": "1.43.4-2+deb9u1",
@@ -225,6 +228,7 @@
           "VendorIDs": [
             "DSA-4535-1"
           ],
+          "PkgID": "libcomerr2@1.43.4-2",
           "PkgName": "libcomerr2",
           "InstalledVersion": "1.43.4-2",
           "FixedVersion": "1.43.4-2+deb9u1",
@@ -284,6 +288,7 @@
           "VendorIDs": [
             "DSA-4535-1"
           ],
+          "PkgID": "libss2@1.43.4-2",
           "PkgName": "libss2",
           "InstalledVersion": "1.43.4-2",
           "FixedVersion": "1.43.4-2+deb9u1",

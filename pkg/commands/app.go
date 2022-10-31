@@ -208,8 +208,7 @@ func NewRootCommand(version string, globalFlags *flag.GlobalFlagGroup) *cobra.Co
 
 func NewImageCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	reportFlagGroup := flag.NewReportFlagGroup()
-	reportFlagGroup.DependencyTree = nil // disable '--dependency-tree'
-	reportFlagGroup.ReportFormat = nil   // TODO: support --report summary
+	reportFlagGroup.ReportFormat = nil // TODO: support --report summary
 
 	imageFlags := &flag.Flags{
 		CacheFlagGroup:         flag.NewCacheFlagGroup(),

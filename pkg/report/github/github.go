@@ -116,7 +116,7 @@ func (w Writer) Write(report types.Report) error {
 			githubPkg := Package{}
 			githubPkg.Scope = RuntimeScope
 			githubPkg.Relationship = getPkgRelationshipType(pkg)
-			githubPkg.Dependencies = pkg.DependsOn
+			githubPkg.Dependencies = pkg.DependsOn // TODO: replace with PURL
 			githubPkg.PackageUrl, err = buildPurl(result.Type, pkg)
 			if err != nil {
 				return xerrors.Errorf("unable to build purl for %s: %w", pkg.Name, err)
