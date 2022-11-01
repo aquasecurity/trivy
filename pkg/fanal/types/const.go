@@ -17,6 +17,7 @@ const (
 	Pip        = "pip"
 	Pipenv     = "pipenv"
 	Poetry     = "poetry"
+	CondaPkg   = "conda-pkg"
 	PythonPkg  = "python-pkg"
 	NodePkg    = "node-pkg"
 	Yarn       = "yarn"
