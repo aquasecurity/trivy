@@ -30,6 +30,7 @@ type Option struct {
 
 	MisconfScannerOption misconf.ScannerOption
 	SecretScannerOption  analyzer.SecretScannerOption
+	LicenseScannerOption analyzer.LicenseScannerOption
 }
 
 func (o *Option) Sort() {

@@ -33,6 +33,125 @@ import (
 )
 
 func TestArtifact_Inspect(t *testing.T) {
+	alpinePkgs := []types.Package{
+		{
+			ID:   "alpine-baselayout@3.2.0-r3",
+			Name: "alpine-baselayout", Version: "3.2.0-r3",
+			SrcName: "alpine-baselayout", SrcVersion: "3.2.0-r3",
+			Licenses: []string{"GPL-2.0"},
+			DependsOn: []string{
+				"busybox@1.31.1-r9",
+				"musl@1.1.24-r2",
+			},
+		},
+		{
+			ID:   "alpine-keys@2.1-r2",
+			Name: "alpine-keys", Version: "2.1-r2", SrcName: "alpine-keys",
+			SrcVersion: "2.1-r2", Licenses: []string{"MIT"},
+		},
+		{
+			ID:   "apk-tools@2.10.4-r3",
+			Name: "apk-tools", Version: "2.10.4-r3", SrcName: "apk-tools",
+			SrcVersion: "2.10.4-r3", Licenses: []string{"GPL-2.0"},
+			DependsOn: []string{
+				"libcrypto1.1@1.1.1d-r3",
+				"libssl1.1@1.1.1d-r3",
+				"musl@1.1.24-r2",
+				"zlib@1.2.11-r3",
+			},
+		},
+		{
+			ID:   "busybox@1.31.1-r9",
+			Name: "busybox", Version: "1.31.1-r9", SrcName: "busybox",
+			SrcVersion: "1.31.1-r9", Licenses: []string{"GPL-2.0"},
+			DependsOn: []string{
+				"musl@1.1.24-r2",
+			},
+		},
+		{
+			ID:   "ca-certificates-cacert@20191127-r1",
+			Name: "ca-certificates-cacert", Version: "20191127-r1",
+			SrcName: "ca-certificates", SrcVersion: "20191127-r1",
+			Licenses: []string{"MPL-2.0", "GPL-2.0"},
+		},
+		{
+			ID:   "libc-utils@0.7.2-r0",
+			Name: "libc-utils", Version: "0.7.2-r0", SrcName: "libc-dev",
+			SrcVersion: "0.7.2-r0", Licenses: []string{"BSD-3-Clause"},
+			DependsOn: []string{
+				"musl-utils@1.1.24-r2",
+			},
+		},
+		{
+			ID:   "libcrypto1.1@1.1.1d-r3",
+			Name: "libcrypto1.1", Version: "1.1.1d-r3", SrcName: "openssl",
+			SrcVersion: "1.1.1d-r3", Licenses: []string{"OpenSSL"},
+			DependsOn: []string{
+				"musl@1.1.24-r2",
+			},
+		},
+		{
+			ID:   "libssl1.1@1.1.1d-r3",
+			Name: "libssl1.1", Version: "1.1.1d-r3", SrcName: "openssl",
+			SrcVersion: "1.1.1d-r3", Licenses: []string{"OpenSSL"},
+			DependsOn: []string{
+				"libcrypto1.1@1.1.1d-r3",
+				"musl@1.1.24-r2",
+			},
+		},
+		{
+			ID:   "libtls-standalone@2.9.1-r0",
+			Name: "libtls-standalone", Version: "2.9.1-r0",
+			SrcName: "libtls-standalone", SrcVersion: "2.9.1-r0",
+			Licenses: []string{"ISC"},
+			DependsOn: []string{
+				"ca-certificates-cacert@20191127-r1",
+				"libcrypto1.1@1.1.1d-r3",
+				"libssl1.1@1.1.1d-r3",
+				"musl@1.1.24-r2",
+			},
+		},
+		{
+			ID:   "musl@1.1.24-r2",
+			Name: "musl", Version: "1.1.24-r2", SrcName: "musl",
+			SrcVersion: "1.1.24-r2", Licenses: []string{"MIT"},
+		},
+		{
+			ID:   "musl-utils@1.1.24-r2",
+			Name: "musl-utils", Version: "1.1.24-r2", SrcName: "musl",
+			SrcVersion: "1.1.24-r2", Licenses: []string{"MIT", "BSD-3-Clause", "GPL-2.0"},
+			DependsOn: []string{
+				"musl@1.1.24-r2",
+				"scanelf@1.2.4-r0",
+			},
+		},
+		{
+			ID:   "scanelf@1.2.4-r0",
+			Name: "scanelf", Version: "1.2.4-r0", SrcName: "pax-utils",
+			SrcVersion: "1.2.4-r0", Licenses: []string{"GPL-2.0"},
+			DependsOn: []string{
+				"musl@1.1.24-r2",
+			},
+		},
+		{
+			ID:   "ssl_client@1.31.1-r9",
+			Name: "ssl_client", Version: "1.31.1-r9", SrcName: "busybox",
+			SrcVersion: "1.31.1-r9", Licenses: []string{"GPL-2.0"},
+			DependsOn: []string{
+				"libtls-standalone@2.9.1-r0",
+				"musl@1.1.24-r2",
+			},
+		},
+		{
+			ID:   "zlib@1.2.11-r3",
+			Name: "zlib", Version: "1.2.11-r3", SrcName: "zlib",
+			SrcVersion: "1.2.11-r3", Licenses: []string{"Zlib"},
+			DependsOn: []string{
+				"musl@1.1.24-r2",
+			},
+		},
+	}
+
 	tests := []struct {
 		name                    string
 		imagePath               string
@@ -46,20 +165,23 @@ func TestArtifact_Inspect(t *testing.T) {
 		{
 			name:      "happy path",
 			imagePath: "../../test/testdata/alpine-311.tar.gz",
+			artifactOpt: artifact.Option{
+				LicenseScannerOption: analyzer.LicenseScannerOption{Full: true},
+			},
 			missingBlobsExpectation: cache.ArtifactCacheMissingBlobsExpectation{
 				Args: cache.ArtifactCacheMissingBlobsArgs{
 					ArtifactID: "sha256:059741cfbdc039e88e337d621e57e03e99b0e0a75df32f2027ebef13f839af65",
-					BlobIDs:    []string{"sha256:bb59015f49048b23e73873f72dc5d0f42b44c64890ba13662849e8e4f9c2f1b7"},
+					BlobIDs:    []string{"sha256:a07b19e0e0a4339c00d982f6d80f305cd9dbb98f88b3c74e57b97574b9ce9ba3"},
 				},
 				Returns: cache.ArtifactCacheMissingBlobsReturns{
 					MissingArtifact: true,
-					MissingBlobIDs:  []string{"sha256:bb59015f49048b23e73873f72dc5d0f42b44c64890ba13662849e8e4f9c2f1b7"},
+					MissingBlobIDs:  []string{"sha256:a07b19e0e0a4339c00d982f6d80f305cd9dbb98f88b3c74e57b97574b9ce9ba3"},
 				},
 			},
 			putBlobExpectations: []cache.ArtifactCachePutBlobExpectation{
 				{
 					Args: cache.ArtifactCachePutBlobArgs{
-						BlobID: "sha256:bb59015f49048b23e73873f72dc5d0f42b44c64890ba13662849e8e4f9c2f1b7",
+						BlobID: "sha256:a07b19e0e0a4339c00d982f6d80f305cd9dbb98f88b3c74e57b97574b9ce9ba3",
 						BlobInfo: types.BlobInfo{
 							SchemaVersion: types.BlobJSONSchemaVersion,
 							Digest:        "",
@@ -76,67 +198,7 @@ func TestArtifact_Inspect(t *testing.T) {
 							PackageInfos: []types.PackageInfo{
 								{
 									FilePath: "lib/apk/db/installed",
-									Packages: []types.Package{
-										{
-											Name: "alpine-baselayout", Version: "3.2.0-r3",
-											SrcName: "alpine-baselayout", SrcVersion: "3.2.0-r3",
-											Licenses: []string{"GPL-2.0"},
-										},
-										{
-											Name: "alpine-keys", Version: "2.1-r2", SrcName: "alpine-keys",
-											SrcVersion: "2.1-r2", Licenses: []string{"MIT"},
-										},
-										{
-											Name: "apk-tools", Version: "2.10.4-r3", SrcName: "apk-tools",
-											SrcVersion: "2.10.4-r3", Licenses: []string{"GPL-2.0"},
-										},
-										{
-											Name: "busybox", Version: "1.31.1-r9", SrcName: "busybox",
-											SrcVersion: "1.31.1-r9", Licenses: []string{"GPL-2.0"},
-										},
-										{
-											Name: "ca-certificates-cacert", Version: "20191127-r1",
-											SrcName: "ca-certificates", SrcVersion: "20191127-r1",
-											Licenses: []string{"MPL-2.0", "GPL-2.0"},
-										},
-										{
-											Name: "libc-utils", Version: "0.7.2-r0", SrcName: "libc-dev",
-											SrcVersion: "0.7.2-r0", Licenses: []string{"BSD-3-Clause"},
-										},
-										{
-											Name: "libcrypto1.1", Version: "1.1.1d-r3", SrcName: "openssl",
-											SrcVersion: "1.1.1d-r3", Licenses: []string{"OpenSSL"},
-										},
-										{
-											Name: "libssl1.1", Version: "1.1.1d-r3", SrcName: "openssl",
-											SrcVersion: "1.1.1d-r3", Licenses: []string{"OpenSSL"},
-										},
-										{
-											Name: "libtls-standalone", Version: "2.9.1-r0",
-											SrcName: "libtls-standalone", SrcVersion: "2.9.1-r0",
-											Licenses: []string{"ISC"},
-										},
-										{
-											Name: "musl", Version: "1.1.24-r2", SrcName: "musl",
-											SrcVersion: "1.1.24-r2", Licenses: []string{"MIT"},
-										},
-										{
-											Name: "musl-utils", Version: "1.1.24-r2", SrcName: "musl",
-											SrcVersion: "1.1.24-r2", Licenses: []string{"MIT", "BSD-3-Clause", "GPL-2.0"},
-										},
-										{
-											Name: "scanelf", Version: "1.2.4-r0", SrcName: "pax-utils",
-											SrcVersion: "1.2.4-r0", Licenses: []string{"GPL-2.0"},
-										},
-										{
-											Name: "ssl_client", Version: "1.31.1-r9", SrcName: "busybox",
-											SrcVersion: "1.31.1-r9", Licenses: []string{"GPL-2.0"},
-										},
-										{
-											Name: "zlib", Version: "1.2.11-r3", SrcName: "zlib",
-											SrcVersion: "1.2.11-r3", Licenses: []string{"Zlib"},
-										},
-									},
+									Packages: alpinePkgs,
 								},
 							},
 							Licenses: []types.LicenseFile{
@@ -197,7 +259,7 @@ func TestArtifact_Inspect(t *testing.T) {
 				Name:    "../../test/testdata/alpine-311.tar.gz",
 				Type:    types.ArtifactContainerImage,
 				ID:      "sha256:059741cfbdc039e88e337d621e57e03e99b0e0a75df32f2027ebef13f839af65",
-				BlobIDs: []string{"sha256:bb59015f49048b23e73873f72dc5d0f42b44c64890ba13662849e8e4f9c2f1b7"},
+				BlobIDs: []string{"sha256:a07b19e0e0a4339c00d982f6d80f305cd9dbb98f88b3c74e57b97574b9ce9ba3"},
 				ImageMetadata: types.ImageMetadata{
 					ID: "sha256:a187dde48cd289ac374ad8539930628314bc581a481cdb41409c9289419ddb72",
 					DiffIDs: []string{
@@ -248,29 +310,32 @@ func TestArtifact_Inspect(t *testing.T) {
 		{
 			name:      "happy path: include lock files",
 			imagePath: "../../test/testdata/vuln-image.tar.gz",
+			artifactOpt: artifact.Option{
+				LicenseScannerOption: analyzer.LicenseScannerOption{Full: true},
+			},
 			missingBlobsExpectation: cache.ArtifactCacheMissingBlobsExpectation{
 				Args: cache.ArtifactCacheMissingBlobsArgs{
 					ArtifactID: "sha256:a646bb11d39c149d4aaf9b888233048e0848304e5abd75667ea6f21d540d800c",
 					BlobIDs: []string{
-						"sha256:6b7f14517d97567b8424123929188f4a807df7f6ba19cd6fdda4ffd1a2672115",
-						"sha256:061feee2cc149279b3248dd65d62e8f93b66673751cee4ef9ff4c85d9becab1e",
-						"sha256:585926dc8c241a62c6def47fe20d193cf95060609518bfdc109190f2e5593cb9",
-						"sha256:47b1a45c2166e8a760f9c59efdaff94184d96ef278d61f466cece82e35b800b2",
+						"sha256:3bfd543b4467abb972bfeeaa7a7d75ee18e7c92f077600d48fd1532f09129b54",
+						"sha256:9f8cf74dff8cad6bb4df8fc0fa81dca446bd6f44c2d811a167ffca34ab90a6f8",
+						"sha256:7487a77e30f32bd00fc35322a7fa308686bf3da17bb63f6a2bb2e9398a9a0357",
+						"sha256:9aead687f9207ee718401fef3174f8e5b9a99114f3bcdcae18ddc34d88ed4906",
 					},
 				},
 				Returns: cache.ArtifactCacheMissingBlobsReturns{
 					MissingBlobIDs: []string{
-						"sha256:6b7f14517d97567b8424123929188f4a807df7f6ba19cd6fdda4ffd1a2672115",
-						"sha256:061feee2cc149279b3248dd65d62e8f93b66673751cee4ef9ff4c85d9becab1e",
-						"sha256:585926dc8c241a62c6def47fe20d193cf95060609518bfdc109190f2e5593cb9",
-						"sha256:47b1a45c2166e8a760f9c59efdaff94184d96ef278d61f466cece82e35b800b2",
+						"sha256:3bfd543b4467abb972bfeeaa7a7d75ee18e7c92f077600d48fd1532f09129b54",
+						"sha256:9f8cf74dff8cad6bb4df8fc0fa81dca446bd6f44c2d811a167ffca34ab90a6f8",
+						"sha256:7487a77e30f32bd00fc35322a7fa308686bf3da17bb63f6a2bb2e9398a9a0357",
+						"sha256:9aead687f9207ee718401fef3174f8e5b9a99114f3bcdcae18ddc34d88ed4906",
 					},
 				},
 			},
 			putBlobExpectations: []cache.ArtifactCachePutBlobExpectation{
 				{
 					Args: cache.ArtifactCachePutBlobArgs{
-						BlobID: "sha256:6b7f14517d97567b8424123929188f4a807df7f6ba19cd6fdda4ffd1a2672115",
+						BlobID: "sha256:3bfd543b4467abb972bfeeaa7a7d75ee18e7c92f077600d48fd1532f09129b54",
 						BlobInfo: types.BlobInfo{
 							SchemaVersion: types.BlobJSONSchemaVersion,
 							Digest:        "",
@@ -285,6 +350,7 @@ func TestArtifact_Inspect(t *testing.T) {
 									FilePath: "var/lib/dpkg/status.d/base",
 									Packages: []types.Package{
 										{
+											ID:   "base-files@9.9+deb9u9",
 											Name: "base-files", Version: "9.9+deb9u9", SrcName: "base-files",
 											SrcVersion: "9.9+deb9u9",
 										},
@@ -293,13 +359,15 @@ func TestArtifact_Inspect(t *testing.T) {
 								{
 									FilePath: "var/lib/dpkg/status.d/netbase",
 									Packages: []types.Package{
-										{Name: "netbase", Version: "5.4", SrcName: "netbase", SrcVersion: "5.4"},
+										{ID: "netbase@5.4", Name: "netbase", Version: "5.4",
+											SrcName: "netbase", SrcVersion: "5.4"},
 									},
 								},
 								{
 									FilePath: "var/lib/dpkg/status.d/tzdata",
 									Packages: []types.Package{
 										{
+											ID:   "tzdata@2019a-0+deb9u1",
 											Name: "tzdata", Version: "2019a-0+deb9u1", SrcName: "tzdata",
 											SrcVersion: "2019a-0+deb9u1",
 										},
@@ -338,7 +406,7 @@ func TestArtifact_Inspect(t *testing.T) {
 				},
 				{
 					Args: cache.ArtifactCachePutBlobArgs{
-						BlobID: "sha256:061feee2cc149279b3248dd65d62e8f93b66673751cee4ef9ff4c85d9becab1e",
+						BlobID: "sha256:9f8cf74dff8cad6bb4df8fc0fa81dca446bd6f44c2d811a167ffca34ab90a6f8",
 						BlobInfo: types.BlobInfo{
 							SchemaVersion: types.BlobJSONSchemaVersion,
 							Digest:        "",
@@ -349,6 +417,7 @@ func TestArtifact_Inspect(t *testing.T) {
 									FilePath: "var/lib/dpkg/status.d/libc6",
 									Packages: []types.Package{
 										{
+											ID:   "libc6@2.24-11+deb9u4",
 											Name: "libc6", Version: "2.24-11+deb9u4", SrcName: "glibc",
 											SrcVersion: "2.24-11+deb9u4",
 										},
@@ -358,6 +427,7 @@ func TestArtifact_Inspect(t *testing.T) {
 									FilePath: "var/lib/dpkg/status.d/libssl1",
 									Packages: []types.Package{
 										{
+											ID:   "libssl1.1@1.1.0k-1~deb9u1",
 											Name: "libssl1.1", Version: "1.1.0k-1~deb9u1", SrcName: "openssl",
 											SrcVersion: "1.1.0k-1~deb9u1",
 										},
@@ -367,6 +437,7 @@ func TestArtifact_Inspect(t *testing.T) {
 									FilePath: "var/lib/dpkg/status.d/openssl",
 									Packages: []types.Package{
 										{
+											ID:   "openssl@1.1.0k-1~deb9u1",
 											Name: "openssl", Version: "1.1.0k-1~deb9u1", SrcName: "openssl",
 											SrcVersion: "1.1.0k-1~deb9u1",
 										},
@@ -405,7 +476,7 @@ func TestArtifact_Inspect(t *testing.T) {
 				},
 				{
 					Args: cache.ArtifactCachePutBlobArgs{
-						BlobID: "sha256:585926dc8c241a62c6def47fe20d193cf95060609518bfdc109190f2e5593cb9",
+						BlobID: "sha256:7487a77e30f32bd00fc35322a7fa308686bf3da17bb63f6a2bb2e9398a9a0357",
 						BlobInfo: types.BlobInfo{
 							SchemaVersion: types.BlobJSONSchemaVersion,
 							Digest:        "",
@@ -438,7 +509,7 @@ func TestArtifact_Inspect(t *testing.T) {
 				},
 				{
 					Args: cache.ArtifactCachePutBlobArgs{
-						BlobID: "sha256:47b1a45c2166e8a760f9c59efdaff94184d96ef278d61f466cece82e35b800b2",
+						BlobID: "sha256:9aead687f9207ee718401fef3174f8e5b9a99114f3bcdcae18ddc34d88ed4906",
 						BlobInfo: types.BlobInfo{
 							SchemaVersion: types.BlobJSONSchemaVersion,
 							Digest:        "",
@@ -517,10 +588,10 @@ func TestArtifact_Inspect(t *testing.T) {
 				Type: types.ArtifactContainerImage,
 				ID:   "sha256:a646bb11d39c149d4aaf9b888233048e0848304e5abd75667ea6f21d540d800c",
 				BlobIDs: []string{
-					"sha256:6b7f14517d97567b8424123929188f4a807df7f6ba19cd6fdda4ffd1a2672115",
-					"sha256:061feee2cc149279b3248dd65d62e8f93b66673751cee4ef9ff4c85d9becab1e",
-					"sha256:585926dc8c241a62c6def47fe20d193cf95060609518bfdc109190f2e5593cb9",
-					"sha256:47b1a45c2166e8a760f9c59efdaff94184d96ef278d61f466cece82e35b800b2",
+					"sha256:3bfd543b4467abb972bfeeaa7a7d75ee18e7c92f077600d48fd1532f09129b54",
+					"sha256:9f8cf74dff8cad6bb4df8fc0fa81dca446bd6f44c2d811a167ffca34ab90a6f8",
+					"sha256:7487a77e30f32bd00fc35322a7fa308686bf3da17bb63f6a2bb2e9398a9a0357",
+					"sha256:9aead687f9207ee718401fef3174f8e5b9a99114f3bcdcae18ddc34d88ed4906",
 				},
 				ImageMetadata: types.ImageMetadata{
 					ID: "sha256:58701fd185bda36cab0557bb6438661831267aa4a9e0b54211c4d5317a48aff4",
@@ -601,30 +672,31 @@ func TestArtifact_Inspect(t *testing.T) {
 					analyzer.TypeDebian, analyzer.TypeDpkg, analyzer.TypeDpkgLicense, analyzer.TypeComposer,
 					analyzer.TypeBundler, analyzer.TypeLicenseFile,
 				},
+				LicenseScannerOption: analyzer.LicenseScannerOption{Full: true},
 			},
 			missingBlobsExpectation: cache.ArtifactCacheMissingBlobsExpectation{
 				Args: cache.ArtifactCacheMissingBlobsArgs{
 					ArtifactID: "sha256:a646bb11d39c149d4aaf9b888233048e0848304e5abd75667ea6f21d540d800c",
 					BlobIDs: []string{
-						"sha256:57ada28264043324e1f99eb3db63de1a7e3f27f1fa4dcbb1df2f76875b98b9c4",
-						"sha256:64f08ed6c84283289beb64335f76a4c60a89f62c7937b8ea50fd8bfda304f0e2",
-						"sha256:da802174ac83921ac629ec623f5f5ad530291fb2420102f6a213322cb257655c",
-						"sha256:996fcbfcc2964d20456afd0de16747533693b1cbebb72a6d28823a134abf0f5f",
+						"sha256:ef7f3617f4e698a7378c222861ad779caf39293eb75bc40a297feb0f04997773",
+						"sha256:47b4982cb2f3465af796707b5d3204ecebff8904a7de34b994b0f349b00749e3",
+						"sha256:4c59618ffe6b2dd606b9342bc7cf5673d87e562789b7f132e5234b2e7412a01f",
+						"sha256:3943af1221bbd84efc398958163456fca57e1400c24eeb2db9e2ddad7c1f37c0",
 					},
 				},
 				Returns: cache.ArtifactCacheMissingBlobsReturns{
 					MissingBlobIDs: []string{
-						"sha256:57ada28264043324e1f99eb3db63de1a7e3f27f1fa4dcbb1df2f76875b98b9c4",
-						"sha256:64f08ed6c84283289beb64335f76a4c60a89f62c7937b8ea50fd8bfda304f0e2",
-						"sha256:da802174ac83921ac629ec623f5f5ad530291fb2420102f6a213322cb257655c",
-						"sha256:996fcbfcc2964d20456afd0de16747533693b1cbebb72a6d28823a134abf0f5f",
+						"sha256:ef7f3617f4e698a7378c222861ad779caf39293eb75bc40a297feb0f04997773",
+						"sha256:47b4982cb2f3465af796707b5d3204ecebff8904a7de34b994b0f349b00749e3",
+						"sha256:4c59618ffe6b2dd606b9342bc7cf5673d87e562789b7f132e5234b2e7412a01f",
+						"sha256:3943af1221bbd84efc398958163456fca57e1400c24eeb2db9e2ddad7c1f37c0",
 					},
 				},
 			},
 			putBlobExpectations: []cache.ArtifactCachePutBlobExpectation{
 				{
 					Args: cache.ArtifactCachePutBlobArgs{
-						BlobID: "sha256:57ada28264043324e1f99eb3db63de1a7e3f27f1fa4dcbb1df2f76875b98b9c4",
+						BlobID: "sha256:ef7f3617f4e698a7378c222861ad779caf39293eb75bc40a297feb0f04997773",
 						BlobInfo: types.BlobInfo{
 							SchemaVersion: types.BlobJSONSchemaVersion,
 							Digest:        "",
@@ -635,7 +707,7 @@ func TestArtifact_Inspect(t *testing.T) {
 				},
 				{
 					Args: cache.ArtifactCachePutBlobArgs{
-						BlobID: "sha256:64f08ed6c84283289beb64335f76a4c60a89f62c7937b8ea50fd8bfda304f0e2",
+						BlobID: "sha256:47b4982cb2f3465af796707b5d3204ecebff8904a7de34b994b0f349b00749e3",
 						BlobInfo: types.BlobInfo{
 							SchemaVersion: types.BlobJSONSchemaVersion,
 							Digest:        "",
@@ -646,7 +718,7 @@ func TestArtifact_Inspect(t *testing.T) {
 				},
 				{
 					Args: cache.ArtifactCachePutBlobArgs{
-						BlobID: "sha256:da802174ac83921ac629ec623f5f5ad530291fb2420102f6a213322cb257655c",
+						BlobID: "sha256:4c59618ffe6b2dd606b9342bc7cf5673d87e562789b7f132e5234b2e7412a01f",
 						BlobInfo: types.BlobInfo{
 							SchemaVersion: types.BlobJSONSchemaVersion,
 							Digest:        "",
@@ -658,7 +730,7 @@ func TestArtifact_Inspect(t *testing.T) {
 				},
 				{
 					Args: cache.ArtifactCachePutBlobArgs{
-						BlobID: "sha256:996fcbfcc2964d20456afd0de16747533693b1cbebb72a6d28823a134abf0f5f",
+						BlobID: "sha256:3943af1221bbd84efc398958163456fca57e1400c24eeb2db9e2ddad7c1f37c0",
 						BlobInfo: types.BlobInfo{
 							SchemaVersion: types.BlobJSONSchemaVersion,
 							Digest:        "",
@@ -674,10 +746,10 @@ func TestArtifact_Inspect(t *testing.T) {
 				Type: types.ArtifactContainerImage,
 				ID:   "sha256:a646bb11d39c149d4aaf9b888233048e0848304e5abd75667ea6f21d540d800c",
 				BlobIDs: []string{
-					"sha256:57ada28264043324e1f99eb3db63de1a7e3f27f1fa4dcbb1df2f76875b98b9c4",
-					"sha256:64f08ed6c84283289beb64335f76a4c60a89f62c7937b8ea50fd8bfda304f0e2",
-					"sha256:da802174ac83921ac629ec623f5f5ad530291fb2420102f6a213322cb257655c",
-					"sha256:996fcbfcc2964d20456afd0de16747533693b1cbebb72a6d28823a134abf0f5f",
+					"sha256:ef7f3617f4e698a7378c222861ad779caf39293eb75bc40a297feb0f04997773",
+					"sha256:47b4982cb2f3465af796707b5d3204ecebff8904a7de34b994b0f349b00749e3",
+					"sha256:4c59618ffe6b2dd606b9342bc7cf5673d87e562789b7f132e5234b2e7412a01f",
+					"sha256:3943af1221bbd84efc398958163456fca57e1400c24eeb2db9e2ddad7c1f37c0",
 				},
 				ImageMetadata: types.ImageMetadata{
 					ID: "sha256:58701fd185bda36cab0557bb6438661831267aa4a9e0b54211c4d5317a48aff4",
@@ -760,7 +832,7 @@ func TestArtifact_Inspect(t *testing.T) {
 			missingBlobsExpectation: cache.ArtifactCacheMissingBlobsExpectation{
 				Args: cache.ArtifactCacheMissingBlobsArgs{
 					ArtifactID: "sha256:059741cfbdc039e88e337d621e57e03e99b0e0a75df32f2027ebef13f839af65",
-					BlobIDs:    []string{"sha256:bb59015f49048b23e73873f72dc5d0f42b44c64890ba13662849e8e4f9c2f1b7"},
+					BlobIDs:    []string{"sha256:a07b19e0e0a4339c00d982f6d80f305cd9dbb98f88b3c74e57b97574b9ce9ba3"},
 				},
 				Returns: cache.ArtifactCacheMissingBlobsReturns{
 					Err: xerrors.New("MissingBlobs failed"),
@@ -774,16 +846,16 @@ func TestArtifact_Inspect(t *testing.T) {
 			missingBlobsExpectation: cache.ArtifactCacheMissingBlobsExpectation{
 				Args: cache.ArtifactCacheMissingBlobsArgs{
 					ArtifactID: "sha256:059741cfbdc039e88e337d621e57e03e99b0e0a75df32f2027ebef13f839af65",
-					BlobIDs:    []string{"sha256:bb59015f49048b23e73873f72dc5d0f42b44c64890ba13662849e8e4f9c2f1b7"},
+					BlobIDs:    []string{"sha256:a07b19e0e0a4339c00d982f6d80f305cd9dbb98f88b3c74e57b97574b9ce9ba3"},
 				},
 				Returns: cache.ArtifactCacheMissingBlobsReturns{
-					MissingBlobIDs: []string{"sha256:bb59015f49048b23e73873f72dc5d0f42b44c64890ba13662849e8e4f9c2f1b7"},
+					MissingBlobIDs: []string{"sha256:a07b19e0e0a4339c00d982f6d80f305cd9dbb98f88b3c74e57b97574b9ce9ba3"},
 				},
 			},
 			putBlobExpectations: []cache.ArtifactCachePutBlobExpectation{
 				{
 					Args: cache.ArtifactCachePutBlobArgs{
-						BlobID: "sha256:bb59015f49048b23e73873f72dc5d0f42b44c64890ba13662849e8e4f9c2f1b7",
+						BlobID: "sha256:a07b19e0e0a4339c00d982f6d80f305cd9dbb98f88b3c74e57b97574b9ce9ba3",
 						BlobInfo: types.BlobInfo{
 							SchemaVersion: types.BlobJSONSchemaVersion,
 							Digest:        "",
@@ -800,67 +872,7 @@ func TestArtifact_Inspect(t *testing.T) {
 							PackageInfos: []types.PackageInfo{
 								{
 									FilePath: "lib/apk/db/installed",
-									Packages: []types.Package{
-										{
-											Name: "alpine-baselayout", Version: "3.2.0-r3",
-											SrcName: "alpine-baselayout", SrcVersion: "3.2.0-r3",
-											Licenses: []string{"GPL-2.0"},
-										},
-										{
-											Name: "alpine-keys", Version: "2.1-r2", SrcName: "alpine-keys",
-											SrcVersion: "2.1-r2", Licenses: []string{"MIT"},
-										},
-										{
-											Name: "apk-tools", Version: "2.10.4-r3", SrcName: "apk-tools",
-											SrcVersion: "2.10.4-r3", Licenses: []string{"GPL-2.0"},
-										},
-										{
-											Name: "busybox", Version: "1.31.1-r9", SrcName: "busybox",
-											SrcVersion: "1.31.1-r9", Licenses: []string{"GPL-2.0"},
-										},
-										{
-											Name: "ca-certificates-cacert", Version: "20191127-r1",
-											SrcName: "ca-certificates", SrcVersion: "20191127-r1",
-											Licenses: []string{"MPL-2.0", "GPL-2.0"},
-										},
-										{
-											Name: "libc-utils", Version: "0.7.2-r0", SrcName: "libc-dev",
-											SrcVersion: "0.7.2-r0", Licenses: []string{"BSD-3-Clause"},
-										},
-										{
-											Name: "libcrypto1.1", Version: "1.1.1d-r3", SrcName: "openssl",
-											SrcVersion: "1.1.1d-r3", Licenses: []string{"OpenSSL"},
-										},
-										{
-											Name: "libssl1.1", Version: "1.1.1d-r3", SrcName: "openssl",
-											SrcVersion: "1.1.1d-r3", Licenses: []string{"OpenSSL"},
-										},
-										{
-											Name: "libtls-standalone", Version: "2.9.1-r0",
-											SrcName: "libtls-standalone", SrcVersion: "2.9.1-r0",
-											Licenses: []string{"ISC"},
-										},
-										{
-											Name: "musl", Version: "1.1.24-r2", SrcName: "musl",
-											SrcVersion: "1.1.24-r2", Licenses: []string{"MIT"},
-										},
-										{
-											Name: "musl-utils", Version: "1.1.24-r2", SrcName: "musl",
-											SrcVersion: "1.1.24-r2", Licenses: []string{"MIT", "BSD-3-Clause", "GPL-2.0"},
-										},
-										{
-											Name: "scanelf", Version: "1.2.4-r0", SrcName: "pax-utils",
-											SrcVersion: "1.2.4-r0", Licenses: []string{"GPL-2.0"},
-										},
-										{
-											Name: "ssl_client", Version: "1.31.1-r9", SrcName: "busybox",
-											SrcVersion: "1.31.1-r9", Licenses: []string{"GPL-2.0"},
-										},
-										{
-											Name: "zlib", Version: "1.2.11-r3", SrcName: "zlib",
-											SrcVersion: "1.2.11-r3", Licenses: []string{"Zlib"},
-										},
-									},
+									Packages: alpinePkgs,
 								},
 							},
 							Licenses: []types.LicenseFile{
@@ -905,17 +917,17 @@ func TestArtifact_Inspect(t *testing.T) {
 			missingBlobsExpectation: cache.ArtifactCacheMissingBlobsExpectation{
 				Args: cache.ArtifactCacheMissingBlobsArgs{
 					ArtifactID: "sha256:059741cfbdc039e88e337d621e57e03e99b0e0a75df32f2027ebef13f839af65",
-					BlobIDs:    []string{"sha256:bb59015f49048b23e73873f72dc5d0f42b44c64890ba13662849e8e4f9c2f1b7"},
+					BlobIDs:    []string{"sha256:a07b19e0e0a4339c00d982f6d80f305cd9dbb98f88b3c74e57b97574b9ce9ba3"},
 				},
 				Returns: cache.ArtifactCacheMissingBlobsReturns{
 					MissingArtifact: true,
-					MissingBlobIDs:  []string{"sha256:bb59015f49048b23e73873f72dc5d0f42b44c64890ba13662849e8e4f9c2f1b7"},
+					MissingBlobIDs:  []string{"sha256:a07b19e0e0a4339c00d982f6d80f305cd9dbb98f88b3c74e57b97574b9ce9ba3"},
 				},
 			},
 			putBlobExpectations: []cache.ArtifactCachePutBlobExpectation{
 				{
 					Args: cache.ArtifactCachePutBlobArgs{
-						BlobID: "sha256:bb59015f49048b23e73873f72dc5d0f42b44c64890ba13662849e8e4f9c2f1b7",
+						BlobID: "sha256:a07b19e0e0a4339c00d982f6d80f305cd9dbb98f88b3c74e57b97574b9ce9ba3",
 						BlobInfo: types.BlobInfo{
 							SchemaVersion: types.BlobJSONSchemaVersion,
 							Digest:        "",
@@ -932,67 +944,7 @@ func TestArtifact_Inspect(t *testing.T) {
 							PackageInfos: []types.PackageInfo{
 								{
 									FilePath: "lib/apk/db/installed",
-									Packages: []types.Package{
-										{
-											Name: "alpine-baselayout", Version: "3.2.0-r3",
-											SrcName: "alpine-baselayout", SrcVersion: "3.2.0-r3",
-											Licenses: []string{"GPL-2.0"},
-										},
-										{
-											Name: "alpine-keys", Version: "2.1-r2", SrcName: "alpine-keys",
-											SrcVersion: "2.1-r2", Licenses: []string{"MIT"},
-										},
-										{
-											Name: "apk-tools", Version: "2.10.4-r3", SrcName: "apk-tools",
-											SrcVersion: "2.10.4-r3", Licenses: []string{"GPL-2.0"},
-										},
-										{
-											Name: "busybox", Version: "1.31.1-r9", SrcName: "busybox",
-											SrcVersion: "1.31.1-r9", Licenses: []string{"GPL-2.0"},
-										},
-										{
-											Name: "ca-certificates-cacert", Version: "20191127-r1",
-											SrcName: "ca-certificates", SrcVersion: "20191127-r1",
-											Licenses: []string{"MPL-2.0", "GPL-2.0"},
-										},
-										{
-											Name: "libc-utils", Version: "0.7.2-r0", SrcName: "libc-dev",
-											SrcVersion: "0.7.2-r0", Licenses: []string{"BSD-3-Clause"},
-										},
-										{
-											Name: "libcrypto1.1", Version: "1.1.1d-r3", SrcName: "openssl",
-											SrcVersion: "1.1.1d-r3", Licenses: []string{"OpenSSL"},
-										},
-										{
-											Name: "libssl1.1", Version: "1.1.1d-r3", SrcName: "openssl",
-											SrcVersion: "1.1.1d-r3", Licenses: []string{"OpenSSL"},
-										},
-										{
-											Name: "libtls-standalone", Version: "2.9.1-r0",
-											SrcName: "libtls-standalone", SrcVersion: "2.9.1-r0",
-											Licenses: []string{"ISC"},
-										},
-										{
-											Name: "musl", Version: "1.1.24-r2", SrcName: "musl",
-											SrcVersion: "1.1.24-r2", Licenses: []string{"MIT"},
-										},
-										{
-											Name: "musl-utils", Version: "1.1.24-r2", SrcName: "musl",
-											SrcVersion: "1.1.24-r2", Licenses: []string{"MIT", "BSD-3-Clause", "GPL-2.0"},
-										},
-										{
-											Name: "scanelf", Version: "1.2.4-r0", SrcName: "pax-utils",
-											SrcVersion: "1.2.4-r0", Licenses: []string{"GPL-2.0"},
-										},
-										{
-											Name: "ssl_client", Version: "1.31.1-r9", SrcName: "busybox",
-											SrcVersion: "1.31.1-r9", Licenses: []string{"GPL-2.0"},
-										},
-										{
-											Name: "zlib", Version: "1.2.11-r3", SrcName: "zlib",
-											SrcVersion: "1.2.11-r3", Licenses: []string{"Zlib"},
-										},
-									},
+									Packages: alpinePkgs,
 								},
 							},
 							Licenses: []types.LicenseFile{

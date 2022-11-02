@@ -39,14 +39,20 @@ var (
 
 // AnalyzerOptions is used to initialize analyzers
 type AnalyzerOptions struct {
-	Group               Group
-	FilePatterns        []string
-	DisabledAnalyzers   []Type
-	SecretScannerOption SecretScannerOption
+	Group                Group
+	FilePatterns         []string
+	DisabledAnalyzers    []Type
+	SecretScannerOption  SecretScannerOption
+	LicenseScannerOption LicenseScannerOption
 }
 
 type SecretScannerOption struct {
 	ConfigPath string
+}
+
+type LicenseScannerOption struct {
+	// Use license classifier to get better results though the classification is expensive.
+	Full bool
 }
 
 ////////////////

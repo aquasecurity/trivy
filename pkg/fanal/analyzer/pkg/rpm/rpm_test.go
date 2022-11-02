@@ -585,17 +585,22 @@ func TestParseRpmInfo(t *testing.T) {
 			require.NoError(t, err)
 			defer f.Close()
 
-			pkgs, _, err := a.parsePkgInfo(f)
+			got, _, err := a.parsePkgInfo(f)
 			require.NoError(t, err)
 
 			sort.Slice(tc.pkgs, func(i, j int) bool {
 				return tc.pkgs[i].Name < tc.pkgs[j].Name
 			})
-			sort.Slice(pkgs, func(i, j int) bool {
-				return pkgs[i].Name < pkgs[j].Name
+			sort.Slice(got, func(i, j int) bool {
+				return got[i].Name < got[j].Name
 			})
 
-			assert.Equal(t, tc.pkgs, pkgs)
+			for i := range got {
+				got[i].ID = ""
+				got[i].DependsOn = nil // TODO: add tests
+			}
+
+			assert.Equal(t, tc.pkgs, got)
 		})
 	}
 }
