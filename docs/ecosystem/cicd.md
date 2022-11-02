@@ -42,3 +42,18 @@ You can use the Trivy Orb for Circle CI to introduce security scanning into your
 
 👉 Get it at: <https://circleci.com/developer/orbs/orb/fifteen5/trivy-orb>
 Source: <https://github.com/15five/trivy-orb>
+
+## Woodpecker CI (Community)
+
+Example Trivy step in pipeline
+
+```yml
+pipeline:
+  securitycheck:
+    image: aquasec/trivy:latest
+    commands:
+      # use any trivy command, if exit code is 0 woodpecker marks it as passed, else it assumes it failed
+      - trivy fs --exit-code 1 --skip-dirs web/ --skip-dirs docs/ --severity MEDIUM,HIGH,CRITICAL .
+```
+
+Woodpecker does use Trivy itself so you can [see it in use there](https://github.com/woodpecker-ci/woodpecker/pull/1163).
