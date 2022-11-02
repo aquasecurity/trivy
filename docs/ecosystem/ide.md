@@ -12,6 +12,13 @@ The Trivy plugin for JetBrains IDEs lets you use Trivy right from your developme
 
 👉 Get it at: <https://plugins.jetbrains.com/plugin/18690-trivy-findings-explorer>
 
+## Kubernetes Lens (Official)
+[Kubernetes Lens](https://k8slens.dev/) is a management application for Kubernetes clusters.
+
+Trivy has an extension for Kubernetes Lens that lets you scan Kubernetes workloads and view the results in the Lens UI.
+
+👉 Get it at: <https://github.com/aquasecurity/trivy-operator-lens-extension>
+
 ## Vim (Community)
 [Vim](https://www.vim.org/) is a terminal based text editor.
 
@@ -30,13 +37,6 @@ Trivy Docker Desktop extension for scanning container images for vulnerabilities
 [Rancher Desktop](https://rancherdesktop.io/) is an easy way to use containers and Kubernetes on your development machine, and mange it in a GUI.
 
 Trivy is natively integrated with Rancher, no installation is needed. More info in Rancher documentation: <https://docs.rancherdesktop.io/getting-started/features#scanning-images>
-
-## Kubernetes Lens (Official)
-[Kubernetes Lens](https://k8slens.dev/) is a management application for Kubernetes clusters.
-
-Trivy has an extension for Kubernetes Lens that lets you scan Kubernetes workloads and view the results in the Lens UI.
-
-👉 Get it at: <https://github.com/aquasecurity/trivy-operator-lens-extension>
 
 ## LazyTrivy (Community)
 A terminal native UI for Trivy

@@ -10,11 +10,6 @@ Using the Trivy Operator you can install Trivy into a Kubernetes cluster so that
 
 👉 Get it at: <https://github.com/aquasecurity/trivy-operator>
 
-### Trivy Operator (Community)
-Kubernetes Operator and Admission controller for continuously scan containers deployed in Kubernetes.
-
-👉 Get it at: <https://github.com/devopstales/trivy-operator>
-
 ## Harbor (Official)
 [Harbor](https://goharbor.io/) is an open source cloud native container and artifact registry.
 
@@ -26,3 +21,8 @@ Trivy is natively integrated into Harbor, no installation is needed. More info i
 You can use Kyverno to ensure and enforce that deployed workloads' images are scanned for vulnerabilities.
 
 👉 Get it at: <https://neonmirrors.net/post/2022-07/attesting-image-scans-kyverno>
+
+### Devopstales Trivy Operator (Community)
+Kubernetes Operator and Admission controller for continuously scan containers deployed in Kubernetes.
+
+👉 Get it at: <https://github.com/devopstales/trivy-operator>
