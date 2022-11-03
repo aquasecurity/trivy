@@ -1,7 +1,7 @@
 {
     "Findings": [
     {{- $t_first := true -}}
-    {{- range . -}}
+    {{- range .[:100] -}}
     {{- $target := .Target -}}
     {{- $image := .Target -}}
     {{- if gt (len $image) 127 -}}
