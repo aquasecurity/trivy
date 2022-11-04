@@ -50,6 +50,13 @@ trivy aws --service s3 --arn arn:aws:s3:::example-bucket
 
 All ARNs with detected issues will be displayed when showing results for their associated service.
 
+## Compliance Spec
+Trivy can also run specific checks by spec by specifying the compliance flag:
+```shell
+trivy aws --compliance=awscis1.2
+```
+Will only target the checks defined under the AWS CIS 1.2 spec. Currently, we support AWS CIS 1.2 and 1.4 specs.
+
 ## Cached Results
 
 By default, Trivy will cache a representation of each AWS service for 24 hours. This means you can filter and view results for a service without having to wait for the entire scan to run again. If you want to force the cache to be refreshed with the latest data, you can use `--update-cache`. Or if you'd like to use cached data for a different timeframe, you can specify `--max-cache-age` (e.g. `--max-cache-age 2h`.). Regardless of whether the cache is used or not, rules will be evaluated again with each run of `trivy aws`.
