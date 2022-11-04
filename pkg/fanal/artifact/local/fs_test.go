@@ -27,9 +27,7 @@ import (
 )
 
 func TestArtifact_Inspect(t *testing.T) {
-	// if runtime.GOOS == "windows" {
-	// 	t.Skip("skipping test on Windows")
-	// }
+
 	type fields struct {
 		dir string
 	}
@@ -51,14 +49,27 @@ func TestArtifact_Inspect(t *testing.T) {
 			},
 			putBlobExpectation: cache.ArtifactCachePutBlobExpectation{
 				Args: cache.ArtifactCachePutBlobArgs{
-					BlobID: "sha256:fa644cab37290cb0be1f690cef170f2b54b939722a6d5f3d7306fa8035abdd0e",
+					BlobID: "sha256:7177f27ce94e21305ba8efe2ced3533ba9be66bd251aaa217615469a29ed86a9",
 					BlobInfo: types.BlobInfo{
 						SchemaVersion: 2, Digest: "", DiffID: "", CreatedBy: "", OpaqueDirs: []string(nil),
-						WhiteoutFiles: []string(nil), OS: (*types.OS)(nil), Repository: (*types.Repository)(nil),
-						PackageInfos: []types.PackageInfo(nil), Applications: []types.Application(nil),
-						Misconfigurations: []types.Misconfiguration(nil), Secrets: []types.Secret(nil),
-						Licenses: []types.LicenseFile(nil), BuildInfo: (*types.BuildInfo)(nil),
-						CustomResources: []types.CustomResource(nil),
+						WhiteoutFiles: []string(nil), OS: &types.OS{Family: "alpine", Name: "3.11.6"},
+						Repository: (*types.Repository)(nil), PackageInfos: []types.PackageInfo{
+							types.PackageInfo{
+								FilePath: "lib/apk/db/installed", Packages: []types.Package{
+									types.Package{
+										ID: "musl@1.1.24-r2", Name: "musl", Version: "1.1.24-r2", Release: "", Epoch: 0,
+										Arch: "", SrcName: "musl", SrcVersion: "1.1.24-r2", SrcRelease: "", SrcEpoch: 0,
+										Licenses: []string{"MIT"}, Modularitylabel: "",
+										BuildInfo: (*types.BuildInfo)(nil), Ref: "", Indirect: false,
+										DependsOn: []string(nil),
+										Layer:     types.Layer{Digest: "", DiffID: "", CreatedBy: ""}, FilePath: "",
+										Locations: []types.Location(nil),
+									},
+								},
+							},
+						}, Applications: []types.Application(nil), Misconfigurations: []types.Misconfiguration(nil),
+						Secrets: []types.Secret(nil), Licenses: []types.LicenseFile(nil),
+						BuildInfo: (*types.BuildInfo)(nil), CustomResources: []types.CustomResource(nil),
 					},
 				},
 				Returns: cache.ArtifactCachePutBlobReturns{},
@@ -66,9 +77,9 @@ func TestArtifact_Inspect(t *testing.T) {
 			want: types.ArtifactReference{
 				Name: "host",
 				Type: types.ArtifactFilesystem,
-				ID:   "sha256:fa644cab37290cb0be1f690cef170f2b54b939722a6d5f3d7306fa8035abdd0e",
+				ID:   "sha256:7177f27ce94e21305ba8efe2ced3533ba9be66bd251aaa217615469a29ed86a9",
 				BlobIDs: []string{
-					"sha256:fa644cab37290cb0be1f690cef170f2b54b939722a6d5f3d7306fa8035abdd0e",
+					"sha256:7177f27ce94e21305ba8efe2ced3533ba9be66bd251aaa217615469a29ed86a9",
 				},
 			},
 		},
@@ -105,14 +116,27 @@ func TestArtifact_Inspect(t *testing.T) {
 			},
 			putBlobExpectation: cache.ArtifactCachePutBlobExpectation{
 				Args: cache.ArtifactCachePutBlobArgs{
-					BlobID: "sha256:fa644cab37290cb0be1f690cef170f2b54b939722a6d5f3d7306fa8035abdd0e",
+					BlobID: "sha256:7177f27ce94e21305ba8efe2ced3533ba9be66bd251aaa217615469a29ed86a9",
 					BlobInfo: types.BlobInfo{
 						SchemaVersion: 2, Digest: "", DiffID: "", CreatedBy: "", OpaqueDirs: []string(nil),
-						WhiteoutFiles: []string(nil), OS: (*types.OS)(nil), Repository: (*types.Repository)(nil),
-						PackageInfos: []types.PackageInfo(nil), Applications: []types.Application(nil),
-						Misconfigurations: []types.Misconfiguration(nil), Secrets: []types.Secret(nil),
-						Licenses: []types.LicenseFile(nil), BuildInfo: (*types.BuildInfo)(nil),
-						CustomResources: []types.CustomResource(nil),
+						WhiteoutFiles: []string(nil), OS: &types.OS{Family: "alpine", Name: "3.11.6"},
+						Repository: (*types.Repository)(nil), PackageInfos: []types.PackageInfo{
+							types.PackageInfo{
+								FilePath: "lib/apk/db/installed", Packages: []types.Package{
+									types.Package{
+										ID: "musl@1.1.24-r2", Name: "musl", Version: "1.1.24-r2", Release: "", Epoch: 0,
+										Arch: "", SrcName: "musl", SrcVersion: "1.1.24-r2", SrcRelease: "", SrcEpoch: 0,
+										Licenses: []string{"MIT"}, Modularitylabel: "",
+										BuildInfo: (*types.BuildInfo)(nil), Ref: "", Indirect: false,
+										DependsOn: []string(nil),
+										Layer:     types.Layer{Digest: "", DiffID: "", CreatedBy: ""}, FilePath: "",
+										Locations: []types.Location(nil),
+									},
+								},
+							},
+						}, Applications: []types.Application(nil), Misconfigurations: []types.Misconfiguration(nil),
+						Secrets: []types.Secret(nil), Licenses: []types.LicenseFile(nil),
+						BuildInfo: (*types.BuildInfo)(nil), CustomResources: []types.CustomResource(nil),
 					},
 				},
 				Returns: cache.ArtifactCachePutBlobReturns{

@@ -60,7 +60,7 @@ func TestDir_Walk(t *testing.T) {
 			name:    "skip dir",
 			rootDir: "testdata/fs/",
 			fields: fields{
-				skipDirs: []string{"/testdata/fs/app/"},
+				skipDirs: []string{"/testdata/fs/app"},
 			},
 			analyzeFn: func(filePath string, info os.FileInfo, opener analyzer.Opener) error {
 				if strings.HasPrefix(filePath, "testdata/fs/app") {
