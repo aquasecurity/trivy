@@ -15,8 +15,6 @@ import (
 )
 
 func TestSecretAnalyzer(t *testing.T) {
-	t.Skip("skipping test in short mode.")
-
 	wantFinding1 := types.SecretFinding{
 		RuleID:    "rule1",
 		Category:  "general",
@@ -122,7 +120,7 @@ func TestSecretAnalyzer(t *testing.T) {
 		{
 			name:       "image scan return result",
 			configPath: filepath.Join("testdata", "image-config.yaml"),
-			filePath:   filepath.Join("testdata", "secret.txt"),
+			filePath:   "testdata/secret.txt",
 			want: &analyzer.AnalysisResult{
 				Secrets: []types.Secret{
 					{

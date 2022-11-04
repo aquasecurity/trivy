@@ -2,8 +2,9 @@ package walker_test
 
 import (
 	"errors"
+	"fmt"
 	"os"
-	"runtime"
+	"path/filepath"
 	"strings"
 	"testing"
 
@@ -17,9 +18,6 @@ import (
 )
 
 func TestLayerTar_Walk(t *testing.T) {
-	if runtime.GOOS == "windows" {
-		t.Skip("skipping test on Windows")
-	}
 	type fields struct {
 		skipFiles []string
 		skipDirs  []string
@@ -35,16 +33,16 @@ func TestLayerTar_Walk(t *testing.T) {
 	}{
 		{
 			name:      "happy path",
-			inputFile: "testdata/test.tar",
+			inputFile: filepath.Join("testdata", "test.tar"),
 			analyzeFn: func(filePath string, info os.FileInfo, opener analyzer.Opener) error {
 				return nil
 			},
-			wantOpqDirs: []string{"etc/"},
-			wantWhFiles: []string{"foo/foo"},
+			wantOpqDirs: []string{fmt.Sprintf("etc%c", os.PathSeparator)},
+			wantWhFiles: []string{filepath.Join("foo", "foo")},
 		},
 		{
 			name:      "skip file",
-			inputFile: "testdata/test.tar",
+			inputFile: filepath.Join("testdata", "test.tar"),
 			fields: fields{
 				skipFiles: []string{"/app/myweb/index.html"},
 			},
@@ -54,14 +52,14 @@ func TestLayerTar_Walk(t *testing.T) {
 				}
 				return nil
 			},
-			wantOpqDirs: []string{"etc/"},
-			wantWhFiles: []string{"foo/foo"},
+			wantOpqDirs: []string{fmt.Sprintf("etc%c", os.PathSeparator)},
+			wantWhFiles: []string{filepath.Join("foo", "foo")},
 		},
 		{
 			name:      "skip dir",
-			inputFile: "testdata/test.tar",
+			inputFile: filepath.Join("testdata", "test.tar"),
 			fields: fields{
-				skipDirs: []string{"/app/"},
+				skipDirs: []string{"/app"},
 			},
 			analyzeFn: func(filePath string, info os.FileInfo, opener analyzer.Opener) error {
 				if strings.HasPrefix(filePath, "app") {
@@ -69,8 +67,8 @@ func TestLayerTar_Walk(t *testing.T) {
 				}
 				return nil
 			},
-			wantOpqDirs: []string{"etc/"},
-			wantWhFiles: []string{"foo/foo"},
+			wantOpqDirs: []string{fmt.Sprintf("etc%c", os.PathSeparator)},
+			wantWhFiles: []string{filepath.Join("foo", "foo")},
 		},
 		{
 			name:      "sad path",

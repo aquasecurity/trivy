@@ -3,6 +3,7 @@ package apk
 import (
 	"bufio"
 	"os"
+	"path/filepath"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -11,7 +12,6 @@ import (
 )
 
 func TestParseApkInfo(t *testing.T) {
-	t.Skip("Not relevant for Windows testing")
 	var tests = map[string]struct {
 		path      string
 		wantPkgs  []types.Package
@@ -163,106 +163,106 @@ func TestParseApkInfo(t *testing.T) {
 			},
 			wantFiles: []string{
 				// musl-1.1.14-r10
-				"lib/libc.musl-x86_64.so.1",
-				"lib/ld-musl-x86_64.so.1",
+				filepath.Join("lib", "libc.musl-x86_64.so.1"),
+				filepath.Join("lib", "ld-musl-x86_64.so.1"),
 
 				// busybox-1.24.2-r9
-				"bin/busybox",
-				"bin/sh",
-				"etc/securetty",
-				"etc/udhcpd.conf",
-				"etc/logrotate.d/acpid",
+				filepath.Join("bin", "busybox"),
+				filepath.Join("bin", "sh"),
+				filepath.Join("etc", "securetty"),
+				filepath.Join("etc", "udhcpd.conf"),
+				filepath.Join("etc", "logrotate.d", "acpid"),
 
 				// alpine-baselayout-3.0.3-r0
-				"etc/hosts",
-				"etc/sysctl.conf",
-				"etc/group",
-				"etc/protocols",
-				"etc/fstab",
-				"etc/mtab",
-				"etc/profile",
-				"etc/TZ",
-				"etc/shells",
-				"etc/motd",
-				"etc/inittab",
-				"etc/hostname",
-				"etc/modules",
-				"etc/services",
-				"etc/shadow",
-				"etc/passwd",
-				"etc/profile.d/color_prompt",
-				"etc/sysctl.d/00-alpine.conf",
-				"etc/modprobe.d/i386.conf",
-				"etc/modprobe.d/blacklist.conf",
-				"etc/modprobe.d/aliases.conf",
-				"etc/modprobe.d/kms.conf",
-				"etc/crontabs/root",
-				"sbin/mkmntdirs",
-				"var/spool/cron/crontabs",
+				filepath.Join("etc", "hosts"),
+				filepath.Join("etc", "sysctl.conf"),
+				filepath.Join("etc", "group"),
+				filepath.Join("etc", "protocols"),
+				filepath.Join("etc", "fstab"),
+				filepath.Join("etc", "mtab"),
+				filepath.Join("etc", "profile"),
+				filepath.Join("etc", "TZ"),
+				filepath.Join("etc", "shells"),
+				filepath.Join("etc", "motd"),
+				filepath.Join("etc", "inittab"),
+				filepath.Join("etc", "hostname"),
+				filepath.Join("etc", "modules"),
+				filepath.Join("etc", "services"),
+				filepath.Join("etc", "shadow"),
+				filepath.Join("etc", "passwd"),
+				filepath.Join("etc", "profile.d", "color_prompt"),
+				filepath.Join("etc", "sysctl.d", "00-alpine.conf"),
+				filepath.Join("etc", "modprobe.d", "i386.conf"),
+				filepath.Join("etc", "modprobe.d", "blacklist.conf"),
+				filepath.Join("etc", "modprobe.d", "aliases.conf"),
+				filepath.Join("etc", "modprobe.d", "kms.conf"),
+				filepath.Join("etc", "crontabs", "root"),
+				filepath.Join("sbin", "mkmntdirs"),
+				filepath.Join("var", "spool", "cron", "crontabs"),
 
 				// alpine-keys-1.1-r0
-				"etc/apk/keys/alpine-devel@lists.alpinelinux.org-4d07755e.rsa.pub",
-				"etc/apk/keys/alpine-devel@lists.alpinelinux.org-524d27bb.rsa.pub",
-				"etc/apk/keys/alpine-devel@lists.alpinelinux.org-5243ef4b.rsa.pub",
-				"etc/apk/keys/alpine-devel@lists.alpinelinux.org-5261cecb.rsa.pub",
-				"etc/apk/keys/alpine-devel@lists.alpinelinux.org-4a6a0840.rsa.pub",
+				filepath.Join("etc", "apk", "keys", "alpine-devel@lists.alpinelinux.org-4d07755e.rsa.pub"),
+				filepath.Join("etc", "apk", "keys", "alpine-devel@lists.alpinelinux.org-524d27bb.rsa.pub"),
+				filepath.Join("etc", "apk", "keys", "alpine-devel@lists.alpinelinux.org-5243ef4b.rsa.pub"),
+				filepath.Join("etc", "apk", "keys", "alpine-devel@lists.alpinelinux.org-5261cecb.rsa.pub"),
+				filepath.Join("etc", "apk", "keys", "alpine-devel@lists.alpinelinux.org-4a6a0840.rsa.pub"),
 
 				// zlib-1.2.8-r2
-				"lib/libz.so.1.2.8",
-				"lib/libz.so.1",
+				filepath.Join("lib", "libz.so.1.2.8"),
+				filepath.Join("lib", "libz.so.1"),
 
 				// libcrypto1.0-1.0.2h-r1
-				"lib/libcrypto.so.1.0.0",
-				"usr/bin/c_rehash",
-				"usr/lib/libcrypto.so.1.0.0",
-				"usr/lib/engines/libubsec.so",
-				"usr/lib/engines/libatalla.so",
-				"usr/lib/engines/libcapi.so",
-				"usr/lib/engines/libgost.so",
-				"usr/lib/engines/libcswift.so",
-				"usr/lib/engines/libchil.so",
-				"usr/lib/engines/libgmp.so",
-				"usr/lib/engines/libnuron.so",
-				"usr/lib/engines/lib4758cca.so",
-				"usr/lib/engines/libsureware.so",
-				"usr/lib/engines/libpadlock.so",
-				"usr/lib/engines/libaep.so",
+				filepath.Join("lib", "libcrypto.so.1.0.0"),
+				filepath.Join("usr", "bin", "c_rehash"),
+				filepath.Join("usr", "lib", "libcrypto.so.1.0.0"),
+				filepath.Join("usr", "lib", "engines", "libubsec.so"),
+				filepath.Join("usr", "lib", "engines", "libatalla.so"),
+				filepath.Join("usr", "lib", "engines", "libcapi.so"),
+				filepath.Join("usr", "lib", "engines", "libgost.so"),
+				filepath.Join("usr", "lib", "engines", "libcswift.so"),
+				filepath.Join("usr", "lib", "engines", "libchil.so"),
+				filepath.Join("usr", "lib", "engines", "libgmp.so"),
+				filepath.Join("usr", "lib", "engines", "libnuron.so"),
+				filepath.Join("usr", "lib", "engines", "lib4758cca.so"),
+				filepath.Join("usr", "lib", "engines", "libsureware.so"),
+				filepath.Join("usr", "lib", "engines", "libpadlock.so"),
+				filepath.Join("usr", "lib", "engines", "libaep.so"),
 
 				// libssl1.0-1.0.2h-r1
-				"lib/libssl.so.1.0.0",
-				"usr/lib/libssl.so.1.0.0",
+				filepath.Join("lib/libssl.so.1.0.0"),
+				filepath.Join("usr/lib/libssl.so.1.0.0"),
 
 				// apk-tools-2.6.7-r0
-				"sbin/apk",
+				filepath.Join("sbin/apk"),
 
 				// scanelf-1.1.6-r0
-				"usr/bin/scanelf",
+				filepath.Join("usr/bin/scanelf"),
 
 				// musl-utils-1.1.14-r10
-				"sbin/ldconfig",
-				"usr/bin/iconv",
-				"usr/bin/ldd",
-				"usr/bin/getconf",
-				"usr/bin/getent",
+				filepath.Join("sbin/ldconfig"),
+				filepath.Join("usr/bin/iconv"),
+				filepath.Join("usr/bin/ldd"),
+				filepath.Join("usr/bin/getconf"),
+				filepath.Join("usr/bin/getent"),
 
 				// libc-utils-0.7-r0
 
 				// pkgconf-1.6.0-r0
-				"usr/bin/pkgconf",
-				"usr/bin/pkg-config",
-				"usr/lib/libpkgconf.so.3.0.0",
-				"usr/lib/libpkgconf.so.3",
-				"usr/share/aclocal/pkg.m4",
+				filepath.Join("usr/bin/pkgconf"),
+				filepath.Join("usr/bin/pkg-config"),
+				filepath.Join("usr/lib/libpkgconf.so.3.0.0"),
+				filepath.Join("usr/lib/libpkgconf.so.3"),
+				filepath.Join("usr/share/aclocal/pkg.m4"),
 
 				// sqlite-libs-3.26.0-r3
-				"usr/lib/libsqlite3.so.0",
-				"usr/lib/libsqlite3.so.0.8.6",
+				filepath.Join("usr/lib/libsqlite3.so.0"),
+				filepath.Join("usr/lib/libsqlite3.so.0.8.6"),
 
 				// test-2.9.11_pre20061021-r2
-				"usr/lib/libsqlite3.so",
-				"usr/lib/pkgconfig/sqlite3.pc",
-				"usr/include/sqlite3ext.h",
-				"usr/include/sqlite3.h",
+				filepath.Join("usr/lib/libsqlite3.so"),
+				filepath.Join("usr/lib/pkgconfig/sqlite3.pc"),
+				filepath.Join("usr/include/sqlite3ext.h"),
+				filepath.Join("usr/include/sqlite3.h"),
 			},
 		},
 	}

@@ -51,11 +51,10 @@ func NewArtifact(img types.Image, c cache.ArtifactCache, opt artifact.Option) (a
 	}
 
 	a, err := analyzer.NewAnalyzerGroup(analyzer.AnalyzerOptions{
-		Group:                opt.AnalyzerGroup,
-		FilePatterns:         opt.FilePatterns,
-		DisabledAnalyzers:    opt.DisabledAnalyzers,
-		SecretScannerOption:  opt.SecretScannerOption,
-		LicenseScannerOption: opt.LicenseScannerOption,
+		Group:               opt.AnalyzerGroup,
+		FilePatterns:        opt.FilePatterns,
+		DisabledAnalyzers:   opt.DisabledAnalyzers,
+		SecretScannerOption: opt.SecretScannerOption,
 	})
 	if err != nil {
 		return nil, xerrors.Errorf("analyzer group error: %w", err)

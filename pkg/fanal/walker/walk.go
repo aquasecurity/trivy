@@ -33,7 +33,7 @@ func newWalker(skipFiles, skipDirs []string) walker {
 	}
 
 	for _, skipDir := range append(skipDirs, SystemDirs...) {
-		skipDir = filepath.Clean(filepath.ToSlash(skipDir))
+		skipDir = filepath.ToSlash(skipDir)
 		skipDir = strings.TrimLeft(skipDir, "/")
 		cleanSkipDirs = append(cleanSkipDirs, skipDir)
 	}

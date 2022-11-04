@@ -1,5 +1,4 @@
-//go:build linux || bsd || darwin || freebsd
-// +build linux bsd darwin freebsd
+//go:build unix
 
 package remote
 

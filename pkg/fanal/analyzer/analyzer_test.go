@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
-	"runtime"
 	"sync"
 	"testing"
 
@@ -286,11 +285,10 @@ func TestAnalyzeFile(t *testing.T) {
 		filePatterns      []string
 	}
 	tests := []struct {
-		name        string
-		args        args
-		want        *analyzer.AnalysisResult
-		wantErr     string
-		skipWindows bool
+		name    string
+		args    args
+		want    *analyzer.AnalysisResult
+		wantErr string
 	}{
 		{
 			name: "happy path with os analyzer",
@@ -332,17 +330,15 @@ func TestAnalyzeFile(t *testing.T) {
 								SrcName:    "musl",
 								SrcVersion: "1.1.24-r2",
 								Licenses:   []string{"MIT"},
-
 							},
 						},
 					},
 				},
 				SystemInstalledFiles: []string{
-					"lib/libc.musl-x86_64.so.1",
-					"lib/ld-musl-x86_64.so.1",
+					filepath.Join("lib", "libc.musl-x86_64.so.1"),
+					filepath.Join("lib", "ld-musl-x86_64.so.1"),
 				},
 			},
-			skipWindows: true,
 		},
 		{
 			name: "happy path with disabled package analyzer",
@@ -448,9 +444,6 @@ func TestAnalyzeFile(t *testing.T) {
 		},
 	}
 	for _, tt := range tests {
-		if tt.skipWindows && runtime.GOOS == "windows" {
-			t.Skip(fmt.Sprint("skipping test on windows: ", tt.name))
-		}
 		t.Run(tt.name, func(t *testing.T) {
 			var wg sync.WaitGroup
 			limit := semaphore.NewWeighted(3)

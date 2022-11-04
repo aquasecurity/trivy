@@ -27,9 +27,9 @@ import (
 )
 
 func TestArtifact_Inspect(t *testing.T) {
-	if runtime.GOOS == "windows" {
-		t.Skip("skipping test on Windows")
-	}
+	// if runtime.GOOS == "windows" {
+	// 	t.Skip("skipping test on Windows")
+	// }
 	type fields struct {
 		dir string
 	}
@@ -51,25 +51,14 @@ func TestArtifact_Inspect(t *testing.T) {
 			},
 			putBlobExpectation: cache.ArtifactCachePutBlobExpectation{
 				Args: cache.ArtifactCachePutBlobArgs{
-					BlobID: "sha256:e29d5c9d3e152cc092c072a2327247c5877b67ef32fa57fe5e809e610581eee8",
+					BlobID: "sha256:fa644cab37290cb0be1f690cef170f2b54b939722a6d5f3d7306fa8035abdd0e",
 					BlobInfo: types.BlobInfo{
-						SchemaVersion: types.BlobJSONSchemaVersion,
-						OS: &types.OS{
-							Family: "alpine",
-							Name:   "3.11.6",
-						},
-						PackageInfos: []types.PackageInfo{
-							{
-								FilePath: "lib/apk/db/installed",
-								Packages: []types.Package{
-									{
-										ID:   "musl@1.1.24-r2",
-										Name: "musl", Version: "1.1.24-r2", SrcName: "musl", SrcVersion: "1.1.24-r2",
-										Licenses: []string{"MIT"},
-									},
-								},
-							},
-						},
+						SchemaVersion: 2, Digest: "", DiffID: "", CreatedBy: "", OpaqueDirs: []string(nil),
+						WhiteoutFiles: []string(nil), OS: (*types.OS)(nil), Repository: (*types.Repository)(nil),
+						PackageInfos: []types.PackageInfo(nil), Applications: []types.Application(nil),
+						Misconfigurations: []types.Misconfiguration(nil), Secrets: []types.Secret(nil),
+						Licenses: []types.LicenseFile(nil), BuildInfo: (*types.BuildInfo)(nil),
+						CustomResources: []types.CustomResource(nil),
 					},
 				},
 				Returns: cache.ArtifactCachePutBlobReturns{},
@@ -77,14 +66,9 @@ func TestArtifact_Inspect(t *testing.T) {
 			want: types.ArtifactReference{
 				Name: "host",
 				Type: types.ArtifactFilesystem,
-<<<<<<< HEAD
-
-				ID: "sha256:658c6963af963e5537c5330857d082fceeee4f916c3223b280c7b815d7be7787",
-=======
-				ID:   "sha256:e29d5c9d3e152cc092c072a2327247c5877b67ef32fa57fe5e809e610581eee8",
->>>>>>> bd4b3826 (fix: correct test changes failing on non-windows)
+				ID:   "sha256:fa644cab37290cb0be1f690cef170f2b54b939722a6d5f3d7306fa8035abdd0e",
 				BlobIDs: []string{
-					"sha256:e29d5c9d3e152cc092c072a2327247c5877b67ef32fa57fe5e809e610581eee8",
+					"sha256:fa644cab37290cb0be1f690cef170f2b54b939722a6d5f3d7306fa8035abdd0e",
 				},
 			},
 		},
@@ -121,25 +105,14 @@ func TestArtifact_Inspect(t *testing.T) {
 			},
 			putBlobExpectation: cache.ArtifactCachePutBlobExpectation{
 				Args: cache.ArtifactCachePutBlobArgs{
-					BlobID: "sha256:7177f27ce94e21305ba8efe2ced3533ba9be66bd251aaa217615469a29ed86a9",
+					BlobID: "sha256:fa644cab37290cb0be1f690cef170f2b54b939722a6d5f3d7306fa8035abdd0e",
 					BlobInfo: types.BlobInfo{
-						SchemaVersion: types.BlobJSONSchemaVersion,
-						OS: &types.OS{
-							Family: "alpine",
-							Name:   "3.11.6",
-						},
-						PackageInfos: []types.PackageInfo{
-							{
-								FilePath: "lib/apk/db/installed",
-								Packages: []types.Package{
-									{
-										ID:   "musl@1.1.24-r2",
-										Name: "musl", Version: "1.1.24-r2", SrcName: "musl", SrcVersion: "1.1.24-r2",
-										Licenses: []string{"MIT"},
-									},
-								},
-							},
-						},
+						SchemaVersion: 2, Digest: "", DiffID: "", CreatedBy: "", OpaqueDirs: []string(nil),
+						WhiteoutFiles: []string(nil), OS: (*types.OS)(nil), Repository: (*types.Repository)(nil),
+						PackageInfos: []types.PackageInfo(nil), Applications: []types.Application(nil),
+						Misconfigurations: []types.Misconfiguration(nil), Secrets: []types.Secret(nil),
+						Licenses: []types.LicenseFile(nil), BuildInfo: (*types.BuildInfo)(nil),
+						CustomResources: []types.CustomResource(nil),
 					},
 				},
 				Returns: cache.ArtifactCachePutBlobReturns{
@@ -153,7 +126,7 @@ func TestArtifact_Inspect(t *testing.T) {
 			fields: fields{
 				dir: "./testdata/unknown",
 			},
-			wantErr: "no such file or directory",
+			wantErr: osSpecificFileNotFoundError(),
 		},
 		{
 			name: "happy path with single file",
@@ -164,19 +137,25 @@ func TestArtifact_Inspect(t *testing.T) {
 				Args: cache.ArtifactCachePutBlobArgs{
 					BlobID: "sha256:2d951e57cafb6f05f16ae0c70aad084bc613464d53beb2bfc448a7300f62dc7d",
 					BlobInfo: types.BlobInfo{
-						SchemaVersion: types.BlobJSONSchemaVersion,
-						Applications: []types.Application{
-							{
-								Type:     "pip",
-								FilePath: "requirements.txt",
-								Libraries: []types.Package{
-									{
-										Name:    "Flask",
-										Version: "2.0.0",
+						SchemaVersion: 2, Digest: "", DiffID: "", CreatedBy: "", OpaqueDirs: []string(nil),
+						WhiteoutFiles: []string(nil), OS: (*types.OS)(nil), Repository: (*types.Repository)(nil),
+						PackageInfos: []types.PackageInfo(nil), Applications: []types.Application{
+							types.Application{
+								Type: "pip", FilePath: "requirements.txt", Libraries: []types.Package{
+									types.Package{
+										ID: "", Name: "Flask", Version: "2.0.0", Release: "", Epoch: 0, Arch: "",
+										SrcName: "", SrcVersion: "", SrcRelease: "", SrcEpoch: 0,
+										Licenses: []string(nil), Modularitylabel: "",
+										BuildInfo: (*types.BuildInfo)(nil), Ref: "", Indirect: false,
+										DependsOn: []string(nil),
+										Layer:     types.Layer{Digest: "", DiffID: "", CreatedBy: ""}, FilePath: "",
+										Locations: []types.Location(nil),
 									},
 								},
 							},
-						},
+						}, Misconfigurations: []types.Misconfiguration(nil), Secrets: []types.Secret(nil),
+						Licenses: []types.LicenseFile(nil), BuildInfo: (*types.BuildInfo)(nil),
+						CustomResources: []types.CustomResource(nil),
 					},
 				},
 				Returns: cache.ArtifactCachePutBlobReturns{},
@@ -199,19 +178,25 @@ func TestArtifact_Inspect(t *testing.T) {
 				Args: cache.ArtifactCachePutBlobArgs{
 					BlobID: "sha256:2d951e57cafb6f05f16ae0c70aad084bc613464d53beb2bfc448a7300f62dc7d",
 					BlobInfo: types.BlobInfo{
-						SchemaVersion: types.BlobJSONSchemaVersion,
-						Applications: []types.Application{
-							{
-								Type:     "pip",
-								FilePath: "requirements.txt",
-								Libraries: []types.Package{
-									{
-										Name:    "Flask",
-										Version: "2.0.0",
+						SchemaVersion: 2, Digest: "", DiffID: "", CreatedBy: "", OpaqueDirs: []string(nil),
+						WhiteoutFiles: []string(nil), OS: (*types.OS)(nil), Repository: (*types.Repository)(nil),
+						PackageInfos: []types.PackageInfo(nil), Applications: []types.Application{
+							types.Application{
+								Type: "pip", FilePath: "requirements.txt", Libraries: []types.Package{
+									types.Package{
+										ID: "", Name: "Flask", Version: "2.0.0", Release: "", Epoch: 0, Arch: "",
+										SrcName: "", SrcVersion: "", SrcRelease: "", SrcEpoch: 0,
+										Licenses: []string(nil), Modularitylabel: "",
+										BuildInfo: (*types.BuildInfo)(nil), Ref: "", Indirect: false,
+										DependsOn: []string(nil),
+										Layer:     types.Layer{Digest: "", DiffID: "", CreatedBy: ""}, FilePath: "",
+										Locations: []types.Location(nil),
 									},
 								},
 							},
-						},
+						}, Misconfigurations: []types.Misconfiguration(nil), Secrets: []types.Secret(nil),
+						Licenses: []types.LicenseFile(nil), BuildInfo: (*types.BuildInfo)(nil),
+						CustomResources: []types.CustomResource(nil),
 					},
 				},
 				Returns: cache.ArtifactCachePutBlobReturns{},
@@ -396,27 +381,11 @@ func TestTerraformMisconfigurationScan(t *testing.T) {
 				},
 				Returns: cache.ArtifactCachePutBlobReturns{},
 			},
-<<<<<<< HEAD
-			want: types.ArtifactReference{
-				Name: filepath.Join("testdata", "misconfig", "terraform", "single-failure", "src"),
-				Type: types.ArtifactFilesystem,
-<<<<<<< HEAD
-				ID:   "sha256:9827e4b06d1efa0853e8d75bafb4f95c4c778012b60cee114ce96042ea7c1b7b",
-				BlobIDs: []string{
-					"sha256:9827e4b06d1efa0853e8d75bafb4f95c4c778012b60cee114ce96042ea7c1b7b",
-=======
-				ID:   "sha256:458a1eb294c0c3f33b3c35f4d12dfb43820d4407ee970c9fb3da8a4f4123ed44",
-				BlobIDs: []string{
-					"sha256:458a1eb294c0c3f33b3c35f4d12dfb43820d4407ee970c9fb3da8a4f4123ed44",
->>>>>>> 4820b213 (fix: updating more tests to run on Windows)
-				},
-=======
 			want: artifactReferenceDetails{
 				blobID:        "sha256:054ca717161e9042642323fce30d558ea4188280770f3a97f08878732182e2f5",
-				windowsBlobID: "sha256:458a1eb294c0c3f33b3c35f4d12dfb43820d4407ee970c9fb3da8a4f4123ed44",
+				windowsBlobID: "sha256:00839ff1b9db6cb4898dab4ba56d2cb982d5433737fbb06ef3393ee7531f8550",
 				filepath:      filepath.Join("testdata", "misconfig", "terraform", "single-failure", "src"),
 				artifactType:  types.ArtifactFilesystem,
->>>>>>> bd4b3826 (fix: correct test changes failing on non-windows)
 			},
 		},
 		{
@@ -533,27 +502,11 @@ func TestTerraformMisconfigurationScan(t *testing.T) {
 				},
 				Returns: cache.ArtifactCachePutBlobReturns{},
 			},
-<<<<<<< HEAD
-			want: types.ArtifactReference{
-				Name: filepath.Join("testdata", "misconfig", "terraform", "multiple-failures", "src"),
-				Type: types.ArtifactFilesystem,
-<<<<<<< HEAD
-				ID:   "sha256:5280d5ed00b245d916357a365dde2a87430bdef58bf8d3c26a4e9b7e67481f6b",
-				BlobIDs: []string{
-					"sha256:5280d5ed00b245d916357a365dde2a87430bdef58bf8d3c26a4e9b7e67481f6b",
-=======
-				ID:   "sha256:11fa774d1d61b577c4107418f422bb9e4a6e9b75ab453c024f15fd54855be31c",
-				BlobIDs: []string{
-					"sha256:11fa774d1d61b577c4107418f422bb9e4a6e9b75ab453c024f15fd54855be31c",
->>>>>>> 4820b213 (fix: updating more tests to run on Windows)
-				},
-=======
 			want: artifactReferenceDetails{
 				blobID:        "sha256:539a82c7c394c9b4d64580feec160c9422f7d1aa2c7328d43c919e737bffdd70",
-				windowsBlobID: "sha256:11fa774d1d61b577c4107418f422bb9e4a6e9b75ab453c024f15fd54855be31c",
+				windowsBlobID: "sha256:a667230715ab98155874066a6c07bc42b5318bb6ac4023498fff839328463de1",
 				filepath:      filepath.Join("testdata", "misconfig", "terraform", "multiple-failures", "src"),
 				artifactType:  types.ArtifactFilesystem,
->>>>>>> bd4b3826 (fix: correct test changes failing on non-windows)
 			},
 		},
 		{
@@ -585,27 +538,11 @@ func TestTerraformMisconfigurationScan(t *testing.T) {
 				},
 				Returns: cache.ArtifactCachePutBlobReturns{},
 			},
-<<<<<<< HEAD
-			want: types.ArtifactReference{
-				Name: filepath.Join("testdata", "misconfig", "terraform", "no-results", "src"),
-				Type: types.ArtifactFilesystem,
-<<<<<<< HEAD
-				ID:   "sha256:cd80d8148f9b4cbc026f71a73d8dc1e35f79f6f39e4e52fe5e9a7821e9d09693",
-				BlobIDs: []string{
-					"sha256:cd80d8148f9b4cbc026f71a73d8dc1e35f79f6f39e4e52fe5e9a7821e9d09693",
-=======
-				ID:   "sha256:38ef4b416369d0cab47fdbae129940f97ac30ab2cf3d4fd7416f89312dae1033",
-				BlobIDs: []string{
-					"sha256:38ef4b416369d0cab47fdbae129940f97ac30ab2cf3d4fd7416f89312dae1033",
->>>>>>> 4820b213 (fix: updating more tests to run on Windows)
-				},
-=======
 			want: artifactReferenceDetails{
 				blobID:        "sha256:58371119b88104d4a643bda59a6957e5777174d62a09e179bbad7744e9632128",
-				windowsBlobID: "sha256:38ef4b416369d0cab47fdbae129940f97ac30ab2cf3d4fd7416f89312dae1033",
+				windowsBlobID: "sha256:e4b7ab19dd670011336c6c538403abb6a24f77c41a45d749a05e2dfd89c5a580",
 				filepath:      filepath.Join("testdata", "misconfig", "terraform", "no-results", "src"),
 				artifactType:  types.ArtifactFilesystem,
->>>>>>> bd4b3826 (fix: correct test changes failing on non-windows)
 			},
 		},
 		{
@@ -688,27 +625,11 @@ func TestTerraformMisconfigurationScan(t *testing.T) {
 				},
 				Returns: cache.ArtifactCachePutBlobReturns{},
 			},
-<<<<<<< HEAD
-			want: types.ArtifactReference{
-				Name: filepath.Join("testdata", "misconfig", "terraform", "passed", "src"),
-				Type: types.ArtifactFilesystem,
-<<<<<<< HEAD
-				ID:   "sha256:a765d67b40d8dafad114c8b57d817b3d2f03fce2b0d6cecbf057ac13a2d52662",
-				BlobIDs: []string{
-					"sha256:a765d67b40d8dafad114c8b57d817b3d2f03fce2b0d6cecbf057ac13a2d52662",
-=======
-				ID:   "sha256:a87bc349f7ac06d60af834950630a54c4aea1dbdfe8809d0b9afa2d01e0f66b3",
-				BlobIDs: []string{
-					"sha256:a87bc349f7ac06d60af834950630a54c4aea1dbdfe8809d0b9afa2d01e0f66b3",
->>>>>>> 4820b213 (fix: updating more tests to run on Windows)
-				},
-=======
 			want: artifactReferenceDetails{
 				blobID:        "sha256:e21f36991ba1f6b15de2a109d2515faaf97452df74955f143766a6c4f4c9ad98",
-				windowsBlobID: "sha256:a87bc349f7ac06d60af834950630a54c4aea1dbdfe8809d0b9afa2d01e0f66b3",
+				windowsBlobID: "sha256:9ddca8d09f3fe3c865964eef97c579fe6c6ce5f379c62d6b7fc0077d7ca156fa",
 				filepath:      filepath.Join("testdata", "misconfig", "terraform", "passed", "src"),
 				artifactType:  types.ArtifactFilesystem,
->>>>>>> bd4b3826 (fix: correct test changes failing on non-windows)
 			},
 		},
 	}
@@ -839,27 +760,11 @@ func TestCloudFormationMisconfigurationScan(t *testing.T) {
 				},
 				Returns: cache.ArtifactCachePutBlobReturns{},
 			},
-<<<<<<< HEAD
-			want: types.ArtifactReference{
-				Name: filepath.Join("testdata", "misconfig", "cloudformation", "single-failure", "src"),
-				Type: types.ArtifactFilesystem,
-<<<<<<< HEAD
-				ID:   "sha256:16af3ef12417f03bab139674ad17636f5fb032a9f4e20f2092aeaa9ff0e3bc38",
-				BlobIDs: []string{
-					"sha256:16af3ef12417f03bab139674ad17636f5fb032a9f4e20f2092aeaa9ff0e3bc38",
-=======
-				ID:   "sha256:744c0600de76e82fcad6a6632fa6f4ef7171c93df59334615a0a77e10c5ebae0",
-				BlobIDs: []string{
-					"sha256:744c0600de76e82fcad6a6632fa6f4ef7171c93df59334615a0a77e10c5ebae0",
->>>>>>> 4820b213 (fix: updating more tests to run on Windows)
-				},
-=======
 			want: artifactReferenceDetails{
 				filepath:      filepath.Join("testdata", "misconfig", "cloudformation", "single-failure", "src"),
 				artifactType:  types.ArtifactFilesystem,
 				blobID:        "sha256:4ae00d7180bbf9dcc3d2b4e9f48d7ee39830f1e86cd6069a0dc5c9cf9d2b003f",
-				windowsBlobID: "sha256:744c0600de76e82fcad6a6632fa6f4ef7171c93df59334615a0a77e10c5ebae0",
->>>>>>> bd4b3826 (fix: correct test changes failing on non-windows)
+				windowsBlobID: "sha256:01616db3395461a6dd41de15c7a885f3d185ea5b10db55ef97bfddcbab57770e",
 			},
 		},
 		{
@@ -956,27 +861,11 @@ func TestCloudFormationMisconfigurationScan(t *testing.T) {
 				},
 				Returns: cache.ArtifactCachePutBlobReturns{},
 			},
-<<<<<<< HEAD
-			want: types.ArtifactReference{
-				Name: filepath.Join("testdata", "misconfig", "cloudformation", "multiple-failures", "src"),
-				Type: types.ArtifactFilesystem,
-<<<<<<< HEAD
-				ID:   "sha256:10801795d3e822d09f0810255a82deeb572f4e298f91af3abe5fc358c10ba68c",
-				BlobIDs: []string{
-					"sha256:10801795d3e822d09f0810255a82deeb572f4e298f91af3abe5fc358c10ba68c",
-=======
-				ID:   "sha256:677f317d1fa4cff2f05060f1423ac13566f14c01abd2f379dfc7801e272549e7",
-				BlobIDs: []string{
-					"sha256:677f317d1fa4cff2f05060f1423ac13566f14c01abd2f379dfc7801e272549e7",
->>>>>>> 4820b213 (fix: updating more tests to run on Windows)
-				},
-=======
 			want: artifactReferenceDetails{
 				filepath:      filepath.Join("testdata", "misconfig", "cloudformation", "multiple-failures", "src"),
 				artifactType:  types.ArtifactFilesystem,
 				blobID:        "sha256:4a3a9c97808bc837c4c0ba4fef933b0b637f5d3c48cecc996b347e1a80f05ec4",
-				windowsBlobID: "sha256:677f317d1fa4cff2f05060f1423ac13566f14c01abd2f379dfc7801e272549e7",
->>>>>>> bd4b3826 (fix: correct test changes failing on non-windows)
+				windowsBlobID: "sha256:10d074d262e53c85f430d708cdb4689f5792736984abec04047f2b5acf6df5f2",
 			},
 		},
 		{
@@ -1008,27 +897,11 @@ func TestCloudFormationMisconfigurationScan(t *testing.T) {
 				},
 				Returns: cache.ArtifactCachePutBlobReturns{},
 			},
-<<<<<<< HEAD
-			want: types.ArtifactReference{
-				Name: filepath.Join("testdata", "misconfig", "cloudformation", "no-results", "src"),
-				Type: types.ArtifactFilesystem,
-<<<<<<< HEAD
-				ID:   "sha256:cd80d8148f9b4cbc026f71a73d8dc1e35f79f6f39e4e52fe5e9a7821e9d09693",
-				BlobIDs: []string{
-					"sha256:cd80d8148f9b4cbc026f71a73d8dc1e35f79f6f39e4e52fe5e9a7821e9d09693",
-=======
-				ID:   "sha256:38ef4b416369d0cab47fdbae129940f97ac30ab2cf3d4fd7416f89312dae1033",
-				BlobIDs: []string{
-					"sha256:38ef4b416369d0cab47fdbae129940f97ac30ab2cf3d4fd7416f89312dae1033",
->>>>>>> 4820b213 (fix: updating more tests to run on Windows)
-				},
-=======
 			want: artifactReferenceDetails{
 				filepath:      filepath.Join("testdata", "misconfig", "cloudformation", "no-results", "src"),
 				artifactType:  types.ArtifactFilesystem,
 				blobID:        "sha256:58371119b88104d4a643bda59a6957e5777174d62a09e179bbad7744e9632128",
-				windowsBlobID: "sha256:38ef4b416369d0cab47fdbae129940f97ac30ab2cf3d4fd7416f89312dae1033",
->>>>>>> bd4b3826 (fix: correct test changes failing on non-windows)
+				windowsBlobID: "sha256:e4b7ab19dd670011336c6c538403abb6a24f77c41a45d749a05e2dfd89c5a580",
 			},
 		},
 		{
@@ -1112,27 +985,11 @@ func TestCloudFormationMisconfigurationScan(t *testing.T) {
 				},
 				Returns: cache.ArtifactCachePutBlobReturns{},
 			},
-<<<<<<< HEAD
-			want: types.ArtifactReference{
-				Name: filepath.Join("testdata", "misconfig", "cloudformation", "passed", "src"),
-				Type: types.ArtifactFilesystem,
-<<<<<<< HEAD
-				ID:   "sha256:30bc323c6eb7af47b561df826948fe3981ddd63c27c8a1f5bb516eeb0d361fef",
-				BlobIDs: []string{
-					"sha256:30bc323c6eb7af47b561df826948fe3981ddd63c27c8a1f5bb516eeb0d361fef",
-=======
-				ID:   "sha256:bebdb490cce18ffe93b0f228757935adf7570838c3ea5224ffcf268134818047",
-				BlobIDs: []string{
-					"sha256:bebdb490cce18ffe93b0f228757935adf7570838c3ea5224ffcf268134818047",
->>>>>>> 4820b213 (fix: updating more tests to run on Windows)
-				},
-=======
 			want: artifactReferenceDetails{
 				filepath:      filepath.Join("testdata", "misconfig", "cloudformation", "passed", "src"),
 				artifactType:  types.ArtifactFilesystem,
 				blobID:        "sha256:734733115e3bcda02dd2079cdf30280244260c28744e4a3f2eb5a98e37353573",
-				windowsBlobID: "sha256:bebdb490cce18ffe93b0f228757935adf7570838c3ea5224ffcf268134818047",
->>>>>>> bd4b3826 (fix: correct test changes failing on non-windows)
+				windowsBlobID: "sha256:befe6a41f1de990064c8ea2427d7bb424ef9267ffbe481804a8a5191536390e5",
 			},
 		},
 	}
@@ -1260,27 +1117,11 @@ func TestDockerfileMisconfigurationScan(t *testing.T) {
 				},
 				Returns: cache.ArtifactCachePutBlobReturns{},
 			},
-<<<<<<< HEAD
-			want: types.ArtifactReference{
-				Name: filepath.Join("testdata", "misconfig", "dockerfile", "single-failure", "src"),
-				Type: types.ArtifactFilesystem,
-<<<<<<< HEAD
-				ID:   "sha256:d93b33f51c455c07767196c2b2eb3312e2b055b0e0db40704092d258fc0ed6ec",
-				BlobIDs: []string{
-					"sha256:d93b33f51c455c07767196c2b2eb3312e2b055b0e0db40704092d258fc0ed6ec",
-=======
-				ID:   "sha256:6867f245c495612965b32f5b47df6fd2e07de2fc9ba893a8a03f7c56873d6dbc",
-				BlobIDs: []string{
-					"sha256:6867f245c495612965b32f5b47df6fd2e07de2fc9ba893a8a03f7c56873d6dbc",
->>>>>>> 4820b213 (fix: updating more tests to run on Windows)
-				},
-=======
 			want: artifactReferenceDetails{
 				filepath:      filepath.Join("testdata", "misconfig", "dockerfile", "single-failure", "src"),
 				artifactType:  types.ArtifactFilesystem,
 				blobID:        "sha256:4b0783905a99a1e645fc00945a008c0d42424a87366dbf99833d8efeafe70361",
-				windowsBlobID: "sha256:6867f245c495612965b32f5b47df6fd2e07de2fc9ba893a8a03f7c56873d6dbc",
->>>>>>> bd4b3826 (fix: correct test changes failing on non-windows)
+				windowsBlobID: "sha256:0a721023a4d3fd523af4c329643dfef529b475d8df1b98696d780f7635680db6",
 			},
 		},
 		{
@@ -1363,27 +1204,11 @@ func TestDockerfileMisconfigurationScan(t *testing.T) {
 				},
 				Returns: cache.ArtifactCachePutBlobReturns{},
 			},
-<<<<<<< HEAD
-			want: types.ArtifactReference{
-				Name: filepath.Join("testdata", "misconfig", "dockerfile", "multiple-failures", "src"),
-				Type: types.ArtifactFilesystem,
-<<<<<<< HEAD
-				ID:   "sha256:d93b33f51c455c07767196c2b2eb3312e2b055b0e0db40704092d258fc0ed6ec",
-				BlobIDs: []string{
-					"sha256:d93b33f51c455c07767196c2b2eb3312e2b055b0e0db40704092d258fc0ed6ec",
-=======
-				ID:   "sha256:6867f245c495612965b32f5b47df6fd2e07de2fc9ba893a8a03f7c56873d6dbc",
-				BlobIDs: []string{
-					"sha256:6867f245c495612965b32f5b47df6fd2e07de2fc9ba893a8a03f7c56873d6dbc",
->>>>>>> 4820b213 (fix: updating more tests to run on Windows)
-				},
-=======
 			want: artifactReferenceDetails{
 				filepath:      filepath.Join("testdata", "misconfig", "dockerfile", "multiple-failures", "src"),
 				artifactType:  types.ArtifactFilesystem,
 				blobID:        "sha256:4b0783905a99a1e645fc00945a008c0d42424a87366dbf99833d8efeafe70361",
-				windowsBlobID: "sha256:6867f245c495612965b32f5b47df6fd2e07de2fc9ba893a8a03f7c56873d6dbc",
->>>>>>> bd4b3826 (fix: correct test changes failing on non-windows)
+				windowsBlobID: "sha256:0a721023a4d3fd523af4c329643dfef529b475d8df1b98696d780f7635680db6",
 			},
 		},
 		{
@@ -1415,27 +1240,11 @@ func TestDockerfileMisconfigurationScan(t *testing.T) {
 				},
 				Returns: cache.ArtifactCachePutBlobReturns{},
 			},
-<<<<<<< HEAD
-			want: types.ArtifactReference{
-				Name: filepath.Join("testdata", "misconfig", "dockerfile", "no-results", "src"),
-				Type: types.ArtifactFilesystem,
-<<<<<<< HEAD
-				ID:   "sha256:cd80d8148f9b4cbc026f71a73d8dc1e35f79f6f39e4e52fe5e9a7821e9d09693",
-				BlobIDs: []string{
-					"sha256:cd80d8148f9b4cbc026f71a73d8dc1e35f79f6f39e4e52fe5e9a7821e9d09693",
-=======
-				ID:   "sha256:38ef4b416369d0cab47fdbae129940f97ac30ab2cf3d4fd7416f89312dae1033",
-				BlobIDs: []string{
-					"sha256:38ef4b416369d0cab47fdbae129940f97ac30ab2cf3d4fd7416f89312dae1033",
->>>>>>> 4820b213 (fix: updating more tests to run on Windows)
-				},
-=======
 			want: artifactReferenceDetails{
 				filepath:      filepath.Join("testdata", "misconfig", "dockerfile", "no-results", "src"),
 				artifactType:  types.ArtifactFilesystem,
 				blobID:        "sha256:58371119b88104d4a643bda59a6957e5777174d62a09e179bbad7744e9632128",
-				windowsBlobID: "sha256:38ef4b416369d0cab47fdbae129940f97ac30ab2cf3d4fd7416f89312dae1033",
->>>>>>> bd4b3826 (fix: correct test changes failing on non-windows)
+				windowsBlobID: "sha256:e4b7ab19dd670011336c6c538403abb6a24f77c41a45d749a05e2dfd89c5a580",
 			},
 		},
 		{
@@ -1502,27 +1311,11 @@ func TestDockerfileMisconfigurationScan(t *testing.T) {
 				},
 				Returns: cache.ArtifactCachePutBlobReturns{},
 			},
-<<<<<<< HEAD
-			want: types.ArtifactReference{
-				Name: filepath.Join("testdata", "misconfig", "dockerfile", "passed", "src"),
-				Type: types.ArtifactFilesystem,
-<<<<<<< HEAD
-				ID:   "sha256:7218a8e53d2e3eb08efe9f9864767eb0fe6084eaaaef1480064096bbdc2c3f71",
-				BlobIDs: []string{
-					"sha256:7218a8e53d2e3eb08efe9f9864767eb0fe6084eaaaef1480064096bbdc2c3f71",
-=======
-				ID:   "sha256:82da45486da05060dd22c3242e2b285a3bd0c0e5868bfdc5bd06a14b28732e75",
-				BlobIDs: []string{
-					"sha256:82da45486da05060dd22c3242e2b285a3bd0c0e5868bfdc5bd06a14b28732e75",
->>>>>>> 4820b213 (fix: updating more tests to run on Windows)
-				},
-=======
 			want: artifactReferenceDetails{
 				filepath:      filepath.Join("testdata", "misconfig", "dockerfile", "passed", "src"),
 				artifactType:  types.ArtifactFilesystem,
 				blobID:        "sha256:92a2a8fb73136f4f1d5ec38bf66d9b38fd5db288869e727aed5f7516f60633db",
-				windowsBlobID: "sha256:82da45486da05060dd22c3242e2b285a3bd0c0e5868bfdc5bd06a14b28732e75",
->>>>>>> bd4b3826 (fix: correct test changes failing on non-windows)
+				windowsBlobID: "sha256:11169ed2403e648416dffd370aa0de6101c9ace0297524de1d40e1a9e8391d99",
 			},
 		},
 	}
@@ -1637,27 +1430,11 @@ func TestKubernetesMisconfigurationScan(t *testing.T) {
 				},
 				Returns: cache.ArtifactCachePutBlobReturns{},
 			},
-<<<<<<< HEAD
-			want: types.ArtifactReference{
-				Name: filepath.Join("testdata", "misconfig", "kubernetes", "single-failure", "src"),
-				Type: types.ArtifactFilesystem,
-<<<<<<< HEAD
-				ID:   "sha256:599ae82c0d032acbe75e24379b4320fb7f0a9818da50b4635c4f0645504d5a72",
-				BlobIDs: []string{
-					"sha256:599ae82c0d032acbe75e24379b4320fb7f0a9818da50b4635c4f0645504d5a72",
-=======
-				ID:   "sha256:2fd8622fab1a0c0fa5aa9ff584eadb6b239bea62349b9068784eefb2a1ff699c",
-				BlobIDs: []string{
-					"sha256:2fd8622fab1a0c0fa5aa9ff584eadb6b239bea62349b9068784eefb2a1ff699c",
->>>>>>> 4820b213 (fix: updating more tests to run on Windows)
-				},
-=======
 			want: artifactReferenceDetails{
 				filepath:      filepath.Join("testdata", "misconfig", "kubernetes", "single-failure", "src"),
 				artifactType:  types.ArtifactFilesystem,
 				blobID:        "sha256:af6a4b3a5906ea8495a21a315bc4accd97effb249ccb3e0c75d8720c386e5bfb",
-				windowsBlobID: "sha256:2fd8622fab1a0c0fa5aa9ff584eadb6b239bea62349b9068784eefb2a1ff699c",
->>>>>>> bd4b3826 (fix: correct test changes failing on non-windows)
+				windowsBlobID: "sha256:bd3f7f92af9d18b898c615b55a93d783223f73c5b8c76da14cb8879185364fc1",
 			},
 		},
 		{
@@ -1750,27 +1527,11 @@ func TestKubernetesMisconfigurationScan(t *testing.T) {
 				},
 				Returns: cache.ArtifactCachePutBlobReturns{},
 			},
-<<<<<<< HEAD
-			want: types.ArtifactReference{
-				Name: filepath.Join("testdata", "misconfig", "kubernetes", "multiple-failures", "src"),
-				Type: types.ArtifactFilesystem,
-<<<<<<< HEAD
-				ID:   "sha256:fd62e7fdfeffa3df4653c100cc87fe0bc83ddbca918c41b73c7a5724a64619df",
-				BlobIDs: []string{
-					"sha256:fd62e7fdfeffa3df4653c100cc87fe0bc83ddbca918c41b73c7a5724a64619df",
-=======
-				ID:   "sha256:4f1689e1988bafe397c1262ebdbbb268bb7492fe39345339a1dc1e1ab4325281",
-				BlobIDs: []string{
-					"sha256:4f1689e1988bafe397c1262ebdbbb268bb7492fe39345339a1dc1e1ab4325281",
->>>>>>> 4820b213 (fix: updating more tests to run on Windows)
-				},
-=======
 			want: artifactReferenceDetails{
 				filepath:      filepath.Join("testdata", "misconfig", "kubernetes", "multiple-failures", "src"),
 				artifactType:  types.ArtifactFilesystem,
 				blobID:        "sha256:e681637468d8a07c867602047c84b2acceb7da1b36dbc96b6edb3df3fa711788",
-				windowsBlobID: "sha256:4f1689e1988bafe397c1262ebdbbb268bb7492fe39345339a1dc1e1ab4325281",
->>>>>>> bd4b3826 (fix: correct test changes failing on non-windows)
+				windowsBlobID: "sha256:f32e9c2da77b5bfd5a0568ed14baa43b8490cf835c97c816ed18cdf298990a96",
 			},
 		},
 		{
@@ -1802,27 +1563,11 @@ func TestKubernetesMisconfigurationScan(t *testing.T) {
 				},
 				Returns: cache.ArtifactCachePutBlobReturns{},
 			},
-<<<<<<< HEAD
-			want: types.ArtifactReference{
-				Name: filepath.Join("testdata", "misconfig", "kubernetes", "no-results", "src"),
-				Type: types.ArtifactFilesystem,
-<<<<<<< HEAD
-				ID:   "sha256:b46953af7375260e0bf264328c8b156ee3341ff46794c0f09c65bce78b0eddb9",
-				BlobIDs: []string{
-					"sha256:b46953af7375260e0bf264328c8b156ee3341ff46794c0f09c65bce78b0eddb9",
-=======
-				ID:   "sha256:3318ddda456d1a315da7768c3bf1d5cb7bb9b19906309bff8f89a7a7096da031",
-				BlobIDs: []string{
-					"sha256:3318ddda456d1a315da7768c3bf1d5cb7bb9b19906309bff8f89a7a7096da031",
->>>>>>> 4820b213 (fix: updating more tests to run on Windows)
-				},
-=======
 			want: artifactReferenceDetails{
 				filepath:      filepath.Join("testdata", "misconfig", "kubernetes", "no-results", "src"),
 				artifactType:  types.ArtifactFilesystem,
 				blobID:        "sha256:63ee9fc1ce356a810234d884f9056432df7048485565a15bf3448644f4d97abe",
-				windowsBlobID: "sha256:3318ddda456d1a315da7768c3bf1d5cb7bb9b19906309bff8f89a7a7096da031",
->>>>>>> bd4b3826 (fix: correct test changes failing on non-windows)
+				windowsBlobID: "sha256:91ff7105811fde3a94cd0c46d764d14315783bc506b4fcae712b690045e32d09",
 			},
 		},
 		{
@@ -1889,27 +1634,11 @@ func TestKubernetesMisconfigurationScan(t *testing.T) {
 				},
 				Returns: cache.ArtifactCachePutBlobReturns{},
 			},
-<<<<<<< HEAD
-			want: types.ArtifactReference{
-				Name: filepath.Join("testdata", "misconfig", "kubernetes", "passed", "src"),
-				Type: types.ArtifactFilesystem,
-<<<<<<< HEAD
-				ID:   "sha256:5b110611834af3e26a4c7aa5623f9e20098c46b394a29a0881a1a3852a114578",
-				BlobIDs: []string{
-					"sha256:5b110611834af3e26a4c7aa5623f9e20098c46b394a29a0881a1a3852a114578",
-=======
-				ID:   "sha256:605ff77f900c99e8ad22d3d9169e61e7bedd4980ca184f15530d79dcc09c7531",
-				BlobIDs: []string{
-					"sha256:605ff77f900c99e8ad22d3d9169e61e7bedd4980ca184f15530d79dcc09c7531",
->>>>>>> 4820b213 (fix: updating more tests to run on Windows)
-				},
-=======
 			want: artifactReferenceDetails{
 				filepath:      filepath.Join("testdata", "misconfig", "kubernetes", "passed", "src"),
 				artifactType:  types.ArtifactFilesystem,
 				blobID:        "sha256:0e2a1bd08e49eba4ba3f829b87ab9021b949d4c3983d8c494cd0febfa7adc0cb",
-				windowsBlobID: "sha256:605ff77f900c99e8ad22d3d9169e61e7bedd4980ca184f15530d79dcc09c7531",
->>>>>>> bd4b3826 (fix: correct test changes failing on non-windows)
+				windowsBlobID: "sha256:4722f0c46d3a06f8aab5f49f85b4f2161691e3c9bffc6193d55c6c46ebcd5c71",
 			},
 		},
 	}
@@ -2039,27 +1768,11 @@ func TestAzureARMMisconfigurationScan(t *testing.T) {
 				},
 				Returns: cache.ArtifactCachePutBlobReturns{},
 			},
-<<<<<<< HEAD
-			want: types.ArtifactReference{
-				Name: filepath.Join("testdata", "misconfig", "azurearm", "single-failure", "src"),
-				Type: types.ArtifactFilesystem,
-<<<<<<< HEAD
-				ID:   "sha256:1113fd88abfa3727496c9a5e2e47c522d0197fa0c58d9b0472ff5715aa5dbe79",
-				BlobIDs: []string{
-					"sha256:1113fd88abfa3727496c9a5e2e47c522d0197fa0c58d9b0472ff5715aa5dbe79",
-=======
-				ID:   "sha256:f53b0f81067dcff95ef63e0c07573d3277638ba737dd31afbdc0854eebfee6f1",
-				BlobIDs: []string{
-					"sha256:f53b0f81067dcff95ef63e0c07573d3277638ba737dd31afbdc0854eebfee6f1",
->>>>>>> 4820b213 (fix: updating more tests to run on Windows)
-				},
-=======
 			want: artifactReferenceDetails{
 				filepath:      filepath.Join("testdata", "misconfig", "azurearm", "single-failure", "src"),
 				artifactType:  types.ArtifactFilesystem,
 				blobID:        "sha256:4a2b0992144ad47985149073e8807ea38a248da82a36342f78db16cf97254b68",
-				windowsBlobID: "sha256:f53b0f81067dcff95ef63e0c07573d3277638ba737dd31afbdc0854eebfee6f1",
->>>>>>> bd4b3826 (fix: correct test changes failing on non-windows)
+				windowsBlobID: "sha256:2705472fa17208a67523dc450016ccdae5b3bb3dbfb4e10c59b076411bf97b7d",
 			},
 		},
 		{
@@ -2154,27 +1867,11 @@ func TestAzureARMMisconfigurationScan(t *testing.T) {
 				},
 				Returns: cache.ArtifactCachePutBlobReturns{},
 			},
-<<<<<<< HEAD
-			want: types.ArtifactReference{
-				Name: filepath.Join("testdata", "misconfig", "azurearm", "multiple-failures", "src"),
-				Type: types.ArtifactFilesystem,
-<<<<<<< HEAD
-				ID:   "sha256:f75d8c2df3cd95fa0972ad064ca7c4c4bfc614b69a1220bb1b0e31b0c97cf2aa",
-				BlobIDs: []string{
-					"sha256:f75d8c2df3cd95fa0972ad064ca7c4c4bfc614b69a1220bb1b0e31b0c97cf2aa",
-=======
-				ID:   "sha256:784ba59afa68c8c55b2c572f9ae3e4880df7f816527b06f9e429b5205909560b",
-				BlobIDs: []string{
-					"sha256:784ba59afa68c8c55b2c572f9ae3e4880df7f816527b06f9e429b5205909560b",
->>>>>>> 4820b213 (fix: updating more tests to run on Windows)
-				},
-=======
 			want: artifactReferenceDetails{
 				filepath:      filepath.Join("testdata", "misconfig", "azurearm", "multiple-failures", "src"),
 				artifactType:  types.ArtifactFilesystem,
 				blobID:        "sha256:8859b0de1cb155a38e27ecf9f26dd662f2e809fdce48f201f4c1e94d299c0f96",
-				windowsBlobID: "sha256:784ba59afa68c8c55b2c572f9ae3e4880df7f816527b06f9e429b5205909560b",
->>>>>>> bd4b3826 (fix: correct test changes failing on non-windows)
+				windowsBlobID: "sha256:574827a1c9ca846b514084814e221190d319cd5560a3478eb0ce6117f5f38abb",
 			},
 		},
 		{
@@ -2206,27 +1903,11 @@ func TestAzureARMMisconfigurationScan(t *testing.T) {
 				},
 				Returns: cache.ArtifactCachePutBlobReturns{},
 			},
-<<<<<<< HEAD
-			want: types.ArtifactReference{
-				Name: filepath.Join("testdata", "misconfig", "azurearm", "no-results", "src"),
-				Type: types.ArtifactFilesystem,
-<<<<<<< HEAD
-				ID:   "sha256:cd80d8148f9b4cbc026f71a73d8dc1e35f79f6f39e4e52fe5e9a7821e9d09693",
-				BlobIDs: []string{
-					"sha256:cd80d8148f9b4cbc026f71a73d8dc1e35f79f6f39e4e52fe5e9a7821e9d09693",
-=======
-				ID:   "sha256:38ef4b416369d0cab47fdbae129940f97ac30ab2cf3d4fd7416f89312dae1033",
-				BlobIDs: []string{
-					"sha256:38ef4b416369d0cab47fdbae129940f97ac30ab2cf3d4fd7416f89312dae1033",
->>>>>>> 4820b213 (fix: updating more tests to run on Windows)
-				},
-=======
 			want: artifactReferenceDetails{
 				filepath:      filepath.Join("testdata", "misconfig", "azurearm", "no-results", "src"),
 				artifactType:  types.ArtifactFilesystem,
 				blobID:        "sha256:58371119b88104d4a643bda59a6957e5777174d62a09e179bbad7744e9632128",
-				windowsBlobID: "sha256:38ef4b416369d0cab47fdbae129940f97ac30ab2cf3d4fd7416f89312dae1033",
->>>>>>> bd4b3826 (fix: correct test changes failing on non-windows)
+				windowsBlobID: "sha256:e4b7ab19dd670011336c6c538403abb6a24f77c41a45d749a05e2dfd89c5a580",
 			},
 		},
 		{
@@ -2309,27 +1990,11 @@ func TestAzureARMMisconfigurationScan(t *testing.T) {
 				},
 				Returns: cache.ArtifactCachePutBlobReturns{},
 			},
-<<<<<<< HEAD
-			want: types.ArtifactReference{
-				Name: filepath.Join("testdata", "misconfig", "azurearm", "passed", "src"),
-				Type: types.ArtifactFilesystem,
-<<<<<<< HEAD
-				ID:   "sha256:1776289fa9295540d5d38fe219a7e565b1d60d7eab2e33331209d9eee88528bb",
-				BlobIDs: []string{
-					"sha256:1776289fa9295540d5d38fe219a7e565b1d60d7eab2e33331209d9eee88528bb",
-=======
-				ID:   "sha256:91bef90dbeb1577d834d7feeac60af3a935ed2465788022146a0ca9c5b38c445",
-				BlobIDs: []string{
-					"sha256:91bef90dbeb1577d834d7feeac60af3a935ed2465788022146a0ca9c5b38c445",
->>>>>>> 4820b213 (fix: updating more tests to run on Windows)
-				},
-=======
 			want: artifactReferenceDetails{
 				filepath:      filepath.Join("testdata", "misconfig", "azurearm", "passed", "src"),
 				artifactType:  types.ArtifactFilesystem,
 				blobID:        "sha256:11bfbe426d39efcefa0bd0ac16a1386967720e1efd00e92012d637b80330821c",
-				windowsBlobID: "sha256:91bef90dbeb1577d834d7feeac60af3a935ed2465788022146a0ca9c5b38c445",
->>>>>>> bd4b3826 (fix: correct test changes failing on non-windows)
+				windowsBlobID: "sha256:61a1869ae33125065c5ee48859a337cab11d228c6538801e942e3e687a3e7ed0",
 			},
 		},
 	}
@@ -2364,5 +2029,14 @@ func TestAzureARMMisconfigurationScan(t *testing.T) {
 			}
 			assert.Equal(t, want, got)
 		})
+	}
+}
+
+func osSpecificFileNotFoundError() string {
+	switch runtime.GOOS {
+	case "windows":
+		return "The system cannot find the file"
+	default:
+		return "no such file or directory"
 	}
 }

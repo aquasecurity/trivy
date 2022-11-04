@@ -4,6 +4,7 @@ import (
 	"context"
 	"os"
 	"path/filepath"
+	"runtime"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -69,7 +70,9 @@ func Test_rustBinaryLibraryAnalyzer_Analyze(t *testing.T) {
 }
 
 func Test_rustBinaryLibraryAnalyzer_Required(t *testing.T) {
-	t.Skip("Permissions tests won't run on Windows")
+	if runtime.GOOS == "windows" {
+		t.Skip("Permissions tests won't run on Windows")
+	}
 	tests := []struct {
 		name     string
 		filePath string

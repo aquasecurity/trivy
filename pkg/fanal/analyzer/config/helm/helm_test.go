@@ -2,10 +2,8 @@ package helm
 
 import (
 	"context"
-	"fmt"
 	"os"
 	"path/filepath"
-	"runtime"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -21,12 +19,11 @@ func Test_helmConfigAnalyzer_Analyze(t *testing.T) {
 		policyPaths []string
 	}
 	tests := []struct {
-		name        string
-		args        args
-		inputFile   string
-		want        *analyzer.AnalysisResult
-		wantErr     string
-		skipWindows bool
+		name      string
+		args      args
+		inputFile string
+		want      *analyzer.AnalysisResult
+		wantErr   string
 	}{
 		{
 			name: "Chart.yaml",
@@ -182,8 +179,7 @@ affinity: {}
 				namespaces:  []string{"main"},
 				policyPaths: []string{"../testdata/kubernetes.rego"},
 			},
-			inputFile:   filepath.Join("testdata", "testchart.tgz"),
-			skipWindows: true,
+			inputFile: filepath.Join("testdata", "testchart.tgz"),
 			want: &analyzer.AnalysisResult{
 				Files: map[types.HandlerType][]types.File{
 					types.MisconfPostHandler: {
@@ -331,9 +327,6 @@ affinity: {}
 		},
 	}
 	for _, tt := range tests {
-		if tt.skipWindows && runtime.GOOS == "windows" {
-			t.Skip(fmt.Sprintf("skipping test %s on windows", tt.name))
-		}
 		t.Run(tt.name, func(t *testing.T) {
 			f, err := os.Open(tt.inputFile)
 			require.NoError(t, err)

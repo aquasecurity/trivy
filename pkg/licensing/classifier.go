@@ -9,6 +9,7 @@ import (
 	"github.com/go-enry/go-license-detector/v4/licensedb"
 	classifier "github.com/google/licenseclassifier/v2"
 	"github.com/google/licenseclassifier/v2/assets"
+	"golang.org/x/exp/maps"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
@@ -102,17 +103,10 @@ func googleClassifierLicense(filePath string, contents []byte) types.LicenseFile
 			Confidence: m.Confidence,
 			Link:       licenseLink,
 		}
-
-		if _, ok := findingsMap[finding]; !ok {
-			findingsMap[finding] = true
-		}
+		findingsMap[finding] = true
 	}
 
-	var findings []types.LicenseFinding
-	for finding := range findingsMap {
-		findings = append(findings, finding)
-	}
-
+	findings := maps.Keys(findingsMap)
 	sort.Slice(findings, func(i, j int) bool {
 		return findings[i].Name < findings[j].Name
 	})

@@ -5,7 +5,6 @@ import (
 	"context"
 	"os"
 	"path/filepath"
-	"runtime"
 	"testing"
 	"time"
 
@@ -631,9 +630,6 @@ deny[res] {
 			}
 
 			if test.regoPolicy != "" {
-				if runtime.GOOS == "windows" {
-					t.Skip("Skipping test on windows")
-				}
 				require.NoError(t, os.MkdirAll(filepath.Join(regoDir, "policies"), 0755))
 				require.NoError(t, os.WriteFile(filepath.Join(regoDir, "policies", "user.rego"), []byte(test.regoPolicy), 0644))
 			}
