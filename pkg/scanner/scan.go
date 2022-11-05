@@ -82,6 +82,12 @@ var RemoteFilesystemSet = wire.NewSet(
 	RemoteSuperSet,
 )
 
+// RemoteRepositorySet binds repository dependencies for client/server mode
+var RemoteRepositorySet = wire.NewSet(
+	remote.NewArtifact,
+	RemoteSuperSet,
+)
+
 // RemoteSBOMSet binds sbom dependencies for client/server mode
 var RemoteSBOMSet = wire.NewSet(
 	sbom.NewArtifact,
