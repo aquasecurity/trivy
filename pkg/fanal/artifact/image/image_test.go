@@ -3,6 +3,7 @@ package image_test
 import (
 	"context"
 	"errors"
+	"runtime"
 	"testing"
 	"time"
 
@@ -33,6 +34,9 @@ import (
 )
 
 func TestArtifact_Inspect(t *testing.T) {
+	if runtime.GOOS == "windows" {
+		t.Skip("skipping test on windows, needs more work")
+	}
 	alpinePkgs := []types.Package{
 		{
 			ID:   "alpine-baselayout@3.2.0-r3",

@@ -27,7 +27,9 @@ import (
 )
 
 func TestArtifact_Inspect(t *testing.T) {
-
+	if runtime.GOOS == "windows" {
+		t.Skip("This test flipflops the blob id's between windows and linux")
+	}
 	type fields struct {
 		dir string
 	}
@@ -528,7 +530,7 @@ func TestTerraformMisconfigurationScan(t *testing.T) {
 			},
 			want: artifactReferenceDetails{
 				blobID:        "sha256:d019b8795805ebb8886e954da62e7b7530fa0108bf0397396188d70219c86779",
-				windowsBlobID: "sha256:a667230715ab98155874066a6c07bc42b5318bb6ac4023498fff839328463de1",
+				windowsBlobID: "sha256:e9f0e899b8b678386df2c4c2bdd33aeb1c42ebdd6422715541edced0b85420c8",
 				filepath:      filepath.Join("testdata", "misconfig", "terraform", "multiple-failures", "src"),
 				artifactType:  types.ArtifactFilesystem,
 			},
@@ -1458,7 +1460,7 @@ func TestKubernetesMisconfigurationScan(t *testing.T) {
 				filepath:      filepath.Join("testdata", "misconfig", "kubernetes", "single-failure", "src"),
 				artifactType:  types.ArtifactFilesystem,
 				blobID:        "sha256:2ef04dd5ff348e57dc1ecd752b085a7c4554d10d8ff7bbd05046864f02e5dcec",
-				windowsBlobID: "sha256:bd3f7f92af9d18b898c615b55a93d783223f73c5b8c76da14cb8879185364fc1",
+				windowsBlobID: "sha256:a3a3b8f58ce255af753517a55a2795d531445849c6d49e0c8a98340f278898e9",
 			},
 		},
 		{
@@ -1555,7 +1557,7 @@ func TestKubernetesMisconfigurationScan(t *testing.T) {
 				filepath:      filepath.Join("testdata", "misconfig", "kubernetes", "multiple-failures", "src"),
 				artifactType:  types.ArtifactFilesystem,
 				blobID:        "sha256:45d853bad8d457c9ffb01921e00b36fc41f8d0c823f222e62cf1a7d7a20313a3",
-				windowsBlobID: "sha256:f32e9c2da77b5bfd5a0568ed14baa43b8490cf835c97c816ed18cdf298990a96",
+				windowsBlobID: "sha256:3b46f835d299174f7af79db6e23e300f0e182f39b7e9eff86deab55b8d4cbcdb",
 			},
 		},
 		{
@@ -1796,7 +1798,7 @@ func TestAzureARMMisconfigurationScan(t *testing.T) {
 				filepath:      filepath.Join("testdata", "misconfig", "azurearm", "single-failure", "src"),
 				artifactType:  types.ArtifactFilesystem,
 				blobID:        "sha256:d9184478c2e60e28dfea431dfb05ff0e9348092c23aae86a9a61a99ff37cb444",
-				windowsBlobID: "sha256:2705472fa17208a67523dc450016ccdae5b3bb3dbfb4e10c59b076411bf97b7d",
+				windowsBlobID: "sha256:575742424312e3412b32dc83c91c3d53914e96de80cd1929ba761f6f4295909e",
 			},
 		},
 		{
@@ -1895,7 +1897,7 @@ func TestAzureARMMisconfigurationScan(t *testing.T) {
 				filepath:      filepath.Join("testdata", "misconfig", "azurearm", "multiple-failures", "src"),
 				artifactType:  types.ArtifactFilesystem,
 				blobID:        "sha256:fa2a7ca3627637a88ec9db7d4edff5b22e62de2dfb5de775f8190c979ac4e052",
-				windowsBlobID: "sha256:574827a1c9ca846b514084814e221190d319cd5560a3478eb0ce6117f5f38abb",
+				windowsBlobID: "sha256:74b2e37a24459dfbba9fa8c4f1dec57b148351e6a593e278dccb2ff270e556c3",
 			},
 		},
 		{
