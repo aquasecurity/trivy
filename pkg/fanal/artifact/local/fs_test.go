@@ -514,7 +514,7 @@ func TestTerraformMisconfigurationScan(t *testing.T) {
 											References: []string{"https://trivy.dev/"},
 										}, CauseMetadata: types.CauseMetadata{
 											Resource: "aws_s3_bucket.three", Provider: "Generic", Service: "general",
-											StartLine: 2, EndLine: 4, Code: types.Code{Lines: []types.Line(nil)},
+											StartLine: 1, EndLine: 3, Code: types.Code{Lines: []types.Line(nil)},
 										}, Traces: []string(nil),
 									},
 								}, Exceptions: types.MisconfResults(nil),
@@ -527,7 +527,7 @@ func TestTerraformMisconfigurationScan(t *testing.T) {
 				Returns: cache.ArtifactCachePutBlobReturns{},
 			},
 			want: artifactReferenceDetails{
-				blobID:        "sha256:5280d5ed00b245d916357a365dde2a87430bdef58bf8d3c26a4e9b7e67481f6b",
+				blobID:        "sha256:d019b8795805ebb8886e954da62e7b7530fa0108bf0397396188d70219c86779",
 				windowsBlobID: "sha256:a667230715ab98155874066a6c07bc42b5318bb6ac4023498fff839328463de1",
 				filepath:      filepath.Join("testdata", "misconfig", "terraform", "multiple-failures", "src"),
 				artifactType:  types.ArtifactFilesystem,
@@ -1457,7 +1457,7 @@ func TestKubernetesMisconfigurationScan(t *testing.T) {
 			want: artifactReferenceDetails{
 				filepath:      filepath.Join("testdata", "misconfig", "kubernetes", "single-failure", "src"),
 				artifactType:  types.ArtifactFilesystem,
-				blobID:        "sha256:599ae82c0d032acbe75e24379b4320fb7f0a9818da50b4635c4f0645504d5a72",
+				blobID:        "sha256:2ef04dd5ff348e57dc1ecd752b085a7c4554d10d8ff7bbd05046864f02e5dcec",
 				windowsBlobID: "sha256:bd3f7f92af9d18b898c615b55a93d783223f73c5b8c76da14cb8879185364fc1",
 			},
 		},
@@ -1554,7 +1554,7 @@ func TestKubernetesMisconfigurationScan(t *testing.T) {
 			want: artifactReferenceDetails{
 				filepath:      filepath.Join("testdata", "misconfig", "kubernetes", "multiple-failures", "src"),
 				artifactType:  types.ArtifactFilesystem,
-				blobID:        "sha256:fd62e7fdfeffa3df4653c100cc87fe0bc83ddbca918c41b73c7a5724a64619df",
+				blobID:        "sha256:45d853bad8d457c9ffb01921e00b36fc41f8d0c823f222e62cf1a7d7a20313a3",
 				windowsBlobID: "sha256:f32e9c2da77b5bfd5a0568ed14baa43b8490cf835c97c816ed18cdf298990a96",
 			},
 		},
@@ -1780,7 +1780,7 @@ func TestAzureARMMisconfigurationScan(t *testing.T) {
 											References: []string{"https://trivy.dev/"},
 										}, CauseMetadata: types.CauseMetadata{
 											Resource: "resources[0]", Provider: "Generic", Service: "general",
-											StartLine: 29, EndLine: 39, Code: types.Code{Lines: []types.Line(nil)},
+											StartLine: 30, EndLine: 40, Code: types.Code{Lines: []types.Line(nil)},
 										}, Traces: []string(nil),
 									},
 								}, Exceptions: types.MisconfResults(nil),
@@ -1795,7 +1795,7 @@ func TestAzureARMMisconfigurationScan(t *testing.T) {
 			want: artifactReferenceDetails{
 				filepath:      filepath.Join("testdata", "misconfig", "azurearm", "single-failure", "src"),
 				artifactType:  types.ArtifactFilesystem,
-				blobID:        "sha256:1113fd88abfa3727496c9a5e2e47c522d0197fa0c58d9b0472ff5715aa5dbe79",
+				blobID:        "sha256:d9184478c2e60e28dfea431dfb05ff0e9348092c23aae86a9a61a99ff37cb444",
 				windowsBlobID: "sha256:2705472fa17208a67523dc450016ccdae5b3bb3dbfb4e10c59b076411bf97b7d",
 			},
 		},
@@ -1827,7 +1827,7 @@ func TestAzureARMMisconfigurationScan(t *testing.T) {
 						WhiteoutFiles: []string(nil), OS: (*types.OS)(nil), Repository: (*types.Repository)(nil),
 						PackageInfos: []types.PackageInfo(nil), Applications: []types.Application(nil),
 						Misconfigurations: []types.Misconfiguration{
-							{
+							types.Misconfiguration{
 								FileType: "azure-arm", FilePath: "deploy.json", Successes: types.MisconfResults{
 									types.MisconfResult{
 										Namespace: "builtin.aws.rds.aws0176",
@@ -1868,7 +1868,7 @@ func TestAzureARMMisconfigurationScan(t *testing.T) {
 											References: []string{"https://trivy.dev/"},
 										}, CauseMetadata: types.CauseMetadata{
 											Resource: "resources[0]", Provider: "Generic", Service: "general",
-											StartLine: 29, EndLine: 39, Code: types.Code{Lines: []types.Line(nil)},
+											StartLine: 30, EndLine: 40, Code: types.Code{Lines: []types.Line(nil)},
 										}, Traces: []string(nil),
 									}, types.MisconfResult{
 										Namespace: "user.something", Query: "data.user.something.deny",
@@ -1879,7 +1879,7 @@ func TestAzureARMMisconfigurationScan(t *testing.T) {
 											References: []string{"https://trivy.dev/"},
 										}, CauseMetadata: types.CauseMetadata{
 											Resource: "resources[1]", Provider: "Generic", Service: "general",
-											StartLine: 40, EndLine: 50, Code: types.Code{Lines: []types.Line(nil)},
+											StartLine: 41, EndLine: 51, Code: types.Code{Lines: []types.Line(nil)},
 										}, Traces: []string(nil),
 									},
 								}, Exceptions: types.MisconfResults(nil),
@@ -1894,7 +1894,7 @@ func TestAzureARMMisconfigurationScan(t *testing.T) {
 			want: artifactReferenceDetails{
 				filepath:      filepath.Join("testdata", "misconfig", "azurearm", "multiple-failures", "src"),
 				artifactType:  types.ArtifactFilesystem,
-				blobID:        "sha256:f75d8c2df3cd95fa0972ad064ca7c4c4bfc614b69a1220bb1b0e31b0c97cf2aa",
+				blobID:        "sha256:fa2a7ca3627637a88ec9db7d4edff5b22e62de2dfb5de775f8190c979ac4e052",
 				windowsBlobID: "sha256:574827a1c9ca846b514084814e221190d319cd5560a3478eb0ce6117f5f38abb",
 			},
 		},
