@@ -54,9 +54,9 @@ func TestArtifact_Inspect(t *testing.T) {
 						SchemaVersion: 2, Digest: "", DiffID: "", CreatedBy: "", OpaqueDirs: []string(nil),
 						WhiteoutFiles: []string(nil), OS: &types.OS{Family: "alpine", Name: "3.11.6"},
 						Repository: (*types.Repository)(nil), PackageInfos: []types.PackageInfo{
-							types.PackageInfo{
+							{
 								FilePath: "lib/apk/db/installed", Packages: []types.Package{
-									types.Package{
+									{
 										ID: "musl@1.1.24-r2", Name: "musl", Version: "1.1.24-r2", Release: "", Epoch: 0,
 										Arch: "", SrcName: "musl", SrcVersion: "1.1.24-r2", SrcRelease: "", SrcEpoch: 0,
 										Licenses: []string{"MIT"}, Modularitylabel: "",
@@ -121,9 +121,9 @@ func TestArtifact_Inspect(t *testing.T) {
 						SchemaVersion: 2, Digest: "", DiffID: "", CreatedBy: "", OpaqueDirs: []string(nil),
 						WhiteoutFiles: []string(nil), OS: &types.OS{Family: "alpine", Name: "3.11.6"},
 						Repository: (*types.Repository)(nil), PackageInfos: []types.PackageInfo{
-							types.PackageInfo{
+							{
 								FilePath: "lib/apk/db/installed", Packages: []types.Package{
-									types.Package{
+									{
 										ID: "musl@1.1.24-r2", Name: "musl", Version: "1.1.24-r2", Release: "", Epoch: 0,
 										Arch: "", SrcName: "musl", SrcVersion: "1.1.24-r2", SrcRelease: "", SrcEpoch: 0,
 										Licenses: []string{"MIT"}, Modularitylabel: "",
@@ -164,9 +164,9 @@ func TestArtifact_Inspect(t *testing.T) {
 						SchemaVersion: 2, Digest: "", DiffID: "", CreatedBy: "", OpaqueDirs: []string(nil),
 						WhiteoutFiles: []string(nil), OS: (*types.OS)(nil), Repository: (*types.Repository)(nil),
 						PackageInfos: []types.PackageInfo(nil), Applications: []types.Application{
-							types.Application{
+							{
 								Type: "pip", FilePath: "requirements.txt", Libraries: []types.Package{
-									types.Package{
+									{
 										ID: "", Name: "Flask", Version: "2.0.0", Release: "", Epoch: 0, Arch: "",
 										SrcName: "", SrcVersion: "", SrcRelease: "", SrcEpoch: 0,
 										Licenses: []string(nil), Modularitylabel: "",
@@ -205,9 +205,9 @@ func TestArtifact_Inspect(t *testing.T) {
 						SchemaVersion: 2, Digest: "", DiffID: "", CreatedBy: "", OpaqueDirs: []string(nil),
 						WhiteoutFiles: []string(nil), OS: (*types.OS)(nil), Repository: (*types.Repository)(nil),
 						PackageInfos: []types.PackageInfo(nil), Applications: []types.Application{
-							types.Application{
+							{
 								Type: "pip", FilePath: "requirements.txt", Libraries: []types.Package{
-									types.Package{
+									{
 										ID: "", Name: "Flask", Version: "2.0.0", Release: "", Epoch: 0, Arch: "",
 										SrcName: "", SrcVersion: "", SrcRelease: "", SrcEpoch: 0,
 										Licenses: []string(nil), Modularitylabel: "",

@@ -3,9 +3,10 @@ package report_test
 import (
 	"testing"
 
+	"github.com/stretchr/testify/assert"
+
 	"github.com/aquasecurity/trivy/pkg/compliance/report"
 	"github.com/aquasecurity/trivy/pkg/types"
-	"github.com/stretchr/testify/assert"
 )
 
 func TestBuildSummary(t *testing.T) {

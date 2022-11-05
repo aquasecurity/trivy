@@ -82,8 +82,8 @@ func TestConfigScanner_Scan(t *testing.T) {
 							}, Traces: []string(nil),
 						},
 					}, Warnings: types.MisconfResults(nil),
-					Successes:   types.MisconfResults(nil),
-					Exceptions:  types.MisconfResults(nil),
+					Successes:  types.MisconfResults(nil),
+					Exceptions: types.MisconfResults(nil),
 					Layer: types.Layer{
 						Digest: "",
 						DiffID: "",

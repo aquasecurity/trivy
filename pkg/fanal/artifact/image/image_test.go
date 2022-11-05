@@ -190,9 +190,9 @@ func TestArtifact_Inspect(t *testing.T) {
 							OS:         &types.OS{Family: "alpine", Name: "3.11.5"},
 							Repository: &types.Repository{Family: "alpine", Release: "3.11"},
 							PackageInfos: []types.PackageInfo{
-								types.PackageInfo{
+								{
 									FilePath: "lib/apk/db/installed", Packages: []types.Package{
-										types.Package{
+										{
 											ID: "alpine-baselayout@3.2.0-r3", Name: "alpine-baselayout",
 											Version: "3.2.0-r3", Release: "", Epoch: 0, Arch: "",
 											SrcName: "alpine-baselayout", SrcVersion: "3.2.0-r3", SrcRelease: "",
@@ -201,7 +201,7 @@ func TestArtifact_Inspect(t *testing.T) {
 											DependsOn: []string{"busybox@1.31.1-r9", "musl@1.1.24-r2"},
 											Layer:     types.Layer{Digest: "", DiffID: "", CreatedBy: ""}, FilePath: "",
 											Locations: []types.Location(nil),
-										}, types.Package{
+										}, {
 											ID: "alpine-keys@2.1-r2", Name: "alpine-keys", Version: "2.1-r2",
 											Release: "", Epoch: 0, Arch: "", SrcName: "alpine-keys",
 											SrcVersion: "2.1-r2", SrcRelease: "", SrcEpoch: 0,
@@ -210,7 +210,7 @@ func TestArtifact_Inspect(t *testing.T) {
 											DependsOn: []string(nil),
 											Layer:     types.Layer{Digest: "", DiffID: "", CreatedBy: ""}, FilePath: "",
 											Locations: []types.Location(nil),
-										}, types.Package{
+										}, {
 											ID: "apk-tools@2.10.4-r3", Name: "apk-tools", Version: "2.10.4-r3",
 											Release: "", Epoch: 0, Arch: "", SrcName: "apk-tools",
 											SrcVersion: "2.10.4-r3", SrcRelease: "", SrcEpoch: 0,
@@ -221,7 +221,7 @@ func TestArtifact_Inspect(t *testing.T) {
 												"zlib@1.2.11-r3",
 											}, Layer: types.Layer{Digest: "", DiffID: "", CreatedBy: ""}, FilePath: "",
 											Locations: []types.Location(nil),
-										}, types.Package{
+										}, {
 											ID: "busybox@1.31.1-r9", Name: "busybox", Version: "1.31.1-r9", Release: "",
 											Epoch: 0, Arch: "", SrcName: "busybox", SrcVersion: "1.31.1-r9",
 											SrcRelease: "", SrcEpoch: 0, Licenses: []string{"GPL-2.0"},
@@ -229,7 +229,7 @@ func TestArtifact_Inspect(t *testing.T) {
 											Indirect: false, DependsOn: []string{"musl@1.1.24-r2"},
 											Layer: types.Layer{Digest: "", DiffID: "", CreatedBy: ""}, FilePath: "",
 											Locations: []types.Location(nil),
-										}, types.Package{
+										}, {
 											ID: "ca-certificates-cacert@20191127-r1", Name: "ca-certificates-cacert",
 											Version: "20191127-r1", Release: "", Epoch: 0, Arch: "",
 											SrcName: "ca-certificates", SrcVersion: "20191127-r1", SrcRelease: "",
@@ -238,7 +238,7 @@ func TestArtifact_Inspect(t *testing.T) {
 											DependsOn: []string(nil),
 											Layer:     types.Layer{Digest: "", DiffID: "", CreatedBy: ""}, FilePath: "",
 											Locations: []types.Location(nil),
-										}, types.Package{
+										}, {
 											ID: "libc-utils@0.7.2-r0", Name: "libc-utils", Version: "0.7.2-r0",
 											Release: "", Epoch: 0, Arch: "", SrcName: "libc-dev",
 											SrcVersion: "0.7.2-r0", SrcRelease: "", SrcEpoch: 0,
@@ -247,7 +247,7 @@ func TestArtifact_Inspect(t *testing.T) {
 											DependsOn: []string{"musl-utils@1.1.24-r2"},
 											Layer:     types.Layer{Digest: "", DiffID: "", CreatedBy: ""}, FilePath: "",
 											Locations: []types.Location(nil),
-										}, types.Package{
+										}, {
 											ID: "libcrypto1.1@1.1.1d-r3", Name: "libcrypto1.1", Version: "1.1.1d-r3",
 											Release: "", Epoch: 0, Arch: "", SrcName: "openssl",
 											SrcVersion: "1.1.1d-r3", SrcRelease: "", SrcEpoch: 0,
@@ -256,7 +256,7 @@ func TestArtifact_Inspect(t *testing.T) {
 											DependsOn: []string{"musl@1.1.24-r2"},
 											Layer:     types.Layer{Digest: "", DiffID: "", CreatedBy: ""}, FilePath: "",
 											Locations: []types.Location(nil),
-										}, types.Package{
+										}, {
 											ID: "libssl1.1@1.1.1d-r3", Name: "libssl1.1", Version: "1.1.1d-r3",
 											Release: "", Epoch: 0, Arch: "", SrcName: "openssl",
 											SrcVersion: "1.1.1d-r3", SrcRelease: "", SrcEpoch: 0,
@@ -265,7 +265,7 @@ func TestArtifact_Inspect(t *testing.T) {
 											DependsOn: []string{"libcrypto1.1@1.1.1d-r3", "musl@1.1.24-r2"},
 											Layer:     types.Layer{Digest: "", DiffID: "", CreatedBy: ""}, FilePath: "",
 											Locations: []types.Location(nil),
-										}, types.Package{
+										}, {
 											ID: "libtls-standalone@2.9.1-r0", Name: "libtls-standalone",
 											Version: "2.9.1-r0", Release: "", Epoch: 0, Arch: "",
 											SrcName: "libtls-standalone", SrcVersion: "2.9.1-r0", SrcRelease: "",
@@ -276,7 +276,7 @@ func TestArtifact_Inspect(t *testing.T) {
 												"libssl1.1@1.1.1d-r3", "musl@1.1.24-r2",
 											}, Layer: types.Layer{Digest: "", DiffID: "", CreatedBy: ""}, FilePath: "",
 											Locations: []types.Location(nil),
-										}, types.Package{
+										}, {
 											ID: "musl@1.1.24-r2", Name: "musl", Version: "1.1.24-r2", Release: "",
 											Epoch: 0, Arch: "", SrcName: "musl", SrcVersion: "1.1.24-r2",
 											SrcRelease: "", SrcEpoch: 0, Licenses: []string{"MIT"}, Modularitylabel: "",
@@ -284,7 +284,7 @@ func TestArtifact_Inspect(t *testing.T) {
 											DependsOn: []string(nil),
 											Layer:     types.Layer{Digest: "", DiffID: "", CreatedBy: ""}, FilePath: "",
 											Locations: []types.Location(nil),
-										}, types.Package{
+										}, {
 											ID: "musl-utils@1.1.24-r2", Name: "musl-utils", Version: "1.1.24-r2",
 											Release: "", Epoch: 0, Arch: "", SrcName: "musl", SrcVersion: "1.1.24-r2",
 											SrcRelease: "", SrcEpoch: 0,
@@ -293,7 +293,7 @@ func TestArtifact_Inspect(t *testing.T) {
 											DependsOn: []string{"musl@1.1.24-r2", "scanelf@1.2.4-r0"},
 											Layer:     types.Layer{Digest: "", DiffID: "", CreatedBy: ""}, FilePath: "",
 											Locations: []types.Location(nil),
-										}, types.Package{
+										}, {
 											ID: "scanelf@1.2.4-r0", Name: "scanelf", Version: "1.2.4-r0", Release: "",
 											Epoch: 0, Arch: "", SrcName: "pax-utils", SrcVersion: "1.2.4-r0",
 											SrcRelease: "", SrcEpoch: 0, Licenses: []string{"GPL-2.0"},
@@ -301,7 +301,7 @@ func TestArtifact_Inspect(t *testing.T) {
 											Indirect: false, DependsOn: []string{"musl@1.1.24-r2"},
 											Layer: types.Layer{Digest: "", DiffID: "", CreatedBy: ""}, FilePath: "",
 											Locations: []types.Location(nil),
-										}, types.Package{
+										}, {
 											ID: "ssl_client@1.31.1-r9", Name: "ssl_client", Version: "1.31.1-r9",
 											Release: "", Epoch: 0, Arch: "", SrcName: "busybox",
 											SrcVersion: "1.31.1-r9", SrcRelease: "", SrcEpoch: 0,
@@ -310,7 +310,7 @@ func TestArtifact_Inspect(t *testing.T) {
 											DependsOn: []string{"libtls-standalone@2.9.1-r0", "musl@1.1.24-r2"},
 											Layer:     types.Layer{Digest: "", DiffID: "", CreatedBy: ""}, FilePath: "",
 											Locations: []types.Location(nil),
-										}, types.Package{
+										}, {
 											ID: "zlib@1.2.11-r3", Name: "zlib", Version: "1.2.11-r3", Release: "",
 											Epoch: 0, Arch: "", SrcName: "zlib", SrcVersion: "1.2.11-r3",
 											SrcRelease: "", SrcEpoch: 0, Licenses: []string{"Zlib"},
@@ -323,24 +323,24 @@ func TestArtifact_Inspect(t *testing.T) {
 								},
 							}, Applications: []types.Application(nil), Misconfigurations: []types.Misconfiguration(nil),
 							Secrets: []types.Secret(nil), Licenses: []types.LicenseFile{
-								types.LicenseFile{
+								{
 									Type: "header", FilePath: "/etc/ssl/misc/CA.pl", PkgName: "",
 									Findings: []types.LicenseFinding{
-										types.LicenseFinding{
+										{
 											Category: "", Name: "Copyright", Confidence: 1,
 											Link: "https://spdx.org/licenses/Copyright.html",
-										}, types.LicenseFinding{
+										}, {
 											Category: "", Name: "OpenSSL", Confidence: 1,
 											Link: "https://spdx.org/licenses/OpenSSL.html",
 										},
 									}, Layer: types.Layer{Digest: "", DiffID: "", CreatedBy: ""},
-								}, types.LicenseFile{
+								}, {
 									Type: "header", FilePath: "/etc/ssl/misc/tsget.pl", PkgName: "",
 									Findings: []types.LicenseFinding{
-										types.LicenseFinding{
+										{
 											Category: "", Name: "Copyright", Confidence: 1,
 											Link: "https://spdx.org/licenses/Copyright.html",
-										}, types.LicenseFinding{
+										}, {
 											Category: "", Name: "OpenSSL", Confidence: 1,
 											Link: "https://spdx.org/licenses/OpenSSL.html",
 										},
@@ -454,9 +454,9 @@ func TestArtifact_Inspect(t *testing.T) {
 							OS:         &types.OS{Family: "debian", Name: "9.9", Eosl: false},
 							Repository: (*types.Repository)(nil),
 							PackageInfos: []types.PackageInfo{
-								types.PackageInfo{
+								{
 									FilePath: "var/lib/dpkg/status.d/base", Packages: []types.Package{
-										types.Package{
+										{
 											ID: "base-files@9.9+deb9u9", Name: "base-files", Version: "9.9+deb9u9",
 											Release: "", Epoch: 0, Arch: "", SrcName: "base-files",
 											SrcVersion: "9.9+deb9u9", SrcRelease: "", SrcEpoch: 0,
@@ -467,9 +467,9 @@ func TestArtifact_Inspect(t *testing.T) {
 											Locations: []types.Location(nil),
 										},
 									},
-								}, types.PackageInfo{
+								}, {
 									FilePath: "var/lib/dpkg/status.d/netbase", Packages: []types.Package{
-										types.Package{
+										{
 											ID: "netbase@5.4", Name: "netbase",
 											Version: "5.4", Release: "", Epoch: 0, Arch: "",
 											SrcName: "netbase", SrcVersion: "5.4", SrcRelease: "",
@@ -480,9 +480,9 @@ func TestArtifact_Inspect(t *testing.T) {
 											Locations: []types.Location(nil),
 										},
 									},
-								}, types.PackageInfo{
+								}, {
 									FilePath: "var/lib/dpkg/status.d/tzdata", Packages: []types.Package{
-										types.Package{
+										{
 											ID: "tzdata@2019a-0+deb9u1", Name: "tzdata", Version: "2019a-0+deb9u1",
 											Release: "", Epoch: 0, Arch: "", SrcName: "tzdata",
 											SrcVersion: "2019a-0+deb9u1", SrcRelease: "", SrcEpoch: 0,
@@ -549,9 +549,9 @@ func TestArtifact_Inspect(t *testing.T) {
 							CreatedBy: "bazel build ...", OpaqueDirs: []string(nil), WhiteoutFiles: []string(nil),
 							OS: (*types.OS)(nil), Repository: (*types.Repository)(nil),
 							PackageInfos: []types.PackageInfo{
-								types.PackageInfo{
+								{
 									FilePath: "var/lib/dpkg/status.d/libc6", Packages: []types.Package{
-										types.Package{
+										{
 											ID: "libc6@2.24-11+deb9u4", Name: "libc6", Version: "2.24-11+deb9u4",
 											Release: "", Epoch: 0, Arch: "", SrcName: "glibc",
 											SrcVersion: "2.24-11+deb9u4", SrcRelease: "", SrcEpoch: 0,
@@ -562,9 +562,9 @@ func TestArtifact_Inspect(t *testing.T) {
 											Locations: []types.Location(nil),
 										},
 									},
-								}, types.PackageInfo{
+								}, {
 									FilePath: "var/lib/dpkg/status.d/libssl1", Packages: []types.Package{
-										types.Package{
+										{
 											ID: "libssl1.1@1.1.0k-1~deb9u1", Name: "libssl1.1",
 											Version: "1.1.0k-1~deb9u1", Release: "", Epoch: 0, Arch: "",
 											SrcName: "openssl", SrcVersion: "1.1.0k-1~deb9u1", SrcRelease: "",
@@ -575,9 +575,9 @@ func TestArtifact_Inspect(t *testing.T) {
 											Locations: []types.Location(nil),
 										},
 									},
-								}, types.PackageInfo{
+								}, {
 									FilePath: "var/lib/dpkg/status.d/openssl", Packages: []types.Package{
-										types.Package{
+										{
 											ID: "openssl@1.1.0k-1~deb9u1", Name: "openssl", Version: "1.1.0k-1~deb9u1",
 											Release: "", Epoch: 0, Arch: "", SrcName: "openssl",
 											SrcVersion: "1.1.0k-1~deb9u1", SrcRelease: "", SrcEpoch: 0,
@@ -591,12 +591,12 @@ func TestArtifact_Inspect(t *testing.T) {
 								},
 							}, Applications: []types.Application(nil), Misconfigurations: []types.Misconfiguration(nil),
 							Secrets: []types.Secret(nil), Licenses: []types.LicenseFile{
-								types.LicenseFile{
+								{
 									Type: "dpkg", FilePath: "usr/share/doc/libc6/copyright", PkgName: "libc6",
 									Findings: []types.LicenseFinding{
-										types.LicenseFinding{
+										{
 											Category: "", Name: "LGPL-2.1", Confidence: 0, Link: "",
-										}, types.LicenseFinding{Category: "", Name: "GPL-2.0", Confidence: 0, Link: ""},
+										}, {Category: "", Name: "GPL-2.0", Confidence: 0, Link: ""},
 									}, Layer: types.Layer{Digest: "", DiffID: "", CreatedBy: ""},
 								},
 							}, BuildInfo: (*types.BuildInfo)(nil), CustomResources: []types.CustomResource(nil),
@@ -1076,9 +1076,9 @@ func TestArtifact_Inspect(t *testing.T) {
 							}, Repository: &types.Repository{
 								Family: "alpine", Release: "3.11",
 							}, PackageInfos: []types.PackageInfo{
-								types.PackageInfo{
+								{
 									FilePath: "lib/apk/db/installed", Packages: []types.Package{
-										types.Package{
+										{
 											ID: "alpine-baselayout@3.2.0-r3", Name: "alpine-baselayout",
 											Version: "3.2.0-r3", Release: "", Epoch: 0, Arch: "",
 											SrcName: "alpine-baselayout", SrcVersion: "3.2.0-r3", SrcRelease: "",
@@ -1087,7 +1087,7 @@ func TestArtifact_Inspect(t *testing.T) {
 											DependsOn: []string{"busybox@1.31.1-r9", "musl@1.1.24-r2"},
 											Layer:     types.Layer{Digest: "", DiffID: "", CreatedBy: ""}, FilePath: "",
 											Locations: []types.Location(nil),
-										}, types.Package{
+										}, {
 											ID: "alpine-keys@2.1-r2", Name: "alpine-keys", Version: "2.1-r2",
 											Release: "", Epoch: 0, Arch: "", SrcName: "alpine-keys",
 											SrcVersion: "2.1-r2", SrcRelease: "", SrcEpoch: 0,
@@ -1096,7 +1096,7 @@ func TestArtifact_Inspect(t *testing.T) {
 											DependsOn: []string(nil),
 											Layer:     types.Layer{Digest: "", DiffID: "", CreatedBy: ""}, FilePath: "",
 											Locations: []types.Location(nil),
-										}, types.Package{
+										}, {
 											ID: "apk-tools@2.10.4-r3", Name: "apk-tools", Version: "2.10.4-r3",
 											Release: "", Epoch: 0, Arch: "", SrcName: "apk-tools",
 											SrcVersion: "2.10.4-r3", SrcRelease: "", SrcEpoch: 0,
@@ -1107,7 +1107,7 @@ func TestArtifact_Inspect(t *testing.T) {
 												"zlib@1.2.11-r3",
 											}, Layer: types.Layer{Digest: "", DiffID: "", CreatedBy: ""}, FilePath: "",
 											Locations: []types.Location(nil),
-										}, types.Package{
+										}, {
 											ID: "busybox@1.31.1-r9", Name: "busybox", Version: "1.31.1-r9", Release: "",
 											Epoch: 0, Arch: "", SrcName: "busybox", SrcVersion: "1.31.1-r9",
 											SrcRelease: "", SrcEpoch: 0, Licenses: []string{"GPL-2.0"},
@@ -1115,7 +1115,7 @@ func TestArtifact_Inspect(t *testing.T) {
 											Indirect: false, DependsOn: []string{"musl@1.1.24-r2"},
 											Layer: types.Layer{Digest: "", DiffID: "", CreatedBy: ""}, FilePath: "",
 											Locations: []types.Location(nil),
-										}, types.Package{
+										}, {
 											ID: "ca-certificates-cacert@20191127-r1", Name: "ca-certificates-cacert",
 											Version: "20191127-r1", Release: "", Epoch: 0, Arch: "",
 											SrcName: "ca-certificates", SrcVersion: "20191127-r1", SrcRelease: "",
@@ -1124,7 +1124,7 @@ func TestArtifact_Inspect(t *testing.T) {
 											DependsOn: []string(nil),
 											Layer:     types.Layer{Digest: "", DiffID: "", CreatedBy: ""}, FilePath: "",
 											Locations: []types.Location(nil),
-										}, types.Package{
+										}, {
 											ID: "libc-utils@0.7.2-r0", Name: "libc-utils", Version: "0.7.2-r0",
 											Release: "", Epoch: 0, Arch: "", SrcName: "libc-dev",
 											SrcVersion: "0.7.2-r0", SrcRelease: "", SrcEpoch: 0,
@@ -1133,7 +1133,7 @@ func TestArtifact_Inspect(t *testing.T) {
 											DependsOn: []string{"musl-utils@1.1.24-r2"},
 											Layer:     types.Layer{Digest: "", DiffID: "", CreatedBy: ""}, FilePath: "",
 											Locations: []types.Location(nil),
-										}, types.Package{
+										}, {
 											ID: "libcrypto1.1@1.1.1d-r3", Name: "libcrypto1.1", Version: "1.1.1d-r3",
 											Release: "", Epoch: 0, Arch: "", SrcName: "openssl",
 											SrcVersion: "1.1.1d-r3", SrcRelease: "", SrcEpoch: 0,
@@ -1142,7 +1142,7 @@ func TestArtifact_Inspect(t *testing.T) {
 											DependsOn: []string{"musl@1.1.24-r2"},
 											Layer:     types.Layer{Digest: "", DiffID: "", CreatedBy: ""}, FilePath: "",
 											Locations: []types.Location(nil),
-										}, types.Package{
+										}, {
 											ID: "libssl1.1@1.1.1d-r3", Name: "libssl1.1", Version: "1.1.1d-r3",
 											Release: "", Epoch: 0, Arch: "", SrcName: "openssl",
 											SrcVersion: "1.1.1d-r3", SrcRelease: "", SrcEpoch: 0,
@@ -1151,7 +1151,7 @@ func TestArtifact_Inspect(t *testing.T) {
 											DependsOn: []string{"libcrypto1.1@1.1.1d-r3", "musl@1.1.24-r2"},
 											Layer:     types.Layer{Digest: "", DiffID: "", CreatedBy: ""}, FilePath: "",
 											Locations: []types.Location(nil),
-										}, types.Package{
+										}, {
 											ID: "libtls-standalone@2.9.1-r0", Name: "libtls-standalone",
 											Version: "2.9.1-r0", Release: "", Epoch: 0, Arch: "",
 											SrcName: "libtls-standalone", SrcVersion: "2.9.1-r0", SrcRelease: "",
@@ -1162,7 +1162,7 @@ func TestArtifact_Inspect(t *testing.T) {
 												"libssl1.1@1.1.1d-r3", "musl@1.1.24-r2",
 											}, Layer: types.Layer{Digest: "", DiffID: "", CreatedBy: ""}, FilePath: "",
 											Locations: []types.Location(nil),
-										}, types.Package{
+										}, {
 											ID: "musl@1.1.24-r2", Name: "musl", Version: "1.1.24-r2", Release: "",
 											Epoch: 0, Arch: "", SrcName: "musl", SrcVersion: "1.1.24-r2",
 											SrcRelease: "", SrcEpoch: 0, Licenses: []string{"MIT"}, Modularitylabel: "",
@@ -1170,7 +1170,7 @@ func TestArtifact_Inspect(t *testing.T) {
 											DependsOn: []string(nil),
 											Layer:     types.Layer{Digest: "", DiffID: "", CreatedBy: ""}, FilePath: "",
 											Locations: []types.Location(nil),
-										}, types.Package{
+										}, {
 											ID: "musl-utils@1.1.24-r2", Name: "musl-utils", Version: "1.1.24-r2",
 											Release: "", Epoch: 0, Arch: "", SrcName: "musl", SrcVersion: "1.1.24-r2",
 											SrcRelease: "", SrcEpoch: 0,
@@ -1179,7 +1179,7 @@ func TestArtifact_Inspect(t *testing.T) {
 											DependsOn: []string{"musl@1.1.24-r2", "scanelf@1.2.4-r0"},
 											Layer:     types.Layer{Digest: "", DiffID: "", CreatedBy: ""}, FilePath: "",
 											Locations: []types.Location(nil),
-										}, types.Package{
+										}, {
 											ID: "scanelf@1.2.4-r0", Name: "scanelf", Version: "1.2.4-r0", Release: "",
 											Epoch: 0, Arch: "", SrcName: "pax-utils", SrcVersion: "1.2.4-r0",
 											SrcRelease: "", SrcEpoch: 0, Licenses: []string{"GPL-2.0"},
@@ -1187,7 +1187,7 @@ func TestArtifact_Inspect(t *testing.T) {
 											Indirect: false, DependsOn: []string{"musl@1.1.24-r2"},
 											Layer: types.Layer{Digest: "", DiffID: "", CreatedBy: ""}, FilePath: "",
 											Locations: []types.Location(nil),
-										}, types.Package{
+										}, {
 											ID: "ssl_client@1.31.1-r9", Name: "ssl_client", Version: "1.31.1-r9",
 											Release: "", Epoch: 0, Arch: "", SrcName: "busybox",
 											SrcVersion: "1.31.1-r9", SrcRelease: "", SrcEpoch: 0,
@@ -1196,7 +1196,7 @@ func TestArtifact_Inspect(t *testing.T) {
 											DependsOn: []string{"libtls-standalone@2.9.1-r0", "musl@1.1.24-r2"},
 											Layer:     types.Layer{Digest: "", DiffID: "", CreatedBy: ""}, FilePath: "",
 											Locations: []types.Location(nil),
-										}, types.Package{
+										}, {
 											ID: "zlib@1.2.11-r3", Name: "zlib", Version: "1.2.11-r3", Release: "",
 											Epoch: 0, Arch: "", SrcName: "zlib", SrcVersion: "1.2.11-r3",
 											SrcRelease: "", SrcEpoch: 0, Licenses: []string{"Zlib"},
@@ -1209,24 +1209,24 @@ func TestArtifact_Inspect(t *testing.T) {
 								},
 							}, Applications: []types.Application(nil), Misconfigurations: []types.Misconfiguration(nil),
 							Secrets: []types.Secret(nil), Licenses: []types.LicenseFile{
-								types.LicenseFile{
+								{
 									Type: "header", FilePath: "/etc/ssl/misc/CA.pl", PkgName: "",
 									Findings: []types.LicenseFinding{
-										types.LicenseFinding{
+										{
 											Category: "", Name: "Copyright", Confidence: 1,
 											Link: "https://spdx.org/licenses/Copyright.html",
-										}, types.LicenseFinding{
+										}, {
 											Category: "", Name: "OpenSSL", Confidence: 1,
 											Link: "https://spdx.org/licenses/OpenSSL.html",
 										},
 									}, Layer: types.Layer{Digest: "", DiffID: "", CreatedBy: ""},
-								}, types.LicenseFile{
+								}, {
 									Type: "header", FilePath: "/etc/ssl/misc/tsget.pl", PkgName: "",
 									Findings: []types.LicenseFinding{
-										types.LicenseFinding{
+										{
 											Category: "", Name: "Copyright", Confidence: 1,
 											Link: "https://spdx.org/licenses/Copyright.html",
-										}, types.LicenseFinding{
+										}, {
 											Category: "", Name: "OpenSSL", Confidence: 1,
 											Link: "https://spdx.org/licenses/OpenSSL.html",
 										},
