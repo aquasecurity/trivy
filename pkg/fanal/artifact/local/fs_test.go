@@ -406,7 +406,7 @@ func TestTerraformMisconfigurationScan(t *testing.T) {
 				Returns: cache.ArtifactCachePutBlobReturns{},
 			},
 			want: artifactReferenceDetails{
-				blobID:        "sha256:054ca717161e9042642323fce30d558ea4188280770f3a97f08878732182e2f5",
+				blobID:        "sha256:9827e4b06d1efa0853e8d75bafb4f95c4c778012b60cee114ce96042ea7c1b7b",
 				windowsBlobID: "sha256:00839ff1b9db6cb4898dab4ba56d2cb982d5433737fbb06ef3393ee7531f8550",
 				filepath:      filepath.Join("testdata", "misconfig", "terraform", "single-failure", "src"),
 				artifactType:  types.ArtifactFilesystem,
@@ -527,7 +527,7 @@ func TestTerraformMisconfigurationScan(t *testing.T) {
 				Returns: cache.ArtifactCachePutBlobReturns{},
 			},
 			want: artifactReferenceDetails{
-				blobID:        "sha256:539a82c7c394c9b4d64580feec160c9422f7d1aa2c7328d43c919e737bffdd70",
+				blobID:        "sha256:5280d5ed00b245d916357a365dde2a87430bdef58bf8d3c26a4e9b7e67481f6b",
 				windowsBlobID: "sha256:a667230715ab98155874066a6c07bc42b5318bb6ac4023498fff839328463de1",
 				filepath:      filepath.Join("testdata", "misconfig", "terraform", "multiple-failures", "src"),
 				artifactType:  types.ArtifactFilesystem,
@@ -563,7 +563,7 @@ func TestTerraformMisconfigurationScan(t *testing.T) {
 				Returns: cache.ArtifactCachePutBlobReturns{},
 			},
 			want: artifactReferenceDetails{
-				blobID:        "sha256:58371119b88104d4a643bda59a6957e5777174d62a09e179bbad7744e9632128",
+				blobID:        "sha256:cd80d8148f9b4cbc026f71a73d8dc1e35f79f6f39e4e52fe5e9a7821e9d09693",
 				windowsBlobID: "sha256:e4b7ab19dd670011336c6c538403abb6a24f77c41a45d749a05e2dfd89c5a580",
 				filepath:      filepath.Join("testdata", "misconfig", "terraform", "no-results", "src"),
 				artifactType:  types.ArtifactFilesystem,
@@ -650,7 +650,7 @@ func TestTerraformMisconfigurationScan(t *testing.T) {
 				Returns: cache.ArtifactCachePutBlobReturns{},
 			},
 			want: artifactReferenceDetails{
-				blobID:        "sha256:e21f36991ba1f6b15de2a109d2515faaf97452df74955f143766a6c4f4c9ad98",
+				blobID:        "sha256:a765d67b40d8dafad114c8b57d817b3d2f03fce2b0d6cecbf057ac13a2d52662",
 				windowsBlobID: "sha256:9ddca8d09f3fe3c865964eef97c579fe6c6ce5f379c62d6b7fc0077d7ca156fa",
 				filepath:      filepath.Join("testdata", "misconfig", "terraform", "passed", "src"),
 				artifactType:  types.ArtifactFilesystem,
@@ -787,7 +787,7 @@ func TestCloudFormationMisconfigurationScan(t *testing.T) {
 			want: artifactReferenceDetails{
 				filepath:      filepath.Join("testdata", "misconfig", "cloudformation", "single-failure", "src"),
 				artifactType:  types.ArtifactFilesystem,
-				blobID:        "sha256:4ae00d7180bbf9dcc3d2b4e9f48d7ee39830f1e86cd6069a0dc5c9cf9d2b003f",
+				blobID:        "sha256:16af3ef12417f03bab139674ad17636f5fb032a9f4e20f2092aeaa9ff0e3bc38",
 				windowsBlobID: "sha256:01616db3395461a6dd41de15c7a885f3d185ea5b10db55ef97bfddcbab57770e",
 			},
 		},
@@ -888,7 +888,7 @@ func TestCloudFormationMisconfigurationScan(t *testing.T) {
 			want: artifactReferenceDetails{
 				filepath:      filepath.Join("testdata", "misconfig", "cloudformation", "multiple-failures", "src"),
 				artifactType:  types.ArtifactFilesystem,
-				blobID:        "sha256:4a3a9c97808bc837c4c0ba4fef933b0b637f5d3c48cecc996b347e1a80f05ec4",
+				blobID:        "sha256:10801795d3e822d09f0810255a82deeb572f4e298f91af3abe5fc358c10ba68c",
 				windowsBlobID: "sha256:10d074d262e53c85f430d708cdb4689f5792736984abec04047f2b5acf6df5f2",
 			},
 		},
@@ -924,7 +924,7 @@ func TestCloudFormationMisconfigurationScan(t *testing.T) {
 			want: artifactReferenceDetails{
 				filepath:      filepath.Join("testdata", "misconfig", "cloudformation", "no-results", "src"),
 				artifactType:  types.ArtifactFilesystem,
-				blobID:        "sha256:58371119b88104d4a643bda59a6957e5777174d62a09e179bbad7744e9632128",
+				blobID:        "sha256:cd80d8148f9b4cbc026f71a73d8dc1e35f79f6f39e4e52fe5e9a7821e9d09693",
 				windowsBlobID: "sha256:e4b7ab19dd670011336c6c538403abb6a24f77c41a45d749a05e2dfd89c5a580",
 			},
 		},
@@ -1012,7 +1012,7 @@ func TestCloudFormationMisconfigurationScan(t *testing.T) {
 			want: artifactReferenceDetails{
 				filepath:      filepath.Join("testdata", "misconfig", "cloudformation", "passed", "src"),
 				artifactType:  types.ArtifactFilesystem,
-				blobID:        "sha256:734733115e3bcda02dd2079cdf30280244260c28744e4a3f2eb5a98e37353573",
+				blobID:        "sha256:30bc323c6eb7af47b561df826948fe3981ddd63c27c8a1f5bb516eeb0d361fef",
 				windowsBlobID: "sha256:befe6a41f1de990064c8ea2427d7bb424ef9267ffbe481804a8a5191536390e5",
 			},
 		},
@@ -1144,7 +1144,7 @@ func TestDockerfileMisconfigurationScan(t *testing.T) {
 			want: artifactReferenceDetails{
 				filepath:      filepath.Join("testdata", "misconfig", "dockerfile", "single-failure", "src"),
 				artifactType:  types.ArtifactFilesystem,
-				blobID:        "sha256:4b0783905a99a1e645fc00945a008c0d42424a87366dbf99833d8efeafe70361",
+				blobID:        "sha256:d93b33f51c455c07767196c2b2eb3312e2b055b0e0db40704092d258fc0ed6ec",
 				windowsBlobID: "sha256:0a721023a4d3fd523af4c329643dfef529b475d8df1b98696d780f7635680db6",
 			},
 		},
@@ -1231,7 +1231,7 @@ func TestDockerfileMisconfigurationScan(t *testing.T) {
 			want: artifactReferenceDetails{
 				filepath:      filepath.Join("testdata", "misconfig", "dockerfile", "multiple-failures", "src"),
 				artifactType:  types.ArtifactFilesystem,
-				blobID:        "sha256:4b0783905a99a1e645fc00945a008c0d42424a87366dbf99833d8efeafe70361",
+				blobID:        "sha256:d93b33f51c455c07767196c2b2eb3312e2b055b0e0db40704092d258fc0ed6ec",
 				windowsBlobID: "sha256:0a721023a4d3fd523af4c329643dfef529b475d8df1b98696d780f7635680db6",
 			},
 		},
@@ -1267,7 +1267,7 @@ func TestDockerfileMisconfigurationScan(t *testing.T) {
 			want: artifactReferenceDetails{
 				filepath:      filepath.Join("testdata", "misconfig", "dockerfile", "no-results", "src"),
 				artifactType:  types.ArtifactFilesystem,
-				blobID:        "sha256:58371119b88104d4a643bda59a6957e5777174d62a09e179bbad7744e9632128",
+				blobID:        "sha256:cd80d8148f9b4cbc026f71a73d8dc1e35f79f6f39e4e52fe5e9a7821e9d09693",
 				windowsBlobID: "sha256:e4b7ab19dd670011336c6c538403abb6a24f77c41a45d749a05e2dfd89c5a580",
 			},
 		},
@@ -1338,7 +1338,7 @@ func TestDockerfileMisconfigurationScan(t *testing.T) {
 			want: artifactReferenceDetails{
 				filepath:      filepath.Join("testdata", "misconfig", "dockerfile", "passed", "src"),
 				artifactType:  types.ArtifactFilesystem,
-				blobID:        "sha256:92a2a8fb73136f4f1d5ec38bf66d9b38fd5db288869e727aed5f7516f60633db",
+				blobID:        "sha256:7218a8e53d2e3eb08efe9f9864767eb0fe6084eaaaef1480064096bbdc2c3f71",
 				windowsBlobID: "sha256:11169ed2403e648416dffd370aa0de6101c9ace0297524de1d40e1a9e8391d99",
 			},
 		},
@@ -1457,7 +1457,7 @@ func TestKubernetesMisconfigurationScan(t *testing.T) {
 			want: artifactReferenceDetails{
 				filepath:      filepath.Join("testdata", "misconfig", "kubernetes", "single-failure", "src"),
 				artifactType:  types.ArtifactFilesystem,
-				blobID:        "sha256:af6a4b3a5906ea8495a21a315bc4accd97effb249ccb3e0c75d8720c386e5bfb",
+				blobID:        "sha256:599ae82c0d032acbe75e24379b4320fb7f0a9818da50b4635c4f0645504d5a72",
 				windowsBlobID: "sha256:bd3f7f92af9d18b898c615b55a93d783223f73c5b8c76da14cb8879185364fc1",
 			},
 		},
@@ -1554,7 +1554,7 @@ func TestKubernetesMisconfigurationScan(t *testing.T) {
 			want: artifactReferenceDetails{
 				filepath:      filepath.Join("testdata", "misconfig", "kubernetes", "multiple-failures", "src"),
 				artifactType:  types.ArtifactFilesystem,
-				blobID:        "sha256:e681637468d8a07c867602047c84b2acceb7da1b36dbc96b6edb3df3fa711788",
+				blobID:        "sha256:fd62e7fdfeffa3df4653c100cc87fe0bc83ddbca918c41b73c7a5724a64619df",
 				windowsBlobID: "sha256:f32e9c2da77b5bfd5a0568ed14baa43b8490cf835c97c816ed18cdf298990a96",
 			},
 		},
@@ -1590,7 +1590,7 @@ func TestKubernetesMisconfigurationScan(t *testing.T) {
 			want: artifactReferenceDetails{
 				filepath:      filepath.Join("testdata", "misconfig", "kubernetes", "no-results", "src"),
 				artifactType:  types.ArtifactFilesystem,
-				blobID:        "sha256:63ee9fc1ce356a810234d884f9056432df7048485565a15bf3448644f4d97abe",
+				blobID:        "sha256:b46953af7375260e0bf264328c8b156ee3341ff46794c0f09c65bce78b0eddb9",
 				windowsBlobID: "sha256:91ff7105811fde3a94cd0c46d764d14315783bc506b4fcae712b690045e32d09",
 			},
 		},
@@ -1661,7 +1661,7 @@ func TestKubernetesMisconfigurationScan(t *testing.T) {
 			want: artifactReferenceDetails{
 				filepath:      filepath.Join("testdata", "misconfig", "kubernetes", "passed", "src"),
 				artifactType:  types.ArtifactFilesystem,
-				blobID:        "sha256:0e2a1bd08e49eba4ba3f829b87ab9021b949d4c3983d8c494cd0febfa7adc0cb",
+				blobID:        "sha256:5b110611834af3e26a4c7aa5623f9e20098c46b394a29a0881a1a3852a114578",
 				windowsBlobID: "sha256:4722f0c46d3a06f8aab5f49f85b4f2161691e3c9bffc6193d55c6c46ebcd5c71",
 			},
 		},
@@ -1795,7 +1795,7 @@ func TestAzureARMMisconfigurationScan(t *testing.T) {
 			want: artifactReferenceDetails{
 				filepath:      filepath.Join("testdata", "misconfig", "azurearm", "single-failure", "src"),
 				artifactType:  types.ArtifactFilesystem,
-				blobID:        "sha256:4a2b0992144ad47985149073e8807ea38a248da82a36342f78db16cf97254b68",
+				blobID:        "sha256:1113fd88abfa3727496c9a5e2e47c522d0197fa0c58d9b0472ff5715aa5dbe79",
 				windowsBlobID: "sha256:2705472fa17208a67523dc450016ccdae5b3bb3dbfb4e10c59b076411bf97b7d",
 			},
 		},
@@ -1894,7 +1894,7 @@ func TestAzureARMMisconfigurationScan(t *testing.T) {
 			want: artifactReferenceDetails{
 				filepath:      filepath.Join("testdata", "misconfig", "azurearm", "multiple-failures", "src"),
 				artifactType:  types.ArtifactFilesystem,
-				blobID:        "sha256:8859b0de1cb155a38e27ecf9f26dd662f2e809fdce48f201f4c1e94d299c0f96",
+				blobID:        "sha256:f75d8c2df3cd95fa0972ad064ca7c4c4bfc614b69a1220bb1b0e31b0c97cf2aa",
 				windowsBlobID: "sha256:574827a1c9ca846b514084814e221190d319cd5560a3478eb0ce6117f5f38abb",
 			},
 		},
@@ -1930,7 +1930,7 @@ func TestAzureARMMisconfigurationScan(t *testing.T) {
 			want: artifactReferenceDetails{
 				filepath:      filepath.Join("testdata", "misconfig", "azurearm", "no-results", "src"),
 				artifactType:  types.ArtifactFilesystem,
-				blobID:        "sha256:58371119b88104d4a643bda59a6957e5777174d62a09e179bbad7744e9632128",
+				blobID:        "sha256:cd80d8148f9b4cbc026f71a73d8dc1e35f79f6f39e4e52fe5e9a7821e9d09693",
 				windowsBlobID: "sha256:e4b7ab19dd670011336c6c538403abb6a24f77c41a45d749a05e2dfd89c5a580",
 			},
 		},
@@ -2017,7 +2017,7 @@ func TestAzureARMMisconfigurationScan(t *testing.T) {
 			want: artifactReferenceDetails{
 				filepath:      filepath.Join("testdata", "misconfig", "azurearm", "passed", "src"),
 				artifactType:  types.ArtifactFilesystem,
-				blobID:        "sha256:11bfbe426d39efcefa0bd0ac16a1386967720e1efd00e92012d637b80330821c",
+				blobID:        "sha256:1776289fa9295540d5d38fe219a7e565b1d60d7eab2e33331209d9eee88528bb",
 				windowsBlobID: "sha256:61a1869ae33125065c5ee48859a337cab11d228c6538801e942e3e687a3e7ed0",
 			},
 		},

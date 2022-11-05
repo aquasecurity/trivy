@@ -183,59 +183,170 @@ func TestArtifact_Inspect(t *testing.T) {
 					Args: cache.ArtifactCachePutBlobArgs{
 						BlobID: "sha256:a07b19e0e0a4339c00d982f6d80f305cd9dbb98f88b3c74e57b97574b9ce9ba3",
 						BlobInfo: types.BlobInfo{
-							SchemaVersion: types.BlobJSONSchemaVersion,
-							Digest:        "",
-							DiffID:        "sha256:beee9f30bc1f711043e78d4a2be0668955d4b761d587d6f60c2c8dc081efb203",
-							CreatedBy:     "ADD file:0c4555f363c2672e350001f1293e689875a3760afe7b3f9146886afe67121cba in / ",
-							OS: &types.OS{
-								Family: "alpine",
-								Name:   "3.11.5",
-							},
-							Repository: &types.Repository{
-								Family:  "alpine",
-								Release: "3.11",
-							},
+							SchemaVersion: 2, Digest: "",
+							DiffID:     "sha256:beee9f30bc1f711043e78d4a2be0668955d4b761d587d6f60c2c8dc081efb203",
+							CreatedBy:  "ADD file:0c4555f363c2672e350001f1293e689875a3760afe7b3f9146886afe67121cba in / ",
+							OpaqueDirs: []string(nil), WhiteoutFiles: []string(nil),
+							OS:         &types.OS{Family: "alpine", Name: "3.11.5"},
+							Repository: &types.Repository{Family: "alpine", Release: "3.11"},
 							PackageInfos: []types.PackageInfo{
-								{
-									FilePath: "lib/apk/db/installed",
-									Packages: alpinePkgs,
-								},
-							},
-							Licenses: []types.LicenseFile{
-								{
-									Type:     "license-file",
-									FilePath: "/etc/ssl/misc/CA.pl",
-									Findings: []types.LicenseFinding{
-										{
-											Name:       "OpenSSL",
-											Confidence: 1,
-											Link:       "https://spdx.org/licenses/OpenSSL.html",
+								types.PackageInfo{
+									FilePath: "lib/apk/db/installed", Packages: []types.Package{
+										types.Package{
+											ID: "alpine-baselayout@3.2.0-r3", Name: "alpine-baselayout",
+											Version: "3.2.0-r3", Release: "", Epoch: 0, Arch: "",
+											SrcName: "alpine-baselayout", SrcVersion: "3.2.0-r3", SrcRelease: "",
+											SrcEpoch: 0, Licenses: []string{"GPL-2.0"}, Modularitylabel: "",
+											BuildInfo: (*types.BuildInfo)(nil), Ref: "", Indirect: false,
+											DependsOn: []string{"busybox@1.31.1-r9", "musl@1.1.24-r2"},
+											Layer:     types.Layer{Digest: "", DiffID: "", CreatedBy: ""}, FilePath: "",
+											Locations: []types.Location(nil),
+										}, types.Package{
+											ID: "alpine-keys@2.1-r2", Name: "alpine-keys", Version: "2.1-r2",
+											Release: "", Epoch: 0, Arch: "", SrcName: "alpine-keys",
+											SrcVersion: "2.1-r2", SrcRelease: "", SrcEpoch: 0,
+											Licenses: []string{"MIT"}, Modularitylabel: "",
+											BuildInfo: (*types.BuildInfo)(nil), Ref: "", Indirect: false,
+											DependsOn: []string(nil),
+											Layer:     types.Layer{Digest: "", DiffID: "", CreatedBy: ""}, FilePath: "",
+											Locations: []types.Location(nil),
+										}, types.Package{
+											ID: "apk-tools@2.10.4-r3", Name: "apk-tools", Version: "2.10.4-r3",
+											Release: "", Epoch: 0, Arch: "", SrcName: "apk-tools",
+											SrcVersion: "2.10.4-r3", SrcRelease: "", SrcEpoch: 0,
+											Licenses: []string{"GPL-2.0"}, Modularitylabel: "",
+											BuildInfo: (*types.BuildInfo)(nil), Ref: "", Indirect: false,
+											DependsOn: []string{
+												"libcrypto1.1@1.1.1d-r3", "libssl1.1@1.1.1d-r3", "musl@1.1.24-r2",
+												"zlib@1.2.11-r3",
+											}, Layer: types.Layer{Digest: "", DiffID: "", CreatedBy: ""}, FilePath: "",
+											Locations: []types.Location(nil),
+										}, types.Package{
+											ID: "busybox@1.31.1-r9", Name: "busybox", Version: "1.31.1-r9", Release: "",
+											Epoch: 0, Arch: "", SrcName: "busybox", SrcVersion: "1.31.1-r9",
+											SrcRelease: "", SrcEpoch: 0, Licenses: []string{"GPL-2.0"},
+											Modularitylabel: "", BuildInfo: (*types.BuildInfo)(nil), Ref: "",
+											Indirect: false, DependsOn: []string{"musl@1.1.24-r2"},
+											Layer: types.Layer{Digest: "", DiffID: "", CreatedBy: ""}, FilePath: "",
+											Locations: []types.Location(nil),
+										}, types.Package{
+											ID: "ca-certificates-cacert@20191127-r1", Name: "ca-certificates-cacert",
+											Version: "20191127-r1", Release: "", Epoch: 0, Arch: "",
+											SrcName: "ca-certificates", SrcVersion: "20191127-r1", SrcRelease: "",
+											SrcEpoch: 0, Licenses: []string{"MPL-2.0", "GPL-2.0"}, Modularitylabel: "",
+											BuildInfo: (*types.BuildInfo)(nil), Ref: "", Indirect: false,
+											DependsOn: []string(nil),
+											Layer:     types.Layer{Digest: "", DiffID: "", CreatedBy: ""}, FilePath: "",
+											Locations: []types.Location(nil),
+										}, types.Package{
+											ID: "libc-utils@0.7.2-r0", Name: "libc-utils", Version: "0.7.2-r0",
+											Release: "", Epoch: 0, Arch: "", SrcName: "libc-dev",
+											SrcVersion: "0.7.2-r0", SrcRelease: "", SrcEpoch: 0,
+											Licenses: []string{"BSD-3-Clause"}, Modularitylabel: "",
+											BuildInfo: (*types.BuildInfo)(nil), Ref: "", Indirect: false,
+											DependsOn: []string{"musl-utils@1.1.24-r2"},
+											Layer:     types.Layer{Digest: "", DiffID: "", CreatedBy: ""}, FilePath: "",
+											Locations: []types.Location(nil),
+										}, types.Package{
+											ID: "libcrypto1.1@1.1.1d-r3", Name: "libcrypto1.1", Version: "1.1.1d-r3",
+											Release: "", Epoch: 0, Arch: "", SrcName: "openssl",
+											SrcVersion: "1.1.1d-r3", SrcRelease: "", SrcEpoch: 0,
+											Licenses: []string{"OpenSSL"}, Modularitylabel: "",
+											BuildInfo: (*types.BuildInfo)(nil), Ref: "", Indirect: false,
+											DependsOn: []string{"musl@1.1.24-r2"},
+											Layer:     types.Layer{Digest: "", DiffID: "", CreatedBy: ""}, FilePath: "",
+											Locations: []types.Location(nil),
+										}, types.Package{
+											ID: "libssl1.1@1.1.1d-r3", Name: "libssl1.1", Version: "1.1.1d-r3",
+											Release: "", Epoch: 0, Arch: "", SrcName: "openssl",
+											SrcVersion: "1.1.1d-r3", SrcRelease: "", SrcEpoch: 0,
+											Licenses: []string{"OpenSSL"}, Modularitylabel: "",
+											BuildInfo: (*types.BuildInfo)(nil), Ref: "", Indirect: false,
+											DependsOn: []string{"libcrypto1.1@1.1.1d-r3", "musl@1.1.24-r2"},
+											Layer:     types.Layer{Digest: "", DiffID: "", CreatedBy: ""}, FilePath: "",
+											Locations: []types.Location(nil),
+										}, types.Package{
+											ID: "libtls-standalone@2.9.1-r0", Name: "libtls-standalone",
+											Version: "2.9.1-r0", Release: "", Epoch: 0, Arch: "",
+											SrcName: "libtls-standalone", SrcVersion: "2.9.1-r0", SrcRelease: "",
+											SrcEpoch: 0, Licenses: []string{"ISC"}, Modularitylabel: "",
+											BuildInfo: (*types.BuildInfo)(nil), Ref: "", Indirect: false,
+											DependsOn: []string{
+												"ca-certificates-cacert@20191127-r1", "libcrypto1.1@1.1.1d-r3",
+												"libssl1.1@1.1.1d-r3", "musl@1.1.24-r2",
+											}, Layer: types.Layer{Digest: "", DiffID: "", CreatedBy: ""}, FilePath: "",
+											Locations: []types.Location(nil),
+										}, types.Package{
+											ID: "musl@1.1.24-r2", Name: "musl", Version: "1.1.24-r2", Release: "",
+											Epoch: 0, Arch: "", SrcName: "musl", SrcVersion: "1.1.24-r2",
+											SrcRelease: "", SrcEpoch: 0, Licenses: []string{"MIT"}, Modularitylabel: "",
+											BuildInfo: (*types.BuildInfo)(nil), Ref: "", Indirect: false,
+											DependsOn: []string(nil),
+											Layer:     types.Layer{Digest: "", DiffID: "", CreatedBy: ""}, FilePath: "",
+											Locations: []types.Location(nil),
+										}, types.Package{
+											ID: "musl-utils@1.1.24-r2", Name: "musl-utils", Version: "1.1.24-r2",
+											Release: "", Epoch: 0, Arch: "", SrcName: "musl", SrcVersion: "1.1.24-r2",
+											SrcRelease: "", SrcEpoch: 0,
+											Licenses: []string{"MIT", "BSD-3-Clause", "GPL-2.0"}, Modularitylabel: "",
+											BuildInfo: (*types.BuildInfo)(nil), Ref: "", Indirect: false,
+											DependsOn: []string{"musl@1.1.24-r2", "scanelf@1.2.4-r0"},
+											Layer:     types.Layer{Digest: "", DiffID: "", CreatedBy: ""}, FilePath: "",
+											Locations: []types.Location(nil),
+										}, types.Package{
+											ID: "scanelf@1.2.4-r0", Name: "scanelf", Version: "1.2.4-r0", Release: "",
+											Epoch: 0, Arch: "", SrcName: "pax-utils", SrcVersion: "1.2.4-r0",
+											SrcRelease: "", SrcEpoch: 0, Licenses: []string{"GPL-2.0"},
+											Modularitylabel: "", BuildInfo: (*types.BuildInfo)(nil), Ref: "",
+											Indirect: false, DependsOn: []string{"musl@1.1.24-r2"},
+											Layer: types.Layer{Digest: "", DiffID: "", CreatedBy: ""}, FilePath: "",
+											Locations: []types.Location(nil),
+										}, types.Package{
+											ID: "ssl_client@1.31.1-r9", Name: "ssl_client", Version: "1.31.1-r9",
+											Release: "", Epoch: 0, Arch: "", SrcName: "busybox",
+											SrcVersion: "1.31.1-r9", SrcRelease: "", SrcEpoch: 0,
+											Licenses: []string{"GPL-2.0"}, Modularitylabel: "",
+											BuildInfo: (*types.BuildInfo)(nil), Ref: "", Indirect: false,
+											DependsOn: []string{"libtls-standalone@2.9.1-r0", "musl@1.1.24-r2"},
+											Layer:     types.Layer{Digest: "", DiffID: "", CreatedBy: ""}, FilePath: "",
+											Locations: []types.Location(nil),
+										}, types.Package{
+											ID: "zlib@1.2.11-r3", Name: "zlib", Version: "1.2.11-r3", Release: "",
+											Epoch: 0, Arch: "", SrcName: "zlib", SrcVersion: "1.2.11-r3",
+											SrcRelease: "", SrcEpoch: 0, Licenses: []string{"Zlib"},
+											Modularitylabel: "", BuildInfo: (*types.BuildInfo)(nil), Ref: "",
+											Indirect: false, DependsOn: []string{"musl@1.1.24-r2"},
+											Layer: types.Layer{Digest: "", DiffID: "", CreatedBy: ""}, FilePath: "",
+											Locations: []types.Location(nil),
 										},
 									},
-									Layer: types.Layer{
-										Digest: "",
-										DiffID: "",
-									},
 								},
-								{
-									Type:     "license-file",
-									FilePath: "/etc/ssl/misc/tsget.pl",
+							}, Applications: []types.Application(nil), Misconfigurations: []types.Misconfiguration(nil),
+							Secrets: []types.Secret(nil), Licenses: []types.LicenseFile{
+								types.LicenseFile{
+									Type: "header", FilePath: "/etc/ssl/misc/CA.pl", PkgName: "",
 									Findings: []types.LicenseFinding{
-										{
-											Name:       "OpenSSL",
-											Confidence: 1,
-											Link:       "https://spdx.org/licenses/OpenSSL.html",
+										types.LicenseFinding{
+											Category: "", Name: "Copyright", Confidence: 1,
+											Link: "https://spdx.org/licenses/Copyright.html",
+										}, types.LicenseFinding{
+											Category: "", Name: "OpenSSL", Confidence: 1,
+											Link: "https://spdx.org/licenses/OpenSSL.html",
 										},
-									},
-									Layer: types.Layer{
-										Digest: "",
-										DiffID: "",
-									},
+									}, Layer: types.Layer{Digest: "", DiffID: "", CreatedBy: ""},
+								}, types.LicenseFile{
+									Type: "header", FilePath: "/etc/ssl/misc/tsget.pl", PkgName: "",
+									Findings: []types.LicenseFinding{
+										types.LicenseFinding{
+											Category: "", Name: "Copyright", Confidence: 1,
+											Link: "https://spdx.org/licenses/Copyright.html",
+										}, types.LicenseFinding{
+											Category: "", Name: "OpenSSL", Confidence: 1,
+											Link: "https://spdx.org/licenses/OpenSSL.html",
+										},
+									}, Layer: types.Layer{Digest: "", DiffID: "", CreatedBy: ""},
 								},
-							},
-							Applications:  []types.Application(nil),
-							OpaqueDirs:    []string(nil),
-							WhiteoutFiles: []string(nil),
+							}, BuildInfo: (*types.BuildInfo)(nil), CustomResources: []types.CustomResource(nil),
 						},
 					},
 					Returns: cache.ArtifactCachePutBlobReturns{},
@@ -337,72 +448,95 @@ func TestArtifact_Inspect(t *testing.T) {
 					Args: cache.ArtifactCachePutBlobArgs{
 						BlobID: "sha256:3bfd543b4467abb972bfeeaa7a7d75ee18e7c92f077600d48fd1532f09129b54",
 						BlobInfo: types.BlobInfo{
-							SchemaVersion: types.BlobJSONSchemaVersion,
-							Digest:        "",
-							DiffID:        "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
-							CreatedBy:     "bazel build ...",
-							OS: &types.OS{
-								Family: "debian",
-								Name:   "9.9",
-							},
+							SchemaVersion: 2, Digest: "",
+							DiffID:    "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
+							CreatedBy: "bazel build ...", OpaqueDirs: []string(nil), WhiteoutFiles: []string(nil),
+							OS:         &types.OS{Family: "debian", Name: "9.9", Eosl: false},
+							Repository: (*types.Repository)(nil),
 							PackageInfos: []types.PackageInfo{
-								{
-									FilePath: "var/lib/dpkg/status.d/base",
-									Packages: []types.Package{
-										{
-											ID:   "base-files@9.9+deb9u9",
-											Name: "base-files", Version: "9.9+deb9u9", SrcName: "base-files",
-											SrcVersion: "9.9+deb9u9",
+								types.PackageInfo{
+									FilePath: "var/lib/dpkg/status.d/base", Packages: []types.Package{
+										types.Package{
+											ID: "base-files@9.9+deb9u9", Name: "base-files", Version: "9.9+deb9u9",
+											Release: "", Epoch: 0, Arch: "", SrcName: "base-files",
+											SrcVersion: "9.9+deb9u9", SrcRelease: "", SrcEpoch: 0,
+											Licenses: []string(nil), Modularitylabel: "",
+											BuildInfo: (*types.BuildInfo)(nil), Ref: "", Indirect: false,
+											DependsOn: []string(nil),
+											Layer:     types.Layer{Digest: "", DiffID: "", CreatedBy: ""}, FilePath: "",
+											Locations: []types.Location(nil),
+										},
+									},
+								}, types.PackageInfo{
+									FilePath: "var/lib/dpkg/status.d/netbase", Packages: []types.Package{
+										types.Package{
+											ID: "netbase@5.4", Name: "netbase",
+											Version: "5.4", Release: "", Epoch: 0, Arch: "",
+											SrcName: "netbase", SrcVersion: "5.4", SrcRelease: "",
+											SrcEpoch: 0, Licenses: []string(nil), Modularitylabel: "",
+											BuildInfo: (*types.BuildInfo)(nil), Ref: "", Indirect: false,
+											DependsOn: []string(nil),
+											Layer:     types.Layer{Digest: "", DiffID: "", CreatedBy: ""}, FilePath: "",
+											Locations: []types.Location(nil),
+										},
+									},
+								}, types.PackageInfo{
+									FilePath: "var/lib/dpkg/status.d/tzdata", Packages: []types.Package{
+										types.Package{
+											ID: "tzdata@2019a-0+deb9u1", Name: "tzdata", Version: "2019a-0+deb9u1",
+											Release: "", Epoch: 0, Arch: "", SrcName: "tzdata",
+											SrcVersion: "2019a-0+deb9u1", SrcRelease: "", SrcEpoch: 0,
+											Licenses: []string(nil), Modularitylabel: "",
+											BuildInfo: (*types.BuildInfo)(nil), Ref: "", Indirect: false,
+											DependsOn: []string(nil),
+											Layer:     types.Layer{Digest: "", DiffID: "", CreatedBy: ""}, FilePath: "",
+											Locations: []types.Location(nil),
 										},
 									},
 								},
+							}, Applications: []types.Application(nil), Misconfigurations: []types.Misconfiguration(nil),
+							Secrets: []types.Secret(nil), Licenses: []types.LicenseFile{
 								{
-									FilePath: "var/lib/dpkg/status.d/netbase",
-									Packages: []types.Package{
-										{
-											ID: "netbase@5.4", Name: "netbase", Version: "5.4",
-											SrcName: "netbase", SrcVersion: "5.4",
-										},
-									},
-								},
-								{
-									FilePath: "var/lib/dpkg/status.d/tzdata",
-									Packages: []types.Package{
-										{
-											ID:   "tzdata@2019a-0+deb9u1",
-											Name: "tzdata", Version: "2019a-0+deb9u1", SrcName: "tzdata",
-											SrcVersion: "2019a-0+deb9u1",
-										},
-									},
-								},
-							},
-							Licenses: []types.LicenseFile{
-								{
-									Type:     types.LicenseTypeDpkg,
-									FilePath: "usr/share/doc/base-files/copyright",
+									Type: "dpkg", FilePath: "usr/share/doc/base-files/copyright", PkgName: "base-files",
 									Findings: []types.LicenseFinding{
-										{Name: "GPL-3.0"},
-									},
-									PkgName: "base-files",
+										{
+											Category:   "",
+											Name:       "GPL-3.0",
+											Confidence: 0,
+											Link:       "",
+										},
+									}, Layer: types.Layer{Digest: "", DiffID: "", CreatedBy: ""},
 								},
 								{
-									Type:     types.LicenseTypeDpkg,
-									FilePath: "usr/share/doc/ca-certificates/copyright",
-									Findings: []types.LicenseFinding{
-										{Name: "GPL-2.0"},
-										{Name: "MPL-2.0"},
-									},
+									Type: "dpkg", FilePath: "usr/share/doc/ca-certificates/copyright",
 									PkgName: "ca-certificates",
+									Findings: []types.LicenseFinding{
+										{
+											Category:   "",
+											Name:       "GPL-2.0",
+											Confidence: 0,
+											Link:       "",
+										},
+										{
+											Category:   "",
+											Name:       "MPL-2.0",
+											Confidence: 0,
+											Link:       "",
+										},
+									}, Layer: types.Layer{Digest: "", DiffID: "", CreatedBy: ""},
 								},
 								{
-									Type:     types.LicenseTypeDpkg,
-									FilePath: "usr/share/doc/netbase/copyright",
+									Type: "dpkg", FilePath: "usr/share/doc/netbase/copyright", PkgName: "netbase",
 									Findings: []types.LicenseFinding{
-										{Name: "GPL-2.0"},
-									},
-									PkgName: "netbase",
+										{
+											Category:   "",
+											Name:       "GPL-2.0",
+											Confidence: 0,
+											Link:       "",
+										},
+									}, Layer: types.Layer{Digest: "", DiffID: "", CreatedBy: ""},
 								},
-							},
+							}, BuildInfo: (*types.BuildInfo)(nil), CustomResources: []types.CustomResource(nil),
 						},
 					},
 				},
@@ -410,69 +544,62 @@ func TestArtifact_Inspect(t *testing.T) {
 					Args: cache.ArtifactCachePutBlobArgs{
 						BlobID: "sha256:9f8cf74dff8cad6bb4df8fc0fa81dca446bd6f44c2d811a167ffca34ab90a6f8",
 						BlobInfo: types.BlobInfo{
-							SchemaVersion: types.BlobJSONSchemaVersion,
-							Digest:        "",
-							DiffID:        "sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5",
-							CreatedBy:     "bazel build ...",
+							SchemaVersion: 2, Digest: "",
+							DiffID:    "sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5",
+							CreatedBy: "bazel build ...", OpaqueDirs: []string(nil), WhiteoutFiles: []string(nil),
+							OS: (*types.OS)(nil), Repository: (*types.Repository)(nil),
 							PackageInfos: []types.PackageInfo{
-								{
-									FilePath: "var/lib/dpkg/status.d/libc6",
-									Packages: []types.Package{
-										{
-											ID:   "libc6@2.24-11+deb9u4",
-											Name: "libc6", Version: "2.24-11+deb9u4", SrcName: "glibc",
-											SrcVersion: "2.24-11+deb9u4",
+								types.PackageInfo{
+									FilePath: "var/lib/dpkg/status.d/libc6", Packages: []types.Package{
+										types.Package{
+											ID: "libc6@2.24-11+deb9u4", Name: "libc6", Version: "2.24-11+deb9u4",
+											Release: "", Epoch: 0, Arch: "", SrcName: "glibc",
+											SrcVersion: "2.24-11+deb9u4", SrcRelease: "", SrcEpoch: 0,
+											Licenses: []string(nil), Modularitylabel: "",
+											BuildInfo: (*types.BuildInfo)(nil), Ref: "", Indirect: false,
+											DependsOn: []string(nil),
+											Layer:     types.Layer{Digest: "", DiffID: "", CreatedBy: ""}, FilePath: "",
+											Locations: []types.Location(nil),
+										},
+									},
+								}, types.PackageInfo{
+									FilePath: "var/lib/dpkg/status.d/libssl1", Packages: []types.Package{
+										types.Package{
+											ID: "libssl1.1@1.1.0k-1~deb9u1", Name: "libssl1.1",
+											Version: "1.1.0k-1~deb9u1", Release: "", Epoch: 0, Arch: "",
+											SrcName: "openssl", SrcVersion: "1.1.0k-1~deb9u1", SrcRelease: "",
+											SrcEpoch: 0, Licenses: []string(nil), Modularitylabel: "",
+											BuildInfo: (*types.BuildInfo)(nil), Ref: "", Indirect: false,
+											DependsOn: []string(nil),
+											Layer:     types.Layer{Digest: "", DiffID: "", CreatedBy: ""}, FilePath: "",
+											Locations: []types.Location(nil),
+										},
+									},
+								}, types.PackageInfo{
+									FilePath: "var/lib/dpkg/status.d/openssl", Packages: []types.Package{
+										types.Package{
+											ID: "openssl@1.1.0k-1~deb9u1", Name: "openssl", Version: "1.1.0k-1~deb9u1",
+											Release: "", Epoch: 0, Arch: "", SrcName: "openssl",
+											SrcVersion: "1.1.0k-1~deb9u1", SrcRelease: "", SrcEpoch: 0,
+											Licenses: []string(nil), Modularitylabel: "",
+											BuildInfo: (*types.BuildInfo)(nil), Ref: "", Indirect: false,
+											DependsOn: []string(nil),
+											Layer:     types.Layer{Digest: "", DiffID: "", CreatedBy: ""}, FilePath: "",
+											Locations: []types.Location(nil),
 										},
 									},
 								},
-								{
-									FilePath: "var/lib/dpkg/status.d/libssl1",
-									Packages: []types.Package{
-										{
-											ID:   "libssl1.1@1.1.0k-1~deb9u1",
-											Name: "libssl1.1", Version: "1.1.0k-1~deb9u1", SrcName: "openssl",
-											SrcVersion: "1.1.0k-1~deb9u1",
-										},
-									},
-								},
-								{
-									FilePath: "var/lib/dpkg/status.d/openssl",
-									Packages: []types.Package{
-										{
-											ID:   "openssl@1.1.0k-1~deb9u1",
-											Name: "openssl", Version: "1.1.0k-1~deb9u1", SrcName: "openssl",
-											SrcVersion: "1.1.0k-1~deb9u1",
-										},
-									},
-								},
-							},
-							Licenses: []types.LicenseFile{
-								{
-									Type:     types.LicenseTypeDpkg,
-									FilePath: "usr/share/doc/libc6/copyright",
+							}, Applications: []types.Application(nil), Misconfigurations: []types.Misconfiguration(nil),
+							Secrets: []types.Secret(nil), Licenses: []types.LicenseFile{
+								types.LicenseFile{
+									Type: "dpkg", FilePath: "usr/share/doc/libc6/copyright", PkgName: "libc6",
 									Findings: []types.LicenseFinding{
-										{Name: "LGPL-2.1"},
-										{Name: "GPL-2.0"},
-									},
-									PkgName: "libc6",
+										types.LicenseFinding{
+											Category: "", Name: "LGPL-2.1", Confidence: 0, Link: "",
+										}, types.LicenseFinding{Category: "", Name: "GPL-2.0", Confidence: 0, Link: ""},
+									}, Layer: types.Layer{Digest: "", DiffID: "", CreatedBy: ""},
 								},
-								{
-									Type:     types.LicenseTypeDpkg,
-									FilePath: "usr/share/doc/libssl1.1/copyright",
-									Findings: []types.LicenseFinding{
-										{Name: "OpenSSL"},
-									},
-									PkgName: "libssl1.1",
-								},
-								{
-									Type:     types.LicenseTypeDpkg,
-									FilePath: "usr/share/doc/openssl/copyright",
-									Findings: []types.LicenseFinding{
-										{Name: "OpenSSL"},
-									},
-									PkgName: "openssl",
-								},
-							},
+							}, BuildInfo: (*types.BuildInfo)(nil), CustomResources: []types.CustomResource(nil),
 						},
 					},
 				},
@@ -879,9 +1006,14 @@ func TestArtifact_Inspect(t *testing.T) {
 							},
 							Licenses: []types.LicenseFile{
 								{
-									Type:     "license-file",
+									Type:     "header",
 									FilePath: "/etc/ssl/misc/CA.pl",
 									Findings: []types.LicenseFinding{
+										{
+											Name:       "Copyright",
+											Confidence: 1,
+											Link:       "https://spdx.org/licenses/Copyright.html",
+										},
 										{
 											Name:       "OpenSSL",
 											Confidence: 1,
@@ -890,9 +1022,14 @@ func TestArtifact_Inspect(t *testing.T) {
 									},
 								},
 								{
-									Type:     "license-file",
+									Type:     "header",
 									FilePath: "/etc/ssl/misc/tsget.pl",
 									Findings: []types.LicenseFinding{
+										{
+											Name:       "Copyright",
+											Confidence: 1,
+											Link:       "https://spdx.org/licenses/Copyright.html",
+										},
 										{
 											Name:       "OpenSSL",
 											Confidence: 1,
@@ -931,51 +1068,171 @@ func TestArtifact_Inspect(t *testing.T) {
 					Args: cache.ArtifactCachePutBlobArgs{
 						BlobID: "sha256:a07b19e0e0a4339c00d982f6d80f305cd9dbb98f88b3c74e57b97574b9ce9ba3",
 						BlobInfo: types.BlobInfo{
-							SchemaVersion: types.BlobJSONSchemaVersion,
-							Digest:        "",
-							DiffID:        "sha256:beee9f30bc1f711043e78d4a2be0668955d4b761d587d6f60c2c8dc081efb203",
-							CreatedBy:     "ADD file:0c4555f363c2672e350001f1293e689875a3760afe7b3f9146886afe67121cba in / ",
-							OS: &types.OS{
-								Family: "alpine",
-								Name:   "3.11.5",
-							},
-							Repository: &types.Repository{
-								Family:  "alpine",
-								Release: "3.11",
-							},
-							PackageInfos: []types.PackageInfo{
-								{
-									FilePath: "lib/apk/db/installed",
-									Packages: alpinePkgs,
-								},
-							},
-							Licenses: []types.LicenseFile{
-								{
-									Type:     "license-file",
-									FilePath: "/etc/ssl/misc/CA.pl",
-									Findings: []types.LicenseFinding{
-										{
-											Name:       "OpenSSL",
-											Confidence: 1,
-											Link:       "https://spdx.org/licenses/OpenSSL.html",
+							SchemaVersion: 2, Digest: "",
+							DiffID:     "sha256:beee9f30bc1f711043e78d4a2be0668955d4b761d587d6f60c2c8dc081efb203",
+							CreatedBy:  "ADD file:0c4555f363c2672e350001f1293e689875a3760afe7b3f9146886afe67121cba in / ",
+							OpaqueDirs: []string(nil), WhiteoutFiles: []string(nil), OS: &types.OS{
+								Family: "alpine", Name: "3.11.5", Eosl: false,
+							}, Repository: &types.Repository{
+								Family: "alpine", Release: "3.11",
+							}, PackageInfos: []types.PackageInfo{
+								types.PackageInfo{
+									FilePath: "lib/apk/db/installed", Packages: []types.Package{
+										types.Package{
+											ID: "alpine-baselayout@3.2.0-r3", Name: "alpine-baselayout",
+											Version: "3.2.0-r3", Release: "", Epoch: 0, Arch: "",
+											SrcName: "alpine-baselayout", SrcVersion: "3.2.0-r3", SrcRelease: "",
+											SrcEpoch: 0, Licenses: []string{"GPL-2.0"}, Modularitylabel: "",
+											BuildInfo: (*types.BuildInfo)(nil), Ref: "", Indirect: false,
+											DependsOn: []string{"busybox@1.31.1-r9", "musl@1.1.24-r2"},
+											Layer:     types.Layer{Digest: "", DiffID: "", CreatedBy: ""}, FilePath: "",
+											Locations: []types.Location(nil),
+										}, types.Package{
+											ID: "alpine-keys@2.1-r2", Name: "alpine-keys", Version: "2.1-r2",
+											Release: "", Epoch: 0, Arch: "", SrcName: "alpine-keys",
+											SrcVersion: "2.1-r2", SrcRelease: "", SrcEpoch: 0,
+											Licenses: []string{"MIT"}, Modularitylabel: "",
+											BuildInfo: (*types.BuildInfo)(nil), Ref: "", Indirect: false,
+											DependsOn: []string(nil),
+											Layer:     types.Layer{Digest: "", DiffID: "", CreatedBy: ""}, FilePath: "",
+											Locations: []types.Location(nil),
+										}, types.Package{
+											ID: "apk-tools@2.10.4-r3", Name: "apk-tools", Version: "2.10.4-r3",
+											Release: "", Epoch: 0, Arch: "", SrcName: "apk-tools",
+											SrcVersion: "2.10.4-r3", SrcRelease: "", SrcEpoch: 0,
+											Licenses: []string{"GPL-2.0"}, Modularitylabel: "",
+											BuildInfo: (*types.BuildInfo)(nil), Ref: "", Indirect: false,
+											DependsOn: []string{
+												"libcrypto1.1@1.1.1d-r3", "libssl1.1@1.1.1d-r3", "musl@1.1.24-r2",
+												"zlib@1.2.11-r3",
+											}, Layer: types.Layer{Digest: "", DiffID: "", CreatedBy: ""}, FilePath: "",
+											Locations: []types.Location(nil),
+										}, types.Package{
+											ID: "busybox@1.31.1-r9", Name: "busybox", Version: "1.31.1-r9", Release: "",
+											Epoch: 0, Arch: "", SrcName: "busybox", SrcVersion: "1.31.1-r9",
+											SrcRelease: "", SrcEpoch: 0, Licenses: []string{"GPL-2.0"},
+											Modularitylabel: "", BuildInfo: (*types.BuildInfo)(nil), Ref: "",
+											Indirect: false, DependsOn: []string{"musl@1.1.24-r2"},
+											Layer: types.Layer{Digest: "", DiffID: "", CreatedBy: ""}, FilePath: "",
+											Locations: []types.Location(nil),
+										}, types.Package{
+											ID: "ca-certificates-cacert@20191127-r1", Name: "ca-certificates-cacert",
+											Version: "20191127-r1", Release: "", Epoch: 0, Arch: "",
+											SrcName: "ca-certificates", SrcVersion: "20191127-r1", SrcRelease: "",
+											SrcEpoch: 0, Licenses: []string{"MPL-2.0", "GPL-2.0"}, Modularitylabel: "",
+											BuildInfo: (*types.BuildInfo)(nil), Ref: "", Indirect: false,
+											DependsOn: []string(nil),
+											Layer:     types.Layer{Digest: "", DiffID: "", CreatedBy: ""}, FilePath: "",
+											Locations: []types.Location(nil),
+										}, types.Package{
+											ID: "libc-utils@0.7.2-r0", Name: "libc-utils", Version: "0.7.2-r0",
+											Release: "", Epoch: 0, Arch: "", SrcName: "libc-dev",
+											SrcVersion: "0.7.2-r0", SrcRelease: "", SrcEpoch: 0,
+											Licenses: []string{"BSD-3-Clause"}, Modularitylabel: "",
+											BuildInfo: (*types.BuildInfo)(nil), Ref: "", Indirect: false,
+											DependsOn: []string{"musl-utils@1.1.24-r2"},
+											Layer:     types.Layer{Digest: "", DiffID: "", CreatedBy: ""}, FilePath: "",
+											Locations: []types.Location(nil),
+										}, types.Package{
+											ID: "libcrypto1.1@1.1.1d-r3", Name: "libcrypto1.1", Version: "1.1.1d-r3",
+											Release: "", Epoch: 0, Arch: "", SrcName: "openssl",
+											SrcVersion: "1.1.1d-r3", SrcRelease: "", SrcEpoch: 0,
+											Licenses: []string{"OpenSSL"}, Modularitylabel: "",
+											BuildInfo: (*types.BuildInfo)(nil), Ref: "", Indirect: false,
+											DependsOn: []string{"musl@1.1.24-r2"},
+											Layer:     types.Layer{Digest: "", DiffID: "", CreatedBy: ""}, FilePath: "",
+											Locations: []types.Location(nil),
+										}, types.Package{
+											ID: "libssl1.1@1.1.1d-r3", Name: "libssl1.1", Version: "1.1.1d-r3",
+											Release: "", Epoch: 0, Arch: "", SrcName: "openssl",
+											SrcVersion: "1.1.1d-r3", SrcRelease: "", SrcEpoch: 0,
+											Licenses: []string{"OpenSSL"}, Modularitylabel: "",
+											BuildInfo: (*types.BuildInfo)(nil), Ref: "", Indirect: false,
+											DependsOn: []string{"libcrypto1.1@1.1.1d-r3", "musl@1.1.24-r2"},
+											Layer:     types.Layer{Digest: "", DiffID: "", CreatedBy: ""}, FilePath: "",
+											Locations: []types.Location(nil),
+										}, types.Package{
+											ID: "libtls-standalone@2.9.1-r0", Name: "libtls-standalone",
+											Version: "2.9.1-r0", Release: "", Epoch: 0, Arch: "",
+											SrcName: "libtls-standalone", SrcVersion: "2.9.1-r0", SrcRelease: "",
+											SrcEpoch: 0, Licenses: []string{"ISC"}, Modularitylabel: "",
+											BuildInfo: (*types.BuildInfo)(nil), Ref: "", Indirect: false,
+											DependsOn: []string{
+												"ca-certificates-cacert@20191127-r1", "libcrypto1.1@1.1.1d-r3",
+												"libssl1.1@1.1.1d-r3", "musl@1.1.24-r2",
+											}, Layer: types.Layer{Digest: "", DiffID: "", CreatedBy: ""}, FilePath: "",
+											Locations: []types.Location(nil),
+										}, types.Package{
+											ID: "musl@1.1.24-r2", Name: "musl", Version: "1.1.24-r2", Release: "",
+											Epoch: 0, Arch: "", SrcName: "musl", SrcVersion: "1.1.24-r2",
+											SrcRelease: "", SrcEpoch: 0, Licenses: []string{"MIT"}, Modularitylabel: "",
+											BuildInfo: (*types.BuildInfo)(nil), Ref: "", Indirect: false,
+											DependsOn: []string(nil),
+											Layer:     types.Layer{Digest: "", DiffID: "", CreatedBy: ""}, FilePath: "",
+											Locations: []types.Location(nil),
+										}, types.Package{
+											ID: "musl-utils@1.1.24-r2", Name: "musl-utils", Version: "1.1.24-r2",
+											Release: "", Epoch: 0, Arch: "", SrcName: "musl", SrcVersion: "1.1.24-r2",
+											SrcRelease: "", SrcEpoch: 0,
+											Licenses: []string{"MIT", "BSD-3-Clause", "GPL-2.0"}, Modularitylabel: "",
+											BuildInfo: (*types.BuildInfo)(nil), Ref: "", Indirect: false,
+											DependsOn: []string{"musl@1.1.24-r2", "scanelf@1.2.4-r0"},
+											Layer:     types.Layer{Digest: "", DiffID: "", CreatedBy: ""}, FilePath: "",
+											Locations: []types.Location(nil),
+										}, types.Package{
+											ID: "scanelf@1.2.4-r0", Name: "scanelf", Version: "1.2.4-r0", Release: "",
+											Epoch: 0, Arch: "", SrcName: "pax-utils", SrcVersion: "1.2.4-r0",
+											SrcRelease: "", SrcEpoch: 0, Licenses: []string{"GPL-2.0"},
+											Modularitylabel: "", BuildInfo: (*types.BuildInfo)(nil), Ref: "",
+											Indirect: false, DependsOn: []string{"musl@1.1.24-r2"},
+											Layer: types.Layer{Digest: "", DiffID: "", CreatedBy: ""}, FilePath: "",
+											Locations: []types.Location(nil),
+										}, types.Package{
+											ID: "ssl_client@1.31.1-r9", Name: "ssl_client", Version: "1.31.1-r9",
+											Release: "", Epoch: 0, Arch: "", SrcName: "busybox",
+											SrcVersion: "1.31.1-r9", SrcRelease: "", SrcEpoch: 0,
+											Licenses: []string{"GPL-2.0"}, Modularitylabel: "",
+											BuildInfo: (*types.BuildInfo)(nil), Ref: "", Indirect: false,
+											DependsOn: []string{"libtls-standalone@2.9.1-r0", "musl@1.1.24-r2"},
+											Layer:     types.Layer{Digest: "", DiffID: "", CreatedBy: ""}, FilePath: "",
+											Locations: []types.Location(nil),
+										}, types.Package{
+											ID: "zlib@1.2.11-r3", Name: "zlib", Version: "1.2.11-r3", Release: "",
+											Epoch: 0, Arch: "", SrcName: "zlib", SrcVersion: "1.2.11-r3",
+											SrcRelease: "", SrcEpoch: 0, Licenses: []string{"Zlib"},
+											Modularitylabel: "", BuildInfo: (*types.BuildInfo)(nil), Ref: "",
+											Indirect: false, DependsOn: []string{"musl@1.1.24-r2"},
+											Layer: types.Layer{Digest: "", DiffID: "", CreatedBy: ""}, FilePath: "",
+											Locations: []types.Location(nil),
 										},
 									},
 								},
-								{
-									Type:     "license-file",
-									FilePath: "/etc/ssl/misc/tsget.pl",
+							}, Applications: []types.Application(nil), Misconfigurations: []types.Misconfiguration(nil),
+							Secrets: []types.Secret(nil), Licenses: []types.LicenseFile{
+								types.LicenseFile{
+									Type: "header", FilePath: "/etc/ssl/misc/CA.pl", PkgName: "",
 									Findings: []types.LicenseFinding{
-										{
-											Name:       "OpenSSL",
-											Confidence: 1,
-											Link:       "https://spdx.org/licenses/OpenSSL.html",
+										types.LicenseFinding{
+											Category: "", Name: "Copyright", Confidence: 1,
+											Link: "https://spdx.org/licenses/Copyright.html",
+										}, types.LicenseFinding{
+											Category: "", Name: "OpenSSL", Confidence: 1,
+											Link: "https://spdx.org/licenses/OpenSSL.html",
 										},
-									},
+									}, Layer: types.Layer{Digest: "", DiffID: "", CreatedBy: ""},
+								}, types.LicenseFile{
+									Type: "header", FilePath: "/etc/ssl/misc/tsget.pl", PkgName: "",
+									Findings: []types.LicenseFinding{
+										types.LicenseFinding{
+											Category: "", Name: "Copyright", Confidence: 1,
+											Link: "https://spdx.org/licenses/Copyright.html",
+										}, types.LicenseFinding{
+											Category: "", Name: "OpenSSL", Confidence: 1,
+											Link: "https://spdx.org/licenses/OpenSSL.html",
+										},
+									}, Layer: types.Layer{Digest: "", DiffID: "", CreatedBy: ""},
 								},
-							},
-							Applications:  []types.Application(nil),
-							OpaqueDirs:    []string(nil),
-							WhiteoutFiles: []string(nil),
+							}, BuildInfo: (*types.BuildInfo)(nil), CustomResources: []types.CustomResource(nil),
 						},
 					},
 					Returns: cache.ArtifactCachePutBlobReturns{},
