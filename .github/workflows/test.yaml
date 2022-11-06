@@ -33,6 +33,7 @@ jobs:
             echo "Run 'go mod tidy' and push it"
             exit 1
           fi
+        if: matrix.operating-system == 'ubuntu-latest'
 
       - name: Lint
         uses: golangci/golangci-lint-action@v3.2.0
@@ -40,6 +41,7 @@ jobs:
           version: v1.49
           args: --deadline=30m
           skip-cache: true # https://github.com/golangci/golangci-lint-action/issues/244#issuecomment-1052197778
+        if: matrix.operating-system == 'ubuntu-latest'
 
       # ubuntu tiny go install
       - name: Install TinyGo
