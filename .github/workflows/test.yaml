@@ -73,7 +73,7 @@ jobs:
       - name: Run unit tests
         run: |
           go test -v -short -coverprofile="coverage.txt" -covermode=atomic .\...
-        if: matrix.operating-system != 'windows-latest'
+        if: matrix.operating-system == 'windows-latest'
 
 
   integration:
