@@ -5,7 +5,6 @@ import (
 	"io"
 	"sync"
 
-	"github.com/go-enry/go-license-detector/v4/licensedb"
 	classifier "github.com/google/licenseclassifier/v2"
 	"github.com/google/licenseclassifier/v2/assets"
 	"golang.org/x/xerrors"
@@ -34,7 +33,7 @@ func initLicenseDB() {
 	// This preloading is expensive and should be called only when the license classification is needed.
 	licensedbOnce.Do(func() {
 		log.Logger.Debug("Loading the license database...")
-		licensedb.Preload()
+		//licensedb.Preload()
 	})
 }
 
@@ -115,17 +114,17 @@ func fallbackClassifyLicense(filePath string, contents []byte) types.LicenseFile
 		Type:     types.LicenseTypeFile,
 		FilePath: filePath,
 	}
+	/*
+		matcher := licensedb.InvestigateLicenseText(contents)
+		for l, confidence := range matcher {
+			licenseLink := fmt.Sprintf("https://spdx.org/licenses/%s.html", l)
 
-	matcher := licensedb.InvestigateLicenseText(contents)
-	for l, confidence := range matcher {
-		licenseLink := fmt.Sprintf("https://spdx.org/licenses/%s.html", l)
-
-		license.Findings = append(license.Findings, types.LicenseFinding{
-			Name:       l,
-			Confidence: float64(confidence),
-			Link:       licenseLink,
-		})
-	}
-
+			license.Findings = append(license.Findings, types.LicenseFinding{
+				Name:       l,
+				Confidence: float64(confidence),
+				Link:       licenseLink,
+			})
+		}
+	*/
 	return license
 }
