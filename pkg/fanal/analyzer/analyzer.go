@@ -5,6 +5,7 @@ import (
 	"errors"
 	"io/fs"
 	"os"
+	"path/filepath"
 	"regexp"
 	"sort"
 	"strings"
@@ -33,9 +34,9 @@ var (
 	ErrNoPkgsDetected = xerrors.New("no packages detected")
 )
 
-//////////////////////
+// ////////////////////
 // Analyzer options //
-//////////////////////
+// ////////////////////
 
 // AnalyzerOptions is used to initialize analyzers
 type AnalyzerOptions struct {
@@ -55,9 +56,9 @@ type LicenseScannerOption struct {
 	Full bool
 }
 
-////////////////
+// //////////////
 // Interfaces //
-////////////////
+// //////////////
 
 // Initializer represents analyzers that need to take parameters from users
 type Initializer interface {
@@ -78,9 +79,9 @@ type configAnalyzer interface {
 	Required(osFound types.OS) bool
 }
 
-////////////////////
+// //////////////////
 // Analyzer group //
-////////////////////
+// //////////////////
 
 type Group string
 
@@ -118,9 +119,9 @@ type AnalyzerGroup struct {
 	filePatterns    map[Type][]*regexp.Regexp
 }
 
-///////////////////////////
+// /////////////////////////
 // Analyzer input/output //
-///////////////////////////
+// /////////////////////////
 
 type AnalysisInput struct {
 	Dir      string
@@ -395,6 +396,9 @@ func (ag AnalyzerGroup) AnalyzeFile(ctx context.Context, wg *sync.WaitGroup, lim
 	if info.IsDir() {
 		return nil
 	}
+
+	// unwindows the filepath
+	filePath = filepath.ToSlash(filePath)
 
 	// filepath extracted from tar file doesn't have the prefix "/"
 	cleanPath := strings.TrimLeft(filePath, "/")

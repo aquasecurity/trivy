@@ -3,6 +3,7 @@ package walker
 import (
 	"archive/tar"
 	"bytes"
+	"fmt"
 	"io"
 	"io/fs"
 	"os"
@@ -41,9 +42,12 @@ func (w LayerTar) Walk(layer io.Reader, analyzeFn WalkFunc) ([]string, []string,
 			return nil, nil, xerrors.Errorf("failed to extract the archive: %w", err)
 		}
 
-		filePath := hdr.Name
-		filePath = strings.TrimLeft(filepath.Clean(filePath), "/")
+		filePath := filepath.ToSlash(hdr.Name)
+		filePath = strings.TrimLeft(filepath.Clean(filePath), string(os.PathSeparator))
 		fileDir, fileName := filepath.Split(filePath)
+
+		fileDir = filepath.ToSlash(fileDir)
+		filePath = filepath.ToSlash(filePath)
 
 		// e.g. etc/.wh..wh..opq
 		if opq == fileName {
@@ -105,7 +109,7 @@ func underSkippedDir(filePath string, skipDirs []string) bool {
 		if err != nil {
 			return false
 		}
-		if !strings.HasPrefix(rel, "../") {
+		if !strings.HasPrefix(rel, fmt.Sprintf("..%c", os.PathSeparator)) {
 			return true
 		}
 	}

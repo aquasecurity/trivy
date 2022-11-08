@@ -2,7 +2,6 @@ package walker_test
 
 import (
 	"errors"
-	"fmt"
 	"os"
 	"path/filepath"
 	"strings"
@@ -37,7 +36,7 @@ func TestLayerTar_Walk(t *testing.T) {
 			analyzeFn: func(filePath string, info os.FileInfo, opener analyzer.Opener) error {
 				return nil
 			},
-			wantOpqDirs: []string{fmt.Sprintf("etc%c", os.PathSeparator)},
+			wantOpqDirs: []string{"etc/"},
 			wantWhFiles: []string{filepath.Join("foo", "foo")},
 		},
 		{
@@ -52,7 +51,7 @@ func TestLayerTar_Walk(t *testing.T) {
 				}
 				return nil
 			},
-			wantOpqDirs: []string{fmt.Sprintf("etc%c", os.PathSeparator)},
+			wantOpqDirs: []string{"etc/"},
 			wantWhFiles: []string{filepath.Join("foo", "foo")},
 		},
 		{
@@ -67,7 +66,7 @@ func TestLayerTar_Walk(t *testing.T) {
 				}
 				return nil
 			},
-			wantOpqDirs: []string{fmt.Sprintf("etc%c", os.PathSeparator)},
+			wantOpqDirs: []string{"etc/"},
 			wantWhFiles: []string{filepath.Join("foo", "foo")},
 		},
 		{

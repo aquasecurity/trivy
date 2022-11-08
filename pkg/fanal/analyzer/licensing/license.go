@@ -76,7 +76,12 @@ func (a licenseFileAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisI
 	// Also, paths to these files do not have "/" prefix.
 	// We need to add a "/" prefix to properly filter paths from the config file.
 	if input.Dir == "" { // add leading path separator for files extracted from image
-		filePath = fmt.Sprintf("%c%s", os.PathSeparator, filePath)
+		if strings.Contains(filePath, string(os.PathSeparator)) {
+			filePath = fmt.Sprintf("%c%s", os.PathSeparator, filePath)
+		} else {
+			// even on windows if this is a tar we need to respect the path separator
+			filePath = fmt.Sprintf("/%s", filePath)
+		}
 	}
 
 	lf, err := licensing.FullClassify(filePath, content)

@@ -3,7 +3,7 @@ package image_test
 import (
 	"context"
 	"errors"
-	"runtime"
+	"path/filepath"
 	"testing"
 	"time"
 
@@ -34,9 +34,6 @@ import (
 )
 
 func TestArtifact_Inspect(t *testing.T) {
-	if runtime.GOOS == "windows" {
-		t.Skip("skipping test on windows, needs more work")
-	}
 	alpinePkgs := []types.Package{
 		{
 			ID:   "alpine-baselayout@3.2.0-r3",
@@ -168,7 +165,7 @@ func TestArtifact_Inspect(t *testing.T) {
 	}{
 		{
 			name:      "happy path",
-			imagePath: "../../test/testdata/alpine-311.tar.gz",
+			imagePath: filepath.Join("..", "..", "test", "testdata", "alpine-311.tar.gz"),
 			artifactOpt: artifact.Option{
 				LicenseScannerOption: analyzer.LicenseScannerOption{Full: true},
 			},
@@ -371,7 +368,7 @@ func TestArtifact_Inspect(t *testing.T) {
 				},
 			},
 			want: types.ArtifactReference{
-				Name:    "../../test/testdata/alpine-311.tar.gz",
+				Name:    filepath.Join("..", "..", "test", "testdata", "alpine-311.tar.gz"),
 				Type:    types.ArtifactContainerImage,
 				ID:      "sha256:059741cfbdc039e88e337d621e57e03e99b0e0a75df32f2027ebef13f839af65",
 				BlobIDs: []string{"sha256:a07b19e0e0a4339c00d982f6d80f305cd9dbb98f88b3c74e57b97574b9ce9ba3"},

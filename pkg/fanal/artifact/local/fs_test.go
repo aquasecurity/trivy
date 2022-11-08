@@ -27,9 +27,6 @@ import (
 )
 
 func TestArtifact_Inspect(t *testing.T) {
-	if runtime.GOOS == "windows" {
-		t.Skip("This test flipflops the blob id's between windows and linux")
-	}
 	type fields struct {
 		dir string
 	}
@@ -1829,7 +1826,7 @@ func TestAzureARMMisconfigurationScan(t *testing.T) {
 						WhiteoutFiles: []string(nil), OS: (*types.OS)(nil), Repository: (*types.Repository)(nil),
 						PackageInfos: []types.PackageInfo(nil), Applications: []types.Application(nil),
 						Misconfigurations: []types.Misconfiguration{
-							types.Misconfiguration{
+							{
 								FileType: "azure-arm", FilePath: "deploy.json", Successes: types.MisconfResults{
 									types.MisconfResult{
 										Namespace: "builtin.aws.rds.aws0176",
