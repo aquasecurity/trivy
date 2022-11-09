@@ -12,9 +12,13 @@ builds:
     goos:
       - darwin
       - linux
+      - windows
     goarch:
       - amd64
       - arm64
+    ignore:
+      - goos: windows
+        goarch: arm64
 
 archives:
   -
@@ -25,7 +29,11 @@ archives:
       arm64: ARM64
       darwin: macOS
       linux: Linux
+      windows: Windows
     files:
       - README.md
       - LICENSE
       - contrib/*.tpl
+    format_overrides:
+      - goos: windows
+        format: zip

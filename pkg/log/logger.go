@@ -2,6 +2,7 @@ package log
 
 import (
 	"os"
+	"runtime"
 
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
@@ -54,6 +55,12 @@ func NewLogger(debug, disable bool) (*zap.SugaredLogger, error) {
 		return zapcore.DebugLevel < lvl && lvl < zapcore.ErrorLevel
 	})
 
+	encoderLevel := zapcore.CapitalColorLevelEncoder
+	// when running on windows, don't log with colour
+	if runtime.GOOS == "windows" {
+		encoderLevel = zapcore.CapitalLevelEncoder
+	}
+
 	encoderConfig := zapcore.EncoderConfig{
 		TimeKey:        "Time",
 		LevelKey:       "Level",
@@ -61,7 +68,7 @@ func NewLogger(debug, disable bool) (*zap.SugaredLogger, error) {
 		CallerKey:      "Caller",
 		MessageKey:     "Msg",
 		StacktraceKey:  "St",
-		EncodeLevel:    zapcore.CapitalColorLevelEncoder,
+		EncodeLevel:    encoderLevel,
 		EncodeTime:     zapcore.ISO8601TimeEncoder,
 		EncodeDuration: zapcore.StringDurationEncoder,
 		EncodeCaller:   zapcore.ShortCallerEncoder,
