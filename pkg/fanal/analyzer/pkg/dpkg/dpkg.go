@@ -173,10 +173,10 @@ func (a dpkgAnalyzer) parseDpkgPkg(scanner *bufio.Scanner) (pkg *types.Package) 
 		return nil
 	}
 	pkg = &types.Package{
-		ID:        a.pkgID(name, version),
-		Name:      name,
-		Version:   version,
-		DependsOn: dependencies, // Will be consolidated later
+		ID:         a.pkgID(name, version),
+		Name:       name,
+		Version:    version,
+		DependsOn:  dependencies, // Will be consolidated later
 		Maintainer: maintainer,
 	}
 
