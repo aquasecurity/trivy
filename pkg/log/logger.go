@@ -56,7 +56,7 @@ func NewLogger(debug, disable bool) (*zap.SugaredLogger, error) {
 	})
 
 	encoderLevel := zapcore.CapitalColorLevelEncoder
-	// when running on windows, don't log with colour
+	// when running on Windows, don't log with color
 	if runtime.GOOS == "windows" {
 		encoderLevel = zapcore.CapitalLevelEncoder
 	}
