@@ -5,10 +5,11 @@ import (
 	"os"
 	"strings"
 
-	sp "github.com/aquasecurity/defsec/pkg/spec"
-	"github.com/aquasecurity/trivy/pkg/types"
 	"golang.org/x/exp/maps"
 	"golang.org/x/xerrors"
+
+	sp "github.com/aquasecurity/defsec/pkg/spec"
+	"github.com/aquasecurity/trivy/pkg/types"
 )
 
 type Severity string
@@ -104,7 +105,7 @@ func GetComplianceSpec(specNameOrPath string) (string, error) {
 	if strings.HasPrefix(specNameOrPath, "@") {
 		buf, err := os.ReadFile(strings.TrimPrefix(specNameOrPath, "@"))
 		if err != nil {
-			return "", fmt.Errorf("error retrieving complaince spec from path: %w", err)
+			return "", fmt.Errorf("error retrieving compliancelaince spec from path: %w", err)
 		}
 		return string(buf), nil
 	}

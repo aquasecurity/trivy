@@ -8,7 +8,6 @@ import (
 	"golang.org/x/xerrors"
 	"gopkg.in/yaml.v3"
 
-	sp "github.com/aquasecurity/defsec/pkg/spec"
 	"github.com/aquasecurity/trivy-kubernetes/pkg/artifacts"
 	"github.com/aquasecurity/trivy-kubernetes/pkg/k8s"
 	cmd "github.com/aquasecurity/trivy/pkg/commands/artifact"
@@ -90,6 +89,7 @@ func (r *runner) run(ctx context.Context, artifacts []*artifacts.Artifact) error
 		}
 		if err = yaml.Unmarshal([]byte(cs), &complianceSpec); err != nil {
 			return xerrors.Errorf("yaml unmarshal error: %w", err)
+		}
 		securityChecks, err := complianceSpec.SecurityChecks()
 		if err != nil {
 			return xerrors.Errorf("security check error: %w", err)
