@@ -217,7 +217,7 @@ func (f *ReportFlagGroup) ToOptions(out io.Writer) (ReportOptions, error) {
 
 func parseComplianceTypes(compliance interface{}) (string, error) {
 	complianceString, ok := compliance.(string)
-	if !ok || (!slices.Contains(types.Compliances, complianceString) && !strings.HasPrefix(complianceString, "@")) {
+	if !ok || (len(complianceString) > 0 && !slices.Contains(types.Compliances, complianceString) && !strings.HasPrefix(complianceString, "@")) {
 		return "", xerrors.Errorf("unknown compliance : %v", compliance)
 	}
 	return complianceString, nil
