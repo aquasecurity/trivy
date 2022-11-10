@@ -89,7 +89,7 @@ var (
 		Name:       "compliance",
 		ConfigName: "scan.compliance",
 		Value:      "",
-		Usage:      "comma-separated list of what compliance reports to generate (nsa)",
+		Usage:      "compliance report to generate (nsa)",
 	}
 )
 
