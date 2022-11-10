@@ -84,10 +84,12 @@ func (r *runner) run(ctx context.Context, artifacts []*artifacts.Artifact) error
 	var complianceSpec spec.ComplianceSpec
 	// set scanners types by spec
 	if r.flagOpts.ReportOptions.Compliance != "" {
-		complianceSpec, err := spec.GetComlianceSpec(r.flagOpts.ReportOptions.Compliance)
+		cs, err := spec.GetComplianceSpec(r.flagOpts.ReportOptions.Compliance)
 		if err != nil {
-			return err
+			return xerrors.Errorf("spec loading from file system error: %w", err)
 		}
+		if err = yaml.Unmarshal([]byte(cs), &complianceSpec); err != nil {
+			return xerrors.Errorf("yaml unmarshal error: %w", err)
 		securityChecks, err := complianceSpec.SecurityChecks()
 		if err != nil {
 			return xerrors.Errorf("security check error: %w", err)

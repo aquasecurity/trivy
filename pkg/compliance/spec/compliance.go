@@ -2,7 +2,6 @@ package spec
 
 import (
 	"fmt"
-	"gopkg.in/yaml.v3"
 	"os"
 	"strings"
 
@@ -100,22 +99,15 @@ func securityCheckByCheckID(checkID string) types.SecurityCheck {
 	}
 }
 
-//GetComlianceSpec accepct compliance flag ane/path and return builtin or file system loaded spec
-func GetComplianceSpec(specNameOrPath string) (*ComplianceSpec, error) {
-	var cs string
+// GetComlianceSpec accepct compliance flag ane/path and return builtin or file system loaded spec
+func GetComplianceSpec(specNameOrPath string) (string, error) {
 	if strings.HasPrefix(specNameOrPath, "@") {
 		buf, err := os.ReadFile(strings.TrimPrefix(specNameOrPath, "@"))
 		if err != nil {
-			return nil, fmt.Errorf("error retrieving complaince spec from path: %w", err)
+			return "", fmt.Errorf("error retrieving complaince spec from path: %w", err)
 		}
-		cs = string(buf)
-	} else {
-		cs = sp.NewSpecLoader().GetSpecByName(specNameOrPath)
+		return string(buf), nil
 	}
-	var complianceSpec ComplianceSpec
-	err := yaml.Unmarshal([]byte(cs), &complianceSpec)
-	if err != nil {
-		return nil, fmt.Errorf("yaml unmarshal error: %w", err)
-	}
-	return &complianceSpec, nil
+	return sp.NewSpecLoader().GetSpecByName(specNameOrPath), nil
+
 }
