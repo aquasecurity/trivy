@@ -8,7 +8,7 @@ import (
 
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 
-	"github.com/liamg/tml"
+	"github.com/aquasecurity/tml"
 
 	"github.com/aquasecurity/trivy/pkg/flag"
 

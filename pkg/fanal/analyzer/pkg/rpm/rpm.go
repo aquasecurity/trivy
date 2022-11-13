@@ -2,17 +2,20 @@ package rpm
 
 import (
 	"context"
+	"fmt"
 	"io"
 	"os"
 	"path/filepath"
+	"sort"
 	"strings"
 
 	rpmdb "github.com/knqyf263/go-rpmdb/pkg"
+	"github.com/samber/lo"
+	"golang.org/x/exp/slices"
 	"golang.org/x/xerrors"
 
-	"github.com/aquasecurity/trivy/pkg/fanal/log"
-
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
+	"github.com/aquasecurity/trivy/pkg/fanal/log"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/fanal/utils"
 )
@@ -21,7 +24,7 @@ func init() {
 	analyzer.RegisterAnalyzer(&rpmPkgAnalyzer{})
 }
 
-const version = 2
+const version = 3
 
 var (
 	requiredFiles = []string{
@@ -76,30 +79,15 @@ func (a rpmPkgAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInput)
 }
 
 func (a rpmPkgAnalyzer) parsePkgInfo(rc io.Reader) ([]types.Package, []string, error) {
-	tmpDir, err := os.MkdirTemp("", "rpm")
+	filePath, err := writeToTempFile(rc)
 	if err != nil {
-		return nil, nil, xerrors.Errorf("failed to create a temp dir: %w", err)
+		return nil, nil, xerrors.Errorf("temp file error: %w", err)
 	}
-	defer os.RemoveAll(tmpDir)
-
-	filename := filepath.Join(tmpDir, "Packages")
-	f, err := os.Create(filename)
-	if err != nil {
-		return nil, nil, xerrors.Errorf("failed to create a package file: %w", err)
-	}
-
-	if _, err = io.Copy(f, rc); err != nil {
-		return nil, nil, xerrors.Errorf("failed to copy a package file: %w", err)
-	}
-
-	// The temp file must be closed before being opened as Berkeley DB.
-	if err = f.Close(); err != nil {
-		return nil, nil, xerrors.Errorf("failed to close a temp file: %w", err)
-	}
+	defer os.RemoveAll(filepath.Dir(filePath)) // Remove the temp dir
 
 	// rpm-python 4.11.3 rpm-4.11.3-35.el7.src.rpm
 	// Extract binary package names because RHSA refers to binary package names.
-	db, err := rpmdb.Open(filename)
+	db, err := rpmdb.Open(filePath)
 	if err != nil {
 		return nil, nil, xerrors.Errorf("failed to open RPM DB: %w", err)
 	}
@@ -114,6 +102,7 @@ func (a rpmPkgAnalyzer) parsePkgInfo(rc io.Reader) ([]types.Package, []string, e
 
 	var pkgs []types.Package
 	var installedFiles []string
+	provides := map[string]string{}
 	for _, pkg := range pkgList {
 		arch := pkg.Arch
 		if arch == "" {
@@ -141,6 +130,7 @@ func (a rpmPkgAnalyzer) parsePkgInfo(rc io.Reader) ([]types.Package, []string, e
 		}
 
 		p := types.Package{
+			ID:              fmt.Sprintf("%s@%s-%s.%s", pkg.Name, pkg.Version, pkg.Release, pkg.Arch),
 			Name:            pkg.Name,
 			Epoch:           pkg.EpochNum(),
 			Version:         pkg.Version,
@@ -152,12 +142,36 @@ func (a rpmPkgAnalyzer) parsePkgInfo(rc io.Reader) ([]types.Package, []string, e
 			SrcRelease:      srcRel,
 			Modularitylabel: pkg.Modularitylabel,
 			Licenses:        []string{pkg.License},
+			DependsOn:       pkg.Requires, // Will be replaced with package IDs
 		}
 		pkgs = append(pkgs, p)
 		installedFiles = append(installedFiles, files...)
+
+		// It contains mappings between package-providing files and package IDs
+		// e.g.
+		//	"libc.so.6()(64bit)" => "glibc-2.12-1.212.el6.x86_64"
+		//  "rtld(GNU_HASH)"     => "glibc-2.12-1.212.el6.x86_64"
+		for _, provide := range pkg.Provides {
+			provides[provide] = p.ID
+		}
 	}
 
+	// Replace required files with package IDs
+	consolidateDependencies(pkgs, provides)
+
 	return pkgs, installedFiles, nil
+}
+
+func (a rpmPkgAnalyzer) Required(filePath string, _ os.FileInfo) bool {
+	return utils.StringInSlice(filePath, requiredFiles)
+}
+
+func (a rpmPkgAnalyzer) Type() analyzer.Type {
+	return analyzer.TypeRpm
+}
+
+func (a rpmPkgAnalyzer) Version() int {
+	return version
 }
 
 // splitFileName returns a name, version, release, epoch, arch:
@@ -168,9 +182,7 @@ func (a rpmPkgAnalyzer) parsePkgInfo(rc io.Reader) ([]types.Package, []string, e
 //
 // https://github.com/rpm-software-management/yum/blob/043e869b08126c1b24e392f809c9f6871344c60d/rpmUtils/miscutils.py#L301
 func splitFileName(filename string) (name, ver, rel string, err error) {
-	if strings.HasSuffix(filename, ".rpm") {
-		filename = filename[:len(filename)-4]
-	}
+	filename = strings.TrimSuffix(filename, ".rpm")
 
 	archIndex := strings.LastIndex(filename, ".")
 	if archIndex == -1 {
@@ -193,18 +205,6 @@ func splitFileName(filename string) (name, ver, rel string, err error) {
 	return name, ver, rel, nil
 }
 
-func (a rpmPkgAnalyzer) Required(filePath string, _ os.FileInfo) bool {
-	return utils.StringInSlice(filePath, requiredFiles)
-}
-
-func (a rpmPkgAnalyzer) Type() analyzer.Type {
-	return analyzer.TypeRpm
-}
-
-func (a rpmPkgAnalyzer) Version() int {
-	return version
-}
-
 func packageProvidedByVendor(pkgVendor string) bool {
 	for _, vendor := range osVendors {
 		if strings.HasPrefix(pkgVendor, vendor) {
@@ -212,4 +212,46 @@ func packageProvidedByVendor(pkgVendor string) bool {
 		}
 	}
 	return false
+}
+
+func writeToTempFile(rc io.Reader) (string, error) {
+	tmpDir, err := os.MkdirTemp("", "rpm")
+	if err != nil {
+		return "", xerrors.Errorf("failed to create a temp dir: %w", err)
+	}
+
+	filePath := filepath.Join(tmpDir, "Packages")
+	f, err := os.Create(filePath)
+	if err != nil {
+		return "", xerrors.Errorf("failed to create a package file: %w", err)
+	}
+
+	if _, err = io.Copy(f, rc); err != nil {
+		return "", xerrors.Errorf("failed to copy a package file: %w", err)
+	}
+
+	// The temp file must be closed before being opened as Berkeley DB.
+	if err = f.Close(); err != nil {
+		return "", xerrors.Errorf("failed to close a temp file: %w", err)
+	}
+
+	return filePath, nil
+}
+
+func consolidateDependencies(pkgs []types.Package, provides map[string]string) {
+	for i := range pkgs {
+		// e.g. "libc.so.6()(64bit)" => "glibc-2.12-1.212.el6.x86_64"
+		pkgs[i].DependsOn = lo.FilterMap(pkgs[i].DependsOn, func(d string, _ int) (string, bool) {
+			if pkgID, ok := provides[d]; ok && pkgs[i].ID != pkgID {
+				return pkgID, true
+			}
+			return "", false
+		})
+		sort.Strings(pkgs[i].DependsOn)
+		pkgs[i].DependsOn = slices.Compact(pkgs[i].DependsOn)
+
+		if len(pkgs[i].DependsOn) == 0 {
+			pkgs[i].DependsOn = nil
+		}
+	}
 }

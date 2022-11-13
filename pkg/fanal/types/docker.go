@@ -20,4 +20,7 @@ type DockerOption struct {
 	// SSL/TLS
 	InsecureSkipTLSVerify bool
 	NonSSL                bool
+
+	// Architecture
+	Platform string
 }

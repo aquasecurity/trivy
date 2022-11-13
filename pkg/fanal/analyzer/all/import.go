@@ -4,6 +4,7 @@ import (
 	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/buildinfo"
 	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/command/apk"
 	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/config/all"
+	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/executable"
 	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/language/c/conan"
 	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/language/dotnet/deps"
 	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/language/dotnet/nuget"

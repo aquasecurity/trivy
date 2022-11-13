@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/liamg/loading/pkg/bar"
+	"github.com/aquasecurity/loading/pkg/bar"
 )
 
 type progressTracker struct {

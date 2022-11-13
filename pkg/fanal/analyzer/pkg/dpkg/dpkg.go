@@ -3,17 +3,20 @@ package dpkg
 import (
 	"bufio"
 	"context"
-	"log"
+	"fmt"
 	"os"
 	"path/filepath"
 	"regexp"
+	"sort"
 	"strings"
 
 	debVersion "github.com/knqyf263/go-deb-version"
+	"github.com/samber/lo"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
+	"github.com/aquasecurity/trivy/pkg/log"
 )
 
 func init() {
@@ -21,7 +24,7 @@ func init() {
 }
 
 const (
-	version = 2
+	analyzerVersion = 3
 
 	statusFile = "var/lib/dpkg/status"
 	statusDir  = "var/lib/dpkg/status.d/"
@@ -81,7 +84,8 @@ func (a dpkgAnalyzer) parseDpkgInfoList(scanner *bufio.Scanner) (*analyzer.Analy
 // parseDpkgStatus parses /var/lib/dpkg/status or /var/lib/dpkg/status/*
 func (a dpkgAnalyzer) parseDpkgStatus(filePath string, scanner *bufio.Scanner) (*analyzer.AnalysisResult, error) {
 	var pkg *types.Package
-	pkgMap := map[string]*types.Package{}
+	pkgs := map[string]*types.Package{}
+	pkgIDs := map[string]string{}
 
 	for scanner.Scan() {
 		line := strings.TrimSpace(scanner.Text())
@@ -91,7 +95,8 @@ func (a dpkgAnalyzer) parseDpkgStatus(filePath string, scanner *bufio.Scanner) (
 
 		pkg = a.parseDpkgPkg(scanner)
 		if pkg != nil {
-			pkgMap[pkg.Name+"-"+pkg.Version] = pkg
+			pkgs[pkg.ID] = pkg
+			pkgIDs[pkg.Name] = pkg.ID
 		}
 	}
 
@@ -99,16 +104,15 @@ func (a dpkgAnalyzer) parseDpkgStatus(filePath string, scanner *bufio.Scanner) (
 		return nil, xerrors.Errorf("scan error: %w", err)
 	}
 
-	pkgs := make([]types.Package, 0, len(pkgMap))
-	for _, p := range pkgMap {
-		pkgs = append(pkgs, *p)
-	}
+	a.consolidateDependencies(pkgs, pkgIDs)
 
 	return &analyzer.AnalysisResult{
 		PackageInfos: []types.PackageInfo{
 			{
 				FilePath: filePath,
-				Packages: pkgs,
+				Packages: lo.MapToSlice(pkgs, func(_ string, p *types.Package) types.Package {
+					return *p
+				}),
 			},
 		},
 	}, nil
@@ -119,6 +123,7 @@ func (a dpkgAnalyzer) parseDpkgPkg(scanner *bufio.Scanner) (pkg *types.Package) 
 		name          string
 		version       string
 		sourceName    string
+		dependencies  []string
 		isInstalled   bool
 		sourceVersion string
 	)
@@ -128,9 +133,10 @@ func (a dpkgAnalyzer) parseDpkgPkg(scanner *bufio.Scanner) (pkg *types.Package) 
 		if line == "" {
 			break
 		}
-		if strings.HasPrefix(line, "Package: ") {
+		switch {
+		case strings.HasPrefix(line, "Package: "):
 			name = strings.TrimSpace(strings.TrimPrefix(line, "Package: "))
-		} else if strings.HasPrefix(line, "Source: ") {
+		case strings.HasPrefix(line, "Source: "):
 			// Source line (Optional)
 			// Gives the name of the source package
 			// May also specifies a version
@@ -145,15 +151,12 @@ func (a dpkgAnalyzer) parseDpkgPkg(scanner *bufio.Scanner) (pkg *types.Package) 
 			if md["version"] != "" {
 				sourceVersion = md["version"]
 			}
-		} else if strings.HasPrefix(line, "Version: ") {
+		case strings.HasPrefix(line, "Version: "):
 			version = strings.TrimPrefix(line, "Version: ")
-		} else if strings.HasPrefix(line, "Status: ") {
-			for _, ss := range strings.Fields(strings.TrimPrefix(line, "Status: ")) {
-				if ss == "deinstall" || ss == "purge" {
-					isInstalled = false
-					break
-				}
-			}
+		case strings.HasPrefix(line, "Status: "):
+			isInstalled = a.parseStatus(line)
+		case strings.HasPrefix(line, "Depends: "):
+			dependencies = a.parseDepends(line)
 		}
 		if !scanner.Scan() {
 			break
@@ -163,10 +166,15 @@ func (a dpkgAnalyzer) parseDpkgPkg(scanner *bufio.Scanner) (pkg *types.Package) 
 	if name == "" || version == "" || !isInstalled {
 		return nil
 	} else if !debVersion.Valid(version) {
-		log.Printf("Invalid Version Found : OS %s, Package %s, Version %s", "debian", name, version)
+		log.Logger.Warnf("Invalid Version Found : OS %s, Package %s, Version %s", "debian", name, version)
 		return nil
 	}
-	pkg = &types.Package{Name: name, Version: version}
+	pkg = &types.Package{
+		ID:        a.pkgID(name, version),
+		Name:      name,
+		Version:   version,
+		DependsOn: dependencies, // Will be consolidated later
+	}
 
 	// Source version and names are computed from binary package names and versions
 	// in dpkg.
@@ -183,7 +191,7 @@ func (a dpkgAnalyzer) parseDpkgPkg(scanner *bufio.Scanner) (pkg *types.Package) 
 	}
 
 	if !debVersion.Valid(sourceVersion) {
-		log.Printf("Invalid Version Found : OS %s, Package %s, Version %s", "debian", sourceName, sourceVersion)
+		log.Logger.Warnf("Invalid Version Found : OS %s, Package %s, Version %s", "debian", sourceName, sourceVersion)
 		return pkg
 	}
 	pkg.SrcName = sourceName
@@ -204,6 +212,63 @@ func (a dpkgAnalyzer) Required(filePath string, _ os.FileInfo) bool {
 	return false
 }
 
+func (a dpkgAnalyzer) pkgID(name, version string) string {
+	return fmt.Sprintf("%s@%s", name, version)
+}
+
+func (a dpkgAnalyzer) parseStatus(line string) bool {
+	for _, ss := range strings.Fields(strings.TrimPrefix(line, "Status: ")) {
+		if ss == "deinstall" || ss == "purge" {
+			return false
+		}
+	}
+	return true
+}
+
+func (a dpkgAnalyzer) parseDepends(line string) []string {
+	line = strings.TrimPrefix(line, "Depends: ")
+	// e.g. Depends: passwd, debconf (>= 0.5) | debconf-2.0
+
+	var dependencies []string
+	depends := strings.Split(line, ",")
+	for _, dep := range depends {
+		// e.g. gpgv | gpgv2 | gpgv1
+		for _, d := range strings.Split(dep, "|") {
+			d = a.trimVersionRequirement(d)
+
+			// Store only package names here
+			dependencies = append(dependencies, strings.TrimSpace(d))
+		}
+	}
+	return dependencies
+}
+
+func (a dpkgAnalyzer) trimVersionRequirement(s string) string {
+	// e.g.
+	//	libapt-pkg6.0 (>= 2.2.4) => libapt-pkg6.0
+	//	adduser => adduser
+	if strings.Contains(s, "(") {
+		s = s[:strings.Index(s, "(")]
+	}
+	return s
+}
+
+func (a dpkgAnalyzer) consolidateDependencies(pkgs map[string]*types.Package, pkgIDs map[string]string) {
+	for _, pkg := range pkgs {
+		// e.g. libc6 => libc6@2.31-13+deb11u4
+		pkg.DependsOn = lo.FilterMap(pkg.DependsOn, func(d string, _ int) (string, bool) {
+			if pkgID, ok := pkgIDs[d]; ok {
+				return pkgID, true
+			}
+			return "", false
+		})
+		sort.Strings(pkg.DependsOn)
+		if len(pkg.DependsOn) == 0 {
+			pkg.DependsOn = nil
+		}
+	}
+}
+
 func (a dpkgAnalyzer) isListFile(dir, fileName string) bool {
 	if dir != infoDir {
 		return false
@@ -217,5 +282,5 @@ func (a dpkgAnalyzer) Type() analyzer.Type {
 }
 
 func (a dpkgAnalyzer) Version() int {
-	return version
+	return analyzerVersion
 }

@@ -72,8 +72,12 @@ func ContainerdImage(ctx context.Context, imageName string) (Image, func(), erro
 		return nil, cleanup, xerrors.Errorf("failed to initialize a containerd client: %w", err)
 	}
 
-	// Need to specify a namespace
-	ctx = namespaces.WithNamespace(ctx, defaultContainerdNamespace)
+	namespace := os.Getenv("CONTAINERD_NAMESPACE")
+	if namespace == "" {
+		namespace = defaultContainerdNamespace
+	}
+
+	ctx = namespaces.WithNamespace(ctx, namespace)
 
 	img, err := client.GetImage(ctx, ref.String())
 	if err != nil {

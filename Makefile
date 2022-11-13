@@ -1,7 +1,7 @@
 VERSION := $(patsubst v%,%,$(shell git describe --tags --always)) #Strips the v prefix from the tag
 LDFLAGS := -ldflags "-s -w -X=main.version=$(VERSION)"
 
-GOPATH := $(shell go env GOPATH)
+GOPATH := $(firstword $(subst :, ,$(shell go env GOPATH)))
 GOBIN := $(GOPATH)/bin
 GOSRC := $(GOPATH)/src
 
