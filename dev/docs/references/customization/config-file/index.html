@@ -2629,6 +2629,13 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#rego-options" class="md-nav__link">
+    Rego Options
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#misconfiguration-options" class="md-nav__link">
     Misconfiguration Options
   </a>
@@ -3212,6 +3219,13 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#rego-options" class="md-nav__link">
+    Rego Options
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#misconfiguration-options" class="md-nav__link">
     Misconfiguration Options
   </a>
@@ -3429,26 +3443,21 @@
 <span class="w">  </span><span class="c1"># Default is &#39;trivy-secret.yaml&#39;</span><span class="w"></span>
 <span class="w">  </span><span class="nt">config</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">config/trivy/secret.yaml</span><span class="w"></span>
 </code></pre></div>
-<h2 id="misconfiguration-options">Misconfiguration Options</h2>
-<p>Available with misconfiguration scanning</p>
-<div class="highlight"><pre><span></span><code><span class="nt">misconfiguration</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="c1"># Same as &#39;--include-non-failures&#39;</span><span class="w"></span>
-<span class="w">  </span><span class="c1"># Default is false</span><span class="w"></span>
-<span class="w">  </span><span class="nt">include-non-failures</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span><span class="w"></span>
+<h2 id="rego-options">Rego Options</h2>
+<div class="highlight"><pre><span></span><code><span class="l l-Scalar l-Scalar-Plain">rego</span><span class="w"></span>
+<span class="w">  </span><span class="l l-Scalar l-Scalar-Plain"># Same as &#39;--trace&#39;</span><span class="w"></span>
+<span class="w">  </span><span class="l l-Scalar l-Scalar-Plain"># Default is false</span><span class="w"></span>
+<span class="w">  </span><span class="l l-Scalar l-Scalar-Plain">trace</span><span class="p p-Indicator">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span><span class="w"></span>
 
-<span class="w">  </span><span class="c1"># Same as &#39;--trace&#39;</span><span class="w"></span>
-<span class="w">  </span><span class="c1"># Default is false</span><span class="w"></span>
-<span class="w">  </span><span class="nt">trace</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span><span class="w"></span>
-
-<span class="w">  </span><span class="c1"># Same as &#39;--config-policy&#39;</span><span class="w"></span>
-<span class="w">  </span><span class="c1"># Default is empty</span><span class="w"></span>
-<span class="w">  </span><span class="nt">policy</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="l l-Scalar l-Scalar-Plain"># Same as &#39;--config-policy&#39;</span><span class="w"></span>
+<span class="w">  </span><span class="l l-Scalar l-Scalar-Plain"># Default is empty</span><span class="w"></span>
+<span class="w">  </span><span class="l l-Scalar l-Scalar-Plain">policy</span><span class="p p-Indicator">:</span><span class="w"></span>
 <span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">policy/repository</span><span class="w"></span>
 <span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">policy/custom</span><span class="w"></span>
 
 <span class="w">  </span><span class="c1"># Same as &#39;--config-data&#39;</span><span class="w"></span>
 <span class="w">  </span><span class="c1"># Default is empty</span><span class="w"></span>
-<span class="w">  </span><span class="nt">data</span><span class="p">:</span><span class="w"></span>
+<span class="w w-Error">  </span><span class="nt">data</span><span class="p">:</span><span class="w"></span>
 <span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">data/</span><span class="w"></span>
 
 <span class="w">  </span><span class="c1"># Same as &#39;--policy-namespaces&#39;</span><span class="w"></span>
@@ -3456,6 +3465,13 @@
 <span class="w">  </span><span class="nt">namespaces</span><span class="p">:</span><span class="w"></span>
 <span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">opa.examples</span><span class="w"></span>
 <span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">users</span><span class="w"></span>
+</code></pre></div>
+<h2 id="misconfiguration-options">Misconfiguration Options</h2>
+<p>Available with misconfiguration scanning</p>
+<div class="highlight"><pre><span></span><code><span class="nt">misconfiguration</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="c1"># Same as &#39;--include-non-failures&#39;</span><span class="w"></span>
+<span class="w">  </span><span class="c1"># Default is false</span><span class="w"></span>
+<span class="w">  </span><span class="nt">include-non-failures</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span><span class="w"></span>
 
 <span class="w">  </span><span class="c1"># helm value override configurations</span><span class="w"></span>
 <span class="w">  </span><span class="c1"># set individual values</span><span class="w"></span>
