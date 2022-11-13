@@ -17,17 +17,14 @@ func init() {
 
 type EXT4 struct{}
 
-func (e EXT4) Try(rs io.ReadSeeker) (bool, error) {
-	defer rs.Seek(0, io.SeekStart)
-	ok := ext4.Check(rs)
+func (e EXT4) New(sr io.SectionReader, cache vm.Cache) (fs.FS, error) {
+	sr.Seek(0, io.SeekStart)
+	ok := ext4.Check(&sr)
 	if !ok {
-		return false, xerrors.Errorf("invalid ext4 header")
+		return nil, filesystem.ErrInvalidHeader
 	}
 
-	return true, nil
-}
-
-func (e EXT4) New(sr io.SectionReader, cache vm.Cache) (fs.FS, error) {
+	sr.Seek(0, io.SeekStart)
 	f, err := ext4.NewFS(sr, cache)
 	if err != nil {
 		return nil, xerrors.Errorf("new ext4 filesystem error: %w", err)

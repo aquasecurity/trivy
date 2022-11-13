@@ -1,16 +1,18 @@
 package vm
 
 import (
+	"errors"
 	"io"
 
-	"github.com/hashicorp/go-multierror"
 	"golang.org/x/xerrors"
 )
 
-var Readers []Reader
+var (
+	Readers             []Reader
+	ErrInvalidSignature = xerrors.New("invalid signature error")
+)
 
 type Reader interface {
-	Try(rs io.ReadSeeker) (bool, error)
 	NewVMReader(rs io.ReadSeeker, cache Cache) (*io.SectionReader, error)
 }
 
@@ -31,25 +33,16 @@ type VM struct {
 }
 
 func New(rs io.ReadSeeker, cache Cache) (*VM, error) {
-	var errs error
 	for _, v := range Readers {
-		ok, err := v.Try(rs)
-		if err != nil {
-			errs = multierror.Append(errs, err)
-			continue
-		}
-		if !ok {
-			continue
-		}
 		vreader, err := v.NewVMReader(rs, cache)
 		if err != nil {
+			if errors.Is(err, ErrInvalidSignature) {
+				continue
+			}
 			return nil, xerrors.Errorf("open virtual machine error: %w", err)
 		}
 
 		return &VM{SectionReader: vreader}, nil
-	}
-	if errs != nil {
-		return nil, xerrors.Errorf("try open virtual machine error: %w", errs)
 	}
 	return nil, xerrors.New("virtual machine can not be detected")
 }

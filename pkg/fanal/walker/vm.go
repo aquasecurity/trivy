@@ -2,6 +2,7 @@ package walker
 
 import (
 	"bytes"
+	"errors"
 	"io"
 	"io/fs"
 	"os"
@@ -126,29 +127,28 @@ func diskWalker(cache vm.Cache) DiskWalker {
 		}
 
 		sr := partition.GetSectionReader()
-		var errs error
-		var f fs.FS
+		var (
+			errs, err error
+			f         fs.FS
+		)
 		for _, fsys := range filesystem.Filesystems {
-			ok, err := fsys.Try(&sr)
-			if err != nil {
-				errs = multierror.Append(errs, err)
-				continue
-			}
-			if !ok {
-				continue
-			}
-
 			// TODO: implement LVM handler
-
 			f, err = fsys.New(sr, cache)
-			if err != nil {
-				return xerrors.Errorf("new filesystem error: %w", err)
+			if err == nil {
+				break
 			}
+			if errors.Is(err, filesystem.ErrInvalidHeader) {
+				continue
+			}
+			errs = multierror.Append(errs, err)
+		}
+		if errs != nil {
+			return errs
 		}
 		if f == nil {
 			return xerrors.Errorf("try filesystems error: %w", errs)
 		}
-		err := fs.WalkDir(f, root, func(path string, d fs.DirEntry, err error) error {
+		err = fs.WalkDir(f, root, func(path string, d fs.DirEntry, err error) error {
 			return fn(f, path, d, err)
 		})
 		if err != nil {

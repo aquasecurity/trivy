@@ -15,16 +15,14 @@ func init() {
 
 type VMDK struct{}
 
-func (V VMDK) Try(rs io.ReadSeeker) (bool, error) {
-	defer rs.Seek(0, io.SeekStart)
-	ok, err := vmdk.Check(rs)
-	if err != nil {
-		return false, xerrors.Errorf("vmdk check error: %w", err)
-	}
-	return ok, nil
-}
-
 func (V VMDK) NewVMReader(rs io.ReadSeeker, cache vm.Cache) (*io.SectionReader, error) {
+	rs.Seek(0, io.SeekStart)
+	_, err := vmdk.Check(rs)
+	if err != nil {
+		return nil, vm.ErrInvalidSignature
+	}
+
+	rs.Seek(0, io.SeekStart)
 	reader, err := vmdk.Open(rs, cache)
 	if err != nil {
 		return nil, xerrors.Errorf("failed to open vmdk: %w", err)
