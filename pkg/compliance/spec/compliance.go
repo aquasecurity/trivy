@@ -105,7 +105,7 @@ func GetComplianceSpec(specNameOrPath string) (string, error) {
 	if strings.HasPrefix(specNameOrPath, "@") {
 		buf, err := os.ReadFile(strings.TrimPrefix(specNameOrPath, "@"))
 		if err != nil {
-			return "", fmt.Errorf("error retrieving compliancelaince spec from path: %w", err)
+			return "", fmt.Errorf("error retrieving compliance spec from path: %w", err)
 		}
 		return string(buf), nil
 	}
