@@ -16,7 +16,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          types:
+          types: |
             feat
             fix
             docs
@@ -30,7 +30,7 @@ jobs:
             revert
             BREAKING
 
-          scopes:
+          scopes: |
             vuln
             misconf
             secret
