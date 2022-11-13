@@ -100,7 +100,7 @@ func securityCheckByCheckID(checkID string) types.SecurityCheck {
 	}
 }
 
-// GetComlianceSpec accepct compliance flag ane/path and return builtin or file system loaded spec
+// GetComlianceSpec accepct compliance flag name/path and return builtin or file system loaded spec
 func GetComplianceSpec(specNameOrPath string) (string, error) {
 	if strings.HasPrefix(specNameOrPath, "@") {
 		buf, err := os.ReadFile(strings.TrimPrefix(specNameOrPath, "@"))
