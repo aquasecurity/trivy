@@ -209,6 +209,7 @@ func NewRootCommand(version string, globalFlags *flag.GlobalFlagGroup) *cobra.Co
 func NewImageCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	reportFlagGroup := flag.NewReportFlagGroup()
 	reportFlagGroup.ReportFormat = nil // TODO: support --report summary
+	reportFlagGroup.Compliance = nil   // disable '--compliance'
 
 	imageFlags := &flag.Flags{
 		CacheFlagGroup:         flag.NewCacheFlagGroup(),
@@ -283,6 +284,7 @@ func NewImageCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 func NewFilesystemCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	reportFlagGroup := flag.NewReportFlagGroup()
 	reportFlagGroup.ReportFormat = nil // TODO: support --report summary
+	reportFlagGroup.Compliance = nil   // disable '--compliance'
 
 	fsFlags := &flag.Flags{
 		CacheFlagGroup:         flag.NewCacheFlagGroup(),
@@ -336,6 +338,7 @@ func NewFilesystemCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 func NewRootfsCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	reportFlagGroup := flag.NewReportFlagGroup()
 	reportFlagGroup.ReportFormat = nil // TODO: support --report summary
+	reportFlagGroup.Compliance = nil   // disable '--compliance'
 
 	rootfsFlags := &flag.Flags{
 		CacheFlagGroup:         flag.NewCacheFlagGroup(),
@@ -390,6 +393,7 @@ func NewRootfsCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 func NewRepositoryCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	reportFlagGroup := flag.NewReportFlagGroup()
 	reportFlagGroup.ReportFormat = nil // TODO: support --report summary
+	reportFlagGroup.Compliance = nil   // disable '--compliance'
 
 	repoFlags := &flag.Flags{
 		CacheFlagGroup:         flag.NewCacheFlagGroup(),
@@ -536,6 +540,7 @@ func NewConfigCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	reportFlagGroup.IgnorePolicy = nil   // disable '--ignore-policy'
 	reportFlagGroup.ListAllPkgs = nil    // disable '--list-all-pkgs'
 	reportFlagGroup.ReportFormat = nil   // TODO: support --report summary
+	reportFlagGroup.Compliance = nil     // disable '--compliance'
 
 	scanFlags := &flag.ScanFlagGroup{
 		// Enable only '--skip-dirs' and '--skip-files' and disable other flags
