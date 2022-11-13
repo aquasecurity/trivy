@@ -68,9 +68,9 @@ $ trivy k8s cluster --compliance=nsa --report all --format json
 
 ## Custom compliance report
 
-The Trivy K8s CLI allows you to create your custom compliance specification and pass it to trivy for scan report generation.
+The Trivy K8s CLI allows you to create a custom compliance specification and pass it to trivy for generating scan report .
 
-The report was generated based on scanning result mapping between users' define controls and trivy checks ID.
+The report is generated based on scanning result mapping between users define controls and trivy checks ID.
 The supported checks are from two types and can be found at [Aqua vulnerability DB](https://avd.aquasec.com/):
 - [misconfiguration](https://avd.aquasec.com/misconfig/)
 - [vulnerabilities](https://avd.aquasec.com/nvd) 
@@ -78,7 +78,7 @@ The supported checks are from two types and can be found at [Aqua vulnerability 
 
 ### Compliance spec format
 
-The compliance spec format should look as follow :
+The compliance spec file format should look as follow :
 
 
 ```yaml
