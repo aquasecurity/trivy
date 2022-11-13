@@ -65,3 +65,52 @@ $ trivy k8s cluster --compliance=nsa --report summary --format json
 ```
 $ trivy k8s cluster --compliance=nsa --report all --format json
 ```
+
+## Custom compliance report
+
+The Trivy K8s CLI allows you to create your custom compliance specification and pass it to trivy for scan report generation.
+
+The report was generated based on scanning result mapping between users' define controls and trivy checks ID.
+The supported checks are from two types and can be found at [Aqua vulnerability DB](https://avd.aquasec.com/):
+- [misconfiguration](https://avd.aquasec.com/misconfig/)
+- [vulnerabilities](https://avd.aquasec.com/nvd) 
+
+
+### Compliance spec format
+
+The compliance spec format should look as follow :
+
+
+```yaml
+---
+spec:
+  id: "0001" # report unique identifier
+  title: nsa # report title 
+  description: National Security Agency - Kubernetes Hardening Guidance # description of the report
+  relatedResources :
+    - https://www.nsa.gov/Press-Room/News-Highlights/Article/Article/2716980/nsa-cisa-release-kubernetes-hardening-guidance/ # refreance is related to public or internal spec
+  version: "1.0" # spec version
+  controls:
+    - name: Non-root containers # short control naming
+      description: 'Check that container is not running as root' # long control description
+      id: '1.0' # control identifier 
+      checks:   # list of trivy checks which associated to control
+        - id: AVD-KSV-0012 # check ID (midconfiguration ot vulnerability) must start with `AVD-` or `CVE-` 
+      severity: 'MEDIUM' # control severity
+    - name: Immutable container file systems
+      description: 'Check that container root file system is immutable'
+      id: '1.1'
+      checks:
+        - id: AVD-KSV-0014
+      severity: 'LOW'
+```
+
+## Custom report CLI Commands
+
+To generate the custom report an custom spec file path should be passed to the trivy command with `@` prefix as follow:
+
+
+```
+$ trivy k8s cluster --compliance=@/spec/my_complaince.yaml --report summary
+```
+
