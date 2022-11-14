@@ -1,6 +1,6 @@
 # Kubernetes Compliance
 
-## NSA Complaince Report
+## NSA Compliance Report
 
 !!! warning "EXPERIMENTAL"
     This feature might change without preserving backwards compatibility.
