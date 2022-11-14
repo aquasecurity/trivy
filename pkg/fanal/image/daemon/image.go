@@ -241,7 +241,8 @@ func emptyLayer(history dimage.HistoryResponseItem) bool {
 		strings.HasPrefix(createdBy, "STOPSIGNAL") ||
 		strings.HasPrefix(createdBy, "SHELL") ||
 		strings.HasPrefix(createdBy, "ARG") ||
-		strings.HasPrefix(createdBy, "WORKDIR") {
+		// buildkit images with "WORKDIR /" command are empty
+		(createdBy == "WORKDIR /" && history.Comment == "buildkit.dockerfile.v0") {
 		return true
 	}
 	// commands here: 'ADD', COPY, RUN and WORKDIR != "/"
