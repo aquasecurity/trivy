@@ -2,6 +2,7 @@ package utils
 
 import (
 	"fmt"
+	"sort"
 
 	"github.com/aquasecurity/go-dep-parser/pkg/types"
 	"golang.org/x/exp/maps"
@@ -32,6 +33,9 @@ func UniqueLibraries(libs []types.Library) []types.Library {
 		} else if len(lib.Locations) > 0 {
 			// merge locations
 			l.Locations = append(l.Locations, lib.Locations...)
+			sort.Slice(l.Locations, func(i, j int) bool {
+				return l.Locations[i].StartLine < l.Locations[j].StartLine
+			})
 			unique[identifier] = l
 		}
 	}
