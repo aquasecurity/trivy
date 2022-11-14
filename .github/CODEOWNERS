@@ -1,6 +1,15 @@
 # Global
 *   @knqyf263
 
+# Docs
+/docs/community/ @knqyf263 @AnaisUrlichs @itaysk
+/docs/ecosystem/ @knqyf263 @AnaisUrlichs @itaysk
+/docs/getting-started/ @knqyf263 @AnaisUrlichs @itaysk
+/docs/tutorials/ @knqyf263 @AnaisUrlichs @itaysk
+/mkdocs.yml @knqyf263 @AnaisUrlichs @itaysk
+/docs/index.md @knqyf263 @AnaisUrlichs @itaysk
+/README.md @knqyf263 @AnaisUrlichs @itaysk
+
 # Helm chart
 helm/trivy/ @krol3
 
