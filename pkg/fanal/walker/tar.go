@@ -28,7 +28,7 @@ type LayerTar struct {
 func NewLayerTar(skipFiles, skipDirs []string, slow bool) LayerTar {
 	threshold := defaultSizeThreshold
 	if slow {
-		threshold = 100 << 10 // 10KB
+		threshold = slowSizeThreshold
 	}
 
 	return LayerTar{

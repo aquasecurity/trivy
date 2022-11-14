@@ -15,7 +15,10 @@ var (
 	SystemDirs = []string{"proc", "sys", "dev"}
 )
 
-const defaultSizeThreshold = int64(200) << 20 // 200MB
+const (
+	defaultSizeThreshold = int64(200) << 20 // 200MB
+	slowSizeThreshold    = int64(200) << 20 // 10KB
+)
 
 type WalkFunc func(filePath string, info os.FileInfo, opener analyzer.Opener) error
 
