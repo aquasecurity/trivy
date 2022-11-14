@@ -22,7 +22,7 @@ func TestParse(t *testing.T) {
 		{
 			file: "testdata/ExampleApp1.deps.json",
 			want: []types.Library{
-				{Name: "Newtonsoft.Json", Version: "13.0.1"},
+				{Name: "Newtonsoft.Json", Version: "13.0.1", Locations: []types.Location{{StartLine: 33, EndLine: 39}}},
 			},
 		},
 		{
@@ -31,7 +31,7 @@ func TestParse(t *testing.T) {
 		},
 		{
 			file:    "testdata/InvalidJson.deps.json",
-			wantErr: "failed to decode .deps.json file: unexpected EOF",
+			wantErr: "failed to decode .deps.json file: EOF",
 		},
 	}
 

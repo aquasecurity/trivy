@@ -1,7 +1,8 @@
 package core_deps
 
 import (
-	"encoding/json"
+	"github.com/liamg/jfather"
+	"io"
 	"strings"
 
 	"golang.org/x/xerrors"
@@ -21,10 +22,12 @@ func NewParser() types.Parser {
 func (p *Parser) Parse(r dio.ReadSeekerAt) ([]types.Library, []types.Dependency, error) {
 	var depsFile dotNetDependencies
 
-	decoder := json.NewDecoder(r)
-
-	if err := decoder.Decode(&depsFile); err != nil {
-		return nil, nil, xerrors.Errorf("failed to decode .deps.json file: %s", err.Error())
+	input, err := io.ReadAll(r)
+	if err != nil {
+		return nil, nil, xerrors.Errorf("read error: %w", err)
+	}
+	if err := jfather.Unmarshal(input, &depsFile); err != nil {
+		return nil, nil, xerrors.Errorf("failed to decode .deps.json file: %w", err)
 	}
 
 	var libraries []types.Library
@@ -41,8 +44,9 @@ func (p *Parser) Parse(r dio.ReadSeekerAt) ([]types.Library, []types.Dependency,
 		}
 
 		libraries = append(libraries, types.Library{
-			Name:    split[0],
-			Version: split[1],
+			Name:      split[0],
+			Version:   split[1],
+			Locations: []types.Location{{StartLine: lib.StartLine, EndLine: lib.EndLine}},
 		})
 	}
 
@@ -54,5 +58,18 @@ type dotNetDependencies struct {
 }
 
 type dotNetLibrary struct {
-	Type string `json:"type"`
+	Type      string `json:"type"`
+	StartLine int
+	EndLine   int
+}
+
+// UnmarshalJSONWithMetadata needed to detect start and end lines of deps
+func (t *dotNetLibrary) UnmarshalJSONWithMetadata(node jfather.Node) error {
+	if err := node.Decode(&t); err != nil {
+		return err
+	}
+	// Decode func will overwrite line numbers if we save them first
+	t.StartLine = node.Range().Start.Line
+	t.EndLine = node.Range().End.Line
+	return nil
 }
