@@ -39,7 +39,12 @@ func (n familiarNamed) Name() string {
 }
 
 func (n familiarNamed) Tag() string {
-	return strings.Split(string(n), ":")[1]
+	s := strings.Split(string(n), ":")
+	if len(s) < 2 {
+		return ""
+	}
+
+	return s[1]
 }
 
 func (n familiarNamed) String() string {

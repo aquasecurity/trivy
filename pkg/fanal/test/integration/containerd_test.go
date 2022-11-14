@@ -17,6 +17,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 
 	"github.com/containerd/containerd"
+	"github.com/containerd/containerd/images"
 	"github.com/containerd/containerd/namespaces"
 	v1 "github.com/google/go-containerregistry/pkg/v1"
 	"github.com/stretchr/testify/assert"
@@ -83,51 +84,53 @@ func TestContainerd_SearchLocalStoreByNameOrDigest(t *testing.T) {
 		name       string
 		imageName  string
 		searchName string
-		digest     bool
 		expectErr  bool
 	}
+
+	digest := "sha256:f12582b2f2190f350e3904462c1c23aaf366b4f76705e97b199f9bbded1d816a"
+	basename := "hello"
+	tag := "world"
+	importedImageOriginalName := "ghcr.io/aquasecurity/trivy-test-images:alpine-310"
 
 	tests := []testInstance{
 		{
 			name:       "familiarName:tag",
-			imageName:  "hello:world",
-			searchName: "hello:world",
+			imageName:  fmt.Sprintf("%s:%s", basename, tag),
+			searchName: fmt.Sprintf("%s:%s", basename, tag),
 		},
 		{
 			name:       "compound/name:tag",
-			imageName:  "say/hello:world",
-			searchName: "say/hello:world",
+			imageName:  fmt.Sprintf("say/%s:%s", basename, tag),
+			searchName: fmt.Sprintf("say/%s:%s", basename, tag),
 		},
 		{
 			name:       "docker.io/library/name:tag",
-			imageName:  "docker.io/library/hello:world",
-			searchName: "docker.io/library/hello:world",
+			imageName:  fmt.Sprintf("docker.io/library/%s:%s", basename, tag),
+			searchName: fmt.Sprintf("docker.io/library/%s:%s", basename, tag),
 		},
 		{
 			name:       "other-registry.io/library/name:tag",
-			imageName:  "other-registry.io/library/hello:world",
-			searchName: "other-registry.io/library/hello:world",
+			imageName:  fmt.Sprintf("other-registry.io/library/%s:%s", basename, tag),
+			searchName: fmt.Sprintf("other-registry.io/library/%s:%s", basename, tag),
 		},
 		{
-			name:       "other-registry.io/library/wrong:wrongTag should fail",
-			imageName:  "other-registry.io/library/hello:world",
-			searchName: "other-registry.io/library/hello:badtag",
+			name:       "other-registry.io/library/name:wrongTag should fail",
+			imageName:  fmt.Sprintf("other-registry.io/library/%s:%s", basename, tag),
+			searchName: fmt.Sprintf("other-registry.io/library/%s:badtag", basename),
 			expectErr:  true,
 		},
 		{
 			name:       "other-registry.io/library/wrongName:tag should fail",
-			imageName:  "other-registry.io/library/hello:world",
-			searchName: "other-registry.io/library/badname:world",
+			imageName:  fmt.Sprintf("other-registry.io/library/%s:%s", basename, tag),
+			searchName: fmt.Sprintf("other-registry.io/library/badname:%s", tag),
 			expectErr:  true,
 		},
 		{
-			digest:     true,
 			name:       "digest should succeed",
 			imageName:  "",
-			searchName: "sha256:63775b87d672bd68c667a244bf7664a5b26f1f8973662b7dd730e2170b1ff2bf",
+			searchName: digest,
 		},
 		{
-			digest:     true,
 			name:       "wrong digest should fail",
 			imageName:  "",
 			searchName: "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
@@ -135,34 +138,34 @@ func TestContainerd_SearchLocalStoreByNameOrDigest(t *testing.T) {
 		},
 		{
 			name:       "name@digest",
-			imageName:  "hello@sha256:63775b87d672bd68c667a244bf7664a5b26f1f8973662b7dd730e2170b1ff2bf",
-			searchName: "hello@sha256:63775b87d672bd68c667a244bf7664a5b26f1f8973662b7dd730e2170b1ff2bf",
+			imageName:  fmt.Sprintf("%s:%s", basename, tag),
+			searchName: fmt.Sprintf("hello@%s", digest),
 		},
 		{
 			name:       "compound/name@digest",
-			imageName:  "hello@sha256:63775b87d672bd68c667a244bf7664a5b26f1f8973662b7dd730e2170b1ff2bf",
-			searchName: "hello@sha256:63775b87d672bd68c667a244bf7664a5b26f1f8973662b7dd730e2170b1ff2bf",
+			imageName:  fmt.Sprintf("compound/%s:%s", basename, tag),
+			searchName: fmt.Sprintf("compound/%s@%s", basename, digest),
 		},
 		{
 			name:       "docker.io/library/name@digest",
-			imageName:  "docker.io/library/name@sha256:63775b87d672bd68c667a244bf7664a5b26f1f8973662b7dd730e2170b1ff2bf",
-			searchName: "docker.io/library/name@sha256:63775b87d672bd68c667a244bf7664a5b26f1f8973662b7dd730e2170b1ff2bf",
+			imageName:  fmt.Sprintf("docker.io/library/%s:%s", basename, tag),
+			searchName: fmt.Sprintf("docker.io/library/%s@%s", basename, digest),
 		},
 		{
 			name:       "otherdomain.io/name@digest",
-			imageName:  "otherdomain.io/name@sha256:63775b87d672bd68c667a244bf7664a5b26f1f8973662b7dd730e2170b1ff2bf",
-			searchName: "otherdomain.io/name@sha256:63775b87d672bd68c667a244bf7664a5b26f1f8973662b7dd730e2170b1ff2bf",
+			imageName:  fmt.Sprintf("otherdomain.io/%s:%s", basename, tag),
+			searchName: fmt.Sprintf("otherdomain.io/%s@%s", basename, digest),
 		},
 		{
 			name:       "wrongName@digest should fail",
-			imageName:  "hello@sha256:63775b87d672bd68c667a244bf7664a5b26f1f8973662b7dd730e2170b1ff2bf",
-			searchName: "badname@sha256:63775b87d672bd68c667a244bf7664a5b26f1f8973662b7dd730e2170b1ff2bf",
+			imageName:  fmt.Sprintf("%s:%s", basename, tag),
+			searchName: fmt.Sprintf("badname@%s", digest),
 			expectErr:  true,
 		},
 		{
 			name:       "compound/wrongName@digest should fail",
-			imageName:  "compound/name@sha256:63775b87d672bd68c667a244bf7664a5b26f1f8973662b7dd730e2170b1ff2bf",
-			searchName: "compound/badname@sha256:63775b87d672bd68c667a244bf7664a5b26f1f8973662b7dd730e2170b1ff2bf",
+			imageName:  fmt.Sprintf("compound/%s:%s", basename, tag),
+			searchName: fmt.Sprintf("compound/badname@%s", digest),
 			expectErr:  true,
 		},
 	}
@@ -192,14 +195,30 @@ func TestContainerd_SearchLocalStoreByNameOrDigest(t *testing.T) {
 			c, err := cache.NewFSCache(cacheDir)
 			require.NoError(t, err)
 
-			names := []containerd.ImportOpt{containerd.WithIndexName(tt.imageName)}
-			if tt.digest {
-				names = []containerd.ImportOpt{}
-			}
-
-			imgs, err := client.Import(ctx, uncompressedArchive, names...)
+			imgs, err := client.Import(ctx, uncompressedArchive)
 			require.NoError(t, err)
 			_ = imgs
+
+			digestTest := tt.imageName == ""
+
+			if !digestTest {
+				// Tag the image, taken from the code in `ctr image tag...`
+				imgs[0].Name = tt.imageName
+				_, err = client.ImageService().Create(ctx, imgs[0])
+				require.NoError(t, err)
+
+				// Remove the image by its original name, to ensure the image
+				// is known only by the tag we have given it.
+				err = client.ImageService().Delete(ctx, importedImageOriginalName, images.SynchronousDelete())
+				require.NoError(t, err)
+			}
+
+			t.Cleanup(func() {
+				for _, img := range imgs {
+					err = client.ImageService().Delete(ctx, img.Name, images.SynchronousDelete())
+					require.NoError(t, err)
+				}
+			})
 
 			img, cleanup, err := image.NewContainerImage(ctx, tt.searchName, types.DockerOption{},
 				image.DisableDockerd(), image.DisablePodman(), image.DisableRemote())
@@ -216,7 +235,7 @@ func TestContainerd_SearchLocalStoreByNameOrDigest(t *testing.T) {
 			ref, err := ar.Inspect(ctx)
 			require.NoError(t, err)
 
-			if tt.digest {
+			if digestTest {
 				actualDigest := strings.Split(ref.ImageMetadata.RepoDigests[0], "@")[1]
 				require.Equal(t, tt.searchName, actualDigest)
 				return
