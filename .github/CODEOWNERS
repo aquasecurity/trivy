@@ -1,18 +1,27 @@
 # Global
 *   @knqyf263
 
+# Docs
+/docs/community/ @knqyf263 @AnaisUrlichs @itaysk
+/docs/ecosystem/ @knqyf263 @AnaisUrlichs @itaysk
+/docs/getting-started/ @knqyf263 @AnaisUrlichs @itaysk
+/docs/tutorials/ @knqyf263 @AnaisUrlichs @itaysk
+/mkdocs.yml @knqyf263 @AnaisUrlichs @itaysk
+/docs/index.md @knqyf263 @AnaisUrlichs @itaysk
+/README.md @knqyf263 @AnaisUrlichs @itaysk
+
 # Helm chart
-helm/trivy/ @krol3
+helm/trivy/ @chen-keinan
 
 # Misconfiguration scanning
-examples/misconf/           @owenrumney @liamg @knqyf263
-docs/docs/misconfiguration  @owenrumney @liamg @knqyf263
-docs/docs/cloud             @owenrumney @liamg @knqyf263
-pkg/fanal/analyzer/config   @owenrumney @liamg @knqyf263
-pkg/fanal/handler/misconf   @owenrumney @liamg @knqyf263
-pkg/cloud                   @owenrumney @liamg @knqyf263
-pkg/flag/aws_flags.go       @owenrumney @liamg @knqyf263
-pkg/flag/misconf_flags.go   @owenrumney @liamg @knqyf263
+examples/misconf/           @knqyf263
+docs/docs/misconfiguration  @knqyf263
+docs/docs/cloud             @knqyf263
+pkg/fanal/analyzer/config   @knqyf263
+pkg/fanal/handler/misconf   @knqyf263
+pkg/cloud                   @knqyf263
+pkg/flag/aws_flags.go       @knqyf263
+pkg/flag/misconf_flags.go   @knqyf263
 
 # Kubernetes scanning
 pkg/k8s/                @josedonizetti @chen-keinan @knqyf263

@@ -37,6 +37,7 @@ const (
 	PropertyRepoTag    = "RepoTag"
 
 	// Package properties
+	PropertyPkgID           = "PkgID"
 	PropertyPkgType         = "PkgType"
 	PropertySrcName         = "SrcName"
 	PropertySrcVersion      = "SrcVersion"
@@ -436,6 +437,7 @@ func cdxProperties(pkgType string, pkg ftypes.Package) *[]cdx.Property {
 		name  string
 		value string
 	}{
+		{PropertyPkgID, pkg.ID},
 		{PropertyPkgType, pkgType},
 		{PropertyFilePath, pkg.FilePath},
 		{PropertySrcName, pkg.SrcName},

@@ -1,29 +1,55 @@
 [
   {
+    "ID": ".composer-phpext-rundeps@0",
     "Name": ".composer-phpext-rundeps",
     "Version": "0",
+    "DependsOn": [
+      "libsodium@1.0.15-r0",
+      "musl@1.1.18-r3",
+      "zlib@1.2.11-r1"
+    ],
     "Layer": {
       "Digest": "sha256:1eea04acda91d39256def9ea27cb33007e243a1b4f7f8908bcfd9d3de376905d",
       "DiffID": "sha256:2f4a5c9187c249834ebc28783bd3c65bdcbacaa8baa6620ddaa27846dd3ef708"
     }
   },
   {
+    "ID": ".persistent-deps@0",
     "Name": ".persistent-deps",
     "Version": "0",
+    "DependsOn": [
+      "ca-certificates@20171114-r0",
+      "curl@7.61.0-r0",
+      "libressl@2.6.5-r0",
+      "tar@1.29-r1",
+      "xz@5.2.3-r1"
+    ],
     "Layer": {
       "Digest": "sha256:88777455d910410652665cec0149a02db3584d6dc26e306788a3532d480b00ae",
       "DiffID": "sha256:0ea33a93585cf1917ba522b2304634c3073654062d5282c1346322967790ef33"
     }
   },
   {
+    "ID": ".php-rundeps@0",
     "Name": ".php-rundeps",
     "Version": "0",
+    "DependsOn": [
+      "libcurl@7.61.1-r0",
+      "libedit@20170329.3.1-r3",
+      "libressl2.6-libcrypto@2.6.5-r0",
+      "libressl2.6-libssl@2.6.5-r0",
+      "libsodium@1.0.15-r0",
+      "libxml2@2.9.7-r0",
+      "musl@1.1.18-r3",
+      "zlib@1.2.11-r1"
+    ],
     "Layer": {
       "Digest": "sha256:3d6152f6ac208640f9fb494d1c379fe508db1fc5754cd08fefec200bddd13e0e",
       "DiffID": "sha256:6408527580eade39c2692dbb6b0f6a9321448d06ea1c2eef06bb7f37da9c5013"
     }
   },
   {
+    "ID": "alpine-baselayout@3.0.5-r2",
     "Name": "alpine-baselayout",
     "Version": "3.0.5-r2",
     "SrcName": "alpine-baselayout",
@@ -31,12 +57,17 @@
     "Licenses": [
       "GPL-2.0"
     ],
+    "DependsOn": [
+      "busybox@1.27.2-r11",
+      "musl@1.1.18-r3"
+    ],
     "Layer": {
       "Digest": "sha256:c67f3896b22c1378881cbbb9c9d1edfe881fd07f713371835ef46d93c649684d",
       "DiffID": "sha256:ebf12965380b39889c99a9c02e82ba465f887b45975b6e389d42e9e6a3857888"
     }
   },
   {
+    "ID": "alpine-keys@2.1-r1",
     "Name": "alpine-keys",
     "Version": "2.1-r1",
     "SrcName": "alpine-keys",
@@ -50,6 +81,7 @@
     }
   },
   {
+    "ID": "apk-tools@2.10.1-r0",
     "Name": "apk-tools",
     "Version": "2.10.1-r0",
     "SrcName": "apk-tools",
@@ -57,12 +89,19 @@
     "Licenses": [
       "GPL-2.0"
     ],
+    "DependsOn": [
+      "libressl2.6-libcrypto@2.6.5-r0",
+      "libressl2.6-libssl@2.6.5-r0",
+      "musl@1.1.18-r3",
+      "zlib@1.2.11-r1"
+    ],
     "Layer": {
       "Digest": "sha256:c67f3896b22c1378881cbbb9c9d1edfe881fd07f713371835ef46d93c649684d",
       "DiffID": "sha256:ebf12965380b39889c99a9c02e82ba465f887b45975b6e389d42e9e6a3857888"
     }
   },
   {
+    "ID": "apr@1.6.3-r0",
     "Name": "apr",
     "Version": "1.6.3-r0",
     "SrcName": "apr",
@@ -70,12 +109,17 @@
     "Licenses": [
       "ASL2.0"
     ],
+    "DependsOn": [
+      "libuuid@2.31-r0",
+      "musl@1.1.18-r3"
+    ],
     "Layer": {
       "Digest": "sha256:c191915691a422a1b0230c9010165ff655204a9fd95e3b43151132bcb237826b",
       "DiffID": "sha256:2da3602d664dd3f71fae83cbc566d4e80b432c6ee8bb4efd94c8e85122f503d4"
     }
   },
   {
+    "ID": "apr-util@1.6.1-r1",
     "Name": "apr-util",
     "Version": "1.6.1-r1",
     "SrcName": "apr-util",
@@ -83,12 +127,19 @@
     "Licenses": [
       "ASL2.0"
     ],
+    "DependsOn": [
+      "apr@1.6.3-r0",
+      "expat@2.2.5-r0",
+      "libressl2.6-libcrypto@2.6.5-r0",
+      "musl@1.1.18-r3"
+    ],
     "Layer": {
       "Digest": "sha256:c191915691a422a1b0230c9010165ff655204a9fd95e3b43151132bcb237826b",
       "DiffID": "sha256:2da3602d664dd3f71fae83cbc566d4e80b432c6ee8bb4efd94c8e85122f503d4"
     }
   },
   {
+    "ID": "bash@4.4.19-r1",
     "Name": "bash",
     "Version": "4.4.19-r1",
     "SrcName": "bash",
@@ -96,12 +147,19 @@
     "Licenses": [
       "GPL-3.0"
     ],
+    "DependsOn": [
+      "busybox@1.27.2-r11",
+      "musl@1.1.18-r3",
+      "pkgconf@1.3.10-r0",
+      "readline@7.0.003-r0"
+    ],
     "Layer": {
       "Digest": "sha256:c191915691a422a1b0230c9010165ff655204a9fd95e3b43151132bcb237826b",
       "DiffID": "sha256:2da3602d664dd3f71fae83cbc566d4e80b432c6ee8bb4efd94c8e85122f503d4"
     }
   },
   {
+    "ID": "busybox@1.27.2-r11",
     "Name": "busybox",
     "Version": "1.27.2-r11",
     "SrcName": "busybox",
@@ -109,12 +167,16 @@
     "Licenses": [
       "GPL-2.0"
     ],
+    "DependsOn": [
+      "musl@1.1.18-r3"
+    ],
     "Layer": {
       "Digest": "sha256:c67f3896b22c1378881cbbb9c9d1edfe881fd07f713371835ef46d93c649684d",
       "DiffID": "sha256:ebf12965380b39889c99a9c02e82ba465f887b45975b6e389d42e9e6a3857888"
     }
   },
   {
+    "ID": "ca-certificates@20171114-r0",
     "Name": "ca-certificates",
     "Version": "20171114-r0",
     "SrcName": "ca-certificates",
@@ -123,12 +185,18 @@
       "MPL-2.0",
       "GPL-2.0"
     ],
+    "DependsOn": [
+      "busybox@1.27.2-r11",
+      "libressl2.6-libcrypto@2.6.5-r0",
+      "musl@1.1.18-r3"
+    ],
     "Layer": {
       "Digest": "sha256:88777455d910410652665cec0149a02db3584d6dc26e306788a3532d480b00ae",
       "DiffID": "sha256:0ea33a93585cf1917ba522b2304634c3073654062d5282c1346322967790ef33"
     }
   },
   {
+    "ID": "curl@7.61.0-r0",
     "Name": "curl",
     "Version": "7.61.0-r0",
     "SrcName": "curl",
@@ -136,12 +204,19 @@
     "Licenses": [
       "MIT"
     ],
+    "DependsOn": [
+      "ca-certificates@20171114-r0",
+      "libcurl@7.61.1-r0",
+      "musl@1.1.18-r3",
+      "zlib@1.2.11-r1"
+    ],
     "Layer": {
       "Digest": "sha256:88777455d910410652665cec0149a02db3584d6dc26e306788a3532d480b00ae",
       "DiffID": "sha256:0ea33a93585cf1917ba522b2304634c3073654062d5282c1346322967790ef33"
     }
   },
   {
+    "ID": "db@5.3.28-r0",
     "Name": "db",
     "Version": "5.3.28-r0",
     "SrcName": "db",
@@ -149,12 +224,16 @@
     "Licenses": [
       "custom"
     ],
+    "DependsOn": [
+      "musl@1.1.18-r3"
+    ],
     "Layer": {
       "Digest": "sha256:c191915691a422a1b0230c9010165ff655204a9fd95e3b43151132bcb237826b",
       "DiffID": "sha256:2da3602d664dd3f71fae83cbc566d4e80b432c6ee8bb4efd94c8e85122f503d4"
     }
   },
   {
+    "ID": "expat@2.2.5-r0",
     "Name": "expat",
     "Version": "2.2.5-r0",
     "SrcName": "expat",
@@ -162,12 +241,16 @@
     "Licenses": [
       "MIT"
     ],
+    "DependsOn": [
+      "musl@1.1.18-r3"
+    ],
     "Layer": {
       "Digest": "sha256:c191915691a422a1b0230c9010165ff655204a9fd95e3b43151132bcb237826b",
       "DiffID": "sha256:2da3602d664dd3f71fae83cbc566d4e80b432c6ee8bb4efd94c8e85122f503d4"
     }
   },
   {
+    "ID": "gdbm@1.13-r1",
     "Name": "gdbm",
     "Version": "1.13-r1",
     "SrcName": "gdbm",
@@ -175,12 +258,16 @@
     "Licenses": [
       "GPL-3.0"
     ],
+    "DependsOn": [
+      "musl@1.1.18-r3"
+    ],
     "Layer": {
       "Digest": "sha256:c191915691a422a1b0230c9010165ff655204a9fd95e3b43151132bcb237826b",
       "DiffID": "sha256:2da3602d664dd3f71fae83cbc566d4e80b432c6ee8bb4efd94c8e85122f503d4"
     }
   },
   {
+    "ID": "git@2.15.2-r0",
     "Name": "git",
     "Version": "2.15.2-r0",
     "SrcName": "git",
@@ -188,12 +275,20 @@
     "Licenses": [
       "GPL-2.0"
     ],
+    "DependsOn": [
+      "expat@2.2.5-r0",
+      "libcurl@7.61.1-r0",
+      "musl@1.1.18-r3",
+      "pcre2@10.30-r0",
+      "zlib@1.2.11-r1"
+    ],
     "Layer": {
       "Digest": "sha256:c191915691a422a1b0230c9010165ff655204a9fd95e3b43151132bcb237826b",
       "DiffID": "sha256:2da3602d664dd3f71fae83cbc566d4e80b432c6ee8bb4efd94c8e85122f503d4"
     }
   },
   {
+    "ID": "libbz2@1.0.6-r6",
     "Name": "libbz2",
     "Version": "1.0.6-r6",
     "SrcName": "bzip2",
@@ -201,12 +296,16 @@
     "Licenses": [
       "BSD-3-Clause"
     ],
+    "DependsOn": [
+      "musl@1.1.18-r3"
+    ],
     "Layer": {
       "Digest": "sha256:c191915691a422a1b0230c9010165ff655204a9fd95e3b43151132bcb237826b",
       "DiffID": "sha256:2da3602d664dd3f71fae83cbc566d4e80b432c6ee8bb4efd94c8e85122f503d4"
     }
   },
   {
+    "ID": "libc-utils@0.7.1-r0",
     "Name": "libc-utils",
     "Version": "0.7.1-r0",
     "SrcName": "libc-dev",
@@ -214,12 +313,16 @@
     "Licenses": [
       "BSD-3-Clause"
     ],
+    "DependsOn": [
+      "musl-utils@1.1.18-r3"
+    ],
     "Layer": {
       "Digest": "sha256:c67f3896b22c1378881cbbb9c9d1edfe881fd07f713371835ef46d93c649684d",
       "DiffID": "sha256:ebf12965380b39889c99a9c02e82ba465f887b45975b6e389d42e9e6a3857888"
     }
   },
   {
+    "ID": "libcurl@7.61.1-r0",
     "Name": "libcurl",
     "Version": "7.61.1-r0",
     "SrcName": "curl",
@@ -227,12 +330,21 @@
     "Licenses": [
       "MIT"
     ],
+    "DependsOn": [
+      "ca-certificates@20171114-r0",
+      "libressl2.6-libcrypto@2.6.5-r0",
+      "libressl2.6-libssl@2.6.5-r0",
+      "libssh2@1.8.0-r2",
+      "musl@1.1.18-r3",
+      "zlib@1.2.11-r1"
+    ],
     "Layer": {
       "Digest": "sha256:3d6152f6ac208640f9fb494d1c379fe508db1fc5754cd08fefec200bddd13e0e",
       "DiffID": "sha256:6408527580eade39c2692dbb6b0f6a9321448d06ea1c2eef06bb7f37da9c5013"
     }
   },
   {
+    "ID": "libedit@20170329.3.1-r3",
     "Name": "libedit",
     "Version": "20170329.3.1-r3",
     "SrcName": "libedit",
@@ -240,12 +352,17 @@
     "Licenses": [
       "BSD-3-Clause"
     ],
+    "DependsOn": [
+      "musl@1.1.18-r3",
+      "ncurses-libs@6.0_p20171125-r1"
+    ],
     "Layer": {
       "Digest": "sha256:3d6152f6ac208640f9fb494d1c379fe508db1fc5754cd08fefec200bddd13e0e",
       "DiffID": "sha256:6408527580eade39c2692dbb6b0f6a9321448d06ea1c2eef06bb7f37da9c5013"
     }
   },
   {
+    "ID": "libffi@3.2.1-r4",
     "Name": "libffi",
     "Version": "3.2.1-r4",
     "SrcName": "libffi",
@@ -253,12 +370,16 @@
     "Licenses": [
       "MIT"
     ],
+    "DependsOn": [
+      "musl@1.1.18-r3"
+    ],
     "Layer": {
       "Digest": "sha256:c191915691a422a1b0230c9010165ff655204a9fd95e3b43151132bcb237826b",
       "DiffID": "sha256:2da3602d664dd3f71fae83cbc566d4e80b432c6ee8bb4efd94c8e85122f503d4"
     }
   },
   {
+    "ID": "libressl@2.6.5-r0",
     "Name": "libressl",
     "Version": "2.6.5-r0",
     "SrcName": "libressl",
@@ -266,12 +387,19 @@
     "Licenses": [
       "custom"
     ],
+    "DependsOn": [
+      "libressl2.6-libcrypto@2.6.5-r0",
+      "libressl2.6-libssl@2.6.5-r0",
+      "libressl2.6-libtls@2.6.5-r0",
+      "musl@1.1.18-r3"
+    ],
     "Layer": {
       "Digest": "sha256:88777455d910410652665cec0149a02db3584d6dc26e306788a3532d480b00ae",
       "DiffID": "sha256:0ea33a93585cf1917ba522b2304634c3073654062d5282c1346322967790ef33"
     }
   },
   {
+    "ID": "libressl2.6-libcrypto@2.6.5-r0",
     "Name": "libressl2.6-libcrypto",
     "Version": "2.6.5-r0",
     "SrcName": "libressl",
@@ -279,12 +407,16 @@
     "Licenses": [
       "custom"
     ],
+    "DependsOn": [
+      "musl@1.1.18-r3"
+    ],
     "Layer": {
       "Digest": "sha256:c67f3896b22c1378881cbbb9c9d1edfe881fd07f713371835ef46d93c649684d",
       "DiffID": "sha256:ebf12965380b39889c99a9c02e82ba465f887b45975b6e389d42e9e6a3857888"
     }
   },
   {
+    "ID": "libressl2.6-libssl@2.6.5-r0",
     "Name": "libressl2.6-libssl",
     "Version": "2.6.5-r0",
     "SrcName": "libressl",
@@ -292,12 +424,17 @@
     "Licenses": [
       "custom"
     ],
+    "DependsOn": [
+      "libressl2.6-libcrypto@2.6.5-r0",
+      "musl@1.1.18-r3"
+    ],
     "Layer": {
       "Digest": "sha256:c67f3896b22c1378881cbbb9c9d1edfe881fd07f713371835ef46d93c649684d",
       "DiffID": "sha256:ebf12965380b39889c99a9c02e82ba465f887b45975b6e389d42e9e6a3857888"
     }
   },
   {
+    "ID": "libressl2.6-libtls@2.6.5-r0",
     "Name": "libressl2.6-libtls",
     "Version": "2.6.5-r0",
     "SrcName": "libressl",
@@ -305,12 +442,18 @@
     "Licenses": [
       "custom"
     ],
+    "DependsOn": [
+      "libressl2.6-libcrypto@2.6.5-r0",
+      "libressl2.6-libssl@2.6.5-r0",
+      "musl@1.1.18-r3"
+    ],
     "Layer": {
       "Digest": "sha256:c67f3896b22c1378881cbbb9c9d1edfe881fd07f713371835ef46d93c649684d",
       "DiffID": "sha256:ebf12965380b39889c99a9c02e82ba465f887b45975b6e389d42e9e6a3857888"
     }
   },
   {
+    "ID": "libsasl@2.1.26-r11",
     "Name": "libsasl",
     "Version": "2.1.26-r11",
     "SrcName": "cyrus-sasl",
@@ -318,12 +461,17 @@
     "Licenses": [
       "custom"
     ],
+    "DependsOn": [
+      "db@5.3.28-r0",
+      "musl@1.1.18-r3"
+    ],
     "Layer": {
       "Digest": "sha256:c191915691a422a1b0230c9010165ff655204a9fd95e3b43151132bcb237826b",
       "DiffID": "sha256:2da3602d664dd3f71fae83cbc566d4e80b432c6ee8bb4efd94c8e85122f503d4"
     }
   },
   {
+    "ID": "libsodium@1.0.15-r0",
     "Name": "libsodium",
     "Version": "1.0.15-r0",
     "SrcName": "libsodium",
@@ -331,12 +479,16 @@
     "Licenses": [
       "ISC"
     ],
+    "DependsOn": [
+      "musl@1.1.18-r3"
+    ],
     "Layer": {
       "Digest": "sha256:3d6152f6ac208640f9fb494d1c379fe508db1fc5754cd08fefec200bddd13e0e",
       "DiffID": "sha256:6408527580eade39c2692dbb6b0f6a9321448d06ea1c2eef06bb7f37da9c5013"
     }
   },
   {
+    "ID": "libssh2@1.8.0-r2",
     "Name": "libssh2",
     "Version": "1.8.0-r2",
     "SrcName": "libssh2",
@@ -344,12 +496,18 @@
     "Licenses": [
       "BSD-3-Clause"
     ],
+    "DependsOn": [
+      "libressl2.6-libcrypto@2.6.5-r0",
+      "musl@1.1.18-r3",
+      "zlib@1.2.11-r1"
+    ],
     "Layer": {
       "Digest": "sha256:88777455d910410652665cec0149a02db3584d6dc26e306788a3532d480b00ae",
       "DiffID": "sha256:0ea33a93585cf1917ba522b2304634c3073654062d5282c1346322967790ef33"
     }
   },
   {
+    "ID": "libuuid@2.31-r0",
     "Name": "libuuid",
     "Version": "2.31-r0",
     "SrcName": "util-linux",
@@ -362,12 +520,16 @@
       "Public",
       "Domain"
     ],
+    "DependsOn": [
+      "musl@1.1.18-r3"
+    ],
     "Layer": {
       "Digest": "sha256:c191915691a422a1b0230c9010165ff655204a9fd95e3b43151132bcb237826b",
       "DiffID": "sha256:2da3602d664dd3f71fae83cbc566d4e80b432c6ee8bb4efd94c8e85122f503d4"
     }
   },
   {
+    "ID": "libxml2@2.9.7-r0",
     "Name": "libxml2",
     "Version": "2.9.7-r0",
     "SrcName": "libxml2",
@@ -375,12 +537,17 @@
     "Licenses": [
       "MIT"
     ],
+    "DependsOn": [
+      "musl@1.1.18-r3",
+      "zlib@1.2.11-r1"
+    ],
     "Layer": {
       "Digest": "sha256:3d6152f6ac208640f9fb494d1c379fe508db1fc5754cd08fefec200bddd13e0e",
       "DiffID": "sha256:6408527580eade39c2692dbb6b0f6a9321448d06ea1c2eef06bb7f37da9c5013"
     }
   },
   {
+    "ID": "mercurial@4.5.2-r0",
     "Name": "mercurial",
     "Version": "4.5.2-r0",
     "SrcName": "mercurial",
@@ -388,12 +555,17 @@
     "Licenses": [
       "GPL-2.0"
     ],
+    "DependsOn": [
+      "musl@1.1.18-r3",
+      "python2@2.7.15-r2"
+    ],
     "Layer": {
       "Digest": "sha256:c191915691a422a1b0230c9010165ff655204a9fd95e3b43151132bcb237826b",
       "DiffID": "sha256:2da3602d664dd3f71fae83cbc566d4e80b432c6ee8bb4efd94c8e85122f503d4"
     }
   },
   {
+    "ID": "musl@1.1.18-r3",
     "Name": "musl",
     "Version": "1.1.18-r3",
     "SrcName": "musl",
@@ -407,6 +579,7 @@
     }
   },
   {
+    "ID": "musl-utils@1.1.18-r3",
     "Name": "musl-utils",
     "Version": "1.1.18-r3",
     "SrcName": "musl",
@@ -416,12 +589,17 @@
       "BSD-3-Clause",
       "GPL-2.0"
     ],
+    "DependsOn": [
+      "musl@1.1.18-r3",
+      "scanelf@1.2.2-r1"
+    ],
     "Layer": {
       "Digest": "sha256:c67f3896b22c1378881cbbb9c9d1edfe881fd07f713371835ef46d93c649684d",
       "DiffID": "sha256:ebf12965380b39889c99a9c02e82ba465f887b45975b6e389d42e9e6a3857888"
     }
   },
   {
+    "ID": "ncurses-libs@6.0_p20171125-r1",
     "Name": "ncurses-libs",
     "Version": "6.0_p20171125-r1",
     "SrcName": "ncurses",
@@ -429,18 +607,10 @@
     "Licenses": [
       "MIT"
     ],
-    "Layer": {
-      "Digest": "sha256:3d6152f6ac208640f9fb494d1c379fe508db1fc5754cd08fefec200bddd13e0e",
-      "DiffID": "sha256:6408527580eade39c2692dbb6b0f6a9321448d06ea1c2eef06bb7f37da9c5013"
-    }
-  },
-  {
-    "Name": "ncurses-terminfo",
-    "Version": "6.0_p20171125-r1",
-    "SrcName": "ncurses",
-    "SrcVersion": "6.0_p20171125-r1",
-    "Licenses": [
-      "MIT"
+    "DependsOn": [
+      "musl@1.1.18-r3",
+      "ncurses-terminfo-base@6.0_p20171125-r1",
+      "ncurses-terminfo@6.0_p20171125-r1"
     ],
     "Layer": {
       "Digest": "sha256:3d6152f6ac208640f9fb494d1c379fe508db1fc5754cd08fefec200bddd13e0e",
@@ -448,6 +618,24 @@
     }
   },
   {
+    "ID": "ncurses-terminfo@6.0_p20171125-r1",
+    "Name": "ncurses-terminfo",
+    "Version": "6.0_p20171125-r1",
+    "SrcName": "ncurses",
+    "SrcVersion": "6.0_p20171125-r1",
+    "Licenses": [
+      "MIT"
+    ],
+    "DependsOn": [
+      "ncurses-terminfo-base@6.0_p20171125-r1"
+    ],
+    "Layer": {
+      "Digest": "sha256:3d6152f6ac208640f9fb494d1c379fe508db1fc5754cd08fefec200bddd13e0e",
+      "DiffID": "sha256:6408527580eade39c2692dbb6b0f6a9321448d06ea1c2eef06bb7f37da9c5013"
+    }
+  },
+  {
+    "ID": "ncurses-terminfo-base@6.0_p20171125-r1",
     "Name": "ncurses-terminfo-base",
     "Version": "6.0_p20171125-r1",
     "SrcName": "ncurses",
@@ -461,6 +649,7 @@
     }
   },
   {
+    "ID": "openssh@7.5_p1-r9",
     "Name": "openssh",
     "Version": "7.5_p1-r9",
     "SrcName": "openssh",
@@ -468,12 +657,20 @@
     "Licenses": [
       "as-is"
     ],
+    "DependsOn": [
+      "libressl2.6-libcrypto@2.6.5-r0",
+      "musl@1.1.18-r3",
+      "openssh-client@7.5_p1-r9",
+      "openssh-server@7.5_p1-r9",
+      "openssh-sftp-server@7.5_p1-r9"
+    ],
     "Layer": {
       "Digest": "sha256:c191915691a422a1b0230c9010165ff655204a9fd95e3b43151132bcb237826b",
       "DiffID": "sha256:2da3602d664dd3f71fae83cbc566d4e80b432c6ee8bb4efd94c8e85122f503d4"
     }
   },
   {
+    "ID": "openssh-client@7.5_p1-r9",
     "Name": "openssh-client",
     "Version": "7.5_p1-r9",
     "SrcName": "openssh",
@@ -481,12 +678,19 @@
     "Licenses": [
       "as-is"
     ],
+    "DependsOn": [
+      "libressl2.6-libcrypto@2.6.5-r0",
+      "musl@1.1.18-r3",
+      "openssh-keygen@7.5_p1-r9",
+      "zlib@1.2.11-r1"
+    ],
     "Layer": {
       "Digest": "sha256:c191915691a422a1b0230c9010165ff655204a9fd95e3b43151132bcb237826b",
       "DiffID": "sha256:2da3602d664dd3f71fae83cbc566d4e80b432c6ee8bb4efd94c8e85122f503d4"
     }
   },
   {
+    "ID": "openssh-keygen@7.5_p1-r9",
     "Name": "openssh-keygen",
     "Version": "7.5_p1-r9",
     "SrcName": "openssh",
@@ -494,18 +698,9 @@
     "Licenses": [
       "as-is"
     ],
-    "Layer": {
-      "Digest": "sha256:c191915691a422a1b0230c9010165ff655204a9fd95e3b43151132bcb237826b",
-      "DiffID": "sha256:2da3602d664dd3f71fae83cbc566d4e80b432c6ee8bb4efd94c8e85122f503d4"
-    }
-  },
-  {
-    "Name": "openssh-server",
-    "Version": "7.5_p1-r9",
-    "SrcName": "openssh",
-    "SrcVersion": "7.5_p1-r9",
-    "Licenses": [
-      "as-is"
+    "DependsOn": [
+      "libressl2.6-libcrypto@2.6.5-r0",
+      "musl@1.1.18-r3"
     ],
     "Layer": {
       "Digest": "sha256:c191915691a422a1b0230c9010165ff655204a9fd95e3b43151132bcb237826b",
@@ -513,6 +708,28 @@
     }
   },
   {
+    "ID": "openssh-server@7.5_p1-r9",
+    "Name": "openssh-server",
+    "Version": "7.5_p1-r9",
+    "SrcName": "openssh",
+    "SrcVersion": "7.5_p1-r9",
+    "Licenses": [
+      "as-is"
+    ],
+    "DependsOn": [
+      "libressl2.6-libcrypto@2.6.5-r0",
+      "musl@1.1.18-r3",
+      "openssh-keygen@7.5_p1-r9",
+      "openssh-server-common@7.5_p1-r9",
+      "zlib@1.2.11-r1"
+    ],
+    "Layer": {
+      "Digest": "sha256:c191915691a422a1b0230c9010165ff655204a9fd95e3b43151132bcb237826b",
+      "DiffID": "sha256:2da3602d664dd3f71fae83cbc566d4e80b432c6ee8bb4efd94c8e85122f503d4"
+    }
+  },
+  {
+    "ID": "openssh-server-common@7.5_p1-r9",
     "Name": "openssh-server-common",
     "Version": "7.5_p1-r9",
     "SrcName": "openssh",
@@ -526,6 +743,7 @@
     }
   },
   {
+    "ID": "openssh-sftp-server@7.5_p1-r9",
     "Name": "openssh-sftp-server",
     "Version": "7.5_p1-r9",
     "SrcName": "openssh",
@@ -533,12 +751,16 @@
     "Licenses": [
       "as-is"
     ],
+    "DependsOn": [
+      "musl@1.1.18-r3"
+    ],
     "Layer": {
       "Digest": "sha256:c191915691a422a1b0230c9010165ff655204a9fd95e3b43151132bcb237826b",
       "DiffID": "sha256:2da3602d664dd3f71fae83cbc566d4e80b432c6ee8bb4efd94c8e85122f503d4"
     }
   },
   {
+    "ID": "patch@2.7.5-r2",
     "Name": "patch",
     "Version": "2.7.5-r2",
     "SrcName": "patch",
@@ -546,12 +768,16 @@
     "Licenses": [
       "GPL-3.0"
     ],
+    "DependsOn": [
+      "musl@1.1.18-r3"
+    ],
     "Layer": {
       "Digest": "sha256:c191915691a422a1b0230c9010165ff655204a9fd95e3b43151132bcb237826b",
       "DiffID": "sha256:2da3602d664dd3f71fae83cbc566d4e80b432c6ee8bb4efd94c8e85122f503d4"
     }
   },
   {
+    "ID": "pcre2@10.30-r0",
     "Name": "pcre2",
     "Version": "10.30-r0",
     "SrcName": "pcre2",
@@ -559,12 +785,16 @@
     "Licenses": [
       "BSD-3-Clause"
     ],
+    "DependsOn": [
+      "musl@1.1.18-r3"
+    ],
     "Layer": {
       "Digest": "sha256:c191915691a422a1b0230c9010165ff655204a9fd95e3b43151132bcb237826b",
       "DiffID": "sha256:2da3602d664dd3f71fae83cbc566d4e80b432c6ee8bb4efd94c8e85122f503d4"
     }
   },
   {
+    "ID": "pkgconf@1.3.10-r0",
     "Name": "pkgconf",
     "Version": "1.3.10-r0",
     "SrcName": "pkgconf",
@@ -572,12 +802,16 @@
     "Licenses": [
       "ISC"
     ],
+    "DependsOn": [
+      "musl@1.1.18-r3"
+    ],
     "Layer": {
       "Digest": "sha256:c191915691a422a1b0230c9010165ff655204a9fd95e3b43151132bcb237826b",
       "DiffID": "sha256:2da3602d664dd3f71fae83cbc566d4e80b432c6ee8bb4efd94c8e85122f503d4"
     }
   },
   {
+    "ID": "python2@2.7.15-r2",
     "Name": "python2",
     "Version": "2.7.15-r2",
     "SrcName": "python2",
@@ -585,12 +819,26 @@
     "Licenses": [
       "custom"
     ],
+    "DependsOn": [
+      "expat@2.2.5-r0",
+      "gdbm@1.13-r1",
+      "libbz2@1.0.6-r6",
+      "libffi@3.2.1-r4",
+      "libressl2.6-libcrypto@2.6.5-r0",
+      "libressl2.6-libssl@2.6.5-r0",
+      "musl@1.1.18-r3",
+      "ncurses-libs@6.0_p20171125-r1",
+      "readline@7.0.003-r0",
+      "sqlite-libs@3.21.0-r1",
+      "zlib@1.2.11-r1"
+    ],
     "Layer": {
       "Digest": "sha256:c191915691a422a1b0230c9010165ff655204a9fd95e3b43151132bcb237826b",
       "DiffID": "sha256:2da3602d664dd3f71fae83cbc566d4e80b432c6ee8bb4efd94c8e85122f503d4"
     }
   },
   {
+    "ID": "readline@7.0.003-r0",
     "Name": "readline",
     "Version": "7.0.003-r0",
     "SrcName": "readline",
@@ -598,12 +846,17 @@
     "Licenses": [
       "GPL-3.0"
     ],
+    "DependsOn": [
+      "musl@1.1.18-r3",
+      "ncurses-libs@6.0_p20171125-r1"
+    ],
     "Layer": {
       "Digest": "sha256:c191915691a422a1b0230c9010165ff655204a9fd95e3b43151132bcb237826b",
       "DiffID": "sha256:2da3602d664dd3f71fae83cbc566d4e80b432c6ee8bb4efd94c8e85122f503d4"
     }
   },
   {
+    "ID": "scanelf@1.2.2-r1",
     "Name": "scanelf",
     "Version": "1.2.2-r1",
     "SrcName": "pax-utils",
@@ -611,12 +864,16 @@
     "Licenses": [
       "GPL-2.0"
     ],
+    "DependsOn": [
+      "musl@1.1.18-r3"
+    ],
     "Layer": {
       "Digest": "sha256:c67f3896b22c1378881cbbb9c9d1edfe881fd07f713371835ef46d93c649684d",
       "DiffID": "sha256:ebf12965380b39889c99a9c02e82ba465f887b45975b6e389d42e9e6a3857888"
     }
   },
   {
+    "ID": "serf@1.3.9-r3",
     "Name": "serf",
     "Version": "1.3.9-r3",
     "SrcName": "serf",
@@ -624,12 +881,21 @@
     "Licenses": [
       "ASL2.0"
     ],
+    "DependsOn": [
+      "apr-util@1.6.1-r1",
+      "apr@1.6.3-r0",
+      "libressl2.6-libcrypto@2.6.5-r0",
+      "libressl2.6-libssl@2.6.5-r0",
+      "musl@1.1.18-r3",
+      "zlib@1.2.11-r1"
+    ],
     "Layer": {
       "Digest": "sha256:c191915691a422a1b0230c9010165ff655204a9fd95e3b43151132bcb237826b",
       "DiffID": "sha256:2da3602d664dd3f71fae83cbc566d4e80b432c6ee8bb4efd94c8e85122f503d4"
     }
   },
   {
+    "ID": "sqlite-libs@3.21.0-r1",
     "Name": "sqlite-libs",
     "Version": "3.21.0-r1",
     "SrcName": "sqlite",
@@ -637,12 +903,16 @@
     "Licenses": [
       "custom"
     ],
+    "DependsOn": [
+      "musl@1.1.18-r3"
+    ],
     "Layer": {
       "Digest": "sha256:c191915691a422a1b0230c9010165ff655204a9fd95e3b43151132bcb237826b",
       "DiffID": "sha256:2da3602d664dd3f71fae83cbc566d4e80b432c6ee8bb4efd94c8e85122f503d4"
     }
   },
   {
+    "ID": "ssl_client@1.27.2-r11",
     "Name": "ssl_client",
     "Version": "1.27.2-r11",
     "SrcName": "busybox",
@@ -650,12 +920,17 @@
     "Licenses": [
       "GPL-2.0"
     ],
+    "DependsOn": [
+      "libressl2.6-libtls@2.6.5-r0",
+      "musl@1.1.18-r3"
+    ],
     "Layer": {
       "Digest": "sha256:c67f3896b22c1378881cbbb9c9d1edfe881fd07f713371835ef46d93c649684d",
       "DiffID": "sha256:ebf12965380b39889c99a9c02e82ba465f887b45975b6e389d42e9e6a3857888"
     }
   },
   {
+    "ID": "subversion@1.9.7-r0",
     "Name": "subversion",
     "Version": "1.9.7-r0",
     "SrcName": "subversion",
@@ -664,12 +939,21 @@
       "Apache-2.0",
       "BSD-3-Clause"
     ],
+    "DependsOn": [
+      "apr-util@1.6.1-r1",
+      "apr@1.6.3-r0",
+      "busybox@1.27.2-r11",
+      "libsasl@2.1.26-r11",
+      "musl@1.1.18-r3",
+      "subversion-libs@1.9.7-r0"
+    ],
     "Layer": {
       "Digest": "sha256:c191915691a422a1b0230c9010165ff655204a9fd95e3b43151132bcb237826b",
       "DiffID": "sha256:2da3602d664dd3f71fae83cbc566d4e80b432c6ee8bb4efd94c8e85122f503d4"
     }
   },
   {
+    "ID": "subversion-libs@1.9.7-r0",
     "Name": "subversion-libs",
     "Version": "1.9.7-r0",
     "SrcName": "subversion",
@@ -678,12 +962,24 @@
       "Apache-2.0",
       "BSD-3-Clause"
     ],
+    "DependsOn": [
+      "apr-util@1.6.1-r1",
+      "apr@1.6.3-r0",
+      "db@5.3.28-r0",
+      "expat@2.2.5-r0",
+      "libsasl@2.1.26-r11",
+      "musl@1.1.18-r3",
+      "serf@1.3.9-r3",
+      "sqlite-libs@3.21.0-r1",
+      "zlib@1.2.11-r1"
+    ],
     "Layer": {
       "Digest": "sha256:c191915691a422a1b0230c9010165ff655204a9fd95e3b43151132bcb237826b",
       "DiffID": "sha256:2da3602d664dd3f71fae83cbc566d4e80b432c6ee8bb4efd94c8e85122f503d4"
     }
   },
   {
+    "ID": "tar@1.29-r1",
     "Name": "tar",
     "Version": "1.29-r1",
     "SrcName": "tar",
@@ -691,12 +987,16 @@
     "Licenses": [
       "GPL-3.0"
     ],
+    "DependsOn": [
+      "musl@1.1.18-r3"
+    ],
     "Layer": {
       "Digest": "sha256:88777455d910410652665cec0149a02db3584d6dc26e306788a3532d480b00ae",
       "DiffID": "sha256:0ea33a93585cf1917ba522b2304634c3073654062d5282c1346322967790ef33"
     }
   },
   {
+    "ID": "tini@0.16.1-r0",
     "Name": "tini",
     "Version": "0.16.1-r0",
     "SrcName": "tini",
@@ -704,12 +1004,16 @@
     "Licenses": [
       "MIT"
     ],
+    "DependsOn": [
+      "musl@1.1.18-r3"
+    ],
     "Layer": {
       "Digest": "sha256:c191915691a422a1b0230c9010165ff655204a9fd95e3b43151132bcb237826b",
       "DiffID": "sha256:2da3602d664dd3f71fae83cbc566d4e80b432c6ee8bb4efd94c8e85122f503d4"
     }
   },
   {
+    "ID": "xz@5.2.3-r1",
     "Name": "xz",
     "Version": "5.2.3-r1",
     "SrcName": "xz",
@@ -717,18 +1021,9 @@
     "Licenses": [
       "custom"
     ],
-    "Layer": {
-      "Digest": "sha256:88777455d910410652665cec0149a02db3584d6dc26e306788a3532d480b00ae",
-      "DiffID": "sha256:0ea33a93585cf1917ba522b2304634c3073654062d5282c1346322967790ef33"
-    }
-  },
-  {
-    "Name": "xz-libs",
-    "Version": "5.2.3-r1",
-    "SrcName": "xz",
-    "SrcVersion": "5.2.3-r1",
-    "Licenses": [
-      "custom"
+    "DependsOn": [
+      "musl@1.1.18-r3",
+      "xz-libs@5.2.3-r1"
     ],
     "Layer": {
       "Digest": "sha256:88777455d910410652665cec0149a02db3584d6dc26e306788a3532d480b00ae",
@@ -736,12 +1031,33 @@
     }
   },
   {
+    "ID": "xz-libs@5.2.3-r1",
+    "Name": "xz-libs",
+    "Version": "5.2.3-r1",
+    "SrcName": "xz",
+    "SrcVersion": "5.2.3-r1",
+    "Licenses": [
+      "custom"
+    ],
+    "DependsOn": [
+      "musl@1.1.18-r3"
+    ],
+    "Layer": {
+      "Digest": "sha256:88777455d910410652665cec0149a02db3584d6dc26e306788a3532d480b00ae",
+      "DiffID": "sha256:0ea33a93585cf1917ba522b2304634c3073654062d5282c1346322967790ef33"
+    }
+  },
+  {
+    "ID": "zlib@1.2.11-r1",
     "Name": "zlib",
     "Version": "1.2.11-r1",
     "SrcName": "zlib",
     "SrcVersion": "1.2.11-r1",
     "Licenses": [
       "Zlib"
+    ],
+    "DependsOn": [
+      "musl@1.1.18-r3"
     ],
     "Layer": {
       "Digest": "sha256:c67f3896b22c1378881cbbb9c9d1edfe881fd07f713371835ef46d93c649684d",

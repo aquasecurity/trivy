@@ -125,6 +125,7 @@ func (s *Scanner) Detect(osVer string, repo *ftypes.Repository, pkgs []ftypes.Pa
 			}
 			vulns = append(vulns, types.DetectedVulnerability{
 				VulnerabilityID:  adv.VulnerabilityID,
+				PkgID:            pkg.ID,
 				PkgName:          pkg.Name,
 				InstalledVersion: installed,
 				FixedVersion:     adv.FixedVersion,

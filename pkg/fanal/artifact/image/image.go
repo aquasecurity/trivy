@@ -64,7 +64,7 @@ func NewArtifact(img types.Image, c cache.ArtifactCache, opt artifact.Option) (a
 	return Artifact{
 		image:          img,
 		cache:          c,
-		walker:         walker.NewLayerTar(opt.SkipFiles, opt.SkipDirs),
+		walker:         walker.NewLayerTar(opt.SkipFiles, opt.SkipDirs, opt.Slow),
 		analyzer:       a,
 		handlerManager: handlerManager,
 
@@ -206,9 +206,24 @@ func (a Artifact) inspect(ctx context.Context, missingImage string, layerKeys, b
 	done := make(chan struct{})
 	errCh := make(chan error)
 
+	limit := semaphore.NewWeighted(parallel)
+	if a.artifactOption.Slow {
+		// Inspect layers in series
+		limit = semaphore.NewWeighted(1)
+	}
+
 	var osFound types.OS
 	for _, k := range layerKeys {
+		if err := limit.Acquire(ctx, 1); err != nil {
+			return xerrors.Errorf("semaphore acquire: %w", err)
+		}
+
 		go func(ctx context.Context, layerKey string) {
+			defer func() {
+				limit.Release(1)
+				done <- struct{}{}
+			}()
+
 			layer := layerKeyMap[layerKey]
 
 			// If it is a base layer, secret scanning should not be performed.
@@ -229,7 +244,6 @@ func (a Artifact) inspect(ctx context.Context, missingImage string, layerKeys, b
 			if layerInfo.OS != nil {
 				osFound = *layerInfo.OS
 			}
-			done <- struct{}{}
 		}(ctx, k)
 	}
 
@@ -266,6 +280,10 @@ func (a Artifact) inspectLayer(ctx context.Context, layerInfo LayerInfo, disable
 	opts := analyzer.AnalysisOptions{Offline: a.artifactOption.Offline}
 	result := analyzer.NewAnalysisResult()
 	limit := semaphore.NewWeighted(parallel)
+	if a.artifactOption.Slow {
+		// Analyze files in series
+		limit = semaphore.NewWeighted(1)
+	}
 
 	// Walk a tar layer
 	opqDirs, whFiles, err := a.walker.Walk(r, func(filePath string, info os.FileInfo, opener analyzer.Opener) error {

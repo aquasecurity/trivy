@@ -55,7 +55,7 @@ func NewArtifact(rootPath string, c cache.ArtifactCache, opt artifact.Option) (a
 	return Artifact{
 		rootPath:       filepath.Clean(rootPath),
 		cache:          c,
-		walker:         walker.NewFS(buildAbsPaths(rootPath, opt.SkipFiles), buildAbsPaths(rootPath, opt.SkipDirs)),
+		walker:         walker.NewFS(buildAbsPaths(rootPath, opt.SkipFiles), buildAbsPaths(rootPath, opt.SkipDirs), opt.Slow),
 		analyzer:       a,
 		handlerManager: handlerManager,
 
@@ -79,6 +79,10 @@ func (a Artifact) Inspect(ctx context.Context) (types.ArtifactReference, error) 
 	var wg sync.WaitGroup
 	result := analyzer.NewAnalysisResult()
 	limit := semaphore.NewWeighted(parallel)
+	if a.artifactOption.Slow {
+		// Analyze files in series
+		limit = semaphore.NewWeighted(1)
+	}
 
 	err := a.walker.Walk(a.rootPath, func(filePath string, info os.FileInfo, opener analyzer.Opener) error {
 		directory := a.rootPath
