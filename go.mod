@@ -62,7 +62,7 @@ require (
 	github.com/spf13/pflag v1.0.5
 	github.com/spf13/viper v1.13.0
 	github.com/stretchr/testify v1.8.1
-	github.com/testcontainers/testcontainers-go v0.13.0
+	github.com/testcontainers/testcontainers-go v0.15.0
 	github.com/tetratelabs/wazero v1.0.0-pre.3
 	github.com/twitchtv/twirp v8.1.2+incompatible
 	github.com/xlab/treeprint v1.1.0
@@ -357,7 +357,6 @@ require (
 	gopkg.in/warnings.v0 v0.1.2 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 	gotest.tools v2.2.0+incompatible
-	gotest.tools/v3 v3.2.0 // indirect
 	helm.sh/helm/v3 v3.10.0 // indirect
 	k8s.io/api v0.25.3 // indirect
 	k8s.io/apiextensions-apiserver v0.25.0 // indirect
