@@ -37,3 +37,8 @@ const (
 	// StatusException Passed represents the status of exception
 	StatusException MisconfStatus = "EXCEPTION"
 )
+
+// GetID retrun misconfig ID
+func (mc *DetectedMisconfiguration) GetID() string {
+	return mc.AVDID
+}

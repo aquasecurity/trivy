@@ -111,6 +111,7 @@ func loadPluginCommands() []*cobra.Command {
 				}
 				return nil
 			},
+			DisableFlagParsing: true,
 		}
 		commands = append(commands, cmd)
 	}
@@ -207,8 +208,8 @@ func NewRootCommand(version string, globalFlags *flag.GlobalFlagGroup) *cobra.Co
 
 func NewImageCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	reportFlagGroup := flag.NewReportFlagGroup()
-	reportFlagGroup.DependencyTree = nil // disable '--dependency-tree'
-	reportFlagGroup.ReportFormat = nil   // TODO: support --report summary
+	reportFlagGroup.ReportFormat = nil // TODO: support --report summary
+	reportFlagGroup.Compliance = nil   // disable '--compliance'
 
 	imageFlags := &flag.Flags{
 		CacheFlagGroup:         flag.NewCacheFlagGroup(),
@@ -247,7 +248,7 @@ func NewImageCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
   $ trivy image --format json --output result.json alpine:3.15
 
   # Generate a report in the CycloneDX format
-  $ trivy image --format cyclonedx --output result.cdx --security-checks none alpine:3.15`,
+  $ trivy image --format cyclonedx --output result.cdx alpine:3.15`,
 
 		// 'Args' cannot be used since it is called before PreRunE and viper is not configured yet.
 		// cmd.Args     -> cannot validate args here
@@ -283,6 +284,7 @@ func NewImageCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 func NewFilesystemCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	reportFlagGroup := flag.NewReportFlagGroup()
 	reportFlagGroup.ReportFormat = nil // TODO: support --report summary
+	reportFlagGroup.Compliance = nil   // disable '--compliance'
 
 	fsFlags := &flag.Flags{
 		CacheFlagGroup:         flag.NewCacheFlagGroup(),
@@ -336,12 +338,14 @@ func NewFilesystemCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 func NewRootfsCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	reportFlagGroup := flag.NewReportFlagGroup()
 	reportFlagGroup.ReportFormat = nil // TODO: support --report summary
+	reportFlagGroup.Compliance = nil   // disable '--compliance'
 
 	rootfsFlags := &flag.Flags{
 		CacheFlagGroup:         flag.NewCacheFlagGroup(),
 		DBFlagGroup:            flag.NewDBFlagGroup(),
 		LicenseFlagGroup:       flag.NewLicenseFlagGroup(),
 		MisconfFlagGroup:       flag.NewMisconfFlagGroup(),
+		RemoteFlagGroup:        flag.NewClientFlags(), // for client/server mode
 		RegoFlagGroup:          flag.NewRegoFlagGroup(),
 		ReportFlagGroup:        reportFlagGroup,
 		ScanFlagGroup:          flag.NewScanFlagGroup(),
@@ -389,6 +393,7 @@ func NewRootfsCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 func NewRepositoryCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	reportFlagGroup := flag.NewReportFlagGroup()
 	reportFlagGroup.ReportFormat = nil // TODO: support --report summary
+	reportFlagGroup.Compliance = nil   // disable '--compliance'
 
 	repoFlags := &flag.Flags{
 		CacheFlagGroup:         flag.NewCacheFlagGroup(),
@@ -535,6 +540,7 @@ func NewConfigCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	reportFlagGroup.IgnorePolicy = nil   // disable '--ignore-policy'
 	reportFlagGroup.ListAllPkgs = nil    // disable '--list-all-pkgs'
 	reportFlagGroup.ReportFormat = nil   // TODO: support --report summary
+	reportFlagGroup.Compliance = nil     // disable '--compliance'
 
 	scanFlags := &flag.ScanFlagGroup{
 		// Enable only '--skip-dirs' and '--skip-files' and disable other flags
@@ -741,7 +747,8 @@ func NewKubernetesCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 		"%s,%s,%s,%s",
 		types.SecurityCheckVulnerability,
 		types.SecurityCheckConfig,
-		types.SecurityCheckSecret, types.SecurityCheckRbac,
+		types.SecurityCheckSecret,
+		types.SecurityCheckRbac,
 	)
 	scanFlags.SecurityChecks = &securityChecks
 
@@ -760,7 +767,7 @@ func NewKubernetesCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:     "kubernetes [flags] { cluster | all | specific resources like kubectl. eg: pods, pod/NAME }",
 		Aliases: []string{"k8s"},
-		Short:   "scan kubernetes cluster",
+		Short:   "[EXPERIMENTAL] Scan kubernetes cluster",
 		Example: `  # cluster scanning
   $ trivy k8s --report summary cluster
 

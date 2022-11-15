@@ -133,7 +133,7 @@ func (s Scanner) Scan(ctx context.Context, target, artifactKey string, blobKeys 
 	}
 
 	// Scan IaC config files
-	if shouldScanMisconfig(options.SecurityChecks) {
+	if ShouldScanMisconfigOrRbac(options.SecurityChecks) {
 		configResults := s.misconfsToResults(artifactDetail.Misconfigurations)
 		results = append(results, configResults...)
 	}
@@ -535,6 +535,7 @@ func mergePkgs(pkgs, pkgsFromCommands []ftypes.Package) []ftypes.Package {
 	return pkgs
 }
 
-func shouldScanMisconfig(securityChecks []string) bool {
-	return slices.Contains(securityChecks, types.SecurityCheckConfig) || slices.Contains(securityChecks, types.SecurityCheckRbac)
+func ShouldScanMisconfigOrRbac(securityChecks []string) bool {
+	return slices.Contains(securityChecks, types.SecurityCheckConfig) ||
+		slices.Contains(securityChecks, types.SecurityCheckRbac)
 }

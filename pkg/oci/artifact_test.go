@@ -7,14 +7,15 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/aquasecurity/trivy/pkg/oci"
-	"github.com/aquasecurity/trivy/pkg/utils"
 	v1 "github.com/google/go-containerregistry/pkg/v1"
 	fakei "github.com/google/go-containerregistry/pkg/v1/fake"
 	"github.com/google/go-containerregistry/pkg/v1/tarball"
 	"github.com/google/go-containerregistry/pkg/v1/types"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+
+	"github.com/aquasecurity/trivy/pkg/oci"
+	"github.com/aquasecurity/trivy/pkg/utils"
 )
 
 type fakeLayer struct {

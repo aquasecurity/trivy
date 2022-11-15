@@ -492,3 +492,48 @@ func TestNewArchiveImage(t *testing.T) {
 		})
 	}
 }
+
+func TestDockerPlatformArguments(t *testing.T) {
+	tr := setupPrivateRegistry()
+	defer tr.Close()
+
+	serverAddr := tr.Listener.Addr().String()
+
+	type args struct {
+		option types.DockerOption
+	}
+	tests := []struct {
+		name    string
+		args    args
+		want    v1.Image
+		wantErr string
+	}{
+		{
+			name: "happy path with valid platform",
+			args: args{
+				option: types.DockerOption{
+					UserName:              "test",
+					Password:              "testpass",
+					NonSSL:                true,
+					InsecureSkipTLSVerify: true,
+					Platform:              "arm/linux",
+				},
+			},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			imageName := fmt.Sprintf("%s/library/alpine:3.10", serverAddr)
+
+			_, cleanup, err := NewContainerImage(context.Background(), imageName, tt.args.option)
+			defer cleanup()
+
+			if tt.wantErr != "" {
+				assert.NotNil(t, err)
+				assert.Contains(t, err.Error(), tt.wantErr, err)
+			} else {
+				assert.NoError(t, err)
+			}
+		})
+	}
+}

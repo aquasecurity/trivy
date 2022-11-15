@@ -11,9 +11,10 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/liamg/memoryfs"
 	"github.com/samber/lo"
 	"golang.org/x/xerrors"
+
+	"github.com/aquasecurity/memoryfs"
 
 	"github.com/aquasecurity/defsec/pkg/scanners/azure/arm"
 

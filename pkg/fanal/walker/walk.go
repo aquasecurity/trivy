@@ -15,25 +15,29 @@ var (
 	SystemDirs = []string{"proc", "sys", "dev"}
 )
 
-const ThresholdSize = int64(200) << 20
+const (
+	defaultSizeThreshold = int64(200) << 20 // 200MB
+	slowSizeThreshold    = int64(200) << 20 // 10KB
+)
 
 type WalkFunc func(filePath string, info os.FileInfo, opener analyzer.Opener) error
 
 type walker struct {
 	skipFiles []string
 	skipDirs  []string
+	slow      bool
 }
 
-func newWalker(skipFiles, skipDirs []string) walker {
+func newWalker(skipFiles, skipDirs []string, slow bool) walker {
 	var cleanSkipFiles, cleanSkipDirs []string
 	for _, skipFile := range skipFiles {
-		skipFile = filepath.Clean(filepath.ToSlash(skipFile))
+		skipFile = filepath.ToSlash(filepath.Clean(skipFile))
 		skipFile = strings.TrimLeft(skipFile, "/")
 		cleanSkipFiles = append(cleanSkipFiles, skipFile)
 	}
 
 	for _, skipDir := range append(skipDirs, SystemDirs...) {
-		skipDir = filepath.Clean(filepath.ToSlash(skipDir))
+		skipDir = filepath.ToSlash(filepath.Clean(skipDir))
 		skipDir = strings.TrimLeft(skipDir, "/")
 		cleanSkipDirs = append(cleanSkipDirs, skipDir)
 	}
@@ -41,6 +45,7 @@ func newWalker(skipFiles, skipDirs []string) walker {
 	return walker{
 		skipFiles: cleanSkipFiles,
 		skipDirs:  cleanSkipDirs,
+		slow:      slow,
 	}
 }
 

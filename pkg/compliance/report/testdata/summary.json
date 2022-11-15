@@ -1,0 +1,20 @@
+{
+  "ID": "1234",
+  "Title": "NSA",
+  "SummaryControls": [
+    {
+      "ID": "1.0",
+      "Name": "Non-root containers",
+      "Severity": "MEDIUM",
+      "TotalPass": 0,
+      "TotalFail": 1
+    },
+    {
+      "ID": "1.1",
+      "Name": "Immutable container file systems",
+      "Severity": "LOW",
+      "TotalPass": 0,
+      "TotalFail": 1
+    }
+  ]
+}

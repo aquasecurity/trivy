@@ -17,10 +17,13 @@ Examples:
   / # trivy rootfs /
 
 Scan Flags
-      --offline-scan             do not issue API requests to identify dependencies
-      --security-checks string   comma-separated list of what security issues to detect (vuln,config,secret) (default "vuln,secret")
-      --skip-dirs strings        specify the directories where the traversal is skipped
-      --skip-files strings       specify the file paths to skip traversal
+      --file-patterns strings     specify config file patterns
+      --offline-scan              do not issue API requests to identify dependencies
+      --rekor-url string          [EXPERIMENTAL] address of rekor STL server (default "https://rekor.sigstore.dev")
+      --sbom-sources strings      [EXPERIMENTAL] try to retrieve SBOM from the specified sources (rekor)
+      --security-checks strings   comma-separated list of what security issues to detect (vuln,config,secret,license) (default [vuln,secret])
+      --skip-dirs strings         specify the directories where the traversal is skipped
+      --skip-files strings        specify the file paths to skip traversal
 
 Report Flags
       --dependency-tree        show dependency origin tree (EXPERIMENTAL)
@@ -53,12 +56,12 @@ Vulnerability Flags
       --vuln-type string   comma-separated list of vulnerability types (os,library) (default "os,library")
 
 Misconfiguration Flags
-      --config-data strings         specify paths from which data for the Rego policies will be recursively loaded
-      --config-policy strings       specify paths to the Rego policy files directory, applying config files
-      --file-patterns strings       specify config file patterns, available with '--security-checks config'
-      --include-non-failures        include successes and exceptions, available with '--security-checks config'
-      --policy-namespaces strings   Rego namespaces
-      --trace                       enable more verbose trace output for custom queries
+      --helm-set strings          specify Helm values on the command line (can specify multiple or separate values with commas: key1=val1,key2=val2)
+      --helm-set-file strings     specify Helm values from respective files specified via the command line (can specify multiple or separate values with commas: key1=path1,key2=path2)
+      --helm-set-string strings   specify Helm string values on the command line (can specify multiple or separate values with commas: key1=val1,key2=val2)
+      --helm-values strings       specify paths to override the Helm values.yaml files
+      --include-non-failures      include successes and exceptions, available with '--security-checks config'
+      --tf-vars strings           specify paths to override the Terraform tfvars files
 
 Secret Flags
       --secret-config string   specify a path to config file for secret scanning (default "trivy-secret.yaml")
@@ -66,6 +69,18 @@ Secret Flags
 License Flags
       --ignored-licenses strings   specify a list of license to ignore
       --license-full               eagerly look for licenses in source code headers and license files
+
+Rego Flags
+      --config-data strings         specify paths from which data for the Rego policies will be recursively loaded
+      --config-policy strings       specify paths to the Rego policy files directory, applying config files
+      --policy-namespaces strings   Rego namespaces
+      --trace                       enable more verbose trace output for custom queries
+
+Client/Server Flags
+      --custom-headers strings   custom headers in client mode
+      --server string            server address in client mode
+      --token string             for authentication in client/server mode
+      --token-header string      specify a header name for token in client/server mode (default "Trivy-Token")
 
 Global Flags:
       --cache-dir string          cache directory (default "/Users/teppei/Library/Caches/trivy")

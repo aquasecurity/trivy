@@ -30,6 +30,7 @@
 		{
 			"SPDXID": "SPDXRef-Package-5a18334f22149877",
 			"attributionTexts": [
+				"PkgID: bash@4.2.46-31.el7.x86_64",
 				"LayerDigest: sha256:ac9208207adaac3a48e54a4dc6b49c69e78c3072d2b3add7efdabf814db2133b",
 				"LayerDiffID: sha256:89169d87dbe2b72ba42bfbb3579c957322baca28e03a1e558076542a1c1b2b4a"
 			],
@@ -50,6 +51,7 @@
 		{
 			"SPDXID": "SPDXRef-Package-e16b1cbaa5186199",
 			"attributionTexts": [
+				"PkgID: openssl-libs@1.0.2k-16.el7.x86_64",
 				"LayerDigest: sha256:ac9208207adaac3a48e54a4dc6b49c69e78c3072d2b3add7efdabf814db2133b",
 				"LayerDiffID: sha256:89169d87dbe2b72ba42bfbb3579c957322baca28e03a1e558076542a1c1b2b4a"
 			],

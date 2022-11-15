@@ -70,6 +70,15 @@ func TestFilesystem(t *testing.T) {
 			golden: "testdata/nodejs.json.golden",
 		},
 		{
+			name: "yarn",
+			args: args{
+				securityChecks: "vuln",
+				input:          "testdata/fixtures/fs/yarn",
+				listAllPkgs:    true,
+			},
+			golden: "testdata/yarn.json.golden",
+		},
+		{
 			name: "pnpm",
 			args: args{
 				securityChecks: "vuln",
