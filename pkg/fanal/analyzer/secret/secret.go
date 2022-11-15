@@ -42,19 +42,21 @@ var (
 
 func init() {
 	// The scanner will be initialized later via InitScanner()
-	analyzer.RegisterAnalyzer(NewSecretAnalyzer(secret.Scanner{}, ""))
+	analyzer.RegisterAnalyzer(NewSecretAnalyzer(secret.Scanner{}, "", false))
 }
 
 // SecretAnalyzer is an analyzer for secrets
 type SecretAnalyzer struct {
-	scanner    secret.Scanner
-	configPath string
+	scanner          secret.Scanner
+	configPath       string
+	outputUncensored bool
 }
 
-func NewSecretAnalyzer(s secret.Scanner, configPath string) *SecretAnalyzer {
+func NewSecretAnalyzer(s secret.Scanner, configPath string, outputUncensored bool) *SecretAnalyzer {
 	return &SecretAnalyzer{
-		scanner:    s,
-		configPath: configPath,
+		scanner:          s,
+		configPath:       configPath,
+		outputUncensored: outputUncensored,
 	}
 }
 
@@ -70,8 +72,9 @@ func (a *SecretAnalyzer) Init(opt analyzer.AnalyzerOptions) error {
 	if err != nil {
 		return xerrors.Errorf("secret config error: %w", err)
 	}
-	a.scanner = secret.NewScanner(c)
+	a.scanner = secret.NewScanner(c, opt.SecretScannerOption.OutputUncensored)
 	a.configPath = configPath
+	a.outputUncensored = opt.SecretScannerOption.OutputUncensored
 	return nil
 }
 

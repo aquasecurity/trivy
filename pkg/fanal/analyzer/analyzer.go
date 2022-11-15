@@ -47,7 +47,8 @@ type AnalyzerOptions struct {
 }
 
 type SecretScannerOption struct {
-	ConfigPath string
+	ConfigPath       string
+	OutputUncensored bool
 }
 
 type LicenseScannerOption struct {

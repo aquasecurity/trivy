@@ -41,9 +41,10 @@ type Config struct {
 }
 
 type Global struct {
-	Rules        []Rule
-	AllowRules   AllowRules
-	ExcludeBlock ExcludeBlock
+	Rules            []Rule
+	AllowRules       AllowRules
+	ExcludeBlock     ExcludeBlock
+	OutputUncensored bool
 }
 
 // Allow checks if the match is allowed
@@ -290,12 +291,13 @@ func ParseConfig(configPath string) (*Config, error) {
 	return &config, nil
 }
 
-func NewScanner(config *Config) Scanner {
+func NewScanner(config *Config, outputUncensored bool) Scanner {
 	// Use the default rules
 	if config == nil {
 		return Scanner{Global: &Global{
-			Rules:      builtinRules,
-			AllowRules: builtinAllowRules,
+			Rules:            builtinRules,
+			AllowRules:       builtinAllowRules,
+			OutputUncensored: outputUncensored,
 		}}
 	}
 
@@ -322,9 +324,10 @@ func NewScanner(config *Config) Scanner {
 	})
 
 	return Scanner{Global: &Global{
-		Rules:        rules,
-		AllowRules:   allowRules,
-		ExcludeBlock: config.ExcludeBlock,
+		Rules:            rules,
+		AllowRules:       allowRules,
+		ExcludeBlock:     config.ExcludeBlock,
+		OutputUncensored: outputUncensored,
 	}}
 }
 
@@ -347,6 +350,7 @@ func (s *Scanner) Scan(args ScanArgs) types.Secret {
 	}
 
 	var censored []byte
+	var uncensored []byte
 	var copyCensored sync.Once
 	var matched []Match
 
@@ -386,8 +390,13 @@ func (s *Scanner) Scan(args ScanArgs) types.Secret {
 				Rule:     rule,
 				Location: loc,
 			})
+
 			copyCensored.Do(func() {
 				censored = make([]byte, len(args.Content))
+				if s.OutputUncensored {
+					uncensored = make([]byte, len(args.Content))
+					copy(uncensored, args.Content)
+				}
 				copy(censored, args.Content)
 			})
 			censored = censorLocation(loc, censored)
@@ -395,7 +404,7 @@ func (s *Scanner) Scan(args ScanArgs) types.Secret {
 	}
 
 	for _, match := range matched {
-		findings = append(findings, toFinding(match.Rule, match.Location, censored))
+		findings = append(findings, toFinding(match.Rule, match.Location, censored, uncensored))
 	}
 
 	if len(findings) == 0 {
@@ -425,18 +434,19 @@ func censorLocation(loc Location, input []byte) []byte {
 	)
 }
 
-func toFinding(rule Rule, loc Location, content []byte) types.SecretFinding {
+func toFinding(rule Rule, loc Location, content []byte, uncensoredContent []byte) types.SecretFinding {
 	startLine, endLine, code, matchLine := findLocation(loc.Start, loc.End, content)
 
 	return types.SecretFinding{
-		RuleID:    rule.ID,
-		Category:  rule.Category,
-		Severity:  lo.Ternary(rule.Severity == "", "UNKNOWN", rule.Severity),
-		Title:     rule.Title,
-		Match:     matchLine,
-		StartLine: startLine,
-		EndLine:   endLine,
-		Code:      code,
+		RuleID:     rule.ID,
+		Category:   rule.Category,
+		Severity:   lo.Ternary(rule.Severity == "", "UNKNOWN", rule.Severity),
+		Title:      rule.Title,
+		Match:      matchLine,
+		StartLine:  startLine,
+		EndLine:    endLine,
+		Code:       code,
+		Uncensored: string(uncensoredContent),
 	}
 }
 
