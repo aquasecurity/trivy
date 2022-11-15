@@ -14,6 +14,8 @@ import (
 )
 
 const (
+	TypeEBS    = "ebs"
+	TypeFile   = "file"
 	EBSPrefix  = "ebs:"
 	FilePrefix = "file:"
 )
@@ -21,6 +23,7 @@ const (
 type Storage interface {
 	Open(string, context.Context) (sr *io.SectionReader, cacheKey string, err error)
 	Close() error
+	Type() string
 }
 
 type File struct {
@@ -36,7 +39,7 @@ func (f *File) Open(filePath string, _ context.Context) (*io.SectionReader, stri
 	}
 	f.File = fp
 
-	v, err := vm.New(f.File, f.cache)
+	reader, err := vm.New(f.File, f.cache)
 	if err != nil {
 		log.Logger.Debugf("new virtual machine scan error: %s, treat as raw image.", err.Error())
 		fi, err := f.Stat()
@@ -46,14 +49,18 @@ func (f *File) Open(filePath string, _ context.Context) (*io.SectionReader, stri
 		return io.NewSectionReader(f, 0, fi.Size()), "", nil
 	}
 
-	return v.SectionReader, "", nil
+	return reader, "", nil
 }
 
 func (f *File) Close() error {
 	return f.File.Close()
 }
 
-func NewFile(cache ebsfile.Cache) *File {
+func (f *File) Type() string {
+	return TypeFile
+}
+
+func NewFile(cache vm.Cache) *File {
 	return &File{
 		cache: cache,
 	}
@@ -80,11 +87,15 @@ func (e *EBS) Open(snapshotID string, ctx context.Context) (*io.SectionReader, s
 	return sr, snapshotID, nil
 }
 
+func (e *EBS) Type() string {
+	return TypeEBS
+}
+
 func (e *EBS) Close() error {
 	return nil
 }
 
-func NewStorage(t string, option ebsfile.Option, c ebsfile.Cache) (Storage, error) {
+func NewStorage(t string, option ebsfile.Option, c vm.Cache) (Storage, error) {
 	var s Storage
 	switch {
 	case strings.HasPrefix(t, EBSPrefix):

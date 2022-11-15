@@ -4,7 +4,6 @@ import (
 	"context"
 	"crypto/sha256"
 	"encoding/json"
-	"fmt"
 	"os"
 	"path/filepath"
 	"strings"
@@ -28,9 +27,8 @@ import (
 )
 
 const (
-	parallel       = 5
-	cacheSize      = 40 << 20 // 40 MB
-	cacheKeyPrefix = "vm:"
+	parallel  = 5
+	cacheSize = 40 << 20 // 40 MB
 )
 
 type Artifact struct {
@@ -57,7 +55,10 @@ func (a Artifact) Inspect(ctx context.Context) (reference types.ArtifactReferenc
 	defer a.store.Close()
 
 	if cacheKey != "" {
-		cacheKey = vmCacheKey(cacheKey)
+		cacheKey, err = a.vmCacheKey(cacheKey)
+		if err != nil {
+			return types.ArtifactReference{}, xerrors.Errorf("failed to create vm cache key: %w", err)
+		}
 		missingVMCache, _, err := a.cache.MissingBlobs(cacheKey, []string{cacheKey})
 		if err != nil {
 			return types.ArtifactReference{}, xerrors.Errorf("failed to missing blobs from cache: %w", err)
@@ -139,7 +140,7 @@ func (a Artifact) Inspect(ctx context.Context) (reference types.ArtifactReferenc
 }
 
 func (a Artifact) Clean(reference types.ArtifactReference) error {
-	if strings.HasPrefix(reference.ID, cacheKeyPrefix) {
+	if strings.HasPrefix(a.store.Type(), storage.TypeEBS) {
 		return nil
 	}
 	return a.cache.DeleteBlobs(reference.BlobIDs)
@@ -181,8 +182,12 @@ func NewArtifact(filePath string, c cache.ArtifactCache, opt artifact.Option) (a
 	}, nil
 }
 
-func vmCacheKey(key string) string {
-	return fmt.Sprintf("%s%s", cacheKeyPrefix, key)
+func (a Artifact) vmCacheKey(key string) (string, error) {
+	s, err := cache.CalcKey(key, a.analyzer.AnalyzerVersions(), a.handlerManager.Versions(), a.artifactOption)
+	if err != nil {
+		return "", xerrors.Errorf("failed to calculate cache key: %w", err)
+	}
+	return s, nil
 }
 
 func (a Artifact) calcCacheKey(blobInfo types.BlobInfo) (string, error) {

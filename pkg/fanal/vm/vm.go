@@ -28,11 +28,7 @@ func RegisterVMReader(vm Reader) {
 	Readers = append(Readers, vm)
 }
 
-type VM struct {
-	*io.SectionReader
-}
-
-func New(rs io.ReadSeeker, cache Cache) (*VM, error) {
+func New(rs io.ReadSeeker, cache Cache) (*io.SectionReader, error) {
 	for _, v := range Readers {
 		vreader, err := v.NewVMReader(rs, cache)
 		if err != nil {
@@ -42,7 +38,7 @@ func New(rs io.ReadSeeker, cache Cache) (*VM, error) {
 			return nil, xerrors.Errorf("open virtual machine error: %w", err)
 		}
 
-		return &VM{SectionReader: vreader}, nil
+		return vreader, nil
 	}
 	return nil, xerrors.New("virtual machine can not be detected")
 }
