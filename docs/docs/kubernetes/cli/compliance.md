@@ -49,10 +49,6 @@ $ trivy k8s cluster --compliance=nsa --report summary
 
 ![k8s Summary Report](../../../imgs/trivy-nsa-summary.png)
 
-***Note*** : The `compliance` column represent the calculation of all tests pass vs. fail for all resources per control check in percentage format.
-
-Example: if I have two resources in cluster and one resource scan result show pass while the other one show fail for `1.0 Non-root Containers` then it compliance will show 50%
-
 An additional report is supported to get all of the detail the output contains, use `--report all`
 ```
 $ trivy k8s cluster --compliance=nsa --report all

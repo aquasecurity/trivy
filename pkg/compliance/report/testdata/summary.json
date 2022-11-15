@@ -6,15 +6,13 @@
       "ID": "1.0",
       "Name": "Non-root containers",
       "Severity": "MEDIUM",
-      "TotalPass": 0,
-      "TotalFail": 1
+      "Status": "FAIL"
     },
     {
       "ID": "1.1",
       "Name": "Immutable container file systems",
       "Severity": "LOW",
-      "TotalPass": 0,
-      "TotalFail": 1
+      "Status": "FAIL"
     }
   ]
 }

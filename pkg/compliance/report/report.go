@@ -54,11 +54,10 @@ type SummaryReport struct {
 }
 
 type ControlCheckSummary struct {
-	ID        string
-	Name      string
-	Severity  string
-	TotalPass float32
-	TotalFail float32
+	ID       string
+	Name     string
+	Severity string
+	Status   string
 }
 
 // Writer defines the result write operation
