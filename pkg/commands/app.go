@@ -873,7 +873,6 @@ The following services are supported:
 func NewVMCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	reportFlagGroup := flag.NewReportFlagGroup()
 	reportFlagGroup.ReportFormat = nil // TODO: support --report summary
-	reportFlagGroup.DependencyTree = nil
 
 	vmFlags := &flag.Flags{
 		CacheFlagGroup:         flag.NewCacheFlagGroup(),
