@@ -19,7 +19,7 @@
       value:
         ID: "ghsa"
         Name: "GitHub Security Advisory Nuget"
-        URL: "https://github.com/advisories?query=type%%3Areviewed+ecosystem%%3Anuget"
+        URL: "https://github.com/advisories?query=type%3Areviewed+ecosystem%3Anuget"
     - key: "pip::GitHub Security Advisory Pip"
       value:
         ID: "ghsa"
