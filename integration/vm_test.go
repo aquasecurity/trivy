@@ -120,6 +120,8 @@ func TestVM(t *testing.T) {
 			for {
 				hdr, err := tr.Next()
 				assert.NoError(t, err)
+				// test image data does stored OCI-Registry.
+				// the image is Tar(**.tar.gz)
 				if strings.HasSuffix(hdr.Name, ".tar.gz") {
 					break
 				}
