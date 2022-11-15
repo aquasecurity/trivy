@@ -42,6 +42,7 @@ jobs:
             sbom
             server
             k8s
+            vm
 
             alpine
             redhat
@@ -90,5 +91,3 @@ jobs:
             report
             db
             deps
-
-            vm
