@@ -69,7 +69,7 @@ func startContainerd(t *testing.T, ctx context.Context, hostPath string) testcon
 	})
 	require.NoError(t, err)
 
-	_, err = containerdC.Exec(ctx, []string{"chmod", "666", "/run/containerd/containerd.sock"})
+	_, _, err = containerdC.Exec(ctx, []string{"chmod", "666", "/run/containerd/containerd.sock"})
 	require.NoError(t, err)
 
 	return containerdC
