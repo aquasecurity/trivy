@@ -76,11 +76,13 @@ func (a Artifact) Inspect(ctx context.Context) (reference types.ArtifactReferenc
 
 	var wg sync.WaitGroup
 	limit := semaphore.NewWeighted(parallel)
+	if a.artifactOption.Slow {
+		limit = semaphore.NewWeighted(1)
+	}
 
 	// TODO: Always walk from the root directory. Consider whether there is a need to be able to set optional
 	err = a.walker.Walk(sr, a.lruCache, "/", func(filePath string, info os.FileInfo, opener analyzer.Opener) error {
 		opts := analyzer.AnalysisOptions{Offline: a.artifactOption.Offline}
-		// Skip special files
 		path := strings.TrimPrefix(filePath, "/")
 		if err = a.analyzer.AnalyzeFile(ctx, &wg, limit, result, "/", path, info, opener, nil, opts); err != nil {
 			return xerrors.Errorf("analyze file (%s): %w", path, err)
@@ -171,7 +173,7 @@ func NewArtifact(filePath string, c cache.ArtifactCache, opt artifact.Option) (a
 		cache:          c,
 		handlerManager: handlerManager,
 		analyzer:       a,
-		walker:         walker.NewVM(opt.SkipFiles, opt.SkipDirs),
+		walker:         walker.NewVM(opt.SkipFiles, opt.SkipDirs, opt.Slow),
 		lruCache:       lruCache,
 		store:          s,
 

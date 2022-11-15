@@ -25,6 +25,7 @@ import (
 
 type VM struct {
 	walker
+	threshold int64
 }
 
 var requiredDiskName = []string{
@@ -39,9 +40,15 @@ func AppendPermitDiskName(s ...string) {
 	requiredDiskName = append(requiredDiskName, s...)
 }
 
-func NewVM(skipFiles, skipDirs []string) VM {
+func NewVM(skipFiles, skipDirs []string, slow bool) VM {
+	threshold := defaultSizeThreshold
+	if slow {
+		threshold = slowSizeThreshold
+	}
+
 	return VM{
-		walker: newWalker(skipFiles, skipDirs),
+		walker:    newWalker(skipFiles, skipDirs, slow),
+		threshold: threshold,
 	}
 }
 
@@ -170,7 +177,7 @@ func (w VM) opener(fsys fs.FS, fi os.FileInfo, pathname string) analyzer.Opener 
 		if err != nil {
 			return nil, err
 		}
-		f := newVMFile(fi.Size(), r)
+		f := newVMFile(fi.Size(), r, w.threshold)
 		defer func() {
 			// nolint
 			_ = f.Clean()
@@ -184,17 +191,19 @@ type vmFile struct {
 	once sync.Once
 	err  error
 
-	size   int64
-	reader io.Reader
+	size      int64
+	reader    io.Reader
+	threshold int64 //　Files larger than this threshold are written to file without being read into memory.
 
 	content  []byte // It will be populated if this file is small
 	filePath string // It will be populated if this file is large
 }
 
-func newVMFile(size int64, r io.Reader) vmFile {
+func newVMFile(size int64, r io.Reader, threshold int64) vmFile {
 	return vmFile{
-		size:   size,
-		reader: r,
+		size:      size,
+		reader:    r,
+		threshold: threshold,
 	}
 }
 
@@ -204,7 +213,7 @@ func newVMFile(size int64, r io.Reader) vmFile {
 func (o *vmFile) Open() (dio.ReadSeekCloserAt, error) {
 	o.once.Do(func() {
 		// When the file is large, it will be written down to a temp file.
-		if o.size >= ThresholdSize {
+		if o.size >= defaultSizeThreshold {
 			f, err := os.CreateTemp("", "fanal-*")
 			if err != nil {
 				o.err = xerrors.Errorf("failed to create the temp file: %w", err)
