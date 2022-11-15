@@ -1,9 +1,10 @@
 package filesystem
 
 import (
-	"golang.org/x/xerrors"
 	"io"
 	"io/fs"
+
+	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/vm"
 )

@@ -18,13 +18,19 @@ func init() {
 type XFS struct{}
 
 func (x XFS) New(sr io.SectionReader, cache vm.Cache) (fs.FS, error) {
-	sr.Seek(0, io.SeekStart)
+	_, err := sr.Seek(0, io.SeekStart)
+	if err != nil {
+		return nil, xerrors.Errorf("failed to seek offset error: %w", err)
+	}
 	ok := xfs.Check(&sr)
 	if !ok {
 		return nil, filesystem.ErrInvalidHeader
 	}
 
-	sr.Seek(0, io.SeekStart)
+	_, err = sr.Seek(0, io.SeekStart)
+	if err != nil {
+		return nil, xerrors.Errorf("failed to seek offset error: %w", err)
+	}
 	f, err := xfs.NewFS(sr, cache)
 	if err != nil {
 		return nil, xerrors.Errorf("new xfs filesystem error: %w", err)

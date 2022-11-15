@@ -18,13 +18,19 @@ func init() {
 type EXT4 struct{}
 
 func (e EXT4) New(sr io.SectionReader, cache vm.Cache) (fs.FS, error) {
-	sr.Seek(0, io.SeekStart)
+	_, err := sr.Seek(0, io.SeekStart)
+	if err != nil {
+		return nil, xerrors.Errorf("failed to seek offset error: %w", err)
+	}
 	ok := ext4.Check(&sr)
 	if !ok {
 		return nil, filesystem.ErrInvalidHeader
 	}
 
-	sr.Seek(0, io.SeekStart)
+	_, err = sr.Seek(0, io.SeekStart)
+	if err != nil {
+		return nil, xerrors.Errorf("failed to seek offset error: %w", err)
+	}
 	f, err := ext4.NewFS(sr, cache)
 	if err != nil {
 		return nil, xerrors.Errorf("new ext4 filesystem error: %w", err)
