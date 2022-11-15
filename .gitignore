@@ -13,3 +13,5 @@
 
 # GoLand
 .idea
+
+/vendor

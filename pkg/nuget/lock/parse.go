@@ -1,8 +1,9 @@
 package lock
 
 import (
-	"github.com/liamg/jfather"
 	"io"
+
+	"github.com/liamg/jfather"
 
 	"golang.org/x/xerrors"
 
@@ -19,10 +20,11 @@ type LockFile struct {
 type Dependencies map[string]Dependency
 
 type Dependency struct {
-	Type      string `json:"type"`
-	Resolved  string `json:"resolved"`
-	StartLine int
-	EndLine   int
+	Type         string `json:"type"`
+	Resolved     string `json:"resolved"`
+	StartLine    int
+	EndLine      int
+	Dependencies map[string]string `json:"dependencies,omitempty"`
 }
 
 type Parser struct{}
@@ -42,6 +44,7 @@ func (p *Parser) Parse(r dio.ReadSeekerAt) ([]types.Library, []types.Dependency,
 	}
 
 	libs := make([]types.Library, 0)
+	depsMap := make(map[string][]string)
 	for _, targetContent := range lockFile.Targets {
 		for packageName, packageContent := range targetContent {
 			// If package type is "project", it is the actual project, and we skip it.
@@ -49,7 +52,10 @@ func (p *Parser) Parse(r dio.ReadSeekerAt) ([]types.Library, []types.Dependency,
 				continue
 			}
 
+			depId := utils.PackageID(packageName, packageContent.Resolved)
+
 			lib := types.Library{
+				ID:      depId,
 				Name:    packageName,
 				Version: packageContent.Resolved,
 				Locations: []types.Location{
@@ -60,9 +66,33 @@ func (p *Parser) Parse(r dio.ReadSeekerAt) ([]types.Library, []types.Dependency,
 				},
 			}
 			libs = append(libs, lib)
+
+			var dependsOn []string
+
+			for depName := range packageContent.Dependencies {
+				dependsOn = append(dependsOn, utils.PackageID(depName, targetContent[depName].Resolved))
+			}
+
+			if savedDependsOn, ok := depsMap[depId]; ok {
+				dependsOn = utils.UniqueStrings(append(dependsOn, savedDependsOn...))
+			}
+
+			if len(dependsOn) > 0 {
+				depsMap[depId] = dependsOn
+			}
 		}
 	}
-	return utils.UniqueLibraries(libs), nil, nil
+
+	deps := make([]types.Dependency, 0)
+	for depId, dependsOn := range depsMap {
+		dep := types.Dependency{
+			ID:        depId,
+			DependsOn: dependsOn,
+		}
+		deps = append(deps, dep)
+	}
+
+	return utils.UniqueLibraries(libs), deps, nil
 }
 
 // UnmarshalJSONWithMetadata needed to detect start and end lines of deps

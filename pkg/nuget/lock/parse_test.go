@@ -15,24 +15,29 @@ import (
 
 func TestParse(t *testing.T) {
 	vectors := []struct {
-		file string // Test input file
-		want []types.Library
+		file     string // Test input file
+		want     []types.Library
+		wantDeps []types.Dependency
 	}{
 		{
-			file: "testdata/packages_lock_simple.json",
-			want: nuGetSimple,
+			file:     "testdata/packages_lock_simple.json",
+			want:     nuGetSimple,
+			wantDeps: nuGetSimpleDeps,
 		},
 		{
-			file: "testdata/packages_lock_subdependencies.json",
-			want: nuGetSubDependencies,
+			file:     "testdata/packages_lock_subdependencies.json",
+			want:     nuGetSubDependencies,
+			wantDeps: nuGetSubDependenciesDeps,
 		},
 		{
-			file: "testdata/packages_lock_multi.json",
-			want: nuGetMultiTarget,
+			file:     "testdata/packages_lock_multi.json",
+			want:     nuGetMultiTarget,
+			wantDeps: nuGetMultiTargetDeps,
 		},
 		{
-			file: "testdata/packages_lock_legacy.json",
-			want: nuGetLegacy,
+			file:     "testdata/packages_lock_legacy.json",
+			want:     nuGetLegacy,
+			wantDeps: nuGetLegacyDeps,
 		},
 	}
 
@@ -41,7 +46,7 @@ func TestParse(t *testing.T) {
 			f, err := os.Open(v.file)
 			require.NoError(t, err)
 
-			got, _, err := NewParser().Parse(f)
+			got, deps, err := NewParser().Parse(f)
 			require.NoError(t, err)
 
 			sort.Slice(got, func(i, j int) bool {
@@ -61,6 +66,22 @@ func TestParse(t *testing.T) {
 			})
 
 			assert.Equal(t, v.want, got)
+
+			if v.wantDeps != nil {
+				sortDeps(deps)
+				sortDeps(v.wantDeps)
+				assert.Equal(t, v.wantDeps, deps)
+			}
 		})
+	}
+}
+
+func sortDeps(deps []types.Dependency) {
+	sort.Slice(deps, func(i, j int) bool {
+		return strings.Compare(deps[i].ID, deps[j].ID) < 0
+	})
+
+	for i := range deps {
+		sort.Strings(deps[i].DependsOn)
 	}
 }
