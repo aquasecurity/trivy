@@ -26,6 +26,7 @@
       "Vulnerabilities": [
         {
           "VulnerabilityID": "CVE-2022-21233",
+          "PkgID": "microcode_ctl@2.1-47.amzn2.0.12.x86_64",
           "PkgName": "microcode_ctl",
           "InstalledVersion": "2:2.1-47.amzn2.0.12",
           "FixedVersion": "2:2.1-47.amzn2.0.13",

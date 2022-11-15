@@ -26,6 +26,7 @@
       "Vulnerabilities": [
         {
           "VulnerabilityID": "SUSE-SU-2022:2713-1",
+          "PkgID": "bind-utils@9.16.20-150400.3.6.x86_64",
           "PkgName": "bind-utils",
           "InstalledVersion": "9.16.20-150400.3.6",
           "FixedVersion": "9.16.31-150400.5.6.1",
@@ -49,6 +50,7 @@
         },
         {
           "VulnerabilityID": "SUSE-SU-2022:2713-1",
+          "PkgID": "python3-bind@9.16.20-150400.3.6.noarch",
           "PkgName": "python3-bind",
           "InstalledVersion": "9.16.20-150400.3.6",
           "FixedVersion": "9.16.31-150400.5.6.1",

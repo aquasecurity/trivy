@@ -26,6 +26,7 @@
       "Vulnerabilities": [
         {
           "VulnerabilityID": "CVE-2022-2795",
+          "PkgID": "bind9-dnsutils@1:9.18.1-1ubuntu1.1",
           "PkgName": "bind9-dnsutils",
           "InstalledVersion": "1:9.18.1-1ubuntu1.1",
           "FixedVersion": "1:9.18.1-1ubuntu1.2",
@@ -64,6 +65,7 @@
         },
         {
           "VulnerabilityID": "CVE-2022-2795",
+          "PkgID": "bind9-host@1:9.18.1-1ubuntu1.1",
           "PkgName": "bind9-host",
           "InstalledVersion": "1:9.18.1-1ubuntu1.1",
           "FixedVersion": "1:9.18.1-1ubuntu1.2",
@@ -102,6 +104,7 @@
         },
         {
           "VulnerabilityID": "CVE-2022-2795",
+          "PkgID": "bind9-libs@1:9.18.1-1ubuntu1.1",
           "PkgName": "bind9-libs",
           "InstalledVersion": "1:9.18.1-1ubuntu1.1",
           "FixedVersion": "1:9.18.1-1ubuntu1.2",

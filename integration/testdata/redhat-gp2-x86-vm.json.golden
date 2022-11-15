@@ -26,6 +26,7 @@
       "Vulnerabilities": [
         {
           "VulnerabilityID": "CVE-2019-12900",
+          "PkgID": "bzip2-libs@1.0.6-26.el8.x86_64",
           "PkgName": "bzip2-libs",
           "InstalledVersion": "1.0.6-26.el8",
           "Layer": {},
