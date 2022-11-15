@@ -188,6 +188,42 @@ func externalRef(bomLink string, bomRef string) (string, error) {
 	return fmt.Sprintf("%s/%d#%s", strings.Replace(bomLink, "uuid", "cdx", 1), cdx.BOMFileFormatJSON, bomRef), nil
 }
 
+func generateDependencyGraph(dependencies map[string][]string, synonyms map[string]string) (heads []cdx.Dependency, deps []cdx.Dependency) {
+	dependents := map[string]struct{}{}
+	for _, v := range maps.Values(dependencies) {
+		for _, kid := range v {
+			dependents[kid] = struct{}{}
+		}
+	}
+
+	bomDeps := map[string]*cdx.Dependency{}
+
+	for k, references := range dependencies {
+		bomRef := synonyms[k]
+
+		var refs []cdx.Dependency
+		for _, refName := range references {
+			bomName := synonyms[refName]
+			if _, ok := bomDeps[bomName]; !ok {
+				bomDeps[bomName] = &cdx.Dependency{Ref: bomName}
+			}
+			refs = append(refs, *bomDeps[bomName])
+		}
+
+		dependency := cdx.Dependency{
+			Ref:          bomRef,
+			Dependencies: &refs,
+		}
+
+		if _, ok := dependents[k]; !ok {
+			heads = append(heads, dependency)
+		}
+
+		deps = append(deps, dependency)
+	}
+	return
+}
+
 func (e *Marshaler) marshalComponents(r types.Report, bomRef string) (*[]cdx.Component, *[]cdx.Dependency, *[]cdx.Vulnerability, error) {
 	var components []cdx.Component
 	var dependencies []cdx.Dependency
@@ -196,7 +232,8 @@ func (e *Marshaler) marshalComponents(r types.Report, bomRef string) (*[]cdx.Com
 	vulnMap := map[string]cdx.Vulnerability{}
 	for _, result := range r.Results {
 		bomRefMap := map[string]string{}
-		var componentDependencies []cdx.Dependency
+		bomNameMap := map[string]string{}
+		depGraph := map[string][]string{}
 		for _, pkg := range result.Packages {
 			pkgComponent, err := pkgToCdxComponent(result.Type, r.Metadata, pkg)
 			if err != nil {
@@ -206,6 +243,7 @@ func (e *Marshaler) marshalComponents(r types.Report, bomRef string) (*[]cdx.Com
 			if _, ok := bomRefMap[pkgID]; !ok {
 				bomRefMap[pkgID] = pkgComponent.BOMRef
 			}
+			bomNameMap[pkg.ID] = pkgComponent.BOMRef
 
 			// When multiple lock files have the same dependency with the same name and version,
 			// "bom-ref" (PURL technically) of Library components may conflict.
@@ -223,13 +261,12 @@ func (e *Marshaler) marshalComponents(r types.Report, bomRef string) (*[]cdx.Com
 
 				// For components
 				// ref. https://cyclonedx.org/use-cases/#inventory
-				//
-				// TODO: All packages are flattened at the moment. We should construct dependency tree.
 				components = append(components, pkgComponent)
 			}
-
-			componentDependencies = append(componentDependencies, cdx.Dependency{Ref: pkgComponent.BOMRef})
+			depGraph[pkg.ID] = pkg.DependsOn
 		}
+		headDependencies, currentDependencies := generateDependencyGraph(depGraph, bomNameMap)
+		dependencies = append(dependencies, currentDependencies...)
 
 		for _, vuln := range result.Vulnerabilities {
 			// Take a bom-ref
@@ -259,7 +296,7 @@ func (e *Marshaler) marshalComponents(r types.Report, bomRef string) (*[]cdx.Com
 			// ref. https://cyclonedx.org/use-cases/#inventory
 
 			// Dependency graph from #1 to #2
-			metadataDependencies = append(metadataDependencies, componentDependencies...)
+			metadataDependencies = append(metadataDependencies, headDependencies...)
 		} else if result.Class == types.ClassOSPkg || result.Class == types.ClassLangPkg {
 			// If a package is OS package, it will be a dependency of "Operating System" component.
 			// e.g.
@@ -283,7 +320,7 @@ func (e *Marshaler) marshalComponents(r types.Report, bomRef string) (*[]cdx.Com
 
 			// Dependency graph from #2 to #3
 			dependencies = append(dependencies,
-				cdx.Dependency{Ref: resultComponent.BOMRef, Dependencies: &componentDependencies},
+				cdx.Dependency{Ref: resultComponent.BOMRef, Dependencies: &headDependencies},
 			)
 
 			// Dependency graph from #1 to #2
