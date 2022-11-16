@@ -201,11 +201,13 @@ func generateDependencyGraph(dependencies map[string][]string, synonyms map[stri
 	for k, references := range dependencies {
 		bomRef := synonyms[k]
 
-		var refs []cdx.Dependency
+		refs := []cdx.Dependency{}
 		for _, refName := range references {
 			bomName := synonyms[refName]
 			if _, ok := bomDeps[bomName]; !ok {
-				bomDeps[bomName] = &cdx.Dependency{Ref: bomName}
+				bomDeps[bomName] = &cdx.Dependency{
+					Ref: bomName,
+				}
 			}
 			refs = append(refs, *bomDeps[bomName])
 		}
