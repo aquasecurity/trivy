@@ -121,7 +121,7 @@ func TestFilesystem(t *testing.T) {
 			golden: "testdata/conan.json.golden",
 		},
 		{
-			name: "dotnet deps",
+			name: "nuget",
 			args: args{
 				securityChecks: "vuln",
 				listAllPkgs:    true,
