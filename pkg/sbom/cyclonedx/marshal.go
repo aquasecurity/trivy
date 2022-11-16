@@ -226,8 +226,8 @@ func generateDependencyGraph(dependencies map[string][]string, synonyms map[stri
 
 func (e *Marshaler) marshalComponents(r types.Report, bomRef string) (*[]cdx.Component, *[]cdx.Dependency, *[]cdx.Vulnerability, error) {
 	var components []cdx.Component
-	var dependencies []cdx.Dependency
 	var metadataDependencies []cdx.Dependency
+	dependencies := map[string]cdx.Dependency{}
 	libraryUniqMap := map[string]struct{}{}
 	vulnMap := map[string]cdx.Vulnerability{}
 	for _, result := range r.Results {
@@ -266,7 +266,12 @@ func (e *Marshaler) marshalComponents(r types.Report, bomRef string) (*[]cdx.Com
 			depGraph[pkg.ID] = pkg.DependsOn
 		}
 		headDependencies, currentDependencies := generateDependencyGraph(depGraph, bomNameMap)
-		dependencies = append(dependencies, currentDependencies...)
+		// add only new dependencies
+		for _, d := range currentDependencies {
+			if _, ok := dependencies[d.Ref]; !ok {
+				dependencies[d.Ref] = d
+			}
+		}
 
 		for _, vuln := range result.Vulnerabilities {
 			// Take a bom-ref
@@ -319,9 +324,7 @@ func (e *Marshaler) marshalComponents(r types.Report, bomRef string) (*[]cdx.Com
 			components = append(components, resultComponent)
 
 			// Dependency graph from #2 to #3
-			dependencies = append(dependencies,
-				cdx.Dependency{Ref: resultComponent.BOMRef, Dependencies: &headDependencies},
-			)
+			dependencies[resultComponent.BOMRef] = cdx.Dependency{Ref: resultComponent.BOMRef, Dependencies: &headDependencies}
 
 			// Dependency graph from #1 to #2
 			metadataDependencies = append(metadataDependencies, cdx.Dependency{Ref: resultComponent.BOMRef})
@@ -332,10 +335,9 @@ func (e *Marshaler) marshalComponents(r types.Report, bomRef string) (*[]cdx.Com
 		return vulns[i].ID > vulns[j].ID
 	})
 
-	dependencies = append(dependencies,
-		cdx.Dependency{Ref: bomRef, Dependencies: &metadataDependencies},
-	)
-	return &components, &dependencies, &vulns, nil
+	dependencies[bomRef] = cdx.Dependency{Ref: bomRef, Dependencies: &metadataDependencies}
+	deps := maps.Values(dependencies)
+	return &components, &deps, &vulns, nil
 }
 
 func packageID(target, pkgName, pkgVersion, pkgFilePath string) string {
