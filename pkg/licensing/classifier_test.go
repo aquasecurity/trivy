@@ -35,14 +35,6 @@ func TestClassifier_FullClassify(t *testing.T) {
 			},
 		},
 		{
-			name:     "C file with no license",
-			filePath: "testdata/unlicensed.c",
-			want: types.LicenseFile{
-				Type:     types.LicenseTypeFile,
-				FilePath: "testdata/unlicensed.c",
-			},
-		},
-		{
 			name:     "Creative commons License file",
 			filePath: "testdata/LICENSE_creativecommons",
 			want: types.LicenseFile{
@@ -53,21 +45,6 @@ func TestClassifier_FullClassify(t *testing.T) {
 						Name:       "Commons-Clause",
 						Confidence: 1,
 						Link:       "https://spdx.org/licenses/Commons-Clause.html",
-					},
-				},
-			},
-		},
-		{
-			name:     "Apache-2.0 CSS File",
-			filePath: "testdata/styles.css",
-			want: types.LicenseFile{
-				Type:     types.LicenseTypeFile,
-				FilePath: "testdata/styles.css",
-				Findings: []types.LicenseFinding{
-					{
-						Name:       "Apache-2.0",
-						Confidence: 1,
-						Link:       "https://spdx.org/licenses/Apache-2.0.html",
 					},
 				},
 			},
@@ -93,7 +70,7 @@ func TestClassifier_FullClassify(t *testing.T) {
 			contents, err := os.ReadFile(tt.filePath)
 			require.NoError(t, err)
 
-			got, err := licensing.FullClassify(tt.filePath, contents)
+			got, err := licensing.GoogleClassify(tt.filePath, contents)
 			require.NoError(t, err)
 			assert.Equal(t, tt.want, got)
 		})

@@ -201,38 +201,6 @@ func TestArtifact_Inspect(t *testing.T) {
 									Packages: alpinePkgs,
 								},
 							},
-							Licenses: []types.LicenseFile{
-								{
-									Type:     "license-file",
-									FilePath: "/etc/ssl/misc/CA.pl",
-									Findings: []types.LicenseFinding{
-										{
-											Name:       "OpenSSL",
-											Confidence: 1,
-											Link:       "https://spdx.org/licenses/OpenSSL.html",
-										},
-									},
-									Layer: types.Layer{
-										Digest: "",
-										DiffID: "",
-									},
-								},
-								{
-									Type:     "license-file",
-									FilePath: "/etc/ssl/misc/tsget.pl",
-									Findings: []types.LicenseFinding{
-										{
-											Name:       "OpenSSL",
-											Confidence: 1,
-											Link:       "https://spdx.org/licenses/OpenSSL.html",
-										},
-									},
-									Layer: types.Layer{
-										Digest: "",
-										DiffID: "",
-									},
-								},
-							},
 							Applications:  []types.Application(nil),
 							OpaqueDirs:    []string(nil),
 							WhiteoutFiles: []string(nil),
@@ -361,7 +329,7 @@ func TestArtifact_Inspect(t *testing.T) {
 									FilePath: "var/lib/dpkg/status.d/netbase",
 									Packages: []types.Package{
 										{ID: "netbase@5.4", Name: "netbase", Version: "5.4",
-											SrcName: "netbase", SrcVersion: "5.4", Maintainer: "Marco d'Itri <md@linux.it>",},
+											SrcName: "netbase", SrcVersion: "5.4", Maintainer: "Marco d'Itri <md@linux.it>"},
 									},
 								},
 								{
@@ -880,30 +848,6 @@ func TestArtifact_Inspect(t *testing.T) {
 									Packages: alpinePkgs,
 								},
 							},
-							Licenses: []types.LicenseFile{
-								{
-									Type:     "license-file",
-									FilePath: "/etc/ssl/misc/CA.pl",
-									Findings: []types.LicenseFinding{
-										{
-											Name:       "OpenSSL",
-											Confidence: 1,
-											Link:       "https://spdx.org/licenses/OpenSSL.html",
-										},
-									},
-								},
-								{
-									Type:     "license-file",
-									FilePath: "/etc/ssl/misc/tsget.pl",
-									Findings: []types.LicenseFinding{
-										{
-											Name:       "OpenSSL",
-											Confidence: 1,
-											Link:       "https://spdx.org/licenses/OpenSSL.html",
-										},
-									},
-								},
-							},
 							Applications:  []types.Application(nil),
 							OpaqueDirs:    []string(nil),
 							WhiteoutFiles: []string(nil),
@@ -950,30 +894,6 @@ func TestArtifact_Inspect(t *testing.T) {
 								{
 									FilePath: "lib/apk/db/installed",
 									Packages: alpinePkgs,
-								},
-							},
-							Licenses: []types.LicenseFile{
-								{
-									Type:     "license-file",
-									FilePath: "/etc/ssl/misc/CA.pl",
-									Findings: []types.LicenseFinding{
-										{
-											Name:       "OpenSSL",
-											Confidence: 1,
-											Link:       "https://spdx.org/licenses/OpenSSL.html",
-										},
-									},
-								},
-								{
-									Type:     "license-file",
-									FilePath: "/etc/ssl/misc/tsget.pl",
-									Findings: []types.LicenseFinding{
-										{
-											Name:       "OpenSSL",
-											Confidence: 1,
-											Link:       "https://spdx.org/licenses/OpenSSL.html",
-										},
-									},
 								},
 							},
 							Applications:  []types.Application(nil),
