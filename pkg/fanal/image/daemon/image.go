@@ -244,8 +244,10 @@ func emptyLayer(history dimage.HistoryResponseItem) bool {
 		return true
 	}
 	// buildkit layers with "WORKDIR /" command are empty,
-	if strings.HasPrefix(history.Comment, "buildkit.dockerfile") && createdBy == "WORKDIR /" {
-		return true
+	if strings.HasPrefix(history.Comment, "buildkit.dockerfile") {
+		if createdBy == "WORKDIR /" {
+			return true
+		}
 	} else if strings.HasPrefix(createdBy, "WORKDIR") { // layers build with docker and podman, WORKDIR command is always empty layer.
 		return true
 	}
