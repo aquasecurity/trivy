@@ -5,7 +5,6 @@ import (
 	"io"
 	"sync"
 
-	"github.com/go-enry/go-license-detector/v4/licensedb"
 	classifier "github.com/google/licenseclassifier/v2"
 	"github.com/google/licenseclassifier/v2/assets"
 	"golang.org/x/xerrors"
@@ -16,7 +15,6 @@ import (
 
 var cf *classifier.Classifier
 var classifierOnce sync.Once
-var licensedbOnce sync.Once
 
 func initGoogleClassifier() error {
 	// Initialize the default classifier once.
@@ -27,15 +25,6 @@ func initGoogleClassifier() error {
 		cf, err = assets.DefaultClassifier()
 	})
 	return err
-}
-
-func initLicenseDB() {
-	// Preload the license database once.
-	// This preloading is expensive and should be called only when the license classification is needed.
-	licensedbOnce.Do(func() {
-		log.Logger.Debug("Loading the license database...")
-		licensedb.Preload()
-	})
 }
 
 // Classify uses a single classifier to detect and classify the license found in a file
@@ -67,20 +56,12 @@ func Classify(r io.Reader) ([]types.LicenseFinding, error) {
 	return findings, nil
 }
 
-// FullClassify uses two classifiers to detect and classify the license found in a file
-func FullClassify(filePath string, contents []byte) (types.LicenseFile, error) {
+// GoogleClassify uses two Google classifier to detect and classify the license found in a file
+func GoogleClassify(filePath string, contents []byte) (types.LicenseFile, error) {
 	if err := initGoogleClassifier(); err != nil {
 		return types.LicenseFile{}, err
 	}
-
-	licFile := googleClassifierLicense(filePath, contents)
-
-	if len(licFile.Findings) != 0 {
-		return licFile, nil
-	}
-
-	initLicenseDB()
-	return fallbackClassifyLicense(filePath, contents), nil
+	return googleClassifierLicense(filePath, contents), nil
 }
 
 func googleClassifierLicense(filePath string, contents []byte) types.LicenseFile {
@@ -108,24 +89,4 @@ func googleClassifierLicense(filePath string, contents []byte) types.LicenseFile
 		FilePath: filePath,
 		Findings: findings,
 	}
-}
-
-func fallbackClassifyLicense(filePath string, contents []byte) types.LicenseFile {
-	license := types.LicenseFile{
-		Type:     types.LicenseTypeFile,
-		FilePath: filePath,
-	}
-
-	matcher := licensedb.InvestigateLicenseText(contents)
-	for l, confidence := range matcher {
-		licenseLink := fmt.Sprintf("https://spdx.org/licenses/%s.html", l)
-
-		license.Findings = append(license.Findings, types.LicenseFinding{
-			Name:       l,
-			Confidence: float64(confidence),
-			Link:       licenseLink,
-		})
-	}
-
-	return license
 }

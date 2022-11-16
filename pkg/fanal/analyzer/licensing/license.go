@@ -77,7 +77,7 @@ func (a licenseFileAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisI
 		filePath = fmt.Sprintf("/%s", filePath)
 	}
 
-	lf, err := licensing.FullClassify(filePath, content)
+	lf, err := licensing.GoogleClassify(filePath, content)
 	if err != nil {
 		return nil, xerrors.Errorf("license classification error: %w", err)
 	} else if len(lf.Findings) == 0 {
