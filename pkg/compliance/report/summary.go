@@ -8,10 +8,11 @@ import (
 
 	"golang.org/x/xerrors"
 
+	"k8s.io/utils/pointer"
+
 	"github.com/aquasecurity/table"
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	pkgReport "github.com/aquasecurity/trivy/pkg/report/table"
-	"k8s.io/utils/pointer"
 )
 
 func BuildSummary(cr *ComplianceReport) *SummaryReport {
