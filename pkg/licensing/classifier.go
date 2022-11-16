@@ -56,7 +56,7 @@ func Classify(r io.Reader) ([]types.LicenseFinding, error) {
 	return findings, nil
 }
 
-// GoogleClassify uses two Google classifier to detect and classify the license found in a file
+// GoogleClassify uses Google classifier to detect and classify the license found in a file
 func GoogleClassify(filePath string, contents []byte) (types.LicenseFile, error) {
 	if err := initGoogleClassifier(); err != nil {
 		return types.LicenseFile{}, err
