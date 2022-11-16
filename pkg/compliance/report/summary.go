@@ -10,8 +10,8 @@ import (
 
 	"github.com/aquasecurity/table"
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
-
 	pkgReport "github.com/aquasecurity/trivy/pkg/report/table"
+	"k8s.io/utils/pointer"
 )
 
 func BuildSummary(cr *ComplianceReport) *SummaryReport {
@@ -23,8 +23,7 @@ func BuildSummary(cr *ComplianceReport) *SummaryReport {
 			Severity: control.Severity,
 		}
 		if !strings.Contains(control.Name, "Manual") {
-			fails := len(control.Results)
-			ccm.TotalFail = &fails
+			ccm.TotalFail = pointer.Int(len(control.Results))
 		}
 		ccma = append(ccma, ccm)
 	}
