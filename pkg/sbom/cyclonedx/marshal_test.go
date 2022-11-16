@@ -2,6 +2,7 @@ package cyclonedx_test
 
 import (
 	"fmt"
+	"sort"
 	"testing"
 	"time"
 
@@ -57,6 +58,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 						Type:   fos.CentOS,
 						Packages: []ftypes.Package{
 							{
+								ID:              "binutils@2.30-93.el8",
 								Name:            "binutils",
 								Version:         "2.30",
 								Release:         "93.el8",
@@ -122,10 +124,12 @@ func TestMarshaler_Marshal(t *testing.T) {
 						Type:   ftypes.Bundler,
 						Packages: []ftypes.Package{
 							{
+								ID:      "actionpack@7.0.0",
 								Name:    "actionpack",
 								Version: "7.0.0",
 							},
 							{
+								ID:      "actioncontroller@7.0.0",
 								Name:    "actioncontroller",
 								Version: "7.0.0",
 							},
@@ -137,6 +141,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 						Type:   ftypes.Bundler,
 						Packages: []ftypes.Package{
 							{
+								ID:      "actionpack@7.0.0",
 								Name:    "actionpack",
 								Version: "7.0.0",
 							},
@@ -148,6 +153,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 						Type:   ftypes.DotNetCore,
 						Packages: []ftypes.Package{
 							{
+								ID:      "Newtonsoft.Json@9.0.1",
 								Name:    "Newtonsoft.Json",
 								Version: "9.0.1",
 							},
@@ -215,6 +221,10 @@ func TestMarshaler_Marshal(t *testing.T) {
 						PackageURL: "pkg:rpm/centos/binutils@2.30-93.el8?arch=aarch64&distro=centos-8.3.2011",
 						Properties: &[]cdx.Property{
 							{
+								Name:  "aquasecurity:trivy:PkgID",
+								Value: "binutils@2.30-93.el8",
+							},
+							{
 								Name:  "aquasecurity:trivy:PkgType",
 								Value: "centos",
 							},
@@ -256,6 +266,10 @@ func TestMarshaler_Marshal(t *testing.T) {
 						PackageURL: "pkg:gem/actionpack@7.0.0",
 						Properties: &[]cdx.Property{
 							{
+								Name:  "aquasecurity:trivy:PkgID",
+								Value: "actionpack@7.0.0",
+							},
+							{
 								Name:  "aquasecurity:trivy:PkgType",
 								Value: "bundler",
 							},
@@ -268,6 +282,10 @@ func TestMarshaler_Marshal(t *testing.T) {
 						Version:    "7.0.0",
 						PackageURL: "pkg:gem/actioncontroller@7.0.0",
 						Properties: &[]cdx.Property{
+							{
+								Name:  "aquasecurity:trivy:PkgID",
+								Value: "actioncontroller@7.0.0",
+							},
 							{
 								Name:  "aquasecurity:trivy:PkgType",
 								Value: "bundler",
@@ -313,6 +331,10 @@ func TestMarshaler_Marshal(t *testing.T) {
 						Version:    "9.0.1",
 						PackageURL: "pkg:nuget/Newtonsoft.Json@9.0.1",
 						Properties: &[]cdx.Property{
+							{
+								Name:  "aquasecurity:trivy:PkgID",
+								Value: "Newtonsoft.Json@9.0.1",
+							},
 							{
 								Name:  "aquasecurity:trivy:PkgType",
 								Value: "dotnet-core",
@@ -373,6 +395,15 @@ func TestMarshaler_Marshal(t *testing.T) {
 						},
 					},
 					{
+						Ref: "pkg:gem/actioncontroller@7.0.0",
+					},
+					{
+						Ref: "pkg:gem/actionpack@7.0.0",
+					},
+					{
+						Ref: "pkg:nuget/Newtonsoft.Json@9.0.1",
+					},
+					{
 						Ref: "pkg:oci/rails@sha256:a27fd8080b517143cbbbab9dfb7c8571c40d67d534bbdee55bd6c473f432b177?repository_url=index.docker.io%2Flibrary%2Frails&arch=arm64",
 						Dependencies: &[]cdx.Dependency{
 							{
@@ -388,6 +419,9 @@ func TestMarshaler_Marshal(t *testing.T) {
 								Ref: "3ff14136-e09f-4df9-80ea-000000000005",
 							},
 						},
+					},
+					{
+						Ref: "pkg:rpm/centos/binutils@2.30-93.el8?arch=aarch64&distro=centos-8.3.2011",
 					},
 				},
 				Vulnerabilities: &[]cdx.Vulnerability{
@@ -485,6 +519,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 						Type:   fos.CentOS,
 						Packages: []ftypes.Package{
 							{
+								ID:              "acl@2.2.53-1.el8",
 								Name:            "acl",
 								Version:         "2.2.53",
 								Release:         "1.el8",
@@ -505,6 +540,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 						Type:   ftypes.GemSpec,
 						Packages: []ftypes.Package{
 							{
+								ID:      "actionpack@7.0.0",
 								Name:    "actionpack",
 								Version: "7.0.0",
 								Layer: ftypes.Layer{
@@ -513,6 +549,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 								FilePath: "tools/project-john/specifications/actionpack.gemspec",
 							},
 							{
+								ID:      "actionpack@7.0.1",
 								Name:    "actionpack",
 								Version: "7.0.1",
 								Layer: ftypes.Layer{
@@ -662,6 +699,10 @@ func TestMarshaler_Marshal(t *testing.T) {
 						PackageURL: "pkg:rpm/centos/acl@1:2.2.53-1.el8?arch=aarch64&distro=centos-8.3.2011",
 						Properties: &[]cdx.Property{
 							{
+								Name:  "aquasecurity:trivy:PkgID",
+								Value: "acl@2.2.53-1.el8",
+							},
+							{
 								Name:  "aquasecurity:trivy:PkgType",
 								Value: "centos",
 							},
@@ -707,6 +748,10 @@ func TestMarshaler_Marshal(t *testing.T) {
 						PackageURL: "pkg:gem/actionpack@7.0.0",
 						Properties: &[]cdx.Property{
 							{
+								Name:  "aquasecurity:trivy:PkgID",
+								Value: "actionpack@7.0.0",
+							},
+							{
 								Name:  "aquasecurity:trivy:PkgType",
 								Value: "gemspec",
 							},
@@ -728,6 +773,10 @@ func TestMarshaler_Marshal(t *testing.T) {
 						PackageURL: "pkg:gem/actionpack@7.0.1",
 						Properties: &[]cdx.Property{
 							{
+								Name:  "aquasecurity:trivy:PkgID",
+								Value: "actionpack@7.0.1",
+							},
+							{
 								Name:  "aquasecurity:trivy:PkgType",
 								Value: "gemspec",
 							},
@@ -744,14 +793,6 @@ func TestMarshaler_Marshal(t *testing.T) {
 				},
 				Dependencies: &[]cdx.Dependency{
 					{
-						Ref: "3ff14136-e09f-4df9-80ea-000000000003",
-						Dependencies: &[]cdx.Dependency{
-							{
-								Ref: "pkg:rpm/centos/acl@1:2.2.53-1.el8?arch=aarch64&distro=centos-8.3.2011",
-							},
-						},
-					},
-					{
 						Ref: "3ff14136-e09f-4df9-80ea-000000000002",
 						Dependencies: &[]cdx.Dependency{
 							{
@@ -764,6 +805,20 @@ func TestMarshaler_Marshal(t *testing.T) {
 								Ref: "pkg:gem/actionpack@7.0.1?file_path=tools%2Fproject-doe%2Fspecifications%2Factionpack.gemspec",
 							},
 						},
+					},
+					{
+						Ref: "3ff14136-e09f-4df9-80ea-000000000003",
+						Dependencies: &[]cdx.Dependency{
+							{
+								Ref: "pkg:rpm/centos/acl@1:2.2.53-1.el8?arch=aarch64&distro=centos-8.3.2011",
+							},
+						},
+					},
+					{
+						Ref: "pkg:gem/actionpack@7.0.0?file_path=tools%2Fproject-john%2Fspecifications%2Factionpack.gemspec",
+					},
+					{
+						Ref: "pkg:gem/actionpack@7.0.1?file_path=tools%2Fproject-doe%2Fspecifications%2Factionpack.gemspec",
 					},
 				},
 				Vulnerabilities: &[]cdx.Vulnerability{
@@ -923,6 +978,14 @@ func TestMarshaler_Marshal(t *testing.T) {
 				Vulnerabilities: &[]cdx.Vulnerability{},
 				Dependencies: &[]cdx.Dependency{
 					{
+						Ref: "3ff14136-e09f-4df9-80ea-000000000002",
+						Dependencies: &[]cdx.Dependency{
+							{
+								Ref: "3ff14136-e09f-4df9-80ea-000000000003",
+							},
+						},
+					},
+					{
 						Ref: "3ff14136-e09f-4df9-80ea-000000000003",
 						Dependencies: &[]cdx.Dependency{
 							{
@@ -931,12 +994,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 						},
 					},
 					{
-						Ref: "3ff14136-e09f-4df9-80ea-000000000002",
-						Dependencies: &[]cdx.Dependency{
-							{
-								Ref: "3ff14136-e09f-4df9-80ea-000000000003",
-							},
-						},
+						Ref: "pkg:gem/actioncable@6.1.4.1",
 					},
 				},
 			},
@@ -954,6 +1012,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 						Type:   ftypes.NodePkg,
 						Packages: []ftypes.Package{
 							{
+								ID:       "ruby-typeprof@0.20.1",
 								Name:     "ruby-typeprof",
 								Version:  "0.20.1",
 								Licenses: []string{"MIT"},
@@ -1005,6 +1064,10 @@ func TestMarshaler_Marshal(t *testing.T) {
 						},
 						Properties: &[]cdx.Property{
 							{
+								Name:  "aquasecurity:trivy:PkgID",
+								Value: "ruby-typeprof@0.20.1",
+							},
+							{
 								Name:  "aquasecurity:trivy:PkgType",
 								Value: "node-pkg",
 							},
@@ -1028,6 +1091,9 @@ func TestMarshaler_Marshal(t *testing.T) {
 								Ref: "pkg:npm/ruby-typeprof@0.20.1?file_path=usr%2Flocal%2Flib%2Fruby%2Fgems%2F3.1.0%2Fgems%2Ftypeprof-0.21.1%2Fvscode%2Fpackage.json",
 							},
 						},
+					},
+					{
+						Ref: "pkg:npm/ruby-typeprof@0.20.1?file_path=usr%2Flocal%2Flib%2Fruby%2Fgems%2F3.1.0%2Fgems%2Ftypeprof-0.21.1%2Fvscode%2Fpackage.json",
 					},
 				},
 			},
@@ -1092,6 +1158,11 @@ func TestMarshaler_Marshal(t *testing.T) {
 			marshaler := cyclonedx.NewMarshaler("dev", cyclonedx.WithClock(clock), cyclonedx.WithNewUUID(newUUID))
 			got, err := marshaler.Marshal(tt.inputReport)
 			require.NoError(t, err)
+
+			sort.Slice(*got.Dependencies, func(i, j int) bool {
+				dps := *got.Dependencies
+				return dps[i].Ref < dps[j].Ref
+			})
 
 			assert.Equal(t, tt.want, got)
 		})
