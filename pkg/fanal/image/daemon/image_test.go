@@ -296,17 +296,17 @@ func Test_image_emptyLayer(t *testing.T) {
 			history: dimage.HistoryResponseItem{
 				CreatedBy: "/bin/sh -c #(nop) WORKDIR /",
 			},
-			want: false,
+			want: true,
 		},
 		{
 			name: "WORKDIR != '/'",
 			history: dimage.HistoryResponseItem{
 				CreatedBy: "/bin/sh -c #(nop)  WORKDIR /app",
 			},
-			want: false,
+			want: true,
 		},
 		{
-			name: "WORKDIR != '/' buildkit",
+			name: "WORKDIR =='/' buildkit",
 			history: dimage.HistoryResponseItem{
 				CreatedBy: "/bin/sh -c #(nop)  WORKDIR /",
 				Comment:   "buildkit.dockerfile.v0",
@@ -314,7 +314,7 @@ func Test_image_emptyLayer(t *testing.T) {
 			want: true,
 		},
 		{
-			name: "WORKDIR != '/app' buildkit",
+			name: "WORKDIR == '/app' buildkit",
 			history: dimage.HistoryResponseItem{
 				CreatedBy: "/bin/sh -c #(nop)  WORKDIR /app",
 				Comment:   "buildkit.dockerfile.v0",
