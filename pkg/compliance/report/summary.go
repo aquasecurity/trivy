@@ -3,6 +3,7 @@ package report
 import (
 	"fmt"
 	"io"
+	"strconv"
 	"strings"
 
 	"golang.org/x/xerrors"
@@ -21,10 +22,9 @@ func BuildSummary(cr *ComplianceReport) *SummaryReport {
 			Name:     control.Name,
 			Severity: control.Severity,
 		}
-		if len(control.Results) == 0 && control.DefaultStatus != "FAIL" { 
-			ccm.Status = "PASS"
-		} else {
-			ccm.Status = "FAIL"
+		if !strings.Contains(control.Name, "Manual") {
+			fails := len(control.Results)
+			ccm.TotalFail = &fails
 		}
 		ccma = append(ccma, ccm)
 	}
@@ -87,7 +87,17 @@ func (s SummaryWriter) Write(report *ComplianceReport) error {
 }
 
 func (s SummaryWriter) generateSummary(summaryControls ControlCheckSummary) []string {
-	return []string{summaryControls.ID, summaryControls.Severity, summaryControls.Name, summaryControls.Status}
+	var numOfIssues string
+	var status string
+	if summaryControls.TotalFail != nil {
+		if *summaryControls.TotalFail == 0 {
+			status = "PASS"
+		} else {
+			status = "FAIL"
+		}
+		numOfIssues = strconv.Itoa(*summaryControls.TotalFail)
+	}
+	return []string{summaryControls.ID, summaryControls.Severity, summaryControls.Name, status, numOfIssues}
 }
 
 func getRequiredSeverities(requiredSevs []dbTypes.Severity) ([]string, []string) {

@@ -6,6 +6,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/compliance/report"
 	"github.com/aquasecurity/trivy/pkg/types"
 	"github.com/stretchr/testify/assert"
+	"k8s.io/utils/pointer"
 )
 
 func TestBuildSummary(t *testing.T) {
@@ -55,16 +56,16 @@ func TestBuildSummary(t *testing.T) {
 				Title:         "NSA",
 				SummaryControls: []report.ControlCheckSummary{
 					{
-						ID:       "1.0",
-						Name:     "Non-root containers",
-						Severity: "MEDIUM",
-						Status:   "FAIL",
+						ID:        "1.0",
+						Name:      "Non-root containers",
+						Severity:  "MEDIUM",
+						TotalFail: pointer.Int(1),
 					},
 					{
-						ID:       "1.1",
-						Name:     "Immutable container file systems",
-						Severity: "LOW",
-						Status:   "FAIL",
+						ID:        "1.1",
+						Name:      "Immutable container file systems",
+						Severity:  "LOW",
+						TotalFail: pointer.Int(1),
 					},
 				},
 			},
@@ -122,22 +123,22 @@ func TestBuildSummary(t *testing.T) {
 				Title:         "NSA",
 				SummaryControls: []report.ControlCheckSummary{
 					{
-						ID:       "1.0",
-						Name:     "Non-root containers",
-						Severity: "MEDIUM",
-						Status:   "FAIL",
+						ID:        "1.0",
+						Name:      "Non-root containers",
+						Severity:  "MEDIUM",
+						TotalFail: pointer.Int(1),
 					},
 					{
-						ID:       "1.1",
-						Name:     "Immutable container file systems",
-						Severity: "LOW",
-						Status:   "FAIL",
+						ID:        "1.1",
+						Name:      "Immutable container file systems",
+						Severity:  "LOW",
+						TotalFail: pointer.Int(1),
 					},
 					{
-						ID:       "1.2",
-						Name:     "tzdata - new upstream version",
-						Severity: "LOW",
-						Status:   "FAIL",
+						ID:        "1.2",
+						Name:      "tzdata - new upstream version",
+						Severity:  "LOW",
+						TotalFail: pointer.Int(1),
 					},
 				},
 			},

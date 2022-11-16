@@ -54,10 +54,10 @@ type SummaryReport struct {
 }
 
 type ControlCheckSummary struct {
-	ID       string
-	Name     string
-	Severity string
-	Status   string
+	ID        string
+	Name      string
+	Severity  string
+	TotalFail *int `json:",omitempty"`
 }
 
 // Writer defines the result write operation
