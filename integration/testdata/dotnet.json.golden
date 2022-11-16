@@ -1,6 +1,6 @@
 {
   "SchemaVersion": 2,
-  "ArtifactName": "testdata/fixtures/fs/nuget",
+  "ArtifactName": "testdata/fixtures/fs/dotnet",
   "ArtifactType": "filesystem",
   "Metadata": {
     "ImageConfig": {
@@ -16,38 +16,26 @@
   },
   "Results": [
     {
-      "Target": "packages.lock.json",
+      "Target": "datacollector.deps.json",
       "Class": "lang-pkgs",
-      "Type": "nuget",
+      "Type": "dotnet-core",
       "Packages": [
         {
           "Name": "Newtonsoft.Json",
-          "Version": "12.0.3",
-          "Layer": {},
+          "Version": "9.0.1",
           "Locations": [
             {
-              "StartLine": 5,
-              "EndLine": 10
+              "StartLine": 8,
+              "EndLine": 14
             }
-         ]
-        },
-        {
-          "Name": "NuGet.Frameworks",
-          "Version": "5.7.0",
-          "Layer": {},
-          "Locations": [
-            {
-              "StartLine": 11,
-              "EndLine": 16
-            }
-         ]
+          ]
         }
       ],
       "Vulnerabilities": [
         {
           "VulnerabilityID": "GHSA-5crp-9r3c-p9vr",
           "PkgName": "Newtonsoft.Json",
-          "InstalledVersion": "12.0.3",
+          "InstalledVersion": "9.0.1",
           "FixedVersion": "13.0.1",
           "Layer": {},
           "SeveritySource": "ghsa",
