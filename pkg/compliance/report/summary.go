@@ -21,7 +21,7 @@ func BuildSummary(cr *ComplianceReport) *SummaryReport {
 			Name:     control.Name,
 			Severity: control.Severity,
 		}
-		if len(control.Results) == 0 && control.DefaultStatus != "FAIL" { // this validation is mainly for vuln type
+		if len(control.Results) == 0 && control.DefaultStatus != "FAIL" { 
 			ccm.Status = "PASS"
 		} else {
 			ccm.Status = "FAIL"
