@@ -49,6 +49,9 @@ $ trivy k8s cluster --compliance=nsa --report summary
 
 ![k8s Summary Report](../../../imgs/trivy-nsa-summary.png)
 
+***Note*** : The `Issues` column represent the total number of failed checks for this control.
+
+
 An additional report is supported to get all of the detail the output contains, use `--report all`
 ```
 $ trivy k8s cluster --compliance=nsa --report all
