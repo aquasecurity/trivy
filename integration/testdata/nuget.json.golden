@@ -16,6 +16,57 @@
   },
   "Results": [
     {
+      "Target": "datacollector.deps.json",
+      "Class": "lang-pkgs",
+      "Type": "dotnet-core",
+      "Packages": [
+        {
+          "Name": "Newtonsoft.Json",
+          "Version": "9.0.1",
+          "Locations": [
+            {
+              "StartLine": 8,
+              "EndLine": 14
+            }
+          ]
+        }
+      ],
+      "Vulnerabilities": [
+        {
+          "VulnerabilityID": "GHSA-5crp-9r3c-p9vr",
+          "PkgName": "Newtonsoft.Json",
+          "InstalledVersion": "9.0.1",
+          "FixedVersion": "13.0.1",
+          "Layer": {},
+          "SeveritySource": "ghsa",
+          "PrimaryURL": "https://github.com/advisories/GHSA-5crp-9r3c-p9vr",
+          "DataSource": {
+            "ID": "ghsa",
+            "Name": "GitHub Security Advisory Nuget",
+            "URL": "https://github.com/advisories?query=type%3Areviewed+ecosystem%3Anuget"
+          },
+          "Title": "Improper Handling of Exceptional Conditions in Newtonsoft.Json",
+          "Description": "Newtonsoft.Json prior to version 13.0.1 is vulnerable to Insecure Defaults due to improper handling of expressions with high nesting level that lead to StackOverFlow exception or high CPU and RAM usage.",
+          "Severity": "HIGH",
+          "CweIDs": [
+            "CWE-755"
+          ],
+          "CVSS": {
+            "ghsa": {
+              "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H",
+              "V3Score": 7.5
+            }
+          },
+          "References": [
+            "https://alephsecurity.com/2018/10/22/StackOverflowException/",
+            "https://alephsecurity.com/vulns/aleph-2018004"
+          ],
+          "PublishedDate": "2022-06-22T15:08:47Z",
+          "LastModifiedDate": "2022-06-27T18:37:23Z"
+        }
+      ]
+    },
+    {
       "Target": "packages.lock.json",
       "Class": "lang-pkgs",
       "Type": "nuget",
@@ -47,11 +98,7 @@
         {
           "VulnerabilityID": "GHSA-5crp-9r3c-p9vr",
           "PkgName": "Newtonsoft.Json",
-<<<<<<< HEAD
-          "InstalledVersion": "9.0.1",
-=======
           "InstalledVersion": "12.0.3",
->>>>>>> 30c8d75674e06814ae409446f40b9f445a82c33a
           "FixedVersion": "13.0.1",
           "Layer": {},
           "SeveritySource": "ghsa",
@@ -59,17 +106,10 @@
           "DataSource": {
             "ID": "ghsa",
             "Name": "GitHub Security Advisory Nuget",
-<<<<<<< HEAD
-            "URL": "https://github.com/advisories?query=type%%3Areviewed+ecosystem%%3Anuget"
-          },
-          "Title": "Improper Handling of Exceptional Conditions in Newtonsoft.Json",
-          "Description": "Newtonsoft.Json prior to version 13.0.1 is vulnerable to Insecure Defaults due to improper handling of expressions with high nesting level that lead to StackOverFlow exception or high CPU and RAM usage",
-=======
             "URL": "https://github.com/advisories?query=type%3Areviewed+ecosystem%3Anuget"
           },
           "Title": "Improper Handling of Exceptional Conditions in Newtonsoft.Json",
           "Description": "Newtonsoft.Json prior to version 13.0.1 is vulnerable to Insecure Defaults due to improper handling of expressions with high nesting level that lead to StackOverFlow exception or high CPU and RAM usage.",
->>>>>>> 30c8d75674e06814ae409446f40b9f445a82c33a
           "Severity": "HIGH",
           "CweIDs": [
             "CWE-755"
@@ -81,13 +121,8 @@
             }
           },
           "References": [
-<<<<<<< HEAD
-            "JamesNK/Newtonsoft.Json#2457",
-            "JamesNK/Newtonsoft.Json#2462"
-=======
             "https://alephsecurity.com/2018/10/22/StackOverflowException/",
             "https://alephsecurity.com/vulns/aleph-2018004"
->>>>>>> 30c8d75674e06814ae409446f40b9f445a82c33a
           ],
           "PublishedDate": "2022-06-22T15:08:47Z",
           "LastModifiedDate": "2022-06-27T18:37:23Z"
