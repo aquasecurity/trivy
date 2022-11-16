@@ -243,17 +243,18 @@ func emptyLayer(history dimage.HistoryResponseItem) bool {
 		strings.HasPrefix(createdBy, "ARG") {
 		return true
 	}
-	// commands here: 'ADD', COPY, RUN
-	// Also RUN command may not include 'RUN' prefix
-	// e.g. '/bin/sh -c mkdir test '
-	var isEmptyWorkDir bool
 	// buildkit layers with "WORKDIR /" command are empty,
-	if history.Comment == "buildkit.dockerfile.v0" {
-		if createdBy == "WORKDIR /" {
-			isEmptyWorkDir = true
-		}
+	if strings.HasPrefix(history.Comment, "buildkit.dockerfile") && createdBy == "WORKDIR /" {
+		return true
 	} else if strings.HasPrefix(createdBy, "WORKDIR") { // layers build with docker and podman, WORKDIR command is always empty layer.
-		isEmptyWorkDir = true
+		return true
 	}
-	return isEmptyWorkDir
+	// The following instructions could reach here:
+	//     - "ADD"
+	//     - "COPY"
+	//     - "RUN"
+	//         - "RUN" may not include even 'RUN' prefix
+	//            e.g. '/bin/sh -c mkdir test '
+	//     - "WORKDIR", which doesn't meet the above conditions
+	return false
 }
