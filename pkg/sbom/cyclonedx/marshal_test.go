@@ -363,7 +363,8 @@ func TestMarshaler_Marshal(t *testing.T) {
 						Ref: "3ff14136-e09f-4df9-80ea-000000000002",
 						Dependencies: &[]cdx.Dependency{
 							{
-								Ref: "pkg:rpm/centos/binutils@2.30-93.el8?arch=aarch64&distro=centos-8.3.2011",
+								Ref:          "pkg:rpm/centos/binutils@2.30-93.el8?arch=aarch64&distro=centos-8.3.2011",
+								Dependencies: &[]cdx.Dependency{},
 							},
 						},
 					},
@@ -371,10 +372,12 @@ func TestMarshaler_Marshal(t *testing.T) {
 						Ref: "3ff14136-e09f-4df9-80ea-000000000003",
 						Dependencies: &[]cdx.Dependency{
 							{
-								Ref: "pkg:gem/actionpack@7.0.0",
+								Ref:          "pkg:gem/actionpack@7.0.0",
+								Dependencies: &[]cdx.Dependency{},
 							},
 							{
-								Ref: "pkg:gem/actioncontroller@7.0.0",
+								Ref:          "pkg:gem/actioncontroller@7.0.0",
+								Dependencies: &[]cdx.Dependency{},
 							},
 						},
 					},
@@ -382,7 +385,8 @@ func TestMarshaler_Marshal(t *testing.T) {
 						Ref: "3ff14136-e09f-4df9-80ea-000000000004",
 						Dependencies: &[]cdx.Dependency{
 							{
-								Ref: "pkg:gem/actionpack@7.0.0",
+								Ref:          "pkg:gem/actionpack@7.0.0",
+								Dependencies: &[]cdx.Dependency{},
 							},
 						},
 					},
@@ -390,18 +394,22 @@ func TestMarshaler_Marshal(t *testing.T) {
 						Ref: "3ff14136-e09f-4df9-80ea-000000000005",
 						Dependencies: &[]cdx.Dependency{
 							{
-								Ref: "pkg:nuget/Newtonsoft.Json@9.0.1",
+								Ref:          "pkg:nuget/Newtonsoft.Json@9.0.1",
+								Dependencies: &[]cdx.Dependency{},
 							},
 						},
 					},
 					{
-						Ref: "pkg:gem/actioncontroller@7.0.0",
+						Ref:          "pkg:gem/actioncontroller@7.0.0",
+						Dependencies: &[]cdx.Dependency{},
 					},
 					{
-						Ref: "pkg:gem/actionpack@7.0.0",
+						Ref:          "pkg:gem/actionpack@7.0.0",
+						Dependencies: &[]cdx.Dependency{},
 					},
 					{
-						Ref: "pkg:nuget/Newtonsoft.Json@9.0.1",
+						Ref:          "pkg:nuget/Newtonsoft.Json@9.0.1",
+						Dependencies: &[]cdx.Dependency{},
 					},
 					{
 						Ref: "pkg:oci/rails@sha256:a27fd8080b517143cbbbab9dfb7c8571c40d67d534bbdee55bd6c473f432b177?repository_url=index.docker.io%2Flibrary%2Frails&arch=arm64",
@@ -421,7 +429,8 @@ func TestMarshaler_Marshal(t *testing.T) {
 						},
 					},
 					{
-						Ref: "pkg:rpm/centos/binutils@2.30-93.el8?arch=aarch64&distro=centos-8.3.2011",
+						Ref:          "pkg:rpm/centos/binutils@2.30-93.el8?arch=aarch64&distro=centos-8.3.2011",
+						Dependencies: &[]cdx.Dependency{},
 					},
 				},
 				Vulnerabilities: &[]cdx.Vulnerability{
@@ -799,10 +808,12 @@ func TestMarshaler_Marshal(t *testing.T) {
 								Ref: "3ff14136-e09f-4df9-80ea-000000000003",
 							},
 							{
-								Ref: "pkg:gem/actionpack@7.0.0?file_path=tools%2Fproject-john%2Fspecifications%2Factionpack.gemspec",
+								Ref:          "pkg:gem/actionpack@7.0.0?file_path=tools%2Fproject-john%2Fspecifications%2Factionpack.gemspec",
+								Dependencies: &[]cdx.Dependency{},
 							},
 							{
-								Ref: "pkg:gem/actionpack@7.0.1?file_path=tools%2Fproject-doe%2Fspecifications%2Factionpack.gemspec",
+								Ref:          "pkg:gem/actionpack@7.0.1?file_path=tools%2Fproject-doe%2Fspecifications%2Factionpack.gemspec",
+								Dependencies: &[]cdx.Dependency{},
 							},
 						},
 					},
@@ -810,15 +821,22 @@ func TestMarshaler_Marshal(t *testing.T) {
 						Ref: "3ff14136-e09f-4df9-80ea-000000000003",
 						Dependencies: &[]cdx.Dependency{
 							{
-								Ref: "pkg:rpm/centos/acl@1:2.2.53-1.el8?arch=aarch64&distro=centos-8.3.2011",
+								Ref:          "pkg:rpm/centos/acl@1:2.2.53-1.el8?arch=aarch64&distro=centos-8.3.2011",
+								Dependencies: &[]cdx.Dependency{},
 							},
 						},
 					},
 					{
-						Ref: "pkg:gem/actionpack@7.0.0?file_path=tools%2Fproject-john%2Fspecifications%2Factionpack.gemspec",
+						Ref:          "pkg:gem/actionpack@7.0.0?file_path=tools%2Fproject-john%2Fspecifications%2Factionpack.gemspec",
+						Dependencies: &[]cdx.Dependency{},
 					},
 					{
-						Ref: "pkg:gem/actionpack@7.0.1?file_path=tools%2Fproject-doe%2Fspecifications%2Factionpack.gemspec",
+						Ref:          "pkg:gem/actionpack@7.0.1?file_path=tools%2Fproject-doe%2Fspecifications%2Factionpack.gemspec",
+						Dependencies: &[]cdx.Dependency{},
+					},
+					{
+						Ref:          "pkg:rpm/centos/acl@1:2.2.53-1.el8?arch=aarch64&distro=centos-8.3.2011",
+						Dependencies: &[]cdx.Dependency{},
 					},
 				},
 				Vulnerabilities: &[]cdx.Vulnerability{
@@ -989,12 +1007,14 @@ func TestMarshaler_Marshal(t *testing.T) {
 						Ref: "3ff14136-e09f-4df9-80ea-000000000003",
 						Dependencies: &[]cdx.Dependency{
 							{
-								Ref: "pkg:gem/actioncable@6.1.4.1",
+								Ref:          "pkg:gem/actioncable@6.1.4.1",
+								Dependencies: &[]cdx.Dependency{},
 							},
 						},
 					},
 					{
-						Ref: "pkg:gem/actioncable@6.1.4.1",
+						Ref:          "pkg:gem/actioncable@6.1.4.1",
+						Dependencies: &[]cdx.Dependency{},
 					},
 				},
 			},
@@ -1088,12 +1108,14 @@ func TestMarshaler_Marshal(t *testing.T) {
 						Ref: "3ff14136-e09f-4df9-80ea-000000000002",
 						Dependencies: &[]cdx.Dependency{
 							{
-								Ref: "pkg:npm/ruby-typeprof@0.20.1?file_path=usr%2Flocal%2Flib%2Fruby%2Fgems%2F3.1.0%2Fgems%2Ftypeprof-0.21.1%2Fvscode%2Fpackage.json",
+								Ref:          "pkg:npm/ruby-typeprof@0.20.1?file_path=usr%2Flocal%2Flib%2Fruby%2Fgems%2F3.1.0%2Fgems%2Ftypeprof-0.21.1%2Fvscode%2Fpackage.json",
+								Dependencies: &[]cdx.Dependency{},
 							},
 						},
 					},
 					{
-						Ref: "pkg:npm/ruby-typeprof@0.20.1?file_path=usr%2Flocal%2Flib%2Fruby%2Fgems%2F3.1.0%2Fgems%2Ftypeprof-0.21.1%2Fvscode%2Fpackage.json",
+						Ref:          "pkg:npm/ruby-typeprof@0.20.1?file_path=usr%2Flocal%2Flib%2Fruby%2Fgems%2F3.1.0%2Fgems%2Ftypeprof-0.21.1%2Fvscode%2Fpackage.json",
+						Dependencies: &[]cdx.Dependency{},
 					},
 				},
 			},
@@ -1158,12 +1180,10 @@ func TestMarshaler_Marshal(t *testing.T) {
 			marshaler := cyclonedx.NewMarshaler("dev", cyclonedx.WithClock(clock), cyclonedx.WithNewUUID(newUUID))
 			got, err := marshaler.Marshal(tt.inputReport)
 			require.NoError(t, err)
-
 			sort.Slice(*got.Dependencies, func(i, j int) bool {
 				dps := *got.Dependencies
 				return dps[i].Ref < dps[j].Ref
 			})
-
 			assert.Equal(t, tt.want, got)
 		})
 	}
