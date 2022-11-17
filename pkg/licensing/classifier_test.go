@@ -16,13 +16,13 @@ func TestClassifier_FullClassify(t *testing.T) {
 	tests := []struct {
 		name     string
 		filePath string
-		want     types.LicenseFile
+		want     *types.LicenseFile
 		wantErr  assert.ErrorAssertionFunc
 	}{
 		{
 			name:     "C file with AGPL-3.0",
 			filePath: "testdata/licensed.c",
-			want: types.LicenseFile{
+			want: &types.LicenseFile{
 				Type:     types.LicenseTypeHeader,
 				FilePath: "testdata/licensed.c",
 				Findings: []types.LicenseFinding{
@@ -35,17 +35,9 @@ func TestClassifier_FullClassify(t *testing.T) {
 			},
 		},
 		{
-			name:     "C file with no license",
-			filePath: "testdata/unlicensed.c",
-			want: types.LicenseFile{
-				Type:     types.LicenseTypeFile,
-				FilePath: "testdata/unlicensed.c",
-			},
-		},
-		{
 			name:     "Creative commons License file",
 			filePath: "testdata/LICENSE_creativecommons",
-			want: types.LicenseFile{
+			want: &types.LicenseFile{
 				Type:     types.LicenseTypeFile,
 				FilePath: "testdata/LICENSE_creativecommons",
 				Findings: []types.LicenseFinding{
@@ -58,24 +50,9 @@ func TestClassifier_FullClassify(t *testing.T) {
 			},
 		},
 		{
-			name:     "Apache-2.0 CSS File",
-			filePath: "testdata/styles.css",
-			want: types.LicenseFile{
-				Type:     types.LicenseTypeFile,
-				FilePath: "testdata/styles.css",
-				Findings: []types.LicenseFinding{
-					{
-						Name:       "Apache-2.0",
-						Confidence: 1,
-						Link:       "https://spdx.org/licenses/Apache-2.0.html",
-					},
-				},
-			},
-		},
-		{
 			name:     "Apache 2 License file",
 			filePath: "testdata/LICENSE_apache2",
-			want: types.LicenseFile{
+			want: &types.LicenseFile{
 				Type:     types.LicenseTypeFile,
 				FilePath: "testdata/LICENSE_apache2",
 				Findings: []types.LicenseFinding{
@@ -90,10 +67,11 @@ func TestClassifier_FullClassify(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			contents, err := os.ReadFile(tt.filePath)
+			contentFile, err := os.Open(tt.filePath)
 			require.NoError(t, err)
+			defer contentFile.Close()
 
-			got, err := licensing.FullClassify(tt.filePath, contents)
+			got, err := licensing.Classify(tt.filePath, contentFile)
 			require.NoError(t, err)
 			assert.Equal(t, tt.want, got)
 		})
