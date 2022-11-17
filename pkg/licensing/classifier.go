@@ -27,66 +27,45 @@ func initGoogleClassifier() error {
 	return err
 }
 
-// Classify uses a single classifier to detect and classify the license found in a file
-func Classify(r io.Reader) ([]types.LicenseFinding, error) {
+// GoogleClassify uses a single classifier to detect and classify the license found in a file
+func GoogleClassify(filePath string, r io.Reader) (*types.LicenseFile, error) {
+	content, err := io.ReadAll(r)
+	if err != nil {
+		return nil, xerrors.Errorf("unable to read a license file %q: %w", filePath, err)
+	}
 	if err := initGoogleClassifier(); err != nil {
 		return nil, err
 	}
 
-	// Use 'github.com/google/licenseclassifier' to find licenses
-	result, err := cf.MatchFrom(r)
-	if err != nil {
-		return nil, xerrors.Errorf("unable to match licenses: %w", err)
-	}
-
 	var findings []types.LicenseFinding
-	seen := map[string]struct{}{}
-	for _, match := range result.Matches {
-		if match.Confidence <= 0.9 {
-			continue
-		}
-
-		if _, ok := seen[match.Name]; !ok {
-			findings = append(findings, types.LicenseFinding{
-				Name: match.Name,
-			})
-			seen[match.Name] = struct{}{}
-		}
-	}
-	return findings, nil
-}
-
-// GoogleClassify uses Google classifier to detect and classify the license found in a file
-func GoogleClassify(filePath string, contents []byte) (types.LicenseFile, error) {
-	if err := initGoogleClassifier(); err != nil {
-		return types.LicenseFile{}, err
-	}
-	return googleClassifierLicense(filePath, contents), nil
-}
-
-func googleClassifierLicense(filePath string, contents []byte) types.LicenseFile {
 	var matchType types.LicenseType
-	var findings []types.LicenseFinding
-	matcher := cf.Match(cf.Normalize(contents))
-	for _, m := range matcher.Matches {
-		switch m.MatchType {
-		case "Header":
-			matchType = types.LicenseTypeHeader
-		case "License":
-			matchType = types.LicenseTypeFile
+	seen := map[string]struct{}{}
+
+	// Use 'github.com/google/licenseclassifier' to find licenses
+	result := cf.Match(cf.Normalize(content))
+
+	for _, match := range result.Matches {
+		if _, ok := seen[match.Name]; !ok {
+			seen[match.Name] = struct{}{}
+
+			switch match.MatchType {
+			case "Header":
+				matchType = types.LicenseTypeHeader
+			case "License":
+				matchType = types.LicenseTypeFile
+			}
+			licenseLink := fmt.Sprintf("https://spdx.org/licenses/%s.html", match.Name)
+
+			findings = append(findings, types.LicenseFinding{
+				Name:       match.Name,
+				Confidence: match.Confidence,
+				Link:       licenseLink,
+			})
 		}
-		licenseLink := fmt.Sprintf("https://spdx.org/licenses/%s.html", m.Name)
-
-		findings = append(findings, types.LicenseFinding{
-			Name:       m.Name,
-			Confidence: m.Confidence,
-			Link:       licenseLink,
-		})
 	}
-
-	return types.LicenseFile{
+	return &types.LicenseFile{
 		Type:     matchType,
 		FilePath: filePath,
 		Findings: findings,
-	}
+	}, nil
 }

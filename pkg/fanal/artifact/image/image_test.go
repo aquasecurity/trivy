@@ -431,7 +431,11 @@ func TestArtifact_Inspect(t *testing.T) {
 									Type:     types.LicenseTypeDpkg,
 									FilePath: "usr/share/doc/libssl1.1/copyright",
 									Findings: []types.LicenseFinding{
-										{Name: "OpenSSL"},
+										{
+											Name:       "OpenSSL",
+											Confidence: 0.9960474308300395,
+											Link:       "https://spdx.org/licenses/OpenSSL.html",
+										},
 									},
 									PkgName: "libssl1.1",
 								},
@@ -439,7 +443,11 @@ func TestArtifact_Inspect(t *testing.T) {
 									Type:     types.LicenseTypeDpkg,
 									FilePath: "usr/share/doc/openssl/copyright",
 									Findings: []types.LicenseFinding{
-										{Name: "OpenSSL"},
+										{
+											Name:       "OpenSSL",
+											Confidence: 0.9960474308300395,
+											Link:       "https://spdx.org/licenses/OpenSSL.html",
+										},
 									},
 									PkgName: "openssl",
 								},

@@ -49,10 +49,11 @@ func (a *dpkgLicenseAnalyzer) Analyze(_ context.Context, input analyzer.Analysis
 			return nil, xerrors.Errorf("seek error: %w", err)
 		}
 
-		findings, err = licensing.Classify(input.Content)
+		licenseFile, err := licensing.GoogleClassify(input.FilePath, input.Content)
 		if err != nil {
 			return nil, xerrors.Errorf("license classification error: %w", err)
 		}
+		findings = licenseFile.Findings
 	}
 
 	if len(findings) == 0 {

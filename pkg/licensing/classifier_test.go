@@ -16,13 +16,13 @@ func TestClassifier_FullClassify(t *testing.T) {
 	tests := []struct {
 		name     string
 		filePath string
-		want     types.LicenseFile
+		want     *types.LicenseFile
 		wantErr  assert.ErrorAssertionFunc
 	}{
 		{
 			name:     "C file with AGPL-3.0",
 			filePath: "testdata/licensed.c",
-			want: types.LicenseFile{
+			want: &types.LicenseFile{
 				Type:     types.LicenseTypeHeader,
 				FilePath: "testdata/licensed.c",
 				Findings: []types.LicenseFinding{
@@ -37,7 +37,7 @@ func TestClassifier_FullClassify(t *testing.T) {
 		{
 			name:     "Creative commons License file",
 			filePath: "testdata/LICENSE_creativecommons",
-			want: types.LicenseFile{
+			want: &types.LicenseFile{
 				Type:     types.LicenseTypeFile,
 				FilePath: "testdata/LICENSE_creativecommons",
 				Findings: []types.LicenseFinding{
@@ -52,7 +52,7 @@ func TestClassifier_FullClassify(t *testing.T) {
 		{
 			name:     "Apache 2 License file",
 			filePath: "testdata/LICENSE_apache2",
-			want: types.LicenseFile{
+			want: &types.LicenseFile{
 				Type:     types.LicenseTypeFile,
 				FilePath: "testdata/LICENSE_apache2",
 				Findings: []types.LicenseFinding{
@@ -67,10 +67,11 @@ func TestClassifier_FullClassify(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			contents, err := os.ReadFile(tt.filePath)
+			contentFile, err := os.Open(tt.filePath)
 			require.NoError(t, err)
+			defer contentFile.Close()
 
-			got, err := licensing.GoogleClassify(tt.filePath, contents)
+			got, err := licensing.GoogleClassify(tt.filePath, contentFile)
 			require.NoError(t, err)
 			assert.Equal(t, tt.want, got)
 		})
