@@ -42,13 +42,11 @@ func Test_cocoaPodsLockAnalyzer_Analyze(t *testing.T) {
 								DependsOn: []string{
 									"AppCenter/Core/4.2.0",
 								},
-								Indirect: true,
 							},
 							{
-								ID:       "AppCenter/Core/4.2.0",
-								Name:     "AppCenter/Core",
-								Version:  "4.2.0",
-								Indirect: true,
+								ID:      "AppCenter/Core/4.2.0",
+								Name:    "AppCenter/Core",
+								Version: "4.2.0",
 							},
 							{
 								ID:      "AppCenter/Crashes/4.2.0",
@@ -57,7 +55,6 @@ func Test_cocoaPodsLockAnalyzer_Analyze(t *testing.T) {
 								DependsOn: []string{
 									"AppCenter/Core/4.2.0",
 								},
-								Indirect: true,
 							},
 							{
 								ID:      "KeychainAccess/4.2.1",
