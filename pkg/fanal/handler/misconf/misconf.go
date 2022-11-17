@@ -293,7 +293,7 @@ func (h misconfPostHandler) Handle(ctx context.Context, result *analyzer.Analysi
 			return xerrors.Errorf("scan config error: %w", err)
 		}
 
-		misconfs = append(misconfs, resultsToMisconf(t, scanner.Name(), results)...)
+		misconfs = append(misconfs, ResultsToMisconf(t, scanner.Name(), results)...)
 	}
 
 	// Add misconfigurations
@@ -335,7 +335,8 @@ func (h misconfPostHandler) Priority() int {
 	return types.MisconfPostHandlerPriority
 }
 
-func resultsToMisconf(configType string, scannerName string, results scan.Results) []types.Misconfiguration {
+// This function is exported for trivy-plugin-aqua purposes only
+func ResultsToMisconf(configType string, scannerName string, results scan.Results) []types.Misconfiguration {
 	misconfs := map[string]types.Misconfiguration{}
 
 	for _, result := range results {

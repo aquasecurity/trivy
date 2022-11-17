@@ -294,15 +294,15 @@ func NewScanner(config *Config) Scanner {
 	// Use the default rules
 	if config == nil {
 		return Scanner{Global: &Global{
-			Rules:      builtinRules,
+			Rules:      BuiltinRules,
 			AllowRules: builtinAllowRules,
 		}}
 	}
 
-	enabledRules := builtinRules
+	enabledRules := BuiltinRules
 	if len(config.EnableBuiltinRuleIDs) != 0 {
 		// Enable only specified built-in rules
-		enabledRules = lo.Filter(builtinRules, func(v Rule, _ int) bool {
+		enabledRules = lo.Filter(BuiltinRules, func(v Rule, _ int) bool {
 			return slices.Contains(config.EnableBuiltinRuleIDs, v.ID)
 		})
 	}
