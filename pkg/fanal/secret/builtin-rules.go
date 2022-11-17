@@ -76,7 +76,8 @@ const (
 	aws = `(aws)?_?`
 )
 
-var builtinRules = []Rule{
+// This var is exported for trivy-plugin-aqua purposes only
+var BuiltinRules = []Rule{
 	{
 		ID:              "aws-access-key-id",
 		Category:        CategoryAWS,
