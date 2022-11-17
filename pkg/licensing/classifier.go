@@ -27,13 +27,13 @@ func initGoogleClassifier() error {
 	return err
 }
 
-// GoogleClassify uses a single classifier to detect and classify the license found in a file
-func GoogleClassify(filePath string, r io.Reader) (*types.LicenseFile, error) {
+// Classify detects and classifies the license found in a file
+func Classify(filePath string, r io.Reader) (*types.LicenseFile, error) {
 	content, err := io.ReadAll(r)
 	if err != nil {
 		return nil, xerrors.Errorf("unable to read a license file %q: %w", filePath, err)
 	}
-	if err := initGoogleClassifier(); err != nil {
+	if err = initGoogleClassifier(); err != nil {
 		return nil, err
 	}
 
@@ -45,23 +45,28 @@ func GoogleClassify(filePath string, r io.Reader) (*types.LicenseFile, error) {
 	result := cf.Match(cf.Normalize(content))
 
 	for _, match := range result.Matches {
-		if _, ok := seen[match.Name]; !ok {
-			seen[match.Name] = struct{}{}
-
-			switch match.MatchType {
-			case "Header":
-				matchType = types.LicenseTypeHeader
-			case "License":
-				matchType = types.LicenseTypeFile
-			}
-			licenseLink := fmt.Sprintf("https://spdx.org/licenses/%s.html", match.Name)
-
-			findings = append(findings, types.LicenseFinding{
-				Name:       match.Name,
-				Confidence: match.Confidence,
-				Link:       licenseLink,
-			})
+		if match.Confidence <= 0.9 {
+			continue
 		}
+		if _, ok := seen[match.Name]; ok {
+			continue
+		}
+
+		seen[match.Name] = struct{}{}
+
+		switch match.MatchType {
+		case "Header":
+			matchType = types.LicenseTypeHeader
+		case "License":
+			matchType = types.LicenseTypeFile
+		}
+		licenseLink := fmt.Sprintf("https://spdx.org/licenses/%s.html", match.Name)
+
+		findings = append(findings, types.LicenseFinding{
+			Name:       match.Name,
+			Confidence: match.Confidence,
+			Link:       licenseLink,
+		})
 	}
 	return &types.LicenseFile{
 		Type:     matchType,
