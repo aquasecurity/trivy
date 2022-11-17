@@ -2,7 +2,8 @@ FROM golang:1.19.2
 
 # Install protoc (cf. http://google.github.io/proto-lens/installing-protoc.html)
 ENV PROTOC_ZIP=protoc-3.19.4-linux-x86_64.zip
-RUN apt-get update && apt-get install --no-install-recommends -y unzip && rm -rf /var/lib/apt/lists/* && adduser -g "trivy" trivy
+RUN apt-get update && apt-get install --no-install-recommends -y unzip && rm -rf /var/lib/apt/lists/* && \
+    addgroup -S trivy && adduser -S trivy -G trivy
 RUN curl --retry 5 -OL https://github.com/protocolbuffers/protobuf/releases/download/v3.19.4/$PROTOC_ZIP \
     && unzip -o $PROTOC_ZIP -d /usr/local bin/protoc \
     && unzip -o $PROTOC_ZIP -d /usr/local 'include/*' \ 
