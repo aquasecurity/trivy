@@ -11,7 +11,7 @@
 [📖 Documentation][docs]
 </div>
 
-Trivy is a comprehensive and versatile security scanner. Trivy has *scanners* that look for security issues, and *targets* where it can find those issues.
+Trivy ([pronunciation][pronunciation]) is a comprehensive and versatile security scanner. Trivy has *scanners* that look for security issues, and *targets* where it can find those issues.
 
 Targets (what Trivy can scan):
 
@@ -92,32 +92,38 @@ trivy k8s --report summary cluster
 ## Highlights
 
 - Comprehensive vulnerability detection
-  - OS packages (Alpine Linux, Red Hat Universal Base Image, Red Hat Enterprise Linux, CentOS, AlmaLinux, Rocky Linux, CBL-Mariner, Oracle Linux, Debian, Ubuntu, Amazon Linux, openSUSE Leap, SUSE Enterprise Linux, Photon OS and Distroless)
-  - **Language-specific packages** (Bundler, Composer, Pipenv, Poetry, npm, yarn, Cargo, NuGet, Maven, and Go)
-  - High accuracy, especially [Alpine Linux][alpine] and RHEL/CentOS
+    - OS packages (Alpine Linux, Red Hat Universal Base Image, Red Hat Enterprise Linux, CentOS, AlmaLinux, Rocky Linux, CBL-Mariner, Oracle Linux, Debian, Ubuntu, Amazon Linux, openSUSE Leap, SUSE Enterprise Linux, Photon OS and Distroless)
+    - **Language-specific packages** (Bundler, Composer, Pipenv, Poetry, npm, yarn, Cargo, NuGet, Maven, and Go)
+    - High accuracy, especially [Alpine Linux][alpine] and RHEL/CentOS
 - Supply chain security (SBOM support)
-  - Support CycloneDX
-  - Support SPDX
-  - Generating and Scanning SBOM
-  - Leveraging in-toto attestations
-  - Integrated with [Sigstore]
+    - Support CycloneDX
+    - Support SPDX
+    - Generating and Scanning SBOM
+    - Leveraging in-toto attestations
+    - Integrated with [Sigstore]
 - Misconfiguration detection (IaC scanning) 
-  - Wide variety of security checks are provided **out of the box**
-  - Kubernetes, Docker, Terraform, and more
-  - User-defined policies using [OPA Rego][rego]
+    - Wide variety of security checks are provided **out of the box**
+    - Kubernetes, Docker, Terraform, and more
+    - User-defined policies using [OPA Rego][rego]
 - Secret detection
-  - A wide variety of built-in rules are provided **out of the box**
-  - User-defined patterns
-  - Efficient scanning of container images
+    - A wide variety of built-in rules are provided **out of the box**
+    - User-defined patterns
+    - Efficient scanning of container images
 - Simple
-  - Available in apt, yum, brew, dockerhub
-  - **No pre-requisites** such as a database, system libraries, or eny environmental requirements. The binary runs anywhere.
-  - The first scan will finish within 10 seconds (depending on your network). Consequent scans will finish instantaneously.
+    - Available in apt, yum, brew, dockerhub
+    - **No pre-requisites** such as a database, system libraries, or eny environmental requirements. The binary runs anywhere.
+    - The first scan will finish within 10 seconds (depending on your network). Consequent scans will finish instantaneously.
 - Fits your workflow
-  - **Great for CI** such as GitHub Actions, Jenkins, GitLab CI, etc.
-  - Available as extension for IDEs such as vscode, jetbrains, vim
-  - Available as extension for Docker Desktop, Rancher Desktop
-  - See [Ecosystem] section in the documentation.
+    - **Great for CI** such as GitHub Actions, Jenkins, GitLab CI, etc.
+    - Available as extension for IDEs such as vscode, jetbrains, vim
+    - Available as extension for Docker Desktop, Rancher Desktop
+    - See [Ecosystem] section in the documentation.
+
+## FAQ
+
+### How to pronounce the name "Trivy"?
+
+`tri` is pronounced like **tri**gger, `vy` is pronounced like en**vy**.
 
 ---
 
@@ -136,6 +142,7 @@ Contact us about any matter by opening a GitHub Discussion [here][discussions]
 [license]: https://github.com/aquasecurity/trivy/blob/main/LICENSE
 [license-img]: https://img.shields.io/badge/License-Apache%202.0-blue.svg
 [docs]: https://aquasecurity.github.io/trivy
+[pronunciation]: #how-to-pronounce-the-name-trivy
 
 [Installation]:https://aquasecurity.github.io/trivy/latest/getting-started/installation/
 [Ecosystem]: https://aquasecurity.github.io/trivy/latestecosystem/tools
