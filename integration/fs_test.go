@@ -139,6 +139,15 @@ func TestFilesystem(t *testing.T) {
 			golden: "testdata/dotnet.json.golden",
 		},
 		{
+			name: "cocoapods",
+			args: args{
+				securityChecks: "vuln",
+				listAllPkgs:    true,
+				input:          "testdata/fixtures/fs/cocoapods",
+			},
+			golden: "testdata/cocoapods.json.golden",
+		},
+		{
 			name: "dockerfile",
 			args: args{
 				securityChecks: "config",
