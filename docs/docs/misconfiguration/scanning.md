@@ -6,7 +6,7 @@ Also, you can write your own policies in [Rego][rego] to scan JSON, YAML, etc, l
 
 ## Quick start
 
-Simply specify a directory containing IaC files such as Terraform, CloudFormation and Dockerfile.
+Simply specify a directory containing IaC files such as Terraform, CloudFormation, Azure ARM templates, Helm Charts and Dockerfile.
 
 ``` bash
 $ trivy config [YOUR_IaC_DIRECTORY]

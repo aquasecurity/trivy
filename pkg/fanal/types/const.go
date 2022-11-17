@@ -42,6 +42,7 @@ const (
 	Helm           = "helm"
 	Rbac           = "rbac"
 	Cloud          = "cloud"
+	AzureARM       = "azure-arm"
 
 	// Licensing
 	License = "license"

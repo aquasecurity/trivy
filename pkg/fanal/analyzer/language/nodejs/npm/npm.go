@@ -28,7 +28,7 @@ func (a npmLibraryAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisIn
 	p := npm.NewParser()
 	res, err := language.Analyze(types.Npm, input.FilePath, input.Content, p)
 	if err != nil {
-		return nil, xerrors.Errorf("unable to parse package-lock.json: %w", err)
+		return nil, xerrors.Errorf("unable to parse %s: %w", input.FilePath, err)
 	}
 	return res, nil
 }

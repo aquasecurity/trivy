@@ -32,7 +32,7 @@ jobs:
           fi
 
       - name: Lint
-        uses: golangci/golangci-lint-action@v3.2.0
+        uses: golangci/golangci-lint-action@v3.3.0
         with:
           version: v1.49
           args: --deadline=30m

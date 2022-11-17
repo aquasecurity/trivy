@@ -16,7 +16,7 @@ import (
 
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/purl"
-	"github.com/aquasecurity/trivy/pkg/sbom"
+	"github.com/aquasecurity/trivy/pkg/types"
 )
 
 var (
@@ -24,7 +24,7 @@ var (
 )
 
 type SPDX struct {
-	*sbom.SBOM
+	*types.SBOM
 }
 
 func NewTVDecoder(r io.Reader) *TVDecoder {
@@ -178,6 +178,7 @@ func parsePkg(spdxPkg spdx.Package2_2) (*ftypes.Package, error) {
 		break // Take the first file name
 	}
 
+	pkg.ID = lookupAttributionTexts(spdxPkg.PackageAttributionTexts, PropertyPkgID)
 	pkg.Layer.Digest = lookupAttributionTexts(spdxPkg.PackageAttributionTexts, PropertyLayerDigest)
 	pkg.Layer.DiffID = lookupAttributionTexts(spdxPkg.PackageAttributionTexts, PropertyLayerDiffID)
 

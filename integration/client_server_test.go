@@ -311,6 +311,17 @@ func TestClientServerWithFormat(t *testing.T) {
 			golden: "testdata/alpine-310.asff.golden",
 		},
 		{
+			name: "scan secrets with ASFF template",
+			args: csArgs{
+				Command:          "fs",
+				RemoteAddrOption: "--server",
+				Format:           "template",
+				TemplatePath:     "@../contrib/asff.tpl",
+				Target:           "testdata/fixtures/fs/secrets/",
+			},
+			golden: "testdata/secrets.asff.golden",
+		},
+		{
 			name: "alpine 3.10 with html template",
 			args: csArgs{
 				Format:       "template",

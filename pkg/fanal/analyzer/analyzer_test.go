@@ -322,7 +322,14 @@ func TestAnalyzeFile(t *testing.T) {
 					{
 						FilePath: "/lib/apk/db/installed",
 						Packages: []types.Package{
-							{Name: "musl", Version: "1.1.24-r2", SrcName: "musl", SrcVersion: "1.1.24-r2", Licenses: []string{"MIT"}},
+							{
+								ID:         "musl@1.1.24-r2",
+								Name:       "musl",
+								Version:    "1.1.24-r2",
+								SrcName:    "musl",
+								SrcVersion: "1.1.24-r2",
+								Licenses:   []string{"MIT"},
+							},
 						},
 					},
 				},
@@ -556,7 +563,7 @@ func TestAnalyzer_AnalyzerVersions(t *testing.T) {
 			want: map[string]int{
 				"alpine":   1,
 				"apk-repo": 1,
-				"apk":      1,
+				"apk":      2,
 				"bundler":  1,
 				"ubuntu":   1,
 			},
@@ -565,7 +572,7 @@ func TestAnalyzer_AnalyzerVersions(t *testing.T) {
 			name:     "disable analyzers",
 			disabled: []analyzer.Type{analyzer.TypeAlpine, analyzer.TypeApkRepo, analyzer.TypeUbuntu},
 			want: map[string]int{
-				"apk":     1,
+				"apk":     2,
 				"bundler": 1,
 			},
 		},

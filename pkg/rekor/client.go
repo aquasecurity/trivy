@@ -7,20 +7,23 @@ import (
 	httptransport "github.com/go-openapi/runtime/client"
 	"github.com/go-openapi/strfmt"
 	"github.com/sigstore/rekor/pkg/generated/client"
-	"github.com/sigstore/rekor/pkg/generated/client/entries"
+	eclient "github.com/sigstore/rekor/pkg/generated/client/entries"
 	"github.com/sigstore/rekor/pkg/generated/client/index"
 	"github.com/sigstore/rekor/pkg/generated/models"
+	"golang.org/x/exp/slices"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/log"
 )
 
 const (
+	MaxGetEntriesLimit = 10
+
 	treeIDLen = 16
 	uuidLen   = 64
 )
 
-var ErrNoAttestation = xerrors.Errorf("Rekor attestations not found")
+var ErrOverGetEntriesLimit = xerrors.Errorf("over get entries limit")
 
 // EntryID is a hex-format string. The length of the string is 80 or 64.
 // If the length is 80, it consists of two elements, the TreeID and the UUID. If the length is 64,
@@ -86,23 +89,46 @@ func (c *Client) Search(ctx context.Context, hash string) ([]EntryID, error) {
 	return ids, nil
 }
 
-func (c *Client) GetEntry(ctx context.Context, entryID EntryID) (Entry, error) {
-	params := entries.NewGetLogEntryByUUIDParamsWithContext(ctx).WithEntryUUID(entryID.String())
+func (c *Client) GetEntries(ctx context.Context, entryIDs []EntryID) ([]Entry, error) {
+	if len(entryIDs) > MaxGetEntriesLimit {
+		return []Entry{}, ErrOverGetEntriesLimit
+	}
 
-	// TODO: bulk search
-	resp, err := c.Entries.GetLogEntryByUUID(params)
+	ids := make([]string, len(entryIDs))
+	uuids := make([]string, len(entryIDs))
+
+	for i, id := range entryIDs {
+		ids[i] = id.String()
+		uuids[i] = id.UUID
+	}
+
+	params := eclient.NewSearchLogQueryParamsWithContext(ctx).WithEntry(&models.SearchLogQuery{
+		EntryUUIDs: ids,
+	})
+
+	resp, err := c.Entries.SearchLogQuery(params)
 	if err != nil {
-		return Entry{}, xerrors.Errorf("failed to get log entry by UUID: %w", err)
+		return []Entry{}, xerrors.Errorf("failed to fetch log entries by UUIDs: %w", err)
 	}
 
-	entry, found := resp.Payload[entryID.UUID]
-	if !found {
-		return Entry{}, ErrNoAttestation
+	entries := make([]Entry, 0, len(resp.Payload))
+	for _, payload := range resp.Payload {
+		for id, entry := range payload {
+			eid, err := NewEntryID(id)
+			if err != nil {
+				return []Entry{}, xerrors.Errorf("failed to parse response entryID: %w", err)
+			}
+
+			if !slices.Contains(uuids, eid.UUID) {
+				continue
+			}
+
+			if entry.Attestation == nil {
+				continue
+			}
+			entries = append(entries, Entry{Statement: entry.Attestation.Data})
+		}
 	}
 
-	if entry.Attestation == nil {
-		return Entry{}, ErrNoAttestation
-	}
-
-	return Entry{Statement: entry.Attestation.Data}, nil
+	return entries, nil
 }

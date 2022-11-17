@@ -66,6 +66,7 @@
       "Vulnerabilities": [
         {
           "VulnerabilityID": "CVE-2019-18276",
+          "PkgID": "bash@4.2.46-31.el7.x86_64",
           "PkgName": "bash",
           "InstalledVersion": "4.2.46-31.el7",
           "Layer": {
@@ -113,6 +114,7 @@
           "VendorIDs": [
             "RHSA-2019:2304"
           ],
+          "PkgID": "openssl-libs@1.0.2k-16.el7.x86_64",
           "PkgName": "openssl-libs",
           "InstalledVersion": "1:1.0.2k-16.el7",
           "FixedVersion": "1:1.0.2k-19.el7",
@@ -193,6 +195,7 @@
           "VendorIDs": [
             "RHSA-2019:2304"
           ],
+          "PkgID": "openssl-libs@1.0.2k-16.el7.x86_64",
           "PkgName": "openssl-libs",
           "InstalledVersion": "1:1.0.2k-16.el7",
           "FixedVersion": "1:1.0.2k-19.el7",

@@ -1,21 +1,17 @@
 package image
 
 import (
-	"bytes"
 	"context"
-	"encoding/json"
 	"errors"
 	"os"
 	"strings"
 
-	"github.com/in-toto/in-toto-golang/in_toto"
 	"golang.org/x/xerrors"
 
-	"github.com/aquasecurity/trivy/pkg/attestation"
+	sbomatt "github.com/aquasecurity/trivy/pkg/attestation/sbom"
 	"github.com/aquasecurity/trivy/pkg/fanal/artifact/sbom"
 	"github.com/aquasecurity/trivy/pkg/fanal/log"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
-	"github.com/aquasecurity/trivy/pkg/rekor"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
 
@@ -46,42 +42,16 @@ func (a Artifact) inspectSBOMAttestation(ctx context.Context) (ftypes.ArtifactRe
 		return ftypes.ArtifactReference{}, xerrors.Errorf("repo digest error: %w", err)
 	}
 
-	client, err := rekor.NewClient(a.artifactOption.RekorURL)
+	client, err := sbomatt.NewRekor(a.artifactOption.RekorURL)
 	if err != nil {
 		return ftypes.ArtifactReference{}, xerrors.Errorf("failed to create rekor client: %w", err)
 	}
 
-	entryIDs, err := client.Search(ctx, digest)
-	if err != nil {
-		return ftypes.ArtifactReference{}, xerrors.Errorf("failed to search rekor records: %w", err)
-	} else if len(entryIDs) == 0 {
+	raw, err := client.RetrieveSBOM(ctx, digest)
+	if errors.Is(err, sbomatt.ErrNoSBOMAttestation) {
 		return ftypes.ArtifactReference{}, errNoSBOMFound
-	}
-
-	log.Logger.Debugf("Found matching Rekor entries: %s", entryIDs)
-	for _, id := range entryIDs {
-		log.Logger.Debugf("Inspecting Rekor entry: %s", id)
-		ref, err := a.inspectRekorRecord(ctx, client, id)
-		if errors.Is(err, rekor.ErrNoAttestation) || errors.Is(err, errNoSBOMFound) {
-			continue
-		} else if err != nil {
-			return ftypes.ArtifactReference{}, xerrors.Errorf("rekor record inspection error: %w", err)
-		}
-		return ref, nil
-	}
-	return ftypes.ArtifactReference{}, errNoSBOMFound
-}
-
-func (a Artifact) inspectRekorRecord(ctx context.Context, client *rekor.Client, entryID rekor.EntryID) (ftypes.ArtifactReference, error) {
-	entry, err := client.GetEntry(ctx, entryID)
-	if err != nil {
-		return ftypes.ArtifactReference{}, xerrors.Errorf("failed to get rekor entry: %w", err)
-	}
-
-	// TODO: Trivy SBOM should take precedence
-	raw, err := a.parseStatement(entry)
-	if err != nil {
-		return ftypes.ArtifactReference{}, err
+	} else if err != nil {
+		return ftypes.ArtifactReference{}, xerrors.Errorf("failed to retrieve SBOM attestation: %w", err)
 	}
 
 	f, err := os.CreateTemp("", "sbom-*")
@@ -109,30 +79,6 @@ func (a Artifact) inspectRekorRecord(ctx context.Context, client *rekor.Client, 
 	results.Name = a.image.Name()
 
 	return results, nil
-}
-
-func (a Artifact) parseStatement(entry rekor.Entry) (json.RawMessage, error) {
-	// Skip base64-encoded attestation
-	if bytes.HasPrefix(entry.Statement, []byte(`eyJ`)) {
-		return nil, errNoSBOMFound
-	}
-
-	// Parse statement of in-toto attestation
-	var raw json.RawMessage
-	statement := &in_toto.Statement{
-		Predicate: &attestation.CosignPredicate{
-			Data: &raw, // Extract CycloneDX or SPDX
-		},
-	}
-	if err := json.Unmarshal(entry.Statement, &statement); err != nil {
-		return nil, xerrors.Errorf("attestation parse error: %w", err)
-	}
-
-	// TODO: add support for SPDX
-	if statement.PredicateType != in_toto.PredicateCycloneDX {
-		return nil, xerrors.Errorf("unsupported predicate type %s: %w", statement.PredicateType, errNoSBOMFound)
-	}
-	return raw, nil
 }
 
 func repoDigest(img ftypes.Image) (string, error) {

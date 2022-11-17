@@ -9,7 +9,6 @@ import (
 	"path/filepath"
 	"regexp"
 
-	"github.com/liamg/memoryfs"
 	"github.com/mailru/easyjson"
 	"github.com/samber/lo"
 	"github.com/tetratelabs/wazero"
@@ -18,6 +17,8 @@ import (
 	wasi "github.com/tetratelabs/wazero/imports/wasi_snapshot_preview1"
 	"golang.org/x/exp/slices"
 	"golang.org/x/xerrors"
+
+	"github.com/aquasecurity/memoryfs"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/log"
@@ -29,7 +30,7 @@ import (
 )
 
 var (
-	exportFunctions = map[string]interface{}{
+	logFunctions = map[string]api.GoModuleFunc{
 		"debug": logDebug,
 		"info":  logInfo,
 		"warn":  logWarn,
@@ -39,32 +40,52 @@ var (
 	RelativeDir = filepath.Join(".trivy", "modules")
 )
 
-func logDebug(ctx context.Context, m api.Module, offset, size uint32) {
-	buf := readMemory(ctx, m, offset, size)
+// logDebug is defined as an api.GoModuleFunc for lower overhead vs reflection.
+func logDebug(ctx context.Context, mod api.Module, params []uint64) (_ []uint64) {
+	offset, size := uint32(params[0]), uint32(params[1])
+
+	buf := readMemory(ctx, mod, offset, size)
 	if buf != nil {
 		log.Logger.Debug(string(buf))
 	}
+
+	return
 }
 
-func logInfo(ctx context.Context, m api.Module, offset, size uint32) {
-	buf := readMemory(ctx, m, offset, size)
+// logInfo is defined as an api.GoModuleFunc for lower overhead vs reflection.
+func logInfo(ctx context.Context, mod api.Module, params []uint64) (_ []uint64) {
+	offset, size := uint32(params[0]), uint32(params[1])
+
+	buf := readMemory(ctx, mod, offset, size)
 	if buf != nil {
 		log.Logger.Info(string(buf))
 	}
+
+	return
 }
 
-func logWarn(ctx context.Context, m api.Module, offset, size uint32) {
-	buf := readMemory(ctx, m, offset, size)
+// logWarn is defined as an api.GoModuleFunc for lower overhead vs reflection.
+func logWarn(ctx context.Context, mod api.Module, params []uint64) (_ []uint64) {
+	offset, size := uint32(params[0]), uint32(params[1])
+
+	buf := readMemory(ctx, mod, offset, size)
 	if buf != nil {
 		log.Logger.Warn(string(buf))
 	}
+
+	return
 }
 
-func logError(ctx context.Context, m api.Module, offset, size uint32) {
-	buf := readMemory(ctx, m, offset, size)
+// logError is defined as an api.GoModuleFunc for lower overhead vs reflection.
+func logError(ctx context.Context, mod api.Module, params []uint64) (_ []uint64) {
+	offset, size := uint32(params[0]), uint32(params[1])
+
+	buf := readMemory(ctx, mod, offset, size)
 	if buf != nil {
 		log.Logger.Error(string(buf))
 	}
+
+	return
 }
 
 func readMemory(ctx context.Context, m api.Module, offset, size uint32) []byte {
@@ -84,11 +105,8 @@ type Manager struct {
 func NewManager(ctx context.Context) (*Manager, error) {
 	m := &Manager{}
 
-	// WebAssembly 2.0 allows use of any version of TinyGo, including 0.24+.
-	c := wazero.NewRuntimeConfig().WithWasmCore2()
-
 	// Create a new WebAssembly Runtime.
-	m.runtime = wazero.NewRuntimeWithConfig(ctx, c)
+	m.runtime = wazero.NewRuntime(ctx)
 
 	// Load WASM modules in local
 	if err := m.loadModules(ctx); err != nil {
@@ -244,19 +262,26 @@ func newWASMPlugin(ctx context.Context, r wazero.Runtime, code []byte) (*wasmMod
 	ns := r.NewNamespace(ctx)
 
 	// Instantiate a Go-defined module named "env" that exports functions.
-	_, err := r.NewModuleBuilder("env").
-		ExportFunctions(exportFunctions).
-		Instantiate(ctx, ns)
-	if err != nil {
+	envBuilder := r.NewHostModuleBuilder("env")
+
+	// Avoid reflection for logging as it implies an overhead of >1us per call.
+	for n, f := range logFunctions {
+		envBuilder.NewFunctionBuilder().
+			WithGoModuleFunction(f, []api.ValueType{api.ValueTypeI32, api.ValueTypeI32}, []api.ValueType{}).
+			WithParameterNames("offset", "size").
+			Export(n)
+	}
+
+	if _, err := envBuilder.Instantiate(ctx, ns); err != nil {
 		return nil, xerrors.Errorf("wasm module build error: %w", err)
 	}
 
-	if _, err = wasi.NewBuilder(r).Instantiate(ctx, ns); err != nil {
+	if _, err := wasi.NewBuilder(r).Instantiate(ctx, ns); err != nil {
 		return nil, xerrors.Errorf("WASI init error: %w", err)
 	}
 
 	// Compile the WebAssembly module using the default configuration.
-	compiled, err := r.CompileModule(ctx, code, wazero.NewCompileConfig())
+	compiled, err := r.CompileModule(ctx, code)
 	if err != nil {
 		return nil, xerrors.Errorf("module compile error: %w", err)
 	}

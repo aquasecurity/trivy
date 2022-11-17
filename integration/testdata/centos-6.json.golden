@@ -76,6 +76,7 @@
       "Vulnerabilities": [
         {
           "VulnerabilityID": "CVE-2020-29573",
+          "PkgID": "glibc@2.12-1.212.el6.x86_64",
           "PkgName": "glibc",
           "InstalledVersion": "2.12-1.212.el6",
           "Layer": {
@@ -119,6 +120,7 @@
           "VendorIDs": [
             "RHSA-2019:2471"
           ],
+          "PkgID": "openssl@1.0.1e-57.el6.x86_64",
           "PkgName": "openssl",
           "InstalledVersion": "1.0.1e-57.el6",
           "FixedVersion": "1.0.1e-58.el6_10",
