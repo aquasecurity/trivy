@@ -52,6 +52,8 @@ $ trivy fs --server http://localhost:8080 --severity CRITICAL ./integration/test
 **Note**: It's important to specify the protocol (http or https).
 <details>
 <summary>Result</summary>
+
+```
 pom.xml (pom)
 =============
 Total: 24 (CRITICAL: 24)
@@ -173,6 +175,7 @@ Total: 24 (CRITICAL: 24)
 |                                             |                  |          |                   |                                | gadgets in anteros-core               |
 |                                             |                  |          |                   |                                | -->avd.aquasec.com/nvd/cve-2020-9548  |
 +---------------------------------------------+------------------+----------+-------------------+--------------------------------+---------------------------------------+
+```
 </details>
 
 ## Remote scan of root filesystem
@@ -183,6 +186,8 @@ $ trivy rootfs --server http://localhost:8080 --severity CRITICAL /tmp/rootfs
 **Note**: It's important to specify the protocol (http or https).
 <details>
 <summary>Result</summary>
+
+```
 /tmp/rootfs (alpine 3.10.2)
 
 Total: 1 (CRITICAL: 1)
@@ -194,7 +199,7 @@ Total: 1 (CRITICAL: 1)
 │           │                │          │                   │               │ other products, mishandles...                               │
 │           │                │          │                   │               │ https://avd.aquasec.com/nvd/cve-2021-36159                  │
 └───────────┴────────────────┴──────────┴───────────────────┴───────────────┴─────────────────────────────────────────────────────────────┘
-
+```
 </details>
 
 ## Remote scan of git repository
