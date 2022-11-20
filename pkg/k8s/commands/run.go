@@ -8,7 +8,6 @@ import (
 	"golang.org/x/xerrors"
 	"gopkg.in/yaml.v3"
 
-	sp "github.com/aquasecurity/defsec/pkg/spec"
 	"github.com/aquasecurity/trivy-kubernetes/pkg/artifacts"
 	"github.com/aquasecurity/trivy-kubernetes/pkg/k8s"
 	cmd "github.com/aquasecurity/trivy/pkg/commands/artifact"
@@ -84,11 +83,13 @@ func (r *runner) run(ctx context.Context, artifacts []*artifacts.Artifact) error
 	var complianceSpec spec.ComplianceSpec
 	// set scanners types by spec
 	if r.flagOpts.ReportOptions.Compliance != "" {
-		cs := sp.NewSpecLoader().GetSpecByName(r.flagOpts.ReportOptions.Compliance)
-		if err = yaml.Unmarshal([]byte(cs), &complianceSpec); err != nil {
+		cs, err := spec.GetComplianceSpec(r.flagOpts.ReportOptions.Compliance)
+		if err != nil {
+			return xerrors.Errorf("spec loading from file system error: %w", err)
+		}
+		if err = yaml.Unmarshal(cs, &complianceSpec); err != nil {
 			return xerrors.Errorf("yaml unmarshal error: %w", err)
 		}
-
 		securityChecks, err := complianceSpec.SecurityChecks()
 		if err != nil {
 			return xerrors.Errorf("security check error: %w", err)
