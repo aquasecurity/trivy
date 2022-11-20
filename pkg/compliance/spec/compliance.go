@@ -101,14 +101,14 @@ func securityCheckByCheckID(checkID string) types.SecurityCheck {
 }
 
 // GetComlianceSpec accepct compliance flag name/path and return builtin or file system loaded spec
-func GetComplianceSpec(specNameOrPath string) (string, error) {
+func GetComplianceSpec(specNameOrPath string) ([]byte, error) {
 	if strings.HasPrefix(specNameOrPath, "@") {
 		buf, err := os.ReadFile(strings.TrimPrefix(specNameOrPath, "@"))
 		if err != nil {
-			return "", fmt.Errorf("error retrieving compliance spec from path: %w", err)
+			return []byte{}, fmt.Errorf("error retrieving compliance spec from path: %w", err)
 		}
-		return string(buf), nil
+		return buf, nil
 	}
-	return sp.NewSpecLoader().GetSpecByName(specNameOrPath), nil
+	return []byte(sp.NewSpecLoader().GetSpecByName(specNameOrPath)), nil
 
 }

@@ -88,7 +88,7 @@ spec:
   title: nsa # report title 
   description: National Security Agency - Kubernetes Hardening Guidance # description of the report
   relatedResources :
-    - https://www.nsa.gov/Press-Room/News-Highlights/Article/Article/2716980/nsa-cisa-release-kubernetes-hardening-guidance/ # refreance is related to public or internal spec
+    - https://www.nsa.gov/Press-Room/News-Highlights/Article/Article/2716980/nsa-cisa-release-kubernetes-hardening-guidance/ # reference is related to public or internal spec
   version: "1.0" # spec version
   controls:
     - name: Non-root containers # short control naming
@@ -107,7 +107,7 @@ spec:
 
 ## Custom report CLI Commands
 
-To generate the custom report an custom spec file path should be passed to the trivy command with `@` prefix as follow:
+To generate the custom report, an custom spec file path should be passed to the `--compliance` flag with `@` prefix as follow:
 
 
 ```

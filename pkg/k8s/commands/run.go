@@ -87,7 +87,7 @@ func (r *runner) run(ctx context.Context, artifacts []*artifacts.Artifact) error
 		if err != nil {
 			return xerrors.Errorf("spec loading from file system error: %w", err)
 		}
-		if err = yaml.Unmarshal([]byte(cs), &complianceSpec); err != nil {
+		if err = yaml.Unmarshal(cs, &complianceSpec); err != nil {
 			return xerrors.Errorf("yaml unmarshal error: %w", err)
 		}
 		securityChecks, err := complianceSpec.SecurityChecks()
