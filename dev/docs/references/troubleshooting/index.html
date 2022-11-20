@@ -2900,6 +2900,13 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#running-out-of-space-during-image-scans" class="md-nav__link">
+    Running out of space during image scans
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -3321,6 +3328,13 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#running-out-of-space-during-image-scans" class="md-nav__link">
+    Running out of space during image scans
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -3493,6 +3507,18 @@ Follow <a href="../../vulnerability/examples/cache/#cache-backend">this instruct
 <p>Trivy clones remote Git repositories under the <code>/tmp</code> directory before scanning them. If <code>/tmp</code> doesn't work for you, you can change it by setting the <code>TMPDIR</code> environment variable.</p>
 <p>Try:</p>
 <div class="highlight"><pre><span></span><code>$ TMPDIR=/my/custom/path trivy repo ...
+</code></pre></div>
+<h3 id="running-out-of-space-during-image-scans">Running out of space during image scans</h3>
+<div class="admonition error">
+<p class="admonition-title">Error</p>
+<div class="highlight"><pre><span></span><code>image scan failed:
+failed to copy the image:
+write /tmp/fanal-3323732142: no space left on device
+</code></pre></div>
+</div>
+<p>Trivy uses the <code>/tmp</code> directory during image scan, if the image is large or <code>/tmp</code> is of insufficient size then the scan fails You can set the <code>TMPDIR</code> environment variable to use redirect trivy to use a directory with adequate storage.</p>
+<p>Try:</p>
+<div class="highlight"><pre><span></span><code>$ TMPDIR=/my/custom/path trivy image ...
 </code></pre></div>
 <h2 id="homebrew">Homebrew</h2>
 <h3 id="scope-error">Scope error</h3>
