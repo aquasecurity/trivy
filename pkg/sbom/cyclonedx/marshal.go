@@ -190,12 +190,6 @@ func externalRef(bomLink string, bomRef string) (string, error) {
 
 func generateDependencyGraph(dependencies map[string][]string, synonyms map[string]string) (heads []cdx.Dependency, deps []cdx.Dependency) {
 	dependents := map[string]struct{}{}
-	for _, v := range maps.Values(dependencies) {
-		for _, kid := range v {
-			dependents[kid] = struct{}{}
-		}
-	}
-
 	bomDeps := map[string]*cdx.Dependency{}
 
 	for k, references := range dependencies {
@@ -209,6 +203,7 @@ func generateDependencyGraph(dependencies map[string][]string, synonyms map[stri
 					Ref: bomName,
 				}
 			}
+			dependents[bomName] = struct{}{}
 			refs = append(refs, *bomDeps[bomName])
 		}
 
@@ -216,12 +211,14 @@ func generateDependencyGraph(dependencies map[string][]string, synonyms map[stri
 			Ref:          bomRef,
 			Dependencies: &refs,
 		}
-
-		if _, ok := dependents[k]; !ok {
-			heads = append(heads, dependency)
-		}
-
+		bomDeps[bomRef] = &dependency
 		deps = append(deps, dependency)
+	}
+
+	for _, depId := range maps.Keys(bomDeps) {
+		if _, ok := dependents[depId]; !ok {
+			heads = append(heads, *bomDeps[depId])
+		}
 	}
 	return
 }
@@ -234,7 +231,7 @@ func (e *Marshaler) marshalComponents(r types.Report, bomRef string) (*[]cdx.Com
 	vulnMap := map[string]cdx.Vulnerability{}
 	for _, result := range r.Results {
 		bomRefMap := map[string]string{}
-		bomNameMap := map[string]string{}
+		bomPkgIDMap := map[string]string{}
 		depGraph := map[string][]string{}
 		for _, pkg := range result.Packages {
 			pkgComponent, err := pkgToCdxComponent(result.Type, r.Metadata, pkg)
@@ -245,8 +242,6 @@ func (e *Marshaler) marshalComponents(r types.Report, bomRef string) (*[]cdx.Com
 			if _, ok := bomRefMap[pkgID]; !ok {
 				bomRefMap[pkgID] = pkgComponent.BOMRef
 			}
-			bomNameMap[pkg.ID] = pkgComponent.BOMRef
-
 			// When multiple lock files have the same dependency with the same name and version,
 			// "bom-ref" (PURL technically) of Library components may conflict.
 			// In that case, only one Library component will be added and
@@ -265,9 +260,10 @@ func (e *Marshaler) marshalComponents(r types.Report, bomRef string) (*[]cdx.Com
 				// ref. https://cyclonedx.org/use-cases/#inventory
 				components = append(components, pkgComponent)
 			}
+			bomPkgIDMap[pkg.ID] = pkgComponent.BOMRef
 			depGraph[pkg.ID] = pkg.DependsOn
 		}
-		headDependencies, currentDependencies := generateDependencyGraph(depGraph, bomNameMap)
+		headDependencies, currentDependencies := generateDependencyGraph(depGraph, bomPkgIDMap)
 		// add only new dependencies
 		for _, d := range currentDependencies {
 			if _, ok := dependencies[d.Ref]; !ok {
