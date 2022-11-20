@@ -54,7 +54,6 @@
       "Vulnerabilities": [
         {
           "VulnerabilityID": "CVE-2019-15542",
-          "PkgID": "ammonia@1.9.0",
           "PkgName": "ammonia",
           "InstalledVersion": "1.9.0",
           "FixedVersion": "\u003e= 2.1.0",
@@ -92,7 +91,6 @@
         },
         {
           "VulnerabilityID": "CVE-2021-38193",
-          "PkgID": "ammonia@1.9.0",
           "PkgName": "ammonia",
           "InstalledVersion": "1.9.0",
           "FixedVersion": "\u003e= 3.1.0, \u003e= 2.1.3, \u003c 3.0.0",
