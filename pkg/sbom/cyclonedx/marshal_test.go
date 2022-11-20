@@ -2,7 +2,6 @@ package cyclonedx_test
 
 import (
 	"fmt"
-	"sort"
 	"testing"
 	"time"
 
@@ -1180,10 +1179,8 @@ func TestMarshaler_Marshal(t *testing.T) {
 			marshaler := cyclonedx.NewMarshaler("dev", cyclonedx.WithClock(clock), cyclonedx.WithNewUUID(newUUID))
 			got, err := marshaler.Marshal(tt.inputReport)
 			require.NoError(t, err)
-			sort.Slice(*got.Dependencies, func(i, j int) bool {
-				dps := *got.Dependencies
-				return dps[i].Ref < dps[j].Ref
-			})
+			assert.ElementsMatch(t, *tt.want.Dependencies, *got.Dependencies)
+			tt.want.Dependencies, got.Dependencies = nil, nil
 			assert.Equal(t, tt.want, got)
 		})
 	}
