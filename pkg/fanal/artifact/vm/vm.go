@@ -4,13 +4,13 @@ import (
 	"context"
 	"crypto/sha256"
 	"encoding/json"
+	"fmt"
 	"os"
 	"path/filepath"
 	"strings"
 	"sync"
 
 	lru "github.com/hashicorp/golang-lru"
-	"github.com/hashicorp/golang-lru/simplelru"
 	ebsfile "github.com/masahiro331/go-ebs-file"
 	digest "github.com/opencontainers/go-digest"
 	"golang.org/x/sync/semaphore"
@@ -28,7 +28,7 @@ import (
 
 const (
 	parallel  = 5
-	cacheSize = 40 << 20 // 40 MB
+	cacheSize = 2048
 )
 
 type Artifact struct {
@@ -37,25 +37,26 @@ type Artifact struct {
 	analyzer       analyzer.AnalyzerGroup
 	handlerManager handler.Manager
 	walker         walker.VM
-	store          storage.Storage
-	lruCache       simplelru.LRUCache
 
 	artifactOption artifact.Option
 }
 
+var (
+	cleanCacheFlag = "deleteCache"
+)
+
 func (a Artifact) Inspect(ctx context.Context) (reference types.ArtifactReference, err error) {
 	result := analyzer.NewAnalysisResult()
 
-	defer a.lruCache.Purge()
-
-	sr, cacheKey, err := a.store.Open(a.filePath, ctx)
+	s, err := storage.Open(a.filePath, ebsfile.Option{}, ctx)
 	if err != nil {
 		return types.ArtifactReference{}, xerrors.Errorf("failed to open storage: %w", err)
 	}
-	defer a.store.Close()
+	defer s.Close()
 
-	if cacheKey != "" {
-		cacheKey, err = a.vmCacheKey(cacheKey)
+	// For EBS scan, if cache exists in fanal.db, use it.
+	if s.Type == storage.TypeEBS {
+		cacheKey, err := a.vmCacheKey(a.filePath)
 		if err != nil {
 			return types.ArtifactReference{}, xerrors.Errorf("failed to create vm cache key: %w", err)
 		}
@@ -81,8 +82,14 @@ func (a Artifact) Inspect(ctx context.Context) (reference types.ArtifactReferenc
 		limit = semaphore.NewWeighted(1)
 	}
 
+	lruCache, err := lru.New(cacheSize)
+	if err != nil {
+		return types.ArtifactReference{}, xerrors.Errorf("failed to create new lru cache: %w", err)
+	}
+	defer lruCache.Purge()
+
 	// TODO: Always walk from the root directory. Consider whether there is a need to be able to set optional
-	err = a.walker.Walk(sr, a.lruCache, "/", func(filePath string, info os.FileInfo, opener analyzer.Opener) error {
+	err = a.walker.Walk(s.Reader, lruCache, "/", func(filePath string, info os.FileInfo, opener analyzer.Opener) error {
 		opts := analyzer.AnalysisOptions{Offline: a.artifactOption.Offline}
 		path := strings.TrimPrefix(filePath, "/")
 		if err = a.analyzer.AnalyzeFile(ctx, &wg, limit, result, "/", path, info, opener, nil, opts); err != nil {
@@ -114,10 +121,19 @@ func (a Artifact) Inspect(ctx context.Context) (reference types.ArtifactReferenc
 		return types.ArtifactReference{}, xerrors.Errorf("failed to call hooks: %w", err)
 	}
 
-	if cacheKey == "" {
+	var cacheKey string
+	if s.Type == storage.TypeFile {
 		cacheKey, err = a.calcCacheKey(blobInfo)
 		if err != nil {
-			return types.ArtifactReference{}, xerrors.Errorf("failed to calculate a cache key: %w", err)
+			return types.ArtifactReference{}, xerrors.Errorf("failed to calculate a file cache key: %w", err)
+		}
+
+		// If file is targeted, do not cache
+		cacheKey = fmt.Sprintf("%s:%s", cleanCacheFlag, cacheKey)
+	} else if s.Type == storage.TypeEBS {
+		cacheKey, err = a.vmCacheKey(a.filePath)
+		if err != nil {
+			return types.ArtifactReference{}, xerrors.Errorf("failed to calculate a vm cache key: %w", err)
 		}
 	}
 
@@ -140,7 +156,7 @@ func (a Artifact) Inspect(ctx context.Context) (reference types.ArtifactReferenc
 }
 
 func (a Artifact) Clean(reference types.ArtifactReference) error {
-	if strings.HasPrefix(a.store.Type(), storage.TypeEBS) {
+	if !strings.HasPrefix(reference.ID, cleanCacheFlag) {
 		return nil
 	}
 	return a.cache.DeleteBlobs(reference.BlobIDs)
@@ -161,22 +177,12 @@ func NewArtifact(filePath string, c cache.ArtifactCache, opt artifact.Option) (a
 		return nil, xerrors.Errorf("analyzer group error: %w", err)
 	}
 
-	lruCache, err := lru.New(cacheSize)
-	if err != nil {
-		return nil, xerrors.Errorf("failed to create new lru cache: %w", err)
-	}
-	s, err := storage.NewStorage(filePath, ebsfile.Option{}, lruCache)
-	if err != nil {
-		return nil, xerrors.Errorf("failed to new storage: %w", err)
-	}
 	return Artifact{
 		filePath:       filepath.Clean(filePath),
 		cache:          c,
 		handlerManager: handlerManager,
 		analyzer:       a,
 		walker:         walker.NewVM(opt.SkipFiles, opt.SkipDirs, opt.Slow),
-		lruCache:       lruCache,
-		store:          s,
 
 		artifactOption: opt,
 	}, nil

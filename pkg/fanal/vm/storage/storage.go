@@ -2,10 +2,12 @@ package storage
 
 import (
 	"context"
+	"fmt"
 	"io"
 	"os"
 	"strings"
 
+	lru "github.com/hashicorp/golang-lru"
 	ebsfile "github.com/masahiro331/go-ebs-file"
 	"golang.org/x/xerrors"
 
@@ -14,96 +16,99 @@ import (
 )
 
 const (
-	TypeEBS    = "ebs"
-	TypeFile   = "file"
-	EBSPrefix  = "ebs:"
-	FilePrefix = "file:"
+	TypeEBS  = "ebs"
+	TypeFile = "file"
+
+	// default block size 512 KB
+	// Max cache memory size 64 MB
+	storageEBSCacheSize = 128
+
+	// default vmdk block size 64 KB
+	// If vm type vmdk max cache memory size 64 MB
+	storageFILECacheSize = 1024
 )
 
-type Storage interface {
-	Open(string, context.Context) (sr *io.SectionReader, cacheKey string, err error)
-	Close() error
-	Type() string
+type Storage struct {
+	file   *os.File
+	Reader *io.SectionReader
+	cache  *lru.Cache
+	Type   string
 }
 
-type File struct {
-	*os.File
-	cache ebsfile.Cache
-}
+func Open(target string, option ebsfile.Option, c context.Context) (s *Storage, err error) {
+	switch {
+	case strings.HasPrefix(target, fmt.Sprintf("%s:", TypeEBS)):
+		target = strings.TrimPrefix(target, fmt.Sprintf("%s:", TypeEBS))
+		s, err = openEBS(target, option, c)
 
-func (f *File) Open(filePath string, _ context.Context) (*io.SectionReader, string, error) {
-	t := strings.TrimPrefix(filePath, FilePrefix)
-	fp, err := os.Open(t)
-	if err != nil {
-		return nil, "", err
+	case strings.HasPrefix(target, fmt.Sprintf("%s:", TypeFile)):
+		target = strings.TrimPrefix(target, fmt.Sprintf("%s:", TypeFile))
+		s, err = openFile(target)
+
+	default:
+		s, err = openFile(target)
 	}
-	f.File = fp
+	if err != nil {
+		return nil, xerrors.Errorf("failed to open %s error: %w", target, err)
+	}
 
-	reader, err := vm.New(f.File, f.cache)
+	return s, err
+}
+
+func openFile(filePath string) (*Storage, error) {
+	cache, err := lru.New(storageFILECacheSize)
+	if err != nil {
+		return nil, xerrors.Errorf("failed to create new lru cache: %w", err)
+	}
+
+	f, err := os.Open(filePath)
+	if err != nil {
+		return nil, err
+	}
+
+	s := &Storage{
+		file:  f,
+		cache: cache,
+		Type:  TypeFile,
+	}
+	reader, err := vm.New(f, cache)
 	if err != nil {
 		log.Logger.Debugf("new virtual machine scan error: %s, treat as raw image.", err.Error())
 		fi, err := f.Stat()
 		if err != nil {
-			return nil, "", err
+			return nil, err
 		}
-		return io.NewSectionReader(f, 0, fi.Size()), "", nil
-	}
-
-	return reader, "", nil
-}
-
-func (f *File) Close() error {
-	return f.File.Close()
-}
-
-func (f *File) Type() string {
-	return TypeFile
-}
-
-func NewFile(cache vm.Cache) *File {
-	return &File{
-		cache: cache,
-	}
-}
-
-func NewEBS(option ebsfile.Option, cache ebsfile.Cache) *EBS {
-	return &EBS{
-		option: option,
-		cache:  cache,
-	}
-}
-
-type EBS struct {
-	option ebsfile.Option
-	cache  ebsfile.Cache
-}
-
-func (e *EBS) Open(snapshotID string, ctx context.Context) (*io.SectionReader, string, error) {
-	t := strings.TrimPrefix(snapshotID, EBSPrefix)
-	sr, err := ebsfile.Open(t, ctx, e.cache, ebsfile.New(e.option))
-	if err != nil {
-		return nil, "", xerrors.Errorf("failed to open EBS file: %w", err)
-	}
-	return sr, snapshotID, nil
-}
-
-func (e *EBS) Type() string {
-	return TypeEBS
-}
-
-func (e *EBS) Close() error {
-	return nil
-}
-
-func NewStorage(t string, option ebsfile.Option, c vm.Cache) (Storage, error) {
-	var s Storage
-	switch {
-	case strings.HasPrefix(t, EBSPrefix):
-		s = NewEBS(option, c)
-	case strings.HasPrefix(t, FilePrefix):
-		s = NewFile(c)
-	default:
-		s = NewFile(c)
+		s.Reader = io.NewSectionReader(f, 0, fi.Size())
+	} else {
+		s.Reader = reader
 	}
 	return s, nil
+}
+
+func openEBS(snapshotID string, option ebsfile.Option, ctx context.Context) (*Storage, error) {
+	cache, err := lru.New(storageEBSCacheSize)
+	if err != nil {
+		return nil, xerrors.Errorf("failed to create new lru cache: %w", err)
+	}
+
+	sr, err := ebsfile.Open(snapshotID, ctx, cache, ebsfile.New(option))
+	if err != nil {
+		return nil, xerrors.Errorf("failed to open EBS file: %w", err)
+	}
+
+	return &Storage{
+		Reader: sr,
+		cache:  cache,
+		Type:   TypeEBS,
+	}, nil
+}
+
+func (s *Storage) Close() error {
+	if s.cache != nil {
+		s.cache.Purge()
+	}
+	if s.file == nil {
+		return nil
+	}
+	return s.file.Close()
 }
