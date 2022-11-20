@@ -188,28 +188,28 @@ func externalRef(bomLink string, bomRef string) (string, error) {
 	return fmt.Sprintf("%s/%d#%s", strings.Replace(bomLink, "uuid", "cdx", 1), cdx.BOMFileFormatJSON, bomRef), nil
 }
 
-func generateDependencyGraph(dependencies map[string][]string, synonyms map[string]string) (heads []cdx.Dependency, deps []cdx.Dependency) {
+func generateDependencyGraph(sourceDependencies map[string][]string, idBomMap map[string]string) (heads []cdx.Dependency, deps []cdx.Dependency) {
 	dependents := map[string]struct{}{}
 	bomDeps := map[string]*cdx.Dependency{}
 
-	for k, references := range dependencies {
-		bomRef := synonyms[k]
+	for sourceId, sourceDependents := range sourceDependencies {
+		bomRef := idBomMap[sourceId]
 
-		refs := []cdx.Dependency{}
-		for _, refName := range references {
-			bomName := synonyms[refName]
-			if _, ok := bomDeps[bomName]; !ok {
-				bomDeps[bomName] = &cdx.Dependency{
-					Ref: bomName,
+		dependencies := []cdx.Dependency{}
+		for _, sourceDepId := range sourceDependents {
+			dependentBomRef := idBomMap[sourceDepId]
+			if _, ok := bomDeps[dependentBomRef]; !ok {
+				bomDeps[dependentBomRef] = &cdx.Dependency{
+					Ref: dependentBomRef,
 				}
 			}
-			dependents[bomName] = struct{}{}
-			refs = append(refs, *bomDeps[bomName])
+			dependents[dependentBomRef] = struct{}{}
+			dependencies = append(dependencies, *bomDeps[dependentBomRef])
 		}
 
 		dependency := cdx.Dependency{
 			Ref:          bomRef,
-			Dependencies: &refs,
+			Dependencies: &dependencies,
 		}
 		bomDeps[bomRef] = &dependency
 		deps = append(deps, dependency)
