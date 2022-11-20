@@ -4,6 +4,7 @@ import (
 	"github.com/BurntSushi/toml"
 	dio "github.com/aquasecurity/go-dep-parser/pkg/io"
 	"github.com/aquasecurity/go-dep-parser/pkg/types"
+	"github.com/aquasecurity/go-dep-parser/pkg/utils"
 
 	"golang.org/x/xerrors"
 )
@@ -32,7 +33,9 @@ func (p *Parser) Parse(r dio.ReadSeekerAt) ([]types.Library, []types.Dependency,
 
 	var libs []types.Library
 	for _, pkg := range lockfile.Packages {
+		pkgID := utils.PackageID(pkg.Name, pkg.Version)
 		libs = append(libs, types.Library{
+			ID:      pkgID,
 			Name:    pkg.Name,
 			Version: pkg.Version,
 		})
