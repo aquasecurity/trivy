@@ -3,6 +3,9 @@ package secret
 import (
 	"fmt"
 
+	"github.com/aquasecurity/defsec/pkg/rules"
+	"github.com/samber/lo"
+
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 )
 
@@ -76,8 +79,17 @@ const (
 	aws = `(aws)?_?`
 )
 
-// This var is exported for trivy-plugin-aqua purposes only
-var BuiltinRules = []Rule{
+// This function is exported for trivy-plugin-aqua purposes only
+func GetSecretRulesMetadata() []rules.Check {
+	return lo.Map(builtinRules, func(rule Rule, i int) rules.Check {
+		return rules.Check{
+			Name:        rule.ID,
+			Description: rule.Title,
+		}
+	})
+}
+
+var builtinRules = []Rule{
 	{
 		ID:              "aws-access-key-id",
 		Category:        CategoryAWS,
