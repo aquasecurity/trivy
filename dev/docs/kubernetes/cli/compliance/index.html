@@ -1884,6 +1884,33 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#custom-compliance-report" class="md-nav__link">
+    Custom compliance report
+  </a>
+  
+    <nav class="md-nav" aria-label="Custom compliance report">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#compliance-spec-format" class="md-nav__link">
+    Compliance spec format
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#custom-report-cli-commands" class="md-nav__link">
+    Custom report CLI Commands
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -3157,6 +3184,33 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#custom-compliance-report" class="md-nav__link">
+    Custom compliance report
+  </a>
+  
+    <nav class="md-nav" aria-label="Custom compliance report">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#compliance-spec-format" class="md-nav__link">
+    Compliance spec format
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#custom-report-cli-commands" class="md-nav__link">
+    Custom report CLI Commands
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -3338,6 +3392,40 @@ Report also supported in json format examples :</p>
 <div class="highlight"><pre><span></span><code>$ trivy k8s cluster --compliance=nsa --report summary --format json
 </code></pre></div>
 <div class="highlight"><pre><span></span><code>$ trivy k8s cluster --compliance=nsa --report all --format json
+</code></pre></div>
+<h2 id="custom-compliance-report">Custom compliance report</h2>
+<p>The Trivy K8s CLI allows you to create a custom compliance specification and pass it to trivy for generating scan report .</p>
+<p>The report is generated based on scanning result mapping between users define controls and trivy checks ID.
+The supported checks are from two types and can be found at <a href="https://avd.aquasec.com/">Aqua vulnerability DB</a>:
+- <a href="https://avd.aquasec.com/misconfig/">misconfiguration</a>
+- <a href="https://avd.aquasec.com/nvd">vulnerabilities</a> </p>
+<h3 id="compliance-spec-format">Compliance spec format</h3>
+<p>The compliance spec file format should look as follow :</p>
+<div class="highlight"><pre><span></span><code><span class="nn">---</span><span class="w"></span>
+<span class="nt">spec</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;0001&quot;</span><span class="w"> </span><span class="c1"># report unique identifier</span><span class="w"></span>
+<span class="w">  </span><span class="nt">title</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">nsa</span><span class="w"> </span><span class="c1"># report title </span><span class="w"></span>
+<span class="w">  </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">National Security Agency - Kubernetes Hardening Guidance</span><span class="w"> </span><span class="c1"># description of the report</span><span class="w"></span>
+<span class="w">  </span><span class="nt">relatedResources </span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">https://www.nsa.gov/Press-Room/News-Highlights/Article/Article/2716980/nsa-cisa-release-kubernetes-hardening-guidance/</span><span class="w"> </span><span class="c1"># reference is related to public or internal spec</span><span class="w"></span>
+<span class="w">  </span><span class="nt">version</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;1.0&quot;</span><span class="w"> </span><span class="c1"># spec version</span><span class="w"></span>
+<span class="w">  </span><span class="nt">controls</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Non-root containers</span><span class="w"> </span><span class="c1"># short control naming</span><span class="w"></span>
+<span class="w">      </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;Check</span><span class="nv"> </span><span class="s">that</span><span class="nv"> </span><span class="s">container</span><span class="nv"> </span><span class="s">is</span><span class="nv"> </span><span class="s">not</span><span class="nv"> </span><span class="s">running</span><span class="nv"> </span><span class="s">as</span><span class="nv"> </span><span class="s">root&#39;</span><span class="w"> </span><span class="c1"># long control description</span><span class="w"></span>
+<span class="w">      </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;1.0&#39;</span><span class="w"> </span><span class="c1"># control identifier </span><span class="w"></span>
+<span class="w">      </span><span class="nt">checks</span><span class="p">:</span><span class="w">   </span><span class="c1"># list of trivy checks which associated to control</span><span class="w"></span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">AVD-KSV-0012</span><span class="w"> </span><span class="c1"># check ID (midconfiguration ot vulnerability) must start with `AVD-` or `CVE-` </span><span class="w"></span>
+<span class="w">      </span><span class="nt">severity</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;MEDIUM&#39;</span><span class="w"> </span><span class="c1"># control severity</span><span class="w"></span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Immutable container file systems</span><span class="w"></span>
+<span class="w">      </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;Check</span><span class="nv"> </span><span class="s">that</span><span class="nv"> </span><span class="s">container</span><span class="nv"> </span><span class="s">root</span><span class="nv"> </span><span class="s">file</span><span class="nv"> </span><span class="s">system</span><span class="nv"> </span><span class="s">is</span><span class="nv"> </span><span class="s">immutable&#39;</span><span class="w"></span>
+<span class="w">      </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;1.1&#39;</span><span class="w"></span>
+<span class="w">      </span><span class="nt">checks</span><span class="p">:</span><span class="w"></span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">AVD-KSV-0014</span><span class="w"></span>
+<span class="w">      </span><span class="nt">severity</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;LOW&#39;</span><span class="w"></span>
+</code></pre></div>
+<h2 id="custom-report-cli-commands">Custom report CLI Commands</h2>
+<p>To generate the custom report, an custom spec file path should be passed to the <code>--compliance</code> flag with <code>@</code> prefix as follow:</p>
+<div class="highlight"><pre><span></span><code>$ trivy k8s cluster --compliance=@/spec/my_complaince.yaml --report summary
 </code></pre></div>
 
               
