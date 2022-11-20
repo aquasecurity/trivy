@@ -3,7 +3,7 @@ package secret
 import (
 	"fmt"
 
-	"github.com/aquasecurity/defsec/pkg/rules"
+	defsecRules "github.com/aquasecurity/defsec/pkg/rules"
 	"github.com/samber/lo"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
@@ -80,9 +80,9 @@ const (
 )
 
 // This function is exported for trivy-plugin-aqua purposes only
-func GetSecretRulesMetadata() []rules.Check {
-	return lo.Map(builtinRules, func(rule Rule, i int) rules.Check {
-		return rules.Check{
+func GetSecretRulesMetadata() []defsecRules.Check {
+	return lo.Map(builtinRules, func(rule Rule, i int) defsecRules.Check {
+		return defsecRules.Check{
 			Name:        rule.ID,
 			Description: rule.Title,
 		}
