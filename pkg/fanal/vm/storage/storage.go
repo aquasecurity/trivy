@@ -35,11 +35,15 @@ type Storage struct {
 	Type   string
 }
 
-func Open(target string, option ebsfile.Option, c context.Context) (s *Storage, err error) {
+type Option struct {
+	EBS ebsfile.Option
+}
+
+func Open(target string, option Option, c context.Context) (s *Storage, err error) {
 	switch {
 	case strings.HasPrefix(target, fmt.Sprintf("%s:", TypeEBS)):
 		target = strings.TrimPrefix(target, fmt.Sprintf("%s:", TypeEBS))
-		s, err = openEBS(target, option, c)
+		s, err = openEBS(target, option.EBS, c)
 
 	case strings.HasPrefix(target, fmt.Sprintf("%s:", TypeFile)):
 		target = strings.TrimPrefix(target, fmt.Sprintf("%s:", TypeFile))

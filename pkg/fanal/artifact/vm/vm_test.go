@@ -2,9 +2,6 @@ package vm
 
 import (
 	"context"
-	"io"
-	"os"
-	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -16,38 +13,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/fanal/artifact"
 	"github.com/aquasecurity/trivy/pkg/fanal/cache"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
-	"github.com/aquasecurity/trivy/pkg/fanal/vm/storage"
 )
-
-var m storage.Storage = &MockStorage{}
-
-type MockStorage struct {
-	*os.File
-	t string
-}
-
-func (m MockStorage) Type() string {
-	return m.t
-}
-
-func (m MockStorage) Open(s string, _ context.Context) (sr *io.SectionReader, cacheKey string, err error) {
-	t := strings.TrimPrefix(s, storage.EBSPrefix)
-	fp, err := os.Open(t)
-	if err != nil {
-		return nil, "", err
-	}
-	m.File = fp
-	m.t = storage.TypeFile
-	fi, err := m.Stat()
-	if err != nil {
-		return nil, "", err
-	}
-	return io.NewSectionReader(m, 0, fi.Size()), s, nil
-}
-
-func (m MockStorage) Close() error {
-	return m.File.Close()
-}
 
 func TestArtifact_Inspect(t *testing.T) {
 	type fields struct {
@@ -73,7 +39,7 @@ func TestArtifact_Inspect(t *testing.T) {
 			},
 			putBlobExpectation: cache.ArtifactCachePutBlobExpectation{
 				Args: cache.ArtifactCachePutBlobArgs{
-					BlobID: "sha256:d59c327eb3a3c71c8728f5e3d597b1c5dbf25adb54d7e9237a0f1c8a495032d6",
+					BlobID: "deleteCache:sha256:d59c327eb3a3c71c8728f5e3d597b1c5dbf25adb54d7e9237a0f1c8a495032d6",
 					BlobInfo: types.BlobInfo{
 						SchemaVersion: types.BlobJSONSchemaVersion,
 						OS: &types.OS{
@@ -93,7 +59,7 @@ func TestArtifact_Inspect(t *testing.T) {
 			putArtifactExpectations: []cache.ArtifactCachePutArtifactExpectation{
 				{
 					Args: cache.ArtifactCachePutArtifactArgs{
-						ArtifactID: "sha256:d59c327eb3a3c71c8728f5e3d597b1c5dbf25adb54d7e9237a0f1c8a495032d6",
+						ArtifactID: "deleteCache:sha256:d59c327eb3a3c71c8728f5e3d597b1c5dbf25adb54d7e9237a0f1c8a495032d6",
 						ArtifactInfo: types.ArtifactInfo{
 							SchemaVersion: types.ArtifactJSONSchemaVersion,
 						},
@@ -104,58 +70,9 @@ func TestArtifact_Inspect(t *testing.T) {
 			want: types.ArtifactReference{
 				Name: "testdata/AmazonLinux2.img",
 				Type: types.ArtifactVM,
-				ID:   "sha256:d59c327eb3a3c71c8728f5e3d597b1c5dbf25adb54d7e9237a0f1c8a495032d6",
+				ID:   "deleteCache:sha256:d59c327eb3a3c71c8728f5e3d597b1c5dbf25adb54d7e9237a0f1c8a495032d6",
 				BlobIDs: []string{
-					"sha256:d59c327eb3a3c71c8728f5e3d597b1c5dbf25adb54d7e9237a0f1c8a495032d6",
-				},
-			},
-		},
-		{
-			name: "happy path for ebs",
-			fields: fields{
-				dir: "ebs:testdata/AmazonLinux2.img",
-			},
-			missingBlobsExpectation: cache.ArtifactCacheMissingBlobsExpectation{
-				Args: cache.ArtifactCacheMissingBlobsArgs{
-					ArtifactID: "sha256:456519ca7dc707a6521501c83577bf92adb06f0c5dff9074b1c5b0767a3eea97",
-					BlobIDs:    []string{"sha256:456519ca7dc707a6521501c83577bf92adb06f0c5dff9074b1c5b0767a3eea97"},
-				},
-			},
-			putBlobExpectation: cache.ArtifactCachePutBlobExpectation{
-				Args: cache.ArtifactCachePutBlobArgs{
-					BlobID: "sha256:456519ca7dc707a6521501c83577bf92adb06f0c5dff9074b1c5b0767a3eea97",
-					BlobInfo: types.BlobInfo{
-						SchemaVersion: types.BlobJSONSchemaVersion,
-						OS: &types.OS{
-							Family: "amazon",
-							Name:   "2 (Karoo)",
-						},
-						PackageInfos: []types.PackageInfo{
-							{
-								FilePath: "var/lib/rpm/Packages",
-								Packages: expectPackages,
-							},
-						},
-					},
-				},
-				Returns: cache.ArtifactCachePutBlobReturns{},
-			},
-			putArtifactExpectations: []cache.ArtifactCachePutArtifactExpectation{
-				{
-					Args: cache.ArtifactCachePutArtifactArgs{
-						ArtifactID: "sha256:456519ca7dc707a6521501c83577bf92adb06f0c5dff9074b1c5b0767a3eea97",
-						ArtifactInfo: types.ArtifactInfo{
-							SchemaVersion: types.ArtifactJSONSchemaVersion,
-						},
-					},
-				},
-			},
-			want: types.ArtifactReference{
-				Name: "ebs:testdata/AmazonLinux2.img",
-				Type: types.ArtifactVM,
-				ID:   "sha256:456519ca7dc707a6521501c83577bf92adb06f0c5dff9074b1c5b0767a3eea97",
-				BlobIDs: []string{
-					"sha256:456519ca7dc707a6521501c83577bf92adb06f0c5dff9074b1c5b0767a3eea97",
+					"deleteCache:sha256:d59c327eb3a3c71c8728f5e3d597b1c5dbf25adb54d7e9237a0f1c8a495032d6",
 				},
 			},
 		},
@@ -176,13 +93,6 @@ func TestArtifact_Inspect(t *testing.T) {
 
 			a, err := NewArtifact(tt.fields.dir, c, tt.artifactOpt)
 			require.NoError(t, err)
-
-			// Patch Artifact.store for EBS
-			if strings.HasPrefix(tt.fields.dir, storage.EBSPrefix) {
-				va := a.(Artifact)
-				va.store = MockStorage{}
-				a = va
-			}
 
 			got, err := a.Inspect(context.Background())
 			if tt.wantErr != "" {

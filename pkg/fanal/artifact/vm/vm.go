@@ -11,7 +11,6 @@ import (
 	"sync"
 
 	lru "github.com/hashicorp/golang-lru"
-	ebsfile "github.com/masahiro331/go-ebs-file"
 	digest "github.com/opencontainers/go-digest"
 	"golang.org/x/sync/semaphore"
 	"golang.org/x/xerrors"
@@ -37,6 +36,7 @@ type Artifact struct {
 	analyzer       analyzer.AnalyzerGroup
 	handlerManager handler.Manager
 	walker         walker.VM
+	storageOption  storage.Option
 
 	artifactOption artifact.Option
 }
@@ -46,9 +46,8 @@ var (
 )
 
 func (a Artifact) Inspect(ctx context.Context) (reference types.ArtifactReference, err error) {
-	result := analyzer.NewAnalysisResult()
 
-	s, err := storage.Open(a.filePath, ebsfile.Option{}, ctx)
+	s, err := storage.Open(a.filePath, a.storageOption, ctx)
 	if err != nil {
 		return types.ArtifactReference{}, xerrors.Errorf("failed to open storage: %w", err)
 	}
@@ -88,6 +87,7 @@ func (a Artifact) Inspect(ctx context.Context) (reference types.ArtifactReferenc
 	}
 	defer lruCache.Purge()
 
+	result := analyzer.NewAnalysisResult()
 	// TODO: Always walk from the root directory. Consider whether there is a need to be able to set optional
 	err = a.walker.Walk(s.Reader, lruCache, "/", func(filePath string, info os.FileInfo, opener analyzer.Opener) error {
 		opts := analyzer.AnalysisOptions{Offline: a.artifactOption.Offline}
@@ -183,7 +183,7 @@ func NewArtifact(filePath string, c cache.ArtifactCache, opt artifact.Option) (a
 		handlerManager: handlerManager,
 		analyzer:       a,
 		walker:         walker.NewVM(opt.SkipFiles, opt.SkipDirs, opt.Slow),
-
+		storageOption:  storage.Option{},
 		artifactOption: opt,
 	}, nil
 }
