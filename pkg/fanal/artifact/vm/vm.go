@@ -31,7 +31,7 @@ type Artifact struct {
 	analyzer       analyzer.AnalyzerGroup
 	handlerManager handler.Manager
 	walker         walker.VM
-	ebs            *ebsfile.EBS
+	ebs            ebsfile.EBSAPI
 
 	artifactOption artifact.Option
 }
@@ -134,7 +134,13 @@ func (a Artifact) Inspect(ctx context.Context) (reference types.ArtifactReferenc
 	}
 
 	var cacheKey string
-	if s.Type == storage.TypeFile {
+	switch s.Type {
+	case storage.TypeEBS:
+		cacheKey, err = a.vmCacheKey(a.filePath)
+		if err != nil {
+			return types.ArtifactReference{}, xerrors.Errorf("failed to calculate a vm cache key: %w", err)
+		}
+	case storage.TypeFile, storage.TypeVM:
 		cacheKey, err = a.calcCacheKey(blobInfo)
 		if err != nil {
 			return types.ArtifactReference{}, xerrors.Errorf("failed to calculate a file cache key: %w", err)
@@ -142,11 +148,8 @@ func (a Artifact) Inspect(ctx context.Context) (reference types.ArtifactReferenc
 
 		// If file is targeted, do not cache
 		cacheKey = fmt.Sprintf("%s:%s", cleanCacheFlag, cacheKey)
-	} else if s.Type == storage.TypeEBS {
-		cacheKey, err = a.vmCacheKey(a.filePath)
-		if err != nil {
-			return types.ArtifactReference{}, xerrors.Errorf("failed to calculate a vm cache key: %w", err)
-		}
+	default:
+		return types.ArtifactReference{}, xerrors.Errorf("invalid storage type(%s) error", s.Type)
 	}
 
 	if err = a.cache.PutBlob(cacheKey, blobInfo); err != nil {

@@ -13,11 +13,13 @@ import (
 	"github.com/aquasecurity/trivy/pkg/fanal/artifact"
 	"github.com/aquasecurity/trivy/pkg/fanal/cache"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
+	ebsfile "github.com/masahiro331/go-ebs-file"
 )
 
 func TestArtifact_Inspect(t *testing.T) {
 	type fields struct {
 		dir string
+		ebs ebsfile.EBSAPI
 	}
 	tests := []struct {
 		name                    string
@@ -77,6 +79,58 @@ func TestArtifact_Inspect(t *testing.T) {
 			},
 		},
 		{
+			name: "happy path for ebs",
+			fields: fields{
+				dir: "ebs:testdata/AmazonLinux2.img",
+				// blockSize: 512 KB, volumeSize: 40MB
+				ebs: ebsfile.NewMockEBS("testdata/AmazonLinux2.img", 512<<10, 40<<20),
+			},
+			missingBlobsExpectation: cache.ArtifactCacheMissingBlobsExpectation{
+				Args: cache.ArtifactCacheMissingBlobsArgs{
+					ArtifactID: "sha256:456519ca7dc707a6521501c83577bf92adb06f0c5dff9074b1c5b0767a3eea97",
+					BlobIDs:    []string{"sha256:456519ca7dc707a6521501c83577bf92adb06f0c5dff9074b1c5b0767a3eea97"},
+				},
+			},
+			putBlobExpectation: cache.ArtifactCachePutBlobExpectation{
+				Args: cache.ArtifactCachePutBlobArgs{
+					BlobID: "sha256:456519ca7dc707a6521501c83577bf92adb06f0c5dff9074b1c5b0767a3eea97",
+					BlobInfo: types.BlobInfo{
+						SchemaVersion: types.BlobJSONSchemaVersion,
+						OS: &types.OS{
+							Family: "amazon",
+							Name:   "2 (Karoo)",
+						},
+						PackageInfos: []types.PackageInfo{
+							{
+								FilePath: "var/lib/rpm/Packages",
+								Packages: expectPackages,
+							},
+						},
+					},
+				},
+				Returns: cache.ArtifactCachePutBlobReturns{},
+			},
+			putArtifactExpectations: []cache.ArtifactCachePutArtifactExpectation{
+				{
+					Args: cache.ArtifactCachePutArtifactArgs{
+						ArtifactID: "sha256:456519ca7dc707a6521501c83577bf92adb06f0c5dff9074b1c5b0767a3eea97",
+						ArtifactInfo: types.ArtifactInfo{
+							SchemaVersion: types.ArtifactJSONSchemaVersion,
+						},
+					},
+				},
+			},
+			want: types.ArtifactReference{
+				Name: "ebs:testdata/AmazonLinux2.img",
+				Type: types.ArtifactVM,
+				ID:   "sha256:456519ca7dc707a6521501c83577bf92adb06f0c5dff9074b1c5b0767a3eea97",
+				BlobIDs: []string{
+					"sha256:456519ca7dc707a6521501c83577bf92adb06f0c5dff9074b1c5b0767a3eea97",
+				},
+			},
+		},
+
+		{
 			name: "sad path with no such directory",
 			fields: fields{
 				dir: "./testdata/unknown",
@@ -95,7 +149,9 @@ func TestArtifact_Inspect(t *testing.T) {
 			require.NoError(t, err)
 
 			artifact := a.(Artifact)
-			artifact.ebs = nil
+			if tt.fields.ebs != nil {
+				artifact.ebs = tt.fields.ebs
+			}
 
 			got, err := artifact.Inspect(context.Background())
 			if tt.wantErr != "" {

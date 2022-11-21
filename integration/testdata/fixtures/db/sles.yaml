@@ -1,6 +1,6 @@
 - bucket: "SUSE Linux Enterprise 15.4"
   pairs:
-    - bucket: bind
+    - bucket: bind-utils
       pairs:
         - key: SUSE-SU-2022:2713-1
           value:

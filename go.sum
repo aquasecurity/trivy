@@ -1119,8 +1119,8 @@ github.com/markbates/safe v1.0.1/go.mod h1:nAqgmRi7cY2nqMc92/bSEeQA+R4OheNU2T1kN
 github.com/marstr/guid v1.1.0/go.mod h1:74gB1z2wpxxInTG6yaqA7KrtM0NZ+RbrcqDvYHefzho=
 github.com/masahiro331/go-disk v0.0.0-20220919035250-c8da316f91ac h1:QyRucnGOLHJag1eB9CtuZwZk+/LpvTSYr5mnFLLFlgA=
 github.com/masahiro331/go-disk v0.0.0-20220919035250-c8da316f91ac/go.mod h1:J7Vb0sf0JzOhT0uHTeCqO6dqP/ELVcQvQ6yQ/56ZRGw=
-github.com/masahiro331/go-ebs-file v0.0.0-20221121021408-ea7f7f977afc h1:3QYYrmS+Wr7ofxSiqdyiXAwwiM1bBYIz60TBVkZWkFw=
-github.com/masahiro331/go-ebs-file v0.0.0-20221121021408-ea7f7f977afc/go.mod h1:FlIy9xS0Urads8c1uiDRZYPk5hJbVIMf0ShkVhTEEVY=
+github.com/masahiro331/go-ebs-file v0.0.0-20221121094110-3aa15aae4a7c h1:gniGpvSgQzA/PfMqtBb50gWEp5Ub4z5hwI3HM81+sqU=
+github.com/masahiro331/go-ebs-file v0.0.0-20221121094110-3aa15aae4a7c/go.mod h1:FlIy9xS0Urads8c1uiDRZYPk5hJbVIMf0ShkVhTEEVY=
 github.com/masahiro331/go-ext4-filesystem v0.0.0-20221016160854-4b40d7ee6193 h1:1005OfmUUdBL4540DpkovaDrV+lkiEda7Nb/t792LEg=
 github.com/masahiro331/go-ext4-filesystem v0.0.0-20221016160854-4b40d7ee6193/go.mod h1:X08d9nmB+eg7Gj2XWAOkiG8lbMFbgGXPsDKEvkFwyF8=
 github.com/masahiro331/go-mvn-version v0.0.0-20210429150710-d3157d602a08 h1:AevUBW4cc99rAF8q8vmddIP8qd/0J5s/UyltGbp66dg=

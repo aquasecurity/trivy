@@ -18,6 +18,7 @@ import (
 const (
 	TypeEBS  = "ebs"
 	TypeFile = "file"
+	TypeVM   = "vm"
 
 	// default block size 512 KB
 	// Max cache memory size 64 MB
@@ -69,7 +70,6 @@ func openFile(filePath string) (*Storage, error) {
 	s := &Storage{
 		file:  f,
 		cache: cache,
-		Type:  TypeFile,
 	}
 	reader, err := vm.New(f, cache)
 	if err != nil {
@@ -79,8 +79,10 @@ func openFile(filePath string) (*Storage, error) {
 			return nil, err
 		}
 		s.Reader = io.NewSectionReader(f, 0, fi.Size())
+		s.Type = TypeFile
 	} else {
 		s.Reader = reader
+		s.Type = TypeVM
 	}
 	return s, nil
 }

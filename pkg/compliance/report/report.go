@@ -57,8 +57,7 @@ type ControlCheckSummary struct {
 	ID        string
 	Name      string
 	Severity  string
-	TotalPass float32
-	TotalFail float32
+	TotalFail *int `json:",omitempty"`
 }
 
 // Writer defines the result write operation

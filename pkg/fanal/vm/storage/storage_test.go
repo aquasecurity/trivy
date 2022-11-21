@@ -49,7 +49,7 @@ func TestOpen(t *testing.T) {
 			name: "happy path for ebs",
 			args: args{
 				target: "ebs:test-snapshot-id",
-				ebs:    mockEBS{},
+				ebs:    ebsfile.NewMockEBS("testdata/rawdata.img", 512<<10, 1<<30),
 			},
 			wantS: &Storage{
 				Type: "ebs",
@@ -77,7 +77,7 @@ func TestOpen(t *testing.T) {
 			}
 			assert.NotNil(t, gotS.Reader)
 			assert.NotNil(t, gotS.cache)
-			if tt.wantS.Type == "file" {
+			if tt.wantS.Type != "ebs" {
 				assert.NotNil(t, gotS.file)
 			}
 		})
