@@ -371,11 +371,11 @@ func TestMarshaler_Marshal(t *testing.T) {
 						Ref: "3ff14136-e09f-4df9-80ea-000000000003",
 						Dependencies: &[]cdx.Dependency{
 							{
-								Ref:          "pkg:gem/actionpack@7.0.0",
+								Ref:          "pkg:gem/actioncontroller@7.0.0",
 								Dependencies: &[]cdx.Dependency{},
 							},
 							{
-								Ref:          "pkg:gem/actioncontroller@7.0.0",
+								Ref:          "pkg:gem/actionpack@7.0.0",
 								Dependencies: &[]cdx.Dependency{},
 							},
 						},

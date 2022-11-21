@@ -188,7 +188,10 @@ func externalRef(bomLink string, bomRef string) (string, error) {
 	return fmt.Sprintf("%s/%d#%s", strings.Replace(bomLink, "uuid", "cdx", 1), cdx.BOMFileFormatJSON, bomRef), nil
 }
 
-func generateDependencyGraph(sourceDependencies map[string][]string, idBomMap map[string]string) (heads []cdx.Dependency, deps []cdx.Dependency) {
+func generateDependencyGraph(sourceDependencies map[string][]string, idBomMap map[string]string) ([]cdx.Dependency, []cdx.Dependency) {
+	heads := []cdx.Dependency{}
+	deps := []cdx.Dependency{}
+
 	dependents := map[string]struct{}{}
 	bomDeps := map[string]*cdx.Dependency{}
 
@@ -206,6 +209,9 @@ func generateDependencyGraph(sourceDependencies map[string][]string, idBomMap ma
 			dependents[dependentBomRef] = struct{}{}
 			dependencies = append(dependencies, *bomDeps[dependentBomRef])
 		}
+		sort.SliceStable(dependencies, func(i, j int) bool {
+			return dependencies[i].Ref < dependencies[j].Ref
+		})
 
 		dependency := cdx.Dependency{
 			Ref:          bomRef,
@@ -220,7 +226,14 @@ func generateDependencyGraph(sourceDependencies map[string][]string, idBomMap ma
 			heads = append(heads, *bomDeps[depId])
 		}
 	}
-	return
+	sort.SliceStable(heads, func(i, j int) bool {
+		return heads[i].Ref < heads[j].Ref
+	})
+	sort.SliceStable(deps, func(i, j int) bool {
+		return deps[i].Ref < deps[j].Ref
+	})
+
+	return heads, deps
 }
 
 func (e *Marshaler) marshalComponents(r types.Report, bomRef string) (*[]cdx.Component, *[]cdx.Dependency, *[]cdx.Vulnerability, error) {
