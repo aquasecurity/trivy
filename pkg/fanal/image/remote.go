@@ -11,9 +11,11 @@ import (
 	"github.com/google/go-containerregistry/pkg/name"
 	v1 "github.com/google/go-containerregistry/pkg/v1"
 	"github.com/google/go-containerregistry/pkg/v1/remote"
+	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/image/token"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
+	"github.com/aquasecurity/trivy/pkg/log"
 )
 
 func tryRemote(ctx context.Context, imageName string, ref name.Reference, option types.DockerOption) (types.Image, error) {
@@ -26,7 +28,7 @@ func tryRemote(ctx context.Context, imageName string, ref name.Reference, option
 	}
 
 	if option.Platform != "" {
-		s, err := v1.ParsePlatform(option.Platform)
+		s, err := parsePlatform(ref, option.Platform)
 		if err != nil {
 			return nil, err
 		}
@@ -63,6 +65,40 @@ func tryRemote(ctx context.Context, imageName string, ref name.Reference, option
 		descriptor: desc,
 	}, nil
 
+}
+
+func parsePlatform(ref name.Reference, p string) (*v1.Platform, error) {
+	// OS wildcard, implicitly pick up the first os found in the image list.
+	// e.g. */amd64
+	if strings.HasPrefix(p, "*/") {
+		index, err := remote.Index(ref)
+		if err != nil {
+			// Not a multi-arch image
+			if _, ok := err.(*remote.ErrSchema1); ok {
+				log.Logger.Debug("Ignored --platform as the image is not multi-arch")
+				return nil, nil
+			}
+			return nil, xerrors.Errorf("remote index error: %w", err)
+		}
+		m, err := index.IndexManifest()
+		if err != nil {
+			return nil, xerrors.Errorf("remote index manifest error: %w", err)
+		}
+		if len(m.Manifests) == 0 {
+			log.Logger.Debug("Ignored --platform as the image is not multi-arch")
+			return nil, nil
+		}
+		if m.Manifests[0].Platform != nil {
+			// Replace with the detected OS
+			// e.g. */amd64 => linux/amd64
+			p = m.Manifests[0].Platform.OS + strings.TrimPrefix(p, "*")
+		}
+	}
+	platform, err := v1.ParsePlatform(p)
+	if err != nil {
+		return nil, xerrors.Errorf("platform parse error: %w", err)
+	}
+	return platform, nil
 }
 
 type remoteImage struct {

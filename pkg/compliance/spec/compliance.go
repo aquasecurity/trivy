@@ -1,11 +1,14 @@
 package spec
 
 import (
+	"fmt"
+	"os"
 	"strings"
 
 	"golang.org/x/exp/maps"
 	"golang.org/x/xerrors"
 
+	sp "github.com/aquasecurity/defsec/pkg/spec"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
 
@@ -95,4 +98,17 @@ func securityCheckByCheckID(checkID string) types.SecurityCheck {
 	default:
 		return types.SecurityCheckUnknown
 	}
+}
+
+// GetComlianceSpec accepct compliance flag name/path and return builtin or file system loaded spec
+func GetComplianceSpec(specNameOrPath string) ([]byte, error) {
+	if strings.HasPrefix(specNameOrPath, "@") {
+		buf, err := os.ReadFile(strings.TrimPrefix(specNameOrPath, "@"))
+		if err != nil {
+			return []byte{}, fmt.Errorf("error retrieving compliance spec from path: %w", err)
+		}
+		return buf, nil
+	}
+	return []byte(sp.NewSpecLoader().GetSpecByName(specNameOrPath)), nil
+
 }
