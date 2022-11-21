@@ -37,7 +37,8 @@ func archiveStandaloneScanner(ctx context.Context, conf ScannerConfig) (scanner.
 // imageRemoteScanner initializes a container image scanner in client/server mode
 // $ trivy image --server localhost:4954 alpine:3.15
 func imageRemoteScanner(ctx context.Context, conf ScannerConfig) (
-	scanner.Scanner, func(), error) {
+	scanner.Scanner, func(), error,
+) {
 	// Scan an image in Docker Engine, Docker Registry, etc.
 	dockerOpt, err := types.GetDockerOption(conf.ArtifactOption.InsecureSkipTLS, conf.ArtifactOption.Platform)
 	if err != nil {
@@ -76,7 +77,7 @@ func filesystemStandaloneScanner(ctx context.Context, conf ScannerConfig) (scann
 func filesystemRemoteScanner(ctx context.Context, conf ScannerConfig) (scanner.Scanner, func(), error) {
 	s, cleanup, err := initializeRemoteFilesystemScanner(ctx, conf.Target, conf.ArtifactCache, conf.RemoteOption, conf.ArtifactOption)
 	if err != nil {
-		return scanner.Scanner{}, func() {}, xerrors.Errorf("unable to initialize a filesystem scanner: %w", err)
+		return scanner.Scanner{}, func() {}, xerrors.Errorf("unable to initialize a remote filesystem scanner: %w", err)
 	}
 	return s, cleanup, nil
 }
