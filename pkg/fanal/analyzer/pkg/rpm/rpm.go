@@ -79,7 +79,7 @@ func (a rpmPkgAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInput)
 	}, nil
 }
 
-func (a rpmPkgAnalyzer) parsePkgInfo(rc io.Reader) (types.Packages, []string, error) {
+func (a rpmPkgAnalyzer) parsePkgInfo(rc io.Reader) (types.Packages, map[string][]string, error) {
 	filePath, err := writeToTempFile(rc)
 	if err != nil {
 		return nil, nil, xerrors.Errorf("temp file error: %w", err)
@@ -102,7 +102,7 @@ func (a rpmPkgAnalyzer) parsePkgInfo(rc io.Reader) (types.Packages, []string, er
 	}
 
 	var pkgs []types.Package
-	var installedFiles []string
+	installedFiles := make(map[string][]string, len(pkgList))
 	provides := map[string]string{}
 	for _, pkg := range pkgList {
 		arch := pkg.Arch
@@ -131,23 +131,25 @@ func (a rpmPkgAnalyzer) parsePkgInfo(rc io.Reader) (types.Packages, []string, er
 		}
 
 		p := types.Package{
-			ID:              fmt.Sprintf("%s@%s-%s.%s", pkg.Name, pkg.Version, pkg.Release, pkg.Arch),
-			Name:            pkg.Name,
-			Epoch:           pkg.EpochNum(),
-			Version:         pkg.Version,
-			Release:         pkg.Release,
-			Arch:            arch,
-			SrcName:         srcName,
-			SrcEpoch:        pkg.EpochNum(), // NOTE: use epoch of binary package as epoch of src package
-			SrcVersion:      srcVer,
-			SrcRelease:      srcRel,
-			Modularitylabel: pkg.Modularitylabel,
-			Licenses:        []string{pkg.License},
-			DependsOn:       pkg.Requires, // Will be replaced with package IDs
-			Maintainer:      pkg.Vendor,
+			ID:                   fmt.Sprintf("%s@%s-%s.%s", pkg.Name, pkg.Version, pkg.Release, pkg.Arch),
+			Name:                 pkg.Name,
+			Epoch:                pkg.EpochNum(),
+			Version:              pkg.Version,
+			Release:              pkg.Release,
+			Arch:                 arch,
+			SrcName:              srcName,
+			SrcEpoch:             pkg.EpochNum(), // NOTE: use epoch of binary package as epoch of src package
+			SrcVersion:           srcVer,
+			SrcRelease:           srcRel,
+			Modularitylabel:      pkg.Modularitylabel,
+			Licenses:             []string{pkg.License},
+			DependsOn:            pkg.Requires, // Will be replaced with package IDs
+			Maintainer:           pkg.Vendor,
+			SystemInstalledFiles: files,
 		}
+
 		pkgs = append(pkgs, p)
-		installedFiles = append(installedFiles, files...)
+		installedFiles[p.Name] = files
 
 		// It contains mappings between package-providing files and package IDs
 		// e.g.

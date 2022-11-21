@@ -6,6 +6,7 @@ const (
 	SystemFileFilteringPostHandler HandlerType = "system-file-filter"
 	GoModMergePostHandler          HandlerType = "go-mod-merge"
 	MisconfPostHandler             HandlerType = "misconf"
+	DpkgPostHandler                HandlerType = "dpkg"
 	UnpackagedPostHandler          HandlerType = "unpackaged"
 
 	// SystemFileFilteringPostHandlerPriority should be higher than other handlers.
@@ -14,5 +15,6 @@ const (
 
 	GoModMergePostHandlerPriority = 50
 	MisconfPostHandlerPriority    = 50
+	DpkgPostHandlerPriority       = 50
 	UnpackagedPostHandlerPriority = 50
 )

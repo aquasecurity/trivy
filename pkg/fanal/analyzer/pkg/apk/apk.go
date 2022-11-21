@@ -5,7 +5,7 @@ import (
 	"context"
 	"fmt"
 	"os"
-	"path"
+	"path/filepath"
 	"sort"
 	"strings"
 
@@ -44,13 +44,13 @@ func (a alpinePkgAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInp
 	}, nil
 }
 
-func (a alpinePkgAnalyzer) parseApkInfo(scanner *bufio.Scanner) ([]types.Package, []string) {
+func (a alpinePkgAnalyzer) parseApkInfo(scanner *bufio.Scanner) ([]types.Package, map[string][]string) {
 	var (
 		pkgs           []types.Package
 		pkg            types.Package
 		version        string
 		dir            string
-		installedFiles []string
+		installedFiles = make(map[string][]string)
 		provides       = map[string]string{} // for dependency graph
 	)
 
@@ -86,7 +86,7 @@ func (a alpinePkgAnalyzer) parseApkInfo(scanner *bufio.Scanner) ([]types.Package
 		case "F:":
 			dir = line[2:]
 		case "R:":
-			installedFiles = append(installedFiles, path.Join(dir, line[2:]))
+			pkg.SystemInstalledFiles = append(pkg.SystemInstalledFiles, filepath.Join(dir, line[2:]))
 		case "p:": // provides (corresponds to provides in PKGINFO, concatenated by spaces into a single line)
 			a.parseProvides(line, pkg.ID, provides)
 		case "D:": // dependencies (corresponds to depend in PKGINFO, concatenated by spaces into a single line)
@@ -104,6 +104,9 @@ func (a alpinePkgAnalyzer) parseApkInfo(scanner *bufio.Scanner) ([]types.Package
 	// in case of last paragraph
 	if !pkg.Empty() {
 		pkgs = append(pkgs, pkg)
+	}
+	if pkg.Name != "" {
+		installedFiles[pkg.Name] = pkg.SystemInstalledFiles
 	}
 
 	pkgs = a.uniquePkgs(pkgs)
