@@ -1,32 +1,25 @@
 package walker
 
 import (
-	"bytes"
 	"errors"
 	"io"
 	"io/fs"
-	"os"
 	"path/filepath"
 	"strings"
-	"sync"
 
 	"github.com/hashicorp/go-multierror"
+	lru "github.com/hashicorp/golang-lru"
 	"github.com/masahiro331/go-disk"
 	"github.com/masahiro331/go-disk/types"
+	"golang.org/x/exp/slices"
 	"golang.org/x/xerrors"
 
 	dio "github.com/aquasecurity/go-dep-parser/pkg/io"
-	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
-	"github.com/aquasecurity/trivy/pkg/fanal/utils"
-	"github.com/aquasecurity/trivy/pkg/fanal/vm"
 	"github.com/aquasecurity/trivy/pkg/fanal/vm/filesystem"
 	"github.com/aquasecurity/trivy/pkg/log"
 )
 
-type VM struct {
-	walker
-	threshold int64
-}
+const cacheSize = 2048
 
 var requiredDiskName = []string{
 	"Linux",    // AmazonLinux image name
@@ -38,6 +31,12 @@ var requiredDiskName = []string{
 
 func AppendPermitDiskName(s ...string) {
 	requiredDiskName = append(requiredDiskName, s...)
+}
+
+type VM struct {
+	walker
+	threshold int64
+	analyzeFn WalkFunc
 }
 
 func NewVM(skipFiles, skipDirs []string, slow bool) VM {
@@ -52,54 +51,11 @@ func NewVM(skipFiles, skipDirs []string, slow bool) VM {
 	}
 }
 
-type DiskWalker func(root string, partition types.Partition, fsfn FilesystemWalkDirFunc) error
-type FilesystemWalkDirFunc func(fsys fs.FS, path string, d fs.DirEntry, err error) error
+func (w *VM) Walk(vreader *io.SectionReader, root string, fn WalkFunc) error {
+	// This function will be called on each file.
+	w.analyzeFn = fn
 
-func (w VM) Walk(vreader *io.SectionReader, cache vm.Cache, root string, fn WalkFunc) error {
-	err := walk(root, vreader, diskWalker(cache), func(fsys fs.FS, path string, d fs.DirEntry, err error) error {
-		if err != nil {
-			return xerrors.Errorf("fs.Walk error: %w", err)
-		}
-		fi, err := d.Info()
-		if err != nil {
-			return xerrors.Errorf("dir entry info error: %w", err)
-		}
-		pathname := strings.TrimPrefix(filepath.Clean(path), "/")
-		if fi.IsDir() {
-			if w.shouldSkipDir(pathname) {
-				return filepath.SkipDir
-			}
-			return nil
-		} else if !fi.Mode().IsRegular() {
-			return nil
-		} else if w.shouldSkipFile(pathname) {
-			return nil
-		} else if fi.Mode()&0x1000 == 0x1000 ||
-			fi.Mode()&0x2000 == 0x2000 ||
-			fi.Mode()&0x6000 == 0x6000 ||
-			fi.Mode()&0xA000 == 0xA000 ||
-			fi.Mode()&0xc000 == 0xc000 {
-			// 	0x1000:	S_IFIFO (FIFO)
-			// 	0x2000:	S_IFCHR (Character device)
-			// 	0x6000:	S_IFBLK (Block device)
-			// 	0xA000:	S_IFLNK (Symbolic link)
-			// 	0xC000:	S_IFSOCK (Socket)
-			return nil
-		}
-
-		if err := fn(path, fi, w.opener(fsys, fi, path)); err != nil {
-			return xerrors.Errorf("failed to analyze file: %w", err)
-		}
-		return nil
-	})
-	if err != nil {
-		return xerrors.Errorf("walk disk error: %w", err)
-	}
-	return nil
-}
-
-func walk(root string, r *io.SectionReader, dfn DiskWalker, fsfn FilesystemWalkDirFunc) error {
-	driver, err := disk.NewDriver(r)
+	driver, err := disk.NewDriver(vreader)
 	if err != nil {
 		return xerrors.Errorf("failed to new disk driver: %w", err)
 	}
@@ -113,8 +69,8 @@ func walk(root string, r *io.SectionReader, dfn DiskWalker, fsfn FilesystemWalkD
 			return xerrors.Errorf("failed to next disk error: %w", err)
 		}
 
-		err = dfn(root, partition, fsfn)
-		if err != nil {
+		// Walk each partition
+		if err = w.diskWalk(root, partition); err != nil {
 			log.Logger.Debugf("walk partition error: %s", err.Error())
 		}
 	}
@@ -122,138 +78,129 @@ func walk(root string, r *io.SectionReader, dfn DiskWalker, fsfn FilesystemWalkD
 }
 
 // Inject disk partitioning processes from externally with diskWalk.
-func diskWalker(cache vm.Cache) DiskWalker {
-	return func(root string, partition types.Partition, fn FilesystemWalkDirFunc) error {
-		if partition.Bootable() {
-			return nil
-		}
-
-		log.Logger.Debugf("found partition: %s", partition.Name())
-		if !utils.StringInSlice(partition.Name(), requiredDiskName) {
-			return nil
-		}
-
-		sr := partition.GetSectionReader()
-		var (
-			errs, err error
-			f         fs.FS
-		)
-		for _, fsys := range filesystem.Filesystems {
-			// TODO: implement LVM handler
-			f, err = fsys.New(sr, cache)
-			if err == nil {
-				break
-			}
-			if errors.Is(err, filesystem.ErrInvalidHeader) {
-				continue
-			}
-			errs = multierror.Append(errs, err)
-		}
-		if errs != nil {
-			return errs
-		}
-		if f == nil {
-			return xerrors.Errorf("try filesystems error: %w", errs)
-		}
-		err = fs.WalkDir(f, root, func(path string, d fs.DirEntry, err error) error {
-			return fn(f, path, d, err)
-		})
-		if err != nil {
-			return xerrors.Errorf("filesystem walk error: %w", err)
-		}
+func (w *VM) diskWalk(root string, partition types.Partition) error {
+	if partition.Bootable() {
 		return nil
 	}
-}
 
-func (w VM) opener(fsys fs.FS, fi os.FileInfo, pathname string) analyzer.Opener {
-	return func() (dio.ReadSeekCloserAt, error) {
-		// FS.Open will error if the path is from the root directory.
-		path, err := filepath.Rel("/", pathname)
-		if err != nil {
-			return nil, xerrors.Errorf("%s relative path error: %w", pathname, err)
-		}
-
-		r, err := fsys.Open(path)
-		if err != nil {
-			return nil, err
-		}
-		f := newVMFile(fi.Size(), r, w.threshold)
-		defer func() {
-			// nolint
-			_ = f.Clean()
-		}()
-
-		return f.Open()
+	log.Logger.Debugf("Found partition: %s", partition.Name())
+	if !slices.Contains(requiredDiskName, partition.Name()) {
+		return nil
 	}
-}
 
-type vmFile struct {
-	once sync.Once
-	err  error
+	sr := partition.GetSectionReader()
+	var (
+		errs, err error
+		f         fs.FS
+	)
 
-	size      int64
-	reader    io.Reader
-	threshold int64 //　Files larger than this threshold are written to file without being read into memory.
-
-	content  []byte // It will be populated if this file is small
-	filePath string // It will be populated if this file is large
-}
-
-func newVMFile(size int64, r io.Reader, threshold int64) vmFile {
-	return vmFile{
-		size:      size,
-		reader:    r,
-		threshold: threshold,
+	// Initialize LRU cache for filesystem walking
+	lruCache, err := lru.New(cacheSize)
+	if err != nil {
+		return xerrors.Errorf("failed to create a LRU cache: %w", err)
 	}
-}
+	defer lruCache.Purge()
 
-// Open opens a file in the virtual machine.
-// If the file size is greater than or equal to threshold, it copies the content to a temp file and opens it next time.
-// If the file size is less than threshold, it opens the file once and the content will be shared so that others analyzers can use the same data.
-func (o *vmFile) Open() (dio.ReadSeekCloserAt, error) {
-	o.once.Do(func() {
-		// When the file is large, it will be written down to a temp file.
-		if o.size >= defaultSizeThreshold {
-			f, err := os.CreateTemp("", "fanal-*")
-			if err != nil {
-				o.err = xerrors.Errorf("failed to create the temp file: %w", err)
-				return
-			}
-
-			if _, err = io.Copy(f, o.reader); err != nil {
-				o.err = xerrors.Errorf("failed to copy: %w", err)
-				return
-			}
-
-			o.filePath = f.Name()
-		} else {
-			b, err := io.ReadAll(o.reader)
-			if err != nil {
-				o.err = xerrors.Errorf("unable to read the file: %w", err)
-				return
-			}
-			o.content = b
+	for _, fsys := range filesystem.Filesystems {
+		// TODO: implement LVM handler
+		f, err = fsys.New(sr, lruCache)
+		if err == nil {
+			break
 		}
+		if errors.Is(err, filesystem.ErrInvalidHeader) {
+			continue
+		}
+		errs = multierror.Append(errs, err)
+	}
+	if errs != nil {
+		return errs
+	}
+	if f == nil {
+		return xerrors.Errorf("unable to detect filesystem: %w", errs)
+	}
+	err = fs.WalkDir(f, root, func(path string, d fs.DirEntry, err error) error {
+		// Walk filesystem
+		return w.fsWalk(f, path, d, err)
 	})
-	if o.err != nil {
-		return nil, xerrors.Errorf("failed to open: %w", o.err)
+	if err != nil {
+		return xerrors.Errorf("filesystem walk error: %w", err)
 	}
-
-	return o.open()
+	return nil
 }
 
-func (o *vmFile) open() (dio.ReadSeekCloserAt, error) {
-	if o.filePath != "" {
-		f, err := os.Open(o.filePath)
-		if err != nil {
-			return nil, xerrors.Errorf("failed to open the temp file: %w", err)
+func (w *VM) fsWalk(fsys fs.FS, path string, d fs.DirEntry, err error) error {
+	if err != nil {
+		return xerrors.Errorf("fs.Walk error: %w", err)
+	}
+	fi, err := d.Info()
+	if err != nil {
+		return xerrors.Errorf("dir entry info error: %w", err)
+	}
+	pathName := strings.TrimPrefix(filepath.Clean(path), "/")
+	if fi.IsDir() {
+		if w.shouldSkipDir(pathName) {
+			return filepath.SkipDir
 		}
-		return f, nil
+		return nil
+	} else if !fi.Mode().IsRegular() {
+		return nil
+	} else if w.shouldSkipFile(pathName) {
+		return nil
+	} else if fi.Mode()&0x1000 == 0x1000 ||
+		fi.Mode()&0x2000 == 0x2000 ||
+		fi.Mode()&0x6000 == 0x6000 ||
+		fi.Mode()&0xA000 == 0xA000 ||
+		fi.Mode()&0xc000 == 0xc000 {
+		// 	0x1000:	S_IFIFO (FIFO)
+		// 	0x2000:	S_IFCHR (Character device)
+		// 	0x6000:	S_IFBLK (Block device)
+		// 	0xA000:	S_IFLNK (Symbolic link)
+		// 	0xC000:	S_IFSOCK (Socket)
+		return nil
 	}
 
-	return dio.NopCloser(bytes.NewReader(o.content)), nil
+	cvf := newCachedVMFile(fsys, pathName, w.threshold)
+	defer cvf.Clean()
+
+	if err = w.analyzeFn(path, fi, cvf.Open); err != nil {
+		return xerrors.Errorf("failed to analyze file: %w", err)
+	}
+	return nil
 }
 
-func (o *vmFile) Clean() error {
-	return os.Remove(o.filePath)
+type cachedVMFile struct {
+	fs        fs.FS
+	filePath  string
+	threshold int64
+
+	cf *cachedFile
+}
+
+func newCachedVMFile(fsys fs.FS, filePath string, threshold int64) *cachedVMFile {
+	return &cachedVMFile{fs: fsys, filePath: filePath, threshold: threshold}
+}
+
+func (cvf *cachedVMFile) Open() (dio.ReadSeekCloserAt, error) {
+	if cvf.cf != nil {
+		return cvf.cf.Open()
+	}
+
+	f, err := cvf.fs.Open(cvf.filePath)
+	if err != nil {
+		return nil, xerrors.Errorf("file open error: %w", err)
+	}
+	fi, err := f.Stat()
+	if err != nil {
+		return nil, xerrors.Errorf("file stat error: %w", err)
+	}
+
+	cvf.cf = newCachedFile(fi.Size(), f, cvf.threshold)
+	return cvf.cf.Open()
+}
+
+func (cvf *cachedVMFile) Clean() error {
+	if cvf.cf == nil {
+		return nil
+	}
+	return cvf.cf.Clean()
 }

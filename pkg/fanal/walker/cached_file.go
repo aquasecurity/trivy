@@ -24,8 +24,8 @@ type cachedFile struct {
 	filePath string // It will be populated if this file is large
 }
 
-func newCachedFile(size int64, r io.Reader, threshold int64) cachedFile {
-	return cachedFile{
+func newCachedFile(size int64, r io.Reader, threshold int64) *cachedFile {
+	return &cachedFile{
 		size:      size,
 		reader:    r,
 		threshold: threshold,

@@ -10,10 +10,8 @@ import (
 	"strings"
 	"sync"
 
-	lru "github.com/hashicorp/golang-lru"
 	ebsfile "github.com/masahiro331/go-ebs-file"
 	digest "github.com/opencontainers/go-digest"
-	"golang.org/x/sync/semaphore"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
@@ -24,11 +22,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/fanal/vm/storage"
 	"github.com/aquasecurity/trivy/pkg/fanal/walker"
 	"github.com/aquasecurity/trivy/pkg/log"
-)
-
-const (
-	parallel  = 5
-	cacheSize = 2048
+	"github.com/aquasecurity/trivy/pkg/semaphore"
 )
 
 type Artifact struct {
@@ -46,8 +40,34 @@ var (
 	cleanCacheFlag = "deleteCache"
 )
 
-func (a Artifact) Inspect(ctx context.Context) (reference types.ArtifactReference, err error) {
+func NewArtifact(filePath string, c cache.ArtifactCache, opt artifact.Option) (artifact.Artifact, error) {
+	handlerManager, err := handler.NewManager(opt)
+	if err != nil {
+		return nil, xerrors.Errorf("handler init error: %w", err)
+	}
+	a, err := analyzer.NewAnalyzerGroup(analyzer.AnalyzerOptions{
+		Group:               opt.AnalyzerGroup,
+		FilePatterns:        opt.FilePatterns,
+		DisabledAnalyzers:   opt.DisabledAnalyzers,
+		SecretScannerOption: opt.SecretScannerOption,
+	})
+	if err != nil {
+		return nil, xerrors.Errorf("analyzer group error: %w", err)
+	}
 
+	ebs := ebsfile.New(ebsfile.Option{})
+	return Artifact{
+		filePath:       filepath.Clean(filePath),
+		cache:          c,
+		handlerManager: handlerManager,
+		analyzer:       a,
+		walker:         walker.NewVM(opt.SkipFiles, opt.SkipDirs, opt.Slow),
+		ebs:            ebs,
+		artifactOption: opt,
+	}, nil
+}
+
+func (a Artifact) Inspect(ctx context.Context) (reference types.ArtifactReference, err error) {
 	s, err := storage.Open(a.filePath, a.ebs, ctx)
 	if err != nil {
 		return types.ArtifactReference{}, xerrors.Errorf("failed to open storage: %w", err)
@@ -77,20 +97,11 @@ func (a Artifact) Inspect(ctx context.Context) (reference types.ArtifactReferenc
 	}
 
 	var wg sync.WaitGroup
-	limit := semaphore.NewWeighted(parallel)
-	if a.artifactOption.Slow {
-		limit = semaphore.NewWeighted(1)
-	}
-
-	lruCache, err := lru.New(cacheSize)
-	if err != nil {
-		return types.ArtifactReference{}, xerrors.Errorf("failed to create new lru cache: %w", err)
-	}
-	defer lruCache.Purge()
-
+	limit := semaphore.New(a.artifactOption.Slow)
 	result := analyzer.NewAnalysisResult()
+
 	// TODO: Always walk from the root directory. Consider whether there is a need to be able to set optional
-	err = a.walker.Walk(s.Reader, lruCache, "/", func(filePath string, info os.FileInfo, opener analyzer.Opener) error {
+	err = a.walker.Walk(s.Reader, "/", func(filePath string, info os.FileInfo, opener analyzer.Opener) error {
 		opts := analyzer.AnalysisOptions{Offline: a.artifactOption.Offline}
 		path := strings.TrimPrefix(filePath, "/")
 		if err = a.analyzer.AnalyzeFile(ctx, &wg, limit, result, "/", path, info, opener, nil, opts); err != nil {
@@ -161,33 +172,6 @@ func (a Artifact) Clean(reference types.ArtifactReference) error {
 		return nil
 	}
 	return a.cache.DeleteBlobs(reference.BlobIDs)
-}
-
-func NewArtifact(filePath string, c cache.ArtifactCache, opt artifact.Option) (artifact.Artifact, error) {
-	handlerManager, err := handler.NewManager(opt)
-	if err != nil {
-		return nil, xerrors.Errorf("handler init error: %w", err)
-	}
-	a, err := analyzer.NewAnalyzerGroup(analyzer.AnalyzerOptions{
-		Group:               opt.AnalyzerGroup,
-		FilePatterns:        opt.FilePatterns,
-		DisabledAnalyzers:   opt.DisabledAnalyzers,
-		SecretScannerOption: opt.SecretScannerOption,
-	})
-	if err != nil {
-		return nil, xerrors.Errorf("analyzer group error: %w", err)
-	}
-
-	ebs := ebsfile.New(ebsfile.Option{})
-	return Artifact{
-		filePath:       filepath.Clean(filePath),
-		cache:          c,
-		handlerManager: handlerManager,
-		analyzer:       a,
-		walker:         walker.NewVM(opt.SkipFiles, opt.SkipDirs, opt.Slow),
-		ebs:            ebs,
-		artifactOption: opt,
-	}, nil
 }
 
 func (a Artifact) vmCacheKey(key string) (string, error) {
