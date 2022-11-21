@@ -44,13 +44,13 @@ func (a alpinePkgAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInp
 	}, nil
 }
 
-func (a alpinePkgAnalyzer) parseApkInfo(scanner *bufio.Scanner) ([]types.Package, []string) {
+func (a alpinePkgAnalyzer) parseApkInfo(scanner *bufio.Scanner) ([]types.Package, map[string][]string) {
 	var (
 		pkgs           []types.Package
 		pkg            types.Package
 		version        string
 		dir            string
-		installedFiles []string
+		installedFiles = map[string][]string{}
 		provides       = map[string]string{} // for dependency graph
 	)
 
@@ -86,7 +86,9 @@ func (a alpinePkgAnalyzer) parseApkInfo(scanner *bufio.Scanner) ([]types.Package
 		case "F:":
 			dir = line[2:]
 		case "R:":
-			installedFiles = append(installedFiles, filepath.Join(dir, line[2:]))
+			relPath := filepath.Join(dir, line[2:])
+			pkg.SystemInstalledFiles = append(pkg.SystemInstalledFiles, relPath)
+			installedFiles[pkg.Name] = append(installedFiles[pkg.Name], relPath)
 		case "p:": // provides (corresponds to provides in PKGINFO, concatenated by spaces into a single line)
 			a.parseProvides(line, pkg.ID, provides)
 		case "D:": // dependencies (corresponds to depend in PKGINFO, concatenated by spaces into a single line)

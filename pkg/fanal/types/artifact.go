@@ -54,6 +54,8 @@ type Package struct {
 
 	// lines from the lock file where the dependency is written
 	Locations []Location `json:",omitempty"`
+
+	SystemInstalledFiles []string // Files provided by the package
 }
 
 type Location struct {

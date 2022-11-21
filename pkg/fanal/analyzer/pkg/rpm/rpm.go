@@ -78,7 +78,7 @@ func (a rpmPkgAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInput)
 	}, nil
 }
 
-func (a rpmPkgAnalyzer) parsePkgInfo(rc io.Reader) ([]types.Package, []string, error) {
+func (a rpmPkgAnalyzer) parsePkgInfo(rc io.Reader) ([]types.Package, map[string][]string, error) {
 	filePath, err := writeToTempFile(rc)
 	if err != nil {
 		return nil, nil, xerrors.Errorf("temp file error: %w", err)
@@ -101,7 +101,7 @@ func (a rpmPkgAnalyzer) parsePkgInfo(rc io.Reader) ([]types.Package, []string, e
 	}
 
 	var pkgs []types.Package
-	var installedFiles []string
+	installedFiles := map[string][]string, len(pkgList){}
 	provides := map[string]string{}
 	for _, pkg := range pkgList {
 		arch := pkg.Arch
@@ -144,9 +144,11 @@ func (a rpmPkgAnalyzer) parsePkgInfo(rc io.Reader) ([]types.Package, []string, e
 			Licenses:        []string{pkg.License},
 			DependsOn:       pkg.Requires, // Will be replaced with package IDs
 			Maintainer:      pkg.Vendor,
+			SystemInstalledFiles: files,
 		}
+
 		pkgs = append(pkgs, p)
-		installedFiles = append(installedFiles, files...)
+		installedFiles[p.Name] = files
 
 		// It contains mappings between package-providing files and package IDs
 		// e.g.

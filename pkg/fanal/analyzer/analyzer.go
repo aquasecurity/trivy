@@ -143,7 +143,7 @@ type AnalysisResult struct {
 	Applications         []types.Application
 	Secrets              []types.Secret
 	Licenses             []types.LicenseFile
-	SystemInstalledFiles []string // A list of files installed by OS package manager
+	SystemInstalledFiles map[string][]string // A map of files installed by OS package manager indexed by package
 
 	// Files holds necessary file contents for the respective post-handler
 	Files map[types.HandlerType][]types.File
@@ -163,6 +163,7 @@ type AnalysisResult struct {
 func NewAnalysisResult() *AnalysisResult {
 	result := new(AnalysisResult)
 	result.Files = map[types.HandlerType][]types.File{}
+	result.SystemInstalledFiles = map[string][]string{}
 	return result
 }
 
@@ -281,7 +282,10 @@ func (r *AnalysisResult) Merge(new *AnalysisResult) {
 
 	r.Secrets = append(r.Secrets, new.Secrets...)
 	r.Licenses = append(r.Licenses, new.Licenses...)
-	r.SystemInstalledFiles = append(r.SystemInstalledFiles, new.SystemInstalledFiles...)
+
+	for packageRef, installedFiles := range new.SystemInstalledFiles {
+		r.SystemInstalledFiles[packageRef] = append(r.SystemInstalledFiles[packageRef], installedFiles...)
+	}
 
 	if new.BuildInfo != nil {
 		if r.BuildInfo == nil {
