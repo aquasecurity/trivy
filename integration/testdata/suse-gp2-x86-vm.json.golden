@@ -47,30 +47,6 @@
             "https://www.suse.com/support/security/rating/",
             "https://www.suse.com/support/update/announcement/2022/suse-su-20222713-1/"
           ]
-        },
-        {
-          "VulnerabilityID": "SUSE-SU-2022:2713-1",
-          "PkgID": "python3-bind@9.16.20-150400.3.6.noarch",
-          "PkgName": "python3-bind",
-          "InstalledVersion": "9.16.20-150400.3.6",
-          "FixedVersion": "9.16.31-150400.5.6.1",
-          "Layer": {},
-          "Title": "Security update for bind",
-          "Description": "This update for bind fixes the following issues:\n\n- CVE-2021-25219",
-          "Severity": "HIGH",
-          "References": [
-            "https://bugzilla.suse.com/1192146",
-            "https://bugzilla.suse.com/1197135",
-            "https://bugzilla.suse.com/1197136",
-            "https://bugzilla.suse.com/1199044",
-            "https://bugzilla.suse.com/1200685",
-            "https://lists.suse.com/pipermail/sle-security-updates/2022-August/011832.html",
-            "https://www.suse.com/security/cve/CVE-2021-25219/",
-            "https://www.suse.com/security/cve/CVE-2021-25220/",
-            "https://www.suse.com/security/cve/CVE-2022-0396/",
-            "https://www.suse.com/support/security/rating/",
-            "https://www.suse.com/support/update/announcement/2022/suse-su-20222713-1/"
-          ]
         }
       ]
     }
