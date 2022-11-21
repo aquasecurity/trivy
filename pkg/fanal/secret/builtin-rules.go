@@ -3,9 +3,9 @@ package secret
 import (
 	"fmt"
 
-	defsecRules "github.com/aquasecurity/defsec/pkg/rules"
 	"github.com/samber/lo"
 
+	defsecRules "github.com/aquasecurity/defsec/pkg/rules"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 )
 
