@@ -201,38 +201,6 @@ func TestArtifact_Inspect(t *testing.T) {
 									Packages: alpinePkgs,
 								},
 							},
-							Licenses: []types.LicenseFile{
-								{
-									Type:     "license-file",
-									FilePath: "/etc/ssl/misc/CA.pl",
-									Findings: []types.LicenseFinding{
-										{
-											Name:       "OpenSSL",
-											Confidence: 1,
-											Link:       "https://spdx.org/licenses/OpenSSL.html",
-										},
-									},
-									Layer: types.Layer{
-										Digest: "",
-										DiffID: "",
-									},
-								},
-								{
-									Type:     "license-file",
-									FilePath: "/etc/ssl/misc/tsget.pl",
-									Findings: []types.LicenseFinding{
-										{
-											Name:       "OpenSSL",
-											Confidence: 1,
-											Link:       "https://spdx.org/licenses/OpenSSL.html",
-										},
-									},
-									Layer: types.Layer{
-										Digest: "",
-										DiffID: "",
-									},
-								},
-							},
 							Applications:  []types.Application(nil),
 							OpaqueDirs:    []string(nil),
 							WhiteoutFiles: []string(nil),
@@ -353,6 +321,7 @@ func TestArtifact_Inspect(t *testing.T) {
 											ID:   "base-files@9.9+deb9u9",
 											Name: "base-files", Version: "9.9+deb9u9", SrcName: "base-files",
 											SrcVersion: "9.9+deb9u9",
+											Maintainer: "Santiago Vila <sanvila@debian.org>",
 										},
 									},
 								},
@@ -360,7 +329,7 @@ func TestArtifact_Inspect(t *testing.T) {
 									FilePath: "var/lib/dpkg/status.d/netbase",
 									Packages: []types.Package{
 										{ID: "netbase@5.4", Name: "netbase", Version: "5.4",
-											SrcName: "netbase", SrcVersion: "5.4"},
+											SrcName: "netbase", SrcVersion: "5.4", Maintainer: "Marco d'Itri <md@linux.it>"},
 									},
 								},
 								{
@@ -370,6 +339,7 @@ func TestArtifact_Inspect(t *testing.T) {
 											ID:   "tzdata@2019a-0+deb9u1",
 											Name: "tzdata", Version: "2019a-0+deb9u1", SrcName: "tzdata",
 											SrcVersion: "2019a-0+deb9u1",
+											Maintainer: "GNU Libc Maintainers <debian-glibc@lists.debian.org>",
 										},
 									},
 								},
@@ -420,6 +390,7 @@ func TestArtifact_Inspect(t *testing.T) {
 											ID:   "libc6@2.24-11+deb9u4",
 											Name: "libc6", Version: "2.24-11+deb9u4", SrcName: "glibc",
 											SrcVersion: "2.24-11+deb9u4",
+											Maintainer: "GNU Libc Maintainers <debian-glibc@lists.debian.org>",
 										},
 									},
 								},
@@ -430,6 +401,7 @@ func TestArtifact_Inspect(t *testing.T) {
 											ID:   "libssl1.1@1.1.0k-1~deb9u1",
 											Name: "libssl1.1", Version: "1.1.0k-1~deb9u1", SrcName: "openssl",
 											SrcVersion: "1.1.0k-1~deb9u1",
+											Maintainer: "Debian OpenSSL Team <pkg-openssl-devel@lists.alioth.debian.org>",
 										},
 									},
 								},
@@ -440,6 +412,7 @@ func TestArtifact_Inspect(t *testing.T) {
 											ID:   "openssl@1.1.0k-1~deb9u1",
 											Name: "openssl", Version: "1.1.0k-1~deb9u1", SrcName: "openssl",
 											SrcVersion: "1.1.0k-1~deb9u1",
+											Maintainer: "Debian OpenSSL Team <pkg-openssl-devel@lists.alioth.debian.org>",
 										},
 									},
 								},
@@ -458,7 +431,11 @@ func TestArtifact_Inspect(t *testing.T) {
 									Type:     types.LicenseTypeDpkg,
 									FilePath: "usr/share/doc/libssl1.1/copyright",
 									Findings: []types.LicenseFinding{
-										{Name: "OpenSSL"},
+										{
+											Name:       "OpenSSL",
+											Confidence: 0.9960474308300395,
+											Link:       "https://spdx.org/licenses/OpenSSL.html",
+										},
 									},
 									PkgName: "libssl1.1",
 								},
@@ -466,7 +443,11 @@ func TestArtifact_Inspect(t *testing.T) {
 									Type:     types.LicenseTypeDpkg,
 									FilePath: "usr/share/doc/openssl/copyright",
 									Findings: []types.LicenseFinding{
-										{Name: "OpenSSL"},
+										{
+											Name:       "OpenSSL",
+											Confidence: 0.9960474308300395,
+											Link:       "https://spdx.org/licenses/OpenSSL.html",
+										},
 									},
 									PkgName: "openssl",
 								},
@@ -875,30 +856,6 @@ func TestArtifact_Inspect(t *testing.T) {
 									Packages: alpinePkgs,
 								},
 							},
-							Licenses: []types.LicenseFile{
-								{
-									Type:     "license-file",
-									FilePath: "/etc/ssl/misc/CA.pl",
-									Findings: []types.LicenseFinding{
-										{
-											Name:       "OpenSSL",
-											Confidence: 1,
-											Link:       "https://spdx.org/licenses/OpenSSL.html",
-										},
-									},
-								},
-								{
-									Type:     "license-file",
-									FilePath: "/etc/ssl/misc/tsget.pl",
-									Findings: []types.LicenseFinding{
-										{
-											Name:       "OpenSSL",
-											Confidence: 1,
-											Link:       "https://spdx.org/licenses/OpenSSL.html",
-										},
-									},
-								},
-							},
 							Applications:  []types.Application(nil),
 							OpaqueDirs:    []string(nil),
 							WhiteoutFiles: []string(nil),
@@ -945,30 +902,6 @@ func TestArtifact_Inspect(t *testing.T) {
 								{
 									FilePath: "lib/apk/db/installed",
 									Packages: alpinePkgs,
-								},
-							},
-							Licenses: []types.LicenseFile{
-								{
-									Type:     "license-file",
-									FilePath: "/etc/ssl/misc/CA.pl",
-									Findings: []types.LicenseFinding{
-										{
-											Name:       "OpenSSL",
-											Confidence: 1,
-											Link:       "https://spdx.org/licenses/OpenSSL.html",
-										},
-									},
-								},
-								{
-									Type:     "license-file",
-									FilePath: "/etc/ssl/misc/tsget.pl",
-									Findings: []types.LicenseFinding{
-										{
-											Name:       "OpenSSL",
-											Confidence: 1,
-											Link:       "https://spdx.org/licenses/OpenSSL.html",
-										},
-									},
 								},
 							},
 							Applications:  []types.Application(nil),

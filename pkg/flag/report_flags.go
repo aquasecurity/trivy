@@ -89,7 +89,7 @@ var (
 		Name:       "compliance",
 		ConfigName: "scan.compliance",
 		Value:      "",
-		Usage:      "comma-separated list of what compliance reports to generate (nsa)",
+		Usage:      "compliance report to generate (nsa)",
 	}
 )
 
@@ -215,12 +215,11 @@ func (f *ReportFlagGroup) ToOptions(out io.Writer) (ReportOptions, error) {
 	}, nil
 }
 
-func parseComplianceTypes(compliance interface{}) (string, error) {
-	complianceString, ok := compliance.(string)
-	if !ok || (len(complianceString) > 0 && !slices.Contains(types.Compliances, complianceString)) {
+func parseComplianceTypes(compliance string) (string, error) {
+	if len(compliance) > 0 && !slices.Contains(types.Compliances, compliance) && !strings.HasPrefix(compliance, "@") {
 		return "", xerrors.Errorf("unknown compliance : %v", compliance)
 	}
-	return complianceString, nil
+	return compliance, nil
 }
 
 func (f *ReportFlagGroup) forceListAllPkgs(format string, listAllPkgs, dependencyTree bool) bool {

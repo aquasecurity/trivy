@@ -230,7 +230,7 @@ podAnnotations: {}
 
 ## Other Tools to use and deploy Trivy
 
-For additional tools and ways to install and use Trivy in different envrionments such as in Docker Desktop and Kubernetes clusters, see the links in the [Ecosystem section](../ecosystem/tools.md).
+For additional tools and ways to install and use Trivy in different environments such as in Docker Desktop and Kubernetes clusters, see the links in the [Ecosystem section](../ecosystem/index.md).
 
 
 [ecr]: https://gallery.ecr.aws/aquasecurity/trivy

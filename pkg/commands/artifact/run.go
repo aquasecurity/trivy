@@ -527,6 +527,7 @@ func initScannerConfig(opts flag.Options, cacheClient cache.Cache) (ScannerConfi
 			SBOMSources:       opts.SBOMSources,
 			RekorURL:          opts.RekorURL,
 			Platform:          opts.Platform,
+			Slow:              opts.Slow,
 
 			// For misconfiguration scanning
 			MisconfScannerOption: configScannerOptions,

@@ -21,8 +21,8 @@ Helm Chart scanning will resolve the chart to Kubernetes manifests then run the 
 
 Ansible scanning is coming soon.
 
-[rego]: https://www.openpolicyagent.org/docs/latest/policy-language/
+[rego]: https://www.openpolicyagent.org/docs/latest/policy-language
 [defsec]: https://github.com/aquasecurity/defsec
-[kubernetes]: https://github.com/aquasecurity/defsec/tree/master/internal/rules/kubernetes
-[kubernetes]: https://github.com/aquasecurity/defsec/tree/master/internal/rules/rbac
-[docker]: https://github.com/aquasecurity/defsec/tree/master/internal/rules/docker
+[kubernetes]: https://github.com/aquasecurity/defsec/tree/master/internal/rules/policies/kubernetes
+[docker]: https://github.com/aquasecurity/defsec/tree/master/internal/rules/policies/docker
+[rbac]: https://github.com/aquasecurity/defsec/tree/master/internal/rules/policies/rbac
