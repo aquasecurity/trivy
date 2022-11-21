@@ -255,7 +255,7 @@ func TestClientServer(t *testing.T) {
 				RemoteAddrOption: "--server",
 				Target:           "https://github.com/knqyf263/trivy-ci-test",
 			},
-			golden: "testdata/remote-repo.json.golden",
+			golden: "testdata/test-repo.json.golden",
 		},
 	}
 
