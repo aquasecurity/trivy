@@ -11,6 +11,7 @@ import (
 	"sync"
 
 	lru "github.com/hashicorp/golang-lru"
+	ebsfile "github.com/masahiro331/go-ebs-file"
 	digest "github.com/opencontainers/go-digest"
 	"golang.org/x/sync/semaphore"
 	"golang.org/x/xerrors"
@@ -36,7 +37,7 @@ type Artifact struct {
 	analyzer       analyzer.AnalyzerGroup
 	handlerManager handler.Manager
 	walker         walker.VM
-	storageOption  storage.Option
+	ebs            *ebsfile.EBS
 
 	artifactOption artifact.Option
 }
@@ -47,7 +48,7 @@ var (
 
 func (a Artifact) Inspect(ctx context.Context) (reference types.ArtifactReference, err error) {
 
-	s, err := storage.Open(a.filePath, a.storageOption, ctx)
+	s, err := storage.Open(a.filePath, a.ebs, ctx)
 	if err != nil {
 		return types.ArtifactReference{}, xerrors.Errorf("failed to open storage: %w", err)
 	}
@@ -177,13 +178,14 @@ func NewArtifact(filePath string, c cache.ArtifactCache, opt artifact.Option) (a
 		return nil, xerrors.Errorf("analyzer group error: %w", err)
 	}
 
+	ebs := ebsfile.New(ebsfile.Option{})
 	return Artifact{
 		filePath:       filepath.Clean(filePath),
 		cache:          c,
 		handlerManager: handlerManager,
 		analyzer:       a,
 		walker:         walker.NewVM(opt.SkipFiles, opt.SkipDirs, opt.Slow),
-		storageOption:  storage.Option{},
+		ebs:            ebs,
 		artifactOption: opt,
 	}, nil
 }

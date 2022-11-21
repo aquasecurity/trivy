@@ -35,15 +35,11 @@ type Storage struct {
 	Type   string
 }
 
-type Option struct {
-	EBS ebsfile.Option
-}
-
-func Open(target string, option Option, c context.Context) (s *Storage, err error) {
+func Open(target string, ebs ebsfile.EBSAPI, c context.Context) (s *Storage, err error) {
 	switch {
 	case strings.HasPrefix(target, fmt.Sprintf("%s:", TypeEBS)):
 		target = strings.TrimPrefix(target, fmt.Sprintf("%s:", TypeEBS))
-		s, err = openEBS(target, option.EBS, c)
+		s, err = openEBS(target, ebs, c)
 
 	case strings.HasPrefix(target, fmt.Sprintf("%s:", TypeFile)):
 		target = strings.TrimPrefix(target, fmt.Sprintf("%s:", TypeFile))
@@ -89,13 +85,13 @@ func openFile(filePath string) (*Storage, error) {
 	return s, nil
 }
 
-func openEBS(snapshotID string, option ebsfile.Option, ctx context.Context) (*Storage, error) {
+func openEBS(snapshotID string, ebs ebsfile.EBSAPI, ctx context.Context) (*Storage, error) {
 	cache, err := lru.New(storageEBSCacheSize)
 	if err != nil {
 		return nil, xerrors.Errorf("failed to create new lru cache: %w", err)
 	}
 
-	sr, err := ebsfile.Open(snapshotID, ctx, cache, ebsfile.New(option))
+	sr, err := ebsfile.Open(snapshotID, ctx, cache, ebs)
 	if err != nil {
 		return nil, xerrors.Errorf("failed to open EBS file: %w", err)
 	}

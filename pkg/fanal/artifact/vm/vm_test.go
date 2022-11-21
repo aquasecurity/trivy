@@ -94,7 +94,10 @@ func TestArtifact_Inspect(t *testing.T) {
 			a, err := NewArtifact(tt.fields.dir, c, tt.artifactOpt)
 			require.NoError(t, err)
 
-			got, err := a.Inspect(context.Background())
+			artifact := a.(Artifact)
+			artifact.ebs = nil
+
+			got, err := artifact.Inspect(context.Background())
 			if tt.wantErr != "" {
 				require.NotNil(t, err)
 				assert.Contains(t, err.Error(), tt.wantErr)
