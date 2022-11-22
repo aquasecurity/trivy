@@ -48,6 +48,7 @@ type SarifWriter struct {
 type sarifData struct {
 	title            string
 	vulnerabilityId  string
+	shortDescription string
 	fullDescription  string
 	helpText         string
 	helpMarkdown     string
@@ -56,6 +57,7 @@ type sarifData struct {
 	url              string
 	resultIndex      int
 	artifactLocation string
+	locationMessage  string
 	message          string
 	cvssScore        string
 	startLine        int
@@ -66,6 +68,7 @@ func (sw *SarifWriter) addSarifRule(data *sarifData) {
 	r := sw.run.AddRule(data.vulnerabilityId).
 		WithName(toSarifRuleName(data.resourceClass)).
 		WithDescription(data.vulnerabilityId).
+		WithShortDescription(&sarif.MultiformatMessageString{Text: &data.shortDescription}).
 		WithFullDescription(&sarif.MultiformatMessageString{Text: &data.fullDescription}).
 		WithHelp(&sarif.MultiformatMessageString{
 			Text:     &data.helpText,
@@ -104,7 +107,7 @@ func (sw *SarifWriter) addSarifResult(data *sarifData) {
 		WithRuleIndex(data.resultIndex).
 		WithMessage(sarif.NewTextMessage(data.message)).
 		WithLevel(toSarifErrorLevel(data.severity)).
-		WithLocations([]*sarif.Location{sarif.NewLocation().WithPhysicalLocation(location)})
+		WithLocations([]*sarif.Location{sarif.NewLocation().WithMessage(sarif.NewTextMessage(data.locationMessage)).WithPhysicalLocation(location)})
 	sw.run.AddResult(result)
 }
 
@@ -148,7 +151,9 @@ func (sw SarifWriter) Write(report types.Report) error {
 				url:              vuln.PrimaryURL,
 				resourceClass:    string(res.Class),
 				artifactLocation: path,
+				locationMessage:  fmt.Sprintf("%v: %v@%v", path, vuln.PkgName, vuln.InstalledVersion),
 				resultIndex:      getRuleIndex(vuln.VulnerabilityID, ruleIndexes),
+				shortDescription: html.EscapeString(vuln.Title),
 				fullDescription:  html.EscapeString(fullDescription),
 				helpText: fmt.Sprintf("Vulnerability %v\nSeverity: %v\nPackage: %v\nFixed Version: %v\nLink: [%v](%v)\n%v",
 					vuln.VulnerabilityID, vuln.Severity, vuln.PkgName, vuln.FixedVersion, vuln.VulnerabilityID, vuln.PrimaryURL, vuln.Description),
@@ -167,9 +172,11 @@ func (sw SarifWriter) Write(report types.Report) error {
 				url:              misconf.PrimaryURL,
 				resourceClass:    string(res.Class),
 				artifactLocation: target,
+				locationMessage:  target,
 				startLine:        misconf.CauseMetadata.StartLine,
 				endLine:          misconf.CauseMetadata.EndLine,
 				resultIndex:      getRuleIndex(misconf.ID, ruleIndexes),
+				shortDescription: html.EscapeString(misconf.Title),
 				fullDescription:  html.EscapeString(misconf.Description),
 				helpText: fmt.Sprintf("Misconfiguration %v\nType: %s\nSeverity: %v\nCheck: %v\nMessage: %v\nLink: [%v](%v)\n%s",
 					misconf.ID, misconf.Type, misconf.Severity, misconf.Title, misconf.Message, misconf.ID, misconf.PrimaryURL, misconf.Description),
@@ -188,9 +195,11 @@ func (sw SarifWriter) Write(report types.Report) error {
 				url:              builtinRulesUrl,
 				resourceClass:    string(res.Class),
 				artifactLocation: target,
+				locationMessage:  target,
 				startLine:        secret.StartLine,
 				endLine:          secret.EndLine,
 				resultIndex:      getRuleIndex(secret.RuleID, ruleIndexes),
+				shortDescription: html.EscapeString(secret.Title),
 				fullDescription:  html.EscapeString(secret.Match),
 				helpText: fmt.Sprintf("Secret %v\nSeverity: %v\nMatch: %s",
 					secret.Title, secret.Severity, secret.Match),

@@ -55,6 +55,7 @@ type Flags struct {
 	LicenseFlagGroup       *LicenseFlagGroup
 	MisconfFlagGroup       *MisconfFlagGroup
 	RemoteFlagGroup        *RemoteFlagGroup
+	RegoFlagGroup          *RegoFlagGroup
 	RepoFlagGroup          *RepoFlagGroup
 	ReportFlagGroup        *ReportFlagGroup
 	SBOMFlagGroup          *SBOMFlagGroup
@@ -74,6 +75,7 @@ type Options struct {
 	K8sOptions
 	LicenseOptions
 	MisconfOptions
+	RegoOptions
 	RemoteOptions
 	RepoOptions
 	ReportOptions
@@ -168,7 +170,18 @@ func getStringSlice(flag *Flag) []string {
 	if flag == nil {
 		return nil
 	}
-	return viper.GetStringSlice(flag.ConfigName)
+	// viper always returns a string for ENV
+	// https://github.com/spf13/viper/blob/419fd86e49ef061d0d33f4d1d56d5e2a480df5bb/viper.go#L545-L553
+	// and uses strings.Field to separate values (whitespace only)
+	// we need to separate env values with ','
+	v := viper.GetStringSlice(flag.ConfigName)
+	switch {
+	case len(v) == 0: // no strings
+		return nil
+	case len(v) == 1 && strings.Contains(v[0], ","): // unseparated string
+		v = strings.Split(v[0], ",")
+	}
+	return v
 }
 
 func getInt(flag *Flag) int {
@@ -224,6 +237,9 @@ func (f *Flags) groups() []FlagGroup {
 	}
 	if f.LicenseFlagGroup != nil {
 		groups = append(groups, f.LicenseFlagGroup)
+	}
+	if f.RegoFlagGroup != nil {
+		groups = append(groups, f.RegoFlagGroup)
 	}
 	if f.CloudFlagGroup != nil {
 		groups = append(groups, f.CloudFlagGroup)
@@ -335,6 +351,13 @@ func (f *Flags) ToOptions(appVersion string, args []string, globalFlags *GlobalF
 		opts.MisconfOptions, err = f.MisconfFlagGroup.ToOptions()
 		if err != nil {
 			return Options{}, xerrors.Errorf("misconfiguration flag error: %w", err)
+		}
+	}
+
+	if f.RegoFlagGroup != nil {
+		opts.RegoOptions, err = f.RegoFlagGroup.ToOptions()
+		if err != nil {
+			return Options{}, xerrors.Errorf("rego flag error: %w", err)
 		}
 	}
 

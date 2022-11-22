@@ -22,5 +22,6 @@ func clusterRun(ctx context.Context, opts flag.Options, cluster k8s.Cluster) err
 		return xerrors.Errorf("get k8s artifacts error: %w", err)
 	}
 
-	return run(ctx, opts, cluster.GetCurrentContext(), artifacts, true)
+	runner := newRunner(opts, cluster.GetCurrentContext())
+	return runner.run(ctx, artifacts)
 }

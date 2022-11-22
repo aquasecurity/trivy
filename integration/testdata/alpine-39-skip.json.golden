@@ -1,0 +1,49 @@
+{
+  "SchemaVersion": 2,
+  "ArtifactName": "testdata/fixtures/images/alpine-39.tar.gz",
+  "ArtifactType": "container_image",
+  "Metadata": {
+    "OS": {
+      "Family": "none",
+      "Name": ""
+    },
+    "ImageID": "sha256:055936d3920576da37aa9bc460d70c5f212028bda1c08c0879aedf03d7a66ea1",
+    "DiffIDs": [
+      "sha256:f1b5933fe4b5f49bbe8258745cf396afe07e625bdab3168e364daf7c956b6b81"
+    ],
+    "ImageConfig": {
+      "architecture": "amd64",
+      "container": "c10d36fa368a7ea673683682666758adf35efe98e10989505f4f566b5b18538f",
+      "created": "2019-05-11T00:07:03.510395965Z",
+      "docker_version": "18.06.1-ce",
+      "history": [
+        {
+          "created": "2019-05-11T00:07:03.358250803Z",
+          "created_by": "/bin/sh -c #(nop) ADD file:a86aea1f3a7d68f6ae03397b99ea77f2e9ee901c5c59e59f76f93adbb4035913 in / "
+        },
+        {
+          "created": "2019-05-11T00:07:03.510395965Z",
+          "created_by": "/bin/sh -c #(nop)  CMD [\"/bin/sh\"]",
+          "empty_layer": true
+        }
+      ],
+      "os": "linux",
+      "rootfs": {
+        "type": "layers",
+        "diff_ids": [
+          "sha256:f1b5933fe4b5f49bbe8258745cf396afe07e625bdab3168e364daf7c956b6b81"
+        ]
+      },
+      "config": {
+        "Cmd": [
+          "/bin/sh"
+        ],
+        "Env": [
+          "PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+        ],
+        "Image": "sha256:09f2bbe58e774849d74dc1391c2e01731896c745c4aba1ecf69a283bdb4b537a",
+        "ArgsEscaped": true
+      }
+    }
+  }
+}
