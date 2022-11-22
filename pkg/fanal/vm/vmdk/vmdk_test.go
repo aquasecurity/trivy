@@ -1,11 +1,12 @@
 package vmdk_test
 
 import (
+	"os"
+	"testing"
+
 	"github.com/aquasecurity/trivy/pkg/fanal/vm/vmdk"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"os"
-	"testing"
 )
 
 func TestVMDK_NewVMReader(t *testing.T) {

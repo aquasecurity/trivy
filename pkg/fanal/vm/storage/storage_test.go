@@ -2,14 +2,16 @@ package storage
 
 import (
 	"context"
-	"github.com/aws/aws-sdk-go/aws"
-	"github.com/aws/aws-sdk-go/service/ebs"
 	"reflect"
 	"testing"
 
+	"github.com/aws/aws-sdk-go/aws"
+	"github.com/aws/aws-sdk-go/service/ebs"
 	"github.com/aws/aws-sdk-go/service/ebs/ebsiface"
 	ebsfile "github.com/masahiro331/go-ebs-file"
 	"github.com/stretchr/testify/assert"
+
+	_ "github.com/aquasecurity/trivy/pkg/fanal/vm/vmdk"
 )
 
 type mockEBS struct {
@@ -54,6 +56,13 @@ func TestOpen(t *testing.T) {
 			wantS: &Storage{
 				Type: "ebs",
 			},
+		},
+		{
+			name: "sad path unsupported vm format",
+			args: args{
+				target: "testdata/monolithicSparse.vmdk",
+			},
+			wantErr: "unsupported type error",
 		},
 		{
 			name: "sad path file not found",
