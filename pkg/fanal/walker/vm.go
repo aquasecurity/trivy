@@ -2,10 +2,12 @@ package walker
 
 import (
 	"bytes"
+	"errors"
 	"io"
 	"io/fs"
 	"os"
 	"path/filepath"
+	"strings"
 	"sync"
 
 	"github.com/hashicorp/go-multierror"
@@ -15,17 +17,38 @@ import (
 
 	dio "github.com/aquasecurity/go-dep-parser/pkg/io"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
+	"github.com/aquasecurity/trivy/pkg/fanal/utils"
 	"github.com/aquasecurity/trivy/pkg/fanal/vm"
 	"github.com/aquasecurity/trivy/pkg/fanal/vm/filesystem"
+	"github.com/aquasecurity/trivy/pkg/log"
 )
 
 type VM struct {
 	walker
+	threshold int64
 }
 
-func NewVM(skipFiles, skipDirs []string) VM {
+var requiredDiskName = []string{
+	"Linux",    // AmazonLinux image name
+	"p.lxroot", // SLES image name
+	"primary",  // Common image name
+	"0",        // Common image name
+	"1",        // Common image name
+}
+
+func AppendPermitDiskName(s ...string) {
+	requiredDiskName = append(requiredDiskName, s...)
+}
+
+func NewVM(skipFiles, skipDirs []string, slow bool) VM {
+	threshold := defaultSizeThreshold
+	if slow {
+		threshold = slowSizeThreshold
+	}
+
 	return VM{
-		walker: newWalker(skipFiles, skipDirs),
+		walker:    newWalker(skipFiles, skipDirs, slow),
+		threshold: threshold,
 	}
 }
 
@@ -41,7 +64,7 @@ func (w VM) Walk(vreader *io.SectionReader, cache vm.Cache, root string, fn Walk
 		if err != nil {
 			return xerrors.Errorf("dir entry info error: %w", err)
 		}
-		pathname := filepath.Clean(path)
+		pathname := strings.TrimPrefix(filepath.Clean(path), "/")
 		if fi.IsDir() {
 			if w.shouldSkipDir(pathname) {
 				return filepath.SkipDir
@@ -51,8 +74,16 @@ func (w VM) Walk(vreader *io.SectionReader, cache vm.Cache, root string, fn Walk
 			return nil
 		} else if w.shouldSkipFile(pathname) {
 			return nil
-		} else if uint32(fi.Mode())&0xA000 == 0xA000 {
-			// skip symbolic link
+		} else if fi.Mode()&0x1000 == 0x1000 ||
+			fi.Mode()&0x2000 == 0x2000 ||
+			fi.Mode()&0x6000 == 0x6000 ||
+			fi.Mode()&0xA000 == 0xA000 ||
+			fi.Mode()&0xc000 == 0xc000 {
+			// 	0x1000:	S_IFIFO (FIFO)
+			// 	0x2000:	S_IFCHR (Character device)
+			// 	0x6000:	S_IFBLK (Block device)
+			// 	0xA000:	S_IFLNK (Symbolic link)
+			// 	0xC000:	S_IFSOCK (Socket)
 			return nil
 		}
 
@@ -81,9 +112,10 @@ func walk(root string, r *io.SectionReader, dfn DiskWalker, fsfn FilesystemWalkD
 			}
 			return xerrors.Errorf("failed to next disk error: %w", err)
 		}
+
 		err = dfn(root, partition, fsfn)
 		if err != nil {
-			return xerrors.Errorf("walk function error: %w", err)
+			log.Logger.Debugf("walk partition error: %s", err.Error())
 		}
 	}
 	return nil
@@ -95,38 +127,39 @@ func diskWalker(cache vm.Cache) DiskWalker {
 		if partition.Bootable() {
 			return nil
 		}
-		// TODO: "Linux" is default root partition name in AmazonLinuxImage
-		if partition.Name() != "Linux" {
+
+		log.Logger.Debugf("found partition: %s", partition.Name())
+		if !utils.StringInSlice(partition.Name(), requiredDiskName) {
 			return nil
 		}
 
 		sr := partition.GetSectionReader()
-		var errs error
+		var (
+			errs, err error
+			f         fs.FS
+		)
 		for _, fsys := range filesystem.Filesystems {
-			ok, err := fsys.Try(&sr)
-			if err != nil {
-				errs = multierror.Append(errs, err)
+			// TODO: implement LVM handler
+			f, err = fsys.New(sr, cache)
+			if err == nil {
 				break
 			}
-			if !ok {
+			if errors.Is(err, filesystem.ErrInvalidHeader) {
 				continue
 			}
-
-			// TODO: implement LVM handler
-
-			f, err := fsys.New(sr, cache)
-			if err != nil {
-				return xerrors.Errorf("new filesystem error: %w", err)
-			}
-			err = fs.WalkDir(f, root, func(path string, d fs.DirEntry, err error) error {
-				return fn(f, path, d, err)
-			})
-			if err != nil {
-				return xerrors.Errorf("filesystem walk error: %w", err)
-			}
+			errs = multierror.Append(errs, err)
 		}
 		if errs != nil {
+			return errs
+		}
+		if f == nil {
 			return xerrors.Errorf("try filesystems error: %w", errs)
+		}
+		err = fs.WalkDir(f, root, func(path string, d fs.DirEntry, err error) error {
+			return fn(f, path, d, err)
+		})
+		if err != nil {
+			return xerrors.Errorf("filesystem walk error: %w", err)
 		}
 		return nil
 	}
@@ -144,7 +177,7 @@ func (w VM) opener(fsys fs.FS, fi os.FileInfo, pathname string) analyzer.Opener 
 		if err != nil {
 			return nil, err
 		}
-		f := newVMFile(fi.Size(), r)
+		f := newVMFile(fi.Size(), r, w.threshold)
 		defer func() {
 			// nolint
 			_ = f.Clean()
@@ -154,22 +187,23 @@ func (w VM) opener(fsys fs.FS, fi os.FileInfo, pathname string) analyzer.Opener 
 	}
 }
 
-// TODO: Refactoring almost identical to TarFile.
 type vmFile struct {
 	once sync.Once
 	err  error
 
-	size   int64
-	reader io.Reader
+	size      int64
+	reader    io.Reader
+	threshold int64 //　Files larger than this threshold are written to file without being read into memory.
 
 	content  []byte // It will be populated if this file is small
 	filePath string // It will be populated if this file is large
 }
 
-func newVMFile(size int64, r io.Reader) vmFile {
+func newVMFile(size int64, r io.Reader, threshold int64) vmFile {
 	return vmFile{
-		size:   size,
-		reader: r,
+		size:      size,
+		reader:    r,
+		threshold: threshold,
 	}
 }
 
@@ -179,7 +213,7 @@ func newVMFile(size int64, r io.Reader) vmFile {
 func (o *vmFile) Open() (dio.ReadSeekCloserAt, error) {
 	o.once.Do(func() {
 		// When the file is large, it will be written down to a temp file.
-		if o.size >= ThresholdSize {
+		if o.size >= defaultSizeThreshold {
 			f, err := os.CreateTemp("", "fanal-*")
 			if err != nil {
 				o.err = xerrors.Errorf("failed to create the temp file: %w", err)

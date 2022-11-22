@@ -28,7 +28,7 @@ func (a gobinaryLibraryAnalyzer) Analyze(_ context.Context, input analyzer.Analy
 	if errors.Is(err, binary.ErrUnrecognizedExe) || errors.Is(err, binary.ErrNonGoBinary) {
 		return nil, nil
 	} else if err != nil {
-		return nil, xerrors.Errorf("go binary parse error: %w", err)
+		return nil, xerrors.Errorf("go binary (filepath: %s) parse error: %w", input.FilePath, err)
 	}
 
 	return language.ToAnalysisResult(types.GoBinary, input.FilePath, "", libs, deps), nil

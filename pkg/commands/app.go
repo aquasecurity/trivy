@@ -873,7 +873,6 @@ The following services are supported:
 func NewVMCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	reportFlagGroup := flag.NewReportFlagGroup()
 	reportFlagGroup.ReportFormat = nil // TODO: support --report summary
-	reportFlagGroup.DependencyTree = nil
 
 	vmFlags := &flag.Flags{
 		CacheFlagGroup:         flag.NewCacheFlagGroup(),
@@ -892,7 +891,14 @@ func NewVMCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 		Aliases: []string{},
 		Short:   "Scan a virtual machine image",
 		Example: `  # Scan your virtual machine image
-  $ trivy vm export-ami.vmdk`,
+  $ trivy vm export-ami.vmdk
+
+  # Scan your AWS EBS snapshot
+  $ trivy vm ebs:${your_ebs_snapshot_id}
+
+  # Scan your raw disk image
+  $ trivy vm snapshot_id.img
+`,
 		PreRunE: func(cmd *cobra.Command, args []string) error {
 			if err := vmFlags.Bind(cmd); err != nil {
 				return xerrors.Errorf("flag bind error: %w", err)
@@ -906,6 +912,10 @@ func NewVMCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 			options, err := vmFlags.ToOptions(cmd.Version, args, globalFlags, outputWriter)
 			if err != nil {
 				return xerrors.Errorf("flag error: %w", err)
+			}
+			if options.Timeout < time.Minute*30 {
+				options.Timeout = time.Minute * 30
+				log.Logger.Debug("Timeout is set to less than 30 min - upgrading to 30 min for this command.")
 			}
 			return artifact.Run(cmd.Context(), options, artifact.TargetVM)
 		},

@@ -4,13 +4,17 @@ import (
 	"io"
 	"io/fs"
 
+	"golang.org/x/xerrors"
+
 	"github.com/aquasecurity/trivy/pkg/fanal/vm"
 )
 
-var Filesystems []Filesystem
+var (
+	Filesystems      []Filesystem
+	ErrInvalidHeader = xerrors.New("invalid Header error")
+)
 
 type Filesystem interface {
-	Try(rs io.ReadSeeker) (bool, error)
 	New(sr io.SectionReader, cache vm.Cache) (fs.FS, error)
 }
 

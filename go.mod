@@ -50,9 +50,11 @@ require (
 	github.com/kylelemons/godebug v1.1.0
 	github.com/mailru/easyjson v0.7.7
 	github.com/masahiro331/go-disk v0.0.0-20220919035250-c8da316f91ac
+	github.com/masahiro331/go-ebs-file v0.0.0-20221121094110-3aa15aae4a7c
+	github.com/masahiro331/go-ext4-filesystem v0.0.0-20221016160854-4b40d7ee6193
 	github.com/masahiro331/go-mvn-version v0.0.0-20210429150710-d3157d602a08
-	github.com/masahiro331/go-vmdk-parser v0.0.0-20220920085928-e985b7990634
-	github.com/masahiro331/go-xfs-filesystem v0.0.0-20220920153948-42307125905b
+	github.com/masahiro331/go-vmdk-parser v0.0.0-20221122050916-ab67ee4a741d
+	github.com/masahiro331/go-xfs-filesystem v0.0.0-20221009071317-ad8f99f58d06
 	github.com/mitchellh/hashstructure/v2 v2.0.2
 	github.com/open-policy-agent/opa v0.44.1-0.20220927105354-00e835a7cc15
 	github.com/owenrumney/go-sarif/v2 v2.1.2
@@ -142,6 +144,7 @@ require (
 	github.com/liamg/iamgo v0.0.9 // indirect
 	github.com/liamg/jfather v0.0.7 // indirect
 	github.com/liamg/memoryfs v1.4.3 // indirect
+	github.com/lunixbochs/struc v0.0.0-20200707160740-784aaebc1d40 // indirect
 	github.com/microsoft/go-rustaudit v0.0.0-20220808201409-204dfee52032 // indirect
 	github.com/oklog/ulid v1.3.1 // indirect
 	github.com/opentracing/opentracing-go v1.2.0 // indirect

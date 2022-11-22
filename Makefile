@@ -77,6 +77,16 @@ test-integration: integration/testdata/fixtures/images/*.tar.gz
 test-module-integration: integration/testdata/fixtures/images/*.tar.gz $(EXAMPLE_MODULES)
 	go test -v -tags=module_integration ./integration/...
 
+# Run VM integration tests
+.PHONY: test-vm-integration
+test-vm-integration: integration/testdata/fixtures/vm/*.img.gz
+	go test -v -tags=vm_integration ./integration/...
+
+integration/testdata/fixtures/vm/*.img.gz: $(GOBIN)/crane
+	mkdir -p integration/testdata/fixtures/vm/
+	integration/scripts/download-vm.sh
+
+
 .PHONY: lint
 lint: $(GOBIN)/golangci-lint
 	$(GOBIN)/golangci-lint run --timeout 5m
