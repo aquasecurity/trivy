@@ -96,14 +96,14 @@ require (
 	github.com/aws/aws-sdk-go-v2/service/dynamodb v1.17.1 // indirect
 	github.com/aws/aws-sdk-go-v2/service/ec2 v1.63.1 // indirect
 	github.com/aws/aws-sdk-go-v2/service/ecr v1.17.18 // indirect
-	github.com/aws/aws-sdk-go-v2/service/ecs v1.18.23 // indirect
+	github.com/aws/aws-sdk-go-v2/service/ecs v1.18.26 // indirect
 	github.com/aws/aws-sdk-go-v2/service/efs v1.17.15 // indirect
 	github.com/aws/aws-sdk-go-v2/service/eks v1.22.1 // indirect
 	github.com/aws/aws-sdk-go-v2/service/elasticache v1.22.10 // indirect
 	github.com/aws/aws-sdk-go-v2/service/elasticloadbalancingv2 v1.18.20 // indirect
 	github.com/aws/aws-sdk-go-v2/service/elasticsearchservice v1.16.10 // indirect
 	github.com/aws/aws-sdk-go-v2/service/emr v1.20.11 // indirect
-	github.com/aws/aws-sdk-go-v2/service/iam v1.18.19 // indirect
+	github.com/aws/aws-sdk-go-v2/service/iam v1.18.23 // indirect
 	github.com/aws/aws-sdk-go-v2/service/internal/accept-encoding v1.9.9 // indirect
 	github.com/aws/aws-sdk-go-v2/service/internal/checksum v1.1.18 // indirect
 	github.com/aws/aws-sdk-go-v2/service/internal/endpoint-discovery v1.7.17 // indirect
@@ -111,7 +111,7 @@ require (
 	github.com/aws/aws-sdk-go-v2/service/internal/s3shared v1.13.17 // indirect
 	github.com/aws/aws-sdk-go-v2/service/kafka v1.17.19 // indirect
 	github.com/aws/aws-sdk-go-v2/service/kinesis v1.15.19 // indirect
-	github.com/aws/aws-sdk-go-v2/service/kms v1.18.11 // indirect
+	github.com/aws/aws-sdk-go-v2/service/kms v1.18.15 // indirect
 	github.com/aws/aws-sdk-go-v2/service/lambda v1.24.6 // indirect
 	github.com/aws/aws-sdk-go-v2/service/mq v1.13.13 // indirect
 	github.com/aws/aws-sdk-go-v2/service/neptune v1.17.12 // indirect
@@ -348,11 +348,11 @@ require (
 	gopkg.in/warnings.v0 v0.1.2 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 	gotest.tools v2.2.0+incompatible
-	helm.sh/helm/v3 v3.10.0 // indirect
+	helm.sh/helm/v3 v3.10.1 // indirect
 	k8s.io/api v0.25.3 // indirect
-	k8s.io/apiextensions-apiserver v0.25.0 // indirect
+	k8s.io/apiextensions-apiserver v0.25.2 // indirect
 	k8s.io/apimachinery v0.25.3 // indirect
-	k8s.io/apiserver v0.25.0 // indirect
+	k8s.io/apiserver v0.25.2 // indirect
 	k8s.io/cli-runtime v0.25.3 // indirect
 	k8s.io/client-go v0.25.3 // indirect
 	k8s.io/component-base v0.25.3 // indirect
