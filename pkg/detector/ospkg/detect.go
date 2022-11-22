@@ -3,6 +3,7 @@ package ospkg
 import (
 	"time"
 
+	"github.com/aquasecurity/trivy/pkg/detector/ospkg/wolfi"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/detector/ospkg/alma"
@@ -40,6 +41,7 @@ var (
 		fos.OpenSUSELeap: suse.NewScanner(suse.OpenSUSE),
 		fos.SLES:         suse.NewScanner(suse.SUSEEnterpriseLinux),
 		fos.Photon:       photon.NewScanner(),
+		fos.Wolfi:        wolfi.NewScanner(),
 	}
 )
 
