@@ -2,7 +2,7 @@ package report
 
 import (
 	"fmt"
-	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
+
 	"html"
 	"io"
 	"regexp"
@@ -12,6 +12,7 @@ import (
 	"github.com/owenrumney/go-sarif/v2/sarif"
 	"golang.org/x/xerrors"
 
+	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
 
