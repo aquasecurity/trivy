@@ -10,6 +10,7 @@ import (
 var (
 	Readers             []Reader
 	ErrInvalidSignature = xerrors.New("invalid signature error")
+	ErrUnsupportedType  = xerrors.New("unsupported type error")
 )
 
 type Reader interface {

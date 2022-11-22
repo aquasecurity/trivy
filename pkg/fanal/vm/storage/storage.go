@@ -2,6 +2,7 @@ package storage
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"io"
 	"os"
@@ -73,6 +74,10 @@ func openFile(filePath string) (*Storage, error) {
 	}
 	reader, err := vm.New(f, cache)
 	if err != nil {
+		if errors.Is(err, vm.ErrUnsupportedType) {
+			return nil, err
+		}
+
 		log.Logger.Debugf("new virtual machine scan error: %s, treat as raw image.", err.Error())
 		fi, err := f.Stat()
 		if err != nil {

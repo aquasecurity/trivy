@@ -1,6 +1,7 @@
 package vmdk
 
 import (
+	"errors"
 	"io"
 
 	"github.com/masahiro331/go-vmdk-parser/pkg/virtualization/vmdk"
@@ -32,6 +33,9 @@ func (V VMDK) NewVMReader(rs io.ReadSeeker, cache vm.Cache) (*io.SectionReader, 
 	}
 	reader, err := vmdk.Open(rs, cache)
 	if err != nil {
+		if errors.Is(err, vmdk.ErrUnSupportedType) {
+			return nil, xerrors.Errorf("%s: %w", err.Error(), vm.ErrUnsupportedType)
+		}
 		return nil, xerrors.Errorf("failed to open vmdk: %w", err)
 	}
 	return reader, nil
