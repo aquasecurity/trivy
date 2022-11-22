@@ -8,7 +8,7 @@ require (
 	github.com/NYTimes/gziphandler v1.1.1
 	github.com/alicebob/miniredis/v2 v2.23.0
 	github.com/aquasecurity/bolt-fixtures v0.0.0-20200903104109-d34e7f983986
-	github.com/aquasecurity/defsec v0.82.0
+	github.com/aquasecurity/defsec v0.82.5
 	github.com/aquasecurity/go-dep-parser v0.0.0-20221114145626-35ef808901e8
 	github.com/aquasecurity/go-gem-version v0.0.0-20201115065557-8eed6fe000ce
 	github.com/aquasecurity/go-npm-version v0.0.0-20201110091526-0b796d180798
@@ -96,14 +96,14 @@ require (
 	github.com/aws/aws-sdk-go-v2/service/dynamodb v1.17.1 // indirect
 	github.com/aws/aws-sdk-go-v2/service/ec2 v1.63.1 // indirect
 	github.com/aws/aws-sdk-go-v2/service/ecr v1.17.18 // indirect
-	github.com/aws/aws-sdk-go-v2/service/ecs v1.18.23 // indirect
+	github.com/aws/aws-sdk-go-v2/service/ecs v1.18.26 // indirect
 	github.com/aws/aws-sdk-go-v2/service/efs v1.17.15 // indirect
 	github.com/aws/aws-sdk-go-v2/service/eks v1.22.1 // indirect
 	github.com/aws/aws-sdk-go-v2/service/elasticache v1.22.10 // indirect
 	github.com/aws/aws-sdk-go-v2/service/elasticloadbalancingv2 v1.18.20 // indirect
 	github.com/aws/aws-sdk-go-v2/service/elasticsearchservice v1.16.10 // indirect
 	github.com/aws/aws-sdk-go-v2/service/emr v1.20.11 // indirect
-	github.com/aws/aws-sdk-go-v2/service/iam v1.18.19 // indirect
+	github.com/aws/aws-sdk-go-v2/service/iam v1.18.23 // indirect
 	github.com/aws/aws-sdk-go-v2/service/internal/accept-encoding v1.9.9 // indirect
 	github.com/aws/aws-sdk-go-v2/service/internal/checksum v1.1.18 // indirect
 	github.com/aws/aws-sdk-go-v2/service/internal/endpoint-discovery v1.7.17 // indirect
@@ -111,7 +111,7 @@ require (
 	github.com/aws/aws-sdk-go-v2/service/internal/s3shared v1.13.17 // indirect
 	github.com/aws/aws-sdk-go-v2/service/kafka v1.17.19 // indirect
 	github.com/aws/aws-sdk-go-v2/service/kinesis v1.15.19 // indirect
-	github.com/aws/aws-sdk-go-v2/service/kms v1.18.11 // indirect
+	github.com/aws/aws-sdk-go-v2/service/kms v1.18.15 // indirect
 	github.com/aws/aws-sdk-go-v2/service/lambda v1.24.6 // indirect
 	github.com/aws/aws-sdk-go-v2/service/mq v1.13.13 // indirect
 	github.com/aws/aws-sdk-go-v2/service/neptune v1.17.12 // indirect
@@ -144,6 +144,7 @@ require (
 	github.com/pelletier/go-toml/v2 v2.0.5 // indirect
 	github.com/shibumi/go-pathspec v1.3.0 // indirect
 	github.com/tchap/go-patricia/v2 v2.3.1 // indirect
+	go.etcd.io/etcd/api/v3 v3.5.4 // indirect
 	go.mongodb.org/mongo-driver v1.10.0 // indirect
 )
 
@@ -347,11 +348,11 @@ require (
 	gopkg.in/warnings.v0 v0.1.2 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 	gotest.tools v2.2.0+incompatible
-	helm.sh/helm/v3 v3.10.0 // indirect
+	helm.sh/helm/v3 v3.10.1 // indirect
 	k8s.io/api v0.25.3 // indirect
-	k8s.io/apiextensions-apiserver v0.25.0 // indirect
+	k8s.io/apiextensions-apiserver v0.25.2 // indirect
 	k8s.io/apimachinery v0.25.3 // indirect
-	k8s.io/apiserver v0.25.0 // indirect
+	k8s.io/apiserver v0.25.2 // indirect
 	k8s.io/cli-runtime v0.25.3 // indirect
 	k8s.io/client-go v0.25.3 // indirect
 	k8s.io/component-base v0.25.3 // indirect
