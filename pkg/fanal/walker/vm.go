@@ -71,7 +71,7 @@ func (w *VM) Walk(vreader *io.SectionReader, root string, fn WalkFunc) error {
 
 		// Walk each partition
 		if err = w.diskWalk(root, partition); err != nil {
-			log.Logger.Debugf("walk partition error: %s", err.Error())
+			log.Logger.Warnf("Partition error: %s", err.Error())
 		}
 	}
 	return nil
@@ -116,7 +116,7 @@ func (w *VM) diskWalk(root string, partition types.Partition) error {
 		return errs
 	}
 	if f == nil {
-		return xerrors.Errorf("unable to detect filesystem: %w", errs)
+		return xerrors.New("unable to detect filesystem")
 	}
 	err = fs.WalkDir(f, root, func(path string, d fs.DirEntry, err error) error {
 		// Walk filesystem
