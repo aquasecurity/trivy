@@ -40,6 +40,7 @@ var (
 		fos.OpenSUSELeap: suse.NewScanner(suse.OpenSUSE),
 		fos.SLES:         suse.NewScanner(suse.SUSEEnterpriseLinux),
 		fos.Photon:       photon.NewScanner(),
+		fos.Wolfi:        alpine.NewScanner(),
 	}
 )
 

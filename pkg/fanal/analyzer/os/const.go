@@ -57,6 +57,9 @@ const (
 
 	// Alpine is done
 	Alpine = "alpine"
+
+	// Wolfi is in progress
+	Wolfi = "wolfi"
 )
 
 var AnalyzeOSError = xerrors.New("unable to analyze OS information")
