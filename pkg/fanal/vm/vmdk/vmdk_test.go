@@ -9,12 +9,13 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestVMDK_NewVMReader(t *testing.T) {
+func TestVMDK_NewReader(t *testing.T) {
 	tests := []struct {
 		name     string
 		fileName string
 		wantErr  string
 	}{
+		// TODO: add valid tests
 		{
 			name:     "invalid vmdk file",
 			fileName: "testdata/invalid.vmdk",
@@ -29,7 +30,7 @@ func TestVMDK_NewVMReader(t *testing.T) {
 			require.NoError(t, err)
 			defer f.Close()
 
-			_, err = v.NewVMReader(f, nil)
+			_, err = v.NewReader(f, nil)
 			if err == nil {
 				assert.Fail(t, "required error test")
 			}

@@ -10,13 +10,9 @@ import (
 	"github.com/aquasecurity/trivy/pkg/fanal/vm"
 )
 
-func init() {
-	vm.RegisterVMReader(&VMDK{})
-}
-
 type VMDK struct{}
 
-func (V VMDK) NewVMReader(rs io.ReadSeeker, cache vm.Cache) (*io.SectionReader, error) {
+func (V VMDK) NewReader(rs io.ReadSeeker, cache vm.Cache) (*io.SectionReader, error) {
 	if _, err := rs.Seek(0, io.SeekStart); err != nil {
 		return nil, xerrors.Errorf("seek error: %w", err)
 	}

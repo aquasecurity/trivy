@@ -5,33 +5,35 @@ import (
 	"io"
 
 	"golang.org/x/xerrors"
+
+	"github.com/aquasecurity/trivy/pkg/fanal/vm/vmdk"
 )
 
 var (
-	Readers             []Reader
+	vmDisks = []Disk{
+		vmdk.VMDK{},
+	}
+
 	ErrInvalidSignature = xerrors.New("invalid signature error")
 	ErrUnsupportedType  = xerrors.New("unsupported type error")
 )
 
-type Reader interface {
-	NewVMReader(rs io.ReadSeeker, cache Cache) (*io.SectionReader, error)
+// Disk defines virtual machine disk images like VMDK, VDI and VHD.
+type Disk interface {
+	NewReader(rs io.ReadSeeker, cache Cache) (*io.SectionReader, error)
 }
 
 type Cache interface {
-	// Add cache data
+	// Add stores data in the cache
 	Add(key, value interface{}) bool
 
 	// Get returns key's value from the cache
 	Get(key interface{}) (value interface{}, ok bool)
 }
 
-func RegisterVMReader(vm Reader) {
-	Readers = append(Readers, vm)
-}
-
 func New(rs io.ReadSeeker, cache Cache) (*io.SectionReader, error) {
-	for _, v := range Readers {
-		vreader, err := v.NewVMReader(rs, cache)
+	for _, disk := range vmDisks {
+		vreader, err := disk.NewReader(rs, cache)
 		if err != nil {
 			if errors.Is(err, ErrInvalidSignature) {
 				continue
