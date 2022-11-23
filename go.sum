@@ -1127,8 +1127,8 @@ github.com/masahiro331/go-mvn-version v0.0.0-20210429150710-d3157d602a08 h1:AevU
 github.com/masahiro331/go-mvn-version v0.0.0-20210429150710-d3157d602a08/go.mod h1:JOkBRrE1HvgTyjk6diFtNGgr8XJMtIfiBzkL5krqzVk=
 github.com/masahiro331/go-vmdk-parser v0.0.0-20221122050916-ab67ee4a741d h1:pM3SQJpPq0VQulpp3+jcbap3JdzNW638rsjRb3Brw0o=
 github.com/masahiro331/go-vmdk-parser v0.0.0-20221122050916-ab67ee4a741d/go.mod h1:5f7mCJGW9cJb8SDn3z8qodGxpMCOo8d/2nls/tiwRrw=
-github.com/masahiro331/go-xfs-filesystem v0.0.0-20221009071317-ad8f99f58d06 h1:ltMB7KmYnH1RYE82qQIaDfPwYkABr/tD/1RPXwzsmeg=
-github.com/masahiro331/go-xfs-filesystem v0.0.0-20221009071317-ad8f99f58d06/go.mod h1:QKBZqdn6teT0LK3QhAf3K6xakItd1LonOShOEC44idQ=
+github.com/masahiro331/go-xfs-filesystem v0.0.0-20221123035428-5c173df8b3f6 h1:UHo9uZWmmUVmYUJqTXPSHNUnPaO6ofKKdTWpEQtpxho=
+github.com/masahiro331/go-xfs-filesystem v0.0.0-20221123035428-5c173df8b3f6/go.mod h1:QKBZqdn6teT0LK3QhAf3K6xakItd1LonOShOEC44idQ=
 github.com/matryer/is v1.2.0 h1:92UTHpy8CDwaJ08GqLDzhhuixiBUUD1p3AU6PHddz4A=
 github.com/matryer/is v1.2.0/go.mod h1:2fLPjFQM9rhQ15aVEtbuwhJinnOqrmgXPNdZsdwlWXA=
 github.com/mattn/go-colorable v0.0.9/go.mod h1:9vuHe8Xs5qXnSaW/c/ABM9alt+Vo+STaOChaDxuIBZU=
