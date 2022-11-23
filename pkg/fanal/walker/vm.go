@@ -27,6 +27,8 @@ var requiredDiskName = []string{
 	"primary",  // Common image name
 	"0",        // Common image name
 	"1",        // Common image name
+	"2",        // Common image name
+	"3",        // Common image name
 }
 
 func AppendPermitDiskName(s ...string) {
