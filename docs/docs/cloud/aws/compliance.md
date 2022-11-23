@@ -128,22 +128,39 @@ $ trivy aws  --compliance=awscis1.2
 
 ![img.png](../../../imgs/aws-cis-report.png)
 
-In this case only the checks defined as per AWS CIS Benchmark v1.2 are run. To see which checks are being evaluated, you can run the following:
+
+You can also summarize the report to get a full compliance report with all the included checks.
 ```shell
-$ trivy aws --debug --compliance=awscis1.2
-
-2022-11-22T16:08:30.205-0800    DEBUG   [defsec] 08:30.205930000 aws-api.scanner                  Found 6 results for AVD-AWS-0145
-2022-11-22T16:08:30.205-0800    DEBUG   [defsec] 08:30.205939000 aws-api.scanner                  Found 1 results for AVD-AWS-0056
-2022-11-22T16:08:30.205-0800    DEBUG   [defsec] 08:30.205953000 aws-api.scanner                  Found 6 results for AVD-AWS-0143
-2022-11-22T16:08:30.205-0800    DEBUG   [defsec] 08:30.205960000 aws-api.scanner                  Found 1 results for AVD-AWS-0058
-2022-11-22T16:08:30.205-0800    DEBUG   [defsec] 08:30.205963000 aws-api.scanner                  Found 1 results for AVD-AWS-0059
-2022-11-22T16:08:30.205-0800    DEBUG   [defsec] 08:30.205971000 aws-api.scanner                  Found 1 results for AVD-AWS-0060
-2022-11-22T16:08:30.205-0800    DEBUG   [defsec] 08:30.205977000 aws-api.scanner                  Found 1 results for AVD-AWS-0061
-2022-11-22T16:08:30.206-0800    DEBUG   [defsec] 08:30.206063000 aws-api.scanner                  Found 8 results for AVD-AWS-0146
-2022-11-22T16:08:30.206-0800    DEBUG   [defsec] 08:30.206077000 aws-api.scanner                  Found 1 results for AVD-AWS-0062
-2022-11-22T16:08:30.206-0800    DEBUG   [defsec] 08:30.206084000 aws-api.scanner                  Found 1 results for AVD-AWS-0063
-
+$ trivy aws --compliance=awscis1.2 --report=summary
 ```
+![img.png](../../../imgs/cloud-compliance-summary.png)
+
+
+Furthermore, you can also get the report in a JSON format.
+```shell
+$ trivy aws --compliance=awscis1.2 --report=summary --format=json
+```
+
+```json
+{
+	"ID": "0001",
+	"Title": "awscis1.2",
+	"SummaryControls": [{
+			"ID": "1.1",
+			"Name": "limit-root-account-usage",
+			"Severity": "LOW",
+			"TotalFail": 5
+		},
+		{
+			"ID": "1.10",
+			"Name": "no-password-reuse",
+			"Severity": "MEDIUM",
+			"TotalFail": 1
+		}
+	]
+}
+```
+
 
 ## Custom compliance report
 
@@ -154,7 +171,6 @@ The supported checks are from two types and can be found at [Aqua vulnerability 
 - [misconfiguration](https://avd.aquasec.com/misconfig/)
 
 ### Compliance spec format
-
 The compliance spec file format should be as follows:
 
 

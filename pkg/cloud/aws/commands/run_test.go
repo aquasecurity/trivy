@@ -613,6 +613,47 @@ deny[res] {
 }
 `,
 		},
+		{
+			name: "compliance report summary",
+			options: flag.Options{
+				AWSOptions: flag.AWSOptions{
+					Region:   "us-east-1",
+					Services: []string{"s3"},
+					Account:  "12345678",
+				},
+				CloudOptions: flag.CloudOptions{
+					MaxCacheAge: time.Hour * 24 * 365 * 100,
+				},
+				ReportOptions: flag.ReportOptions{Compliance: "@./testdata/example-spec.yaml", Format: "table", ReportFormat: "summary"},
+			},
+			cacheContent: exampleS3Cache,
+			want: `
+Summary Report for compliance: my-custom-spec
+┌─────┬──────────┬───────────────────────┬────────┬────────┐
+│ ID  │ Severity │     Control Name      │ Status │ Issues │
+├─────┼──────────┼───────────────────────┼────────┼────────┤
+│ 1.1 │ HIGH     │ Unencrypted S3 bucket │  FAIL  │   1    │
+└─────┴──────────┴───────────────────────┴────────┴────────┘
+
+
+`,
+		},
+		{
+			name:      "error loading compliance report",
+			expectErr: true,
+			options: flag.Options{
+				AWSOptions: flag.AWSOptions{
+					Region:   "us-east-1",
+					Services: []string{"s3"},
+					Account:  "12345678",
+				},
+				CloudOptions: flag.CloudOptions{
+					MaxCacheAge: time.Hour * 24 * 365 * 100,
+				},
+				ReportOptions: flag.ReportOptions{Compliance: "@./testdata/nosuchspec.yaml", Format: "table", ReportFormat: "summary"},
+			},
+			cacheContent: exampleS3Cache,
+		},
 	}
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
@@ -620,7 +661,9 @@ deny[res] {
 			test.options.Output = buffer
 			test.options.Debug = true
 			test.options.GlobalOptions.Timeout = time.Minute
-			test.options.Format = "json"
+			if test.options.Format == "" {
+				test.options.Format = "json"
+			}
 			test.options.Severities = []dbTypes.Severity{
 				dbTypes.SeverityUnknown,
 				dbTypes.SeverityLow,
