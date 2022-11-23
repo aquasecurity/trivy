@@ -79,11 +79,10 @@ test-module-integration: integration/testdata/fixtures/images/*.tar.gz $(EXAMPLE
 
 # Run VM integration tests
 .PHONY: test-vm-integration
-test-vm-integration: integration/testdata/fixtures/vm/*.img.gz
+test-vm-integration: integration/testdata/fixtures/vm-images/*.img.gz
 	go test -v -tags=vm_integration ./integration/...
 
-integration/testdata/fixtures/vm/*.img.gz: $(GOBIN)/crane
-	mkdir -p integration/testdata/fixtures/vm/
+integration/testdata/fixtures/vm-images/*.img.gz: $(GOBIN)/crane
 	integration/scripts/download-vm.sh
 
 
