@@ -55,7 +55,7 @@ Trivy can also run specific checks by spec by specifying the compliance flag:
 ```shell
 trivy aws --compliance=awscis1.2
 ```
-Will only target the checks defined under the AWS CIS 1.2 spec. Currently, we support AWS CIS 1.2 and 1.4 specs.
+Will only target the checks defined under the AWS CIS 1.2 spec. Currently, we support AWS CIS 1.2 and 1.4 specs. More details [here](compliance.md).
 
 ## Cached Results
 
