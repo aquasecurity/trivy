@@ -14,6 +14,13 @@ import (
 	digest "github.com/opencontainers/go-digest"
 	"golang.org/x/xerrors"
 
+	// Register Filesystem
+	_ "github.com/aquasecurity/trivy/pkg/fanal/vm/filesystem/ext4"
+	_ "github.com/aquasecurity/trivy/pkg/fanal/vm/filesystem/xfs"
+
+	// Register VirtualMachineImage
+	_ "github.com/aquasecurity/trivy/pkg/fanal/vm/vmdk"
+
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/artifact"
 	"github.com/aquasecurity/trivy/pkg/fanal/cache"
