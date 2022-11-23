@@ -17,20 +17,18 @@ func init() {
 type VMDK struct{}
 
 func (V VMDK) NewVMReader(rs io.ReadSeeker, cache vm.Cache) (*io.SectionReader, error) {
-	_, err := rs.Seek(0, io.SeekStart)
-	if err != nil {
-		return nil, xerrors.Errorf("failed to seek offset error: %w", err)
+	if _, err := rs.Seek(0, io.SeekStart); err != nil {
+		return nil, xerrors.Errorf("seek error: %w", err)
 	}
 
-	_, err = vmdk.Check(rs)
-	if err != nil {
+	if _, err := vmdk.Check(rs); err != nil {
 		return nil, vm.ErrInvalidSignature
 	}
 
-	_, err = rs.Seek(0, io.SeekStart)
-	if err != nil {
-		return nil, xerrors.Errorf("failed to seek offset error: %w", err)
+	if _, err := rs.Seek(0, io.SeekStart); err != nil {
+		return nil, xerrors.Errorf("seek error: %w", err)
 	}
+
 	reader, err := vmdk.Open(rs, cache)
 	if err != nil {
 		if errors.Is(err, vmdk.ErrUnSupportedType) {

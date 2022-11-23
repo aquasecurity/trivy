@@ -23,16 +23,17 @@ func TestVMDK_NewVMReader(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			V := vmdk.VMDK{}
+			v := vmdk.VMDK{}
 
 			f, err := os.Open(tt.fileName)
 			require.NoError(t, err)
+			defer f.Close()
 
-			_, err = V.NewVMReader(f, nil)
+			_, err = v.NewVMReader(f, nil)
 			if err == nil {
 				assert.Fail(t, "required error test")
 			}
-			assert.Contains(t, tt.wantErr, err.Error())
+			assert.ErrorContains(t, err, tt.wantErr)
 		})
 	}
 }
