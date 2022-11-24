@@ -6,6 +6,11 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/aws/aws-sdk-go-v2/config"
+	"github.com/aws/aws-sdk-go-v2/service/sts"
+	"golang.org/x/xerrors"
+	"gopkg.in/yaml.v3"
+
 	"github.com/aquasecurity/defsec/pkg/errs"
 	"github.com/aquasecurity/defsec/pkg/scan"
 	awsScanner "github.com/aquasecurity/defsec/pkg/scanners/cloud/aws"
@@ -19,10 +24,6 @@ import (
 	"github.com/aquasecurity/trivy/pkg/flag"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/types"
-	"github.com/aws/aws-sdk-go-v2/config"
-	"github.com/aws/aws-sdk-go-v2/service/sts"
-	"golang.org/x/xerrors"
-	"gopkg.in/yaml.v3"
 )
 
 func getAccountIDAndRegion(ctx context.Context, region string) (string, string, error) {
