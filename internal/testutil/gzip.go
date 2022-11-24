@@ -24,5 +24,5 @@ func DecompressGzip(t *testing.T, src, dst string) {
 	require.NoError(t, err)
 
 	_, err = io.CopyN(w, gr, max)
-	require.NoError(t, err)
+	require.ErrorIs(t, err, io.EOF)
 }
