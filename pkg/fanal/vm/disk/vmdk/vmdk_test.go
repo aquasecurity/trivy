@@ -4,7 +4,8 @@ import (
 	"os"
 	"testing"
 
-	"github.com/aquasecurity/trivy/pkg/fanal/vm/vmdk"
+	"github.com/aquasecurity/trivy/pkg/fanal/vm/disk/vmdk"
+
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -18,7 +19,7 @@ func TestVMDK_NewReader(t *testing.T) {
 		// TODO: add valid tests
 		{
 			name:     "invalid vmdk file",
-			fileName: "testdata/invalid.vmdk",
+			fileName: "../testdata/invalid.vmdk",
 			wantErr:  "invalid signature error",
 		},
 	}

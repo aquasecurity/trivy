@@ -1,4 +1,4 @@
-package vm_test
+package disk_test
 
 import (
 	"io"
@@ -9,7 +9,7 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/vm"
-	_ "github.com/aquasecurity/trivy/pkg/fanal/vm/vmdk"
+	"github.com/aquasecurity/trivy/pkg/fanal/vm/disk"
 )
 
 func TestNew(t *testing.T) {
@@ -33,11 +33,11 @@ func TestNew(t *testing.T) {
 			f, err := os.Open(tt.fileName)
 			require.NoError(t, err)
 
-			_, err = vm.New(f, nil)
+			_, err = disk.New(f, nil)
 			if err == nil {
 				assert.Fail(t, "required error test")
 			}
-			assert.Contains(t, tt.wantErr, err.Error())
+			assert.ErrorContains(t, err, tt.wantErr)
 		})
 	}
 }

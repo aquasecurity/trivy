@@ -8,6 +8,8 @@ import (
 	"os"
 	"strings"
 
+	"github.com/aquasecurity/trivy/pkg/fanal/vm/disk"
+
 	lru "github.com/hashicorp/golang-lru"
 	ebsfile "github.com/masahiro331/go-ebs-file"
 	"golang.org/x/xerrors"
@@ -37,11 +39,11 @@ type Storage struct {
 	Type   string
 }
 
-func Open(target string, ebs ebsfile.EBSAPI, c context.Context) (s *Storage, err error) {
+func Open(ctx context.Context, target string, ebs ebsfile.EBSAPI) (s *Storage, err error) {
 	switch {
 	case strings.HasPrefix(target, fmt.Sprintf("%s:", TypeEBS)):
 		target = strings.TrimPrefix(target, fmt.Sprintf("%s:", TypeEBS))
-		s, err = openEBS(target, ebs, c)
+		s, err = openEBS(ctx, target, ebs)
 
 	case strings.HasPrefix(target, fmt.Sprintf("%s:", TypeFile)):
 		target = strings.TrimPrefix(target, fmt.Sprintf("%s:", TypeFile))
@@ -51,10 +53,10 @@ func Open(target string, ebs ebsfile.EBSAPI, c context.Context) (s *Storage, err
 		s, err = openFile(target)
 	}
 	if err != nil {
-		return nil, xerrors.Errorf("failed to open %s error: %w", target, err)
+		return nil, xerrors.Errorf("failed to open %s: %w", target, err)
 	}
 
-	return s, err
+	return s, nil
 }
 
 func openFile(filePath string) (*Storage, error) {
@@ -72,7 +74,7 @@ func openFile(filePath string) (*Storage, error) {
 		file:  f,
 		cache: cache,
 	}
-	reader, err := vm.New(f, cache)
+	reader, err := disk.New(f, cache)
 	if err != nil {
 		if errors.Is(err, vm.ErrUnsupportedType) {
 			return nil, err
@@ -92,15 +94,15 @@ func openFile(filePath string) (*Storage, error) {
 	return s, nil
 }
 
-func openEBS(snapshotID string, ebs ebsfile.EBSAPI, ctx context.Context) (*Storage, error) {
+func openEBS(ctx context.Context, snapshotID string, ebs ebsfile.EBSAPI) (*Storage, error) {
 	cache, err := lru.New(storageEBSCacheSize)
 	if err != nil {
-		return nil, xerrors.Errorf("failed to create new lru cache: %w", err)
+		return nil, xerrors.Errorf("lru cache error: %w", err)
 	}
 
 	sr, err := ebsfile.Open(snapshotID, ctx, cache, ebs)
 	if err != nil {
-		return nil, xerrors.Errorf("failed to open EBS file: %w", err)
+		return nil, xerrors.Errorf("EBS error: %w", err)
 	}
 
 	return &Storage{

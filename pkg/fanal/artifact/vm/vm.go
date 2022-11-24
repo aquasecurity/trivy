@@ -18,9 +18,6 @@ import (
 	_ "github.com/aquasecurity/trivy/pkg/fanal/vm/filesystem/ext4"
 	_ "github.com/aquasecurity/trivy/pkg/fanal/vm/filesystem/xfs"
 
-	// Register VirtualMachineImage
-	_ "github.com/aquasecurity/trivy/pkg/fanal/vm/vmdk"
-
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/artifact"
 	"github.com/aquasecurity/trivy/pkg/fanal/cache"
@@ -75,7 +72,7 @@ func NewArtifact(filePath string, c cache.ArtifactCache, opt artifact.Option) (a
 }
 
 func (a Artifact) Inspect(ctx context.Context) (reference types.ArtifactReference, err error) {
-	s, err := storage.Open(a.filePath, a.ebs, ctx)
+	s, err := storage.Open(ctx, a.filePath, a.ebs)
 	if err != nil {
 		return types.ArtifactReference{}, xerrors.Errorf("failed to open storage: %w", err)
 	}

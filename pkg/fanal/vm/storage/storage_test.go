@@ -10,8 +10,6 @@ import (
 	"github.com/aws/aws-sdk-go/service/ebs/ebsiface"
 	ebsfile "github.com/masahiro331/go-ebs-file"
 	"github.com/stretchr/testify/assert"
-
-	_ "github.com/aquasecurity/trivy/pkg/fanal/vm/vmdk"
 )
 
 type mockEBS struct {
@@ -74,7 +72,7 @@ func TestOpen(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			gotS, err := Open(tt.args.target, tt.args.ebs, tt.args.c)
+			gotS, err := Open(context.Background(), tt.args.target, tt.args.ebs)
 			if tt.wantErr == "" {
 				assert.NoError(t, err)
 			} else {
