@@ -12,7 +12,10 @@
                 "type": "Direct",
                 "requested": "[5.7.0, )",
                 "resolved": "5.7.0",
-                "contentHash": "7Q/wUoB3jCBcq9zoBOBGHFhe78C13jViPmvjvzTwthVV8DAjMfpXnqAYtgwdaRLJMkTXrtdLxfPBIFFhmlsnIQ=="
+                "contentHash": "7Q/wUoB3jCBcq9zoBOBGHFhe78C13jViPmvjvzTwthVV8DAjMfpXnqAYtgwdaRLJMkTXrtdLxfPBIFFhmlsnIQ==",
+                "dependencies": {
+                    "Newtonsoft.Json": "12.0.3"
+                }
             }
         }
     }
