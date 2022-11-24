@@ -1,4 +1,4 @@
-package vmdk
+package disk
 
 import (
 	"errors"

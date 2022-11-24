@@ -7,12 +7,11 @@ import (
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/vm"
-	"github.com/aquasecurity/trivy/pkg/fanal/vm/disk/vmdk"
 )
 
 var (
 	vmDisks = []Disk{
-		vmdk.VMDK{},
+		VMDK{},
 	}
 )
 
