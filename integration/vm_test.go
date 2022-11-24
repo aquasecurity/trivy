@@ -31,7 +31,7 @@ func TestVM(t *testing.T) {
 		{
 			name: "amazon linux 2 in VMDK, filesystem XFS",
 			args: args{
-				input:        "testdata/fixtures/vm/amazonlinux2-gp2-x86.vmdk.img.gz",
+				input:        "testdata/fixtures/vm-images/amazonlinux2-gp2-x86.vmdk.img.gz",
 				format:       "json",
 				artifactType: "vm",
 			},
@@ -40,7 +40,7 @@ func TestVM(t *testing.T) {
 		{
 			name: "amazon linux 2 in Snapshot, filesystem XFS",
 			args: args{
-				input:        "testdata/fixtures/vm/amazonlinux2-gp2-x86.img.gz",
+				input:        "testdata/fixtures/vm-images/amazonlinux2-gp2-x86.img.gz",
 				format:       "json",
 				artifactType: "vm",
 			},
@@ -49,7 +49,7 @@ func TestVM(t *testing.T) {
 		{
 			name: "RedHat in Snapshot, filesystem XFS",
 			args: args{
-				input:        "testdata/fixtures/vm/redhat-gp2-x86.img.gz",
+				input:        "testdata/fixtures/vm-images/redhat-gp2-x86.img.gz",
 				format:       "json",
 				artifactType: "vm",
 			},
@@ -58,7 +58,7 @@ func TestVM(t *testing.T) {
 		{
 			name: "RedHat in VMDK, filesystem XFS",
 			args: args{
-				input:        "testdata/fixtures/vm/redhat-gp2-x86.vmdk.img.gz",
+				input:        "testdata/fixtures/vm-images/redhat-gp2-x86.vmdk.img.gz",
 				format:       "json",
 				artifactType: "vm",
 			},
@@ -67,7 +67,7 @@ func TestVM(t *testing.T) {
 		{
 			name: "SUSE in Snapshot, filesystem XFS",
 			args: args{
-				input:        "testdata/fixtures/vm/suse-gp2-x86.img.gz",
+				input:        "testdata/fixtures/vm-images/suse-gp2-x86.img.gz",
 				format:       "json",
 				artifactType: "vm",
 			},
@@ -76,7 +76,7 @@ func TestVM(t *testing.T) {
 		{
 			name: "Ubuntu in Snapshot, filesystem EXT4",
 			args: args{
-				input:        "testdata/fixtures/vm/ubuntu-gp2-x86.img.gz",
+				input:        "testdata/fixtures/vm-images/ubuntu-gp2-x86.img.gz",
 				format:       "json",
 				artifactType: "vm",
 			},
@@ -85,7 +85,7 @@ func TestVM(t *testing.T) {
 		{
 			name: "Ubuntu in VMDK, filesystem EXT4",
 			args: args{
-				input:        "testdata/fixtures/vm/ubuntu-gp2-x86.vmdk.img.gz",
+				input:        "testdata/fixtures/vm-images/ubuntu-gp2-x86.vmdk.img.gz",
 				format:       "json",
 				artifactType: "vm",
 			},

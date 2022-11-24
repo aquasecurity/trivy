@@ -1,29 +1,77 @@
-package vm
+package vm_test
 
 import (
+	"compress/gzip"
 	"context"
+	"fmt"
+	"io"
+	"os"
+	"path/filepath"
+	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
-	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/all"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer/config"
 	"github.com/aquasecurity/trivy/pkg/fanal/artifact"
+	"github.com/aquasecurity/trivy/pkg/fanal/artifact/vm"
 	"github.com/aquasecurity/trivy/pkg/fanal/cache"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 	ebsfile "github.com/masahiro331/go-ebs-file"
+
+	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/all"
 )
 
-func TestArtifact_Inspect(t *testing.T) {
-	type fields struct {
-		dir string
-		ebs ebsfile.EBSAPI
+const (
+	ebsPrefix  = string(vm.TypeEBS) + ":"
+	filePrefix = string(vm.TypeFile) + ":"
+)
+
+func TestNewArtifact(t *testing.T) {
+	tests := []struct {
+		name    string
+		target  string
+		wantErr assert.ErrorAssertionFunc
+	}{
+		{
+			name:    "happy path for file",
+			target:  "testdata/rawdata.img",
+			wantErr: assert.NoError,
+		},
+		{
+			name:    "happy path for EBS",
+			target:  "ebs:ebs-012345",
+			wantErr: assert.NoError,
+		},
+		{
+			name:   "sad path unsupported vm format",
+			target: "testdata/monolithicSparse.vmdk",
+			wantErr: func(t assert.TestingT, err error, args ...interface{}) bool {
+				return assert.ErrorContains(t, err, "unsupported type error")
+			},
+		},
+		{
+			name:   "sad path file not found",
+			target: "testdata/no-file",
+			wantErr: func(t assert.TestingT, err error, args ...interface{}) bool {
+				return assert.ErrorContains(t, err, "no such file or directory")
+			},
+		},
 	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			_, err := vm.NewArtifact(tt.target, nil, artifact.Option{})
+			tt.wantErr(t, err, fmt.Sprintf("NewArtifact(%v, nil, nil)", tt.target))
+		})
+	}
+}
+
+func TestArtifact_Inspect(t *testing.T) {
 	tests := []struct {
 		name                    string
-		fields                  fields
+		filePath                string
 		artifactOpt             artifact.Option
 		scannerOpt              config.ScannerOption
 		disabledAnalyzers       []analyzer.Type
@@ -35,13 +83,11 @@ func TestArtifact_Inspect(t *testing.T) {
 		wantErr                 string
 	}{
 		{
-			name: "happy path for raw image",
-			fields: fields{
-				dir: "testdata/AmazonLinux2.img",
-			},
+			name:     "happy path for raw image",
+			filePath: "testdata/AmazonLinux2.img.gz",
 			putBlobExpectation: cache.ArtifactCachePutBlobExpectation{
 				Args: cache.ArtifactCachePutBlobArgs{
-					BlobID: "deleteCache:sha256:d59c327eb3a3c71c8728f5e3d597b1c5dbf25adb54d7e9237a0f1c8a495032d6",
+					BlobID: "sha256:d59c327eb3a3c71c8728f5e3d597b1c5dbf25adb54d7e9237a0f1c8a495032d6",
 					BlobInfo: types.BlobInfo{
 						SchemaVersion: types.BlobJSONSchemaVersion,
 						OS: &types.OS{
@@ -61,7 +107,7 @@ func TestArtifact_Inspect(t *testing.T) {
 			putArtifactExpectations: []cache.ArtifactCachePutArtifactExpectation{
 				{
 					Args: cache.ArtifactCachePutArtifactArgs{
-						ArtifactID: "deleteCache:sha256:d59c327eb3a3c71c8728f5e3d597b1c5dbf25adb54d7e9237a0f1c8a495032d6",
+						ArtifactID: "sha256:d59c327eb3a3c71c8728f5e3d597b1c5dbf25adb54d7e9237a0f1c8a495032d6",
 						ArtifactInfo: types.ArtifactInfo{
 							SchemaVersion: types.ArtifactJSONSchemaVersion,
 						},
@@ -70,30 +116,26 @@ func TestArtifact_Inspect(t *testing.T) {
 			},
 
 			want: types.ArtifactReference{
-				Name: "testdata/AmazonLinux2.img",
+				Name: "testdata/AmazonLinux2.img.gz",
 				Type: types.ArtifactVM,
-				ID:   "deleteCache:sha256:d59c327eb3a3c71c8728f5e3d597b1c5dbf25adb54d7e9237a0f1c8a495032d6",
+				ID:   "sha256:d59c327eb3a3c71c8728f5e3d597b1c5dbf25adb54d7e9237a0f1c8a495032d6",
 				BlobIDs: []string{
-					"deleteCache:sha256:d59c327eb3a3c71c8728f5e3d597b1c5dbf25adb54d7e9237a0f1c8a495032d6",
+					"sha256:d59c327eb3a3c71c8728f5e3d597b1c5dbf25adb54d7e9237a0f1c8a495032d6",
 				},
 			},
 		},
 		{
-			name: "happy path for ebs",
-			fields: fields{
-				dir: "ebs:testdata/AmazonLinux2.img",
-				// blockSize: 512 KB, volumeSize: 40MB
-				ebs: ebsfile.NewMockEBS("testdata/AmazonLinux2.img", 512<<10, 40<<20),
-			},
+			name:     "happy path for ebs",
+			filePath: "ebs:ebs-012345",
 			missingBlobsExpectation: cache.ArtifactCacheMissingBlobsExpectation{
 				Args: cache.ArtifactCacheMissingBlobsArgs{
-					ArtifactID: "sha256:456519ca7dc707a6521501c83577bf92adb06f0c5dff9074b1c5b0767a3eea97",
-					BlobIDs:    []string{"sha256:456519ca7dc707a6521501c83577bf92adb06f0c5dff9074b1c5b0767a3eea97"},
+					ArtifactID: "sha256:a0a5dc5e371203bcfe6e8d9d24c6910b3ca2fd661cb53de62b6371fc177dcb69",
+					BlobIDs:    []string{"sha256:a0a5dc5e371203bcfe6e8d9d24c6910b3ca2fd661cb53de62b6371fc177dcb69"},
 				},
 			},
 			putBlobExpectation: cache.ArtifactCachePutBlobExpectation{
 				Args: cache.ArtifactCachePutBlobArgs{
-					BlobID: "sha256:456519ca7dc707a6521501c83577bf92adb06f0c5dff9074b1c5b0767a3eea97",
+					BlobID: "sha256:a0a5dc5e371203bcfe6e8d9d24c6910b3ca2fd661cb53de62b6371fc177dcb69",
 					BlobInfo: types.BlobInfo{
 						SchemaVersion: types.BlobJSONSchemaVersion,
 						OS: &types.OS{
@@ -113,7 +155,7 @@ func TestArtifact_Inspect(t *testing.T) {
 			putArtifactExpectations: []cache.ArtifactCachePutArtifactExpectation{
 				{
 					Args: cache.ArtifactCachePutArtifactArgs{
-						ArtifactID: "sha256:456519ca7dc707a6521501c83577bf92adb06f0c5dff9074b1c5b0767a3eea97",
+						ArtifactID: "sha256:a0a5dc5e371203bcfe6e8d9d24c6910b3ca2fd661cb53de62b6371fc177dcb69",
 						ArtifactInfo: types.ArtifactInfo{
 							SchemaVersion: types.ArtifactJSONSchemaVersion,
 						},
@@ -121,21 +163,13 @@ func TestArtifact_Inspect(t *testing.T) {
 				},
 			},
 			want: types.ArtifactReference{
-				Name: "ebs:testdata/AmazonLinux2.img",
+				Name: "ebs-012345",
 				Type: types.ArtifactVM,
-				ID:   "sha256:456519ca7dc707a6521501c83577bf92adb06f0c5dff9074b1c5b0767a3eea97",
+				ID:   "sha256:a0a5dc5e371203bcfe6e8d9d24c6910b3ca2fd661cb53de62b6371fc177dcb69",
 				BlobIDs: []string{
-					"sha256:456519ca7dc707a6521501c83577bf92adb06f0c5dff9074b1c5b0767a3eea97",
+					"sha256:a0a5dc5e371203bcfe6e8d9d24c6910b3ca2fd661cb53de62b6371fc177dcb69",
 				},
 			},
-		},
-
-		{
-			name: "sad path with no such directory",
-			fields: fields{
-				dir: "./testdata/unknown",
-			},
-			wantErr: "no such file or directory",
 		},
 	}
 	for _, tt := range tests {
@@ -145,25 +179,55 @@ func TestArtifact_Inspect(t *testing.T) {
 			c.ApplyMissingBlobsExpectation(tt.missingBlobsExpectation)
 			c.ApplyPutArtifactExpectations(tt.putArtifactExpectations)
 
-			a, err := NewArtifact(tt.fields.dir, c, tt.artifactOpt)
+			filePath := decompressImage(t, tt.filePath)
+			a, err := vm.NewArtifact(filePath, c, tt.artifactOpt)
 			require.NoError(t, err)
 
-			artifact := a.(Artifact)
-			if tt.fields.ebs != nil {
-				artifact.ebs = tt.fields.ebs
+			if aa, ok := a.(*vm.EBS); ok {
+				// blockSize: 512 KB, volumeSize: 40MB
+				ebs := ebsfile.NewMockEBS("testdata/AmazonLinux2.img.gz", 512<<10, 40<<20)
+				aa.SetEBS(ebs)
 			}
 
-			got, err := artifact.Inspect(context.Background())
+			got, err := a.Inspect(context.Background())
 			if tt.wantErr != "" {
-				require.NotNil(t, err)
-				assert.Contains(t, err.Error(), tt.wantErr)
+				require.Error(t, err)
+				assert.ErrorContains(t, err, tt.wantErr)
 				return
-			} else {
-				require.NoError(t, err)
 			}
+			tt.want.Name = trimPrefix(filePath)
+			require.NoError(t, err)
 			assert.Equal(t, tt.want, got)
 		})
 	}
+}
+
+func trimPrefix(s string) string {
+	s = strings.TrimPrefix(s, ebsPrefix)
+	s = strings.TrimPrefix(s, filePrefix)
+	return s
+}
+
+func decompressImage(t *testing.T, filePath string) string {
+	if strings.HasPrefix(filePath, ebsPrefix) {
+		return filePath
+	}
+	diskPath := filepath.Join(t.TempDir(), "disk.img")
+	w, err := os.Create(diskPath)
+	require.NoError(t, err)
+	defer w.Close()
+
+	f, err := os.Open(filePath)
+	require.NoError(t, err)
+	defer f.Close()
+
+	gr, err := gzip.NewReader(f)
+	require.NoError(t, err)
+
+	_, err = io.Copy(w, gr)
+	require.NoError(t, err)
+
+	return diskPath
 }
 
 /*
