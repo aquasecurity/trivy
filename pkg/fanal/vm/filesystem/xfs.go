@@ -1,4 +1,4 @@
-package xfs
+package filesystem
 
 import (
 	"io"
@@ -8,12 +8,7 @@ import (
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/vm"
-	"github.com/aquasecurity/trivy/pkg/fanal/vm/filesystem"
 )
-
-func init() {
-	filesystem.RegisterFilesystem(&XFS{})
-}
 
 type XFS struct{}
 
@@ -24,7 +19,7 @@ func (x XFS) New(sr io.SectionReader, cache vm.Cache) (fs.FS, error) {
 	}
 	ok := xfs.Check(&sr)
 	if !ok {
-		return nil, filesystem.ErrInvalidHeader
+		return nil, ErrInvalidHeader
 	}
 
 	_, err = sr.Seek(0, io.SeekStart)

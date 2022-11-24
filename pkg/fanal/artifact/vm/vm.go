@@ -10,10 +10,6 @@ import (
 
 	"golang.org/x/xerrors"
 
-	// Register Filesystem
-	_ "github.com/aquasecurity/trivy/pkg/fanal/vm/filesystem/ext4"
-	_ "github.com/aquasecurity/trivy/pkg/fanal/vm/filesystem/xfs"
-
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/artifact"
 	"github.com/aquasecurity/trivy/pkg/fanal/cache"

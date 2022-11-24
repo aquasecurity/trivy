@@ -1,14 +1,11 @@
 package walker
 
 import (
-	"errors"
 	"io"
 	"io/fs"
 	"path/filepath"
 	"strings"
 
-	"github.com/hashicorp/go-multierror"
-	lru "github.com/hashicorp/golang-lru"
 	"github.com/masahiro331/go-disk"
 	"github.com/masahiro331/go-disk/types"
 	"golang.org/x/exp/slices"
@@ -18,8 +15,6 @@ import (
 	"github.com/aquasecurity/trivy/pkg/fanal/vm/filesystem"
 	"github.com/aquasecurity/trivy/pkg/log"
 )
-
-const cacheSize = 2048
 
 var requiredDiskName = []string{
 	"Linux",    // AmazonLinux image name
@@ -91,38 +86,17 @@ func (w *VM) diskWalk(root string, partition types.Partition) error {
 	}
 
 	sr := partition.GetSectionReader()
-	var (
-		errs, err error
-		f         fs.FS
-	)
 
-	// Initialize LRU cache for filesystem walking
-	lruCache, err := lru.New(cacheSize)
+	// Auto-detect filesystem such as ext4 and xfs
+	fsys, clean, err := filesystem.New(sr)
 	if err != nil {
-		return xerrors.Errorf("failed to create a LRU cache: %w", err)
+		return xerrors.Errorf("filesystem error: %w", err)
 	}
-	defer lruCache.Purge()
+	defer clean()
 
-	for _, fsys := range filesystem.Filesystems {
-		// TODO: implement LVM handler
-		f, err = fsys.New(sr, lruCache)
-		if err == nil {
-			break
-		}
-		if errors.Is(err, filesystem.ErrInvalidHeader) {
-			continue
-		}
-		errs = multierror.Append(errs, err)
-	}
-	if errs != nil {
-		return errs
-	}
-	if f == nil {
-		return xerrors.New("unable to detect filesystem")
-	}
-	err = fs.WalkDir(f, root, func(path string, d fs.DirEntry, err error) error {
+	err = fs.WalkDir(fsys, root, func(path string, d fs.DirEntry, err error) error {
 		// Walk filesystem
-		return w.fsWalk(f, path, d, err)
+		return w.fsWalk(fsys, path, d, err)
 	})
 	if err != nil {
 		return xerrors.Errorf("filesystem walk error: %w", err)

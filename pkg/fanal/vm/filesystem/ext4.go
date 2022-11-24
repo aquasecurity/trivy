@@ -1,4 +1,4 @@
-package ext4
+package filesystem
 
 import (
 	"io"
@@ -8,12 +8,7 @@ import (
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/vm"
-	"github.com/aquasecurity/trivy/pkg/fanal/vm/filesystem"
 )
-
-func init() {
-	filesystem.RegisterFilesystem(&EXT4{})
-}
 
 type EXT4 struct{}
 
@@ -24,7 +19,7 @@ func (e EXT4) New(sr io.SectionReader, cache vm.Cache) (fs.FS, error) {
 	}
 	ok := ext4.Check(&sr)
 	if !ok {
-		return nil, filesystem.ErrInvalidHeader
+		return nil, ErrInvalidHeader
 	}
 
 	_, err = sr.Seek(0, io.SeekStart)
