@@ -4,6 +4,7 @@ import (
 	"context"
 	"crypto/sha256"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -114,8 +115,12 @@ func (a Artifact) Inspect(ctx context.Context) (reference types.ArtifactReferenc
 	wg.Wait()
 
 	if err != nil {
+		if errors.Is(err, walker.ErrBootableOnlyDisk) {
+			log.Logger.Error("This image only bootable partition, Trivy does not support bootable partition scan")
+		}
 		return types.ArtifactReference{}, xerrors.Errorf("walk vm error: %w", err)
 	}
+
 	result.Sort()
 
 	blobInfo := types.BlobInfo{

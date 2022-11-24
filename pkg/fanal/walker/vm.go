@@ -1,6 +1,7 @@
 package walker
 
 import (
+	"bytes"
 	"errors"
 	"io"
 	"io/fs"
@@ -30,6 +31,10 @@ var requiredDiskName = []string{
 	"2",        // Common image name
 	"3",        // Common image name
 }
+
+var (
+	ErrBootableOnlyDisk = xerrors.New("the disk bootable partition only error")
+)
 
 func AppendPermitDiskName(s ...string) {
 	requiredDiskName = append(requiredDiskName, s...)
@@ -62,6 +67,7 @@ func (w *VM) Walk(vreader *io.SectionReader, root string, fn WalkFunc) error {
 		return xerrors.Errorf("failed to new disk driver: %w", err)
 	}
 
+	bootableOnly := true
 	for {
 		partition, err := driver.Next()
 		if err != nil {
@@ -71,19 +77,30 @@ func (w *VM) Walk(vreader *io.SectionReader, root string, fn WalkFunc) error {
 			return xerrors.Errorf("failed to next disk error: %w", err)
 		}
 
+		// skip boot partition
+		if partition.Bootable() {
+			continue
+		}
+
+		// skip empty partition
+		if bytes.Equal(partition.GetType(), []byte{0x00}) {
+			continue
+		}
+		bootableOnly = false
+
 		// Walk each partition
 		if err = w.diskWalk(root, partition); err != nil {
 			log.Logger.Warnf("Partition error: %s", err.Error())
 		}
+	}
+	if bootableOnly {
+		return ErrBootableOnlyDisk
 	}
 	return nil
 }
 
 // Inject disk partitioning processes from externally with diskWalk.
 func (w *VM) diskWalk(root string, partition types.Partition) error {
-	if partition.Bootable() {
-		return nil
-	}
 
 	log.Logger.Debugf("Found partition: %s", partition.Name())
 	if !slices.Contains(requiredDiskName, partition.Name()) {
