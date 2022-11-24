@@ -50,10 +50,11 @@ func NewArtifact(filePath string, c cache.ArtifactCache, opt artifact.Option) (a
 		return nil, xerrors.Errorf("handler init error: %w", err)
 	}
 	a, err := analyzer.NewAnalyzerGroup(analyzer.AnalyzerOptions{
-		Group:               opt.AnalyzerGroup,
-		FilePatterns:        opt.FilePatterns,
-		DisabledAnalyzers:   opt.DisabledAnalyzers,
-		SecretScannerOption: opt.SecretScannerOption,
+		Group:                opt.AnalyzerGroup,
+		FilePatterns:         opt.FilePatterns,
+		DisabledAnalyzers:    opt.DisabledAnalyzers,
+		SecretScannerOption:  opt.SecretScannerOption,
+		LicenseScannerOption: opt.LicenseScannerOption,
 	})
 	if err != nil {
 		return nil, xerrors.Errorf("analyzer group error: %w", err)
