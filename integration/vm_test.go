@@ -61,33 +61,6 @@ func TestVM(t *testing.T) {
 			},
 			golden: "testdata/ubuntu-gp2-x86-vm.json.golden",
 		},
-		//{
-		//	name: "RedHat in Snapshot, filesystem XFS",
-		//	args: args{
-		//		input:        "testdata/fixtures/vm-images/redhat-gp2-x86.img.gz",
-		//		format:       "json",
-		//		artifactType: "vm",
-		//	},
-		//	golden: "testdata/redhat-gp2-x86-vm.json.golden",
-		//},
-		//{
-		//	name: "RedHat in VMDK, filesystem XFS",
-		//	args: args{
-		//		input:        "testdata/fixtures/vm-images/redhat-gp2-x86.vmdk.img.gz",
-		//		format:       "json",
-		//		artifactType: "vm",
-		//	},
-		//	golden: "testdata/redhat-gp2-x86-vm.json.golden",
-		//},
-		//{
-		//	name: "SUSE in Snapshot, filesystem XFS",
-		//	args: args{
-		//		input:        "testdata/fixtures/vm-images/suse-gp2-x86.img.gz",
-		//		format:       "json",
-		//		artifactType: "vm",
-		//	},
-		//	golden: "testdata/suse-gp2-x86-vm.json.golden",
-		//},
 	}
 
 	// Set up testing DB
