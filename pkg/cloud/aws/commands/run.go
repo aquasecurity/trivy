@@ -127,7 +127,7 @@ func Run(ctx context.Context, opt flag.Options) error {
 	}
 
 	log.Logger.Debug("Writing report to output...")
-	if len(opt.Compliance) > 0 && opt.ReportFormat == "summary" {
+	if len(opt.Compliance) > 0 {
 		var complianceSpec spec.ComplianceSpec
 		cs, err := spec.GetComplianceSpec(opt.Compliance)
 		if err != nil {
