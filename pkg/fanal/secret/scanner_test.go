@@ -194,7 +194,7 @@ func TestSecretScanner(t *testing.T) {
 		Severity:  "CRITICAL",
 		StartLine: 2,
 		EndLine:   2,
-		Match:     "AWS_ACCESS_KEY_ID=********************",
+		Match:     "\"AWS_ACCESS_KEY_ID\": \"********************\",",
 		Code: types.Code{
 			Lines: []types.Line{
 				{
@@ -204,8 +204,8 @@ func TestSecretScanner(t *testing.T) {
 				},
 				{
 					Number:      2,
-					Content:     "AWS_ACCESS_KEY_ID=********************",
-					Highlighted: "AWS_ACCESS_KEY_ID=********************",
+					Content:     "\"AWS_ACCESS_KEY_ID\": \"********************\",",
+					Highlighted: "\"AWS_ACCESS_KEY_ID\": \"********************\",",
 					IsCause:     true,
 					FirstCause:  true,
 					LastCause:   true,
@@ -394,8 +394,8 @@ func TestSecretScanner(t *testing.T) {
 				},
 				{
 					Number:      2,
-					Content:     "AWS_ACCESS_KEY_ID=********************",
-					Highlighted: "AWS_ACCESS_KEY_ID=********************",
+					Content:     "\"AWS_ACCESS_KEY_ID\": \"********************\",",
+					Highlighted: "\"AWS_ACCESS_KEY_ID\": \"********************\",",
 				},
 			},
 		},
@@ -417,8 +417,8 @@ func TestSecretScanner(t *testing.T) {
 				},
 				{
 					Number:      2,
-					Content:     "AWS_ACCESS_KEY_ID=********************",
-					Highlighted: "AWS_ACCESS_KEY_ID=********************",
+					Content:     "\"AWS_ACCESS_KEY_ID\": \"********************\",",
+					Highlighted: "\"AWS_ACCESS_KEY_ID\": \"********************\",",
 				},
 				{
 					Number:      3,
