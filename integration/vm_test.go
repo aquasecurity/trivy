@@ -7,7 +7,6 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
 	"github.com/aquasecurity/trivy/internal/testutil"
@@ -94,10 +93,9 @@ func TestVM(t *testing.T) {
 	// Set up testing DB
 	cacheDir := initDB(t)
 
-	dirName := "./tmp-test-vm-integration-dir"
-	err := os.Mkdir(dirName, 0700)
-	assert.NoError(t, err)
-	defer os.Remove(dirName)
+	// Keep the current working directory
+	currentDir, err := os.Getwd()
+	require.NoError(t, err)
 
 	const imageFile = "disk.img"
 
@@ -127,6 +125,7 @@ func TestVM(t *testing.T) {
 			// Change the current working directory so that targets in the result could be the same as golden files.
 			err = os.Chdir(tmpDir)
 			require.NoError(t, err)
+			defer os.Chdir(currentDir)
 
 			osArgs = append(osArgs, "--output", outputFile)
 			osArgs = append(osArgs, imageFile)
