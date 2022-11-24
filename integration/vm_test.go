@@ -3,16 +3,14 @@
 package integration
 
 import (
-	"archive/tar"
-	"compress/gzip"
-	"io"
 	"os"
 	"path/filepath"
-	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 
+	"github.com/aquasecurity/trivy/internal/testutil"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
 
@@ -31,7 +29,7 @@ func TestVM(t *testing.T) {
 		{
 			name: "amazon linux 2 in VMDK, filesystem XFS",
 			args: args{
-				input:        "testdata/fixtures/vm-images/amazonlinux2-gp2-x86.vmdk.img.gz",
+				input:        "testdata/fixtures/vm-images/amazon-2.vmdk.gz",
 				format:       "json",
 				artifactType: "vm",
 			},
@@ -40,43 +38,16 @@ func TestVM(t *testing.T) {
 		{
 			name: "amazon linux 2 in Snapshot, filesystem XFS",
 			args: args{
-				input:        "testdata/fixtures/vm-images/amazonlinux2-gp2-x86.img.gz",
+				input:        "testdata/fixtures/vm-images/amazon-2.img.gz",
 				format:       "json",
 				artifactType: "vm",
 			},
 			golden: "testdata/amazonlinux2-gp2-x86-vm.json.golden",
 		},
 		{
-			name: "RedHat in Snapshot, filesystem XFS",
-			args: args{
-				input:        "testdata/fixtures/vm-images/redhat-gp2-x86.img.gz",
-				format:       "json",
-				artifactType: "vm",
-			},
-			golden: "testdata/redhat-gp2-x86-vm.json.golden",
-		},
-		{
-			name: "RedHat in VMDK, filesystem XFS",
-			args: args{
-				input:        "testdata/fixtures/vm-images/redhat-gp2-x86.vmdk.img.gz",
-				format:       "json",
-				artifactType: "vm",
-			},
-			golden: "testdata/redhat-gp2-x86-vm.json.golden",
-		},
-		{
-			name: "SUSE in Snapshot, filesystem XFS",
-			args: args{
-				input:        "testdata/fixtures/vm-images/suse-gp2-x86.img.gz",
-				format:       "json",
-				artifactType: "vm",
-			},
-			golden: "testdata/suse-gp2-x86-vm.json.golden",
-		},
-		{
 			name: "Ubuntu in Snapshot, filesystem EXT4",
 			args: args{
-				input:        "testdata/fixtures/vm-images/ubuntu-gp2-x86.img.gz",
+				input:        "testdata/fixtures/vm-images/ubuntu-2204.img.gz",
 				format:       "json",
 				artifactType: "vm",
 			},
@@ -85,12 +56,39 @@ func TestVM(t *testing.T) {
 		{
 			name: "Ubuntu in VMDK, filesystem EXT4",
 			args: args{
-				input:        "testdata/fixtures/vm-images/ubuntu-gp2-x86.vmdk.img.gz",
+				input:        "testdata/fixtures/vm-images/ubuntu-2204.vmdk.gz",
 				format:       "json",
 				artifactType: "vm",
 			},
 			golden: "testdata/ubuntu-gp2-x86-vm.json.golden",
 		},
+		//{
+		//	name: "RedHat in Snapshot, filesystem XFS",
+		//	args: args{
+		//		input:        "testdata/fixtures/vm-images/redhat-gp2-x86.img.gz",
+		//		format:       "json",
+		//		artifactType: "vm",
+		//	},
+		//	golden: "testdata/redhat-gp2-x86-vm.json.golden",
+		//},
+		//{
+		//	name: "RedHat in VMDK, filesystem XFS",
+		//	args: args{
+		//		input:        "testdata/fixtures/vm-images/redhat-gp2-x86.vmdk.img.gz",
+		//		format:       "json",
+		//		artifactType: "vm",
+		//	},
+		//	golden: "testdata/redhat-gp2-x86-vm.json.golden",
+		//},
+		//{
+		//	name: "SUSE in Snapshot, filesystem XFS",
+		//	args: args{
+		//		input:        "testdata/fixtures/vm-images/suse-gp2-x86.img.gz",
+		//		format:       "json",
+		//		artifactType: "vm",
+		//	},
+		//	golden: "testdata/suse-gp2-x86-vm.json.golden",
+		//},
 	}
 
 	// Set up testing DB
@@ -100,51 +98,43 @@ func TestVM(t *testing.T) {
 	err := os.Mkdir(dirName, 0700)
 	assert.NoError(t, err)
 	defer os.Remove(dirName)
+
+	const imageFile = "disk.img"
+
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			osArgs := []string{
-				"--cache-dir", cacheDir, "vm", "--security-checks", "vuln", "-q", "--skip-db-update", "--format", tt.args.format,
+				"--cache-dir", cacheDir, "vm", "--security-checks", "vuln", "-q", "--skip-db-update",
+				"--format", tt.args.format,
 			}
 
+			tmpDir := t.TempDir()
+
 			// Set up the output file
-			outputFile := filepath.Join(t.TempDir(), "output.json")
+			outputFile := filepath.Join(tmpDir, "output.json")
 			if *update {
 				outputFile = tt.golden
 			}
 
-			f, err := os.Open(tt.args.input)
-			assert.NoError(t, err)
-			defer f.Close()
-			tr := tar.NewReader(f)
+			// Get the absolute path of the golden file
+			goldenFile, err := filepath.Abs(tt.golden)
+			require.NoError(t, err)
 
-			for {
-				hdr, err := tr.Next()
-				assert.NoError(t, err)
-				// test image data does stored OCI-Registry.
-				// the image is Tar(**.tar.gz)
-				if strings.HasSuffix(hdr.Name, ".tar.gz") {
-					break
-				}
-			}
+			// Decompress the gzipped image file
+			imagePath := filepath.Join(tmpDir, imageFile)
+			testutil.DecompressGzip(t, tt.args.input, imagePath)
 
-			gr, err := gzip.NewReader(tr)
-			assert.NoError(t, err)
-
-			testImagePath := filepath.Join(dirName, "target.img")
-			tf, err := os.Create(testImagePath)
-			assert.NoError(t, err)
-			defer os.Remove(testImagePath)
-
-			_, err = io.Copy(tf, gr)
-			assert.NoError(t, err)
+			// Change the current working directory so that targets in the result could be the same as golden files.
+			err = os.Chdir(tmpDir)
+			require.NoError(t, err)
 
 			osArgs = append(osArgs, "--output", outputFile)
-			osArgs = append(osArgs, testImagePath)
+			osArgs = append(osArgs, imageFile)
 
 			// Run "trivy vm"
 			err = execute(osArgs)
-			assert.NoError(t, err)
-			compareReports(t, tt.golden, outputFile)
+			require.NoError(t, err)
+			compareReports(t, goldenFile, outputFile)
 		})
 	}
 }
