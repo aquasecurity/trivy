@@ -82,8 +82,8 @@ test-module-integration: integration/testdata/fixtures/images/*.tar.gz $(EXAMPLE
 test-vm-integration: integration/testdata/fixtures/vm-images/*.img.gz
 	go test -v -tags=vm_integration ./integration/...
 
-integration/testdata/fixtures/vm-images/*.img.gz: $(GOBIN)/crane
-	integration/scripts/download-vm.sh
+integration/testdata/fixtures/vm-images/*.img.gz:
+	integration/scripts/download-vm-images.sh
 
 
 .PHONY: lint

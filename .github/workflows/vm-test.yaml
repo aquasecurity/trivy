@@ -1,4 +1,4 @@
-name: Virtual Machine Test
+name: VM Test
 on:
   push:
     branches:
@@ -12,7 +12,7 @@ on:
 
 jobs:
   vm-test:
-    name: Virtual Machine Integration Test
+    name: VM Integration Test
     runs-on: ubuntu-latest
     steps:
       - name: Checkout

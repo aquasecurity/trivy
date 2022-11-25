@@ -1,6 +1,6 @@
 {
   "SchemaVersion": 2,
-  "ArtifactName": "tmp-test-vm-integration-dir/target.img",
+  "ArtifactName": "disk.img",
   "ArtifactType": "vm",
   "Metadata": {
     "OS": {
@@ -20,7 +20,7 @@
   },
   "Results": [
     {
-      "Target": "tmp-test-vm-integration-dir/target.img (ubuntu 22.04)",
+      "Target": "disk.img (ubuntu 22.04)",
       "Class": "os-pkgs",
       "Type": "ubuntu",
       "Vulnerabilities": [

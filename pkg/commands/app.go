@@ -890,14 +890,11 @@ func NewVMCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 		Use:     "vm [flags] VM_IMAGE",
 		Aliases: []string{},
 		Short:   "Scan a virtual machine image",
-		Example: `  # Scan your virtual machine image
-  $ trivy vm export-ami.vmdk
+		Example: `  # Scan your AWS AMI
+  $ trivy vm ami:${your_ami_id}
 
   # Scan your AWS EBS snapshot
   $ trivy vm ebs:${your_ebs_snapshot_id}
-
-  # Scan your raw disk image
-  $ trivy vm snapshot_id.img
 `,
 		PreRunE: func(cmd *cobra.Command, args []string) error {
 			if err := vmFlags.Bind(cmd); err != nil {

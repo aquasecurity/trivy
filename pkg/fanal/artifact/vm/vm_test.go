@@ -1,11 +1,8 @@
 package vm_test
 
 import (
-	"compress/gzip"
 	"context"
 	"fmt"
-	"io"
-	"os"
 	"path/filepath"
 	"strings"
 	"testing"
@@ -13,6 +10,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
+	"github.com/aquasecurity/trivy/internal/testutil"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer/config"
 	"github.com/aquasecurity/trivy/pkg/fanal/artifact"
@@ -179,7 +177,12 @@ func TestArtifact_Inspect(t *testing.T) {
 			c.ApplyMissingBlobsExpectation(tt.missingBlobsExpectation)
 			c.ApplyPutArtifactExpectations(tt.putArtifactExpectations)
 
-			filePath := decompressImage(t, tt.filePath)
+			filePath := tt.filePath
+			if !strings.HasPrefix(tt.filePath, ebsPrefix) {
+				filePath = filepath.Join(t.TempDir(), "disk.img")
+				testutil.DecompressGzip(t, tt.filePath, filePath)
+			}
+
 			a, err := vm.NewArtifact(filePath, c, tt.artifactOpt)
 			require.NoError(t, err)
 
@@ -206,28 +209,6 @@ func trimPrefix(s string) string {
 	s = strings.TrimPrefix(s, ebsPrefix)
 	s = strings.TrimPrefix(s, filePrefix)
 	return s
-}
-
-func decompressImage(t *testing.T, filePath string) string {
-	if strings.HasPrefix(filePath, ebsPrefix) {
-		return filePath
-	}
-	diskPath := filepath.Join(t.TempDir(), "disk.img")
-	w, err := os.Create(diskPath)
-	require.NoError(t, err)
-	defer w.Close()
-
-	f, err := os.Open(filePath)
-	require.NoError(t, err)
-	defer f.Close()
-
-	gr, err := gzip.NewReader(f)
-	require.NoError(t, err)
-
-	_, err = io.Copy(w, gr)
-	require.NoError(t, err)
-
-	return diskPath
 }
 
 /*

@@ -3,7 +3,6 @@ package vm
 import (
 	"context"
 	"errors"
-	"fmt"
 	"io"
 	"os"
 	"strings"
@@ -23,7 +22,12 @@ import (
 
 type Type string
 
+func (t Type) Prefix() string {
+	return string(t) + ":"
+}
+
 const (
+	TypeAMI  Type = "ami"
 	TypeEBS  Type = "ebs"
 	TypeFile Type = "file"
 )
@@ -108,25 +112,30 @@ func NewArtifact(target string, c cache.ArtifactCache, opt artifact.Option) (art
 
 	targetType := detectType(target)
 	switch targetType {
-	case TypeFile:
-		target = strings.TrimPrefix(target, fmt.Sprintf("%s:", TypeFile))
-		return newFile(target, storage)
+	case TypeAMI:
+		target = strings.TrimPrefix(target, TypeAMI.Prefix())
+		return newAMI(target, storage)
 	case TypeEBS:
-		target = strings.TrimPrefix(target, fmt.Sprintf("%s:", TypeEBS))
+		target = strings.TrimPrefix(target, TypeEBS.Prefix())
 		e, err := newEBS(target, storage)
 		if err != nil {
 			return nil, xerrors.Errorf("new EBS error: %w", err)
 		}
 		return e, nil
+	case TypeFile:
+		target = strings.TrimPrefix(target, TypeFile.Prefix())
+		return newFile(target, storage)
 	}
 	return nil, xerrors.Errorf("unsupported format")
 }
 
 func detectType(target string) Type {
 	switch {
-	case strings.HasPrefix(target, fmt.Sprintf("%s:", TypeEBS)):
+	case strings.HasPrefix(target, TypeAMI.Prefix()):
+		return TypeAMI
+	case strings.HasPrefix(target, TypeEBS.Prefix()):
 		return TypeEBS
-	case strings.HasPrefix(target, fmt.Sprintf("%s:", TypeFile)):
+	case strings.HasPrefix(target, TypeFile.Prefix()):
 		return TypeFile
 	default:
 		return TypeFile
