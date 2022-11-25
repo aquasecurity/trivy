@@ -113,7 +113,11 @@ func NewArtifact(target string, c cache.ArtifactCache, opt artifact.Option) (art
 		return newFile(target, storage)
 	case TypeEBS:
 		target = strings.TrimPrefix(target, fmt.Sprintf("%s:", TypeEBS))
-		return newEBS(target, storage), nil
+		e, err := newEBS(target, storage)
+		if err != nil {
+			return nil, xerrors.Errorf("new EBS error: %w", err)
+		}
+		return e, nil
 	}
 	return nil, xerrors.Errorf("unsupported format")
 }

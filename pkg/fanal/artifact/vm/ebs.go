@@ -24,14 +24,17 @@ type EBS struct {
 	ebs        ebsfile.EBSAPI
 }
 
-func newEBS(snapshotID string, vm Storage) *EBS {
-	ebs := ebsfile.New(ebsfile.Option{})
+func newEBS(snapshotID string, vm Storage) (*EBS, error) {
+	ebs, err := ebsfile.New(ebsfile.Option{})
+	if err != nil {
+		return nil, xerrors.Errorf("new ebsfile error: %w", err)
+	}
 
 	return &EBS{
 		Storage:    vm,
 		snapshotID: snapshotID,
 		ebs:        ebs,
-	}
+	}, nil
 }
 
 func (a *EBS) Inspect(ctx context.Context) (types.ArtifactReference, error) {
