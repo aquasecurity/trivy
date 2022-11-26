@@ -17,11 +17,14 @@ $ trivy vm ami:${your_ami_id}
     See [the AWS documentation][ebsapi-elements] for the detail.
 
 ### Example
-Note that the scanning could be faster if you enable only vulnerability scanning.
 
 ```shell
 $ trivy vm --security-checks vuln ami:ami-0123456789abcdefg
 ```
+
+!!! tip
+    The scanning could be faster if you enable only vulnerability scanning (`--security-checks vuln`) because Trivy tries to download only necessary blocks for vulnerability detection.
+
 
 ### Required Actions
 Some actions on EBS are also necessary since Trivy scans an EBS snapshot tied to the specified AMI under the hood.
@@ -42,11 +45,12 @@ $ trivy vm ebs:${your_ebs_snapshot_id}
     See [the AWS documentation][ebsapi-elements] for the detail.
 
 ### Example
-Note that the scanning could be faster if you enable only vulnerability scanning.
-
 ```shell
 $ trivy vm --security-checks vuln ebs:snap-0123456789abcdefg
 ```
+
+!!! tip
+The scanning could be faster if you enable only vulnerability scanning (`--security-checks vuln`) because Trivy tries to download only necessary blocks for vulnerability detection.
 
 The above command takes a while as it calls EBS API and fetches the EBS blocks.
 If you want to scan the same snapshot several times, you can download the snapshot locally by using [coldsnap][coldsnap] maintained by AWS.
