@@ -63,6 +63,11 @@
     <label class="md-overlay" for="__drawer"></label>
     <div data-md-component="skip">
       
+        
+        <a href="#trivy-documentation" class="md-skip">
+          Skip to content
+        </a>
+      
     </div>
     <div data-md-component="announce">
       
@@ -344,6 +349,8 @@
       <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
       
       
+        
+      
       
       <a href="." class="md-nav__link md-nav__link--active">
         Overview
@@ -362,20 +369,6 @@
     <li class="md-nav__item">
       <a href="getting-started/installation/" class="md-nav__link">
         Installation
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="getting-started/quickstart/" class="md-nav__link">
-        Quick Start
       </a>
     </li>
   
@@ -3089,6 +3082,8 @@
   
   
   
+    
+  
   
 </nav>
                   </div>
@@ -3102,35 +3097,73 @@
                 
 
 
-  <h1>Overview</h1>
-
 <p><img align="right" alt="logo" src="imgs/logo.png" /></p>
-<p>Trivy (tri pronounced like trigger, vy pronounced like envy) is a comprehensive security scanner. It is reliable, fast, extremely easy to use, and it works wherever you need it.</p>
-<p>Trivy has different scanners that look for different security issues, and different targets where it can find those issues.</p>
-<p>Targets:</p>
+<h1 id="trivy-documentation">Trivy Documentation</h1>
+<p>👋 Welcome to Trivy Documentation! To help you get around, please notice the different sections at the top global menu:</p>
+<ul>
+<li>You are currently in the [Getting Started] section where you can find general information and help with first steps.</li>
+<li>In the <a href="./tutorials/overview">Tutorials</a> section you can find step-by-step guides that help you accomplish specific tasks.</li>
+<li>In the <a href="./docs">CLI</a> section you will find the complete reference documentation for all of the different features and settings that Trivy has to offer.</li>
+<li>In the <a href="./ecosystem/overview">Ecosystem</a> section you will find how Trivy works together with other tools and applications that you might already use.</li>
+<li>In the <a href="./contributing/issue">Contributing</a> section you will find instructions about developing Trivy, and contribution guidelines.</li>
+</ul>
+<h1 id="about-trivy">About Trivy</h1>
+<p>Trivy (<a href="#how-to-pronounce-the-name-trivy">pronunciation</a>) is a comprehensive and versatile security scanner. Trivy has <em>scanners</em> that look for security issues, and <em>targets</em> where it can find those issues.</p>
+<p>Targets (what Trivy can scan):</p>
 <ul>
 <li>Container Image</li>
 <li>Filesystem</li>
 <li>Git repository (remote)</li>
-<li>Kubernetes cluster or resource</li>
+<li>Kubernetes</li>
+<li>AWS</li>
 </ul>
-<p>Scanners:</p>
+<p>Scanners (what Trivy can find there):</p>
 <ul>
 <li>OS packages and software dependencies in use (SBOM)</li>
 <li>Known vulnerabilities (CVEs)</li>
-<li>IaC misconfigurations</li>
+<li>IaC issues and misconfigurations</li>
 <li>Sensitive information and secrets</li>
+<li>Software licenses</li>
 </ul>
-<p>It is designed to be used in CI. Before pushing to a container registry or deploying your application, you can scan your local container image and other artifacts easily.
-See <a href="tutorials/integrations/">Integrations</a> for details.</p>
-<p>Much more scanners and targets are coming up. <a href="https://slack.aquasec.com">Join the Slack</a> channel to stay up to date, ask questions, and let us know what features you would like to see.</p>
-<p>Please see <a href="https://github.com/aquasecurity/trivy/blob/main/LICENSE">LICENSE</a> for Trivy licensing information.</p>
+<h2 id="quick-start">Quick Start</h2>
+<h3 id="get-trivy">Get Trivy</h3>
+<p>Trivy is available in most common distribution methods. The full list of installation options is available in the <a href="getting-started/installation/">Installation</a> page, here are a few popular options:</p>
+<ul>
+<li><code>apt-get install trivy</code></li>
+<li><code>yum install trivy</code></li>
+<li><code>brew install aquasecurity/trivy/trivy</code></li>
+<li><code>docker run aquasec/trivy</code></li>
+<li>Download binary from <a href="https://github.com/aquasecurity/trivy/releases/latest/">https://github.com/aquasecurity/trivy/releases/latest/</a></li>
+</ul>
+<p>Trivy is integrated with many popular platforms and applications. The full list of integrations is available in the <a href="./ecosystem/overview">Ecosystem</a> page. Here are a few popular options:</p>
+<ul>
+<li><a href="https://github.com/aquasecurity/trivy-action">GitHub Actions</a></li>
+<li><a href="https://circleci.com/developer/orbs/orb/fifteen5/trivy-orb">CircleCI</a></li>
+<li><a href="https://github.com/aquasecurity/trivy-operator">Kubernetes operator</a></li>
+<li><a href="https://github.com/aquasecurity/trivy-vscode-extension">VS Code plugin</a></li>
+</ul>
+<h3 id="general-usage">General usage</h3>
+<div class="highlight"><pre><span></span><code>trivy &lt;target&gt; <span class="o">[</span>--security-checks &lt;scanner1,scanner2&gt;<span class="o">]</span> &lt;subject&gt;
+</code></pre></div>
+<p>Examples:</p>
+<div class="highlight"><pre><span></span><code>trivy image python:3.4-alpine
+</code></pre></div>
+<details>
+<summary>Result</summary>
+
 <figure style="text-align: center">
   <video width="1000" autoplay muted controls loop>
     <source src="https://user-images.githubusercontent.com/1161307/171013513-95f18734-233d-45d3-aaf5-d6aec687db0e.mov" type="video/mp4" />
   </video>
   <figcaption>Demo: Vulnerability Detection</figcaption>
 </figure>
+
+</details>
+
+<div class="highlight"><pre><span></span><code>trivy fs --security-checks vuln,secret,config myproject/
+</code></pre></div>
+<details>
+<summary>Result</summary>
 
 <figure style="text-align: center">
   <video width="1000" autoplay muted controls loop>
@@ -3139,10 +3172,69 @@ See <a href="tutorials/integrations/">Integrations</a> for details.</p>
   <figcaption>Demo: Misconfiguration Detection</figcaption>
 </figure>
 
+</details>
+
+<div class="highlight"><pre><span></span><code>trivy k8s --report summary cluster
+</code></pre></div>
+<details>
+<summary>Result</summary>
+
 <figure style="text-align: center">
   <img src="imgs/secret-demo.gif" width="1000">
   <figcaption>Demo: Secret Detection</figcaption>
 </figure>
+
+</details>
+
+<h2 id="highlights">Highlights</h2>
+<ul>
+<li>Comprehensive vulnerability detection<ul>
+<li>OS packages (Alpine Linux, Red Hat Universal Base Image, Red Hat Enterprise Linux, CentOS, AlmaLinux, Rocky Linux, CBL-Mariner, Oracle Linux, Debian, Ubuntu, Amazon Linux, openSUSE Leap, SUSE Enterprise Linux, Photon OS and Distroless)</li>
+<li><strong>Language-specific packages</strong> (Bundler, Composer, Pipenv, Poetry, npm, yarn, Cargo, NuGet, Maven, and Go)</li>
+<li>High accuracy, especially [Alpine Linux][alpine] and RHEL/CentOS</li>
+</ul>
+</li>
+<li>Supply chain security (SBOM support)<ul>
+<li>Support CycloneDX</li>
+<li>Support SPDX</li>
+<li>Generating and Scanning SBOM</li>
+<li>Leveraging in-toto attestations</li>
+<li>Integrated with [Sigstore]</li>
+</ul>
+</li>
+<li>Misconfiguration detection (IaC scanning) <ul>
+<li>Wide variety of security checks are provided <strong>out of the box</strong></li>
+<li>Kubernetes, Docker, Terraform, and more</li>
+<li>User-defined policies using [OPA Rego][rego]</li>
+</ul>
+</li>
+<li>Secret detection<ul>
+<li>A wide variety of built-in rules are provided <strong>out of the box</strong></li>
+<li>User-defined patterns</li>
+<li>Efficient scanning of container images</li>
+</ul>
+</li>
+<li>Simple<ul>
+<li>Available in apt, yum, brew, dockerhub</li>
+<li><strong>No pre-requisites</strong> such as a database, system libraries, or eny environmental requirements. The binary runs anywhere.</li>
+<li>The first scan will finish within 10 seconds (depending on your network). Consequent scans will finish instantaneously.</li>
+</ul>
+</li>
+<li>Fits your workflow<ul>
+<li><strong>Great for CI</strong> such as GitHub Actions, Jenkins, GitLab CI, etc.</li>
+<li>Available as extension for IDEs such as vscode, jetbrains, vim</li>
+<li>Available as extension for Docker Desktop, Rancher Desktop</li>
+<li>See <a href="./ecosystem/overview">Ecosystem</a> section in the documentation.</li>
+</ul>
+</li>
+</ul>
+<h2 id="faq">FAQ</h2>
+<h3 id="how-to-pronounce-the-name-trivy">How to pronounce the name "Trivy"?</h3>
+<p><code>tri</code> is pronounced like <strong>tri</strong>gger, <code>vy</code> is pronounced like en<strong>vy</strong>.</p>
+<hr />
+<p>Trivy is an <a href="https://aquasec.com">Aqua Security</a> open source project.<br />
+Learn about our open source work and portfolio <a href="https://www.aquasec.com/products/open-source-projects/">here</a>.<br />
+Contact us about any matter by opening a GitHub Discussion <a href="https://github.com/aquasecurity/trivy/discussions">here</a></p>
 
               
             </article>
