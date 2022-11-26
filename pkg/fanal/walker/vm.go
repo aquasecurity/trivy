@@ -87,13 +87,12 @@ func (w *VM) diskWalk(root string, partition types.Partition) error {
 
 	sr := partition.GetSectionReader()
 
-	// Trivy does not support LVM scanning, workaround is to detect LVM signature and scan skip.
+	// Trivy does not support LVM scanning. It is skipped at the moment.
 	foundLVM, err := w.detectLVM(sr)
 	if err != nil {
-		return xerrors.Errorf("detect lvm error: %w", err)
-	}
-	if foundLVM {
-		log.Logger.Errorf("VM scan does not support lvm partition: skip scan partition: %s.img", partition.Name())
+		return xerrors.Errorf("LVM detection error: %w", err)
+	} else if foundLVM {
+		log.Logger.Errorf("LVM is not supported, skip %s.img", partition.Name())
 		return nil
 	}
 
@@ -199,7 +198,7 @@ func (w *VM) detectLVM(sr io.SectionReader) (bool, error) {
 	}
 	_, err = sr.Seek(0, io.SeekStart)
 	if err != nil {
-		return false, xerrors.Errorf("seek start offset error: %w", err)
+		return false, xerrors.Errorf("seek error: %w", err)
 	}
 
 	// LABELONE is LVM signature
