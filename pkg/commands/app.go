@@ -891,7 +891,7 @@ func NewVMCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 		Aliases: []string{},
 		Short:   "[EXPERIMENTAL] Scan a virtual machine image",
 		Example: `  # Scan your AWS AMI
-  $ trivy vm ami:${your_ami_id}
+  $ trivy vm --security-checks vuln ami:${your_ami_id}
 
   # Scan your AWS EBS snapshot
   $ trivy vm ebs:${your_ebs_snapshot_id}
