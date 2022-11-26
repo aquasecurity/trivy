@@ -22,8 +22,12 @@ Targets (what Trivy can scan):
 
 - Container Image
 - Filesystem
+<<<<<<< HEAD
 - Git Repository (remote)
 - Virtual Machine Image
+=======
+- Git repository (remote)
+>>>>>>> main
 - Kubernetes
 - AWS
 
@@ -152,6 +156,7 @@ Learn about our open source work and portfolio [here][oss].
 Contact us about any matter by opening a GitHub Discussion [here][discussions]
 
 [Ecosystem]: ./ecosystem/index.md
+[Installation]: getting-started/installation.md
 [pronunciation]: #how-to-pronounce-the-name-trivy
 
 [aquasec]: https://aquasec.com
@@ -160,4 +165,4 @@ Contact us about any matter by opening a GitHub Discussion [here][discussions]
 
 [Tutorials]: ./tutorials/overview
 [CLI]: ./docs
-[Contributing]: ./community/contribute/issue.md
+[Contributing]: ./community/contribute/issue
