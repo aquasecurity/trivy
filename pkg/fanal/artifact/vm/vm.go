@@ -2,7 +2,6 @@ package vm
 
 import (
 	"context"
-	"errors"
 	"io"
 	"os"
 	"strings"
@@ -16,7 +15,6 @@ import (
 	"github.com/aquasecurity/trivy/pkg/fanal/handler"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/fanal/walker"
-	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/semaphore"
 )
 
@@ -60,9 +58,6 @@ func (a *Storage) Analyze(ctx context.Context, r *io.SectionReader) (types.BlobI
 	wg.Wait()
 
 	if err != nil {
-		if errors.Is(err, walker.ErrBootableOnlyDisk) {
-			log.Logger.Error("This image only bootable partition, Trivy does not support bootable partition scan")
-		}
 		return types.BlobInfo{}, xerrors.Errorf("walk vm error: %w", err)
 	}
 
