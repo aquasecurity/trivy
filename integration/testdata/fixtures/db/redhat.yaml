@@ -73,12 +73,3 @@
                   - 858
                 Cves:
                   - Severity: 2.0
-    - bucket: bzip2-libs
-      pairs:
-        - key: CVE-2019-12900
-          value:
-            Entries:
-              - Affected:
-                  - 1076
-                Cves:
-                  - Severity: 1

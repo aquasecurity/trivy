@@ -1,7 +1,0 @@
-- bucket: "SUSE Linux Enterprise 15.4"
-  pairs:
-    - bucket: bind-utils
-      pairs:
-        - key: SUSE-SU-2022:2713-1
-          value:
-            FixedVersion: 9.16.31-150400.5.6.1

@@ -8,22 +8,14 @@
         - key: "rhel-7-server-rpms"
           value:
             - 869
-        - key: "rhel-8-for-x86_64-baseos-rpms"
-          value:
-            - 1076
     - bucket: nvr
       pairs:
         - key: "ubi7-container-7.7-140-x86_64"
           value:
             - 869
-        - key: "ubi8-container-8.2-299-x86_64"
-          value:
-            - 1076
     - bucket: cpe
       pairs:
         - key: "857"
           value: "cpe:/o:redhat:enterprise_linux:6::server"
         - key: "869"
           value: "cpe:/o:redhat:enterprise_linux:7::server"
-        - key: "1076"
-          value: "cpe:/o:redhat:enterprise_linux:8::baseos"
