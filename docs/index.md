@@ -22,12 +22,8 @@ Targets (what Trivy can scan):
 
 - Container Image
 - Filesystem
-<<<<<<< HEAD
 - Git Repository (remote)
 - Virtual Machine Image
-=======
-- Git repository (remote)
->>>>>>> main
 - Kubernetes
 - AWS
 
