@@ -87,14 +87,12 @@ jobs:
     runs-on: ubuntu-latest
     container:
       image: aquasec/trivy:latest
-      volumes:
-        - ./:src/
     steps:
       - name: Lint the Dockerfiles 
         run: |
-          trivy config --quiet /src/Dockerfile
-          trivy config --quiet /src/Dockerfile.canary
-          trivy config --quiet /src/Dockerfile.protoc
+          trivy config --quiet /__w/Dockerfile
+          trivy config --quiet /__w/Dockerfile.canary
+          trivy config --quiet /__w/Dockerfile.protoc
 
   build-test:
     name: Build Test
