@@ -1,25 +1,29 @@
-# Virtual Machine
-
+# Virtual Machine Image
 
 !!! warning "EXPERIMENTAL"
     This feature might change without preserving backwards compatibility.
 
-Scan a virtual machine image (such as a VMDK, a VHD, or other virtual machine image format).
+## Scanning
+Trivy supports VM image scanning for vulnerabilities, secrets, etc.
+The following targets are currently supported:
+
+- Local file
+- [AWS EC2][aws]
+
+To scan VM images, you can use the `vm` subcommand.
+
+### Local file
+Pass the path to your local VM image file.
 
 ```bash
-# VM scan
-$ trivy vm /path/to/virtual_machine_image
-
-# EBS snapshot scan
-$ trivy vm ebs:[YOUR_EBS_SNAPSHOT_ID]
+$ trivy vm --security-checks vuln disk.vmdk
 ```
-
 
 <details>
 <summary>Result</summary>
 
 ```
-export-ami.vmdk (amazon 2 (Karoo))
+disk.vmdk (amazon 2 (Karoo))
 ===========================================================================================
 Total: 802 (UNKNOWN: 0, LOW: 17, MEDIUM: 554, HIGH: 221, CRITICAL: 10)
 
@@ -53,57 +57,16 @@ Total: 802 (UNKNOWN: 0, LOW: 17, MEDIUM: 554, HIGH: 221, CRITICAL: 10)
 │                            │                │          │                               │                               │ cause named to terminate...                                  │
 │                            │                │          │                               │                               │ https://avd.aquasec.com/nvd/cve-2021-25214                   │
 ├────────────────────────────┼────────────────┼──────────┤                               ├───────────────────────────────┼──────────────────────────────────────────────────────────────┤
-│ bind-license               │ CVE-2021-25215 │ HIGH     │                               │ 32:9.11.4-26.P2.amzn2.5       │ bind: An assertion check can fail while answering queries    │
-│                            │                │          │                               │                               │ for DNAME records...                                         │
-│                            │                │          │                               │                               │ https://avd.aquasec.com/nvd/cve-2021-25215                   │
-│                            ├────────────────┼──────────┤                               ├───────────────────────────────┼──────────────────────────────────────────────────────────────┤
-│                            │ CVE-2021-25214 │ MEDIUM   │                               │ 32:9.11.4-26.P2.amzn2.5.2     │ bind: Broken inbound incremental zone update (IXFR) can      │
-│                            │                │          │                               │                               │ cause named to terminate...                                  │
-│                            │                │          │                               │                               │ https://avd.aquasec.com/nvd/cve-2021-25214                   │
-├────────────────────────────┼────────────────┼──────────┤                               ├───────────────────────────────┼──────────────────────────────────────────────────────────────┤
-│ bind-utils                 │ CVE-2021-25215 │ HIGH     │                               │ 32:9.11.4-26.P2.amzn2.5       │ bind: An assertion check can fail while answering queries    │
-│                            │                │          │                               │                               │ for DNAME records...                                         │
-│                            │                │          │                               │                               │ https://avd.aquasec.com/nvd/cve-2021-25215                   │
-│                            ├────────────────┼──────────┤                               ├───────────────────────────────┼──────────────────────────────────────────────────────────────┤
-│                            │ CVE-2021-25214 │ MEDIUM   │                               │ 32:9.11.4-26.P2.amzn2.5.2     │ bind: Broken inbound incremental zone update (IXFR) can      │
-│                            │                │          │                               │                               │ cause named to terminate...                                  │
-│                            │                │          │                               │                               │ https://avd.aquasec.com/nvd/cve-2021-25214                   │
-├────────────────────────────┼────────────────┼──────────┼───────────────────────────────┼───────────────────────────────┼──────────────────────────────────────────────────────────────┤
 ... 
 ```
 
 </details>
 
-## Use Cases 
+### AWS EC2
 
-### AMI scan
+See [here][aws] for the detail.
 
-Scan your AWS EC2 image. 
-
-You can scan EC2 AMIs by [Exporting a VM directly from an Amazon Machine Image][export_image].
-
-```
-$ AMI_ID=[TARGET_AMI_ID]
-$ EXPORT_BUCKET=[BUCKET_NAME]
-$ aws ec2 export-image --image-id $AMI_ID --disk-image-format VMDK --s3-export-location S3Bucket=$EXPORT_BUCKET,S3Prefix=exports/
-
-# Download AMI to your local directory
-$ trivy vm /path/to/export-ami.vmdk
-```
-
-### EBS Snapshot scan
-
-Scan your AWS EBS Snapshot.
-
-```
-# choose some snapshot-id.
-$ aws ec2 describe-snapshots --owner-ids self  --query 'Snapshots[]'
-
-# scan ec2 snapshot.
-$ trivy vm ebs:snap-XXXXXXXXXXXXXXXXX
-```
-
-## Support architectures
+## Supported architectures
 
 ### Virtual machine images
 
@@ -116,9 +79,9 @@ $ trivy vm ebs:snap-XXXXXXXXXXXXXXXXX
 | QCOW2        |         |
 
 
-#### VMDK Subformat support
+#### VMDK disk types
 
-| VMDK Sub format             | Support |
+| VMDK disk type              | Support |
 |-----------------------------|:-------:|
 | streamOptimized             |    ✔    |
 | monolithicSparse            |         |
@@ -133,17 +96,17 @@ $ trivy vm ebs:snap-XXXXXXXXXXXXXXXXX
 | vmfsRawDeviceMap            |         |
 | vmfsPassthroughRawDeviceMap |         |
 
-Reference: [VMware Virtual Disk Format 1.1.pdf](https://www.vmware.com/app/vmdk/?src=vmdk)
+Reference: [VMware Virtual Disk Format 1.1.pdf][vmdk]
 
 
 ### Disk partitions
 
-| Disk format                 | Support |
-|-----------------------------|:-------:|
-| Master boot record          |    ✔    |
-| Extended master boot record |         |
-| GUID partition table        |    ✔    |
-| Logical volume manager      |         |
+| Disk format                  | Support |
+|------------------------------|:-------:|
+| Master boot record (MBR)     |    ✔    |
+| Extended master boot record  |         |
+| GUID partition table (GPT)   |    ✔    |
+| Logical volume manager (LVM) |         |
 
 ### Filesystems
 
@@ -154,4 +117,5 @@ Reference: [VMware Virtual Disk Format 1.1.pdf](https://www.vmware.com/app/vmdk/
 | EXT2/3            |         |
 | ZFS               |         |
 
-[export_image]: https://docs.aws.amazon.com/vm-import/latest/userguide/vmexport_image.html
+[aws]: ./aws.md
+[vmdk]: https://www.vmware.com/app/vmdk/?src=vmdk

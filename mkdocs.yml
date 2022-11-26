@@ -41,7 +41,6 @@ nav:
               - Filesystem: docs/vulnerability/scanning/filesystem.md
               - Rootfs: docs/vulnerability/scanning/rootfs.md
               - Git Repository: docs/vulnerability/scanning/git-repository.md
-              - Virtual Machine: docs/vulnerability/scanning/virtual-machine.md
           - Detection:
               - OS Packages: docs/vulnerability/detection/os.md
               - Language-specific Packages: docs/vulnerability/detection/language.md
@@ -90,10 +89,13 @@ nav:
               - Compliance: docs/kubernetes/cli/compliance.md
           - Operator:
               - Overview: docs/kubernetes/operator/index.md
-      - Compliance:
-          - Reports:  docs/compliance/compliance.md
       - Cloud:
           - AWS: docs/cloud/aws/scanning.md
+      - Virtual Machine Image:
+          - Overview: docs/vm/index.md
+          - AWS EC2: docs/vm/aws.md
+      - Compliance:
+            - Reports:  docs/compliance/compliance.md
       - SBOM:
           - Overview: docs/sbom/index.md
           - CycloneDX: docs/sbom/cyclonedx.md
