@@ -151,8 +151,7 @@ Trivy is an [Aqua Security][aquasec] open source project.
 Learn about our open source work and portfolio [here][oss].  
 Contact us about any matter by opening a GitHub Discussion [here][discussions]
 
-[Ecosystem]: ./ecosystem/overview
-[Installation]: getting-started/installation/
+[Ecosystem]: ./ecosystem/index.md
 [pronunciation]: #how-to-pronounce-the-name-trivy
 
 [aquasec]: https://aquasec.com
@@ -161,4 +160,4 @@ Contact us about any matter by opening a GitHub Discussion [here][discussions]
 
 [Tutorials]: ./tutorials/overview
 [CLI]: ./docs
-[Contributing]: ./contributing/issue
+[Contributing]: ./community/contribute/issue.md
