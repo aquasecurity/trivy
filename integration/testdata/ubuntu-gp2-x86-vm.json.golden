@@ -1,0 +1,147 @@
+{
+  "SchemaVersion": 2,
+  "ArtifactName": "disk.img",
+  "ArtifactType": "vm",
+  "Metadata": {
+    "OS": {
+      "Family": "ubuntu",
+      "Name": "22.04"
+    },
+    "ImageConfig": {
+      "architecture": "",
+      "created": "0001-01-01T00:00:00Z",
+      "os": "",
+      "rootfs": {
+        "type": "",
+        "diff_ids": null
+      },
+      "config": {}
+    }
+  },
+  "Results": [
+    {
+      "Target": "disk.img (ubuntu 22.04)",
+      "Class": "os-pkgs",
+      "Type": "ubuntu",
+      "Vulnerabilities": [
+        {
+          "VulnerabilityID": "CVE-2022-2795",
+          "PkgID": "bind9-dnsutils@1:9.18.1-1ubuntu1.1",
+          "PkgName": "bind9-dnsutils",
+          "InstalledVersion": "1:9.18.1-1ubuntu1.1",
+          "FixedVersion": "1:9.18.1-1ubuntu1.2",
+          "Layer": {},
+          "SeveritySource": "nvd",
+          "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2022-2795",
+          "Title": "bind: processing large delegations may severely degrade resolver performance",
+          "Description": "By flooding the target resolver with queries exploiting this flaw an attacker",
+          "Severity": "HIGH",
+          "CweIDs": [
+            "CWE-400"
+          ],
+          "CVSS": {
+            "nvd": {
+              "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H",
+              "V3Score": 7.5
+            },
+            "redhat": {
+              "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:L",
+              "V3Score": 5.3
+            }
+          },
+          "References": [
+            "http://www.openwall.com/lists/oss-security/2022/09/21/3",
+            "https://access.redhat.com/security/cve/CVE-2022-2795",
+            "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2022-2795",
+            "https://kb.isc.org/docs/cve-2022-2795",
+            "https://lists.debian.org/debian-lts-announce/2022/10/msg00007.html",
+            "https://nvd.nist.gov/vuln/detail/CVE-2022-2795",
+            "https://ubuntu.com/security/notices/USN-5626-1",
+            "https://ubuntu.com/security/notices/USN-5626-2",
+            "https://www.debian.org/security/2022/dsa-5235"
+          ],
+          "PublishedDate": "2022-09-21T11:15:00Z",
+          "LastModifiedDate": "2022-10-06T20:15:00Z"
+        },
+        {
+          "VulnerabilityID": "CVE-2022-2795",
+          "PkgID": "bind9-host@1:9.18.1-1ubuntu1.1",
+          "PkgName": "bind9-host",
+          "InstalledVersion": "1:9.18.1-1ubuntu1.1",
+          "FixedVersion": "1:9.18.1-1ubuntu1.2",
+          "Layer": {},
+          "SeveritySource": "nvd",
+          "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2022-2795",
+          "Title": "bind: processing large delegations may severely degrade resolver performance",
+          "Description": "By flooding the target resolver with queries exploiting this flaw an attacker",
+          "Severity": "HIGH",
+          "CweIDs": [
+            "CWE-400"
+          ],
+          "CVSS": {
+            "nvd": {
+              "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H",
+              "V3Score": 7.5
+            },
+            "redhat": {
+              "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:L",
+              "V3Score": 5.3
+            }
+          },
+          "References": [
+            "http://www.openwall.com/lists/oss-security/2022/09/21/3",
+            "https://access.redhat.com/security/cve/CVE-2022-2795",
+            "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2022-2795",
+            "https://kb.isc.org/docs/cve-2022-2795",
+            "https://lists.debian.org/debian-lts-announce/2022/10/msg00007.html",
+            "https://nvd.nist.gov/vuln/detail/CVE-2022-2795",
+            "https://ubuntu.com/security/notices/USN-5626-1",
+            "https://ubuntu.com/security/notices/USN-5626-2",
+            "https://www.debian.org/security/2022/dsa-5235"
+          ],
+          "PublishedDate": "2022-09-21T11:15:00Z",
+          "LastModifiedDate": "2022-10-06T20:15:00Z"
+        },
+        {
+          "VulnerabilityID": "CVE-2022-2795",
+          "PkgID": "bind9-libs@1:9.18.1-1ubuntu1.1",
+          "PkgName": "bind9-libs",
+          "InstalledVersion": "1:9.18.1-1ubuntu1.1",
+          "FixedVersion": "1:9.18.1-1ubuntu1.2",
+          "Layer": {},
+          "SeveritySource": "nvd",
+          "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2022-2795",
+          "Title": "bind: processing large delegations may severely degrade resolver performance",
+          "Description": "By flooding the target resolver with queries exploiting this flaw an attacker",
+          "Severity": "HIGH",
+          "CweIDs": [
+            "CWE-400"
+          ],
+          "CVSS": {
+            "nvd": {
+              "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H",
+              "V3Score": 7.5
+            },
+            "redhat": {
+              "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:L",
+              "V3Score": 5.3
+            }
+          },
+          "References": [
+            "http://www.openwall.com/lists/oss-security/2022/09/21/3",
+            "https://access.redhat.com/security/cve/CVE-2022-2795",
+            "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2022-2795",
+            "https://kb.isc.org/docs/cve-2022-2795",
+            "https://lists.debian.org/debian-lts-announce/2022/10/msg00007.html",
+            "https://nvd.nist.gov/vuln/detail/CVE-2022-2795",
+            "https://ubuntu.com/security/notices/USN-5626-1",
+            "https://ubuntu.com/security/notices/USN-5626-2",
+            "https://www.debian.org/security/2022/dsa-5235"
+          ],
+          "PublishedDate": "2022-09-21T11:15:00Z",
+          "LastModifiedDate": "2022-10-06T20:15:00Z"
+        }
+      ]
+    }
+  ]
+}

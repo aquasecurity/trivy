@@ -11,13 +11,15 @@
 [📖 Documentation][docs]
 </div>
 
-Trivy ([pronunciation][pronunciation]) is a comprehensive and versatile security scanner. Trivy has *scanners* that look for security issues, and *targets* where it can find those issues.
+Trivy ([pronunciation][pronunciation]) is a comprehensive and versatile security scanner.
+Trivy has *scanners* that look for security issues, and *targets* where it can find those issues.
 
 Targets (what Trivy can scan):
 
 - Container Image
 - Filesystem
-- Git repository (remote)
+- Git Repository (remote)
+- Virtual Machine Image
 - Kubernetes
 - AWS
 

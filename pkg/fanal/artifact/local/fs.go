@@ -10,7 +10,6 @@ import (
 	"sync"
 
 	"github.com/opencontainers/go-digest"
-	"golang.org/x/sync/semaphore"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
@@ -19,10 +18,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/fanal/handler"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/fanal/walker"
-)
-
-const (
-	parallel = 10
+	"github.com/aquasecurity/trivy/pkg/semaphore"
 )
 
 type Artifact struct {
@@ -78,11 +74,7 @@ func buildAbsPaths(base string, paths []string) []string {
 func (a Artifact) Inspect(ctx context.Context) (types.ArtifactReference, error) {
 	var wg sync.WaitGroup
 	result := analyzer.NewAnalysisResult()
-	limit := semaphore.NewWeighted(parallel)
-	if a.artifactOption.Slow {
-		// Analyze files in series
-		limit = semaphore.NewWeighted(1)
-	}
+	limit := semaphore.New(a.artifactOption.Slow)
 
 	err := a.walker.Walk(a.rootPath, func(filePath string, info os.FileInfo, opener analyzer.Opener) error {
 		directory := a.rootPath
