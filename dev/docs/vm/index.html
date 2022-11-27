@@ -10,21 +10,21 @@
       
       
       
-        <link rel="canonical" href="https://aquasecurity.github.io/trivy/dev/docs/kubernetes/cli/compliance/">
+        <link rel="canonical" href="https://aquasecurity.github.io/trivy/dev/docs/vm/">
       
-      <link rel="icon" href="../../../../assets/images/favicon.png">
+      <link rel="icon" href="../../assets/images/favicon.png">
       <meta name="generator" content="mkdocs-1.3.0, mkdocs-material-8.3.9">
     
     
       
-        <title>Compliance - Trivy</title>
+        <title>Overview - Trivy</title>
       
     
     
-      <link rel="stylesheet" href="../../../../assets/stylesheets/main.1d29e8d0.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.1d29e8d0.min.css">
       
         
-        <link rel="stylesheet" href="../../../../assets/stylesheets/palette.cbb835fc.min.css">
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.cbb835fc.min.css">
         
       
       
@@ -40,7 +40,7 @@
       
     
     
-    <script>__md_scope=new URL("../../../..",location),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    <script>__md_scope=new URL("../..",location),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
       
 
@@ -64,7 +64,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#kubernetes-compliance" class="md-skip">
+        <a href="#virtual-machine-image" class="md-skip">
           Skip to content
         </a>
       
@@ -86,9 +86,9 @@
 
 <header class="md-header md-header--lifted" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
-    <a href="../../../.." title="Trivy" class="md-header__button md-logo" aria-label="Trivy" data-md-component="logo">
+    <a href="../.." title="Trivy" class="md-header__button md-logo" aria-label="Trivy" data-md-component="logo">
       
-  <img src="../../../../imgs/logo-white.svg" alt="logo">
+  <img src="../../imgs/logo-white.svg" alt="logo">
 
     </a>
     <label class="md-header__button md-icon" for="__drawer">
@@ -104,7 +104,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Compliance
+              Overview
             
           </span>
         </div>
@@ -176,7 +176,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="../../../.." class="md-tabs__link">
+      <a href="../.." class="md-tabs__link">
         Getting Started
       </a>
     </li>
@@ -192,7 +192,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="../../../../tutorials/overview/" class="md-tabs__link">
+      <a href="../../tutorials/overview/" class="md-tabs__link">
         Tutorials
       </a>
     </li>
@@ -210,7 +210,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="../../../" class="md-tabs__link md-tabs__link--active">
+      <a href="../" class="md-tabs__link md-tabs__link--active">
         CLI
       </a>
     </li>
@@ -226,7 +226,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="../../../../ecosystem/" class="md-tabs__link">
+      <a href="../../ecosystem/" class="md-tabs__link">
         Ecosystem
       </a>
     </li>
@@ -247,7 +247,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="../../../../community/contribute/issue/" class="md-tabs__link">
+      <a href="../../community/contribute/issue/" class="md-tabs__link">
         Contributing
       </a>
     </li>
@@ -283,9 +283,9 @@
 
 <nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href="../../../.." title="Trivy" class="md-nav__button md-logo" aria-label="Trivy" data-md-component="logo">
+    <a href="../.." title="Trivy" class="md-nav__button md-logo" aria-label="Trivy" data-md-component="logo">
       
-  <img src="../../../../imgs/logo-white.svg" alt="logo">
+  <img src="../../imgs/logo-white.svg" alt="logo">
 
     </a>
     Trivy
@@ -339,7 +339,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../.." class="md-nav__link">
+      <a href="../.." class="md-nav__link">
         Overview
       </a>
     </li>
@@ -353,7 +353,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../getting-started/installation/" class="md-nav__link">
+      <a href="../../getting-started/installation/" class="md-nav__link">
         Installation
       </a>
     </li>
@@ -401,7 +401,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../tutorials/overview/" class="md-nav__link">
+      <a href="../../tutorials/overview/" class="md-nav__link">
         Overview
       </a>
     </li>
@@ -443,7 +443,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../tutorials/integrations/" class="md-nav__link">
+      <a href="../../tutorials/integrations/" class="md-nav__link">
         Overview
       </a>
     </li>
@@ -457,7 +457,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../tutorials/integrations/github-actions/" class="md-nav__link">
+      <a href="../../tutorials/integrations/github-actions/" class="md-nav__link">
         GitHub Actions
       </a>
     </li>
@@ -471,7 +471,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../tutorials/integrations/circleci/" class="md-nav__link">
+      <a href="../../tutorials/integrations/circleci/" class="md-nav__link">
         CircleCI
       </a>
     </li>
@@ -485,7 +485,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../tutorials/integrations/travis-ci/" class="md-nav__link">
+      <a href="../../tutorials/integrations/travis-ci/" class="md-nav__link">
         Travis CI
       </a>
     </li>
@@ -499,7 +499,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../tutorials/integrations/gitlab-ci/" class="md-nav__link">
+      <a href="../../tutorials/integrations/gitlab-ci/" class="md-nav__link">
         GitLab CI
       </a>
     </li>
@@ -513,7 +513,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../tutorials/integrations/bitbucket/" class="md-nav__link">
+      <a href="../../tutorials/integrations/bitbucket/" class="md-nav__link">
         Bitbucket Pipelines
       </a>
     </li>
@@ -527,7 +527,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../tutorials/integrations/aws-codepipeline/" class="md-nav__link">
+      <a href="../../tutorials/integrations/aws-codepipeline/" class="md-nav__link">
         AWS CodePipeline
       </a>
     </li>
@@ -541,7 +541,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../tutorials/integrations/aws-security-hub/" class="md-nav__link">
+      <a href="../../tutorials/integrations/aws-security-hub/" class="md-nav__link">
         AWS Security Hub
       </a>
     </li>
@@ -555,7 +555,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../tutorials/integrations/azure-devops/" class="md-nav__link">
+      <a href="../../tutorials/integrations/azure-devops/" class="md-nav__link">
         Azure
       </a>
     </li>
@@ -604,7 +604,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../tutorials/signing/vuln-attestation/" class="md-nav__link">
+      <a href="../../tutorials/signing/vuln-attestation/" class="md-nav__link">
         Vulnerability Scan Record Attestation
       </a>
     </li>
@@ -653,7 +653,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../tutorials/kubernetes/cluster-scanning/" class="md-nav__link">
+      <a href="../../tutorials/kubernetes/cluster-scanning/" class="md-nav__link">
         Cluster Scanning
       </a>
     </li>
@@ -667,7 +667,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../tutorials/kubernetes/kyverno/" class="md-nav__link">
+      <a href="../../tutorials/kubernetes/kyverno/" class="md-nav__link">
         Kyverno
       </a>
     </li>
@@ -681,7 +681,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../tutorials/kubernetes/gitops/" class="md-nav__link">
+      <a href="../../tutorials/kubernetes/gitops/" class="md-nav__link">
         GitOps
       </a>
     </li>
@@ -730,7 +730,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../tutorials/additional-resources/references/" class="md-nav__link">
+      <a href="../../tutorials/additional-resources/references/" class="md-nav__link">
         Additional Resources
       </a>
     </li>
@@ -744,7 +744,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../tutorials/additional-resources/community/" class="md-nav__link">
+      <a href="../../tutorials/additional-resources/community/" class="md-nav__link">
         Community References
       </a>
     </li>
@@ -758,7 +758,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../tutorials/additional-resources/cks/" class="md-nav__link">
+      <a href="../../tutorials/additional-resources/cks/" class="md-nav__link">
         CKS Reference
       </a>
     </li>
@@ -815,7 +815,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../" class="md-nav__link">
+      <a href="../" class="md-nav__link">
         Overview
       </a>
     </li>
@@ -883,7 +883,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../vulnerability/scanning/" class="md-nav__link">
+      <a href="../vulnerability/scanning/" class="md-nav__link">
         Overview
       </a>
     </li>
@@ -897,7 +897,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../vulnerability/scanning/image/" class="md-nav__link">
+      <a href="../vulnerability/scanning/image/" class="md-nav__link">
         Container Image
       </a>
     </li>
@@ -911,7 +911,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../vulnerability/scanning/filesystem/" class="md-nav__link">
+      <a href="../vulnerability/scanning/filesystem/" class="md-nav__link">
         Filesystem
       </a>
     </li>
@@ -925,7 +925,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../vulnerability/scanning/rootfs/" class="md-nav__link">
+      <a href="../vulnerability/scanning/rootfs/" class="md-nav__link">
         Rootfs
       </a>
     </li>
@@ -939,7 +939,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../vulnerability/scanning/git-repository/" class="md-nav__link">
+      <a href="../vulnerability/scanning/git-repository/" class="md-nav__link">
         Git Repository
       </a>
     </li>
@@ -986,7 +986,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../vulnerability/detection/os/" class="md-nav__link">
+      <a href="../vulnerability/detection/os/" class="md-nav__link">
         OS Packages
       </a>
     </li>
@@ -1000,7 +1000,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../vulnerability/detection/language/" class="md-nav__link">
+      <a href="../vulnerability/detection/language/" class="md-nav__link">
         Language-specific Packages
       </a>
     </li>
@@ -1014,7 +1014,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../vulnerability/detection/data-source/" class="md-nav__link">
+      <a href="../vulnerability/detection/data-source/" class="md-nav__link">
         Data Sources
       </a>
     </li>
@@ -1028,7 +1028,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../vulnerability/detection/supported/" class="md-nav__link">
+      <a href="../vulnerability/detection/supported/" class="md-nav__link">
         Supported
       </a>
     </li>
@@ -1075,7 +1075,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../vulnerability/examples/filter/" class="md-nav__link">
+      <a href="../vulnerability/examples/filter/" class="md-nav__link">
         Vulnerability Filtering
       </a>
     </li>
@@ -1089,7 +1089,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../vulnerability/examples/report/" class="md-nav__link">
+      <a href="../vulnerability/examples/report/" class="md-nav__link">
         Report Formats
       </a>
     </li>
@@ -1103,7 +1103,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../vulnerability/examples/db/" class="md-nav__link">
+      <a href="../vulnerability/examples/db/" class="md-nav__link">
         Vulnerability DB
       </a>
     </li>
@@ -1117,7 +1117,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../vulnerability/examples/cache/" class="md-nav__link">
+      <a href="../vulnerability/examples/cache/" class="md-nav__link">
         Cache
       </a>
     </li>
@@ -1131,7 +1131,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../vulnerability/examples/others/" class="md-nav__link">
+      <a href="../vulnerability/examples/others/" class="md-nav__link">
         Others
       </a>
     </li>
@@ -1152,7 +1152,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../vulnerability/distributions/" class="md-nav__link">
+      <a href="../vulnerability/distributions/" class="md-nav__link">
         Distributions
       </a>
     </li>
@@ -1192,7 +1192,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../vulnerability/languages/golang/" class="md-nav__link">
+      <a href="../vulnerability/languages/golang/" class="md-nav__link">
         Go
       </a>
     </li>
@@ -1248,7 +1248,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../misconfiguration/scanning/" class="md-nav__link">
+      <a href="../misconfiguration/scanning/" class="md-nav__link">
         Scanning
       </a>
     </li>
@@ -1288,7 +1288,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../misconfiguration/policy/builtin/" class="md-nav__link">
+      <a href="../misconfiguration/policy/builtin/" class="md-nav__link">
         Built-in Policies
       </a>
     </li>
@@ -1302,7 +1302,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../misconfiguration/policy/exceptions/" class="md-nav__link">
+      <a href="../misconfiguration/policy/exceptions/" class="md-nav__link">
         Exceptions
       </a>
     </li>
@@ -1349,7 +1349,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../misconfiguration/custom/" class="md-nav__link">
+      <a href="../misconfiguration/custom/" class="md-nav__link">
         Overview
       </a>
     </li>
@@ -1363,7 +1363,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../misconfiguration/custom/data/" class="md-nav__link">
+      <a href="../misconfiguration/custom/data/" class="md-nav__link">
         Data
       </a>
     </li>
@@ -1377,7 +1377,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../misconfiguration/custom/combine/" class="md-nav__link">
+      <a href="../misconfiguration/custom/combine/" class="md-nav__link">
         Combine
       </a>
     </li>
@@ -1391,7 +1391,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../misconfiguration/custom/testing/" class="md-nav__link">
+      <a href="../misconfiguration/custom/testing/" class="md-nav__link">
         Testing
       </a>
     </li>
@@ -1405,7 +1405,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../misconfiguration/custom/debug/" class="md-nav__link">
+      <a href="../misconfiguration/custom/debug/" class="md-nav__link">
         Debugging Policies
       </a>
     </li>
@@ -1419,7 +1419,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../misconfiguration/custom/examples/" class="md-nav__link">
+      <a href="../misconfiguration/custom/examples/" class="md-nav__link">
         Examples
       </a>
     </li>
@@ -1466,7 +1466,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../misconfiguration/options/policy/" class="md-nav__link">
+      <a href="../misconfiguration/options/policy/" class="md-nav__link">
         Policy
       </a>
     </li>
@@ -1480,7 +1480,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../misconfiguration/options/filter/" class="md-nav__link">
+      <a href="../misconfiguration/options/filter/" class="md-nav__link">
         Filtering
       </a>
     </li>
@@ -1494,7 +1494,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../misconfiguration/options/report/" class="md-nav__link">
+      <a href="../misconfiguration/options/report/" class="md-nav__link">
         Report Formats
       </a>
     </li>
@@ -1508,7 +1508,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../misconfiguration/options/values/" class="md-nav__link">
+      <a href="../misconfiguration/options/values/" class="md-nav__link">
         Value Overrides
       </a>
     </li>
@@ -1522,7 +1522,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../misconfiguration/options/others/" class="md-nav__link">
+      <a href="../misconfiguration/options/others/" class="md-nav__link">
         Others
       </a>
     </li>
@@ -1569,7 +1569,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../misconfiguration/comparison/conftest/" class="md-nav__link">
+      <a href="../misconfiguration/comparison/conftest/" class="md-nav__link">
         vs Conftest
       </a>
     </li>
@@ -1583,7 +1583,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../misconfiguration/comparison/tfsec/" class="md-nav__link">
+      <a href="../misconfiguration/comparison/tfsec/" class="md-nav__link">
         vs tfsec
       </a>
     </li>
@@ -1597,7 +1597,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../misconfiguration/comparison/cfsec/" class="md-nav__link">
+      <a href="../misconfiguration/comparison/cfsec/" class="md-nav__link">
         vs cfsec
       </a>
     </li>
@@ -1653,7 +1653,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../secret/scanning/" class="md-nav__link">
+      <a href="../secret/scanning/" class="md-nav__link">
         Scanning
       </a>
     </li>
@@ -1667,7 +1667,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../secret/configuration/" class="md-nav__link">
+      <a href="../secret/configuration/" class="md-nav__link">
         Configuration
       </a>
     </li>
@@ -1681,7 +1681,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../secret/examples/" class="md-nav__link">
+      <a href="../secret/examples/" class="md-nav__link">
         Examples
       </a>
     </li>
@@ -1730,7 +1730,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../licenses/scanning/" class="md-nav__link">
+      <a href="../licenses/scanning/" class="md-nav__link">
         Scanning
       </a>
     </li>
@@ -1749,16 +1749,14 @@
               
   
   
-    
-  
   
     
       
     
-    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_6" type="checkbox" id="__nav_3_6" checked>
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_6" type="checkbox" id="__nav_3_6" >
       
       
       
@@ -1779,14 +1777,12 @@
               
   
   
-    
-  
   
     
-    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_6_1" type="checkbox" id="__nav_3_6_1" checked>
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_6_1" type="checkbox" id="__nav_3_6_1" >
       
       
       
@@ -1809,7 +1805,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../scanning/" class="md-nav__link">
+      <a href="../kubernetes/cli/scanning/" class="md-nav__link">
         Scanning
       </a>
     </li>
@@ -1821,86 +1817,11 @@
               
   
   
-    
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
-      
-      
-        
-      
-      
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          Compliance
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <a href="./" class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href="../kubernetes/cli/compliance/" class="md-nav__link">
         Compliance
       </a>
-      
-        
-
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#nsa-compliance-report" class="md-nav__link">
-    NSA Compliance Report
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#cli-commands" class="md-nav__link">
-    CLI Commands
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#custom-compliance-report" class="md-nav__link">
-    Custom compliance report
-  </a>
-  
-    <nav class="md-nav" aria-label="Custom compliance report">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#compliance-spec-format" class="md-nav__link">
-    Compliance spec format
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#custom-report-cli-commands" class="md-nav__link">
-    Custom report CLI Commands
-  </a>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-      
     </li>
   
 
@@ -1945,7 +1866,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../operator/" class="md-nav__link">
+      <a href="../kubernetes/operator/" class="md-nav__link">
         Overview
       </a>
     </li>
@@ -2001,7 +1922,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../cloud/aws/scanning/" class="md-nav__link">
+      <a href="../cloud/aws/scanning/" class="md-nav__link">
         AWS
       </a>
     </li>
@@ -2020,14 +1941,16 @@
               
   
   
+    
+  
   
     
       
     
-    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_8" type="checkbox" id="__nav_3_8" >
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_8" type="checkbox" id="__nav_3_8" checked>
       
       
       
@@ -2048,11 +1971,119 @@
               
   
   
+    
   
-    <li class="md-nav__item">
-      <a href="../../../vm/" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          Overview
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
         Overview
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#scanning" class="md-nav__link">
+    Scanning
+  </a>
+  
+    <nav class="md-nav" aria-label="Scanning">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#local-file" class="md-nav__link">
+    Local file
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#aws-ec2" class="md-nav__link">
+    AWS EC2
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#supported-architectures" class="md-nav__link">
+    Supported architectures
+  </a>
+  
+    <nav class="md-nav" aria-label="Supported architectures">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#virtual-machine-images" class="md-nav__link">
+    Virtual machine images
+  </a>
+  
+    <nav class="md-nav" aria-label="Virtual machine images">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#vmdk-disk-types" class="md-nav__link">
+    VMDK disk types
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#disk-partitions" class="md-nav__link">
+    Disk partitions
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#filesystems" class="md-nav__link">
+    Filesystems
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -2064,7 +2095,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../vm/aws/" class="md-nav__link">
+      <a href="aws/" class="md-nav__link">
         AWS EC2
       </a>
     </li>
@@ -2113,7 +2144,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../compliance/compliance/" class="md-nav__link">
+      <a href="../compliance/compliance/" class="md-nav__link">
         Reports
       </a>
     </li>
@@ -2162,7 +2193,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../sbom/" class="md-nav__link">
+      <a href="../sbom/" class="md-nav__link">
         Overview
       </a>
     </li>
@@ -2176,7 +2207,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../sbom/cyclonedx/" class="md-nav__link">
+      <a href="../sbom/cyclonedx/" class="md-nav__link">
         CycloneDX
       </a>
     </li>
@@ -2190,7 +2221,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../sbom/spdx/" class="md-nav__link">
+      <a href="../sbom/spdx/" class="md-nav__link">
         SPDX
       </a>
     </li>
@@ -2239,7 +2270,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../attestation/sbom/" class="md-nav__link">
+      <a href="../attestation/sbom/" class="md-nav__link">
         SBOM
       </a>
     </li>
@@ -2253,7 +2284,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../attestation/vuln/" class="md-nav__link">
+      <a href="../attestation/vuln/" class="md-nav__link">
         Cosign Vulnerability Scan Record
       </a>
     </li>
@@ -2267,7 +2298,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../attestation/rekor/" class="md-nav__link">
+      <a href="../attestation/rekor/" class="md-nav__link">
         SBOM Attestation in Rekor
       </a>
     </li>
@@ -2316,7 +2347,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../advanced/modules/" class="md-nav__link">
+      <a href="../advanced/modules/" class="md-nav__link">
         Modules
       </a>
     </li>
@@ -2330,7 +2361,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../advanced/plugins/" class="md-nav__link">
+      <a href="../advanced/plugins/" class="md-nav__link">
         Plugins
       </a>
     </li>
@@ -2344,7 +2375,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../advanced/air-gap/" class="md-nav__link">
+      <a href="../advanced/air-gap/" class="md-nav__link">
         Air-Gapped Environment
       </a>
     </li>
@@ -2384,7 +2415,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../advanced/container/embed-in-dockerfile/" class="md-nav__link">
+      <a href="../advanced/container/embed-in-dockerfile/" class="md-nav__link">
         Embed in Dockerfile
       </a>
     </li>
@@ -2398,7 +2429,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../advanced/container/unpacked-filesystem/" class="md-nav__link">
+      <a href="../advanced/container/unpacked-filesystem/" class="md-nav__link">
         Unpacked container image filesystem
       </a>
     </li>
@@ -2412,7 +2443,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../advanced/container/oci/" class="md-nav__link">
+      <a href="../advanced/container/oci/" class="md-nav__link">
         OCI Image
       </a>
     </li>
@@ -2426,7 +2457,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../advanced/container/podman/" class="md-nav__link">
+      <a href="../advanced/container/podman/" class="md-nav__link">
         Podman
       </a>
     </li>
@@ -2440,7 +2471,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../advanced/container/containerd/" class="md-nav__link">
+      <a href="../advanced/container/containerd/" class="md-nav__link">
         containerd
       </a>
     </li>
@@ -2480,7 +2511,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../advanced/private-registries/" class="md-nav__link">
+      <a href="../advanced/private-registries/" class="md-nav__link">
         Overview
       </a>
     </li>
@@ -2494,7 +2525,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../advanced/private-registries/docker-hub/" class="md-nav__link">
+      <a href="../advanced/private-registries/docker-hub/" class="md-nav__link">
         Docker Hub
       </a>
     </li>
@@ -2508,7 +2539,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../advanced/private-registries/ecr/" class="md-nav__link">
+      <a href="../advanced/private-registries/ecr/" class="md-nav__link">
         AWS ECR (Elastic Container Registry)
       </a>
     </li>
@@ -2522,7 +2553,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../advanced/private-registries/gcr/" class="md-nav__link">
+      <a href="../advanced/private-registries/gcr/" class="md-nav__link">
         GCR (Google Container Registry)
       </a>
     </li>
@@ -2536,7 +2567,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../advanced/private-registries/acr/" class="md-nav__link">
+      <a href="../advanced/private-registries/acr/" class="md-nav__link">
         ACR (Azure Container Registry)
       </a>
     </li>
@@ -2550,7 +2581,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../advanced/private-registries/self/" class="md-nav__link">
+      <a href="../advanced/private-registries/self/" class="md-nav__link">
         Self-Hosted
       </a>
     </li>
@@ -2639,7 +2670,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../references/customization/envs/" class="md-nav__link">
+      <a href="../references/customization/envs/" class="md-nav__link">
         Environment variables
       </a>
     </li>
@@ -2653,7 +2684,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../references/customization/config-file/" class="md-nav__link">
+      <a href="../references/customization/config-file/" class="md-nav__link">
         Config file
       </a>
     </li>
@@ -2700,7 +2731,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../references/cli/" class="md-nav__link">
+      <a href="../references/cli/" class="md-nav__link">
         Overview
       </a>
     </li>
@@ -2714,7 +2745,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../references/cli/image/" class="md-nav__link">
+      <a href="../references/cli/image/" class="md-nav__link">
         Image
       </a>
     </li>
@@ -2728,7 +2759,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../references/cli/config/" class="md-nav__link">
+      <a href="../references/cli/config/" class="md-nav__link">
         Config
       </a>
     </li>
@@ -2742,7 +2773,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../references/cli/fs/" class="md-nav__link">
+      <a href="../references/cli/fs/" class="md-nav__link">
         Filesystem
       </a>
     </li>
@@ -2756,7 +2787,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../references/cli/rootfs/" class="md-nav__link">
+      <a href="../references/cli/rootfs/" class="md-nav__link">
         Rootfs
       </a>
     </li>
@@ -2770,7 +2801,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../references/cli/repo/" class="md-nav__link">
+      <a href="../references/cli/repo/" class="md-nav__link">
         Repository
       </a>
     </li>
@@ -2784,7 +2815,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../references/cli/client/" class="md-nav__link">
+      <a href="../references/cli/client/" class="md-nav__link">
         Client
       </a>
     </li>
@@ -2798,7 +2829,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../references/cli/server/" class="md-nav__link">
+      <a href="../references/cli/server/" class="md-nav__link">
         Server
       </a>
     </li>
@@ -2812,7 +2843,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../references/cli/plugin/" class="md-nav__link">
+      <a href="../references/cli/plugin/" class="md-nav__link">
         Plugin
       </a>
     </li>
@@ -2826,7 +2857,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../references/cli/sbom/" class="md-nav__link">
+      <a href="../references/cli/sbom/" class="md-nav__link">
         SBOM
       </a>
     </li>
@@ -2840,7 +2871,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../references/cli/module/" class="md-nav__link">
+      <a href="../references/cli/module/" class="md-nav__link">
         Module
       </a>
     </li>
@@ -2887,7 +2918,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../references/modes/standalone/" class="md-nav__link">
+      <a href="../references/modes/standalone/" class="md-nav__link">
         Standalone
       </a>
     </li>
@@ -2901,7 +2932,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../references/modes/client-server/" class="md-nav__link">
+      <a href="../references/modes/client-server/" class="md-nav__link">
         Client/Server
       </a>
     </li>
@@ -2922,7 +2953,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../references/troubleshooting/" class="md-nav__link">
+      <a href="../references/troubleshooting/" class="md-nav__link">
         Troubleshooting
       </a>
     </li>
@@ -2977,7 +3008,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../ecosystem/" class="md-nav__link">
+      <a href="../../ecosystem/" class="md-nav__link">
         Overview
       </a>
     </li>
@@ -2991,7 +3022,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../ecosystem/cicd/" class="md-nav__link">
+      <a href="../../ecosystem/cicd/" class="md-nav__link">
         CI/CD
       </a>
     </li>
@@ -3005,7 +3036,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../ecosystem/ide/" class="md-nav__link">
+      <a href="../../ecosystem/ide/" class="md-nav__link">
         IDE and Dev tools
       </a>
     </li>
@@ -3019,7 +3050,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../ecosystem/prod/" class="md-nav__link">
+      <a href="../../ecosystem/prod/" class="md-nav__link">
         Production and Clouds
       </a>
     </li>
@@ -3095,7 +3126,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../community/contribute/issue/" class="md-nav__link">
+      <a href="../../community/contribute/issue/" class="md-nav__link">
         Issues
       </a>
     </li>
@@ -3109,7 +3140,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../community/contribute/pr/" class="md-nav__link">
+      <a href="../../community/contribute/pr/" class="md-nav__link">
         Pull Requests
       </a>
     </li>
@@ -3158,7 +3189,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../community/maintainer/help-wanted/" class="md-nav__link">
+      <a href="../../community/maintainer/help-wanted/" class="md-nav__link">
         Help Wanted
       </a>
     </li>
@@ -3172,7 +3203,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../community/maintainer/triage/" class="md-nav__link">
+      <a href="../../community/maintainer/triage/" class="md-nav__link">
         Triage
       </a>
     </li>
@@ -3220,30 +3251,23 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#nsa-compliance-report" class="md-nav__link">
-    NSA Compliance Report
+  <a href="#scanning" class="md-nav__link">
+    Scanning
   </a>
   
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#cli-commands" class="md-nav__link">
-    CLI Commands
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#custom-compliance-report" class="md-nav__link">
-    Custom compliance report
-  </a>
-  
-    <nav class="md-nav" aria-label="Custom compliance report">
+    <nav class="md-nav" aria-label="Scanning">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#compliance-spec-format" class="md-nav__link">
-    Compliance spec format
+  <a href="#local-file" class="md-nav__link">
+    Local file
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#aws-ec2" class="md-nav__link">
+    AWS EC2
   </a>
   
 </li>
@@ -3254,9 +3278,49 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#custom-report-cli-commands" class="md-nav__link">
-    Custom report CLI Commands
+  <a href="#supported-architectures" class="md-nav__link">
+    Supported architectures
   </a>
+  
+    <nav class="md-nav" aria-label="Supported architectures">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#virtual-machine-images" class="md-nav__link">
+    Virtual machine images
+  </a>
+  
+    <nav class="md-nav" aria-label="Virtual machine images">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#vmdk-disk-types" class="md-nav__link">
+    VMDK disk types
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#disk-partitions" class="md-nav__link">
+    Disk partitions
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#filesystems" class="md-nav__link">
+    Filesystems
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -3274,208 +3338,213 @@
                 
 
 
-<h1 id="kubernetes-compliance">Kubernetes Compliance</h1>
-<h2 id="nsa-compliance-report">NSA Compliance Report</h2>
+<h1 id="virtual-machine-image">Virtual Machine Image</h1>
 <div class="admonition warning">
 <p class="admonition-title">EXPERIMENTAL</p>
 <p>This feature might change without preserving backwards compatibility.</p>
 </div>
-<p>The Trivy K8s CLI allows you to scan your Kubernetes cluster resources and generate the <code>NSA, CISA Kubernetes Hardening Guidance</code> report</p>
-<p><a href="https://media.defense.gov/2022/Aug/29/2003066362/-1/-1/0/CTR_KUBERNETES_HARDENING_GUIDANCE_1.2_20220829.PDF">NSA, CISA Kubernetes Hardening Guidance v1.2</a> cybersecurity technical report is produced by trivy and validate the following control checks :</p>
+<h2 id="scanning">Scanning</h2>
+<p>Trivy supports VM image scanning for vulnerabilities, secrets, etc.
+The following targets are currently supported:</p>
+<ul>
+<li>Local file</li>
+<li><a href="aws/">AWS EC2</a></li>
+</ul>
+<p>To scan VM images, you can use the <code>vm</code> subcommand.</p>
+<h3 id="local-file">Local file</h3>
+<p>Pass the path to your local VM image file.</p>
+<div class="highlight"><pre><span></span><code>$ trivy vm --security-checks vuln disk.vmdk
+</code></pre></div>
+<details>
+<summary>Result</summary>
+
+<div class="highlight"><pre><span></span><code>disk.vmdk (amazon 2 (Karoo))
+===========================================================================================
+Total: 802 (UNKNOWN: 0, LOW: 17, MEDIUM: 554, HIGH: 221, CRITICAL: 10)
+
+┌────────────────────────────┬────────────────┬──────────┬───────────────────────────────┬───────────────────────────────┬──────────────────────────────────────────────────────────────┐
+│          Library           │ Vulnerability  │ Severity │       Installed Version       │         Fixed Version         │                            Title                             │
+├────────────────────────────┼────────────────┼──────────┼───────────────────────────────┼───────────────────────────────┼──────────────────────────────────────────────────────────────┤
+│ amazon-ssm-agent           │ CVE-2022-24675 │ HIGH     │ 3.0.529.0-1.amzn2             │ 3.1.1575.0-1.amzn2            │ golang: encoding/pem: fix stack overflow in Decode           │
+│                            │                │          │                               │                               │ https://avd.aquasec.com/nvd/cve-2022-24675                   │
+├────────────────────────────┼────────────────┤          ├───────────────────────────────┼───────────────────────────────┼──────────────────────────────────────────────────────────────┤
+│ bind-export-libs           │ CVE-2021-25215 │          │ 32:9.11.4-26.P2.amzn2.4       │ 32:9.11.4-26.P2.amzn2.5       │ bind: An assertion check can fail while answering queries    │
+│                            │                │          │                               │                               │ for DNAME records...                                         │
+│                            │                │          │                               │                               │ https://avd.aquasec.com/nvd/cve-2021-25215                   │
+│                            ├────────────────┼──────────┤                               ├───────────────────────────────┼──────────────────────────────────────────────────────────────┤
+│                            │ CVE-2021-25214 │ MEDIUM   │                               │ 32:9.11.4-26.P2.amzn2.5.2     │ bind: Broken inbound incremental zone update (IXFR) can      │
+│                            │                │          │                               │                               │ cause named to terminate...                                  │
+│                            │                │          │                               │                               │ https://avd.aquasec.com/nvd/cve-2021-25214                   │
+├────────────────────────────┼────────────────┼──────────┤                               ├───────────────────────────────┼──────────────────────────────────────────────────────────────┤
+│ bind-libs                  │ CVE-2021-25215 │ HIGH     │                               │ 32:9.11.4-26.P2.amzn2.5       │ bind: An assertion check can fail while answering queries    │
+│                            │                │          │                               │                               │ for DNAME records...                                         │
+│                            │                │          │                               │                               │ https://avd.aquasec.com/nvd/cve-2021-25215                   │
+│                            ├────────────────┼──────────┤                               ├───────────────────────────────┼──────────────────────────────────────────────────────────────┤
+│                            │ CVE-2021-25214 │ MEDIUM   │                               │ 32:9.11.4-26.P2.amzn2.5.2     │ bind: Broken inbound incremental zone update (IXFR) can      │
+│                            │                │          │                               │                               │ cause named to terminate...                                  │
+│                            │                │          │                               │                               │ https://avd.aquasec.com/nvd/cve-2021-25214                   │
+├────────────────────────────┼────────────────┼──────────┤                               ├───────────────────────────────┼──────────────────────────────────────────────────────────────┤
+│ bind-libs-lite             │ CVE-2021-25215 │ HIGH     │                               │ 32:9.11.4-26.P2.amzn2.5       │ bind: An assertion check can fail while answering queries    │
+│                            │                │          │                               │                               │ for DNAME records...                                         │
+│                            │                │          │                               │                               │ https://avd.aquasec.com/nvd/cve-2021-25215                   │
+│                            ├────────────────┼──────────┤                               ├───────────────────────────────┼──────────────────────────────────────────────────────────────┤
+│                            │ CVE-2021-25214 │ MEDIUM   │                               │ 32:9.11.4-26.P2.amzn2.5.2     │ bind: Broken inbound incremental zone update (IXFR) can      │
+│                            │                │          │                               │                               │ cause named to terminate...                                  │
+│                            │                │          │                               │                               │ https://avd.aquasec.com/nvd/cve-2021-25214                   │
+├────────────────────────────┼────────────────┼──────────┤                               ├───────────────────────────────┼──────────────────────────────────────────────────────────────┤
+... 
+</code></pre></div>
+
+</details>
+
+<h3 id="aws-ec2">AWS EC2</h3>
+<p>See <a href="aws/">here</a> for the detail.</p>
+<h2 id="supported-architectures">Supported architectures</h2>
+<h3 id="virtual-machine-images">Virtual machine images</h3>
 <table>
 <thead>
 <tr>
-<th>NAME</th>
-<th>DESCRIPTION</th>
-<th></th>
+<th>Image format</th>
+<th align="center">Support</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td>Non-root containers</td>
-<td>Check that container is not running as root</td>
-<td></td>
+<td>VMDK</td>
+<td align="center">✔</td>
 </tr>
 <tr>
-<td>Immutable container file systems</td>
-<td>Check that container root file system is immutable</td>
-<td></td>
+<td>OVA</td>
+<td align="center"></td>
 </tr>
 <tr>
-<td>Preventing privileged containers</td>
-<td>Controls whether Pods can run privileged containers</td>
-<td></td>
+<td>VHD</td>
+<td align="center"></td>
 </tr>
 <tr>
-<td>Share containers process namespaces</td>
-<td>Controls whether containers can share process namespaces</td>
-<td></td>
+<td>VHDX</td>
+<td align="center"></td>
 </tr>
 <tr>
-<td>Share host process namespaces</td>
-<td>Controls whether share host process namespaces</td>
-<td></td>
-</tr>
-<tr>
-<td>Use the host network</td>
-<td>Controls whether containers can use the host network</td>
-<td></td>
-</tr>
-<tr>
-<td>Run with root privileges or with root group membership</td>
-<td>Controls whether container applications can run with <br/>root privileges or with root group membership</td>
-<td></td>
-</tr>
-<tr>
-<td>Restricts escalation to root privileges</td>
-<td>Control check restrictions escalation to root privileges</td>
-<td></td>
-</tr>
-<tr>
-<td>Sets the SELinux context of the container</td>
-<td>Control checks if pod sets the SELinux context of the container</td>
-<td></td>
-</tr>
-<tr>
-<td>Restrict a container's access to resources with AppArmor</td>
-<td>Control checks the restriction of containers access to resources with AppArmor</td>
-<td></td>
-</tr>
-<tr>
-<td>Sets the seccomp profile used to sandbox containers</td>
-<td>Control checks the sets the seccomp profile used to sandbox containers</td>
-<td></td>
-</tr>
-<tr>
-<td>Protecting Pod service account tokens</td>
-<td>Control check whether disable secret token been mount ,automountServiceAccountToken: false</td>
-<td></td>
-</tr>
-<tr>
-<td>Namespace kube-system should not be used by users</td>
-<td>Control check whether Namespace kube-system is not be used by users</td>
-<td></td>
-</tr>
-<tr>
-<td>Pod and/or namespace Selectors usage</td>
-<td>Control check validate the pod and/or namespace Selectors usage</td>
-<td></td>
-</tr>
-<tr>
-<td>Use CNI plugin that supports NetworkPolicy API</td>
-<td>Control check whether check cni plugin installed</td>
-<td></td>
-</tr>
-<tr>
-<td>Use ResourceQuota policies to limit resources</td>
-<td>Control check the use of ResourceQuota policy to limit aggregate resource usage within namespace</td>
-<td></td>
-</tr>
-<tr>
-<td>Use LimitRange policies to limit resources</td>
-<td>Control check the use of LimitRange policy limit resource usage for namespaces or nodes</td>
-<td></td>
-</tr>
-<tr>
-<td>Control plan disable insecure port</td>
-<td>Control check whether control plan disable insecure port</td>
-<td></td>
-</tr>
-<tr>
-<td>Encrypt etcd communication</td>
-<td>Control check whether etcd communication is encrypted</td>
-<td></td>
-</tr>
-<tr>
-<td>Ensure kube config file permission</td>
-<td>Control check whether kube config file permissions</td>
-<td></td>
-</tr>
-<tr>
-<td>Check that encryption resource has been set</td>
-<td>Control checks whether encryption resource has been set</td>
-<td></td>
-</tr>
-<tr>
-<td>Check encryption provider</td>
-<td>Control checks whether encryption provider has been set</td>
-<td></td>
-</tr>
-<tr>
-<td>Make sure anonymous-auth is unset</td>
-<td>Control checks whether anonymous-auth is unset</td>
-<td></td>
-</tr>
-<tr>
-<td>Make sure -authorization-mode=RBAC</td>
-<td>Control check whether RBAC permission is in use</td>
-<td></td>
-</tr>
-<tr>
-<td>Audit policy is configure</td>
-<td>Control check whether audit policy is configure</td>
-<td></td>
-</tr>
-<tr>
-<td>Audit log path is configure</td>
-<td>Control check whether audit log path is configure</td>
-<td></td>
-</tr>
-<tr>
-<td>Audit log aging</td>
-<td>Control check whether audit log aging is configure</td>
-<td></td>
+<td>QCOW2</td>
+<td align="center"></td>
 </tr>
 </tbody>
 </table>
-<h2 id="cli-commands">CLI Commands</h2>
-<p>Scan a full cluster and generate a complliance NSA summary report:</p>
-<div class="highlight"><pre><span></span><code>$ trivy k8s cluster --compliance=nsa --report summary
-</code></pre></div>
-<p><img alt="k8s Summary Report" src="../../../../imgs/trivy-nsa-summary.png" /></p>
-<p><strong><em>Note</em></strong> : The <code>Issues</code> column represent the total number of failed checks for this control.</p>
-<p>An additional report is supported to get all of the detail the output contains, use <code>--report all</code>
-<div class="highlight"><pre><span></span><code>$ trivy k8s cluster --compliance=nsa --report all
-</code></pre></div>
-Report also supported in json format examples :</p>
-<div class="highlight"><pre><span></span><code>$ trivy k8s cluster --compliance=nsa --report summary --format json
-</code></pre></div>
-<div class="highlight"><pre><span></span><code>$ trivy k8s cluster --compliance=nsa --report all --format json
-</code></pre></div>
-<h2 id="custom-compliance-report">Custom compliance report</h2>
-<p>The Trivy K8s CLI allows you to create a custom compliance specification and pass it to trivy for generating scan report .</p>
-<p>The report is generated based on scanning result mapping between users define controls and trivy checks ID.
-The supported checks are from two types and can be found at <a href="https://avd.aquasec.com/">Aqua vulnerability DB</a>:
-- <a href="https://avd.aquasec.com/misconfig/">misconfiguration</a>
-- <a href="https://avd.aquasec.com/nvd">vulnerabilities</a> </p>
-<h3 id="compliance-spec-format">Compliance spec format</h3>
-<p>The compliance spec file format should look as follow :</p>
-<div class="highlight"><pre><span></span><code><span class="nn">---</span><span class="w"></span>
-<span class="nt">spec</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;0001&quot;</span><span class="w"> </span><span class="c1"># report unique identifier</span><span class="w"></span>
-<span class="w">  </span><span class="nt">title</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">nsa</span><span class="w"> </span><span class="c1"># report title </span><span class="w"></span>
-<span class="w">  </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">National Security Agency - Kubernetes Hardening Guidance</span><span class="w"> </span><span class="c1"># description of the report</span><span class="w"></span>
-<span class="w">  </span><span class="nt">relatedResources </span><span class="p">:</span><span class="w"></span>
-<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">https://www.nsa.gov/Press-Room/News-Highlights/Article/Article/2716980/nsa-cisa-release-kubernetes-hardening-guidance/</span><span class="w"> </span><span class="c1"># reference is related to public or internal spec</span><span class="w"></span>
-<span class="w">  </span><span class="nt">version</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;1.0&quot;</span><span class="w"> </span><span class="c1"># spec version</span><span class="w"></span>
-<span class="w">  </span><span class="nt">controls</span><span class="p">:</span><span class="w"></span>
-<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Non-root containers</span><span class="w"> </span><span class="c1"># short control naming</span><span class="w"></span>
-<span class="w">      </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;Check</span><span class="nv"> </span><span class="s">that</span><span class="nv"> </span><span class="s">container</span><span class="nv"> </span><span class="s">is</span><span class="nv"> </span><span class="s">not</span><span class="nv"> </span><span class="s">running</span><span class="nv"> </span><span class="s">as</span><span class="nv"> </span><span class="s">root&#39;</span><span class="w"> </span><span class="c1"># long control description</span><span class="w"></span>
-<span class="w">      </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;1.0&#39;</span><span class="w"> </span><span class="c1"># control identifier </span><span class="w"></span>
-<span class="w">      </span><span class="nt">checks</span><span class="p">:</span><span class="w">   </span><span class="c1"># list of trivy checks which associated to control</span><span class="w"></span>
-<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">AVD-KSV-0012</span><span class="w"> </span><span class="c1"># check ID (midconfiguration ot vulnerability) must start with `AVD-` or `CVE-` </span><span class="w"></span>
-<span class="w">      </span><span class="nt">severity</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;MEDIUM&#39;</span><span class="w"> </span><span class="c1"># control severity</span><span class="w"></span>
-<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Immutable container file systems</span><span class="w"></span>
-<span class="w">      </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;Check</span><span class="nv"> </span><span class="s">that</span><span class="nv"> </span><span class="s">container</span><span class="nv"> </span><span class="s">root</span><span class="nv"> </span><span class="s">file</span><span class="nv"> </span><span class="s">system</span><span class="nv"> </span><span class="s">is</span><span class="nv"> </span><span class="s">immutable&#39;</span><span class="w"></span>
-<span class="w">      </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;1.1&#39;</span><span class="w"></span>
-<span class="w">      </span><span class="nt">checks</span><span class="p">:</span><span class="w"></span>
-<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">AVD-KSV-0014</span><span class="w"></span>
-<span class="w">      </span><span class="nt">severity</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;LOW&#39;</span><span class="w"></span>
-</code></pre></div>
-<h2 id="custom-report-cli-commands">Custom report CLI Commands</h2>
-<p>To generate the custom report, an custom spec file path should be passed to the <code>--compliance</code> flag with <code>@</code> prefix as follow:</p>
-<div class="highlight"><pre><span></span><code>$ trivy k8s cluster --compliance=@/spec/my_complaince.yaml --report summary
-</code></pre></div>
+<h4 id="vmdk-disk-types">VMDK disk types</h4>
+<table>
+<thead>
+<tr>
+<th>VMDK disk type</th>
+<th align="center">Support</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>streamOptimized</td>
+<td align="center">✔</td>
+</tr>
+<tr>
+<td>monolithicSparse</td>
+<td align="center"></td>
+</tr>
+<tr>
+<td>vmfs</td>
+<td align="center"></td>
+</tr>
+<tr>
+<td>vmfsSparse</td>
+<td align="center"></td>
+</tr>
+<tr>
+<td>twoGbMaxExtentSparse</td>
+<td align="center"></td>
+</tr>
+<tr>
+<td>monolithicFlat</td>
+<td align="center"></td>
+</tr>
+<tr>
+<td>twoGbMaxExtentFlat</td>
+<td align="center"></td>
+</tr>
+<tr>
+<td>vmfsRaw</td>
+<td align="center"></td>
+</tr>
+<tr>
+<td>fullDevice</td>
+<td align="center"></td>
+</tr>
+<tr>
+<td>partitionedDevice</td>
+<td align="center"></td>
+</tr>
+<tr>
+<td>vmfsRawDeviceMap</td>
+<td align="center"></td>
+</tr>
+<tr>
+<td>vmfsPassthroughRawDeviceMap</td>
+<td align="center"></td>
+</tr>
+</tbody>
+</table>
+<p>Reference: <a href="https://www.vmware.com/app/vmdk/?src=vmdk">VMware Virtual Disk Format 1.1.pdf</a></p>
+<h3 id="disk-partitions">Disk partitions</h3>
+<table>
+<thead>
+<tr>
+<th>Disk format</th>
+<th align="center">Support</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Master boot record (MBR)</td>
+<td align="center">✔</td>
+</tr>
+<tr>
+<td>Extended master boot record</td>
+<td align="center"></td>
+</tr>
+<tr>
+<td>GUID partition table (GPT)</td>
+<td align="center">✔</td>
+</tr>
+<tr>
+<td>Logical volume manager (LVM)</td>
+<td align="center"></td>
+</tr>
+</tbody>
+</table>
+<h3 id="filesystems">Filesystems</h3>
+<table>
+<thead>
+<tr>
+<th>Filesystem format</th>
+<th align="center">Support</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>XFS</td>
+<td align="center">✔</td>
+</tr>
+<tr>
+<td>EXT4</td>
+<td align="center">✔</td>
+</tr>
+<tr>
+<td>EXT2/3</td>
+<td align="center"></td>
+</tr>
+<tr>
+<td>ZFS</td>
+<td align="center"></td>
+</tr>
+</tbody>
+</table>
 
               
             </article>
@@ -3493,7 +3562,7 @@ The supported checks are from two types and can be found at <a href="https://avd
     <nav class="md-footer__inner md-grid" aria-label="Footer" >
       
         
-        <a href="../scanning/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Scanning" rel="prev">
+        <a href="../cloud/aws/scanning/" class="md-footer__link md-footer__link--prev" aria-label="Previous: AWS" rel="prev">
           <div class="md-footer__button md-icon">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
           </div>
@@ -3502,20 +3571,20 @@ The supported checks are from two types and can be found at <a href="https://avd
               <span class="md-footer__direction">
                 Previous
               </span>
-              Scanning
+              AWS
             </div>
           </div>
         </a>
       
       
         
-        <a href="../../operator/" class="md-footer__link md-footer__link--next" aria-label="Next: Overview" rel="next">
+        <a href="aws/" class="md-footer__link md-footer__link--next" aria-label="Next: AWS EC2" rel="next">
           <div class="md-footer__title">
             <div class="md-ellipsis">
               <span class="md-footer__direction">
                 Next
               </span>
-              Overview
+              AWS EC2
             </div>
           </div>
           <div class="md-footer__button md-icon">
@@ -3540,10 +3609,10 @@ The supported checks are from two types and can be found at <a href="https://avd
     <div class="md-dialog" data-md-component="dialog">
       <div class="md-dialog__inner md-typeset"></div>
     </div>
-    <script id="__config" type="application/json">{"base": "../../../..", "features": ["navigation.tabs", "navigation.tabs.sticky", "navigation.sections", "content.tabs.link"], "search": "../../../../assets/javascripts/workers/search.b97dbffb.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "version": {"method": "mike", "provider": "mike"}}</script>
+    <script id="__config" type="application/json">{"base": "../..", "features": ["navigation.tabs", "navigation.tabs.sticky", "navigation.sections", "content.tabs.link"], "search": "../../assets/javascripts/workers/search.b97dbffb.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "version": {"method": "mike", "provider": "mike"}}</script>
     
     
-      <script src="../../../../assets/javascripts/bundle.6c7ad80a.min.js"></script>
+      <script src="../../assets/javascripts/bundle.6c7ad80a.min.js"></script>
       
     
   </body>
