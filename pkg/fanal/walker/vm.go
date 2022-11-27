@@ -9,6 +9,7 @@ import (
 
 	"github.com/masahiro331/go-disk"
 	"github.com/masahiro331/go-disk/gpt"
+	"github.com/masahiro331/go-disk/mbr"
 	"github.com/masahiro331/go-disk/types"
 	"golang.org/x/exp/slices"
 	"golang.org/x/xerrors"
@@ -220,11 +221,9 @@ func shouldSkip(partition types.Partition) bool {
 
 	switch p := partition.(type) {
 	case *gpt.PartitionEntry:
-		guid := p.PartitionTypeGUID.String()
-		// Should not skip EFI System Partition (ESP).
-		if guid == gpt.MBR || guid == gpt.GrubBIOSBoot {
-			return true
-		}
+		return p.Bootable()
+	case *mbr.Partition:
+		return false
 	}
 	return false
 }
