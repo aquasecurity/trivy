@@ -2,7 +2,6 @@ package report
 
 import (
 	"fmt"
-
 	"html"
 	"io"
 	"regexp"
@@ -127,6 +126,7 @@ func (sw SarifWriter) Write(report types.Report) error {
 	sw.run.Tool.Driver.WithVersion(sw.Version)
 	sw.run.Tool.Driver.WithFullName("Trivy Vulnerability Scanner")
 
+	foundLocations := map[string][]location{}
 	ruleIndexes := map[string]int{}
 	for _, res := range report.Results {
 		target := ToPathUri(res.Target)
@@ -149,7 +149,7 @@ func (sw SarifWriter) Write(report types.Report) error {
 				resourceClass:    string(res.Class),
 				artifactLocation: path,
 				locationMessage:  fmt.Sprintf("%v: %v@%v", path, vuln.PkgName, vuln.InstalledVersion),
-				locations:        getLocations(vuln.PkgName, vuln.InstalledVersion, res.Packages),
+				locations:        getLocations(vuln.PkgName, vuln.InstalledVersion, path, foundLocations, res.Packages),
 				resultIndex:      getRuleIndex(vuln.VulnerabilityID, ruleIndexes),
 				shortDescription: html.EscapeString(vuln.Title),
 				fullDescription:  html.EscapeString(fullDescription),
@@ -216,13 +216,17 @@ func (sw SarifWriter) Write(report types.Report) error {
 
 func toSarifLocations(locations []location, artifactLocation, locationMessage string) []*sarif.Location {
 	var sarifLocs []*sarif.Location
+	// add default (hardcoded) location for vulnerabilities that don't support locations
+	if len(locations) == 0 {
+		locations = append(locations, location{startLine: 1, endLine: 1})
+	}
 
 	// some dependencies can be placed in multiple places.
 	// e.g.https://github.com/aquasecurity/go-dep-parser/pull/134#discussion_r985353240
 	// create locations for each place.
 
 	for _, l := range locations {
-		// location is missed. Use default (hardcoded) value
+		// location is missed. Use default (hardcoded) value (misconfigurations have this case)
 		if l.startLine == 0 && l.endLine == 0 {
 			l.startLine = 1
 			l.endLine = 1
@@ -234,14 +238,6 @@ func toSarifLocations(locations []location, artifactLocation, locationMessage st
 		sarifLocs = append(sarifLocs, sarif.NewLocation().WithMessage(sarif.NewTextMessage(locationMessage)).WithPhysicalLocation(loc))
 	}
 
-	// add default (hardcoded) location for vulnerabilities that don't support locations
-	if len(sarifLocs) == 0 {
-		region := sarif.NewRegion().WithStartLine(1).WithEndLine(1).WithStartColumn(1).WithEndColumn(1)
-		loc := sarif.NewPhysicalLocation().
-			WithArtifactLocation(sarif.NewSimpleArtifactLocation(artifactLocation).WithUriBaseId("ROOTPATH")).
-			WithRegion(region)
-		sarifLocs = append(sarifLocs, sarif.NewLocation().WithMessage(sarif.NewTextMessage(locationMessage)).WithPhysicalLocation(loc))
-	}
 	return sarifLocs
 }
 
@@ -286,18 +282,22 @@ func ToPathUri(input string) string {
 	return strings.ReplaceAll(input, "\\", "/")
 }
 
-func getLocations(name, version string, pkgs []ftypes.Package) []location {
-	var locations []location
-	for _, pkg := range pkgs {
-		if name == pkg.Name && version == pkg.Version {
-			for _, l := range pkg.Locations {
-				loc := location{startLine: l.StartLine, endLine: l.EndLine}
-				locations = append(locations, loc)
+func getLocations(name, version, path string, foundLocations map[string][]location, pkgs []ftypes.Package) []location {
+	id := fmt.Sprintf("%s@%s@%s", path, name, version)
+	locs, ok := foundLocations[id]
+	if !ok {
+		for _, pkg := range pkgs {
+			if name == pkg.Name && version == pkg.Version {
+				for _, l := range pkg.Locations {
+					loc := location{startLine: l.StartLine, endLine: l.EndLine}
+					locs = append(locs, loc)
+				}
+				foundLocations[id] = locs
+				return locs
 			}
-			return locations
 		}
 	}
-	return locations
+	return locs
 }
 
 func getCVSSScore(vuln types.DetectedVulnerability) string {

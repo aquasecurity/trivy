@@ -227,8 +227,9 @@ func (f *ReportFlagGroup) forceListAllPkgs(format string, listAllPkgs, dependenc
 		log.Logger.Debugf("%q automatically enables '--list-all-pkgs'.", report.SupportedSBOMFormats)
 		return true
 	}
+	// We need this flag to insert dependency locations into Sarif('Package' struct contains 'Locations')
 	if format == report.FormatSarif && !listAllPkgs {
-		log.Logger.Debugf("Sarif format automatically enables '--list-all-pkgs'. to get locations")
+		log.Logger.Debugf("Sarif format automatically enables '--list-all-pkgs' to get locations")
 		return true
 	}
 	if dependencyTree && !listAllPkgs {
