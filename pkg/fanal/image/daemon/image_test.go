@@ -328,6 +328,27 @@ func Test_image_emptyLayer(t *testing.T) {
 			},
 			want: false,
 		},
+		{
+			name: "ECHO",
+			history: dimage.HistoryResponseItem{
+				CreatedBy: "/bin/sh -c ECHO \"hello world\"",
+			},
+			want: true,
+		},
+		{
+			name: "echo",
+			history: dimage.HistoryResponseItem{
+				CreatedBy: "/bin/sh -c echo \"hello world\"",
+			},
+			want: true,
+		},
+		{
+			name: "buildkit echo",
+			history: dimage.HistoryResponseItem{
+				CreatedBy: "RUN /bin/sh -c ECHO \"hello world\"",
+			},
+			want: false,
+		},
 	}
 
 	for _, tt := range tests {

@@ -243,6 +243,12 @@ func emptyLayer(history dimage.HistoryResponseItem) bool {
 		strings.HasPrefix(createdBy, "ARG") {
 		return true
 	}
+	// For "echo" statements in the image creation (e.g. RUN echo "hello world"), docker treats the layer as empty,
+	// but podman and BUILDKIT mark it as non empty layer
+	// So this condition in the below conditional statement handles it for images built with docker
+	if strings.HasPrefix(strings.ToUpper(createdBy), "ECHO") {
+		return true
+	}
 	// buildkit layers with "WORKDIR /" command are empty,
 	if strings.HasPrefix(history.Comment, "buildkit.dockerfile") {
 		if createdBy == "WORKDIR /" {
