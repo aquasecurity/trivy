@@ -48,3 +48,9 @@ A terminal native UI for Trivy
 Web application that allows to load a Trivy report in json format and displays the vulnerabilities of a single target in an interactive data table
 
 👉 Get it at: <https://github.com/dbsystel/trivy-vulnerability-explorer>
+
+## Trivy pre-commit (Community)
+
+A trivy pre-commit hook that runs a `trivy fs` in your git repo before commiting, preventing you from commiting secrets in the first place.
+
+👉 Get it at: <https://github.com/mxab/pre-commit-trivy>
