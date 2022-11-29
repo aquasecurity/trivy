@@ -333,6 +333,7 @@ func TestAnalyzeFile(t *testing.T) {
 									"lib/libc.musl-x86_64.so.1",
 									"lib/ld-musl-x86_64.so.1",
 								},
+								Arch: "x86_64",
 							},
 						},
 					},

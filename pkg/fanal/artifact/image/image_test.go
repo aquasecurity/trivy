@@ -72,6 +72,7 @@ func TestArtifact_Inspect(t *testing.T) {
 				"var/spool/mail",
 				"var/spool/cron/crontabs",
 			},
+			Arch: "x86_64",
 		},
 		{
 			ID:   "alpine-keys@2.1-r2",
@@ -97,6 +98,7 @@ func TestArtifact_Inspect(t *testing.T) {
 				"usr/share/apk/keys/x86_64/alpine-devel@lists.alpinelinux.org-5261cecb.rsa.pub",
 				"usr/share/apk/keys/x86_64/alpine-devel@lists.alpinelinux.org-4a6a0840.rsa.pub",
 			},
+			Arch: "x86_64",
 		},
 		{
 			ID:   "apk-tools@2.10.4-r3",
@@ -111,6 +113,7 @@ func TestArtifact_Inspect(t *testing.T) {
 			SystemInstalledFiles: []string{
 				"sbin/apk",
 			},
+			Arch: "x86_64",
 		},
 		{
 			ID:   "busybox@1.31.1-r9",
@@ -128,6 +131,7 @@ func TestArtifact_Inspect(t *testing.T) {
 				"etc/network/if-up.d/dad",
 				"usr/share/udhcpc/default.script",
 			},
+			Arch: "x86_64",
 		},
 		{
 			ID:   "ca-certificates-cacert@20191127-r1",
@@ -135,6 +139,7 @@ func TestArtifact_Inspect(t *testing.T) {
 			SrcName: "ca-certificates", SrcVersion: "20191127-r1",
 			Licenses:             []string{"MPL-2.0", "GPL-2.0"},
 			SystemInstalledFiles: []string{"etc/ssl/cert.pem"},
+			Arch:                 "x86_64",
 		},
 		{
 			ID:   "libc-utils@0.7.2-r0",
@@ -144,6 +149,7 @@ func TestArtifact_Inspect(t *testing.T) {
 				"musl-utils@1.1.24-r2",
 			},
 			SystemInstalledFiles: []string{},
+			Arch:                 "x86_64",
 		},
 		{
 			ID:   "libcrypto1.1@1.1.1d-r3",
@@ -166,6 +172,7 @@ func TestArtifact_Inspect(t *testing.T) {
 				"usr/lib/engines-1.1/padlock.so",
 				"usr/lib/engines-1.1/afalg.so",
 			},
+			Arch: "x86_64",
 		},
 		{
 			ID:   "libssl1.1@1.1.1d-r3",
@@ -179,6 +186,7 @@ func TestArtifact_Inspect(t *testing.T) {
 				"lib/libssl.so.1.1",
 				"usr/lib/libssl.so.1.1",
 			},
+			Arch: "x86_64",
 		},
 		{
 			ID:   "libtls-standalone@2.9.1-r0",
@@ -195,6 +203,7 @@ func TestArtifact_Inspect(t *testing.T) {
 				"usr/lib/libtls-standalone.so.1.0.0",
 				"usr/lib/libtls-standalone.so.1",
 			},
+			Arch: "x86_64",
 		},
 		{
 			ID:   "musl@1.1.24-r2",
@@ -204,6 +213,7 @@ func TestArtifact_Inspect(t *testing.T) {
 				"lib/libc.musl-x86_64.so.1",
 				"lib/ld-musl-x86_64.so.1",
 			},
+			Arch: "x86_64",
 		},
 		{
 			ID:   "musl-utils@1.1.24-r2",
@@ -220,6 +230,7 @@ func TestArtifact_Inspect(t *testing.T) {
 				"usr/bin/getconf",
 				"usr/bin/getent",
 			},
+			Arch: "x86_64",
 		},
 		{
 			ID:   "scanelf@1.2.4-r0",
@@ -229,6 +240,7 @@ func TestArtifact_Inspect(t *testing.T) {
 				"musl@1.1.24-r2",
 			},
 			SystemInstalledFiles: []string{"usr/bin/scanelf"},
+			Arch:                 "x86_64",
 		},
 		{
 			ID:   "ssl_client@1.31.1-r9",
@@ -239,6 +251,7 @@ func TestArtifact_Inspect(t *testing.T) {
 				"musl@1.1.24-r2",
 			},
 			SystemInstalledFiles: []string{"usr/bin/ssl_client"},
+			Arch:                 "x86_64",
 		},
 		{
 			ID:   "zlib@1.2.11-r3",
@@ -251,6 +264,7 @@ func TestArtifact_Inspect(t *testing.T) {
 				"lib/libz.so.1.2.11",
 				"lib/libz.so.1",
 			},
+			Arch: "x86_64",
 		},
 	}
 

@@ -96,6 +96,8 @@ func (a alpinePkgAnalyzer) parseApkInfo(scanner *bufio.Scanner) ([]types.Package
 			a.parseProvides(line, pkg.ID, provides)
 		case "D:": // dependencies (corresponds to depend in PKGINFO, concatenated by spaces into a single line)
 			pkg.DependsOn = a.parseDependencies(line)
+		case "A:":
+			pkg.Arch = line[2:]
 		}
 
 		if pkg.Name != "" && pkg.Version != "" {

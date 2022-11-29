@@ -45,7 +45,7 @@ func TestArtifact_Inspect(t *testing.T) {
 			},
 			putBlobExpectation: cache.ArtifactCachePutBlobExpectation{
 				Args: cache.ArtifactCachePutBlobArgs{
-					BlobID: "sha256:1c55fd11998f095257f3dcd2d25b0858e3ebd7a4bfd6969a89a65f4043dc4a93",
+					BlobID: "sha256:cf2a5e49b637ace9ca353f87d0d8d4405a2d86961ed6d703c4c1a2fb8b7fbf1e",
 					BlobInfo: types.BlobInfo{
 						SchemaVersion: types.BlobJSONSchemaVersion,
 						OS: &types.OS{
@@ -64,6 +64,7 @@ func TestArtifact_Inspect(t *testing.T) {
 											"lib/libc.musl-x86_64.so.1",
 											"lib/ld-musl-x86_64.so.1",
 										},
+										Arch: "x86_64",
 									},
 								},
 							},
@@ -75,9 +76,9 @@ func TestArtifact_Inspect(t *testing.T) {
 			want: types.ArtifactReference{
 				Name: "host",
 				Type: types.ArtifactFilesystem,
-				ID:   "sha256:1c55fd11998f095257f3dcd2d25b0858e3ebd7a4bfd6969a89a65f4043dc4a93",
+				ID:   "sha256:cf2a5e49b637ace9ca353f87d0d8d4405a2d86961ed6d703c4c1a2fb8b7fbf1e",
 				BlobIDs: []string{
-					"sha256:1c55fd11998f095257f3dcd2d25b0858e3ebd7a4bfd6969a89a65f4043dc4a93",
+					"sha256:cf2a5e49b637ace9ca353f87d0d8d4405a2d86961ed6d703c4c1a2fb8b7fbf1e",
 				},
 			},
 		},
@@ -114,7 +115,7 @@ func TestArtifact_Inspect(t *testing.T) {
 			},
 			putBlobExpectation: cache.ArtifactCachePutBlobExpectation{
 				Args: cache.ArtifactCachePutBlobArgs{
-					BlobID: "sha256:1c55fd11998f095257f3dcd2d25b0858e3ebd7a4bfd6969a89a65f4043dc4a93",
+					BlobID: "sha256:cf2a5e49b637ace9ca353f87d0d8d4405a2d86961ed6d703c4c1a2fb8b7fbf1e",
 					BlobInfo: types.BlobInfo{
 						SchemaVersion: types.BlobJSONSchemaVersion,
 						OS: &types.OS{
@@ -133,6 +134,7 @@ func TestArtifact_Inspect(t *testing.T) {
 											"lib/libc.musl-x86_64.so.1",
 											"lib/ld-musl-x86_64.so.1",
 										},
+										Arch: "x86_64",
 									},
 								},
 							},
