@@ -66,6 +66,29 @@ func TestNewArtifact(t *testing.T) {
 	}
 }
 
+type testMockArtifactCache struct {
+	*cache.MockArtifactCache
+	testInstalledFiles bool
+}
+
+func (t *testMockArtifactCache) PutBlob(blobID string, blobInfo types.BlobInfo) (err error) {
+	for i, pkgInfo := range blobInfo.PackageInfos {
+		for j := range pkgInfo.Packages {
+			if !t.testInstalledFiles || j > 0 {
+				blobInfo.PackageInfos[i].Packages[j].SystemInstalledFiles = nil
+			}
+		}
+	}
+	return t.MockArtifactCache.PutBlob(blobID, blobInfo)
+}
+
+func newTestMockArtifactCache(testInstalledFiles bool) *testMockArtifactCache {
+	return &testMockArtifactCache{
+		testInstalledFiles: testInstalledFiles,
+		MockArtifactCache:  new(cache.MockArtifactCache),
+	}
+}
+
 func TestArtifact_Inspect(t *testing.T) {
 	tests := []struct {
 		name                    string
@@ -79,13 +102,14 @@ func TestArtifact_Inspect(t *testing.T) {
 		putArtifactExpectations []cache.ArtifactCachePutArtifactExpectation
 		want                    types.ArtifactReference
 		wantErr                 string
+		testInstalledFiles      bool
 	}{
 		{
 			name:     "happy path for raw image",
 			filePath: "testdata/AmazonLinux2.img.gz",
 			putBlobExpectation: cache.ArtifactCachePutBlobExpectation{
 				Args: cache.ArtifactCachePutBlobArgs{
-					BlobID: "sha256:d59c327eb3a3c71c8728f5e3d597b1c5dbf25adb54d7e9237a0f1c8a495032d6",
+					BlobID: "sha256:d583caa560597f02936de6b46cd1c10c56523e0ed641efc72ac369893321a616",
 					BlobInfo: types.BlobInfo{
 						SchemaVersion: types.BlobJSONSchemaVersion,
 						OS: &types.OS{
@@ -105,7 +129,7 @@ func TestArtifact_Inspect(t *testing.T) {
 			putArtifactExpectations: []cache.ArtifactCachePutArtifactExpectation{
 				{
 					Args: cache.ArtifactCachePutArtifactArgs{
-						ArtifactID: "sha256:d59c327eb3a3c71c8728f5e3d597b1c5dbf25adb54d7e9237a0f1c8a495032d6",
+						ArtifactID: "sha256:d583caa560597f02936de6b46cd1c10c56523e0ed641efc72ac369893321a616",
 						ArtifactInfo: types.ArtifactInfo{
 							SchemaVersion: types.ArtifactJSONSchemaVersion,
 						},
@@ -116,11 +140,12 @@ func TestArtifact_Inspect(t *testing.T) {
 			want: types.ArtifactReference{
 				Name: "testdata/AmazonLinux2.img.gz",
 				Type: types.ArtifactVM,
-				ID:   "sha256:d59c327eb3a3c71c8728f5e3d597b1c5dbf25adb54d7e9237a0f1c8a495032d6",
+				ID:   "sha256:d583caa560597f02936de6b46cd1c10c56523e0ed641efc72ac369893321a616",
 				BlobIDs: []string{
-					"sha256:d59c327eb3a3c71c8728f5e3d597b1c5dbf25adb54d7e9237a0f1c8a495032d6",
+					"sha256:d583caa560597f02936de6b46cd1c10c56523e0ed641efc72ac369893321a616",
 				},
 			},
+			testInstalledFiles: true,
 		},
 		{
 			name:     "happy path for ebs",
@@ -172,7 +197,7 @@ func TestArtifact_Inspect(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			c := new(cache.MockArtifactCache)
+			c := newTestMockArtifactCache(tt.testInstalledFiles)
 			c.ApplyPutBlobExpectation(tt.putBlobExpectation)
 			c.ApplyMissingBlobsExpectation(tt.missingBlobsExpectation)
 			c.ApplyPutArtifactExpectations(tt.putArtifactExpectations)
@@ -198,6 +223,7 @@ func TestArtifact_Inspect(t *testing.T) {
 				assert.ErrorContains(t, err, tt.wantErr)
 				return
 			}
+
 			tt.want.Name = trimPrefix(filePath)
 			require.NoError(t, err)
 			assert.Equal(t, tt.want, got)
@@ -243,7 +269,39 @@ $ losetup -d /dev/loop5
 
 var expectPackages = []types.Package{
 	{ID: "amazon-linux-extras@1.6.7-1.amzn2.noarch", Name: "amazon-linux-extras", Version: "1.6.7", Release: "1.amzn2", Arch: "noarch", SrcName: "amazon-linux-extras", SrcVersion: "1.6.7",
-		SrcRelease: "1.amzn2", Epoch: 0, SrcEpoch: 0, Maintainer: "Amazon Linux", Layer: types.Layer{}, Licenses: []string{"GPLv2"}, DependsOn: []string{"bash@4.2.46-30.amzn2.x86_64", "coreutils@8.22-21.amzn2.x86_64", "python@2.7.14-58.amzn2.0.4.x86_64", "system-release@2-10.amzn2.x86_64"}},
+		SrcRelease: "1.amzn2", Epoch: 0, SrcEpoch: 0, Maintainer: "Amazon Linux", Layer: types.Layer{}, Licenses: []string{"GPLv2"}, DependsOn: []string{"bash@4.2.46-30.amzn2.x86_64", "coreutils@8.22-21.amzn2.x86_64", "python@2.7.14-58.amzn2.0.4.x86_64", "system-release@2-10.amzn2.x86_64"},
+		SystemInstalledFiles: []string{
+			"/etc/update-motd.d/50-amazon-linux-extras-news",
+			"/usr/bin/amazon-linux-extras",
+			"/usr/lib/python2.7/site-packages/amazon_linux_extras",
+			"/usr/lib/python2.7/site-packages/amazon_linux_extras-1.6.7-py2.7.egg-info",
+			"/usr/lib/python2.7/site-packages/amazon_linux_extras-1.6.7-py2.7.egg-info/PKG-INFO",
+			"/usr/lib/python2.7/site-packages/amazon_linux_extras-1.6.7-py2.7.egg-info/SOURCES.txt",
+			"/usr/lib/python2.7/site-packages/amazon_linux_extras-1.6.7-py2.7.egg-info/dependency_links.txt",
+			"/usr/lib/python2.7/site-packages/amazon_linux_extras-1.6.7-py2.7.egg-info/top_level.txt",
+			"/usr/lib/python2.7/site-packages/amazon_linux_extras/__init__.py",
+			"/usr/lib/python2.7/site-packages/amazon_linux_extras/__init__.pyc",
+			"/usr/lib/python2.7/site-packages/amazon_linux_extras/__init__.pyo",
+			"/usr/lib/python2.7/site-packages/amazon_linux_extras/__main__.py",
+			"/usr/lib/python2.7/site-packages/amazon_linux_extras/__main__.pyc",
+			"/usr/lib/python2.7/site-packages/amazon_linux_extras/__main__.pyo",
+			"/usr/lib/python2.7/site-packages/amazon_linux_extras/cli.py",
+			"/usr/lib/python2.7/site-packages/amazon_linux_extras/cli.pyc",
+			"/usr/lib/python2.7/site-packages/amazon_linux_extras/cli.pyo",
+			"/usr/lib/python2.7/site-packages/amazon_linux_extras/repo.py",
+			"/usr/lib/python2.7/site-packages/amazon_linux_extras/repo.pyc",
+			"/usr/lib/python2.7/site-packages/amazon_linux_extras/repo.pyo",
+			"/usr/lib/python2.7/site-packages/amazon_linux_extras/software_catalog.py",
+			"/usr/lib/python2.7/site-packages/amazon_linux_extras/software_catalog.pyc",
+			"/usr/lib/python2.7/site-packages/amazon_linux_extras/software_catalog.pyo",
+			"/usr/share/doc/amazon-linux-extras-1.6.7",
+			"/usr/share/doc/amazon-linux-extras-1.6.7/README",
+			"/usr/share/locale/es/LC_MESSAGES/amazon_linux_extras.mo",
+			"/usr/share/locale/nl/LC_MESSAGES/amazon_linux_extras.mo",
+			"/usr/share/locale/zh/LC_MESSAGES/amazon_linux_extras.mo",
+			"/usr/share/man/man1/amazon-linux-extras.1.gz",
+		},
+	},
 	{ID: "basesystem@10.0-7.amzn2.0.1.noarch", Name: "basesystem", Version: "10.0", Release: "7.amzn2.0.1", Arch: "noarch", SrcName: "basesystem", SrcVersion: "10.0",
 		SrcRelease: "7.amzn2.0.1", Epoch: 0, SrcEpoch: 0, Maintainer: "Amazon Linux", Layer: types.Layer{}, Licenses: []string{"Public Domain"}, DependsOn: []string{"filesystem@3.2-25.amzn2.0.4.x86_64", "setup@2.8.71-10.amzn2.noarch"}},
 	{ID: "bash@4.2.46-30.amzn2.x86_64", Name: "bash", Version: "4.2.46", Release: "30.amzn2", Arch: "x86_64", SrcName: "bash", SrcVersion: "4.2.46",

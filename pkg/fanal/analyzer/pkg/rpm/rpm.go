@@ -101,7 +101,7 @@ func (a rpmPkgAnalyzer) parsePkgInfo(rc io.Reader) ([]types.Package, map[string]
 	}
 
 	var pkgs []types.Package
-	installedFiles := map[string][]string, len(pkgList){}
+	installedFiles := map[string][]string{}
 	provides := map[string]string{}
 	for _, pkg := range pkgList {
 		arch := pkg.Arch
@@ -130,20 +130,20 @@ func (a rpmPkgAnalyzer) parsePkgInfo(rc io.Reader) ([]types.Package, map[string]
 		}
 
 		p := types.Package{
-			ID:              fmt.Sprintf("%s@%s-%s.%s", pkg.Name, pkg.Version, pkg.Release, pkg.Arch),
-			Name:            pkg.Name,
-			Epoch:           pkg.EpochNum(),
-			Version:         pkg.Version,
-			Release:         pkg.Release,
-			Arch:            arch,
-			SrcName:         srcName,
-			SrcEpoch:        pkg.EpochNum(), // NOTE: use epoch of binary package as epoch of src package
-			SrcVersion:      srcVer,
-			SrcRelease:      srcRel,
-			Modularitylabel: pkg.Modularitylabel,
-			Licenses:        []string{pkg.License},
-			DependsOn:       pkg.Requires, // Will be replaced with package IDs
-			Maintainer:      pkg.Vendor,
+			ID:                   fmt.Sprintf("%s@%s-%s.%s", pkg.Name, pkg.Version, pkg.Release, pkg.Arch),
+			Name:                 pkg.Name,
+			Epoch:                pkg.EpochNum(),
+			Version:              pkg.Version,
+			Release:              pkg.Release,
+			Arch:                 arch,
+			SrcName:              srcName,
+			SrcEpoch:             pkg.EpochNum(), // NOTE: use epoch of binary package as epoch of src package
+			SrcVersion:           srcVer,
+			SrcRelease:           srcRel,
+			Modularitylabel:      pkg.Modularitylabel,
+			Licenses:             []string{pkg.License},
+			DependsOn:            pkg.Requires, // Will be replaced with package IDs
+			Maintainer:           pkg.Vendor,
 			SystemInstalledFiles: files,
 		}
 

@@ -22,24 +22,26 @@ func Test_systemFileFilterHook_Hook(t *testing.T) {
 		{
 			name: "happy path",
 			result: &analyzer.AnalysisResult{
-				SystemInstalledFiles: []string{
-					"/",
-					"/usr/bin/pydoc",
-					"/usr/bin/python",
-					"/usr/bin/python2",
-					"/usr/bin/python2.7",
-					"/usr/libexec/platform-python",
-					"/usr/share/doc/python-2.7.5",
-					"/usr/share/doc/python-2.7.5/LICENSE",
-					"/usr/share/doc/python-2.7.5/README",
-					"/usr/share/man/man1/python.1.gz",
-					"/usr/share/man/man1/python2.1.gz",
-					"/usr/share/man/man1/python2.7.1.gz",
-					"/usr/lib64/python2.7/distutils/command/install_egg_info.py",
-					"/usr/lib64/python2.7/distutils/command/install_egg_info.pyc",
-					"/usr/lib64/python2.7/distutils/command/install_egg_info.pyo",
-					"/usr/lib64/python2.7/lib-dynload/Python-2.7.5-py2.7.egg-info",
-					"usr/lib64/python2.7/wsgiref.egg-info", // without the leading slash
+				SystemInstalledFiles: map[string][]string{
+					"python2.7": {
+						"/",
+						"/usr/bin/pydoc",
+						"/usr/bin/python",
+						"/usr/bin/python2",
+						"/usr/bin/python2.7",
+						"/usr/libexec/platform-python",
+						"/usr/share/doc/python-2.7.5",
+						"/usr/share/doc/python-2.7.5/LICENSE",
+						"/usr/share/doc/python-2.7.5/README",
+						"/usr/share/man/man1/python.1.gz",
+						"/usr/share/man/man1/python2.1.gz",
+						"/usr/share/man/man1/python2.7.1.gz",
+						"/usr/lib64/python2.7/distutils/command/install_egg_info.py",
+						"/usr/lib64/python2.7/distutils/command/install_egg_info.pyc",
+						"/usr/lib64/python2.7/distutils/command/install_egg_info.pyo",
+						"/usr/lib64/python2.7/lib-dynload/Python-2.7.5-py2.7.egg-info",
+						"usr/lib64/python2.7/wsgiref.egg-info", // without the leading slash
+					},
 				},
 			},
 			blob: &types.BlobInfo{
@@ -201,8 +203,10 @@ func Test_systemFileFilterHook_Hook(t *testing.T) {
 		{
 			name: "go binaries",
 			result: &analyzer.AnalysisResult{
-				SystemInstalledFiles: []string{
-					"usr/local/bin/goreleaser",
+				SystemInstalledFiles: map[string][]string{
+					"github.com/goreleaser/goreleaser": {
+						"usr/local/bin/goreleaser",
+					},
 				},
 			},
 			blob: &types.BlobInfo{
@@ -224,8 +228,10 @@ func Test_systemFileFilterHook_Hook(t *testing.T) {
 		{
 			name: "Rust will not be skipped",
 			result: &analyzer.AnalysisResult{
-				SystemInstalledFiles: []string{
-					"app/Cargo.lock",
+				SystemInstalledFiles: map[string][]string{
+					"Cargo": {
+						"app/Cargo.lock",
+					},
 				},
 			},
 			blob: &types.BlobInfo{

@@ -41,6 +41,7 @@ func Test_dpkgAnalyzer_Analyze(t *testing.T) {
 									"passwd@1:4.5-1ubuntu1",
 								},
 								Maintainer: "Ubuntu Core Developers <ubuntu-devel-discuss@lists.ubuntu.com>",
+								Arch:       "all",
 							},
 							{
 								ID:         "apt@1.6.3ubuntu0.1",
@@ -60,6 +61,7 @@ func Test_dpkgAnalyzer_Analyze(t *testing.T) {
 									"ubuntu-keyring@2018.02.28",
 								},
 								Maintainer: "Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>",
+								Arch:       "amd64",
 							},
 							{
 								ID:         "base-files@10.1ubuntu2.2",
@@ -68,6 +70,7 @@ func Test_dpkgAnalyzer_Analyze(t *testing.T) {
 								SrcName:    "base-files",
 								SrcVersion: "10.1ubuntu2.2",
 								Maintainer: "Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>",
+								Arch:       "amd64",
 							},
 							{
 								ID:         "base-passwd@3.5.44",
@@ -80,6 +83,7 @@ func Test_dpkgAnalyzer_Analyze(t *testing.T) {
 									"libdebconfclient0@0.213ubuntu1",
 								},
 								Maintainer: "Colin Watson <cjwatson@debian.org>",
+								Arch:       "amd64",
 							},
 							{
 								ID:         "bash@4.4.18-2ubuntu1",
@@ -92,6 +96,7 @@ func Test_dpkgAnalyzer_Analyze(t *testing.T) {
 									"debianutils@4.8.4",
 								},
 								Maintainer: "Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>",
+								Arch:       "amd64",
 							},
 							{
 								ID:         "bsdutils@1:2.31.1-0.4ubuntu3.1",
@@ -100,6 +105,7 @@ func Test_dpkgAnalyzer_Analyze(t *testing.T) {
 								SrcName:    "util-linux",
 								SrcVersion: "2.31.1-0.4ubuntu3.1",
 								Maintainer: "Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>",
+								Arch:       "amd64",
 							},
 							{
 								ID:         "bzip2@1.0.6-8.1",
@@ -112,6 +118,7 @@ func Test_dpkgAnalyzer_Analyze(t *testing.T) {
 									"libc6@2.27-3ubuntu1",
 								},
 								Maintainer: "Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>",
+								Arch:       "amd64",
 							},
 							{
 								ID:         "coreutils@8.28-1ubuntu1",
@@ -120,6 +127,7 @@ func Test_dpkgAnalyzer_Analyze(t *testing.T) {
 								SrcName:    "coreutils",
 								SrcVersion: "8.28-1ubuntu1",
 								Maintainer: "Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>",
+								Arch:       "amd64",
 							},
 							{
 								ID:         "dash@0.5.8-2.10",
@@ -132,6 +140,7 @@ func Test_dpkgAnalyzer_Analyze(t *testing.T) {
 									"dpkg@1.19.0.5ubuntu2",
 								},
 								Maintainer: "Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>",
+								Arch:       "amd64",
 							},
 							{ID: "debconf@1.5.66",
 								Name:       "debconf",
@@ -139,6 +148,7 @@ func Test_dpkgAnalyzer_Analyze(t *testing.T) {
 								SrcName:    "debconf",
 								SrcVersion: "1.5.66",
 								Maintainer: "Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>",
+								Arch:       "all",
 							},
 							{
 								ID:         "debianutils@4.8.4",
@@ -147,6 +157,7 @@ func Test_dpkgAnalyzer_Analyze(t *testing.T) {
 								SrcName:    "debianutils",
 								SrcVersion: "4.8.4",
 								Maintainer: "Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>",
+								Arch:       "amd64",
 							},
 							{
 								ID:         "diffutils@1:3.6-1",
@@ -155,6 +166,7 @@ func Test_dpkgAnalyzer_Analyze(t *testing.T) {
 								SrcName:    "diffutils",
 								SrcVersion: "1:3.6-1",
 								Maintainer: "Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>",
+								Arch:       "amd64",
 							},
 							{
 								ID:         "dpkg@1.19.0.5ubuntu2",
@@ -164,6 +176,7 @@ func Test_dpkgAnalyzer_Analyze(t *testing.T) {
 								SrcVersion: "1.19.0.5ubuntu2",
 								DependsOn:  []string{"tar@1.29b-2"},
 								Maintainer: "Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>",
+								Arch:       "amd64",
 							},
 							{
 								ID:         "e2fsprogs@1.44.1-1",
@@ -172,6 +185,7 @@ func Test_dpkgAnalyzer_Analyze(t *testing.T) {
 								SrcName:    "e2fsprogs",
 								SrcVersion: "1.44.1-1",
 								Maintainer: "Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>",
+								Arch:       "amd64",
 							},
 							{
 								ID:         "fdisk@2.31.1-0.4ubuntu3.1",
@@ -188,6 +202,7 @@ func Test_dpkgAnalyzer_Analyze(t *testing.T) {
 									"libtinfo5@6.1-1ubuntu1.18.04",
 								},
 								Maintainer: "Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>",
+								Arch:       "amd64",
 							},
 							{
 								ID:         "findutils@4.6.0+git+20170828-2",
@@ -196,6 +211,7 @@ func Test_dpkgAnalyzer_Analyze(t *testing.T) {
 								SrcName:    "findutils",
 								SrcVersion: "4.6.0+git+20170828-2",
 								Maintainer: "Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>",
+								Arch:       "amd64",
 							},
 							{
 								ID:         "gcc-8-base@8-20180414-1ubuntu2",
@@ -204,6 +220,7 @@ func Test_dpkgAnalyzer_Analyze(t *testing.T) {
 								SrcName:    "gcc-8",
 								SrcVersion: "8-20180414-1ubuntu2",
 								Maintainer: "Ubuntu Core developers <ubuntu-devel-discuss@lists.ubuntu.com>",
+								Arch:       "amd64",
 							},
 							{
 								ID:         "gpgv@2.2.4-1ubuntu1.1",
@@ -219,6 +236,7 @@ func Test_dpkgAnalyzer_Analyze(t *testing.T) {
 									"zlib1g@1:1.2.11.dfsg-0ubuntu2",
 								},
 								Maintainer: "Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>",
+								Arch:       "amd64",
 							},
 							{
 								ID:         "grep@3.1-2",
@@ -228,6 +246,7 @@ func Test_dpkgAnalyzer_Analyze(t *testing.T) {
 								SrcVersion: "3.1-2",
 								DependsOn:  []string{"dpkg@1.19.0.5ubuntu2"},
 								Maintainer: "Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>",
+								Arch:       "amd64",
 							},
 							{
 								ID:         "gzip@1.6-5ubuntu1",
@@ -237,6 +256,7 @@ func Test_dpkgAnalyzer_Analyze(t *testing.T) {
 								SrcVersion: "1.6-5ubuntu1",
 								DependsOn:  []string{"dpkg@1.19.0.5ubuntu2"},
 								Maintainer: "Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>",
+								Arch:       "amd64",
 							},
 							{
 								ID:         "hostname@3.20",
@@ -245,6 +265,7 @@ func Test_dpkgAnalyzer_Analyze(t *testing.T) {
 								SrcName:    "hostname",
 								SrcVersion: "3.20",
 								Maintainer: "Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>",
+								Arch:       "amd64",
 							},
 							{
 								ID:         "init-system-helpers@1.51",
@@ -254,6 +275,7 @@ func Test_dpkgAnalyzer_Analyze(t *testing.T) {
 								SrcVersion: "1.51",
 								DependsOn:  []string{"perl-base@5.26.1-6ubuntu0.2"},
 								Maintainer: "Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>",
+								Arch:       "all",
 							},
 							{
 								ID:         "libacl1@2.2.52-3build1",
@@ -266,6 +288,7 @@ func Test_dpkgAnalyzer_Analyze(t *testing.T) {
 									"libc6@2.27-3ubuntu1",
 								},
 								Maintainer: "Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>",
+								Arch:       "amd64",
 							},
 							{
 								ID:         "libapt-pkg5.0@1.6.3ubuntu0.1",
@@ -285,6 +308,7 @@ func Test_dpkgAnalyzer_Analyze(t *testing.T) {
 									"zlib1g@1:1.2.11.dfsg-0ubuntu2",
 								},
 								Maintainer: "Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>",
+								Arch:       "amd64",
 							},
 							{
 								ID:         "libattr1@1:2.4.47-2build1",
@@ -294,6 +318,7 @@ func Test_dpkgAnalyzer_Analyze(t *testing.T) {
 								SrcVersion: "1:2.4.47-2build1",
 								DependsOn:  []string{"libc6@2.27-3ubuntu1"},
 								Maintainer: "Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>",
+								Arch:       "amd64",
 							},
 							{
 								ID:         "libaudit-common@1:2.8.2-1ubuntu1",
@@ -302,6 +327,7 @@ func Test_dpkgAnalyzer_Analyze(t *testing.T) {
 								SrcName:    "audit",
 								SrcVersion: "1:2.8.2-1ubuntu1",
 								Maintainer: "Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>",
+								Arch:       "all",
 							},
 							{
 								ID:         "libaudit1@1:2.8.2-1ubuntu1",
@@ -313,6 +339,7 @@ func Test_dpkgAnalyzer_Analyze(t *testing.T) {
 									"libc6@2.27-3ubuntu1",
 									"libcap-ng0@0.7.7-3.1"},
 								Maintainer: "Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>",
+								Arch:       "amd64",
 							},
 							{
 								ID:         "libblkid1@2.31.1-0.4ubuntu3.1",
@@ -323,6 +350,7 @@ func Test_dpkgAnalyzer_Analyze(t *testing.T) {
 								DependsOn: []string{"libc6@2.27-3ubuntu1",
 									"libuuid1@2.31.1-0.4ubuntu3.1"},
 								Maintainer: "Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>",
+								Arch:       "amd64",
 							},
 							{
 								ID:         "libbz2-1.0@1.0.6-8.1",
@@ -332,6 +360,7 @@ func Test_dpkgAnalyzer_Analyze(t *testing.T) {
 								SrcVersion: "1.0.6-8.1",
 								DependsOn:  []string{"libc6@2.27-3ubuntu1"},
 								Maintainer: "Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>",
+								Arch:       "amd64",
 							},
 							{
 								ID:         "libc-bin@2.27-3ubuntu1",
@@ -342,6 +371,7 @@ func Test_dpkgAnalyzer_Analyze(t *testing.T) {
 								DependsOn: []string{"libc6@2.27-3ubuntu1",
 									"libc6@2.27-3ubuntu1"},
 								Maintainer: "Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>",
+								Arch:       "amd64",
 							},
 							{
 								ID:         "libc6@2.27-3ubuntu1",
@@ -351,6 +381,7 @@ func Test_dpkgAnalyzer_Analyze(t *testing.T) {
 								SrcVersion: "2.27-3ubuntu1",
 								DependsOn:  []string{"libgcc1@1:8-20180414-1ubuntu2"},
 								Maintainer: "Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>",
+								Arch:       "amd64",
 							},
 							{
 								ID:         "libcap-ng0@0.7.7-3.1",
@@ -360,6 +391,7 @@ func Test_dpkgAnalyzer_Analyze(t *testing.T) {
 								SrcVersion: "0.7.7-3.1",
 								DependsOn:  []string{"libc6@2.27-3ubuntu1"},
 								Maintainer: "Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>",
+								Arch:       "amd64",
 							},
 							{
 								ID:         "libcom-err2@1.44.1-1",
@@ -369,6 +401,7 @@ func Test_dpkgAnalyzer_Analyze(t *testing.T) {
 								SrcVersion: "1.44.1-1",
 								DependsOn:  []string{"libc6@2.27-3ubuntu1"},
 								Maintainer: "Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>",
+								Arch:       "amd64",
 							},
 							{
 								ID:         "libdb5.3@5.3.28-13.1ubuntu1",
@@ -378,6 +411,7 @@ func Test_dpkgAnalyzer_Analyze(t *testing.T) {
 								SrcVersion: "5.3.28-13.1ubuntu1",
 								DependsOn:  []string{"libc6@2.27-3ubuntu1"},
 								Maintainer: "Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>",
+								Arch:       "amd64",
 							},
 							{
 								ID:         "libdebconfclient0@0.213ubuntu1",
@@ -387,6 +421,7 @@ func Test_dpkgAnalyzer_Analyze(t *testing.T) {
 								SrcVersion: "0.213ubuntu1",
 								DependsOn:  []string{"libc6@2.27-3ubuntu1"},
 								Maintainer: "Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>",
+								Arch:       "amd64",
 							},
 							{
 								ID:         "libext2fs2@1.44.1-1",
@@ -396,6 +431,7 @@ func Test_dpkgAnalyzer_Analyze(t *testing.T) {
 								SrcVersion: "1.44.1-1",
 								DependsOn:  []string{"libc6@2.27-3ubuntu1"},
 								Maintainer: "Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>",
+								Arch:       "amd64",
 							},
 							{
 								ID:         "libfdisk1@2.31.1-0.4ubuntu3.1",
@@ -407,6 +443,7 @@ func Test_dpkgAnalyzer_Analyze(t *testing.T) {
 									"libc6@2.27-3ubuntu1",
 									"libuuid1@2.31.1-0.4ubuntu3.1"},
 								Maintainer: "Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>",
+								Arch:       "amd64",
 							},
 							{
 								ID:         "libffi6@3.2.1-8",
@@ -416,6 +453,7 @@ func Test_dpkgAnalyzer_Analyze(t *testing.T) {
 								SrcVersion: "3.2.1-8",
 								DependsOn:  []string{"libc6@2.27-3ubuntu1"},
 								Maintainer: "Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>",
+								Arch:       "amd64",
 							},
 							{
 								ID:         "libgcc1@1:8-20180414-1ubuntu2",
@@ -426,6 +464,7 @@ func Test_dpkgAnalyzer_Analyze(t *testing.T) {
 								DependsOn: []string{"gcc-8-base@8-20180414-1ubuntu2",
 									"libc6@2.27-3ubuntu1"},
 								Maintainer: "Ubuntu Core developers <ubuntu-devel-discuss@lists.ubuntu.com>",
+								Arch:       "amd64",
 							},
 							{
 								ID:         "libgcrypt20@1.8.1-4ubuntu1.1",
@@ -436,6 +475,7 @@ func Test_dpkgAnalyzer_Analyze(t *testing.T) {
 								DependsOn: []string{"libc6@2.27-3ubuntu1",
 									"libgpg-error0@1.27-6"},
 								Maintainer: "Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>",
+								Arch:       "amd64",
 							},
 							{
 								ID:         "libgmp10@2:6.1.2+dfsg-2",
@@ -445,6 +485,7 @@ func Test_dpkgAnalyzer_Analyze(t *testing.T) {
 								SrcVersion: "2:6.1.2+dfsg-2",
 								DependsOn:  []string{"libc6@2.27-3ubuntu1"},
 								Maintainer: "Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>",
+								Arch:       "amd64",
 							},
 							{
 								ID:         "libgnutls30@3.5.18-1ubuntu1",
@@ -462,6 +503,7 @@ func Test_dpkgAnalyzer_Analyze(t *testing.T) {
 									"libunistring2@0.9.9-0ubuntu1",
 									"zlib1g@1:1.2.11.dfsg-0ubuntu2"},
 								Maintainer: "Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>",
+								Arch:       "amd64",
 							},
 							{
 								ID:         "libgpg-error0@1.27-6",
@@ -471,6 +513,7 @@ func Test_dpkgAnalyzer_Analyze(t *testing.T) {
 								SrcVersion: "1.27-6",
 								DependsOn:  []string{"libc6@2.27-3ubuntu1"},
 								Maintainer: "Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>",
+								Arch:       "amd64",
 							},
 							{
 								ID:         "libhogweed4@3.4-1",
@@ -482,6 +525,7 @@ func Test_dpkgAnalyzer_Analyze(t *testing.T) {
 									"libgmp10@2:6.1.2+dfsg-2",
 									"libnettle6@3.4-1"},
 								Maintainer: "Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>",
+								Arch:       "amd64",
 							},
 							{
 								ID:         "libidn2-0@2.0.4-1.1build2",
@@ -492,6 +536,7 @@ func Test_dpkgAnalyzer_Analyze(t *testing.T) {
 								DependsOn: []string{"libc6@2.27-3ubuntu1",
 									"libunistring2@0.9.9-0ubuntu1"},
 								Maintainer: "Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>",
+								Arch:       "amd64",
 							},
 							{
 								ID:         "liblz4-1@0.0~r131-2ubuntu3",
@@ -501,6 +546,7 @@ func Test_dpkgAnalyzer_Analyze(t *testing.T) {
 								SrcVersion: "0.0~r131-2ubuntu3",
 								DependsOn:  []string{"libc6@2.27-3ubuntu1"},
 								Maintainer: "Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>",
+								Arch:       "amd64",
 							},
 							{
 								ID:         "liblzma5@5.1.1alpha+20120614-2+b3",
@@ -510,6 +556,7 @@ func Test_dpkgAnalyzer_Analyze(t *testing.T) {
 								SrcVersion: "5.1.1alpha+20120614-2",
 								DependsOn:  []string{"libc6@2.27-3ubuntu1"},
 								Maintainer: "Jonathan Nieder <jrnieder@gmail.com>",
+								Arch:       "amd64",
 							},
 							{
 								ID:         "libmount1@2.31.1-0.4ubuntu3.1",
@@ -521,6 +568,7 @@ func Test_dpkgAnalyzer_Analyze(t *testing.T) {
 									"libc6@2.27-3ubuntu1",
 									"libselinux1@2.7-2build2"},
 								Maintainer: "Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>",
+								Arch:       "amd64",
 							},
 							{
 								ID:         "libncurses5@6.1-1ubuntu1.18.04",
@@ -531,6 +579,7 @@ func Test_dpkgAnalyzer_Analyze(t *testing.T) {
 								DependsOn: []string{"libc6@2.27-3ubuntu1",
 									"libtinfo5@6.1-1ubuntu1.18.04"},
 								Maintainer: "Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>",
+								Arch:       "amd64",
 							},
 							{
 								ID:         "libncursesw5@6.1-1ubuntu1.18.04",
@@ -541,6 +590,7 @@ func Test_dpkgAnalyzer_Analyze(t *testing.T) {
 								DependsOn: []string{"libc6@2.27-3ubuntu1",
 									"libtinfo5@6.1-1ubuntu1.18.04"},
 								Maintainer: "Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>",
+								Arch:       "amd64",
 							},
 							{
 								ID:         "libnettle6@3.4-1",
@@ -550,6 +600,7 @@ func Test_dpkgAnalyzer_Analyze(t *testing.T) {
 								SrcVersion: "3.4-1",
 								DependsOn:  []string{"libc6@2.27-3ubuntu1"},
 								Maintainer: "Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>",
+								Arch:       "amd64",
 							},
 							{
 								ID:         "libp11-kit0@0.23.9-2",
@@ -560,6 +611,7 @@ func Test_dpkgAnalyzer_Analyze(t *testing.T) {
 								DependsOn: []string{"libc6@2.27-3ubuntu1",
 									"libffi6@3.2.1-8"},
 								Maintainer: "Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>",
+								Arch:       "amd64",
 							},
 							{
 								ID:         "libpam-modules@1.1.8-3.6ubuntu2",
@@ -568,6 +620,7 @@ func Test_dpkgAnalyzer_Analyze(t *testing.T) {
 								SrcName:    "pam",
 								SrcVersion: "1.1.8-3.6ubuntu2",
 								Maintainer: "Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>",
+								Arch:       "amd64",
 							},
 							{
 								ID:         "libpam-modules-bin@1.1.8-3.6ubuntu2",
@@ -580,6 +633,7 @@ func Test_dpkgAnalyzer_Analyze(t *testing.T) {
 									"libpam0g@1.1.8-3.6ubuntu2",
 									"libselinux1@2.7-2build2"},
 								Maintainer: "Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>",
+								Arch:       "amd64",
 							},
 							{
 								ID:         "libpam-runtime@1.1.8-3.6ubuntu2",
@@ -591,6 +645,7 @@ func Test_dpkgAnalyzer_Analyze(t *testing.T) {
 									"debconf@1.5.66",
 									"libpam-modules@1.1.8-3.6ubuntu2"},
 								Maintainer: "Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>",
+								Arch:       "all",
 							},
 							{
 								ID:         "libpam0g@1.1.8-3.6ubuntu2",
@@ -602,6 +657,7 @@ func Test_dpkgAnalyzer_Analyze(t *testing.T) {
 									"libaudit1@1:2.8.2-1ubuntu1",
 									"libc6@2.27-3ubuntu1"},
 								Maintainer: "Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>",
+								Arch:       "amd64",
 							},
 							{
 								ID:         "libpcre3@2:8.39-9",
@@ -611,6 +667,7 @@ func Test_dpkgAnalyzer_Analyze(t *testing.T) {
 								SrcVersion: "2:8.39-9",
 								DependsOn:  []string{"libc6@2.27-3ubuntu1"},
 								Maintainer: "Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>",
+								Arch:       "amd64",
 							},
 							{
 								ID:         "libprocps6@2:3.3.12-3ubuntu1.1",
@@ -621,6 +678,7 @@ func Test_dpkgAnalyzer_Analyze(t *testing.T) {
 								DependsOn: []string{"libc6@2.27-3ubuntu1",
 									"libsystemd0@237-3ubuntu10.3"},
 								Maintainer: "Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>",
+								Arch:       "amd64",
 							},
 							{
 								ID:         "libseccomp2@2.3.1-2.1ubuntu4",
@@ -630,6 +688,7 @@ func Test_dpkgAnalyzer_Analyze(t *testing.T) {
 								SrcVersion: "2.3.1-2.1ubuntu4",
 								DependsOn:  []string{"libc6@2.27-3ubuntu1"},
 								Maintainer: "Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>",
+								Arch:       "amd64",
 							},
 							{
 								ID:         "libselinux1@2.7-2build2",
@@ -640,6 +699,7 @@ func Test_dpkgAnalyzer_Analyze(t *testing.T) {
 								DependsOn: []string{"libc6@2.27-3ubuntu1",
 									"libpcre3@2:8.39-9"},
 								Maintainer: "Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>",
+								Arch:       "amd64",
 							},
 							{
 								ID:         "libsemanage-common@2.7-2build2",
@@ -648,6 +708,7 @@ func Test_dpkgAnalyzer_Analyze(t *testing.T) {
 								SrcName:    "libsemanage",
 								SrcVersion: "2.7-2build2",
 								Maintainer: "Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>",
+								Arch:       "all",
 							},
 							{
 								ID:         "libsemanage1@2.7-2build2",
@@ -662,6 +723,7 @@ func Test_dpkgAnalyzer_Analyze(t *testing.T) {
 									"libsemanage-common@2.7-2build2",
 									"libsepol1@2.7-1"},
 								Maintainer: "Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>",
+								Arch:       "amd64",
 							},
 							{
 								ID:         "libsepol1@2.7-1",
@@ -671,6 +733,7 @@ func Test_dpkgAnalyzer_Analyze(t *testing.T) {
 								SrcVersion: "2.7-1",
 								DependsOn:  []string{"libc6@2.27-3ubuntu1"},
 								Maintainer: "Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>",
+								Arch:       "amd64",
 							},
 							{
 								ID:         "libsmartcols1@2.31.1-0.4ubuntu3.1",
@@ -680,6 +743,7 @@ func Test_dpkgAnalyzer_Analyze(t *testing.T) {
 								SrcVersion: "2.31.1-0.4ubuntu3.1",
 								DependsOn:  []string{"libc6@2.27-3ubuntu1"},
 								Maintainer: "Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>",
+								Arch:       "amd64",
 							},
 							{
 								ID:         "libss2@1.44.1-1",
@@ -690,6 +754,7 @@ func Test_dpkgAnalyzer_Analyze(t *testing.T) {
 								DependsOn: []string{"libc6@2.27-3ubuntu1",
 									"libcom-err2@1.44.1-1"},
 								Maintainer: "Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>",
+								Arch:       "amd64",
 							},
 							{
 								ID:         "libstdc++6@8-20180414-1ubuntu2",
@@ -701,6 +766,7 @@ func Test_dpkgAnalyzer_Analyze(t *testing.T) {
 									"libc6@2.27-3ubuntu1",
 									"libgcc1@1:8-20180414-1ubuntu2"},
 								Maintainer: "Ubuntu Core developers <ubuntu-devel-discuss@lists.ubuntu.com>",
+								Arch:       "amd64",
 							},
 							{
 								ID:         "libsystemd0@237-3ubuntu10.3",
@@ -709,6 +775,7 @@ func Test_dpkgAnalyzer_Analyze(t *testing.T) {
 								SrcName:    "systemd",
 								SrcVersion: "237-3ubuntu10.3",
 								Maintainer: "Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>",
+								Arch:       "amd64",
 							},
 							{
 								ID:         "libtasn1-6@4.13-2",
@@ -718,6 +785,7 @@ func Test_dpkgAnalyzer_Analyze(t *testing.T) {
 								SrcVersion: "4.13-2",
 								DependsOn:  []string{"libc6@2.27-3ubuntu1"},
 								Maintainer: "Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>",
+								Arch:       "amd64",
 							},
 							{
 								ID:         "libtinfo5@6.1-1ubuntu1.18.04",
@@ -727,6 +795,7 @@ func Test_dpkgAnalyzer_Analyze(t *testing.T) {
 								SrcVersion: "6.1-1ubuntu1.18.04",
 								DependsOn:  []string{"libc6@2.27-3ubuntu1"},
 								Maintainer: "Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>",
+								Arch:       "amd64",
 							},
 							{
 								ID:         "libudev1@237-3ubuntu10.3",
@@ -736,6 +805,7 @@ func Test_dpkgAnalyzer_Analyze(t *testing.T) {
 								SrcVersion: "237-3ubuntu10.3",
 								DependsOn:  []string{"libc6@2.27-3ubuntu1"},
 								Maintainer: "Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>",
+								Arch:       "amd64",
 							},
 							{
 								ID:         "libunistring2@0.9.9-0ubuntu1",
@@ -745,6 +815,7 @@ func Test_dpkgAnalyzer_Analyze(t *testing.T) {
 								SrcVersion: "0.9.9-0ubuntu1",
 								DependsOn:  []string{"libc6@2.27-3ubuntu1"},
 								Maintainer: "Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>",
+								Arch:       "amd64",
 							},
 							{
 								ID:         "libustr-1.0-1@1.0.4-3+b2",
@@ -754,6 +825,7 @@ func Test_dpkgAnalyzer_Analyze(t *testing.T) {
 								SrcVersion: "1.0.4-3",
 								DependsOn:  []string{"libc6@2.27-3ubuntu1"},
 								Maintainer: "Vaclav Ovsik <vaclav.ovsik@i.cz>",
+								Arch:       "amd64",
 							},
 							{
 								ID:         "libuuid1@2.31.1-0.4ubuntu3.1",
@@ -763,6 +835,7 @@ func Test_dpkgAnalyzer_Analyze(t *testing.T) {
 								SrcVersion: "2.31.1-0.4ubuntu3.1",
 								DependsOn:  []string{"libc6@2.27-3ubuntu1"},
 								Maintainer: "Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>",
+								Arch:       "amd64",
 							},
 							{
 								ID:         "libzstd1@1.3.3+dfsg-2ubuntu1",
@@ -772,6 +845,7 @@ func Test_dpkgAnalyzer_Analyze(t *testing.T) {
 								SrcVersion: "1.3.3+dfsg-2ubuntu1",
 								DependsOn:  []string{"libc6@2.27-3ubuntu1"},
 								Maintainer: "Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>",
+								Arch:       "amd64",
 							},
 							{
 								ID:         "login@1:4.5-1ubuntu1",
@@ -780,6 +854,7 @@ func Test_dpkgAnalyzer_Analyze(t *testing.T) {
 								SrcName:    "shadow",
 								SrcVersion: "1:4.5-1ubuntu1",
 								Maintainer: "Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>",
+								Arch:       "amd64",
 							},
 							{
 								ID:         "lsb-base@9.20170808ubuntu1",
@@ -788,6 +863,7 @@ func Test_dpkgAnalyzer_Analyze(t *testing.T) {
 								SrcName:    "lsb",
 								SrcVersion: "9.20170808ubuntu1",
 								Maintainer: "Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>",
+								Arch:       "all",
 							},
 							{
 								ID:         "mawk@1.3.3-17ubuntu3",
@@ -796,6 +872,7 @@ func Test_dpkgAnalyzer_Analyze(t *testing.T) {
 								SrcName:    "mawk",
 								SrcVersion: "1.3.3-17ubuntu3",
 								Maintainer: "Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>",
+								Arch:       "amd64",
 							},
 							{
 								ID:         "mount@2.31.1-0.4ubuntu3.1",
@@ -805,6 +882,7 @@ func Test_dpkgAnalyzer_Analyze(t *testing.T) {
 								SrcVersion: "2.31.1-0.4ubuntu3.1",
 								DependsOn:  []string{"util-linux@2.31.1-0.4ubuntu3.1"},
 								Maintainer: "Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>",
+								Arch:       "amd64",
 							},
 							{
 								ID:         "ncurses-base@6.1-1ubuntu1.18.04",
@@ -813,6 +891,7 @@ func Test_dpkgAnalyzer_Analyze(t *testing.T) {
 								SrcName:    "ncurses",
 								SrcVersion: "6.1-1ubuntu1.18.04",
 								Maintainer: "Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>",
+								Arch:       "all",
 							},
 							{
 								ID:         "ncurses-bin@6.1-1ubuntu1.18.04",
@@ -821,6 +900,7 @@ func Test_dpkgAnalyzer_Analyze(t *testing.T) {
 								SrcName:    "ncurses",
 								SrcVersion: "6.1-1ubuntu1.18.04",
 								Maintainer: "Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>",
+								Arch:       "amd64",
 							},
 							{
 								ID:         "passwd@1:4.5-1ubuntu1",
@@ -835,6 +915,7 @@ func Test_dpkgAnalyzer_Analyze(t *testing.T) {
 									"libselinux1@2.7-2build2",
 									"libsemanage1@2.7-2build2"},
 								Maintainer: "Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>",
+								Arch:       "amd64",
 							},
 							{
 								ID:         "perl-base@5.26.1-6ubuntu0.2",
@@ -843,6 +924,7 @@ func Test_dpkgAnalyzer_Analyze(t *testing.T) {
 								SrcName:    "perl",
 								SrcVersion: "5.26.1-6ubuntu0.2",
 								Maintainer: "Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>",
+								Arch:       "amd64",
 							},
 							{
 								ID:         "procps@2:3.3.12-3ubuntu1.1",
@@ -858,6 +940,7 @@ func Test_dpkgAnalyzer_Analyze(t *testing.T) {
 									"libtinfo5@6.1-1ubuntu1.18.04",
 									"lsb-base@9.20170808ubuntu1"},
 								Maintainer: "Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>",
+								Arch:       "amd64",
 							},
 							{
 								ID:         "sed@4.4-2",
@@ -866,6 +949,7 @@ func Test_dpkgAnalyzer_Analyze(t *testing.T) {
 								SrcName:    "sed",
 								SrcVersion: "4.4-2",
 								Maintainer: "Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>",
+								Arch:       "amd64",
 							},
 							{
 								ID:         "sensible-utils@0.0.12",
@@ -874,6 +958,7 @@ func Test_dpkgAnalyzer_Analyze(t *testing.T) {
 								SrcName:    "sensible-utils",
 								SrcVersion: "0.0.12",
 								Maintainer: "Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>",
+								Arch:       "all",
 							},
 							{
 								ID:         "sysvinit-utils@2.88dsf-59.10ubuntu1",
@@ -885,6 +970,7 @@ func Test_dpkgAnalyzer_Analyze(t *testing.T) {
 									"libc6@2.27-3ubuntu1",
 									"util-linux@2.31.1-0.4ubuntu3.1"},
 								Maintainer: "Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>",
+								Arch:       "amd64",
 							},
 							{
 								ID:         "tar@1.29b-2",
@@ -893,6 +979,7 @@ func Test_dpkgAnalyzer_Analyze(t *testing.T) {
 								SrcName:    "tar",
 								SrcVersion: "1.29b-2",
 								Maintainer: "Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>",
+								Arch:       "amd64",
 							},
 							{
 								ID:         "ubuntu-keyring@2018.02.28",
@@ -901,6 +988,7 @@ func Test_dpkgAnalyzer_Analyze(t *testing.T) {
 								SrcName:    "ubuntu-keyring",
 								SrcVersion: "2018.02.28",
 								Maintainer: "Dimitri John Ledkov <dimitri.ledkov@canonical.com>",
+								Arch:       "all",
 							},
 							{
 								ID:         "util-linux@2.31.1-0.4ubuntu3.1",
@@ -910,6 +998,7 @@ func Test_dpkgAnalyzer_Analyze(t *testing.T) {
 								SrcVersion: "2.31.1-0.4ubuntu3.1",
 								DependsOn:  []string{"fdisk@2.31.1-0.4ubuntu3.1"},
 								Maintainer: "Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>",
+								Arch:       "amd64",
 							},
 							{
 								ID:         "zlib1g@1:1.2.11.dfsg-0ubuntu2",
@@ -919,6 +1008,7 @@ func Test_dpkgAnalyzer_Analyze(t *testing.T) {
 								SrcVersion: "1:1.2.11.dfsg-0ubuntu2",
 								DependsOn:  []string{"libc6@2.27-3ubuntu1"},
 								Maintainer: "Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>",
+								Arch:       "amd64",
 							},
 						},
 					},
@@ -941,6 +1031,7 @@ func Test_dpkgAnalyzer_Analyze(t *testing.T) {
 								SrcName:    "gcc-5",
 								SrcVersion: "5.1.1-12ubuntu1",
 								Maintainer: "Ubuntu Core developers <ubuntu-devel-discuss@lists.ubuntu.com>",
+								Arch:       "amd64",
 							},
 							{
 								ID:         "libpam-modules-bin@1.1.8-3.1ubuntu3",
@@ -949,6 +1040,7 @@ func Test_dpkgAnalyzer_Analyze(t *testing.T) {
 								SrcName:    "pam",
 								SrcVersion: "1.1.8-3.1ubuntu3",
 								Maintainer: "Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>",
+								Arch:       "amd64",
 							},
 							{
 								ID:         "libpam-runtime@1.1.8-3.1ubuntu3",
@@ -957,6 +1049,7 @@ func Test_dpkgAnalyzer_Analyze(t *testing.T) {
 								SrcName:    "pam",
 								SrcVersion: "1.1.8-3.1ubuntu3",
 								Maintainer: "Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>",
+								Arch:       "all",
 							},
 							{
 								ID:         "makedev@2.3.1-93ubuntu1",
@@ -965,6 +1058,7 @@ func Test_dpkgAnalyzer_Analyze(t *testing.T) {
 								SrcName:    "makedev",
 								SrcVersion: "2.3.1-93ubuntu1",
 								Maintainer: "Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>",
+								Arch:       "all",
 							},
 						},
 					},
@@ -982,7 +1076,9 @@ func Test_dpkgAnalyzer_Analyze(t *testing.T) {
 						Packages: []types.Package{
 							{
 								ID: "apt@1.6.3ubuntu0.1", Name: "apt", Version: "1.6.3ubuntu0.1",
-								SrcName: "apt", SrcVersion: "1.6.3ubuntu0.1", Maintainer: "Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>"},
+								SrcName: "apt", SrcVersion: "1.6.3ubuntu0.1", Maintainer: "Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>",
+								Arch: "amd64",
+							},
 						},
 					},
 				},
@@ -993,22 +1089,24 @@ func Test_dpkgAnalyzer_Analyze(t *testing.T) {
 			testFile: "./testdata/bash.list",
 			filePath: "var/lib/dpkg/info/tar.list",
 			want: &analyzer.AnalysisResult{
-				SystemInstalledFiles: []string{
-					"/bin/tar",
-					"/etc",
-					"/usr/lib/mime/packages/tar",
-					"/usr/sbin/rmt-tar",
-					"/usr/sbin/tarcat",
-					"/usr/share/doc/tar/AUTHORS",
-					"/usr/share/doc/tar/NEWS.gz",
-					"/usr/share/doc/tar/README.Debian",
-					"/usr/share/doc/tar/THANKS.gz",
-					"/usr/share/doc/tar/changelog.Debian.gz",
-					"/usr/share/doc/tar/copyright",
-					"/usr/share/man/man1/tar.1.gz",
-					"/usr/share/man/man1/tarcat.1.gz",
-					"/usr/share/man/man8/rmt-tar.8.gz",
-					"/etc/rmt",
+				SystemInstalledFiles: map[string][]string{
+					"tar": {
+						"/bin/tar",
+						"/etc",
+						"/usr/lib/mime/packages/tar",
+						"/usr/sbin/rmt-tar",
+						"/usr/sbin/tarcat",
+						"/usr/share/doc/tar/AUTHORS",
+						"/usr/share/doc/tar/NEWS.gz",
+						"/usr/share/doc/tar/README.Debian",
+						"/usr/share/doc/tar/THANKS.gz",
+						"/usr/share/doc/tar/changelog.Debian.gz",
+						"/usr/share/doc/tar/copyright",
+						"/usr/share/man/man1/tar.1.gz",
+						"/usr/share/man/man1/tarcat.1.gz",
+						"/usr/share/man/man8/rmt-tar.8.gz",
+						"/etc/rmt",
+					},
 				},
 			},
 		},

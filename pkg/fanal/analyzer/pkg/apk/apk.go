@@ -62,7 +62,7 @@ func (a alpinePkgAnalyzer) parseApkInfo(scanner *bufio.Scanner) ([]types.Package
 			if !pkg.Empty() {
 				pkgs = append(pkgs, pkg)
 			}
-			pkg = types.Package{}
+			pkg = types.Package{SystemInstalledFiles: []string{}}
 			continue
 		}
 
@@ -77,6 +77,7 @@ func (a alpinePkgAnalyzer) parseApkInfo(scanner *bufio.Scanner) ([]types.Package
 				continue
 			}
 			pkg.Version = version
+			installedFiles[pkg.Name+"-"+pkg.Version] = []string{}
 		case "o:":
 			origin := line[2:]
 			pkg.SrcName = origin
@@ -86,9 +87,11 @@ func (a alpinePkgAnalyzer) parseApkInfo(scanner *bufio.Scanner) ([]types.Package
 		case "F:":
 			dir = line[2:]
 		case "R:":
+			pkgRef := pkg.Name + "-" + pkg.Version
 			relPath := filepath.Join(dir, line[2:])
 			pkg.SystemInstalledFiles = append(pkg.SystemInstalledFiles, relPath)
-			installedFiles[pkg.Name] = append(installedFiles[pkg.Name], relPath)
+			installedFiles[pkgRef] = append(installedFiles[pkgRef], filepath.Join(dir, line[2:]))
+
 		case "p:": // provides (corresponds to provides in PKGINFO, concatenated by spaces into a single line)
 			a.parseProvides(line, pkg.ID, provides)
 		case "D:": // dependencies (corresponds to depend in PKGINFO, concatenated by spaces into a single line)
@@ -103,6 +106,7 @@ func (a alpinePkgAnalyzer) parseApkInfo(scanner *bufio.Scanner) ([]types.Package
 			provides[pkg.Name] = pkg.ID
 		}
 	}
+
 	// in case of last paragraph
 	if !pkg.Empty() {
 		pkgs = append(pkgs, pkg)

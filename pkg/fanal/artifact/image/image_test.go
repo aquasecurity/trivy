@@ -43,11 +43,60 @@ func TestArtifact_Inspect(t *testing.T) {
 				"busybox@1.31.1-r9",
 				"musl@1.1.24-r2",
 			},
+			SystemInstalledFiles: []string{
+				"etc/hosts",
+				"etc/sysctl.conf",
+				"etc/group",
+				"etc/protocols",
+				"etc/fstab",
+				"etc/mtab",
+				"etc/profile",
+				"etc/shells",
+				"etc/motd",
+				"etc/inittab",
+				"etc/hostname",
+				"etc/modules",
+				"etc/services",
+				"etc/shadow",
+				"etc/passwd",
+				"etc/profile.d/locale",
+				"etc/profile.d/color_prompt",
+				"etc/sysctl.d/00-alpine.conf",
+				"etc/modprobe.d/i386.conf",
+				"etc/modprobe.d/blacklist.conf",
+				"etc/modprobe.d/aliases.conf",
+				"etc/modprobe.d/kms.conf",
+				"etc/crontabs/root",
+				"sbin/mkmntdirs",
+				"var/run",
+				"var/spool/mail",
+				"var/spool/cron/crontabs",
+			},
 		},
 		{
 			ID:   "alpine-keys@2.1-r2",
 			Name: "alpine-keys", Version: "2.1-r2", SrcName: "alpine-keys",
 			SrcVersion: "2.1-r2", Licenses: []string{"MIT"},
+			SystemInstalledFiles: []string{
+				"etc/apk/keys/alpine-devel@lists.alpinelinux.org-5243ef4b.rsa.pub",
+				"etc/apk/keys/alpine-devel@lists.alpinelinux.org-5261cecb.rsa.pub",
+				"etc/apk/keys/alpine-devel@lists.alpinelinux.org-4a6a0840.rsa.pub",
+				"usr/share/apk/keys/alpine-devel@lists.alpinelinux.org-524d27bb.rsa.pub",
+				"usr/share/apk/keys/alpine-devel@lists.alpinelinux.org-5243ef4b.rsa.pub",
+				"usr/share/apk/keys/alpine-devel@lists.alpinelinux.org-5261cecb.rsa.pub",
+				"usr/share/apk/keys/alpine-devel@lists.alpinelinux.org-58cbb476.rsa.pub",
+				"usr/share/apk/keys/alpine-devel@lists.alpinelinux.org-58199dcc.rsa.pub",
+				"usr/share/apk/keys/alpine-devel@lists.alpinelinux.org-4a6a0840.rsa.pub",
+				"usr/share/apk/keys/alpine-devel@lists.alpinelinux.org-58e4f17d.rsa.pub",
+				"usr/share/apk/keys/aarch64/alpine-devel@lists.alpinelinux.org-58199dcc.rsa.pub",
+				"usr/share/apk/keys/ppc64le/alpine-devel@lists.alpinelinux.org-58cbb476.rsa.pub",
+				"usr/share/apk/keys/x86/alpine-devel@lists.alpinelinux.org-5243ef4b.rsa.pub",
+				"usr/share/apk/keys/x86/alpine-devel@lists.alpinelinux.org-4a6a0840.rsa.pub",
+				"usr/share/apk/keys/s390x/alpine-devel@lists.alpinelinux.org-58e4f17d.rsa.pub",
+				"usr/share/apk/keys/armhf/alpine-devel@lists.alpinelinux.org-524d27bb.rsa.pub",
+				"usr/share/apk/keys/x86_64/alpine-devel@lists.alpinelinux.org-5261cecb.rsa.pub",
+				"usr/share/apk/keys/x86_64/alpine-devel@lists.alpinelinux.org-4a6a0840.rsa.pub",
+			},
 		},
 		{
 			ID:   "apk-tools@2.10.4-r3",
@@ -59,6 +108,9 @@ func TestArtifact_Inspect(t *testing.T) {
 				"musl@1.1.24-r2",
 				"zlib@1.2.11-r3",
 			},
+			SystemInstalledFiles: []string{
+				"sbin/apk",
+			},
 		},
 		{
 			ID:   "busybox@1.31.1-r9",
@@ -67,12 +119,22 @@ func TestArtifact_Inspect(t *testing.T) {
 			DependsOn: []string{
 				"musl@1.1.24-r2",
 			},
+			SystemInstalledFiles: []string{
+				"bin/busybox",
+				"bin/sh",
+				"etc/securetty",
+				"etc/udhcpd.conf",
+				"etc/logrotate.d/acpid",
+				"etc/network/if-up.d/dad",
+				"usr/share/udhcpc/default.script",
+			},
 		},
 		{
 			ID:   "ca-certificates-cacert@20191127-r1",
 			Name: "ca-certificates-cacert", Version: "20191127-r1",
 			SrcName: "ca-certificates", SrcVersion: "20191127-r1",
-			Licenses: []string{"MPL-2.0", "GPL-2.0"},
+			Licenses:             []string{"MPL-2.0", "GPL-2.0"},
+			SystemInstalledFiles: []string{"etc/ssl/cert.pem"},
 		},
 		{
 			ID:   "libc-utils@0.7.2-r0",
@@ -81,6 +143,7 @@ func TestArtifact_Inspect(t *testing.T) {
 			DependsOn: []string{
 				"musl-utils@1.1.24-r2",
 			},
+			SystemInstalledFiles: []string{},
 		},
 		{
 			ID:   "libcrypto1.1@1.1.1d-r3",
@@ -88,6 +151,20 @@ func TestArtifact_Inspect(t *testing.T) {
 			SrcVersion: "1.1.1d-r3", Licenses: []string{"OpenSSL"},
 			DependsOn: []string{
 				"musl@1.1.24-r2",
+			},
+			SystemInstalledFiles: []string{
+				"etc/ssl/openssl.cnf.dist",
+				"etc/ssl/ct_log_list.cnf",
+				"etc/ssl/ct_log_list.cnf.dist",
+				"etc/ssl/openssl.cnf",
+				"etc/ssl/misc/CA.pl",
+				"etc/ssl/misc/tsget.pl",
+				"etc/ssl/misc/tsget",
+				"lib/libcrypto.so.1.1",
+				"usr/lib/libcrypto.so.1.1",
+				"usr/lib/engines-1.1/capi.so",
+				"usr/lib/engines-1.1/padlock.so",
+				"usr/lib/engines-1.1/afalg.so",
 			},
 		},
 		{
@@ -97,6 +174,10 @@ func TestArtifact_Inspect(t *testing.T) {
 			DependsOn: []string{
 				"libcrypto1.1@1.1.1d-r3",
 				"musl@1.1.24-r2",
+			},
+			SystemInstalledFiles: []string{
+				"lib/libssl.so.1.1",
+				"usr/lib/libssl.so.1.1",
 			},
 		},
 		{
@@ -110,11 +191,19 @@ func TestArtifact_Inspect(t *testing.T) {
 				"libssl1.1@1.1.1d-r3",
 				"musl@1.1.24-r2",
 			},
+			SystemInstalledFiles: []string{
+				"usr/lib/libtls-standalone.so.1.0.0",
+				"usr/lib/libtls-standalone.so.1",
+			},
 		},
 		{
 			ID:   "musl@1.1.24-r2",
 			Name: "musl", Version: "1.1.24-r2", SrcName: "musl",
 			SrcVersion: "1.1.24-r2", Licenses: []string{"MIT"},
+			SystemInstalledFiles: []string{
+				"lib/libc.musl-x86_64.so.1",
+				"lib/ld-musl-x86_64.so.1",
+			},
 		},
 		{
 			ID:   "musl-utils@1.1.24-r2",
@@ -124,6 +213,13 @@ func TestArtifact_Inspect(t *testing.T) {
 				"musl@1.1.24-r2",
 				"scanelf@1.2.4-r0",
 			},
+			SystemInstalledFiles: []string{
+				"sbin/ldconfig",
+				"usr/bin/iconv",
+				"usr/bin/ldd",
+				"usr/bin/getconf",
+				"usr/bin/getent",
+			},
 		},
 		{
 			ID:   "scanelf@1.2.4-r0",
@@ -132,6 +228,7 @@ func TestArtifact_Inspect(t *testing.T) {
 			DependsOn: []string{
 				"musl@1.1.24-r2",
 			},
+			SystemInstalledFiles: []string{"usr/bin/scanelf"},
 		},
 		{
 			ID:   "ssl_client@1.31.1-r9",
@@ -141,6 +238,7 @@ func TestArtifact_Inspect(t *testing.T) {
 				"libtls-standalone@2.9.1-r0",
 				"musl@1.1.24-r2",
 			},
+			SystemInstalledFiles: []string{"usr/bin/ssl_client"},
 		},
 		{
 			ID:   "zlib@1.2.11-r3",
@@ -148,6 +246,10 @@ func TestArtifact_Inspect(t *testing.T) {
 			SrcVersion: "1.2.11-r3", Licenses: []string{"Zlib"},
 			DependsOn: []string{
 				"musl@1.1.24-r2",
+			},
+			SystemInstalledFiles: []string{
+				"lib/libz.so.1.2.11",
+				"lib/libz.so.1",
 			},
 		},
 	}
@@ -322,6 +424,7 @@ func TestArtifact_Inspect(t *testing.T) {
 											Name: "base-files", Version: "9.9+deb9u9", SrcName: "base-files",
 											SrcVersion: "9.9+deb9u9",
 											Maintainer: "Santiago Vila <sanvila@debian.org>",
+											Arch:       "amd64",
 										},
 									},
 								},
@@ -329,7 +432,7 @@ func TestArtifact_Inspect(t *testing.T) {
 									FilePath: "var/lib/dpkg/status.d/netbase",
 									Packages: []types.Package{
 										{ID: "netbase@5.4", Name: "netbase", Version: "5.4",
-											SrcName: "netbase", SrcVersion: "5.4", Maintainer: "Marco d'Itri <md@linux.it>"},
+											SrcName: "netbase", SrcVersion: "5.4", Maintainer: "Marco d'Itri <md@linux.it>", Arch: "all"},
 									},
 								},
 								{
@@ -340,6 +443,7 @@ func TestArtifact_Inspect(t *testing.T) {
 											Name: "tzdata", Version: "2019a-0+deb9u1", SrcName: "tzdata",
 											SrcVersion: "2019a-0+deb9u1",
 											Maintainer: "GNU Libc Maintainers <debian-glibc@lists.debian.org>",
+											Arch:       "all",
 										},
 									},
 								},
@@ -391,6 +495,7 @@ func TestArtifact_Inspect(t *testing.T) {
 											Name: "libc6", Version: "2.24-11+deb9u4", SrcName: "glibc",
 											SrcVersion: "2.24-11+deb9u4",
 											Maintainer: "GNU Libc Maintainers <debian-glibc@lists.debian.org>",
+											Arch:       "amd64",
 										},
 									},
 								},
@@ -402,6 +507,7 @@ func TestArtifact_Inspect(t *testing.T) {
 											Name: "libssl1.1", Version: "1.1.0k-1~deb9u1", SrcName: "openssl",
 											SrcVersion: "1.1.0k-1~deb9u1",
 											Maintainer: "Debian OpenSSL Team <pkg-openssl-devel@lists.alioth.debian.org>",
+											Arch:       "amd64",
 										},
 									},
 								},
@@ -413,6 +519,7 @@ func TestArtifact_Inspect(t *testing.T) {
 											Name: "openssl", Version: "1.1.0k-1~deb9u1", SrcName: "openssl",
 											SrcVersion: "1.1.0k-1~deb9u1",
 											Maintainer: "Debian OpenSSL Team <pkg-openssl-devel@lists.alioth.debian.org>",
+											Arch:       "amd64",
 										},
 									},
 								},

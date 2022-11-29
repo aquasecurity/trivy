@@ -13,17 +13,60 @@ import (
 
 func TestParseRpmInfo(t *testing.T) {
 	var tests = map[string]struct {
-		path string
-		pkgs []types.Package
+		path               string
+		pkgs               []types.Package
+		testInstalledFiles bool
 	}{
 		"Valid": {
 			path: "./testdata/valid",
 			// cp ./testdata/valid /path/to/testdir/Packages
 			// rpm --dbpath /path/to/testdir -qa --qf "{Name: \"%{NAME}\", Epoch: %{EPOCHNUM}, Version: \"%{VERSION}\", Release: \"%{RELEASE}\", Arch: \"%{ARCH}\"\},\n"
 			pkgs: []types.Package{
-				{Name: "centos-release", Epoch: 0, Version: "7", Release: "1.1503.el7.centos.2.8", Arch: "x86_64", SrcName: "centos-release", SrcEpoch: 0, SrcVersion: "7", SrcRelease: "1.1503.el7.centos.2.8", Licenses: []string{"GPLv2"}, Maintainer: "CentOS"},
+				{
+					Name:       "centos-release",
+					Epoch:      0,
+					Version:    "7",
+					Release:    "1.1503.el7.centos.2.8",
+					Arch:       "x86_64",
+					SrcName:    "centos-release",
+					SrcEpoch:   0,
+					SrcVersion: "7",
+					SrcRelease: "1.1503.el7.centos.2.8",
+					Licenses:   []string{"GPLv2"},
+					Maintainer: "CentOS",
+					SystemInstalledFiles: []string{
+						"/etc/centos-release",
+						"/etc/centos-release-upstream",
+						"/etc/issue",
+						"/etc/issue.net",
+						"/etc/os-release",
+						"/etc/pki/rpm-gpg",
+						"/etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-7",
+						"/etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-Debug-7",
+						"/etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-Testing-7",
+						"/etc/redhat-release",
+						"/etc/rpm/macros.dist",
+						"/etc/system-release",
+						"/etc/system-release-cpe",
+						"/etc/yum.repos.d/CentOS-Base.repo",
+						"/etc/yum.repos.d/CentOS-CR.repo",
+						"/etc/yum.repos.d/CentOS-Debuginfo.repo",
+						"/etc/yum.repos.d/CentOS-Sources.repo",
+						"/etc/yum.repos.d/CentOS-Vault.repo",
+						"/etc/yum.repos.d/CentOS-fasttrack.repo",
+						"/etc/yum/vars/infra",
+						"/usr/lib/systemd/system-preset/85-display-manager.preset",
+						"/usr/lib/systemd/system-preset/90-default.preset",
+						"/usr/share/centos-release/EULA",
+						"/usr/share/doc/centos-release/Contributors",
+						"/usr/share/doc/centos-release/GPL",
+						"/usr/share/doc/redhat-release",
+						"/usr/share/redhat-release",
+					},
+				},
 				{Name: "filesystem", Epoch: 0, Version: "3.2", Release: "18.el7", Arch: "x86_64", SrcName: "filesystem", SrcEpoch: 0, SrcVersion: "3.2", SrcRelease: "18.el7", Licenses: []string{"Public Domain"}, Maintainer: "CentOS"},
 			},
+			testInstalledFiles: true,
 		},
 		"ValidBig": {
 			path: "./testdata/valid_big",
@@ -585,7 +628,7 @@ func TestParseRpmInfo(t *testing.T) {
 			require.NoError(t, err)
 			defer f.Close()
 
-			got, _, err := a.parsePkgInfo(f)
+			got, installedFiles, err := a.parsePkgInfo(f)
 			require.NoError(t, err)
 
 			sort.Slice(tc.pkgs, func(i, j int) bool {
@@ -598,6 +641,12 @@ func TestParseRpmInfo(t *testing.T) {
 			for i := range got {
 				got[i].ID = ""
 				got[i].DependsOn = nil // TODO: add tests
+
+				if !tc.testInstalledFiles || i != 0 { // Only test first package
+					got[i].SystemInstalledFiles = nil
+				} else {
+					got[i].SystemInstalledFiles = installedFiles[got[i].Name]
+				}
 			}
 
 			assert.Equal(t, tc.pkgs, got)

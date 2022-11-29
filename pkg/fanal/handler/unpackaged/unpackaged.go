@@ -41,8 +41,10 @@ func NewUnpackagedHandler(opt artifact.Option) (handler.PostHandler, error) {
 func (h unpackagedHook) Handle(ctx context.Context, res *analyzer.AnalysisResult, blob *types.BlobInfo) error {
 	for filePath, digest := range res.Digests {
 		// Skip files installed by OS package managers.
-		if slices.Contains(res.SystemInstalledFiles, filePath) {
-			continue
+		for _, installedFiles := range res.SystemInstalledFiles {
+			if slices.Contains(installedFiles, filePath) {
+				continue
+			}
 		}
 
 		// Retrieve SBOM from Rekor according to the file digest.

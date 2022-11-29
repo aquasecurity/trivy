@@ -284,6 +284,9 @@ func (r *AnalysisResult) Merge(new *AnalysisResult) {
 	r.Licenses = append(r.Licenses, new.Licenses...)
 
 	for packageRef, installedFiles := range new.SystemInstalledFiles {
+		if r.SystemInstalledFiles == nil {
+			r.SystemInstalledFiles = make(map[string][]string)
+		}
 		r.SystemInstalledFiles[packageRef] = append(r.SystemInstalledFiles[packageRef], installedFiles...)
 	}
 

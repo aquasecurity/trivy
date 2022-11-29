@@ -2,7 +2,6 @@ package dpkg
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer/os"
@@ -38,10 +37,7 @@ func (h dpkgHook) Handle(_ context.Context, r *analyzer.AnalysisResult, blob *ty
 					installedFiles, found = r.SystemInstalledFiles[pkg.Name]
 				}
 				if found {
-					fmt.Printf("Merging files for %s\n", pkg.Name)
 					r.PackageInfos[i].Packages[j].SystemInstalledFiles = installedFiles
-				} else {
-					fmt.Printf("Failed to find files for %s\n", pkg.Name)
 				}
 			}
 		}
