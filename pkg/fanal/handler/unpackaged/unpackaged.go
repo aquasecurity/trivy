@@ -39,18 +39,19 @@ func NewUnpackagedHandler(opt artifact.Option) (handler.PostHandler, error) {
 
 // Handle retrieves SBOM of unpackaged executable files in Rekor.
 func (h unpackagedHook) Handle(ctx context.Context, res *analyzer.AnalysisResult, blob *types.BlobInfo) error {
+DIGEST:
 	for filePath, digest := range res.Digests {
 		// Skip files installed by OS package managers.
 		for _, installedFiles := range res.SystemInstalledFiles {
 			if slices.Contains(installedFiles, filePath) {
-				continue
+				continue DIGEST
 			}
 		}
 
 		// Retrieve SBOM from Rekor according to the file digest.
 		raw, err := h.client.RetrieveSBOM(ctx, digest)
 		if errors.Is(err, sbomatt.ErrNoSBOMAttestation) {
-			continue
+			continue DIGEST
 		} else if err != nil {
 			return err
 		}
