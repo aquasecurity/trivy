@@ -25,7 +25,7 @@ func newDpkgHandler(artifact.Option) (handler.PostHandler, error) {
 
 // Handle merges go.mod and go.sum.
 func (h dpkgHook) Handle(_ context.Context, r *analyzer.AnalysisResult, blob *types.BlobInfo) error {
-	if r.OS.Family != os.Debian && r.OS.Family != os.Ubuntu {
+	if r.OS == nil || (r.OS.Family != os.Debian && r.OS.Family != os.Ubuntu) {
 		return nil
 	}
 
