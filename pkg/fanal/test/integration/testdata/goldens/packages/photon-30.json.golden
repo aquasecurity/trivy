@@ -1,5 +1,6 @@
 [
   {
+    "ID": "bash@4.4.18-1.ph3.x86_64",
     "Name": "bash",
     "Version": "4.4.18",
     "Release": "1.ph3",
@@ -7,13 +8,79 @@
     "SrcName": "bash",
     "SrcVersion": "4.4.18",
     "SrcRelease": "1.ph3",
-    "License": "GPLv3",
+    "Licenses": [
+      "GPLv3"
+    ],
+    "Maintainer": "VMware, Inc.",
+    "DependsOn": [
+      "glibc@2.28-3.ph3.x86_64",
+      "ncurses-libs@6.1-1.ph3.x86_64",
+      "readline@7.0-2.ph3.x86_64"
+    ],
     "Layer": {
-      "Digest": "sha256:675aead3dff5e25094cb9f4d7cc64f05e9f04a3f3397d5d45bfbc1c8a99c3a73",
       "DiffID": "sha256:0f379947a276b7b051643960392fa66c2f0cb493bc1dcd471abb5545005949fd"
-    }
+    },
+    "SystemInstalledFiles": [
+      "/bin/bash",
+      "/bin/bashbug",
+      "/bin/sh",
+      "/etc",
+      "/etc/bash.bashrc",
+      "/etc/dircolors",
+      "/etc/profile.d",
+      "/etc/profile.d/bash_completion.sh",
+      "/etc/profile.d/dircolors.sh",
+      "/etc/profile.d/extrapaths.sh",
+      "/etc/profile.d/i18n.sh",
+      "/etc/profile.d/readline.sh",
+      "/etc/profile.d/umask.sh",
+      "/etc/skel",
+      "/etc/skel/.bash_logout",
+      "/etc/skel/.bash_profile",
+      "/etc/skel/.bashrc",
+      "/usr/lib/bash/basename",
+      "/usr/lib/bash/dirname",
+      "/usr/lib/bash/finfo",
+      "/usr/lib/bash/head",
+      "/usr/lib/bash/id",
+      "/usr/lib/bash/ln",
+      "/usr/lib/bash/logname",
+      "/usr/lib/bash/mkdir",
+      "/usr/lib/bash/mypid",
+      "/usr/lib/bash/pathchk",
+      "/usr/lib/bash/print",
+      "/usr/lib/bash/printenv",
+      "/usr/lib/bash/push",
+      "/usr/lib/bash/realpath",
+      "/usr/lib/bash/rmdir",
+      "/usr/lib/bash/setpgid",
+      "/usr/lib/bash/sleep",
+      "/usr/lib/bash/strftime",
+      "/usr/lib/bash/sync",
+      "/usr/lib/bash/tee",
+      "/usr/lib/bash/truefalse",
+      "/usr/lib/bash/tty",
+      "/usr/lib/bash/uname",
+      "/usr/lib/bash/unlink",
+      "/usr/lib/bash/whoami",
+      "/usr/share/bash-completion",
+      "/usr/share/bash-completion/bash_completion",
+      "/usr/share/doc/bash-4.4.18/bash.html",
+      "/usr/share/doc/bash-4.4.18/bashref.html",
+      "/usr/share/doc/bash/CHANGES",
+      "/usr/share/doc/bash/COMPAT",
+      "/usr/share/doc/bash/FAQ",
+      "/usr/share/doc/bash/INTRO",
+      "/usr/share/doc/bash/NEWS",
+      "/usr/share/doc/bash/POSIX",
+      "/usr/share/doc/bash/RBASH",
+      "/usr/share/doc/bash/README",
+      "/usr/share/man/man1/bash.1.gz",
+      "/usr/share/man/man1/bashbug.1.gz"
+    ]
   },
   {
+    "ID": "bzip2-libs@1.0.6-10.ph3.x86_64",
     "Name": "bzip2-libs",
     "Version": "1.0.6",
     "Release": "10.ph3",
@@ -21,13 +88,24 @@
     "SrcName": "bzip2",
     "SrcVersion": "1.0.6",
     "SrcRelease": "10.ph3",
-    "License": "BSD",
+    "Licenses": [
+      "BSD"
+    ],
+    "Maintainer": "VMware, Inc.",
+    "DependsOn": [
+      "glibc@2.28-3.ph3.x86_64"
+    ],
     "Layer": {
-      "Digest": "sha256:675aead3dff5e25094cb9f4d7cc64f05e9f04a3f3397d5d45bfbc1c8a99c3a73",
       "DiffID": "sha256:0f379947a276b7b051643960392fa66c2f0cb493bc1dcd471abb5545005949fd"
-    }
+    },
+    "SystemInstalledFiles": [
+      "/usr/lib/libbz2.so.1",
+      "/usr/lib/libbz2.so.1.0",
+      "/usr/lib/libbz2.so.1.0.6"
+    ]
   },
   {
+    "ID": "ca-certificates@20190521-1.ph3.x86_64",
     "Name": "ca-certificates",
     "Version": "20190521",
     "Release": "1.ph3",
@@ -35,13 +113,180 @@
     "SrcName": "ca-certificates",
     "SrcVersion": "20190521",
     "SrcRelease": "1.ph3",
-    "License": "Custom",
+    "Licenses": [
+      "Custom"
+    ],
+    "Maintainer": "VMware, Inc.",
+    "DependsOn": [
+      "bash@4.4.18-1.ph3.x86_64",
+      "ca-certificates-pki@20190521-1.ph3.x86_64",
+      "openssl@1.0.2s-1.ph3.x86_64"
+    ],
     "Layer": {
-      "Digest": "sha256:675aead3dff5e25094cb9f4d7cc64f05e9f04a3f3397d5d45bfbc1c8a99c3a73",
       "DiffID": "sha256:0f379947a276b7b051643960392fa66c2f0cb493bc1dcd471abb5545005949fd"
-    }
+    },
+    "SystemInstalledFiles": [
+      "/bin/make-ca.sh",
+      "/bin/make-cert.pl",
+      "/bin/remove-expired-certs.sh",
+      "/etc/ssl/certs/02265526.pem",
+      "/etc/ssl/certs/03179a64.pem",
+      "/etc/ssl/certs/062cdee6.pem",
+      "/etc/ssl/certs/064e0aa9.pem",
+      "/etc/ssl/certs/06dc52d5.pem",
+      "/etc/ssl/certs/080911ac.pem",
+      "/etc/ssl/certs/09789157.pem",
+      "/etc/ssl/certs/0a775a30.pem",
+      "/etc/ssl/certs/0b1b94ef.pem",
+      "/etc/ssl/certs/0b7c536a.pem",
+      "/etc/ssl/certs/0bf05006.pem",
+      "/etc/ssl/certs/0c4c9b6c.pem",
+      "/etc/ssl/certs/0f5dc4f3.pem",
+      "/etc/ssl/certs/0f6fa695.pem",
+      "/etc/ssl/certs/1001acf7.pem",
+      "/etc/ssl/certs/106f3e4d.pem",
+      "/etc/ssl/certs/116bf586.pem",
+      "/etc/ssl/certs/128805a3.pem",
+      "/etc/ssl/certs/1320b215.pem",
+      "/etc/ssl/certs/14bc7599.pem",
+      "/etc/ssl/certs/157753a5.pem",
+      "/etc/ssl/certs/1636090b.pem",
+      "/etc/ssl/certs/18856ac4.pem",
+      "/etc/ssl/certs/1d3472b9.pem",
+      "/etc/ssl/certs/1e08bfd1.pem",
+      "/etc/ssl/certs/1e09d511.pem",
+      "/etc/ssl/certs/244b5494.pem",
+      "/etc/ssl/certs/26312675.pem",
+      "/etc/ssl/certs/2923b3f9.pem",
+      "/etc/ssl/certs/2ae6433e.pem",
+      "/etc/ssl/certs/2b349938.pem",
+      "/etc/ssl/certs/2c543cd1.pem",
+      "/etc/ssl/certs/2e4eed3c.pem",
+      "/etc/ssl/certs/2e5ac55d.pem",
+      "/etc/ssl/certs/32888f65.pem",
+      "/etc/ssl/certs/349f2832.pem",
+      "/etc/ssl/certs/3513523f.pem",
+      "/etc/ssl/certs/3bde41ac.pem",
+      "/etc/ssl/certs/3e44d2f7.pem",
+      "/etc/ssl/certs/3e45d192.pem",
+      "/etc/ssl/certs/3efd4dc0.pem",
+      "/etc/ssl/certs/40193066.pem",
+      "/etc/ssl/certs/4042bcee.pem",
+      "/etc/ssl/certs/40547a79.pem",
+      "/etc/ssl/certs/406c9bb1.pem",
+      "/etc/ssl/certs/4304c5e5.pem",
+      "/etc/ssl/certs/442adcac.pem",
+      "/etc/ssl/certs/480720ec.pem",
+      "/etc/ssl/certs/48bec511.pem",
+      "/etc/ssl/certs/4a6481c9.pem",
+      "/etc/ssl/certs/4b718d9b.pem",
+      "/etc/ssl/certs/4bfab552.pem",
+      "/etc/ssl/certs/4d4ba017.pem",
+      "/etc/ssl/certs/4f316efb.pem",
+      "/etc/ssl/certs/5273a94c.pem",
+      "/etc/ssl/certs/5443e9e3.pem",
+      "/etc/ssl/certs/54657681.pem",
+      "/etc/ssl/certs/57bcb2da.pem",
+      "/etc/ssl/certs/5a4d6896.pem",
+      "/etc/ssl/certs/5ad8a5d6.pem",
+      "/etc/ssl/certs/5c44d531.pem",
+      "/etc/ssl/certs/5cd81ad7.pem",
+      "/etc/ssl/certs/5d3033c5.pem",
+      "/etc/ssl/certs/5f15c80c.pem",
+      "/etc/ssl/certs/607986c7.pem",
+      "/etc/ssl/certs/626dceaf.pem",
+      "/etc/ssl/certs/62744ee1.pem",
+      "/etc/ssl/certs/6410666e.pem",
+      "/etc/ssl/certs/653b494a.pem",
+      "/etc/ssl/certs/68dd7389.pem",
+      "/etc/ssl/certs/6b99d060.pem",
+      "/etc/ssl/certs/6d41d539.pem",
+      "/etc/ssl/certs/6fa5da56.pem",
+      "/etc/ssl/certs/706f604c.pem",
+      "/etc/ssl/certs/749e9e03.pem",
+      "/etc/ssl/certs/75d1b2ed.pem",
+      "/etc/ssl/certs/76cb8f92.pem",
+      "/etc/ssl/certs/76faf6c0.pem",
+      "/etc/ssl/certs/7719f463.pem",
+      "/etc/ssl/certs/773e07ad.pem",
+      "/etc/ssl/certs/7aaf71c0.pem",
+      "/etc/ssl/certs/7d0b38bd.pem",
+      "/etc/ssl/certs/7f3d5d1d.pem",
+      "/etc/ssl/certs/812e17de.pem",
+      "/etc/ssl/certs/8160b96c.pem",
+      "/etc/ssl/certs/861a399d.pem",
+      "/etc/ssl/certs/8867006a.pem",
+      "/etc/ssl/certs/8cb5ee0f.pem",
+      "/etc/ssl/certs/8d86cdd1.pem",
+      "/etc/ssl/certs/930ac5d2.pem",
+      "/etc/ssl/certs/93bc0acc.pem",
+      "/etc/ssl/certs/988a38cb.pem",
+      "/etc/ssl/certs/9c2e7d30.pem",
+      "/etc/ssl/certs/9c8dfbd4.pem",
+      "/etc/ssl/certs/9d04f354.pem",
+      "/etc/ssl/certs/9f0f5fd6.pem",
+      "/etc/ssl/certs/a3418fda.pem",
+      "/etc/ssl/certs/a8dee976.pem",
+      "/etc/ssl/certs/a94d09e5.pem",
+      "/etc/ssl/certs/ad088e1d.pem",
+      "/etc/ssl/certs/aee5f10d.pem",
+      "/etc/ssl/certs/b0e59380.pem",
+      "/etc/ssl/certs/b1159c4c.pem",
+      "/etc/ssl/certs/b1b8a7f3.pem",
+      "/etc/ssl/certs/b204d74a.pem",
+      "/etc/ssl/certs/b66938e9.pem",
+      "/etc/ssl/certs/b727005e.pem",
+      "/etc/ssl/certs/b7a5b843.pem",
+      "/etc/ssl/certs/ba89ed3b.pem",
+      "/etc/ssl/certs/c01cdfa2.pem",
+      "/etc/ssl/certs/c01eb047.pem",
+      "/etc/ssl/certs/c089bbbd.pem",
+      "/etc/ssl/certs/c0ff1f52.pem",
+      "/etc/ssl/certs/c28a8a30.pem",
+      "/etc/ssl/certs/c47d9980.pem",
+      "/etc/ssl/certs/c5e082db.pem",
+      "/etc/ssl/certs/ca6e4ad9.pem",
+      "/etc/ssl/certs/cb59f961.pem",
+      "/etc/ssl/certs/cbf06781.pem",
+      "/etc/ssl/certs/cc450945.pem",
+      "/etc/ssl/certs/cd58d51e.pem",
+      "/etc/ssl/certs/cd8c0d63.pem",
+      "/etc/ssl/certs/ce5e74ef.pem",
+      "/etc/ssl/certs/d4dae3dd.pem",
+      "/etc/ssl/certs/d6325660.pem",
+      "/etc/ssl/certs/d7e8dc79.pem",
+      "/etc/ssl/certs/d853d49e.pem",
+      "/etc/ssl/certs/dc45b0bd.pem",
+      "/etc/ssl/certs/dc4d6a89.pem",
+      "/etc/ssl/certs/dd8e9d41.pem",
+      "/etc/ssl/certs/de6d66f3.pem",
+      "/etc/ssl/certs/def36a68.pem",
+      "/etc/ssl/certs/e113c810.pem",
+      "/etc/ssl/certs/e18bfb83.pem",
+      "/etc/ssl/certs/e2799e36.pem",
+      "/etc/ssl/certs/e36a6752.pem",
+      "/etc/ssl/certs/e73d606e.pem",
+      "/etc/ssl/certs/e8de2f56.pem",
+      "/etc/ssl/certs/ee1365c0.pem",
+      "/etc/ssl/certs/ee64a828.pem",
+      "/etc/ssl/certs/eed8c118.pem",
+      "/etc/ssl/certs/ef954a4e.pem",
+      "/etc/ssl/certs/f060240e.pem",
+      "/etc/ssl/certs/f081611a.pem",
+      "/etc/ssl/certs/f0c70a8d.pem",
+      "/etc/ssl/certs/f30dd6ad.pem",
+      "/etc/ssl/certs/f3377b1b.pem",
+      "/etc/ssl/certs/f387163d.pem",
+      "/etc/ssl/certs/f39fc864.pem",
+      "/etc/ssl/certs/f51bb24c.pem",
+      "/etc/ssl/certs/f90208f7.pem",
+      "/etc/ssl/certs/fc5a8f99.pem",
+      "/etc/ssl/certs/fe8a2cd8.pem",
+      "/etc/ssl/certs/ff34af3f.pem"
+    ]
   },
   {
+    "ID": "ca-certificates-pki@20190521-1.ph3.x86_64",
     "Name": "ca-certificates-pki",
     "Version": "20190521",
     "Release": "1.ph3",
@@ -49,13 +294,19 @@
     "SrcName": "ca-certificates",
     "SrcVersion": "20190521",
     "SrcRelease": "1.ph3",
-    "License": "Custom",
+    "Licenses": [
+      "Custom"
+    ],
+    "Maintainer": "VMware, Inc.",
     "Layer": {
-      "Digest": "sha256:675aead3dff5e25094cb9f4d7cc64f05e9f04a3f3397d5d45bfbc1c8a99c3a73",
       "DiffID": "sha256:0f379947a276b7b051643960392fa66c2f0cb493bc1dcd471abb5545005949fd"
-    }
+    },
+    "SystemInstalledFiles": [
+      "/etc/pki/tls/certs/ca-bundle.crt"
+    ]
   },
   {
+    "ID": "curl@7.61.1-4.ph3.x86_64",
     "Name": "curl",
     "Version": "7.61.1",
     "Release": "4.ph3",
@@ -63,13 +314,32 @@
     "SrcName": "curl",
     "SrcVersion": "7.61.1",
     "SrcRelease": "4.ph3",
-    "License": "MIT",
+    "Licenses": [
+      "MIT"
+    ],
+    "Maintainer": "VMware, Inc.",
+    "DependsOn": [
+      "bash@4.4.18-1.ph3.x86_64",
+      "ca-certificates@20190521-1.ph3.x86_64",
+      "curl-libs@7.61.1-4.ph3.x86_64",
+      "glibc@2.28-3.ph3.x86_64",
+      "krb5@1.17-1.ph3.x86_64",
+      "libssh2@1.9.0-1.ph3.x86_64",
+      "openssl@1.0.2s-1.ph3.x86_64",
+      "zlib@1.2.11-1.ph3.x86_64"
+    ],
     "Layer": {
-      "Digest": "sha256:675aead3dff5e25094cb9f4d7cc64f05e9f04a3f3397d5d45bfbc1c8a99c3a73",
       "DiffID": "sha256:0f379947a276b7b051643960392fa66c2f0cb493bc1dcd471abb5545005949fd"
-    }
+    },
+    "SystemInstalledFiles": [
+      "/usr/bin/curl",
+      "/usr/bin/curl-config",
+      "/usr/share/man/man1/curl-config.1.gz",
+      "/usr/share/man/man1/curl.1.gz"
+    ]
   },
   {
+    "ID": "curl-libs@7.61.1-4.ph3.x86_64",
     "Name": "curl-libs",
     "Version": "7.61.1",
     "Release": "4.ph3",
@@ -77,13 +347,29 @@
     "SrcName": "curl",
     "SrcVersion": "7.61.1",
     "SrcRelease": "4.ph3",
-    "License": "MIT",
+    "Licenses": [
+      "MIT"
+    ],
+    "Maintainer": "VMware, Inc.",
+    "DependsOn": [
+      "ca-certificates-pki@20190521-1.ph3.x86_64",
+      "e2fsprogs-libs@1.44.3-2.ph3.x86_64",
+      "glibc@2.28-3.ph3.x86_64",
+      "krb5@1.17-1.ph3.x86_64",
+      "libssh2@1.9.0-1.ph3.x86_64",
+      "openssl@1.0.2s-1.ph3.x86_64",
+      "zlib@1.2.11-1.ph3.x86_64"
+    ],
     "Layer": {
-      "Digest": "sha256:675aead3dff5e25094cb9f4d7cc64f05e9f04a3f3397d5d45bfbc1c8a99c3a73",
       "DiffID": "sha256:0f379947a276b7b051643960392fa66c2f0cb493bc1dcd471abb5545005949fd"
-    }
+    },
+    "SystemInstalledFiles": [
+      "/usr/lib/libcurl.so.4",
+      "/usr/lib/libcurl.so.4.5.0"
+    ]
   },
   {
+    "ID": "e2fsprogs-libs@1.44.3-2.ph3.x86_64",
     "Name": "e2fsprogs-libs",
     "Version": "1.44.3",
     "Release": "2.ph3",
@@ -91,13 +377,28 @@
     "SrcName": "e2fsprogs",
     "SrcVersion": "1.44.3",
     "SrcRelease": "2.ph3",
-    "License": "GPLv2+",
+    "Licenses": [
+      "GPLv2+"
+    ],
+    "Maintainer": "VMware, Inc.",
+    "DependsOn": [
+      "glibc@2.28-3.ph3.x86_64"
+    ],
     "Layer": {
-      "Digest": "sha256:675aead3dff5e25094cb9f4d7cc64f05e9f04a3f3397d5d45bfbc1c8a99c3a73",
       "DiffID": "sha256:0f379947a276b7b051643960392fa66c2f0cb493bc1dcd471abb5545005949fd"
-    }
+    },
+    "SystemInstalledFiles": [
+      "/usr/lib/libcom_err.a",
+      "/usr/lib/libcom_err.so",
+      "/usr/lib/libcom_err.so.2",
+      "/usr/lib/libcom_err.so.2.1",
+      "/usr/lib/libss.so",
+      "/usr/lib/libss.so.2",
+      "/usr/lib/libss.so.2.0"
+    ]
   },
   {
+    "ID": "elfutils-libelf@0.176-1.ph3.x86_64",
     "Name": "elfutils-libelf",
     "Version": "0.176",
     "Release": "1.ph3",
@@ -105,13 +406,24 @@
     "SrcName": "elfutils",
     "SrcVersion": "0.176",
     "SrcRelease": "1.ph3",
-    "License": "GPLv2+ or LGPLv3+",
+    "Licenses": [
+      "GPLv2+ or LGPLv3+"
+    ],
+    "Maintainer": "VMware, Inc.",
+    "DependsOn": [
+      "glibc@2.28-3.ph3.x86_64",
+      "zlib@1.2.11-1.ph3.x86_64"
+    ],
     "Layer": {
-      "Digest": "sha256:675aead3dff5e25094cb9f4d7cc64f05e9f04a3f3397d5d45bfbc1c8a99c3a73",
       "DiffID": "sha256:0f379947a276b7b051643960392fa66c2f0cb493bc1dcd471abb5545005949fd"
-    }
+    },
+    "SystemInstalledFiles": [
+      "/usr/lib/libelf-0.176.so",
+      "/usr/lib/libelf.so.1"
+    ]
   },
   {
+    "ID": "expat-libs@2.2.6-2.ph3.x86_64",
     "Name": "expat-libs",
     "Version": "2.2.6",
     "Release": "2.ph3",
@@ -119,13 +431,23 @@
     "SrcName": "expat",
     "SrcVersion": "2.2.6",
     "SrcRelease": "2.ph3",
-    "License": "MIT",
+    "Licenses": [
+      "MIT"
+    ],
+    "Maintainer": "VMware, Inc.",
+    "DependsOn": [
+      "glibc@2.28-3.ph3.x86_64"
+    ],
     "Layer": {
-      "Digest": "sha256:675aead3dff5e25094cb9f4d7cc64f05e9f04a3f3397d5d45bfbc1c8a99c3a73",
       "DiffID": "sha256:0f379947a276b7b051643960392fa66c2f0cb493bc1dcd471abb5545005949fd"
-    }
+    },
+    "SystemInstalledFiles": [
+      "/usr/lib/libexpat.so.1",
+      "/usr/lib/libexpat.so.1.6.8"
+    ]
   },
   {
+    "ID": "filesystem@1.1-4.ph3.x86_64",
     "Name": "filesystem",
     "Version": "1.1",
     "Release": "4.ph3",
@@ -133,13 +455,133 @@
     "SrcName": "filesystem",
     "SrcVersion": "1.1",
     "SrcRelease": "4.ph3",
-    "License": "GPLv3",
+    "Licenses": [
+      "GPLv3"
+    ],
+    "Maintainer": "VMware, Inc.",
     "Layer": {
-      "Digest": "sha256:675aead3dff5e25094cb9f4d7cc64f05e9f04a3f3397d5d45bfbc1c8a99c3a73",
       "DiffID": "sha256:0f379947a276b7b051643960392fa66c2f0cb493bc1dcd471abb5545005949fd"
-    }
+    },
+    "SystemInstalledFiles": [
+      "/bin",
+      "/boot",
+      "/dev",
+      "/etc",
+      "/etc/fstab",
+      "/etc/group",
+      "/etc/hosts",
+      "/etc/inputrc",
+      "/etc/modprobe.d",
+      "/etc/modprobe.d/usb.conf",
+      "/etc/mtab",
+      "/etc/opt",
+      "/etc/passwd",
+      "/etc/profile",
+      "/etc/profile.d",
+      "/etc/profile.d/proxy.sh",
+      "/etc/sysconfig",
+      "/etc/sysconfig/clock",
+      "/etc/sysconfig/console",
+      "/etc/sysconfig/proxy",
+      "/home",
+      "/lib",
+      "/lib64",
+      "/media",
+      "/mnt",
+      "/mnt/cdrom",
+      "/mnt/hgfs",
+      "/proc",
+      "/root",
+      "/run",
+      "/run/lock",
+      "/run/media/cdrom",
+      "/run/media/floppy",
+      "/sbin",
+      "/srv",
+      "/sys",
+      "/tmp",
+      "/usr",
+      "/usr/bin",
+      "/usr/include",
+      "/usr/lib",
+      "/usr/lib/debug",
+      "/usr/lib/debug/bin",
+      "/usr/lib/debug/lib",
+      "/usr/lib/debug/lib64",
+      "/usr/lib/debug/sbin",
+      "/usr/lib/debug/usr/bin",
+      "/usr/lib/debug/usr/lib",
+      "/usr/lib/debug/usr/lib64",
+      "/usr/lib/debug/usr/sbin",
+      "/usr/lib64",
+      "/usr/libexec",
+      "/usr/local",
+      "/usr/local/bin",
+      "/usr/local/include",
+      "/usr/local/lib",
+      "/usr/local/lib64",
+      "/usr/local/share",
+      "/usr/local/share/color",
+      "/usr/local/share/dict",
+      "/usr/local/share/doc",
+      "/usr/local/share/info",
+      "/usr/local/share/locale",
+      "/usr/local/share/man",
+      "/usr/local/share/man/man1",
+      "/usr/local/share/man/man2",
+      "/usr/local/share/man/man3",
+      "/usr/local/share/man/man4",
+      "/usr/local/share/man/man5",
+      "/usr/local/share/man/man6",
+      "/usr/local/share/man/man7",
+      "/usr/local/share/man/man8",
+      "/usr/local/share/misc",
+      "/usr/local/share/terminfo",
+      "/usr/local/share/zoneinfo",
+      "/usr/local/src",
+      "/usr/sbin",
+      "/usr/share",
+      "/usr/share/color",
+      "/usr/share/dict",
+      "/usr/share/doc",
+      "/usr/share/info",
+      "/usr/share/locale",
+      "/usr/share/man",
+      "/usr/share/man/man1",
+      "/usr/share/man/man2",
+      "/usr/share/man/man3",
+      "/usr/share/man/man4",
+      "/usr/share/man/man5",
+      "/usr/share/man/man6",
+      "/usr/share/man/man7",
+      "/usr/share/man/man8",
+      "/usr/share/misc",
+      "/usr/share/terminfo",
+      "/usr/share/zoneinfo",
+      "/usr/src",
+      "/var",
+      "/var/cache",
+      "/var/lib",
+      "/var/lib/color",
+      "/var/lib/locate",
+      "/var/lib/misc",
+      "/var/local",
+      "/var/lock",
+      "/var/log",
+      "/var/log/btmp",
+      "/var/log/lastlog",
+      "/var/log/wtmp",
+      "/var/mail",
+      "/var/mnt",
+      "/var/opt",
+      "/var/run",
+      "/var/spool",
+      "/var/srv",
+      "/var/tmp"
+    ]
   },
   {
+    "ID": "glibc@2.28-3.ph3.x86_64",
     "Name": "glibc",
     "Version": "2.28",
     "Release": "3.ph3",
@@ -147,24 +589,130 @@
     "SrcName": "glibc",
     "SrcVersion": "2.28",
     "SrcRelease": "3.ph3",
-    "License": "LGPLv2+",
+    "Licenses": [
+      "LGPLv2+"
+    ],
+    "Maintainer": "VMware, Inc.",
+    "DependsOn": [
+      "bash@4.4.18-1.ph3.x86_64",
+      "filesystem@1.1-4.ph3.x86_64"
+    ],
     "Layer": {
-      "Digest": "sha256:675aead3dff5e25094cb9f4d7cc64f05e9f04a3f3397d5d45bfbc1c8a99c3a73",
       "DiffID": "sha256:0f379947a276b7b051643960392fa66c2f0cb493bc1dcd471abb5545005949fd"
-    }
+    },
+    "SystemInstalledFiles": [
+      "/etc/ld.so.cache",
+      "/etc/ld.so.conf",
+      "/etc/ld.so.conf.d",
+      "/etc/locale-gen.conf",
+      "/etc/nsswitch.conf",
+      "/etc/rpc",
+      "/lib64/ld-2.28.so",
+      "/lib64/ld-linux-x86-64.so.2",
+      "/lib64/libBrokenLocale-2.28.so",
+      "/lib64/libBrokenLocale.so.1",
+      "/lib64/libSegFault.so",
+      "/lib64/libanl-2.28.so",
+      "/lib64/libanl.so.1",
+      "/lib64/libc-2.28.so",
+      "/lib64/libc.so.6",
+      "/lib64/libcrypt-2.28.so",
+      "/lib64/libcrypt.so.1",
+      "/lib64/libdl-2.28.so",
+      "/lib64/libdl.so.2",
+      "/lib64/libm-2.28.so",
+      "/lib64/libm.so.6",
+      "/lib64/libmemusage.so",
+      "/lib64/libmvec-2.28.so",
+      "/lib64/libmvec.so.1",
+      "/lib64/libnsl-2.28.so",
+      "/lib64/libnsl.so.1",
+      "/lib64/libnss_compat-2.28.so",
+      "/lib64/libnss_compat.so.2",
+      "/lib64/libnss_db-2.28.so",
+      "/lib64/libnss_db.so.2",
+      "/lib64/libnss_dns-2.28.so",
+      "/lib64/libnss_dns.so.2",
+      "/lib64/libnss_files-2.28.so",
+      "/lib64/libnss_files.so.2",
+      "/lib64/libnss_hesiod-2.28.so",
+      "/lib64/libnss_hesiod.so.2",
+      "/lib64/libpthread-2.28.so",
+      "/lib64/libpthread.so.0",
+      "/lib64/libresolv-2.28.so",
+      "/lib64/libresolv.so.2",
+      "/lib64/librt-2.28.so",
+      "/lib64/librt.so.1",
+      "/lib64/libthread_db-1.0.so",
+      "/lib64/libthread_db.so.1",
+      "/lib64/libutil-2.28.so",
+      "/lib64/libutil.so.1",
+      "/sbin/ldconfig",
+      "/sbin/locale-gen.sh",
+      "/usr/bin/gencat",
+      "/usr/bin/getconf",
+      "/usr/bin/getent",
+      "/usr/bin/ldd",
+      "/usr/bin/locale",
+      "/usr/bin/localedef",
+      "/usr/bin/makedb",
+      "/usr/bin/tzselect",
+      "/usr/lib/locale/en_US.UTF-8",
+      "/usr/lib/locale/en_US.UTF-8/LC_ADDRESS",
+      "/usr/lib/locale/en_US.UTF-8/LC_COLLATE",
+      "/usr/lib/locale/en_US.UTF-8/LC_CTYPE",
+      "/usr/lib/locale/en_US.UTF-8/LC_IDENTIFICATION",
+      "/usr/lib/locale/en_US.UTF-8/LC_MEASUREMENT",
+      "/usr/lib/locale/en_US.UTF-8/LC_MESSAGES",
+      "/usr/lib/locale/en_US.UTF-8/LC_MESSAGES/SYS_LC_MESSAGES",
+      "/usr/lib/locale/en_US.UTF-8/LC_MONETARY",
+      "/usr/lib/locale/en_US.UTF-8/LC_NAME",
+      "/usr/lib/locale/en_US.UTF-8/LC_NUMERIC",
+      "/usr/lib/locale/en_US.UTF-8/LC_PAPER",
+      "/usr/lib/locale/en_US.UTF-8/LC_TELEPHONE",
+      "/usr/lib/locale/en_US.UTF-8/LC_TIME",
+      "/usr/lib64/libBrokenLocale.so",
+      "/usr/lib64/libanl.so",
+      "/usr/lib64/libc.so",
+      "/usr/lib64/libcrypt.so",
+      "/usr/lib64/libdl.so",
+      "/usr/lib64/libm.so",
+      "/usr/lib64/libmvec.so",
+      "/usr/lib64/libnss_compat.so",
+      "/usr/lib64/libnss_db.so",
+      "/usr/lib64/libnss_dns.so",
+      "/usr/lib64/libnss_files.so",
+      "/usr/lib64/libnss_hesiod.so",
+      "/usr/lib64/libpthread.so",
+      "/usr/lib64/libresolv.so",
+      "/usr/lib64/librt.so",
+      "/usr/lib64/libthread_db.so",
+      "/usr/lib64/libutil.so",
+      "/usr/libexec/getconf",
+      "/usr/libexec/getconf/POSIX_V6_LP64_OFF64",
+      "/usr/libexec/getconf/POSIX_V7_LP64_OFF64",
+      "/usr/libexec/getconf/XBS5_LP64_OFF64",
+      "/usr/share/i18n/charmaps/ISO-8859-1.gz",
+      "/usr/share/i18n/charmaps/UTF-8.gz",
+      "/usr/share/i18n/locales/en_US",
+      "/usr/share/locale/locale.alias"
+    ]
   },
   {
+    "ID": "gpg-pubkey@66fd4949-4803fe57.",
     "Name": "gpg-pubkey",
     "Version": "66fd4949",
     "Release": "4803fe57",
     "Arch": "None",
-    "License": "pubkey",
+    "Licenses": [
+      "pubkey"
+    ],
     "Layer": {
-      "Digest": "sha256:675aead3dff5e25094cb9f4d7cc64f05e9f04a3f3397d5d45bfbc1c8a99c3a73",
       "DiffID": "sha256:0f379947a276b7b051643960392fa66c2f0cb493bc1dcd471abb5545005949fd"
     }
   },
   {
+    "ID": "krb5@1.17-1.ph3.x86_64",
     "Name": "krb5",
     "Version": "1.17",
     "Release": "1.ph3",
@@ -172,13 +720,122 @@
     "SrcName": "krb5",
     "SrcVersion": "1.17",
     "SrcRelease": "1.ph3",
-    "License": "MIT",
+    "Licenses": [
+      "MIT"
+    ],
+    "Maintainer": "VMware, Inc.",
+    "DependsOn": [
+      "bash@4.4.18-1.ph3.x86_64",
+      "e2fsprogs-libs@1.44.3-2.ph3.x86_64",
+      "glibc@2.28-3.ph3.x86_64",
+      "openssl@1.0.2s-1.ph3.x86_64"
+    ],
     "Layer": {
-      "Digest": "sha256:675aead3dff5e25094cb9f4d7cc64f05e9f04a3f3397d5d45bfbc1c8a99c3a73",
       "DiffID": "sha256:0f379947a276b7b051643960392fa66c2f0cb493bc1dcd471abb5545005949fd"
-    }
+    },
+    "SystemInstalledFiles": [
+      "/usr/bin/gss-client",
+      "/usr/bin/k5srvutil",
+      "/usr/bin/kadmin",
+      "/usr/bin/kdestroy",
+      "/usr/bin/kinit",
+      "/usr/bin/klist",
+      "/usr/bin/kpasswd",
+      "/usr/bin/krb5-config",
+      "/usr/bin/kswitch",
+      "/usr/bin/ktutil",
+      "/usr/bin/kvno",
+      "/usr/bin/sclient",
+      "/usr/bin/sim_client",
+      "/usr/bin/uuclient",
+      "/usr/lib/krb5/plugins/authdata",
+      "/usr/lib/krb5/plugins/kdb",
+      "/usr/lib/krb5/plugins/kdb/db2.so",
+      "/usr/lib/krb5/plugins/libkrb5",
+      "/usr/lib/krb5/plugins/preauth",
+      "/usr/lib/krb5/plugins/preauth/otp.so",
+      "/usr/lib/krb5/plugins/preauth/pkinit.so",
+      "/usr/lib/krb5/plugins/preauth/spake.so",
+      "/usr/lib/krb5/plugins/preauth/test.so",
+      "/usr/lib/krb5/plugins/tls",
+      "/usr/lib/krb5/plugins/tls/k5tls.so",
+      "/usr/lib/libgssapi_krb5.so",
+      "/usr/lib/libgssapi_krb5.so.2",
+      "/usr/lib/libgssapi_krb5.so.2.2",
+      "/usr/lib/libgssrpc.so",
+      "/usr/lib/libgssrpc.so.4",
+      "/usr/lib/libgssrpc.so.4.2",
+      "/usr/lib/libk5crypto.so",
+      "/usr/lib/libk5crypto.so.3",
+      "/usr/lib/libk5crypto.so.3.1",
+      "/usr/lib/libkadm5clnt.so",
+      "/usr/lib/libkadm5clnt_mit.so",
+      "/usr/lib/libkadm5clnt_mit.so.11",
+      "/usr/lib/libkadm5clnt_mit.so.11.0",
+      "/usr/lib/libkadm5srv.so",
+      "/usr/lib/libkadm5srv_mit.so",
+      "/usr/lib/libkadm5srv_mit.so.11",
+      "/usr/lib/libkadm5srv_mit.so.11.0",
+      "/usr/lib/libkdb5.so",
+      "/usr/lib/libkdb5.so.9",
+      "/usr/lib/libkdb5.so.9.0",
+      "/usr/lib/libkrad.so",
+      "/usr/lib/libkrad.so.0",
+      "/usr/lib/libkrad.so.0.0",
+      "/usr/lib/libkrb5.so",
+      "/usr/lib/libkrb5.so.3",
+      "/usr/lib/libkrb5.so.3.3",
+      "/usr/lib/libkrb5support.so",
+      "/usr/lib/libkrb5support.so.0",
+      "/usr/lib/libkrb5support.so.0.1",
+      "/usr/lib/libverto.so",
+      "/usr/lib/libverto.so.0",
+      "/usr/lib/libverto.so.0.0",
+      "/usr/sbin/gss-server",
+      "/usr/sbin/kadmin.local",
+      "/usr/sbin/kadmind",
+      "/usr/sbin/kdb5_util",
+      "/usr/sbin/kprop",
+      "/usr/sbin/kpropd",
+      "/usr/sbin/kproplog",
+      "/usr/sbin/krb5-send-pr",
+      "/usr/sbin/krb5kdc",
+      "/usr/sbin/sim_server",
+      "/usr/sbin/sserver",
+      "/usr/sbin/uuserver",
+      "/usr/share/man/man1/k5srvutil.1.gz",
+      "/usr/share/man/man1/kadmin.1.gz",
+      "/usr/share/man/man1/kdestroy.1.gz",
+      "/usr/share/man/man1/kinit.1.gz",
+      "/usr/share/man/man1/klist.1.gz",
+      "/usr/share/man/man1/kpasswd.1.gz",
+      "/usr/share/man/man1/krb5-config.1.gz",
+      "/usr/share/man/man1/ksu.1.gz",
+      "/usr/share/man/man1/kswitch.1.gz",
+      "/usr/share/man/man1/ktutil.1.gz",
+      "/usr/share/man/man1/kvno.1.gz",
+      "/usr/share/man/man1/sclient.1.gz",
+      "/usr/share/man/man5/.k5identity.5.gz",
+      "/usr/share/man/man5/.k5login.5.gz",
+      "/usr/share/man/man5/k5identity.5.gz",
+      "/usr/share/man/man5/k5login.5.gz",
+      "/usr/share/man/man5/kadm5.acl.5.gz",
+      "/usr/share/man/man5/kdc.conf.5.gz",
+      "/usr/share/man/man5/krb5.conf.5.gz",
+      "/usr/share/man/man7/kerberos.7.gz",
+      "/usr/share/man/man8/kadmin.local.8.gz",
+      "/usr/share/man/man8/kadmind.8.gz",
+      "/usr/share/man/man8/kdb5_ldap_util.8.gz",
+      "/usr/share/man/man8/kdb5_util.8.gz",
+      "/usr/share/man/man8/kprop.8.gz",
+      "/usr/share/man/man8/kpropd.8.gz",
+      "/usr/share/man/man8/kproplog.8.gz",
+      "/usr/share/man/man8/krb5kdc.8.gz",
+      "/usr/share/man/man8/sserver.8.gz"
+    ]
   },
   {
+    "ID": "libcap@2.25-8.ph3.x86_64",
     "Name": "libcap",
     "Version": "2.25",
     "Release": "8.ph3",
@@ -186,13 +843,30 @@
     "SrcName": "libcap",
     "SrcVersion": "2.25",
     "SrcRelease": "8.ph3",
-    "License": "GPLv2+",
+    "Licenses": [
+      "GPLv2+"
+    ],
+    "Maintainer": "VMware, Inc.",
+    "DependsOn": [
+      "glibc@2.28-3.ph3.x86_64"
+    ],
     "Layer": {
-      "Digest": "sha256:675aead3dff5e25094cb9f4d7cc64f05e9f04a3f3397d5d45bfbc1c8a99c3a73",
       "DiffID": "sha256:0f379947a276b7b051643960392fa66c2f0cb493bc1dcd471abb5545005949fd"
-    }
+    },
+    "SystemInstalledFiles": [
+      "/usr/lib64/libcap.so.2",
+      "/usr/lib64/libcap.so.2.25",
+      "/usr/sbin/capsh",
+      "/usr/sbin/getcap",
+      "/usr/sbin/getpcaps",
+      "/usr/sbin/setcap",
+      "/usr/share/man/man1/capsh.1.gz",
+      "/usr/share/man/man8/getcap.8.gz",
+      "/usr/share/man/man8/setcap.8.gz"
+    ]
   },
   {
+    "ID": "libdb@5.3.28-2.ph3.x86_64",
     "Name": "libdb",
     "Version": "5.3.28",
     "Release": "2.ph3",
@@ -200,13 +874,26 @@
     "SrcName": "libdb",
     "SrcVersion": "5.3.28",
     "SrcRelease": "2.ph3",
-    "License": "BSD and LGPLv2 and Sleepycat",
+    "Licenses": [
+      "BSD and LGPLv2 and Sleepycat"
+    ],
+    "Maintainer": "VMware, Inc.",
+    "DependsOn": [
+      "glibc@2.28-3.ph3.x86_64"
+    ],
     "Layer": {
-      "Digest": "sha256:675aead3dff5e25094cb9f4d7cc64f05e9f04a3f3397d5d45bfbc1c8a99c3a73",
       "DiffID": "sha256:0f379947a276b7b051643960392fa66c2f0cb493bc1dcd471abb5545005949fd"
-    }
+    },
+    "SystemInstalledFiles": [
+      "/usr/lib/libdb-5.3.so",
+      "/usr/lib/libdb-5.so",
+      "/usr/lib/libdb.so",
+      "/usr/share/licenses/LICENSE",
+      "/usr/share/licenses/README"
+    ]
   },
   {
+    "ID": "libgcc@7.3.0-4.ph3.x86_64",
     "Name": "libgcc",
     "Version": "7.3.0",
     "Release": "4.ph3",
@@ -214,13 +901,22 @@
     "SrcName": "gcc",
     "SrcVersion": "7.3.0",
     "SrcRelease": "4.ph3",
-    "License": "GPLv2+",
+    "Licenses": [
+      "GPLv2+"
+    ],
+    "Maintainer": "VMware, Inc.",
+    "DependsOn": [
+      "glibc@2.28-3.ph3.x86_64"
+    ],
     "Layer": {
-      "Digest": "sha256:675aead3dff5e25094cb9f4d7cc64f05e9f04a3f3397d5d45bfbc1c8a99c3a73",
       "DiffID": "sha256:0f379947a276b7b051643960392fa66c2f0cb493bc1dcd471abb5545005949fd"
-    }
+    },
+    "SystemInstalledFiles": [
+      "/usr/lib64/libgcc_s.so.1"
+    ]
   },
   {
+    "ID": "libsolv@0.6.26-5.ph3.x86_64",
     "Name": "libsolv",
     "Version": "0.6.26",
     "Release": "5.ph3",
@@ -228,13 +924,48 @@
     "SrcName": "libsolv",
     "SrcVersion": "0.6.26",
     "SrcRelease": "5.ph3",
-    "License": "BSD",
+    "Licenses": [
+      "BSD"
+    ],
+    "Maintainer": "VMware, Inc.",
+    "DependsOn": [
+      "bash@4.4.18-1.ph3.x86_64",
+      "expat-libs@2.2.6-2.ph3.x86_64",
+      "glibc@2.28-3.ph3.x86_64",
+      "libdb@5.3.28-2.ph3.x86_64",
+      "zlib@1.2.11-1.ph3.x86_64"
+    ],
     "Layer": {
-      "Digest": "sha256:675aead3dff5e25094cb9f4d7cc64f05e9f04a3f3397d5d45bfbc1c8a99c3a73",
       "DiffID": "sha256:0f379947a276b7b051643960392fa66c2f0cb493bc1dcd471abb5545005949fd"
-    }
+    },
+    "SystemInstalledFiles": [
+      "/usr/bin/deltainfoxml2solv",
+      "/usr/bin/dumpsolv",
+      "/usr/bin/installcheck",
+      "/usr/bin/mergesolv",
+      "/usr/bin/repo2solv.sh",
+      "/usr/bin/repomdxml2solv",
+      "/usr/bin/rpmdb2solv",
+      "/usr/bin/rpmmd2solv",
+      "/usr/bin/rpms2solv",
+      "/usr/bin/testsolv",
+      "/usr/bin/updateinfoxml2solv",
+      "/usr/lib64/libsolv.so.0",
+      "/usr/lib64/libsolvext.so.0",
+      "/usr/share/man/man1/deltainfoxml2solv.1.gz",
+      "/usr/share/man/man1/dumpsolv.1.gz",
+      "/usr/share/man/man1/installcheck.1.gz",
+      "/usr/share/man/man1/mergesolv.1.gz",
+      "/usr/share/man/man1/repomdxml2solv.1.gz",
+      "/usr/share/man/man1/rpmdb2solv.1.gz",
+      "/usr/share/man/man1/rpmmd2solv.1.gz",
+      "/usr/share/man/man1/rpms2solv.1.gz",
+      "/usr/share/man/man1/testsolv.1.gz",
+      "/usr/share/man/man1/updateinfoxml2solv.1.gz"
+    ]
   },
   {
+    "ID": "libssh2@1.9.0-1.ph3.x86_64",
     "Name": "libssh2",
     "Version": "1.9.0",
     "Release": "1.ph3",
@@ -242,13 +973,25 @@
     "SrcName": "libssh2",
     "SrcVersion": "1.9.0",
     "SrcRelease": "1.ph3",
-    "License": "BSD",
+    "Licenses": [
+      "BSD"
+    ],
+    "Maintainer": "VMware, Inc.",
+    "DependsOn": [
+      "glibc@2.28-3.ph3.x86_64",
+      "openssl@1.0.2s-1.ph3.x86_64",
+      "zlib@1.2.11-1.ph3.x86_64"
+    ],
     "Layer": {
-      "Digest": "sha256:675aead3dff5e25094cb9f4d7cc64f05e9f04a3f3397d5d45bfbc1c8a99c3a73",
       "DiffID": "sha256:0f379947a276b7b051643960392fa66c2f0cb493bc1dcd471abb5545005949fd"
-    }
+    },
+    "SystemInstalledFiles": [
+      "/usr/lib/libssh2.so.1",
+      "/usr/lib/libssh2.so.1.0.1"
+    ]
   },
   {
+    "ID": "ncurses-libs@6.1-1.ph3.x86_64",
     "Name": "ncurses-libs",
     "Version": "6.1",
     "Release": "1.ph3",
@@ -256,13 +999,36 @@
     "SrcName": "ncurses",
     "SrcVersion": "6.1",
     "SrcRelease": "1.ph3",
-    "License": "MIT",
+    "Licenses": [
+      "MIT"
+    ],
+    "Maintainer": "VMware, Inc.",
+    "DependsOn": [
+      "glibc@2.28-3.ph3.x86_64"
+    ],
     "Layer": {
-      "Digest": "sha256:675aead3dff5e25094cb9f4d7cc64f05e9f04a3f3397d5d45bfbc1c8a99c3a73",
       "DiffID": "sha256:0f379947a276b7b051643960392fa66c2f0cb493bc1dcd471abb5545005949fd"
-    }
+    },
+    "SystemInstalledFiles": [
+      "/usr/lib/libformw.so.6",
+      "/usr/lib/libformw.so.6.1",
+      "/usr/lib/libmenuw.so.6",
+      "/usr/lib/libmenuw.so.6.1",
+      "/usr/lib/libncurses.so.6",
+      "/usr/lib/libncursesw.so.6",
+      "/usr/lib/libncursesw.so.6.1",
+      "/usr/lib/libpanelw.so.6",
+      "/usr/lib/libpanelw.so.6.1",
+      "/usr/lib/terminfo",
+      "/usr/share/tabset/std",
+      "/usr/share/tabset/stdcrt",
+      "/usr/share/tabset/vt100",
+      "/usr/share/tabset/vt300",
+      "/usr/share/terminfo/l/linux"
+    ]
   },
   {
+    "ID": "nspr@4.21-1.ph3.x86_64",
     "Name": "nspr",
     "Version": "4.21",
     "Release": "1.ph3",
@@ -270,13 +1036,26 @@
     "SrcName": "nspr",
     "SrcVersion": "4.21",
     "SrcRelease": "1.ph3",
-    "License": "MPLv2.0",
+    "Licenses": [
+      "MPLv2.0"
+    ],
+    "Maintainer": "VMware, Inc.",
+    "DependsOn": [
+      "bash@4.4.18-1.ph3.x86_64",
+      "glibc@2.28-3.ph3.x86_64"
+    ],
     "Layer": {
-      "Digest": "sha256:675aead3dff5e25094cb9f4d7cc64f05e9f04a3f3397d5d45bfbc1c8a99c3a73",
       "DiffID": "sha256:0f379947a276b7b051643960392fa66c2f0cb493bc1dcd471abb5545005949fd"
-    }
+    },
+    "SystemInstalledFiles": [
+      "/usr/bin/nspr-config",
+      "/usr/lib/libnspr4.so",
+      "/usr/lib/libplc4.so",
+      "/usr/lib/libplds4.so"
+    ]
   },
   {
+    "ID": "nss-libs@3.44-2.ph3.x86_64",
     "Name": "nss-libs",
     "Version": "3.44",
     "Release": "2.ph3",
@@ -284,13 +1063,27 @@
     "SrcName": "nss",
     "SrcVersion": "3.44",
     "SrcRelease": "2.ph3",
-    "License": "MPLv2.0",
+    "Licenses": [
+      "MPLv2.0"
+    ],
+    "Maintainer": "VMware, Inc.",
+    "DependsOn": [
+      "glibc@2.28-3.ph3.x86_64",
+      "nspr@4.21-1.ph3.x86_64",
+      "sqlite-libs@3.27.2-3.ph3.x86_64"
+    ],
     "Layer": {
-      "Digest": "sha256:675aead3dff5e25094cb9f4d7cc64f05e9f04a3f3397d5d45bfbc1c8a99c3a73",
       "DiffID": "sha256:0f379947a276b7b051643960392fa66c2f0cb493bc1dcd471abb5545005949fd"
-    }
+    },
+    "SystemInstalledFiles": [
+      "/usr/lib/libfreeblpriv3.so",
+      "/usr/lib/libnss3.so",
+      "/usr/lib/libnssutil3.so",
+      "/usr/lib/libsoftokn3.so"
+    ]
   },
   {
+    "ID": "openssl@1.0.2s-1.ph3.x86_64",
     "Name": "openssl",
     "Version": "1.0.2s",
     "Release": "1.ph3",
@@ -298,13 +1091,150 @@
     "SrcName": "openssl",
     "SrcVersion": "1.0.2s",
     "SrcRelease": "1.ph3",
-    "License": "OpenSSL",
+    "Licenses": [
+      "OpenSSL"
+    ],
+    "Maintainer": "VMware, Inc.",
+    "DependsOn": [
+      "bash@4.4.18-1.ph3.x86_64",
+      "glibc@2.28-3.ph3.x86_64",
+      "libgcc@7.3.0-4.ph3.x86_64"
+    ],
     "Layer": {
-      "Digest": "sha256:675aead3dff5e25094cb9f4d7cc64f05e9f04a3f3397d5d45bfbc1c8a99c3a73",
       "DiffID": "sha256:0f379947a276b7b051643960392fa66c2f0cb493bc1dcd471abb5545005949fd"
-    }
+    },
+    "SystemInstalledFiles": [
+      "/etc/ssl/certs",
+      "/etc/ssl/misc/CA.sh",
+      "/etc/ssl/misc/c_hash",
+      "/etc/ssl/misc/c_info",
+      "/etc/ssl/misc/c_issuer",
+      "/etc/ssl/misc/c_name",
+      "/etc/ssl/openssl.cnf",
+      "/etc/ssl/private",
+      "/usr/bin/openssl",
+      "/usr/lib/engines/lib4758cca.so",
+      "/usr/lib/engines/libaep.so",
+      "/usr/lib/engines/libatalla.so",
+      "/usr/lib/engines/libcapi.so",
+      "/usr/lib/engines/libchil.so",
+      "/usr/lib/engines/libcswift.so",
+      "/usr/lib/engines/libgmp.so",
+      "/usr/lib/engines/libgost.so",
+      "/usr/lib/engines/libnuron.so",
+      "/usr/lib/engines/libpadlock.so",
+      "/usr/lib/engines/libsureware.so",
+      "/usr/lib/engines/libubsec.so",
+      "/usr/lib/libcrypto.so.1.0.0",
+      "/usr/lib/libcrypto.so.1.0.2",
+      "/usr/lib/libssl.so.1.0.0",
+      "/usr/lib/libssl.so.1.0.2",
+      "/usr/share/man/man1/CA.pl.1ssl.gz",
+      "/usr/share/man/man1/asn1parse.1ssl.gz",
+      "/usr/share/man/man1/c_rehash.1ssl.gz",
+      "/usr/share/man/man1/ca.1ssl.gz",
+      "/usr/share/man/man1/ciphers.1ssl.gz",
+      "/usr/share/man/man1/cms.1ssl.gz",
+      "/usr/share/man/man1/crl.1ssl.gz",
+      "/usr/share/man/man1/crl2pkcs7.1ssl.gz",
+      "/usr/share/man/man1/dgst.1ssl.gz",
+      "/usr/share/man/man1/dhparam.1ssl.gz",
+      "/usr/share/man/man1/dsa.1ssl.gz",
+      "/usr/share/man/man1/dsaparam.1ssl.gz",
+      "/usr/share/man/man1/dss1.1ssl.gz",
+      "/usr/share/man/man1/ec.1ssl.gz",
+      "/usr/share/man/man1/ecparam.1ssl.gz",
+      "/usr/share/man/man1/enc.1ssl.gz",
+      "/usr/share/man/man1/errstr.1ssl.gz",
+      "/usr/share/man/man1/gendsa.1ssl.gz",
+      "/usr/share/man/man1/genpkey.1ssl.gz",
+      "/usr/share/man/man1/genrsa.1ssl.gz",
+      "/usr/share/man/man1/md2.1ssl.gz",
+      "/usr/share/man/man1/md4.1ssl.gz",
+      "/usr/share/man/man1/md5.1ssl.gz",
+      "/usr/share/man/man1/mdc2.1ssl.gz",
+      "/usr/share/man/man1/nseq.1ssl.gz",
+      "/usr/share/man/man1/ocsp.1ssl.gz",
+      "/usr/share/man/man1/openssl-asn1parse.1ssl.gz",
+      "/usr/share/man/man1/openssl-ca.1ssl.gz",
+      "/usr/share/man/man1/openssl-ciphers.1ssl.gz",
+      "/usr/share/man/man1/openssl-cms.1ssl.gz",
+      "/usr/share/man/man1/openssl-crl.1ssl.gz",
+      "/usr/share/man/man1/openssl-crl2pkcs7.1ssl.gz",
+      "/usr/share/man/man1/openssl-dgst.1ssl.gz",
+      "/usr/share/man/man1/openssl-dhparam.1ssl.gz",
+      "/usr/share/man/man1/openssl-dsa.1ssl.gz",
+      "/usr/share/man/man1/openssl-dsaparam.1ssl.gz",
+      "/usr/share/man/man1/openssl-ec.1ssl.gz",
+      "/usr/share/man/man1/openssl-ecparam.1ssl.gz",
+      "/usr/share/man/man1/openssl-enc.1ssl.gz",
+      "/usr/share/man/man1/openssl-errstr.1ssl.gz",
+      "/usr/share/man/man1/openssl-gendsa.1ssl.gz",
+      "/usr/share/man/man1/openssl-genpkey.1ssl.gz",
+      "/usr/share/man/man1/openssl-genrsa.1ssl.gz",
+      "/usr/share/man/man1/openssl-nseq.1ssl.gz",
+      "/usr/share/man/man1/openssl-ocsp.1ssl.gz",
+      "/usr/share/man/man1/openssl-passwd.1ssl.gz",
+      "/usr/share/man/man1/openssl-pkcs12.1ssl.gz",
+      "/usr/share/man/man1/openssl-pkcs7.1ssl.gz",
+      "/usr/share/man/man1/openssl-pkcs8.1ssl.gz",
+      "/usr/share/man/man1/openssl-pkey.1ssl.gz",
+      "/usr/share/man/man1/openssl-pkeyparam.1ssl.gz",
+      "/usr/share/man/man1/openssl-pkeyutl.1ssl.gz",
+      "/usr/share/man/man1/openssl-rand.1ssl.gz",
+      "/usr/share/man/man1/openssl-req.1ssl.gz",
+      "/usr/share/man/man1/openssl-rsa.1ssl.gz",
+      "/usr/share/man/man1/openssl-rsautl.1ssl.gz",
+      "/usr/share/man/man1/openssl-s_client.1ssl.gz",
+      "/usr/share/man/man1/openssl-s_server.1ssl.gz",
+      "/usr/share/man/man1/openssl-s_time.1ssl.gz",
+      "/usr/share/man/man1/openssl-sess_id.1ssl.gz",
+      "/usr/share/man/man1/openssl-smime.1ssl.gz",
+      "/usr/share/man/man1/openssl-speed.1ssl.gz",
+      "/usr/share/man/man1/openssl-spkac.1ssl.gz",
+      "/usr/share/man/man1/openssl-ts.1ssl.gz",
+      "/usr/share/man/man1/openssl-tsget.1ssl.gz",
+      "/usr/share/man/man1/openssl-verify.1ssl.gz",
+      "/usr/share/man/man1/openssl-version.1ssl.gz",
+      "/usr/share/man/man1/openssl-x509.1ssl.gz",
+      "/usr/share/man/man1/openssl.1ssl.gz",
+      "/usr/share/man/man1/passwd.1ssl.gz",
+      "/usr/share/man/man1/pkcs12.1ssl.gz",
+      "/usr/share/man/man1/pkcs7.1ssl.gz",
+      "/usr/share/man/man1/pkcs8.1ssl.gz",
+      "/usr/share/man/man1/pkey.1ssl.gz",
+      "/usr/share/man/man1/pkeyparam.1ssl.gz",
+      "/usr/share/man/man1/pkeyutl.1ssl.gz",
+      "/usr/share/man/man1/rand.1ssl.gz",
+      "/usr/share/man/man1/req.1ssl.gz",
+      "/usr/share/man/man1/ripemd160.1ssl.gz",
+      "/usr/share/man/man1/rsa.1ssl.gz",
+      "/usr/share/man/man1/rsautl.1ssl.gz",
+      "/usr/share/man/man1/s_client.1ssl.gz",
+      "/usr/share/man/man1/s_server.1ssl.gz",
+      "/usr/share/man/man1/s_time.1ssl.gz",
+      "/usr/share/man/man1/sess_id.1ssl.gz",
+      "/usr/share/man/man1/sha.1ssl.gz",
+      "/usr/share/man/man1/sha1.1ssl.gz",
+      "/usr/share/man/man1/sha224.1ssl.gz",
+      "/usr/share/man/man1/sha256.1ssl.gz",
+      "/usr/share/man/man1/sha384.1ssl.gz",
+      "/usr/share/man/man1/sha512.1ssl.gz",
+      "/usr/share/man/man1/smime.1ssl.gz",
+      "/usr/share/man/man1/speed.1ssl.gz",
+      "/usr/share/man/man1/spkac.1ssl.gz",
+      "/usr/share/man/man1/ts.1ssl.gz",
+      "/usr/share/man/man1/tsget.1ssl.gz",
+      "/usr/share/man/man1/verify.1ssl.gz",
+      "/usr/share/man/man1/version.1ssl.gz",
+      "/usr/share/man/man1/x509.1ssl.gz",
+      "/usr/share/man/man5/config.5ssl.gz",
+      "/usr/share/man/man5/x509v3_config.5ssl.gz",
+      "/usr/share/man/man7/des_modes.7ssl.gz"
+    ]
   },
   {
+    "ID": "photon-release@3.0-3.ph3.noarch",
     "Name": "photon-release",
     "Version": "3.0",
     "Release": "3.ph3",
@@ -312,13 +1242,27 @@
     "SrcName": "photon-release",
     "SrcVersion": "3.0",
     "SrcRelease": "3.ph3",
-    "License": "Apache License",
+    "Licenses": [
+      "Apache License"
+    ],
+    "Maintainer": "VMware, Inc.",
+    "DependsOn": [
+      "bash@4.4.18-1.ph3.x86_64"
+    ],
     "Layer": {
-      "Digest": "sha256:675aead3dff5e25094cb9f4d7cc64f05e9f04a3f3397d5d45bfbc1c8a99c3a73",
       "DiffID": "sha256:0f379947a276b7b051643960392fa66c2f0cb493bc1dcd471abb5545005949fd"
-    }
+    },
+    "SystemInstalledFiles": [
+      "/etc/issue",
+      "/etc/issue.net",
+      "/etc/lsb-release",
+      "/etc/os-release",
+      "/etc/photon-release",
+      "/usr/lib/os-release"
+    ]
   },
   {
+    "ID": "photon-repos@3.0-3.ph3.noarch",
     "Name": "photon-repos",
     "Version": "3.0",
     "Release": "3.ph3",
@@ -326,13 +1270,25 @@
     "SrcName": "photon-repos",
     "SrcVersion": "3.0",
     "SrcRelease": "3.ph3",
-    "License": "Apache License",
+    "Licenses": [
+      "Apache License"
+    ],
+    "Maintainer": "VMware, Inc.",
     "Layer": {
-      "Digest": "sha256:675aead3dff5e25094cb9f4d7cc64f05e9f04a3f3397d5d45bfbc1c8a99c3a73",
       "DiffID": "sha256:0f379947a276b7b051643960392fa66c2f0cb493bc1dcd471abb5545005949fd"
-    }
+    },
+    "SystemInstalledFiles": [
+      "/etc/pki/rpm-gpg/VMWARE-RPM-GPG-KEY",
+      "/etc/yum.repos.d",
+      "/etc/yum.repos.d/photon-debuginfo.repo",
+      "/etc/yum.repos.d/photon-extras.repo",
+      "/etc/yum.repos.d/photon-iso.repo",
+      "/etc/yum.repos.d/photon-updates.repo",
+      "/etc/yum.repos.d/photon.repo"
+    ]
   },
   {
+    "ID": "popt@1.16-5.ph3.x86_64",
     "Name": "popt",
     "Version": "1.16",
     "Release": "5.ph3",
@@ -340,13 +1296,23 @@
     "SrcName": "popt",
     "SrcVersion": "1.16",
     "SrcRelease": "5.ph3",
-    "License": "MIT",
+    "Licenses": [
+      "MIT"
+    ],
+    "Maintainer": "VMware, Inc.",
+    "DependsOn": [
+      "glibc@2.28-3.ph3.x86_64"
+    ],
     "Layer": {
-      "Digest": "sha256:675aead3dff5e25094cb9f4d7cc64f05e9f04a3f3397d5d45bfbc1c8a99c3a73",
       "DiffID": "sha256:0f379947a276b7b051643960392fa66c2f0cb493bc1dcd471abb5545005949fd"
-    }
+    },
+    "SystemInstalledFiles": [
+      "/usr/lib/libpopt.so.0",
+      "/usr/lib/libpopt.so.0.0.0"
+    ]
   },
   {
+    "ID": "readline@7.0-2.ph3.x86_64",
     "Name": "readline",
     "Version": "7.0",
     "Release": "2.ph3",
@@ -354,13 +1320,26 @@
     "SrcName": "readline",
     "SrcVersion": "7.0",
     "SrcRelease": "2.ph3",
-    "License": "GPLv3+",
+    "Licenses": [
+      "GPLv3+"
+    ],
+    "Maintainer": "VMware, Inc.",
+    "DependsOn": [
+      "glibc@2.28-3.ph3.x86_64",
+      "ncurses-libs@6.1-1.ph3.x86_64"
+    ],
     "Layer": {
-      "Digest": "sha256:675aead3dff5e25094cb9f4d7cc64f05e9f04a3f3397d5d45bfbc1c8a99c3a73",
       "DiffID": "sha256:0f379947a276b7b051643960392fa66c2f0cb493bc1dcd471abb5545005949fd"
-    }
+    },
+    "SystemInstalledFiles": [
+      "/usr/lib/libhistory.so.7",
+      "/usr/lib/libhistory.so.7.0",
+      "/usr/lib/libreadline.so.7",
+      "/usr/lib/libreadline.so.7.0"
+    ]
   },
   {
+    "ID": "rpm-libs@4.14.2-4.ph3.x86_64",
     "Name": "rpm-libs",
     "Version": "4.14.2",
     "Release": "4.ph3",
@@ -368,13 +1347,165 @@
     "SrcName": "rpm",
     "SrcVersion": "4.14.2",
     "SrcRelease": "4.ph3",
-    "License": "GPLv2+",
+    "Licenses": [
+      "GPLv2+"
+    ],
+    "Maintainer": "VMware, Inc.",
+    "DependsOn": [
+      "bzip2-libs@1.0.6-10.ph3.x86_64",
+      "elfutils-libelf@0.176-1.ph3.x86_64",
+      "glibc@2.28-3.ph3.x86_64",
+      "libcap@2.25-8.ph3.x86_64",
+      "libdb@5.3.28-2.ph3.x86_64",
+      "libgcc@7.3.0-4.ph3.x86_64",
+      "nss-libs@3.44-2.ph3.x86_64",
+      "popt@1.16-5.ph3.x86_64",
+      "xz-libs@5.2.4-1.ph3.x86_64",
+      "zlib@1.2.11-1.ph3.x86_64"
+    ],
     "Layer": {
-      "Digest": "sha256:675aead3dff5e25094cb9f4d7cc64f05e9f04a3f3397d5d45bfbc1c8a99c3a73",
       "DiffID": "sha256:0f379947a276b7b051643960392fa66c2f0cb493bc1dcd471abb5545005949fd"
-    }
+    },
+    "SystemInstalledFiles": [
+      "/etc/rpm/macros",
+      "/usr/lib/librpm.so.8",
+      "/usr/lib/librpm.so.8.1.0",
+      "/usr/lib/librpmio.so.8",
+      "/usr/lib/librpmio.so.8.1.0",
+      "/usr/lib/rpm/macros",
+      "/usr/lib/rpm/platform/aarch64-linux",
+      "/usr/lib/rpm/platform/aarch64-linux/macros",
+      "/usr/lib/rpm/platform/alpha-linux",
+      "/usr/lib/rpm/platform/alpha-linux/macros",
+      "/usr/lib/rpm/platform/alphaev5-linux",
+      "/usr/lib/rpm/platform/alphaev5-linux/macros",
+      "/usr/lib/rpm/platform/alphaev56-linux",
+      "/usr/lib/rpm/platform/alphaev56-linux/macros",
+      "/usr/lib/rpm/platform/alphaev6-linux",
+      "/usr/lib/rpm/platform/alphaev6-linux/macros",
+      "/usr/lib/rpm/platform/alphaev67-linux",
+      "/usr/lib/rpm/platform/alphaev67-linux/macros",
+      "/usr/lib/rpm/platform/alphapca56-linux",
+      "/usr/lib/rpm/platform/alphapca56-linux/macros",
+      "/usr/lib/rpm/platform/amd64-linux",
+      "/usr/lib/rpm/platform/amd64-linux/macros",
+      "/usr/lib/rpm/platform/armv3l-linux",
+      "/usr/lib/rpm/platform/armv3l-linux/macros",
+      "/usr/lib/rpm/platform/armv4b-linux",
+      "/usr/lib/rpm/platform/armv4b-linux/macros",
+      "/usr/lib/rpm/platform/armv4l-linux",
+      "/usr/lib/rpm/platform/armv4l-linux/macros",
+      "/usr/lib/rpm/platform/armv5tejl-linux",
+      "/usr/lib/rpm/platform/armv5tejl-linux/macros",
+      "/usr/lib/rpm/platform/armv5tel-linux",
+      "/usr/lib/rpm/platform/armv5tel-linux/macros",
+      "/usr/lib/rpm/platform/armv5tl-linux",
+      "/usr/lib/rpm/platform/armv5tl-linux/macros",
+      "/usr/lib/rpm/platform/armv6hl-linux",
+      "/usr/lib/rpm/platform/armv6hl-linux/macros",
+      "/usr/lib/rpm/platform/armv6l-linux",
+      "/usr/lib/rpm/platform/armv6l-linux/macros",
+      "/usr/lib/rpm/platform/armv7hl-linux",
+      "/usr/lib/rpm/platform/armv7hl-linux/macros",
+      "/usr/lib/rpm/platform/armv7hnl-linux",
+      "/usr/lib/rpm/platform/armv7hnl-linux/macros",
+      "/usr/lib/rpm/platform/armv7l-linux",
+      "/usr/lib/rpm/platform/armv7l-linux/macros",
+      "/usr/lib/rpm/platform/athlon-linux",
+      "/usr/lib/rpm/platform/athlon-linux/macros",
+      "/usr/lib/rpm/platform/geode-linux",
+      "/usr/lib/rpm/platform/geode-linux/macros",
+      "/usr/lib/rpm/platform/i386-linux",
+      "/usr/lib/rpm/platform/i386-linux/macros",
+      "/usr/lib/rpm/platform/i486-linux",
+      "/usr/lib/rpm/platform/i486-linux/macros",
+      "/usr/lib/rpm/platform/i586-linux",
+      "/usr/lib/rpm/platform/i586-linux/macros",
+      "/usr/lib/rpm/platform/i686-linux",
+      "/usr/lib/rpm/platform/i686-linux/macros",
+      "/usr/lib/rpm/platform/ia32e-linux",
+      "/usr/lib/rpm/platform/ia32e-linux/macros",
+      "/usr/lib/rpm/platform/ia64-linux",
+      "/usr/lib/rpm/platform/ia64-linux/macros",
+      "/usr/lib/rpm/platform/m68k-linux",
+      "/usr/lib/rpm/platform/m68k-linux/macros",
+      "/usr/lib/rpm/platform/mips-linux",
+      "/usr/lib/rpm/platform/mips-linux/macros",
+      "/usr/lib/rpm/platform/mips64-linux",
+      "/usr/lib/rpm/platform/mips64-linux/macros",
+      "/usr/lib/rpm/platform/mips64el-linux",
+      "/usr/lib/rpm/platform/mips64el-linux/macros",
+      "/usr/lib/rpm/platform/mips64r6-linux",
+      "/usr/lib/rpm/platform/mips64r6-linux/macros",
+      "/usr/lib/rpm/platform/mips64r6el-linux",
+      "/usr/lib/rpm/platform/mips64r6el-linux/macros",
+      "/usr/lib/rpm/platform/mipsel-linux",
+      "/usr/lib/rpm/platform/mipsel-linux/macros",
+      "/usr/lib/rpm/platform/mipsr6-linux",
+      "/usr/lib/rpm/platform/mipsr6-linux/macros",
+      "/usr/lib/rpm/platform/mipsr6el-linux",
+      "/usr/lib/rpm/platform/mipsr6el-linux/macros",
+      "/usr/lib/rpm/platform/noarch-linux",
+      "/usr/lib/rpm/platform/noarch-linux/macros",
+      "/usr/lib/rpm/platform/pentium3-linux",
+      "/usr/lib/rpm/platform/pentium3-linux/macros",
+      "/usr/lib/rpm/platform/pentium4-linux",
+      "/usr/lib/rpm/platform/pentium4-linux/macros",
+      "/usr/lib/rpm/platform/ppc-linux",
+      "/usr/lib/rpm/platform/ppc-linux/macros",
+      "/usr/lib/rpm/platform/ppc32dy4-linux",
+      "/usr/lib/rpm/platform/ppc32dy4-linux/macros",
+      "/usr/lib/rpm/platform/ppc64-linux",
+      "/usr/lib/rpm/platform/ppc64-linux/macros",
+      "/usr/lib/rpm/platform/ppc64iseries-linux",
+      "/usr/lib/rpm/platform/ppc64iseries-linux/macros",
+      "/usr/lib/rpm/platform/ppc64le-linux",
+      "/usr/lib/rpm/platform/ppc64le-linux/macros",
+      "/usr/lib/rpm/platform/ppc64p7-linux",
+      "/usr/lib/rpm/platform/ppc64p7-linux/macros",
+      "/usr/lib/rpm/platform/ppc64pseries-linux",
+      "/usr/lib/rpm/platform/ppc64pseries-linux/macros",
+      "/usr/lib/rpm/platform/ppc8260-linux",
+      "/usr/lib/rpm/platform/ppc8260-linux/macros",
+      "/usr/lib/rpm/platform/ppc8560-linux",
+      "/usr/lib/rpm/platform/ppc8560-linux/macros",
+      "/usr/lib/rpm/platform/ppciseries-linux",
+      "/usr/lib/rpm/platform/ppciseries-linux/macros",
+      "/usr/lib/rpm/platform/ppcpseries-linux",
+      "/usr/lib/rpm/platform/ppcpseries-linux/macros",
+      "/usr/lib/rpm/platform/riscv64-linux",
+      "/usr/lib/rpm/platform/riscv64-linux/macros",
+      "/usr/lib/rpm/platform/s390-linux",
+      "/usr/lib/rpm/platform/s390-linux/macros",
+      "/usr/lib/rpm/platform/s390x-linux",
+      "/usr/lib/rpm/platform/s390x-linux/macros",
+      "/usr/lib/rpm/platform/sh-linux",
+      "/usr/lib/rpm/platform/sh-linux/macros",
+      "/usr/lib/rpm/platform/sh3-linux",
+      "/usr/lib/rpm/platform/sh3-linux/macros",
+      "/usr/lib/rpm/platform/sh4-linux",
+      "/usr/lib/rpm/platform/sh4-linux/macros",
+      "/usr/lib/rpm/platform/sh4a-linux",
+      "/usr/lib/rpm/platform/sh4a-linux/macros",
+      "/usr/lib/rpm/platform/sparc-linux",
+      "/usr/lib/rpm/platform/sparc-linux/macros",
+      "/usr/lib/rpm/platform/sparc64-linux",
+      "/usr/lib/rpm/platform/sparc64-linux/macros",
+      "/usr/lib/rpm/platform/sparc64v-linux",
+      "/usr/lib/rpm/platform/sparc64v-linux/macros",
+      "/usr/lib/rpm/platform/sparcv8-linux",
+      "/usr/lib/rpm/platform/sparcv8-linux/macros",
+      "/usr/lib/rpm/platform/sparcv9-linux",
+      "/usr/lib/rpm/platform/sparcv9-linux/macros",
+      "/usr/lib/rpm/platform/sparcv9v-linux",
+      "/usr/lib/rpm/platform/sparcv9v-linux/macros",
+      "/usr/lib/rpm/platform/x86_64-linux",
+      "/usr/lib/rpm/platform/x86_64-linux/macros",
+      "/usr/lib/rpm/rpmrc"
+    ]
   },
   {
+    "ID": "sqlite-libs@3.27.2-3.ph3.x86_64",
     "Name": "sqlite-libs",
     "Version": "3.27.2",
     "Release": "3.ph3",
@@ -382,13 +1513,24 @@
     "SrcName": "sqlite",
     "SrcVersion": "3.27.2",
     "SrcRelease": "3.ph3",
-    "License": "Public Domain",
+    "Licenses": [
+      "Public Domain"
+    ],
+    "Maintainer": "VMware, Inc.",
+    "DependsOn": [
+      "bash@4.4.18-1.ph3.x86_64",
+      "glibc@2.28-3.ph3.x86_64",
+      "zlib@1.2.11-1.ph3.x86_64"
+    ],
     "Layer": {
-      "Digest": "sha256:675aead3dff5e25094cb9f4d7cc64f05e9f04a3f3397d5d45bfbc1c8a99c3a73",
       "DiffID": "sha256:0f379947a276b7b051643960392fa66c2f0cb493bc1dcd471abb5545005949fd"
-    }
+    },
+    "SystemInstalledFiles": [
+      "/usr/lib/libsqlite3.so.0.8.6"
+    ]
   },
   {
+    "ID": "tdnf@2.0.0-10.ph3.x86_64",
     "Name": "tdnf",
     "Version": "2.0.0",
     "Release": "10.ph3",
@@ -396,13 +1538,38 @@
     "SrcName": "tdnf",
     "SrcVersion": "2.0.0",
     "SrcRelease": "10.ph3",
-    "License": "LGPLv2.1,GPLv2",
+    "Licenses": [
+      "LGPLv2.1,GPLv2"
+    ],
+    "Maintainer": "VMware, Inc.",
+    "DependsOn": [
+      "bash@4.4.18-1.ph3.x86_64",
+      "curl-libs@7.61.1-4.ph3.x86_64",
+      "curl@7.61.1-4.ph3.x86_64",
+      "glibc@2.28-3.ph3.x86_64",
+      "libsolv@0.6.26-5.ph3.x86_64",
+      "rpm-libs@4.14.2-4.ph3.x86_64",
+      "tdnf-cli-libs@2.0.0-10.ph3.x86_64"
+    ],
     "Layer": {
-      "Digest": "sha256:675aead3dff5e25094cb9f4d7cc64f05e9f04a3f3397d5d45bfbc1c8a99c3a73",
       "DiffID": "sha256:0f379947a276b7b051643960392fa66c2f0cb493bc1dcd471abb5545005949fd"
-    }
+    },
+    "SystemInstalledFiles": [
+      "/etc/motdgen.d/02-tdnf-updateinfo.sh",
+      "/etc/tdnf/tdnf.conf",
+      "/usr/bin/tdnf",
+      "/usr/bin/tdnf-cache-updateinfo",
+      "/usr/bin/tyum",
+      "/usr/bin/yum",
+      "/usr/lib/libtdnf.so.0",
+      "/usr/lib/libtdnf.so.0.0.0",
+      "/usr/lib/systemd/system/tdnf-cache-updateinfo.service",
+      "/usr/lib/systemd/system/tdnf-cache-updateinfo.timer",
+      "/var/cache/tdnf"
+    ]
   },
   {
+    "ID": "tdnf-cli-libs@2.0.0-10.ph3.x86_64",
     "Name": "tdnf-cli-libs",
     "Version": "2.0.0",
     "Release": "10.ph3",
@@ -410,13 +1577,25 @@
     "SrcName": "tdnf",
     "SrcVersion": "2.0.0",
     "SrcRelease": "10.ph3",
-    "License": "LGPLv2.1,GPLv2",
+    "Licenses": [
+      "LGPLv2.1,GPLv2"
+    ],
+    "Maintainer": "VMware, Inc.",
+    "DependsOn": [
+      "glibc@2.28-3.ph3.x86_64",
+      "libsolv@0.6.26-5.ph3.x86_64",
+      "rpm-libs@4.14.2-4.ph3.x86_64"
+    ],
     "Layer": {
-      "Digest": "sha256:675aead3dff5e25094cb9f4d7cc64f05e9f04a3f3397d5d45bfbc1c8a99c3a73",
       "DiffID": "sha256:0f379947a276b7b051643960392fa66c2f0cb493bc1dcd471abb5545005949fd"
-    }
+    },
+    "SystemInstalledFiles": [
+      "/usr/lib/libtdnfcli.so.0",
+      "/usr/lib/libtdnfcli.so.0.0.0"
+    ]
   },
   {
+    "ID": "toybox@0.7.7-1.ph3.x86_64",
     "Name": "toybox",
     "Version": "0.7.7",
     "Release": "1.ph3",
@@ -424,13 +1603,189 @@
     "SrcName": "toybox",
     "SrcVersion": "0.7.7",
     "SrcRelease": "1.ph3",
-    "License": "BSD",
+    "Licenses": [
+      "BSD"
+    ],
+    "Maintainer": "VMware, Inc.",
+    "DependsOn": [
+      "glibc@2.28-3.ph3.x86_64"
+    ],
     "Layer": {
-      "Digest": "sha256:675aead3dff5e25094cb9f4d7cc64f05e9f04a3f3397d5d45bfbc1c8a99c3a73",
       "DiffID": "sha256:0f379947a276b7b051643960392fa66c2f0cb493bc1dcd471abb5545005949fd"
-    }
+    },
+    "SystemInstalledFiles": [
+      "/bin/blkid",
+      "/bin/cat",
+      "/bin/chattr",
+      "/bin/chgrp",
+      "/bin/chmod",
+      "/bin/chown",
+      "/bin/cksum",
+      "/bin/cp",
+      "/bin/cpio",
+      "/bin/date",
+      "/bin/dos2unix",
+      "/bin/echo",
+      "/bin/egrep",
+      "/bin/false",
+      "/bin/fgrep",
+      "/bin/fstype",
+      "/bin/fsync",
+      "/bin/grep",
+      "/bin/help",
+      "/bin/hostname",
+      "/bin/kill",
+      "/bin/ln",
+      "/bin/login",
+      "/bin/ls",
+      "/bin/lsattr",
+      "/bin/microcom",
+      "/bin/mkdir",
+      "/bin/mknod",
+      "/bin/mktemp",
+      "/bin/mount",
+      "/bin/mountpoint",
+      "/bin/mv",
+      "/bin/netcat",
+      "/bin/netstat",
+      "/bin/nl",
+      "/bin/paste",
+      "/bin/pidof",
+      "/bin/pmap",
+      "/bin/pwd",
+      "/bin/readahead",
+      "/bin/rm",
+      "/bin/rmdir",
+      "/bin/sed",
+      "/bin/sleep",
+      "/bin/stat",
+      "/bin/stty",
+      "/bin/su",
+      "/bin/sync",
+      "/bin/taskset",
+      "/bin/timeout",
+      "/bin/touch",
+      "/bin/toybox",
+      "/bin/true",
+      "/bin/truncate",
+      "/bin/umount",
+      "/bin/uname",
+      "/bin/unix2dos",
+      "/bin/vmstat",
+      "/sbin/df",
+      "/sbin/freeramdisk",
+      "/sbin/ifconfig",
+      "/sbin/killall5",
+      "/sbin/losetup",
+      "/sbin/mkswap",
+      "/sbin/oneit",
+      "/sbin/partprobe",
+      "/sbin/pivot_root",
+      "/sbin/swapoff",
+      "/sbin/swapon",
+      "/sbin/switch_root",
+      "/sbin/sysctl",
+      "/sbin/vconfig",
+      "/usr/bin/acpi",
+      "/usr/bin/base64",
+      "/usr/bin/basename",
+      "/usr/bin/blockdev",
+      "/usr/bin/bunzip2",
+      "/usr/bin/bzcat",
+      "/usr/bin/cal",
+      "/usr/bin/catv",
+      "/usr/bin/chvt",
+      "/usr/bin/cmp",
+      "/usr/bin/comm",
+      "/usr/bin/count",
+      "/usr/bin/cut",
+      "/usr/bin/dirname",
+      "/usr/bin/du",
+      "/usr/bin/eject",
+      "/usr/bin/env",
+      "/usr/bin/expand",
+      "/usr/bin/factor",
+      "/usr/bin/fallocate",
+      "/usr/bin/file",
+      "/usr/bin/find",
+      "/usr/bin/flock",
+      "/usr/bin/free",
+      "/usr/bin/ftpget",
+      "/usr/bin/ftpput",
+      "/usr/bin/groups",
+      "/usr/bin/head",
+      "/usr/bin/hexedit",
+      "/usr/bin/hwclock",
+      "/usr/bin/id",
+      "/usr/bin/inotifyd",
+      "/usr/bin/install",
+      "/usr/bin/ionice",
+      "/usr/bin/iorenice",
+      "/usr/bin/iotop",
+      "/usr/bin/killall",
+      "/usr/bin/link",
+      "/usr/bin/logname",
+      "/usr/bin/lspci",
+      "/usr/bin/lsusb",
+      "/usr/bin/makedevs",
+      "/usr/bin/md5sum",
+      "/usr/bin/mix",
+      "/usr/bin/mkfifo",
+      "/usr/bin/mkpasswd",
+      "/usr/bin/nbd-client",
+      "/usr/bin/nc",
+      "/usr/bin/nice",
+      "/usr/bin/nohup",
+      "/usr/bin/nproc",
+      "/usr/bin/od",
+      "/usr/bin/passwd",
+      "/usr/bin/patch",
+      "/usr/bin/pgrep",
+      "/usr/bin/pkill",
+      "/usr/bin/printenv",
+      "/usr/bin/printf",
+      "/usr/bin/ps",
+      "/usr/bin/pwdx",
+      "/usr/bin/readlink",
+      "/usr/bin/realpath",
+      "/usr/bin/renice",
+      "/usr/bin/rev",
+      "/usr/bin/seq",
+      "/usr/bin/setsid",
+      "/usr/bin/sha1sum",
+      "/usr/bin/shred",
+      "/usr/bin/sort",
+      "/usr/bin/split",
+      "/usr/bin/tac",
+      "/usr/bin/tail",
+      "/usr/bin/tee",
+      "/usr/bin/time",
+      "/usr/bin/top",
+      "/usr/bin/tty",
+      "/usr/bin/tunctl",
+      "/usr/bin/uniq",
+      "/usr/bin/unlink",
+      "/usr/bin/uptime",
+      "/usr/bin/uudecode",
+      "/usr/bin/uuencode",
+      "/usr/bin/w",
+      "/usr/bin/wc",
+      "/usr/bin/which",
+      "/usr/bin/who",
+      "/usr/bin/whoami",
+      "/usr/bin/xargs",
+      "/usr/bin/xxd",
+      "/usr/bin/yes",
+      "/usr/sbin/chroot",
+      "/usr/sbin/fsfreeze",
+      "/usr/sbin/rfkill",
+      "/usr/share/doc/toybox-0.7.7",
+      "/usr/share/doc/toybox-0.7.7/LICENSE",
+      "/usr/share/doc/toybox-0.7.7/README"
+    ]
   },
   {
+    "ID": "xz-libs@5.2.4-1.ph3.x86_64",
     "Name": "xz-libs",
     "Version": "5.2.4",
     "Release": "1.ph3",
@@ -438,13 +1793,23 @@
     "SrcName": "xz",
     "SrcVersion": "5.2.4",
     "SrcRelease": "1.ph3",
-    "License": "GPLv2+ and GPLv3+ and LGPLv2+",
+    "Licenses": [
+      "GPLv2+ and GPLv3+ and LGPLv2+"
+    ],
+    "Maintainer": "VMware, Inc.",
+    "DependsOn": [
+      "glibc@2.28-3.ph3.x86_64"
+    ],
     "Layer": {
-      "Digest": "sha256:675aead3dff5e25094cb9f4d7cc64f05e9f04a3f3397d5d45bfbc1c8a99c3a73",
       "DiffID": "sha256:0f379947a276b7b051643960392fa66c2f0cb493bc1dcd471abb5545005949fd"
-    }
+    },
+    "SystemInstalledFiles": [
+      "/usr/lib/liblzma.so.5",
+      "/usr/lib/liblzma.so.5.2.4"
+    ]
   },
   {
+    "ID": "zlib@1.2.11-1.ph3.x86_64",
     "Name": "zlib",
     "Version": "1.2.11",
     "Release": "1.ph3",
@@ -452,10 +1817,19 @@
     "SrcName": "zlib",
     "SrcVersion": "1.2.11",
     "SrcRelease": "1.ph3",
-    "License": "zlib",
+    "Licenses": [
+      "zlib"
+    ],
+    "Maintainer": "VMware, Inc.",
+    "DependsOn": [
+      "glibc@2.28-3.ph3.x86_64"
+    ],
     "Layer": {
-      "Digest": "sha256:675aead3dff5e25094cb9f4d7cc64f05e9f04a3f3397d5d45bfbc1c8a99c3a73",
       "DiffID": "sha256:0f379947a276b7b051643960392fa66c2f0cb493bc1dcd471abb5545005949fd"
-    }
+    },
+    "SystemInstalledFiles": [
+      "/usr/lib/libz.so.1",
+      "/usr/lib/libz.so.1.2.11"
+    ]
   }
 ]
