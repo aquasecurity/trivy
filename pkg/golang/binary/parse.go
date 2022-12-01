@@ -45,6 +45,13 @@ func (p *Parser) Parse(r dio.ReadSeekerAt) ([]types.Library, []types.Dependency,
 	libs := make([]types.Library, 0, len(info.Deps))
 
 	for _, dep := range info.Deps {
+		// binaries with old go version may incorrectly add module in Deps
+		// In this case Path == "", Version == "Devel"
+		// we need to skip this
+		if dep.Path == "" {
+			continue
+		}
+
 		mod := dep
 		if dep.Replace != nil {
 			mod = dep.Replace
