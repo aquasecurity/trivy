@@ -12,7 +12,6 @@ import (
 
 	v1 "github.com/google/go-containerregistry/pkg/v1"
 	"golang.org/x/exp/slices"
-	"golang.org/x/sync/semaphore"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
@@ -22,10 +21,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/fanal/log"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/fanal/walker"
-)
-
-const (
-	parallel = 5
+	"github.com/aquasecurity/trivy/pkg/semaphore"
 )
 
 type Artifact struct {
@@ -205,12 +201,7 @@ func (a Artifact) consolidateCreatedBy(diffIDs, layerKeys []string, configFile *
 func (a Artifact) inspect(ctx context.Context, missingImage string, layerKeys, baseDiffIDs []string, layerKeyMap map[string]LayerInfo) error {
 	done := make(chan struct{})
 	errCh := make(chan error)
-
-	limit := semaphore.NewWeighted(parallel)
-	if a.artifactOption.Slow {
-		// Inspect layers in series
-		limit = semaphore.NewWeighted(1)
-	}
+	limit := semaphore.New(a.artifactOption.Slow)
 
 	var osFound types.OS
 	for _, k := range layerKeys {
@@ -279,11 +270,7 @@ func (a Artifact) inspectLayer(ctx context.Context, layerInfo LayerInfo, disable
 	var wg sync.WaitGroup
 	opts := analyzer.AnalysisOptions{Offline: a.artifactOption.Offline}
 	result := analyzer.NewAnalysisResult()
-	limit := semaphore.NewWeighted(parallel)
-	if a.artifactOption.Slow {
-		// Analyze files in series
-		limit = semaphore.NewWeighted(1)
-	}
+	limit := semaphore.New(a.artifactOption.Slow)
 
 	// Walk a tar layer
 	opqDirs, whFiles, err := a.walker.Walk(r, func(filePath string, info os.FileInfo, opener analyzer.Opener) error {

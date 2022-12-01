@@ -42,6 +42,7 @@ jobs:
             sbom
             server
             k8s
+            vm
 
             alpine
             redhat
@@ -66,7 +67,7 @@ jobs:
             go
             c
             c++
-            
+
             os
             lang
 
@@ -82,7 +83,7 @@ jobs:
 
             cli
             flag
-            
+
             cyclonedx
             spdx
 

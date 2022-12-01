@@ -3,15 +3,16 @@ package report
 import (
 	"fmt"
 	"io"
+	"strconv"
 	"strings"
 
 	"golang.org/x/xerrors"
 
+	"k8s.io/utils/pointer"
+
 	"github.com/aquasecurity/table"
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
-	"github.com/aquasecurity/trivy/pkg/compliance/spec"
 	pkgReport "github.com/aquasecurity/trivy/pkg/report/table"
-	"github.com/aquasecurity/trivy/pkg/types"
 )
 
 func BuildSummary(cr *ComplianceReport) *SummaryReport {
@@ -22,23 +23,8 @@ func BuildSummary(cr *ComplianceReport) *SummaryReport {
 			Name:     control.Name,
 			Severity: control.Severity,
 		}
-		if len(control.Results) == 0 { // this validation is mainly for vuln type
-			if control.DefaultStatus == spec.PassStatus {
-				ccm.TotalPass = 1
-			}
-			ccma = append(ccma, ccm)
-			continue
-		}
-		for _, check := range control.Results {
-			for _, m := range check.Misconfigurations {
-				if m.Status == types.StatusPassed {
-					ccm.TotalPass++
-					continue
-				}
-				ccm.TotalFail++
-			}
-			// Detected vulnerabilities are always failure.
-			ccm.TotalFail += float32(len(check.Vulnerabilities))
+		if !strings.Contains(control.Name, "Manual") {
+			ccm.TotalFail = pointer.Int(len(control.Results))
 		}
 		ccma = append(ccma, ccm)
 	}
@@ -101,16 +87,17 @@ func (s SummaryWriter) Write(report *ComplianceReport) error {
 }
 
 func (s SummaryWriter) generateSummary(summaryControls ControlCheckSummary) []string {
-	percentage := calculatePercentage(summaryControls.TotalFail, summaryControls.TotalPass)
-	return []string{summaryControls.ID, summaryControls.Severity, summaryControls.Name, percentage}
-}
-
-func calculatePercentage(totalFail float32, totalPass float32) string {
-	if totalPass == 0 && totalFail == 0 {
-		return fmt.Sprintf("%.2f", 0.00) + "%"
+	var numOfIssues string
+	var status string
+	if summaryControls.TotalFail != nil {
+		if *summaryControls.TotalFail == 0 {
+			status = "PASS"
+		} else {
+			status = "FAIL"
+		}
+		numOfIssues = strconv.Itoa(*summaryControls.TotalFail)
 	}
-	relPass := totalPass / (totalFail + totalPass)
-	return fmt.Sprintf("%.2f", relPass*100.0) + "%"
+	return []string{summaryControls.ID, summaryControls.Severity, summaryControls.Name, status, numOfIssues}
 }
 
 func getRequiredSeverities(requiredSevs []dbTypes.Severity) ([]string, []string) {

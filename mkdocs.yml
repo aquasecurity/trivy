@@ -10,7 +10,6 @@ nav:
   - Getting Started: 
       - Overview: index.md
       - Installation: getting-started/installation.md
-      - Quick Start: getting-started/quickstart.md
   - Tutorials:
       - Overview: tutorials/overview.md   
       - CI/CD:
@@ -90,10 +89,13 @@ nav:
               - Compliance: docs/kubernetes/cli/compliance.md
           - Operator:
               - Overview: docs/kubernetes/operator/index.md
-      - Compliance:
-          - Reports:  docs/compliance/compliance.md
       - Cloud:
           - AWS: docs/cloud/aws/scanning.md
+      - Virtual Machine Image:
+          - Overview: docs/vm/index.md
+          - AWS EC2: docs/vm/aws.md
+      - Compliance:
+            - Reports:  docs/compliance/compliance.md
       - SBOM:
           - Overview: docs/sbom/index.md
           - CycloneDX: docs/sbom/cyclonedx.md

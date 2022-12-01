@@ -133,6 +133,23 @@ Try:
 $ TMPDIR=/my/custom/path trivy repo ...
 ```
 
+### Running out of space during image scans
+
+!!! error
+    ``` bash
+    image scan failed:
+    failed to copy the image:
+    write /tmp/fanal-3323732142: no space left on device
+    ```
+
+Trivy uses the `/tmp` directory during image scan, if the image is large or `/tmp` is of insufficient size then the scan fails You can set the `TMPDIR` environment variable to use redirect trivy to use a directory with adequate storage.
+
+Try:
+
+```
+$ TMPDIR=/my/custom/path trivy image ...
+```
+
 ## Homebrew
 ### Scope error
 !!! error
