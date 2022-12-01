@@ -41,9 +41,10 @@ var (
 
 // SarifWriter implements result Writer
 type SarifWriter struct {
-	Output  io.Writer
-	Version string
-	run     *sarif.Run
+	Output        io.Writer
+	Version       string
+	run           *sarif.Run
+	locationCache map[string][]location
 }
 
 type sarifData struct {
@@ -126,7 +127,6 @@ func (sw SarifWriter) Write(report types.Report) error {
 	sw.run.Tool.Driver.WithVersion(sw.Version)
 	sw.run.Tool.Driver.WithFullName("Trivy Vulnerability Scanner")
 
-	foundLocations := map[string][]location{}
 	ruleIndexes := map[string]int{}
 	for _, res := range report.Results {
 		target := ToPathUri(res.Target)
@@ -149,7 +149,7 @@ func (sw SarifWriter) Write(report types.Report) error {
 				resourceClass:    string(res.Class),
 				artifactLocation: path,
 				locationMessage:  fmt.Sprintf("%v: %v@%v", path, vuln.PkgName, vuln.InstalledVersion),
-				locations:        getLocations(vuln.PkgName, vuln.InstalledVersion, path, foundLocations, res.Packages),
+				locations:        sw.getLocations(vuln.PkgName, vuln.InstalledVersion, path, res.Packages),
 				resultIndex:      getRuleIndex(vuln.VulnerabilityID, ruleIndexes),
 				shortDescription: html.EscapeString(vuln.Title),
 				fullDescription:  html.EscapeString(fullDescription),
@@ -282,9 +282,9 @@ func ToPathUri(input string) string {
 	return strings.ReplaceAll(input, "\\", "/")
 }
 
-func getLocations(name, version, path string, foundLocations map[string][]location, pkgs []ftypes.Package) []location {
+func (sw SarifWriter) getLocations(name, version, path string, pkgs []ftypes.Package) []location {
 	id := fmt.Sprintf("%s@%s@%s", path, name, version)
-	locs, ok := foundLocations[id]
+	locs, ok := sw.locationCache[id]
 	if !ok {
 		for _, pkg := range pkgs {
 			if name == pkg.Name && version == pkg.Version {
@@ -292,7 +292,7 @@ func getLocations(name, version, path string, foundLocations map[string][]locati
 					loc := location{startLine: l.StartLine, endLine: l.EndLine}
 					locs = append(locs, loc)
 				}
-				foundLocations[id] = locs
+				sw.locationCache[id] = locs
 				return locs
 			}
 		}
