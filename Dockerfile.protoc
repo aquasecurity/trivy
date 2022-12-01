@@ -1,4 +1,4 @@
-FROM golang:1.19.2
+FROM golang:1.19.3
 
 # Install protoc (cf. http://google.github.io/proto-lens/installing-protoc.html)
 ENV PROTOC_ZIP=protoc-3.19.4-linux-x86_64.zip
