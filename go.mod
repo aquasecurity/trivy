@@ -69,7 +69,7 @@ require (
 	github.com/spf13/viper v1.13.0
 	github.com/stretchr/testify v1.8.1
 	github.com/testcontainers/testcontainers-go v0.15.0
-	github.com/tetratelabs/wazero v1.0.0-pre.3
+	github.com/tetratelabs/wazero v1.0.0-pre.4
 	github.com/twitchtv/twirp v8.1.2+incompatible
 	github.com/xlab/treeprint v1.1.0
 	go.etcd.io/bbolt v1.3.6
