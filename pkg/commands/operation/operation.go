@@ -164,8 +164,9 @@ func InitBuiltinPolicies(ctx context.Context, cacheDir string, quiet, skipUpdate
 	policyPaths, err := client.LoadBuiltinPolicies()
 	if err != nil {
 		if skipUpdate {
-			log.Logger.Info("No built-in policies were loaded")
-			return nil, nil
+			msg := "No downloadable policies were loaded as --skip-policy-update is enabled"
+			log.Logger.Info(msg)
+			return nil, xerrors.Errorf(msg)
 		}
 		return nil, xerrors.Errorf("policy load error: %w", err)
 	}

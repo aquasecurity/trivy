@@ -63,7 +63,7 @@ func (s *AWSScanner) Scan(ctx context.Context, option flag.Options) (scan.Result
 
 	var policyPaths []string
 	var downloadedPolicyPaths []string
-	if !option.SkipPolicyUpdate && len(option.RegoOptions.PolicyPaths) <= 0 {
+	if len(option.RegoOptions.PolicyPaths) == 0 {
 		var err error
 		downloadedPolicyPaths, err = operation.InitBuiltinPolicies(context.Background(), option.CacheDir, option.Quiet, option.SkipPolicyUpdate)
 		if err != nil {
@@ -74,9 +74,7 @@ func (s *AWSScanner) Scan(ctx context.Context, option flag.Options) (scan.Result
 			scannerOpts = append(scannerOpts,
 				options.ScannerWithEmbeddedPolicies(false))
 		}
-	}
-
-	if len(option.RegoOptions.PolicyPaths) > 0 { // override with custom policy from user
+	} else { // override with custom policy from user
 		policyPaths = append(policyPaths, option.RegoOptions.PolicyPaths...)
 	}
 

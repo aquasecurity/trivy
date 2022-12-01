@@ -494,7 +494,7 @@ func initScannerConfig(opts flag.Options, cacheClient cache.Cache) (ScannerConfi
 
 	var downloadedPolicyPaths []string
 	var disableEmbedded bool
-	if !opts.SkipPolicyUpdate && len(opts.PolicyPaths) <= 0 {
+	if len(opts.PolicyPaths) == 0 {
 		var err error
 		downloadedPolicyPaths, err = operation.InitBuiltinPolicies(context.Background(), opts.CacheDir, opts.Quiet, opts.SkipPolicyUpdate)
 		if err != nil {
