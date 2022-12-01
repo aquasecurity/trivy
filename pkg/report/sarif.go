@@ -126,6 +126,7 @@ func (sw SarifWriter) Write(report types.Report) error {
 	sw.run = sarif.NewRunWithInformationURI("Trivy", "https://github.com/aquasecurity/trivy")
 	sw.run.Tool.Driver.WithVersion(sw.Version)
 	sw.run.Tool.Driver.WithFullName("Trivy Vulnerability Scanner")
+	sw.locationCache = map[string][]location{}
 
 	ruleIndexes := map[string]int{}
 	for _, res := range report.Results {
