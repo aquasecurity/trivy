@@ -9,6 +9,7 @@ The Trivy AWS CLI allows you to scan your AWS account resources and generate the
 
 [AWS CIS Foundations Benchmark v1.2](https://d0.awsstatic.com/whitepapers/compliance/AWS_CIS_Foundations_Benchmark.pdf) validates the following control checks:
 
+```shell
 +--------------------------------------------+--------------------------------+
 |                    NAME                    |          DESCRIPTION           |
 +--------------------------------------------+--------------------------------+
@@ -117,23 +118,76 @@ The Trivy AWS CLI allows you to scan your AWS account resources and generate the
 | no-public-ingress-sgr                      | An ingress security group rule |
 |                                            | allows traffic from /0.        |
 +--------------------------------------------+--------------------------------+
+```
 
 ## CLI Commands
 
 Scan for misconfigurations in an AWS account based on AWS CIS 1.2 benchmark:
 
-```
-$ trivy aws  --compliance=awscis1.2 
+```shell
+$ trivy aws --compliance=awscis1.2
+
+arn:aws:iam::123456789:user/DummyRoleManager (cloud)
+
+Tests: 1 (SUCCESSES: 0, FAILURES: 1, EXCEPTIONS: 0)
+
+LOW: One or more policies are attached directly to a user
+══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+CIS recommends that you apply IAM policies directly to groups and roles but not users. Assigning privileges at the group or role level reduces the complexity of access management as the number of users grow. Reducing access management complexity might in turn reduce opportunity for a principal to inadvertently receive or retain excessive privileges.
+
+See https://avd.aquasec.com/misconfig/avd-aws-0143
+──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+
 ```
 
-![img.png](../../../imgs/aws-cis-report.png)
 
 
 You can also summarize the report to get a full compliance report with all the included checks.
 ```shell
 $ trivy aws --compliance=awscis1.2 --report=summary
 ```
-![img.png](../../../imgs/cloud-compliance-summary.png)
+
+```shell
+Summary Report for compliance: awscis1.2
+┌──────┬──────────┬────────────────────────────────────────────┬────────┬────────┐
+│  ID  │ Severity │                Control Name                │ Status │ Issues │
+├──────┼──────────┼────────────────────────────────────────────┼────────┼────────┤
+│ 1.1  │ LOW      │          limit-root-account-usage          │  PASS  │   0    │
+│ 1.10 │ MEDIUM   │             no-password-reuse              │  PASS  │   0    │
+│ 1.11 │ MEDIUM   │            set-max-password-age            │  PASS  │   0    │
+│ 1.12 │ CRITICAL │            no-root-access-keys             │  PASS  │   0    │
+│ 1.13 │ CRITICAL │              enforce-root-mfa              │  PASS  │   0    │
+│ 1.16 │ LOW      │         no-user-attached-policies          │  FAIL  │   5    │
+│ 1.2  │ MEDIUM   │              enforce-user-mfa              │  PASS  │   0    │
+│ 1.3  │ MEDIUM   │         disable-unused-credentials         │  FAIL  │   2    │
+│ 1.4  │ LOW      │             rotate-access-keys             │  FAIL  │   7    │
+│ 1.5  │ MEDIUM   │       require-uppercase-in-passwords       │  PASS  │   0    │
+│ 1.6  │ MEDIUM   │       require-lowercase-in-passwords       │  PASS  │   0    │
+│ 1.7  │ MEDIUM   │        require-symbols-in-passwords        │  PASS  │   0    │
+│ 1.8  │ MEDIUM   │        require-numbers-in-passwords        │  PASS  │   0    │
+│ 1.9  │ MEDIUM   │        set-minimum-password-length         │  FAIL  │   1    │
+│ 2.3  │ CRITICAL │            no-public-log-access            │  PASS  │   0    │
+│ 2.4  │ LOW      │       ensure-cloudwatch-integration        │  PASS  │   0    │
+│ 2.5  │ MEDIUM   │             enable-all-regions             │  PASS  │   0    │
+│ 2.6  │ LOW      │       require-bucket-access-logging        │  PASS  │   0    │
+│ 3.1  │ LOW      │    require-unauthorised-api-call-alarm     │  PASS  │   0    │
+│ 3.10 │ LOW      │          require-sg-change-alarms          │  PASS  │   0    │
+│ 3.11 │ LOW      │         require-nacl-changes-alarm         │  PASS  │   0    │
+│ 3.12 │ LOW      │   require-network-gateway-changes-alarm    │  PASS  │   0    │
+│ 3.13 │ LOW      │   require-network-gateway-changes-alarm    │  PASS  │   0    │
+│ 3.14 │ LOW      │         require-vpc-changes-alarm          │  PASS  │   0    │
+│ 3.2  │ LOW      │        require-non-mfa-login-alarm         │  PASS  │   0    │
+│ 3.3  │ LOW      │       require-root-user-usage-alarm        │  PASS  │   0    │
+│ 3.4  │ LOW      │      require-iam-policy-change-alarm       │  PASS  │   0    │
+│ 3.5  │ LOW      │      require-cloud-trail-change-alarm      │  PASS  │   0    │
+│ 3.6  │ LOW      │    require-console-login-failures-alarm    │  PASS  │   0    │
+│ 3.7  │ LOW      │         require-cmk-disabled-alarm         │  PASS  │   0    │
+│ 3.8  │ LOW      │   require-s3-bucket-policy-change-alarm    │  PASS  │   0    │
+│ 3.9  │ LOW      │ require-config-configuration-changes-alarm │  PASS  │   0    │
+│ 4.1  │ CRITICAL │           no-public-ingress-sgr            │  PASS  │   0    │
+└──────┴──────────┴────────────────────────────────────────────┴────────┴────────┘
+```
 
 
 Furthermore, you can also get the report in a JSON format.
