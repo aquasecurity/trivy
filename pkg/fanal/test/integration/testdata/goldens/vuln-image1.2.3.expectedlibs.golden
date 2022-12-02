@@ -688,7 +688,7 @@
         "Layer": {}
       },
       {
-        "ID": "walkdir@1.0.7,
+        "ID": "walkdir@1.0.7",
         "Name": "walkdir",
         "Version": "1.0.7",
         "Layer": {}
