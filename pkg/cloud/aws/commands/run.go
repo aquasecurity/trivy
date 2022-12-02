@@ -12,7 +12,6 @@ import (
 	"gopkg.in/yaml.v3"
 
 	"github.com/aquasecurity/defsec/pkg/errs"
-	"github.com/aquasecurity/defsec/pkg/scan"
 	awsScanner "github.com/aquasecurity/defsec/pkg/scanners/cloud/aws"
 	"github.com/aquasecurity/trivy/pkg/cloud"
 	"github.com/aquasecurity/trivy/pkg/cloud/aws/scanner"
@@ -20,7 +19,6 @@ import (
 	cmd "github.com/aquasecurity/trivy/pkg/commands/artifact"
 	cr "github.com/aquasecurity/trivy/pkg/compliance/report"
 	"github.com/aquasecurity/trivy/pkg/compliance/spec"
-	fanaltypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/flag"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/types"
@@ -137,7 +135,13 @@ func Run(ctx context.Context, opt flag.Options) error {
 			return xerrors.Errorf("yaml unmarshal error: %w", err)
 		}
 
-		complianceReport, err := cr.BuildComplianceReport(defsecResultsToComplianceResults(results.GetFailed()), complianceSpec)
+		convertedResults := report.ConvertResults(results, cloud.ProviderAWS, opt.Services)
+		var crr []types.Results
+		for _, r := range convertedResults {
+			crr = append(crr, r.Results)
+		}
+
+		complianceReport, err := cr.BuildComplianceReport(crr, complianceSpec)
 		if err != nil {
 			return xerrors.Errorf("compliance report build error: %w", err)
 		}
@@ -155,28 +159,4 @@ func Run(ctx context.Context, opt flag.Options) error {
 
 	cmd.Exit(opt, r.Failed())
 	return nil
-}
-
-func defsecResultsToComplianceResults(defsecResults scan.Results) []types.Results {
-	var trivyResults []types.Results
-
-	var misconfResults types.Results
-	var result types.Result
-	var misconfs []types.DetectedMisconfiguration
-
-	for _, r := range defsecResults {
-		misconfs = append(misconfs, types.DetectedMisconfiguration{
-			Type:     fanaltypes.Cloud,
-			ID:       r.Rule().LongID(),
-			AVDID:    r.Rule().AVDID,
-			Severity: string(r.Severity()),
-			Status:   types.MisconfStatus(r.Status()),
-		})
-	}
-
-	result.Misconfigurations = misconfs
-	misconfResults = append(misconfResults, result)
-	trivyResults = append(trivyResults, misconfResults)
-
-	return trivyResults
 }
