@@ -1,0 +1,36 @@
+{
+  "bomFormat": "CycloneDX",
+  "specVersion": "1.4",
+  "serialNumber": "urn:uuid:c986ba94-e37d-49c8-9e30-96daccd0415b",
+  "version": 1,
+  "metadata": {
+    "timestamp": "2022-05-28T10:20:03.79527Z",
+    "component": {
+      "bom-ref": "0f585d64-4815-4b72-92c5-97dae191fa4a",
+      "type": "container",
+      "name": "test-project"
+    }
+  },
+  "components": [
+    {
+      "bom-ref": "pkg:apk/alpine/musl@1.2.3-r0?distro=3.16.0",
+      "type": "library",
+      "name": "musl",
+      "version": "1.2.3-r0",
+      "licenses": [
+        {
+          "expression": "MIT"
+        }
+      ],
+      "purl": "pkg:apk/alpine/musl@1.2.3-r0?distro=3.16.0"
+    },
+    {
+      "bom-ref": "pkg:composer/pear/log@1.13.1",
+      "type": "library",
+      "name": "pear/log",
+      "version": "1.13.1",
+      "purl": "pkg:composer/pear/log@1.13.1"
+    }
+  ],
+  "vulnerabilities": []
+}

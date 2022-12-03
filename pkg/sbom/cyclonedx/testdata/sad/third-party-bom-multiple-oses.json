@@ -1,0 +1,29 @@
+{
+  "bomFormat": "CycloneDX",
+  "specVersion": "1.4",
+  "serialNumber": "urn:uuid:c986ba94-e37d-49c8-9e30-96daccd0415b",
+  "version": 1,
+  "metadata": {
+    "timestamp": "2022-05-28T10:20:03.79527Z",
+    "component": {
+      "bom-ref": "0f585d64-4815-4b72-92c5-97dae191fa4a",
+      "type": "container",
+      "name": "test-project"
+    }
+  },
+  "components": [
+    {
+      "bom-ref": "60e9f57b-d4a6-4f71-ad14-0893ac609182",
+      "type": "operating-system",
+      "name": "centos",
+      "version": "7"
+    },
+    {
+      "bom-ref": "60e9f57b-d4a6-4f71-ad14-0893ac609183",
+      "type": "operating-system",
+      "name": "alpine",
+      "version": "3.16.0"
+    }
+  ],
+  "vulnerabilities": []
+}
