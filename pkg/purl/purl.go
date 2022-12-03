@@ -76,8 +76,8 @@ func (p *PackageURL) Package() *ftypes.Package {
 	return pkg
 }
 
-// AppType returns an application type in Trivy
-func (p *PackageURL) AppType() string {
+// PackageType returns an application type in Trivy
+func (p *PackageURL) PackageType() string {
 	switch p.Type {
 	case packageurl.TypeComposer:
 		return string(analyzer.TypeComposer)

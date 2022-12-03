@@ -83,7 +83,7 @@ func (c *CycloneDX) UnmarshalJSON(b []byte) error {
 			libComponents = append(libComponents, component)
 		}
 
-		// For third party SBOM.
+		// For third party SBOMs.
 		// If there are no operating-system dependent libraries, make them implicitly dependent.
 		if component.Type == cdx.ComponentTypeOS {
 			c.OS = toOS(component)
@@ -95,7 +95,7 @@ func (c *CycloneDX) UnmarshalJSON(b []byte) error {
 		return xerrors.Errorf("failed to aggregate packages: %w", err)
 	}
 
-	// For third party SBOM.
+	// For third party SBOMs.
 	// If a package that depends on the operating-system did not exist,
 	// but an os package is found during aggregate, it is used.
 	if len(c.Packages) == 0 && len(pkgInfos) != 0 {
@@ -243,48 +243,40 @@ func dependencyMap(deps *[]cdx.Dependency) map[string][]string {
 }
 
 func aggregatePkgs(libs []cdx.Component) ([]ftypes.PackageInfo, []ftypes.Application, error) {
-	apps, err := aggregateLangPkgs(libs)
-	if err != nil {
-		return nil, nil, xerrors.Errorf("failed to aggregate language packages: %w", err)
-	}
-
-	var retPkgInfos []ftypes.PackageInfo
-	var retApps []ftypes.Application
-	for _, app := range apps {
-		if isOSPackageType(app.Type) {
-			retPkgInfos = append(retPkgInfos, ftypes.PackageInfo{Packages: app.Libraries})
-		} else {
-			retApps = append(retApps, app)
-		}
-	}
-	return retPkgInfos, retApps, nil
-}
-
-func aggregateLangPkgs(libs []cdx.Component) ([]ftypes.Application, error) {
 	pkgMap := map[string][]ftypes.Package{}
 	for _, lib := range libs {
-		appType, pkg, err := toPackage(lib)
+		pkgType, pkg, err := toPackage(lib)
 		if err != nil {
 			if errors.Is(err, ErrPURLEmpty) {
 				continue
 			}
-			return nil, xerrors.Errorf("failed to parse purl to package: %w", err)
+			return nil, nil, xerrors.Errorf("failed to parse purl to package: %w", err)
 		}
 
-		pkgMap[appType] = append(pkgMap[appType], *pkg)
+		pkgMap[pkgType] = append(pkgMap[pkgType], *pkg)
 	}
 
 	var apps []ftypes.Application
-	for appType, pkgs := range pkgMap {
+	var pkgInfos []ftypes.PackageInfo
+	for pkgType, pkgs := range pkgMap {
 		sort.Slice(pkgs, func(i, j int) bool {
 			return pkgs[i].Name < pkgs[j].Name
 		})
-		apps = append(apps, ftypes.Application{
-			Type:      appType,
-			Libraries: pkgs,
-		})
+
+		if isOSPackageType(pkgType) {
+			// For third-party SBOMs.
+			// Used when there is an os package that is independent of the Operating-System component.
+			pkgInfos = append(pkgInfos, ftypes.PackageInfo{
+				Packages: pkgs,
+			})
+		} else {
+			apps = append(apps, ftypes.Application{
+				Type:      pkgType,
+				Libraries: pkgs,
+			})
+		}
 	}
-	return apps, nil
+	return pkgInfos, apps, nil
 }
 
 func toOS(component cdx.Component) *ftypes.OS {
@@ -342,7 +334,7 @@ func toPackage(component cdx.Component) (string, *ftypes.Package, error) {
 		}
 	}
 
-	if isOSPackageType(p.AppType()) {
+	if isOSPackageType(p.PackageType()) {
 		// Fill source package information for Third-party SBOMs components.
 		if pkg.SrcName == "" {
 			pkg.SrcName = pkg.Name
@@ -358,7 +350,7 @@ func toPackage(component cdx.Component) (string, *ftypes.Package, error) {
 		}
 	}
 
-	return p.AppType(), pkg, nil
+	return p.PackageType(), pkg, nil
 }
 
 func toTrivyCdxComponent(component cdx.Component) ftypes.Component {
