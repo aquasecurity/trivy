@@ -144,7 +144,7 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 				Applications: []ftypes.Application{
 					{
 						Type:     "composer",
-						FilePath: "composer",
+						FilePath: "",
 						Libraries: []ftypes.Package{
 							{
 								Name:    "pear/log",
@@ -169,7 +169,7 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 				Applications: []ftypes.Application{
 					{
 						Type:     "composer",
-						FilePath: "composer",
+						FilePath: "",
 						Libraries: []ftypes.Package{
 							{
 								Name:    "pear/log",
@@ -258,11 +258,6 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 			name:      "happy path empty metadata component",
 			inputFile: "testdata/happy/empty-metadata-component-bom.json",
 			want:      types.SBOM{},
-		},
-		{
-			name:      "sad path multiple oses",
-			inputFile: "testdata/sad/third-party-bom-multiple-oses.json",
-			wantErr:   "Trivy does not support SBOMs containing multiple OSes",
 		},
 		{
 			name:      "sad path invalid purl",
