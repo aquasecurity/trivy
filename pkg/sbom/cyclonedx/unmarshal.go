@@ -44,6 +44,43 @@ func (c *CycloneDX) UnmarshalJSON(b []byte) error {
 		log.Logger.Warnf("This sbom was not made by trivy, third party sbom does not detect vulnerabilities accurately.")
 	}
 
+	if err := c.parseSBOM(bom); err != nil {
+		return xerrors.Errorf("failed to parse sbom: %w", err)
+	}
+
+	sort.Slice(c.Applications, func(i, j int) bool {
+		if c.Applications[i].Type != c.Applications[j].Type {
+			return c.Applications[i].Type < c.Applications[j].Type
+		}
+		return c.Applications[i].FilePath < c.Applications[j].FilePath
+	})
+
+	var metadata ftypes.Metadata
+	if bom.Metadata != nil {
+		metadata.Timestamp = bom.Metadata.Timestamp
+		if bom.Metadata.Component != nil {
+			metadata.Component = toTrivyCdxComponent(lo.FromPtr(bom.Metadata.Component))
+		}
+	}
+
+	var components []ftypes.Component
+	for _, component := range lo.FromPtr(bom.Components) {
+		components = append(components, toTrivyCdxComponent(component))
+	}
+
+	// Keep the original SBOM
+	c.CycloneDX = &ftypes.CycloneDX{
+		BOMFormat:    bom.BOMFormat,
+		SpecVersion:  bom.SpecVersion,
+		SerialNumber: bom.SerialNumber,
+		Version:      bom.Version,
+		Metadata:     metadata,
+		Components:   components,
+	}
+	return nil
+}
+
+func (c *CycloneDX) parseSBOM(bom *cdx.BOM) error {
 	c.dependencies = dependencyMap(bom.Dependencies)
 	c.components = componentMap(bom.Metadata, bom.Components)
 	var seen = make(map[string]struct{})
@@ -105,39 +142,9 @@ func (c *CycloneDX) UnmarshalJSON(b []byte) error {
 			c.Packages = pkgInfos
 		}
 	}
-
 	c.Applications = append(c.Applications, aggregatedApps...)
 
-	sort.Slice(c.Applications, func(i, j int) bool {
-		if c.Applications[i].Type != c.Applications[j].Type {
-			return c.Applications[i].Type < c.Applications[j].Type
-		}
-		return c.Applications[i].FilePath < c.Applications[j].FilePath
-	})
-
-	var metadata ftypes.Metadata
-	if bom.Metadata != nil {
-		metadata.Timestamp = bom.Metadata.Timestamp
-		if bom.Metadata.Component != nil {
-			metadata.Component = toTrivyCdxComponent(lo.FromPtr(bom.Metadata.Component))
-		}
-	}
-
-	var components []ftypes.Component
-	for _, component := range lo.FromPtr(bom.Components) {
-		components = append(components, toTrivyCdxComponent(component))
-	}
-
-	// Keep the original SBOM
-	c.CycloneDX = &ftypes.CycloneDX{
-		BOMFormat:    bom.BOMFormat,
-		SpecVersion:  bom.SpecVersion,
-		SerialNumber: bom.SerialNumber,
-		Version:      bom.Version,
-		Metadata:     metadata,
-		Components:   components,
-	}
-	return nil
+	return err
 }
 
 func (c *CycloneDX) parseOSPkgs(component cdx.Component, seen map[string]struct{}) (ftypes.PackageInfo, error) {
