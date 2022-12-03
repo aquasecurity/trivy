@@ -2,6 +2,7 @@ package cyclonedx
 
 import (
 	"bytes"
+	"errors"
 	"sort"
 	"strconv"
 	"strings"
@@ -10,10 +11,15 @@ import (
 	"github.com/samber/lo"
 	"golang.org/x/xerrors"
 
+	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/purl"
 	"github.com/aquasecurity/trivy/pkg/types"
+)
+
+var (
+	ErrPURLEmpty = errors.New("purl empty error")
 )
 
 type CycloneDX struct {
@@ -34,6 +40,91 @@ func (c *CycloneDX) UnmarshalJSON(b []byte) error {
 		return xerrors.Errorf("CycloneDX decode error: %w", err)
 	}
 
+	if isTrivySBOM(bom) {
+		err := c.parseSBOM(bom)
+		if err != nil {
+			return xerrors.Errorf("parse trivy sbom: %w", err)
+		}
+	} else {
+		err := c.parseThirdPartySBOM(bom)
+		log.Logger.Warnf("This sbom was not made by trivy, third party sbom does not detect vulnerabilities accurately.")
+		if err != nil {
+			return xerrors.Errorf("parse third party sbom: %w", err)
+		}
+	}
+
+	sort.Slice(c.Applications, func(i, j int) bool {
+		if c.Applications[i].Type != c.Applications[j].Type {
+			return c.Applications[i].Type < c.Applications[j].Type
+		}
+		return c.Applications[i].FilePath < c.Applications[j].FilePath
+	})
+
+	var metadata ftypes.Metadata
+	if bom.Metadata != nil {
+		metadata.Timestamp = bom.Metadata.Timestamp
+		if bom.Metadata.Component != nil {
+			metadata.Component = toTrivyCdxComponent(lo.FromPtr(bom.Metadata.Component))
+		}
+	}
+
+	var components []ftypes.Component
+	for _, component := range lo.FromPtr(bom.Components) {
+		components = append(components, toTrivyCdxComponent(component))
+	}
+
+	// Keep the original SBOM
+	c.CycloneDX = &ftypes.CycloneDX{
+		BOMFormat:    bom.BOMFormat,
+		SpecVersion:  bom.SpecVersion,
+		SerialNumber: bom.SerialNumber,
+		Version:      bom.Version,
+		Metadata:     metadata,
+		Components:   components,
+	}
+	return nil
+}
+
+func (c *CycloneDX) parseThirdPartySBOM(bom *cdx.BOM) error {
+	c.components = componentMap(bom.Metadata, bom.Components)
+
+	var libComponents []cdx.Component
+	var osComponents []cdx.Component
+	for _, component := range c.components {
+		switch component.Type {
+		case cdx.ComponentTypeLibrary:
+			libComponents = append(libComponents, component)
+		case cdx.ComponentTypeOS:
+			osComponents = append(osComponents, component)
+		}
+	}
+
+	if len(osComponents) > 0 {
+		if len(osComponents) != 1 {
+			return xerrors.New("failed to parse os components, Trivy does not support SBOMs containing multiple OSes")
+		}
+		c.OS = toOS(osComponents[0])
+	}
+
+	// Third-party SBOMs aggregate all package types, ignoring dependencies.
+	pkgInfos, aggregatedApps, err := aggregatePkgs(libComponents)
+	if err != nil {
+		return xerrors.Errorf("failed to aggregate packages: %w", err)
+	}
+	if c.OS != nil {
+		c.Packages = pkgInfos
+	} else if c.OS == nil && len(pkgInfos) != 0 {
+		log.Logger.Warnf("Ignore the OS package as no OS information is found.")
+	}
+
+	for _, app := range aggregatedApps {
+		c.Applications = append(c.Applications, app)
+	}
+
+	return nil
+}
+
+func (c *CycloneDX) parseSBOM(bom *cdx.BOM) error {
 	c.dependencies = dependencyMap(bom.Dependencies)
 	c.components = componentMap(bom.Metadata, bom.Components)
 
@@ -80,38 +171,8 @@ func (c *CycloneDX) UnmarshalJSON(b []byte) error {
 	}
 	c.Applications = append(c.Applications, aggregatedApps...)
 
-	sort.Slice(c.Applications, func(i, j int) bool {
-		if c.Applications[i].Type != c.Applications[j].Type {
-			return c.Applications[i].Type < c.Applications[j].Type
-		}
-		return c.Applications[i].FilePath < c.Applications[j].FilePath
-	})
-
-	var metadata ftypes.Metadata
-	if bom.Metadata != nil {
-		metadata.Timestamp = bom.Metadata.Timestamp
-		if bom.Metadata.Component != nil {
-			metadata.Component = toTrivyCdxComponent(lo.FromPtr(bom.Metadata.Component))
-		}
-	}
-
-	var components []ftypes.Component
-	for _, component := range lo.FromPtr(bom.Components) {
-		components = append(components, toTrivyCdxComponent(component))
-	}
-
-	// Keep the original SBOM
-	c.CycloneDX = &ftypes.CycloneDX{
-		BOMFormat:    bom.BOMFormat,
-		SpecVersion:  bom.SpecVersion,
-		SerialNumber: bom.SerialNumber,
-		Version:      bom.Version,
-		Metadata:     metadata,
-		Components:   components,
-	}
 	return nil
 }
-
 func (c *CycloneDX) parseOSPkgs(component cdx.Component, seen map[string]struct{}) (ftypes.PackageInfo, error) {
 	components := c.walkDependencies(component.BOMRef)
 	pkgs, err := parsePkgs(components, seen)
@@ -146,6 +207,9 @@ func parsePkgs(components []cdx.Component, seen map[string]struct{}) ([]ftypes.P
 		seen[com.BOMRef] = struct{}{}
 		_, pkg, err := toPackage(com)
 		if err != nil {
+			if errors.Is(err, ErrPURLEmpty) {
+				continue
+			}
 			return nil, xerrors.Errorf("failed to parse language package: %w", err)
 		}
 		pkgs = append(pkgs, *pkg)
@@ -211,11 +275,33 @@ func dependencyMap(deps *[]cdx.Dependency) map[string][]string {
 	return depMap
 }
 
+func aggregatePkgs(libs []cdx.Component) ([]ftypes.PackageInfo, []ftypes.Application, error) {
+	apps, err := aggregateLangPkgs(libs)
+	if err != nil {
+		return nil, nil, xerrors.Errorf("failed to aggregate language packages: %w", err)
+	}
+
+	var retPkgInfos []ftypes.PackageInfo
+	var retApps []ftypes.Application
+	for _, app := range apps {
+		if isOSPackageType(app.Type) {
+			retPkgInfos = append(retPkgInfos, ftypes.PackageInfo{Packages: app.Libraries})
+		} else {
+			app.FilePath = app.Type
+			retApps = append(retApps, app)
+		}
+	}
+	return retPkgInfos, retApps, nil
+}
+
 func aggregateLangPkgs(libs []cdx.Component) ([]ftypes.Application, error) {
 	pkgMap := map[string][]ftypes.Package{}
 	for _, lib := range libs {
 		appType, pkg, err := toPackage(lib)
 		if err != nil {
+			if errors.Is(err, ErrPURLEmpty) {
+				continue
+			}
 			return nil, xerrors.Errorf("failed to parse purl to package: %w", err)
 		}
 
@@ -250,6 +336,10 @@ func toApplication(component cdx.Component) *ftypes.Application {
 }
 
 func toPackage(component cdx.Component) (string, *ftypes.Package, error) {
+	if component.PackageURL == "" {
+		log.Logger.Warnf("Skip (BOM-Ref: %s) component, purl is empty", component.BOMRef)
+		return "", nil, ErrPURLEmpty
+	}
 	p, err := purl.FromString(component.PackageURL)
 	if err != nil {
 		return "", nil, xerrors.Errorf("failed to parse purl: %w", err)
@@ -286,6 +376,22 @@ func toPackage(component cdx.Component) (string, *ftypes.Package, error) {
 		}
 	}
 
+	if isOSPackageType(p.AppType()) {
+		// Fill source package information for Third-party SBOMs components.
+		if pkg.SrcName == "" {
+			pkg.SrcName = pkg.Name
+		}
+		if pkg.SrcVersion == "" {
+			pkg.SrcVersion = pkg.Version
+		}
+		if pkg.SrcRelease == "" {
+			pkg.SrcRelease = pkg.Release
+		}
+		if pkg.SrcEpoch == 0 {
+			pkg.SrcEpoch = pkg.Epoch
+		}
+	}
+
 	return p.AppType(), pkg, nil
 }
 
@@ -307,4 +413,26 @@ func lookupProperty(properties *[]cdx.Property, key string) string {
 		}
 	}
 	return ""
+}
+
+func isTrivySBOM(c *cdx.BOM) bool {
+	if c == nil {
+		return false
+	}
+	if c.Metadata == nil {
+		return false
+	}
+	if c.Metadata.Tools == nil {
+		return false
+	}
+	for _, tool := range *c.Metadata.Tools {
+		if tool.Vendor == ToolVendor && tool.Name == ToolName {
+			return true
+		}
+	}
+	return false
+}
+
+func isOSPackageType(t string) bool {
+	return t == string(analyzer.TypeRpm) || t == string(analyzer.TypeApk) || t == string(analyzer.TypeDpkg)
 }
