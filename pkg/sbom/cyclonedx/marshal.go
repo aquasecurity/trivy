@@ -23,7 +23,9 @@ import (
 )
 
 const (
-	Namespace = "aquasecurity:trivy:"
+	ToolVendor = "aquasecurity"
+	ToolName   = "trivy"
+	Namespace  = ToolVendor + ":" + ToolName + ":"
 
 	PropertySchemaVersion = "SchemaVersion"
 	PropertyType          = "Type"
