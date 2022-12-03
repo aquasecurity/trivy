@@ -28,7 +28,7 @@ type PackageURL struct {
 func FromString(purl string) (*PackageURL, error) {
 	p, err := packageurl.FromString(purl)
 	if err != nil {
-		return nil, xerrors.Errorf("failed to parse purl: %w", err)
+		return nil, xerrors.Errorf("failed to parse purl(%s): %w", purl, err)
 	}
 
 	return &PackageURL{
@@ -95,6 +95,14 @@ func (p *PackageURL) AppType() string {
 		return string(analyzer.TypeRustBinary)
 	case packageurl.TypeNuget:
 		return string(analyzer.TypeNuget)
+	case packageurl.TypeRPM:
+		return string(analyzer.TypeRpm)
+	case packageurl.TypeDebian:
+		return string(analyzer.TypeDpkg)
+	case string(analyzer.TypeApk):
+		// Alpine type does not define in packageurl-go
+		// Not required as the process, but explicitly returned
+		return p.Type
 	}
 	return p.Type
 }
