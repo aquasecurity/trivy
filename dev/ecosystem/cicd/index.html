@@ -3007,6 +3007,13 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#concourse-ci-community" class="md-nav__link">
+    Concourse CI (Community)
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -3298,6 +3305,13 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#concourse-ci-community" class="md-nav__link">
+    Concourse CI (Community)
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -3347,6 +3361,11 @@ Source: <a href="https://github.com/15five/trivy-orb">https://github.com/15five/
       - trivy fs --exit-code 1 --skip-dirs web/ --skip-dirs docs/ --severity MEDIUM,HIGH,CRITICAL .
 </code></pre></div>
 <p>Woodpecker does use Trivy itself so you can <a href="https://github.com/woodpecker-ci/woodpecker/pull/1163">see it in use there</a>.</p>
+<h2 id="concourse-ci-community">Concourse CI (Community)</h2>
+<p><a href="https://concourse-ci.org/">Concourse CI</a> is a CI/CD service.</p>
+<p>You can use Trivy Resource in Concourse for scanning containers and introducing security scanning into your workflow.
+It has capabilities to fail the pipeline, create issues, alert communication channels (using respective resources) based on Trivy scan output.</p>
+<p>👉 Get it at: <a href="https://github.com/Comcast/trivy-resource/">https://github.com/Comcast/trivy-resource/</a></p>
 
               
             </article>
