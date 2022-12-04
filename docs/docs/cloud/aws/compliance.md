@@ -3,7 +3,7 @@
 ## CIS Compliance Report
 
 !!! warning "EXPERIMENTAL"
-This feature might change without preserving backwards compatibility.
+    This feature might change without preserving backwards compatibility.
 
 The Trivy AWS CLI allows you to scan your AWS account resources and generate the `AWS CIS Foundations Benchmark` report
 
