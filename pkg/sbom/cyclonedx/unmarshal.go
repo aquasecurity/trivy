@@ -144,7 +144,7 @@ func (c *CycloneDX) parseSBOM(bom *cdx.BOM) error {
 	}
 	c.Applications = append(c.Applications, aggregatedApps...)
 
-	return err
+	return nil
 }
 
 func (c *CycloneDX) parseOSPkgs(component cdx.Component, seen map[string]struct{}) (ftypes.PackageInfo, error) {
