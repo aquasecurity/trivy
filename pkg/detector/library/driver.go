@@ -2,10 +2,7 @@ package library
 
 import (
 	"fmt"
-	"github.com/aquasecurity/trivy/pkg/log"
 	"strings"
-
-	"github.com/aquasecurity/trivy/pkg/detector/library/compare/maven"
 
 	"golang.org/x/xerrors"
 
@@ -13,10 +10,12 @@ import (
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/vulnerability"
 	"github.com/aquasecurity/trivy/pkg/detector/library/compare"
+	"github.com/aquasecurity/trivy/pkg/detector/library/compare/maven"
 	"github.com/aquasecurity/trivy/pkg/detector/library/compare/npm"
 	"github.com/aquasecurity/trivy/pkg/detector/library/compare/pep440"
 	"github.com/aquasecurity/trivy/pkg/detector/library/compare/rubygems"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
+	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
 
