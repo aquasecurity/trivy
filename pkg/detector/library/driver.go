@@ -2,6 +2,7 @@ package library
 
 import (
 	"fmt"
+	"github.com/aquasecurity/trivy/pkg/log"
 	"strings"
 
 	"github.com/aquasecurity/trivy/pkg/detector/library/compare/maven"
@@ -55,6 +56,7 @@ func NewDriver(libType string) (Driver, error) {
 		// https://docs.conan.io/en/latest/versioning/version_ranges.html
 		comparer = compare.GenericComparer{}
 	case ftypes.Cocoapods:
+		log.Logger.Warn("CocoaPods is supported for SBOM, not for vulnerability scanning")
 		ecosystem = "cocoapods" // TODO use const from Trivy-db after adding it
 		comparer = compare.GenericComparer{}
 	default:
