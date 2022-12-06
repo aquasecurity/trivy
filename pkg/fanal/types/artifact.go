@@ -110,6 +110,7 @@ const (
 	ArtifactCycloneDX        ArtifactType = "cyclonedx"
 	ArtifactSPDX             ArtifactType = "spdx"
 	ArtifactAWSAccount       ArtifactType = "aws_account"
+	ArtifactVM               ArtifactType = "vm"
 )
 
 // ArtifactReference represents a reference of container image, local filesystem and repository

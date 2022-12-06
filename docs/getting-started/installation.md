@@ -57,7 +57,7 @@ pacman -S trivy
 You can use homebrew on macOS and Linux.
 
 ```bash
-brew install aquasecurity/trivy/trivy
+brew install trivy
 ```
 
 ## MacPorts

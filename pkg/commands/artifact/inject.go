@@ -57,6 +57,13 @@ func initializeSBOMScanner(ctx context.Context, filePath string, artifactCache c
 	return scanner.Scanner{}, nil, nil
 }
 
+func initializeVMScanner(ctx context.Context, filePath string, artifactCache cache.ArtifactCache,
+	localArtifactCache cache.Cache, artifactOption artifact.Option) (
+	scanner.Scanner, func(), error) {
+	wire.Build(scanner.StandaloneVMSet)
+	return scanner.Scanner{}, nil, nil
+}
+
 /////////////////
 // Client/Server
 /////////////////
@@ -89,5 +96,12 @@ func initializeRemoteFilesystemScanner(ctx context.Context, path string, artifac
 func initializeRemoteSBOMScanner(ctx context.Context, path string, artifactCache cache.ArtifactCache,
 	remoteScanOptions client.ScannerOption, artifactOption artifact.Option) (scanner.Scanner, func(), error) {
 	wire.Build(scanner.RemoteSBOMSet)
+	return scanner.Scanner{}, nil, nil
+}
+
+// initializeRemoteVMScanner is for vm scanning in client/server mode
+func initializeRemoteVMScanner(ctx context.Context, path string, artifactCache cache.ArtifactCache,
+	remoteScanOptions client.ScannerOption, artifactOption artifact.Option) (scanner.Scanner, func(), error) {
+	wire.Build(scanner.RemoteVMSet)
 	return scanner.Scanner{}, nil, nil
 }

@@ -124,6 +124,8 @@ trivy:
   # existingSecret if an existing secret has been created outside the chart.
   # Overrides gitHubToken, registryUsername, registryPassword, serverToken
   existingSecret: ""
+  # extraEnvVars to be set on the container
+  extraEnvVars: {}
 
 service:
   # If specified, the name used for the Trivy service.

@@ -32,6 +32,22 @@ func TestReportWriter_Sarif(t *testing.T) {
 				{
 					Target: "library/test",
 					Class:  types.ClassOSPkg,
+					Packages: []ftypes.Package{
+						{
+							Name:    "foo",
+							Version: "1.2.3",
+							Locations: []ftypes.Location{
+								{
+									StartLine: 5,
+									EndLine:   10,
+								},
+								{
+									StartLine: 15,
+									EndLine:   20,
+								},
+							},
+						},
+					},
 					Vulnerabilities: []types.DetectedVulnerability{
 						{
 							VulnerabilityID:  "CVE-2020-0001",
@@ -103,8 +119,23 @@ func TestReportWriter_Sarif(t *testing.T) {
 									URIBaseId: toPtr("ROOTPATH"),
 								},
 								Region: &sarif.Region{
-									StartLine:   toPtr(1),
-									EndLine:     toPtr(1),
+									StartLine:   toPtr(5),
+									EndLine:     toPtr(10),
+									StartColumn: toPtr(1),
+									EndColumn:   toPtr(1),
+								},
+							},
+						},
+						{
+							Message: &sarif.Message{Text: toPtr("library/test: foo@1.2.3")},
+							PhysicalLocation: &sarif.PhysicalLocation{
+								ArtifactLocation: &sarif.ArtifactLocation{
+									URI:       toPtr("library/test"),
+									URIBaseId: toPtr("ROOTPATH"),
+								},
+								Region: &sarif.Region{
+									StartLine:   toPtr(15),
+									EndLine:     toPtr(20),
 									StartColumn: toPtr(1),
 									EndColumn:   toPtr(1),
 								},

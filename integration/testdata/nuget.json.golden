@@ -21,6 +21,7 @@
       "Type": "nuget",
       "Packages": [
         {
+          "ID": "Newtonsoft.Json@12.0.3",
           "Name": "Newtonsoft.Json",
           "Version": "12.0.3",
           "Layer": {},
@@ -32,13 +33,17 @@
          ]
         },
         {
+          "ID": "NuGet.Frameworks@5.7.0",
           "Name": "NuGet.Frameworks",
           "Version": "5.7.0",
           "Layer": {},
+          "DependsOn": [
+            "Newtonsoft.Json@12.0.3"
+          ],
           "Locations": [
             {
               "StartLine": 11,
-              "EndLine": 16
+              "EndLine": 19
             }
          ]
         }
@@ -47,6 +52,7 @@
         {
           "VulnerabilityID": "GHSA-5crp-9r3c-p9vr",
           "PkgName": "Newtonsoft.Json",
+          "PkgID": "Newtonsoft.Json@12.0.3",
           "InstalledVersion": "12.0.3",
           "FixedVersion": "13.0.1",
           "Layer": {},
