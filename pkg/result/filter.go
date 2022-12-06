@@ -74,7 +74,7 @@ func filterVulnerabilities(vulns []types.DetectedVulnerability, severities []dbT
 			}
 
 			// Check if there is a duplicate vulnerability
-			key := fmt.Sprintf("%s/%s/%s", vuln.VulnerabilityID, vuln.PkgName, vuln.InstalledVersion)
+			key := fmt.Sprintf("%s/%s/%s/%s", vuln.VulnerabilityID, vuln.PkgName, vuln.InstalledVersion, vuln.PkgPath)
 			if old, ok := uniqVulns[key]; ok && !shouldOverwrite(old, vuln) {
 				continue
 			}
