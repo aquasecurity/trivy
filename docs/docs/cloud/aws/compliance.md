@@ -120,6 +120,150 @@ The Trivy AWS CLI allows you to scan your AWS account resources and generate the
 +--------------------------------------------+--------------------------------+
 ```
 
+
+[AWS CIS Foundations Benchmark v1.4](https://docs.aws.amazon.com/securityhub/latest/userguide/securityhub-cis-controls-1.4.0.html) validates the following control checks:
+```shell
++--------------------------------------------+--------------------------------+
+|                    NAME                    |          DESCRIPTION           |
++--------------------------------------------+--------------------------------+
+| require-mfa-delete                         | Buckets should have MFA        |
+|                                            | deletion protection enabled.   |
+| disable-unused-credentials-45-days         | AWS IAM users can access AWS   |
+|                                            | resources using different      |
+|                                            | types of credentials, such     |
+|                                            | as passwords or access keys.   |
+|                                            | It is recommended that all     |
+|                                            | credentials that have been     |
+|                                            | unused in 45 or greater days   |
+|                                            | be deactivated or removed.     |
+| limit-user-access-keys                     | No user should have more than  |
+|                                            | one active access key.         |
+| rotate-access-keys                         | Access keys should be rotated  |
+|                                            | at least every 90 days         |
+| no-user-attached-policies                  | IAM policies should not be     |
+|                                            | granted directly to users.     |
+| no-policy-wildcards                        | IAM policy should avoid use    |
+|                                            | of wildcards and instead       |
+|                                            | apply the principle of least   |
+|                                            | privilege                      |
+| require-support-role                       | Missing IAM Role to allow      |
+|                                            | authorized users to manage     |
+|                                            | incidents with AWS Support.    |
+| remove-expired-certificates                | Delete expired TLS             |
+|                                            | certificates                   |
+| enable-access-analyzer                     | Enable IAM Access analyzer     |
+|                                            | for IAM policies about all     |
+|                                            | resources in each region.      |
+| enforce-user-mfa                           | IAM Users should have MFA      |
+|                                            | enforcement activated.         |
+| no-root-access-keys                        | The root user has complete     |
+|                                            | access to all services and     |
+|                                            | resources in an AWS account.   |
+|                                            | AWS Access Keys provide        |
+|                                            | programmatic access to a given |
+|                                            | account.                       |
+| enforce-root-mfa                           | The "root" account has         |
+|                                            | unrestricted access to all     |
+|                                            | resources in the AWS account.  |
+|                                            | It is highly recommended that  |
+|                                            | this account have MFA enabled. |
+| enforce-root-hardware-mfa                  | The "root" account has         |
+|                                            | unrestricted access to all     |
+|                                            | resources in the AWS account.  |
+|                                            | It is highly recommended that  |
+|                                            | this account have hardware MFA |
+|                                            | enabled.                       |
+| limit-root-account-usage                   | The "root" account has         |
+|                                            | unrestricted access to all     |
+|                                            | resources in the AWS account.  |
+|                                            | It is highly recommended that  |
+|                                            | the use of this account be     |
+|                                            | avoided.                       |
+| set-minimum-password-length                | IAM Password policy should     |
+|                                            | have minimum password length   |
+|                                            | of 14 or more characters.      |
+| no-password-reuse                          | IAM Password policy should     |
+|                                            | prevent password reuse.        |
+| enable-object-write-logging                | S3 object-level API            |
+|                                            | operations such as GetObject,  |
+|                                            | DeleteObject, and PutObject    |
+|                                            | are called data events. By     |
+|                                            | default, CloudTrail trails     |
+|                                            | don't log data events and so   |
+|                                            | it is recommended to enable    |
+|                                            | Object-level logging for S3    |
+|                                            | buckets.                       |
+| enable-object-read-logging                 | S3 object-level API            |
+|                                            | operations such as GetObject,  |
+|                                            | DeleteObject, and PutObject    |
+|                                            | are called data events. By     |
+|                                            | default, CloudTrail trails     |
+|                                            | don't log data events and so   |
+|                                            | it is recommended to enable    |
+|                                            | Object-level logging for S3    |
+|                                            | buckets.                       |
+| no-public-log-access                       | The S3 Bucket backing          |
+|                                            | Cloudtrail should be private   |
+| ensure-cloudwatch-integration              | CloudTrail logs should be      |
+|                                            | stored in S3 and also sent to  |
+|                                            | CloudWatch Logs                |
+| require-bucket-access-logging              | You should enable bucket       |
+|                                            | access logging on the          |
+|                                            | CloudTrail S3 bucket.          |
+| require-sg-change-alarms                   | Ensure a log metric filter and |
+|                                            | alarm exist for security group |
+|                                            | changes                        |
+| require-unauthorised-api-call-alarm        | Ensure a log metric filter and |
+|                                            | alarm exist for unauthorized   |
+|                                            | API calls                      |
+| require-nacl-changes-alarm                 | Ensure a log metric filter     |
+|                                            | and alarm exist for changes to |
+|                                            | Network Access Control Lists   |
+|                                            | (NACL)                         |
+| require-network-gateway-changes-alarm      | Ensure a log metric filter     |
+|                                            | and alarm exist for changes to |
+|                                            | network gateways               |
+| require-network-gateway-changes-alarm      | Ensure a log metric filter and |
+|                                            | alarm exist for route table    |
+|                                            | changes                        |
+| require-vpc-changes-alarm                  | Ensure a log metric filter and |
+|                                            | alarm exist for VPC changes    |
+| require-org-changes-alarm                  | Ensure a log metric filter and |
+|                                            | alarm exist for organisation   |
+|                                            | changes                        |
+| require-non-mfa-login-alarm                | Ensure a log metric filter and |
+|                                            | alarm exist for AWS Management |
+|                                            | Console sign-in without MFA    |
+| require-root-user-usage-alarm              | Ensure a log metric filter and |
+|                                            | alarm exist for usage of root  |
+|                                            | user                           |
+| require-iam-policy-change-alarm            | Ensure a log metric filter     |
+|                                            | and alarm exist for IAM policy |
+|                                            | changes                        |
+| require-cloud-trail-change-alarm           | Ensure a log metric filter     |
+|                                            | and alarm exist for CloudTrail |
+|                                            | configuration changes          |
+| require-console-login-failures-alarm       | Ensure a log metric filter and |
+|                                            | alarm exist for AWS Management |
+|                                            | Console authentication         |
+|                                            | failures                       |
+| require-cmk-disabled-alarm                 | Ensure a log metric filter and |
+|                                            | alarm exist for disabling or   |
+|                                            | scheduled deletion of customer |
+|                                            | managed keys                   |
+| require-s3-bucket-policy-change-alarm      | Ensure a log metric filter     |
+|                                            | and alarm exist for S3 bucket  |
+|                                            | policy changes                 |
+| require-config-configuration-changes-alarm | Ensure a log metric filter     |
+|                                            | and alarm exist for AWS Config |
+|                                            | configuration changes          |
+| restrict-all-in-default-sg                 | Default security group should  |
+|                                            | restrict all traffic           |
++--------------------------------------------+--------------------------------+
+```
+
+[Differences between v1.2 and v1.4](https://docs.aws.amazon.com/securityhub/latest/userguide/securityhub-standards-cis1.4-vs-cis1.2.html)
+
 ## CLI Commands
 
 Scan for misconfigurations in an AWS account based on AWS CIS 1.2 benchmark:
