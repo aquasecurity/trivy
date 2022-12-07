@@ -90,12 +90,12 @@ nav:
           - Operator:
               - Overview: docs/kubernetes/operator/index.md
       - Cloud:
-          - AWS: docs/cloud/aws/scanning.md
+          - AWS:
+            - Scanning: docs/cloud/aws/scanning.md
+            - Compliance: docs/cloud/aws/compliance.md
       - Virtual Machine Image:
           - Overview: docs/vm/index.md
           - AWS EC2: docs/vm/aws.md
-      - Compliance:
-            - Reports:  docs/compliance/compliance.md
       - SBOM:
           - Overview: docs/sbom/index.md
           - CycloneDX: docs/sbom/cyclonedx.md

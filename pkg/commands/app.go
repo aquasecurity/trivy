@@ -753,6 +753,11 @@ func NewKubernetesCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	)
 	scanFlags.SecurityChecks = &securityChecks
 
+	reportFlagGroup := flag.NewReportFlagGroup()
+	compliance := flag.ComplianceFlag
+	compliance.Usage += fmt.Sprintf(" (%s)", types.ComplianceNsa)
+	reportFlagGroup.Compliance = &compliance // override usage as the accepted values differ for each subcommand.
+
 	k8sFlags := &flag.Flags{
 		CacheFlagGroup:         flag.NewCacheFlagGroup(),
 		DBFlagGroup:            flag.NewDBFlagGroup(),
@@ -760,7 +765,7 @@ func NewKubernetesCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 		LicenseFlagGroup:       flag.NewLicenseFlagGroup(),
 		MisconfFlagGroup:       flag.NewMisconfFlagGroup(),
 		RegoFlagGroup:          flag.NewRegoFlagGroup(),
-		ReportFlagGroup:        flag.NewReportFlagGroup(),
+		ReportFlagGroup:        reportFlagGroup,
 		ScanFlagGroup:          scanFlags,
 		SecretFlagGroup:        flag.NewSecretFlagGroup(),
 		VulnerabilityFlagGroup: flag.NewVulnerabilityFlagGroup(),
@@ -810,13 +815,17 @@ func NewKubernetesCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 }
 
 func NewAWSCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
+	reportFlagGroup := flag.NewReportFlagGroup()
+	compliance := flag.ComplianceFlag
+	compliance.Usage += fmt.Sprintf(" (%s, %s)", types.ComplianceAWSCIS12, types.ComplianceAWSCIS14)
+	reportFlagGroup.Compliance = &compliance // override usage as the accepted values differ for each subcommand.
 
 	awsFlags := &flag.Flags{
 		AWSFlagGroup:     flag.NewAWSFlagGroup(),
 		CloudFlagGroup:   flag.NewCloudFlagGroup(),
 		MisconfFlagGroup: flag.NewMisconfFlagGroup(),
 		RegoFlagGroup:    flag.NewRegoFlagGroup(),
-		ReportFlagGroup:  flag.NewReportFlagGroup(),
+		ReportFlagGroup:  reportFlagGroup,
 	}
 
 	services := awsScanner.AllSupportedServices()
