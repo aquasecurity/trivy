@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"os"
+	"runtime/pprof"
 
 	"golang.org/x/xerrors"
 
@@ -18,6 +19,16 @@ var (
 func main() {
 	if err := run(); err != nil {
 		log.Fatal(err)
+	}
+	{
+		fMem, err := os.Create("mem.profile")
+		if err != nil {
+			panic("could not create memory profile: " + err.Error())
+		}
+		defer fMem.Close()
+		if err := pprof.WriteHeapProfile(fMem); err != nil {
+			panic("could not write memory profile: " + err.Error())
+		}
 	}
 }
 
