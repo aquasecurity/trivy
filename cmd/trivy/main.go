@@ -17,6 +17,17 @@ var (
 )
 
 func main() {
+	{
+		f, err := os.Create("cpu.profile")
+		if err != nil {
+			panic("could not create CPU profile: " + err.Error())
+		}
+		defer f.Close() // error handling omitted for example
+		if err := pprof.StartCPUProfile(f); err != nil {
+			panic("could not start CPU profile: " + err.Error())
+		}
+		defer pprof.StopCPUProfile()
+	}
 	if err := run(); err != nil {
 		log.Fatal(err)
 	}
