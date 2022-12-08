@@ -3,7 +3,6 @@ package ospkg
 import (
 	"time"
 
-	"github.com/aquasecurity/trivy/pkg/detector/ospkg/wolfi"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/detector/ospkg/alma"
@@ -17,6 +16,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/detector/ospkg/rocky"
 	"github.com/aquasecurity/trivy/pkg/detector/ospkg/suse"
 	"github.com/aquasecurity/trivy/pkg/detector/ospkg/ubuntu"
+	"github.com/aquasecurity/trivy/pkg/detector/ospkg/wolfi"
 	fos "github.com/aquasecurity/trivy/pkg/fanal/analyzer/os"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
