@@ -88,9 +88,11 @@ jobs:
     container:
       image: aquasec/trivy:latest
     steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
       - name: Lint the Dockerfiles 
         run: |
-          ls -la /github/workspace
           trivy config --quiet /__w/trivy/trivy/Dockerfile
           trivy config --quiet /__w/trivy/trivy/Dockerfile.canary
           trivy config --quiet /__w/trivy/trivy/Dockerfile.protoc
