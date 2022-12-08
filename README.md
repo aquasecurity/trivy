@@ -147,7 +147,7 @@ Contact us about any matter by opening a GitHub Discussion [here][discussions]
 [pronunciation]: #how-to-pronounce-the-name-trivy
 
 [Installation]:https://aquasecurity.github.io/trivy/latest/getting-started/installation/
-[Ecosystem]: https://aquasecurity.github.io/trivy/latestecosystem/tools
+[Ecosystem]: https://aquasecurity.github.io/trivy/latest/ecosystem/
 
 [alpine]: https://ariadne.space/2021/06/08/the-vulnerability-remediation-lifecycle-of-alpine-containers/
 [rego]: https://www.openpolicyagent.org/docs/latest/#rego
