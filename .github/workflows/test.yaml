@@ -90,9 +90,9 @@ jobs:
     steps:
       - name: Lint the Dockerfiles 
         run: |
-          trivy config --quiet /__w/Dockerfile
-          trivy config --quiet /__w/Dockerfile.canary
-          trivy config --quiet /__w/Dockerfile.protoc
+          trivy config --quiet ${HOME}/Dockerfile
+          trivy config --quiet ${HOME}/Dockerfile.canary
+          trivy config --quiet ${HOME}/Dockerfile.protoc
 
   build-test:
     name: Build Test
