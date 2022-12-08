@@ -90,8 +90,7 @@ jobs:
     steps:
       - name: Lint the Dockerfiles 
         run: |
-          ls
-          pwd
+          ls -la /github/workspace
           trivy config --quiet /__w/trivy/trivy/Dockerfile
           trivy config --quiet /__w/trivy/trivy/Dockerfile.canary
           trivy config --quiet /__w/trivy/trivy/Dockerfile.protoc
