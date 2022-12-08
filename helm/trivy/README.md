@@ -76,6 +76,7 @@ The following table lists the configurable parameters of the Trivy chart and the
 | `trivy.serverToken`                   | The token to authenticate Trivy client with Trivy server                | `` |
 | `trivy.existingSecret`                | existingSecret if an existing secret has been created outside the chart. Overrides gitHubToken, registryUsername, registryPassword, serverToken | `` |
 | `trivy.podAnnotations`                | Annotations for pods created by statefulset                             | `{}` |
+| `trivy.extraEnvVars`                  | extraEnvVars to be set on the container                                 | `{}` |
 | `service.name`                        | If specified, the name used for the Trivy service                       |     |
 | `service.type`                        | Kubernetes service type                                                 | `ClusterIP` |
 | `service.port`                        | Kubernetes service port                                                 | `4954`      |

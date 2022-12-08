@@ -153,6 +153,17 @@ func TestMarshaler_Marshal(t *testing.T) {
 							},
 						},
 					},
+					{
+						Target: "usr/local/bin/tfsec",
+						Class:  types.ClassLangPkg,
+						Type:   ftypes.GoBinary,
+						Packages: []ftypes.Package{
+							{
+								Name:    "golang.org/x/crypto",
+								Version: "v0.0.0-20210421170649-83a5a9bb288b",
+							},
+						},
+					},
 				},
 			},
 			want: &cdx.BOM{
@@ -335,6 +346,35 @@ func TestMarshaler_Marshal(t *testing.T) {
 							},
 						},
 					},
+					{
+						BOMRef:     "pkg:golang/golang.org/x/crypto@v0.0.0-20210421170649-83a5a9bb288b",
+						Type:       cdx.ComponentTypeLibrary,
+						Name:       "golang.org/x/crypto",
+						Version:    "v0.0.0-20210421170649-83a5a9bb288b",
+						PackageURL: "pkg:golang/golang.org/x/crypto@v0.0.0-20210421170649-83a5a9bb288b",
+						Properties: &[]cdx.Property{
+							{
+								Name:  "aquasecurity:trivy:PkgType",
+								Value: "gobinary",
+							},
+						},
+					},
+					{
+						BOMRef:  "3ff14136-e09f-4df9-80ea-000000000006",
+						Type:    cdx.ComponentTypeApplication,
+						Name:    "usr/local/bin/tfsec",
+						Version: "",
+						Properties: &[]cdx.Property{
+							{
+								Name:  "aquasecurity:trivy:Type",
+								Value: "gobinary",
+							},
+							{
+								Name:  "aquasecurity:trivy:Class",
+								Value: "lang-pkgs",
+							},
+						},
+					},
 				},
 				Dependencies: &[]cdx.Dependency{
 					{
@@ -373,6 +413,14 @@ func TestMarshaler_Marshal(t *testing.T) {
 						},
 					},
 					{
+						Ref: "3ff14136-e09f-4df9-80ea-000000000006",
+						Dependencies: &[]cdx.Dependency{
+							{
+								Ref: "pkg:golang/golang.org/x/crypto@v0.0.0-20210421170649-83a5a9bb288b",
+							},
+						},
+					},
+					{
 						Ref: "pkg:oci/rails@sha256:a27fd8080b517143cbbbab9dfb7c8571c40d67d534bbdee55bd6c473f432b177?repository_url=index.docker.io%2Flibrary%2Frails&arch=arm64",
 						Dependencies: &[]cdx.Dependency{
 							{
@@ -386,6 +434,9 @@ func TestMarshaler_Marshal(t *testing.T) {
 							},
 							{
 								Ref: "3ff14136-e09f-4df9-80ea-000000000005",
+							},
+							{
+								Ref: "3ff14136-e09f-4df9-80ea-000000000006",
 							},
 						},
 					},

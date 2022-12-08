@@ -89,7 +89,7 @@ var (
 		Name:       "compliance",
 		ConfigName: "scan.compliance",
 		Value:      "",
-		Usage:      "compliance report to generate (nsa)",
+		Usage:      "compliance report to generate",
 	}
 )
 
@@ -225,6 +225,11 @@ func parseComplianceTypes(compliance string) (string, error) {
 func (f *ReportFlagGroup) forceListAllPkgs(format string, listAllPkgs, dependencyTree bool) bool {
 	if slices.Contains(report.SupportedSBOMFormats, format) && !listAllPkgs {
 		log.Logger.Debugf("%q automatically enables '--list-all-pkgs'.", report.SupportedSBOMFormats)
+		return true
+	}
+	// We need this flag to insert dependency locations into Sarif('Package' struct contains 'Locations')
+	if format == report.FormatSarif && !listAllPkgs {
+		log.Logger.Debugf("Sarif format automatically enables '--list-all-pkgs' to get locations")
 		return true
 	}
 	if dependencyTree && !listAllPkgs {

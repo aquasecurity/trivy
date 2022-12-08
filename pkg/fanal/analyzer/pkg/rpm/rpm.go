@@ -57,6 +57,7 @@ var osVendors = []string{
 	"SUSE",                  // SUSE Linux Enterprise
 	"openSUSE",              // openSUSE
 	"Microsoft Corporation", // CBL-Mariner
+	"Rocky",                 // Rocky Linux
 }
 
 type rpmPkgAnalyzer struct{}

@@ -45,7 +45,7 @@ This documentation details how to use Trivy to access the features listed below.
 
 Please see [LICENSE][license] for Trivy licensing information.
 
-[installation]: ../index.md
+[installation]: ../getting-started/installation.md
 [vuln]: ../docs/vulnerability/scanning/index.md
 [misconf]: ../docs/misconfiguration/scanning.md
 [kubernetesoperator]: ../docs/kubernetes/operator/index.md
@@ -63,7 +63,7 @@ Please see [LICENSE][license] for Trivy licensing information.
 [lang]: ../docs/vulnerability/detection/language.md
 
 [builtin]: ../docs/misconfiguration/policy/builtin.md
-[quickstart]: ../getting-started/quickstart.md
+[quickstart]: ../index.md
 [podman]: ../docs/advanced/container/podman.md
 
 [sbom]: ../docs/sbom/index.md

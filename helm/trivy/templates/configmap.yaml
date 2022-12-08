@@ -23,3 +23,6 @@ data:
 {{- if .Values.noProxy }}
   NO_PROXY: {{ .Values.noProxy | quote }}
 {{- end }}
+{{- with .Values.trivy.extraEnvVars }}
+  {{- . | toYaml | nindent 2 }}
+{{- end }}
