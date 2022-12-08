@@ -98,6 +98,7 @@ nav:
             - Reports:  docs/compliance/compliance.md
       - SBOM:
           - Overview: docs/sbom/index.md
+          - Supported: docs/sbom/supported.md
           - CycloneDX: docs/sbom/cyclonedx.md
           - SPDX: docs/sbom/spdx.md
       - Attestation:
