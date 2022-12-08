@@ -35,6 +35,9 @@ func (p *Parser) Parse(r dio.ReadSeekerAt) ([]types.Library, []types.Dependency,
 
 	var libs []types.Library
 	for _, pkg := range lockfile.Packages {
+		if pkg.Category == "dev" {
+			continue
+		}
 		libs = append(libs, types.Library{
 			Name:    pkg.Name,
 			Version: pkg.Version,
