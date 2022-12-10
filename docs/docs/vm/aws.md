@@ -25,6 +25,12 @@ $ trivy vm --security-checks vuln ami:ami-0123456789abcdefg
 !!! tip
     The scanning could be faster if you enable only vulnerability scanning (`--security-checks vuln`) because Trivy tries to download only necessary blocks for vulnerability detection.
 
+If you want to scan a AMI of non-default setting region, you can set any region via `--region` option.
+
+```shell
+$ trivy vm --region ap-northeast-1 ami:ami-0123456789abcdefg
+```
+
 
 ### Required Actions
 Some actions on EBS are also necessary since Trivy scans an EBS snapshot tied to the specified AMI under the hood.
@@ -51,6 +57,13 @@ $ trivy vm --security-checks vuln ebs:snap-0123456789abcdefg
 
 !!! tip
 The scanning could be faster if you enable only vulnerability scanning (`--security-checks vuln`) because Trivy tries to download only necessary blocks for vulnerability detection.
+
+If you want to scan an EBS Snapshot of non-default setting region, you can set any region via `--region` option.
+
+```shell
+$ trivy vm --region ap-northeast-1 ebs:ebs-0123456789abcdefg
+```
+
 
 The above command takes a while as it calls EBS API and fetches the EBS blocks.
 If you want to scan the same snapshot several times, you can download the snapshot locally by using [coldsnap][coldsnap] maintained by AWS.
