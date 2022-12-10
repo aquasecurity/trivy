@@ -543,6 +543,7 @@ func initScannerConfig(opts flag.Options, cacheClient cache.Cache) (ScannerConfi
 			RekorURL:          opts.RekorURL,
 			Platform:          opts.Platform,
 			Slow:              opts.Slow,
+			AWSRegion:         opts.AWSRegion,
 
 			// For misconfiguration scanning
 			MisconfScannerOption: configScannerOptions,
