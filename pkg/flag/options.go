@@ -403,6 +403,10 @@ func (f *Flags) ToOptions(appVersion string, args []string, globalFlags *GlobalF
 		opts.VulnerabilityOptions = f.VulnerabilityFlagGroup.ToOptions()
 	}
 
+	if f.VMFlagGroups != nil {
+		opts.VMOptions = f.VMFlagGroups.ToOptions()
+	}
+
 	opts.Align()
 
 	return opts, nil
