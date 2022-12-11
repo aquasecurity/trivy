@@ -19,6 +19,8 @@ import (
 	"github.com/aquasecurity/trivy/pkg/types"
 )
 
+var ErrSBOMSupportOnly = xerrors.New("SBOM support only")
+
 // NewDriver returns a driver according to the library type
 func NewDriver(libType string) (Driver, error) {
 	var ecosystem dbTypes.Ecosystem
@@ -56,8 +58,7 @@ func NewDriver(libType string) (Driver, error) {
 		comparer = compare.GenericComparer{}
 	case ftypes.Cocoapods:
 		log.Logger.Warn("CocoaPods is supported for SBOM, not for vulnerability scanning")
-		ecosystem = "cocoapods" // TODO use const from Trivy-db after adding it
-		comparer = compare.GenericComparer{}
+		return Driver{}, ErrSBOMSupportOnly
 	default:
 		return Driver{}, xerrors.Errorf("unsupported type %s", libType)
 	}
