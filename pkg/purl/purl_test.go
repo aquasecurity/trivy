@@ -43,14 +43,14 @@ func TestNewPackageURL(t *testing.T) {
 		},
 		{
 			name: "gradle package",
-			typ:  string(ftypes.Gradle),
+			typ:  ftypes.Gradle,
 			pkg: ftypes.Package{
 				Name:    "org.springframework:spring-core",
 				Version: "5.3.14",
 			},
 			want: purl.PackageURL{
 				PackageURL: packageurl.PackageURL{
-					Type:      string(ftypes.Gradle),
+					Type:      packageurl.TypeMaven,
 					Namespace: "org.springframework",
 					Name:      "spring-core",
 					Version:   "5.3.14",

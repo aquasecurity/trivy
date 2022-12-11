@@ -289,7 +289,7 @@ func parseNpm(pkgName string) (string, string) {
 
 func purlType(t string) string {
 	switch t {
-	case ftypes.Jar, ftypes.Pom:
+	case ftypes.Jar, ftypes.Pom, ftypes.Gradle:
 		return packageurl.TypeMaven
 	case ftypes.Bundler, ftypes.GemSpec:
 		return packageurl.TypeGem
