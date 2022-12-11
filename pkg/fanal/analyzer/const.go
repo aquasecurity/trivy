@@ -75,7 +75,7 @@ const (
 	TypeConanLock Type = "conan-lock"
 
 	// Swift
-	TypeCocoaPodsLock Type = "cocoaPods-lock"
+	TypeCocoaPods Type = "cocoapods"
 
 	// ============
 	// Non-packaged
@@ -128,14 +128,14 @@ var (
 		TypeBundler, TypeGemSpec, TypeCargo, TypeComposer, TypeJar, TypePom, TypeGradleLock,
 		TypeNpmPkgLock, TypeNodePkg, TypeYarn, TypePnpm, TypeNuget, TypeDotNetCore,
 		TypePythonPkg, TypePip, TypePipenv, TypePoetry, TypeGoBinary, TypeGoMod, TypeRustBinary, TypeConanLock,
-		TypeCocoaPodsLock,
+		TypeCocoaPods,
 	}
 
 	// TypeLockfiles has all lock file analyzers
 	TypeLockfiles = []Type{
 		TypeBundler, TypeNpmPkgLock, TypeYarn,
 		TypePnpm, TypePip, TypePipenv, TypePoetry, TypeGoMod, TypePom, TypeConanLock, TypeGradleLock,
-		TypeCocoaPodsLock,
+		TypeCocoaPods,
 	}
 
 	// TypeIndividualPkgs has all analyzers for individual packages

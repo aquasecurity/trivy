@@ -37,7 +37,7 @@ func (a cocoaPodsLockAnalyzer) Required(_ string, fileInfo os.FileInfo) bool {
 }
 
 func (a cocoaPodsLockAnalyzer) Type() analyzer.Type {
-	return analyzer.TypeCocoaPodsLock
+	return analyzer.TypeCocoaPods
 }
 
 func (a cocoaPodsLockAnalyzer) Version() int {
