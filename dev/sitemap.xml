@@ -331,6 +331,11 @@
          <changefreq>daily</changefreq>
     </url>
     <url>
+         <loc>https://aquasecurity.github.io/trivy/dev/docs/sbom/supported/</loc>
+         <lastmod>2022-12-11</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
          <loc>https://aquasecurity.github.io/trivy/dev/docs/secret/configuration/</loc>
          <lastmod>2022-12-11</lastmod>
          <changefreq>daily</changefreq>

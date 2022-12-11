@@ -10,14 +10,14 @@
       
       
       
-        <link rel="canonical" href="https://aquasecurity.github.io/trivy/dev/docs/advanced/air-gap/">
+        <link rel="canonical" href="https://aquasecurity.github.io/trivy/dev/docs/sbom/supported/">
       
       <link rel="icon" href="../../../assets/images/favicon.png">
       <meta name="generator" content="mkdocs-1.3.0, mkdocs-material-8.3.9">
     
     
       
-        <title>Air-Gapped Environment - Trivy</title>
+        <title>Supported - Trivy</title>
       
     
     
@@ -64,7 +64,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#air-gapped-environment" class="md-skip">
+        <a href="#packages-that-support-vulnerability-scanning" class="md-skip">
           Skip to content
         </a>
       
@@ -104,7 +104,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Air-Gapped Environment
+              Supported
             
           </span>
         </div>
@@ -2051,14 +2051,16 @@
               
   
   
+    
+  
   
     
       
     
-    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_9" type="checkbox" id="__nav_3_9" >
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_9" type="checkbox" id="__nav_3_9" checked>
       
       
       
@@ -2081,7 +2083,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../sbom/" class="md-nav__link">
+      <a href="../" class="md-nav__link">
         Overview
       </a>
     </li>
@@ -2093,11 +2095,55 @@
               
   
   
+    
   
-    <li class="md-nav__item">
-      <a href="../../sbom/supported/" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+      
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          Supported
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
         Supported
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#packages-that-support-vulnerability-scanning" class="md-nav__link">
+    Packages that support vulnerability scanning
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#other-language-specific-packages" class="md-nav__link">
+    Other language-specific packages
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -2109,7 +2155,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../sbom/cyclonedx/" class="md-nav__link">
+      <a href="../cyclonedx/" class="md-nav__link">
         CycloneDX
       </a>
     </li>
@@ -2123,7 +2169,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../sbom/spdx/" class="md-nav__link">
+      <a href="../spdx/" class="md-nav__link">
         SPDX
       </a>
     </li>
@@ -2219,16 +2265,14 @@
               
   
   
-    
-  
   
     
       
     
-    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_11" type="checkbox" id="__nav_3_11" checked>
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_11" type="checkbox" id="__nav_3_11" >
       
       
       
@@ -2251,7 +2295,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../modules/" class="md-nav__link">
+      <a href="../../advanced/modules/" class="md-nav__link">
         Modules
       </a>
     </li>
@@ -2265,7 +2309,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../plugins/" class="md-nav__link">
+      <a href="../../advanced/plugins/" class="md-nav__link">
         Plugins
       </a>
     </li>
@@ -2277,106 +2321,11 @@
               
   
   
-    
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
-      
-      
-        
-      
-      
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          Air-Gapped Environment
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <a href="./" class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href="../../advanced/air-gap/" class="md-nav__link">
         Air-Gapped Environment
       </a>
-      
-        
-
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#air-gapped-environment-for-vulnerabilities" class="md-nav__link">
-    Air-Gapped Environment for vulnerabilities
-  </a>
-  
-    <nav class="md-nav" aria-label="Air-Gapped Environment for vulnerabilities">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#download-the-vulnerability-database" class="md-nav__link">
-    Download the vulnerability database
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#transfer-the-db-file-into-the-air-gapped-environment" class="md-nav__link">
-    Transfer the DB file into the air-gapped environment
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#put-the-db-file-in-trivys-cache-directory" class="md-nav__link">
-    Put the DB file in Trivy's cache directory
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#run-trivy-with-skip-update-and-offline-scan-option" class="md-nav__link">
-    Run Trivy with --skip-update and --offline-scan option
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#air-gapped-environment-for-misconfigurations" class="md-nav__link">
-    Air-Gapped Environment for misconfigurations
-  </a>
-  
-    <nav class="md-nav" aria-label="Air-Gapped Environment for misconfigurations">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#run-trivy-with-skip-policy-update-option" class="md-nav__link">
-    Run Trivy with --skip-policy-update option
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-      
     </li>
   
 
@@ -2414,7 +2363,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../container/embed-in-dockerfile/" class="md-nav__link">
+      <a href="../../advanced/container/embed-in-dockerfile/" class="md-nav__link">
         Embed in Dockerfile
       </a>
     </li>
@@ -2428,7 +2377,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../container/unpacked-filesystem/" class="md-nav__link">
+      <a href="../../advanced/container/unpacked-filesystem/" class="md-nav__link">
         Unpacked container image filesystem
       </a>
     </li>
@@ -2442,7 +2391,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../container/oci/" class="md-nav__link">
+      <a href="../../advanced/container/oci/" class="md-nav__link">
         OCI Image
       </a>
     </li>
@@ -2456,7 +2405,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../container/podman/" class="md-nav__link">
+      <a href="../../advanced/container/podman/" class="md-nav__link">
         Podman
       </a>
     </li>
@@ -2470,7 +2419,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../container/containerd/" class="md-nav__link">
+      <a href="../../advanced/container/containerd/" class="md-nav__link">
         containerd
       </a>
     </li>
@@ -2510,7 +2459,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../private-registries/" class="md-nav__link">
+      <a href="../../advanced/private-registries/" class="md-nav__link">
         Overview
       </a>
     </li>
@@ -2524,7 +2473,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../private-registries/docker-hub/" class="md-nav__link">
+      <a href="../../advanced/private-registries/docker-hub/" class="md-nav__link">
         Docker Hub
       </a>
     </li>
@@ -2538,7 +2487,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../private-registries/ecr/" class="md-nav__link">
+      <a href="../../advanced/private-registries/ecr/" class="md-nav__link">
         AWS ECR (Elastic Container Registry)
       </a>
     </li>
@@ -2552,7 +2501,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../private-registries/gcr/" class="md-nav__link">
+      <a href="../../advanced/private-registries/gcr/" class="md-nav__link">
         GCR (Google Container Registry)
       </a>
     </li>
@@ -2566,7 +2515,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../private-registries/acr/" class="md-nav__link">
+      <a href="../../advanced/private-registries/acr/" class="md-nav__link">
         ACR (Azure Container Registry)
       </a>
     </li>
@@ -2580,7 +2529,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../private-registries/self/" class="md-nav__link">
+      <a href="../../advanced/private-registries/self/" class="md-nav__link">
         Self-Hosted
       </a>
     </li>
@@ -3240,8 +3189,6 @@
   
   
   
-    
-  
   
     <label class="md-nav__title" for="__toc">
       <span class="md-nav__icon md-icon"></span>
@@ -3250,63 +3197,16 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#air-gapped-environment-for-vulnerabilities" class="md-nav__link">
-    Air-Gapped Environment for vulnerabilities
+  <a href="#packages-that-support-vulnerability-scanning" class="md-nav__link">
+    Packages that support vulnerability scanning
   </a>
-  
-    <nav class="md-nav" aria-label="Air-Gapped Environment for vulnerabilities">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#download-the-vulnerability-database" class="md-nav__link">
-    Download the vulnerability database
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#transfer-the-db-file-into-the-air-gapped-environment" class="md-nav__link">
-    Transfer the DB file into the air-gapped environment
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#put-the-db-file-in-trivys-cache-directory" class="md-nav__link">
-    Put the DB file in Trivy's cache directory
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#run-trivy-with-skip-update-and-offline-scan-option" class="md-nav__link">
-    Run Trivy with --skip-update and --offline-scan option
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#air-gapped-environment-for-misconfigurations" class="md-nav__link">
-    Air-Gapped Environment for misconfigurations
+  <a href="#other-language-specific-packages" class="md-nav__link">
+    Other language-specific packages
   </a>
-  
-    <nav class="md-nav" aria-label="Air-Gapped Environment for misconfigurations">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#run-trivy-with-skip-policy-update-option" class="md-nav__link">
-    Run Trivy with --skip-policy-update option
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
   
 </li>
       
@@ -3324,65 +3224,28 @@
                 
 
 
-<h1 id="air-gapped-environment">Air-Gapped Environment</h1>
-<p>Trivy can be used in air-gapped environments. Note that an allowlist is <a href="../../references/troubleshooting/">here</a>.</p>
-<h2 id="air-gapped-environment-for-vulnerabilities">Air-Gapped Environment for vulnerabilities</h2>
-<h3 id="download-the-vulnerability-database">Download the vulnerability database</h3>
-<div class="tabbed-set tabbed-alternate" data-tabs="1:3"><input checked="checked" id="__tabbed_1_1" name="__tabbed_1" type="radio" /><input id="__tabbed_1_2" name="__tabbed_1" type="radio" /><input id="__tabbed_1_3" name="__tabbed_1" type="radio" /><div class="tabbed-labels"><label for="__tabbed_1_1">Trivy</label><label for="__tabbed_1_2">oras &gt;= v0.13.0</label><label for="__tabbed_1_3">oras &lt; v0.13.0</label></div>
-<div class="tabbed-content">
-<div class="tabbed-block">
-<div class="highlight"><pre><span></span><code>TRIVY_TEMP_DIR=$(mktemp -d)
-trivy --cache-dir $TRIVY_TEMP_DIR image --download-db-only
-tar -cf ./db.tar.gz -C $TRIVY_TEMP_DIR/db metadata.json trivy.db
-rm -rf $TRIVY_TEMP_DIR
-</code></pre></div>
-</div>
-<div class="tabbed-block">
-<p>At first, you need to download the vulnerability database for use in air-gapped environments.
-Please follow <a href="https://oras.land/cli/">oras installation instruction</a>.</p>
-<p>Download <code>db.tar.gz</code>:</p>
-<div class="highlight"><pre><span></span><code>$ oras pull ghcr.io/aquasecurity/trivy-db:2
-</code></pre></div>
-</div>
-<div class="tabbed-block">
-<p>At first, you need to download the vulnerability database for use in air-gapped environments.
-Please follow <a href="https://oras.land/cli/">oras installation instruction</a>.</p>
-<p>Download <code>db.tar.gz</code>:</p>
-<div class="highlight"><pre><span></span><code>$ oras pull -a ghcr.io/aquasecurity/trivy-db:2
-</code></pre></div>
-</div>
-</div>
-</div>
-<h3 id="transfer-the-db-file-into-the-air-gapped-environment">Transfer the DB file into the air-gapped environment</h3>
-<p>The way of transfer depends on the environment.</p>
-<div class="highlight"><pre><span></span><code>$ rsync -av -e ssh /path/to/db.tar.gz [user]@[host]:dst
-</code></pre></div>
-<h3 id="put-the-db-file-in-trivys-cache-directory">Put the DB file in Trivy's cache directory</h3>
-<p>You have to know where to put the DB file. The following command shows the default cache directory.</p>
-<div class="highlight"><pre><span></span><code>$ ssh user@host
-$ trivy -h | grep cache
-   --cache-dir value  cache directory (default: &quot;/home/myuser/.cache/trivy&quot;) [$TRIVY_CACHE_DIR]
-</code></pre></div>
-<p>Put the DB file in the cache directory + <code>/db</code>.</p>
-<div class="highlight"><pre><span></span><code>$ mkdir -p /home/myuser/.cache/trivy/db
-$ cd /home/myuser/.cache/trivy/db
-$ tar xvf /path/to/db.tar.gz -C /home/myuser/.cache/trivy/db
-x trivy.db
-x metadata.json
-$ rm /path/to/db.tar.gz
-</code></pre></div>
-<p>In an air-gapped environment it is your responsibility to update the Trivy database on a regular basis, so that the scanner can detect recently-identified vulnerabilities. </p>
-<h3 id="run-trivy-with-skip-update-and-offline-scan-option">Run Trivy with <code>--skip-update</code> and <code>--offline-scan</code> option</h3>
-<p>In an air-gapped environment, specify <code>--skip-update</code> so that Trivy doesn't attempt to download the latest database file.
-In addition, if you want to scan Java dependencies such as JAR and pom.xml, you need to specify <code>--offline-scan</code> since Trivy tries to issue API requests for scanning Java applications by default.</p>
-<div class="highlight"><pre><span></span><code>$ trivy image --skip-update --offline-scan alpine:3.12
-</code></pre></div>
-<h2 id="air-gapped-environment-for-misconfigurations">Air-Gapped Environment for misconfigurations</h2>
-<p>No special measures are required to detect misconfigurations in an air-gapped environment.</p>
-<h3 id="run-trivy-with-skip-policy-update-option">Run Trivy with <code>--skip-policy-update</code> option</h3>
-<p>In an air-gapped environment, specify <code>--skip-policy-update</code> so that Trivy doesn't attempt to download the latest misconfiguration policies.</p>
-<div class="highlight"><pre><span></span><code>$ trivy conf --skip-policy-update /path/to/conf
-</code></pre></div>
+  <h1>Supported</h1>
+
+<h2 id="packages-that-support-vulnerability-scanning">Packages that support vulnerability scanning</h2>
+<ul>
+<li><a href="../../vulnerability/detection/os/">OS packages</a></li>
+<li><a href="../../vulnerability/detection/language/">Language-specific packages</a></li>
+</ul>
+<h2 id="other-language-specific-packages">Other language-specific packages</h2>
+<table>
+<thead>
+<tr>
+<th>Language</th>
+<th>File</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Swift</td>
+<td>PodFile.lock</td>
+</tr>
+</tbody>
+</table>
 
               
             </article>
@@ -3400,7 +3263,7 @@ In addition, if you want to scan Java dependencies such as JAR and pom.xml, you 
     <nav class="md-footer__inner md-grid" aria-label="Footer" >
       
         
-        <a href="../plugins/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Plugins" rel="prev">
+        <a href="../" class="md-footer__link md-footer__link--prev" aria-label="Previous: Overview" rel="prev">
           <div class="md-footer__button md-icon">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
           </div>
@@ -3409,20 +3272,20 @@ In addition, if you want to scan Java dependencies such as JAR and pom.xml, you 
               <span class="md-footer__direction">
                 Previous
               </span>
-              Plugins
+              Overview
             </div>
           </div>
         </a>
       
       
         
-        <a href="../container/embed-in-dockerfile/" class="md-footer__link md-footer__link--next" aria-label="Next: Embed in Dockerfile" rel="next">
+        <a href="../cyclonedx/" class="md-footer__link md-footer__link--next" aria-label="Next: CycloneDX" rel="next">
           <div class="md-footer__title">
             <div class="md-ellipsis">
               <span class="md-footer__direction">
                 Next
               </span>
-              Embed in Dockerfile
+              CycloneDX
             </div>
           </div>
           <div class="md-footer__button md-icon">
