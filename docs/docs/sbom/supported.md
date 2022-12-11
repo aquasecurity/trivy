@@ -1,8 +1,8 @@
 ## Packages that support vulnerability scanning
-- [os packages][os_packages]
-- [language packages][os_packages]
+- [OS packages][os_packages]
+- [Language-specific packages][language_packages]
 
-## Other packages
+## Other language-specific packages
 
 | Language | File         |
 |----------|--------------|
