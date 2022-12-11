@@ -19,7 +19,8 @@ import (
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 	ebsfile "github.com/masahiro331/go-ebs-file"
 
-	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/all"
+	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/os/amazonlinux"
+	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/pkg/rpm"
 )
 
 const (
@@ -35,7 +36,7 @@ func TestNewArtifact(t *testing.T) {
 	}{
 		{
 			name:    "happy path for file",
-			target:  "testdata/rawdata.img",
+			target:  filepath.Join("testdata", "rawdata.img"),
 			wantErr: assert.NoError,
 		},
 		{
@@ -45,7 +46,7 @@ func TestNewArtifact(t *testing.T) {
 		},
 		{
 			name:   "sad path unsupported vm format",
-			target: "testdata/monolithicSparse.vmdk",
+			target: filepath.Join("testdata", "monolithicSparse.vmdk"),
 			wantErr: func(t assert.TestingT, err error, args ...interface{}) bool {
 				return assert.ErrorContains(t, err, "unsupported type error")
 			},
@@ -85,7 +86,7 @@ func TestArtifact_Inspect(t *testing.T) {
 			filePath: "testdata/AmazonLinux2.img.gz",
 			putBlobExpectation: cache.ArtifactCachePutBlobExpectation{
 				Args: cache.ArtifactCachePutBlobArgs{
-					BlobID: "sha256:69e2b6e965c00999a02bfc9294e0b5d9a20f8181f8d514aa1a8faf2b4ba44f17",
+					BlobID: "sha256:bdff805a4b2a96074c549dbb7912f5089df1a484cf0919639ecdba437a959e90",
 					BlobInfo: types.BlobInfo{
 						SchemaVersion: types.BlobJSONSchemaVersion,
 						OS: &types.OS{
@@ -105,7 +106,7 @@ func TestArtifact_Inspect(t *testing.T) {
 			putArtifactExpectations: []cache.ArtifactCachePutArtifactExpectation{
 				{
 					Args: cache.ArtifactCachePutArtifactArgs{
-						ArtifactID: "sha256:69e2b6e965c00999a02bfc9294e0b5d9a20f8181f8d514aa1a8faf2b4ba44f17",
+						ArtifactID: "sha256:bdff805a4b2a96074c549dbb7912f5089df1a484cf0919639ecdba437a959e90",
 						ArtifactInfo: types.ArtifactInfo{
 							SchemaVersion: types.ArtifactJSONSchemaVersion,
 						},
@@ -116,9 +117,9 @@ func TestArtifact_Inspect(t *testing.T) {
 			want: types.ArtifactReference{
 				Name: "testdata/AmazonLinux2.img.gz",
 				Type: types.ArtifactVM,
-				ID:   "sha256:69e2b6e965c00999a02bfc9294e0b5d9a20f8181f8d514aa1a8faf2b4ba44f17",
+				ID:   "sha256:bdff805a4b2a96074c549dbb7912f5089df1a484cf0919639ecdba437a959e90",
 				BlobIDs: []string{
-					"sha256:69e2b6e965c00999a02bfc9294e0b5d9a20f8181f8d514aa1a8faf2b4ba44f17",
+					"sha256:bdff805a4b2a96074c549dbb7912f5089df1a484cf0919639ecdba437a959e90",
 				},
 			},
 		},
@@ -127,13 +128,13 @@ func TestArtifact_Inspect(t *testing.T) {
 			filePath: "ebs:ebs-012345",
 			missingBlobsExpectation: cache.ArtifactCacheMissingBlobsExpectation{
 				Args: cache.ArtifactCacheMissingBlobsArgs{
-					ArtifactID: "sha256:69267e53cb143298aee49fa179b125e3b304672715f0f8abf25ea224eb507b5c",
-					BlobIDs:    []string{"sha256:69267e53cb143298aee49fa179b125e3b304672715f0f8abf25ea224eb507b5c"},
+					ArtifactID: "sha256:284fbc20c2224e9ffc9dbc2fa1cdc4138fcfd5c55763ecb737864c0ee0d8163f",
+					BlobIDs:    []string{"sha256:284fbc20c2224e9ffc9dbc2fa1cdc4138fcfd5c55763ecb737864c0ee0d8163f"},
 				},
 			},
 			putBlobExpectation: cache.ArtifactCachePutBlobExpectation{
 				Args: cache.ArtifactCachePutBlobArgs{
-					BlobID: "sha256:69267e53cb143298aee49fa179b125e3b304672715f0f8abf25ea224eb507b5c",
+					BlobID: "sha256:284fbc20c2224e9ffc9dbc2fa1cdc4138fcfd5c55763ecb737864c0ee0d8163f",
 					BlobInfo: types.BlobInfo{
 						SchemaVersion: types.BlobJSONSchemaVersion,
 						OS: &types.OS{
@@ -153,7 +154,7 @@ func TestArtifact_Inspect(t *testing.T) {
 			putArtifactExpectations: []cache.ArtifactCachePutArtifactExpectation{
 				{
 					Args: cache.ArtifactCachePutArtifactArgs{
-						ArtifactID: "sha256:69267e53cb143298aee49fa179b125e3b304672715f0f8abf25ea224eb507b5c",
+						ArtifactID: "sha256:284fbc20c2224e9ffc9dbc2fa1cdc4138fcfd5c55763ecb737864c0ee0d8163f",
 						ArtifactInfo: types.ArtifactInfo{
 							SchemaVersion: types.ArtifactJSONSchemaVersion,
 						},
@@ -163,9 +164,9 @@ func TestArtifact_Inspect(t *testing.T) {
 			want: types.ArtifactReference{
 				Name: "ebs-012345",
 				Type: types.ArtifactVM,
-				ID:   "sha256:69267e53cb143298aee49fa179b125e3b304672715f0f8abf25ea224eb507b5c",
+				ID:   "sha256:284fbc20c2224e9ffc9dbc2fa1cdc4138fcfd5c55763ecb737864c0ee0d8163f",
 				BlobIDs: []string{
-					"sha256:69267e53cb143298aee49fa179b125e3b304672715f0f8abf25ea224eb507b5c",
+					"sha256:284fbc20c2224e9ffc9dbc2fa1cdc4138fcfd5c55763ecb737864c0ee0d8163f",
 				},
 			},
 		},
@@ -188,7 +189,7 @@ func TestArtifact_Inspect(t *testing.T) {
 
 			if aa, ok := a.(*vm.EBS); ok {
 				// blockSize: 512 KB, volumeSize: 40MB
-				ebs := ebsfile.NewMockEBS("testdata/AmazonLinux2.img.gz", 512<<10, 40<<20)
+				ebs := ebsfile.NewMockEBS(filepath.Join("testdata", "AmazonLinux2.img.gz"), 512<<10, 40<<20)
 				aa.SetEBS(ebs)
 			}
 

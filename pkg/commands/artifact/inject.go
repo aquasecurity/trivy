@@ -92,6 +92,14 @@ func initializeRemoteFilesystemScanner(ctx context.Context, path string, artifac
 	return scanner.Scanner{}, nil, nil
 }
 
+// initializeRemoteRepositoryScanner is for repository scanning in client/server mode
+func initializeRemoteRepositoryScanner(ctx context.Context, url string, artifactCache cache.ArtifactCache,
+	remoteScanOptions client.ScannerOption, artifactOption artifact.Option) (
+	scanner.Scanner, func(), error) {
+	wire.Build(scanner.RemoteRepositorySet)
+	return scanner.Scanner{}, nil, nil
+}
+
 // initializeRemoteSBOMScanner is for sbom scanning in client/server mode
 func initializeRemoteSBOMScanner(ctx context.Context, path string, artifactCache cache.ArtifactCache,
 	remoteScanOptions client.ScannerOption, artifactOption artifact.Option) (scanner.Scanner, func(), error) {
