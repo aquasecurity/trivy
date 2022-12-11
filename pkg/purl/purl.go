@@ -99,21 +99,22 @@ func (p *PackageURL) AppType() string {
 	return p.Type
 }
 
-func (purl PackageURL) BOMRef() string {
+func (p *PackageURL) BOMRef() string {
 	// 'bom-ref' must be unique within BOM, but PURLs may conflict
 	// when the same packages are installed in an artifact.
 	// In that case, we prefer to make PURLs unique by adding file paths,
 	// rather than using UUIDs, even if it is not PURL technically.
 	// ref. https://cyclonedx.org/use-cases/#dependency-graph
-	if purl.FilePath != "" {
+	purl := p.PackageURL // so that it will not override the qualifiers below
+	if p.FilePath != "" {
 		purl.Qualifiers = append(purl.Qualifiers,
 			packageurl.Qualifier{
 				Key:   "file_path",
-				Value: purl.FilePath,
+				Value: p.FilePath,
 			},
 		)
 	}
-	return purl.PackageURL.String()
+	return purl.String()
 }
 
 // nolint: gocyclo
