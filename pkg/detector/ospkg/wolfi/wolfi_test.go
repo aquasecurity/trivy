@@ -143,36 +143,6 @@ func TestScanner_Detect(t *testing.T) {
 			},
 		},
 		{
-			name:     "repository is newer than OS version",
-			fixtures: []string{"testdata/fixtures/wolfi.yaml", "testdata/fixtures/data-source.yaml"},
-			args: args{
-				repo: &ftypes.Repository{
-					Family: os.Wolfi,
-				},
-				pkgs: []ftypes.Package{
-					{
-						Name:       "jq",
-						Version:    "1.6-r0",
-						SrcName:    "jq",
-						SrcVersion: "1.6-r0",
-					},
-				},
-			},
-			want: []types.DetectedVulnerability{
-				{
-					PkgName:          "jq",
-					VulnerabilityID:  "CVE-2020-1234",
-					InstalledVersion: "1.6-r0",
-					FixedVersion:     "1.6-r1",
-					DataSource: &dbTypes.DataSource{
-						ID:   vulnerability.Wolfi,
-						Name: "Wolfi Secdb",
-						URL:  "https://packages.wolfi.dev/os/security.json/",
-					},
-				},
-			},
-		},
-		{
 			name:     "Get returns an error",
 			fixtures: []string{"testdata/fixtures/invalid.yaml", "testdata/fixtures/data-source.yaml"},
 			args: args{
