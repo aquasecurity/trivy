@@ -50,7 +50,10 @@ mode:
 - fs
 - repo
 - sbom
+- k8s
 - server
+- aws
+- vm
 
 os:
 
@@ -101,6 +104,12 @@ cli:
 
 - cli
 - flag
+
+SBOM:
+
+- cyclonedx
+- spdx
+- purl
 
 others:
 

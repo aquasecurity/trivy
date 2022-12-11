@@ -80,42 +80,43 @@ func (p *PackageURL) Package() *ftypes.Package {
 func (p *PackageURL) AppType() string {
 	switch p.Type {
 	case packageurl.TypeComposer:
-		return string(analyzer.TypeComposer)
+		return ftypes.Composer
 	case packageurl.TypeMaven:
-		return string(analyzer.TypeJar)
+		return ftypes.Jar
 	case packageurl.TypeGem:
-		return string(analyzer.TypeGemSpec)
+		return ftypes.GemSpec
 	case packageurl.TypePyPi:
-		return string(analyzer.TypePythonPkg)
+		return ftypes.PythonPkg
 	case packageurl.TypeGolang:
-		return string(analyzer.TypeGoBinary)
+		return ftypes.GoBinary
 	case packageurl.TypeNPM:
-		return string(analyzer.TypeNodePkg)
+		return ftypes.NodePkg
 	case packageurl.TypeCargo:
-		return string(analyzer.TypeRustBinary)
+		return ftypes.Cargo
 	case packageurl.TypeNuget:
-		return string(analyzer.TypeNuget)
+		return ftypes.NuGet
 	case packageurl.TypeSwift:
-		return string(analyzer.TypeCocoaPods)
+		return ftypes.Cocoapods
 	}
 	return p.Type
 }
 
-func (purl PackageURL) BOMRef() string {
+func (p *PackageURL) BOMRef() string {
 	// 'bom-ref' must be unique within BOM, but PURLs may conflict
 	// when the same packages are installed in an artifact.
 	// In that case, we prefer to make PURLs unique by adding file paths,
 	// rather than using UUIDs, even if it is not PURL technically.
 	// ref. https://cyclonedx.org/use-cases/#dependency-graph
-	if purl.FilePath != "" {
+	purl := p.PackageURL // so that it will not override the qualifiers below
+	if p.FilePath != "" {
 		purl.Qualifiers = append(purl.Qualifiers,
 			packageurl.Qualifier{
 				Key:   "file_path",
-				Value: purl.FilePath,
+				Value: p.FilePath,
 			},
 		)
 	}
-	return purl.PackageURL.String()
+	return purl.String()
 }
 
 // nolint: gocyclo
@@ -290,19 +291,19 @@ func parseNpm(pkgName string) (string, string) {
 
 func purlType(t string) string {
 	switch t {
-	case string(analyzer.TypeJar), string(analyzer.TypePom):
+	case ftypes.Jar, ftypes.Pom, ftypes.Gradle:
 		return packageurl.TypeMaven
-	case string(analyzer.TypeBundler), string(analyzer.TypeGemSpec):
+	case ftypes.Bundler, ftypes.GemSpec:
 		return packageurl.TypeGem
-	case string(analyzer.TypeNuget), string(analyzer.TypeDotNetCore):
+	case ftypes.NuGet, ftypes.DotNetCore:
 		return packageurl.TypeNuget
-	case string(analyzer.TypePythonPkg), string(analyzer.TypePip), string(analyzer.TypePipenv), string(analyzer.TypePoetry):
+	case ftypes.PythonPkg, ftypes.Pip, ftypes.Pipenv, ftypes.Poetry:
 		return packageurl.TypePyPi
-	case string(analyzer.TypeGoBinary), string(analyzer.TypeGoMod):
+	case ftypes.GoBinary, ftypes.GoModule:
 		return packageurl.TypeGolang
-	case string(analyzer.TypeNpmPkgLock), string(analyzer.TypeNodePkg), string(analyzer.TypeYarn), string(analyzer.TypePnpm):
+	case ftypes.Npm, ftypes.NodePkg, ftypes.Yarn, ftypes.Pnpm:
 		return packageurl.TypeNPM
-	case string(ftypes.Cocoapods):
+	case ftypes.Cocoapods:
 		return packageurl.TypeSwift
 	case os.Alpine:
 		return string(analyzer.TypeApk)
