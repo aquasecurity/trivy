@@ -95,6 +95,8 @@ func (p *PackageURL) AppType() string {
 		return ftypes.Cargo
 	case packageurl.TypeNuget:
 		return ftypes.NuGet
+	case packageurl.TypeSwift:
+		return ftypes.Cocoapods
 	}
 	return p.Type
 }
@@ -301,6 +303,8 @@ func purlType(t string) string {
 		return packageurl.TypeGolang
 	case ftypes.Npm, ftypes.NodePkg, ftypes.Yarn, ftypes.Pnpm:
 		return packageurl.TypeNPM
+	case ftypes.Cocoapods:
+		return packageurl.TypeSwift
 	case os.Alpine:
 		return string(analyzer.TypeApk)
 	case os.Debian, os.Ubuntu:
