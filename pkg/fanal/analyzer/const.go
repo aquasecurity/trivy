@@ -20,7 +20,6 @@ const (
 	TypeRedHatBase Type = "redhat"
 	TypeSUSE       Type = "suse"
 	TypeUbuntu     Type = "ubuntu"
-	TypeWolfi      Type = "wolfi"
 
 	// OS Package
 	TypeApk         Type = "apk"
