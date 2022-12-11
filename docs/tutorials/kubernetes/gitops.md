@@ -106,7 +106,7 @@ spec:
       sourceRef:
         kind: HelmRepository
         name: trivy-operator
-				namespace: flux-system
+		namespace: flux-system
       version: 0.0.5
   interval: 60m
 ```
