@@ -27,7 +27,7 @@ func TestNewPackageURL(t *testing.T) {
 	}{
 		{
 			name: "maven package",
-			typ:  string(analyzer.TypeJar),
+			typ:  ftypes.Jar,
 			pkg: ftypes.Package{
 				Name:    "org.springframework:spring-core",
 				Version: "5.3.14",
@@ -59,7 +59,7 @@ func TestNewPackageURL(t *testing.T) {
 		},
 		{
 			name: "yarn package",
-			typ:  string(analyzer.TypeYarn),
+			typ:  ftypes.Yarn,
 			pkg: ftypes.Package{
 				Name:    "@xtuc/ieee754",
 				Version: "1.2.0",
@@ -75,7 +75,7 @@ func TestNewPackageURL(t *testing.T) {
 		},
 		{
 			name: "yarn package with non-namespace",
-			typ:  string(analyzer.TypeYarn),
+			typ:  ftypes.Yarn,
 			pkg: ftypes.Package{
 				Name:    "lodash",
 				Version: "4.17.21",
@@ -90,7 +90,7 @@ func TestNewPackageURL(t *testing.T) {
 		},
 		{
 			name: "pnpm package",
-			typ:  string(analyzer.TypePnpm),
+			typ:  ftypes.Pnpm,
 			pkg: ftypes.Package{
 				Name:    "@xtuc/ieee754",
 				Version: "1.2.0",
@@ -106,7 +106,7 @@ func TestNewPackageURL(t *testing.T) {
 		},
 		{
 			name: "pnpm package with non-namespace",
-			typ:  string(analyzer.TypePnpm),
+			typ:  ftypes.Pnpm,
 			pkg: ftypes.Package{
 				Name:    "lodash",
 				Version: "4.17.21",
@@ -121,7 +121,7 @@ func TestNewPackageURL(t *testing.T) {
 		},
 		{
 			name: "pypi package",
-			typ:  string(analyzer.TypePip),
+			typ:  ftypes.PythonPkg,
 			pkg: ftypes.Package{
 				Name:    "Django_test",
 				Version: "1.2.0",
@@ -136,7 +136,7 @@ func TestNewPackageURL(t *testing.T) {
 		},
 		{
 			name: "composer package",
-			typ:  string(analyzer.TypeComposer),
+			typ:  ftypes.Composer,
 			pkg: ftypes.Package{
 				Name:    "symfony/contracts",
 				Version: "v1.0.2",
@@ -152,7 +152,7 @@ func TestNewPackageURL(t *testing.T) {
 		},
 		{
 			name: "golang package",
-			typ:  string(analyzer.TypeGoMod),
+			typ:  ftypes.GoModule,
 			pkg: ftypes.Package{
 				Name:    "github.com/go-sql-driver/Mysql",
 				Version: "v1.5.0",
