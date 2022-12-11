@@ -248,6 +248,15 @@ func TestClientServer(t *testing.T) {
 			},
 			golden: "testdata/secrets.json.golden",
 		},
+		{
+			name: "scan remote repository with repo command in client/server mode",
+			args: csArgs{
+				Command:          "repo",
+				RemoteAddrOption: "--server",
+				Target:           "https://github.com/knqyf263/trivy-ci-test",
+			},
+			golden: "testdata/test-repo.json.golden",
+		},
 	}
 
 	addr, cacheDir := setup(t, setupOptions{})
