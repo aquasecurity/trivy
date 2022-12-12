@@ -46,6 +46,7 @@ jobs:
             vm
 
             alpine
+            wolfi
             redhat
             alma
             rocky

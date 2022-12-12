@@ -1,0 +1,7 @@
+- bucket: data-source
+  pairs:
+    - key: wolfi
+      value:
+        ID: "wolfi"
+        Name: "Wolfi Secdb"
+        URL: "https://packages.wolfi.dev/os/security.json/"
