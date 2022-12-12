@@ -5,6 +5,7 @@ on:
       - 'main'
     paths:
       - '**.go'
+      - 'go.mod'
       - 'Dockerfile.canary'
       - '.github/workflows/canary.yaml'
   workflow_dispatch:
