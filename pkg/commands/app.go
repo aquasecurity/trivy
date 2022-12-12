@@ -884,7 +884,14 @@ func NewVMCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 		ScanFlagGroup:          flag.NewScanFlagGroup(),
 		SecretFlagGroup:        flag.NewSecretFlagGroup(),
 		VulnerabilityFlagGroup: flag.NewVulnerabilityFlagGroup(),
-		VMFlagGroups:           flag.NewVMFlagGroup(),
+		AWSFlagGroup: &flag.AWSFlagGroup{
+			Region: &flag.Flag{
+				Name:       "aws-region",
+				ConfigName: "aws.region",
+				Value:      "",
+				Usage:      "AWS region to scan",
+			},
+		},
 	}
 
 	cmd := &cobra.Command{

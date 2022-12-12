@@ -62,7 +62,6 @@ type Flags struct {
 	ScanFlagGroup          *ScanFlagGroup
 	SecretFlagGroup        *SecretFlagGroup
 	VulnerabilityFlagGroup *VulnerabilityFlagGroup
-	VMFlagGroups           *VMFlagGroups
 }
 
 // Options holds all the runtime configuration
@@ -84,7 +83,6 @@ type Options struct {
 	ScanOptions
 	SecretOptions
 	VulnerabilityOptions
-	VMOptions
 
 	// Trivy's version, not populated via CLI flags
 	AppVersion string
@@ -258,9 +256,6 @@ func (f *Flags) groups() []FlagGroup {
 	if f.RepoFlagGroup != nil {
 		groups = append(groups, f.RepoFlagGroup)
 	}
-	if f.VMFlagGroups != nil {
-		groups = append(groups, f.VMFlagGroups)
-	}
 	return groups
 }
 
@@ -401,10 +396,6 @@ func (f *Flags) ToOptions(appVersion string, args []string, globalFlags *GlobalF
 
 	if f.VulnerabilityFlagGroup != nil {
 		opts.VulnerabilityOptions = f.VulnerabilityFlagGroup.ToOptions()
-	}
-
-	if f.VMFlagGroups != nil {
-		opts.VMOptions = f.VMFlagGroups.ToOptions()
 	}
 
 	opts.Align()
