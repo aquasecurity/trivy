@@ -61,7 +61,7 @@ The scanning could be faster if you enable only vulnerability scanning (`--secur
 If you want to scan an EBS Snapshot of non-default setting region, you can set any region via `--region` option.
 
 ```shell
-$ trivy vm --region ap-northeast-1 ebs:ebs-0123456789abcdefg
+$ trivy vm --aws-region ap-northeast-1 ebs:ebs-0123456789abcdefg
 ```
 
 
