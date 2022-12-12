@@ -57,3 +57,11 @@ pipeline:
 ```
 
 Woodpecker does use Trivy itself so you can [see it in use there](https://github.com/woodpecker-ci/woodpecker/pull/1163).
+
+## Concourse CI (Community)
+[Concourse CI](https://concourse-ci.org/) is a CI/CD service.
+
+You can use Trivy Resource in Concourse for scanning containers and introducing security scanning into your workflow.
+It has capabilities to fail the pipeline, create issues, alert communication channels (using respective resources) based on Trivy scan output.
+
+👉 Get it at: <https://github.com/Comcast/trivy-resource/>

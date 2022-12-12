@@ -211,7 +211,15 @@ func (r *runner) ScanRepository(ctx context.Context, opts flag.Options) (types.R
 	// Disable the OS analyzers and individual package analyzers
 	opts.DisabledAnalyzers = append(analyzer.TypeIndividualPkgs, analyzer.TypeOSes...)
 
-	return r.scanArtifact(ctx, opts, repositoryStandaloneScanner)
+	var s InitializeScanner
+	if opts.ServerAddr == "" {
+		// Scan repository in standalone mode
+		s = repositoryStandaloneScanner
+	} else {
+		// Scan repository in client/server mode
+		s = repositoryRemoteScanner
+	}
+	return r.scanArtifact(ctx, opts, s)
 }
 
 func (r *runner) ScanSBOM(ctx context.Context, opts flag.Options) (types.Report, error) {

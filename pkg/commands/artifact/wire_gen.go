@@ -8,7 +8,6 @@ package artifact
 
 import (
 	"context"
-
 	"github.com/aquasecurity/trivy-db/pkg/db"
 	"github.com/aquasecurity/trivy/pkg/detector/ospkg"
 	"github.com/aquasecurity/trivy/pkg/fanal/applier"
@@ -199,6 +198,20 @@ func initializeRemoteFilesystemScanner(ctx context.Context, path string, artifac
 	}
 	scannerScanner := scanner.NewScanner(clientScanner, artifactArtifact)
 	return scannerScanner, func() {
+	}, nil
+}
+
+// initializeRemoteRepositoryScanner is for repository scanning in client/server mode
+func initializeRemoteRepositoryScanner(ctx context.Context, url string, artifactCache cache.ArtifactCache, remoteScanOptions client.ScannerOption, artifactOption artifact.Option) (scanner.Scanner, func(), error) {
+	v := _wireValue3
+	clientScanner := client.NewScanner(remoteScanOptions, v...)
+	artifactArtifact, cleanup, err := remote.NewArtifact(url, artifactCache, artifactOption)
+	if err != nil {
+		return scanner.Scanner{}, nil, err
+	}
+	scannerScanner := scanner.NewScanner(clientScanner, artifactArtifact)
+	return scannerScanner, func() {
+		cleanup()
 	}, nil
 }
 
