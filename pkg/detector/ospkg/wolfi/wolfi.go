@@ -63,7 +63,7 @@ func (s *Scanner) Detect(_ string, _ *ftypes.Repository, pkgs []ftypes.Package) 
 			return nil, xerrors.Errorf("failed to get Wolfi advisories: %w", err)
 		}
 
-		installed := utils.FormatSrcVersion(pkg)
+		installed := utils.FormatVersion(pkg)
 		installedVersion, err := version.NewVersion(installed)
 		if err != nil {
 			log.Logger.Debugf("failed to parse Wolfi Linux installed package version: %s", err)
