@@ -66,20 +66,6 @@ func TestScanner_Detect(t *testing.T) {
 						URL:  "https://packages.wolfi.dev/os/security.json/",
 					},
 				},
-				{
-					PkgName:          "ansible",
-					VulnerabilityID:  "CVE-2021-20191",
-					InstalledVersion: "2.6.4",
-					FixedVersion:     "",
-					Layer: ftypes.Layer{
-						DiffID: "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
-					},
-					DataSource: &dbTypes.DataSource{
-						ID:   vulnerability.Wolfi,
-						Name: "Wolfi Secdb",
-						URL:  "https://packages.wolfi.dev/os/security.json/",
-					},
-				},
 			},
 		},
 		{
