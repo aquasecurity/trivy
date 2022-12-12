@@ -28,7 +28,7 @@ $ trivy vm --security-checks vuln ami:ami-0123456789abcdefg
 If you want to scan a AMI of non-default setting region, you can set any region via `--region` option.
 
 ```shell
-$ trivy vm --region ap-northeast-1 ami:ami-0123456789abcdefg
+$ trivy vm --aws-region ap-northeast-1 ami:ami-0123456789abcdefg
 ```
 
 
