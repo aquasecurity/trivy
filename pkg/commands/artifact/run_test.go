@@ -1,9 +1,16 @@
 package artifact
 
 import (
+	"context"
+	"os"
 	"testing"
+	"time"
 
+	"github.com/google/go-containerregistry/cmd/crane/cmd"
 	"github.com/stretchr/testify/require"
+
+	"github.com/aquasecurity/trivy/pkg/flag"
+	"github.com/aquasecurity/trivy/pkg/utils"
 )
 
 func TestCanonicalVersion(t *testing.T) {
@@ -44,5 +51,25 @@ func TestCanonicalVersion(t *testing.T) {
 			got := canonicalVersion(test.input)
 			require.Equal(t, test.want, got)
 		})
+	}
+}
+
+func TestPerformance(t *testing.T) {
+	args := []string{}
+	flgs := &flag.Flags{}
+	globalFlags := &flag.GlobalFlagGroup{}
+
+	options, _ := flgs.ToOptions(cmd.Version, args, globalFlags, os.Stdout)
+	options.ScanOptions.Target = "jboss/wildfly:latest"
+	options.Slow = true
+	options.Timeout = time.Hour
+	options.CacheDir = utils.DefaultCacheDir()
+	options.Format = "json"
+	options.Output = os.Stdout
+	options.SecurityChecks = []string{"vuln"}
+
+	err := Run(context.Background(), options, TargetContainerImage)
+	if err != nil {
+		t.Errorf("error: %v", err)
 	}
 }
