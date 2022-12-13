@@ -1594,81 +1594,6 @@
 
             
           
-            
-              
-  
-  
-  
-    
-    <li class="md-nav__item md-nav__item--nested">
-      
-      
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_3_5" type="checkbox" id="__nav_3_3_5" >
-      
-      
-      
-      
-        <label class="md-nav__link" for="__nav_3_3_5">
-          Comparison
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <nav class="md-nav" aria-label="Comparison" data-md-level="3">
-        <label class="md-nav__title" for="__nav_3_3_5">
-          <span class="md-nav__icon md-icon"></span>
-          Comparison
-        </label>
-        <ul class="md-nav__list" data-md-scrollfix>
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../comparison/conftest/" class="md-nav__link">
-        vs Conftest
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../comparison/tfsec/" class="md-nav__link">
-        vs tfsec
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../comparison/cfsec/" class="md-nav__link">
-        vs cfsec
-      </a>
-    </li>
-  
-
-            
-          
-        </ul>
-      </nav>
-    </li>
-  
-
-            
-          
         </ul>
       </nav>
     </li>
@@ -3245,8 +3170,8 @@
 
 
 <h1 id="misconfiguration-scanning">Misconfiguration Scanning</h1>
-<p>Trivy provides built-in policies to detect configuration issues in Docker, Kubernetes, Terraform and CloudFormation.
-Also, you can write your own policies in <a href="https://www.openpolicyagent.org/docs/latest/policy-language/">Rego</a> to scan JSON, YAML, etc, like <a href="https://github.com/open-policy-agent/conftest/">Conftest</a>.</p>
+<p>Trivy provides built-in policies to detect configuration issues in popular Infrastructure as Code files, such as: Docker, Kubernetes, Terraform, CloudFormation, and more. 
+In addition to built-in policies, you can write your own custom policies, as you can see <a href="../custom/">here</a>.</p>
 <p><img alt="misconf" src="../../../imgs/misconf.png" /></p>
 <h2 id="quick-start">Quick start</h2>
 <p>Simply specify a directory containing IaC files such as Terraform, CloudFormation, Azure ARM templates, Helm Charts and Dockerfile.</p>
