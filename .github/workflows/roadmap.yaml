@@ -14,7 +14,7 @@ jobs:
       - uses: actions/add-to-project@v0.4.0 # add new issue to project
         with:
           project-url: https://github.com/orgs/aquasecurity/projects/25
-          github-token: ${{ secrets.ORG_GITHUB_TOKEN }}
+          github-token: ${{ secrets.ORG_PROJECT_TOKEN }}
           labeled: kind/feature, priority/backlog
           label-operator: AND
         id: add-backlog-issue
@@ -22,7 +22,7 @@ jobs:
         if: ${{ steps.add-backlog-issue.outputs.itemId }}
         with:
           project-url: https://github.com/orgs/aquasecurity/projects/25
-          github-token: ${{ secrets.ORG_GITHUB_TOKEN }}
+          github-token: ${{ secrets.ORG_PROJECT_TOKEN }}
           item-id: ${{ steps.add-backlog-issue.outputs.itemId }} # Use the item-id output of the previous step
           field-keys: Priority
           field-values: Backlog
@@ -31,7 +31,7 @@ jobs:
       - uses: actions/add-to-project@v0.4.0 # add new issue to project
         with:
           project-url: https://github.com/orgs/aquasecurity/projects/25
-          github-token: ${{ secrets.ORG_GITHUB_TOKEN }}
+          github-token: ${{ secrets.ORG_PROJECT_TOKEN }}
           labeled: kind/feature, priority/important-longterm
           label-operator: AND
         id: add-longterm-issue
@@ -39,7 +39,7 @@ jobs:
         if: ${{ steps.add-longterm-issue.outputs.itemId }}
         with:
           project-url: https://github.com/orgs/aquasecurity/projects/25
-          github-token: ${{ secrets.ORG_GITHUB_TOKEN }}
+          github-token: ${{ secrets.ORG_PROJECT_TOKEN }}
           item-id: ${{ steps.add-longterm-issue.outputs.itemId }} # Use the item-id output of the previous step
           field-keys: Priority
           field-values: Important (long-term)
@@ -48,7 +48,7 @@ jobs:
       - uses: actions/add-to-project@v0.4.0 # add new issue to project
         with:
           project-url: https://github.com/orgs/aquasecurity/projects/25
-          github-token: ${{ secrets.ORG_GITHUB_TOKEN }}
+          github-token: ${{ secrets.ORG_PROJECT_TOKEN }}
           labeled: kind/feature, priority/important-soon
           label-operator: AND
         id: add-soon-issue
@@ -56,7 +56,7 @@ jobs:
         if: ${{ steps.add-soon-issue.outputs.itemId }}
         with:
           project-url: https://github.com/orgs/aquasecurity/projects/25
-          github-token: ${{ secrets.ORG_GITHUB_TOKEN }}
+          github-token: ${{ secrets.ORG_PROJECT_TOKEN }}
           item-id: ${{ steps.add-soon-issue.outputs.itemId }} # Use the item-id output of the previous step
           field-keys: Priority
           field-values: Important (soon)
@@ -65,7 +65,7 @@ jobs:
       - uses: actions/add-to-project@v0.4.0 # add new issue to project
         with:
           project-url: https://github.com/orgs/aquasecurity/projects/25
-          github-token: ${{ secrets.ORG_GITHUB_TOKEN }}
+          github-token: ${{ secrets.ORG_PROJECT_TOKEN }}
           labeled: kind/feature, priority/critical-urgent
           label-operator: AND
         id: add-urgent-issue
@@ -73,7 +73,7 @@ jobs:
         if: ${{ steps.add-urgent-issue.outputs.itemId }}
         with:
           project-url: https://github.com/orgs/aquasecurity/projects/25
-          github-token: ${{ secrets.ORG_GITHUB_TOKEN }}
+          github-token: ${{ secrets.ORG_PROJECT_TOKEN }}
           item-id: ${{ steps.add-urgent-issue.outputs.itemId }} # Use the item-id output of the previous step
           field-keys: Priority
           field-values: Urgent
