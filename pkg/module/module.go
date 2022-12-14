@@ -3,7 +3,6 @@ package module
 import (
 	"context"
 	"encoding/json"
-	"io"
 	"io/fs"
 	"os"
 	"path/filepath"
@@ -13,12 +12,9 @@ import (
 	"github.com/samber/lo"
 	"github.com/tetratelabs/wazero"
 	"github.com/tetratelabs/wazero/api"
-	"github.com/tetratelabs/wazero/experimental"
 	wasi "github.com/tetratelabs/wazero/imports/wasi_snapshot_preview1"
 	"golang.org/x/exp/slices"
 	"golang.org/x/xerrors"
-
-	"github.com/aquasecurity/memoryfs"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/log"
@@ -217,7 +213,8 @@ func marshal(ctx context.Context, m api.Module, malloc api.Function, v easyjson.
 }
 
 type wasmModule struct {
-	mod api.Module
+	mod   api.Module
+	memFS *memFS
 
 	name          string
 	version       int
@@ -235,8 +232,8 @@ type wasmModule struct {
 }
 
 func newWASMPlugin(ctx context.Context, r wazero.Runtime, code []byte) (*wasmModule, error) {
-	// Combine the above into our baseline config, overriding defaults (which discard stdout and have no file system).
-	config := wazero.NewModuleConfig().WithStdout(os.Stdout).WithFS(memoryfs.New())
+	mf := &memFS{}
+	config := wazero.NewModuleConfig().WithStdout(os.Stdout).WithFS(mf)
 
 	// Create an empty namespace so that multiple modules will not conflict
 	ns := r.NewNamespace(ctx)
@@ -334,6 +331,7 @@ func newWASMPlugin(ctx context.Context, r wazero.Runtime, code []byte) (*wasmMod
 
 	return &wasmModule{
 		mod:           mod,
+		memFS:         mf,
 		name:          name,
 		version:       version,
 		requiredFiles: requiredFiles,
@@ -390,20 +388,9 @@ func (m *wasmModule) Analyze(ctx context.Context, input analyzer.AnalysisInput) 
 	filePath := "/" + filepath.ToSlash(input.FilePath)
 	log.Logger.Debugf("Module %s: analyzing %s...", m.name, filePath)
 
-	memfs := memoryfs.New()
-	if err := memfs.MkdirAll(filepath.Dir(filePath), fs.ModePerm); err != nil {
-		return nil, xerrors.Errorf("memory fs mkdir error: %w", err)
+	if err := m.memFS.initialize(filePath, input.Content); err != nil {
+		return nil, err
 	}
-	err := memfs.WriteLazyFile(filePath, func() (io.Reader, error) {
-		return input.Content, nil
-	}, fs.ModePerm)
-	if err != nil {
-		return nil, xerrors.Errorf("memory fs write error: %w", err)
-	}
-
-	// Pass memory fs to the analyze() function
-	ctx, closer := experimental.WithFS(ctx, memfs)
-	defer closer.Close(ctx)
 
 	inputPtr, inputSize, err := stringToPtrSize(ctx, filePath, m.mod, m.malloc)
 	if err != nil {
