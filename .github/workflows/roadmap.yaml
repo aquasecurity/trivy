@@ -10,8 +10,6 @@ jobs:
     name: Add issue to the roadmap project
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-
       # 'kind/feature' AND 'priority/backlog' labels -> 'Backlog' column
       - uses: actions/add-to-project@v0.4.0 # add new issue to project
         with:
