@@ -24,8 +24,8 @@ func (m *memFS) Open(name string) (fs.File, error) {
 
 // initialize changes the underlying memory file system with the given file path and contents.
 //
-// Note: it is always to safe swap the underlying ones as thia is called only at the beginning of Analyze
-// which is not concurrently called per module instance.
+// Note: it is always to safe swap the underlying FS with this API since this is called only at the beginning of
+// Analyze interface call, which is not concurrently called per module instance.
 func (m *memFS) initialize(filePath string, content dio.ReadSeekerAt) (err error) {
 	memfs := memoryfs.New()
 	if err = memfs.MkdirAll(filepath.Dir(filePath), fs.ModePerm); err != nil {
