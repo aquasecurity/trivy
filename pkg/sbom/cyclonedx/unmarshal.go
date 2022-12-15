@@ -381,15 +381,10 @@ func lookupProperty(properties *[]cdx.Property, key string) string {
 }
 
 func isTrivySBOM(c *cdx.BOM) bool {
-	if c == nil {
+	if c == nil || c.Metadata == nil || c.Metadata.Tools == nil {
 		return false
 	}
-	if c.Metadata == nil {
-		return false
-	}
-	if c.Metadata.Tools == nil {
-		return false
-	}
+
 	for _, tool := range *c.Metadata.Tools {
 		if tool.Vendor == ToolVendor && tool.Name == ToolName {
 			return true
