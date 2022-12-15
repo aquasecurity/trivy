@@ -124,6 +124,9 @@ func (c *CycloneDX) parseSBOM(bom *cdx.BOM) error {
 		// For third-party SBOMs.
 		// If there are no operating-system dependent libraries, make them implicitly dependent.
 		if component.Type == cdx.ComponentTypeOS {
+			if c.OS != nil {
+				return xerrors.New("multiple OSes are not supported")
+			}
 			c.OS = toOS(component)
 		}
 	}
