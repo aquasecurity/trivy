@@ -1,6 +1,6 @@
 # Misconfiguration Scanning
-Trivy provides built-in policies to detect configuration issues in Docker, Kubernetes, Terraform and CloudFormation.
-Also, you can write your own policies in [Rego][rego] to scan JSON, YAML, etc, like [Conftest][conftest].
+Trivy provides built-in policies to detect configuration issues in popular Infrastructure as Code files, such as: Docker, Kubernetes, Terraform, CloudFormation, and more. 
+In addition to built-in policies, you can write your own custom policies, as you can see [here][custom].
 
 ![misconf](../../imgs/misconf.png)
 
@@ -316,6 +316,4 @@ Failures: 2 (MEDIUM: 2, HIGH: 0, CRITICAL: 0)
 ## Examples
 See [here](https://github.com/aquasecurity/trivy/tree/{{ git.tag }}/examples/misconf/mixed)
 
-[rego]: https://www.openpolicyagent.org/docs/latest/policy-language/
-[conftest]: https://github.com/open-policy-agent/conftest/
-
+[custom]: ./custom/index.md

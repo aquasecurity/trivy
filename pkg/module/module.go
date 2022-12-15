@@ -41,7 +41,7 @@ var (
 )
 
 // logDebug is defined as an api.GoModuleFunc for lower overhead vs reflection.
-func logDebug(ctx context.Context, mod api.Module, params []uint64) (_ []uint64) {
+func logDebug(ctx context.Context, mod api.Module, params []uint64) {
 	offset, size := uint32(params[0]), uint32(params[1])
 
 	buf := readMemory(ctx, mod, offset, size)
@@ -53,7 +53,7 @@ func logDebug(ctx context.Context, mod api.Module, params []uint64) (_ []uint64)
 }
 
 // logInfo is defined as an api.GoModuleFunc for lower overhead vs reflection.
-func logInfo(ctx context.Context, mod api.Module, params []uint64) (_ []uint64) {
+func logInfo(ctx context.Context, mod api.Module, params []uint64) {
 	offset, size := uint32(params[0]), uint32(params[1])
 
 	buf := readMemory(ctx, mod, offset, size)
@@ -65,7 +65,7 @@ func logInfo(ctx context.Context, mod api.Module, params []uint64) (_ []uint64) 
 }
 
 // logWarn is defined as an api.GoModuleFunc for lower overhead vs reflection.
-func logWarn(ctx context.Context, mod api.Module, params []uint64) (_ []uint64) {
+func logWarn(ctx context.Context, mod api.Module, params []uint64) {
 	offset, size := uint32(params[0]), uint32(params[1])
 
 	buf := readMemory(ctx, mod, offset, size)
@@ -77,7 +77,7 @@ func logWarn(ctx context.Context, mod api.Module, params []uint64) (_ []uint64) 
 }
 
 // logError is defined as an api.GoModuleFunc for lower overhead vs reflection.
-func logError(ctx context.Context, mod api.Module, params []uint64) (_ []uint64) {
+func logError(ctx context.Context, mod api.Module, params []uint64) {
 	offset, size := uint32(params[0]), uint32(params[1])
 
 	buf := readMemory(ctx, mod, offset, size)

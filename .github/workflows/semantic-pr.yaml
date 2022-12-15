@@ -42,9 +42,11 @@ jobs:
             sbom
             server
             k8s
+            aws
             vm
 
             alpine
+            wolfi
             redhat
             alma
             rocky
@@ -86,6 +88,7 @@ jobs:
 
             cyclonedx
             spdx
+            purl
 
             helm
             report
