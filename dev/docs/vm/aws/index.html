@@ -3257,6 +3257,9 @@ See <a href="https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ebs-accessing-s
 <p class="admonition-title">Tip</p>
 <p>The scanning could be faster if you enable only vulnerability scanning (<code>--security-checks vuln</code>) because Trivy tries to download only necessary blocks for vulnerability detection.</p>
 </div>
+<p>If you want to scan a AMI of non-default setting region, you can set any region via <code>--aws-region</code> option.</p>
+<div class="highlight"><pre><span></span><code>$ trivy vm --aws-region ap-northeast-1 ami:ami-0123456789abcdefg
+</code></pre></div>
 <h3 id="required-actions">Required Actions</h3>
 <p>Some actions on EBS are also necessary since Trivy scans an EBS snapshot tied to the specified AMI under the hood.</p>
 <ul>
@@ -3280,6 +3283,9 @@ See <a href="https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ebs-accessing-s
 <p class="admonition-title">Tip</p>
 </div>
 <p>The scanning could be faster if you enable only vulnerability scanning (<code>--security-checks vuln</code>) because Trivy tries to download only necessary blocks for vulnerability detection.</p>
+<p>If you want to scan an EBS Snapshot of non-default setting region, you can set any region via <code>--aws-region</code> option.</p>
+<div class="highlight"><pre><span></span><code>$ trivy vm --aws-region ap-northeast-1 ebs:ebs-0123456789abcdefg
+</code></pre></div>
 <p>The above command takes a while as it calls EBS API and fetches the EBS blocks.
 If you want to scan the same snapshot several times, you can download the snapshot locally by using <a href="https://github.com/awslabs/coldsnap">coldsnap</a> maintained by AWS.
 Then, Trivy can scan the local VM image file.</p>
