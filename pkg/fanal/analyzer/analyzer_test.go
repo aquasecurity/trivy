@@ -33,7 +33,7 @@ func (mockConfigAnalyzer) Required(targetOS types.OS) bool {
 	return targetOS.Family == "alpine"
 }
 
-func (mockConfigAnalyzer) Analyze(targetOS types.OS, configBlob []byte) ([]types.Package, error) {
+func (mockConfigAnalyzer) Analyze(targetOS types.OS, configBlob []byte) (types.Packages, error) {
 	if string(configBlob) != `foo` {
 		return nil, errors.New("error")
 	}

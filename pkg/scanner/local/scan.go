@@ -181,9 +181,7 @@ func (s Scanner) osPkgsToResult(target string, detail ftypes.ArtifactDetail, opt
 	if options.ScanRemovedPackages {
 		pkgs = mergePkgs(pkgs, detail.HistoryPackages)
 	}
-	sort.Slice(pkgs, func(i, j int) bool {
-		return strings.Compare(pkgs[i].Name, pkgs[j].Name) <= 0
-	})
+	sort.Sort(pkgs)
 	return &types.Result{
 		Target:   fmt.Sprintf("%s (%s %s)", target, detail.OS.Family, detail.OS.Name),
 		Class:    types.ClassOSPkg,

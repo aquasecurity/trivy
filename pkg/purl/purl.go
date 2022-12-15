@@ -9,7 +9,6 @@ import (
 	packageurl "github.com/package-url/packageurl-go"
 	"golang.org/x/xerrors"
 
-	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer/os"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/scanner/utils"
@@ -17,6 +16,7 @@ import (
 )
 
 const (
+	TypeAPK = "apk" // not defined in github.com/package-url/packageurl-go
 	TypeOCI = "oci"
 )
 
@@ -28,7 +28,7 @@ type PackageURL struct {
 func FromString(purl string) (*PackageURL, error) {
 	p, err := packageurl.FromString(purl)
 	if err != nil {
-		return nil, xerrors.Errorf("failed to parse purl: %w", err)
+		return nil, xerrors.Errorf("failed to parse purl(%s): %w", purl, err)
 	}
 
 	return &PackageURL{
@@ -57,10 +57,9 @@ func (p *PackageURL) Package() *ftypes.Package {
 		pkg.Epoch = rpmVer.Epoch()
 	}
 
-	// TODO: replace with packageurl.TypeApk once they add it.
-	// Return of packages without Namespace.
-	// OS packages does not have namespace.
-	if p.Namespace == "" || p.Type == packageurl.TypeRPM || p.Type == packageurl.TypeDebian || p.Type == string(analyzer.TypeApk) {
+	// Return packages without namespace.
+	// OS packages are not supposed to have namespace.
+	if p.Namespace == "" || p.IsOSPkg() {
 		return pkg
 	}
 
@@ -76,8 +75,8 @@ func (p *PackageURL) Package() *ftypes.Package {
 	return pkg
 }
 
-// AppType returns an application type in Trivy
-func (p *PackageURL) AppType() string {
+// PackageType returns an application type in Trivy
+func (p *PackageURL) PackageType() string {
 	switch p.Type {
 	case packageurl.TypeComposer:
 		return ftypes.Composer
@@ -99,6 +98,10 @@ func (p *PackageURL) AppType() string {
 		return ftypes.Cocoapods
 	}
 	return p.Type
+}
+
+func (p *PackageURL) IsOSPkg() bool {
+	return p.Type == TypeAPK || p.Type == packageurl.TypeDebian || p.Type == packageurl.TypeRPM
 }
 
 func (p *PackageURL) BOMRef() string {
@@ -141,7 +144,7 @@ func NewPackageURL(t string, metadata types.Metadata, pkg ftypes.Package) (Packa
 		if metadata.OS != nil {
 			namespace = metadata.OS.Family
 		}
-	case string(analyzer.TypeApk): // TODO: replace with packageurl.TypeApk once they add it.
+	case TypeAPK: // TODO: replace with packageurl.TypeApk once they add it.
 		qualifiers = append(qualifiers, parseApk(metadata.OS)...)
 		if metadata.OS != nil {
 			namespace = metadata.OS.Family
@@ -306,7 +309,7 @@ func purlType(t string) string {
 	case ftypes.Cocoapods:
 		return packageurl.TypeSwift
 	case os.Alpine:
-		return string(analyzer.TypeApk)
+		return TypeAPK
 	case os.Debian, os.Ubuntu:
 		return packageurl.TypeDebian
 	case os.RedHat, os.CentOS, os.Rocky, os.Alma,

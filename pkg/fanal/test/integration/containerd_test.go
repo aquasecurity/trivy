@@ -642,7 +642,7 @@ func localImageTestWithNamespace(t *testing.T, namespace string) {
 			require.NoError(t, err)
 			defer golden.Close()
 
-			var wantPkgs []types.Package
+			var wantPkgs types.Packages
 			err = json.NewDecoder(golden).Decode(&wantPkgs)
 			require.NoError(t, err)
 
@@ -768,7 +768,7 @@ func TestContainerd_PullImage(t *testing.T) {
 			golden, err := os.Open(fmt.Sprintf("testdata/goldens/packages/%s.json.golden", tag))
 			require.NoError(t, err)
 
-			var wantPkgs []types.Package
+			var wantPkgs types.Packages
 			err = json.NewDecoder(golden).Decode(&wantPkgs)
 			require.NoError(t, err)
 
