@@ -9,9 +9,9 @@ import (
 
 	cdx "github.com/CycloneDX/cyclonedx-go"
 	"github.com/samber/lo"
+	"golang.org/x/exp/maps"
 	"golang.org/x/xerrors"
 
-	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/purl"
@@ -41,7 +41,8 @@ func (c *CycloneDX) UnmarshalJSON(b []byte) error {
 	}
 
 	if !isTrivySBOM(bom) {
-		log.Logger.Warnf("This sbom was not made by trivy, third party sbom does not detect vulnerabilities accurately.")
+		log.Logger.Warnf("Third-party SBOM may lead to inaccurate vulnerability detection")
+		log.Logger.Warnf("Recommend using Trivy to generate SBOMs")
 	}
 
 	if err := c.parseSBOM(bom); err != nil {
@@ -120,7 +121,7 @@ func (c *CycloneDX) parseSBOM(bom *cdx.BOM) error {
 			libComponents = append(libComponents, component)
 		}
 
-		// For third party SBOMs.
+		// For third-party SBOMs.
 		// If there are no operating-system dependent libraries, make them implicitly dependent.
 		if component.Type == cdx.ComponentTypeOS {
 			c.OS = toOS(component)
@@ -179,7 +180,7 @@ func parsePkgs(components []cdx.Component, seen map[string]struct{}) ([]ftypes.P
 	var pkgs []ftypes.Package
 	for _, com := range components {
 		seen[com.BOMRef] = struct{}{}
-		_, pkg, err := toPackage(com)
+		_, _, pkg, err := toPackage(com)
 		if err != nil {
 			if errors.Is(err, ErrPURLEmpty) {
 				continue
@@ -250,40 +251,46 @@ func dependencyMap(deps *[]cdx.Dependency) map[string][]string {
 }
 
 func aggregatePkgs(libs []cdx.Component) ([]ftypes.PackageInfo, []ftypes.Application, error) {
-	pkgMap := map[string][]ftypes.Package{}
+	osPkgMap := map[string]ftypes.Packages{}
+	langPkgMap := map[string]ftypes.Packages{}
 	for _, lib := range libs {
-		pkgType, pkg, err := toPackage(lib)
+		isOSPkg, pkgType, pkg, err := toPackage(lib)
 		if err != nil {
 			if errors.Is(err, ErrPURLEmpty) {
 				continue
 			}
-			return nil, nil, xerrors.Errorf("failed to parse purl to package: %w", err)
+			return nil, nil, xerrors.Errorf("failed to parse the component: %w", err)
 		}
 
-		pkgMap[pkgType] = append(pkgMap[pkgType], *pkg)
+		if isOSPkg {
+			osPkgMap[pkgType] = append(osPkgMap[pkgType], *pkg)
+		} else {
+			langPkgMap[pkgType] = append(langPkgMap[pkgType], *pkg)
+		}
+	}
+
+	if len(osPkgMap) > 1 {
+		return nil, nil, xerrors.Errorf("multiple types of OS packages in SBOM are not supported (%q)",
+			maps.Keys(osPkgMap))
+	}
+
+	var osPkgs ftypes.PackageInfo
+	for _, pkgs := range osPkgMap {
+		// Just take the first element
+		sort.Sort(pkgs)
+		osPkgs = ftypes.PackageInfo{Packages: pkgs}
+		break
 	}
 
 	var apps []ftypes.Application
-	var pkgInfos []ftypes.PackageInfo
-	for pkgType, pkgs := range pkgMap {
-		sort.Slice(pkgs, func(i, j int) bool {
-			return pkgs[i].Name < pkgs[j].Name
+	for pkgType, pkgs := range langPkgMap {
+		sort.Sort(pkgs)
+		apps = append(apps, ftypes.Application{
+			Type:      pkgType,
+			Libraries: pkgs,
 		})
-
-		if isOSPackageType(pkgType) {
-			// For third-party SBOMs.
-			// Used when there is an os package that is independent of the Operating-System component.
-			pkgInfos = append(pkgInfos, ftypes.PackageInfo{
-				Packages: pkgs,
-			})
-		} else {
-			apps = append(apps, ftypes.Application{
-				Type:      pkgType,
-				Libraries: pkgs,
-			})
-		}
 	}
-	return pkgInfos, apps, nil
+	return []ftypes.PackageInfo{osPkgs}, apps, nil
 }
 
 func toOS(component cdx.Component) *ftypes.OS {
@@ -300,14 +307,14 @@ func toApplication(component cdx.Component) *ftypes.Application {
 	}
 }
 
-func toPackage(component cdx.Component) (string, *ftypes.Package, error) {
+func toPackage(component cdx.Component) (bool, string, *ftypes.Package, error) {
 	if component.PackageURL == "" {
-		log.Logger.Warnf("Skip (BOM-Ref: %s) component, purl is empty", component.BOMRef)
-		return "", nil, ErrPURLEmpty
+		log.Logger.Warnf("Skip the component (BOM-Ref: %s) as the PURL is empty", component.BOMRef)
+		return false, "", nil, ErrPURLEmpty
 	}
 	p, err := purl.FromString(component.PackageURL)
 	if err != nil {
-		return "", nil, xerrors.Errorf("failed to parse purl: %w", err)
+		return false, "", nil, xerrors.Errorf("failed to parse purl: %w", err)
 	}
 
 	pkg := p.Package()
@@ -331,7 +338,7 @@ func toPackage(component cdx.Component) (string, *ftypes.Package, error) {
 			case PropertySrcEpoch:
 				pkg.SrcEpoch, err = strconv.Atoi(prop.Value)
 				if err != nil {
-					return "", nil, xerrors.Errorf("failed to parse source epoch: %w", err)
+					return false, "", nil, xerrors.Errorf("failed to parse source epoch: %w", err)
 				}
 			case PropertyModularitylabel:
 				pkg.Modularitylabel = prop.Value
@@ -341,8 +348,9 @@ func toPackage(component cdx.Component) (string, *ftypes.Package, error) {
 		}
 	}
 
-	if isOSPackageType(p.PackageType()) {
-		// Fill source package information for Third-party SBOMs components.
+	isOSPkg := p.IsOSPkg()
+	if isOSPkg {
+		// Fill source package information for components in third-party SBOMs .
 		if pkg.SrcName == "" {
 			pkg.SrcName = pkg.Name
 		}
@@ -357,7 +365,7 @@ func toPackage(component cdx.Component) (string, *ftypes.Package, error) {
 		}
 	}
 
-	return p.PackageType(), pkg, nil
+	return isOSPkg, p.PackageType(), pkg, nil
 }
 
 func toTrivyCdxComponent(component cdx.Component) ftypes.Component {
@@ -391,8 +399,4 @@ func isTrivySBOM(c *cdx.BOM) bool {
 		}
 	}
 	return false
-}
-
-func isOSPackageType(t string) bool {
-	return t == string(analyzer.TypeRpm) || t == string(analyzer.TypeApk) || t == string(analyzer.TypeDpkg)
 }
