@@ -14,7 +14,7 @@ import (
 func TestParseRpmInfo(t *testing.T) {
 	var tests = map[string]struct {
 		path string
-		pkgs []types.Package
+		pkgs types.Packages
 	}{
 		"Valid": {
 			path: "./testdata/valid",
@@ -588,12 +588,8 @@ func TestParseRpmInfo(t *testing.T) {
 			got, _, err := a.parsePkgInfo(f)
 			require.NoError(t, err)
 
-			sort.Slice(tc.pkgs, func(i, j int) bool {
-				return tc.pkgs[i].Name < tc.pkgs[j].Name
-			})
-			sort.Slice(got, func(i, j int) bool {
-				return got[i].Name < got[j].Name
-			})
+			sort.Sort(tc.pkgs)
+			sort.Sort(got)
 
 			for i := range got {
 				got[i].ID = ""

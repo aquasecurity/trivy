@@ -1028,23 +1028,13 @@ func Test_dpkgAnalyzer_Analyze(t *testing.T) {
 
 			// Sort the result for consistency
 			for i := range got.PackageInfos {
-				got.PackageInfos[i].Packages = sortPkgs(got.PackageInfos[i].Packages)
+				sort.Sort(got.PackageInfos[i].Packages)
 			}
 
 			assert.Equal(t, tt.wantErr, err != nil, err)
 			assert.Equal(t, tt.want, got)
 		})
 	}
-}
-
-func sortPkgs(pkgs []types.Package) []types.Package {
-	sort.Slice(pkgs, func(i, j int) bool {
-		if pkgs[i].Name != pkgs[j].Name {
-			return pkgs[i].Name < pkgs[j].Name
-		}
-		return pkgs[i].Version < pkgs[j].Version
-	})
-	return pkgs
 }
 
 func Test_dpkgAnalyzer_Required(t *testing.T) {
