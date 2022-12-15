@@ -502,6 +502,139 @@ func TestClient_Filter(t *testing.T) {
 				},
 			},
 		},
+		{
+			name: "happy path with duplicates and different package paths",
+			args: args{
+				result: types.Result{
+					Vulnerabilities: []types.DetectedVulnerability{
+						{
+							VulnerabilityID:  "CVE-2019-0001",
+							PkgPath:          "some/path/a.jar",
+							PkgName:          "bar",
+							InstalledVersion: "1.2.3",
+							FixedVersion:     "1.2.4",
+							Vulnerability: dbTypes.Vulnerability{
+								Severity: dbTypes.SeverityCritical.String(),
+							},
+						},
+						{
+							VulnerabilityID:  "CVE-2019-0001",
+							PkgPath:          "some/other/path/a.jar",
+							PkgName:          "bar",
+							InstalledVersion: "1.2.3",
+							FixedVersion:     "1.2.4",
+							Vulnerability: dbTypes.Vulnerability{
+								Severity: dbTypes.SeverityCritical.String(),
+							},
+						},
+						{
+							VulnerabilityID:  "CVE-2019-0002",
+							PkgName:          "baz",
+							PkgPath:          "some/path/b.jar",
+							InstalledVersion: "1.2.3",
+							FixedVersion:     "",
+							Vulnerability: dbTypes.Vulnerability{
+								Severity: dbTypes.SeverityHigh.String(),
+							},
+						},
+						{
+							VulnerabilityID:  "CVE-2019-0002",
+							PkgPath:          "some/path/b.jar",
+							PkgName:          "baz",
+							InstalledVersion: "1.2.3",
+							FixedVersion:     "1.2.4",
+							Vulnerability: dbTypes.Vulnerability{
+								Severity: dbTypes.SeverityHigh.String(),
+							},
+						},
+						{
+							VulnerabilityID:  "CVE-2019-0003",
+							PkgPath:          "some/path/c.jar",
+							PkgName:          "bar",
+							InstalledVersion: "1.2.3",
+							FixedVersion:     "",
+							Vulnerability: dbTypes.Vulnerability{
+								Severity: "",
+							},
+						},
+						{
+							VulnerabilityID:  "CVE-2019-0003",
+							PkgName:          "bar",
+							PkgPath:          "some/path/c.jar",
+							InstalledVersion: "1.2.3",
+							FixedVersion:     "1.2.4",
+							Vulnerability: dbTypes.Vulnerability{
+								Severity: "",
+							},
+						},
+						{
+							VulnerabilityID:  "CVE-2019-0003",
+							PkgName:          "bar",
+							PkgPath:          "some/other/path/c.jar",
+							InstalledVersion: "1.2.3",
+							FixedVersion:     "",
+							Vulnerability: dbTypes.Vulnerability{
+								Severity: "",
+							},
+						},
+					},
+				},
+				severities:    []dbTypes.Severity{dbTypes.SeverityCritical, dbTypes.SeverityHigh, dbTypes.SeverityUnknown},
+				ignoreUnfixed: false,
+			},
+			wantVulns: []types.DetectedVulnerability{
+				{
+					VulnerabilityID:  "CVE-2019-0001",
+					PkgPath:          "some/other/path/a.jar",
+					PkgName:          "bar",
+					InstalledVersion: "1.2.3",
+					FixedVersion:     "1.2.4",
+					Vulnerability: dbTypes.Vulnerability{
+						Severity: dbTypes.SeverityCritical.String(),
+					},
+				},
+				{
+					VulnerabilityID:  "CVE-2019-0001",
+					PkgPath:          "some/path/a.jar",
+					PkgName:          "bar",
+					InstalledVersion: "1.2.3",
+					FixedVersion:     "1.2.4",
+					Vulnerability: dbTypes.Vulnerability{
+						Severity: dbTypes.SeverityCritical.String(),
+					},
+				},
+				{
+					VulnerabilityID:  "CVE-2019-0003",
+					PkgName:          "bar",
+					PkgPath:          "some/other/path/c.jar",
+					InstalledVersion: "1.2.3",
+					FixedVersion:     "",
+					Vulnerability: dbTypes.Vulnerability{
+						Severity: dbTypes.SeverityUnknown.String(),
+					},
+				},
+				{
+					VulnerabilityID:  "CVE-2019-0003",
+					PkgName:          "bar",
+					PkgPath:          "some/path/c.jar",
+					InstalledVersion: "1.2.3",
+					FixedVersion:     "1.2.4",
+					Vulnerability: dbTypes.Vulnerability{
+						Severity: dbTypes.SeverityUnknown.String(),
+					},
+				},
+				{
+					VulnerabilityID:  "CVE-2019-0002",
+					PkgPath:          "some/path/b.jar",
+					PkgName:          "baz",
+					InstalledVersion: "1.2.3",
+					FixedVersion:     "1.2.4",
+					Vulnerability: dbTypes.Vulnerability{
+						Severity: dbTypes.SeverityHigh.String(),
+					},
+				},
+			},
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
