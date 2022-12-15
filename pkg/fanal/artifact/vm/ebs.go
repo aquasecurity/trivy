@@ -24,8 +24,10 @@ type EBS struct {
 	ebs        ebsfile.EBSAPI
 }
 
-func newEBS(snapshotID string, vm Storage) (*EBS, error) {
-	ebs, err := ebsfile.New(ebsfile.Option{})
+func newEBS(snapshotID string, vm Storage, region string) (*EBS, error) {
+	ebs, err := ebsfile.New(ebsfile.Option{
+		AwsRegion: region,
+	})
 	if err != nil {
 		return nil, xerrors.Errorf("new ebsfile error: %w", err)
 	}

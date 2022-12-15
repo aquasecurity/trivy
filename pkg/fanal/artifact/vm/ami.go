@@ -19,12 +19,15 @@ type AMI struct {
 	imageID string
 }
 
-func newAMI(imageID string, storage Storage) (*AMI, error) {
+func newAMI(imageID string, storage Storage, region string) (*AMI, error) {
 	// TODO: propagate context
 	ctx := context.TODO()
 	cfg, err := config.LoadDefaultConfig(ctx)
 	if err != nil {
 		return nil, xerrors.Errorf("aws config load error: %w", err)
+	}
+	if region != "" {
+		cfg.Region = region
 	}
 	client := ec2.NewFromConfig(cfg)
 	output, err := client.DescribeImages(ctx, &ec2.DescribeImagesInput{
@@ -43,7 +46,7 @@ func newAMI(imageID string, storage Storage) (*AMI, error) {
 			continue
 		}
 		log.Logger.Infof("Snapshot %s found", snapshotID)
-		ebs, err := newEBS(snapshotID, storage)
+		ebs, err := newEBS(snapshotID, storage, region)
 		if err != nil {
 			return nil, xerrors.Errorf("new EBS error: %w", err)
 		}
