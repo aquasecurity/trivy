@@ -293,6 +293,24 @@ func TestClient_Filter(t *testing.T) {
 							Status:   types.StatusFailure,
 						},
 					},
+					Secrets: []ftypes.SecretFinding{
+						{
+							RuleID:    "generic-wanted-rule",
+							Severity:  dbTypes.SeverityLow.String(),
+							Title:     "Secret that should pass filter on rule id",
+							StartLine: 1,
+							EndLine:   2,
+							Match:     "*****",
+						},
+						{
+							RuleID:    "generic-unwanted-rule",
+							Severity:  dbTypes.SeverityLow.String(),
+							Title:     "Secret that should not pass filter on rule id",
+							StartLine: 3,
+							EndLine:   4,
+							Match:     "*****",
+						},
+					},
 				},
 				severities:    []dbTypes.Severity{dbTypes.SeverityLow},
 				ignoreUnfixed: false,
@@ -317,6 +335,16 @@ func TestClient_Filter(t *testing.T) {
 					Vulnerability: dbTypes.Vulnerability{
 						Severity: dbTypes.SeverityLow.String(),
 					},
+				},
+			},
+			wantSecrets: []ftypes.SecretFinding{
+				{
+					RuleID:    "generic-wanted-rule",
+					Severity:  dbTypes.SeverityLow.String(),
+					Title:     "Secret that should pass filter on rule id",
+					StartLine: 1,
+					EndLine:   2,
+					Match:     "*****",
 				},
 			},
 		},

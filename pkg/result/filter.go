@@ -34,7 +34,7 @@ func Filter(ctx context.Context, result *types.Result, severities []dbTypes.Seve
 
 	filteredVulns := filterVulnerabilities(result.Vulnerabilities, severities, ignoreUnfixed, ignoredIDs)
 	misconfSummary, filteredMisconfs := filterMisconfigurations(result.Misconfigurations, severities, includeNonFailures, ignoredIDs)
-	result.Secrets = filterSecrets(result.Secrets, severities)
+	result.Secrets = filterSecrets(result.Secrets, severities, ignoredIDs)
 	result.Licenses = filterLicenses(result.Licenses, severities, ignoreLicenses)
 
 	if policyFile != "" {
@@ -117,12 +117,16 @@ func filterMisconfigurations(misconfs []types.DetectedMisconfiguration, severiti
 	return summary, filtered
 }
 
-func filterSecrets(secrets []ftypes.SecretFinding, severities []dbTypes.Severity) []ftypes.SecretFinding {
+func filterSecrets(secrets []ftypes.SecretFinding, severities []dbTypes.Severity,
+	ignoredIDs []string) []ftypes.SecretFinding {
 	var filtered []ftypes.SecretFinding
 	for _, secret := range secrets {
 		// Filter secrets by severity
 		for _, s := range severities {
 			if s.String() == secret.Severity {
+				if slices.Contains(ignoredIDs, secret.RuleID) {
+					continue
+				}
 				filtered = append(filtered, secret)
 				break
 			}
