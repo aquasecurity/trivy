@@ -7,6 +7,7 @@ import (
 	"os"
 	"path/filepath"
 	"regexp"
+	"sync"
 
 	"github.com/mailru/easyjson"
 	"github.com/samber/lo"
@@ -215,6 +216,7 @@ func marshal(ctx context.Context, m api.Module, malloc api.Function, v easyjson.
 type wasmModule struct {
 	mod   api.Module
 	memFS *memFS
+	mux   sync.Mutex
 
 	name          string
 	version       int
@@ -387,6 +389,11 @@ func (m *wasmModule) Required(filePath string, _ os.FileInfo) bool {
 func (m *wasmModule) Analyze(ctx context.Context, input analyzer.AnalysisInput) (*analyzer.AnalysisResult, error) {
 	filePath := "/" + filepath.ToSlash(input.FilePath)
 	log.Logger.Debugf("Module %s: analyzing %s...", m.name, filePath)
+
+	// Wasm module instances are not Goroutine safe, so we take look here since Analyze might be called concurrently.
+	// TODO: This is temporary solution and we could improve the Analyze performance by having module instance pool.
+	m.mux.Lock()
+	defer m.mux.Unlock()
 
 	if err := m.memFS.initialize(filePath, input.Content); err != nil {
 		return nil, err
