@@ -54,7 +54,7 @@ Vulnerability DB:
 	}
 }
 
-//Check flag and command for print version
+// Check flag and command for print version
 func TestPrintVersion(t *testing.T) {
 	tableOutput := `Version: test
 Vulnerability DB:

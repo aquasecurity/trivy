@@ -33,7 +33,7 @@ func (mockConfigAnalyzer) Required(targetOS types.OS) bool {
 	return targetOS.Family == "alpine"
 }
 
-func (mockConfigAnalyzer) Analyze(targetOS types.OS, configBlob []byte) ([]types.Package, error) {
+func (mockConfigAnalyzer) Analyze(targetOS types.OS, configBlob []byte) (types.Packages, error) {
 	if string(configBlob) != `foo` {
 		return nil, errors.New("error")
 	}
@@ -345,7 +345,14 @@ func TestAnalyzeFile(t *testing.T) {
 					{
 						FilePath: "/lib/apk/db/installed",
 						Packages: []types.Package{
-							{Name: "musl", Version: "1.1.24-r2", SrcName: "musl", SrcVersion: "1.1.24-r2", Licenses: []string{"MIT"}},
+							{
+								ID:         "musl@1.1.24-r2",
+								Name:       "musl",
+								Version:    "1.1.24-r2",
+								SrcName:    "musl",
+								SrcVersion: "1.1.24-r2",
+								Licenses:   []string{"MIT"},
+							},
 						},
 					},
 				},
@@ -464,7 +471,10 @@ func TestAnalyzeFile(t *testing.T) {
 			limit := semaphore.NewWeighted(3)
 
 			got := new(analyzer.AnalysisResult)
-			a, err := analyzer.NewAnalyzerGroup(analyzer.GroupBuiltin, tt.args.disabledAnalyzers, tt.args.filePatterns)
+			a, err := analyzer.NewAnalyzerGroup(analyzer.AnalyzerOptions{
+				FilePatterns:      tt.args.filePatterns,
+				DisabledAnalyzers: tt.args.disabledAnalyzers,
+			})
 			if err != nil && tt.wantErr != "" {
 				require.NotNil(t, err)
 				assert.Contains(t, err.Error(), tt.wantErr)
@@ -553,7 +563,10 @@ func TestAnalyzeConfig(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			a, err := analyzer.NewAnalyzerGroup(analyzer.GroupBuiltin, tt.args.disabledAnalyzers, tt.args.filePatterns)
+			a, err := analyzer.NewAnalyzerGroup(analyzer.AnalyzerOptions{
+				FilePatterns:      tt.args.filePatterns,
+				DisabledAnalyzers: tt.args.disabledAnalyzers,
+			})
 			require.NoError(t, err)
 			got := a.AnalyzeImageConfig(tt.args.targetOS, tt.args.configBlob)
 			assert.Equal(t, tt.want, got)
@@ -573,7 +586,7 @@ func TestAnalyzer_AnalyzerVersions(t *testing.T) {
 			want: map[string]int{
 				"alpine":   1,
 				"apk-repo": 1,
-				"apk":      1,
+				"apk":      2,
 				"bundler":  1,
 				"ubuntu":   1,
 			},
@@ -582,14 +595,16 @@ func TestAnalyzer_AnalyzerVersions(t *testing.T) {
 			name:     "disable analyzers",
 			disabled: []analyzer.Type{analyzer.TypeAlpine, analyzer.TypeApkRepo, analyzer.TypeUbuntu},
 			want: map[string]int{
-				"apk":     1,
+				"apk":     2,
 				"bundler": 1,
 			},
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			a, err := analyzer.NewAnalyzerGroup(analyzer.GroupBuiltin, tt.disabled, nil)
+			a, err := analyzer.NewAnalyzerGroup(analyzer.AnalyzerOptions{
+				DisabledAnalyzers: tt.disabled,
+			})
 			require.NoError(t, err)
 			got := a.AnalyzerVersions()
 			fmt.Printf("%v\n", got)
@@ -622,7 +637,9 @@ func TestAnalyzer_ImageConfigAnalyzerVersions(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			a, err := analyzer.NewAnalyzerGroup(analyzer.GroupBuiltin, tt.disabled, nil)
+			a, err := analyzer.NewAnalyzerGroup(analyzer.AnalyzerOptions{
+				DisabledAnalyzers: tt.disabled,
+			})
 			require.NoError(t, err)
 			got := a.ImageConfigAnalyzerVersions()
 			assert.Equal(t, tt.want, got)

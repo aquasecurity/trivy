@@ -9,6 +9,7 @@ type ScanOptions struct {
 	VulnType            []string
 	SecurityChecks      []string
 	ScanRemovedPackages bool
+	Platform            string
 	ListAllPackages     bool
 	LicenseCategories   map[types.LicenseCategory][]string
 	FilePatterns        []string

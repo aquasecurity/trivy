@@ -36,27 +36,23 @@ A single package must contain only one policy.
 
 !!!example
     ``` rego
+    # METADATA
+    # title: Deployment not allowed
+    # description: Deployments are not allowed because of some reasons.
+    # schemas:
+    #   - input: schema.input
+    # custom:
+    #   id: ID001
+    #   severity: LOW
+    #   input:
+    #     selector: 
+    #     - type: kubernetes
     package user.kubernetes.ID001
-    
-    import lib.result
-
-    __rego_metadata__ := {
-    	"id": "ID001",
-    	"title": "Deployment not allowed",
-    	"severity": "LOW",
-    	"description": "Deployments are not allowed because of some reasons.",
-    }
-
-    __rego_input__ := {
-        "selector": [
-            {"type": "kubernetes"},
-        ],
-    }
     
     deny[res] {
         input.kind == "Deployment"
         msg := sprintf("Found deployment '%s' but deployments are not allowed", [input.metadata.name])
-        res := result.new(msg, input)
+        res := result.new(msg, input.kind)
     }
     ```
 
@@ -65,21 +61,16 @@ If you add a new custom policy, it must be defined under a new package like `use
 
 ### Policy structure
 
+`# METADATA` (optional)
+:   - SHOULD be defined for clarity since these values will be displayed in the scan results
+    - `custom.input` SHOULD be set to indicate the input type the policy should be applied to. See [list of available types](https://github.com/aquasecurity/defsec/blob/418759b4dc97af25f30f32e0bd365be7984003a1/pkg/types/sources.go)
+
 `package` (required)
 :   - MUST follow the Rego's [specification][package]
     - MUST be unique per policy
     - SHOULD include policy id for uniqueness
     - MAY include the group name such as `kubernetes` for clarity
         - Group name has no effect on policy evaluation
-
-`import data.lib.result` (optional)
-:   - MAY be defined if you would like to embellish your result(s) with line numbers and code highlighting
-
-`__rego_metadata__` (optional)
-:   - SHOULD be defined for clarity since these values will be displayed in the scan results
-
-`__rego_input__` (optional)
-:   - MAY be defined when you want to specify input format
 
 `deny` (required)
 :   - SHOULD be `deny` or start with `deny_`
@@ -112,28 +103,38 @@ Any package prefixes such as `main` and `user` are allowed.
 ### Metadata
 Metadata helps enrich Trivy's scan results with useful information.
 
+The annotation format is described in the [OPA documentation](https://www.openpolicyagent.org/docs/latest/annotations/).
+
+Trivy supports extra fields in the `custom` section as described below.
+
 !!!example
     ``` rego
-    __rego_metadata__ := {
-    	"id": "ID001",
-    	"title": "Deployment not allowed",
-    	"severity": "LOW",
-    	"description": "Deployments are not allowed because of some reasons.",
-    	"recommended_actions": "Remove Deployment",
-    	"url": "https://cloud.google.com/blog/products/containers-kubernetes/kubernetes-best-practices-resource-requests-and-limits",
-    }
+    # METADATA
+    # title: Deployment not allowed
+    # description: Deployments are not allowed because of some reasons.
+    # custom:
+    #   id: ID001
+    #   severity: LOW
+    #   input:
+    #     selector:
+    #     - type: kubernetes
     ```
   
-All fields under `__rego_metadata__` are optional.
+All fields are optional. The `schemas` field should be used to enable policy validation using a built-in schema. The 
+schema that will be used is based on the input document type. It is recommended to use this to ensure your policies are 
+correct and do not reference incorrect properties/values.
 
-| Field name          | Allowed values                      | Default value |     In table     |     In JSON      |
-|---------------------|-------------------------------------|:-------------:|:----------------:|:----------------:|
-| id                  | Any characters                      |      N/A      | :material-check: | :material-check: |
-| title               | Any characters                      |      N/A      | :material-check: | :material-check: |
-| severity            | `LOW`, `MEDIUM`, `HIGH`, `CRITICAL` |    UNKNOWN    | :material-check: | :material-check: |
-| description         | Any characters                      |               | :material-close: | :material-check: |
-| recommended_actions | Any characters                      |               | :material-close: | :material-check: | 
-| url                 | Any characters                      |               | :material-close: | :material-check: |
+| Field name                 | Allowed values                           |        Default value         |     In table     |     In JSON      |
+|----------------------------|------------------------------------------|:----------------------------:|:----------------:|:----------------:|
+| title                      | Any characters                           |             N/A              | :material-check: | :material-check: |
+| description                | Any characters                           |                              | :material-close: | :material-check: |
+| schemas.input              | `schema.input`                           | (applied to all input types) | :material-close: | :material-close: |
+| custom.id                  | Any characters                           |             N/A              | :material-check: | :material-check: |
+| custom.severity            | `LOW`, `MEDIUM`, `HIGH`, `CRITICAL`      |           UNKNOWN            | :material-check: | :material-check: |
+| custom.recommended_actions | Any characters                           |                              | :material-close: | :material-check: | 
+| custom.input.selector.type | Any item(s) in [this list][source-types] |                              | :material-close: | :material-check: | 
+| url                        | Any characters                           |                              | :material-close: | :material-check: |
+
 
 Some fields are displayed in scan results.
 
@@ -156,17 +157,16 @@ Deployments are not allowed because of some reasons.
 ```
 
 ### Input
-You can specify input format via `__rego_input__`.
-All fields under `__rego_input` are optional.
+You can specify input format via the `custom.input` annotation.
 
 !!!example
     ``` rego
-    __rego_input__ := {
-        "combine": false,
-        "selector": [
-            {"type": "kubernetes"},
-        ],
-    }
+    # METADATA
+    # custom:
+    #   input:
+    #     combine: false
+    #     selector:
+    #     - type: kubernetes
     ```
 
 `combine` (boolean)
@@ -177,6 +177,15 @@ All fields under `__rego_input` are optional.
     In the above example, Trivy passes only Kubernetes files to this policy.
     Even if a Dockerfile exists in the specified directory, it will not be passed to the policy as input.
 
+    Possible values for input types are:
+    - `dockerfile` (Dockerfile)
+    - `kubernetes` (Kubernetes YAML/JSON)
+    - `rbac` (Kubernetes RBAC YAML/JSON)
+    - `cloud` (Cloud format, as defined by defsec - this is used for Terraform, CloudFormation, and Cloud/AWS scanning)
+    - `yaml` (Generic YAML)
+    - `json` (Generic JSON)
+    - `toml` (Generic TOML)
+
     When configuration languages such as Kubernetes are not identified, file formats such as JSON will be used as `type`.
     When a configuration language is identified, it will overwrite `type`.
     
@@ -186,5 +195,15 @@ All fields under `__rego_input` are optional.
 
     `type` accepts `kubernetes`, `dockerfile`, `cloudformation`, `terraform`, `terraformplan`, `json`, or `yaml`.
 
+### Schemas
+
+You can explore the format of input documents by browsing the schema for the relevant input type:
+
+- [Cloud](https://github.com/aquasecurity/defsec/blob/master/pkg/rego/schemas/cloud.json)
+- [Dockerfile](https://github.com/aquasecurity/defsec/blob/master/pkg/rego/schemas/dockerfile.json)
+- [Kubernetes](https://github.com/aquasecurity/defsec/blob/master/pkg/rego/schemas/kubernetes.json)
+- [RBAC](https://github.com/aquasecurity/defsec/blob/master/pkg/rego/schemas/rbac.json)
+
 [rego]: https://www.openpolicyagent.org/docs/latest/policy-language/
 [package]: https://www.openpolicyagent.org/docs/latest/policy-language/#packages
+[source-types]: https://github.com/aquasecurity/defsec/blob/418759b4dc97af25f30f32e0bd365be7984003a1/pkg/types/sources.go)

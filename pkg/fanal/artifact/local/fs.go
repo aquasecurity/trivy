@@ -10,20 +10,15 @@ import (
 	"sync"
 
 	"github.com/opencontainers/go-digest"
-	"golang.org/x/sync/semaphore"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
-	"github.com/aquasecurity/trivy/pkg/fanal/analyzer/secret"
 	"github.com/aquasecurity/trivy/pkg/fanal/artifact"
 	"github.com/aquasecurity/trivy/pkg/fanal/cache"
 	"github.com/aquasecurity/trivy/pkg/fanal/handler"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/fanal/walker"
-)
-
-const (
-	parallel = 10
+	"github.com/aquasecurity/trivy/pkg/semaphore"
 )
 
 type Artifact struct {
@@ -42,12 +37,13 @@ func NewArtifact(rootPath string, c cache.ArtifactCache, opt artifact.Option) (a
 		return nil, xerrors.Errorf("handler initialize error: %w", err)
 	}
 
-	// Register secret analyzer
-	if err = secret.RegisterSecretAnalyzer(opt.SecretScannerOption); err != nil {
-		return nil, xerrors.Errorf("secret scanner error: %w", err)
-	}
-
-	a, err := analyzer.NewAnalyzerGroup(opt.AnalyzerGroup, opt.DisabledAnalyzers, opt.FilePatterns)
+	a, err := analyzer.NewAnalyzerGroup(analyzer.AnalyzerOptions{
+		Group:                opt.AnalyzerGroup,
+		FilePatterns:         opt.FilePatterns,
+		DisabledAnalyzers:    opt.DisabledAnalyzers,
+		SecretScannerOption:  opt.SecretScannerOption,
+		LicenseScannerOption: opt.LicenseScannerOption,
+	})
 	if err != nil {
 		return nil, xerrors.Errorf("analyzer group error: %w", err)
 	}
@@ -55,7 +51,7 @@ func NewArtifact(rootPath string, c cache.ArtifactCache, opt artifact.Option) (a
 	return Artifact{
 		rootPath:       filepath.Clean(rootPath),
 		cache:          c,
-		walker:         walker.NewFS(buildAbsPaths(rootPath, opt.SkipFiles), buildAbsPaths(rootPath, opt.SkipDirs)),
+		walker:         walker.NewFS(buildAbsPaths(rootPath, opt.SkipFiles), buildAbsPaths(rootPath, opt.SkipDirs), opt.Slow),
 		analyzer:       a,
 		handlerManager: handlerManager,
 
@@ -78,7 +74,7 @@ func buildAbsPaths(base string, paths []string) []string {
 func (a Artifact) Inspect(ctx context.Context) (types.ArtifactReference, error) {
 	var wg sync.WaitGroup
 	result := analyzer.NewAnalysisResult()
-	limit := semaphore.NewWeighted(parallel)
+	limit := semaphore.New(a.artifactOption.Slow)
 
 	err := a.walker.Walk(a.rootPath, func(filePath string, info os.FileInfo, opener analyzer.Opener) error {
 		directory := a.rootPath

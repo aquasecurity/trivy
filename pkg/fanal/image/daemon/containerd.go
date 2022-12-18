@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"strings"
 	"time"
 
 	"github.com/containerd/containerd"
@@ -19,6 +20,7 @@ import (
 	api "github.com/docker/docker/api/types"
 	"github.com/docker/docker/api/types/container"
 	"github.com/docker/go-connections/nat"
+	v1 "github.com/google/go-containerregistry/pkg/v1"
 	"github.com/opencontainers/go-digest"
 	ocispec "github.com/opencontainers/image-spec/specs-go/v1"
 	"github.com/samber/lo"
@@ -29,6 +31,25 @@ const (
 	defaultContainerdSocket    = "/run/containerd/containerd.sock"
 	defaultContainerdNamespace = "default"
 )
+
+type familiarNamed string
+
+func (n familiarNamed) Name() string {
+	return strings.Split(string(n), ":")[0]
+}
+
+func (n familiarNamed) Tag() string {
+	s := strings.Split(string(n), ":")
+	if len(s) < 2 {
+		return ""
+	}
+
+	return s[1]
+}
+
+func (n familiarNamed) String() string {
+	return string(n)
+}
 
 func imageWriter(client *containerd.Client, img containerd.Image) imageSave {
 	return func(ctx context.Context, ref []string) (io.ReadCloser, error) {
@@ -60,10 +81,9 @@ func ContainerdImage(ctx context.Context, imageName string) (Image, func(), erro
 		return nil, cleanup, xerrors.Errorf("containerd socket not found: %s", addr)
 	}
 
-	// Parse the image name
-	ref, err := refdocker.ParseDockerRef(imageName)
+	ref, searchFilters, err := parseReference(imageName)
 	if err != nil {
-		return nil, cleanup, xerrors.Errorf("parse error: %w", err)
+		return nil, cleanup, err
 	}
 
 	client, err := containerd.New(addr)
@@ -71,13 +91,23 @@ func ContainerdImage(ctx context.Context, imageName string) (Image, func(), erro
 		return nil, cleanup, xerrors.Errorf("failed to initialize a containerd client: %w", err)
 	}
 
-	// Need to specify a namespace
-	ctx = namespaces.WithNamespace(ctx, defaultContainerdNamespace)
-
-	img, err := client.GetImage(ctx, ref.String())
-	if err != nil {
-		return nil, cleanup, xerrors.Errorf("failed to get %s: %w", imageName, err)
+	namespace := os.Getenv("CONTAINERD_NAMESPACE")
+	if namespace == "" {
+		namespace = defaultContainerdNamespace
 	}
+
+	ctx = namespaces.WithNamespace(ctx, namespace)
+
+	imgs, err := client.ListImages(ctx, searchFilters...)
+	if err != nil {
+		return nil, cleanup, xerrors.Errorf("failed to list images from containerd client: %w", err)
+	}
+
+	if len(imgs) < 1 {
+		return nil, cleanup, xerrors.Errorf("image not found in containerd store: %s", imageName)
+	}
+
+	img := imgs[0]
 
 	f, err := os.CreateTemp("", "fanal-containerd-*")
 	if err != nil {
@@ -90,7 +120,7 @@ func ContainerdImage(ctx context.Context, imageName string) (Image, func(), erro
 		_ = os.Remove(f.Name())
 	}
 
-	insp, err := inspect(ctx, img, ref)
+	insp, history, ref, err := inspect(ctx, img, ref)
 	if err != nil {
 		return nil, nil, xerrors.Errorf("inspect error: %w", err)
 	}
@@ -98,7 +128,49 @@ func ContainerdImage(ctx context.Context, imageName string) (Image, func(), erro
 	return &image{
 		opener:  imageOpener(ctx, ref.String(), f, imageWriter(client, img)),
 		inspect: insp,
+		history: history,
 	}, cleanup, nil
+}
+
+func parseReference(imageName string) (refdocker.Reference, []string, error) {
+	ref, err := refdocker.ParseAnyReference(imageName)
+	if err != nil {
+		return nil, nil, xerrors.Errorf("parse error: %w", err)
+	}
+
+	d, isDigested := ref.(refdocker.Digested)
+	n, isNamed := ref.(refdocker.Named)
+	nt, isNamedAndTagged := ref.(refdocker.NamedTagged)
+
+	// a name plus a digest
+	// example: name@sha256:41adb3ef...
+	if isDigested && isNamed {
+		digest := d.Digest()
+		// for the filters, each slice entry is logically or'd. each
+		// comma-separated filter is logically anded
+		return ref, []string{
+			fmt.Sprintf(`name~="^%s(:|@).*",target.digest=="%s"`, n.Name(), digest),
+			fmt.Sprintf(`name~="^%s(:|@).*",target.digest=="%s"`, refdocker.FamiliarName(n), digest),
+		}, nil
+	}
+
+	// digested, but not named. i.e. a plain digest
+	// example: sha256:41adb3ef...
+	if isDigested {
+		return ref, []string{fmt.Sprintf(`target.digest=="%s"`, d.Digest())}, nil
+	}
+
+	// a name plus a tag
+	// example: name:tag
+	if isNamedAndTagged {
+		tag := nt.Tag()
+		return familiarNamed(imageName), []string{
+			fmt.Sprintf(`name=="%s:%s"`, nt.Name(), tag),
+			fmt.Sprintf(`name=="%s:%s"`, refdocker.FamiliarName(nt), tag),
+		}, nil
+	}
+
+	return nil, nil, xerrors.Errorf("failed to parse image reference: %s", imageName)
 }
 
 // readImageConfig reads the config spec (`application/vnd.oci.image.config.v1+json`) for img.platform from content store.
@@ -121,21 +193,40 @@ func readImageConfig(ctx context.Context, img containerd.Image) (ocispec.Image, 
 }
 
 // ported from https://github.com/containerd/nerdctl/blob/d110fea18018f13c3f798fa6565e482f3ff03591/pkg/inspecttypes/dockercompat/dockercompat.go#L279-L321
-func inspect(ctx context.Context, img containerd.Image, ref docker.Named) (api.ImageInspect, error) {
+func inspect(ctx context.Context, img containerd.Image, ref docker.Reference) (api.ImageInspect, []v1.History, refdocker.Reference, error) {
+	if _, ok := ref.(refdocker.Digested); ok {
+		ref = familiarNamed(img.Name())
+	}
+
 	var tag string
 	if tagged, ok := ref.(refdocker.Tagged); ok {
 		tag = tagged.Tag()
 	}
-	repository := refdocker.FamiliarName(ref)
+
+	var repository string
+	if n, isNamed := ref.(docker.Named); isNamed {
+		repository = refdocker.FamiliarName(n)
+	}
 
 	imgConfig, imgConfigDesc, err := readImageConfig(ctx, img)
 	if err != nil {
-		return api.ImageInspect{}, err
+		return api.ImageInspect{}, nil, nil, err
 	}
 
 	var lastHistory ocispec.History
 	if len(imgConfig.History) > 0 {
 		lastHistory = imgConfig.History[len(imgConfig.History)-1]
+	}
+
+	var history []v1.History
+	for _, h := range imgConfig.History {
+		history = append(history, v1.History{
+			Author:     h.Author,
+			Created:    v1.Time{Time: *h.Created},
+			CreatedBy:  h.CreatedBy,
+			Comment:    h.Comment,
+			EmptyLayer: h.EmptyLayer,
+		})
 	}
 
 	portSet := make(nat.PortSet)
@@ -168,5 +259,5 @@ func inspect(ctx context.Context, img containerd.Image, ref docker.Named) (api.I
 				return d.String()
 			}),
 		},
-	}, nil
+	}, history, ref, nil
 }

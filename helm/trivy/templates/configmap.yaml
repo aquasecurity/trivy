@@ -9,6 +9,7 @@ data:
   TRIVY_CACHE_DIR: "/home/scanner/.cache/trivy"
 {{- if .Values.trivy.cache.redis.enabled }}
   TRIVY_CACHE_BACKEND: {{ .Values.trivy.cache.redis.url | quote }}
+  TRIVY_CACHE_TTL: {{ .Values.trivy.cache.redis.ttl | quote }}
 {{- end }}
   TRIVY_DEBUG: {{ .Values.trivy.debugMode | quote }}
   TRIVY_SKIP_UPDATE: {{ .Values.trivy.skipUpdate | quote }}
@@ -21,4 +22,7 @@ data:
 {{- end }}
 {{- if .Values.noProxy }}
   NO_PROXY: {{ .Values.noProxy | quote }}
+{{- end }}
+{{- with .Values.trivy.extraEnvVars }}
+  {{- . | toYaml | nindent 2 }}
 {{- end }}

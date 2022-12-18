@@ -11,6 +11,7 @@ import (
 	"github.com/owenrumney/go-sarif/v2/sarif"
 	"golang.org/x/xerrors"
 
+	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
 
@@ -18,6 +19,7 @@ const (
 	sarifOsPackageVulnerability        = "OsPackageVulnerability"
 	sarifLanguageSpecificVulnerability = "LanguageSpecificPackageVulnerability"
 	sarifConfigFiles                   = "Misconfiguration"
+	sarifSecretFiles                   = "Secret"
 	sarifUnknownIssue                  = "UnknownIssue"
 
 	sarifError   = "error"
@@ -26,6 +28,8 @@ const (
 	sarifNone    = "none"
 
 	columnKind = "utf16CodeUnits"
+
+	builtinRulesUrl = "https://github.com/aquasecurity/trivy/blob/main/pkg/fanal/secret/builtin-rules.go" // list all secrets
 )
 
 var (
@@ -37,14 +41,16 @@ var (
 
 // SarifWriter implements result Writer
 type SarifWriter struct {
-	Output  io.Writer
-	Version string
-	run     *sarif.Run
+	Output        io.Writer
+	Version       string
+	run           *sarif.Run
+	locationCache map[string][]location
 }
 
 type sarifData struct {
 	title            string
 	vulnerabilityId  string
+	shortDescription string
 	fullDescription  string
 	helpText         string
 	helpMarkdown     string
@@ -53,16 +59,22 @@ type sarifData struct {
 	url              string
 	resultIndex      int
 	artifactLocation string
+	locationMessage  string
 	message          string
 	cvssScore        string
-	startLine        int
-	endLine          int
+	locations        []location
+}
+
+type location struct {
+	startLine int
+	endLine   int
 }
 
 func (sw *SarifWriter) addSarifRule(data *sarifData) {
 	r := sw.run.AddRule(data.vulnerabilityId).
 		WithName(toSarifRuleName(data.resourceClass)).
 		WithDescription(data.vulnerabilityId).
+		WithShortDescription(&sarif.MultiformatMessageString{Text: &data.shortDescription}).
 		WithFullDescription(&sarif.MultiformatMessageString{Text: &data.fullDescription}).
 		WithHelp(&sarif.MultiformatMessageString{
 			Text:     &data.helpText,
@@ -88,20 +100,11 @@ func (sw *SarifWriter) addSarifRule(data *sarifData) {
 func (sw *SarifWriter) addSarifResult(data *sarifData) {
 	sw.addSarifRule(data)
 
-	region := sarif.NewRegion().WithStartLine(1).WithEndLine(1)
-	if data.startLine > 0 {
-		region = sarif.NewSimpleRegion(data.startLine, data.endLine)
-	}
-	region.WithStartColumn(1).WithEndColumn(1)
-
-	location := sarif.NewPhysicalLocation().
-		WithArtifactLocation(sarif.NewSimpleArtifactLocation(data.artifactLocation).WithUriBaseId("ROOTPATH")).
-		WithRegion(region)
 	result := sarif.NewRuleResult(data.vulnerabilityId).
 		WithRuleIndex(data.resultIndex).
 		WithMessage(sarif.NewTextMessage(data.message)).
 		WithLevel(toSarifErrorLevel(data.severity)).
-		WithLocations([]*sarif.Location{sarif.NewLocation().WithPhysicalLocation(location)})
+		WithLocations(toSarifLocations(data.locations, data.artifactLocation, data.locationMessage))
 	sw.run.AddResult(result)
 }
 
@@ -123,6 +126,7 @@ func (sw SarifWriter) Write(report types.Report) error {
 	sw.run = sarif.NewRunWithInformationURI("Trivy", "https://github.com/aquasecurity/trivy")
 	sw.run.Tool.Driver.WithVersion(sw.Version)
 	sw.run.Tool.Driver.WithFullName("Trivy Vulnerability Scanner")
+	sw.locationCache = map[string][]location{}
 
 	ruleIndexes := map[string]int{}
 	for _, res := range report.Results {
@@ -145,7 +149,10 @@ func (sw SarifWriter) Write(report types.Report) error {
 				url:              vuln.PrimaryURL,
 				resourceClass:    string(res.Class),
 				artifactLocation: path,
+				locationMessage:  fmt.Sprintf("%v: %v@%v", path, vuln.PkgName, vuln.InstalledVersion),
+				locations:        sw.getLocations(vuln.PkgName, vuln.InstalledVersion, path, res.Packages),
 				resultIndex:      getRuleIndex(vuln.VulnerabilityID, ruleIndexes),
+				shortDescription: html.EscapeString(vuln.Title),
 				fullDescription:  html.EscapeString(fullDescription),
 				helpText: fmt.Sprintf("Vulnerability %v\nSeverity: %v\nPackage: %v\nFixed Version: %v\nLink: [%v](%v)\n%v",
 					vuln.VulnerabilityID, vuln.Severity, vuln.PkgName, vuln.FixedVersion, vuln.VulnerabilityID, vuln.PrimaryURL, vuln.Description),
@@ -164,9 +171,10 @@ func (sw SarifWriter) Write(report types.Report) error {
 				url:              misconf.PrimaryURL,
 				resourceClass:    string(res.Class),
 				artifactLocation: target,
-				startLine:        misconf.CauseMetadata.StartLine,
-				endLine:          misconf.CauseMetadata.EndLine,
+				locationMessage:  target,
+				locations:        []location{{startLine: misconf.CauseMetadata.StartLine, endLine: misconf.CauseMetadata.EndLine}},
 				resultIndex:      getRuleIndex(misconf.ID, ruleIndexes),
+				shortDescription: html.EscapeString(misconf.Title),
 				fullDescription:  html.EscapeString(misconf.Description),
 				helpText: fmt.Sprintf("Misconfiguration %v\nType: %s\nSeverity: %v\nCheck: %v\nMessage: %v\nLink: [%v](%v)\n%s",
 					misconf.ID, misconf.Type, misconf.Severity, misconf.Title, misconf.Message, misconf.ID, misconf.PrimaryURL, misconf.Description),
@@ -174,6 +182,28 @@ func (sw SarifWriter) Write(report types.Report) error {
 					misconf.ID, misconf.Type, misconf.Severity, misconf.Title, misconf.Message, misconf.ID, misconf.PrimaryURL, misconf.Description),
 				message: fmt.Sprintf("Artifact: %v\nType: %v\nVulnerability %v\nSeverity: %v\nMessage: %v\nLink: [%v](%v)",
 					res.Target, res.Type, misconf.ID, misconf.Severity, misconf.Message, misconf.ID, misconf.PrimaryURL),
+			})
+		}
+		for _, secret := range res.Secrets {
+			sw.addSarifResult(&sarifData{
+				title:            "secret",
+				vulnerabilityId:  secret.RuleID,
+				severity:         secret.Severity,
+				cvssScore:        severityToScore(secret.Severity),
+				url:              builtinRulesUrl,
+				resourceClass:    string(res.Class),
+				artifactLocation: target,
+				locationMessage:  target,
+				locations:        []location{{startLine: secret.StartLine, endLine: secret.EndLine}},
+				resultIndex:      getRuleIndex(secret.RuleID, ruleIndexes),
+				shortDescription: html.EscapeString(secret.Title),
+				fullDescription:  html.EscapeString(secret.Match),
+				helpText: fmt.Sprintf("Secret %v\nSeverity: %v\nMatch: %s",
+					secret.Title, secret.Severity, secret.Match),
+				helpMarkdown: fmt.Sprintf("**Secret %v**\n| Severity | Match |\n| --- | --- |\n|%v|%v|",
+					secret.Title, secret.Severity, secret.Match),
+				message: fmt.Sprintf("Artifact: %v\nType: %v\nSecret %v\nSeverity: %v\nMatch: %v",
+					res.Target, res.Type, secret.Title, secret.Severity, secret.Match),
 			})
 		}
 	}
@@ -185,6 +215,33 @@ func (sw SarifWriter) Write(report types.Report) error {
 	return sarifReport.PrettyWrite(sw.Output)
 }
 
+func toSarifLocations(locations []location, artifactLocation, locationMessage string) []*sarif.Location {
+	var sarifLocs []*sarif.Location
+	// add default (hardcoded) location for vulnerabilities that don't support locations
+	if len(locations) == 0 {
+		locations = append(locations, location{startLine: 1, endLine: 1})
+	}
+
+	// some dependencies can be placed in multiple places.
+	// e.g.https://github.com/aquasecurity/go-dep-parser/pull/134#discussion_r985353240
+	// create locations for each place.
+
+	for _, l := range locations {
+		// location is missed. Use default (hardcoded) value (misconfigurations have this case)
+		if l.startLine == 0 && l.endLine == 0 {
+			l.startLine = 1
+			l.endLine = 1
+		}
+		region := sarif.NewRegion().WithStartLine(l.startLine).WithEndLine(l.endLine).WithStartColumn(1).WithEndColumn(1)
+		loc := sarif.NewPhysicalLocation().
+			WithArtifactLocation(sarif.NewSimpleArtifactLocation(artifactLocation).WithUriBaseId("ROOTPATH")).
+			WithRegion(region)
+		sarifLocs = append(sarifLocs, sarif.NewLocation().WithMessage(sarif.NewTextMessage(locationMessage)).WithPhysicalLocation(loc))
+	}
+
+	return sarifLocs
+}
+
 func toSarifRuleName(class string) string {
 	switch class {
 	case types.ClassOSPkg:
@@ -193,6 +250,8 @@ func toSarifRuleName(class string) string {
 		return sarifLanguageSpecificVulnerability
 	case types.ClassConfig:
 		return sarifConfigFiles
+	case types.ClassSecret:
+		return sarifSecretFiles
 	default:
 		return sarifUnknownIssue
 	}
@@ -222,6 +281,24 @@ func ToPathUri(input string) string {
 	}
 
 	return strings.ReplaceAll(input, "\\", "/")
+}
+
+func (sw SarifWriter) getLocations(name, version, path string, pkgs []ftypes.Package) []location {
+	id := fmt.Sprintf("%s@%s@%s", path, name, version)
+	locs, ok := sw.locationCache[id]
+	if !ok {
+		for _, pkg := range pkgs {
+			if name == pkg.Name && version == pkg.Version {
+				for _, l := range pkg.Locations {
+					loc := location{startLine: l.StartLine, endLine: l.EndLine}
+					locs = append(locs, loc)
+				}
+				sw.locationCache[id] = locs
+				return locs
+			}
+		}
+	}
+	return locs
 }
 
 func getCVSSScore(vuln types.DetectedVulnerability) string {

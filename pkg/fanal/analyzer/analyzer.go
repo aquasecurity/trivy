@@ -10,6 +10,7 @@ import (
 	"strings"
 	"sync"
 
+	"github.com/samber/lo"
 	"golang.org/x/exp/slices"
 	"golang.org/x/sync/semaphore"
 	"golang.org/x/xerrors"
@@ -32,17 +33,35 @@ var (
 	ErrNoPkgsDetected = xerrors.New("no packages detected")
 )
 
-type AnalysisInput struct {
-	Dir      string
-	FilePath string
-	Info     os.FileInfo
-	Content  dio.ReadSeekerAt
+//////////////////////
+// Analyzer options //
+//////////////////////
 
-	Options AnalysisOptions
+// AnalyzerOptions is used to initialize analyzers
+type AnalyzerOptions struct {
+	Group                Group
+	FilePatterns         []string
+	DisabledAnalyzers    []Type
+	SecretScannerOption  SecretScannerOption
+	LicenseScannerOption LicenseScannerOption
 }
 
-type AnalysisOptions struct {
-	Offline bool
+type SecretScannerOption struct {
+	ConfigPath string
+}
+
+type LicenseScannerOption struct {
+	// Use license classifier to get better results though the classification is expensive.
+	Full bool
+}
+
+////////////////
+// Interfaces //
+////////////////
+
+// Initializer represents analyzers that need to take parameters from users
+type Initializer interface {
+	Init(AnalyzerOptions) error
 }
 
 type analyzer interface {
@@ -55,9 +74,13 @@ type analyzer interface {
 type configAnalyzer interface {
 	Type() Type
 	Version() int
-	Analyze(targetOS types.OS, content []byte) ([]types.Package, error)
+	Analyze(targetOS types.OS, content []byte) (types.Packages, error)
 	Required(osFound types.OS) bool
 }
+
+////////////////////
+// Analyzer group //
+////////////////////
 
 type Group string
 
@@ -95,6 +118,23 @@ type AnalyzerGroup struct {
 	filePatterns    map[Type][]*regexp.Regexp
 }
 
+///////////////////////////
+// Analyzer input/output //
+///////////////////////////
+
+type AnalysisInput struct {
+	Dir      string
+	FilePath string
+	Info     os.FileInfo
+	Content  dio.ReadSeekerAt
+
+	Options AnalysisOptions
+}
+
+type AnalysisOptions struct {
+	Offline bool
+}
+
 type AnalysisResult struct {
 	m                    sync.Mutex
 	OS                   *types.OS
@@ -105,7 +145,12 @@ type AnalysisResult struct {
 	Licenses             []types.LicenseFile
 	SystemInstalledFiles []string // A list of files installed by OS package manager
 
+	// Files holds necessary file contents for the respective post-handler
 	Files map[types.HandlerType][]types.File
+
+	// Digests contains SHA-256 digests of unpackaged files
+	// used to search for SBOM attestation.
+	Digests map[string]string
 
 	// For Red Hat
 	BuildInfo *types.BuildInfo
@@ -124,7 +169,7 @@ func NewAnalysisResult() *AnalysisResult {
 func (r *AnalysisResult) isEmpty() bool {
 	return r.OS == nil && r.Repository == nil && len(r.PackageInfos) == 0 && len(r.Applications) == 0 &&
 		len(r.Secrets) == 0 && len(r.Licenses) == 0 && len(r.SystemInstalledFiles) == 0 &&
-		r.BuildInfo == nil && len(r.Files) == 0 && len(r.CustomResources) == 0
+		r.BuildInfo == nil && len(r.Files) == 0 && len(r.Digests) == 0 && len(r.CustomResources) == 0
 }
 
 func (r *AnalysisResult) Sort() {
@@ -134,9 +179,7 @@ func (r *AnalysisResult) Sort() {
 	})
 
 	for _, pi := range r.PackageInfos {
-		sort.Slice(pi.Packages, func(i, j int) bool {
-			return pi.Packages[i].Name < pi.Packages[j].Name
-		})
+		sort.Sort(pi.Packages)
 	}
 
 	// Language-specific packages
@@ -216,6 +259,11 @@ func (r *AnalysisResult) Merge(new *AnalysisResult) {
 		r.Applications = append(r.Applications, new.Applications...)
 	}
 
+	// Merge SHA-256 digests of unpackaged files
+	if new.Digests != nil {
+		r.Digests = lo.Assign(r.Digests, new.Digests)
+	}
+
 	for t, files := range new.Files {
 		if v, ok := r.Files[t]; ok {
 			r.Files[t] = append(v, files...)
@@ -265,7 +313,8 @@ func belongToGroup(groupName Group, analyzerType Type, disabledAnalyzers []Type,
 
 const separator = ":"
 
-func NewAnalyzerGroup(groupName Group, disabledAnalyzers []Type, filePatterns []string) (AnalyzerGroup, error) {
+func NewAnalyzerGroup(opt AnalyzerOptions) (AnalyzerGroup, error) {
+	groupName := opt.Group
 	if groupName == "" {
 		groupName = GroupBuiltin
 	}
@@ -273,7 +322,7 @@ func NewAnalyzerGroup(groupName Group, disabledAnalyzers []Type, filePatterns []
 	group := AnalyzerGroup{
 		filePatterns: map[Type][]*regexp.Regexp{},
 	}
-	for _, p := range filePatterns {
+	for _, p := range opt.FilePatterns {
 		// e.g. "dockerfile:my_dockerfile_*"
 		s := strings.SplitN(p, separator, 2)
 		if len(s) != 2 {
@@ -294,14 +343,20 @@ func NewAnalyzerGroup(groupName Group, disabledAnalyzers []Type, filePatterns []
 	}
 
 	for analyzerType, a := range analyzers {
-		if !belongToGroup(groupName, analyzerType, disabledAnalyzers, a) {
+		if !belongToGroup(groupName, analyzerType, opt.DisabledAnalyzers, a) {
 			continue
+		}
+		// Initialize only scanners that have Init()
+		if ini, ok := a.(Initializer); ok {
+			if err := ini.Init(opt); err != nil {
+				return AnalyzerGroup{}, xerrors.Errorf("analyzer initialization error: %w", err)
+			}
 		}
 		group.analyzers = append(group.analyzers, a)
 	}
 
 	for analyzerType, a := range configAnalyzers {
-		if slices.Contains(disabledAnalyzers, analyzerType) {
+		if slices.Contains(opt.DisabledAnalyzers, analyzerType) {
 			continue
 		}
 		group.configAnalyzers = append(group.configAnalyzers, a)

@@ -23,7 +23,9 @@ import (
 )
 
 const (
-	Namespace = "aquasecurity:trivy:"
+	ToolVendor = "aquasecurity"
+	ToolName   = "trivy"
+	Namespace  = ToolVendor + ":" + ToolName + ":"
 
 	PropertySchemaVersion = "SchemaVersion"
 	PropertyType          = "Type"
@@ -37,6 +39,7 @@ const (
 	PropertyRepoTag    = "RepoTag"
 
 	// Package properties
+	PropertyPkgID           = "PkgID"
 	PropertyPkgType         = "PkgType"
 	PropertySrcName         = "SrcName"
 	PropertySrcVersion      = "SrcVersion"
@@ -157,7 +160,9 @@ func (e *Marshaler) MarshalVulnerabilities(report types.Report) (*cdx.BOM, error
 	//      "bom-ref" : "urn:cdx:f08a6ccd-4dce-4759-bd84-c626675d60a7/1"
 	//    }
 	//  },
-	bom.Metadata.Component.BOMRef = fmt.Sprintf("%s/%d", report.CycloneDX.SerialNumber, report.CycloneDX.Version)
+	if report.CycloneDX.SerialNumber != "" { // bomRef is optional field - https://cyclonedx.org/docs/1.4/json/#metadata_component_bom-ref
+		bom.Metadata.Component.BOMRef = fmt.Sprintf("%s/%d", report.CycloneDX.SerialNumber, report.CycloneDX.Version)
+	}
 	return bom, nil
 }
 
@@ -166,8 +171,8 @@ func (e *Marshaler) cdxMetadata() *cdx.Metadata {
 		Timestamp: e.clock.Now().UTC().Format(timeLayout),
 		Tools: &[]cdx.Tool{
 			{
-				Vendor:  "aquasecurity",
-				Name:    "trivy",
+				Vendor:  ToolVendor,
+				Name:    ToolName,
 				Version: e.appVersion,
 			},
 		},
@@ -175,6 +180,10 @@ func (e *Marshaler) cdxMetadata() *cdx.Metadata {
 }
 
 func externalRef(bomLink string, bomRef string) (string, error) {
+	// bomLink is optional field: https://cyclonedx.org/docs/1.4/json/#vulnerabilities_items_bom-ref
+	if bomLink == "" {
+		return bomRef, nil
+	}
 	if !strings.HasPrefix(bomLink, "urn:uuid:") {
 		return "", xerrors.Errorf("%q: %w", bomLink, ErrInvalidBOMLink)
 	}
@@ -198,6 +207,7 @@ func (e *Marshaler) marshalComponents(r types.Report, bomRef string) (*[]cdx.Com
 			pkgID := packageID(result.Target, pkg.Name, utils.FormatVersion(pkg), pkg.FilePath)
 			if _, ok := bomRefMap[pkgID]; !ok {
 				bomRefMap[pkgID] = pkgComponent.BOMRef
+				componentDependencies = append(componentDependencies, cdx.Dependency{Ref: pkgComponent.BOMRef})
 			}
 
 			// When multiple lock files have the same dependency with the same name and version,
@@ -220,8 +230,6 @@ func (e *Marshaler) marshalComponents(r types.Report, bomRef string) (*[]cdx.Com
 				// TODO: All packages are flattened at the moment. We should construct dependency tree.
 				components = append(components, pkgComponent)
 			}
-
-			componentDependencies = append(componentDependencies, cdx.Dependency{Ref: pkgComponent.BOMRef})
 		}
 
 		for _, vuln := range result.Vulnerabilities {
@@ -240,8 +248,8 @@ func (e *Marshaler) marshalComponents(r types.Report, bomRef string) (*[]cdx.Com
 			}
 		}
 
-		if result.Type == ftypes.NodePkg || result.Type == ftypes.PythonPkg || result.Type == ftypes.GoBinary ||
-			result.Type == ftypes.GemSpec || result.Type == ftypes.Jar || result.Type == ftypes.RustBinary {
+		if result.Type == ftypes.NodePkg || result.Type == ftypes.PythonPkg ||
+			result.Type == ftypes.GemSpec || result.Type == ftypes.Jar {
 			// If a package is language-specific package that isn't associated with a lock file,
 			// it will be a dependency of a component under "metadata".
 			// e.g.
@@ -430,6 +438,7 @@ func cdxProperties(pkgType string, pkg ftypes.Package) *[]cdx.Property {
 		name  string
 		value string
 	}{
+		{PropertyPkgID, pkg.ID},
 		{PropertyPkgType, pkgType},
 		{PropertyFilePath, pkg.FilePath},
 		{PropertySrcName, pkg.SrcName},

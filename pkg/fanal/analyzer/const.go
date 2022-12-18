@@ -59,7 +59,7 @@ const (
 
 	// .NET
 	TypeNuget      Type = "nuget"
-	TypeDotNetDeps Type = "dotnet-deps"
+	TypeDotNetCore Type = "dotnet-core"
 
 	// Python
 	TypePythonPkg Type = "python-pkg"
@@ -70,6 +70,17 @@ const (
 	// Go
 	TypeGoBinary Type = "gobinary"
 	TypeGoMod    Type = "gomod"
+
+	// C/C++
+	TypeConanLock Type = "conan-lock"
+
+	// Swift
+	TypeCocoaPods Type = "cocoapods"
+
+	// ============
+	// Non-packaged
+	// ============
+	TypeExecutable Type = "executable"
 
 	// ============
 	// Image Config
@@ -115,14 +126,16 @@ var (
 	// TypeLanguages has all language analyzers
 	TypeLanguages = []Type{
 		TypeBundler, TypeGemSpec, TypeCargo, TypeComposer, TypeJar, TypePom, TypeGradleLock,
-		TypeNpmPkgLock, TypeNodePkg, TypeYarn, TypePnpm, TypeNuget, TypeDotNetDeps,
-		TypePythonPkg, TypePip, TypePipenv, TypePoetry, TypeGoBinary, TypeGoMod, TypeRustBinary,
+		TypeNpmPkgLock, TypeNodePkg, TypeYarn, TypePnpm, TypeNuget, TypeDotNetCore,
+		TypePythonPkg, TypePip, TypePipenv, TypePoetry, TypeGoBinary, TypeGoMod, TypeRustBinary, TypeConanLock,
+		TypeCocoaPods,
 	}
 
 	// TypeLockfiles has all lock file analyzers
 	TypeLockfiles = []Type{
 		TypeBundler, TypeNpmPkgLock, TypeYarn,
-		TypePnpm, TypePip, TypePipenv, TypePoetry, TypeGoMod, TypePom, TypeGradleLock,
+		TypePnpm, TypePip, TypePipenv, TypePoetry, TypeGoMod, TypePom, TypeConanLock, TypeGradleLock,
+		TypeCocoaPods,
 	}
 
 	// TypeIndividualPkgs has all analyzers for individual packages

@@ -55,6 +55,7 @@ var (
 		"21.04":     time.Date(2022, 1, 22, 23, 59, 59, 0, time.UTC),
 		"21.10":     time.Date(2022, 7, 22, 23, 59, 59, 0, time.UTC),
 		"22.04":     time.Date(2032, 4, 23, 23, 59, 59, 0, time.UTC),
+		"22.10":     time.Date(2023, 7, 20, 23, 59, 59, 0, time.UTC),
 	}
 )
 
@@ -114,6 +115,7 @@ func (s *Scanner) Detect(osVer string, _ *ftypes.Repository, pkgs []ftypes.Packa
 		for _, adv := range advisories {
 			vuln := types.DetectedVulnerability{
 				VulnerabilityID:  adv.VulnerabilityID,
+				PkgID:            pkg.ID,
 				PkgName:          pkg.Name,
 				InstalledVersion: installed,
 				FixedVersion:     adv.FixedVersion,

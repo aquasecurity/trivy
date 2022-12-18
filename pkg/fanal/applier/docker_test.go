@@ -364,6 +364,7 @@ func TestApplyLayers(t *testing.T) {
 					SchemaVersion: 2,
 					Digest:        "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
 					DiffID:        "sha256:a187dde48cd289ac374ad8539930628314bc581a481cdb41409c9289419ddb72",
+					CreatedBy:     "Line_1",
 					Secrets: []types.Secret{
 						{
 							FilePath: "usr/secret.txt",
@@ -397,6 +398,7 @@ func TestApplyLayers(t *testing.T) {
 					SchemaVersion: 2,
 					Digest:        "sha256:24df0d4e20c0f42d3703bf1f1db2bdd77346c7956f74f423603d651e8e5ae8a7",
 					DiffID:        "sha256:aad63a9339440e7c3e1fff2b988991b9bfb81280042fa7f39a5e327023056819",
+					CreatedBy:     "Line_2",
 					Secrets: []types.Secret{
 						{
 							FilePath: "usr/secret.txt",
@@ -451,6 +453,7 @@ func TestApplyLayers(t *testing.T) {
 					SchemaVersion: 2,
 					Digest:        "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
 					DiffID:        "sha256:a187dde48cd289ac374ad8539930628314bc581a481cdb41409c9289419ddb72",
+					CreatedBy:     "Line_3",
 					WhiteoutFiles: []string{
 						"usr/secret.txt",
 					},
@@ -466,13 +469,13 @@ func TestApplyLayers(t *testing.T) {
 								Category:  "GitHub",
 								Severity:  "CRITICAL",
 								Title:     "GitHub Personal Access Token",
-								Deleted:   true,
 								StartLine: 1,
 								EndLine:   1,
 								Match:     "GITHUB_PAT=****************************************",
 								Layer: types.Layer{
-									Digest: "sha256:24df0d4e20c0f42d3703bf1f1db2bdd77346c7956f74f423603d651e8e5ae8a7",
-									DiffID: "sha256:aad63a9339440e7c3e1fff2b988991b9bfb81280042fa7f39a5e327023056819",
+									Digest:    "sha256:24df0d4e20c0f42d3703bf1f1db2bdd77346c7956f74f423603d651e8e5ae8a7",
+									DiffID:    "sha256:aad63a9339440e7c3e1fff2b988991b9bfb81280042fa7f39a5e327023056819",
+									CreatedBy: "Line_2",
 								},
 								Code: types.Code{
 									Lines: []types.Line{
@@ -492,13 +495,13 @@ func TestApplyLayers(t *testing.T) {
 								Category:  "AWS",
 								Severity:  "CRITICAL",
 								Title:     "AWS Access Key ID",
-								Deleted:   true,
 								StartLine: 2,
 								EndLine:   2,
 								Match:     "AWS_ACCESS_KEY_ID=********************",
 								Layer: types.Layer{
-									Digest: "sha256:24df0d4e20c0f42d3703bf1f1db2bdd77346c7956f74f423603d651e8e5ae8a7",
-									DiffID: "sha256:aad63a9339440e7c3e1fff2b988991b9bfb81280042fa7f39a5e327023056819",
+									Digest:    "sha256:24df0d4e20c0f42d3703bf1f1db2bdd77346c7956f74f423603d651e8e5ae8a7",
+									DiffID:    "sha256:aad63a9339440e7c3e1fff2b988991b9bfb81280042fa7f39a5e327023056819",
+									CreatedBy: "Line_2",
 								},
 								Code: types.Code{
 									Lines: []types.Line{
@@ -797,9 +800,7 @@ func TestApplyLayers(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			got := applier.ApplyLayers(tt.inputLayers)
-			sort.Slice(got.Packages, func(i, j int) bool {
-				return got.Packages[i].Name < got.Packages[j].Name
-			})
+			sort.Sort(got.Packages)
 			sort.Slice(got.Applications, func(i, j int) bool {
 				return got.Applications[i].FilePath < got.Applications[j].FilePath
 			})

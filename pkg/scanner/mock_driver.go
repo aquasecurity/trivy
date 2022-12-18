@@ -5,8 +5,9 @@ package scanner
 import (
 	"context"
 
-	fanaltypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	mock "github.com/stretchr/testify/mock"
+
+	fanaltypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 
 	types "github.com/aquasecurity/trivy/pkg/types"
 )

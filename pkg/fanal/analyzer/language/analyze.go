@@ -42,6 +42,14 @@ func ToAnalysisResult(fileType, filePath, libFilePath string, libs []godeptypes.
 				licenses[i] = licensing.Normalize(strings.TrimSpace(license))
 			}
 		}
+		var locs []types.Location
+		for _, loc := range lib.Locations {
+			l := types.Location{
+				StartLine: loc.StartLine,
+				EndLine:   loc.EndLine,
+			}
+			locs = append(locs, l)
+		}
 		pkgs = append(pkgs, types.Package{
 			ID:        lib.ID,
 			Name:      lib.Name,
@@ -50,6 +58,7 @@ func ToAnalysisResult(fileType, filePath, libFilePath string, libs []godeptypes.
 			Indirect:  lib.Indirect,
 			Licenses:  licenses,
 			DependsOn: deps[lib.ID],
+			Locations: locs,
 		})
 	}
 	apps := []types.Application{{

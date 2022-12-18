@@ -3,6 +3,9 @@ package secret
 import (
 	"fmt"
 
+	"github.com/samber/lo"
+
+	defsecRules "github.com/aquasecurity/defsec/pkg/rules"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 )
 
@@ -75,6 +78,16 @@ const (
 
 	aws = `(aws)?_?`
 )
+
+// This function is exported for trivy-plugin-aqua purposes only
+func GetSecretRulesMetadata() []defsecRules.Check {
+	return lo.Map(builtinRules, func(rule Rule, i int) defsecRules.Check {
+		return defsecRules.Check{
+			Name:        rule.ID,
+			Description: rule.Title,
+		}
+	})
+}
 
 var builtinRules = []Rule{
 	{
@@ -149,7 +162,7 @@ var builtinRules = []Rule{
 		Category:        CategoryAsymmetricPrivateKey,
 		Title:           "Asymmetric Private Key",
 		Severity:        "HIGH",
-		Regex:           MustCompile(`(?i)-----\s*?BEGIN[ A-Z0-9_-]*?PRIVATE KEY( BLOCK)?\s*?-----[\s]*?(?P<secret>[A-Za-z0-9=+/\\\r\n]+)[\s]*?-----\s*?END[ A-Z0-9_-]*? PRIVATE KEY( BLOCK)?\s*?-----`),
+		Regex:           MustCompile(`(?i)-----\s*?BEGIN[ A-Z0-9_-]*?PRIVATE KEY( BLOCK)?\s*?-----[\s]*?(?P<secret>[\sA-Za-z0-9=+/\\\r\n]+)[\s]*?-----\s*?END[ A-Z0-9_-]*? PRIVATE KEY( BLOCK)?\s*?-----`),
 		SecretGroupName: "secret",
 		Keywords:        []string{"-----"},
 	},
@@ -270,12 +283,13 @@ var builtinRules = []Rule{
 		Keywords: []string{"p8e-"},
 	},
 	{
-		ID:       "alibaba-access-key-id",
-		Category: CategoryAlibaba,
-		Title:    "Alibaba AccessKey ID",
-		Severity: "HIGH",
-		Regex:    MustCompile(`(LTAI)(?i)[a-z0-9]{20}`),
-		Keywords: []string{"LTAI"},
+		ID:              "alibaba-access-key-id",
+		Category:        CategoryAlibaba,
+		Title:           "Alibaba AccessKey ID",
+		Severity:        "HIGH",
+		Regex:           MustCompile(`([^0-9a-z]|^)(?P<secret>(LTAI)(?i)[a-z0-9]{20})([^0-9a-z]|$)`),
+		SecretGroupName: "secret",
+		Keywords:        []string{"LTAI"},
 	},
 	{
 		ID:              "alibaba-secret-key",

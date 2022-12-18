@@ -1,7 +1,7 @@
 VERSION := $(patsubst v%,%,$(shell git describe --tags --always)) #Strips the v prefix from the tag
 LDFLAGS := -ldflags "-s -w -X=main.version=$(VERSION)"
 
-GOPATH := $(shell go env GOPATH)
+GOPATH := $(firstword $(subst :, ,$(shell go env GOPATH)))
 GOBIN := $(GOPATH)/bin
 GOSRC := $(GOPATH)/src
 
@@ -26,7 +26,7 @@ $(GOBIN)/crane:
 	go install github.com/google/go-containerregistry/cmd/crane@v0.9.0
 
 $(GOBIN)/golangci-lint:
-	curl -sfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh| sh -s -- -b $(GOBIN) v1.45.2
+	curl -sfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh| sh -s -- -b $(GOBIN) v1.49.0
 
 $(GOBIN)/labeler:
 	go install github.com/knqyf263/labeler@latest
@@ -76,6 +76,15 @@ test-integration: integration/testdata/fixtures/images/*.tar.gz
 .PHONY: test-module-integration
 test-module-integration: integration/testdata/fixtures/images/*.tar.gz $(EXAMPLE_MODULES)
 	go test -v -tags=module_integration ./integration/...
+
+# Run VM integration tests
+.PHONY: test-vm-integration
+test-vm-integration: integration/testdata/fixtures/vm-images/*.img.gz
+	go test -v -tags=vm_integration ./integration/...
+
+integration/testdata/fixtures/vm-images/*.img.gz:
+	integration/scripts/download-vm-images.sh
+
 
 .PHONY: lint
 lint: $(GOBIN)/golangci-lint

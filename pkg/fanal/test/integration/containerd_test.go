@@ -9,11 +9,15 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"runtime"
 	"strings"
 	"testing"
 	"time"
 
+	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
+
 	"github.com/containerd/containerd"
+	"github.com/containerd/containerd/images"
 	"github.com/containerd/containerd/namespaces"
 	v1 "github.com/google/go-containerregistry/pkg/v1"
 	"github.com/stretchr/testify/assert"
@@ -29,7 +33,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 )
 
-func configureTestDataPaths(t *testing.T) (string, string) {
+func configureTestDataPaths(t *testing.T, namespace string) (string, string) {
 	t.Helper()
 	tmpDir, err := os.MkdirTemp("/tmp", "fanal")
 	require.NoError(t, err)
@@ -42,6 +46,7 @@ func configureTestDataPaths(t *testing.T) (string, string) {
 
 	// Set a containerd socket
 	t.Setenv("CONTAINERD_ADDRESS", socketPath)
+	t.Setenv("CONTAINERD_NAMESPACE", namespace)
 
 	return tmpDir, socketPath
 }
@@ -65,13 +70,192 @@ func startContainerd(t *testing.T, ctx context.Context, hostPath string) testcon
 	})
 	require.NoError(t, err)
 
-	_, err = containerdC.Exec(ctx, []string{"chmod", "666", "/run/containerd/containerd.sock"})
+	_, _, err = containerdC.Exec(ctx, []string{"chmod", "666", "/run/containerd/containerd.sock"})
 	require.NoError(t, err)
 
 	return containerdC
 }
 
+// Each of these tests imports an image and tags it with the name found in the
+// `imageName` field. Then, the containerd store is searched by the reference
+// provided in the `searchName` field.
+func TestContainerd_SearchLocalStoreByNameOrDigest(t *testing.T) {
+	type testInstance struct {
+		name       string
+		imageName  string
+		searchName string
+		expectErr  bool
+	}
+
+	digest := "sha256:f12582b2f2190f350e3904462c1c23aaf366b4f76705e97b199f9bbded1d816a"
+	basename := "hello"
+	tag := "world"
+	importedImageOriginalName := "ghcr.io/aquasecurity/trivy-test-images:alpine-310"
+
+	tests := []testInstance{
+		{
+			name:       "familiarName:tag",
+			imageName:  fmt.Sprintf("%s:%s", basename, tag),
+			searchName: fmt.Sprintf("%s:%s", basename, tag),
+		},
+		{
+			name:       "compound/name:tag",
+			imageName:  fmt.Sprintf("say/%s:%s", basename, tag),
+			searchName: fmt.Sprintf("say/%s:%s", basename, tag),
+		},
+		{
+			name:       "docker.io/library/name:tag",
+			imageName:  fmt.Sprintf("docker.io/library/%s:%s", basename, tag),
+			searchName: fmt.Sprintf("docker.io/library/%s:%s", basename, tag),
+		},
+		{
+			name:       "other-registry.io/library/name:tag",
+			imageName:  fmt.Sprintf("other-registry.io/library/%s:%s", basename, tag),
+			searchName: fmt.Sprintf("other-registry.io/library/%s:%s", basename, tag),
+		},
+		{
+			name:       "other-registry.io/library/name:wrongTag should fail",
+			imageName:  fmt.Sprintf("other-registry.io/library/%s:%s", basename, tag),
+			searchName: fmt.Sprintf("other-registry.io/library/%s:badtag", basename),
+			expectErr:  true,
+		},
+		{
+			name:       "other-registry.io/library/wrongName:tag should fail",
+			imageName:  fmt.Sprintf("other-registry.io/library/%s:%s", basename, tag),
+			searchName: fmt.Sprintf("other-registry.io/library/badname:%s", tag),
+			expectErr:  true,
+		},
+		{
+			name:       "digest should succeed",
+			imageName:  "",
+			searchName: digest,
+		},
+		{
+			name:       "wrong digest should fail",
+			imageName:  "",
+			searchName: "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+			expectErr:  true,
+		},
+		{
+			name:       "name@digest",
+			imageName:  fmt.Sprintf("%s:%s", basename, tag),
+			searchName: fmt.Sprintf("hello@%s", digest),
+		},
+		{
+			name:       "compound/name@digest",
+			imageName:  fmt.Sprintf("compound/%s:%s", basename, tag),
+			searchName: fmt.Sprintf("compound/%s@%s", basename, digest),
+		},
+		{
+			name:       "docker.io/library/name@digest",
+			imageName:  fmt.Sprintf("docker.io/library/%s:%s", basename, tag),
+			searchName: fmt.Sprintf("docker.io/library/%s@%s", basename, digest),
+		},
+		{
+			name:       "otherdomain.io/name@digest",
+			imageName:  fmt.Sprintf("otherdomain.io/%s:%s", basename, tag),
+			searchName: fmt.Sprintf("otherdomain.io/%s@%s", basename, digest),
+		},
+		{
+			name:       "wrongName@digest should fail",
+			imageName:  fmt.Sprintf("%s:%s", basename, tag),
+			searchName: fmt.Sprintf("badname@%s", digest),
+			expectErr:  true,
+		},
+		{
+			name:       "compound/wrongName@digest should fail",
+			imageName:  fmt.Sprintf("compound/%s:%s", basename, tag),
+			searchName: fmt.Sprintf("compound/badname@%s", digest),
+			expectErr:  true,
+		},
+	}
+
+	namespace := "default"
+	ctx := namespaces.WithNamespace(context.Background(), namespace)
+	tmpDir, socketPath := configureTestDataPaths(t, namespace)
+	defer os.RemoveAll(tmpDir)
+
+	containerdC := startContainerd(t, ctx, tmpDir)
+	defer containerdC.Terminate(ctx)
+
+	client, err := containerd.New(socketPath)
+	require.NoError(t, err)
+	defer client.Close()
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			archive, err := os.Open("../../../../integration/testdata/fixtures/images/alpine-310.tar.gz")
+			require.NoError(t, err)
+
+			uncompressedArchive, err := gzip.NewReader(archive)
+			require.NoError(t, err)
+			defer archive.Close()
+
+			cacheDir := t.TempDir()
+			c, err := cache.NewFSCache(cacheDir)
+			require.NoError(t, err)
+
+			imgs, err := client.Import(ctx, uncompressedArchive)
+			require.NoError(t, err)
+			_ = imgs
+
+			digestTest := tt.imageName == ""
+
+			if !digestTest {
+				// Tag the image, taken from the code in `ctr image tag...`
+				imgs[0].Name = tt.imageName
+				_, err = client.ImageService().Create(ctx, imgs[0])
+				require.NoError(t, err)
+
+				// Remove the image by its original name, to ensure the image
+				// is known only by the tag we have given it.
+				err = client.ImageService().Delete(ctx, importedImageOriginalName, images.SynchronousDelete())
+				require.NoError(t, err)
+			}
+
+			t.Cleanup(func() {
+				for _, img := range imgs {
+					err = client.ImageService().Delete(ctx, img.Name, images.SynchronousDelete())
+					require.NoError(t, err)
+				}
+			})
+
+			img, cleanup, err := image.NewContainerImage(ctx, tt.searchName, types.DockerOption{},
+				image.DisableDockerd(), image.DisablePodman(), image.DisableRemote())
+			defer cleanup()
+			if tt.expectErr {
+				require.Error(t, err)
+				return
+			}
+			require.NoError(t, err)
+
+			ar, err := aimage.NewArtifact(img, c, artifact.Option{})
+			require.NoError(t, err)
+
+			ref, err := ar.Inspect(ctx)
+			require.NoError(t, err)
+
+			if digestTest {
+				actualDigest := strings.Split(ref.ImageMetadata.RepoDigests[0], "@")[1]
+				require.Equal(t, tt.searchName, actualDigest)
+				return
+			}
+
+			require.Equal(t, tt.searchName, ref.Name)
+		})
+	}
+}
+
 func TestContainerd_LocalImage(t *testing.T) {
+	localImageTestWithNamespace(t, "default")
+}
+
+func TestContainerd_LocalImage_Alternative_Namespace(t *testing.T) {
+	localImageTestWithNamespace(t, "test")
+}
+
+func localImageTestWithNamespace(t *testing.T, namespace string) {
+	t.Helper()
 	tests := []struct {
 		name         string
 		imageName    string
@@ -110,6 +294,17 @@ func TestContainerd_LocalImage(t *testing.T) {
 						},
 						Env: []string{
 							"PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin",
+						},
+					},
+					History: []v1.History{
+						{
+							Created:   v1.Time{Time: time.Date(2019, 8, 20, 20, 19, 55, 62606894, time.UTC)},
+							CreatedBy: "/bin/sh -c #(nop) ADD file:fe64057fbb83dccb960efabbf1cd8777920ef279a7fa8dbca0a8801c651bdf7c in / ",
+						},
+						{
+							Created:    v1.Time{Time: time.Date(2019, 8, 20, 20, 19, 55, 211423266, time.UTC)},
+							CreatedBy:  "/bin/sh -c #(nop)  CMD [\"/bin/sh\"]",
+							EmptyLayer: true,
 						},
 					},
 				},
@@ -201,13 +396,185 @@ func TestContainerd_LocalImage(t *testing.T) {
 							"/docker-entrypoint.sh",
 						},
 					},
+					History: []v1.History{
+						{
+							Created:   v1.Time{Time: time.Date(2018, 9, 11, 22, 19, 38, 885299940, time.UTC)},
+							CreatedBy: "/bin/sh -c #(nop) ADD file:49f9e47e678d868d5b023482aa8dded71276a241a665c4f8b55ca77269321b34 in / ",
+						},
+						{
+							Created:    v1.Time{Time: time.Date(2018, 9, 11, 22, 19, 39, 58628442, time.UTC)},
+							CreatedBy:  "/bin/sh -c #(nop)  CMD [\"/bin/sh\"]",
+							EmptyLayer: true,
+						},
+						{
+							Created:    v1.Time{Time: time.Date(2018, 9, 12, 1, 26, 59, 951316015, time.UTC)},
+							CreatedBy:  "/bin/sh -c #(nop)  ENV PHPIZE_DEPS=autoconf \t\tdpkg-dev dpkg \t\tfile \t\tg++ \t\tgcc \t\tlibc-dev \t\tmake \t\tpkgconf \t\tre2c",
+							EmptyLayer: true,
+						},
+						{
+							Created:   v1.Time{Time: time.Date(2018, 9, 12, 1, 27, 1, 470388635, time.UTC)},
+							CreatedBy: "/bin/sh -c apk add --no-cache --virtual .persistent-deps \t\tca-certificates \t\tcurl \t\ttar \t\txz \t\tlibressl",
+						},
+						{
+							Created:   v1.Time{Time: time.Date(2018, 9, 12, 1, 27, 2, 432381785, time.UTC)},
+							CreatedBy: "/bin/sh -c set -x \t&& addgroup -g 82 -S www-data \t&& adduser -u 82 -D -S -G www-data www-data",
+						},
+						{
+							Created:    v1.Time{Time: time.Date(2018, 9, 12, 1, 27, 2, 715120309, time.UTC)},
+							CreatedBy:  "/bin/sh -c #(nop)  ENV PHP_INI_DIR=/usr/local/etc/php",
+							EmptyLayer: true,
+						},
+						{
+							Created:   v1.Time{Time: time.Date(2018, 9, 12, 1, 27, 3, 655421341, time.UTC)},
+							CreatedBy: "/bin/sh -c mkdir -p $PHP_INI_DIR/conf.d",
+						},
+						{
+							Created:    v1.Time{Time: time.Date(2018, 9, 12, 1, 27, 3, 931799562, time.UTC)},
+							CreatedBy:  "/bin/sh -c #(nop)  ENV PHP_CFLAGS=-fstack-protector-strong -fpic -fpie -O2",
+							EmptyLayer: true,
+						},
+						{
+							Created:    v1.Time{Time: time.Date(2018, 9, 12, 1, 27, 4, 210945499, time.UTC)},
+							CreatedBy:  "/bin/sh -c #(nop)  ENV PHP_CPPFLAGS=-fstack-protector-strong -fpic -fpie -O2",
+							EmptyLayer: true,
+						},
+						{
+							Created:    v1.Time{Time: time.Date(2018, 9, 12, 1, 27, 4, 523116501, time.UTC)},
+							CreatedBy:  "/bin/sh -c #(nop)  ENV PHP_LDFLAGS=-Wl,-O1 -Wl,--hash-style=both -pie",
+							EmptyLayer: true,
+						},
+						{
+							Created:    v1.Time{Time: time.Date(2018, 9, 12, 1, 27, 4, 795176159, time.UTC)},
+							CreatedBy:  "/bin/sh -c #(nop)  ENV GPG_KEYS=1729F83938DA44E27BA0F4D3DBDB397470D12172 B1B44D8F021E4E2D6021E995DC9FF8D3EE5AF27F",
+							EmptyLayer: true,
+						},
+						{
+							Created:    v1.Time{Time: time.Date(2018, 10, 15, 19, 2, 18, 415761689, time.UTC)},
+							CreatedBy:  "/bin/sh -c #(nop)  ENV PHP_VERSION=7.2.11",
+							EmptyLayer: true,
+						},
+						{
+							Created:    v1.Time{Time: time.Date(2018, 10, 15, 19, 2, 18, 599097853, time.UTC)},
+							CreatedBy:  "/bin/sh -c #(nop)  ENV PHP_URL=https://secure.php.net/get/php-7.2.11.tar.xz/from/this/mirror PHP_ASC_URL=https://secure.php.net/get/php-7.2.11.tar.xz.asc/from/this/mirror",
+							EmptyLayer: true,
+						},
+						{
+							Created:    v1.Time{Time: time.Date(2018, 10, 15, 19, 2, 18, 782890412, time.UTC)},
+							CreatedBy:  "/bin/sh -c #(nop)  ENV PHP_SHA256=da1a705c0bc46410e330fc6baa967666c8cd2985378fb9707c01a8e33b01d985 PHP_MD5=",
+							EmptyLayer: true,
+						},
+						{
+							Created:   v1.Time{Time: time.Date(2018, 10, 15, 19, 2, 22, 795846753, time.UTC)},
+							CreatedBy: "/bin/sh -c set -xe; \t\tapk add --no-cache --virtual .fetch-deps \t\tgnupg \t\twget \t; \t\tmkdir -p /usr/src; \tcd /usr/src; \t\twget -O php.tar.xz \"$PHP_URL\"; \t\tif [ -n \"$PHP_SHA256\" ]; then \t\techo \"$PHP_SHA256 *php.tar.xz\" | sha256sum -c -; \tfi; \tif [ -n \"$PHP_MD5\" ]; then \t\techo \"$PHP_MD5 *php.tar.xz\" | md5sum -c -; \tfi; \t\tif [ -n \"$PHP_ASC_URL\" ]; then \t\twget -O php.tar.xz.asc \"$PHP_ASC_URL\"; \t\texport GNUPGHOME=\"$(mktemp -d)\"; \t\tfor key in $GPG_KEYS; do \t\t\tgpg --keyserver ha.pool.sks-keyservers.net --recv-keys \"$key\"; \t\tdone; \t\tgpg --batch --verify php.tar.xz.asc php.tar.xz; \t\tcommand -v gpgconf > /dev/null && gpgconf --kill all; \t\trm -rf \"$GNUPGHOME\"; \tfi; \t\tapk del .fetch-deps",
+						},
+						{
+							Created:   v1.Time{Time: time.Date(2018, 10, 15, 19, 2, 23, 71406376, time.UTC)},
+							CreatedBy: "/bin/sh -c #(nop) COPY file:207c686e3fed4f71f8a7b245d8dcae9c9048d276a326d82b553c12a90af0c0ca in /usr/local/bin/ ",
+						},
+						{
+							Created:   v1.Time{Time: time.Date(2018, 10, 15, 19, 7, 13, 93396680, time.UTC)},
+							CreatedBy: "/bin/sh -c set -xe \t&& apk add --no-cache --virtual .build-deps \t\t$PHPIZE_DEPS \t\tcoreutils \t\tcurl-dev \t\tlibedit-dev \t\tlibressl-dev \t\tlibsodium-dev \t\tlibxml2-dev \t\tsqlite-dev \t\t&& export CFLAGS=\"$PHP_CFLAGS\" \t\tCPPFLAGS=\"$PHP_CPPFLAGS\" \t\tLDFLAGS=\"$PHP_LDFLAGS\" \t&& docker-php-source extract \t&& cd /usr/src/php \t&& gnuArch=\"$(dpkg-architecture --query DEB_BUILD_GNU_TYPE)\" \t&& ./configure \t\t--build=\"$gnuArch\" \t\t--with-config-file-path=\"$PHP_INI_DIR\" \t\t--with-config-file-scan-dir=\"$PHP_INI_DIR/conf.d\" \t\t\t\t--enable-option-checking=fatal \t\t\t\t--with-mhash \t\t\t\t--enable-ftp \t\t--enable-mbstring \t\t--enable-mysqlnd \t\t--with-sodium=shared \t\t\t\t--with-curl \t\t--with-libedit \t\t--with-openssl \t\t--with-zlib \t\t\t\t$(test \"$gnuArch\" = 's390x-linux-gnu' && echo '--without-pcre-jit') \t\t\t\t$PHP_EXTRA_CONFIGURE_ARGS \t&& make -j \"$(nproc)\" \t&& make install \t&& { find /usr/local/bin /usr/local/sbin -type f -perm +0111 -exec strip --strip-all '{}' + || true; } \t&& make clean \t\t&& cp -v php.ini-* \"$PHP_INI_DIR/\" \t\t&& cd / \t&& docker-php-source delete \t\t&& runDeps=\"$( \t\tscanelf --needed --nobanner --format '%n#p' --recursive /usr/local \t\t\t| tr ',' '\\n' \t\t\t| sort -u \t\t\t| awk 'system(\"[ -e /usr/local/lib/\" $1 \" ]\") == 0 { next } { print \"so:\" $1 }' \t)\" \t&& apk add --no-cache --virtual .php-rundeps $runDeps \t\t&& apk del .build-deps \t\t&& pecl update-channels \t&& rm -rf /tmp/pear ~/.pearrc",
+						},
+						{
+							Created:   v1.Time{Time: time.Date(2018, 10, 15, 19, 7, 13, 722586262, time.UTC)},
+							CreatedBy: "/bin/sh -c #(nop) COPY multi:2cdcedabcf5a3b9ae610fab7848e94bc2f64b4d85710d55fd6f79e44dacf73d8 in /usr/local/bin/ ",
+						},
+						{
+							Created:   v1.Time{Time: time.Date(2018, 10, 15, 19, 7, 14, 618087104, time.UTC)},
+							CreatedBy: "/bin/sh -c docker-php-ext-enable sodium",
+						},
+						{
+							Created:    v1.Time{Time: time.Date(2018, 10, 15, 19, 7, 14, 826981756, time.UTC)},
+							CreatedBy:  "/bin/sh -c #(nop)  ENTRYPOINT [\"docker-php-entrypoint\"]",
+							EmptyLayer: true,
+						},
+						{
+							Created:    v1.Time{Time: time.Date(2018, 10, 15, 19, 7, 15, 10831572, time.UTC)},
+							CreatedBy:  "/bin/sh -c #(nop)  CMD [\"php\" \"-a\"]",
+							EmptyLayer: true,
+						},
+						{
+							Created:   v1.Time{Time: time.Date(2018, 10, 15, 21, 28, 21, 919735971, time.UTC)},
+							CreatedBy: "/bin/sh -c apk --no-cache add git subversion openssh mercurial tini bash patch",
+						},
+						{
+							Created:   v1.Time{Time: time.Date(2018, 10, 15, 21, 28, 22, 611763893, time.UTC)},
+							CreatedBy: "/bin/sh -c echo \"memory_limit=-1\" > \"$PHP_INI_DIR/conf.d/memory-limit.ini\"  && echo \"date.timezone=${PHP_TIMEZONE:-UTC}\" > \"$PHP_INI_DIR/conf.d/date_timezone.ini\"",
+						},
+						{
+							Created:   v1.Time{Time: time.Date(2018, 10, 15, 21, 28, 50, 224278478, time.UTC)},
+							CreatedBy: "/bin/sh -c apk add --no-cache --virtual .build-deps zlib-dev  && docker-php-ext-install zip  && runDeps=\"$(     scanelf --needed --nobanner --format '%n#p' --recursive /usr/local/lib/php/extensions     | tr ',' '\\n'     | sort -u     | awk 'system(\"[ -e /usr/local/lib/\" $1 \" ]\") == 0 { next } { print \"so:\" $1 }'     )\"  && apk add --virtual .composer-phpext-rundeps $runDeps  && apk del .build-deps",
+						},
+						{
+							Created:    v1.Time{Time: time.Date(2018, 10, 15, 21, 28, 50, 503010161, time.UTC)},
+							CreatedBy:  "/bin/sh -c #(nop)  ENV COMPOSER_ALLOW_SUPERUSER=1",
+							EmptyLayer: true,
+						},
+						{
+							Created:    v1.Time{Time: time.Date(2018, 10, 15, 21, 28, 50, 775378559, time.UTC)},
+							CreatedBy:  "/bin/sh -c #(nop)  ENV COMPOSER_HOME=/tmp",
+							EmptyLayer: true,
+						},
+						{
+							Created:    v1.Time{Time: time.Date(2018, 10, 15, 21, 28, 51, 35012363, time.UTC)},
+							CreatedBy:  "/bin/sh -c #(nop)  ENV COMPOSER_VERSION=1.7.2",
+							EmptyLayer: true,
+						},
+						{
+							Created:   v1.Time{Time: time.Date(2018, 10, 15, 21, 28, 52, 491402624, time.UTC)},
+							CreatedBy: "/bin/sh -c curl --silent --fail --location --retry 3 --output /tmp/installer.php --url https://raw.githubusercontent.com/composer/getcomposer.org/b107d959a5924af895807021fcef4ffec5a76aa9/web/installer  && php -r \"     \\$signature = '544e09ee996cdf60ece3804abc52599c22b1f40f4323403c44d44fdfdd586475ca9813a858088ffbc1f233e9b180f061';     \\$hash = hash('SHA384', file_get_contents('/tmp/installer.php'));     if (!hash_equals(\\$signature, \\$hash)) {         unlink('/tmp/installer.php');         echo 'Integrity check failed, installer is either corrupt or worse.' . PHP_EOL;         exit(1);     }\"  && php /tmp/installer.php --no-ansi --install-dir=/usr/bin --filename=composer --version=${COMPOSER_VERSION}  && composer --ansi --version --no-interaction  && rm -rf /tmp/* /tmp/.htaccess",
+						},
+						{
+							Created:   v1.Time{Time: time.Date(2018, 10, 15, 21, 28, 52, 948859545, time.UTC)},
+							CreatedBy: "/bin/sh -c #(nop) COPY file:295943a303e8f27de4302b6aa3687bce4b1d1392335efaaab9ecd37bec5ab4c5 in /docker-entrypoint.sh ",
+						},
+						{
+							Created:   v1.Time{Time: time.Date(2018, 10, 15, 21, 28, 53, 295399872, time.UTC)},
+							CreatedBy: "/bin/sh -c #(nop) WORKDIR /app",
+						},
+						{
+							Created:    v1.Time{Time: time.Date(2018, 10, 15, 21, 28, 53, 582920705, time.UTC)},
+							CreatedBy:  "/bin/sh -c #(nop)  ENTRYPOINT [\"/bin/sh\" \"/docker-entrypoint.sh\"]",
+							EmptyLayer: true,
+						},
+						{
+							Created:    v1.Time{Time: time.Date(2018, 10, 15, 21, 28, 53, 798628678, time.UTC)},
+							CreatedBy:  "/bin/sh -c #(nop)  CMD [\"composer\"]",
+							EmptyLayer: true,
+						},
+						{
+							Created:   v1.Time{Time: time.Date(2019, 8, 7, 7, 25, 57, 211142800, time.UTC)},
+							CreatedBy: "/bin/sh -c #(nop) ADD file:842584685f26edb24dc305d76894f51cfda2bad0c24a05e727f9d4905d184a70 in /php-app/composer.lock ",
+						},
+						{
+							Created:   v1.Time{Time: time.Date(2019, 8, 7, 7, 25, 57, 583779000, time.UTC)},
+							CreatedBy: "/bin/sh -c #(nop) ADD file:c6d0373d380252b91829a5bb3c81d5b1afa574c91cef7752d18170a231c31f6d in /ruby-app/Gemfile.lock ",
+						},
+						{
+							Created:   v1.Time{Time: time.Date(2019, 8, 7, 7, 25, 57, 921730100, time.UTC)},
+							CreatedBy: "/bin/sh -c #(nop) ADD file:54a1c52556a5ebe98fd124f51c25d071f9e29e2714c72c80d6d3d254b9e83386 in /node-app/package-lock.json ",
+						},
+						{
+							Created:   v1.Time{Time: time.Date(2019, 8, 7, 7, 25, 58, 311593100, time.UTC)},
+							CreatedBy: "/bin/sh -c #(nop) ADD file:097d32f46acde76c4da9e55f17110d69d02cc6d16c86da907980da335fc0fc5f in /python-app/Pipfile.lock ",
+						},
+						{
+							Created:   v1.Time{Time: time.Date(2019, 8, 7, 7, 25, 58, 651649800, time.UTC)},
+							CreatedBy: "/bin/sh -c #(nop) ADD file:7f147d85de19bfb905c260a0c175f227a433259022c163017b96d0efacdcd105 in /rust-app/Cargo.lock ",
+						},
+					},
 				},
 			},
 		},
 	}
-	ctx := namespaces.WithNamespace(context.Background(), "default")
+	// Each architecture needs different images and test cases.
+	// Currently only amd64 architecture is supported
+	if runtime.GOARCH != "amd64" {
+		t.Skip("'Containerd' test only supports amd64 architecture")
+	}
+	ctx := namespaces.WithNamespace(context.Background(), namespace)
 
-	tmpDir, socketPath := configureTestDataPaths(t)
+	tmpDir, socketPath := configureTestDataPaths(t, namespace)
 	defer os.RemoveAll(tmpDir)
 
 	containerdC := startContainerd(t, ctx, tmpDir)
@@ -244,7 +611,12 @@ func TestContainerd_LocalImage(t *testing.T) {
 			require.NoError(t, err)
 			defer cleanup()
 
-			ar, err := aimage.NewArtifact(img, c, artifact.Option{})
+			ar, err := aimage.NewArtifact(img, c, artifact.Option{
+				DisabledAnalyzers: []analyzer.Type{
+					analyzer.TypeExecutable,
+					analyzer.TypeLicenseFile,
+				},
+			})
 			require.NoError(t, err)
 
 			ref, err := ar.Inspect(ctx)
@@ -270,7 +642,7 @@ func TestContainerd_LocalImage(t *testing.T) {
 			require.NoError(t, err)
 			defer golden.Close()
 
-			var wantPkgs []types.Package
+			var wantPkgs types.Packages
 			err = json.NewDecoder(golden).Decode(&wantPkgs)
 			require.NoError(t, err)
 
@@ -320,14 +692,32 @@ func TestContainerd_PullImage(t *testing.T) {
 						},
 						ArgsEscaped: false,
 					},
+					History: []v1.History{
+						{
+							Created:   v1.Time{time.Date(2019, 8, 20, 20, 19, 55, 62606894, time.UTC)},
+							CreatedBy: "/bin/sh -c #(nop) ADD file:fe64057fbb83dccb960efabbf1cd8777920ef279a7fa8dbca0a8801c651bdf7c in / ",
+						},
+						{
+							Created:    v1.Time{time.Date(2019, 8, 20, 20, 19, 55, 211423266, time.UTC)},
+							CreatedBy:  "/bin/sh -c #(nop)  CMD [\"/bin/sh\"]",
+							EmptyLayer: true,
+						},
+					},
 				},
 			},
 		},
 	}
 
-	ctx := namespaces.WithNamespace(context.Background(), "default")
+	// Each architecture needs different images and test cases.
+	// Currently only amd64 architecture is supported
+	if runtime.GOARCH != "amd64" {
+		t.Skip("'Containerd' test only supports amd64 architecture")
+	}
 
-	tmpDir, socketPath := configureTestDataPaths(t)
+	namespace := "default"
+	ctx := namespaces.WithNamespace(context.Background(), namespace)
+
+	tmpDir, socketPath := configureTestDataPaths(t, namespace)
 
 	containerdC := startContainerd(t, ctx, tmpDir)
 	defer containerdC.Terminate(ctx)
@@ -356,7 +746,12 @@ func TestContainerd_PullImage(t *testing.T) {
 			require.NoError(t, err)
 			defer cleanup()
 
-			art, err := aimage.NewArtifact(img, c, artifact.Option{})
+			art, err := aimage.NewArtifact(img, c, artifact.Option{
+				DisabledAnalyzers: []analyzer.Type{
+					analyzer.TypeExecutable,
+					analyzer.TypeLicenseFile,
+				},
+			})
 			require.NoError(t, err)
 			require.NotNil(t, art)
 
@@ -373,7 +768,7 @@ func TestContainerd_PullImage(t *testing.T) {
 			golden, err := os.Open(fmt.Sprintf("testdata/goldens/packages/%s.json.golden", tag))
 			require.NoError(t, err)
 
-			var wantPkgs []types.Package
+			var wantPkgs types.Packages
 			err = json.NewDecoder(golden).Decode(&wantPkgs)
 			require.NoError(t, err)
 

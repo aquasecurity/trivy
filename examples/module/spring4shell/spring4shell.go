@@ -138,88 +138,90 @@ func (Spring4Shell) PostScanSpec() serialize.PostScanSpec {
 //
 // Example input:
 // [
-//  {
-//    "Target": "",
-//    "Class": "custom",
-//    "CustomResources": [
-//      {
-//        "Type": "spring4shell/java-major-version",
-//        "FilePath": "/usr/local/openjdk-8/release",
-//        "Layer": {
-//          "Digest": "sha256:d7b564a873af313eb2dbcb1ed0d393c57543e3666bdedcbe5d75841d72b1f791",
-//          "DiffID": "sha256:ba40706eccba610401e4942e29f50bdf36807f8638942ce20805b359ae3ac1c1"
-//        },
-//        "Data": "1.8.0_322"
-//      },
-//      {
-//        "Type": "spring4shell/tomcat-version",
-//        "FilePath": "/usr/local/tomcat/RELEASE-NOTES",
-//        "Layer": {
-//          "Digest": "sha256:59c0978ccb117247fd40d936973c40df89195f60466118c5acc6a55f8ba29f06",
-//          "DiffID": "sha256:85595543df2b1115a18284a8ef62d0b235c4bc29e3d33b55f89b54ee1eadf4c6"
-//        },
-//        "Data": "8.5.77"
-//      }
-//    ]
-//  },
-//  {
-//    "Target": "Java",
-//    "Class": "lang-pkgs",
-//    "Type": "jar",
-//    "Vulnerabilities": [
-//      {
-//        "VulnerabilityID": "CVE-2022-22965",
-//        "PkgName": "org.springframework.boot:spring-boot",
-//        "PkgPath": "usr/local/tomcat/webapps/helloworld.war",
-//        "InstalledVersion": "2.6.3",
-//        "FixedVersion": "2.5.12, 2.6.6",
-//        "Layer": {
-//          "Digest": "sha256:cc44af318e91e6f9f9bf73793fa4f0639487613f46aa1f819b02b6e8fb5c6c07",
-//          "DiffID": "sha256:eb769943b91f10a0418f2fc3b4a4fde6c6293be60c37293fcc0fa319edaf27a5"
-//        },
-//        "SeveritySource": "nvd",
-//        "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2022-22965",
-//        "DataSource": {
-//          "ID": "glad",
-//          "Name": "GitLab Advisory Database Community",
-//          "URL": "https://gitlab.com/gitlab-org/advisories-community"
-//        },
-//        "Title": "spring-framework: RCE via Data Binding on JDK 9+",
-//        "Description": "A Spring MVC or Spring WebFlux application running on JDK 9+ may be vulnerable to remote code execution (RCE) via data binding. The specific exploit requires the application to run on Tomcat as a WAR deployment. If the application is deployed as a Spring Boot executable jar, i.e. the default, it is not vulnerable to the exploit. However, the nature of the vulnerability is more general, and there may be other ways to exploit it.",
-//        "Severity": "CRITICAL",
-//        "CweIDs": [
-//          "CWE-94"
-//        ],
-//        "VendorSeverity": {
-//          "ghsa": 4,
-//          "nvd": 4,
-//          "redhat": 3
-//        },
-//        "CVSS": {
-//          "ghsa": {
-//            "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H",
-//            "V3Score": 9.8
-//          },
-//          "nvd": {
-//            "V2Vector": "AV:N/AC:L/Au:N/C:P/I:P/A:P",
-//            "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H",
-//            "V2Score": 7.5,
-//            "V3Score": 9.8
-//          },
-//          "redhat": {
-//            "V3Vector": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:H/I:H/A:H",
-//            "V3Score": 8.1
-//          }
-//        },
-//        "References": [
-//          "https://github.com/advisories/GHSA-36p3-wjmg-h94x"
-//        ],
-//        "PublishedDate": "2022-04-01T23:15:00Z",
-//        "LastModifiedDate": "2022-05-19T14:21:00Z"
-//      }
-//    ]
-//  }
-//]
+//
+//	{
+//	  "Target": "",
+//	  "Class": "custom",
+//	  "CustomResources": [
+//	    {
+//	      "Type": "spring4shell/java-major-version",
+//	      "FilePath": "/usr/local/openjdk-8/release",
+//	      "Layer": {
+//	        "Digest": "sha256:d7b564a873af313eb2dbcb1ed0d393c57543e3666bdedcbe5d75841d72b1f791",
+//	        "DiffID": "sha256:ba40706eccba610401e4942e29f50bdf36807f8638942ce20805b359ae3ac1c1"
+//	      },
+//	      "Data": "1.8.0_322"
+//	    },
+//	    {
+//	      "Type": "spring4shell/tomcat-version",
+//	      "FilePath": "/usr/local/tomcat/RELEASE-NOTES",
+//	      "Layer": {
+//	        "Digest": "sha256:59c0978ccb117247fd40d936973c40df89195f60466118c5acc6a55f8ba29f06",
+//	        "DiffID": "sha256:85595543df2b1115a18284a8ef62d0b235c4bc29e3d33b55f89b54ee1eadf4c6"
+//	      },
+//	      "Data": "8.5.77"
+//	    }
+//	  ]
+//	},
+//	{
+//	  "Target": "Java",
+//	  "Class": "lang-pkgs",
+//	  "Type": "jar",
+//	  "Vulnerabilities": [
+//	    {
+//	      "VulnerabilityID": "CVE-2022-22965",
+//	      "PkgName": "org.springframework.boot:spring-boot",
+//	      "PkgPath": "usr/local/tomcat/webapps/helloworld.war",
+//	      "InstalledVersion": "2.6.3",
+//	      "FixedVersion": "2.5.12, 2.6.6",
+//	      "Layer": {
+//	        "Digest": "sha256:cc44af318e91e6f9f9bf73793fa4f0639487613f46aa1f819b02b6e8fb5c6c07",
+//	        "DiffID": "sha256:eb769943b91f10a0418f2fc3b4a4fde6c6293be60c37293fcc0fa319edaf27a5"
+//	      },
+//	      "SeveritySource": "nvd",
+//	      "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2022-22965",
+//	      "DataSource": {
+//	        "ID": "glad",
+//	        "Name": "GitLab Advisory Database Community",
+//	        "URL": "https://gitlab.com/gitlab-org/advisories-community"
+//	      },
+//	      "Title": "spring-framework: RCE via Data Binding on JDK 9+",
+//	      "Description": "A Spring MVC or Spring WebFlux application running on JDK 9+ may be vulnerable to remote code execution (RCE) via data binding. The specific exploit requires the application to run on Tomcat as a WAR deployment. If the application is deployed as a Spring Boot executable jar, i.e. the default, it is not vulnerable to the exploit. However, the nature of the vulnerability is more general, and there may be other ways to exploit it.",
+//	      "Severity": "CRITICAL",
+//	      "CweIDs": [
+//	        "CWE-94"
+//	      ],
+//	      "VendorSeverity": {
+//	        "ghsa": 4,
+//	        "nvd": 4,
+//	        "redhat": 3
+//	      },
+//	      "CVSS": {
+//	        "ghsa": {
+//	          "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H",
+//	          "V3Score": 9.8
+//	        },
+//	        "nvd": {
+//	          "V2Vector": "AV:N/AC:L/Au:N/C:P/I:P/A:P",
+//	          "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H",
+//	          "V2Score": 7.5,
+//	          "V3Score": 9.8
+//	        },
+//	        "redhat": {
+//	          "V3Vector": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:H/I:H/A:H",
+//	          "V3Score": 8.1
+//	        }
+//	      },
+//	      "References": [
+//	        "https://github.com/advisories/GHSA-36p3-wjmg-h94x"
+//	      ],
+//	      "PublishedDate": "2022-04-01T23:15:00Z",
+//	      "LastModifiedDate": "2022-05-19T14:21:00Z"
+//	    }
+//	  ]
+//	}
+//
+// ]
 func (Spring4Shell) PostScan(results serialize.Results) (serialize.Results, error) {
 	var javaMajorVersion int
 	var tomcatVersion string

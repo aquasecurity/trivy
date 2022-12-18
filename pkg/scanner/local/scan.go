@@ -40,6 +40,7 @@ var (
 // SuperSet binds dependencies for Local scan
 var SuperSet = wire.NewSet(
 	vulnerability.SuperSet,
+	wire.Value([]applier.Option(nil)), // functional options
 	applier.NewApplier,
 	wire.Bind(new(Applier), new(applier.Applier)),
 	wire.Struct(new(ospkgDetector.Detector)),
@@ -132,8 +133,8 @@ func (s Scanner) Scan(ctx context.Context, target, artifactKey string, blobKeys 
 	}
 
 	// Scan IaC config files
-	if shouldScanMisconfig(options.SecurityChecks) {
-		configResults := s.misconfsToResults(artifactDetail.Misconfigurations)
+	if ShouldScanMisconfigOrRbac(options.SecurityChecks) {
+		configResults := s.MisconfsToResults(artifactDetail.Misconfigurations)
 		results = append(results, configResults...)
 	}
 
@@ -180,9 +181,7 @@ func (s Scanner) osPkgsToResult(target string, detail ftypes.ArtifactDetail, opt
 	if options.ScanRemovedPackages {
 		pkgs = mergePkgs(pkgs, detail.HistoryPackages)
 	}
-	sort.Slice(pkgs, func(i, j int) bool {
-		return strings.Compare(pkgs[i].Name, pkgs[j].Name) <= 0
-	})
+	sort.Sort(pkgs)
 	return &types.Result{
 		Target:   fmt.Sprintf("%s (%s %s)", target, detail.OS.Family, detail.OS.Name),
 		Class:    types.ClassOSPkg,
@@ -333,7 +332,8 @@ func (s Scanner) fillPkgsInVulns(pkgResults, vulnResults types.Results) types.Re
 	return results
 }
 
-func (s Scanner) misconfsToResults(misconfs []ftypes.Misconfiguration) types.Results {
+// This function is exported for trivy-plugin-aqua purposes only
+func (s Scanner) MisconfsToResults(misconfs []ftypes.Misconfiguration) types.Results {
 	log.Logger.Infof("Detected config files: %d", len(misconfs))
 	var results types.Results
 	for _, misconf := range misconfs {
@@ -488,6 +488,10 @@ func toDetectedMisconfiguration(res ftypes.MisconfResult, defaultSeverity dbType
 		res.References = append(res.References, primaryURL)
 	}
 
+	if len(primaryURL) == 0 && len(res.References) > 0 {
+		primaryURL = res.References[0]
+	}
+
 	return types.DetectedMisconfiguration{
 		ID:          res.ID,
 		AVDID:       res.AVDID,
@@ -530,6 +534,7 @@ func mergePkgs(pkgs, pkgsFromCommands []ftypes.Package) []ftypes.Package {
 	return pkgs
 }
 
-func shouldScanMisconfig(securityChecks []string) bool {
-	return slices.Contains(securityChecks, types.SecurityCheckConfig) || slices.Contains(securityChecks, types.SecurityCheckRbac)
+func ShouldScanMisconfigOrRbac(securityChecks []string) bool {
+	return slices.Contains(securityChecks, types.SecurityCheckConfig) ||
+		slices.Contains(securityChecks, types.SecurityCheckRbac)
 }

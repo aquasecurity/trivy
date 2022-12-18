@@ -103,7 +103,11 @@ func (s *Scanner) Detect(osVer string, repo *ftypes.Repository, pkgs []ftypes.Pa
 
 	var vulns []types.DetectedVulnerability
 	for _, pkg := range pkgs {
-		advisories, err := s.vs.Get(stream, pkg.SrcName)
+		srcName := pkg.SrcName
+		if srcName == "" {
+			srcName = pkg.Name
+		}
+		advisories, err := s.vs.Get(stream, srcName)
 		if err != nil {
 			return nil, xerrors.Errorf("failed to get alpine advisories: %w", err)
 		}
@@ -121,6 +125,7 @@ func (s *Scanner) Detect(osVer string, repo *ftypes.Repository, pkgs []ftypes.Pa
 			}
 			vulns = append(vulns, types.DetectedVulnerability{
 				VulnerabilityID:  adv.VulnerabilityID,
+				PkgID:            pkg.ID,
 				PkgName:          pkg.Name,
 				InstalledVersion: installed,
 				FixedVersion:     adv.FixedVersion,

@@ -53,6 +53,7 @@
       "Vulnerabilities": [
         {
           "VulnerabilityID": "CVE-2021-3712",
+          "PkgID": "openssl-libs@1.1.1k-4.el8.x86_64",
           "PkgName": "openssl-libs",
           "InstalledVersion": "1:1.1.1k-4.el8",
           "FixedVersion": "1:1.1.1k-5.el8_5",

@@ -1,6 +1,7 @@
 package sbom
 
 import (
+	"bufio"
 	"encoding/json"
 	"encoding/xml"
 	"io"
@@ -10,16 +11,10 @@ import (
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/attestation"
-	"github.com/aquasecurity/trivy/pkg/fanal/types"
+	"github.com/aquasecurity/trivy/pkg/sbom/cyclonedx"
+	"github.com/aquasecurity/trivy/pkg/sbom/spdx"
+	"github.com/aquasecurity/trivy/pkg/types"
 )
-
-type SBOM struct {
-	OS           *types.OS
-	Packages     []types.PackageInfo
-	Applications []types.Application
-
-	CycloneDX *types.CycloneDX
-}
 
 type Format string
 
@@ -27,19 +22,31 @@ const (
 	FormatCycloneDXJSON       Format = "cyclonedx-json"
 	FormatCycloneDXXML        Format = "cyclonedx-xml"
 	FormatSPDXJSON            Format = "spdx-json"
+	FormatSPDXTV              Format = "spdx-tv"
 	FormatSPDXXML             Format = "spdx-xml"
 	FormatAttestCycloneDXJSON Format = "attest-cyclonedx-json"
 	FormatUnknown             Format = "unknown"
 )
 
-func DetectFormat(r io.ReadSeeker) (Format, error) {
-	type cyclonedx struct {
-		// XML specific field
-		XMLNS string `json:"-" xml:"xmlns,attr"`
+var ErrUnknownFormat = xerrors.New("Unknown SBOM format")
 
-		// JSON specific field
-		BOMFormat string `json:"bomFormat" xml:"-"`
-	}
+func DetectFormat(r io.ReadSeeker) (Format, error) {
+	// Rewind the SBOM file at the end
+	defer r.Seek(0, io.SeekStart)
+
+	type (
+		cyclonedx struct {
+			// XML specific field
+			XMLNS string `json:"-" xml:"xmlns,attr"`
+
+			// JSON specific field
+			BOMFormat string `json:"bomFormat" xml:"-"`
+		}
+
+		spdx struct {
+			SpdxID string `json:"SPDXID"`
+		}
+	)
 
 	// Try CycloneDX JSON
 	var cdxBom cyclonedx
@@ -64,7 +71,28 @@ func DetectFormat(r io.ReadSeeker) (Format, error) {
 		return FormatUnknown, xerrors.Errorf("seek error: %w", err)
 	}
 
-	// TODO: implement SPDX
+	// Try SPDX json
+	var spdxBom spdx
+	if err := json.NewDecoder(r).Decode(&spdxBom); err == nil {
+		if strings.HasPrefix(spdxBom.SpdxID, "SPDX") {
+			return FormatSPDXJSON, nil
+		}
+	}
+
+	if _, err := r.Seek(0, io.SeekStart); err != nil {
+		return FormatUnknown, xerrors.Errorf("seek error: %w", err)
+	}
+
+	// Try SPDX tag-value
+	if scanner := bufio.NewScanner(r); scanner.Scan() {
+		if strings.HasPrefix(scanner.Text(), "SPDX") {
+			return FormatSPDXTV, nil
+		}
+	}
+
+	if _, err := r.Seek(0, io.SeekStart); err != nil {
+		return FormatUnknown, xerrors.Errorf("seek error: %w", err)
+	}
 
 	// Try in-toto attestation
 	var s attestation.Statement
@@ -75,4 +103,46 @@ func DetectFormat(r io.ReadSeeker) (Format, error) {
 	}
 
 	return FormatUnknown, nil
+}
+
+func Decode(f io.Reader, format Format) (types.SBOM, error) {
+	var (
+		v       interface{}
+		bom     types.SBOM
+		decoder interface{ Decode(any) error }
+	)
+
+	switch format {
+	case FormatCycloneDXJSON:
+		v = &cyclonedx.CycloneDX{SBOM: &bom}
+		decoder = json.NewDecoder(f)
+	case FormatAttestCycloneDXJSON:
+		// dsse envelope
+		//   => in-toto attestation
+		//     => cosign predicate
+		//       => CycloneDX JSON
+		v = &attestation.Statement{
+			Predicate: &attestation.CosignPredicate{
+				Data: &cyclonedx.CycloneDX{SBOM: &bom},
+			},
+		}
+		decoder = json.NewDecoder(f)
+	case FormatSPDXJSON:
+		v = &spdx.SPDX{SBOM: &bom}
+		decoder = json.NewDecoder(f)
+	case FormatSPDXTV:
+		v = &spdx.SPDX{SBOM: &bom}
+		decoder = spdx.NewTVDecoder(f)
+
+	default:
+		return types.SBOM{}, xerrors.Errorf("%s scanning is not yet supported", format)
+
+	}
+
+	// Decode a file content into sbom.SBOM
+	if err := decoder.Decode(v); err != nil {
+		return types.SBOM{}, xerrors.Errorf("failed to decode: %w", err)
+	}
+
+	return bom, nil
 }

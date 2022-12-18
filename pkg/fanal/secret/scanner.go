@@ -5,6 +5,7 @@ import (
 	"errors"
 	"os"
 	"regexp"
+	"sort"
 	"strings"
 	"sync"
 
@@ -263,36 +264,39 @@ func (b *Blocks) find() {
 	}
 }
 
-func NewScanner(configPath string) (Scanner, error) {
-	// Set default values
-	global := Global{
-		Rules:      builtinRules,
-		AllowRules: builtinAllowRules,
-	}
-
+func ParseConfig(configPath string) (*Config, error) {
 	// If no config is passed, use built-in rules and allow rules.
 	if configPath == "" {
-		return Scanner{&global}, nil
+		return nil, nil
 	}
 
 	f, err := os.Open(configPath)
 	if errors.Is(err, os.ErrNotExist) {
 		// If the specified file doesn't exist, it just uses built-in rules and allow rules.
 		log.Logger.Debugf("No secret config detected: %s", configPath)
-		return Scanner{&global}, nil
+		return nil, nil
 	} else if err != nil {
-		return Scanner{}, xerrors.Errorf("file open error %s: %w", configPath, err)
+		return nil, xerrors.Errorf("file open error %s: %w", configPath, err)
 	}
 	defer f.Close()
 
 	log.Logger.Infof("Loading %s for secret scanning...", configPath)
 
-	// reset global
-	global = Global{}
-
 	var config Config
 	if err = yaml.NewDecoder(f).Decode(&config); err != nil {
-		return Scanner{}, xerrors.Errorf("secrets config decode error: %w", err)
+		return nil, xerrors.Errorf("secrets config decode error: %w", err)
+	}
+
+	return &config, nil
+}
+
+func NewScanner(config *Config) Scanner {
+	// Use the default rules
+	if config == nil {
+		return Scanner{Global: &Global{
+			Rules:      builtinRules,
+			AllowRules: builtinAllowRules,
+		}}
 	}
 
 	enabledRules := builtinRules
@@ -307,19 +311,21 @@ func NewScanner(configPath string) (Scanner, error) {
 	enabledRules = append(enabledRules, config.CustomRules...)
 
 	// Disable specified rules
-	global.Rules = lo.Filter(enabledRules, func(v Rule, _ int) bool {
+	rules := lo.Filter(enabledRules, func(v Rule, _ int) bool {
 		return !slices.Contains(config.DisableRuleIDs, v.ID)
 	})
 
 	// Disable specified allow rules
 	allowRules := append(builtinAllowRules, config.CustomAllowRules...)
-	global.AllowRules = lo.Filter(allowRules, func(v AllowRule, _ int) bool {
+	allowRules = lo.Filter(allowRules, func(v AllowRule, _ int) bool {
 		return !slices.Contains(config.DisableAllowRuleIDs, v.ID)
 	})
 
-	global.ExcludeBlock = config.ExcludeBlock
-
-	return Scanner{Global: &global}, nil
+	return Scanner{Global: &Global{
+		Rules:        rules,
+		AllowRules:   allowRules,
+		ExcludeBlock: config.ExcludeBlock,
+	}}
 }
 
 type ScanArgs struct {
@@ -332,7 +338,7 @@ type Match struct {
 	Location Location
 }
 
-func (s Scanner) Scan(args ScanArgs) types.Secret {
+func (s *Scanner) Scan(args ScanArgs) types.Secret {
 	// Global allowed paths
 	if s.AllowPath(args.FilePath) {
 		return types.Secret{
@@ -395,6 +401,13 @@ func (s Scanner) Scan(args ScanArgs) types.Secret {
 	if len(findings) == 0 {
 		return types.Secret{}
 	}
+
+	sort.Slice(findings, func(i, j int) bool {
+		if findings[i].RuleID != findings[j].RuleID {
+			return findings[i].RuleID < findings[j].RuleID
+		}
+		return findings[i].Match < findings[j].Match
+	})
 
 	return types.Secret{
 		FilePath: args.FilePath,
