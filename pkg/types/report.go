@@ -52,6 +52,7 @@ const (
 
 	// ComplianceNsa is the compliance checks for nsa
 	ComplianceNsa      = Compliance("nsa")
+	ComplianceCIS      = Compliance("cis")
 	ComplianceAWSCIS12 = Compliance("awscis1.2")
 	ComplianceAWSCIS14 = Compliance("awscis1.4")
 )

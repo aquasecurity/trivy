@@ -82,7 +82,9 @@ nav:
       - Kubernetes:
           - CLI:
               - Scanning: docs/kubernetes/cli/scanning.md
-              - Compliance: docs/kubernetes/cli/compliance.md
+              - Compliance: 
+                - NSA: docs/kubernetes/cli/nsa.md
+                - CIS-Benchmark: docs/kubernetes/cli/cis.md
           - Operator:
               - Overview: docs/kubernetes/operator/index.md
       - Cloud:
