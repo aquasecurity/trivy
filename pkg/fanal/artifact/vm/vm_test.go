@@ -177,6 +177,9 @@ func TestArtifact_Inspect(t *testing.T) {
 			c.ApplyPutBlobExpectation(tt.putBlobExpectation)
 			c.ApplyMissingBlobsExpectation(tt.missingBlobsExpectation)
 			c.ApplyPutArtifactExpectations(tt.putArtifactExpectations)
+			c.ApplyDeleteBlobsExpectation(cache.ArtifactCacheDeleteBlobsExpectation{
+				Args: cache.ArtifactCacheDeleteBlobsArgs{BlobIDsAnything: true},
+			})
 
 			filePath := tt.filePath
 			if !strings.HasPrefix(tt.filePath, ebsPrefix) {
