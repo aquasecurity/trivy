@@ -37,7 +37,7 @@ func TestLayerTar_Walk(t *testing.T) {
 				return nil
 			},
 			wantOpqDirs: []string{"etc/"},
-			wantWhFiles: []string{filepath.Join("foo", "foo")},
+			wantWhFiles: []string{"foo/foo"},
 		},
 		{
 			name:      "skip file",
@@ -52,7 +52,7 @@ func TestLayerTar_Walk(t *testing.T) {
 				return nil
 			},
 			wantOpqDirs: []string{"etc/"},
-			wantWhFiles: []string{filepath.Join("foo", "foo")},
+			wantWhFiles: []string{"foo/foo"},
 		},
 		{
 			name:      "skip dir",
@@ -67,7 +67,7 @@ func TestLayerTar_Walk(t *testing.T) {
 				return nil
 			},
 			wantOpqDirs: []string{"etc/"},
-			wantWhFiles: []string{filepath.Join("foo", "foo")},
+			wantWhFiles: []string{"foo/foo"},
 		},
 		{
 			name:      "sad path",

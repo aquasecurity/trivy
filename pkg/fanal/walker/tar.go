@@ -2,10 +2,9 @@ package walker
 
 import (
 	"archive/tar"
-	"fmt"
 	"io"
 	"io/fs"
-	"os"
+	"path"
 	"path/filepath"
 	"strings"
 
@@ -46,12 +45,10 @@ func (w LayerTar) Walk(layer io.Reader, analyzeFn WalkFunc) ([]string, []string,
 			return nil, nil, xerrors.Errorf("failed to extract the archive: %w", err)
 		}
 
-		filePath := filepath.ToSlash(hdr.Name)
-		filePath = strings.TrimLeft(filepath.Clean(filePath), "/")
-		fileDir, fileName := filepath.Split(filePath)
-
-		fileDir = filepath.ToSlash(fileDir)
-		filePath = filepath.ToSlash(filePath)
+		// filepath.Clean cannot be used since tar file paths should be OS-agnostic.
+		filePath := path.Clean(hdr.Name)
+		filePath = strings.TrimLeft(filePath, "/")
+		fileDir, fileName := path.Split(filePath)
 
 		// e.g. etc/.wh..wh..opq
 		if opq == fileName {
@@ -61,7 +58,7 @@ func (w LayerTar) Walk(layer io.Reader, analyzeFn WalkFunc) ([]string, []string,
 		// etc/.wh.hostname
 		if strings.HasPrefix(fileName, wh) {
 			name := strings.TrimPrefix(fileName, wh)
-			fpath := filepath.Join(fileDir, name)
+			fpath := path.Join(fileDir, name)
 			whFiles = append(whFiles, fpath)
 			continue
 		}
@@ -113,7 +110,7 @@ func underSkippedDir(filePath string, skipDirs []string) bool {
 		if err != nil {
 			return false
 		}
-		if !strings.HasPrefix(rel, fmt.Sprintf("..%c", os.PathSeparator)) {
+		if !strings.HasPrefix(rel, "../") {
 			return true
 		}
 	}
