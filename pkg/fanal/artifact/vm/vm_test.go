@@ -53,9 +53,9 @@ func TestNewArtifact(t *testing.T) {
 		},
 		{
 			name:   "sad path file not found",
-			target: "testdata/no-file",
+			target: filepath.Join("testdata", "no-file"),
 			wantErr: func(t assert.TestingT, err error, args ...interface{}) bool {
-				return assert.ErrorContains(t, err, "no such file or directory")
+				return assert.ErrorContains(t, err, "file open error")
 			},
 		},
 	}
@@ -83,7 +83,7 @@ func TestArtifact_Inspect(t *testing.T) {
 	}{
 		{
 			name:     "happy path for raw image",
-			filePath: "testdata/AmazonLinux2.img.gz",
+			filePath: filepath.Join("testdata", "AmazonLinux2.img.gz"),
 			putBlobExpectation: cache.ArtifactCachePutBlobExpectation{
 				Args: cache.ArtifactCachePutBlobArgs{
 					BlobID: "sha256:bdff805a4b2a96074c549dbb7912f5089df1a484cf0919639ecdba437a959e90",
@@ -194,6 +194,7 @@ func TestArtifact_Inspect(t *testing.T) {
 			}
 
 			got, err := a.Inspect(context.Background())
+			defer a.Clean(got)
 			if tt.wantErr != "" {
 				require.Error(t, err)
 				assert.ErrorContains(t, err, tt.wantErr)
