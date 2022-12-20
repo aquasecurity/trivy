@@ -5,45 +5,44 @@ import (
 	"os"
 	"testing"
 
-	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
+
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+
+	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 )
 
 func Test_ubuntuOSAnalyzer_Analyze(t *testing.T) {
 	tests := []struct {
-		name     string
-		filePath string
-		testFile string
-		want     *analyzer.AnalysisResult
-		wantErr  string
+		name      string
+		inputFile string
+		want      *analyzer.AnalysisResult
+		wantErr   string
 	}{
 		{
-			name:     "happy path. Parse lsb-release file",
-			filePath: "testdata/lsb-release",
-			testFile: "testdata/lsb-release",
+			name:      "happy path",
+			inputFile: "testdata/lsb-release",
 			want: &analyzer.AnalysisResult{
 				OS: &types.OS{Family: "ubuntu", Name: "18.04"},
 			},
 		},
 		{
-			name:     "sad path",
-			filePath: "testdata/lsb-release",
-			testFile: "testdata/invalid",
-			wantErr:  "ubuntu: unable to analyze OS information",
+			name:      "sad path",
+			inputFile: "testdata/invalid",
+			wantErr:   "ubuntu: unable to analyze OS information",
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			a := ubuntuOSAnalyzer{}
-			f, err := os.Open(tt.testFile)
+			f, err := os.Open(tt.inputFile)
 			require.NoError(t, err)
 			defer f.Close()
 
 			ctx := context.Background()
 			got, err := a.Analyze(ctx, analyzer.AnalysisInput{
-				FilePath: tt.filePath,
+				FilePath: "etc/lsb-release",
 				Content:  f,
 			})
 			if tt.wantErr != "" {
@@ -65,7 +64,7 @@ func Test_ubuntuOSAnalyzer_Required(t *testing.T) {
 		want     bool
 	}{
 		{
-			name:     "happy path lsb-release",
+			name:     "happy path",
 			filePath: "etc/lsb-release",
 			want:     true,
 		},
