@@ -2,6 +2,7 @@ package walker
 
 import (
 	"archive/tar"
+	"github.com/aquasecurity/trivy/pkg/fanal/utils"
 	"io"
 	"io/fs"
 	"path"
@@ -15,6 +16,8 @@ const (
 	opq string = ".wh..wh..opq"
 	wh  string = ".wh."
 )
+
+var parentDir = ".." + utils.PathSeparator
 
 type LayerTar struct {
 	walker
@@ -34,7 +37,6 @@ func NewLayerTar(skipFiles, skipDirs []string, slow bool) LayerTar {
 }
 
 func (w LayerTar) Walk(layer io.Reader, analyzeFn WalkFunc) ([]string, []string, error) {
-
 	var opqDirs, whFiles, skipDirs []string
 	tr := tar.NewReader(layer)
 	for {
@@ -110,7 +112,7 @@ func underSkippedDir(filePath string, skipDirs []string) bool {
 		if err != nil {
 			return false
 		}
-		if !strings.HasPrefix(rel, "../") {
+		if !strings.HasPrefix(rel, parentDir) {
 			return true
 		}
 	}
