@@ -224,7 +224,7 @@ func TestAnalysisResult_Merge(t *testing.T) {
 				new: &analyzer.AnalysisResult{
 					OS: &types.OS{
 						Family:   aos.Ubuntu,
-						Extended: "ESM",
+						Extended: true,
 					},
 				},
 			},

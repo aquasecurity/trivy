@@ -11,7 +11,7 @@ message OS {
   string family   = 1;
   string name     = 2;
   bool   eosl     = 3;
-  string extended = 4;
+  bool   extended = 4;
 }
 
 message Repository {

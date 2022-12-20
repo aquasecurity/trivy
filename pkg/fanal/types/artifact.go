@@ -1,6 +1,8 @@
 package types
 
 import (
+	aos "github.com/aquasecurity/trivy/pkg/fanal/analyzer/os"
+	"strings"
 	"time"
 
 	v1 "github.com/google/go-containerregistry/pkg/v1"
@@ -9,8 +11,8 @@ import (
 type OS struct {
 	Family   string
 	Name     string
-	Extended string `json:"extended,omitempty"` // This field is used for enhanced security maintenance programs such as Ubuntu ESM, Debian Extended LTS.
-	Eosl     bool   `json:"EOSL,omitempty"`
+	Extended bool `json:"extended,omitempty"` // This field is used for enhanced security maintenance programs such as Ubuntu ESM, Debian Extended LTS.
+	Eosl     bool `json:"EOSL,omitempty"`
 }
 
 type Repository struct {
@@ -132,6 +134,8 @@ const (
 	ArtifactSPDX             ArtifactType = "spdx"
 	ArtifactAWSAccount       ArtifactType = "aws_account"
 	ArtifactVM               ArtifactType = "vm"
+
+	UbuntuSuffixESM string = "ESM"
 )
 
 // ArtifactReference represents a reference of container image, local filesystem and repository
@@ -260,4 +264,32 @@ type CustomResource struct {
 	FilePath string
 	Layer    Layer
 	Data     interface{}
+}
+
+func MergeOsVersion(old, new *OS) *OS {
+	switch {
+	case old == nil:
+		return new
+	// OLE also has /etc/redhat-release and it detects OLE as RHEL by mistake.
+	// In that case, OS must be overwritten with the content of /etc/oracle-release.
+	// There is the same problem between Debian and Ubuntu.
+	case old.Family == aos.RedHat, old.Family == aos.Debian:
+		return new
+	// Ubuntu has ESM program: https://ubuntu.com/security/esm
+	// OS version and esm status are stored in different files.
+	// We have to merge OS version after parsing these files.
+	case old.Family == aos.Ubuntu && new.Family == aos.Ubuntu:
+		if strings.HasSuffix(old.Name, UbuntuSuffixESM) { // version number with ESM suffix already stored
+			return old
+		}
+		if old.Extended {
+			new.Name = new.Name + "-" + UbuntuSuffixESM
+			return new
+		}
+		if new.Extended {
+			old.Name = old.Name + "-" + UbuntuSuffixESM
+			return old
+		}
+	}
+	return old
 }
