@@ -3,10 +3,12 @@ package ubuntu
 import (
 	"bufio"
 	"context"
+	"os"
+
 	"encoding/json"
+
 	"golang.org/x/exp/slices"
 	"golang.org/x/xerrors"
-	"os"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	aos "github.com/aquasecurity/trivy/pkg/fanal/analyzer/os"

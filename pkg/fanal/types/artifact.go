@@ -1,11 +1,12 @@
 package types
 
 import (
-	aos "github.com/aquasecurity/trivy/pkg/fanal/analyzer/os"
 	"strings"
 	"time"
 
 	v1 "github.com/google/go-containerregistry/pkg/v1"
+
+	aos "github.com/aquasecurity/trivy/pkg/fanal/analyzer/os"
 )
 
 type OS struct {
@@ -266,6 +267,7 @@ type CustomResource struct {
 	Data     interface{}
 }
 
+// MergeOsVersion merge OS version and enhanced security maintenance programs
 func MergeOsVersion(old, new *OS) *OS {
 	switch {
 	case old == nil:
