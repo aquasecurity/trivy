@@ -3,6 +3,7 @@ package licensing
 import (
 	"fmt"
 	"io"
+	"sort"
 	"sync"
 
 	classifier "github.com/google/licenseclassifier/v2"
@@ -37,7 +38,7 @@ func Classify(filePath string, r io.Reader) (*types.LicenseFile, error) {
 		return nil, err
 	}
 
-	var findings []types.LicenseFinding
+	var findings types.LicenseFindings
 	var matchType types.LicenseType
 	seen := map[string]struct{}{}
 
@@ -68,6 +69,7 @@ func Classify(filePath string, r io.Reader) (*types.LicenseFile, error) {
 			Link:       licenseLink,
 		})
 	}
+	sort.Sort(findings)
 	return &types.LicenseFile{
 		Type:     matchType,
 		FilePath: filePath,
