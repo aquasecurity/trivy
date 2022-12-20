@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"os"
+	"path/filepath"
 
 	"golang.org/x/xerrors"
 
@@ -34,8 +35,8 @@ func (a gobinaryLibraryAnalyzer) Analyze(_ context.Context, input analyzer.Analy
 	return language.ToAnalysisResult(types.GoBinary, input.FilePath, "", libs, deps), nil
 }
 
-func (a gobinaryLibraryAnalyzer) Required(_ string, fileInfo os.FileInfo) bool {
-	return utils.IsExecutable(fileInfo)
+func (a gobinaryLibraryAnalyzer) Required(filePath string, fileInfo os.FileInfo) bool {
+	return utils.IsExecutable(fileInfo) || filepath.Ext(filePath) == ".exe"
 }
 
 func (a gobinaryLibraryAnalyzer) Type() analyzer.Type {

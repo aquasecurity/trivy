@@ -7,6 +7,8 @@ import (
 	"runtime"
 	"testing"
 
+	"github.com/samber/lo"
+
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
@@ -69,10 +71,6 @@ func Test_gobinaryLibraryAnalyzer_Analyze(t *testing.T) {
 }
 
 func Test_gobinaryLibraryAnalyzer_Required(t *testing.T) {
-	if runtime.GOOS == "windows" {
-		t.Skip("Permissions tests won't run on Windows")
-	}
-
 	tests := []struct {
 		name     string
 		filePath string
@@ -80,12 +78,12 @@ func Test_gobinaryLibraryAnalyzer_Required(t *testing.T) {
 	}{
 		{
 			name:     "file perm 0755",
-			filePath: "testdata/0755",
+			filePath: lo.Ternary(runtime.GOOS == "windows", "testdata/binary.exe", "testdata/0755"),
 			want:     true,
 		},
 		{
 			name:     "file perm 0644",
-			filePath: "testdata/0644",
+			filePath: filepath.Join("testdata", "0644"),
 			want:     false,
 		},
 		{
