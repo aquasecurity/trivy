@@ -35,6 +35,7 @@ type Package struct {
 	SrcRelease string   `json:",omitempty"`
 	SrcEpoch   int      `json:",omitempty"`
 	Licenses   []string `json:",omitempty"`
+	Maintainer string   `json:",omitempty"`
 
 	Modularitylabel string     `json:",omitempty"` // only for Red Hat based distributions
 	BuildInfo       *BuildInfo `json:",omitempty"` // only for Red Hat
@@ -71,6 +72,26 @@ func (pkg *Package) Empty() bool {
 	return pkg.Name == "" || pkg.Version == ""
 }
 
+type Packages []Package
+
+func (pkgs Packages) Len() int {
+	return len(pkgs)
+}
+
+func (pkgs Packages) Swap(i, j int) {
+	pkgs[i], pkgs[j] = pkgs[j], pkgs[i]
+}
+
+func (pkgs Packages) Less(i, j int) bool {
+	switch {
+	case pkgs[i].Name != pkgs[j].Name:
+		return pkgs[i].Name < pkgs[j].Name
+	case pkgs[i].Version != pkgs[j].Version:
+		return pkgs[i].Version < pkgs[j].Version
+	}
+	return pkgs[i].FilePath < pkgs[j].FilePath
+}
+
 type SrcPackage struct {
 	Name        string   `json:"name"`
 	Version     string   `json:"version"`
@@ -79,7 +100,7 @@ type SrcPackage struct {
 
 type PackageInfo struct {
 	FilePath string
-	Packages []Package
+	Packages Packages
 }
 
 type Application struct {
@@ -109,6 +130,7 @@ const (
 	ArtifactCycloneDX        ArtifactType = "cyclonedx"
 	ArtifactSPDX             ArtifactType = "spdx"
 	ArtifactAWSAccount       ArtifactType = "aws_account"
+	ArtifactVM               ArtifactType = "vm"
 )
 
 // ArtifactReference represents a reference of container image, local filesystem and repository
@@ -196,7 +218,7 @@ func (b *BlobInfo) ToArtifactDetail() ArtifactDetail {
 type ArtifactDetail struct {
 	OS                *OS                `json:",omitempty"`
 	Repository        *Repository        `json:",omitempty"`
-	Packages          []Package          `json:",omitempty"`
+	Packages          Packages           `json:",omitempty"`
 	Applications      []Application      `json:",omitempty"`
 	Misconfigurations []Misconfiguration `json:",omitempty"`
 	Secrets           []Secret           `json:",omitempty"`

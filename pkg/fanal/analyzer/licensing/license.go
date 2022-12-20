@@ -1,7 +1,6 @@
 package licensing
 
 import (
-	"bytes"
 	"context"
 	"fmt"
 	"io"
@@ -65,12 +64,6 @@ func (a licenseFileAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisI
 		return nil, nil
 	}
 
-	content, err := io.ReadAll(input.Content)
-	if err != nil {
-		return nil, xerrors.Errorf("read error %s: %w", input.FilePath, err)
-	}
-	content = bytes.ReplaceAll(content, []byte("\r"), []byte(""))
-
 	filePath := input.FilePath
 	// Files extracted from the image have an empty input.Dir.
 	// Also, paths to these files do not have "/" prefix.
@@ -84,7 +77,7 @@ func (a licenseFileAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisI
 		}
 	}
 
-	lf, err := licensing.FullClassify(filePath, content)
+	lf, err := licensing.Classify(filePath, input.Content)
 	if err != nil {
 		return nil, xerrors.Errorf("license classification error: %w", err)
 	} else if len(lf.Findings) == 0 {
@@ -92,7 +85,7 @@ func (a licenseFileAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisI
 	}
 
 	return &analyzer.AnalysisResult{
-		Licenses: []types.LicenseFile{lf},
+		Licenses: []types.LicenseFile{*lf},
 	}, nil
 }
 

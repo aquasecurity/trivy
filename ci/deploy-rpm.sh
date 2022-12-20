@@ -10,7 +10,7 @@ function create_rpm_repo () {
         mkdir -p $rpm_path
         cp ../dist/*64bit.rpm ${rpm_path}/${RPM_EL}
 
-        createrepo --update $rpm_path
+        createrepo_c --update $rpm_path
 }
 
 cd trivy-repo

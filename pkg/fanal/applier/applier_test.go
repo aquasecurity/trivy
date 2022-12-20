@@ -691,9 +691,7 @@ func TestApplier_ApplyLayers(t *testing.T) {
 				require.NoError(t, err, tt.name)
 			}
 
-			sort.Slice(got.Packages, func(i, j int) bool {
-				return got.Packages[i].Name < got.Packages[j].Name
-			})
+			sort.Sort(got.Packages)
 			for _, app := range got.Applications {
 				sort.Slice(app.Libraries, func(i, j int) bool {
 					return app.Libraries[i].Name < app.Libraries[j].Name

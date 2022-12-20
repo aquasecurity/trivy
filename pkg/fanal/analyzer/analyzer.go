@@ -75,7 +75,7 @@ type analyzer interface {
 type configAnalyzer interface {
 	Type() Type
 	Version() int
-	Analyze(targetOS types.OS, content []byte) ([]types.Package, error)
+	Analyze(targetOS types.OS, content []byte) (types.Packages, error)
 	Required(osFound types.OS) bool
 }
 
@@ -180,9 +180,7 @@ func (r *AnalysisResult) Sort() {
 	})
 
 	for _, pi := range r.PackageInfos {
-		sort.Slice(pi.Packages, func(i, j int) bool {
-			return pi.Packages[i].Name < pi.Packages[j].Name
-		})
+		sort.Sort(pi.Packages)
 	}
 
 	// Language-specific packages

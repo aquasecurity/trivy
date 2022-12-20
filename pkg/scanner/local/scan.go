@@ -134,7 +134,7 @@ func (s Scanner) Scan(ctx context.Context, target, artifactKey string, blobKeys 
 
 	// Scan IaC config files
 	if ShouldScanMisconfigOrRbac(options.SecurityChecks) {
-		configResults := s.misconfsToResults(artifactDetail.Misconfigurations)
+		configResults := s.MisconfsToResults(artifactDetail.Misconfigurations)
 		results = append(results, configResults...)
 	}
 
@@ -181,9 +181,7 @@ func (s Scanner) osPkgsToResult(target string, detail ftypes.ArtifactDetail, opt
 	if options.ScanRemovedPackages {
 		pkgs = mergePkgs(pkgs, detail.HistoryPackages)
 	}
-	sort.Slice(pkgs, func(i, j int) bool {
-		return strings.Compare(pkgs[i].Name, pkgs[j].Name) <= 0
-	})
+	sort.Sort(pkgs)
 	return &types.Result{
 		Target:   fmt.Sprintf("%s (%s %s)", target, detail.OS.Family, detail.OS.Name),
 		Class:    types.ClassOSPkg,
@@ -334,7 +332,8 @@ func (s Scanner) fillPkgsInVulns(pkgResults, vulnResults types.Results) types.Re
 	return results
 }
 
-func (s Scanner) misconfsToResults(misconfs []ftypes.Misconfiguration) types.Results {
+// This function is exported for trivy-plugin-aqua purposes only
+func (s Scanner) MisconfsToResults(misconfs []ftypes.Misconfiguration) types.Results {
 	log.Logger.Infof("Detected config files: %d", len(misconfs))
 	var results types.Results
 	for _, misconf := range misconfs {

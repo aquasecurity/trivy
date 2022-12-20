@@ -4,6 +4,7 @@ import (
 	"os"
 	"runtime"
 
+	xlog "github.com/masahiro331/go-xfs-filesystem/log"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 	"golang.org/x/xerrors"
@@ -36,6 +37,9 @@ func InitLogger(debug, disable bool) (err error) {
 
 	// Set logger for fanal
 	flog.SetLogger(Logger)
+
+	// Set logger for go-xfs-filesystem
+	xlog.SetLogger(Logger)
 
 	return nil
 

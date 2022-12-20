@@ -771,9 +771,7 @@ func TestApplyLayers(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			got := applier.ApplyLayers(tt.inputLayers)
-			sort.Slice(got.Packages, func(i, j int) bool {
-				return got.Packages[i].Name < got.Packages[j].Name
-			})
+			sort.Sort(got.Packages)
 			sort.Slice(got.Applications, func(i, j int) bool {
 				return got.Applications[i].FilePath < got.Applications[j].FilePath
 			})

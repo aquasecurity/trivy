@@ -10,7 +10,6 @@ nav:
   - Getting Started: 
       - Overview: index.md
       - Installation: getting-started/installation.md
-      - Quick Start: getting-started/quickstart.md
   - Tutorials:
       - Overview: tutorials/overview.md   
       - CI/CD:
@@ -23,7 +22,6 @@ nav:
           - AWS CodePipeline: tutorials/integrations/aws-codepipeline.md
           - AWS Security Hub: tutorials/integrations/aws-security-hub.md
           - Azure: tutorials/integrations/azure-devops.md
-          - Woodpecker CI: docs/integrations/woodpecker-ci.md
       - Signing:
           - Vulnerability Scan Record Attestation: tutorials/signing/vuln-attestation.md
       - Kubernetes:
@@ -75,10 +73,6 @@ nav:
               - Report Formats: docs/misconfiguration/options/report.md
               - Value Overrides: docs/misconfiguration/options/values.md
               - Others: docs/misconfiguration/options/others.md
-          - Comparison:
-              - vs Conftest: docs/misconfiguration/comparison/conftest.md
-              - vs tfsec: docs/misconfiguration/comparison/tfsec.md
-              - vs cfsec: docs/misconfiguration/comparison/cfsec.md
       - Secret:
           - Scanning: docs/secret/scanning.md
           - Configuration: docs/secret/configuration.md
@@ -91,12 +85,16 @@ nav:
               - Compliance: docs/kubernetes/cli/compliance.md
           - Operator:
               - Overview: docs/kubernetes/operator/index.md
-      - Compliance:
-          - Reports:  docs/compliance/compliance.md
       - Cloud:
-          - AWS: docs/cloud/aws/scanning.md
+          - AWS:
+            - Scanning: docs/cloud/aws/scanning.md
+            - Compliance: docs/cloud/aws/compliance.md
+      - Virtual Machine Image:
+          - Overview: docs/vm/index.md
+          - AWS EC2: docs/vm/aws.md
       - SBOM:
           - Overview: docs/sbom/index.md
+          - Supported: docs/sbom/supported.md
           - CycloneDX: docs/sbom/cyclonedx.md
           - SPDX: docs/sbom/spdx.md
       - Attestation:
@@ -140,7 +138,11 @@ nav:
               - Standalone: docs/references/modes/standalone.md
               - Client/Server: docs/references/modes/client-server.md
           - Troubleshooting: docs/references/troubleshooting.md
-  - Ecosystem: ecosystem/tools.md
+  - Ecosystem: 
+    - Overview: ecosystem/index.md
+    - CI/CD: ecosystem/cicd.md
+    - IDE and Dev tools: ecosystem/ide.md
+    - Production and Clouds: ecosystem/prod.md
   - Contributing:
       - How to contribute:
           - Issues: community/contribute/issue.md

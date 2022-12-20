@@ -53,12 +53,17 @@ func Test_nugetibraryAnalyzer_Analyze(t *testing.T) {
 						FilePath: filepath.Join("testdata", "packages.lock.json"),
 						Libraries: []types.Package{
 							{
-								Name:    "Newtonsoft.Json",
-								Version: "12.0.3",
+								ID:        "Newtonsoft.Json@12.0.3",
+								Name:      "Newtonsoft.Json",
+								Version:   "12.0.3",
+								Locations: []types.Location{{StartLine: 5, EndLine: 10}},
 							},
 							{
-								Name:    "NuGet.Frameworks",
-								Version: "5.7.0",
+								ID:        "NuGet.Frameworks@5.7.0",
+								Name:      "NuGet.Frameworks",
+								Version:   "5.7.0",
+								Locations: []types.Location{{StartLine: 11, EndLine: 19}},
+								DependsOn: []string{"Newtonsoft.Json@12.0.3"},
 							},
 						},
 					},

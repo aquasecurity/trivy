@@ -1,12 +1,12 @@
 package report_test
 
 import (
+	"github.com/samber/lo"
 	"testing"
-
-	"github.com/stretchr/testify/assert"
 
 	"github.com/aquasecurity/trivy/pkg/compliance/report"
 	"github.com/aquasecurity/trivy/pkg/types"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestBuildSummary(t *testing.T) {
@@ -59,15 +59,13 @@ func TestBuildSummary(t *testing.T) {
 						ID:        "1.0",
 						Name:      "Non-root containers",
 						Severity:  "MEDIUM",
-						TotalPass: 0,
-						TotalFail: 1,
+						TotalFail: lo.ToPtr(1),
 					},
 					{
 						ID:        "1.1",
 						Name:      "Immutable container file systems",
 						Severity:  "LOW",
-						TotalPass: 0,
-						TotalFail: 1,
+						TotalFail: lo.ToPtr(1),
 					},
 				},
 			},
@@ -128,22 +126,19 @@ func TestBuildSummary(t *testing.T) {
 						ID:        "1.0",
 						Name:      "Non-root containers",
 						Severity:  "MEDIUM",
-						TotalPass: 0,
-						TotalFail: 1,
+						TotalFail: lo.ToPtr(1),
 					},
 					{
 						ID:        "1.1",
 						Name:      "Immutable container file systems",
 						Severity:  "LOW",
-						TotalPass: 0,
-						TotalFail: 1,
+						TotalFail: lo.ToPtr(1),
 					},
 					{
 						ID:        "1.2",
 						Name:      "tzdata - new upstream version",
 						Severity:  "LOW",
-						TotalPass: 0,
-						TotalFail: 2,
+						TotalFail: lo.ToPtr(1),
 					},
 				},
 			},

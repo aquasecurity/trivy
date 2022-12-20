@@ -192,7 +192,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 					{
 						RefA:         spdx.DocElementID{ElementRefID: "DOCUMENT"},
 						RefB:         spdx.DocElementID{ElementRefID: "ContainerImage-9396d894cd0cb6cb"},
-						Relationship: "DESCRIBE",
+						Relationship: "DESCRIBES",
 					},
 					{
 						RefA:         spdx.DocElementID{ElementRefID: "ContainerImage-9396d894cd0cb6cb"},
@@ -400,7 +400,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 					{
 						RefA:         spdx.DocElementID{ElementRefID: "DOCUMENT"},
 						RefB:         spdx.DocElementID{ElementRefID: "ContainerImage-413bfede37ad01fc"},
-						Relationship: "DESCRIBE",
+						Relationship: "DESCRIBES",
 					},
 					{
 						RefA:         spdx.DocElementID{ElementRefID: "ContainerImage-413bfede37ad01fc"},
@@ -498,7 +498,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 					{
 						RefA:         spdx.DocElementID{ElementRefID: "DOCUMENT"},
 						RefB:         spdx.DocElementID{ElementRefID: "Filesystem-5af0f1f08c20909a"},
-						Relationship: "DESCRIBE",
+						Relationship: "DESCRIBES",
 					},
 					{
 						RefA:         spdx.DocElementID{ElementRefID: "Filesystem-5af0f1f08c20909a"},
@@ -590,7 +590,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 					{
 						RefA:         spdx.DocElementID{ElementRefID: "DOCUMENT"},
 						RefB:         spdx.DocElementID{ElementRefID: "Repository-7cb7a269a391a798"},
-						Relationship: "DESCRIBE",
+						Relationship: "DESCRIBES",
 					},
 					{
 						RefA:         spdx.DocElementID{ElementRefID: "Repository-7cb7a269a391a798"},
@@ -637,7 +637,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 					{
 						RefA:         spdx.DocElementID{ElementRefID: "DOCUMENT"},
 						RefB:         spdx.DocElementID{ElementRefID: "Filesystem-70f34983067dba86"},
-						Relationship: "DESCRIBE",
+						Relationship: "DESCRIBES",
 					},
 				},
 			},

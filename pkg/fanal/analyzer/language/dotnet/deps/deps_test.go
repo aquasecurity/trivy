@@ -30,8 +30,9 @@ func Test_depsLibraryAnalyzer_Analyze(t *testing.T) {
 						FilePath: filepath.Join("testdata", "datacollector.deps.json"),
 						Libraries: []types.Package{
 							{
-								Name:    "Newtonsoft.Json",
-								Version: "9.0.1",
+								Name:      "Newtonsoft.Json",
+								Version:   "9.0.1",
+								Locations: []types.Location{{StartLine: 8, EndLine: 14}},
 							},
 						},
 					},

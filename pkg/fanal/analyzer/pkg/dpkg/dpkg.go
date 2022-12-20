@@ -126,6 +126,7 @@ func (a dpkgAnalyzer) parseDpkgPkg(scanner *bufio.Scanner) (pkg *types.Package) 
 		dependencies  []string
 		isInstalled   bool
 		sourceVersion string
+		maintainer    string
 	)
 	isInstalled = true
 	for {
@@ -157,6 +158,8 @@ func (a dpkgAnalyzer) parseDpkgPkg(scanner *bufio.Scanner) (pkg *types.Package) 
 			isInstalled = a.parseStatus(line)
 		case strings.HasPrefix(line, "Depends: "):
 			dependencies = a.parseDepends(line)
+		case strings.HasPrefix(line, "Maintainer: "):
+			maintainer = strings.TrimSpace(strings.TrimPrefix(line, "Maintainer: "))
 		}
 		if !scanner.Scan() {
 			break
@@ -170,10 +173,11 @@ func (a dpkgAnalyzer) parseDpkgPkg(scanner *bufio.Scanner) (pkg *types.Package) 
 		return nil
 	}
 	pkg = &types.Package{
-		ID:        a.pkgID(name, version),
-		Name:      name,
-		Version:   version,
-		DependsOn: dependencies, // Will be consolidated later
+		ID:         a.pkgID(name, version),
+		Name:       name,
+		Version:    version,
+		DependsOn:  dependencies, // Will be consolidated later
+		Maintainer: maintainer,
 	}
 
 	// Source version and names are computed from binary package names and versions

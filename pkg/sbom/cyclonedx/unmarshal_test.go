@@ -124,6 +124,64 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 			},
 		},
 		{
+			name:      "happy path for third party sbom",
+			inputFile: "testdata/happy/third-party-bom.json",
+			want: types.SBOM{
+				OS: &ftypes.OS{
+					Family: "alpine",
+					Name:   "3.16.0",
+				},
+				Packages: []ftypes.PackageInfo{
+					{
+						Packages: []ftypes.Package{
+							{
+								Name: "musl", Version: "1.2.3-r0", SrcName: "musl", SrcVersion: "1.2.3-r0", Licenses: []string{"MIT"},
+								Ref: "pkg:apk/alpine/musl@1.2.3-r0?distro=3.16.0",
+							},
+						},
+					},
+				},
+				Applications: []ftypes.Application{
+					{
+						Type:     "composer",
+						FilePath: "",
+						Libraries: []ftypes.Package{
+							{
+								Name:    "pear/log",
+								Version: "1.13.1",
+								Ref:     "pkg:composer/pear/log@1.13.1",
+							},
+							{
+
+								Name:    "pear/pear_exception",
+								Version: "v1.0.0",
+								Ref:     "pkg:composer/pear/pear_exception@v1.0.0",
+							},
+						},
+					},
+				},
+			},
+		},
+		{
+			name:      "happy path for third party sbom, no operation-system component",
+			inputFile: "testdata/happy/third-party-bom-no-os.json",
+			want: types.SBOM{
+				Applications: []ftypes.Application{
+					{
+						Type:     "composer",
+						FilePath: "",
+						Libraries: []ftypes.Package{
+							{
+								Name:    "pear/log",
+								Version: "1.13.1",
+								Ref:     "pkg:composer/pear/log@1.13.1",
+							},
+						},
+					},
+				},
+			},
+		},
+		{
 			name:      "happy path for unrelated bom",
 			inputFile: "testdata/happy/unrelated-bom.json",
 			want: types.SBOM{
@@ -221,12 +279,12 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 				assert.Contains(t, err.Error(), tt.wantErr)
 				return
 			}
+			require.NoError(t, err)
 
 			// Not compare the CycloneDX field
 			got := *cdx.SBOM
 			got.CycloneDX = nil
 
-			require.NoError(t, err)
 			assert.Equal(t, tt.want, got)
 		})
 	}

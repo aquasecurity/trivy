@@ -23,7 +23,9 @@ import (
 )
 
 const (
-	Namespace = "aquasecurity:trivy:"
+	ToolVendor = "aquasecurity"
+	ToolName   = "trivy"
+	Namespace  = ToolVendor + ":" + ToolName + ":"
 
 	PropertySchemaVersion = "SchemaVersion"
 	PropertyType          = "Type"
@@ -169,8 +171,8 @@ func (e *Marshaler) cdxMetadata() *cdx.Metadata {
 		Timestamp: e.clock.Now().UTC().Format(timeLayout),
 		Tools: &[]cdx.Tool{
 			{
-				Vendor:  "aquasecurity",
-				Name:    "trivy",
+				Vendor:  ToolVendor,
+				Name:    ToolName,
 				Version: e.appVersion,
 			},
 		},
@@ -205,6 +207,7 @@ func (e *Marshaler) marshalComponents(r types.Report, bomRef string) (*[]cdx.Com
 			pkgID := packageID(result.Target, pkg.Name, utils.FormatVersion(pkg), pkg.FilePath)
 			if _, ok := bomRefMap[pkgID]; !ok {
 				bomRefMap[pkgID] = pkgComponent.BOMRef
+				componentDependencies = append(componentDependencies, cdx.Dependency{Ref: pkgComponent.BOMRef})
 			}
 
 			// When multiple lock files have the same dependency with the same name and version,
@@ -227,8 +230,6 @@ func (e *Marshaler) marshalComponents(r types.Report, bomRef string) (*[]cdx.Com
 				// TODO: All packages are flattened at the moment. We should construct dependency tree.
 				components = append(components, pkgComponent)
 			}
-
-			componentDependencies = append(componentDependencies, cdx.Dependency{Ref: pkgComponent.BOMRef})
 		}
 
 		for _, vuln := range result.Vulnerabilities {
@@ -247,8 +248,8 @@ func (e *Marshaler) marshalComponents(r types.Report, bomRef string) (*[]cdx.Com
 			}
 		}
 
-		if result.Type == ftypes.NodePkg || result.Type == ftypes.PythonPkg || result.Type == ftypes.GoBinary ||
-			result.Type == ftypes.GemSpec || result.Type == ftypes.Jar || result.Type == ftypes.RustBinary {
+		if result.Type == ftypes.NodePkg || result.Type == ftypes.PythonPkg ||
+			result.Type == ftypes.GemSpec || result.Type == ftypes.Jar {
 			// If a package is language-specific package that isn't associated with a lock file,
 			// it will be a dependency of a component under "metadata".
 			// e.g.
