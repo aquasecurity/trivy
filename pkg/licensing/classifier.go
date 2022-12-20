@@ -14,8 +14,11 @@ import (
 	"github.com/aquasecurity/trivy/pkg/log"
 )
 
-var cf *classifier.Classifier
-var classifierOnce sync.Once
+var (
+	cf             *classifier.Classifier
+	classifierOnce sync.Once
+	m              sync.Mutex
+)
 
 func initGoogleClassifier() error {
 	// Initialize the default classifier once.
@@ -42,8 +45,13 @@ func Classify(filePath string, r io.Reader) (*types.LicenseFile, error) {
 	var matchType types.LicenseType
 	seen := map[string]struct{}{}
 
+	// cf.Match is not thread safe
+	m.Lock()
+
 	// Use 'github.com/google/licenseclassifier' to find licenses
 	result := cf.Match(cf.Normalize(content))
+
+	m.Unlock()
 
 	for _, match := range result.Matches {
 		if match.Confidence <= 0.9 {
