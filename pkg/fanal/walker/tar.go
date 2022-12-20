@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io"
 	"io/fs"
+	"os"
 	"path/filepath"
 	"strings"
 
@@ -46,7 +47,7 @@ func (w LayerTar) Walk(layer io.Reader, analyzeFn WalkFunc) ([]string, []string,
 		}
 
 		filePath := filepath.ToSlash(hdr.Name)
-		filePath = strings.TrimLeft(filepath.Clean(filePath), string(os.PathSeparator))
+		filePath = strings.TrimLeft(filepath.Clean(filePath), "/")
 		fileDir, fileName := filepath.Split(filePath)
 
 		fileDir = filepath.ToSlash(fileDir)
