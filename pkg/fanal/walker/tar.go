@@ -2,7 +2,6 @@ package walker
 
 import (
 	"archive/tar"
-	"github.com/aquasecurity/trivy/pkg/fanal/utils"
 	"io"
 	"io/fs"
 	"path"
@@ -10,6 +9,8 @@ import (
 	"strings"
 
 	"golang.org/x/xerrors"
+
+	"github.com/aquasecurity/trivy/pkg/fanal/utils"
 )
 
 const (
