@@ -24,12 +24,12 @@ func Test_gobinaryLibraryAnalyzer_Analyze(t *testing.T) {
 	}{
 		{
 			name:      "happy path",
-			inputFile: filepath.Join("testdata", "executable_gobinary"),
+			inputFile: "testdata/executable_gobinary",
 			want: &analyzer.AnalysisResult{
 				Applications: []types.Application{
 					{
 						Type:     types.GoBinary,
-						FilePath: filepath.Join("testdata", "executable_gobinary"),
+						FilePath: "testdata/executable_gobinary",
 						Libraries: []types.Package{
 							{
 								Name:    "github.com/aquasecurity/go-pep440-version",
@@ -44,11 +44,11 @@ func Test_gobinaryLibraryAnalyzer_Analyze(t *testing.T) {
 		},
 		{
 			name:      "not go binary",
-			inputFile: filepath.Join("testdata", "executable_bash"),
+			inputFile: "testdata/executable_bash",
 		},
 		{
 			name:      "broken elf",
-			inputFile: filepath.Join("testdata", "broken_elf"),
+			inputFile: "testdata/broken_elf",
 		},
 	}
 	for _, tt := range tests {
