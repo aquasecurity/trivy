@@ -34,9 +34,9 @@ var (
 	ErrNoPkgsDetected = xerrors.New("no packages detected")
 )
 
-// ////////////////////
+//////////////////////
 // Analyzer options //
-// ////////////////////
+//////////////////////
 
 // AnalyzerOptions is used to initialize analyzers
 type AnalyzerOptions struct {
@@ -56,9 +56,9 @@ type LicenseScannerOption struct {
 	Full bool
 }
 
-// //////////////
+////////////////
 // Interfaces //
-// //////////////
+////////////////
 
 // Initializer represents analyzers that need to take parameters from users
 type Initializer interface {
@@ -79,9 +79,9 @@ type configAnalyzer interface {
 	Required(osFound types.OS) bool
 }
 
-// //////////////////
+////////////////////
 // Analyzer group //
-// //////////////////
+////////////////////
 
 type Group string
 
@@ -119,9 +119,9 @@ type AnalyzerGroup struct {
 	filePatterns    map[Type][]*regexp.Regexp
 }
 
-// /////////////////////////
+///////////////////////////
 // Analyzer input/output //
-// /////////////////////////
+///////////////////////////
 
 type AnalysisInput struct {
 	Dir      string
