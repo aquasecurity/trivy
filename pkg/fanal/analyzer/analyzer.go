@@ -5,7 +5,6 @@ import (
 	"errors"
 	"io/fs"
 	"os"
-	"path/filepath"
 	"regexp"
 	"sort"
 	"strings"
@@ -394,9 +393,6 @@ func (ag AnalyzerGroup) AnalyzeFile(ctx context.Context, wg *sync.WaitGroup, lim
 	if info.IsDir() {
 		return nil
 	}
-
-	// unwindows the filepath
-	filePath = filepath.ToSlash(filePath)
 
 	// filepath extracted from tar file doesn't have the prefix "/"
 	cleanPath := strings.TrimLeft(filePath, "/")
