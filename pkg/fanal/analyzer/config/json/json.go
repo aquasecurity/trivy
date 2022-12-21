@@ -1,7 +1,6 @@
 package json
 
 import (
-	"bytes"
 	"context"
 	"io"
 	"os"
@@ -31,7 +30,6 @@ func (a jsonConfigAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisIn
 	if err != nil {
 		return nil, xerrors.Errorf("failed to read %s: %w", input.FilePath, err)
 	}
-	b = bytes.ReplaceAll(b, []byte("\r"), []byte(""))
 
 	return &analyzer.AnalysisResult{
 		Files: map[types.HandlerType][]types.File{
