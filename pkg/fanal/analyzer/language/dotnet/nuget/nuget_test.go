@@ -3,7 +3,6 @@ package nuget
 import (
 	"context"
 	"os"
-	"path/filepath"
 	"sort"
 	"testing"
 
@@ -23,12 +22,12 @@ func Test_nugetibraryAnalyzer_Analyze(t *testing.T) {
 	}{
 		{
 			name:      "happy path config file",
-			inputFile: filepath.Join("testdata", "packages.config"),
+			inputFile: "testdata/packages.config",
 			want: &analyzer.AnalysisResult{
 				Applications: []types.Application{
 					{
 						Type:     types.NuGet,
-						FilePath: filepath.Join("testdata", "packages.config"),
+						FilePath: "testdata/packages.config",
 						Libraries: []types.Package{
 							{
 								Name:    "Microsoft.AspNet.WebApi",
@@ -45,12 +44,12 @@ func Test_nugetibraryAnalyzer_Analyze(t *testing.T) {
 		},
 		{
 			name:      "happy path lock file",
-			inputFile: filepath.Join("testdata", "packages.lock.json"),
+			inputFile: "testdata/packages.lock.json",
 			want: &analyzer.AnalysisResult{
 				Applications: []types.Application{
 					{
 						Type:     types.NuGet,
-						FilePath: filepath.Join("testdata", "packages.lock.json"),
+						FilePath: "testdata/packages.lock.json",
 						Libraries: []types.Package{
 							{
 								ID:        "Newtonsoft.Json@12.0.3",
@@ -72,7 +71,7 @@ func Test_nugetibraryAnalyzer_Analyze(t *testing.T) {
 		},
 		{
 			name:      "sad path",
-			inputFile: filepath.Join("testdata", "invalid.txt"),
+			inputFile: "testdata/invalid.txt",
 			wantErr:   "NuGet analysis error",
 		},
 	}
