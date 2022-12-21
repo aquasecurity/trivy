@@ -3,7 +3,6 @@ package secret_test
 import (
 	"context"
 	"os"
-	"path/filepath"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -105,13 +104,13 @@ func TestSecretAnalyzer(t *testing.T) {
 	}{
 		{
 			name:       "return results",
-			configPath: filepath.Join("testdata", "config.yaml"),
-			filePath:   filepath.Join("testdata", "secret.txt"),
+			configPath: "testdata/config.yaml",
+			filePath:   "testdata/secret.txt",
 			dir:        ".",
 			want: &analyzer.AnalysisResult{
 				Secrets: []types.Secret{
 					{
-						FilePath: filepath.Join("testdata", "secret.txt"),
+						FilePath: "testdata/secret.txt",
 						Findings: []types.SecretFinding{wantFinding1, wantFinding2},
 					},
 				},
@@ -119,7 +118,7 @@ func TestSecretAnalyzer(t *testing.T) {
 		},
 		{
 			name:       "image scan return result",
-			configPath: filepath.Join("testdata", "image-config.yaml"),
+			configPath: "testdata/image-config.yaml",
 			filePath:   "testdata/secret.txt",
 			want: &analyzer.AnalysisResult{
 				Secrets: []types.Secret{
@@ -132,20 +131,20 @@ func TestSecretAnalyzer(t *testing.T) {
 		},
 		{
 			name:       "image scan return nil",
-			configPath: filepath.Join("testdata", "image-config.yaml"),
-			filePath:   filepath.Join("testdata", "secret.doc"),
+			configPath: "testdata/image-config.yaml",
+			filePath:   "testdata/secret.doc",
 			want:       nil,
 		},
 		{
 			name:       "return nil when no results",
 			configPath: "",
-			filePath:   filepath.Join("testdata", "secret.txt"),
+			filePath:   "testdata/secret.txt",
 			want:       nil,
 		},
 		{
 			name:       "skip binary file",
 			configPath: "",
-			filePath:   filepath.Join("testdata", "binaryfile"),
+			filePath:   "testdata/binaryfile",
 			want:       nil,
 		},
 	}
@@ -183,12 +182,12 @@ func TestSecretRequire(t *testing.T) {
 	}{
 		{
 			name:     "pass regular file",
-			filePath: filepath.Join("testdata", "secret.txt"),
+			filePath: "testdata/secret.txt",
 			want:     true,
 		},
 		{
 			name:     "skip small file",
-			filePath: filepath.Join("testdata", "emptyfile"),
+			filePath: "testdata/emptyfile",
 			want:     false,
 		},
 		{
@@ -198,12 +197,12 @@ func TestSecretRequire(t *testing.T) {
 		},
 		{
 			name:     "skip file",
-			filePath: filepath.Join("testdata", "package-lock.json"),
+			filePath: "testdata/package-lock.json",
 			want:     false,
 		},
 		{
 			name:     "skip extension",
-			filePath: filepath.Join("testdata", "secret.doc"),
+			filePath: "testdata/secret.doc",
 			want:     false,
 		},
 	}
