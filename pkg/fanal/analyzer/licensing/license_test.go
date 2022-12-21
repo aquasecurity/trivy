@@ -3,7 +3,6 @@ package licensing
 import (
 	"context"
 	"os"
-	"path/filepath"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -21,12 +20,12 @@ func Test_licenseAnalyzer_Analyze(t *testing.T) {
 	}{
 		{
 			name:     "Licensed C file",
-			filePath: filepath.Join("testdata", "licensed.c"),
+			filePath: "testdata/licensed.c",
 			want: &analyzer.AnalysisResult{
 				Licenses: []types.LicenseFile{
 					{
 						Type:     types.LicenseTypeHeader,
-						FilePath: filepath.Join(string(os.PathSeparator), "testdata", "licensed.c"),
+						FilePath: "/testdata/licensed.c",
 						Findings: []types.LicenseFinding{
 							{
 								Name:       "AGPL-3.0",
@@ -40,7 +39,7 @@ func Test_licenseAnalyzer_Analyze(t *testing.T) {
 		},
 		{
 			name:     "Non human readable binary file",
-			filePath: filepath.Join("testdata", "binaryfile"),
+			filePath: "testdata/binaryfile",
 			want:     nil,
 		},
 	}
@@ -75,17 +74,17 @@ func Test_licenseAnalyzer_Required(t *testing.T) {
 	}{
 		{
 			name:     "C file with license",
-			filePath: filepath.Join("testdata", "licensed.c"),
+			filePath: "testdata/licensed.c",
 			want:     true,
 		},
 		{
 			name:     "C file without license",
-			filePath: filepath.Join("testdata", "unlicensed.c"),
+			filePath: "testdata/unlicensed.c",
 			want:     true,
 		},
 		{
 			name:     "Unreadable file",
-			filePath: filepath.Join("testdata", "binaryfile"),
+			filePath: "testdata/binaryfile",
 			want:     false,
 		},
 	}
