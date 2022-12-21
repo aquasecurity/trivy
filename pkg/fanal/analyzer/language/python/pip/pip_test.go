@@ -3,7 +3,6 @@ package pip
 import (
 	"context"
 	"os"
-	"path/filepath"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -22,12 +21,12 @@ func Test_pipAnalyzer_Analyze(t *testing.T) {
 	}{
 		{
 			name:      "happy path",
-			inputFile: filepath.Join("testdata", "requirements.txt"),
+			inputFile: "testdata/requirements.txt",
 			want: &analyzer.AnalysisResult{
 				Applications: []types.Application{
 					{
 						Type:     types.Pip,
-						FilePath: filepath.Join("testdata", "requirements.txt"),
+						FilePath: "testdata/requirements.txt",
 						Libraries: []types.Package{
 							{
 								Name:    "click",
@@ -47,7 +46,7 @@ func Test_pipAnalyzer_Analyze(t *testing.T) {
 			},
 		}, {
 			name:      "happy path with not related filename",
-			inputFile: filepath.Join("testdata", "not-related.txt"),
+			inputFile: "testdata/not-related.txt",
 			want:      nil,
 		},
 	}
