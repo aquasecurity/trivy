@@ -3,7 +3,6 @@ package release
 import (
 	"context"
 	"os"
-	"path/filepath"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -24,7 +23,7 @@ func Test_osReleaseAnalyzer_Analyze(t *testing.T) {
 	}{
 		{
 			name:      "alpine",
-			inputFile: filepath.Join("testdata", "alpine"),
+			inputFile: "testdata/alpine",
 			want: &analyzer.AnalysisResult{
 				OS: &types.OS{Family: aos.Alpine, Name: "3.15.4"},
 			},
@@ -45,45 +44,45 @@ func Test_osReleaseAnalyzer_Analyze(t *testing.T) {
 		},
 		{
 			name:      "openSUSE-tumbleweed",
-			inputFile: filepath.Join("testdata", "opensusetumbleweed"),
+			inputFile: "testdata/opensusetumbleweed",
 			want: &analyzer.AnalysisResult{
 				OS: &types.OS{Family: aos.OpenSUSETumbleweed, Name: "20220412"},
 			},
 		},
 		{
 			name:      "SUSE Linux Enterprise Server",
-			inputFile: filepath.Join("testdata", "sles"),
+			inputFile: "testdata/sles",
 			want: &analyzer.AnalysisResult{
 				OS: &types.OS{Family: aos.SLES, Name: "15.3"},
 			},
 		},
 		{
 			name:      "Photon OS",
-			inputFile: filepath.Join("testdata", "photon"),
+			inputFile: "testdata/photon",
 			want: &analyzer.AnalysisResult{
 				OS: &types.OS{Family: aos.Photon, Name: "4.0"},
 			},
 		},
 		{
 			name:      "Photon OS",
-			inputFile: filepath.Join("testdata", "photon"),
+			inputFile: "testdata/photon",
 			want: &analyzer.AnalysisResult{
 				OS: &types.OS{Family: aos.Photon, Name: "4.0"},
 			},
 		},
 		{
 			name:      "Unknown OS",
-			inputFile: filepath.Join("testdata", "unknown"),
+			inputFile: "testdata/unknown",
 			want:      nil,
 		},
 		{
 			name:      "No 'ID' field",
-			inputFile: filepath.Join("testdata", "no-id"),
+			inputFile: "testdata/no-id",
 			want:      nil,
 		},
 		{
 			name:      "No 'VERSION_ID' field",
-			inputFile: filepath.Join("testdata", "no-version"),
+			inputFile: "testdata/no-version",
 			want:      nil,
 		},
 	}
