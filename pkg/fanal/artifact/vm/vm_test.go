@@ -53,7 +53,7 @@ func TestNewArtifact(t *testing.T) {
 		},
 		{
 			name:   "sad path file not found",
-			target: filepath.Join("testdata", "no-file"),
+			target: "testdata/no-file",
 			wantErr: func(t assert.TestingT, err error, args ...interface{}) bool {
 				return assert.ErrorContains(t, err, "file open error")
 			},
@@ -83,7 +83,7 @@ func TestArtifact_Inspect(t *testing.T) {
 	}{
 		{
 			name:     "happy path for raw image",
-			filePath: filepath.Join("testdata", "AmazonLinux2.img.gz"),
+			filePath: "testdata/AmazonLinux2.img.gz",
 			putBlobExpectation: cache.ArtifactCachePutBlobExpectation{
 				Args: cache.ArtifactCachePutBlobArgs{
 					BlobID: "sha256:bdff805a4b2a96074c549dbb7912f5089df1a484cf0919639ecdba437a959e90",
@@ -192,7 +192,7 @@ func TestArtifact_Inspect(t *testing.T) {
 
 			if aa, ok := a.(*vm.EBS); ok {
 				// blockSize: 512 KB, volumeSize: 40MB
-				ebs := ebsfile.NewMockEBS(filepath.Join("testdata", "AmazonLinux2.img.gz"), 512<<10, 40<<20)
+				ebs := ebsfile.NewMockEBS("testdata/AmazonLinux2.img.gz", 512<<10, 40<<20)
 				aa.SetEBS(ebs)
 			}
 
