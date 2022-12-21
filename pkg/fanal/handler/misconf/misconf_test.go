@@ -119,7 +119,8 @@ func Test_FindingFSTarget(t *testing.T) {
 		},
 		{
 			input: []string{
-				filepath.Join(string(os.PathSeparator), "foo"), filepath.Join(string(os.PathSeparator), "bar"),
+				filepath.Join(string(os.PathSeparator), "foo"),
+				filepath.Join(string(os.PathSeparator), "bar"),
 			},
 			wantTarget: string(os.PathSeparator),
 			wantPaths:  []string{"foo", "bar"},
@@ -134,15 +135,9 @@ func Test_FindingFSTarget(t *testing.T) {
 	for _, test := range tests {
 		t.Run(fmt.Sprintf("%#v", test.input), func(t *testing.T) {
 			if runtime.GOOS == "windows" {
-				cwd, err := os.Getwd()
+				wantTarget, err := filepath.Abs(test.wantTarget)
 				require.NoError(t, err)
-				vol := filepath.VolumeName(cwd)
-
-				if test.wantTarget != "" {
-					test.wantTarget = filepath.Join(vol, string(os.PathSeparator), test.wantTarget)
-				} else {
-					test.wantTarget = vol
-				}
+				test.wantTarget = filepath.Clean(wantTarget)
 			}
 
 			target, paths, err := findFSTarget(test.input)
