@@ -5,7 +5,6 @@ import (
 	"errors"
 	"fmt"
 	"os"
-	"path/filepath"
 	"sync"
 	"testing"
 
@@ -294,7 +293,7 @@ func TestAnalyzeFile(t *testing.T) {
 			name: "happy path with os analyzer",
 			args: args{
 				filePath:     "/etc/alpine-release",
-				testFilePath: filepath.Join("testdata", "etc", "alpine-release"),
+				testFilePath: "testdata/etc/alpine-release",
 			},
 			want: &analyzer.AnalysisResult{
 				OS: &types.OS{
@@ -307,7 +306,7 @@ func TestAnalyzeFile(t *testing.T) {
 			name: "happy path with disabled os analyzer",
 			args: args{
 				filePath:          "/etc/alpine-release",
-				testFilePath:      filepath.Join("testdata", "etc", "alpine-release"),
+				testFilePath:      "testdata/etc/alpine-release",
 				disabledAnalyzers: []analyzer.Type{analyzer.TypeAlpine},
 			},
 			want: &analyzer.AnalysisResult{},
@@ -316,7 +315,7 @@ func TestAnalyzeFile(t *testing.T) {
 			name: "happy path with package analyzer",
 			args: args{
 				filePath:     "/lib/apk/db/installed",
-				testFilePath: filepath.Join("testdata", "lib", "apk", "db", "installed"),
+				testFilePath: "testdata/lib/apk/db/installed",
 			},
 			want: &analyzer.AnalysisResult{
 				PackageInfos: []types.PackageInfo{
@@ -335,8 +334,8 @@ func TestAnalyzeFile(t *testing.T) {
 					},
 				},
 				SystemInstalledFiles: []string{
-					filepath.Join("lib", "libc.musl-x86_64.so.1"),
-					filepath.Join("lib", "ld-musl-x86_64.so.1"),
+					"lib/libc.musl-x86_64.so.1",
+					"lib/ld-musl-x86_64.so.1",
 				},
 			},
 		},
@@ -344,7 +343,7 @@ func TestAnalyzeFile(t *testing.T) {
 			name: "happy path with disabled package analyzer",
 			args: args{
 				filePath:          "/lib/apk/db/installed",
-				testFilePath:      filepath.Join("testdata", "lib", "apk", "db", "installed"),
+				testFilePath:      "testdata/lib/apk/db/installed",
 				disabledAnalyzers: []analyzer.Type{analyzer.TypeApk},
 			},
 			want: &analyzer.AnalysisResult{},
@@ -353,7 +352,7 @@ func TestAnalyzeFile(t *testing.T) {
 			name: "happy path with library analyzer",
 			args: args{
 				filePath:     "/app/Gemfile.lock",
-				testFilePath: filepath.Join("testdata", "app", "Gemfile.lock"),
+				testFilePath: "testdata/app/Gemfile.lock",
 			},
 			want: &analyzer.AnalysisResult{
 				Applications: []types.Application{
@@ -382,7 +381,7 @@ func TestAnalyzeFile(t *testing.T) {
 			name: "happy path with a directory",
 			args: args{
 				filePath:     "/etc/lsb-release",
-				testFilePath: filepath.Join("testdata", "etc"),
+				testFilePath: "testdata/etc",
 			},
 			want: &analyzer.AnalysisResult{},
 		},
@@ -412,7 +411,7 @@ func TestAnalyzeFile(t *testing.T) {
 			name: "ignore permission error",
 			args: args{
 				filePath:     "/etc/alpine-release",
-				testFilePath: filepath.Join("testdata", "no-permission"),
+				testFilePath: "testdata/no-permission",
 			},
 			want: &analyzer.AnalysisResult{},
 		},
@@ -420,7 +419,7 @@ func TestAnalyzeFile(t *testing.T) {
 			name: "sad path with opener error",
 			args: args{
 				filePath:     "/lib/apk/db/installed",
-				testFilePath: filepath.Join("testdata", "error"),
+				testFilePath: "testdata/error",
 			},
 			wantErr: "unable to open /lib/apk/db/installed",
 		},
@@ -466,9 +465,9 @@ func TestAnalyzeFile(t *testing.T) {
 			ctx := context.Background()
 			err = a.AnalyzeFile(ctx, &wg, limit, got, "", tt.args.filePath, info,
 				func() (dio.ReadSeekCloserAt, error) {
-					if tt.args.testFilePath == filepath.Join("testdata", "error") {
+					if tt.args.testFilePath == "testdata/error" {
 						return nil, xerrors.New("error")
-					} else if tt.args.testFilePath == filepath.Join("testdata", "no-permission") {
+					} else if tt.args.testFilePath == "testdata/no-permission" {
 						os.Chmod(tt.args.testFilePath, 0000)
 						t.Cleanup(func() {
 							os.Chmod(tt.args.testFilePath, 0644)
