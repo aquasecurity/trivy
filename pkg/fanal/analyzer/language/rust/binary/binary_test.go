@@ -3,10 +3,10 @@ package binary
 import (
 	"context"
 	"os"
-	"path/filepath"
 	"runtime"
 	"testing"
 
+	"github.com/samber/lo"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
@@ -22,12 +22,12 @@ func Test_rustBinaryLibraryAnalyzer_Analyze(t *testing.T) {
 	}{
 		{
 			name:      "happy path",
-			inputFile: filepath.Join("testdata", "executable_rust"),
+			inputFile: "testdata/executable_rust",
 			want: &analyzer.AnalysisResult{
 				Applications: []types.Application{
 					{
 						Type:     types.RustBinary,
-						FilePath: filepath.Join("testdata", "executable_rust"),
+						FilePath: "testdata/executable_rust",
 						Libraries: []types.Package{
 							{
 								ID:        "crate_with_features@0.1.0",
@@ -35,7 +35,12 @@ func Test_rustBinaryLibraryAnalyzer_Analyze(t *testing.T) {
 								Version:   "0.1.0",
 								DependsOn: []string{"library_crate@0.1.0"},
 							},
-							{ID: "library_crate@0.1.0", Name: "library_crate", Version: "0.1.0", Indirect: true},
+							{
+								ID:       "library_crate@0.1.0",
+								Name:     "library_crate",
+								Version:  "0.1.0",
+								Indirect: true,
+							},
 						},
 					},
 				},
@@ -43,11 +48,11 @@ func Test_rustBinaryLibraryAnalyzer_Analyze(t *testing.T) {
 		},
 		{
 			name:      "not rust binary",
-			inputFile: filepath.Join("testdata", "executable_bash"),
+			inputFile: "testdata/executable_bash",
 		},
 		{
 			name:      "broken elf",
-			inputFile: filepath.Join("testdata", "broken_elf"),
+			inputFile: "testdata/broken_elf",
 		},
 	}
 	for _, tt := range tests {
@@ -70,17 +75,14 @@ func Test_rustBinaryLibraryAnalyzer_Analyze(t *testing.T) {
 }
 
 func Test_rustBinaryLibraryAnalyzer_Required(t *testing.T) {
-	if runtime.GOOS == "windows" {
-		t.Skip("Permissions tests won't run on Windows")
-	}
 	tests := []struct {
 		name     string
 		filePath string
 		want     bool
 	}{
 		{
-			name:     "file perm 0755",
-			filePath: "testdata/0755",
+			name:     "executable file",
+			filePath: lo.Ternary(runtime.GOOS == "windows", "testdata/binary.exe", "testdata/0755"),
 			want:     true,
 		},
 		{
@@ -90,7 +92,7 @@ func Test_rustBinaryLibraryAnalyzer_Required(t *testing.T) {
 		},
 		{
 			name:     "symlink",
-			filePath: filepath.Join("testdata", "symlink"),
+			filePath: "testdata/symlink",
 			want:     false,
 		},
 	}
