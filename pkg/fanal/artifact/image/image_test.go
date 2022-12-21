@@ -3,7 +3,6 @@ package image_test
 import (
 	"context"
 	"errors"
-	"path/filepath"
 	"testing"
 	"time"
 
@@ -165,7 +164,7 @@ func TestArtifact_Inspect(t *testing.T) {
 	}{
 		{
 			name:      "happy path",
-			imagePath: filepath.Join("..", "..", "test", "testdata", "alpine-311.tar.gz"),
+			imagePath: "../../test/testdata/alpine-311.tar.gz",
 			artifactOpt: artifact.Option{
 				LicenseScannerOption: analyzer.LicenseScannerOption{Full: true},
 			},
@@ -246,7 +245,7 @@ func TestArtifact_Inspect(t *testing.T) {
 				},
 			},
 			want: types.ArtifactReference{
-				Name:    filepath.Join("..", "..", "test", "testdata", "alpine-311.tar.gz"),
+				Name:    "../../test/testdata/alpine-311.tar.gz",
 				Type:    types.ArtifactContainerImage,
 				ID:      "sha256:059741cfbdc039e88e337d621e57e03e99b0e0a75df32f2027ebef13f839af65",
 				BlobIDs: []string{"sha256:a07b19e0e0a4339c00d982f6d80f305cd9dbb98f88b3c74e57b97574b9ce9ba3"},
@@ -299,7 +298,7 @@ func TestArtifact_Inspect(t *testing.T) {
 		},
 		{
 			name:      "happy path: include lock files",
-			imagePath: filepath.Join("..", "..", "test", "testdata", "vuln-image.tar.gz"),
+			imagePath: "../../test/testdata/vuln-image.tar.gz",
 			artifactOpt: artifact.Option{
 				LicenseScannerOption: analyzer.LicenseScannerOption{Full: true},
 			},
@@ -587,7 +586,7 @@ func TestArtifact_Inspect(t *testing.T) {
 				},
 			},
 			want: types.ArtifactReference{
-				Name: filepath.Join("..", "..", "test", "testdata", "vuln-image.tar.gz"),
+				Name: "../../test/testdata/vuln-image.tar.gz",
 				Type: types.ArtifactContainerImage,
 				ID:   "sha256:a646bb11d39c149d4aaf9b888233048e0848304e5abd75667ea6f21d540d800c",
 				BlobIDs: []string{
@@ -669,7 +668,7 @@ func TestArtifact_Inspect(t *testing.T) {
 		},
 		{
 			name:      "happy path: disable analyzers",
-			imagePath: filepath.Join("..", "..", "test", "testdata", "vuln-image.tar.gz"),
+			imagePath: "../../test/testdata/vuln-image.tar.gz",
 			artifactOpt: artifact.Option{
 				DisabledAnalyzers: []analyzer.Type{
 					analyzer.TypeDebian, analyzer.TypeDpkg, analyzer.TypeDpkgLicense, analyzer.TypeComposer,
@@ -745,7 +744,7 @@ func TestArtifact_Inspect(t *testing.T) {
 				},
 			},
 			want: types.ArtifactReference{
-				Name: filepath.Join("..", "..", "test", "testdata", "vuln-image.tar.gz"),
+				Name: "../../test/testdata/vuln-image.tar.gz",
 				Type: types.ArtifactContainerImage,
 				ID:   "sha256:a646bb11d39c149d4aaf9b888233048e0848304e5abd75667ea6f21d540d800c",
 				BlobIDs: []string{
@@ -831,7 +830,7 @@ func TestArtifact_Inspect(t *testing.T) {
 		},
 		{
 			name:      "sad path, MissingBlobs returns an error",
-			imagePath: filepath.Join("..", "..", "test", "testdata", "alpine-311.tar.gz"),
+			imagePath: "../../test/testdata/alpine-311.tar.gz",
 			missingBlobsExpectation: cache.ArtifactCacheMissingBlobsExpectation{
 				Args: cache.ArtifactCacheMissingBlobsArgs{
 					ArtifactID: "sha256:059741cfbdc039e88e337d621e57e03e99b0e0a75df32f2027ebef13f839af65",
@@ -845,7 +844,7 @@ func TestArtifact_Inspect(t *testing.T) {
 		},
 		{
 			name:      "sad path, PutBlob returns an error",
-			imagePath: filepath.Join("..", "..", "test", "testdata", "alpine-311.tar.gz"),
+			imagePath: "../../test/testdata/alpine-311.tar.gz",
 			missingBlobsExpectation: cache.ArtifactCacheMissingBlobsExpectation{
 				Args: cache.ArtifactCacheMissingBlobsArgs{
 					ArtifactID: "sha256:059741cfbdc039e88e337d621e57e03e99b0e0a75df32f2027ebef13f839af65",
@@ -913,7 +912,7 @@ func TestArtifact_Inspect(t *testing.T) {
 		},
 		{
 			name:      "sad path, PutArtifact returns an error",
-			imagePath: filepath.Join("..", "..", "test", "testdata", "alpine-311.tar.gz"),
+			imagePath: "../../test/testdata/alpine-311.tar.gz",
 			missingBlobsExpectation: cache.ArtifactCacheMissingBlobsExpectation{
 				Args: cache.ArtifactCacheMissingBlobsArgs{
 					ArtifactID: "sha256:059741cfbdc039e88e337d621e57e03e99b0e0a75df32f2027ebef13f839af65",
