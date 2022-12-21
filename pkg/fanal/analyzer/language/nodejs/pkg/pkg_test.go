@@ -2,9 +2,7 @@ package pkg
 
 import (
 	"context"
-	"fmt"
 	"os"
-	"path/filepath"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -23,18 +21,18 @@ func Test_nodePkgLibraryAnalyzer_Analyze(t *testing.T) {
 	}{
 		{
 			name:      "happy path",
-			inputFile: filepath.Join("testdata", "package.json"),
+			inputFile: "testdata/package.json",
 			want: &analyzer.AnalysisResult{
 				Applications: []types.Application{
 					{
 						Type:     types.NodePkg,
-						FilePath: filepath.Join("testdata", "package.json"),
+						FilePath: "testdata/package.json",
 						Libraries: []types.Package{
 							{
 								Name:     "lodash",
 								Version:  "5.0.0",
 								Licenses: []string{"MIT"},
-								FilePath: filepath.Join("testdata", "package.json"),
+								FilePath: "testdata/package.json",
 							},
 						},
 					},
@@ -43,8 +41,8 @@ func Test_nodePkgLibraryAnalyzer_Analyze(t *testing.T) {
 		},
 		{
 			name:      "sad path",
-			inputFile: filepath.Join("testdata", "noname.json"),
-			wantErr:   fmt.Sprintf("unable to parse %s", filepath.Join("testdata", "noname.json")),
+			inputFile: "testdata/noname.json",
+			wantErr:   "unable to parse",
 		},
 	}
 	for _, tt := range tests {
