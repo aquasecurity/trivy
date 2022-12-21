@@ -76,7 +76,7 @@ func Test_gobinaryLibraryAnalyzer_Required(t *testing.T) {
 		want     bool
 	}{
 		{
-			name:     "file perm 0755",
+			name:     "executable file",
 			filePath: lo.Ternary(runtime.GOOS == "windows", "testdata/binary.exe", "testdata/0755"),
 			want:     true,
 		},

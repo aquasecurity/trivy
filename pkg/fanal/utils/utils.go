@@ -7,6 +7,7 @@ import (
 	"math"
 	"os"
 	"os/exec"
+	"path/filepath"
 
 	dio "github.com/aquasecurity/go-dep-parser/pkg/io"
 )
@@ -56,6 +57,11 @@ func Keys(m map[string]struct{}) []string {
 }
 
 func IsExecutable(fileInfo os.FileInfo) bool {
+	// For Windows
+	if filepath.Ext(fileInfo.Name()) == ".exe" {
+		return true
+	}
+
 	mode := fileInfo.Mode()
 	if !mode.IsRegular() {
 		return false
