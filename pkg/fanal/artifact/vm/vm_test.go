@@ -36,7 +36,7 @@ func TestNewArtifact(t *testing.T) {
 	}{
 		{
 			name:    "happy path for file",
-			target:  filepath.Join("testdata", "rawdata.img"),
+			target:  "testdata/rawdata.img",
 			wantErr: assert.NoError,
 		},
 		{
@@ -46,7 +46,7 @@ func TestNewArtifact(t *testing.T) {
 		},
 		{
 			name:   "sad path unsupported vm format",
-			target: filepath.Join("testdata", "monolithicSparse.vmdk"),
+			target: "testdata/monolithicSparse.vmdk",
 			wantErr: func(t assert.TestingT, err error, args ...interface{}) bool {
 				return assert.ErrorContains(t, err, "unsupported type error")
 			},
