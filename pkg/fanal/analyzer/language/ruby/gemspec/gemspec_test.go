@@ -3,7 +3,6 @@ package gemspec
 import (
 	"context"
 	"os"
-	"path/filepath"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -22,18 +21,18 @@ func Test_gemspecLibraryAnalyzer_Analyze(t *testing.T) {
 	}{
 		{
 			name:      "happy path",
-			inputFile: filepath.Join("testdata", "multiple_licenses.gemspec"),
+			inputFile: "testdata/multiple_licenses.gemspec",
 			want: &analyzer.AnalysisResult{
 				Applications: []types.Application{
 					{
 						Type:     types.GemSpec,
-						FilePath: filepath.Join("testdata", "multiple_licenses.gemspec"),
+						FilePath: "testdata/multiple_licenses.gemspec",
 						Libraries: []types.Package{
 							{
 								Name:     "test-unit",
 								Version:  "3.3.7",
 								Licenses: []string{"Ruby", "BSDL", "PSFL"},
-								FilePath: filepath.Join("testdata", "multiple_licenses.gemspec"),
+								FilePath: "testdata/multiple_licenses.gemspec",
 							},
 						},
 					},
@@ -42,7 +41,7 @@ func Test_gemspecLibraryAnalyzer_Analyze(t *testing.T) {
 		},
 		{
 			name:      "empty name",
-			inputFile: filepath.Join("testdata", "empty_name.gemspec"),
+			inputFile: "testdata/empty_name.gemspec",
 			want:      nil,
 			wantErr:   "failed to parse",
 		},
