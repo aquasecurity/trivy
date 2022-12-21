@@ -1,7 +1,6 @@
 package dockerfile
 
 import (
-	"bytes"
 	"context"
 	"io"
 	"os"
@@ -29,7 +28,6 @@ func (s dockerConfigAnalyzer) Analyze(_ context.Context, input analyzer.Analysis
 	if err != nil {
 		return nil, xerrors.Errorf("failed to read %s: %w", input.FilePath, err)
 	}
-	b = bytes.ReplaceAll(b, []byte("\r\n"), []byte("\n")) // for Windows
 
 	return &analyzer.AnalysisResult{
 		Files: map[types.HandlerType][]types.File{

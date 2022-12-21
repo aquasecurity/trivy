@@ -2,7 +2,7 @@ package dockerfile
 
 import (
 	"context"
-	"os"
+	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -26,33 +26,9 @@ func Test_dockerConfigAnalyzer_Analyze(t *testing.T) {
 				Files: map[types.HandlerType][]types.File{
 					types.MisconfPostHandler: {
 						{
-							Type: types.Dockerfile,
-							Path: "testdata/Dockerfile.deployment",
-							Content: []byte(`FROM foo
-COPY . /
-RUN echo hello
-`),
-						},
-					},
-				},
-			},
-		},
-		{
-			name:      "happy path with multi-stage",
-			inputFile: "testdata/Dockerfile.multistage",
-			want: &analyzer.AnalysisResult{
-				Files: map[types.HandlerType][]types.File{
-					types.MisconfPostHandler: {
-						{
-							Type: types.Dockerfile,
-							Path: "testdata/Dockerfile.multistage",
-							Content: []byte(`FROM foo AS build
-COPY . /
-RUN echo hello
-
-FROM scratch 
-COPY --from=build /bar /bar
-`),
+							Type:    types.Dockerfile,
+							Path:    "testdata/Dockerfile.deployment",
+							Content: []byte(`FROM scratch`),
 						},
 					},
 				},
@@ -62,15 +38,12 @@ COPY --from=build /bar /bar
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			f, err := os.Open(tt.inputFile)
-			require.NoError(t, err)
-			defer f.Close()
-
+			r := strings.NewReader("FROM scratch")
 			a := dockerConfigAnalyzer{}
 			ctx := context.Background()
 			got, err := a.Analyze(ctx, analyzer.AnalysisInput{
 				FilePath: tt.inputFile,
-				Content:  f,
+				Content:  r,
 			})
 
 			if tt.wantErr != "" {
