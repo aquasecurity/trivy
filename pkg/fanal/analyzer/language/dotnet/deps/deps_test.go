@@ -3,7 +3,6 @@ package deps
 import (
 	"context"
 	"os"
-	"path/filepath"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -22,12 +21,12 @@ func Test_depsLibraryAnalyzer_Analyze(t *testing.T) {
 	}{
 		{
 			name:      "happy path",
-			inputFile: filepath.Join("testdata", "datacollector.deps.json"),
+			inputFile: "testdata/datacollector.deps.json",
 			want: &analyzer.AnalysisResult{
 				Applications: []types.Application{
 					{
 						Type:     types.DotNetCore,
-						FilePath: filepath.Join("testdata", "datacollector.deps.json"),
+						FilePath: "testdata/datacollector.deps.json",
 						Libraries: []types.Package{
 							{
 								Name:      "Newtonsoft.Json",
@@ -41,7 +40,7 @@ func Test_depsLibraryAnalyzer_Analyze(t *testing.T) {
 		},
 		{
 			name:      "sad path",
-			inputFile: filepath.Join("testdata", "invalid.txt"),
+			inputFile: "testdata/invalid.txt",
 			wantErr:   ".Net Core dependencies analysis error",
 		},
 	}
