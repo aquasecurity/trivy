@@ -142,7 +142,7 @@ func TestArtifact_Inspect(t *testing.T) {
 			fields: fields{
 				dir: "./testdata/unknown",
 			},
-			wantErr: "no such file or directory",
+			wantErr: "walk error",
 		},
 		{
 			name: "happy path with single file",

@@ -140,7 +140,8 @@ func (a Artifact) Inspect(ctx context.Context) (types.ArtifactReference, error) 
 	if err == nil && string(b) != "" {
 		hostName = strings.TrimSpace(string(b))
 	} else {
-		hostName = a.rootPath
+		// To slash for Windows
+		hostName = filepath.ToSlash(a.rootPath)
 	}
 
 	return types.ArtifactReference{
