@@ -8,6 +8,7 @@ import (
 	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/language/c/conan"
 	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/language/dotnet/deps"
 	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/language/dotnet/nuget"
+	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/language/elixir/mixlock"
 	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/language/golang/binary"
 	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/language/golang/mod"
 	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/language/java/gradle"

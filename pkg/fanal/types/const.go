@@ -30,6 +30,7 @@ const (
 	RustBinary = "rustbinary"
 	Conan      = "conan"
 	Cocoapods  = "cocoapods"
+	ElixirLock = "elixir-lock"
 
 	// Config files
 	YAML           = "yaml"
