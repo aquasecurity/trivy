@@ -36,7 +36,7 @@ func TestNewArtifact(t *testing.T) {
 	}{
 		{
 			name:    "happy path for file",
-			target:  filepath.Join("testdata", "rawdata.img"),
+			target:  "testdata/rawdata.img",
 			wantErr: assert.NoError,
 		},
 		{
@@ -46,7 +46,7 @@ func TestNewArtifact(t *testing.T) {
 		},
 		{
 			name:   "sad path unsupported vm format",
-			target: filepath.Join("testdata", "monolithicSparse.vmdk"),
+			target: "testdata/monolithicSparse.vmdk",
 			wantErr: func(t assert.TestingT, err error, args ...interface{}) bool {
 				return assert.ErrorContains(t, err, "unsupported type error")
 			},
@@ -55,7 +55,7 @@ func TestNewArtifact(t *testing.T) {
 			name:   "sad path file not found",
 			target: "testdata/no-file",
 			wantErr: func(t assert.TestingT, err error, args ...interface{}) bool {
-				return assert.ErrorContains(t, err, "no such file or directory")
+				return assert.ErrorContains(t, err, "file open error")
 			},
 		},
 	}
@@ -177,6 +177,9 @@ func TestArtifact_Inspect(t *testing.T) {
 			c.ApplyPutBlobExpectation(tt.putBlobExpectation)
 			c.ApplyMissingBlobsExpectation(tt.missingBlobsExpectation)
 			c.ApplyPutArtifactExpectations(tt.putArtifactExpectations)
+			c.ApplyDeleteBlobsExpectation(cache.ArtifactCacheDeleteBlobsExpectation{
+				Args: cache.ArtifactCacheDeleteBlobsArgs{BlobIDsAnything: true},
+			})
 
 			filePath := tt.filePath
 			if !strings.HasPrefix(tt.filePath, ebsPrefix) {
@@ -189,11 +192,12 @@ func TestArtifact_Inspect(t *testing.T) {
 
 			if aa, ok := a.(*vm.EBS); ok {
 				// blockSize: 512 KB, volumeSize: 40MB
-				ebs := ebsfile.NewMockEBS(filepath.Join("testdata", "AmazonLinux2.img.gz"), 512<<10, 40<<20)
+				ebs := ebsfile.NewMockEBS("testdata/AmazonLinux2.img.gz", 512<<10, 40<<20)
 				aa.SetEBS(ebs)
 			}
 
 			got, err := a.Inspect(context.Background())
+			defer a.Clean(got)
 			if tt.wantErr != "" {
 				require.Error(t, err)
 				assert.ErrorContains(t, err, tt.wantErr)

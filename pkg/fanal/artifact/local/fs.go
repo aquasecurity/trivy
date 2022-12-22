@@ -91,6 +91,9 @@ func (a Artifact) Inspect(ctx context.Context) (types.ArtifactReference, error) 
 			return xerrors.Errorf("filepath rel (%s): %w", filePath, err)
 		}
 
+		// For Windows
+		filePath = filepath.ToSlash(filePath)
+
 		opts := analyzer.AnalysisOptions{Offline: a.artifactOption.Offline}
 		if err = a.analyzer.AnalyzeFile(ctx, &wg, limit, result, directory, filePath, info, opener, nil, opts); err != nil {
 			return xerrors.Errorf("analyze file (%s): %w", filePath, err)
@@ -137,7 +140,8 @@ func (a Artifact) Inspect(ctx context.Context) (types.ArtifactReference, error) 
 	if err == nil && string(b) != "" {
 		hostName = strings.TrimSpace(string(b))
 	} else {
-		hostName = a.rootPath
+		// To slash for Windows
+		hostName = filepath.ToSlash(a.rootPath)
 	}
 
 	return types.ArtifactReference{

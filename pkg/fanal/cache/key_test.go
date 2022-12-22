@@ -152,7 +152,7 @@ func TestCalcKey(t *testing.T) {
 				},
 				policy: []string{"policydir"},
 			},
-			wantErr: "no such file or directory",
+			wantErr: "hash dir error",
 		},
 	}
 	for _, tt := range tests {
@@ -170,7 +170,7 @@ func TestCalcKey(t *testing.T) {
 			got, err := CalcKey(tt.args.key, tt.args.analyzerVersions, tt.args.hookVersions, artifactOpt)
 			if tt.wantErr != "" {
 				require.Error(t, err)
-				assert.Contains(t, err.Error(), tt.wantErr)
+				assert.ErrorContains(t, err, tt.wantErr)
 				return
 			}
 			assert.NoError(t, err)

@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"runtime"
 	"strings"
 	"sync"
 
@@ -131,6 +132,11 @@ func summarize(specifiedSeverities []dbTypes.Severity, severityCount map[string]
 }
 
 func IsOutputToTerminal(output io.Writer) bool {
+	if runtime.GOOS == "windows" {
+		// if its windows, we don't support formatting
+		return false
+	}
+
 	if output != os.Stdout {
 		return false
 	}

@@ -97,7 +97,7 @@ func findFSTarget(paths []string) (string, []string, error) {
 	for _, path := range absPaths {
 		path := filepath.ToSlash(path)
 		path = strings.TrimPrefix(path, slashTarget)
-		path = strings.TrimPrefix(path, string(filepath.Separator))
+		path = strings.TrimPrefix(path, "/")
 		if path == "" {
 			path = "."
 		}
@@ -106,8 +106,8 @@ func findFSTarget(paths []string) (string, []string, error) {
 
 	// we don't use filepath.Join here as we need to maintain the root "/"
 	target := strings.Join(outputSegments, string(filepath.Separator))
-	if target == "" {
-		target = string(filepath.Separator)
+	if target == "" || filepath.VolumeName(target) == target {
+		target += string(filepath.Separator)
 	}
 	return target, cleanPaths, nil
 }
