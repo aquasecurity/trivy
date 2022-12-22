@@ -42,9 +42,7 @@ jobs:
         if: matrix.operating-system == 'ubuntu-latest'
 
       # Install tools
-      # Use fork until the PR gets merged upstream
-      # https://github.com/aquaproj/aqua-installer/pull/286
-      - uses: knqyf263/aqua-installer@powershell
+      - uses: aquaproj/aqua-installer@v1.2.0
         with:
           aqua_version: v1.25.0
 
