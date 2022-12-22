@@ -9,8 +9,6 @@ on:
       - 'mkdocs.yml'
       - 'LICENSE'
   pull_request:
-env:
-  TINYGO_VERSION: "0.25.0"
 jobs:
   test:
     name: Test
@@ -43,28 +41,12 @@ jobs:
           skip-cache: true # https://github.com/golangci/golangci-lint-action/issues/244#issuecomment-1052197778
         if: matrix.operating-system == 'ubuntu-latest'
 
-      # ubuntu tiny go install
-      - name: Install TinyGo
-        run: |
-          wget https://github.com/tinygo-org/tinygo/releases/download/v${TINYGO_VERSION}/tinygo_${TINYGO_VERSION}_amd64.deb
-          sudo dpkg -i tinygo_${TINYGO_VERSION}_amd64.deb
-        if: matrix.operating-system == 'ubuntu-latest'
-
-      # macos tiny go install
-      - name: Install TinyGo
-        run: |
-          brew tap tinygo-org/tools
-          brew install tinygo
-        if: matrix.operating-system == 'macos-latest'
-
-      # windows tiny go install
-      - name: Install TinyGo
-        run: |
-          Set-ExecutionPolicy RemoteSigned -scope CurrentUser
-          iex "& {$(irm get.scoop.sh)} -RunAsAdmin"
-          Join-Path (Resolve-Path ~).Path "scoop\shims" >> $Env:GITHUB_PATH
-          scoop install tinygo@${{ env.TINYGO_VERSION }}
-        if: matrix.operating-system == 'windows-latest'
+      # Install tools
+      # Use fork until the PR gets merged upstream
+      # https://github.com/aquaproj/aqua-installer/pull/286
+      - uses: knqyf263/aqua-installer@powershell
+        with:
+          aqua_version: v1.25.0
 
       - name: Run unit tests
         run: make test
@@ -96,12 +78,13 @@ jobs:
         with:
           go-version-file: go.mod
 
-      - name: Install TinyGo
-        run: |
-          wget https://github.com/tinygo-org/tinygo/releases/download/v${TINYGO_VERSION}/tinygo_${TINYGO_VERSION}_amd64.deb
-          sudo dpkg -i tinygo_${TINYGO_VERSION}_amd64.deb
+      # Install tools
+      - uses: aquaproj/aqua-installer@v1.1.2
+        with:
+          aqua_version: v1.25.0
 
       - name: Run module integration tests
+        shell: bash
         run: |
           make test-module-integration
 
