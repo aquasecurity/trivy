@@ -204,7 +204,7 @@ func TestArtifact_Inspect(t *testing.T) {
 							Licenses: []types.LicenseFile{
 								{
 									Type:     "header",
-									FilePath: "/etc/ssl/misc/CA.pl",
+									FilePath: "etc/ssl/misc/CA.pl",
 									Findings: []types.LicenseFinding{
 										{
 											Name:       "OpenSSL",
@@ -215,7 +215,7 @@ func TestArtifact_Inspect(t *testing.T) {
 								},
 								{
 									Type:     "header",
-									FilePath: "/etc/ssl/misc/tsget.pl",
+									FilePath: "etc/ssl/misc/tsget.pl",
 									Findings: []types.LicenseFinding{
 										{
 											Name:       "OpenSSL",
@@ -880,7 +880,7 @@ func TestArtifact_Inspect(t *testing.T) {
 							Licenses: []types.LicenseFile{
 								{
 									Type:     "header",
-									FilePath: "/etc/ssl/misc/CA.pl",
+									FilePath: "etc/ssl/misc/CA.pl",
 									Findings: []types.LicenseFinding{
 										{
 											Name:       "OpenSSL",
@@ -891,7 +891,7 @@ func TestArtifact_Inspect(t *testing.T) {
 								},
 								{
 									Type:     "header",
-									FilePath: "/etc/ssl/misc/tsget.pl",
+									FilePath: "etc/ssl/misc/tsget.pl",
 									Findings: []types.LicenseFinding{
 										{
 											Name:       "OpenSSL",
@@ -949,7 +949,7 @@ func TestArtifact_Inspect(t *testing.T) {
 							Licenses: []types.LicenseFile{
 								{
 									Type:     "header",
-									FilePath: "/etc/ssl/misc/CA.pl",
+									FilePath: "etc/ssl/misc/CA.pl",
 									Findings: []types.LicenseFinding{
 										{
 											Name:       "OpenSSL",
@@ -960,7 +960,7 @@ func TestArtifact_Inspect(t *testing.T) {
 								},
 								{
 									Type:     "header",
-									FilePath: "/etc/ssl/misc/tsget.pl",
+									FilePath: "etc/ssl/misc/tsget.pl",
 									Findings: []types.LicenseFinding{
 										{
 											Name:       "OpenSSL",
