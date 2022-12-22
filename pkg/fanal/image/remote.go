@@ -27,14 +27,6 @@ func tryRemote(ctx context.Context, imageName string, ref name.Reference, option
 		remoteOpts = append(remoteOpts, remote.WithTransport(t))
 	}
 
-	if option.Platform != "" {
-		s, err := parsePlatform(ref, option.Platform)
-		if err != nil {
-			return nil, err
-		}
-		remoteOpts = append(remoteOpts, remote.WithPlatform(*s))
-	}
-
 	domain := ref.Context().RegistryStr()
 	auth := token.GetToken(ctx, domain, option)
 
@@ -45,6 +37,14 @@ func tryRemote(ctx context.Context, imageName string, ref name.Reference, option
 		remoteOpts = append(remoteOpts, remote.WithAuth(&bearer))
 	} else {
 		remoteOpts = append(remoteOpts, remote.WithAuthFromKeychain(authn.DefaultKeychain))
+	}
+
+	if option.Platform != "" {
+		s, err := parsePlatform(ref, remoteOpts, option.Platform)
+		if err != nil {
+			return nil, err
+		}
+		remoteOpts = append(remoteOpts, remote.WithPlatform(*s))
 	}
 
 	desc, err := remote.Get(ref, remoteOpts...)
@@ -67,16 +67,16 @@ func tryRemote(ctx context.Context, imageName string, ref name.Reference, option
 
 }
 
-func parsePlatform(ref name.Reference, p string) (*v1.Platform, error) {
+func parsePlatform(ref name.Reference, options []remote.Option, p string) (*v1.Platform, error) {
 	// OS wildcard, implicitly pick up the first os found in the image list.
 	// e.g. */amd64
 	if strings.HasPrefix(p, "*/") {
-		index, err := remote.Index(ref)
+		index, err := remote.Index(ref, options...)
 		if err != nil {
 			// Not a multi-arch image
 			if _, ok := err.(*remote.ErrSchema1); ok {
 				log.Logger.Debug("Ignored --platform as the image is not multi-arch")
-				return nil, nil
+				return nil, err
 			}
 			return nil, xerrors.Errorf("remote index error: %w", err)
 		}
@@ -86,7 +86,7 @@ func parsePlatform(ref name.Reference, p string) (*v1.Platform, error) {
 		}
 		if len(m.Manifests) == 0 {
 			log.Logger.Debug("Ignored --platform as the image is not multi-arch")
-			return nil, nil
+			return nil, xerrors.New("ignored --platform as the image is not multi-arch")
 		}
 		if m.Manifests[0].Platform != nil {
 			// Replace with the detected OS
