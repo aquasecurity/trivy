@@ -52,7 +52,7 @@ func NewArtifact(rootPath string, c cache.ArtifactCache, opt artifact.Option) (a
 	return Artifact{
 		rootPath:       filepath.Clean(rootPath),
 		cache:          c,
-		walker:         walker.NewFS(buildRelativePaths(rootPath, opt.SkipFiles), buildRelativePaths(rootPath, opt.SkipDirs), opt.Slow),
+		walker:         walker.NewFS(buildPathsToSkip(rootPath, opt.SkipFiles), buildPathsToSkip(rootPath, opt.SkipDirs), opt.Slow),
 		analyzer:       a,
 		handlerManager: handlerManager,
 
@@ -60,7 +60,8 @@ func NewArtifact(rootPath string, c cache.ArtifactCache, opt artifact.Option) (a
 	}, nil
 }
 
-func buildRelativePaths(base string, paths []string) []string {
+// buildPathsToSkip builds correct patch for skipDirs and skipFiles
+func buildPathsToSkip(base string, paths []string) []string {
 	var relativePaths []string
 	absBase, err := filepath.Abs(base)
 	if err != nil {
@@ -68,16 +69,22 @@ func buildRelativePaths(base string, paths []string) []string {
 		return nil
 	}
 	for _, path := range paths {
-		b := base
 		if filepath.IsAbs(path) {
-			b = absBase
+			relPath, err := filepath.Rel(absBase, path)
+			if err != nil {
+				log.Logger.Warnf("can't get relative path to %s: %s", path, err)
+				continue
+			}
+			relativePaths = append(relativePaths, filepath.Join(base, relPath))
+		} else {
+			// we use not only path: https://github.com/aquasecurity/trivy/blob/8569d43a7a4c0b7301f90c004e7a3b75c0b02bcf/pkg/fanal/walker/fs.go#L33
+			// that is why we need to join base to path
+			relPath := filepath.Join(base, path)
+			if rel, err := filepath.Rel(base, path); err == nil {
+				relPath = filepath.Join(base, rel)
+			}
+			relativePaths = append(relativePaths, relPath)
 		}
-		relPath, err := filepath.Rel(b, path)
-		if err != nil {
-			log.Logger.Warnf("can't get relative path to %s: %s", path, err)
-			continue
-		}
-		relativePaths = append(relativePaths, relPath)
 	}
 	return relativePaths
 }

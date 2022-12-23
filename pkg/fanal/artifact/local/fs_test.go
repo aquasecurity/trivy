@@ -236,24 +236,24 @@ func TestArtifact_Inspect(t *testing.T) {
 	}
 }
 
-// TODO: fix the logic in the first place
-func TestBuildRelativePath(t *testing.T) {
+func TestBuildPathsToSkip(t *testing.T) {
 	tests := []struct {
 		name  string
 		paths []string
 		base  string
 		want  []string
 	}{
-		{"path - abs, base - abs", []string{"/bar"}, "/foo", []string{"../bar"}},
-		{"path - abs, base - abs. Skip common prefix", []string{"/foo/bar"}, "/foo", []string{"bar"}},
-		{"path - rel, base - rel. Skip common prefix", []string{"foo/bar"}, "foo", []string{"bar"}},
-		{"path - rel with dot, base - rel. Skip common prefix", []string{"./foo/bar"}, "foo", []string{"bar"}},
+		{"path - abs, base - abs. Skip common prefix", []string{"/foo/bar"}, "/foo", []string{"/foo/bar"}},
+		//{"path - abs, base - rel.", nil, "", nil}, - impossible to check. absPath for each PC will be different. Checked manual mode.
+		{"path - rel, base - abs", []string{"bar"}, "/foo", []string{"/foo/bar"}},
+		{"path - rel, base - rel. Skip common prefix", []string{"foo/bar/bar"}, "foo", []string{"foo/bar/bar"}},
+		{"path - rel with dot, base - rel. Skip common prefix", []string{"./foo/bar"}, "foo", []string{"foo/bar"}},
 		{"path - rel, base - dot", []string{"foo/bar"}, ".", []string{"foo/bar"}},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got := buildRelativePaths(tt.base, tt.paths)
+			got := buildPathsToSkip(tt.base, tt.paths)
 			assert.Equal(t, tt.want, got)
 		})
 	}

@@ -47,7 +47,7 @@ func TestFilesystem(t *testing.T) {
 			args: args{
 				securityChecks: "vuln",
 				input:          "testdata/fixtures/fs/gomod",
-				skipFiles:      []string{"/testdata/fixtures/fs/gomod/submod2/go.mod"},
+				skipFiles:      []string{"testdata/fixtures/fs/gomod/submod2/go.mod"},
 			},
 			golden: "testdata/gomod-skip.json.golden",
 		},
@@ -56,7 +56,7 @@ func TestFilesystem(t *testing.T) {
 			args: args{
 				securityChecks: "vuln",
 				input:          "testdata/fixtures/fs/gomod",
-				skipDirs:       []string{"/testdata/fixtures/fs/gomod/submod2"},
+				skipDirs:       []string{"testdata/fixtures/fs/gomod/submod2"},
 			},
 			golden: "testdata/gomod-skip.json.golden",
 		},
