@@ -69,6 +69,7 @@ jobs:
             go
             c
             c++
+            elixir
 
             os
             lang
