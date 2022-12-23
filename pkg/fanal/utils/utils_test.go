@@ -3,6 +3,7 @@ package utils
 import (
 	"bufio"
 	"os"
+	"path/filepath"
 	"testing"
 )
 
@@ -11,11 +12,11 @@ func TestIsGzip(t *testing.T) {
 		in   string
 		want bool
 	}{
-		{"testdata/test.txt.gz", true},
-		{"testdata/test.tar.gz", true},
-		{"testdata/test.txt", false},
-		{"testdata/test.txt.zst", false},
-		{"testdata/aqua.png", false},
+		{filepath.Join("testdata", "test.txt.gz"), true},
+		{filepath.Join("testdata", "test.tar.gz"), true},
+		{filepath.Join("testdata", "test.txt"), false},
+		{filepath.Join("testdata", "test.txt.zst"), false},
+		{filepath.Join("testdata", "aqua.png"), false},
 	}
 	for _, tt := range tests {
 		t.Run(tt.in, func(t *testing.T) {

@@ -201,9 +201,30 @@ func TestArtifact_Inspect(t *testing.T) {
 									Packages: alpinePkgs,
 								},
 							},
-							Applications:  []types.Application(nil),
-							OpaqueDirs:    []string(nil),
-							WhiteoutFiles: []string(nil),
+							Licenses: []types.LicenseFile{
+								{
+									Type:     "header",
+									FilePath: "etc/ssl/misc/CA.pl",
+									Findings: []types.LicenseFinding{
+										{
+											Name:       "OpenSSL",
+											Confidence: 1,
+											Link:       "https://spdx.org/licenses/OpenSSL.html",
+										},
+									},
+								},
+								{
+									Type:     "header",
+									FilePath: "etc/ssl/misc/tsget.pl",
+									Findings: []types.LicenseFinding{
+										{
+											Name:       "OpenSSL",
+											Confidence: 1,
+											Link:       "https://spdx.org/licenses/OpenSSL.html",
+										},
+									},
+								},
+							},
 						},
 					},
 					Returns: cache.ArtifactCachePutBlobReturns{},
@@ -856,9 +877,30 @@ func TestArtifact_Inspect(t *testing.T) {
 									Packages: alpinePkgs,
 								},
 							},
-							Applications:  []types.Application(nil),
-							OpaqueDirs:    []string(nil),
-							WhiteoutFiles: []string(nil),
+							Licenses: []types.LicenseFile{
+								{
+									Type:     "header",
+									FilePath: "etc/ssl/misc/CA.pl",
+									Findings: []types.LicenseFinding{
+										{
+											Name:       "OpenSSL",
+											Confidence: 1,
+											Link:       "https://spdx.org/licenses/OpenSSL.html",
+										},
+									},
+								},
+								{
+									Type:     "header",
+									FilePath: "etc/ssl/misc/tsget.pl",
+									Findings: []types.LicenseFinding{
+										{
+											Name:       "OpenSSL",
+											Confidence: 1,
+											Link:       "https://spdx.org/licenses/OpenSSL.html",
+										},
+									},
+								},
+							},
 						},
 					},
 					Returns: cache.ArtifactCachePutBlobReturns{
@@ -904,9 +946,30 @@ func TestArtifact_Inspect(t *testing.T) {
 									Packages: alpinePkgs,
 								},
 							},
-							Applications:  []types.Application(nil),
-							OpaqueDirs:    []string(nil),
-							WhiteoutFiles: []string(nil),
+							Licenses: []types.LicenseFile{
+								{
+									Type:     "header",
+									FilePath: "etc/ssl/misc/CA.pl",
+									Findings: []types.LicenseFinding{
+										{
+											Name:       "OpenSSL",
+											Confidence: 1,
+											Link:       "https://spdx.org/licenses/OpenSSL.html",
+										},
+									},
+								},
+								{
+									Type:     "header",
+									FilePath: "etc/ssl/misc/tsget.pl",
+									Findings: []types.LicenseFinding{
+										{
+											Name:       "OpenSSL",
+											Confidence: 1,
+											Link:       "https://spdx.org/licenses/OpenSSL.html",
+										},
+									},
+								},
+							},
 						},
 					},
 					Returns: cache.ArtifactCachePutBlobReturns{},

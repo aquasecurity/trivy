@@ -67,6 +67,8 @@ func TestTableWriter_Write(t *testing.T) {
 			require.NoError(t, err)
 
 			want, err := os.ReadFile(tt.want)
+			want = bytes.ReplaceAll(want, []byte("\r"), []byte(""))
+
 			require.NoError(t, err)
 
 			assert.Equal(t, string(want), buf.String())

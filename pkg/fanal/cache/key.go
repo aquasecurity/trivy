@@ -37,7 +37,7 @@ func CalcKey(id string, analyzerVersions, hookVersions map[string]int, artifactO
 		for _, p := range paths {
 			s, err := dirhash.HashDir(p, "", dirhash.DefaultHash)
 			if err != nil {
-				return "", xerrors.Errorf("hash dir (%s): %w", p, err)
+				return "", xerrors.Errorf("hash dir error (%s): %w", p, err)
 			}
 
 			if _, err = h.Write([]byte(s)); err != nil {

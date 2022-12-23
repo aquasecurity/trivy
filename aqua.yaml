@@ -1,0 +1,8 @@
+---
+# aqua - Declarative CLI Version Manager
+# https://aquaproj.github.io/
+registries:
+- type: standard
+  ref: v3.106.0 # renovate: depName=aquaproj/aqua-registry
+packages:
+- name: tinygo-org/tinygo@v0.26.0
