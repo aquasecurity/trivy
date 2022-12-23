@@ -96,6 +96,8 @@ func (p *PackageURL) PackageType() string {
 		return ftypes.NuGet
 	case packageurl.TypeSwift:
 		return ftypes.Cocoapods
+	case "elixir": // TODO use purl package after adding this
+		return ftypes.ElixirLock
 	}
 	return p.Type
 }
@@ -308,6 +310,8 @@ func purlType(t string) string {
 		return packageurl.TypeNPM
 	case ftypes.Cocoapods:
 		return packageurl.TypeSwift
+	case ftypes.ElixirLock:
+		return "elixir"
 	case os.Alpine:
 		return TypeAPK
 	case os.Debian, os.Ubuntu:
