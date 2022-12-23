@@ -35,8 +35,8 @@ func (a mixLockAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInput
 	return res, nil
 }
 
-func (a mixLockAnalyzer) Required(_ string, fileInfo os.FileInfo) bool {
-	return strings.HasSuffix(fileInfo.Name(), fileNameSuffix)
+func (a mixLockAnalyzer) Required(filePath string, _ os.FileInfo) bool {
+	return strings.HasSuffix(filePath, fileNameSuffix)
 }
 
 func (a mixLockAnalyzer) Type() analyzer.Type {
