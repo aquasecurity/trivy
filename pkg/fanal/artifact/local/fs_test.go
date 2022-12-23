@@ -3,6 +3,7 @@ package local
 import (
 	"context"
 	"errors"
+	"runtime"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -239,22 +240,29 @@ func TestArtifact_Inspect(t *testing.T) {
 func TestBuildPathsToSkip(t *testing.T) {
 	tests := []struct {
 		name  string
+		os    string
 		paths []string
 		base  string
 		want  []string
 	}{
-		{"path - abs, base - abs. Skip common prefix", []string{"/foo/bar"}, "/foo", []string{"/foo/bar"}},
+		// linux/mac
+		{"path - abs, base - abs. Skip common prefix", "linux/mac", []string{"/foo/bar"}, "/foo", []string{"/foo/bar"}},
 		//{"path - abs, base - rel.", nil, "", nil}, - impossible to check. absPath for each PC will be different. Checked manual mode.
-		{"path - rel, base - abs", []string{"bar"}, "/foo", []string{"/foo/bar"}},
-		{"path - rel, base - rel. Skip common prefix", []string{"foo/bar/bar"}, "foo", []string{"foo/bar/bar"}},
-		{"path - rel with dot, base - rel. Skip common prefix", []string{"./foo/bar"}, "foo", []string{"foo/bar"}},
-		{"path - rel, base - dot", []string{"foo/bar"}, ".", []string{"foo/bar"}},
+		{"path - rel, base - abs", "linux/mac", []string{"bar"}, "/foo", []string{"/foo/bar"}},
+		{"path - rel, base - rel. Skip common prefix", "linux/mac", []string{"foo/bar/bar"}, "foo", []string{"foo/bar/bar"}},
+		{"path - rel with dot, base - rel. Skip common prefix", "linux/mac", []string{"./foo/bar"}, "foo", []string{"foo/bar"}},
+		{"path - rel, base - dot", "linux/mac", []string{"foo/bar"}, ".", []string{"foo/bar"}},
+		// windows
+		{"path - rel, base - rel. Skip common prefix", "windows", []string{"foo\\bar\\bar"}, "foo", []string{"foo\\bar\\bar"}},
+		{"path - rel, base - dot", "windows", []string{"foo\\bar"}, ".", []string{"foo\\bar"}},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got := buildPathsToSkip(tt.base, tt.paths)
-			assert.Equal(t, tt.want, got)
+			if runtime.GOOS == tt.os {
+				got := buildPathsToSkip(tt.base, tt.paths)
+				assert.Equal(t, tt.want, got)
+			}
 		})
 	}
 }
