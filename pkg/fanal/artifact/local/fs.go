@@ -4,6 +4,7 @@ import (
 	"context"
 	"crypto/sha256"
 	"encoding/json"
+	"github.com/aquasecurity/trivy/pkg/log"
 	"os"
 	"path/filepath"
 	"strings"
@@ -51,7 +52,7 @@ func NewArtifact(rootPath string, c cache.ArtifactCache, opt artifact.Option) (a
 	return Artifact{
 		rootPath:       filepath.Clean(rootPath),
 		cache:          c,
-		walker:         walker.NewFS(buildAbsPaths(rootPath, opt.SkipFiles), buildAbsPaths(rootPath, opt.SkipDirs), opt.Slow),
+		walker:         walker.NewFS(buildRelativePaths(rootPath, opt.SkipFiles), buildRelativePaths(rootPath, opt.SkipDirs), opt.Slow),
 		analyzer:       a,
 		handlerManager: handlerManager,
 
@@ -59,16 +60,26 @@ func NewArtifact(rootPath string, c cache.ArtifactCache, opt artifact.Option) (a
 	}, nil
 }
 
-func buildAbsPaths(base string, paths []string) []string {
-	var absPaths []string
-	for _, path := range paths {
-		if filepath.IsAbs(path) {
-			absPaths = append(absPaths, path)
-		} else {
-			absPaths = append(absPaths, filepath.Join(base, path))
-		}
+func buildRelativePaths(base string, paths []string) []string {
+	var relativePaths []string
+	absBase, err := filepath.Abs(base)
+	if err != nil {
+		log.Logger.Warnf("can't get abspath to base to: %s", err)
+		return nil
 	}
-	return absPaths
+	for _, path := range paths {
+		b := base
+		if filepath.IsAbs(path) {
+			b = absBase
+		}
+		relPath, err := filepath.Rel(b, path)
+		if err != nil {
+			log.Logger.Warnf("can't get relative path to %s: %s", path, err)
+			continue
+		}
+		relativePaths = append(relativePaths, relPath)
+	}
+	return relativePaths
 }
 
 func (a Artifact) Inspect(ctx context.Context) (types.ArtifactReference, error) {

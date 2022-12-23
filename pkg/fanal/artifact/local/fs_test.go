@@ -237,34 +237,27 @@ func TestArtifact_Inspect(t *testing.T) {
 }
 
 // TODO: fix the logic in the first place
-//func TestBuildAbsPath(t *testing.T) {
-//	tests := []struct {
-//		name          string
-//		base          string
-//		paths         []string
-//		expectedPaths []string
-//	}{
-//		{"absolute path", "/testBase", []string{"/testPath"}, []string{"/testPath"}},
-//		{"relative path", "/testBase", []string{"testPath"}, []string{"/testBase/testPath"}},
-//		{"path have '.'", "/testBase", []string{"./testPath"}, []string{"/testBase/testPath"}},
-//		{"path have '..'", "/testBase", []string{"../testPath/"}, []string{"/testPath"}},
-//	}
-//
-//	for _, test := range tests {
-//		t.Run(test.name, func(t *testing.T) {
-//			got := buildAbsPaths(test.base, test.paths)
-//			if len(test.paths) != len(got) {
-//				t.Errorf("paths not equals, expected: %s, got: %s", test.expectedPaths, got)
-//			} else {
-//				for i, path := range test.expectedPaths {
-//					if path != got[i] {
-//						t.Errorf("paths not equals, expected: %s, got: %s", test.expectedPaths, got)
-//					}
-//				}
-//			}
-//		})
-//	}
-//}
+func TestBuildRelativePath(t *testing.T) {
+	tests := []struct {
+		name  string
+		paths []string
+		base  string
+		want  []string
+	}{
+		{"path - abs, base - abs", []string{"/bar"}, "/foo", []string{"../bar"}},
+		{"path - abs, base - abs. Skip common prefix", []string{"/foo/bar"}, "/foo", []string{"bar"}},
+		{"path - rel, base - rel. Skip common prefix", []string{"foo/bar"}, "foo", []string{"bar"}},
+		{"path - rel with dot, base - rel. Skip common prefix", []string{"./foo/bar"}, "foo", []string{"bar"}},
+		{"path - rel, base - dot", []string{"foo/bar"}, ".", []string{"foo/bar"}},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got := buildRelativePaths(tt.base, tt.paths)
+			assert.Equal(t, tt.want, got)
+		})
+	}
+}
 
 func TestTerraformMisconfigurationScan(t *testing.T) {
 	type fields struct {
