@@ -16,7 +16,7 @@ type DockerConfig struct {
 }
 
 // GetDockerOption returns the Docker scanning options using DockerConfig
-func GetDockerOption(insecureTlsSkip bool) (types.DockerOption, error) {
+func GetDockerOption(insecureTlsSkip bool, Platform string) (types.DockerOption, error) {
 	cfg := DockerConfig{}
 	if err := env.Parse(&cfg); err != nil {
 		return types.DockerOption{}, xerrors.Errorf("unable to parse environment variables: %w", err)
@@ -28,5 +28,6 @@ func GetDockerOption(insecureTlsSkip bool) (types.DockerOption, error) {
 		RegistryToken:         cfg.RegistryToken,
 		InsecureSkipTLSVerify: insecureTlsSkip,
 		NonSSL:                cfg.NonSSL,
+		Platform:              Platform,
 	}, nil
 }

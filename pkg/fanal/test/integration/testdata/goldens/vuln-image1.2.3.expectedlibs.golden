@@ -280,371 +280,445 @@
     "FilePath": "rust-app/Cargo.lock",
     "Libraries": [
       {
+        "ID": "ammonia@1.9.0",
         "Name": "ammonia",
         "Version": "1.9.0",
         "Layer": {}
       },
       {
+        "ID": "autocfg@0.1.2",
         "Name": "autocfg",
         "Version": "0.1.2",
         "Layer": {}
       },
       {
+        "ID": "bitflags@0.7.0",
         "Name": "bitflags",
         "Version": "0.7.0",
         "Layer": {}
       },
       {
+        "ID": "bitflags@1.0.4",
         "Name": "bitflags",
         "Version": "1.0.4",
         "Layer": {}
       },
       {
+        "ID": "cfg-if@0.1.7",
         "Name": "cfg-if",
         "Version": "0.1.7",
         "Layer": {}
       },
       {
+        "ID": "cloudabi@0.0.3",
         "Name": "cloudabi",
         "Version": "0.0.3",
         "Layer": {}
       },
       {
+        "ID": "fuchsia-cprng@0.1.1",
         "Name": "fuchsia-cprng",
         "Version": "0.1.1",
         "Layer": {}
       },
       {
+        "ID": "futf@0.1.4",
         "Name": "futf",
         "Version": "0.1.4",
         "Layer": {}
       },
       {
+        "ID": "gdi32-sys@0.2.0",
         "Name": "gdi32-sys",
         "Version": "0.2.0",
         "Layer": {}
       },
       {
+        "ID": "html5ever@0.23.0",
         "Name": "html5ever",
         "Version": "0.23.0",
         "Layer": {}
       },
       {
+        "ID": "idna@0.1.5",
         "Name": "idna",
         "Version": "0.1.5",
         "Layer": {}
       },
       {
+        "ID": "itoa@0.4.4",
         "Name": "itoa",
         "Version": "0.4.4",
         "Layer": {}
       },
       {
+        "ID": "kernel32-sys@0.2.2",
         "Name": "kernel32-sys",
         "Version": "0.2.2",
         "Layer": {}
       },
       {
+        "ID": "lazy_static@0.2.11",
         "Name": "lazy_static",
         "Version": "0.2.11",
         "Layer": {}
       },
       {
+        "ID": "lazy_static@1.3.0",
         "Name": "lazy_static",
         "Version": "1.3.0",
         "Layer": {}
       },
       {
+        "ID": "libc@0.2.54",
         "Name": "libc",
         "Version": "0.2.54",
         "Layer": {}
       },
       {
+        "ID": "libressl-pnacl-sys@2.1.6",
         "Name": "libressl-pnacl-sys",
         "Version": "2.1.6",
         "Layer": {}
       },
       {
+        "ID": "log@0.4.6",
         "Name": "log",
         "Version": "0.4.6",
         "Layer": {}
       },
       {
+        "ID": "mac@0.1.1",
         "Name": "mac",
         "Version": "0.1.1",
         "Layer": {}
       },
       {
+        "ID": "maplit@1.0.1",
         "Name": "maplit",
         "Version": "1.0.1",
         "Layer": {}
       },
       {
+        "ID": "markup5ever@0.8.1",
         "Name": "markup5ever",
         "Version": "0.8.1",
         "Layer": {}
       },
       {
+        "ID": "matches@0.1.8",
         "Name": "matches",
         "Version": "0.1.8",
         "Layer": {}
       },
       {
+        "ID": "new_debug_unreachable@1.0.3",
         "Name": "new_debug_unreachable",
         "Version": "1.0.3",
         "Layer": {}
       },
       {
+        "ID": "normal@0.1.0",
         "Name": "normal",
         "Version": "0.1.0",
         "Layer": {}
       },
       {
+        "ID": "openssl@0.8.3",
         "Name": "openssl",
         "Version": "0.8.3",
         "Layer": {}
       },
       {
+        "ID": "openssl-sys@0.7.17",
         "Name": "openssl-sys",
         "Version": "0.7.17",
         "Layer": {}
       },
       {
+        "ID": "percent-encoding@1.0.1",
         "Name": "percent-encoding",
         "Version": "1.0.1",
         "Layer": {}
       },
       {
+        "ID": "phf@0.7.24",
         "Name": "phf",
         "Version": "0.7.24",
         "Layer": {}
       },
       {
+        "ID": "phf_codegen@0.7.24",
         "Name": "phf_codegen",
         "Version": "0.7.24",
         "Layer": {}
       },
       {
+        "ID": "phf_generator@0.7.24",
         "Name": "phf_generator",
         "Version": "0.7.24",
         "Layer": {}
       },
       {
+        "ID": "phf_shared@0.7.24",
         "Name": "phf_shared",
         "Version": "0.7.24",
         "Layer": {}
       },
       {
+        "ID": "pkg-config@0.3.14",
         "Name": "pkg-config",
         "Version": "0.3.14",
         "Layer": {}
       },
       {
+        "ID": "pnacl-build-helper@1.4.11",
         "Name": "pnacl-build-helper",
         "Version": "1.4.11",
         "Layer": {}
       },
       {
+        "ID": "precomputed-hash@0.1.1",
         "Name": "precomputed-hash",
         "Version": "0.1.1",
         "Layer": {}
       },
       {
+        "ID": "proc-macro2@0.4.30",
         "Name": "proc-macro2",
         "Version": "0.4.30",
         "Layer": {}
       },
       {
+        "ID": "quote@0.6.12",
         "Name": "quote",
         "Version": "0.6.12",
         "Layer": {}
       },
       {
+        "ID": "rand@0.4.6",
         "Name": "rand",
         "Version": "0.4.6",
         "Layer": {}
       },
       {
+        "ID": "rand@0.6.5",
         "Name": "rand",
         "Version": "0.6.5",
         "Layer": {}
       },
       {
+        "ID": "rand_chacha@0.1.1",
         "Name": "rand_chacha",
         "Version": "0.1.1",
         "Layer": {}
       },
       {
+        "ID": "rand_core@0.3.1",
         "Name": "rand_core",
         "Version": "0.3.1",
         "Layer": {}
       },
       {
+        "ID": "rand_core@0.4.0",
         "Name": "rand_core",
         "Version": "0.4.0",
         "Layer": {}
       },
       {
+        "ID": "rand_hc@0.1.0",
         "Name": "rand_hc",
         "Version": "0.1.0",
         "Layer": {}
       },
       {
+        "ID": "rand_isaac@0.1.1",
         "Name": "rand_isaac",
         "Version": "0.1.1",
         "Layer": {}
       },
       {
+        "ID": "rand_jitter@0.1.4",
         "Name": "rand_jitter",
         "Version": "0.1.4",
         "Layer": {}
       },
       {
+        "ID": "rand_os@0.1.3",
         "Name": "rand_os",
         "Version": "0.1.3",
         "Layer": {}
       },
       {
+        "ID": "rand_pcg@0.1.2",
         "Name": "rand_pcg",
         "Version": "0.1.2",
         "Layer": {}
       },
       {
+        "ID": "rand_xorshift@0.1.1",
         "Name": "rand_xorshift",
         "Version": "0.1.1",
         "Layer": {}
       },
       {
+        "ID": "rdrand@0.4.0",
         "Name": "rdrand",
         "Version": "0.4.0",
         "Layer": {}
       },
       {
+        "ID": "remove_dir_all@0.5.1",
         "Name": "remove_dir_all",
         "Version": "0.5.1",
         "Layer": {}
       },
       {
+        "ID": "ryu@0.2.8",
         "Name": "ryu",
         "Version": "0.2.8",
         "Layer": {}
       },
       {
+        "ID": "same-file@0.1.3",
         "Name": "same-file",
         "Version": "0.1.3",
         "Layer": {}
       },
       {
+        "ID": "serde@1.0.91",
         "Name": "serde",
         "Version": "1.0.91",
         "Layer": {}
       },
       {
+        "ID": "serde_derive@1.0.91",
         "Name": "serde_derive",
         "Version": "1.0.91",
         "Layer": {}
       },
       {
+        "ID": "serde_json@1.0.39",
         "Name": "serde_json",
         "Version": "1.0.39",
         "Layer": {}
       },
       {
+        "ID": "siphasher@0.2.3",
         "Name": "siphasher",
         "Version": "0.2.3",
         "Layer": {}
       },
       {
+        "ID": "smallvec@0.6.9",
         "Name": "smallvec",
         "Version": "0.6.9",
         "Layer": {}
       },
       {
+        "ID": "string_cache@0.7.3",
         "Name": "string_cache",
         "Version": "0.7.3",
         "Layer": {}
       },
       {
+        "ID": "string_cache_codegen@0.4.2",
         "Name": "string_cache_codegen",
         "Version": "0.4.2",
         "Layer": {}
       },
       {
+        "ID": "string_cache_shared@0.3.0",
         "Name": "string_cache_shared",
         "Version": "0.3.0",
         "Layer": {}
       },
       {
+        "ID": "syn@0.15.34",
         "Name": "syn",
         "Version": "0.15.34",
         "Layer": {}
       },
       {
+        "ID": "tempdir@0.3.7",
         "Name": "tempdir",
         "Version": "0.3.7",
         "Layer": {}
       },
       {
+        "ID": "tendril@0.4.1",
         "Name": "tendril",
         "Version": "0.4.1",
         "Layer": {}
       },
       {
+        "ID": "unicode-bidi@0.3.4",
         "Name": "unicode-bidi",
         "Version": "0.3.4",
         "Layer": {}
       },
       {
+        "ID": "unicode-normalization@0.1.8",
         "Name": "unicode-normalization",
         "Version": "0.1.8",
         "Layer": {}
       },
       {
+        "ID": "unicode-xid@0.1.0",
         "Name": "unicode-xid",
         "Version": "0.1.0",
         "Layer": {}
       },
       {
+        "ID": "url@1.7.2",
         "Name": "url",
         "Version": "1.7.2",
         "Layer": {}
       },
       {
+        "ID": "user32-sys@0.2.0",
         "Name": "user32-sys",
         "Version": "0.2.0",
         "Layer": {}
       },
       {
+        "ID": "utf-8@0.7.5",
         "Name": "utf-8",
         "Version": "0.7.5",
         "Layer": {}
       },
       {
+        "ID": "walkdir@1.0.7",
         "Name": "walkdir",
         "Version": "1.0.7",
         "Layer": {}
       },
       {
+        "ID": "winapi@0.2.8",
         "Name": "winapi",
         "Version": "0.2.8",
         "Layer": {}
       },
       {
+        "ID": "winapi@0.3.7",
         "Name": "winapi",
         "Version": "0.3.7",
         "Layer": {}
       },
       {
+        "ID": "winapi-build@0.1.1",
         "Name": "winapi-build",
         "Version": "0.1.1",
         "Layer": {}
       },
       {
+        "ID": "winapi-i686-pc-windows-gnu@0.4.0",
         "Name": "winapi-i686-pc-windows-gnu",
         "Version": "0.4.0",
         "Layer": {}
       },
       {
+        "ID": "winapi-x86_64-pc-windows-gnu@0.4.0",
         "Name": "winapi-x86_64-pc-windows-gnu",
         "Version": "0.4.0",
         "Layer": {}
@@ -736,97 +810,194 @@
         "Name": "asap",
         "Version": "2.0.6",
         "Indirect": true,
-        "Layer": {}
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 6,
+            "EndLine": 10
+          }
+        ]
       },
       {
         "ID": "jquery@3.3.9",
         "Name": "jquery",
         "Version": "3.3.9",
         "Indirect": true,
-        "Layer": {}
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 16,
+            "EndLine": 20
+          }
+        ]
       },
       {
         "ID": "js-tokens@4.0.0",
         "Name": "js-tokens",
         "Version": "4.0.0",
         "Indirect": true,
-        "Layer": {}
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 21,
+            "EndLine": 25
+          }
+        ]
       },
       {
         "ID": "lodash@4.17.4",
         "Name": "lodash",
         "Version": "4.17.4",
         "Indirect": true,
-        "Layer": {}
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 11,
+            "EndLine": 15
+          }
+        ]
       },
       {
         "ID": "loose-envify@1.4.0",
         "Name": "loose-envify",
         "Version": "1.4.0",
         "Indirect": true,
+        "DependsOn": [
+          "js-tokens@4.0.0"
+        ],
         "Layer": {},
-        "DependsOn": ["js-tokens@4.0.0"]
+        "Locations": [
+          {
+            "StartLine": 26,
+            "EndLine": 33
+          }
+        ]
       },
       {
         "ID": "object-assign@4.1.1",
         "Name": "object-assign",
         "Version": "4.1.1",
         "Indirect": true,
-        "Layer": {}
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 34,
+            "EndLine": 38
+          }
+        ]
       },
       {
         "ID": "promise@8.0.3",
         "Name": "promise",
         "Version": "8.0.3",
         "Indirect": true,
+        "DependsOn": [
+          "asap@2.0.6"
+        ],
         "Layer": {},
-        "DependsOn": ["asap@2.0.6"]
+        "Locations": [
+          {
+            "StartLine": 39,
+            "EndLine": 46
+          }
+        ]
       },
       {
         "ID": "prop-types@15.7.2",
         "Name": "prop-types",
         "Version": "15.7.2",
         "Indirect": true,
+        "DependsOn": [
+          "loose-envify@1.4.0",
+          "object-assign@4.1.1",
+          "react-is@16.8.6"
+        ],
         "Layer": {},
-        "DependsOn": ["loose-envify@1.4.0", "object-assign@4.1.1", "react-is@16.8.6"]
+        "Locations": [
+          {
+            "StartLine": 47,
+            "EndLine": 56
+          }
+        ]
       },
       {
         "ID": "react@16.8.6",
         "Name": "react",
         "Version": "16.8.6",
         "Indirect": true,
+        "DependsOn": [
+          "loose-envify@1.4.0",
+          "object-assign@4.1.1",
+          "prop-types@15.7.2",
+          "scheduler@0.13.6"
+        ],
         "Layer": {},
-        "DependsOn": ["loose-envify@1.4.0", "object-assign@4.1.1", "prop-types@15.7.2", "scheduler@0.13.6"]
+        "Locations": [
+          {
+            "StartLine": 57,
+            "EndLine": 67
+          }
+        ]
       },
       {
         "ID": "react-is@16.8.6",
         "Name": "react-is",
         "Version": "16.8.6",
         "Indirect": true,
-        "Layer": {}
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 68,
+            "EndLine": 72
+          }
+        ]
       },
       {
         "ID": "redux@4.0.1",
         "Name": "redux",
         "Version": "4.0.1",
         "Indirect": true,
+        "DependsOn": [
+          "loose-envify@1.4.0",
+          "symbol-observable@1.2.0"
+        ],
         "Layer": {},
-        "DependsOn": ["loose-envify@1.4.0", "symbol-observable@1.2.0"]
+        "Locations": [
+          {
+            "StartLine": 73,
+            "EndLine": 81
+          }
+        ]
       },
       {
         "ID": "scheduler@0.13.6",
         "Name": "scheduler",
         "Version": "0.13.6",
         "Indirect": true,
+        "DependsOn": [
+          "loose-envify@1.4.0",
+          "object-assign@4.1.1"
+        ],
         "Layer": {},
-        "DependsOn": ["loose-envify@1.4.0", "object-assign@4.1.1"]
+        "Locations": [
+          {
+            "StartLine": 82,
+            "EndLine": 90
+          }
+        ]
       },
       {
         "ID": "symbol-observable@1.2.0",
         "Name": "symbol-observable",
         "Version": "1.2.0",
         "Indirect": true,
-        "Layer": {}
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 91,
+            "EndLine": 95
+          }
+        ]
       }
     ]
   },

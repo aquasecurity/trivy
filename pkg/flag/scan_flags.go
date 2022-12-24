@@ -38,6 +38,12 @@ var (
 		Value:      []string{},
 		Usage:      "specify config file patterns",
 	}
+	SlowFlag = Flag{
+		Name:       "slow",
+		ConfigName: "scan.slow",
+		Value:      false,
+		Usage:      "scan over time with lower CPU and memory utilization",
+	}
 	SBOMSourcesFlag = Flag{
 		Name:       "sbom-sources",
 		ConfigName: "scan.sbom-sources",
@@ -58,6 +64,7 @@ type ScanFlagGroup struct {
 	OfflineScan    *Flag
 	SecurityChecks *Flag
 	FilePatterns   *Flag
+	Slow           *Flag
 	SBOMSources    *Flag
 	RekorURL       *Flag
 }
@@ -69,6 +76,7 @@ type ScanOptions struct {
 	OfflineScan    bool
 	SecurityChecks []string
 	FilePatterns   []string
+	Slow           bool
 	SBOMSources    []string
 	RekorURL       string
 }
@@ -80,6 +88,7 @@ func NewScanFlagGroup() *ScanFlagGroup {
 		OfflineScan:    &OfflineScanFlag,
 		SecurityChecks: &SecurityChecksFlag,
 		FilePatterns:   &FilePatternsFlag,
+		Slow:           &SlowFlag,
 		SBOMSources:    &SBOMSourcesFlag,
 		RekorURL:       &RekorURLFlag,
 	}
@@ -90,7 +99,8 @@ func (f *ScanFlagGroup) Name() string {
 }
 
 func (f *ScanFlagGroup) Flags() []*Flag {
-	return []*Flag{f.SkipDirs, f.SkipFiles, f.OfflineScan, f.SecurityChecks, f.FilePatterns, f.SBOMSources, f.RekorURL}
+	return []*Flag{f.SkipDirs, f.SkipFiles, f.OfflineScan, f.SecurityChecks, f.FilePatterns,
+		f.Slow, f.SBOMSources, f.RekorURL}
 }
 
 func (f *ScanFlagGroup) ToOptions(args []string) (ScanOptions, error) {
@@ -115,6 +125,7 @@ func (f *ScanFlagGroup) ToOptions(args []string) (ScanOptions, error) {
 		OfflineScan:    getBool(f.OfflineScan),
 		SecurityChecks: securityChecks,
 		FilePatterns:   getStringSlice(f.FilePatterns),
+		Slow:           getBool(f.Slow),
 		SBOMSources:    sbomSources,
 		RekorURL:       getString(f.RekorURL),
 	}, nil

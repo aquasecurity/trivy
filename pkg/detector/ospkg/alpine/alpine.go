@@ -43,6 +43,7 @@ var (
 		"3.14": time.Date(2023, 5, 1, 23, 59, 59, 0, time.UTC),
 		"3.15": time.Date(2023, 11, 1, 23, 59, 59, 0, time.UTC),
 		"3.16": time.Date(2024, 5, 23, 23, 59, 59, 0, time.UTC),
+		"3.17": time.Date(2024, 11, 22, 23, 59, 59, 0, time.UTC),
 		"edge": time.Date(9999, 1, 1, 0, 0, 0, 0, time.UTC),
 	}
 )
@@ -103,7 +104,11 @@ func (s *Scanner) Detect(osVer string, repo *ftypes.Repository, pkgs []ftypes.Pa
 
 	var vulns []types.DetectedVulnerability
 	for _, pkg := range pkgs {
-		advisories, err := s.vs.Get(stream, pkg.SrcName)
+		srcName := pkg.SrcName
+		if srcName == "" {
+			srcName = pkg.Name
+		}
+		advisories, err := s.vs.Get(stream, srcName)
 		if err != nil {
 			return nil, xerrors.Errorf("failed to get alpine advisories: %w", err)
 		}
@@ -121,6 +126,7 @@ func (s *Scanner) Detect(osVer string, repo *ftypes.Repository, pkgs []ftypes.Pa
 			}
 			vulns = append(vulns, types.DetectedVulnerability{
 				VulnerabilityID:  adv.VulnerabilityID,
+				PkgID:            pkg.ID,
 				PkgName:          pkg.Name,
 				InstalledVersion: installed,
 				FixedVersion:     adv.FixedVersion,

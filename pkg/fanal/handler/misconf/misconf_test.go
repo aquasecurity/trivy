@@ -3,13 +3,17 @@ package misconf
 import (
 	"context"
 	"fmt"
+	"os"
+	"path/filepath"
+	"runtime"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/artifact"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
 )
 
 func Test_Handle(t *testing.T) {
@@ -80,44 +84,62 @@ func Test_FindingFSTarget(t *testing.T) {
 			wantErr: true,
 		},
 		{
-			input:      []string{"/"},
-			wantTarget: "/",
+			input:      []string{string(os.PathSeparator)},
+			wantTarget: string(os.PathSeparator),
 			wantPaths:  []string{"."},
 		},
 		{
-			input:      []string{"/home/user"},
-			wantTarget: "/home/user",
+			input:      []string{filepath.Join(string(os.PathSeparator), "home", "user")},
+			wantTarget: filepath.Join(string(os.PathSeparator), "home", "user"),
 			wantPaths:  []string{"."},
 		},
 		{
-			input:      []string{"/home/user", "/home/user/something"},
-			wantTarget: "/home/user",
+			input: []string{
+				filepath.Join(string(os.PathSeparator), "home", "user"),
+				filepath.Join(string(os.PathSeparator), "home", "user", "something"),
+			},
+			wantTarget: filepath.Join(string(os.PathSeparator), "home", "user"),
 			wantPaths:  []string{".", "something"},
 		},
 		{
-			input:      []string{"/home/user", "/home/user/something/else"},
-			wantTarget: "/home/user",
+			input: []string{
+				filepath.Join(string(os.PathSeparator), "home", "user"),
+				filepath.Join(string(os.PathSeparator), "home", "user", "something", "else"),
+			},
+			wantTarget: filepath.Join(string(os.PathSeparator), "home", "user"),
 			wantPaths:  []string{".", "something/else"},
 		},
 		{
-			input:      []string{"/home/user", "/home/user2/something/else"},
-			wantTarget: "/home",
+			input: []string{
+				filepath.Join(string(os.PathSeparator), "home", "user"),
+				filepath.Join(string(os.PathSeparator), "home", "user2", "something", "else"),
+			},
+			wantTarget: filepath.Join(string(os.PathSeparator), "home"),
 			wantPaths:  []string{"user", "user2/something/else"},
 		},
 		{
-			input:      []string{"/foo", "/bar"},
-			wantTarget: "/",
+			input: []string{
+				filepath.Join(string(os.PathSeparator), "foo"),
+				filepath.Join(string(os.PathSeparator), "bar"),
+			},
+			wantTarget: string(os.PathSeparator),
 			wantPaths:  []string{"foo", "bar"},
 		},
 		{
-			input:      []string{"/", "/bar"},
-			wantTarget: "/",
+			input:      []string{string(os.PathSeparator), filepath.Join(string(os.PathSeparator), "bar")},
+			wantTarget: string(os.PathSeparator),
 			wantPaths:  []string{".", "bar"},
 		},
 	}
 
 	for _, test := range tests {
 		t.Run(fmt.Sprintf("%#v", test.input), func(t *testing.T) {
+			if runtime.GOOS == "windows" {
+				wantTarget, err := filepath.Abs(test.wantTarget)
+				require.NoError(t, err)
+				test.wantTarget = filepath.Clean(wantTarget)
+			}
+
 			target, paths, err := findFSTarget(test.input)
 			if test.wantErr {
 				require.Error(t, err)
@@ -127,5 +149,4 @@ func Test_FindingFSTarget(t *testing.T) {
 			}
 		})
 	}
-
 }

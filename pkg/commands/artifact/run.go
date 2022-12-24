@@ -40,6 +40,7 @@ const (
 	TargetRepository     TargetKind = "repo"
 	TargetImageArchive   TargetKind = "archive"
 	TargetSBOM           TargetKind = "sbom"
+	TargetVM             TargetKind = "vm"
 
 	devVersion = "dev"
 )
@@ -78,6 +79,8 @@ type Runner interface {
 	ScanRepository(ctx context.Context, opts flag.Options) (types.Report, error)
 	// ScanSBOM scans SBOM
 	ScanSBOM(ctx context.Context, opts flag.Options) (types.Report, error)
+	// ScanVM scans VM
+	ScanVM(ctx context.Context, opts flag.Options) (types.Report, error)
 	// Filter filter a report
 	Filter(ctx context.Context, opts flag.Options, report types.Report) (types.Report, error)
 	// Report a writes a report
@@ -208,7 +211,15 @@ func (r *runner) ScanRepository(ctx context.Context, opts flag.Options) (types.R
 	// Disable the OS analyzers and individual package analyzers
 	opts.DisabledAnalyzers = append(analyzer.TypeIndividualPkgs, analyzer.TypeOSes...)
 
-	return r.scanArtifact(ctx, opts, repositoryStandaloneScanner)
+	var s InitializeScanner
+	if opts.ServerAddr == "" {
+		// Scan repository in standalone mode
+		s = repositoryStandaloneScanner
+	} else {
+		// Scan repository in client/server mode
+		s = repositoryRemoteScanner
+	}
+	return r.scanArtifact(ctx, opts, s)
 }
 
 func (r *runner) ScanSBOM(ctx context.Context, opts flag.Options) (types.Report, error) {
@@ -219,6 +230,22 @@ func (r *runner) ScanSBOM(ctx context.Context, opts flag.Options) (types.Report,
 	} else {
 		// Scan cycloneDX in client/server mode
 		s = sbomRemoteScanner
+	}
+
+	return r.scanArtifact(ctx, opts, s)
+}
+
+func (r *runner) ScanVM(ctx context.Context, opts flag.Options) (types.Report, error) {
+	// TODO: Does VM scan disable lock file..?
+	opts.DisabledAnalyzers = analyzer.TypeLockfiles
+
+	var s InitializeScanner
+	if opts.ServerAddr == "" {
+		// Scan virtual machine in standalone mode
+		s = vmStandaloneScanner
+	} else {
+		// Scan virtual machine in client/server mode
+		s = vmRemoteScanner
 	}
 
 	return r.scanArtifact(ctx, opts, s)
@@ -385,6 +412,10 @@ func Run(ctx context.Context, opts flag.Options, targetKind TargetKind) (err err
 		if report, err = r.ScanSBOM(ctx, opts); err != nil {
 			return xerrors.Errorf("sbom scan error: %w", err)
 		}
+	case TargetVM:
+		if report, err = r.ScanVM(ctx, opts); err != nil {
+			return xerrors.Errorf("vm scan error: %w", err)
+		}
 	}
 
 	report, err = r.Filter(ctx, opts, report)
@@ -433,6 +464,10 @@ func disabledAnalyzers(opts flag.Options) []analyzer.Type {
 		analyzers = append(analyzers, analyzer.TypeLicenseFile)
 	}
 
+	if len(opts.SBOMSources) == 0 {
+		analyzers = append(analyzers, analyzer.TypeExecutable)
+	}
+
 	return analyzers
 }
 
@@ -446,6 +481,7 @@ func initScannerConfig(opts flag.Options, cacheClient cache.Cache) (ScannerConfi
 		VulnType:            opts.VulnType,
 		SecurityChecks:      opts.SecurityChecks,
 		ScanRemovedPackages: opts.ScanRemovedPkgs, // this is valid only for 'image' subcommand
+		Platform:            opts.Platform,        // this is valid only for 'image' subcommand
 		ListAllPackages:     opts.ListAllPkgs,
 		LicenseCategories:   opts.LicenseCategories,
 		FilePatterns:        opts.FilePatterns,
@@ -513,6 +549,9 @@ func initScannerConfig(opts flag.Options, cacheClient cache.Cache) (ScannerConfi
 			RepoTag:           opts.RepoTag,
 			SBOMSources:       opts.SBOMSources,
 			RekorURL:          opts.RekorURL,
+			Platform:          opts.Platform,
+			Slow:              opts.Slow,
+			AWSRegion:         opts.Region,
 
 			// For misconfiguration scanning
 			MisconfScannerOption: configScannerOptions,
@@ -520,6 +559,11 @@ func initScannerConfig(opts flag.Options, cacheClient cache.Cache) (ScannerConfi
 			// For secret scanning
 			SecretScannerOption: analyzer.SecretScannerOption{
 				ConfigPath: opts.SecretConfigPath,
+			},
+
+			// For license scanning
+			LicenseScannerOption: analyzer.LicenseScannerOption{
+				Full: opts.LicenseFull,
 			},
 		},
 	}, scanOptions, nil

@@ -19,4 +19,11 @@ $ export CONTAINERD_ADDRESS=/run/k3s/containerd/containerd.sock
 $ trivy image aquasec/nginx
 ```
 
+If your scan targets are images in a namespace other than containerd's default namespace (`default`), you can override it via `CONTAINERD_NAMESPACE`.
+
+```bash
+$ export CONTAINERD_NAMESPACE=k8s.io
+$ trivy image aquasec/nginx
+```
+
 [containerd]: https://containerd.io/

@@ -8,21 +8,13 @@ import (
 	"strings"
 
 	"github.com/in-toto/in-toto-golang/in_toto"
-	stypes "github.com/spdx/tools-golang/spdx"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/attestation"
-	"github.com/aquasecurity/trivy/pkg/fanal/types"
+	"github.com/aquasecurity/trivy/pkg/sbom/cyclonedx"
+	"github.com/aquasecurity/trivy/pkg/sbom/spdx"
+	"github.com/aquasecurity/trivy/pkg/types"
 )
-
-type SBOM struct {
-	OS           *types.OS
-	Packages     []types.PackageInfo
-	Applications []types.Application
-
-	CycloneDX *types.CycloneDX
-	SPDX      *stypes.Document2_2
-}
 
 type Format string
 
@@ -34,11 +26,19 @@ const (
 	FormatSPDXXML             Format = "spdx-xml"
 	FormatAttestCycloneDXJSON Format = "attest-cyclonedx-json"
 	FormatUnknown             Format = "unknown"
+
+	// PredicateCycloneDXBeforeV05 is the PredicateCycloneDX value defined in in-toto-golang before v0.5.0.
+	// This is necessary for backward-compatible SBOM detection.
+	// ref. https://github.com/in-toto/in-toto-golang/pull/188
+	PredicateCycloneDXBeforeV05 = "https://cyclonedx.org/schema"
 )
 
 var ErrUnknownFormat = xerrors.New("Unknown SBOM format")
 
 func DetectFormat(r io.ReadSeeker) (Format, error) {
+	// Rewind the SBOM file at the end
+	defer r.Seek(0, io.SeekStart)
+
 	type (
 		cyclonedx struct {
 			// XML specific field
@@ -102,10 +102,52 @@ func DetectFormat(r io.ReadSeeker) (Format, error) {
 	// Try in-toto attestation
 	var s attestation.Statement
 	if err := json.NewDecoder(r).Decode(&s); err == nil {
-		if s.PredicateType == in_toto.PredicateCycloneDX {
+		if s.PredicateType == in_toto.PredicateCycloneDX || s.PredicateType == PredicateCycloneDXBeforeV05 {
 			return FormatAttestCycloneDXJSON, nil
 		}
 	}
 
 	return FormatUnknown, nil
+}
+
+func Decode(f io.Reader, format Format) (types.SBOM, error) {
+	var (
+		v       interface{}
+		bom     types.SBOM
+		decoder interface{ Decode(any) error }
+	)
+
+	switch format {
+	case FormatCycloneDXJSON:
+		v = &cyclonedx.CycloneDX{SBOM: &bom}
+		decoder = json.NewDecoder(f)
+	case FormatAttestCycloneDXJSON:
+		// dsse envelope
+		//   => in-toto attestation
+		//     => cosign predicate
+		//       => CycloneDX JSON
+		v = &attestation.Statement{
+			Predicate: &attestation.CosignPredicate{
+				Data: &cyclonedx.CycloneDX{SBOM: &bom},
+			},
+		}
+		decoder = json.NewDecoder(f)
+	case FormatSPDXJSON:
+		v = &spdx.SPDX{SBOM: &bom}
+		decoder = json.NewDecoder(f)
+	case FormatSPDXTV:
+		v = &spdx.SPDX{SBOM: &bom}
+		decoder = spdx.NewTVDecoder(f)
+
+	default:
+		return types.SBOM{}, xerrors.Errorf("%s scanning is not yet supported", format)
+
+	}
+
+	// Decode a file content into sbom.SBOM
+	if err := decoder.Decode(v); err != nil {
+		return types.SBOM{}, xerrors.Errorf("failed to decode: %w", err)
+	}
+
+	return bom, nil
 }

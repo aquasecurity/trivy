@@ -29,6 +29,7 @@ const (
 	JavaScript = "javascript"
 	RustBinary = "rustbinary"
 	Conan      = "conan"
+	Cocoapods  = "cocoapods"
 
 	// Config files
 	YAML           = "yaml"
@@ -41,6 +42,7 @@ const (
 	Helm           = "helm"
 	Rbac           = "rbac"
 	Cloud          = "cloud"
+	AzureARM       = "azure-arm"
 
 	// Licensing
 	License = "license"
@@ -69,4 +71,6 @@ const (
 	CargoLock = "Cargo.lock"
 
 	ConanLock = "conan.lock"
+
+	CocoaPodsLock = "Podfile.lock"
 )

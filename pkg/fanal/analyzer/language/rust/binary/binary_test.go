@@ -3,8 +3,10 @@ package binary
 import (
 	"context"
 	"os"
+	"runtime"
 	"testing"
 
+	"github.com/samber/lo"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
@@ -33,7 +35,12 @@ func Test_rustBinaryLibraryAnalyzer_Analyze(t *testing.T) {
 								Version:   "0.1.0",
 								DependsOn: []string{"library_crate@0.1.0"},
 							},
-							{ID: "library_crate@0.1.0", Name: "library_crate", Version: "0.1.0", Indirect: true},
+							{
+								ID:       "library_crate@0.1.0",
+								Name:     "library_crate",
+								Version:  "0.1.0",
+								Indirect: true,
+							},
 						},
 					},
 				},
@@ -74,8 +81,8 @@ func Test_rustBinaryLibraryAnalyzer_Required(t *testing.T) {
 		want     bool
 	}{
 		{
-			name:     "file perm 0755",
-			filePath: "testdata/0755",
+			name:     "executable file",
+			filePath: lo.Ternary(runtime.GOOS == "windows", "testdata/binary.exe", "testdata/0755"),
 			want:     true,
 		},
 		{

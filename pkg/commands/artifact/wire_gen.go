@@ -16,6 +16,7 @@ import (
 	local2 "github.com/aquasecurity/trivy/pkg/fanal/artifact/local"
 	"github.com/aquasecurity/trivy/pkg/fanal/artifact/remote"
 	"github.com/aquasecurity/trivy/pkg/fanal/artifact/sbom"
+	"github.com/aquasecurity/trivy/pkg/fanal/artifact/vm"
 	"github.com/aquasecurity/trivy/pkg/fanal/cache"
 	"github.com/aquasecurity/trivy/pkg/fanal/image"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
@@ -128,6 +129,22 @@ func initializeSBOMScanner(ctx context.Context, filePath string, artifactCache c
 	}, nil
 }
 
+func initializeVMScanner(ctx context.Context, filePath string, artifactCache cache.ArtifactCache, localArtifactCache cache.Cache, artifactOption artifact.Option) (scanner.Scanner, func(), error) {
+	v := _wireValue
+	applierApplier := applier.NewApplier(localArtifactCache, v...)
+	detector := ospkg.Detector{}
+	config := db.Config{}
+	client := vulnerability.NewClient(config)
+	localScanner := local.NewScanner(applierApplier, detector, client)
+	artifactArtifact, err := vm.NewArtifact(filePath, artifactCache, artifactOption)
+	if err != nil {
+		return scanner.Scanner{}, nil, err
+	}
+	scannerScanner := scanner.NewScanner(localScanner, artifactArtifact)
+	return scannerScanner, func() {
+	}, nil
+}
+
 // initializeRemoteDockerScanner is for container image scanning in client/server mode
 // e.g. dockerd, container registry, podman, etc.
 func initializeRemoteDockerScanner(ctx context.Context, imageName string, artifactCache cache.ArtifactCache, remoteScanOptions client.ScannerOption, dockerOpt types.DockerOption, artifactOption artifact.Option) (scanner.Scanner, func(), error) {
@@ -184,11 +201,38 @@ func initializeRemoteFilesystemScanner(ctx context.Context, path string, artifac
 	}, nil
 }
 
+// initializeRemoteRepositoryScanner is for repository scanning in client/server mode
+func initializeRemoteRepositoryScanner(ctx context.Context, url string, artifactCache cache.ArtifactCache, remoteScanOptions client.ScannerOption, artifactOption artifact.Option) (scanner.Scanner, func(), error) {
+	v := _wireValue3
+	clientScanner := client.NewScanner(remoteScanOptions, v...)
+	artifactArtifact, cleanup, err := remote.NewArtifact(url, artifactCache, artifactOption)
+	if err != nil {
+		return scanner.Scanner{}, nil, err
+	}
+	scannerScanner := scanner.NewScanner(clientScanner, artifactArtifact)
+	return scannerScanner, func() {
+		cleanup()
+	}, nil
+}
+
 // initializeRemoteSBOMScanner is for sbom scanning in client/server mode
 func initializeRemoteSBOMScanner(ctx context.Context, path string, artifactCache cache.ArtifactCache, remoteScanOptions client.ScannerOption, artifactOption artifact.Option) (scanner.Scanner, func(), error) {
 	v := _wireValue3
 	clientScanner := client.NewScanner(remoteScanOptions, v...)
 	artifactArtifact, err := sbom.NewArtifact(path, artifactCache, artifactOption)
+	if err != nil {
+		return scanner.Scanner{}, nil, err
+	}
+	scannerScanner := scanner.NewScanner(clientScanner, artifactArtifact)
+	return scannerScanner, func() {
+	}, nil
+}
+
+// initializeRemoteVMScanner is for vm scanning in client/server mode
+func initializeRemoteVMScanner(ctx context.Context, path string, artifactCache cache.ArtifactCache, remoteScanOptions client.ScannerOption, artifactOption artifact.Option) (scanner.Scanner, func(), error) {
+	v := _wireValue3
+	clientScanner := client.NewScanner(remoteScanOptions, v...)
+	artifactArtifact, err := vm.NewArtifact(path, artifactCache, artifactOption)
 	if err != nil {
 		return scanner.Scanner{}, nil, err
 	}

@@ -3,18 +3,16 @@ package module
 import (
 	"context"
 	"encoding/json"
-	"io"
 	"io/fs"
 	"os"
 	"path/filepath"
 	"regexp"
+	"sync"
 
-	"github.com/liamg/memoryfs"
 	"github.com/mailru/easyjson"
 	"github.com/samber/lo"
 	"github.com/tetratelabs/wazero"
 	"github.com/tetratelabs/wazero/api"
-	"github.com/tetratelabs/wazero/experimental"
 	wasi "github.com/tetratelabs/wazero/imports/wasi_snapshot_preview1"
 	"golang.org/x/exp/slices"
 	"golang.org/x/xerrors"
@@ -29,7 +27,7 @@ import (
 )
 
 var (
-	exportFunctions = map[string]interface{}{
+	logFunctions = map[string]api.GoModuleFunc{
 		"debug": logDebug,
 		"info":  logInfo,
 		"warn":  logWarn,
@@ -39,32 +37,52 @@ var (
 	RelativeDir = filepath.Join(".trivy", "modules")
 )
 
-func logDebug(ctx context.Context, m api.Module, offset, size uint32) {
-	buf := readMemory(ctx, m, offset, size)
+// logDebug is defined as an api.GoModuleFunc for lower overhead vs reflection.
+func logDebug(ctx context.Context, mod api.Module, params []uint64) {
+	offset, size := uint32(params[0]), uint32(params[1])
+
+	buf := readMemory(ctx, mod, offset, size)
 	if buf != nil {
 		log.Logger.Debug(string(buf))
 	}
+
+	return
 }
 
-func logInfo(ctx context.Context, m api.Module, offset, size uint32) {
-	buf := readMemory(ctx, m, offset, size)
+// logInfo is defined as an api.GoModuleFunc for lower overhead vs reflection.
+func logInfo(ctx context.Context, mod api.Module, params []uint64) {
+	offset, size := uint32(params[0]), uint32(params[1])
+
+	buf := readMemory(ctx, mod, offset, size)
 	if buf != nil {
 		log.Logger.Info(string(buf))
 	}
+
+	return
 }
 
-func logWarn(ctx context.Context, m api.Module, offset, size uint32) {
-	buf := readMemory(ctx, m, offset, size)
+// logWarn is defined as an api.GoModuleFunc for lower overhead vs reflection.
+func logWarn(ctx context.Context, mod api.Module, params []uint64) {
+	offset, size := uint32(params[0]), uint32(params[1])
+
+	buf := readMemory(ctx, mod, offset, size)
 	if buf != nil {
 		log.Logger.Warn(string(buf))
 	}
+
+	return
 }
 
-func logError(ctx context.Context, m api.Module, offset, size uint32) {
-	buf := readMemory(ctx, m, offset, size)
+// logError is defined as an api.GoModuleFunc for lower overhead vs reflection.
+func logError(ctx context.Context, mod api.Module, params []uint64) {
+	offset, size := uint32(params[0]), uint32(params[1])
+
+	buf := readMemory(ctx, mod, offset, size)
 	if buf != nil {
 		log.Logger.Error(string(buf))
 	}
+
+	return
 }
 
 func readMemory(ctx context.Context, m api.Module, offset, size uint32) []byte {
@@ -216,7 +234,9 @@ func marshal(ctx context.Context, m api.Module, malloc api.Function, v easyjson.
 }
 
 type wasmModule struct {
-	mod api.Module
+	mod   api.Module
+	memFS *memFS
+	mux   sync.Mutex
 
 	name          string
 	version       int
@@ -234,21 +254,28 @@ type wasmModule struct {
 }
 
 func newWASMPlugin(ctx context.Context, r wazero.Runtime, code []byte) (*wasmModule, error) {
-	// Combine the above into our baseline config, overriding defaults (which discard stdout and have no file system).
-	config := wazero.NewModuleConfig().WithStdout(os.Stdout).WithFS(memoryfs.New())
+	mf := &memFS{}
+	config := wazero.NewModuleConfig().WithStdout(os.Stdout).WithFS(mf)
 
 	// Create an empty namespace so that multiple modules will not conflict
 	ns := r.NewNamespace(ctx)
 
 	// Instantiate a Go-defined module named "env" that exports functions.
-	_, err := r.NewHostModuleBuilder("env").
-		ExportFunctions(exportFunctions).
-		Instantiate(ctx, ns)
-	if err != nil {
+	envBuilder := r.NewHostModuleBuilder("env")
+
+	// Avoid reflection for logging as it implies an overhead of >1us per call.
+	for n, f := range logFunctions {
+		envBuilder.NewFunctionBuilder().
+			WithGoModuleFunction(f, []api.ValueType{api.ValueTypeI32, api.ValueTypeI32}, []api.ValueType{}).
+			WithParameterNames("offset", "size").
+			Export(n)
+	}
+
+	if _, err := envBuilder.Instantiate(ctx, ns); err != nil {
 		return nil, xerrors.Errorf("wasm module build error: %w", err)
 	}
 
-	if _, err = wasi.NewBuilder(r).Instantiate(ctx, ns); err != nil {
+	if _, err := wasi.NewBuilder(r).Instantiate(ctx, ns); err != nil {
 		return nil, xerrors.Errorf("WASI init error: %w", err)
 	}
 
@@ -333,6 +360,7 @@ func newWASMPlugin(ctx context.Context, r wazero.Runtime, code []byte) (*wasmMod
 
 	return &wasmModule{
 		mod:           mod,
+		memFS:         mf,
 		name:          name,
 		version:       version,
 		requiredFiles: requiredFiles,
@@ -389,20 +417,14 @@ func (m *wasmModule) Analyze(ctx context.Context, input analyzer.AnalysisInput) 
 	filePath := "/" + filepath.ToSlash(input.FilePath)
 	log.Logger.Debugf("Module %s: analyzing %s...", m.name, filePath)
 
-	memfs := memoryfs.New()
-	if err := memfs.MkdirAll(filepath.Dir(filePath), fs.ModePerm); err != nil {
-		return nil, xerrors.Errorf("memory fs mkdir error: %w", err)
-	}
-	err := memfs.WriteLazyFile(filePath, func() (io.Reader, error) {
-		return input.Content, nil
-	}, fs.ModePerm)
-	if err != nil {
-		return nil, xerrors.Errorf("memory fs write error: %w", err)
-	}
+	// Wasm module instances are not Goroutine safe, so we take look here since Analyze might be called concurrently.
+	// TODO: This is temporary solution and we could improve the Analyze performance by having module instance pool.
+	m.mux.Lock()
+	defer m.mux.Unlock()
 
-	// Pass memory fs to the analyze() function
-	ctx, closer := experimental.WithFS(ctx, memfs)
-	defer closer.Close(ctx)
+	if err := m.memFS.initialize(filePath, input.Content); err != nil {
+		return nil, err
+	}
 
 	inputPtr, inputSize, err := stringToPtrSize(ctx, filePath, m.mod, m.malloc)
 	if err != nil {

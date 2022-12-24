@@ -25,9 +25,13 @@ type Option struct {
 	RepoTag           string
 	SBOMSources       []string
 	RekorURL          string
+	Platform          string
+	Slow              bool // Lower CPU and memory
+	AWSRegion         string
 
 	MisconfScannerOption misconf.ScannerOption
 	SecretScannerOption  analyzer.SecretScannerOption
+	LicenseScannerOption analyzer.LicenseScannerOption
 }
 
 func (o *Option) Sort() {

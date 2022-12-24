@@ -2,13 +2,13 @@ package gradle
 
 import (
 	"os"
-	"path/filepath"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
 )
 
 func Test_gradleLockAnalyzer_Analyze(t *testing.T) {
@@ -86,20 +86,8 @@ func Test_nugetLibraryAnalyzer_Required(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			err := os.MkdirAll(filepath.Dir(tt.filePath), 0700)
-			assert.NoError(t, err)
-			_, err = os.Create(tt.filePath)
-			assert.NoError(t, err)
-			defer func() {
-				err = os.RemoveAll(filepath.Dir(tt.filePath))
-				assert.NoError(t, err)
-			}()
-
-			fileInfo, err := os.Stat(tt.filePath)
-			assert.NoError(t, err)
-
 			a := gradleLockAnalyzer{}
-			got := a.Required("", fileInfo)
+			got := a.Required(tt.filePath, nil)
 			assert.Equal(t, tt.want, got)
 		})
 	}

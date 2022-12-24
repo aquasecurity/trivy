@@ -12,7 +12,7 @@ import (
 // imageStandaloneScanner initializes a container image scanner in standalone mode
 // $ trivy image alpine:3.15
 func imageStandaloneScanner(ctx context.Context, conf ScannerConfig) (scanner.Scanner, func(), error) {
-	dockerOpt, err := types.GetDockerOption(conf.ArtifactOption.InsecureSkipTLS)
+	dockerOpt, err := types.GetDockerOption(conf.ArtifactOption.InsecureSkipTLS, conf.ArtifactOption.Platform)
 	if err != nil {
 		return scanner.Scanner{}, nil, err
 	}
@@ -40,7 +40,7 @@ func archiveStandaloneScanner(ctx context.Context, conf ScannerConfig) (scanner.
 func imageRemoteScanner(ctx context.Context, conf ScannerConfig) (
 	scanner.Scanner, func(), error) {
 	// Scan an image in Docker Engine, Docker Registry, etc.
-	dockerOpt, err := types.GetDockerOption(conf.ArtifactOption.InsecureSkipTLS)
+	dockerOpt, err := types.GetDockerOption(conf.ArtifactOption.InsecureSkipTLS, conf.ArtifactOption.Platform)
 	if err != nil {
 		return scanner.Scanner{}, nil, err
 	}
@@ -83,12 +83,22 @@ func filesystemRemoteScanner(ctx context.Context, conf ScannerConfig) (scanner.S
 	return s, cleanup, nil
 }
 
-// filesystemStandaloneScanner initializes a repository scanner in standalone mode
+// repositoryStandaloneScanner initializes a repository scanner in standalone mode
 func repositoryStandaloneScanner(ctx context.Context, conf ScannerConfig) (scanner.Scanner, func(), error) {
 	s, cleanup, err := initializeRepositoryScanner(ctx, conf.Target, conf.ArtifactCache, conf.LocalArtifactCache,
 		conf.ArtifactOption)
 	if err != nil {
-		return scanner.Scanner{}, func() {}, xerrors.Errorf("unable to initialize a filesystem scanner: %w", err)
+		return scanner.Scanner{}, func() {}, xerrors.Errorf("unable to initialize a repository scanner: %w", err)
+	}
+	return s, cleanup, nil
+}
+
+// repositoryRemoteScanner initializes a repository scanner in client/server mode
+func repositoryRemoteScanner(ctx context.Context, conf ScannerConfig) (scanner.Scanner, func(), error) {
+	s, cleanup, err := initializeRemoteRepositoryScanner(ctx, conf.Target, conf.ArtifactCache, conf.RemoteOption,
+		conf.ArtifactOption)
+	if err != nil {
+		return scanner.Scanner{}, func() {}, xerrors.Errorf("unable to initialize a repository scanner: %w", err)
 	}
 	return s, cleanup, nil
 }
@@ -108,6 +118,25 @@ func sbomRemoteScanner(ctx context.Context, conf ScannerConfig) (scanner.Scanner
 	s, cleanup, err := initializeRemoteSBOMScanner(ctx, conf.Target, conf.ArtifactCache, conf.RemoteOption, conf.ArtifactOption)
 	if err != nil {
 		return scanner.Scanner{}, func() {}, xerrors.Errorf("unable to initialize a cycloneDX scanner: %w", err)
+	}
+	return s, cleanup, nil
+}
+
+// vmStandaloneScanner initializes a VM scanner in standalone mode
+func vmStandaloneScanner(ctx context.Context, conf ScannerConfig) (scanner.Scanner, func(), error) {
+	s, cleanup, err := initializeVMScanner(ctx, conf.Target, conf.ArtifactCache, conf.LocalArtifactCache,
+		conf.ArtifactOption)
+	if err != nil {
+		return scanner.Scanner{}, func() {}, xerrors.Errorf("unable to initialize a vm scanner: %w", err)
+	}
+	return s, cleanup, nil
+}
+
+// vmRemoteScanner initializes a VM scanner in client/server mode
+func vmRemoteScanner(ctx context.Context, conf ScannerConfig) (scanner.Scanner, func(), error) {
+	s, cleanup, err := initializeRemoteVMScanner(ctx, conf.Target, conf.ArtifactCache, conf.RemoteOption, conf.ArtifactOption)
+	if err != nil {
+		return scanner.Scanner{}, func() {}, xerrors.Errorf("unable to initialize a vm scanner: %w", err)
 	}
 	return s, cleanup, nil
 }
