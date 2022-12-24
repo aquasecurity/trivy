@@ -264,7 +264,7 @@ func (m *Marshaler) langPackage(target, appType string) (spdx.Package2_2, error)
 }
 
 func (m *Marshaler) pkgToSpdxPackage(t string, class types.ResultClass, metadata types.Metadata, pkg ftypes.Package) (spdx.Package2_2, error) {
-	license := getLicense(pkg)
+	license := GetLicense(pkg)
 
 	pkgID, err := calcPkgID(m.hasher, pkg)
 	if err != nil {
@@ -356,7 +356,7 @@ func purlExternalReference(packageURL string) *spdx.PackageExternalReference2_2 
 	}
 }
 
-func getLicense(p ftypes.Package) string {
+func GetLicense(p ftypes.Package) string {
 	if len(p.Licenses) == 0 {
 		return "NONE"
 	}

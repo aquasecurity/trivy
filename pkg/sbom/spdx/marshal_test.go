@@ -710,3 +710,66 @@ func TestNormalizeForSPDX(t *testing.T) {
 		})
 	}
 }
+
+func Test_GetLicense(t *testing.T) {
+	tests := []struct {
+		name  string
+		input ftypes.Package
+		want  string
+	}{
+		{
+			name: "happy path",
+			input: ftypes.Package{
+				Licenses: []string{
+					"GPLv2+",
+				},
+			},
+			want: "GPL-2.0",
+		},
+		{
+			name: "happy path with multi license",
+			input: ftypes.Package{
+				Licenses: []string{
+					"GPLv2+",
+					"GPLv3+",
+				},
+			},
+			want: "GPL-2.0 AND GPL-3.0",
+		},
+		{
+			name: "happy path with OR operator",
+			input: ftypes.Package{
+				Licenses: []string{
+					"GPLv2+",
+					"LGPL 2.0 or GNU LESSER",
+				},
+			},
+			want: "GPL-2.0 AND ( LGPL-2.0 OR LGPL-3.0 )",
+		},
+		{
+			name: "happy path with AND operator",
+			input: ftypes.Package{
+				Licenses: []string{
+					"GPLv2+",
+					"LGPL 2.0 and GNU LESSER",
+				},
+			},
+			want: "GPL-2.0 AND LGPL-2.0 AND LGPL-3.0",
+		},
+		{
+			name: "happy path with WITH operator",
+			input: ftypes.Package{
+				Licenses: []string{
+					"AFL 2.0",
+					"AFL 3.0 with distribution exception",
+				},
+			},
+			want: "AFL-2.0 AND AFL-3.0 WITH distribution-exception",
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			assert.Equalf(t, tt.want, tspdx.GetLicense(tt.input), "getLicense(%v)", tt.input)
+		})
+	}
+}
