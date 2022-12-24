@@ -7,12 +7,15 @@ import (
 	"time"
 
 	"github.com/google/uuid"
+	"github.com/masahiro331/go-license/lexer"
+	"github.com/masahiro331/go-license/parser"
 	"github.com/mitchellh/hashstructure/v2"
 	"github.com/spdx/tools-golang/spdx"
 	"golang.org/x/xerrors"
 	"k8s.io/utils/clock"
 
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
+	"github.com/aquasecurity/trivy/pkg/licensing"
 	"github.com/aquasecurity/trivy/pkg/purl"
 	"github.com/aquasecurity/trivy/pkg/scanner/utils"
 	"github.com/aquasecurity/trivy/pkg/types"
@@ -358,7 +361,43 @@ func getLicense(p ftypes.Package) string {
 		return "NONE"
 	}
 
-	return strings.Join(p.Licenses, ", ")
+	var licenses []string
+	for i, license := range p.Licenses {
+		if i != 0 && strings.Contains(strings.ToUpper(license), " OR ") {
+			license = fmt.Sprintf("(%s)", license)
+		}
+		licenses = append(licenses, license)
+	}
+	license := strings.Join(licenses, " AND ")
+
+	licenseParser := parser.New(lexer.New(license)).RegisterNormalizeFunc(
+		licensing.Normalize,
+		NormalizeForSPDX,
+	)
+	expression, err := licenseParser.Parse()
+	if err != nil {
+		return license
+	}
+	return licenseParser.Normalize(expression)
+}
+
+func NormalizeForSPDX(name string) string {
+	OperatorWith := " WITH "
+	i := strings.Index(strings.ToUpper(name), OperatorWith)
+	if i < 0 {
+		return strings.Replace(name, " ", "-", -1)
+	}
+
+	// Convert "WITH" expression split by " " to "-".
+	// examples:
+	// 	GPL-2+ with distribution exception => GPL-2+ with distribution-exception
+	//  GPL-2 with Linux-syscall-note exception => GPL-2 with Linux-syscall-note-exception
+	//  AFL 2.0 with Linux-syscall-note exception => AFL-2.0 with Linux-syscall-note-exception
+	withSection := strings.Replace(name[i+len(OperatorWith):], " ", "-", -1)
+	if i > 0 {
+		return strings.Replace(name[:i], " ", "-", -1) + OperatorWith + withSection
+	}
+	return name
 }
 
 func getDocumentNamespace(r types.Report, m *Marshaler) string {

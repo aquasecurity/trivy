@@ -176,8 +176,8 @@ func TestMarshaler_Marshal(t *testing.T) {
 						PackageSPDXIdentifier:   spdx.ElementID("Package-fd0dc3cf913d5bc3"),
 						PackageName:             "binutils",
 						PackageVersion:          "2.30",
-						PackageLicenseConcluded: "GPLv3+",
-						PackageLicenseDeclared:  "GPLv3+",
+						PackageLicenseConcluded: "GPL-3.0",
+						PackageLicenseDeclared:  "GPL-3.0",
 						PackageExternalReferences: []*spdx.PackageExternalReference2_2{
 							{
 								Category: tspdx.CategoryPackageManager,
@@ -338,8 +338,8 @@ func TestMarshaler_Marshal(t *testing.T) {
 						PackageSPDXIdentifier:   spdx.ElementID("Package-d8dccb186bafaf37"),
 						PackageName:             "acl",
 						PackageVersion:          "2.2.53",
-						PackageLicenseConcluded: "GPLv2+",
-						PackageLicenseDeclared:  "GPLv2+",
+						PackageLicenseConcluded: "GPL-2.0",
+						PackageLicenseDeclared:  "GPL-2.0",
 						PackageExternalReferences: []*spdx.PackageExternalReference2_2{
 							{
 								Category: tspdx.CategoryPackageManager,
@@ -683,6 +683,30 @@ func TestMarshaler_Marshal(t *testing.T) {
 			require.NoError(t, err)
 
 			assert.Equal(t, tc.wantSBOM, spdxDoc)
+		})
+	}
+}
+
+func TestNormalizeForSPDX(t *testing.T) {
+	tests := []struct {
+		name    string
+		license string
+		want    string
+	}{
+		{
+			name:    "happy path",
+			license: "AFL 2.0",
+			want:    "AFL-2.0",
+		},
+		{
+			name:    "happy path with WITH section",
+			license: "AFL 2.0 with Linux-syscall-note exception",
+			want:    "AFL-2.0 WITH Linux-syscall-note-exception",
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			assert.Equalf(t, tt.want, tspdx.NormalizeForSPDX(tt.license), "NormalizeWithExpression(%v)", tt.license)
 		})
 	}
 }
