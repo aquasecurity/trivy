@@ -404,10 +404,8 @@ func TestMarshaler_Marshal(t *testing.T) {
 					},
 					{
 						Ref: "3ff14136-e09f-4df9-80ea-000000000006",
-						Dependencies: &[]cdx.Dependency{
-							{
-								Ref: "pkg:golang/golang.org/x/crypto@v0.0.0-20210421170649-83a5a9bb288b",
-							},
+						Dependencies: &[]string{
+							"pkg:golang/golang.org/x/crypto@v0.0.0-20210421170649-83a5a9bb288b",
 						},
 					},
 					{
@@ -1423,7 +1421,7 @@ func TestMarshaler_MarshalVulnerabilities(t *testing.T) {
 			want: &cdx.BOM{
 				XMLNS:       "http://cyclonedx.org/schema/bom/1.4",
 				BOMFormat:   "CycloneDX",
-				SpecVersion: "1.4",
+				SpecVersion: cdx.SpecVersion1_4,
 				Version:     1,
 				Metadata: &cdx.Metadata{
 					Timestamp: "2021-08-25T12:20:30+00:00",
