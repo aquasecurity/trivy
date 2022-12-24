@@ -72,7 +72,7 @@ func (c *CycloneDX) UnmarshalJSON(b []byte) error {
 	// Keep the original SBOM
 	c.CycloneDX = &ftypes.CycloneDX{
 		BOMFormat:    bom.BOMFormat,
-		SpecVersion:  strconv.Itoa(int(bom.SpecVersion)),
+		SpecVersion:  ftypes.SpecVersion(bom.SpecVersion),
 		SerialNumber: bom.SerialNumber,
 		Version:      bom.Version,
 		Metadata:     metadata,
