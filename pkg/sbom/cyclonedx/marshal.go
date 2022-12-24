@@ -315,6 +315,9 @@ func toCdxVulnerability(bomRef string, vuln types.DetectedVulnerability) cdx.Vul
 		Description: vuln.Description,
 		Advisories:  cdxAdvisories(vuln.References),
 	}
+	if vuln.FixedVersion != "" {
+		v.Recommendation = fmt.Sprintf("Fixed version: %s", vuln.FixedVersion)
+	}
 	if vuln.PublishedDate != nil {
 		v.Published = vuln.PublishedDate.Format(timeLayout)
 	}
