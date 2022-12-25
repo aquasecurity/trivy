@@ -2,7 +2,7 @@ package json
 
 import (
 	"context"
-	"os"
+	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -13,111 +13,22 @@ import (
 )
 
 func Test_jsonConfigAnalyzer_Analyze(t *testing.T) {
-	type args struct {
-		namespaces  []string
-		policyPaths []string
-	}
 	tests := []struct {
 		name      string
-		args      args
 		inputFile string
 		want      *analyzer.AnalysisResult
 		wantErr   string
 	}{
 		{
-			name: "happy path",
-			args: args{
-				namespaces:  []string{"main"},
-				policyPaths: []string{"../testdata/kubernetes.rego"},
-			},
-			inputFile: "testdata/deployment.json",
+			name:      "happy path",
+			inputFile: "test.json",
 			want: &analyzer.AnalysisResult{
 				Files: map[types.HandlerType][]types.File{
 					types.MisconfPostHandler: {
 						{
-							Type: "json",
-							Path: "testdata/deployment.json",
-							Content: []byte(`{
-	"apiVersion": "apps/v1",
-	"kind": "Deployment",
-	"metadata": {
-		"name": "hello-kubernetes"
-	},
-	"spec": {
-		"replicas": 3
-	}
-}
-`),
-						},
-					},
-				},
-			},
-		},
-		{
-			name: "deny",
-			args: args{
-				namespaces:  []string{"main"},
-				policyPaths: []string{"../testdata/kubernetes.rego"},
-			},
-			inputFile: "testdata/deployment_deny.json",
-			want: &analyzer.AnalysisResult{
-				Files: map[types.HandlerType][]types.File{
-					types.MisconfPostHandler: {
-						{
-							Type: "json",
-							Path: "testdata/deployment_deny.json",
-							Content: []byte(`{
-	"apiVersion": "apps/v1",
-	"kind": "Deployment",
-	"metadata": {
-		"name": "hello-kubernetes"
-	},
-	"spec": {
-		"replicas": 4
-	}
-}
-`),
-						},
-					},
-				},
-			},
-		},
-		{
-			name: "json array",
-			args: args{
-				namespaces:  []string{"main"},
-				policyPaths: []string{"../testdata/kubernetes.rego"},
-			},
-			inputFile: "testdata/array.json",
-			want: &analyzer.AnalysisResult{
-				Files: map[types.HandlerType][]types.File{
-					types.MisconfPostHandler: {
-						{
-							Type: "json",
-							Path: "testdata/array.json",
-							Content: []byte(`[
-	{
-		"apiVersion": "apps/v1",
-		"kind": "Deployment",
-		"metadata": {
-			"name": "hello-kubernetes"
-		},
-		"spec": {
-			"replicas": 4
-		}
-	},
-	{
-		"apiVersion": "apps/v2",
-		"kind": "Deployment",
-		"metadata": {
-			"name": "hello-kubernetes"
-		},
-		"spec": {
-			"replicas": 5
-		}
-	}
-]
-`),
+							Type:    "json",
+							Path:    "test.json",
+							Content: []byte(`{}`),
 						},
 					},
 				},
@@ -127,16 +38,12 @@ func Test_jsonConfigAnalyzer_Analyze(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			f, err := os.Open(tt.inputFile)
-			require.NoError(t, err)
-			defer f.Close()
+			r := strings.NewReader("{}")
 
 			s := jsonConfigAnalyzer{}
-
-			ctx := context.Background()
-			got, err := s.Analyze(ctx, analyzer.AnalysisInput{
+			got, err := s.Analyze(context.Background(), analyzer.AnalysisInput{
 				FilePath: tt.inputFile,
-				Content:  f,
+				Content:  r,
 			})
 
 			if tt.wantErr != "" {
