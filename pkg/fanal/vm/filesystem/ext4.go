@@ -12,7 +12,7 @@ import (
 
 type EXT4 struct{}
 
-func (e EXT4) New(sr io.SectionReader, cache vm.Cache) (fs.FS, error) {
+func (e EXT4) New(sr io.SectionReader, cache vm.Cache[string, any]) (fs.FS, error) {
 	_, err := sr.Seek(0, io.SeekStart)
 	if err != nil {
 		return nil, xerrors.Errorf("failed to seek offset error: %w", err)

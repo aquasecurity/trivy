@@ -17,12 +17,13 @@ var (
 
 // Disk defines virtual machine disk images like VMDK, VDI and VHD.
 type Disk interface {
-	NewReader(rs io.ReadSeeker, cache vm.Cache) (*io.SectionReader, error)
+	NewReader(io.ReadSeeker, vm.Cache[string, []byte]) (*io.SectionReader, error)
 }
 
-func New(rs io.ReadSeeker, cache vm.Cache) (*io.SectionReader, error) {
-	for _, disk := range vmDisks {
-		vreader, err := disk.NewReader(rs, cache)
+func New(rs io.ReadSeeker, cache vm.Cache[string, []byte]) (*io.SectionReader, error) {
+
+	for _, vmdisk := range vmDisks {
+		var vreader, err = vmdisk.NewReader(rs, cache)
 		if err != nil {
 			if errors.Is(err, vm.ErrInvalidSignature) {
 				continue
