@@ -6,7 +6,7 @@
 
 | Language | File         | Dependency location[^1] |
 |----------|--------------|:-----------------------:|
-| Swift    | PodFile.lock |            -            |
+| Swift    | Podfile.lock |            -            |
 
 [^1]: Use `startline == 1 and endline == 1` for unsupported file types
 

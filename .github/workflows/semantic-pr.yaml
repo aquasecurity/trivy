@@ -58,6 +58,7 @@ jobs:
             suse
             photon
             distroless
+            windows
 
             ruby
             php

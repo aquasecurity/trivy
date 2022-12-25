@@ -99,7 +99,10 @@ func TestFSCache_GetBlob(t *testing.T) {
 
 			fs, err := NewFSCache(tmpDir)
 			require.NoError(t, err)
-			defer fs.Clear()
+			defer func() {
+				_ = fs.Clear()
+				_ = fs.Close()
+			}()
 
 			got, err := fs.GetBlob(tt.args.layerID)
 			assert.Equal(t, tt.wantErr, err != nil, err)
@@ -269,7 +272,10 @@ func TestFSCache_PutBlob(t *testing.T) {
 
 			fs, err := NewFSCache(tmpDir)
 			require.NoError(t, err)
-			defer fs.Clear()
+			defer func() {
+				_ = fs.Clear()
+				_ = fs.Close()
+			}()
 
 			if strings.HasPrefix(tt.name, "sad") {
 				require.NoError(t, fs.Close())
@@ -349,7 +355,10 @@ func TestFSCache_PutArtifact(t *testing.T) {
 
 			fs, err := NewFSCache(tmpDir)
 			require.NoError(t, err)
-			//defer fs.Clear()
+			defer func() {
+				_ = fs.Clear()
+				_ = fs.Close()
+			}()
 
 			err = fs.PutArtifact(tt.args.imageID, tt.args.imageConfig)
 			if tt.wantErr != "" {
@@ -466,7 +475,10 @@ func TestFSCache_MissingBlobs(t *testing.T) {
 
 			fs, err := NewFSCache(tmpDir)
 			require.NoError(t, err)
-			defer fs.Clear()
+			defer func() {
+				_ = fs.Clear()
+				_ = fs.Close()
+			}()
 
 			gotMissingImage, gotMissingLayerIDs, err := fs.MissingBlobs(tt.args.imageID, tt.args.layerIDs)
 			if tt.wantErr != "" {
