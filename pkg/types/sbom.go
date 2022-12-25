@@ -7,7 +7,7 @@ import (
 )
 
 type SBOM struct {
-	OS           *types.OS
+	OS           types.OS
 	Packages     []types.PackageInfo
 	Applications []types.Application
 

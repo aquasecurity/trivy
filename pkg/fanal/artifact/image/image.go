@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"github.com/samber/lo"
 	"io"
 	"os"
 	"reflect"
@@ -232,8 +233,8 @@ func (a Artifact) inspect(ctx context.Context, missingImage string, layerKeys, b
 				errCh <- xerrors.Errorf("failed to store layer: %s in cache: %w", layerKey, err)
 				return
 			}
-			if layerInfo.OS != nil {
-				osFound = *layerInfo.OS
+			if !lo.IsEmpty(layerInfo.OS) {
+				osFound = layerInfo.OS
 			}
 		}(ctx, k)
 	}

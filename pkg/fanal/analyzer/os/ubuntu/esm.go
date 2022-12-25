@@ -42,7 +42,7 @@ func (a ubuntuESMAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInp
 		}
 		if enable {
 			return &analyzer.AnalysisResult{
-				OS: &types.OS{
+				OS: types.OS{
 					Family:   aos.Ubuntu,
 					Extended: true,
 				},

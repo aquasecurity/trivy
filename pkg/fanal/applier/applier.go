@@ -65,7 +65,7 @@ func (a Applier) ApplyLayers(imageID string, layerKeys []string) (types.Artifact
 	}
 
 	mergedLayer := ApplyLayers(layers)
-	if mergedLayer.OS == nil {
+	if !mergedLayer.OS.Detected() {
 		return mergedLayer, analyzer.ErrUnknownOS // send back package and apps info regardless
 	} else if mergedLayer.Packages == nil {
 		return mergedLayer, analyzer.ErrNoPkgsDetected // send back package and apps info regardless

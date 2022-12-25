@@ -49,7 +49,7 @@ func TestApplier_ApplyLayers(t *testing.T) {
 							SchemaVersion: 1,
 							Digest:        "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
 							DiffID:        "sha256:a187dde48cd289ac374ad8539930628314bc581a481cdb41409c9289419ddb72",
-							OS: &types.OS{
+							OS: types.OS{
 								Family: "debian",
 								Name:   "9.9",
 							},
@@ -139,7 +139,7 @@ func TestApplier_ApplyLayers(t *testing.T) {
 				},
 			},
 			want: types.ArtifactDetail{
-				OS: &types.OS{
+				OS: types.OS{
 					Family: "debian",
 					Name:   "9.9",
 				},
@@ -203,7 +203,7 @@ func TestApplier_ApplyLayers(t *testing.T) {
 							SchemaVersion: 1,
 							Digest:        "sha256:a187dde48cd289ac374ad8539930628314bc581a481cdb41409c9289419ddb72",
 							DiffID:        "sha256:531743b7098cb2aaf615641007a129173f63ed86ca32fe7b5a246a1c47286028",
-							OS: &types.OS{
+							OS: types.OS{
 								Family: "alpine",
 								Name:   "3.10.4",
 							},
@@ -246,7 +246,7 @@ func TestApplier_ApplyLayers(t *testing.T) {
 				},
 			},
 			want: types.ArtifactDetail{
-				OS: &types.OS{
+				OS: types.OS{
 					Family: "alpine",
 					Name:   "3.10.4",
 				},
@@ -490,7 +490,7 @@ func TestApplier_ApplyLayers(t *testing.T) {
 					Returns: cache.CacheGetBlobReturns{
 						BlobInfo: types.BlobInfo{
 							SchemaVersion: 1,
-							OS: &types.OS{
+							OS: types.OS{
 								Family: "debian",
 								Name:   "9.9",
 							},
@@ -499,7 +499,7 @@ func TestApplier_ApplyLayers(t *testing.T) {
 				},
 			},
 			want: types.ArtifactDetail{
-				OS: &types.OS{
+				OS: types.OS{
 					Family: "debian",
 					Name:   "9.9",
 				},

@@ -137,7 +137,7 @@ type AnalysisOptions struct {
 
 type AnalysisResult struct {
 	m                    sync.Mutex
-	OS                   *types.OS
+	OS                   types.OS
 	Repository           *types.Repository
 	PackageInfos         []types.PackageInfo
 	Applications         []types.Application
@@ -167,7 +167,7 @@ func NewAnalysisResult() *AnalysisResult {
 }
 
 func (r *AnalysisResult) isEmpty() bool {
-	return r.OS == nil && r.Repository == nil && len(r.PackageInfos) == 0 && len(r.Applications) == 0 &&
+	return lo.IsEmpty(r.OS) && r.Repository == nil && len(r.PackageInfos) == 0 && len(r.Applications) == 0 &&
 		len(r.Secrets) == 0 && len(r.Licenses) == 0 && len(r.SystemInstalledFiles) == 0 &&
 		r.BuildInfo == nil && len(r.Files) == 0 && len(r.Digests) == 0 && len(r.CustomResources) == 0
 }
@@ -243,9 +243,7 @@ func (r *AnalysisResult) Merge(new *AnalysisResult) {
 	r.m.Lock()
 	defer r.m.Unlock()
 
-	if new.OS != nil {
-		r.OS = types.MergeOsVersion(r.OS, new.OS)
-	}
+	r.OS.Merge(new.OS)
 
 	if new.Repository != nil {
 		r.Repository = new.Repository

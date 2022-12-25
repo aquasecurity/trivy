@@ -24,7 +24,7 @@ func Test_ubuntuESMAnalyzer_Analyze(t *testing.T) {
 			filePath: "var/lib/ubuntu-advantage/status.json",
 			testFile: "testdata/esm_enabled_status.json",
 			want: &analyzer.AnalysisResult{
-				OS: &types.OS{Family: "ubuntu", Extended: true},
+				OS: types.OS{Family: "ubuntu", Extended: true},
 			},
 		},
 		{

@@ -41,7 +41,7 @@ func (a ubuntuOSAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInpu
 
 		if isUbuntu && strings.HasPrefix(line, "DISTRIB_RELEASE=") {
 			return &analyzer.AnalysisResult{
-				OS: &types.OS{
+				OS: types.OS{
 					Family: aos.Ubuntu,
 					Name:   strings.TrimSpace(line[16:]),
 				},
