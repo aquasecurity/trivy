@@ -53,12 +53,10 @@ func Test_ubuntuESMAnalyzer_Analyze(t *testing.T) {
 				Content:  f,
 			})
 			if tt.wantErr != "" {
-				require.NotNil(t, err)
-				assert.Contains(t, err.Error(), tt.wantErr)
+				assert.ErrorContains(t, err, tt.wantErr)
 				return
-			} else {
-				require.NoError(t, err)
 			}
+			require.NoError(t, err)
 			assert.Equal(t, tt.want, got)
 		})
 	}
