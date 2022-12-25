@@ -12,7 +12,7 @@ import (
 
 type XFS struct{}
 
-func (x XFS) New(sr io.SectionReader, cache vm.Cache) (fs.FS, error) {
+func (x XFS) New(sr io.SectionReader, cache vm.Cache[string, any]) (fs.FS, error) {
 	_, err := sr.Seek(0, io.SeekStart)
 	if err != nil {
 		return nil, xerrors.Errorf("failed to seek offset error: %w", err)

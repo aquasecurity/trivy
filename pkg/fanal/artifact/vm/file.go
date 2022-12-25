@@ -8,7 +8,7 @@ import (
 	"io"
 	"os"
 
-	lru "github.com/hashicorp/golang-lru"
+	lru "github.com/hashicorp/golang-lru/v2"
 	"github.com/opencontainers/go-digest"
 	"golang.org/x/xerrors"
 
@@ -38,7 +38,7 @@ func newFile(filePath string, storage Storage) (*ImageFile, error) {
 		return nil, xerrors.Errorf("file open error: %w", err)
 	}
 
-	c, err := lru.New(storageFILECacheSize)
+	c, err := lru.New[string, []byte](storageFILECacheSize)
 	if err != nil {
 		return nil, xerrors.Errorf("failed to create new lru cache: %w", err)
 	}
