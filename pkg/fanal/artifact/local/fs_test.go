@@ -303,11 +303,11 @@ func TestBuildPathsToSkip(t *testing.T) {
 			want:  []string{"bar/bar"},
 		},
 		{
-			name:  "path - rel, base - dot",
+			name:  "path - rel, base - dot, windows",
 			oses:  []string{"windows"},
 			base:  ".",
 			paths: []string{"foo\\bar"},
-			want:  []string{"bar"},
+			want:  []string{"foo/bar"},
 		},
 	}
 
