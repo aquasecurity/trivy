@@ -8,7 +8,7 @@ import (
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 )
 
-var Compliances = []string{ComplianceNsa, ComplianceAWSCIS12, ComplianceAWSCIS14}
+var Compliances = []string{ComplianceNsa,ComplianceCIS, ComplianceAWSCIS12, ComplianceAWSCIS14}
 
 // Report represents a scan result
 type Report struct {
