@@ -3,10 +3,13 @@ package local
 import (
 	"context"
 	"errors"
+	"path/filepath"
+	"runtime"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"golang.org/x/exp/slices"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer/config"
@@ -236,35 +239,88 @@ func TestArtifact_Inspect(t *testing.T) {
 	}
 }
 
-// TODO: fix the logic in the first place
-//func TestBuildAbsPath(t *testing.T) {
-//	tests := []struct {
-//		name          string
-//		base          string
-//		paths         []string
-//		expectedPaths []string
-//	}{
-//		{"absolute path", "/testBase", []string{"/testPath"}, []string{"/testPath"}},
-//		{"relative path", "/testBase", []string{"testPath"}, []string{"/testBase/testPath"}},
-//		{"path have '.'", "/testBase", []string{"./testPath"}, []string{"/testBase/testPath"}},
-//		{"path have '..'", "/testBase", []string{"../testPath/"}, []string{"/testPath"}},
-//	}
-//
-//	for _, test := range tests {
-//		t.Run(test.name, func(t *testing.T) {
-//			got := buildAbsPaths(test.base, test.paths)
-//			if len(test.paths) != len(got) {
-//				t.Errorf("paths not equals, expected: %s, got: %s", test.expectedPaths, got)
-//			} else {
-//				for i, path := range test.expectedPaths {
-//					if path != got[i] {
-//						t.Errorf("paths not equals, expected: %s, got: %s", test.expectedPaths, got)
-//					}
-//				}
-//			}
-//		})
-//	}
-//}
+func TestBuildPathsToSkip(t *testing.T) {
+	tests := []struct {
+		name  string
+		oses  []string
+		paths []string
+		base  string
+		want  []string
+	}{
+		// Linux/macOS
+		{
+			name:  "path - abs, base - abs, not joining paths",
+			oses:  []string{"linux", "darwin"},
+			base:  "/foo",
+			paths: []string{"/foo/bar"},
+			want:  []string{"bar"},
+		},
+		{
+			name: "path - abs, base - rel",
+			oses: []string{"linux", "darwin"},
+			base: "foo",
+			paths: func() []string {
+				abs, err := filepath.Abs("foo/bar")
+				require.NoError(t, err)
+				return []string{abs}
+			}(),
+			want: []string{"bar"},
+		},
+		{
+			name:  "path - rel, base - rel, joining paths",
+			oses:  []string{"linux", "darwin"},
+			base:  "foo",
+			paths: []string{"bar"},
+			want:  []string{"bar"},
+		},
+		{
+			name:  "path - rel, base - rel, not joining paths",
+			oses:  []string{"linux", "darwin"},
+			base:  "foo",
+			paths: []string{"foo/bar/bar"},
+			want:  []string{"bar/bar"},
+		},
+		{
+			name:  "path - rel with dot, base - rel, removing the leading dot and not joining paths",
+			oses:  []string{"linux", "darwin"},
+			base:  "foo",
+			paths: []string{"./foo/bar"},
+			want:  []string{"bar"},
+		},
+		{
+			name:  "path - rel, base - dot",
+			oses:  []string{"linux", "darwin"},
+			base:  ".",
+			paths: []string{"foo/bar"},
+			want:  []string{"foo/bar"},
+		},
+		// Windows
+		{
+			name:  "path - rel, base - rel. Skip common prefix",
+			oses:  []string{"windows"},
+			base:  "foo",
+			paths: []string{"foo\\bar\\bar"},
+			want:  []string{"bar/bar"},
+		},
+		{
+			name:  "path - rel, base - dot, windows",
+			oses:  []string{"windows"},
+			base:  ".",
+			paths: []string{"foo\\bar"},
+			want:  []string{"foo/bar"},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if !slices.Contains(tt.oses, runtime.GOOS) {
+				t.Skipf("Skip path tests for %q", tt.oses)
+			}
+			got := buildPathsToSkip(tt.base, tt.paths)
+			assert.Equal(t, tt.want, got)
+		})
+	}
+}
 
 func TestTerraformMisconfigurationScan(t *testing.T) {
 	type fields struct {

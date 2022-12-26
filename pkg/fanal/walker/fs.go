@@ -29,18 +29,25 @@ func (w FS) Walk(root string, fn WalkFunc) error {
 	walkFn := func(pathname string, fi os.FileInfo) error {
 		pathname = filepath.Clean(pathname)
 
+		// For exported rootfs (e.g. images/alpine/etc/alpine-release)
+		relPath, err := filepath.Rel(root, pathname)
+		if err != nil {
+			return xerrors.Errorf("filepath rel (%s): %w", relPath, err)
+		}
+		relPath = filepath.ToSlash(relPath)
+
 		if fi.IsDir() {
-			if w.shouldSkipDir(pathname) {
+			if w.shouldSkipDir(relPath) {
 				return filepath.SkipDir
 			}
 			return nil
 		} else if !fi.Mode().IsRegular() {
 			return nil
-		} else if w.shouldSkipFile(pathname) {
+		} else if w.shouldSkipFile(relPath) {
 			return nil
 		}
 
-		if err := fn(pathname, fi, w.fileOpener(pathname)); err != nil {
+		if err := fn(relPath, fi, w.fileOpener(pathname)); err != nil {
 			return xerrors.Errorf("failed to analyze file: %w", err)
 		}
 		return nil
