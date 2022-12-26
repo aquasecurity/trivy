@@ -3,7 +3,6 @@
   "ArtifactName": "testdata/fixtures/fs/pip",
   "ArtifactType": "filesystem",
   "Metadata": {
-    "OS": {},
     "ImageConfig": {
       "architecture": "",
       "created": "0001-01-01T00:00:00Z",

@@ -243,7 +243,7 @@ func runChecks(t *testing.T, ctx context.Context, ar artifact.Artifact, applier 
 }
 
 func commonChecks(t *testing.T, detail types.ArtifactDetail, tc testCase) {
-	assert.Equal(t, tc.wantOS, detail.OS, tc.name)
+	assert.Equal(t, tc.wantOS, *detail.OS, tc.name)
 	checkOSPackages(t, detail, tc)
 	checkPackageFromCommands(t, detail, tc)
 	checkLangPkgs(detail, t, tc)

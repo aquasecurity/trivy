@@ -2,9 +2,6 @@
   "SchemaVersion": 2,
   "ArtifactName": "testdata/fixtures/fs/conan",
   "ArtifactType": "filesystem",
-  "Metadata": {
-    "OS": {}
-  },
   "Results": [
     {
       "Target": "conan.lock",
