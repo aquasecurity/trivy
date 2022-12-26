@@ -28,13 +28,13 @@ func (w FS) Walk(root string, fn WalkFunc) error {
 	// walk function called for every path found
 	walkFn := func(pathname string, fi os.FileInfo) error {
 		pathname = filepath.Clean(pathname)
-		pathname = filepath.ToSlash(pathname)
 
 		// For exported rootfs (e.g. images/alpine/etc/alpine-release)
 		relPath, err := filepath.Rel(root, pathname)
 		if err != nil {
 			return xerrors.Errorf("filepath rel (%s): %w", relPath, err)
 		}
+		relPath = filepath.ToSlash(relPath)
 
 		if fi.IsDir() {
 			if w.shouldSkipDir(relPath) {
