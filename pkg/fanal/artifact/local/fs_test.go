@@ -3,6 +3,7 @@ package local
 import (
 	"context"
 	"errors"
+	"golang.org/x/exp/slices"
 	"runtime"
 	"testing"
 
@@ -240,29 +241,30 @@ func TestArtifact_Inspect(t *testing.T) {
 func TestBuildPathsToSkip(t *testing.T) {
 	tests := []struct {
 		name  string
-		os    string
+		oses  []string
 		paths []string
 		base  string
 		want  []string
 	}{
 		// linux/mac
-		{"path - abs, base - abs. Skip common prefix", "linux/mac", []string{"/foo/bar"}, "/foo", []string{"/foo/bar"}},
+		{"path - abs, base - abs. Skip common prefix", []string{"linux", "darwin"}, []string{"/foo/bar"}, "/foo", []string{"/foo/bar"}},
 		//{"path - abs, base - rel.", nil, "", nil}, - impossible to check. absPath for each PC will be different. Checked manual mode.
-		{"path - rel, base - abs", "linux/mac", []string{"bar"}, "/foo", []string{"/foo/bar"}},
-		{"path - rel, base - rel. Skip common prefix", "linux/mac", []string{"foo/bar/bar"}, "foo", []string{"foo/bar/bar"}},
-		{"path - rel with dot, base - rel. Skip common prefix", "linux/mac", []string{"./foo/bar"}, "foo", []string{"foo/bar"}},
-		{"path - rel, base - dot", "linux/mac", []string{"foo/bar"}, ".", []string{"foo/bar"}},
+		{"path - rel, base - rel", []string{"linux", "darwin"}, []string{"bar"}, "foo", []string{"foo/bar"}},
+		{"path - rel, base - rel. Skip common prefix", []string{"linux", "darwin"}, []string{"foo/bar/bar"}, "foo", []string{"foo/bar/bar"}},
+		{"path - rel with dot, base - rel. Skip common prefix", []string{"linux", "darwin"}, []string{"./foo/bar"}, "foo", []string{"foo/bar"}},
+		{"path - rel, base - dot", []string{"linux", "darwin"}, []string{"foo/bar"}, ".", []string{"foo/bar"}},
 		// windows
-		{"path - rel, base - rel. Skip common prefix", "windows", []string{"foo\\bar\\bar"}, "foo", []string{"foo\\bar\\bar"}},
-		{"path - rel, base - dot", "windows", []string{"foo\\bar"}, ".", []string{"foo\\bar"}},
+		{"path - rel, base - rel. Skip common prefix", []string{"windows"}, []string{"foo\\bar\\bar"}, "foo", []string{"foo/bar/bar"}},
+		{"path - rel, base - dot", []string{"windows"}, []string{"foo\\bar"}, ".", []string{"foo/bar"}},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if runtime.GOOS == tt.os {
-				got := buildPathsToSkip(tt.base, tt.paths)
-				assert.Equal(t, tt.want, got)
+			if !slices.Contains(tt.oses, runtime.GOOS) {
+				t.Skipf("Skip path tests for %q", tt.oses)
 			}
+			got := buildPathsToSkip(tt.base, tt.paths)
+			assert.Equal(t, tt.want, got)
 		})
 	}
 }

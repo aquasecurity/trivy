@@ -68,23 +68,38 @@ func buildPathsToSkip(base string, paths []string) []string {
 		log.Logger.Warnf("can't get abspath to base to: %s", err)
 		return nil
 	}
+	var relPath string
 	for _, path := range paths {
 		if filepath.IsAbs(path) {
-			relPath, err := filepath.Rel(absBase, path)
+			relPath, err = filepath.Rel(absBase, path)
 			if err != nil {
 				log.Logger.Warnf("can't get relative path to %s: %s", path, err)
 				continue
 			}
-			relativePaths = append(relativePaths, filepath.Join(base, relPath))
+			relPath = filepath.Join(base, relPath)
 		} else {
-			// we use not only path: https://github.com/aquasecurity/trivy/blob/8569d43a7a4c0b7301f90c004e7a3b75c0b02bcf/pkg/fanal/walker/fs.go#L33
-			// that is why we need to join base to path
-			relPath := filepath.Join(base, path)
-			if rel, err := filepath.Rel(base, path); err == nil {
-				relPath = filepath.Join(base, rel)
+			// Supports two types of flag specification
+			// 1. Relative skip dirs/files from the root directory
+			//     The specified dirs and files must be joined with the root directory.
+			//       e.g. $ trivy fs --skip-dirs bar ./foo
+			//     The path from the working directory will be `foo/bar`.
+			// 2. Relative skip dirs/files from the working directory
+			//     The specified dirs and files must not be joined with the root directory.
+			//       e.g. $ trivy fs --skip-dirs ./foo/bar ./foo
+			rel, err := filepath.Rel(base, path)
+			if err != nil {
+				log.Logger.Warnf("can't get relative path to %s: %s", path, err)
 			}
-			relativePaths = append(relativePaths, relPath)
+			if strings.HasPrefix(rel, "..") {
+				// #1: The path should be joined
+				relPath = filepath.Join(base, path)
+			} else {
+				// #2: Use the path as is
+				relPath = filepath.Join(path) // required to remove './' if used
+			}
 		}
+		relPath = filepath.ToSlash(relPath)
+		relativePaths = append(relativePaths, relPath)
 	}
 	return relativePaths
 }
