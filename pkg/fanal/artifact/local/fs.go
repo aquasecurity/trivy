@@ -65,38 +65,49 @@ func buildPathsToSkip(base string, paths []string) []string {
 	var relativePaths []string
 	absBase, err := filepath.Abs(base)
 	if err != nil {
-		log.Logger.Warnf("can't get abspath to base to: %s", err)
+		log.Logger.Warnf("Failed to get an absolute path of %s: %s", base, err)
 		return nil
 	}
-	var relPath string
 	for _, path := range paths {
-		if filepath.IsAbs(path) {
-			relPath, err = filepath.Rel(absBase, path)
-			if err != nil {
-				log.Logger.Warnf("can't get relative path to %s: %s", path, err)
-				continue
-			}
-			relPath = filepath.Join(base, relPath)
-		} else {
-			// Supports two types of flag specification
-			// 1. Relative skip dirs/files from the root directory
-			//     The specified dirs and files must be joined with the root directory.
-			//       e.g. $ trivy fs --skip-dirs bar ./foo
-			//     The path from the working directory will be `foo/bar`.
-			// 2. Relative skip dirs/files from the working directory
-			//     The specified dirs and files must not be joined with the root directory.
-			//       e.g. $ trivy fs --skip-dirs ./foo/bar ./foo
-			rel, err := filepath.Rel(base, path)
-			if err != nil {
-				log.Logger.Warnf("can't get relative path to %s: %s", path, err)
-			}
-			if strings.HasPrefix(rel, "..") {
-				// #1: The path should be joined
-				relPath = filepath.Join(base, path)
-			} else {
-				// #2: Use the path as is
-				relPath = filepath.Join(path) // required to remove './' if used
-			}
+		// Supports three types of flag specification.
+		// All of them are converted into the relative path from the root directory.
+		// 1. Relative skip dirs/files from the root directory
+		//     The specified dirs and files will be used as is.
+		//       e.g. $ trivy fs --skip-dirs bar ./foo
+		//     The skip dir from the root directory will be `bar/`.
+		// 2. Relative skip dirs/files from the working directory
+		//     The specified dirs and files wll be converted to the relative path from the root directory.
+		//       e.g. $ trivy fs --skip-dirs ./foo/bar ./foo
+		//     The skip dir will be converted to `bar/`.
+		// 3. Absolute skip dirs/files
+		//     The specified dirs and files wll be converted to the relative path from the root directory.
+		//       e.g. $ trivy fs --skip-dirs /bar/foo/baz ./foo
+		//     When the working directory is
+		//       3.1 /bar: the skip dir will be converted to `baz/`.
+		//       3.2 /hoge : the skip dir will be converted to `../../bar/foo/baz/`.
+
+		absSkipPath, err := filepath.Abs(path)
+		if err != nil {
+			log.Logger.Warnf("Failed to get an absolute path of %s: %s", base, err)
+			continue
+		}
+		rel, err := filepath.Rel(absBase, absSkipPath)
+		if err != nil {
+			log.Logger.Warnf("Failed to get a relative path from %s to %s: %s", base, path, err)
+			continue
+		}
+
+		var relPath string
+		switch {
+		case !filepath.IsAbs(path) && strings.HasPrefix(rel, ".."):
+			// #1: Use the path as is
+			relPath = path
+		case !filepath.IsAbs(path) && !strings.HasPrefix(rel, ".."):
+			// #2: Use the relative path from the root directory
+			relPath = rel
+		case filepath.IsAbs(path):
+			// #3: Use the relative path from the root directory
+			relPath = rel
 		}
 		relPath = filepath.ToSlash(relPath)
 		relativePaths = append(relativePaths, relPath)
@@ -113,22 +124,13 @@ func (a Artifact) Inspect(ctx context.Context) (types.ArtifactReference, error) 
 		directory := a.rootPath
 
 		// When the directory is the same as the filePath, a file was given
-		// instead of a directory, rewrite the directory in this case.
-		if a.rootPath == filePath {
-			directory = filepath.Dir(a.rootPath)
+		// instead of a directory, rewrite the file path and directory in this case.
+		if filePath == "." {
+			directory, filePath = filepath.Split(a.rootPath)
 		}
-
-		// For exported rootfs (e.g. images/alpine/etc/alpine-release)
-		filePath, err := filepath.Rel(directory, filePath)
-		if err != nil {
-			return xerrors.Errorf("filepath rel (%s): %w", filePath, err)
-		}
-
-		// For Windows
-		filePath = filepath.ToSlash(filePath)
 
 		opts := analyzer.AnalysisOptions{Offline: a.artifactOption.Offline}
-		if err = a.analyzer.AnalyzeFile(ctx, &wg, limit, result, directory, filePath, info, opener, nil, opts); err != nil {
+		if err := a.analyzer.AnalyzeFile(ctx, &wg, limit, result, directory, filePath, info, opener, nil, opts); err != nil {
 			return xerrors.Errorf("analyze file (%s): %w", filePath, err)
 		}
 		return nil

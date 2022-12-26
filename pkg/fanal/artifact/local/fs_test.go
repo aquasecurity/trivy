@@ -3,12 +3,13 @@ package local
 import (
 	"context"
 	"errors"
-	"golang.org/x/exp/slices"
+	"path/filepath"
 	"runtime"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"golang.org/x/exp/slices"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer/config"
@@ -246,16 +247,68 @@ func TestBuildPathsToSkip(t *testing.T) {
 		base  string
 		want  []string
 	}{
-		// linux/mac
-		{"path - abs, base - abs. Skip common prefix", []string{"linux", "darwin"}, []string{"/foo/bar"}, "/foo", []string{"/foo/bar"}},
-		//{"path - abs, base - rel.", nil, "", nil}, - impossible to check. absPath for each PC will be different. Checked manual mode.
-		{"path - rel, base - rel", []string{"linux", "darwin"}, []string{"bar"}, "foo", []string{"foo/bar"}},
-		{"path - rel, base - rel. Skip common prefix", []string{"linux", "darwin"}, []string{"foo/bar/bar"}, "foo", []string{"foo/bar/bar"}},
-		{"path - rel with dot, base - rel. Skip common prefix", []string{"linux", "darwin"}, []string{"./foo/bar"}, "foo", []string{"foo/bar"}},
-		{"path - rel, base - dot", []string{"linux", "darwin"}, []string{"foo/bar"}, ".", []string{"foo/bar"}},
-		// windows
-		{"path - rel, base - rel. Skip common prefix", []string{"windows"}, []string{"foo\\bar\\bar"}, "foo", []string{"foo/bar/bar"}},
-		{"path - rel, base - dot", []string{"windows"}, []string{"foo\\bar"}, ".", []string{"foo/bar"}},
+		// Linux/macOS
+		{
+			name:  "path - abs, base - abs, not joining paths",
+			oses:  []string{"linux", "darwin"},
+			base:  "/foo",
+			paths: []string{"/foo/bar"},
+			want:  []string{"bar"},
+		},
+		{
+			name: "path - abs, base - rel",
+			oses: []string{"linux", "darwin"},
+			base: "foo",
+			paths: func() []string {
+				abs, err := filepath.Abs("foo/bar")
+				require.NoError(t, err)
+				return []string{abs}
+			}(),
+			want: []string{"bar"},
+		},
+		{
+			name:  "path - rel, base - rel, joining paths",
+			oses:  []string{"linux", "darwin"},
+			base:  "foo",
+			paths: []string{"bar"},
+			want:  []string{"bar"},
+		},
+		{
+			name:  "path - rel, base - rel, not joining paths",
+			oses:  []string{"linux", "darwin"},
+			base:  "foo",
+			paths: []string{"foo/bar/bar"},
+			want:  []string{"bar/bar"},
+		},
+		{
+			name:  "path - rel with dot, base - rel, removing the leading dot and not joining paths",
+			oses:  []string{"linux", "darwin"},
+			base:  "foo",
+			paths: []string{"./foo/bar"},
+			want:  []string{"bar"},
+		},
+		{
+			name:  "path - rel, base - dot",
+			oses:  []string{"linux", "darwin"},
+			base:  ".",
+			paths: []string{"foo/bar"},
+			want:  []string{"foo/bar"},
+		},
+		// Windows
+		{
+			name:  "path - rel, base - rel. Skip common prefix",
+			oses:  []string{"windows"},
+			base:  "foo",
+			paths: []string{"foo\\bar\\bar"},
+			want:  []string{"bar/bar"},
+		},
+		{
+			name:  "path - rel, base - dot",
+			oses:  []string{"windows"},
+			base:  ".",
+			paths: []string{"foo\\bar"},
+			want:  []string{"bar"},
+		},
 	}
 
 	for _, tt := range tests {
