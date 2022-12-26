@@ -1,7 +1,6 @@
 package ubuntu
 
 import (
-	"bufio"
 	"context"
 	"os"
 
@@ -33,25 +32,21 @@ var ESMRequiredFiles = []string{
 type ubuntuESMAnalyzer struct{}
 
 func (a ubuntuESMAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInput) (*analyzer.AnalysisResult, error) {
-	scanner := bufio.NewScanner(input.Content)
-	for scanner.Scan() {
-		line := scanner.Text()
-		enable, err := esmEnabled(line)
-		if err != nil {
-			return nil, xerrors.Errorf("ubuntu ESM analyze error: %w", err)
-		}
-		if enable {
-			return &analyzer.AnalysisResult{
-				OS: types.OS{
-					Family:   aos.Ubuntu,
-					Extended: true,
-				},
-			}, nil
-		} else { // if ESM is disabled - return nil to reduce the amount of logic in the MergeOsVersion function
-			return nil, nil
-		}
+	st := status{}
+	err := json.NewDecoder(input.Content).Decode(&st)
+	if err != nil {
+		return nil, xerrors.Errorf("ubuntu ESM analyze error: %w", err)
 	}
-	return nil, xerrors.Errorf("ubuntu ESM: %w", aos.AnalyzeOSError)
+	if esmEnabled(st) {
+		return &analyzer.AnalysisResult{
+			OS: types.OS{
+				Family:   aos.Ubuntu,
+				Extended: true,
+			},
+		}, nil
+	}
+	// if ESM is disabled - return nil to reduce the amount of logic in the OS.Merge function
+	return nil, nil
 }
 
 func (a ubuntuESMAnalyzer) Required(filePath string, _ os.FileInfo) bool {
@@ -76,18 +71,11 @@ type service struct {
 	Status string `json:"status"`
 }
 
-func esmEnabled(line string) (bool, error) {
-	st := status{}
-
-	err := json.Unmarshal([]byte(line), &st)
-	if err != nil {
-		return false, err
-	}
-
+func esmEnabled(st status) bool {
 	for _, s := range st.Services { // Find ESM Service
 		if s.Name == esmServiceName && s.Status == esmStatusEnabled {
-			return true, nil
+			return true
 		}
 	}
-	return false, nil
+	return false
 }
