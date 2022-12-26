@@ -391,6 +391,24 @@ func TestTerraformMisconfigurationScan(t *testing.T) {
 											Code: types.Code{Lines: []types.Line(nil)},
 										}, Traces: []string(nil),
 									},
+									{
+										Namespace: "builtin.aws.rds.aws0180",
+										Query:     "data.builtin.aws.rds.aws0180.deny",
+										PolicyMetadata: types.PolicyMetadata{
+											ID:                 "N/A",
+											AVDID:              "AVD-AWS-0180",
+											Type:               "Terraform Security Check",
+											Title:              "RDS Publicly Accessible",
+											Description:        "Ensures RDS instances are not launched into the public cloud.",
+											Severity:           "HIGH",
+											RecommendedActions: "Remove the public endpoint from the RDS instance'",
+											References:         []string{"http://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_VPC.html"},
+										},
+										CauseMetadata: types.CauseMetadata{
+											Resource: "", Provider: "AWS", Service: "rds", StartLine: 0, EndLine: 0,
+											Code: types.Code{Lines: []types.Line(nil)},
+										}, Traces: []string(nil),
+									},
 								},
 							},
 							{
@@ -429,9 +447,9 @@ func TestTerraformMisconfigurationScan(t *testing.T) {
 			want: types.ArtifactReference{
 				Name: "testdata/misconfig/terraform/single-failure/src",
 				Type: types.ArtifactFilesystem,
-				ID:   "sha256:c489d24f0bf3e58d86c9d5d9fadfe5a78826a7cc98235a4519c97ad3565eee17",
+				ID:   "sha256:50ac4117e0b0d075e9ce20726f3bd43f570955f3914ab3547bcbcfcdd0c2f063",
 				BlobIDs: []string{
-					"sha256:c489d24f0bf3e58d86c9d5d9fadfe5a78826a7cc98235a4519c97ad3565eee17",
+					"sha256:50ac4117e0b0d075e9ce20726f3bd43f570955f3914ab3547bcbcfcdd0c2f063",
 				},
 			},
 		},
@@ -492,6 +510,24 @@ func TestTerraformMisconfigurationScan(t *testing.T) {
 											Provider: "AWS",
 											Service:  "rds",
 										},
+									},
+									{
+										Namespace: "builtin.aws.rds.aws0180",
+										Query:     "data.builtin.aws.rds.aws0180.deny",
+										PolicyMetadata: types.PolicyMetadata{
+											ID:                 "N/A",
+											AVDID:              "AVD-AWS-0180",
+											Type:               "Terraform Security Check",
+											Title:              "RDS Publicly Accessible",
+											Description:        "Ensures RDS instances are not launched into the public cloud.",
+											Severity:           "HIGH",
+											RecommendedActions: "Remove the public endpoint from the RDS instance'",
+											References:         []string{"http://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_VPC.html"},
+										},
+										CauseMetadata: types.CauseMetadata{
+											Resource: "", Provider: "AWS", Service: "rds", StartLine: 0, EndLine: 0,
+											Code: types.Code{Lines: []types.Line(nil)},
+										}, Traces: []string(nil),
 									},
 								},
 							},
@@ -580,9 +616,9 @@ func TestTerraformMisconfigurationScan(t *testing.T) {
 			want: types.ArtifactReference{
 				Name: "testdata/misconfig/terraform/multiple-failures/src",
 				Type: types.ArtifactFilesystem,
-				ID:   "sha256:b5a4f680b5b7fbf9125f9d2209015e39c8eb30acc5daad9423b44089a5b48f5f",
+				ID:   "sha256:99517dc844bb08a112ad5c418b87e179cebee917a7d4cf1406bdcfe1429eeabb",
 				BlobIDs: []string{
-					"sha256:b5a4f680b5b7fbf9125f9d2209015e39c8eb30acc5daad9423b44089a5b48f5f",
+					"sha256:99517dc844bb08a112ad5c418b87e179cebee917a7d4cf1406bdcfe1429eeabb",
 				},
 			},
 		},
@@ -675,6 +711,24 @@ func TestTerraformMisconfigurationScan(t *testing.T) {
 										},
 									},
 									{
+										Namespace: "builtin.aws.rds.aws0180",
+										Query:     "data.builtin.aws.rds.aws0180.deny",
+										PolicyMetadata: types.PolicyMetadata{
+											ID:                 "N/A",
+											AVDID:              "AVD-AWS-0180",
+											Type:               "Terraform Security Check",
+											Title:              "RDS Publicly Accessible",
+											Description:        "Ensures RDS instances are not launched into the public cloud.",
+											Severity:           "HIGH",
+											RecommendedActions: "Remove the public endpoint from the RDS instance'",
+											References:         []string{"http://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_VPC.html"},
+										},
+										CauseMetadata: types.CauseMetadata{
+											Resource: "", Provider: "AWS", Service: "rds", StartLine: 0, EndLine: 0,
+											Code: types.Code{Lines: []types.Line(nil)},
+										}, Traces: []string(nil),
+									},
+									{
 										Namespace: "user.something",
 										Query:     "data.user.something.deny",
 										PolicyMetadata: types.PolicyMetadata{
@@ -702,9 +756,9 @@ func TestTerraformMisconfigurationScan(t *testing.T) {
 			want: types.ArtifactReference{
 				Name: "testdata/misconfig/terraform/passed/src",
 				Type: types.ArtifactFilesystem,
-				ID:   "sha256:8b0f0a9c59edc58b713bab8b7e28b56c7fcc9879dab6914df8fc7fd5d38822c5",
+				ID:   "sha256:3b10f21212504dafd8b4e5656b1cb590a6cb88f6a9e20e05b1a773e1b2951714",
 				BlobIDs: []string{
-					"sha256:8b0f0a9c59edc58b713bab8b7e28b56c7fcc9879dab6914df8fc7fd5d38822c5",
+					"sha256:3b10f21212504dafd8b4e5656b1cb590a6cb88f6a9e20e05b1a773e1b2951714",
 				},
 			},
 		},
