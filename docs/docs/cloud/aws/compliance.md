@@ -1,299 +1,23 @@
 # AWS Compliance
 
-## CIS Compliance Report
+# Kubernetes Compliance
 
 !!! warning "EXPERIMENTAL"
     This feature might change without preserving backwards compatibility.
 
-The Trivy AWS CLI allows you to scan your AWS account resources and generate the `AWS CIS Foundations Benchmark` report
+This page describes AWS specific compliance reports. For an overview of Trivy's Compliance feature, including working with custom compliance, check out the [Compliance documentation](../../compliance/compliance.md).
 
-[AWS CIS Foundations Benchmark v1.2](https://d0.awsstatic.com/whitepapers/compliance/AWS_CIS_Foundations_Benchmark.pdf) validates the following control checks:
-
-```shell
-+--------------------------------------------+--------------------------------+
-|                    NAME                    |          DESCRIPTION           |
-+--------------------------------------------+--------------------------------+
-| limit-root-account-usage                   | The "root" account has         |
-|                                            | unrestricted access to all     |
-|                                            | resources in the AWS account.  |
-|                                            | It is highly recommended that  |
-|                                            | the use of this account be     |
-|                                            | avoided.                       |
-| no-password-reuse                          | IAM Password policy should     |
-|                                            | prevent password reuse.        |
-| set-max-password-age                       | IAM Password policy should     |
-|                                            | have expiry less than or equal |
-|                                            | to 90 days.                    |
-| no-root-access-keys                        | The root user has complete     |
-|                                            | access to all services and     |
-|                                            | resources in an AWS account.   |
-|                                            | AWS Access Keys provide        |
-|                                            | programmatic access to a given |
-|                                            | account.                       |
-| enforce-root-mfa                           | The "root" account has         |
-|                                            | unrestricted access to all     |
-|                                            | resources in the AWS account.  |
-|                                            | It is highly recommended that  |
-|                                            | this account have MFA enabled. |
-| no-user-attached-policies                  | IAM policies should not be     |
-|                                            | granted directly to users.     |
-| enforce-user-mfa                           | IAM Users should have MFA      |
-|                                            | enforcement activated.         |
-| disable-unused-credentials                 | Credentials which are          |
-|                                            | no longer used should be       |
-|                                            | disabled.                      |
-| rotate-access-keys                         | Access keys should be rotated  |
-|                                            | at least every 90 days         |
-| require-uppercase-in-passwords             | IAM Password policy should     |
-|                                            | have requirement for at least  |
-|                                            | one uppercase character.       |
-| require-lowercase-in-passwords             | IAM Password policy should     |
-|                                            | have requirement for at least  |
-|                                            | one lowercase character.       |
-| require-symbols-in-passwords               | IAM Password policy should     |
-|                                            | have requirement for at least  |
-|                                            | one symbol in the password.    |
-| require-numbers-in-passwords               | IAM Password policy should     |
-|                                            | have requirement for at least  |
-|                                            | one number in the password.    |
-| set-minimum-password-length                | IAM Password policy should     |
-|                                            | have minimum password length   |
-|                                            | of 14 or more characters.      |
-| no-public-log-access                       | The S3 Bucket backing          |
-|                                            | Cloudtrail should be private   |
-| ensure-cloudwatch-integration              | CloudTrail logs should be      |
-|                                            | stored in S3 and also sent to  |
-|                                            | CloudWatch Logs                |
-| enable-all-regions                         | Cloudtrail should be enabled   |
-|                                            | in all regions regardless of   |
-|                                            | where your AWS resources are   |
-|                                            | generally homed                |
-| require-bucket-access-logging              | You should enable bucket       |
-|                                            | access logging on the          |
-|                                            | CloudTrail S3 bucket.          |
-| require-unauthorised-api-call-alarm        | Ensure a log metric filter and |
-|                                            | alarm exist for unauthorized   |
-|                                            | API calls                      |
-| require-sg-change-alarms                   | Ensure a log metric filter and |
-|                                            | alarm exist for security group |
-|                                            | changes                        |
-| require-nacl-changes-alarm                 | Ensure a log metric filter     |
-|                                            | and alarm exist for changes to |
-|                                            | Network Access Control Lists   |
-|                                            | (NACL)                         |
-| require-network-gateway-changes-alarm      | Ensure a log metric filter     |
-|                                            | and alarm exist for changes to |
-|                                            | network gateways               |
-| require-network-gateway-changes-alarm      | Ensure a log metric filter and |
-|                                            | alarm exist for route table    |
-|                                            | changes                        |
-| require-vpc-changes-alarm                  | Ensure a log metric filter and |
-|                                            | alarm exist for VPC changes    |
-| require-non-mfa-login-alarm                | Ensure a log metric filter and |
-|                                            | alarm exist for AWS Management |
-|                                            | Console sign-in without MFA    |
-| require-root-user-usage-alarm              | Ensure a log metric filter and |
-|                                            | alarm exist for usage of root  |
-|                                            | user                           |
-| require-iam-policy-change-alarm            | Ensure a log metric filter     |
-|                                            | and alarm exist for IAM policy |
-|                                            | changes                        |
-| require-cloud-trail-change-alarm           | Ensure a log metric filter     |
-|                                            | and alarm exist for CloudTrail |
-|                                            | configuration changes          |
-| require-console-login-failures-alarm       | Ensure a log metric filter and |
-|                                            | alarm exist for AWS Management |
-|                                            | Console authentication         |
-|                                            | failures                       |
-| require-cmk-disabled-alarm                 | Ensure a log metric filter and |
-|                                            | alarm exist for disabling or   |
-|                                            | scheduled deletion of customer |
-|                                            | managed keys                   |
-| require-s3-bucket-policy-change-alarm      | Ensure a log metric filter     |
-|                                            | and alarm exist for S3 bucket  |
-|                                            | policy changes                 |
-| require-config-configuration-changes-alarm | Ensure a log metric filter     |
-|                                            | and alarm exist for AWS Config |
-|                                            | configuration changes          |
-| no-public-ingress-sgr                      | An ingress security group rule |
-|                                            | allows traffic from /0.        |
-+--------------------------------------------+--------------------------------+
-```
-
-
-[AWS CIS Foundations Benchmark v1.4](https://docs.aws.amazon.com/securityhub/latest/userguide/securityhub-cis-controls-1.4.0.html) validates the following control checks:
-```shell
-+--------------------------------------------+--------------------------------+
-|                    NAME                    |          DESCRIPTION           |
-+--------------------------------------------+--------------------------------+
-| require-mfa-delete                         | Buckets should have MFA        |
-|                                            | deletion protection enabled.   |
-| disable-unused-credentials-45-days         | AWS IAM users can access AWS   |
-|                                            | resources using different      |
-|                                            | types of credentials, such     |
-|                                            | as passwords or access keys.   |
-|                                            | It is recommended that all     |
-|                                            | credentials that have been     |
-|                                            | unused in 45 or greater days   |
-|                                            | be deactivated or removed.     |
-| limit-user-access-keys                     | No user should have more than  |
-|                                            | one active access key.         |
-| rotate-access-keys                         | Access keys should be rotated  |
-|                                            | at least every 90 days         |
-| no-user-attached-policies                  | IAM policies should not be     |
-|                                            | granted directly to users.     |
-| no-policy-wildcards                        | IAM policy should avoid use    |
-|                                            | of wildcards and instead       |
-|                                            | apply the principle of least   |
-|                                            | privilege                      |
-| require-support-role                       | Missing IAM Role to allow      |
-|                                            | authorized users to manage     |
-|                                            | incidents with AWS Support.    |
-| remove-expired-certificates                | Delete expired TLS             |
-|                                            | certificates                   |
-| enable-access-analyzer                     | Enable IAM Access analyzer     |
-|                                            | for IAM policies about all     |
-|                                            | resources in each region.      |
-| enforce-user-mfa                           | IAM Users should have MFA      |
-|                                            | enforcement activated.         |
-| no-root-access-keys                        | The root user has complete     |
-|                                            | access to all services and     |
-|                                            | resources in an AWS account.   |
-|                                            | AWS Access Keys provide        |
-|                                            | programmatic access to a given |
-|                                            | account.                       |
-| enforce-root-mfa                           | The "root" account has         |
-|                                            | unrestricted access to all     |
-|                                            | resources in the AWS account.  |
-|                                            | It is highly recommended that  |
-|                                            | this account have MFA enabled. |
-| enforce-root-hardware-mfa                  | The "root" account has         |
-|                                            | unrestricted access to all     |
-|                                            | resources in the AWS account.  |
-|                                            | It is highly recommended that  |
-|                                            | this account have hardware MFA |
-|                                            | enabled.                       |
-| limit-root-account-usage                   | The "root" account has         |
-|                                            | unrestricted access to all     |
-|                                            | resources in the AWS account.  |
-|                                            | It is highly recommended that  |
-|                                            | the use of this account be     |
-|                                            | avoided.                       |
-| set-minimum-password-length                | IAM Password policy should     |
-|                                            | have minimum password length   |
-|                                            | of 14 or more characters.      |
-| no-password-reuse                          | IAM Password policy should     |
-|                                            | prevent password reuse.        |
-| enable-object-write-logging                | S3 object-level API            |
-|                                            | operations such as GetObject,  |
-|                                            | DeleteObject, and PutObject    |
-|                                            | are called data events. By     |
-|                                            | default, CloudTrail trails     |
-|                                            | don't log data events and so   |
-|                                            | it is recommended to enable    |
-|                                            | Object-level logging for S3    |
-|                                            | buckets.                       |
-| enable-object-read-logging                 | S3 object-level API            |
-|                                            | operations such as GetObject,  |
-|                                            | DeleteObject, and PutObject    |
-|                                            | are called data events. By     |
-|                                            | default, CloudTrail trails     |
-|                                            | don't log data events and so   |
-|                                            | it is recommended to enable    |
-|                                            | Object-level logging for S3    |
-|                                            | buckets.                       |
-| no-public-log-access                       | The S3 Bucket backing          |
-|                                            | Cloudtrail should be private   |
-| ensure-cloudwatch-integration              | CloudTrail logs should be      |
-|                                            | stored in S3 and also sent to  |
-|                                            | CloudWatch Logs                |
-| require-bucket-access-logging              | You should enable bucket       |
-|                                            | access logging on the          |
-|                                            | CloudTrail S3 bucket.          |
-| require-sg-change-alarms                   | Ensure a log metric filter and |
-|                                            | alarm exist for security group |
-|                                            | changes                        |
-| require-unauthorised-api-call-alarm        | Ensure a log metric filter and |
-|                                            | alarm exist for unauthorized   |
-|                                            | API calls                      |
-| require-nacl-changes-alarm                 | Ensure a log metric filter     |
-|                                            | and alarm exist for changes to |
-|                                            | Network Access Control Lists   |
-|                                            | (NACL)                         |
-| require-network-gateway-changes-alarm      | Ensure a log metric filter     |
-|                                            | and alarm exist for changes to |
-|                                            | network gateways               |
-| require-network-gateway-changes-alarm      | Ensure a log metric filter and |
-|                                            | alarm exist for route table    |
-|                                            | changes                        |
-| require-vpc-changes-alarm                  | Ensure a log metric filter and |
-|                                            | alarm exist for VPC changes    |
-| require-org-changes-alarm                  | Ensure a log metric filter and |
-|                                            | alarm exist for organisation   |
-|                                            | changes                        |
-| require-non-mfa-login-alarm                | Ensure a log metric filter and |
-|                                            | alarm exist for AWS Management |
-|                                            | Console sign-in without MFA    |
-| require-root-user-usage-alarm              | Ensure a log metric filter and |
-|                                            | alarm exist for usage of root  |
-|                                            | user                           |
-| require-iam-policy-change-alarm            | Ensure a log metric filter     |
-|                                            | and alarm exist for IAM policy |
-|                                            | changes                        |
-| require-cloud-trail-change-alarm           | Ensure a log metric filter     |
-|                                            | and alarm exist for CloudTrail |
-|                                            | configuration changes          |
-| require-console-login-failures-alarm       | Ensure a log metric filter and |
-|                                            | alarm exist for AWS Management |
-|                                            | Console authentication         |
-|                                            | failures                       |
-| require-cmk-disabled-alarm                 | Ensure a log metric filter and |
-|                                            | alarm exist for disabling or   |
-|                                            | scheduled deletion of customer |
-|                                            | managed keys                   |
-| require-s3-bucket-policy-change-alarm      | Ensure a log metric filter     |
-|                                            | and alarm exist for S3 bucket  |
-|                                            | policy changes                 |
-| require-config-configuration-changes-alarm | Ensure a log metric filter     |
-|                                            | and alarm exist for AWS Config |
-|                                            | configuration changes          |
-| restrict-all-in-default-sg                 | Default security group should  |
-|                                            | restrict all traffic           |
-+--------------------------------------------+--------------------------------+
-```
-
-[Differences between v1.2 and v1.4](https://docs.aws.amazon.com/securityhub/latest/userguide/securityhub-standards-cis1.4-vs-cis1.2.html)
 
 ## CLI Commands
 
-Scan for misconfigurations in an AWS account based on AWS CIS 1.2 benchmark:
-
-```shell
-$ trivy aws --compliance=aws-cis-1.2
-
-arn:aws:iam::123456789:user/DummyRoleManager (cloud)
-
-Tests: 1 (SUCCESSES: 0, FAILURES: 1, EXCEPTIONS: 0)
-
-LOW: One or more policies are attached directly to a user
-══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
-CIS recommends that you apply IAM policies directly to groups and roles but not users. Assigning privileges at the group or role level reduces the complexity of access management as the number of users grow. Reducing access management complexity might in turn reduce opportunity for a principal to inadvertently receive or retain excessive privileges.
-
-See https://avd.aquasec.com/misconfig/avd-aws-0143
-──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-
+Scan a cloud accoung and generate a compliance summary report:
 
 ```
-
-
-
-You can also summarize the report to get a full compliance report with all the included checks.
-```shell
-$ trivy aws --compliance=aws-cis-1.2 --report=summary
+$ trivy aws --compliance=awscis1.2 --report=summary
 ```
 
-```shell
-Summary Report for compliance: AWS CIS Foundations v1.2
+```
+Summary Report for compliance: awscis1.2
 ┌──────┬──────────┬────────────────────────────────────────────┬────────┬────────┐
 │  ID  │ Severity │                Control Name                │ Status │ Issues │
 ├──────┼──────────┼────────────────────────────────────────────┼────────┼────────┤
@@ -333,6 +57,7 @@ Summary Report for compliance: AWS CIS Foundations v1.2
 └──────┴──────────┴────────────────────────────────────────────┴────────┴────────┘
 ```
 
+<<<<<<< HEAD
 
 Furthermore, you can also get the report in a JSON format.
 ```shell
@@ -396,8 +121,32 @@ spec:
 ## Custom report CLI Commands
 
 To use a custom spec, the file path should be passed to the `--compliance` flag with `@` prefix as follows:
+=======
+***Note*** : The `Issues` column represent the total number of failed checks for this control.
+
+
+Get all of the detailed output for checks:
+>>>>>>> 499209ca8 (docs: improve compliance docs)
 
 ```
-$ trivy aws --compliance=@/spec/my_compliance.yaml
+$ trivy aws --compliance=awscis1.2 --report all
 ```
 
+Report result in JSON format:
+
+```
+$ trivy aws --compliance=awscis1.2 --report all --format json
+```
+
+```
+$ trivy k8s cluster --compliance=nsa --report all --format json
+```
+
+## Built in reports
+
+the following reports out of the box:
+
+| Compliance | Name for command | More info
+--- | --- | ---
+AWS CIS Foundations Benchmark v1.2 | `awscis1.2` | [link](https://d0.awsstatic.com/whitepapers/compliance/AWS_CIS_Foundations_Benchmark.pdf)
+AWS CIS Foundations Benchmark v1.4 | `awscis1.4` | [link](https://docs.aws.amazon.com/securityhub/latest/userguide/securityhub-cis-controls-1.4.0.html)
