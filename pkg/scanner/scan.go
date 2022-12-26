@@ -156,9 +156,12 @@ func (s Scanner) ScanArtifact(ctx context.Context, options types.ScanOptions) (t
 		return types.Report{}, xerrors.Errorf("scan failed: %w", err)
 	}
 
+	ptros := &osFound
 	if osFound.Detected() && osFound.Eosl {
 		log.Logger.Warnf("This OS version is no longer supported by the distribution: %s %s", osFound.Family, osFound.Name)
 		log.Logger.Warnf("The vulnerability detection may be insufficient because security updates are not provided")
+	} else if !osFound.Detected() {
+		ptros = nil
 	}
 
 	// Layer makes sense only when scanning container images
@@ -171,7 +174,7 @@ func (s Scanner) ScanArtifact(ctx context.Context, options types.ScanOptions) (t
 		ArtifactName:  artifactInfo.Name,
 		ArtifactType:  artifactInfo.Type,
 		Metadata: types.Metadata{
-			OS: &osFound,
+			OS: ptros,
 
 			// Container image
 			ImageID:     artifactInfo.ImageMetadata.ID,
