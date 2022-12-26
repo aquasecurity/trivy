@@ -3,6 +3,7 @@
   "ArtifactName": "testdata/fixtures/fs/pnpm",
   "ArtifactType": "filesystem",
   "Metadata": {
+    "OS": {},
     "ImageConfig": {
       "architecture": "",
       "created": "0001-01-01T00:00:00Z",

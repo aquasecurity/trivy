@@ -3,6 +3,10 @@
   "ArtifactName": "testdata/fixtures/images/busybox-with-lockfile.tar.gz",
   "ArtifactType": "container_image",
   "Metadata": {
+    "OS": {
+      "Family": "",
+      "Name": ""
+    },
     "ImageID": "sha256:88702f6b6133bf06cc46af48437d0c0fc661239155548757c65916504a0e5eee",
     "DiffIDs": [
       "sha256:797ac4999b67d8c38a596919efa5b7b6a4a8fd5814cb8564efa482c5d8403e6d",

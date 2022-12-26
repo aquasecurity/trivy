@@ -3,6 +3,10 @@
   "ArtifactName": "https://github.com/knqyf263/trivy-ci-test",
   "ArtifactType": "repository",
   "Metadata": {
+    "OS": {
+      "Family": "",
+      "Name": ""
+    },
     "ImageConfig": {
       "architecture": "",
       "created": "0001-01-01T00:00:00Z",

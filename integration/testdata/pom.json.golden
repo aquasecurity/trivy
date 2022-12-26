@@ -3,6 +3,10 @@
   "ArtifactName": "testdata/fixtures/fs/pom",
   "ArtifactType": "filesystem",
   "Metadata": {
+    "OS": {
+      "Family": "",
+      "Name": ""
+    },
     "ImageConfig": {
       "architecture": "",
       "created": "0001-01-01T00:00:00Z",
