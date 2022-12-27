@@ -1,0 +1,45 @@
+package pubspeclock
+
+import (
+	"context"
+	"os"
+
+	"golang.org/x/xerrors"
+
+	"github.com/aquasecurity/go-dep-parser/pkg/dart/lock"
+	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
+	"github.com/aquasecurity/trivy/pkg/fanal/analyzer/language"
+	"github.com/aquasecurity/trivy/pkg/fanal/types"
+)
+
+func init() {
+	analyzer.RegisterAnalyzer(&pubSpecLockAnalyzer{})
+}
+
+const (
+	version = 1
+)
+
+// pubSpecLockAnalyzer analyzes Podfile.lock
+type pubSpecLockAnalyzer struct{}
+
+func (a pubSpecLockAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInput) (*analyzer.AnalysisResult, error) {
+	p := lock.NewParser()
+	res, err := language.Analyze(types.PubSpec, input.FilePath, input.Content, p)
+	if err != nil {
+		return nil, xerrors.Errorf("%s parse error: %w", input.FilePath, err)
+	}
+	return res, nil
+}
+
+func (a pubSpecLockAnalyzer) Required(_ string, fileInfo os.FileInfo) bool {
+	return fileInfo.Name() == types.PubSpecLock
+}
+
+func (a pubSpecLockAnalyzer) Type() analyzer.Type {
+	return analyzer.TypePubSpecLock
+}
+
+func (a pubSpecLockAnalyzer) Version() int {
+	return version
+}

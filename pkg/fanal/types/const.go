@@ -30,6 +30,7 @@ const (
 	RustBinary = "rustbinary"
 	Conan      = "conan"
 	Cocoapods  = "cocoapods"
+	PubSpec    = "pubspec"
 
 	// Config files
 	YAML           = "yaml"
@@ -73,4 +74,6 @@ const (
 	ConanLock = "conan.lock"
 
 	CocoaPodsLock = "Podfile.lock"
+
+	PubSpecLock = "pubspec.lock"
 )
