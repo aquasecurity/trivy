@@ -23,8 +23,8 @@ import (
 )
 
 const (
-	ToolVendor = "aquasecurity"
-	ToolName   = "trivy"
+	ToolVendor = "Deepfactor"
+	ToolName   = "dfctl"
 	Namespace  = ToolVendor + ":" + ToolName + ":"
 
 	PropertySchemaVersion = "SchemaVersion"
