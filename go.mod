@@ -81,10 +81,7 @@ require (
 	k8s.io/utils v0.0.0-20220728103510-ee6ede2d64ed
 )
 
-require (
-	github.com/moby/patternmatcher v0.5.0 // indirect
-	github.com/moby/sys/sequential v0.5.0 // indirect
-)
+require github.com/moby/sys/mount v0.3.3 // indirect
 
 require (
 	cloud.google.com/go v0.104.0 // indirect
@@ -387,7 +384,8 @@ require (
 	sigs.k8s.io/yaml v1.3.0 // indirect
 )
 
-replace github.com/docker/docker => github.com/moby/moby v20.10.3-0.20221223164052-980701114f23+incompatible
+// replace github.com/docker/docker => github.com/moby/moby v20.10.3-0.20221223164052-980701114f23+incompatible
+replace github.com/docker/docker => github.com/moby/moby v20.10.3-0.20220224222438-c78f6963a1c0+incompatible
 
 // v1.2.0 is taken from github.com/open-policy-agent/opa v0.42.0
 // v1.2.0 incompatible with github.com/docker/docker v20.10.3-0.20220224222438-c78f6963a1c0+incompatible
