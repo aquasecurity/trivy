@@ -57,7 +57,8 @@ var (
 )
 
 type Option struct {
-	AppVersion string
+	AppVersion   string
+	DfctlVersion string
 
 	Format         string
 	Report         string
@@ -105,7 +106,7 @@ func Write(report types.Report, option Option) error {
 		}
 	case FormatCycloneDX:
 		// TODO: support xml format option with cyclonedx writer
-		writer = cyclonedx.NewWriter(option.Output, option.AppVersion)
+		writer = cyclonedx.NewWriter(option.Output, option.DfctlVersion)
 	case FormatSPDX, FormatSPDXJSON:
 		writer = spdx.NewWriter(option.Output, option.AppVersion, option.Format)
 	case FormatTemplate:

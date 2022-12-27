@@ -283,6 +283,7 @@ func (r *runner) Filter(ctx context.Context, opts flag.Options, report types.Rep
 func (r *runner) Report(opts flag.Options, report types.Report) error {
 	if err := pkgReport.Write(report, pkgReport.Option{
 		AppVersion:         opts.AppVersion,
+		DfctlVersion:       opts.DfctlVersion,
 		Format:             opts.Format,
 		Output:             opts.Output,
 		Tree:               opts.DependencyTree,
