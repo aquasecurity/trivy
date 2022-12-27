@@ -89,7 +89,7 @@ func TestArtifact_Inspect(t *testing.T) {
 					BlobID: "sha256:bdff805a4b2a96074c549dbb7912f5089df1a484cf0919639ecdba437a959e90",
 					BlobInfo: types.BlobInfo{
 						SchemaVersion: types.BlobJSONSchemaVersion,
-						OS: &types.OS{
+						OS: types.OS{
 							Family: "amazon",
 							Name:   "2 (Karoo)",
 						},
@@ -137,7 +137,7 @@ func TestArtifact_Inspect(t *testing.T) {
 					BlobID: "sha256:284fbc20c2224e9ffc9dbc2fa1cdc4138fcfd5c55763ecb737864c0ee0d8163f",
 					BlobInfo: types.BlobInfo{
 						SchemaVersion: types.BlobJSONSchemaVersion,
-						OS: &types.OS{
+						OS: types.OS{
 							Family: "amazon",
 							Name:   "2 (Karoo)",
 						},

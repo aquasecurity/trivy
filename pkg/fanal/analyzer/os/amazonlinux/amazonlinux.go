@@ -37,7 +37,7 @@ func (a amazonlinuxOSAnalyzer) Analyze(_ context.Context, input analyzer.Analysi
 		return nil, err
 	}
 	return &analyzer.AnalysisResult{
-		OS: &foundOS,
+		OS: foundOS,
 	}, nil
 }
 
