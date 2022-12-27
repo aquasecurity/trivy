@@ -793,253 +793,289 @@ func TestCloudFormationMisconfigurationScan(t *testing.T) {
 		want               types.ArtifactReference
 	}{
 		{
-			name: "single failure",
-			fields: fields{
-				dir: "./testdata/misconfig/cloudformation/single-failure/src",
-			},
-			artifactOpt: artifact.Option{
-				MisconfScannerOption: config.ScannerOption{
-					RegoOnly:    true,
-					Namespaces:  []string{"user"},
-					PolicyPaths: []string{"./testdata/misconfig/cloudformation/single-failure/rego"},
-				},
-			},
-			putBlobExpectation: cache.ArtifactCachePutBlobExpectation{
-				Args: cache.ArtifactCachePutBlobArgs{
-					BlobIDAnything: true,
-					BlobInfo: types.BlobInfo{
-						SchemaVersion: 2,
-						Misconfigurations: []types.Misconfiguration{
-							{
-								FileType: "cloudformation",
-								FilePath: "main.yaml",
-								Successes: types.MisconfResults{
-									{
-										Namespace: "builtin.aws.rds.aws0176",
-										Query:     "data.builtin.aws.rds.aws0176.deny",
-										PolicyMetadata: types.PolicyMetadata{
-											ID:                 "N/A",
-											AVDID:              "AVD-AWS-0176",
-											Type:               "CloudFormation Security Check",
-											Title:              "RDS IAM Database Authentication Disabled",
-											Description:        "Ensure IAM Database Authentication is enabled for RDS database instances to manage database access",
-											Severity:           "MEDIUM",
-											RecommendedActions: "Modify the PostgreSQL and MySQL type RDS instances to enable IAM database authentication.",
-											References:         []string{"https://docs.aws.amazon.com/neptune/latest/userguide/iam-auth.html"},
-										},
-										CauseMetadata: types.CauseMetadata{
-											Provider: "AWS",
-											Service:  "rds",
-										},
-									},
-									{
-										Namespace: "builtin.aws.rds.aws0177",
-										Query:     "data.builtin.aws.rds.aws0177.deny",
-										PolicyMetadata: types.PolicyMetadata{
-											ID:                 "N/A",
-											AVDID:              "AVD-AWS-0177",
-											Type:               "CloudFormation Security Check",
-											Title:              "RDS Deletion Protection Disabled",
-											Description:        "Ensure deletion protection is enabled for RDS database instances.",
-											Severity:           "MEDIUM",
-											RecommendedActions: "Modify the RDS instances to enable deletion protection.",
-											References:         []string{"https://aws.amazon.com/about-aws/whats-new/2018/09/amazon-rds-now-provides-database-deletion-protection/"},
-										},
-										CauseMetadata: types.CauseMetadata{
-											Provider: "AWS",
-											Service:  "rds",
-										},
-									},
-								},
-								Failures: types.MisconfResults{
-									{
-										Namespace: "user.something",
-										Query:     "data.user.something.deny",
-										Message:   "No buckets allowed!",
-										PolicyMetadata: types.PolicyMetadata{
-											ID:                 "TEST001",
-											AVDID:              "AVD-TEST-0001",
-											Type:               "CloudFormation Security Check",
-											Title:              "Test policy",
-											Description:        "This is a test policy.",
-											Severity:           "LOW",
-											RecommendedActions: "Have a cup of tea.",
-											References:         []string{"https://trivy.dev/"},
-										},
-										CauseMetadata: types.CauseMetadata{
-											Resource:  "main.yaml:3-6",
-											Provider:  "Generic",
-											Service:   "general",
-											StartLine: 3,
-											EndLine:   6,
-										},
-									},
-								},
-							},
-						},
-					},
-				},
-				Returns: cache.ArtifactCachePutBlobReturns{},
-			},
-			want: types.ArtifactReference{
-				Name: "testdata/misconfig/cloudformation/single-failure/src",
-				Type: types.ArtifactFilesystem,
-				ID:   "sha256:6504ec9ca79c48ec9e993d0cff076c4954843b95f1b1664ec0be2d8c986cbe8d",
-				BlobIDs: []string{
-					"sha256:6504ec9ca79c48ec9e993d0cff076c4954843b95f1b1664ec0be2d8c986cbe8d",
-				},
-			},
-		},
-		{
-			name: "multiple failures",
-			fields: fields{
-				dir: "./testdata/misconfig/cloudformation/multiple-failures/src",
-			},
-			artifactOpt: artifact.Option{
-				MisconfScannerOption: config.ScannerOption{
-					RegoOnly:    true,
-					Namespaces:  []string{"user"},
-					PolicyPaths: []string{"./testdata/misconfig/cloudformation/multiple-failures/rego"},
-				},
-			},
-			putBlobExpectation: cache.ArtifactCachePutBlobExpectation{
-				Args: cache.ArtifactCachePutBlobArgs{
-					BlobIDAnything: true,
-					BlobInfo: types.BlobInfo{
-						SchemaVersion: 2,
-						Misconfigurations: []types.Misconfiguration{
-							{
-								FileType: "cloudformation",
-								FilePath: "main.yaml",
-								Successes: types.MisconfResults{
-									{
-										Namespace: "builtin.aws.rds.aws0176",
-										Query:     "data.builtin.aws.rds.aws0176.deny",
-										PolicyMetadata: types.PolicyMetadata{
-											ID:                 "N/A",
-											AVDID:              "AVD-AWS-0176",
-											Type:               "CloudFormation Security Check",
-											Title:              "RDS IAM Database Authentication Disabled",
-											Description:        "Ensure IAM Database Authentication is enabled for RDS database instances to manage database access",
-											Severity:           "MEDIUM",
-											RecommendedActions: "Modify the PostgreSQL and MySQL type RDS instances to enable IAM database authentication.",
-											References:         []string{"https://docs.aws.amazon.com/neptune/latest/userguide/iam-auth.html"},
-										},
-										CauseMetadata: types.CauseMetadata{
-											Provider: "AWS",
-											Service:  "rds",
-										},
-									},
-									{
-										Namespace: "builtin.aws.rds.aws0177",
-										Query:     "data.builtin.aws.rds.aws0177.deny",
-										PolicyMetadata: types.PolicyMetadata{
-											ID:                 "N/A",
-											AVDID:              "AVD-AWS-0177",
-											Type:               "CloudFormation Security Check",
-											Title:              "RDS Deletion Protection Disabled",
-											Description:        "Ensure deletion protection is enabled for RDS database instances.",
-											Severity:           "MEDIUM",
-											RecommendedActions: "Modify the RDS instances to enable deletion protection.",
-											References:         []string{"https://aws.amazon.com/about-aws/whats-new/2018/09/amazon-rds-now-provides-database-deletion-protection/"},
-										},
-										CauseMetadata: types.CauseMetadata{
-											Provider: "AWS",
-											Service:  "rds",
-										},
-									},
-								},
-								Failures: types.MisconfResults{
-									types.MisconfResult{
-										Namespace: "user.something",
-										Query:     "data.user.something.deny",
-										Message:   "No buckets allowed!",
-										PolicyMetadata: types.PolicyMetadata{
-											ID:                 "TEST001",
-											AVDID:              "AVD-TEST-0001",
-											Type:               "CloudFormation Security Check",
-											Title:              "Test policy",
-											Description:        "This is a test policy.",
-											Severity:           "LOW",
-											RecommendedActions: "Have a cup of tea.",
-											References:         []string{"https://trivy.dev/"},
-										},
-										CauseMetadata: types.CauseMetadata{
-											Resource:  "main.yaml:2-5",
-											Provider:  "Generic",
-											Service:   "general",
-											StartLine: 2,
-											EndLine:   5,
-										},
-									},
-									{
-										Namespace: "user.something",
-										Query:     "data.user.something.deny",
-										Message:   "No buckets allowed!",
-										PolicyMetadata: types.PolicyMetadata{
-											ID:                 "TEST001",
-											AVDID:              "AVD-TEST-0001",
-											Type:               "CloudFormation Security Check",
-											Title:              "Test policy",
-											Description:        "This is a test policy.",
-											Severity:           "LOW",
-											RecommendedActions: "Have a cup of tea.",
-											References:         []string{"https://trivy.dev/"},
-										},
-										CauseMetadata: types.CauseMetadata{
-											Resource:  "main.yaml:6-9",
-											Provider:  "Generic",
-											Service:   "general",
-											StartLine: 6,
-											EndLine:   9,
-										},
-									},
-								},
-							},
-						},
-					},
-				},
-				Returns: cache.ArtifactCachePutBlobReturns{},
-			},
-			want: types.ArtifactReference{
-				Name: "testdata/misconfig/cloudformation/multiple-failures/src",
-				Type: types.ArtifactFilesystem,
-				ID:   "sha256:6da37a417407a0fe4116da5992809aaf58ce933cec84262acb1eae2411fb3115",
-				BlobIDs: []string{
-					"sha256:6da37a417407a0fe4116da5992809aaf58ce933cec84262acb1eae2411fb3115",
-				},
-			},
-		},
-		{
-			name: "no results",
-			fields: fields{
-				dir: "./testdata/misconfig/cloudformation/no-results/src",
-			},
-			artifactOpt: artifact.Option{
-				MisconfScannerOption: config.ScannerOption{
-					RegoOnly:    true,
-					Namespaces:  []string{"user"},
-					PolicyPaths: []string{"./testdata/misconfig/cloudformation/no-results/rego"},
-				},
-			},
-			putBlobExpectation: cache.ArtifactCachePutBlobExpectation{
-				Args: cache.ArtifactCachePutBlobArgs{
-					BlobIDAnything: true,
-					BlobInfo: types.BlobInfo{
-						SchemaVersion: types.BlobJSONSchemaVersion,
-					},
-				},
-				Returns: cache.ArtifactCachePutBlobReturns{},
-			},
-			want: types.ArtifactReference{
-				Name: "testdata/misconfig/cloudformation/no-results/src",
-				Type: types.ArtifactFilesystem,
-				ID:   "sha256:6612c1db6d6c52c11de53447264b552ee96bf9cc317de37b3374687a8fc4c4ac",
-				BlobIDs: []string{
-					"sha256:6612c1db6d6c52c11de53447264b552ee96bf9cc317de37b3374687a8fc4c4ac",
-				},
-			},
-		},
+      name: "single failure",
+      fields: fields{
+        dir: "./testdata/misconfig/cloudformation/single-failure/src",
+      },
+      artifactOpt: artifact.Option{
+        MisconfScannerOption: config.ScannerOption{
+          RegoOnly:    true,
+          Namespaces:  []string{"user"},
+          PolicyPaths: []string{"./testdata/misconfig/cloudformation/single-failure/rego"},
+        },
+      },
+      putBlobExpectation: cache.ArtifactCachePutBlobExpectation{
+        Args: cache.ArtifactCachePutBlobArgs{
+          BlobIDAnything: true,
+          BlobInfo: types.BlobInfo{
+            SchemaVersion: 2,
+            Misconfigurations: []types.Misconfiguration{
+              {
+                FileType: "cloudformation",
+                FilePath: "main.yaml",
+                Successes: types.MisconfResults{
+                  {
+                    Namespace: "builtin.aws.rds.aws0176",
+                    Query:     "data.builtin.aws.rds.aws0176.deny",
+                    PolicyMetadata: types.PolicyMetadata{
+                      ID:                 "N/A",
+                      AVDID:              "AVD-AWS-0176",
+                      Type:               "CloudFormation Security Check",
+                      Title:              "RDS IAM Database Authentication Disabled",
+                      Description:        "Ensure IAM Database Authentication is enabled for RDS database instances to manage database access",
+                      Severity:           "MEDIUM",
+                      RecommendedActions: "Modify the PostgreSQL and MySQL type RDS instances to enable IAM database authentication.",
+                      References:         []string{"https://docs.aws.amazon.com/neptune/latest/userguide/iam-auth.html"},
+                    },
+                    CauseMetadata: types.CauseMetadata{
+                      Provider: "AWS",
+                      Service:  "rds",
+                    },
+                  },
+                  {
+                    Namespace: "builtin.aws.rds.aws0177",
+                    Query:     "data.builtin.aws.rds.aws0177.deny",
+                    PolicyMetadata: types.PolicyMetadata{
+                      ID:                 "N/A",
+                      AVDID:              "AVD-AWS-0177",
+                      Type:               "CloudFormation Security Check",
+                      Title:              "RDS Deletion Protection Disabled",
+                      Description:        "Ensure deletion protection is enabled for RDS database instances.",
+                      Severity:           "MEDIUM",
+                      RecommendedActions: "Modify the RDS instances to enable deletion protection.",
+                      References:         []string{"https://aws.amazon.com/about-aws/whats-new/2018/09/amazon-rds-now-provides-database-deletion-protection/"},
+                    },
+                    CauseMetadata: types.CauseMetadata{
+                      Provider: "AWS",
+                      Service:  "rds",
+                    },
+                  },
+                  {
+                    Namespace: "builtin.aws.rds.aws0180",
+                    Query:     "data.builtin.aws.rds.aws0180.deny",
+                    PolicyMetadata: types.PolicyMetadata{
+                      ID:                 "N/A",
+                      AVDID:              "AVD-AWS-0180",
+                      Type:               "CloudFormation Security Check",
+                      Title:              "RDS Publicly Accessible",
+                      Description:        "Ensures RDS instances are not launched into the public cloud.",
+                      Severity:           "HIGH",
+                      RecommendedActions: "Remove the public endpoint from the RDS instance'",
+                      References:         []string{"http://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_VPC.html"},
+                    },
+                    CauseMetadata: types.CauseMetadata{
+                      Resource: "", Provider: "AWS", Service: "rds", StartLine: 0, EndLine: 0,
+                      Code: types.Code{Lines: []types.Line(nil)},
+                    }, Traces: []string(nil),
+                  },
+                },
+                Failures: types.MisconfResults{
+                  {
+                    Namespace: "user.something",
+                    Query:     "data.user.something.deny",
+                    Message:   "No buckets allowed!",
+                    PolicyMetadata: types.PolicyMetadata{
+                      ID:                 "TEST001",
+                      AVDID:              "AVD-TEST-0001",
+                      Type:               "CloudFormation Security Check",
+                      Title:              "Test policy",
+                      Description:        "This is a test policy.",
+                      Severity:           "LOW",
+                      RecommendedActions: "Have a cup of tea.",
+                      References:         []string{"https://trivy.dev/"},
+                    },
+                    CauseMetadata: types.CauseMetadata{
+                      Resource:  "main.yaml:3-6",
+                      Provider:  "Generic",
+                      Service:   "general",
+                      StartLine: 3,
+                      EndLine:   6,
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+        Returns: cache.ArtifactCachePutBlobReturns{},
+      },
+      want: types.ArtifactReference{
+        Name: "testdata/misconfig/cloudformation/single-failure/src",
+        Type: types.ArtifactFilesystem,
+        ID:   "sha256:fc9006e68fd8e3306ec2e7fb4868c273223e133208bcf920d75cdd393a5cb155",
+        BlobIDs: []string{
+          "sha256:fc9006e68fd8e3306ec2e7fb4868c273223e133208bcf920d75cdd393a5cb155",
+        },
+      },
+    },
+    {
+      name: "multiple failures",
+      fields: fields{
+        dir: "./testdata/misconfig/cloudformation/multiple-failures/src",
+      },
+      artifactOpt: artifact.Option{
+        MisconfScannerOption: config.ScannerOption{
+          RegoOnly:    true,
+          Namespaces:  []string{"user"},
+          PolicyPaths: []string{"./testdata/misconfig/cloudformation/multiple-failures/rego"},
+        },
+      },
+      putBlobExpectation: cache.ArtifactCachePutBlobExpectation{
+        Args: cache.ArtifactCachePutBlobArgs{
+          BlobIDAnything: true,
+          BlobInfo: types.BlobInfo{
+            SchemaVersion: 2,
+            Misconfigurations: []types.Misconfiguration{
+              {
+                FileType: "cloudformation",
+                FilePath: "main.yaml",
+                Successes: types.MisconfResults{
+                  {
+                    Namespace: "builtin.aws.rds.aws0176",
+                    Query:     "data.builtin.aws.rds.aws0176.deny",
+                    PolicyMetadata: types.PolicyMetadata{
+                      ID:                 "N/A",
+                      AVDID:              "AVD-AWS-0176",
+                      Type:               "CloudFormation Security Check",
+                      Title:              "RDS IAM Database Authentication Disabled",
+                      Description:        "Ensure IAM Database Authentication is enabled for RDS database instances to manage database access",
+                      Severity:           "MEDIUM",
+                      RecommendedActions: "Modify the PostgreSQL and MySQL type RDS instances to enable IAM database authentication.",
+                      References:         []string{"https://docs.aws.amazon.com/neptune/latest/userguide/iam-auth.html"},
+                    },
+                    CauseMetadata: types.CauseMetadata{
+                      Provider: "AWS",
+                      Service:  "rds",
+                    },
+                  },
+                  {
+                    Namespace: "builtin.aws.rds.aws0177",
+                    Query:     "data.builtin.aws.rds.aws0177.deny",
+                    PolicyMetadata: types.PolicyMetadata{
+                      ID:                 "N/A",
+                      AVDID:              "AVD-AWS-0177",
+                      Type:               "CloudFormation Security Check",
+                      Title:              "RDS Deletion Protection Disabled",
+                      Description:        "Ensure deletion protection is enabled for RDS database instances.",
+                      Severity:           "MEDIUM",
+                      RecommendedActions: "Modify the RDS instances to enable deletion protection.",
+                      References:         []string{"https://aws.amazon.com/about-aws/whats-new/2018/09/amazon-rds-now-provides-database-deletion-protection/"},
+                    },
+                    CauseMetadata: types.CauseMetadata{
+                      Provider: "AWS",
+                      Service:  "rds",
+                    },
+                  },
+                  {
+                    Namespace: "builtin.aws.rds.aws0180",
+                    Query:     "data.builtin.aws.rds.aws0180.deny",
+                    PolicyMetadata: types.PolicyMetadata{
+                      ID:                 "N/A",
+                      AVDID:              "AVD-AWS-0180",
+                      Type:               "CloudFormation Security Check",
+                      Title:              "RDS Publicly Accessible",
+                      Description:        "Ensures RDS instances are not launched into the public cloud.",
+                      Severity:           "HIGH",
+                      RecommendedActions: "Remove the public endpoint from the RDS instance'",
+                      References:         []string{"http://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_VPC.html"},
+                    },
+                    CauseMetadata: types.CauseMetadata{
+                      Resource: "", Provider: "AWS", Service: "rds", StartLine: 0, EndLine: 0,
+                      Code: types.Code{Lines: []types.Line(nil)},
+                    }, Traces: []string(nil),
+                  },
+                },
+                Failures: types.MisconfResults{
+                  types.MisconfResult{
+                    Namespace: "user.something",
+                    Query:     "data.user.something.deny",
+                    Message:   "No buckets allowed!",
+                    PolicyMetadata: types.PolicyMetadata{
+                      ID:                 "TEST001",
+                      AVDID:              "AVD-TEST-0001",
+                      Type:               "CloudFormation Security Check",
+                      Title:              "Test policy",
+                      Description:        "This is a test policy.",
+                      Severity:           "LOW",
+                      RecommendedActions: "Have a cup of tea.",
+                      References:         []string{"https://trivy.dev/"},
+                    },
+                    CauseMetadata: types.CauseMetadata{
+                      Resource:  "main.yaml:2-5",
+                      Provider:  "Generic",
+                      Service:   "general",
+                      StartLine: 2,
+                      EndLine:   5,
+                    },
+                  },
+                  {
+                    Namespace: "user.something",
+                    Query:     "data.user.something.deny",
+                    Message:   "No buckets allowed!",
+                    PolicyMetadata: types.PolicyMetadata{
+                      ID:                 "TEST001",
+                      AVDID:              "AVD-TEST-0001",
+                      Type:               "CloudFormation Security Check",
+                      Title:              "Test policy",
+                      Description:        "This is a test policy.",
+                      Severity:           "LOW",
+                      RecommendedActions: "Have a cup of tea.",
+                      References:         []string{"https://trivy.dev/"},
+                    },
+                    CauseMetadata: types.CauseMetadata{
+                      Resource:  "main.yaml:6-9",
+                      Provider:  "Generic",
+                      Service:   "general",
+                      StartLine: 6,
+                      EndLine:   9,
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+        Returns: cache.ArtifactCachePutBlobReturns{},
+      },
+      want: types.ArtifactReference{
+        Name: "testdata/misconfig/cloudformation/multiple-failures/src",
+        Type: types.ArtifactFilesystem,
+        ID:   "sha256:d007d48e2a07a76462768fa561e6f4f72c93f5835465522cda7a2fb5056c60b6",
+        BlobIDs: []string{
+          "sha256:d007d48e2a07a76462768fa561e6f4f72c93f5835465522cda7a2fb5056c60b6",
+        },
+      },
+    },
+    {
+      name: "no results",
+      fields: fields{
+        dir: "./testdata/misconfig/cloudformation/no-results/src",
+      },
+      artifactOpt: artifact.Option{
+        MisconfScannerOption: config.ScannerOption{
+          RegoOnly:    true,
+          Namespaces:  []string{"user"},
+          PolicyPaths: []string{"./testdata/misconfig/cloudformation/no-results/rego"},
+        },
+      },
+      putBlobExpectation: cache.ArtifactCachePutBlobExpectation{
+        Args: cache.ArtifactCachePutBlobArgs{
+          BlobIDAnything: true,
+          BlobInfo: types.BlobInfo{
+            SchemaVersion: types.BlobJSONSchemaVersion,
+          },
+        },
+        Returns: cache.ArtifactCachePutBlobReturns{},
+      },
+      want: types.ArtifactReference{
+        Name: "testdata/misconfig/cloudformation/no-results/src",
+        Type: types.ArtifactFilesystem,
+        ID:   "sha256:cd80d8148f9b4cbc026f71a73d8dc1e35f79f6f39e4e52fe5e9a7821e9d09693",
+        BlobIDs: []string{
+          "sha256:cd80d8148f9b4cbc026f71a73d8dc1e35f79f6f39e4e52fe5e9a7821e9d09693",
+        },
+      },
+    },
 		{
 			name: "passed",
 			fields: fields{
@@ -1099,6 +1135,24 @@ func TestCloudFormationMisconfigurationScan(t *testing.T) {
 										},
 									},
 									{
+										Namespace: "builtin.aws.rds.aws0180",
+										Query:     "data.builtin.aws.rds.aws0180.deny",
+										PolicyMetadata: types.PolicyMetadata{
+											ID:                 "N/A",
+											AVDID:              "AVD-AWS-0180",
+											Type:               "CloudFormation Security Check",
+											Title:              "RDS Publicly Accessible",
+											Description:        "Ensures RDS instances are not launched into the public cloud.",
+											Severity:           "HIGH",
+											RecommendedActions: "Remove the public endpoint from the RDS instance'",
+											References:         []string{"http://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_VPC.html"},
+										},
+										CauseMetadata: types.CauseMetadata{
+											Resource: "", Provider: "AWS", Service: "rds", StartLine: 0, EndLine: 0,
+											Code: types.Code{Lines: []types.Line(nil)},
+										}, Traces: []string(nil),
+									},
+									{
 										Namespace: "user.something",
 										Query:     "data.user.something.deny",
 										PolicyMetadata: types.PolicyMetadata{
@@ -1126,9 +1180,9 @@ func TestCloudFormationMisconfigurationScan(t *testing.T) {
 			want: types.ArtifactReference{
 				Name: "testdata/misconfig/cloudformation/passed/src",
 				Type: types.ArtifactFilesystem,
-				ID:   "sha256:3b0a4c2f8cd71e7d3a81fe535e89b3524710c47ea219575ce3f6d1d6a87595a2",
+				ID:   "sha256:0c3ba0cb0ff2d77ed46e57ea8e6d7961844f68947599732d95e9596e314efbcd",
 				BlobIDs: []string{
-					"sha256:3b0a4c2f8cd71e7d3a81fe535e89b3524710c47ea219575ce3f6d1d6a87595a2",
+					"sha256:0c3ba0cb0ff2d77ed46e57ea8e6d7961844f68947599732d95e9596e314efbcd",
 				},
 			},
 		},
@@ -1719,6 +1773,24 @@ func TestAzureARMMisconfigurationScan(t *testing.T) {
 											Service:  "rds",
 										},
 									},
+										{
+										Namespace: "builtin.aws.rds.aws0180",
+										Query:     "data.builtin.aws.rds.aws0180.deny",
+										PolicyMetadata: types.PolicyMetadata{
+											ID:                 "N/A",
+											AVDID:              "AVD-AWS-0180",
+											Type:               "Azure ARM Security Check",
+											Title:              "RDS Publicly Accessible",
+											Description:        "Ensures RDS instances are not launched into the public cloud.",
+											Severity:           "HIGH",
+											RecommendedActions: "Remove the public endpoint from the RDS instance'",
+											References:         []string{"http://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_VPC.html"},
+										},
+										CauseMetadata: types.CauseMetadata{
+											Resource: "", Provider: "AWS", Service: "rds", StartLine: 0, EndLine: 0,
+											Code: types.Code{Lines: []types.Line(nil)},
+										}, Traces: []string(nil),
+									},
 								},
 								Failures: types.MisconfResults{
 									{
@@ -1753,9 +1825,9 @@ func TestAzureARMMisconfigurationScan(t *testing.T) {
 			want: types.ArtifactReference{
 				Name: "testdata/misconfig/azurearm/single-failure/src",
 				Type: types.ArtifactFilesystem,
-				ID:   "sha256:22fc5cecab78634bc975b601ea5df0018f850b92702db94cecd13c09c9854a86",
+				ID:   "sha256:2d7ddb4a4f5e05278903bfa020a95756682ffcc8b168a79c9f9363806151803c",
 				BlobIDs: []string{
-					"sha256:22fc5cecab78634bc975b601ea5df0018f850b92702db94cecd13c09c9854a86",
+					"sha256:2d7ddb4a4f5e05278903bfa020a95756682ffcc8b168a79c9f9363806151803c",
 				},
 			},
 		},
@@ -1817,6 +1889,24 @@ func TestAzureARMMisconfigurationScan(t *testing.T) {
 											Service:  "rds",
 										},
 									},
+									{
+										Namespace: "builtin.aws.rds.aws0180",
+										Query:     "data.builtin.aws.rds.aws0180.deny",
+										PolicyMetadata: types.PolicyMetadata{
+											ID:                 "N/A",
+											AVDID:              "AVD-AWS-0180",
+											Type:               "Azure ARM Security Check",
+											Title:              "RDS Publicly Accessible",
+											Description:        "Ensures RDS instances are not launched into the public cloud.",
+											Severity:           "HIGH",
+											RecommendedActions: "Remove the public endpoint from the RDS instance'",
+											References:         []string{"http://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_VPC.html"},
+										},
+										CauseMetadata: types.CauseMetadata{
+											Resource: "", Provider: "AWS", Service: "rds", StartLine: 0, EndLine: 0,
+											Code: types.Code{Lines: []types.Line(nil)},
+										}, Traces: []string(nil),
+									},
 								},
 								Failures: types.MisconfResults{
 									{
@@ -1873,9 +1963,9 @@ func TestAzureARMMisconfigurationScan(t *testing.T) {
 			want: types.ArtifactReference{
 				Name: "testdata/misconfig/azurearm/multiple-failures/src",
 				Type: types.ArtifactFilesystem,
-				ID:   "sha256:3e7aacf9f4fd44c0ff9df212da350ef74283114baf823b677ffdecd11a4d5ed0",
+				ID:   "sha256:101d413693da46fc1f5e3465c1ac9c00e12cd802a475dd348b470ae9e20bbc8d",
 				BlobIDs: []string{
-					"sha256:3e7aacf9f4fd44c0ff9df212da350ef74283114baf823b677ffdecd11a4d5ed0",
+					"sha256:101d413693da46fc1f5e3465c1ac9c00e12cd802a475dd348b470ae9e20bbc8d",
 				},
 			},
 		},
@@ -1967,6 +2057,24 @@ func TestAzureARMMisconfigurationScan(t *testing.T) {
 										},
 									},
 									{
+										Namespace: "builtin.aws.rds.aws0180",
+										Query:     "data.builtin.aws.rds.aws0180.deny",
+										PolicyMetadata: types.PolicyMetadata{
+											ID:                 "N/A",
+											AVDID:              "AVD-AWS-0180",
+											Type:               "Azure ARM Security Check",
+											Title:              "RDS Publicly Accessible",
+											Description:        "Ensures RDS instances are not launched into the public cloud.",
+											Severity:           "HIGH",
+											RecommendedActions: "Remove the public endpoint from the RDS instance'",
+											References:         []string{"http://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_VPC.html"},
+										},
+										CauseMetadata: types.CauseMetadata{
+											Resource: "", Provider: "AWS", Service: "rds", StartLine: 0, EndLine: 0,
+											Code: types.Code{Lines: []types.Line(nil)},
+										}, Traces: []string(nil),
+									},
+									{
 										Namespace: "user.something",
 										Query:     "data.user.something.deny",
 										PolicyMetadata: types.PolicyMetadata{
@@ -1994,9 +2102,9 @@ func TestAzureARMMisconfigurationScan(t *testing.T) {
 			want: types.ArtifactReference{
 				Name: "testdata/misconfig/azurearm/passed/src",
 				Type: types.ArtifactFilesystem,
-				ID:   "sha256:90db6162959dae5bf9a06e03aac98dd2f5e0fe5a5be68984e1b895b646419b82",
+				ID:   "sha256:9a45fcaed342f1778b1221f97c5cdad91a06cd24345e16be81315c1ae8ef1d23",
 				BlobIDs: []string{
-					"sha256:90db6162959dae5bf9a06e03aac98dd2f5e0fe5a5be68984e1b895b646419b82",
+					"sha256:9a45fcaed342f1778b1221f97c5cdad91a06cd24345e16be81315c1ae8ef1d23",
 				},
 			},
 		},
