@@ -384,6 +384,7 @@ require (
 	sigs.k8s.io/yaml v1.3.0 // indirect
 )
 
+// See https://github.com/moby/moby/issues/42939#issuecomment-1114255529
 replace github.com/docker/docker => github.com/docker/engine v17.12.0-ce-rc1.0.20211209213653-8955d8da8951+incompatible
 
 // v1.2.0 is taken from github.com/open-policy-agent/opa v0.42.0
