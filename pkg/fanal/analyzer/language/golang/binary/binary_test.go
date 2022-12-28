@@ -3,7 +3,10 @@ package binary
 import (
 	"context"
 	"os"
+	"runtime"
 	"testing"
+
+	"github.com/samber/lo"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -73,8 +76,8 @@ func Test_gobinaryLibraryAnalyzer_Required(t *testing.T) {
 		want     bool
 	}{
 		{
-			name:     "file perm 0755",
-			filePath: "testdata/0755",
+			name:     "executable file",
+			filePath: lo.Ternary(runtime.GOOS == "windows", "testdata/binary.exe", "testdata/0755"),
 			want:     true,
 		},
 		{

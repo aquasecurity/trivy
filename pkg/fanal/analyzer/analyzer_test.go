@@ -58,7 +58,7 @@ func TestMain(m *testing.M) {
 func TestAnalysisResult_Merge(t *testing.T) {
 	type fields struct {
 		m            sync.Mutex
-		OS           *types.OS
+		OS           types.OS
 		PackageInfos []types.PackageInfo
 		Applications []types.Application
 	}
@@ -74,7 +74,7 @@ func TestAnalysisResult_Merge(t *testing.T) {
 		{
 			name: "happy path",
 			fields: fields{
-				OS: &types.OS{
+				OS: types.OS{
 					Family: aos.Debian,
 					Name:   "9.8",
 				},
@@ -124,7 +124,7 @@ func TestAnalysisResult_Merge(t *testing.T) {
 				},
 			},
 			want: analyzer.AnalysisResult{
-				OS: &types.OS{
+				OS: types.OS{
 					Family: aos.Debian,
 					Name:   "9.8",
 				},
@@ -169,21 +169,21 @@ func TestAnalysisResult_Merge(t *testing.T) {
 		{
 			name: "redhat must be replaced with oracle",
 			fields: fields{
-				OS: &types.OS{
+				OS: types.OS{
 					Family: aos.RedHat, // this must be overwritten
 					Name:   "8.0",
 				},
 			},
 			args: args{
 				new: &analyzer.AnalysisResult{
-					OS: &types.OS{
+					OS: types.OS{
 						Family: aos.Oracle,
 						Name:   "8.0",
 					},
 				},
 			},
 			want: analyzer.AnalysisResult{
-				OS: &types.OS{
+				OS: types.OS{
 					Family: aos.Oracle,
 					Name:   "8.0",
 				},
@@ -192,30 +192,55 @@ func TestAnalysisResult_Merge(t *testing.T) {
 		{
 			name: "debian must be replaced with ubuntu",
 			fields: fields{
-				OS: &types.OS{
+				OS: types.OS{
 					Family: aos.Debian, // this must be overwritten
 					Name:   "9.0",
 				},
 			},
 			args: args{
 				new: &analyzer.AnalysisResult{
-					OS: &types.OS{
+					OS: types.OS{
 						Family: aos.Ubuntu,
 						Name:   "18.04",
 					},
 				},
 			},
 			want: analyzer.AnalysisResult{
-				OS: &types.OS{
+				OS: types.OS{
 					Family: aos.Ubuntu,
 					Name:   "18.04",
 				},
 			},
 		},
 		{
+			name: "merge extended flag",
+			fields: fields{
+				// This must be overwritten
+				OS: types.OS{
+					Family: aos.Ubuntu,
+					Name:   "16.04",
+				},
+			},
+			args: args{
+				new: &analyzer.AnalysisResult{
+					OS: types.OS{
+						Family:   aos.Ubuntu,
+						Extended: true,
+					},
+				},
+			},
+			want: analyzer.AnalysisResult{
+				OS: types.OS{
+					Family:   aos.Ubuntu,
+					Name:     "16.04",
+					Extended: true,
+				},
+			},
+		},
+		{
 			name: "alpine OS needs to be extended with apk repositories",
 			fields: fields{
-				OS: &types.OS{
+				OS: types.OS{
 					Family: aos.Alpine,
 					Name:   "3.15.3",
 				},
@@ -229,7 +254,7 @@ func TestAnalysisResult_Merge(t *testing.T) {
 				},
 			},
 			want: analyzer.AnalysisResult{
-				OS: &types.OS{
+				OS: types.OS{
 					Family: aos.Alpine,
 					Name:   "3.15.3",
 				},
@@ -242,21 +267,21 @@ func TestAnalysisResult_Merge(t *testing.T) {
 		{
 			name: "alpine must not be replaced with oracle",
 			fields: fields{
-				OS: &types.OS{
+				OS: types.OS{
 					Family: aos.Alpine, // this must not be overwritten
 					Name:   "3.11",
 				},
 			},
 			args: args{
 				new: &analyzer.AnalysisResult{
-					OS: &types.OS{
+					OS: types.OS{
 						Family: aos.Oracle,
 						Name:   "8.0",
 					},
 				},
 			},
 			want: analyzer.AnalysisResult{
-				OS: &types.OS{
+				OS: types.OS{
 					Family: aos.Alpine, // this must not be overwritten
 					Name:   "3.11",
 				},
@@ -296,7 +321,7 @@ func TestAnalyzeFile(t *testing.T) {
 				testFilePath: "testdata/etc/alpine-release",
 			},
 			want: &analyzer.AnalysisResult{
-				OS: &types.OS{
+				OS: types.OS{
 					Family: "alpine",
 					Name:   "3.11.6",
 				},

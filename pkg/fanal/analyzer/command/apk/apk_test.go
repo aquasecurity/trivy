@@ -2,7 +2,6 @@ package apk
 
 import (
 	"encoding/json"
-	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
 	"os"
@@ -11,16 +10,15 @@ import (
 	"testing"
 	"time"
 
-	"github.com/stretchr/testify/assert"
-
 	"github.com/kylelemons/godebug/pretty"
+	"github.com/stretchr/testify/assert"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 )
 
 func TestAnalyze(t *testing.T) {
 	testServer := httptest.NewServer(http.HandlerFunc(func(res http.ResponseWriter, req *http.Request) {
-		content, err := ioutil.ReadFile("testdata/history_v3.9.json")
+		content, err := os.ReadFile("testdata/history_v3.9.json")
 		if err != nil {
 			http.Error(res, err.Error(), http.StatusInternalServerError)
 			return

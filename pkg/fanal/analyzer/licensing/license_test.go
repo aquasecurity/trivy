@@ -25,7 +25,7 @@ func Test_licenseAnalyzer_Analyze(t *testing.T) {
 				Licenses: []types.LicenseFile{
 					{
 						Type:     types.LicenseTypeHeader,
-						FilePath: "/testdata/licensed.c",
+						FilePath: "testdata/licensed.c",
 						Findings: []types.LicenseFinding{
 							{
 								Name:       "AGPL-3.0",

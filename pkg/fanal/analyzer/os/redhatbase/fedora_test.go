@@ -23,7 +23,7 @@ func Test_fedoraOSAnalyzer_Analyze(t *testing.T) {
 			name:      "happy path",
 			inputFile: "testdata/fedora_29/fedora-release",
 			want: &analyzer.AnalysisResult{
-				OS: &types.OS{Family: "fedora", Name: "29"},
+				OS: types.OS{Family: "fedora", Name: "29"},
 			},
 		},
 		{
