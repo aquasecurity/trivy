@@ -77,7 +77,7 @@ const (
 	// Swift
 	TypeCocoaPods Type = "cocoapods"
 
-	// Dark
+	// Dart
 	TypePubSpecLock Type = "pubspec-lock"
 
 	// ============
