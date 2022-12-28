@@ -21,35 +21,41 @@
       "Type": "yarn",
       "Packages": [
         {
+          "ID": "asap@2.0.6",
           "Name": "asap",
           "Version": "2.0.6",
           "Layer": {},
           "Locations": [
             {
               "StartLine": 5,
-              "EndLine": 5
+              "EndLine": 8
             }
           ]
         },
         {
+          "ID": "jquery@3.2.1",
           "Name": "jquery",
           "Version": "3.2.1",
           "Layer": {},
           "Locations": [
             {
               "StartLine": 10,
-              "EndLine": 10
+              "EndLine": 13
             }
           ]
         },
         {
+          "ID": "promise@8.0.3",
           "Name": "promise",
           "Version": "8.0.3",
+          "DependsOn": [
+            "asap@2.0.6"
+          ],
           "Layer": {},
           "Locations": [
             {
               "StartLine": 15,
-              "EndLine": 15
+              "EndLine": 20
             }
           ]
         }
