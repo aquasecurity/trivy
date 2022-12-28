@@ -163,7 +163,8 @@ When the plugin is called via Trivy CLI, `bin` command will be executed.
 The plugin is responsible for handling flags and arguments. Any arguments are passed to the plugin from the `trivy` command.
 
 ## Example
-https://github.com/aquasecurity/trivy-plugin-kubectl
+- https://github.com/aquasecurity/trivy-plugin-kubectl
+- https://github.com/umax/trivy-plugin-sonarqube
 
 [kubectl]: https://kubernetes.io/docs/tasks/extend-kubectl/kubectl-plugins/
 [helm]: https://helm.sh/docs/topics/plugins/
