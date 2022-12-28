@@ -755,7 +755,7 @@ func NewKubernetesCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 
 	reportFlagGroup := flag.NewReportFlagGroup()
 	compliance := flag.ComplianceFlag
-	compliance.Usage += fmt.Sprintf(" (%s)", types.ComplianceNsa)
+	compliance.Usage += fmt.Sprintf(" (%s,%s)", types.ComplianceNsa, types.ComplianceCIS)
 	reportFlagGroup.Compliance = &compliance // override usage as the accepted values differ for each subcommand.
 
 	k8sFlags := &flag.Flags{
