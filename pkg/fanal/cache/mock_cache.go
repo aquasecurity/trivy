@@ -79,43 +79,43 @@ func (_m *MockCache) Close() error {
 	return r0
 }
 
-type CacheDeleteBlobsArgs struct {
-	BlobIDs         []string
-	BlobIDsAnything bool
+type CacheDeleteBlobArgs struct {
+	BlobID         string
+	BlobIDAnything bool
 }
 
-type CacheDeleteBlobsReturns struct {
+type CacheDeleteBlobReturns struct {
 	_a0 error
 }
 
-type CacheDeleteBlobsExpectation struct {
-	Args    CacheDeleteBlobsArgs
-	Returns CacheDeleteBlobsReturns
+type CacheDeleteBlobExpectation struct {
+	Args    CacheDeleteBlobArgs
+	Returns CacheDeleteBlobReturns
 }
 
-func (_m *MockCache) ApplyDeleteBlobsExpectation(e CacheDeleteBlobsExpectation) {
+func (_m *MockCache) ApplyDeleteBlobExpectation(e CacheDeleteBlobExpectation) {
 	var args []interface{}
-	if e.Args.BlobIDsAnything {
+	if e.Args.BlobIDAnything {
 		args = append(args, mock.Anything)
 	} else {
-		args = append(args, e.Args.BlobIDs)
+		args = append(args, e.Args.BlobID)
 	}
-	_m.On("DeleteBlobs", args...).Return(e.Returns._a0)
+	_m.On("DeleteBlob", args...).Return(e.Returns._a0)
 }
 
-func (_m *MockCache) ApplyDeleteBlobsExpectations(expectations []CacheDeleteBlobsExpectation) {
+func (_m *MockCache) ApplyDeleteBlobExpectations(expectations []CacheDeleteBlobExpectation) {
 	for _, e := range expectations {
-		_m.ApplyDeleteBlobsExpectation(e)
+		_m.ApplyDeleteBlobExpectation(e)
 	}
 }
 
-// DeleteBlobs provides a mock function with given fields: blobIDs
-func (_m *MockCache) DeleteBlobs(blobIDs []string) error {
-	ret := _m.Called(blobIDs)
+// DeleteBlob provides a mock function with given fields: blobID
+func (_m *MockCache) DeleteBlob(blobID string) error {
+	ret := _m.Called(blobID)
 
 	var r0 error
-	if rf, ok := ret.Get(0).(func([]string) error); ok {
-		r0 = rf(blobIDs)
+	if rf, ok := ret.Get(0).(func(string) error); ok {
+		r0 = rf(blobID)
 	} else {
 		r0 = ret.Error(0)
 	}
