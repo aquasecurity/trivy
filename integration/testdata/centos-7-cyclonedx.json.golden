@@ -185,6 +185,7 @@
         203
       ],
       "description": "If an application encounters a fatal protocol error and then calls SSL_shutdown() twice (once to send a close_notify, and once to receive one) then OpenSSL can respond differently to the calling application if a 0 byte record is received with invalid padding compared to if a 0 byte record is received with an invalid MAC. If the application then behaves differently based on that in a way that is detectable to the remote peer, then this amounts to a padding oracle that could be used to decrypt data. In order for this to be exploitable \"non-stitched\" ciphersuites must be in use. Stitched ciphersuites are optimised implementations of certain commonly used ciphersuites. Also the application must call SSL_shutdown() twice even if a protocol error has occurred (applications should not do this but some do anyway). Fixed in OpenSSL 1.0.2r (Affected 1.0.2-1.0.2q).",
+      "recommendation": "Upgrade openssl-libs to version 1:1.0.2k-19.el7",
       "advisories": [
         {
           "url": "http://lists.opensuse.org/opensuse-security-announce/2019-03/msg00041.html"
@@ -401,6 +402,7 @@
         327
       ],
       "description": "The OpenSSL DSA signature algorithm has been shown to be vulnerable to a timing side channel attack. An attacker could use variations in the signing algorithm to recover the private key. Fixed in OpenSSL 1.1.1a (Affected 1.1.1). Fixed in OpenSSL 1.1.0j (Affected 1.1.0-1.1.0i). Fixed in OpenSSL 1.0.2q (Affected 1.0.2-1.0.2p).",
+      "recommendation": "Upgrade openssl-libs to version 1:1.0.2k-19.el7",
       "advisories": [
         {
           "url": "http://lists.opensuse.org/opensuse-security-announce/2019-06/msg00030.html"
