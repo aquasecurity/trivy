@@ -20,7 +20,7 @@ const (
 	version = 1
 )
 
-// pubSpecLockAnalyzer analyzes Podfile.lock
+// pubSpecLockAnalyzer analyzes pubspec.lock
 type pubSpecLockAnalyzer struct{}
 
 func (a pubSpecLockAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInput) (*analyzer.AnalysisResult, error) {
