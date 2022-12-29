@@ -46,7 +46,7 @@ const (
 	PropertyLayerDigest = "LayerDigest"
 
 	RelationShipContains  = "CONTAINS"
-	RelationShipDescribe  = "DESCRIBE"
+	RelationShipDescribe  = "DESCRIBES"
 	RelationShipDependsOn = "DEPENDS_ON"
 
 	ElementOperatingSystem = "OperatingSystem"

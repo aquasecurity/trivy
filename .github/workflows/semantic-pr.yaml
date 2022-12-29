@@ -12,11 +12,11 @@ jobs:
     name: Validate PR title
     runs-on: ubuntu-latest
     steps:
-      - uses: amannn/action-semantic-pull-request@v4
+      - uses: amannn/action-semantic-pull-request@v5
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          types:
+          types: |
             feat
             fix
             docs
@@ -30,7 +30,7 @@ jobs:
             revert
             BREAKING
 
-          scopes:
+          scopes: |
             vuln
             misconf
             secret
@@ -42,8 +42,11 @@ jobs:
             sbom
             server
             k8s
+            aws
+            vm
 
             alpine
+            wolfi
             redhat
             alma
             rocky
@@ -55,6 +58,7 @@ jobs:
             suse
             photon
             distroless
+            windows
 
             ruby
             php
@@ -66,7 +70,7 @@ jobs:
             go
             c
             c++
-            
+
             os
             lang
 
@@ -82,9 +86,10 @@ jobs:
 
             cli
             flag
-            
+
             cyclonedx
             spdx
+            purl
 
             helm
             report

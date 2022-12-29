@@ -87,6 +87,7 @@ func NewApp(version string) *cobra.Command {
 		NewSBOMCommand(globalFlags),
 		NewVersionCommand(globalFlags),
 		NewAWSCommand(globalFlags),
+		NewVMCommand(globalFlags),
 	)
 	rootCmd.AddCommand(loadPluginCommands()...)
 
@@ -209,6 +210,7 @@ func NewRootCommand(version string, globalFlags *flag.GlobalFlagGroup) *cobra.Co
 func NewImageCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	reportFlagGroup := flag.NewReportFlagGroup()
 	reportFlagGroup.ReportFormat = nil // TODO: support --report summary
+	reportFlagGroup.Compliance = nil   // disable '--compliance'
 
 	imageFlags := &flag.Flags{
 		CacheFlagGroup:         flag.NewCacheFlagGroup(),
@@ -247,7 +249,7 @@ func NewImageCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
   $ trivy image --format json --output result.json alpine:3.15
 
   # Generate a report in the CycloneDX format
-  $ trivy image --format cyclonedx --output result.cdx --security-checks none alpine:3.15`,
+  $ trivy image --format cyclonedx --output result.cdx alpine:3.15`,
 
 		// 'Args' cannot be used since it is called before PreRunE and viper is not configured yet.
 		// cmd.Args     -> cannot validate args here
@@ -283,6 +285,7 @@ func NewImageCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 func NewFilesystemCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	reportFlagGroup := flag.NewReportFlagGroup()
 	reportFlagGroup.ReportFormat = nil // TODO: support --report summary
+	reportFlagGroup.Compliance = nil   // disable '--compliance'
 
 	fsFlags := &flag.Flags{
 		CacheFlagGroup:         flag.NewCacheFlagGroup(),
@@ -336,6 +339,7 @@ func NewFilesystemCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 func NewRootfsCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	reportFlagGroup := flag.NewReportFlagGroup()
 	reportFlagGroup.ReportFormat = nil // TODO: support --report summary
+	reportFlagGroup.Compliance = nil   // disable '--compliance'
 
 	rootfsFlags := &flag.Flags{
 		CacheFlagGroup:         flag.NewCacheFlagGroup(),
@@ -390,6 +394,7 @@ func NewRootfsCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 func NewRepositoryCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	reportFlagGroup := flag.NewReportFlagGroup()
 	reportFlagGroup.ReportFormat = nil // TODO: support --report summary
+	reportFlagGroup.Compliance = nil   // disable '--compliance'
 
 	repoFlags := &flag.Flags{
 		CacheFlagGroup:         flag.NewCacheFlagGroup(),
@@ -536,6 +541,7 @@ func NewConfigCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	reportFlagGroup.IgnorePolicy = nil   // disable '--ignore-policy'
 	reportFlagGroup.ListAllPkgs = nil    // disable '--list-all-pkgs'
 	reportFlagGroup.ReportFormat = nil   // TODO: support --report summary
+	reportFlagGroup.Compliance = nil     // disable '--compliance'
 
 	scanFlags := &flag.ScanFlagGroup{
 		// Enable only '--skip-dirs' and '--skip-files' and disable other flags
@@ -747,6 +753,11 @@ func NewKubernetesCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	)
 	scanFlags.SecurityChecks = &securityChecks
 
+	reportFlagGroup := flag.NewReportFlagGroup()
+	compliance := flag.ComplianceFlag
+	compliance.Usage += fmt.Sprintf(" (%s,%s)", types.ComplianceNsa, types.ComplianceCIS)
+	reportFlagGroup.Compliance = &compliance // override usage as the accepted values differ for each subcommand.
+
 	k8sFlags := &flag.Flags{
 		CacheFlagGroup:         flag.NewCacheFlagGroup(),
 		DBFlagGroup:            flag.NewDBFlagGroup(),
@@ -754,7 +765,7 @@ func NewKubernetesCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 		LicenseFlagGroup:       flag.NewLicenseFlagGroup(),
 		MisconfFlagGroup:       flag.NewMisconfFlagGroup(),
 		RegoFlagGroup:          flag.NewRegoFlagGroup(),
-		ReportFlagGroup:        flag.NewReportFlagGroup(),
+		ReportFlagGroup:        reportFlagGroup,
 		ScanFlagGroup:          scanFlags,
 		SecretFlagGroup:        flag.NewSecretFlagGroup(),
 		VulnerabilityFlagGroup: flag.NewVulnerabilityFlagGroup(),
@@ -804,13 +815,17 @@ func NewKubernetesCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 }
 
 func NewAWSCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
+	reportFlagGroup := flag.NewReportFlagGroup()
+	compliance := flag.ComplianceFlag
+	compliance.Usage += fmt.Sprintf(" (%s, %s)", types.ComplianceAWSCIS12, types.ComplianceAWSCIS14)
+	reportFlagGroup.Compliance = &compliance // override usage as the accepted values differ for each subcommand.
 
 	awsFlags := &flag.Flags{
 		AWSFlagGroup:     flag.NewAWSFlagGroup(),
 		CloudFlagGroup:   flag.NewCloudFlagGroup(),
 		MisconfFlagGroup: flag.NewMisconfFlagGroup(),
 		RegoFlagGroup:    flag.NewRegoFlagGroup(),
-		ReportFlagGroup:  flag.NewReportFlagGroup(),
+		ReportFlagGroup:  reportFlagGroup,
 	}
 
 	services := awsScanner.AllSupportedServices()
@@ -819,7 +834,7 @@ func NewAWSCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 		Use:     "aws [flags]",
 		Aliases: []string{},
 		Args:    cobra.ExactArgs(0),
-		Short:   "scan aws account",
+		Short:   "[EXPERIMENTAL] Scan AWS account",
 		Long: fmt.Sprintf(`Scan an AWS account for misconfigurations. Trivy uses the same authentication methods as the AWS CLI. See https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-configure.html
 
 The following services are supported:
@@ -860,6 +875,70 @@ The following services are supported:
 	cmd.SetFlagErrorFunc(flagErrorFunc)
 	awsFlags.AddFlags(cmd)
 	cmd.SetUsageTemplate(fmt.Sprintf(usageTemplate, awsFlags.Usages(cmd)))
+
+	return cmd
+}
+
+func NewVMCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
+	reportFlagGroup := flag.NewReportFlagGroup()
+	reportFlagGroup.ReportFormat = nil // TODO: support --report summary
+
+	vmFlags := &flag.Flags{
+		CacheFlagGroup:         flag.NewCacheFlagGroup(),
+		DBFlagGroup:            flag.NewDBFlagGroup(),
+		LicenseFlagGroup:       flag.NewLicenseFlagGroup(),
+		MisconfFlagGroup:       flag.NewMisconfFlagGroup(),
+		RemoteFlagGroup:        flag.NewClientFlags(), // for client/server mode
+		ReportFlagGroup:        reportFlagGroup,
+		ScanFlagGroup:          flag.NewScanFlagGroup(),
+		SecretFlagGroup:        flag.NewSecretFlagGroup(),
+		VulnerabilityFlagGroup: flag.NewVulnerabilityFlagGroup(),
+		AWSFlagGroup: &flag.AWSFlagGroup{
+			Region: &flag.Flag{
+				Name:       "aws-region",
+				ConfigName: "aws.region",
+				Value:      "",
+				Usage:      "AWS region to scan",
+			},
+		},
+	}
+
+	cmd := &cobra.Command{
+		Use:     "vm [flags] VM_IMAGE",
+		Aliases: []string{},
+		Short:   "[EXPERIMENTAL] Scan a virtual machine image",
+		Example: `  # Scan your AWS AMI
+  $ trivy vm --security-checks vuln ami:${your_ami_id}
+
+  # Scan your AWS EBS snapshot
+  $ trivy vm ebs:${your_ebs_snapshot_id}
+`,
+		PreRunE: func(cmd *cobra.Command, args []string) error {
+			if err := vmFlags.Bind(cmd); err != nil {
+				return xerrors.Errorf("flag bind error: %w", err)
+			}
+			return validateArgs(cmd, args)
+		},
+		RunE: func(cmd *cobra.Command, args []string) error {
+			if err := vmFlags.Bind(cmd); err != nil {
+				return xerrors.Errorf("flag bind error: %w", err)
+			}
+			options, err := vmFlags.ToOptions(cmd.Version, args, globalFlags, outputWriter)
+			if err != nil {
+				return xerrors.Errorf("flag error: %w", err)
+			}
+			if options.Timeout < time.Minute*30 {
+				options.Timeout = time.Minute * 30
+				log.Logger.Debug("Timeout is set to less than 30 min - upgrading to 30 min for this command.")
+			}
+			return artifact.Run(cmd.Context(), options, artifact.TargetVM)
+		},
+		SilenceErrors: true,
+		SilenceUsage:  true,
+	}
+	cmd.SetFlagErrorFunc(flagErrorFunc)
+	vmFlags.AddFlags(cmd)
+	cmd.SetUsageTemplate(fmt.Sprintf(usageTemplate, vmFlags.Usages(cmd)))
 
 	return cmd
 }

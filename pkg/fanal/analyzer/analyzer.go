@@ -74,7 +74,7 @@ type analyzer interface {
 type configAnalyzer interface {
 	Type() Type
 	Version() int
-	Analyze(targetOS types.OS, content []byte) ([]types.Package, error)
+	Analyze(targetOS types.OS, content []byte) (types.Packages, error)
 	Required(osFound types.OS) bool
 }
 
@@ -137,7 +137,7 @@ type AnalysisOptions struct {
 
 type AnalysisResult struct {
 	m                    sync.Mutex
-	OS                   *types.OS
+	OS                   types.OS
 	Repository           *types.Repository
 	PackageInfos         []types.PackageInfo
 	Applications         []types.Application
@@ -167,7 +167,7 @@ func NewAnalysisResult() *AnalysisResult {
 }
 
 func (r *AnalysisResult) isEmpty() bool {
-	return r.OS == nil && r.Repository == nil && len(r.PackageInfos) == 0 && len(r.Applications) == 0 &&
+	return lo.IsEmpty(r.OS) && r.Repository == nil && len(r.PackageInfos) == 0 && len(r.Applications) == 0 &&
 		len(r.Secrets) == 0 && len(r.Licenses) == 0 && len(r.SystemInstalledFiles) == 0 &&
 		r.BuildInfo == nil && len(r.Files) == 0 && len(r.Digests) == 0 && len(r.CustomResources) == 0
 }
@@ -179,9 +179,7 @@ func (r *AnalysisResult) Sort() {
 	})
 
 	for _, pi := range r.PackageInfos {
-		sort.Slice(pi.Packages, func(i, j int) bool {
-			return pi.Packages[i].Name < pi.Packages[j].Name
-		})
+		sort.Sort(pi.Packages)
 	}
 
 	// Language-specific packages
@@ -245,14 +243,7 @@ func (r *AnalysisResult) Merge(new *AnalysisResult) {
 	r.m.Lock()
 	defer r.m.Unlock()
 
-	if new.OS != nil {
-		// OLE also has /etc/redhat-release and it detects OLE as RHEL by mistake.
-		// In that case, OS must be overwritten with the content of /etc/oracle-release.
-		// There is the same problem between Debian and Ubuntu.
-		if r.OS == nil || r.OS.Family == aos.RedHat || r.OS.Family == aos.Debian {
-			r.OS = new.OS
-		}
-	}
+	r.OS.Merge(new.OS)
 
 	if new.Repository != nil {
 		r.Repository = new.Repository

@@ -2,6 +2,7 @@ package helm
 
 import (
 	"archive/tar"
+	"bytes"
 	"compress/gzip"
 	"context"
 	"errors"
@@ -28,7 +29,9 @@ const maxTarSize = 209_715_200 // 200MB
 type helmConfigAnalyzer struct{}
 
 func (a helmConfigAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInput) (*analyzer.AnalysisResult, error) {
+	isAnArchive := false
 	if isArchive(input.FilePath) {
+		isAnArchive = true
 		if !isHelmChart(input.FilePath, input.Content) {
 			return nil, nil
 		}
@@ -41,6 +44,10 @@ func (a helmConfigAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisIn
 	b, err := io.ReadAll(input.Content)
 	if err != nil {
 		return nil, xerrors.Errorf("failed to read %s: %w", input.FilePath, err)
+	}
+	if !isAnArchive {
+		// if it's not an archive we need to remove the carriage returns
+		b = bytes.ReplaceAll(b, []byte("\r"), []byte(""))
 	}
 
 	return &analyzer.AnalysisResult{

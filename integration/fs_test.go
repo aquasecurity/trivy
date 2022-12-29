@@ -47,7 +47,7 @@ func TestFilesystem(t *testing.T) {
 			args: args{
 				securityChecks: "vuln",
 				input:          "testdata/fixtures/fs/gomod",
-				skipFiles:      []string{"/testdata/fixtures/fs/gomod/submod2/go.mod"},
+				skipFiles:      []string{"testdata/fixtures/fs/gomod/submod2/go.mod"},
 			},
 			golden: "testdata/gomod-skip.json.golden",
 		},
@@ -56,7 +56,7 @@ func TestFilesystem(t *testing.T) {
 			args: args{
 				securityChecks: "vuln",
 				input:          "testdata/fixtures/fs/gomod",
-				skipDirs:       []string{"/testdata/fixtures/fs/gomod/submod2"},
+				skipDirs:       []string{"testdata/fixtures/fs/gomod/submod2"},
 			},
 			golden: "testdata/gomod-skip.json.golden",
 		},
@@ -119,6 +119,33 @@ func TestFilesystem(t *testing.T) {
 				input:          "testdata/fixtures/fs/conan",
 			},
 			golden: "testdata/conan.json.golden",
+		},
+		{
+			name: "nuget",
+			args: args{
+				securityChecks: "vuln",
+				listAllPkgs:    true,
+				input:          "testdata/fixtures/fs/nuget",
+			},
+			golden: "testdata/nuget.json.golden",
+		},
+		{
+			name: "dotnet",
+			args: args{
+				securityChecks: "vuln",
+				listAllPkgs:    true,
+				input:          "testdata/fixtures/fs/dotnet",
+			},
+			golden: "testdata/dotnet.json.golden",
+		},
+		{
+			name: "cocoapods",
+			args: args{
+				securityChecks: "vuln",
+				listAllPkgs:    true,
+				input:          "testdata/fixtures/fs/cocoapods",
+			},
+			golden: "testdata/cocoapods.json.golden",
 		},
 		{
 			name: "dockerfile",

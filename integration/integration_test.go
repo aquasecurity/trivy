@@ -1,4 +1,4 @@
-//go:build integration || module_integration
+//go:build integration || vm_integration || module_integration
 
 package integration
 

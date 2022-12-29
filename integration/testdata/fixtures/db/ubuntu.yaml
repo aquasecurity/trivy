@@ -12,3 +12,10 @@
         - key: CVE-2019-5094
           value:
             FixedVersion: 1.44.1-1ubuntu1.2
+- bucket: ubuntu 22.04
+  pairs:
+    - bucket: bind9
+      pairs:
+        - key: CVE-2022-2795
+          value:
+            FixedVersion: 1:9.18.1-1ubuntu1.2

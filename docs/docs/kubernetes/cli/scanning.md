@@ -241,7 +241,7 @@ components under `kube-system` with commands:
 
 ```
 $ trivy k8s cluster --report summary # full cluster scan
-$ trivy k8s all -n kube-system --report summary # scan all componetns under kube-system
+$ trivy k8s all -n kube-system --report summary # scan all components under kube-system
 ```
 
 A table will be printed about misconfigurations found on kubernetes core components:

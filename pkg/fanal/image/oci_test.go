@@ -1,6 +1,7 @@
 package image
 
 import (
+	"path/filepath"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -14,32 +15,32 @@ func TestTryOCI(t *testing.T) {
 	}{
 		{
 			name:         "correct path to index without tag",
-			ociImagePath: "testdata/multi",
+			ociImagePath: filepath.Join("testdata", "multi"),
 			wantErr:      "",
 		},
 		{
 			name:         "correct path to index with correct tag",
-			ociImagePath: "testdata/multi:tg11",
+			ociImagePath: filepath.Join("testdata", "multi:tg11"),
 			wantErr:      "",
 		},
 		{
 			name:         "correct path to index with incorrect tag",
-			ociImagePath: "testdata/multi:tg12",
+			ociImagePath: filepath.Join("testdata", "multi:tg12"),
 			wantErr:      "invalid OCI image tag",
 		},
 		{
 			name:         "correct path to manifest without tag",
-			ociImagePath: "testdata/single",
+			ociImagePath: filepath.Join("testdata", "single"),
 			wantErr:      "",
 		},
 		{
 			name:         "correct path to manifest with correct tag",
-			ociImagePath: "testdata/single:3.14",
+			ociImagePath: filepath.Join("testdata", "single:3.14"),
 			wantErr:      "",
 		},
 		{
 			name:         "correct path to manifest with incorrect tag",
-			ociImagePath: "testdata/single:3.11",
+			ociImagePath: filepath.Join("testdata", "single:3.11"),
 			wantErr:      "invalid OCI image tag",
 		},
 	}

@@ -10,7 +10,6 @@ import (
 	"sync"
 
 	"github.com/opencontainers/go-digest"
-	"golang.org/x/sync/semaphore"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
@@ -19,10 +18,8 @@ import (
 	"github.com/aquasecurity/trivy/pkg/fanal/handler"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/fanal/walker"
-)
-
-const (
-	parallel = 10
+	"github.com/aquasecurity/trivy/pkg/log"
+	"github.com/aquasecurity/trivy/pkg/semaphore"
 )
 
 type Artifact struct {
@@ -55,7 +52,7 @@ func NewArtifact(rootPath string, c cache.ArtifactCache, opt artifact.Option) (a
 	return Artifact{
 		rootPath:       filepath.Clean(rootPath),
 		cache:          c,
-		walker:         walker.NewFS(buildAbsPaths(rootPath, opt.SkipFiles), buildAbsPaths(rootPath, opt.SkipDirs)),
+		walker:         walker.NewFS(buildPathsToSkip(rootPath, opt.SkipFiles), buildPathsToSkip(rootPath, opt.SkipDirs), opt.Slow),
 		analyzer:       a,
 		handlerManager: handlerManager,
 
@@ -63,40 +60,77 @@ func NewArtifact(rootPath string, c cache.ArtifactCache, opt artifact.Option) (a
 	}, nil
 }
 
-func buildAbsPaths(base string, paths []string) []string {
-	var absPaths []string
-	for _, path := range paths {
-		if filepath.IsAbs(path) {
-			absPaths = append(absPaths, path)
-		} else {
-			absPaths = append(absPaths, filepath.Join(base, path))
-		}
+// buildPathsToSkip builds correct patch for skipDirs and skipFiles
+func buildPathsToSkip(base string, paths []string) []string {
+	var relativePaths []string
+	absBase, err := filepath.Abs(base)
+	if err != nil {
+		log.Logger.Warnf("Failed to get an absolute path of %s: %s", base, err)
+		return nil
 	}
-	return absPaths
+	for _, path := range paths {
+		// Supports three types of flag specification.
+		// All of them are converted into the relative path from the root directory.
+		// 1. Relative skip dirs/files from the root directory
+		//     The specified dirs and files will be used as is.
+		//       e.g. $ trivy fs --skip-dirs bar ./foo
+		//     The skip dir from the root directory will be `bar/`.
+		// 2. Relative skip dirs/files from the working directory
+		//     The specified dirs and files wll be converted to the relative path from the root directory.
+		//       e.g. $ trivy fs --skip-dirs ./foo/bar ./foo
+		//     The skip dir will be converted to `bar/`.
+		// 3. Absolute skip dirs/files
+		//     The specified dirs and files wll be converted to the relative path from the root directory.
+		//       e.g. $ trivy fs --skip-dirs /bar/foo/baz ./foo
+		//     When the working directory is
+		//       3.1 /bar: the skip dir will be converted to `baz/`.
+		//       3.2 /hoge : the skip dir will be converted to `../../bar/foo/baz/`.
+
+		absSkipPath, err := filepath.Abs(path)
+		if err != nil {
+			log.Logger.Warnf("Failed to get an absolute path of %s: %s", base, err)
+			continue
+		}
+		rel, err := filepath.Rel(absBase, absSkipPath)
+		if err != nil {
+			log.Logger.Warnf("Failed to get a relative path from %s to %s: %s", base, path, err)
+			continue
+		}
+
+		var relPath string
+		switch {
+		case !filepath.IsAbs(path) && strings.HasPrefix(rel, ".."):
+			// #1: Use the path as is
+			relPath = path
+		case !filepath.IsAbs(path) && !strings.HasPrefix(rel, ".."):
+			// #2: Use the relative path from the root directory
+			relPath = rel
+		case filepath.IsAbs(path):
+			// #3: Use the relative path from the root directory
+			relPath = rel
+		}
+		relPath = filepath.ToSlash(relPath)
+		relativePaths = append(relativePaths, relPath)
+	}
+	return relativePaths
 }
 
 func (a Artifact) Inspect(ctx context.Context) (types.ArtifactReference, error) {
 	var wg sync.WaitGroup
 	result := analyzer.NewAnalysisResult()
-	limit := semaphore.NewWeighted(parallel)
+	limit := semaphore.New(a.artifactOption.Slow)
 
 	err := a.walker.Walk(a.rootPath, func(filePath string, info os.FileInfo, opener analyzer.Opener) error {
 		directory := a.rootPath
 
 		// When the directory is the same as the filePath, a file was given
-		// instead of a directory, rewrite the directory in this case.
-		if a.rootPath == filePath {
-			directory = filepath.Dir(a.rootPath)
-		}
-
-		// For exported rootfs (e.g. images/alpine/etc/alpine-release)
-		filePath, err := filepath.Rel(directory, filePath)
-		if err != nil {
-			return xerrors.Errorf("filepath rel (%s): %w", filePath, err)
+		// instead of a directory, rewrite the file path and directory in this case.
+		if filePath == "." {
+			directory, filePath = filepath.Split(a.rootPath)
 		}
 
 		opts := analyzer.AnalysisOptions{Offline: a.artifactOption.Offline}
-		if err = a.analyzer.AnalyzeFile(ctx, &wg, limit, result, directory, filePath, info, opener, nil, opts); err != nil {
+		if err := a.analyzer.AnalyzeFile(ctx, &wg, limit, result, directory, filePath, info, opener, nil, opts); err != nil {
 			return xerrors.Errorf("analyze file (%s): %w", filePath, err)
 		}
 		return nil
@@ -141,7 +175,8 @@ func (a Artifact) Inspect(ctx context.Context) (types.ArtifactReference, error) 
 	if err == nil && string(b) != "" {
 		hostName = strings.TrimSpace(string(b))
 	} else {
-		hostName = a.rootPath
+		// To slash for Windows
+		hostName = filepath.ToSlash(a.rootPath)
 	}
 
 	return types.ArtifactReference{
