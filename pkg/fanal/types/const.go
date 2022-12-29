@@ -74,4 +74,6 @@ const (
 	ConanLock = "conan.lock"
 
 	CocoaPodsLock = "Podfile.lock"
+
+	MixLock = "mix.lock"
 )

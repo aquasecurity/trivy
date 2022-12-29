@@ -6,6 +6,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"os"
+	"path/filepath"
 	"testing"
 )
 
@@ -81,8 +82,16 @@ func Test_elexirLockAnalyzer_Required(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			dir := t.TempDir()
+			f, err := os.Create(filepath.Join(dir, tt.filePath))
+			require.NoError(t, err)
+			defer f.Close()
+
+			fi, err := f.Stat()
+			require.NoError(t, err)
+
 			a := mixLockAnalyzer{}
-			got := a.Required(tt.filePath, nil)
+			got := a.Required("", fi)
 			assert.Equal(t, tt.want, got)
 		})
 	}

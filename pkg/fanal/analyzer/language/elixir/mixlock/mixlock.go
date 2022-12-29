@@ -3,7 +3,6 @@ package mixlock
 import (
 	"context"
 	"os"
-	"strings"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer/language"
@@ -19,8 +18,7 @@ func init() {
 }
 
 const (
-	version        = 1
-	fileNameSuffix = "mix.lock"
+	version = 1
 )
 
 // mixLockAnalyzer analyzes 'mix.lock'
@@ -35,8 +33,11 @@ func (a mixLockAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInput
 	return res, nil
 }
 
-func (a mixLockAnalyzer) Required(filePath string, _ os.FileInfo) bool {
-	return strings.HasSuffix(filePath, fileNameSuffix)
+func (a mixLockAnalyzer) Required(_ string, fileInfo os.FileInfo) bool {
+	// Lock file name can be anything
+	// cf. https://hexdocs.pm/mix/Mix.Project.html#module-configuration
+	// By default, we only check the default filename - `mix.lock`.
+	return fileInfo.Name() == types.MixLock
 }
 
 func (a mixLockAnalyzer) Type() analyzer.Type {
