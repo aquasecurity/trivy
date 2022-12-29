@@ -152,7 +152,7 @@ func TestFilesystem(t *testing.T) {
 			args: args{
 				securityChecks: "vuln",
 				listAllPkgs:    true,
-				input:          "testdata/fixtures/fs/pubspeclock",
+				input:          "testdata/fixtures/fs/pubspec",
 			},
 			golden: "testdata/pubspec.lock.json.golden",
 		},

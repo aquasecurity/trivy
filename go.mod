@@ -73,7 +73,7 @@ require (
 	github.com/twitchtv/twirp v8.1.2+incompatible
 	github.com/xlab/treeprint v1.1.0
 	go.etcd.io/bbolt v1.3.6
-	go.uber.org/zap v1.23.0
+	go.uber.org/zap v1.24.0
 	golang.org/x/exp v0.0.0-20220823124025-807a23277127
 	golang.org/x/xerrors v0.0.0-20220907171357-04be3eba64a2
 	google.golang.org/protobuf v1.28.1
@@ -390,6 +390,6 @@ replace github.com/docker/docker => github.com/docker/docker v20.10.3-0.20220224
 // v1.2.0 incompatible with github.com/docker/docker v20.10.3-0.20220224222438-c78f6963a1c0+incompatible
 replace oras.land/oras-go => oras.land/oras-go v1.1.1
 
-replace github.com/aquasecurity/go-dep-parser => github.com/aquasecurity/go-dep-parser v0.0.0-20221227064320-b4aa3d0aeaba
+replace github.com/aquasecurity/go-dep-parser => github.com/aquasecurity/go-dep-parser v0.0.0-20221229042223-7846c833510a
 
-replace github.com/aquasecurity/trivy-db => github.com/aquasecurity/trivy-db v0.0.0-20221227050808-7277b47efc18
+replace github.com/aquasecurity/trivy-db => github.com/aquasecurity/trivy-db v0.0.0-20221229023805-1bab3b99a681

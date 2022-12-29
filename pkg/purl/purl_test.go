@@ -167,6 +167,21 @@ func TestNewPackageURL(t *testing.T) {
 			},
 		},
 		{
+			name: "dart package",
+			typ:  ftypes.PubSpec,
+			pkg: ftypes.Package{
+				Name:    "http",
+				Version: "0.13.2",
+			},
+			want: purl.PackageURL{
+				PackageURL: packageurl.PackageURL{
+					Type:    "dart",
+					Name:    "http",
+					Version: "0.13.2",
+				},
+			},
+		},
+		{
 			name: "os package",
 			typ:  os.RedHat,
 			pkg: ftypes.Package{
@@ -361,6 +376,18 @@ func TestFromString(t *testing.T) {
 							Value: "app/app/package.json",
 						},
 					},
+				},
+			},
+		},
+		{
+			name: "happy path for dart",
+			purl: "pkg:dart/http@0.13.2",
+			want: purl.PackageURL{
+				PackageURL: packageurl.PackageURL{
+					Type:       "dart",
+					Name:       "http",
+					Version:    "0.13.2",
+					Qualifiers: packageurl.Qualifiers{},
 				},
 			},
 		},

@@ -1,4 +1,4 @@
-package pubspeclock
+package pubspec
 
 import (
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"

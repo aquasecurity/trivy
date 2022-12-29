@@ -1,6 +1,6 @@
 {
   "SchemaVersion": 2,
-  "ArtifactName": "testdata/fixtures/fs/pubspeclock",
+  "ArtifactName": "testdata/fixtures/fs/pubspec",
   "ArtifactType": "filesystem",
   "Metadata": {
     "ImageConfig": {
