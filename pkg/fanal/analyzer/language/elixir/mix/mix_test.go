@@ -1,4 +1,4 @@
-package mixlock
+package mix
 
 import (
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
@@ -6,11 +6,10 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"os"
-	"path/filepath"
 	"testing"
 )
 
-func Test_elexirLockAnalyzer_Analyze(t *testing.T) {
+func Test_mixLockAnalyzer_Analyze(t *testing.T) {
 	tests := []struct {
 		name      string
 		inputFile string
@@ -63,7 +62,7 @@ func Test_elexirLockAnalyzer_Analyze(t *testing.T) {
 	}
 }
 
-func Test_elexirLockAnalyzer_Required(t *testing.T) {
+func Test_mixLockAnalyzer_Required(t *testing.T) {
 	tests := []struct {
 		name     string
 		filePath string
@@ -82,16 +81,8 @@ func Test_elexirLockAnalyzer_Required(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			dir := t.TempDir()
-			f, err := os.Create(filepath.Join(dir, tt.filePath))
-			require.NoError(t, err)
-			defer f.Close()
-
-			fi, err := f.Stat()
-			require.NoError(t, err)
-
 			a := mixLockAnalyzer{}
-			got := a.Required("", fi)
+			got := a.Required(tt.filePath, nil)
 			assert.Equal(t, tt.want, got)
 		})
 	}

@@ -1,16 +1,16 @@
-package mixlock
+package mix
 
 import (
 	"context"
 	"os"
+	"path/filepath"
 
+	"golang.org/x/xerrors"
+
+	"github.com/aquasecurity/go-dep-parser/pkg/hex/mix"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer/language"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
-
-	"github.com/aquasecurity/go-dep-parser/pkg/hex/mix"
-
-	"golang.org/x/xerrors"
 )
 
 func init() {
@@ -33,11 +33,11 @@ func (a mixLockAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInput
 	return res, nil
 }
 
-func (a mixLockAnalyzer) Required(_ string, fileInfo os.FileInfo) bool {
-	// Lock file name can be anything
+func (a mixLockAnalyzer) Required(filePath string, _ os.FileInfo) bool {
+	// Lock file name can be anything.
 	// cf. https://hexdocs.pm/mix/Mix.Project.html#module-configuration
-	// By default, we only check the default filename - `mix.lock`.
-	return fileInfo.Name() == types.MixLock
+	// By default, we only check the default file name - `mix.lock`.
+	return filepath.Base(filePath) == types.MixLock
 }
 
 func (a mixLockAnalyzer) Type() analyzer.Type {
