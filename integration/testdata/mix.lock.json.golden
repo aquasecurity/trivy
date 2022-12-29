@@ -1,0 +1,180 @@
+{
+  "SchemaVersion": 2,
+  "ArtifactName": "testdata/fixtures/fs/mixlock",
+  "ArtifactType": "filesystem",
+  "Metadata": {
+    "ImageConfig": {
+      "architecture": "",
+      "created": "0001-01-01T00:00:00Z",
+      "os": "",
+      "rootfs": {
+        "type": "",
+        "diff_ids": null
+      },
+      "config": {}
+    }
+  },
+  "Results": [
+    {
+      "Target": "mix.lock",
+      "Class": "lang-pkgs",
+      "Type": "hex",
+      "Packages": [
+        {
+          "ID": "castore@0.1.18",
+          "Name": "castore",
+          "Version": "0.1.18",
+          "Layer": {},
+          "Locations": [
+            {
+              "StartLine": 2,
+              "EndLine": 2
+            }
+         ]
+        },
+        {
+          "ID": "jason@1.4.0",
+          "Name": "jason",
+          "Version": "1.4.0",
+          "Layer": {},
+          "Locations": [
+            {
+              "StartLine": 3,
+              "EndLine": 3
+            }
+         ]
+        },
+        {
+          "ID": "phoenix@1.6.13",
+          "Name": "phoenix",
+          "Version": "1.6.13",
+          "Layer": {},
+          "Locations": [
+            {
+              "StartLine": 4,
+              "EndLine": 4
+            }
+         ]
+        },
+        {
+          "ID": "phoenix_html@3.2.0",
+          "Name": "phoenix_html",
+          "Version": "3.2.0",
+          "Layer": {},
+          "Locations": [
+            {
+              "StartLine": 5,
+              "EndLine": 5
+            }
+         ]
+        },
+        {
+          "ID": "phoenix_pubsub@2.1.1",
+          "Name": "phoenix_pubsub",
+          "Version": "2.1.1",
+          "Layer": {},
+          "Locations": [
+            {
+              "StartLine": 6,
+              "EndLine": 6
+            }
+         ]
+        },
+        {
+          "ID": "phoenix_template@1.0.0",
+          "Name": "phoenix_template",
+          "Version": "1.0.0",
+          "Layer": {},
+          "Locations": [
+            {
+              "StartLine": 7,
+              "EndLine": 7
+            }
+         ]
+        },
+        {
+          "ID": "phoenix_view@2.0.1",
+          "Name": "phoenix_view",
+          "Version": "2.0.1",
+          "Layer": {},
+          "Locations": [
+            {
+              "StartLine": 8,
+              "EndLine": 8
+            }
+         ]
+        },
+        {
+          "ID": "plug@1.14.0",
+          "Name": "plug",
+          "Version": "1.14.0",
+          "Layer": {},
+          "Locations": [
+            {
+              "StartLine": 9,
+              "EndLine": 9
+            }
+         ]
+        },
+        {
+          "ID": "plug_crypto@1.2.3",
+          "Name": "plug_crypto",
+          "Version": "1.2.3",
+          "Layer": {},
+          "Locations": [
+            {
+              "StartLine": 10,
+              "EndLine": 10
+            }
+         ]
+        },
+        {
+          "ID": "telemetry@1.1.0",
+          "Name": "telemetry",
+          "Version": "1.1.0",
+          "Layer": {},
+          "Locations": [
+            {
+              "StartLine": 11,
+              "EndLine": 11
+            }
+         ]
+        }
+      ],
+      "Vulnerabilities": [
+        {
+          "VulnerabilityID": "CVE-2022-42975",
+          "PkgName": "phoenix",
+          "PkgID": "phoenix@1.6.13",
+          "InstalledVersion": "1.6.13",
+          "FixedVersion": "1.6.14",
+          "Layer": {},
+          "SeveritySource": "ghsa",
+          "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2022-42975",
+          "DataSource": {
+            "ID": "ghsa",
+            "Name": "GitHub Security Advisory Erlang",
+            "URL": "https://github.com/advisories?query=type%3Areviewed+ecosystem%3Aerlang"
+          },
+          "Title": "Phoenix before 1.6.14 mishandles check_origin wildcarding",
+          "Description": "socket/transport.ex in Phoenix before 1.6.14 mishandles check_origin wildcarding. NOTE: LiveView applications are unaffected by default because of the presence of a LiveView CSRF token.",
+          "Severity": "HIGH",
+          "CVSS": {
+            "ghsa": {
+              "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:H/A:N",
+              "V3Score": 7.5
+            }
+          },
+          "References": [
+            "https://nvd.nist.gov/vuln/detail/CVE-2022-42975",
+            "https://github.com/phoenixframework/phoenix/commit/6e7185b33a59e0b1d1c0b4223adf340a73e963ae",
+            "https://hexdocs.pm/phoenix/1.6.14/changelog.html#1-6-14-2022-10-10",
+            "https://github.com/advisories/GHSA-p8f7-22gq-m7j9"
+          ],
+          "PublishedDate": "2022-10-17T12:00:27Z",
+          "LastModifiedDate": "2022-10-18T18:01:44Z"
+        }
+      ]
+    }
+  ]
+}

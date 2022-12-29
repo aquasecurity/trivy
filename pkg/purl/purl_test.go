@@ -167,6 +167,23 @@ func TestNewPackageURL(t *testing.T) {
 			},
 		},
 		{
+			name: "hex package",
+			typ:  ftypes.Hex,
+			pkg: ftypes.Package{
+				ID:        "bunt@0.2.0",
+				Name:      "bunt",
+				Version:   "0.2.0",
+				Locations: []ftypes.Location{{StartLine: 2, EndLine: 2}},
+			},
+			want: purl.PackageURL{
+				PackageURL: packageurl.PackageURL{
+					Type:    packageurl.TypeHex,
+					Name:    "bunt",
+					Version: "0.2.0",
+				},
+			},
+		},
+		{
 			name: "os package",
 			typ:  os.RedHat,
 			pkg: ftypes.Package{
@@ -361,6 +378,18 @@ func TestFromString(t *testing.T) {
 							Value: "app/app/package.json",
 						},
 					},
+				},
+			},
+		},
+		{
+			name: "happy path for hex",
+			purl: "pkg:hex/plug@1.14.0",
+			want: purl.PackageURL{
+				PackageURL: packageurl.PackageURL{
+					Type:       packageurl.TypeHex,
+					Name:       "plug",
+					Version:    "1.14.0",
+					Qualifiers: packageurl.Qualifiers{},
 				},
 			},
 		},
