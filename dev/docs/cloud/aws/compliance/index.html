@@ -3519,7 +3519,7 @@
 <p><a href="https://docs.aws.amazon.com/securityhub/latest/userguide/securityhub-standards-cis1.4-vs-cis1.2.html">Differences between v1.2 and v1.4</a></p>
 <h2 id="cli-commands">CLI Commands</h2>
 <p>Scan for misconfigurations in an AWS account based on AWS CIS 1.2 benchmark:</p>
-<div class="highlight"><pre><span></span><code>$ trivy aws --compliance<span class="o">=</span>awscis1.2
+<div class="highlight"><pre><span></span><code>$ trivy aws --compliance<span class="o">=</span>aws-cis-1.2
 
 arn:aws:iam::123456789:user/DummyRoleManager <span class="o">(</span>cloud<span class="o">)</span>
 
@@ -3533,9 +3533,9 @@ See https://avd.aquasec.com/misconfig/avd-aws-0143
 ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 </code></pre></div>
 <p>You can also summarize the report to get a full compliance report with all the included checks.
-<div class="highlight"><pre><span></span><code>$ trivy aws --compliance<span class="o">=</span>awscis1.2 --report<span class="o">=</span>summary
+<div class="highlight"><pre><span></span><code>$ trivy aws --compliance<span class="o">=</span>aws-cis-1.2 --report<span class="o">=</span>summary
 </code></pre></div></p>
-<div class="highlight"><pre><span></span><code>Summary Report <span class="k">for</span> compliance: awscis1.2
+<div class="highlight"><pre><span></span><code>Summary Report <span class="k">for</span> compliance: AWS CIS Foundations v1.2
 ┌──────┬──────────┬────────────────────────────────────────────┬────────┬────────┐
 │  ID  │ Severity │                Control Name                │ Status │ Issues │
 ├──────┼──────────┼────────────────────────────────────────────┼────────┼────────┤
@@ -3575,24 +3575,25 @@ See https://avd.aquasec.com/misconfig/avd-aws-0143
 └──────┴──────────┴────────────────────────────────────────────┴────────┴────────┘
 </code></pre></div>
 <p>Furthermore, you can also get the report in a JSON format.
-<div class="highlight"><pre><span></span><code>$ trivy aws --compliance<span class="o">=</span>awscis1.2 --report<span class="o">=</span>summary --format<span class="o">=</span>json
+<div class="highlight"><pre><span></span><code>$ trivy aws --compliance<span class="o">=</span>aws-cis-1.2 --report<span class="o">=</span>summary --format<span class="o">=</span>json
 </code></pre></div></p>
 <div class="highlight"><pre><span></span><code><span class="p">{</span><span class="w"></span>
-<span class="w">    </span><span class="nt">&quot;ID&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;0001&quot;</span><span class="p">,</span><span class="w"></span>
-<span class="w">    </span><span class="nt">&quot;Title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;awscis1.2&quot;</span><span class="p">,</span><span class="w"></span>
-<span class="w">    </span><span class="nt">&quot;SummaryControls&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[{</span><span class="w"></span>
-<span class="w">            </span><span class="nt">&quot;ID&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;1.1&quot;</span><span class="p">,</span><span class="w"></span>
-<span class="w">            </span><span class="nt">&quot;Name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;limit-root-account-usage&quot;</span><span class="p">,</span><span class="w"></span>
-<span class="w">            </span><span class="nt">&quot;Severity&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;LOW&quot;</span><span class="p">,</span><span class="w"></span>
-<span class="w">            </span><span class="nt">&quot;TotalFail&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">5</span><span class="w"></span>
-<span class="w">        </span><span class="p">},</span><span class="w"></span>
-<span class="w">        </span><span class="p">{</span><span class="w"></span>
-<span class="w">            </span><span class="nt">&quot;ID&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;1.10&quot;</span><span class="p">,</span><span class="w"></span>
-<span class="w">            </span><span class="nt">&quot;Name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;no-password-reuse&quot;</span><span class="p">,</span><span class="w"></span>
-<span class="w">            </span><span class="nt">&quot;Severity&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;MEDIUM&quot;</span><span class="p">,</span><span class="w"></span>
-<span class="w">            </span><span class="nt">&quot;TotalFail&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="w"></span>
-<span class="w">        </span><span class="p">}</span><span class="w"></span>
-<span class="w">    </span><span class="p">]</span><span class="w"></span>
+<span class="w">  </span><span class="nt">&quot;ID&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;aws-cis-1.2&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">  </span><span class="nt">&quot;Title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;AWS CIS Foundations&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">  </span><span class="nt">&quot;SummaryControls&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"></span>
+<span class="w">    </span><span class="p">{</span><span class="w"></span>
+<span class="w">      </span><span class="nt">&quot;ID&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;1.1&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">      </span><span class="nt">&quot;Name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;limit-root-account-usage&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">      </span><span class="nt">&quot;Severity&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;LOW&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">      </span><span class="nt">&quot;TotalFail&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">5</span><span class="w"></span>
+<span class="w">    </span><span class="p">},</span><span class="w"></span>
+<span class="w">    </span><span class="p">{</span><span class="w"></span>
+<span class="w">      </span><span class="nt">&quot;ID&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;1.10&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">      </span><span class="nt">&quot;Name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;no-password-reuse&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">      </span><span class="nt">&quot;Severity&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;MEDIUM&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">      </span><span class="nt">&quot;TotalFail&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="w"></span>
+<span class="w">    </span><span class="p">}</span><span class="w"></span>
+<span class="w">  </span><span class="p">]</span><span class="w"></span>
 <span class="p">}</span><span class="w"></span>
 </code></pre></div>
 <h2 id="custom-compliance-report">Custom compliance report</h2>
@@ -3604,8 +3605,8 @@ The supported checks are from two types and can be found at <a href="https://avd
 <p>The compliance spec file format should be as follows:</p>
 <div class="highlight"><pre><span></span><code><span class="nn">---</span><span class="w"></span>
 <span class="nt">spec</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;0001&quot;</span><span class="w"></span>
-<span class="w">  </span><span class="nt">title</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">awscis1.2</span><span class="w"></span>
+<span class="w">  </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">aws-cis-1.2</span><span class="w"></span>
+<span class="w">  </span><span class="nt">title</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">AWS CIS Foundations</span><span class="w"></span>
 <span class="w">  </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">AWS CIS Foundations</span><span class="w"></span>
 <span class="w">  </span><span class="nt">version</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;1.2&quot;</span><span class="w"></span>
 <span class="w">  </span><span class="nt">relatedResources</span><span class="p">:</span><span class="w"></span>

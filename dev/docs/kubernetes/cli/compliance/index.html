@@ -3281,17 +3281,18 @@
 </div>
 </details>
 <h2 id="cli-commands">CLI Commands</h2>
-<p>Scan a full cluster and generate a complliance NSA / CIS Kubernetes Benchmark summary report:</p>
-<div class="highlight"><pre><span></span><code>trivy k8s cluster --compliance=nsa --report summary
-</code></pre></div>
+<p>Scan a full cluster and generate a complliance NSA / CIS Kubernetes Benchmark summary report:
+Supported spec IDs: <code>k8s-nsa</code> , <code>k8s-cis</code>
+<div class="highlight"><pre><span></span><code>trivy k8s cluster --compliance=k8s-nsa --report summary
+</code></pre></div></p>
 <p><strong><em>Note</em></strong> : The <code>Issues</code> column represent the total number of failed checks for this control.</p>
 <p>An additional report is supported to get all of the detail the output contains, use <code>--report all</code></p>
-<div class="highlight"><pre><span></span><code>trivy k8s cluster --compliance=cis --report all
+<div class="highlight"><pre><span></span><code>trivy k8s cluster --compliance=k8s-cis --report all
 </code></pre></div>
 <p>Report also supported in json format examples :</p>
-<div class="highlight"><pre><span></span><code>trivy k8s cluster --compliance=nsa --report summary --format json
+<div class="highlight"><pre><span></span><code>trivy k8s cluster --compliance=k8s-nsa --report summary --format json
 </code></pre></div>
-<div class="highlight"><pre><span></span><code>trivy k8s cluster --compliance=cis --report all --format json
+<div class="highlight"><pre><span></span><code>trivy k8s cluster --compliance=k8s-cis --report all --format json
 </code></pre></div>
 <h2 id="custom-compliance-report">Custom compliance report</h2>
 <p>The Trivy K8s CLI allows you to create a custom compliance specification and pass it to trivy for generating scan report .</p>
