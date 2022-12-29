@@ -174,12 +174,12 @@ func TestReportFlagGroup_ToOptions(t *testing.T) {
 		{
 			name: "happy path with compliance",
 			fields: fields{
-				compliane:  "nsa",
+				compliane:  "k8s-nsa",
 				severities: "low",
 			},
 			want: flag.ReportOptions{
 				Output:     os.Stdout,
-				Compliance: "nsa",
+				Compliance: "k8s-nsa",
 				Severities: []dbTypes.Severity{dbTypes.SeverityLow},
 			},
 		},
