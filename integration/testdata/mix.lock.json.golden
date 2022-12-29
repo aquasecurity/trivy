@@ -18,7 +18,7 @@
     {
       "Target": "mix.lock",
       "Class": "lang-pkgs",
-      "Type": "elixir-lock",
+      "Type": "hex",
       "Packages": [
         {
           "ID": "castore@0.1.18",

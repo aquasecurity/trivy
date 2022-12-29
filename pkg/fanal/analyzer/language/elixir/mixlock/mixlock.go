@@ -9,7 +9,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer/language"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 
-	"github.com/aquasecurity/go-dep-parser/pkg/elixir/lock"
+	"github.com/aquasecurity/go-dep-parser/pkg/hex/mix"
 
 	"golang.org/x/xerrors"
 )
@@ -27,8 +27,8 @@ const (
 type mixLockAnalyzer struct{}
 
 func (a mixLockAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInput) (*analyzer.AnalysisResult, error) {
-	p := lock.NewParser()
-	res, err := language.Analyze(types.ElixirLock, input.FilePath, input.Content, p)
+	p := mix.NewParser()
+	res, err := language.Analyze(types.Hex, input.FilePath, input.Content, p)
 	if err != nil {
 		return nil, xerrors.Errorf("%s parse error: %w", input.FilePath, err)
 	}
@@ -40,7 +40,7 @@ func (a mixLockAnalyzer) Required(filePath string, _ os.FileInfo) bool {
 }
 
 func (a mixLockAnalyzer) Type() analyzer.Type {
-	return analyzer.TypeElixirLock
+	return analyzer.TypeMixLock
 }
 
 func (a mixLockAnalyzer) Version() int {

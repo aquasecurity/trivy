@@ -9,7 +9,7 @@ require (
 	github.com/alicebob/miniredis/v2 v2.23.0
 	github.com/aquasecurity/bolt-fixtures v0.0.0-20200903104109-d34e7f983986
 	github.com/aquasecurity/defsec v0.82.6
-	github.com/aquasecurity/go-dep-parser v0.0.0-20221208150335-299772f066c4
+	github.com/aquasecurity/go-dep-parser v0.0.0-20221227140654-09a64a5d9b51
 	github.com/aquasecurity/go-gem-version v0.0.0-20201115065557-8eed6fe000ce
 	github.com/aquasecurity/go-npm-version v0.0.0-20201110091526-0b796d180798
 	github.com/aquasecurity/go-pep440-version v0.0.0-20210121094942-22b2f8951d46
@@ -19,7 +19,7 @@ require (
 	github.com/aquasecurity/table v1.8.0
 	github.com/aquasecurity/testdocker v0.0.0-20210911155206-e1e85f5a1516
 	github.com/aquasecurity/tml v0.6.1
-	github.com/aquasecurity/trivy-db v0.0.0-20221208102935-e829718a223f
+	github.com/aquasecurity/trivy-db v0.0.0-20221227141502-af78ecb7db4c
 	github.com/aquasecurity/trivy-kubernetes v0.3.1-0.20221021174315-8d74450b4506
 	github.com/aws/aws-sdk-go v1.44.136
 	github.com/aws/aws-sdk-go-v2 v1.17.1
@@ -389,7 +389,3 @@ replace github.com/docker/docker => github.com/docker/docker v20.10.3-0.20220224
 // v1.2.0 is taken from github.com/open-policy-agent/opa v0.42.0
 // v1.2.0 incompatible with github.com/docker/docker v20.10.3-0.20220224222438-c78f6963a1c0+incompatible
 replace oras.land/oras-go => oras.land/oras-go v1.1.1
-
-replace github.com/aquasecurity/go-dep-parser => github.com/aquasecurity/go-dep-parser v0.0.0-20221221045642-fc4517d369b5
-
-replace github.com/aquasecurity/trivy-db => github.com/aquasecurity/trivy-db v0.0.0-20221222100642-951d7a91dc6f

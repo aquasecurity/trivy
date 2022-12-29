@@ -21,7 +21,7 @@ func Test_elexirLockAnalyzer_Analyze(t *testing.T) {
 			want: &analyzer.AnalysisResult{
 				Applications: []types.Application{
 					{
-						Type:     types.ElixirLock,
+						Type:     types.Hex,
 						FilePath: "testdata/happy.mix.lock",
 						Libraries: []types.Package{
 							{
