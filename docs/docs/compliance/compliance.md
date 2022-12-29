@@ -23,7 +23,7 @@ flag | effect
 `--report summary` | shows a summary of the results. for every control shows the number of failed checks.
 `--report all` | shows fully detailed results. for every control shows where it failed and why.
 `--format table` | shows results in textual table format (good for human readability).
-`--reoirt json` | shows results in json format (good for machine readability).
+`--format json` | shows results in json format (good for machine readability).
 
 ## Built-in compliance
 

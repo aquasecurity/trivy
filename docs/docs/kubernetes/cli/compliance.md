@@ -40,5 +40,3 @@ trivy k8s cluster --compliance=<compliance_id> --report summary --format json
 ```
 trivy k8s cluster --compliance=<compliance_id> --report all --format json
 ```
-
-
