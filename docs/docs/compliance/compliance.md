@@ -5,6 +5,26 @@
 
 Trivy’s compliance flag lets you curate a specific set of checks into a report. In a typical Trivy scan, there are hundreds of different checks for many different components and configurations, but sometimes you already know which specific checks you are interested in. Often this would be an industry accepted set of checks such as CIS, or some vendor specific guideline, or your own organization policy that you want to comply with. These are all possible using the flexible compliance infrastructure that's built into Trivy. Compliance reports are defined as simple YAML documents that select checks to include in the report.
 
+## Usage
+
+Compliance report is currently supported in the following targets (trivy sub-commands):
+
+- `trivy aws`
+- `trivy k8s`
+
+Add the `--compliance` flag to the command line, and set it's value to desired report. For example: `trivy k8s cluster --compliance k8s-nsa` (see below for built-in and custom reports)
+
+### Options
+
+The following flags are compatible with `--compliance` flag and allows customizing it's output:
+
+flag | effect
+--- | ---
+`--report summary` | shows a summary of the results. for every control shows the number of failed checks.
+`--report all` | shows fully detailed results. for every control shows where it failed and why.
+`--format table` | shows results in textual table format (good for human readability).
+`--reoirt json` | shows results in json format (good for machine readability).
+
 ## Built-in compliance
 
 Trivy has a number of built-in compliance reports that you can asses right out of the box.
