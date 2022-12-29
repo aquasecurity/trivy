@@ -92,6 +92,8 @@ nav:
       - Virtual Machine Image:
           - Overview: docs/vm/index.md
           - AWS EC2: docs/vm/aws.md
+      - Compliance:
+            - Reports:  docs/compliance/compliance.md
       - SBOM:
           - Overview: docs/sbom/index.md
           - Supported: docs/sbom/supported.md

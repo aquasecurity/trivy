@@ -193,10 +193,10 @@ github.com/apparentlymart/go-textseg/v13 v13.0.0 h1:Y+KvPE1NYz0xl601PVImeQfFyEy6
 github.com/apparentlymart/go-textseg/v13 v13.0.0/go.mod h1:ZK2fH7c4NqDTLtiYLvIkEghdlcqw7yxLeM89kiTRPUo=
 github.com/aquasecurity/bolt-fixtures v0.0.0-20200903104109-d34e7f983986 h1:2a30xLN2sUZcMXl50hg+PJCIDdJgIvIbVcKqLJ/ZrtM=
 github.com/aquasecurity/bolt-fixtures v0.0.0-20200903104109-d34e7f983986/go.mod h1:NT+jyeCzXk6vXR5MTkdn4z64TgGfE5HMLC8qfj5unl8=
-github.com/aquasecurity/defsec v0.82.6 h1:whb9ygS+cANcvGSq51s44+hY3nU6OV3VOR2Q4dIz3kc=
-github.com/aquasecurity/defsec v0.82.6/go.mod h1:sUdW6pzASralDcs+CDOE+QpWfBJt3/PY1Qbg8CS5flg=
-github.com/aquasecurity/go-dep-parser v0.0.0-20221228091712-87917eb2d668 h1:n7ek9nFfNT3kNJ0PNr0mYtE4xUAEsb2MX0WwNvtRLNw=
-github.com/aquasecurity/go-dep-parser v0.0.0-20221228091712-87917eb2d668/go.mod h1:sVaiFgCEAOD3REZ8yamINqBf+BKiV/jt60DhG2rvKEo=
+github.com/aquasecurity/defsec v0.82.7-0.20221225070347-3a6cfb67e460 h1:XHYo9HDWlrn3l+GH1ZTVUQAeP//r/iyEVUoP4Rmhuuw=
+github.com/aquasecurity/defsec v0.82.7-0.20221225070347-3a6cfb67e460/go.mod h1:sUdW6pzASralDcs+CDOE+QpWfBJt3/PY1Qbg8CS5flg=
+github.com/aquasecurity/go-dep-parser v0.0.0-20221208150335-299772f066c4 h1:cFQv/JghmN6dC/vuu6JbDkziwhBgLPfQvyi/TxJN+6I=
+github.com/aquasecurity/go-dep-parser v0.0.0-20221208150335-299772f066c4/go.mod h1:ZCiGJgdQxCateSw3nPMwZvp9J/+nU8/3DcGY/NO71e4=
 github.com/aquasecurity/go-gem-version v0.0.0-20201115065557-8eed6fe000ce h1:QgBRgJvtEOBtUXilDb1MLi1p1MWoyFDXAu5DEUl5nwM=
 github.com/aquasecurity/go-gem-version v0.0.0-20201115065557-8eed6fe000ce/go.mod h1:HXgVzOPvXhVGLJs4ZKO817idqr/xhwsTcj17CLYY74s=
 github.com/aquasecurity/go-mock-aws v0.0.0-20220726154943-99847deb62b0 h1:tihCUjLWkF0b1SAjAKcFltUs3SpsqGrLtI+Frye0D10=
