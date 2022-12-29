@@ -33,7 +33,7 @@ func (a oracleOSAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInpu
 			return nil, xerrors.New("oracle: invalid oracle-release")
 		}
 		return &analyzer.AnalysisResult{
-			OS: types.OS{Family: aos.Oracle, Name: result[2]},
+			OS: &types.OS{Family: aos.Oracle, Name: result[2]},
 		}, nil
 	}
 

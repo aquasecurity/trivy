@@ -32,7 +32,7 @@ func (a marinerOSAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInp
 		return nil, xerrors.Errorf("release parse error: %w", err)
 	}
 	return &analyzer.AnalysisResult{
-		OS: foundOS,
+		OS: &foundOS,
 	}, nil
 }
 

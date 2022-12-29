@@ -124,7 +124,7 @@ func (c *CycloneDX) parseSBOM(bom *cdx.BOM) error {
 		// For third-party SBOMs.
 		// If there are no operating-system dependent libraries, make them implicitly dependent.
 		if component.Type == cdx.ComponentTypeOS {
-			if lo.IsNotEmpty(c.OS) {
+			if c.OS != nil {
 				return xerrors.New("multiple OSes are not supported")
 			}
 			c.OS = toOS(component)
@@ -140,7 +140,7 @@ func (c *CycloneDX) parseSBOM(bom *cdx.BOM) error {
 	// If a package that depends on the operating-system did not exist,
 	// but an os package is found during aggregate, it is used.
 	if len(c.Packages) == 0 && len(pkgInfos) != 0 {
-		if !c.OS.Detected() {
+		if c.OS == nil {
 			log.Logger.Warnf("Ignore the OS package as no OS information is found.")
 		} else {
 			c.Packages = pkgInfos
@@ -296,8 +296,8 @@ func aggregatePkgs(libs []cdx.Component) ([]ftypes.PackageInfo, []ftypes.Applica
 	return []ftypes.PackageInfo{osPkgs}, apps, nil
 }
 
-func toOS(component cdx.Component) ftypes.OS {
-	return ftypes.OS{
+func toOS(component cdx.Component) *ftypes.OS {
+	return &ftypes.OS{
 		Family: component.Name,
 		Name:   component.Version,
 	}

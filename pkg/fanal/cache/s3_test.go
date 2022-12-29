@@ -67,7 +67,7 @@ func TestS3Cache_PutBlob(t *testing.T) {
 				blobID: "sha256:24df0d4e20c0f42d3703bf1f1db2bdd77346c7956f74f423603d651e8e5ae8a7",
 				blobInfo: types.BlobInfo{
 					SchemaVersion: 1,
-					OS: types.OS{
+					OS: &types.OS{
 						Family: "alpine",
 						Name:   "3.10",
 					},

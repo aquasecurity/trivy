@@ -159,7 +159,7 @@ func TestTLSRegistry(t *testing.T) {
 				return
 			}
 
-			assert.Equal(t, tc.expectedOS, imageDetail.OS)
+			assert.Equal(t, &tc.expectedOS, imageDetail.OS)
 			assert.Equal(t, &tc.expectedRepo, imageDetail.Repository)
 		})
 	}

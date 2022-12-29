@@ -23,7 +23,7 @@ func Test_centosOSAnalyzer_Analyze(t *testing.T) {
 			name:      "happy path",
 			inputFile: "testdata/centos/centos-release",
 			want: &analyzer.AnalysisResult{
-				OS: types.OS{Family: "centos", Name: "7.6.1810"},
+				OS: &types.OS{Family: "centos", Name: "7.6.1810"},
 			},
 		},
 		{

@@ -29,7 +29,7 @@ func (a alpineOSAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInpu
 	for scanner.Scan() {
 		line := scanner.Text()
 		return &analyzer.AnalysisResult{
-			OS: types.OS{Family: aos.Alpine, Name: line},
+			OS: &types.OS{Family: aos.Alpine, Name: line},
 		}, nil
 	}
 	return nil, xerrors.Errorf("alpine: %w", aos.AnalyzeOSError)

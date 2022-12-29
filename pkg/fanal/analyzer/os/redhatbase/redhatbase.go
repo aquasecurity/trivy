@@ -35,7 +35,7 @@ func (a redhatOSAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInpu
 		return nil, err
 	}
 	return &analyzer.AnalysisResult{
-		OS: foundOS,
+		OS: &foundOS,
 	}, nil
 
 }

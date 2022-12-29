@@ -6,26 +6,21 @@ import (
 	"os"
 	"strings"
 
-	"golang.org/x/exp/slices"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	aos "github.com/aquasecurity/trivy/pkg/fanal/analyzer/os"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
+	"github.com/aquasecurity/trivy/pkg/fanal/utils"
 )
 
 func init() {
 	analyzer.RegisterAnalyzer(&ubuntuOSAnalyzer{})
 }
 
-const (
-	version            = 1
-	ubuntuConfFilePath = "etc/lsb-release"
-)
+const version = 1
 
-var requiredFiles = []string{
-	ubuntuConfFilePath,
-}
+var requiredFiles = []string{"etc/lsb-release"}
 
 type ubuntuOSAnalyzer struct{}
 
@@ -41,7 +36,7 @@ func (a ubuntuOSAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInpu
 
 		if isUbuntu && strings.HasPrefix(line, "DISTRIB_RELEASE=") {
 			return &analyzer.AnalysisResult{
-				OS: types.OS{
+				OS: &types.OS{
 					Family: aos.Ubuntu,
 					Name:   strings.TrimSpace(line[16:]),
 				},
@@ -52,7 +47,7 @@ func (a ubuntuOSAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInpu
 }
 
 func (a ubuntuOSAnalyzer) Required(filePath string, _ os.FileInfo) bool {
-	return slices.Contains(requiredFiles, filePath)
+	return utils.StringInSlice(filePath, requiredFiles)
 }
 
 func (a ubuntuOSAnalyzer) Type() analyzer.Type {

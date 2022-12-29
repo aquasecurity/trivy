@@ -8,10 +8,9 @@ option  go_package = "github.com/aquasecurity/trivy/rpc/common;common";
 import "google/protobuf/struct.proto";
 
 message OS {
-  string family   = 1;
-  string name     = 2;
-  bool   eosl     = 3;
-  bool   extended = 4;
+  string family = 1;
+  string name   = 2;
+  bool   eosl   = 3;
 }
 
 message Repository {
@@ -169,7 +168,7 @@ message SecretFinding {
   string match      = 8;
   Layer  layer      = 10;
 
-  reserved 9;  // deprecated 'deleted'
+  reserved 9; // deprecated 'deleted'
 }
 
 message Secret {

@@ -35,7 +35,7 @@ func (a fedoraOSAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInpu
 		switch strings.ToLower(result[1]) {
 		case "fedora", "fedora linux":
 			return &analyzer.AnalysisResult{
-				OS: types.OS{Family: aos.Fedora, Name: result[2]},
+				OS: &types.OS{Family: aos.Fedora, Name: result[2]},
 			}, nil
 		}
 	}

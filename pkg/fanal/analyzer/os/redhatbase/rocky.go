@@ -35,7 +35,7 @@ func (a rockyOSAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInput
 		switch strings.ToLower(result[1]) {
 		case "rocky", "rocky linux":
 			return &analyzer.AnalysisResult{
-				OS: types.OS{Family: aos.Rocky, Name: result[2]},
+				OS: &types.OS{Family: aos.Rocky, Name: result[2]},
 			}, nil
 		}
 	}

@@ -5,7 +5,7 @@ import (
 	"io"
 	"io/fs"
 
-	lru "github.com/hashicorp/golang-lru/v2"
+	lru "github.com/hashicorp/golang-lru"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/vm"
@@ -14,22 +14,23 @@ import (
 const cacheSize = 2048
 
 var (
-	ErrInvalidHeader = xerrors.New("invalid Header error")
-	filesystems      = []Filesystem{
+	filesystems = []Filesystem{
 		EXT4{},
 		XFS{},
 	}
+
+	ErrInvalidHeader = xerrors.New("invalid Header error")
 )
 
 type Filesystem interface {
-	New(io.SectionReader, vm.Cache[string, any]) (fs.FS, error)
+	New(sr io.SectionReader, cache vm.Cache) (fs.FS, error)
 }
 
 func New(sr io.SectionReader) (fs.FS, func(), error) {
 	var clean func()
 
 	// Initialize LRU cache for filesystem walking
-	lruCache, err := lru.New[string, any](cacheSize)
+	lruCache, err := lru.New(cacheSize)
 	if err != nil {
 		return nil, clean, xerrors.Errorf("failed to create a LRU cache: %w", err)
 	}

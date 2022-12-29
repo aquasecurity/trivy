@@ -23,7 +23,7 @@ func TestApplyLayers(t *testing.T) {
 					SchemaVersion: 1,
 					Digest:        "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
 					DiffID:        "sha256:a187dde48cd289ac374ad8539930628314bc581a481cdb41409c9289419ddb72",
-					OS: types.OS{
+					OS: &types.OS{
 						Family: "alpine",
 						Name:   "3.10",
 					},
@@ -133,7 +133,7 @@ func TestApplyLayers(t *testing.T) {
 				},
 			},
 			want: types.ArtifactDetail{
-				OS: types.OS{
+				OS: &types.OS{
 					Family: "alpine",
 					Name:   "3.10",
 				},
@@ -199,43 +199,13 @@ func TestApplyLayers(t *testing.T) {
 			},
 		},
 		{
-			name: "happy path with merging ubuntu version and ESM",
-			inputLayers: []types.BlobInfo{
-				{
-					SchemaVersion: 1,
-					Digest:        "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
-					DiffID:        "sha256:a187dde48cd289ac374ad8539930628314bc581a481cdb41409c9289419ddb72",
-					OS: types.OS{
-						Family:   "ubuntu",
-						Extended: true,
-					},
-				},
-				{
-					SchemaVersion: 1,
-					Digest:        "sha256:24df0d4e20c0f42d3703bf1f1db2bdd77346c7956f74f423603d651e8e5ae8a7",
-					DiffID:        "sha256:aad63a9339440e7c3e1fff2b988991b9bfb81280042fa7f39a5e327023056819",
-					OS: types.OS{
-						Family: "ubuntu",
-						Name:   "16.04",
-					},
-				},
-			},
-			want: types.ArtifactDetail{
-				OS: types.OS{
-					Family:   "ubuntu",
-					Name:     "16.04",
-					Extended: true,
-				},
-			},
-		},
-		{
 			name: "happy path with removed and updated lockfile",
 			inputLayers: []types.BlobInfo{
 				{
 					SchemaVersion: 1,
 					Digest:        "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
 					DiffID:        "sha256:a187dde48cd289ac374ad8539930628314bc581a481cdb41409c9289419ddb72",
-					OS: types.OS{
+					OS: &types.OS{
 						Family: "alpine",
 						Name:   "3.10",
 					},
@@ -314,7 +284,7 @@ func TestApplyLayers(t *testing.T) {
 				},
 			},
 			want: types.ArtifactDetail{
-				OS: types.OS{
+				OS: &types.OS{
 					Family: "alpine",
 					Name:   "3.10",
 				},
@@ -529,7 +499,7 @@ func TestApplyLayers(t *testing.T) {
 					SchemaVersion: 1,
 					Digest:        "sha256:24df0d4e20c0f42d3703bf1f1db2bdd77346c7956f74f423603d651e8e5ae8a7",
 					DiffID:        "sha256:aad63a9339440e7c3e1fff2b988991b9bfb81280042fa7f39a5e327023056819",
-					OS: types.OS{
+					OS: &types.OS{
 						Family: "debian",
 						Name:   "8",
 					},
@@ -598,7 +568,7 @@ func TestApplyLayers(t *testing.T) {
 				},
 			},
 			want: types.ArtifactDetail{
-				OS: types.OS{
+				OS: &types.OS{
 					Family: "debian",
 					Name:   "8",
 				},
@@ -662,7 +632,7 @@ func TestApplyLayers(t *testing.T) {
 					SchemaVersion: 1,
 					Digest:        "sha256:24df0d4e20c0f42d3703bf1f1db2bdd77346c7956f74f423603d651e8e5ae8a7",
 					DiffID:        "sha256:aad63a9339440e7c3e1fff2b988991b9bfb81280042fa7f39a5e327023056819",
-					OS: types.OS{
+					OS: &types.OS{
 						Family: "redhat",
 						Name:   "8",
 					},
@@ -745,7 +715,7 @@ func TestApplyLayers(t *testing.T) {
 				},
 			},
 			want: types.ArtifactDetail{
-				OS: types.OS{
+				OS: &types.OS{
 					Family: "redhat",
 					Name:   "8",
 				},

@@ -9,7 +9,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/fanal/cache"
 )
 
-func initializeScanServer(localArtifactCache cache.LocalArtifactCache) *ScanServer {
+func initializeScanServer(localArtifactCache cache.Cache) *ScanServer {
 	wire.Build(ScanSuperSet)
 	return &ScanServer{}
 }

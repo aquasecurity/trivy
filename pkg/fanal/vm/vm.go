@@ -9,10 +9,10 @@ var (
 	ErrUnsupportedType  = xerrors.New("unsupported type error")
 )
 
-type Cache[K comparable, V any] interface {
+type Cache interface {
 	// Add stores data in the cache
-	Add(key K, value V) (evicted bool)
+	Add(key, value interface{}) bool
 
 	// Get returns key's value from the cache
-	Get(key K) (value V, ok bool)
+	Get(key interface{}) (value interface{}, ok bool)
 }

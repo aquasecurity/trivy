@@ -24,7 +24,7 @@ func Test_marinerOSAnalyzer_Analyze(t *testing.T) {
 			name:      "happy path with CBL Mariner 1.0",
 			inputFile: "testdata/1.0/mariner-release",
 			want: &analyzer.AnalysisResult{
-				OS: types.OS{
+				OS: &types.OS{
 					Family: aos.CBLMariner,
 					Name:   "1.0.20220122",
 				},

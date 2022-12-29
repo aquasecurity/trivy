@@ -824,7 +824,6 @@ func TestMarshaler_Marshal(t *testing.T) {
 							Name: string(vulnerability.RubySec),
 							URL:  "https://github.com/rubysec/ruby-advisory-db",
 						},
-						Recommendation: "Upgrade actionpack to version ~> 5.2.6, >= 5.2.6.2, ~> 6.0.4, >= 6.0.4.6, ~> 6.1.4, >= 6.1.4.6, >= 7.0.2.2",
 						Ratings: &[]cdx.VulnerabilityRating{
 							{
 								Source: &cdx.Source{

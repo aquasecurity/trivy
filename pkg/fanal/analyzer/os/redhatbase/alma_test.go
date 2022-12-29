@@ -23,7 +23,7 @@ func Test_almaOSAnalyzer_Analyze(t *testing.T) {
 			name:      "happy path",
 			inputFile: "testdata/alma/almalinux-release",
 			want: &analyzer.AnalysisResult{
-				OS: types.OS{Family: "alma", Name: "8.4"},
+				OS: &types.OS{Family: "alma", Name: "8.4"},
 			},
 		},
 		{

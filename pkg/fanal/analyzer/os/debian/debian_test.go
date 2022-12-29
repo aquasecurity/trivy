@@ -25,7 +25,7 @@ func Test_debianOSAnalyzer_Analyze(t *testing.T) {
 			name:      "happy path with debian 9",
 			inputFile: "testdata/debian_9/etc/debian_version",
 			want: &analyzer.AnalysisResult{
-				OS: types.OS{
+				OS: &types.OS{
 					Family: aos.Debian,
 					Name:   "9.8",
 				},
@@ -35,7 +35,7 @@ func Test_debianOSAnalyzer_Analyze(t *testing.T) {
 			name:      "happy path with debian sid",
 			inputFile: "testdata/debian_sid/etc/debian_version",
 			want: &analyzer.AnalysisResult{
-				OS: types.OS{
+				OS: &types.OS{
 					Family: aos.Debian,
 					Name:   "buster/sid",
 				},

@@ -50,6 +50,7 @@ func newWalker(skipFiles, skipDirs []string, slow bool) walker {
 }
 
 func (w *walker) shouldSkipFile(filePath string) bool {
+	filePath = filepath.ToSlash(filePath)
 	filePath = strings.TrimLeft(filePath, "/")
 
 	// skip files
@@ -57,6 +58,7 @@ func (w *walker) shouldSkipFile(filePath string) bool {
 }
 
 func (w *walker) shouldSkipDir(dir string) bool {
+	dir = filepath.ToSlash(dir)
 	dir = strings.TrimLeft(dir, "/")
 
 	// Skip application dirs (relative path)

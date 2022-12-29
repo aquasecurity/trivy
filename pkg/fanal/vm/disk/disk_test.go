@@ -15,7 +15,7 @@ import (
 func TestNew(t *testing.T) {
 	type args struct {
 		rs    io.ReadSeeker
-		cache vm.Cache[string, []byte]
+		cache vm.Cache
 	}
 	tests := []struct {
 		name     string

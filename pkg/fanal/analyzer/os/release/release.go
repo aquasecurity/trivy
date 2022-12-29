@@ -65,7 +65,7 @@ func (a osReleaseAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInp
 
 		if family != "" && versionID != "" {
 			return &analyzer.AnalysisResult{
-				OS: types.OS{Family: family, Name: versionID},
+				OS: &types.OS{Family: family, Name: versionID},
 			}, nil
 		}
 	}

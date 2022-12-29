@@ -4,7 +4,7 @@ import (
 	"context"
 	"io"
 
-	lru "github.com/hashicorp/golang-lru/v2"
+	lru "github.com/hashicorp/golang-lru"
 	ebsfile "github.com/masahiro331/go-ebs-file"
 	"golang.org/x/xerrors"
 
@@ -77,7 +77,7 @@ func (a *EBS) Inspect(ctx context.Context) (types.ArtifactReference, error) {
 }
 
 func (a *EBS) openEBS(ctx context.Context) (*io.SectionReader, error) {
-	c, err := lru.New[string, []byte](storageEBSCacheSize)
+	c, err := lru.New(storageEBSCacheSize)
 	if err != nil {
 		return nil, xerrors.Errorf("lru cache error: %w", err)
 	}

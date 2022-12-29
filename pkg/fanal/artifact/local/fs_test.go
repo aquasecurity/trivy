@@ -3,13 +3,10 @@ package local
 import (
 	"context"
 	"errors"
-	"path/filepath"
-	"runtime"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"golang.org/x/exp/slices"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer/config"
@@ -51,7 +48,7 @@ func TestArtifact_Inspect(t *testing.T) {
 					BlobID: "sha256:7177f27ce94e21305ba8efe2ced3533ba9be66bd251aaa217615469a29ed86a9",
 					BlobInfo: types.BlobInfo{
 						SchemaVersion: types.BlobJSONSchemaVersion,
-						OS: types.OS{
+						OS: &types.OS{
 							Family: "alpine",
 							Name:   "3.11.6",
 						},
@@ -90,7 +87,7 @@ func TestArtifact_Inspect(t *testing.T) {
 			},
 			putBlobExpectation: cache.ArtifactCachePutBlobExpectation{
 				Args: cache.ArtifactCachePutBlobArgs{
-					BlobID: "sha256:25af809c209a60d5c852a9cd0fe0ea853f12876b693b7e3a90ba36236976f16a",
+					BlobID: "sha256:44b3bdb81eb5dedef26e5c06fd6ef8a0df7b6925910942b00b6fced3a720a61c",
 					BlobInfo: types.BlobInfo{
 						SchemaVersion: types.BlobJSONSchemaVersion,
 					},
@@ -100,9 +97,9 @@ func TestArtifact_Inspect(t *testing.T) {
 			want: types.ArtifactReference{
 				Name: "host",
 				Type: types.ArtifactFilesystem,
-				ID:   "sha256:25af809c209a60d5c852a9cd0fe0ea853f12876b693b7e3a90ba36236976f16a",
+				ID:   "sha256:44b3bdb81eb5dedef26e5c06fd6ef8a0df7b6925910942b00b6fced3a720a61c",
 				BlobIDs: []string{
-					"sha256:25af809c209a60d5c852a9cd0fe0ea853f12876b693b7e3a90ba36236976f16a",
+					"sha256:44b3bdb81eb5dedef26e5c06fd6ef8a0df7b6925910942b00b6fced3a720a61c",
 				},
 			},
 		},
@@ -116,7 +113,7 @@ func TestArtifact_Inspect(t *testing.T) {
 					BlobID: "sha256:7177f27ce94e21305ba8efe2ced3533ba9be66bd251aaa217615469a29ed86a9",
 					BlobInfo: types.BlobInfo{
 						SchemaVersion: types.BlobJSONSchemaVersion,
-						OS: types.OS{
+						OS: &types.OS{
 							Family: "alpine",
 							Name:   "3.11.6",
 						},
@@ -154,7 +151,7 @@ func TestArtifact_Inspect(t *testing.T) {
 			},
 			putBlobExpectation: cache.ArtifactCachePutBlobExpectation{
 				Args: cache.ArtifactCachePutBlobArgs{
-					BlobID: "sha256:5733e6d01251440e3ce19f0171a43360c50d32205051b2889187b8dd00e8d515",
+					BlobID: "sha256:2d951e57cafb6f05f16ae0c70aad084bc613464d53beb2bfc448a7300f62dc7d",
 					BlobInfo: types.BlobInfo{
 						SchemaVersion: types.BlobJSONSchemaVersion,
 						Applications: []types.Application{
@@ -176,9 +173,9 @@ func TestArtifact_Inspect(t *testing.T) {
 			want: types.ArtifactReference{
 				Name: "testdata/requirements.txt",
 				Type: types.ArtifactFilesystem,
-				ID:   "sha256:5733e6d01251440e3ce19f0171a43360c50d32205051b2889187b8dd00e8d515",
+				ID:   "sha256:2d951e57cafb6f05f16ae0c70aad084bc613464d53beb2bfc448a7300f62dc7d",
 				BlobIDs: []string{
-					"sha256:5733e6d01251440e3ce19f0171a43360c50d32205051b2889187b8dd00e8d515",
+					"sha256:2d951e57cafb6f05f16ae0c70aad084bc613464d53beb2bfc448a7300f62dc7d",
 				},
 			},
 		},
@@ -189,7 +186,7 @@ func TestArtifact_Inspect(t *testing.T) {
 			},
 			putBlobExpectation: cache.ArtifactCachePutBlobExpectation{
 				Args: cache.ArtifactCachePutBlobArgs{
-					BlobID: "sha256:5733e6d01251440e3ce19f0171a43360c50d32205051b2889187b8dd00e8d515",
+					BlobID: "sha256:2d951e57cafb6f05f16ae0c70aad084bc613464d53beb2bfc448a7300f62dc7d",
 					BlobInfo: types.BlobInfo{
 						SchemaVersion: types.BlobJSONSchemaVersion,
 						Applications: []types.Application{
@@ -211,9 +208,9 @@ func TestArtifact_Inspect(t *testing.T) {
 			want: types.ArtifactReference{
 				Name: "testdata/requirements.txt",
 				Type: types.ArtifactFilesystem,
-				ID:   "sha256:5733e6d01251440e3ce19f0171a43360c50d32205051b2889187b8dd00e8d515",
+				ID:   "sha256:2d951e57cafb6f05f16ae0c70aad084bc613464d53beb2bfc448a7300f62dc7d",
 				BlobIDs: []string{
-					"sha256:5733e6d01251440e3ce19f0171a43360c50d32205051b2889187b8dd00e8d515",
+					"sha256:2d951e57cafb6f05f16ae0c70aad084bc613464d53beb2bfc448a7300f62dc7d",
 				},
 			},
 		},
@@ -239,88 +236,35 @@ func TestArtifact_Inspect(t *testing.T) {
 	}
 }
 
-func TestBuildPathsToSkip(t *testing.T) {
-	tests := []struct {
-		name  string
-		oses  []string
-		paths []string
-		base  string
-		want  []string
-	}{
-		// Linux/macOS
-		{
-			name:  "path - abs, base - abs, not joining paths",
-			oses:  []string{"linux", "darwin"},
-			base:  "/foo",
-			paths: []string{"/foo/bar"},
-			want:  []string{"bar"},
-		},
-		{
-			name: "path - abs, base - rel",
-			oses: []string{"linux", "darwin"},
-			base: "foo",
-			paths: func() []string {
-				abs, err := filepath.Abs("foo/bar")
-				require.NoError(t, err)
-				return []string{abs}
-			}(),
-			want: []string{"bar"},
-		},
-		{
-			name:  "path - rel, base - rel, joining paths",
-			oses:  []string{"linux", "darwin"},
-			base:  "foo",
-			paths: []string{"bar"},
-			want:  []string{"bar"},
-		},
-		{
-			name:  "path - rel, base - rel, not joining paths",
-			oses:  []string{"linux", "darwin"},
-			base:  "foo",
-			paths: []string{"foo/bar/bar"},
-			want:  []string{"bar/bar"},
-		},
-		{
-			name:  "path - rel with dot, base - rel, removing the leading dot and not joining paths",
-			oses:  []string{"linux", "darwin"},
-			base:  "foo",
-			paths: []string{"./foo/bar"},
-			want:  []string{"bar"},
-		},
-		{
-			name:  "path - rel, base - dot",
-			oses:  []string{"linux", "darwin"},
-			base:  ".",
-			paths: []string{"foo/bar"},
-			want:  []string{"foo/bar"},
-		},
-		// Windows
-		{
-			name:  "path - rel, base - rel. Skip common prefix",
-			oses:  []string{"windows"},
-			base:  "foo",
-			paths: []string{"foo\\bar\\bar"},
-			want:  []string{"bar/bar"},
-		},
-		{
-			name:  "path - rel, base - dot, windows",
-			oses:  []string{"windows"},
-			base:  ".",
-			paths: []string{"foo\\bar"},
-			want:  []string{"foo/bar"},
-		},
-	}
-
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			if !slices.Contains(tt.oses, runtime.GOOS) {
-				t.Skipf("Skip path tests for %q", tt.oses)
-			}
-			got := buildPathsToSkip(tt.base, tt.paths)
-			assert.Equal(t, tt.want, got)
-		})
-	}
-}
+// TODO: fix the logic in the first place
+//func TestBuildAbsPath(t *testing.T) {
+//	tests := []struct {
+//		name          string
+//		base          string
+//		paths         []string
+//		expectedPaths []string
+//	}{
+//		{"absolute path", "/testBase", []string{"/testPath"}, []string{"/testPath"}},
+//		{"relative path", "/testBase", []string{"testPath"}, []string{"/testBase/testPath"}},
+//		{"path have '.'", "/testBase", []string{"./testPath"}, []string{"/testBase/testPath"}},
+//		{"path have '..'", "/testBase", []string{"../testPath/"}, []string{"/testPath"}},
+//	}
+//
+//	for _, test := range tests {
+//		t.Run(test.name, func(t *testing.T) {
+//			got := buildAbsPaths(test.base, test.paths)
+//			if len(test.paths) != len(got) {
+//				t.Errorf("paths not equals, expected: %s, got: %s", test.expectedPaths, got)
+//			} else {
+//				for i, path := range test.expectedPaths {
+//					if path != got[i] {
+//						t.Errorf("paths not equals, expected: %s, got: %s", test.expectedPaths, got)
+//					}
+//				}
+//			}
+//		})
+//	}
+//}
 
 func TestTerraformMisconfigurationScan(t *testing.T) {
 	type fields struct {
@@ -391,24 +335,6 @@ func TestTerraformMisconfigurationScan(t *testing.T) {
 											Code: types.Code{Lines: []types.Line(nil)},
 										}, Traces: []string(nil),
 									},
-									{
-										Namespace: "builtin.aws.rds.aws0180",
-										Query:     "data.builtin.aws.rds.aws0180.deny",
-										PolicyMetadata: types.PolicyMetadata{
-											ID:                 "N/A",
-											AVDID:              "AVD-AWS-0180",
-											Type:               "Terraform Security Check",
-											Title:              "RDS Publicly Accessible",
-											Description:        "Ensures RDS instances are not launched into the public cloud.",
-											Severity:           "HIGH",
-											RecommendedActions: "Remove the public endpoint from the RDS instance'",
-											References:         []string{"http://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_VPC.html"},
-										},
-										CauseMetadata: types.CauseMetadata{
-											Resource: "", Provider: "AWS", Service: "rds", StartLine: 0, EndLine: 0,
-											Code: types.Code{Lines: []types.Line(nil)},
-										}, Traces: []string(nil),
-									},
 								},
 							},
 							{
@@ -447,9 +373,9 @@ func TestTerraformMisconfigurationScan(t *testing.T) {
 			want: types.ArtifactReference{
 				Name: "testdata/misconfig/terraform/single-failure/src",
 				Type: types.ArtifactFilesystem,
-				ID:   "sha256:7695efb9660d47bc53851aea5ca7d7e1bb1c90c22a18e8fd37b6d0634a03b69d",
+				ID:   "sha256:9827e4b06d1efa0853e8d75bafb4f95c4c778012b60cee114ce96042ea7c1b7b",
 				BlobIDs: []string{
-					"sha256:7695efb9660d47bc53851aea5ca7d7e1bb1c90c22a18e8fd37b6d0634a03b69d",
+					"sha256:9827e4b06d1efa0853e8d75bafb4f95c4c778012b60cee114ce96042ea7c1b7b",
 				},
 			},
 		},
@@ -510,24 +436,6 @@ func TestTerraformMisconfigurationScan(t *testing.T) {
 											Provider: "AWS",
 											Service:  "rds",
 										},
-									},
-									{
-										Namespace: "builtin.aws.rds.aws0180",
-										Query:     "data.builtin.aws.rds.aws0180.deny",
-										PolicyMetadata: types.PolicyMetadata{
-											ID:                 "N/A",
-											AVDID:              "AVD-AWS-0180",
-											Type:               "Terraform Security Check",
-											Title:              "RDS Publicly Accessible",
-											Description:        "Ensures RDS instances are not launched into the public cloud.",
-											Severity:           "HIGH",
-											RecommendedActions: "Remove the public endpoint from the RDS instance'",
-											References:         []string{"http://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_VPC.html"},
-										},
-										CauseMetadata: types.CauseMetadata{
-											Resource: "", Provider: "AWS", Service: "rds", StartLine: 0, EndLine: 0,
-											Code: types.Code{Lines: []types.Line(nil)},
-										}, Traces: []string(nil),
 									},
 								},
 							},
@@ -616,9 +524,9 @@ func TestTerraformMisconfigurationScan(t *testing.T) {
 			want: types.ArtifactReference{
 				Name: "testdata/misconfig/terraform/multiple-failures/src",
 				Type: types.ArtifactFilesystem,
-				ID:   "sha256:61728a22aeefbe2b0f30bdb01ee623cb16b64488eaa6e0b1d488a47b2bd4c3fb",
+				ID:   "sha256:d019b8795805ebb8886e954da62e7b7530fa0108bf0397396188d70219c86779",
 				BlobIDs: []string{
-					"sha256:61728a22aeefbe2b0f30bdb01ee623cb16b64488eaa6e0b1d488a47b2bd4c3fb",
+					"sha256:d019b8795805ebb8886e954da62e7b7530fa0108bf0397396188d70219c86779",
 				},
 			},
 		},
@@ -646,9 +554,9 @@ func TestTerraformMisconfigurationScan(t *testing.T) {
 			want: types.ArtifactReference{
 				Name: "testdata/misconfig/terraform/no-results/src",
 				Type: types.ArtifactFilesystem,
-				ID:   "sha256:6612c1db6d6c52c11de53447264b552ee96bf9cc317de37b3374687a8fc4c4ac",
+				ID:   "sha256:cd80d8148f9b4cbc026f71a73d8dc1e35f79f6f39e4e52fe5e9a7821e9d09693",
 				BlobIDs: []string{
-					"sha256:6612c1db6d6c52c11de53447264b552ee96bf9cc317de37b3374687a8fc4c4ac",
+					"sha256:cd80d8148f9b4cbc026f71a73d8dc1e35f79f6f39e4e52fe5e9a7821e9d09693",
 				},
 			},
 		},
@@ -711,24 +619,6 @@ func TestTerraformMisconfigurationScan(t *testing.T) {
 										},
 									},
 									{
-										Namespace: "builtin.aws.rds.aws0180",
-										Query:     "data.builtin.aws.rds.aws0180.deny",
-										PolicyMetadata: types.PolicyMetadata{
-											ID:                 "N/A",
-											AVDID:              "AVD-AWS-0180",
-											Type:               "Terraform Security Check",
-											Title:              "RDS Publicly Accessible",
-											Description:        "Ensures RDS instances are not launched into the public cloud.",
-											Severity:           "HIGH",
-											RecommendedActions: "Remove the public endpoint from the RDS instance'",
-											References:         []string{"http://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_VPC.html"},
-										},
-										CauseMetadata: types.CauseMetadata{
-											Resource: "", Provider: "AWS", Service: "rds", StartLine: 0, EndLine: 0,
-											Code: types.Code{Lines: []types.Line(nil)},
-										}, Traces: []string(nil),
-									},
-									{
 										Namespace: "user.something",
 										Query:     "data.user.something.deny",
 										PolicyMetadata: types.PolicyMetadata{
@@ -756,9 +646,9 @@ func TestTerraformMisconfigurationScan(t *testing.T) {
 			want: types.ArtifactReference{
 				Name: "testdata/misconfig/terraform/passed/src",
 				Type: types.ArtifactFilesystem,
-				ID:   "sha256:0e792318cb431f2306399f28038a09f7ccbe3cb46d77f13b9f4c5da74fd03c61",
+				ID:   "sha256:a765d67b40d8dafad114c8b57d817b3d2f03fce2b0d6cecbf057ac13a2d52662",
 				BlobIDs: []string{
-					"sha256:0e792318cb431f2306399f28038a09f7ccbe3cb46d77f13b9f4c5da74fd03c61",
+					"sha256:a765d67b40d8dafad114c8b57d817b3d2f03fce2b0d6cecbf057ac13a2d52662",
 				},
 			},
 		},
@@ -850,24 +740,6 @@ func TestCloudFormationMisconfigurationScan(t *testing.T) {
 											Service:  "rds",
 										},
 									},
-									{
-										Namespace: "builtin.aws.rds.aws0180",
-										Query:     "data.builtin.aws.rds.aws0180.deny",
-										PolicyMetadata: types.PolicyMetadata{
-											ID:                 "N/A",
-											AVDID:              "AVD-AWS-0180",
-											Type:               "CloudFormation Security Check",
-											Title:              "RDS Publicly Accessible",
-											Description:        "Ensures RDS instances are not launched into the public cloud.",
-											Severity:           "HIGH",
-											RecommendedActions: "Remove the public endpoint from the RDS instance'",
-											References:         []string{"http://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_VPC.html"},
-										},
-										CauseMetadata: types.CauseMetadata{
-											Resource: "", Provider: "AWS", Service: "rds", StartLine: 0, EndLine: 0,
-											Code: types.Code{Lines: []types.Line(nil)},
-										}, Traces: []string(nil),
-									},
 								},
 								Failures: types.MisconfResults{
 									{
@@ -902,9 +774,9 @@ func TestCloudFormationMisconfigurationScan(t *testing.T) {
 			want: types.ArtifactReference{
 				Name: "testdata/misconfig/cloudformation/single-failure/src",
 				Type: types.ArtifactFilesystem,
-				ID:   "sha256:793d3e4cb82fa4d73e62267c358bd038b453fca36297064e5d240d5809ad241e",
+				ID:   "sha256:16af3ef12417f03bab139674ad17636f5fb032a9f4e20f2092aeaa9ff0e3bc38",
 				BlobIDs: []string{
-					"sha256:793d3e4cb82fa4d73e62267c358bd038b453fca36297064e5d240d5809ad241e",
+					"sha256:16af3ef12417f03bab139674ad17636f5fb032a9f4e20f2092aeaa9ff0e3bc38",
 				},
 			},
 		},
@@ -966,24 +838,6 @@ func TestCloudFormationMisconfigurationScan(t *testing.T) {
 											Service:  "rds",
 										},
 									},
-									{
-										Namespace: "builtin.aws.rds.aws0180",
-										Query:     "data.builtin.aws.rds.aws0180.deny",
-										PolicyMetadata: types.PolicyMetadata{
-											ID:                 "N/A",
-											AVDID:              "AVD-AWS-0180",
-											Type:               "CloudFormation Security Check",
-											Title:              "RDS Publicly Accessible",
-											Description:        "Ensures RDS instances are not launched into the public cloud.",
-											Severity:           "HIGH",
-											RecommendedActions: "Remove the public endpoint from the RDS instance'",
-											References:         []string{"http://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_VPC.html"},
-										},
-										CauseMetadata: types.CauseMetadata{
-											Resource: "", Provider: "AWS", Service: "rds", StartLine: 0, EndLine: 0,
-											Code: types.Code{Lines: []types.Line(nil)},
-										}, Traces: []string(nil),
-									},
 								},
 								Failures: types.MisconfResults{
 									types.MisconfResult{
@@ -1040,9 +894,9 @@ func TestCloudFormationMisconfigurationScan(t *testing.T) {
 			want: types.ArtifactReference{
 				Name: "testdata/misconfig/cloudformation/multiple-failures/src",
 				Type: types.ArtifactFilesystem,
-				ID:   "sha256:49edf1eecd461fd56eccb1221aaff26c0c5939f2d8128e9cb867cc8e7552b8aa",
+				ID:   "sha256:10801795d3e822d09f0810255a82deeb572f4e298f91af3abe5fc358c10ba68c",
 				BlobIDs: []string{
-					"sha256:49edf1eecd461fd56eccb1221aaff26c0c5939f2d8128e9cb867cc8e7552b8aa",
+					"sha256:10801795d3e822d09f0810255a82deeb572f4e298f91af3abe5fc358c10ba68c",
 				},
 			},
 		},
@@ -1070,9 +924,9 @@ func TestCloudFormationMisconfigurationScan(t *testing.T) {
 			want: types.ArtifactReference{
 				Name: "testdata/misconfig/cloudformation/no-results/src",
 				Type: types.ArtifactFilesystem,
-				ID:   "sha256:6612c1db6d6c52c11de53447264b552ee96bf9cc317de37b3374687a8fc4c4ac",
+				ID:   "sha256:cd80d8148f9b4cbc026f71a73d8dc1e35f79f6f39e4e52fe5e9a7821e9d09693",
 				BlobIDs: []string{
-					"sha256:6612c1db6d6c52c11de53447264b552ee96bf9cc317de37b3374687a8fc4c4ac",
+					"sha256:cd80d8148f9b4cbc026f71a73d8dc1e35f79f6f39e4e52fe5e9a7821e9d09693",
 				},
 			},
 		},
@@ -1135,24 +989,6 @@ func TestCloudFormationMisconfigurationScan(t *testing.T) {
 										},
 									},
 									{
-										Namespace: "builtin.aws.rds.aws0180",
-										Query:     "data.builtin.aws.rds.aws0180.deny",
-										PolicyMetadata: types.PolicyMetadata{
-											ID:                 "N/A",
-											AVDID:              "AVD-AWS-0180",
-											Type:               "CloudFormation Security Check",
-											Title:              "RDS Publicly Accessible",
-											Description:        "Ensures RDS instances are not launched into the public cloud.",
-											Severity:           "HIGH",
-											RecommendedActions: "Remove the public endpoint from the RDS instance'",
-											References:         []string{"http://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_VPC.html"},
-										},
-										CauseMetadata: types.CauseMetadata{
-											Resource: "", Provider: "AWS", Service: "rds", StartLine: 0, EndLine: 0,
-											Code: types.Code{Lines: []types.Line(nil)},
-										}, Traces: []string(nil),
-									},
-									{
 										Namespace: "user.something",
 										Query:     "data.user.something.deny",
 										PolicyMetadata: types.PolicyMetadata{
@@ -1180,9 +1016,9 @@ func TestCloudFormationMisconfigurationScan(t *testing.T) {
 			want: types.ArtifactReference{
 				Name: "testdata/misconfig/cloudformation/passed/src",
 				Type: types.ArtifactFilesystem,
-				ID:   "sha256:a923fba51d802d1634246662e2e674b4abbce3ed796c8cfd4839f287dfd9033e",
+				ID:   "sha256:30bc323c6eb7af47b561df826948fe3981ddd63c27c8a1f5bb516eeb0d361fef",
 				BlobIDs: []string{
-					"sha256:a923fba51d802d1634246662e2e674b4abbce3ed796c8cfd4839f287dfd9033e",
+					"sha256:30bc323c6eb7af47b561df826948fe3981ddd63c27c8a1f5bb516eeb0d361fef",
 				},
 			},
 		},
@@ -1267,9 +1103,9 @@ func TestDockerfileMisconfigurationScan(t *testing.T) {
 			want: types.ArtifactReference{
 				Name: "testdata/misconfig/dockerfile/single-failure/src",
 				Type: types.ArtifactFilesystem,
-				ID:   "sha256:acf53660fed1eb7961e3c47f85c8f41a117f7df7a0c09221f6d84fc64737e361",
+				ID:   "sha256:d93b33f51c455c07767196c2b2eb3312e2b055b0e0db40704092d258fc0ed6ec",
 				BlobIDs: []string{
-					"sha256:acf53660fed1eb7961e3c47f85c8f41a117f7df7a0c09221f6d84fc64737e361",
+					"sha256:d93b33f51c455c07767196c2b2eb3312e2b055b0e0db40704092d258fc0ed6ec",
 				},
 			},
 		},
@@ -1324,9 +1160,9 @@ func TestDockerfileMisconfigurationScan(t *testing.T) {
 			want: types.ArtifactReference{
 				Name: "testdata/misconfig/dockerfile/multiple-failures/src",
 				Type: types.ArtifactFilesystem,
-				ID:   "sha256:acf53660fed1eb7961e3c47f85c8f41a117f7df7a0c09221f6d84fc64737e361",
+				ID:   "sha256:d93b33f51c455c07767196c2b2eb3312e2b055b0e0db40704092d258fc0ed6ec",
 				BlobIDs: []string{
-					"sha256:acf53660fed1eb7961e3c47f85c8f41a117f7df7a0c09221f6d84fc64737e361",
+					"sha256:d93b33f51c455c07767196c2b2eb3312e2b055b0e0db40704092d258fc0ed6ec",
 				},
 			},
 		},
@@ -1354,9 +1190,9 @@ func TestDockerfileMisconfigurationScan(t *testing.T) {
 			want: types.ArtifactReference{
 				Name: "testdata/misconfig/dockerfile/no-results/src",
 				Type: types.ArtifactFilesystem,
-				ID:   "sha256:6612c1db6d6c52c11de53447264b552ee96bf9cc317de37b3374687a8fc4c4ac",
+				ID:   "sha256:cd80d8148f9b4cbc026f71a73d8dc1e35f79f6f39e4e52fe5e9a7821e9d09693",
 				BlobIDs: []string{
-					"sha256:6612c1db6d6c52c11de53447264b552ee96bf9cc317de37b3374687a8fc4c4ac",
+					"sha256:cd80d8148f9b4cbc026f71a73d8dc1e35f79f6f39e4e52fe5e9a7821e9d09693",
 				},
 			},
 		},
@@ -1413,9 +1249,9 @@ func TestDockerfileMisconfigurationScan(t *testing.T) {
 			want: types.ArtifactReference{
 				Name: "testdata/misconfig/dockerfile/passed/src",
 				Type: types.ArtifactFilesystem,
-				ID:   "sha256:78a5071a951a980a53a0df7818384eda36fedd2a0237529a43e12979d3bf36f9",
+				ID:   "sha256:7218a8e53d2e3eb08efe9f9864767eb0fe6084eaaaef1480064096bbdc2c3f71",
 				BlobIDs: []string{
-					"sha256:78a5071a951a980a53a0df7818384eda36fedd2a0237529a43e12979d3bf36f9",
+					"sha256:7218a8e53d2e3eb08efe9f9864767eb0fe6084eaaaef1480064096bbdc2c3f71",
 				},
 			},
 		},
@@ -1505,9 +1341,9 @@ func TestKubernetesMisconfigurationScan(t *testing.T) {
 			want: types.ArtifactReference{
 				Name: "testdata/misconfig/kubernetes/single-failure/src",
 				Type: types.ArtifactFilesystem,
-				ID:   "sha256:2a60e6a9b9cf1ab3c083f4e52a38d3c70026ab331b771d449b06f4ffd4b6f2dd",
+				ID:   "sha256:2ef04dd5ff348e57dc1ecd752b085a7c4554d10d8ff7bbd05046864f02e5dcec",
 				BlobIDs: []string{
-					"sha256:2a60e6a9b9cf1ab3c083f4e52a38d3c70026ab331b771d449b06f4ffd4b6f2dd",
+					"sha256:2ef04dd5ff348e57dc1ecd752b085a7c4554d10d8ff7bbd05046864f02e5dcec",
 				},
 			},
 		},
@@ -1590,9 +1426,9 @@ func TestKubernetesMisconfigurationScan(t *testing.T) {
 			want: types.ArtifactReference{
 				Name: "testdata/misconfig/kubernetes/multiple-failures/src",
 				Type: types.ArtifactFilesystem,
-				ID:   "sha256:56675c845f72190c9a6277d51a0c8248768d5322ea0d92650d1cc179f20d920e",
+				ID:   "sha256:45d853bad8d457c9ffb01921e00b36fc41f8d0c823f222e62cf1a7d7a20313a3",
 				BlobIDs: []string{
-					"sha256:56675c845f72190c9a6277d51a0c8248768d5322ea0d92650d1cc179f20d920e",
+					"sha256:45d853bad8d457c9ffb01921e00b36fc41f8d0c823f222e62cf1a7d7a20313a3",
 				},
 			},
 		},
@@ -1620,9 +1456,9 @@ func TestKubernetesMisconfigurationScan(t *testing.T) {
 			want: types.ArtifactReference{
 				Name: "testdata/misconfig/kubernetes/no-results/src",
 				Type: types.ArtifactFilesystem,
-				ID:   "sha256:f1bc1b154a70ae2e1d94297ffcf721348d1975037ccd4a32f4f1157738cbe54d",
+				ID:   "sha256:b46953af7375260e0bf264328c8b156ee3341ff46794c0f09c65bce78b0eddb9",
 				BlobIDs: []string{
-					"sha256:f1bc1b154a70ae2e1d94297ffcf721348d1975037ccd4a32f4f1157738cbe54d",
+					"sha256:b46953af7375260e0bf264328c8b156ee3341ff46794c0f09c65bce78b0eddb9",
 				},
 			},
 		},
@@ -1679,9 +1515,9 @@ func TestKubernetesMisconfigurationScan(t *testing.T) {
 			want: types.ArtifactReference{
 				Name: "testdata/misconfig/kubernetes/passed/src",
 				Type: types.ArtifactFilesystem,
-				ID:   "sha256:64fd37028d8cb4aefa49d6fa8438fa3a7e08ca331bfdfad22faf91e31ca0ff29",
+				ID:   "sha256:5b110611834af3e26a4c7aa5623f9e20098c46b394a29a0881a1a3852a114578",
 				BlobIDs: []string{
-					"sha256:64fd37028d8cb4aefa49d6fa8438fa3a7e08ca331bfdfad22faf91e31ca0ff29",
+					"sha256:5b110611834af3e26a4c7aa5623f9e20098c46b394a29a0881a1a3852a114578",
 				},
 			},
 		},
@@ -1773,24 +1609,6 @@ func TestAzureARMMisconfigurationScan(t *testing.T) {
 											Service:  "rds",
 										},
 									},
-									{
-										Namespace: "builtin.aws.rds.aws0180",
-										Query:     "data.builtin.aws.rds.aws0180.deny",
-										PolicyMetadata: types.PolicyMetadata{
-											ID:                 "N/A",
-											AVDID:              "AVD-AWS-0180",
-											Type:               "Azure ARM Security Check",
-											Title:              "RDS Publicly Accessible",
-											Description:        "Ensures RDS instances are not launched into the public cloud.",
-											Severity:           "HIGH",
-											RecommendedActions: "Remove the public endpoint from the RDS instance'",
-											References:         []string{"http://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_VPC.html"},
-										},
-										CauseMetadata: types.CauseMetadata{
-											Resource: "", Provider: "AWS", Service: "rds", StartLine: 0, EndLine: 0,
-											Code: types.Code{Lines: []types.Line(nil)},
-										}, Traces: []string(nil),
-									},
 								},
 								Failures: types.MisconfResults{
 									{
@@ -1825,9 +1643,9 @@ func TestAzureARMMisconfigurationScan(t *testing.T) {
 			want: types.ArtifactReference{
 				Name: "testdata/misconfig/azurearm/single-failure/src",
 				Type: types.ArtifactFilesystem,
-				ID:   "sha256:50155d7398d717aac20a616af8ac17964d20a24f5423b868871005dfa2cf4a61",
+				ID:   "sha256:d9184478c2e60e28dfea431dfb05ff0e9348092c23aae86a9a61a99ff37cb444",
 				BlobIDs: []string{
-					"sha256:50155d7398d717aac20a616af8ac17964d20a24f5423b868871005dfa2cf4a61",
+					"sha256:d9184478c2e60e28dfea431dfb05ff0e9348092c23aae86a9a61a99ff37cb444",
 				},
 			},
 		},
@@ -1889,24 +1707,6 @@ func TestAzureARMMisconfigurationScan(t *testing.T) {
 											Service:  "rds",
 										},
 									},
-									{
-										Namespace: "builtin.aws.rds.aws0180",
-										Query:     "data.builtin.aws.rds.aws0180.deny",
-										PolicyMetadata: types.PolicyMetadata{
-											ID:                 "N/A",
-											AVDID:              "AVD-AWS-0180",
-											Type:               "Azure ARM Security Check",
-											Title:              "RDS Publicly Accessible",
-											Description:        "Ensures RDS instances are not launched into the public cloud.",
-											Severity:           "HIGH",
-											RecommendedActions: "Remove the public endpoint from the RDS instance'",
-											References:         []string{"http://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_VPC.html"},
-										},
-										CauseMetadata: types.CauseMetadata{
-											Resource: "", Provider: "AWS", Service: "rds", StartLine: 0, EndLine: 0,
-											Code: types.Code{Lines: []types.Line(nil)},
-										}, Traces: []string(nil),
-									},
 								},
 								Failures: types.MisconfResults{
 									{
@@ -1963,9 +1763,9 @@ func TestAzureARMMisconfigurationScan(t *testing.T) {
 			want: types.ArtifactReference{
 				Name: "testdata/misconfig/azurearm/multiple-failures/src",
 				Type: types.ArtifactFilesystem,
-				ID:   "sha256:e31c260a87a099d00acc76b7afe5d6a88e18c5e0fd26153d15e1b4f491b7c42c",
+				ID:   "sha256:fa2a7ca3627637a88ec9db7d4edff5b22e62de2dfb5de775f8190c979ac4e052",
 				BlobIDs: []string{
-					"sha256:e31c260a87a099d00acc76b7afe5d6a88e18c5e0fd26153d15e1b4f491b7c42c",
+					"sha256:fa2a7ca3627637a88ec9db7d4edff5b22e62de2dfb5de775f8190c979ac4e052",
 				},
 			},
 		},
@@ -1993,9 +1793,9 @@ func TestAzureARMMisconfigurationScan(t *testing.T) {
 			want: types.ArtifactReference{
 				Name: "testdata/misconfig/azurearm/no-results/src",
 				Type: types.ArtifactFilesystem,
-				ID:   "sha256:6612c1db6d6c52c11de53447264b552ee96bf9cc317de37b3374687a8fc4c4ac",
+				ID:   "sha256:cd80d8148f9b4cbc026f71a73d8dc1e35f79f6f39e4e52fe5e9a7821e9d09693",
 				BlobIDs: []string{
-					"sha256:6612c1db6d6c52c11de53447264b552ee96bf9cc317de37b3374687a8fc4c4ac",
+					"sha256:cd80d8148f9b4cbc026f71a73d8dc1e35f79f6f39e4e52fe5e9a7821e9d09693",
 				},
 			},
 		},
@@ -2057,24 +1857,6 @@ func TestAzureARMMisconfigurationScan(t *testing.T) {
 										},
 									},
 									{
-										Namespace: "builtin.aws.rds.aws0180",
-										Query:     "data.builtin.aws.rds.aws0180.deny",
-										PolicyMetadata: types.PolicyMetadata{
-											ID:                 "N/A",
-											AVDID:              "AVD-AWS-0180",
-											Type:               "Azure ARM Security Check",
-											Title:              "RDS Publicly Accessible",
-											Description:        "Ensures RDS instances are not launched into the public cloud.",
-											Severity:           "HIGH",
-											RecommendedActions: "Remove the public endpoint from the RDS instance'",
-											References:         []string{"http://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_VPC.html"},
-										},
-										CauseMetadata: types.CauseMetadata{
-											Resource: "", Provider: "AWS", Service: "rds", StartLine: 0, EndLine: 0,
-											Code: types.Code{Lines: []types.Line(nil)},
-										}, Traces: []string(nil),
-									},
-									{
 										Namespace: "user.something",
 										Query:     "data.user.something.deny",
 										PolicyMetadata: types.PolicyMetadata{
@@ -2102,9 +1884,9 @@ func TestAzureARMMisconfigurationScan(t *testing.T) {
 			want: types.ArtifactReference{
 				Name: "testdata/misconfig/azurearm/passed/src",
 				Type: types.ArtifactFilesystem,
-				ID:   "sha256:e9289e2efc545895a2199fab4583d5f3ef52c20eda1afcf4b0505bb2014ba3e4",
+				ID:   "sha256:1776289fa9295540d5d38fe219a7e565b1d60d7eab2e33331209d9eee88528bb",
 				BlobIDs: []string{
-					"sha256:e9289e2efc545895a2199fab4583d5f3ef52c20eda1afcf4b0505bb2014ba3e4",
+					"sha256:1776289fa9295540d5d38fe219a7e565b1d60d7eab2e33331209d9eee88528bb",
 				},
 			},
 		},
