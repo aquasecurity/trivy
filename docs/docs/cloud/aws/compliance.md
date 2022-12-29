@@ -269,7 +269,7 @@ The Trivy AWS CLI allows you to scan your AWS account resources and generate the
 Scan for misconfigurations in an AWS account based on AWS CIS 1.2 benchmark:
 
 ```shell
-$ trivy aws --compliance=awscis1.2
+$ trivy aws --compliance=aws-cis-1.2
 
 arn:aws:iam::123456789:user/DummyRoleManager (cloud)
 
@@ -289,11 +289,11 @@ See https://avd.aquasec.com/misconfig/avd-aws-0143
 
 You can also summarize the report to get a full compliance report with all the included checks.
 ```shell
-$ trivy aws --compliance=awscis1.2 --report=summary
+$ trivy aws --compliance=aws-cis-1.2 --report=summary
 ```
 
 ```shell
-Summary Report for compliance: awscis1.2
+Summary Report for compliance: AWS CIS Foundations v1.2
 ┌──────┬──────────┬────────────────────────────────────────────┬────────┬────────┐
 │  ID  │ Severity │                Control Name                │ Status │ Issues │
 ├──────┼──────────┼────────────────────────────────────────────┼────────┼────────┤
@@ -336,26 +336,27 @@ Summary Report for compliance: awscis1.2
 
 Furthermore, you can also get the report in a JSON format.
 ```shell
-$ trivy aws --compliance=awscis1.2 --report=summary --format=json
+$ trivy aws --compliance=aws-cis-1.2 --report=summary --format=json
 ```
 
 ```json
 {
-	"ID": "0001",
-	"Title": "awscis1.2",
-	"SummaryControls": [{
-			"ID": "1.1",
-			"Name": "limit-root-account-usage",
-			"Severity": "LOW",
-			"TotalFail": 5
-		},
-		{
-			"ID": "1.10",
-			"Name": "no-password-reuse",
-			"Severity": "MEDIUM",
-			"TotalFail": 1
-		}
-	]
+  "ID": "aws-cis-1.2",
+  "Title": "AWS CIS Foundations",
+  "SummaryControls": [
+    {
+      "ID": "1.1",
+      "Name": "limit-root-account-usage",
+      "Severity": "LOW",
+      "TotalFail": 5
+    },
+    {
+      "ID": "1.10",
+      "Name": "no-password-reuse",
+      "Severity": "MEDIUM",
+      "TotalFail": 1
+    }
+  ]
 }
 ```
 
@@ -375,8 +376,8 @@ The compliance spec file format should be as follows:
 ```yaml
 ---
 spec:
-  id: "0001"
-  title: awscis1.2
+  id: aws-cis-1.2
+  title: AWS CIS Foundations
   description: AWS CIS Foundations
   version: "1.2"
   relatedResources:
