@@ -66,7 +66,7 @@ func TestArtifact_InspectRekorAttestation(t *testing.T) {
 						BlobID: "sha256:8c90c68f385a8067778a200fd3e56e257d4d6dd563e519a7be65902ee0b6e861",
 						BlobInfo: types.BlobInfo{
 							SchemaVersion: types.BlobJSONSchemaVersion,
-							OS: &types.OS{
+							OS: types.OS{
 								Family: "alpine",
 								Name:   "3.16.2",
 							},
