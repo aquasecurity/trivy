@@ -105,10 +105,18 @@ func getDependency(target string) (name, version string, err error) {
 	return capture[1], capture[2], nil
 }
 
-func validProtocol(protocol string) (valid bool) {
+func validProtocol(protocol string) bool {
 	switch protocol {
 	// only scan npm packages
 	case "npm", "":
+		return true
+	}
+	return false
+}
+
+func ignoreProtocol(protocol string) bool {
+	switch protocol {
+	case "workspace", "patch":
 		return true
 	}
 	return false
@@ -196,7 +204,9 @@ func parseBlock(block []byte, lineNum int) (lib Library, deps []string, newLine 
 		if name, protocol, patterns, patternErr := parsePackagePatterns(line); patternErr == nil {
 			if patterns == nil || !validProtocol(protocol) {
 				skipBlock = true
-				err = xerrors.Errorf("failed to parse package patterns")
+				if !ignoreProtocol(protocol) {
+					return Library{}, nil, -1,  xerrors.Errorf("failed to parse package patterns")
+				}
 				continue
 			} else {
 				lib.Patterns = patterns
@@ -211,7 +221,7 @@ func parseBlock(block []byte, lineNum int) (lib Library, deps []string, newLine 
 		EndLine:   scanner.LineNum(lineNum),
 	}
 
-	if scanErr := scanner.Err(); err != scanErr {
+	if scanErr := scanner.Err(); scanErr != nil {
 		err = scanErr
 	}
 

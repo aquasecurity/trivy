@@ -251,6 +251,7 @@ func TestParse(t *testing.T) {
 		file     string // Test input file
 		want     []types.Library
 		wantDeps []types.Dependency
+		wantErr  bool
 	}{
 		{
 			name:     "normal",
@@ -310,6 +311,12 @@ func TestParse(t *testing.T) {
 			want:     yarnV2Many,
 			wantDeps: yarnV2ManyDeps,
 		},
+		{
+			name:     "bad yarn file",
+			file:     "testdata/bad_yarn.lock",
+			wantErr:  true,
+			wantDeps: nil,
+		},
 	}
 
 	for _, tt := range tests {
@@ -318,6 +325,12 @@ func TestParse(t *testing.T) {
 			require.NoError(t, err)
 
 			got, deps, err := NewParser().Parse(f)
+
+			if tt.wantErr {
+				require.NotNil(t, err)
+				return
+			}
+
 			require.NoError(t, err)
 
 			sortLibs(got)
