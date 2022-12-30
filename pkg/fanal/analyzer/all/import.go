@@ -9,6 +9,7 @@ import (
 	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/language/dart/pubspec"
 	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/language/dotnet/deps"
 	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/language/dotnet/nuget"
+	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/language/elixir/mix"
 	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/language/golang/binary"
 	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/language/golang/mod"
 	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/language/java/gradle"

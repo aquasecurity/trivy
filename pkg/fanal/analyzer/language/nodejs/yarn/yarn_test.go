@@ -29,33 +29,39 @@ func Test_yarnLibraryAnalyzer_Analyze(t *testing.T) {
 						FilePath: "testdata/happy_yarn.lock",
 						Libraries: []types.Package{
 							{
+								ID:      "asap@2.0.6",
 								Name:    "asap",
 								Version: "2.0.6",
 								Locations: []types.Location{
 									{
 										StartLine: 5,
-										EndLine:   5,
+										EndLine:   8,
 									},
 								},
 							},
 							{
+								ID:      "jquery@3.4.1",
 								Name:    "jquery",
 								Version: "3.4.1",
 								Locations: []types.Location{
 									{
 										StartLine: 10,
-										EndLine:   10,
+										EndLine:   13,
 									},
 								},
 							},
 							{
+								ID:      "promise@8.0.3",
 								Name:    "promise",
 								Version: "8.0.3",
 								Locations: []types.Location{
 									{
 										StartLine: 15,
-										EndLine:   15,
+										EndLine:   20,
 									},
+								},
+								DependsOn: []string{
+									"asap@2.0.6",
 								},
 							},
 						},

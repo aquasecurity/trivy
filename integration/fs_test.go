@@ -157,6 +157,15 @@ func TestFilesystem(t *testing.T) {
 			golden: "testdata/pubspec.lock.json.golden",
 		},
 		{
+			name: "mix.lock",
+			args: args{
+				securityChecks: "vuln",
+				listAllPkgs:    true,
+				input:          "testdata/fixtures/fs/mixlock",
+			},
+			golden: "testdata/mix.lock.json.golden",
+		},
+		{
 			name: "dockerfile",
 			args: args{
 				securityChecks: "config",

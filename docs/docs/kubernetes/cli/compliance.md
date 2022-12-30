@@ -6,9 +6,9 @@
 </details>
 ## CLI Commands
 Scan a full cluster and generate a complliance NSA / CIS Kubernetes Benchmark summary report:
-
+Supported spec IDs: `k8s-nsa` , `k8s-cis`
 ```
-trivy k8s cluster --compliance=nsa --report summary
+trivy k8s cluster --compliance=k8s-nsa --report summary
 ```
 
 ***Note*** : The `Issues` column represent the total number of failed checks for this control.
@@ -16,17 +16,17 @@ trivy k8s cluster --compliance=nsa --report summary
 An additional report is supported to get all of the detail the output contains, use `--report all`
 
 ```
-trivy k8s cluster --compliance=cis --report all
+trivy k8s cluster --compliance=k8s-cis --report all
 ```
 
 Report also supported in json format examples :
 
 ```
-trivy k8s cluster --compliance=nsa --report summary --format json
+trivy k8s cluster --compliance=k8s-nsa --report summary --format json
 ```
 
 ```
-trivy k8s cluster --compliance=cis --report all --format json
+trivy k8s cluster --compliance=k8s-cis --report all --format json
 ```
 
 ## Custom compliance report

@@ -80,6 +80,7 @@ language:
 - dotnet
 - java
 - go
+- elixir
 - dart
 
 vuln:

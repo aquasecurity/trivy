@@ -96,6 +96,8 @@ func (p *PackageURL) PackageType() string {
 		return ftypes.NuGet
 	case packageurl.TypeSwift:
 		return ftypes.Cocoapods
+	case packageurl.TypeHex:
+		return ftypes.Hex
 	case "dart": // TODO: replace with packageurl.TypeDart once they add it.
 		return ftypes.PubSpec
 	}
@@ -310,6 +312,8 @@ func purlType(t string) string {
 		return packageurl.TypeNPM
 	case ftypes.Cocoapods:
 		return packageurl.TypeSwift
+	case ftypes.Hex:
+		return packageurl.TypeHex
 	case ftypes.PubSpec:
 		return "dart" // TODO: replace with packageurl.TypeDart once they add it.
 	case os.Alpine:

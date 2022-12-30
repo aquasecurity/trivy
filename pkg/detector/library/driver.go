@@ -54,6 +54,9 @@ func NewDriver(libType string) (Driver, error) {
 	case ftypes.PubSpec:
 		ecosystem = vulnerability.Pub
 		comparer = compare.GenericComparer{}
+	case ftypes.Hex:
+		ecosystem = vulnerability.Erlang
+		comparer = compare.GenericComparer{}
 	case ftypes.Conan:
 		ecosystem = vulnerability.Conan
 		// Only semver can be used for version ranges

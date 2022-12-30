@@ -35,6 +35,11 @@
         ID: "ghsa"
         Name: "GitHub Security Advisory Pub"
         URL: "https://github.com/advisories?query=type%3Areviewed+ecosystem%3Apub"
+    - key: "erlang::GitHub Security Advisory Erlang"
+      value:
+        ID: "ghsa"
+        Name: "GitHub Security Advisory Erlang"
+        URL: "https://github.com/advisories?query=type%3Areviewed+ecosystem%3Aerlang"
     - key: Oracle Linux 8
       value:
         ID: "oracle-oval"

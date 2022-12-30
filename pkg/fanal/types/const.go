@@ -31,6 +31,7 @@ const (
 	Conan      = "conan"
 	Cocoapods  = "cocoapods"
 	PubSpec    = "pubspec"
+	Hex        = "hex"
 
 	// Config files
 	YAML           = "yaml"
@@ -76,4 +77,6 @@ const (
 	CocoaPodsLock = "Podfile.lock"
 
 	PubSpecLock = "pubspec.lock"
+
+	MixLock = "mix.lock"
 )
