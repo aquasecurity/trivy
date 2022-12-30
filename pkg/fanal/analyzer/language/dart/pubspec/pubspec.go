@@ -3,6 +3,7 @@ package pubspec
 import (
 	"context"
 	"os"
+	"path/filepath"
 
 	"golang.org/x/xerrors"
 
@@ -32,8 +33,8 @@ func (a pubSpecLockAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisI
 	return res, nil
 }
 
-func (a pubSpecLockAnalyzer) Required(_ string, fileInfo os.FileInfo) bool {
-	return fileInfo.Name() == types.PubSpecLock
+func (a pubSpecLockAnalyzer) Required(filePath string, _ os.FileInfo) bool {
+	return filepath.Base(filePath) == types.PubSpecLock
 }
 
 func (a pubSpecLockAnalyzer) Type() analyzer.Type {

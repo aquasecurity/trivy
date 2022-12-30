@@ -77,3 +77,29 @@ func Test_pubSpecLockAnalyzer_Analyze(t *testing.T) {
 		})
 	}
 }
+
+func Test_pubSpecLockAnalyzer_Required(t *testing.T) {
+	tests := []struct {
+		name     string
+		filePath string
+		want     bool
+	}{
+		{
+			name:     "happy path",
+			filePath: "pubspec.lock",
+			want:     true,
+		},
+		{
+			name:     "sad path",
+			filePath: "test.txt",
+			want:     false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			a := pubSpecLockAnalyzer{}
+			got := a.Required(tt.filePath, nil)
+			assert.Equal(t, tt.want, got)
+		})
+	}
+}
