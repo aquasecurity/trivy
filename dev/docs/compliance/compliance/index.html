@@ -2042,8 +2042,35 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#supported-reports" class="md-nav__link">
-    Supported reports
+  <a href="#usage" class="md-nav__link">
+    Usage
+  </a>
+  
+    <nav class="md-nav" aria-label="Usage">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#options" class="md-nav__link">
+    Options
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#built-in-compliance" class="md-nav__link">
+    Built-in compliance
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#custom-compliance" class="md-nav__link">
+    Custom compliance
   </a>
   
 </li>
@@ -3170,8 +3197,35 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#supported-reports" class="md-nav__link">
-    Supported reports
+  <a href="#usage" class="md-nav__link">
+    Usage
+  </a>
+  
+    <nav class="md-nav" aria-label="Usage">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#options" class="md-nav__link">
+    Options
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#built-in-compliance" class="md-nav__link">
+    Built-in compliance
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#custom-compliance" class="md-nav__link">
+    Custom compliance
   </a>
   
 </li>
@@ -3191,13 +3245,79 @@
 
 
 <h1 id="compliance-reports">Compliance Reports</h1>
-<p>Trivy supports producing compliance reports.</p>
-<h2 id="supported-reports">Supported reports</h2>
+<div class="admonition warning">
+<p class="admonition-title">EXPERIMENTAL</p>
+<p>This feature might change without preserving backwards compatibility.</p>
+</div>
+<p>Trivy’s compliance flag lets you curate a specific set of checks into a report. In a typical Trivy scan, there are hundreds of different checks for many different components and configurations, but sometimes you already know which specific checks you are interested in. Often this would be an industry accepted set of checks such as CIS, or some vendor specific guideline, or your own organization policy that you want to comply with. These are all possible using the flexible compliance infrastructure that's built into Trivy. Compliance reports are defined as simple YAML documents that select checks to include in the report.</p>
+<h2 id="usage">Usage</h2>
+<p>Compliance report is currently supported in the following targets (trivy sub-commands):</p>
 <ul>
-<li><a href="../../kubernetes/cli/compliance/">NSA, CISA Kubernetes Hardening Guidance v1.0</a></li>
-<li><a href="../../kubernetes/cli/compliance/">CIS Benchmark for Kubernetes v1.23</a></li>
-<li><a href="../../cloud/aws/compliance/">AWS CIS v1.2 and v1.4</a></li>
+<li><code>trivy aws</code></li>
+<li><code>trivy k8s</code></li>
 </ul>
+<p>Add the <code>--compliance</code> flag to the command line, and set it's value to desired report. For example: <code>trivy k8s cluster --compliance k8s-nsa</code> (see below for built-in and custom reports)</p>
+<h3 id="options">Options</h3>
+<p>The following flags are compatible with <code>--compliance</code> flag and allows customizing it's output:</p>
+<table>
+<thead>
+<tr>
+<th>flag</th>
+<th>effect</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>--report summary</code></td>
+<td>shows a summary of the results. for every control shows the number of failed checks.</td>
+</tr>
+<tr>
+<td><code>--report all</code></td>
+<td>shows fully detailed results. for every control shows where it failed and why.</td>
+</tr>
+<tr>
+<td><code>--format table</code></td>
+<td>shows results in textual table format (good for human readability).</td>
+</tr>
+<tr>
+<td><code>--format json</code></td>
+<td>shows results in json format (good for machine readability).</td>
+</tr>
+</tbody>
+</table>
+<h2 id="built-in-compliance">Built-in compliance</h2>
+<p>Trivy has a number of built-in compliance reports that you can asses right out of the box.
+to specify a built-in compliance report, select it by ID like <code>trivy --compliance &lt;compliance_id&gt;</code>.</p>
+<p>For the list of built-in compliance reports, please see the relevant section:</p>
+<ul>
+<li><a href="../../kubernetes/cli/compliance/">Kubernetes compliance</a> </li>
+<li><a href="../../cloud/aws/compliance/">AWS compliance</a></li>
+</ul>
+<h2 id="custom-compliance">Custom compliance</h2>
+<p>You can create your own custom compliance report. A compliance report is a simple YAML document in the following format:</p>
+<div class="highlight"><pre><span></span><code><span class="nt">spec</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;k8s-myreport&quot;</span><span class="w"> </span><span class="c1"># report unique identifier. this should not container spaces.</span><span class="w"></span>
+<span class="w">  </span><span class="nt">title</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;My</span><span class="nv"> </span><span class="s">custom</span><span class="nv"> </span><span class="s">Kubernetes</span><span class="nv"> </span><span class="s">report&quot;</span><span class="w"> </span><span class="c1"># report title. Any one-line title.</span><span class="w"></span>
+<span class="w">  </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Describe</span><span class="nv"> </span><span class="s">your</span><span class="nv"> </span><span class="s">report&quot;</span><span class="w"> </span><span class="c1"># description of the report. Any text.</span><span class="w"></span>
+<span class="w">  </span><span class="nt">relatedResources </span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">https://some.url</span><span class="w"> </span><span class="c1"># useful references. URLs only.</span><span class="w"></span>
+<span class="w">  </span><span class="nt">version</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;1.0&quot;</span><span class="w"> </span><span class="c1"># spec version (string)</span><span class="w"></span>
+<span class="w">  </span><span class="nt">controls</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Non-root</span><span class="nv"> </span><span class="s">containers&quot;</span><span class="w"> </span><span class="c1"># Name for the control (appears in the report as is). Any one-line name.</span><span class="w"></span>
+<span class="w">      </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;Check</span><span class="nv"> </span><span class="s">that</span><span class="nv"> </span><span class="s">container</span><span class="nv"> </span><span class="s">is</span><span class="nv"> </span><span class="s">not</span><span class="nv"> </span><span class="s">running</span><span class="nv"> </span><span class="s">as</span><span class="nv"> </span><span class="s">root&#39;</span><span class="w"> </span><span class="c1"># Description (appears in the report as is). Any text.</span><span class="w"></span>
+<span class="w">      </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;1.0&quot;</span><span class="w"> </span><span class="c1"># control identifier (string)</span><span class="w"></span>
+<span class="w">      </span><span class="nt">checks</span><span class="p">:</span><span class="w">   </span><span class="c1"># list of existing Trivy checks that define the control</span><span class="w"></span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">AVD-KSV-0012</span><span class="w"> </span><span class="c1"># check ID. Must start with `AVD-` or `CVE-` </span><span class="w"></span>
+<span class="w">      </span><span class="nt">severity</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;MEDIUM&quot;</span><span class="w"> </span><span class="c1"># Severity for the control (note that checks severity isn&#39;t used)</span><span class="w"></span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Immutable</span><span class="nv"> </span><span class="s">container</span><span class="nv"> </span><span class="s">file</span><span class="nv"> </span><span class="s">systems&quot;</span><span class="w"></span>
+<span class="w">      </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;Check</span><span class="nv"> </span><span class="s">that</span><span class="nv"> </span><span class="s">container</span><span class="nv"> </span><span class="s">root</span><span class="nv"> </span><span class="s">file</span><span class="nv"> </span><span class="s">system</span><span class="nv"> </span><span class="s">is</span><span class="nv"> </span><span class="s">immutable&#39;</span><span class="w"></span>
+<span class="w">      </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;1.1&quot;</span><span class="w"></span>
+<span class="w">      </span><span class="nt">checks</span><span class="p">:</span><span class="w"></span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">AVD-KSV-0014</span><span class="w"></span>
+<span class="w">      </span><span class="nt">severity</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;LOW&quot;</span><span class="w"></span>
+</code></pre></div>
+<p>The check id field (<code>controls[].checks[].id</code>) is referring to existing check by it's "AVD ID". This AVD ID is easily located in the check's source code metadata header, or by browsing <a href="https://avd.aquasec.com/">Aqua vulnerability DB</a>, specifically in the <a href="https://avd.aquasec.com/misconfig/">Misconfigurations</a> and <a href="https://avd.aquasec.com/nvd">Vulnerabilities</a> sections.</p>
+<p>Once you have a compliance spec, you can select it by file path: <code>trivy --compliance @&lt;/path/to/compliance.yaml&gt;</code> (note the <code>@</code> indicating file path instead of report id).</p>
 
               
             </article>
