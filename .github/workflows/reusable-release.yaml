@@ -76,7 +76,7 @@ jobs:
           version: ^v1
 
       - name: GoReleaser
-        uses: goreleaser/goreleaser-action@v3
+        uses: goreleaser/goreleaser-action@v4
         with:
           version: v1.4.1
           args: release -f=${{ inputs.goreleaser_config}} ${{ inputs.goreleaser_options}}
