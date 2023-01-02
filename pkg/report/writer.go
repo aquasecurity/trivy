@@ -103,6 +103,15 @@ func Write(report types.Report, option Option) error {
 	return nil
 }
 
+func ValidateFormat(format string) error {
+	switch format {
+	case FormatTable, FormatJSON, FormatGitHub, FormatCycloneDX, FormatSPDX, FormatSPDXJSON, FormatTemplate, FormatSarif, FormatCosignVuln:
+		return nil
+	default:
+		return xerrors.Errorf("unknown format: %v", format)
+	}
+}
+
 // Writer defines the result write operation
 type Writer interface {
 	Write(types.Report) error

@@ -155,6 +155,10 @@ func (f *ReportFlagGroup) ToOptions(out io.Writer) (ReportOptions, error) {
 	listAllPkgs := getBool(f.ListAllPkgs)
 	output := getString(f.Output)
 
+	if err := report.ValidateFormat(format); err != nil {
+		return ReportOptions{}, err
+	}
+
 	if template != "" {
 		if format == "" {
 			log.Logger.Warn("'--template' is ignored because '--format template' is not specified. Use '--template' option with '--format template' option.")
