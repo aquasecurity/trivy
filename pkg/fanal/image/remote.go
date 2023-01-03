@@ -73,12 +73,7 @@ func parsePlatform(ref name.Reference, options []remote.Option, p string) (*v1.P
 	if strings.HasPrefix(p, "*/") {
 		index, err := remote.Index(ref, options...)
 		if err != nil {
-			// Not a multi-arch image
-			if _, ok := err.(*remote.ErrSchema1); ok {
-				log.Logger.Debug("Ignored --platform as the image is not multi-arch")
-				return nil, err
-			}
-			return nil, xerrors.Errorf("remote index error: %w", err)
+			return nil, err
 		}
 		m, err := index.IndexManifest()
 		if err != nil {
