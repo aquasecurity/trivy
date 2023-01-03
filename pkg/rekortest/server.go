@@ -50,7 +50,7 @@ var (
 			Data: &cyclonedx.BOM{
 				BOMFormat:    cyclonedx.BOMFormat,
 				SerialNumber: "urn:uuid:6453fd82-71f4-47c8-ad12-01775619c443",
-				SpecVersion:  "1.4",
+				SpecVersion:  cyclonedx.SpecVersion1_4,
 				Version:      1,
 				Metadata: &cyclonedx.Metadata{
 					Timestamp: "2022-09-15T13:53:49+00:00",
@@ -106,14 +106,14 @@ var (
 				Dependencies: &[]cyclonedx.Dependency{
 					{
 						Ref: "pkg:oci/alpine@sha256:bc41182d7ef5ffc53a40b044e725193bc10142a1243f395ee852a8d9730fc2ad?repository_url=index.docker.io%2Flibrary%2Falpine&6arch=amd64",
-						Dependencies: &[]cyclonedx.Dependency{
-							{Ref: "fad4eb97-3d2a-4499-ace7-2c94444148a7"},
+						Dependencies: &[]string{
+							"fad4eb97-3d2a-4499-ace7-2c94444148a7",
 						},
 					},
 					{
 						Ref: "fad4eb97-3d2a-4499-ace7-2c94444148a7",
-						Dependencies: &[]cyclonedx.Dependency{
-							{Ref: "pkg:apk/alpine/musl@1.2.3-r0?distro=3.16.2"},
+						Dependencies: &[]string{
+							"pkg:apk/alpine/musl@1.2.3-r0?distro=3.16.2",
 						},
 					},
 				},
@@ -138,7 +138,7 @@ var (
 			Data: &cyclonedx.BOM{
 				BOMFormat:    cyclonedx.BOMFormat,
 				SerialNumber: "urn:uuid:8b16c9a3-e957-4c85-b43d-7dd05ea0421c",
-				SpecVersion:  "1.4",
+				SpecVersion:  cyclonedx.SpecVersion1_4,
 				Version:      1,
 				Metadata: &cyclonedx.Metadata{
 					Timestamp: "2022-10-21T09:50:08+00:00",
@@ -182,14 +182,14 @@ var (
 				Dependencies: &[]cyclonedx.Dependency{
 					{
 						Ref: "ef8385d7-a56f-495a-a220-7b0a2e940d39",
-						Dependencies: &[]cyclonedx.Dependency{
-							{Ref: "bb8b7541-2b08-4692-9363-8f79da5c1a31"},
+						Dependencies: &[]string{
+							"bb8b7541-2b08-4692-9363-8f79da5c1a31",
 						},
 					},
 					{
 						Ref: "bb8b7541-2b08-4692-9363-8f79da5c1a31",
-						Dependencies: &[]cyclonedx.Dependency{
-							{Ref: "pkg:golang/github.com/spf13/cobra@1.5.0"},
+						Dependencies: &[]string{
+							"pkg:golang/github.com/spf13/cobra@1.5.0",
 						},
 					},
 				},
@@ -205,7 +205,7 @@ var (
 		Predicate: &attestation.CosignPredicate{
 			Data: &cyclonedx.BOM{
 				BOMFormat:   cyclonedx.BOMFormat,
-				SpecVersion: "1.4",
+				SpecVersion: cyclonedx.SpecVersion1_4,
 				Version:     2,
 			},
 		},
