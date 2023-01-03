@@ -33,6 +33,10 @@ const (
 )
 
 var (
+	SupportedFormats = []string{FormatTable, FormatJSON, FormatTemplate, FormatSarif, FormatCycloneDX, FormatSPDX, FormatSPDXJSON, FormatGitHub, FormatCosignVuln}
+)
+
+var (
 	SupportedSBOMFormats = []string{FormatCycloneDX, FormatSPDX, FormatSPDXJSON, FormatGitHub}
 )
 
@@ -101,15 +105,6 @@ func Write(report types.Report, option Option) error {
 		return xerrors.Errorf("failed to write results: %w", err)
 	}
 	return nil
-}
-
-func ValidateFormat(format string) error {
-	switch format {
-	case FormatTable, FormatJSON, FormatGitHub, FormatCycloneDX, FormatSPDX, FormatSPDXJSON, FormatTemplate, FormatSarif, FormatCosignVuln:
-		return nil
-	default:
-		return xerrors.Errorf("unknown format: %v", format)
-	}
 }
 
 // Writer defines the result write operation

@@ -155,8 +155,8 @@ func (f *ReportFlagGroup) ToOptions(out io.Writer) (ReportOptions, error) {
 	listAllPkgs := getBool(f.ListAllPkgs)
 	output := getString(f.Output)
 
-	if err := report.ValidateFormat(format); err != nil {
-		return ReportOptions{}, err
+	if format != "" && !slices.Contains(report.SupportedFormats, format) {
+		return ReportOptions{}, xerrors.Errorf("unknown format: %v", format)
 	}
 
 	if template != "" {
