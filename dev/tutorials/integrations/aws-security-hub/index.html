@@ -3245,7 +3245,7 @@
 
 
 <h1 id="aws-security-hub">AWS Security Hub</h1>
-<p><img src="../../imgs/Security-Hub.jpeg" alt="security-hub" width=50 height=50 /></p>
+<p><img alt="Amazon Security Hub" src="../../../imgs/Security-Hub.jpeg" width="50" /></p>
 <h2 id="upload-findings-to-security-hub">Upload findings to Security Hub</h2>
 <p>In the following example using the template <code>asff.tpl</code>, <a href="https://docs.aws.amazon.com/securityhub/latest/userguide/securityhub-findings-format.html">ASFF</a> file can be generated.</p>
 <div class="highlight"><pre><span></span><code>$ AWS_REGION=us-west-1 AWS_ACCOUNT_ID=123456789012 trivy image --format template --template &quot;@contrib/asff.tpl&quot; -o report.asff golang:1.12-alpine
@@ -3277,7 +3277,7 @@ $ export AWS_ACCOUNT_ID=123456789012
 $ trivy image --format template --template &quot;@your-asff.tpl&quot; -o report.asff golang:1.12-alpine
 </code></pre></div>
 <h2 id="reference">Reference</h2>
-<p>https://aws.amazon.com/blogs/security/how-to-build-ci-cd-pipeline-container-vulnerability-scanning-trivy-and-aws-security-hub/</p>
+<p><a href="https://aws.amazon.com/blogs/security/how-to-build-ci-cd-pipeline-container-vulnerability-scanning-trivy-and-aws-security-hub/">aws.amazon.com/blogs/security/how-to-build-ci-cd-pipeline-container-vulnerability-scanning-trivy-and-aws-security-hub/</a></p>
 
               
             </article>
