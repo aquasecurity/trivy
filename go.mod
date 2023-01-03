@@ -62,7 +62,7 @@ require (
 	github.com/package-url/packageurl-go v0.1.1-0.20220203205134-d70459300c8a
 	github.com/samber/lo v1.36.0
 	github.com/secure-systems-lab/go-securesystemslib v0.4.0
-	github.com/sigstore/rekor v1.0.1
+	github.com/sigstore/rekor v0.2.0
 	github.com/sosedoff/gitkit v0.3.0
 	github.com/spf13/cobra v1.6.0
 	github.com/spf13/pflag v1.0.5
@@ -70,7 +70,7 @@ require (
 	github.com/stretchr/testify v1.8.1
 	github.com/testcontainers/testcontainers-go v0.15.0
 	github.com/tetratelabs/wazero v1.0.0-pre.7
-	github.com/twitchtv/twirp v8.1.2+incompatible
+	github.com/twitchtv/twirp v8.1.3+incompatible
 	github.com/xlab/treeprint v1.1.0
 	go.etcd.io/bbolt v1.3.6
 	go.uber.org/zap v1.24.0
