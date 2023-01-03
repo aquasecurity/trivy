@@ -19,6 +19,9 @@ type memFS struct {
 
 // Open implements fs.FS.
 func (m *memFS) Open(name string) (fs.File, error) {
+	if m.current == nil {
+		return nil, fs.ErrNotExist
+	}
 	return m.current.Open(name)
 }
 
