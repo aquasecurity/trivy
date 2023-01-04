@@ -31,7 +31,7 @@ func Test_packagingAnalyzer_Analyze(t *testing.T) {
 							{
 								Name:     "pip",
 								Version:  "22.2.2",
-								Licenses: []string{"TODO"},
+								Licenses: []string{"MIT"},
 								FilePath: "testdata/pip-22.2.2-py38h06a4308_0.json",
 							},
 						},
@@ -42,7 +42,7 @@ func Test_packagingAnalyzer_Analyze(t *testing.T) {
 		{
 			name:      "invalid",
 			inputFile: "testdata/invalid.json",
-			want:      nil,
+			wantErr:   "unable to parse conda package",
 		},
 	}
 	for _, tt := range tests {
@@ -63,10 +63,10 @@ func Test_packagingAnalyzer_Analyze(t *testing.T) {
 			})
 
 			if tt.wantErr != "" {
-				require.NotNil(t, err)
-				assert.Contains(t, err.Error(), tt.wantErr)
+				assert.ErrorContains(t, err, tt.wantErr)
 				return
 			}
+
 			assert.NoError(t, err)
 			assert.Equal(t, tt.want, got)
 		})
