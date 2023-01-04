@@ -7,11 +7,11 @@ repo_url: https://github.com/aquasecurity/trivy
 edit_uri: ""
 
 nav:
-  - Getting Started: 
+  - Getting Started:
       - Overview: index.md
       - Installation: getting-started/installation.md
   - Tutorials:
-      - Overview: tutorials/overview.md   
+      - Overview: tutorials/overview.md
       - CI/CD:
           - Overview: tutorials/integrations/index.md
           - GitHub Actions: tutorials/integrations/github-actions.md
@@ -28,7 +28,7 @@ nav:
           - Cluster Scanning: tutorials/kubernetes/cluster-scanning.md
           - Kyverno: tutorials/kubernetes/kyverno.md
           - GitOps: tutorials/kubernetes/gitops.md
-      - Additional Resources: 
+      - Additional Resources:
           - Additional Resources: tutorials/additional-resources/references.md
           - Community References: tutorials/additional-resources/community.md
           - CKS Reference: tutorials/additional-resources/cks.md
@@ -140,11 +140,12 @@ nav:
               - Standalone: docs/references/modes/standalone.md
               - Client/Server: docs/references/modes/client-server.md
           - Troubleshooting: docs/references/troubleshooting.md
-  - Ecosystem: 
+  - Ecosystem:
     - Overview: ecosystem/index.md
     - CI/CD: ecosystem/cicd.md
     - IDE and Dev tools: ecosystem/ide.md
     - Production and Clouds: ecosystem/prod.md
+    - Security Management: ecosystem/security.md
   - Contributing:
       - How to contribute:
           - Issues: community/contribute/issue.md
