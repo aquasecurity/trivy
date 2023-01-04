@@ -101,9 +101,7 @@ func ApplyLayers(layers []types.BlobInfo) types.ArtifactDetail {
 			_ = nestedMap.DeleteByString(whFile, sep) // nolint
 		}
 
-		if layer.OS != nil {
-			mergedLayer.OS = layer.OS
-		}
+		mergedLayer.OS.Merge(layer.OS)
 
 		if layer.Repository != nil {
 			mergedLayer.Repository = layer.Repository

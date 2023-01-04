@@ -3,10 +3,13 @@ package local
 import (
 	"context"
 	"errors"
+	"path/filepath"
+	"runtime"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"golang.org/x/exp/slices"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer/config"
@@ -48,7 +51,7 @@ func TestArtifact_Inspect(t *testing.T) {
 					BlobID: "sha256:7177f27ce94e21305ba8efe2ced3533ba9be66bd251aaa217615469a29ed86a9",
 					BlobInfo: types.BlobInfo{
 						SchemaVersion: types.BlobJSONSchemaVersion,
-						OS: &types.OS{
+						OS: types.OS{
 							Family: "alpine",
 							Name:   "3.11.6",
 						},
@@ -87,7 +90,7 @@ func TestArtifact_Inspect(t *testing.T) {
 			},
 			putBlobExpectation: cache.ArtifactCachePutBlobExpectation{
 				Args: cache.ArtifactCachePutBlobArgs{
-					BlobID: "sha256:44b3bdb81eb5dedef26e5c06fd6ef8a0df7b6925910942b00b6fced3a720a61c",
+					BlobID: "sha256:25af809c209a60d5c852a9cd0fe0ea853f12876b693b7e3a90ba36236976f16a",
 					BlobInfo: types.BlobInfo{
 						SchemaVersion: types.BlobJSONSchemaVersion,
 					},
@@ -97,9 +100,9 @@ func TestArtifact_Inspect(t *testing.T) {
 			want: types.ArtifactReference{
 				Name: "host",
 				Type: types.ArtifactFilesystem,
-				ID:   "sha256:44b3bdb81eb5dedef26e5c06fd6ef8a0df7b6925910942b00b6fced3a720a61c",
+				ID:   "sha256:25af809c209a60d5c852a9cd0fe0ea853f12876b693b7e3a90ba36236976f16a",
 				BlobIDs: []string{
-					"sha256:44b3bdb81eb5dedef26e5c06fd6ef8a0df7b6925910942b00b6fced3a720a61c",
+					"sha256:25af809c209a60d5c852a9cd0fe0ea853f12876b693b7e3a90ba36236976f16a",
 				},
 			},
 		},
@@ -113,7 +116,7 @@ func TestArtifact_Inspect(t *testing.T) {
 					BlobID: "sha256:7177f27ce94e21305ba8efe2ced3533ba9be66bd251aaa217615469a29ed86a9",
 					BlobInfo: types.BlobInfo{
 						SchemaVersion: types.BlobJSONSchemaVersion,
-						OS: &types.OS{
+						OS: types.OS{
 							Family: "alpine",
 							Name:   "3.11.6",
 						},
@@ -142,7 +145,7 @@ func TestArtifact_Inspect(t *testing.T) {
 			fields: fields{
 				dir: "./testdata/unknown",
 			},
-			wantErr: "no such file or directory",
+			wantErr: "walk error",
 		},
 		{
 			name: "happy path with single file",
@@ -151,7 +154,7 @@ func TestArtifact_Inspect(t *testing.T) {
 			},
 			putBlobExpectation: cache.ArtifactCachePutBlobExpectation{
 				Args: cache.ArtifactCachePutBlobArgs{
-					BlobID: "sha256:2d951e57cafb6f05f16ae0c70aad084bc613464d53beb2bfc448a7300f62dc7d",
+					BlobID: "sha256:5733e6d01251440e3ce19f0171a43360c50d32205051b2889187b8dd00e8d515",
 					BlobInfo: types.BlobInfo{
 						SchemaVersion: types.BlobJSONSchemaVersion,
 						Applications: []types.Application{
@@ -173,9 +176,9 @@ func TestArtifact_Inspect(t *testing.T) {
 			want: types.ArtifactReference{
 				Name: "testdata/requirements.txt",
 				Type: types.ArtifactFilesystem,
-				ID:   "sha256:2d951e57cafb6f05f16ae0c70aad084bc613464d53beb2bfc448a7300f62dc7d",
+				ID:   "sha256:5733e6d01251440e3ce19f0171a43360c50d32205051b2889187b8dd00e8d515",
 				BlobIDs: []string{
-					"sha256:2d951e57cafb6f05f16ae0c70aad084bc613464d53beb2bfc448a7300f62dc7d",
+					"sha256:5733e6d01251440e3ce19f0171a43360c50d32205051b2889187b8dd00e8d515",
 				},
 			},
 		},
@@ -186,7 +189,7 @@ func TestArtifact_Inspect(t *testing.T) {
 			},
 			putBlobExpectation: cache.ArtifactCachePutBlobExpectation{
 				Args: cache.ArtifactCachePutBlobArgs{
-					BlobID: "sha256:2d951e57cafb6f05f16ae0c70aad084bc613464d53beb2bfc448a7300f62dc7d",
+					BlobID: "sha256:5733e6d01251440e3ce19f0171a43360c50d32205051b2889187b8dd00e8d515",
 					BlobInfo: types.BlobInfo{
 						SchemaVersion: types.BlobJSONSchemaVersion,
 						Applications: []types.Application{
@@ -208,9 +211,9 @@ func TestArtifact_Inspect(t *testing.T) {
 			want: types.ArtifactReference{
 				Name: "testdata/requirements.txt",
 				Type: types.ArtifactFilesystem,
-				ID:   "sha256:2d951e57cafb6f05f16ae0c70aad084bc613464d53beb2bfc448a7300f62dc7d",
+				ID:   "sha256:5733e6d01251440e3ce19f0171a43360c50d32205051b2889187b8dd00e8d515",
 				BlobIDs: []string{
-					"sha256:2d951e57cafb6f05f16ae0c70aad084bc613464d53beb2bfc448a7300f62dc7d",
+					"sha256:5733e6d01251440e3ce19f0171a43360c50d32205051b2889187b8dd00e8d515",
 				},
 			},
 		},
@@ -236,31 +239,85 @@ func TestArtifact_Inspect(t *testing.T) {
 	}
 }
 
-func TestBuildAbsPath(t *testing.T) {
+func TestBuildPathsToSkip(t *testing.T) {
 	tests := []struct {
-		name          string
-		base          string
-		paths         []string
-		expectedPaths []string
+		name  string
+		oses  []string
+		paths []string
+		base  string
+		want  []string
 	}{
-		{"absolute path", "/testBase", []string{"/testPath"}, []string{"/testPath"}},
-		{"relative path", "/testBase", []string{"testPath"}, []string{"/testBase/testPath"}},
-		{"path have '.'", "/testBase", []string{"./testPath"}, []string{"/testBase/testPath"}},
-		{"path have '..'", "/testBase", []string{"../testPath/"}, []string{"/testPath"}},
+		// Linux/macOS
+		{
+			name:  "path - abs, base - abs, not joining paths",
+			oses:  []string{"linux", "darwin"},
+			base:  "/foo",
+			paths: []string{"/foo/bar"},
+			want:  []string{"bar"},
+		},
+		{
+			name: "path - abs, base - rel",
+			oses: []string{"linux", "darwin"},
+			base: "foo",
+			paths: func() []string {
+				abs, err := filepath.Abs("foo/bar")
+				require.NoError(t, err)
+				return []string{abs}
+			}(),
+			want: []string{"bar"},
+		},
+		{
+			name:  "path - rel, base - rel, joining paths",
+			oses:  []string{"linux", "darwin"},
+			base:  "foo",
+			paths: []string{"bar"},
+			want:  []string{"bar"},
+		},
+		{
+			name:  "path - rel, base - rel, not joining paths",
+			oses:  []string{"linux", "darwin"},
+			base:  "foo",
+			paths: []string{"foo/bar/bar"},
+			want:  []string{"bar/bar"},
+		},
+		{
+			name:  "path - rel with dot, base - rel, removing the leading dot and not joining paths",
+			oses:  []string{"linux", "darwin"},
+			base:  "foo",
+			paths: []string{"./foo/bar"},
+			want:  []string{"bar"},
+		},
+		{
+			name:  "path - rel, base - dot",
+			oses:  []string{"linux", "darwin"},
+			base:  ".",
+			paths: []string{"foo/bar"},
+			want:  []string{"foo/bar"},
+		},
+		// Windows
+		{
+			name:  "path - rel, base - rel. Skip common prefix",
+			oses:  []string{"windows"},
+			base:  "foo",
+			paths: []string{"foo\\bar\\bar"},
+			want:  []string{"bar/bar"},
+		},
+		{
+			name:  "path - rel, base - dot, windows",
+			oses:  []string{"windows"},
+			base:  ".",
+			paths: []string{"foo\\bar"},
+			want:  []string{"foo/bar"},
+		},
 	}
 
-	for _, test := range tests {
-		t.Run(test.name, func(t *testing.T) {
-			got := buildAbsPaths(test.base, test.paths)
-			if len(test.paths) != len(got) {
-				t.Errorf("paths not equals, expected: %s, got: %s", test.expectedPaths, got)
-			} else {
-				for i, path := range test.expectedPaths {
-					if path != got[i] {
-						t.Errorf("paths not equals, expected: %s, got: %s", test.expectedPaths, got)
-					}
-				}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if !slices.Contains(tt.oses, runtime.GOOS) {
+				t.Skipf("Skip path tests for %q", tt.oses)
 			}
+			got := buildPathsToSkip(tt.base, tt.paths)
+			assert.Equal(t, tt.want, got)
 		})
 	}
 }
@@ -282,14 +339,6 @@ func TestTerraformMisconfigurationScan(t *testing.T) {
 				dir: "./testdata/misconfig/terraform/single-failure/src",
 			},
 			artifactOpt: artifact.Option{
-				AnalyzerGroup:     "",
-				DisabledAnalyzers: nil,
-				DisabledHandlers:  nil,
-				SkipFiles:         nil,
-				SkipDirs:          nil,
-				NoProgress:        false,
-				Offline:           false,
-				InsecureSkipTLS:   false,
 				MisconfScannerOption: config.ScannerOption{
 					RegoOnly:    true,
 					Namespaces:  []string{"user"},
@@ -300,64 +349,97 @@ func TestTerraformMisconfigurationScan(t *testing.T) {
 				Args: cache.ArtifactCachePutBlobArgs{
 					BlobIDAnything: true,
 					BlobInfo: types.BlobInfo{
-						SchemaVersion: 2, Digest: "", DiffID: "", CreatedBy: "", OpaqueDirs: []string(nil),
-						WhiteoutFiles: []string(nil), OS: (*types.OS)(nil), Repository: (*types.Repository)(nil),
-						PackageInfos: []types.PackageInfo(nil), Applications: []types.Application(nil),
+						SchemaVersion: 2,
 						Misconfigurations: []types.Misconfiguration{
-							types.Misconfiguration{
-								FileType: "terraform", FilePath: ".", Successes: types.MisconfResults{
-									types.MisconfResult{
+							{
+								FileType: "terraform",
+								FilePath: ".",
+								Successes: types.MisconfResults{
+									{
 										Namespace: "builtin.aws.rds.aws0176",
 										Query:     "data.builtin.aws.rds.aws0176.deny", Message: "",
 										PolicyMetadata: types.PolicyMetadata{
-											ID: "N/A", AVDID: "AVD-AWS-0176", Type: "Terraform Security Check",
+											ID:                 "N/A",
+											AVDID:              "AVD-AWS-0176",
+											Type:               "Terraform Security Check",
 											Title:              "RDS IAM Database Authentication Disabled",
 											Description:        "Ensure IAM Database Authentication is enabled for RDS database instances to manage database access",
 											Severity:           "MEDIUM",
 											RecommendedActions: "Modify the PostgreSQL and MySQL type RDS instances to enable IAM database authentication.",
 											References:         []string{"https://docs.aws.amazon.com/neptune/latest/userguide/iam-auth.html"},
-										}, CauseMetadata: types.CauseMetadata{
+										},
+										CauseMetadata: types.CauseMetadata{
 											Resource: "", Provider: "AWS", Service: "rds", StartLine: 0, EndLine: 0,
 											Code: types.Code{Lines: []types.Line(nil)},
 										}, Traces: []string(nil),
-									}, types.MisconfResult{
+									},
+									{
 										Namespace: "builtin.aws.rds.aws0177",
-										Query:     "data.builtin.aws.rds.aws0177.deny", Message: "",
+										Query:     "data.builtin.aws.rds.aws0177.deny",
 										PolicyMetadata: types.PolicyMetadata{
-											ID: "N/A", AVDID: "AVD-AWS-0177", Type: "Terraform Security Check",
+											ID:                 "N/A",
+											AVDID:              "AVD-AWS-0177",
+											Type:               "Terraform Security Check",
 											Title:              "RDS Deletion Protection Disabled",
 											Description:        "Ensure deletion protection is enabled for RDS database instances.",
 											Severity:           "MEDIUM",
 											RecommendedActions: "Modify the RDS instances to enable deletion protection.",
 											References:         []string{"https://aws.amazon.com/about-aws/whats-new/2018/09/amazon-rds-now-provides-database-deletion-protection/"},
-										}, CauseMetadata: types.CauseMetadata{
+										},
+										CauseMetadata: types.CauseMetadata{
 											Resource: "", Provider: "AWS", Service: "rds", StartLine: 0, EndLine: 0,
 											Code: types.Code{Lines: []types.Line(nil)},
 										}, Traces: []string(nil),
 									},
-								}, Warnings: types.MisconfResults(nil), Failures: types.MisconfResults(nil),
-								Exceptions: types.MisconfResults(nil),
-								Layer:      types.Layer{Digest: "", DiffID: "", CreatedBy: ""},
-							}, types.Misconfiguration{
-								FileType: "terraform", FilePath: "main.tf", Successes: types.MisconfResults(nil),
-								Warnings: types.MisconfResults(nil), Failures: types.MisconfResults{
-									types.MisconfResult{
-										Namespace: "user.something", Query: "data.user.something.deny",
-										Message: "No buckets allowed!", PolicyMetadata: types.PolicyMetadata{
-											ID: "TEST001", AVDID: "AVD-TEST-0001", Type: "Terraform Security Check",
-											Title: "Test policy", Description: "This is a test policy.",
-											Severity: "LOW", RecommendedActions: "Have a cup of tea.",
-											References: []string{"https://trivy.dev/"},
-										}, CauseMetadata: types.CauseMetadata{
-											Resource: "aws_s3_bucket.asd", Provider: "Generic", Service: "general",
-											StartLine: 1, EndLine: 3, Code: types.Code{Lines: []types.Line(nil)},
+									{
+										Namespace: "builtin.aws.rds.aws0180",
+										Query:     "data.builtin.aws.rds.aws0180.deny",
+										PolicyMetadata: types.PolicyMetadata{
+											ID:                 "N/A",
+											AVDID:              "AVD-AWS-0180",
+											Type:               "Terraform Security Check",
+											Title:              "RDS Publicly Accessible",
+											Description:        "Ensures RDS instances are not launched into the public cloud.",
+											Severity:           "HIGH",
+											RecommendedActions: "Remove the public endpoint from the RDS instance'",
+											References:         []string{"http://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_VPC.html"},
+										},
+										CauseMetadata: types.CauseMetadata{
+											Resource: "", Provider: "AWS", Service: "rds", StartLine: 0, EndLine: 0,
+											Code: types.Code{Lines: []types.Line(nil)},
 										}, Traces: []string(nil),
 									},
-								}, Exceptions: types.MisconfResults(nil),
-								Layer: types.Layer{Digest: "", DiffID: "", CreatedBy: ""},
+								},
 							},
-						}, Secrets: []types.Secret(nil), Licenses: []types.LicenseFile(nil),
-						BuildInfo: (*types.BuildInfo)(nil), CustomResources: []types.CustomResource(nil),
+							{
+								FileType: "terraform",
+								FilePath: "main.tf",
+								Failures: types.MisconfResults{
+									{
+										Namespace: "user.something",
+										Query:     "data.user.something.deny",
+										Message:   "No buckets allowed!",
+										PolicyMetadata: types.PolicyMetadata{
+											ID:                 "TEST001",
+											AVDID:              "AVD-TEST-0001",
+											Type:               "Terraform Security Check",
+											Title:              "Test policy",
+											Description:        "This is a test policy.",
+											Severity:           "LOW",
+											RecommendedActions: "Have a cup of tea.",
+											References:         []string{"https://trivy.dev/"},
+										},
+										CauseMetadata: types.CauseMetadata{
+											Resource:  "aws_s3_bucket.asd",
+											Provider:  "Generic",
+											Service:   "general",
+											StartLine: 1,
+											EndLine:   3,
+										},
+									},
+								},
+							},
+						},
 					},
 				},
 				Returns: cache.ArtifactCachePutBlobReturns{},
@@ -365,9 +447,9 @@ func TestTerraformMisconfigurationScan(t *testing.T) {
 			want: types.ArtifactReference{
 				Name: "testdata/misconfig/terraform/single-failure/src",
 				Type: types.ArtifactFilesystem,
-				ID:   "sha256:9827e4b06d1efa0853e8d75bafb4f95c4c778012b60cee114ce96042ea7c1b7b",
+				ID:   "sha256:7695efb9660d47bc53851aea5ca7d7e1bb1c90c22a18e8fd37b6d0634a03b69d",
 				BlobIDs: []string{
-					"sha256:9827e4b06d1efa0853e8d75bafb4f95c4c778012b60cee114ce96042ea7c1b7b",
+					"sha256:7695efb9660d47bc53851aea5ca7d7e1bb1c90c22a18e8fd37b6d0634a03b69d",
 				},
 			},
 		},
@@ -377,14 +459,6 @@ func TestTerraformMisconfigurationScan(t *testing.T) {
 				dir: "./testdata/misconfig/terraform/multiple-failures/src",
 			},
 			artifactOpt: artifact.Option{
-				AnalyzerGroup:     "",
-				DisabledAnalyzers: nil,
-				DisabledHandlers:  nil,
-				SkipFiles:         nil,
-				SkipDirs:          nil,
-				NoProgress:        false,
-				Offline:           false,
-				InsecureSkipTLS:   false,
 				MisconfScannerOption: config.ScannerOption{
 					RegoOnly:    true,
 					Namespaces:  []string{"user"},
@@ -395,92 +469,146 @@ func TestTerraformMisconfigurationScan(t *testing.T) {
 				Args: cache.ArtifactCachePutBlobArgs{
 					BlobIDAnything: true,
 					BlobInfo: types.BlobInfo{
-						SchemaVersion: 2, Digest: "", DiffID: "", CreatedBy: "", OpaqueDirs: []string(nil),
-						WhiteoutFiles: []string(nil), OS: (*types.OS)(nil), Repository: (*types.Repository)(nil),
-						PackageInfos: []types.PackageInfo(nil), Applications: []types.Application(nil),
+						SchemaVersion: 2,
 						Misconfigurations: []types.Misconfiguration{
-							types.Misconfiguration{
-								FileType: "terraform", FilePath: ".", Successes: types.MisconfResults{
-									types.MisconfResult{
+							{
+								FileType: "terraform",
+								FilePath: ".",
+								Successes: types.MisconfResults{
+									{
 										Namespace: "builtin.aws.rds.aws0176",
-										Query:     "data.builtin.aws.rds.aws0176.deny", Message: "",
+										Query:     "data.builtin.aws.rds.aws0176.deny",
 										PolicyMetadata: types.PolicyMetadata{
-											ID: "N/A", AVDID: "AVD-AWS-0176", Type: "Terraform Security Check",
+											ID:                 "N/A",
+											AVDID:              "AVD-AWS-0176",
+											Type:               "Terraform Security Check",
 											Title:              "RDS IAM Database Authentication Disabled",
 											Description:        "Ensure IAM Database Authentication is enabled for RDS database instances to manage database access",
 											Severity:           "MEDIUM",
 											RecommendedActions: "Modify the PostgreSQL and MySQL type RDS instances to enable IAM database authentication.",
 											References:         []string{"https://docs.aws.amazon.com/neptune/latest/userguide/iam-auth.html"},
-										}, CauseMetadata: types.CauseMetadata{
-											Resource: "", Provider: "AWS", Service: "rds", StartLine: 0, EndLine: 0,
-											Code: types.Code{Lines: []types.Line(nil)},
-										}, Traces: []string(nil),
-									}, types.MisconfResult{
+										},
+										CauseMetadata: types.CauseMetadata{
+											Provider: "AWS",
+											Service:  "rds",
+										},
+									},
+									{
 										Namespace: "builtin.aws.rds.aws0177",
-										Query:     "data.builtin.aws.rds.aws0177.deny", Message: "",
+										Query:     "data.builtin.aws.rds.aws0177.deny",
 										PolicyMetadata: types.PolicyMetadata{
-											ID: "N/A", AVDID: "AVD-AWS-0177", Type: "Terraform Security Check",
+											ID:                 "N/A",
+											AVDID:              "AVD-AWS-0177",
+											Type:               "Terraform Security Check",
 											Title:              "RDS Deletion Protection Disabled",
 											Description:        "Ensure deletion protection is enabled for RDS database instances.",
 											Severity:           "MEDIUM",
 											RecommendedActions: "Modify the RDS instances to enable deletion protection.",
 											References:         []string{"https://aws.amazon.com/about-aws/whats-new/2018/09/amazon-rds-now-provides-database-deletion-protection/"},
-										}, CauseMetadata: types.CauseMetadata{
+										},
+										CauseMetadata: types.CauseMetadata{
+											Provider: "AWS",
+											Service:  "rds",
+										},
+									},
+									{
+										Namespace: "builtin.aws.rds.aws0180",
+										Query:     "data.builtin.aws.rds.aws0180.deny",
+										PolicyMetadata: types.PolicyMetadata{
+											ID:                 "N/A",
+											AVDID:              "AVD-AWS-0180",
+											Type:               "Terraform Security Check",
+											Title:              "RDS Publicly Accessible",
+											Description:        "Ensures RDS instances are not launched into the public cloud.",
+											Severity:           "HIGH",
+											RecommendedActions: "Remove the public endpoint from the RDS instance'",
+											References:         []string{"http://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_VPC.html"},
+										},
+										CauseMetadata: types.CauseMetadata{
 											Resource: "", Provider: "AWS", Service: "rds", StartLine: 0, EndLine: 0,
 											Code: types.Code{Lines: []types.Line(nil)},
 										}, Traces: []string(nil),
 									},
-								}, Warnings: types.MisconfResults(nil), Failures: types.MisconfResults(nil),
-								Exceptions: types.MisconfResults(nil),
-								Layer:      types.Layer{Digest: "", DiffID: "", CreatedBy: ""},
-							}, types.Misconfiguration{
-								FileType: "terraform", FilePath: "main.tf", Successes: types.MisconfResults(nil),
-								Warnings: types.MisconfResults(nil), Failures: types.MisconfResults{
-									types.MisconfResult{
-										Namespace: "user.something", Query: "data.user.something.deny",
-										Message: "No buckets allowed!", PolicyMetadata: types.PolicyMetadata{
-											ID: "TEST001", AVDID: "AVD-TEST-0001", Type: "Terraform Security Check",
-											Title: "Test policy", Description: "This is a test policy.",
-											Severity: "LOW", RecommendedActions: "Have a cup of tea.",
-											References: []string{"https://trivy.dev/"},
-										}, CauseMetadata: types.CauseMetadata{
-											Resource: "aws_s3_bucket.one", Provider: "Generic", Service: "general",
-											StartLine: 1, EndLine: 3, Code: types.Code{Lines: []types.Line(nil)},
-										}, Traces: []string(nil),
-									}, types.MisconfResult{
-										Namespace: "user.something", Query: "data.user.something.deny",
-										Message: "No buckets allowed!", PolicyMetadata: types.PolicyMetadata{
-											ID: "TEST001", AVDID: "AVD-TEST-0001", Type: "Terraform Security Check",
-											Title: "Test policy", Description: "This is a test policy.",
-											Severity: "LOW", RecommendedActions: "Have a cup of tea.",
-											References: []string{"https://trivy.dev/"},
-										}, CauseMetadata: types.CauseMetadata{
-											Resource: "aws_s3_bucket.two", Provider: "Generic", Service: "general",
-											StartLine: 5, EndLine: 7, Code: types.Code{Lines: []types.Line(nil)},
-										}, Traces: []string(nil),
-									},
-								}, Exceptions: types.MisconfResults(nil),
-								Layer: types.Layer{Digest: "", DiffID: "", CreatedBy: ""},
-							}, types.Misconfiguration{
-								FileType: "terraform", FilePath: "more.tf", Successes: types.MisconfResults(nil),
-								Warnings: types.MisconfResults(nil), Failures: types.MisconfResults{
-									types.MisconfResult{
-										Namespace: "user.something", Query: "data.user.something.deny",
-										Message: "No buckets allowed!", PolicyMetadata: types.PolicyMetadata{
-											ID: "TEST001", AVDID: "AVD-TEST-0001", Type: "Terraform Security Check",
-											Title: "Test policy", Description: "This is a test policy.",
-											Severity: "LOW", RecommendedActions: "Have a cup of tea.",
-											References: []string{"https://trivy.dev/"},
-										}, CauseMetadata: types.CauseMetadata{
-											Resource: "aws_s3_bucket.three", Provider: "Generic", Service: "general",
-											StartLine: 2, EndLine: 4, Code: types.Code{Lines: []types.Line(nil)},
-										}, Traces: []string(nil),
-									},
-								}, Exceptions: types.MisconfResults(nil),
-								Layer: types.Layer{Digest: "", DiffID: "", CreatedBy: ""},
+								},
 							},
-						}, Secrets: []types.Secret(nil), Licenses: []types.LicenseFile(nil),
-						BuildInfo: (*types.BuildInfo)(nil), CustomResources: []types.CustomResource(nil),
+							{
+								FileType: "terraform",
+								FilePath: "main.tf",
+								Failures: types.MisconfResults{
+									{
+										Namespace: "user.something",
+										Query:     "data.user.something.deny",
+										Message:   "No buckets allowed!",
+										PolicyMetadata: types.PolicyMetadata{
+											ID:                 "TEST001",
+											AVDID:              "AVD-TEST-0001",
+											Type:               "Terraform Security Check",
+											Title:              "Test policy",
+											Description:        "This is a test policy.",
+											Severity:           "LOW",
+											RecommendedActions: "Have a cup of tea.",
+											References:         []string{"https://trivy.dev/"},
+										},
+										CauseMetadata: types.CauseMetadata{
+											Resource:  "aws_s3_bucket.one",
+											Provider:  "Generic",
+											Service:   "general",
+											StartLine: 1,
+											EndLine:   3,
+										},
+									},
+									{
+										Namespace: "user.something", Query: "data.user.something.deny",
+										Message: "No buckets allowed!",
+										PolicyMetadata: types.PolicyMetadata{
+											ID:                 "TEST001",
+											AVDID:              "AVD-TEST-0001",
+											Type:               "Terraform Security Check",
+											Title:              "Test policy",
+											Description:        "This is a test policy.",
+											Severity:           "LOW",
+											RecommendedActions: "Have a cup of tea.",
+											References:         []string{"https://trivy.dev/"},
+										},
+										CauseMetadata: types.CauseMetadata{
+											Resource:  "aws_s3_bucket.two",
+											Provider:  "Generic",
+											Service:   "general",
+											StartLine: 5,
+											EndLine:   7,
+										},
+									},
+								},
+							},
+							{
+								FileType: "terraform",
+								FilePath: "more.tf",
+								Failures: types.MisconfResults{
+									{
+										Namespace: "user.something",
+										Query:     "data.user.something.deny",
+										Message:   "No buckets allowed!",
+										PolicyMetadata: types.PolicyMetadata{
+											ID:                 "TEST001",
+											AVDID:              "AVD-TEST-0001",
+											Type:               "Terraform Security Check",
+											Title:              "Test policy",
+											Description:        "This is a test policy.",
+											Severity:           "LOW",
+											RecommendedActions: "Have a cup of tea.",
+											References:         []string{"https://trivy.dev/"},
+										},
+										CauseMetadata: types.CauseMetadata{
+											Resource:  "aws_s3_bucket.three",
+											Provider:  "Generic",
+											Service:   "general",
+											StartLine: 1,
+											EndLine:   3,
+										},
+									},
+								},
+							},
+						},
 					},
 				},
 				Returns: cache.ArtifactCachePutBlobReturns{},
@@ -488,9 +616,9 @@ func TestTerraformMisconfigurationScan(t *testing.T) {
 			want: types.ArtifactReference{
 				Name: "testdata/misconfig/terraform/multiple-failures/src",
 				Type: types.ArtifactFilesystem,
-				ID:   "sha256:5280d5ed00b245d916357a365dde2a87430bdef58bf8d3c26a4e9b7e67481f6b",
+				ID:   "sha256:61728a22aeefbe2b0f30bdb01ee623cb16b64488eaa6e0b1d488a47b2bd4c3fb",
 				BlobIDs: []string{
-					"sha256:5280d5ed00b245d916357a365dde2a87430bdef58bf8d3c26a4e9b7e67481f6b",
+					"sha256:61728a22aeefbe2b0f30bdb01ee623cb16b64488eaa6e0b1d488a47b2bd4c3fb",
 				},
 			},
 		},
@@ -500,14 +628,6 @@ func TestTerraformMisconfigurationScan(t *testing.T) {
 				dir: "./testdata/misconfig/terraform/no-results/src",
 			},
 			artifactOpt: artifact.Option{
-				AnalyzerGroup:     "",
-				DisabledAnalyzers: nil,
-				DisabledHandlers:  nil,
-				SkipFiles:         nil,
-				SkipDirs:          nil,
-				NoProgress:        false,
-				Offline:           false,
-				InsecureSkipTLS:   false,
 				MisconfScannerOption: config.ScannerOption{
 					RegoOnly:    true,
 					Namespaces:  []string{"user"},
@@ -526,9 +646,9 @@ func TestTerraformMisconfigurationScan(t *testing.T) {
 			want: types.ArtifactReference{
 				Name: "testdata/misconfig/terraform/no-results/src",
 				Type: types.ArtifactFilesystem,
-				ID:   "sha256:cd80d8148f9b4cbc026f71a73d8dc1e35f79f6f39e4e52fe5e9a7821e9d09693",
+				ID:   "sha256:6612c1db6d6c52c11de53447264b552ee96bf9cc317de37b3374687a8fc4c4ac",
 				BlobIDs: []string{
-					"sha256:cd80d8148f9b4cbc026f71a73d8dc1e35f79f6f39e4e52fe5e9a7821e9d09693",
+					"sha256:6612c1db6d6c52c11de53447264b552ee96bf9cc317de37b3374687a8fc4c4ac",
 				},
 			},
 		},
@@ -538,14 +658,6 @@ func TestTerraformMisconfigurationScan(t *testing.T) {
 				dir: "./testdata/misconfig/terraform/passed/src",
 			},
 			artifactOpt: artifact.Option{
-				AnalyzerGroup:     "",
-				DisabledAnalyzers: nil,
-				DisabledHandlers:  nil,
-				SkipFiles:         nil,
-				SkipDirs:          nil,
-				NoProgress:        false,
-				Offline:           false,
-				InsecureSkipTLS:   false,
 				MisconfScannerOption: config.ScannerOption{
 					RegoOnly:    true,
 					Namespaces:  []string{"user"},
@@ -556,58 +668,87 @@ func TestTerraformMisconfigurationScan(t *testing.T) {
 				Args: cache.ArtifactCachePutBlobArgs{
 					BlobIDAnything: true,
 					BlobInfo: types.BlobInfo{
-						SchemaVersion: 2, Digest: "", DiffID: "", CreatedBy: "", OpaqueDirs: []string(nil),
-						WhiteoutFiles: []string(nil), OS: (*types.OS)(nil), Repository: (*types.Repository)(nil),
-						PackageInfos: []types.PackageInfo(nil), Applications: []types.Application(nil),
+						SchemaVersion: 2,
 						Misconfigurations: []types.Misconfiguration{
-							types.Misconfiguration{
-								FileType: "terraform", FilePath: ".", Successes: types.MisconfResults{
-									types.MisconfResult{
+							{
+								FileType: "terraform",
+								FilePath: ".",
+								Successes: types.MisconfResults{
+									{
 										Namespace: "builtin.aws.rds.aws0176",
-										Query:     "data.builtin.aws.rds.aws0176.deny", Message: "",
+										Query:     "data.builtin.aws.rds.aws0176.deny",
 										PolicyMetadata: types.PolicyMetadata{
-											ID: "N/A", AVDID: "AVD-AWS-0176", Type: "Terraform Security Check",
+											ID:                 "N/A",
+											AVDID:              "AVD-AWS-0176",
+											Type:               "Terraform Security Check",
 											Title:              "RDS IAM Database Authentication Disabled",
 											Description:        "Ensure IAM Database Authentication is enabled for RDS database instances to manage database access",
 											Severity:           "MEDIUM",
 											RecommendedActions: "Modify the PostgreSQL and MySQL type RDS instances to enable IAM database authentication.",
 											References:         []string{"https://docs.aws.amazon.com/neptune/latest/userguide/iam-auth.html"},
-										}, CauseMetadata: types.CauseMetadata{
-											Resource: "", Provider: "AWS", Service: "rds", StartLine: 0, EndLine: 0,
-											Code: types.Code{Lines: []types.Line(nil)},
-										}, Traces: []string(nil),
-									}, types.MisconfResult{
+										},
+										CauseMetadata: types.CauseMetadata{
+											Provider: "AWS",
+											Service:  "rds",
+										},
+									},
+									{
 										Namespace: "builtin.aws.rds.aws0177",
-										Query:     "data.builtin.aws.rds.aws0177.deny", Message: "",
+										Query:     "data.builtin.aws.rds.aws0177.deny",
 										PolicyMetadata: types.PolicyMetadata{
-											ID: "N/A", AVDID: "AVD-AWS-0177", Type: "Terraform Security Check",
+											ID:                 "N/A",
+											AVDID:              "AVD-AWS-0177",
+											Type:               "Terraform Security Check",
 											Title:              "RDS Deletion Protection Disabled",
 											Description:        "Ensure deletion protection is enabled for RDS database instances.",
 											Severity:           "MEDIUM",
 											RecommendedActions: "Modify the RDS instances to enable deletion protection.",
 											References:         []string{"https://aws.amazon.com/about-aws/whats-new/2018/09/amazon-rds-now-provides-database-deletion-protection/"},
-										}, CauseMetadata: types.CauseMetadata{
+										},
+										CauseMetadata: types.CauseMetadata{
+											Provider: "AWS",
+											Service:  "rds",
+										},
+									},
+									{
+										Namespace: "builtin.aws.rds.aws0180",
+										Query:     "data.builtin.aws.rds.aws0180.deny",
+										PolicyMetadata: types.PolicyMetadata{
+											ID:                 "N/A",
+											AVDID:              "AVD-AWS-0180",
+											Type:               "Terraform Security Check",
+											Title:              "RDS Publicly Accessible",
+											Description:        "Ensures RDS instances are not launched into the public cloud.",
+											Severity:           "HIGH",
+											RecommendedActions: "Remove the public endpoint from the RDS instance'",
+											References:         []string{"http://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_VPC.html"},
+										},
+										CauseMetadata: types.CauseMetadata{
 											Resource: "", Provider: "AWS", Service: "rds", StartLine: 0, EndLine: 0,
 											Code: types.Code{Lines: []types.Line(nil)},
 										}, Traces: []string(nil),
-									}, types.MisconfResult{
-										Namespace: "user.something", Query: "data.user.something.deny", Message: "",
-										PolicyMetadata: types.PolicyMetadata{
-											ID: "TEST001", AVDID: "AVD-TEST-0001", Type: "Terraform Security Check",
-											Title: "Test policy", Description: "This is a test policy.",
-											Severity: "LOW", RecommendedActions: "Have a cup of tea.",
-											References: []string{"https://trivy.dev/"},
-										}, CauseMetadata: types.CauseMetadata{
-											Resource: "", Provider: "Generic", Service: "general", StartLine: 0,
-											EndLine: 0, Code: types.Code{Lines: []types.Line(nil)},
-										}, Traces: []string(nil),
 									},
-								}, Warnings: types.MisconfResults(nil), Failures: types.MisconfResults(nil),
-								Exceptions: types.MisconfResults(nil),
-								Layer:      types.Layer{Digest: "", DiffID: "", CreatedBy: ""},
+									{
+										Namespace: "user.something",
+										Query:     "data.user.something.deny",
+										PolicyMetadata: types.PolicyMetadata{
+											ID:                 "TEST001",
+											AVDID:              "AVD-TEST-0001",
+											Type:               "Terraform Security Check",
+											Title:              "Test policy",
+											Description:        "This is a test policy.",
+											Severity:           "LOW",
+											RecommendedActions: "Have a cup of tea.",
+											References:         []string{"https://trivy.dev/"},
+										},
+										CauseMetadata: types.CauseMetadata{
+											Provider: "Generic",
+											Service:  "general",
+										},
+									},
+								},
 							},
-						}, Secrets: []types.Secret(nil), Licenses: []types.LicenseFile(nil),
-						BuildInfo: (*types.BuildInfo)(nil), CustomResources: []types.CustomResource(nil),
+						},
 					},
 				},
 				Returns: cache.ArtifactCachePutBlobReturns{},
@@ -615,9 +756,9 @@ func TestTerraformMisconfigurationScan(t *testing.T) {
 			want: types.ArtifactReference{
 				Name: "testdata/misconfig/terraform/passed/src",
 				Type: types.ArtifactFilesystem,
-				ID:   "sha256:a765d67b40d8dafad114c8b57d817b3d2f03fce2b0d6cecbf057ac13a2d52662",
+				ID:   "sha256:0e792318cb431f2306399f28038a09f7ccbe3cb46d77f13b9f4c5da74fd03c61",
 				BlobIDs: []string{
-					"sha256:a765d67b40d8dafad114c8b57d817b3d2f03fce2b0d6cecbf057ac13a2d52662",
+					"sha256:0e792318cb431f2306399f28038a09f7ccbe3cb46d77f13b9f4c5da74fd03c61",
 				},
 			},
 		},
@@ -652,251 +793,295 @@ func TestCloudFormationMisconfigurationScan(t *testing.T) {
 		want               types.ArtifactReference
 	}{
 		{
-			name: "single failure",
-			fields: fields{
-				dir: "./testdata/misconfig/cloudformation/single-failure/src",
-			},
-			artifactOpt: artifact.Option{
-				AnalyzerGroup:     "",
-				DisabledAnalyzers: nil,
-				DisabledHandlers:  nil,
-				SkipFiles:         nil,
-				SkipDirs:          nil,
-				NoProgress:        false,
-				Offline:           false,
-				InsecureSkipTLS:   false,
-				MisconfScannerOption: config.ScannerOption{
-					RegoOnly:    true,
-					Namespaces:  []string{"user"},
-					PolicyPaths: []string{"./testdata/misconfig/cloudformation/single-failure/rego"},
-				},
-			},
-			putBlobExpectation: cache.ArtifactCachePutBlobExpectation{
-				Args: cache.ArtifactCachePutBlobArgs{
-					BlobIDAnything: true,
-					BlobInfo: types.BlobInfo{
-						SchemaVersion: 2, Digest: "", DiffID: "", CreatedBy: "", OpaqueDirs: []string(nil),
-						WhiteoutFiles: []string(nil), OS: (*types.OS)(nil), Repository: (*types.Repository)(nil),
-						PackageInfos: []types.PackageInfo(nil), Applications: []types.Application(nil),
-						Misconfigurations: []types.Misconfiguration{
-							types.Misconfiguration{
-								FileType: "cloudformation", FilePath: "main.yaml", Successes: types.MisconfResults{
-									types.MisconfResult{
-										Namespace: "builtin.aws.rds.aws0176",
-										Query:     "data.builtin.aws.rds.aws0176.deny", Message: "",
-										PolicyMetadata: types.PolicyMetadata{
-											ID: "N/A", AVDID: "AVD-AWS-0176", Type: "CloudFormation Security Check",
-											Title:              "RDS IAM Database Authentication Disabled",
-											Description:        "Ensure IAM Database Authentication is enabled for RDS database instances to manage database access",
-											Severity:           "MEDIUM",
-											RecommendedActions: "Modify the PostgreSQL and MySQL type RDS instances to enable IAM database authentication.",
-											References:         []string{"https://docs.aws.amazon.com/neptune/latest/userguide/iam-auth.html"},
-										}, CauseMetadata: types.CauseMetadata{
-											Resource: "", Provider: "AWS", Service: "rds", StartLine: 0, EndLine: 0,
-											Code: types.Code{Lines: []types.Line(nil)},
-										}, Traces: []string(nil),
-									}, types.MisconfResult{
-										Namespace: "builtin.aws.rds.aws0177",
-										Query:     "data.builtin.aws.rds.aws0177.deny", Message: "",
-										PolicyMetadata: types.PolicyMetadata{
-											ID: "N/A", AVDID: "AVD-AWS-0177", Type: "CloudFormation Security Check",
-											Title:              "RDS Deletion Protection Disabled",
-											Description:        "Ensure deletion protection is enabled for RDS database instances.",
-											Severity:           "MEDIUM",
-											RecommendedActions: "Modify the RDS instances to enable deletion protection.",
-											References:         []string{"https://aws.amazon.com/about-aws/whats-new/2018/09/amazon-rds-now-provides-database-deletion-protection/"},
-										}, CauseMetadata: types.CauseMetadata{
-											Resource: "", Provider: "AWS", Service: "rds", StartLine: 0, EndLine: 0,
-											Code: types.Code{Lines: []types.Line(nil)},
-										}, Traces: []string(nil),
-									},
-								}, Warnings: types.MisconfResults(nil), Failures: types.MisconfResults{
-									types.MisconfResult{
-										Namespace: "user.something", Query: "data.user.something.deny",
-										Message: "No buckets allowed!", PolicyMetadata: types.PolicyMetadata{
-											ID: "TEST001", AVDID: "AVD-TEST-0001",
-											Type: "CloudFormation Security Check", Title: "Test policy",
-											Description: "This is a test policy.", Severity: "LOW",
-											RecommendedActions: "Have a cup of tea.",
-											References:         []string{"https://trivy.dev/"},
-										}, CauseMetadata: types.CauseMetadata{
-											Resource: "main.yaml:3-6", Provider: "Generic", Service: "general",
-											StartLine: 3, EndLine: 6, Code: types.Code{Lines: []types.Line(nil)},
-										}, Traces: []string(nil),
-									},
-								}, Exceptions: types.MisconfResults(nil),
-								Layer: types.Layer{Digest: "", DiffID: "", CreatedBy: ""},
-							},
-						}, Secrets: []types.Secret(nil), Licenses: []types.LicenseFile(nil),
-						BuildInfo: (*types.BuildInfo)(nil), CustomResources: []types.CustomResource(nil),
-					},
-				},
-				Returns: cache.ArtifactCachePutBlobReturns{},
-			},
-			want: types.ArtifactReference{
-				Name: "testdata/misconfig/cloudformation/single-failure/src",
-				Type: types.ArtifactFilesystem,
-				ID:   "sha256:16af3ef12417f03bab139674ad17636f5fb032a9f4e20f2092aeaa9ff0e3bc38",
-				BlobIDs: []string{
-					"sha256:16af3ef12417f03bab139674ad17636f5fb032a9f4e20f2092aeaa9ff0e3bc38",
-				},
-			},
-		},
-		{
-			name: "multiple failures",
-			fields: fields{
-				dir: "./testdata/misconfig/cloudformation/multiple-failures/src",
-			},
-			artifactOpt: artifact.Option{
-				AnalyzerGroup:     "",
-				DisabledAnalyzers: nil,
-				DisabledHandlers:  nil,
-				SkipFiles:         nil,
-				SkipDirs:          nil,
-				NoProgress:        false,
-				Offline:           false,
-				InsecureSkipTLS:   false,
-				MisconfScannerOption: config.ScannerOption{
-					RegoOnly:    true,
-					Namespaces:  []string{"user"},
-					PolicyPaths: []string{"./testdata/misconfig/cloudformation/multiple-failures/rego"},
-				},
-			},
-			putBlobExpectation: cache.ArtifactCachePutBlobExpectation{
-				Args: cache.ArtifactCachePutBlobArgs{
-					BlobIDAnything: true,
-					BlobInfo: types.BlobInfo{
-						SchemaVersion: 2, Digest: "", DiffID: "", CreatedBy: "", OpaqueDirs: []string(nil),
-						WhiteoutFiles: []string(nil), OS: (*types.OS)(nil), Repository: (*types.Repository)(nil),
-						PackageInfos: []types.PackageInfo(nil), Applications: []types.Application(nil),
-						Misconfigurations: []types.Misconfiguration{
-							{
-								FileType: "cloudformation", FilePath: "main.yaml", Successes: types.MisconfResults{
-									types.MisconfResult{
-										Namespace: "builtin.aws.rds.aws0176",
-										Query:     "data.builtin.aws.rds.aws0176.deny", Message: "",
-										PolicyMetadata: types.PolicyMetadata{
-											ID: "N/A", AVDID: "AVD-AWS-0176", Type: "CloudFormation Security Check",
-											Title:              "RDS IAM Database Authentication Disabled",
-											Description:        "Ensure IAM Database Authentication is enabled for RDS database instances to manage database access",
-											Severity:           "MEDIUM",
-											RecommendedActions: "Modify the PostgreSQL and MySQL type RDS instances to enable IAM database authentication.",
-											References:         []string{"https://docs.aws.amazon.com/neptune/latest/userguide/iam-auth.html"},
-										}, CauseMetadata: types.CauseMetadata{
-											Resource: "", Provider: "AWS", Service: "rds", StartLine: 0, EndLine: 0,
-											Code: types.Code{Lines: []types.Line(nil)},
-										}, Traces: []string(nil),
-									}, types.MisconfResult{
-										Namespace: "builtin.aws.rds.aws0177",
-										Query:     "data.builtin.aws.rds.aws0177.deny", Message: "",
-										PolicyMetadata: types.PolicyMetadata{
-											ID: "N/A", AVDID: "AVD-AWS-0177", Type: "CloudFormation Security Check",
-											Title:              "RDS Deletion Protection Disabled",
-											Description:        "Ensure deletion protection is enabled for RDS database instances.",
-											Severity:           "MEDIUM",
-											RecommendedActions: "Modify the RDS instances to enable deletion protection.",
-											References:         []string{"https://aws.amazon.com/about-aws/whats-new/2018/09/amazon-rds-now-provides-database-deletion-protection/"},
-										}, CauseMetadata: types.CauseMetadata{
-											Resource: "", Provider: "AWS", Service: "rds", StartLine: 0, EndLine: 0,
-											Code: types.Code{Lines: []types.Line(nil)},
-										}, Traces: []string(nil),
-									},
-								}, Warnings: types.MisconfResults(nil), Failures: types.MisconfResults{
-									types.MisconfResult{
-										Namespace: "user.something", Query: "data.user.something.deny",
-										Message: "No buckets allowed!", PolicyMetadata: types.PolicyMetadata{
-											ID: "TEST001", AVDID: "AVD-TEST-0001",
-											Type: "CloudFormation Security Check", Title: "Test policy",
-											Description: "This is a test policy.", Severity: "LOW",
-											RecommendedActions: "Have a cup of tea.",
-											References:         []string{"https://trivy.dev/"},
-										}, CauseMetadata: types.CauseMetadata{
-											Resource: "main.yaml:2-5", Provider: "Generic", Service: "general",
-											StartLine: 2, EndLine: 5, Code: types.Code{Lines: []types.Line(nil)},
-										}, Traces: []string(nil),
-									}, types.MisconfResult{
-										Namespace: "user.something", Query: "data.user.something.deny",
-										Message: "No buckets allowed!", PolicyMetadata: types.PolicyMetadata{
-											ID: "TEST001", AVDID: "AVD-TEST-0001",
-											Type: "CloudFormation Security Check", Title: "Test policy",
-											Description: "This is a test policy.", Severity: "LOW",
-											RecommendedActions: "Have a cup of tea.",
-											References:         []string{"https://trivy.dev/"},
-										}, CauseMetadata: types.CauseMetadata{
-											Resource: "main.yaml:6-9", Provider: "Generic", Service: "general",
-											StartLine: 6, EndLine: 9, Code: types.Code{Lines: []types.Line(nil)},
-										}, Traces: []string(nil),
-									},
-								}, Exceptions: types.MisconfResults(nil),
-								Layer: types.Layer{Digest: "", DiffID: "", CreatedBy: ""},
-							},
-						}, Secrets: []types.Secret(nil), Licenses: []types.LicenseFile(nil),
-						BuildInfo: (*types.BuildInfo)(nil), CustomResources: []types.CustomResource(nil),
-					},
-				},
-				Returns: cache.ArtifactCachePutBlobReturns{},
-			},
-			want: types.ArtifactReference{
-				Name: "testdata/misconfig/cloudformation/multiple-failures/src",
-				Type: types.ArtifactFilesystem,
-				ID:   "sha256:10801795d3e822d09f0810255a82deeb572f4e298f91af3abe5fc358c10ba68c",
-				BlobIDs: []string{
-					"sha256:10801795d3e822d09f0810255a82deeb572f4e298f91af3abe5fc358c10ba68c",
-				},
-			},
-		},
-		{
-			name: "no results",
-			fields: fields{
-				dir: "./testdata/misconfig/cloudformation/no-results/src",
-			},
-			artifactOpt: artifact.Option{
-				AnalyzerGroup:     "",
-				DisabledAnalyzers: nil,
-				DisabledHandlers:  nil,
-				SkipFiles:         nil,
-				SkipDirs:          nil,
-				NoProgress:        false,
-				Offline:           false,
-				InsecureSkipTLS:   false,
-				MisconfScannerOption: config.ScannerOption{
-					RegoOnly:    true,
-					Namespaces:  []string{"user"},
-					PolicyPaths: []string{"./testdata/misconfig/cloudformation/no-results/rego"},
-				},
-			},
-			putBlobExpectation: cache.ArtifactCachePutBlobExpectation{
-				Args: cache.ArtifactCachePutBlobArgs{
-					BlobIDAnything: true,
-					BlobInfo: types.BlobInfo{
-						SchemaVersion: types.BlobJSONSchemaVersion,
-					},
-				},
-				Returns: cache.ArtifactCachePutBlobReturns{},
-			},
-			want: types.ArtifactReference{
-				Name: "testdata/misconfig/cloudformation/no-results/src",
-				Type: types.ArtifactFilesystem,
-				ID:   "sha256:cd80d8148f9b4cbc026f71a73d8dc1e35f79f6f39e4e52fe5e9a7821e9d09693",
-				BlobIDs: []string{
-					"sha256:cd80d8148f9b4cbc026f71a73d8dc1e35f79f6f39e4e52fe5e9a7821e9d09693",
-				},
-			},
-		},
+      name: "single failure",
+      fields: fields{
+        dir: "./testdata/misconfig/cloudformation/single-failure/src",
+      },
+      artifactOpt: artifact.Option{
+        MisconfScannerOption: config.ScannerOption{
+          RegoOnly:    true,
+          Namespaces:  []string{"user"},
+          PolicyPaths: []string{"./testdata/misconfig/cloudformation/single-failure/rego"},
+        },
+      },
+      putBlobExpectation: cache.ArtifactCachePutBlobExpectation{
+        Args: cache.ArtifactCachePutBlobArgs{
+          BlobIDAnything: true,
+          BlobInfo: types.BlobInfo{
+            SchemaVersion: 2,
+            Misconfigurations: []types.Misconfiguration{
+              {
+                FileType: "cloudformation",
+                FilePath: "main.yaml",
+                Successes: types.MisconfResults{
+                  {
+                    Namespace: "builtin.aws.rds.aws0176",
+                    Query:     "data.builtin.aws.rds.aws0176.deny",
+                    PolicyMetadata: types.PolicyMetadata{
+                      ID:                 "N/A",
+                      AVDID:              "AVD-AWS-0176",
+                      Type:               "CloudFormation Security Check",
+                      Title:              "RDS IAM Database Authentication Disabled",
+                      Description:        "Ensure IAM Database Authentication is enabled for RDS database instances to manage database access",
+                      Severity:           "MEDIUM",
+                      RecommendedActions: "Modify the PostgreSQL and MySQL type RDS instances to enable IAM database authentication.",
+                      References:         []string{"https://docs.aws.amazon.com/neptune/latest/userguide/iam-auth.html"},
+                    },
+                    CauseMetadata: types.CauseMetadata{
+                      Provider: "AWS",
+                      Service:  "rds",
+                    },
+                  },
+                  {
+                    Namespace: "builtin.aws.rds.aws0177",
+                    Query:     "data.builtin.aws.rds.aws0177.deny",
+                    PolicyMetadata: types.PolicyMetadata{
+                      ID:                 "N/A",
+                      AVDID:              "AVD-AWS-0177",
+                      Type:               "CloudFormation Security Check",
+                      Title:              "RDS Deletion Protection Disabled",
+                      Description:        "Ensure deletion protection is enabled for RDS database instances.",
+                      Severity:           "MEDIUM",
+                      RecommendedActions: "Modify the RDS instances to enable deletion protection.",
+                      References:         []string{"https://aws.amazon.com/about-aws/whats-new/2018/09/amazon-rds-now-provides-database-deletion-protection/"},
+                    },
+                    CauseMetadata: types.CauseMetadata{
+                      Provider: "AWS",
+                      Service:  "rds",
+                    },
+                  },
+                  {
+                    Namespace: "builtin.aws.rds.aws0180",
+                    Query:     "data.builtin.aws.rds.aws0180.deny",
+                    PolicyMetadata: types.PolicyMetadata{
+                      ID:                 "N/A",
+                      AVDID:              "AVD-AWS-0180",
+                      Type:               "CloudFormation Security Check",
+                      Title:              "RDS Publicly Accessible",
+                      Description:        "Ensures RDS instances are not launched into the public cloud.",
+                      Severity:           "HIGH",
+                      RecommendedActions: "Remove the public endpoint from the RDS instance'",
+                      References:         []string{"http://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_VPC.html"},
+                    },
+                    CauseMetadata: types.CauseMetadata{
+                      Resource: "", Provider: "AWS", Service: "rds", StartLine: 0, EndLine: 0,
+                      Code: types.Code{Lines: []types.Line(nil)},
+                    }, Traces: []string(nil),
+                  },
+                },
+                Failures: types.MisconfResults{
+                  {
+                    Namespace: "user.something",
+                    Query:     "data.user.something.deny",
+                    Message:   "No buckets allowed!",
+                    PolicyMetadata: types.PolicyMetadata{
+                      ID:                 "TEST001",
+                      AVDID:              "AVD-TEST-0001",
+                      Type:               "CloudFormation Security Check",
+                      Title:              "Test policy",
+                      Description:        "This is a test policy.",
+                      Severity:           "LOW",
+                      RecommendedActions: "Have a cup of tea.",
+                      References:         []string{"https://trivy.dev/"},
+                    },
+                    CauseMetadata: types.CauseMetadata{
+                      Resource:  "main.yaml:3-6",
+                      Provider:  "Generic",
+                      Service:   "general",
+                      StartLine: 3,
+                      EndLine:   6,
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+        Returns: cache.ArtifactCachePutBlobReturns{},
+      },
+      want: types.ArtifactReference{
+        Name: "testdata/misconfig/cloudformation/single-failure/src",
+        Type: types.ArtifactFilesystem,
+        ID:   "sha256:793d3e4cb82fa4d73e62267c358bd038b453fca36297064e5d240d5809ad241e",
+        BlobIDs: []string{
+          "sha256:793d3e4cb82fa4d73e62267c358bd038b453fca36297064e5d240d5809ad241e",
+        },
+      },
+    },
+    {
+      name: "multiple failures",
+      fields: fields{
+        dir: "./testdata/misconfig/cloudformation/multiple-failures/src",
+      },
+      artifactOpt: artifact.Option{
+        MisconfScannerOption: config.ScannerOption{
+          RegoOnly:    true,
+          Namespaces:  []string{"user"},
+          PolicyPaths: []string{"./testdata/misconfig/cloudformation/multiple-failures/rego"},
+        },
+      },
+      putBlobExpectation: cache.ArtifactCachePutBlobExpectation{
+        Args: cache.ArtifactCachePutBlobArgs{
+          BlobIDAnything: true,
+          BlobInfo: types.BlobInfo{
+            SchemaVersion: 2,
+            Misconfigurations: []types.Misconfiguration{
+              {
+                FileType: "cloudformation",
+                FilePath: "main.yaml",
+                Successes: types.MisconfResults{
+                  {
+                    Namespace: "builtin.aws.rds.aws0176",
+                    Query:     "data.builtin.aws.rds.aws0176.deny",
+                    PolicyMetadata: types.PolicyMetadata{
+                      ID:                 "N/A",
+                      AVDID:              "AVD-AWS-0176",
+                      Type:               "CloudFormation Security Check",
+                      Title:              "RDS IAM Database Authentication Disabled",
+                      Description:        "Ensure IAM Database Authentication is enabled for RDS database instances to manage database access",
+                      Severity:           "MEDIUM",
+                      RecommendedActions: "Modify the PostgreSQL and MySQL type RDS instances to enable IAM database authentication.",
+                      References:         []string{"https://docs.aws.amazon.com/neptune/latest/userguide/iam-auth.html"},
+                    },
+                    CauseMetadata: types.CauseMetadata{
+                      Provider: "AWS",
+                      Service:  "rds",
+                    },
+                  },
+                  {
+                    Namespace: "builtin.aws.rds.aws0177",
+                    Query:     "data.builtin.aws.rds.aws0177.deny",
+                    PolicyMetadata: types.PolicyMetadata{
+                      ID:                 "N/A",
+                      AVDID:              "AVD-AWS-0177",
+                      Type:               "CloudFormation Security Check",
+                      Title:              "RDS Deletion Protection Disabled",
+                      Description:        "Ensure deletion protection is enabled for RDS database instances.",
+                      Severity:           "MEDIUM",
+                      RecommendedActions: "Modify the RDS instances to enable deletion protection.",
+                      References:         []string{"https://aws.amazon.com/about-aws/whats-new/2018/09/amazon-rds-now-provides-database-deletion-protection/"},
+                    },
+                    CauseMetadata: types.CauseMetadata{
+                      Provider: "AWS",
+                      Service:  "rds",
+                    },
+                  },
+                  {
+                    Namespace: "builtin.aws.rds.aws0180",
+                    Query:     "data.builtin.aws.rds.aws0180.deny",
+                    PolicyMetadata: types.PolicyMetadata{
+                      ID:                 "N/A",
+                      AVDID:              "AVD-AWS-0180",
+                      Type:               "CloudFormation Security Check",
+                      Title:              "RDS Publicly Accessible",
+                      Description:        "Ensures RDS instances are not launched into the public cloud.",
+                      Severity:           "HIGH",
+                      RecommendedActions: "Remove the public endpoint from the RDS instance'",
+                      References:         []string{"http://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_VPC.html"},
+                    },
+                    CauseMetadata: types.CauseMetadata{
+                      Resource: "", Provider: "AWS", Service: "rds", StartLine: 0, EndLine: 0,
+                      Code: types.Code{Lines: []types.Line(nil)},
+                    }, Traces: []string(nil),
+                  },
+                },
+                Failures: types.MisconfResults{
+                  types.MisconfResult{
+                    Namespace: "user.something",
+                    Query:     "data.user.something.deny",
+                    Message:   "No buckets allowed!",
+                    PolicyMetadata: types.PolicyMetadata{
+                      ID:                 "TEST001",
+                      AVDID:              "AVD-TEST-0001",
+                      Type:               "CloudFormation Security Check",
+                      Title:              "Test policy",
+                      Description:        "This is a test policy.",
+                      Severity:           "LOW",
+                      RecommendedActions: "Have a cup of tea.",
+                      References:         []string{"https://trivy.dev/"},
+                    },
+                    CauseMetadata: types.CauseMetadata{
+                      Resource:  "main.yaml:2-5",
+                      Provider:  "Generic",
+                      Service:   "general",
+                      StartLine: 2,
+                      EndLine:   5,
+                    },
+                  },
+                  {
+                    Namespace: "user.something",
+                    Query:     "data.user.something.deny",
+                    Message:   "No buckets allowed!",
+                    PolicyMetadata: types.PolicyMetadata{
+                      ID:                 "TEST001",
+                      AVDID:              "AVD-TEST-0001",
+                      Type:               "CloudFormation Security Check",
+                      Title:              "Test policy",
+                      Description:        "This is a test policy.",
+                      Severity:           "LOW",
+                      RecommendedActions: "Have a cup of tea.",
+                      References:         []string{"https://trivy.dev/"},
+                    },
+                    CauseMetadata: types.CauseMetadata{
+                      Resource:  "main.yaml:6-9",
+                      Provider:  "Generic",
+                      Service:   "general",
+                      StartLine: 6,
+                      EndLine:   9,
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+        Returns: cache.ArtifactCachePutBlobReturns{},
+      },
+      want: types.ArtifactReference{
+        Name: "testdata/misconfig/cloudformation/multiple-failures/src",
+        Type: types.ArtifactFilesystem,
+        ID:   "sha256:49edf1eecd461fd56eccb1221aaff26c0c5939f2d8128e9cb867cc8e7552b8aa",
+        BlobIDs: []string{
+          "sha256:49edf1eecd461fd56eccb1221aaff26c0c5939f2d8128e9cb867cc8e7552b8aa",
+        },
+      },
+    },
+    {
+      name: "no results",
+      fields: fields{
+        dir: "./testdata/misconfig/cloudformation/no-results/src",
+      },
+      artifactOpt: artifact.Option{
+        MisconfScannerOption: config.ScannerOption{
+          RegoOnly:    true,
+          Namespaces:  []string{"user"},
+          PolicyPaths: []string{"./testdata/misconfig/cloudformation/no-results/rego"},
+        },
+      },
+      putBlobExpectation: cache.ArtifactCachePutBlobExpectation{
+        Args: cache.ArtifactCachePutBlobArgs{
+          BlobIDAnything: true,
+          BlobInfo: types.BlobInfo{
+            SchemaVersion: types.BlobJSONSchemaVersion,
+          },
+        },
+        Returns: cache.ArtifactCachePutBlobReturns{},
+      },
+      want: types.ArtifactReference{
+        Name: "testdata/misconfig/cloudformation/no-results/src",
+        Type: types.ArtifactFilesystem,
+        ID:   "sha256:6612c1db6d6c52c11de53447264b552ee96bf9cc317de37b3374687a8fc4c4ac",
+        BlobIDs: []string{
+          "sha256:6612c1db6d6c52c11de53447264b552ee96bf9cc317de37b3374687a8fc4c4ac",
+        },
+      },
+    },
 		{
 			name: "passed",
 			fields: fields{
 				dir: "./testdata/misconfig/cloudformation/passed/src",
 			},
 			artifactOpt: artifact.Option{
-				AnalyzerGroup:     "",
-				DisabledAnalyzers: nil,
-				DisabledHandlers:  nil,
-				SkipFiles:         nil,
-				SkipDirs:          nil,
-				NoProgress:        false,
-				Offline:           false,
-				InsecureSkipTLS:   false,
 				MisconfScannerOption: config.ScannerOption{
 					RegoOnly:    true,
 					Namespaces:  []string{"user"},
@@ -907,59 +1092,87 @@ func TestCloudFormationMisconfigurationScan(t *testing.T) {
 				Args: cache.ArtifactCachePutBlobArgs{
 					BlobIDAnything: true,
 					BlobInfo: types.BlobInfo{
-						SchemaVersion: 2, Digest: "", DiffID: "", CreatedBy: "", OpaqueDirs: []string(nil),
-						WhiteoutFiles: []string(nil), OS: (*types.OS)(nil), Repository: (*types.Repository)(nil),
-						PackageInfos: []types.PackageInfo(nil), Applications: []types.Application(nil),
+						SchemaVersion: 2,
 						Misconfigurations: []types.Misconfiguration{
-							types.Misconfiguration{
-								FileType: "cloudformation", FilePath: "main.yaml", Successes: types.MisconfResults{
-									types.MisconfResult{
+							{
+								FileType: "cloudformation",
+								FilePath: "main.yaml",
+								Successes: types.MisconfResults{
+									{
 										Namespace: "builtin.aws.rds.aws0176",
-										Query:     "data.builtin.aws.rds.aws0176.deny", Message: "",
+										Query:     "data.builtin.aws.rds.aws0176.deny",
 										PolicyMetadata: types.PolicyMetadata{
-											ID: "N/A", AVDID: "AVD-AWS-0176", Type: "CloudFormation Security Check",
+											ID:                 "N/A",
+											AVDID:              "AVD-AWS-0176",
+											Type:               "CloudFormation Security Check",
 											Title:              "RDS IAM Database Authentication Disabled",
 											Description:        "Ensure IAM Database Authentication is enabled for RDS database instances to manage database access",
 											Severity:           "MEDIUM",
 											RecommendedActions: "Modify the PostgreSQL and MySQL type RDS instances to enable IAM database authentication.",
 											References:         []string{"https://docs.aws.amazon.com/neptune/latest/userguide/iam-auth.html"},
-										}, CauseMetadata: types.CauseMetadata{
-											Resource: "", Provider: "AWS", Service: "rds", StartLine: 0, EndLine: 0,
-											Code: types.Code{Lines: []types.Line(nil)},
-										}, Traces: []string(nil),
-									}, types.MisconfResult{
+										},
+										CauseMetadata: types.CauseMetadata{
+											Provider: "AWS",
+											Service:  "rds",
+										},
+									},
+									{
 										Namespace: "builtin.aws.rds.aws0177",
-										Query:     "data.builtin.aws.rds.aws0177.deny", Message: "",
+										Query:     "data.builtin.aws.rds.aws0177.deny",
 										PolicyMetadata: types.PolicyMetadata{
-											ID: "N/A", AVDID: "AVD-AWS-0177", Type: "CloudFormation Security Check",
+											ID:                 "N/A",
+											AVDID:              "AVD-AWS-0177",
+											Type:               "CloudFormation Security Check",
 											Title:              "RDS Deletion Protection Disabled",
 											Description:        "Ensure deletion protection is enabled for RDS database instances.",
 											Severity:           "MEDIUM",
 											RecommendedActions: "Modify the RDS instances to enable deletion protection.",
 											References:         []string{"https://aws.amazon.com/about-aws/whats-new/2018/09/amazon-rds-now-provides-database-deletion-protection/"},
-										}, CauseMetadata: types.CauseMetadata{
+										},
+										CauseMetadata: types.CauseMetadata{
+											Provider: "AWS",
+											Service:  "rds",
+										},
+									},
+									{
+										Namespace: "builtin.aws.rds.aws0180",
+										Query:     "data.builtin.aws.rds.aws0180.deny",
+										PolicyMetadata: types.PolicyMetadata{
+											ID:                 "N/A",
+											AVDID:              "AVD-AWS-0180",
+											Type:               "CloudFormation Security Check",
+											Title:              "RDS Publicly Accessible",
+											Description:        "Ensures RDS instances are not launched into the public cloud.",
+											Severity:           "HIGH",
+											RecommendedActions: "Remove the public endpoint from the RDS instance'",
+											References:         []string{"http://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_VPC.html"},
+										},
+										CauseMetadata: types.CauseMetadata{
 											Resource: "", Provider: "AWS", Service: "rds", StartLine: 0, EndLine: 0,
 											Code: types.Code{Lines: []types.Line(nil)},
 										}, Traces: []string(nil),
-									}, types.MisconfResult{
-										Namespace: "user.something", Query: "data.user.something.deny", Message: "",
+									},
+									{
+										Namespace: "user.something",
+										Query:     "data.user.something.deny",
 										PolicyMetadata: types.PolicyMetadata{
-											ID: "TEST001", AVDID: "AVD-TEST-0001",
-											Type: "CloudFormation Security Check", Title: "Test policy",
-											Description: "This is a test policy.", Severity: "LOW",
+											ID:                 "TEST001",
+											AVDID:              "AVD-TEST-0001",
+											Type:               "CloudFormation Security Check",
+											Title:              "Test policy",
+											Description:        "This is a test policy.",
+											Severity:           "LOW",
 											RecommendedActions: "Have a cup of tea.",
 											References:         []string{"https://trivy.dev/"},
-										}, CauseMetadata: types.CauseMetadata{
-											Resource: "", Provider: "Generic", Service: "general", StartLine: 0,
-											EndLine: 0, Code: types.Code{Lines: []types.Line(nil)},
-										}, Traces: []string(nil),
+										},
+										CauseMetadata: types.CauseMetadata{
+											Provider: "Generic",
+											Service:  "general",
+										},
 									},
-								}, Warnings: types.MisconfResults(nil), Failures: types.MisconfResults(nil),
-								Exceptions: types.MisconfResults(nil),
-								Layer:      types.Layer{Digest: "", DiffID: "", CreatedBy: ""},
+								},
 							},
-						}, Secrets: []types.Secret(nil), Licenses: []types.LicenseFile(nil),
-						BuildInfo: (*types.BuildInfo)(nil), CustomResources: []types.CustomResource(nil),
+						},
 					},
 				},
 				Returns: cache.ArtifactCachePutBlobReturns{},
@@ -967,9 +1180,9 @@ func TestCloudFormationMisconfigurationScan(t *testing.T) {
 			want: types.ArtifactReference{
 				Name: "testdata/misconfig/cloudformation/passed/src",
 				Type: types.ArtifactFilesystem,
-				ID:   "sha256:30bc323c6eb7af47b561df826948fe3981ddd63c27c8a1f5bb516eeb0d361fef",
+				ID:   "sha256:a923fba51d802d1634246662e2e674b4abbce3ed796c8cfd4839f287dfd9033e",
 				BlobIDs: []string{
-					"sha256:30bc323c6eb7af47b561df826948fe3981ddd63c27c8a1f5bb516eeb0d361fef",
+					"sha256:a923fba51d802d1634246662e2e674b4abbce3ed796c8cfd4839f287dfd9033e",
 				},
 			},
 		},
@@ -1009,14 +1222,6 @@ func TestDockerfileMisconfigurationScan(t *testing.T) {
 				dir: "./testdata/misconfig/dockerfile/single-failure/src",
 			},
 			artifactOpt: artifact.Option{
-				AnalyzerGroup:     "",
-				DisabledAnalyzers: nil,
-				DisabledHandlers:  nil,
-				SkipFiles:         nil,
-				SkipDirs:          nil,
-				NoProgress:        false,
-				Offline:           false,
-				InsecureSkipTLS:   false,
 				MisconfScannerOption: config.ScannerOption{
 					RegoOnly:                true,
 					Namespaces:              []string{"user"},
@@ -1029,11 +1234,6 @@ func TestDockerfileMisconfigurationScan(t *testing.T) {
 					BlobIDAnything: true,
 					BlobInfo: types.BlobInfo{
 						SchemaVersion: types.BlobJSONSchemaVersion,
-						Digest:        "", DiffID: "",
-						OS:           (*types.OS)(nil),
-						Repository:   (*types.Repository)(nil),
-						PackageInfos: []types.PackageInfo(nil),
-						Applications: []types.Application(nil),
 						Misconfigurations: []types.Misconfiguration{
 							{
 								FileType: "dockerfile",
@@ -1042,7 +1242,6 @@ func TestDockerfileMisconfigurationScan(t *testing.T) {
 									types.MisconfResult{
 										Namespace: "user.something",
 										Query:     "data.user.something.deny",
-										Message:   "",
 										PolicyMetadata: types.PolicyMetadata{
 											ID:                 "TEST001",
 											AVDID:              "AVD-TEST-0001",
@@ -1054,30 +1253,13 @@ func TestDockerfileMisconfigurationScan(t *testing.T) {
 											References:         []string{"https://trivy.dev/"},
 										},
 										CauseMetadata: types.CauseMetadata{
-											Resource:  "",
-											Provider:  "Generic",
-											Service:   "general",
-											StartLine: 0,
-											EndLine:   0,
-											Code: types.Code{
-												Lines: []types.Line(nil),
-											},
-										}, Traces: []string(nil),
+											Provider: "Generic",
+											Service:  "general",
+										},
 									},
 								},
-								Warnings:   types.MisconfResults(nil),
-								Failures:   types.MisconfResults(nil),
-								Exceptions: types.MisconfResults(nil),
-								Layer: types.Layer{
-									Digest: "",
-									DiffID: "",
-								},
 							},
-						}, Secrets: []types.Secret(nil),
-						OpaqueDirs:      []string(nil),
-						WhiteoutFiles:   []string(nil),
-						BuildInfo:       (*types.BuildInfo)(nil),
-						CustomResources: []types.CustomResource(nil),
+						},
 					},
 				},
 				Returns: cache.ArtifactCachePutBlobReturns{},
@@ -1085,9 +1267,9 @@ func TestDockerfileMisconfigurationScan(t *testing.T) {
 			want: types.ArtifactReference{
 				Name: "testdata/misconfig/dockerfile/single-failure/src",
 				Type: types.ArtifactFilesystem,
-				ID:   "sha256:d93b33f51c455c07767196c2b2eb3312e2b055b0e0db40704092d258fc0ed6ec",
+				ID:   "sha256:acf53660fed1eb7961e3c47f85c8f41a117f7df7a0c09221f6d84fc64737e361",
 				BlobIDs: []string{
-					"sha256:d93b33f51c455c07767196c2b2eb3312e2b055b0e0db40704092d258fc0ed6ec",
+					"sha256:acf53660fed1eb7961e3c47f85c8f41a117f7df7a0c09221f6d84fc64737e361",
 				},
 			},
 		},
@@ -1097,14 +1279,6 @@ func TestDockerfileMisconfigurationScan(t *testing.T) {
 				dir: "./testdata/misconfig/dockerfile/multiple-failures/src",
 			},
 			artifactOpt: artifact.Option{
-				AnalyzerGroup:     "",
-				DisabledAnalyzers: nil,
-				DisabledHandlers:  nil,
-				SkipFiles:         nil,
-				SkipDirs:          nil,
-				NoProgress:        false,
-				Offline:           false,
-				InsecureSkipTLS:   false,
 				MisconfScannerOption: config.ScannerOption{
 					RegoOnly:                true,
 					Namespaces:              []string{"user"},
@@ -1117,12 +1291,6 @@ func TestDockerfileMisconfigurationScan(t *testing.T) {
 					BlobIDAnything: true,
 					BlobInfo: types.BlobInfo{
 						SchemaVersion: types.BlobJSONSchemaVersion,
-						Digest:        "",
-						DiffID:        "",
-						OS:            (*types.OS)(nil),
-						Repository:    (*types.Repository)(nil),
-						PackageInfos:  []types.PackageInfo(nil),
-						Applications:  []types.Application(nil),
 						Misconfigurations: []types.Misconfiguration{
 							{
 								FileType: "dockerfile",
@@ -1131,7 +1299,6 @@ func TestDockerfileMisconfigurationScan(t *testing.T) {
 									types.MisconfResult{
 										Namespace: "user.something",
 										Query:     "data.user.something.deny",
-										Message:   "",
 										PolicyMetadata: types.PolicyMetadata{
 											ID:                 "TEST001",
 											AVDID:              "AVD-TEST-0001",
@@ -1143,30 +1310,13 @@ func TestDockerfileMisconfigurationScan(t *testing.T) {
 											References:         []string{"https://trivy.dev/"},
 										},
 										CauseMetadata: types.CauseMetadata{
-											Resource:  "",
-											Provider:  "Generic",
-											Service:   "general",
-											StartLine: 0,
-											EndLine:   0,
-											Code: types.Code{
-												Lines: []types.Line(nil),
-											},
-										}, Traces: []string(nil),
+											Provider: "Generic",
+											Service:  "general",
+										},
 									},
 								},
-								Warnings:   types.MisconfResults(nil),
-								Failures:   types.MisconfResults(nil),
-								Exceptions: types.MisconfResults(nil),
-								Layer: types.Layer{
-									Digest: "",
-									DiffID: "",
-								},
 							},
-						}, Secrets: []types.Secret(nil),
-						OpaqueDirs:      []string(nil),
-						WhiteoutFiles:   []string(nil),
-						BuildInfo:       (*types.BuildInfo)(nil),
-						CustomResources: []types.CustomResource(nil),
+						},
 					},
 				},
 				Returns: cache.ArtifactCachePutBlobReturns{},
@@ -1174,9 +1324,9 @@ func TestDockerfileMisconfigurationScan(t *testing.T) {
 			want: types.ArtifactReference{
 				Name: "testdata/misconfig/dockerfile/multiple-failures/src",
 				Type: types.ArtifactFilesystem,
-				ID:   "sha256:d93b33f51c455c07767196c2b2eb3312e2b055b0e0db40704092d258fc0ed6ec",
+				ID:   "sha256:acf53660fed1eb7961e3c47f85c8f41a117f7df7a0c09221f6d84fc64737e361",
 				BlobIDs: []string{
-					"sha256:d93b33f51c455c07767196c2b2eb3312e2b055b0e0db40704092d258fc0ed6ec",
+					"sha256:acf53660fed1eb7961e3c47f85c8f41a117f7df7a0c09221f6d84fc64737e361",
 				},
 			},
 		},
@@ -1186,14 +1336,6 @@ func TestDockerfileMisconfigurationScan(t *testing.T) {
 				dir: "./testdata/misconfig/dockerfile/no-results/src",
 			},
 			artifactOpt: artifact.Option{
-				AnalyzerGroup:     "",
-				DisabledAnalyzers: nil,
-				DisabledHandlers:  nil,
-				SkipFiles:         nil,
-				SkipDirs:          nil,
-				NoProgress:        false,
-				Offline:           false,
-				InsecureSkipTLS:   false,
 				MisconfScannerOption: config.ScannerOption{
 					RegoOnly:    true,
 					Namespaces:  []string{"user"},
@@ -1212,9 +1354,9 @@ func TestDockerfileMisconfigurationScan(t *testing.T) {
 			want: types.ArtifactReference{
 				Name: "testdata/misconfig/dockerfile/no-results/src",
 				Type: types.ArtifactFilesystem,
-				ID:   "sha256:cd80d8148f9b4cbc026f71a73d8dc1e35f79f6f39e4e52fe5e9a7821e9d09693",
+				ID:   "sha256:6612c1db6d6c52c11de53447264b552ee96bf9cc317de37b3374687a8fc4c4ac",
 				BlobIDs: []string{
-					"sha256:cd80d8148f9b4cbc026f71a73d8dc1e35f79f6f39e4e52fe5e9a7821e9d09693",
+					"sha256:6612c1db6d6c52c11de53447264b552ee96bf9cc317de37b3374687a8fc4c4ac",
 				},
 			},
 		},
@@ -1224,14 +1366,6 @@ func TestDockerfileMisconfigurationScan(t *testing.T) {
 				dir: "./testdata/misconfig/dockerfile/passed/src",
 			},
 			artifactOpt: artifact.Option{
-				AnalyzerGroup:     "",
-				DisabledAnalyzers: nil,
-				DisabledHandlers:  nil,
-				SkipFiles:         nil,
-				SkipDirs:          nil,
-				NoProgress:        false,
-				Offline:           false,
-				InsecureSkipTLS:   false,
 				MisconfScannerOption: config.ScannerOption{
 					RegoOnly:                true,
 					Namespaces:              []string{"user"},
@@ -1252,7 +1386,6 @@ func TestDockerfileMisconfigurationScan(t *testing.T) {
 									{
 										Namespace: "user.something",
 										Query:     "data.user.something.deny",
-										Message:   "",
 										PolicyMetadata: types.PolicyMetadata{
 											ID:                 "TEST001",
 											AVDID:              "AVD-TEST-0001",
@@ -1266,16 +1399,11 @@ func TestDockerfileMisconfigurationScan(t *testing.T) {
 											},
 										},
 										CauseMetadata: types.CauseMetadata{
-											Resource:  "",
-											Provider:  "Generic",
-											Service:   "general",
-											StartLine: 0,
-											EndLine:   0,
+											Provider: "Generic",
+											Service:  "general",
 										},
-										Traces: nil,
 									},
 								},
-								Layer: types.Layer{},
 							},
 						},
 					},
@@ -1285,9 +1413,9 @@ func TestDockerfileMisconfigurationScan(t *testing.T) {
 			want: types.ArtifactReference{
 				Name: "testdata/misconfig/dockerfile/passed/src",
 				Type: types.ArtifactFilesystem,
-				ID:   "sha256:7218a8e53d2e3eb08efe9f9864767eb0fe6084eaaaef1480064096bbdc2c3f71",
+				ID:   "sha256:78a5071a951a980a53a0df7818384eda36fedd2a0237529a43e12979d3bf36f9",
 				BlobIDs: []string{
-					"sha256:7218a8e53d2e3eb08efe9f9864767eb0fe6084eaaaef1480064096bbdc2c3f71",
+					"sha256:78a5071a951a980a53a0df7818384eda36fedd2a0237529a43e12979d3bf36f9",
 				},
 			},
 		},
@@ -1327,14 +1455,6 @@ func TestKubernetesMisconfigurationScan(t *testing.T) {
 				dir: "./testdata/misconfig/kubernetes/single-failure/src",
 			},
 			artifactOpt: artifact.Option{
-				AnalyzerGroup:     "",
-				DisabledAnalyzers: nil,
-				DisabledHandlers:  nil,
-				SkipFiles:         nil,
-				SkipDirs:          nil,
-				NoProgress:        false,
-				Offline:           false,
-				InsecureSkipTLS:   false,
 				MisconfScannerOption: config.ScannerOption{
 					RegoOnly:                true,
 					Namespaces:              []string{"user"},
@@ -1349,10 +1469,8 @@ func TestKubernetesMisconfigurationScan(t *testing.T) {
 						SchemaVersion: types.BlobJSONSchemaVersion,
 						Misconfigurations: []types.Misconfiguration{
 							{
-								FileType:  "kubernetes",
-								FilePath:  "test.yaml",
-								Successes: nil,
-								Warnings:  nil,
+								FileType: "kubernetes",
+								FilePath: "test.yaml",
 								Failures: []types.MisconfResult{
 									{
 										Namespace: "user.something",
@@ -1376,11 +1494,8 @@ func TestKubernetesMisconfigurationScan(t *testing.T) {
 											StartLine: 7,
 											EndLine:   9,
 										},
-										Traces: nil,
 									},
 								},
-								Exceptions: nil,
-								Layer:      types.Layer{},
 							},
 						},
 					},
@@ -1390,9 +1505,9 @@ func TestKubernetesMisconfigurationScan(t *testing.T) {
 			want: types.ArtifactReference{
 				Name: "testdata/misconfig/kubernetes/single-failure/src",
 				Type: types.ArtifactFilesystem,
-				ID:   "sha256:599ae82c0d032acbe75e24379b4320fb7f0a9818da50b4635c4f0645504d5a72",
+				ID:   "sha256:2a60e6a9b9cf1ab3c083f4e52a38d3c70026ab331b771d449b06f4ffd4b6f2dd",
 				BlobIDs: []string{
-					"sha256:599ae82c0d032acbe75e24379b4320fb7f0a9818da50b4635c4f0645504d5a72",
+					"sha256:2a60e6a9b9cf1ab3c083f4e52a38d3c70026ab331b771d449b06f4ffd4b6f2dd",
 				},
 			},
 		},
@@ -1402,14 +1517,6 @@ func TestKubernetesMisconfigurationScan(t *testing.T) {
 				dir: "./testdata/misconfig/kubernetes/multiple-failures/src",
 			},
 			artifactOpt: artifact.Option{
-				AnalyzerGroup:     "",
-				DisabledAnalyzers: nil,
-				DisabledHandlers:  nil,
-				SkipFiles:         nil,
-				SkipDirs:          nil,
-				NoProgress:        false,
-				Offline:           false,
-				InsecureSkipTLS:   false,
 				MisconfScannerOption: config.ScannerOption{
 					RegoOnly:                true,
 					Namespaces:              []string{"user"},
@@ -1424,10 +1531,8 @@ func TestKubernetesMisconfigurationScan(t *testing.T) {
 						SchemaVersion: types.BlobJSONSchemaVersion,
 						Misconfigurations: []types.Misconfiguration{
 							{
-								FileType:  "kubernetes",
-								FilePath:  "test.yaml",
-								Successes: nil,
-								Warnings:  nil,
+								FileType: "kubernetes",
+								FilePath: "test.yaml",
 								Failures: []types.MisconfResult{
 									{
 										Namespace: "user.something",
@@ -1451,7 +1556,6 @@ func TestKubernetesMisconfigurationScan(t *testing.T) {
 											StartLine: 7,
 											EndLine:   9,
 										},
-										Traces: nil,
 									},
 									{
 										Namespace: "user.something",
@@ -1475,11 +1579,8 @@ func TestKubernetesMisconfigurationScan(t *testing.T) {
 											StartLine: 10,
 											EndLine:   12,
 										},
-										Traces: nil,
 									},
 								},
-								Exceptions: nil,
-								Layer:      types.Layer{},
 							},
 						},
 					},
@@ -1489,9 +1590,9 @@ func TestKubernetesMisconfigurationScan(t *testing.T) {
 			want: types.ArtifactReference{
 				Name: "testdata/misconfig/kubernetes/multiple-failures/src",
 				Type: types.ArtifactFilesystem,
-				ID:   "sha256:fd62e7fdfeffa3df4653c100cc87fe0bc83ddbca918c41b73c7a5724a64619df",
+				ID:   "sha256:56675c845f72190c9a6277d51a0c8248768d5322ea0d92650d1cc179f20d920e",
 				BlobIDs: []string{
-					"sha256:fd62e7fdfeffa3df4653c100cc87fe0bc83ddbca918c41b73c7a5724a64619df",
+					"sha256:56675c845f72190c9a6277d51a0c8248768d5322ea0d92650d1cc179f20d920e",
 				},
 			},
 		},
@@ -1501,14 +1602,6 @@ func TestKubernetesMisconfigurationScan(t *testing.T) {
 				dir: "./testdata/misconfig/kubernetes/no-results/src",
 			},
 			artifactOpt: artifact.Option{
-				AnalyzerGroup:     "",
-				DisabledAnalyzers: nil,
-				DisabledHandlers:  nil,
-				SkipFiles:         nil,
-				SkipDirs:          nil,
-				NoProgress:        false,
-				Offline:           false,
-				InsecureSkipTLS:   false,
 				MisconfScannerOption: config.ScannerOption{
 					RegoOnly:    true,
 					Namespaces:  []string{"user"},
@@ -1527,9 +1620,9 @@ func TestKubernetesMisconfigurationScan(t *testing.T) {
 			want: types.ArtifactReference{
 				Name: "testdata/misconfig/kubernetes/no-results/src",
 				Type: types.ArtifactFilesystem,
-				ID:   "sha256:b46953af7375260e0bf264328c8b156ee3341ff46794c0f09c65bce78b0eddb9",
+				ID:   "sha256:f1bc1b154a70ae2e1d94297ffcf721348d1975037ccd4a32f4f1157738cbe54d",
 				BlobIDs: []string{
-					"sha256:b46953af7375260e0bf264328c8b156ee3341ff46794c0f09c65bce78b0eddb9",
+					"sha256:f1bc1b154a70ae2e1d94297ffcf721348d1975037ccd4a32f4f1157738cbe54d",
 				},
 			},
 		},
@@ -1539,14 +1632,6 @@ func TestKubernetesMisconfigurationScan(t *testing.T) {
 				dir: "./testdata/misconfig/kubernetes/passed/src",
 			},
 			artifactOpt: artifact.Option{
-				AnalyzerGroup:     "",
-				DisabledAnalyzers: nil,
-				DisabledHandlers:  nil,
-				SkipFiles:         nil,
-				SkipDirs:          nil,
-				NoProgress:        false,
-				Offline:           false,
-				InsecureSkipTLS:   false,
 				MisconfScannerOption: config.ScannerOption{
 					RegoOnly:                true,
 					Namespaces:              []string{"user"},
@@ -1567,7 +1652,6 @@ func TestKubernetesMisconfigurationScan(t *testing.T) {
 									{
 										Namespace: "user.something",
 										Query:     "data.user.something.deny",
-										Message:   "",
 										PolicyMetadata: types.PolicyMetadata{
 											ID:                 "TEST001",
 											AVDID:              "AVD-TEST-0001",
@@ -1581,16 +1665,11 @@ func TestKubernetesMisconfigurationScan(t *testing.T) {
 											},
 										},
 										CauseMetadata: types.CauseMetadata{
-											Resource:  "",
-											Provider:  "Generic",
-											Service:   "general",
-											StartLine: 0,
-											EndLine:   0,
+											Provider: "Generic",
+											Service:  "general",
 										},
-										Traces: nil,
 									},
 								},
-								Layer: types.Layer{},
 							},
 						},
 					},
@@ -1600,9 +1679,9 @@ func TestKubernetesMisconfigurationScan(t *testing.T) {
 			want: types.ArtifactReference{
 				Name: "testdata/misconfig/kubernetes/passed/src",
 				Type: types.ArtifactFilesystem,
-				ID:   "sha256:5b110611834af3e26a4c7aa5623f9e20098c46b394a29a0881a1a3852a114578",
+				ID:   "sha256:64fd37028d8cb4aefa49d6fa8438fa3a7e08ca331bfdfad22faf91e31ca0ff29",
 				BlobIDs: []string{
-					"sha256:5b110611834af3e26a4c7aa5623f9e20098c46b394a29a0881a1a3852a114578",
+					"sha256:64fd37028d8cb4aefa49d6fa8438fa3a7e08ca331bfdfad22faf91e31ca0ff29",
 				},
 			},
 		},
@@ -1642,14 +1721,6 @@ func TestAzureARMMisconfigurationScan(t *testing.T) {
 				dir: "./testdata/misconfig/azurearm/single-failure/src",
 			},
 			artifactOpt: artifact.Option{
-				AnalyzerGroup:     "",
-				DisabledAnalyzers: nil,
-				DisabledHandlers:  nil,
-				SkipFiles:         nil,
-				SkipDirs:          nil,
-				NoProgress:        false,
-				Offline:           false,
-				InsecureSkipTLS:   false,
 				MisconfScannerOption: config.ScannerOption{
 					RegoOnly:    true,
 					Namespaces:  []string{"user"},
@@ -1660,59 +1731,93 @@ func TestAzureARMMisconfigurationScan(t *testing.T) {
 				Args: cache.ArtifactCachePutBlobArgs{
 					BlobIDAnything: true,
 					BlobInfo: types.BlobInfo{
-						SchemaVersion: 2, Digest: "", DiffID: "", CreatedBy: "", OpaqueDirs: []string(nil),
-						WhiteoutFiles: []string(nil), OS: (*types.OS)(nil), Repository: (*types.Repository)(nil),
-						PackageInfos: []types.PackageInfo(nil), Applications: []types.Application(nil),
+						SchemaVersion: 2,
 						Misconfigurations: []types.Misconfiguration{
-							types.Misconfiguration{
-								FileType: "azure-arm", FilePath: "deploy.json", Successes: types.MisconfResults{
-									types.MisconfResult{
+							{
+								FileType: "azure-arm",
+								FilePath: "deploy.json",
+								Successes: types.MisconfResults{
+									{
 										Namespace: "builtin.aws.rds.aws0176",
-										Query:     "data.builtin.aws.rds.aws0176.deny", Message: "",
+										Query:     "data.builtin.aws.rds.aws0176.deny",
 										PolicyMetadata: types.PolicyMetadata{
-											ID: "N/A", AVDID: "AVD-AWS-0176", Type: "Azure ARM Security Check",
+											ID:                 "N/A",
+											AVDID:              "AVD-AWS-0176",
+											Type:               "Azure ARM Security Check",
 											Title:              "RDS IAM Database Authentication Disabled",
 											Description:        "Ensure IAM Database Authentication is enabled for RDS database instances to manage database access",
 											Severity:           "MEDIUM",
 											RecommendedActions: "Modify the PostgreSQL and MySQL type RDS instances to enable IAM database authentication.",
 											References:         []string{"https://docs.aws.amazon.com/neptune/latest/userguide/iam-auth.html"},
-										}, CauseMetadata: types.CauseMetadata{
-											Resource: "", Provider: "AWS", Service: "rds", StartLine: 0, EndLine: 0,
-											Code: types.Code{Lines: []types.Line(nil)},
-										}, Traces: []string(nil),
-									}, types.MisconfResult{
+										},
+										CauseMetadata: types.CauseMetadata{
+											Provider: "AWS",
+											Service:  "rds",
+										},
+									},
+									{
 										Namespace: "builtin.aws.rds.aws0177",
-										Query:     "data.builtin.aws.rds.aws0177.deny", Message: "",
+										Query:     "data.builtin.aws.rds.aws0177.deny",
 										PolicyMetadata: types.PolicyMetadata{
-											ID: "N/A", AVDID: "AVD-AWS-0177", Type: "Azure ARM Security Check",
+											ID:                 "N/A",
+											AVDID:              "AVD-AWS-0177",
+											Type:               "Azure ARM Security Check",
 											Title:              "RDS Deletion Protection Disabled",
 											Description:        "Ensure deletion protection is enabled for RDS database instances.",
 											Severity:           "MEDIUM",
 											RecommendedActions: "Modify the RDS instances to enable deletion protection.",
 											References:         []string{"https://aws.amazon.com/about-aws/whats-new/2018/09/amazon-rds-now-provides-database-deletion-protection/"},
-										}, CauseMetadata: types.CauseMetadata{
+										},
+										CauseMetadata: types.CauseMetadata{
+											Provider: "AWS",
+											Service:  "rds",
+										},
+									},
+										{
+										Namespace: "builtin.aws.rds.aws0180",
+										Query:     "data.builtin.aws.rds.aws0180.deny",
+										PolicyMetadata: types.PolicyMetadata{
+											ID:                 "N/A",
+											AVDID:              "AVD-AWS-0180",
+											Type:               "Azure ARM Security Check",
+											Title:              "RDS Publicly Accessible",
+											Description:        "Ensures RDS instances are not launched into the public cloud.",
+											Severity:           "HIGH",
+											RecommendedActions: "Remove the public endpoint from the RDS instance'",
+											References:         []string{"http://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_VPC.html"},
+										},
+										CauseMetadata: types.CauseMetadata{
 											Resource: "", Provider: "AWS", Service: "rds", StartLine: 0, EndLine: 0,
 											Code: types.Code{Lines: []types.Line(nil)},
 										}, Traces: []string(nil),
 									},
-								}, Warnings: types.MisconfResults(nil), Failures: types.MisconfResults{
-									types.MisconfResult{
-										Namespace: "user.something", Query: "data.user.something.deny",
-										Message: "No account allowed!", PolicyMetadata: types.PolicyMetadata{
-											ID: "TEST001", AVDID: "AVD-TEST-0001", Type: "Azure ARM Security Check",
-											Title: "Test policy", Description: "This is a test policy.",
-											Severity: "LOW", RecommendedActions: "Have a cup of tea.",
-											References: []string{"https://trivy.dev/"},
-										}, CauseMetadata: types.CauseMetadata{
-											Resource: "resources[0]", Provider: "Generic", Service: "general",
-											StartLine: 29, EndLine: 39, Code: types.Code{Lines: []types.Line(nil)},
-										}, Traces: []string(nil),
+								},
+								Failures: types.MisconfResults{
+									{
+										Namespace: "user.something",
+										Query:     "data.user.something.deny",
+										Message:   "No account allowed!",
+										PolicyMetadata: types.PolicyMetadata{
+											ID:                 "TEST001",
+											AVDID:              "AVD-TEST-0001",
+											Type:               "Azure ARM Security Check",
+											Title:              "Test policy",
+											Description:        "This is a test policy.",
+											Severity:           "LOW",
+											RecommendedActions: "Have a cup of tea.",
+											References:         []string{"https://trivy.dev/"},
+										},
+										CauseMetadata: types.CauseMetadata{
+											Resource:  "resources[0]",
+											Provider:  "Generic",
+											Service:   "general",
+											StartLine: 30,
+											EndLine:   40,
+										},
 									},
-								}, Exceptions: types.MisconfResults(nil),
-								Layer: types.Layer{Digest: "", DiffID: "", CreatedBy: ""},
+								},
 							},
-						}, Secrets: []types.Secret(nil), Licenses: []types.LicenseFile(nil),
-						BuildInfo: (*types.BuildInfo)(nil), CustomResources: []types.CustomResource(nil),
+						},
 					},
 				},
 				Returns: cache.ArtifactCachePutBlobReturns{},
@@ -1720,9 +1825,9 @@ func TestAzureARMMisconfigurationScan(t *testing.T) {
 			want: types.ArtifactReference{
 				Name: "testdata/misconfig/azurearm/single-failure/src",
 				Type: types.ArtifactFilesystem,
-				ID:   "sha256:1113fd88abfa3727496c9a5e2e47c522d0197fa0c58d9b0472ff5715aa5dbe79",
+				ID:   "sha256:50155d7398d717aac20a616af8ac17964d20a24f5423b868871005dfa2cf4a61",
 				BlobIDs: []string{
-					"sha256:1113fd88abfa3727496c9a5e2e47c522d0197fa0c58d9b0472ff5715aa5dbe79",
+					"sha256:50155d7398d717aac20a616af8ac17964d20a24f5423b868871005dfa2cf4a61",
 				},
 			},
 		},
@@ -1732,14 +1837,6 @@ func TestAzureARMMisconfigurationScan(t *testing.T) {
 				dir: "./testdata/misconfig/azurearm/multiple-failures/src",
 			},
 			artifactOpt: artifact.Option{
-				AnalyzerGroup:     "",
-				DisabledAnalyzers: nil,
-				DisabledHandlers:  nil,
-				SkipFiles:         nil,
-				SkipDirs:          nil,
-				NoProgress:        false,
-				Offline:           false,
-				InsecureSkipTLS:   false,
 				MisconfScannerOption: config.ScannerOption{
 					RegoOnly:    true,
 					Namespaces:  []string{"user"},
@@ -1750,70 +1847,115 @@ func TestAzureARMMisconfigurationScan(t *testing.T) {
 				Args: cache.ArtifactCachePutBlobArgs{
 					BlobIDAnything: true,
 					BlobInfo: types.BlobInfo{
-						SchemaVersion: 2, Digest: "", DiffID: "", CreatedBy: "", OpaqueDirs: []string(nil),
-						WhiteoutFiles: []string(nil), OS: (*types.OS)(nil), Repository: (*types.Repository)(nil),
-						PackageInfos: []types.PackageInfo(nil), Applications: []types.Application(nil),
+						SchemaVersion: 2,
 						Misconfigurations: []types.Misconfiguration{
-							types.Misconfiguration{
-								FileType: "azure-arm", FilePath: "deploy.json", Successes: types.MisconfResults{
-									types.MisconfResult{
+							{
+								FileType: "azure-arm",
+								FilePath: "deploy.json",
+								Successes: types.MisconfResults{
+									{
 										Namespace: "builtin.aws.rds.aws0176",
-										Query:     "data.builtin.aws.rds.aws0176.deny", Message: "",
+										Query:     "data.builtin.aws.rds.aws0176.deny",
 										PolicyMetadata: types.PolicyMetadata{
-											ID: "N/A", AVDID: "AVD-AWS-0176", Type: "Azure ARM Security Check",
+											ID:                 "N/A",
+											AVDID:              "AVD-AWS-0176",
+											Type:               "Azure ARM Security Check",
 											Title:              "RDS IAM Database Authentication Disabled",
 											Description:        "Ensure IAM Database Authentication is enabled for RDS database instances to manage database access",
 											Severity:           "MEDIUM",
 											RecommendedActions: "Modify the PostgreSQL and MySQL type RDS instances to enable IAM database authentication.",
 											References:         []string{"https://docs.aws.amazon.com/neptune/latest/userguide/iam-auth.html"},
-										}, CauseMetadata: types.CauseMetadata{
-											Resource: "", Provider: "AWS", Service: "rds", StartLine: 0, EndLine: 0,
-											Code: types.Code{Lines: []types.Line(nil)},
-										}, Traces: []string(nil),
-									}, types.MisconfResult{
+										},
+										CauseMetadata: types.CauseMetadata{
+											Provider: "AWS",
+											Service:  "rds",
+										},
+									},
+									{
 										Namespace: "builtin.aws.rds.aws0177",
-										Query:     "data.builtin.aws.rds.aws0177.deny", Message: "",
+										Query:     "data.builtin.aws.rds.aws0177.deny",
 										PolicyMetadata: types.PolicyMetadata{
-											ID: "N/A", AVDID: "AVD-AWS-0177", Type: "Azure ARM Security Check",
+											ID:                 "N/A",
+											AVDID:              "AVD-AWS-0177",
+											Type:               "Azure ARM Security Check",
 											Title:              "RDS Deletion Protection Disabled",
 											Description:        "Ensure deletion protection is enabled for RDS database instances.",
 											Severity:           "MEDIUM",
 											RecommendedActions: "Modify the RDS instances to enable deletion protection.",
 											References:         []string{"https://aws.amazon.com/about-aws/whats-new/2018/09/amazon-rds-now-provides-database-deletion-protection/"},
-										}, CauseMetadata: types.CauseMetadata{
+										},
+										CauseMetadata: types.CauseMetadata{
+											Provider: "AWS",
+											Service:  "rds",
+										},
+									},
+									{
+										Namespace: "builtin.aws.rds.aws0180",
+										Query:     "data.builtin.aws.rds.aws0180.deny",
+										PolicyMetadata: types.PolicyMetadata{
+											ID:                 "N/A",
+											AVDID:              "AVD-AWS-0180",
+											Type:               "Azure ARM Security Check",
+											Title:              "RDS Publicly Accessible",
+											Description:        "Ensures RDS instances are not launched into the public cloud.",
+											Severity:           "HIGH",
+											RecommendedActions: "Remove the public endpoint from the RDS instance'",
+											References:         []string{"http://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_VPC.html"},
+										},
+										CauseMetadata: types.CauseMetadata{
 											Resource: "", Provider: "AWS", Service: "rds", StartLine: 0, EndLine: 0,
 											Code: types.Code{Lines: []types.Line(nil)},
 										}, Traces: []string(nil),
 									},
-								}, Warnings: types.MisconfResults(nil), Failures: types.MisconfResults{
-									types.MisconfResult{
-										Namespace: "user.something", Query: "data.user.something.deny",
-										Message: "No account allowed!", PolicyMetadata: types.PolicyMetadata{
-											ID: "TEST001", AVDID: "AVD-TEST-0001", Type: "Azure ARM Security Check",
-											Title: "Test policy", Description: "This is a test policy.",
-											Severity: "LOW", RecommendedActions: "Have a cup of tea.",
-											References: []string{"https://trivy.dev/"},
-										}, CauseMetadata: types.CauseMetadata{
-											Resource: "resources[0]", Provider: "Generic", Service: "general",
-											StartLine: 29, EndLine: 39, Code: types.Code{Lines: []types.Line(nil)},
-										}, Traces: []string(nil),
-									}, types.MisconfResult{
-										Namespace: "user.something", Query: "data.user.something.deny",
-										Message: "No account allowed!", PolicyMetadata: types.PolicyMetadata{
-											ID: "TEST001", AVDID: "AVD-TEST-0001", Type: "Azure ARM Security Check",
-											Title: "Test policy", Description: "This is a test policy.",
-											Severity: "LOW", RecommendedActions: "Have a cup of tea.",
-											References: []string{"https://trivy.dev/"},
-										}, CauseMetadata: types.CauseMetadata{
-											Resource: "resources[1]", Provider: "Generic", Service: "general",
-											StartLine: 40, EndLine: 50, Code: types.Code{Lines: []types.Line(nil)},
-										}, Traces: []string(nil),
+								},
+								Failures: types.MisconfResults{
+									{
+										Namespace: "user.something",
+										Query:     "data.user.something.deny",
+										Message:   "No account allowed!",
+										PolicyMetadata: types.PolicyMetadata{
+											ID:                 "TEST001",
+											AVDID:              "AVD-TEST-0001",
+											Type:               "Azure ARM Security Check",
+											Title:              "Test policy",
+											Description:        "This is a test policy.",
+											Severity:           "LOW",
+											RecommendedActions: "Have a cup of tea.",
+											References:         []string{"https://trivy.dev/"},
+										},
+										CauseMetadata: types.CauseMetadata{
+											Resource:  "resources[0]",
+											Provider:  "Generic",
+											Service:   "general",
+											StartLine: 30,
+											EndLine:   40,
+										},
 									},
-								}, Exceptions: types.MisconfResults(nil),
-								Layer: types.Layer{Digest: "", DiffID: "", CreatedBy: ""},
+									{
+										Namespace: "user.something",
+										Query:     "data.user.something.deny",
+										Message:   "No account allowed!",
+										PolicyMetadata: types.PolicyMetadata{
+											ID:                 "TEST001",
+											AVDID:              "AVD-TEST-0001",
+											Type:               "Azure ARM Security Check",
+											Title:              "Test policy",
+											Description:        "This is a test policy.",
+											Severity:           "LOW",
+											RecommendedActions: "Have a cup of tea.",
+											References:         []string{"https://trivy.dev/"},
+										},
+										CauseMetadata: types.CauseMetadata{
+											Resource:  "resources[1]",
+											Provider:  "Generic",
+											Service:   "general",
+											StartLine: 41,
+											EndLine:   51,
+										},
+									},
+								},
 							},
-						}, Secrets: []types.Secret(nil), Licenses: []types.LicenseFile(nil),
-						BuildInfo: (*types.BuildInfo)(nil), CustomResources: []types.CustomResource(nil),
+						},
 					},
 				},
 				Returns: cache.ArtifactCachePutBlobReturns{},
@@ -1821,9 +1963,9 @@ func TestAzureARMMisconfigurationScan(t *testing.T) {
 			want: types.ArtifactReference{
 				Name: "testdata/misconfig/azurearm/multiple-failures/src",
 				Type: types.ArtifactFilesystem,
-				ID:   "sha256:f75d8c2df3cd95fa0972ad064ca7c4c4bfc614b69a1220bb1b0e31b0c97cf2aa",
+				ID:   "sha256:e31c260a87a099d00acc76b7afe5d6a88e18c5e0fd26153d15e1b4f491b7c42c",
 				BlobIDs: []string{
-					"sha256:f75d8c2df3cd95fa0972ad064ca7c4c4bfc614b69a1220bb1b0e31b0c97cf2aa",
+					"sha256:e31c260a87a099d00acc76b7afe5d6a88e18c5e0fd26153d15e1b4f491b7c42c",
 				},
 			},
 		},
@@ -1833,14 +1975,6 @@ func TestAzureARMMisconfigurationScan(t *testing.T) {
 				dir: "./testdata/misconfig/azurearm/no-results/src",
 			},
 			artifactOpt: artifact.Option{
-				AnalyzerGroup:     "",
-				DisabledAnalyzers: nil,
-				DisabledHandlers:  nil,
-				SkipFiles:         nil,
-				SkipDirs:          nil,
-				NoProgress:        false,
-				Offline:           false,
-				InsecureSkipTLS:   false,
 				MisconfScannerOption: config.ScannerOption{
 					RegoOnly:    true,
 					Namespaces:  []string{"user"},
@@ -1859,9 +1993,9 @@ func TestAzureARMMisconfigurationScan(t *testing.T) {
 			want: types.ArtifactReference{
 				Name: "testdata/misconfig/azurearm/no-results/src",
 				Type: types.ArtifactFilesystem,
-				ID:   "sha256:cd80d8148f9b4cbc026f71a73d8dc1e35f79f6f39e4e52fe5e9a7821e9d09693",
+				ID:   "sha256:6612c1db6d6c52c11de53447264b552ee96bf9cc317de37b3374687a8fc4c4ac",
 				BlobIDs: []string{
-					"sha256:cd80d8148f9b4cbc026f71a73d8dc1e35f79f6f39e4e52fe5e9a7821e9d09693",
+					"sha256:6612c1db6d6c52c11de53447264b552ee96bf9cc317de37b3374687a8fc4c4ac",
 				},
 			},
 		},
@@ -1871,14 +2005,6 @@ func TestAzureARMMisconfigurationScan(t *testing.T) {
 				dir: "./testdata/misconfig/azurearm/passed/src",
 			},
 			artifactOpt: artifact.Option{
-				AnalyzerGroup:     "",
-				DisabledAnalyzers: nil,
-				DisabledHandlers:  nil,
-				SkipFiles:         nil,
-				SkipDirs:          nil,
-				NoProgress:        false,
-				Offline:           false,
-				InsecureSkipTLS:   false,
 				MisconfScannerOption: config.ScannerOption{
 					RegoOnly:    true,
 					Namespaces:  []string{"user"},
@@ -1889,58 +2015,86 @@ func TestAzureARMMisconfigurationScan(t *testing.T) {
 				Args: cache.ArtifactCachePutBlobArgs{
 					BlobIDAnything: true,
 					BlobInfo: types.BlobInfo{
-						SchemaVersion: 2, Digest: "", DiffID: "", CreatedBy: "", OpaqueDirs: []string(nil),
-						WhiteoutFiles: []string(nil), OS: (*types.OS)(nil), Repository: (*types.Repository)(nil),
-						PackageInfos: []types.PackageInfo(nil), Applications: []types.Application(nil),
+						SchemaVersion: 2,
 						Misconfigurations: []types.Misconfiguration{
-							types.Misconfiguration{
-								FileType: "azure-arm", FilePath: "deploy.json", Successes: types.MisconfResults{
-									types.MisconfResult{
+							{
+								FileType: "azure-arm",
+								FilePath: "deploy.json",
+								Successes: types.MisconfResults{
+									{
 										Namespace: "builtin.aws.rds.aws0176",
-										Query:     "data.builtin.aws.rds.aws0176.deny", Message: "",
+										Query:     "data.builtin.aws.rds.aws0176.deny",
 										PolicyMetadata: types.PolicyMetadata{
-											ID: "N/A", AVDID: "AVD-AWS-0176", Type: "Azure ARM Security Check",
+											ID:                 "N/A",
+											AVDID:              "AVD-AWS-0176",
+											Type:               "Azure ARM Security Check",
 											Title:              "RDS IAM Database Authentication Disabled",
 											Description:        "Ensure IAM Database Authentication is enabled for RDS database instances to manage database access",
 											Severity:           "MEDIUM",
 											RecommendedActions: "Modify the PostgreSQL and MySQL type RDS instances to enable IAM database authentication.",
 											References:         []string{"https://docs.aws.amazon.com/neptune/latest/userguide/iam-auth.html"},
-										}, CauseMetadata: types.CauseMetadata{
-											Resource: "", Provider: "AWS", Service: "rds", StartLine: 0, EndLine: 0,
-											Code: types.Code{Lines: []types.Line(nil)},
-										}, Traces: []string(nil),
-									}, types.MisconfResult{
+										},
+										CauseMetadata: types.CauseMetadata{
+											Provider: "AWS",
+											Service:  "rds",
+										},
+									},
+									{
 										Namespace: "builtin.aws.rds.aws0177",
-										Query:     "data.builtin.aws.rds.aws0177.deny", Message: "",
+										Query:     "data.builtin.aws.rds.aws0177.deny",
 										PolicyMetadata: types.PolicyMetadata{
-											ID: "N/A", AVDID: "AVD-AWS-0177", Type: "Azure ARM Security Check",
+											ID:                 "N/A",
+											AVDID:              "AVD-AWS-0177",
+											Type:               "Azure ARM Security Check",
 											Title:              "RDS Deletion Protection Disabled",
 											Description:        "Ensure deletion protection is enabled for RDS database instances.",
 											Severity:           "MEDIUM",
 											RecommendedActions: "Modify the RDS instances to enable deletion protection.",
 											References:         []string{"https://aws.amazon.com/about-aws/whats-new/2018/09/amazon-rds-now-provides-database-deletion-protection/"},
 										}, CauseMetadata: types.CauseMetadata{
+											Provider: "AWS",
+											Service:  "rds",
+										},
+									},
+									{
+										Namespace: "builtin.aws.rds.aws0180",
+										Query:     "data.builtin.aws.rds.aws0180.deny",
+										PolicyMetadata: types.PolicyMetadata{
+											ID:                 "N/A",
+											AVDID:              "AVD-AWS-0180",
+											Type:               "Azure ARM Security Check",
+											Title:              "RDS Publicly Accessible",
+											Description:        "Ensures RDS instances are not launched into the public cloud.",
+											Severity:           "HIGH",
+											RecommendedActions: "Remove the public endpoint from the RDS instance'",
+											References:         []string{"http://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_VPC.html"},
+										},
+										CauseMetadata: types.CauseMetadata{
 											Resource: "", Provider: "AWS", Service: "rds", StartLine: 0, EndLine: 0,
 											Code: types.Code{Lines: []types.Line(nil)},
 										}, Traces: []string(nil),
-									}, types.MisconfResult{
-										Namespace: "user.something", Query: "data.user.something.deny", Message: "",
-										PolicyMetadata: types.PolicyMetadata{
-											ID: "TEST001", AVDID: "AVD-TEST-0001", Type: "Azure ARM Security Check",
-											Title: "Test policy", Description: "This is a test policy.",
-											Severity: "LOW", RecommendedActions: "Have a cup of tea.",
-											References: []string{"https://trivy.dev/"},
-										}, CauseMetadata: types.CauseMetadata{
-											Resource: "", Provider: "Generic", Service: "general", StartLine: 0,
-											EndLine: 0, Code: types.Code{Lines: []types.Line(nil)},
-										}, Traces: []string(nil),
 									},
-								}, Warnings: types.MisconfResults(nil), Failures: types.MisconfResults(nil),
-								Exceptions: types.MisconfResults(nil),
-								Layer:      types.Layer{Digest: "", DiffID: "", CreatedBy: ""},
+									{
+										Namespace: "user.something",
+										Query:     "data.user.something.deny",
+										PolicyMetadata: types.PolicyMetadata{
+											ID:                 "TEST001",
+											AVDID:              "AVD-TEST-0001",
+											Type:               "Azure ARM Security Check",
+											Title:              "Test policy",
+											Description:        "This is a test policy.",
+											Severity:           "LOW",
+											RecommendedActions: "Have a cup of tea.",
+											References:         []string{"https://trivy.dev/"},
+										},
+										CauseMetadata: types.CauseMetadata{
+											Provider: "Generic",
+											Service:  "general",
+										},
+									},
+								},
 							},
-						}, Secrets: []types.Secret(nil), Licenses: []types.LicenseFile(nil),
-						BuildInfo: (*types.BuildInfo)(nil), CustomResources: []types.CustomResource(nil),
+						},
 					},
 				},
 				Returns: cache.ArtifactCachePutBlobReturns{},
@@ -1948,9 +2102,9 @@ func TestAzureARMMisconfigurationScan(t *testing.T) {
 			want: types.ArtifactReference{
 				Name: "testdata/misconfig/azurearm/passed/src",
 				Type: types.ArtifactFilesystem,
-				ID:   "sha256:1776289fa9295540d5d38fe219a7e565b1d60d7eab2e33331209d9eee88528bb",
+				ID:   "sha256:e9289e2efc545895a2199fab4583d5f3ef52c20eda1afcf4b0505bb2014ba3e4",
 				BlobIDs: []string{
-					"sha256:1776289fa9295540d5d38fe219a7e565b1d60d7eab2e33331209d9eee88528bb",
+					"sha256:e9289e2efc545895a2199fab4583d5f3ef52c20eda1afcf4b0505bb2014ba3e4",
 				},
 			},
 		},

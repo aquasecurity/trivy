@@ -2,7 +2,7 @@ package gomod
 
 import (
 	"context"
-	"path/filepath"
+	"path"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/artifact"
@@ -30,7 +30,8 @@ func (h gomodMergeHook) Handle(_ context.Context, _ *analyzer.AnalysisResult, bl
 	var apps []types.Application
 	for _, app := range blob.Applications {
 		if app.Type == types.GoModule {
-			dir, file := filepath.Split(app.FilePath)
+			// The file path is supposed to be slash-separated regardless of OS.
+			dir, file := path.Split(app.FilePath)
 
 			// go.sum should be merged to go.mod.
 			if file == types.GoSum {
@@ -39,7 +40,7 @@ func (h gomodMergeHook) Handle(_ context.Context, _ *analyzer.AnalysisResult, bl
 
 			if file == types.GoMod && lessThanGo117(app) {
 				// e.g. /app/go.mod => /app/go.sum
-				gosumFile := filepath.Join(dir, types.GoSum)
+				gosumFile := path.Join(dir, types.GoSum)
 				if gosum := findGoSum(gosumFile, blob.Applications); gosum != nil {
 					mergeGoSum(&app, gosum) // nolint
 				}

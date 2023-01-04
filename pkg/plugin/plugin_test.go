@@ -4,6 +4,7 @@ import (
 	"context"
 	"os"
 	"path/filepath"
+	"runtime"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -14,6 +15,10 @@ import (
 )
 
 func TestPlugin_Run(t *testing.T) {
+	if runtime.GOOS == "windows" {
+		// the test.sh script can't be run on windows so skipping
+		t.Skip("Test satisfied adequately by Linux tests")
+	}
 	type fields struct {
 		Name        string
 		Repository  string
@@ -169,6 +174,10 @@ func TestPlugin_Run(t *testing.T) {
 }
 
 func TestInstall(t *testing.T) {
+	if runtime.GOOS == "windows" {
+		// the test.sh script can't be run on windows so skipping
+		t.Skip("Test satisfied adequately by Linux tests")
+	}
 	tests := []struct {
 		name     string
 		url      string
@@ -272,6 +281,10 @@ func TestInstall(t *testing.T) {
 }
 
 func TestUninstall(t *testing.T) {
+	if runtime.GOOS == "windows" {
+		// the test.sh script can't be run on windows so skipping
+		t.Skip("Test satisfied adequately by Linux tests")
+	}
 	pluginName := "test_plugin"
 
 	tempDir := t.TempDir()
@@ -292,6 +305,10 @@ func TestUninstall(t *testing.T) {
 }
 
 func TestInformation(t *testing.T) {
+	if runtime.GOOS == "windows" {
+		// the test.sh script can't be run on windows so skipping
+		t.Skip("Test satisfied adequately by Linux tests")
+	}
 	pluginName := "test_plugin"
 
 	tempDir := t.TempDir()
@@ -325,6 +342,10 @@ description: A simple test plugin`
 }
 
 func TestLoadAll1(t *testing.T) {
+	if runtime.GOOS == "windows" {
+		// the test.sh script can't be run on windows so skipping
+		t.Skip("Test satisfied adequately by Linux tests")
+	}
 	tests := []struct {
 		name    string
 		dir     string
@@ -380,6 +401,10 @@ func TestLoadAll1(t *testing.T) {
 }
 
 func TestUpdate(t *testing.T) {
+	if runtime.GOOS == "windows" {
+		// the test.sh script can't be run on windows so skipping
+		t.Skip("Test satisfied adequately by Linux tests")
+	}
 	pluginName := "test_plugin"
 
 	tempDir := t.TempDir()

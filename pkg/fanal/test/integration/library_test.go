@@ -243,7 +243,7 @@ func runChecks(t *testing.T, ctx context.Context, ar artifact.Artifact, applier 
 }
 
 func commonChecks(t *testing.T, detail types.ArtifactDetail, tc testCase) {
-	assert.Equal(t, tc.wantOS, *detail.OS, tc.name)
+	assert.Equal(t, tc.wantOS, detail.OS, tc.name)
 	checkOSPackages(t, detail, tc)
 	checkPackageFromCommands(t, detail, tc)
 	checkLangPkgs(detail, t, tc)
@@ -251,12 +251,7 @@ func commonChecks(t *testing.T, detail types.ArtifactDetail, tc testCase) {
 
 func checkOSPackages(t *testing.T, detail types.ArtifactDetail, tc testCase) {
 	// Sort OS packages for consistency
-	sort.Slice(detail.Packages, func(i, j int) bool {
-		if detail.Packages[i].Name != detail.Packages[j].Name {
-			return detail.Packages[i].Name < detail.Packages[j].Name
-		}
-		return detail.Packages[i].Version < detail.Packages[j].Version
-	})
+	sort.Sort(detail.Packages)
 
 	splitted := strings.Split(tc.remoteImageName, ":")
 	goldenFile := fmt.Sprintf("testdata/goldens/packages/%s.json.golden", splitted[len(splitted)-1])
@@ -277,7 +272,7 @@ func checkOSPackages(t *testing.T, detail types.ArtifactDetail, tc testCase) {
 
 	require.Equal(t, len(expectedPkgs), len(detail.Packages), tc.name)
 	sort.Slice(expectedPkgs, func(i, j int) bool { return expectedPkgs[i].Name < expectedPkgs[j].Name })
-	sort.Slice(detail.Packages, func(i, j int) bool { return detail.Packages[i].Name < detail.Packages[j].Name })
+	sort.Sort(detail.Packages)
 
 	for i := 0; i < len(expectedPkgs); i++ {
 		require.Equal(t, expectedPkgs[i].Name, detail.Packages[i].Name, tc.name)

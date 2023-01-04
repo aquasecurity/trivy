@@ -187,7 +187,7 @@ func TestArtifact_Inspect(t *testing.T) {
 							Digest:        "",
 							DiffID:        "sha256:beee9f30bc1f711043e78d4a2be0668955d4b761d587d6f60c2c8dc081efb203",
 							CreatedBy:     "ADD file:0c4555f363c2672e350001f1293e689875a3760afe7b3f9146886afe67121cba in / ",
-							OS: &types.OS{
+							OS: types.OS{
 								Family: "alpine",
 								Name:   "3.11.5",
 							},
@@ -203,23 +203,19 @@ func TestArtifact_Inspect(t *testing.T) {
 							},
 							Licenses: []types.LicenseFile{
 								{
-									Type:     "license-file",
-									FilePath: "/etc/ssl/misc/CA.pl",
+									Type:     "header",
+									FilePath: "etc/ssl/misc/CA.pl",
 									Findings: []types.LicenseFinding{
 										{
 											Name:       "OpenSSL",
 											Confidence: 1,
 											Link:       "https://spdx.org/licenses/OpenSSL.html",
 										},
-									},
-									Layer: types.Layer{
-										Digest: "",
-										DiffID: "",
 									},
 								},
 								{
-									Type:     "license-file",
-									FilePath: "/etc/ssl/misc/tsget.pl",
+									Type:     "header",
+									FilePath: "etc/ssl/misc/tsget.pl",
 									Findings: []types.LicenseFinding{
 										{
 											Name:       "OpenSSL",
@@ -227,15 +223,8 @@ func TestArtifact_Inspect(t *testing.T) {
 											Link:       "https://spdx.org/licenses/OpenSSL.html",
 										},
 									},
-									Layer: types.Layer{
-										Digest: "",
-										DiffID: "",
-									},
 								},
 							},
-							Applications:  []types.Application(nil),
-							OpaqueDirs:    []string(nil),
-							WhiteoutFiles: []string(nil),
 						},
 					},
 					Returns: cache.ArtifactCachePutBlobReturns{},
@@ -341,7 +330,7 @@ func TestArtifact_Inspect(t *testing.T) {
 							Digest:        "",
 							DiffID:        "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
 							CreatedBy:     "bazel build ...",
-							OS: &types.OS{
+							OS: types.OS{
 								Family: "debian",
 								Name:   "9.9",
 							},
@@ -353,6 +342,7 @@ func TestArtifact_Inspect(t *testing.T) {
 											ID:   "base-files@9.9+deb9u9",
 											Name: "base-files", Version: "9.9+deb9u9", SrcName: "base-files",
 											SrcVersion: "9.9+deb9u9",
+											Maintainer: "Santiago Vila <sanvila@debian.org>",
 										},
 									},
 								},
@@ -360,7 +350,7 @@ func TestArtifact_Inspect(t *testing.T) {
 									FilePath: "var/lib/dpkg/status.d/netbase",
 									Packages: []types.Package{
 										{ID: "netbase@5.4", Name: "netbase", Version: "5.4",
-											SrcName: "netbase", SrcVersion: "5.4"},
+											SrcName: "netbase", SrcVersion: "5.4", Maintainer: "Marco d'Itri <md@linux.it>"},
 									},
 								},
 								{
@@ -370,6 +360,7 @@ func TestArtifact_Inspect(t *testing.T) {
 											ID:   "tzdata@2019a-0+deb9u1",
 											Name: "tzdata", Version: "2019a-0+deb9u1", SrcName: "tzdata",
 											SrcVersion: "2019a-0+deb9u1",
+											Maintainer: "GNU Libc Maintainers <debian-glibc@lists.debian.org>",
 										},
 									},
 								},
@@ -420,6 +411,7 @@ func TestArtifact_Inspect(t *testing.T) {
 											ID:   "libc6@2.24-11+deb9u4",
 											Name: "libc6", Version: "2.24-11+deb9u4", SrcName: "glibc",
 											SrcVersion: "2.24-11+deb9u4",
+											Maintainer: "GNU Libc Maintainers <debian-glibc@lists.debian.org>",
 										},
 									},
 								},
@@ -430,6 +422,7 @@ func TestArtifact_Inspect(t *testing.T) {
 											ID:   "libssl1.1@1.1.0k-1~deb9u1",
 											Name: "libssl1.1", Version: "1.1.0k-1~deb9u1", SrcName: "openssl",
 											SrcVersion: "1.1.0k-1~deb9u1",
+											Maintainer: "Debian OpenSSL Team <pkg-openssl-devel@lists.alioth.debian.org>",
 										},
 									},
 								},
@@ -440,6 +433,7 @@ func TestArtifact_Inspect(t *testing.T) {
 											ID:   "openssl@1.1.0k-1~deb9u1",
 											Name: "openssl", Version: "1.1.0k-1~deb9u1", SrcName: "openssl",
 											SrcVersion: "1.1.0k-1~deb9u1",
+											Maintainer: "Debian OpenSSL Team <pkg-openssl-devel@lists.alioth.debian.org>",
 										},
 									},
 								},
@@ -458,7 +452,11 @@ func TestArtifact_Inspect(t *testing.T) {
 									Type:     types.LicenseTypeDpkg,
 									FilePath: "usr/share/doc/libssl1.1/copyright",
 									Findings: []types.LicenseFinding{
-										{Name: "OpenSSL"},
+										{
+											Name:       "OpenSSL",
+											Confidence: 0.9960474308300395,
+											Link:       "https://spdx.org/licenses/OpenSSL.html",
+										},
 									},
 									PkgName: "libssl1.1",
 								},
@@ -466,7 +464,11 @@ func TestArtifact_Inspect(t *testing.T) {
 									Type:     types.LicenseTypeDpkg,
 									FilePath: "usr/share/doc/openssl/copyright",
 									Findings: []types.LicenseFinding{
-										{Name: "OpenSSL"},
+										{
+											Name:       "OpenSSL",
+											Confidence: 0.9960474308300395,
+											Link:       "https://spdx.org/licenses/OpenSSL.html",
+										},
 									},
 									PkgName: "openssl",
 								},
@@ -861,7 +863,7 @@ func TestArtifact_Inspect(t *testing.T) {
 							Digest:        "",
 							DiffID:        "sha256:beee9f30bc1f711043e78d4a2be0668955d4b761d587d6f60c2c8dc081efb203",
 							CreatedBy:     "ADD file:0c4555f363c2672e350001f1293e689875a3760afe7b3f9146886afe67121cba in / ",
-							OS: &types.OS{
+							OS: types.OS{
 								Family: "alpine",
 								Name:   "3.11.5",
 							},
@@ -877,8 +879,8 @@ func TestArtifact_Inspect(t *testing.T) {
 							},
 							Licenses: []types.LicenseFile{
 								{
-									Type:     "license-file",
-									FilePath: "/etc/ssl/misc/CA.pl",
+									Type:     "header",
+									FilePath: "etc/ssl/misc/CA.pl",
 									Findings: []types.LicenseFinding{
 										{
 											Name:       "OpenSSL",
@@ -888,8 +890,8 @@ func TestArtifact_Inspect(t *testing.T) {
 									},
 								},
 								{
-									Type:     "license-file",
-									FilePath: "/etc/ssl/misc/tsget.pl",
+									Type:     "header",
+									FilePath: "etc/ssl/misc/tsget.pl",
 									Findings: []types.LicenseFinding{
 										{
 											Name:       "OpenSSL",
@@ -899,9 +901,6 @@ func TestArtifact_Inspect(t *testing.T) {
 									},
 								},
 							},
-							Applications:  []types.Application(nil),
-							OpaqueDirs:    []string(nil),
-							WhiteoutFiles: []string(nil),
 						},
 					},
 					Returns: cache.ArtifactCachePutBlobReturns{
@@ -933,7 +932,7 @@ func TestArtifact_Inspect(t *testing.T) {
 							Digest:        "",
 							DiffID:        "sha256:beee9f30bc1f711043e78d4a2be0668955d4b761d587d6f60c2c8dc081efb203",
 							CreatedBy:     "ADD file:0c4555f363c2672e350001f1293e689875a3760afe7b3f9146886afe67121cba in / ",
-							OS: &types.OS{
+							OS: types.OS{
 								Family: "alpine",
 								Name:   "3.11.5",
 							},
@@ -949,8 +948,8 @@ func TestArtifact_Inspect(t *testing.T) {
 							},
 							Licenses: []types.LicenseFile{
 								{
-									Type:     "license-file",
-									FilePath: "/etc/ssl/misc/CA.pl",
+									Type:     "header",
+									FilePath: "etc/ssl/misc/CA.pl",
 									Findings: []types.LicenseFinding{
 										{
 											Name:       "OpenSSL",
@@ -960,8 +959,8 @@ func TestArtifact_Inspect(t *testing.T) {
 									},
 								},
 								{
-									Type:     "license-file",
-									FilePath: "/etc/ssl/misc/tsget.pl",
+									Type:     "header",
+									FilePath: "etc/ssl/misc/tsget.pl",
 									Findings: []types.LicenseFinding{
 										{
 											Name:       "OpenSSL",
@@ -971,9 +970,6 @@ func TestArtifact_Inspect(t *testing.T) {
 									},
 								},
 							},
-							Applications:  []types.Application(nil),
-							OpaqueDirs:    []string(nil),
-							WhiteoutFiles: []string(nil),
 						},
 					},
 					Returns: cache.ArtifactCachePutBlobReturns{},

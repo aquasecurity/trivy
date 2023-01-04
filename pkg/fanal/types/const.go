@@ -30,6 +30,8 @@ const (
 	JavaScript = "javascript"
 	RustBinary = "rustbinary"
 	Conan      = "conan"
+	Cocoapods  = "cocoapods"
+	Hex        = "hex"
 
 	// Config files
 	YAML           = "yaml"
@@ -71,4 +73,8 @@ const (
 	CargoLock = "Cargo.lock"
 
 	ConanLock = "conan.lock"
+
+	CocoaPodsLock = "Podfile.lock"
+
+	MixLock = "mix.lock"
 )

@@ -22,11 +22,12 @@ const (
 	ControlIDColumn   = "ID"
 	SeverityColumn    = "Severity"
 	ControlNameColumn = "Control Name"
-	ComplianceColumn  = "Compliance"
+	StatusColumn      = "Status"
+	IssuesColumn      = "Issues"
 )
 
 func (tw TableWriter) columns() []string {
-	return []string{ControlIDColumn, SeverityColumn, ControlNameColumn, ComplianceColumn}
+	return []string{ControlIDColumn, SeverityColumn, ControlNameColumn, StatusColumn, IssuesColumn}
 }
 
 func (tw TableWriter) Write(report *ComplianceReport) error {

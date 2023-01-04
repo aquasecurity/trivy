@@ -59,7 +59,7 @@ type pkg struct {
 
 type version map[string]int
 
-func (a alpineCmdAnalyzer) Analyze(targetOS types.OS, configBlob []byte) ([]types.Package, error) {
+func (a alpineCmdAnalyzer) Analyze(targetOS types.OS, configBlob []byte) (types.Packages, error) {
 	var apkIndexArchive *apkIndex
 	var err error
 	if apkIndexArchive, err = a.fetchApkIndexArchive(targetOS); err != nil {

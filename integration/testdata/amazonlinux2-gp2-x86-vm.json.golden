@@ -1,0 +1,66 @@
+{
+  "SchemaVersion": 2,
+  "ArtifactName": "disk.img",
+  "ArtifactType": "vm",
+  "Metadata": {
+    "OS": {
+      "Family": "amazon",
+      "Name": "2 (Karoo)"
+    },
+    "ImageConfig": {
+      "architecture": "",
+      "created": "0001-01-01T00:00:00Z",
+      "os": "",
+      "rootfs": {
+        "type": "",
+        "diff_ids": null
+      },
+      "config": {}
+    }
+  },
+  "Results": [
+    {
+      "Target": "disk.img (amazon 2 (Karoo))",
+      "Class": "os-pkgs",
+      "Type": "amazon",
+      "Vulnerabilities": [
+        {
+          "VulnerabilityID": "CVE-2022-21233",
+          "PkgID": "microcode_ctl@2.1-47.amzn2.0.12.x86_64",
+          "PkgName": "microcode_ctl",
+          "InstalledVersion": "2:2.1-47.amzn2.0.12",
+          "FixedVersion": "2:2.1-47.amzn2.0.13",
+          "Layer": {},
+          "SeveritySource": "nvd",
+          "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2022-21233",
+          "DataSource": {
+            "ID": "amazon",
+            "Name": "Amazon Linux Security Center",
+            "URL": "https://alas.aws.amazon.com/"
+          },
+          "Title": "hw: cpu: Intel: Stale Data Read from legacy xAPIC vulnerability",
+          "Description": "Improper isolation of shared resources in some Intel(R) Processors may allow",
+          "Severity": "MEDIUM",
+          "CVSS": {
+            "nvd": {
+              "V3Vector": "CVSS:3.1/AV:L/AC:L/PR:L/UI:N/S:U/C:H/I:N/A:N",
+              "V3Score": 5.5
+            },
+            "redhat": {
+              "V3Vector": "CVSS:3.1/AV:L/AC:L/PR:H/UI:N/S:C/C:H/I:N/A:N",
+              "V3Score": 6
+            }
+          },
+          "References": [
+            "https://access.redhat.com/security/cve/CVE-2022-21233",
+            "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2022-21233",
+            "https://security.netapp.com/advisory/ntap-20220923-0002/",
+            "https://ubuntu.com/security/notices/USN-5612-1"
+          ],
+          "PublishedDate": "2022-08-18T20:15:00Z",
+          "LastModifiedDate": "2022-09-23T15:15:00Z"
+        }
+      ]
+    }
+  ]
+}
