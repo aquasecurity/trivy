@@ -73,7 +73,7 @@ func parsePlatform(ref name.Reference, options []remote.Option, p string) (*v1.P
 	if strings.HasPrefix(p, "*/") {
 		index, err := remote.Index(ref, options...)
 		if err != nil {
-			return nil, err
+			return nil, xerrors.Errorf("remote index error: %w", err)
 		}
 		m, err := index.IndexManifest()
 		if err != nil {
@@ -81,7 +81,7 @@ func parsePlatform(ref name.Reference, options []remote.Option, p string) (*v1.P
 		}
 		if len(m.Manifests) == 0 {
 			log.Logger.Debug("Ignored --platform as the image is not multi-arch")
-			return nil, xerrors.New("ignored --platform as the image is not multi-arch")
+			return nil, nil
 		}
 		if m.Manifests[0].Platform != nil {
 			// Replace with the detected OS
