@@ -293,6 +293,24 @@ func TestClient_Filter(t *testing.T) {
 							Status:   types.StatusFailure,
 						},
 					},
+					Secrets: []ftypes.SecretFinding{
+						{
+							RuleID:    "generic-wanted-rule",
+							Severity:  dbTypes.SeverityLow.String(),
+							Title:     "Secret that should pass filter on rule id",
+							StartLine: 1,
+							EndLine:   2,
+							Match:     "*****",
+						},
+						{
+							RuleID:    "generic-unwanted-rule",
+							Severity:  dbTypes.SeverityLow.String(),
+							Title:     "Secret that should not pass filter on rule id",
+							StartLine: 3,
+							EndLine:   4,
+							Match:     "*****",
+						},
+					},
 				},
 				severities:    []dbTypes.Severity{dbTypes.SeverityLow},
 				ignoreUnfixed: false,
@@ -317,6 +335,16 @@ func TestClient_Filter(t *testing.T) {
 					Vulnerability: dbTypes.Vulnerability{
 						Severity: dbTypes.SeverityLow.String(),
 					},
+				},
+			},
+			wantSecrets: []ftypes.SecretFinding{
+				{
+					RuleID:    "generic-wanted-rule",
+					Severity:  dbTypes.SeverityLow.String(),
+					Title:     "Secret that should pass filter on rule id",
+					StartLine: 1,
+					EndLine:   2,
+					Match:     "*****",
 				},
 			},
 		},
@@ -496,6 +524,139 @@ func TestClient_Filter(t *testing.T) {
 					PkgName:          "baz",
 					InstalledVersion: "1.2.3",
 					FixedVersion:     "",
+					Vulnerability: dbTypes.Vulnerability{
+						Severity: dbTypes.SeverityHigh.String(),
+					},
+				},
+			},
+		},
+		{
+			name: "happy path with duplicates and different package paths",
+			args: args{
+				result: types.Result{
+					Vulnerabilities: []types.DetectedVulnerability{
+						{
+							VulnerabilityID:  "CVE-2019-0001",
+							PkgPath:          "some/path/a.jar",
+							PkgName:          "bar",
+							InstalledVersion: "1.2.3",
+							FixedVersion:     "1.2.4",
+							Vulnerability: dbTypes.Vulnerability{
+								Severity: dbTypes.SeverityCritical.String(),
+							},
+						},
+						{
+							VulnerabilityID:  "CVE-2019-0001",
+							PkgPath:          "some/other/path/a.jar",
+							PkgName:          "bar",
+							InstalledVersion: "1.2.3",
+							FixedVersion:     "1.2.4",
+							Vulnerability: dbTypes.Vulnerability{
+								Severity: dbTypes.SeverityCritical.String(),
+							},
+						},
+						{
+							VulnerabilityID:  "CVE-2019-0002",
+							PkgName:          "baz",
+							PkgPath:          "some/path/b.jar",
+							InstalledVersion: "1.2.3",
+							FixedVersion:     "",
+							Vulnerability: dbTypes.Vulnerability{
+								Severity: dbTypes.SeverityHigh.String(),
+							},
+						},
+						{
+							VulnerabilityID:  "CVE-2019-0002",
+							PkgPath:          "some/path/b.jar",
+							PkgName:          "baz",
+							InstalledVersion: "1.2.3",
+							FixedVersion:     "1.2.4",
+							Vulnerability: dbTypes.Vulnerability{
+								Severity: dbTypes.SeverityHigh.String(),
+							},
+						},
+						{
+							VulnerabilityID:  "CVE-2019-0003",
+							PkgPath:          "some/path/c.jar",
+							PkgName:          "bar",
+							InstalledVersion: "1.2.3",
+							FixedVersion:     "",
+							Vulnerability: dbTypes.Vulnerability{
+								Severity: "",
+							},
+						},
+						{
+							VulnerabilityID:  "CVE-2019-0003",
+							PkgName:          "bar",
+							PkgPath:          "some/path/c.jar",
+							InstalledVersion: "1.2.3",
+							FixedVersion:     "1.2.4",
+							Vulnerability: dbTypes.Vulnerability{
+								Severity: "",
+							},
+						},
+						{
+							VulnerabilityID:  "CVE-2019-0003",
+							PkgName:          "bar",
+							PkgPath:          "some/other/path/c.jar",
+							InstalledVersion: "1.2.3",
+							FixedVersion:     "",
+							Vulnerability: dbTypes.Vulnerability{
+								Severity: "",
+							},
+						},
+					},
+				},
+				severities:    []dbTypes.Severity{dbTypes.SeverityCritical, dbTypes.SeverityHigh, dbTypes.SeverityUnknown},
+				ignoreUnfixed: false,
+			},
+			wantVulns: []types.DetectedVulnerability{
+				{
+					VulnerabilityID:  "CVE-2019-0001",
+					PkgPath:          "some/other/path/a.jar",
+					PkgName:          "bar",
+					InstalledVersion: "1.2.3",
+					FixedVersion:     "1.2.4",
+					Vulnerability: dbTypes.Vulnerability{
+						Severity: dbTypes.SeverityCritical.String(),
+					},
+				},
+				{
+					VulnerabilityID:  "CVE-2019-0001",
+					PkgPath:          "some/path/a.jar",
+					PkgName:          "bar",
+					InstalledVersion: "1.2.3",
+					FixedVersion:     "1.2.4",
+					Vulnerability: dbTypes.Vulnerability{
+						Severity: dbTypes.SeverityCritical.String(),
+					},
+				},
+				{
+					VulnerabilityID:  "CVE-2019-0003",
+					PkgName:          "bar",
+					PkgPath:          "some/other/path/c.jar",
+					InstalledVersion: "1.2.3",
+					FixedVersion:     "",
+					Vulnerability: dbTypes.Vulnerability{
+						Severity: dbTypes.SeverityUnknown.String(),
+					},
+				},
+				{
+					VulnerabilityID:  "CVE-2019-0003",
+					PkgName:          "bar",
+					PkgPath:          "some/path/c.jar",
+					InstalledVersion: "1.2.3",
+					FixedVersion:     "1.2.4",
+					Vulnerability: dbTypes.Vulnerability{
+						Severity: dbTypes.SeverityUnknown.String(),
+					},
+				},
+				{
+					VulnerabilityID:  "CVE-2019-0002",
+					PkgPath:          "some/path/b.jar",
+					PkgName:          "baz",
+					InstalledVersion: "1.2.3",
+					FixedVersion:     "1.2.4",
 					Vulnerability: dbTypes.Vulnerability{
 						Severity: dbTypes.SeverityHigh.String(),
 					},

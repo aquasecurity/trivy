@@ -9,12 +9,13 @@ on:
       - 'mkdocs.yml'
       - 'LICENSE'
   pull_request:
-env:
-  TINYGO_VERSION: "0.25.0"
 jobs:
   test:
     name: Test
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.operating-system }}
+    strategy:
+      matrix:
+        operating-system: [ubuntu-latest, windows-latest, macos-latest]
     steps:
       - uses: actions/checkout@v3
 
@@ -30,18 +31,20 @@ jobs:
             echo "Run 'go mod tidy' and push it"
             exit 1
           fi
+        if: matrix.operating-system == 'ubuntu-latest'
 
       - name: Lint
-        uses: golangci/golangci-lint-action@v3.2.0
+        uses: golangci/golangci-lint-action@v3.3.0
         with:
           version: v1.49
           args: --deadline=30m
           skip-cache: true # https://github.com/golangci/golangci-lint-action/issues/244#issuecomment-1052197778
+        if: matrix.operating-system == 'ubuntu-latest'
 
-      - name: Install TinyGo
-        run: |
-          wget https://github.com/tinygo-org/tinygo/releases/download/v${TINYGO_VERSION}/tinygo_${TINYGO_VERSION}_amd64.deb
-          sudo dpkg -i tinygo_${TINYGO_VERSION}_amd64.deb
+      # Install tools
+      - uses: aquaproj/aqua-installer@v1.2.0
+        with:
+          aqua_version: v1.25.0
 
       - name: Run unit tests
         run: make test
@@ -73,12 +76,13 @@ jobs:
         with:
           go-version-file: go.mod
 
-      - name: Install TinyGo
-        run: |
-          wget https://github.com/tinygo-org/tinygo/releases/download/v${TINYGO_VERSION}/tinygo_${TINYGO_VERSION}_amd64.deb
-          sudo dpkg -i tinygo_${TINYGO_VERSION}_amd64.deb
+      # Install tools
+      - uses: aquaproj/aqua-installer@v1.1.2
+        with:
+          aqua_version: v1.25.0
 
       - name: Run module integration tests
+        shell: bash
         run: |
           make test-module-integration
 
@@ -107,7 +111,7 @@ jobs:
         go-version-file: go.mod
 
     - name: Run GoReleaser
-      uses: goreleaser/goreleaser-action@v3
+      uses: goreleaser/goreleaser-action@v4
       with:
         version: v1.4.1
         args: release --skip-sign --snapshot --rm-dist --skip-publish --timeout 90m

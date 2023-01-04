@@ -98,9 +98,9 @@ allow-rules:
 
 ## Enable Rules
 Trivy provides plenty of out-of-box rules and allow rules, but you may not need all of them.
-In that case, `enable-builin-rules` will be helpful.
+In that case, `enable-builtin-rules` will be helpful.
 If you just need AWS secret detection, you can enable only relevant rules as shown below.
-It specifies AWS-related rule IDs in `enable-builin-rules`.
+It specifies AWS-related rule IDs in `enable-builtin-rules`.
 All other rules are disabled, so the scanning will be much faster.
 We would strongly recommend using this option if you don't need all rules.
 
@@ -118,9 +118,9 @@ Trivy offers built-in rules and allow rules, but you may want to disable some of
 For example, you don't use Slack, so Slack doesn't have to be scanned.
 You can specify the Slack rule IDs, `slack-access-token` and `slack-web-hook` in `disable-rules` so that those rules will be disabled for less false positives.
 
-You should specify either `enable-builin-rules` or `disable-rules`.
+You should specify either `enable-builtin-rules` or `disable-rules`.
 If they both are specified, `disable-rules` takes precedence.
-In case `github-pat` is specified in `enable-builin-rules` and `disable-rules`, it will be disabled.
+In case `github-pat` is specified in `enable-builtin-rules` and `disable-rules`, it will be disabled.
 
 In addition, there are some allow rules.
 Markdown files are ignored by default, but you may want to scan markdown files as well.

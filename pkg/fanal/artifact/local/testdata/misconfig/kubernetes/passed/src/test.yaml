@@ -4,6 +4,6 @@ metadata:
   name: good-pod
 spec:
   containers:
-    - command: ["sh", "-c", "echo 'Hello' && sleep 1h"]
+    - command: [ "sh", "-c", "echo 'Hello' && sleep 1h" ]
       image: good
       name: good

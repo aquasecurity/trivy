@@ -47,7 +47,7 @@ License checking classifies the identified licenses and map the classification t
 This section shows how to scan license in container image and filesystem.
 
 ### Standard scanning
-Specify an image name with `--security-cheks license`.
+Specify an image name with `--security-checks license`.
 
 ``` shell
 $ trivy image --security-checks license --severity UNKNOWN,HIGH,CRITICAL alpine:3.15

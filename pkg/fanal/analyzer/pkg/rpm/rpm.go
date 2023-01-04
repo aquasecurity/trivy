@@ -57,6 +57,7 @@ var osVendors = []string{
 	"SUSE",                  // SUSE Linux Enterprise
 	"openSUSE",              // openSUSE
 	"Microsoft Corporation", // CBL-Mariner
+	"Rocky",                 // Rocky Linux
 }
 
 type rpmPkgAnalyzer struct{}
@@ -78,7 +79,7 @@ func (a rpmPkgAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInput)
 	}, nil
 }
 
-func (a rpmPkgAnalyzer) parsePkgInfo(rc io.Reader) ([]types.Package, []string, error) {
+func (a rpmPkgAnalyzer) parsePkgInfo(rc io.Reader) (types.Packages, []string, error) {
 	filePath, err := writeToTempFile(rc)
 	if err != nil {
 		return nil, nil, xerrors.Errorf("temp file error: %w", err)
@@ -143,6 +144,7 @@ func (a rpmPkgAnalyzer) parsePkgInfo(rc io.Reader) ([]types.Package, []string, e
 			Modularitylabel: pkg.Modularitylabel,
 			Licenses:        []string{pkg.License},
 			DependsOn:       pkg.Requires, // Will be replaced with package IDs
+			Maintainer:      pkg.Vendor,
 		}
 		pkgs = append(pkgs, p)
 		installedFiles = append(installedFiles, files...)

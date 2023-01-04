@@ -5,7 +5,7 @@ This documentation details how to use Trivy to access the features listed below.
 ## Features
 
 - Comprehensive vulnerability detection
-    - [OS packages][os] (Alpine, Red Hat Universal Base Image, Red Hat Enterprise Linux, CentOS, AlmaLinux, Rocky Linux, CBL-Mariner, Oracle Linux, Debian, Ubuntu, Amazon Linux, openSUSE Leap, SUSE Enterprise Linux, Photon OS and Distroless)
+    - [OS packages][os] (Alpine, Wolfi, Red Hat Universal Base Image, Red Hat Enterprise Linux, CentOS, AlmaLinux, Rocky Linux, CBL-Mariner, Oracle Linux, Debian, Ubuntu, Amazon Linux, openSUSE Leap, SUSE Enterprise Linux, Photon OS and Distroless)
     - [**Language-specific packages**][lang] (Bundler, Composer, Pipenv, Poetry, npm, yarn, pnpm, Cargo, NuGet, Maven, and Go)
 - Detect IaC misconfigurations
     - A wide variety of [built-in policies][builtin] are provided **out of the box**:
@@ -45,7 +45,7 @@ This documentation details how to use Trivy to access the features listed below.
 
 Please see [LICENSE][license] for Trivy licensing information.
 
-[installation]: ../index.md
+[installation]: ../getting-started/installation.md
 [vuln]: ../docs/vulnerability/scanning/index.md
 [misconf]: ../docs/misconfiguration/scanning.md
 [kubernetesoperator]: ../docs/kubernetes/operator/index.md
@@ -63,7 +63,7 @@ Please see [LICENSE][license] for Trivy licensing information.
 [lang]: ../docs/vulnerability/detection/language.md
 
 [builtin]: ../docs/misconfiguration/policy/builtin.md
-[quickstart]: ../getting-started/quickstart.md
+[quickstart]: ../index.md
 [podman]: ../docs/advanced/container/podman.md
 
 [sbom]: ../docs/sbom/index.md

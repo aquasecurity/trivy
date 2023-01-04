@@ -149,8 +149,8 @@ func initApplication(pkg spdx.Package2_2) *ftypes.Application {
 	return app
 }
 
-func parseOS(pkg spdx.Package2_2) *ftypes.OS {
-	return &ftypes.OS{
+func parseOS(pkg spdx.Package2_2) ftypes.OS {
+	return ftypes.OS{
 		Family: pkg.PackageName,
 		Name:   pkg.PackageVersion,
 	}

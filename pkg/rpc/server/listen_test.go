@@ -114,6 +114,8 @@ func Test_dbWorker_update(t *testing.T) {
 				tt.needsUpdate.input.appVersion, tt.needsUpdate.input.skip).Return(
 				tt.needsUpdate.output.needsUpdate, tt.needsUpdate.output.err)
 
+			defer func() { _ = db.Close() }()
+
 			if tt.download.call {
 				mockDBClient.On("Download", mock.Anything, mock.Anything).Run(
 					func(args mock.Arguments) {
@@ -222,6 +224,7 @@ func Test_newServeMux(t *testing.T) {
 
 			c, err := cache.NewFSCache(t.TempDir())
 			require.NoError(t, err)
+			defer func() { _ = c.Close() }()
 
 			ts := httptest.NewServer(newServeMux(
 				c, dbUpdateWg, requestWg, tt.args.token, tt.args.tokenHeader),

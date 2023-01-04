@@ -32,3 +32,7 @@ func InitDB(t *testing.T, fixtureFiles []string) string {
 
 	return dir
 }
+
+func Close() error {
+	return db.Close()
+}
