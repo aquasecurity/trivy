@@ -18,7 +18,7 @@
     {
       "Target": "pubspec.lock",
       "Class": "lang-pkgs",
-      "Type": "pubspec",
+      "Type": "pub",
       "Packages": [
         {
           "ID": "http@0.13.2",
