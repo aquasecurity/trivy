@@ -312,6 +312,12 @@ func TestParse(t *testing.T) {
 			wantDeps: yarnV2ManyDeps,
 		},
 		{
+			name:     "yarn with local dependency",
+			file:     "testdata/yarn_with_local.lock",
+			want:     yarnNormal,
+			wantDeps: yarnNormalDeps,
+		},
+		{
 			name:     "bad yarn file",
 			file:     "testdata/bad_yarn.lock",
 			wantErr:  true,

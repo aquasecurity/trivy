@@ -116,7 +116,7 @@ func validProtocol(protocol string) bool {
 
 func ignoreProtocol(protocol string) bool {
 	switch protocol {
-	case "workspace", "patch":
+	case "workspace", "patch", "file":
 		return true
 	}
 	return false
@@ -205,7 +205,7 @@ func parseBlock(block []byte, lineNum int) (lib Library, deps []string, newLine 
 			if patterns == nil || !validProtocol(protocol) {
 				skipBlock = true
 				if !ignoreProtocol(protocol) {
-					return Library{}, nil, -1,  xerrors.Errorf("failed to parse package patterns")
+					return Library{}, nil, -1, xerrors.Errorf("failed to parse package patterns")
 				}
 				continue
 			} else {
