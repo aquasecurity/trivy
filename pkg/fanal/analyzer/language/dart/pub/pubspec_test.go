@@ -15,6 +15,7 @@ func Test_pubSpecLockAnalyzer_Analyze(t *testing.T) {
 		name      string
 		inputFile string
 		want      *analyzer.AnalysisResult
+		wantErr   assert.ErrorAssertionFunc
 	}{
 		{
 			name:      "happy path",
@@ -45,10 +46,17 @@ func Test_pubSpecLockAnalyzer_Analyze(t *testing.T) {
 					},
 				},
 			},
+			wantErr: assert.NoError,
 		},
 		{
 			name:      "empty file",
 			inputFile: "testdata/empty.lock",
+			wantErr:   assert.NoError,
+		},
+		{
+			name:      "broken file",
+			inputFile: "testdata/broken.lock",
+			wantErr:   assert.Error,
 		},
 	}
 
@@ -72,7 +80,9 @@ func Test_pubSpecLockAnalyzer_Analyze(t *testing.T) {
 				}
 			}
 
-			assert.NoError(t, err)
+			if !tt.wantErr(t, err, tt.inputFile) {
+				return
+			}
 			assert.Equal(t, tt.want, got)
 		})
 	}
