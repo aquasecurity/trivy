@@ -1,0 +1,65 @@
+title: "[Show and tell] "
+labels: ["Share with us your Trivy use cases"]
+body:
+  - type: textarea
+    id: company
+    attributes:
+      label: Company or project
+      description: "Which company or project did you implement Trivy with? 👀"
+      value: |
+        ...
+      render: bash
+    validations:
+      required: true
+  - type: dropdown
+    id: oss
+    attributes:
+    label: Is the project in which you use Trivy open source?
+    options:
+      - Yes
+      - No
+    validations:
+      required: true
+  - type: textarea
+    id: link
+    attributes:
+      label: Share Links
+      description: "If you would like to share a link to your project or company, please paste it below 🌐"
+      value: |
+        ...
+      render: bash
+    validations:
+      required: false
+  - type: checkboxes
+    attributes:
+      label: Please select all the scan targets that you are using
+      options:
+        - label: Container Images
+        - label: Filesystem
+        - label: Git Repository
+        - label: Virtual Machine Images
+        - label: Kubernetes
+        - label: AWS
+    validations:
+      required: true
+  - type: checkboxes
+    attributes:
+      label: Which scanners are you using on those scan targets?
+      options:
+        - label: OS packages and software dependencies in use (SBOM)
+        - label: Known vulnerabilities (CVEs)
+        - label: IaC issues and misconfigurations
+        - label: Sensitive information and secrets
+        - label: Software licenses
+    validations:
+      required: true
+  - type: textarea
+    id: more
+    attributes:
+      label: description
+      description: "Please tell us more about your use case of Trivy -- anything that you would like to share 🎉"
+      value: |
+        ...
+      render: bash
+    validations:
+      required: false
