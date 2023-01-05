@@ -1,4 +1,4 @@
-package pubspec
+package pub
 
 import (
 	"context"
@@ -26,7 +26,7 @@ type pubSpecLockAnalyzer struct{}
 
 func (a pubSpecLockAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInput) (*analyzer.AnalysisResult, error) {
 	p := pub.NewParser()
-	res, err := language.Analyze(types.PubSpec, input.FilePath, input.Content, p)
+	res, err := language.Analyze(types.Pub, input.FilePath, input.Content, p)
 	if err != nil {
 		return nil, xerrors.Errorf("%s parse error: %w", input.FilePath, err)
 	}

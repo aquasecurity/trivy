@@ -30,7 +30,7 @@ const (
 	RustBinary = "rustbinary"
 	Conan      = "conan"
 	Cocoapods  = "cocoapods"
-	PubSpec    = "pubspec"
+	Pub        = "pub"
 	Hex        = "hex"
 
 	// Config files

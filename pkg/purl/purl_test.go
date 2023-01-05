@@ -185,7 +185,7 @@ func TestNewPackageURL(t *testing.T) {
 		},
 		{
 			name: "dart package",
-			typ:  ftypes.PubSpec,
+			typ:  ftypes.Pub,
 			pkg: ftypes.Package{
 				Name:    "http",
 				Version: "0.13.2",

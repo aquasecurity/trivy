@@ -1,4 +1,4 @@
-package pubspec
+package pub
 
 import (
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
@@ -22,7 +22,7 @@ func Test_pubSpecLockAnalyzer_Analyze(t *testing.T) {
 			want: &analyzer.AnalysisResult{
 				Applications: []types.Application{
 					{
-						Type:     types.PubSpec,
+						Type:     types.Pub,
 						FilePath: "testdata/happy.lock",
 						Libraries: []types.Package{
 							{
