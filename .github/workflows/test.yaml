@@ -111,7 +111,7 @@ jobs:
         go-version-file: go.mod
 
     - name: Run GoReleaser
-      uses: goreleaser/goreleaser-action@v3
+      uses: goreleaser/goreleaser-action@v4
       with:
         version: v1.4.1
         args: release --skip-sign --snapshot --rm-dist --skip-publish --timeout 90m

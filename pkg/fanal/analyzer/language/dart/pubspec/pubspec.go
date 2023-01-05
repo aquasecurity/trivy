@@ -7,7 +7,7 @@ import (
 
 	"golang.org/x/xerrors"
 
-	"github.com/aquasecurity/go-dep-parser/pkg/dart/lock"
+	"github.com/aquasecurity/go-dep-parser/pkg/dart/pub"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer/language"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
@@ -25,7 +25,7 @@ const (
 type pubSpecLockAnalyzer struct{}
 
 func (a pubSpecLockAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInput) (*analyzer.AnalysisResult, error) {
-	p := lock.NewParser()
+	p := pub.NewParser()
 	res, err := language.Analyze(types.PubSpec, input.FilePath, input.Content, p)
 	if err != nil {
 		return nil, xerrors.Errorf("%s parse error: %w", input.FilePath, err)
