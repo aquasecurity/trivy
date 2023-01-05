@@ -39,7 +39,7 @@ Trivy is available in most common distribution methods. The full list of install
 
 - `apt-get install trivy`
 - `yum install trivy`
-- `brew install aquasecurity/trivy/trivy`
+- `brew install trivy`
 - `docker run aquasec/trivy`
 - Download binary from <https://github.com/aquasecurity/trivy/releases/latest/>
 
