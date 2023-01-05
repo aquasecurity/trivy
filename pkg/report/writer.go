@@ -33,6 +33,10 @@ const (
 )
 
 var (
+	SupportedFormats = []string{FormatTable, FormatJSON, FormatTemplate, FormatSarif, FormatCycloneDX, FormatSPDX, FormatSPDXJSON, FormatGitHub, FormatCosignVuln}
+)
+
+var (
 	SupportedSBOMFormats = []string{FormatCycloneDX, FormatSPDX, FormatSPDXJSON, FormatGitHub}
 )
 

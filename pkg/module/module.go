@@ -38,10 +38,10 @@ var (
 )
 
 // logDebug is defined as an api.GoModuleFunc for lower overhead vs reflection.
-func logDebug(ctx context.Context, mod api.Module, params []uint64) {
+func logDebug(_ context.Context, mod api.Module, params []uint64) {
 	offset, size := uint32(params[0]), uint32(params[1])
 
-	buf := readMemory(ctx, mod, offset, size)
+	buf := readMemory(mod.Memory(), offset, size)
 	if buf != nil {
 		log.Logger.Debug(string(buf))
 	}
@@ -50,10 +50,10 @@ func logDebug(ctx context.Context, mod api.Module, params []uint64) {
 }
 
 // logInfo is defined as an api.GoModuleFunc for lower overhead vs reflection.
-func logInfo(ctx context.Context, mod api.Module, params []uint64) {
+func logInfo(_ context.Context, mod api.Module, params []uint64) {
 	offset, size := uint32(params[0]), uint32(params[1])
 
-	buf := readMemory(ctx, mod, offset, size)
+	buf := readMemory(mod.Memory(), offset, size)
 	if buf != nil {
 		log.Logger.Info(string(buf))
 	}
@@ -62,10 +62,10 @@ func logInfo(ctx context.Context, mod api.Module, params []uint64) {
 }
 
 // logWarn is defined as an api.GoModuleFunc for lower overhead vs reflection.
-func logWarn(ctx context.Context, mod api.Module, params []uint64) {
+func logWarn(_ context.Context, mod api.Module, params []uint64) {
 	offset, size := uint32(params[0]), uint32(params[1])
 
-	buf := readMemory(ctx, mod, offset, size)
+	buf := readMemory(mod.Memory(), offset, size)
 	if buf != nil {
 		log.Logger.Warn(string(buf))
 	}
@@ -74,10 +74,10 @@ func logWarn(ctx context.Context, mod api.Module, params []uint64) {
 }
 
 // logError is defined as an api.GoModuleFunc for lower overhead vs reflection.
-func logError(ctx context.Context, mod api.Module, params []uint64) {
+func logError(_ context.Context, mod api.Module, params []uint64) {
 	offset, size := uint32(params[0]), uint32(params[1])
 
-	buf := readMemory(ctx, mod, offset, size)
+	buf := readMemory(mod.Memory(), offset, size)
 	if buf != nil {
 		log.Logger.Error(string(buf))
 	}
@@ -85,8 +85,8 @@ func logError(ctx context.Context, mod api.Module, params []uint64) {
 	return
 }
 
-func readMemory(ctx context.Context, m api.Module, offset, size uint32) []byte {
-	buf, ok := m.Memory().Read(ctx, offset, size)
+func readMemory(mem api.Memory, offset, size uint32) []byte {
+	buf, ok := mem.Read(offset, size)
 	if !ok {
 		log.Logger.Errorf("Memory.Read(%d, %d) out of range", offset, size)
 		return nil
@@ -171,9 +171,9 @@ func splitPtrSize(u uint64) (uint32, uint32) {
 	return ptr, size
 }
 
-func ptrSizeToString(ctx context.Context, m api.Module, ptrSize uint64) (string, error) {
+func ptrSizeToString(mem api.Memory, ptrSize uint64) (string, error) {
 	ptr, size := splitPtrSize(ptrSize)
-	buf := readMemory(ctx, m, ptr, size)
+	buf := readMemory(mem, ptr, size)
 	if buf == nil {
 		return "", xerrors.New("unable to read memory")
 	}
@@ -190,17 +190,17 @@ func stringToPtrSize(ctx context.Context, s string, mod api.Module, malloc api.F
 
 	// The pointer is a linear memory offset, which is where we write the string.
 	ptr := results[0]
-	if !mod.Memory().Write(ctx, uint32(ptr), []byte(s)) {
+	if !mod.Memory().Write(uint32(ptr), []byte(s)) {
 		return 0, 0, xerrors.Errorf("Memory.Write(%d, %d) out of range of memory size %d",
-			ptr, size, mod.Memory().Size(ctx))
+			ptr, size, mod.Memory().Size())
 	}
 
 	return ptr, size, nil
 }
 
-func unmarshal(ctx context.Context, m api.Module, ptrSize uint64, v any) error {
+func unmarshal(mem api.Memory, ptrSize uint64, v any) error {
 	ptr, size := splitPtrSize(ptrSize)
-	buf := readMemory(ctx, m, ptr, size)
+	buf := readMemory(mem, ptr, size)
 	if buf == nil {
 		return xerrors.New("unable to read memory")
 	}
@@ -225,9 +225,9 @@ func marshal(ctx context.Context, m api.Module, malloc api.Function, v easyjson.
 
 	// The pointer is a linear memory offset, which is where we write the marshaled value.
 	ptr := results[0]
-	if !m.Memory().Write(ctx, uint32(ptr), b) {
+	if !m.Memory().Write(uint32(ptr), b) {
 		return 0, 0, xerrors.Errorf("Memory.Write(%d, %d) out of range of memory size %d",
-			ptr, size, m.Memory().Size(ctx))
+			ptr, size, m.Memory().Size())
 	}
 
 	return ptr, size, nil
@@ -440,7 +440,7 @@ func (m *wasmModule) Analyze(ctx context.Context, input analyzer.AnalysisInput) 
 	}
 
 	var result analyzer.AnalysisResult
-	if err = unmarshal(ctx, m.mod, analyzeRes[0], &result); err != nil {
+	if err = unmarshal(m.mod.Memory(), analyzeRes[0], &result); err != nil {
 		return nil, xerrors.Errorf("invalid return value: %w", err)
 	}
 
@@ -481,7 +481,7 @@ func (m *wasmModule) PostScan(ctx context.Context, results types.Results) (types
 	}
 
 	var got types.Results
-	if err = unmarshal(ctx, m.mod, analyzeRes[0], &got); err != nil {
+	if err = unmarshal(m.mod.Memory(), analyzeRes[0], &got); err != nil {
 		return nil, xerrors.Errorf("post scan unmarshal error: %w", err)
 	}
 
@@ -604,7 +604,7 @@ func moduleName(ctx context.Context, mod api.Module) (string, error) {
 		return "", xerrors.New("invalid signature: name()")
 	}
 
-	name, err := ptrSizeToString(ctx, mod, nameRes[0])
+	name, err := ptrSizeToString(mod.Memory(), nameRes[0])
 	if err != nil {
 		return "", xerrors.Errorf("invalid return value: %w", err)
 	}
@@ -657,7 +657,7 @@ func moduleRequiredFiles(ctx context.Context, mod api.Module) ([]*regexp.Regexp,
 	}
 
 	var fileRegexps serialize.StringSlice
-	if err = unmarshal(ctx, mod, requiredFilesRes[0], &fileRegexps); err != nil {
+	if err = unmarshal(mod.Memory(), requiredFilesRes[0], &fileRegexps); err != nil {
 		return nil, xerrors.Errorf("invalid return value: %w", err)
 	}
 
@@ -715,7 +715,7 @@ func modulePostScanSpec(ctx context.Context, mod api.Module) (serialize.PostScan
 	}
 
 	var spec serialize.PostScanSpec
-	if err = unmarshal(ctx, mod, postScanSpecRes[0], &spec); err != nil {
+	if err = unmarshal(mod.Memory(), postScanSpecRes[0], &spec); err != nil {
 		return serialize.PostScanSpec{}, xerrors.Errorf("invalid return value: %w", err)
 	}
 
