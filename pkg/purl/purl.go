@@ -16,8 +16,9 @@ import (
 )
 
 const (
-	TypeAPK = "apk" // not defined in github.com/package-url/packageurl-go
-	TypeOCI = "oci"
+	TypeAPK  = "apk" // not defined in github.com/package-url/packageurl-go
+	TypeOCI  = "oci"
+	TypeDart = "dart"
 )
 
 type PackageURL struct {
@@ -98,7 +99,7 @@ func (p *PackageURL) PackageType() string {
 		return ftypes.Cocoapods
 	case packageurl.TypeHex:
 		return ftypes.Hex
-	case "dart": // TODO: replace with packageurl.TypeDart once they add it.
+	case TypeDart: // TODO: replace with packageurl.TypeDart once they add it.
 		return ftypes.Pub
 	}
 	return p.Type
@@ -315,7 +316,7 @@ func purlType(t string) string {
 	case ftypes.Hex:
 		return packageurl.TypeHex
 	case ftypes.Pub:
-		return "dart" // TODO: replace with packageurl.TypeDart once they add it.
+		return TypeDart // TODO: replace with packageurl.TypeDart once they add it.
 	case os.Alpine:
 		return TypeAPK
 	case os.Debian, os.Ubuntu:

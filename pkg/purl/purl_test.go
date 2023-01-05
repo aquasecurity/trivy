@@ -192,7 +192,7 @@ func TestNewPackageURL(t *testing.T) {
 			},
 			want: purl.PackageURL{
 				PackageURL: packageurl.PackageURL{
-					Type:    "dart",
+					Type:    purl.TypeDart,
 					Name:    "http",
 					Version: "0.13.2",
 				},
@@ -413,7 +413,7 @@ func TestFromString(t *testing.T) {
 			purl: "pkg:dart/http@0.13.2",
 			want: purl.PackageURL{
 				PackageURL: packageurl.PackageURL{
-					Type:       "dart",
+					Type:       purl.TypeDart,
 					Name:       "http",
 					Version:    "0.13.2",
 					Qualifiers: packageurl.Qualifiers{},
