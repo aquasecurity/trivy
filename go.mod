@@ -2,9 +2,9 @@ module github.com/aquasecurity/trivy
 
 go 1.19
 
-replace github.com/aquasecurity/defsec => github.com/chen-keinan/defsec v0.15.3-0.20230104130536-691c03594490
+replace github.com/aquasecurity/defsec => github.com/chen-keinan/defsec v0.15.3-0.20230105125508-9a8093be901a
 
-replace github.com/aquasecurity/trivy-kubernetes => github.com/chen-keinan/trivy-kubernetes v0.3.1-0.20230104143029-8e94be193003
+replace github.com/aquasecurity/trivy-kubernetes => github.com/chen-keinan/trivy-kubernetes v0.3.1-0.20230104154058-1cf0b483db11
 
 require (
 	github.com/CycloneDX/cyclonedx-go v0.6.0

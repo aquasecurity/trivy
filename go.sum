@@ -396,10 +396,10 @@ github.com/checkpoint-restore/go-criu/v5 v5.3.0/go.mod h1:E/eQpaFtUKGOOSEBZgmKAc
 github.com/cheggaaa/pb v1.0.27/go.mod h1:pQciLPpbU0oxA0h+VJYYLxO+XeDQb5pZijXscXHm81s=
 github.com/cheggaaa/pb/v3 v3.1.0 h1:3uouEsl32RL7gTiQsuaXD4Bzbfl5tGztXGUvXbs4O04=
 github.com/cheggaaa/pb/v3 v3.1.0/go.mod h1:YjrevcBqadFDaGQKRdmZxTY42pXEqda48Ea3lt0K/BE=
-github.com/chen-keinan/defsec v0.15.3-0.20230104130536-691c03594490 h1:LRaGgHVWRS4rzDLmRHQ789hxiV0+UOnch8g6qUaWiJ4=
-github.com/chen-keinan/defsec v0.15.3-0.20230104130536-691c03594490/go.mod h1:aX3TcsZB+IA1j9AXMzxrCJQ74WcEnoO1L2TkW1vKgsA=
-github.com/chen-keinan/trivy-kubernetes v0.3.1-0.20230104143029-8e94be193003 h1:2ueFL4Fd9FZM6HmlTWWoYG2bqv9gzSSZxXMGjLMOMtE=
-github.com/chen-keinan/trivy-kubernetes v0.3.1-0.20230104143029-8e94be193003/go.mod h1:+NCXDHPCw9Nlq7pzzigyjgjtOLPzHBL9O5QScDOUXE4=
+github.com/chen-keinan/defsec v0.15.3-0.20230105125508-9a8093be901a h1:lxp+J+vEGe+lvBIW8lbBhFlGbu+qiob3Ty1FBbS0wPE=
+github.com/chen-keinan/defsec v0.15.3-0.20230105125508-9a8093be901a/go.mod h1:aX3TcsZB+IA1j9AXMzxrCJQ74WcEnoO1L2TkW1vKgsA=
+github.com/chen-keinan/trivy-kubernetes v0.3.1-0.20230104154058-1cf0b483db11 h1:0mwZVGArXJd0bWpt7PrM6n1fNCF6xbcGzAsd3qvqtdc=
+github.com/chen-keinan/trivy-kubernetes v0.3.1-0.20230104154058-1cf0b483db11/go.mod h1:+NCXDHPCw9Nlq7pzzigyjgjtOLPzHBL9O5QScDOUXE4=
 github.com/chzyer/logex v1.1.10/go.mod h1:+Ywpsq7O8HXn0nuIou7OrIPyXbp3wmkHB+jjWRnGsAI=
 github.com/chzyer/readline v0.0.0-20180603132655-2972be24d48e/go.mod h1:nSuG5e5PlCu98SY8svDHJxuZscDgtXS6KTTbou5AhLI=
 github.com/chzyer/test v0.0.0-20180213035817-a1ea475d72b1/go.mod h1:Q3SI9o4m/ZMnBNeIyt5eFwwo7qiLfzFZmjNmxjkiQlU=
