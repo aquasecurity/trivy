@@ -1,0 +1,60 @@
+{
+  "build": "h7f8727e_0",
+  "build_number": 0,
+  "channel": "https://repo.anaconda.com/pkgs/main/linux-64",
+  "constrains": [],
+  "depends": [
+    "ca-certificates",
+    "libgcc-ng >=7.5.0"
+  ],
+  "extracted_package_dir": "/home/mmaitre/miniconda3/pkgs/openssl-1.1.1q-h7f8727e_0",
+  "features": "",
+  "files": [
+    "bin/c_rehash",
+    "<SNIP>",
+    "ssl/openssl.cnf.dist"
+  ],
+  "fn": "openssl-1.1.1q-h7f8727e_0.conda",
+  "legacy_bz2_md5": "ad51928702694e3f6d25b7d4229c84e6",
+  "license": "OpenSSL",
+  "license_family": "Apache",
+  "link": {
+    "source": "/home/user/miniconda3/pkgs/openssl-1.1.1q-h7f8727e_0",
+    "type": 1
+  },
+  "md5": "2ac47797afee2ece8d339c18b095b8d8",
+  "name": "openssl",
+  "package_tarball_full_path": "/home/user/miniconda3/pkgs/openssl-1.1.1q-h7f8727e_0.conda",
+  "paths_data": {
+    "paths": [
+      {
+        "_path": "bin/c_rehash",
+        "file_mode": "text",
+        "path_type": "hardlink",
+        "prefix_placeholder": "/opt/conda/conda-bld/openssl_1657551138854/_h_env_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_place",
+        "sha256": "04c9f4a5c91e20a24d14a36668b5bebe826d6087fb2337b68e33a4d485f5586f",
+        "sha256_in_prefix": "fc2a6b708cccb8ba90d20e54a9b07257fce009bf315a36f73d3e542dd8674921",
+        "size_in_bytes": 6991
+      },
+      {
+        "_path": "<SNIP>"
+      },
+      {
+        "_path": "ssl/openssl.cnf.dist",
+        "path_type": "hardlink",
+        "sha256": "f10ba64917b4458fafc1e078c2eb9e6a7602e68fc98c2e9e6df5e1636ae27d6b",
+        "sha256_in_prefix": "f10ba64917b4458fafc1e078c2eb9e6a7602e68fc98c2e9e6df5e1636ae27d6b",
+        "size_in_bytes": 10909
+      }
+    ],
+    "paths_version": 1
+  },
+  "requested_spec": "None",
+  "sha256": "49804293b87141523b2606836ece8e2aaa5202983698fd91e7c36bdb8c8a8de5",
+  "size": 2649280,
+  "subdir": "linux-64",
+  "timestamp": 1657551292835,
+  "track_features": "",
+  "url": "https://repo.anaconda.com/pkgs/main/linux-64/openssl-1.1.1q-h7f8727e_0.conda",
+  "version": "1.1.1q"
+}

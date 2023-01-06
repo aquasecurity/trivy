@@ -62,6 +62,9 @@ func NewDriver(libType string) (Driver, error) {
 	case ftypes.Cocoapods:
 		log.Logger.Warn("CocoaPods is supported for SBOM, not for vulnerability scanning")
 		return Driver{}, ErrSBOMSupportOnly
+	case ftypes.CondaPkg:
+		log.Logger.Warn("Conda package is supported for SBOM, not for vulnerability scanning")
+		return Driver{}, ErrSBOMSupportOnly
 	default:
 		return Driver{}, xerrors.Errorf("unsupported type %s", libType)
 	}

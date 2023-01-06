@@ -135,6 +135,21 @@ func TestNewPackageURL(t *testing.T) {
 			},
 		},
 		{
+			name: "conda package",
+			typ:  ftypes.CondaPkg,
+			pkg: ftypes.Package{
+				Name:    "absl-py",
+				Version: "0.4.1",
+			},
+			want: purl.PackageURL{
+				PackageURL: packageurl.PackageURL{
+					Type:    packageurl.TypeConda,
+					Name:    "absl-py",
+					Version: "0.4.1",
+				},
+			},
+		},
+		{
 			name: "composer package",
 			typ:  ftypes.Composer,
 			pkg: ftypes.Package{
@@ -420,6 +435,18 @@ func TestFromString(t *testing.T) {
 					Namespace:  "redhat",
 					Name:       "containers-common",
 					Version:    "0.1.14",
+					Qualifiers: packageurl.Qualifiers{},
+				},
+			},
+		},
+		{
+			name: "happy path for conda",
+			purl: "pkg:conda/absl-py@0.4.1",
+			want: purl.PackageURL{
+				PackageURL: packageurl.PackageURL{
+					Type:       packageurl.TypeConda,
+					Name:       "absl-py",
+					Version:    "0.4.1",
 					Qualifiers: packageurl.Qualifiers{},
 				},
 			},
