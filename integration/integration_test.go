@@ -136,12 +136,16 @@ func readCycloneDX(t *testing.T, filePath string) *cdx.BOM {
 	bom.Metadata.Timestamp = ""
 	bom.Metadata.Component.BOMRef = ""
 	bom.SerialNumber = ""
-	for i := range *bom.Components {
-		(*bom.Components)[i].BOMRef = ""
+	if bom.Components != nil {
+		for i := range *bom.Components {
+			(*bom.Components)[i].BOMRef = ""
+		}
 	}
-	for j := range *bom.Dependencies {
-		(*bom.Dependencies)[j].Ref = ""
-		(*bom.Dependencies)[j].Dependencies = nil
+	if bom.Dependencies != nil {
+		for j := range *bom.Dependencies {
+			(*bom.Dependencies)[j].Ref = ""
+			(*bom.Dependencies)[j].Dependencies = nil
+		}
 	}
 
 	return bom
