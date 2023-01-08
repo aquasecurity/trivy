@@ -1,27 +1,18 @@
 # Tutorials
 
-Tutorials are a great way to learn about use cases and integrations. We highly encourage community members to share their Trivy use cases with us in the documentation.
+In this section you can find step-by-step guides that help you accomplish specific tasks.
 
-There are two ways to contributor to the tutorials section
+👈 Please use the side-navigation on the left in order to browse the different topics.
 
-1. If you are creating any external content on Trivy, we would love to have it as part of our list of [external community resources][community-resources]
-2. If you are creating an end-to-end tutorial on a specific Trivy use-case, we would love to feature it in our tutorial section. Read below how you can contribute tutorials to the docs.
+## Adding tutorials
 
-## Process for adding new tutorials
+You are welcome to create tutorials and showcase them here. Tutorials can be either included in here as full articles, or included as external links under [external community resources][community-resources]. 
+Before sending PR, please first create an issue (of kind "Documentation") and describe the suggestion, if it's external link or article, and what category it's under.
 
-Requirements
-- The tutorial has to provide an end-to-end set of instructions
-- Ideally, tutorials should focus on a specific use case
-- If the tutorial is featuring other tools, those should be open source, too
-- Make sure to describe the expected outcome after each instruction
+Guidelines:
 
-**Tip:** Make sure that your tutorial is concise about a specific use case or integration. 
-
-How to add a tutorial
-
-1. Simply create a new `.md` file in the tutorials folder of the docs
-2. Add your content 
-3. Create a new index in the mkdocs.yaml file which is in the [root directory](https://github.com/aquasecurity/trivy) of the repository
-4. Create a PR
+- Focus on a specific use case. Start by clearly describing the use case and when/who it is relevant for.
+- Provide an end-to-end set of instructions. Make sure anyone can easily follow.
+- Describe the expected outcome after each step. Include examples as much as possible.
 
 [community-resources]: additional-resources/community.md

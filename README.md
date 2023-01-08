@@ -31,24 +31,25 @@ Scanners (what Trivy can find there):
 - Sensitive information and secrets
 - Software licenses
 
+To learn more, go to the [Trivy homepage][homepage] for feature highlights, or to the [Documentation site][docs] for detailed information.
+
 ## Quick Start
 
 ### Get Trivy
 
-Trivy is available in most common distribution methods. The full list of installation options is available in the [Installation] page, here are a few popular options:
+Trivy is available in most common distribution channels. The full list of installation options is available in the [Installation] page. Here are a few popular examples:
 
-- `apt-get install trivy`
-- `yum install trivy`
 - `brew install trivy`
 - `docker run aquasec/trivy`
 - Download binary from <https://github.com/aquasecurity/trivy/releases/latest/>
+- See [Installation] for more
 
-Trivy is integrated with many popular platforms and applications. The full list of integrations is available in the [Ecosystem] page. Here are a few popular options:
+Trivy is integrated with many popular platforms and applications. The complete list of integrations is available in the [Ecosystem] page. Here are a few popular examples:
 
 - [GitHub Actions](https://github.com/aquasecurity/trivy-action)
-- [CircleCI](https://circleci.com/developer/orbs/orb/fifteen5/trivy-orb)
 - [Kubernetes operator](https://github.com/aquasecurity/trivy-operator)
 - [VS Code plugin](https://github.com/aquasecurity/trivy-vscode-extension)
+- See [Ecosystem] for more
 
 ### General usage
 
@@ -91,36 +92,6 @@ trivy k8s --report summary cluster
 
 </details>
 
-## Highlights
-
-- Comprehensive vulnerability detection
-    - OS packages (Alpine Linux, Red Hat Universal Base Image, Red Hat Enterprise Linux, CentOS, AlmaLinux, Rocky Linux, CBL-Mariner, Oracle Linux, Debian, Ubuntu, Amazon Linux, openSUSE Leap, SUSE Enterprise Linux, Photon OS and Distroless)
-    - **Language-specific packages** (Bundler, Composer, Pipenv, Poetry, npm, yarn, Cargo, NuGet, Maven, and Go)
-    - High accuracy, especially [Alpine Linux][alpine] and RHEL/CentOS
-- Supply chain security (SBOM support)
-    - Support CycloneDX
-    - Support SPDX
-    - Generating and Scanning SBOM
-    - Leveraging in-toto attestations
-    - Integrated with [Sigstore]
-- Misconfiguration detection (IaC scanning) 
-    - Wide variety of security checks are provided **out of the box**
-    - Kubernetes, Docker, Terraform, and more
-    - User-defined policies using [OPA Rego][rego]
-- Secret detection
-    - A wide variety of built-in rules are provided **out of the box**
-    - User-defined patterns
-    - Efficient scanning of container images
-- Simple
-    - Available in apt, yum, brew, dockerhub
-    - **No pre-requisites** such as a database, system libraries, or eny environmental requirements. The binary runs anywhere.
-    - The first scan will finish within 10 seconds (depending on your network). Consequent scans will finish instantaneously.
-- Fits your workflow
-    - **Great for CI** such as GitHub Actions, Jenkins, GitLab CI, etc.
-    - Available as extension for IDEs such as vscode, jetbrains, vim
-    - Available as extension for Docker Desktop, Rancher Desktop
-    - See [Ecosystem] section in the documentation.
-
 ## FAQ
 
 ### How to pronounce the name "Trivy"?
@@ -143,6 +114,7 @@ Contact us about any matter by opening a GitHub Discussion [here][discussions]
 [docker-pulls]: https://img.shields.io/docker/pulls/aquasec/trivy?logo=docker&label=docker%20pulls%20%2F%20trivy
 [license]: https://github.com/aquasecurity/trivy/blob/main/LICENSE
 [license-img]: https://img.shields.io/badge/License-Apache%202.0-blue.svg
+[homepage]: https://trivy.dev
 [docs]: https://aquasecurity.github.io/trivy
 [pronunciation]: #how-to-pronounce-the-name-trivy
 
