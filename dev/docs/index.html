@@ -211,7 +211,7 @@
   
     <li class="md-tabs__item">
       <a href="./" class="md-tabs__link md-tabs__link--active">
-        CLI
+        Docs
       </a>
     </li>
   
@@ -798,14 +798,14 @@
       
       
         <label class="md-nav__link" for="__nav_3">
-          CLI
+          Docs
           <span class="md-nav__icon md-icon"></span>
         </label>
       
-      <nav class="md-nav" aria-label="CLI" data-md-level="1">
+      <nav class="md-nav" aria-label="Docs" data-md-level="1">
         <label class="md-nav__title" for="__nav_3">
           <span class="md-nav__icon md-icon"></span>
-          CLI
+          Docs
         </label>
         <ul class="md-nav__list" data-md-scrollfix>
           
@@ -824,40 +824,9 @@
         
       
       
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          Overview
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
       <a href="./" class="md-nav__link md-nav__link--active">
         Overview
       </a>
-      
-        
-
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#features" class="md-nav__link">
-    Features
-  </a>
-  
-</li>
-      
-    </ul>
-  
-</nav>
       
     </li>
   
@@ -3175,21 +3144,6 @@
     
   
   
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#features" class="md-nav__link">
-    Features
-  </a>
-  
-</li>
-      
-    </ul>
-  
 </nav>
                   </div>
                 </div>
@@ -3203,71 +3157,8 @@
 
 
 <h1 id="docs">Docs</h1>
-<p>This documentation details how to use Trivy to access the features listed below.</p>
-<h2 id="features">Features</h2>
-<ul>
-<li>Comprehensive vulnerability detection<ul>
-<li><a href="vulnerability/detection/os/">OS packages</a> (Alpine, Wolfi, Red Hat Universal Base Image, Red Hat Enterprise Linux, CentOS, AlmaLinux, Rocky Linux, CBL-Mariner, Oracle Linux, Debian, Ubuntu, Amazon Linux, openSUSE Leap, SUSE Enterprise Linux, Photon OS and Distroless)</li>
-<li><a href="vulnerability/detection/language/"><strong>Language-specific packages</strong></a> (Bundler, Composer, Pipenv, Poetry, npm, yarn, pnpm, Cargo, NuGet, Maven, and Go)</li>
-</ul>
-</li>
-<li>Detect IaC misconfigurations<ul>
-<li>A wide variety of <a href="misconfiguration/policy/builtin/">built-in policies</a> are provided <strong>out of the box</strong>:<ul>
-<li>Kubernetes</li>
-<li>Docker</li>
-<li>Terraform</li>
-<li>more coming soon</li>
-</ul>
-</li>
-<li>Support custom policies</li>
-</ul>
-</li>
-<li>Simple<ul>
-<li>Specify only an image name, a directory containing IaC configs, or an artifact name</li>
-<li>See <a href="..">Quick Start</a></li>
-</ul>
-</li>
-<li>Fast<ul>
-<li>The first scan will finish within 10 seconds (depending on your network). Consequent scans will finish in single seconds.</li>
-<li>Unlike other scanners that take long to fetch vulnerability information (~10 minutes) on the first run, and encourage you to maintain a durable vulnerability database, Trivy is stateless and requires no maintenance or preparation.</li>
-</ul>
-</li>
-<li>Easy installation<ul>
-<li><code>apt-get install</code>, <code>yum install</code> and <code>brew install</code> is possible (See <a href="../getting-started/installation/">Installation</a>)</li>
-<li><strong>No pre-requisites</strong> such as installation of DB, libraries, etc.</li>
-</ul>
-</li>
-<li>High accuracy<ul>
-<li><strong>Especially Alpine Linux and RHEL/CentOS</strong></li>
-<li>Other OSes are also high</li>
-</ul>
-</li>
-<li>DevSecOps<ul>
-<li><strong>Suitable for CI</strong> such as Travis CI, CircleCI, Jenkins, GitLab CI, etc.</li>
-<li>See <a href="../tutorials/integrations/">CI Example</a></li>
-</ul>
-</li>
-<li>Support multiple formats<ul>
-<li>container image<ul>
-<li>A local image in Docker Engine which is running as a daemon</li>
-<li>A local image in <a href="advanced/container/podman/">Podman</a> (&gt;=2.0) which is exposing a socket</li>
-<li>A remote image in Docker Registry such as Docker Hub, ECR, GCR and ACR</li>
-<li>A tar archive stored in the <code>docker save</code> / <code>podman save</code> formatted file</li>
-<li>An image directory compliant with <a href="https://github.com/opencontainers/image-spec">OCI Image Format</a></li>
-</ul>
-</li>
-<li>local filesystem and rootfs</li>
-<li>remote git repository</li>
-</ul>
-</li>
-<li><a href="sbom/">SBOM</a> (Software Bill of Materials) support<ul>
-<li>CycloneDX</li>
-<li>SPDX</li>
-<li>GitHub Dependency Snapshots</li>
-</ul>
-</li>
-</ul>
-<p>Please see <a href="https://github.com/aquasecurity/trivy/blob/main/LICENSE">LICENSE</a> for Trivy licensing information.</p>
+<p>In this section you can find the complete reference documentation for all of the different features and settings that Trivy has to offer.</p>
+<p>👈 Please use the side-navigation on the left in order to browse the different topics.</p>
 
               
             </article>

@@ -63,6 +63,11 @@
     <label class="md-overlay" for="__drawer"></label>
     <div data-md-component="skip">
       
+        
+        <a href="#aws-private-registry-permissions" class="md-skip">
+          Skip to content
+        </a>
+      
     </div>
     <div data-md-component="announce">
       
@@ -206,7 +211,7 @@
   
     <li class="md-tabs__item">
       <a href="../../../" class="md-tabs__link md-tabs__link--active">
-        CLI
+        Docs
       </a>
     </li>
   
@@ -793,14 +798,14 @@
       
       
         <label class="md-nav__link" for="__nav_3">
-          CLI
+          Docs
           <span class="md-nav__icon md-icon"></span>
         </label>
       
-      <nav class="md-nav" aria-label="CLI" data-md-level="1">
+      <nav class="md-nav" aria-label="Docs" data-md-level="1">
         <label class="md-nav__title" for="__nav_3">
           <span class="md-nav__icon md-icon"></span>
-          CLI
+          Docs
         </label>
         <ul class="md-nav__list" data-md-scrollfix>
           
@@ -2423,9 +2428,58 @@
       
       
       
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          AWS ECR (Elastic Container Registry)
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
       <a href="./" class="md-nav__link md-nav__link--active">
         AWS ECR (Elastic Container Registry)
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#aws-private-registry-permissions" class="md-nav__link">
+    AWS private registry permissions
+  </a>
+  
+    <nav class="md-nav" aria-label="AWS private registry permissions">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#iam-role-service-account" class="md-nav__link">
+    IAM Role Service account
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#kube2iam-or-kiam" class="md-nav__link">
+    Kube2iam or Kiam
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
       
     </li>
   
@@ -3141,6 +3195,41 @@
   
   
   
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#aws-private-registry-permissions" class="md-nav__link">
+    AWS private registry permissions
+  </a>
+  
+    <nav class="md-nav" aria-label="AWS private registry permissions">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#iam-role-service-account" class="md-nav__link">
+    IAM Role Service account
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#kube2iam-or-kiam" class="md-nav__link">
+    Kube2iam or Kiam
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
 </nav>
                   </div>
                 </div>
@@ -3157,6 +3246,27 @@
 
 <p>Trivy uses AWS SDK. You don't need to install <code>aws</code> CLI tool.
 You can use <a href="https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-envvars.html">AWS CLI's ENV Vars</a>.</p>
+<h3 id="aws-private-registry-permissions">AWS private registry permissions</h3>
+<p>You may need to grant permissions to allow Trivy to pull images from private ECR.</p>
+<p>It depends on how you want to provide AWS Role to trivy.</p>
+<ul>
+<li><a href="https://github.com/aws/amazon-eks-pod-identity-webhook">IAM Role Service account</a></li>
+<li><a href="https://github.com/jtblin/kube2iam">Kube2iam</a> or <a href="https://github.com/uswitch/kiam">Kiam</a></li>
+</ul>
+<h4 id="iam-role-service-account">IAM Role Service account</h4>
+<p>Add the AWS role in trivy's service account annotations:</p>
+<div class="highlight"><pre><span></span><code><span class="nt">trivy</span><span class="p">:</span><span class="w"></span>
+
+<span class="w">  </span><span class="nt">serviceAccount</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">annotations</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{}</span><span class="w"></span>
+<span class="w">      </span><span class="c1"># eks.amazonaws.com/role-arn: arn:aws:iam::ACCOUNT_ID:role/IAM_ROLE_NAME</span><span class="w"></span>
+</code></pre></div>
+<h4 id="kube2iam-or-kiam">Kube2iam or Kiam</h4>
+<p>Add the AWS role to pod's annotations:</p>
+<div class="highlight"><pre><span></span><code><span class="nt">podAnnotations</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{}</span><span class="w"></span>
+<span class="w">  </span><span class="c1">## kube2iam/kiam annotation</span><span class="w"></span>
+<span class="w">  </span><span class="c1"># iam.amazonaws.com/role: arn:aws:iam::ACCOUNT_ID:role/IAM_ROLE_NAME</span><span class="w"></span>
+</code></pre></div>
 
               
             </article>
