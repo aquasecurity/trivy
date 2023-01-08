@@ -4,11 +4,16 @@ on:
     branches:
       - main
     paths-ignore:
-      - '*.md'
+      - '**.md'
       - 'docs/**'
       - 'mkdocs.yml'
       - 'LICENSE'
   pull_request:
+      paths-ignore:
+      - '**.md'
+      - 'docs/**'
+      - 'mkdocs.yml'
+      - 'LICENSE'
 jobs:
   test:
     name: Test
@@ -116,24 +121,3 @@ jobs:
         version: v1.4.1
         args: release --skip-sign --snapshot --rm-dist --skip-publish --timeout 90m
 
-  build-documents:
-    name: Documentation Test
-    runs-on: ubuntu-latest
-    steps:
-    - name: Checkout
-      uses: actions/checkout@v3
-      with:
-        fetch-depth: 0
-        persist-credentials: true
-    - uses: actions/setup-python@v4
-      with:
-        python-version: 3.x
-    - name: Install dependencies
-      run: |
-        pip install -r docs/build/requirements.txt
-    - name: Configure the git user
-      run: |
-        git config user.name "knqyf263"
-        git config user.email "knqyf263@gmail.com"
-    - name: Deploy the dev documents
-      run: mike deploy test
