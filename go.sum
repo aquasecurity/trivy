@@ -193,8 +193,8 @@ github.com/apparentlymart/go-textseg/v13 v13.0.0 h1:Y+KvPE1NYz0xl601PVImeQfFyEy6
 github.com/apparentlymart/go-textseg/v13 v13.0.0/go.mod h1:ZK2fH7c4NqDTLtiYLvIkEghdlcqw7yxLeM89kiTRPUo=
 github.com/aquasecurity/bolt-fixtures v0.0.0-20200903104109-d34e7f983986 h1:2a30xLN2sUZcMXl50hg+PJCIDdJgIvIbVcKqLJ/ZrtM=
 github.com/aquasecurity/bolt-fixtures v0.0.0-20200903104109-d34e7f983986/go.mod h1:NT+jyeCzXk6vXR5MTkdn4z64TgGfE5HMLC8qfj5unl8=
-github.com/aquasecurity/defsec v0.82.7-0.20221229120130-2bc18528da1c h1:Z7Uj3+zo6NJa9SFtMgGItZSqDMT3F7fPfCfXTdS3hKI=
-github.com/aquasecurity/defsec v0.82.7-0.20221229120130-2bc18528da1c/go.mod h1:sUdW6pzASralDcs+CDOE+QpWfBJt3/PY1Qbg8CS5flg=
+github.com/aquasecurity/defsec v0.82.7-0.20230103191626-4f3187c78d6b h1:3tjlf7nI/AFqoClNTOmm7MbO/HJy/ObQRzMIj2M44z8=
+github.com/aquasecurity/defsec v0.82.7-0.20230103191626-4f3187c78d6b/go.mod h1:aX3TcsZB+IA1j9AXMzxrCJQ74WcEnoO1L2TkW1vKgsA=
 github.com/aquasecurity/go-dep-parser v0.0.0-20230105081339-fe9e63bf16bf h1:r7OsibIkchbBlbRd0HhyHnL8GkELo8WrHu2wRAx8a9M=
 github.com/aquasecurity/go-dep-parser v0.0.0-20230105081339-fe9e63bf16bf/go.mod h1:sVaiFgCEAOD3REZ8yamINqBf+BKiV/jt60DhG2rvKEo=
 github.com/aquasecurity/go-gem-version v0.0.0-20201115065557-8eed6fe000ce h1:QgBRgJvtEOBtUXilDb1MLi1p1MWoyFDXAu5DEUl5nwM=
@@ -2293,8 +2293,8 @@ gotest.tools v2.2.0+incompatible/go.mod h1:DsYFclhRJ6vuDpmuTbkuFWG+y2sxOXAzmJt81
 gotest.tools/v3 v3.0.2/go.mod h1:3SzNCllyD9/Y+b5r9JIKQ474KzkZyqLqEfYqMsX94Bk=
 gotest.tools/v3 v3.0.3/go.mod h1:Z7Lb0S5l+klDB31fvDQX8ss/FlKDxtlFlw3Oa8Ymbl8=
 gotest.tools/v3 v3.4.0 h1:ZazjZUfuVeZGLAmlKKuyv3IKP5orXcwtOwDQH6YVr6o=
-helm.sh/helm/v3 v3.10.1 h1:uTnNlYx8QcTSNA4ZJ50Llwife4CSohUY4ehumyVf2QE=
-helm.sh/helm/v3 v3.10.1/go.mod h1:CXOcs02AYvrlPMWARNYNRgf2rNP7gLJQsi/Ubd4EDrI=
+helm.sh/helm/v3 v3.10.3 h1:wL7IUZ7Zyukm5Kz0OUmIFZgKHuAgByCrUcJBtY0kDyw=
+helm.sh/helm/v3 v3.10.3/go.mod h1:CXOcs02AYvrlPMWARNYNRgf2rNP7gLJQsi/Ubd4EDrI=
 honnef.co/go/tools v0.0.0-20190102054323-c2f93a96b099/go.mod h1:rf3lG4BRIbNafJWhAfAdb/ePZxsR/4RtNHQocxwk9r4=
 honnef.co/go/tools v0.0.0-20190106161140-3f1c8253044a/go.mod h1:rf3lG4BRIbNafJWhAfAdb/ePZxsR/4RtNHQocxwk9r4=
 honnef.co/go/tools v0.0.0-20190418001031-e561f6794a2a/go.mod h1:rf3lG4BRIbNafJWhAfAdb/ePZxsR/4RtNHQocxwk9r4=
