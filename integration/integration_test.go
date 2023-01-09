@@ -15,6 +15,8 @@ import (
 	"time"
 
 	cdx "github.com/CycloneDX/cyclonedx-go"
+	"github.com/spdx/tools-golang/jsonloader"
+	"github.com/spdx/tools-golang/spdx"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
@@ -151,6 +153,21 @@ func readCycloneDX(t *testing.T, filePath string) *cdx.BOM {
 	return bom
 }
 
+func readSpdxJson(t *testing.T, filePath string) *spdx.Document2_2 {
+	f, err := os.Open(filePath)
+	require.NoError(t, err)
+	defer f.Close()
+
+	bom, err := jsonloader.Load2_2(f)
+	require.NoError(t, err)
+
+	// We don't compare values which change each time an SBOM is generated
+	bom.CreationInfo.Created = ""
+	bom.CreationInfo.DocumentNamespace = ""
+
+	return bom
+}
+
 func execute(osArgs []string) error {
 	// Setup CLI App
 	app := commands.NewApp("dev")
@@ -170,5 +187,11 @@ func compareReports(t *testing.T, wantFile, gotFile string) {
 func compareCycloneDX(t *testing.T, wantFile, gotFile string) {
 	want := readCycloneDX(t, wantFile)
 	got := readCycloneDX(t, gotFile)
+	assert.Equal(t, want, got)
+}
+
+func compareSpdxJson(t *testing.T, wantFile, gotFile string) {
+	want := readSpdxJson(t, wantFile)
+	got := readSpdxJson(t, gotFile)
 	assert.Equal(t, want, got)
 }

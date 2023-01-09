@@ -249,7 +249,7 @@ func (e *Marshaler) marshalComponents(r types.Report, bomRef string) (*[]cdx.Com
 		}
 
 		if result.Type == ftypes.NodePkg || result.Type == ftypes.PythonPkg ||
-			result.Type == ftypes.GemSpec || result.Type == ftypes.Jar {
+			result.Type == ftypes.GemSpec || result.Type == ftypes.Jar || result.Type == ftypes.CondaPkg {
 			// If a package is language-specific package that isn't associated with a lock file,
 			// it will be a dependency of a component under "metadata".
 			// e.g.

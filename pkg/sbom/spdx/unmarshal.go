@@ -143,7 +143,7 @@ func initApplication(pkg spdx.Package2_2) *ftypes.Application {
 		FilePath: pkg.PackageSourceInfo,
 	}
 	if pkg.PackageName == ftypes.NodePkg || pkg.PackageName == ftypes.PythonPkg ||
-		pkg.PackageName == ftypes.GemSpec || pkg.PackageName == ftypes.Jar {
+		pkg.PackageName == ftypes.GemSpec || pkg.PackageName == ftypes.Jar || pkg.PackageName == ftypes.CondaPkg {
 		app.FilePath = ""
 	}
 	return app

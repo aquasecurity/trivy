@@ -257,13 +257,22 @@ func TestFilesystem(t *testing.T) {
 			golden: "testdata/secrets.json.golden",
 		},
 		{
-			name: "conda",
+			name: "conda generating CycloneDX SBOM",
 			args: args{
 				command: "rootfs",
 				format:  "cyclonedx",
 				input:   "testdata/fixtures/fs/conda",
 			},
-			golden: "testdata/conda.json.golden",
+			golden: "testdata/conda-cyclonedx.json.golden",
+		},
+		{
+			name: "conda generating SPDX SBOM",
+			args: args{
+				command: "rootfs",
+				format:  "spdx-json",
+				input:   "testdata/fixtures/fs/conda",
+			},
+			golden: "testdata/conda-spdx.json.golden",
 		},
 	}
 
@@ -373,6 +382,8 @@ func TestFilesystem(t *testing.T) {
 			switch format {
 			case "cyclonedx":
 				compareCycloneDX(t, tt.golden, outputFile)
+			case "spdx-json":
+				compareSpdxJson(t, tt.golden, outputFile)
 			case "json":
 				compareReports(t, tt.golden, outputFile)
 			default:
