@@ -120,6 +120,7 @@ func (c *Client) LoadBuiltinPolicies() ([]string, error) {
 	if err != nil {
 		return nil, xerrors.Errorf("manifest file open error (%s): %w", c.manifestPath(), err)
 	}
+	defer f.Close()
 
 	var manifest bundle.Manifest
 	if err = json.NewDecoder(f).Decode(&manifest); err != nil {
@@ -147,6 +148,7 @@ func (c *Client) NeedsUpdate() (bool, error) {
 		log.Logger.Debugf("Failed to open the policy metadata: %s", err)
 		return true, nil
 	}
+	defer f.Close()
 
 	var meta Metadata
 	if err = json.NewDecoder(f).Decode(&meta); err != nil {
