@@ -31,6 +31,7 @@ import (
 var (
 	pkgTargets = map[string]string{
 		ftypes.PythonPkg: "Python",
+		ftypes.CondaPkg:  "Conda",
 		ftypes.GemSpec:   "Ruby",
 		ftypes.NodePkg:   "Node.js",
 		ftypes.Jar:       "Java",

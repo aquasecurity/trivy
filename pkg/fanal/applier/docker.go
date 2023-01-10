@@ -232,12 +232,13 @@ func ApplyLayers(layers []types.BlobInfo) types.ArtifactDetail {
 	return mergedLayer
 }
 
-// aggregate merges all packages installed by pip/gem/npm/jar into each application
+// aggregate merges all packages installed by pip/gem/npm/jar/conda into each application
 func aggregate(detail *types.ArtifactDetail) {
 	var apps []types.Application
 
 	aggregatedApps := map[string]*types.Application{
 		types.PythonPkg: {Type: types.PythonPkg},
+		types.CondaPkg:  {Type: types.CondaPkg},
 		types.GemSpec:   {Type: types.GemSpec},
 		types.NodePkg:   {Type: types.NodePkg},
 		types.Jar:       {Type: types.Jar},

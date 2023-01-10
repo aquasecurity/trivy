@@ -85,6 +85,8 @@ func (p *PackageURL) PackageType() string {
 		return ftypes.Jar
 	case packageurl.TypeGem:
 		return ftypes.GemSpec
+	case packageurl.TypeConda:
+		return ftypes.CondaPkg
 	case packageurl.TypePyPi:
 		return ftypes.PythonPkg
 	case packageurl.TypeGolang:
@@ -305,6 +307,8 @@ func purlType(t string) string {
 		return packageurl.TypeGem
 	case ftypes.NuGet, ftypes.DotNetCore:
 		return packageurl.TypeNuget
+	case ftypes.CondaPkg:
+		return packageurl.TypeConda
 	case ftypes.PythonPkg, ftypes.Pip, ftypes.Pipenv, ftypes.Poetry:
 		return packageurl.TypePyPi
 	case ftypes.GoBinary, ftypes.GoModule:
