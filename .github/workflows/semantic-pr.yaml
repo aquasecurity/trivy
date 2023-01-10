@@ -71,6 +71,7 @@ jobs:
             c
             c++
             elixir
+            dart
 
             os
             lang

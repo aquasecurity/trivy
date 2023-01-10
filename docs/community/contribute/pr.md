@@ -81,6 +81,7 @@ language:
 - java
 - go
 - elixir
+- dart
 
 vuln:
 

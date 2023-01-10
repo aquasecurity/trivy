@@ -150,6 +150,15 @@ func TestFilesystem(t *testing.T) {
 			golden: "testdata/cocoapods.json.golden",
 		},
 		{
+			name: "pubspec.lock",
+			args: args{
+				securityChecks: "vuln",
+				listAllPkgs:    true,
+				input:          "testdata/fixtures/fs/pubspec",
+			},
+			golden: "testdata/pubspec.lock.json.golden",
+		},
+		{
 			name: "mix.lock",
 			args: args{
 				securityChecks: "vuln",
