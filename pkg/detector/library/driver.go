@@ -51,6 +51,9 @@ func NewDriver(libType string) (Driver, error) {
 	case ftypes.Pipenv, ftypes.Poetry, ftypes.Pip, ftypes.PythonPkg:
 		ecosystem = vulnerability.Pip
 		comparer = pep440.Comparer{}
+	case ftypes.Pub:
+		ecosystem = vulnerability.Pub
+		comparer = compare.GenericComparer{}
 	case ftypes.Hex:
 		ecosystem = vulnerability.Erlang
 		comparer = compare.GenericComparer{}

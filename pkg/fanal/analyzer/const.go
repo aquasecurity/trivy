@@ -80,6 +80,9 @@ const (
 	// Swift
 	TypeCocoaPods Type = "cocoapods"
 
+	// Dart
+	TypePubSpecLock Type = "pubspec-lock"
+
 	// ============
 	// Non-packaged
 	// ============
@@ -131,14 +134,14 @@ var (
 		TypeBundler, TypeGemSpec, TypeCargo, TypeComposer, TypeJar, TypePom, TypeGradleLock,
 		TypeNpmPkgLock, TypeNodePkg, TypeYarn, TypePnpm, TypeNuget, TypeDotNetCore,
 		TypePythonPkg, TypePip, TypePipenv, TypePoetry, TypeGoBinary, TypeGoMod, TypeRustBinary, TypeConanLock,
-		TypeCocoaPods, TypeMixLock,
+		TypeCocoaPods, TypePubSpecLock, TypeMixLock,
 	}
 
 	// TypeLockfiles has all lock file analyzers
 	TypeLockfiles = []Type{
 		TypeBundler, TypeNpmPkgLock, TypeYarn,
 		TypePnpm, TypePip, TypePipenv, TypePoetry, TypeGoMod, TypePom, TypeConanLock, TypeGradleLock,
-		TypeCocoaPods, TypeMixLock,
+		TypeCocoaPods, TypePubSpecLock, TypeMixLock,
 	}
 
 	// TypeIndividualPkgs has all analyzers for individual packages

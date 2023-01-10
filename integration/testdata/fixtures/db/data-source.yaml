@@ -30,6 +30,11 @@
         ID: "ghsa"
         Name: "GitHub Security Advisory RubyGems"
         URL: "https://github.com/advisories?query=type%3Areviewed+ecosystem%3Arubygems"
+    - key: "pub::GitHub Security Advisory Pub"
+      value:
+        ID: "ghsa"
+        Name: "GitHub Security Advisory Pub"
+        URL: "https://github.com/advisories?query=type%3Areviewed+ecosystem%3Apub"
     - key: "erlang::GitHub Security Advisory Erlang"
       value:
         ID: "ghsa"

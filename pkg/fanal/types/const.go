@@ -30,6 +30,7 @@ const (
 	RustBinary = "rustbinary"
 	Conan      = "conan"
 	Cocoapods  = "cocoapods"
+	Pub        = "pub"
 	Hex        = "hex"
 
 	// Config files
@@ -74,6 +75,8 @@ const (
 	ConanLock = "conan.lock"
 
 	CocoaPodsLock = "Podfile.lock"
+
+	PubSpecLock = "pubspec.lock"
 
 	MixLock = "mix.lock"
 )
