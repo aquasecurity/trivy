@@ -26,7 +26,7 @@ var (
 		ConfigName: "format",
 		Shorthand:  "f",
 		Value:      report.FormatTable,
-		Usage:      "format (table, json, sarif, template, cyclonedx, spdx, spdx-json, github, cosign-vuln)",
+		Usage:      "format (" + strings.Join(report.SupportedFormats, ", ") + ")",
 	}
 	ReportFormatFlag = Flag{
 		Name:       "report",
@@ -154,6 +154,10 @@ func (f *ReportFlagGroup) ToOptions(out io.Writer) (ReportOptions, error) {
 	dependencyTree := getBool(f.DependencyTree)
 	listAllPkgs := getBool(f.ListAllPkgs)
 	output := getString(f.Output)
+
+	if format != "" && !slices.Contains(report.SupportedFormats, format) {
+		return ReportOptions{}, xerrors.Errorf("unknown format: %v", format)
+	}
 
 	if template != "" {
 		if format == "" {
