@@ -43,9 +43,9 @@ func tryRemote(ctx context.Context, imageName string, ref name.Reference, option
 	if option.Platform != "" {
 		s, err := parsePlatform(ref, option.Platform, remoteOpts)
 		if err != nil {
-			return nil, err
+			return nil, xerrors.Errorf("platform error: %w", err)
 		}
-		//Ignored --platform should skip adding platform remoteOpts
+		// Don't pass platform when the specified image is single-arch.
 		if s != nil {
 			remoteOpts = append(remoteOpts, remote.WithPlatform(*s))
 		}
