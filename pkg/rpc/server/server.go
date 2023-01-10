@@ -36,7 +36,7 @@ func NewScanServer(s scanner.Driver) *ScanServer {
 
 // Log and return an error
 func teeError(err error) error {
-	log.Logger.Errorf("%v", err)
+	log.Logger.Errorf("%+v", err)
 	return err
 }
 
