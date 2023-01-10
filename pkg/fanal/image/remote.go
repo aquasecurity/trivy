@@ -45,6 +45,7 @@ func tryRemote(ctx context.Context, imageName string, ref name.Reference, option
 		if err != nil {
 			return nil, err
 		}
+		//Ignored --platform should skip adding platform remoteOpts
 		if s != nil {
 			remoteOpts = append(remoteOpts, remote.WithPlatform(*s))
 		}
