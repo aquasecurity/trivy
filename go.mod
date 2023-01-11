@@ -53,7 +53,6 @@ require (
 	github.com/masahiro331/go-disk v0.0.0-20220919035250-c8da316f91ac
 	github.com/masahiro331/go-ebs-file v0.0.0-20221125181850-09c63351e38c
 	github.com/masahiro331/go-ext4-filesystem v0.0.0-20221016160854-4b40d7ee6193
-	github.com/masahiro331/go-license v0.0.0-20221224162715-f8b5ee7ddd6a
 	github.com/masahiro331/go-mvn-version v0.0.0-20210429150710-d3157d602a08
 	github.com/masahiro331/go-vmdk-parser v0.0.0-20221124162251-5eeffd974e5a
 	github.com/masahiro331/go-xfs-filesystem v0.0.0-20221127135739-051c25f1becd
