@@ -30,6 +30,16 @@ func TestParse(t *testing.T) {
 			expectStr: "Public Domain",
 		},
 		{
+			name:  "happy path tag:value license",
+			input: "DocumentRef-spdx-tool-1.2:LicenseRef-MIT-Style-2",
+			expect: &LicenseExpression{
+				Node: Node{
+					License: "DocumentRef-spdx-tool-1.2:LicenseRef-MIT-Style-2",
+				},
+			},
+			expectStr: "DocumentRef-spdx-tool-1.2:LicenseRef-MIT-Style-2",
+		},
+		{
 			name:  "happy path single license with norm func",
 			input: "Public Domain with exception",
 			expect: &LicenseExpression{

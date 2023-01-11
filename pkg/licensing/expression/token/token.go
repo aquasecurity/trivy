@@ -10,8 +10,6 @@ const (
 
 	LPAREN = "("
 	RPAREN = ")"
-	LBRACE = "{"
-	RBRACE = "}"
 
 	AND = "AND"
 	OR  = "OR"

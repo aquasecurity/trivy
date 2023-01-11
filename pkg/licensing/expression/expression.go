@@ -19,6 +19,10 @@ func Normalize(license string, fn ...parser.NormalizeFunc) string {
 	return licenseParser.Normalize(expression)
 }
 
+// NormalizeForSPDX is normalized license-id replace ' ' to '-'.
+// SPDX license MUST NOT be white space between a license-id.
+// There MUST be white space on either side of the operator "WITH".
+// ref: https://spdx.github.io/spdx-spec/v2.3/SPDX-license-expressions
 func NormalizeForSPDX(name string) string {
 	OperatorWith := " WITH "
 	i := strings.Index(strings.ToUpper(name), OperatorWith)

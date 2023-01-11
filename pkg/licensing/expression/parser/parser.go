@@ -60,21 +60,15 @@ func (p *Parser) Parse() (*LicenseExpression, error) {
 			cursor.Operator = string(tok.Type)
 			cursor.Next = &LicenseExpression{}
 			cursor = cursor.Next
-		case token.LPAREN, token.LBRACE:
+		case token.LPAREN:
 			p := Pair{root: root, cursor: cursor, bracket: tok.Type}
 			stack.Push(p)
 			root = &LicenseExpression{}
 			cursor = root
-		case token.RPAREN, token.RBRACE:
+		case token.RPAREN:
 			e := stack.Pop()
-			if e.bracket == token.LPAREN {
-				if tok.Type != token.RPAREN {
-					return nil, ErrInvalidExpression
-				}
-			} else if e.bracket == token.LBRACE {
-				if tok.Type != token.RBRACE {
-					return nil, ErrInvalidExpression
-				}
+			if e.bracket == token.LPAREN && tok.Type != token.RPAREN {
+				return nil, ErrInvalidExpression
 			}
 			e.cursor.Node.LicenseExpression = root
 			cursor = e.cursor
@@ -86,6 +80,7 @@ func (p *Parser) Parse() (*LicenseExpression, error) {
 	}
 	return root, nil
 }
+
 func (p *Parser) Normalize(l *LicenseExpression) string {
 	cursor := l
 

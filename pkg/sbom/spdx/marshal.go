@@ -2,12 +2,12 @@ package spdx
 
 import (
 	"fmt"
-	"github.com/mitchellh/hashstructure/v2"
 	"strconv"
 	"strings"
 	"time"
 
 	"github.com/google/uuid"
+	"github.com/mitchellh/hashstructure/v2"
 	"github.com/spdx/tools-golang/spdx"
 	"golang.org/x/xerrors"
 	"k8s.io/utils/clock"
