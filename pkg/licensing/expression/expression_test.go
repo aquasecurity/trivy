@@ -29,3 +29,33 @@ func TestNormalizeForSPDX(t *testing.T) {
 		})
 	}
 }
+
+func TestJoin(t *testing.T) {
+	tests := []struct {
+		name          string
+		inputElements []string
+		expect        string
+	}{
+		{
+			name:          "happy path single license",
+			inputElements: []string{"MIT"},
+			expect:        "MIT",
+		},
+		{
+			name:          "happy path multi license",
+			inputElements: []string{"MIT", "GPL1.0"},
+			expect:        "MIT AND GPL1.0",
+		},
+		{
+			name:          "happy path multi license with OR operator",
+			inputElements: []string{"MIT", "GPL1.0 OR GPL2.0"},
+			expect:        "MIT AND (GPL1.0 OR GPL2.0)",
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got := Join(tt.inputElements, AND)
+			assert.Equal(t, tt.expect, got)
+		})
+	}
+}

@@ -1,6 +1,8 @@
 package token
 
-import "strings"
+import (
+	"strings"
+)
 
 const (
 	ILLEGAL = "ILLEGAL"

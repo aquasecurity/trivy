@@ -360,16 +360,8 @@ func GetLicense(p ftypes.Package) string {
 		return "NONE"
 	}
 
-	var licenses []string
-	for i, license := range p.Licenses {
-		if i != 0 && strings.Contains(strings.ToUpper(license), " OR ") {
-			license = fmt.Sprintf("(%s)", license)
-		}
-		licenses = append(licenses, license)
-	}
-	license := strings.Join(licenses, " AND ")
-
-	return expression.Normalize(license,
+	return expression.Normalize(
+		expression.Join(p.Licenses, expression.AND),
 		licensing.Normalize,
 		expression.NormalizeForSPDX,
 	)

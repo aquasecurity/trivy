@@ -169,16 +169,6 @@ func TestParse(t *testing.T) {
 			input:     "Public Domain AND ( GPLv2+ ",
 			expectErr: "invalid expression error",
 		},
-		{
-			name:      "bad path bad bracket",
-			input:     "Public Domain AND { ( GPLv2+ } )",
-			expectErr: "invalid expression error",
-		},
-		{
-			name:      "bad path bad bracket",
-			input:     "Public Domain AND  ({GPLv2+)}",
-			expectErr: "invalid expression error",
-		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {

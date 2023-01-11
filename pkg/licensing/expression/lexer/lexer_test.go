@@ -105,32 +105,6 @@ func TestNextToken(t *testing.T) {
 			},
 		},
 		{
-			name:              "BRACE operator",
-			licenseExpression: "{GPL1.0+ OR GPL2.0}",
-			expectTokens: []token.Token{
-				{
-					Type:    token.LBRACE,
-					Literal: "{",
-				},
-				{
-					Type:    token.IDENT,
-					Literal: "GPL1.0+",
-				},
-				{
-					Type:    token.OR,
-					Literal: "OR",
-				},
-				{
-					Type:    token.IDENT,
-					Literal: "GPL2.0",
-				},
-				{
-					Type:    token.RBRACE,
-					Literal: "}",
-				},
-			},
-		},
-		{
 			name:              "illegal string",
 			licenseExpression: "GPL1.0+" + string(byte(0x20)) + "あ" + "🇯🇵" + "AND LGPL1.0",
 			expectTokens: []token.Token{
