@@ -35,7 +35,14 @@ func Normalize(license string, fn ...parser.NormalizeFunc) string {
 func Join(elems []string, sep Operator) string {
 	var licenses []string
 	for i, license := range elems {
-		if i != 0 && strings.Contains(strings.ToUpper(license), OR.String()) {
+		var mid Operator
+		if sep == AND {
+			mid = OR
+		} else if sep == OR {
+			mid = AND
+		}
+
+		if i != 0 && strings.Contains(strings.ToUpper(license), mid.String()) {
 			license = fmt.Sprintf("(%s)", license)
 		}
 		licenses = append(licenses, license)
