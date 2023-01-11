@@ -127,7 +127,6 @@ func TestClient_LoadBuiltinPolicies(t *testing.T) {
 				assert.Contains(t, err.Error(), tt.wantErr)
 				return
 			}
-			filepath.Join()
 			assert.NoError(t, err)
 			assert.Equal(t, tt.want, got)
 		})
