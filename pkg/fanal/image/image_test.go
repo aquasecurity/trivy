@@ -60,7 +60,6 @@ func TestNewDockerImage(t *testing.T) {
 		name            string
 		args            args
 		wantID          string
-		wantLayerIDs    []string
 		wantConfigFile  *v1.ConfigFile
 		wantRepoTags    []string
 		wantRepoDigests []string
@@ -72,7 +71,6 @@ func TestNewDockerImage(t *testing.T) {
 				imageName: "alpine:3.11",
 			},
 			wantID:       "sha256:a187dde48cd289ac374ad8539930628314bc581a481cdb41409c9289419ddb72",
-			wantLayerIDs: []string{"sha256:beee9f30bc1f711043e78d4a2be0668955d4b761d587d6f60c2c8dc081efb203"},
 			wantRepoTags: []string{"alpine:3.11"},
 			wantConfigFile: &v1.ConfigFile{
 				Architecture:  "amd64",
@@ -117,7 +115,6 @@ func TestNewDockerImage(t *testing.T) {
 				imageName: "a187dde48cd2",
 			},
 			wantID:       "sha256:a187dde48cd289ac374ad8539930628314bc581a481cdb41409c9289419ddb72",
-			wantLayerIDs: []string{"sha256:beee9f30bc1f711043e78d4a2be0668955d4b761d587d6f60c2c8dc081efb203"},
 			wantRepoTags: []string{"alpine:3.11"},
 			wantConfigFile: &v1.ConfigFile{
 				Architecture:  "amd64",
@@ -162,7 +159,6 @@ func TestNewDockerImage(t *testing.T) {
 				imageName: fmt.Sprintf("%s/library/alpine:3.10", serverAddr),
 			},
 			wantID:       "sha256:af341ccd2df8b0e2d67cf8dd32e087bfda4e5756ebd1c76bbf3efa0dc246590e",
-			wantLayerIDs: []string{"sha256:531743b7098cb2aaf615641007a129173f63ed86ca32fe7b5a246a1c47286028"},
 			wantRepoTags: []string{serverAddr + "/library/alpine:3.10"},
 			wantRepoDigests: []string{
 				serverAddr + "/library/alpine@sha256:e10ea963554297215478627d985466ada334ed15c56d3d6bb808ceab98374d91",
@@ -215,7 +211,6 @@ func TestNewDockerImage(t *testing.T) {
 				},
 			},
 			wantID:       "sha256:af341ccd2df8b0e2d67cf8dd32e087bfda4e5756ebd1c76bbf3efa0dc246590e",
-			wantLayerIDs: []string{"sha256:531743b7098cb2aaf615641007a129173f63ed86ca32fe7b5a246a1c47286028"},
 			wantRepoTags: []string{serverAddr + "/library/alpine:3.10"},
 			wantRepoDigests: []string{
 				serverAddr + "/library/alpine@sha256:e10ea963554297215478627d985466ada334ed15c56d3d6bb808ceab98374d91",
@@ -288,10 +283,6 @@ func TestNewDockerImage(t *testing.T) {
 			gotConfigFile, err := img.ConfigFile()
 			require.NoError(t, err)
 			assert.Equal(t, tt.wantConfigFile, gotConfigFile)
-
-			gotLayerIDs, err := img.LayerIDs()
-			require.NoError(t, err)
-			assert.Equal(t, tt.wantLayerIDs, gotLayerIDs)
 
 			gotRepoTags := img.RepoTags()
 			assert.Equal(t, tt.wantRepoTags, gotRepoTags)
