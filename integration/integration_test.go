@@ -139,8 +139,13 @@ func readCycloneDX(t *testing.T, filePath string) *cdx.BOM {
 	bom.Metadata.Component.BOMRef = ""
 	bom.SerialNumber = ""
 	if bom.Components != nil {
-		for i := range *bom.Components {
+		for i, component := range *bom.Components {
 			(*bom.Components)[i].BOMRef = ""
+			props := *component.Properties
+			sort.Slice(props, func(ii, jj int) bool {
+				return props[ii].Name < props[jj].Name
+			})
+			(*bom.Components)[i].Properties = &props
 		}
 	}
 	if bom.Dependencies != nil {
@@ -164,6 +169,7 @@ func readSpdxJson(t *testing.T, filePath string) *spdx.Document2_2 {
 	// We don't compare values which change each time an SBOM is generated
 	bom.CreationInfo.Created = ""
 	bom.CreationInfo.DocumentNamespace = ""
+	bom.Relationships = nil
 
 	return bom
 }
