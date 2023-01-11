@@ -4,7 +4,7 @@ go 1.19
 
 replace github.com/aquasecurity/defsec => github.com/chen-keinan/defsec v0.15.3-0.20230105125508-9a8093be901a
 
-replace github.com/aquasecurity/trivy-kubernetes => github.com/chen-keinan/trivy-kubernetes v0.3.1-0.20230108160713-2f2151bce564
+replace github.com/aquasecurity/trivy-kubernetes => github.com/chen-keinan/trivy-kubernetes v0.3.1-0.20230111141925-7c794b62455d
 
 require (
 	github.com/CycloneDX/cyclonedx-go v0.6.0
