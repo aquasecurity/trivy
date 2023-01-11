@@ -139,9 +139,9 @@ func readCycloneDX(t *testing.T, filePath string) *cdx.BOM {
 	bom.Metadata.Component.BOMRef = ""
 	bom.SerialNumber = ""
 	if bom.Components != nil {
-		for i, component := range *bom.Components {
+		for i := range *bom.Components {
 			(*bom.Components)[i].BOMRef = ""
-			props := *component.Properties
+			props := *(*bom.Components)[i].Properties
 			sort.Slice(props, func(ii, jj int) bool {
 				return props[ii].Name < props[jj].Name
 			})
