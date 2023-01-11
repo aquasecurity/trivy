@@ -51,6 +51,12 @@ func NewDriver(libType string) (Driver, error) {
 	case ftypes.Pipenv, ftypes.Poetry, ftypes.Pip, ftypes.PythonPkg:
 		ecosystem = vulnerability.Pip
 		comparer = pep440.Comparer{}
+	case ftypes.Pub:
+		ecosystem = vulnerability.Pub
+		comparer = compare.GenericComparer{}
+	case ftypes.Hex:
+		ecosystem = vulnerability.Erlang
+		comparer = compare.GenericComparer{}
 	case ftypes.Conan:
 		ecosystem = vulnerability.Conan
 		// Only semver can be used for version ranges
@@ -58,6 +64,9 @@ func NewDriver(libType string) (Driver, error) {
 		comparer = compare.GenericComparer{}
 	case ftypes.Cocoapods:
 		log.Logger.Warn("CocoaPods is supported for SBOM, not for vulnerability scanning")
+		return Driver{}, ErrSBOMSupportOnly
+	case ftypes.CondaPkg:
+		log.Logger.Warn("Conda package is supported for SBOM, not for vulnerability scanning")
 		return Driver{}, ErrSBOMSupportOnly
 	default:
 		return Driver{}, xerrors.Errorf("unsupported type %s", libType)

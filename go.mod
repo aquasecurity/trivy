@@ -3,13 +3,13 @@ module github.com/aquasecurity/trivy
 go 1.19
 
 require (
-	github.com/CycloneDX/cyclonedx-go v0.6.0
+	github.com/CycloneDX/cyclonedx-go v0.7.0
 	github.com/Masterminds/sprig/v3 v3.2.3
 	github.com/NYTimes/gziphandler v1.1.1
 	github.com/alicebob/miniredis/v2 v2.23.0
 	github.com/aquasecurity/bolt-fixtures v0.0.0-20200903104109-d34e7f983986
-	github.com/aquasecurity/defsec v0.82.6
-	github.com/aquasecurity/go-dep-parser v0.0.0-20221208150335-299772f066c4
+	github.com/aquasecurity/defsec v0.82.7-0.20230103191626-4f3187c78d6b
+	github.com/aquasecurity/go-dep-parser v0.0.0-20230105081339-fe9e63bf16bf
 	github.com/aquasecurity/go-gem-version v0.0.0-20201115065557-8eed6fe000ce
 	github.com/aquasecurity/go-npm-version v0.0.0-20201110091526-0b796d180798
 	github.com/aquasecurity/go-pep440-version v0.0.0-20210121094942-22b2f8951d46
@@ -19,9 +19,9 @@ require (
 	github.com/aquasecurity/table v1.8.0
 	github.com/aquasecurity/testdocker v0.0.0-20210911155206-e1e85f5a1516
 	github.com/aquasecurity/tml v0.6.1
-	github.com/aquasecurity/trivy-db v0.0.0-20221208102935-e829718a223f
+	github.com/aquasecurity/trivy-db v0.0.0-20230105123735-5ce110fc82e1
 	github.com/aquasecurity/trivy-kubernetes v0.3.1-0.20221021174315-8d74450b4506
-	github.com/aws/aws-sdk-go v1.44.136
+	github.com/aws/aws-sdk-go v1.44.171
 	github.com/aws/aws-sdk-go-v2 v1.17.1
 	github.com/aws/aws-sdk-go-v2/config v1.18.3
 	github.com/aws/aws-sdk-go-v2/service/ec2 v1.63.1
@@ -29,7 +29,7 @@ require (
 	github.com/caarlos0/env/v6 v6.10.1
 	github.com/cenkalti/backoff v2.2.1+incompatible
 	github.com/cheggaaa/pb/v3 v3.1.0
-	github.com/containerd/containerd v1.6.8
+	github.com/containerd/containerd v1.6.14
 	github.com/docker/docker v20.10.20+incompatible
 	github.com/docker/go-connections v0.4.0
 	github.com/fatih/color v1.13.0
@@ -43,7 +43,7 @@ require (
 	github.com/google/uuid v1.3.0
 	github.com/google/wire v0.5.0
 	github.com/hashicorp/go-getter v1.6.2
-	github.com/hashicorp/golang-lru v0.5.4
+	github.com/hashicorp/golang-lru/v2 v2.0.1
 	github.com/in-toto/in-toto-golang v0.5.0
 	github.com/knqyf263/go-apk-version v0.0.0-20200609155635-041fdbb8563f
 	github.com/knqyf263/go-deb-version v0.0.0-20190517075300-09fca494f03d
@@ -51,29 +51,29 @@ require (
 	github.com/kylelemons/godebug v1.1.0
 	github.com/mailru/easyjson v0.7.7
 	github.com/masahiro331/go-disk v0.0.0-20220919035250-c8da316f91ac
-	github.com/masahiro331/go-ebs-file v0.0.0-20221125181850-09c63351e38c
-	github.com/masahiro331/go-ext4-filesystem v0.0.0-20221016160854-4b40d7ee6193
+	github.com/masahiro331/go-ebs-file v0.0.0-20221225061409-5ef263bb2cc3
+	github.com/masahiro331/go-ext4-filesystem v0.0.0-20221225060520-c150f5eacfe1
 	github.com/masahiro331/go-mvn-version v0.0.0-20210429150710-d3157d602a08
-	github.com/masahiro331/go-vmdk-parser v0.0.0-20221124162251-5eeffd974e5a
-	github.com/masahiro331/go-xfs-filesystem v0.0.0-20221127135739-051c25f1becd
+	github.com/masahiro331/go-vmdk-parser v0.0.0-20221225061455-612096e4bbbd
+	github.com/masahiro331/go-xfs-filesystem v0.0.0-20221225060805-c02764233454
 	github.com/mitchellh/hashstructure/v2 v2.0.2
 	github.com/open-policy-agent/opa v0.44.1-0.20220927105354-00e835a7cc15
 	github.com/owenrumney/go-sarif/v2 v2.1.2
 	github.com/package-url/packageurl-go v0.1.1-0.20220203205134-d70459300c8a
 	github.com/samber/lo v1.36.0
 	github.com/secure-systems-lab/go-securesystemslib v0.4.0
-	github.com/sigstore/rekor v1.0.0
+	github.com/sigstore/rekor v1.0.1
 	github.com/sosedoff/gitkit v0.3.0
 	github.com/spf13/cobra v1.6.0
 	github.com/spf13/pflag v1.0.5
 	github.com/spf13/viper v1.14.0
 	github.com/stretchr/testify v1.8.1
 	github.com/testcontainers/testcontainers-go v0.15.0
-	github.com/tetratelabs/wazero v1.0.0-pre.4
+	github.com/tetratelabs/wazero v1.0.0-pre.7
 	github.com/twitchtv/twirp v8.1.2+incompatible
 	github.com/xlab/treeprint v1.1.0
 	go.etcd.io/bbolt v1.3.6
-	go.uber.org/zap v1.23.0
+	go.uber.org/zap v1.24.0
 	golang.org/x/exp v0.0.0-20220823124025-807a23277127
 	golang.org/x/xerrors v0.0.0-20220907171357-04be3eba64a2
 	google.golang.org/protobuf v1.28.1
@@ -105,7 +105,7 @@ require (
 	github.com/Masterminds/semver/v3 v3.2.0 // indirect
 	github.com/Masterminds/squirrel v1.5.3 // indirect
 	github.com/Microsoft/go-winio v0.6.0 // indirect
-	github.com/Microsoft/hcsshim v0.9.4 // indirect
+	github.com/Microsoft/hcsshim v0.9.6 // indirect
 	github.com/OneOfOne/xxhash v1.2.8 // indirect
 	github.com/ProtonMail/go-crypto v0.0.0-20210428141323-04723f9f07d7 // indirect
 	github.com/VividCortex/ewma v1.1.1 // indirect
@@ -262,7 +262,7 @@ require (
 	github.com/mattn/go-colorable v0.1.12 // indirect
 	github.com/mattn/go-isatty v0.0.14 // indirect
 	github.com/mattn/go-runewidth v0.0.13 // indirect
-	github.com/matttproud/golang_protobuf_extensions v1.0.2-0.20181231171920-c182affec369 // indirect
+	github.com/matttproud/golang_protobuf_extensions v1.0.4 // indirect
 	github.com/microsoft/go-rustaudit v0.0.0-20220808201409-204dfee52032 // indirect
 	github.com/mitchellh/copystructure v1.2.0 // indirect
 	github.com/mitchellh/go-homedir v1.1.0 // indirect
@@ -270,7 +270,7 @@ require (
 	github.com/mitchellh/go-wordwrap v1.0.1 // indirect
 	github.com/mitchellh/mapstructure v1.5.0 // indirect
 	github.com/mitchellh/reflectwalk v1.0.2 // indirect
-	github.com/moby/buildkit v0.10.4
+	github.com/moby/buildkit v0.10.6
 	github.com/moby/locker v1.0.1 // indirect
 	github.com/moby/spdystream v0.2.0 // indirect
 	github.com/moby/sys/mount v0.3.3 // indirect
@@ -340,7 +340,7 @@ require (
 	golang.org/x/sync v0.1.0
 	golang.org/x/sys v0.3.0 // indirect
 	golang.org/x/term v0.3.0
-	golang.org/x/text v0.4.0
+	golang.org/x/text v0.5.0
 	golang.org/x/time v0.0.0-20220609170525-579cf78fd858 // indirect
 	golang.org/x/tools v0.2.0 // indirect
 	google.golang.org/api v0.102.0 // indirect
@@ -354,7 +354,7 @@ require (
 	gopkg.in/warnings.v0 v0.1.2 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 	gotest.tools v2.2.0+incompatible
-	helm.sh/helm/v3 v3.10.1 // indirect
+	helm.sh/helm/v3 v3.10.3 // indirect
 	k8s.io/api v0.25.3 // indirect
 	k8s.io/apiextensions-apiserver v0.25.2 // indirect
 	k8s.io/apimachinery v0.25.3 // indirect

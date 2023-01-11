@@ -32,7 +32,7 @@ func TestArtifact_Inspect(t *testing.T) {
 					BlobID: "sha256:21f10e5ab97c37f6c4d6a45815cd5db10e9539d5db8614d3b1d8890111d7a2b8",
 					BlobInfo: types.BlobInfo{
 						SchemaVersion: types.BlobJSONSchemaVersion,
-						OS: &types.OS{
+						OS: types.OS{
 							Family: "alpine",
 							Name:   "3.16.0",
 						},
@@ -139,7 +139,7 @@ func TestArtifact_Inspect(t *testing.T) {
 					BlobID: "sha256:21f10e5ab97c37f6c4d6a45815cd5db10e9539d5db8614d3b1d8890111d7a2b8",
 					BlobInfo: types.BlobInfo{
 						SchemaVersion: types.BlobJSONSchemaVersion,
-						OS: &types.OS{
+						OS: types.OS{
 							Family: "alpine",
 							Name:   "3.16.0",
 						},
@@ -251,7 +251,7 @@ func TestArtifact_Inspect(t *testing.T) {
 					BlobID: "sha256:05a4e94bb5503e437108210c90849a977ea0b9b83e4e8606aabc9647b2a5256c",
 					BlobInfo: types.BlobInfo{
 						SchemaVersion: types.BlobJSONSchemaVersion,
-						OS: &types.OS{
+						OS: types.OS{
 							Family: "alpine",
 							Name:   "3.16.0",
 						},

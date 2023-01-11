@@ -27,8 +27,7 @@ func imageStandaloneScanner(ctx context.Context, conf ScannerConfig) (scanner.Sc
 // archiveStandaloneScanner initializes an image archive scanner in standalone mode
 // $ trivy image --input alpine.tar
 func archiveStandaloneScanner(ctx context.Context, conf ScannerConfig) (scanner.Scanner, func(), error) {
-	s, err := initializeArchiveScanner(ctx, conf.Target, conf.ArtifactCache, conf.LocalArtifactCache,
-		conf.ArtifactOption)
+	s, err := initializeArchiveScanner(ctx, conf.Target, conf.ArtifactCache, conf.LocalArtifactCache, conf.ArtifactOption)
 	if err != nil {
 		return scanner.Scanner{}, func() {}, xerrors.Errorf("unable to initialize the archive scanner: %w", err)
 	}
@@ -66,8 +65,7 @@ func archiveRemoteScanner(ctx context.Context, conf ScannerConfig) (scanner.Scan
 
 // filesystemStandaloneScanner initializes a filesystem scanner in standalone mode
 func filesystemStandaloneScanner(ctx context.Context, conf ScannerConfig) (scanner.Scanner, func(), error) {
-	s, cleanup, err := initializeFilesystemScanner(ctx, conf.Target, conf.ArtifactCache, conf.LocalArtifactCache,
-		conf.ArtifactOption)
+	s, cleanup, err := initializeFilesystemScanner(ctx, conf.Target, conf.ArtifactCache, conf.LocalArtifactCache, conf.ArtifactOption)
 	if err != nil {
 		return scanner.Scanner{}, func() {}, xerrors.Errorf("unable to initialize a filesystem scanner: %w", err)
 	}
@@ -85,8 +83,7 @@ func filesystemRemoteScanner(ctx context.Context, conf ScannerConfig) (scanner.S
 
 // repositoryStandaloneScanner initializes a repository scanner in standalone mode
 func repositoryStandaloneScanner(ctx context.Context, conf ScannerConfig) (scanner.Scanner, func(), error) {
-	s, cleanup, err := initializeRepositoryScanner(ctx, conf.Target, conf.ArtifactCache, conf.LocalArtifactCache,
-		conf.ArtifactOption)
+	s, cleanup, err := initializeRepositoryScanner(ctx, conf.Target, conf.ArtifactCache, conf.LocalArtifactCache, conf.ArtifactOption)
 	if err != nil {
 		return scanner.Scanner{}, func() {}, xerrors.Errorf("unable to initialize a repository scanner: %w", err)
 	}
@@ -105,8 +102,7 @@ func repositoryRemoteScanner(ctx context.Context, conf ScannerConfig) (scanner.S
 
 // sbomStandaloneScanner initializes a SBOM scanner in standalone mode
 func sbomStandaloneScanner(ctx context.Context, conf ScannerConfig) (scanner.Scanner, func(), error) {
-	s, cleanup, err := initializeSBOMScanner(ctx, conf.Target, conf.ArtifactCache, conf.LocalArtifactCache,
-		conf.ArtifactOption)
+	s, cleanup, err := initializeSBOMScanner(ctx, conf.Target, conf.ArtifactCache, conf.LocalArtifactCache, conf.ArtifactOption)
 	if err != nil {
 		return scanner.Scanner{}, func() {}, xerrors.Errorf("unable to initialize a cycloneDX scanner: %w", err)
 	}

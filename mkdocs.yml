@@ -32,7 +32,7 @@ nav:
           - Additional Resources: tutorials/additional-resources/references.md
           - Community References: tutorials/additional-resources/community.md
           - CKS Reference: tutorials/additional-resources/cks.md
-  - CLI:
+  - Docs:
       - Overview: docs/index.md
       - Vulnerability:
           - Scanning:
@@ -92,6 +92,8 @@ nav:
       - Virtual Machine Image:
           - Overview: docs/vm/index.md
           - AWS EC2: docs/vm/aws.md
+      - Compliance:
+            - Reports:  docs/compliance/compliance.md
       - SBOM:
           - Overview: docs/sbom/index.md
           - Supported: docs/sbom/supported.md
@@ -143,6 +145,7 @@ nav:
     - CI/CD: ecosystem/cicd.md
     - IDE and Dev tools: ecosystem/ide.md
     - Production and Clouds: ecosystem/prod.md
+    - Security Management: ecosystem/security.md
   - Contributing:
       - How to contribute:
           - Issues: community/contribute/issue.md

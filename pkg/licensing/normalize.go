@@ -19,6 +19,7 @@ var mapping = map[string]string{
 	"GPL-2.0+":                       GPL20,
 	"GPL-2.0-OR-LATER":               GPL20,
 	"GPL-2+ WITH AUTOCONF EXCEPTION": GPL20withautoconfexception,
+	"GPL-2+-with-bison-exception":    GPL20withbisonexception,
 	"GPL3":                           GPL30,
 	"GPL 3.0":                        GPL30,
 	"GPL 3":                          GPL30,

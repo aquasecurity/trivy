@@ -28,6 +28,8 @@ func TestFilesystem(t *testing.T) {
 		helmValuesFile []string
 		skipFiles      []string
 		skipDirs       []string
+		command        string
+		format         string
 	}
 	tests := []struct {
 		name   string
@@ -47,7 +49,7 @@ func TestFilesystem(t *testing.T) {
 			args: args{
 				securityChecks: "vuln",
 				input:          "testdata/fixtures/fs/gomod",
-				skipFiles:      []string{"/testdata/fixtures/fs/gomod/submod2/go.mod"},
+				skipFiles:      []string{"testdata/fixtures/fs/gomod/submod2/go.mod"},
 			},
 			golden: "testdata/gomod-skip.json.golden",
 		},
@@ -56,7 +58,7 @@ func TestFilesystem(t *testing.T) {
 			args: args{
 				securityChecks: "vuln",
 				input:          "testdata/fixtures/fs/gomod",
-				skipDirs:       []string{"/testdata/fixtures/fs/gomod/submod2"},
+				skipDirs:       []string{"testdata/fixtures/fs/gomod/submod2"},
 			},
 			golden: "testdata/gomod-skip.json.golden",
 		},
@@ -146,6 +148,24 @@ func TestFilesystem(t *testing.T) {
 				input:          "testdata/fixtures/fs/cocoapods",
 			},
 			golden: "testdata/cocoapods.json.golden",
+		},
+		{
+			name: "pubspec.lock",
+			args: args{
+				securityChecks: "vuln",
+				listAllPkgs:    true,
+				input:          "testdata/fixtures/fs/pubspec",
+			},
+			golden: "testdata/pubspec.lock.json.golden",
+		},
+		{
+			name: "mix.lock",
+			args: args{
+				securityChecks: "vuln",
+				listAllPkgs:    true,
+				input:          "testdata/fixtures/fs/mixlock",
+			},
+			golden: "testdata/mix.lock.json.golden",
 		},
 		{
 			name: "dockerfile",
@@ -245,6 +265,24 @@ func TestFilesystem(t *testing.T) {
 			},
 			golden: "testdata/secrets.json.golden",
 		},
+		{
+			name: "conda generating CycloneDX SBOM",
+			args: args{
+				command: "rootfs",
+				format:  "cyclonedx",
+				input:   "testdata/fixtures/fs/conda",
+			},
+			golden: "testdata/conda-cyclonedx.json.golden",
+		},
+		{
+			name: "conda generating SPDX SBOM",
+			args: args{
+				command: "rootfs",
+				format:  "spdx-json",
+				input:   "testdata/fixtures/fs/conda",
+			},
+			golden: "testdata/conda-spdx.json.golden",
+		},
 	}
 
 	// Set up testing DB
@@ -255,9 +293,24 @@ func TestFilesystem(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+
+			command := "fs"
+			if tt.args.command != "" {
+				command = tt.args.command
+			}
+
+			format := "json"
+			if tt.args.format != "" {
+				format = tt.args.format
+			}
+
 			osArgs := []string{
-				"-q", "--cache-dir", cacheDir, "fs", "--skip-db-update", "--skip-policy-update",
-				"--format", "json", "--offline-scan", "--security-checks", tt.args.securityChecks,
+				"-q", "--cache-dir", cacheDir, command, "--skip-db-update", "--skip-policy-update",
+				"--format", format, "--offline-scan",
+			}
+
+			if tt.args.securityChecks != "" {
+				osArgs = append(osArgs, "--security-checks", tt.args.securityChecks)
 			}
 
 			if len(tt.args.policyPaths) != 0 {
@@ -335,7 +388,16 @@ func TestFilesystem(t *testing.T) {
 			require.NoError(t, err)
 
 			// Compare want and got
-			compareReports(t, tt.golden, outputFile)
+			switch format {
+			case "cyclonedx":
+				compareCycloneDX(t, tt.golden, outputFile)
+			case "spdx-json":
+				compareSpdxJson(t, tt.golden, outputFile)
+			case "json":
+				compareReports(t, tt.golden, outputFile)
+			default:
+				require.Fail(t, "invalid format", "format: %s", format)
+			}
 		})
 	}
 }

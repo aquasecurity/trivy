@@ -11,6 +11,7 @@ import (
 	"sync"
 
 	v1 "github.com/google/go-containerregistry/pkg/v1"
+	"github.com/samber/lo"
 	"golang.org/x/exp/slices"
 	"golang.org/x/xerrors"
 
@@ -232,8 +233,8 @@ func (a Artifact) inspect(ctx context.Context, missingImage string, layerKeys, b
 				errCh <- xerrors.Errorf("failed to store layer: %s in cache: %w", layerKey, err)
 				return
 			}
-			if layerInfo.OS != nil {
-				osFound = *layerInfo.OS
+			if lo.IsNotEmpty(layerInfo.OS) {
+				osFound = layerInfo.OS
 			}
 		}(ctx, k)
 	}

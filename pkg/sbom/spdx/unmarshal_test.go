@@ -25,7 +25,7 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 			name:      "happy path",
 			inputFile: "testdata/happy/bom.json",
 			want: types.SBOM{
-				OS: &ftypes.OS{
+				OS: ftypes.OS{
 					Family: "alpine",
 					Name:   "3.16.0",
 				},
@@ -139,7 +139,7 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 			name:      "happy path only os component",
 			inputFile: "testdata/happy/os-only-bom.json",
 			want: types.SBOM{
-				OS: &ftypes.OS{
+				OS: ftypes.OS{
 					Family: "alpine",
 					Name:   "3.16.0",
 				},

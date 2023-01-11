@@ -193,12 +193,12 @@ func externalRef(bomLink string, bomRef string) (string, error) {
 func (e *Marshaler) marshalComponents(r types.Report, bomRef string) (*[]cdx.Component, *[]cdx.Dependency, *[]cdx.Vulnerability, error) {
 	var components []cdx.Component
 	var dependencies []cdx.Dependency
-	var metadataDependencies []cdx.Dependency
+	var metadataDependencies []string
 	libraryUniqMap := map[string]struct{}{}
 	vulnMap := map[string]cdx.Vulnerability{}
 	for _, result := range r.Results {
 		bomRefMap := map[string]string{}
-		var componentDependencies []cdx.Dependency
+		var componentDependencies []string
 		for _, pkg := range result.Packages {
 			pkgComponent, err := pkgToCdxComponent(result.Type, r.Metadata, pkg)
 			if err != nil {
@@ -207,7 +207,7 @@ func (e *Marshaler) marshalComponents(r types.Report, bomRef string) (*[]cdx.Com
 			pkgID := packageID(result.Target, pkg.Name, utils.FormatVersion(pkg), pkg.FilePath)
 			if _, ok := bomRefMap[pkgID]; !ok {
 				bomRefMap[pkgID] = pkgComponent.BOMRef
-				componentDependencies = append(componentDependencies, cdx.Dependency{Ref: pkgComponent.BOMRef})
+				componentDependencies = append(componentDependencies, pkgComponent.BOMRef)
 			}
 
 			// When multiple lock files have the same dependency with the same name and version,
@@ -249,7 +249,7 @@ func (e *Marshaler) marshalComponents(r types.Report, bomRef string) (*[]cdx.Com
 		}
 
 		if result.Type == ftypes.NodePkg || result.Type == ftypes.PythonPkg ||
-			result.Type == ftypes.GemSpec || result.Type == ftypes.Jar {
+			result.Type == ftypes.GemSpec || result.Type == ftypes.Jar || result.Type == ftypes.CondaPkg {
 			// If a package is language-specific package that isn't associated with a lock file,
 			// it will be a dependency of a component under "metadata".
 			// e.g.
@@ -288,7 +288,7 @@ func (e *Marshaler) marshalComponents(r types.Report, bomRef string) (*[]cdx.Com
 			)
 
 			// Dependency graph from #1 to #2
-			metadataDependencies = append(metadataDependencies, cdx.Dependency{Ref: resultComponent.BOMRef})
+			metadataDependencies = append(metadataDependencies, resultComponent.BOMRef)
 		}
 	}
 	vulns := maps.Values(vulnMap)
@@ -314,6 +314,9 @@ func toCdxVulnerability(bomRef string, vuln types.DetectedVulnerability) cdx.Vul
 		CWEs:        cwes(vuln.CweIDs),
 		Description: vuln.Description,
 		Advisories:  cdxAdvisories(vuln.References),
+	}
+	if vuln.FixedVersion != "" {
+		v.Recommendation = fmt.Sprintf("Upgrade %s to version %s", vuln.PkgName, vuln.FixedVersion)
 	}
 	if vuln.PublishedDate != nil {
 		v.Published = vuln.PublishedDate.Format(timeLayout)

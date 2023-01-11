@@ -17,6 +17,7 @@ const (
 	Pip        = "pip"
 	Pipenv     = "pipenv"
 	Poetry     = "poetry"
+	CondaPkg   = "conda-pkg"
 	PythonPkg  = "python-pkg"
 	NodePkg    = "node-pkg"
 	Yarn       = "yarn"
@@ -30,6 +31,8 @@ const (
 	RustBinary = "rustbinary"
 	Conan      = "conan"
 	Cocoapods  = "cocoapods"
+	Pub        = "pub"
+	Hex        = "hex"
 
 	// Config files
 	YAML           = "yaml"
@@ -73,4 +76,8 @@ const (
 	ConanLock = "conan.lock"
 
 	CocoaPodsLock = "Podfile.lock"
+
+	PubSpecLock = "pubspec.lock"
+
+	MixLock = "mix.lock"
 )

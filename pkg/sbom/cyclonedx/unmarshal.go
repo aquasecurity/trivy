@@ -72,7 +72,7 @@ func (c *CycloneDX) UnmarshalJSON(b []byte) error {
 	// Keep the original SBOM
 	c.CycloneDX = &ftypes.CycloneDX{
 		BOMFormat:    bom.BOMFormat,
-		SpecVersion:  bom.SpecVersion,
+		SpecVersion:  ftypes.SpecVersion(bom.SpecVersion),
 		SerialNumber: bom.SerialNumber,
 		Version:      bom.Version,
 		Metadata:     metadata,
@@ -124,7 +124,7 @@ func (c *CycloneDX) parseSBOM(bom *cdx.BOM) error {
 		// For third-party SBOMs.
 		// If there are no operating-system dependent libraries, make them implicitly dependent.
 		if component.Type == cdx.ComponentTypeOS {
-			if c.OS != nil {
+			if lo.IsNotEmpty(c.OS) {
 				return xerrors.New("multiple OSes are not supported")
 			}
 			c.OS = toOS(component)
@@ -140,7 +140,7 @@ func (c *CycloneDX) parseSBOM(bom *cdx.BOM) error {
 	// If a package that depends on the operating-system did not exist,
 	// but an os package is found during aggregate, it is used.
 	if len(c.Packages) == 0 && len(pkgInfos) != 0 {
-		if c.OS == nil {
+		if !c.OS.Detected() {
 			log.Logger.Warnf("Ignore the OS package as no OS information is found.")
 		} else {
 			c.Packages = pkgInfos
@@ -242,10 +242,9 @@ func dependencyMap(deps *[]cdx.Dependency) map[string][]string {
 		if _, ok := depMap[dep.Ref]; ok {
 			continue
 		}
-
 		var refs []string
-		for _, d := range lo.FromPtr(dep.Dependencies) {
-			refs = append(refs, d.Ref)
+		if dep.Dependencies != nil {
+			refs = append(refs, *dep.Dependencies...)
 		}
 
 		depMap[dep.Ref] = refs
@@ -296,8 +295,8 @@ func aggregatePkgs(libs []cdx.Component) ([]ftypes.PackageInfo, []ftypes.Applica
 	return []ftypes.PackageInfo{osPkgs}, apps, nil
 }
 
-func toOS(component cdx.Component) *ftypes.OS {
-	return &ftypes.OS{
+func toOS(component cdx.Component) ftypes.OS {
+	return ftypes.OS{
 		Family: component.Name,
 		Name:   component.Version,
 	}
