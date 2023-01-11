@@ -141,11 +141,9 @@ func readCycloneDX(t *testing.T, filePath string) *cdx.BOM {
 	if bom.Components != nil {
 		for i := range *bom.Components {
 			(*bom.Components)[i].BOMRef = ""
-			props := *(*bom.Components)[i].Properties
-			sort.Slice(props, func(ii, jj int) bool {
-				return props[ii].Name < props[jj].Name
+			sort.Slice(*(*bom.Components)[i].Properties, func(ii, jj int) bool {
+				return (*(*bom.Components)[i].Properties)[ii].Name < (*(*bom.Components)[i].Properties)[jj].Name
 			})
-			(*bom.Components)[i].Properties = &props
 		}
 	}
 	if bom.Dependencies != nil {
@@ -166,10 +164,16 @@ func readSpdxJson(t *testing.T, filePath string) *spdx.Document2_2 {
 	bom, err := jsonloader.Load2_2(f)
 	require.NoError(t, err)
 
+	sort.Slice(bom.Relationships, func(i, j int) bool {
+		if bom.Relationships[i].RefA.ElementRefID != bom.Relationships[j].RefA.ElementRefID {
+			return bom.Relationships[i].RefA.ElementRefID < bom.Relationships[j].RefA.ElementRefID
+		}
+		return bom.Relationships[i].RefB.ElementRefID < bom.Relationships[j].RefB.ElementRefID
+	})
+
 	// We don't compare values which change each time an SBOM is generated
 	bom.CreationInfo.Created = ""
 	bom.CreationInfo.DocumentNamespace = ""
-	bom.Relationships = nil
 
 	return bom
 }
