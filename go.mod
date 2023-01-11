@@ -17,7 +17,7 @@ require (
 	github.com/aquasecurity/loading v0.0.5
 	github.com/aquasecurity/memoryfs v1.4.4
 	github.com/aquasecurity/table v1.8.0
-	github.com/aquasecurity/testdocker v0.0.0-20210911155206-e1e85f5a1516
+	github.com/aquasecurity/testdocker v0.0.0-20230111101738-e741bda259da
 	github.com/aquasecurity/tml v0.6.1
 	github.com/aquasecurity/trivy-db v0.0.0-20230105123735-5ce110fc82e1
 	github.com/aquasecurity/trivy-kubernetes v0.3.1-0.20221021174315-8d74450b4506
@@ -394,5 +394,3 @@ replace oras.land/oras-go => oras.land/oras-go v1.1.1
 // v0.3.1-0.20230104082527-d6f58551be3f is taken from github.com/moby/buildkit v0.11.0
 // spdx logic write on v0.3.0 and incompatible with v0.3.1-0.20230104082527-d6f58551be3f
 replace github.com/spdx/tools-golang => github.com/spdx/tools-golang v0.3.0
-
-replace github.com/aquasecurity/testdocker => github.com/DmitriyLewen/testdocker v0.0.0-20230111052443-904af5e51170
