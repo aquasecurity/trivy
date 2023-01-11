@@ -63,21 +63,19 @@ func (s *AWSScanner) Scan(ctx context.Context, option flag.Options) (scan.Result
 
 	var policyPaths []string
 	var downloadedPolicyPaths []string
-	if len(option.RegoOptions.PolicyPaths) == 0 {
-		var err error
-		downloadedPolicyPaths, err = operation.InitBuiltinPolicies(context.Background(), option.CacheDir, option.Quiet, option.SkipPolicyUpdate)
-		if err != nil {
-			log.Logger.Debug("Falling back to embedded policies: ", err)
-		} else {
-			log.Logger.Debug("Policies successfully loaded from disk")
-			policyPaths = append(policyPaths, downloadedPolicyPaths...)
-			scannerOpts = append(scannerOpts,
-				options.ScannerWithEmbeddedPolicies(false))
+	var err error
+	downloadedPolicyPaths, err = operation.InitBuiltinPolicies(context.Background(), option.CacheDir, option.Quiet, option.SkipPolicyUpdate)
+	if err != nil {
+		if !option.SkipPolicyUpdate {
+			log.Logger.Errorf("Falling back to embedded policies: %s", err)
 		}
-	} else { // override with custom policy from user
-		policyPaths = append(policyPaths, option.RegoOptions.PolicyPaths...)
+	} else {
+		log.Logger.Debug("Policies successfully loaded from disk")
+		policyPaths = append(policyPaths, downloadedPolicyPaths...)
+		scannerOpts = append(scannerOpts,
+			options.ScannerWithEmbeddedPolicies(false))
 	}
-
+	policyPaths = append(policyPaths, option.RegoOptions.PolicyPaths...)
 	scannerOpts = append(scannerOpts, options.ScannerWithPolicyDirs(policyPaths...))
 
 	if len(option.RegoOptions.PolicyNamespaces) > 0 {
