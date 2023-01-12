@@ -27,10 +27,6 @@ func (f fakeImage) ID() (string, error) {
 	return "", nil
 }
 
-func (f fakeImage) LayerIDs() ([]string, error) {
-	return nil, nil
-}
-
 func (f fakeImage) Name() string {
 	return f.name
 }

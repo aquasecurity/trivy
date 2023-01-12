@@ -10,7 +10,6 @@ type Image interface {
 type ImageExtension interface {
 	Name() string
 	ID() (string, error)
-	LayerIDs() ([]string, error)
 	RepoTags() []string
 	RepoDigests() []string
 }
