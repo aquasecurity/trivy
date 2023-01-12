@@ -84,7 +84,7 @@ func Test_dbWorker_update(t *testing.T) {
 			name: "skip update",
 			needsUpdate: needsUpdate{
 				input:  needsUpdateInput{appVersion: "1", skip: true},
-				output: needsUpdateOutput{needsUpdate: true},
+				output: needsUpdateOutput{needsUpdate: false},
 			},
 			args: args{appVersion: "1"},
 		},

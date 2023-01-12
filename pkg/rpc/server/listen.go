@@ -121,13 +121,9 @@ func newDBWorker(dbClient dbFile.Operation) dbWorker {
 }
 
 func (w dbWorker) update(ctx context.Context, appVersion, cacheDir string,
-	skipDbUpdate bool, dbUpdateWg, requestWg *sync.WaitGroup) error {
-	if skipDbUpdate { // don't update db if `skip-db-update` flag is enabled
-		log.Logger.Debug("Skip db update because `skip-db-update` flag is enabled")
-		return nil
-	}
+	skipDBUpdate bool, dbUpdateWg, requestWg *sync.WaitGroup) error {
 	log.Logger.Debug("Check for DB update...")
-	needsUpdate, err := w.dbClient.NeedsUpdate(appVersion, false)
+	needsUpdate, err := w.dbClient.NeedsUpdate(appVersion, skipDBUpdate)
 	if err != nil {
 		return xerrors.Errorf("failed to check if db needs an update")
 	} else if !needsUpdate {
