@@ -129,10 +129,6 @@ func (img remoteImage) ID() (string, error) {
 	return ID(img)
 }
 
-func (img remoteImage) LayerIDs() ([]string, error) {
-	return LayerIDs(img)
-}
-
 func (img remoteImage) RepoTags() []string {
 	tag := img.ref.TagName()
 	if tag == "" {
