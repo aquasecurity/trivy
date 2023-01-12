@@ -81,6 +81,14 @@ func Test_dbWorker_update(t *testing.T) {
 			args: args{appVersion: "1"},
 		},
 		{
+			name: "skip update",
+			needsUpdate: needsUpdate{
+				input:  needsUpdateInput{appVersion: "1", skip: true},
+				output: needsUpdateOutput{needsUpdate: true},
+			},
+			args: args{appVersion: "1"},
+		},
+		{
 			name: "NeedsUpdate returns an error",
 			needsUpdate: needsUpdate{
 				input:  needsUpdateInput{appVersion: "1", skip: false},
@@ -137,7 +145,7 @@ func Test_dbWorker_update(t *testing.T) {
 
 			var dbUpdateWg, requestWg sync.WaitGroup
 			err := w.update(context.Background(), tt.args.appVersion, cacheDir,
-				&dbUpdateWg, &requestWg)
+				tt.needsUpdate.input.skip, &dbUpdateWg, &requestWg)
 			if tt.wantErr != "" {
 				require.NotNil(t, err, tt.name)
 				assert.Contains(t, err.Error(), tt.wantErr, tt.name)

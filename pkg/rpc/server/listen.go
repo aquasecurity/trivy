@@ -47,7 +47,7 @@ func NewServer(appVersion, addr, cacheDir, token, tokenHeader, dbRepository stri
 }
 
 // ListenAndServe starts Trivy server
-func (s Server) ListenAndServe(serverCache cache.Cache, insecure bool) error {
+func (s Server) ListenAndServe(serverCache cache.Cache, insecure, skipDBUpdate bool) error {
 	requestWg := &sync.WaitGroup{}
 	dbUpdateWg := &sync.WaitGroup{}
 
@@ -56,7 +56,7 @@ func (s Server) ListenAndServe(serverCache cache.Cache, insecure bool) error {
 		ctx := context.Background()
 		for {
 			time.Sleep(updateInterval)
-			if err := worker.update(ctx, s.appVersion, s.cacheDir, dbUpdateWg, requestWg); err != nil {
+			if err := worker.update(ctx, s.appVersion, s.cacheDir, skipDBUpdate, dbUpdateWg, requestWg); err != nil {
 				log.Logger.Errorf("%+v\n", err)
 			}
 		}
@@ -121,7 +121,11 @@ func newDBWorker(dbClient dbFile.Operation) dbWorker {
 }
 
 func (w dbWorker) update(ctx context.Context, appVersion, cacheDir string,
-	dbUpdateWg, requestWg *sync.WaitGroup) error {
+	skipDbUpdate bool, dbUpdateWg, requestWg *sync.WaitGroup) error {
+	if skipDbUpdate { // don't update db if `skip-db-update` flag is enabled
+		log.Logger.Debug("Skip db update because `skip-db-update` flag is enabled")
+		return nil
+	}
 	log.Logger.Debug("Check for DB update...")
 	needsUpdate, err := w.dbClient.NeedsUpdate(appVersion, false)
 	if err != nil {
