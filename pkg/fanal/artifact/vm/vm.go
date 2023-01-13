@@ -101,7 +101,7 @@ func NewArtifact(target string, c cache.ArtifactCache, opt artifact.Option) (art
 		cache:          c,
 		analyzer:       a,
 		handlerManager: handlerManager,
-		walker:         walker.NewVM(opt.SkipFiles, opt.SkipDirs, opt.Slow),
+		walker:         walker.NewVM(opt.SkipFiles, opt.SkipDirs, opt.OnlyDirs, opt.Slow),
 		artifactOption: opt,
 	}
 

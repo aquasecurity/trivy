@@ -39,14 +39,14 @@ type VM struct {
 	analyzeFn WalkFunc
 }
 
-func NewVM(skipFiles, skipDirs []string, slow bool) VM {
+func NewVM(skipFiles, skipDirs, onlyDirs []string, slow bool) VM {
 	threshold := defaultSizeThreshold
 	if slow {
 		threshold = slowSizeThreshold
 	}
 
 	return VM{
-		walker:    newWalker(skipFiles, skipDirs, slow),
+		walker:    newWalker(skipFiles, skipDirs, onlyDirs, slow),
 		threshold: threshold,
 	}
 }

@@ -547,6 +547,7 @@ func NewConfigCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 		// Enable only '--skip-dirs' and '--skip-files' and disable other flags
 		SkipDirs:     &flag.SkipDirsFlag,
 		SkipFiles:    &flag.SkipFilesFlag,
+		OnlyDirs:     &flag.OnlyDirsFlag,
 		FilePatterns: &flag.FilePatternsFlag,
 	}
 

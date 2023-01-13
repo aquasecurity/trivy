@@ -20,6 +20,12 @@ var (
 		Value:      []string{},
 		Usage:      "specify the file paths to skip traversal",
 	}
+	OnlyDirsFlag = Flag{
+		Name:       "only-dirs",
+		ConfigName: "scan.only-dirs",
+		Value:      []string{},
+		Usage:      "specify the directories where the traversal is allowed",
+	}
 	OfflineScanFlag = Flag{
 		Name:       "offline-scan",
 		ConfigName: "scan.offline",
@@ -61,6 +67,7 @@ var (
 type ScanFlagGroup struct {
 	SkipDirs       *Flag
 	SkipFiles      *Flag
+	OnlyDirs       *Flag
 	OfflineScan    *Flag
 	SecurityChecks *Flag
 	FilePatterns   *Flag
@@ -73,6 +80,7 @@ type ScanOptions struct {
 	Target         string
 	SkipDirs       []string
 	SkipFiles      []string
+	OnlyDirs       []string
 	OfflineScan    bool
 	SecurityChecks []string
 	FilePatterns   []string
@@ -85,6 +93,7 @@ func NewScanFlagGroup() *ScanFlagGroup {
 	return &ScanFlagGroup{
 		SkipDirs:       &SkipDirsFlag,
 		SkipFiles:      &SkipFilesFlag,
+		OnlyDirs:       &OnlyDirsFlag,
 		OfflineScan:    &OfflineScanFlag,
 		SecurityChecks: &SecurityChecksFlag,
 		FilePatterns:   &FilePatternsFlag,
@@ -99,7 +108,7 @@ func (f *ScanFlagGroup) Name() string {
 }
 
 func (f *ScanFlagGroup) Flags() []*Flag {
-	return []*Flag{f.SkipDirs, f.SkipFiles, f.OfflineScan, f.SecurityChecks, f.FilePatterns,
+	return []*Flag{f.SkipDirs, f.SkipFiles, f.OnlyDirs, f.OfflineScan, f.SecurityChecks, f.FilePatterns,
 		f.Slow, f.SBOMSources, f.RekorURL}
 }
 
@@ -122,6 +131,7 @@ func (f *ScanFlagGroup) ToOptions(args []string) (ScanOptions, error) {
 		Target:         target,
 		SkipDirs:       getStringSlice(f.SkipDirs),
 		SkipFiles:      getStringSlice(f.SkipFiles),
+		OnlyDirs:       getStringSlice(f.OnlyDirs),
 		OfflineScan:    getBool(f.OfflineScan),
 		SecurityChecks: securityChecks,
 		FilePatterns:   getStringSlice(f.FilePatterns),
