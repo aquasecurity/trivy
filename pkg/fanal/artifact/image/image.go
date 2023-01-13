@@ -349,6 +349,13 @@ func (a Artifact) uncompressedLayer(diffID string) (string, io.Reader, error) {
 	if err != nil {
 		return "", nil, xerrors.Errorf("failed to get the layer content (%s): %w", diffID, err)
 	}
+	if digest == "" {
+		d, err := layer.Digest()
+		if err != nil {
+			return "", nil, xerrors.Errorf("failed to get the digest (%s): %w", diffID, err)
+		}
+		digest = d.String()
+	}
 	return digest, r, nil
 }
 
