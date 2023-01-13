@@ -46,6 +46,7 @@ trivy sbom [flags] SBOM_PATH
       --list-all-pkgs                output all packages in the JSON report regardless of vulnerability
       --no-progress                  suppress progress bar
       --offline-scan                 do not issue API requests to identify dependencies
+      --only-dirs strings            specify the directories where the traversal is allowed
   -o, --output string                output file name
       --output-plugin-arg string     [EXPERIMENTAL] output plugin arguments
       --password strings             password. Comma-separated passwords allowed. TRIVY_PASSWORD should be used for security reasons.

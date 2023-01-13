@@ -18,6 +18,8 @@ var defaultSkipDirs = []string{
 type Option struct {
 	SkipFiles []string
 	SkipDirs  []string
+	OnlyDirs  []string
 }
 
 type WalkFunc func(filePath string, info os.FileInfo, opener analyzer.Opener) error
+

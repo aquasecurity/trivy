@@ -149,3 +149,87 @@ func TestSkipDir(t *testing.T) {
 		})
 	}
 }
+
+func Test_onlyDir(t *testing.T) {
+	tests := []struct {
+		name     string
+		onlyDirs []string
+		wants    map[string]bool
+	}{
+		{
+			name:     "double star",
+			onlyDirs: []string{"/etc/**"},
+			wants: map[string]bool{
+				"/etc/foo/bar": false,
+				"/var/log/bar": true,
+			},
+		},
+		{
+			name:     "double star",
+			onlyDirs: []string{"/**"},
+			wants: map[string]bool{
+				"/foo":         false,
+				"/etc/foo":     false,
+				"/var/log/bar": false,
+			},
+		},
+		{
+			name:     "single star",
+			onlyDirs: []string{"/*"},
+			wants: map[string]bool{
+				"/foo":         false,
+				"/etc/foo":     true,
+				"/etc/foo/bar": true,
+			},
+		},
+		{
+			name:     "single star",
+			onlyDirs: []string{"/etc/foo/*"},
+			wants: map[string]bool{
+				"/etc/foo/bar":      false,
+				"/etc/foo2/bar":     true,
+				"/var/etc/foo2/bar": true,
+			},
+		},
+		{
+			name:     "single star",
+			onlyDirs: []string{"/*/bar"},
+			wants: map[string]bool{
+				"/etc/bar/bar":     true,
+				"/etc/foo/bar":     true,
+				"/etc/bar/foo":     true,
+				"/etc/foo/bar/foo": true,
+			},
+		},
+		{
+			name:     "double star",
+			onlyDirs: []string{"**/bar"},
+			wants: map[string]bool{
+				"/etc/bar/bar":     false,
+				"/etc/foo/bar":     false,
+				"/etc/bar/foo":     true,
+				"/etc/foo/bar/foo": true,
+			},
+		},
+		{
+			name:     "double star and single star",
+			onlyDirs: []string{"**/foo/*/bar"},
+			wants: map[string]bool{
+				"/foo/foo/bar/bar": false,
+				"/etc/foo/bar":     true,
+				"/etc/bar/foo":     true,
+				"/etc/foo/bar/bar": false,
+			},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			for dir, want := range tt.wants {
+				dir = filepath.ToSlash(filepath.Clean(dir))
+				got := utils.OnlyPath(dir, utils.CleanSkipPaths(tt.onlyDirs))
+				assert.Equal(t, want, got, "onlyDirs: %s, dir: %s", tt.onlyDirs, dir)
+			}
+		})
+	}
+}
