@@ -64,6 +64,7 @@ trivy kubernetes [flags] { cluster | all | specific resources like kubectl. eg: 
       --no-progress                       suppress progress bar
       --node-collector-namespace string   specify the namespace in which the node-collector job should be deployed (default "trivy-temp")
       --offline-scan                      do not issue API requests to identify dependencies
+      --only-dirs strings                 specify the directories where the traversal is allowed
   -o, --output string                     output file name
       --parallel int                      number of goroutines enabled for parallel scanning, set 0 to auto-detect parallelism (default 5)
       --password strings                  password. Comma-separated passwords allowed. TRIVY_PASSWORD should be used for security reasons.

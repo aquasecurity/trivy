@@ -25,10 +25,10 @@ type LayerTar struct {
 	threshold int64
 }
 
-func NewLayerTar(skipFiles, skipDirs []string) LayerTar {
+func NewLayerTar(skipFiles, skipDirs, onlyDirs []string) LayerTar {
 	threshold := defaultSizeThreshold
 	return LayerTar{
-		walker:    newWalker(skipFiles, skipDirs),
+		walker:    newWalker(skipFiles, skipDirs, onlyDirs),
 		threshold: threshold,
 	}
 }
