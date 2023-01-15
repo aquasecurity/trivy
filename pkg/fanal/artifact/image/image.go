@@ -2,7 +2,6 @@ package image
 
 import (
 	"context"
-	"encoding/json"
 	"errors"
 	"io"
 	"os"
@@ -359,25 +358,25 @@ func (a Artifact) isCompressed(l v1.Layer) bool {
 }
 
 func (a Artifact) inspectConfig(imageID string, osFound types.OS) error {
-	configBlob, err := a.image.RawConfigFile()
+	config, err := a.image.ConfigFile()
 	if err != nil {
 		return xerrors.Errorf("unable to get config blob: %w", err)
 	}
 
-	pkgs := a.analyzer.AnalyzeImageConfig(osFound, configBlob)
+	result := lo.FromPtr(a.analyzer.AnalyzeImageConfig(osFound, config))
 
-	var s1 v1.ConfigFile
-	if err = json.Unmarshal(configBlob, &s1); err != nil {
-		return xerrors.Errorf("json marshal error: %w", err)
+	var historyPkgs types.Packages
+	if len(result.PackageInfos) == 1 {
+		historyPkgs = result.PackageInfos[0].Packages
 	}
 
 	info := types.ArtifactInfo{
 		SchemaVersion:   types.ArtifactJSONSchemaVersion,
-		Architecture:    s1.Architecture,
-		Created:         s1.Created.Time,
-		DockerVersion:   s1.DockerVersion,
-		OS:              s1.OS,
-		HistoryPackages: pkgs,
+		Architecture:    config.Architecture,
+		Created:         config.Created.Time,
+		DockerVersion:   config.DockerVersion,
+		OS:              config.OS,
+		HistoryPackages: historyPkgs,
 	}
 
 	if err = a.cache.PutArtifact(imageID, info); err != nil {
