@@ -1332,6 +1332,20 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#policy-distribution" class="md-nav__link">
+    Policy Distribution
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#update-interval" class="md-nav__link">
+    Update Interval
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -3192,6 +3206,20 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#policy-distribution" class="md-nav__link">
+    Policy Distribution
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#update-interval" class="md-nav__link">
+    Update Interval
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -3208,7 +3236,7 @@
 
 <h1 id="built-in-policies">Built-in Policies</h1>
 <h2 id="policy-sources">Policy Sources</h2>
-<p>Built-in policies are mainly written in <a href="https://www.openpolicyagent.org/docs/latest/policy-language">Rego</a> and Go.
+<p>Built-in policies are mainly written in <a href="https://www.openpolicyagent.org/docs/latest/policy-language/">Rego</a> and Go.
 Those policies are managed under <a href="https://github.com/aquasecurity/defsec">defsec repository</a>.</p>
 <table>
 <thead>
@@ -3220,11 +3248,11 @@ Those policies are managed under <a href="https://github.com/aquasecurity/defsec
 <tbody>
 <tr>
 <td>Kubernetes</td>
-<td><a href="https://github.com/aquasecurity/defsec/tree/master/internal/rules/policies/kubernetes">defsec</a></td>
+<td><a href="https://github.com/aquasecurity/defsec/tree/master/internal/rules/rbac">defsec</a></td>
 </tr>
 <tr>
 <td>Dockerfile, Containerfile</td>
-<td><a href="https://github.com/aquasecurity/defsec/tree/master/internal/rules/policies/docker">defsec</a></td>
+<td><a href="https://github.com/aquasecurity/defsec/tree/master/internal/rules/docker">defsec</a></td>
 </tr>
 <tr>
 <td>Terraform</td>
@@ -3240,17 +3268,24 @@ Those policies are managed under <a href="https://github.com/aquasecurity/defsec
 </tr>
 <tr>
 <td>Helm Chart</td>
-<td><a href="https://github.com/aquasecurity/defsec/tree/master/internal/rules/policies/kubernetes">defsec</a></td>
+<td><a href="https://github.com/aquasecurity/defsec/tree/master/internal/rules/rbac">defsec</a></td>
 </tr>
 <tr>
 <td>RBAC</td>
-<td><a href="https://github.com/aquasecurity/defsec/tree/master/internal/rules/policies/rbac">defsec</a></td>
+<td><a href="https://github.com/aquasecurity/defsec">defsec</a>[rbac]</td>
 </tr>
 </tbody>
 </table>
 <p>For suggestions or issues regarding policy content, please open an issue under the <a href="https://github.com/aquasecurity/defsec">defsec</a> repository.</p>
-<p>Helm Chart scanning will resolve the chart to Kubernetes manifests then run the <a href="https://github.com/aquasecurity/defsec/tree/master/internal/rules/policies/kubernetes">kubernetes</a> checks.</p>
+<p>Helm Chart scanning will resolve the chart to Kubernetes manifests then run the <a href="https://github.com/aquasecurity/defsec/tree/master/internal/rules/rbac">kubernetes</a> checks.</p>
 <p>Ansible scanning is coming soon.</p>
+<h2 id="policy-distribution">Policy Distribution</h2>
+<p>defsec policies are distributed as an OPA bundle on <a href="https://github.com/aquasecurity/defsec/pkgs/container/defsec">GitHub Container Registry</a> (GHCR).
+When misconfiguration detection is enabled, Trivy pulls the OPA bundle from GHCR as an OCI artifact and stores it in the cache.
+Those policies are then loaded into Trivy OPA engine and used for detecting misconfigurations.
+If Trivy is unable to pull down newer policies, it will use the embedded set of policies as a fallback. This is also the case in air-gap environments where <code>--skip-policy-update</code> might be passed.</p>
+<h2 id="update-interval">Update Interval</h2>
+<p>Trivy checks for updates to OPA bundle on GHCR every 24 hours and pulls it if there are any updates.</p>
 
               
             </article>
