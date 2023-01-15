@@ -27,7 +27,6 @@ import (
 	"github.com/aquasecurity/defsec/pkg/scanners/helm"
 	k8sscanner "github.com/aquasecurity/defsec/pkg/scanners/kubernetes"
 	"github.com/aquasecurity/defsec/pkg/scanners/options"
-	"github.com/aquasecurity/defsec/pkg/scanners/rbac"
 	tfscanner "github.com/aquasecurity/defsec/pkg/scanners/terraform"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
@@ -194,7 +193,6 @@ func newMisconfPostHandler(artifactOpt artifact.Option) (handler.PostHandler, er
 			types.Dockerfile:     dfscanner.NewScanner(opts...),
 			types.Kubernetes:     k8sscanner.NewScanner(opts...),
 			types.Helm:           helm.New(helmOpts...),
-			types.Rbac:           rbac.NewScanner(opts...),
 		},
 	}, nil
 }
@@ -234,7 +232,6 @@ var enabledDefsecTypes = map[detection.FileType]string{
 	detection.FileTypeDockerfile:     types.Dockerfile,
 	detection.FileTypeKubernetes:     types.Kubernetes,
 	detection.FileTypeHelm:           types.Helm,
-	detection.FileTypeRbac:           types.Rbac,
 }
 
 func (h misconfPostHandler) hasCustomPatternForType(t string) bool {
