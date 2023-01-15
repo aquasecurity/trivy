@@ -92,7 +92,7 @@ func parsePackagePatterns(target string) (packagename, protocol string, patterns
 func getVersion(target string) (version string, err error) {
 	capture := yarnVersionRegexp.FindStringSubmatch(target)
 	if len(capture) < 2 {
-		return "", xerrors.New("failed to parse version")
+		return "", xerrors.Errorf("failed to parse version: '%s", target)
 	}
 	return capture[len(capture)-1], nil
 }
@@ -116,7 +116,7 @@ func validProtocol(protocol string) bool {
 
 func ignoreProtocol(protocol string) bool {
 	switch protocol {
-	case "workspace", "patch", "file":
+	case "workspace", "patch", "file", "link", "portal", "github":
 		return true
 	}
 	return false
@@ -205,7 +205,7 @@ func parseBlock(block []byte, lineNum int) (lib Library, deps []string, newLine 
 			if patterns == nil || !validProtocol(protocol) {
 				skipBlock = true
 				if !ignoreProtocol(protocol) {
-					return Library{}, nil, -1, xerrors.Errorf("failed to parse package patterns")
+					return Library{}, nil, -1, xerrors.Errorf("failed to parse package pattern: '%s', unknown protocol: '%s'", line, protocol)
 				}
 				continue
 			} else {
