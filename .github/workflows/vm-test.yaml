@@ -9,6 +9,11 @@ on:
       - 'pkg/fanal/artifact/vm/**'
       - 'integration/vm_test.go'
   pull_request:
+    paths:
+      - 'pkg/fanal/vm/**'
+      - 'pkg/fanal/walker/vm.go'
+      - 'pkg/fanal/artifact/vm/**'
+      - 'integration/vm_test.go'
 
 jobs:
   vm-test:
