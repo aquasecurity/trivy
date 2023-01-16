@@ -3497,7 +3497,7 @@ There are two options to resolve this issue:</p>
 This option affects only vulnerability scanning. The vulnerability database and builtin policies are downloaded as usual.
 If you want to skip them as well, you can try <code>--skip-update</code> and <code>--skip-policy-update</code>.
 <strong>Note that a number of vulnerabilities might be fewer than without the <code>--offline-scan</code> option.</strong></p>
-<p>The second, more scalable, option is the place Trivy behind a rate-limiting forward-proxy to the Maven Central API.
+<p>The second, more scalable, option is to place Trivy behind a rate-limiting forward-proxy to the Maven Central API.
 One way to achieve this is to use nginx. You can use the following nginx config to enable both rate-limiting and caching (the caching greatly reduces the number of calls to the Maven Central API, especially if you are scanning a lot of similar images):</p>
 <div class="highlight"><pre><span></span><code><span class="k">limit_req_zone</span><span class="w"> </span><span class="s">global</span><span class="w"> </span><span class="s">zone=maven:1m</span><span class="w"> </span><span class="s">rate=10r/s</span><span class="p">;</span><span class="w"></span>
 <span class="k">proxy_cache_path</span><span class="w"> </span><span class="s">/tmp/cache</span><span class="w"> </span><span class="s">keys_zone=mavencache:10m</span><span class="p">;</span><span class="w"></span>
