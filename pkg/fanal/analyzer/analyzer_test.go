@@ -19,7 +19,7 @@ import (
 	aos "github.com/aquasecurity/trivy/pkg/fanal/analyzer/os"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 
-	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/command/apk"
+	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/imgconf/apk"
 	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/language/ruby/bundler"
 	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/os/alpine"
 	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/os/ubuntu"
