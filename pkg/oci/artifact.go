@@ -60,6 +60,7 @@ func NewArtifact(repo, mediaType string, quiet, insecure bool, opts ...Option) (
 		if insecure {
 			t := &http.Transport{
 				TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
+				Proxy:           http.ProxyFromEnvironment,
 			}
 			remoteOpts = append(remoteOpts, remote.WithTransport(t))
 		}
