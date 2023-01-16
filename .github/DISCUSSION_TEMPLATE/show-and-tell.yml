@@ -1,5 +1,5 @@
 title: "[Show and tell] "
-labels: ["Share with us your Trivy use cases"]
+labels: ["adopters"]
 body:
   - type: textarea
     id: company
@@ -11,17 +11,8 @@ body:
       render: bash
     validations:
       required: true
-  - type: dropdown
-    id: oss
-    attributes:
-    label: Is the project in which you use Trivy open source?
-    options:
-      - Yes
-      - No
-    validations:
-      required: true
   - type: textarea
-    id: link
+    id: links
     attributes:
       label: Share Links
       description: "If you would like to share a link to your project or company, please paste it below 🌐"
@@ -41,7 +32,7 @@ body:
         - label: Kubernetes
         - label: AWS
     validations:
-      required: true
+      required: false
   - type: checkboxes
     attributes:
       label: Which scanners are you using on those scan targets?
@@ -53,7 +44,7 @@ body:
         - label: Software licenses
     validations:
       required: true
-  - type: textarea
+  - type: markdown
     id: more
     attributes:
       label: description
