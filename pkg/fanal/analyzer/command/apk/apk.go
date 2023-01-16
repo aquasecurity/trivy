@@ -11,11 +11,11 @@ import (
 	"strings"
 	"time"
 
+	v1 "github.com/google/go-containerregistry/pkg/v1"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer/os"
-	"github.com/aquasecurity/trivy/pkg/fanal/applier"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 )
 
@@ -59,21 +59,30 @@ type pkg struct {
 
 type version map[string]int
 
-func (a alpineCmdAnalyzer) Analyze(targetOS types.OS, configBlob []byte) (types.Packages, error) {
+func (a alpineCmdAnalyzer) Analyze(input analyzer.ConfigAnalysisInput) (*analyzer.AnalysisResult, error) {
+	if input.Config == nil {
+		return nil, nil
+	}
 	var apkIndexArchive *apkIndex
 	var err error
-	if apkIndexArchive, err = a.fetchApkIndexArchive(targetOS); err != nil {
+	if apkIndexArchive, err = a.fetchApkIndexArchive(input.OS); err != nil {
 		log.Println(err)
 		return nil, xerrors.Errorf("failed to fetch apk index archive: %w", err)
 	}
 
-	var config applier.Config
-	if err = json.Unmarshal(configBlob, &config); err != nil {
-		return nil, xerrors.Errorf("failed to unmarshal docker config: %w", err)
+	pkgs := a.parseConfig(apkIndexArchive, input.Config)
+	if len(pkgs) == 0 {
+		return nil, nil
 	}
-	pkgs := a.parseConfig(apkIndexArchive, config)
 
-	return pkgs, nil
+	return &analyzer.AnalysisResult{
+		PackageInfos: []types.PackageInfo{
+			{
+				FilePath: types.HistoryPkgs,
+				Packages: pkgs,
+			},
+		},
+	}, nil
 }
 func (a alpineCmdAnalyzer) fetchApkIndexArchive(targetOS types.OS) (*apkIndex, error) {
 	// 3.9.3 => 3.9
@@ -107,9 +116,9 @@ func (a alpineCmdAnalyzer) fetchApkIndexArchive(targetOS types.OS) (*apkIndex, e
 	return apkIndexArchive, nil
 }
 
-func (a alpineCmdAnalyzer) parseConfig(apkIndexArchive *apkIndex, config applier.Config) (packages []types.Package) {
+func (a alpineCmdAnalyzer) parseConfig(apkIndexArchive *apkIndex, config *v1.ConfigFile) (packages []types.Package) {
 	envs := map[string]string{}
-	for _, env := range config.ContainerConfig.Env {
+	for _, env := range config.Config.Env {
 		index := strings.Index(env, "=")
 		envs["$"+env[:index]] = env[index+1:]
 	}
@@ -118,7 +127,7 @@ func (a alpineCmdAnalyzer) parseConfig(apkIndexArchive *apkIndex, config applier
 	for _, history := range config.History {
 		pkgs := a.parseCommand(history.CreatedBy, envs)
 		pkgs = a.resolveDependencies(apkIndexArchive, pkgs)
-		results := a.guessVersion(apkIndexArchive, pkgs, history.Created)
+		results := a.guessVersion(apkIndexArchive, pkgs, history.Created.Time)
 		for _, result := range results {
 			uniqPkgs[result.Name] = result
 		}

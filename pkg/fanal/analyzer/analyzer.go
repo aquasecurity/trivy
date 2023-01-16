@@ -10,6 +10,7 @@ import (
 	"strings"
 	"sync"
 
+	v1 "github.com/google/go-containerregistry/pkg/v1"
 	"github.com/samber/lo"
 	"golang.org/x/exp/slices"
 	"golang.org/x/sync/semaphore"
@@ -71,10 +72,11 @@ type analyzer interface {
 	Required(filePath string, info os.FileInfo) bool
 }
 
+// configAnalyzer defines an interface for container image config analyzer
 type configAnalyzer interface {
 	Type() Type
 	Version() int
-	Analyze(targetOS types.OS, content []byte) (types.Packages, error)
+	Analyze(input ConfigAnalysisInput) (*AnalysisResult, error)
 	Required(osFound types.OS) bool
 }
 
@@ -158,6 +160,11 @@ type AnalysisResult struct {
 	// CustomResources hold analysis results from custom analyzers.
 	// It is for extensibility and not used in OSS.
 	CustomResources []types.CustomResource
+}
+
+type ConfigAnalysisInput struct {
+	OS     types.OS
+	Config *v1.ConfigFile
 }
 
 func NewAnalysisResult() *AnalysisResult {
@@ -437,19 +444,26 @@ func (ag AnalyzerGroup) AnalyzeFile(ctx context.Context, wg *sync.WaitGroup, lim
 	return nil
 }
 
-func (ag AnalyzerGroup) AnalyzeImageConfig(targetOS types.OS, configBlob []byte) []types.Package {
-	for _, d := range ag.configAnalyzers {
-		if !d.Required(targetOS) {
+func (ag AnalyzerGroup) AnalyzeImageConfig(targetOS types.OS, config *v1.ConfigFile) *AnalysisResult {
+	input := ConfigAnalysisInput{
+		OS:     targetOS,
+		Config: config,
+	}
+	result := NewAnalysisResult()
+	for _, a := range ag.configAnalyzers {
+		if !a.Required(targetOS) {
 			continue
 		}
 
-		pkgs, err := d.Analyze(targetOS, configBlob)
+		r, err := a.Analyze(input)
 		if err != nil {
+			log.Logger.Debugf("Image config analysis error: %s", err)
 			continue
 		}
-		return pkgs
+
+		result.Merge(r)
 	}
-	return nil
+	return result
 }
 
 func (ag AnalyzerGroup) filePatternMatch(analyzerType Type, filePath string) bool {

@@ -200,7 +200,7 @@ type ArtifactInfo struct {
 	OS            string
 
 	// HistoryPackages are packages extracted from RUN instructions
-	HistoryPackages []Package `json:",omitempty"`
+	HistoryPackages Packages `json:",omitempty"`
 }
 
 // BlobInfo is stored in cache

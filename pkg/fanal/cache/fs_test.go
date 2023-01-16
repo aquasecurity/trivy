@@ -482,13 +482,10 @@ func TestFSCache_MissingBlobs(t *testing.T) {
 
 			gotMissingImage, gotMissingLayerIDs, err := fs.MissingBlobs(tt.args.imageID, tt.args.layerIDs)
 			if tt.wantErr != "" {
-				require.NotNil(t, err, tt.name)
-				assert.Contains(t, err.Error(), tt.wantErr, tt.name)
+				assert.ErrorContains(t, err, tt.wantErr, tt.name)
 				return
-			} else {
-				require.NoError(t, err, tt.name)
 			}
-
+			require.NoError(t, err, tt.name)
 			assert.Equal(t, tt.wantMissingImage, gotMissingImage, tt.name)
 			assert.Equal(t, tt.wantMissingLayerIDs, gotMissingLayerIDs, tt.name)
 		})
