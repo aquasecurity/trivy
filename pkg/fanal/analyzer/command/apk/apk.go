@@ -78,7 +78,7 @@ func (a alpineCmdAnalyzer) Analyze(input analyzer.ConfigAnalysisInput) (*analyze
 	return &analyzer.AnalysisResult{
 		PackageInfos: []types.PackageInfo{
 			{
-				FilePath: "pkgs-from-history",
+				FilePath: types.HistoryPkgs,
 				Packages: pkgs,
 			},
 		},

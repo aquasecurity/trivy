@@ -365,11 +365,13 @@ func (a Artifact) inspectConfig(imageID string, osFound types.OS) error {
 
 	result := lo.FromPtr(a.analyzer.AnalyzeImageConfig(osFound, config))
 
-	// Identify packages from history. It currently supports Alpine packages.
-	// The length of PackageInfos will be 0 or 1.
+	// Identify packages from history.
 	var historyPkgs types.Packages
-	if len(result.PackageInfos) == 1 {
-		historyPkgs = result.PackageInfos[0].Packages
+	for _, pi := range result.PackageInfos {
+		if pi.FilePath == types.HistoryPkgs {
+			historyPkgs = pi.Packages
+			break
+		}
 	}
 
 	info := types.ArtifactInfo{
