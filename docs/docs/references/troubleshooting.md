@@ -58,7 +58,7 @@ This option affects only vulnerability scanning. The vulnerability database and 
 If you want to skip them as well, you can try `--skip-update` and `--skip-policy-update`.
 **Note that a number of vulnerabilities might be fewer than without the `--offline-scan` option.**
 
-The second, more scalable, option is the place Trivy behind a rate-limiting forward-proxy to the Maven Central API.
+The second, more scalable, option is to place Trivy behind a rate-limiting forward-proxy to the Maven Central API.
 One way to achieve this is to use nginx. You can use the following nginx config to enable both rate-limiting and caching (the caching greatly reduces the number of calls to the Maven Central API, especially if you are scanning a lot of similar images):
 
 ```nginx
