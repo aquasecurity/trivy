@@ -14,6 +14,7 @@ import (
 	"golang.org/x/exp/slices"
 	"golang.org/x/xerrors"
 
+	"github.com/aquasecurity/defsec/pkg/detection"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/artifact"
 	"github.com/aquasecurity/trivy/pkg/fanal/cache"
@@ -21,6 +22,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/fanal/log"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/fanal/walker"
+	"github.com/aquasecurity/trivy/pkg/misconf"
 	"github.com/aquasecurity/trivy/pkg/semaphore"
 )
 
@@ -119,7 +121,7 @@ func (a Artifact) Inspect(ctx context.Context) (types.ArtifactReference, error) 
 		missingImageKey = ""
 	}
 
-	if err = a.inspect(ctx, missingImageKey, missingLayers, baseDiffIDs, layerKeyMap); err != nil {
+	if err = a.inspect(ctx, missingImageKey, missingLayers, baseDiffIDs, layerKeyMap, configFile); err != nil {
 		return types.ArtifactReference{}, xerrors.Errorf("analyze error: %w", err)
 	}
 
@@ -195,7 +197,8 @@ func (a Artifact) consolidateCreatedBy(diffIDs, layerKeys []string, configFile *
 	return layerKeyMap
 }
 
-func (a Artifact) inspect(ctx context.Context, missingImage string, layerKeys, baseDiffIDs []string, layerKeyMap map[string]LayerInfo) error {
+func (a Artifact) inspect(ctx context.Context, missingImage string, layerKeys, baseDiffIDs []string,
+	layerKeyMap map[string]LayerInfo, configFile *v1.ConfigFile) error {
 	done := make(chan struct{})
 	errCh := make(chan error)
 	limit := semaphore.New(a.artifactOption.Slow)
@@ -246,7 +249,7 @@ func (a Artifact) inspect(ctx context.Context, missingImage string, layerKeys, b
 	}
 
 	if missingImage != "" {
-		if err := a.inspectConfig(missingImage, osFound); err != nil {
+		if err := a.inspectConfig(missingImage, osFound, configFile); err != nil {
 			return xerrors.Errorf("unable to analyze config: %w", err)
 		}
 	}
@@ -357,13 +360,21 @@ func (a Artifact) isCompressed(l v1.Layer) bool {
 	return !uncompressed
 }
 
-func (a Artifact) inspectConfig(imageID string, osFound types.OS) error {
-	config, err := a.image.ConfigFile()
-	if err != nil {
-		return xerrors.Errorf("unable to get config blob: %w", err)
-	}
-
+func (a Artifact) inspectConfig(imageID string, osFound types.OS, config *v1.ConfigFile) error {
 	result := lo.FromPtr(a.analyzer.AnalyzeImageConfig(osFound, config))
+
+	// TODO: refactor
+	scanner, err := misconf.NewScanner(a.artifactOption.FilePatterns, a.artifactOption.MisconfScannerOption)
+	if err != nil {
+		return err
+	}
+	misconfs, err := scanner.Scan(context.TODO(), result.Files[types.MisconfPostHandler])
+	if err != nil {
+		return err
+	}
+	imageMisconf, _ := lo.Find(misconfs, func(m types.Misconfiguration) bool {
+		return m.FileType == string(detection.FileTypeDockerfile)
+	})
 
 	// Identify packages from history.
 	var historyPkgs types.Packages
@@ -375,12 +386,13 @@ func (a Artifact) inspectConfig(imageID string, osFound types.OS) error {
 	}
 
 	info := types.ArtifactInfo{
-		SchemaVersion:   types.ArtifactJSONSchemaVersion,
-		Architecture:    config.Architecture,
-		Created:         config.Created.Time,
-		DockerVersion:   config.DockerVersion,
-		OS:              config.OS,
-		HistoryPackages: historyPkgs,
+		SchemaVersion:    types.ArtifactJSONSchemaVersion,
+		Architecture:     config.Architecture,
+		Created:          config.Created.Time,
+		DockerVersion:    config.DockerVersion,
+		OS:               config.OS,
+		Misconfiguration: imageMisconf,
+		HistoryPackages:  historyPkgs,
 	}
 
 	if err = a.cache.PutArtifact(imageID, info); err != nil {
