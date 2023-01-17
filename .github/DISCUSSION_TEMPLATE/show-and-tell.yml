@@ -8,7 +8,6 @@ body:
       description: "If you would like to share a link to your project or company, please paste it below 🌐"
       value: |
         ...
-      render: bash
     validations:
       required: false
   - type: checkboxes
@@ -41,6 +40,5 @@ body:
       description: "Please tell us more about your use case of Trivy -- anything that you would like to share 🎉"
       value: |
         ...
-      render: bash
     validations:
       required: false
