@@ -133,11 +133,10 @@ func (s Scanner) Scan(ctx context.Context, target, artifactKey string, blobKeys 
 
 	// Scan IaC config files
 	if ShouldScanMisconfigOrRbac(options.SecurityChecks) {
-		imgMisconf := artifactDetail.ImageMisconfiguration
-		imgMisconf.FilePath = target
-		results = append(results, s.MisconfsToResults([]ftypes.Misconfiguration{
-			imgMisconf,
-		})...)
+		if im := artifactDetail.ImageMisconfiguration; im != nil {
+			im.FilePath = target // Set the target name to the file path as container image config is not a real file.
+			results = append(results, s.MisconfsToResults([]ftypes.Misconfiguration{*im})...)
+		}
 
 		configResults := s.MisconfsToResults(artifactDetail.Misconfigurations)
 		results = append(results, configResults...)

@@ -80,7 +80,4 @@ const (
 	PubSpecLock = "pubspec.lock"
 
 	MixLock = "mix.lock"
-
-	// Container image config
-	HistoryPkgs = "pkgs-from-history"
 )

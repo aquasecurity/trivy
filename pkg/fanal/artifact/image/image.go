@@ -14,7 +14,6 @@ import (
 	"golang.org/x/exp/slices"
 	"golang.org/x/xerrors"
 
-	"github.com/aquasecurity/defsec/pkg/detection"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/artifact"
 	"github.com/aquasecurity/trivy/pkg/fanal/cache"
@@ -22,7 +21,6 @@ import (
 	"github.com/aquasecurity/trivy/pkg/fanal/log"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/fanal/walker"
-	"github.com/aquasecurity/trivy/pkg/misconf"
 	"github.com/aquasecurity/trivy/pkg/semaphore"
 )
 
@@ -30,7 +28,8 @@ type Artifact struct {
 	image          types.Image
 	cache          cache.ArtifactCache
 	walker         walker.LayerTar
-	analyzer       analyzer.AnalyzerGroup
+	analyzer       analyzer.AnalyzerGroup       // analyzer for files in container image
+	configAnalyzer analyzer.ConfigAnalyzerGroup // analyzer for container image config
 	handlerManager handler.Manager
 
 	artifactOption artifact.Option
@@ -59,11 +58,21 @@ func NewArtifact(img types.Image, c cache.ArtifactCache, opt artifact.Option) (a
 		return nil, xerrors.Errorf("analyzer group error: %w", err)
 	}
 
+	ca, err := analyzer.NewConfigAnalyzerGroup(analyzer.ConfigAnalyzerOptions{
+		FilePatterns:         opt.FilePatterns,
+		DisabledAnalyzers:    opt.DisabledAnalyzers,
+		MisconfScannerOption: opt.MisconfScannerOption,
+	})
+	if err != nil {
+		return nil, xerrors.Errorf("config analyzer group error: %w", err)
+	}
+
 	return Artifact{
 		image:          img,
 		cache:          c,
 		walker:         walker.NewLayerTar(opt.SkipFiles, opt.SkipDirs, opt.Slow),
 		analyzer:       a,
+		configAnalyzer: ca,
 		handlerManager: handlerManager,
 
 		artifactOption: opt,
@@ -146,7 +155,7 @@ func (Artifact) Clean(_ types.ArtifactReference) error {
 
 func (a Artifact) calcCacheKeys(imageID string, diffIDs []string) (string, []string, error) {
 	// Pass an empty config scanner option so that the cache key can be the same, even when policies are updated.
-	imageKey, err := cache.CalcKey(imageID, a.analyzer.ImageConfigAnalyzerVersions(), nil, artifact.Option{})
+	imageKey, err := cache.CalcKey(imageID, a.configAnalyzer.AnalyzerVersions(), nil, artifact.Option{})
 	if err != nil {
 		return "", nil, err
 	}
@@ -249,7 +258,7 @@ func (a Artifact) inspect(ctx context.Context, missingImage string, layerKeys, b
 	}
 
 	if missingImage != "" {
-		if err := a.inspectConfig(missingImage, osFound, configFile); err != nil {
+		if err := a.inspectConfig(ctx, missingImage, osFound, configFile); err != nil {
 			return xerrors.Errorf("unable to analyze config: %w", err)
 		}
 	}
@@ -360,30 +369,8 @@ func (a Artifact) isCompressed(l v1.Layer) bool {
 	return !uncompressed
 }
 
-func (a Artifact) inspectConfig(imageID string, osFound types.OS, config *v1.ConfigFile) error {
-	result := lo.FromPtr(a.analyzer.AnalyzeImageConfig(osFound, config))
-
-	// TODO: refactor
-	scanner, err := misconf.NewScanner(a.artifactOption.FilePatterns, a.artifactOption.MisconfScannerOption)
-	if err != nil {
-		return err
-	}
-	misconfs, err := scanner.Scan(context.TODO(), result.Files[types.MisconfPostHandler])
-	if err != nil {
-		return err
-	}
-	imageMisconf, _ := lo.Find(misconfs, func(m types.Misconfiguration) bool {
-		return m.FileType == string(detection.FileTypeDockerfile)
-	})
-
-	// Identify packages from history.
-	var historyPkgs types.Packages
-	for _, pi := range result.PackageInfos {
-		if pi.FilePath == types.HistoryPkgs {
-			historyPkgs = pi.Packages
-			break
-		}
-	}
+func (a Artifact) inspectConfig(ctx context.Context, imageID string, osFound types.OS, config *v1.ConfigFile) error {
+	result := lo.FromPtr(a.configAnalyzer.AnalyzeImageConfig(ctx, osFound, config))
 
 	info := types.ArtifactInfo{
 		SchemaVersion:    types.ArtifactJSONSchemaVersion,
@@ -391,11 +378,11 @@ func (a Artifact) inspectConfig(imageID string, osFound types.OS, config *v1.Con
 		Created:          config.Created.Time,
 		DockerVersion:    config.DockerVersion,
 		OS:               config.OS,
-		Misconfiguration: imageMisconf,
-		HistoryPackages:  historyPkgs,
+		Misconfiguration: result.Misconfiguration,
+		HistoryPackages:  result.HistoryPackages,
 	}
 
-	if err = a.cache.PutArtifact(imageID, info); err != nil {
+	if err := a.cache.PutArtifact(imageID, info); err != nil {
 		return xerrors.Errorf("failed to put image info into the cache: %w", err)
 	}
 

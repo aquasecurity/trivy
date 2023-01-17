@@ -200,7 +200,7 @@ type ArtifactInfo struct {
 	OS            string
 
 	// Misconfiguration holds misconfiguration in container image config
-	Misconfiguration Misconfiguration `json:",omitempty"`
+	Misconfiguration *Misconfiguration `json:",omitempty"`
 
 	// HistoryPackages are packages extracted from RUN instructions
 	HistoryPackages Packages `json:",omitempty"`
@@ -247,7 +247,7 @@ type ArtifactDetail struct {
 	Licenses          []LicenseFile      `json:",omitempty"`
 
 	// ImageMisconfiguration holds misconfigurations in container image config
-	ImageMisconfiguration Misconfiguration `json:",omitempty"`
+	ImageMisconfiguration *Misconfiguration `json:",omitempty"`
 
 	// HistoryPackages are packages extracted from RUN instructions
 	HistoryPackages []Package `json:",omitempty"`

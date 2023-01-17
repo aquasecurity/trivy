@@ -2,21 +2,38 @@ package apk
 
 import (
 	"bytes"
+	"context"
 	"strings"
+
+	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
+	"github.com/aquasecurity/trivy/pkg/misconf"
 )
 
 const analyzerVersion = 1
 
 func init() {
-	analyzer.RegisterConfigAnalyzer(&historyAnalyzer{})
+	analyzer.RegisterConfigAnalyzer(analyzer.TypeHistoryDockerfile, newHistoryAnalyzer)
 }
 
-type historyAnalyzer struct{}
+type historyAnalyzer struct {
+	scanner misconf.Scanner
+}
 
-func (a historyAnalyzer) Analyze(input analyzer.ConfigAnalysisInput) (*analyzer.AnalysisResult, error) {
+func newHistoryAnalyzer(opts analyzer.ConfigAnalyzerOptions) (analyzer.ConfigAnalyzer, error) {
+	s, err := misconf.NewScanner(opts.FilePatterns, opts.MisconfScannerOption)
+	if err != nil {
+		return nil, xerrors.Errorf("misconfiguration scanner error: %w", err)
+	}
+	return &historyAnalyzer{
+		scanner: s,
+	}, nil
+}
+
+func (a *historyAnalyzer) Analyze(ctx context.Context, input analyzer.ConfigAnalysisInput) (*analyzer.
+	ConfigAnalysisResult, error) {
 	if input.Config == nil {
 		return nil, nil
 	}
@@ -34,27 +51,36 @@ func (a historyAnalyzer) Analyze(input analyzer.ConfigAnalysisInput) (*analyzer.
 		dockerfile.WriteString(strings.TrimSpace(createdBy) + "\n")
 	}
 
-	return &analyzer.AnalysisResult{
-		Files: map[types.HandlerType][]types.File{
-			types.MisconfPostHandler: {
-				{
-					Type:    types.Dockerfile,
-					Path:    "Dockerfile",
-					Content: dockerfile.Bytes(),
-				},
-			},
+	files := []types.File{
+		{
+			Type:    types.Dockerfile,
+			Path:    "Dockerfile",
+			Content: dockerfile.Bytes(),
 		},
+	}
+
+	misconfs, err := a.scanner.Scan(ctx, files)
+	if err != nil {
+		return nil, xerrors.Errorf("history scan error: %w", err)
+	}
+	// The result should be a single element as it passes one Dockerfile.
+	if len(misconfs) != 1 {
+		return nil, nil
+	}
+
+	return &analyzer.ConfigAnalysisResult{
+		Misconfiguration: &misconfs[0],
 	}, nil
 }
 
-func (a historyAnalyzer) Required(_ types.OS) bool {
+func (a *historyAnalyzer) Required(_ types.OS) bool {
 	return true
 }
 
-func (a historyAnalyzer) Type() analyzer.Type {
+func (a *historyAnalyzer) Type() analyzer.Type {
 	return analyzer.TypeHistoryDockerfile
 }
 
-func (a historyAnalyzer) Version() int {
+func (a *historyAnalyzer) Version() int {
 	return analyzerVersion
 }

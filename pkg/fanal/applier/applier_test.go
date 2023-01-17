@@ -22,12 +22,12 @@ func TestApplier_ApplyLayers(t *testing.T) {
 		layerIDs []string
 	}
 	tests := []struct {
-		name                 string
-		args                 args
-		getLayerExpectations []cache.LocalArtifactCacheGetBlobExpectation
-		getImageExpectations []cache.LocalArtifactCacheGetArtifactExpectation
-		want                 types.ArtifactDetail
-		wantErr              string
+		name                    string
+		args                    args
+		getLayerExpectations    []cache.LocalArtifactCacheGetBlobExpectation
+		getArtifactExpectations []cache.LocalArtifactCacheGetArtifactExpectation
+		want                    types.ArtifactDetail
+		wantErr                 string
 	}{
 		{
 			name: "happy path",
@@ -126,7 +126,7 @@ func TestApplier_ApplyLayers(t *testing.T) {
 					},
 				},
 			},
-			getImageExpectations: []cache.LocalArtifactCacheGetArtifactExpectation{
+			getArtifactExpectations: []cache.LocalArtifactCacheGetArtifactExpectation{
 				{
 					Args: cache.LocalArtifactCacheGetArtifactArgs{
 						ArtifactID: "sha256:4791503518dff090d6a82f7a5c1fd71c41146920e2562fb64308e17ab6834b7e",
@@ -145,14 +145,20 @@ func TestApplier_ApplyLayers(t *testing.T) {
 				},
 				Packages: []types.Package{
 					{
-						Name: "libc6", Version: "2.24-11+deb9u4", SrcName: "glibc", SrcVersion: "2.24-11+deb9u4",
+						Name:       "libc6",
+						Version:    "2.24-11+deb9u4",
+						SrcName:    "glibc",
+						SrcVersion: "2.24-11+deb9u4",
 						Layer: types.Layer{
 							Digest: "sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5",
 							DiffID: "sha256:aad63a9339440e7c3e1fff2b988991b9bfb81280042fa7f39a5e327023056819",
 						},
 					},
 					{
-						Name: "tzdata", Version: "2019a-0+deb9u1", SrcName: "tzdata", SrcVersion: "2019a-0+deb9u1",
+						Name:       "tzdata",
+						Version:    "2019a-0+deb9u1",
+						SrcName:    "tzdata",
+						SrcVersion: "2019a-0+deb9u1",
 						Layer: types.Layer{
 							Digest: "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
 							DiffID: "sha256:a187dde48cd289ac374ad8539930628314bc581a481cdb41409c9289419ddb72",
@@ -211,11 +217,26 @@ func TestApplier_ApplyLayers(t *testing.T) {
 								{
 									FilePath: "lib/apk/db/installed",
 									Packages: []types.Package{
-										{Name: "musl", Version: "1.1.22-r3"},
-										{Name: "busybox", Version: "1.30.1-r3"},
-										{Name: "openssl", Version: "1.1.1d-r2"},
-										{Name: "libcrypto1.1", Version: "1.1.1d-r2"},
-										{Name: "libssl1.1", Version: "1.1.1d-r2"},
+										{
+											Name:    "musl",
+											Version: "1.1.22-r3",
+										},
+										{
+											Name:    "busybox",
+											Version: "1.30.1-r3",
+										},
+										{
+											Name:    "openssl",
+											Version: "1.1.1d-r2",
+										},
+										{
+											Name:    "libcrypto1.1",
+											Version: "1.1.1d-r2",
+										},
+										{
+											Name:    "libssl1.1",
+											Version: "1.1.1d-r2",
+										},
 									},
 								},
 							},
@@ -223,7 +244,7 @@ func TestApplier_ApplyLayers(t *testing.T) {
 					},
 				},
 			},
-			getImageExpectations: []cache.LocalArtifactCacheGetArtifactExpectation{
+			getArtifactExpectations: []cache.LocalArtifactCacheGetArtifactExpectation{
 				{
 					Args: cache.LocalArtifactCacheGetArtifactArgs{
 						ArtifactID: "sha256:3bb70bd5fb37e05b8ecaaace5d6a6b5ec7834037c07ecb5907355c23ab70352d",
@@ -232,14 +253,38 @@ func TestApplier_ApplyLayers(t *testing.T) {
 						ArtifactInfo: types.ArtifactInfo{
 							SchemaVersion: 1,
 							HistoryPackages: []types.Package{
-								{Name: "musl", Version: "1.1.23"},
-								{Name: "busybox", Version: "1.31"},
-								{Name: "ncurses-libs", Version: "6.1_p20190518-r0"},
-								{Name: "ncurses-terminfo-base", Version: "6.1_p20190518-r0"},
-								{Name: "ncurses", Version: "6.1_p20190518-r0"},
-								{Name: "ncurses-terminfo", Version: "6.1_p20190518-r0"},
-								{Name: "bash", Version: "5.0.0-r0"},
-								{Name: "readline", Version: "8.0.0-r0"},
+								{
+									Name:    "musl",
+									Version: "1.1.23",
+								},
+								{
+									Name:    "busybox",
+									Version: "1.31",
+								},
+								{
+									Name:    "ncurses-libs",
+									Version: "6.1_p20190518-r0",
+								},
+								{
+									Name:    "ncurses-terminfo-base",
+									Version: "6.1_p20190518-r0",
+								},
+								{
+									Name:    "ncurses",
+									Version: "6.1_p20190518-r0",
+								},
+								{
+									Name:    "ncurses-terminfo",
+									Version: "6.1_p20190518-r0",
+								},
+								{
+									Name:    "bash",
+									Version: "5.0.0-r0",
+								},
+								{
+									Name:    "readline",
+									Version: "8.0.0-r0",
+								},
 							},
 						},
 					},
@@ -293,14 +338,38 @@ func TestApplier_ApplyLayers(t *testing.T) {
 					},
 				},
 				HistoryPackages: []types.Package{
-					{Name: "musl", Version: "1.1.23"},
-					{Name: "busybox", Version: "1.31"},
-					{Name: "ncurses-libs", Version: "6.1_p20190518-r0"},
-					{Name: "ncurses-terminfo-base", Version: "6.1_p20190518-r0"},
-					{Name: "ncurses", Version: "6.1_p20190518-r0"},
-					{Name: "ncurses-terminfo", Version: "6.1_p20190518-r0"},
-					{Name: "bash", Version: "5.0.0-r0"},
-					{Name: "readline", Version: "8.0.0-r0"},
+					{
+						Name:    "musl",
+						Version: "1.1.23",
+					},
+					{
+						Name:    "busybox",
+						Version: "1.31",
+					},
+					{
+						Name:    "ncurses-libs",
+						Version: "6.1_p20190518-r0",
+					},
+					{
+						Name:    "ncurses-terminfo-base",
+						Version: "6.1_p20190518-r0",
+					},
+					{
+						Name:    "ncurses",
+						Version: "6.1_p20190518-r0",
+					},
+					{
+						Name:    "ncurses-terminfo",
+						Version: "6.1_p20190518-r0",
+					},
+					{
+						Name:    "bash",
+						Version: "5.0.0-r0",
+					},
+					{
+						Name:    "readline",
+						Version: "8.0.0-r0",
+					},
 				},
 			},
 		},
@@ -346,6 +415,18 @@ func TestApplier_ApplyLayers(t *testing.T) {
 					"sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
 					"sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5",
 					"sha256:24df0d4e20c0f42d3703bf1f1db2bdd77346c7956f74f423603d651e8e5ae8a7",
+				},
+			},
+			getArtifactExpectations: []cache.LocalArtifactCacheGetArtifactExpectation{
+				{
+					Args: cache.LocalArtifactCacheGetArtifactArgs{
+						ArtifactID: "sha256:4791503518dff090d6a82f7a5c1fd71c41146920e2562fb64308e17ab6834b7e",
+					},
+					Returns: cache.LocalArtifactCacheGetArtifactReturns{
+						ArtifactInfo: types.ArtifactInfo{
+							SchemaVersion: 1,
+						},
+					},
 				},
 			},
 			getLayerExpectations: []cache.LocalArtifactCacheGetBlobExpectation{
@@ -434,14 +515,20 @@ func TestApplier_ApplyLayers(t *testing.T) {
 			want: types.ArtifactDetail{
 				Packages: []types.Package{
 					{
-						Name: "libc6", Version: "2.24-11+deb9u4", SrcName: "glibc", SrcVersion: "2.24-11+deb9u4",
+						Name:       "libc6",
+						Version:    "2.24-11+deb9u4",
+						SrcName:    "glibc",
+						SrcVersion: "2.24-11+deb9u4",
 						Layer: types.Layer{
 							Digest: "sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5",
 							DiffID: "sha256:aad63a9339440e7c3e1fff2b988991b9bfb81280042fa7f39a5e327023056819",
 						},
 					},
 					{
-						Name: "tzdata", Version: "2019a-0+deb9u1", SrcName: "tzdata", SrcVersion: "2019a-0+deb9u1",
+						Name:       "tzdata",
+						Version:    "2019a-0+deb9u1",
+						SrcName:    "tzdata",
+						SrcVersion: "2019a-0+deb9u1",
 						Layer: types.Layer{
 							Digest: "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
 							DiffID: "sha256:a187dde48cd289ac374ad8539930628314bc581a481cdb41409c9289419ddb72",
@@ -478,8 +565,21 @@ func TestApplier_ApplyLayers(t *testing.T) {
 		{
 			name: "sad path no package detected",
 			args: args{
+				imageID: "sha256:4791503518dff090d6a82f7a5c1fd71c41146920e2562fb64308e17ab6834b7e",
 				layerIDs: []string{
 					"sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
+				},
+			},
+			getArtifactExpectations: []cache.LocalArtifactCacheGetArtifactExpectation{
+				{
+					Args: cache.LocalArtifactCacheGetArtifactArgs{
+						ArtifactID: "sha256:4791503518dff090d6a82f7a5c1fd71c41146920e2562fb64308e17ab6834b7e",
+					},
+					Returns: cache.LocalArtifactCacheGetArtifactReturns{
+						ArtifactInfo: types.ArtifactInfo{
+							SchemaVersion: 1,
+						},
+					},
 				},
 			},
 			getLayerExpectations: []cache.LocalArtifactCacheGetBlobExpectation{
@@ -513,6 +613,18 @@ func TestApplier_ApplyLayers(t *testing.T) {
 				layerIDs: []string{
 					"sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
 					"sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5",
+				},
+			},
+			getArtifactExpectations: []cache.LocalArtifactCacheGetArtifactExpectation{
+				{
+					Args: cache.LocalArtifactCacheGetArtifactArgs{
+						ArtifactID: "sha256:4791503518dff090d6a82f7a5c1fd71c41146920e2562fb64308e17ab6834b7e",
+					},
+					Returns: cache.LocalArtifactCacheGetArtifactReturns{
+						ArtifactInfo: types.ArtifactInfo{
+							SchemaVersion: 1,
+						},
+					},
 				},
 			},
 			getLayerExpectations: []cache.LocalArtifactCacheGetBlobExpectation{
@@ -605,7 +717,10 @@ func TestApplier_ApplyLayers(t *testing.T) {
 			want: types.ArtifactDetail{
 				Packages: []types.Package{
 					{
-						Name: "tzdata", Version: "2019a-0+deb9u1", SrcName: "tzdata", SrcVersion: "2019a-0+deb9u1",
+						Name:       "tzdata",
+						Version:    "2019a-0+deb9u1",
+						SrcName:    "tzdata",
+						SrcVersion: "2019a-0+deb9u1",
 						Layer: types.Layer{
 							Digest: "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
 							DiffID: "sha256:a187dde48cd289ac374ad8539930628314bc581a481cdb41409c9289419ddb72",
@@ -679,7 +794,7 @@ func TestApplier_ApplyLayers(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			c := new(cache.MockLocalArtifactCache)
 			c.ApplyGetBlobExpectations(tt.getLayerExpectations)
-			c.ApplyGetArtifactExpectations(tt.getImageExpectations)
+			c.ApplyGetArtifactExpectations(tt.getArtifactExpectations)
 
 			a := applier.NewApplier(c)
 
