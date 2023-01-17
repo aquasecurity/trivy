@@ -3,13 +3,13 @@ package analyzer
 import (
 	"context"
 
-	misconf "github.com/aquasecurity/trivy/pkg/fanal/analyzer/config"
-
-	"github.com/aquasecurity/trivy/pkg/fanal/types"
-	"github.com/aquasecurity/trivy/pkg/log"
 	v1 "github.com/google/go-containerregistry/pkg/v1"
 	"golang.org/x/exp/slices"
 	"golang.org/x/xerrors"
+
+	misconf "github.com/aquasecurity/trivy/pkg/fanal/analyzer/config"
+	"github.com/aquasecurity/trivy/pkg/fanal/types"
+	"github.com/aquasecurity/trivy/pkg/log"
 )
 
 var configAnalyzerConstructors = map[Type]configAnalyzerConstructor{}
