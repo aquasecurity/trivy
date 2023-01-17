@@ -1,4 +1,4 @@
-title: "[<company name>] "
+title: "<company name> "
 labels: ["adopters"]
 body:
   - type: textarea
