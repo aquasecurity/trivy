@@ -32,7 +32,7 @@ var (
 
 // Scanner implements oracle vulnerability scanner
 type Scanner struct {
-	vs    oracleoval.VulnSrc
+	vs    *oracleoval.VulnSrc
 	clock clock.Clock
 }
 
