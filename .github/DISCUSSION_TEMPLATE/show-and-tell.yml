@@ -1,16 +1,6 @@
-title: "[Company] "
+title: "[<company name>] "
 labels: ["adopters"]
 body:
-  - type: textarea
-    id: company
-    attributes:
-      label: Company or project
-      description: "Which company or project did you implement Trivy with? 👀"
-      value: |
-        ...
-      render: bash
-    validations:
-      required: true
   - type: textarea
     id: links
     attributes:
@@ -43,7 +33,7 @@ body:
         - label: Sensitive information and secrets
         - label: Software licenses
     validations:
-      required: true
+      required: false
   - type: markdown
     id: more
     attributes:
