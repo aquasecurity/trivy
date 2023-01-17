@@ -2,13 +2,11 @@ package analyzer_test
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"os"
 	"sync"
 	"testing"
 
-	v1 "github.com/google/go-containerregistry/pkg/v1"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"golang.org/x/sync/semaphore"
@@ -27,45 +25,6 @@ import (
 	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/repo/apk"
 	_ "github.com/aquasecurity/trivy/pkg/fanal/handler/all"
 )
-
-type mockConfigAnalyzer struct{}
-
-func (mockConfigAnalyzer) Required(targetOS types.OS) bool {
-	return targetOS.Family == "alpine"
-}
-
-func (mockConfigAnalyzer) Analyze(input analyzer.ConfigAnalysisInput) (*analyzer.AnalysisResult, error) {
-	if input.Config == nil {
-		return nil, errors.New("error")
-	}
-	return &analyzer.AnalysisResult{
-		PackageInfos: []types.PackageInfo{
-			{
-				Packages: types.Packages{
-					{
-						Name:    "musl",
-						Version: "1.1.24-r2",
-					},
-				},
-			},
-		},
-	}, nil
-}
-
-func (mockConfigAnalyzer) Type() analyzer.Type {
-	return analyzer.Type("test")
-}
-
-func (mockConfigAnalyzer) Version() int {
-	return 1
-}
-
-func TestMain(m *testing.M) {
-	mock := mockConfigAnalyzer{}
-	analyzer.RegisterConfigAnalyzer(mock)
-	defer analyzer.DeregisterConfigAnalyzer(mock.Type())
-	os.Exit(m.Run())
-}
 
 func TestAnalysisResult_Merge(t *testing.T) {
 	type fields struct {
@@ -325,7 +284,7 @@ func TestAnalysisResult_Merge(t *testing.T) {
 	}
 }
 
-func TestAnalyzeFile(t *testing.T) {
+func TestAnalyzerGroup_AnalyzeFile(t *testing.T) {
 	type args struct {
 		filePath          string
 		testFilePath      string
@@ -540,81 +499,7 @@ func TestAnalyzeFile(t *testing.T) {
 	}
 }
 
-func TestAnalyzeConfig(t *testing.T) {
-	type args struct {
-		targetOS          types.OS
-		config            *v1.ConfigFile
-		disabledAnalyzers []analyzer.Type
-		filePatterns      []string
-	}
-	tests := []struct {
-		name string
-		args args
-		want *analyzer.AnalysisResult
-	}{
-		{
-			name: "happy path",
-			args: args{
-				targetOS: types.OS{
-					Family: "alpine",
-					Name:   "3.11.6",
-				},
-				config: &v1.ConfigFile{
-					OS: "linux",
-				},
-			},
-			want: &analyzer.AnalysisResult{
-				Files: map[types.HandlerType][]types.File{},
-				PackageInfos: []types.PackageInfo{
-					{
-						Packages: []types.Package{
-							{
-								Name:    "musl",
-								Version: "1.1.24-r2",
-							},
-						},
-					},
-				},
-			},
-		},
-		{
-			name: "non-target OS",
-			args: args{
-				targetOS: types.OS{
-					Family: "debian",
-					Name:   "9.2",
-				},
-				config: &v1.ConfigFile{
-					OS: "linux",
-				},
-			},
-			want: analyzer.NewAnalysisResult(),
-		},
-		{
-			name: "Analyze returns an error",
-			args: args{
-				targetOS: types.OS{
-					Family: "alpine",
-					Name:   "3.11.6",
-				},
-			},
-			want: analyzer.NewAnalysisResult(),
-		},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			a, err := analyzer.NewAnalyzerGroup(analyzer.AnalyzerOptions{
-				FilePatterns:      tt.args.filePatterns,
-				DisabledAnalyzers: tt.args.disabledAnalyzers,
-			})
-			require.NoError(t, err)
-			got := a.AnalyzeImageConfig(tt.args.targetOS, tt.args.config)
-			assert.Equal(t, tt.want, got)
-		})
-	}
-}
-
-func TestAnalyzer_AnalyzerVersions(t *testing.T) {
+func TestAnalyzerGroup_AnalyzerVersions(t *testing.T) {
 	tests := []struct {
 		name     string
 		disabled []analyzer.Type
@@ -652,43 +537,6 @@ func TestAnalyzer_AnalyzerVersions(t *testing.T) {
 			require.NoError(t, err)
 			got := a.AnalyzerVersions()
 			fmt.Printf("%v\n", got)
-			assert.Equal(t, tt.want, got)
-		})
-	}
-}
-
-func TestAnalyzer_ImageConfigAnalyzerVersions(t *testing.T) {
-	tests := []struct {
-		name     string
-		disabled []analyzer.Type
-		want     map[string]int
-	}{
-		{
-			name:     "happy path",
-			disabled: []analyzer.Type{},
-			want: map[string]int{
-				"apk-command": 1,
-				"test":        1,
-			},
-		},
-		{
-			name: "disable analyzers",
-			disabled: []analyzer.Type{
-				analyzer.TypeAlpine,
-				analyzer.TypeApkCommand,
-			},
-			want: map[string]int{
-				"test": 1,
-			},
-		},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			a, err := analyzer.NewAnalyzerGroup(analyzer.AnalyzerOptions{
-				DisabledAnalyzers: tt.disabled,
-			})
-			require.NoError(t, err)
-			got := a.ImageConfigAnalyzerVersions()
 			assert.Equal(t, tt.want, got)
 		})
 	}
