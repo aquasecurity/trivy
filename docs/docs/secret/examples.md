@@ -15,7 +15,7 @@ $ trivy image --skip-dirs /var/lib --skip-dirs /var/log YOUR_IMAGE
 $ trivy fs --skip-dirs ./my-test-dir --skip-dirs ./my-testing-cert/ /path/to/your_project
 ```
 
-`--skip-fles` also works similarly.
+`--skip-files` also works similarly.
 
 ## Filter by severity
 
