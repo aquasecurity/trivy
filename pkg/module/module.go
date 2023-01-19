@@ -34,7 +34,7 @@ var (
 		"error": logError,
 	}
 
-	RelativeDir = filepath.Join(".trivy", "modules")
+	RelativeDir = filepath.Join(".deepfactor", "modules")
 )
 
 // logDebug is defined as an api.GoModuleFunc for lower overhead vs reflection.
