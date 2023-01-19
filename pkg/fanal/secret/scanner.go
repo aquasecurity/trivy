@@ -459,31 +459,33 @@ func findLocation(start, end int, content []byte) (int, int, types.Code, string)
 		lineEnd += start
 	}
 
-	match := string(content[start:end])
-	matchLine := string(content[lineStart:lineEnd])
-	if len(matchLine) > 100 {
+	var matchLine string
+	if lineEnd-lineStart > 100 {
 		truncatedLineStart := lo.Ternary(start-30 < 0, 0, start-30)
 		truncatedLineEnd := lo.Ternary(end+20 > len(content), len(content), end+20)
 		matchLine = string(content[truncatedLineStart:truncatedLineEnd])
+	} else {
+		matchLine = string(content[lineStart:lineEnd])
 	}
-	endLineNum := startLineNum + strings.Count(match, string(lineSep))
+	endLineNum := startLineNum + bytes.Count(content[start:end], lineSep)
 
 	var code types.Code
 
-	lines := strings.Split(string(content), string(lineSep))
+	lines := bytes.Split(content, lineSep)
 	codeStart := lo.Ternary(startLineNum-secretHighlightRadius < 0, 0, startLineNum-secretHighlightRadius)
 	codeEnd := lo.Ternary(endLineNum+secretHighlightRadius > len(lines), len(lines), endLineNum+secretHighlightRadius)
 
 	rawLines := lines[codeStart:codeEnd]
 	var foundFirst bool
 	for i, rawLine := range rawLines {
+		strRawLine := string(rawLine)
 		realLine := codeStart + i
 		inCause := realLine >= startLineNum && realLine <= endLineNum
 		code.Lines = append(code.Lines, types.Line{
 			Number:      codeStart + i + 1,
-			Content:     rawLine,
+			Content:     strRawLine,
 			IsCause:     inCause,
-			Highlighted: rawLine,
+			Highlighted: strRawLine,
 			FirstCause:  !foundFirst && inCause,
 			LastCause:   false,
 		})
