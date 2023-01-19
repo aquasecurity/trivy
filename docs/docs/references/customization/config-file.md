@@ -63,6 +63,10 @@ ignore-policy:
 # Default is 0
 exit-code: 0
 
+# Same as '--exit-on-eosl'
+# Default is false
+exit-on-eosl: false
+
 # Same as '--output'
 # Default is empty (stdout)
 output:

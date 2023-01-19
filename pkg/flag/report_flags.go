@@ -71,6 +71,12 @@ var (
 		Value:      0,
 		Usage:      "specify exit code when any security issues are found",
 	}
+	ExitOnEoslFlag = Flag{
+		Name:       "exit-on-eosl",
+		ConfigName: "exit-on-eosl",
+		Value:      false,
+		Usage:      "exit with the specified code when the os of image ends of service/life",
+	}
 	OutputFlag = Flag{
 		Name:       "output",
 		ConfigName: "output",
@@ -104,6 +110,7 @@ type ReportFlagGroup struct {
 	IgnoreFile     *Flag
 	IgnorePolicy   *Flag
 	ExitCode       *Flag
+	ExitOnEosl     *Flag
 	Output         *Flag
 	Severity       *Flag
 	Compliance     *Flag
@@ -117,6 +124,7 @@ type ReportOptions struct {
 	ListAllPkgs    bool
 	IgnoreFile     string
 	ExitCode       int
+	ExitOnEosl     bool
 	IgnorePolicy   string
 	Output         io.Writer
 	Severities     []dbTypes.Severity
@@ -133,6 +141,7 @@ func NewReportFlagGroup() *ReportFlagGroup {
 		IgnoreFile:     &IgnoreFileFlag,
 		IgnorePolicy:   &IgnorePolicyFlag,
 		ExitCode:       &ExitCodeFlag,
+		ExitOnEosl:     &ExitOnEoslFlag,
 		Output:         &OutputFlag,
 		Severity:       &SeverityFlag,
 		Compliance:     &ComplianceFlag,
@@ -145,15 +154,21 @@ func (f *ReportFlagGroup) Name() string {
 
 func (f *ReportFlagGroup) Flags() []*Flag {
 	return []*Flag{f.Format, f.ReportFormat, f.Template, f.DependencyTree, f.ListAllPkgs, f.IgnoreFile,
-		f.IgnorePolicy, f.ExitCode, f.Output, f.Severity, f.Compliance}
+		f.IgnorePolicy, f.ExitCode, f.ExitOnEosl, f.Output, f.Severity, f.Compliance}
 }
 
 func (f *ReportFlagGroup) ToOptions(out io.Writer) (ReportOptions, error) {
+	exitCode := getInt(f.ExitCode)
+	exitOnEosl := getBool(f.ExitOnEosl)
 	format := getString(f.Format)
 	template := getString(f.Template)
 	dependencyTree := getBool(f.DependencyTree)
 	listAllPkgs := getBool(f.ListAllPkgs)
 	output := getString(f.Output)
+
+	if exitOnEosl && exitCode == 0 {
+		log.Logger.Warn("'--exit-on-eosl' is ignored because '--exit-code' is 0 or not specified. Use '--exit-on-eosl' option with non-zero '--exit-code' option.")
+	}
 
 	if format != "" && !slices.Contains(report.SupportedFormats, format) {
 		return ReportOptions{}, xerrors.Errorf("unknown format: %v", format)
@@ -212,6 +227,7 @@ func (f *ReportFlagGroup) ToOptions(out io.Writer) (ReportOptions, error) {
 		ListAllPkgs:    listAllPkgs,
 		IgnoreFile:     getString(f.IgnoreFile),
 		ExitCode:       getInt(f.ExitCode),
+		ExitOnEosl:     getBool(f.ExitOnEosl),
 		IgnorePolicy:   getString(f.IgnorePolicy),
 		Output:         out,
 		Severities:     splitSeverity(getStringSlice(f.Severity)),
