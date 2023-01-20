@@ -49,6 +49,8 @@ func (a osReleaseAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInp
 
 		var family string
 		switch id {
+		case "altlinux":
+			family = aos.ALT
 		case "alpine":
 			family = aos.Alpine
 		case "opensuse-tumbleweed":

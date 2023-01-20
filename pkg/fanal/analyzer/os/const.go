@@ -58,6 +58,8 @@ const (
 	// Alpine is done
 	Alpine = "alpine"
 
+	//ALT is done
+	ALT = "alt"
 	// Wolfi is done
 	Wolfi = "wolfi"
 )

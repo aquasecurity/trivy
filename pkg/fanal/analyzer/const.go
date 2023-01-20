@@ -8,6 +8,7 @@ const (
 	// ======
 	TypeOSRelease  Type = "os-release"
 	TypeAlpine     Type = "alpine"
+	TypeALT        Type = "alt"
 	TypeAmazon     Type = "amazon"
 	TypeCBLMariner Type = "cbl-mariner"
 	TypeDebian     Type = "debian"
@@ -129,7 +130,7 @@ var (
 		TypeOSRelease, TypeAlpine, TypeAmazon, TypeCBLMariner, TypeDebian, TypePhoton, TypeCentOS,
 		TypeRocky, TypeAlma, TypeFedora, TypeOracle, TypeRedHatBase, TypeSUSE, TypeUbuntu,
 		TypeApk, TypeDpkg, TypeDpkgLicense, TypeRpm, TypeRpmqa,
-		TypeApkRepo,
+		TypeApkRepo, TypeALT,
 	}
 
 	// TypeLanguages has all language analyzers
