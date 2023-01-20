@@ -15,6 +15,7 @@ func TestScanFlagGroup_ToOptions(t *testing.T) {
 	type fields struct {
 		skipDirs       []string
 		skipFiles      []string
+		onlyDirs       []string
 		offlineScan    bool
 		securityChecks string
 	}
@@ -106,6 +107,7 @@ func TestScanFlagGroup_ToOptions(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			viper.Set(flag.SkipDirsFlag.ConfigName, tt.fields.skipDirs)
 			viper.Set(flag.SkipFilesFlag.ConfigName, tt.fields.skipFiles)
+			viper.Set(flag.OnlyDirsFlag.ConfigName, tt.fields.onlyDirs)
 			viper.Set(flag.OfflineScanFlag.ConfigName, tt.fields.offlineScan)
 			viper.Set(flag.SecurityChecksFlag.ConfigName, tt.fields.securityChecks)
 
@@ -113,6 +115,7 @@ func TestScanFlagGroup_ToOptions(t *testing.T) {
 			f := &flag.ScanFlagGroup{
 				SkipDirs:       &flag.SkipDirsFlag,
 				SkipFiles:      &flag.SkipFilesFlag,
+				OnlyDirs:       &flag.OnlyDirsFlag,
 				OfflineScan:    &flag.OfflineScanFlag,
 				SecurityChecks: &flag.SecurityChecksFlag,
 			}
