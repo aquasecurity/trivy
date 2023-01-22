@@ -25,7 +25,7 @@ In addition to package licenses, Trivy scans source code files, Markdown documen
 
 Currently, the standard license scanning doesn't support filesystem and repository scanning.
 
-|   License scnanning   | Image | Rootfs    | Filesystem | Repository |
+|   License scanning    | Image | Rootfs    | Filesystem | Repository |
 |:---------------------:|:-----:|:---------:|:----------:|:----------:|
 |       Standard        |  ✅   |     ✅    |   -        |      -     |
 | Full (--license-full) |  ✅   |     ✅    |     ✅     |     ✅     |
