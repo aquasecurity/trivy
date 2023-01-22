@@ -4,7 +4,7 @@ body:
   - type: textarea
     id: links
     attributes:
-      label: Share Links
+      label: "Share Links"
       description: "If you would like to share a link to your project or company, please paste it below 🌐"
       value: |
         ...
@@ -13,7 +13,7 @@ body:
   - type: textarea
     id: logo
     attributes:
-      label: Share Logo
+      label: "Share Logo"
       description: "If you have a link to your logo, please provide it in the following text-box 🌐"
       value: |
         ...
@@ -42,10 +42,10 @@ body:
         - label: Software licenses
     validations:
       required: false
-  - type: markdown
-    id: more
+  - type: textarea
+    id: info
     attributes:
-      label: description
+      label: "Additional Information"
       description: "Please tell us more about your use case of Trivy -- anything that you would like to share 🎉"
       value: |
         ...
