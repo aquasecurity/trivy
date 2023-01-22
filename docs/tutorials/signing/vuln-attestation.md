@@ -18,7 +18,7 @@ trivy image --ignore-unfixed --format json --output scan.json anaisurlichs/cns-w
 ```
 
 * --ignore-unfixed: Ensures that only the vulnerabilities are displayed that have a already a fix available
-* --output scan.json: The scan output is scaved to a scan.json file instead of being displayed in the terminal.
+* --output scan.json: The scan output is saved to a scan.json file instead of being displayed in the terminal.
 
 Note: Replace the container image with the container image that you would like to scan.
 
