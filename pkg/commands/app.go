@@ -581,7 +581,7 @@ func NewConfigCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 			options.DisabledAnalyzers = append(analyzer.TypeOSes, analyzer.TypeLanguages...)
 
 			// Scan only for misconfigurations
-			options.SecurityChecks = []string{types.SecurityCheckConfig}
+			options.Scanners = []string{types.MisconfigScanner}
 
 			return artifact.Run(cmd.Context(), options, artifact.TargetFilesystem)
 		},
@@ -743,15 +743,15 @@ func NewModuleCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 
 func NewKubernetesCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	scanFlags := flag.NewScanFlagGroup()
-	securityChecks := flag.SecurityChecksFlag
-	securityChecks.Value = fmt.Sprintf( // overwrite the default value
+	scanners := flag.ScannersFlag
+	scanners.Value = fmt.Sprintf( // overwrite the default value
 		"%s,%s,%s,%s",
-		types.SecurityCheckVulnerability,
-		types.SecurityCheckConfig,
-		types.SecurityCheckSecret,
-		types.SecurityCheckRbac,
+		types.VulnerabilityScanner,
+		types.MisconfigScanner,
+		types.SecretScanner,
+		types.RBACScanner,
 	)
-	scanFlags.SecurityChecks = &securityChecks
+	scanFlags.Scanners = &scanners
 
 	reportFlagGroup := flag.NewReportFlagGroup()
 	compliance := flag.ComplianceFlag
@@ -908,7 +908,7 @@ func NewVMCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 		Aliases: []string{},
 		Short:   "[EXPERIMENTAL] Scan a virtual machine image",
 		Example: `  # Scan your AWS AMI
-  $ trivy vm --security-checks vuln ami:${your_ami_id}
+  $ trivy vm --scanners vuln ami:${your_ami_id}
 
   # Scan your AWS EBS snapshot
   $ trivy vm ebs:${your_ebs_snapshot_id}
@@ -949,7 +949,7 @@ func NewSBOMCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	reportFlagGroup.ReportFormat = nil   // TODO: support --report summary
 
 	scanFlags := flag.NewScanFlagGroup()
-	scanFlags.SecurityChecks = nil // disable '--security-checks' as it always scans for vulnerabilities
+	scanFlags.Scanners = nil // disable '--scanners' as it always scans for vulnerabilities
 
 	sbomFlags := &flag.Flags{
 		CacheFlagGroup:         flag.NewCacheFlagGroup(),
@@ -989,7 +989,7 @@ func NewSBOMCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 			}
 
 			// Scan vulnerabilities
-			options.SecurityChecks = []string{types.SecurityCheckVulnerability}
+			options.Scanners = []string{types.VulnerabilityScanner}
 
 			return artifact.Run(cmd.Context(), options, artifact.TargetSBOM)
 		},

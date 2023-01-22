@@ -3,8 +3,8 @@ package types
 // VulnType represents vulnerability type
 type VulnType = string
 
-// SecurityCheck represents the type of security check
-type SecurityCheck = string
+// Scanner represents the type of security scanning
+type Scanner = string
 
 const (
 	// VulnTypeUnknown is a vulnerability type of unknown
@@ -16,29 +16,35 @@ const (
 	// VulnTypeLibrary is a vulnerability type of programming language dependencies
 	VulnTypeLibrary = VulnType("library")
 
-	// SecurityCheckUnknown is a security check of unknown
-	SecurityCheckUnknown = SecurityCheck("unknown")
+	// ScannerUnknown is the scanner of unknown
+	ScannerUnknown = Scanner("unknown")
 
-	// SecurityCheckVulnerability is a security check of vulnerabilities
-	SecurityCheckVulnerability = SecurityCheck("vuln")
+	// VulnerabilityScanner is the scanner of vulnerabilities
+	VulnerabilityScanner = Scanner("vuln")
 
-	// SecurityCheckConfig is a security check of misconfigurations
-	SecurityCheckConfig = SecurityCheck("config")
+	// MisconfigScanner is the scanner of misconfigurations
+	MisconfigScanner = Scanner("config")
 
-	// SecurityCheckSecret is a security check of secrets
-	SecurityCheckSecret = SecurityCheck("secret")
+	// SecretScanner is the scanner of secrets
+	SecretScanner = Scanner("secret")
 
-	// SecurityCheckRbac is a security check of rbac assessment
-	SecurityCheckRbac = SecurityCheck("rbac")
+	// RBACScanner is the scanner of rbac assessment
+	RBACScanner = Scanner("rbac")
 
-	// SecurityCheckLicense is the security check of licenses
-	SecurityCheckLicense = SecurityCheck("license")
+	// LicenseScanner is the scanner of licenses
+	LicenseScanner = Scanner("license")
 )
 
 var (
-	VulnTypes      = []string{VulnTypeOS, VulnTypeLibrary}
-	SecurityChecks = []string{
-		SecurityCheckVulnerability, SecurityCheckConfig, SecurityCheckRbac,
-		SecurityCheckSecret, SecurityCheckLicense,
+	VulnTypes = []string{
+		VulnTypeOS,
+		VulnTypeLibrary,
+	}
+	Scanners = []string{
+		VulnerabilityScanner,
+		MisconfigScanner,
+		RBACScanner,
+		SecretScanner,
+		LicenseScanner,
 	}
 )

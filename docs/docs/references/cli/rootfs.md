@@ -21,7 +21,7 @@ Scan Flags
       --offline-scan              do not issue API requests to identify dependencies
       --rekor-url string          [EXPERIMENTAL] address of rekor STL server (default "https://rekor.sigstore.dev")
       --sbom-sources strings      [EXPERIMENTAL] try to retrieve SBOM from the specified sources (rekor)
-      --security-checks strings   comma-separated list of what security issues to detect (vuln,config,secret,license) (default [vuln,secret])
+      --scanners strings          comma-separated list of what security issues to detect (vuln,config,secret,license) (default [vuln,secret])
       --skip-dirs strings         specify the directories where the traversal is skipped
       --skip-files strings        specify the file paths to skip traversal
 
@@ -60,7 +60,7 @@ Misconfiguration Flags
       --helm-set-file strings     specify Helm values from respective files specified via the command line (can specify multiple or separate values with commas: key1=path1,key2=path2)
       --helm-set-string strings   specify Helm string values on the command line (can specify multiple or separate values with commas: key1=val1,key2=val2)
       --helm-values strings       specify paths to override the Helm values.yaml files
-      --include-non-failures      include successes and exceptions, available with '--security-checks config'
+      --include-non-failures      include successes and exceptions, available with '--scanners config'
       --tf-vars strings           specify paths to override the Terraform tfvars files
 
 Secret Flags

@@ -61,13 +61,13 @@ const (
 	WarnStatus ControlStatus = "WARN"
 )
 
-// SecurityChecks reads spec control and determines the scanners by check ID prefix
-func (cs *ComplianceSpec) SecurityChecks() ([]types.SecurityCheck, error) {
-	scannerTypes := map[types.SecurityCheck]struct{}{}
+// Scanners reads spec control and determines the scanners by check ID prefix
+func (cs *ComplianceSpec) Scanners() ([]types.Scanner, error) {
+	scannerTypes := map[types.Scanner]struct{}{}
 	for _, control := range cs.Spec.Controls {
 		for _, check := range control.Checks {
-			scannerType := securityCheckByCheckID(check.ID)
-			if scannerType == types.SecurityCheckUnknown {
+			scannerType := scannerByCheckID(check.ID)
+			if scannerType == types.ScannerUnknown {
 				return nil, xerrors.Errorf("unsupported check ID: %s", check.ID)
 			}
 			scannerTypes[scannerType] = struct{}{}
@@ -77,26 +77,26 @@ func (cs *ComplianceSpec) SecurityChecks() ([]types.SecurityCheck, error) {
 }
 
 // CheckIDs return list of compliance check IDs
-func (cs *ComplianceSpec) CheckIDs() map[types.SecurityCheck][]string {
-	checkIDsMap := map[types.SecurityCheck][]string{}
+func (cs *ComplianceSpec) CheckIDs() map[types.Scanner][]string {
+	checkIDsMap := map[types.Scanner][]string{}
 	for _, control := range cs.Spec.Controls {
 		for _, check := range control.Checks {
-			scannerType := securityCheckByCheckID(check.ID)
+			scannerType := scannerByCheckID(check.ID)
 			checkIDsMap[scannerType] = append(checkIDsMap[scannerType], check.ID)
 		}
 	}
 	return checkIDsMap
 }
 
-func securityCheckByCheckID(checkID string) types.SecurityCheck {
+func scannerByCheckID(checkID string) types.Scanner {
 	checkID = strings.ToLower(checkID)
 	switch {
 	case strings.HasPrefix(checkID, "cve-") || strings.HasPrefix(checkID, "dla-"):
-		return types.SecurityCheckVulnerability
+		return types.VulnerabilityScanner
 	case strings.HasPrefix(checkID, "avd-"):
-		return types.SecurityCheckConfig
+		return types.MisconfigScanner
 	default:
-		return types.SecurityCheckUnknown
+		return types.ScannerUnknown
 	}
 }
 
