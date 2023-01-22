@@ -10,6 +10,15 @@ body:
         ...
     validations:
       required: false
+  - type: textarea
+    id: logo
+    attributes:
+      label: Share Logo
+      description: "If you have a link to your logo, please provide it in the following text-box 🌐"
+      value: |
+        ...
+    validations:
+      required: false
   - type: checkboxes
     attributes:
       label: Please select all the scan targets that you are using
