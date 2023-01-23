@@ -116,7 +116,7 @@ Contact us about any matter by opening a GitHub Discussion [here][discussions]
 [license-img]: https://img.shields.io/badge/License-Apache%202.0-blue.svg
 [homepage]: https://trivy.dev
 [docs]: https://aquasecurity.github.io/trivy
-[pronunciation]: #how-to-pronounce-the-name-trivy
+[pronunciation]: https://aquasecurity.github.io/trivy/latest/getting-started/faq/#how-to-pronounce-the-name-trivy
 
 [Installation]:https://aquasecurity.github.io/trivy/latest/getting-started/installation/
 [Ecosystem]: https://aquasecurity.github.io/trivy/latest/ecosystem/

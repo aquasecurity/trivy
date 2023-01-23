@@ -11,7 +11,7 @@ nav:
       - Overview: index.md
       - Quick Start: getting-started/quick-start.md
       - Installation: getting-started/installation.md
-      - Quick Start: getting-started/faq.md
+      - FAQ: getting-started/faq.md
   - Tutorials:
       - Overview: tutorials/overview.md   
       - CI/CD:
