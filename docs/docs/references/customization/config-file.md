@@ -102,9 +102,9 @@ scan:
   # Default is false
   offline-scan: false
   
-  # Same as '--security-checks'
+  # Same as '--scanners'
   # Default depends on subcommand
-  security-checks:
+  scanners:
     - vuln
     - config
     - secret

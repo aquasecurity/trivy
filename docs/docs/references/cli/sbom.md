@@ -19,7 +19,7 @@ Examples:
 
 Scan Flags
       --offline-scan             do not issue API requests to identify dependencies
-      --security-checks string   comma-separated list of what security issues to detect (vuln,config,secret) (default "vuln,secret")
+      --scanners string          comma-separated list of what security issues to detect (vuln,config,secret) (default "vuln,secret")
       --skip-dirs strings        specify the directories where the traversal is skipped
       --skip-files strings       specify the file paths to skip traversal
 

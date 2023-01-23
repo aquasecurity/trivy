@@ -15,7 +15,7 @@ By default, `--format cyclonedx` represents SBOM and doesn't include vulnerabili
 
 ```
 $ trivy image --format cyclonedx --output result.json alpine:3.15
-2022-07-19T07:47:27.624Z        INFO    "--format cyclonedx" disables security checks. Specify "--security-checks vuln" explicitly if you want to include vulnerabilities in the CycloneDX report.
+2022-07-19T07:47:27.624Z        INFO    "--format cyclonedx" disables security scanning. Specify "--scanners vuln" explicitly if you want to include vulnerabilities in the CycloneDX report.
 ```
 
 <details>
@@ -239,10 +239,10 @@ $ cat result.json | jq .
 
 </details>
 
-If you want to include vulnerabilities, you can enable vulnerability scanning via `--security-checks vuln`.
+If you want to include vulnerabilities, you can enable vulnerability scanning via `--scanners vuln`.
 
 ```
-$ trivy image --security-checks vuln --format cyclonedx --output result.json alpine:3.15
+$ trivy image --scanners vuln --format cyclonedx --output result.json alpine:3.15
 ```
 
 ## Scanning

@@ -94,14 +94,14 @@ type Options struct {
 // Align takes consistency of options
 func (o *Options) Align() {
 	if o.Format == report.FormatSPDX || o.Format == report.FormatSPDXJSON {
-		log.Logger.Info(`"--format spdx" and "--format spdx-json" disable security checks`)
-		o.SecurityChecks = nil
+		log.Logger.Info(`"--format spdx" and "--format spdx-json" disable security scanning`)
+		o.Scanners = nil
 	}
 
 	// Vulnerability scanning is disabled by default for CycloneDX.
-	if o.Format == report.FormatCycloneDX && !viper.IsSet(SecurityChecksFlag.ConfigName) {
-		log.Logger.Info(`"--format cyclonedx" disables security checks. Specify "--security-checks vuln" explicitly if you want to include vulnerabilities in the CycloneDX report.`)
-		o.SecurityChecks = nil
+	if o.Format == report.FormatCycloneDX && !viper.IsSet(ScannersFlag.ConfigName) {
+		log.Logger.Info(`"--format cyclonedx" disables security scanning. Specify "--scanners vuln" explicitly if you want to include vulnerabilities in the CycloneDX report.`)
+		o.Scanners = nil
 	}
 }
 
@@ -415,6 +415,8 @@ func flagNameNormalize(f *pflag.FlagSet, name string) pflag.NormalizedName {
 		name = PolicyNamespaceFlag.Name
 	case "ctx":
 		name = ClusterContextFlag.Name
+	case "security-checks":
+		name = ScannersFlag.Name
 	}
 	return pflag.NormalizedName(name)
 }

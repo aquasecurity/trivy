@@ -10,67 +10,102 @@ import (
 )
 
 func TestReport_ColumnHeading(t *testing.T) {
-	allSecurityChecks := []string{
-		types.SecurityCheckVulnerability,
-		types.SecurityCheckConfig,
-		types.SecurityCheckSecret,
-		types.SecurityCheckRbac,
+	allScanners := []string{
+		types.VulnerabilityScanner,
+		types.MisconfigScanner,
+		types.SecretScanner,
+		types.RBACScanner,
 	}
 
 	tests := []struct {
 		name             string
-		securityChecks   []string
+		scanners         []string
 		components       []string
 		availableColumns []string
 		want             []string
 	}{
 		{
 			name:             "filter workload columns",
-			securityChecks:   allSecurityChecks,
+			scanners:         allScanners,
 			availableColumns: WorkloadColumns(),
-			components:       []string{workloadComponent, infraComponent},
-			want:             []string{NamespaceColumn, ResourceColumn, VulnerabilitiesColumn, MisconfigurationsColumn, SecretsColumn},
+			components: []string{
+				workloadComponent,
+				infraComponent,
+			},
+			want: []string{
+				NamespaceColumn,
+				ResourceColumn,
+				VulnerabilitiesColumn,
+				MisconfigurationsColumn,
+				SecretsColumn,
+			},
 		},
 		{
 			name:             "filter rbac columns",
-			securityChecks:   allSecurityChecks,
+			scanners:         allScanners,
 			components:       []string{},
 			availableColumns: RoleColumns(),
-			want:             []string{NamespaceColumn, ResourceColumn, RbacAssessmentColumn},
+			want: []string{
+				NamespaceColumn,
+				ResourceColumn,
+				RbacAssessmentColumn,
+			},
 		},
 		{
-			name:             "filter infra columns",
-			securityChecks:   allSecurityChecks,
-			components:       []string{workloadComponent, infraComponent},
+			name:     "filter infra columns",
+			scanners: allScanners,
+			components: []string{
+				workloadComponent,
+				infraComponent,
+			},
 			availableColumns: InfraColumns(),
-			want:             []string{NamespaceColumn, ResourceColumn, InfraAssessmentColumn},
+			want: []string{
+				NamespaceColumn,
+				ResourceColumn,
+				InfraAssessmentColumn,
+			},
 		},
 		{
-			name:             "config column only",
-			securityChecks:   []string{types.SecurityCheckConfig},
-			components:       []string{workloadComponent, infraComponent},
+			name:     "config column only",
+			scanners: []string{types.MisconfigScanner},
+			components: []string{
+				workloadComponent,
+				infraComponent,
+			},
 			availableColumns: WorkloadColumns(),
-			want:             []string{NamespaceColumn, ResourceColumn, MisconfigurationsColumn},
+			want: []string{
+				NamespaceColumn,
+				ResourceColumn,
+				MisconfigurationsColumn,
+			},
 		},
 		{
 			name:             "secret column only",
-			securityChecks:   []string{types.SecurityCheckSecret},
+			scanners:         []string{types.SecretScanner},
 			components:       []string{},
 			availableColumns: WorkloadColumns(),
-			want:             []string{NamespaceColumn, ResourceColumn, SecretsColumn},
+			want: []string{
+				NamespaceColumn,
+				ResourceColumn,
+				SecretsColumn,
+			},
 		},
 		{
 			name:             "vuln column only",
-			securityChecks:   []string{types.SecurityCheckVulnerability},
+			scanners:         []string{types.VulnerabilityScanner},
 			components:       []string{},
 			availableColumns: WorkloadColumns(),
-			want:             []string{NamespaceColumn, ResourceColumn, VulnerabilitiesColumn},
+			want: []string{
+				NamespaceColumn,
+				ResourceColumn,
+				VulnerabilitiesColumn,
+			},
 		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			column := ColumnHeading(tt.securityChecks, tt.components, tt.availableColumns)
+			column := ColumnHeading(tt.scanners, tt.components, tt.availableColumns)
 			if !assert.Equal(t, column, tt.want) {
 				t.Error(fmt.Errorf("TestReport_ColumnHeading want %v got %v", tt.want, column))
 			}
