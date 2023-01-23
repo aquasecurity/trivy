@@ -3316,8 +3316,14 @@ spec:
         kind: HelmRepository
         name: trivy-operator
         namespace: flux-system
-      version: 0.0.5
+      version: 0.10.1
   interval: 60m
+  values:
+    trivy:
+      ignoreUnfixed: true
+  install:
+    crds: CreateReplace
+    createNamespace: true
 </code></pre></div></p>
 <p>You can then apply the file to your Kubernetes cluster:
 <div class="highlight"><pre><span></span><code>kubectl apply -f trivy-operator.yaml
