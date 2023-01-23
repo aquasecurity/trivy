@@ -305,9 +305,11 @@ func (p properties) String() string {
 type manifest struct {
 	implementationVersion  string
 	implementationTitle    string
+	implementationVendor   string
 	implementationVendorId string
 	specificationTitle     string
 	specificationVersion   string
+	specificationVendor    string
 	bundleName             string
 	bundleVersion          string
 	bundleSymbolicName     string
@@ -338,12 +340,16 @@ func parseManifest(f *zip.File) (manifest, error) {
 			m.implementationVersion = strings.TrimPrefix(line, "Implementation-Version:")
 		case strings.HasPrefix(line, "Implementation-Title:"):
 			m.implementationTitle = strings.TrimPrefix(line, "Implementation-Title:")
+		case strings.HasPrefix(line, "Implementation-Vendor:"):
+			m.implementationVendor = strings.TrimPrefix(line, "Implementation-Vendor:")
 		case strings.HasPrefix(line, "Implementation-Vendor-Id:"):
 			m.implementationVendorId = strings.TrimPrefix(line, "Implementation-Vendor-Id:")
 		case strings.HasPrefix(line, "Specification-Version:"):
 			m.specificationVersion = strings.TrimPrefix(line, "Specification-Version:")
 		case strings.HasPrefix(line, "Specification-Title:"):
 			m.specificationTitle = strings.TrimPrefix(line, "Specification-Title:")
+		case strings.HasPrefix(line, "Specification-Vendor:"):
+			m.specificationVendor = strings.TrimPrefix(line, "Specification-Vendor:")
 		case strings.HasPrefix(line, "Bundle-Version:"):
 			m.bundleVersion = strings.TrimPrefix(line, "Bundle-Version:")
 		case strings.HasPrefix(line, "Bundle-Name:"):
@@ -409,6 +415,10 @@ func (m manifest) determineGroupID() (string, error) {
 		if idx > 0 {
 			groupID = m.bundleSymbolicName[:idx]
 		}
+	case m.implementationVendor != "":
+		groupID = m.implementationVendor
+	case m.specificationVendor != "":
+		groupID = m.specificationVendor
 	default:
 		return "", xerrors.New("no groupID found")
 	}
