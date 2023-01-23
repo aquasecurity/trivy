@@ -2908,20 +2908,6 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#error-downloading-vulnerability-db" class="md-nav__link">
-    Error downloading vulnerability DB
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#old-db-schema" class="md-nav__link">
-    Old DB schema
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
   <a href="#multiple-trivy-servers" class="md-nav__link">
     Multiple Trivy servers
   </a>
@@ -2938,6 +2924,40 @@
           <li class="md-nav__item">
   <a href="#running-out-of-space-during-image-scans" class="md-nav__link">
     Running out of space during image scans
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#db" class="md-nav__link">
+    DB
+  </a>
+  
+    <nav class="md-nav" aria-label="DB">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#old-db-schema" class="md-nav__link">
+    Old DB schema
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#error-downloading-vulnerability-db" class="md-nav__link">
+    Error downloading vulnerability DB
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#denied" class="md-nav__link">
+    Denied
   </a>
   
 </li>
@@ -3350,20 +3370,6 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#error-downloading-vulnerability-db" class="md-nav__link">
-    Error downloading vulnerability DB
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#old-db-schema" class="md-nav__link">
-    Old DB schema
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
   <a href="#multiple-trivy-servers" class="md-nav__link">
     Multiple Trivy servers
   </a>
@@ -3380,6 +3386,40 @@
           <li class="md-nav__item">
   <a href="#running-out-of-space-during-image-scans" class="md-nav__link">
     Running out of space during image scans
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#db" class="md-nav__link">
+    DB
+  </a>
+  
+    <nav class="md-nav" aria-label="DB">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#old-db-schema" class="md-nav__link">
+    Old DB schema
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#error-downloading-vulnerability-db" class="md-nav__link">
+    Error downloading vulnerability DB
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#denied" class="md-nav__link">
+    Denied
   </a>
   
 </li>
@@ -3522,22 +3562,6 @@ This is because of a limitation of boltdb.</p>
 <p>Bolt obtains a file lock on the data file so multiple processes cannot open the same database at the same time. Opening an already open Bolt database will cause it to hang until the other process closes it.</p>
 </blockquote>
 <p>Reference : <a href="https://github.com/boltdb/bolt#opening-a-database">boltdb: Opening a database</a>.</p>
-<h3 id="error-downloading-vulnerability-db">Error downloading vulnerability DB</h3>
-<div class="admonition error">
-<p class="admonition-title">Error</p>
-<p>FATAL failed to download vulnerability DB</p>
-</div>
-<p>If trivy is running behind corporate firewall, you have to add the following urls to your allowlist.</p>
-<ul>
-<li>ghcr.io</li>
-<li>pkg-containers.githubusercontent.com</li>
-</ul>
-<h3 id="old-db-schema">Old DB schema</h3>
-<div class="admonition error">
-<p class="admonition-title">Error</p>
-<p>--skip-update cannot be specified with the old DB schema.</p>
-</div>
-<p>Trivy v0.23.0 or later requires Trivy DB v2. Please update your local database or follow <a href="../../advanced/air-gap/">the instruction of air-gapped environment</a>.</p>
 <h3 id="multiple-trivy-servers">Multiple Trivy servers</h3>
 <div class="admonition error">
 <p class="admonition-title">Error</p>
@@ -3568,6 +3592,32 @@ write /tmp/fanal-3323732142: no space left on device
 <p>Trivy uses the <code>/tmp</code> directory during image scan, if the image is large or <code>/tmp</code> is of insufficient size then the scan fails You can set the <code>TMPDIR</code> environment variable to use redirect trivy to use a directory with adequate storage.</p>
 <p>Try:</p>
 <div class="highlight"><pre><span></span><code>$ TMPDIR=/my/custom/path trivy image ...
+</code></pre></div>
+<h2 id="db">DB</h2>
+<h3 id="old-db-schema">Old DB schema</h3>
+<div class="admonition error">
+<p class="admonition-title">Error</p>
+<p>--skip-update cannot be specified with the old DB schema.</p>
+</div>
+<p>Trivy v0.23.0 or later requires Trivy DB v2. Please update your local database or follow <a href="../../advanced/air-gap/">the instruction of air-gapped environment</a>.</p>
+<h3 id="error-downloading-vulnerability-db">Error downloading vulnerability DB</h3>
+<div class="admonition error">
+<p class="admonition-title">Error</p>
+<p>FATAL failed to download vulnerability DB</p>
+</div>
+<p>If trivy is running behind corporate firewall, you have to add the following urls to your allowlist.</p>
+<ul>
+<li>ghcr.io</li>
+<li>pkg-containers.githubusercontent.com</li>
+</ul>
+<h3 id="denied">Denied</h3>
+<div class="admonition error">
+<p class="admonition-title">Error</p>
+<p>GET https://ghcr.io/token?scope=repository%3Aaquasecurity%2Ftrivy-db%3Apull&amp;service=ghcr.io: DENIED: denied</p>
+</div>
+<p>Your local GHCR (GitHub Container Registry) token might be expired.
+Please remove the token and try downloading the DB again.</p>
+<div class="highlight"><pre><span></span><code>docker <span class="nb">logout</span> ghcr.io
 </code></pre></div>
 <h2 id="homebrew">Homebrew</h2>
 <h3 id="scope-error">Scope error</h3>
