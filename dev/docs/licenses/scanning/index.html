@@ -3392,8 +3392,8 @@ In addition to package licenses, Trivy scans source code files, Markdown documen
 <h2 id="quick-start">Quick start</h2>
 <p>This section shows how to scan license in container image and filesystem.</p>
 <h3 id="standard-scanning">Standard scanning</h3>
-<p>Specify an image name with <code>--security-checks license</code>.</p>
-<div class="highlight"><pre><span></span><code>$ trivy image --security-checks license --severity UNKNOWN,HIGH,CRITICAL alpine:3.15
+<p>Specify an image name with <code>--scanners license</code>.</p>
+<div class="highlight"><pre><span></span><code>$ trivy image --scanners license --severity UNKNOWN,HIGH,CRITICAL alpine:3.15
 <span class="m">2022</span>-07-13T17:28:39.526+0300    INFO    License scanning is enabled
 
 OS Packages <span class="o">(</span>license<span class="o">)</span>
@@ -3418,7 +3418,7 @@ Total: <span class="m">6</span> <span class="o">(</span>UNKNOWN: <span class="m"
 </code></pre></div>
 <h3 id="full-scanning">Full scanning</h3>
 <p>Specify <code>--license-full</code></p>
-<div class="highlight"><pre><span></span><code>$ trivy image --security-checks license --severity UNKNOWN,HIGH,CRITICAL --license-full grafana/grafana
+<div class="highlight"><pre><span></span><code>$ trivy image --scanners license --severity UNKNOWN,HIGH,CRITICAL --license-full grafana/grafana
 <span class="m">2022</span>-07-13T17:48:40.905+0300    INFO    Full license scanning is enabled
 
 OS Packages <span class="o">(</span>license<span class="o">)</span>
@@ -3475,7 +3475,7 @@ Total: <span class="m">6</span> <span class="o">(</span>UNKNOWN: <span class="m"
 <p>Trivy has number of configuration flags for use with license scanning;</p>
 <h3 id="ignored-licenses">Ignored Licenses</h3>
 <p>Trivy license scanning can ignore licenses that are identified to explicitly remove them from the results using the <code>--ignored-licenses</code> flag;</p>
-<div class="highlight"><pre><span></span><code>$ trivy image --security-checks license --ignored-licenses MPL-2.0,MIT --severity LOW grafana/grafana:latest
+<div class="highlight"><pre><span></span><code>$ trivy image --scanners license --ignored-licenses MPL-2.0,MIT --severity LOW grafana/grafana:latest
 <span class="m">2022</span>-07-13T18:15:28.605Z        INFO    License scanning is enabled
 
 OS Packages <span class="o">(</span>license<span class="o">)</span>

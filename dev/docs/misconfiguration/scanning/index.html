@@ -3264,22 +3264,22 @@ Dockerfile:1
 ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 </code></pre></div>
 </div>
-<p>You can also enable misconfiguration detection in container image, filesystem and git repository scanning via <code>--security-checks config</code>.</p>
-<div class="highlight"><pre><span></span><code>$ trivy image --security-checks config IMAGE_NAME
+<p>You can also enable misconfiguration detection in container image, filesystem and git repository scanning via <code>--scanners config</code>.</p>
+<div class="highlight"><pre><span></span><code>$ trivy image --scanners config IMAGE_NAME
 </code></pre></div>
-<div class="highlight"><pre><span></span><code>$ trivy fs --security-checks config /path/to/dir
+<div class="highlight"><pre><span></span><code>$ trivy fs --scanners config /path/to/dir
 </code></pre></div>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>Misconfiguration detection is not enabled by default in <code>image</code>, <code>fs</code> and <code>repo</code> subcommands.</p>
 </div>
 <p>Unlike the <code>config</code> subcommand, <code>image</code>, <code>fs</code> and <code>repo</code> subcommands can also scan for vulnerabilities and secrets at the same time. 
-You can specify <code>--security-checks vuln,config,secret</code> to enable vulnerability and secret detection as well as misconfiguration detection.</p>
+You can specify <code>--scanners vuln,config,secret</code> to enable vulnerability and secret detection as well as misconfiguration detection.</p>
 <div class="admonition example">
 <p class="admonition-title">Example</p>
 <div class="highlight"><pre><span></span><code>$ ls myapp/
 Dockerfile Pipfile.lock
-$ trivy fs --security-checks vuln,config,secret --severity HIGH,CRITICAL myapp/
+$ trivy fs --scanners vuln,config,secret --severity HIGH,CRITICAL myapp/
 <span class="m">2022</span>-05-16T13:42:21.440+0100    INFO    Number of language-specific files: <span class="m">1</span>
 <span class="m">2022</span>-05-16T13:42:21.440+0100    INFO    Detecting pipenv vulnerabilities...
 <span class="m">2022</span>-05-16T13:42:21.440+0100    INFO    Detected config files: <span class="m">1</span>

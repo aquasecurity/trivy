@@ -3181,7 +3181,7 @@ Scan Flags
       --offline-scan              <span class="k">do</span> not issue API requests to identify dependencies
       --rekor-url string          <span class="o">[</span>EXPERIMENTAL<span class="o">]</span> address of rekor STL server <span class="o">(</span>default <span class="s2">&quot;https://rekor.sigstore.dev&quot;</span><span class="o">)</span>
       --sbom-sources strings      <span class="o">[</span>EXPERIMENTAL<span class="o">]</span> try to retrieve SBOM from the specified sources <span class="o">(</span>rekor<span class="o">)</span>
-      --security-checks strings   comma-separated list of what security issues to detect <span class="o">(</span>vuln,config,secret,license<span class="o">)</span> <span class="o">(</span>default <span class="o">[</span>vuln,secret<span class="o">])</span>
+      --scanners strings          comma-separated list of what security issues to detect <span class="o">(</span>vuln,config,secret,license<span class="o">)</span> <span class="o">(</span>default <span class="o">[</span>vuln,secret<span class="o">])</span>
       --skip-dirs strings         specify the directories where the traversal is skipped
       --skip-files strings        specify the file paths to skip traversal
 
@@ -3220,7 +3220,7 @@ DB Flags
 <span class="s1">      --helm-set-file strings     specify Helm values from respective files specified via the command line (can specify multiple or separate values with commas: key1=path1,key2=path2)</span>
 <span class="s1">      --helm-set-string strings   specify Helm string values on the command line (can specify multiple or separate values with commas: key1=val1,key2=val2)</span>
 <span class="s1">      --helm-values strings       specify paths to override the Helm values.yaml files</span>
-<span class="s1">      --include-non-failures      include successes and exceptions, available with &#39;</span>--security-checks config<span class="err">&#39;</span>
+<span class="s1">      --include-non-failures      include successes and exceptions, available with &#39;</span>--scanners config<span class="err">&#39;</span>
       --tf-vars strings           specify paths to override the Terraform tfvars files
 
 Secret Flags

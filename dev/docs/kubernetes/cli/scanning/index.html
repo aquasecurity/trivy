@@ -3237,10 +3237,10 @@
 <p>Filter by severity:</p>
 <div class="highlight"><pre><span></span><code>$ trivy k8s --severity=CRITICAL --report=all cluster
 </code></pre></div>
-<p>Filter by security check (Vulnerabilities, Secrets or Misconfigurations):</p>
-<div class="highlight"><pre><span></span><code>$ trivy k8s --security-checks=secret --report=summary cluster
+<p>Filter by scanners (Vulnerabilities, Secrets or Misconfigurations):</p>
+<div class="highlight"><pre><span></span><code>$ trivy k8s --scanners=secret --report=summary cluster
 # or
-$ trivy k8s --security-checks=config --report=summary cluster
+$ trivy k8s --scanners=config --report=summary cluster
 </code></pre></div>
 <p>Scan a specific namespace:</p>
 <div class="highlight"><pre><span></span><code>$ trivy k8s -n kube-system --report=summary all
@@ -3439,11 +3439,11 @@ $ trivy k8s all -n kube-system --report summary # scan all components under kube
 Severities: C=CRITICAL H=HIGH M=MEDIUM L=LOW U=UNKNOWN
 </code></pre></div>
 <p>The infra checks are based on CIS Benchmarks recommendations for kubernetes.</p>
-<p>If you want filter only for the infra checks, you can use the flag <code>--components</code> along with the <code>--security-checks=config</code></p>
-<div class="highlight"><pre><span></span><code>$ trivy k8s cluster --report summary --components=infra --security-checks=config # scan only infra
+<p>If you want filter only for the infra checks, you can use the flag <code>--components</code> along with the <code>--scanners=config</code></p>
+<div class="highlight"><pre><span></span><code>$ trivy k8s cluster --report summary --components=infra --scanners=config # scan only infra
 </code></pre></div>
 <p>Or, to filter for all other checks besides the infra checks, you can:</p>
-<div class="highlight"><pre><span></span><code>$ trivy k8s cluster --report summary --components=workload --security-checks=config # scan all components besides infra
+<div class="highlight"><pre><span></span><code>$ trivy k8s cluster --report summary --components=workload --scanners=config # scan all components besides infra
 </code></pre></div>
 
               

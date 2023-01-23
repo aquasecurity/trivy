@@ -3230,7 +3230,7 @@ Note that XML format is not supported at the moment.</p>
 </ul>
 <p>By default, <code>--format cyclonedx</code> represents SBOM and doesn't include vulnerabilities in the CycloneDX output.</p>
 <div class="highlight"><pre><span></span><code>$ trivy image --format cyclonedx --output result.json alpine:3.15
-2022-07-19T07:47:27.624Z        INFO    &quot;--format cyclonedx&quot; disables security checks. Specify &quot;--security-checks vuln&quot; explicitly if you want to include vulnerabilities in the CycloneDX report.
+2022-07-19T07:47:27.624Z        INFO    &quot;--format cyclonedx&quot; disables security scanning. Specify &quot;--scanners vuln&quot; explicitly if you want to include vulnerabilities in the CycloneDX report.
 </code></pre></div>
 <details>
 <summary>Result</summary>
@@ -3451,8 +3451,8 @@ Note that XML format is not supported at the moment.</p>
 
 </details>
 
-<p>If you want to include vulnerabilities, you can enable vulnerability scanning via <code>--security-checks vuln</code>.</p>
-<div class="highlight"><pre><span></span><code>$ trivy image --security-checks vuln --format cyclonedx --output result.json alpine:3.15
+<p>If you want to include vulnerabilities, you can enable vulnerability scanning via <code>--scanners vuln</code>.</p>
+<div class="highlight"><pre><span></span><code>$ trivy image --scanners vuln --format cyclonedx --output result.json alpine:3.15
 </code></pre></div>
 <h2 id="scanning">Scanning</h2>
 <p>Trivy can take CycloneDX as an input and scan for vulnerabilities.

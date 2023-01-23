@@ -3207,7 +3207,7 @@
 <li>See <a href="ecosystem/">Ecosystem</a> for more</li>
 </ul>
 <h3 id="general-usage">General usage</h3>
-<div class="highlight"><pre><span></span><code>trivy &lt;target&gt; <span class="o">[</span>--security-checks &lt;scanner1,scanner2&gt;<span class="o">]</span> &lt;subject&gt;
+<div class="highlight"><pre><span></span><code>trivy &lt;target&gt; <span class="o">[</span>--scanners &lt;scanner1,scanner2&gt;<span class="o">]</span> &lt;subject&gt;
 </code></pre></div>
 <p>Examples:</p>
 <div class="highlight"><pre><span></span><code>trivy image python:3.4-alpine
@@ -3224,7 +3224,7 @@
 
 </details>
 
-<div class="highlight"><pre><span></span><code>trivy fs --security-checks vuln,secret,config myproject/
+<div class="highlight"><pre><span></span><code>trivy fs --scanners vuln,secret,config myproject/
 </code></pre></div>
 <details>
 <summary>Result</summary>

@@ -3193,7 +3193,7 @@ Examples:
 
 Scan Flags
       --offline-scan             <span class="k">do</span> not issue API requests to identify dependencies
-      --security-checks string   comma-separated list of what security issues to detect <span class="o">(</span>vuln,config,secret<span class="o">)</span> <span class="o">(</span>default <span class="s2">&quot;vuln,secret&quot;</span><span class="o">)</span>
+      --scanners string          comma-separated list of what security issues to detect <span class="o">(</span>vuln,config,secret<span class="o">)</span> <span class="o">(</span>default <span class="s2">&quot;vuln,secret&quot;</span><span class="o">)</span>
       --skip-dirs strings        specify the directories where the traversal is skipped
       --skip-files strings       specify the file paths to skip traversal
 
@@ -3233,8 +3233,8 @@ DB Flags
 <span class="s1">Misconfiguration Flags</span>
 <span class="s1">      --config-data strings         specify paths from which data for the Rego policies will be recursively loaded</span>
 <span class="s1">      --config-policy strings       specify paths to the Rego policy files directory, applying config files</span>
-<span class="s1">      --file-patterns strings       specify config file patterns, available with &#39;</span>--security-checks config<span class="s1">&#39;</span>
-<span class="s1">      --include-non-failures        include successes and exceptions, available with &#39;</span>--security-checks config<span class="err">&#39;</span>
+<span class="s1">      --file-patterns strings       specify config file patterns, available with &#39;</span>--scanners config<span class="s1">&#39;</span>
+<span class="s1">      --include-non-failures        include successes and exceptions, available with &#39;</span>--scanners config<span class="err">&#39;</span>
       --policy-namespaces strings   Rego namespaces
       --trace                       <span class="nb">enable</span> more verbose trace output <span class="k">for</span> custom queries
 

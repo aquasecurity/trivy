@@ -3314,11 +3314,11 @@
 See <a href="https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ebs-accessing-snapshot.html#ebsapi-elements">the AWS documentation</a> for the detail.</p>
 </div>
 <h3 id="example">Example</h3>
-<div class="highlight"><pre><span></span><code>$ trivy vm --security-checks vuln ami:ami-0123456789abcdefg
+<div class="highlight"><pre><span></span><code>$ trivy vm --scanners vuln ami:ami-0123456789abcdefg
 </code></pre></div>
 <div class="admonition tip">
 <p class="admonition-title">Tip</p>
-<p>The scanning could be faster if you enable only vulnerability scanning (<code>--security-checks vuln</code>) because Trivy tries to download only necessary blocks for vulnerability detection.</p>
+<p>The scanning could be faster if you enable only vulnerability scanning (<code>--scanners vuln</code>) because Trivy tries to download only necessary blocks for vulnerability detection.</p>
 </div>
 <p>If you want to scan a AMI of non-default setting region, you can set any region via <code>--aws-region</code> option.</p>
 <div class="highlight"><pre><span></span><code>$ trivy vm --aws-region ap-northeast-1 ami:ami-0123456789abcdefg
@@ -3340,12 +3340,12 @@ See <a href="https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ebs-accessing-s
 See <a href="https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ebs-accessing-snapshot.html#ebsapi-elements">the AWS documentation</a> for the detail.</p>
 </div>
 <h3 id="example_1">Example</h3>
-<div class="highlight"><pre><span></span><code>$ trivy vm --security-checks vuln ebs:snap-0123456789abcdefg
+<div class="highlight"><pre><span></span><code>$ trivy vm --scanners vuln ebs:snap-0123456789abcdefg
 </code></pre></div>
 <div class="admonition tip">
 <p class="admonition-title">Tip</p>
 </div>
-<p>The scanning could be faster if you enable only vulnerability scanning (<code>--security-checks vuln</code>) because Trivy tries to download only necessary blocks for vulnerability detection.</p>
+<p>The scanning could be faster if you enable only vulnerability scanning (<code>--scanners vuln</code>) because Trivy tries to download only necessary blocks for vulnerability detection.</p>
 <p>If you want to scan an EBS Snapshot of non-default setting region, you can set any region via <code>--aws-region</code> option.</p>
 <div class="highlight"><pre><span></span><code>$ trivy vm --aws-region ap-northeast-1 ebs:ebs-0123456789abcdefg
 </code></pre></div>
