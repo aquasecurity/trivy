@@ -70,5 +70,5 @@ trivy k8s --report summary cluster
 
 </details>
 
-[Ecosystem]: ./ecosystem/index.md
-[Installation]: getting-started/installation.md
+[Ecosystem]: ../ecosystem/index.md
+[Installation]: installation.md
