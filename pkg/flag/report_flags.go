@@ -71,7 +71,7 @@ var (
 		Value:      0,
 		Usage:      "specify exit code when any security issues are found",
 	}
-	ExitOnEoslFlag = Flag{
+	ExitOnEOSLFlag = Flag{
 		Name:       "exit-on-eosl",
 		ConfigName: "exit-on-eosl",
 		Value:      false,
@@ -110,7 +110,7 @@ type ReportFlagGroup struct {
 	IgnoreFile     *Flag
 	IgnorePolicy   *Flag
 	ExitCode       *Flag
-	ExitOnEosl     *Flag
+	ExitOnEOSL     *Flag
 	Output         *Flag
 	Severity       *Flag
 	Compliance     *Flag
@@ -124,7 +124,7 @@ type ReportOptions struct {
 	ListAllPkgs    bool
 	IgnoreFile     string
 	ExitCode       int
-	ExitOnEosl     bool
+	ExitOnEOSL     bool
 	IgnorePolicy   string
 	Output         io.Writer
 	Severities     []dbTypes.Severity
@@ -141,7 +141,7 @@ func NewReportFlagGroup() *ReportFlagGroup {
 		IgnoreFile:     &IgnoreFileFlag,
 		IgnorePolicy:   &IgnorePolicyFlag,
 		ExitCode:       &ExitCodeFlag,
-		ExitOnEosl:     &ExitOnEoslFlag,
+		ExitOnEOSL:     &ExitOnEOSLFlag,
 		Output:         &OutputFlag,
 		Severity:       &SeverityFlag,
 		Compliance:     &ComplianceFlag,
@@ -154,19 +154,19 @@ func (f *ReportFlagGroup) Name() string {
 
 func (f *ReportFlagGroup) Flags() []*Flag {
 	return []*Flag{f.Format, f.ReportFormat, f.Template, f.DependencyTree, f.ListAllPkgs, f.IgnoreFile,
-		f.IgnorePolicy, f.ExitCode, f.ExitOnEosl, f.Output, f.Severity, f.Compliance}
+		f.IgnorePolicy, f.ExitCode, f.ExitOnEOSL, f.Output, f.Severity, f.Compliance}
 }
 
 func (f *ReportFlagGroup) ToOptions(out io.Writer) (ReportOptions, error) {
 	exitCode := getInt(f.ExitCode)
-	exitOnEosl := getBool(f.ExitOnEosl)
+	exitOnEOSL := getBool(f.ExitOnEOSL)
 	format := getString(f.Format)
 	template := getString(f.Template)
 	dependencyTree := getBool(f.DependencyTree)
 	listAllPkgs := getBool(f.ListAllPkgs)
 	output := getString(f.Output)
 
-	if exitOnEosl && exitCode == 0 {
+	if exitOnEOSL && exitCode == 0 {
 		log.Logger.Warn("'--exit-on-eosl' is ignored because '--exit-code' is 0 or not specified. Use '--exit-on-eosl' option with non-zero '--exit-code' option.")
 	}
 
@@ -226,8 +226,8 @@ func (f *ReportFlagGroup) ToOptions(out io.Writer) (ReportOptions, error) {
 		DependencyTree: dependencyTree,
 		ListAllPkgs:    listAllPkgs,
 		IgnoreFile:     getString(f.IgnoreFile),
-		ExitCode:       getInt(f.ExitCode),
-		ExitOnEosl:     getBool(f.ExitOnEosl),
+		ExitCode:       exitCode,
+		ExitOnEOSL:     exitOnEOSL,
 		IgnorePolicy:   getString(f.IgnorePolicy),
 		Output:         out,
 		Severities:     splitSeverity(getStringSlice(f.Severity)),

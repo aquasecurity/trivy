@@ -427,7 +427,7 @@ func Run(ctx context.Context, opts flag.Options, targetKind TargetKind) (err err
 		return xerrors.Errorf("report error: %w", err)
 	}
 
-	ExitOnEosl(opts, report.Metadata)
+	exitOnEosl(opts, report.Metadata)
 	Exit(opts, report.Results.Failed())
 
 	return nil
@@ -610,9 +610,9 @@ func Exit(opts flag.Options, failedResults bool) {
 	}
 }
 
-func ExitOnEosl(opts flag.Options, m types.Metadata) {
-	if opts.ReportOptions.ExitOnEosl && opts.ExitCode != 0 && m.OS != nil && m.OS.Eosl {
-		os.Exit(opts.ExitCode)
+func exitOnEosl(opts flag.Options, m types.Metadata) {
+	if opts.ReportOptions.ExitOnEOSL && m.OS != nil && m.OS.Eosl {
+		Exit(opts, true)
 	}
 }
 
