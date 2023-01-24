@@ -459,14 +459,11 @@ func findLocation(start, end int, content []byte) (int, int, types.Code, string)
 		lineEnd += start
 	}
 
-	var matchLine string
 	if lineEnd-lineStart > 100 {
-		truncatedLineStart := lo.Ternary(start-30 < 0, 0, start-30)
-		truncatedLineEnd := lo.Ternary(end+20 > len(content), len(content), end+20)
-		matchLine = string(content[truncatedLineStart:truncatedLineEnd])
-	} else {
-		matchLine = string(content[lineStart:lineEnd])
+		lineStart = lo.Ternary(start-30 < 0, 0, start-30)
+		lineEnd = lo.Ternary(end+20 > len(content), len(content), end+20)
 	}
+	matchLine := string(content[lineStart:lineEnd])
 	endLineNum := startLineNum + bytes.Count(content[start:end], lineSep)
 
 	var code types.Code
