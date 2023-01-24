@@ -75,8 +75,15 @@ func TestVM(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			osArgs := []string{
-				"--cache-dir", cacheDir, "vm", "--security-checks", "vuln", "-q", "--skip-db-update",
-				"--format", tt.args.format,
+				"--cache-dir",
+				cacheDir,
+				"vm",
+				"--scanners",
+				"vuln",
+				"-q",
+				"--skip-db-update",
+				"--format",
+				tt.args.format,
 			}
 
 			tmpDir := t.TempDir()

@@ -8,6 +8,7 @@ import (
 	"sync"
 	"testing"
 
+	v1 "github.com/google/go-containerregistry/pkg/v1"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"golang.org/x/sync/semaphore"
@@ -33,12 +34,21 @@ func (mockConfigAnalyzer) Required(targetOS types.OS) bool {
 	return targetOS.Family == "alpine"
 }
 
-func (mockConfigAnalyzer) Analyze(targetOS types.OS, configBlob []byte) (types.Packages, error) {
-	if string(configBlob) != `foo` {
+func (mockConfigAnalyzer) Analyze(input analyzer.ConfigAnalysisInput) (*analyzer.AnalysisResult, error) {
+	if input.Config == nil {
 		return nil, errors.New("error")
 	}
-	return []types.Package{
-		{Name: "musl", Version: "1.1.24-r2"},
+	return &analyzer.AnalysisResult{
+		PackageInfos: []types.PackageInfo{
+			{
+				Packages: types.Packages{
+					{
+						Name:    "musl",
+						Version: "1.1.24-r2",
+					},
+				},
+			},
+		},
 	}, nil
 }
 
@@ -51,7 +61,9 @@ func (mockConfigAnalyzer) Version() int {
 }
 
 func TestMain(m *testing.M) {
-	analyzer.RegisterConfigAnalyzer(mockConfigAnalyzer{})
+	mock := mockConfigAnalyzer{}
+	analyzer.RegisterConfigAnalyzer(mock)
+	defer analyzer.DeregisterConfigAnalyzer(mock.Type())
 	os.Exit(m.Run())
 }
 
@@ -82,7 +94,10 @@ func TestAnalysisResult_Merge(t *testing.T) {
 					{
 						FilePath: "var/lib/dpkg/status.d/libc",
 						Packages: []types.Package{
-							{Name: "libc", Version: "1.2.3"},
+							{
+								Name:    "libc",
+								Version: "1.2.3",
+							},
 						},
 					},
 				},
@@ -105,7 +120,10 @@ func TestAnalysisResult_Merge(t *testing.T) {
 						{
 							FilePath: "var/lib/dpkg/status.d/openssl",
 							Packages: []types.Package{
-								{Name: "openssl", Version: "1.1.1"},
+								{
+									Name:    "openssl",
+									Version: "1.1.1",
+								},
 							},
 						},
 					},
@@ -132,13 +150,19 @@ func TestAnalysisResult_Merge(t *testing.T) {
 					{
 						FilePath: "var/lib/dpkg/status.d/libc",
 						Packages: []types.Package{
-							{Name: "libc", Version: "1.2.3"},
+							{
+								Name:    "libc",
+								Version: "1.2.3",
+							},
 						},
 					},
 					{
 						FilePath: "var/lib/dpkg/status.d/openssl",
 						Packages: []types.Package{
-							{Name: "openssl", Version: "1.1.1"},
+							{
+								Name:    "openssl",
+								Version: "1.1.1",
+							},
 						},
 					},
 				},
@@ -517,17 +541,16 @@ func TestAnalyzeFile(t *testing.T) {
 }
 
 func TestAnalyzeConfig(t *testing.T) {
-
 	type args struct {
 		targetOS          types.OS
-		configBlob        []byte
+		config            *v1.ConfigFile
 		disabledAnalyzers []analyzer.Type
 		filePatterns      []string
 	}
 	tests := []struct {
 		name string
 		args args
-		want []types.Package
+		want *analyzer.AnalysisResult
 	}{
 		{
 			name: "happy path",
@@ -536,10 +559,22 @@ func TestAnalyzeConfig(t *testing.T) {
 					Family: "alpine",
 					Name:   "3.11.6",
 				},
-				configBlob: []byte("foo"),
+				config: &v1.ConfigFile{
+					OS: "linux",
+				},
 			},
-			want: []types.Package{
-				{Name: "musl", Version: "1.1.24-r2"},
+			want: &analyzer.AnalysisResult{
+				Files: map[types.HandlerType][]types.File{},
+				PackageInfos: []types.PackageInfo{
+					{
+						Packages: []types.Package{
+							{
+								Name:    "musl",
+								Version: "1.1.24-r2",
+							},
+						},
+					},
+				},
 			},
 		},
 		{
@@ -549,8 +584,11 @@ func TestAnalyzeConfig(t *testing.T) {
 					Family: "debian",
 					Name:   "9.2",
 				},
-				configBlob: []byte("foo"),
+				config: &v1.ConfigFile{
+					OS: "linux",
+				},
 			},
+			want: analyzer.NewAnalysisResult(),
 		},
 		{
 			name: "Analyze returns an error",
@@ -559,8 +597,8 @@ func TestAnalyzeConfig(t *testing.T) {
 					Family: "alpine",
 					Name:   "3.11.6",
 				},
-				configBlob: []byte("bar"),
 			},
+			want: analyzer.NewAnalysisResult(),
 		},
 	}
 	for _, tt := range tests {
@@ -570,7 +608,7 @@ func TestAnalyzeConfig(t *testing.T) {
 				DisabledAnalyzers: tt.args.disabledAnalyzers,
 			})
 			require.NoError(t, err)
-			got := a.AnalyzeImageConfig(tt.args.targetOS, tt.args.configBlob)
+			got := a.AnalyzeImageConfig(tt.args.targetOS, tt.args.config)
 			assert.Equal(t, tt.want, got)
 		})
 	}
@@ -594,8 +632,12 @@ func TestAnalyzer_AnalyzerVersions(t *testing.T) {
 			},
 		},
 		{
-			name:     "disable analyzers",
-			disabled: []analyzer.Type{analyzer.TypeAlpine, analyzer.TypeApkRepo, analyzer.TypeUbuntu},
+			name: "disable analyzers",
+			disabled: []analyzer.Type{
+				analyzer.TypeAlpine,
+				analyzer.TypeApkRepo,
+				analyzer.TypeUbuntu,
+			},
 			want: map[string]int{
 				"apk":     2,
 				"bundler": 1,
@@ -630,8 +672,11 @@ func TestAnalyzer_ImageConfigAnalyzerVersions(t *testing.T) {
 			},
 		},
 		{
-			name:     "disable analyzers",
-			disabled: []analyzer.Type{analyzer.TypeAlpine, analyzer.TypeApkCommand},
+			name: "disable analyzers",
+			disabled: []analyzer.Type{
+				analyzer.TypeAlpine,
+				analyzer.TypeApkCommand,
+			},
 			want: map[string]int{
 				"test": 1,
 			},

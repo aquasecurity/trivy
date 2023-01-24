@@ -11,7 +11,7 @@ var (
 		Name:       "include-non-failures",
 		ConfigName: "misconfiguration.include-non-failures",
 		Value:      false,
-		Usage:      "include successes and exceptions, available with '--security-checks config'",
+		Usage:      "include successes and exceptions, available with '--scanners config'",
 	}
 	HelmValuesFileFlag = Flag{
 		Name:       "helm-values",

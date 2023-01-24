@@ -37,28 +37,28 @@ $ trivy config [YOUR_IaC_DIRECTORY]
     ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
     ```
 
-You can also enable misconfiguration detection in container image, filesystem and git repository scanning via `--security-checks config`.
+You can also enable misconfiguration detection in container image, filesystem and git repository scanning via `--scanners config`.
 
 ```bash
-$ trivy image --security-checks config IMAGE_NAME
+$ trivy image --scanners config IMAGE_NAME
 ```
 
 ```bash
-$ trivy fs --security-checks config /path/to/dir
+$ trivy fs --scanners config /path/to/dir
 ```
 
 !!! note
     Misconfiguration detection is not enabled by default in `image`, `fs` and `repo` subcommands.
 
 Unlike the `config` subcommand, `image`, `fs` and `repo` subcommands can also scan for vulnerabilities and secrets at the same time. 
-You can specify `--security-checks vuln,config,secret` to enable vulnerability and secret detection as well as misconfiguration detection.
+You can specify `--scanners vuln,config,secret` to enable vulnerability and secret detection as well as misconfiguration detection.
 
 
 !!! example
     ``` bash
     $ ls myapp/
     Dockerfile Pipfile.lock
-    $ trivy fs --security-checks vuln,config,secret --severity HIGH,CRITICAL myapp/
+    $ trivy fs --scanners vuln,config,secret --severity HIGH,CRITICAL myapp/
     2022-05-16T13:42:21.440+0100	INFO	Number of language-specific files: 1
     2022-05-16T13:42:21.440+0100	INFO	Detecting pipenv vulnerabilities...
     2022-05-16T13:42:21.440+0100	INFO	Detected config files: 1

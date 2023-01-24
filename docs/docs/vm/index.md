@@ -16,7 +16,7 @@ To scan VM images, you can use the `vm` subcommand.
 Pass the path to your local VM image file.
 
 ```bash
-$ trivy vm --security-checks vuln disk.vmdk
+$ trivy vm --scanners vuln disk.vmdk
 ```
 
 <details>

@@ -38,7 +38,7 @@ func WithClock(clock clock.Clock) option {
 
 // Scanner implements the Rocky Linux scanner
 type Scanner struct {
-	vs rocky.VulnSrc
+	vs *rocky.VulnSrc
 	*options
 }
 
@@ -94,6 +94,7 @@ func (s *Scanner) Detect(osVer string, _ *ftypes.Repository, pkgs []ftypes.Packa
 					Ref:              pkg.Ref,
 					Layer:            pkg.Layer,
 					DataSource:       adv.DataSource,
+					Custom:           adv.Custom,
 				}
 				vulns = append(vulns, vuln)
 			}

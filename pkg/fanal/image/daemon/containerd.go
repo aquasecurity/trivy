@@ -122,7 +122,7 @@ func ContainerdImage(ctx context.Context, imageName string) (Image, func(), erro
 
 	insp, history, ref, err := inspect(ctx, img, ref)
 	if err != nil {
-		return nil, nil, xerrors.Errorf("inspect error: %w", err)
+		return nil, cleanup, xerrors.Errorf("inspect error: %w", err)
 	}
 
 	return &image{

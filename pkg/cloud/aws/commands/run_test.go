@@ -8,11 +8,10 @@ import (
 	"testing"
 	"time"
 
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
-
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/flag"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func Test_Run(t *testing.T) {
@@ -28,14 +27,17 @@ func Test_Run(t *testing.T) {
 		regoPolicy   string
 	}{
 		{
-			name:      "fail without region",
-			options:   flag.Options{},
+			name: "fail without region",
+			options: flag.Options{
+				RegoOptions: flag.RegoOptions{SkipPolicyUpdate: true},
+			},
 			want:      "",
 			expectErr: true,
 		},
 		{
 			name: "fail without creds",
 			options: flag.Options{
+				RegoOptions: flag.RegoOptions{SkipPolicyUpdate: true},
 				AWSOptions: flag.AWSOptions{
 					Region: "us-east-1",
 				},
@@ -46,6 +48,7 @@ func Test_Run(t *testing.T) {
 		{
 			name: "try to call aws if cache is expired",
 			options: flag.Options{
+				RegoOptions: flag.RegoOptions{SkipPolicyUpdate: true},
 				AWSOptions: flag.AWSOptions{
 					Region:   "us-east-1",
 					Services: []string{"s3"},
@@ -61,6 +64,7 @@ func Test_Run(t *testing.T) {
 		{
 			name: "succeed with cached infra",
 			options: flag.Options{
+				RegoOptions: flag.RegoOptions{SkipPolicyUpdate: true},
 				AWSOptions: flag.AWSOptions{
 					Region:   "us-east-1",
 					Services: []string{"s3"},

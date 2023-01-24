@@ -58,7 +58,7 @@ This option affects only vulnerability scanning. The vulnerability database and 
 If you want to skip them as well, you can try `--skip-update` and `--skip-policy-update`.
 **Note that a number of vulnerabilities might be fewer than without the `--offline-scan` option.**
 
-The second, more scalable, option is the place Trivy behind a rate-limiting forward-proxy to the Maven Central API.
+The second, more scalable, option is to place Trivy behind a rate-limiting forward-proxy to the Maven Central API.
 One way to achieve this is to use nginx. You can use the following nginx config to enable both rate-limiting and caching (the caching greatly reduces the number of calls to the Maven Central API, especially if you are scanning a lot of similar images):
 
 ```nginx
@@ -90,23 +90,6 @@ This is because of a limitation of boltdb.
 Reference : [boltdb: Opening a database][boltdb].
 
 [boltdb]: https://github.com/boltdb/bolt#opening-a-database
-
-### Error downloading vulnerability DB
-
-!!! error
-    FATAL failed to download vulnerability DB
-
-If trivy is running behind corporate firewall, you have to add the following urls to your allowlist.
-
-- ghcr.io
-- pkg-containers.githubusercontent.com
-
-### Old DB schema
-
-!!! error
-    --skip-update cannot be specified with the old DB schema.
-
-Trivy v0.23.0 or later requires Trivy DB v2. Please update your local database or follow [the instruction of air-gapped environment][air-gapped].
 
 ### Multiple Trivy servers
 
@@ -149,6 +132,37 @@ Try:
 ```
 $ TMPDIR=/my/custom/path trivy image ...
 ```
+
+## DB
+### Old DB schema
+
+!!! error
+    --skip-update cannot be specified with the old DB schema.
+
+Trivy v0.23.0 or later requires Trivy DB v2. Please update your local database or follow [the instruction of air-gapped environment][air-gapped].
+
+### Error downloading vulnerability DB
+
+!!! error
+    FATAL failed to download vulnerability DB
+
+If trivy is running behind corporate firewall, you have to add the following urls to your allowlist.
+
+- ghcr.io
+- pkg-containers.githubusercontent.com
+
+### Denied
+
+!!! error
+    GET https://ghcr.io/token?scope=repository%3Aaquasecurity%2Ftrivy-db%3Apull&service=ghcr.io: DENIED: denied
+
+Your local GHCR (GitHub Container Registry) token might be expired.
+Please remove the token and try downloading the DB again.
+
+```shell
+docker logout ghcr.io
+```
+
 
 ## Homebrew
 ### Scope error

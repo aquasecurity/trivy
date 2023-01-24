@@ -29,13 +29,13 @@ const (
 )
 
 type Option struct {
-	Format         string
-	Report         string
-	Output         io.Writer
-	Severities     []dbTypes.Severity
-	ColumnHeading  []string
-	SecurityChecks []string
-	Components     []string
+	Format        string
+	Report        string
+	Output        io.Writer
+	Severities    []dbTypes.Severity
+	ColumnHeading []string
+	Scanners      []string
+	Components    []string
 }
 
 // Report represents a kubernetes scan report
@@ -135,10 +135,13 @@ func Write(report Report, option Option) error {
 
 	switch option.Format {
 	case jsonFormat:
-		jwriter := JSONWriter{Output: option.Output, Report: option.Report}
+		jwriter := JSONWriter{
+			Output: option.Output,
+			Report: option.Report,
+		}
 		return jwriter.Write(report)
 	case tableFormat:
-		separatedReports := separateMisconfigReports(report, option.SecurityChecks, option.Components)
+		separatedReports := separateMisconfigReports(report, option.Scanners, option.Components)
 
 		if option.Report == summaryReport {
 			target := fmt.Sprintf("Summary Report for %s", report.ClusterName)
@@ -150,7 +153,7 @@ func Write(report Report, option Option) error {
 				Output:        option.Output,
 				Report:        option.Report,
 				Severities:    option.Severities,
-				ColumnHeading: ColumnHeading(option.SecurityChecks, option.Components, r.columns),
+				ColumnHeading: ColumnHeading(option.Scanners, option.Components, r.columns),
 			}
 
 			if err := writer.Write(r.report); err != nil {
@@ -169,11 +172,11 @@ type reports struct {
 	columns []string
 }
 
-// separateMisconfigReports returns 3 reports based on securityChecks and components flags,
+// separateMisconfigReports returns 3 reports based on scanners and components flags,
 // - misconfiguration report
 // - rbac report
 // - infra checks report
-func separateMisconfigReports(k8sReport Report, securityChecks, components []string) []reports {
+func separateMisconfigReports(k8sReport Report, scanners, components []string) []reports {
 
 	workloadMisconfig := make([]Resource, 0)
 	infraMisconfig := make([]Resource, 0)
@@ -181,7 +184,7 @@ func separateMisconfigReports(k8sReport Report, securityChecks, components []str
 
 	for _, misConfig := range k8sReport.Misconfigurations {
 		switch {
-		case slices.Contains(securityChecks, types.SecurityCheckRbac) && rbacResource(misConfig):
+		case slices.Contains(scanners, types.RBACScanner) && rbacResource(misConfig):
 			rbacAssessment = append(rbacAssessment, misConfig)
 		case infraResource(misConfig):
 			workload, infra := splitInfraAndWorkloadResources(misConfig)
@@ -194,7 +197,7 @@ func separateMisconfigReports(k8sReport Report, securityChecks, components []str
 				workloadMisconfig = append(workloadMisconfig, workload)
 			}
 
-		case slices.Contains(securityChecks, types.SecurityCheckConfig) && !rbacResource(misConfig):
+		case slices.Contains(scanners, types.MisconfigScanner) && !rbacResource(misConfig):
 			if slices.Contains(components, workloadComponent) {
 				workloadMisconfig = append(workloadMisconfig, misConfig)
 			}
@@ -203,7 +206,7 @@ func separateMisconfigReports(k8sReport Report, securityChecks, components []str
 
 	r := make([]reports, 0)
 
-	if shouldAddWorkloadReport(securityChecks) {
+	if shouldAddWorkloadReport(scanners) {
 		workloadReport := Report{
 			SchemaVersion:     0,
 			ClusterName:       k8sReport.ClusterName,
@@ -215,11 +218,14 @@ func separateMisconfigReports(k8sReport Report, securityChecks, components []str
 		if (slices.Contains(components, workloadComponent) &&
 			len(workloadMisconfig) > 0) ||
 			len(k8sReport.Vulnerabilities) > 0 {
-			r = append(r, reports{report: workloadReport, columns: WorkloadColumns()})
+			r = append(r, reports{
+				report:  workloadReport,
+				columns: WorkloadColumns(),
+			})
 		}
 	}
 
-	if slices.Contains(securityChecks, types.SecurityCheckRbac) && len(rbacAssessment) > 0 {
+	if slices.Contains(scanners, types.RBACScanner) && len(rbacAssessment) > 0 {
 		r = append(r, reports{
 			report: Report{
 				SchemaVersion:     0,
@@ -231,7 +237,7 @@ func separateMisconfigReports(k8sReport Report, securityChecks, components []str
 		})
 	}
 
-	if slices.Contains(securityChecks, types.SecurityCheckConfig) &&
+	if slices.Contains(scanners, types.MisconfigScanner) &&
 		slices.Contains(components, infraComponent) &&
 		len(infraMisconfig) > 0 {
 
@@ -357,8 +363,8 @@ func copyResult(r types.Result, misconfigs []types.DetectedMisconfiguration) typ
 	}
 }
 
-func shouldAddWorkloadReport(securityChecks []string) bool {
-	return slices.Contains(securityChecks, types.SecurityCheckConfig) ||
-		slices.Contains(securityChecks, types.SecurityCheckVulnerability) ||
-		slices.Contains(securityChecks, types.SecurityCheckSecret)
+func shouldAddWorkloadReport(scanners []string) bool {
+	return slices.Contains(scanners, types.MisconfigScanner) ||
+		slices.Contains(scanners, types.VulnerabilityScanner) ||
+		slices.Contains(scanners, types.SecretScanner)
 }

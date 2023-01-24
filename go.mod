@@ -1,6 +1,6 @@
 module github.com/aquasecurity/trivy
 
-go 1.19
+go 1.18
 
 require (
 	github.com/CycloneDX/cyclonedx-go v0.7.0
@@ -9,7 +9,7 @@ require (
 	github.com/alicebob/miniredis/v2 v2.23.0
 	github.com/aquasecurity/bolt-fixtures v0.0.0-20200903104109-d34e7f983986
 	github.com/aquasecurity/defsec v0.82.7-0.20230103191626-4f3187c78d6b
-	github.com/aquasecurity/go-dep-parser v0.0.0-20230105081339-fe9e63bf16bf
+	github.com/aquasecurity/go-dep-parser v0.0.0-20230115135733-3be7cb085121
 	github.com/aquasecurity/go-gem-version v0.0.0-20201115065557-8eed6fe000ce
 	github.com/aquasecurity/go-npm-version v0.0.0-20201110091526-0b796d180798
 	github.com/aquasecurity/go-pep440-version v0.0.0-20210121094942-22b2f8951d46
@@ -19,7 +19,7 @@ require (
 	github.com/aquasecurity/table v1.8.0
 	github.com/aquasecurity/testdocker v0.0.0-20230111101738-e741bda259da
 	github.com/aquasecurity/tml v0.6.1
-	github.com/aquasecurity/trivy-db v0.0.0-20230105123735-5ce110fc82e1
+	github.com/aquasecurity/trivy-db v0.0.0-20230116084806-4bcdf1c414d0
 	github.com/aquasecurity/trivy-kubernetes v0.3.1-0.20221021174315-8d74450b4506
 	github.com/aws/aws-sdk-go v1.44.171
 	github.com/aws/aws-sdk-go-v2 v1.17.1
@@ -236,7 +236,7 @@ require (
 	github.com/hashicorp/errwrap v1.1.0 // indirect
 	github.com/hashicorp/go-cleanhttp v0.5.2 // indirect
 	github.com/hashicorp/go-multierror v1.1.1
-	github.com/hashicorp/go-retryablehttp v0.7.1 // indirect
+	github.com/hashicorp/go-retryablehttp v0.7.2 // indirect
 	github.com/hashicorp/go-safetemp v1.0.0 // indirect
 	github.com/hashicorp/go-uuid v1.0.3 // indirect
 	github.com/hashicorp/go-version v1.6.0 // indirect

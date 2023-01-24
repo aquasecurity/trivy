@@ -27,12 +27,12 @@ Filter by severity:
 $ trivy k8s --severity=CRITICAL --report=all cluster
 ```
 
-Filter by security check (Vulnerabilities, Secrets or Misconfigurations):
+Filter by scanners (Vulnerabilities, Secrets or Misconfigurations):
 
 ```
-$ trivy k8s --security-checks=secret --report=summary cluster
+$ trivy k8s --scanners=secret --report=summary cluster
 # or
-$ trivy k8s --security-checks=config --report=summary cluster
+$ trivy k8s --scanners=config --report=summary cluster
 ```
 
 Scan a specific namespace:
@@ -263,16 +263,16 @@ Severities: C=CRITICAL H=HIGH M=MEDIUM L=LOW U=UNKNOWN
 The infra checks are based on CIS Benchmarks recommendations for kubernetes.
 
 
-If you want filter only for the infra checks, you can use the flag `--components` along with the `--security-checks=config`
+If you want filter only for the infra checks, you can use the flag `--components` along with the `--scanners=config`
 
 ```
-$ trivy k8s cluster --report summary --components=infra --security-checks=config # scan only infra
+$ trivy k8s cluster --report summary --components=infra --scanners=config # scan only infra
 ```
 
 Or, to filter for all other checks besides the infra checks, you can:
 
 ```
-$ trivy k8s cluster --report summary --components=workload --security-checks=config # scan all components besides infra
+$ trivy k8s cluster --report summary --components=workload --scanners=config # scan all components besides infra
 ```
 
 	

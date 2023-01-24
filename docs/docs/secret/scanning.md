@@ -106,10 +106,10 @@ All rules are disabled except for the ones you specify, so it runs very fast.
 On the other hand, you should use `disable-rules` if you just want to disable some built-in rules.
 See the [enable-rules][enable-rules] and [disable-rules][disable-rules] sections for the detail.
 
-If you don't need secret scanning, you can disable it via the `--security-checks` flag.
+If you don't need secret scanning, you can disable it via the `--scanners` flag.
 
 ```shell
-$ trivy image --security-checks vuln alpine:3.15
+$ trivy image --scanners vuln alpine:3.15
 ```
 
 
