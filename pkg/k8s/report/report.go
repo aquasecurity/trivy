@@ -260,7 +260,7 @@ func rbacResource(misConfig Resource) bool {
 }
 
 func infraResource(misConfig Resource) bool {
-	return misConfig.Kind == "Pod" && misConfig.Namespace == "kube-system"
+	return (misConfig.Kind == "Pod" && misConfig.Namespace == "kube-system") || misConfig.Kind == "NodeInfo"
 }
 
 func CreateResource(artifact *artifacts.Artifact, report types.Report, err error) Resource {
