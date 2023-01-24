@@ -2,16 +2,19 @@ module github.com/aquasecurity/trivy
 
 go 1.18
 
-replace github.com/aquasecurity/defsec => github.com/sm171190/defsec v0.82.7-0.20230112035505-b8f2b199bdce
-
 require (
 	github.com/CycloneDX/cyclonedx-go v0.7.0
 	github.com/Masterminds/sprig/v3 v3.2.3
 	github.com/NYTimes/gziphandler v1.1.1
 	github.com/alicebob/miniredis/v2 v2.23.0
 	github.com/aquasecurity/bolt-fixtures v0.0.0-20200903104109-d34e7f983986
+<<<<<<< HEAD
 	github.com/aquasecurity/defsec v0.82.7-0.20230103191626-4f3187c78d6b
 	github.com/aquasecurity/go-dep-parser v0.0.0-20230123091557-6a4a819ab8da
+=======
+	github.com/aquasecurity/defsec v0.82.7-0.20230120014503-046ee90ace59
+	github.com/aquasecurity/go-dep-parser v0.0.0-20230115135733-3be7cb085121
+>>>>>>> c09faf2d5 (fix: migrate rbac k8s)
 	github.com/aquasecurity/go-gem-version v0.0.0-20201115065557-8eed6fe000ce
 	github.com/aquasecurity/go-npm-version v0.0.0-20201110091526-0b796d180798
 	github.com/aquasecurity/go-pep440-version v0.0.0-20210121094942-22b2f8951d46
