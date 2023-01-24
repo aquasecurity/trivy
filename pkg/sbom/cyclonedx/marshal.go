@@ -209,11 +209,9 @@ func generateDependencyGraph(sourceDependencies map[string][]string, idBomMap ma
 				}
 			}
 			dependents[dependentBomRef] = struct{}{}
-			dependencies = append(dependencies, *bomDeps[dependentBomRef])
+			dependencies = append(dependencies, dependentBomRef)
 		}
-		sort.SliceStable(dependencies, func(i, j int) bool {
-			return dependencies[i].Ref < dependencies[j].Ref
-		})
+		sort.Strings(dependencies)
 
 		dependency := cdx.Dependency{
 			Ref:          bomRef,
@@ -234,21 +232,20 @@ func generateDependencyGraph(sourceDependencies map[string][]string, idBomMap ma
 	sort.SliceStable(deps, func(i, j int) bool {
 		return deps[i].Ref < deps[j].Ref
 	})
-
 	return heads, deps
 }
 
 func (e *Marshaler) marshalComponents(r types.Report, bomRef string) (*[]cdx.Component, *[]cdx.Dependency, *[]cdx.Vulnerability, error) {
 	var components []cdx.Component
-	dependencies := map[string]cdx.Dependency{}
-	var metadataDependencies []string
+	dependencies := map[string]*[]string{}
+	var metadataDependencies []cdx.Dependency
 	libraryUniqMap := map[string]struct{}{}
 	vulnMap := map[string]cdx.Vulnerability{}
 	for _, result := range r.Results {
 		bomRefMap := map[string]string{}
 		bomPkgIDMap := map[string]string{}
 		depGraph := map[string][]string{}
-		var componentDependencies []string
+		var componentDependencies []cdx.Dependency
 		for _, pkg := range result.Packages {
 			pkgComponent, err := pkgToCdxComponent(result.Type, r.Metadata, pkg)
 			if err != nil {
@@ -257,7 +254,7 @@ func (e *Marshaler) marshalComponents(r types.Report, bomRef string) (*[]cdx.Com
 			pkgID := packageID(result.Target, pkg.Name, utils.FormatVersion(pkg), pkg.FilePath)
 			if _, ok := bomRefMap[pkgID]; !ok {
 				bomRefMap[pkgID] = pkgComponent.BOMRef
-				componentDependencies = append(componentDependencies, pkgComponent.BOMRef)
+				componentDependencies = append(componentDependencies, cdx.Dependency{Ref: bomRef})
 			}
 			// When multiple lock files have the same dependency with the same name and version,
 			// "bom-ref" (PURL technically) of Library components may conflict.
@@ -284,7 +281,7 @@ func (e *Marshaler) marshalComponents(r types.Report, bomRef string) (*[]cdx.Com
 		// add only new dependencies
 		for _, d := range currentDependencies {
 			if _, ok := dependencies[d.Ref]; !ok {
-				dependencies[d.Ref] = d
+				dependencies[d.Ref] = d.Dependencies
 			}
 		}
 
@@ -339,19 +336,21 @@ func (e *Marshaler) marshalComponents(r types.Report, bomRef string) (*[]cdx.Com
 			components = append(components, resultComponent)
 
 			// Dependency graph from #2 to #3
-			dependencies[resultComponent.BOMRef] = cdx.Dependency{Ref: resultComponent.BOMRef, Dependencies: &headDependencies}
+			//dependencies[resultComponent.BOMRef] = cdx.Dependency{Ref: resultComponent.BOMRef, Dependencies: &headDependencies}
 
 			// Dependency graph from #1 to #2
-			metadataDependencies = append(metadataDependencies, resultComponent.BOMRef)
+			metadataDependencies = append(metadataDependencies, cdx.Dependency{Ref: resultComponent.BOMRef})
 		}
 	}
+
 	vulns := maps.Values(vulnMap)
 	sort.Slice(vulns, func(i, j int) bool {
 		return vulns[i].ID > vulns[j].ID
 	})
 
-	dependencies[bomRef] = cdx.Dependency{Ref: bomRef, Dependencies: &metadataDependencies}
-	deps := maps.Values(dependencies)
+	//dependencies[bomRef] = cdx.Dependency{Ref: bomRef, Dependencies: &metadataDependencies}
+	//deps := maps.Values(dependencies)
+	deps := []cdx.Dependency{}
 	return &components, &deps, &vulns, nil
 }
 
