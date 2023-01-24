@@ -33,6 +33,13 @@ var (
 			types.VulnerabilityScanner,
 			types.SecretScanner,
 		},
+		Aliases: []Alias{
+			{
+				Name:       "security-checks",
+				ConfigName: "scan.security-checks",
+				Deprecated: true, // --security-checks was renamed to --scanners
+			},
+		},
 		Usage: "comma-separated list of what security issues to detect (vuln,config,secret,license)",
 	}
 	FilePatternsFlag = Flag{

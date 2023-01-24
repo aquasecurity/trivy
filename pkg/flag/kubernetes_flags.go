@@ -6,6 +6,9 @@ var (
 		ConfigName: "kubernetes.context",
 		Value:      "",
 		Usage:      "specify a context to scan",
+		Aliases: []Alias{
+			{Name: "ctx"},
+		},
 	}
 	K8sNamespaceFlag = Flag{
 		Name:       "namespace",
@@ -23,8 +26,11 @@ var (
 	ComponentsFlag = Flag{
 		Name:       "components",
 		ConfigName: "kubernetes.components",
-		Value:      []string{"workload", "infra"},
-		Usage:      "specify which components to scan",
+		Value: []string{
+			"workload",
+			"infra",
+		},
+		Usage: "specify which components to scan",
 	}
 )
 
@@ -56,7 +62,12 @@ func (f *K8sFlagGroup) Name() string {
 }
 
 func (f *K8sFlagGroup) Flags() []*Flag {
-	return []*Flag{f.ClusterContext, f.Namespace, f.KubeConfig, f.Components}
+	return []*Flag{
+		f.ClusterContext,
+		f.Namespace,
+		f.KubeConfig,
+		f.Components,
+	}
 }
 
 func (f *K8sFlagGroup) ToOptions() K8sOptions {

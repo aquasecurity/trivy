@@ -26,6 +26,12 @@ var (
 		ConfigName: "db.skip-update",
 		Value:      false,
 		Usage:      "skip updating vulnerability database",
+		Aliases: []Alias{
+			{
+				Name:       "skip-update",
+				Deprecated: true, // --security-update was renamed to --skip-db-update
+			},
+		},
 	}
 	NoProgressFlag = Flag{
 		Name:       "no-progress",
@@ -84,7 +90,14 @@ func (f *DBFlagGroup) Name() string {
 }
 
 func (f *DBFlagGroup) Flags() []*Flag {
-	return []*Flag{f.Reset, f.DownloadDBOnly, f.SkipDBUpdate, f.NoProgress, f.DBRepository, f.Light}
+	return []*Flag{
+		f.Reset,
+		f.DownloadDBOnly,
+		f.SkipDBUpdate,
+		f.NoProgress,
+		f.DBRepository,
+		f.Light,
+	}
 }
 
 func (f *DBFlagGroup) ToOptions() (DBOptions, error) {
