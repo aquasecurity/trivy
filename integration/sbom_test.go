@@ -3,11 +3,9 @@
 package integration
 
 import (
-	"os"
 	"path/filepath"
 	"testing"
 
-	cdx "github.com/CycloneDX/cyclonedx-go"
 	v1 "github.com/google/go-containerregistry/pkg/v1"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -128,9 +126,7 @@ func TestSBOM(t *testing.T) {
 			// Compare want and got
 			switch tt.args.format {
 			case "cyclonedx":
-				want := decodeCycloneDX(t, tt.golden)
-				got := decodeCycloneDX(t, outputFile)
-				assert.Equal(t, want, got)
+				compareCycloneDX(t, tt.golden, outputFile)
 			case "json":
 				compareSBOMReports(t, tt.golden, outputFile, tt.override)
 			default:
@@ -164,19 +160,4 @@ func compareSBOMReports(t *testing.T, wantFile, gotFile string, overrideWant typ
 
 	got := readReport(t, gotFile)
 	assert.Equal(t, want, got)
-}
-
-func decodeCycloneDX(t *testing.T, filePath string) *cdx.BOM {
-	f, err := os.Open(filePath)
-	require.NoError(t, err)
-	defer f.Close()
-
-	bom := cdx.NewBOM()
-	decoder := cdx.NewBOMDecoder(f, cdx.BOMFileFormatJSON)
-	err = decoder.Decode(bom)
-	require.NoError(t, err)
-
-	bom.Metadata.Timestamp = ""
-
-	return bom
 }

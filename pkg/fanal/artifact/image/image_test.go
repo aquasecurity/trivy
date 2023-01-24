@@ -187,7 +187,7 @@ func TestArtifact_Inspect(t *testing.T) {
 							Digest:        "",
 							DiffID:        "sha256:beee9f30bc1f711043e78d4a2be0668955d4b761d587d6f60c2c8dc081efb203",
 							CreatedBy:     "ADD file:0c4555f363c2672e350001f1293e689875a3760afe7b3f9146886afe67121cba in / ",
-							OS: &types.OS{
+							OS: types.OS{
 								Family: "alpine",
 								Name:   "3.11.5",
 							},
@@ -201,9 +201,30 @@ func TestArtifact_Inspect(t *testing.T) {
 									Packages: alpinePkgs,
 								},
 							},
-							Applications:  []types.Application(nil),
-							OpaqueDirs:    []string(nil),
-							WhiteoutFiles: []string(nil),
+							Licenses: []types.LicenseFile{
+								{
+									Type:     "header",
+									FilePath: "etc/ssl/misc/CA.pl",
+									Findings: []types.LicenseFinding{
+										{
+											Name:       "OpenSSL",
+											Confidence: 1,
+											Link:       "https://spdx.org/licenses/OpenSSL.html",
+										},
+									},
+								},
+								{
+									Type:     "header",
+									FilePath: "etc/ssl/misc/tsget.pl",
+									Findings: []types.LicenseFinding{
+										{
+											Name:       "OpenSSL",
+											Confidence: 1,
+											Link:       "https://spdx.org/licenses/OpenSSL.html",
+										},
+									},
+								},
+							},
 						},
 					},
 					Returns: cache.ArtifactCachePutBlobReturns{},
@@ -309,7 +330,7 @@ func TestArtifact_Inspect(t *testing.T) {
 							Digest:        "",
 							DiffID:        "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
 							CreatedBy:     "bazel build ...",
-							OS: &types.OS{
+							OS: types.OS{
 								Family: "debian",
 								Name:   "9.9",
 							},
@@ -842,7 +863,7 @@ func TestArtifact_Inspect(t *testing.T) {
 							Digest:        "",
 							DiffID:        "sha256:beee9f30bc1f711043e78d4a2be0668955d4b761d587d6f60c2c8dc081efb203",
 							CreatedBy:     "ADD file:0c4555f363c2672e350001f1293e689875a3760afe7b3f9146886afe67121cba in / ",
-							OS: &types.OS{
+							OS: types.OS{
 								Family: "alpine",
 								Name:   "3.11.5",
 							},
@@ -856,9 +877,30 @@ func TestArtifact_Inspect(t *testing.T) {
 									Packages: alpinePkgs,
 								},
 							},
-							Applications:  []types.Application(nil),
-							OpaqueDirs:    []string(nil),
-							WhiteoutFiles: []string(nil),
+							Licenses: []types.LicenseFile{
+								{
+									Type:     "header",
+									FilePath: "etc/ssl/misc/CA.pl",
+									Findings: []types.LicenseFinding{
+										{
+											Name:       "OpenSSL",
+											Confidence: 1,
+											Link:       "https://spdx.org/licenses/OpenSSL.html",
+										},
+									},
+								},
+								{
+									Type:     "header",
+									FilePath: "etc/ssl/misc/tsget.pl",
+									Findings: []types.LicenseFinding{
+										{
+											Name:       "OpenSSL",
+											Confidence: 1,
+											Link:       "https://spdx.org/licenses/OpenSSL.html",
+										},
+									},
+								},
+							},
 						},
 					},
 					Returns: cache.ArtifactCachePutBlobReturns{
@@ -890,7 +932,7 @@ func TestArtifact_Inspect(t *testing.T) {
 							Digest:        "",
 							DiffID:        "sha256:beee9f30bc1f711043e78d4a2be0668955d4b761d587d6f60c2c8dc081efb203",
 							CreatedBy:     "ADD file:0c4555f363c2672e350001f1293e689875a3760afe7b3f9146886afe67121cba in / ",
-							OS: &types.OS{
+							OS: types.OS{
 								Family: "alpine",
 								Name:   "3.11.5",
 							},
@@ -904,9 +946,30 @@ func TestArtifact_Inspect(t *testing.T) {
 									Packages: alpinePkgs,
 								},
 							},
-							Applications:  []types.Application(nil),
-							OpaqueDirs:    []string(nil),
-							WhiteoutFiles: []string(nil),
+							Licenses: []types.LicenseFile{
+								{
+									Type:     "header",
+									FilePath: "etc/ssl/misc/CA.pl",
+									Findings: []types.LicenseFinding{
+										{
+											Name:       "OpenSSL",
+											Confidence: 1,
+											Link:       "https://spdx.org/licenses/OpenSSL.html",
+										},
+									},
+								},
+								{
+									Type:     "header",
+									FilePath: "etc/ssl/misc/tsget.pl",
+									Findings: []types.LicenseFinding{
+										{
+											Name:       "OpenSSL",
+											Confidence: 1,
+											Link:       "https://spdx.org/licenses/OpenSSL.html",
+										},
+									},
+								},
+							},
 						},
 					},
 					Returns: cache.ArtifactCachePutBlobReturns{},

@@ -42,9 +42,11 @@ jobs:
             sbom
             server
             k8s
+            aws
             vm
 
             alpine
+            wolfi
             redhat
             alma
             rocky
@@ -56,6 +58,7 @@ jobs:
             suse
             photon
             distroless
+            windows
 
             ruby
             php
@@ -67,6 +70,8 @@ jobs:
             go
             c
             c++
+            elixir
+            dart
 
             os
             lang
@@ -86,6 +91,7 @@ jobs:
 
             cyclonedx
             spdx
+            purl
 
             helm
             report

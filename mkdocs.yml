@@ -32,7 +32,7 @@ nav:
           - Additional Resources: tutorials/additional-resources/references.md
           - Community References: tutorials/additional-resources/community.md
           - CKS Reference: tutorials/additional-resources/cks.md
-  - CLI:
+  - Docs:
       - Overview: docs/index.md
       - Vulnerability:
           - Scanning:
@@ -73,10 +73,6 @@ nav:
               - Report Formats: docs/misconfiguration/options/report.md
               - Value Overrides: docs/misconfiguration/options/values.md
               - Others: docs/misconfiguration/options/others.md
-          - Comparison:
-              - vs Conftest: docs/misconfiguration/comparison/conftest.md
-              - vs tfsec: docs/misconfiguration/comparison/tfsec.md
-              - vs cfsec: docs/misconfiguration/comparison/cfsec.md
       - Secret:
           - Scanning: docs/secret/scanning.md
           - Configuration: docs/secret/configuration.md
@@ -90,7 +86,9 @@ nav:
           - Operator:
               - Overview: docs/kubernetes/operator/index.md
       - Cloud:
-          - AWS: docs/cloud/aws/scanning.md
+          - AWS:
+            - Scanning: docs/cloud/aws/scanning.md
+            - Compliance: docs/cloud/aws/compliance.md
       - Virtual Machine Image:
           - Overview: docs/vm/index.md
           - AWS EC2: docs/vm/aws.md
@@ -98,6 +96,7 @@ nav:
             - Reports:  docs/compliance/compliance.md
       - SBOM:
           - Overview: docs/sbom/index.md
+          - Supported: docs/sbom/supported.md
           - CycloneDX: docs/sbom/cyclonedx.md
           - SPDX: docs/sbom/spdx.md
       - Attestation:
@@ -146,6 +145,7 @@ nav:
     - CI/CD: ecosystem/cicd.md
     - IDE and Dev tools: ecosystem/ide.md
     - Production and Clouds: ecosystem/prod.md
+    - Security Management: ecosystem/security.md
   - Contributing:
       - How to contribute:
           - Issues: community/contribute/issue.md

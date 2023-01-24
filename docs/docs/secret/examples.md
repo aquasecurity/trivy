@@ -35,6 +35,18 @@ Total: 1 (CRITICAL: 1)
 +----------+-------------------+----------+---------+--------------------------------+
 ```
 
+## Filter by RuleID
+
+Use `.trivyignore`.
+
+```bash
+$ cat .trivyignore
+
+# Ignore these rules
+generic-unwanted-rule
+aws-account-id
+```
+
 ## Disable secret scanning
 If you need vulnerability scanning only, you can disable secret scanning via the `--security-checks` flag.
 

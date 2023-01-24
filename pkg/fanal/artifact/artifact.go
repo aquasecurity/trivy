@@ -27,6 +27,7 @@ type Option struct {
 	RekorURL          string
 	Platform          string
 	Slow              bool // Lower CPU and memory
+	AWSRegion         string
 
 	MisconfScannerOption misconf.ScannerOption
 	SecretScannerOption  analyzer.SecretScannerOption

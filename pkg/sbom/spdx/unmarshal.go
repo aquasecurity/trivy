@@ -143,14 +143,14 @@ func initApplication(pkg spdx.Package2_2) *ftypes.Application {
 		FilePath: pkg.PackageSourceInfo,
 	}
 	if pkg.PackageName == ftypes.NodePkg || pkg.PackageName == ftypes.PythonPkg ||
-		pkg.PackageName == ftypes.GemSpec || pkg.PackageName == ftypes.Jar {
+		pkg.PackageName == ftypes.GemSpec || pkg.PackageName == ftypes.Jar || pkg.PackageName == ftypes.CondaPkg {
 		app.FilePath = ""
 	}
 	return app
 }
 
-func parseOS(pkg spdx.Package2_2) *ftypes.OS {
-	return &ftypes.OS{
+func parseOS(pkg spdx.Package2_2) ftypes.OS {
+	return ftypes.OS{
 		Family: pkg.PackageName,
 		Name:   pkg.PackageVersion,
 	}

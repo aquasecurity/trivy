@@ -11,6 +11,7 @@ import (
 	"github.com/google/go-containerregistry/pkg/name"
 	v1 "github.com/google/go-containerregistry/pkg/v1"
 	"github.com/google/go-containerregistry/pkg/v1/remote"
+	v1types "github.com/google/go-containerregistry/pkg/v1/types"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/image/token"
@@ -27,14 +28,6 @@ func tryRemote(ctx context.Context, imageName string, ref name.Reference, option
 		remoteOpts = append(remoteOpts, remote.WithTransport(t))
 	}
 
-	if option.Platform != "" {
-		s, err := parsePlatform(ref, option.Platform)
-		if err != nil {
-			return nil, err
-		}
-		remoteOpts = append(remoteOpts, remote.WithPlatform(*s))
-	}
-
 	domain := ref.Context().RegistryStr()
 	auth := token.GetToken(ctx, domain, option)
 
@@ -45,6 +38,17 @@ func tryRemote(ctx context.Context, imageName string, ref name.Reference, option
 		remoteOpts = append(remoteOpts, remote.WithAuth(&bearer))
 	} else {
 		remoteOpts = append(remoteOpts, remote.WithAuthFromKeychain(authn.DefaultKeychain))
+	}
+
+	if option.Platform != "" {
+		s, err := parsePlatform(ref, option.Platform, remoteOpts)
+		if err != nil {
+			return nil, xerrors.Errorf("platform error: %w", err)
+		}
+		// Don't pass platform when the specified image is single-arch.
+		if s != nil {
+			remoteOpts = append(remoteOpts, remote.WithPlatform(*s))
+		}
 	}
 
 	desc, err := remote.Get(ref, remoteOpts...)
@@ -67,25 +71,34 @@ func tryRemote(ctx context.Context, imageName string, ref name.Reference, option
 
 }
 
-func parsePlatform(ref name.Reference, p string) (*v1.Platform, error) {
+func parsePlatform(ref name.Reference, p string, options []remote.Option) (*v1.Platform, error) {
 	// OS wildcard, implicitly pick up the first os found in the image list.
 	// e.g. */amd64
 	if strings.HasPrefix(p, "*/") {
-		index, err := remote.Index(ref)
+		d, err := remote.Get(ref, options...)
 		if err != nil {
-			// Not a multi-arch image
-			if _, ok := err.(*remote.ErrSchema1); ok {
-				log.Logger.Debug("Ignored --platform as the image is not multi-arch")
-				return nil, nil
-			}
-			return nil, xerrors.Errorf("remote index error: %w", err)
+			return nil, xerrors.Errorf("image get error: %w", err)
 		}
+		switch d.MediaType {
+		case v1types.OCIManifestSchema1, v1types.DockerManifestSchema2:
+			// We want an index but the registry has an image, not multi-arch. We just ignore "--platform".
+			log.Logger.Debug("Ignore --platform as the image is not multi-arch")
+			return nil, nil
+		case v1types.OCIImageIndex, v1types.DockerManifestList:
+			// These are expected.
+		}
+
+		index, err := d.ImageIndex()
+		if err != nil {
+			return nil, xerrors.Errorf("image index error: %w", err)
+		}
+
 		m, err := index.IndexManifest()
 		if err != nil {
 			return nil, xerrors.Errorf("remote index manifest error: %w", err)
 		}
 		if len(m.Manifests) == 0 {
-			log.Logger.Debug("Ignored --platform as the image is not multi-arch")
+			log.Logger.Debug("Ignore --platform as the image is not multi-arch")
 			return nil, nil
 		}
 		if m.Manifests[0].Platform != nil {
@@ -114,10 +127,6 @@ func (img remoteImage) Name() string {
 
 func (img remoteImage) ID() (string, error) {
 	return ID(img)
-}
-
-func (img remoteImage) LayerIDs() ([]string, error) {
-	return LayerIDs(img)
 }
 
 func (img remoteImage) RepoTags() []string {

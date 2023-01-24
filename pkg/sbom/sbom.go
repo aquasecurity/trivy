@@ -26,6 +26,11 @@ const (
 	FormatSPDXXML             Format = "spdx-xml"
 	FormatAttestCycloneDXJSON Format = "attest-cyclonedx-json"
 	FormatUnknown             Format = "unknown"
+
+	// PredicateCycloneDXBeforeV05 is the PredicateCycloneDX value defined in in-toto-golang before v0.5.0.
+	// This is necessary for backward-compatible SBOM detection.
+	// ref. https://github.com/in-toto/in-toto-golang/pull/188
+	PredicateCycloneDXBeforeV05 = "https://cyclonedx.org/schema"
 )
 
 var ErrUnknownFormat = xerrors.New("Unknown SBOM format")
@@ -97,7 +102,7 @@ func DetectFormat(r io.ReadSeeker) (Format, error) {
 	// Try in-toto attestation
 	var s attestation.Statement
 	if err := json.NewDecoder(r).Decode(&s); err == nil {
-		if s.PredicateType == in_toto.PredicateCycloneDX {
+		if s.PredicateType == in_toto.PredicateCycloneDX || s.PredicateType == PredicateCycloneDXBeforeV05 {
 			return FormatAttestCycloneDXJSON, nil
 		}
 	}

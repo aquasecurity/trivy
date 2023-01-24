@@ -11,6 +11,7 @@ import (
 	"sync"
 
 	v1 "github.com/google/go-containerregistry/pkg/v1"
+	"github.com/samber/lo"
 	"golang.org/x/exp/slices"
 	"golang.org/x/xerrors"
 
@@ -74,15 +75,12 @@ func (a Artifact) Inspect(ctx context.Context) (types.ArtifactReference, error) 
 		return types.ArtifactReference{}, xerrors.Errorf("unable to get the image ID: %w", err)
 	}
 
-	diffIDs, err := a.image.LayerIDs()
-	if err != nil {
-		return types.ArtifactReference{}, xerrors.Errorf("unable to get layer IDs: %w", err)
-	}
-
 	configFile, err := a.image.ConfigFile()
 	if err != nil {
 		return types.ArtifactReference{}, xerrors.Errorf("unable to get the image's config file: %w", err)
 	}
+
+	diffIDs := a.diffIDs(configFile)
 
 	// Debug
 	log.Logger.Debugf("Image ID: %s", imageID)
@@ -232,8 +230,8 @@ func (a Artifact) inspect(ctx context.Context, missingImage string, layerKeys, b
 				errCh <- xerrors.Errorf("failed to store layer: %s in cache: %w", layerKey, err)
 				return
 			}
-			if layerInfo.OS != nil {
-				osFound = *layerInfo.OS
+			if lo.IsNotEmpty(layerInfo.OS) {
+				osFound = layerInfo.OS
 			}
 		}(ctx, k)
 	}
@@ -314,6 +312,15 @@ func (a Artifact) inspectLayer(ctx context.Context, layerInfo LayerInfo, disable
 	}
 
 	return blobInfo, nil
+}
+
+func (a Artifact) diffIDs(configFile *v1.ConfigFile) []string {
+	if configFile == nil {
+		return nil
+	}
+	return lo.Map(configFile.RootFS.DiffIDs, func(diffID v1.Hash, _ int) string {
+		return diffID.String()
+	})
 }
 
 func (a Artifact) uncompressedLayer(diffID string) (string, io.Reader, error) {

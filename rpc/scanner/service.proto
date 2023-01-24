@@ -16,7 +16,8 @@ message ScanRequest {
   ScanOptions     options     = 4;
 }
 
-// cf. https://stackoverflow.com/questions/38886789/protobuf3-how-to-describe-map-of-repeated-string
+// cf.
+// https://stackoverflow.com/questions/38886789/protobuf3-how-to-describe-map-of-repeated-string
 message Licenses {
   repeated string names = 1;
 }
@@ -42,5 +43,5 @@ message Result {
   string   type                                              = 3;
   repeated common.Package packages                           = 5;
   repeated common.CustomResource custom_resources            = 7;
-  repeated common.SecretFinding secrets                             = 8;
+  repeated common.SecretFinding secrets                      = 8;
 }

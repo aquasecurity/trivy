@@ -27,7 +27,7 @@ func TestNewPackageURL(t *testing.T) {
 	}{
 		{
 			name: "maven package",
-			typ:  string(analyzer.TypeJar),
+			typ:  ftypes.Jar,
 			pkg: ftypes.Package{
 				Name:    "org.springframework:spring-core",
 				Version: "5.3.14",
@@ -43,14 +43,14 @@ func TestNewPackageURL(t *testing.T) {
 		},
 		{
 			name: "gradle package",
-			typ:  string(ftypes.Gradle),
+			typ:  ftypes.Gradle,
 			pkg: ftypes.Package{
 				Name:    "org.springframework:spring-core",
 				Version: "5.3.14",
 			},
 			want: purl.PackageURL{
 				PackageURL: packageurl.PackageURL{
-					Type:      string(ftypes.Gradle),
+					Type:      packageurl.TypeMaven,
 					Namespace: "org.springframework",
 					Name:      "spring-core",
 					Version:   "5.3.14",
@@ -59,7 +59,7 @@ func TestNewPackageURL(t *testing.T) {
 		},
 		{
 			name: "yarn package",
-			typ:  string(analyzer.TypeYarn),
+			typ:  ftypes.Yarn,
 			pkg: ftypes.Package{
 				Name:    "@xtuc/ieee754",
 				Version: "1.2.0",
@@ -75,7 +75,7 @@ func TestNewPackageURL(t *testing.T) {
 		},
 		{
 			name: "yarn package with non-namespace",
-			typ:  string(analyzer.TypeYarn),
+			typ:  ftypes.Yarn,
 			pkg: ftypes.Package{
 				Name:    "lodash",
 				Version: "4.17.21",
@@ -90,7 +90,7 @@ func TestNewPackageURL(t *testing.T) {
 		},
 		{
 			name: "pnpm package",
-			typ:  string(analyzer.TypePnpm),
+			typ:  ftypes.Pnpm,
 			pkg: ftypes.Package{
 				Name:    "@xtuc/ieee754",
 				Version: "1.2.0",
@@ -106,7 +106,7 @@ func TestNewPackageURL(t *testing.T) {
 		},
 		{
 			name: "pnpm package with non-namespace",
-			typ:  string(analyzer.TypePnpm),
+			typ:  ftypes.Pnpm,
 			pkg: ftypes.Package{
 				Name:    "lodash",
 				Version: "4.17.21",
@@ -121,7 +121,7 @@ func TestNewPackageURL(t *testing.T) {
 		},
 		{
 			name: "pypi package",
-			typ:  string(analyzer.TypePip),
+			typ:  ftypes.PythonPkg,
 			pkg: ftypes.Package{
 				Name:    "Django_test",
 				Version: "1.2.0",
@@ -135,8 +135,23 @@ func TestNewPackageURL(t *testing.T) {
 			},
 		},
 		{
+			name: "conda package",
+			typ:  ftypes.CondaPkg,
+			pkg: ftypes.Package{
+				Name:    "absl-py",
+				Version: "0.4.1",
+			},
+			want: purl.PackageURL{
+				PackageURL: packageurl.PackageURL{
+					Type:    packageurl.TypeConda,
+					Name:    "absl-py",
+					Version: "0.4.1",
+				},
+			},
+		},
+		{
 			name: "composer package",
-			typ:  string(analyzer.TypeComposer),
+			typ:  ftypes.Composer,
 			pkg: ftypes.Package{
 				Name:    "symfony/contracts",
 				Version: "v1.0.2",
@@ -152,7 +167,7 @@ func TestNewPackageURL(t *testing.T) {
 		},
 		{
 			name: "golang package",
-			typ:  string(analyzer.TypeGoMod),
+			typ:  ftypes.GoModule,
 			pkg: ftypes.Package{
 				Name:    "github.com/go-sql-driver/Mysql",
 				Version: "v1.5.0",
@@ -163,6 +178,38 @@ func TestNewPackageURL(t *testing.T) {
 					Namespace: "github.com/go-sql-driver",
 					Name:      "mysql",
 					Version:   "v1.5.0",
+				},
+			},
+		},
+		{
+			name: "hex package",
+			typ:  ftypes.Hex,
+			pkg: ftypes.Package{
+				ID:        "bunt@0.2.0",
+				Name:      "bunt",
+				Version:   "0.2.0",
+				Locations: []ftypes.Location{{StartLine: 2, EndLine: 2}},
+			},
+			want: purl.PackageURL{
+				PackageURL: packageurl.PackageURL{
+					Type:    packageurl.TypeHex,
+					Name:    "bunt",
+					Version: "0.2.0",
+				},
+			},
+		},
+		{
+			name: "dart package",
+			typ:  ftypes.Pub,
+			pkg: ftypes.Package{
+				Name:    "http",
+				Version: "0.13.2",
+			},
+			want: purl.PackageURL{
+				PackageURL: packageurl.PackageURL{
+					Type:    purl.TypeDart,
+					Name:    "http",
+					Version: "0.13.2",
 				},
 			},
 		},
@@ -365,6 +412,30 @@ func TestFromString(t *testing.T) {
 			},
 		},
 		{
+			name: "happy path for hex",
+			purl: "pkg:hex/plug@1.14.0",
+			want: purl.PackageURL{
+				PackageURL: packageurl.PackageURL{
+					Type:       packageurl.TypeHex,
+					Name:       "plug",
+					Version:    "1.14.0",
+					Qualifiers: packageurl.Qualifiers{},
+				},
+			},
+		},
+		{
+			name: "happy path for dart",
+			purl: "pkg:dart/http@0.13.2",
+			want: purl.PackageURL{
+				PackageURL: packageurl.PackageURL{
+					Type:       purl.TypeDart,
+					Name:       "http",
+					Version:    "0.13.2",
+					Qualifiers: packageurl.Qualifiers{},
+				},
+			},
+		},
+		{
 			name: "happy path for apk",
 			purl: "pkg:apk/alpine/alpine-baselayout@3.2.0-r16?distro=3.14.2",
 			want: purl.PackageURL{
@@ -391,6 +462,18 @@ func TestFromString(t *testing.T) {
 					Namespace:  "redhat",
 					Name:       "containers-common",
 					Version:    "0.1.14",
+					Qualifiers: packageurl.Qualifiers{},
+				},
+			},
+		},
+		{
+			name: "happy path for conda",
+			purl: "pkg:conda/absl-py@0.4.1",
+			want: purl.PackageURL{
+				PackageURL: packageurl.PackageURL{
+					Type:       packageurl.TypeConda,
+					Name:       "absl-py",
+					Version:    "0.4.1",
 					Qualifiers: packageurl.Qualifiers{},
 				},
 			},

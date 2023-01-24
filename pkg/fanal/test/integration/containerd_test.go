@@ -169,6 +169,11 @@ func TestContainerd_SearchLocalStoreByNameOrDigest(t *testing.T) {
 			expectErr:  true,
 		},
 	}
+	// Each architecture needs different images and test cases.
+	// Currently only amd64 architecture is supported
+	if runtime.GOARCH != "amd64" {
+		t.Skip("'Containerd' test only supports amd64 architecture")
+	}
 
 	namespace := "default"
 	ctx := namespaces.WithNamespace(context.Background(), namespace)
@@ -642,7 +647,7 @@ func localImageTestWithNamespace(t *testing.T, namespace string) {
 			require.NoError(t, err)
 			defer golden.Close()
 
-			var wantPkgs []types.Package
+			var wantPkgs types.Packages
 			err = json.NewDecoder(golden).Decode(&wantPkgs)
 			require.NoError(t, err)
 
@@ -768,7 +773,7 @@ func TestContainerd_PullImage(t *testing.T) {
 			golden, err := os.Open(fmt.Sprintf("testdata/goldens/packages/%s.json.golden", tag))
 			require.NoError(t, err)
 
-			var wantPkgs []types.Package
+			var wantPkgs types.Packages
 			err = json.NewDecoder(golden).Decode(&wantPkgs)
 			require.NoError(t, err)
 
