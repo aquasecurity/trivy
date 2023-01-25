@@ -297,7 +297,7 @@ func (r *runner) Report(opts flag.Options, report types.Report) error {
 
 func (r *runner) initDB(opts flag.Options) error {
 	// When scanning config files or running as client mode, it doesn't need to download the vulnerability database.
-	if opts.ServerAddr != "" || !slices.Contains(opts.Scanners, types.VulnerabilityScanner) {
+	if opts.ServerAddr != "" || !opts.Scanners.Enabled(types.VulnerabilityScanner) {
 		return nil
 	}
 
@@ -358,16 +358,6 @@ func (r *runner) initCache(opts flag.Options) error {
 	r.cache = cacheClient
 	return nil
 }
-
-// Run performs artifact scanning
-//func Run(cliCtx *cli.Context, targetKind TargetKind) error {
-//	opt, err := InitOption(cliCtx)
-//	if err != nil {
-//		return xerrors.Errorf("InitOption: %w", err)
-//	}
-//
-//	return run(cliCtx.Context, opt, targetKind)
-//}
 
 // Run performs artifact scanning
 func Run(ctx context.Context, opts flag.Options, targetKind TargetKind) (err error) {
@@ -452,20 +442,25 @@ func disabledAnalyzers(opts flag.Options) []analyzer.Type {
 	}
 
 	// Do not perform secret scanning when it is not specified.
-	if !slices.Contains(opts.Scanners, types.SecretScanner) {
+	if !opts.Scanners.Enabled(types.SecretScanner) {
 		analyzers = append(analyzers, analyzer.TypeSecret)
 	}
 
 	// Do not perform misconfiguration scanning when it is not specified.
-	if !slices.Contains(opts.Scanners, types.MisconfigScanner) &&
-		!slices.Contains(opts.Scanners, types.RBACScanner) {
+	if !opts.Scanners.AnyEnabled(types.MisconfigScanner, types.RBACScanner) {
 		analyzers = append(analyzers, analyzer.TypeConfigFiles...)
 	}
 
 	// Scanning file headers and license files is expensive.
-	// It is performed only when '--scanners license' and '--license-full' are specified.
-	if !slices.Contains(opts.Scanners, types.LicenseScanner) || !opts.LicenseFull {
+	// It is performed only when '--scanners license' and '--license-full' are specified together.
+	if !opts.Scanners.Enabled(types.LicenseScanner) || !opts.LicenseFull {
 		analyzers = append(analyzers, analyzer.TypeLicenseFile)
+	}
+
+	// Do not perform misconfiguration scanning on container image config
+	// when it is not specified.
+	if !opts.ImageConfigScanners.Enabled(types.MisconfigScanner) {
+		analyzers = append(analyzers, analyzer.TypeHistoryDockerfile)
 	}
 
 	if len(opts.SBOMSources) == 0 {
@@ -484,24 +479,28 @@ func initScannerConfig(opts flag.Options, cacheClient cache.Cache) (ScannerConfi
 	scanOptions := types.ScanOptions{
 		VulnType:            opts.VulnType,
 		Scanners:            opts.Scanners,
-		ScanRemovedPackages: opts.ScanRemovedPkgs, // this is valid only for 'image' subcommand
-		Platform:            opts.Platform,        // this is valid only for 'image' subcommand
+		ImageConfigScanners: opts.ImageConfigScanners, // this is valid only for 'image' subcommand
+		ScanRemovedPackages: opts.ScanRemovedPkgs,     // this is valid only for 'image' subcommand
+		Platform:            opts.Platform,            // this is valid only for 'image' subcommand
 		ListAllPackages:     opts.ListAllPkgs,
 		LicenseCategories:   opts.LicenseCategories,
 		FilePatterns:        opts.FilePatterns,
 	}
 
-	if slices.Contains(opts.Scanners, types.VulnerabilityScanner) {
+	if len(opts.ImageConfigScanners) != 0 {
+		log.Logger.Infof("Container image config scanners: %q", opts.ImageConfigScanners)
+	}
+
+	if opts.Scanners.Enabled(types.VulnerabilityScanner) {
 		log.Logger.Info("Vulnerability scanning is enabled")
 		log.Logger.Debugf("Vulnerability type:  %s", scanOptions.VulnType)
 	}
 
-	}
-
 	// ScannerOption is filled only when config scanning is enabled.
 	var configScannerOptions config.ScannerOption
-	if slices.Contains(opts.Scanners, types.MisconfigScanner) {
+	if opts.Scanners.Enabled(types.MisconfigScanner) || opts.ImageConfigScanners.Enabled(types.MisconfigScanner) {
 		log.Logger.Info("Misconfiguration scanning is enabled")
+
 		var downloadedPolicyPaths []string
 		var disableEmbedded bool
 		downloadedPolicyPaths, err := operation.InitBuiltinPolicies(context.Background(), opts.CacheDir, opts.Quiet, opts.SkipPolicyUpdate)
@@ -529,7 +528,7 @@ func initScannerConfig(opts flag.Options, cacheClient cache.Cache) (ScannerConfi
 	}
 
 	// Do not load config file for secret scanning
-	if slices.Contains(opts.Scanners, types.SecretScanner) {
+	if opts.Scanners.Enabled(types.SecretScanner) {
 		ver := canonicalVersion(opts.AppVersion)
 		log.Logger.Info("Secret scanning is enabled")
 		log.Logger.Info("If your scanning is slow, please try '--scanners vuln' to disable secret scanning")
@@ -538,7 +537,7 @@ func initScannerConfig(opts flag.Options, cacheClient cache.Cache) (ScannerConfi
 		opts.SecretConfigPath = ""
 	}
 
-	if slices.Contains(opts.Scanners, types.LicenseScanner) {
+	if opts.Scanners.Enabled(types.LicenseScanner) {
 		if opts.LicenseFull {
 			log.Logger.Info("Full license scanning is enabled")
 		} else {

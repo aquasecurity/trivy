@@ -35,7 +35,7 @@ func NewSummaryWriter(output io.Writer, requiredSevs []dbTypes.Severity, columnH
 	}
 }
 
-func ColumnHeading(scanners, components, availableColumns []string) []string {
+func ColumnHeading(scanners types.Scanners, components, availableColumns []string) []string {
 	columns := []string{
 		NamespaceColumn,
 		ResourceColumn,

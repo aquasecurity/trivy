@@ -7,7 +7,7 @@ import (
 // ScanOptions holds the attributes for scanning vulnerabilities
 type ScanOptions struct {
 	VulnType            []string
-	Scanners            []string
+	Scanners            Scanners
 	ScanRemovedPackages bool
 	Platform            string
 	ListAllPackages     bool
