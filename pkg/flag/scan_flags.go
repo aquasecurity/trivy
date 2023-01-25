@@ -26,11 +26,21 @@ var (
 		Value:      false,
 		Usage:      "do not issue API requests to identify dependencies",
 	}
-	SecurityChecksFlag = Flag{
-		Name:       "security-checks",
-		ConfigName: "scan.security-checks",
-		Value:      []string{types.SecurityCheckVulnerability, types.SecurityCheckSecret},
-		Usage:      "comma-separated list of what security issues to detect (vuln,config,secret,license)",
+	ScannersFlag = Flag{
+		Name:       "scanners",
+		ConfigName: "scan.scanners",
+		Value: []string{
+			types.VulnerabilityScanner,
+			types.SecretScanner,
+		},
+		Aliases: []Alias{
+			{
+				Name:       "security-checks",
+				ConfigName: "scan.security-checks",
+				Deprecated: true, // --security-checks was renamed to --scanners
+			},
+		},
+		Usage: "comma-separated list of what security issues to detect (vuln,config,secret,license)",
 	}
 	FilePatternsFlag = Flag{
 		Name:       "file-patterns",
@@ -59,38 +69,38 @@ var (
 )
 
 type ScanFlagGroup struct {
-	SkipDirs       *Flag
-	SkipFiles      *Flag
-	OfflineScan    *Flag
-	SecurityChecks *Flag
-	FilePatterns   *Flag
-	Slow           *Flag
-	SBOMSources    *Flag
-	RekorURL       *Flag
+	SkipDirs     *Flag
+	SkipFiles    *Flag
+	OfflineScan  *Flag
+	Scanners     *Flag
+	FilePatterns *Flag
+	Slow         *Flag
+	SBOMSources  *Flag
+	RekorURL     *Flag
 }
 
 type ScanOptions struct {
-	Target         string
-	SkipDirs       []string
-	SkipFiles      []string
-	OfflineScan    bool
-	SecurityChecks []string
-	FilePatterns   []string
-	Slow           bool
-	SBOMSources    []string
-	RekorURL       string
+	Target       string
+	SkipDirs     []string
+	SkipFiles    []string
+	OfflineScan  bool
+	Scanners     []string
+	FilePatterns []string
+	Slow         bool
+	SBOMSources  []string
+	RekorURL     string
 }
 
 func NewScanFlagGroup() *ScanFlagGroup {
 	return &ScanFlagGroup{
-		SkipDirs:       &SkipDirsFlag,
-		SkipFiles:      &SkipFilesFlag,
-		OfflineScan:    &OfflineScanFlag,
-		SecurityChecks: &SecurityChecksFlag,
-		FilePatterns:   &FilePatternsFlag,
-		Slow:           &SlowFlag,
-		SBOMSources:    &SBOMSourcesFlag,
-		RekorURL:       &RekorURLFlag,
+		SkipDirs:     &SkipDirsFlag,
+		SkipFiles:    &SkipFilesFlag,
+		OfflineScan:  &OfflineScanFlag,
+		Scanners:     &ScannersFlag,
+		FilePatterns: &FilePatternsFlag,
+		Slow:         &SlowFlag,
+		SBOMSources:  &SBOMSourcesFlag,
+		RekorURL:     &RekorURLFlag,
 	}
 }
 
@@ -99,8 +109,16 @@ func (f *ScanFlagGroup) Name() string {
 }
 
 func (f *ScanFlagGroup) Flags() []*Flag {
-	return []*Flag{f.SkipDirs, f.SkipFiles, f.OfflineScan, f.SecurityChecks, f.FilePatterns,
-		f.Slow, f.SBOMSources, f.RekorURL}
+	return []*Flag{
+		f.SkipDirs,
+		f.SkipFiles,
+		f.OfflineScan,
+		f.Scanners,
+		f.FilePatterns,
+		f.Slow,
+		f.SBOMSources,
+		f.RekorURL,
+	}
 }
 
 func (f *ScanFlagGroup) ToOptions(args []string) (ScanOptions, error) {
@@ -108,9 +126,9 @@ func (f *ScanFlagGroup) ToOptions(args []string) (ScanOptions, error) {
 	if len(args) == 1 {
 		target = args[0]
 	}
-	securityChecks, err := parseSecurityCheck(getStringSlice(f.SecurityChecks))
+	scanners, err := parseScanners(getStringSlice(f.Scanners))
 	if err != nil {
-		return ScanOptions{}, xerrors.Errorf("unable to parse security checks: %w", err)
+		return ScanOptions{}, xerrors.Errorf("unable to parse scanners: %w", err)
 	}
 
 	sbomSources := getStringSlice(f.SBOMSources)
@@ -119,27 +137,27 @@ func (f *ScanFlagGroup) ToOptions(args []string) (ScanOptions, error) {
 	}
 
 	return ScanOptions{
-		Target:         target,
-		SkipDirs:       getStringSlice(f.SkipDirs),
-		SkipFiles:      getStringSlice(f.SkipFiles),
-		OfflineScan:    getBool(f.OfflineScan),
-		SecurityChecks: securityChecks,
-		FilePatterns:   getStringSlice(f.FilePatterns),
-		Slow:           getBool(f.Slow),
-		SBOMSources:    sbomSources,
-		RekorURL:       getString(f.RekorURL),
+		Target:       target,
+		SkipDirs:     getStringSlice(f.SkipDirs),
+		SkipFiles:    getStringSlice(f.SkipFiles),
+		OfflineScan:  getBool(f.OfflineScan),
+		Scanners:     scanners,
+		FilePatterns: getStringSlice(f.FilePatterns),
+		Slow:         getBool(f.Slow),
+		SBOMSources:  sbomSources,
+		RekorURL:     getString(f.RekorURL),
 	}, nil
 }
 
-func parseSecurityCheck(securityCheck []string) ([]string, error) {
-	var securityChecks []string
-	for _, v := range securityCheck {
-		if !slices.Contains(types.SecurityChecks, v) {
-			return nil, xerrors.Errorf("unknown security check: %s", v)
+func parseScanners(scanner []string) ([]string, error) {
+	var scanners []string
+	for _, v := range scanner {
+		if !slices.Contains(types.Scanners, v) {
+			return nil, xerrors.Errorf("unknown scanner: %s", v)
 		}
-		securityChecks = append(securityChecks, v)
+		scanners = append(scanners, v)
 	}
-	return securityChecks, nil
+	return scanners, nil
 }
 
 func validateSBOMSources(sbomSources []string) error {

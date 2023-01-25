@@ -24,30 +24,42 @@ func Test_getStringSlice(t *testing.T) {
 	}{
 		{
 			name:      "happy path. Empty value",
-			flag:      &SecurityChecksFlag,
+			flag:      &ScannersFlag,
 			flagValue: "",
 			want:      nil,
 		},
 		{
 			name:      "happy path. String value",
-			flag:      &SecurityChecksFlag,
+			flag:      &ScannersFlag,
 			flagValue: "license,vuln",
-			want:      []string{types.SecurityCheckLicense, types.SecurityCheckVulnerability},
+			want: []string{
+				types.LicenseScanner,
+				types.VulnerabilityScanner,
+			},
 		},
 		{
-			name:      "happy path. Slice value",
-			flag:      &SecurityChecksFlag,
-			flagValue: []string{"license", "secret"},
-			want:      []string{types.SecurityCheckLicense, types.SecurityCheckSecret},
+			name: "happy path. Slice value",
+			flag: &ScannersFlag,
+			flagValue: []string{
+				"license",
+				"secret",
+			},
+			want: []string{
+				types.LicenseScanner,
+				types.SecretScanner,
+			},
 		},
 		{
 			name: "happy path. Env value",
-			flag: &SecurityChecksFlag,
+			flag: &ScannersFlag,
 			env: env{
 				key:   "TRIVY_SECURITY_CHECKS",
 				value: "rbac,config",
 			},
-			want: []string{types.SecurityCheckRbac, types.SecurityCheckConfig},
+			want: []string{
+				types.RBACScanner,
+				types.MisconfigScanner,
+			},
 		},
 	}
 

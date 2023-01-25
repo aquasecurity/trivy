@@ -15,7 +15,7 @@ $ trivy image --skip-dirs /var/lib --skip-dirs /var/log YOUR_IMAGE
 $ trivy fs --skip-dirs ./my-test-dir --skip-dirs ./my-testing-cert/ /path/to/your_project
 ```
 
-`--skip-fles` also works similarly.
+`--skip-files` also works similarly.
 
 ## Filter by severity
 
@@ -48,10 +48,10 @@ aws-account-id
 ```
 
 ## Disable secret scanning
-If you need vulnerability scanning only, you can disable secret scanning via the `--security-checks` flag.
+If you need vulnerability scanning only, you can disable secret scanning via the `--scanners` flag.
 
 ``` shell
-$ trivy image --security-checks vuln alpine:3.15
+$ trivy image --scanners vuln alpine:3.15
 ```
 
 ## With configuration file

@@ -44,7 +44,7 @@ func teeError(err error) error {
 func (s *ScanServer) Scan(ctx context.Context, in *rpcScanner.ScanRequest) (*rpcScanner.ScanResponse, error) {
 	options := types.ScanOptions{
 		VulnType:        in.Options.VulnType,
-		SecurityChecks:  in.Options.SecurityChecks,
+		Scanners:        in.Options.Scanners,
 		ListAllPackages: in.Options.ListAllPackages,
 	}
 	results, os, err := s.localScanner.Scan(ctx, in.Target, in.ArtifactId, in.BlobIds, options)
@@ -95,7 +95,10 @@ func (s *CacheServer) MissingBlobs(_ context.Context, in *rpcCache.MissingBlobsR
 	if err != nil {
 		return nil, teeError(xerrors.Errorf("failed to get missing blobs: %w", err))
 	}
-	return &rpcCache.MissingBlobsResponse{MissingArtifact: missingArtifact, MissingBlobIds: blobIDs}, nil
+	return &rpcCache.MissingBlobsResponse{
+		MissingArtifact: missingArtifact,
+		MissingBlobIds:  blobIDs,
+	}, nil
 }
 
 // DeleteBlobs removes blobs by IDs

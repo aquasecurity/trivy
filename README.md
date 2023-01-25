@@ -54,7 +54,7 @@ Trivy is integrated with many popular platforms and applications. The complete l
 ### General usage
 
 ```bash
-trivy <target> [--security-checks <scanner1,scanner2>] <subject>
+trivy <target> [--scanners <scanner1,scanner2>] <subject>
 ```
 
 Examples:
@@ -71,7 +71,7 @@ https://user-images.githubusercontent.com/1161307/171013513-95f18734-233d-45d3-a
 </details>
 
 ```bash
-trivy fs --security-checks vuln,secret,config myproject/
+trivy fs --scanners vuln,secret,config myproject/
 ```
 
 <details>

@@ -43,7 +43,6 @@ const (
 	Kubernetes     = "kubernetes"
 	Ansible        = "ansible"
 	Helm           = "helm"
-	Rbac           = "rbac"
 	Cloud          = "cloud"
 	AzureARM       = "azure-arm"
 

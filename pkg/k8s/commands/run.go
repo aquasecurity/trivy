@@ -51,7 +51,10 @@ type runner struct {
 }
 
 func newRunner(flagOpts flag.Options, cluster string) *runner {
-	return &runner{flagOpts, cluster}
+	return &runner{
+		flagOpts,
+		cluster,
+	}
 }
 
 func (r *runner) run(ctx context.Context, artifacts []*artifacts.Artifact) error {
@@ -90,11 +93,11 @@ func (r *runner) run(ctx context.Context, artifacts []*artifacts.Artifact) error
 		if err = yaml.Unmarshal(cs, &complianceSpec); err != nil {
 			return xerrors.Errorf("yaml unmarshal error: %w", err)
 		}
-		securityChecks, err := complianceSpec.SecurityChecks()
+		scanners, err := complianceSpec.Scanners()
 		if err != nil {
-			return xerrors.Errorf("security check error: %w", err)
+			return xerrors.Errorf("scanner error: %w", err)
 		}
-		r.flagOpts.ScanOptions.SecurityChecks = securityChecks
+		r.flagOpts.ScanOptions.Scanners = scanners
 	}
 
 	rpt, err := s.Scan(ctx, artifacts)
@@ -117,16 +120,17 @@ func (r *runner) run(ctx context.Context, artifacts []*artifacts.Artifact) error
 		return cr.Write(complianceReport, cr.Option{
 			Format: r.flagOpts.Format,
 			Report: r.flagOpts.ReportFormat,
-			Output: r.flagOpts.Output})
+			Output: r.flagOpts.Output,
+		})
 	}
 
 	if err := report.Write(rpt, report.Option{
-		Format:         r.flagOpts.Format,
-		Report:         r.flagOpts.ReportFormat,
-		Output:         r.flagOpts.Output,
-		Severities:     r.flagOpts.Severities,
-		Components:     r.flagOpts.Components,
-		SecurityChecks: r.flagOpts.ScanOptions.SecurityChecks,
+		Format:     r.flagOpts.Format,
+		Report:     r.flagOpts.ReportFormat,
+		Output:     r.flagOpts.Output,
+		Severities: r.flagOpts.Severities,
+		Components: r.flagOpts.Components,
+		Scanners:   r.flagOpts.ScanOptions.Scanners,
 	}); err != nil {
 		return xerrors.Errorf("unable to write results: %w", err)
 	}

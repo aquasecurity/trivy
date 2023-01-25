@@ -3,9 +3,12 @@ package flag
 import (
 	"fmt"
 	"io"
+	"os"
 	"strings"
+	"sync"
 	"time"
 
+	"github.com/spf13/cast"
 	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
 	"github.com/spf13/viper"
@@ -37,6 +40,15 @@ type Flag struct {
 	Persistent bool
 
 	// Deprecated represents if the flag is deprecated
+	Deprecated bool
+
+	// Aliases represents aliases
+	Aliases []Alias
+}
+
+type Alias struct {
+	Name       string
+	ConfigName string
 	Deprecated bool
 }
 
@@ -94,14 +106,14 @@ type Options struct {
 // Align takes consistency of options
 func (o *Options) Align() {
 	if o.Format == report.FormatSPDX || o.Format == report.FormatSPDXJSON {
-		log.Logger.Info(`"--format spdx" and "--format spdx-json" disable security checks`)
-		o.SecurityChecks = nil
+		log.Logger.Info(`"--format spdx" and "--format spdx-json" disable security scanning`)
+		o.Scanners = nil
 	}
 
 	// Vulnerability scanning is disabled by default for CycloneDX.
-	if o.Format == report.FormatCycloneDX && !viper.IsSet(SecurityChecksFlag.ConfigName) {
-		log.Logger.Info(`"--format cyclonedx" disables security checks. Specify "--security-checks vuln" explicitly if you want to include vulnerabilities in the CycloneDX report.`)
-		o.SecurityChecks = nil
+	if o.Format == report.FormatCycloneDX && !viper.IsSet(ScannersFlag.ConfigName) {
+		log.Logger.Info(`"--format cyclonedx" disables security scanning. Specify "--scanners vuln" explicitly if you want to include vulnerabilities in the CycloneDX report.`)
+		o.Scanners = nil
 	}
 }
 
@@ -142,39 +154,58 @@ func bind(cmd *cobra.Command, flag *Flag) error {
 		viper.SetDefault(flag.ConfigName, flag.Value)
 		return nil
 	}
+
+	// Bind CLI flags
 	if flag.Persistent {
 		if err := viper.BindPFlag(flag.ConfigName, cmd.PersistentFlags().Lookup(flag.Name)); err != nil {
-			return err
+			return xerrors.Errorf("bind flag error: %w", err)
 		}
 	} else {
 		if err := viper.BindPFlag(flag.ConfigName, cmd.Flags().Lookup(flag.Name)); err != nil {
-			return err
+			return xerrors.Errorf("bind flag error: %w", err)
 		}
 	}
-	// We don't use viper.AutomaticEnv, so we need to add a prefix manually here.
-	if err := viper.BindEnv(flag.ConfigName, strings.ToUpper("trivy_"+strings.ReplaceAll(flag.Name, "-", "_"))); err != nil {
+
+	// Bind environmental variable
+	if err := bindEnv(flag); err != nil {
 		return err
 	}
 
 	return nil
 }
 
-func getString(flag *Flag) string {
-	if flag == nil {
-		return ""
+func bindEnv(flag *Flag) error {
+	// We don't use viper.AutomaticEnv, so we need to add a prefix manually here.
+	envName := strings.ToUpper("trivy_" + strings.ReplaceAll(flag.Name, "-", "_"))
+	if err := viper.BindEnv(flag.ConfigName, envName); err != nil {
+		return xerrors.Errorf("bind env error: %w", err)
 	}
-	return viper.GetString(flag.ConfigName)
+
+	// Bind env aliases
+	for _, alias := range flag.Aliases {
+		envAlias := strings.ToUpper("trivy_" + strings.ReplaceAll(alias.Name, "-", "_"))
+		if err := viper.BindEnv(flag.ConfigName, envAlias); err != nil {
+			return xerrors.Errorf("bind env error: %w", err)
+		}
+		if alias.Deprecated {
+			if _, ok := os.LookupEnv(envAlias); ok {
+				log.Logger.Warnf("'%s' is deprecated. Use '%s' instead.", envAlias, envName)
+			}
+		}
+	}
+	return nil
+}
+
+func getString(flag *Flag) string {
+	return cast.ToString(getValue(flag))
 }
 
 func getStringSlice(flag *Flag) []string {
-	if flag == nil {
-		return nil
-	}
 	// viper always returns a string for ENV
 	// https://github.com/spf13/viper/blob/419fd86e49ef061d0d33f4d1d56d5e2a480df5bb/viper.go#L545-L553
 	// and uses strings.Field to separate values (whitespace only)
 	// we need to separate env values with ','
-	v := viper.GetStringSlice(flag.ConfigName)
+	v := cast.ToStringSlice(getValue(flag))
 	switch {
 	case len(v) == 0: // no strings
 		return nil
@@ -185,24 +216,36 @@ func getStringSlice(flag *Flag) []string {
 }
 
 func getInt(flag *Flag) int {
-	if flag == nil {
-		return 0
-	}
-	return viper.GetInt(flag.ConfigName)
+	return cast.ToInt(getValue(flag))
 }
 
 func getBool(flag *Flag) bool {
-	if flag == nil {
-		return false
-	}
-	return viper.GetBool(flag.ConfigName)
+	return cast.ToBool(getValue(flag))
 }
 
 func getDuration(flag *Flag) time.Duration {
+	return cast.ToDuration(getValue(flag))
+}
+
+func getValue(flag *Flag) any {
 	if flag == nil {
-		return 0
+		return nil
 	}
-	return viper.GetDuration(flag.ConfigName)
+
+	// First, looks for aliases in config file (trivy.yaml).
+	// Note that viper.RegisterAlias cannot be used for this purpose.
+	var v any
+	for _, alias := range flag.Aliases {
+		if alias.ConfigName == "" {
+			continue
+		}
+		v = viper.Get(alias.ConfigName)
+		if v != nil {
+			log.Logger.Warnf("'%s' in config file is deprecated. Use '%s' instead.", alias.ConfigName, flag.ConfigName)
+			return v
+		}
+	}
+	return viper.Get(flag.ConfigName)
 }
 
 func (f *Flags) groups() []FlagGroup {
@@ -260,13 +303,17 @@ func (f *Flags) groups() []FlagGroup {
 }
 
 func (f *Flags) AddFlags(cmd *cobra.Command) {
+	aliases := make(flagAliases)
 	for _, group := range f.groups() {
 		for _, flag := range group.Flags() {
 			addFlag(cmd, flag)
+
+			// Register flag aliases
+			aliases.Add(flag)
 		}
 	}
 
-	cmd.Flags().SetNormalizeFunc(flagNameNormalize)
+	cmd.Flags().SetNormalizeFunc(aliases.NormalizeFunc())
 }
 
 func (f *Flags) Usages(cmd *cobra.Command) string {
@@ -403,18 +450,38 @@ func (f *Flags) ToOptions(appVersion string, args []string, globalFlags *GlobalF
 	return opts, nil
 }
 
-func flagNameNormalize(f *pflag.FlagSet, name string) pflag.NormalizedName {
-	switch name {
-	case "skip-update":
-		name = SkipDBUpdateFlag.Name
-	case "policy":
-		name = ConfigPolicyFlag.Name
-	case "data":
-		name = ConfigDataFlag.Name
-	case "namespaces":
-		name = PolicyNamespaceFlag.Name
-	case "ctx":
-		name = ClusterContextFlag.Name
+type flagAlias struct {
+	formalName string
+	deprecated bool
+	once       sync.Once
+}
+
+// flagAliases have aliases for CLI flags
+type flagAliases map[string]*flagAlias
+
+func (a flagAliases) Add(flag *Flag) {
+	if flag == nil {
+		return
 	}
-	return pflag.NormalizedName(name)
+	for _, alias := range flag.Aliases {
+		a[alias.Name] = &flagAlias{
+			formalName: flag.Name,
+			deprecated: alias.Deprecated,
+		}
+	}
+}
+
+func (a flagAliases) NormalizeFunc() func(*pflag.FlagSet, string) pflag.NormalizedName {
+	return func(_ *pflag.FlagSet, name string) pflag.NormalizedName {
+		if alias, ok := a[name]; ok {
+			if alias.deprecated {
+				// NormalizeFunc is called several times
+				alias.once.Do(func() {
+					log.Logger.Warnf("'--%s' is deprecated. Use '--%s' instead.", name, alias.formalName)
+				})
+			}
+			name = alias.formalName
+		}
+		return pflag.NormalizedName(name)
+	}
 }

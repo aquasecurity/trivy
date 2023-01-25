@@ -25,7 +25,7 @@ In addition to package licenses, Trivy scans source code files, Markdown documen
 
 Currently, the standard license scanning doesn't support filesystem and repository scanning.
 
-|   License scnanning   | Image | Rootfs    | Filesystem | Repository |
+|   License scanning    | Image | Rootfs    | Filesystem | Repository |
 |:---------------------:|:-----:|:---------:|:----------:|:----------:|
 |       Standard        |  ✅   |     ✅    |   -        |      -     |
 | Full (--license-full) |  ✅   |     ✅    |     ✅     |     ✅     |
@@ -47,10 +47,10 @@ License checking classifies the identified licenses and map the classification t
 This section shows how to scan license in container image and filesystem.
 
 ### Standard scanning
-Specify an image name with `--security-checks license`.
+Specify an image name with `--scanners license`.
 
 ``` shell
-$ trivy image --security-checks license --severity UNKNOWN,HIGH,CRITICAL alpine:3.15
+$ trivy image --scanners license --severity UNKNOWN,HIGH,CRITICAL alpine:3.15
 2022-07-13T17:28:39.526+0300    INFO    License scanning is enabled
 
 OS Packages (license)
@@ -78,7 +78,7 @@ Total: 6 (UNKNOWN: 0, HIGH: 6, CRITICAL: 0)
 Specify `--license-full`
 
 ``` shell
-$ trivy image --security-checks license --severity UNKNOWN,HIGH,CRITICAL --license-full grafana/grafana
+$ trivy image --scanners license --severity UNKNOWN,HIGH,CRITICAL --license-full grafana/grafana
 2022-07-13T17:48:40.905+0300    INFO    Full license scanning is enabled
 
 OS Packages (license)
@@ -141,7 +141,7 @@ Trivy has number of configuration flags for use with license scanning;
 Trivy license scanning can ignore licenses that are identified to explicitly remove them from the results using the `--ignored-licenses` flag;
 
 ```shell
-$ trivy image --security-checks license --ignored-licenses MPL-2.0,MIT --severity LOW grafana/grafana:latest
+$ trivy image --scanners license --ignored-licenses MPL-2.0,MIT --severity LOW grafana/grafana:latest
 2022-07-13T18:15:28.605Z        INFO    License scanning is enabled
 
 OS Packages (license)

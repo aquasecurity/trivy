@@ -114,7 +114,7 @@ func (s Scanner) Scan(ctx context.Context, target, artifactKey string, blobKeys 
 	}
 
 	// Scan packages for vulnerabilities
-	if slices.Contains(options.SecurityChecks, types.SecurityCheckVulnerability) {
+	if slices.Contains(options.Scanners, types.VulnerabilityScanner) {
 		var vulnResults types.Results
 		vulnResults, eosl, err = s.scanVulnerabilities(target, artifactDetail, options)
 		if err != nil {
@@ -132,7 +132,7 @@ func (s Scanner) Scan(ctx context.Context, target, artifactKey string, blobKeys 
 	}
 
 	// Scan IaC config files
-	if ShouldScanMisconfigOrRbac(options.SecurityChecks) {
+	if ShouldScanMisconfigOrRbac(options.Scanners) {
 		if im := artifactDetail.ImageMisconfiguration; im != nil {
 			im.FilePath = target // Set the target name to the file path as container image config is not a real file.
 			results = append(results, s.MisconfsToResults([]ftypes.Misconfiguration{*im})...)
@@ -143,13 +143,13 @@ func (s Scanner) Scan(ctx context.Context, target, artifactKey string, blobKeys 
 	}
 
 	// Scan secrets
-	if slices.Contains(options.SecurityChecks, types.SecurityCheckSecret) {
+	if slices.Contains(options.Scanners, types.SecretScanner) {
 		secretResults := s.secretsToResults(artifactDetail.Secrets)
 		results = append(results, secretResults...)
 	}
 
 	// Scan licenses
-	if slices.Contains(options.SecurityChecks, types.SecurityCheckLicense) {
+	if slices.Contains(options.Scanners, types.LicenseScanner) {
 		licenseResults := s.scanLicenses(artifactDetail, options.LicenseCategories)
 		results = append(results, licenseResults...)
 	}
@@ -543,7 +543,7 @@ func mergePkgs(pkgs, pkgsFromCommands []ftypes.Package) []ftypes.Package {
 	return pkgs
 }
 
-func ShouldScanMisconfigOrRbac(securityChecks []string) bool {
-	return slices.Contains(securityChecks, types.SecurityCheckConfig) ||
-		slices.Contains(securityChecks, types.SecurityCheckRbac)
+func ShouldScanMisconfigOrRbac(scanners []string) bool {
+	return slices.Contains(scanners, types.MisconfigScanner) ||
+		slices.Contains(scanners, types.RBACScanner)
 }
