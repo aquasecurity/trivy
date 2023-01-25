@@ -190,62 +190,36 @@ func externalRef(bomLink string, bomRef string) (string, error) {
 	return fmt.Sprintf("%s/%d#%s", strings.Replace(bomLink, "uuid", "cdx", 1), cdx.BOMFileFormatJSON, bomRef), nil
 }
 
-func generateDependencyGraph(sourceDependencies map[string][]string, idBomMap map[string]string) ([]cdx.Dependency, []cdx.Dependency) {
-	heads := []cdx.Dependency{}
-	deps := []cdx.Dependency{}
-
-	dependents := map[string]struct{}{}
-	bomDeps := map[string]*cdx.Dependency{}
-
-	for sourceId, sourceDependents := range sourceDependencies {
-		bomRef := idBomMap[sourceId]
-
-		dependencies := []string{}
-		for _, sourceDepId := range sourceDependents {
-			dependentBomRef := idBomMap[sourceDepId]
-			if _, ok := bomDeps[dependentBomRef]; !ok {
-				bomDeps[dependentBomRef] = &cdx.Dependency{
-					Ref: dependentBomRef,
-				}
-			}
-			dependents[dependentBomRef] = struct{}{}
-			dependencies = append(dependencies, dependentBomRef)
-		}
-		sort.Strings(dependencies)
-
-		dependency := cdx.Dependency{
-			Ref:          bomRef,
-			Dependencies: &dependencies,
-		}
-		bomDeps[bomRef] = &dependency
-		deps = append(deps, dependency)
-	}
-
-	for _, depId := range maps.Keys(bomDeps) {
-		if _, ok := dependents[depId]; !ok {
-			heads = append(heads, *bomDeps[depId])
+func getDependencyHead(dependenciesById map[string][]string, mapIdToBom map[string]string) []string {
+	res := []string{}
+	dependent := map[string]bool{}
+	for _, v := range dependenciesById {
+		for _, id := range v {
+			dependent[id] = true
 		}
 	}
-	sort.SliceStable(heads, func(i, j int) bool {
-		return heads[i].Ref < heads[j].Ref
-	})
-	sort.SliceStable(deps, func(i, j int) bool {
-		return deps[i].Ref < deps[j].Ref
-	})
-	return heads, deps
+	for id, bom := range mapIdToBom {
+		if !dependent[id] {
+			res = append(res, bom)
+		}
+	}
+	sort.Strings(res)
+	return res
 }
 
 func (e *Marshaler) marshalComponents(r types.Report, bomRef string) (*[]cdx.Component, *[]cdx.Dependency, *[]cdx.Vulnerability, error) {
 	var components []cdx.Component
-	dependencies := map[string]*[]string{}
-	var metadataDependencies []cdx.Dependency
+	// we use map to avoid duplicate components
+	dependencies := map[string]cdx.Dependency{}
+	var metadataDependencies []string
 	libraryUniqMap := map[string]struct{}{}
 	vulnMap := map[string]cdx.Vulnerability{}
 	for _, result := range r.Results {
 		bomRefMap := map[string]string{}
-		bomPkgIDMap := map[string]string{}
-		depGraph := map[string][]string{}
-		var componentDependencies []cdx.Dependency
+
+		mapPkgIdToBom := map[string]string{}
+		depsGraphByIDs := map[string][]string{}
+
 		for _, pkg := range result.Packages {
 			pkgComponent, err := pkgToCdxComponent(result.Type, r.Metadata, pkg)
 			if err != nil {
@@ -254,8 +228,11 @@ func (e *Marshaler) marshalComponents(r types.Report, bomRef string) (*[]cdx.Com
 			pkgID := packageID(result.Target, pkg.Name, utils.FormatVersion(pkg), pkg.FilePath)
 			if _, ok := bomRefMap[pkgID]; !ok {
 				bomRefMap[pkgID] = pkgComponent.BOMRef
-				componentDependencies = append(componentDependencies, cdx.Dependency{Ref: bomRef})
 			}
+			// collect data for dependency tree
+			mapPkgIdToBom[pkg.ID] = pkgComponent.BOMRef
+			depsGraphByIDs[pkg.ID] = pkg.DependsOn
+
 			// When multiple lock files have the same dependency with the same name and version,
 			// "bom-ref" (PURL technically) of Library components may conflict.
 			// In that case, only one Library component will be added and
@@ -274,16 +251,19 @@ func (e *Marshaler) marshalComponents(r types.Report, bomRef string) (*[]cdx.Com
 				// ref. https://cyclonedx.org/use-cases/#inventory
 				components = append(components, pkgComponent)
 			}
-			bomPkgIDMap[pkg.ID] = pkgComponent.BOMRef
-			depGraph[pkg.ID] = pkg.DependsOn
 		}
-		headDependencies, currentDependencies := generateDependencyGraph(depGraph, bomPkgIDMap)
-		// add only new dependencies
-		for _, d := range currentDependencies {
-			if _, ok := dependencies[d.Ref]; !ok {
-				dependencies[d.Ref] = d.Dependencies
+		// constructs dependency tree
+		for pkgID, deps := range depsGraphByIDs {
+			bomDeps := []string{}
+			for _, dep := range deps {
+				bomDeps = append(bomDeps, mapPkgIdToBom[dep])
+			}
+			dependencies[mapPkgIdToBom[pkgID]] = cdx.Dependency{
+				Ref:          mapPkgIdToBom[pkgID],
+				Dependencies: &bomDeps,
 			}
 		}
+		headDependencies := getDependencyHead(depsGraphByIDs, mapPkgIdToBom)
 
 		for _, vuln := range result.Vulnerabilities {
 			// Take a bom-ref
@@ -336,10 +316,10 @@ func (e *Marshaler) marshalComponents(r types.Report, bomRef string) (*[]cdx.Com
 			components = append(components, resultComponent)
 
 			// Dependency graph from #2 to #3
-			//dependencies[resultComponent.BOMRef] = cdx.Dependency{Ref: resultComponent.BOMRef, Dependencies: &headDependencies}
+			dependencies[resultComponent.BOMRef] = cdx.Dependency{Ref: resultComponent.BOMRef, Dependencies: &headDependencies}
 
 			// Dependency graph from #1 to #2
-			metadataDependencies = append(metadataDependencies, cdx.Dependency{Ref: resultComponent.BOMRef})
+			metadataDependencies = append(metadataDependencies, resultComponent.BOMRef)
 		}
 	}
 
@@ -348,10 +328,12 @@ func (e *Marshaler) marshalComponents(r types.Report, bomRef string) (*[]cdx.Com
 		return vulns[i].ID > vulns[j].ID
 	})
 
-	//dependencies[bomRef] = cdx.Dependency{Ref: bomRef, Dependencies: &metadataDependencies}
-	//deps := maps.Values(dependencies)
-	deps := []cdx.Dependency{}
-	return &components, &deps, &vulns, nil
+	dependencies[bomRef] = cdx.Dependency{Ref: bomRef, Dependencies: &metadataDependencies}
+	dependenciesList := maps.Values(dependencies)
+	sort.Slice(dependenciesList, func(i, j int) bool {
+		return dependenciesList[i].Ref < dependenciesList[j].Ref
+	})
+	return &components, &dependenciesList, &vulns, nil
 }
 
 func packageID(target, pkgName, pkgVersion, pkgFilePath string) string {

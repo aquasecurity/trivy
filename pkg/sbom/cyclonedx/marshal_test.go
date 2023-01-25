@@ -407,8 +407,8 @@ func TestMarshaler_Marshal(t *testing.T) {
 					{
 						Ref: "3ff14136-e09f-4df9-80ea-000000000003",
 						Dependencies: &[]string{
-							"pkg:gem/actionpack@7.0.0",
 							"pkg:gem/actioncontroller@7.0.0",
+							"pkg:gem/actionpack@7.0.0",
 						},
 					},
 					{
@@ -425,15 +425,15 @@ func TestMarshaler_Marshal(t *testing.T) {
 					},
 					{
 						Ref:          "pkg:gem/actioncontroller@7.0.0",
-						Dependencies: &[]cdx.Dependency{},
+						Dependencies: &[]string{},
 					},
 					{
 						Ref:          "pkg:gem/actionpack@7.0.0",
-						Dependencies: &[]cdx.Dependency{},
+						Dependencies: &[]string{},
 					},
 					{
 						Ref:          "pkg:nuget/Newtonsoft.Json@9.0.1",
-						Dependencies: &[]cdx.Dependency{},
+						Dependencies: &[]string{},
 					},
 					{
 						Ref: "3ff14136-e09f-4df9-80ea-000000000006",
@@ -443,7 +443,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 					},
 					{
 						Ref:          "pkg:golang/golang.org/x/crypto@v0.0.0-20210421170649-83a5a9bb288b",
-						Dependencies: &[]cdx.Dependency{},
+						Dependencies: &[]string{},
 					},
 					{
 						Ref: "pkg:oci/rails@sha256:a27fd8080b517143cbbbab9dfb7c8571c40d67d534bbdee55bd6c473f432b177?repository_url=index.docker.io%2Flibrary%2Frails&arch=arm64",
@@ -457,7 +457,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 					},
 					{
 						Ref:          "pkg:rpm/centos/binutils@2.30-93.el8?arch=aarch64&distro=centos-8.3.2011",
-						Dependencies: &[]cdx.Dependency{},
+						Dependencies: &[]string{},
 					},
 				},
 				Vulnerabilities: &[]cdx.Vulnerability{
@@ -829,12 +829,6 @@ func TestMarshaler_Marshal(t *testing.T) {
 				},
 				Dependencies: &[]cdx.Dependency{
 					{
-						Ref: "3ff14136-e09f-4df9-80ea-000000000003",
-						Dependencies: &[]string{
-							"pkg:rpm/centos/acl@1:2.2.53-1.el8?arch=aarch64&distro=centos-8.3.2011",
-						},
-					},
-					{
 						Ref: "3ff14136-e09f-4df9-80ea-000000000002",
 						Dependencies: &[]string{
 							"3ff14136-e09f-4df9-80ea-000000000003",
@@ -844,24 +838,21 @@ func TestMarshaler_Marshal(t *testing.T) {
 					},
 					{
 						Ref: "3ff14136-e09f-4df9-80ea-000000000003",
-						Dependencies: &[]cdx.Dependency{
-							{
-								Ref:          "pkg:rpm/centos/acl@1:2.2.53-1.el8?arch=aarch64&distro=centos-8.3.2011",
-								Dependencies: &[]cdx.Dependency{},
-							},
+						Dependencies: &[]string{
+							"pkg:rpm/centos/acl@1:2.2.53-1.el8?arch=aarch64&distro=centos-8.3.2011",
 						},
 					},
 					{
 						Ref:          "pkg:gem/actionpack@7.0.0?file_path=tools%2Fproject-john%2Fspecifications%2Factionpack.gemspec",
-						Dependencies: &[]cdx.Dependency{},
+						Dependencies: &[]string{},
 					},
 					{
 						Ref:          "pkg:gem/actionpack@7.0.1?file_path=tools%2Fproject-doe%2Fspecifications%2Factionpack.gemspec",
-						Dependencies: &[]cdx.Dependency{},
+						Dependencies: &[]string{},
 					},
 					{
 						Ref:          "pkg:rpm/centos/acl@1:2.2.53-1.el8?arch=aarch64&distro=centos-8.3.2011",
-						Dependencies: &[]cdx.Dependency{},
+						Dependencies: &[]string{},
 					},
 				},
 				Vulnerabilities: &[]cdx.Vulnerability{
@@ -1035,7 +1026,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 					},
 					{
 						Ref:          "pkg:gem/actioncable@6.1.4.1",
-						Dependencies: &[]cdx.Dependency{},
+						Dependencies: &[]string{},
 					},
 				},
 			},
@@ -1133,7 +1124,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 					},
 					{
 						Ref:          "pkg:npm/ruby-typeprof@0.20.1?file_path=usr%2Flocal%2Flib%2Fruby%2Fgems%2F3.1.0%2Fgems%2Ftypeprof-0.21.1%2Fvscode%2Fpackage.json",
-						Dependencies: &[]cdx.Dependency{},
+						Dependencies: &[]string{},
 					},
 				},
 			},
