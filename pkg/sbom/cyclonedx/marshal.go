@@ -230,8 +230,13 @@ func (e *Marshaler) marshalComponents(r types.Report, bomRef string) (*[]cdx.Com
 				bomRefMap[pkgID] = pkgComponent.BOMRef
 			}
 			// collect data for dependency tree
-			mapPkgIdToBom[pkg.ID] = pkgComponent.BOMRef
-			depsGraphByIDs[pkg.ID] = pkg.DependsOn
+			originalPkgId := pkg.ID
+			// we can't create dependency tree for packages without ID (e.x. conda)
+			if originalPkgId == "" {
+				originalPkgId = fmt.Sprintf("%s:%s", pkg.Name, pkg.Version)
+			}
+			mapPkgIdToBom[originalPkgId] = pkgComponent.BOMRef
+			depsGraphByIDs[originalPkgId] = pkg.DependsOn
 
 			// When multiple lock files have the same dependency with the same name and version,
 			// "bom-ref" (PURL technically) of Library components may conflict.
