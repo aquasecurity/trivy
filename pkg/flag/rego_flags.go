@@ -24,18 +24,27 @@ var (
 		ConfigName: "rego.policy",
 		Value:      []string{},
 		Usage:      "specify paths to the Rego policy files directory, applying config files",
+		Aliases: []Alias{
+			{Name: "policy"},
+		},
 	}
 	ConfigDataFlag = Flag{
 		Name:       "config-data",
 		ConfigName: "rego.data",
 		Value:      []string{},
 		Usage:      "specify paths from which data for the Rego policies will be recursively loaded",
+		Aliases: []Alias{
+			{Name: "data"},
+		},
 	}
 	PolicyNamespaceFlag = Flag{
 		Name:       "policy-namespaces",
 		ConfigName: "rego.namespaces",
 		Value:      []string{},
 		Usage:      "Rego namespaces",
+		Aliases: []Alias{
+			{Name: "namespaces"},
+		},
 	}
 )
 
