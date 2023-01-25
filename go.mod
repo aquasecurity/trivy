@@ -20,7 +20,7 @@ require (
 	github.com/aquasecurity/testdocker v0.0.0-20230111101738-e741bda259da
 	github.com/aquasecurity/tml v0.6.1
 	github.com/aquasecurity/trivy-db v0.0.0-20230116084806-4bcdf1c414d0
-	github.com/aquasecurity/trivy-kubernetes v0.3.1-0.20221021174315-8d74450b4506
+	github.com/aquasecurity/trivy-kubernetes v0.3.1-0.20230124152305-a266786d8ded
 	github.com/aws/aws-sdk-go v1.44.171
 	github.com/aws/aws-sdk-go-v2 v1.17.3
 	github.com/aws/aws-sdk-go-v2/config v1.18.3
@@ -78,12 +78,13 @@ require (
 	golang.org/x/xerrors v0.0.0-20220907171357-04be3eba64a2
 	google.golang.org/protobuf v1.28.1
 	gopkg.in/yaml.v3 v3.0.1
-	k8s.io/utils v0.0.0-20220728103510-ee6ede2d64ed
+	k8s.io/utils v0.0.0-20221107191617-1a15be271d1d
 )
 
 require (
 	github.com/moby/patternmatcher v0.5.0 // indirect
 	github.com/moby/sys/sequential v0.5.0 // indirect
+	github.com/russross/blackfriday/v2 v2.1.0 // indirect
 )
 
 require (
@@ -195,7 +196,7 @@ require (
 	github.com/docker/go-events v0.0.0-20190806004212-e31b211e4f1c // indirect
 	github.com/docker/go-metrics v0.0.1 // indirect
 	github.com/docker/go-units v0.5.0 // indirect
-	github.com/emicklei/go-restful/v3 v3.8.0 // indirect
+	github.com/emicklei/go-restful/v3 v3.9.0 // indirect
 	github.com/emirpasic/gods v1.12.0 // indirect
 	github.com/evanphx/json-patch v5.6.0+incompatible // indirect
 	github.com/exponent-io/jsonpath v0.0.0-20151013193312-d6023ce2651d // indirect
@@ -308,7 +309,6 @@ require (
 	github.com/remyoudompheng/bigfft v0.0.0-20200410134404-eec4a21b6bb0 // indirect
 	github.com/rivo/uniseg v0.2.0 // indirect
 	github.com/rubenv/sql-migrate v1.1.2 // indirect
-	github.com/russross/blackfriday v1.6.0 // indirect
 	github.com/saracen/walker v0.0.0-20191201085201-324a081bae7e
 	github.com/sergi/go-diff v1.1.0 // indirect
 	github.com/shibumi/go-pathspec v1.3.0 // indirect
@@ -359,16 +359,16 @@ require (
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 	gotest.tools v2.2.0+incompatible
 	helm.sh/helm/v3 v3.10.3 // indirect
-	k8s.io/api v0.25.3 // indirect
+	k8s.io/api v0.26.1 // indirect
 	k8s.io/apiextensions-apiserver v0.25.2 // indirect
-	k8s.io/apimachinery v0.25.3 // indirect
+	k8s.io/apimachinery v0.26.1 // indirect
 	k8s.io/apiserver v0.25.2 // indirect
-	k8s.io/cli-runtime v0.25.3 // indirect
-	k8s.io/client-go v0.25.3 // indirect
-	k8s.io/component-base v0.25.3 // indirect
-	k8s.io/klog/v2 v2.70.1 // indirect
-	k8s.io/kube-openapi v0.0.0-20220803162953-67bda5d908f1 // indirect
-	k8s.io/kubectl v0.25.3 // indirect
+	k8s.io/cli-runtime v0.26.1 // indirect
+	k8s.io/client-go v0.26.1 // indirect
+	k8s.io/component-base v0.26.1 // indirect
+	k8s.io/klog/v2 v2.80.1 // indirect
+	k8s.io/kube-openapi v0.0.0-20221012153701-172d655c2280 // indirect
+	k8s.io/kubectl v0.26.1 // indirect
 	lukechampine.com/uint128 v1.1.1 // indirect
 	modernc.org/cc/v3 v3.36.0 // indirect
 	modernc.org/ccgo/v3 v3.16.6 // indirect
