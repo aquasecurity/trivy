@@ -347,8 +347,21 @@ func (ag AnalyzerGroup) AnalyzerVersions() map[string]int {
 	return versions
 }
 
-func (ag AnalyzerGroup) AnalyzeFile(ctx context.Context, wg *sync.WaitGroup, limit *semaphore.Weighted, result *AnalysisResult,
+// ImageConfigAnalyzerVersions returns analyzer version identifier used for cache keys.
+func (ag AnalyzerGroup) ImageConfigAnalyzerVersions() map[string]int {
+	versions := map[string]int{}
+	for _, ca := range ag.configAnalyzers {
+		versions[string(ca.Type())] = ca.Version()
+	}
+	return versions
+}
+
+func (ag AnalyzerGroup) AnalyzeFile(ctx context.Context, wg *sync.WaitGroup, terminateWalk *bool, terminateError *string, limit *semaphore.Weighted, result *AnalysisResult,
 	dir, filePath string, info os.FileInfo, opener Opener, disabled []Type, opts AnalysisOptions) error {
+	// if a goroutine encountered an error while analyzing the file then skip further processing
+	if *terminateWalk {
+		return nil
+	}
 	if info.IsDir() {
 		return nil
 	}
@@ -383,6 +396,11 @@ func (ag AnalyzerGroup) AnalyzeFile(ctx context.Context, wg *sync.WaitGroup, lim
 			defer wg.Done()
 			defer rc.Close()
 
+			// if a goroutine encountered an error while analyzing the file then skip further processing
+			if *terminateWalk {
+				return
+			}
+
 			ret, err := a.Analyze(ctx, AnalysisInput{
 				Dir:      dir,
 				FilePath: filePath,
@@ -391,7 +409,10 @@ func (ag AnalyzerGroup) AnalyzeFile(ctx context.Context, wg *sync.WaitGroup, lim
 				Options:  opts,
 			})
 			if err != nil && !errors.Is(err, aos.AnalyzeOSError) {
-				log.Logger.Debugf("Analysis error: %s", err)
+				log.Logger.Errorf("Analysis error: %s", err)
+				// Terminate walk and update error
+				*terminateWalk = true
+				*terminateError = err.Error()
 				return
 			}
 			if ret != nil {

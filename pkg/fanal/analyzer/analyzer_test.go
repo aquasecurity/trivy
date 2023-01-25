@@ -453,6 +453,8 @@ func TestAnalyzerGroup_AnalyzeFile(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			var wg sync.WaitGroup
+			var terminateWalk bool
+			var terminateError string
 			limit := semaphore.NewWeighted(3)
 
 			got := new(analyzer.AnalysisResult)
@@ -471,7 +473,7 @@ func TestAnalyzerGroup_AnalyzeFile(t *testing.T) {
 			require.NoError(t, err)
 
 			ctx := context.Background()
-			err = a.AnalyzeFile(ctx, &wg, limit, got, "", tt.args.filePath, info,
+			err = a.AnalyzeFile(ctx, &wg, &terminateWalk, &terminateError, limit, got, "", tt.args.filePath, info,
 				func() (dio.ReadSeekCloserAt, error) {
 					if tt.args.testFilePath == "testdata/error" {
 						return nil, xerrors.New("error")
