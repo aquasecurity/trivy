@@ -149,6 +149,19 @@ func (s Scanner) Scan(ctx context.Context, target, artifactKey string, blobKeys 
 		results = append(results, licenseResults...)
 	}
 
+	// Scan misconfiguration on container image config
+	if options.ImageConfigScanners.Enabled(types.MisconfigScanner) {
+		if im := artifactDetail.ImageMisconfiguration; im != nil {
+			im.FilePath = target // Set the target name to the file path as container image config is not a real file.
+			results = append(results, s.MisconfsToResults([]ftypes.Misconfiguration{*im})...)
+		}
+	}
+
+	// Scan secrets on container image config
+	if options.ImageConfigScanners.Enabled(types.SecretScanner) {
+		// TODO
+	}
+
 	// For WASM plugins and custom analyzers
 	if len(artifactDetail.CustomResources) != 0 {
 		results = append(results, types.Result{

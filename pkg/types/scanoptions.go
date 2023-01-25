@@ -8,6 +8,7 @@ import (
 type ScanOptions struct {
 	VulnType            []string
 	Scanners            Scanners
+	ImageConfigScanners Scanners // Scanners for container image configuration
 	ScanRemovedPackages bool
 	Platform            string
 	ListAllPackages     bool
