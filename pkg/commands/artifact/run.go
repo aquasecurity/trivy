@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"github.com/aquasecurity/trivy/pkg/java_db"
 	"os"
 
 	"github.com/hashicorp/go-multierror"
@@ -304,6 +305,10 @@ func (r *runner) initDB(opts flag.Options) error {
 	// download the database file
 	noProgress := opts.Quiet || opts.NoProgress
 	if err := operation.DownloadDB(opts.AppVersion, opts.CacheDir, opts.DBRepository, noProgress, opts.Insecure, opts.SkipDBUpdate); err != nil {
+		return err
+	}
+
+	if err := java_db.InitJavaDB(opts.CacheDir, noProgress, opts.Insecure); err != nil {
 		return err
 	}
 
