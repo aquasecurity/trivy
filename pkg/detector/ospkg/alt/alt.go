@@ -22,8 +22,8 @@ import (
 
 var (
 	eolDates = map[string]time.Time{
-		"9":  time.Date(2023, 12, 31, 23, 59, 59, 0, time.UTC),
-		"10": time.Date(2024, 6, 30, 23, 59, 59, 0, time.UTC),
+		"p9":  time.Date(2023, 12, 31, 23, 59, 59, 0, time.UTC),
+		"p10": time.Date(2024, 6, 30, 23, 59, 59, 0, time.UTC),
 	}
 )
 
@@ -39,7 +39,7 @@ func WithClock(clock clock.Clock) option {
 	}
 }
 
-// Scanner implements the ALT scanner
+// Scanner implements the ALT scanner with RedHat` vuln source
 type Scanner struct {
 	vs redhat.VulnSrc
 	*options
@@ -101,8 +101,6 @@ func (s *Scanner) detect(osVer string, pkg ftypes.Package) ([]types.DetectedVuln
 	var contentSets []string
 	var nvr string
 	if pkg.BuildInfo == nil {
-		//contentSets = defaultContentSets[osVer]
-		//contentSets = []string{"rhel-7-server-rpms", "rhel-7-server-extras-rpms"}
 		contentSets = []string{"rhel-9-for-x86_64-baseos-rpms", "rhel-9-for-x86_64-appstream-rpms"}
 	} else {
 		contentSets = pkg.BuildInfo.ContentSets

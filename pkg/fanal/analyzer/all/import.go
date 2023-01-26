@@ -32,7 +32,6 @@ import (
 	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/language/swift/cocoapods"
 	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/licensing"
 	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/os/alpine"
-	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/os/alt"
 	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/os/amazonlinux"
 	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/os/debian"
 	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/os/mariner"
