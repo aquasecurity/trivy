@@ -2,9 +2,13 @@ package jar
 
 import (
 	"context"
+	"github.com/aquasecurity/trivy-db/pkg/metadata"
+	"github.com/aquasecurity/trivy/pkg/fanal/log"
+	"github.com/aquasecurity/trivy/pkg/oci"
 	"os"
 	"path/filepath"
 	"strings"
+	"time"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 
@@ -19,7 +23,11 @@ func init() {
 	analyzer.RegisterAnalyzer(&javaLibraryAnalyzer{})
 }
 
-const version = 1
+const (
+	version   = 1
+	mediaType = "application/vnd.aquasec.trivy.java.db.layer.v1.tar+gzip"
+	repo      = "ghcr.io/dmitriylewen/trivy-java-db:latest"
+)
 
 var requiredExtensions = []string{".jar", ".war", ".ear", ".par"}
 
@@ -40,6 +48,15 @@ func (a javaLibraryAnalyzer) Required(filePath string, _ os.FileInfo) bool {
 	ext := filepath.Ext(filePath)
 	for _, required := range requiredExtensions {
 		if strings.EqualFold(ext, required) {
+			cacheDir := "/home/dmitriy/.cache/trivy/java-db" // TODO change this
+			c := metadata.NewClient(cacheDir)
+			meta, err := c.Get()
+			if err != nil || meta.NextUpdate.Before(time.Now().UTC()) {
+				err = downloadTrivyJavaDB(filepath.Join(cacheDir, "db"), false, false) // TODO add flags
+				if err != nil {
+					log.Logger.Warn("can't download trivy-java-db: %w", err)
+				}
+			}
 			return true
 		}
 	}
@@ -52,4 +69,16 @@ func (a javaLibraryAnalyzer) Type() analyzer.Type {
 
 func (a javaLibraryAnalyzer) Version() int {
 	return version
+}
+
+func downloadTrivyJavaDB(cacheDir string, quiet, insecure bool) error {
+	artifact, err := oci.NewArtifact(repo, mediaType, quiet, insecure)
+	if err != nil {
+		return xerrors.Errorf("trivy-java-db artifact initialize error: %w", err) // TODO change this!!!
+	}
+	err = artifact.Download(context.Background(), cacheDir)
+	if err != nil {
+		return xerrors.Errorf("trivy-java-db download error: %w", err)
+	}
+	return nil
 }
