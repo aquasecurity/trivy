@@ -2,16 +2,17 @@ package jar
 
 import (
 	"context"
-	"github.com/aquasecurity/trivy/pkg/fanal/types"
-	"github.com/aquasecurity/trivy/pkg/java_db"
-	"golang.org/x/xerrors"
 	"os"
 	"path/filepath"
 	"strings"
 
+	"golang.org/x/xerrors"
+
 	"github.com/aquasecurity/go-dep-parser/pkg/java/jar"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer/language"
+	"github.com/aquasecurity/trivy/pkg/fanal/types"
+	"github.com/aquasecurity/trivy/pkg/java_db"
 )
 
 func init() {
