@@ -32,18 +32,15 @@ func Filter(ctx context.Context, result *types.Result, severities []dbTypes.Seve
 	ignoreFile, policyFile string, ignoreLicenses []string) error {
 	ignoredIDs := getIgnoredIDs(ignoreFile)
 
-	filteredVulns := filterVulnerabilities(result.Vulnerabilities, severities, ignoreUnfixed, ignoredIDs)
-	misconfSummary, filteredMisconfs := filterMisconfigurations(result.Misconfigurations, severities, includeNonFailures, ignoredIDs)
+	policy, err := initPolicy(ctx, policyFile)
+	if err != nil {
+		return xerrors.Errorf("failed to init the policy: %w", err)
+	}
+
+	filteredVulns := filterVulnerabilities(ctx, result.Vulnerabilities, severities, ignoreUnfixed, ignoredIDs, policy)
+	misconfSummary, filteredMisconfs := filterMisconfigurations(ctx, result.Misconfigurations, severities, includeNonFailures, ignoredIDs, policy)
 	result.Secrets = filterSecrets(result.Secrets, severities, ignoredIDs)
 	result.Licenses = filterLicenses(result.Licenses, severities, ignoreLicenses)
-
-	if policyFile != "" {
-		var err error
-		filteredVulns, filteredMisconfs, err = applyPolicy(ctx, filteredVulns, filteredMisconfs, policyFile)
-		if err != nil {
-			return xerrors.Errorf("failed to apply the policy: %w", err)
-		}
-	}
 	sort.Sort(types.BySeverity(filteredVulns))
 
 	result.Vulnerabilities = filteredVulns
@@ -53,61 +50,82 @@ func Filter(ctx context.Context, result *types.Result, severities []dbTypes.Seve
 	return nil
 }
 
-func filterVulnerabilities(vulns []types.DetectedVulnerability, severities []dbTypes.Severity,
-	ignoreUnfixed bool, ignoredIDs []string) []types.DetectedVulnerability {
+func filterVulnerabilities(ctx context.Context, vulns []types.DetectedVulnerability, severities []dbTypes.Severity,
+	ignoreUnfixed bool, ignoredIDs []string, policy *rego.PreparedEvalQuery) []types.DetectedVulnerability {
 	uniqVulns := make(map[string]types.DetectedVulnerability)
 	for _, vuln := range vulns {
 		if vuln.Severity == "" {
 			vuln.Severity = dbTypes.SeverityUnknown.String()
 		}
+
 		// Filter vulnerabilities by severity
-		for _, s := range severities {
-			if s.String() != vuln.Severity {
-				continue
-			}
-
-			// Ignore unfixed vulnerabilities
-			if ignoreUnfixed && vuln.FixedVersion == "" {
-				continue
-			} else if slices.Contains(ignoredIDs, vuln.VulnerabilityID) {
-				continue
-			}
-
-			// Check if there is a duplicate vulnerability
-			key := fmt.Sprintf("%s/%s/%s/%s", vuln.VulnerabilityID, vuln.PkgName, vuln.InstalledVersion, vuln.PkgPath)
-			if old, ok := uniqVulns[key]; ok && !shouldOverwrite(old, vuln) {
-				continue
-			}
-			uniqVulns[key] = vuln
-			break
+		severity, _ := dbTypes.NewSeverity(vuln.Severity)
+		if !slices.Contains(severities, severity) {
+			continue
 		}
+
+		// Ignore unfixed vulnerabilities
+		if ignoreUnfixed && vuln.FixedVersion == "" {
+			continue
+		} else if slices.Contains(ignoredIDs, vuln.VulnerabilityID) {
+			continue
+		}
+
+		if policy != nil {
+			ignored, err := evaluatePolicy(ctx, *policy, vuln)
+			if err != nil {
+				log.Logger.Errorf("Unable to evaluate policy %v", err)
+			} else if ignored {
+				continue
+			}
+		}
+
+		// Check if there is a duplicate vulnerability
+		key := fmt.Sprintf("%s/%s/%s/%s", vuln.VulnerabilityID, vuln.PkgName, vuln.InstalledVersion, vuln.PkgPath)
+		if old, ok := uniqVulns[key]; ok && !shouldOverwrite(old, vuln) {
+			continue
+		}
+		uniqVulns[key] = vuln
 	}
 	return maps.Values(uniqVulns)
 }
 
-func filterMisconfigurations(misconfs []types.DetectedMisconfiguration, severities []dbTypes.Severity,
-	includeNonFailures bool, ignoredIDs []string) (*types.MisconfSummary, []types.DetectedMisconfiguration) {
+func filterMisconfigurations(ctx context.Context, misconfs []types.DetectedMisconfiguration, severities []dbTypes.Severity,
+	includeNonFailures bool, ignoredIDs []string, policy *rego.PreparedEvalQuery) (*types.MisconfSummary, []types.DetectedMisconfiguration) {
 	var filtered []types.DetectedMisconfiguration
 	summary := new(types.MisconfSummary)
 
 	for _, misconf := range misconfs {
+		if misconf.Severity == "" {
+			misconf.Severity = dbTypes.SeverityUnknown.String()
+		}
+
 		// Filter misconfigurations by severity
-		for _, s := range severities {
-			if s.String() == misconf.Severity {
-				if slices.Contains(ignoredIDs, misconf.ID) || slices.Contains(ignoredIDs, misconf.AVDID) {
-					continue
-				}
+		severity, _ := dbTypes.NewSeverity(misconf.Severity)
+		if !slices.Contains(severities, severity) {
+			continue
+		}
 
-				// Count successes, failures, and exceptions
-				summarize(misconf.Status, summary)
+		if slices.Contains(ignoredIDs, misconf.ID) || slices.Contains(ignoredIDs, misconf.AVDID) {
+			continue
+		}
 
-				if misconf.Status != types.StatusFailure && !includeNonFailures {
-					continue
-				}
-				filtered = append(filtered, misconf)
-				break
+		if policy != nil {
+			ignored, err := evaluatePolicy(ctx, *policy, misconf)
+			if err != nil {
+				log.Logger.Errorf("Unable to evaluate policy %v", err)
+			} else if ignored {
+				continue
 			}
 		}
+
+		// Count successes, failures, and exceptions
+		summarize(misconf.Status, summary)
+
+		if misconf.Status != types.StatusFailure && !includeNonFailures {
+			continue
+		}
+		filtered = append(filtered, misconf)
 	}
 
 	if summary.Empty() {
@@ -163,11 +181,14 @@ func summarize(status types.MisconfStatus, summary *types.MisconfSummary) {
 	}
 }
 
-func applyPolicy(ctx context.Context, vulns []types.DetectedVulnerability, misconfs []types.DetectedMisconfiguration,
-	policyFile string) ([]types.DetectedVulnerability, []types.DetectedMisconfiguration, error) {
+func initPolicy(ctx context.Context, policyFile string) (*rego.PreparedEvalQuery, error) {
+	if policyFile == "" {
+		return nil, nil
+	}
+
 	policy, err := os.ReadFile(policyFile)
 	if err != nil {
-		return nil, nil, xerrors.Errorf("unable to read the policy file: %w", err)
+		return nil, xerrors.Errorf("unable to read the policy file: %w", err)
 	}
 
 	query, err := rego.New(
@@ -176,37 +197,13 @@ func applyPolicy(ctx context.Context, vulns []types.DetectedVulnerability, misco
 		rego.Module("trivy.rego", string(policy)),
 	).PrepareForEval(ctx)
 	if err != nil {
-		return nil, nil, xerrors.Errorf("unable to prepare for eval: %w", err)
+		return nil, xerrors.Errorf("unable to prepare for eval: %w", err)
 	}
 
-	// Vulnerabilities
-	var filteredVulns []types.DetectedVulnerability
-	for _, vuln := range vulns {
-		ignored, err := evaluate(ctx, query, vuln)
-		if err != nil {
-			return nil, nil, err
-		}
-		if ignored {
-			continue
-		}
-		filteredVulns = append(filteredVulns, vuln)
-	}
-
-	// Misconfigurations
-	var filteredMisconfs []types.DetectedMisconfiguration
-	for _, misconf := range misconfs {
-		ignored, err := evaluate(ctx, query, misconf)
-		if err != nil {
-			return nil, nil, err
-		}
-		if ignored {
-			continue
-		}
-		filteredMisconfs = append(filteredMisconfs, misconf)
-	}
-	return filteredVulns, filteredMisconfs, nil
+	return &query, nil
 }
-func evaluate(ctx context.Context, query rego.PreparedEvalQuery, input interface{}) (bool, error) {
+
+func evaluatePolicy(ctx context.Context, query rego.PreparedEvalQuery, input interface{}) (bool, error) {
 	results, err := query.Eval(ctx, rego.EvalInput(input))
 	if err != nil {
 		return false, xerrors.Errorf("unable to evaluate the policy: %w", err)
