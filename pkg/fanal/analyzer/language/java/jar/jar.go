@@ -28,12 +28,11 @@ var requiredExtensions = []string{".jar", ".war", ".ear", ".par"}
 type javaLibraryAnalyzer struct{}
 
 func (a javaLibraryAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInput) (*analyzer.AnalysisResult, error) {
-	_, err := java_db.UpdateJavaDB()
+	dbCacheDir, err := java_db.UpdateJavaDB()
 	if err != nil {
 		return nil, xerrors.Errorf("trivy-java-db update error: %w", err) // TODO just skip using trivy-java-db????
 	}
-	// TODO use cacheDir from db.UpdateJavaDB() in jar.NewParse to find out where trivy-java-db is stored
-	p := jar.NewParser(jar.WithSize(input.Info.Size()), jar.WithFilePath(input.FilePath), jar.WithOffline(input.Options.Offline))
+	p := jar.NewParser(jar.WithSize(input.Info.Size()), jar.WithFilePath(input.FilePath), jar.WithOffline(input.Options.Offline), jar.WithTrivyJavaDBDir(dbCacheDir))
 	libs, deps, err := p.Parse(input.Content)
 	if err != nil {
 		return nil, xerrors.Errorf("jar/war/ear/par parse error: %w", err)
