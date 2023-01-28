@@ -482,14 +482,14 @@ func Test_separateMisconfigReports(t *testing.T) {
 	tests := []struct {
 		name            string
 		k8sReport       Report
-		scanners        []string
+		scanners        types.Scanners
 		components      []string
 		expectedReports []Report
 	}{
 		{
 			name:      "Config, Rbac, and Infra Reports",
 			k8sReport: k8sReport,
-			scanners: []string{
+			scanners: types.Scanners{
 				types.MisconfigScanner,
 				types.RBACScanner,
 			},
@@ -513,7 +513,7 @@ func Test_separateMisconfigReports(t *testing.T) {
 		{
 			name:      "Config and Infra for the same resource",
 			k8sReport: k8sReport,
-			scanners:  []string{types.MisconfigScanner},
+			scanners:  types.Scanners{types.MisconfigScanner},
 			components: []string{
 				workloadComponent,
 				infraComponent,
@@ -533,7 +533,7 @@ func Test_separateMisconfigReports(t *testing.T) {
 		{
 			name:      "Role Report Only",
 			k8sReport: k8sReport,
-			scanners:  []string{types.RBACScanner},
+			scanners:  types.Scanners{types.RBACScanner},
 			expectedReports: []Report{
 				{Misconfigurations: []Resource{{Kind: "Role"}}},
 			},
@@ -541,7 +541,7 @@ func Test_separateMisconfigReports(t *testing.T) {
 		{
 			name:       "Config Report Only",
 			k8sReport:  k8sReport,
-			scanners:   []string{types.MisconfigScanner},
+			scanners:   types.Scanners{types.MisconfigScanner},
 			components: []string{workloadComponent},
 			expectedReports: []Report{
 				{
@@ -556,7 +556,7 @@ func Test_separateMisconfigReports(t *testing.T) {
 		{
 			name:       "Infra Report Only",
 			k8sReport:  k8sReport,
-			scanners:   []string{types.MisconfigScanner},
+			scanners:   types.Scanners{types.MisconfigScanner},
 			components: []string{infraComponent},
 			expectedReports: []Report{
 				{Misconfigurations: []Resource{{Kind: "Pod"}}},
@@ -594,7 +594,7 @@ func TestReportWrite_Summary(t *testing.T) {
 		name           string
 		report         Report
 		opt            Option
-		scanners       []string
+		scanners       types.Scanners
 		components     []string
 		severities     []dbTypes.Severity
 		expectedOutput string
@@ -605,7 +605,7 @@ func TestReportWrite_Summary(t *testing.T) {
 				ClusterName:       "test",
 				Misconfigurations: []Resource{deployOrionWithMisconfigs},
 			},
-			scanners:   []string{types.MisconfigScanner},
+			scanners:   types.Scanners{types.MisconfigScanner},
 			components: []string{workloadComponent},
 			severities: allSeverities,
 			expectedOutput: `Summary Report for test
@@ -627,7 +627,7 @@ Severities: C=CRITICAL H=HIGH M=MEDIUM L=LOW U=UNKNOWN`,
 				ClusterName:     "test",
 				Vulnerabilities: []Resource{deployOrionWithVulns},
 			},
-			scanners:   []string{types.VulnerabilityScanner},
+			scanners:   types.Scanners{types.VulnerabilityScanner},
 			severities: allSeverities,
 			expectedOutput: `Summary Report for test
 =======================
@@ -648,7 +648,7 @@ Severities: C=CRITICAL H=HIGH M=MEDIUM L=LOW U=UNKNOWN`,
 				ClusterName:       "test",
 				Misconfigurations: []Resource{roleWithMisconfig},
 			},
-			scanners:   []string{types.RBACScanner},
+			scanners:   types.Scanners{types.RBACScanner},
 			severities: allSeverities,
 			expectedOutput: `Summary Report for test
 =======================
@@ -669,7 +669,7 @@ Severities: C=CRITICAL H=HIGH M=MEDIUM L=LOW U=UNKNOWN`,
 				ClusterName:     "test",
 				Vulnerabilities: []Resource{deployLuaWithSecrets},
 			},
-			scanners:   []string{types.SecretScanner},
+			scanners:   types.Scanners{types.SecretScanner},
 			severities: allSeverities,
 			expectedOutput: `Summary Report for test
 =======================
@@ -690,7 +690,7 @@ Severities: C=CRITICAL H=HIGH M=MEDIUM L=LOW U=UNKNOWN`,
 				ClusterName:       "test",
 				Misconfigurations: []Resource{apiseverPodWithMisconfigAndInfra},
 			},
-			scanners:   []string{types.MisconfigScanner},
+			scanners:   types.Scanners{types.MisconfigScanner},
 			components: []string{infraComponent},
 			severities: allSeverities,
 			expectedOutput: `Summary Report for test
@@ -712,7 +712,7 @@ Severities: C=CRITICAL H=HIGH M=MEDIUM L=LOW U=UNKNOWN`,
 				ClusterName:       "test",
 				Misconfigurations: []Resource{apiseverPodWithMisconfigAndInfra},
 			},
-			scanners: []string{
+			scanners: types.Scanners{
 				types.VulnerabilityScanner,
 				types.MisconfigScanner,
 				types.SecretScanner,
@@ -738,7 +738,7 @@ Severities: C=CRITICAL H=HIGH M=MEDIUM L=LOW U=UNKNOWN`,
 				ClusterName:       "test",
 				Misconfigurations: []Resource{apiseverPodWithMisconfigAndInfra},
 			},
-			scanners: []string{
+			scanners: types.Scanners{
 				types.MisconfigScanner,
 				types.VulnerabilityScanner,
 				types.RBACScanner,
