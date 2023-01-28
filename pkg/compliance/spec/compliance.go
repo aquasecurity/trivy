@@ -62,7 +62,7 @@ const (
 )
 
 // Scanners reads spec control and determines the scanners by check ID prefix
-func (cs *ComplianceSpec) Scanners() ([]types.Scanner, error) {
+func (cs *ComplianceSpec) Scanners() (types.Scanners, error) {
 	scannerTypes := map[types.Scanner]struct{}{}
 	for _, control := range cs.Spec.Controls {
 		for _, check := range control.Checks {
