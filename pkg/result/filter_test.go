@@ -349,7 +349,7 @@ func TestClient_Filter(t *testing.T) {
 			},
 		},
 		{
-			name: "happy path with a policy file",
+			name: "happy path with a policy file (by detected vulnerabilty)",
 			args: args{
 				result: types.Result{
 					Vulnerabilities: []types.DetectedVulnerability{
@@ -399,6 +399,30 @@ func TestClient_Filter(t *testing.T) {
 					},
 				},
 			},
+		},
+		{
+			name: "happy path with a policy file (by detected vulnerabilty extended)",
+			args: args{
+				result: types.Result{
+					Target: "foobar",
+					Vulnerabilities: []types.DetectedVulnerability{
+						{
+							// this vulnerability is ignored
+							VulnerabilityID:  "CVE-2019-0001",
+							PkgName:          "foo",
+							InstalledVersion: "1.2.3",
+							FixedVersion:     "1.2.4",
+							Vulnerability: dbTypes.Vulnerability{
+								Severity: dbTypes.SeverityLow.String(),
+							},
+						},
+					},
+				},
+				severities:    []dbTypes.Severity{dbTypes.SeverityLow},
+				ignoreUnfixed: false,
+				policyFile:    "./testdata/test2.rego",
+			},
+			wantVulns: []types.DetectedVulnerability{},
 		},
 		{
 			name: "happy path with duplicates, one with empty fixed version",

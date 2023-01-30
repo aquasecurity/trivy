@@ -104,3 +104,7 @@ ignore {
 	deny_cwe_ids := {"CWE-79"} # XSS
 	count({x | x := input.CweIDs[_]; x == deny_cwe_ids[_]}) == 0
 }
+
+ignore {
+	input.Type != "gobinary"
+}

@@ -27,6 +27,14 @@ const (
 	DefaultIgnoreFile = ".trivyignore"
 )
 
+type DetectedVulnerabilityExtended struct {
+	Target string
+	Class  types.ResultClass
+	Type   string
+
+	types.DetectedVulnerability
+}
+
 // Filter filters out the vulnerabilities
 func Filter(ctx context.Context, result *types.Result, severities []dbTypes.Severity, ignoreUnfixed, includeNonFailures bool,
 	ignoreFile, policyFile string, ignoreLicenses []string) error {
@@ -37,7 +45,7 @@ func Filter(ctx context.Context, result *types.Result, severities []dbTypes.Seve
 		return xerrors.Errorf("failed to init the policy: %w", err)
 	}
 
-	filteredVulns := filterVulnerabilities(ctx, result.Vulnerabilities, severities, ignoreUnfixed, ignoredIDs, policy)
+	filteredVulns := filterVulnerabilities(ctx, result, severities, ignoreUnfixed, ignoredIDs, policy)
 	misconfSummary, filteredMisconfs := filterMisconfigurations(ctx, result.Misconfigurations, severities, includeNonFailures, ignoredIDs, policy)
 	result.Secrets = filterSecrets(result.Secrets, severities, ignoredIDs)
 	result.Licenses = filterLicenses(result.Licenses, severities, ignoreLicenses)
@@ -50,10 +58,10 @@ func Filter(ctx context.Context, result *types.Result, severities []dbTypes.Seve
 	return nil
 }
 
-func filterVulnerabilities(ctx context.Context, vulns []types.DetectedVulnerability, severities []dbTypes.Severity,
+func filterVulnerabilities(ctx context.Context, result *types.Result, severities []dbTypes.Severity,
 	ignoreUnfixed bool, ignoredIDs []string, policy *rego.PreparedEvalQuery) []types.DetectedVulnerability {
 	uniqVulns := make(map[string]types.DetectedVulnerability)
-	for _, vuln := range vulns {
+	for _, vuln := range result.Vulnerabilities {
 		if vuln.Severity == "" {
 			vuln.Severity = dbTypes.SeverityUnknown.String()
 		}
@@ -72,7 +80,12 @@ func filterVulnerabilities(ctx context.Context, vulns []types.DetectedVulnerabil
 		}
 
 		if policy != nil {
-			ignored, err := evaluatePolicy(ctx, *policy, vuln)
+			ignored, err := evaluatePolicy(ctx, *policy, DetectedVulnerabilityExtended{
+				Target:                result.Target,
+				Class:                 result.Class,
+				Type:                  result.Type,
+				DetectedVulnerability: vuln,
+			})
 			if err != nil {
 				log.Logger.Errorf("Unable to evaluate policy %v", err)
 			} else if ignored {
