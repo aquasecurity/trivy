@@ -383,7 +383,10 @@ func (f *Flags) ToOptions(appVersion string, args []string, globalFlags *GlobalF
 	}
 
 	if f.ImageFlagGroup != nil {
-		opts.ImageOptions = f.ImageFlagGroup.ToOptions()
+		opts.ImageOptions, err = f.ImageFlagGroup.ToOptions()
+		if err != nil {
+			return Options{}, xerrors.Errorf("image flag error: %w", err)
+		}
 	}
 
 	if f.K8sFlagGroup != nil {

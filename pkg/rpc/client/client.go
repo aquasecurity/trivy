@@ -82,7 +82,7 @@ func (s Scanner) Scan(ctx context.Context, target, artifactKey string, blobKeys 
 			BlobIds:    blobKeys,
 			Options: &rpc.ScanOptions{
 				VulnType:          opts.VulnType,
-				Scanners:          opts.Scanners,
+				Scanners:          opts.Scanners.StringSlice(),
 				ListAllPackages:   opts.ListAllPackages,
 				LicenseCategories: licenseCategories,
 			},

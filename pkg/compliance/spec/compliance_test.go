@@ -15,7 +15,7 @@ func TestComplianceSpec_Scanners(t *testing.T) {
 	tests := []struct {
 		name    string
 		spec    spec.Spec
-		want    []types.Scanner
+		want    types.Scanners
 		wantErr assert.ErrorAssertionFunc
 	}{
 		{
@@ -127,7 +127,9 @@ func TestComplianceSpec_Scanners(t *testing.T) {
 			if !tt.wantErr(t, err, fmt.Sprintf("Scanners()")) {
 				return
 			}
-			sort.Strings(got) // for consistency
+			sort.Slice(got, func(i, j int) bool {
+				return got[i] < got[j]
+			}) // for consistency
 			assert.Equalf(t, tt.want, got, "Scanners()")
 		})
 	}

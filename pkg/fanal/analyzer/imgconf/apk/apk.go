@@ -1,6 +1,7 @@
 package apk
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -24,16 +25,24 @@ const (
 	analyzerVersion       = 1
 )
 
-var apkIndexArchiveURL = "https://raw.githubusercontent.com/knqyf263/apkIndex-archive/master/alpine/v%s/main/x86_64/history.json"
+var defaultApkIndexArchiveURL = "https://raw.githubusercontent." +
+	"com/knqyf263/apkIndex-archive/master/alpine/v%s/main/x86_64/history.json"
 
 func init() {
+	analyzer.RegisterConfigAnalyzer(analyzer.TypeApkCommand, newAlpineCmdAnalyzer)
+}
+
+type alpineCmdAnalyzer struct {
+	apkIndexArchiveURL string
+}
+
+func newAlpineCmdAnalyzer(_ analyzer.ConfigAnalyzerOptions) (analyzer.ConfigAnalyzer, error) {
+	apkIndexArchiveURL := defaultApkIndexArchiveURL
 	if builtinos.Getenv(envApkIndexArchiveURL) != "" {
 		apkIndexArchiveURL = builtinos.Getenv(envApkIndexArchiveURL)
 	}
-	analyzer.RegisterConfigAnalyzer(&alpineCmdAnalyzer{})
+	return alpineCmdAnalyzer{apkIndexArchiveURL: apkIndexArchiveURL}, nil
 }
-
-type alpineCmdAnalyzer struct{}
 
 type apkIndex struct {
 	Package map[string]archive
@@ -59,7 +68,7 @@ type pkg struct {
 
 type version map[string]int
 
-func (a alpineCmdAnalyzer) Analyze(input analyzer.ConfigAnalysisInput) (*analyzer.AnalysisResult, error) {
+func (a alpineCmdAnalyzer) Analyze(_ context.Context, input analyzer.ConfigAnalysisInput) (*analyzer.ConfigAnalysisResult, error) {
 	if input.Config == nil {
 		return nil, nil
 	}
@@ -75,13 +84,8 @@ func (a alpineCmdAnalyzer) Analyze(input analyzer.ConfigAnalysisInput) (*analyze
 		return nil, nil
 	}
 
-	return &analyzer.AnalysisResult{
-		PackageInfos: []types.PackageInfo{
-			{
-				FilePath: types.HistoryPkgs,
-				Packages: pkgs,
-			},
-		},
+	return &analyzer.ConfigAnalysisResult{
+		HistoryPackages: pkgs,
 	}, nil
 }
 func (a alpineCmdAnalyzer) fetchApkIndexArchive(targetOS types.OS) (*apkIndex, error) {
@@ -91,7 +95,7 @@ func (a alpineCmdAnalyzer) fetchApkIndexArchive(targetOS types.OS) (*apkIndex, e
 		osVer = osVer[:strings.LastIndex(osVer, ".")]
 	}
 
-	url := fmt.Sprintf(apkIndexArchiveURL, osVer)
+	url := fmt.Sprintf(a.apkIndexArchiveURL, osVer)
 	var reader io.Reader
 	if strings.HasPrefix(url, "file://") {
 		var err error
@@ -193,7 +197,8 @@ func (a alpineCmdAnalyzer) resolveDependencies(apkIndexArchive *apkIndex, origin
 	return pkgs
 }
 
-func (a alpineCmdAnalyzer) resolveDependency(apkIndexArchive *apkIndex, pkgName string, seenPkgs map[string]struct{}) (pkgNames []string) {
+func (a alpineCmdAnalyzer) resolveDependency(apkIndexArchive *apkIndex, pkgName string,
+	seenPkgs map[string]struct{}) (pkgNames []string) {
 	pkg, ok := apkIndexArchive.Package[pkgName]
 	if !ok {
 		return nil
@@ -232,7 +237,8 @@ type historyVersion struct {
 	BuiltAt int
 }
 
-func (a alpineCmdAnalyzer) guessVersion(apkIndexArchive *apkIndex, originalPkgs []string, createdAt time.Time) (pkgs []types.Package) {
+func (a alpineCmdAnalyzer) guessVersion(apkIndexArchive *apkIndex, originalPkgs []string,
+	createdAt time.Time) (pkgs []types.Package) {
 	for _, pkg := range originalPkgs {
 		archive, ok := apkIndexArchive.Package[pkg]
 		if !ok {

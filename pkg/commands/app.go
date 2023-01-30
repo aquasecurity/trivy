@@ -581,7 +581,7 @@ func NewConfigCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 			options.DisabledAnalyzers = append(analyzer.TypeOSes, analyzer.TypeLanguages...)
 
 			// Scan only for misconfigurations
-			options.Scanners = []string{types.MisconfigScanner}
+			options.Scanners = types.Scanners{types.MisconfigScanner}
 
 			return artifact.Run(cmd.Context(), options, artifact.TargetFilesystem)
 		},
@@ -989,7 +989,7 @@ func NewSBOMCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 			}
 
 			// Scan vulnerabilities
-			options.Scanners = []string{types.VulnerabilityScanner}
+			options.Scanners = types.Scanners{types.VulnerabilityScanner}
 
 			return artifact.Run(cmd.Context(), options, artifact.TargetSBOM)
 		},
