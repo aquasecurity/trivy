@@ -21,7 +21,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/fanal/artifact"
 	"github.com/aquasecurity/trivy/pkg/fanal/cache"
 	"github.com/aquasecurity/trivy/pkg/flag"
-	"github.com/aquasecurity/trivy/pkg/java_db"
+	"github.com/aquasecurity/trivy/pkg/javadb"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/module"
 	pkgReport "github.com/aquasecurity/trivy/pkg/report"
@@ -309,9 +309,8 @@ func (r *runner) initDB(opts flag.Options) error {
 		return err
 	}
 
-	if err := java_db.InitJavaDB(opts.CacheDir, noProgress, opts.Insecure); err != nil {
-		return err
-	}
+	// Java DB
+	javadb.Init(opts.CacheDir, noProgress, opts.Insecure)
 
 	if opts.DownloadDBOnly {
 		return SkipScan

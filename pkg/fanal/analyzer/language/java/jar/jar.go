@@ -12,7 +12,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer/language"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
-	"github.com/aquasecurity/trivy/pkg/java_db"
+	"github.com/aquasecurity/trivy/pkg/javadb"
 	"github.com/aquasecurity/trivy/pkg/log"
 )
 
@@ -24,18 +24,26 @@ const (
 	version = 1
 )
 
-var requiredExtensions = []string{".jar", ".war", ".ear", ".par"}
+var requiredExtensions = []string{
+	".jar",
+	".war",
+	".ear",
+	".par",
+}
 
 // javaLibraryAnalyzer analyzes jar/war/ear/par files
 type javaLibraryAnalyzer struct{}
 
 func (a javaLibraryAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInput) (*analyzer.AnalysisResult, error) {
-	dbCacheDir, err := java_db.UpdateJavaDB()
+	// TODO: think about the sonatype API and "--offline"
+	client, err := javadb.Client()
 	if err != nil {
-		// if dbCacheDir == "" => db.Searcher will not be init
-		log.Logger.Warnf("disable search jars with trivy-java-db. Update error: %s", err)
+		log.Logger.Errorf("Unable to initialize the Java DB: %s", err)
+		return nil, err
+	} else if client == nil {
+		return nil, nil
 	}
-	p := jar.NewParser(jar.WithSize(input.Info.Size()), jar.WithFilePath(input.FilePath), jar.WithOffline(input.Options.Offline), jar.WithDBDir(dbCacheDir))
+	p := jar.NewParser(client, jar.WithSize(input.Info.Size()), jar.WithFilePath(input.FilePath))
 	libs, deps, err := p.Parse(input.Content)
 	if err != nil {
 		return nil, xerrors.Errorf("jar/war/ear/par parse error: %w", err)
