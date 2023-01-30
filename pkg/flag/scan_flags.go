@@ -29,10 +29,10 @@ var (
 	ScannersFlag = Flag{
 		Name:       "scanners",
 		ConfigName: "scan.scanners",
-		Value: []string{
+		Value: types.Scanners{
 			types.VulnerabilityScanner,
 			types.SecretScanner,
-		},
+		}.StringSlice(),
 		Aliases: []Alias{
 			{
 				Name:       "security-checks",
@@ -84,7 +84,7 @@ type ScanOptions struct {
 	SkipDirs     []string
 	SkipFiles    []string
 	OfflineScan  bool
-	Scanners     []string
+	Scanners     types.Scanners
 	FilePatterns []string
 	Slow         bool
 	SBOMSources  []string
@@ -126,7 +126,7 @@ func (f *ScanFlagGroup) ToOptions(args []string) (ScanOptions, error) {
 	if len(args) == 1 {
 		target = args[0]
 	}
-	scanners, err := parseScanners(getStringSlice(f.Scanners))
+	scanners, err := parseScanners(getStringSlice(f.Scanners), types.AllScanners)
 	if err != nil {
 		return ScanOptions{}, xerrors.Errorf("unable to parse scanners: %w", err)
 	}
@@ -149,13 +149,14 @@ func (f *ScanFlagGroup) ToOptions(args []string) (ScanOptions, error) {
 	}, nil
 }
 
-func parseScanners(scanner []string) ([]string, error) {
-	var scanners []string
+func parseScanners(scanner []string, allowedScanners []types.Scanner) (types.Scanners, error) {
+	var scanners types.Scanners
 	for _, v := range scanner {
-		if !slices.Contains(types.Scanners, v) {
+		s := types.Scanner(v)
+		if !slices.Contains(allowedScanners, s) {
 			return nil, xerrors.Errorf("unknown scanner: %s", v)
 		}
-		scanners = append(scanners, v)
+		scanners = append(scanners, s)
 	}
 	return scanners, nil
 }

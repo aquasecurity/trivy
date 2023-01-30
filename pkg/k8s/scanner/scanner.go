@@ -5,7 +5,6 @@ import (
 	"io"
 
 	"github.com/cheggaaa/pb/v3"
-	"golang.org/x/exp/slices"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy-kubernetes/pkg/artifacts"
@@ -63,7 +62,7 @@ func (s *Scanner) Scan(ctx context.Context, artifacts []*artifacts.Artifact) (re
 	for _, artifact := range artifacts {
 		bar.Increment()
 
-		if shouldScanVulnsOrSecrets(s.opts.Scanners) {
+		if s.opts.Scanners.AnyEnabled(types.VulnerabilityScanner, types.SecretScanner) {
 			resources, err := s.scanVulns(ctx, artifact)
 			if err != nil {
 				return report.Report{}, xerrors.Errorf("scanning vulnerabilities error: %w", err)
@@ -139,9 +138,4 @@ func (s *Scanner) filter(ctx context.Context, r types.Report, artifact *artifact
 		return report.Resource{}, xerrors.Errorf("filter error: %w", err)
 	}
 	return report.CreateResource(artifact, r, nil), nil
-}
-
-func shouldScanVulnsOrSecrets(scanners []string) bool {
-	return slices.Contains(scanners, types.VulnerabilityScanner) ||
-		slices.Contains(scanners, types.SecretScanner)
 }

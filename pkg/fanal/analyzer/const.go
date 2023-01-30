@@ -94,7 +94,8 @@ const (
 	// ============
 	// Image Config
 	// ============
-	TypeApkCommand Type = "apk-command"
+	TypeApkCommand        Type = "apk-command"
+	TypeHistoryDockerfile Type = "history-dockerfile"
 
 	// =================
 	// Structured Config

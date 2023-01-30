@@ -42,7 +42,7 @@ func TestScanFlagGroup_ToOptions(t *testing.T) {
 			},
 			want: flag.ScanOptions{
 				Target:   "alpine:latest",
-				Scanners: []string{types.MisconfigScanner},
+				Scanners: types.Scanners{types.MisconfigScanner},
 			},
 			assertion: require.NoError,
 		},

@@ -1,7 +1,6 @@
 package flag
 
 import (
-	"os"
 	"testing"
 
 	"github.com/spf13/viper"
@@ -33,8 +32,8 @@ func Test_getStringSlice(t *testing.T) {
 			flag:      &ScannersFlag,
 			flagValue: "license,vuln",
 			want: []string{
-				types.LicenseScanner,
-				types.VulnerabilityScanner,
+				string(types.LicenseScanner),
+				string(types.VulnerabilityScanner),
 			},
 		},
 		{
@@ -45,8 +44,8 @@ func Test_getStringSlice(t *testing.T) {
 				"secret",
 			},
 			want: []string{
-				types.LicenseScanner,
-				types.SecretScanner,
+				string(types.LicenseScanner),
+				string(types.SecretScanner),
 			},
 		},
 		{
@@ -57,8 +56,8 @@ func Test_getStringSlice(t *testing.T) {
 				value: "rbac,config",
 			},
 			want: []string{
-				types.RBACScanner,
-				types.MisconfigScanner,
+				string(types.RBACScanner),
+				string(types.MisconfigScanner),
 			},
 		},
 	}
@@ -71,10 +70,7 @@ func Test_getStringSlice(t *testing.T) {
 				err := viper.BindEnv(tt.flag.ConfigName, tt.env.key)
 				assert.NoError(t, err)
 
-				savedEnvValue := os.Getenv(tt.env.key)
-				err = os.Setenv(tt.env.key, tt.env.value)
-				assert.NoError(t, err)
-				defer os.Setenv(tt.env.key, savedEnvValue)
+				t.Setenv(tt.env.key, tt.env.value)
 			}
 
 			sl := getStringSlice(tt.flag)
