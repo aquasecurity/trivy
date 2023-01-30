@@ -2,6 +2,7 @@ package jar_test
 
 import (
 	"encoding/json"
+	"github.com/aquasecurity/go-dep-parser/pkg/java/jar/sonatype"
 	"net/http"
 	"net/http/httptest"
 	"os"
@@ -22,48 +23,108 @@ var (
 	// mvn dependency:list
 	// mvn dependency:tree -Dscope=compile -Dscope=runtime | awk '/:tree/,/BUILD SUCCESS/' | awk 'NR > 1 { print }' | head -n -2 | awk '{print $NF}' | awk -F":" '{printf("{\""$1":"$2"\", \""$4 "\", \"\"},\n")}'
 	wantMaven = []types.Library{
-		{Name: "com.example:web-app", Version: "1.0-SNAPSHOT"},
-		{Name: "com.fasterxml.jackson.core:jackson-databind", Version: "2.9.10.6"},
-		{Name: "com.fasterxml.jackson.core:jackson-annotations", Version: "2.9.10"},
-		{Name: "com.fasterxml.jackson.core:jackson-core", Version: "2.9.10"},
-		{Name: "com.cronutils:cron-utils", Version: "9.1.2"},
-		{Name: "org.slf4j:slf4j-api", Version: "1.7.30"},
-		{Name: "org.glassfish:javax.el", Version: "3.0.0"},
-		{Name: "org.apache.commons:commons-lang3", Version: "3.11"},
+		{
+			Name:    "com.example:web-app",
+			Version: "1.0-SNAPSHOT",
+		},
+		{
+			Name:    "com.fasterxml.jackson.core:jackson-databind",
+			Version: "2.9.10.6",
+		},
+		{
+			Name:    "com.fasterxml.jackson.core:jackson-annotations",
+			Version: "2.9.10",
+		},
+		{
+			Name:    "com.fasterxml.jackson.core:jackson-core",
+			Version: "2.9.10",
+		},
+		{
+			Name:    "com.cronutils:cron-utils",
+			Version: "9.1.2",
+		},
+		{
+			Name:    "org.slf4j:slf4j-api",
+			Version: "1.7.30",
+		},
+		{
+			Name:    "org.glassfish:javax.el",
+			Version: "3.0.0",
+		},
+		{
+			Name:    "org.apache.commons:commons-lang3",
+			Version: "3.11",
+		},
 	}
 
 	// cd testdata/testimage/gradle && docker build -t test .
 	// docker run --rm --name test -it test bash
 	// gradle app:dependencies --configuration implementation | grep "[+\]---" | cut -d" " -f2 | awk -F":" '{printf("{\""$1":"$2"\", \""$3"\", \"\"},\n")}'
 	wantGradle = []types.Library{
-		{Name: "commons-dbcp:commons-dbcp", Version: "1.4"},
-		{Name: "commons-pool:commons-pool", Version: "1.6"},
-		{Name: "log4j:log4j", Version: "1.2.17"},
-		{Name: "org.apache.commons:commons-compress", Version: "1.19"},
+		{
+			Name:    "commons-dbcp:commons-dbcp",
+			Version: "1.4",
+		},
+		{
+			Name:    "commons-pool:commons-pool",
+			Version: "1.6",
+		},
+		{
+			Name:    "log4j:log4j",
+			Version: "1.2.17",
+		},
+		{
+			Name:    "org.apache.commons:commons-compress",
+			Version: "1.19",
+		},
 	}
 
 	// manually created
 	wantSHA1 = []types.Library{
-		{Name: "org.springframework:spring-core", Version: "5.3.3"},
+		{
+			Name:    "org.springframework:spring-core",
+			Version: "5.3.3",
+		},
 	}
 
 	// offline
 	wantOffline = []types.Library{
-		{Name: "org.springframework:Spring Framework", Version: "2.5.6.SEC03"},
+		{
+			Name:    "org.springframework:Spring Framework",
+			Version: "2.5.6.SEC03",
+		},
 	}
 
 	// manually created
 	wantHeuristic = []types.Library{
-		{Name: "com.example:heuristic", Version: "1.0.0-SNAPSHOT"},
+		{
+			Name:    "com.example:heuristic",
+			Version: "1.0.0-SNAPSHOT",
+		},
 	}
 
 	// manually created
 	wantFatjar = []types.Library{
-		{Name: "com.google.guava:failureaccess", Version: "1.0.1"},
-		{Name: "com.google.guava:guava", Version: "29.0-jre"},
-		{Name: "com.google.guava:listenablefuture", Version: "9999.0-empty-to-avoid-conflict-with-guava"},
-		{Name: "com.google.j2objc:j2objc-annotations", Version: "1.3"},
-		{Name: "org.apache.hadoop.thirdparty:hadoop-shaded-guava", Version: "1.1.0-SNAPSHOT"},
+		{
+			Name:    "com.google.guava:failureaccess",
+			Version: "1.0.1",
+		},
+		{
+			Name:    "com.google.guava:guava",
+			Version: "29.0-jre",
+		},
+		{
+			Name:    "com.google.guava:listenablefuture",
+			Version: "9999.0-empty-to-avoid-conflict-with-guava",
+		},
+		{
+			Name:    "com.google.j2objc:j2objc-annotations",
+			Version: "1.3",
+		},
+		{
+			Name:    "org.apache.hadoop.thirdparty:hadoop-shaded-guava",
+			Version: "1.1.0-SNAPSHOT",
+		},
 	}
 )
 
@@ -170,8 +231,9 @@ func TestParse(t *testing.T) {
 
 			stat, err := f.Stat()
 			require.NoError(t, err)
-			p := jar.NewParser(jar.WithURL(ts.URL), jar.WithFilePath(v.file),
-				jar.WithHTTPClient(ts.Client()), jar.WithOffline(v.offline), jar.WithSize(stat.Size()))
+
+			c := sonatype.New(sonatype.WithURL(ts.URL), sonatype.WithHTTPClient(ts.Client()))
+			p := jar.NewParser(c, jar.WithFilePath(v.file), jar.WithOffline(v.offline), jar.WithSize(stat.Size()))
 
 			got, _, err := p.Parse(f)
 			require.NoError(t, err)
