@@ -29,8 +29,11 @@ func (a Applier) ApplyLayers(imageID string, layerKeys []string) (types.Artifact
 	mergedLayer := ApplyLayers(layers)
 
 	imageInfo, _ := a.cache.GetArtifact(imageID) // nolint
-	mergedLayer.HistoryPackages = imageInfo.HistoryPackages
-	mergedLayer.ImageMisconfiguration = imageInfo.Misconfiguration
+	mergedLayer.ImageConfig = types.ImageConfigDetail{
+		Packages:         imageInfo.HistoryPackages,
+		Misconfiguration: imageInfo.Misconfiguration,
+		Secret:           imageInfo.Secret,
+	}
 
 	if !mergedLayer.OS.Detected() {
 		return mergedLayer, analyzer.ErrUnknownOS // send back package and apps info regardless

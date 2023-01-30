@@ -21,6 +21,7 @@ linters-settings:
     local-prefixes: github.com/aquasecurity
   gosec:
     excludes:
+      - G101
       - G114
       - G204
       - G402

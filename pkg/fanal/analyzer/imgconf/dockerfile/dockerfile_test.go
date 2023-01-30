@@ -123,6 +123,7 @@ func Test_historyAnalyzer_Analyze(t *testing.T) {
 			if got != nil && got.Misconfiguration != nil {
 				got.Misconfiguration.Successes = nil // Not compare successes in this test
 			}
+			require.NoError(t, err)
 			assert.Equal(t, tt.want, got)
 		})
 	}
