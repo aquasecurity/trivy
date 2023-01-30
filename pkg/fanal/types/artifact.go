@@ -199,6 +199,9 @@ type ArtifactInfo struct {
 	DockerVersion string
 	OS            string
 
+	// Misconfiguration holds misconfiguration in container image config
+	Misconfiguration *Misconfiguration `json:",omitempty"`
+
 	// HistoryPackages are packages extracted from RUN instructions
 	HistoryPackages Packages `json:",omitempty"`
 }
@@ -242,6 +245,9 @@ type ArtifactDetail struct {
 	Misconfigurations []Misconfiguration `json:",omitempty"`
 	Secrets           []Secret           `json:",omitempty"`
 	Licenses          []LicenseFile      `json:",omitempty"`
+
+	// ImageMisconfiguration holds misconfigurations in container image config
+	ImageMisconfiguration *Misconfiguration `json:",omitempty"`
 
 	// HistoryPackages are packages extracted from RUN instructions
 	HistoryPackages []Package `json:",omitempty"`

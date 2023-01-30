@@ -27,14 +27,16 @@ func (a Applier) ApplyLayers(imageID string, layerKeys []string) (types.Artifact
 	}
 
 	mergedLayer := ApplyLayers(layers)
+
+	imageInfo, _ := a.cache.GetArtifact(imageID) // nolint
+	mergedLayer.HistoryPackages = imageInfo.HistoryPackages
+	mergedLayer.ImageMisconfiguration = imageInfo.Misconfiguration
+
 	if !mergedLayer.OS.Detected() {
 		return mergedLayer, analyzer.ErrUnknownOS // send back package and apps info regardless
 	} else if mergedLayer.Packages == nil {
 		return mergedLayer, analyzer.ErrNoPkgsDetected // send back package and apps info regardless
 	}
-
-	imageInfo, _ := a.cache.GetArtifact(imageID) // nolint
-	mergedLayer.HistoryPackages = imageInfo.HistoryPackages
 
 	return mergedLayer, nil
 }

@@ -1,6 +1,7 @@
 package apk
 
 import (
+	"context"
 	"encoding/json"
 	"net/http"
 	"net/http/httptest"
@@ -10,13 +11,14 @@ import (
 	"testing"
 	"time"
 
-	v1 "github.com/google/go-containerregistry/pkg/v1"
-	"github.com/kylelemons/godebug/pretty"
-	"github.com/stretchr/testify/assert"
+	"github.com/samber/lo"
 	"github.com/stretchr/testify/require"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
+	v1 "github.com/google/go-containerregistry/pkg/v1"
+	"github.com/kylelemons/godebug/pretty"
+	"github.com/stretchr/testify/assert"
 )
 
 var (
@@ -564,465 +566,458 @@ var (
 		},
 	}
 
-	wantPkgs = &analyzer.AnalysisResult{
-		PackageInfos: []types.PackageInfo{
-			{
-				FilePath: "pkgs-from-history",
-				Packages: []types.Package{
-					{
-						Name:    "acl",
-						Version: "2.2.52-r5",
-					},
-					{
-						Name:    "apr",
-						Version: "1.6.5-r0",
-					},
-					{
-						Name:    "apr-util",
-						Version: "1.6.1-r5",
-					},
-					{
-						Name:    "argon2",
-						Version: "20171227-r1",
-					},
-					{
-						Name:    "argon2-dev",
-						Version: "20171227-r1",
-					},
-					{
-						Name:    "argon2-libs",
-						Version: "20171227-r1",
-					},
-					{
-						Name:    "attr",
-						Version: "2.4.47-r7",
-					},
-					{
-						Name:    "autoconf",
-						Version: "2.69-r2",
-					},
-					{
-						Name:    "bash",
-						Version: "4.4.19-r1",
-					},
-					{
-						Name:    "binutils",
-						Version: "2.31.1-r2",
-					},
-					{
-						Name:    "busybox",
-						Version: "1.29.3-r10",
-					},
-					{
-						Name:    "bzip2",
-						Version: "1.0.6-r6",
-					},
-					{
-						Name:    "ca-certificates",
-						Version: "20190108-r0",
-					},
-					{
-						Name:    "coreutils",
-						Version: "8.30-r0",
-					},
-					{
-						Name:    "curl",
-						Version: "7.64.0-r1",
-					},
-					{
-						Name:    "curl-dev",
-						Version: "7.64.0-r1",
-					},
-					{
-						Name:    "cyrus-sasl",
-						Version: "2.1.27-r1",
-					},
-					{
-						Name:    "db",
-						Version: "5.3.28-r1",
-					},
-					{
-						Name:    "dpkg",
-						Version: "1.19.2-r0",
-					},
-					{
-						Name:    "dpkg-dev",
-						Version: "1.19.2-r0",
-					},
-					{
-						Name:    "expat",
-						Version: "2.2.6-r0",
-					},
-					{
-						Name:    "file",
-						Version: "5.36-r0",
-					},
-					{
-						Name:    "g++",
-						Version: "8.3.0-r0",
-					},
-					{
-						Name:    "gcc",
-						Version: "8.3.0-r0",
-					},
-					{
-						Name:    "gdbm",
-						Version: "1.13-r1",
-					},
-					{
-						Name:    "git",
-						Version: "2.20.1-r0",
-					},
-					{
-						Name:    "gmp",
-						Version: "6.1.2-r1",
-					},
-					{
-						Name:    "gnupg",
-						Version: "2.2.12-r0",
-					},
-					{
-						Name:    "gnutls",
-						Version: "3.6.7-r0",
-					},
-					{
-						Name:    "isl",
-						Version: "0.18-r0",
-					},
-					{
-						Name:    "libacl",
-						Version: "2.2.52-r5",
-					},
-					{
-						Name:    "libassuan",
-						Version: "2.5.1-r0",
-					},
-					{
-						Name:    "libatomic",
-						Version: "8.3.0-r0",
-					},
-					{
-						Name:    "libattr",
-						Version: "2.4.47-r7",
-					},
-					{
-						Name:    "libbz2",
-						Version: "1.0.6-r6",
-					},
-					{
-						Name:    "libc-dev",
-						Version: "0.7.1-r0",
-					},
-					{
-						Name:    "libcap",
-						Version: "2.26-r0",
-					},
-					{
-						Name:    "libcrypto1.1",
-						Version: "1.1.1b-r1",
-					},
-					{
-						Name:    "libcurl",
-						Version: "7.64.0-r1",
-					},
-					{
-						Name:    "libedit",
-						Version: "20181209.3.1-r0",
-					},
-					{
-						Name:    "libedit-dev",
-						Version: "20181209.3.1-r0",
-					},
-					{
-						Name:    "libffi",
-						Version: "3.2.1-r6",
-					},
-					{
-						Name:    "libgcc",
-						Version: "8.3.0-r0",
-					},
-					{
-						Name:    "libgcrypt",
-						Version: "1.8.4-r0",
-					},
-					{
-						Name:    "libgomp",
-						Version: "8.3.0-r0",
-					},
-					{
-						Name:    "libgpg-error",
-						Version: "1.33-r0",
-					},
-					{
-						Name:    "libksba",
-						Version: "1.3.5-r0",
-					},
-					{
-						Name:    "libldap",
-						Version: "2.4.47-r2",
-					},
-					{
-						Name:    "libmagic",
-						Version: "5.36-r0",
-					},
-					{
-						Name:    "libsasl",
-						Version: "2.1.27-r1",
-					},
-					{
-						Name:    "libsodium",
-						Version: "1.0.16-r0",
-					},
-					{
-						Name:    "libsodium-dev",
-						Version: "1.0.16-r0",
-					},
-					{
-						Name:    "libssh2",
-						Version: "1.8.2-r0",
-					},
-					{
-						Name:    "libssh2-dev",
-						Version: "1.8.2-r0",
-					},
-					{
-						Name:    "libssl1.1",
-						Version: "1.1.1b-r1",
-					},
-					{
-						Name:    "libstdc++",
-						Version: "8.3.0-r0",
-					},
-					{
-						Name:    "libtasn1",
-						Version: "4.13-r0",
-					},
-					{
-						Name:    "libunistring",
-						Version: "0.9.10-r0",
-					},
-					{
-						Name:    "libuuid",
-						Version: "2.33-r0",
-					},
-					{
-						Name:    "libxml2",
-						Version: "2.9.9-r1",
-					},
-					{
-						Name:    "libxml2-dev",
-						Version: "2.9.9-r1",
-					},
-					{
-						Name:    "lz4",
-						Version: "1.8.3-r2",
-					},
-					{
-						Name:    "lz4-libs",
-						Version: "1.8.3-r2",
-					},
-					{
-						Name:    "m4",
-						Version: "1.4.18-r1",
-					},
-					{
-						Name:    "make",
-						Version: "4.2.1-r2",
-					},
-					{
-						Name:    "mercurial",
-						Version: "4.9.1-r0",
-					},
-					{
-						Name:    "mpc1",
-						Version: "1.0.3-r1",
-					},
-					{
-						Name:    "mpfr3",
-						Version: "3.1.5-r1",
-					},
-					{
-						Name:    "musl",
-						Version: "1.1.20-r4",
-					},
-					{
-						Name:    "musl-dev",
-						Version: "1.1.20-r4",
-					},
-					{
-						Name:    "ncurses",
-						Version: "6.1_p20190105-r0",
-					},
-					{
-						Name:    "ncurses-dev",
-						Version: "6.1_p20190105-r0",
-					},
-					{
-						Name:    "ncurses-libs",
-						Version: "6.1_p20190105-r0",
-					},
-					{
-						Name:    "ncurses-terminfo",
-						Version: "6.1_p20190105-r0",
-					},
-					{
-						Name:    "ncurses-terminfo-base",
-						Version: "6.1_p20190105-r0",
-					},
-					{
-						Name:    "nettle",
-						Version: "3.4.1-r0",
-					},
-					{
-						Name:    "nghttp2",
-						Version: "1.35.1-r0",
-					},
-					{
-						Name:    "nghttp2-dev",
-						Version: "1.35.1-r0",
-					},
-					{
-						Name:    "nghttp2-libs",
-						Version: "1.35.1-r0",
-					},
-					{
-						Name:    "npth",
-						Version: "1.6-r0",
-					},
-					{
-						Name:    "openldap",
-						Version: "2.4.47-r2",
-					},
-					{
-						Name:    "openssh",
-						Version: "7.9_p1-r5",
-					},
-					{
-						Name:    "openssh-client",
-						Version: "7.9_p1-r5",
-					},
-					{
-						Name:    "openssh-keygen",
-						Version: "7.9_p1-r5",
-					},
-					{
-						Name:    "openssh-server",
-						Version: "7.9_p1-r5",
-					},
-					{
-						Name:    "openssh-server-common",
-						Version: "7.9_p1-r5",
-					},
-					{
-						Name:    "openssh-sftp-server",
-						Version: "7.9_p1-r5",
-					},
-					{
-						Name:    "openssl",
-						Version: "1.1.1b-r1",
-					},
-					{
-						Name:    "openssl-dev",
-						Version: "1.1.1b-r1",
-					},
-					{
-						Name:    "p11-kit",
-						Version: "0.23.14-r0",
-					},
-					{
-						Name:    "patch",
-						Version: "2.7.6-r4",
-					},
-					{
-						Name:    "pcre2",
-						Version: "10.32-r1",
-					},
-					{
-						Name:    "perl",
-						Version: "5.26.3-r0",
-					},
-					{
-						Name:    "pinentry",
-						Version: "1.1.0-r0",
-					},
-					{
-						Name:    "pkgconf",
-						Version: "1.6.0-r0",
-					},
-					{
-						Name:    "python2",
-						Version: "2.7.16-r1",
-					},
-					{
-						Name:    "re2c",
-						Version: "1.1.1-r0",
-					},
-					{
-						Name:    "readline",
-						Version: "7.0.003-r1",
-					},
-					{
-						Name:    "serf",
-						Version: "1.3.9-r5",
-					},
-					{
-						Name:    "sqlite",
-						Version: "3.26.0-r3",
-					},
-					{
-						Name:    "sqlite-dev",
-						Version: "3.26.0-r3",
-					},
-					{
-						Name:    "sqlite-libs",
-						Version: "3.26.0-r3",
-					},
-					{
-						Name:    "subversion",
-						Version: "1.11.1-r0",
-					},
-					{
-						Name:    "subversion-libs",
-						Version: "1.11.1-r0",
-					},
-					{
-						Name:    "tar",
-						Version: "1.32-r0",
-					},
-					{
-						Name:    "unzip",
-						Version: "6.0-r4",
-					},
-					{
-						Name:    "util-linux",
-						Version: "2.33-r0",
-					},
-					{
-						Name:    "wget",
-						Version: "1.20.3-r0",
-					},
-					{
-						Name:    "xz",
-						Version: "5.2.4-r0",
-					},
-					{
-						Name:    "xz-libs",
-						Version: "5.2.4-r0",
-					},
-					{
-						Name:    "zip",
-						Version: "3.0-r7",
-					},
-					{
-						Name:    "zlib",
-						Version: "1.2.11-r1",
-					},
-					{
-						Name:    "zlib-dev",
-						Version: "1.2.11-r1",
-					},
-				},
-			},
+	wantPkgs = []types.Package{
+		{
+			Name:    "acl",
+			Version: "2.2.52-r5",
+		},
+		{
+			Name:    "apr",
+			Version: "1.6.5-r0",
+		},
+		{
+			Name:    "apr-util",
+			Version: "1.6.1-r5",
+		},
+		{
+			Name:    "argon2",
+			Version: "20171227-r1",
+		},
+		{
+			Name:    "argon2-dev",
+			Version: "20171227-r1",
+		},
+		{
+			Name:    "argon2-libs",
+			Version: "20171227-r1",
+		},
+		{
+			Name:    "attr",
+			Version: "2.4.47-r7",
+		},
+		{
+			Name:    "autoconf",
+			Version: "2.69-r2",
+		},
+		{
+			Name:    "bash",
+			Version: "4.4.19-r1",
+		},
+		{
+			Name:    "binutils",
+			Version: "2.31.1-r2",
+		},
+		{
+			Name:    "busybox",
+			Version: "1.29.3-r10",
+		},
+		{
+			Name:    "bzip2",
+			Version: "1.0.6-r6",
+		},
+		{
+			Name:    "ca-certificates",
+			Version: "20190108-r0",
+		},
+		{
+			Name:    "coreutils",
+			Version: "8.30-r0",
+		},
+		{
+			Name:    "curl",
+			Version: "7.64.0-r1",
+		},
+		{
+			Name:    "curl-dev",
+			Version: "7.64.0-r1",
+		},
+		{
+			Name:    "cyrus-sasl",
+			Version: "2.1.27-r1",
+		},
+		{
+			Name:    "db",
+			Version: "5.3.28-r1",
+		},
+		{
+			Name:    "dpkg",
+			Version: "1.19.2-r0",
+		},
+		{
+			Name:    "dpkg-dev",
+			Version: "1.19.2-r0",
+		},
+		{
+			Name:    "expat",
+			Version: "2.2.6-r0",
+		},
+		{
+			Name:    "file",
+			Version: "5.36-r0",
+		},
+		{
+			Name:    "g++",
+			Version: "8.3.0-r0",
+		},
+		{
+			Name:    "gcc",
+			Version: "8.3.0-r0",
+		},
+		{
+			Name:    "gdbm",
+			Version: "1.13-r1",
+		},
+		{
+			Name:    "git",
+			Version: "2.20.1-r0",
+		},
+		{
+			Name:    "gmp",
+			Version: "6.1.2-r1",
+		},
+		{
+			Name:    "gnupg",
+			Version: "2.2.12-r0",
+		},
+		{
+			Name:    "gnutls",
+			Version: "3.6.7-r0",
+		},
+		{
+			Name:    "isl",
+			Version: "0.18-r0",
+		},
+		{
+			Name:    "libacl",
+			Version: "2.2.52-r5",
+		},
+		{
+			Name:    "libassuan",
+			Version: "2.5.1-r0",
+		},
+		{
+			Name:    "libatomic",
+			Version: "8.3.0-r0",
+		},
+		{
+			Name:    "libattr",
+			Version: "2.4.47-r7",
+		},
+		{
+			Name:    "libbz2",
+			Version: "1.0.6-r6",
+		},
+		{
+			Name:    "libc-dev",
+			Version: "0.7.1-r0",
+		},
+		{
+			Name:    "libcap",
+			Version: "2.26-r0",
+		},
+		{
+			Name:    "libcrypto1.1",
+			Version: "1.1.1b-r1",
+		},
+		{
+			Name:    "libcurl",
+			Version: "7.64.0-r1",
+		},
+		{
+			Name:    "libedit",
+			Version: "20181209.3.1-r0",
+		},
+		{
+			Name:    "libedit-dev",
+			Version: "20181209.3.1-r0",
+		},
+		{
+			Name:    "libffi",
+			Version: "3.2.1-r6",
+		},
+		{
+			Name:    "libgcc",
+			Version: "8.3.0-r0",
+		},
+		{
+			Name:    "libgcrypt",
+			Version: "1.8.4-r0",
+		},
+		{
+			Name:    "libgomp",
+			Version: "8.3.0-r0",
+		},
+		{
+			Name:    "libgpg-error",
+			Version: "1.33-r0",
+		},
+		{
+			Name:    "libksba",
+			Version: "1.3.5-r0",
+		},
+		{
+			Name:    "libldap",
+			Version: "2.4.47-r2",
+		},
+		{
+			Name:    "libmagic",
+			Version: "5.36-r0",
+		},
+		{
+			Name:    "libsasl",
+			Version: "2.1.27-r1",
+		},
+		{
+			Name:    "libsodium",
+			Version: "1.0.16-r0",
+		},
+		{
+			Name:    "libsodium-dev",
+			Version: "1.0.16-r0",
+		},
+		{
+			Name:    "libssh2",
+			Version: "1.8.2-r0",
+		},
+		{
+			Name:    "libssh2-dev",
+			Version: "1.8.2-r0",
+		},
+		{
+			Name:    "libssl1.1",
+			Version: "1.1.1b-r1",
+		},
+		{
+			Name:    "libstdc++",
+			Version: "8.3.0-r0",
+		},
+		{
+			Name:    "libtasn1",
+			Version: "4.13-r0",
+		},
+		{
+			Name:    "libunistring",
+			Version: "0.9.10-r0",
+		},
+		{
+			Name:    "libuuid",
+			Version: "2.33-r0",
+		},
+		{
+			Name:    "libxml2",
+			Version: "2.9.9-r1",
+		},
+		{
+			Name:    "libxml2-dev",
+			Version: "2.9.9-r1",
+		},
+		{
+			Name:    "lz4",
+			Version: "1.8.3-r2",
+		},
+		{
+			Name:    "lz4-libs",
+			Version: "1.8.3-r2",
+		},
+		{
+			Name:    "m4",
+			Version: "1.4.18-r1",
+		},
+		{
+			Name:    "make",
+			Version: "4.2.1-r2",
+		},
+		{
+			Name:    "mercurial",
+			Version: "4.9.1-r0",
+		},
+		{
+			Name:    "mpc1",
+			Version: "1.0.3-r1",
+		},
+		{
+			Name:    "mpfr3",
+			Version: "3.1.5-r1",
+		},
+		{
+			Name:    "musl",
+			Version: "1.1.20-r4",
+		},
+		{
+			Name:    "musl-dev",
+			Version: "1.1.20-r4",
+		},
+		{
+			Name:    "ncurses",
+			Version: "6.1_p20190105-r0",
+		},
+		{
+			Name:    "ncurses-dev",
+			Version: "6.1_p20190105-r0",
+		},
+		{
+			Name:    "ncurses-libs",
+			Version: "6.1_p20190105-r0",
+		},
+		{
+			Name:    "ncurses-terminfo",
+			Version: "6.1_p20190105-r0",
+		},
+		{
+			Name:    "ncurses-terminfo-base",
+			Version: "6.1_p20190105-r0",
+		},
+		{
+			Name:    "nettle",
+			Version: "3.4.1-r0",
+		},
+		{
+			Name:    "nghttp2",
+			Version: "1.35.1-r0",
+		},
+		{
+			Name:    "nghttp2-dev",
+			Version: "1.35.1-r0",
+		},
+		{
+			Name:    "nghttp2-libs",
+			Version: "1.35.1-r0",
+		},
+		{
+			Name:    "npth",
+			Version: "1.6-r0",
+		},
+		{
+			Name:    "openldap",
+			Version: "2.4.47-r2",
+		},
+		{
+			Name:    "openssh",
+			Version: "7.9_p1-r5",
+		},
+		{
+			Name:    "openssh-client",
+			Version: "7.9_p1-r5",
+		},
+		{
+			Name:    "openssh-keygen",
+			Version: "7.9_p1-r5",
+		},
+		{
+			Name:    "openssh-server",
+			Version: "7.9_p1-r5",
+		},
+		{
+			Name:    "openssh-server-common",
+			Version: "7.9_p1-r5",
+		},
+		{
+			Name:    "openssh-sftp-server",
+			Version: "7.9_p1-r5",
+		},
+		{
+			Name:    "openssl",
+			Version: "1.1.1b-r1",
+		},
+		{
+			Name:    "openssl-dev",
+			Version: "1.1.1b-r1",
+		},
+		{
+			Name:    "p11-kit",
+			Version: "0.23.14-r0",
+		},
+		{
+			Name:    "patch",
+			Version: "2.7.6-r4",
+		},
+		{
+			Name:    "pcre2",
+			Version: "10.32-r1",
+		},
+		{
+			Name:    "perl",
+			Version: "5.26.3-r0",
+		},
+		{
+			Name:    "pinentry",
+			Version: "1.1.0-r0",
+		},
+		{
+			Name:    "pkgconf",
+			Version: "1.6.0-r0",
+		},
+		{
+			Name:    "python2",
+			Version: "2.7.16-r1",
+		},
+		{
+			Name:    "re2c",
+			Version: "1.1.1-r0",
+		},
+		{
+			Name:    "readline",
+			Version: "7.0.003-r1",
+		},
+		{
+			Name:    "serf",
+			Version: "1.3.9-r5",
+		},
+		{
+			Name:    "sqlite",
+			Version: "3.26.0-r3",
+		},
+		{
+			Name:    "sqlite-dev",
+			Version: "3.26.0-r3",
+		},
+		{
+			Name:    "sqlite-libs",
+			Version: "3.26.0-r3",
+		},
+		{
+			Name:    "subversion",
+			Version: "1.11.1-r0",
+		},
+		{
+			Name:    "subversion-libs",
+			Version: "1.11.1-r0",
+		},
+		{
+			Name:    "tar",
+			Version: "1.32-r0",
+		},
+		{
+			Name:    "unzip",
+			Version: "6.0-r4",
+		},
+		{
+			Name:    "util-linux",
+			Version: "2.33-r0",
+		},
+		{
+			Name:    "wget",
+			Version: "1.20.3-r0",
+		},
+		{
+			Name:    "xz",
+			Version: "5.2.4-r0",
+		},
+		{
+			Name:    "xz-libs",
+			Version: "5.2.4-r0",
+		},
+		{
+			Name:    "zip",
+			Version: "3.0-r7",
+		},
+		{
+			Name:    "zlib",
+			Version: "1.2.11-r1",
+		},
+		{
+			Name:    "zlib-dev",
+			Version: "1.2.11-r1",
 		},
 	}
 )
@@ -1047,7 +1042,7 @@ func TestAnalyze(t *testing.T) {
 	var tests = map[string]struct {
 		args                args
 		apkIndexArchivePath string
-		want                *analyzer.AnalysisResult
+		want                types.Packages
 	}{
 		"old": {
 			args: args{
@@ -1085,17 +1080,18 @@ func TestAnalyze(t *testing.T) {
 	}
 	for testName, v := range tests {
 		t.Run(testName, func(t *testing.T) {
-			apkIndexArchiveURL = v.apkIndexArchivePath
-			a := alpineCmdAnalyzer{}
-			actual, _ := a.Analyze(analyzer.ConfigAnalysisInput{
+			t.Setenv(envApkIndexArchiveURL, v.apkIndexArchivePath)
+			a, err := newAlpineCmdAnalyzer(analyzer.ConfigAnalyzerOptions{})
+			require.NoError(t, err)
+			result, err := a.Analyze(context.Background(), analyzer.ConfigAnalysisInput{
 				OS:     v.args.targetOS,
 				Config: v.args.config,
 			})
-			if actual != nil {
-				require.Equal(t, 1, len(actual.PackageInfos))
-				sort.Sort(actual.PackageInfos[0].Packages)
-			}
-			assert.Equal(t, v.want, actual)
+			require.NoError(t, err)
+
+			got := lo.FromPtr(result)
+			sort.Sort(got.HistoryPackages)
+			assert.Equal(t, v.want, got.HistoryPackages)
 		})
 	}
 }

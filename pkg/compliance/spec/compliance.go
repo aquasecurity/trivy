@@ -62,12 +62,12 @@ const (
 )
 
 // Scanners reads spec control and determines the scanners by check ID prefix
-func (cs *ComplianceSpec) Scanners() ([]types.Scanner, error) {
+func (cs *ComplianceSpec) Scanners() (types.Scanners, error) {
 	scannerTypes := map[types.Scanner]struct{}{}
 	for _, control := range cs.Spec.Controls {
 		for _, check := range control.Checks {
 			scannerType := scannerByCheckID(check.ID)
-			if scannerType == types.ScannerUnknown {
+			if scannerType == types.UnknownScanner {
 				return nil, xerrors.Errorf("unsupported check ID: %s", check.ID)
 			}
 			scannerTypes[scannerType] = struct{}{}
@@ -96,11 +96,11 @@ func scannerByCheckID(checkID string) types.Scanner {
 	case strings.HasPrefix(checkID, "avd-"):
 		return types.MisconfigScanner
 	default:
-		return types.ScannerUnknown
+		return types.UnknownScanner
 	}
 }
 
-// GetComlianceSpec accepct compliance flag name/path and return builtin or file system loaded spec
+// GetComplianceSpec accepct compliance flag name/path and return builtin or file system loaded spec
 func GetComplianceSpec(specNameOrPath string) ([]byte, error) {
 	if strings.HasPrefix(specNameOrPath, "@") {
 		buf, err := os.ReadFile(strings.TrimPrefix(specNameOrPath, "@"))

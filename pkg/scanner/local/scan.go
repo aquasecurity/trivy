@@ -114,7 +114,7 @@ func (s Scanner) Scan(ctx context.Context, target, artifactKey string, blobKeys 
 	}
 
 	// Scan packages for vulnerabilities
-	if slices.Contains(options.Scanners, types.VulnerabilityScanner) {
+	if options.Scanners.Enabled(types.VulnerabilityScanner) {
 		var vulnResults types.Results
 		vulnResults, eosl, err = s.scanVulnerabilities(target, artifactDetail, options)
 		if err != nil {
@@ -138,15 +138,28 @@ func (s Scanner) Scan(ctx context.Context, target, artifactKey string, blobKeys 
 	}
 
 	// Scan secrets
-	if slices.Contains(options.Scanners, types.SecretScanner) {
+	if options.Scanners.Enabled(types.SecretScanner) {
 		secretResults := s.secretsToResults(artifactDetail.Secrets)
 		results = append(results, secretResults...)
 	}
 
 	// Scan licenses
-	if slices.Contains(options.Scanners, types.LicenseScanner) {
+	if options.Scanners.Enabled(types.LicenseScanner) {
 		licenseResults := s.scanLicenses(artifactDetail, options.LicenseCategories)
 		results = append(results, licenseResults...)
+	}
+
+	// Scan misconfiguration on container image config
+	if options.ImageConfigScanners.Enabled(types.MisconfigScanner) {
+		if im := artifactDetail.ImageMisconfiguration; im != nil {
+			im.FilePath = target // Set the target name to the file path as container image config is not a real file.
+			results = append(results, s.MisconfsToResults([]ftypes.Misconfiguration{*im})...)
+		}
+	}
+
+	// Scan secrets on container image config
+	if options.ImageConfigScanners.Enabled(types.SecretScanner) {
+		// TODO
 	}
 
 	// For WASM plugins and custom analyzers
@@ -538,7 +551,6 @@ func mergePkgs(pkgs, pkgsFromCommands []ftypes.Package) []ftypes.Package {
 	return pkgs
 }
 
-func ShouldScanMisconfigOrRbac(scanners []string) bool {
-	return slices.Contains(scanners, types.MisconfigScanner) ||
-		slices.Contains(scanners, types.RBACScanner)
+func ShouldScanMisconfigOrRbac(scanners types.Scanners) bool {
+	return scanners.AnyEnabled(types.MisconfigScanner, types.RBACScanner)
 }

@@ -11,28 +11,25 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
-	"github.com/aquasecurity/trivy/pkg/fanal/artifact"
+	"github.com/aquasecurity/trivy/pkg/fanal/analyzer/config"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 )
 
-func Test_Handle(t *testing.T) {
+func TestScanner_Scan(t *testing.T) {
 	tests := []struct {
 		name         string
-		files        map[types.HandlerType][]types.File
+		files        []types.File
 		filePatterns []string
 		wantFilePath string
 		wantFileType string
 	}{
 		{
 			name: "happy path. Dockerfile",
-			files: map[types.HandlerType][]types.File{
-				types.MisconfPostHandler: {
-					{
-						Path:    "Dockerfile",
-						Type:    types.Dockerfile,
-						Content: []byte(`FROM alpine`),
-					},
+			files: []types.File{
+				{
+					Path:    "Dockerfile",
+					Type:    types.Dockerfile,
+					Content: []byte(`FROM alpine`),
 				},
 			},
 			wantFilePath: "Dockerfile",
@@ -40,13 +37,11 @@ func Test_Handle(t *testing.T) {
 		},
 		{
 			name: "happy path. Dockerfile with custom file name",
-			files: map[types.HandlerType][]types.File{
-				types.MisconfPostHandler: {
-					{
-						Path:    "dockerf",
-						Type:    types.Dockerfile,
-						Content: []byte(`FROM alpine`),
-					},
+			files: []types.File{
+				{
+					Path:    "dockerf",
+					Type:    types.Dockerfile,
+					Content: []byte(`FROM alpine`),
 				},
 			},
 			filePatterns: []string{"dockerfile:dockerf"},
@@ -56,18 +51,14 @@ func Test_Handle(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			result := &analyzer.AnalysisResult{
-				Files: tt.files,
-			}
-			misconfHandler, err := newMisconfPostHandler(artifact.Option{FilePatterns: tt.filePatterns})
-			assert.NoError(t, err)
-			blobInfo := &types.BlobInfo{}
+			s, err := NewScanner(tt.filePatterns, config.ScannerOption{})
+			require.NoError(t, err)
 
-			err = misconfHandler.Handle(context.Background(), result, blobInfo)
-			assert.NoError(t, err)
-			assert.Equal(t, 1, len(blobInfo.Misconfigurations), "wrong number of misconfigurations found")
-			assert.Equal(t, tt.wantFilePath, blobInfo.Misconfigurations[0].FilePath, "filePaths don't equal")
-			assert.Equal(t, tt.wantFileType, blobInfo.Misconfigurations[0].FileType, "fileTypes don't equal")
+			misconfs, err := s.Scan(context.Background(), tt.files)
+			require.NoError(t, err)
+			assert.Equal(t, 1, len(misconfs), "wrong number of misconfigurations found")
+			assert.Equal(t, tt.wantFilePath, misconfs[0].FilePath, "filePaths don't equal")
+			assert.Equal(t, tt.wantFileType, misconfs[0].FileType, "fileTypes don't equal")
 		})
 	}
 }

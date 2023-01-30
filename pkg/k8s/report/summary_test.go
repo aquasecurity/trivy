@@ -10,7 +10,7 @@ import (
 )
 
 func TestReport_ColumnHeading(t *testing.T) {
-	allScanners := []string{
+	allScanners := types.Scanners{
 		types.VulnerabilityScanner,
 		types.MisconfigScanner,
 		types.SecretScanner,
@@ -19,7 +19,7 @@ func TestReport_ColumnHeading(t *testing.T) {
 
 	tests := []struct {
 		name             string
-		scanners         []string
+		scanners         types.Scanners
 		components       []string
 		availableColumns []string
 		want             []string
@@ -67,7 +67,7 @@ func TestReport_ColumnHeading(t *testing.T) {
 		},
 		{
 			name:     "config column only",
-			scanners: []string{types.MisconfigScanner},
+			scanners: types.Scanners{types.MisconfigScanner},
 			components: []string{
 				workloadComponent,
 				infraComponent,
@@ -81,7 +81,7 @@ func TestReport_ColumnHeading(t *testing.T) {
 		},
 		{
 			name:             "secret column only",
-			scanners:         []string{types.SecretScanner},
+			scanners:         types.Scanners{types.SecretScanner},
 			components:       []string{},
 			availableColumns: WorkloadColumns(),
 			want: []string{
@@ -92,7 +92,7 @@ func TestReport_ColumnHeading(t *testing.T) {
 		},
 		{
 			name:             "vuln column only",
-			scanners:         []string{types.VulnerabilityScanner},
+			scanners:         types.Scanners{types.VulnerabilityScanner},
 			components:       []string{},
 			availableColumns: WorkloadColumns(),
 			want: []string{
