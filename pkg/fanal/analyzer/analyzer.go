@@ -16,6 +16,7 @@ import (
 	"golang.org/x/xerrors"
 
 	dio "github.com/aquasecurity/go-dep-parser/pkg/io"
+	godepparserutils "github.com/aquasecurity/go-dep-parser/pkg/utils"
 	aos "github.com/aquasecurity/trivy/pkg/fanal/analyzer/os"
 	"github.com/aquasecurity/trivy/pkg/fanal/log"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
@@ -410,9 +411,11 @@ func (ag AnalyzerGroup) AnalyzeFile(ctx context.Context, wg *sync.WaitGroup, ter
 			})
 			if err != nil && !errors.Is(err, aos.AnalyzeOSError) {
 				log.Logger.Debugf("Analysis error: %s", err)
-				// Terminate walk and update error
-				*terminateWalk = true
-				*terminateError = err.Error()
+				if strings.Contains(err.Error(), godepparserutils.JAVA_ARTIFACT_PARSER_ERROR) || (strings.Contains(err.Error(), "PROTOCOL_ERROR") && strings.Contains(err.Error(), "walk error")) {
+					// Terminate walk and update error
+					*terminateWalk = true
+					*terminateError = err.Error()
+				}
 				return
 			}
 			if ret != nil {
