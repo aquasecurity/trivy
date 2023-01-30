@@ -402,6 +402,6 @@ replace oras.land/oras-go => oras.land/oras-go v1.1.1
 // spdx logic write on v0.3.0 and incompatible with v0.3.1-0.20230104082527-d6f58551be3f
 replace github.com/spdx/tools-golang => github.com/spdx/tools-golang v0.3.0
 
-replace github.com/aquasecurity/go-dep-parser => github.com/DmitriyLewen/go-dep-parser v0.0.0-20230127084430-490c4e5ffe6b
+replace github.com/aquasecurity/go-dep-parser => github.com/DmitriyLewen/go-dep-parser v0.0.0-20230130075123-8795ff28c7f2
 
 replace github.com/aquasecurity/trivy-java-db => github.com/DmitriyLewen/trivy-java-db v0.0.0-20230127064158-abac0999f6d8

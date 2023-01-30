@@ -13,6 +13,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer/language"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/java_db"
+	"github.com/aquasecurity/trivy/pkg/log"
 )
 
 func init() {
@@ -31,9 +32,10 @@ type javaLibraryAnalyzer struct{}
 func (a javaLibraryAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInput) (*analyzer.AnalysisResult, error) {
 	dbCacheDir, err := java_db.UpdateJavaDB()
 	if err != nil {
-		return nil, xerrors.Errorf("trivy-java-db update error: %w", err) // TODO just skip using trivy-java-db????
+		// if dbCacheDir == "" => db.Searcher will not be init
+		log.Logger.Warnf("disable search jars with trivy-java-db. Update error: %s", err)
 	}
-	p := jar.NewParser(jar.WithSize(input.Info.Size()), jar.WithFilePath(input.FilePath), jar.WithOffline(input.Options.Offline), jar.WithTrivyJavaDBDir(dbCacheDir))
+	p := jar.NewParser(jar.WithSize(input.Info.Size()), jar.WithFilePath(input.FilePath), jar.WithOffline(input.Options.Offline), jar.WithDBDir(dbCacheDir))
 	libs, deps, err := p.Parse(input.Content)
 	if err != nil {
 		return nil, xerrors.Errorf("jar/war/ear/par parse error: %w", err)

@@ -110,8 +110,8 @@ github.com/BurntSushi/xgb v0.0.0-20160522181843-27f122750802/go.mod h1:IVnqGOEym
 github.com/CycloneDX/cyclonedx-go v0.7.0 h1:jNxp8hL7UpcvPDFXjY+Y1ibFtsW+e5zyF9QoSmhK/zg=
 github.com/CycloneDX/cyclonedx-go v0.7.0/go.mod h1:W5Z9w8pTTL+t+yG3PCiFRGlr8PUlE0pGWzKSJbsyXkg=
 github.com/DATA-DOG/go-sqlmock v1.5.0 h1:Shsta01QNfFxHCfpW6YH2STWB0MudeXXEWMr20OEh60=
-github.com/DmitriyLewen/go-dep-parser v0.0.0-20230127084430-490c4e5ffe6b h1:QMXp5Kzkf7qIiksOVWnG2IZgJAEi51kG+BGTi3w/VpA=
-github.com/DmitriyLewen/go-dep-parser v0.0.0-20230127084430-490c4e5ffe6b/go.mod h1:OY4X5N1w8T3U44GEm5KqiRDLkIAgq4LwYgMCqtkzBAc=
+github.com/DmitriyLewen/go-dep-parser v0.0.0-20230130075123-8795ff28c7f2 h1:w9p7kta4grur/hZUDEbo3PGKHzlyWpDgCX66d9CFX3g=
+github.com/DmitriyLewen/go-dep-parser v0.0.0-20230130075123-8795ff28c7f2/go.mod h1:OY4X5N1w8T3U44GEm5KqiRDLkIAgq4LwYgMCqtkzBAc=
 github.com/DmitriyLewen/trivy-java-db v0.0.0-20230127064158-abac0999f6d8 h1:XkDYNxIua+eUUvbMU5vPGeC9jL1/+JPLNkBtmb6RhgY=
 github.com/DmitriyLewen/trivy-java-db v0.0.0-20230127064158-abac0999f6d8/go.mod h1:eAl4owZFb6vRIWYTpDNhDJy72uYaHQhLBXqa44zL/PY=
 github.com/GoogleCloudPlatform/docker-credential-gcr v2.0.5+incompatible h1:juIaKLLVhqzP55d8x4cSVgwyQv76Z55/fRv/UBr2KkQ=

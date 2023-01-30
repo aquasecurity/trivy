@@ -5,15 +5,16 @@ import (
 	"path/filepath"
 	"time"
 
-	"golang.org/x/xerrors"
-
-	"github.com/aquasecurity/trivy-db/pkg/metadata"
+	"github.com/aquasecurity/trivy-java-db/pkg/metadata"
 	"github.com/aquasecurity/trivy/pkg/oci"
+
+	"golang.org/x/xerrors"
 )
 
 const (
 	defaultJavaDBRepository = "ghcr.io/dmitriylewen/trivy-java-db:latest"
-	mediaType               = "application/vnd.aquasec.trivy.java.db.layer.v1.tar+gzip"
+	// defaultJavaDBRepository = "ghcr.io/aquasecurity/trivy-java-db:latest"
+	mediaType = "application/vnd.aquasec.trivy.java.db.layer.v1.tar+gzip"
 )
 
 var (
@@ -23,8 +24,6 @@ var (
 type JavaDBClient struct {
 	ociArtifact *oci.Artifact
 	cacheDir    string
-	quiet       bool
-	insecure    bool
 }
 
 func InitJavaDB(cacheDir string, quiet, insecure bool) error {
@@ -35,33 +34,29 @@ func InitJavaDB(cacheDir string, quiet, insecure bool) error {
 	javaDBClient = JavaDBClient{
 		ociArtifact: a,
 		cacheDir:    filepath.Join(cacheDir + "/java-db"),
-		quiet:       quiet,
-		insecure:    insecure,
 	}
 	return nil
 }
 
 func UpdateJavaDB() (string, error) {
-	dbDir := filepath.Join(javaDBClient.cacheDir, "db")
-	c := metadata.NewClient(javaDBClient.cacheDir) // TODO use metadata from trivy-java-db
-	meta, err := c.Get()
-	if err != nil || meta.NextUpdate.Before(time.Now().UTC()) {
-		err = downloadTrivyJavaDB(dbDir, javaDBClient.quiet, javaDBClient.insecure) // TODO add flags
+	dbDir := javaDBClient.cacheDir
+	metadata.Init(javaDBClient.cacheDir)
+	meta, err := metadata.Get()
+	if err != nil {
+		return "", err
+	}
+	if meta.NextUpdate.Before(time.Now().UTC()) {
+		// download DB
+		err = javaDBClient.ociArtifact.Download(context.Background(), javaDBClient.cacheDir)
+		if err != nil {
+			return "", xerrors.Errorf("trivy-java-db download error: %w", err)
+		}
+		// update DownloadedAt
+		meta.DownloadedAt = time.Now().UTC()
+		err = metadata.Update(meta)
 		if err != nil {
 			return "", err
 		}
 	}
 	return dbDir, nil
-}
-
-func downloadTrivyJavaDB(cacheDir string, quiet, insecure bool) error {
-	artifact, err := oci.NewArtifact(defaultJavaDBRepository, mediaType, quiet, insecure)
-	if err != nil {
-		return xerrors.Errorf("trivy-java-db artifact initialize error: %w", err) // TODO change this!!!
-	}
-	err = artifact.Download(context.Background(), cacheDir)
-	if err != nil {
-		return xerrors.Errorf("trivy-java-db download error: %w", err)
-	}
-	return nil
 }
