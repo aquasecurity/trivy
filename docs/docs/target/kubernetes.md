@@ -3,13 +3,21 @@
 !!! warning "EXPERIMENTAL"
     This feature might change without preserving backwards compatibility.
 
-The Trivy K8s CLI allows you to scan your Kubernetes cluster for Vulnerabilities, Secrets and Misconfigurations. You can either run the CLI locally or integrate it into your CI/CD pipeline. The difference to the Trivy CLI is that the Trivy K8s CLI allows you to scan running workloads directly within your cluster.
+## CLI
+The Trivy K8s CLI allows you to scan your Kubernetes cluster for 
 
-If you are looking for continuous cluster audit scanning, have a look at the [Trivy K8s operator.](../operator/index.md)
+- Vulnerabilities
+- Misconfigurations
+- Secrets
+ 
+You can either run the CLI locally or integrate it into your CI/CD pipeline.
+The difference to the Trivy CLI is that the Trivy K8s CLI allows you to scan running workloads directly within your cluster.
+
+If you are looking for continuous cluster audit scanning, have a look at the Trivy K8s operator below.
 
 Trivy uses your local kubectl configuration to access the API server to list artifacts.
 
-## CLI Commands
+### Commands
 
 Scan a full cluster and generate a simple summary report:
 
@@ -17,7 +25,7 @@ Scan a full cluster and generate a simple summary report:
 $ trivy k8s --report=summary cluster
 ```
 
-![k8s Summary Report](../../../imgs/trivy-k8s.png)
+![k8s Summary Report](../../imgs/trivy-k8s.png)
 
 The summary report is the default. To get all of the detail the output contains, use `--report all`.
 
@@ -233,7 +241,7 @@ $ trivy k8s --format json -o results.json cluster
 
 
 
-## Infra checks
+### Infra checks
 
 Trivy by default scans kubernetes infra components (apiserver, controller-manager, scheduler and etcd)
 if they exist under the `kube-system` namespace. For example, if you run a full cluster scan, or scan all
@@ -275,5 +283,55 @@ Or, to filter for all other checks besides the infra checks, you can:
 $ trivy k8s cluster --report summary --components=workload --scanners=config # scan all components besides infra
 ```
 
-	
+### Compliance
+This section describes Kubernetes specific compliance reports.
+For an overview of Trivy's Compliance feature, including working with custom compliance, check out the [Compliance documentation](../compliance/compliance.md).
 
+#### Built in reports
+
+The following reports are available out of the box:
+
+| Compliance | Name for command | More info
+--- | --- | ---
+NSA, CISA Kubernetes Hardening Guidance v1.2 | `k8s-nsa` | [Link](https://media.defense.gov/2022/Aug/29/2003066362/-1/-1/0/CTR_KUBERNETES_HARDENING_GUIDANCE_1.2_20220829.PDF)
+CIS Benchmark for Kubernetes v1.23 | `k8s-cis` | [Link](https://www.cisecurity.org/benchmark/kubernetes)
+
+#### Examples
+
+Scan a full cluster and generate a compliance summary report:
+
+```
+$ trivy k8s cluster --compliance=<compliance_id> --report summary
+```
+
+***Note*** : The `Issues` column represent the total number of failed checks for this control.
+
+
+Get all of the detailed output for checks:
+
+```
+trivy k8s cluster --compliance=<compliance_id> --report all
+```
+
+Report result in JSON format:
+
+```
+trivy k8s cluster --compliance=<compliance_id> --report summary --format json
+```
+
+```
+trivy k8s cluster --compliance=<compliance_id> --report all --format json
+```
+
+## Operator
+Trivy has a native [Kubernetes Operator][operator] which continuously scans your Kubernetes cluster for security issues, and generates security reports as Kubernetes [Custom Resources][crd]. It does it by watching Kubernetes for state changes and automatically triggering scans in response to changes, for example initiating a vulnerability scan when a new Pod is created.
+
+> Kubernetes-native security toolkit. ([Documentation][trivy-operator]).
+
+<figure>
+  <figcaption>Workload reconcilers discover K8s controllers, manage scan jobs, and create VulnerabilityReport and ConfigAuditReport objects.</figcaption>
+</figure>
+
+[operator]: https://kubernetes.io/docs/concepts/extend-kubernetes/operator/
+[crd]: https://kubernetes.io/docs/concepts/extend-kubernetes/api-extension/custom-resources/
+[trivy-operator]: https://aquasecurity.github.io/trivy-operator/latest
