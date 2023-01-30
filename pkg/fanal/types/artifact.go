@@ -202,6 +202,9 @@ type ArtifactInfo struct {
 	// Misconfiguration holds misconfiguration in container image config
 	Misconfiguration *Misconfiguration `json:",omitempty"`
 
+	// Secret holds secrets in container image config such as environment variables
+	Secret *Secret `json:",omitempty"`
+
 	// HistoryPackages are packages extracted from RUN instructions
 	HistoryPackages Packages `json:",omitempty"`
 }
@@ -246,15 +249,24 @@ type ArtifactDetail struct {
 	Secrets           []Secret           `json:",omitempty"`
 	Licenses          []LicenseFile      `json:",omitempty"`
 
-	// ImageMisconfiguration holds misconfigurations in container image config
-	ImageMisconfiguration *Misconfiguration `json:",omitempty"`
-
-	// HistoryPackages are packages extracted from RUN instructions
-	HistoryPackages []Package `json:",omitempty"`
+	// ImageConfig has information from container image config
+	ImageConfig ImageConfigDetail
 
 	// CustomResources hold analysis results from custom analyzers.
 	// It is for extensibility and not used in OSS.
 	CustomResources []CustomResource `json:",omitempty"`
+}
+
+// ImageConfigDetail has information from container image config
+type ImageConfigDetail struct {
+	// Packages are packages extracted from RUN instructions in history
+	Packages []Package `json:",omitempty"`
+
+	// Misconfiguration holds misconfigurations in container image config
+	Misconfiguration *Misconfiguration `json:",omitempty"`
+
+	// Secret holds secrets in container image config
+	Secret *Secret `json:",omitempty"`
 }
 
 // ToBlobInfo is used to store a merged layer in cache.

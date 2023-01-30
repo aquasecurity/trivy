@@ -149,9 +149,9 @@ func (s Scanner) Scan(ctx context.Context, target, artifactKey string, blobKeys 
 		results = append(results, licenseResults...)
 	}
 
-	// Scan misconfiguration on container image config
+	// Scan misconfigurations on container image config
 	if options.ImageConfigScanners.Enabled(types.MisconfigScanner) {
-		if im := artifactDetail.ImageMisconfiguration; im != nil {
+		if im := artifactDetail.ImageConfig.Misconfiguration; im != nil {
 			im.FilePath = target // Set the target name to the file path as container image config is not a real file.
 			results = append(results, s.MisconfsToResults([]ftypes.Misconfiguration{*im})...)
 		}
@@ -159,7 +159,10 @@ func (s Scanner) Scan(ctx context.Context, target, artifactKey string, blobKeys 
 
 	// Scan secrets on container image config
 	if options.ImageConfigScanners.Enabled(types.SecretScanner) {
-		// TODO
+		if is := artifactDetail.ImageConfig.Secret; is != nil {
+			is.FilePath = target // Set the target name to the file path as container image config is not a real file.
+			results = append(results, s.secretsToResults([]ftypes.Secret{*is})...)
+		}
 	}
 
 	// For WASM plugins and custom analyzers
@@ -191,7 +194,7 @@ func (s Scanner) osPkgsToResult(target string, detail ftypes.ArtifactDetail, opt
 
 	pkgs := detail.Packages
 	if options.ScanRemovedPackages {
-		pkgs = mergePkgs(pkgs, detail.HistoryPackages)
+		pkgs = mergePkgs(pkgs, detail.ImageConfig.Packages)
 	}
 	sort.Sort(pkgs)
 	return &types.Result{
@@ -260,7 +263,7 @@ func (s Scanner) scanOSPkgs(target string, detail ftypes.ArtifactDetail, options
 
 	pkgs := detail.Packages
 	if options.ScanRemovedPackages {
-		pkgs = mergePkgs(pkgs, detail.HistoryPackages)
+		pkgs = mergePkgs(pkgs, detail.ImageConfig.Packages)
 	}
 
 	if detail.OS.Extended {
