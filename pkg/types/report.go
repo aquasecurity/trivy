@@ -56,12 +56,13 @@ const (
 	ClassLicenseFile = "license-file" // For detected licenses in files
 	ClassCustom      = "custom"
 
-	// ComplianceNsa is the compliance checks for nsa
-	ComplianceK8sNsa    = Compliance("k8s-nsa")
-	ComplianceK8sCIS    = Compliance("k8s-cis")
-	ComplianceAWSCIS12  = Compliance("aws-cis-1.2")
-	ComplianceAWSCIS14  = Compliance("aws-cis-1.4")
-	ComplianceDockerCIS = Compliance("docker-cis")
+	ComplianceK8sNsa           = Compliance("k8s-nsa")
+	ComplianceK8sCIS           = Compliance("k8s-cis")
+	ComplianceK8sPSSBaseline   = Compliance("k8s-pss-baseline")
+	ComplianceK8sPSSRestricted = Compliance("k8s-pss-restricted")
+	ComplianceAWSCIS12         = Compliance("aws-cis-1.2")
+	ComplianceAWSCIS14         = Compliance("aws-cis-1.4")
+	ComplianceDockerCIS        = Compliance("docker-cis")
 )
 
 // Result holds a target and detected vulnerabilities
