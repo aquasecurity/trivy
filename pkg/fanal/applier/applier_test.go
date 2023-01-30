@@ -337,38 +337,40 @@ func TestApplier_ApplyLayers(t *testing.T) {
 						},
 					},
 				},
-				HistoryPackages: []types.Package{
-					{
-						Name:    "musl",
-						Version: "1.1.23",
-					},
-					{
-						Name:    "busybox",
-						Version: "1.31",
-					},
-					{
-						Name:    "ncurses-libs",
-						Version: "6.1_p20190518-r0",
-					},
-					{
-						Name:    "ncurses-terminfo-base",
-						Version: "6.1_p20190518-r0",
-					},
-					{
-						Name:    "ncurses",
-						Version: "6.1_p20190518-r0",
-					},
-					{
-						Name:    "ncurses-terminfo",
-						Version: "6.1_p20190518-r0",
-					},
-					{
-						Name:    "bash",
-						Version: "5.0.0-r0",
-					},
-					{
-						Name:    "readline",
-						Version: "8.0.0-r0",
+				ImageConfig: types.ImageConfigDetail{
+					Packages: []types.Package{
+						{
+							Name:    "musl",
+							Version: "1.1.23",
+						},
+						{
+							Name:    "busybox",
+							Version: "1.31",
+						},
+						{
+							Name:    "ncurses-libs",
+							Version: "6.1_p20190518-r0",
+						},
+						{
+							Name:    "ncurses-terminfo-base",
+							Version: "6.1_p20190518-r0",
+						},
+						{
+							Name:    "ncurses",
+							Version: "6.1_p20190518-r0",
+						},
+						{
+							Name:    "ncurses-terminfo",
+							Version: "6.1_p20190518-r0",
+						},
+						{
+							Name:    "bash",
+							Version: "5.0.0-r0",
+						},
+						{
+							Name:    "readline",
+							Version: "8.0.0-r0",
+						},
 					},
 				},
 			},
