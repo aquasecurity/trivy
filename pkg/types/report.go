@@ -11,6 +11,8 @@ import (
 var Compliances = []string{
 	ComplianceK8sNsa,
 	ComplianceK8sCIS,
+	ComplianceK8sPSSBaseline,
+	ComplianceK8sPSSRestricted,
 	ComplianceAWSCIS12,
 	ComplianceAWSCIS14,
 	ComplianceDockerCIS,

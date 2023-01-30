@@ -766,7 +766,7 @@ func NewKubernetesCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 
 	reportFlagGroup := flag.NewReportFlagGroup()
 	compliance := flag.ComplianceFlag
-	compliance.Usage += fmt.Sprintf(" (%s,%s)", types.ComplianceK8sNsa, types.ComplianceK8sCIS)
+	compliance.Usage += fmt.Sprintf(" (%s,%s, %s, %s)", types.ComplianceK8sNsa, types.ComplianceK8sCIS, types.ComplianceK8sPSSBaseline, types.ComplianceK8sPSSRestricted)
 	reportFlagGroup.Compliance = &compliance // override usage as the accepted values differ for each subcommand.
 	reportFlagGroup.ExitOnEOSL = nil         // disable '--exit-on-eosl'
 
