@@ -484,13 +484,14 @@ func initScannerConfig(opts flag.Options, cacheClient cache.Cache) (ScannerConfi
 		if err != nil {
 			return ScannerConfig{}, types.ScanOptions{}, xerrors.Errorf("scanner error: %w", err)
 		}
+
 		opts.Scanners = scanners
 		opts.ImageConfigScanners = nil
 		// TODO: define image-config-scanners in the spec
 		if opts.Compliance.Spec.ID == "docker-cis" {
 			opts.Scanners = nil
 			opts.ImageConfigScanners = scanners
-		} 
+		}
 	}
 
 	scanOptions := types.ScanOptions{
