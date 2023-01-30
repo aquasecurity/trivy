@@ -29,6 +29,10 @@ func Test_historyAnalyzer_Analyze(t *testing.T) {
 							EmptyLayer: false,
 						},
 						{
+							CreatedBy:  "/bin/sh -c #(nop) HEALTHCHECK NONE",
+							EmptyLayer: false,
+						},
+						{
 							CreatedBy:  `/bin/sh -c #(nop)  CMD [\"/bin/sh\"]`,
 							EmptyLayer: true,
 						},
