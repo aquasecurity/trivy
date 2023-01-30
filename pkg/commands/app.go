@@ -209,8 +209,10 @@ func NewRootCommand(version string, globalFlags *flag.GlobalFlagGroup) *cobra.Co
 
 func NewImageCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	reportFlagGroup := flag.NewReportFlagGroup()
-	reportFlagGroup.ReportFormat = nil // TODO: support --report summary
-	reportFlagGroup.Compliance = nil   // disable '--compliance'
+
+	compliance := flag.ComplianceFlag
+	compliance.Usage += fmt.Sprintf(" (%s)", types.ComplianceDockerCIS)
+	reportFlagGroup.Compliance = &compliance // override usage as the accepted values differ for each subcommand.
 
 	imageFlags := &flag.Flags{
 		CacheFlagGroup:         flag.NewCacheFlagGroup(),

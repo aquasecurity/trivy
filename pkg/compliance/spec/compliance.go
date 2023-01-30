@@ -7,6 +7,7 @@ import (
 
 	"golang.org/x/exp/maps"
 	"golang.org/x/xerrors"
+	"gopkg.in/yaml.v3"
 
 	sp "github.com/aquasecurity/defsec/pkg/spec"
 	"github.com/aquasecurity/trivy/pkg/types"
@@ -101,14 +102,23 @@ func scannerByCheckID(checkID string) types.Scanner {
 }
 
 // GetComplianceSpec accepct compliance flag name/path and return builtin or file system loaded spec
-func GetComplianceSpec(specNameOrPath string) ([]byte, error) {
+func GetComplianceSpec(specNameOrPath string) (ComplianceSpec, error) {
+	var b []byte
+	var err error
 	if strings.HasPrefix(specNameOrPath, "@") {
-		buf, err := os.ReadFile(strings.TrimPrefix(specNameOrPath, "@"))
+		b, err = os.ReadFile(strings.TrimPrefix(specNameOrPath, "@"))
 		if err != nil {
-			return []byte{}, fmt.Errorf("error retrieving compliance spec from path: %w", err)
+			return ComplianceSpec{}, fmt.Errorf("error retrieving compliance spec from path: %w", err)
 		}
-		return buf, nil
+	} else {
+		// TODO: GetSpecByName() should return []byte
+		b = []byte(sp.NewSpecLoader().GetSpecByName(specNameOrPath))
 	}
-	return []byte(sp.NewSpecLoader().GetSpecByName(specNameOrPath)), nil
+
+	var complianceSpec ComplianceSpec
+	if err = yaml.Unmarshal(b, &complianceSpec); err != nil {
+		return ComplianceSpec{}, xerrors.Errorf("spec yaml decode error: %w", err)
+	}
+	return complianceSpec, nil
 
 }

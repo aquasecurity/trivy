@@ -9,10 +9,12 @@ Trivy’s compliance flag lets you curate a specific set of checks into a report
 
 Compliance report is currently supported in the following targets (trivy sub-commands):
 
+- `trivy image`
 - `trivy aws`
 - `trivy k8s`
 
-Add the `--compliance` flag to the command line, and set it's value to desired report. For example: `trivy k8s cluster --compliance k8s-nsa` (see below for built-in and custom reports)
+Add the `--compliance` flag to the command line, and set it's value to desired report.
+For example: `trivy k8s cluster --compliance k8s-nsa` (see below for built-in and custom reports)
 
 ### Options
 

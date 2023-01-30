@@ -288,6 +288,8 @@ func (r *runner) Report(opts flag.Options, report types.Report) error {
 		OutputTemplate:     opts.Template,
 		IncludeNonFailures: opts.IncludeNonFailures,
 		Trace:              opts.Trace,
+		Report:             opts.ReportFormat,
+		Compliance:         opts.Compliance,
 	}); err != nil {
 		return xerrors.Errorf("unable to write results: %w", err)
 	}
@@ -365,7 +367,7 @@ func Run(ctx context.Context, opts flag.Options, targetKind TargetKind) (err err
 	defer cancel()
 
 	defer func() {
-		if xerrors.Is(err, context.DeadlineExceeded) {
+		if errors.Is(err, context.DeadlineExceeded) {
 			log.Logger.Warn("Increase --timeout value")
 		}
 	}()
@@ -474,6 +476,22 @@ func initScannerConfig(opts flag.Options, cacheClient cache.Cache) (ScannerConfi
 	target := opts.Target
 	if opts.Input != "" {
 		target = opts.Input
+	}
+
+	if opts.Compliance.Spec.ID != "" {
+		// set scanners types by spec
+		scanners, err := opts.Compliance.Scanners()
+		if err != nil {
+			return ScannerConfig{}, types.ScanOptions{}, xerrors.Errorf("scanner error: %w", err)
+		}
+		// TODO: define image-config-scanners in the spec
+		if opts.Compliance.Spec.ID == "docker-cis" {
+			opts.Scanners = nil
+			opts.ImageConfigScanners = scanners
+		} else {
+			opts.Scanners = scanners
+			opts.ImageConfigScanners = nil
+		}
 	}
 
 	scanOptions := types.ScanOptions{

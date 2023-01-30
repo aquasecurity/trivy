@@ -26,14 +26,14 @@ const (
 	IssuesColumn      = "Issues"
 )
 
-func (tw TableWriter) columns() []string {
-	return []string{ControlIDColumn, SeverityColumn, ControlNameColumn, StatusColumn, IssuesColumn}
-}
-
 func (tw TableWriter) Write(report *ComplianceReport) error {
 	switch tw.Report {
 	case allReport:
-		t := pkgReport.Writer{Output: tw.Output, Severities: tw.Severities, ShowMessageOnce: &sync.Once{}}
+		t := pkgReport.Writer{
+			Output:          tw.Output,
+			Severities:      tw.Severities,
+			ShowMessageOnce: &sync.Once{},
+		}
 		for _, cr := range report.Results {
 			r := types.Report{Results: cr.Results}
 			err := t.Write(r)
@@ -42,7 +42,7 @@ func (tw TableWriter) Write(report *ComplianceReport) error {
 			}
 		}
 	case summaryReport:
-		writer := NewSummaryWriter(tw.Output, tw.Severities, tw.columns())
+		writer := NewSummaryWriter(tw.Output)
 		return writer.Write(report)
 	default:
 		return xerrors.Errorf(`report %q not supported. Use "summary" or "all"`, tw.Report)

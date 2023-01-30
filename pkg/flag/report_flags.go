@@ -9,6 +9,7 @@ import (
 	"golang.org/x/xerrors"
 
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
+	"github.com/aquasecurity/trivy/pkg/compliance/spec"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/report"
 	"github.com/aquasecurity/trivy/pkg/result"
@@ -120,7 +121,7 @@ type ReportOptions struct {
 	IgnorePolicy   string
 	Output         io.Writer
 	Severities     []dbTypes.Severity
-	Compliance     string
+	Compliance     spec.ComplianceSpec
 }
 
 func NewReportFlagGroup() *ReportFlagGroup {
@@ -144,8 +145,19 @@ func (f *ReportFlagGroup) Name() string {
 }
 
 func (f *ReportFlagGroup) Flags() []*Flag {
-	return []*Flag{f.Format, f.ReportFormat, f.Template, f.DependencyTree, f.ListAllPkgs, f.IgnoreFile,
-		f.IgnorePolicy, f.ExitCode, f.Output, f.Severity, f.Compliance}
+	return []*Flag{
+		f.Format,
+		f.ReportFormat,
+		f.Template,
+		f.DependencyTree,
+		f.ListAllPkgs,
+		f.IgnoreFile,
+		f.IgnorePolicy,
+		f.ExitCode,
+		f.Output,
+		f.Severity,
+		f.Compliance,
+	}
 }
 
 func (f *ReportFlagGroup) ToOptions(out io.Writer) (ReportOptions, error) {
@@ -199,9 +211,9 @@ func (f *ReportFlagGroup) ToOptions(out io.Writer) (ReportOptions, error) {
 		}
 	}
 
-	complianceTypes, err := parseComplianceTypes(getString(f.Compliance))
+	cs, err := loadComplianceTypes(getString(f.Compliance))
 	if err != nil {
-		return ReportOptions{}, xerrors.Errorf("unable to parse compliance types: %w", err)
+		return ReportOptions{}, xerrors.Errorf("unable to load compliance spec: %w", err)
 	}
 
 	return ReportOptions{
@@ -215,15 +227,21 @@ func (f *ReportFlagGroup) ToOptions(out io.Writer) (ReportOptions, error) {
 		IgnorePolicy:   getString(f.IgnorePolicy),
 		Output:         out,
 		Severities:     splitSeverity(getStringSlice(f.Severity)),
-		Compliance:     complianceTypes,
+		Compliance:     cs,
 	}, nil
 }
 
-func parseComplianceTypes(compliance string) (string, error) {
+func loadComplianceTypes(compliance string) (spec.ComplianceSpec, error) {
 	if len(compliance) > 0 && !slices.Contains(types.Compliances, compliance) && !strings.HasPrefix(compliance, "@") {
-		return "", xerrors.Errorf("unknown compliance : %v", compliance)
+		return spec.ComplianceSpec{}, xerrors.Errorf("unknown compliance : %v", compliance)
 	}
-	return compliance, nil
+
+	cs, err := spec.GetComplianceSpec(compliance)
+	if err != nil {
+		return spec.ComplianceSpec{}, xerrors.Errorf("spec loading from file system error: %w", err)
+	}
+
+	return cs, nil
 }
 
 func (f *ReportFlagGroup) forceListAllPkgs(format string, listAllPkgs, dependencyTree bool) bool {
