@@ -6,13 +6,11 @@ import (
 
 	"github.com/spf13/viper"
 	"golang.org/x/xerrors"
-	"gopkg.in/yaml.v3"
 
 	"github.com/aquasecurity/trivy-kubernetes/pkg/artifacts"
 	"github.com/aquasecurity/trivy-kubernetes/pkg/k8s"
 	cmd "github.com/aquasecurity/trivy/pkg/commands/artifact"
 	cr "github.com/aquasecurity/trivy/pkg/compliance/report"
-	"github.com/aquasecurity/trivy/pkg/compliance/spec"
 	"github.com/aquasecurity/trivy/pkg/flag"
 	"github.com/aquasecurity/trivy/pkg/k8s/report"
 	"github.com/aquasecurity/trivy/pkg/k8s/scanner"
@@ -83,17 +81,9 @@ func (r *runner) run(ctx context.Context, artifacts []*artifacts.Artifact) error
 
 	s := scanner.NewScanner(r.cluster, runner, r.flagOpts)
 
-	var complianceSpec spec.ComplianceSpec
 	// set scanners types by spec
-	if r.flagOpts.ReportOptions.Compliance != "" {
-		cs, err := spec.GetComplianceSpec(r.flagOpts.ReportOptions.Compliance)
-		if err != nil {
-			return xerrors.Errorf("spec loading from file system error: %w", err)
-		}
-		if err = yaml.Unmarshal(cs, &complianceSpec); err != nil {
-			return xerrors.Errorf("yaml unmarshal error: %w", err)
-		}
-		scanners, err := complianceSpec.Scanners()
+	if r.flagOpts.Compliance.Spec.ID != "" {
+		scanners, err := r.flagOpts.Compliance.Scanners()
 		if err != nil {
 			return xerrors.Errorf("scanner error: %w", err)
 		}
@@ -105,7 +95,7 @@ func (r *runner) run(ctx context.Context, artifacts []*artifacts.Artifact) error
 		return xerrors.Errorf("k8s scan error: %w", err)
 	}
 
-	if len(r.flagOpts.ReportOptions.Compliance) > 0 {
+	if r.flagOpts.Compliance.Spec.ID != "" {
 		var scanResults []types.Results
 		for _, rss := range rpt.Vulnerabilities {
 			scanResults = append(scanResults, rss.Results)
@@ -113,7 +103,7 @@ func (r *runner) run(ctx context.Context, artifacts []*artifacts.Artifact) error
 		for _, rss := range rpt.Misconfigurations {
 			scanResults = append(scanResults, rss.Results)
 		}
-		complianceReport, err := cr.BuildComplianceReport(scanResults, complianceSpec)
+		complianceReport, err := cr.BuildComplianceReport(scanResults, r.flagOpts.Compliance)
 		if err != nil {
 			return xerrors.Errorf("compliance report build error: %w", err)
 		}
