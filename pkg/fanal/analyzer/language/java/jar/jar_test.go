@@ -2,6 +2,7 @@ package jar
 
 import (
 	"context"
+	"github.com/aquasecurity/trivy/pkg/javadb"
 	"os"
 	"testing"
 
@@ -93,6 +94,25 @@ func Test_javaLibraryAnalyzer_Analyze(t *testing.T) {
 			},
 		},
 		{
+			name:      "happy path (package found in trivy-java-db by sha1)",
+			inputFile: "testdata/test.jar",
+			want: &analyzer.AnalysisResult{
+				Applications: []types.Application{
+					{
+						Type:     types.Jar,
+						FilePath: "testdata/test.jar",
+						Libraries: []types.Package{
+							{
+								Name:     "org.apache.tomcat.embed:tomcat-embed-websocket",
+								FilePath: "testdata/test.jar",
+								Version:  "9.0.65",
+							},
+						},
+					},
+				},
+			},
+		},
+		{
 			name:      "sad path",
 			inputFile: "testdata/test.txt",
 			wantErr:   "not a valid zip file",
@@ -106,6 +126,9 @@ func Test_javaLibraryAnalyzer_Analyze(t *testing.T) {
 
 			stat, err := f.Stat()
 			require.NoError(t, err)
+
+			// init java-trivy-db with skip update
+			javadb.Init("testdata/testdb", true, false, false)
 
 			a := javaLibraryAnalyzer{}
 			ctx := context.Background()
