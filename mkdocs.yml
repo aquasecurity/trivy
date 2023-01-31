@@ -55,6 +55,7 @@ nav:
           - Distributions: docs/vulnerability/distributions.md
           - Languages:
               - Go: docs/vulnerability/languages/golang.md
+              - Java: docs/vulnerability/languages/java.md
       - Misconfiguration:
           - Scanning: docs/misconfiguration/scanning.md
           - Policy:
