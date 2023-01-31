@@ -310,7 +310,7 @@ func (r *runner) initDB(opts flag.Options) error {
 	}
 
 	// Java DB
-	javadb.Init(opts.CacheDir, noProgress, opts.Insecure)
+	javadb.Init(opts.CacheDir, opts.SkipJavaDBUpdate, noProgress, opts.Insecure)
 
 	if opts.DownloadDBOnly {
 		return SkipScan

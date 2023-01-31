@@ -39,6 +39,7 @@ DB Flags
       --no-progress            suppress progress bar
       --reset                  remove all caches and database
       --skip-db-update         skip updating vulnerability database
+      --skip-java-db-update    skip updating java indexes database
 
 Vulnerability Flags
       --ignore-unfixed     display only fixed vulnerabilities

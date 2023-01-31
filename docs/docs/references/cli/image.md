@@ -61,6 +61,7 @@ DB Flags
       --no-progress            suppress progress bar
       --reset                  remove all caches and database
       --skip-db-update         skip updating vulnerability database
+      --skip-java-db-update    skip updating java indexes database
 
 Image Flags
       --input string   input file path instead of image name

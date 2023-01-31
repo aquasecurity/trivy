@@ -33,6 +33,7 @@ var (
 type Updater struct {
 	repo     string
 	dbDir    string
+	skip     bool
 	quiet    bool
 	insecure bool
 
@@ -47,12 +48,17 @@ func (u *Updater) Update() error {
 
 		var meta metadata.Metadata
 		meta, u.err = metac.Get()
-		if u.err != nil && !errors.Is(u.err, os.ErrNotExist) {
-			return
+		if u.err != nil {
+			if !errors.Is(u.err, os.ErrNotExist) {
+				return
+			} else if u.skip {
+				log.Logger.Error("The first run cannot skip downloading java DB")
+				u.err = xerrors.New("--skip-java-update cannot be specified on the first run")
+				return
+			}
 		}
 
-		// TODO: support "--skip-java-db-update"
-		if meta.Version != version || meta.NextUpdate.Before(time.Now().UTC()) {
+		if (meta.Version != version || meta.NextUpdate.Before(time.Now().UTC())) && !u.skip {
 			// Download DB
 			log.Logger.Info("Downloading the Java DB...")
 
@@ -91,10 +97,11 @@ func (u *Updater) Update() error {
 	return nil
 }
 
-func Init(cacheDir string, quiet, insecure bool) {
+func Init(cacheDir string, skip, quiet, insecure bool) {
 	updater = Updater{
 		repo:     fmt.Sprintf("%s:%d", defaultJavaDBRepository, version), // TODO: make it configurable
 		dbDir:    filepath.Join(cacheDir, "java-db"),
+		skip:     skip,
 		quiet:    quiet,
 		insecure: insecure,
 	}

@@ -33,6 +33,12 @@ var (
 			},
 		},
 	}
+	SkipJavaDBUpdateFlag = Flag{
+		Name:       "skip-java-db-update",
+		ConfigName: "db.java-skip-update",
+		Value:      false,
+		Usage:      "skip updating java indexes database",
+	}
 	NoProgressFlag = Flag{
 		Name:       "no-progress",
 		ConfigName: "db.no-progress",
@@ -56,32 +62,35 @@ var (
 
 // DBFlagGroup composes common printer flag structs used for commands requiring DB logic.
 type DBFlagGroup struct {
-	Reset          *Flag
-	DownloadDBOnly *Flag
-	SkipDBUpdate   *Flag
-	NoProgress     *Flag
-	DBRepository   *Flag
-	Light          *Flag // deprecated
+	Reset            *Flag
+	DownloadDBOnly   *Flag
+	SkipDBUpdate     *Flag
+	SkipJavaDBUpdate *Flag
+	NoProgress       *Flag
+	DBRepository     *Flag
+	Light            *Flag // deprecated
 }
 
 type DBOptions struct {
-	Reset          bool
-	DownloadDBOnly bool
-	SkipDBUpdate   bool
-	NoProgress     bool
-	DBRepository   string
-	Light          bool // deprecated
+	Reset            bool
+	DownloadDBOnly   bool
+	SkipDBUpdate     bool
+	SkipJavaDBUpdate bool
+	NoProgress       bool
+	DBRepository     string
+	Light            bool // deprecated
 }
 
 // NewDBFlagGroup returns a default DBFlagGroup
 func NewDBFlagGroup() *DBFlagGroup {
 	return &DBFlagGroup{
-		Reset:          &ResetFlag,
-		DownloadDBOnly: &DownloadDBOnlyFlag,
-		SkipDBUpdate:   &SkipDBUpdateFlag,
-		Light:          &LightFlag,
-		NoProgress:     &NoProgressFlag,
-		DBRepository:   &DBRepositoryFlag,
+		Reset:            &ResetFlag,
+		DownloadDBOnly:   &DownloadDBOnlyFlag,
+		SkipDBUpdate:     &SkipDBUpdateFlag,
+		SkipJavaDBUpdate: &SkipJavaDBUpdateFlag,
+		Light:            &LightFlag,
+		NoProgress:       &NoProgressFlag,
+		DBRepository:     &DBRepositoryFlag,
 	}
 }
 
@@ -94,6 +103,7 @@ func (f *DBFlagGroup) Flags() []*Flag {
 		f.Reset,
 		f.DownloadDBOnly,
 		f.SkipDBUpdate,
+		f.SkipJavaDBUpdate,
 		f.NoProgress,
 		f.DBRepository,
 		f.Light,
@@ -102,6 +112,7 @@ func (f *DBFlagGroup) Flags() []*Flag {
 
 func (f *DBFlagGroup) ToOptions() (DBOptions, error) {
 	skipDBUpdate := getBool(f.SkipDBUpdate)
+	skipJavaDBUpdate := getBool(f.SkipJavaDBUpdate)
 	downloadDBOnly := getBool(f.DownloadDBOnly)
 	light := getBool(f.Light)
 
@@ -113,11 +124,12 @@ func (f *DBFlagGroup) ToOptions() (DBOptions, error) {
 	}
 
 	return DBOptions{
-		Reset:          getBool(f.Reset),
-		DownloadDBOnly: downloadDBOnly,
-		SkipDBUpdate:   skipDBUpdate,
-		Light:          light,
-		NoProgress:     getBool(f.NoProgress),
-		DBRepository:   getString(f.DBRepository),
+		Reset:            getBool(f.Reset),
+		DownloadDBOnly:   downloadDBOnly,
+		SkipDBUpdate:     skipDBUpdate,
+		SkipJavaDBUpdate: skipJavaDBUpdate,
+		Light:            light,
+		NoProgress:       getBool(f.NoProgress),
+		DBRepository:     getString(f.DBRepository),
 	}, nil
 }
