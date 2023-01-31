@@ -1518,8 +1518,8 @@ github.com/tchap/go-patricia/v2 v2.3.1 h1:6rQp39lgIYZ+MHmdEq4xzuk1t7OdC35z/xm0BG
 github.com/tchap/go-patricia/v2 v2.3.1/go.mod h1:VZRHKAb53DLaG+nA9EaYYiaEx6YztwDlLElMsnSHD4k=
 github.com/testcontainers/testcontainers-go v0.17.0 h1:UdKSw2DJXinlS6ijbFb4VHpQzD+EfTwcTq1/19a+8PU=
 github.com/testcontainers/testcontainers-go v0.17.0/go.mod h1:n5trpHrB68IUelEqGNC8VipaCo6jOGusU44kIK11XRs=
-github.com/tetratelabs/wazero v1.0.0-pre.7 h1:WI5N14XxoXw+ZWhcjSazJ6rEowhJbH/x8hglxC5gN7k=
-github.com/tetratelabs/wazero v1.0.0-pre.7/go.mod h1:u8wrFmpdrykiFK0DFPiFm5a4+0RzsdmXYVtijBKqUVo=
+github.com/tetratelabs/wazero v1.0.0-pre.8 h1:Ir82PWj79WCppH+9ny73eGY2qv+oCnE3VwMY92cBSyI=
+github.com/tetratelabs/wazero v1.0.0-pre.8/go.mod h1:u8wrFmpdrykiFK0DFPiFm5a4+0RzsdmXYVtijBKqUVo=
 github.com/thoas/go-funk v0.9.1 h1:O549iLZqPpTUQ10ykd26sZhzD+rmR5pWhuElrhbC20M=
 github.com/tidwall/pretty v1.0.0/go.mod h1:XNkn88O1ChpSDQmQeStsy+sBenx6DDtFZJxhVysOjyk=
 github.com/tidwall/pretty v1.2.0 h1:RWIZEg2iJ8/g6fDDYzMpobmaoGh5OLl4AXtGUGPcqCs=
