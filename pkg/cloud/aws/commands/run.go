@@ -9,7 +9,6 @@ import (
 	"github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/service/sts"
 	"golang.org/x/xerrors"
-	"gopkg.in/yaml.v3"
 
 	"github.com/aquasecurity/defsec/pkg/errs"
 	awsScanner "github.com/aquasecurity/defsec/pkg/scanners/cloud/aws"
@@ -18,7 +17,6 @@ import (
 	"github.com/aquasecurity/trivy/pkg/cloud/report"
 	cmd "github.com/aquasecurity/trivy/pkg/commands/artifact"
 	cr "github.com/aquasecurity/trivy/pkg/compliance/report"
-	"github.com/aquasecurity/trivy/pkg/compliance/spec"
 	"github.com/aquasecurity/trivy/pkg/flag"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/types"
@@ -125,23 +123,14 @@ func Run(ctx context.Context, opt flag.Options) error {
 	}
 
 	log.Logger.Debug("Writing report to output...")
-	if len(opt.Compliance) > 0 {
-		var complianceSpec spec.ComplianceSpec
-		cs, err := spec.GetComplianceSpec(opt.Compliance)
-		if err != nil {
-			return xerrors.Errorf("spec loading from file system error: %w", err)
-		}
-		if err = yaml.Unmarshal(cs, &complianceSpec); err != nil {
-			return xerrors.Errorf("yaml unmarshal error: %w", err)
-		}
-
+	if opt.Compliance.Spec.ID != "" {
 		convertedResults := report.ConvertResults(results, cloud.ProviderAWS, opt.Services)
 		var crr []types.Results
 		for _, r := range convertedResults {
 			crr = append(crr, r.Results)
 		}
 
-		complianceReport, err := cr.BuildComplianceReport(crr, complianceSpec)
+		complianceReport, err := cr.BuildComplianceReport(crr, opt.Compliance)
 		if err != nil {
 			return xerrors.Errorf("compliance report build error: %w", err)
 		}
@@ -149,7 +138,8 @@ func Run(ctx context.Context, opt flag.Options) error {
 		return cr.Write(complianceReport, cr.Option{
 			Format: opt.Format,
 			Report: opt.ReportFormat,
-			Output: opt.Output})
+			Output: opt.Output,
+		})
 	}
 
 	r := report.New(cloud.ProviderAWS, opt.Account, opt.Region, results.GetFailed(), opt.Services)

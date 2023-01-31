@@ -10,6 +10,7 @@ import (
 	"go.uber.org/zap/zaptest/observer"
 
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
+	"github.com/aquasecurity/trivy/pkg/compliance/spec"
 	"github.com/aquasecurity/trivy/pkg/flag"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/report"
@@ -174,12 +175,30 @@ func TestReportFlagGroup_ToOptions(t *testing.T) {
 		{
 			name: "happy path with compliance",
 			fields: fields{
-				compliane:  "k8s-nsa",
+				compliane:  "@testdata/example-spec.yaml",
 				severities: "low",
 			},
 			want: flag.ReportOptions{
-				Output:     os.Stdout,
-				Compliance: "k8s-nsa",
+				Output: os.Stdout,
+				Compliance: spec.ComplianceSpec{
+					Spec: spec.Spec{
+						ID:          "0001",
+						Title:       "my-custom-spec",
+						Description: "My fancy spec",
+						Version:     "1.2",
+						Controls: []spec.Control{
+							{
+								ID:          "1.1",
+								Name:        "Unencrypted S3 bucket",
+								Description: "S3 Buckets should be encrypted to protect the data that is stored within them if access is compromised.",
+								Checks: []spec.SpecCheck{
+									{ID: "AVD-AWS-0088"},
+								},
+								Severity: "HIGH",
+							},
+						},
+					},
+				},
 				Severities: []dbTypes.Severity{dbTypes.SeverityLow},
 			},
 		},

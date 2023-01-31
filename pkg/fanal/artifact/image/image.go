@@ -379,6 +379,7 @@ func (a Artifact) inspectConfig(ctx context.Context, imageID string, osFound typ
 		DockerVersion:    config.DockerVersion,
 		OS:               config.OS,
 		Misconfiguration: result.Misconfiguration,
+		Secret:           result.Secret,
 		HistoryPackages:  result.HistoryPackages,
 	}
 
