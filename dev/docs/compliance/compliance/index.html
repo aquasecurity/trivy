@@ -3267,10 +3267,12 @@
 <h2 id="usage">Usage</h2>
 <p>Compliance report is currently supported in the following targets (trivy sub-commands):</p>
 <ul>
+<li><code>trivy image</code></li>
 <li><code>trivy aws</code></li>
 <li><code>trivy k8s</code></li>
 </ul>
-<p>Add the <code>--compliance</code> flag to the command line, and set it's value to desired report. For example: <code>trivy k8s cluster --compliance k8s-nsa</code> (see below for built-in and custom reports)</p>
+<p>Add the <code>--compliance</code> flag to the command line, and set it's value to desired report.
+For example: <code>trivy k8s cluster --compliance k8s-nsa</code> (see below for built-in and custom reports)</p>
 <h3 id="options">Options</h3>
 <p>The following flags are compatible with <code>--compliance</code> flag and allows customizing it's output:</p>
 <table>
