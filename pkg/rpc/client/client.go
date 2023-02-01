@@ -57,7 +57,10 @@ func NewScanner(scannerOptions ScannerOption, opts ...Option) Scanner {
 		opt(o)
 	}
 
-	return Scanner{customHeaders: scannerOptions.CustomHeaders, client: o.rpcClient}
+	return Scanner{
+		customHeaders: scannerOptions.CustomHeaders,
+		client:        o.rpcClient,
+	}
 }
 
 // Scan scans the image
@@ -79,7 +82,7 @@ func (s Scanner) Scan(ctx context.Context, target, artifactKey string, blobKeys 
 			BlobIds:    blobKeys,
 			Options: &rpc.ScanOptions{
 				VulnType:          opts.VulnType,
-				SecurityChecks:    opts.SecurityChecks,
+				Scanners:          opts.Scanners.StringSlice(),
 				ListAllPackages:   opts.ListAllPackages,
 				LicenseCategories: licenseCategories,
 			},

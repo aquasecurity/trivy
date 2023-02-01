@@ -28,7 +28,8 @@ type Artifact struct {
 	image          types.Image
 	cache          cache.ArtifactCache
 	walker         walker.LayerTar
-	analyzer       analyzer.AnalyzerGroup
+	analyzer       analyzer.AnalyzerGroup       // analyzer for files in container image
+	configAnalyzer analyzer.ConfigAnalyzerGroup // analyzer for container image config
 	handlerManager handler.Manager
 
 	artifactOption artifact.Option
@@ -57,11 +58,21 @@ func NewArtifact(img types.Image, c cache.ArtifactCache, opt artifact.Option) (a
 		return nil, xerrors.Errorf("analyzer group error: %w", err)
 	}
 
+	ca, err := analyzer.NewConfigAnalyzerGroup(analyzer.ConfigAnalyzerOptions{
+		FilePatterns:         opt.FilePatterns,
+		DisabledAnalyzers:    opt.DisabledAnalyzers,
+		MisconfScannerOption: opt.MisconfScannerOption,
+	})
+	if err != nil {
+		return nil, xerrors.Errorf("config analyzer group error: %w", err)
+	}
+
 	return Artifact{
 		image:          img,
 		cache:          c,
 		walker:         walker.NewLayerTar(opt.SkipFiles, opt.SkipDirs, opt.Slow),
 		analyzer:       a,
+		configAnalyzer: ca,
 		handlerManager: handlerManager,
 
 		artifactOption: opt,
@@ -119,7 +130,7 @@ func (a Artifact) Inspect(ctx context.Context) (types.ArtifactReference, error) 
 		missingImageKey = ""
 	}
 
-	if err = a.inspect(ctx, missingImageKey, missingLayers, baseDiffIDs, layerKeyMap); err != nil {
+	if err = a.inspect(ctx, missingImageKey, missingLayers, baseDiffIDs, layerKeyMap, configFile); err != nil {
 		return types.ArtifactReference{}, xerrors.Errorf("analyze error: %w", err)
 	}
 
@@ -144,7 +155,7 @@ func (Artifact) Clean(_ types.ArtifactReference) error {
 
 func (a Artifact) calcCacheKeys(imageID string, diffIDs []string) (string, []string, error) {
 	// Pass an empty config scanner option so that the cache key can be the same, even when policies are updated.
-	imageKey, err := cache.CalcKey(imageID, a.analyzer.ImageConfigAnalyzerVersions(), nil, artifact.Option{})
+	imageKey, err := cache.CalcKey(imageID, a.configAnalyzer.AnalyzerVersions(), nil, artifact.Option{})
 	if err != nil {
 		return "", nil, err
 	}
@@ -195,7 +206,8 @@ func (a Artifact) consolidateCreatedBy(diffIDs, layerKeys []string, configFile *
 	return layerKeyMap
 }
 
-func (a Artifact) inspect(ctx context.Context, missingImage string, layerKeys, baseDiffIDs []string, layerKeyMap map[string]LayerInfo) error {
+func (a Artifact) inspect(ctx context.Context, missingImage string, layerKeys, baseDiffIDs []string,
+	layerKeyMap map[string]LayerInfo, configFile *v1.ConfigFile) error {
 	done := make(chan struct{})
 	errCh := make(chan error)
 	limit := semaphore.New(a.artifactOption.Slow)
@@ -246,7 +258,7 @@ func (a Artifact) inspect(ctx context.Context, missingImage string, layerKeys, b
 	}
 
 	if missingImage != "" {
-		if err := a.inspectConfig(missingImage, osFound); err != nil {
+		if err := a.inspectConfig(ctx, missingImage, osFound, configFile); err != nil {
 			return xerrors.Errorf("unable to analyze config: %w", err)
 		}
 	}
@@ -258,10 +270,11 @@ func (a Artifact) inspect(ctx context.Context, missingImage string, layerKeys, b
 func (a Artifact) inspectLayer(ctx context.Context, layerInfo LayerInfo, disabled []analyzer.Type) (types.BlobInfo, error) {
 	log.Logger.Debugf("Missing diff ID in cache: %s", layerInfo.DiffID)
 
-	layerDigest, r, err := a.uncompressedLayer(layerInfo.DiffID)
+	layerDigest, rc, err := a.uncompressedLayer(layerInfo.DiffID)
 	if err != nil {
 		return types.BlobInfo{}, xerrors.Errorf("unable to get uncompressed layer %s: %w", layerInfo.DiffID, err)
 	}
+	defer rc.Close()
 
 	// Prepare variables
 	var wg sync.WaitGroup
@@ -270,7 +283,7 @@ func (a Artifact) inspectLayer(ctx context.Context, layerInfo LayerInfo, disable
 	limit := semaphore.New(a.artifactOption.Slow)
 
 	// Walk a tar layer
-	opqDirs, whFiles, err := a.walker.Walk(r, func(filePath string, info os.FileInfo, opener analyzer.Opener) error {
+	opqDirs, whFiles, err := a.walker.Walk(rc, func(filePath string, info os.FileInfo, opener analyzer.Opener) error {
 		if err = a.analyzer.AnalyzeFile(ctx, &wg, limit, result, "", filePath, info, opener, disabled, opts); err != nil {
 			return xerrors.Errorf("failed to analyze %s: %w", filePath, err)
 		}
@@ -322,7 +335,7 @@ func (a Artifact) diffIDs(configFile *v1.ConfigFile) []string {
 	})
 }
 
-func (a Artifact) uncompressedLayer(diffID string) (string, io.Reader, error) {
+func (a Artifact) uncompressedLayer(diffID string) (string, io.ReadCloser, error) {
 	// diffID is a hash of the uncompressed layer
 	h, err := v1.NewHash(diffID)
 	if err != nil {
@@ -344,11 +357,11 @@ func (a Artifact) uncompressedLayer(diffID string) (string, io.Reader, error) {
 		digest = d.String()
 	}
 
-	r, err := layer.Uncompressed()
+	rc, err := layer.Uncompressed()
 	if err != nil {
 		return "", nil, xerrors.Errorf("failed to get the layer content (%s): %w", diffID, err)
 	}
-	return digest, r, nil
+	return digest, rc, nil
 }
 
 // ref. https://github.com/google/go-containerregistry/issues/701
@@ -357,33 +370,21 @@ func (a Artifact) isCompressed(l v1.Layer) bool {
 	return !uncompressed
 }
 
-func (a Artifact) inspectConfig(imageID string, osFound types.OS) error {
-	config, err := a.image.ConfigFile()
-	if err != nil {
-		return xerrors.Errorf("unable to get config blob: %w", err)
-	}
-
-	result := lo.FromPtr(a.analyzer.AnalyzeImageConfig(osFound, config))
-
-	// Identify packages from history.
-	var historyPkgs types.Packages
-	for _, pi := range result.PackageInfos {
-		if pi.FilePath == types.HistoryPkgs {
-			historyPkgs = pi.Packages
-			break
-		}
-	}
+func (a Artifact) inspectConfig(ctx context.Context, imageID string, osFound types.OS, config *v1.ConfigFile) error {
+	result := lo.FromPtr(a.configAnalyzer.AnalyzeImageConfig(ctx, osFound, config))
 
 	info := types.ArtifactInfo{
-		SchemaVersion:   types.ArtifactJSONSchemaVersion,
-		Architecture:    config.Architecture,
-		Created:         config.Created.Time,
-		DockerVersion:   config.DockerVersion,
-		OS:              config.OS,
-		HistoryPackages: historyPkgs,
+		SchemaVersion:    types.ArtifactJSONSchemaVersion,
+		Architecture:     config.Architecture,
+		Created:          config.Created.Time,
+		DockerVersion:    config.DockerVersion,
+		OS:               config.OS,
+		Misconfiguration: result.Misconfiguration,
+		Secret:           result.Secret,
+		HistoryPackages:  result.HistoryPackages,
 	}
 
-	if err = a.cache.PutArtifact(imageID, info); err != nil {
+	if err := a.cache.PutArtifact(imageID, info); err != nil {
 		return xerrors.Errorf("failed to put image info into the cache: %w", err)
 	}
 

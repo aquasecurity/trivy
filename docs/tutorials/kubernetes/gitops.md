@@ -106,9 +106,15 @@ spec:
       sourceRef:
         kind: HelmRepository
         name: trivy-operator
-		namespace: flux-system
-      version: 0.0.5
+        namespace: flux-system
+      version: 0.10.1
   interval: 60m
+  values:
+    trivy:
+      ignoreUnfixed: true
+  install:
+    crds: CreateReplace
+    createNamespace: true
 ```
 
 You can then apply the file to your Kubernetes cluster:

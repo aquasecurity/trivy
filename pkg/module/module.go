@@ -95,7 +95,7 @@ func readMemory(mem api.Memory, offset, size uint32) []byte {
 }
 
 type Manager struct {
-	runtime wazero.Runtime
+	cache   wazero.CompilationCache
 	modules []*wasmModule
 }
 
@@ -103,7 +103,7 @@ func NewManager(ctx context.Context) (*Manager, error) {
 	m := &Manager{}
 
 	// Create a new WebAssembly Runtime.
-	m.runtime = wazero.NewRuntime(ctx)
+	m.cache = wazero.NewCompilationCache()
 
 	// Load WASM modules in local
 	if err := m.loadModules(ctx); err != nil {
@@ -139,7 +139,7 @@ func (m *Manager) loadModules(ctx context.Context) error {
 			return xerrors.Errorf("file read error: %w", err)
 		}
 
-		p, err := newWASMPlugin(ctx, m.runtime, wasmCode)
+		p, err := newWASMPlugin(ctx, m.cache, wasmCode)
 		if err != nil {
 			return xerrors.Errorf("WASM module init error %s: %w", rel, err)
 		}
@@ -162,7 +162,7 @@ func (m *Manager) Register() {
 }
 
 func (m *Manager) Close(ctx context.Context) error {
-	return m.runtime.Close(ctx)
+	return m.cache.Close(ctx)
 }
 
 func splitPtrSize(u uint64) (uint32, uint32) {
@@ -253,12 +253,12 @@ type wasmModule struct {
 	free     api.Function // TinyGo specific
 }
 
-func newWASMPlugin(ctx context.Context, r wazero.Runtime, code []byte) (*wasmModule, error) {
+func newWASMPlugin(ctx context.Context, ccache wazero.CompilationCache, code []byte) (*wasmModule, error) {
 	mf := &memFS{}
 	config := wazero.NewModuleConfig().WithStdout(os.Stdout).WithFS(mf)
 
 	// Create an empty namespace so that multiple modules will not conflict
-	ns := r.NewNamespace(ctx)
+	r := wazero.NewRuntimeWithConfig(ctx, wazero.NewRuntimeConfig().WithCompilationCache(ccache))
 
 	// Instantiate a Go-defined module named "env" that exports functions.
 	envBuilder := r.NewHostModuleBuilder("env")
@@ -271,11 +271,11 @@ func newWASMPlugin(ctx context.Context, r wazero.Runtime, code []byte) (*wasmMod
 			Export(n)
 	}
 
-	if _, err := envBuilder.Instantiate(ctx, ns); err != nil {
+	if _, err := envBuilder.Instantiate(ctx); err != nil {
 		return nil, xerrors.Errorf("wasm module build error: %w", err)
 	}
 
-	if _, err := wasi.NewBuilder(r).Instantiate(ctx, ns); err != nil {
+	if _, err := wasi.NewBuilder(r).Instantiate(ctx); err != nil {
 		return nil, xerrors.Errorf("WASI init error: %w", err)
 	}
 
@@ -286,7 +286,7 @@ func newWASMPlugin(ctx context.Context, r wazero.Runtime, code []byte) (*wasmMod
 	}
 
 	// InstantiateModule runs the "_start" function which is what TinyGo compiles "main" to.
-	mod, err := ns.InstantiateModule(ctx, compiled, config)
+	mod, err := r.InstantiateModule(ctx, compiled, config)
 	if err != nil {
 		return nil, xerrors.Errorf("module init error: %w", err)
 	}

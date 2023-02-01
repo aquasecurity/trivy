@@ -209,8 +209,15 @@ func NewRootCommand(version string, globalFlags *flag.GlobalFlagGroup) *cobra.Co
 
 func NewImageCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	reportFlagGroup := flag.NewReportFlagGroup()
-	reportFlagGroup.ReportFormat = nil // TODO: support --report summary
-	reportFlagGroup.Compliance = nil   // disable '--compliance'
+
+	report := flag.ReportFormatFlag
+	report.Value = "summary"                                     // override the default value as the summary is preferred for the compliance report
+	report.Usage = "specify a format for the compliance report." // "--report" works only with "--compliance"
+	reportFlagGroup.ReportFormat = &report
+
+	compliance := flag.ComplianceFlag
+	compliance.Usage += fmt.Sprintf(" (%s)", types.ComplianceDockerCIS)
+	reportFlagGroup.Compliance = &compliance // override usage as the accepted values differ for each subcommand.
 
 	imageFlags := &flag.Flags{
 		CacheFlagGroup:         flag.NewCacheFlagGroup(),
@@ -585,7 +592,7 @@ func NewConfigCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 			options.DisabledAnalyzers = append(analyzer.TypeOSes, analyzer.TypeLanguages...)
 
 			// Scan only for misconfigurations
-			options.SecurityChecks = []string{types.SecurityCheckConfig}
+			options.Scanners = types.Scanners{types.MisconfigScanner}
 
 			return artifact.Run(cmd.Context(), options, artifact.TargetFilesystem)
 		},
@@ -747,15 +754,15 @@ func NewModuleCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 
 func NewKubernetesCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	scanFlags := flag.NewScanFlagGroup()
-	securityChecks := flag.SecurityChecksFlag
-	securityChecks.Value = fmt.Sprintf( // overwrite the default value
+	scanners := flag.ScannersFlag
+	scanners.Value = fmt.Sprintf( // overwrite the default value
 		"%s,%s,%s,%s",
-		types.SecurityCheckVulnerability,
-		types.SecurityCheckConfig,
-		types.SecurityCheckSecret,
-		types.SecurityCheckRbac,
+		types.VulnerabilityScanner,
+		types.MisconfigScanner,
+		types.SecretScanner,
+		types.RBACScanner,
 	)
-	scanFlags.SecurityChecks = &securityChecks
+	scanFlags.Scanners = &scanners
 
 	reportFlagGroup := flag.NewReportFlagGroup()
 	compliance := flag.ComplianceFlag
@@ -915,7 +922,7 @@ func NewVMCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 		Aliases: []string{},
 		Short:   "[EXPERIMENTAL] Scan a virtual machine image",
 		Example: `  # Scan your AWS AMI
-  $ trivy vm --security-checks vuln ami:${your_ami_id}
+  $ trivy vm --scanners vuln ami:${your_ami_id}
 
   # Scan your AWS EBS snapshot
   $ trivy vm ebs:${your_ebs_snapshot_id}
@@ -957,7 +964,7 @@ func NewSBOMCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	reportFlagGroup.ExitOnEOSL = nil     // disable '--exit-on-eosl'
 
 	scanFlags := flag.NewScanFlagGroup()
-	scanFlags.SecurityChecks = nil // disable '--security-checks' as it always scans for vulnerabilities
+	scanFlags.Scanners = nil // disable '--scanners' as it always scans for vulnerabilities
 
 	sbomFlags := &flag.Flags{
 		CacheFlagGroup:         flag.NewCacheFlagGroup(),
@@ -997,7 +1004,7 @@ func NewSBOMCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 			}
 
 			// Scan vulnerabilities
-			options.SecurityChecks = []string{types.SecurityCheckVulnerability}
+			options.Scanners = types.Scanners{types.VulnerabilityScanner}
 
 			return artifact.Run(cmd.Context(), options, artifact.TargetSBOM)
 		},
@@ -1070,9 +1077,10 @@ func showVersion(cacheDir, outputFormat, version string, outputWriter io.Writer)
 }
 
 func validateArgs(cmd *cobra.Command, args []string) error {
-	// '--clear-cache', '--download-db-only', '--reset' and '--generate-default-config' don't conduct the subsequent scanning
+	// '--clear-cache', '--download-db-only', '--download-java-db-only', '--reset' and '--generate-default-config' don't conduct the subsequent scanning
 	if viper.GetBool(flag.ClearCacheFlag.ConfigName) || viper.GetBool(flag.DownloadDBOnlyFlag.ConfigName) ||
-		viper.GetBool(flag.ResetFlag.ConfigName) || viper.GetBool(flag.GenerateDefaultConfigFlag.ConfigName) {
+		viper.GetBool(flag.ResetFlag.ConfigName) || viper.GetBool(flag.GenerateDefaultConfigFlag.ConfigName) ||
+		viper.GetBool(flag.DownloadJavaDBOnlyFlag.ConfigName) {
 		return nil
 	}
 

@@ -43,7 +43,6 @@ const (
 	Kubernetes     = "kubernetes"
 	Ansible        = "ansible"
 	Helm           = "helm"
-	Rbac           = "rbac"
 	Cloud          = "cloud"
 	AzureARM       = "azure-arm"
 
@@ -80,7 +79,4 @@ const (
 	PubSpecLock = "pubspec.lock"
 
 	MixLock = "mix.lock"
-
-	// Container image config
-	HistoryPkgs = "pkgs-from-history"
 )

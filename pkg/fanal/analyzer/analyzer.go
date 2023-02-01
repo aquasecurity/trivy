@@ -10,7 +10,6 @@ import (
 	"strings"
 	"sync"
 
-	v1 "github.com/google/go-containerregistry/pkg/v1"
 	"github.com/samber/lo"
 	"golang.org/x/exp/slices"
 	"golang.org/x/sync/semaphore"
@@ -23,8 +22,7 @@ import (
 )
 
 var (
-	analyzers       = map[Type]analyzer{}
-	configAnalyzers = map[Type]configAnalyzer{}
+	analyzers = map[Type]analyzer{}
 
 	// ErrUnknownOS occurs when unknown OS is analyzed.
 	ErrUnknownOS = xerrors.New("unknown OS")
@@ -72,14 +70,6 @@ type analyzer interface {
 	Required(filePath string, info os.FileInfo) bool
 }
 
-// configAnalyzer defines an interface for container image config analyzer
-type configAnalyzer interface {
-	Type() Type
-	Version() int
-	Analyze(input ConfigAnalysisInput) (*AnalysisResult, error)
-	Required(osFound types.OS) bool
-}
-
 ////////////////////
 // Analyzer group //
 ////////////////////
@@ -97,15 +87,6 @@ func DeregisterAnalyzer(t Type) {
 	delete(analyzers, t)
 }
 
-func RegisterConfigAnalyzer(analyzer configAnalyzer) {
-	configAnalyzers[analyzer.Type()] = analyzer
-}
-
-// DeregisterConfigAnalyzer is mainly for testing
-func DeregisterConfigAnalyzer(t Type) {
-	delete(configAnalyzers, t)
-}
-
 // CustomGroup returns a group name for custom analyzers
 // This is mainly intended to be used in Aqua products.
 type CustomGroup interface {
@@ -115,9 +96,8 @@ type CustomGroup interface {
 type Opener func() (dio.ReadSeekCloserAt, error)
 
 type AnalyzerGroup struct {
-	analyzers       []analyzer
-	configAnalyzers []configAnalyzer
-	filePatterns    map[Type][]*regexp.Regexp
+	analyzers    []analyzer
+	filePatterns map[Type][]*regexp.Regexp
 }
 
 ///////////////////////////
@@ -160,11 +140,6 @@ type AnalysisResult struct {
 	// CustomResources hold analysis results from custom analyzers.
 	// It is for extensibility and not used in OSS.
 	CustomResources []types.CustomResource
-}
-
-type ConfigAnalysisInput struct {
-	OS     types.OS
-	Config *v1.ConfigFile
 }
 
 func NewAnalysisResult() *AnalysisResult {
@@ -360,13 +335,6 @@ func NewAnalyzerGroup(opt AnalyzerOptions) (AnalyzerGroup, error) {
 		group.analyzers = append(group.analyzers, a)
 	}
 
-	for analyzerType, a := range configAnalyzers {
-		if slices.Contains(opt.DisabledAnalyzers, analyzerType) {
-			continue
-		}
-		group.configAnalyzers = append(group.configAnalyzers, a)
-	}
-
 	return group, nil
 }
 
@@ -375,15 +343,6 @@ func (ag AnalyzerGroup) AnalyzerVersions() map[string]int {
 	versions := map[string]int{}
 	for _, a := range ag.analyzers {
 		versions[string(a.Type())] = a.Version()
-	}
-	return versions
-}
-
-// ImageConfigAnalyzerVersions returns analyzer version identifier used for cache keys.
-func (ag AnalyzerGroup) ImageConfigAnalyzerVersions() map[string]int {
-	versions := map[string]int{}
-	for _, ca := range ag.configAnalyzers {
-		versions[string(ca.Type())] = ca.Version()
 	}
 	return versions
 }
@@ -431,7 +390,7 @@ func (ag AnalyzerGroup) AnalyzeFile(ctx context.Context, wg *sync.WaitGroup, lim
 				Content:  rc,
 				Options:  opts,
 			})
-			if err != nil && !xerrors.Is(err, aos.AnalyzeOSError) {
+			if err != nil && !errors.Is(err, aos.AnalyzeOSError) {
 				log.Logger.Debugf("Analysis error: %s", err)
 				return
 			}
@@ -442,28 +401,6 @@ func (ag AnalyzerGroup) AnalyzeFile(ctx context.Context, wg *sync.WaitGroup, lim
 	}
 
 	return nil
-}
-
-func (ag AnalyzerGroup) AnalyzeImageConfig(targetOS types.OS, config *v1.ConfigFile) *AnalysisResult {
-	input := ConfigAnalysisInput{
-		OS:     targetOS,
-		Config: config,
-	}
-	result := NewAnalysisResult()
-	for _, a := range ag.configAnalyzers {
-		if !a.Required(targetOS) {
-			continue
-		}
-
-		r, err := a.Analyze(input)
-		if err != nil {
-			log.Logger.Debugf("Image config analysis error: %s", err)
-			continue
-		}
-
-		result.Merge(r)
-	}
-	return result
 }
 
 func (ag AnalyzerGroup) filePatternMatch(analyzerType Type, filePath string) bool {
