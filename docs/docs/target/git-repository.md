@@ -180,7 +180,7 @@ See [here](../secret/scanning.md) for the detail.
 $ trivy repo [YOUR_REPO_URL]
 ```
 
-### Secrets
+### Licenses
 It is disabled by default.
 See [here](../licenses/scanning.md) for the detail.
 

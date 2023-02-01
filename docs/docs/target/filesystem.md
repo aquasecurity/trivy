@@ -80,7 +80,7 @@ See [here](../secret/scanning.md) for the detail.
 $ trivy fs /path/to/project
 ```
 
-### Secrets
+### Licenses
 It is disabled by default.
 See [here](../licenses/scanning.md) for the detail.
 
