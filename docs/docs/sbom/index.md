@@ -1,12 +1,12 @@
-# SBOM
+# SBOM generation
 
-## Generating
 Trivy can generate the following SBOM formats.
 
 - [CycloneDX][cyclonedx]
 - [SPDX][spdx]
 
-To generate SBOM, you can use the `--format` option for each subcommand such as `image` and `fs`.
+## CLI commands
+To generate SBOM, you can use the `--format` option for each subcommand such as `image`, `fs` and `vm`.
 
 ```
 $ trivy image --format spdx-json --output result.json alpine:3.15
@@ -177,56 +177,27 @@ $ trivy fs --format cyclonedx --output result.json /app/myproject
 
 </details>
 
-## Scanning
-Trivy also can take the following SBOM formats as an input and scan for vulnerabilities.
+## Supported packages
+Trivy supports the following packages.
 
-- CycloneDX
-- SPDX
-- SPDX JSON
-- CycloneDX-type attestation
+- [OS packages][os_packages]
+- [Language-specific packages][language_packages]
 
-To scan SBOM, you can use the `sbom` subcommand and pass the path to the SBOM.
-
-```bash
-$ trivy sbom /path/to/cyclonedx.json
-```
-
-See [here][cyclonedx] for the detail.
+In addition to the above packages, Trivy also supports the following packages for generating SBOM.
 
 !!! note
-    CycloneDX XML is not supported at the moment.
+    These packages are not supported for vulnerability scanning.
 
-```bash
-$ trivy sbom /path/to/spdx.json
-```
+| Language | File              | Dependency location[^1] |
+|----------|-------------------|:-----------------------:|
+| Python   | conda package[^2] |            -            |
+| Swift    | Podfile.lock      |            -            |
 
-See [here][spdx] for the detail.
-
-
-You can also scan an SBOM attestation.
-In the following example, [Cosign][Cosign] can get an attestation and trivy scan it. You must create CycloneDX-type attestation before trying the example. To learn more about how to create an CycloneDX-Type attestation and attach it to an image, see the [SBOM attestation page][sbom_attestation].
-```bash
-$ cosign verify-attestation --key /path/to/cosign.pub --type cyclonedx <IMAGE> > sbom.cdx.intoto.jsonl
-$ trivy sbom ./sbom.cdx.intoto.jsonl
-
-sbom.cdx.intoto.jsonl (alpine 3.7.3)
-=========================
-Total: 2 (UNKNOWN: 0, LOW: 0, MEDIUM: 0, HIGH: 0, CRITICAL: 2)
-
-┌────────────┬────────────────┬──────────┬───────────────────┬───────────────┬──────────────────────────────────────────────────────────┐
-│  Library   │ Vulnerability  │ Severity │ Installed Version │ Fixed Version │                          Title                           │
-├────────────┼────────────────┼──────────┼───────────────────┼───────────────┼──────────────────────────────────────────────────────────┤
-│ musl       │ CVE-2019-14697 │ CRITICAL │ 1.1.18-r3         │ 1.1.18-r4     │ musl libc through 1.1.23 has an x87 floating-point stack │
-│            │                │          │                   │               │ adjustment im ......                                     │
-│            │                │          │                   │               │ https://avd.aquasec.com/nvd/cve-2019-14697               │
-├────────────┤                │          │                   │               │                                                          │
-│ musl-utils │                │          │                   │               │                                                          │
-│            │                │          │                   │               │                                                          │
-│            │                │          │                   │               │                                                          │
-└────────────┴────────────────┴──────────┴───────────────────┴───────────────┴──────────────────────────────────────────────────────────┘
-```
+[^1]: Use `startline == 1 and endline == 1` for unsupported file types
+[^2]: `envs/*/conda-meta/*.json`
 
 [cyclonedx]: cyclonedx.md
 [spdx]: spdx.md
-[Cosign]: https://github.com/sigstore/cosign
-[sbom_attestation]: ../attestation/sbom.md#sign-with-a-local-key-pair
+
+[os_packages]: ../vulnerability/detection/os.md
+[language_packages]: ../vulnerability/detection/language.md
