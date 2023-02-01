@@ -96,7 +96,7 @@ fmt:
 
 .PHONY: build
 build:
-	go build $(LDFLAGS) ./cmd/trivy
+	CGO_ENABLED=0 go build $(LDFLAGS) ./cmd/trivy
 
 .PHONY: protoc
 protoc:
