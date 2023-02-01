@@ -48,7 +48,7 @@ jobs:
         if: matrix.operating-system == 'ubuntu-latest'
 
       # Install tools
-      - uses: aquaproj/aqua-installer@v1.2.0
+      - uses: aquaproj/aqua-installer@v2.0.2
         with:
           aqua_version: v1.25.0
 
@@ -83,7 +83,7 @@ jobs:
           go-version-file: go.mod
 
       # Install tools
-      - uses: aquaproj/aqua-installer@v1.1.2
+      - uses: aquaproj/aqua-installer@v2.0.2
         with:
           aqua_version: v1.25.0
 
