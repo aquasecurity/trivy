@@ -5,6 +5,8 @@ Trivy can be used in air-gapped environments. Note that an allowlist is [here][a
 ## Air-Gapped Environment for vulnerabilities
 
 ### Download the vulnerability database
+At first, you need to download the vulnerability database for use in air-gapped environments.
+
 === "Trivy"
 
     ```
@@ -15,7 +17,6 @@ Trivy can be used in air-gapped environments. Note that an allowlist is [here][a
     ```
 
 === "oras >= v0.13.0"
-    At first, you need to download the vulnerability database for use in air-gapped environments.
     Please follow [oras installation instruction][oras].
 
     Download `db.tar.gz`:
@@ -25,7 +26,6 @@ Trivy can be used in air-gapped environments. Note that an allowlist is [here][a
     ```
 
 === "oras < v0.13.0"
-    At first, you need to download the vulnerability database for use in air-gapped environments.
     Please follow [oras installation instruction][oras].
 
     Download `db.tar.gz`:
@@ -34,7 +34,13 @@ Trivy can be used in air-gapped environments. Note that an allowlist is [here][a
     $ oras pull -a ghcr.io/aquasecurity/trivy-db:2
     ```
 
-### Download the java indexes database[^1]
+### Download the Java index database[^1]
+Java users also need to download the Java index database for use in air-gapped environments.
+
+!!! note
+    You container image may contain JAR files even though you don't use Java directly.
+    In that case, you also need to download the Java index database.
+
 === "Trivy"
 
     ```
@@ -44,7 +50,6 @@ Trivy can be used in air-gapped environments. Note that an allowlist is [here][a
     rm -rf $TRIVY_TEMP_DIR
     ```
 === "oras >= v0.13.0"
-    At first, you need to download the vulnerability database for use in air-gapped environments.
     Please follow [oras installation instruction][oras].
 
     Download `db.tar.gz`:
@@ -54,7 +59,6 @@ Trivy can be used in air-gapped environments. Note that an allowlist is [here][a
     ```
 
 === "oras < v0.13.0"
-    At first, you need to download the vulnerability database for use in air-gapped environments.
     Please follow [oras installation instruction][oras].
 
     Download `db.tar.gz`:
@@ -66,14 +70,15 @@ Trivy can be used in air-gapped environments. Note that an allowlist is [here][a
 
 ### Transfer the DB files into the air-gapped environment
 The way of transfer depends on the environment.
+
 === "Vulnerability db"
     ```
     $ rsync -av -e ssh /path/to/db.tar.gz [user]@[host]:dst
     ```
 
-=== "Java indexes db[^1]"
+=== "Java index db[^1]"
     ```
-    $ rsync -av -e ssh /path/to/db.tar.gz [user]@[host]:dst
+    $ rsync -av -e ssh /path/to/javadb.tar.gz [user]@[host]:dst
     ```
 
 ### Put the DB files in Trivy's cache directory
@@ -96,7 +101,7 @@ $ trivy -h | grep cache
     $ rm /path/to/db.tar.gz
     ```
 
-=== "Java indexes db[^1]"
+=== "Java index db[^1]"
     Put the DB file in the cache directory + `/java-db`.
 
     ```
@@ -112,8 +117,8 @@ $ trivy -h | grep cache
 
 In an air-gapped environment it is your responsibility to update the Trivy databases on a regular basis, so that the scanner can detect recently-identified vulnerabilities. 
 
-### Run Trivy with `--skip-db-update`, `--skip-java-db-update` and `--offline-scan` options
-In an air-gapped environment, specify `--skip-db-update` and `--skip-java-db-update`[^1] so that Trivy doesn't attempt to download the latest database files.
+### Run Trivy with the specific flags.
+In an air-gapped environment, you have to specify `--skip-db-update` and `--skip-java-db-update`[^1] so that Trivy doesn't attempt to download the latest database files.
 In addition, if you want to scan `pom.xml` dependencies, you need to specify `--offline-scan` since Trivy tries to issue API requests for scanning Java applications by default.
 
 ```
@@ -134,4 +139,4 @@ $ trivy conf --skip-policy-update /path/to/conf
 [allowlist]: ../references/troubleshooting.md
 [oras]: https://oras.land/cli/
 
-[^1]: This is only required to scan `jar` files. More information about `Java indexes db` [here](../vulnerability/languages/java.md)
+[^1]: This is only required to scan `jar` files. More information about `Java index db` [here](../vulnerability/languages/java.md)

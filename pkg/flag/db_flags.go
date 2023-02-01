@@ -37,13 +37,13 @@ var (
 		Name:       "download-java-db-only",
 		ConfigName: "db.download-java-only",
 		Value:      false,
-		Usage:      "download/update java indexes database but don't run a scan",
+		Usage:      "download/update Java index database but don't run a scan",
 	}
 	SkipJavaDBUpdateFlag = Flag{
 		Name:       "skip-java-db-update",
 		ConfigName: "db.java-skip-update",
 		Value:      false,
-		Usage:      "skip updating java indexes database",
+		Usage:      "skip updating Java index database",
 	}
 	NoProgressFlag = Flag{
 		Name:       "no-progress",
