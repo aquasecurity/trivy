@@ -270,10 +270,11 @@ func (a Artifact) inspect(ctx context.Context, missingImage string, layerKeys, b
 func (a Artifact) inspectLayer(ctx context.Context, layerInfo LayerInfo, disabled []analyzer.Type) (types.BlobInfo, error) {
 	log.Logger.Debugf("Missing diff ID in cache: %s", layerInfo.DiffID)
 
-	layerDigest, r, err := a.uncompressedLayer(layerInfo.DiffID)
+	layerDigest, rc, err := a.uncompressedLayer(layerInfo.DiffID)
 	if err != nil {
 		return types.BlobInfo{}, xerrors.Errorf("unable to get uncompressed layer %s: %w", layerInfo.DiffID, err)
 	}
+	defer rc.Close()
 
 	// Prepare variables
 	var wg sync.WaitGroup
@@ -282,7 +283,7 @@ func (a Artifact) inspectLayer(ctx context.Context, layerInfo LayerInfo, disable
 	limit := semaphore.New(a.artifactOption.Slow)
 
 	// Walk a tar layer
-	opqDirs, whFiles, err := a.walker.Walk(r, func(filePath string, info os.FileInfo, opener analyzer.Opener) error {
+	opqDirs, whFiles, err := a.walker.Walk(rc, func(filePath string, info os.FileInfo, opener analyzer.Opener) error {
 		if err = a.analyzer.AnalyzeFile(ctx, &wg, limit, result, "", filePath, info, opener, disabled, opts); err != nil {
 			return xerrors.Errorf("failed to analyze %s: %w", filePath, err)
 		}
@@ -334,7 +335,7 @@ func (a Artifact) diffIDs(configFile *v1.ConfigFile) []string {
 	})
 }
 
-func (a Artifact) uncompressedLayer(diffID string) (string, io.Reader, error) {
+func (a Artifact) uncompressedLayer(diffID string) (string, io.ReadCloser, error) {
 	// diffID is a hash of the uncompressed layer
 	h, err := v1.NewHash(diffID)
 	if err != nil {
@@ -356,11 +357,11 @@ func (a Artifact) uncompressedLayer(diffID string) (string, io.Reader, error) {
 		digest = d.String()
 	}
 
-	r, err := layer.Uncompressed()
+	rc, err := layer.Uncompressed()
 	if err != nil {
 		return "", nil, xerrors.Errorf("failed to get the layer content (%s): %w", diffID, err)
 	}
-	return digest, r, nil
+	return digest, rc, nil
 }
 
 // ref. https://github.com/google/go-containerregistry/issues/701
