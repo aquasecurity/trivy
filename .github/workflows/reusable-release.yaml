@@ -85,6 +85,16 @@ jobs:
 
       ## push images to registries
       ## only for canary build
+      - name: Docker meta
+        if: ${{ inputs.goreleaser_config == 'goreleaser-canary.yml' }}
+        id: docker_meta
+        uses: docker/metadata-action@v4
+        with:
+          images: |
+            aquasec/trivy
+            ghcr.io/aquasecurity/trivy
+            public.ecr.aws/aquasecurity/trivy
+
       - name: Build and push
         if: ${{ inputs.goreleaser_config == 'goreleaser-canary.yml' }}
         uses: docker/build-push-action@v3
@@ -93,6 +103,7 @@ jobs:
           file: ./Dockerfile.canary # path to Dockerfile
           context: .
           push: true
+          labels: ${{ steps.docker_meta.outputs.labels }}
           tags: |
             aquasec/trivy:canary
             ghcr.io/aquasecurity/trivy:canary
