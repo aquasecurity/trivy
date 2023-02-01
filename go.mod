@@ -20,7 +20,7 @@ require (
 	github.com/aquasecurity/testdocker v0.0.0-20230111101738-e741bda259da
 	github.com/aquasecurity/tml v0.6.1
 	github.com/aquasecurity/trivy-db v0.0.0-20230116084806-4bcdf1c414d0
-	github.com/aquasecurity/trivy-java-db v0.0.0-20230130194604-b1b12e703cf9
+	github.com/aquasecurity/trivy-java-db v0.0.0-20230201134457-514a75965135
 	github.com/aquasecurity/trivy-kubernetes v0.3.1-0.20230124152305-a266786d8ded
 	github.com/aws/aws-sdk-go v1.44.171
 	github.com/aws/aws-sdk-go-v2 v1.17.3
@@ -84,13 +84,14 @@ require (
 
 require (
 	github.com/dustin/go-humanize v1.0.0 // indirect
+	github.com/glebarez/go-sqlite v1.20.0 // indirect
+	github.com/glebarez/sqlite v1.6.0 // indirect
 	github.com/jinzhu/inflection v1.0.0 // indirect
 	github.com/jinzhu/now v1.1.5 // indirect
 	github.com/mattn/go-sqlite3 v1.14.16 // indirect
 	github.com/moby/patternmatcher v0.5.0 // indirect
 	github.com/moby/sys/sequential v0.5.0 // indirect
 	github.com/russross/blackfriday/v2 v2.1.0 // indirect
-	gorm.io/driver/sqlite v1.4.4 // indirect
 	gorm.io/gorm v1.24.3 // indirect
 )
 
