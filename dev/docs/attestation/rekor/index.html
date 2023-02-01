@@ -3057,6 +3057,12 @@ $ tar xvf bat-v0.20.0-x86_64-apple-darwin.tar.gz
 $ trivy plugin install github.com/aquasecurity/trivy-plugin-attest
 $ trivy attest --predicate ./bat.cdx --type cyclonedx ./bat-v0.20.0-x86_64-apple-darwin/bat
 </code></pre></div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The public instance of the Rekor maintained by the Sigstore team limits the attestation size.
+If you are using the public instance, please make sure that your SBOM is small enough.
+To get more detail, please refer to the Rekor project's <a href="https://github.com/sigstore/rekor#public-instance">documentation</a>.</p>
+</div>
 <h3 id="scan-a-non-packaged-binary">Scan a non-packaged binary</h3>
 <p>Trivy calculates the digest of the <code>bat</code> binary and searches for the SBOM attestation by the digest in Rekor.
 If it is found, Trivy uses that for vulnerability scanning.</p>
