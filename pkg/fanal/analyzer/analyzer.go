@@ -390,7 +390,7 @@ func (ag AnalyzerGroup) AnalyzeFile(ctx context.Context, wg *sync.WaitGroup, lim
 				Content:  rc,
 				Options:  opts,
 			})
-			if err != nil && !xerrors.Is(err, aos.AnalyzeOSError) {
+			if err != nil && !errors.Is(err, aos.AnalyzeOSError) {
 				log.Logger.Debugf("Analysis error: %s", err)
 				return
 			}

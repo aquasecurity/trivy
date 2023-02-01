@@ -33,6 +33,18 @@ var (
 			},
 		},
 	}
+	DownloadJavaDBOnlyFlag = Flag{
+		Name:       "download-java-db-only",
+		ConfigName: "db.download-java-only",
+		Value:      false,
+		Usage:      "download/update Java index database but don't run a scan",
+	}
+	SkipJavaDBUpdateFlag = Flag{
+		Name:       "skip-java-db-update",
+		ConfigName: "db.java-skip-update",
+		Value:      false,
+		Usage:      "skip updating Java index database",
+	}
 	NoProgressFlag = Flag{
 		Name:       "no-progress",
 		ConfigName: "db.no-progress",
@@ -56,32 +68,38 @@ var (
 
 // DBFlagGroup composes common printer flag structs used for commands requiring DB logic.
 type DBFlagGroup struct {
-	Reset          *Flag
-	DownloadDBOnly *Flag
-	SkipDBUpdate   *Flag
-	NoProgress     *Flag
-	DBRepository   *Flag
-	Light          *Flag // deprecated
+	Reset              *Flag
+	DownloadDBOnly     *Flag
+	SkipDBUpdate       *Flag
+	DownloadJavaDBOnly *Flag
+	SkipJavaDBUpdate   *Flag
+	NoProgress         *Flag
+	DBRepository       *Flag
+	Light              *Flag // deprecated
 }
 
 type DBOptions struct {
-	Reset          bool
-	DownloadDBOnly bool
-	SkipDBUpdate   bool
-	NoProgress     bool
-	DBRepository   string
-	Light          bool // deprecated
+	Reset              bool
+	DownloadDBOnly     bool
+	SkipDBUpdate       bool
+	DownloadJavaDBOnly bool
+	SkipJavaDBUpdate   bool
+	NoProgress         bool
+	DBRepository       string
+	Light              bool // deprecated
 }
 
 // NewDBFlagGroup returns a default DBFlagGroup
 func NewDBFlagGroup() *DBFlagGroup {
 	return &DBFlagGroup{
-		Reset:          &ResetFlag,
-		DownloadDBOnly: &DownloadDBOnlyFlag,
-		SkipDBUpdate:   &SkipDBUpdateFlag,
-		Light:          &LightFlag,
-		NoProgress:     &NoProgressFlag,
-		DBRepository:   &DBRepositoryFlag,
+		Reset:              &ResetFlag,
+		DownloadDBOnly:     &DownloadDBOnlyFlag,
+		SkipDBUpdate:       &SkipDBUpdateFlag,
+		DownloadJavaDBOnly: &DownloadJavaDBOnlyFlag,
+		SkipJavaDBUpdate:   &SkipJavaDBUpdateFlag,
+		Light:              &LightFlag,
+		NoProgress:         &NoProgressFlag,
+		DBRepository:       &DBRepositoryFlag,
 	}
 }
 
@@ -94,6 +112,8 @@ func (f *DBFlagGroup) Flags() []*Flag {
 		f.Reset,
 		f.DownloadDBOnly,
 		f.SkipDBUpdate,
+		f.DownloadJavaDBOnly,
+		f.SkipJavaDBUpdate,
 		f.NoProgress,
 		f.DBRepository,
 		f.Light,
@@ -102,22 +122,29 @@ func (f *DBFlagGroup) Flags() []*Flag {
 
 func (f *DBFlagGroup) ToOptions() (DBOptions, error) {
 	skipDBUpdate := getBool(f.SkipDBUpdate)
+	skipJavaDBUpdate := getBool(f.SkipJavaDBUpdate)
 	downloadDBOnly := getBool(f.DownloadDBOnly)
+	downloadJavaDBOnly := getBool(f.DownloadJavaDBOnly)
 	light := getBool(f.Light)
 
 	if downloadDBOnly && skipDBUpdate {
 		return DBOptions{}, xerrors.New("--skip-db-update and --download-db-only options can not be specified both")
+	}
+	if downloadJavaDBOnly && skipJavaDBUpdate {
+		return DBOptions{}, xerrors.New("--skip-java-db-update and --download-java-db-only options can not be specified both")
 	}
 	if light {
 		log.Logger.Warn("'--light' option is deprecated and will be removed. See also: https://github.com/aquasecurity/trivy/discussions/1649")
 	}
 
 	return DBOptions{
-		Reset:          getBool(f.Reset),
-		DownloadDBOnly: downloadDBOnly,
-		SkipDBUpdate:   skipDBUpdate,
-		Light:          light,
-		NoProgress:     getBool(f.NoProgress),
-		DBRepository:   getString(f.DBRepository),
+		Reset:              getBool(f.Reset),
+		DownloadDBOnly:     downloadDBOnly,
+		SkipDBUpdate:       skipDBUpdate,
+		DownloadJavaDBOnly: downloadJavaDBOnly,
+		SkipJavaDBUpdate:   skipJavaDBUpdate,
+		Light:              light,
+		NoProgress:         getBool(f.NoProgress),
+		DBRepository:       getString(f.DBRepository),
 	}, nil
 }

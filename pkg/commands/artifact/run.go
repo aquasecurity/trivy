@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+
 	"os"
 
 	"github.com/hashicorp/go-multierror"
@@ -20,6 +21,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/fanal/artifact"
 	"github.com/aquasecurity/trivy/pkg/fanal/cache"
 	"github.com/aquasecurity/trivy/pkg/flag"
+	"github.com/aquasecurity/trivy/pkg/javadb"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/module"
 	pkgReport "github.com/aquasecurity/trivy/pkg/report"
@@ -302,9 +304,18 @@ func (r *runner) initDB(opts flag.Options) error {
 	if opts.ServerAddr != "" || !opts.Scanners.Enabled(types.VulnerabilityScanner) {
 		return nil
 	}
+	noProgress := opts.Quiet || opts.NoProgress
+
+	// Java DB
+	javadb.Init(opts.CacheDir, opts.SkipJavaDBUpdate, noProgress, opts.Insecure)
+	if opts.DownloadJavaDBOnly {
+		if err := javadb.Update(); err != nil {
+			return xerrors.Errorf("Java DB error: %w", err)
+		}
+		return SkipScan
+	}
 
 	// download the database file
-	noProgress := opts.Quiet || opts.NoProgress
 	if err := operation.DownloadDB(opts.AppVersion, opts.CacheDir, opts.DBRepository, noProgress, opts.Insecure, opts.SkipDBUpdate); err != nil {
 		return err
 	}
