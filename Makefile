@@ -16,6 +16,8 @@ EXAMPLE_MODULES := $(patsubst %.go,%.wasm,$(EXAMPLE_MODULE_SRCS))
 MKDOCS_IMAGE := aquasec/mkdocs-material:dev
 MKDOCS_PORT := 8000
 
+export CGO_ENABLED := 0 
+
 u := $(if $(update),-u)
 
 # Tools
@@ -96,7 +98,7 @@ fmt:
 
 .PHONY: build
 build:
-	CGO_ENABLED=0 go build $(LDFLAGS) ./cmd/trivy
+	go build $(LDFLAGS) ./cmd/trivy
 
 .PHONY: protoc
 protoc:
