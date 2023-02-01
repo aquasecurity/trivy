@@ -309,9 +309,8 @@ func (r *runner) initDB(opts flag.Options) error {
 	// Java DB
 	javadb.Init(opts.CacheDir, opts.SkipJavaDBUpdate, noProgress, opts.Insecure)
 	if opts.DownloadJavaDBOnly {
-		_, err := javadb.Client()
-		if err != nil {
-			return err
+		if _, err := javadb.Client(); err != nil {
+			return xerrors.Errorf("Java DB error: %w", err)
 		}
 		return SkipScan
 	}
