@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-
 	"os"
 
 	"github.com/hashicorp/go-multierror"
@@ -24,6 +23,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/javadb"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/module"
+	"github.com/aquasecurity/trivy/pkg/report"
 	pkgReport "github.com/aquasecurity/trivy/pkg/report"
 	"github.com/aquasecurity/trivy/pkg/result"
 	"github.com/aquasecurity/trivy/pkg/rpc/client"
@@ -300,22 +300,17 @@ func (r *runner) Report(opts flag.Options, report types.Report) error {
 }
 
 func (r *runner) initDB(opts flag.Options) error {
+	if err := r.initJavaDB(opts); err != nil {
+		return err
+	}
+
 	// When scanning config files or running as client mode, it doesn't need to download the vulnerability database.
 	if opts.ServerAddr != "" || !opts.Scanners.Enabled(types.VulnerabilityScanner) {
 		return nil
 	}
-	noProgress := opts.Quiet || opts.NoProgress
-
-	// Java DB
-	javadb.Init(opts.CacheDir, opts.SkipJavaDBUpdate, noProgress, opts.Insecure)
-	if opts.DownloadJavaDBOnly {
-		if err := javadb.Update(); err != nil {
-			return xerrors.Errorf("Java DB error: %w", err)
-		}
-		return SkipScan
-	}
 
 	// download the database file
+	noProgress := opts.Quiet || opts.NoProgress
 	if err := operation.DownloadDB(opts.AppVersion, opts.CacheDir, opts.DBRepository, noProgress, opts.Insecure, opts.SkipDBUpdate); err != nil {
 		return err
 	}
@@ -328,6 +323,31 @@ func (r *runner) initDB(opts flag.Options) error {
 		return xerrors.Errorf("error in vulnerability DB initialize: %w", err)
 	}
 	r.dbOpen = true
+
+	return nil
+}
+
+func (r *runner) initJavaDB(opts flag.Options) error {
+	// When running as server mode, it doesn't need to download the Java database.
+	if opts.Listen != "" {
+		return nil
+	}
+
+	// If vulnerability scanning and SBOM generation are disabled, it doesn't need to download the Java database.
+	if !opts.Scanners.Enabled(types.VulnerabilityScanner) &&
+		!slices.Contains(report.SupportedSBOMFormats, opts.Format) {
+		return nil
+	}
+
+	// Update the Java DB
+	noProgress := opts.Quiet || opts.NoProgress
+	javadb.Init(opts.CacheDir, opts.SkipJavaDBUpdate, noProgress, opts.Insecure)
+	if opts.DownloadJavaDBOnly {
+		if err := javadb.Update(); err != nil {
+			return xerrors.Errorf("Java DB error: %w", err)
+		}
+		return SkipScan
+	}
 
 	return nil
 }

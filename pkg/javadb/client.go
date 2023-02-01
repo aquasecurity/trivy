@@ -90,7 +90,7 @@ func Init(cacheDir string, skip, quiet, insecure bool) {
 
 func Update() error {
 	if updater == nil {
-		return xerrors.New("not initialized")
+		return xerrors.New("Java DB client not initialized")
 	}
 	if err := updater.Update(); err != nil {
 		return xerrors.Errorf("Java DB update error: %w", err)
