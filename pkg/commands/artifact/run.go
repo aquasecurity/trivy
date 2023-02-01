@@ -304,15 +304,22 @@ func (r *runner) initDB(opts flag.Options) error {
 	if opts.ServerAddr != "" || !opts.Scanners.Enabled(types.VulnerabilityScanner) {
 		return nil
 	}
-
-	// download the database file
 	noProgress := opts.Quiet || opts.NoProgress
-	if err := operation.DownloadDB(opts.AppVersion, opts.CacheDir, opts.DBRepository, noProgress, opts.Insecure, opts.SkipDBUpdate); err != nil {
-		return err
-	}
 
 	// Java DB
 	javadb.Init(opts.CacheDir, opts.SkipJavaDBUpdate, noProgress, opts.Insecure)
+	if opts.DownloadJavaDBOnly {
+		_, err := javadb.Client()
+		if err != nil {
+			return err
+		}
+		return SkipScan
+	}
+
+	// download the database file
+	if err := operation.DownloadDB(opts.AppVersion, opts.CacheDir, opts.DBRepository, noProgress, opts.Insecure, opts.SkipDBUpdate); err != nil {
+		return err
+	}
 
 	if opts.DownloadDBOnly {
 		return SkipScan

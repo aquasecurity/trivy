@@ -41,6 +41,7 @@ Cache Flags
 DB Flags
       --db-repository string   OCI repository to retrieve trivy-db from (default "ghcr.io/aquasecurity/trivy-db")
       --download-db-only       download/update vulnerability database but don't run a scan
+      --download-java-db-only  download/update java indexes database but don't run a scan
       --no-progress            suppress progress bar
       --reset                  remove all caches and database
       --skip-db-update         skip updating vulnerability database

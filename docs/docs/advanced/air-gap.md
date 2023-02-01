@@ -35,6 +35,14 @@ Trivy can be used in air-gapped environments. Note that an allowlist is [here][a
     ```
 
 ### Download the java indexes database[^1]
+=== "Trivy"
+
+    ```
+    TRIVY_TEMP_DIR=$(mktemp -d)
+    trivy --cache-dir $TRIVY_TEMP_DIR image --download-java-db-only
+    tar -cf ./javadb.tar.gz -C $TRIVY_TEMP_DIR/java-db metadata.json trivy-java.db
+    rm -rf $TRIVY_TEMP_DIR
+    ```
 === "oras >= v0.13.0"
     At first, you need to download the vulnerability database for use in air-gapped environments.
     Please follow [oras installation instruction][oras].
