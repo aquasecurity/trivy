@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
-	"sync"
 	"time"
 
 	"golang.org/x/xerrors"
@@ -25,10 +24,7 @@ const (
 	mediaType               = "application/vnd.aquasec.trivy.javadb.layer.v1.tar+gzip"
 )
 
-var (
-	updater Updater
-	client  DB
-)
+var updater *Updater
 
 type Updater struct {
 	repo     string
@@ -36,69 +32,54 @@ type Updater struct {
 	skip     bool
 	quiet    bool
 	insecure bool
-
-	once sync.Once
-	err  error
 }
 
 func (u *Updater) Update() error {
-	u.once.Do(func() {
-		dbDir := u.dbDir
-		metac := metadata.New(dbDir)
+	dbDir := u.dbDir
+	metac := metadata.New(dbDir)
 
-		var meta metadata.Metadata
-		meta, u.err = metac.Get()
-		if u.err != nil {
-			if !errors.Is(u.err, os.ErrNotExist) {
-				return
-			} else if u.skip {
-				log.Logger.Error("The first run cannot skip downloading java DB")
-				u.err = xerrors.New("--skip-java-update cannot be specified on the first run")
-				return
-			}
+	meta, err := metac.Get()
+	if err != nil {
+		if !errors.Is(err, os.ErrNotExist) {
+			return xerrors.Errorf("Java DB metadata error: %w", err)
+		} else if u.skip {
+			log.Logger.Error("The first run cannot skip downloading java DB")
+			return xerrors.New("--skip-java-update cannot be specified on the first run")
 		}
-
-		if (meta.Version != version || meta.NextUpdate.Before(time.Now().UTC())) && !u.skip {
-			// Download DB
-			log.Logger.Info("Downloading the Java DB...")
-
-			var a *oci.Artifact
-			if a, u.err = oci.NewArtifact(u.repo, mediaType, u.quiet, u.insecure); u.err != nil {
-				return
-			}
-			if u.err = a.Download(context.Background(), dbDir); u.err != nil {
-				return
-			}
-
-			// Parse the newly downloaded metadata.json
-			meta, u.err = metac.Get()
-			if u.err != nil {
-				return
-			}
-
-			// Update DownloadedAt
-			meta.DownloadedAt = time.Now().UTC()
-			if u.err = metac.Update(meta); u.err != nil {
-				return
-			}
-		}
-
-		var dbc db.DB
-		if dbc, u.err = db.New(dbDir); u.err != nil {
-			return
-		}
-		client = DB{
-			driver: dbc,
-		}
-	})
-	if u.err != nil {
-		return xerrors.Errorf("Java DB update error: %w", u.err)
 	}
+
+	if (meta.Version != version || meta.NextUpdate.Before(time.Now().UTC())) && !u.skip {
+		// Download DB
+		log.Logger.Info("Downloading the Java DB...")
+
+		var a *oci.Artifact
+		if a, err = oci.NewArtifact(u.repo, mediaType, u.quiet, u.insecure); err != nil {
+			return xerrors.Errorf("oci error: %w", err)
+		}
+		if err = a.Download(context.Background(), dbDir); err != nil {
+			return xerrors.Errorf("DB download error: %w", err)
+		}
+
+		// Parse the newly downloaded metadata.json
+		meta, err = metac.Get()
+		if err != nil {
+			return xerrors.Errorf("Java DB metadata error: %w", err)
+		}
+
+		// Update DownloadedAt
+		meta.DownloadedAt = time.Now().UTC()
+		if err = metac.Update(meta); err != nil {
+			return xerrors.Errorf("Java DB metadata update error: %w", err)
+		}
+		log.Logger.Info("The Java DB is cached for 3 days. If you want to update the database more frequently, " +
+			"the '--reset' flag clears the DB cache.")
+	}
+
 	return nil
 }
 
 func Init(cacheDir string, skip, quiet, insecure bool) {
-	updater = Updater{
+	updater = &Updater{
 		repo:     fmt.Sprintf("%s:%d", defaultJavaDBRepository, version), // TODO: make it configurable
 		dbDir:    filepath.Join(cacheDir, "java-db"),
 		skip:     skip,
@@ -107,18 +88,31 @@ func Init(cacheDir string, skip, quiet, insecure bool) {
 	}
 }
 
+func Update() error {
+	if updater == nil {
+		return xerrors.New("not initialized")
+	}
+	if err := updater.Update(); err != nil {
+		return xerrors.Errorf("Java DB update error: %w", err)
+	}
+	return nil
+}
+
 type DB struct {
 	driver db.DB
 }
 
-func Client() (*DB, error) {
-	// Not return the same error multiple times
-	if updater.err != nil {
-		return nil, nil
-	} else if err := updater.Update(); err != nil {
+func NewClient() (*DB, error) {
+	if err := Update(); err != nil {
 		return nil, xerrors.Errorf("Java DB update failed: %s", err)
 	}
-	return &client, nil
+
+	dbc, err := db.New(updater.dbDir)
+	if err != nil {
+		return nil, xerrors.Errorf("Java DB open error: %w", err)
+	}
+
+	return &DB{driver: dbc}, nil
 }
 
 func (d *DB) Exists(groupID, artifactID string) (bool, error) {
