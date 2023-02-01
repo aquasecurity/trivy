@@ -10,21 +10,21 @@
       
       
       
-        <link rel="canonical" href="https://aquasecurity.github.io/trivy/dev/docs/kubernetes/cli/compliance/">
+        <link rel="canonical" href="https://aquasecurity.github.io/trivy/dev/docs/target/rootfs/">
       
-      <link rel="icon" href="../../../../assets/images/favicon.png">
+      <link rel="icon" href="../../../assets/images/favicon.png">
       <meta name="generator" content="mkdocs-1.3.0, mkdocs-material-8.3.9">
     
     
       
-        <title>Compliance - Trivy</title>
+        <title>Rootfs - Trivy</title>
       
     
     
-      <link rel="stylesheet" href="../../../../assets/stylesheets/main.1d29e8d0.min.css">
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.1d29e8d0.min.css">
       
         
-        <link rel="stylesheet" href="../../../../assets/stylesheets/palette.cbb835fc.min.css">
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.cbb835fc.min.css">
         
       
       
@@ -40,7 +40,7 @@
       
     
     
-    <script>__md_scope=new URL("../../../..",location),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    <script>__md_scope=new URL("../../..",location),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
       
 
@@ -64,7 +64,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#kubernetes-compliance" class="md-skip">
+        <a href="#rootfs" class="md-skip">
           Skip to content
         </a>
       
@@ -86,9 +86,9 @@
 
 <header class="md-header md-header--lifted" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
-    <a href="../../../.." title="Trivy" class="md-header__button md-logo" aria-label="Trivy" data-md-component="logo">
+    <a href="../../.." title="Trivy" class="md-header__button md-logo" aria-label="Trivy" data-md-component="logo">
       
-  <img src="../../../../imgs/logo-white.svg" alt="logo">
+  <img src="../../../imgs/logo-white.svg" alt="logo">
 
     </a>
     <label class="md-header__button md-icon" for="__drawer">
@@ -104,7 +104,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Compliance
+              Rootfs
             
           </span>
         </div>
@@ -176,7 +176,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="../../../.." class="md-tabs__link">
+      <a href="../../.." class="md-tabs__link">
         Getting Started
       </a>
     </li>
@@ -192,7 +192,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="../../../../tutorials/overview/" class="md-tabs__link">
+      <a href="../../../tutorials/overview/" class="md-tabs__link">
         Tutorials
       </a>
     </li>
@@ -210,7 +210,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="../../../" class="md-tabs__link md-tabs__link--active">
+      <a href="../../" class="md-tabs__link md-tabs__link--active">
         Docs
       </a>
     </li>
@@ -226,7 +226,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="../../../../ecosystem/" class="md-tabs__link">
+      <a href="../../../ecosystem/" class="md-tabs__link">
         Ecosystem
       </a>
     </li>
@@ -247,7 +247,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="../../../../community/contribute/issue/" class="md-tabs__link">
+      <a href="../../../community/contribute/issue/" class="md-tabs__link">
         Contributing
       </a>
     </li>
@@ -283,9 +283,9 @@
 
 <nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href="../../../.." title="Trivy" class="md-nav__button md-logo" aria-label="Trivy" data-md-component="logo">
+    <a href="../../.." title="Trivy" class="md-nav__button md-logo" aria-label="Trivy" data-md-component="logo">
       
-  <img src="../../../../imgs/logo-white.svg" alt="logo">
+  <img src="../../../imgs/logo-white.svg" alt="logo">
 
     </a>
     Trivy
@@ -339,7 +339,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../.." class="md-nav__link">
+      <a href="../../.." class="md-nav__link">
         Overview
       </a>
     </li>
@@ -353,7 +353,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../getting-started/installation/" class="md-nav__link">
+      <a href="../../../getting-started/installation/" class="md-nav__link">
         Installation
       </a>
     </li>
@@ -401,7 +401,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../tutorials/overview/" class="md-nav__link">
+      <a href="../../../tutorials/overview/" class="md-nav__link">
         Overview
       </a>
     </li>
@@ -443,7 +443,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../tutorials/integrations/" class="md-nav__link">
+      <a href="../../../tutorials/integrations/" class="md-nav__link">
         Overview
       </a>
     </li>
@@ -457,7 +457,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../tutorials/integrations/github-actions/" class="md-nav__link">
+      <a href="../../../tutorials/integrations/github-actions/" class="md-nav__link">
         GitHub Actions
       </a>
     </li>
@@ -471,7 +471,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../tutorials/integrations/circleci/" class="md-nav__link">
+      <a href="../../../tutorials/integrations/circleci/" class="md-nav__link">
         CircleCI
       </a>
     </li>
@@ -485,7 +485,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../tutorials/integrations/travis-ci/" class="md-nav__link">
+      <a href="../../../tutorials/integrations/travis-ci/" class="md-nav__link">
         Travis CI
       </a>
     </li>
@@ -499,7 +499,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../tutorials/integrations/gitlab-ci/" class="md-nav__link">
+      <a href="../../../tutorials/integrations/gitlab-ci/" class="md-nav__link">
         GitLab CI
       </a>
     </li>
@@ -513,7 +513,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../tutorials/integrations/bitbucket/" class="md-nav__link">
+      <a href="../../../tutorials/integrations/bitbucket/" class="md-nav__link">
         Bitbucket Pipelines
       </a>
     </li>
@@ -527,7 +527,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../tutorials/integrations/aws-codepipeline/" class="md-nav__link">
+      <a href="../../../tutorials/integrations/aws-codepipeline/" class="md-nav__link">
         AWS CodePipeline
       </a>
     </li>
@@ -541,7 +541,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../tutorials/integrations/aws-security-hub/" class="md-nav__link">
+      <a href="../../../tutorials/integrations/aws-security-hub/" class="md-nav__link">
         AWS Security Hub
       </a>
     </li>
@@ -555,7 +555,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../tutorials/integrations/azure-devops/" class="md-nav__link">
+      <a href="../../../tutorials/integrations/azure-devops/" class="md-nav__link">
         Azure
       </a>
     </li>
@@ -604,7 +604,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../tutorials/signing/vuln-attestation/" class="md-nav__link">
+      <a href="../../../tutorials/signing/vuln-attestation/" class="md-nav__link">
         Vulnerability Scan Record Attestation
       </a>
     </li>
@@ -653,7 +653,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../tutorials/kubernetes/cluster-scanning/" class="md-nav__link">
+      <a href="../../../tutorials/kubernetes/cluster-scanning/" class="md-nav__link">
         Cluster Scanning
       </a>
     </li>
@@ -667,7 +667,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../tutorials/kubernetes/kyverno/" class="md-nav__link">
+      <a href="../../../tutorials/kubernetes/kyverno/" class="md-nav__link">
         Kyverno
       </a>
     </li>
@@ -681,7 +681,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../tutorials/kubernetes/gitops/" class="md-nav__link">
+      <a href="../../../tutorials/kubernetes/gitops/" class="md-nav__link">
         GitOps
       </a>
     </li>
@@ -730,7 +730,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../tutorials/additional-resources/references/" class="md-nav__link">
+      <a href="../../../tutorials/additional-resources/references/" class="md-nav__link">
         Additional Resources
       </a>
     </li>
@@ -744,7 +744,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../tutorials/additional-resources/community/" class="md-nav__link">
+      <a href="../../../tutorials/additional-resources/community/" class="md-nav__link">
         Community References
       </a>
     </li>
@@ -758,7 +758,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../tutorials/additional-resources/cks/" class="md-nav__link">
+      <a href="../../../tutorials/additional-resources/cks/" class="md-nav__link">
         CKS Reference
       </a>
     </li>
@@ -815,7 +815,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../" class="md-nav__link">
+      <a href="../../" class="md-nav__link">
         Overview
       </a>
     </li>
@@ -827,53 +827,29 @@
               
   
   
+    
+  
   
     
       
     
-    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_2" type="checkbox" id="__nav_3_2" >
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_2" type="checkbox" id="__nav_3_2" checked>
       
       
       
       
         <label class="md-nav__link" for="__nav_3_2">
-          Vulnerability
+          Target
           <span class="md-nav__icon md-icon"></span>
         </label>
       
-      <nav class="md-nav" aria-label="Vulnerability" data-md-level="2">
+      <nav class="md-nav" aria-label="Target" data-md-level="2">
         <label class="md-nav__title" for="__nav_3_2">
           <span class="md-nav__icon md-icon"></span>
-          Vulnerability
-        </label>
-        <ul class="md-nav__list" data-md-scrollfix>
-          
-            
-              
-  
-  
-  
-    
-    <li class="md-nav__item md-nav__item--nested">
-      
-      
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_2_1" type="checkbox" id="__nav_3_2_1" >
-      
-      
-      
-      
-        <label class="md-nav__link" for="__nav_3_2_1">
-          Scanning
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <nav class="md-nav" aria-label="Scanning" data-md-level="3">
-        <label class="md-nav__title" for="__nav_3_2_1">
-          <span class="md-nav__icon md-icon"></span>
-          Scanning
+          Target
         </label>
         <ul class="md-nav__list" data-md-scrollfix>
           
@@ -883,21 +859,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../vulnerability/scanning/" class="md-nav__link">
-        Overview
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../../vulnerability/scanning/image/" class="md-nav__link">
+      <a href="../container_image/" class="md-nav__link">
         Container Image
       </a>
     </li>
@@ -911,7 +873,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../vulnerability/scanning/filesystem/" class="md-nav__link">
+      <a href="../filesystem/" class="md-nav__link">
         Filesystem
       </a>
     </li>
@@ -923,11 +885,21 @@
               
   
   
+    
   
-    <li class="md-nav__item">
-      <a href="../../../vulnerability/scanning/rootfs/" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
         Rootfs
       </a>
+      
     </li>
   
 
@@ -939,7 +911,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../vulnerability/scanning/git-repository/" class="md-nav__link">
+      <a href="../git-repository/" class="md-nav__link">
         Git Repository
       </a>
     </li>
@@ -947,47 +919,14 @@
 
             
           
-        </ul>
-      </nav>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    
-    <li class="md-nav__item md-nav__item--nested">
-      
-      
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_2_2" type="checkbox" id="__nav_3_2_2" >
-      
-      
-      
-      
-        <label class="md-nav__link" for="__nav_3_2_2">
-          Detection
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <nav class="md-nav" aria-label="Detection" data-md-level="3">
-        <label class="md-nav__title" for="__nav_3_2_2">
-          <span class="md-nav__icon md-icon"></span>
-          Detection
-        </label>
-        <ul class="md-nav__list" data-md-scrollfix>
-          
             
               
   
   
   
     <li class="md-nav__item">
-      <a href="../../../vulnerability/detection/os/" class="md-nav__link">
-        OS Packages
+      <a href="../vm/" class="md-nav__link">
+        Virtual Machine Image
       </a>
     </li>
   
@@ -1000,8 +939,8 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../vulnerability/detection/language/" class="md-nav__link">
-        Language-specific Packages
+      <a href="../kubernetes/" class="md-nav__link">
+        Kubernetes
       </a>
     </li>
   
@@ -1014,8 +953,8 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../vulnerability/detection/data-source/" class="md-nav__link">
-        Data Sources
+      <a href="../aws/" class="md-nav__link">
+        AWS
       </a>
     </li>
   
@@ -1028,194 +967,9 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../vulnerability/detection/supported/" class="md-nav__link">
-        Supported
+      <a href="../sbom/" class="md-nav__link">
+        SBOM
       </a>
-    </li>
-  
-
-            
-          
-        </ul>
-      </nav>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    
-    <li class="md-nav__item md-nav__item--nested">
-      
-      
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_2_3" type="checkbox" id="__nav_3_2_3" >
-      
-      
-      
-      
-        <label class="md-nav__link" for="__nav_3_2_3">
-          Examples
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <nav class="md-nav" aria-label="Examples" data-md-level="3">
-        <label class="md-nav__title" for="__nav_3_2_3">
-          <span class="md-nav__icon md-icon"></span>
-          Examples
-        </label>
-        <ul class="md-nav__list" data-md-scrollfix>
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../../vulnerability/examples/filter/" class="md-nav__link">
-        Vulnerability Filtering
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../../vulnerability/examples/report/" class="md-nav__link">
-        Report Formats
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../../vulnerability/examples/db/" class="md-nav__link">
-        Vulnerability DB
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../../vulnerability/examples/cache/" class="md-nav__link">
-        Cache
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../../vulnerability/examples/others/" class="md-nav__link">
-        Others
-      </a>
-    </li>
-  
-
-            
-          
-        </ul>
-      </nav>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../../vulnerability/distributions/" class="md-nav__link">
-        Distributions
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    
-    <li class="md-nav__item md-nav__item--nested">
-      
-      
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_2_5" type="checkbox" id="__nav_3_2_5" >
-      
-      
-      
-      
-        <label class="md-nav__link" for="__nav_3_2_5">
-          Languages
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <nav class="md-nav" aria-label="Languages" data-md-level="3">
-        <label class="md-nav__title" for="__nav_3_2_5">
-          <span class="md-nav__icon md-icon"></span>
-          Languages
-        </label>
-        <ul class="md-nav__list" data-md-scrollfix>
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../../vulnerability/languages/golang/" class="md-nav__link">
-        Go
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../../vulnerability/languages/java/" class="md-nav__link">
-        Java
-      </a>
-    </li>
-  
-
-            
-          
-        </ul>
-      </nav>
     </li>
   
 
@@ -1245,14 +999,14 @@
       
       
         <label class="md-nav__link" for="__nav_3_3">
-          Misconfiguration
+          Vulnerability
           <span class="md-nav__icon md-icon"></span>
         </label>
       
-      <nav class="md-nav" aria-label="Misconfiguration" data-md-level="2">
+      <nav class="md-nav" aria-label="Vulnerability" data-md-level="2">
         <label class="md-nav__title" for="__nav_3_3">
           <span class="md-nav__icon md-icon"></span>
-          Misconfiguration
+          Vulnerability
         </label>
         <ul class="md-nav__list" data-md-scrollfix>
           
@@ -1262,7 +1016,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../misconfiguration/scanning/" class="md-nav__link">
+      <a href="../../vulnerability/scanning/" class="md-nav__link">
         Scanning
       </a>
     </li>
@@ -1285,14 +1039,14 @@
       
       
         <label class="md-nav__link" for="__nav_3_3_2">
-          Policy
+          Detection
           <span class="md-nav__icon md-icon"></span>
         </label>
       
-      <nav class="md-nav" aria-label="Policy" data-md-level="3">
+      <nav class="md-nav" aria-label="Detection" data-md-level="3">
         <label class="md-nav__title" for="__nav_3_3_2">
           <span class="md-nav__icon md-icon"></span>
-          Policy
+          Detection
         </label>
         <ul class="md-nav__list" data-md-scrollfix>
           
@@ -1302,8 +1056,8 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../misconfiguration/policy/builtin/" class="md-nav__link">
-        Built-in Policies
+      <a href="../../vulnerability/detection/os/" class="md-nav__link">
+        OS Packages
       </a>
     </li>
   
@@ -1316,8 +1070,22 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../misconfiguration/policy/exceptions/" class="md-nav__link">
-        Exceptions
+      <a href="../../vulnerability/detection/language/" class="md-nav__link">
+        Language-specific Packages
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../vulnerability/detection/data-source/" class="md-nav__link">
+        Data Sources
       </a>
     </li>
   
@@ -1346,14 +1114,14 @@
       
       
         <label class="md-nav__link" for="__nav_3_3_3">
-          Custom Policies
+          Examples
           <span class="md-nav__icon md-icon"></span>
         </label>
       
-      <nav class="md-nav" aria-label="Custom Policies" data-md-level="3">
+      <nav class="md-nav" aria-label="Examples" data-md-level="3">
         <label class="md-nav__title" for="__nav_3_3_3">
           <span class="md-nav__icon md-icon"></span>
-          Custom Policies
+          Examples
         </label>
         <ul class="md-nav__list" data-md-scrollfix>
           
@@ -1363,8 +1131,8 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../misconfiguration/custom/" class="md-nav__link">
-        Overview
+      <a href="../../vulnerability/examples/filter/" class="md-nav__link">
+        Vulnerability Filtering
       </a>
     </li>
   
@@ -1377,8 +1145,8 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../misconfiguration/custom/data/" class="md-nav__link">
-        Data
+      <a href="../../vulnerability/examples/report/" class="md-nav__link">
+        Report Formats
       </a>
     </li>
   
@@ -1391,8 +1159,8 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../misconfiguration/custom/combine/" class="md-nav__link">
-        Combine
+      <a href="../../vulnerability/examples/db/" class="md-nav__link">
+        Vulnerability DB
       </a>
     </li>
   
@@ -1405,8 +1173,8 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../misconfiguration/custom/testing/" class="md-nav__link">
-        Testing
+      <a href="../../vulnerability/examples/cache/" class="md-nav__link">
+        Cache
       </a>
     </li>
   
@@ -1419,22 +1187,8 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../misconfiguration/custom/debug/" class="md-nav__link">
-        Debugging Policies
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../../misconfiguration/custom/examples/" class="md-nav__link">
-        Examples
+      <a href="../../vulnerability/examples/others/" class="md-nav__link">
+        Others
       </a>
     </li>
   
@@ -1463,14 +1217,14 @@
       
       
         <label class="md-nav__link" for="__nav_3_3_4">
-          Options
+          Languages
           <span class="md-nav__icon md-icon"></span>
         </label>
       
-      <nav class="md-nav" aria-label="Options" data-md-level="3">
+      <nav class="md-nav" aria-label="Languages" data-md-level="3">
         <label class="md-nav__title" for="__nav_3_3_4">
           <span class="md-nav__icon md-icon"></span>
-          Options
+          Languages
         </label>
         <ul class="md-nav__list" data-md-scrollfix>
           
@@ -1480,8 +1234,8 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../misconfiguration/options/policy/" class="md-nav__link">
-        Policy
+      <a href="../../vulnerability/languages/golang/" class="md-nav__link">
+        Go
       </a>
     </li>
   
@@ -1494,50 +1248,8 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../misconfiguration/options/filter/" class="md-nav__link">
-        Filtering
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../../misconfiguration/options/report/" class="md-nav__link">
-        Report Formats
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../../misconfiguration/options/values/" class="md-nav__link">
-        Value Overrides
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../../misconfiguration/options/others/" class="md-nav__link">
-        Others
+      <a href="../../vulnerability/languages/java/" class="md-nav__link">
+        Java
       </a>
     </li>
   
@@ -1575,14 +1287,14 @@
       
       
         <label class="md-nav__link" for="__nav_3_4">
-          Secret
+          Misconfiguration
           <span class="md-nav__icon md-icon"></span>
         </label>
       
-      <nav class="md-nav" aria-label="Secret" data-md-level="2">
+      <nav class="md-nav" aria-label="Misconfiguration" data-md-level="2">
         <label class="md-nav__title" for="__nav_3_4">
           <span class="md-nav__icon md-icon"></span>
-          Secret
+          Misconfiguration
         </label>
         <ul class="md-nav__list" data-md-scrollfix>
           
@@ -1592,7 +1304,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../secret/scanning/" class="md-nav__link">
+      <a href="../../misconfiguration/scanning/" class="md-nav__link">
         Scanning
       </a>
     </li>
@@ -1605,9 +1317,35 @@
   
   
   
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_4_2" type="checkbox" id="__nav_3_4_2" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_3_4_2">
+          Policy
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Policy" data-md-level="3">
+        <label class="md-nav__title" for="__nav_3_4_2">
+          <span class="md-nav__icon md-icon"></span>
+          Policy
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
     <li class="md-nav__item">
-      <a href="../../../secret/configuration/" class="md-nav__link">
-        Configuration
+      <a href="../../misconfiguration/policy/builtin/" class="md-nav__link">
+        Built-in Policies
       </a>
     </li>
   
@@ -1620,9 +1358,236 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../secret/examples/" class="md-nav__link">
+      <a href="../../misconfiguration/policy/exceptions/" class="md-nav__link">
+        Exceptions
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_4_3" type="checkbox" id="__nav_3_4_3" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_3_4_3">
+          Custom Policies
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Custom Policies" data-md-level="3">
+        <label class="md-nav__title" for="__nav_3_4_3">
+          <span class="md-nav__icon md-icon"></span>
+          Custom Policies
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../misconfiguration/custom/" class="md-nav__link">
+        Overview
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../misconfiguration/custom/data/" class="md-nav__link">
+        Data
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../misconfiguration/custom/combine/" class="md-nav__link">
+        Combine
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../misconfiguration/custom/testing/" class="md-nav__link">
+        Testing
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../misconfiguration/custom/debug/" class="md-nav__link">
+        Debugging Policies
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../misconfiguration/custom/examples/" class="md-nav__link">
         Examples
       </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_4_4" type="checkbox" id="__nav_3_4_4" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_3_4_4">
+          Options
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Options" data-md-level="3">
+        <label class="md-nav__title" for="__nav_3_4_4">
+          <span class="md-nav__icon md-icon"></span>
+          Options
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../misconfiguration/options/policy/" class="md-nav__link">
+        Policy
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../misconfiguration/options/filter/" class="md-nav__link">
+        Filtering
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../misconfiguration/options/report/" class="md-nav__link">
+        Report Formats
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../misconfiguration/options/values/" class="md-nav__link">
+        Value Overrides
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../misconfiguration/options/others/" class="md-nav__link">
+        Others
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
     </li>
   
 
@@ -1652,14 +1617,14 @@
       
       
         <label class="md-nav__link" for="__nav_3_5">
-          License
+          Secret
           <span class="md-nav__icon md-icon"></span>
         </label>
       
-      <nav class="md-nav" aria-label="License" data-md-level="2">
+      <nav class="md-nav" aria-label="Secret" data-md-level="2">
         <label class="md-nav__title" for="__nav_3_5">
           <span class="md-nav__icon md-icon"></span>
-          License
+          Secret
         </label>
         <ul class="md-nav__list" data-md-scrollfix>
           
@@ -1669,8 +1634,36 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../licenses/scanning/" class="md-nav__link">
+      <a href="../../secret/scanning/" class="md-nav__link">
         Scanning
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../secret/configuration/" class="md-nav__link">
+        Configuration
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../secret/examples/" class="md-nav__link">
+        Examples
       </a>
     </li>
   
@@ -1688,57 +1681,27 @@
               
   
   
-    
-  
   
     
       
     
-    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_6" type="checkbox" id="__nav_3_6" checked>
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_6" type="checkbox" id="__nav_3_6" >
       
       
       
       
         <label class="md-nav__link" for="__nav_3_6">
-          Kubernetes
+          License
           <span class="md-nav__icon md-icon"></span>
         </label>
       
-      <nav class="md-nav" aria-label="Kubernetes" data-md-level="2">
+      <nav class="md-nav" aria-label="License" data-md-level="2">
         <label class="md-nav__title" for="__nav_3_6">
           <span class="md-nav__icon md-icon"></span>
-          Kubernetes
-        </label>
-        <ul class="md-nav__list" data-md-scrollfix>
-          
-            
-              
-  
-  
-    
-  
-  
-    
-    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
-      
-      
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_6_1" type="checkbox" id="__nav_3_6_1" checked>
-      
-      
-      
-      
-        <label class="md-nav__link" for="__nav_3_6_1">
-          CLI
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <nav class="md-nav" aria-label="CLI" data-md-level="3">
-        <label class="md-nav__title" for="__nav_3_6_1">
-          <span class="md-nav__icon md-icon"></span>
-          CLI
+          License
         </label>
         <ul class="md-nav__list" data-md-scrollfix>
           
@@ -1748,125 +1711,9 @@
   
   
     <li class="md-nav__item">
-      <a href="../scanning/" class="md-nav__link">
+      <a href="../../licenses/scanning/" class="md-nav__link">
         Scanning
       </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-    
-  
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
-      
-      
-        
-      
-      
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          Compliance
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <a href="./" class="md-nav__link md-nav__link--active">
-        Compliance
-      </a>
-      
-        
-
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#built-in-reports" class="md-nav__link">
-    Built in reports
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#examples" class="md-nav__link">
-    Examples
-  </a>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-      
-    </li>
-  
-
-            
-          
-        </ul>
-      </nav>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    
-    <li class="md-nav__item md-nav__item--nested">
-      
-      
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_6_2" type="checkbox" id="__nav_3_6_2" >
-      
-      
-      
-      
-        <label class="md-nav__link" for="__nav_3_6_2">
-          Operator
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <nav class="md-nav" aria-label="Operator" data-md-level="3">
-        <label class="md-nav__title" for="__nav_3_6_2">
-          <span class="md-nav__icon md-icon"></span>
-          Operator
-        </label>
-        <ul class="md-nav__list" data-md-scrollfix>
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../operator/" class="md-nav__link">
-        Overview
-      </a>
-    </li>
-  
-
-            
-          
-        </ul>
-      </nav>
     </li>
   
 
@@ -1896,40 +1743,14 @@
       
       
         <label class="md-nav__link" for="__nav_3_7">
-          Cloud
+          Compliance
           <span class="md-nav__icon md-icon"></span>
         </label>
       
-      <nav class="md-nav" aria-label="Cloud" data-md-level="2">
+      <nav class="md-nav" aria-label="Compliance" data-md-level="2">
         <label class="md-nav__title" for="__nav_3_7">
           <span class="md-nav__icon md-icon"></span>
-          Cloud
-        </label>
-        <ul class="md-nav__list" data-md-scrollfix>
-          
-            
-              
-  
-  
-  
-    
-    <li class="md-nav__item md-nav__item--nested">
-      
-      
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_7_1" type="checkbox" id="__nav_3_7_1" >
-      
-      
-      
-      
-        <label class="md-nav__link" for="__nav_3_7_1">
-          AWS
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <nav class="md-nav" aria-label="AWS" data-md-level="3">
-        <label class="md-nav__title" for="__nav_3_7_1">
-          <span class="md-nav__icon md-icon"></span>
-          AWS
+          Compliance
         </label>
         <ul class="md-nav__list" data-md-scrollfix>
           
@@ -1939,30 +1760,9 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../cloud/aws/scanning/" class="md-nav__link">
-        Scanning
+      <a href="../../compliance/compliance/" class="md-nav__link">
+        Reports
       </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../../cloud/aws/compliance/" class="md-nav__link">
-        Compliance
-      </a>
-    </li>
-  
-
-            
-          
-        </ul>
-      </nav>
     </li>
   
 
@@ -1992,14 +1792,14 @@
       
       
         <label class="md-nav__link" for="__nav_3_8">
-          Virtual Machine Image
+          SBOM
           <span class="md-nav__icon md-icon"></span>
         </label>
       
-      <nav class="md-nav" aria-label="Virtual Machine Image" data-md-level="2">
+      <nav class="md-nav" aria-label="SBOM" data-md-level="2">
         <label class="md-nav__title" for="__nav_3_8">
           <span class="md-nav__icon md-icon"></span>
-          Virtual Machine Image
+          SBOM
         </label>
         <ul class="md-nav__list" data-md-scrollfix>
           
@@ -2009,7 +1809,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../vm/" class="md-nav__link">
+      <a href="../../sbom/" class="md-nav__link">
         Overview
       </a>
     </li>
@@ -2023,8 +1823,22 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../vm/aws/" class="md-nav__link">
-        AWS EC2
+      <a href="../../sbom/cyclonedx/" class="md-nav__link">
+        CycloneDX
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../sbom/spdx/" class="md-nav__link">
+        SPDX
       </a>
     </li>
   
@@ -2055,14 +1869,14 @@
       
       
         <label class="md-nav__link" for="__nav_3_9">
-          Compliance
+          Attestation
           <span class="md-nav__icon md-icon"></span>
         </label>
       
-      <nav class="md-nav" aria-label="Compliance" data-md-level="2">
+      <nav class="md-nav" aria-label="Attestation" data-md-level="2">
         <label class="md-nav__title" for="__nav_3_9">
           <span class="md-nav__icon md-icon"></span>
-          Compliance
+          Attestation
         </label>
         <ul class="md-nav__list" data-md-scrollfix>
           
@@ -2072,8 +1886,36 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../compliance/compliance/" class="md-nav__link">
-        Reports
+      <a href="../../attestation/sbom/" class="md-nav__link">
+        SBOM
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../attestation/vuln/" class="md-nav__link">
+        Cosign Vulnerability Scan Record
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../attestation/rekor/" class="md-nav__link">
+        SBOM Attestation in Rekor
       </a>
     </li>
   
@@ -2104,180 +1946,12 @@
       
       
         <label class="md-nav__link" for="__nav_3_10">
-          SBOM
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <nav class="md-nav" aria-label="SBOM" data-md-level="2">
-        <label class="md-nav__title" for="__nav_3_10">
-          <span class="md-nav__icon md-icon"></span>
-          SBOM
-        </label>
-        <ul class="md-nav__list" data-md-scrollfix>
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../../sbom/" class="md-nav__link">
-        Overview
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../../sbom/supported/" class="md-nav__link">
-        Supported
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../../sbom/cyclonedx/" class="md-nav__link">
-        CycloneDX
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../../sbom/spdx/" class="md-nav__link">
-        SPDX
-      </a>
-    </li>
-  
-
-            
-          
-        </ul>
-      </nav>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    
-      
-    
-    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
-      
-      
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_11" type="checkbox" id="__nav_3_11" >
-      
-      
-      
-      
-        <label class="md-nav__link" for="__nav_3_11">
-          Attestation
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <nav class="md-nav" aria-label="Attestation" data-md-level="2">
-        <label class="md-nav__title" for="__nav_3_11">
-          <span class="md-nav__icon md-icon"></span>
-          Attestation
-        </label>
-        <ul class="md-nav__list" data-md-scrollfix>
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../../attestation/sbom/" class="md-nav__link">
-        SBOM
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../../attestation/vuln/" class="md-nav__link">
-        Cosign Vulnerability Scan Record
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../../attestation/rekor/" class="md-nav__link">
-        SBOM Attestation in Rekor
-      </a>
-    </li>
-  
-
-            
-          
-        </ul>
-      </nav>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    
-      
-    
-    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
-      
-      
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_12" type="checkbox" id="__nav_3_12" >
-      
-      
-      
-      
-        <label class="md-nav__link" for="__nav_3_12">
           Advanced
           <span class="md-nav__icon md-icon"></span>
         </label>
       
       <nav class="md-nav" aria-label="Advanced" data-md-level="2">
-        <label class="md-nav__title" for="__nav_3_12">
+        <label class="md-nav__title" for="__nav_3_10">
           <span class="md-nav__icon md-icon"></span>
           Advanced
         </label>
@@ -2289,7 +1963,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../advanced/modules/" class="md-nav__link">
+      <a href="../../advanced/modules/" class="md-nav__link">
         Modules
       </a>
     </li>
@@ -2303,7 +1977,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../advanced/plugins/" class="md-nav__link">
+      <a href="../../advanced/plugins/" class="md-nav__link">
         Plugins
       </a>
     </li>
@@ -2317,7 +1991,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../advanced/air-gap/" class="md-nav__link">
+      <a href="../../advanced/air-gap/" class="md-nav__link">
         Air-Gapped Environment
       </a>
     </li>
@@ -2334,18 +2008,18 @@
     <li class="md-nav__item md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_12_4" type="checkbox" id="__nav_3_12_4" >
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_10_4" type="checkbox" id="__nav_3_10_4" >
       
       
       
       
-        <label class="md-nav__link" for="__nav_3_12_4">
+        <label class="md-nav__link" for="__nav_3_10_4">
           Container Image
           <span class="md-nav__icon md-icon"></span>
         </label>
       
       <nav class="md-nav" aria-label="Container Image" data-md-level="3">
-        <label class="md-nav__title" for="__nav_3_12_4">
+        <label class="md-nav__title" for="__nav_3_10_4">
           <span class="md-nav__icon md-icon"></span>
           Container Image
         </label>
@@ -2357,7 +2031,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../advanced/container/embed-in-dockerfile/" class="md-nav__link">
+      <a href="../../advanced/container/embed-in-dockerfile/" class="md-nav__link">
         Embed in Dockerfile
       </a>
     </li>
@@ -2371,50 +2045,8 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../advanced/container/unpacked-filesystem/" class="md-nav__link">
+      <a href="../../advanced/container/unpacked-filesystem/" class="md-nav__link">
         Unpacked container image filesystem
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../../advanced/container/oci/" class="md-nav__link">
-        OCI Image
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../../advanced/container/podman/" class="md-nav__link">
-        Podman
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../../advanced/container/containerd/" class="md-nav__link">
-        containerd
       </a>
     </li>
   
@@ -2430,18 +2062,18 @@
     <li class="md-nav__item md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_12_4_6" type="checkbox" id="__nav_3_12_4_6" >
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_10_4_3" type="checkbox" id="__nav_3_10_4_3" >
       
       
       
       
-        <label class="md-nav__link" for="__nav_3_12_4_6">
+        <label class="md-nav__link" for="__nav_3_10_4_3">
           Private Docker Registries
           <span class="md-nav__icon md-icon"></span>
         </label>
       
       <nav class="md-nav" aria-label="Private Docker Registries" data-md-level="4">
-        <label class="md-nav__title" for="__nav_3_12_4_6">
+        <label class="md-nav__title" for="__nav_3_10_4_3">
           <span class="md-nav__icon md-icon"></span>
           Private Docker Registries
         </label>
@@ -2453,7 +2085,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../advanced/private-registries/" class="md-nav__link">
+      <a href="../../advanced/private-registries/" class="md-nav__link">
         Overview
       </a>
     </li>
@@ -2467,7 +2099,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../advanced/private-registries/docker-hub/" class="md-nav__link">
+      <a href="../../advanced/private-registries/docker-hub/" class="md-nav__link">
         Docker Hub
       </a>
     </li>
@@ -2481,7 +2113,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../advanced/private-registries/ecr/" class="md-nav__link">
+      <a href="../../advanced/private-registries/ecr/" class="md-nav__link">
         AWS ECR (Elastic Container Registry)
       </a>
     </li>
@@ -2495,7 +2127,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../advanced/private-registries/gcr/" class="md-nav__link">
+      <a href="../../advanced/private-registries/gcr/" class="md-nav__link">
         GCR (Google Container Registry)
       </a>
     </li>
@@ -2509,7 +2141,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../advanced/private-registries/acr/" class="md-nav__link">
+      <a href="../../advanced/private-registries/acr/" class="md-nav__link">
         ACR (Azure Container Registry)
       </a>
     </li>
@@ -2523,7 +2155,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../advanced/private-registries/self/" class="md-nav__link">
+      <a href="../../advanced/private-registries/self/" class="md-nav__link">
         Self-Hosted
       </a>
     </li>
@@ -2563,18 +2195,18 @@
     <li class="md-nav__item md-nav__item--section md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_13" type="checkbox" id="__nav_3_13" >
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_11" type="checkbox" id="__nav_3_11" >
       
       
       
       
-        <label class="md-nav__link" for="__nav_3_13">
+        <label class="md-nav__link" for="__nav_3_11">
           References
           <span class="md-nav__icon md-icon"></span>
         </label>
       
       <nav class="md-nav" aria-label="References" data-md-level="2">
-        <label class="md-nav__title" for="__nav_3_13">
+        <label class="md-nav__title" for="__nav_3_11">
           <span class="md-nav__icon md-icon"></span>
           References
         </label>
@@ -2589,18 +2221,18 @@
     <li class="md-nav__item md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_13_1" type="checkbox" id="__nav_3_13_1" >
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_11_1" type="checkbox" id="__nav_3_11_1" >
       
       
       
       
-        <label class="md-nav__link" for="__nav_3_13_1">
+        <label class="md-nav__link" for="__nav_3_11_1">
           Customization
           <span class="md-nav__icon md-icon"></span>
         </label>
       
       <nav class="md-nav" aria-label="Customization" data-md-level="3">
-        <label class="md-nav__title" for="__nav_3_13_1">
+        <label class="md-nav__title" for="__nav_3_11_1">
           <span class="md-nav__icon md-icon"></span>
           Customization
         </label>
@@ -2612,7 +2244,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../references/customization/envs/" class="md-nav__link">
+      <a href="../../references/customization/envs/" class="md-nav__link">
         Environment variables
       </a>
     </li>
@@ -2626,7 +2258,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../references/customization/config-file/" class="md-nav__link">
+      <a href="../../references/customization/config-file/" class="md-nav__link">
         Config file
       </a>
     </li>
@@ -2650,18 +2282,18 @@
     <li class="md-nav__item md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_13_2" type="checkbox" id="__nav_3_13_2" >
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_11_2" type="checkbox" id="__nav_3_11_2" >
       
       
       
       
-        <label class="md-nav__link" for="__nav_3_13_2">
+        <label class="md-nav__link" for="__nav_3_11_2">
           CLI
           <span class="md-nav__icon md-icon"></span>
         </label>
       
       <nav class="md-nav" aria-label="CLI" data-md-level="3">
-        <label class="md-nav__title" for="__nav_3_13_2">
+        <label class="md-nav__title" for="__nav_3_11_2">
           <span class="md-nav__icon md-icon"></span>
           CLI
         </label>
@@ -2673,7 +2305,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../references/cli/" class="md-nav__link">
+      <a href="../../references/cli/" class="md-nav__link">
         Overview
       </a>
     </li>
@@ -2687,7 +2319,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../references/cli/image/" class="md-nav__link">
+      <a href="../../references/cli/image/" class="md-nav__link">
         Image
       </a>
     </li>
@@ -2701,7 +2333,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../references/cli/config/" class="md-nav__link">
+      <a href="../../references/cli/config/" class="md-nav__link">
         Config
       </a>
     </li>
@@ -2715,7 +2347,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../references/cli/fs/" class="md-nav__link">
+      <a href="../../references/cli/fs/" class="md-nav__link">
         Filesystem
       </a>
     </li>
@@ -2729,7 +2361,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../references/cli/rootfs/" class="md-nav__link">
+      <a href="../../references/cli/rootfs/" class="md-nav__link">
         Rootfs
       </a>
     </li>
@@ -2743,7 +2375,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../references/cli/repo/" class="md-nav__link">
+      <a href="../../references/cli/repo/" class="md-nav__link">
         Repository
       </a>
     </li>
@@ -2757,7 +2389,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../references/cli/client/" class="md-nav__link">
+      <a href="../../references/cli/client/" class="md-nav__link">
         Client
       </a>
     </li>
@@ -2771,7 +2403,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../references/cli/server/" class="md-nav__link">
+      <a href="../../references/cli/server/" class="md-nav__link">
         Server
       </a>
     </li>
@@ -2785,7 +2417,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../references/cli/plugin/" class="md-nav__link">
+      <a href="../../references/cli/plugin/" class="md-nav__link">
         Plugin
       </a>
     </li>
@@ -2799,7 +2431,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../references/cli/sbom/" class="md-nav__link">
+      <a href="../../references/cli/sbom/" class="md-nav__link">
         SBOM
       </a>
     </li>
@@ -2813,7 +2445,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../references/cli/module/" class="md-nav__link">
+      <a href="../../references/cli/module/" class="md-nav__link">
         Module
       </a>
     </li>
@@ -2837,18 +2469,18 @@
     <li class="md-nav__item md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_13_3" type="checkbox" id="__nav_3_13_3" >
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_11_3" type="checkbox" id="__nav_3_11_3" >
       
       
       
       
-        <label class="md-nav__link" for="__nav_3_13_3">
+        <label class="md-nav__link" for="__nav_3_11_3">
           Modes
           <span class="md-nav__icon md-icon"></span>
         </label>
       
       <nav class="md-nav" aria-label="Modes" data-md-level="3">
-        <label class="md-nav__title" for="__nav_3_13_3">
+        <label class="md-nav__title" for="__nav_3_11_3">
           <span class="md-nav__icon md-icon"></span>
           Modes
         </label>
@@ -2860,7 +2492,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../references/modes/standalone/" class="md-nav__link">
+      <a href="../../references/modes/standalone/" class="md-nav__link">
         Standalone
       </a>
     </li>
@@ -2874,7 +2506,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../references/modes/client-server/" class="md-nav__link">
+      <a href="../../references/modes/client-server/" class="md-nav__link">
         Client/Server
       </a>
     </li>
@@ -2895,7 +2527,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../references/troubleshooting/" class="md-nav__link">
+      <a href="../../references/troubleshooting/" class="md-nav__link">
         Troubleshooting
       </a>
     </li>
@@ -2950,7 +2582,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../ecosystem/" class="md-nav__link">
+      <a href="../../../ecosystem/" class="md-nav__link">
         Overview
       </a>
     </li>
@@ -2964,7 +2596,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../ecosystem/cicd/" class="md-nav__link">
+      <a href="../../../ecosystem/cicd/" class="md-nav__link">
         CI/CD
       </a>
     </li>
@@ -2978,7 +2610,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../ecosystem/ide/" class="md-nav__link">
+      <a href="../../../ecosystem/ide/" class="md-nav__link">
         IDE and Dev tools
       </a>
     </li>
@@ -2992,7 +2624,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../ecosystem/prod/" class="md-nav__link">
+      <a href="../../../ecosystem/prod/" class="md-nav__link">
         Production and Clouds
       </a>
     </li>
@@ -3006,7 +2638,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../ecosystem/security/" class="md-nav__link">
+      <a href="../../../ecosystem/security/" class="md-nav__link">
         Security Management
       </a>
     </li>
@@ -3082,7 +2714,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../community/contribute/issue/" class="md-nav__link">
+      <a href="../../../community/contribute/issue/" class="md-nav__link">
         Issues
       </a>
     </li>
@@ -3096,7 +2728,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../community/contribute/pr/" class="md-nav__link">
+      <a href="../../../community/contribute/pr/" class="md-nav__link">
         Pull Requests
       </a>
     </li>
@@ -3145,7 +2777,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../community/maintainer/help-wanted/" class="md-nav__link">
+      <a href="../../../community/maintainer/help-wanted/" class="md-nav__link">
         Help Wanted
       </a>
     </li>
@@ -3159,7 +2791,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../community/maintainer/triage/" class="md-nav__link">
+      <a href="../../../community/maintainer/triage/" class="md-nav__link">
         Triage
       </a>
     </li>
@@ -3200,28 +2832,6 @@
     
   
   
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#built-in-reports" class="md-nav__link">
-    Built in reports
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#examples" class="md-nav__link">
-    Examples
-  </a>
-  
-</li>
-      
-    </ul>
-  
 </nav>
                   </div>
                 </div>
@@ -3234,48 +2844,21 @@
                 
 
 
-<h1 id="kubernetes-compliance">Kubernetes Compliance</h1>
-<div class="admonition warning">
-<p class="admonition-title">EXPERIMENTAL</p>
-<p>This feature might change without preserving backwards compatibility.</p>
+<h1 id="rootfs">Rootfs</h1>
+<p>Rootfs scanning is for special use cases such as</p>
+<ul>
+<li>Host machine</li>
+<li><a href="../../advanced/container/embed-in-dockerfile/">Root filesystem</a></li>
+<li><a href="../../advanced/container/unpacked-filesystem/">Unpacked filesystem</a></li>
+</ul>
+<div class="highlight"><pre><span></span><code>$ trivy rootfs /path/to/rootfs
+</code></pre></div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Rootfs scanning works differently from the Filesystem scanning.
+You should use <code>trivy fs</code> to scan your local projects in CI/CD.
+See <a href="../../vulnerability/detection/language/">here</a> for the differences.</p>
 </div>
-<p>This page describes Kubernetes specific compliance reports. For an overview of Trivy's Compliance feature, including working with custom compliance, check out the <a href="../../../compliance/compliance/">Compliance documentation</a>.</p>
-<h2 id="built-in-reports">Built in reports</h2>
-<p>The following reports are available out of the box:</p>
-<table>
-<thead>
-<tr>
-<th>Compliance</th>
-<th>Name for command</th>
-<th>More info</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>NSA, CISA Kubernetes Hardening Guidance v1.2</td>
-<td><code>k8s-nsa</code></td>
-<td><a href="https://media.defense.gov/2022/Aug/29/2003066362/-1/-1/0/CTR_KUBERNETES_HARDENING_GUIDANCE_1.2_20220829.PDF">Link</a></td>
-</tr>
-<tr>
-<td>CIS Benchmark for Kubernetes v1.23</td>
-<td><code>k8s-cis</code></td>
-<td><a href="https://www.cisecurity.org/benchmark/kubernetes">Link</a></td>
-</tr>
-</tbody>
-</table>
-<h2 id="examples">Examples</h2>
-<p>Scan a full cluster and generate a compliance summary report:</p>
-<div class="highlight"><pre><span></span><code>$ trivy k8s cluster --compliance=&lt;compliance_id&gt; --report summary
-</code></pre></div>
-<p><strong><em>Note</em></strong> : The <code>Issues</code> column represent the total number of failed checks for this control.</p>
-<p>Get all of the detailed output for checks:</p>
-<div class="highlight"><pre><span></span><code>trivy k8s cluster --compliance=&lt;compliance_id&gt; --report all
-</code></pre></div>
-<p>Report result in JSON format:</p>
-<div class="highlight"><pre><span></span><code>trivy k8s cluster --compliance=&lt;compliance_id&gt; --report summary --format json
-</code></pre></div>
-<div class="highlight"><pre><span></span><code>trivy k8s cluster --compliance=&lt;compliance_id&gt; --report all --format json
-</code></pre></div>
 
               
             </article>
@@ -3293,7 +2876,7 @@
     <nav class="md-footer__inner md-grid" aria-label="Footer" >
       
         
-        <a href="../scanning/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Scanning" rel="prev">
+        <a href="../filesystem/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Filesystem" rel="prev">
           <div class="md-footer__button md-icon">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
           </div>
@@ -3302,20 +2885,20 @@
               <span class="md-footer__direction">
                 Previous
               </span>
-              Scanning
+              Filesystem
             </div>
           </div>
         </a>
       
       
         
-        <a href="../../operator/" class="md-footer__link md-footer__link--next" aria-label="Next: Overview" rel="next">
+        <a href="../git-repository/" class="md-footer__link md-footer__link--next" aria-label="Next: Git Repository" rel="next">
           <div class="md-footer__title">
             <div class="md-ellipsis">
               <span class="md-footer__direction">
                 Next
               </span>
-              Overview
+              Git Repository
             </div>
           </div>
           <div class="md-footer__button md-icon">
@@ -3340,10 +2923,10 @@
     <div class="md-dialog" data-md-component="dialog">
       <div class="md-dialog__inner md-typeset"></div>
     </div>
-    <script id="__config" type="application/json">{"base": "../../../..", "features": ["navigation.tabs", "navigation.tabs.sticky", "navigation.sections", "content.tabs.link"], "search": "../../../../assets/javascripts/workers/search.b97dbffb.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "version": {"method": "mike", "provider": "mike"}}</script>
+    <script id="__config" type="application/json">{"base": "../../..", "features": ["navigation.tabs", "navigation.tabs.sticky", "navigation.sections", "content.tabs.link"], "search": "../../../assets/javascripts/workers/search.b97dbffb.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "version": {"method": "mike", "provider": "mike"}}</script>
     
     
-      <script src="../../../../assets/javascripts/bundle.6c7ad80a.min.js"></script>
+      <script src="../../../assets/javascripts/bundle.6c7ad80a.min.js"></script>
       
     
   </body>

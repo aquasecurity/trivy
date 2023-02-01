@@ -10,14 +10,14 @@
       
       
       
-        <link rel="canonical" href="https://aquasecurity.github.io/trivy/dev/docs/sbom/supported/">
+        <link rel="canonical" href="https://aquasecurity.github.io/trivy/dev/docs/target/kubernetes/">
       
       <link rel="icon" href="../../../assets/images/favicon.png">
       <meta name="generator" content="mkdocs-1.3.0, mkdocs-material-8.3.9">
     
     
       
-        <title>Supported - Trivy</title>
+        <title>Kubernetes - Trivy</title>
       
     
     
@@ -64,7 +64,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#packages-that-support-vulnerability-scanning" class="md-skip">
+        <a href="#kubernetes" class="md-skip">
           Skip to content
         </a>
       
@@ -104,7 +104,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Supported
+              Kubernetes
             
           </span>
         </div>
@@ -827,53 +827,29 @@
               
   
   
+    
+  
   
     
       
     
-    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_2" type="checkbox" id="__nav_3_2" >
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_2" type="checkbox" id="__nav_3_2" checked>
       
       
       
       
         <label class="md-nav__link" for="__nav_3_2">
-          Vulnerability
+          Target
           <span class="md-nav__icon md-icon"></span>
         </label>
       
-      <nav class="md-nav" aria-label="Vulnerability" data-md-level="2">
+      <nav class="md-nav" aria-label="Target" data-md-level="2">
         <label class="md-nav__title" for="__nav_3_2">
           <span class="md-nav__icon md-icon"></span>
-          Vulnerability
-        </label>
-        <ul class="md-nav__list" data-md-scrollfix>
-          
-            
-              
-  
-  
-  
-    
-    <li class="md-nav__item md-nav__item--nested">
-      
-      
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_2_1" type="checkbox" id="__nav_3_2_1" >
-      
-      
-      
-      
-        <label class="md-nav__link" for="__nav_3_2_1">
-          Scanning
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <nav class="md-nav" aria-label="Scanning" data-md-level="3">
-        <label class="md-nav__title" for="__nav_3_2_1">
-          <span class="md-nav__icon md-icon"></span>
-          Scanning
+          Target
         </label>
         <ul class="md-nav__list" data-md-scrollfix>
           
@@ -883,21 +859,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../vulnerability/scanning/" class="md-nav__link">
-        Overview
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../vulnerability/scanning/image/" class="md-nav__link">
+      <a href="../container_image/" class="md-nav__link">
         Container Image
       </a>
     </li>
@@ -911,7 +873,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../vulnerability/scanning/filesystem/" class="md-nav__link">
+      <a href="../filesystem/" class="md-nav__link">
         Filesystem
       </a>
     </li>
@@ -925,7 +887,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../vulnerability/scanning/rootfs/" class="md-nav__link">
+      <a href="../rootfs/" class="md-nav__link">
         Rootfs
       </a>
     </li>
@@ -939,8 +901,159 @@
   
   
     <li class="md-nav__item">
-      <a href="../../vulnerability/scanning/git-repository/" class="md-nav__link">
+      <a href="../git-repository/" class="md-nav__link">
         Git Repository
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../vm/" class="md-nav__link">
+        Virtual Machine Image
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+    
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          Kubernetes
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        Kubernetes
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#cli" class="md-nav__link">
+    CLI
+  </a>
+  
+    <nav class="md-nav" aria-label="CLI">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#commands" class="md-nav__link">
+    Commands
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#infra-checks" class="md-nav__link">
+    Infra checks
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#compliance" class="md-nav__link">
+    Compliance
+  </a>
+  
+    <nav class="md-nav" aria-label="Compliance">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#built-in-reports" class="md-nav__link">
+    Built in reports
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#examples" class="md-nav__link">
+    Examples
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#operator" class="md-nav__link">
+    Operator
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../aws/" class="md-nav__link">
+        AWS
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../sbom/" class="md-nav__link">
+        SBOM
       </a>
     </li>
   
@@ -960,21 +1073,63 @@
   
   
     
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_3" type="checkbox" id="__nav_3_3" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_3_3">
+          Vulnerability
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Vulnerability" data-md-level="2">
+        <label class="md-nav__title" for="__nav_3_3">
+          <span class="md-nav__icon md-icon"></span>
+          Vulnerability
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../vulnerability/scanning/" class="md-nav__link">
+        Scanning
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
     <li class="md-nav__item md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_2_2" type="checkbox" id="__nav_3_2_2" >
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_3_2" type="checkbox" id="__nav_3_3_2" >
       
       
       
       
-        <label class="md-nav__link" for="__nav_3_2_2">
+        <label class="md-nav__link" for="__nav_3_3_2">
           Detection
           <span class="md-nav__icon md-icon"></span>
         </label>
       
       <nav class="md-nav" aria-label="Detection" data-md-level="3">
-        <label class="md-nav__title" for="__nav_3_2_2">
+        <label class="md-nav__title" for="__nav_3_3_2">
           <span class="md-nav__icon md-icon"></span>
           Detection
         </label>
@@ -1022,20 +1177,6 @@
 
             
           
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../vulnerability/detection/supported/" class="md-nav__link">
-        Supported
-      </a>
-    </li>
-  
-
-            
-          
         </ul>
       </nav>
     </li>
@@ -1052,18 +1193,18 @@
     <li class="md-nav__item md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_2_3" type="checkbox" id="__nav_3_2_3" >
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_3_3" type="checkbox" id="__nav_3_3_3" >
       
       
       
       
-        <label class="md-nav__link" for="__nav_3_2_3">
+        <label class="md-nav__link" for="__nav_3_3_3">
           Examples
           <span class="md-nav__icon md-icon"></span>
         </label>
       
       <nav class="md-nav" aria-label="Examples" data-md-level="3">
-        <label class="md-nav__title" for="__nav_3_2_3">
+        <label class="md-nav__title" for="__nav_3_3_3">
           <span class="md-nav__icon md-icon"></span>
           Examples
         </label>
@@ -1151,36 +1292,22 @@
   
   
   
-    <li class="md-nav__item">
-      <a href="../../vulnerability/distributions/" class="md-nav__link">
-        Distributions
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
     
     <li class="md-nav__item md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_2_5" type="checkbox" id="__nav_3_2_5" >
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_3_4" type="checkbox" id="__nav_3_3_4" >
       
       
       
       
-        <label class="md-nav__link" for="__nav_3_2_5">
+        <label class="md-nav__link" for="__nav_3_3_4">
           Languages
           <span class="md-nav__icon md-icon"></span>
         </label>
       
       <nav class="md-nav" aria-label="Languages" data-md-level="3">
-        <label class="md-nav__title" for="__nav_3_2_5">
+        <label class="md-nav__title" for="__nav_3_3_4">
           <span class="md-nav__icon md-icon"></span>
           Languages
         </label>
@@ -1239,18 +1366,18 @@
     <li class="md-nav__item md-nav__item--section md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_3" type="checkbox" id="__nav_3_3" >
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_4" type="checkbox" id="__nav_3_4" >
       
       
       
       
-        <label class="md-nav__link" for="__nav_3_3">
+        <label class="md-nav__link" for="__nav_3_4">
           Misconfiguration
           <span class="md-nav__icon md-icon"></span>
         </label>
       
       <nav class="md-nav" aria-label="Misconfiguration" data-md-level="2">
-        <label class="md-nav__title" for="__nav_3_3">
+        <label class="md-nav__title" for="__nav_3_4">
           <span class="md-nav__icon md-icon"></span>
           Misconfiguration
         </label>
@@ -1279,18 +1406,18 @@
     <li class="md-nav__item md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_3_2" type="checkbox" id="__nav_3_3_2" >
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_4_2" type="checkbox" id="__nav_3_4_2" >
       
       
       
       
-        <label class="md-nav__link" for="__nav_3_3_2">
+        <label class="md-nav__link" for="__nav_3_4_2">
           Policy
           <span class="md-nav__icon md-icon"></span>
         </label>
       
       <nav class="md-nav" aria-label="Policy" data-md-level="3">
-        <label class="md-nav__title" for="__nav_3_3_2">
+        <label class="md-nav__title" for="__nav_3_4_2">
           <span class="md-nav__icon md-icon"></span>
           Policy
         </label>
@@ -1340,18 +1467,18 @@
     <li class="md-nav__item md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_3_3" type="checkbox" id="__nav_3_3_3" >
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_4_3" type="checkbox" id="__nav_3_4_3" >
       
       
       
       
-        <label class="md-nav__link" for="__nav_3_3_3">
+        <label class="md-nav__link" for="__nav_3_4_3">
           Custom Policies
           <span class="md-nav__icon md-icon"></span>
         </label>
       
       <nav class="md-nav" aria-label="Custom Policies" data-md-level="3">
-        <label class="md-nav__title" for="__nav_3_3_3">
+        <label class="md-nav__title" for="__nav_3_4_3">
           <span class="md-nav__icon md-icon"></span>
           Custom Policies
         </label>
@@ -1457,18 +1584,18 @@
     <li class="md-nav__item md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_3_4" type="checkbox" id="__nav_3_3_4" >
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_4_4" type="checkbox" id="__nav_3_4_4" >
       
       
       
       
-        <label class="md-nav__link" for="__nav_3_3_4">
+        <label class="md-nav__link" for="__nav_3_4_4">
           Options
           <span class="md-nav__icon md-icon"></span>
         </label>
       
       <nav class="md-nav" aria-label="Options" data-md-level="3">
-        <label class="md-nav__title" for="__nav_3_3_4">
+        <label class="md-nav__title" for="__nav_3_4_4">
           <span class="md-nav__icon md-icon"></span>
           Options
         </label>
@@ -1569,18 +1696,18 @@
     <li class="md-nav__item md-nav__item--section md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_4" type="checkbox" id="__nav_3_4" >
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_5" type="checkbox" id="__nav_3_5" >
       
       
       
       
-        <label class="md-nav__link" for="__nav_3_4">
+        <label class="md-nav__link" for="__nav_3_5">
           Secret
           <span class="md-nav__icon md-icon"></span>
         </label>
       
       <nav class="md-nav" aria-label="Secret" data-md-level="2">
-        <label class="md-nav__title" for="__nav_3_4">
+        <label class="md-nav__title" for="__nav_3_5">
           <span class="md-nav__icon md-icon"></span>
           Secret
         </label>
@@ -1646,18 +1773,18 @@
     <li class="md-nav__item md-nav__item--section md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_5" type="checkbox" id="__nav_3_5" >
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_6" type="checkbox" id="__nav_3_6" >
       
       
       
       
-        <label class="md-nav__link" for="__nav_3_5">
+        <label class="md-nav__link" for="__nav_3_6">
           License
           <span class="md-nav__icon md-icon"></span>
         </label>
       
       <nav class="md-nav" aria-label="License" data-md-level="2">
-        <label class="md-nav__title" for="__nav_3_5">
+        <label class="md-nav__title" for="__nav_3_6">
           <span class="md-nav__icon md-icon"></span>
           License
         </label>
@@ -1695,320 +1822,18 @@
     <li class="md-nav__item md-nav__item--section md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_6" type="checkbox" id="__nav_3_6" >
-      
-      
-      
-      
-        <label class="md-nav__link" for="__nav_3_6">
-          Kubernetes
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <nav class="md-nav" aria-label="Kubernetes" data-md-level="2">
-        <label class="md-nav__title" for="__nav_3_6">
-          <span class="md-nav__icon md-icon"></span>
-          Kubernetes
-        </label>
-        <ul class="md-nav__list" data-md-scrollfix>
-          
-            
-              
-  
-  
-  
-    
-    <li class="md-nav__item md-nav__item--nested">
-      
-      
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_6_1" type="checkbox" id="__nav_3_6_1" >
-      
-      
-      
-      
-        <label class="md-nav__link" for="__nav_3_6_1">
-          CLI
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <nav class="md-nav" aria-label="CLI" data-md-level="3">
-        <label class="md-nav__title" for="__nav_3_6_1">
-          <span class="md-nav__icon md-icon"></span>
-          CLI
-        </label>
-        <ul class="md-nav__list" data-md-scrollfix>
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../kubernetes/cli/scanning/" class="md-nav__link">
-        Scanning
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../kubernetes/cli/compliance/" class="md-nav__link">
-        Compliance
-      </a>
-    </li>
-  
-
-            
-          
-        </ul>
-      </nav>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    
-    <li class="md-nav__item md-nav__item--nested">
-      
-      
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_6_2" type="checkbox" id="__nav_3_6_2" >
-      
-      
-      
-      
-        <label class="md-nav__link" for="__nav_3_6_2">
-          Operator
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <nav class="md-nav" aria-label="Operator" data-md-level="3">
-        <label class="md-nav__title" for="__nav_3_6_2">
-          <span class="md-nav__icon md-icon"></span>
-          Operator
-        </label>
-        <ul class="md-nav__list" data-md-scrollfix>
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../kubernetes/operator/" class="md-nav__link">
-        Overview
-      </a>
-    </li>
-  
-
-            
-          
-        </ul>
-      </nav>
-    </li>
-  
-
-            
-          
-        </ul>
-      </nav>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    
-      
-    
-    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
-      
-      
         <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_7" type="checkbox" id="__nav_3_7" >
       
       
       
       
         <label class="md-nav__link" for="__nav_3_7">
-          Cloud
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <nav class="md-nav" aria-label="Cloud" data-md-level="2">
-        <label class="md-nav__title" for="__nav_3_7">
-          <span class="md-nav__icon md-icon"></span>
-          Cloud
-        </label>
-        <ul class="md-nav__list" data-md-scrollfix>
-          
-            
-              
-  
-  
-  
-    
-    <li class="md-nav__item md-nav__item--nested">
-      
-      
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_7_1" type="checkbox" id="__nav_3_7_1" >
-      
-      
-      
-      
-        <label class="md-nav__link" for="__nav_3_7_1">
-          AWS
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <nav class="md-nav" aria-label="AWS" data-md-level="3">
-        <label class="md-nav__title" for="__nav_3_7_1">
-          <span class="md-nav__icon md-icon"></span>
-          AWS
-        </label>
-        <ul class="md-nav__list" data-md-scrollfix>
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../cloud/aws/scanning/" class="md-nav__link">
-        Scanning
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../cloud/aws/compliance/" class="md-nav__link">
-        Compliance
-      </a>
-    </li>
-  
-
-            
-          
-        </ul>
-      </nav>
-    </li>
-  
-
-            
-          
-        </ul>
-      </nav>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    
-      
-    
-    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
-      
-      
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_8" type="checkbox" id="__nav_3_8" >
-      
-      
-      
-      
-        <label class="md-nav__link" for="__nav_3_8">
-          Virtual Machine Image
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <nav class="md-nav" aria-label="Virtual Machine Image" data-md-level="2">
-        <label class="md-nav__title" for="__nav_3_8">
-          <span class="md-nav__icon md-icon"></span>
-          Virtual Machine Image
-        </label>
-        <ul class="md-nav__list" data-md-scrollfix>
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../vm/" class="md-nav__link">
-        Overview
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../vm/aws/" class="md-nav__link">
-        AWS EC2
-      </a>
-    </li>
-  
-
-            
-          
-        </ul>
-      </nav>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    
-      
-    
-    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
-      
-      
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_9" type="checkbox" id="__nav_3_9" >
-      
-      
-      
-      
-        <label class="md-nav__link" for="__nav_3_9">
           Compliance
           <span class="md-nav__icon md-icon"></span>
         </label>
       
       <nav class="md-nav" aria-label="Compliance" data-md-level="2">
-        <label class="md-nav__title" for="__nav_3_9">
+        <label class="md-nav__title" for="__nav_3_7">
           <span class="md-nav__icon md-icon"></span>
           Compliance
         </label>
@@ -2039,27 +1864,25 @@
               
   
   
-    
-  
   
     
       
     
-    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_10" type="checkbox" id="__nav_3_10" checked>
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_8" type="checkbox" id="__nav_3_8" >
       
       
       
       
-        <label class="md-nav__link" for="__nav_3_10">
+        <label class="md-nav__link" for="__nav_3_8">
           SBOM
           <span class="md-nav__icon md-icon"></span>
         </label>
       
       <nav class="md-nav" aria-label="SBOM" data-md-level="2">
-        <label class="md-nav__title" for="__nav_3_10">
+        <label class="md-nav__title" for="__nav_3_8">
           <span class="md-nav__icon md-icon"></span>
           SBOM
         </label>
@@ -2071,7 +1894,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../" class="md-nav__link">
+      <a href="../../sbom/" class="md-nav__link">
         Overview
       </a>
     </li>
@@ -2083,67 +1906,9 @@
               
   
   
-    
-  
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
-      
-      
-      
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          Supported
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <a href="./" class="md-nav__link md-nav__link--active">
-        Supported
-      </a>
-      
-        
-
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#packages-that-support-vulnerability-scanning" class="md-nav__link">
-    Packages that support vulnerability scanning
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#other-language-specific-packages" class="md-nav__link">
-    Other language-specific packages
-  </a>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-      
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
   
     <li class="md-nav__item">
-      <a href="../cyclonedx/" class="md-nav__link">
+      <a href="../../sbom/cyclonedx/" class="md-nav__link">
         CycloneDX
       </a>
     </li>
@@ -2157,7 +1922,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../spdx/" class="md-nav__link">
+      <a href="../../sbom/spdx/" class="md-nav__link">
         SPDX
       </a>
     </li>
@@ -2183,18 +1948,18 @@
     <li class="md-nav__item md-nav__item--section md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_11" type="checkbox" id="__nav_3_11" >
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_9" type="checkbox" id="__nav_3_9" >
       
       
       
       
-        <label class="md-nav__link" for="__nav_3_11">
+        <label class="md-nav__link" for="__nav_3_9">
           Attestation
           <span class="md-nav__icon md-icon"></span>
         </label>
       
       <nav class="md-nav" aria-label="Attestation" data-md-level="2">
-        <label class="md-nav__title" for="__nav_3_11">
+        <label class="md-nav__title" for="__nav_3_9">
           <span class="md-nav__icon md-icon"></span>
           Attestation
         </label>
@@ -2260,18 +2025,18 @@
     <li class="md-nav__item md-nav__item--section md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_12" type="checkbox" id="__nav_3_12" >
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_10" type="checkbox" id="__nav_3_10" >
       
       
       
       
-        <label class="md-nav__link" for="__nav_3_12">
+        <label class="md-nav__link" for="__nav_3_10">
           Advanced
           <span class="md-nav__icon md-icon"></span>
         </label>
       
       <nav class="md-nav" aria-label="Advanced" data-md-level="2">
-        <label class="md-nav__title" for="__nav_3_12">
+        <label class="md-nav__title" for="__nav_3_10">
           <span class="md-nav__icon md-icon"></span>
           Advanced
         </label>
@@ -2328,18 +2093,18 @@
     <li class="md-nav__item md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_12_4" type="checkbox" id="__nav_3_12_4" >
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_10_4" type="checkbox" id="__nav_3_10_4" >
       
       
       
       
-        <label class="md-nav__link" for="__nav_3_12_4">
+        <label class="md-nav__link" for="__nav_3_10_4">
           Container Image
           <span class="md-nav__icon md-icon"></span>
         </label>
       
       <nav class="md-nav" aria-label="Container Image" data-md-level="3">
-        <label class="md-nav__title" for="__nav_3_12_4">
+        <label class="md-nav__title" for="__nav_3_10_4">
           <span class="md-nav__icon md-icon"></span>
           Container Image
         </label>
@@ -2378,64 +2143,22 @@
   
   
   
-    <li class="md-nav__item">
-      <a href="../../advanced/container/oci/" class="md-nav__link">
-        OCI Image
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../advanced/container/podman/" class="md-nav__link">
-        Podman
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../advanced/container/containerd/" class="md-nav__link">
-        containerd
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
     
     <li class="md-nav__item md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_12_4_6" type="checkbox" id="__nav_3_12_4_6" >
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_10_4_3" type="checkbox" id="__nav_3_10_4_3" >
       
       
       
       
-        <label class="md-nav__link" for="__nav_3_12_4_6">
+        <label class="md-nav__link" for="__nav_3_10_4_3">
           Private Docker Registries
           <span class="md-nav__icon md-icon"></span>
         </label>
       
       <nav class="md-nav" aria-label="Private Docker Registries" data-md-level="4">
-        <label class="md-nav__title" for="__nav_3_12_4_6">
+        <label class="md-nav__title" for="__nav_3_10_4_3">
           <span class="md-nav__icon md-icon"></span>
           Private Docker Registries
         </label>
@@ -2557,18 +2280,18 @@
     <li class="md-nav__item md-nav__item--section md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_13" type="checkbox" id="__nav_3_13" >
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_11" type="checkbox" id="__nav_3_11" >
       
       
       
       
-        <label class="md-nav__link" for="__nav_3_13">
+        <label class="md-nav__link" for="__nav_3_11">
           References
           <span class="md-nav__icon md-icon"></span>
         </label>
       
       <nav class="md-nav" aria-label="References" data-md-level="2">
-        <label class="md-nav__title" for="__nav_3_13">
+        <label class="md-nav__title" for="__nav_3_11">
           <span class="md-nav__icon md-icon"></span>
           References
         </label>
@@ -2583,18 +2306,18 @@
     <li class="md-nav__item md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_13_1" type="checkbox" id="__nav_3_13_1" >
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_11_1" type="checkbox" id="__nav_3_11_1" >
       
       
       
       
-        <label class="md-nav__link" for="__nav_3_13_1">
+        <label class="md-nav__link" for="__nav_3_11_1">
           Customization
           <span class="md-nav__icon md-icon"></span>
         </label>
       
       <nav class="md-nav" aria-label="Customization" data-md-level="3">
-        <label class="md-nav__title" for="__nav_3_13_1">
+        <label class="md-nav__title" for="__nav_3_11_1">
           <span class="md-nav__icon md-icon"></span>
           Customization
         </label>
@@ -2644,18 +2367,18 @@
     <li class="md-nav__item md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_13_2" type="checkbox" id="__nav_3_13_2" >
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_11_2" type="checkbox" id="__nav_3_11_2" >
       
       
       
       
-        <label class="md-nav__link" for="__nav_3_13_2">
+        <label class="md-nav__link" for="__nav_3_11_2">
           CLI
           <span class="md-nav__icon md-icon"></span>
         </label>
       
       <nav class="md-nav" aria-label="CLI" data-md-level="3">
-        <label class="md-nav__title" for="__nav_3_13_2">
+        <label class="md-nav__title" for="__nav_3_11_2">
           <span class="md-nav__icon md-icon"></span>
           CLI
         </label>
@@ -2831,18 +2554,18 @@
     <li class="md-nav__item md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_13_3" type="checkbox" id="__nav_3_13_3" >
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_11_3" type="checkbox" id="__nav_3_11_3" >
       
       
       
       
-        <label class="md-nav__link" for="__nav_3_13_3">
+        <label class="md-nav__link" for="__nav_3_11_3">
           Modes
           <span class="md-nav__icon md-icon"></span>
         </label>
       
       <nav class="md-nav" aria-label="Modes" data-md-level="3">
-        <label class="md-nav__title" for="__nav_3_13_3">
+        <label class="md-nav__title" for="__nav_3_11_3">
           <span class="md-nav__icon md-icon"></span>
           Modes
         </label>
@@ -3191,6 +2914,8 @@
   
   
   
+    
+  
   
     <label class="md-nav__title" for="__toc">
       <span class="md-nav__icon md-icon"></span>
@@ -3199,15 +2924,62 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#packages-that-support-vulnerability-scanning" class="md-nav__link">
-    Packages that support vulnerability scanning
+  <a href="#cli" class="md-nav__link">
+    CLI
   </a>
+  
+    <nav class="md-nav" aria-label="CLI">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#commands" class="md-nav__link">
+    Commands
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#infra-checks" class="md-nav__link">
+    Infra checks
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#compliance" class="md-nav__link">
+    Compliance
+  </a>
+  
+    <nav class="md-nav" aria-label="Compliance">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#built-in-reports" class="md-nav__link">
+    Built in reports
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#examples" class="md-nav__link">
+    Examples
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#other-language-specific-packages" class="md-nav__link">
-    Other language-specific packages
+  <a href="#operator" class="md-nav__link">
+    Operator
   </a>
   
 </li>
@@ -3226,46 +2998,286 @@
                 
 
 
-  <h1>Supported</h1>
-
-<h2 id="packages-that-support-vulnerability-scanning">Packages that support vulnerability scanning</h2>
+<h1 id="kubernetes">Kubernetes</h1>
+<div class="admonition warning">
+<p class="admonition-title">EXPERIMENTAL</p>
+<p>This feature might change without preserving backwards compatibility.</p>
+</div>
+<h2 id="cli">CLI</h2>
+<p>The Trivy K8s CLI allows you to scan your Kubernetes cluster for </p>
 <ul>
-<li><a href="../../vulnerability/detection/os/">OS packages</a></li>
-<li><a href="../../vulnerability/detection/language/">Language-specific packages</a></li>
+<li>Vulnerabilities</li>
+<li>Misconfigurations</li>
+<li>Secrets</li>
 </ul>
-<h2 id="other-language-specific-packages">Other language-specific packages</h2>
+<p>You can either run the CLI locally or integrate it into your CI/CD pipeline.
+The difference to the Trivy CLI is that the Trivy K8s CLI allows you to scan running workloads directly within your cluster.</p>
+<p>If you are looking for continuous cluster audit scanning, have a look at the Trivy K8s operator below.</p>
+<p>Trivy uses your local kubectl configuration to access the API server to list artifacts.</p>
+<h3 id="commands">Commands</h3>
+<p>Scan a full cluster and generate a simple summary report:</p>
+<div class="highlight"><pre><span></span><code>$ trivy k8s --report=summary cluster
+</code></pre></div>
+<p><img alt="k8s Summary Report" src="../../../imgs/trivy-k8s.png" /></p>
+<p>The summary report is the default. To get all of the detail the output contains, use <code>--report all</code>.</p>
+<p>Filter by severity:</p>
+<div class="highlight"><pre><span></span><code>$ trivy k8s --severity=CRITICAL --report=all cluster
+</code></pre></div>
+<p>Filter by scanners (Vulnerabilities, Secrets or Misconfigurations):</p>
+<div class="highlight"><pre><span></span><code>$ trivy k8s --scanners=secret --report=summary cluster
+# or
+$ trivy k8s --scanners=config --report=summary cluster
+</code></pre></div>
+<p>Scan a specific namespace:</p>
+<div class="highlight"><pre><span></span><code>$ trivy k8s -n kube-system --report=summary all
+</code></pre></div>
+<p>Use a specific kubeconfig file:</p>
+<div class="highlight"><pre><span></span><code>$ trivy k8s --kubeconfig ~/.kube/config2 -n kube-system --report=summary all
+</code></pre></div>
+<p>Scan a specific resource and get all the output:</p>
+<div class="highlight"><pre><span></span><code>$ trivy k8s deployment appname
+</code></pre></div>
+<p>Scan all deploys, or deploys and configmaps:</p>
+<div class="highlight"><pre><span></span><code>$ trivy k8s --report=summary deployment
+$ trivy k8s --report=summary deployment,configmaps
+</code></pre></div>
+<p>If you want to pass in flags before scanning specific workloads, you will have to do it before the resource name.
+For example, scanning a deployment in the app namespace of your Kubernetes cluster for critical vulnerabilities would be done through the following command:</p>
+<p><div class="highlight"><pre><span></span><code>$ trivy k8s -n app --severity=CRITICAL deployment/appname
+</code></pre></div>
+This is specific to all Trivy CLI commands.</p>
+<p>The supported formats are <code>table</code>, which is the default, and <code>json</code>.
+To get a JSON output on a full cluster scan:</p>
+<div class="highlight"><pre><span></span><code>$ trivy k8s --format json -o results.json cluster
+</code></pre></div>
+<details>
+<summary>Result</summary>
+
+<div class="highlight"><pre><span></span><code><span class="p">{</span><span class="w"></span>
+<span class="w">  </span><span class="nt">&quot;ClusterName&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;minikube&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">  </span><span class="nt">&quot;Vulnerabilities&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"></span>
+<span class="w">    </span><span class="p">{</span><span class="w"></span>
+<span class="w">      </span><span class="nt">&quot;Namespace&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;default&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">      </span><span class="nt">&quot;Kind&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Deployment&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">      </span><span class="nt">&quot;Name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;app&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">      </span><span class="nt">&quot;Results&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"></span>
+<span class="w">        </span><span class="p">{</span><span class="w"></span>
+<span class="w">          </span><span class="nt">&quot;Target&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;ubuntu:latest (ubuntu 22.04)&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">          </span><span class="nt">&quot;Class&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;os-pkgs&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">          </span><span class="nt">&quot;Type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;ubuntu&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">          </span><span class="nt">&quot;Vulnerabilities&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"></span>
+<span class="w">            </span><span class="p">{</span><span class="w"></span>
+<span class="w">              </span><span class="nt">&quot;VulnerabilityID&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;CVE-2016-2781&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">              </span><span class="nt">&quot;PkgName&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;coreutils&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">              </span><span class="nt">&quot;InstalledVersion&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;8.32-4.1ubuntu1&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">              </span><span class="nt">&quot;Layer&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">                </span><span class="nt">&quot;Digest&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;sha256:125a6e411906fe6b0aaa50fc9d600bf6ff9bb11a8651727ce1ed482dc271c24c&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">                </span><span class="nt">&quot;DiffID&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;sha256:e59fc94956120a6c7629f085027578e6357b48061d45714107e79f04a81a6f0c&quot;</span><span class="w"></span>
+<span class="w">              </span><span class="p">},</span><span class="w"></span>
+<span class="w">              </span><span class="nt">&quot;SeveritySource&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;ubuntu&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">              </span><span class="nt">&quot;PrimaryURL&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;https://avd.aquasec.com/nvd/cve-2016-2781&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">              </span><span class="nt">&quot;DataSource&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">                </span><span class="nt">&quot;ID&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;ubuntu&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">                </span><span class="nt">&quot;Name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Ubuntu CVE Tracker&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">                </span><span class="nt">&quot;URL&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;https://git.launchpad.net/ubuntu-cve-tracker&quot;</span><span class="w"></span>
+<span class="w">              </span><span class="p">},</span><span class="w"></span>
+<span class="w">              </span><span class="nt">&quot;Title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;coreutils: Non-privileged session can escape to the parent session in chroot&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">              </span><span class="nt">&quot;Description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;chroot in GNU coreutils, when used with --userspec, allows local users to escape to the parent session via a crafted TIOCSTI ioctl call, which pushes characters to the terminal&#39;s input buffer.&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">              </span><span class="nt">&quot;Severity&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;LOW&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">              </span><span class="nt">&quot;CweIDs&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"></span>
+<span class="w">                </span><span class="s2">&quot;CWE-20&quot;</span><span class="w"></span>
+<span class="w">              </span><span class="p">],</span><span class="w"></span>
+<span class="w">              </span><span class="nt">&quot;VendorSeverity&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">                </span><span class="nt">&quot;cbl-mariner&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"></span>
+<span class="w">                </span><span class="nt">&quot;nvd&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"></span>
+<span class="w">                </span><span class="nt">&quot;redhat&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"></span>
+<span class="w">                </span><span class="nt">&quot;ubuntu&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="w"></span>
+<span class="w">              </span><span class="p">},</span><span class="w"></span>
+<span class="w">              </span><span class="nt">&quot;CVSS&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">                </span><span class="nt">&quot;nvd&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">                  </span><span class="nt">&quot;V2Vector&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;AV:L/AC:L/Au:N/C:N/I:P/A:N&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">                  </span><span class="nt">&quot;V3Vector&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;CVSS:3.0/AV:L/AC:L/PR:L/UI:N/S:C/C:N/I:H/A:N&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">                  </span><span class="nt">&quot;V2Score&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">2.1</span><span class="p">,</span><span class="w"></span>
+<span class="w">                  </span><span class="nt">&quot;V3Score&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">6.5</span><span class="w"></span>
+<span class="w">                </span><span class="p">},</span><span class="w"></span>
+<span class="w">                </span><span class="nt">&quot;redhat&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">                  </span><span class="nt">&quot;V2Vector&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;AV:L/AC:H/Au:N/C:C/I:C/A:C&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">                  </span><span class="nt">&quot;V3Vector&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;CVSS:3.0/AV:L/AC:L/PR:N/UI:R/S:C/C:H/I:H/A:H&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">                  </span><span class="nt">&quot;V2Score&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">6.2</span><span class="p">,</span><span class="w"></span>
+<span class="w">                  </span><span class="nt">&quot;V3Score&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">8.6</span><span class="w"></span>
+<span class="w">                </span><span class="p">}</span><span class="w"></span>
+<span class="w">              </span><span class="p">},</span><span class="w"></span>
+<span class="w">              </span><span class="nt">&quot;References&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"></span>
+<span class="w">                </span><span class="s2">&quot;http://seclists.org/oss-sec/2016/q1/452&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">                </span><span class="s2">&quot;http://www.openwall.com/lists/oss-security/2016/02/28/2&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">                </span><span class="s2">&quot;http://www.openwall.com/lists/oss-security/2016/02/28/3&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">                </span><span class="s2">&quot;https://access.redhat.com/security/cve/CVE-2016-2781&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">                </span><span class="s2">&quot;https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2016-2781&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">                </span><span class="s2">&quot;https://lists.apache.org/thread.html/rf9fa47ab66495c78bb4120b0754dd9531ca2ff0430f6685ac9b07772@%3Cdev.mina.apache.org%3E&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">                </span><span class="s2">&quot;https://lore.kernel.org/patchwork/patch/793178/&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">                </span><span class="s2">&quot;https://nvd.nist.gov/vuln/detail/CVE-2016-2781&quot;</span><span class="w"></span>
+<span class="w">              </span><span class="p">],</span><span class="w"></span>
+<span class="w">              </span><span class="nt">&quot;PublishedDate&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2017-02-07T15:59:00Z&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">              </span><span class="nt">&quot;LastModifiedDate&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2021-02-25T17:15:00Z&quot;</span><span class="w"></span>
+<span class="w">            </span><span class="p">}</span><span class="w"></span>
+<span class="w">          </span><span class="p">]</span><span class="w"></span>
+<span class="w">        </span><span class="p">}</span><span class="w"></span>
+<span class="w">      </span><span class="p">]</span><span class="w"></span>
+<span class="w">    </span><span class="p">}</span><span class="w"></span>
+<span class="w">  </span><span class="p">],</span><span class="w"></span>
+<span class="w">  </span><span class="nt">&quot;Misconfigurations&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"></span>
+<span class="w">    </span><span class="p">{</span><span class="w"></span>
+<span class="w">      </span><span class="nt">&quot;Namespace&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;default&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">      </span><span class="nt">&quot;Kind&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Deployment&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">      </span><span class="nt">&quot;Name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;app&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">      </span><span class="nt">&quot;Results&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"></span>
+<span class="w">        </span><span class="p">{</span><span class="w"></span>
+<span class="w">          </span><span class="nt">&quot;Target&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Deployment/app&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">          </span><span class="nt">&quot;Class&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;config&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">          </span><span class="nt">&quot;Type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;kubernetes&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">          </span><span class="nt">&quot;MisconfSummary&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">            </span><span class="nt">&quot;Successes&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">20</span><span class="p">,</span><span class="w"></span>
+<span class="w">            </span><span class="nt">&quot;Failures&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">19</span><span class="p">,</span><span class="w"></span>
+<span class="w">            </span><span class="nt">&quot;Exceptions&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="w"></span>
+<span class="w">          </span><span class="p">},</span><span class="w"></span>
+<span class="w">          </span><span class="nt">&quot;Misconfigurations&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"></span>
+<span class="w">            </span><span class="p">{</span><span class="w"></span>
+<span class="w">              </span><span class="nt">&quot;Type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Kubernetes Security Check&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">              </span><span class="nt">&quot;ID&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;KSV001&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">              </span><span class="nt">&quot;Title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Process can elevate its own privileges&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">              </span><span class="nt">&quot;Description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;A program inside the container can elevate its own privileges and run as root, which might give the program control over the container and node.&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">              </span><span class="nt">&quot;Message&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Container &#39;app&#39; of Deployment &#39;app&#39; should set &#39;securityContext.allowPrivilegeEscalation&#39; to false&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">              </span><span class="nt">&quot;Namespace&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;builtin.kubernetes.KSV001&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">              </span><span class="nt">&quot;Query&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;data.builtin.kubernetes.KSV001.deny&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">              </span><span class="nt">&quot;Resolution&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Set &#39;set containers[].securityContext.allowPrivilegeEscalation&#39; to &#39;false&#39;.&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">              </span><span class="nt">&quot;Severity&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;MEDIUM&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">              </span><span class="nt">&quot;PrimaryURL&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;https://avd.aquasec.com/misconfig/ksv001&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">              </span><span class="nt">&quot;References&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"></span>
+<span class="w">                </span><span class="s2">&quot;https://kubernetes.io/docs/concepts/security/pod-security-standards/#restricted&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">                </span><span class="s2">&quot;https://avd.aquasec.com/misconfig/ksv001&quot;</span><span class="w"></span>
+<span class="w">              </span><span class="p">],</span><span class="w"></span>
+<span class="w">              </span><span class="nt">&quot;Status&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;FAIL&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">              </span><span class="nt">&quot;Layer&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{},</span><span class="w"></span>
+<span class="w">              </span><span class="nt">&quot;IacMetadata&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">                </span><span class="nt">&quot;Provider&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Kubernetes&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">                </span><span class="nt">&quot;Service&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;general&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">                </span><span class="nt">&quot;StartLine&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">121</span><span class="p">,</span><span class="w"></span>
+<span class="w">                </span><span class="nt">&quot;EndLine&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">133</span><span class="w"></span>
+<span class="w">              </span><span class="p">}</span><span class="w"></span>
+<span class="w">            </span><span class="p">},</span><span class="w"></span>
+<span class="w">            </span><span class="p">{</span><span class="w"></span>
+<span class="w">              </span><span class="nt">&quot;Type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Kubernetes Security Check&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">              </span><span class="nt">&quot;ID&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;KSV003&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">              </span><span class="nt">&quot;Title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Default capabilities not dropped&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">              </span><span class="nt">&quot;Description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;The container should drop all default capabilities and add only those that are needed for its execution.&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">              </span><span class="nt">&quot;Message&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Container &#39;app&#39; of Deployment &#39;app&#39; should add &#39;ALL&#39; to &#39;securityContext.capabilities.drop&#39;&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">              </span><span class="nt">&quot;Namespace&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;builtin.kubernetes.KSV003&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">              </span><span class="nt">&quot;Query&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;data.builtin.kubernetes.KSV003.deny&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">              </span><span class="nt">&quot;Resolution&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Add &#39;ALL&#39; to containers[].securityContext.capabilities.drop.&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">              </span><span class="nt">&quot;Severity&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;LOW&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">              </span><span class="nt">&quot;PrimaryURL&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;https://avd.aquasec.com/misconfig/ksv003&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">              </span><span class="nt">&quot;References&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"></span>
+<span class="w">                </span><span class="s2">&quot;https://kubesec.io/basics/containers-securitycontext-capabilities-drop-index-all/&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">                </span><span class="s2">&quot;https://avd.aquasec.com/misconfig/ksv003&quot;</span><span class="w"></span>
+<span class="w">              </span><span class="p">],</span><span class="w"></span>
+<span class="w">              </span><span class="nt">&quot;Status&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;FAIL&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">              </span><span class="nt">&quot;Layer&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{},</span><span class="w"></span>
+<span class="w">              </span><span class="nt">&quot;IacMetadata&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">                </span><span class="nt">&quot;Provider&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Kubernetes&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">                </span><span class="nt">&quot;Service&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;general&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">                </span><span class="nt">&quot;StartLine&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">121</span><span class="p">,</span><span class="w"></span>
+<span class="w">                </span><span class="nt">&quot;EndLine&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">133</span><span class="w"></span>
+<span class="w">              </span><span class="p">}</span><span class="w"></span>
+<span class="w">            </span><span class="p">}</span><span class="w"></span>
+<span class="w">          </span><span class="p">]</span><span class="w"></span>
+<span class="w">        </span><span class="p">}</span><span class="w"></span>
+<span class="w">      </span><span class="p">]</span><span class="w"></span>
+<span class="w">    </span><span class="p">},</span><span class="w"></span>
+<span class="w">    </span><span class="p">{</span><span class="w"></span>
+<span class="w">      </span><span class="nt">&quot;Namespace&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;default&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">      </span><span class="nt">&quot;Kind&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;ConfigMap&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">      </span><span class="nt">&quot;Name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;kube-root-ca.crt&quot;</span><span class="w"></span>
+<span class="w">    </span><span class="p">}</span><span class="w"></span>
+<span class="w">  </span><span class="p">]</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
+</code></pre></div>
+
+</details>
+
+<h3 id="infra-checks">Infra checks</h3>
+<p>Trivy by default scans kubernetes infra components (apiserver, controller-manager, scheduler and etcd)
+if they exist under the <code>kube-system</code> namespace. For example, if you run a full cluster scan, or scan all
+components under <code>kube-system</code> with commands:</p>
+<div class="highlight"><pre><span></span><code>$ trivy k8s cluster --report summary # full cluster scan
+$ trivy k8s all -n kube-system --report summary # scan all components under kube-system
+</code></pre></div>
+<p>A table will be printed about misconfigurations found on kubernetes core components:</p>
+<div class="highlight"><pre><span></span><code>Summary Report for minikube
+┌─────────────┬──────────────────────────────────────┬─────────────────────────────┐
+│  Namespace  │               Resource               │ Kubernetes Infra Assessment │
+│             │                                      ├────┬────┬────┬─────┬────────┤
+│             │                                      │ C  │ H  │ M  │ L   │   U    │
+├─────────────┼──────────────────────────────────────┼────┼────┼────┼─────┼────────┤
+│ kube-system │ Pod/kube-apiserver-minikube          │    │    │ 1  │ 10  │        │
+│ kube-system │ Pod/kube-controller-manager-minikube │    │    │    │ 3   │        │
+│ kube-system │ Pod/kube-scheduler-minikube          │    │    │    │ 1   │        │
+└─────────────┴──────────────────────────────────────┴────┴────┴────┴─────┴────────┘
+Severities: C=CRITICAL H=HIGH M=MEDIUM L=LOW U=UNKNOWN
+</code></pre></div>
+<p>The infra checks are based on CIS Benchmarks recommendations for kubernetes.</p>
+<p>If you want filter only for the infra checks, you can use the flag <code>--components</code> along with the <code>--scanners=config</code></p>
+<div class="highlight"><pre><span></span><code>$ trivy k8s cluster --report summary --components=infra --scanners=config # scan only infra
+</code></pre></div>
+<p>Or, to filter for all other checks besides the infra checks, you can:</p>
+<div class="highlight"><pre><span></span><code>$ trivy k8s cluster --report summary --components=workload --scanners=config # scan all components besides infra
+</code></pre></div>
+<h3 id="compliance">Compliance</h3>
+<p>This section describes Kubernetes specific compliance reports.
+For an overview of Trivy's Compliance feature, including working with custom compliance, check out the <a href="../../compliance/compliance/">Compliance documentation</a>.</p>
+<h4 id="built-in-reports">Built in reports</h4>
+<p>The following reports are available out of the box:</p>
 <table>
 <thead>
 <tr>
-<th>Language</th>
-<th>File</th>
-<th align="center">Dependency location<sup id="fnref:1"><a class="footnote-ref" href="#fn:1">1</a></sup></th>
+<th>Compliance</th>
+<th>Name for command</th>
+<th>More info</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td>Python</td>
-<td>conda package<sup id="fnref:2"><a class="footnote-ref" href="#fn:2">2</a></sup></td>
-<td align="center">-</td>
+<td>NSA, CISA Kubernetes Hardening Guidance v1.2</td>
+<td><code>k8s-nsa</code></td>
+<td><a href="https://media.defense.gov/2022/Aug/29/2003066362/-1/-1/0/CTR_KUBERNETES_HARDENING_GUIDANCE_1.2_20220829.PDF">Link</a></td>
 </tr>
 <tr>
-<td>Swift</td>
-<td>Podfile.lock</td>
-<td align="center">-</td>
+<td>CIS Benchmark for Kubernetes v1.23</td>
+<td><code>k8s-cis</code></td>
+<td><a href="https://www.cisecurity.org/benchmark/kubernetes">Link</a></td>
 </tr>
 </tbody>
 </table>
-<div class="footnote">
-<hr />
-<ol>
-<li id="fn:1">
-<p>Use <code>startline == 1 and endline == 1</code> for unsupported file types&#160;<a class="footnote-backref" href="#fnref:1" title="Jump back to footnote 1 in the text">&#8617;</a></p>
-</li>
-<li id="fn:2">
-<p><code>envs/*/conda-meta/*.json</code>&#160;<a class="footnote-backref" href="#fnref:2" title="Jump back to footnote 2 in the text">&#8617;</a></p>
-</li>
-</ol>
-</div>
+<h4 id="examples">Examples</h4>
+<p>Scan a full cluster and generate a compliance summary report:</p>
+<div class="highlight"><pre><span></span><code>$ trivy k8s cluster --compliance=&lt;compliance_id&gt; --report summary
+</code></pre></div>
+<p><strong><em>Note</em></strong> : The <code>Issues</code> column represent the total number of failed checks for this control.</p>
+<p>Get all of the detailed output for checks:</p>
+<div class="highlight"><pre><span></span><code>trivy k8s cluster --compliance=&lt;compliance_id&gt; --report all
+</code></pre></div>
+<p>Report result in JSON format:</p>
+<div class="highlight"><pre><span></span><code>trivy k8s cluster --compliance=&lt;compliance_id&gt; --report summary --format json
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>trivy k8s cluster --compliance=&lt;compliance_id&gt; --report all --format json
+</code></pre></div>
+<h2 id="operator">Operator</h2>
+<p>Trivy has a native <a href="https://kubernetes.io/docs/concepts/extend-kubernetes/operator/">Kubernetes Operator</a> which continuously scans your Kubernetes cluster for security issues, and generates security reports as Kubernetes <a href="https://kubernetes.io/docs/concepts/extend-kubernetes/api-extension/custom-resources/">Custom Resources</a>. It does it by watching Kubernetes for state changes and automatically triggering scans in response to changes, for example initiating a vulnerability scan when a new Pod is created.</p>
+<blockquote>
+<p>Kubernetes-native security toolkit. (<a href="https://aquasecurity.github.io/trivy-operator/latest">Documentation</a>).</p>
+</blockquote>
+<figure>
+  <figcaption>Workload reconcilers discover K8s controllers, manage scan jobs, and create VulnerabilityReport and ConfigAuditReport objects.</figcaption>
+</figure>
 
               
             </article>
@@ -3283,7 +3295,7 @@
     <nav class="md-footer__inner md-grid" aria-label="Footer" >
       
         
-        <a href="../" class="md-footer__link md-footer__link--prev" aria-label="Previous: Overview" rel="prev">
+        <a href="../vm/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Virtual Machine Image" rel="prev">
           <div class="md-footer__button md-icon">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
           </div>
@@ -3292,20 +3304,20 @@
               <span class="md-footer__direction">
                 Previous
               </span>
-              Overview
+              Virtual Machine Image
             </div>
           </div>
         </a>
       
       
         
-        <a href="../cyclonedx/" class="md-footer__link md-footer__link--next" aria-label="Next: CycloneDX" rel="next">
+        <a href="../aws/" class="md-footer__link md-footer__link--next" aria-label="Next: AWS" rel="next">
           <div class="md-footer__title">
             <div class="md-ellipsis">
               <span class="md-footer__direction">
                 Next
               </span>
-              CycloneDX
+              AWS
             </div>
           </div>
           <div class="md-footer__button md-icon">

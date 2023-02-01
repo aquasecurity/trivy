@@ -10,14 +10,14 @@
       
       
       
-        <link rel="canonical" href="https://aquasecurity.github.io/trivy/dev/docs/vm/aws/">
+        <link rel="canonical" href="https://aquasecurity.github.io/trivy/dev/docs/target/aws/">
       
       <link rel="icon" href="../../../assets/images/favicon.png">
       <meta name="generator" content="mkdocs-1.3.0, mkdocs-material-8.3.9">
     
     
       
-        <title>AWS EC2 - Trivy</title>
+        <title>AWS - Trivy</title>
       
     
     
@@ -64,7 +64,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#aws-ec2" class="md-skip">
+        <a href="#amazon-web-services" class="md-skip">
           Skip to content
         </a>
       
@@ -104,7 +104,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              AWS EC2
+              AWS
             
           </span>
         </div>
@@ -827,53 +827,29 @@
               
   
   
+    
+  
   
     
       
     
-    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_2" type="checkbox" id="__nav_3_2" >
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_2" type="checkbox" id="__nav_3_2" checked>
       
       
       
       
         <label class="md-nav__link" for="__nav_3_2">
-          Vulnerability
+          Target
           <span class="md-nav__icon md-icon"></span>
         </label>
       
-      <nav class="md-nav" aria-label="Vulnerability" data-md-level="2">
+      <nav class="md-nav" aria-label="Target" data-md-level="2">
         <label class="md-nav__title" for="__nav_3_2">
           <span class="md-nav__icon md-icon"></span>
-          Vulnerability
-        </label>
-        <ul class="md-nav__list" data-md-scrollfix>
-          
-            
-              
-  
-  
-  
-    
-    <li class="md-nav__item md-nav__item--nested">
-      
-      
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_2_1" type="checkbox" id="__nav_3_2_1" >
-      
-      
-      
-      
-        <label class="md-nav__link" for="__nav_3_2_1">
-          Scanning
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <nav class="md-nav" aria-label="Scanning" data-md-level="3">
-        <label class="md-nav__title" for="__nav_3_2_1">
-          <span class="md-nav__icon md-icon"></span>
-          Scanning
+          Target
         </label>
         <ul class="md-nav__list" data-md-scrollfix>
           
@@ -883,21 +859,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../vulnerability/scanning/" class="md-nav__link">
-        Overview
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../vulnerability/scanning/image/" class="md-nav__link">
+      <a href="../container_image/" class="md-nav__link">
         Container Image
       </a>
     </li>
@@ -911,7 +873,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../vulnerability/scanning/filesystem/" class="md-nav__link">
+      <a href="../filesystem/" class="md-nav__link">
         Filesystem
       </a>
     </li>
@@ -925,7 +887,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../vulnerability/scanning/rootfs/" class="md-nav__link">
+      <a href="../rootfs/" class="md-nav__link">
         Rootfs
       </a>
     </li>
@@ -939,8 +901,146 @@
   
   
     <li class="md-nav__item">
-      <a href="../../vulnerability/scanning/git-repository/" class="md-nav__link">
+      <a href="../git-repository/" class="md-nav__link">
         Git Repository
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../vm/" class="md-nav__link">
+        Virtual Machine Image
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../kubernetes/" class="md-nav__link">
+        Kubernetes
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+    
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          AWS
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        AWS
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#cli-commands" class="md-nav__link">
+    CLI Commands
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#compliance" class="md-nav__link">
+    Compliance
+  </a>
+  
+    <nav class="md-nav" aria-label="Compliance">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#built-in-reports" class="md-nav__link">
+    Built in reports
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#examples" class="md-nav__link">
+    Examples
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cached-results" class="md-nav__link">
+    Cached Results
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#custom-policies" class="md-nav__link">
+    Custom Policies
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../sbom/" class="md-nav__link">
+        SBOM
       </a>
     </li>
   
@@ -960,21 +1060,63 @@
   
   
     
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_3" type="checkbox" id="__nav_3_3" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_3_3">
+          Vulnerability
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Vulnerability" data-md-level="2">
+        <label class="md-nav__title" for="__nav_3_3">
+          <span class="md-nav__icon md-icon"></span>
+          Vulnerability
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../vulnerability/scanning/" class="md-nav__link">
+        Scanning
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
     <li class="md-nav__item md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_2_2" type="checkbox" id="__nav_3_2_2" >
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_3_2" type="checkbox" id="__nav_3_3_2" >
       
       
       
       
-        <label class="md-nav__link" for="__nav_3_2_2">
+        <label class="md-nav__link" for="__nav_3_3_2">
           Detection
           <span class="md-nav__icon md-icon"></span>
         </label>
       
       <nav class="md-nav" aria-label="Detection" data-md-level="3">
-        <label class="md-nav__title" for="__nav_3_2_2">
+        <label class="md-nav__title" for="__nav_3_3_2">
           <span class="md-nav__icon md-icon"></span>
           Detection
         </label>
@@ -1022,20 +1164,6 @@
 
             
           
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../vulnerability/detection/supported/" class="md-nav__link">
-        Supported
-      </a>
-    </li>
-  
-
-            
-          
         </ul>
       </nav>
     </li>
@@ -1052,18 +1180,18 @@
     <li class="md-nav__item md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_2_3" type="checkbox" id="__nav_3_2_3" >
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_3_3" type="checkbox" id="__nav_3_3_3" >
       
       
       
       
-        <label class="md-nav__link" for="__nav_3_2_3">
+        <label class="md-nav__link" for="__nav_3_3_3">
           Examples
           <span class="md-nav__icon md-icon"></span>
         </label>
       
       <nav class="md-nav" aria-label="Examples" data-md-level="3">
-        <label class="md-nav__title" for="__nav_3_2_3">
+        <label class="md-nav__title" for="__nav_3_3_3">
           <span class="md-nav__icon md-icon"></span>
           Examples
         </label>
@@ -1151,36 +1279,22 @@
   
   
   
-    <li class="md-nav__item">
-      <a href="../../vulnerability/distributions/" class="md-nav__link">
-        Distributions
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
     
     <li class="md-nav__item md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_2_5" type="checkbox" id="__nav_3_2_5" >
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_3_4" type="checkbox" id="__nav_3_3_4" >
       
       
       
       
-        <label class="md-nav__link" for="__nav_3_2_5">
+        <label class="md-nav__link" for="__nav_3_3_4">
           Languages
           <span class="md-nav__icon md-icon"></span>
         </label>
       
       <nav class="md-nav" aria-label="Languages" data-md-level="3">
-        <label class="md-nav__title" for="__nav_3_2_5">
+        <label class="md-nav__title" for="__nav_3_3_4">
           <span class="md-nav__icon md-icon"></span>
           Languages
         </label>
@@ -1239,18 +1353,18 @@
     <li class="md-nav__item md-nav__item--section md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_3" type="checkbox" id="__nav_3_3" >
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_4" type="checkbox" id="__nav_3_4" >
       
       
       
       
-        <label class="md-nav__link" for="__nav_3_3">
+        <label class="md-nav__link" for="__nav_3_4">
           Misconfiguration
           <span class="md-nav__icon md-icon"></span>
         </label>
       
       <nav class="md-nav" aria-label="Misconfiguration" data-md-level="2">
-        <label class="md-nav__title" for="__nav_3_3">
+        <label class="md-nav__title" for="__nav_3_4">
           <span class="md-nav__icon md-icon"></span>
           Misconfiguration
         </label>
@@ -1279,18 +1393,18 @@
     <li class="md-nav__item md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_3_2" type="checkbox" id="__nav_3_3_2" >
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_4_2" type="checkbox" id="__nav_3_4_2" >
       
       
       
       
-        <label class="md-nav__link" for="__nav_3_3_2">
+        <label class="md-nav__link" for="__nav_3_4_2">
           Policy
           <span class="md-nav__icon md-icon"></span>
         </label>
       
       <nav class="md-nav" aria-label="Policy" data-md-level="3">
-        <label class="md-nav__title" for="__nav_3_3_2">
+        <label class="md-nav__title" for="__nav_3_4_2">
           <span class="md-nav__icon md-icon"></span>
           Policy
         </label>
@@ -1340,18 +1454,18 @@
     <li class="md-nav__item md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_3_3" type="checkbox" id="__nav_3_3_3" >
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_4_3" type="checkbox" id="__nav_3_4_3" >
       
       
       
       
-        <label class="md-nav__link" for="__nav_3_3_3">
+        <label class="md-nav__link" for="__nav_3_4_3">
           Custom Policies
           <span class="md-nav__icon md-icon"></span>
         </label>
       
       <nav class="md-nav" aria-label="Custom Policies" data-md-level="3">
-        <label class="md-nav__title" for="__nav_3_3_3">
+        <label class="md-nav__title" for="__nav_3_4_3">
           <span class="md-nav__icon md-icon"></span>
           Custom Policies
         </label>
@@ -1457,18 +1571,18 @@
     <li class="md-nav__item md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_3_4" type="checkbox" id="__nav_3_3_4" >
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_4_4" type="checkbox" id="__nav_3_4_4" >
       
       
       
       
-        <label class="md-nav__link" for="__nav_3_3_4">
+        <label class="md-nav__link" for="__nav_3_4_4">
           Options
           <span class="md-nav__icon md-icon"></span>
         </label>
       
       <nav class="md-nav" aria-label="Options" data-md-level="3">
-        <label class="md-nav__title" for="__nav_3_3_4">
+        <label class="md-nav__title" for="__nav_3_4_4">
           <span class="md-nav__icon md-icon"></span>
           Options
         </label>
@@ -1569,18 +1683,18 @@
     <li class="md-nav__item md-nav__item--section md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_4" type="checkbox" id="__nav_3_4" >
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_5" type="checkbox" id="__nav_3_5" >
       
       
       
       
-        <label class="md-nav__link" for="__nav_3_4">
+        <label class="md-nav__link" for="__nav_3_5">
           Secret
           <span class="md-nav__icon md-icon"></span>
         </label>
       
       <nav class="md-nav" aria-label="Secret" data-md-level="2">
-        <label class="md-nav__title" for="__nav_3_4">
+        <label class="md-nav__title" for="__nav_3_5">
           <span class="md-nav__icon md-icon"></span>
           Secret
         </label>
@@ -1646,18 +1760,18 @@
     <li class="md-nav__item md-nav__item--section md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_5" type="checkbox" id="__nav_3_5" >
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_6" type="checkbox" id="__nav_3_6" >
       
       
       
       
-        <label class="md-nav__link" for="__nav_3_5">
+        <label class="md-nav__link" for="__nav_3_6">
           License
           <span class="md-nav__icon md-icon"></span>
         </label>
       
       <nav class="md-nav" aria-label="License" data-md-level="2">
-        <label class="md-nav__title" for="__nav_3_5">
+        <label class="md-nav__title" for="__nav_3_6">
           <span class="md-nav__icon md-icon"></span>
           License
         </label>
@@ -1695,410 +1809,18 @@
     <li class="md-nav__item md-nav__item--section md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_6" type="checkbox" id="__nav_3_6" >
-      
-      
-      
-      
-        <label class="md-nav__link" for="__nav_3_6">
-          Kubernetes
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <nav class="md-nav" aria-label="Kubernetes" data-md-level="2">
-        <label class="md-nav__title" for="__nav_3_6">
-          <span class="md-nav__icon md-icon"></span>
-          Kubernetes
-        </label>
-        <ul class="md-nav__list" data-md-scrollfix>
-          
-            
-              
-  
-  
-  
-    
-    <li class="md-nav__item md-nav__item--nested">
-      
-      
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_6_1" type="checkbox" id="__nav_3_6_1" >
-      
-      
-      
-      
-        <label class="md-nav__link" for="__nav_3_6_1">
-          CLI
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <nav class="md-nav" aria-label="CLI" data-md-level="3">
-        <label class="md-nav__title" for="__nav_3_6_1">
-          <span class="md-nav__icon md-icon"></span>
-          CLI
-        </label>
-        <ul class="md-nav__list" data-md-scrollfix>
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../kubernetes/cli/scanning/" class="md-nav__link">
-        Scanning
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../kubernetes/cli/compliance/" class="md-nav__link">
-        Compliance
-      </a>
-    </li>
-  
-
-            
-          
-        </ul>
-      </nav>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    
-    <li class="md-nav__item md-nav__item--nested">
-      
-      
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_6_2" type="checkbox" id="__nav_3_6_2" >
-      
-      
-      
-      
-        <label class="md-nav__link" for="__nav_3_6_2">
-          Operator
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <nav class="md-nav" aria-label="Operator" data-md-level="3">
-        <label class="md-nav__title" for="__nav_3_6_2">
-          <span class="md-nav__icon md-icon"></span>
-          Operator
-        </label>
-        <ul class="md-nav__list" data-md-scrollfix>
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../kubernetes/operator/" class="md-nav__link">
-        Overview
-      </a>
-    </li>
-  
-
-            
-          
-        </ul>
-      </nav>
-    </li>
-  
-
-            
-          
-        </ul>
-      </nav>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    
-      
-    
-    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
-      
-      
         <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_7" type="checkbox" id="__nav_3_7" >
       
       
       
       
         <label class="md-nav__link" for="__nav_3_7">
-          Cloud
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <nav class="md-nav" aria-label="Cloud" data-md-level="2">
-        <label class="md-nav__title" for="__nav_3_7">
-          <span class="md-nav__icon md-icon"></span>
-          Cloud
-        </label>
-        <ul class="md-nav__list" data-md-scrollfix>
-          
-            
-              
-  
-  
-  
-    
-    <li class="md-nav__item md-nav__item--nested">
-      
-      
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_7_1" type="checkbox" id="__nav_3_7_1" >
-      
-      
-      
-      
-        <label class="md-nav__link" for="__nav_3_7_1">
-          AWS
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <nav class="md-nav" aria-label="AWS" data-md-level="3">
-        <label class="md-nav__title" for="__nav_3_7_1">
-          <span class="md-nav__icon md-icon"></span>
-          AWS
-        </label>
-        <ul class="md-nav__list" data-md-scrollfix>
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../cloud/aws/scanning/" class="md-nav__link">
-        Scanning
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../cloud/aws/compliance/" class="md-nav__link">
-        Compliance
-      </a>
-    </li>
-  
-
-            
-          
-        </ul>
-      </nav>
-    </li>
-  
-
-            
-          
-        </ul>
-      </nav>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-    
-  
-  
-    
-      
-    
-    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
-      
-      
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_8" type="checkbox" id="__nav_3_8" checked>
-      
-      
-      
-      
-        <label class="md-nav__link" for="__nav_3_8">
-          Virtual Machine Image
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <nav class="md-nav" aria-label="Virtual Machine Image" data-md-level="2">
-        <label class="md-nav__title" for="__nav_3_8">
-          <span class="md-nav__icon md-icon"></span>
-          Virtual Machine Image
-        </label>
-        <ul class="md-nav__list" data-md-scrollfix>
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../" class="md-nav__link">
-        Overview
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-    
-  
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
-      
-      
-        
-      
-      
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          AWS EC2
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <a href="./" class="md-nav__link md-nav__link--active">
-        AWS EC2
-      </a>
-      
-        
-
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#amazon-machine-image-ami" class="md-nav__link">
-    Amazon Machine Image (AMI)
-  </a>
-  
-    <nav class="md-nav" aria-label="Amazon Machine Image (AMI)">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#example" class="md-nav__link">
-    Example
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#required-actions" class="md-nav__link">
-    Required Actions
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#elastic-block-store-ebs-snapshot" class="md-nav__link">
-    Elastic Block Store (EBS) Snapshot
-  </a>
-  
-    <nav class="md-nav" aria-label="Elastic Block Store (EBS) Snapshot">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#example_1" class="md-nav__link">
-    Example
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#required-actions_1" class="md-nav__link">
-    Required Actions
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-      
-    </li>
-  
-
-            
-          
-        </ul>
-      </nav>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    
-      
-    
-    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
-      
-      
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_9" type="checkbox" id="__nav_3_9" >
-      
-      
-      
-      
-        <label class="md-nav__link" for="__nav_3_9">
           Compliance
           <span class="md-nav__icon md-icon"></span>
         </label>
       
       <nav class="md-nav" aria-label="Compliance" data-md-level="2">
-        <label class="md-nav__title" for="__nav_3_9">
+        <label class="md-nav__title" for="__nav_3_7">
           <span class="md-nav__icon md-icon"></span>
           Compliance
         </label>
@@ -2136,18 +1858,18 @@
     <li class="md-nav__item md-nav__item--section md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_10" type="checkbox" id="__nav_3_10" >
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_8" type="checkbox" id="__nav_3_8" >
       
       
       
       
-        <label class="md-nav__link" for="__nav_3_10">
+        <label class="md-nav__link" for="__nav_3_8">
           SBOM
           <span class="md-nav__icon md-icon"></span>
         </label>
       
       <nav class="md-nav" aria-label="SBOM" data-md-level="2">
-        <label class="md-nav__title" for="__nav_3_10">
+        <label class="md-nav__title" for="__nav_3_8">
           <span class="md-nav__icon md-icon"></span>
           SBOM
         </label>
@@ -2161,20 +1883,6 @@
     <li class="md-nav__item">
       <a href="../../sbom/" class="md-nav__link">
         Overview
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../sbom/supported/" class="md-nav__link">
-        Supported
       </a>
     </li>
   
@@ -2227,18 +1935,18 @@
     <li class="md-nav__item md-nav__item--section md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_11" type="checkbox" id="__nav_3_11" >
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_9" type="checkbox" id="__nav_3_9" >
       
       
       
       
-        <label class="md-nav__link" for="__nav_3_11">
+        <label class="md-nav__link" for="__nav_3_9">
           Attestation
           <span class="md-nav__icon md-icon"></span>
         </label>
       
       <nav class="md-nav" aria-label="Attestation" data-md-level="2">
-        <label class="md-nav__title" for="__nav_3_11">
+        <label class="md-nav__title" for="__nav_3_9">
           <span class="md-nav__icon md-icon"></span>
           Attestation
         </label>
@@ -2304,18 +2012,18 @@
     <li class="md-nav__item md-nav__item--section md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_12" type="checkbox" id="__nav_3_12" >
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_10" type="checkbox" id="__nav_3_10" >
       
       
       
       
-        <label class="md-nav__link" for="__nav_3_12">
+        <label class="md-nav__link" for="__nav_3_10">
           Advanced
           <span class="md-nav__icon md-icon"></span>
         </label>
       
       <nav class="md-nav" aria-label="Advanced" data-md-level="2">
-        <label class="md-nav__title" for="__nav_3_12">
+        <label class="md-nav__title" for="__nav_3_10">
           <span class="md-nav__icon md-icon"></span>
           Advanced
         </label>
@@ -2372,18 +2080,18 @@
     <li class="md-nav__item md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_12_4" type="checkbox" id="__nav_3_12_4" >
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_10_4" type="checkbox" id="__nav_3_10_4" >
       
       
       
       
-        <label class="md-nav__link" for="__nav_3_12_4">
+        <label class="md-nav__link" for="__nav_3_10_4">
           Container Image
           <span class="md-nav__icon md-icon"></span>
         </label>
       
       <nav class="md-nav" aria-label="Container Image" data-md-level="3">
-        <label class="md-nav__title" for="__nav_3_12_4">
+        <label class="md-nav__title" for="__nav_3_10_4">
           <span class="md-nav__icon md-icon"></span>
           Container Image
         </label>
@@ -2422,64 +2130,22 @@
   
   
   
-    <li class="md-nav__item">
-      <a href="../../advanced/container/oci/" class="md-nav__link">
-        OCI Image
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../advanced/container/podman/" class="md-nav__link">
-        Podman
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../advanced/container/containerd/" class="md-nav__link">
-        containerd
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
     
     <li class="md-nav__item md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_12_4_6" type="checkbox" id="__nav_3_12_4_6" >
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_10_4_3" type="checkbox" id="__nav_3_10_4_3" >
       
       
       
       
-        <label class="md-nav__link" for="__nav_3_12_4_6">
+        <label class="md-nav__link" for="__nav_3_10_4_3">
           Private Docker Registries
           <span class="md-nav__icon md-icon"></span>
         </label>
       
       <nav class="md-nav" aria-label="Private Docker Registries" data-md-level="4">
-        <label class="md-nav__title" for="__nav_3_12_4_6">
+        <label class="md-nav__title" for="__nav_3_10_4_3">
           <span class="md-nav__icon md-icon"></span>
           Private Docker Registries
         </label>
@@ -2601,18 +2267,18 @@
     <li class="md-nav__item md-nav__item--section md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_13" type="checkbox" id="__nav_3_13" >
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_11" type="checkbox" id="__nav_3_11" >
       
       
       
       
-        <label class="md-nav__link" for="__nav_3_13">
+        <label class="md-nav__link" for="__nav_3_11">
           References
           <span class="md-nav__icon md-icon"></span>
         </label>
       
       <nav class="md-nav" aria-label="References" data-md-level="2">
-        <label class="md-nav__title" for="__nav_3_13">
+        <label class="md-nav__title" for="__nav_3_11">
           <span class="md-nav__icon md-icon"></span>
           References
         </label>
@@ -2627,18 +2293,18 @@
     <li class="md-nav__item md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_13_1" type="checkbox" id="__nav_3_13_1" >
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_11_1" type="checkbox" id="__nav_3_11_1" >
       
       
       
       
-        <label class="md-nav__link" for="__nav_3_13_1">
+        <label class="md-nav__link" for="__nav_3_11_1">
           Customization
           <span class="md-nav__icon md-icon"></span>
         </label>
       
       <nav class="md-nav" aria-label="Customization" data-md-level="3">
-        <label class="md-nav__title" for="__nav_3_13_1">
+        <label class="md-nav__title" for="__nav_3_11_1">
           <span class="md-nav__icon md-icon"></span>
           Customization
         </label>
@@ -2688,18 +2354,18 @@
     <li class="md-nav__item md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_13_2" type="checkbox" id="__nav_3_13_2" >
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_11_2" type="checkbox" id="__nav_3_11_2" >
       
       
       
       
-        <label class="md-nav__link" for="__nav_3_13_2">
+        <label class="md-nav__link" for="__nav_3_11_2">
           CLI
           <span class="md-nav__icon md-icon"></span>
         </label>
       
       <nav class="md-nav" aria-label="CLI" data-md-level="3">
-        <label class="md-nav__title" for="__nav_3_13_2">
+        <label class="md-nav__title" for="__nav_3_11_2">
           <span class="md-nav__icon md-icon"></span>
           CLI
         </label>
@@ -2875,18 +2541,18 @@
     <li class="md-nav__item md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_13_3" type="checkbox" id="__nav_3_13_3" >
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_11_3" type="checkbox" id="__nav_3_11_3" >
       
       
       
       
-        <label class="md-nav__link" for="__nav_3_13_3">
+        <label class="md-nav__link" for="__nav_3_11_3">
           Modes
           <span class="md-nav__icon md-icon"></span>
         </label>
       
       <nav class="md-nav" aria-label="Modes" data-md-level="3">
-        <label class="md-nav__title" for="__nav_3_13_3">
+        <label class="md-nav__title" for="__nav_3_11_3">
           <span class="md-nav__icon md-icon"></span>
           Modes
         </label>
@@ -3245,23 +2911,30 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#amazon-machine-image-ami" class="md-nav__link">
-    Amazon Machine Image (AMI)
+  <a href="#cli-commands" class="md-nav__link">
+    CLI Commands
   </a>
   
-    <nav class="md-nav" aria-label="Amazon Machine Image (AMI)">
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#compliance" class="md-nav__link">
+    Compliance
+  </a>
+  
+    <nav class="md-nav" aria-label="Compliance">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#example" class="md-nav__link">
-    Example
+  <a href="#built-in-reports" class="md-nav__link">
+    Built in reports
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#required-actions" class="md-nav__link">
-    Required Actions
+  <a href="#examples" class="md-nav__link">
+    Examples
   </a>
   
 </li>
@@ -3272,29 +2945,16 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#elastic-block-store-ebs-snapshot" class="md-nav__link">
-    Elastic Block Store (EBS) Snapshot
-  </a>
-  
-    <nav class="md-nav" aria-label="Elastic Block Store (EBS) Snapshot">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#example_1" class="md-nav__link">
-    Example
+  <a href="#cached-results" class="md-nav__link">
+    Cached Results
   </a>
   
 </li>
-        
-          <li class="md-nav__item">
-  <a href="#required-actions_1" class="md-nav__link">
-    Required Actions
+      
+        <li class="md-nav__item">
+  <a href="#custom-policies" class="md-nav__link">
+    Custom Policies
   </a>
-  
-</li>
-        
-      </ul>
-    </nav>
   
 </li>
       
@@ -3312,68 +2972,87 @@
                 
 
 
-<h1 id="aws-ec2">AWS EC2</h1>
-<p>Trivy can scan the following targets in AWS EC2.</p>
+<h1 id="amazon-web-services">Amazon Web Services</h1>
+<div class="admonition warning">
+<p class="admonition-title">EXPERIMENTAL</p>
+<p>This feature might change without preserving backwards compatibility.</p>
+</div>
+<p>The Trivy AWS CLI allows you to scan your AWS account for misconfigurations. 
+You can either run the CLI locally or integrate it into your CI/CD pipeline. </p>
+<p>Whilst you can already scan the infrastructure-as-code that defines your AWS resources with <code>trivy config</code>, you can now scan your live AWS account(s) directly too.</p>
+<p>The included checks cover all of the aspects of the <a href="https://docs.aws.amazon.com/securityhub/latest/userguide/securityhub-standards-cis.html">AWS CIS 1.2</a> automated benchmarks.</p>
+<p>Trivy uses the same <a href="https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-configure.html">authentication methods</a> as the AWS CLI to configure and authenticate your access to the AWS platform.</p>
+<p>You will need permissions configured to read all AWS resources - we recommend using a group/role with the <code>ReadOnlyAccess</code> policy attached.</p>
+<p>Once you've scanned your account, you can run additional commands to filter the results without having to run the entire scan again - infrastructure information is cached locally per AWS account/region.</p>
+<p>Trivy currently supports the following scanning for AWS accounts.</p>
 <ul>
-<li>Amazon Machine Image (AMI)</li>
-<li>Elastic Block Store (EBS) Snapshot</li>
+<li>Misconfigurations</li>
 </ul>
-<h2 id="amazon-machine-image-ami">Amazon Machine Image (AMI)</h2>
-<p>You can specify your AMI ID with the <code>ami:</code> prefix.</p>
-<div class="highlight"><pre><span></span><code>$ trivy vm ami:<span class="si">${</span><span class="nv">your_ami_id</span><span class="si">}</span>
+<h2 id="cli-commands">CLI Commands</h2>
+<p>Scan a full AWS account (all supported services):</p>
+<div class="highlight"><pre><span></span><code>trivy aws --region us-east-1
 </code></pre></div>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>AMIs in the marketplace are not supported because the EBS direct APIs don't support that.
-See <a href="https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ebs-accessing-snapshot.html#ebsapi-elements">the AWS documentation</a> for the detail.</p>
-</div>
-<h3 id="example">Example</h3>
-<div class="highlight"><pre><span></span><code>$ trivy vm --scanners vuln ami:ami-0123456789abcdefg
+<p>You can allow Trivy to determine the AWS region etc. by using the standard AWS configuration files and environment variables. The <code>--region</code> flag overrides these.</p>
+<p><img alt="AWS Summary Report" src="../../../imgs/trivy-aws.png" /></p>
+<p>The summary view is the default when scanning multiple services.</p>
+<p>Scan a specific service:</p>
+<div class="highlight"><pre><span></span><code>trivy aws --service s3
 </code></pre></div>
-<div class="admonition tip">
-<p class="admonition-title">Tip</p>
-<p>The scanning could be faster if you enable only vulnerability scanning (<code>--scanners vuln</code>) because Trivy tries to download only necessary blocks for vulnerability detection.</p>
-</div>
-<p>If you want to scan a AMI of non-default setting region, you can set any region via <code>--aws-region</code> option.</p>
-<div class="highlight"><pre><span></span><code>$ trivy vm --aws-region ap-northeast-1 ami:ami-0123456789abcdefg
+<p>Scan multiple services:</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># --service s3,ec2 works too</span>
+trivy aws --service s3 --service ec2
 </code></pre></div>
-<h3 id="required-actions">Required Actions</h3>
-<p>Some actions on EBS are also necessary since Trivy scans an EBS snapshot tied to the specified AMI under the hood.</p>
-<ul>
-<li>ec2:DescribeImages</li>
-<li>ebs:ListSnapshotBlocks</li>
-<li>ebs:GetSnapshotBlock</li>
-</ul>
-<h2 id="elastic-block-store-ebs-snapshot">Elastic Block Store (EBS) Snapshot</h2>
-<p>You can specify your EBS snapshot ID with the <code>ebs:</code> prefix.</p>
-<div class="highlight"><pre><span></span><code>$ trivy vm ebs:<span class="si">${</span><span class="nv">your_ebs_snapshot_id</span><span class="si">}</span>
+<p>Show results for a specific AWS resource:</p>
+<div class="highlight"><pre><span></span><code>trivy aws --service s3 --arn arn:aws:s3:::example-bucket
 </code></pre></div>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>Public snapshots are not supported because the EBS direct APIs don't support that.
-See <a href="https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ebs-accessing-snapshot.html#ebsapi-elements">the AWS documentation</a> for the detail.</p>
-</div>
-<h3 id="example_1">Example</h3>
-<div class="highlight"><pre><span></span><code>$ trivy vm --scanners vuln ebs:snap-0123456789abcdefg
+<p>All ARNs with detected issues will be displayed when showing results for their associated service.</p>
+<h2 id="compliance">Compliance</h2>
+<p>This section describes AWS specific compliance reports.
+For an overview of Trivy's Compliance feature, including working with custom compliance, check out the <a href="../../compliance/compliance/">Compliance documentation</a>.</p>
+<h3 id="built-in-reports">Built in reports</h3>
+<p>the following reports are available out of the box:</p>
+<table>
+<thead>
+<tr>
+<th>Compliance</th>
+<th>Name for command</th>
+<th>More info</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>AWS CIS Foundations Benchmark v1.2</td>
+<td><code>aws-cis-1.2</code></td>
+<td><a href="https://d0.awsstatic.com/whitepapers/compliance/AWS_CIS_Foundations_Benchmark.pdf">link</a></td>
+</tr>
+<tr>
+<td>AWS CIS Foundations Benchmark v1.4</td>
+<td><code>aws-cis-1.4</code></td>
+<td><a href="https://docs.aws.amazon.com/securityhub/latest/userguide/securityhub-cis-controls-1.4.0.html">link</a></td>
+</tr>
+</tbody>
+</table>
+<h3 id="examples">Examples</h3>
+<p>Scan a cloud account and generate a compliance summary report:</p>
+<div class="highlight"><pre><span></span><code>$ trivy aws --compliance=&lt;compliance_id&gt; --report=summary
 </code></pre></div>
-<div class="admonition tip">
-<p class="admonition-title">Tip</p>
-</div>
-<p>The scanning could be faster if you enable only vulnerability scanning (<code>--scanners vuln</code>) because Trivy tries to download only necessary blocks for vulnerability detection.</p>
-<p>If you want to scan an EBS Snapshot of non-default setting region, you can set any region via <code>--aws-region</code> option.</p>
-<div class="highlight"><pre><span></span><code>$ trivy vm --aws-region ap-northeast-1 ebs:ebs-0123456789abcdefg
+<p><strong><em>Note</em></strong> : The <code>Issues</code> column represent the total number of failed checks for this control.</p>
+<p>Get all of the detailed output for checks:</p>
+<div class="highlight"><pre><span></span><code>$ trivy aws --compliance=&lt;compliance_id&gt; --report all
 </code></pre></div>
-<p>The above command takes a while as it calls EBS API and fetches the EBS blocks.
-If you want to scan the same snapshot several times, you can download the snapshot locally by using <a href="https://github.com/awslabs/coldsnap">coldsnap</a> maintained by AWS.
-Then, Trivy can scan the local VM image file.</p>
-<div class="highlight"><pre><span></span><code>$ coldsnap download snap-0123456789abcdefg disk.img
-$ trivy vm ./disk.img
+<p>Report result in JSON format:</p>
+<div class="highlight"><pre><span></span><code>$ trivy aws --compliance=&lt;compliance_id&gt; --report all --format json
 </code></pre></div>
-<h3 id="required-actions_1">Required Actions</h3>
-<ul>
-<li>ebs:ListSnapshotBlocks</li>
-<li>ebs:GetSnapshotBlock</li>
-</ul>
+<h2 id="cached-results">Cached Results</h2>
+<p>By default, Trivy will cache a representation of each AWS service for 24 hours.
+This means you can filter and view results for a service without having to wait for the entire scan to run again.
+If you want to force the cache to be refreshed with the latest data, you can use <code>--update-cache</code>.
+Or if you'd like to use cached data for a different timeframe, you can specify <code>--max-cache-age</code> (e.g. <code>--max-cache-age 2h</code>.).
+Regardless of whether the cache is used or not, rules will be evaluated again with each run of <code>trivy aws</code>.</p>
+<h2 id="custom-policies">Custom Policies</h2>
+<p>You can write custom policies for Trivy to evaluate against your AWS account.
+These policies are written in <a href="https://www.openpolicyagent.org/docs/latest/policy-language/">Rego</a>, the same language used by <a href="https://www.openpolicyagent.org/">Open Policy Agent</a>.
+See the <a href="../../misconfiguration/custom/">Custom Policies</a> page for more information.</p>
 
               
             </article>
@@ -3391,7 +3070,7 @@ $ trivy vm ./disk.img
     <nav class="md-footer__inner md-grid" aria-label="Footer" >
       
         
-        <a href="../" class="md-footer__link md-footer__link--prev" aria-label="Previous: Overview" rel="prev">
+        <a href="../kubernetes/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Kubernetes" rel="prev">
           <div class="md-footer__button md-icon">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
           </div>
@@ -3400,20 +3079,20 @@ $ trivy vm ./disk.img
               <span class="md-footer__direction">
                 Previous
               </span>
-              Overview
+              Kubernetes
             </div>
           </div>
         </a>
       
       
         
-        <a href="../../compliance/compliance/" class="md-footer__link md-footer__link--next" aria-label="Next: Reports" rel="next">
+        <a href="../sbom/" class="md-footer__link md-footer__link--next" aria-label="Next: SBOM" rel="next">
           <div class="md-footer__title">
             <div class="md-ellipsis">
               <span class="md-footer__direction">
                 Next
               </span>
-              Reports
+              SBOM
             </div>
           </div>
           <div class="md-footer__button md-icon">

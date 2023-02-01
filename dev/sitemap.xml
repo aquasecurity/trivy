@@ -46,22 +46,7 @@
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>https://aquasecurity.github.io/trivy/dev/docs/advanced/container/containerd/</loc>
-         <lastmod>2023-02-01</lastmod>
-         <changefreq>daily</changefreq>
-    </url>
-    <url>
          <loc>https://aquasecurity.github.io/trivy/dev/docs/advanced/container/embed-in-dockerfile/</loc>
-         <lastmod>2023-02-01</lastmod>
-         <changefreq>daily</changefreq>
-    </url>
-    <url>
-         <loc>https://aquasecurity.github.io/trivy/dev/docs/advanced/container/oci/</loc>
-         <lastmod>2023-02-01</lastmod>
-         <changefreq>daily</changefreq>
-    </url>
-    <url>
-         <loc>https://aquasecurity.github.io/trivy/dev/docs/advanced/container/podman/</loc>
          <lastmod>2023-02-01</lastmod>
          <changefreq>daily</changefreq>
     </url>
@@ -116,32 +101,7 @@
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>https://aquasecurity.github.io/trivy/dev/docs/cloud/aws/compliance/</loc>
-         <lastmod>2023-02-01</lastmod>
-         <changefreq>daily</changefreq>
-    </url>
-    <url>
-         <loc>https://aquasecurity.github.io/trivy/dev/docs/cloud/aws/scanning/</loc>
-         <lastmod>2023-02-01</lastmod>
-         <changefreq>daily</changefreq>
-    </url>
-    <url>
          <loc>https://aquasecurity.github.io/trivy/dev/docs/compliance/compliance/</loc>
-         <lastmod>2023-02-01</lastmod>
-         <changefreq>daily</changefreq>
-    </url>
-    <url>
-         <loc>https://aquasecurity.github.io/trivy/dev/docs/kubernetes/cli/compliance/</loc>
-         <lastmod>2023-02-01</lastmod>
-         <changefreq>daily</changefreq>
-    </url>
-    <url>
-         <loc>https://aquasecurity.github.io/trivy/dev/docs/kubernetes/cli/scanning/</loc>
-         <lastmod>2023-02-01</lastmod>
-         <changefreq>daily</changefreq>
-    </url>
-    <url>
-         <loc>https://aquasecurity.github.io/trivy/dev/docs/kubernetes/operator/</loc>
          <lastmod>2023-02-01</lastmod>
          <changefreq>daily</changefreq>
     </url>
@@ -316,11 +276,6 @@
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>https://aquasecurity.github.io/trivy/dev/docs/sbom/supported/</loc>
-         <lastmod>2023-02-01</lastmod>
-         <changefreq>daily</changefreq>
-    </url>
-    <url>
          <loc>https://aquasecurity.github.io/trivy/dev/docs/secret/configuration/</loc>
          <lastmod>2023-02-01</lastmod>
          <changefreq>daily</changefreq>
@@ -336,17 +291,47 @@
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>https://aquasecurity.github.io/trivy/dev/docs/vm/</loc>
+         <loc>https://aquasecurity.github.io/trivy/dev/docs/target/aws/</loc>
          <lastmod>2023-02-01</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>https://aquasecurity.github.io/trivy/dev/docs/vm/aws/</loc>
+         <loc>https://aquasecurity.github.io/trivy/dev/docs/target/container_image/</loc>
          <lastmod>2023-02-01</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>https://aquasecurity.github.io/trivy/dev/docs/vulnerability/distributions/</loc>
+         <loc>https://aquasecurity.github.io/trivy/dev/docs/target/filesystem/</loc>
+         <lastmod>2023-02-01</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://aquasecurity.github.io/trivy/dev/docs/target/git-repository/</loc>
+         <lastmod>2023-02-01</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://aquasecurity.github.io/trivy/dev/docs/target/kubernetes/</loc>
+         <lastmod>2023-02-01</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://aquasecurity.github.io/trivy/dev/docs/target/rootfs/</loc>
+         <lastmod>2023-02-01</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://aquasecurity.github.io/trivy/dev/docs/target/sbom/</loc>
+         <lastmod>2023-02-01</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://aquasecurity.github.io/trivy/dev/docs/target/vm/</loc>
+         <lastmod>2023-02-01</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://aquasecurity.github.io/trivy/dev/docs/vulnerability/scanning/</loc>
          <lastmod>2023-02-01</lastmod>
          <changefreq>daily</changefreq>
     </url>
@@ -362,11 +347,6 @@
     </url>
     <url>
          <loc>https://aquasecurity.github.io/trivy/dev/docs/vulnerability/detection/os/</loc>
-         <lastmod>2023-02-01</lastmod>
-         <changefreq>daily</changefreq>
-    </url>
-    <url>
-         <loc>https://aquasecurity.github.io/trivy/dev/docs/vulnerability/detection/supported/</loc>
          <lastmod>2023-02-01</lastmod>
          <changefreq>daily</changefreq>
     </url>
@@ -402,31 +382,6 @@
     </url>
     <url>
          <loc>https://aquasecurity.github.io/trivy/dev/docs/vulnerability/languages/java/</loc>
-         <lastmod>2023-02-01</lastmod>
-         <changefreq>daily</changefreq>
-    </url>
-    <url>
-         <loc>https://aquasecurity.github.io/trivy/dev/docs/vulnerability/scanning/</loc>
-         <lastmod>2023-02-01</lastmod>
-         <changefreq>daily</changefreq>
-    </url>
-    <url>
-         <loc>https://aquasecurity.github.io/trivy/dev/docs/vulnerability/scanning/filesystem/</loc>
-         <lastmod>2023-02-01</lastmod>
-         <changefreq>daily</changefreq>
-    </url>
-    <url>
-         <loc>https://aquasecurity.github.io/trivy/dev/docs/vulnerability/scanning/git-repository/</loc>
-         <lastmod>2023-02-01</lastmod>
-         <changefreq>daily</changefreq>
-    </url>
-    <url>
-         <loc>https://aquasecurity.github.io/trivy/dev/docs/vulnerability/scanning/image/</loc>
-         <lastmod>2023-02-01</lastmod>
-         <changefreq>daily</changefreq>
-    </url>
-    <url>
-         <loc>https://aquasecurity.github.io/trivy/dev/docs/vulnerability/scanning/rootfs/</loc>
          <lastmod>2023-02-01</lastmod>
          <changefreq>daily</changefreq>
     </url>
