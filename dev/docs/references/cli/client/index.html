@@ -2882,19 +2882,21 @@ Cache Flags
 DB Flags
       --db-repository string   OCI repository to retrieve trivy-db from <span class="o">(</span>default <span class="s2">&quot;ghcr.io/aquasecurity/trivy-db&quot;</span><span class="o">)</span>
       --download-db-only       download/update vulnerability database but don<span class="s1">&#39;t run a scan</span>
-<span class="s1">      --no-progress            suppress progress bar</span>
-<span class="s1">      --reset                  remove all caches and database</span>
-<span class="s1">      --skip-db-update         skip updating vulnerability database</span>
+<span class="s1">      --download-java-db-only  download/update java indexes database but don&#39;</span>t run a scan
+      --no-progress            suppress progress bar
+      --reset                  remove all caches and database
+      --skip-db-update         skip updating vulnerability database
+      --skip-java-db-update    skip updating java indexes database
 
-<span class="s1">Vulnerability Flags</span>
-<span class="s1">      --ignore-unfixed     display only fixed vulnerabilities</span>
-<span class="s1">      --vuln-type string   comma-separated list of vulnerability types (os,library) (default &quot;os,library&quot;)</span>
+Vulnerability Flags
+      --ignore-unfixed     display only fixed vulnerabilities
+      --vuln-type string   comma-separated list of vulnerability types <span class="o">(</span>os,library<span class="o">)</span> <span class="o">(</span>default <span class="s2">&quot;os,library&quot;</span><span class="o">)</span>
 
-<span class="s1">Misconfiguration Flags</span>
-<span class="s1">      --config-data strings         specify paths from which data for the Rego policies will be recursively loaded</span>
-<span class="s1">      --config-policy strings       specify paths to the Rego policy files directory, applying config files</span>
-<span class="s1">      --file-patterns strings       specify config file patterns, available with &#39;</span>--scanners config<span class="s1">&#39;</span>
-<span class="s1">      --include-non-failures        include successes and exceptions, available with &#39;</span>--scanners config<span class="err">&#39;</span>
+Misconfiguration Flags
+      --config-data strings         specify paths from which data <span class="k">for</span> the Rego policies will be recursively loaded
+      --config-policy strings       specify paths to the Rego policy files directory, applying config files
+      --file-patterns strings       specify config file patterns, available with <span class="s1">&#39;--scanners config&#39;</span>
+      --include-non-failures        include successes and exceptions, available with <span class="s1">&#39;--scanners config&#39;</span>
       --policy-namespaces strings   Rego namespaces
       --trace                       <span class="nb">enable</span> more verbose trace output <span class="k">for</span> custom queries
 

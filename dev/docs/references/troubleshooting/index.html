@@ -2580,8 +2580,8 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#maven-rate-limiting-inconsistent-jar-vulnerability-reporting" class="md-nav__link">
-    Maven rate limiting / inconsistent jar vulnerability reporting
+  <a href="#unable-to-open-jar-files" class="md-nav__link">
+    Unable to open JAR files
   </a>
   
 </li>
@@ -3042,8 +3042,8 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#maven-rate-limiting-inconsistent-jar-vulnerability-reporting" class="md-nav__link">
-    Maven rate limiting / inconsistent jar vulnerability reporting
+  <a href="#unable-to-open-jar-files" class="md-nav__link">
+    Unable to open JAR files
   </a>
   
 </li>
@@ -3207,40 +3207,19 @@ API rate limit exceeded <span class="k">for</span> xxx.xxx.xxx.xxx.
 https://developer.github.com/v3/#rate-limiting</p>
 <div class="highlight"><pre><span></span><code>$ GITHUB_TOKEN=XXXXXXXXXX trivy alpine:3.10
 </code></pre></div>
-<h3 id="maven-rate-limiting-inconsistent-jar-vulnerability-reporting">Maven rate limiting / inconsistent jar vulnerability reporting</h3>
+<h3 id="unable-to-open-jar-files">Unable to open JAR files</h3>
 <div class="admonition error">
 <p class="admonition-title">Error</p>
 <div class="highlight"><pre><span></span><code>$ trivy image ...
 ...
-status <span class="m">403</span> Forbidden from http://search.maven.org/solrsearch/select
+failed to analyze file: failed to analyze usr/lib/jvm/java-1.8-openjdk/lib/tools.jar: unable to open usr/lib/jvm/java-1.8-openjdk/lib/tools.jar: failed to open: unable to <span class="nb">read</span> the file: stream error: stream ID <span class="m">9</span><span class="p">;</span> PROTOCOL_ERROR<span class="p">;</span> received from peer
 </code></pre></div>
 </div>
-<p>Trivy calls Maven API for better detection of JAR files, but many requests may exceed rate limiting.
-This can easily happen if you are running more than one instance of Trivy which is concurrently scanning multiple images.
-Once this starts happening Trivy's vulnerability reporting on jar files may become inconsistent.
-There are two options to resolve this issue:</p>
-<p>The first is to enable offline scanning using the <code>--offline-scan</code> option to stop Trivy from making API requests.
-This option affects only vulnerability scanning. The vulnerability database and builtin policies are downloaded as usual.
-If you want to skip them as well, you can try <code>--skip-update</code> and <code>--skip-policy-update</code>.
-<strong>Note that a number of vulnerabilities might be fewer than without the <code>--offline-scan</code> option.</strong></p>
-<p>The second, more scalable, option is to place Trivy behind a rate-limiting forward-proxy to the Maven Central API.
-One way to achieve this is to use nginx. You can use the following nginx config to enable both rate-limiting and caching (the caching greatly reduces the number of calls to the Maven Central API, especially if you are scanning a lot of similar images):</p>
-<div class="highlight"><pre><span></span><code><span class="k">limit_req_zone</span><span class="w"> </span><span class="s">global</span><span class="w"> </span><span class="s">zone=maven:1m</span><span class="w"> </span><span class="s">rate=10r/s</span><span class="p">;</span><span class="w"></span>
-<span class="k">proxy_cache_path</span><span class="w"> </span><span class="s">/tmp/cache</span><span class="w"> </span><span class="s">keys_zone=mavencache:10m</span><span class="p">;</span><span class="w"></span>
-
-<span class="k">server</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">  </span><span class="kn">listen</span><span class="w"> </span><span class="mi">80</span><span class="p">;</span><span class="w"></span>
-<span class="w">  </span><span class="kn">proxy_cache</span><span class="w"> </span><span class="s">mavencache</span><span class="p">;</span><span class="w"></span>
-
-<span class="w">  </span><span class="kn">location</span><span class="w"> </span><span class="s">/</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">    </span><span class="kn">limit_req</span><span class="w"> </span><span class="s">zone=maven</span><span class="w"> </span><span class="s">burst=1000</span><span class="p">;</span><span class="w"></span>
-<span class="w">    </span><span class="kn">proxy_cache_valid</span><span class="w"> </span><span class="s">any</span><span class="w"> </span><span class="s">1h</span><span class="p">;</span><span class="w"></span>
-<span class="w">    </span><span class="kn">proxy_pass</span><span class="w"> </span><span class="s">https://search.maven.org:443</span><span class="p">;</span><span class="w"></span>
-<span class="w">  </span><span class="p">}</span><span class="w"></span>
-<span class="p">}</span><span class="w"></span>
+<p>Currently, we're investigating this issue. As a temporary mitigation, you may be able to avoid this issue by downloading the Java DB in advance.</p>
+<div class="highlight"><pre><span></span><code>$ trivy image --download-java-db-only
+<span class="m">2023</span>-02-01T16:57:04.322+0900    INFO    Downloading the Java DB...
+$ trivy image <span class="o">[</span>YOUR_JAVA_IMAGE<span class="o">]</span>
 </code></pre></div>
-<p>This config file will allow a maximum of 10 requests per second to the Maven API, this number was determined experimentally so you might want to use something else if it doesn't fit your needs.</p>
-<p>Once nginx is up and running, you need to tell all your Trivy deployments to proxy their Maven API calls through nginx. You can do this by setting the <code>MAVEN_CENTRAL_URL</code> environment variable. For example, if your nginx proxy is running at <code>127.0.0.1</code>, you can set <code>MAVEN_CENTRAL_URL=http://127.0.0.1/solrsearch/select</code>.</p>
 <h3 id="running-in-parallel-takes-same-time-as-series-run">Running in parallel takes same time as series run</h3>
 <p>When running trivy on multiple images simultaneously, it will take same time as running trivy in series.
 This is because of a limitation of boltdb.</p>

@@ -2893,20 +2893,22 @@ Cache Flags
 DB Flags
       --db-repository string   OCI repository to retrieve trivy-db from <span class="o">(</span>default <span class="s2">&quot;ghcr.io/aquasecurity/trivy-db&quot;</span><span class="o">)</span>
       --download-db-only       download/update vulnerability database but don<span class="s1">&#39;t run a scan</span>
-<span class="s1">      --no-progress            suppress progress bar</span>
-<span class="s1">      --reset                  remove all caches and database</span>
-<span class="s1">      --skip-db-update         skip updating vulnerability database</span>
+<span class="s1">      --download-java-db-only  download/update java indexes database but don&#39;</span>t run a scan
+      --no-progress            suppress progress bar
+      --reset                  remove all caches and database
+      --skip-db-update         skip updating vulnerability database
+      --skip-java-db-update    skip updating java indexes database
 
-<span class="s1">Vulnerability Flags</span>
-<span class="s1">      --ignore-unfixed     display only fixed vulnerabilities</span>
-<span class="s1">      --vuln-type string   comma-separated list of vulnerability types (os,library) (default &quot;os,library&quot;)</span>
+Vulnerability Flags
+      --ignore-unfixed     display only fixed vulnerabilities
+      --vuln-type string   comma-separated list of vulnerability types <span class="o">(</span>os,library<span class="o">)</span> <span class="o">(</span>default <span class="s2">&quot;os,library&quot;</span><span class="o">)</span>
 
-<span class="s1">Misconfiguration Flags</span>
-<span class="s1">      --helm-set strings          specify Helm values on the command line (can specify multiple or separate values with commas: key1=val1,key2=val2)</span>
-<span class="s1">      --helm-set-file strings     specify Helm values from respective files specified via the command line (can specify multiple or separate values with commas: key1=path1,key2=path2)</span>
-<span class="s1">      --helm-set-string strings   specify Helm string values on the command line (can specify multiple or separate values with commas: key1=val1,key2=val2)</span>
-<span class="s1">      --helm-values strings       specify paths to override the Helm values.yaml files</span>
-<span class="s1">      --include-non-failures      include successes and exceptions, available with &#39;</span>--scanners config<span class="err">&#39;</span>
+Misconfiguration Flags
+      --helm-set strings          specify Helm values on the <span class="nb">command</span> line <span class="o">(</span>can specify multiple or separate values with commas: <span class="nv">key1</span><span class="o">=</span>val1,key2<span class="o">=</span>val2<span class="o">)</span>
+      --helm-set-file strings     specify Helm values from respective files specified via the <span class="nb">command</span> line <span class="o">(</span>can specify multiple or separate values with commas: <span class="nv">key1</span><span class="o">=</span>path1,key2<span class="o">=</span>path2<span class="o">)</span>
+      --helm-set-string strings   specify Helm string values on the <span class="nb">command</span> line <span class="o">(</span>can specify multiple or separate values with commas: <span class="nv">key1</span><span class="o">=</span>val1,key2<span class="o">=</span>val2<span class="o">)</span>
+      --helm-values strings       specify paths to override the Helm values.yaml files
+      --include-non-failures      include successes and exceptions, available with <span class="s1">&#39;--scanners config&#39;</span>
       --tf-vars strings           specify paths to override the Terraform tfvars files
 
 Secret Flags
