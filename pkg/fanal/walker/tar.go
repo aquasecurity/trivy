@@ -2,6 +2,7 @@ package walker
 
 import (
 	"archive/tar"
+	"bytes"
 	"io"
 	"io/fs"
 	"path"
@@ -39,7 +40,11 @@ func NewLayerTar(skipFiles, skipDirs []string, slow bool) LayerTar {
 
 func (w LayerTar) Walk(layer io.Reader, analyzeFn WalkFunc) ([]string, []string, error) {
 	var opqDirs, whFiles, skipDirs []string
-	tr := tar.NewReader(layer)
+	var buf bytes.Buffer
+	if _, err := buf.ReadFrom(layer); err != nil {
+		return nil, nil, xerrors.Errorf("can't save layer in buffer: %w", err)
+	}
+	tr := tar.NewReader(&buf)
 	for {
 		hdr, err := tr.Next()
 		if err == io.EOF {
