@@ -141,3 +141,33 @@ func Test_FindingFSTarget(t *testing.T) {
 		})
 	}
 }
+
+func Test_createPolicyFS(t *testing.T) {
+	t.Run("inside cwd", func(t *testing.T) {
+		cwd, err := os.Getwd()
+		require.NoError(t, err)
+		require.NoError(t, os.MkdirAll(filepath.Join(cwd, "testdir"), 0750))
+		require.NoError(t, os.MkdirAll(filepath.Join(cwd, ".testdir"), 0750))
+		defer func() {
+			os.RemoveAll(filepath.Join(cwd, "testdir"))
+			os.RemoveAll(filepath.Join(cwd, ".testdir"))
+		}()
+
+		_, got1, err := createPolicyFS([]string{"testdir"})
+		require.NoError(t, err)
+
+		_, got2, err := createPolicyFS([]string{".testdir"})
+		require.NoError(t, err)
+
+		assert.NotEqual(t, got1, got2, "testdir and .testdir are different dirs and should not be equal")
+	})
+
+	t.Run("outside cwd", func(t *testing.T) {
+		tmpDir := t.TempDir()
+		require.NoError(t, os.MkdirAll(filepath.Join(tmpDir, "subdir/testdir"), 0750))
+		f, got, err := createPolicyFS([]string{filepath.Join(tmpDir, "subdir/testdir")})
+		require.NoError(t, err)
+		assert.Equal(t, []string{"."}, got)
+		assert.Contains(t, f, "testdir")
+	})
+}
