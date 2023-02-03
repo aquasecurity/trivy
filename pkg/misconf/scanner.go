@@ -205,8 +205,7 @@ func createPolicyFS(policyPaths []string) (fs.FS, []string, error) {
 		}
 		var cleanPaths []string
 		for _, path := range policyPaths {
-			path = strings.TrimPrefix(path, "/")
-			cleanPaths = append(cleanPaths, path)
+			cleanPaths = append(cleanPaths, filepath.Clean(path))
 		}
 		return os.DirFS(cwd), cleanPaths, nil
 	}
