@@ -276,10 +276,8 @@ func (a Artifact) inspectLayer(ctx context.Context, layerInfo LayerInfo, disable
 	if err != nil {
 		return types.BlobInfo{}, xerrors.Errorf("unable to get uncompressed layer %s: %w", layerInfo.DiffID, err)
 	}
-	defer func() {
-		rc.Close()
-		cleanLayerFile(layerFilePath)
-	}()
+	defer rc.Close()
+	defer cleanLayerFile(layerFilePath)
 
 	// Prepare variables
 	var wg sync.WaitGroup

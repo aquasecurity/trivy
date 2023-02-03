@@ -3,7 +3,6 @@ package walker
 import (
 	"archive/tar"
 	"bytes"
-	dio "github.com/aquasecurity/go-dep-parser/pkg/io"
 	"io"
 	"io/fs"
 	"path"
@@ -12,6 +11,7 @@ import (
 
 	"golang.org/x/xerrors"
 
+	dio "github.com/aquasecurity/go-dep-parser/pkg/io"
 	"github.com/aquasecurity/trivy/pkg/fanal/utils"
 )
 
