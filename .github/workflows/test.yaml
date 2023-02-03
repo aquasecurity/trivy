@@ -21,14 +21,13 @@ jobs:
     strategy:
       matrix:
         operating-system: [ubuntu-latest, windows-latest, macos-latest]
-        go-version: [stable, oldstable]
     steps:
       - uses: actions/checkout@v3
 
       - name: Set up Go
         uses: actions/setup-go@v3
         with:
-          go-version: ${{ matrix.go-version }}
+          go-version: oldstable
 
       - name: go mod tidy
         run: |
@@ -40,7 +39,7 @@ jobs:
         if: matrix.operating-system == 'ubuntu-latest'
 
       - name: Lint
-        uses: golangci/golangci-lint-action@v3.3.0
+        uses: golangci/golangci-lint-action@v3.4.0
         with:
           version: v1.49
           args: --deadline=30m
@@ -48,7 +47,7 @@ jobs:
         if: matrix.operating-system == 'ubuntu-latest'
 
       # Install tools
-      - uses: aquaproj/aqua-installer@v1.2.0
+      - uses: aquaproj/aqua-installer@v2.0.2
         with:
           aqua_version: v1.25.0
 
@@ -83,7 +82,7 @@ jobs:
           go-version-file: go.mod
 
       # Install tools
-      - uses: aquaproj/aqua-installer@v1.1.2
+      - uses: aquaproj/aqua-installer@v2.0.2
         with:
           aqua_version: v1.25.0
 
