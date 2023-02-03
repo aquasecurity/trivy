@@ -87,7 +87,7 @@ jobs:
       ## only for canary build
       - name: Build and push
         if: ${{ inputs.goreleaser_config == 'goreleaser-canary.yml' }}
-        uses: docker/build-push-action@v3
+        uses: docker/build-push-action@v4
         with:
           platforms: linux/amd64, linux/arm64
           file: ./Dockerfile.canary # path to Dockerfile
