@@ -18,7 +18,6 @@ var (
 const (
 	defaultSizeThreshold = int64(200) << 20 // 200MB
 	slowSizeThreshold    = int64(100) << 10 // 10KB
-	layerSizeThreshold   = int64(50) << 20  // 50MB
 )
 
 type WalkFunc func(filePath string, info os.FileInfo, opener analyzer.Opener) error

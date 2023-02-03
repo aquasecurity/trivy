@@ -2,6 +2,8 @@ package walker
 
 import (
 	"archive/tar"
+	"bytes"
+	dio "github.com/aquasecurity/go-dep-parser/pkg/io"
 	"io"
 	"io/fs"
 	"path"
@@ -22,30 +24,17 @@ var parentDir = ".." + utils.PathSeparator
 
 type LayerTar struct {
 	walker
-	threshold int64
 }
 
 func NewLayerTar(skipFiles, skipDirs []string, slow bool) LayerTar {
-	threshold := defaultSizeThreshold
-	if slow {
-		threshold = slowSizeThreshold
-	}
-
 	return LayerTar{
-		walker:    newWalker(skipFiles, skipDirs, slow),
-		threshold: threshold,
+		walker: newWalker(skipFiles, skipDirs, slow),
 	}
 }
 
-func (w LayerTar) Walk(layer io.ReadCloser, size int64, analyzeFn WalkFunc) ([]string, []string, error) {
+func (w LayerTar) Walk(layer io.Reader, analyzeFn WalkFunc) ([]string, []string, error) {
 	var opqDirs, whFiles, skipDirs []string
-	cl := newCachedLayer(layer, size, layerSizeThreshold)
-	cr, err := cl.open()
-	if err != nil {
-		return nil, nil, xerrors.Errorf("failed to open cached layer: %w", err)
-	}
-	defer cl.clean()
-	tr := tar.NewReader(cr)
+	tr := tar.NewReader(layer)
 	for {
 		hdr, err := tr.Next()
 		if err == io.EOF {
@@ -100,13 +89,14 @@ func (w LayerTar) Walk(layer io.ReadCloser, size int64, analyzeFn WalkFunc) ([]s
 }
 
 func (w LayerTar) processFile(filePath string, tr *tar.Reader, fi fs.FileInfo, analyzeFn WalkFunc) error {
-	cf := newCachedFile(fi.Size(), tr, w.threshold)
-	defer func() {
-		// nolint
-		_ = cf.Clean()
-	}()
+	b, err := io.ReadAll(tr)
+	if err != nil {
+		return xerrors.Errorf("unable to read the file: %w", err)
+	}
 
-	if err := analyzeFn(filePath, fi, cf.Open); err != nil {
+	if err = analyzeFn(filePath, fi, func() (dio.ReadSeekCloserAt, error) {
+		return dio.NopCloser(bytes.NewReader(b)), nil
+	}); err != nil {
 		return xerrors.Errorf("failed to analyze file: %w", err)
 	}
 

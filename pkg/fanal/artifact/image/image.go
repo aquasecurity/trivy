@@ -24,6 +24,8 @@ import (
 	"github.com/aquasecurity/trivy/pkg/semaphore"
 )
 
+const defaultLayerSizeThreshold = int64(50) << 20 // 50MB =
+
 type Artifact struct {
 	image          types.Image
 	cache          cache.ArtifactCache
@@ -270,11 +272,14 @@ func (a Artifact) inspect(ctx context.Context, missingImage string, layerKeys, b
 func (a Artifact) inspectLayer(ctx context.Context, layerInfo LayerInfo, disabled []analyzer.Type) (types.BlobInfo, error) {
 	log.Logger.Debugf("Missing diff ID in cache: %s", layerInfo.DiffID)
 
-	layerDigest, size, rc, err := a.uncompressedLayer(layerInfo.DiffID)
+	layerDigest, rc, layerFilePath, err := a.uncompressedLayer(layerInfo.DiffID)
 	if err != nil {
 		return types.BlobInfo{}, xerrors.Errorf("unable to get uncompressed layer %s: %w", layerInfo.DiffID, err)
 	}
-	defer rc.Close()
+	defer func() {
+		rc.Close()
+		cleanLayerFile(layerFilePath)
+	}()
 
 	// Prepare variables
 	var wg sync.WaitGroup
@@ -283,7 +288,7 @@ func (a Artifact) inspectLayer(ctx context.Context, layerInfo LayerInfo, disable
 	limit := semaphore.New(a.artifactOption.Slow)
 
 	// Walk a tar layer
-	opqDirs, whFiles, err := a.walker.Walk(rc, size, func(filePath string, info os.FileInfo, opener analyzer.Opener) error {
+	opqDirs, whFiles, err := a.walker.Walk(rc, func(filePath string, info os.FileInfo, opener analyzer.Opener) error {
 		if err = a.analyzer.AnalyzeFile(ctx, &wg, limit, result, "", filePath, info, opener, disabled, opts); err != nil {
 			return xerrors.Errorf("failed to analyze %s: %w", filePath, err)
 		}
@@ -335,16 +340,16 @@ func (a Artifact) diffIDs(configFile *v1.ConfigFile) []string {
 	})
 }
 
-func (a Artifact) uncompressedLayer(diffID string) (string, int64, io.ReadCloser, error) {
+func (a Artifact) uncompressedLayer(diffID string) (string, io.ReadCloser, string, error) {
 	// diffID is a hash of the uncompressed layer
 	h, err := v1.NewHash(diffID)
 	if err != nil {
-		return "", 0, nil, xerrors.Errorf("invalid layer ID (%s): %w", diffID, err)
+		return "", nil, "", xerrors.Errorf("invalid layer ID (%s): %w", diffID, err)
 	}
 
 	layer, err := a.image.LayerByDiffID(h)
 	if err != nil {
-		return "", 0, nil, xerrors.Errorf("failed to get the layer (%s): %w", diffID, err)
+		return "", nil, "", xerrors.Errorf("failed to get the layer (%s): %w", diffID, err)
 	}
 
 	// digest is a hash of the compressed layer
@@ -352,21 +357,59 @@ func (a Artifact) uncompressedLayer(diffID string) (string, int64, io.ReadCloser
 	if a.isCompressed(layer) {
 		d, err := layer.Digest()
 		if err != nil {
-			return "", 0, nil, xerrors.Errorf("failed to get the digest (%s): %w", diffID, err)
+			return "", nil, "", xerrors.Errorf("failed to get the digest (%s): %w", diffID, err)
 		}
 		digest = d.String()
 	}
 
 	size, err := layer.Size()
 	if err != nil {
-		return "", 0, nil, xerrors.Errorf("failed to get the layer size (%s): %w", diffID, err)
+		return "", nil, "", xerrors.Errorf("failed to get the layer size (%s): %w", diffID, err)
 	}
 
 	rc, err := layer.Uncompressed()
 	if err != nil {
-		return "", 0, nil, xerrors.Errorf("failed to get the layer content (%s): %w", diffID, err)
+		return "", nil, "", xerrors.Errorf("failed to get the layer content (%s): %w", diffID, err)
 	}
-	return digest, size, rc, nil
+
+	rc, layerFilePath, err := a.cacheLayer(rc, size)
+	if err != nil {
+		return "", nil, "", xerrors.Errorf("failed to cache layer (%s): %w", diffID, err)
+	}
+	return digest, rc, layerFilePath, nil
+}
+
+func (a Artifact) cacheLayer(rc io.ReadCloser, size int64) (io.ReadCloser, string, error) {
+	filePath := ""
+	if a.artifactOption.Slow || size >= defaultLayerSizeThreshold {
+		tmpFile, err := os.CreateTemp("", "fanal-layer-*")
+		if err != nil {
+			return nil, "", xerrors.Errorf("failed to create the temp file for layer: %w", err)
+		}
+
+		if _, err = io.Copy(tmpFile, rc); err != nil {
+			return nil, "", xerrors.Errorf("failed to copy layer in file: %w", err)
+		}
+
+		err = rc.Close() // close reader to free RAM
+		if err != nil {
+			return nil, "", xerrors.Errorf("failed to close layer stream: %w", err)
+		}
+
+		filePath = tmpFile.Name()
+		rc, err = os.Open(filePath)
+		if err != nil {
+			return nil, "", xerrors.Errorf("failed to open the temp layer file: %w", err)
+		}
+	}
+	return rc, filePath, nil
+}
+
+func cleanLayerFile(filePath string) error {
+	if filePath == "" {
+		return nil
+	}
+	return os.Remove(filePath)
 }
 
 // ref. https://github.com/google/go-containerregistry/issues/701

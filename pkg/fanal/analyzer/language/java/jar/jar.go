@@ -2,19 +2,17 @@ package jar
 
 import (
 	"context"
-	"os"
-	"path/filepath"
-	"strings"
-	"sync"
-
-	"golang.org/x/xerrors"
-
 	"github.com/aquasecurity/go-dep-parser/pkg/java/jar"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer/language"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/javadb"
 	"github.com/aquasecurity/trivy/pkg/log"
+	"golang.org/x/xerrors"
+	"os"
+	"path/filepath"
+	"strings"
+	"sync"
 )
 
 func init() {
@@ -39,8 +37,10 @@ type javaLibraryAnalyzer struct {
 func (a *javaLibraryAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInput) (*analyzer.AnalysisResult, error) {
 	// TODO: think about the sonatype API and "--offline"
 	var err error
+	//time.Sleep(1 * time.Minute)
 	a.once.Do(func() {
 		log.Logger.Info("JAR files found")
+		//time.Sleep(3 * time.Minute)
 		a.client, err = javadb.NewClient()
 		if err != nil {
 			log.Logger.Errorf("Unable to initialize the Java DB: %s", err)
