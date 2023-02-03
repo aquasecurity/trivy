@@ -2,7 +2,6 @@ package walker
 
 import (
 	"archive/tar"
-	"bytes"
 	"io"
 	"io/fs"
 	"path"
@@ -38,13 +37,15 @@ func NewLayerTar(skipFiles, skipDirs []string, slow bool) LayerTar {
 	}
 }
 
-func (w LayerTar) Walk(layer io.Reader, analyzeFn WalkFunc) ([]string, []string, error) {
+func (w LayerTar) Walk(layer io.ReadCloser, size int64, analyzeFn WalkFunc) ([]string, []string, error) {
 	var opqDirs, whFiles, skipDirs []string
-	var buf bytes.Buffer
-	if _, err := buf.ReadFrom(layer); err != nil {
-		return nil, nil, xerrors.Errorf("can't save layer in buffer: %w", err)
+	cl := newCachedLayer(layer, size, layerSizeThreshold)
+	cr, err := cl.open()
+	if err != nil {
+		return nil, nil, xerrors.Errorf("failed to open cached layer: %w", err)
 	}
-	tr := tar.NewReader(&buf)
+	defer cl.clean()
+	tr := tar.NewReader(cr)
 	for {
 		hdr, err := tr.Next()
 		if err == io.EOF {
