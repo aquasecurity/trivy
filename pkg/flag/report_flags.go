@@ -163,7 +163,7 @@ func (f *ReportFlagGroup) Flags() []*Flag {
 		f.IgnoreFile,
 		f.IgnorePolicy,
 		f.ExitCode,
-    f.ExitOnEOSL,
+		f.ExitOnEOSL,
 		f.Output,
 		f.Severity,
 		f.Compliance,
