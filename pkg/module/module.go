@@ -99,18 +99,48 @@ type Manager struct {
 	modules []*wasmModule
 }
 
-func NewManager(ctx context.Context) (*Manager, error) {
+// NewManager returns a new manager instance with asm compilation cache and the list of wasm modules
+// loaded from a default directory else accepts an optional list of module files
+func NewManager(ctx context.Context, moduleFiles ...string) (*Manager, error) {
 	m := &Manager{}
 
 	// Create a new WebAssembly Runtime.
 	m.cache = wazero.NewCompilationCache()
 
 	// Load WASM modules in local
-	if err := m.loadModules(ctx); err != nil {
+	if len(moduleFiles) > 0 {
+		if err := m.loadCustomModules(ctx, moduleFiles); err != nil {
+			return nil, xerrors.Errorf("custom module load error: %w", err)
+		}
+	} else if err := m.loadModules(ctx); err != nil {
 		return nil, xerrors.Errorf("module load error: %w", err)
 	}
 
 	return m, nil
+}
+
+// loadCustomModules accepts a list of moduleFiles and performs following checks
+// 1. If the file exists, 2. If file is not a directory 3. If the file extension is not .wasm
+// else loads the files(.wasm) to maintain a list of wasm plugins.
+func (m *Manager) loadCustomModules(ctx context.Context, moduleFiles []string) error {
+	for _, module := range moduleFiles {
+		info, err := os.Stat(module)
+		if os.IsNotExist(err) {
+			log.Logger.Infof("File does not exist %s...", module)
+			continue
+		}
+		if info.IsDir() || filepath.Ext(info.Name()) != ".wasm" {
+			log.Logger.Infof("File is not a valid wasm %s...", module)
+			continue
+		}
+
+		err = m.loadModulePlugin(ctx, module)
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
 }
 
 func (m *Manager) loadModules(ctx context.Context) error {
@@ -134,23 +164,33 @@ func (m *Manager) loadModules(ctx context.Context) error {
 		}
 
 		log.Logger.Infof("Loading %s...", rel)
-		wasmCode, err := os.ReadFile(path)
+		err = m.loadModulePlugin(ctx, path)
 		if err != nil {
-			return xerrors.Errorf("file read error: %w", err)
+			return err
 		}
-
-		p, err := newWASMPlugin(ctx, m.cache, wasmCode)
-		if err != nil {
-			return xerrors.Errorf("WASM module init error %s: %w", rel, err)
-		}
-
-		m.modules = append(m.modules, p)
 
 		return nil
 	})
 	if err != nil {
 		return xerrors.Errorf("module walk error: %w", err)
 	}
+
+	return nil
+}
+
+// loadModulePlugin loads the actual .wasm file to create a wasmPlugin
+func (m *Manager) loadModulePlugin(ctx context.Context, moduleFile string) error {
+	wasmCode, err := os.ReadFile(moduleFile)
+	if err != nil {
+		return xerrors.Errorf("file read error: %w", err)
+	}
+
+	p, err := newWASMPlugin(ctx, m.cache, wasmCode)
+	if err != nil {
+		return xerrors.Errorf("WASM module init error %s: %w", moduleFile, err)
+	}
+
+	m.modules = append(m.modules, p)
 
 	return nil
 }
