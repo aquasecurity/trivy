@@ -562,7 +562,13 @@ func initScannerConfig(opts flag.Options, cacheClient cache.Cache) (ScannerConfi
 			log.Logger.Debug("Policies successfully loaded from disk")
 			disableEmbedded = true
 		}
-
+		if len(opts.MisconfOptions.K8sVersion) > 0 {
+			err := createTempK8sRegoDataFile(opts.MisconfOptions.K8sVersion, getTempk8sRegoDataFolder())
+			if err != nil {
+				return ScannerConfig{}, scanOptions, err
+			}
+			opts.DataPaths = append(opts.DataPaths, getTempk8sRegoDataFolder())
+		}
 		configScannerOptions = config.ScannerOption{
 			Trace:                   opts.Trace,
 			Namespaces:              append(opts.PolicyNamespaces, defaultPolicyNamespaces...),
@@ -639,12 +645,13 @@ func initScannerConfig(opts flag.Options, cacheClient cache.Cache) (ScannerConfi
 
 func scan(ctx context.Context, opts flag.Options, initializeScanner InitializeScanner, cacheClient cache.Cache) (
 	types.Report, error) {
-
 	scannerConfig, scanOptions, err := initScannerConfig(opts, cacheClient)
 	if err != nil {
 		return types.Report{}, err
 	}
-
+	if len(opts.MisconfOptions.K8sVersion) > 0 {
+		defer removeK8sDataFolder(getTempk8sRegoDataFolder())
+	}
 	s, cleanup, err := initializeScanner(ctx, scannerConfig)
 	if err != nil {
 		return types.Report{}, xerrors.Errorf("unable to initialize a scanner: %w", err)

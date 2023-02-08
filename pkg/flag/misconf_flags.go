@@ -43,6 +43,12 @@ var (
 		Value:      []string{},
 		Usage:      "specify paths to override the Terraform tfvars files",
 	}
+	K8sVersionFlag = Flag{
+		Name:       "k8s-version",
+		ConfigName: "misconfiguration.k8s.version",
+		Value:      "",
+		Usage:      "specify k8s version to validate outdated api by it (example: 1.21.0)",
+	}
 )
 
 // MisconfFlagGroup composes common printer flag structs used for commands providing misconfinguration scanning.
@@ -55,6 +61,7 @@ type MisconfFlagGroup struct {
 	HelmFileValues   *Flag
 	HelmStringValues *Flag
 	TerraformTFVars  *Flag
+	K8sVersion       *Flag
 }
 
 type MisconfOptions struct {
@@ -66,6 +73,7 @@ type MisconfOptions struct {
 	HelmFileValues   []string
 	HelmStringValues []string
 	TerraformTFVars  []string
+	K8sVersion       string
 }
 
 func NewMisconfFlagGroup() *MisconfFlagGroup {
@@ -76,6 +84,7 @@ func NewMisconfFlagGroup() *MisconfFlagGroup {
 		HelmStringValues:   &HelmSetStringFlag,
 		HelmValueFiles:     &HelmValuesFileFlag,
 		TerraformTFVars:    &TfVarsFlag,
+		K8sVersion:         &K8sVersionFlag,
 	}
 }
 
@@ -91,6 +100,7 @@ func (f *MisconfFlagGroup) Flags() []*Flag {
 		f.HelmFileValues,
 		f.HelmStringValues,
 		f.TerraformTFVars,
+		f.K8sVersion,
 	}
 }
 
@@ -102,5 +112,6 @@ func (f *MisconfFlagGroup) ToOptions() (MisconfOptions, error) {
 		HelmFileValues:     getStringSlice(f.HelmFileValues),
 		HelmStringValues:   getStringSlice(f.HelmStringValues),
 		TerraformTFVars:    getStringSlice(f.TerraformTFVars),
+		K8sVersion:         getString(f.K8sVersion),
 	}, nil
 }
