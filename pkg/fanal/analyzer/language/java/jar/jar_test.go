@@ -11,6 +11,8 @@ import (
 
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
+
+	_ "modernc.org/sqlite"
 )
 
 func Test_javaLibraryAnalyzer_Analyze(t *testing.T) {

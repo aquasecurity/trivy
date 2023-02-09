@@ -12,6 +12,8 @@ import (
 
 	"github.com/aquasecurity/trivy/pkg/module"
 	"github.com/aquasecurity/trivy/pkg/utils"
+
+	_ "modernc.org/sqlite"
 )
 
 func TestModule(t *testing.T) {
