@@ -12,7 +12,6 @@ import (
 
 	"github.com/aquasecurity/go-dep-parser/pkg/java/jar"
 	"github.com/aquasecurity/trivy-java-db/pkg/db"
-	"github.com/aquasecurity/trivy-java-db/pkg/metadata"
 	"github.com/aquasecurity/trivy-java-db/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/oci"
@@ -36,7 +35,7 @@ type Updater struct {
 
 func (u *Updater) Update() error {
 	dbDir := u.dbDir
-	metac := metadata.New(dbDir)
+	metac := db.NewMetadata(dbDir)
 
 	meta, err := metac.Get()
 	if err != nil {

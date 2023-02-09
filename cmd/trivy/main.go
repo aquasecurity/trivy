@@ -9,6 +9,8 @@ import (
 	"github.com/aquasecurity/trivy/pkg/commands"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/plugin"
+
+	_ "modernc.org/sqlite" // sql driver for javadb
 )
 
 var (
