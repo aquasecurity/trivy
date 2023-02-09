@@ -4,15 +4,16 @@ import (
 	"context"
 	"crypto/tls"
 	"fmt"
-	"net/http"
-	"strings"
-
 	"github.com/google/go-containerregistry/pkg/authn"
 	"github.com/google/go-containerregistry/pkg/name"
 	v1 "github.com/google/go-containerregistry/pkg/v1"
 	"github.com/google/go-containerregistry/pkg/v1/remote"
 	v1types "github.com/google/go-containerregistry/pkg/v1/types"
 	"golang.org/x/xerrors"
+	"net"
+	"net/http"
+	"strings"
+	"time"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/image/token"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
@@ -21,12 +22,15 @@ import (
 
 func tryRemote(ctx context.Context, imageName string, ref name.Reference, option types.DockerOption) (types.Image, error) {
 	var remoteOpts []remote.Option
-	if option.InsecureSkipTLSVerify {
-		t := &http.Transport{
-			TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
-		}
-		remoteOpts = append(remoteOpts, remote.WithTransport(t))
+	d := &net.Dialer{
+		Timeout: 10 * time.Minute,
 	}
+	t := &http.Transport{
+		DisableKeepAlives: true,
+		DialContext:       d.DialContext,
+		TLSClientConfig:   &tls.Config{InsecureSkipVerify: option.InsecureSkipTLSVerify},
+	}
+	remoteOpts = append(remoteOpts, remote.WithTransport(t))
 
 	domain := ref.Context().RegistryStr()
 	auth := token.GetToken(ctx, domain, option)
