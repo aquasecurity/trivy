@@ -76,6 +76,7 @@ func (a rpmqaPkgAnalyzer) parseRpmqaManifest(r io.ReadSeekerAt) ([]types.Package
 			SrcName:    srcName,
 			SrcVersion: srcVer,
 			SrcRelease: srcRel,
+			Type: string(a.Type()),
 		}
 		pkgs = append(pkgs, pkg)
 	}

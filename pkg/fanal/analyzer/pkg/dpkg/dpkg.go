@@ -95,6 +95,7 @@ func (a dpkgAnalyzer) parseDpkgStatus(filePath string, scanner *bufio.Scanner) (
 
 		pkg = a.parseDpkgPkg(scanner)
 		if pkg != nil {
+			pkg.Type = string(a.Type())
 			pkgs[pkg.ID] = pkg
 			pkgIDs[pkg.Name] = pkg.ID
 		}

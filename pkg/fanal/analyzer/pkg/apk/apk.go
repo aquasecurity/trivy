@@ -103,6 +103,7 @@ func (a alpinePkgAnalyzer) parseApkInfo(scanner *bufio.Scanner) ([]types.Package
 	}
 	// in case of last paragraph
 	if !pkg.Empty() {
+		pkg.Type = string(a.Type())
 		pkgs = append(pkgs, pkg)
 	}
 

@@ -92,6 +92,9 @@ type Package struct {
 
 	// lines from the lock file where the dependency is written
 	Locations []Location `json:",omitempty"`
+
+	// pkg type  like dpkg  apk rpm
+	Type string `json:",omitempty"`
 }
 
 type Location struct {
