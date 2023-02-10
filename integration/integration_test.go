@@ -25,6 +25,8 @@ import (
 	"github.com/aquasecurity/trivy/pkg/commands"
 	"github.com/aquasecurity/trivy/pkg/dbtest"
 	"github.com/aquasecurity/trivy/pkg/types"
+
+	_ "modernc.org/sqlite"
 )
 
 var update = flag.Bool("update", false, "update golden files")
@@ -58,6 +60,7 @@ func initDB(t *testing.T) string {
 	})
 	require.NoError(t, err)
 
+	dbtest.InitJavaDB(t, cacheDir)
 	return cacheDir
 }
 

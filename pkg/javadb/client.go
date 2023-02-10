@@ -12,14 +12,12 @@ import (
 
 	"github.com/aquasecurity/go-dep-parser/pkg/java/jar"
 	"github.com/aquasecurity/trivy-java-db/pkg/db"
-	"github.com/aquasecurity/trivy-java-db/pkg/metadata"
 	"github.com/aquasecurity/trivy-java-db/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/oci"
 )
 
 const (
-	version                 = 1
 	defaultJavaDBRepository = "ghcr.io/aquasecurity/trivy-java-db"
 	mediaType               = "application/vnd.aquasec.trivy.javadb.layer.v1.tar+gzip"
 )
@@ -36,19 +34,19 @@ type Updater struct {
 
 func (u *Updater) Update() error {
 	dbDir := u.dbDir
-	metac := metadata.New(dbDir)
+	metac := db.NewMetadata(dbDir)
 
 	meta, err := metac.Get()
 	if err != nil {
 		if !errors.Is(err, os.ErrNotExist) {
 			return xerrors.Errorf("Java DB metadata error: %w", err)
 		} else if u.skip {
-			log.Logger.Error("The first run cannot skip downloading java DB")
-			return xerrors.New("--skip-java-update cannot be specified on the first run")
+			log.Logger.Error("The first run cannot skip downloading Java DB")
+			return xerrors.New("'--skip-java-update' cannot be specified on the first run")
 		}
 	}
 
-	if (meta.Version != version || meta.NextUpdate.Before(time.Now().UTC())) && !u.skip {
+	if (meta.Version != db.SchemaVersion || meta.NextUpdate.Before(time.Now().UTC())) && !u.skip {
 		// Download DB
 		log.Logger.Info("Downloading the Java DB...")
 
@@ -80,7 +78,7 @@ func (u *Updater) Update() error {
 
 func Init(cacheDir string, skip, quiet, insecure bool) {
 	updater = &Updater{
-		repo:     fmt.Sprintf("%s:%d", defaultJavaDBRepository, version), // TODO: make it configurable
+		repo:     fmt.Sprintf("%s:%d", defaultJavaDBRepository, db.SchemaVersion), // TODO: make it configurable
 		dbDir:    filepath.Join(cacheDir, "java-db"),
 		skip:     skip,
 		quiet:    quiet,

@@ -20,7 +20,7 @@ require (
 	github.com/aquasecurity/testdocker v0.0.0-20230111101738-e741bda259da
 	github.com/aquasecurity/tml v0.6.1
 	github.com/aquasecurity/trivy-db v0.0.0-20230116084806-4bcdf1c414d0
-	github.com/aquasecurity/trivy-java-db v0.0.0-20230201134457-514a75965135
+	github.com/aquasecurity/trivy-java-db v0.0.0-20230209231723-7cddb1406728
 	github.com/aquasecurity/trivy-kubernetes v0.3.1-0.20230124152305-a266786d8ded
 	github.com/aws/aws-sdk-go v1.44.171
 	github.com/aws/aws-sdk-go-v2 v1.17.3
@@ -65,7 +65,7 @@ require (
 	github.com/secure-systems-lab/go-securesystemslib v0.4.0
 	github.com/sigstore/rekor v1.0.1
 	github.com/sosedoff/gitkit v0.3.0
-	github.com/spf13/cobra v1.6.0
+	github.com/spf13/cobra v1.6.1
 	github.com/spf13/pflag v1.0.5
 	github.com/spf13/viper v1.14.0
 	github.com/stretchr/testify v1.8.1
@@ -80,19 +80,7 @@ require (
 	google.golang.org/protobuf v1.28.1
 	gopkg.in/yaml.v3 v3.0.1
 	k8s.io/utils v0.0.0-20230115233650-391b47cb4029
-)
-
-require (
-	github.com/dustin/go-humanize v1.0.1 // indirect
-	github.com/glebarez/go-sqlite v1.20.3 // indirect
-	github.com/glebarez/sqlite v1.6.0 // indirect
-	github.com/jinzhu/inflection v1.0.0 // indirect
-	github.com/jinzhu/now v1.1.5 // indirect
-	github.com/mattn/go-sqlite3 v1.14.16 // indirect
-	github.com/moby/patternmatcher v0.5.0 // indirect
-	github.com/moby/sys/sequential v0.5.0 // indirect
-	github.com/russross/blackfriday/v2 v2.1.0 // indirect
-	gorm.io/gorm v1.24.3 // indirect
+	modernc.org/sqlite v1.20.3
 )
 
 require (
@@ -204,6 +192,7 @@ require (
 	github.com/docker/go-events v0.0.0-20190806004212-e31b211e4f1c // indirect
 	github.com/docker/go-metrics v0.0.1 // indirect
 	github.com/docker/go-units v0.5.0 // indirect
+	github.com/dustin/go-humanize v1.0.1 // indirect
 	github.com/emicklei/go-restful/v3 v3.9.0 // indirect
 	github.com/emirpasic/gods v1.12.0 // indirect
 	github.com/evanphx/json-patch v5.6.0+incompatible // indirect
@@ -258,6 +247,7 @@ require (
 	github.com/jmoiron/sqlx v1.3.5 // indirect
 	github.com/josharian/intern v1.0.0 // indirect
 	github.com/json-iterator/go v1.1.12 // indirect
+	github.com/kballard/go-shellquote v0.0.0-20180428030007-95032a82bc51 // indirect
 	github.com/kevinburke/ssh_config v0.0.0-20201106050909-4977a11b4351 // indirect
 	github.com/klauspost/compress v1.15.12 // indirect
 	github.com/knqyf263/go-rpmdb v0.0.0-20230201142403-697bc51b3948
@@ -274,6 +264,7 @@ require (
 	github.com/mattn/go-colorable v0.1.12 // indirect
 	github.com/mattn/go-isatty v0.0.17 // indirect
 	github.com/mattn/go-runewidth v0.0.13 // indirect
+	github.com/mattn/go-sqlite3 v1.14.16 // indirect
 	github.com/matttproud/golang_protobuf_extensions v1.0.4 // indirect
 	github.com/microsoft/go-rustaudit v0.0.0-20220808201409-204dfee52032 // indirect
 	github.com/mitchellh/copystructure v1.2.0 // indirect
@@ -284,8 +275,10 @@ require (
 	github.com/mitchellh/reflectwalk v1.0.2 // indirect
 	github.com/moby/buildkit v0.11.0
 	github.com/moby/locker v1.0.1 // indirect
+	github.com/moby/patternmatcher v0.5.0 // indirect
 	github.com/moby/spdystream v0.2.0 // indirect
 	github.com/moby/sys/mountinfo v0.6.2 // indirect
+	github.com/moby/sys/sequential v0.5.0 // indirect
 	github.com/moby/sys/signal v0.7.0 // indirect
 	github.com/moby/term v0.0.0-20221128092401-c43b287e0e0f // indirect
 	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd // indirect
@@ -315,6 +308,7 @@ require (
 	github.com/remyoudompheng/bigfft v0.0.0-20230126093431-47fa9a501578 // indirect
 	github.com/rivo/uniseg v0.2.0 // indirect
 	github.com/rubenv/sql-migrate v1.1.2 // indirect
+	github.com/russross/blackfriday/v2 v2.1.0 // indirect
 	github.com/saracen/walker v0.0.0-20191201085201-324a081bae7e
 	github.com/sergi/go-diff v1.1.0 // indirect
 	github.com/shibumi/go-pathspec v1.3.0 // indirect
@@ -375,10 +369,15 @@ require (
 	k8s.io/klog/v2 v2.80.1 // indirect
 	k8s.io/kube-openapi v0.0.0-20221012153701-172d655c2280 // indirect
 	k8s.io/kubectl v0.26.1 // indirect
+	lukechampine.com/uint128 v1.2.0 // indirect
+	modernc.org/cc/v3 v3.40.0 // indirect
+	modernc.org/ccgo/v3 v3.16.13 // indirect
 	modernc.org/libc v1.22.2 // indirect
 	modernc.org/mathutil v1.5.0 // indirect
 	modernc.org/memory v1.5.0 // indirect
-	modernc.org/sqlite v1.20.3 // indirect
+	modernc.org/opt v0.1.3 // indirect
+	modernc.org/strutil v1.1.3 // indirect
+	modernc.org/token v1.0.1 // indirect
 	oras.land/oras-go v1.2.0 // indirect
 	sigs.k8s.io/json v0.0.0-20220713155537-f223a00ba0e2 // indirect
 	sigs.k8s.io/kustomize/api v0.12.1 // indirect

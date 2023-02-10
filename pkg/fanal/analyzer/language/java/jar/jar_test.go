@@ -2,7 +2,6 @@ package jar
 
 import (
 	"context"
-	"github.com/aquasecurity/trivy/pkg/javadb"
 	"os"
 	"testing"
 
@@ -11,6 +10,9 @@ import (
 
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
+	"github.com/aquasecurity/trivy/pkg/javadb"
+
+	_ "modernc.org/sqlite"
 )
 
 func Test_javaLibraryAnalyzer_Analyze(t *testing.T) {
@@ -128,7 +130,7 @@ func Test_javaLibraryAnalyzer_Analyze(t *testing.T) {
 			require.NoError(t, err)
 
 			// init java-trivy-db with skip update
-			javadb.Init("testdata/testdb", true, false, false)
+			javadb.Init("testdata", true, false, false)
 
 			a := javaLibraryAnalyzer{}
 			ctx := context.Background()
