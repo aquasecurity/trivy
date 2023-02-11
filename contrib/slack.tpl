@@ -21,7 +21,7 @@
                 "type": "section",
                     "text": {
                     "type": "mrkdwn",
-                    "text": ":scream: *{{ (len .Vulnerabilities) | toString }} vulnerabilities found!* \nThis is too many for Slack to render!\nPlease <https://aquasecurity.github.io/trivy/latest/getting-started/installation/|install> & <https://aquasecurity.github.io/trivy/v0.37/docs/target/container_image/|run> trivy locally to see the full list."
+                    "text": ":scream: *{{ (len .Vulnerabilities) | toString }} vulnerabilities found!* \nThis is too many for Slack to render!\nPlease <https://aquasecurity.github.io/trivy/latest/getting-started/installation/|install> & <https://aquasecurity.github.io/trivy/latest/docs/target/container_image/|run> trivy locally to see the full list."
                 }
             },
             {{- else if (eq (len .Vulnerabilities) 0) }}
