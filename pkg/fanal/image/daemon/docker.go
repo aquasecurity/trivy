@@ -11,10 +11,17 @@ import (
 
 // DockerImage implements v1.Image by extending daemon.Image.
 // The caller must call cleanup() to remove a temporary file.
-func DockerImage(ref name.Reference) (Image, func(), error) {
+func DockerImage(ref name.Reference, host string) (Image, func(), error) {
 	cleanup := func() {}
 
-	c, err := client.NewClientWithOpts(client.FromEnv, client.WithAPIVersionNegotiation())
+	var c *client.Client
+	var err error
+	if host == "" {
+		c, err = client.NewClientWithOpts(client.FromEnv, client.WithAPIVersionNegotiation())
+	} else {
+		// adding host parameter to the last assuming it will pickup more preference
+		c, err = client.NewClientWithOpts(client.FromEnv, client.WithAPIVersionNegotiation(), client.WithHost(host))
+	}
 	if err != nil {
 		return nil, cleanup, xerrors.Errorf("failed to initialize a docker client: %w", err)
 	}

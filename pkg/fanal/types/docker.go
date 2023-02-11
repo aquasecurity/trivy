@@ -23,4 +23,7 @@ type DockerOption struct {
 
 	// Architecture
 	Platform string
+
+	// Unix domain socket path
+	DockerHost string
 }

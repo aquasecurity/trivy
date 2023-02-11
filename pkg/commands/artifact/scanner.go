@@ -12,12 +12,22 @@ import (
 // imageStandaloneScanner initializes a container image scanner in standalone mode
 // $ trivy image alpine:3.15
 func imageStandaloneScanner(ctx context.Context, conf ScannerConfig) (scanner.Scanner, func(), error) {
-	dockerOpt, err := types.GetDockerOption(conf.ArtifactOption.InsecureSkipTLS, conf.ArtifactOption.Platform)
+	dockerOpt, err := types.GetDockerOption(
+		conf.ArtifactOption.InsecureSkipTLS,
+		conf.ArtifactOption.Platform,
+		conf.ArtifactOption.DockerHost,
+	)
 	if err != nil {
 		return scanner.Scanner{}, nil, err
 	}
-	s, cleanup, err := initializeDockerScanner(ctx, conf.Target, conf.ArtifactCache, conf.LocalArtifactCache,
-		dockerOpt, conf.ArtifactOption)
+	s, cleanup, err := initializeDockerScanner(
+		ctx,
+		conf.Target,
+		conf.ArtifactCache,
+		conf.LocalArtifactCache,
+		dockerOpt,
+		conf.ArtifactOption,
+	)
 	if err != nil {
 		return scanner.Scanner{}, func() {}, xerrors.Errorf("unable to initialize a docker scanner: %w", err)
 	}
@@ -39,7 +49,7 @@ func archiveStandaloneScanner(ctx context.Context, conf ScannerConfig) (scanner.
 func imageRemoteScanner(ctx context.Context, conf ScannerConfig) (
 	scanner.Scanner, func(), error) {
 	// Scan an image in Docker Engine, Docker Registry, etc.
-	dockerOpt, err := types.GetDockerOption(conf.ArtifactOption.InsecureSkipTLS, conf.ArtifactOption.Platform)
+	dockerOpt, err := types.GetDockerOption(conf.ArtifactOption.InsecureSkipTLS, conf.ArtifactOption.Platform, "")
 	if err != nil {
 		return scanner.Scanner{}, nil, err
 	}
