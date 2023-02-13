@@ -69,7 +69,7 @@ jobs:
             java
             go
             c
-            c++
+            c\+\+
             elixir
             dart
 
