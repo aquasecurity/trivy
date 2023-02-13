@@ -23,10 +23,12 @@ import (
 
 func tryRemote(ctx context.Context, imageName string, ref name.Reference, option types.DockerOption) (types.Image, error) {
 	var remoteOpts []remote.Option
+
 	d := &net.Dialer{
 		Timeout: 10 * time.Minute,
 	}
 	t := &http.Transport{
+		Proxy:             http.ProxyFromEnvironment,
 		DisableKeepAlives: true,
 		DialContext:       d.DialContext,
 		TLSClientConfig:   &tls.Config{InsecureSkipVerify: option.InsecureSkipTLSVerify},
