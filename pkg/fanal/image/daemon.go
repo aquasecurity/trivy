@@ -9,8 +9,8 @@ import (
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 )
 
-func tryDockerDaemon(imageName string, ref name.Reference, host string) (types.Image, func(), error) {
-	img, cleanup, err := daemon.DockerImage(ref, host)
+func tryDockerDaemon(imageName string, ref name.Reference, opt types.DockerOption) (types.Image, func(), error) {
+	img, cleanup, err := daemon.DockerImage(ref, opt.DockerHost)
 	if err != nil {
 		return nil, nil, err
 	}

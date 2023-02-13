@@ -14,14 +14,13 @@ import (
 func DockerImage(ref name.Reference, host string) (Image, func(), error) {
 	cleanup := func() {}
 
-	var c *client.Client
-	var err error
-	if host == "" {
-		c, err = client.NewClientWithOpts(client.FromEnv, client.WithAPIVersionNegotiation())
-	} else {
+	opts := []client.Opt{client.FromEnv, client.WithAPIVersionNegotiation()}
+	if host != "" {
 		// adding host parameter to the last assuming it will pickup more preference
-		c, err = client.NewClientWithOpts(client.FromEnv, client.WithAPIVersionNegotiation(), client.WithHost(host))
+		opts = append(opts, client.WithHost(host))
 	}
+	c, err := client.NewClientWithOpts(opts...)
+
 	if err != nil {
 		return nil, cleanup, xerrors.Errorf("failed to initialize a docker client: %w", err)
 	}

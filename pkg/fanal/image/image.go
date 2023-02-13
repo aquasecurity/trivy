@@ -67,7 +67,7 @@ func NewContainerImage(ctx context.Context, imageName string, option types.Docke
 
 	// Try accessing Docker Daemon
 	if o.dockerd {
-		img, cleanup, err := tryDockerDaemon(imageName, ref, option.DockerHost)
+		img, cleanup, err := tryDockerDaemon(imageName, ref, option)
 		if err == nil {
 			// Return v1.Image if the image is found in Docker Engine
 			return img, cleanup, nil

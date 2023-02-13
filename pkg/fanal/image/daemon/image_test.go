@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
+	"path/filepath"
 	"testing"
 	"time"
 
@@ -17,18 +18,19 @@ import (
 	"github.com/aquasecurity/testdocker/engine"
 )
 
-func TestMain(m *testing.M) {
-	imagePaths := map[string]string{
-		"alpine:3.10":            "../../test/testdata/alpine-310.tar.gz",
-		"alpine:3.11":            "../../test/testdata/alpine-311.tar.gz",
-		"gcr.io/distroless/base": "../../test/testdata/distroless.tar.gz",
-	}
+var imagePaths = map[string]string{
+	"alpine:3.10":            "../../test/testdata/alpine-310.tar.gz",
+	"alpine:3.11":            "../../test/testdata/alpine-311.tar.gz",
+	"gcr.io/distroless/base": "../../test/testdata/distroless.tar.gz",
+}
 
-	// for Docker
-	opt := engine.Option{
-		APIVersion: "1.38",
-		ImagePaths: imagePaths,
-	}
+// for Docker
+var opt = engine.Option{
+	APIVersion: "1.38",
+	ImagePaths: imagePaths,
+}
+
+func TestMain(m *testing.M) {
 	te := engine.NewDockerEngine(opt)
 	defer te.Close()
 
@@ -68,6 +70,39 @@ func Test_image_ConfigName(t *testing.T) {
 			assert.Equal(t, tt.wantErr, err != nil)
 		})
 	}
+}
+
+func Test_image_ConfigNameWithCustomDockerHost(t *testing.T) {
+
+	runtimeDir, err := ioutil.TempDir("", "daemon")
+	require.NoError(t, err)
+
+	dir := filepath.Join(runtimeDir, "image")
+	err = os.MkdirAll(dir, os.ModePerm)
+	require.NoError(t, err)
+
+	customDockerHost := filepath.Join(dir, "image-test-unix-socket.sock")
+
+	te := engine.NewDockerEngine(engine.Option{
+		APIVersion:       opt.APIVersion,
+		ImagePaths:       opt.ImagePaths,
+		UnixDomainSocket: customDockerHost,
+	})
+	defer te.Close()
+
+	ref, err := name.ParseReference("alpine:3.11")
+	require.NoError(t, err)
+
+	img, cleanup, err := DockerImage(ref, "unix://"+customDockerHost)
+	require.NoError(t, err)
+	defer cleanup()
+
+	conf, err := img.ConfigName()
+	assert.Equal(t, v1.Hash{
+		Algorithm: "sha256",
+		Hex:       "a187dde48cd289ac374ad8539930628314bc581a481cdb41409c9289419ddb72",
+	}, conf)
+	assert.Nil(t, err)
 }
 
 func Test_image_ConfigFile(t *testing.T) {
