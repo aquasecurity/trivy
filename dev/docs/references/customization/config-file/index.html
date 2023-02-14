@@ -3076,7 +3076,7 @@
 
 <h1 id="config-file">Config file</h1>
 <p>Trivy can be customized by tweaking a <code>trivy.yaml</code> file. The config path can be overridden by the <code>--config</code> flag.</p>
-<p>An example is <a href="https://github.com/aquasecurity/trivy/tree/v0.36.1/examples/trivy-conf/trivy.yaml">here</a>.</p>
+<p>An example is <a href="https://github.com/aquasecurity/trivy/tree/v0.37.3/examples/trivy-conf/trivy.yaml">here</a>.</p>
 <h2 id="global-options">Global Options</h2>
 <div class="highlight"><pre><span></span><code><span class="c1"># Same as &#39;--quiet&#39;</span><span class="w"></span>
 <span class="c1"># Default is false</span><span class="w"></span>
@@ -3109,7 +3109,7 @@
 
 <span class="c1"># Same as &#39;--template&#39;</span><span class="w"></span>
 <span class="c1"># Default is empty</span><span class="w"></span>
-<span class="nt">template</span><span class="p">:</span><span class="w"> </span>
+<span class="nt">template</span><span class="p">:</span><span class="w"></span>
 
 <span class="c1"># Same as &#39;--dependency-tree&#39;</span><span class="w"></span>
 <span class="c1"># Default is false</span><span class="w"></span>
@@ -3177,11 +3177,11 @@
 <h2 id="cache-options">Cache Options</h2>
 <div class="highlight"><pre><span></span><code><span class="nt">cache</span><span class="p">:</span><span class="w"></span>
 <span class="w">  </span><span class="c1"># Same as &#39;--cache-backend&#39;</span><span class="w"></span>
-<span class="w">  </span><span class="c1"># Default is &#39;fs&#39; </span><span class="w"></span>
+<span class="w">  </span><span class="c1"># Default is &#39;fs&#39;</span><span class="w"></span>
 <span class="w">  </span><span class="nt">backend</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;fs&#39;</span><span class="w"></span>
 
 <span class="w">  </span><span class="c1"># Same as &#39;--cache-ttl&#39;</span><span class="w"></span>
-<span class="w">  </span><span class="c1"># Default is 0 (no ttl) </span><span class="w"></span>
+<span class="w">  </span><span class="c1"># Default is 0 (no ttl)</span><span class="w"></span>
 <span class="w">  </span><span class="nt">ttl</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0</span><span class="w"></span>
 
 <span class="w">  </span><span class="c1"># Redis options</span><span class="w"></span>
@@ -3209,8 +3209,12 @@
 <span class="w">  </span><span class="nt">no-progress</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span><span class="w"></span>
 
 <span class="w">  </span><span class="c1"># Same as &#39;--db-repository&#39;</span><span class="w"></span>
-<span class="w">  </span><span class="c1"># Default is &#39;github.com/aquasecurity-trivy-repo&#39;</span><span class="w"></span>
-<span class="w">  </span><span class="nt">repository</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">github.com/aquasecurity-trivy-repo</span><span class="w"></span>
+<span class="w">  </span><span class="c1"># Default is &#39;ghcr.io/aquasecurity/trivy-db&#39;</span><span class="w"></span>
+<span class="w">  </span><span class="nt">repository</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ghcr.io/aquasecurity/trivy-db</span><span class="w"></span>
+
+<span class="w">  </span><span class="c1"># Same as &#39;--java-db-repository&#39;</span><span class="w"></span>
+<span class="w">  </span><span class="c1"># Default is &#39;ghcr.io/aquasecurity/trivy-java-db&#39;</span><span class="w"></span>
+<span class="w">  </span><span class="nt">java-repository</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ghcr.io/aquasecurity/trivy-java-db</span><span class="w"></span>
 </code></pre></div>
 <h2 id="image-options">Image Options</h2>
 <p>Available with container image scanning</p>
@@ -3312,7 +3316,7 @@
 <span class="w">  </span><span class="nt">namespace</span><span class="p">:</span><span class="w"></span>
 </code></pre></div>
 <h2 id="repository-options">Repository Options</h2>
-<p>Available with git repository scanning (<code>trivy repo</code>) </p>
+<p>Available with git repository scanning (<code>trivy repo</code>)</p>
 <div class="highlight"><pre><span></span><code><span class="nt">repository</span><span class="p">:</span><span class="w"></span>
 <span class="w">  </span><span class="c1"># Same as &#39;--branch&#39;</span><span class="w"></span>
 <span class="w">  </span><span class="c1"># Default is empty</span><span class="w"></span>
