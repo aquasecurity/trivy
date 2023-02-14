@@ -93,10 +93,14 @@ func (s *AWSScanner) Scan(ctx context.Context, option flag.Options) (scan.Result
 			framework.CIS_AWS_1_2))
 	}
 
+	if option.CloudOptions.UpdateCache {
+		scannerOpts = append(scannerOpts, options.ScannerWithSpec(option.Compliance))
+	}
+
 	scanner := aws.New(scannerOpts...)
 
 	var freshState *state.State
-	if len(missing) > 0 {
+	if len(missing) > 0 || option.CloudOptions.UpdateCache {
 		var err error
 		freshState, err = scanner.CreateState(ctx)
 		if err != nil {
