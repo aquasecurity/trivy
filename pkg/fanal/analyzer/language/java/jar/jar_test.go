@@ -15,6 +15,10 @@ import (
 	_ "modernc.org/sqlite"
 )
 
+const (
+	defaultJavaDBRepository = "ghcr.io/aquasecurity/trivy-java-db"
+)
+
 func Test_javaLibraryAnalyzer_Analyze(t *testing.T) {
 	tests := []struct {
 		name      string
@@ -130,7 +134,7 @@ func Test_javaLibraryAnalyzer_Analyze(t *testing.T) {
 			require.NoError(t, err)
 
 			// init java-trivy-db with skip update
-			javadb.Init("testdata", true, false, false)
+			javadb.Init("testdata", defaultJavaDBRepository, true, false, false)
 
 			a := javaLibraryAnalyzer{}
 			ctx := context.Background()
