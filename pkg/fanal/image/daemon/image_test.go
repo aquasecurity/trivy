@@ -93,7 +93,7 @@ func Test_image_ConfigNameWithCustomDockerHost(t *testing.T) {
 	ref, err := name.ParseReference("alpine:3.11")
 	require.NoError(t, err)
 
-	img, cleanup, err := DockerImage(ref, "unix://"+customDockerHost)
+	img, cleanup, err := DockerImage(ref, "unix:///"+customDockerHost)
 	require.NoError(t, err)
 	defer cleanup()
 
