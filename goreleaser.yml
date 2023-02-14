@@ -264,6 +264,16 @@ signs:
     - "${artifact}"
   artifacts: all
   output: true
+- id: "gpg signing"
+  artifacts: package
+  args:
+    - "--batch"
+    - "--local-user"
+    - "{{ .Env.GPG_FINGERPRINT }}"
+    - "--output"
+    - "${signature}"
+    - "--detach-sign"
+    - "${artifact}"
 
 docker_signs:
 - cmd: cosign

@@ -75,6 +75,13 @@ jobs:
           args: mod -licenses -json -output bom.json
           version: ^v1
 
+      - name: Import GPG key
+        id: import_gpg
+        uses: crazy-max/ghaction-import-gpg@v5
+        with:
+          gpg_private_key: ${{ secrets.GPG_KEY }}
+          passphrase: ${{ secrets.GPG_PASSPHRASE }}
+
       - name: GoReleaser
         uses: goreleaser/goreleaser-action@v4
         with:
@@ -82,6 +89,7 @@ jobs:
           args: release -f=${{ inputs.goreleaser_config}} ${{ inputs.goreleaser_options}}
         env:
           GITHUB_TOKEN: ${{ secrets.ORG_REPO_TOKEN }}
+          GPG_FINGERPRINT: ${{ steps.import_gpg.outputs.fingerprint }}
 
       ## push images to registries
       ## only for canary build
