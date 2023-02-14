@@ -73,7 +73,6 @@ func Test_image_ConfigName(t *testing.T) {
 }
 
 func Test_image_ConfigNameWithCustomDockerHost(t *testing.T) {
-
 	runtimeDir, err := ioutil.TempDir("", "daemon")
 	require.NoError(t, err)
 
