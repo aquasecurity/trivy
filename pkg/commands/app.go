@@ -348,7 +348,6 @@ func NewRootfsCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	reportFlagGroup := flag.NewReportFlagGroup()
 	reportFlagGroup.ReportFormat = nil // TODO: support --report summary
 	reportFlagGroup.Compliance = nil   // disable '--compliance'
-	reportFlagGroup.ExitOnEOSL = nil   // disable '--exit-on-eosl'
 
 	rootfsFlags := &flag.Flags{
 		CacheFlagGroup:         flag.NewCacheFlagGroup(),
@@ -895,7 +894,6 @@ The following services are supported:
 func NewVMCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	reportFlagGroup := flag.NewReportFlagGroup()
 	reportFlagGroup.ReportFormat = nil // TODO: support --report summary
-	reportFlagGroup.ExitOnEOSL = nil   // disable '--exit-on-eosl'
 
 	vmFlags := &flag.Flags{
 		CacheFlagGroup:         flag.NewCacheFlagGroup(),
@@ -961,7 +959,6 @@ func NewSBOMCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	reportFlagGroup := flag.NewReportFlagGroup()
 	reportFlagGroup.DependencyTree = nil // disable '--dependency-tree'
 	reportFlagGroup.ReportFormat = nil   // TODO: support --report summary
-	reportFlagGroup.ExitOnEOSL = nil     // disable '--exit-on-eosl'
 
 	scanFlags := flag.NewScanFlagGroup()
 	scanFlags.Scanners = nil // disable '--scanners' as it always scans for vulnerabilities
