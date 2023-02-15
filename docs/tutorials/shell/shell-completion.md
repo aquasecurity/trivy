@@ -2,14 +2,14 @@
 
 Below is example steps to enable shell completion feature for `trivy` cli:
 
-1. Know your current shell
+### 1. Know your current shell
 
 ```bash
 $ echo $SHELL
 /bin/zsh # For this example it is zsh, but will be vary depend on your $SHELL, maybe /bin/bash or /bin/fish
 ```
 
-2. Run `completion` command to get sub-commands
+### 2. Run `completion` command to get sub-commands
 
 ``` bash
 $ trivy completion zsh -h
@@ -37,7 +37,7 @@ To load completions for every new session, execute once:
 You will need to start a new shell for this setup to take effect.
 ```
 
-3. Run the sub-commands following the instruction
+### 3. Run the sub-commands following the instruction
 
 ```bash
 echo "autoload -U compinit; compinit" >> ~/.zshrc
@@ -45,7 +45,7 @@ source <(trivy completion zsh); compdef _trivy trivy
 trivy completion zsh > "${fpath[1]}/_trivy"
 ```
 
-4. Start a new shell and you can see the shell completion
+### 4. Start a new shell and you can see the shell completion
 
 ```bash
 $ trivy [tab]
