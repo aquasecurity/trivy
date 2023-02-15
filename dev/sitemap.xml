@@ -196,6 +196,11 @@
          <changefreq>daily</changefreq>
     </url>
     <url>
+         <loc>https://aquasecurity.github.io/trivy/dev/docs/references/cli/completion/</loc>
+         <lastmod>2023-02-15</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
          <loc>https://aquasecurity.github.io/trivy/dev/docs/references/cli/config/</loc>
          <lastmod>2023-02-15</lastmod>
          <changefreq>daily</changefreq>
@@ -492,6 +497,11 @@
     </url>
     <url>
          <loc>https://aquasecurity.github.io/trivy/dev/tutorials/kubernetes/kyverno/</loc>
+         <lastmod>2023-02-15</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://aquasecurity.github.io/trivy/dev/tutorials/shell/shell-completion/</loc>
          <lastmod>2023-02-15</lastmod>
          <changefreq>daily</changefreq>
     </url>

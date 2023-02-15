@@ -587,61 +587,12 @@
       
       
         <label class="md-nav__link" for="__nav_2_3">
-          Signing
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <nav class="md-nav" aria-label="Signing" data-md-level="2">
-        <label class="md-nav__title" for="__nav_2_3">
-          <span class="md-nav__icon md-icon"></span>
-          Signing
-        </label>
-        <ul class="md-nav__list" data-md-scrollfix>
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../../../tutorials/signing/vuln-attestation/" class="md-nav__link">
-        Vulnerability Scan Record Attestation
-      </a>
-    </li>
-  
-
-            
-          
-        </ul>
-      </nav>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    
-      
-    
-    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
-      
-      
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_2_4" type="checkbox" id="__nav_2_4" >
-      
-      
-      
-      
-        <label class="md-nav__link" for="__nav_2_4">
           Kubernetes
           <span class="md-nav__icon md-icon"></span>
         </label>
       
       <nav class="md-nav" aria-label="Kubernetes" data-md-level="2">
-        <label class="md-nav__title" for="__nav_2_4">
+        <label class="md-nav__title" for="__nav_2_3">
           <span class="md-nav__icon md-icon"></span>
           Kubernetes
         </label>
@@ -707,18 +658,116 @@
     <li class="md-nav__item md-nav__item--section md-nav__item--nested">
       
       
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_2_4" type="checkbox" id="__nav_2_4" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_2_4">
+          Signing
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Signing" data-md-level="2">
+        <label class="md-nav__title" for="__nav_2_4">
+          <span class="md-nav__icon md-icon"></span>
+          Signing
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../tutorials/signing/vuln-attestation/" class="md-nav__link">
+        Vulnerability Scan Record Attestation
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+      
         <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_2_5" type="checkbox" id="__nav_2_5" >
       
       
       
       
         <label class="md-nav__link" for="__nav_2_5">
+          Shell
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Shell" data-md-level="2">
+        <label class="md-nav__title" for="__nav_2_5">
+          <span class="md-nav__icon md-icon"></span>
+          Shell
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../tutorials/shell/shell-completion/" class="md-nav__link">
+        Completion
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_2_6" type="checkbox" id="__nav_2_6" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_2_6">
           Additional Resources
           <span class="md-nav__icon md-icon"></span>
         </label>
       
       <nav class="md-nav" aria-label="Additional Resources" data-md-level="2">
-        <label class="md-nav__title" for="__nav_2_5">
+        <label class="md-nav__title" for="__nav_2_6">
           <span class="md-nav__icon md-icon"></span>
           Additional Resources
         </label>
@@ -2493,6 +2542,20 @@
 
             
           
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../references/cli/completion/" class="md-nav__link">
+        Completion
+      </a>
+    </li>
+  
+
+            
+          
         </ul>
       </nav>
     </li>
@@ -2932,7 +2995,7 @@ exception[ns] {
 </code></pre></div>
 </div>
 <p>This example exempts all built-in policies for Kubernetes.</p>
-<p>For more details, see <a href="https://github.com/aquasecurity/trivy/tree/370098dbf4502a3b36dbbcea269a3a0ccf5f6c33/examples/misconf/namespace-exception">an example</a>.</p>
+<p>For more details, see <a href="https://github.com/aquasecurity/trivy/tree/9be8062c10a45f23ff57464b4cb22af81985ad37/examples/misconf/namespace-exception">an example</a>.</p>
 <h2 id="rule-based-exceptions">Rule-based exceptions</h2>
 <p>There are some cases where you need more flexibility and granularity in defining which cases to exempt.
 Rule-based exceptions lets you granularly choose which individual rules to exempt, while also declaring under which conditions to exempt them.</p>
@@ -2984,7 +3047,7 @@ exception[rules] {
 </div>
 <p>This exception is applied to <a href="https://github.com/aquasecurity/defsec/blob/master/internal/rules/kubernetes/policies/pss/restricted/3_runs_as_root.rego">KSV012</a> in defsec.
 You can get the package names in the <a href="https://github.com/aquasecurity/defsec/">defsec repository</a> or the JSON output from Trivy.</p>
-<p>For more details, see <a href="https://github.com/aquasecurity/trivy/tree/370098dbf4502a3b36dbbcea269a3a0ccf5f6c33/examples/misconf/rule-exception">an example</a>.</p>
+<p>For more details, see <a href="https://github.com/aquasecurity/trivy/tree/9be8062c10a45f23ff57464b4cb22af81985ad37/examples/misconf/rule-exception">an example</a>.</p>
 
               
             </article>
