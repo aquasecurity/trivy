@@ -3,12 +3,15 @@ package analyzer
 import (
 	"context"
 	"errors"
+	"io"
 	"io/fs"
 	"os"
 	"regexp"
 	"sort"
 	"strings"
 	"sync"
+
+	"github.com/aquasecurity/memoryfs"
 
 	"github.com/samber/lo"
 	"golang.org/x/exp/slices"
@@ -22,7 +25,8 @@ import (
 )
 
 var (
-	analyzers = map[Type]analyzer{}
+	analyzers     = map[Type]analyzer{}
+	postAnalyzers = map[Type]postAnalyzer{}
 
 	// ErrUnknownOS occurs when unknown OS is analyzed.
 	ErrUnknownOS = xerrors.New("unknown OS")
@@ -70,6 +74,13 @@ type analyzer interface {
 	Required(filePath string, info os.FileInfo) bool
 }
 
+type postAnalyzer interface {
+	Type() Type
+	Version() int
+	PostAnalyze(ctx context.Context, input PostAnalysisInput) (*AnalysisResult, error)
+	Required(filePath string, info os.FileInfo) bool
+}
+
 ////////////////////
 // Analyzer group //
 ////////////////////
@@ -80,6 +91,10 @@ const GroupBuiltin Group = "builtin"
 
 func RegisterAnalyzer(analyzer analyzer) {
 	analyzers[analyzer.Type()] = analyzer
+}
+
+func RegisterPostAnalyzer(analyzer postAnalyzer) {
+	postAnalyzers[analyzer.Type()] = analyzer
 }
 
 // DeregisterAnalyzer is mainly for testing
@@ -96,8 +111,9 @@ type CustomGroup interface {
 type Opener func() (dio.ReadSeekCloserAt, error)
 
 type AnalyzerGroup struct {
-	analyzers    []analyzer
-	filePatterns map[Type][]*regexp.Regexp
+	analyzers     []analyzer
+	postAnalyzers []postAnalyzer
+	filePatterns  map[Type][]*regexp.Regexp
 }
 
 ///////////////////////////
@@ -110,6 +126,11 @@ type AnalysisInput struct {
 	Info     os.FileInfo
 	Content  dio.ReadSeekerAt
 
+	Options AnalysisOptions
+}
+
+type PostAnalysisInput struct {
+	FS      fs.FS
 	Options AnalysisOptions
 }
 
@@ -335,6 +356,13 @@ func NewAnalyzerGroup(opt AnalyzerOptions) (AnalyzerGroup, error) {
 		group.analyzers = append(group.analyzers, a)
 	}
 
+	for analyzerType, a := range postAnalyzers {
+		if !belongToGroup(groupName, analyzerType, opt.DisabledAnalyzers, a) {
+			continue
+		}
+		group.postAnalyzers = append(group.postAnalyzers, a)
+	}
+
 	return group, nil
 }
 
@@ -394,12 +422,44 @@ func (ag AnalyzerGroup) AnalyzeFile(ctx context.Context, wg *sync.WaitGroup, lim
 				log.Logger.Debugf("Analysis error: %s", err)
 				return
 			}
-			if ret != nil {
-				result.Merge(ret)
-			}
+			result.Merge(ret)
 		}(a, rc)
 	}
 
+	return nil
+}
+
+func (ag AnalyzerGroup) RequiredPostAnalyzers(ctx context.Context, dir, filePath string, info os.FileInfo) []Type {
+	var postAnalyzerTypes []Type
+	for _, a := range ag.postAnalyzers {
+		if a.Required(filePath, info) {
+			postAnalyzerTypes = append(postAnalyzerTypes, a.Type())
+		}
+	}
+	return postAnalyzerTypes
+}
+
+func (ag AnalyzerGroup) PostAnalyze(ctx context.Context, files map[Type]*memoryfs.FS, result *AnalysisResult, opts AnalysisOptions) error {
+	for _, a := range ag.postAnalyzers {
+		fsys, ok := files[a.Type()]
+		if !ok {
+			continue
+		}
+
+		filteredFS, err := filterFS(fsys, result.SystemInstalledFiles)
+		if err != nil {
+			return err
+		}
+
+		res, err := a.PostAnalyze(ctx, PostAnalysisInput{
+			FS:      filteredFS,
+			Options: opts,
+		})
+		if err != nil {
+			return err
+		}
+		result.Merge(res)
+	}
 	return nil
 }
 
@@ -410,4 +470,30 @@ func (ag AnalyzerGroup) filePatternMatch(analyzerType Type, filePath string) boo
 		}
 	}
 	return false
+}
+
+func filterFS(base *memoryfs.FS, skipped []string) (*memoryfs.FS, error) {
+	newFS := memoryfs.New()
+	err := fs.WalkDir(base, ".", func(path string, d fs.DirEntry, err error) error {
+		if err != nil {
+			return err
+		}
+
+		if d.IsDir() {
+			return newFS.MkdirAll(path, d.Type().Perm())
+		}
+
+		if slices.Contains(skipped, path) {
+			return nil
+		}
+
+		return newFS.WriteLazyFile(path, func() (io.Reader, error) {
+			return base.Open(path)
+		}, d.Type().Perm())
+	})
+	if err != nil {
+		return nil, xerrors.Errorf("walk error", err)
+	}
+
+	return nil, nil
 }
