@@ -56,7 +56,3 @@ func (d daemonImage) Name() string {
 func (d daemonImage) ID() (string, error) {
 	return ID(d)
 }
-
-func (d daemonImage) LayerIDs() ([]string, error) {
-	return LayerIDs(d)
-}

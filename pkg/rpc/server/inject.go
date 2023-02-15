@@ -4,11 +4,12 @@
 package server
 
 import (
-	"github.com/aquasecurity/trivy/pkg/fanal/cache"
 	"github.com/google/wire"
+
+	"github.com/aquasecurity/trivy/pkg/fanal/cache"
 )
 
-func initializeScanServer(localArtifactCache cache.Cache) *ScanServer {
+func initializeScanServer(localArtifactCache cache.LocalArtifactCache) *ScanServer {
 	wire.Build(ScanSuperSet)
 	return &ScanServer{}
 }

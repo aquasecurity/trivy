@@ -10,6 +10,7 @@ import (
 	"strings"
 	"sync"
 
+	"github.com/samber/lo"
 	"golang.org/x/exp/slices"
 	"golang.org/x/sync/semaphore"
 	"golang.org/x/xerrors"
@@ -21,8 +22,7 @@ import (
 )
 
 var (
-	analyzers       = map[Type]analyzer{}
-	configAnalyzers = map[Type]configAnalyzer{}
+	analyzers = map[Type]analyzer{}
 
 	// ErrUnknownOS occurs when unknown OS is analyzed.
 	ErrUnknownOS = xerrors.New("unknown OS")
@@ -38,14 +38,20 @@ var (
 
 // AnalyzerOptions is used to initialize analyzers
 type AnalyzerOptions struct {
-	Group               Group
-	FilePatterns        []string
-	DisabledAnalyzers   []Type
-	SecretScannerOption SecretScannerOption
+	Group                Group
+	FilePatterns         []string
+	DisabledAnalyzers    []Type
+	SecretScannerOption  SecretScannerOption
+	LicenseScannerOption LicenseScannerOption
 }
 
 type SecretScannerOption struct {
 	ConfigPath string
+}
+
+type LicenseScannerOption struct {
+	// Use license classifier to get better results though the classification is expensive.
+	Full bool
 }
 
 ////////////////
@@ -62,13 +68,6 @@ type analyzer interface {
 	Version() int
 	Analyze(ctx context.Context, input AnalysisInput) (*AnalysisResult, error)
 	Required(filePath string, info os.FileInfo) bool
-}
-
-type configAnalyzer interface {
-	Type() Type
-	Version() int
-	Analyze(targetOS types.OS, content []byte) ([]types.Package, error)
-	Required(osFound types.OS) bool
 }
 
 ////////////////////
@@ -88,15 +87,6 @@ func DeregisterAnalyzer(t Type) {
 	delete(analyzers, t)
 }
 
-func RegisterConfigAnalyzer(analyzer configAnalyzer) {
-	configAnalyzers[analyzer.Type()] = analyzer
-}
-
-// DeregisterConfigAnalyzer is mainly for testing
-func DeregisterConfigAnalyzer(t Type) {
-	delete(configAnalyzers, t)
-}
-
 // CustomGroup returns a group name for custom analyzers
 // This is mainly intended to be used in Aqua products.
 type CustomGroup interface {
@@ -106,9 +96,8 @@ type CustomGroup interface {
 type Opener func() (dio.ReadSeekCloserAt, error)
 
 type AnalyzerGroup struct {
-	analyzers       []analyzer
-	configAnalyzers []configAnalyzer
-	filePatterns    map[Type][]*regexp.Regexp
+	analyzers    []analyzer
+	filePatterns map[Type][]*regexp.Regexp
 }
 
 ///////////////////////////
@@ -130,7 +119,7 @@ type AnalysisOptions struct {
 
 type AnalysisResult struct {
 	m                    sync.Mutex
-	OS                   *types.OS
+	OS                   types.OS
 	Repository           *types.Repository
 	PackageInfos         []types.PackageInfo
 	Applications         []types.Application
@@ -138,7 +127,12 @@ type AnalysisResult struct {
 	Licenses             []types.LicenseFile
 	SystemInstalledFiles []string // A list of files installed by OS package manager
 
+	// Files holds necessary file contents for the respective post-handler
 	Files map[types.HandlerType][]types.File
+
+	// Digests contains SHA-256 digests of unpackaged files
+	// used to search for SBOM attestation.
+	Digests map[string]string
 
 	// For Red Hat
 	BuildInfo *types.BuildInfo
@@ -155,9 +149,9 @@ func NewAnalysisResult() *AnalysisResult {
 }
 
 func (r *AnalysisResult) isEmpty() bool {
-	return r.OS == nil && r.Repository == nil && len(r.PackageInfos) == 0 && len(r.Applications) == 0 &&
+	return lo.IsEmpty(r.OS) && r.Repository == nil && len(r.PackageInfos) == 0 && len(r.Applications) == 0 &&
 		len(r.Secrets) == 0 && len(r.Licenses) == 0 && len(r.SystemInstalledFiles) == 0 &&
-		r.BuildInfo == nil && len(r.Files) == 0 && len(r.CustomResources) == 0
+		r.BuildInfo == nil && len(r.Files) == 0 && len(r.Digests) == 0 && len(r.CustomResources) == 0
 }
 
 func (r *AnalysisResult) Sort() {
@@ -167,9 +161,7 @@ func (r *AnalysisResult) Sort() {
 	})
 
 	for _, pi := range r.PackageInfos {
-		sort.Slice(pi.Packages, func(i, j int) bool {
-			return pi.Packages[i].Name < pi.Packages[j].Name
-		})
+		sort.Sort(pi.Packages)
 	}
 
 	// Language-specific packages
@@ -233,14 +225,7 @@ func (r *AnalysisResult) Merge(new *AnalysisResult) {
 	r.m.Lock()
 	defer r.m.Unlock()
 
-	if new.OS != nil {
-		// OLE also has /etc/redhat-release and it detects OLE as RHEL by mistake.
-		// In that case, OS must be overwritten with the content of /etc/oracle-release.
-		// There is the same problem between Debian and Ubuntu.
-		if r.OS == nil || r.OS.Family == aos.RedHat || r.OS.Family == aos.Debian {
-			r.OS = new.OS
-		}
-	}
+	r.OS.Merge(new.OS)
 
 	if new.Repository != nil {
 		r.Repository = new.Repository
@@ -252,6 +237,11 @@ func (r *AnalysisResult) Merge(new *AnalysisResult) {
 
 	if len(new.Applications) > 0 {
 		r.Applications = append(r.Applications, new.Applications...)
+	}
+
+	// Merge SHA-256 digests of unpackaged files
+	if new.Digests != nil {
+		r.Digests = lo.Assign(r.Digests, new.Digests)
 	}
 
 	for t, files := range new.Files {
@@ -345,13 +335,6 @@ func NewAnalyzerGroup(opt AnalyzerOptions) (AnalyzerGroup, error) {
 		group.analyzers = append(group.analyzers, a)
 	}
 
-	for analyzerType, a := range configAnalyzers {
-		if slices.Contains(opt.DisabledAnalyzers, analyzerType) {
-			continue
-		}
-		group.configAnalyzers = append(group.configAnalyzers, a)
-	}
-
 	return group, nil
 }
 
@@ -360,15 +343,6 @@ func (ag AnalyzerGroup) AnalyzerVersions() map[string]int {
 	versions := map[string]int{}
 	for _, a := range ag.analyzers {
 		versions[string(a.Type())] = a.Version()
-	}
-	return versions
-}
-
-// ImageConfigAnalyzerVersions returns analyzer version identifier used for cache keys.
-func (ag AnalyzerGroup) ImageConfigAnalyzerVersions() map[string]int {
-	versions := map[string]int{}
-	for _, ca := range ag.configAnalyzers {
-		versions[string(ca.Type())] = ca.Version()
 	}
 	return versions
 }
@@ -416,7 +390,7 @@ func (ag AnalyzerGroup) AnalyzeFile(ctx context.Context, wg *sync.WaitGroup, lim
 				Content:  rc,
 				Options:  opts,
 			})
-			if err != nil && !xerrors.Is(err, aos.AnalyzeOSError) {
+			if err != nil && !errors.Is(err, aos.AnalyzeOSError) {
 				log.Logger.Debugf("Analysis error: %s", err)
 				return
 			}
@@ -426,21 +400,6 @@ func (ag AnalyzerGroup) AnalyzeFile(ctx context.Context, wg *sync.WaitGroup, lim
 		}(a, rc)
 	}
 
-	return nil
-}
-
-func (ag AnalyzerGroup) AnalyzeImageConfig(targetOS types.OS, configBlob []byte) []types.Package {
-	for _, d := range ag.configAnalyzers {
-		if !d.Required(targetOS) {
-			continue
-		}
-
-		pkgs, err := d.Analyze(targetOS, configBlob)
-		if err != nil {
-			continue
-		}
-		return pkgs
-	}
 	return nil
 }
 

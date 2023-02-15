@@ -4,12 +4,14 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"runtime"
 	"strings"
 	"sync"
 
 	"github.com/fatih/color"
-	"github.com/liamg/tml"
 	"golang.org/x/exp/slices"
+
+	"github.com/aquasecurity/tml"
 
 	"github.com/aquasecurity/table"
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
@@ -92,14 +94,7 @@ func (tw Writer) write(result types.Result) {
 }
 
 func (tw Writer) isOutputToTerminal() bool {
-	if tw.Output != os.Stdout {
-		return false
-	}
-	o, err := os.Stdout.Stat()
-	if err != nil {
-		return false
-	}
-	return (o.Mode() & os.ModeCharDevice) == os.ModeCharDevice
+	return IsOutputToTerminal(tw.Output)
 }
 
 func newTableWriter(output io.Writer, isTerminal bool) *table.Table {
@@ -136,7 +131,23 @@ func summarize(specifiedSeverities []dbTypes.Severity, severityCount map[string]
 	return total, summaries
 }
 
-func renderTarget(w io.Writer, target string, isTerminal bool) {
+func IsOutputToTerminal(output io.Writer) bool {
+	if runtime.GOOS == "windows" {
+		// if its windows, we don't support formatting
+		return false
+	}
+
+	if output != os.Stdout {
+		return false
+	}
+	o, err := os.Stdout.Stat()
+	if err != nil {
+		return false
+	}
+	return (o.Mode() & os.ModeCharDevice) == os.ModeCharDevice
+}
+
+func RenderTarget(w io.Writer, target string, isTerminal bool) {
 	if isTerminal {
 		// nolint
 		_ = tml.Fprintf(w, "\n<underline><bold>%s</bold></underline>\n\n", target)

@@ -39,48 +39,22 @@ https://developer.github.com/v3/#rate-limiting
 $ GITHUB_TOKEN=XXXXXXXXXX trivy alpine:3.10
 ```
 
-### Maven rate limiting / inconsistent jar vulnerability reporting
+### Unable to open JAR files
 
 !!! error
     ``` bash
     $ trivy image ...
     ...
-    status 403 Forbidden from http://search.maven.org/solrsearch/select
+    failed to analyze file: failed to analyze usr/lib/jvm/java-1.8-openjdk/lib/tools.jar: unable to open usr/lib/jvm/java-1.8-openjdk/lib/tools.jar: failed to open: unable to read the file: stream error: stream ID 9; PROTOCOL_ERROR; received from peer
     ```
 
-Trivy calls Maven API for better detection of JAR files, but many requests may exceed rate limiting.
-This can easily happen if you are running more than one instance of Trivy which is concurrently scanning multiple images.
-Once this starts happening Trivy's vulnerability reporting on jar files may become inconsistent.
-There are two options to resolve this issue:
+Currently, we're investigating this issue. As a temporary mitigation, you may be able to avoid this issue by downloading the Java DB in advance.
 
-The first is to enable offline scanning using the `--offline-scan` option to stop Trivy from making API requests.
-This option affects only vulnerability scanning. The vulnerability database and builtin policies are downloaded as usual.
-If you want to skip them as well, you can try `--skip-update` and `--skip-policy-update`.
-**Note that a number of vulnerabilities might be fewer than without the `--offline-scan` option.**
-
-The second, more scalable, option is the place Trivy behind a rate-limiting forward-proxy to the Maven Central API.
-One way to achieve this is to use nginx. You can use the following nginx config to enable both rate-limiting and caching (the caching greatly reduces the number of calls to the Maven Central API, especially if you are scanning a lot of similar images):
-
-```nginx
-limit_req_zone global zone=maven:1m rate=10r/s;
-proxy_cache_path /tmp/cache keys_zone=mavencache:10m;
-
-server {
-  listen 80;
-  proxy_cache mavencache;
-
-  location / {
-    limit_req zone=maven burst=1000;
-    proxy_cache_valid any 1h;
-    proxy_pass https://search.maven.org:443;
-  }
-}
+```shell
+$ trivy image --download-java-db-only
+2023-02-01T16:57:04.322+0900    INFO    Downloading the Java DB...
+$ trivy image [YOUR_JAVA_IMAGE]
 ```
-
-This config file will allow a maximum of 10 requests per second to the Maven API, this number was determined experimentally so you might want to use something else if it doesn't fit your needs.
-
-Once nginx is up and running, you need to tell all your Trivy deployments to proxy their Maven API calls through nginx. You can do this by setting the `MAVEN_CENTRAL_URL` environment variable. For example, if your nginx proxy is running at `127.0.0.1`, you can set `MAVEN_CENTRAL_URL=http://127.0.0.1/solrsearch/select`.
-
 
 ### Running in parallel takes same time as series run
 When running trivy on multiple images simultaneously, it will take same time as running trivy in series.
@@ -90,23 +64,6 @@ This is because of a limitation of boltdb.
 Reference : [boltdb: Opening a database][boltdb].
 
 [boltdb]: https://github.com/boltdb/bolt#opening-a-database
-
-### Error downloading vulnerability DB
-
-!!! error
-    FATAL failed to download vulnerability DB
-
-If trivy is running behind corporate firewall, you have to add the following urls to your allowlist.
-
-- ghcr.io
-- pkg-containers.githubusercontent.com
-
-### Old DB schema
-
-!!! error
-    --skip-update cannot be specified with the old DB schema.
-
-Trivy v0.23.0 or later requires Trivy DB v2. Please update your local database or follow [the instruction of air-gapped environment][air-gapped].
 
 ### Multiple Trivy servers
 
@@ -132,6 +89,54 @@ Try:
 ```
 $ TMPDIR=/my/custom/path trivy repo ...
 ```
+
+### Running out of space during image scans
+
+!!! error
+    ``` bash
+    image scan failed:
+    failed to copy the image:
+    write /tmp/fanal-3323732142: no space left on device
+    ```
+
+Trivy uses the `/tmp` directory during image scan, if the image is large or `/tmp` is of insufficient size then the scan fails You can set the `TMPDIR` environment variable to use redirect trivy to use a directory with adequate storage.
+
+Try:
+
+```
+$ TMPDIR=/my/custom/path trivy image ...
+```
+
+## DB
+### Old DB schema
+
+!!! error
+    --skip-update cannot be specified with the old DB schema.
+
+Trivy v0.23.0 or later requires Trivy DB v2. Please update your local database or follow [the instruction of air-gapped environment][air-gapped].
+
+### Error downloading vulnerability DB
+
+!!! error
+    FATAL failed to download vulnerability DB
+
+If trivy is running behind corporate firewall, you have to add the following urls to your allowlist.
+
+- ghcr.io
+- pkg-containers.githubusercontent.com
+
+### Denied
+
+!!! error
+    GET https://ghcr.io/token?scope=repository%3Aaquasecurity%2Ftrivy-db%3Apull&service=ghcr.io: DENIED: denied
+
+Your local GHCR (GitHub Container Registry) token might be expired.
+Please remove the token and try downloading the DB again.
+
+```shell
+docker logout ghcr.io
+```
+
 
 ## Homebrew
 ### Scope error

@@ -63,6 +63,7 @@
         502
       ],
       "description": "A deserialization of untrusted data vulnerability exists in rails \u003c 5.2.4.3, rails \u003c 6.0.3.1 that can allow an attacker to unmarshal user-provided objects in MemCacheStore and RedisCacheStore potentially resulting in an RCE.",
+      "recommendation": "Upgrade activesupport to version 6.0.3.1, 5.2.4.3",
       "advisories": [
         {
           "url": "http://lists.opensuse.org/opensuse-security-announce/2020-10/msg00031.html"
@@ -284,6 +285,7 @@
         787
       ],
       "description": "idn2_to_ascii_4i in lib/lookup.c in GNU libidn2 before 2.1.1 has a heap-based buffer overflow via a long domain string.",
+      "recommendation": "Upgrade libidn2-0 to version 2.0.5-1+deb10u1",
       "advisories": [
         {
           "url": "http://lists.opensuse.org/opensuse-security-announce/2019-12/msg00008.html"

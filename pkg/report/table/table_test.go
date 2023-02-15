@@ -240,8 +240,8 @@ Total: 2 (MEDIUM: 1, HIGH: 1)
 │ sanitize-html │ CVE-2021-26539 │ MEDIUM   │ 1.20.0            │ 2.3.1         │        │
 └───────────────┴────────────────┴──────────┴───────────────────┴───────────────┴────────┘
 
-Dependency Origin Tree
-======================
+Dependency Origin Tree (Reversed)
+=================================
 package-lock.json
 ├── node-fetch@1.7.3, (MEDIUM: 0, HIGH: 1)
 │   └── isomorphic-fetch@2.2.1

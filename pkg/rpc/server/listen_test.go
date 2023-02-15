@@ -81,6 +81,14 @@ func Test_dbWorker_update(t *testing.T) {
 			args: args{appVersion: "1"},
 		},
 		{
+			name: "skip update",
+			needsUpdate: needsUpdate{
+				input:  needsUpdateInput{appVersion: "1", skip: true},
+				output: needsUpdateOutput{needsUpdate: false},
+			},
+			args: args{appVersion: "1"},
+		},
+		{
 			name: "NeedsUpdate returns an error",
 			needsUpdate: needsUpdate{
 				input:  needsUpdateInput{appVersion: "1", skip: false},
@@ -114,6 +122,8 @@ func Test_dbWorker_update(t *testing.T) {
 				tt.needsUpdate.input.appVersion, tt.needsUpdate.input.skip).Return(
 				tt.needsUpdate.output.needsUpdate, tt.needsUpdate.output.err)
 
+			defer func() { _ = db.Close() }()
+
 			if tt.download.call {
 				mockDBClient.On("Download", mock.Anything, mock.Anything).Run(
 					func(args mock.Arguments) {
@@ -135,7 +145,7 @@ func Test_dbWorker_update(t *testing.T) {
 
 			var dbUpdateWg, requestWg sync.WaitGroup
 			err := w.update(context.Background(), tt.args.appVersion, cacheDir,
-				&dbUpdateWg, &requestWg)
+				tt.needsUpdate.input.skip, &dbUpdateWg, &requestWg)
 			if tt.wantErr != "" {
 				require.NotNil(t, err, tt.name)
 				assert.Contains(t, err.Error(), tt.wantErr, tt.name)
@@ -222,6 +232,7 @@ func Test_newServeMux(t *testing.T) {
 
 			c, err := cache.NewFSCache(t.TempDir())
 			require.NoError(t, err)
+			defer func() { _ = c.Close() }()
 
 			ts := httptest.NewServer(newServeMux(
 				c, dbUpdateWg, requestWg, tt.args.token, tt.args.tokenHeader),

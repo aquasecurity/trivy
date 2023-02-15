@@ -10,6 +10,13 @@ import (
 
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
+	"github.com/aquasecurity/trivy/pkg/javadb"
+
+	_ "modernc.org/sqlite"
+)
+
+const (
+	defaultJavaDBRepository = "ghcr.io/aquasecurity/trivy-java-db"
 )
 
 func Test_javaLibraryAnalyzer_Analyze(t *testing.T) {
@@ -28,23 +35,46 @@ func Test_javaLibraryAnalyzer_Analyze(t *testing.T) {
 						Type:     types.Jar,
 						FilePath: "testdata/test.war",
 						Libraries: []types.Package{
-							{Name: "org.glassfish:javax.el", FilePath: "testdata/test.war", Version: "3.0.0"},
 							{
-								Name: "com.fasterxml.jackson.core:jackson-databind", FilePath: "testdata/test.war",
-								Version: "2.9.10.6",
+								Name:     "org.glassfish:javax.el",
+								FilePath: "testdata/test.war",
+								Version:  "3.0.0",
 							},
 							{
-								Name: "com.fasterxml.jackson.core:jackson-annotations", FilePath: "testdata/test.war",
-								Version: "2.9.10",
+								Name:     "com.fasterxml.jackson.core:jackson-databind",
+								FilePath: "testdata/test.war",
+								Version:  "2.9.10.6",
 							},
 							{
-								Name: "com.fasterxml.jackson.core:jackson-core", FilePath: "testdata/test.war",
-								Version: "2.9.10",
+								Name:     "com.fasterxml.jackson.core:jackson-annotations",
+								FilePath: "testdata/test.war",
+								Version:  "2.9.10",
 							},
-							{Name: "org.slf4j:slf4j-api", FilePath: "testdata/test.war", Version: "1.7.30"},
-							{Name: "com.cronutils:cron-utils", FilePath: "testdata/test.war", Version: "9.1.2"},
-							{Name: "org.apache.commons:commons-lang3", FilePath: "testdata/test.war", Version: "3.11"},
-							{Name: "com.example:web-app", FilePath: "testdata/test.war", Version: "1.0-SNAPSHOT"},
+							{
+								Name:     "com.fasterxml.jackson.core:jackson-core",
+								FilePath: "testdata/test.war",
+								Version:  "2.9.10",
+							},
+							{
+								Name:     "org.slf4j:slf4j-api",
+								FilePath: "testdata/test.war",
+								Version:  "1.7.30",
+							},
+							{
+								Name:     "com.cronutils:cron-utils",
+								FilePath: "testdata/test.war",
+								Version:  "9.1.2",
+							},
+							{
+								Name:     "org.apache.commons:commons-lang3",
+								FilePath: "testdata/test.war",
+								Version:  "3.11",
+							},
+							{
+								Name:     "com.example:web-app",
+								FilePath: "testdata/test.war",
+								Version:  "1.0-SNAPSHOT",
+							},
 						},
 					},
 				},
@@ -60,8 +90,28 @@ func Test_javaLibraryAnalyzer_Analyze(t *testing.T) {
 						FilePath: "testdata/test.par",
 						Libraries: []types.Package{
 							{
-								Name: "com.fasterxml.jackson.core:jackson-core", FilePath: "testdata/test.par",
-								Version: "2.9.10",
+								Name:     "com.fasterxml.jackson.core:jackson-core",
+								FilePath: "testdata/test.par",
+								Version:  "2.9.10",
+							},
+						},
+					},
+				},
+			},
+		},
+		{
+			name:      "happy path (package found in trivy-java-db by sha1)",
+			inputFile: "testdata/test.jar",
+			want: &analyzer.AnalysisResult{
+				Applications: []types.Application{
+					{
+						Type:     types.Jar,
+						FilePath: "testdata/test.jar",
+						Libraries: []types.Package{
+							{
+								Name:     "org.apache.tomcat.embed:tomcat-embed-websocket",
+								FilePath: "testdata/test.jar",
+								Version:  "9.0.65",
 							},
 						},
 					},
@@ -82,6 +132,9 @@ func Test_javaLibraryAnalyzer_Analyze(t *testing.T) {
 
 			stat, err := f.Stat()
 			require.NoError(t, err)
+
+			// init java-trivy-db with skip update
+			javadb.Init("testdata", defaultJavaDBRepository, true, false, false)
 
 			a := javaLibraryAnalyzer{}
 			ctx := context.Background()

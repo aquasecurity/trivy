@@ -1,7 +1,9 @@
 package secret_test
 
 import (
+	"bytes"
 	"os"
+	"path/filepath"
 	"testing"
 
 	"go.uber.org/zap"
@@ -473,6 +475,58 @@ func TestSecretScanner(t *testing.T) {
 			},
 		},
 	}
+	wantFindingAsymmSecretKey := types.SecretFinding{
+		RuleID:    "private-key",
+		Category:  secret.CategoryAsymmetricPrivateKey,
+		Title:     "Asymmetric Private Key",
+		Severity:  "HIGH",
+		StartLine: 1,
+		EndLine:   1,
+		Match:     "----BEGIN RSA PRIVATE KEY-----**************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************-----END RSA PRIVATE",
+		Code: types.Code{
+			Lines: []types.Line{
+				{
+					Number:      1,
+					Content:     "-----BEGIN RSA PRIVATE KEY-----**************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************-----END RSA PRIVATE KEY-----",
+					Highlighted: "-----BEGIN RSA PRIVATE KEY-----**************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************-----END RSA PRIVATE KEY-----",
+					IsCause:     true,
+					FirstCause:  true,
+					LastCause:   true,
+				},
+			},
+		},
+	}
+	wantFindingAlibabaAccessKeyId := types.SecretFinding{
+		RuleID:    "alibaba-access-key-id",
+		Category:  secret.CategoryAlibaba,
+		Title:     "Alibaba AccessKey ID",
+		Severity:  "HIGH",
+		StartLine: 2,
+		EndLine:   2,
+		Match:     "key = ************************,",
+		Code: types.Code{
+			Lines: []types.Line{
+				{
+					Number:      1,
+					Content:     "key : LTAI1234567890ABCDEFG123asd",
+					Highlighted: "key : LTAI1234567890ABCDEFG123asd",
+				},
+				{
+					Number:      2,
+					Content:     "key = ************************,",
+					Highlighted: "key = ************************,",
+					IsCause:     true,
+					FirstCause:  true,
+					LastCause:   true,
+				},
+				{
+					Number:      3,
+					Content:     "asdLTAI1234567890ABCDEFG123",
+					Highlighted: "asdLTAI1234567890ABCDEFG123",
+				},
+			},
+		},
+	}
 
 	tests := []struct {
 		name          string
@@ -482,197 +536,214 @@ func TestSecretScanner(t *testing.T) {
 	}{
 		{
 			name:          "find match",
-			configPath:    "testdata/config.yaml",
-			inputFilePath: "testdata/secret.txt",
+			configPath:    filepath.Join("testdata", "config.yaml"),
+			inputFilePath: filepath.Join("testdata", "secret.txt"),
 			want: types.Secret{
-				FilePath: "testdata/secret.txt",
+				FilePath: filepath.Join("testdata", "secret.txt"),
 				Findings: []types.SecretFinding{wantFinding1, wantFinding2},
 			},
 		},
 		{
 			name:          "find aws secrets",
-			configPath:    "testdata/config.yaml",
-			inputFilePath: "testdata/aws-secrets.txt",
+			configPath:    filepath.Join("testdata", "config.yaml"),
+			inputFilePath: filepath.Join("testdata", "aws-secrets.txt"),
 			want: types.Secret{
-				FilePath: "testdata/aws-secrets.txt",
+				FilePath: filepath.Join("testdata", "aws-secrets.txt"),
 				Findings: []types.SecretFinding{wantFinding5, wantFinding10, wantFinding9},
 			},
 		},
 		{
 			name:          "find Asymmetric Private Key secrets",
-			inputFilePath: "testdata/asymmetric-private-secret.txt",
+			inputFilePath: filepath.Join("testdata", "asymmetric-private-secret.txt"),
 			want: types.Secret{
-				FilePath: "testdata/asymmetric-private-secret.txt",
+				FilePath: filepath.Join("testdata", "asymmetric-private-secret.txt"),
 				Findings: []types.SecretFinding{wantFindingAsymmetricPrivateKey},
 			},
 		},
 		{
-			name:          "find Asymmetric Private Key secrets json",
-			inputFilePath: "testdata/asymmetric-private-secret.json",
+			name:          "find Alibaba AccessKey ID txt",
+			inputFilePath: "testdata/alibaba-access-key-id.txt",
 			want: types.Secret{
-				FilePath: "testdata/asymmetric-private-secret.json",
+				FilePath: "testdata/alibaba-access-key-id.txt",
+				Findings: []types.SecretFinding{wantFindingAlibabaAccessKeyId},
+			},
+		},
+		{
+			name:          "find Asymmetric Private Key secrets json",
+			inputFilePath: filepath.Join("testdata", "asymmetric-private-secret.json"),
+			want: types.Secret{
+				FilePath: filepath.Join("testdata", "asymmetric-private-secret.json"),
 				Findings: []types.SecretFinding{wantFindingAsymmetricPrivateKeyJson},
 			},
 		},
 		{
 			name:          "include when keyword found",
-			configPath:    "testdata/config-happy-keywords.yaml",
-			inputFilePath: "testdata/secret.txt",
+			configPath:    filepath.Join("testdata", "config-happy-keywords.yaml"),
+			inputFilePath: filepath.Join("testdata", "secret.txt"),
 			want: types.Secret{
-				FilePath: "testdata/secret.txt",
+				FilePath: filepath.Join("testdata", "secret.txt"),
 				Findings: []types.SecretFinding{wantFinding1, wantFinding2},
 			},
 		},
 		{
 			name:          "exclude when no keyword found",
-			configPath:    "testdata/config-sad-keywords.yaml",
-			inputFilePath: "testdata/secret.txt",
+			configPath:    filepath.Join("testdata", "config-sad-keywords.yaml"),
+			inputFilePath: filepath.Join("testdata", "secret.txt"),
 			want:          types.Secret{},
 		},
 		{
 			name:          "should ignore .md files by default",
-			configPath:    "testdata/config.yaml",
-			inputFilePath: "testdata/secret.md",
+			configPath:    filepath.Join("testdata", "config.yaml"),
+			inputFilePath: filepath.Join("testdata", "secret.md"),
 			want: types.Secret{
-				FilePath: "testdata/secret.md",
+				FilePath: filepath.Join("testdata", "secret.md"),
 			},
 		},
 		{
 			name:          "should disable .md allow rule",
-			configPath:    "testdata/config-disable-allow-rule-md.yaml",
-			inputFilePath: "testdata/secret.md",
+			configPath:    filepath.Join("testdata", "config-disable-allow-rule-md.yaml"),
+			inputFilePath: filepath.Join("testdata", "secret.md"),
 			want: types.Secret{
-				FilePath: "testdata/secret.md",
+				FilePath: filepath.Join("testdata", "secret.md"),
 				Findings: []types.SecretFinding{wantFinding1, wantFinding2},
 			},
 		},
 		{
 			name:          "should find ghp builtin secret",
 			configPath:    "",
-			inputFilePath: "testdata/builtin-rule-secret.txt",
+			inputFilePath: filepath.Join("testdata", "builtin-rule-secret.txt"),
 			want: types.Secret{
-				FilePath: "testdata/builtin-rule-secret.txt",
+				FilePath: filepath.Join("testdata", "builtin-rule-secret.txt"),
 				Findings: []types.SecretFinding{wantFinding5a, wantFinding6},
 			},
 		},
 		{
 			name:          "should enable github-pat builtin rule, but disable aws-access-key-id rule",
-			configPath:    "testdata/config-enable-ghp.yaml",
-			inputFilePath: "testdata/builtin-rule-secret.txt",
+			configPath:    filepath.Join("testdata", "config-enable-ghp.yaml"),
+			inputFilePath: filepath.Join("testdata", "builtin-rule-secret.txt"),
 			want: types.Secret{
-				FilePath: "testdata/builtin-rule-secret.txt",
+				FilePath: filepath.Join("testdata", "builtin-rule-secret.txt"),
 				Findings: []types.SecretFinding{wantFindingGHButDisableAWS},
 			},
 		},
 		{
 			name:          "should disable github-pat builtin rule",
-			configPath:    "testdata/config-disable-ghp.yaml",
-			inputFilePath: "testdata/builtin-rule-secret.txt",
+			configPath:    filepath.Join("testdata", "config-disable-ghp.yaml"),
+			inputFilePath: filepath.Join("testdata", "builtin-rule-secret.txt"),
 			want: types.Secret{
-				FilePath: "testdata/builtin-rule-secret.txt",
+				FilePath: filepath.Join("testdata", "builtin-rule-secret.txt"),
 				Findings: []types.SecretFinding{wantFindingPATDisabled},
 			},
 		},
 		{
 			name:          "should disable custom rule",
-			configPath:    "testdata/config-disable-rule1.yaml",
-			inputFilePath: "testdata/secret.txt",
+			configPath:    filepath.Join("testdata", "config-disable-rule1.yaml"),
+			inputFilePath: filepath.Join("testdata", "secret.txt"),
 			want:          types.Secret{},
 		},
 		{
 			name:          "allow-rule path",
-			configPath:    "testdata/allow-path.yaml",
-			inputFilePath: "testdata/secret.txt",
+			configPath:    filepath.Join("testdata", "allow-path.yaml"),
+			inputFilePath: filepath.Join("testdata", "secret.txt"),
 			want:          types.Secret{},
 		},
 		{
 			name:          "allow-rule regex inside group",
-			configPath:    "testdata/allow-regex.yaml",
-			inputFilePath: "testdata/secret.txt",
+			configPath:    filepath.Join("testdata", "allow-regex.yaml"),
+			inputFilePath: filepath.Join("testdata", "secret.txt"),
 			want: types.Secret{
-				FilePath: "testdata/secret.txt",
+				FilePath: filepath.Join("testdata", "secret.txt"),
 				Findings: []types.SecretFinding{wantFinding1},
 			},
 		},
 		{
 			name:          "allow-rule regex outside group",
-			configPath:    "testdata/allow-regex-outside-group.yaml",
-			inputFilePath: "testdata/secret.txt",
+			configPath:    filepath.Join("testdata", "allow-regex-outside-group.yaml"),
+			inputFilePath: filepath.Join("testdata", "secret.txt"),
 			want:          types.Secret{},
 		},
 		{
 			name:          "exclude-block regexes",
-			configPath:    "testdata/exclude-block.yaml",
-			inputFilePath: "testdata/secret.txt",
+			configPath:    filepath.Join("testdata", "exclude-block.yaml"),
+			inputFilePath: filepath.Join("testdata", "secret.txt"),
 			want: types.Secret{
-				FilePath: "testdata/secret.txt",
+				FilePath: filepath.Join("testdata", "secret.txt"),
 				Findings: []types.SecretFinding{wantFindingRegexDisabled},
 			},
 		},
 		{
 			name:          "skip examples file",
-			inputFilePath: "testdata/example-secret.txt",
+			inputFilePath: filepath.Join("testdata", "example-secret.txt"),
 			want: types.Secret{
-				FilePath: "testdata/example-secret.txt",
+				FilePath: filepath.Join("testdata", "example-secret.txt"),
 			},
 		},
 		{
 			name:          "global allow-rule path",
-			configPath:    "testdata/global-allow-path.yaml",
-			inputFilePath: "testdata/secret.txt",
+			configPath:    filepath.Join("testdata", "global-allow-path.yaml"),
+			inputFilePath: filepath.Join("testdata", "secret.txt"),
 			want: types.Secret{
-				FilePath: "testdata/secret.txt",
+				FilePath: filepath.Join("testdata", "secret.txt"),
 				Findings: nil,
 			},
 		},
 		{
 			name:          "global allow-rule regex",
-			configPath:    "testdata/global-allow-regex.yaml",
-			inputFilePath: "testdata/secret.txt",
+			configPath:    filepath.Join("testdata", "global-allow-regex.yaml"),
+			inputFilePath: filepath.Join("testdata", "secret.txt"),
 			want: types.Secret{
-				FilePath: "testdata/secret.txt",
+				FilePath: filepath.Join("testdata", "secret.txt"),
 				Findings: []types.SecretFinding{wantFinding1},
 			},
 		},
 		{
 			name:          "global exclude-block regexes",
-			configPath:    "testdata/global-exclude-block.yaml",
-			inputFilePath: "testdata/secret.txt",
+			configPath:    filepath.Join("testdata", "global-exclude-block.yaml"),
+			inputFilePath: filepath.Join("testdata", "secret.txt"),
 			want: types.Secret{
-				FilePath: "testdata/secret.txt",
+				FilePath: filepath.Join("testdata", "secret.txt"),
 				Findings: []types.SecretFinding{wantFindingRegexDisabled},
 			},
 		},
 		{
 			name:          "multiple secret groups",
-			configPath:    "testdata/multiple-secret-groups.yaml",
-			inputFilePath: "testdata/secret.txt",
+			configPath:    filepath.Join("testdata", "multiple-secret-groups.yaml"),
+			inputFilePath: filepath.Join("testdata", "secret.txt"),
 			want: types.Secret{
-				FilePath: "testdata/secret.txt",
+				FilePath: filepath.Join("testdata", "secret.txt"),
 				Findings: []types.SecretFinding{wantFinding3, wantFinding4},
 			},
 		},
 		{
 			name:          "truncate long line",
-			inputFilePath: "testdata/long-line-secret.txt",
+			inputFilePath: filepath.Join("testdata", "long-line-secret.txt"),
 			want: types.Secret{
-				FilePath: "testdata/long-line-secret.txt",
+				FilePath: filepath.Join("testdata", "long-line-secret.txt"),
 				Findings: []types.SecretFinding{wantFinding7},
 			},
 		},
 		{
 			name:          "add unknown severity when rule has no severity",
-			configPath:    "testdata/config-without-severity.yaml",
-			inputFilePath: "testdata/secret.txt",
+			configPath:    filepath.Join("testdata", "config-without-severity.yaml"),
+			inputFilePath: filepath.Join("testdata", "secret.txt"),
 			want: types.Secret{
-				FilePath: "testdata/secret.txt",
+				FilePath: filepath.Join("testdata", "secret.txt"),
 				Findings: []types.SecretFinding{wantFinding8},
 			},
 		},
 		{
 			name:          "invalid aws secrets",
-			inputFilePath: "testdata/invalid-aws-secrets.txt",
+			inputFilePath: filepath.Join("testdata", "invalid-aws-secrets.txt"),
 			want:          types.Secret{},
+		},
+		{
+			name:          "asymmetric file",
+			configPath:    "",
+			inputFilePath: "testdata/asymmetric-private-key.txt",
+			want: types.Secret{
+				FilePath: "testdata/asymmetric-private-key.txt",
+				Findings: []types.SecretFinding{wantFindingAsymmSecretKey},
+			},
 		},
 	}
 
@@ -680,6 +751,8 @@ func TestSecretScanner(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			content, err := os.ReadFile(tt.inputFilePath)
 			require.NoError(t, err)
+
+			content = bytes.ReplaceAll(content, []byte("\r"), []byte(""))
 
 			c, err := secret.ParseConfig(tt.configPath)
 			require.NoError(t, err)

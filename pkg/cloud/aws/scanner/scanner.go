@@ -5,17 +5,15 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/aquasecurity/defsec/pkg/state"
-
 	"github.com/aquasecurity/defsec/pkg/framework"
-
-	"github.com/aquasecurity/trivy/pkg/cloud/aws/cache"
-	"github.com/aquasecurity/trivy/pkg/flag"
-	"github.com/aquasecurity/trivy/pkg/log"
-
 	"github.com/aquasecurity/defsec/pkg/scan"
 	"github.com/aquasecurity/defsec/pkg/scanners/cloud/aws"
 	"github.com/aquasecurity/defsec/pkg/scanners/options"
+	"github.com/aquasecurity/defsec/pkg/state"
+	"github.com/aquasecurity/trivy/pkg/cloud/aws/cache"
+	"github.com/aquasecurity/trivy/pkg/commands/operation"
+	"github.com/aquasecurity/trivy/pkg/flag"
+	"github.com/aquasecurity/trivy/pkg/log"
 )
 
 type AWSScanner struct {
@@ -63,12 +61,22 @@ func (s *AWSScanner) Scan(ctx context.Context, option flag.Options) (scan.Result
 		)
 	}
 
-	if len(option.RegoOptions.PolicyPaths) > 0 {
-		scannerOpts = append(
-			scannerOpts,
-			options.ScannerWithPolicyDirs(option.RegoOptions.PolicyPaths...),
-		)
+	var policyPaths []string
+	var downloadedPolicyPaths []string
+	var err error
+	downloadedPolicyPaths, err = operation.InitBuiltinPolicies(context.Background(), option.CacheDir, option.Quiet, option.SkipPolicyUpdate)
+	if err != nil {
+		if !option.SkipPolicyUpdate {
+			log.Logger.Errorf("Falling back to embedded policies: %s", err)
+		}
+	} else {
+		log.Logger.Debug("Policies successfully loaded from disk")
+		policyPaths = append(policyPaths, downloadedPolicyPaths...)
+		scannerOpts = append(scannerOpts,
+			options.ScannerWithEmbeddedPolicies(false))
 	}
+	policyPaths = append(policyPaths, option.RegoOptions.PolicyPaths...)
+	scannerOpts = append(scannerOpts, options.ScannerWithPolicyDirs(policyPaths...))
 
 	if len(option.RegoOptions.PolicyNamespaces) > 0 {
 		scannerOpts = append(
@@ -77,10 +85,13 @@ func (s *AWSScanner) Scan(ctx context.Context, option flag.Options) (scan.Result
 		)
 	}
 
-	scannerOpts = append(scannerOpts, options.ScannerWithFrameworks(
-		framework.Default,
-		framework.CIS_AWS_1_2,
-	))
+	if option.Compliance.Spec.ID != "" {
+		scannerOpts = append(scannerOpts, options.ScannerWithSpec(option.Compliance.Spec.ID))
+	} else {
+		scannerOpts = append(scannerOpts, options.ScannerWithFrameworks(
+			framework.Default,
+			framework.CIS_AWS_1_2))
+	}
 
 	scanner := aws.New(scannerOpts...)
 

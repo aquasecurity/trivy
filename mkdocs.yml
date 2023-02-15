@@ -10,7 +10,6 @@ nav:
   - Getting Started: 
       - Overview: index.md
       - Installation: getting-started/installation.md
-      - Quick Start: getting-started/quickstart.md
   - Tutorials:
       - Overview: tutorials/overview.md   
       - CI/CD:
@@ -23,42 +22,44 @@ nav:
           - AWS CodePipeline: tutorials/integrations/aws-codepipeline.md
           - AWS Security Hub: tutorials/integrations/aws-security-hub.md
           - Azure: tutorials/integrations/azure-devops.md
-          - Woodpecker CI: docs/integrations/woodpecker-ci.md
       - Kubernetes:
           - Cluster Scanning: tutorials/kubernetes/cluster-scanning.md
           - Kyverno: tutorials/kubernetes/kyverno.md
           - GitOps: tutorials/kubernetes/gitops.md
       - Signing:
-            - Vulnerability Scan Record Attestation: tutorials/signing/vuln-attestation.md
+          - Vulnerability Scan Record Attestation: tutorials/signing/vuln-attestation.md
       - Shell:
-            - Completion: tutorials/shell/shell-completion.md
+          - Completion: tutorials/shell/shell-completion.md
       - Additional Resources:
           - Additional Resources: tutorials/additional-resources/references.md
           - Community References: tutorials/additional-resources/community.md
           - CKS Reference: tutorials/additional-resources/cks.md
-  - CLI:
+  - Docs:
       - Overview: docs/index.md
+      - Target:
+          Container Image: docs/target/container_image.md
+          Filesystem: docs/target/filesystem.md
+          Rootfs: docs/target/rootfs.md
+          Git Repository: docs/target/git-repository.md
+          Virtual Machine Image: docs/target/vm.md
+          Kubernetes: docs/target/kubernetes.md
+          AWS: docs/target/aws.md
+          SBOM: docs/target/sbom.md
       - Vulnerability:
-          - Scanning:
-              - Overview: docs/vulnerability/scanning/index.md
-              - Container Image: docs/vulnerability/scanning/image.md
-              - Filesystem: docs/vulnerability/scanning/filesystem.md
-              - Rootfs: docs/vulnerability/scanning/rootfs.md
-              - Git Repository: docs/vulnerability/scanning/git-repository.md
+          - Scanning: docs/vulnerability/scanning.md
           - Detection:
               - OS Packages: docs/vulnerability/detection/os.md
               - Language-specific Packages: docs/vulnerability/detection/language.md
               - Data Sources: docs/vulnerability/detection/data-source.md
-              - Supported: docs/vulnerability/detection/supported.md
           - Examples:
               - Vulnerability Filtering: docs/vulnerability/examples/filter.md
               - Report Formats: docs/vulnerability/examples/report.md
               - Vulnerability DB: docs/vulnerability/examples/db.md
               - Cache: docs/vulnerability/examples/cache.md
               - Others: docs/vulnerability/examples/others.md
-          - Distributions: docs/vulnerability/distributions.md
           - Languages:
               - Go: docs/vulnerability/languages/golang.md
+              - Java: docs/vulnerability/languages/java.md
       - Misconfiguration:
           - Scanning: docs/misconfiguration/scanning.md
           - Policy:
@@ -77,23 +78,14 @@ nav:
               - Report Formats: docs/misconfiguration/options/report.md
               - Value Overrides: docs/misconfiguration/options/values.md
               - Others: docs/misconfiguration/options/others.md
-          - Comparison:
-              - vs Conftest: docs/misconfiguration/comparison/conftest.md
-              - vs tfsec: docs/misconfiguration/comparison/tfsec.md
-              - vs cfsec: docs/misconfiguration/comparison/cfsec.md
       - Secret:
           - Scanning: docs/secret/scanning.md
           - Configuration: docs/secret/configuration.md
           - Examples: docs/secret/examples.md
       - License:
             - Scanning: docs/licenses/scanning.md
-      - Kubernetes:
-          - CLI:
-              - Scanning: docs/kubernetes/cli/scanning.md
-          - Operator:
-              - Overview: docs/kubernetes/operator/index.md
-      - Cloud:
-          - AWS: docs/cloud/aws/scanning.md
+      - Compliance:
+            - Reports:  docs/compliance/compliance.md
       - SBOM:
           - Overview: docs/sbom/index.md
           - CycloneDX: docs/sbom/cyclonedx.md
@@ -109,9 +101,6 @@ nav:
           - Container Image:
               - Embed in Dockerfile: docs/advanced/container/embed-in-dockerfile.md
               - Unpacked container image filesystem: docs/advanced/container/unpacked-filesystem.md
-              - OCI Image: docs/advanced/container/oci.md
-              - Podman: docs/advanced/container/podman.md
-              - containerd: docs/advanced/container/containerd.md
               - Private Docker Registries:
                   - Overview: docs/advanced/private-registries/index.md
                   - Docker Hub: docs/advanced/private-registries/docker-hub.md
@@ -140,7 +129,12 @@ nav:
               - Standalone: docs/references/modes/standalone.md
               - Client/Server: docs/references/modes/client-server.md
           - Troubleshooting: docs/references/troubleshooting.md
-  - Ecosystem: ecosystem/tools.md
+  - Ecosystem: 
+    - Overview: ecosystem/index.md
+    - CI/CD: ecosystem/cicd.md
+    - IDE and Dev tools: ecosystem/ide.md
+    - Production and Clouds: ecosystem/prod.md
+    - Security Management: ecosystem/security.md
   - Contributing:
       - How to contribute:
           - Issues: community/contribute/issue.md

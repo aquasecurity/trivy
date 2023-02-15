@@ -50,7 +50,10 @@ mode:
 - fs
 - repo
 - sbom
+- k8s
 - server
+- aws
+- vm
 
 os:
 
@@ -77,6 +80,8 @@ language:
 - dotnet
 - java
 - go
+- elixir
+- dart
 
 vuln:
 
@@ -101,6 +106,12 @@ cli:
 
 - cli
 - flag
+
+SBOM:
+
+- cyclonedx
+- spdx
+- purl
 
 others:
 

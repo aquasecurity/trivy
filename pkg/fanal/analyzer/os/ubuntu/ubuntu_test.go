@@ -24,7 +24,7 @@ func Test_ubuntuOSAnalyzer_Analyze(t *testing.T) {
 			name:      "happy path",
 			inputFile: "testdata/lsb-release",
 			want: &analyzer.AnalysisResult{
-				OS: &types.OS{Family: "ubuntu", Name: "18.04"},
+				OS: types.OS{Family: "ubuntu", Name: "18.04"},
 			},
 		},
 		{

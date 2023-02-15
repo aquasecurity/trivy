@@ -14,7 +14,7 @@ scan:
     - /usr/lib
     - /usr/include
 
-  security-checks:
+  scanners:
     - vuln
     - secret
 vulnerability:

@@ -7,10 +7,11 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
-	"github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+
+	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
+	"github.com/aquasecurity/trivy/pkg/fanal/types"
 )
 
 func Test_npmLibraryAnalyzer_Analyze(t *testing.T) {
@@ -120,14 +121,14 @@ func Test_npmLibraryAnalyzer_Analyze(t *testing.T) {
 		{
 			name:      "sad path",
 			inputFile: "testdata/wrong.json",
-			wantErr:   "unable to parse testdata/wrong.json",
+			wantErr:   "unable to parse",
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			f, err := os.Open(tt.inputFile)
 			require.NoError(t, err)
-			defer f.Close()
+			defer func() { _ = f.Close() }()
 
 			a := npmLibraryAnalyzer{}
 			got, err := a.Analyze(context.Background(), analyzer.AnalysisInput{

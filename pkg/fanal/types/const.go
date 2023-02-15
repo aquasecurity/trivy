@@ -17,6 +17,7 @@ const (
 	Pip        = "pip"
 	Pipenv     = "pipenv"
 	Poetry     = "poetry"
+	CondaPkg   = "conda-pkg"
 	PythonPkg  = "python-pkg"
 	NodePkg    = "node-pkg"
 	Yarn       = "yarn"
@@ -29,6 +30,9 @@ const (
 	JavaScript = "javascript"
 	RustBinary = "rustbinary"
 	Conan      = "conan"
+	Cocoapods  = "cocoapods"
+	Pub        = "pub"
+	Hex        = "hex"
 
 	// Config files
 	YAML           = "yaml"
@@ -39,7 +43,6 @@ const (
 	Kubernetes     = "kubernetes"
 	Ansible        = "ansible"
 	Helm           = "helm"
-	Rbac           = "rbac"
 	Cloud          = "cloud"
 	AzureARM       = "azure-arm"
 
@@ -70,4 +73,10 @@ const (
 	CargoLock = "Cargo.lock"
 
 	ConanLock = "conan.lock"
+
+	CocoaPodsLock = "Podfile.lock"
+
+	PubSpecLock = "pubspec.lock"
+
+	MixLock = "mix.lock"
 )

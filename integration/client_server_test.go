@@ -248,6 +248,15 @@ func TestClientServer(t *testing.T) {
 			},
 			golden: "testdata/secrets.json.golden",
 		},
+		{
+			name: "scan remote repository with repo command in client/server mode",
+			args: csArgs{
+				Command:          "repo",
+				RemoteAddrOption: "--server",
+				Target:           "https://github.com/knqyf263/trivy-ci-test",
+			},
+			golden: "testdata/test-repo.json.golden",
+		},
 	}
 
 	addr, cacheDir := setup(t, setupOptions{})
@@ -309,6 +318,17 @@ func TestClientServerWithFormat(t *testing.T) {
 				Input:        "testdata/fixtures/images/alpine-310.tar.gz",
 			},
 			golden: "testdata/alpine-310.asff.golden",
+		},
+		{
+			name: "scan secrets with ASFF template",
+			args: csArgs{
+				Command:          "fs",
+				RemoteAddrOption: "--server",
+				Format:           "template",
+				TemplatePath:     "@../contrib/asff.tpl",
+				Target:           "testdata/fixtures/fs/secrets/",
+			},
+			golden: "testdata/secrets.asff.golden",
 		},
 		{
 			name: "alpine 3.10 with html template",
