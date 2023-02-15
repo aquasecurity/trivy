@@ -25,6 +25,7 @@ func TestReportFlagGroup_ToOptions(t *testing.T) {
 		ignoreUnfixed  bool
 		ignoreFile     string
 		exitCode       int
+		exitOnEOSL     bool
 		ignorePolicy   string
 		output         string
 		severities     string
@@ -202,6 +203,20 @@ func TestReportFlagGroup_ToOptions(t *testing.T) {
 				Severities: []dbTypes.Severity{dbTypes.SeverityLow},
 			},
 		},
+		{
+			name: "invalid option combination: --exit-code 0 with --exit-on-eosl",
+			fields: fields{
+				exitCode:   0,
+				exitOnEOSL: true,
+			},
+			wantLogs: []string{
+				"'--exit-on-eosl' is ignored because '--exit-code' is 0 or not specified. Use '--exit-on-eosl' option with non-zero '--exit-code' option.",
+			},
+			want: flag.ReportOptions{
+				Output:     os.Stdout,
+				ExitOnEOSL: true,
+			},
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -220,6 +235,7 @@ func TestReportFlagGroup_ToOptions(t *testing.T) {
 			viper.Set(flag.IgnoreUnfixedFlag.ConfigName, tt.fields.ignoreUnfixed)
 			viper.Set(flag.IgnorePolicyFlag.ConfigName, tt.fields.ignorePolicy)
 			viper.Set(flag.ExitCodeFlag.ConfigName, tt.fields.exitCode)
+			viper.Set(flag.ExitOnEOSLFlag.ConfigName, tt.fields.exitOnEOSL)
 			viper.Set(flag.OutputFlag.ConfigName, tt.fields.output)
 			viper.Set(flag.SeverityFlag.ConfigName, tt.fields.severities)
 			viper.Set(flag.ComplianceFlag.ConfigName, tt.fields.compliane)
@@ -233,6 +249,7 @@ func TestReportFlagGroup_ToOptions(t *testing.T) {
 				IgnoreFile:     &flag.IgnoreFileFlag,
 				IgnorePolicy:   &flag.IgnorePolicyFlag,
 				ExitCode:       &flag.ExitCodeFlag,
+				ExitOnEOSL:     &flag.ExitOnEOSLFlag,
 				Output:         &flag.OutputFlag,
 				Severity:       &flag.SeverityFlag,
 				Compliance:     &flag.ComplianceFlag,
