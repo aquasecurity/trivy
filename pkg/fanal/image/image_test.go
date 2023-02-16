@@ -208,7 +208,8 @@ func TestNewDockerImage(t *testing.T) {
 				imageName: fmt.Sprintf("%s/library/alpine:3.10", serverAddr),
 				option: types.DockerOption{
 					Credentials: []types.Credential{
-						{UserName: "test",
+						{
+							UserName: "test",
 							Password: "test",
 						},
 					},
