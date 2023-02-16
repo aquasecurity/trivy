@@ -5,6 +5,7 @@ import (
 	"io/ioutil"
 	"os"
 	"path/filepath"
+	"runtime"
 	"testing"
 	"time"
 
@@ -73,26 +74,38 @@ func Test_image_ConfigName(t *testing.T) {
 }
 
 func Test_image_ConfigNameWithCustomDockerHost(t *testing.T) {
-	runtimeDir, err := ioutil.TempDir("", "daemon")
-	require.NoError(t, err)
-
-	dir := filepath.Join(runtimeDir, "image")
-	err = os.MkdirAll(dir, os.ModePerm)
-	require.NoError(t, err)
-
-	customDockerHost := filepath.Join(dir, "image-test-unix-socket.sock")
-
-	te := engine.NewDockerEngine(engine.Option{
-		APIVersion:       opt.APIVersion,
-		ImagePaths:       opt.ImagePaths,
-		UnixDomainSocket: customDockerHost,
-	})
-	defer te.Close()
 
 	ref, err := name.ParseReference("alpine:3.11")
 	require.NoError(t, err)
 
-	img, cleanup, err := DockerImage(ref, "unix:///"+customDockerHost)
+	eo := engine.Option{
+		APIVersion: opt.APIVersion,
+		ImagePaths: opt.ImagePaths,
+	}
+
+	var dockerHostParam string
+
+	if runtime.GOOS != "windows" {
+		runtimeDir, err := ioutil.TempDir("", "daemon")
+		require.NoError(t, err)
+
+		dir := filepath.Join(runtimeDir, "image")
+		err = os.MkdirAll(dir, os.ModePerm)
+		require.NoError(t, err)
+
+		customDockerHost := filepath.Join(dir, "image-test-unix-socket.sock")
+		eo.UnixDomainSocket = customDockerHost
+		dockerHostParam = "unix://" + customDockerHost
+	}
+
+	te := engine.NewDockerEngine(eo)
+	defer te.Close()
+
+	if runtime.GOOS == "windows" {
+		dockerHostParam = te.Listener.Addr().String()
+	}
+
+	img, cleanup, err := DockerImage(ref, dockerHostParam)
 	require.NoError(t, err)
 	defer cleanup()
 
