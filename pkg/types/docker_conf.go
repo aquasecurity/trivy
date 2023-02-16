@@ -25,16 +25,16 @@ func GetDockerOption(insecureTlsSkip bool, Platform string) (types.DockerOption,
 	}
 	credentials := make([]types.Credential, 0)
 	users := strings.Split(cfg.UserName, ",")
-	password := strings.Split(cfg.Password, ",")
+	passwords := strings.Split(cfg.Password, ",")
 	for index, user := range users {
-		if len(user) > 0 && len(password[index]) > 0 {
-			credentials = append(credentials, types.Credential{UserName: user, Password: password[index]})
+		if len(user) > 0 && len(passwords[index]) > 0 {
+			credentials = append(credentials, types.Credential{UserName: user, Password: passwords[index]})
 		}
 	}
 	if len(credentials) == 0 {
 		credentials = append(credentials, types.Credential{}) // no credential use-case
 	}
-	if len(credentials) > 1 { // backward competability maybe can be removed later
+	if len(users) > 0 && len(passwords) > 0 && len(credentials) > 0 { // backward competability maybe can be removed later
 		cfg.UserName = credentials[0].UserName
 		cfg.Password = credentials[0].Password
 	}
