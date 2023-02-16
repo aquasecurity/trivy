@@ -39,8 +39,8 @@ func GetDockerOption(insecureTlsSkip bool, Platform string) (types.DockerOption,
 	}
 
 	return types.DockerOption{
-		UserName:              credentials[0].UserName,
-		Password:              credentials[0].Password,
+		UserName:              credentials[0].UserName, // for backward competability (can be removed later)
+		Password:              credentials[0].Password, // for backward competability (can be removed later)
 		Credentials:           credentials,
 		RegistryToken:         cfg.RegistryToken,
 		InsecureSkipTLSVerify: insecureTlsSkip,
