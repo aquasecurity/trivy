@@ -102,7 +102,7 @@ func Test_image_ConfigNameWithCustomDockerHost(t *testing.T) {
 	defer te.Close()
 
 	if runtime.GOOS == "windows" {
-		dockerHostParam = te.Listener.Addr().String()
+		dockerHostParam = te.Listener.Addr().Network() + "://" + te.Listener.Addr().String()
 	}
 
 	img, cleanup, err := DockerImage(ref, dockerHostParam)
