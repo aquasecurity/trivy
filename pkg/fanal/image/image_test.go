@@ -207,7 +207,11 @@ func TestNewDockerImage(t *testing.T) {
 			args: args{
 				imageName: fmt.Sprintf("%s/library/alpine:3.10", serverAddr),
 				option: types.DockerOption{
-					Credentials:           []types.Credential{{UserName: "test", Password: "test"}},
+					Credentials: []types.Credential{
+						{UserName: "test",
+							Password: "test",
+						},
+					},
 					NonSSL:                true,
 					InsecureSkipTLSVerify: true,
 				},
@@ -339,7 +343,12 @@ func TestNewDockerImageWithPrivateRegistry(t *testing.T) {
 			args: args{
 				imageName: fmt.Sprintf("%s/library/alpine:3.10", serverAddr),
 				option: types.DockerOption{
-					Credentials:           []types.Credential{{UserName: "test", Password: "testpass"}},
+					Credentials: []types.Credential{
+						{
+							UserName: "test",
+							Password: "testpass",
+						},
+					},
 					NonSSL:                true,
 					InsecureSkipTLSVerify: true,
 				},
@@ -509,7 +518,12 @@ func TestDockerPlatformArguments(t *testing.T) {
 			name: "happy path with valid platform",
 			args: args{
 				option: types.DockerOption{
-					Credentials:           []types.Credential{{UserName: "test", Password: "testpass"}},
+					Credentials: []types.Credential{
+						{
+							UserName: "test",
+							Password: "testpass",
+						},
+					},
 					NonSSL:                true,
 					InsecureSkipTLSVerify: true,
 					Platform:              "arm/linux",
