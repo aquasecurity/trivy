@@ -2,10 +2,12 @@ package parallel
 
 import (
 	"context"
-	dio "github.com/aquasecurity/go-dep-parser/pkg/io"
+	"io/fs"
+
 	"golang.org/x/sync/errgroup"
 	"golang.org/x/xerrors"
-	"io/fs"
+
+	dio "github.com/aquasecurity/go-dep-parser/pkg/io"
 )
 
 type onFile[T any] func(string, fs.FileInfo, dio.ReadSeekerAt) (T, error)

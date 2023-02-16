@@ -3,15 +3,12 @@ package analyzer
 import (
 	"context"
 	"errors"
-	"io"
 	"io/fs"
 	"os"
 	"regexp"
 	"sort"
 	"strings"
 	"sync"
-
-	"github.com/aquasecurity/memoryfs"
 
 	"github.com/samber/lo"
 	"golang.org/x/exp/slices"
@@ -22,11 +19,13 @@ import (
 	aos "github.com/aquasecurity/trivy/pkg/fanal/analyzer/os"
 	"github.com/aquasecurity/trivy/pkg/fanal/log"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
+	"github.com/aquasecurity/trivy/pkg/mapfs"
+	"github.com/aquasecurity/trivy/pkg/syncx"
 )
 
 var (
 	analyzers     = map[Type]analyzer{}
-	postAnalyzers = map[Type]postAnalyzer{}
+	postAnalyzers = map[Type]postAnalyzerInitialize{}
 
 	// ErrUnknownOS occurs when unknown OS is analyzed.
 	ErrUnknownOS = xerrors.New("unknown OS")
@@ -43,6 +42,7 @@ var (
 // AnalyzerOptions is used to initialize analyzers
 type AnalyzerOptions struct {
 	Group                Group
+	Slow                 bool
 	FilePatterns         []string
 	DisabledAnalyzers    []Type
 	SecretScannerOption  SecretScannerOption
@@ -74,7 +74,7 @@ type analyzer interface {
 	Required(filePath string, info os.FileInfo) bool
 }
 
-type postAnalyzer interface {
+type PostAnalyzer interface {
 	Type() Type
 	Version() int
 	PostAnalyze(ctx context.Context, input PostAnalysisInput) (*AnalysisResult, error)
@@ -90,11 +90,19 @@ type Group string
 const GroupBuiltin Group = "builtin"
 
 func RegisterAnalyzer(analyzer analyzer) {
+	if _, ok := analyzers[analyzer.Type()]; ok {
+		log.Logger.Fatalf("analyzer %s is registered twice", analyzer.Type())
+	}
 	analyzers[analyzer.Type()] = analyzer
 }
 
-func RegisterPostAnalyzer(analyzer postAnalyzer) {
-	postAnalyzers[analyzer.Type()] = analyzer
+type postAnalyzerInitialize func(options AnalyzerOptions) PostAnalyzer
+
+func RegisterPostAnalyzer(t Type, initializer postAnalyzerInitialize) {
+	if _, ok := postAnalyzers[t]; ok {
+		log.Logger.Fatalf("analyzer %s is registered twice", t)
+	}
+	postAnalyzers[t] = initializer
 }
 
 // DeregisterAnalyzer is mainly for testing
@@ -112,7 +120,7 @@ type Opener func() (dio.ReadSeekCloserAt, error)
 
 type AnalyzerGroup struct {
 	analyzers     []analyzer
-	postAnalyzers []postAnalyzer
+	postAnalyzers []PostAnalyzer
 	filePatterns  map[Type][]*regexp.Regexp
 }
 
@@ -356,7 +364,8 @@ func NewAnalyzerGroup(opt AnalyzerOptions) (AnalyzerGroup, error) {
 		group.analyzers = append(group.analyzers, a)
 	}
 
-	for analyzerType, a := range postAnalyzers {
+	for analyzerType, init := range postAnalyzers {
+		a := init(opt)
 		if !belongToGroup(groupName, analyzerType, opt.DisabledAnalyzers, a) {
 			continue
 		}
@@ -366,13 +375,25 @@ func NewAnalyzerGroup(opt AnalyzerOptions) (AnalyzerGroup, error) {
 	return group, nil
 }
 
+type Versions struct {
+	analyzers     map[string]int
+	postAnalyzers map[string]int
+}
+
 // AnalyzerVersions returns analyzer version identifier used for cache keys.
-func (ag AnalyzerGroup) AnalyzerVersions() map[string]int {
-	versions := map[string]int{}
+func (ag AnalyzerGroup) AnalyzerVersions() Versions {
+	analyzerVersions := map[string]int{}
 	for _, a := range ag.analyzers {
-		versions[string(a.Type())] = a.Version()
+		analyzerVersions[string(a.Type())] = a.Version()
 	}
-	return versions
+	postAnalyzerVersions := map[string]int{}
+	for _, a := range ag.postAnalyzers {
+		postAnalyzerVersions[string(a.Type())] = a.Version()
+	}
+	return Versions{
+		analyzers:     analyzerVersions,
+		postAnalyzers: postAnalyzerVersions,
+	}
 }
 
 func (ag AnalyzerGroup) AnalyzeFile(ctx context.Context, wg *sync.WaitGroup, limit *semaphore.Weighted, result *AnalysisResult,
@@ -429,7 +450,7 @@ func (ag AnalyzerGroup) AnalyzeFile(ctx context.Context, wg *sync.WaitGroup, lim
 	return nil
 }
 
-func (ag AnalyzerGroup) RequiredPostAnalyzers(ctx context.Context, dir, filePath string, info os.FileInfo) []Type {
+func (ag AnalyzerGroup) RequiredPostAnalyzers(filePath string, info os.FileInfo) []Type {
 	var postAnalyzerTypes []Type
 	for _, a := range ag.postAnalyzers {
 		if a.Required(filePath, info) {
@@ -439,16 +460,16 @@ func (ag AnalyzerGroup) RequiredPostAnalyzers(ctx context.Context, dir, filePath
 	return postAnalyzerTypes
 }
 
-func (ag AnalyzerGroup) PostAnalyze(ctx context.Context, files map[Type]*memoryfs.FS, result *AnalysisResult, opts AnalysisOptions) error {
+func (ag AnalyzerGroup) PostAnalyze(ctx context.Context, files *syncx.Map[Type, *mapfs.FS], result *AnalysisResult, opts AnalysisOptions) error {
 	for _, a := range ag.postAnalyzers {
-		fsys, ok := files[a.Type()]
+		fsys, ok := files.Load(a.Type())
 		if !ok {
 			continue
 		}
 
-		filteredFS, err := filterFS(fsys, result.SystemInstalledFiles)
+		filteredFS, err := fsys.Filter(result.SystemInstalledFiles)
 		if err != nil {
-			return err
+			return xerrors.Errorf("unable to filter filesystem: %w", err)
 		}
 
 		res, err := a.PostAnalyze(ctx, PostAnalysisInput{
@@ -456,7 +477,7 @@ func (ag AnalyzerGroup) PostAnalyze(ctx context.Context, files map[Type]*memoryf
 			Options: opts,
 		})
 		if err != nil {
-			return err
+			return xerrors.Errorf("post analysis error: %w", err)
 		}
 		result.Merge(res)
 	}
@@ -470,30 +491,4 @@ func (ag AnalyzerGroup) filePatternMatch(analyzerType Type, filePath string) boo
 		}
 	}
 	return false
-}
-
-func filterFS(base *memoryfs.FS, skipped []string) (*memoryfs.FS, error) {
-	newFS := memoryfs.New()
-	err := fs.WalkDir(base, ".", func(path string, d fs.DirEntry, err error) error {
-		if err != nil {
-			return err
-		}
-
-		if d.IsDir() {
-			return newFS.MkdirAll(path, d.Type().Perm())
-		}
-
-		if slices.Contains(skipped, path) {
-			return nil
-		}
-
-		return newFS.WriteLazyFile(path, func() (io.Reader, error) {
-			return base.Open(path)
-		}, d.Type().Perm())
-	})
-	if err != nil {
-		return nil, xerrors.Errorf("walk error", err)
-	}
-
-	return nil, nil
 }

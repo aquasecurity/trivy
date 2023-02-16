@@ -17,10 +17,11 @@ import (
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/javadb"
 	"github.com/aquasecurity/trivy/pkg/log"
+	"github.com/aquasecurity/trivy/pkg/parallel"
 )
 
 func init() {
-	analyzer.RegisterPostAnalyzer(&javaLibraryAnalyzer{})
+	analyzer.RegisterPostAnalyzer(analyzer.TypeJar, newJavaLibraryAnalyzer)
 }
 
 const version = 1
@@ -36,9 +37,16 @@ var requiredExtensions = []string{
 type javaLibraryAnalyzer struct {
 	once   sync.Once
 	client *javadb.DB
+	slow   bool
 }
 
-func (a *javaLibraryAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAnalysisInput) (*analyzer.AnalysisResult, error) {
+func newJavaLibraryAnalyzer(options analyzer.AnalyzerOptions) analyzer.PostAnalyzer {
+	return &javaLibraryAnalyzer{
+		slow: options.Slow,
+	}
+}
+
+func (a *javaLibraryAnalyzer) PostAnalyze(ctx context.Context, input analyzer.PostAnalysisInput) (*analyzer.AnalysisResult, error) {
 	// TODO: think about the sonatype API and "--offline"
 	var err error
 	a.once.Do(func() {
@@ -59,37 +67,28 @@ func (a *javaLibraryAnalyzer) PostAnalyze(_ context.Context, input analyzer.Post
 		return nil, nil
 	}
 
-	var apps []types.Application
-	err = fs.WalkDir(input.FS, ".", func(path string, d fs.DirEntry, err error) error {
-		info, err := d.Info()
-		if err != nil {
-			return err
-		}
-		f, err := input.FS.Open(path)
-		if err != nil {
-			return err
-		}
-		defer f.Close()
-
-		r, ok := f.(dio.ReadSeekerAt)
-		if !ok {
-			return xerrors.New("type assertion failed")
-		}
+	// It will be called on each JAR file
+	onFile := func(path string, info fs.FileInfo, r dio.ReadSeekerAt) (*types.Application, error) {
 		p := jar.NewParser(a.client, jar.WithSize(info.Size()), jar.WithFilePath(path))
 		libs, deps, err := p.Parse(r)
 		if err != nil {
-			return xerrors.Errorf("jar/war/ear/par parse error: %w", err)
+			return nil, xerrors.Errorf("jar/war/ear/par parse error: %w", err)
 		}
 
-		app := language.ToApplication(types.Jar, path, path, libs, deps)
+		return language.ToApplication(types.Jar, path, path, libs, deps), nil
+	}
+
+	var apps []types.Application
+	onResult := func(app *types.Application) error {
 		if app == nil {
 			return nil
 		}
 		apps = append(apps, *app)
 		return nil
-	})
-	if err != nil {
-		return nil, xerrors.Errorf("walk error: %w", err)
+	}
+
+	if err = parallel.WalkDir(ctx, input.FS, ".", a.slow, onFile, onResult); err != nil {
+		return nil, xerrors.Errorf("walk dir error: %w", err)
 	}
 
 	return &analyzer.AnalysisResult{
