@@ -94,7 +94,12 @@ func TestTLSRegistry(t *testing.T) {
 			imageName: "ghcr.io/aquasecurity/trivy-test-images:alpine-310",
 			imageFile: "../../../../integration/testdata/fixtures/images/alpine-310.tar.gz",
 			option: types.DockerOption{
-				Credentials:           []types.Credential{{UserName: registryUsername, Password: registryPassword}},
+				Credentials: []types.Credential{
+					{
+						UserName: registryUsername,
+						Password: registryPassword,
+					},
+				},
 				InsecureSkipTLSVerify: true,
 			},
 			expectedOS:   types.OS{Name: "3.10.2", Family: "alpine"},
@@ -119,7 +124,12 @@ func TestTLSRegistry(t *testing.T) {
 			imageName: "ghcr.io/aquasecurity/trivy-test-images:alpine-310",
 			imageFile: "../../../../integration/testdata/fixtures/images/alpine-310.tar.gz",
 			option: types.DockerOption{
-				Credentials: []types.Credential{{UserName: registryUsername, Password: registryPassword}},
+				Credentials: []types.Credential{
+					{
+						UserName: registryUsername,
+						Password: registryPassword,
+					},
+				},
 			},
 			wantErr: true,
 		},
