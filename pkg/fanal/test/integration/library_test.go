@@ -151,7 +151,7 @@ func TestFanal_Library_DockerLessMode(t *testing.T) {
 			})
 
 			// Enable only registry scanning
-			img, cleanup, err := image.NewContainerImage(ctx, tt.remoteImageName, types.DockerOption{},
+			img, cleanup, err := image.NewContainerImage(ctx, tt.remoteImageName, types.DockerOption{Credentials: []types.Credential{{}}},
 				image.DisableDockerd(), image.DisablePodman(), image.DisableContainerd())
 			require.NoError(t, err)
 			defer cleanup()
@@ -200,7 +200,7 @@ func TestFanal_Library_DockerMode(t *testing.T) {
 			require.NoError(t, err, tt.name)
 
 			// Enable only dockerd scanning
-			img, cleanup, err := image.NewContainerImage(ctx, tt.remoteImageName, types.DockerOption{},
+			img, cleanup, err := image.NewContainerImage(ctx, tt.remoteImageName, types.DockerOption{Credentials: []types.Credential{{}}},
 				image.DisablePodman(), image.DisableContainerd(), image.DisableRemote())
 			require.NoError(t, err, tt.name)
 			defer cleanup()
