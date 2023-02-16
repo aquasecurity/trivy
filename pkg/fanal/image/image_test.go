@@ -157,6 +157,9 @@ func TestNewDockerImage(t *testing.T) {
 			name: "happy path with Docker Registry",
 			args: args{
 				imageName: fmt.Sprintf("%s/library/alpine:3.10", serverAddr),
+				option: types.DockerOption{
+					Credentials: []types.Credential{{}},
+				},
 			},
 			wantID:       "sha256:af341ccd2df8b0e2d67cf8dd32e087bfda4e5756ebd1c76bbf3efa0dc246590e",
 			wantRepoTags: []string{serverAddr + "/library/alpine:3.10"},
@@ -204,8 +207,7 @@ func TestNewDockerImage(t *testing.T) {
 			args: args{
 				imageName: fmt.Sprintf("%s/library/alpine:3.10", serverAddr),
 				option: types.DockerOption{
-					UserName:              "test",
-					Password:              "test",
+					Credentials:           []types.Credential{{UserName: "test", Password: "test"}},
 					NonSSL:                true,
 					InsecureSkipTLSVerify: true,
 				},
@@ -337,8 +339,7 @@ func TestNewDockerImageWithPrivateRegistry(t *testing.T) {
 			args: args{
 				imageName: fmt.Sprintf("%s/library/alpine:3.10", serverAddr),
 				option: types.DockerOption{
-					UserName:              "test",
-					Password:              "testpass",
+					Credentials:           []types.Credential{{UserName: "test", Password: "testpass"}},
 					NonSSL:                true,
 					InsecureSkipTLSVerify: true,
 				},
@@ -350,6 +351,7 @@ func TestNewDockerImageWithPrivateRegistry(t *testing.T) {
 				imageName: fmt.Sprintf("%s/library/alpine:3.10", serverAddr),
 				option: types.DockerOption{
 					RegistryToken: registryToken,
+					Credentials:   []types.Credential{{}},
 					NonSSL:        true,
 				},
 			},
@@ -358,6 +360,9 @@ func TestNewDockerImageWithPrivateRegistry(t *testing.T) {
 			name: "sad path without a credential",
 			args: args{
 				imageName: fmt.Sprintf("%s/library/alpine:3.11", serverAddr),
+				option: types.DockerOption{
+					Credentials: []types.Credential{{}},
+				},
 			},
 			wantErr: "unexpected status code 401",
 		},
@@ -368,6 +373,7 @@ func TestNewDockerImageWithPrivateRegistry(t *testing.T) {
 				option: types.DockerOption{
 					RegistryToken: registryToken + "invalid",
 					NonSSL:        true,
+					Credentials:   []types.Credential{{}},
 				},
 			},
 			wantErr: "signature is invalid",
@@ -503,8 +509,7 @@ func TestDockerPlatformArguments(t *testing.T) {
 			name: "happy path with valid platform",
 			args: args{
 				option: types.DockerOption{
-					UserName:              "test",
-					Password:              "testpass",
+					Credentials:           []types.Credential{{UserName: "test", Password: "testpass"}},
 					NonSSL:                true,
 					InsecureSkipTLSVerify: true,
 					Platform:              "arm/linux",
