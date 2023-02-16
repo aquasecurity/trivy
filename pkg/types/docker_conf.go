@@ -11,8 +11,8 @@ import (
 
 // DockerConfig holds the config of Docker
 type DockerConfig struct {
-	UsersName     string `env:"TRIVY_USERNAME"`
-	Passwords     string `env:"TRIVY_PASSWORD"`
+	UserName      string `env:"TRIVY_USERNAME"`
+	Password      string `env:"TRIVY_PASSWORD"`
 	RegistryToken string `env:"TRIVY_REGISTRY_TOKEN"`
 	NonSSL        bool   `env:"TRIVY_NON_SSL" envDefault:"false"`
 }
@@ -24,8 +24,8 @@ func GetDockerOption(insecureTlsSkip bool, Platform string) (types.DockerOption,
 		return types.DockerOption{}, xerrors.Errorf("unable to parse environment variables: %w", err)
 	}
 	credentials := make([]types.Credential, 0)
-	users := strings.Split(cfg.UsersName, ",")
-	password := strings.Split(cfg.Passwords, ",")
+	users := strings.Split(cfg.UserName, ",")
+	password := strings.Split(cfg.Password, ",")
 	for index, user := range users {
 		if len(user) > 0 && len(password[index]) > 0 {
 			credentials = append(credentials, types.Credential{UserName: user, Password: password[index]})
@@ -35,13 +35,13 @@ func GetDockerOption(insecureTlsSkip bool, Platform string) (types.DockerOption,
 		credentials = append(credentials, types.Credential{}) // no credential use-case
 	}
 	if len(credentials) > 1 { // backward competability maybe can be removed later
-		cfg.UsersName = credentials[0].UserName
-		cfg.Passwords = credentials[0].Password
+		cfg.UserName = credentials[0].UserName
+		cfg.Password = credentials[0].Password
 	}
 
 	return types.DockerOption{
-		UserName:              cfg.UsersName,
-		Password:              cfg.Passwords,
+		UserName:              cfg.UserName,
+		Password:              cfg.Password,
 		Credentials:           credentials,
 		RegistryToken:         cfg.RegistryToken,
 		InsecureSkipTLSVerify: insecureTlsSkip,
