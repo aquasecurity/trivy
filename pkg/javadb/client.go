@@ -160,8 +160,8 @@ func (d *DB) SearchByArtifactID(artifactID string) (string, error) {
 	maxCount := 0
 	var groupID string
 	for k, v := range groupIDs {
-		maxCount = v
 		if v > maxCount {
+			maxCount = v
 			groupID = k
 		}
 	}
