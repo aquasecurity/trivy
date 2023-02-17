@@ -372,6 +372,7 @@ func (a Artifact) buildFS(tmpDir, filePath string, info os.FileInfo, opener anal
 	if err != nil {
 		return xerrors.Errorf("file open error: %w", err)
 	}
+	defer r.Close()
 
 	// Copy file content into the temporary file
 	if _, err = io.Copy(f, r); err != nil {
