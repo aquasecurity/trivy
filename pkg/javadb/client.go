@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"sort"
 	"time"
 
 	"golang.org/x/xerrors"
@@ -142,6 +143,9 @@ func (d *DB) SearchByArtifactID(artifactID string) (string, error) {
 	} else if len(indexes) == 0 {
 		return "", xerrors.Errorf("artifactID %s: %w", artifactID, jar.ArtifactNotFoundErr)
 	}
+	sort.Slice(indexes, func(i, j int) bool {
+		return indexes[i].GroupID < indexes[j].GroupID
+	})
 
 	// Some artifacts might have the same artifactId.
 	// e.g. "javax.servlet:jstl" and "jstl:jstl"
@@ -156,6 +160,7 @@ func (d *DB) SearchByArtifactID(artifactID string) (string, error) {
 	maxCount := 0
 	var groupID string
 	for k, v := range groupIDs {
+		maxCount = v
 		if v > maxCount {
 			groupID = k
 		}
