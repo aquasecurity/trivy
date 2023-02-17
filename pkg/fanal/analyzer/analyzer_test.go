@@ -18,6 +18,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 
 	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/imgconf/apk"
+	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/language/java/jar"
 	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/language/ruby/bundler"
 	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/os/alpine"
 	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/os/ubuntu"
@@ -503,17 +504,23 @@ func TestAnalyzerGroup_AnalyzerVersions(t *testing.T) {
 	tests := []struct {
 		name     string
 		disabled []analyzer.Type
-		want     map[string]int
+		want     analyzer.Versions
 	}{
 		{
 			name:     "happy path",
 			disabled: []analyzer.Type{},
-			want: map[string]int{
-				"alpine":   1,
-				"apk-repo": 1,
-				"apk":      2,
-				"bundler":  1,
-				"ubuntu":   1,
+			want: analyzer.Versions{
+				Analyzers: map[string]int{
+					"alpine":     1,
+					"apk-repo":   1,
+					"apk":        2,
+					"bundler":    1,
+					"ubuntu":     1,
+					"ubuntu-esm": 1,
+				},
+				PostAnalyzers: map[string]int{
+					"jar": 1,
+				},
 			},
 		},
 		{
@@ -522,10 +529,15 @@ func TestAnalyzerGroup_AnalyzerVersions(t *testing.T) {
 				analyzer.TypeAlpine,
 				analyzer.TypeApkRepo,
 				analyzer.TypeUbuntu,
+				analyzer.TypeUbuntuESM,
+				analyzer.TypeJar,
 			},
-			want: map[string]int{
-				"apk":     2,
-				"bundler": 1,
+			want: analyzer.Versions{
+				Analyzers: map[string]int{
+					"apk":     2,
+					"bundler": 1,
+				},
+				PostAnalyzers: map[string]int{},
 			},
 		},
 	}

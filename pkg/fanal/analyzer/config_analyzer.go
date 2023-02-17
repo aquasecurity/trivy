@@ -97,7 +97,7 @@ func (ag *ConfigAnalyzerGroup) AnalyzerVersions() Versions {
 		versions[string(ca.Type())] = ca.Version()
 	}
 	return Versions{
-		analyzers: versions,
+		Analyzers: versions,
 	}
 }
 

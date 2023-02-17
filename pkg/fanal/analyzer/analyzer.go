@@ -376,8 +376,8 @@ func NewAnalyzerGroup(opt AnalyzerOptions) (AnalyzerGroup, error) {
 }
 
 type Versions struct {
-	analyzers     map[string]int
-	postAnalyzers map[string]int
+	Analyzers     map[string]int
+	PostAnalyzers map[string]int
 }
 
 // AnalyzerVersions returns analyzer version identifier used for cache keys.
@@ -391,8 +391,8 @@ func (ag AnalyzerGroup) AnalyzerVersions() Versions {
 		postAnalyzerVersions[string(a.Type())] = a.Version()
 	}
 	return Versions{
-		analyzers:     analyzerVersions,
-		postAnalyzers: postAnalyzerVersions,
+		Analyzers:     analyzerVersions,
+		PostAnalyzers: postAnalyzerVersions,
 	}
 }
 
