@@ -3,6 +3,7 @@ package scanner
 import (
 	"context"
 	"io"
+	"sync"
 
 	"github.com/cheggaaa/pb/v3"
 	"golang.org/x/xerrors"
@@ -15,6 +16,8 @@ import (
 	"github.com/aquasecurity/trivy/pkg/scanner/local"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
+
+const numOfWorkers = 5
 
 type Scanner struct {
 	cluster string
@@ -31,15 +34,6 @@ func NewScanner(cluster string, runner cmd.Runner, opts flag.Options) *Scanner {
 }
 
 func (s *Scanner) Scan(ctx context.Context, artifacts []*artifacts.Artifact) (report.Report, error) {
-	// progress bar
-	bar := pb.StartNew(len(artifacts))
-	if s.opts.NoProgress {
-		bar.SetWriter(io.Discard)
-	}
-	defer bar.Finish()
-
-	var vulns, misconfigs []report.Resource
-
 	// disable logs before scanning
 	err := log.InitLogger(s.opts.Debug, true)
 	if err != nil {
@@ -57,26 +51,9 @@ func (s *Scanner) Scan(ctx context.Context, artifacts []*artifacts.Artifact) (re
 		}
 	}()
 
-	// Loops once over all artifacts, and execute scanners as necessary. Not every artifacts has an image,
-	// so image scanner is not always executed.
-	for _, artifact := range artifacts {
-		bar.Increment()
-
-		if s.opts.Scanners.AnyEnabled(types.VulnerabilityScanner, types.SecretScanner) {
-			resources, err := s.scanVulns(ctx, artifact)
-			if err != nil {
-				return report.Report{}, xerrors.Errorf("scanning vulnerabilities error: %w", err)
-			}
-			vulns = append(vulns, resources...)
-		}
-
-		if local.ShouldScanMisconfigOrRbac(s.opts.Scanners) {
-			resource, err := s.scanMisconfigs(ctx, artifact)
-			if err != nil {
-				return report.Report{}, xerrors.Errorf("scanning misconfigurations error: %w", err)
-			}
-			misconfigs = append(misconfigs, resource)
-		}
+	vulns, misconfigs, err := s.k8sResourcesReport(ctx, artifacts)
+	if err != nil {
+		return report.Report{}, err
 	}
 
 	return report.Report{
@@ -85,6 +62,54 @@ func (s *Scanner) Scan(ctx context.Context, artifacts []*artifacts.Artifact) (re
 		Vulnerabilities:   vulns,
 		Misconfigurations: misconfigs,
 	}, nil
+}
+
+func (s *Scanner) k8sResourcesReport(ctx context.Context, artifacts []*artifacts.Artifact) ([]report.Resource, []report.Resource, error) {
+	artifactPerWorker := len(artifacts) / numOfWorkers
+	//remainArtifact := len(artifacts) % numOfWorkers
+	// progress bar
+	bar := pb.StartNew(len(artifacts))
+	if s.opts.NoProgress {
+		bar.SetWriter(io.Discard)
+	}
+	defer bar.Finish()
+	var vulns, misconfigs []report.Resource
+	var errChan = make(chan error, numOfWorkers)
+	var vulnsChan = make(chan []report.Resource, numOfWorkers)
+	var misconfigsChan = make(chan []report.Resource, numOfWorkers)
+	var wg sync.WaitGroup
+	for i := 0; i < numOfWorkers; i++ {
+		wg.Add(1)
+		// Loops once over all artifacts, and execute scanners as necessary. Not every artifacts has an image,
+		// so image scanner is not always executed.
+		go func(errChan chan error) {
+			defer wg.Done()
+			for k := i * artifactPerWorker; k < ((i + 1) * artifactPerWorker); k++ {
+				bar.Increment()
+				if s.opts.Scanners.AnyEnabled(types.VulnerabilityScanner, types.SecretScanner) {
+					resources, err := s.scanVulns(ctx, artifacts[k])
+					if err != nil {
+						errChan <- err
+						return
+					}
+					vulns = append(vulns, resources...)
+				}
+
+				if local.ShouldScanMisconfigOrRbac(s.opts.Scanners) {
+					resource, err := s.scanMisconfigs(ctx, artifacts[k])
+					if err != nil {
+						errChan <- err
+						return
+					}
+					misconfigs = append(misconfigs, resource)
+				}
+			}
+			vulnsChan <- vulns
+			misconfigsChan <- misconfigs
+		}(errChan)
+	}
+	wg.Wait()
+	return vulns, misconfigs, nil
 }
 
 func (s *Scanner) scanVulns(ctx context.Context, artifact *artifacts.Artifact) ([]report.Resource, error) {
