@@ -1,11 +1,14 @@
 package spec
 
 import (
+	"github.com/samber/lo"
+
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/types"
-	"github.com/samber/lo"
 )
 
+// We might be going to rewrite these functions in Rego,
+// but we'll keep them for now until we need flexibility.
 var customIDs = map[string]func(types.Result) types.Result{
 	"VULN-CRITICAL": filterCriticalVulns,
 	"VULN-HIGH":     filterHighVulns,
