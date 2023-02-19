@@ -561,6 +561,7 @@ func NewConfigCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 		CacheFlagGroup:   flag.NewCacheFlagGroup(),
 		MisconfFlagGroup: flag.NewMisconfFlagGroup(),
 		RegoFlagGroup:    flag.NewRegoFlagGroup(),
+		K8sFlagGroup:     flag.NewK8sFlagGroup(),
 		ReportFlagGroup:  reportFlagGroup,
 		ScanFlagGroup:    scanFlags,
 	}

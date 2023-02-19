@@ -22,6 +22,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/flag"
 	"github.com/aquasecurity/trivy/pkg/javadb"
 	"github.com/aquasecurity/trivy/pkg/log"
+	"github.com/aquasecurity/trivy/pkg/misconf"
 	"github.com/aquasecurity/trivy/pkg/module"
 	"github.com/aquasecurity/trivy/pkg/report"
 	pkgReport "github.com/aquasecurity/trivy/pkg/report"
@@ -562,12 +563,12 @@ func initScannerConfig(opts flag.Options, cacheClient cache.Cache) (ScannerConfi
 			log.Logger.Debug("Policies successfully loaded from disk")
 			disableEmbedded = true
 		}
-		if len(opts.MisconfOptions.K8sVersion) > 0 {
-			err := createTempK8sRegoDataFile(opts.MisconfOptions.K8sVersion, getTempk8sRegoDataFolder())
+		if len(opts.K8sVersion) > 0 {
+			err := misconf.CreateTempK8sRegoDataFile(opts.K8sVersion, misconf.GetTempk8sRegoDataFolder())
 			if err != nil {
 				return ScannerConfig{}, scanOptions, err
 			}
-			opts.DataPaths = append(opts.DataPaths, getTempk8sRegoDataFolder())
+			opts.DataPaths = append(opts.DataPaths, misconf.GetTempk8sRegoDataFolder())
 		}
 		configScannerOptions = config.ScannerOption{
 			Trace:                   opts.Trace,
@@ -649,8 +650,8 @@ func scan(ctx context.Context, opts flag.Options, initializeScanner InitializeSc
 	if err != nil {
 		return types.Report{}, err
 	}
-	if len(opts.MisconfOptions.K8sVersion) > 0 {
-		defer removeK8sDataFolder(getTempk8sRegoDataFolder())
+	if len(opts.K8sVersion) > 0 {
+		defer misconf.RemoveK8sDataFolder(misconf.GetTempk8sRegoDataFolder())
 	}
 	s, cleanup, err := initializeScanner(ctx, scannerConfig)
 	if err != nil {

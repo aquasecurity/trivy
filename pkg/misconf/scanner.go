@@ -4,6 +4,8 @@ import (
 	"bytes"
 	"context"
 	_ "embed"
+	"encoding/json"
+	"errors"
 	"fmt"
 	"io/fs"
 	"os"
@@ -382,4 +384,43 @@ func NewCauseWithCode(underlying scan.Result) types.CauseMetadata {
 		}
 	}
 	return cause
+}
+
+const k8sDataFile = "k8s_data"
+const K8sRegoDataSubFolder = "k8sData"
+
+type K8s struct {
+	K8s Data `json:"k8s"`
+}
+
+type Data struct {
+	Version string `json:"version"`
+}
+
+// CreateTempK8sRegoDataFile generate a temp rego data file in a temp folder with k8s version
+func CreateTempK8sRegoDataFile(version string, regoDataFolder string) error {
+	k8sData := K8s{Data{Version: version}}
+	b, err := json.Marshal(&k8sData)
+	if err != nil {
+		return err
+	}
+	if _, err := os.Stat(regoDataFolder); errors.Is(err, os.ErrNotExist) {
+		err := os.Mkdir(regoDataFolder, os.ModePerm)
+		if err != nil {
+			return err
+		}
+	}
+	return os.WriteFile(filepath.Join(regoDataFolder, fmt.Sprintf("%s-*.json", k8sDataFile)), b, 0600)
+}
+
+// RemoveK8sDataFolder delete the temp rego data folder
+func RemoveK8sDataFolder(filename string) {
+	if err := os.RemoveAll(filename); err != nil {
+		log.Logger.Errorf("failed to remove temp file %s: %s:", filename, err)
+	}
+}
+
+// GetTempk8sRegoDataFolder return the temp rego data folder path
+func GetTempk8sRegoDataFolder() string {
+	return filepath.Join(os.TempDir(), K8sRegoDataSubFolder)
 }
