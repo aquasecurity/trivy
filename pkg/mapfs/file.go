@@ -13,7 +13,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/syncx"
 )
 
-var separator = string(os.PathSeparator)
+var separator = "/"
 
 type file struct {
 	path  string // underlying file path
