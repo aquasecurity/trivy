@@ -14,7 +14,16 @@ import (
 	"github.com/aquasecurity/trivy/pkg/syncx"
 )
 
-var _ fs.FS = &FS{}
+type allFS interface {
+	fs.ReadFileFS
+	fs.ReadDirFS
+	fs.StatFS
+	fs.GlobFS
+	fs.SubFS
+}
+
+// Make sure FS implements all the interfaces
+var _ allFS = &FS{}
 
 // FS is an in-memory filesystem
 type FS struct {

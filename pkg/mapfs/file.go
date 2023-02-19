@@ -26,7 +26,7 @@ func (f *file) Open(name string) (fs.File, error) {
 		return f.open()
 	}
 
-	if sub, err := f.getFile(name); err == nil {
+	if sub, err := f.getFile(name); err == nil && !sub.stat.IsDir() {
 		return sub.open()
 	}
 
@@ -125,6 +125,9 @@ func (f *file) ReadDir(name string) ([]fs.DirEntry, error) {
 			}
 			return true
 		})
+		if err != nil {
+			return nil, xerrors.Errorf("range error: %w", err)
+		}
 		sort.Slice(entries, func(i, j int) bool { return entries[i].Name() < entries[j].Name() })
 		return entries, nil
 	}
@@ -219,5 +222,6 @@ func (f *file) glob(pattern string) ([]string, error) {
 		return nil, xerrors.Errorf("range error: %w", err)
 	}
 
+	sort.Strings(entries)
 	return entries, nil
 }
