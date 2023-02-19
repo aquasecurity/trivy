@@ -5,7 +5,6 @@ import (
 	"io/fs"
 	"os"
 	"path/filepath"
-	"strings"
 	"time"
 
 	"golang.org/x/exp/slices"
@@ -80,7 +79,7 @@ func (m *FS) Filter(skippedFiles []string) (*FS, error) {
 
 // Stat returns a FileInfo describing the file.
 func (m *FS) Stat(name string) (fs.FileInfo, error) {
-	name = filepath.Clean(name)
+	name = cleanPath(name)
 	f, err := m.root.getFile(name)
 	if err != nil {
 		return nil, &fs.PathError{
@@ -98,17 +97,17 @@ func (m *FS) Stat(name string) (fs.FileInfo, error) {
 // ReadDir reads the named directory
 // and returns a list of directory entries sorted by filename.
 func (m *FS) ReadDir(name string) ([]fs.DirEntry, error) {
-	return m.root.ReadDir(filepath.Clean(name))
+	return m.root.ReadDir(cleanPath(name))
 }
 
 // Open opens the named file for reading.
 func (m *FS) Open(name string) (fs.File, error) {
-	return m.root.Open(filepath.Clean(name))
+	return m.root.Open(cleanPath(name))
 }
 
 // WriteFile writes the specified bytes to the named file. If the file exists, it will be overwritten.
 func (m *FS) WriteFile(path, underlyingPath string) error {
-	return m.root.WriteFile(filepath.Clean(path), underlyingPath)
+	return m.root.WriteFile(cleanPath(path), underlyingPath)
 }
 
 // MkdirAll creates a directory named path,
@@ -119,7 +118,7 @@ func (m *FS) WriteFile(path, underlyingPath string) error {
 // If path is already a directory, MkdirAll does nothing
 // and returns nil.
 func (m *FS) MkdirAll(path string, perm fs.FileMode) error {
-	return m.root.MkdirAll(filepath.Clean(path), perm)
+	return m.root.MkdirAll(cleanPath(path), perm)
 }
 
 // ReadFile reads the named file and returns its contents.
@@ -130,7 +129,7 @@ func (m *FS) MkdirAll(path string, perm fs.FileMode) error {
 // The caller is permitted to modify the returned byte slice.
 // This method should return a copy of the underlying data.
 func (m *FS) ReadFile(name string) ([]byte, error) {
-	f, err := m.root.Open(filepath.Clean(name))
+	f, err := m.root.Open(cleanPath(name))
 	if err != nil {
 		return nil, err
 	}
@@ -140,7 +139,7 @@ func (m *FS) ReadFile(name string) ([]byte, error) {
 
 // Sub returns an FS corresponding to the subtree rooted at dir.
 func (m *FS) Sub(dir string) (fs.FS, error) {
-	d, err := m.root.getFile(filepath.Clean(dir))
+	d, err := m.root.getFile(cleanPath(dir))
 	if err != nil {
 		return nil, err
 	}
@@ -158,16 +157,21 @@ func (m *FS) Sub(dir string) (fs.FS, error) {
 // The only possible returned error is ErrBadPattern, when pattern
 // is malformed.
 func (m *FS) Glob(pattern string) ([]string, error) {
-	pattern = strings.ReplaceAll(pattern, "/", separator)
 	return m.root.glob(pattern)
 }
 
 // Remove deletes a file or directory from the filesystem
 func (m *FS) Remove(path string) error {
-	return m.root.Remove(filepath.Clean(path))
+	return m.root.Remove(cleanPath(path))
 }
 
 // RemoveAll deletes a file or directory and any children if present from the filesystem
 func (m *FS) RemoveAll(path string) error {
-	return m.root.RemoveAll(filepath.Clean(path))
+	return m.root.RemoveAll(cleanPath(path))
+}
+
+func cleanPath(path string) string {
+	path = filepath.Clean(path)
+	path = filepath.ToSlash(path)
+	return path
 }

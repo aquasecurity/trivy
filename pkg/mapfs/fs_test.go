@@ -3,6 +3,7 @@ package mapfs_test
 import (
 	"io"
 	"io/fs"
+	"runtime"
 	"testing"
 
 	"github.com/samber/lo"
@@ -31,15 +32,16 @@ type fileInfo struct {
 }
 
 var (
+	filePerm      = lo.Ternary(runtime.GOOS == "windows", fs.FileMode(0666), fs.FileMode(0644))
 	helloFileInfo = fileInfo{
 		name:     "hello.txt",
-		fileMode: fs.FileMode(0644),
+		fileMode: filePerm,
 		isDir:    false,
 		size:     11,
 	}
 	btxtFileInfo = fileInfo{
 		name:     "b.txt",
-		fileMode: fs.FileMode(0644),
+		fileMode: filePerm,
 		isDir:    false,
 		size:     3,
 	}
@@ -160,7 +162,7 @@ func TestFS_ReadDir(t *testing.T) {
 				},
 				{
 					name:     "hello.txt",
-					fileMode: fs.FileMode(0644),
+					fileMode: filePerm,
 					isDir:    false,
 					size:     11,
 					fileInfo: helloFileInfo,
@@ -174,24 +176,24 @@ func TestFS_ReadDir(t *testing.T) {
 			want: []dirEntry{
 				{
 					name:     ".dotfile",
-					fileMode: fs.FileMode(0644),
+					fileMode: filePerm,
 					isDir:    false,
 					size:     7,
 					fileInfo: fileInfo{
 						name:     ".dotfile",
-						fileMode: fs.FileMode(0644),
+						fileMode: filePerm,
 						isDir:    false,
 						size:     7,
 					},
 				},
 				{
 					name:     "c.txt",
-					fileMode: fs.FileMode(0644),
+					fileMode: filePerm,
 					isDir:    false,
 					size:     0,
 					fileInfo: fileInfo{
 						name:     "c.txt",
-						fileMode: fs.FileMode(0644),
+						fileMode: filePerm,
 						isDir:    false,
 						size:     0,
 					},
@@ -215,8 +217,8 @@ func TestFS_ReadDir(t *testing.T) {
 			for _, z := range lo.Zip2(entries, tt.want) {
 				got, want := z.A, z.B
 				assert.Equal(t, want.name, got.Name())
-				assert.Equal(t, want.fileMode, got.Type())
-				assert.Equal(t, want.isDir, got.IsDir())
+				assert.Equal(t, want.fileMode, got.Type(), want.name)
+				assert.Equal(t, want.isDir, got.IsDir(), want.name)
 
 				fi, err := got.Info()
 				require.NoError(t, err)
