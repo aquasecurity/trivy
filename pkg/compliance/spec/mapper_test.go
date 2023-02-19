@@ -5,6 +5,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 
+	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/compliance/spec"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/types"
@@ -19,6 +20,7 @@ func TestMapSpecCheckIDToFilteredResults(t *testing.T) {
 		},
 		types.VulnerabilityScanner: {
 			"CVE-9999-9999",
+			"VULN-CRITICAL",
 		},
 	}
 	tests := []struct {
@@ -96,8 +98,18 @@ func TestMapSpecCheckIDToFilteredResults(t *testing.T) {
 				Class:  types.ClassLangPkg,
 				Type:   ftypes.GoModule,
 				Vulnerabilities: []types.DetectedVulnerability{
-					{VulnerabilityID: "CVE-9999-0001"},
-					{VulnerabilityID: "CVE-9999-9999"},
+					{
+						VulnerabilityID: "CVE-9999-0001",
+						Vulnerability: dbTypes.Vulnerability{
+							Severity: "CRITICAL",
+						},
+					},
+					{
+						VulnerabilityID: "CVE-9999-9999",
+						Vulnerability: dbTypes.Vulnerability{
+							Severity: "LOW",
+						},
+					},
 				},
 			},
 			want: map[string]types.Results{
@@ -107,7 +119,27 @@ func TestMapSpecCheckIDToFilteredResults(t *testing.T) {
 						Class:  types.ClassLangPkg,
 						Type:   ftypes.GoModule,
 						Vulnerabilities: []types.DetectedVulnerability{
-							{VulnerabilityID: "CVE-9999-9999"},
+							{
+								VulnerabilityID: "CVE-9999-9999",
+								Vulnerability: dbTypes.Vulnerability{
+									Severity: "LOW",
+								},
+							},
+						},
+					},
+				},
+				"VULN-CRITICAL": {
+					{
+						Target: "target",
+						Class:  types.ClassLangPkg,
+						Type:   ftypes.GoModule,
+						Vulnerabilities: []types.DetectedVulnerability{
+							{
+								VulnerabilityID: "CVE-9999-0001",
+								Vulnerability: dbTypes.Vulnerability{
+									Severity: "CRITICAL",
+								},
+							},
 						},
 					},
 				},
