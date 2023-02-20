@@ -3,6 +3,7 @@
 package integration
 
 import (
+	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"os"
 	"path/filepath"
 	"testing"
@@ -62,6 +63,7 @@ func TestModule(t *testing.T) {
 			// Run Trivy
 			err = execute(osArgs)
 			assert.NoError(t, err)
+			defer analyzer.DeregisterAnalyzer("spring4shell")
 
 			// Compare want and got
 			compareReports(t, tt.golden, outputFile)

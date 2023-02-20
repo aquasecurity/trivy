@@ -23,7 +23,7 @@ func Analyze(fileType, filePath string, r dio.ReadSeekerAt, parser godeptypes.Pa
 	return ToAnalysisResult(fileType, filePath, "", parsedLibs, parsedDependencies), nil
 }
 
-func ToAnalysisResult(fileType, filePath, libFilePath string, libs []godeptypes.Library, depGraph []godeptypes.Dependency) *analyzer.AnalysisResult {
+func ToApplication(fileType, filePath, libFilePath string, libs []godeptypes.Library, depGraph []godeptypes.Dependency) *types.Application {
 	if len(libs) == 0 {
 		return nil
 	}
@@ -61,11 +61,19 @@ func ToAnalysisResult(fileType, filePath, libFilePath string, libs []godeptypes.
 			Locations: locs,
 		})
 	}
-	apps := []types.Application{{
+
+	return &types.Application{
 		Type:      fileType,
 		FilePath:  filePath,
 		Libraries: pkgs,
-	}}
+	}
+}
 
-	return &analyzer.AnalysisResult{Applications: apps}
+func ToAnalysisResult(fileType, filePath, libFilePath string, libs []godeptypes.Library, depGraph []godeptypes.Dependency) *analyzer.AnalysisResult {
+	app := ToApplication(fileType, filePath, libFilePath, libs, depGraph)
+	if app == nil {
+		return nil
+	}
+
+	return &analyzer.AnalysisResult{Applications: []types.Application{*app}}
 }

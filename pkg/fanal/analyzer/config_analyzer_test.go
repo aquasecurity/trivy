@@ -126,14 +126,16 @@ func TestConfigAnalyzerGroup_AnalyzerVersions(t *testing.T) {
 	tests := []struct {
 		name     string
 		disabled []analyzer.Type
-		want     map[string]int
+		want     analyzer.Versions
 	}{
 		{
 			name:     "happy path",
 			disabled: []analyzer.Type{},
-			want: map[string]int{
-				"apk-command": 1,
-				"test":        1,
+			want: analyzer.Versions{
+				Analyzers: map[string]int{
+					"apk-command": 1,
+					"test":        1,
+				},
 			},
 		},
 		{
@@ -142,8 +144,10 @@ func TestConfigAnalyzerGroup_AnalyzerVersions(t *testing.T) {
 				analyzer.TypeAlpine,
 				analyzer.TypeApkCommand,
 			},
-			want: map[string]int{
-				"test": 1,
+			want: analyzer.Versions{
+				Analyzers: map[string]int{
+					"test": 1,
+				},
 			},
 		},
 	}

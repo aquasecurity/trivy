@@ -25,15 +25,18 @@ func TestManager_Register(t *testing.T) {
 		name                    string
 		noModuleDir             bool
 		moduleName              string
-		wantAnalyzerVersions    map[string]int
+		wantAnalyzerVersions    analyzer.Versions
 		wantPostScannerVersions map[string]int
 		wantErr                 bool
 	}{
 		{
 			name:       "happy path",
 			moduleName: "happy",
-			wantAnalyzerVersions: map[string]int{
-				"happy": 1,
+			wantAnalyzerVersions: analyzer.Versions{
+				Analyzers: map[string]int{
+					"happy": 1,
+				},
+				PostAnalyzers: map[string]int{},
 			},
 			wantPostScannerVersions: map[string]int{
 				"happy": 1,
@@ -42,24 +45,33 @@ func TestManager_Register(t *testing.T) {
 		{
 			name:       "only analyzer",
 			moduleName: "analyzer",
-			wantAnalyzerVersions: map[string]int{
-				"analyzer": 1,
+			wantAnalyzerVersions: analyzer.Versions{
+				Analyzers: map[string]int{
+					"analyzer": 1,
+				},
+				PostAnalyzers: map[string]int{},
 			},
 			wantPostScannerVersions: map[string]int{},
 		},
 		{
-			name:                 "only post scanner",
-			moduleName:           "scanner",
-			wantAnalyzerVersions: map[string]int{},
+			name:       "only post scanner",
+			moduleName: "scanner",
+			wantAnalyzerVersions: analyzer.Versions{
+				Analyzers:     map[string]int{},
+				PostAnalyzers: map[string]int{},
+			},
 			wantPostScannerVersions: map[string]int{
 				"scanner": 2,
 			},
 		},
 		{
-			name:                    "no module dir",
-			noModuleDir:             true,
-			moduleName:              "happy",
-			wantAnalyzerVersions:    map[string]int{},
+			name:        "no module dir",
+			noModuleDir: true,
+			moduleName:  "happy",
+			wantAnalyzerVersions: analyzer.Versions{
+				Analyzers:     map[string]int{},
+				PostAnalyzers: map[string]int{},
+			},
 			wantPostScannerVersions: map[string]int{},
 		},
 	}
@@ -104,8 +116,8 @@ func TestManager_Register(t *testing.T) {
 			assert.Equal(t, tt.wantAnalyzerVersions, got)
 
 			// Confirm the post scanner is registered
-			got = post.ScannerVersions()
-			assert.Equal(t, tt.wantPostScannerVersions, got)
+			gotScannerVersions := post.ScannerVersions()
+			assert.Equal(t, tt.wantPostScannerVersions, gotScannerVersions)
 		})
 	}
 }
