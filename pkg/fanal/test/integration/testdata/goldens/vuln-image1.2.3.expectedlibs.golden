@@ -1008,276 +1008,606 @@
       {
         "Name": "amqp",
         "Version": "2.4.2",
-        "Layer": {}
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 19,
+            "EndLine": 25
+          }
+        ]
       },
       {
         "Name": "autopep8",
         "Version": "1.4.3",
-        "Layer": {}
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 26,
+            "EndLine": 31
+          }
+        ]
       },
       {
         "Name": "babel",
         "Version": "2.6.0",
-        "Layer": {}
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 32,
+            "EndLine": 38
+          }
+        ]
       },
       {
         "Name": "billiard",
         "Version": "3.6.0.0",
-        "Layer": {}
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 39,
+            "EndLine": 44
+          }
+        ]
       },
       {
         "Name": "boto3",
         "Version": "1.9.130",
-        "Layer": {}
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 45,
+            "EndLine": 52
+          }
+        ]
       },
       {
         "Name": "botocore",
         "Version": "1.12.130",
-        "Layer": {}
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 53,
+            "EndLine": 59
+          }
+        ]
       },
       {
         "Name": "celery",
         "Version": "4.3.0",
-        "Layer": {}
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 60,
+            "EndLine": 70
+          }
+        ]
       },
       {
         "Name": "certifi",
         "Version": "2019.3.9",
-        "Layer": {}
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 71,
+            "EndLine": 77
+          }
+        ]
       },
       {
         "Name": "chardet",
         "Version": "3.0.4",
-        "Layer": {}
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 78,
+            "EndLine": 84
+          }
+        ]
       },
       {
         "Name": "decorator",
         "Version": "4.4.0",
-        "Layer": {}
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 85,
+            "EndLine": 91
+          }
+        ]
       },
       {
         "Name": "django",
         "Version": "2.0.9",
-        "Layer": {}
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 92,
+            "EndLine": 99
+          }
+        ]
       },
       {
         "Name": "django-celery-beat",
         "Version": "1.4.0",
-        "Layer": {}
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 100,
+            "EndLine": 107
+          }
+        ]
       },
       {
         "Name": "django-cors-headers",
         "Version": "2.5.2",
-        "Layer": {}
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 108,
+            "EndLine": 115
+          }
+        ]
       },
       {
         "Name": "django-extensions",
         "Version": "2.1.6",
-        "Layer": {}
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 116,
+            "EndLine": 123
+          }
+        ]
       },
       {
         "Name": "django-postgres-extra",
-        "Layer": {}
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 124,
+            "EndLine": 128
+          }
+        ]
       },
       {
         "Name": "django-redis-cache",
         "Version": "2.0.0",
-        "Layer": {}
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 129,
+            "EndLine": 135
+          }
+        ]
       },
       {
         "Name": "django-silk",
         "Version": "3.0.1",
-        "Layer": {}
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 136,
+            "EndLine": 143
+          }
+        ]
       },
       {
         "Name": "django-timezone-field",
         "Version": "3.0",
-        "Layer": {}
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 144,
+            "EndLine": 150
+          }
+        ]
       },
       {
         "Name": "djangorestframework",
         "Version": "3.9.2",
-        "Layer": {}
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 151,
+            "EndLine": 158
+          }
+        ]
       },
       {
         "Name": "djangorestframework-jwt",
         "Version": "1.11.0",
-        "Layer": {}
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 159,
+            "EndLine": 166
+          }
+        ]
       },
       {
         "Name": "docutils",
         "Version": "0.14",
-        "Layer": {}
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 167,
+            "EndLine": 174
+          }
+        ]
       },
       {
         "Name": "flower",
         "Version": "0.9.3",
-        "Layer": {}
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 175,
+            "EndLine": 181
+          }
+        ]
       },
       {
         "Name": "gprof2dot",
         "Version": "2016.10.13",
-        "Layer": {}
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 182,
+            "EndLine": 187
+          }
+        ]
       },
       {
         "Name": "gunicorn",
         "Version": "19.9.0",
-        "Layer": {}
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 188,
+            "EndLine": 195
+          }
+        ]
       },
       {
         "Name": "hiredis",
         "Version": "1.0.0",
-        "Layer": {}
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 196,
+            "EndLine": 229
+          }
+        ]
       },
       {
         "Name": "httplib2",
         "Version": "0.12.1",
-        "Layer": {}
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 230,
+            "EndLine": 235
+          }
+        ]
       },
       {
         "Name": "idna",
         "Version": "2.8",
-        "Layer": {}
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 236,
+            "EndLine": 242
+          }
+        ]
       },
       {
         "Name": "jinja2",
         "Version": "2.10.1",
-        "Layer": {}
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 243,
+            "EndLine": 249
+          }
+        ]
       },
       {
         "Name": "jmespath",
         "Version": "0.9.4",
-        "Layer": {}
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 250,
+            "EndLine": 256
+          }
+        ]
       },
       {
         "Name": "kombu",
         "Version": "4.5.0",
-        "Layer": {}
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 257,
+            "EndLine": 263
+          }
+        ]
       },
       {
         "Name": "markupsafe",
         "Version": "1.1.1",
-        "Layer": {}
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 264,
+            "EndLine": 296
+          }
+        ]
       },
       {
         "Name": "oauth2",
         "Version": "1.9.0.post1",
-        "Layer": {}
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 297,
+            "EndLine": 304
+          }
+        ]
       },
       {
         "Name": "psycopg2-binary",
         "Version": "2.8.1",
-        "Layer": {}
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 305,
+            "EndLine": 338
+          }
+        ]
       },
       {
         "Name": "py",
         "Version": "1.8.0",
-        "Layer": {}
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 339,
+            "EndLine": 345
+          }
+        ]
       },
       {
         "Name": "pycodestyle",
         "Version": "2.5.0",
-        "Layer": {}
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 346,
+            "EndLine": 352
+          }
+        ]
       },
       {
         "Name": "pycurl",
         "Version": "7.43.0.2",
-        "Layer": {}
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 353,
+            "EndLine": 365
+          }
+        ]
       },
       {
         "Name": "pygments",
         "Version": "2.3.1",
-        "Layer": {}
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 366,
+            "EndLine": 372
+          }
+        ]
       },
       {
         "Name": "pyjwt",
         "Version": "1.7.1",
-        "Layer": {}
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 373,
+            "EndLine": 379
+          }
+        ]
       },
       {
         "Name": "python-crontab",
         "Version": "2.3.6",
-        "Layer": {}
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 380,
+            "EndLine": 385
+          }
+        ]
       },
       {
         "Name": "python-dateutil",
         "Version": "2.8.0",
-        "Layer": {}
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 386,
+            "EndLine": 393
+          }
+        ]
       },
       {
         "Name": "python-http-client",
         "Version": "3.1.0",
-        "Layer": {}
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 394,
+            "EndLine": 399
+          }
+        ]
       },
       {
         "Name": "pytz",
         "Version": "2019.1",
-        "Layer": {}
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 400,
+            "EndLine": 406
+          }
+        ]
       },
       {
         "Name": "pyyaml",
         "Version": "5.1",
-        "Layer": {}
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 407,
+            "EndLine": 423
+          }
+        ]
       },
       {
         "Name": "redis",
         "Version": "3.2.1",
-        "Layer": {}
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 424,
+            "EndLine": 430
+          }
+        ]
       },
       {
         "Name": "requests",
         "Version": "2.21.0",
-        "Layer": {}
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 431,
+            "EndLine": 438
+          }
+        ]
       },
       {
         "Name": "retry",
         "Version": "0.9.2",
-        "Layer": {}
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 439,
+            "EndLine": 446
+          }
+        ]
       },
       {
         "Name": "s3transfer",
         "Version": "0.2.0",
-        "Layer": {}
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 447,
+            "EndLine": 453
+          }
+        ]
       },
       {
         "Name": "sendgrid",
         "Version": "6.0.4",
-        "Layer": {}
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 454,
+            "EndLine": 461
+          }
+        ]
       },
       {
         "Name": "sentry-sdk",
         "Version": "0.7.10",
-        "Layer": {}
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 462,
+            "EndLine": 469
+          }
+        ]
       },
       {
         "Name": "six",
         "Version": "1.12.0",
-        "Layer": {}
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 470,
+            "EndLine": 476
+          }
+        ]
       },
       {
         "Name": "sqlparse",
         "Version": "0.3.0",
-        "Layer": {}
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 477,
+            "EndLine": 483
+          }
+        ]
       },
       {
         "Name": "tornado",
         "Version": "5.1.1",
-        "Layer": {}
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 484,
+            "EndLine": 495
+          }
+        ]
       },
       {
         "Name": "urllib3",
         "Version": "1.24.1",
-        "Layer": {}
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 496,
+            "EndLine": 503
+          }
+        ]
       },
       {
         "Name": "vine",
         "Version": "1.3.0",
-        "Layer": {}
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 504,
+            "EndLine": 510
+          }
+        ]
       },
       {
         "Name": "xmltodict",
         "Version": "0.12.0",
-        "Layer": {}
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 511,
+            "EndLine": 518
+          }
+        ]
       }
     ]
   }
