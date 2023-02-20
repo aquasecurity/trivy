@@ -13,17 +13,6 @@ import (
 	"github.com/aquasecurity/trivy/pkg/mapfs"
 )
 
-func initFS(t *testing.T) *mapfs.FS {
-	fsys := mapfs.New()
-	require.NoError(t, fsys.MkdirAll("a/b/c", 0700))
-	require.NoError(t, fsys.MkdirAll("a/b/empty", 0700))
-	require.NoError(t, fsys.WriteFile("hello.txt", "testdata/hello.txt"))
-	require.NoError(t, fsys.WriteFile("a/b/b.txt", "testdata/b.txt"))
-	require.NoError(t, fsys.WriteFile("a/b/c/c.txt", "testdata/c.txt"))
-	require.NoError(t, fsys.WriteFile("a/b/c/.dotfile", "testdata/dotfile"))
-	return fsys
-}
-
 type fileInfo struct {
 	name     string
 	fileMode fs.FileMode
@@ -45,6 +34,12 @@ var (
 		isDir:    false,
 		size:     3,
 	}
+	virtualFileInfo = fileInfo{
+		name:     "virtual.txt",
+		fileMode: 0600,
+		isDir:    false,
+		size:     7,
+	}
 	cdirFileInfo = fileInfo{
 		name:     "c",
 		fileMode: fs.FileMode(0700) | fs.ModeDir,
@@ -52,6 +47,18 @@ var (
 		size:     256,
 	}
 )
+
+func initFS(t *testing.T) *mapfs.FS {
+	fsys := mapfs.New()
+	require.NoError(t, fsys.MkdirAll("a/b/c", 0700))
+	require.NoError(t, fsys.MkdirAll("a/b/empty", 0700))
+	require.NoError(t, fsys.WriteFile("hello.txt", "testdata/hello.txt"))
+	require.NoError(t, fsys.WriteFile("a/b/b.txt", "testdata/b.txt"))
+	require.NoError(t, fsys.WriteFile("a/b/c/c.txt", "testdata/c.txt"))
+	require.NoError(t, fsys.WriteFile("a/b/c/.dotfile", "testdata/dotfile"))
+	require.NoError(t, fsys.WriteVirtualFile("a/b/c/virtual.txt", []byte("virtual"), 0600))
+	return fsys
+}
 
 func assertFileInfo(t *testing.T, want fileInfo, got fs.FileInfo) {
 	if got == nil {
@@ -95,7 +102,7 @@ func TestFS_Stat(t *testing.T) {
 		wantErr  assert.ErrorAssertionFunc
 	}{
 		{
-			name:     "regular file",
+			name:     "ordinary file",
 			filePath: "hello.txt",
 			want:     helloFileInfo,
 			wantErr:  assert.NoError,
@@ -104,6 +111,12 @@ func TestFS_Stat(t *testing.T) {
 			name:     "nested file",
 			filePath: "a/b/b.txt",
 			want:     btxtFileInfo,
+			wantErr:  assert.NoError,
+		},
+		{
+			name:     "virtual file",
+			filePath: "a/b/c/virtual.txt",
+			want:     virtualFileInfo,
 			wantErr:  assert.NoError,
 		},
 		{
@@ -198,6 +211,13 @@ func TestFS_ReadDir(t *testing.T) {
 						size:     0,
 					},
 				},
+				{
+					name:     "virtual.txt",
+					fileMode: 0600,
+					isDir:    false,
+					size:     0,
+					fileInfo: virtualFileInfo,
+				},
 			},
 			wantErr: assert.NoError,
 		},
@@ -241,11 +261,20 @@ func TestFS_Open(t *testing.T) {
 		wantErr  assert.ErrorAssertionFunc
 	}{
 		{
-			name:     "regular file",
+			name:     "ordinary file",
 			filePath: "hello.txt",
 			want: file{
 				fileInfo: helloFileInfo,
 				body:     "hello world",
+			},
+			wantErr: assert.NoError,
+		},
+		{
+			name:     "virtual file",
+			filePath: "a/b/c/virtual.txt",
+			want: file{
+				fileInfo: virtualFileInfo,
+				body:     "virtual",
 			},
 			wantErr: assert.NoError,
 		},
@@ -292,9 +321,15 @@ func TestFS_ReadFile(t *testing.T) {
 		wantErr  assert.ErrorAssertionFunc
 	}{
 		{
-			name:     "regular file",
+			name:     "ordinary file",
 			filePath: "hello.txt",
 			want:     "hello world",
+			wantErr:  assert.NoError,
+		},
+		{
+			name:     "virtual file",
+			filePath: "a/b/c/virtual.txt",
+			want:     "virtual",
 			wantErr:  assert.NoError,
 		},
 		{
@@ -345,6 +380,7 @@ func TestFS_Glob(t *testing.T) {
 			pattern: "*/b/c/*.txt",
 			want: []string{
 				"a/b/c/c.txt",
+				"a/b/c/virtual.txt",
 			},
 			wantErr: assert.NoError,
 		},
@@ -372,13 +408,18 @@ func TestFS_Remove(t *testing.T) {
 		wantErr assert.ErrorAssertionFunc
 	}{
 		{
-			name:    "regular file",
+			name:    "ordinary file",
 			path:    "hello.txt",
 			wantErr: assert.NoError,
 		},
 		{
 			name:    "nested file",
 			path:    "a/b/b.txt",
+			wantErr: assert.NoError,
+		},
+		{
+			name:    "virtual file",
+			path:    "a/b/c/virtual.txt",
 			wantErr: assert.NoError,
 		},
 		{
@@ -415,7 +456,7 @@ func TestFS_Remove(t *testing.T) {
 
 func TestFS_RemoveAll(t *testing.T) {
 	fsys := initFS(t)
-	t.Run("regular file", func(t *testing.T) {
+	t.Run("ordinary file", func(t *testing.T) {
 		err := fsys.RemoveAll("hello.txt")
 		require.NoError(t, err)
 		_, err = fsys.Stat("hello.txt")
@@ -427,6 +468,8 @@ func TestFS_RemoveAll(t *testing.T) {
 		_, err = fsys.Stat("a/b/c/c.txt")
 		require.ErrorIs(t, err, fs.ErrNotExist)
 		_, err = fsys.Stat("a/b/c/.dotfile")
+		require.ErrorIs(t, err, fs.ErrNotExist)
+		_, err = fsys.Stat("a/b/c/virtual.txt")
 		require.ErrorIs(t, err, fs.ErrNotExist)
 	})
 }

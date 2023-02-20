@@ -1,6 +1,7 @@
 package mapfs
 
 import (
+	"io"
 	"io/fs"
 	"os"
 	"path/filepath"
@@ -15,10 +16,19 @@ import (
 
 var separator = "/"
 
+// file represents one of them:
+// - an actual file
+// - a virtual file
+// - a virtual dir
 type file struct {
 	path  string // underlying file path
+	data  []byte // virtual file, only either of 'path' or 'data' has a value.
 	stat  fileStat
 	files syncx.Map[string, *file]
+}
+
+func (f *file) isVirtual() bool {
+	return len(f.data) != 0 || f.stat.IsDir()
 }
 
 func (f *file) Open(name string) (fs.File, error) {
@@ -26,6 +36,7 @@ func (f *file) Open(name string) (fs.File, error) {
 		return f.open()
 	}
 
+	// TODO: support directory
 	if sub, err := f.getFile(name); err == nil && !sub.stat.IsDir() {
 		return sub.open()
 	}
@@ -38,6 +49,15 @@ func (f *file) Open(name string) (fs.File, error) {
 }
 
 func (f *file) open() (fs.File, error) {
+	// virtual file
+	if len(f.data) != 0 {
+		return &openMapFile{
+			path:   f.stat.name,
+			file:   f,
+			offset: 0,
+		}, nil
+	}
+	// real file
 	return os.Open(f.path)
 }
 
@@ -107,7 +127,7 @@ func (f *file) ReadDir(name string) ([]fs.DirEntry, error) {
 		var entries []fs.DirEntry
 		var err error
 		f.files.Range(func(name string, value *file) bool {
-			if value.stat.IsDir() {
+			if value.isVirtual() {
 				entries = append(entries, &value.stat)
 			} else {
 				var fi os.FileInfo
@@ -192,6 +212,30 @@ func (f *file) WriteFile(path, underlyingPath string) error {
 	return dir.WriteFile(strings.Join(parts[1:], separator), underlyingPath)
 }
 
+func (f *file) WriteVirtualFile(path string, data []byte, mode fs.FileMode) error {
+	parts := strings.Split(path, separator)
+
+	if len(parts) == 1 {
+		f.files.Store(parts[0], &file{
+			data: data,
+			stat: fileStat{
+				name:    parts[0],
+				size:    int64(len(data)),
+				mode:    mode,
+				modTime: time.Now(),
+			},
+		})
+		return nil
+	}
+
+	dir, ok := f.files.Load(parts[0])
+	if !ok || !dir.stat.IsDir() {
+		return fs.ErrNotExist
+	}
+
+	return dir.WriteVirtualFile(strings.Join(parts[1:], separator), data, mode)
+}
+
 func (f *file) glob(pattern string) ([]string, error) {
 	var entries []string
 	parts := strings.Split(pattern, separator)
@@ -224,4 +268,55 @@ func (f *file) glob(pattern string) ([]string, error) {
 
 	sort.Strings(entries)
 	return entries, nil
+}
+
+// An openMapFile is a regular (non-directory) fs.File open for reading.
+// ported from https://github.com/golang/go/blob/99bc53f5e819c2d2d49f2a56c488898085be3982/src/testing/fstest/mapfs.go
+type openMapFile struct {
+	path string
+	*file
+	offset int64
+}
+
+func (f *openMapFile) Stat() (fs.FileInfo, error) { return &f.file.stat, nil }
+
+func (f *openMapFile) Close() error { return nil }
+
+func (f *openMapFile) Read(b []byte) (int, error) {
+	if f.offset >= int64(len(f.file.data)) {
+		return 0, io.EOF
+	}
+	if f.offset < 0 {
+		return 0, &fs.PathError{Op: "read", Path: f.path, Err: fs.ErrInvalid}
+	}
+	n := copy(b, f.file.data[f.offset:])
+	f.offset += int64(n)
+	return n, nil
+}
+
+func (f *openMapFile) Seek(offset int64, whence int) (int64, error) {
+	switch whence {
+	case 0:
+		// offset += 0
+	case 1:
+		offset += f.offset
+	case 2:
+		offset += int64(len(f.file.data))
+	}
+	if offset < 0 || offset > int64(len(f.file.data)) {
+		return 0, &fs.PathError{Op: "seek", Path: f.path, Err: fs.ErrInvalid}
+	}
+	f.offset = offset
+	return offset, nil
+}
+
+func (f *openMapFile) ReadAt(b []byte, offset int64) (int, error) {
+	if offset < 0 || offset > int64(len(f.file.data)) {
+		return 0, &fs.PathError{Op: "read", Path: f.path, Err: fs.ErrInvalid}
+	}
+	n := copy(b, f.file.data[offset:])
+	if n < len(b) {
+		return n, io.EOF
+	}
+	return n, nil
 }

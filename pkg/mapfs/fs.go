@@ -88,7 +88,7 @@ func (m *FS) Stat(name string) (fs.FileInfo, error) {
 			Err:  err,
 		}
 	}
-	if f.stat.IsDir() {
+	if f.isVirtual() {
 		return &f.stat, nil
 	}
 	return os.Stat(f.path)
@@ -105,9 +105,14 @@ func (m *FS) Open(name string) (fs.File, error) {
 	return m.root.Open(cleanPath(name))
 }
 
-// WriteFile writes the specified bytes to the named file. If the file exists, it will be overwritten.
+// WriteFile creates a mapping between path and underlyingPath.
 func (m *FS) WriteFile(path, underlyingPath string) error {
 	return m.root.WriteFile(cleanPath(path), underlyingPath)
+}
+
+// WriteVirtualFile writes the specified bytes to the named file. If the file exists, it will be overwritten.
+func (m *FS) WriteVirtualFile(path string, data []byte, mode fs.FileMode) error {
+	return m.root.WriteVirtualFile(cleanPath(path), data, mode)
 }
 
 // MkdirAll creates a directory named path,
