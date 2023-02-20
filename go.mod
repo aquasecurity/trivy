@@ -30,7 +30,7 @@ require (
 	github.com/caarlos0/env/v6 v6.10.1
 	github.com/cenkalti/backoff v2.2.1+incompatible
 	github.com/cheggaaa/pb/v3 v3.1.0
-	github.com/containerd/containerd v1.6.15
+	github.com/containerd/containerd v1.6.18
 	github.com/docker/docker v23.0.0-rc.1+incompatible
 	github.com/docker/go-connections v0.4.0
 	github.com/fatih/color v1.13.0
