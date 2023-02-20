@@ -341,7 +341,7 @@ func (r *runner) initJavaDB(opts flag.Options) error {
 
 	// Update the Java DB
 	noProgress := opts.Quiet || opts.NoProgress
-	javadb.Init(opts.CacheDir, opts.SkipJavaDBUpdate, noProgress, opts.Insecure)
+	javadb.Init(opts.CacheDir, opts.JavaDBRepository, opts.SkipJavaDBUpdate, noProgress, opts.Insecure)
 	if opts.DownloadJavaDBOnly {
 		if err := javadb.Update(); err != nil {
 			return xerrors.Errorf("Java DB error: %w", err)
@@ -454,6 +454,7 @@ func Run(ctx context.Context, opts flag.Options, targetKind TargetKind) (err err
 		return xerrors.Errorf("report error: %w", err)
 	}
 
+	exitOnEosl(opts, report.Metadata)
 	Exit(opts, report.Results.Failed())
 
 	return nil
@@ -660,6 +661,12 @@ func scan(ctx context.Context, opts flag.Options, initializeScanner InitializeSc
 func Exit(opts flag.Options, failedResults bool) {
 	if opts.ExitCode != 0 && failedResults {
 		os.Exit(opts.ExitCode)
+	}
+}
+
+func exitOnEosl(opts flag.Options, m types.Metadata) {
+	if opts.ReportOptions.ExitOnEOSL && m.OS != nil && m.OS.Eosl {
+		Exit(opts, true)
 	}
 }
 

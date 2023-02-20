@@ -22,13 +22,15 @@ nav:
           - AWS CodePipeline: tutorials/integrations/aws-codepipeline.md
           - AWS Security Hub: tutorials/integrations/aws-security-hub.md
           - Azure: tutorials/integrations/azure-devops.md
-      - Signing:
-          - Vulnerability Scan Record Attestation: tutorials/signing/vuln-attestation.md
       - Kubernetes:
           - Cluster Scanning: tutorials/kubernetes/cluster-scanning.md
           - Kyverno: tutorials/kubernetes/kyverno.md
           - GitOps: tutorials/kubernetes/gitops.md
-      - Additional Resources: 
+      - Signing:
+          - Vulnerability Scan Record Attestation: tutorials/signing/vuln-attestation.md
+      - Shell:
+          - Completion: tutorials/shell/shell-completion.md
+      - Additional Resources:
           - Additional Resources: tutorials/additional-resources/references.md
           - Community References: tutorials/additional-resources/community.md
           - CKS Reference: tutorials/additional-resources/cks.md
@@ -122,6 +124,7 @@ nav:
               - Plugin: docs/references/cli/plugin.md
               - SBOM: docs/references/cli/sbom.md
               - Module: docs/references/cli/module.md
+              - Completion: docs/references/cli/completion.md
           - Modes:
               - Standalone: docs/references/modes/standalone.md
               - Client/Server: docs/references/modes/client-server.md

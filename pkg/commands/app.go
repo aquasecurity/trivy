@@ -151,9 +151,6 @@ func NewRootCommand(version string, globalFlags *flag.GlobalFlagGroup) *cobra.Co
 
   # Run in server mode
   $ trivy server`,
-		CompletionOptions: cobra.CompletionOptions{
-			DisableDefaultCmd: true,
-		},
 		Args: cobra.NoArgs,
 		PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
 			cmd.SetOut(outputWriter)
@@ -293,6 +290,7 @@ func NewFilesystemCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	reportFlagGroup := flag.NewReportFlagGroup()
 	reportFlagGroup.ReportFormat = nil // TODO: support --report summary
 	reportFlagGroup.Compliance = nil   // disable '--compliance'
+	reportFlagGroup.ExitOnEOSL = nil   // disable '--exit-on-eosl'
 
 	fsFlags := &flag.Flags{
 		CacheFlagGroup:         flag.NewCacheFlagGroup(),
@@ -402,6 +400,7 @@ func NewRepositoryCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	reportFlagGroup := flag.NewReportFlagGroup()
 	reportFlagGroup.ReportFormat = nil // TODO: support --report summary
 	reportFlagGroup.Compliance = nil   // disable '--compliance'
+	reportFlagGroup.ExitOnEOSL = nil   // disable '--exit-on-eosl'
 
 	repoFlags := &flag.Flags{
 		CacheFlagGroup:         flag.NewCacheFlagGroup(),
@@ -549,6 +548,7 @@ func NewConfigCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	reportFlagGroup.ListAllPkgs = nil    // disable '--list-all-pkgs'
 	reportFlagGroup.ReportFormat = nil   // TODO: support --report summary
 	reportFlagGroup.Compliance = nil     // disable '--compliance'
+	reportFlagGroup.ExitOnEOSL = nil     // disable '--exit-on-eosl'
 
 	scanFlags := &flag.ScanFlagGroup{
 		// Enable only '--skip-dirs' and '--skip-files' and disable other flags
@@ -764,6 +764,7 @@ func NewKubernetesCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	compliance := flag.ComplianceFlag
 	compliance.Usage += fmt.Sprintf(" (%s,%s)", types.ComplianceK8sNsa, types.ComplianceK8sCIS)
 	reportFlagGroup.Compliance = &compliance // override usage as the accepted values differ for each subcommand.
+	reportFlagGroup.ExitOnEOSL = nil         // disable '--exit-on-eosl'
 
 	k8sFlags := &flag.Flags{
 		CacheFlagGroup:         flag.NewCacheFlagGroup(),
@@ -826,6 +827,7 @@ func NewAWSCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	compliance := flag.ComplianceFlag
 	compliance.Usage += fmt.Sprintf(" (%s, %s)", types.ComplianceAWSCIS12, types.ComplianceAWSCIS14)
 	reportFlagGroup.Compliance = &compliance // override usage as the accepted values differ for each subcommand.
+	reportFlagGroup.ExitOnEOSL = nil         // disable '--exit-on-eosl'
 
 	awsFlags := &flag.Flags{
 		AWSFlagGroup:     flag.NewAWSFlagGroup(),
