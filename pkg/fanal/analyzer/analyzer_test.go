@@ -370,9 +370,10 @@ func TestAnalyzerGroup_AnalyzeFile(t *testing.T) {
 						FilePath: "/app/Gemfile.lock",
 						Libraries: []types.Package{
 							{
-								ID:      "actioncable@5.2.3",
-								Name:    "actioncable",
-								Version: "5.2.3",
+								ID:        "actioncable@5.2.3",
+								Name:      "actioncable",
+								Version:   "5.2.3",
+								DependsOn: []string{},
 							},
 						},
 					},
@@ -409,9 +410,10 @@ func TestAnalyzerGroup_AnalyzeFile(t *testing.T) {
 						FilePath: "/app/Gemfile-dev.lock",
 						Libraries: []types.Package{
 							{
-								ID:      "actioncable@5.2.3",
-								Name:    "actioncable",
-								Version: "5.2.3",
+								ID:        "actioncable@5.2.3",
+								Name:      "actioncable",
+								Version:   "5.2.3",
+								DependsOn: []string{},
 							},
 						},
 					},
