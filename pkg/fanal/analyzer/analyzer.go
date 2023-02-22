@@ -96,7 +96,7 @@ func RegisterAnalyzer(analyzer analyzer) {
 	analyzers[analyzer.Type()] = analyzer
 }
 
-type postAnalyzerInitialize func(options AnalyzerOptions) PostAnalyzer
+type postAnalyzerInitialize func(options AnalyzerOptions) (PostAnalyzer, error)
 
 func RegisterPostAnalyzer(t Type, initializer postAnalyzerInitialize) {
 	if _, ok := postAnalyzers[t]; ok {
@@ -365,7 +365,10 @@ func NewAnalyzerGroup(opt AnalyzerOptions) (AnalyzerGroup, error) {
 	}
 
 	for analyzerType, init := range postAnalyzers {
-		a := init(opt)
+		a, err := init(opt)
+		if err != nil {
+			return AnalyzerGroup{}, xerrors.Errorf("post-analyzer init error: %w", err)
+		}
 		if !belongToGroup(groupName, analyzerType, opt.DisabledAnalyzers, a) {
 			continue
 		}
