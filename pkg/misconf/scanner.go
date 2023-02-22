@@ -29,6 +29,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer/config"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
+	"github.com/aquasecurity/trivy/pkg/mapfs"
 )
 
 var enabledDefsecTypes = map[detection.FileType]string{
@@ -58,6 +59,13 @@ func NewScanner(filePatterns []string, opt config.ScannerOption) (Scanner, error
 	if policyFS != nil {
 		opts = append(opts, options.ScannerWithPolicyFilesystem(policyFS))
 	}
+
+	dataFS, dataPaths, err := createDataFS(opt.DataPaths, opt.K8sVersion)
+	if err != nil {
+		return Scanner{}, err
+	}
+	opts = append(opts, options.ScannerWithDataDirs(dataPaths...))
+	opts = append(opts, options.ScannerWithDataFilesystem(dataFS))
 
 	if opt.Trace {
 		opts = append(opts, options.ScannerWithPerResultTracing(true))
@@ -216,6 +224,31 @@ func createPolicyFS(policyPaths []string) (fs.FS, []string, error) {
 	}
 
 	return os.DirFS(target), cleanPaths, nil
+}
+
+func createDataFS(dataPaths []string, k8sVersion string) (fs.FS, []string, error) {
+	fsys := mapfs.New()
+
+	// Create a virtual file for Kubernetes scanning
+	if k8sVersion != "" {
+		if err := fsys.MkdirAll("system", 0700); err != nil {
+			return nil, nil, err
+		}
+		data := []byte(fmt.Sprintf(`{"k8s": {"version": "%s"}}`, k8sVersion))
+		if err := fsys.WriteVirtualFile("system/k8s-version.json", data, 0600); err != nil {
+			return nil, nil, err
+		}
+	}
+	for _, path := range dataPaths {
+		if err := fsys.CopyFilesUnder(path); err != nil {
+			return nil, nil, err
+		}
+	}
+
+	// data paths are no longer needed as fs.FS contains only needed files now.
+	dataPaths = []string{"."}
+
+	return fsys, dataPaths, nil
 }
 
 func (s *Scanner) hasCustomPatternForType(t string) bool {
