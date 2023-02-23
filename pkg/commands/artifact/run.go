@@ -29,7 +29,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/rpc/client"
 	"github.com/aquasecurity/trivy/pkg/scanner"
 	"github.com/aquasecurity/trivy/pkg/types"
-	"github.com/aquasecurity/trivy/pkg/utils"
+	"github.com/aquasecurity/trivy/pkg/utils/fsutils"
 )
 
 // TargetKind represents what kind of artifact Trivy scans
@@ -366,12 +366,12 @@ func (r *runner) initCache(opts flag.Options) error {
 	}
 
 	// standalone mode
-	utils.SetCacheDir(opts.CacheDir)
+	fsutils.SetCacheDir(opts.CacheDir)
 	cacheClient, err := operation.NewCache(opts.CacheOptions)
 	if err != nil {
 		return xerrors.Errorf("unable to initialize the cache: %w", err)
 	}
-	log.Logger.Debugf("cache dir:  %s", utils.CacheDir())
+	log.Logger.Debugf("cache dir:  %s", fsutils.CacheDir())
 
 	if opts.Reset {
 		defer cacheClient.Close()
