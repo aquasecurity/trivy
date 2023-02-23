@@ -113,22 +113,22 @@ func (s *Scanner) Detect(osVer string, repo *ftypes.Repository, pkgs []ftypes.Pa
 			return nil, xerrors.Errorf("failed to get alpine advisories: %w", err)
 		}
 
-		installed := utils.FormatSrcVersion(pkg)
-		installedVersion, err := version.NewVersion(installed)
+		built := utils.FormatSrcVersion(pkg)
+		builtVersion, err := version.NewVersion(built)
 		if err != nil {
 			log.Logger.Debugf("failed to parse Alpine Linux installed package version: %s", err)
 			continue
 		}
 
 		for _, adv := range advisories {
-			if !s.isVulnerable(installedVersion, adv) {
+			if !s.isVulnerable(builtVersion, adv) {
 				continue
 			}
 			vulns = append(vulns, types.DetectedVulnerability{
 				VulnerabilityID:  adv.VulnerabilityID,
 				PkgID:            pkg.ID,
 				PkgName:          pkg.Name,
-				InstalledVersion: installed,
+				InstalledVersion: utils.FormatVersion(pkg),
 				FixedVersion:     adv.FixedVersion,
 				Layer:            pkg.Layer,
 				Ref:              pkg.Ref,
