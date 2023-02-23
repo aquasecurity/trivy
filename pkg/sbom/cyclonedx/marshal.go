@@ -15,7 +15,6 @@ import (
 
 	dtypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/vulnerability"
-	fos "github.com/aquasecurity/trivy/pkg/fanal/analyzer/os"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/purl"
@@ -206,16 +205,7 @@ func (e *Marshaler) marshalComponents(r types.Report, bomRef string) (*[]cdx.Com
 				return nil, nil, nil, xerrors.Errorf("failed to parse pkg: %w", err)
 			}
 
-			version := utils.FormatVersion(pkg)
-
-			// These OS create vuln.InstallVersion based on SrcVersion.
-			if r.Metadata.OS != nil && (r.Metadata.OS.Family == fos.Debian ||
-				r.Metadata.OS.Family == fos.CBLMariner ||
-				r.Metadata.OS.Family == fos.Alpine ||
-				r.Metadata.OS.Family == fos.Ubuntu) {
-				version = utils.FormatSrcVersion(pkg)
-			}
-			pkgID := packageID(result.Target, pkg.Name, version, pkg.FilePath)
+			pkgID := packageID(result.Target, pkg.Name, utils.FormatVersion(pkg), pkg.FilePath)
 			if _, ok := bomRefMap[pkgID]; !ok {
 				bomRefMap[pkgID] = pkgComponent.BOMRef
 				componentDependencies = append(componentDependencies, pkgComponent.BOMRef)

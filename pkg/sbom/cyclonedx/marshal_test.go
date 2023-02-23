@@ -886,13 +886,13 @@ func TestMarshaler_Marshal(t *testing.T) {
 							{
 								ID:         "bsdutils@1:2.36.1-8+deb11u1",
 								Name:       "bsdutils",
-								Version:    "1:2.36.1-8+deb11u1",
-								Release:    "",
-								Epoch:      0,
+								Version:    "2.36.1",
+								Release:    "8+deb11u1",
+								Epoch:      1,
 								Arch:       "",
 								SrcName:    "util-linux",
-								SrcVersion: "2.36.1-8+deb11u1",
-								SrcRelease: "",
+								SrcVersion: "2.36.1",
+								SrcRelease: "8+deb11u1",
 								SrcEpoch:   0,
 							},
 						},
@@ -901,7 +901,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 								VulnerabilityID:  "CVE-2022-0563",
 								PkgID:            "bsdutils@1:2.36.1-8+deb11u1",
 								PkgName:          "bsdutils",
-								InstalledVersion: "2.36.1-8+deb11u1",
+								InstalledVersion: "1:2.36.1-8+deb11u1",
 								SeveritySource:   "debian",
 								PrimaryURL:       "https://avd.aquasec.com/nvd/cve-2022-0563",
 								DataSource: &dtypes.DataSource{
@@ -995,7 +995,11 @@ func TestMarshaler_Marshal(t *testing.T) {
 							},
 							{
 								Name:  "aquasecurity:trivy:SrcVersion",
-								Value: "2.36.1-8+deb11u1",
+								Value: "2.36.1",
+							},
+							{
+								Name:  "aquasecurity:trivy:SrcRelease",
+								Value: "8+deb11u1",
 							},
 						},
 					},
@@ -1065,7 +1069,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 								Ref: "pkg:deb/debian/bsdutils@1:2.36.1-8+deb11u1?distro=debian-11.5",
 								Range: &[]cdx.AffectedVersions{
 									{
-										Version: "2.36.1-8+deb11u1",
+										Version: "1:2.36.1-8+deb11u1",
 										Status:  cdx.VulnerabilityStatusAffected,
 									},
 								},
