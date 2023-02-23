@@ -25,6 +25,7 @@ func (p *Parser) Parse(r dio.ReadSeekerAt) ([]types.Library, []types.Dependency,
 	var deps []types.Dependency
 	var pkgID string
 
+	lineNum := 1
 	scanner := bufio.NewScanner(r)
 	for scanner.Scan() {
 		line := scanner.Text()
@@ -48,10 +49,11 @@ func (p *Parser) Parse(r dio.ReadSeekerAt) ([]types.Library, []types.Dependency,
 			name := s[0]
 			pkgID = utils.PackageID(name, version)
 			libs[name] = types.Library{
-				ID:       pkgID,
-				Name:     name,
-				Version:  version,
-				Indirect: true,
+				ID:        pkgID,
+				Name:      name,
+				Version:   version,
+				Indirect:  true,
+				Locations: []types.Location{{StartLine: lineNum, EndLine: lineNum}},
 			}
 		}
 		// Parse dependency graph
@@ -60,6 +62,7 @@ func (p *Parser) Parse(r dio.ReadSeekerAt) ([]types.Library, []types.Dependency,
 			s := strings.Fields(line)
 			dependsOn = append(dependsOn, s[0]) //store name only for now
 		}
+		lineNum++
 
 		// Parse direct dependencies
 		if line == "DEPENDENCIES" {
