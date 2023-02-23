@@ -191,7 +191,7 @@ func externalRef(bomLink string, bomRef string) (string, error) {
 }
 
 func (e *Marshaler) marshalComponents(r types.Report, bomRef string) (*[]cdx.Component, *[]cdx.Dependency, *[]cdx.Vulnerability, error) {
-	var components []cdx.Component
+	components := make([]cdx.Component, 0) // To export an empty array in JSON
 	var dependencies []cdx.Dependency
 	var metadataDependencies []string
 	libraryUniqMap := map[string]struct{}{}
@@ -507,7 +507,7 @@ func cwes(cweIDs []string) *[]int {
 }
 
 func cdxRatings(vulnerability types.DetectedVulnerability) *[]cdx.VulnerabilityRating {
-	var rates []cdx.VulnerabilityRating
+	rates := make([]cdx.VulnerabilityRating, 0) // To export an empty array in JSON
 	for sourceID, severity := range vulnerability.VendorSeverity {
 		// When the vendor also provides CVSS score/vector
 		if cvss, ok := vulnerability.CVSS[sourceID]; ok {
