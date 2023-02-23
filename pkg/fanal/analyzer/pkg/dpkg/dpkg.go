@@ -24,7 +24,7 @@ func init() {
 }
 
 const (
-	analyzerVersion = 3
+	analyzerVersion = 4
 
 	statusFile = "var/lib/dpkg/status"
 	statusDir  = "var/lib/dpkg/status.d/"
