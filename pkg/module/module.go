@@ -18,6 +18,7 @@ import (
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
+	fanalUtils "github.com/aquasecurity/trivy/pkg/fanal/utils"
 	"github.com/aquasecurity/trivy/pkg/log"
 	tapi "github.com/aquasecurity/trivy/pkg/module/api"
 	"github.com/aquasecurity/trivy/pkg/module/serialize"
@@ -36,6 +37,13 @@ var (
 
 	RelativeDir = filepath.Join(".trivy", "modules")
 )
+
+type options struct {
+	moduleDir     string
+	enableModules []string
+}
+
+type Option func(*options)
 
 // logDebug is defined as an api.GoModuleFunc for lower overhead vs reflection.
 func logDebug(_ context.Context, mod api.Module, params []uint64) {
@@ -99,41 +107,62 @@ type Manager struct {
 	modules []*wasmModule
 }
 
-func NewManager(ctx context.Context) (*Manager, error) {
+func NewManager(ctx context.Context, opts ...Option) (*Manager, error) {
 	m := &Manager{}
 
 	// Create a new WebAssembly Runtime.
 	m.cache = wazero.NewCompilationCache()
 
+	o := &options{}
+	for _, opt := range opts {
+		opt(o)
+	}
+
 	// Load WASM modules in local
-	if err := m.loadModules(ctx); err != nil {
+	if err := m.loadModules(ctx, o); err != nil {
 		return nil, xerrors.Errorf("module load error: %w", err)
 	}
 
 	return m, nil
 }
 
-func (m *Manager) loadModules(ctx context.Context) error {
-	moduleDir := dir()
-	_, err := os.Stat(moduleDir)
+// WithModuleDirectory takes default overridable module directory path
+func WithModuleDirectory(moduleDir string) Option {
+	return func(opts *options) {
+		opts.moduleDir = moduleDir
+	}
+}
+
+// WithEnableModules takes list of modules only to be enabled from the module directory
+func WithEnableModules(enableModules []string) Option {
+	return func(opts *options) {
+		opts.enableModules = enableModules
+	}
+}
+
+func (m *Manager) loadModules(ctx context.Context, opts *options) error {
+	if opts.moduleDir == "" {
+		opts.moduleDir = dir()
+	}
+	_, err := os.Stat(opts.moduleDir)
 	if os.IsNotExist(err) {
 		return nil
 	}
-	log.Logger.Debugf("Module dir: %s", moduleDir)
+	log.Logger.Debugf("Module dir: %s", opts.moduleDir)
 
-	err = filepath.Walk(moduleDir, func(path string, info fs.FileInfo, err error) error {
+	err = filepath.Walk(opts.moduleDir, func(path string, info fs.FileInfo, err error) error {
 		if err != nil {
 			return err
 		} else if info.IsDir() || filepath.Ext(info.Name()) != ".wasm" {
 			return nil
 		}
 
-		rel, err := filepath.Rel(moduleDir, path)
+		rel, err := filepath.Rel(opts.moduleDir, path)
 		if err != nil {
 			return xerrors.Errorf("failed to get a relative path: %w", err)
 		}
 
-		log.Logger.Infof("Loading %s...", rel)
+		log.Logger.Infof("Reading %s...", rel)
 		wasmCode, err := os.ReadFile(path)
 		if err != nil {
 			return xerrors.Errorf("file read error: %w", err)
@@ -144,6 +173,12 @@ func (m *Manager) loadModules(ctx context.Context) error {
 			return xerrors.Errorf("WASM module init error %s: %w", rel, err)
 		}
 
+		// Skip Loading WASM modules if not in the list of enable modules flag.
+		if len(opts.enableModules) > 0 && !fanalUtils.StringInSlice(p.name, opts.enableModules) {
+			return nil
+		}
+
+		log.Logger.Infof("Loading %s...", rel)
 		m.modules = append(m.modules, p)
 
 		return nil

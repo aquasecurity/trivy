@@ -48,7 +48,7 @@ func Run(ctx context.Context, opts flag.Options) (err error) {
 	}
 
 	// Initialize WASM modules
-	m, err := module.NewManager(ctx)
+	m, err := module.NewManager(ctx, module.WithModuleDirectory(opts.ModuleDir), module.WithEnableModules(opts.EnableModules))
 	if err != nil {
 		return xerrors.Errorf("WASM module error: %w", err)
 	}

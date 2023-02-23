@@ -69,6 +69,20 @@ var (
 		Usage:      "write the default config to trivy-default.yaml",
 		Persistent: true,
 	}
+	ModuleDirFlag = Flag{
+		Name:       "module-dir",
+		ConfigName: "module.dir",
+		Value:      "",
+		Usage:      "specify directory to the wasm modules that can be loaded for module scan",
+		Persistent: true,
+	}
+	EnableModulesFlag = Flag{
+		Name:       "enable-modules",
+		ConfigName: "enable.modules",
+		Value:      []string{},
+		Usage:      "specify directory to the wasm modules that can be loaded for module scan",
+		Persistent: true,
+	}
 )
 
 // GlobalFlagGroup composes global flags
@@ -81,6 +95,8 @@ type GlobalFlagGroup struct {
 	Timeout               *Flag
 	CacheDir              *Flag
 	GenerateDefaultConfig *Flag
+	ModuleDir             *Flag
+	EnableModules         *Flag
 }
 
 // GlobalOptions defines flags and other configuration parameters for all the subcommands
@@ -93,6 +109,8 @@ type GlobalOptions struct {
 	Timeout               time.Duration
 	CacheDir              string
 	GenerateDefaultConfig bool
+	ModuleDir             string
+	EnableModules         []string
 }
 
 func NewGlobalFlagGroup() *GlobalFlagGroup {
@@ -105,11 +123,13 @@ func NewGlobalFlagGroup() *GlobalFlagGroup {
 		Timeout:               &TimeoutFlag,
 		CacheDir:              &CacheDirFlag,
 		GenerateDefaultConfig: &GenerateDefaultConfigFlag,
+		ModuleDir:             &ModuleDirFlag,
+		EnableModules:         &EnableModulesFlag,
 	}
 }
 
 func (f *GlobalFlagGroup) flags() []*Flag {
-	return []*Flag{f.ConfigFile, f.ShowVersion, f.Quiet, f.Debug, f.Insecure, f.Timeout, f.CacheDir, f.GenerateDefaultConfig}
+	return []*Flag{f.ConfigFile, f.ShowVersion, f.Quiet, f.Debug, f.Insecure, f.Timeout, f.CacheDir, f.GenerateDefaultConfig, f.ModuleDir, f.EnableModules}
 }
 
 func (f *GlobalFlagGroup) AddFlags(cmd *cobra.Command) {
@@ -137,5 +157,7 @@ func (f *GlobalFlagGroup) ToOptions() GlobalOptions {
 		Timeout:               getDuration(f.Timeout),
 		CacheDir:              getString(f.CacheDir),
 		GenerateDefaultConfig: getBool(f.GenerateDefaultConfig),
+		ModuleDir:             getString(f.ModuleDir),
+		EnableModules:         getStringSlice(f.EnableModules),
 	}
 }
