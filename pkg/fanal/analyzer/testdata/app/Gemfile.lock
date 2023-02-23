@@ -3,14 +3,13 @@ GEM
   specs:
     actioncable (5.2.3)
       actionpack (= 5.2.3)
-      nio4r (~> 2.0)
-      websocket-driver (>= 0.6.1)
+    actionpack (5.2.3)
 
 PLATFORMS
   ruby
 
 DEPENDENCIES
-  dotenv (~> 2.7)
+  actioncable (~> 5.0)
 
 BUNDLED WITH
    1.17.2
