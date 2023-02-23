@@ -561,8 +561,12 @@ func NewConfigCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 		CacheFlagGroup:   flag.NewCacheFlagGroup(),
 		MisconfFlagGroup: flag.NewMisconfFlagGroup(),
 		RegoFlagGroup:    flag.NewRegoFlagGroup(),
-		ReportFlagGroup:  reportFlagGroup,
-		ScanFlagGroup:    scanFlags,
+		K8sFlagGroup: &flag.K8sFlagGroup{
+			// disable unneeded flags
+			K8sVersion: &flag.K8sVersionFlag,
+		},
+		ReportFlagGroup: reportFlagGroup,
+		ScanFlagGroup:   scanFlags,
 	}
 
 	cmd := &cobra.Command{
