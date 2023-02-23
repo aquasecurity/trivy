@@ -358,8 +358,10 @@ func TestArtifact_Inspect(t *testing.T) {
 									Packages: []types.Package{
 										{
 											ID:   "tzdata@2019a-0+deb9u1",
-											Name: "tzdata", Version: "2019a-0+deb9u1", SrcName: "tzdata",
-											SrcVersion: "2019a-0+deb9u1",
+											Name: "tzdata", Version: "2019a", SrcName: "tzdata",
+											Release:    "0+deb9u1",
+											SrcVersion: "2019a",
+											SrcRelease: "0+deb9u1",
 											Maintainer: "GNU Libc Maintainers <debian-glibc@lists.debian.org>",
 										},
 									},
@@ -409,8 +411,10 @@ func TestArtifact_Inspect(t *testing.T) {
 									Packages: []types.Package{
 										{
 											ID:   "libc6@2.24-11+deb9u4",
-											Name: "libc6", Version: "2.24-11+deb9u4", SrcName: "glibc",
-											SrcVersion: "2.24-11+deb9u4",
+											Name: "libc6", Version: "2.24", Release: "11+deb9u4",
+											SrcName:    "glibc",
+											SrcVersion: "2.24",
+											SrcRelease: "11+deb9u4",
 											Maintainer: "GNU Libc Maintainers <debian-glibc@lists.debian.org>",
 										},
 									},
@@ -420,8 +424,10 @@ func TestArtifact_Inspect(t *testing.T) {
 									Packages: []types.Package{
 										{
 											ID:   "libssl1.1@1.1.0k-1~deb9u1",
-											Name: "libssl1.1", Version: "1.1.0k-1~deb9u1", SrcName: "openssl",
-											SrcVersion: "1.1.0k-1~deb9u1",
+											Name: "libssl1.1", Version: "1.1.0k", SrcName: "openssl",
+											Release:    "1~deb9u1",
+											SrcVersion: "1.1.0k",
+											SrcRelease: "1~deb9u1",
 											Maintainer: "Debian OpenSSL Team <pkg-openssl-devel@lists.alioth.debian.org>",
 										},
 									},
@@ -431,8 +437,10 @@ func TestArtifact_Inspect(t *testing.T) {
 									Packages: []types.Package{
 										{
 											ID:   "openssl@1.1.0k-1~deb9u1",
-											Name: "openssl", Version: "1.1.0k-1~deb9u1", SrcName: "openssl",
-											SrcVersion: "1.1.0k-1~deb9u1",
+											Name: "openssl", Version: "1.1.0k", SrcName: "openssl",
+											Release:    "1~deb9u1",
+											SrcVersion: "1.1.0k",
+											SrcRelease: "1~deb9u1",
 											Maintainer: "Debian OpenSSL Team <pkg-openssl-devel@lists.alioth.debian.org>",
 										},
 									},
