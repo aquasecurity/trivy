@@ -15,7 +15,7 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/aquasecurity/trivy/pkg/oci"
-	"github.com/aquasecurity/trivy/pkg/utils"
+	"github.com/aquasecurity/trivy/pkg/utils/fsutils"
 )
 
 type fakeLayer struct {
@@ -53,7 +53,10 @@ func TestNewArtifact(t *testing.T) {
 			name:      "sad: two layers",
 			mediaType: "application/vnd.cncf.openpolicyagent.layer.v1.tar+gzip",
 			layersReturns: layersReturns{
-				layers: []v1.Layer{layer, layer},
+				layers: []v1.Layer{
+					layer,
+					layer,
+				},
 			},
 			wantErr: "OCI artifact must be a single layer",
 		},
@@ -78,7 +81,7 @@ func TestNewArtifact(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			tempDir := t.TempDir()
-			utils.SetCacheDir(tempDir)
+			fsutils.SetCacheDir(tempDir)
 
 			// Mock image
 			img := new(fakei.FakeImage)
@@ -90,7 +93,8 @@ func TestNewArtifact(t *testing.T) {
 						Size:      100,
 						Digest: v1.Hash{
 							Algorithm: "sha256",
-							Hex:       "cba33656188782852f58993f45b68bfb8577f64cdcf02a604e3fc2afbeb5f2d8"},
+							Hex:       "cba33656188782852f58993f45b68bfb8577f64cdcf02a604e3fc2afbeb5f2d8",
+						},
 						Annotations: map[string]string{
 							"org.opencontainers.image.title": "bundle.tar.gz",
 						},
@@ -131,7 +135,7 @@ func TestArtifact_Download(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			tempDir := t.TempDir()
-			utils.SetCacheDir(tempDir)
+			fsutils.SetCacheDir(tempDir)
 
 			// Mock layer
 			layer, err := tarball.LayerFromFile(tt.input)
@@ -148,7 +152,8 @@ func TestArtifact_Download(t *testing.T) {
 						Size:      100,
 						Digest: v1.Hash{
 							Algorithm: "sha256",
-							Hex:       "cba33656188782852f58993f45b68bfb8577f64cdcf02a604e3fc2afbeb5f2d8"},
+							Hex:       "cba33656188782852f58993f45b68bfb8577f64cdcf02a604e3fc2afbeb5f2d8",
+						},
 						Annotations: map[string]string{
 							"org.opencontainers.image.title": "bundle.tar.gz",
 						},

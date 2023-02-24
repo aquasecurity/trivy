@@ -32,6 +32,9 @@ func Test_gomodAnalyzer_Analyze(t *testing.T) {
 							{
 								Name:    "github.com/aquasecurity/go-dep-parser",
 								Version: "0.0.0-20220406074731-71021a481237",
+								Licenses: []string{
+									"MIT",
+								},
 							},
 							{
 								Name:     "golang.org/x/xerrors",
@@ -60,6 +63,9 @@ func Test_gomodAnalyzer_Analyze(t *testing.T) {
 								Name:     "github.com/BurntSushi/toml",
 								Version:  "0.3.1",
 								Indirect: true,
+								Licenses: []string{
+									"MIT",
+								},
 							},
 						},
 					},
@@ -91,6 +97,7 @@ func Test_gomodAnalyzer_Analyze(t *testing.T) {
 		},
 	}
 	for _, tt := range tests {
+		t.Setenv("GOPATH", "testdata")
 		t.Run(tt.name, func(t *testing.T) {
 			a, err := newGoModAnalyzer(analyzer.AnalyzerOptions{})
 			require.NoError(t, err)
