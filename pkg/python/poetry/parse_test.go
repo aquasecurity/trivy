@@ -1,10 +1,8 @@
 package poetry
 
 import (
+	"fmt"
 	"os"
-	"path"
-	"sort"
-	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -13,50 +11,119 @@ import (
 	"github.com/aquasecurity/go-dep-parser/pkg/types"
 )
 
-func TestParse(t *testing.T) {
-	vectors := []struct {
-		file string // Test input file
-		want []types.Library
+func TestParser_Parse(t *testing.T) {
+	tests := []struct {
+		name     string
+		file     string
+		wantLibs []types.Library
+		wantDeps []types.Dependency
+		wantErr  assert.ErrorAssertionFunc
 	}{
 		{
-			file: "testdata/poetry_normal.lock",
-			want: poetryNormal,
+			name:     "normal",
+			file:     "testdata/poetry_normal.lock",
+			wantLibs: poetryNormal,
+			wantErr:  assert.NoError,
 		},
 		{
-			file: "testdata/poetry_many.lock",
-			want: poetryMany,
+			name:     "many",
+			file:     "testdata/poetry_many.lock",
+			wantLibs: poetryMany,
+			wantDeps: poetryManyDeps,
+			wantErr:  assert.NoError,
 		},
 		{
-			file: "testdata/poetry_flask.lock",
-			want: poetryFlask,
+			name:     "flask",
+			file:     "testdata/poetry_flask.lock",
+			wantLibs: poetryFlask,
+			wantDeps: poetryFlaskDeps,
+			wantErr:  assert.NoError,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			f, err := os.Open(tt.file)
+			require.NoError(t, err)
+			defer f.Close()
+
+			p := &Parser{}
+			gotLibs, gotDeps, err := p.Parse(f)
+			if !tt.wantErr(t, err, fmt.Sprintf("Parse(%v)", tt.file)) {
+				return
+			}
+			assert.Equalf(t, tt.wantLibs, gotLibs, "Parse(%v)", tt.file)
+			assert.Equalf(t, tt.wantDeps, gotDeps, "Parse(%v)", tt.file)
+		})
+	}
+}
+
+func TestParseDependency(t *testing.T) {
+	tests := []struct {
+		name         string
+		packageName  string
+		versionRange interface{}
+		libsVersions map[string][]string
+		want         string
+		wantErr      string
+	}{
+		{
+			name:         "handle package name",
+			packageName:  "Test_project.Name",
+			versionRange: "*",
+			libsVersions: map[string][]string{
+				"test-project-name": {"1.0.0"},
+			},
+			want: "test-project-name@1.0.0",
+		},
+		{
+			name:         "version range as string",
+			packageName:  "test",
+			versionRange: ">=1.0.0",
+			libsVersions: map[string][]string{
+				"test": {"2.0.0"},
+			},
+			want: "test@2.0.0",
+		},
+		{
+			name:         "version range == *",
+			packageName:  "test",
+			versionRange: "*",
+			libsVersions: map[string][]string{
+				"test": {"3.0.0"},
+			},
+			want: "test@3.0.0",
+		},
+		{
+			name:        "version range as json",
+			packageName: "test",
+			versionRange: map[string]interface{}{
+				"version": ">=4.8.3",
+				"markers": "python_version < \"3.8\"",
+			},
+			libsVersions: map[string][]string{
+				"test": {"5.0.0"},
+			},
+			want: "test@5.0.0",
+		},
+		{
+			name:         "libsVersions doesn't contain required version",
+			packageName:  "test",
+			versionRange: ">=1.0.0",
+			libsVersions: map[string][]string{},
+			wantErr:      "no version found",
 		},
 	}
 
-	for _, v := range vectors {
-		t.Run(path.Base(v.file), func(t *testing.T) {
-			f, err := os.Open(v.file)
-			require.NoError(t, err)
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, err := parseDependency(tt.packageName, tt.versionRange, tt.libsVersions)
+			if tt.wantErr != "" {
+				assert.ErrorContains(t, err, tt.wantErr)
+				return
+			}
 
-			got, _, err := NewParser().Parse(f)
-			require.NoError(t, err)
-
-			sort.Slice(got, func(i, j int) bool {
-				ret := strings.Compare(got[i].Name, got[j].Name)
-				if ret == 0 {
-					return got[i].Version < got[j].Version
-				}
-				return ret < 0
-			})
-
-			sort.Slice(v.want, func(i, j int) bool {
-				ret := strings.Compare(v.want[i].Name, v.want[j].Name)
-				if ret == 0 {
-					return v.want[i].Version < v.want[j].Version
-				}
-				return ret < 0
-			})
-
-			assert.Equal(t, v.want, got)
+			assert.NoError(t, err)
+			assert.Equal(t, tt.want, got)
 		})
 	}
 }
