@@ -3121,13 +3121,13 @@ rm -rf $TRIVY_TEMP_DIR
 </div>
 <div class="tabbed-block">
 <p>Please follow <a href="https://oras.land/cli/">oras installation instruction</a>.</p>
-<p>Download <code>db.tar.gz</code>:</p>
+<p>Download <code>javadb.tar.gz</code>:</p>
 <div class="highlight"><pre><span></span><code>$ oras pull ghcr.io/aquasecurity/trivy-java-db:1
 </code></pre></div>
 </div>
 <div class="tabbed-block">
 <p>Please follow <a href="https://oras.land/cli/">oras installation instruction</a>.</p>
-<p>Download <code>db.tar.gz</code>:</p>
+<p>Download <code>javadb.tar.gz</code>:</p>
 <div class="highlight"><pre><span></span><code>$ oras pull -a ghcr.io/aquasecurity/trivy-java-db:1
 </code></pre></div>
 </div>
@@ -3181,7 +3181,7 @@ $ rm /path/to/javadb.tar.gz
 <h3 id="run-trivy-with-the-specific-flags">Run Trivy with the specific flags.</h3>
 <p>In an air-gapped environment, you have to specify <code>--skip-db-update</code> and <code>--skip-java-db-update</code><sup id="fnref2:1"><a class="footnote-ref" href="#fn:1">1</a></sup> so that Trivy doesn't attempt to download the latest database files.
 In addition, if you want to scan <code>pom.xml</code> dependencies, you need to specify <code>--offline-scan</code> since Trivy tries to issue API requests for scanning Java applications by default.</p>
-<div class="highlight"><pre><span></span><code>$ trivy image --skip-update --skip-java-db-update --offline-scan alpine:3.12
+<div class="highlight"><pre><span></span><code>$ trivy image --skip-db-update --skip-java-db-update --offline-scan alpine:3.12
 </code></pre></div>
 <h2 id="air-gapped-environment-for-misconfigurations">Air-Gapped Environment for misconfigurations</h2>
 <p>No special measures are required to detect misconfigurations in an air-gapped environment.</p>
