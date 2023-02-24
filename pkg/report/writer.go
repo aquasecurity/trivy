@@ -102,8 +102,9 @@ func Write(report types.Report, option Option) error {
 		writer = &JSONWriter{Output: option.Output}
 	case FormatGitHub:
 		writer = &github.Writer{
-			Output:  option.Output,
-			Version: option.AppVersion,
+			Output:         option.Output,
+			Version:        option.AppVersion,
+			DfScannerImage: option.DfScannerImage,
 		}
 	case FormatCycloneDX:
 		// TODO: support xml format option with cyclonedx writer
