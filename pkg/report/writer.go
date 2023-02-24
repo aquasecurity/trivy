@@ -57,8 +57,9 @@ var (
 )
 
 type Option struct {
-	AppVersion   string
-	DfctlVersion string
+	AppVersion     string
+	DfctlVersion   string
+	DfScannerImage string
 
 	Format         string
 	Report         string
@@ -125,8 +126,9 @@ func Write(report types.Report, option Option) error {
 		}
 	case FormatSarif:
 		writer = SarifWriter{
-			Output:  option.Output,
-			Version: option.AppVersion,
+			Output:       option.Output,
+			Version:      option.AppVersion,
+			ScannerImage: option.DfScannerImage,
 		}
 	case FormatCosignVuln:
 		writer = predicate.NewVulnWriter(option.Output, option.AppVersion)

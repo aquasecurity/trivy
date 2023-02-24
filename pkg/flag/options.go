@@ -102,6 +102,9 @@ type Options struct {
 	// Deepfactor dfctl version
 	DfctlVersion string
 
+	// Deepfactor docker image url
+	DfScannerImage string
+
 	// We don't want to allow disabled analyzers to be passed by users, but it is necessary for internal use.
 	DisabledAnalyzers []analyzer.Type
 }
