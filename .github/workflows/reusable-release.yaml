@@ -19,6 +19,7 @@ jobs:
   release:
     name: Release
     runs-on: ubuntu-latest
+    environment: AQUA_ENVIRONMENT
     env:
       DOCKER_CLI_EXPERIMENTAL: "enabled"
     permissions:
