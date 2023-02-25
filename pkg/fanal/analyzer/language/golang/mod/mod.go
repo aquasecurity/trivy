@@ -44,14 +44,19 @@ var (
 )
 
 type gomodAnalyzer struct {
+	// root go.mod/go.sum
 	modParser godeptypes.Parser
 	sumParser godeptypes.Parser
+
+	// go.mod/go.sum in dependencies
+	leafModParser godeptypes.Parser
 }
 
 func newGoModAnalyzer(_ analyzer.AnalyzerOptions) (analyzer.PostAnalyzer, error) {
 	return &gomodAnalyzer{
-		modParser: mod.NewParser(),
-		sumParser: sum.NewParser(),
+		modParser:     mod.NewParser(true), // Only the root module should replace
+		sumParser:     sum.NewParser(),
+		leafModParser: mod.NewParser(false),
 	}, nil
 }
 
@@ -94,8 +99,8 @@ func (a *gomodAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAnalys
 		return nil, xerrors.Errorf("walk error: %w", err)
 	}
 
-	if err = fillLicenses(apps); err != nil {
-		return nil, xerrors.Errorf("unable to identify licenses: %w", err)
+	if err = a.fillAdditionalData(apps); err != nil {
+		return nil, xerrors.Errorf("unable to collect additional info: %w", err)
 	}
 
 	return &analyzer.AnalysisResult{
@@ -116,6 +121,97 @@ func (a *gomodAnalyzer) Version() int {
 	return version
 }
 
+// fillAdditionalData collects licenses and dependency relationships, then update applications.
+func (a *gomodAnalyzer) fillAdditionalData(apps []types.Application) error {
+	gopath := os.Getenv("GOPATH")
+	if gopath == "" {
+		gopath = build.Default.GOPATH
+	}
+
+	// $GOPATH/pkg/mod
+	modPath := filepath.Join(gopath, "pkg", "mod")
+	if !fsutils.DirExists(modPath) {
+		log.Logger.Debugf("GOPATH (%s) not found. Need 'go mod download' to fill licenses and dependency relationships", modPath)
+		return nil
+	}
+
+	licenses := map[string][]string{}
+	for i, app := range apps {
+		// Actually used dependencies
+		usedLibs := lo.SliceToMap(app.Libraries, func(pkg types.Package) (string, types.Package) {
+			return pkg.Name, pkg
+		})
+		for j, lib := range app.Libraries {
+			if l, ok := licenses[lib.ID]; ok {
+				// Fill licenses
+				apps[i].Libraries[j].Licenses = l
+				continue
+			}
+
+			// e.g. $GOPATH/pkg/mod/github.com/aquasecurity/go-dep-parser@v1.0.0
+			modDir := filepath.Join(modPath, fmt.Sprintf("%s@v%s", normalizeModName(lib.Name), lib.Version))
+
+			// Collect licenses
+			if licenseNames, err := findLicense(modDir); err != nil {
+				return xerrors.Errorf("license error: %w", err)
+			} else {
+				// Cache the detected licenses
+				licenses[lib.ID] = licenseNames
+
+				// Fill licenses
+				apps[i].Libraries[j].Licenses = licenseNames
+			}
+
+			// Collect dependencies of the direct dependency
+			if dep, err := a.collectDeps(modDir, lib.ID); err != nil {
+				return xerrors.Errorf("dependency graph error: %w", err)
+			} else if dep.ID == "" {
+				// go.mod not found
+				continue
+			} else {
+				// Filter out unused dependencies and convert module names to module IDs
+				apps[i].Libraries[j].DependsOn = lo.FilterMap(dep.DependsOn, func(modName string, _ int) (string, bool) {
+					if m, ok := usedLibs[modName]; !ok {
+						return "", false
+					} else {
+						return m.ID, true
+					}
+				})
+			}
+		}
+	}
+	return nil
+}
+
+func (a *gomodAnalyzer) collectDeps(modDir string, pkgID string) (godeptypes.Dependency, error) {
+	// e.g. $GOPATH/pkg/mod/github.com/aquasecurity/go-dep-parser@v0.0.0-20220406074731-71021a481237/go.mod
+	modPath := filepath.Join(modDir, "go.mod")
+	f, err := os.Open(modPath)
+	if errors.Is(err, fs.ErrNotExist) {
+		log.Logger.Debugf("go.mod not found: %s", pkgID)
+		return godeptypes.Dependency{}, nil
+	} else if err != nil {
+		return godeptypes.Dependency{}, xerrors.Errorf("file open error: %w", err)
+	}
+	defer f.Close()
+
+	// Parse go.mod under $GOPATH/pkg/mod
+	libs, _, err := a.leafModParser.Parse(f)
+	if err != nil {
+		return godeptypes.Dependency{}, xerrors.Errorf("%s parse error: %w", modPath, err)
+	}
+
+	// Filter out indirect dependencies
+	dependsOn := lo.FilterMap(libs, func(lib godeptypes.Library, index int) (string, bool) {
+		return lib.Name, !lib.Indirect
+	})
+
+	return godeptypes.Dependency{
+		ID:        pkgID,
+		DependsOn: dependsOn,
+	}, nil
+}
+
 func parse(fsys fs.FS, path string, parser godeptypes.Parser) (*types.Application, error) {
 	f, err := fsys.Open(path)
 	if err != nil {
@@ -133,6 +229,7 @@ func parse(fsys fs.FS, path string, parser godeptypes.Parser) (*types.Applicatio
 	if err != nil {
 		return nil, xerrors.Errorf("%s parse error: %w", path, err)
 	}
+
 	return language.ToApplication(types.GoModule, path, "", libs, deps), nil
 }
 
@@ -171,51 +268,7 @@ func mergeGoSum(gomod, gosum *types.Application) {
 	gomod.Libraries = maps.Values(uniq)
 }
 
-func fillLicenses(apps []types.Application) error {
-	gopath := os.Getenv("GOPATH")
-	if gopath == "" {
-		gopath = build.Default.GOPATH
-	}
-
-	// $GOPATH/pkg/mod
-	modPath := filepath.Join(gopath, "pkg", "mod")
-	if !fsutils.DirExists(modPath) {
-		log.Logger.Debugf("GOPATH (%s) not found. Need 'go mod download' to fill license information", modPath)
-		return nil
-	}
-
-	licenses := map[string][]string{}
-	for i, app := range apps {
-		for j, lib := range app.Libraries {
-			libID := lib.Name + "@v" + lib.Version
-			if l, ok := licenses[libID]; ok {
-				// Fill licenses
-				apps[i].Libraries[j].Licenses = l
-				continue
-			}
-
-			// e.g. $GOPATH/pkg/mod/github.com/aquasecurity/go-dep-parser@v1.0.0
-			modDir := filepath.Join(modPath, fmt.Sprintf("%s@v%s", normalizeModName(lib.Name), lib.Version))
-			l, err := findLicense(modDir)
-			if err != nil {
-				return xerrors.Errorf("golang license error: %w", err)
-			} else if l == nil || len(l.Findings) == 0 {
-				continue
-			}
-			licenseNames := lo.Map(l.Findings, func(finding types.LicenseFinding, _ int) string {
-				return finding.Name
-			})
-			// Cache the detected licenses
-			licenses[libID] = licenseNames
-
-			// Fill licenses
-			apps[i].Libraries[j].Licenses = licenseNames
-		}
-	}
-	return nil
-}
-
-func findLicense(dir string) (*types.LicenseFile, error) {
+func findLicense(dir string) ([]string, error) {
 	var license *types.LicenseFile
 	err := filepath.WalkDir(dir, func(path string, d fs.DirEntry, err error) error {
 		if err != nil {
@@ -249,8 +302,13 @@ func findLicense(dir string) (*types.LicenseFile, error) {
 		return nil, nil
 	} else if err != nil && !errors.Is(err, io.EOF) {
 		return nil, fmt.Errorf("finding a known open source license: %w", err)
+	} else if license == nil || len(license.Findings) == 0 {
+		return nil, nil
 	}
-	return license, nil
+
+	return lo.Map(license.Findings, func(finding types.LicenseFinding, _ int) string {
+		return finding.Name
+	}), nil
 }
 
 // normalizeModName escapes upper characters
