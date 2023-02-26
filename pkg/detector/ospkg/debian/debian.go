@@ -85,8 +85,7 @@ func (s *Scanner) Detect(osVer string, _ *ftypes.Repository, pkgs []ftypes.Packa
 
 	var vulns []types.DetectedVulnerability
 	for _, pkg := range pkgs {
-		built := utils.FormatSrcVersion(pkg)
-		builtVersion, err := version.NewVersion(built)
+		sourceVersion, err := version.NewVersion(utils.FormatSrcVersion(pkg))
 		if err != nil {
 			log.Logger.Debugf("Debian installed package version error: %s", err)
 			continue
@@ -132,7 +131,7 @@ func (s *Scanner) Detect(osVer string, _ *ftypes.Repository, pkgs []ftypes.Packa
 				continue
 			}
 
-			if builtVersion.LessThan(fixedVersion) {
+			if sourceVersion.LessThan(fixedVersion) {
 				vulns = append(vulns, vuln)
 			}
 		}

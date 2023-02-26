@@ -45,8 +45,7 @@ func (s *Scanner) Detect(osVer string, _ *ftypes.Repository, pkgs []ftypes.Packa
 			return nil, xerrors.Errorf("failed to get CBL-Mariner advisories: %w", err)
 		}
 
-		built := utils.FormatSrcVersion(pkg)
-		builtVersion := version.NewVersion(built)
+		sourceVersion := version.NewVersion(utils.FormatSrcVersion(pkg))
 
 		for _, adv := range advisories {
 			vuln := types.DetectedVulnerability{
@@ -66,7 +65,7 @@ func (s *Scanner) Detect(osVer string, _ *ftypes.Repository, pkgs []ftypes.Packa
 
 			// Patched vulnerabilities
 			fixedVersion := version.NewVersion(adv.FixedVersion)
-			if builtVersion.LessThan(fixedVersion) {
+			if sourceVersion.LessThan(fixedVersion) {
 				vuln.FixedVersion = fixedVersion.String()
 				vulns = append(vulns, vuln)
 			}

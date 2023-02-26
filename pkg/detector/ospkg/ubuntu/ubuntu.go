@@ -105,8 +105,7 @@ func (s *Scanner) Detect(osVer string, _ *ftypes.Repository, pkgs []ftypes.Packa
 			return nil, xerrors.Errorf("failed to get Ubuntu advisories: %w", err)
 		}
 
-		built := utils.FormatSrcVersion(pkg)
-		builtVersion, err := version.NewVersion(built)
+		sourceVersion, err := version.NewVersion(utils.FormatSrcVersion(pkg))
 		if err != nil {
 			log.Logger.Debugf("failed to parse Ubuntu installed package version: %w", err)
 			continue
@@ -136,7 +135,7 @@ func (s *Scanner) Detect(osVer string, _ *ftypes.Repository, pkgs []ftypes.Packa
 				continue
 			}
 
-			if builtVersion.LessThan(fixedVersion) {
+			if sourceVersion.LessThan(fixedVersion) {
 				vulns = append(vulns, vuln)
 			}
 		}
