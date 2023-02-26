@@ -220,6 +220,9 @@ func NewImageCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	compliance.Usage += fmt.Sprintf(" (%s)", types.ComplianceDockerCIS)
 	reportFlagGroup.Compliance = &compliance // override usage as the accepted values differ for each subcommand.
 
+	scanFlagGroup := flag.NewScanFlagGroup()
+	scanFlagGroup.Parallel = nil
+
 	imageFlags := &flag.Flags{
 		CacheFlagGroup:         flag.NewCacheFlagGroup(),
 		DBFlagGroup:            flag.NewDBFlagGroup(),
@@ -230,7 +233,7 @@ func NewImageCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 		RemoteFlagGroup:        flag.NewClientFlags(), // for client/server mode
 		RegoFlagGroup:          flag.NewRegoFlagGroup(),
 		ReportFlagGroup:        reportFlagGroup,
-		ScanFlagGroup:          flag.NewScanFlagGroup(),
+		ScanFlagGroup:          scanFlagGroup,
 		SecretFlagGroup:        flag.NewSecretFlagGroup(),
 		VulnerabilityFlagGroup: flag.NewVulnerabilityFlagGroup(),
 	}
@@ -297,6 +300,9 @@ func NewFilesystemCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	reportFlagGroup.Compliance = nil   // disable '--compliance'
 	reportFlagGroup.ExitOnEOL = nil    // disable '--exit-on-eol'
 
+	scanFlagGroup := flag.NewScanFlagGroup()
+	scanFlagGroup.Parallel = nil
+
 	fsFlags := &flag.Flags{
 		CacheFlagGroup:         flag.NewCacheFlagGroup(),
 		DBFlagGroup:            flag.NewDBFlagGroup(),
@@ -306,7 +312,7 @@ func NewFilesystemCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 		RemoteFlagGroup:        flag.NewClientFlags(), // for client/server mode
 		RegoFlagGroup:          flag.NewRegoFlagGroup(),
 		ReportFlagGroup:        reportFlagGroup,
-		ScanFlagGroup:          flag.NewScanFlagGroup(),
+		ScanFlagGroup:          scanFlagGroup,
 		SecretFlagGroup:        flag.NewSecretFlagGroup(),
 		VulnerabilityFlagGroup: flag.NewVulnerabilityFlagGroup(),
 	}
@@ -352,6 +358,9 @@ func NewRootfsCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	reportFlagGroup.ReportFormat = nil // TODO: support --report summary
 	reportFlagGroup.Compliance = nil   // disable '--compliance'
 
+	scanFlagGroup := flag.NewScanFlagGroup()
+	scanFlagGroup.Parallel = nil
+
 	rootfsFlags := &flag.Flags{
 		CacheFlagGroup:         flag.NewCacheFlagGroup(),
 		DBFlagGroup:            flag.NewDBFlagGroup(),
@@ -361,7 +370,7 @@ func NewRootfsCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 		RemoteFlagGroup:        flag.NewClientFlags(), // for client/server mode
 		RegoFlagGroup:          flag.NewRegoFlagGroup(),
 		ReportFlagGroup:        reportFlagGroup,
-		ScanFlagGroup:          flag.NewScanFlagGroup(),
+		ScanFlagGroup:          scanFlagGroup,
 		SecretFlagGroup:        flag.NewSecretFlagGroup(),
 		VulnerabilityFlagGroup: flag.NewVulnerabilityFlagGroup(),
 	}
@@ -409,6 +418,9 @@ func NewRepositoryCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	reportFlagGroup.Compliance = nil   // disable '--compliance'
 	reportFlagGroup.ExitOnEOL = nil    // disable '--exit-on-eol'
 
+	scanFlagGroup := flag.NewScanFlagGroup()
+	scanFlagGroup.Parallel = nil
+
 	repoFlags := &flag.Flags{
 		CacheFlagGroup:         flag.NewCacheFlagGroup(),
 		DBFlagGroup:            flag.NewDBFlagGroup(),
@@ -418,7 +430,7 @@ func NewRepositoryCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 		RegoFlagGroup:          flag.NewRegoFlagGroup(),
 		RemoteFlagGroup:        flag.NewClientFlags(), // for client/server mode
 		ReportFlagGroup:        reportFlagGroup,
-		ScanFlagGroup:          flag.NewScanFlagGroup(),
+		ScanFlagGroup:          scanFlagGroup,
 		SecretFlagGroup:        flag.NewSecretFlagGroup(),
 		VulnerabilityFlagGroup: flag.NewVulnerabilityFlagGroup(),
 		RepoFlagGroup:          flag.NewRepoFlagGroup(),
@@ -467,6 +479,8 @@ func NewClientCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 		Usage:      "server address",
 	}
 	remoteFlags.ServerAddr = &remoteAddr // disable '--server' and enable '--remote' instead.
+	scanFlagGroup := flag.NewScanFlagGroup()
+	scanFlagGroup.Parallel = nil
 
 	clientFlags := &flag.Flags{
 		CacheFlagGroup:         flag.NewCacheFlagGroup(),
@@ -475,7 +489,7 @@ func NewClientCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 		RegoFlagGroup:          flag.NewRegoFlagGroup(),
 		RemoteFlagGroup:        remoteFlags,
 		ReportFlagGroup:        flag.NewReportFlagGroup(),
-		ScanFlagGroup:          flag.NewScanFlagGroup(),
+		ScanFlagGroup:          scanFlagGroup,
 		VulnerabilityFlagGroup: flag.NewVulnerabilityFlagGroup(),
 	}
 
@@ -930,6 +944,9 @@ func NewVMCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	reportFlagGroup := flag.NewReportFlagGroup()
 	reportFlagGroup.ReportFormat = nil // TODO: support --report summary
 
+	scanFlagGroup := flag.NewScanFlagGroup()
+	scanFlagGroup.Parallel = nil
+
 	vmFlags := &flag.Flags{
 		CacheFlagGroup:         flag.NewCacheFlagGroup(),
 		DBFlagGroup:            flag.NewDBFlagGroup(),
@@ -938,7 +955,7 @@ func NewVMCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 		ModuleFlagGroup:        flag.NewModuleFlagGroup(),
 		RemoteFlagGroup:        flag.NewClientFlags(), // for client/server mode
 		ReportFlagGroup:        reportFlagGroup,
-		ScanFlagGroup:          flag.NewScanFlagGroup(),
+		ScanFlagGroup:          scanFlagGroup,
 		SecretFlagGroup:        flag.NewSecretFlagGroup(),
 		VulnerabilityFlagGroup: flag.NewVulnerabilityFlagGroup(),
 		AWSFlagGroup: &flag.AWSFlagGroup{
@@ -998,13 +1015,14 @@ func NewSBOMCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 
 	scanFlags := flag.NewScanFlagGroup()
 	scanFlags.Scanners = nil // disable '--scanners' as it always scans for vulnerabilities
+	scanFlags.Parallel = nil
 
 	sbomFlags := &flag.Flags{
 		CacheFlagGroup:         flag.NewCacheFlagGroup(),
 		DBFlagGroup:            flag.NewDBFlagGroup(),
 		RemoteFlagGroup:        flag.NewClientFlags(), // for client/server mode
 		ReportFlagGroup:        reportFlagGroup,
-		ScanFlagGroup:          flag.NewScanFlagGroup(),
+		ScanFlagGroup:          scanFlags,
 		SBOMFlagGroup:          flag.NewSBOMFlagGroup(),
 		VulnerabilityFlagGroup: flag.NewVulnerabilityFlagGroup(),
 	}

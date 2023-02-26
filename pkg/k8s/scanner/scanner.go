@@ -18,8 +18,6 @@ import (
 	"github.com/aquasecurity/trivy/pkg/types"
 )
 
-const numOfWorkers = 5
-
 type Scanner struct {
 	cluster string
 	runner  cmd.Runner
@@ -60,7 +58,7 @@ func (s *Scanner) Scan(ctx context.Context, artifacts []*artifacts.Artifact) (re
 			log.Fatal(xerrors.Errorf("can't enable logger error: %w", err))
 		}
 	}()
-
+	numOfWorkers := s.opts.Parallel
 	var wg sync.WaitGroup
 	artifactsPerWorker := len(artifacts) / numOfWorkers
 	var errChan = make(chan error, len(artifacts))

@@ -1,6 +1,8 @@
 package flag
 
 import (
+	"strconv"
+
 	"golang.org/x/exp/slices"
 	"golang.org/x/xerrors"
 
@@ -54,6 +56,12 @@ var (
 		Value:      false,
 		Usage:      "scan over time with lower CPU and memory utilization",
 	}
+	ParallelFlag = Flag{
+		Name:       "parallel",
+		ConfigName: "scan.parallel",
+		Value:      "5",
+		Usage:      "number of goroutines enabled for parallel scanning",
+	}
 	SBOMSourcesFlag = Flag{
 		Name:       "sbom-sources",
 		ConfigName: "scan.sbom-sources",
@@ -77,6 +85,7 @@ type ScanFlagGroup struct {
 	Slow         *Flag
 	SBOMSources  *Flag
 	RekorURL     *Flag
+	Parallel     *Flag
 }
 
 type ScanOptions struct {
@@ -89,6 +98,7 @@ type ScanOptions struct {
 	Slow         bool
 	SBOMSources  []string
 	RekorURL     string
+	Parallel     int
 }
 
 func NewScanFlagGroup() *ScanFlagGroup {
@@ -101,6 +111,7 @@ func NewScanFlagGroup() *ScanFlagGroup {
 		Slow:         &SlowFlag,
 		SBOMSources:  &SBOMSourcesFlag,
 		RekorURL:     &RekorURLFlag,
+		Parallel:     &ParallelFlag,
 	}
 }
 
@@ -118,6 +129,7 @@ func (f *ScanFlagGroup) Flags() []*Flag {
 		f.Slow,
 		f.SBOMSources,
 		f.RekorURL,
+		f.Parallel,
 	}
 }
 
@@ -136,6 +148,12 @@ func (f *ScanFlagGroup) ToOptions(args []string) (ScanOptions, error) {
 		return ScanOptions{}, xerrors.Errorf("unable to parse SBOM sources: %w", err)
 	}
 
+	parallelFlag := getString(f.Parallel)
+	parallel, err := strconv.Atoi(parallelFlag)
+	if err != nil {
+		return ScanOptions{}, xerrors.Errorf("unable to parse parallel number: %w", err)
+	}
+
 	return ScanOptions{
 		Target:       target,
 		SkipDirs:     getStringSlice(f.SkipDirs),
@@ -146,6 +164,7 @@ func (f *ScanFlagGroup) ToOptions(args []string) (ScanOptions, error) {
 		Slow:         getBool(f.Slow),
 		SBOMSources:  sbomSources,
 		RekorURL:     getString(f.RekorURL),
+		Parallel:     parallel,
 	}, nil
 }
 
