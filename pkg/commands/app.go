@@ -731,6 +731,7 @@ func NewModuleCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 				repo := args[0]
 				opts := globalFlags.ToOptions()
 				return module.Install(cmd.Context(), repo, opts.Quiet, opts.Insecure)
+				return module.Install(cmd.Context(), opts.ModuleDir, repo, opts.Quiet, opts.Insecure)
 			},
 		},
 		&cobra.Command{
@@ -745,6 +746,7 @@ func NewModuleCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 
 				repo := args[0]
 				return module.Uninstall(cmd.Context(), repo)
+				return module.Uninstall(cmd.Context(), opts.ModuleDir, repo)
 			},
 		},
 	)
