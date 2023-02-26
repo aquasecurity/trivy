@@ -40,10 +40,10 @@ type javaLibraryAnalyzer struct {
 	slow   bool
 }
 
-func newJavaLibraryAnalyzer(options analyzer.AnalyzerOptions) analyzer.PostAnalyzer {
+func newJavaLibraryAnalyzer(options analyzer.AnalyzerOptions) (analyzer.PostAnalyzer, error) {
 	return &javaLibraryAnalyzer{
 		slow: options.Slow,
-	}
+	}, nil
 }
 
 func (a *javaLibraryAnalyzer) PostAnalyze(ctx context.Context, input analyzer.PostAnalysisInput) (*analyzer.AnalysisResult, error) {

@@ -1,8 +1,6 @@
-package utils
+package fsutils
 
 import (
-	"crypto/tls"
-	"crypto/x509"
 	"fmt"
 	"io"
 	"os"
@@ -72,20 +70,9 @@ func CopyFile(src, dst string) (int64, error) {
 	return n, err
 }
 
-// GetTLSConfig get tls config from CA, Cert and Key file
-func GetTLSConfig(caCertPath, certPath, keyPath string) (*x509.CertPool, tls.Certificate, error) {
-	cert, err := tls.LoadX509KeyPair(certPath, keyPath)
-	if err != nil {
-		return nil, tls.Certificate{}, err
+func DirExists(path string) bool {
+	if f, err := os.Stat(path); os.IsNotExist(err) || !f.IsDir() {
+		return false
 	}
-
-	caCert, err := os.ReadFile(caCertPath)
-	if err != nil {
-		return nil, tls.Certificate{}, err
-	}
-
-	caCertPool := x509.NewCertPool()
-	caCertPool.AppendCertsFromPEM(caCert)
-
-	return caCertPool, cert, nil
+	return true
 }

@@ -1328,12 +1328,12 @@ func TestMarshaler_Marshal(t *testing.T) {
 						},
 					},
 				},
-				Components:      new([]cdx.Component),
+				Components:      lo.ToPtr([]cdx.Component{}),
 				Vulnerabilities: &[]cdx.Vulnerability{},
 				Dependencies: &[]cdx.Dependency{
 					{
 						Ref:          "3ff14136-e09f-4df9-80ea-000000000002",
-						Dependencies: new([]string),
+						Dependencies: lo.ToPtr([]string{}),
 					},
 				},
 			},
@@ -1632,14 +1632,11 @@ func TestMarshaler_MarshalVulnerabilities(t *testing.T) {
 									URL:  "https://www.redhat.com/security/data/oval/v2/",
 								},
 								Vulnerability: dtypes.Vulnerability{
-									Title:       "binutils: Use-after-free in the error function",
-									Description: "In GNU Binutils 2.31.1, there is a use-after-free in the error function in elfcomm.c when called from the process_archive function in readelf.c via a crafted ELF file.",
-									Severity:    dtypes.SeverityMedium.String(),
-									VendorSeverity: dtypes.VendorSeverity{
-										vulnerability.NVD:        dtypes.SeverityMedium,
-										vulnerability.RedHatOVAL: dtypes.SeverityMedium,
-									},
-									CweIDs: []string{"CWE-416"},
+									Title:          "binutils: Use-after-free in the error function",
+									Description:    "In GNU Binutils 2.31.1, there is a use-after-free in the error function in elfcomm.c when called from the process_archive function in readelf.c via a crafted ELF file.",
+									Severity:       dtypes.SeverityMedium.String(),
+									VendorSeverity: dtypes.VendorSeverity{},
+									CweIDs:         []string{"CWE-416"},
 									CVSS: dtypes.VendorCVSS{
 										vulnerability.NVD: dtypes.CVSS{
 											V2Vector: "AV:N/AC:M/Au:N/C:N/I:N/A:P",
@@ -1690,38 +1687,7 @@ func TestMarshaler_MarshalVulnerabilities(t *testing.T) {
 							Name: string(vulnerability.RedHatOVAL),
 							URL:  "https://www.redhat.com/security/data/oval/v2/",
 						},
-						Ratings: &[]cdx.VulnerabilityRating{
-							{
-								Source: &cdx.Source{
-									Name: string(vulnerability.NVD),
-									URL:  "",
-								},
-								Score:    lo.ToPtr(4.3),
-								Severity: cdx.SeverityMedium,
-								Method:   cdx.ScoringMethodCVSSv2,
-								Vector:   "AV:N/AC:M/Au:N/C:N/I:N/A:P",
-							},
-							{
-								Source: &cdx.Source{
-									Name: string(vulnerability.NVD),
-									URL:  "",
-								},
-								Score:    lo.ToPtr(5.5),
-								Severity: cdx.SeverityMedium,
-								Method:   cdx.ScoringMethodCVSSv3,
-								Vector:   "CVSS:3.0/AV:L/AC:L/PR:N/UI:R/S:U/C:N/I:N/A:H",
-							},
-							{
-								Source: &cdx.Source{
-									Name: string(vulnerability.RedHatOVAL),
-									URL:  "",
-								},
-								Score:    lo.ToPtr(5.3),
-								Severity: cdx.SeverityMedium,
-								Method:   cdx.ScoringMethodCVSSv3,
-								Vector:   "CVSS:3.0/AV:L/AC:L/PR:L/UI:N/S:U/C:L/I:L/A:L",
-							},
-						},
+						Ratings: lo.ToPtr([]cdx.VulnerabilityRating{}),
 						CWEs: &[]int{
 							416,
 						},
