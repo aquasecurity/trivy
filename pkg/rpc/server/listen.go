@@ -17,7 +17,7 @@ import (
 	dbc "github.com/aquasecurity/trivy/pkg/db"
 	"github.com/aquasecurity/trivy/pkg/fanal/cache"
 	"github.com/aquasecurity/trivy/pkg/log"
-	"github.com/aquasecurity/trivy/pkg/utils"
+	"github.com/aquasecurity/trivy/pkg/utils/fsutils"
 	rpcCache "github.com/aquasecurity/trivy/rpc/cache"
 	rpcScanner "github.com/aquasecurity/trivy/rpc/scanner"
 )
@@ -160,12 +160,12 @@ func (w dbWorker) hotUpdate(ctx context.Context, cacheDir string, dbUpdateWg, re
 	}
 
 	// Copy trivy.db
-	if _, err = utils.CopyFile(db.Path(tmpDir), db.Path(cacheDir)); err != nil {
+	if _, err = fsutils.CopyFile(db.Path(tmpDir), db.Path(cacheDir)); err != nil {
 		return xerrors.Errorf("failed to copy the database file: %w", err)
 	}
 
 	// Copy metadata.json
-	if _, err = utils.CopyFile(metadata.Path(tmpDir), metadata.Path(cacheDir)); err != nil {
+	if _, err = fsutils.CopyFile(metadata.Path(tmpDir), metadata.Path(cacheDir)); err != nil {
 		return xerrors.Errorf("failed to copy the metadata file: %w", err)
 	}
 

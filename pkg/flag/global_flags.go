@@ -5,7 +5,7 @@ import (
 
 	"github.com/spf13/cobra"
 
-	"github.com/aquasecurity/trivy/pkg/utils"
+	"github.com/aquasecurity/trivy/pkg/utils/fsutils"
 )
 
 var (
@@ -58,7 +58,7 @@ var (
 	CacheDirFlag = Flag{
 		Name:       "cache-dir",
 		ConfigName: "cache.dir",
-		Value:      utils.DefaultCacheDir(),
+		Value:      fsutils.DefaultCacheDir(),
 		Usage:      "cache directory",
 		Persistent: true,
 	}

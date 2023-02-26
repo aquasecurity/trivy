@@ -60,9 +60,12 @@ func TestArtifact_Inspect(t *testing.T) {
 								FilePath: "lib/apk/db/installed",
 								Packages: []types.Package{
 									{
-										ID:   "musl@1.1.24-r2",
-										Name: "musl", Version: "1.1.24-r2", SrcName: "musl", SrcVersion: "1.1.24-r2",
-										Licenses: []string{"MIT"},
+										ID:         "musl@1.1.24-r2",
+										Name:       "musl",
+										Version:    "1.1.24-r2",
+										SrcName:    "musl",
+										SrcVersion: "1.1.24-r2",
+										Licenses:   []string{"MIT"},
 									},
 								},
 							},
@@ -86,7 +89,11 @@ func TestArtifact_Inspect(t *testing.T) {
 				dir: "./testdata/alpine",
 			},
 			artifactOpt: artifact.Option{
-				DisabledAnalyzers: []analyzer.Type{analyzer.TypeAlpine, analyzer.TypeApk, analyzer.TypePip},
+				DisabledAnalyzers: []analyzer.Type{
+					analyzer.TypeAlpine,
+					analyzer.TypeApk,
+					analyzer.TypePip,
+				},
 			},
 			putBlobExpectation: cache.ArtifactCachePutBlobExpectation{
 				Args: cache.ArtifactCachePutBlobArgs{
@@ -125,9 +132,12 @@ func TestArtifact_Inspect(t *testing.T) {
 								FilePath: "lib/apk/db/installed",
 								Packages: []types.Package{
 									{
-										ID:   "musl@1.1.24-r2",
-										Name: "musl", Version: "1.1.24-r2", SrcName: "musl", SrcVersion: "1.1.24-r2",
-										Licenses: []string{"MIT"},
+										ID:         "musl@1.1.24-r2",
+										Name:       "musl",
+										Version:    "1.1.24-r2",
+										SrcName:    "musl",
+										SrcVersion: "1.1.24-r2",
+										Licenses:   []string{"MIT"},
 									},
 								},
 							},
@@ -249,15 +259,21 @@ func TestBuildPathsToSkip(t *testing.T) {
 	}{
 		// Linux/macOS
 		{
-			name:  "path - abs, base - abs, not joining paths",
-			oses:  []string{"linux", "darwin"},
+			name: "path - abs, base - abs, not joining paths",
+			oses: []string{
+				"linux",
+				"darwin",
+			},
 			base:  "/foo",
 			paths: []string{"/foo/bar"},
 			want:  []string{"bar"},
 		},
 		{
 			name: "path - abs, base - rel",
-			oses: []string{"linux", "darwin"},
+			oses: []string{
+				"linux",
+				"darwin",
+			},
 			base: "foo",
 			paths: func() []string {
 				abs, err := filepath.Abs("foo/bar")
@@ -267,29 +283,41 @@ func TestBuildPathsToSkip(t *testing.T) {
 			want: []string{"bar"},
 		},
 		{
-			name:  "path - rel, base - rel, joining paths",
-			oses:  []string{"linux", "darwin"},
+			name: "path - rel, base - rel, joining paths",
+			oses: []string{
+				"linux",
+				"darwin",
+			},
 			base:  "foo",
 			paths: []string{"bar"},
 			want:  []string{"bar"},
 		},
 		{
-			name:  "path - rel, base - rel, not joining paths",
-			oses:  []string{"linux", "darwin"},
+			name: "path - rel, base - rel, not joining paths",
+			oses: []string{
+				"linux",
+				"darwin",
+			},
 			base:  "foo",
 			paths: []string{"foo/bar/bar"},
 			want:  []string{"bar/bar"},
 		},
 		{
-			name:  "path - rel with dot, base - rel, removing the leading dot and not joining paths",
-			oses:  []string{"linux", "darwin"},
+			name: "path - rel with dot, base - rel, removing the leading dot and not joining paths",
+			oses: []string{
+				"linux",
+				"darwin",
+			},
 			base:  "foo",
 			paths: []string{"./foo/bar"},
 			want:  []string{"bar"},
 		},
 		{
-			name:  "path - rel, base - dot",
-			oses:  []string{"linux", "darwin"},
+			name: "path - rel, base - dot",
+			oses: []string{
+				"linux",
+				"darwin",
+			},
 			base:  ".",
 			paths: []string{"foo/bar"},
 			want:  []string{"foo/bar"},
@@ -357,7 +385,8 @@ func TestTerraformMisconfigurationScan(t *testing.T) {
 								Successes: types.MisconfResults{
 									{
 										Namespace: "builtin.aws.rds.aws0176",
-										Query:     "data.builtin.aws.rds.aws0176.deny", Message: "",
+										Query:     "data.builtin.aws.rds.aws0176.deny",
+										Message:   "",
 										PolicyMetadata: types.PolicyMetadata{
 											ID:                 "N/A",
 											AVDID:              "AVD-AWS-0176",
@@ -369,9 +398,14 @@ func TestTerraformMisconfigurationScan(t *testing.T) {
 											References:         []string{"https://docs.aws.amazon.com/neptune/latest/userguide/iam-auth.html"},
 										},
 										CauseMetadata: types.CauseMetadata{
-											Resource: "", Provider: "AWS", Service: "rds", StartLine: 0, EndLine: 0,
-											Code: types.Code{Lines: []types.Line(nil)},
-										}, Traces: []string(nil),
+											Resource:  "",
+											Provider:  "AWS",
+											Service:   "rds",
+											StartLine: 0,
+											EndLine:   0,
+											Code:      types.Code{Lines: []types.Line(nil)},
+										},
+										Traces: []string(nil),
 									},
 									{
 										Namespace: "builtin.aws.rds.aws0177",
@@ -387,9 +421,14 @@ func TestTerraformMisconfigurationScan(t *testing.T) {
 											References:         []string{"https://aws.amazon.com/about-aws/whats-new/2018/09/amazon-rds-now-provides-database-deletion-protection/"},
 										},
 										CauseMetadata: types.CauseMetadata{
-											Resource: "", Provider: "AWS", Service: "rds", StartLine: 0, EndLine: 0,
-											Code: types.Code{Lines: []types.Line(nil)},
-										}, Traces: []string(nil),
+											Resource:  "",
+											Provider:  "AWS",
+											Service:   "rds",
+											StartLine: 0,
+											EndLine:   0,
+											Code:      types.Code{Lines: []types.Line(nil)},
+										},
+										Traces: []string(nil),
 									},
 									{
 										Namespace: "builtin.aws.rds.aws0180",
@@ -405,9 +444,14 @@ func TestTerraformMisconfigurationScan(t *testing.T) {
 											References:         []string{"http://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_VPC.html"},
 										},
 										CauseMetadata: types.CauseMetadata{
-											Resource: "", Provider: "AWS", Service: "rds", StartLine: 0, EndLine: 0,
-											Code: types.Code{Lines: []types.Line(nil)},
-										}, Traces: []string(nil),
+											Resource:  "",
+											Provider:  "AWS",
+											Service:   "rds",
+											StartLine: 0,
+											EndLine:   0,
+											Code:      types.Code{Lines: []types.Line(nil)},
+										},
+										Traces: []string(nil),
 									},
 								},
 							},
@@ -525,9 +569,14 @@ func TestTerraformMisconfigurationScan(t *testing.T) {
 											References:         []string{"http://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_VPC.html"},
 										},
 										CauseMetadata: types.CauseMetadata{
-											Resource: "", Provider: "AWS", Service: "rds", StartLine: 0, EndLine: 0,
-											Code: types.Code{Lines: []types.Line(nil)},
-										}, Traces: []string(nil),
+											Resource:  "",
+											Provider:  "AWS",
+											Service:   "rds",
+											StartLine: 0,
+											EndLine:   0,
+											Code:      types.Code{Lines: []types.Line(nil)},
+										},
+										Traces: []string(nil),
 									},
 								},
 							},
@@ -558,8 +607,9 @@ func TestTerraformMisconfigurationScan(t *testing.T) {
 										},
 									},
 									{
-										Namespace: "user.something", Query: "data.user.something.deny",
-										Message: "No buckets allowed!",
+										Namespace: "user.something",
+										Query:     "data.user.something.deny",
+										Message:   "No buckets allowed!",
 										PolicyMetadata: types.PolicyMetadata{
 											ID:                 "TEST001",
 											AVDID:              "AVD-TEST-0001",
@@ -724,9 +774,14 @@ func TestTerraformMisconfigurationScan(t *testing.T) {
 											References:         []string{"http://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_VPC.html"},
 										},
 										CauseMetadata: types.CauseMetadata{
-											Resource: "", Provider: "AWS", Service: "rds", StartLine: 0, EndLine: 0,
-											Code: types.Code{Lines: []types.Line(nil)},
-										}, Traces: []string(nil),
+											Resource:  "",
+											Provider:  "AWS",
+											Service:   "rds",
+											StartLine: 0,
+											EndLine:   0,
+											Code:      types.Code{Lines: []types.Line(nil)},
+										},
+										Traces: []string(nil),
 									},
 									{
 										Namespace: "user.something",
@@ -769,7 +824,6 @@ func TestTerraformMisconfigurationScan(t *testing.T) {
 			c.ApplyPutBlobExpectation(tt.putBlobExpectation)
 			tt.artifactOpt.DisabledHandlers = []types.HandlerType{
 				types.SystemFileFilteringPostHandler,
-				types.GoModMergePostHandler,
 			}
 			a, err := NewArtifact(tt.fields.dir, c, tt.artifactOpt)
 			require.NoError(t, err)
@@ -864,9 +918,14 @@ func TestCloudFormationMisconfigurationScan(t *testing.T) {
 											References:         []string{"http://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_VPC.html"},
 										},
 										CauseMetadata: types.CauseMetadata{
-											Resource: "", Provider: "AWS", Service: "rds", StartLine: 0, EndLine: 0,
-											Code: types.Code{Lines: []types.Line(nil)},
-										}, Traces: []string(nil),
+											Resource:  "",
+											Provider:  "AWS",
+											Service:   "rds",
+											StartLine: 0,
+											EndLine:   0,
+											Code:      types.Code{Lines: []types.Line(nil)},
+										},
+										Traces: []string(nil),
 									},
 								},
 								Failures: types.MisconfResults{
@@ -980,9 +1039,14 @@ func TestCloudFormationMisconfigurationScan(t *testing.T) {
 											References:         []string{"http://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_VPC.html"},
 										},
 										CauseMetadata: types.CauseMetadata{
-											Resource: "", Provider: "AWS", Service: "rds", StartLine: 0, EndLine: 0,
-											Code: types.Code{Lines: []types.Line(nil)},
-										}, Traces: []string(nil),
+											Resource:  "",
+											Provider:  "AWS",
+											Service:   "rds",
+											StartLine: 0,
+											EndLine:   0,
+											Code:      types.Code{Lines: []types.Line(nil)},
+										},
+										Traces: []string(nil),
 									},
 								},
 								Failures: types.MisconfResults{
@@ -1148,9 +1212,14 @@ func TestCloudFormationMisconfigurationScan(t *testing.T) {
 											References:         []string{"http://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_VPC.html"},
 										},
 										CauseMetadata: types.CauseMetadata{
-											Resource: "", Provider: "AWS", Service: "rds", StartLine: 0, EndLine: 0,
-											Code: types.Code{Lines: []types.Line(nil)},
-										}, Traces: []string(nil),
+											Resource:  "",
+											Provider:  "AWS",
+											Service:   "rds",
+											StartLine: 0,
+											EndLine:   0,
+											Code:      types.Code{Lines: []types.Line(nil)},
+										},
+										Traces: []string(nil),
 									},
 									{
 										Namespace: "user.something",
@@ -1193,7 +1262,6 @@ func TestCloudFormationMisconfigurationScan(t *testing.T) {
 			c.ApplyPutBlobExpectation(tt.putBlobExpectation)
 			tt.artifactOpt.DisabledHandlers = []types.HandlerType{
 				types.SystemFileFilteringPostHandler,
-				types.GoModMergePostHandler,
 			}
 			a, err := NewArtifact(tt.fields.dir, c, tt.artifactOpt)
 			require.NoError(t, err)
@@ -1426,7 +1494,6 @@ func TestDockerfileMisconfigurationScan(t *testing.T) {
 			c.ApplyPutBlobExpectation(tt.putBlobExpectation)
 			tt.artifactOpt.DisabledHandlers = []types.HandlerType{
 				types.SystemFileFilteringPostHandler,
-				types.GoModMergePostHandler,
 			}
 			a, err := NewArtifact(tt.fields.dir, c, tt.artifactOpt)
 			require.NoError(t, err)
@@ -1692,7 +1759,6 @@ func TestKubernetesMisconfigurationScan(t *testing.T) {
 			c.ApplyPutBlobExpectation(tt.putBlobExpectation)
 			tt.artifactOpt.DisabledHandlers = []types.HandlerType{
 				types.SystemFileFilteringPostHandler,
-				types.GoModMergePostHandler,
 			}
 			a, err := NewArtifact(tt.fields.dir, c, tt.artifactOpt)
 			require.NoError(t, err)
@@ -1787,9 +1853,14 @@ func TestAzureARMMisconfigurationScan(t *testing.T) {
 											References:         []string{"http://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_VPC.html"},
 										},
 										CauseMetadata: types.CauseMetadata{
-											Resource: "", Provider: "AWS", Service: "rds", StartLine: 0, EndLine: 0,
-											Code: types.Code{Lines: []types.Line(nil)},
-										}, Traces: []string(nil),
+											Resource:  "",
+											Provider:  "AWS",
+											Service:   "rds",
+											StartLine: 0,
+											EndLine:   0,
+											Code:      types.Code{Lines: []types.Line(nil)},
+										},
+										Traces: []string(nil),
 									},
 								},
 								Failures: types.MisconfResults{
@@ -1903,9 +1974,14 @@ func TestAzureARMMisconfigurationScan(t *testing.T) {
 											References:         []string{"http://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_VPC.html"},
 										},
 										CauseMetadata: types.CauseMetadata{
-											Resource: "", Provider: "AWS", Service: "rds", StartLine: 0, EndLine: 0,
-											Code: types.Code{Lines: []types.Line(nil)},
-										}, Traces: []string(nil),
+											Resource:  "",
+											Provider:  "AWS",
+											Service:   "rds",
+											StartLine: 0,
+											EndLine:   0,
+											Code:      types.Code{Lines: []types.Line(nil)},
+										},
+										Traces: []string(nil),
 									},
 								},
 								Failures: types.MisconfResults{
@@ -2051,7 +2127,8 @@ func TestAzureARMMisconfigurationScan(t *testing.T) {
 											Severity:           "MEDIUM",
 											RecommendedActions: "Modify the RDS instances to enable deletion protection.",
 											References:         []string{"https://aws.amazon.com/about-aws/whats-new/2018/09/amazon-rds-now-provides-database-deletion-protection/"},
-										}, CauseMetadata: types.CauseMetadata{
+										},
+										CauseMetadata: types.CauseMetadata{
 											Provider: "AWS",
 											Service:  "rds",
 										},
@@ -2070,9 +2147,14 @@ func TestAzureARMMisconfigurationScan(t *testing.T) {
 											References:         []string{"http://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_VPC.html"},
 										},
 										CauseMetadata: types.CauseMetadata{
-											Resource: "", Provider: "AWS", Service: "rds", StartLine: 0, EndLine: 0,
-											Code: types.Code{Lines: []types.Line(nil)},
-										}, Traces: []string(nil),
+											Resource:  "",
+											Provider:  "AWS",
+											Service:   "rds",
+											StartLine: 0,
+											EndLine:   0,
+											Code:      types.Code{Lines: []types.Line(nil)},
+										},
+										Traces: []string(nil),
 									},
 									{
 										Namespace: "user.something",
@@ -2115,7 +2197,6 @@ func TestAzureARMMisconfigurationScan(t *testing.T) {
 			c.ApplyPutBlobExpectation(tt.putBlobExpectation)
 			tt.artifactOpt.DisabledHandlers = []types.HandlerType{
 				types.SystemFileFilteringPostHandler,
-				types.GoModMergePostHandler,
 			}
 			a, err := NewArtifact(tt.fields.dir, c, tt.artifactOpt)
 			require.NoError(t, err)

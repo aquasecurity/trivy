@@ -23,7 +23,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/module/serialize"
 	"github.com/aquasecurity/trivy/pkg/scanner/post"
 	"github.com/aquasecurity/trivy/pkg/types"
-	"github.com/aquasecurity/trivy/pkg/utils"
+	"github.com/aquasecurity/trivy/pkg/utils/fsutils"
 )
 
 var (
@@ -725,7 +725,7 @@ func isType(ctx context.Context, mod api.Module, name string) (bool, error) {
 }
 
 func dir() string {
-	return filepath.Join(utils.HomeDir(), RelativeDir)
+	return filepath.Join(fsutils.HomeDir(), RelativeDir)
 }
 
 func modulePostScanSpec(ctx context.Context, mod api.Module) (serialize.PostScanSpec, error) {
