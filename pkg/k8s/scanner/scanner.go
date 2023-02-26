@@ -3,8 +3,10 @@ package scanner
 import (
 	"context"
 	"io"
+	"sync"
 
 	"github.com/cheggaaa/pb/v3"
+	"github.com/hashicorp/go-multierror"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy-kubernetes/pkg/artifacts"
@@ -15,6 +17,8 @@ import (
 	"github.com/aquasecurity/trivy/pkg/scanner/local"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
+
+const numOfWorkers = 5
 
 type Scanner struct {
 	cluster string
@@ -57,25 +61,72 @@ func (s *Scanner) Scan(ctx context.Context, artifacts []*artifacts.Artifact) (re
 		}
 	}()
 
-	// Loops once over all artifacts, and execute scanners as necessary. Not every artifacts has an image,
-	// so image scanner is not always executed.
-	for _, artifact := range artifacts {
-		bar.Increment()
+	var wg sync.WaitGroup
+	artifactsPerWorker := len(artifacts) / numOfWorkers
+	var errChan = make(chan error, len(artifacts))
+	var vulnsChan = make(chan []report.Resource, len(artifacts))
+	var misconfigsChan = make(chan report.Resource, len(artifacts))
+	for workerIndex := 0; workerIndex < numOfWorkers; workerIndex++ {
+		wg.Add(1)
+		// Loops once over all artifacts, and execute scanners as necessary. Not every artifacts has an image,
+		// so image scanner is not always executed.
+		go func(workerIndex int) {
+			defer wg.Done()
 
-		if s.opts.Scanners.AnyEnabled(types.VulnerabilityScanner, types.SecretScanner) {
-			resources, err := s.scanVulns(ctx, artifact)
-			if err != nil {
-				return report.Report{}, xerrors.Errorf("scanning vulnerabilities error: %w", err)
+			// calculate for each worker the range of artifact to iterate
+			start := workerIndex * artifactsPerWorker
+			end := (workerIndex + 1) * artifactsPerWorker
+			if workerIndex == numOfWorkers-1 {
+				end = end + len(artifacts)%numOfWorkers
 			}
-			vulns = append(vulns, resources...)
+			for k := start; k < end; k++ {
+				bar.Increment()
+				// Loops once over all artifacts, and execute scanners as necessary. Not every artifacts has an image,
+				// so image scanner is not always executed.
+				if s.opts.Scanners.AnyEnabled(types.VulnerabilityScanner, types.SecretScanner) {
+					resources, err := s.scanVulns(ctx, artifacts[k])
+					if err != nil {
+						errChan <- xerrors.Errorf("scanning vulnerabilities error: %w", err)
+						return
+					}
+					vulnsChan <- resources
+				}
+
+				if local.ShouldScanMisconfigOrRbac(s.opts.Scanners) {
+					resource, err := s.scanMisconfigs(ctx, artifacts[k])
+					if err != nil {
+						errChan <- xerrors.Errorf("scanning misconfigurations error: %w", err)
+						return
+					}
+					misconfigsChan <- resource
+				}
+			}
+		}(workerIndex)
+	}
+	wg.Wait()
+
+	// return errors if found
+	if len(errChan) > 0 {
+		close(errChan)
+		var errs error
+		for err := range errChan {
+			errs = multierror.Append(errs, err)
 		}
+		return report.Report{}, errs
+	}
 
-		if local.ShouldScanMisconfigOrRbac(s.opts.Scanners) {
-			resource, err := s.scanMisconfigs(ctx, artifact)
-			if err != nil {
-				return report.Report{}, xerrors.Errorf("scanning misconfigurations error: %w", err)
-			}
-			misconfigs = append(misconfigs, resource)
+	// append vulns
+	if len(vulnsChan) > 0 {
+		close(vulnsChan)
+		for vuln := range vulnsChan {
+			vulns = append(vulns, vuln...)
+		}
+	}
+	// append misconfig
+	if len(misconfigsChan) > 0 {
+		close(misconfigsChan)
+		for misConfig := range misconfigsChan {
+			misconfigs = append(misconfigs, misConfig)
 		}
 	}
 
