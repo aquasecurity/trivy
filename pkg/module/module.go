@@ -18,7 +18,6 @@ import (
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
-	fanalUtils "github.com/aquasecurity/trivy/pkg/fanal/utils"
 	"github.com/aquasecurity/trivy/pkg/log"
 	tapi "github.com/aquasecurity/trivy/pkg/module/api"
 	"github.com/aquasecurity/trivy/pkg/module/serialize"
@@ -36,14 +35,9 @@ var (
 	}
 
 	RelativeDir = filepath.Join(".trivy", "modules")
+
+	DefaultDir = dir()
 )
-
-type options struct {
-	moduleDir     string
-	enableModules []string
-}
-
-type Option func(*options)
 
 // logDebug is defined as an api.GoModuleFunc for lower overhead vs reflection.
 func logDebug(_ context.Context, mod api.Module, params []uint64) {
@@ -102,62 +96,50 @@ func readMemory(mem api.Memory, offset, size uint32) []byte {
 	return buf
 }
 
-type Manager struct {
-	cache   wazero.CompilationCache
-	modules []*wasmModule
+type Options struct {
+	Dir            string
+	EnabledModules []string
 }
 
-func NewManager(ctx context.Context, opts ...Option) (*Manager, error) {
-	m := &Manager{}
+type Manager struct {
+	cache          wazero.CompilationCache
+	modules        []*wasmModule
+	dir            string
+	enabledModules []string
+}
+
+func NewManager(ctx context.Context, opts Options) (*Manager, error) {
+	m := &Manager{
+		dir:            opts.Dir,
+		enabledModules: opts.EnabledModules,
+	}
 
 	// Create a new WebAssembly Runtime.
 	m.cache = wazero.NewCompilationCache()
 
-	o := &options{}
-	for _, opt := range opts {
-		opt(o)
-	}
-
 	// Load WASM modules in local
-	if err := m.loadModules(ctx, o); err != nil {
+	if err := m.loadModules(ctx); err != nil {
 		return nil, xerrors.Errorf("module load error: %w", err)
 	}
 
 	return m, nil
 }
 
-// WithModuleDirectory takes default overridable module directory path
-func WithModuleDirectory(moduleDir string) Option {
-	return func(opts *options) {
-		opts.moduleDir = moduleDir
-	}
-}
-
-// WithEnableModules takes list of modules only to be enabled from the module directory
-func WithEnableModules(enableModules []string) Option {
-	return func(opts *options) {
-		opts.enableModules = enableModules
-	}
-}
-
-func (m *Manager) loadModules(ctx context.Context, opts *options) error {
-	if opts.moduleDir == "" {
-		opts.moduleDir = dir()
-	}
-	_, err := os.Stat(opts.moduleDir)
+func (m *Manager) loadModules(ctx context.Context) error {
+	_, err := os.Stat(m.dir)
 	if os.IsNotExist(err) {
 		return nil
 	}
-	log.Logger.Debugf("Module dir: %s", opts.moduleDir)
+	log.Logger.Debugf("Module dir: %s", m.dir)
 
-	err = filepath.Walk(opts.moduleDir, func(path string, info fs.FileInfo, err error) error {
+	err = filepath.Walk(m.dir, func(path string, info fs.FileInfo, err error) error {
 		if err != nil {
 			return err
 		} else if info.IsDir() || filepath.Ext(info.Name()) != ".wasm" {
 			return nil
 		}
 
-		rel, err := filepath.Rel(opts.moduleDir, path)
+		rel, err := filepath.Rel(m.dir, path)
 		if err != nil {
 			return xerrors.Errorf("failed to get a relative path: %w", err)
 		}
@@ -174,11 +156,11 @@ func (m *Manager) loadModules(ctx context.Context, opts *options) error {
 		}
 
 		// Skip Loading WASM modules if not in the list of enable modules flag.
-		if len(opts.enableModules) > 0 && !fanalUtils.StringInSlice(p.name, opts.enableModules) {
+		if len(m.enabledModules) > 0 && !slices.Contains(m.enabledModules, p.Name()) {
 			return nil
 		}
 
-		log.Logger.Infof("Loading %s...", rel)
+		log.Logger.Infof("%s loaded", rel)
 		m.modules = append(m.modules, p)
 
 		return nil
@@ -193,6 +175,13 @@ func (m *Manager) loadModules(ctx context.Context, opts *options) error {
 func (m *Manager) Register() {
 	for _, mod := range m.modules {
 		mod.Register()
+	}
+}
+
+func (m *Manager) Deregister() {
+	for _, mod := range m.modules {
+		analyzer.DeregisterAnalyzer(analyzer.Type(mod.Name()))
+		post.DeregisterPostScanner(mod.Name())
 	}
 }
 
@@ -301,7 +290,10 @@ func newWASMPlugin(ctx context.Context, ccache wazero.CompilationCache, code []b
 	// Avoid reflection for logging as it implies an overhead of >1us per call.
 	for n, f := range logFunctions {
 		envBuilder.NewFunctionBuilder().
-			WithGoModuleFunction(f, []api.ValueType{api.ValueTypeI32, api.ValueTypeI32}, []api.ValueType{}).
+			WithGoModuleFunction(f, []api.ValueType{
+				api.ValueTypeI32,
+				api.ValueTypeI32,
+			}, []api.ValueType{}).
 			WithParameterNames("offset", "size").
 			Export(n)
 	}

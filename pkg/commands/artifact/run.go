@@ -131,7 +131,10 @@ func NewRunner(ctx context.Context, cliOptions flag.Options, opts ...runnerOptio
 	}
 
 	// Initialize WASM modules
-	m, err := module.NewManager(ctx, module.WithModuleDirectory(cliOptions.ModuleDir), module.WithEnableModules(cliOptions.EnableModules))
+	m, err := module.NewManager(ctx, module.Options{
+		Dir:            cliOptions.ModuleDir,
+		EnabledModules: cliOptions.EnabledModules,
+	})
 	if err != nil {
 		return nil, xerrors.Errorf("WASM module error: %w", err)
 	}
