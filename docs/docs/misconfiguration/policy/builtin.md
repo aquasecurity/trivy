@@ -19,8 +19,6 @@ For suggestions or issues regarding policy content, please open an issue under t
 
 Helm Chart scanning will resolve the chart to Kubernetes manifests then run the [kubernetes][kubernetes] checks.
 
-Ansible scanning is coming soon.
-
 ## Policy Distribution
 defsec policies are distributed as an OPA bundle on [GitHub Container Registry][ghcr] (GHCR).
 When misconfiguration detection is enabled, Trivy pulls the OPA bundle from GHCR as an OCI artifact and stores it in the cache.
