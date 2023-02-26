@@ -74,7 +74,17 @@ func (m *FS) Filter(skippedFiles []string) (*FS, error) {
 	}
 
 	return newFS, nil
+}
 
+func (m *FS) CopyFilesUnder(dir string) error {
+	return filepath.WalkDir(dir, func(path string, d fs.DirEntry, err error) error {
+		if err != nil {
+			return err
+		} else if d.IsDir() {
+			return m.MkdirAll(path, d.Type())
+		}
+		return m.WriteFile(path, path)
+	})
 }
 
 // Stat returns a FileInfo describing the file.

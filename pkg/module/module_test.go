@@ -13,7 +13,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/module"
 	"github.com/aquasecurity/trivy/pkg/scanner/post"
-	"github.com/aquasecurity/trivy/pkg/utils"
+	"github.com/aquasecurity/trivy/pkg/utils/fsutils"
 )
 
 func TestManager_Register(t *testing.T) {
@@ -94,7 +94,7 @@ func TestManager_Register(t *testing.T) {
 				require.NoError(t, err)
 
 				// Copy the wasm module for testing
-				_, err = utils.CopyFile(modulePath, filepath.Join(moduleDir, filepath.Base(modulePath)))
+				_, err = fsutils.CopyFile(modulePath, filepath.Join(moduleDir, filepath.Base(modulePath)))
 				require.NoError(t, err)
 			}
 

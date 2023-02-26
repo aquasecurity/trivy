@@ -52,7 +52,7 @@ Java users also need to download the Java index database for use in air-gapped e
 === "oras >= v0.13.0"
     Please follow [oras installation instruction][oras].
 
-    Download `db.tar.gz`:
+    Download `javadb.tar.gz`:
 
     ```
     $ oras pull ghcr.io/aquasecurity/trivy-java-db:1
@@ -61,7 +61,7 @@ Java users also need to download the Java index database for use in air-gapped e
 === "oras < v0.13.0"
     Please follow [oras installation instruction][oras].
 
-    Download `db.tar.gz`:
+    Download `javadb.tar.gz`:
 
     ```
     $ oras pull -a ghcr.io/aquasecurity/trivy-java-db:1
@@ -122,7 +122,7 @@ In an air-gapped environment, you have to specify `--skip-db-update` and `--skip
 In addition, if you want to scan `pom.xml` dependencies, you need to specify `--offline-scan` since Trivy tries to issue API requests for scanning Java applications by default.
 
 ```
-$ trivy image --skip-update --skip-java-db-update --offline-scan alpine:3.12
+$ trivy image --skip-db-update --skip-java-db-update --offline-scan alpine:3.12
 ```
 
 ## Air-Gapped Environment for misconfigurations

@@ -23,7 +23,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/module/serialize"
 	"github.com/aquasecurity/trivy/pkg/scanner/post"
 	"github.com/aquasecurity/trivy/pkg/types"
-	"github.com/aquasecurity/trivy/pkg/utils"
+	"github.com/aquasecurity/trivy/pkg/utils/fsutils"
 )
 
 var (
@@ -266,7 +266,10 @@ func newWASMPlugin(ctx context.Context, ccache wazero.CompilationCache, code []b
 	// Avoid reflection for logging as it implies an overhead of >1us per call.
 	for n, f := range logFunctions {
 		envBuilder.NewFunctionBuilder().
-			WithGoModuleFunction(f, []api.ValueType{api.ValueTypeI32, api.ValueTypeI32}, []api.ValueType{}).
+			WithGoModuleFunction(f, []api.ValueType{
+				api.ValueTypeI32,
+				api.ValueTypeI32,
+			}, []api.ValueType{}).
 			WithParameterNames("offset", "size").
 			Export(n)
 	}
@@ -698,7 +701,7 @@ func isType(ctx context.Context, mod api.Module, name string) (bool, error) {
 }
 
 func dir() string {
-	return filepath.Join(utils.HomeDir(), RelativeDir)
+	return filepath.Join(fsutils.HomeDir(), RelativeDir)
 }
 
 func modulePostScanSpec(ctx context.Context, mod api.Module) (serialize.PostScanSpec, error) {

@@ -209,7 +209,7 @@ func (f *ReportFlagGroup) ToOptions(out io.Writer) (ReportOptions, error) {
 	if dependencyTree {
 		log.Logger.Infof(`"--dependency-tree" only shows the dependents of vulnerable packages. ` +
 			`Note that it is the reverse of the usual dependency tree, which shows the packages that depend on the vulnerable package. ` +
-			`It supports "package-lock.json", "Cargo.lock" and OS packages. Please see the document for the detail.`)
+			`It supports limited package managers. Please see the document for the detail.`)
 		if format != report.FormatTable {
 			log.Logger.Warn(`"--dependency-tree" can be used only with "--format table".`)
 		}
