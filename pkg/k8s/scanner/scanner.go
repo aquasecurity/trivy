@@ -72,7 +72,6 @@ func (s *Scanner) Scan(ctx context.Context, artifacts []*artifacts.Artifact) (re
 		// so image scanner is not always executed.
 		go func(workerIndex int) {
 			defer wg.Done()
-
 			// calculate for each worker the range of artifact to iterate
 			start := workerIndex * artifactsPerWorker
 			end := (workerIndex + 1) * artifactsPerWorker
@@ -91,7 +90,6 @@ func (s *Scanner) Scan(ctx context.Context, artifacts []*artifacts.Artifact) (re
 					}
 					vulnsChan <- resources
 				}
-
 				if local.ShouldScanMisconfigOrRbac(s.opts.Scanners) {
 					resource, err := s.scanMisconfigs(ctx, artifacts[k])
 					if err != nil {
