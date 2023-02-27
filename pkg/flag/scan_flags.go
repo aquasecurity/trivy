@@ -59,7 +59,7 @@ var (
 	ParallelFlag = Flag{
 		Name:       "parallel",
 		ConfigName: "scan.parallel",
-		Value:      "5",
+		Value:      "1",
 		Usage:      "number of goroutines enabled for parallel scanning",
 	}
 	SBOMSourcesFlag = Flag{
@@ -150,8 +150,9 @@ func (f *ScanFlagGroup) ToOptions(args []string) (ScanOptions, error) {
 
 	parallelFlag := getString(f.Parallel)
 	parallel, err := strconv.Atoi(parallelFlag)
-	if err != nil {
-		return ScanOptions{}, xerrors.Errorf("unable to parse parallel number: %w", err)
+	// check parallel flag is a valid number between 1-20
+	if err != nil || parallel < 1 || parallel > 20 {
+		return ScanOptions{}, xerrors.Errorf("unable to parse parallel value, please ensure that the value entered is a valid number between 1-20.")
 	}
 
 	return ScanOptions{
