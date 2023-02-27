@@ -99,14 +99,13 @@ func (s *Scanner) Scan(ctx context.Context, artifacts []*artifacts.Artifact) (re
 		return report.Report{}, err
 	}
 
-	// append vulns
 	if len(vulnsChan) > 0 {
 		close(vulnsChan)
 		for vuln := range vulnsChan {
 			vulns = append(vulns, vuln...)
 		}
 	}
-	// append misconfig
+	
 	if len(misconfigsChan) > 0 {
 		close(misconfigsChan)
 		for misConfig := range misconfigsChan {
