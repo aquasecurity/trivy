@@ -4,6 +4,22 @@
 Policies can be defined with custom schemas that allow inputs to be verified against them. Adding a policy schema
 enables Trivy to show more detailed error messages when an invalid input is encountered.
 
+In Trivy we have been able to define a schema for a [Dockerfile](https://github.com/aquasecurity/defsec/blob/master/pkg/rego/schemas/dockerfile.json).
+Without input schemas, a policy would be as follows:
+
+!!! example
+    ```
+    # METADATA
+    package mypackage
+
+    deny {
+        input.evil == "foo bar"
+    }
+    ```
+
+If this policy is run against offending Dockerfile(s), there will not be any issues as the policy will fail to evaluate.
+Although the policy's failure to evaluate is legitimate, this should not result in a positive result for the scan.
+
 For instance if we have a policy that checks for misconfigurations in a `Dockerfile`, we could define the
 schema as such
 
