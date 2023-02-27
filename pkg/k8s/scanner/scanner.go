@@ -69,7 +69,7 @@ func (s *Scanner) Scan(ctx context.Context, artifacts []*artifacts.Artifact) (re
 			start := workerIndex * artifactsPerWorker
 			end := (workerIndex + 1) * artifactsPerWorker
 			if workerIndex == numOfWorkers-1 {
-				end = end + len(artifacts)%numOfWorkers
+				end = end + len(artifacts) % numOfWorkers
 			}
 
 			for k := start; k < end; k++ {
