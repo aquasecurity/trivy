@@ -3,10 +3,9 @@ package scanner
 import (
 	"context"
 	"io"
-	"sync"
 
 	"github.com/cheggaaa/pb/v3"
-	"github.com/hashicorp/go-multierror"
+	"golang.org/x/sync/errgroup"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy-kubernetes/pkg/artifacts"
@@ -59,23 +58,20 @@ func (s *Scanner) Scan(ctx context.Context, artifacts []*artifacts.Artifact) (re
 		}
 	}()
 	numOfWorkers := s.opts.Parallel
-	var wg sync.WaitGroup
-	artifactsPerWorker := len(artifacts) / numOfWorkers
-	var errChan = make(chan error, len(artifacts))
 	var vulnsChan = make(chan []report.Resource, len(artifacts))
 	var misconfigsChan = make(chan report.Resource, len(artifacts))
+	artifactsPerWorker := len(artifacts) / numOfWorkers
+	g, ctx := errgroup.WithContext(ctx)
 	for workerIndex := 0; workerIndex < numOfWorkers; workerIndex++ {
-		wg.Add(1)
-		// Loops once over all artifacts, and execute scanners as necessary. Not every artifacts has an image,
-		// so image scanner is not always executed.
-		go func(workerIndex int) {
-			defer wg.Done()
+		workerIndex := workerIndex //https://go.dev/doc/faq#closures_and_goroutines
+		g.Go(func() error {
 			// calculate for each worker the range of artifact to iterate
 			start := workerIndex * artifactsPerWorker
 			end := (workerIndex + 1) * artifactsPerWorker
 			if workerIndex == numOfWorkers-1 {
 				end = end + len(artifacts)%numOfWorkers
 			}
+
 			for k := start; k < end; k++ {
 				bar.Increment()
 				// Loops once over all artifacts, and execute scanners as necessary. Not every artifacts has an image,
@@ -83,32 +79,24 @@ func (s *Scanner) Scan(ctx context.Context, artifacts []*artifacts.Artifact) (re
 				if s.opts.Scanners.AnyEnabled(types.VulnerabilityScanner, types.SecretScanner) {
 					resources, err := s.scanVulns(ctx, artifacts[k])
 					if err != nil {
-						errChan <- xerrors.Errorf("scanning vulnerabilities error: %w", err)
-						return
+						return xerrors.Errorf("scanning vulnerabilities error: %w", err)
 					}
 					vulnsChan <- resources
 				}
 				if local.ShouldScanMisconfigOrRbac(s.opts.Scanners) {
 					resource, err := s.scanMisconfigs(ctx, artifacts[k])
 					if err != nil {
-						errChan <- xerrors.Errorf("scanning misconfigurations error: %w", err)
-						return
+						return xerrors.Errorf("scanning misconfigurations error: %w", err)
 					}
 					misconfigsChan <- resource
 				}
 			}
-		}(workerIndex)
+			return nil
+		},
+		)
 	}
-	wg.Wait()
-
-	// return errors if found
-	if len(errChan) > 0 {
-		close(errChan)
-		var errs error
-		for err := range errChan {
-			errs = multierror.Append(errs, err)
-		}
-		return report.Report{}, errs
+	if err := g.Wait(); err != nil {
+		return report.Report{}, err
 	}
 
 	// append vulns
@@ -125,7 +113,6 @@ func (s *Scanner) Scan(ctx context.Context, artifacts []*artifacts.Artifact) (re
 			misconfigs = append(misconfigs, misConfig)
 		}
 	}
-
 	return report.Report{
 		SchemaVersion:     0,
 		ClusterName:       s.cluster,
