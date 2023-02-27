@@ -53,6 +53,22 @@ func Test_GetDockerOption(t *testing.T) {
 			Platform:    "platform",
 		},
 		},
+		{name: "num of users higher then password ", userEnv: "user1,user2,user3", passEnv: "pass1,pass2", platform: "platform", want: types.DockerOption{
+			UserName: "user1",
+			Password: "pass1",
+			Credentials: []types.Credential{
+				{
+					UserName: "user1",
+					Password: "pass1",
+				},
+				{
+					UserName: "user2",
+					Password: "pass2",
+				},
+			},
+			Platform: "platform",
+		},
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {

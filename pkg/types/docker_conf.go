@@ -27,7 +27,8 @@ func GetDockerOption(insecureTlsSkip bool, Platform string) (types.DockerOption,
 	users := strings.Split(cfg.UserName, ",")
 	passwords := strings.Split(cfg.Password, ",")
 	for index, user := range users {
-		if len(user) > 0 && len(passwords[index]) > 0 {
+
+		if len(user) > 0 && index < len(passwords) && len(passwords[index]) > 0 {
 			credentials = append(credentials, types.Credential{
 				UserName: strings.TrimSpace(user),
 				Password: strings.TrimSpace(passwords[index]),
