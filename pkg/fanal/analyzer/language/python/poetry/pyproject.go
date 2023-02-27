@@ -1,9 +1,10 @@
 package poetry
 
 import (
+	"io"
+
 	"github.com/BurntSushi/toml"
 	"golang.org/x/xerrors"
-	"io"
 )
 
 type PyProject struct {

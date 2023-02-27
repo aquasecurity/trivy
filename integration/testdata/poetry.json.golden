@@ -33,6 +33,7 @@
           "ID": "colorama@0.4.6",
           "Name": "colorama",
           "Version": "0.4.6",
+          "Indirect": true,
           "Layer": {}
         },
         {
