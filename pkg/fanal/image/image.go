@@ -95,6 +95,9 @@ func NewContainerImage(ctx context.Context, imageName string, option types.Docke
 		errs = multierror.Append(errs, err)
 	}
 
+	if len(option.Credentials) == 0 {
+		option.Credentials = append(option.Credentials, types.Credential{}) // no credential use-case
+	}
 	// Try accessing Docker Registry
 	if o.remote {
 		for _, credential := range option.Credentials {
