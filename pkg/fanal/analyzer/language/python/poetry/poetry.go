@@ -11,6 +11,7 @@ import (
 
 	dio "github.com/aquasecurity/go-dep-parser/pkg/io"
 	"github.com/aquasecurity/go-dep-parser/pkg/python/poetry"
+	"github.com/aquasecurity/go-dep-parser/pkg/python/pyproject"
 	godeptypes "github.com/aquasecurity/go-dep-parser/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer/language"
@@ -26,13 +27,13 @@ func init() {
 const version = 1
 
 type poetryAnalyzer struct {
-	pyprojectParser PyProjectParser
+	pyprojectParser *pyproject.Parser
 	lockParser      godeptypes.Parser
 }
 
 func newPoetryAnalyzer(_ analyzer.AnalyzerOptions) (analyzer.PostAnalyzer, error) {
 	return &poetryAnalyzer{
-		pyprojectParser: PyProjectParser{},
+		pyprojectParser: pyproject.NewParser(),
 		lockParser:      poetry.NewParser(),
 	}, nil
 }
@@ -105,7 +106,7 @@ func (a poetryAnalyzer) mergePyProject(fsys fs.FS, dir string, app *types.Applic
 
 	for i, lib := range app.Libraries {
 		// Identify the direct/transitive dependencies
-		if _, ok := p.Tool.Poetry.Dependencies[lib.Name]; !ok {
+		if _, ok := p[lib.Name]; !ok {
 			app.Libraries[i].Indirect = true
 		}
 	}
@@ -113,17 +114,17 @@ func (a poetryAnalyzer) mergePyProject(fsys fs.FS, dir string, app *types.Applic
 	return nil
 }
 
-func (a poetryAnalyzer) parsePyProject(fsys fs.FS, path string) (PyProject, error) {
+func (a poetryAnalyzer) parsePyProject(fsys fs.FS, path string) (map[string]string, error) {
 	// Parse pyproject.toml
 	f, err := fsys.Open(path)
 	if err != nil {
-		return PyProject{}, xerrors.Errorf("file open error: %w", err)
+		return nil, xerrors.Errorf("file open error: %w", err)
 	}
 	defer f.Close()
 
 	parsed, err := a.pyprojectParser.Parse(f)
 	if err != nil {
-		return PyProject{}, err
+		return nil, err
 	}
 	return parsed, nil
 }
