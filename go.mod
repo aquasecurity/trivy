@@ -8,7 +8,7 @@ require (
 	github.com/NYTimes/gziphandler v1.1.1
 	github.com/alicebob/miniredis/v2 v2.23.0
 	github.com/aquasecurity/bolt-fixtures v0.0.0-20200903104109-d34e7f983986
-	github.com/aquasecurity/defsec v0.82.9
+	github.com/aquasecurity/defsec v0.82.11-0.20230227200028-1372c6329e1f
 	github.com/aquasecurity/go-dep-parser v0.0.0-20230130190635-5e31092b0621
 	github.com/aquasecurity/go-gem-version v0.0.0-20201115065557-8eed6fe000ce
 	github.com/aquasecurity/go-npm-version v0.0.0-20201110091526-0b796d180798
@@ -30,7 +30,7 @@ require (
 	github.com/caarlos0/env/v6 v6.10.1
 	github.com/cenkalti/backoff v2.2.1+incompatible
 	github.com/cheggaaa/pb/v3 v3.1.0
-	github.com/containerd/containerd v1.6.15
+	github.com/containerd/containerd v1.6.18
 	github.com/docker/docker v23.0.0-rc.1+incompatible
 	github.com/docker/go-connections v0.4.0
 	github.com/fatih/color v1.13.0
@@ -43,7 +43,7 @@ require (
 	github.com/google/licenseclassifier/v2 v2.0.0
 	github.com/google/uuid v1.3.0
 	github.com/google/wire v0.5.0
-	github.com/hashicorp/go-getter v1.6.2
+	github.com/hashicorp/go-getter v1.7.0
 	github.com/hashicorp/golang-lru/v2 v2.0.1
 	github.com/in-toto/in-toto-golang v0.5.0
 	github.com/knqyf263/go-apk-version v0.0.0-20200609155635-041fdbb8563f
@@ -274,7 +274,7 @@ require (
 	github.com/microsoft/go-rustaudit v0.0.0-20220808201409-204dfee52032 // indirect
 	github.com/mitchellh/copystructure v1.2.0 // indirect
 	github.com/mitchellh/go-homedir v1.1.0 // indirect
-	github.com/mitchellh/go-testing-interface v1.0.0 // indirect
+	github.com/mitchellh/go-testing-interface v1.14.1 // indirect
 	github.com/mitchellh/go-wordwrap v1.0.1 // indirect
 	github.com/mitchellh/mapstructure v1.5.0 // indirect
 	github.com/mitchellh/reflectwalk v1.0.2 // indirect
@@ -342,12 +342,12 @@ require (
 	go.uber.org/multierr v1.8.0 // indirect
 	golang.org/x/crypto v0.5.0
 	golang.org/x/mod v0.8.0
-	golang.org/x/net v0.5.0 // indirect
+	golang.org/x/net v0.7.0 // indirect
 	golang.org/x/oauth2 v0.1.0 // indirect
 	golang.org/x/sync v0.1.0
-	golang.org/x/sys v0.4.0 // indirect
-	golang.org/x/term v0.4.0
-	golang.org/x/text v0.6.0
+	golang.org/x/sys v0.5.0 // indirect
+	golang.org/x/term v0.5.0
+	golang.org/x/text v0.7.0
 	golang.org/x/time v0.1.0 // indirect
 	golang.org/x/tools v0.2.0 // indirect
 	google.golang.org/api v0.107.0 // indirect
