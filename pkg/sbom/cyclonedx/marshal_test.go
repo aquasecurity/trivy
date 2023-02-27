@@ -1088,7 +1088,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 				Dependencies: &[]cdx.Dependency{
 					{
 						Ref:          "3ff14136-e09f-4df9-80ea-000000000002",
-						Dependencies: new([]string),
+						Dependencies: lo.ToPtr([]string{}),
 					},
 				},
 			},

@@ -193,7 +193,7 @@ func externalRef(bomLink string, bomRef string) (string, error) {
 func (e *Marshaler) marshalComponents(r types.Report, bomRef string) (*[]cdx.Component, *[]cdx.Dependency, *[]cdx.Vulnerability, error) {
 	components := make([]cdx.Component, 0) // To export an empty array in JSON
 	var dependencies []cdx.Dependency
-	var metadataDependencies []string
+	metadataDependencies := make([]string, 0) // To export an empty array in JSON
 	libraryUniqMap := map[string]struct{}{}
 	vulnMap := map[string]cdx.Vulnerability{}
 	for _, result := range r.Results {
@@ -284,7 +284,10 @@ func (e *Marshaler) marshalComponents(r types.Report, bomRef string) (*[]cdx.Com
 
 			// Dependency graph from #2 to #3
 			dependencies = append(dependencies,
-				cdx.Dependency{Ref: resultComponent.BOMRef, Dependencies: &componentDependencies},
+				cdx.Dependency{
+					Ref:          resultComponent.BOMRef,
+					Dependencies: &componentDependencies,
+				},
 			)
 
 			// Dependency graph from #1 to #2
@@ -297,7 +300,10 @@ func (e *Marshaler) marshalComponents(r types.Report, bomRef string) (*[]cdx.Com
 	})
 
 	dependencies = append(dependencies,
-		cdx.Dependency{Ref: bomRef, Dependencies: &metadataDependencies},
+		cdx.Dependency{
+			Ref:          bomRef,
+			Dependencies: &metadataDependencies,
+		},
 	)
 	return &components, &dependencies, &vulns, nil
 }
@@ -441,16 +447,46 @@ func cdxProperties(pkgType string, pkg ftypes.Package) *[]cdx.Property {
 		name  string
 		value string
 	}{
-		{PropertyPkgID, pkg.ID},
-		{PropertyPkgType, pkgType},
-		{PropertyFilePath, pkg.FilePath},
-		{PropertySrcName, pkg.SrcName},
-		{PropertySrcVersion, pkg.SrcVersion},
-		{PropertySrcRelease, pkg.SrcRelease},
-		{PropertySrcEpoch, strconv.Itoa(pkg.SrcEpoch)},
-		{PropertyModularitylabel, pkg.Modularitylabel},
-		{PropertyLayerDigest, pkg.Layer.Digest},
-		{PropertyLayerDiffID, pkg.Layer.DiffID},
+		{
+			PropertyPkgID,
+			pkg.ID,
+		},
+		{
+			PropertyPkgType,
+			pkgType,
+		},
+		{
+			PropertyFilePath,
+			pkg.FilePath,
+		},
+		{
+			PropertySrcName,
+			pkg.SrcName,
+		},
+		{
+			PropertySrcVersion,
+			pkg.SrcVersion,
+		},
+		{
+			PropertySrcRelease,
+			pkg.SrcRelease,
+		},
+		{
+			PropertySrcEpoch,
+			strconv.Itoa(pkg.SrcEpoch),
+		},
+		{
+			PropertyModularitylabel,
+			pkg.Modularitylabel,
+		},
+		{
+			PropertyLayerDigest,
+			pkg.Layer.Digest,
+		},
+		{
+			PropertyLayerDiffID,
+			pkg.Layer.DiffID,
+		},
 	}
 
 	var properties []cdx.Property
