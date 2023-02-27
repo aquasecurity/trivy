@@ -29,7 +29,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/rpc/client"
 	"github.com/aquasecurity/trivy/pkg/scanner"
 	"github.com/aquasecurity/trivy/pkg/types"
-	"github.com/aquasecurity/trivy/pkg/utils"
+	"github.com/aquasecurity/trivy/pkg/utils/fsutils"
 )
 
 // TargetKind represents what kind of artifact Trivy scans
@@ -366,12 +366,12 @@ func (r *runner) initCache(opts flag.Options) error {
 	}
 
 	// standalone mode
-	utils.SetCacheDir(opts.CacheDir)
+	fsutils.SetCacheDir(opts.CacheDir)
 	cacheClient, err := operation.NewCache(opts.CacheOptions)
 	if err != nil {
 		return xerrors.Errorf("unable to initialize the cache: %w", err)
 	}
-	log.Logger.Debugf("cache dir:  %s", utils.CacheDir())
+	log.Logger.Debugf("cache dir:  %s", fsutils.CacheDir())
 
 	if opts.Reset {
 		defer cacheClient.Close()
@@ -562,7 +562,6 @@ func initScannerConfig(opts flag.Options, cacheClient cache.Cache) (ScannerConfi
 			log.Logger.Debug("Policies successfully loaded from disk")
 			disableEmbedded = true
 		}
-
 		configScannerOptions = config.ScannerOption{
 			Trace:                   opts.Trace,
 			Namespaces:              append(opts.PolicyNamespaces, defaultPolicyNamespaces...),
@@ -573,6 +572,7 @@ func initScannerConfig(opts flag.Options, cacheClient cache.Cache) (ScannerConfi
 			HelmFileValues:          opts.HelmFileValues,
 			HelmStringValues:        opts.HelmStringValues,
 			TerraformTFVars:         opts.TerraformTFVars,
+			K8sVersion:              opts.K8sVersion,
 			DisableEmbeddedPolicies: disableEmbedded,
 		}
 	}
@@ -639,12 +639,10 @@ func initScannerConfig(opts flag.Options, cacheClient cache.Cache) (ScannerConfi
 
 func scan(ctx context.Context, opts flag.Options, initializeScanner InitializeScanner, cacheClient cache.Cache) (
 	types.Report, error) {
-
 	scannerConfig, scanOptions, err := initScannerConfig(opts, cacheClient)
 	if err != nil {
 		return types.Report{}, err
 	}
-
 	s, cleanup, err := initializeScanner(ctx, scannerConfig)
 	if err != nil {
 		return types.Report{}, xerrors.Errorf("unable to initialize a scanner: %w", err)

@@ -32,6 +32,12 @@ var (
 		},
 		Usage: "specify which components to scan",
 	}
+	K8sVersionFlag = Flag{
+		Name:       "k8s-version",
+		ConfigName: "kubernetes.k8s.version",
+		Value:      "",
+		Usage:      "specify k8s version to validate outdated api by it (example: 1.21.0)",
+	}
 )
 
 type K8sFlagGroup struct {
@@ -39,6 +45,7 @@ type K8sFlagGroup struct {
 	Namespace      *Flag
 	KubeConfig     *Flag
 	Components     *Flag
+	K8sVersion     *Flag
 }
 
 type K8sOptions struct {
@@ -46,6 +53,7 @@ type K8sOptions struct {
 	Namespace      string
 	KubeConfig     string
 	Components     []string
+	K8sVersion     string
 }
 
 func NewK8sFlagGroup() *K8sFlagGroup {
@@ -54,6 +62,7 @@ func NewK8sFlagGroup() *K8sFlagGroup {
 		Namespace:      &K8sNamespaceFlag,
 		KubeConfig:     &KubeConfigFlag,
 		Components:     &ComponentsFlag,
+		K8sVersion:     &K8sVersionFlag,
 	}
 }
 
@@ -67,6 +76,7 @@ func (f *K8sFlagGroup) Flags() []*Flag {
 		f.Namespace,
 		f.KubeConfig,
 		f.Components,
+		f.K8sVersion,
 	}
 }
 
@@ -76,5 +86,6 @@ func (f *K8sFlagGroup) ToOptions() K8sOptions {
 		Namespace:      getString(f.Namespace),
 		KubeConfig:     getString(f.KubeConfig),
 		Components:     getStringSlice(f.Components),
+		K8sVersion:     getString(f.K8sVersion),
 	}
 }

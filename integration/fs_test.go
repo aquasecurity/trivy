@@ -100,6 +100,24 @@ func TestFilesystem(t *testing.T) {
 			golden: "testdata/pip.json.golden",
 		},
 		{
+			name: "pipenv",
+			args: args{
+				scanner:     types.VulnerabilityScanner,
+				listAllPkgs: true,
+				input:       "testdata/fixtures/fs/pipenv",
+			},
+			golden: "testdata/pipenv.json.golden",
+		},
+		{
+			name: "poetry",
+			args: args{
+				scanner:     types.VulnerabilityScanner,
+				listAllPkgs: true,
+				input:       "testdata/fixtures/fs/poetry",
+			},
+			golden: "testdata/poetry.json.golden",
+		},
+		{
 			name: "pom",
 			args: args{
 				scanner: types.VulnerabilityScanner,

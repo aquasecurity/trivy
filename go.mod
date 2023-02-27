@@ -9,7 +9,7 @@ require (
 	github.com/alicebob/miniredis/v2 v2.23.0
 	github.com/aquasecurity/bolt-fixtures v0.0.0-20200903104109-d34e7f983986
 	github.com/aquasecurity/defsec v0.82.11-0.20230227200028-1372c6329e1f
-	github.com/aquasecurity/go-dep-parser v0.0.0-20230130190635-5e31092b0621
+	github.com/aquasecurity/go-dep-parser v0.0.0-20230227085514-f6e7eca87043
 	github.com/aquasecurity/go-gem-version v0.0.0-20201115065557-8eed6fe000ce
 	github.com/aquasecurity/go-npm-version v0.0.0-20201110091526-0b796d180798
 	github.com/aquasecurity/go-pep440-version v0.0.0-20210121094942-22b2f8951d46
@@ -21,7 +21,7 @@ require (
 	github.com/aquasecurity/tml v0.6.1
 	github.com/aquasecurity/trivy-db v0.0.0-20230116084806-4bcdf1c414d0
 	github.com/aquasecurity/trivy-java-db v0.0.0-20230209231723-7cddb1406728
-	github.com/aquasecurity/trivy-kubernetes v0.3.1-0.20230213131443-cca5acd03fb0
+	github.com/aquasecurity/trivy-kubernetes v0.3.1-0.20230223104408-c772810be7c3
 	github.com/aws/aws-sdk-go v1.44.171
 	github.com/aws/aws-sdk-go-v2 v1.17.4
 	github.com/aws/aws-sdk-go-v2/config v1.18.3
@@ -34,7 +34,7 @@ require (
 	github.com/docker/docker v23.0.0-rc.1+incompatible
 	github.com/docker/go-connections v0.4.0
 	github.com/fatih/color v1.13.0
-	github.com/go-openapi/runtime v0.24.2
+	github.com/go-openapi/runtime v0.25.0
 	github.com/go-openapi/strfmt v0.21.3
 	github.com/go-redis/redis/v8 v8.11.5
 	github.com/golang-jwt/jwt v3.2.2+incompatible
@@ -47,7 +47,7 @@ require (
 	github.com/hashicorp/golang-lru/v2 v2.0.1
 	github.com/in-toto/in-toto-golang v0.5.0
 	github.com/knqyf263/go-apk-version v0.0.0-20200609155635-041fdbb8563f
-	github.com/knqyf263/go-deb-version v0.0.0-20190517075300-09fca494f03d
+	github.com/knqyf263/go-deb-version v0.0.0-20230223133812-3ed183d23422
 	github.com/knqyf263/go-rpm-version v0.0.0-20220614171824-631e686d1075
 	github.com/kylelemons/godebug v1.1.0
 	github.com/mailru/easyjson v0.7.7
@@ -61,7 +61,7 @@ require (
 	github.com/open-policy-agent/opa v0.44.1-0.20220927105354-00e835a7cc15
 	github.com/owenrumney/go-sarif/v2 v2.1.2
 	github.com/package-url/packageurl-go v0.1.1-0.20220428063043-89078438f170
-	github.com/samber/lo v1.36.0
+	github.com/samber/lo v1.37.0
 	github.com/secure-systems-lab/go-securesystemslib v0.4.0
 	github.com/sigstore/rekor v1.0.1
 	github.com/sosedoff/gitkit v0.3.0
@@ -70,7 +70,7 @@ require (
 	github.com/spf13/viper v1.15.0
 	github.com/stretchr/testify v1.8.1
 	github.com/testcontainers/testcontainers-go v0.17.0
-	github.com/tetratelabs/wazero v1.0.0-pre.8
+	github.com/tetratelabs/wazero v1.0.0-pre.9
 	github.com/twitchtv/twirp v8.1.2+incompatible
 	github.com/xlab/treeprint v1.1.0
 	go.etcd.io/bbolt v1.3.6
@@ -85,8 +85,11 @@ require (
 
 require (
 	github.com/cloudflare/circl v1.1.0 // indirect
+	github.com/go-logr/stdr v1.2.2 // indirect
 	github.com/pjbgf/sha1cd v0.2.3 // indirect
 	github.com/skeema/knownhosts v1.1.0 // indirect
+	go.opentelemetry.io/otel v1.11.1 // indirect
+	go.opentelemetry.io/otel/trace v1.11.1 // indirect
 )
 
 require (

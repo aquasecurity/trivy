@@ -2,7 +2,9 @@ package jar
 
 import (
 	"context"
+	"github.com/aquasecurity/trivy/pkg/mapfs"
 	"os"
+	"path/filepath"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -126,22 +128,20 @@ func Test_javaLibraryAnalyzer_Analyze(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			f, err := os.Open(tt.inputFile)
-			require.NoError(t, err)
-			defer f.Close()
-
-			stat, err := f.Stat()
-			require.NoError(t, err)
-
 			// init java-trivy-db with skip update
 			javadb.Init("testdata", defaultJavaDBRepository, true, false, false)
 
-			a := javaLibraryAnalyzer{}
+			a := javaLibraryAnalyzer{slow: true}
 			ctx := context.Background()
-			got, err := a.Analyze(ctx, analyzer.AnalysisInput{
-				FilePath: tt.inputFile,
-				Info:     stat,
-				Content:  f,
+
+			mfs := mapfs.New()
+			err := mfs.MkdirAll(filepath.Dir(tt.inputFile), os.ModePerm)
+			assert.NoError(t, err)
+			err = mfs.WriteFile(tt.inputFile, tt.inputFile)
+			assert.NoError(t, err)
+
+			got, err := a.PostAnalyze(ctx, analyzer.PostAnalysisInput{
+				FS: mfs,
 			})
 
 			if tt.wantErr != "" {

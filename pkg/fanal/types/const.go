@@ -64,6 +64,7 @@ const (
 
 	ComposerLock = "composer.lock"
 
+	PyProject       = "pyproject.toml"
 	PipRequirements = "requirements.txt"
 	PipfileLock     = "Pipfile.lock"
 	PoetryLock      = "poetry.lock"

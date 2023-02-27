@@ -1,14 +1,15 @@
-package utils
+package fsutils
 
 import (
-	"crypto/tls"
-	"crypto/x509"
 	"fmt"
 	"io"
+	"io/fs"
 	"os"
 	"path/filepath"
 
 	"golang.org/x/xerrors"
+
+	dio "github.com/aquasecurity/go-dep-parser/pkg/io"
 )
 
 const (
@@ -72,20 +73,36 @@ func CopyFile(src, dst string) (int64, error) {
 	return n, err
 }
 
-// GetTLSConfig get tls config from CA, Cert and Key file
-func GetTLSConfig(caCertPath, certPath, keyPath string) (*x509.CertPool, tls.Certificate, error) {
-	cert, err := tls.LoadX509KeyPair(certPath, keyPath)
-	if err != nil {
-		return nil, tls.Certificate{}, err
+func DirExists(path string) bool {
+	if f, err := os.Stat(path); os.IsNotExist(err) || !f.IsDir() {
+		return false
 	}
+	return true
+}
 
-	caCert, err := os.ReadFile(caCertPath)
-	if err != nil {
-		return nil, tls.Certificate{}, err
-	}
+type WalkDirRequiredFunc func(path string, d fs.DirEntry) bool
 
-	caCertPool := x509.NewCertPool()
-	caCertPool.AppendCertsFromPEM(caCert)
+type WalkDirFunc func(path string, d fs.DirEntry, r dio.ReadSeekerAt) error
 
-	return caCertPool, cert, nil
+func WalkDir(fsys fs.FS, root string, required WalkDirRequiredFunc, fn WalkDirFunc) error {
+	return fs.WalkDir(fsys, root, func(path string, d fs.DirEntry, err error) error {
+		if err != nil {
+			return err
+		} else if !d.Type().IsRegular() || !required(path, d) {
+			return nil
+		}
+
+		f, err := fsys.Open(path)
+		if err != nil {
+			return xerrors.Errorf("file open error: %w", err)
+		}
+
+		file, ok := f.(dio.ReadSeekCloserAt)
+		if !ok {
+			return xerrors.Errorf("type assertion error: %w", err)
+		}
+		defer f.Close()
+
+		return fn(path, d, file)
+	})
 }

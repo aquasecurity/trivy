@@ -2,6 +2,7 @@ package jar
 
 import (
 	"context"
+	"io/fs"
 	"os"
 	"path/filepath"
 	"strings"
@@ -9,16 +10,18 @@ import (
 
 	"golang.org/x/xerrors"
 
+	dio "github.com/aquasecurity/go-dep-parser/pkg/io"
 	"github.com/aquasecurity/go-dep-parser/pkg/java/jar"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer/language"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/javadb"
 	"github.com/aquasecurity/trivy/pkg/log"
+	"github.com/aquasecurity/trivy/pkg/parallel"
 )
 
 func init() {
-	analyzer.RegisterAnalyzer(&javaLibraryAnalyzer{})
+	analyzer.RegisterPostAnalyzer(analyzer.TypeJar, newJavaLibraryAnalyzer)
 }
 
 const version = 1
@@ -34,9 +37,16 @@ var requiredExtensions = []string{
 type javaLibraryAnalyzer struct {
 	once   sync.Once
 	client *javadb.DB
+	slow   bool
 }
 
-func (a *javaLibraryAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInput) (*analyzer.AnalysisResult, error) {
+func newJavaLibraryAnalyzer(options analyzer.AnalyzerOptions) (analyzer.PostAnalyzer, error) {
+	return &javaLibraryAnalyzer{
+		slow: options.Slow,
+	}, nil
+}
+
+func (a *javaLibraryAnalyzer) PostAnalyze(ctx context.Context, input analyzer.PostAnalysisInput) (*analyzer.AnalysisResult, error) {
 	// TODO: think about the sonatype API and "--offline"
 	var err error
 	a.once.Do(func() {
@@ -57,13 +67,33 @@ func (a *javaLibraryAnalyzer) Analyze(_ context.Context, input analyzer.Analysis
 		return nil, nil
 	}
 
-	p := jar.NewParser(a.client, jar.WithSize(input.Info.Size()), jar.WithFilePath(input.FilePath))
-	libs, deps, err := p.Parse(input.Content)
-	if err != nil {
-		return nil, xerrors.Errorf("jar/war/ear/par parse error: %w", err)
+	// It will be called on each JAR file
+	onFile := func(path string, info fs.FileInfo, r dio.ReadSeekerAt) (*types.Application, error) {
+		p := jar.NewParser(a.client, jar.WithSize(info.Size()), jar.WithFilePath(path))
+		libs, deps, err := p.Parse(r)
+		if err != nil {
+			return nil, xerrors.Errorf("jar/war/ear/par parse error: %w", err)
+		}
+
+		return language.ToApplication(types.Jar, path, path, libs, deps), nil
 	}
 
-	return language.ToAnalysisResult(types.Jar, input.FilePath, input.FilePath, libs, deps), nil
+	var apps []types.Application
+	onResult := func(app *types.Application) error {
+		if app == nil {
+			return nil
+		}
+		apps = append(apps, *app)
+		return nil
+	}
+
+	if err = parallel.WalkDir(ctx, input.FS, ".", a.slow, onFile, onResult); err != nil {
+		return nil, xerrors.Errorf("walk dir error: %w", err)
+	}
+
+	return &analyzer.AnalysisResult{
+		Applications: apps,
+	}, nil
 }
 
 func (a *javaLibraryAnalyzer) Required(filePath string, _ os.FileInfo) bool {
