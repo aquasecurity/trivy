@@ -62,8 +62,9 @@ func (s *Scanner) Scan(ctx context.Context, artifacts []*artifacts.Artifact) (re
 	var misconfigsChan = make(chan report.Resource, len(artifacts))
 	artifactsPerWorker := len(artifacts) / numOfWorkers
 	g, ctx := errgroup.WithContext(ctx)
+
 	for workerIndex := 0; workerIndex < numOfWorkers; workerIndex++ {
-		workerIndex := workerIndex //https://go.dev/doc/faq#closures_and_goroutines
+		workerIndex := workerIndex // https://go.dev/doc/faq#closures_and_goroutines
 		g.Go(func() error {
 			// calculate for each worker the range of artifact to iterate
 			start := workerIndex * artifactsPerWorker
