@@ -317,8 +317,8 @@ github.com/aquasecurity/bolt-fixtures v0.0.0-20200903104109-d34e7f983986 h1:2a30
 github.com/aquasecurity/bolt-fixtures v0.0.0-20200903104109-d34e7f983986/go.mod h1:NT+jyeCzXk6vXR5MTkdn4z64TgGfE5HMLC8qfj5unl8=
 github.com/aquasecurity/defsec v0.82.11-0.20230227200028-1372c6329e1f h1:GMsUbqXjrGzNOyxFGJt/WtJrBFXzQWtJJ2h+uoAUguQ=
 github.com/aquasecurity/defsec v0.82.11-0.20230227200028-1372c6329e1f/go.mod h1:AJswzQrwesjdpF03Ev7lcPdr5REBJLAmDqjvOitvr94=
-github.com/aquasecurity/go-dep-parser v0.0.0-20230227085514-f6e7eca87043 h1:3YbIYXC9/HLODABe2P4v3nPJjK9MEFOtOmnSbiCIXdo=
-github.com/aquasecurity/go-dep-parser v0.0.0-20230227085514-f6e7eca87043/go.mod h1:xx5OX/gVENa5dY60k9EliVvTbUf/EmRw1tJKzdskKGw=
+github.com/aquasecurity/go-dep-parser v0.0.0-20230228091112-63a15cdc6bc3 h1:vOnS6iiH+b056rNsJjg6Km/a6N9oX52Cw83lTI3qlFI=
+github.com/aquasecurity/go-dep-parser v0.0.0-20230228091112-63a15cdc6bc3/go.mod h1:xx5OX/gVENa5dY60k9EliVvTbUf/EmRw1tJKzdskKGw=
 github.com/aquasecurity/go-gem-version v0.0.0-20201115065557-8eed6fe000ce h1:QgBRgJvtEOBtUXilDb1MLi1p1MWoyFDXAu5DEUl5nwM=
 github.com/aquasecurity/go-gem-version v0.0.0-20201115065557-8eed6fe000ce/go.mod h1:HXgVzOPvXhVGLJs4ZKO817idqr/xhwsTcj17CLYY74s=
 github.com/aquasecurity/go-mock-aws v0.0.0-20220726154943-99847deb62b0 h1:tihCUjLWkF0b1SAjAKcFltUs3SpsqGrLtI+Frye0D10=
@@ -1204,8 +1204,6 @@ github.com/knqyf263/go-apk-version v0.0.0-20200609155635-041fdbb8563f h1:GvCU5GX
 github.com/knqyf263/go-apk-version v0.0.0-20200609155635-041fdbb8563f/go.mod h1:q59u9px8b7UTj0nIjEjvmTWekazka6xIt6Uogz5Dm+8=
 github.com/knqyf263/go-deb-version v0.0.0-20230223133812-3ed183d23422 h1:PPPlUUqPP6fLudIK4n0l0VU4KT2cQGnheW9x8pNiCHI=
 github.com/knqyf263/go-deb-version v0.0.0-20230223133812-3ed183d23422/go.mod h1:ijAmSS4jErO6+KRzcK6ixsm3Vt96hMhJ+W+x+VmbrQA=
-github.com/knqyf263/go-dep-parser v0.0.0-20230225203131-96664a370716 h1:wm+UURVHlLp7A54WgNCNwRLkcsdw+93HIE+Dr0Xqt90=
-github.com/knqyf263/go-dep-parser v0.0.0-20230225203131-96664a370716/go.mod h1:xx5OX/gVENa5dY60k9EliVvTbUf/EmRw1tJKzdskKGw=
 github.com/knqyf263/go-rpm-version v0.0.0-20220614171824-631e686d1075 h1:aC6MEAs3PE3lWD7lqrJfDxHd6hcced9R4JTZu85cJwU=
 github.com/knqyf263/go-rpm-version v0.0.0-20220614171824-631e686d1075/go.mod h1:i4sF0l1fFnY1aiw08QQSwVAFxHEm311Me3WsU/X7nL0=
 github.com/knqyf263/go-rpmdb v0.0.0-20230201142403-697bc51b3948 h1:gYyAaKRpnnV3PhR1XWvIKD0UjCnYB4fubIf2pB2NiUI=
