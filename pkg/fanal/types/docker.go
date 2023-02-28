@@ -2,9 +2,9 @@ package types
 
 type DockerOption struct {
 	// Auth
-	UserName string
-	Password string
-
+	UserName    string
+	Password    string
+	Credentials []Credential
 	// RegistryToken is a bearer token to be sent to a registry
 	RegistryToken string
 
@@ -23,4 +23,9 @@ type DockerOption struct {
 
 	// Architecture
 	Platform string
+}
+
+type Credential struct {
+	UserName string
+	Password string
 }
