@@ -188,7 +188,7 @@ func (a *gomodAnalyzer) collectDeps(modDir string, pkgID string) (godeptypes.Dep
 	modPath := filepath.Join(modDir, "go.mod")
 	f, err := os.Open(modPath)
 	if errors.Is(err, fs.ErrNotExist) {
-		log.Logger.Debugf("go.mod not found: %s", pkgID)
+		log.Logger.Debugf("Unable to identify dependencies of %s as it doesn't support Go modules", pkgID)
 		return godeptypes.Dependency{}, nil
 	} else if err != nil {
 		return godeptypes.Dependency{}, xerrors.Errorf("file open error: %w", err)
