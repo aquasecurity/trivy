@@ -28,6 +28,8 @@ nav:
           - Cluster Scanning: tutorials/kubernetes/cluster-scanning.md
           - Kyverno: tutorials/kubernetes/kyverno.md
           - GitOps: tutorials/kubernetes/gitops.md
+      - Misconfiguration:
+          - Terraform scanning: tutorials/misconfiguration/terraform.md
       - Signing:
           - Vulnerability Scan Record Attestation: tutorials/signing/vuln-attestation.md
       - Shell:
