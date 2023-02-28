@@ -1,7 +1,6 @@
 package types
 
 import (
-	"reflect"
 	"testing"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
@@ -84,7 +83,7 @@ func Test_GetDockerOption(t *testing.T) {
 			if err != nil {
 				assert.Equal(t, err.Error(), tt.expectedErr.Error())
 			} else {
-				assert.True(t, reflect.DeepEqual(got, tt.want))
+				assert.Equal(t, got, tt.want)
 			}
 		})
 	}
