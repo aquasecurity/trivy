@@ -1611,6 +1611,20 @@
   
   
     <li class="md-nav__item">
+      <a href="schema/" class="md-nav__link">
+        Schemas
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
       <a href="testing/" class="md-nav__link">
         Testing
       </a>
@@ -3161,7 +3175,7 @@ Once you finish writing custom policies, you can pass the directory where those 
 # title: Deployment not allowed
 # description: Deployments are not allowed because of some reasons.
 # schemas:
-#   - input: schema.input
+#   - input: schema[&quot;kubernetes&quot;]
 # custom:
 #   id: ID001
 #   severity: LOW
@@ -3279,7 +3293,7 @@ correct and do not reference incorrect properties/values.</p>
 </tr>
 <tr>
 <td>schemas.input</td>
-<td><code>schema.input</code></td>
+<td><code>schema["kubernetes"]</code>, <code>schema["dockerfile"]</code>, <code>schema["cloud"]</code></td>
 <td align="center">(applied to all input types)</td>
 <td align="center"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg></span></td>
 <td align="center"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg></span></td>
@@ -3377,13 +3391,7 @@ When a configuration language is identified, it will overwrite <code>type</code>
 </dd>
 </dl>
 <h3 id="schemas">Schemas</h3>
-<p>You can explore the format of input documents by browsing the schema for the relevant input type:</p>
-<ul>
-<li><a href="https://github.com/aquasecurity/defsec/blob/master/pkg/rego/schemas/cloud.json">Cloud</a></li>
-<li><a href="https://github.com/aquasecurity/defsec/blob/master/pkg/rego/schemas/dockerfile.json">Dockerfile</a></li>
-<li><a href="https://github.com/aquasecurity/defsec/blob/master/pkg/rego/schemas/kubernetes.json">Kubernetes</a></li>
-<li><a href="https://github.com/aquasecurity/defsec/blob/master/pkg/rego/schemas/rbac.json">RBAC</a></li>
-</ul>
+<p>See <a href="schema/">here</a> for the detail.</p>
 
               
             </article>

@@ -1557,6 +1557,20 @@
   
   
     <li class="md-nav__item">
+      <a href="../../custom/schema/" class="md-nav__link">
+        Schemas
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../custom/testing/" class="md-nav__link">
         Testing
       </a>
@@ -3041,7 +3055,6 @@ Those policies are managed under <a href="https://github.com/aquasecurity/defsec
 </table>
 <p>For suggestions or issues regarding policy content, please open an issue under the <a href="https://github.com/aquasecurity/defsec">defsec</a> repository.</p>
 <p>Helm Chart scanning will resolve the chart to Kubernetes manifests then run the <a href="https://github.com/aquasecurity/defsec/tree/master/internal/rules/rbac">kubernetes</a> checks.</p>
-<p>Ansible scanning is coming soon.</p>
 <h2 id="policy-distribution">Policy Distribution</h2>
 <p>defsec policies are distributed as an OPA bundle on <a href="https://github.com/aquasecurity/defsec/pkgs/container/defsec">GitHub Container Registry</a> (GHCR).
 When misconfiguration detection is enabled, Trivy pulls the OPA bundle from GHCR as an OCI artifact and stores it in the cache.

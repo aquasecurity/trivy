@@ -10,14 +10,14 @@
       
       
       
-        <link rel="canonical" href="https://aquasecurity.github.io/trivy/dev/docs/references/cli/fs/">
+        <link rel="canonical" href="https://aquasecurity.github.io/trivy/dev/docs/misconfiguration/custom/schema/">
       
       <link rel="icon" href="../../../../assets/images/favicon.png">
       <meta name="generator" content="mkdocs-1.3.0, mkdocs-material-8.3.9">
     
     
       
-        <title>Filesystem - Trivy</title>
+        <title>Schemas - Trivy</title>
       
     
     
@@ -64,7 +64,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#filesystem" class="md-skip">
+        <a href="#input-schema" class="md-skip">
           Skip to content
         </a>
       
@@ -104,7 +104,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Filesystem
+              Schemas
             
           </span>
         </div>
@@ -1325,14 +1325,16 @@
               
   
   
+    
+  
   
     
       
     
-    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_4" type="checkbox" id="__nav_3_4" >
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_4" type="checkbox" id="__nav_3_4" checked>
       
       
       
@@ -1355,7 +1357,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../misconfiguration/scanning/" class="md-nav__link">
+      <a href="../../scanning/" class="md-nav__link">
         Scanning
       </a>
     </li>
@@ -1395,7 +1397,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../misconfiguration/policy/builtin/" class="md-nav__link">
+      <a href="../../policy/builtin/" class="md-nav__link">
         Built-in Policies
       </a>
     </li>
@@ -1409,7 +1411,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../misconfiguration/policy/exceptions/" class="md-nav__link">
+      <a href="../../policy/exceptions/" class="md-nav__link">
         Exceptions
       </a>
     </li>
@@ -1428,12 +1430,14 @@
               
   
   
+    
+  
   
     
-    <li class="md-nav__item md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_4_3" type="checkbox" id="__nav_3_4_3" >
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_4_3" type="checkbox" id="__nav_3_4_3" checked>
       
       
       
@@ -1456,7 +1460,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../misconfiguration/custom/" class="md-nav__link">
+      <a href="../" class="md-nav__link">
         Overview
       </a>
     </li>
@@ -1470,7 +1474,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../misconfiguration/custom/data/" class="md-nav__link">
+      <a href="../data/" class="md-nav__link">
         Data
       </a>
     </li>
@@ -1484,7 +1488,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../misconfiguration/custom/combine/" class="md-nav__link">
+      <a href="../combine/" class="md-nav__link">
         Combine
       </a>
     </li>
@@ -1496,11 +1500,59 @@
               
   
   
+    
   
-    <li class="md-nav__item">
-      <a href="../../../misconfiguration/custom/schema/" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          Schemas
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
         Schemas
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#overview" class="md-nav__link">
+    Overview
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#custom-policies-with-custom-schemas" class="md-nav__link">
+    Custom Policies with Custom Schemas
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -1512,7 +1564,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../misconfiguration/custom/testing/" class="md-nav__link">
+      <a href="../testing/" class="md-nav__link">
         Testing
       </a>
     </li>
@@ -1526,7 +1578,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../misconfiguration/custom/debug/" class="md-nav__link">
+      <a href="../debug/" class="md-nav__link">
         Debugging Policies
       </a>
     </li>
@@ -1540,7 +1592,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../misconfiguration/custom/examples/" class="md-nav__link">
+      <a href="../examples/" class="md-nav__link">
         Examples
       </a>
     </li>
@@ -1587,7 +1639,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../misconfiguration/options/policy/" class="md-nav__link">
+      <a href="../../options/policy/" class="md-nav__link">
         Policy
       </a>
     </li>
@@ -1601,7 +1653,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../misconfiguration/options/filter/" class="md-nav__link">
+      <a href="../../options/filter/" class="md-nav__link">
         Filtering
       </a>
     </li>
@@ -1615,7 +1667,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../misconfiguration/options/report/" class="md-nav__link">
+      <a href="../../options/report/" class="md-nav__link">
         Report Formats
       </a>
     </li>
@@ -1629,7 +1681,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../misconfiguration/options/values/" class="md-nav__link">
+      <a href="../../options/values/" class="md-nav__link">
         Value Overrides
       </a>
     </li>
@@ -1643,7 +1695,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../misconfiguration/options/others/" class="md-nav__link">
+      <a href="../../options/others/" class="md-nav__link">
         Others
       </a>
     </li>
@@ -2253,16 +2305,14 @@
               
   
   
-    
-  
   
     
       
     
-    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_11" type="checkbox" id="__nav_3_11" checked>
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_11" type="checkbox" id="__nav_3_11" >
       
       
       
@@ -2311,7 +2361,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../customization/envs/" class="md-nav__link">
+      <a href="../../../references/customization/envs/" class="md-nav__link">
         Environment variables
       </a>
     </li>
@@ -2325,7 +2375,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../customization/config-file/" class="md-nav__link">
+      <a href="../../../references/customization/config-file/" class="md-nav__link">
         Config file
       </a>
     </li>
@@ -2344,14 +2394,12 @@
               
   
   
-    
-  
   
     
-    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_11_2" type="checkbox" id="__nav_3_11_2" checked>
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_11_2" type="checkbox" id="__nav_3_11_2" >
       
       
       
@@ -2374,7 +2422,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../" class="md-nav__link">
+      <a href="../../../references/cli/" class="md-nav__link">
         Overview
       </a>
     </li>
@@ -2388,7 +2436,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../image/" class="md-nav__link">
+      <a href="../../../references/cli/image/" class="md-nav__link">
         Image
       </a>
     </li>
@@ -2402,7 +2450,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../config/" class="md-nav__link">
+      <a href="../../../references/cli/config/" class="md-nav__link">
         Config
       </a>
     </li>
@@ -2414,21 +2462,11 @@
               
   
   
-    
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
-      
-      
-        
-      
-      
-      <a href="./" class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href="../../../references/cli/fs/" class="md-nav__link">
         Filesystem
       </a>
-      
     </li>
   
 
@@ -2440,7 +2478,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../rootfs/" class="md-nav__link">
+      <a href="../../../references/cli/rootfs/" class="md-nav__link">
         Rootfs
       </a>
     </li>
@@ -2454,7 +2492,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../repo/" class="md-nav__link">
+      <a href="../../../references/cli/repo/" class="md-nav__link">
         Repository
       </a>
     </li>
@@ -2468,7 +2506,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../client/" class="md-nav__link">
+      <a href="../../../references/cli/client/" class="md-nav__link">
         Client
       </a>
     </li>
@@ -2482,7 +2520,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../server/" class="md-nav__link">
+      <a href="../../../references/cli/server/" class="md-nav__link">
         Server
       </a>
     </li>
@@ -2496,7 +2534,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../plugin/" class="md-nav__link">
+      <a href="../../../references/cli/plugin/" class="md-nav__link">
         Plugin
       </a>
     </li>
@@ -2510,7 +2548,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../sbom/" class="md-nav__link">
+      <a href="../../../references/cli/sbom/" class="md-nav__link">
         SBOM
       </a>
     </li>
@@ -2524,7 +2562,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../module/" class="md-nav__link">
+      <a href="../../../references/cli/module/" class="md-nav__link">
         Module
       </a>
     </li>
@@ -2538,7 +2576,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../completion/" class="md-nav__link">
+      <a href="../../../references/cli/completion/" class="md-nav__link">
         Completion
       </a>
     </li>
@@ -2585,7 +2623,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../modes/standalone/" class="md-nav__link">
+      <a href="../../../references/modes/standalone/" class="md-nav__link">
         Standalone
       </a>
     </li>
@@ -2599,7 +2637,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../modes/client-server/" class="md-nav__link">
+      <a href="../../../references/modes/client-server/" class="md-nav__link">
         Client/Server
       </a>
     </li>
@@ -2620,7 +2658,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../troubleshooting/" class="md-nav__link">
+      <a href="../../../references/troubleshooting/" class="md-nav__link">
         Troubleshooting
       </a>
     </li>
@@ -2925,6 +2963,28 @@
     
   
   
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#overview" class="md-nav__link">
+    Overview
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#custom-policies-with-custom-schemas" class="md-nav__link">
+    Custom Policies with Custom Schemas
+  </a>
+  
+</li>
+      
+    </ul>
+  
 </nav>
                   </div>
                 </div>
@@ -2937,92 +2997,83 @@
                 
 
 
-<h1 id="filesystem">Filesystem</h1>
-<div class="highlight"><pre><span></span><code>Scan <span class="nb">local</span> filesystem
+<h1 id="input-schema">Input Schema</h1>
+<h2 id="overview">Overview</h2>
+<p>Policies can be defined with custom schemas that allow inputs to be verified against them. Adding a policy schema
+enables Trivy to show more detailed error messages when an invalid input is encountered.</p>
+<p>In Trivy we have been able to define a schema for a <a href="https://github.com/aquasecurity/defsec/blob/master/pkg/rego/schemas/dockerfile.json">Dockerfile</a>.
+Without input schemas, a policy would be as follows:</p>
+<div class="admonition example">
+<p class="admonition-title">Example</p>
+<div class="highlight"><pre><span></span><code># METADATA
+package mypackage
 
-Usage:
-  trivy filesystem <span class="o">[</span>flags<span class="o">]</span> PATH
-
-Aliases:
-  filesystem, fs
-
-Examples:
-  <span class="c1"># Scan a local project including language-specific files</span>
-  $ trivy fs /path/to/your_project
-
-  <span class="c1"># Scan a single file</span>
-  $ trivy fs ./trivy-ci-test/Pipfile.lock
-
-Scan Flags
-      --offline-scan             <span class="k">do</span> not issue API requests to identify dependencies
-      --scanners string          comma-separated list of what security issues to detect <span class="o">(</span>vuln,config,secret<span class="o">)</span> <span class="o">(</span>default <span class="s2">&quot;vuln,secret&quot;</span><span class="o">)</span>
-      --skip-dirs strings        specify the directories where the traversal is skipped
-      --skip-files strings       specify the file paths to skip traversal
-
-Report Flags
-      --dependency-tree        show dependency origin tree <span class="o">(</span>EXPERIMENTAL<span class="o">)</span>
-      --exit-code int          specify <span class="nb">exit</span> code when any security issues are found
-  -f, --format string          format <span class="o">(</span>table, json, sarif, template, cyclonedx, spdx, spdx-json, github, cosign-vuln<span class="o">)</span> <span class="o">(</span>default <span class="s2">&quot;table&quot;</span><span class="o">)</span>
-      --ignore-policy string   specify the Rego file path to evaluate each vulnerability
-      --ignorefile string      specify .trivyignore file <span class="o">(</span>default <span class="s2">&quot;.trivyignore&quot;</span><span class="o">)</span>
-      --list-all-pkgs          enabling the option will output all packages regardless of vulnerability
-  -o, --output string          output file name
-  -s, --severity string        severities of security issues to be displayed <span class="o">(</span>comma separated<span class="o">)</span> <span class="o">(</span>default <span class="s2">&quot;UNKNOWN,LOW,MEDIUM,HIGH,CRITICAL&quot;</span><span class="o">)</span>
-  -t, --template string        output template
-
-Cache Flags
-      --cache-backend string   cache backend <span class="o">(</span>e.g. redis://localhost:6379<span class="o">)</span> <span class="o">(</span>default <span class="s2">&quot;fs&quot;</span><span class="o">)</span>
-      --cache-ttl duration     cache TTL when using redis as cache backend
-      --clear-cache            clear image caches without scanning
-      --redis-ca string        redis ca file location, <span class="k">if</span> using redis as cache backend
-      --redis-cert string      redis certificate file location, <span class="k">if</span> using redis as cache backend
-      --redis-key string       redis key file location, <span class="k">if</span> using redis as cache backend
-
-DB Flags
-      --db-repository string   OCI repository to retrieve trivy-db from <span class="o">(</span>default <span class="s2">&quot;ghcr.io/aquasecurity/trivy-db&quot;</span><span class="o">)</span>
-      --download-db-only       download/update vulnerability database but don<span class="s1">&#39;t run a scan</span>
-<span class="s1">      --download-java-db-only  download/update java indexes database but don&#39;</span>t run a scan
-      --java-db-repository string   OCI repository to retrieve trivy-java-db from <span class="o">(</span>default <span class="s2">&quot;ghcr.io/aquasecurity/trivy-java-db&quot;</span><span class="o">)</span>
-      --no-progress            suppress progress bar
-      --reset                  remove all caches and database
-      --skip-db-update         skip updating vulnerability database
-      --skip-java-db-update    skip updating java indexes database
-
-Vulnerability Flags
-      --ignore-unfixed     display only fixed vulnerabilities
-      --vuln-type string   comma-separated list of vulnerability types <span class="o">(</span>os,library<span class="o">)</span> <span class="o">(</span>default <span class="s2">&quot;os,library&quot;</span><span class="o">)</span>
-
-Misconfiguration Flags
-      --config-data strings         specify paths from which data <span class="k">for</span> the Rego policies will be recursively loaded
-      --config-policy strings       specify paths to the Rego policy files directory, applying config files
-      --file-patterns strings       specify config file patterns, available with <span class="s1">&#39;--scanners config&#39;</span>
-      --include-non-failures        include successes and exceptions, available with <span class="s1">&#39;--scanners config&#39;</span>
-      --policy-namespaces strings   Rego namespaces
-      --trace                       <span class="nb">enable</span> more verbose trace output <span class="k">for</span> custom queries
-
-Secret Flags
-      --secret-config string   specify a path to config file <span class="k">for</span> secret scanning <span class="o">(</span>default <span class="s2">&quot;trivy-secret.yaml&quot;</span><span class="o">)</span>
-
-License Flags
-      --ignored-licenses strings   specify a list of license to ignore
-      --license-full               eagerly look <span class="k">for</span> licenses <span class="k">in</span> <span class="nb">source</span> code headers and license files
-
-Client/Server Flags
-      --custom-headers strings   custom headers <span class="k">in</span> client mode
-      --server string            server address <span class="k">in</span> client mode
-      --token string             <span class="k">for</span> authentication <span class="k">in</span> client/server mode
-      --token-header string      specify a header name <span class="k">for</span> token <span class="k">in</span> client/server mode <span class="o">(</span>default <span class="s2">&quot;Trivy-Token&quot;</span><span class="o">)</span>
-
-Global Flags:
-      --cache-dir string          cache directory <span class="o">(</span>default <span class="s2">&quot;/Users/teppei/Library/Caches/trivy&quot;</span><span class="o">)</span>
-  -c, --config string             config path <span class="o">(</span>default <span class="s2">&quot;trivy.yaml&quot;</span><span class="o">)</span>
-  -d, --debug                     debug mode
-      --generate-default-config   write the default config to trivy-default.yaml
-      --insecure                  allow insecure server connections when using TLS
-  -q, --quiet                     suppress progress bar and log output
-      --timeout duration          timeout <span class="o">(</span>default 5m0s<span class="o">)</span>
-  -v, --version                   show version
+deny {
+    input.evil == &quot;foo bar&quot;
+}
 </code></pre></div>
+</div>
+<p>If this policy is run against offending Dockerfile(s), there will not be any issues as the policy will fail to evaluate.
+Although the policy's failure to evaluate is legitimate, this should not result in a positive result for the scan.</p>
+<p>For instance if we have a policy that checks for misconfigurations in a <code>Dockerfile</code>, we could define the
+schema as such</p>
+<div class="admonition example">
+<p class="admonition-title">Example</p>
+<div class="highlight"><pre><span></span><code># METADATA
+# schemas:
+# - input: schema[&quot;dockerfile&quot;]
+package mypackage
+
+deny {
+    input.evil == &quot;foo bar&quot;
+}
+</code></pre></div>
+</div>
+<p>Here <code>input: schema["dockerfile"]</code> points to a schema that expects a valid <code>Dockerfile</code> as input. An example of this
+can be found <a href="https://github.com/aquasecurity/defsec/blob/master/pkg/rego/schemas/dockerfile.json">here</a></p>
+<p>Now if this policy is evaluated against, a more descriptive error will be available to help fix the problem.</p>
+<div class="highlight"><pre><span></span><code><span class="m">1</span> error occurred: testpolicy.rego:8: rego_type_error: undefined ref: input.evil
+        input.evil
+              ^
+              have: <span class="s2">&quot;evil&quot;</span>
+              want <span class="o">(</span>one of<span class="o">)</span>: <span class="o">[</span><span class="s2">&quot;Stages&quot;</span><span class="o">]</span>
+</code></pre></div>
+<p>Currently, out of the box the following schemas are supported natively:</p>
+<ol>
+<li><a href="https://github.com/aquasecurity/defsec/blob/master/pkg/rego/schemas/dockerfile.json">Docker</a></li>
+<li><a href="https://github.com/aquasecurity/defsec/blob/master/pkg/rego/schemas/kubernetes.json">Kubernetes</a></li>
+<li><a href="https://github.com/aquasecurity/defsec/blob/master/pkg/rego/schemas/cloud.json">Cloud</a></li>
+</ol>
+<h2 id="custom-policies-with-custom-schemas">Custom Policies with Custom Schemas</h2>
+<p>You can also bring a custom policy that defines one or more custom schema. </p>
+<div class="admonition example">
+<p class="admonition-title">Example</p>
+<div class="highlight"><pre><span></span><code># METADATA
+# schemas:
+# - input: schema[&quot;fooschema&quot;]
+# - input: schema[&quot;barschema&quot;]
+package mypackage
+
+deny {
+    input.evil == &quot;foo bar&quot;
+}
+</code></pre></div>
+</div>
+<p>The policies can be placed in a structure as follows</p>
+<div class="admonition example">
+<p class="admonition-title">Example</p>
+<div class="highlight"><pre><span></span><code>/Users/user/my-custom-policies
+├── my_policy.rego
+└── schemas
+    └── fooschema.json
+    └── barschema.json
+</code></pre></div>
+</div>
+<p>To use such a policy with Trivy, use the <code>--config-policy</code> flag that points to the directory where the schemas and policies
+are contained.</p>
+<div class="highlight"><pre><span></span><code>$ trivy --config-policy<span class="o">=</span>/Users/user/my-custom-policies &lt;path/to/iac&gt;
+</code></pre></div>
+<p>For more details on how to define schemas within Rego policies, please see the <a href="https://www.openpolicyagent.org/docs/latest/schemas/#schema-annotations">OPA guide</a> that describes it in more detail.</p>
 
               
             </article>
@@ -3040,7 +3091,7 @@ Global Flags:
     <nav class="md-footer__inner md-grid" aria-label="Footer" >
       
         
-        <a href="../config/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Config" rel="prev">
+        <a href="../combine/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Combine" rel="prev">
           <div class="md-footer__button md-icon">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
           </div>
@@ -3049,20 +3100,20 @@ Global Flags:
               <span class="md-footer__direction">
                 Previous
               </span>
-              Config
+              Combine
             </div>
           </div>
         </a>
       
       
         
-        <a href="../rootfs/" class="md-footer__link md-footer__link--next" aria-label="Next: Rootfs" rel="next">
+        <a href="../testing/" class="md-footer__link md-footer__link--next" aria-label="Next: Testing" rel="next">
           <div class="md-footer__title">
             <div class="md-ellipsis">
               <span class="md-footer__direction">
                 Next
               </span>
-              Rootfs
+              Testing
             </div>
           </div>
           <div class="md-footer__button md-icon">
