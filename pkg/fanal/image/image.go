@@ -95,14 +95,21 @@ func NewContainerImage(ctx context.Context, imageName string, option types.Docke
 		errs = multierror.Append(errs, err)
 	}
 
+	if len(option.Credentials) == 0 {
+		option.Credentials = append(option.Credentials, types.Credential{}) // no credential use-case
+	}
 	// Try accessing Docker Registry
 	if o.remote {
-		img, err := tryRemote(ctx, imageName, ref, option)
-		if err == nil {
-			// Return v1.Image if the image is found in a remote registry
-			return img, func() {}, nil
+		for _, credential := range option.Credentials {
+			option.UserName = credential.UserName
+			option.Password = credential.Password
+			img, err := tryRemote(ctx, imageName, ref, option)
+			if err == nil {
+				// Return v1.Image if the image is found in a remote registry
+				return img, func() {}, nil
+			}
+			errs = multierror.Append(errs, err)
 		}
-		errs = multierror.Append(errs, err)
 	}
 
 	return nil, func() {}, errs

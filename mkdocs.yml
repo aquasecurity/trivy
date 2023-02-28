@@ -71,6 +71,7 @@ nav:
               - Data: docs/misconfiguration/custom/data.md
               - Combine: docs/misconfiguration/custom/combine.md
               - Selectors: docs/misconfiguration/custom/selectors.md
+              - Schemas: docs/misconfiguration/custom/schema.md
               - Testing: docs/misconfiguration/custom/testing.md
               - Debugging Policies: docs/misconfiguration/custom/debug.md
               - Examples: docs/misconfiguration/custom/examples.md
