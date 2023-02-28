@@ -8,7 +8,7 @@ require (
 	github.com/NYTimes/gziphandler v1.1.1
 	github.com/alicebob/miniredis/v2 v2.23.0
 	github.com/aquasecurity/bolt-fixtures v0.0.0-20200903104109-d34e7f983986
-	github.com/aquasecurity/defsec v0.82.11-0.20230227200028-1372c6329e1f
+	github.com/aquasecurity/defsec v0.84.0
 	github.com/aquasecurity/go-dep-parser v0.0.0-20230227085514-f6e7eca87043
 	github.com/aquasecurity/go-gem-version v0.0.0-20201115065557-8eed6fe000ce
 	github.com/aquasecurity/go-npm-version v0.0.0-20201110091526-0b796d180798
@@ -22,11 +22,11 @@ require (
 	github.com/aquasecurity/trivy-db v0.0.0-20230116084806-4bcdf1c414d0
 	github.com/aquasecurity/trivy-java-db v0.0.0-20230209231723-7cddb1406728
 	github.com/aquasecurity/trivy-kubernetes v0.3.1-0.20230223104408-c772810be7c3
-	github.com/aws/aws-sdk-go v1.44.171
-	github.com/aws/aws-sdk-go-v2 v1.17.4
-	github.com/aws/aws-sdk-go-v2/config v1.18.3
-	github.com/aws/aws-sdk-go-v2/service/ec2 v1.85.0
-	github.com/aws/aws-sdk-go-v2/service/sts v1.18.0
+	github.com/aws/aws-sdk-go v1.44.210
+	github.com/aws/aws-sdk-go-v2 v1.17.5
+	github.com/aws/aws-sdk-go-v2/config v1.18.15
+	github.com/aws/aws-sdk-go-v2/service/ec2 v1.86.1
+	github.com/aws/aws-sdk-go-v2/service/sts v1.18.5
 	github.com/caarlos0/env/v6 v6.10.1
 	github.com/cenkalti/backoff v2.2.1+incompatible
 	github.com/cheggaaa/pb/v3 v3.1.0
@@ -129,11 +129,11 @@ require (
 	github.com/apparentlymart/go-textseg/v13 v13.0.0 // indirect
 	github.com/asaskevich/govalidator v0.0.0-20210307081110-f21760c49a8d // indirect
 	github.com/aws/aws-sdk-go-v2/aws/protocol/eventstream v1.4.8 // indirect
-	github.com/aws/aws-sdk-go-v2/credentials v1.13.8 // indirect
-	github.com/aws/aws-sdk-go-v2/feature/ec2/imds v1.12.21 // indirect
-	github.com/aws/aws-sdk-go-v2/internal/configsources v1.1.28 // indirect
-	github.com/aws/aws-sdk-go-v2/internal/endpoints/v2 v2.4.22 // indirect
-	github.com/aws/aws-sdk-go-v2/internal/ini v1.3.26 // indirect
+	github.com/aws/aws-sdk-go-v2/credentials v1.13.15 // indirect
+	github.com/aws/aws-sdk-go-v2/feature/ec2/imds v1.12.23 // indirect
+	github.com/aws/aws-sdk-go-v2/internal/configsources v1.1.29 // indirect
+	github.com/aws/aws-sdk-go-v2/internal/endpoints/v2 v2.4.23 // indirect
+	github.com/aws/aws-sdk-go-v2/internal/ini v1.3.30 // indirect
 	github.com/aws/aws-sdk-go-v2/internal/v4a v1.0.14 // indirect
 	github.com/aws/aws-sdk-go-v2/service/accessanalyzer v1.16.0 // indirect
 	github.com/aws/aws-sdk-go-v2/service/apigateway v1.15.24 // indirect
@@ -159,9 +159,9 @@ require (
 	github.com/aws/aws-sdk-go-v2/service/internal/accept-encoding v1.9.10 // indirect
 	github.com/aws/aws-sdk-go-v2/service/internal/checksum v1.1.18 // indirect
 	github.com/aws/aws-sdk-go-v2/service/internal/endpoint-discovery v1.7.19 // indirect
-	github.com/aws/aws-sdk-go-v2/service/internal/presigned-url v1.9.22 // indirect
+	github.com/aws/aws-sdk-go-v2/service/internal/presigned-url v1.9.23 // indirect
 	github.com/aws/aws-sdk-go-v2/service/internal/s3shared v1.13.17 // indirect
-	github.com/aws/aws-sdk-go-v2/service/kafka v1.17.19 // indirect
+	github.com/aws/aws-sdk-go-v2/service/kafka v1.19.4 // indirect
 	github.com/aws/aws-sdk-go-v2/service/kinesis v1.15.19 // indirect
 	github.com/aws/aws-sdk-go-v2/service/kms v1.18.15 // indirect
 	github.com/aws/aws-sdk-go-v2/service/lambda v1.24.6 // indirect
@@ -173,8 +173,8 @@ require (
 	github.com/aws/aws-sdk-go-v2/service/secretsmanager v1.16.2 // indirect
 	github.com/aws/aws-sdk-go-v2/service/sns v1.18.1 // indirect
 	github.com/aws/aws-sdk-go-v2/service/sqs v1.19.10 // indirect
-	github.com/aws/aws-sdk-go-v2/service/sso v1.12.0 // indirect
-	github.com/aws/aws-sdk-go-v2/service/ssooidc v1.14.0 // indirect
+	github.com/aws/aws-sdk-go-v2/service/sso v1.12.4 // indirect
+	github.com/aws/aws-sdk-go-v2/service/ssooidc v1.14.4 // indirect
 	github.com/aws/aws-sdk-go-v2/service/workspaces v1.23.0 // indirect
 	github.com/aws/smithy-go v1.13.5 // indirect
 	github.com/beorn7/perks v1.0.1 // indirect
@@ -302,7 +302,7 @@ require (
 	github.com/opencontainers/runtime-spec v1.0.3-0.20220311020903-6969a0a09ab1 // indirect
 	github.com/opencontainers/selinux v1.10.2 // indirect
 	github.com/opentracing/opentracing-go v1.2.0 // indirect
-	github.com/owenrumney/squealer v1.0.1-0.20220510063705-c0be93f0edea // indirect
+	github.com/owenrumney/squealer v1.1.1 // indirect
 	github.com/pelletier/go-toml/v2 v2.0.6 // indirect
 	github.com/peterbourgon/diskv v2.0.1+incompatible // indirect
 	github.com/pkg/errors v0.9.1 // indirect
