@@ -52,6 +52,8 @@ $ trivy fs --server http://localhost:8080 --severity CRITICAL ./integration/test
 **Note**: It's important to specify the protocol (http or https).
 <details>
 <summary>Result</summary>
+
+```
 pom.xml (pom)
 =============
 Total: 24 (CRITICAL: 24)
@@ -173,6 +175,7 @@ Total: 24 (CRITICAL: 24)
 |                                             |                  |          |                   |                                | gadgets in anteros-core               |
 |                                             |                  |          |                   |                                | -->avd.aquasec.com/nvd/cve-2020-9548  |
 +---------------------------------------------+------------------+----------+-------------------+--------------------------------+---------------------------------------+
+```
 </details>
 
 ## Remote scan of root filesystem
@@ -183,6 +186,8 @@ $ trivy rootfs --server http://localhost:8080 --severity CRITICAL /tmp/rootfs
 **Note**: It's important to specify the protocol (http or https).
 <details>
 <summary>Result</summary>
+
+```
 /tmp/rootfs (alpine 3.10.2)
 
 Total: 1 (CRITICAL: 1)
@@ -194,10 +199,84 @@ Total: 1 (CRITICAL: 1)
 │           │                │          │                   │               │ other products, mishandles...                               │
 │           │                │          │                   │               │ https://avd.aquasec.com/nvd/cve-2021-36159                  │
 └───────────┴────────────────┴──────────┴───────────────────┴───────────────┴─────────────────────────────────────────────────────────────┘
-
+```
 </details>
 
+## Remote scan of git repository
+Also, there is a way to scan remote git repository:
+```shell
+$ trivy repo https://github.com/knqyf263/trivy-ci-test --server http://localhost:8080 
+```
+**Note**: It's important to specify the protocol (http or https).
+<details>
+<summary>Result</summary>
 
+```
+Cargo.lock (cargo)
+==================
+Total: 5 (UNKNOWN: 0, LOW: 0, MEDIUM: 2, HIGH: 2, CRITICAL: 0)
+
+┌───────────┬─────────────────────┬──────────┬───────────────────┬───────────────┬─────────────────────────────────────────────────────────────┐
+│  Library  │    Vulnerability    │ Severity │ Installed Version │ Fixed Version │                            Title                            │
+├───────────┼─────────────────────┼──────────┼───────────────────┼───────────────┼─────────────────────────────────────────────────────────────┤
+│ ammonia   │ CVE-2019-15542      │ HIGH     │ 1.9.0             │ 2.1.0         │ Uncontrolled recursion in ammonia                           │
+│           │                     │          │                   │               │ https://avd.aquasec.com/nvd/cve-2019-15542                  │
+│           ├─────────────────────┼──────────┤                   ├───────────────┼─────────────────────────────────────────────────────────────┤
+│           │ CVE-2021-38193      │ MEDIUM   │                   │ 2.1.3, 3.1.0  │ An issue was discovered in the ammonia crate before 3.1.0   │
+│           │                     │          │                   │               │ for Rust....                                                │
+│           │                     │          │                   │               │ https://avd.aquasec.com/nvd/cve-2021-38193                  │
+├───────────┼─────────────────────┤          ├───────────────────┼───────────────┼─────────────────────────────────────────────────────────────┤
+│ smallvec  │ CVE-2019-15551      │          │ 0.6.9             │ 0.6.10        │ An issue was discovered in the smallvec crate before 0.6.10 │
+│           │                     │          │                   │               │ for Rust....                                                │
+│           │                     │          │                   │               │ https://avd.aquasec.com/nvd/cve-2019-15551                  │
+│           ├─────────────────────┼──────────┤                   ├───────────────┼─────────────────────────────────────────────────────────────┤
+│           │ CVE-2018-25023      │ HIGH     │                   │ 0.6.13        │ An issue was discovered in the smallvec crate before 0.6.13 │
+│           │                     │          │                   │               │ for Rust....                                                │
+│           │                     │          │                   │               │ https://avd.aquasec.com/nvd/cve-2018-25023                  │
+│           ├─────────────────────┼──────────┤                   │               ├─────────────────────────────────────────────────────────────┤
+│           │ GHSA-66p5-j55p-32r9 │ MEDIUM   │                   │               │ smallvec creates uninitialized value of any type            │
+│           │                     │          │                   │               │ https://github.com/advisories/GHSA-66p5-j55p-32r9           │
+└───────────┴─────────────────────┴──────────┴───────────────────┴───────────────┴─────────────────────────────────────────────────────────────┘
+
+Pipfile.lock (pipenv)
+=====================
+Total: 8 (UNKNOWN: 0, LOW: 0, MEDIUM: 6, HIGH: 2, CRITICAL: 0)
+
+┌─────────────────────┬────────────────┬──────────┬───────────────────┬────────────────────────┬──────────────────────────────────────────────────────────────┐
+│       Library       │ Vulnerability  │ Severity │ Installed Version │     Fixed Version      │                            Title                             │
+├─────────────────────┼────────────────┼──────────┼───────────────────┼────────────────────────┼──────────────────────────────────────────────────────────────┤
+│ celery              │ CVE-2021-23727 │ HIGH     │ 4.3.0             │ 5.2.2                  │ celery: stored command injection vulnerability may allow     │
+│                     │                │          │                   │                        │ privileges escalation                                        │
+│                     │                │          │                   │                        │ https://avd.aquasec.com/nvd/cve-2021-23727                   │
+├─────────────────────┼────────────────┤          ├───────────────────┼────────────────────────┼──────────────────────────────────────────────────────────────┤
+│ django              │ CVE-2019-6975  │          │ 2.0.9             │ 1.11.19, 2.0.12, 2.1.7 │ python-django: memory exhaustion in                          │
+│                     │                │          │                   │                        │ django.utils.numberformat.format()                           │
+│                     │                │          │                   │                        │ https://avd.aquasec.com/nvd/cve-2019-6975                    │
+│                     ├────────────────┼──────────┤                   ├────────────────────────┼──────────────────────────────────────────────────────────────┤
+│                     │ CVE-2019-3498  │ MEDIUM   │                   │ 1.11.18, 2.0.10, 2.1.5 │ python-django: Content spoofing via URL path in default 404  │
+│                     │                │          │                   │                        │ page                                                         │
+│                     │                │          │                   │                        │ https://avd.aquasec.com/nvd/cve-2019-3498                    │
+│                     ├────────────────┤          │                   ├────────────────────────┼──────────────────────────────────────────────────────────────┤
+│                     │ CVE-2021-33203 │          │                   │ 2.2.24, 3.1.12, 3.2.4  │ django: Potential directory traversal via ``admindocs``      │
+│                     │                │          │                   │                        │ https://avd.aquasec.com/nvd/cve-2021-33203                   │
+├─────────────────────┼────────────────┤          ├───────────────────┼────────────────────────┼──────────────────────────────────────────────────────────────┤
+│ urllib3             │ CVE-2019-11324 │          │ 1.24.1            │ 1.24.2                 │ python-urllib3: Certification mishandle when error should be │
+│                     │                │          │                   │                        │ thrown                                                       │
+│                     │                │          │                   │                        │ https://avd.aquasec.com/nvd/cve-2019-11324                   │
+│                     ├────────────────┤          │                   ├────────────────────────┼──────────────────────────────────────────────────────────────┤
+│                     │ CVE-2021-33503 │          │                   │ 1.26.5                 │ python-urllib3: ReDoS in the parsing of authority part of    │
+│                     │                │          │                   │                        │ URL                                                          │
+│                     │                │          │                   │                        │ https://avd.aquasec.com/nvd/cve-2021-33503                   │
+│                     ├────────────────┼──────────┤                   ├────────────────────────┼──────────────────────────────────────────────────────────────┤
+│                     │ CVE-2019-11236 │ MEDIUM   │                   │ 1.24.3                 │ python-urllib3: CRLF injection due to not encoding the       │
+│                     │                │          │                   │                        │ '\r\n' sequence leading to...                                │
+│                     │                │          │                   │                        │ https://avd.aquasec.com/nvd/cve-2019-11236                   │
+│                     ├────────────────┤          │                   ├────────────────────────┼──────────────────────────────────────────────────────────────┤
+│                     │ CVE-2020-26137 │          │                   │ 1.25.9                 │ python-urllib3: CRLF injection via HTTP request method       │
+│                     │                │          │                   │                        │ https://avd.aquasec.com/nvd/cve-2020-26137                   │
+└─────────────────────┴────────────────┴──────────┴───────────────────┴────────────────────────┴──────────────────────────────────────────────────────────────┘
+```
+</details>
 
 ## Authentication
 

@@ -1,0 +1,77 @@
+{
+  "SchemaVersion": 2,
+  "ArtifactName": "testdata/fixtures/fs/pubspec",
+  "ArtifactType": "filesystem",
+  "Metadata": {
+    "ImageConfig": {
+      "architecture": "",
+      "created": "0001-01-01T00:00:00Z",
+      "os": "",
+      "rootfs": {
+        "type": "",
+        "diff_ids": null
+      },
+      "config": {}
+    }
+  },
+  "Results": [
+    {
+      "Target": "pubspec.lock",
+      "Class": "lang-pkgs",
+      "Type": "pub",
+      "Packages": [
+        {
+          "ID": "http@0.13.2",
+          "Name": "http",
+          "Version": "0.13.2"
+        },
+        {
+          "ID": "shelf@1.3.1",
+          "Name": "shelf",
+          "Version": "1.3.1",
+          "Indirect": true
+        }
+      ],
+      "Vulnerabilities": [
+        {
+          "VulnerabilityID": "CVE-2020-35669",
+          "PkgName": "http",
+          "PkgID": "http@0.13.2",
+          "InstalledVersion": "0.13.2",
+          "FixedVersion": "0.13.3",
+          "Layer": {},
+          "SeveritySource": "ghsa",
+          "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2020-35669",
+          "DataSource": {
+            "ID": "ghsa",
+            "Name": "GitHub Security Advisory Pub",
+            "URL": "https://github.com/advisories?query=type%3Areviewed+ecosystem%3Apub"
+          },
+          "Title": "http before 0.13.3 vulnerable to header injection",
+          "Description": "An issue was discovered in the http package before 0.13.3 for Dart. If the attacker controls the HTTP method and the app is using Request directly, it's possible to achieve CRLF injection in an HTTP request via HTTP header injection. This issue has been addressed in commit abb2bb182 by validating request methods.",
+          "Severity": "MEDIUM",
+          "CweIDs": [
+            "CWE-74"
+          ],
+          "CVSS": {
+            "ghsa": {
+              "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:R/S:C/C:L/I:L/A:N",
+              "V3Score": 6.1
+            }
+          },
+          "References": [
+            "https://nvd.nist.gov/vuln/detail/CVE-2020-35669",
+            "https://github.com/dart-lang/http/issues/511",
+            "https://github.com/dart-lang/http/blob/master/CHANGELOG.md#0133",
+            "https://github.com/dart-lang/http/pull/512",
+            "https://github.com/dart-lang/http/commit/abb2bb182fbd7f03aafd1f889b902d7b3bdb8769",
+            "https://pub.dev/packages/http/changelog#0133",
+            "https://github.com/advisories/GHSA-4rgh-jx4f-qfcq"
+          ],
+          "PublishedDate": "2022-05-24T17:37:16Z",
+          "LastModifiedDate": "2022-10-06T20:26:08Z"
+        }
+      ]
+    }
+  ]
+}

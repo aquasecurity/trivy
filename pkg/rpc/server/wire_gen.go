@@ -17,9 +17,8 @@ import (
 
 // Injectors from inject.go:
 
-func initializeScanServer(localArtifactCache cache.Cache) *ScanServer {
-	v := _wireValue
-	applierApplier := applier.NewApplier(localArtifactCache, v...)
+func initializeScanServer(localArtifactCache cache.LocalArtifactCache) *ScanServer {
+	applierApplier := applier.NewApplier(localArtifactCache)
 	detector := ospkg.Detector{}
 	config := db.Config{}
 	client := vulnerability.NewClient(config)
@@ -27,7 +26,3 @@ func initializeScanServer(localArtifactCache cache.Cache) *ScanServer {
 	scanServer := NewScanServer(scanner)
 	return scanServer
 }
-
-var (
-	_wireValue = []applier.Option(nil)
-)

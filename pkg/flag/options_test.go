@@ -1,7 +1,6 @@
 package flag
 
 import (
-	"os"
 	"testing"
 
 	"github.com/spf13/viper"
@@ -24,30 +23,42 @@ func Test_getStringSlice(t *testing.T) {
 	}{
 		{
 			name:      "happy path. Empty value",
-			flag:      &SecurityChecksFlag,
+			flag:      &ScannersFlag,
 			flagValue: "",
 			want:      nil,
 		},
 		{
 			name:      "happy path. String value",
-			flag:      &SecurityChecksFlag,
+			flag:      &ScannersFlag,
 			flagValue: "license,vuln",
-			want:      []string{types.SecurityCheckLicense, types.SecurityCheckVulnerability},
+			want: []string{
+				string(types.LicenseScanner),
+				string(types.VulnerabilityScanner),
+			},
 		},
 		{
-			name:      "happy path. Slice value",
-			flag:      &SecurityChecksFlag,
-			flagValue: []string{"license", "secret"},
-			want:      []string{types.SecurityCheckLicense, types.SecurityCheckSecret},
+			name: "happy path. Slice value",
+			flag: &ScannersFlag,
+			flagValue: []string{
+				"license",
+				"secret",
+			},
+			want: []string{
+				string(types.LicenseScanner),
+				string(types.SecretScanner),
+			},
 		},
 		{
 			name: "happy path. Env value",
-			flag: &SecurityChecksFlag,
+			flag: &ScannersFlag,
 			env: env{
 				key:   "TRIVY_SECURITY_CHECKS",
 				value: "rbac,config",
 			},
-			want: []string{types.SecurityCheckRbac, types.SecurityCheckConfig},
+			want: []string{
+				string(types.RBACScanner),
+				string(types.MisconfigScanner),
+			},
 		},
 	}
 
@@ -59,10 +70,7 @@ func Test_getStringSlice(t *testing.T) {
 				err := viper.BindEnv(tt.flag.ConfigName, tt.env.key)
 				assert.NoError(t, err)
 
-				savedEnvValue := os.Getenv(tt.env.key)
-				err = os.Setenv(tt.env.key, tt.env.value)
-				assert.NoError(t, err)
-				defer os.Setenv(tt.env.key, savedEnvValue)
+				t.Setenv(tt.env.key, tt.env.value)
 			}
 
 			sl := getStringSlice(tt.flag)

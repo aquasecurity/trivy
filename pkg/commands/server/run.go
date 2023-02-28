@@ -11,7 +11,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/module"
 	rpcServer "github.com/aquasecurity/trivy/pkg/rpc/server"
-	"github.com/aquasecurity/trivy/pkg/utils"
+	"github.com/aquasecurity/trivy/pkg/utils/fsutils"
 )
 
 // Run runs the scan
@@ -21,13 +21,13 @@ func Run(ctx context.Context, opts flag.Options) (err error) {
 	}
 
 	// configure cache dir
-	utils.SetCacheDir(opts.CacheDir)
+	fsutils.SetCacheDir(opts.CacheDir)
 	cache, err := operation.NewCache(opts.CacheOptions)
 	if err != nil {
 		return xerrors.Errorf("server cache error: %w", err)
 	}
 	defer cache.Close()
-	log.Logger.Debugf("cache dir:  %s", utils.CacheDir())
+	log.Logger.Debugf("cache dir:  %s", fsutils.CacheDir())
 
 	if opts.Reset {
 		return cache.ClearDB()
@@ -55,5 +55,5 @@ func Run(ctx context.Context, opts flag.Options) (err error) {
 	m.Register()
 
 	server := rpcServer.NewServer(opts.AppVersion, opts.Listen, opts.CacheDir, opts.Token, opts.TokenHeader, opts.DBRepository)
-	return server.ListenAndServe(cache, opts.Insecure)
+	return server.ListenAndServe(cache, opts.Insecure, opts.SkipDBUpdate)
 }

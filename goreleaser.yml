@@ -13,6 +13,7 @@ builds:
       - darwin
       - linux
       - freebsd
+      - windows
     goarch:
       - amd64
       - 386
@@ -30,6 +31,16 @@ builds:
         goarch: arm
       - goos: freebsd
         goarch: arm64
+      - goos: windows
+        goarch: 386
+      - goos: windows
+        goarch: arm
+      - goos: windows
+        goarch: arm64
+      - goos: windows
+        goarch: s390x
+      - goos: windows
+        goarch: ppc64le
 
 release:
     extra_files:
@@ -59,6 +70,7 @@ nfpms:
       netbsd: NetBSD
       freebsd: FreeBSD
       dragonfly: DragonFlyBSD
+      windows: Windows
     contents:
      - src: contrib/*.tpl
        dst: /usr/local/share/trivy/templates
@@ -83,6 +95,9 @@ archives:
       - README.md
       - LICENSE
       - contrib/*.tpl
+    format_overrides:
+      - goos: windows
+        format: zip
 
 
 brews:

@@ -4,34 +4,35 @@ import (
 	"context"
 	"crypto/tls"
 	"fmt"
+	"net"
 	"net/http"
 	"strings"
+	"time"
 
 	"github.com/google/go-containerregistry/pkg/authn"
 	"github.com/google/go-containerregistry/pkg/name"
 	v1 "github.com/google/go-containerregistry/pkg/v1"
 	"github.com/google/go-containerregistry/pkg/v1/remote"
+	v1types "github.com/google/go-containerregistry/pkg/v1/types"
+	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/image/token"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
+	"github.com/aquasecurity/trivy/pkg/log"
 )
 
 func tryRemote(ctx context.Context, imageName string, ref name.Reference, option types.DockerOption) (types.Image, error) {
 	var remoteOpts []remote.Option
-	if option.InsecureSkipTLSVerify {
-		t := &http.Transport{
-			TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
-		}
-		remoteOpts = append(remoteOpts, remote.WithTransport(t))
+	d := &net.Dialer{
+		Timeout: 10 * time.Minute,
 	}
-
-	if option.Platform != "" {
-		s, err := v1.ParsePlatform(option.Platform)
-		if err != nil {
-			return nil, err
-		}
-		remoteOpts = append(remoteOpts, remote.WithPlatform(*s))
+	t := &http.Transport{
+		Proxy:             http.ProxyFromEnvironment,
+		DisableKeepAlives: true,
+		DialContext:       d.DialContext,
+		TLSClientConfig:   &tls.Config{InsecureSkipVerify: option.InsecureSkipTLSVerify},
 	}
+	remoteOpts = append(remoteOpts, remote.WithTransport(t))
 
 	domain := ref.Context().RegistryStr()
 	auth := token.GetToken(ctx, domain, option)
@@ -43,6 +44,17 @@ func tryRemote(ctx context.Context, imageName string, ref name.Reference, option
 		remoteOpts = append(remoteOpts, remote.WithAuth(&bearer))
 	} else {
 		remoteOpts = append(remoteOpts, remote.WithAuthFromKeychain(authn.DefaultKeychain))
+	}
+
+	if option.Platform != "" {
+		s, err := parsePlatform(ref, option.Platform, remoteOpts)
+		if err != nil {
+			return nil, xerrors.Errorf("platform error: %w", err)
+		}
+		// Don't pass platform when the specified image is single-arch.
+		if s != nil {
+			remoteOpts = append(remoteOpts, remote.WithPlatform(*s))
+		}
 	}
 
 	desc, err := remote.Get(ref, remoteOpts...)
@@ -65,6 +77,49 @@ func tryRemote(ctx context.Context, imageName string, ref name.Reference, option
 
 }
 
+func parsePlatform(ref name.Reference, p string, options []remote.Option) (*v1.Platform, error) {
+	// OS wildcard, implicitly pick up the first os found in the image list.
+	// e.g. */amd64
+	if strings.HasPrefix(p, "*/") {
+		d, err := remote.Get(ref, options...)
+		if err != nil {
+			return nil, xerrors.Errorf("image get error: %w", err)
+		}
+		switch d.MediaType {
+		case v1types.OCIManifestSchema1, v1types.DockerManifestSchema2:
+			// We want an index but the registry has an image, not multi-arch. We just ignore "--platform".
+			log.Logger.Debug("Ignore --platform as the image is not multi-arch")
+			return nil, nil
+		case v1types.OCIImageIndex, v1types.DockerManifestList:
+			// These are expected.
+		}
+
+		index, err := d.ImageIndex()
+		if err != nil {
+			return nil, xerrors.Errorf("image index error: %w", err)
+		}
+
+		m, err := index.IndexManifest()
+		if err != nil {
+			return nil, xerrors.Errorf("remote index manifest error: %w", err)
+		}
+		if len(m.Manifests) == 0 {
+			log.Logger.Debug("Ignore --platform as the image is not multi-arch")
+			return nil, nil
+		}
+		if m.Manifests[0].Platform != nil {
+			// Replace with the detected OS
+			// e.g. */amd64 => linux/amd64
+			p = m.Manifests[0].Platform.OS + strings.TrimPrefix(p, "*")
+		}
+	}
+	platform, err := v1.ParsePlatform(p)
+	if err != nil {
+		return nil, xerrors.Errorf("platform parse error: %w", err)
+	}
+	return platform, nil
+}
+
 type remoteImage struct {
 	name       string
 	ref        implicitReference
@@ -78,10 +133,6 @@ func (img remoteImage) Name() string {
 
 func (img remoteImage) ID() (string, error) {
 	return ID(img)
-}
-
-func (img remoteImage) LayerIDs() ([]string, error) {
-	return LayerIDs(img)
 }
 
 func (img remoteImage) RepoTags() []string {

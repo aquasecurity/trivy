@@ -9,13 +9,14 @@ Aliases:
 
 Scan Flags
       --offline-scan             do not issue API requests to identify dependencies
-      --security-checks string   comma-separated list of what security issues to detect (vuln,config,secret) (default "vuln,secret")
+      --scanners string          comma-separated list of what security issues to detect (vuln,config,secret) (default "vuln,secret")
       --skip-dirs strings        specify the directories where the traversal is skipped
       --skip-files strings       specify the file paths to skip traversal
 
 Report Flags
       --dependency-tree        show dependency origin tree (EXPERIMENTAL)
       --exit-code int          specify exit code when any security issues are found
+      --exit-on-eosl           exit with the specified code when the os of image ends of service/life
   -f, --format string          format (table, json, sarif, template, cyclonedx, spdx, spdx-json, github, cosign-vuln) (default "table")
       --ignore-policy string   specify the Rego file path to evaluate each vulnerability
       --ignorefile string      specify .trivyignore file (default ".trivyignore")
@@ -36,9 +37,12 @@ Cache Flags
 DB Flags
       --db-repository string   OCI repository to retrieve trivy-db from (default "ghcr.io/aquasecurity/trivy-db")
       --download-db-only       download/update vulnerability database but don't run a scan
+      --download-java-db-only  download/update java indexes database but don't run a scan
+      --java-db-repository string   OCI repository to retrieve trivy-java-db from (default "ghcr.io/aquasecurity/trivy-java-db")
       --no-progress            suppress progress bar
       --reset                  remove all caches and database
       --skip-db-update         skip updating vulnerability database
+      --skip-java-db-update    skip updating java indexes database
 
 Vulnerability Flags
       --ignore-unfixed     display only fixed vulnerabilities
@@ -47,8 +51,8 @@ Vulnerability Flags
 Misconfiguration Flags
       --config-data strings         specify paths from which data for the Rego policies will be recursively loaded
       --config-policy strings       specify paths to the Rego policy files directory, applying config files
-      --file-patterns strings       specify config file patterns, available with '--security-checks config'
-      --include-non-failures        include successes and exceptions, available with '--security-checks config'
+      --file-patterns strings       specify config file patterns, available with '--scanners config'
+      --include-non-failures        include successes and exceptions, available with '--scanners config'
       --policy-namespaces strings   Rego namespaces
       --trace                       enable more verbose trace output for custom queries
 

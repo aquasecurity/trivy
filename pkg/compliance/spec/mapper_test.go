@@ -5,25 +5,27 @@ import (
 
 	"github.com/stretchr/testify/assert"
 
+	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/compliance/spec"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
 
 func TestMapSpecCheckIDToFilteredResults(t *testing.T) {
-	checkIDs := map[types.SecurityCheck][]string{
-		types.SecurityCheckConfig: {
+	checkIDs := map[types.Scanner][]string{
+		types.MisconfigScanner: {
 			"AVD-KSV012",
 			"AVD-1.2.31",
 			"AVD-1.2.32",
 		},
-		types.SecurityCheckVulnerability: {
+		types.VulnerabilityScanner: {
 			"CVE-9999-9999",
+			"VULN-CRITICAL",
 		},
 	}
 	tests := []struct {
 		name     string
-		checkIDs map[types.SecurityCheck][]string
+		checkIDs map[types.Scanner][]string
 		result   types.Result
 		want     map[string]types.Results
 	}{
@@ -35,31 +37,54 @@ func TestMapSpecCheckIDToFilteredResults(t *testing.T) {
 				Class:  types.ClassConfig,
 				Type:   ftypes.Kubernetes,
 				Misconfigurations: []types.DetectedMisconfiguration{
-					{AVDID: "AVD-KSV012", Status: types.StatusFailure},
-					{AVDID: "AVD-KSV013", Status: types.StatusFailure},
-					{AVDID: "AVD-1.2.31", Status: types.StatusFailure},
+					{
+						AVDID:  "AVD-KSV012",
+						Status: types.StatusFailure,
+					},
+					{
+						AVDID:  "AVD-KSV013",
+						Status: types.StatusFailure,
+					},
+					{
+						AVDID:  "AVD-1.2.31",
+						Status: types.StatusFailure,
+					},
 				},
 			},
 			want: map[string]types.Results{
 				"AVD-KSV012": {
 					{
-						Target:         "target",
-						Class:          types.ClassConfig,
-						Type:           ftypes.Kubernetes,
-						MisconfSummary: &types.MisconfSummary{Successes: 0, Failures: 1, Exceptions: 0},
+						Target: "target",
+						Class:  types.ClassConfig,
+						Type:   ftypes.Kubernetes,
+						MisconfSummary: &types.MisconfSummary{
+							Successes:  0,
+							Failures:   1,
+							Exceptions: 0,
+						},
 						Misconfigurations: []types.DetectedMisconfiguration{
-							{AVDID: "AVD-KSV012", Status: types.StatusFailure},
+							{
+								AVDID:  "AVD-KSV012",
+								Status: types.StatusFailure,
+							},
 						},
 					},
 				},
 				"AVD-1.2.31": {
 					{
-						Target:         "target",
-						Class:          types.ClassConfig,
-						Type:           ftypes.Kubernetes,
-						MisconfSummary: &types.MisconfSummary{Successes: 0, Failures: 1, Exceptions: 0},
+						Target: "target",
+						Class:  types.ClassConfig,
+						Type:   ftypes.Kubernetes,
+						MisconfSummary: &types.MisconfSummary{
+							Successes:  0,
+							Failures:   1,
+							Exceptions: 0,
+						},
 						Misconfigurations: []types.DetectedMisconfiguration{
-							{AVDID: "AVD-1.2.31", Status: types.StatusFailure},
+							{
+								AVDID:  "AVD-1.2.31",
+								Status: types.StatusFailure,
+							},
 						},
 					},
 				},
@@ -73,8 +98,18 @@ func TestMapSpecCheckIDToFilteredResults(t *testing.T) {
 				Class:  types.ClassLangPkg,
 				Type:   ftypes.GoModule,
 				Vulnerabilities: []types.DetectedVulnerability{
-					{VulnerabilityID: "CVE-9999-0001"},
-					{VulnerabilityID: "CVE-9999-9999"},
+					{
+						VulnerabilityID: "CVE-9999-0001",
+						Vulnerability: dbTypes.Vulnerability{
+							Severity: "CRITICAL",
+						},
+					},
+					{
+						VulnerabilityID: "CVE-9999-9999",
+						Vulnerability: dbTypes.Vulnerability{
+							Severity: "LOW",
+						},
+					},
 				},
 			},
 			want: map[string]types.Results{
@@ -84,7 +119,27 @@ func TestMapSpecCheckIDToFilteredResults(t *testing.T) {
 						Class:  types.ClassLangPkg,
 						Type:   ftypes.GoModule,
 						Vulnerabilities: []types.DetectedVulnerability{
-							{VulnerabilityID: "CVE-9999-9999"},
+							{
+								VulnerabilityID: "CVE-9999-9999",
+								Vulnerability: dbTypes.Vulnerability{
+									Severity: "LOW",
+								},
+							},
+						},
+					},
+				},
+				"VULN-CRITICAL": {
+					{
+						Target: "target",
+						Class:  types.ClassLangPkg,
+						Type:   ftypes.GoModule,
+						Vulnerabilities: []types.DetectedVulnerability{
+							{
+								VulnerabilityID: "CVE-9999-0001",
+								Vulnerability: dbTypes.Vulnerability{
+									Severity: "CRITICAL",
+								},
+							},
 						},
 					},
 				},

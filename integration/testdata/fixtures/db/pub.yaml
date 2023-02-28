@@ -1,0 +1,10 @@
+- bucket: pub::GitHub Security Advisory Pub
+  pairs:
+    - bucket: http
+      pairs:
+        - key: CVE-2020-35669
+          value:
+            PatchedVersions:
+              - 0.13.3
+            VulnerableVersions:
+              - "<= 0.13.3"

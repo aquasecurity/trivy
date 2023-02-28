@@ -10,8 +10,9 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
+	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/module"
-	"github.com/aquasecurity/trivy/pkg/utils"
+	"github.com/aquasecurity/trivy/pkg/utils/fsutils"
 )
 
 func TestModule(t *testing.T) {
@@ -42,14 +43,24 @@ func TestModule(t *testing.T) {
 
 	// Set up Spring4Shell module
 	t.Setenv("XDG_DATA_HOME", cacheDir)
-	_, err = utils.CopyFile(filepath.Join("../", "examples", "module", "spring4shell", "spring4shell.wasm"),
+	_, err = fsutils.CopyFile(filepath.Join("../", "examples", "module", "spring4shell", "spring4shell.wasm"),
 		filepath.Join(moduleDir, "spring4shell.wasm"))
 	require.NoError(t, err)
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			osArgs := []string{"--cache-dir", cacheDir, "image", "--ignore-unfixed", "--format", "json",
-				"--skip-update", "--offline-scan", "--input", tt.input}
+			osArgs := []string{
+				"--cache-dir",
+				cacheDir,
+				"image",
+				"--ignore-unfixed",
+				"--format",
+				"json",
+				"--skip-update",
+				"--offline-scan",
+				"--input",
+				tt.input,
+			}
 
 			// Set up the output file
 			outputFile := filepath.Join(t.TempDir(), "output.json")
@@ -57,11 +68,15 @@ func TestModule(t *testing.T) {
 				outputFile = tt.golden
 			}
 
-			osArgs = append(osArgs, []string{"--output", outputFile}...)
+			osArgs = append(osArgs, []string{
+				"--output",
+				outputFile,
+			}...)
 
 			// Run Trivy
 			err = execute(osArgs)
 			assert.NoError(t, err)
+			defer analyzer.DeregisterAnalyzer("spring4shell")
 
 			// Compare want and got
 			compareReports(t, tt.golden, outputFile)

@@ -11,11 +11,11 @@ import (
 	"github.com/aquasecurity/trivy/pkg/types"
 )
 
-func TestComplianceSpec_SecurityChecks(t *testing.T) {
+func TestComplianceSpec_Scanners(t *testing.T) {
 	tests := []struct {
 		name    string
 		spec    spec.Spec
-		want    []types.SecurityCheck
+		want    types.Scanners
 		wantErr assert.ErrorAssertionFunc
 	}{
 		{
@@ -48,7 +48,7 @@ func TestComplianceSpec_SecurityChecks(t *testing.T) {
 					},
 				},
 			},
-			want:    []types.SecurityCheck{types.SecurityCheckConfig},
+			want:    []types.Scanner{types.MisconfigScanner},
 			wantErr: assert.NoError,
 		},
 		{
@@ -89,7 +89,10 @@ func TestComplianceSpec_SecurityChecks(t *testing.T) {
 					},
 				},
 			},
-			want:    []types.SecurityCheck{types.SecurityCheckConfig, types.SecurityCheckVulnerability},
+			want: []types.Scanner{
+				types.MisconfigScanner,
+				types.VulnerabilityScanner,
+			},
 			wantErr: assert.NoError,
 		},
 		{
@@ -120,12 +123,14 @@ func TestComplianceSpec_SecurityChecks(t *testing.T) {
 			cs := &spec.ComplianceSpec{
 				Spec: tt.spec,
 			}
-			got, err := cs.SecurityChecks()
-			if !tt.wantErr(t, err, fmt.Sprintf("SecurityChecks()")) {
+			got, err := cs.Scanners()
+			if !tt.wantErr(t, err, fmt.Sprintf("Scanners()")) {
 				return
 			}
-			sort.Strings(got) // for consistency
-			assert.Equalf(t, tt.want, got, "SecurityChecks()")
+			sort.Slice(got, func(i, j int) bool {
+				return got[i] < got[j]
+			}) // for consistency
+			assert.Equalf(t, tt.want, got, "Scanners()")
 		})
 	}
 }
@@ -134,7 +139,7 @@ func TestComplianceSpec_CheckIDs(t *testing.T) {
 	tests := []struct {
 		name string
 		spec spec.Spec
-		want map[types.SecurityCheck][]string
+		want map[types.Scanner][]string
 	}{
 		{
 			name: "get config scanner type by check id prefix",
@@ -166,8 +171,8 @@ func TestComplianceSpec_CheckIDs(t *testing.T) {
 					},
 				},
 			},
-			want: map[types.SecurityCheck][]string{
-				types.SecurityCheckConfig: {
+			want: map[types.Scanner][]string{
+				types.MisconfigScanner: {
 					"AVD-KSV012",
 					"AVD-1.2.31",
 					"AVD-1.2.32",
@@ -212,13 +217,13 @@ func TestComplianceSpec_CheckIDs(t *testing.T) {
 					},
 				},
 			},
-			want: map[types.SecurityCheck][]string{
-				types.SecurityCheckConfig: {
+			want: map[types.Scanner][]string{
+				types.MisconfigScanner: {
 					"AVD-KSV012",
 					"AVD-1.2.31",
 					"AVD-1.2.32",
 				},
-				types.SecurityCheckVulnerability: {
+				types.VulnerabilityScanner: {
 					"CVE-9999-9999",
 				},
 			},

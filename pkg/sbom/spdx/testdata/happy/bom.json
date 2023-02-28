@@ -167,7 +167,7 @@
 	"relationships": [
 		{
 			"relatedSpdxElement": "SPDXRef-ContainerImage-b5d81cde5f95c8fc",
-			"relationshipType": "DESCRIBE",
+			"relationshipType": "DESCRIBES",
 			"spdxElementId": "SPDXRef-DOCUMENT"
 		},
 		{

@@ -53,11 +53,6 @@ func (img archiveImage) ID() (string, error) {
 	return ID(img)
 }
 
-// LayerIDs returns a list of uncompressed layer IDs
-func (img archiveImage) LayerIDs() ([]string, error) {
-	return LayerIDs(img)
-}
-
 // RepoTags returns empty as an archive doesn't support RepoTags
 func (archiveImage) RepoTags() []string {
 	return nil

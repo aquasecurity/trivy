@@ -41,11 +41,12 @@ const (
 	PropertyRepoTag    = "RepoTag"
 
 	// Package properties
+	PropertyPkgID       = "PkgID"
 	PropertyLayerDiffID = "LayerDiffID"
 	PropertyLayerDigest = "LayerDigest"
 
 	RelationShipContains  = "CONTAINS"
-	RelationShipDescribe  = "DESCRIBE"
+	RelationShipDescribe  = "DESCRIBES"
 	RelationShipDependsOn = "DEPENDS_ON"
 
 	ElementOperatingSystem = "OperatingSystem"
@@ -149,7 +150,7 @@ func (m *Marshaler) Marshal(r types.Report) (*spdx.Document2_2, error) {
 			DocumentNamespace:    getDocumentNamespace(r, m),
 			CreatorOrganizations: []string{CreatorOrganization},
 			CreatorTools:         []string{CreatorTool},
-			Created:              m.clock.Now().UTC().Format(time.RFC3339Nano),
+			Created:              m.clock.Now().UTC().Format(time.RFC3339),
 		},
 		Packages:      packages,
 		Relationships: relationShips,
@@ -279,6 +280,7 @@ func (m *Marshaler) pkgToSpdxPackage(t string, class types.ResultClass, metadata
 	pkgExtRefs := []*spdx.PackageExternalReference2_2{purlExternalReference(packageURL.String())}
 
 	var attrTexts []string
+	attrTexts = appendAttributionText(attrTexts, PropertyPkgID, pkg.ID)
 	attrTexts = appendAttributionText(attrTexts, PropertyLayerDigest, pkg.Layer.Digest)
 	attrTexts = appendAttributionText(attrTexts, PropertyLayerDiffID, pkg.Layer.DiffID)
 

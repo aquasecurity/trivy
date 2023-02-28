@@ -153,12 +153,23 @@ func TestMarshaler_Marshal(t *testing.T) {
 							},
 						},
 					},
+					{
+						Target: "usr/local/bin/tfsec",
+						Class:  types.ClassLangPkg,
+						Type:   ftypes.GoBinary,
+						Packages: []ftypes.Package{
+							{
+								Name:    "golang.org/x/crypto",
+								Version: "v0.0.0-20210421170649-83a5a9bb288b",
+							},
+						},
+					},
 				},
 			},
 			want: &cdx.BOM{
 				XMLNS:        "http://cyclonedx.org/schema/bom/1.4",
 				BOMFormat:    "CycloneDX",
-				SpecVersion:  "1.4",
+				SpecVersion:  cdx.SpecVersion1_4,
 				SerialNumber: "urn:uuid:3ff14136-e09f-4df9-80ea-000000000001",
 				Version:      1,
 				Metadata: &cdx.Metadata{
@@ -335,58 +346,76 @@ func TestMarshaler_Marshal(t *testing.T) {
 							},
 						},
 					},
+					{
+						BOMRef:     "pkg:golang/golang.org/x/crypto@v0.0.0-20210421170649-83a5a9bb288b",
+						Type:       cdx.ComponentTypeLibrary,
+						Name:       "golang.org/x/crypto",
+						Version:    "v0.0.0-20210421170649-83a5a9bb288b",
+						PackageURL: "pkg:golang/golang.org/x/crypto@v0.0.0-20210421170649-83a5a9bb288b",
+						Properties: &[]cdx.Property{
+							{
+								Name:  "aquasecurity:trivy:PkgType",
+								Value: "gobinary",
+							},
+						},
+					},
+					{
+						BOMRef:  "3ff14136-e09f-4df9-80ea-000000000006",
+						Type:    cdx.ComponentTypeApplication,
+						Name:    "usr/local/bin/tfsec",
+						Version: "",
+						Properties: &[]cdx.Property{
+							{
+								Name:  "aquasecurity:trivy:Type",
+								Value: "gobinary",
+							},
+							{
+								Name:  "aquasecurity:trivy:Class",
+								Value: "lang-pkgs",
+							},
+						},
+					},
 				},
 				Dependencies: &[]cdx.Dependency{
 					{
 						Ref: "3ff14136-e09f-4df9-80ea-000000000002",
-						Dependencies: &[]cdx.Dependency{
-							{
-								Ref: "pkg:rpm/centos/binutils@2.30-93.el8?arch=aarch64&distro=centos-8.3.2011",
-							},
+						Dependencies: &[]string{
+							"pkg:rpm/centos/binutils@2.30-93.el8?arch=aarch64&distro=centos-8.3.2011",
 						},
 					},
 					{
 						Ref: "3ff14136-e09f-4df9-80ea-000000000003",
-						Dependencies: &[]cdx.Dependency{
-							{
-								Ref: "pkg:gem/actionpack@7.0.0",
-							},
-							{
-								Ref: "pkg:gem/actioncontroller@7.0.0",
-							},
+						Dependencies: &[]string{
+							"pkg:gem/actionpack@7.0.0",
+							"pkg:gem/actioncontroller@7.0.0",
 						},
 					},
 					{
 						Ref: "3ff14136-e09f-4df9-80ea-000000000004",
-						Dependencies: &[]cdx.Dependency{
-							{
-								Ref: "pkg:gem/actionpack@7.0.0",
-							},
+						Dependencies: &[]string{
+							"pkg:gem/actionpack@7.0.0",
 						},
 					},
 					{
 						Ref: "3ff14136-e09f-4df9-80ea-000000000005",
-						Dependencies: &[]cdx.Dependency{
-							{
-								Ref: "pkg:nuget/Newtonsoft.Json@9.0.1",
-							},
+						Dependencies: &[]string{
+							"pkg:nuget/Newtonsoft.Json@9.0.1",
+						},
+					},
+					{
+						Ref: "3ff14136-e09f-4df9-80ea-000000000006",
+						Dependencies: &[]string{
+							"pkg:golang/golang.org/x/crypto@v0.0.0-20210421170649-83a5a9bb288b",
 						},
 					},
 					{
 						Ref: "pkg:oci/rails@sha256:a27fd8080b517143cbbbab9dfb7c8571c40d67d534bbdee55bd6c473f432b177?repository_url=index.docker.io%2Flibrary%2Frails&arch=arm64",
-						Dependencies: &[]cdx.Dependency{
-							{
-								Ref: "3ff14136-e09f-4df9-80ea-000000000002",
-							},
-							{
-								Ref: "3ff14136-e09f-4df9-80ea-000000000003",
-							},
-							{
-								Ref: "3ff14136-e09f-4df9-80ea-000000000004",
-							},
-							{
-								Ref: "3ff14136-e09f-4df9-80ea-000000000005",
-							},
+						Dependencies: &[]string{
+							"3ff14136-e09f-4df9-80ea-000000000002",
+							"3ff14136-e09f-4df9-80ea-000000000003",
+							"3ff14136-e09f-4df9-80ea-000000000004",
+							"3ff14136-e09f-4df9-80ea-000000000005",
+							"3ff14136-e09f-4df9-80ea-000000000006",
 						},
 					},
 				},
@@ -613,7 +642,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 			want: &cdx.BOM{
 				XMLNS:        "http://cyclonedx.org/schema/bom/1.4",
 				BOMFormat:    "CycloneDX",
-				SpecVersion:  "1.4",
+				SpecVersion:  cdx.SpecVersion1_4,
 				SerialNumber: "urn:uuid:3ff14136-e09f-4df9-80ea-000000000001",
 				Version:      1,
 				Metadata: &cdx.Metadata{
@@ -745,24 +774,16 @@ func TestMarshaler_Marshal(t *testing.T) {
 				Dependencies: &[]cdx.Dependency{
 					{
 						Ref: "3ff14136-e09f-4df9-80ea-000000000003",
-						Dependencies: &[]cdx.Dependency{
-							{
-								Ref: "pkg:rpm/centos/acl@1:2.2.53-1.el8?arch=aarch64&distro=centos-8.3.2011",
-							},
+						Dependencies: &[]string{
+							"pkg:rpm/centos/acl@1:2.2.53-1.el8?arch=aarch64&distro=centos-8.3.2011",
 						},
 					},
 					{
 						Ref: "3ff14136-e09f-4df9-80ea-000000000002",
-						Dependencies: &[]cdx.Dependency{
-							{
-								Ref: "3ff14136-e09f-4df9-80ea-000000000003",
-							},
-							{
-								Ref: "pkg:gem/actionpack@7.0.0?file_path=tools%2Fproject-john%2Fspecifications%2Factionpack.gemspec",
-							},
-							{
-								Ref: "pkg:gem/actionpack@7.0.1?file_path=tools%2Fproject-doe%2Fspecifications%2Factionpack.gemspec",
-							},
+						Dependencies: &[]string{
+							"3ff14136-e09f-4df9-80ea-000000000003",
+							"pkg:gem/actionpack@7.0.0?file_path=tools%2Fproject-john%2Fspecifications%2Factionpack.gemspec",
+							"pkg:gem/actionpack@7.0.1?file_path=tools%2Fproject-doe%2Fspecifications%2Factionpack.gemspec",
 						},
 					},
 				},
@@ -773,6 +794,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 							Name: string(vulnerability.RubySec),
 							URL:  "https://github.com/rubysec/ruby-advisory-db",
 						},
+						Recommendation: "Upgrade actionpack to version ~> 5.2.6, >= 5.2.6.2, ~> 6.0.4, >= 6.0.4.6, ~> 6.1.4, >= 6.1.4.6, >= 7.0.2.2",
 						Ratings: &[]cdx.VulnerabilityRating{
 							{
 								Source: &cdx.Source{
@@ -866,7 +888,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 			want: &cdx.BOM{
 				XMLNS:        "http://cyclonedx.org/schema/bom/1.4",
 				BOMFormat:    "CycloneDX",
-				SpecVersion:  "1.4",
+				SpecVersion:  cdx.SpecVersion1_4,
 				SerialNumber: "urn:uuid:3ff14136-e09f-4df9-80ea-000000000001",
 				Version:      1,
 				Metadata: &cdx.Metadata{
@@ -924,18 +946,14 @@ func TestMarshaler_Marshal(t *testing.T) {
 				Dependencies: &[]cdx.Dependency{
 					{
 						Ref: "3ff14136-e09f-4df9-80ea-000000000003",
-						Dependencies: &[]cdx.Dependency{
-							{
-								Ref: "pkg:gem/actioncable@6.1.4.1",
-							},
+						Dependencies: &[]string{
+							"pkg:gem/actioncable@6.1.4.1",
 						},
 					},
 					{
 						Ref: "3ff14136-e09f-4df9-80ea-000000000002",
-						Dependencies: &[]cdx.Dependency{
-							{
-								Ref: "3ff14136-e09f-4df9-80ea-000000000003",
-							},
+						Dependencies: &[]string{
+							"3ff14136-e09f-4df9-80ea-000000000003",
 						},
 					},
 				},
@@ -969,7 +987,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 			want: &cdx.BOM{
 				XMLNS:        "http://cyclonedx.org/schema/bom/1.4",
 				BOMFormat:    "CycloneDX",
-				SpecVersion:  "1.4",
+				SpecVersion:  cdx.SpecVersion1_4,
 				SerialNumber: "urn:uuid:3ff14136-e09f-4df9-80ea-000000000001",
 				Version:      1,
 				Metadata: &cdx.Metadata{
@@ -1023,10 +1041,8 @@ func TestMarshaler_Marshal(t *testing.T) {
 				Dependencies: &[]cdx.Dependency{
 					{
 						Ref: "3ff14136-e09f-4df9-80ea-000000000002",
-						Dependencies: &[]cdx.Dependency{
-							{
-								Ref: "pkg:npm/ruby-typeprof@0.20.1?file_path=usr%2Flocal%2Flib%2Fruby%2Fgems%2F3.1.0%2Fgems%2Ftypeprof-0.21.1%2Fvscode%2Fpackage.json",
-							},
+						Dependencies: &[]string{
+							"pkg:npm/ruby-typeprof@0.20.1?file_path=usr%2Flocal%2Flib%2Fruby%2Fgems%2F3.1.0%2Fgems%2Ftypeprof-0.21.1%2Fvscode%2Fpackage.json",
 						},
 					},
 				},
@@ -1043,7 +1059,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 			want: &cdx.BOM{
 				XMLNS:        "http://cyclonedx.org/schema/bom/1.4",
 				BOMFormat:    "CycloneDX",
-				SpecVersion:  "1.4",
+				SpecVersion:  cdx.SpecVersion1_4,
 				SerialNumber: "urn:uuid:3ff14136-e09f-4df9-80ea-000000000001",
 				Version:      1,
 				Metadata: &cdx.Metadata{
@@ -1067,12 +1083,12 @@ func TestMarshaler_Marshal(t *testing.T) {
 						},
 					},
 				},
-				Components:      new([]cdx.Component),
+				Components:      lo.ToPtr([]cdx.Component{}),
 				Vulnerabilities: &[]cdx.Vulnerability{},
 				Dependencies: &[]cdx.Dependency{
 					{
 						Ref:          "3ff14136-e09f-4df9-80ea-000000000002",
-						Dependencies: new([]cdx.Dependency),
+						Dependencies: lo.ToPtr([]string{}),
 					},
 				},
 			},
@@ -1213,7 +1229,7 @@ func TestMarshaler_MarshalVulnerabilities(t *testing.T) {
 			want: &cdx.BOM{
 				XMLNS:       "http://cyclonedx.org/schema/bom/1.4",
 				BOMFormat:   "CycloneDX",
-				SpecVersion: "1.4",
+				SpecVersion: cdx.SpecVersion1_4,
 				Version:     1,
 				Metadata: &cdx.Metadata{
 					Timestamp: "2021-08-25T12:20:30+00:00",
@@ -1371,14 +1387,11 @@ func TestMarshaler_MarshalVulnerabilities(t *testing.T) {
 									URL:  "https://www.redhat.com/security/data/oval/v2/",
 								},
 								Vulnerability: dtypes.Vulnerability{
-									Title:       "binutils: Use-after-free in the error function",
-									Description: "In GNU Binutils 2.31.1, there is a use-after-free in the error function in elfcomm.c when called from the process_archive function in readelf.c via a crafted ELF file.",
-									Severity:    dtypes.SeverityMedium.String(),
-									VendorSeverity: dtypes.VendorSeverity{
-										vulnerability.NVD:        dtypes.SeverityMedium,
-										vulnerability.RedHatOVAL: dtypes.SeverityMedium,
-									},
-									CweIDs: []string{"CWE-416"},
+									Title:          "binutils: Use-after-free in the error function",
+									Description:    "In GNU Binutils 2.31.1, there is a use-after-free in the error function in elfcomm.c when called from the process_archive function in readelf.c via a crafted ELF file.",
+									Severity:       dtypes.SeverityMedium.String(),
+									VendorSeverity: dtypes.VendorSeverity{},
+									CweIDs:         []string{"CWE-416"},
 									CVSS: dtypes.VendorCVSS{
 										vulnerability.NVD: dtypes.CVSS{
 											V2Vector: "AV:N/AC:M/Au:N/C:N/I:N/A:P",
@@ -1406,7 +1419,7 @@ func TestMarshaler_MarshalVulnerabilities(t *testing.T) {
 			want: &cdx.BOM{
 				XMLNS:       "http://cyclonedx.org/schema/bom/1.4",
 				BOMFormat:   "CycloneDX",
-				SpecVersion: "1.4",
+				SpecVersion: cdx.SpecVersion1_4,
 				Version:     1,
 				Metadata: &cdx.Metadata{
 					Timestamp: "2021-08-25T12:20:30+00:00",
@@ -1429,38 +1442,7 @@ func TestMarshaler_MarshalVulnerabilities(t *testing.T) {
 							Name: string(vulnerability.RedHatOVAL),
 							URL:  "https://www.redhat.com/security/data/oval/v2/",
 						},
-						Ratings: &[]cdx.VulnerabilityRating{
-							{
-								Source: &cdx.Source{
-									Name: string(vulnerability.NVD),
-									URL:  "",
-								},
-								Score:    lo.ToPtr(4.3),
-								Severity: cdx.SeverityMedium,
-								Method:   cdx.ScoringMethodCVSSv2,
-								Vector:   "AV:N/AC:M/Au:N/C:N/I:N/A:P",
-							},
-							{
-								Source: &cdx.Source{
-									Name: string(vulnerability.NVD),
-									URL:  "",
-								},
-								Score:    lo.ToPtr(5.5),
-								Severity: cdx.SeverityMedium,
-								Method:   cdx.ScoringMethodCVSSv3,
-								Vector:   "CVSS:3.0/AV:L/AC:L/PR:N/UI:R/S:U/C:N/I:N/A:H",
-							},
-							{
-								Source: &cdx.Source{
-									Name: string(vulnerability.RedHatOVAL),
-									URL:  "",
-								},
-								Score:    lo.ToPtr(5.3),
-								Severity: cdx.SeverityMedium,
-								Method:   cdx.ScoringMethodCVSSv3,
-								Vector:   "CVSS:3.0/AV:L/AC:L/PR:L/UI:N/S:U/C:L/I:L/A:L",
-							},
-						},
+						Ratings: lo.ToPtr([]cdx.VulnerabilityRating{}),
 						CWEs: &[]int{
 							416,
 						},

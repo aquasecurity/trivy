@@ -16,7 +16,7 @@ jobs:
   deploy-packages:
     name: Deploy rpm/dep packages
     needs: release # run this job after 'release' job completes
-    runs-on: ubuntu-18.04 # 20.04 doesn't provide createrepo for now
+    runs-on: ubuntu-22.04
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -24,7 +24,7 @@ jobs:
           fetch-depth: 0
 
       - name: Restore Trivy binaries from cache
-        uses: actions/cache@v3.0.9
+        uses: actions/cache@v3.2.4
         with:
           path: dist/
           key: ${{ runner.os }}-bins-${{github.workflow}}-${{github.sha}}
@@ -32,7 +32,7 @@ jobs:
       - name: Install dependencies
         run: |
           sudo apt-get -y update
-          sudo apt-get -y install rpm reprepro createrepo distro-info
+          sudo apt-get -y install rpm reprepro createrepo-c distro-info
 
       - name: Checkout trivy-repo
         uses: actions/checkout@v3

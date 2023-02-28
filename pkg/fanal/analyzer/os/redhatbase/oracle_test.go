@@ -23,7 +23,7 @@ func Test_oracleOSAnalyzer_Analyze(t *testing.T) {
 			name:      "happy path",
 			inputFile: "testdata/oracle_7/oracle-release",
 			want: &analyzer.AnalysisResult{
-				OS: &types.OS{Family: "oracle", Name: "7.6"},
+				OS: types.OS{Family: "oracle", Name: "7.6"},
 			},
 		},
 		{

@@ -27,10 +27,6 @@ func (f fakeImage) ID() (string, error) {
 	return "", nil
 }
 
-func (f fakeImage) LayerIDs() ([]string, error) {
-	return nil, nil
-}
-
 func (f fakeImage) Name() string {
 	return f.name
 }
@@ -63,10 +59,10 @@ func TestArtifact_InspectRekorAttestation(t *testing.T) {
 			putBlobExpectations: []cache.ArtifactCachePutBlobExpectation{
 				{
 					Args: cache.ArtifactCachePutBlobArgs{
-						BlobID: "sha256:8c90c68f385a8067778a200fd3e56e257d4d6dd563e519a7be65902ee0b6e861",
+						BlobID: "sha256:9c23872047046e145f49fb5533b63ace0cbf819f5b68e33f69f4e9bbab4c517e",
 						BlobInfo: types.BlobInfo{
 							SchemaVersion: types.BlobJSONSchemaVersion,
-							OS: &types.OS{
+							OS: types.OS{
 								Family: "alpine",
 								Name:   "3.16.2",
 							},
@@ -98,9 +94,9 @@ func TestArtifact_InspectRekorAttestation(t *testing.T) {
 			want: types.ArtifactReference{
 				Name: "test/image:10",
 				Type: types.ArtifactCycloneDX,
-				ID:   "sha256:8c90c68f385a8067778a200fd3e56e257d4d6dd563e519a7be65902ee0b6e861",
+				ID:   "sha256:9c23872047046e145f49fb5533b63ace0cbf819f5b68e33f69f4e9bbab4c517e",
 				BlobIDs: []string{
-					"sha256:8c90c68f385a8067778a200fd3e56e257d4d6dd563e519a7be65902ee0b6e861",
+					"sha256:9c23872047046e145f49fb5533b63ace0cbf819f5b68e33f69f4e9bbab4c517e",
 				},
 			},
 		},

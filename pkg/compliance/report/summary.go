@@ -3,15 +3,13 @@ package report
 import (
 	"fmt"
 	"io"
+	"strconv"
 	"strings"
 
+	"github.com/samber/lo"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/table"
-	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
-	"github.com/aquasecurity/trivy/pkg/compliance/spec"
-	pkgReport "github.com/aquasecurity/trivy/pkg/report/table"
-	"github.com/aquasecurity/trivy/pkg/types"
 )
 
 func BuildSummary(cr *ComplianceReport) *SummaryReport {
@@ -22,23 +20,8 @@ func BuildSummary(cr *ComplianceReport) *SummaryReport {
 			Name:     control.Name,
 			Severity: control.Severity,
 		}
-		if len(control.Results) == 0 { // this validation is mainly for vuln type
-			if control.DefaultStatus == spec.PassStatus {
-				ccm.TotalPass = 1
-			}
-			ccma = append(ccma, ccm)
-			continue
-		}
-		for _, check := range control.Results {
-			for _, m := range check.Misconfigurations {
-				if m.Status == types.StatusPassed {
-					ccm.TotalPass++
-					continue
-				}
-				ccm.TotalFail++
-			}
-			// Detected vulnerabilities are always failure.
-			ccm.TotalFail += float32(len(check.Vulnerabilities))
+		if !strings.Contains(control.Name, "Manual") {
+			ccm.TotalFail = lo.ToPtr(len(control.Results))
 		}
 		ccma = append(ccma, ccm)
 	}
@@ -50,21 +33,12 @@ func BuildSummary(cr *ComplianceReport) *SummaryReport {
 }
 
 type SummaryWriter struct {
-	Output           io.Writer
-	Severities       []string
-	SeverityHeadings []string
-	ColumnsHeading   []string
+	Output io.Writer
 }
 
-func NewSummaryWriter(output io.Writer, requiredSevs []dbTypes.Severity, columnHeading []string) SummaryWriter {
-	var severities []string
-	var severityHeadings []string
-	severities, severityHeadings = getRequiredSeverities(requiredSevs)
+func NewSummaryWriter(output io.Writer) SummaryWriter {
 	return SummaryWriter{
-		Output:           output,
-		Severities:       severities,
-		SeverityHeadings: severityHeadings,
-		ColumnsHeading:   columnHeading,
+		Output: output,
 	}
 }
 
@@ -80,70 +54,58 @@ func (s SummaryWriter) Write(report *ComplianceReport) error {
 	sr := BuildSummary(report)
 	t := table.New(s.Output)
 	t.SetRowLines(false)
-	configureHeader(s, t, s.ColumnsHeading)
+	configureHeader(t, s.columns())
 
 	for _, summaryControl := range sr.SummaryControls {
-		rowParts := make([]string, 0)
-		rowParts = append(rowParts, s.generateSummary(summaryControl)...)
+		rowParts := s.generateSummary(summaryControl)
 		t.AddRow(rowParts...)
 	}
 
 	t.Render()
 
-	keyParts := make([]string, 0)
-	for _, s := range s.Severities {
-		keyParts = append(keyParts, fmt.Sprintf("%s=%s", s[:1], pkgReport.ColorizeSeverity(s, s)))
-	}
-
-	_, _ = fmt.Fprintln(s.Output, strings.Join(keyParts, " "))
-	_, _ = fmt.Fprintln(s.Output)
 	return nil
 }
 
+func (s SummaryWriter) columns() []string {
+	return []string{
+		ControlIDColumn,
+		SeverityColumn,
+		ControlNameColumn,
+		StatusColumn,
+		IssuesColumn,
+	}
+}
+
 func (s SummaryWriter) generateSummary(summaryControls ControlCheckSummary) []string {
-	percentage := calculatePercentage(summaryControls.TotalFail, summaryControls.TotalPass)
-	return []string{summaryControls.ID, summaryControls.Severity, summaryControls.Name, percentage}
-}
-
-func calculatePercentage(totalFail float32, totalPass float32) string {
-	if totalPass == 0 && totalFail == 0 {
-		return fmt.Sprintf("%.2f", 0.00) + "%"
-	}
-	relPass := totalPass / (totalFail + totalPass)
-	return fmt.Sprintf("%.2f", relPass*100.0) + "%"
-}
-
-func getRequiredSeverities(requiredSevs []dbTypes.Severity) ([]string, []string) {
-	requiredSevOrder := []dbTypes.Severity{dbTypes.SeverityCritical,
-		dbTypes.SeverityHigh, dbTypes.SeverityMedium,
-		dbTypes.SeverityLow, dbTypes.SeverityUnknown}
-	var severities []string
-	var severityHeadings []string
-	for _, sev := range requiredSevOrder {
-		for _, p := range requiredSevs {
-			if p == sev {
-				severities = append(severities, sev.String())
-				severityHeadings = append(severityHeadings, strings.ToUpper(sev.String()[:1]))
-				continue
-			}
+	// "-" means manual checks
+	numOfIssues := "-"
+	status := "-"
+	if summaryControls.TotalFail != nil {
+		if *summaryControls.TotalFail == 0 {
+			status = "PASS"
+		} else {
+			status = "FAIL"
 		}
+		numOfIssues = strconv.Itoa(*summaryControls.TotalFail)
 	}
-	return severities, severityHeadings
+	return []string{
+		summaryControls.ID,
+		summaryControls.Severity,
+		summaryControls.Name,
+		status,
+		numOfIssues,
+	}
 }
 
-func configureHeader(s SummaryWriter, t *table.Table, columnHeading []string) {
-	sevCount := len(s.Severities)
-	headerRow := []string{columnHeading[0], columnHeading[1]}
-	count := len(columnHeading) - len(headerRow)
-	colSpan := []int{1, 1}
-	headerAlignment := []table.Alignment{table.AlignLeft, table.AlignLeft}
-	for i := 0; i < count; i++ {
-		headerRow = append(headerRow, s.SeverityHeadings...)
-		colSpan = append(colSpan, sevCount)
-		headerAlignment = append(headerAlignment, table.AlignCenter)
+func configureHeader(t *table.Table, columnHeading []string) {
+	headerAlignment := []table.Alignment{
+		table.AlignLeft,
+		table.AlignCenter,
+		table.AlignLeft,
+		table.AlignCenter,
+		table.AlignCenter,
 	}
 	t.SetHeaders(columnHeading...)
 	t.SetAlignment(headerAlignment...)
 	t.SetAutoMergeHeaders(true)
-	t.SetHeaderColSpans(0, colSpan...)
 }
