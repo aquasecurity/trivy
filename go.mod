@@ -8,8 +8,8 @@ require (
 	github.com/NYTimes/gziphandler v1.1.1
 	github.com/alicebob/miniredis/v2 v2.23.0
 	github.com/aquasecurity/bolt-fixtures v0.0.0-20200903104109-d34e7f983986
-	github.com/aquasecurity/defsec v0.82.10-0.20230222063803-b1b6b5381ea1
-	github.com/aquasecurity/go-dep-parser v0.0.0-20230224182230-75d738ffcb91
+	github.com/aquasecurity/defsec v0.82.11-0.20230227200028-1372c6329e1f
+	github.com/aquasecurity/go-dep-parser v0.0.0-20230227085514-f6e7eca87043
 	github.com/aquasecurity/go-gem-version v0.0.0-20201115065557-8eed6fe000ce
 	github.com/aquasecurity/go-npm-version v0.0.0-20201110091526-0b796d180798
 	github.com/aquasecurity/go-pep440-version v0.0.0-20210121094942-22b2f8951d46

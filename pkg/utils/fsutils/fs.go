@@ -3,10 +3,13 @@ package fsutils
 import (
 	"fmt"
 	"io"
+	"io/fs"
 	"os"
 	"path/filepath"
 
 	"golang.org/x/xerrors"
+
+	dio "github.com/aquasecurity/go-dep-parser/pkg/io"
 )
 
 const (
@@ -75,4 +78,31 @@ func DirExists(path string) bool {
 		return false
 	}
 	return true
+}
+
+type WalkDirRequiredFunc func(path string, d fs.DirEntry) bool
+
+type WalkDirFunc func(path string, d fs.DirEntry, r dio.ReadSeekerAt) error
+
+func WalkDir(fsys fs.FS, root string, required WalkDirRequiredFunc, fn WalkDirFunc) error {
+	return fs.WalkDir(fsys, root, func(path string, d fs.DirEntry, err error) error {
+		if err != nil {
+			return err
+		} else if !d.Type().IsRegular() || !required(path, d) {
+			return nil
+		}
+
+		f, err := fsys.Open(path)
+		if err != nil {
+			return xerrors.Errorf("file open error: %w", err)
+		}
+
+		file, ok := f.(dio.ReadSeekCloserAt)
+		if !ok {
+			return xerrors.Errorf("type assertion error: %w", err)
+		}
+		defer f.Close()
+
+		return fn(path, d, file)
+	})
 }
