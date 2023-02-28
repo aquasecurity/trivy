@@ -4,9 +4,11 @@ import (
 	"bufio"
 	"strings"
 
+	"golang.org/x/xerrors"
+
+	"github.com/aquasecurity/go-dep-parser/pkg/golang/mod"
 	dio "github.com/aquasecurity/go-dep-parser/pkg/io"
 	"github.com/aquasecurity/go-dep-parser/pkg/types"
-	"golang.org/x/xerrors"
 )
 
 type Parser struct{}
@@ -38,6 +40,7 @@ func (p *Parser) Parse(r dio.ReadSeekerAt) ([]types.Library, []types.Dependency,
 
 	for k, v := range uniqueLibs {
 		libs = append(libs, types.Library{
+			ID:      mod.ModuleID(k, v),
 			Name:    k,
 			Version: v,
 		})

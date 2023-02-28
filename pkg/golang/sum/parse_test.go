@@ -39,9 +39,14 @@ func TestParse(t *testing.T) {
 		t.Run(path.Base(v.file), func(t *testing.T) {
 			f, err := os.Open(v.file)
 			require.NoError(t, err)
+			defer f.Close()
 
 			got, _, err := NewParser().Parse(f)
 			require.NoError(t, err)
+
+			for i := range got {
+				got[i].ID = "" // Not compare IDs, tested in mod.TestModuleID()
+			}
 
 			sort.Slice(got, func(i, j int) bool {
 				return got[i].Name < got[j].Name

@@ -1,6 +1,7 @@
 package mod
 
 import (
+	"fmt"
 	"io"
 	"regexp"
 	"strconv"
@@ -27,15 +28,24 @@ var (
 	VCSUrlGoPkgInRegexWithoutUser = regexp.MustCompile(`^gopkg\.in/([^.]+)\..*$`)
 )
 
-type Parser struct{}
+type Parser struct {
+	replace bool // 'replace' represents if the 'replace' directive should be taken into account.
+}
 
-func NewParser() types.Parser {
-	return &Parser{}
+func NewParser(replace bool) types.Parser {
+	return &Parser{
+		replace: replace,
+	}
 }
 
 func (p *Parser) GetExternalRefs(path string) []types.ExternalRef {
 	if url := resolveVCSUrl(path); url != "" {
-		return []types.ExternalRef{{Type: types.RefVCS, URL: url}}
+		return []types.ExternalRef{
+			{
+				Type: types.RefVCS,
+				URL:  url,
+			},
+		}
 	}
 
 	return nil
@@ -79,6 +89,7 @@ func (p *Parser) Parse(r dio.ReadSeekerAt) ([]types.Library, []types.Dependency,
 			continue
 		}
 		libs[require.Mod.Path] = types.Library{
+			ID:                 ModuleID(require.Mod.Path, require.Mod.Version[1:]),
 			Name:               require.Mod.Path,
 			Version:            require.Mod.Version[1:],
 			Indirect:           require.Indirect,
@@ -86,35 +97,39 @@ func (p *Parser) Parse(r dio.ReadSeekerAt) ([]types.Library, []types.Dependency,
 		}
 	}
 
-	for _, replace := range modFileParsed.Replace {
-		// Check if replaced path is actually in our libs.
-		old, ok := libs[replace.Old.Path]
-		if !ok {
-			continue
-		}
+	// No need to evaluate the 'replace' directive for indirect dependencies
+	if p.replace {
+		for _, rep := range modFileParsed.Replace {
+			// Check if replaced path is actually in our libs.
+			old, ok := libs[rep.Old.Path]
+			if !ok {
+				continue
+			}
 
-		// If the replace directive has a version on the left side, make sure it matches the version that was imported.
-		if replace.Old.Version != "" && old.Version != replace.Old.Version[1:] {
-			continue
-		}
+			// If the replace directive has a version on the left side, make sure it matches the version that was imported.
+			if rep.Old.Version != "" && old.Version != rep.Old.Version[1:] {
+				continue
+			}
 
-		// Only support replace directive with version on the right side.
-		// Directive without version is a local path.
-		if replace.New.Version == "" {
-			// Delete old lib, since it's a local path now.
-			delete(libs, replace.Old.Path)
-			continue
-		}
+			// Only support replace directive with version on the right side.
+			// Directive without version is a local path.
+			if rep.New.Version == "" {
+				// Delete old lib, since it's a local path now.
+				delete(libs, rep.Old.Path)
+				continue
+			}
 
-		// Delete old lib, in case the path has changed.
-		delete(libs, replace.Old.Path)
+			// Delete old lib, in case the path has changed.
+			delete(libs, rep.Old.Path)
 
-		// Add replaced library to library register.
-		libs[replace.New.Path] = types.Library{
-			Name:               replace.New.Path,
-			Version:            replace.New.Version[1:],
-			Indirect:           old.Indirect,
-			ExternalReferences: p.GetExternalRefs(replace.New.Path),
+			// Add replaced library to library register.
+			libs[rep.New.Path] = types.Library{
+				ID:                 ModuleID(rep.New.Path, rep.New.Version[1:]),
+				Name:               rep.New.Path,
+				Version:            rep.New.Version[1:],
+				Indirect:           old.Indirect,
+				ExternalReferences: p.GetExternalRefs(rep.New.Path),
+			}
 		}
 	}
 
@@ -137,4 +152,11 @@ func lessThan117(ver string) bool {
 	}
 
 	return major <= 1 && minor < 17
+}
+
+// ModuleID returns a module ID according the Go way.
+// Format: <module_name>@v<module_version>
+// e.g. github.com/aquasecurity/go-dep-parser@v0.0.0-20230130190635-5e31092b0621
+func ModuleID(name, version string) string {
+	return fmt.Sprintf("%s@v%s", name, version)
 }
