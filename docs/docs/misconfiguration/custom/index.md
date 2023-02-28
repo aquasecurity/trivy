@@ -196,13 +196,7 @@ You can specify input format via the `custom.input` annotation.
     `type` accepts `kubernetes`, `dockerfile`, `cloudformation`, `terraform`, `terraformplan`, `json`, or `yaml`.
 
 ### Schemas
-
-You can explore the format of input documents by browsing the schema for the relevant input type:
-
-- [Cloud](https://github.com/aquasecurity/defsec/blob/master/pkg/rego/schemas/cloud.json)
-- [Dockerfile](https://github.com/aquasecurity/defsec/blob/master/pkg/rego/schemas/dockerfile.json)
-- [Kubernetes](https://github.com/aquasecurity/defsec/blob/master/pkg/rego/schemas/kubernetes.json)
-- [RBAC](https://github.com/aquasecurity/defsec/blob/master/pkg/rego/schemas/rbac.json)
+See [here](./schema.md) for the detail.
 
 [rego]: https://www.openpolicyagent.org/docs/latest/policy-language/
 [package]: https://www.openpolicyagent.org/docs/latest/policy-language/#packages
