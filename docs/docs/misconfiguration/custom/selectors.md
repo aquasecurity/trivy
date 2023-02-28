@@ -40,8 +40,15 @@ They will ensure that the policy is only run when the input to such a policy con
 ## Required fields
 For input selectors to work, the following fields are required to be specified per misconfiguration type
 
-| Type                     | Selector fields required | Example                         | 
-|--------------------------|--------------------------|---------------------------------|
-| Cloud (AWS, Azure, etc.) | `provider`, `service`    | `provider: aws`, `service: rds` |
+| Type                     | Subtype fields required | Example                         | 
+|--------------------------|-------------------------|---------------------------------|
+| Cloud (AWS, Azure, etc.) | `provider`, `service`   | `provider: aws`, `service: rds` |
 
-Currently, selectors are only supported with Cloud resources. We plan to add support for all Trivy misconfiguration (Kubernetes and Dockerfiles) types shortly.
+
+You can also define more than one subtype if your policy applies to multiple resources, in this case the policy
+will be evaluated for either of the subtypes.
+
+Currently, subtypes are only supported with Cloud resources. We plan to add support for all Trivy misconfiguration (Kubernetes and Dockerfiles) types shortly.
+
+## Default behaviour
+If no subtypes or selectors are specified, the policy will be evaluated regardless of input.
