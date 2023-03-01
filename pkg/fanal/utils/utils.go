@@ -9,7 +9,7 @@ import (
 	"os/exec"
 	"path/filepath"
 
-	dio "github.com/aquasecurity/go-dep-parser/pkg/io"
+	dio "github.com/deepfactor-io/go-dep-parser/pkg/io"
 )
 
 var (

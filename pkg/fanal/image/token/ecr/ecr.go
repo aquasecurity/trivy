@@ -5,7 +5,7 @@ import (
 	"encoding/base64"
 	"strings"
 
-	"github.com/aquasecurity/trivy/pkg/fanal/types"
+	"github.com/deepfactor-io/trivy/pkg/fanal/types"
 
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/credentials"

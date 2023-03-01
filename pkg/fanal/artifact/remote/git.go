@@ -11,10 +11,10 @@ import (
 	"github.com/go-git/go-git/v5/plumbing/transport/http"
 	"golang.org/x/xerrors"
 
-	"github.com/aquasecurity/trivy/pkg/fanal/artifact"
-	"github.com/aquasecurity/trivy/pkg/fanal/artifact/local"
-	"github.com/aquasecurity/trivy/pkg/fanal/cache"
-	"github.com/aquasecurity/trivy/pkg/fanal/types"
+	"github.com/deepfactor-io/trivy/pkg/fanal/artifact"
+	"github.com/deepfactor-io/trivy/pkg/fanal/artifact/local"
+	"github.com/deepfactor-io/trivy/pkg/fanal/cache"
+	"github.com/deepfactor-io/trivy/pkg/fanal/types"
 )
 
 type Artifact struct {

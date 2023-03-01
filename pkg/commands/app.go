@@ -16,16 +16,16 @@ import (
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy-db/pkg/metadata"
-	awscommands "github.com/aquasecurity/trivy/pkg/cloud/aws/commands"
-	"github.com/aquasecurity/trivy/pkg/commands/artifact"
-	"github.com/aquasecurity/trivy/pkg/commands/server"
-	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
-	"github.com/aquasecurity/trivy/pkg/flag"
-	k8scommands "github.com/aquasecurity/trivy/pkg/k8s/commands"
-	"github.com/aquasecurity/trivy/pkg/log"
-	"github.com/aquasecurity/trivy/pkg/module"
-	"github.com/aquasecurity/trivy/pkg/plugin"
-	"github.com/aquasecurity/trivy/pkg/types"
+	awscommands "github.com/deepfactor-io/trivy/pkg/cloud/aws/commands"
+	"github.com/deepfactor-io/trivy/pkg/commands/artifact"
+	"github.com/deepfactor-io/trivy/pkg/commands/server"
+	"github.com/deepfactor-io/trivy/pkg/fanal/analyzer"
+	"github.com/deepfactor-io/trivy/pkg/flag"
+	k8scommands "github.com/deepfactor-io/trivy/pkg/k8s/commands"
+	"github.com/deepfactor-io/trivy/pkg/log"
+	"github.com/deepfactor-io/trivy/pkg/module"
+	"github.com/deepfactor-io/trivy/pkg/plugin"
+	"github.com/deepfactor-io/trivy/pkg/types"
 )
 
 // VersionInfo holds the trivy DB version Info

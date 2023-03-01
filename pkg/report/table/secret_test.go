@@ -5,9 +5,9 @@ import (
 	"testing"
 
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
-	"github.com/aquasecurity/trivy/pkg/report/table"
+	"github.com/deepfactor-io/trivy/pkg/report/table"
 
-	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
+	ftypes "github.com/deepfactor-io/trivy/pkg/fanal/types"
 
 	"github.com/stretchr/testify/assert"
 )

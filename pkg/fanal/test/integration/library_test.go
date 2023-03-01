@@ -19,16 +19,16 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
+	"github.com/deepfactor-io/trivy/pkg/fanal/analyzer"
 
-	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/all"
-	"github.com/aquasecurity/trivy/pkg/fanal/applier"
-	"github.com/aquasecurity/trivy/pkg/fanal/artifact"
-	aimage "github.com/aquasecurity/trivy/pkg/fanal/artifact/image"
-	"github.com/aquasecurity/trivy/pkg/fanal/cache"
-	_ "github.com/aquasecurity/trivy/pkg/fanal/handler/all"
-	"github.com/aquasecurity/trivy/pkg/fanal/image"
-	"github.com/aquasecurity/trivy/pkg/fanal/types"
+	_ "github.com/deepfactor-io/trivy/pkg/fanal/analyzer/all"
+	"github.com/deepfactor-io/trivy/pkg/fanal/applier"
+	"github.com/deepfactor-io/trivy/pkg/fanal/artifact"
+	aimage "github.com/deepfactor-io/trivy/pkg/fanal/artifact/image"
+	"github.com/deepfactor-io/trivy/pkg/fanal/cache"
+	_ "github.com/deepfactor-io/trivy/pkg/fanal/handler/all"
+	"github.com/deepfactor-io/trivy/pkg/fanal/image"
+	"github.com/deepfactor-io/trivy/pkg/fanal/types"
 
 	_ "modernc.org/sqlite"
 )

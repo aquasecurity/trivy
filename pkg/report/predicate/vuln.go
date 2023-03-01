@@ -9,8 +9,8 @@ import (
 	"github.com/package-url/packageurl-go"
 	"golang.org/x/xerrors"
 
-	"github.com/aquasecurity/trivy/pkg/clock"
-	"github.com/aquasecurity/trivy/pkg/types"
+	"github.com/deepfactor-io/trivy/pkg/clock"
+	"github.com/deepfactor-io/trivy/pkg/types"
 )
 
 // CosignVulnPredicate represents the Cosign Vulnerability Scan Record.

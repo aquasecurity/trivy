@@ -8,7 +8,7 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/aquasecurity/trivy-db/pkg/types"
-	"github.com/aquasecurity/trivy/pkg/flag"
+	"github.com/deepfactor-io/trivy/pkg/flag"
 )
 
 func Test_ResourceReport(t *testing.T) {

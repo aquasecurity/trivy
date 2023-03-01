@@ -9,7 +9,7 @@ import (
 	slsa "github.com/in-toto/in-toto-golang/in_toto/slsa_provenance/common"
 	"github.com/stretchr/testify/require"
 
-	"github.com/aquasecurity/trivy/pkg/attestation"
+	"github.com/deepfactor-io/trivy/pkg/attestation"
 )
 
 func TestStatement_UnmarshalJSON(t *testing.T) {

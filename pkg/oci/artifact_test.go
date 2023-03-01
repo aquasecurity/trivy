@@ -14,8 +14,8 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/aquasecurity/trivy/pkg/oci"
-	"github.com/aquasecurity/trivy/pkg/utils"
+	"github.com/deepfactor-io/trivy/pkg/oci"
+	"github.com/deepfactor-io/trivy/pkg/utils"
 )
 
 type fakeLayer struct {

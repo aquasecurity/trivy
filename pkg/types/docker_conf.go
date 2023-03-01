@@ -4,7 +4,7 @@ import (
 	"github.com/caarlos0/env/v6"
 	"golang.org/x/xerrors"
 
-	"github.com/aquasecurity/trivy/pkg/fanal/types"
+	"github.com/deepfactor-io/trivy/pkg/fanal/types"
 )
 
 // DockerConfig holds the config of Docker

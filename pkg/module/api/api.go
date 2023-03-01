@@ -1,6 +1,6 @@
 package api
 
-import "github.com/aquasecurity/trivy/pkg/module/serialize"
+import "github.com/deepfactor-io/trivy/pkg/module/serialize"
 
 const (
 	Version = 1

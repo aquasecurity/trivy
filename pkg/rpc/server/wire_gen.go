@@ -8,11 +8,11 @@ package server
 
 import (
 	"github.com/aquasecurity/trivy-db/pkg/db"
-	"github.com/aquasecurity/trivy/pkg/detector/ospkg"
-	"github.com/aquasecurity/trivy/pkg/fanal/applier"
-	"github.com/aquasecurity/trivy/pkg/fanal/cache"
-	"github.com/aquasecurity/trivy/pkg/scanner/local"
-	"github.com/aquasecurity/trivy/pkg/vulnerability"
+	"github.com/deepfactor-io/trivy/pkg/detector/ospkg"
+	"github.com/deepfactor-io/trivy/pkg/fanal/applier"
+	"github.com/deepfactor-io/trivy/pkg/fanal/cache"
+	"github.com/deepfactor-io/trivy/pkg/scanner/local"
+	"github.com/deepfactor-io/trivy/pkg/vulnerability"
 )
 
 // Injectors from inject.go:

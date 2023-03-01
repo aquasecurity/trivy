@@ -9,8 +9,8 @@ import (
 	"go.uber.org/zap/zapcore"
 	"golang.org/x/xerrors"
 
-	dlog "github.com/aquasecurity/go-dep-parser/pkg/log"
-	flog "github.com/aquasecurity/trivy/pkg/fanal/log"
+	dlog "github.com/deepfactor-io/go-dep-parser/pkg/log"
+	flog "github.com/deepfactor-io/trivy/pkg/fanal/log"
 )
 
 var (

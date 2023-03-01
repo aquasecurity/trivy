@@ -7,9 +7,9 @@ import (
 	"golang.org/x/exp/slices"
 	"golang.org/x/xerrors"
 
-	misconf "github.com/aquasecurity/trivy/pkg/fanal/analyzer/config"
-	"github.com/aquasecurity/trivy/pkg/fanal/types"
-	"github.com/aquasecurity/trivy/pkg/log"
+	misconf "github.com/deepfactor-io/trivy/pkg/fanal/analyzer/config"
+	"github.com/deepfactor-io/trivy/pkg/fanal/types"
+	"github.com/deepfactor-io/trivy/pkg/log"
 )
 
 var configAnalyzerConstructors = map[Type]configAnalyzerConstructor{}

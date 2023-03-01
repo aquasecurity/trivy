@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 
-	"github.com/aquasecurity/trivy/pkg/fanal/artifact"
+	"github.com/deepfactor-io/trivy/pkg/fanal/artifact"
 
 	"golang.org/x/mod/sumdb/dirhash"
 	"golang.org/x/xerrors"

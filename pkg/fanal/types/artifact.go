@@ -6,7 +6,7 @@ import (
 	v1 "github.com/google/go-containerregistry/pkg/v1"
 	"github.com/samber/lo"
 
-	aos "github.com/aquasecurity/trivy/pkg/fanal/analyzer/os"
+	aos "github.com/deepfactor-io/trivy/pkg/fanal/analyzer/os"
 )
 
 type OS struct {

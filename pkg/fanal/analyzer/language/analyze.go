@@ -5,11 +5,11 @@ import (
 
 	"golang.org/x/xerrors"
 
-	dio "github.com/aquasecurity/go-dep-parser/pkg/io"
-	godeptypes "github.com/aquasecurity/go-dep-parser/pkg/types"
-	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
-	"github.com/aquasecurity/trivy/pkg/fanal/types"
-	"github.com/aquasecurity/trivy/pkg/licensing"
+	dio "github.com/deepfactor-io/go-dep-parser/pkg/io"
+	godeptypes "github.com/deepfactor-io/go-dep-parser/pkg/types"
+	"github.com/deepfactor-io/trivy/pkg/fanal/analyzer"
+	"github.com/deepfactor-io/trivy/pkg/fanal/types"
+	"github.com/deepfactor-io/trivy/pkg/licensing"
 )
 
 func Analyze(fileType, filePath string, r dio.ReadSeekerAt, parser godeptypes.Parser) (*analyzer.AnalysisResult, error) {

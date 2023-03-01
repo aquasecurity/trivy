@@ -3,7 +3,7 @@ package spec
 import (
 	"golang.org/x/exp/slices"
 
-	"github.com/aquasecurity/trivy/pkg/types"
+	"github.com/deepfactor-io/trivy/pkg/types"
 )
 
 // MapSpecCheckIDToFilteredResults map spec check id to filtered scan results

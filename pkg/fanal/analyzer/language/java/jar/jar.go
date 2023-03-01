@@ -9,12 +9,12 @@ import (
 
 	"golang.org/x/xerrors"
 
-	"github.com/aquasecurity/go-dep-parser/pkg/java/jar"
-	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
-	"github.com/aquasecurity/trivy/pkg/fanal/analyzer/language"
-	"github.com/aquasecurity/trivy/pkg/fanal/types"
-	"github.com/aquasecurity/trivy/pkg/javadb"
-	"github.com/aquasecurity/trivy/pkg/log"
+	"github.com/deepfactor-io/go-dep-parser/pkg/java/jar"
+	"github.com/deepfactor-io/trivy/pkg/fanal/analyzer"
+	"github.com/deepfactor-io/trivy/pkg/fanal/analyzer/language"
+	"github.com/deepfactor-io/trivy/pkg/fanal/types"
+	"github.com/deepfactor-io/trivy/pkg/javadb"
+	"github.com/deepfactor-io/trivy/pkg/log"
 )
 
 func init() {

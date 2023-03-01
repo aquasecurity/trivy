@@ -8,7 +8,7 @@ import (
 	"github.com/knqyf263/nested"
 	"github.com/samber/lo"
 
-	"github.com/aquasecurity/trivy/pkg/fanal/types"
+	"github.com/deepfactor-io/trivy/pkg/fanal/types"
 )
 
 type Config struct {

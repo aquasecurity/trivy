@@ -5,7 +5,7 @@ import (
 
 	npm "github.com/aquasecurity/go-npm-version/pkg"
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
-	"github.com/aquasecurity/trivy/pkg/detector/library/compare"
+	"github.com/deepfactor-io/trivy/pkg/detector/library/compare"
 )
 
 // Comparer represents a comparer for npm

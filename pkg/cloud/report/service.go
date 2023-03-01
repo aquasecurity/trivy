@@ -10,8 +10,8 @@ import (
 	"github.com/aquasecurity/tml"
 
 	"github.com/aquasecurity/table"
-	pkgReport "github.com/aquasecurity/trivy/pkg/report/table"
-	"github.com/aquasecurity/trivy/pkg/types"
+	pkgReport "github.com/deepfactor-io/trivy/pkg/report/table"
+	"github.com/deepfactor-io/trivy/pkg/types"
 )
 
 func writeServiceTable(report *Report, results types.Results, output io.Writer) error {

@@ -8,8 +8,8 @@ import (
 	swalker "github.com/saracen/walker"
 	"golang.org/x/xerrors"
 
-	dio "github.com/aquasecurity/go-dep-parser/pkg/io"
-	"github.com/aquasecurity/trivy/pkg/log"
+	dio "github.com/deepfactor-io/go-dep-parser/pkg/io"
+	"github.com/deepfactor-io/trivy/pkg/log"
 )
 
 type FS struct {

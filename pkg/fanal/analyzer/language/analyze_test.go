@@ -9,11 +9,11 @@ import (
 	"github.com/stretchr/testify/require"
 	"golang.org/x/xerrors"
 
-	dio "github.com/aquasecurity/go-dep-parser/pkg/io"
-	godeptypes "github.com/aquasecurity/go-dep-parser/pkg/types"
-	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
-	"github.com/aquasecurity/trivy/pkg/fanal/analyzer/language"
-	"github.com/aquasecurity/trivy/pkg/fanal/types"
+	dio "github.com/deepfactor-io/go-dep-parser/pkg/io"
+	godeptypes "github.com/deepfactor-io/go-dep-parser/pkg/types"
+	"github.com/deepfactor-io/trivy/pkg/fanal/analyzer"
+	"github.com/deepfactor-io/trivy/pkg/fanal/analyzer/language"
+	"github.com/deepfactor-io/trivy/pkg/fanal/types"
 )
 
 type mockParser struct {

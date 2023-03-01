@@ -16,7 +16,7 @@ import (
 	"github.com/aquasecurity/testdocker/auth"
 	"github.com/aquasecurity/testdocker/engine"
 	"github.com/aquasecurity/testdocker/registry"
-	"github.com/aquasecurity/trivy/pkg/fanal/types"
+	"github.com/deepfactor-io/trivy/pkg/fanal/types"
 )
 
 func setupEngineAndRegistry() (*httptest.Server, *httptest.Server) {

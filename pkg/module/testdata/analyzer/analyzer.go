@@ -4,8 +4,8 @@
 package main
 
 import (
-	"github.com/aquasecurity/trivy/pkg/module/serialize"
-	"github.com/aquasecurity/trivy/pkg/module/wasm"
+	"github.com/deepfactor-io/trivy/pkg/module/serialize"
+	"github.com/deepfactor-io/trivy/pkg/module/wasm"
 )
 
 const (

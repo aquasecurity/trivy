@@ -8,7 +8,7 @@ import (
 	multierror "github.com/hashicorp/go-multierror"
 	"golang.org/x/xerrors"
 
-	"github.com/aquasecurity/trivy/pkg/fanal/types"
+	"github.com/deepfactor-io/trivy/pkg/fanal/types"
 )
 
 type options struct {

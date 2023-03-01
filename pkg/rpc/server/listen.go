@@ -13,13 +13,13 @@ import (
 
 	"github.com/aquasecurity/trivy-db/pkg/db"
 	"github.com/aquasecurity/trivy-db/pkg/metadata"
-	dbFile "github.com/aquasecurity/trivy/pkg/db"
-	dbc "github.com/aquasecurity/trivy/pkg/db"
-	"github.com/aquasecurity/trivy/pkg/fanal/cache"
-	"github.com/aquasecurity/trivy/pkg/log"
-	"github.com/aquasecurity/trivy/pkg/utils"
-	rpcCache "github.com/aquasecurity/trivy/rpc/cache"
-	rpcScanner "github.com/aquasecurity/trivy/rpc/scanner"
+	dbFile "github.com/deepfactor-io/trivy/pkg/db"
+	dbc "github.com/deepfactor-io/trivy/pkg/db"
+	"github.com/deepfactor-io/trivy/pkg/fanal/cache"
+	"github.com/deepfactor-io/trivy/pkg/log"
+	"github.com/deepfactor-io/trivy/pkg/utils"
+	rpcCache "github.com/deepfactor-io/trivy/rpc/cache"
+	rpcScanner "github.com/deepfactor-io/trivy/rpc/scanner"
 )
 
 const updateInterval = 1 * time.Hour

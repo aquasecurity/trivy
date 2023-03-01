@@ -15,7 +15,7 @@ import (
 	"github.com/google/go-containerregistry/pkg/v1/remote"
 	"golang.org/x/xerrors"
 
-	"github.com/aquasecurity/trivy/pkg/downloader"
+	"github.com/deepfactor-io/trivy/pkg/downloader"
 )
 
 const titleAnnotation = "org.opencontainers.image.title"

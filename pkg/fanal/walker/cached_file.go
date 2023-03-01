@@ -8,7 +8,7 @@ import (
 
 	"golang.org/x/xerrors"
 
-	dio "github.com/aquasecurity/go-dep-parser/pkg/io"
+	dio "github.com/deepfactor-io/go-dep-parser/pkg/io"
 )
 
 // cachedFile represents a file cached in memory or storage according to the file size.

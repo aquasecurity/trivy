@@ -8,10 +8,10 @@ import (
 	"github.com/stretchr/testify/assert"
 
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
-	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
-	"github.com/aquasecurity/trivy/pkg/report"
-	"github.com/aquasecurity/trivy/pkg/report/github"
-	"github.com/aquasecurity/trivy/pkg/types"
+	ftypes "github.com/deepfactor-io/trivy/pkg/fanal/types"
+	"github.com/deepfactor-io/trivy/pkg/report"
+	"github.com/deepfactor-io/trivy/pkg/report/github"
+	"github.com/deepfactor-io/trivy/pkg/types"
 )
 
 func TestWriter_Write(t *testing.T) {

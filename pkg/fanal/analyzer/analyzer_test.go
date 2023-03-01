@@ -12,18 +12,18 @@ import (
 	"golang.org/x/sync/semaphore"
 	"golang.org/x/xerrors"
 
-	dio "github.com/aquasecurity/go-dep-parser/pkg/io"
-	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
-	aos "github.com/aquasecurity/trivy/pkg/fanal/analyzer/os"
-	"github.com/aquasecurity/trivy/pkg/fanal/types"
+	dio "github.com/deepfactor-io/go-dep-parser/pkg/io"
+	"github.com/deepfactor-io/trivy/pkg/fanal/analyzer"
+	aos "github.com/deepfactor-io/trivy/pkg/fanal/analyzer/os"
+	"github.com/deepfactor-io/trivy/pkg/fanal/types"
 
-	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/imgconf/apk"
-	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/language/ruby/bundler"
-	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/os/alpine"
-	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/os/ubuntu"
-	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/pkg/apk"
-	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/repo/apk"
-	_ "github.com/aquasecurity/trivy/pkg/fanal/handler/all"
+	_ "github.com/deepfactor-io/trivy/pkg/fanal/analyzer/imgconf/apk"
+	_ "github.com/deepfactor-io/trivy/pkg/fanal/analyzer/language/ruby/bundler"
+	_ "github.com/deepfactor-io/trivy/pkg/fanal/analyzer/os/alpine"
+	_ "github.com/deepfactor-io/trivy/pkg/fanal/analyzer/os/ubuntu"
+	_ "github.com/deepfactor-io/trivy/pkg/fanal/analyzer/pkg/apk"
+	_ "github.com/deepfactor-io/trivy/pkg/fanal/analyzer/repo/apk"
+	_ "github.com/deepfactor-io/trivy/pkg/fanal/handler/all"
 )
 
 func TestAnalysisResult_Merge(t *testing.T) {

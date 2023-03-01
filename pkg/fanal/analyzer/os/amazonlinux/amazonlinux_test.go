@@ -8,10 +8,10 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	aos "github.com/aquasecurity/trivy/pkg/fanal/analyzer/os"
-	"github.com/aquasecurity/trivy/pkg/fanal/types"
+	aos "github.com/deepfactor-io/trivy/pkg/fanal/analyzer/os"
+	"github.com/deepfactor-io/trivy/pkg/fanal/types"
 
-	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
+	"github.com/deepfactor-io/trivy/pkg/fanal/analyzer"
 )
 
 func Test_amazonlinuxOSAnalyzer_Analyze(t *testing.T) {

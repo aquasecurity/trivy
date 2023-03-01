@@ -10,8 +10,8 @@ import (
 
 	"github.com/open-policy-agent/opa/bundle"
 
-	"github.com/aquasecurity/trivy/pkg/log"
-	"github.com/aquasecurity/trivy/pkg/oci"
+	"github.com/deepfactor-io/trivy/pkg/log"
+	"github.com/deepfactor-io/trivy/pkg/oci"
 
 	"golang.org/x/xerrors"
 	"k8s.io/utils/clock"

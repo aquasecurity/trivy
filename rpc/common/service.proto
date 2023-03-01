@@ -3,7 +3,7 @@ syntax = "proto3";
 import "google/protobuf/timestamp.proto";
 
 package trivy.common;
-option  go_package = "github.com/aquasecurity/trivy/rpc/common;common";
+option  go_package = "github.com/deepfactor-io/trivy/rpc/common;common";
 
 import "google/protobuf/struct.proto";
 

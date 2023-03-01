@@ -7,7 +7,7 @@
 package scanner
 
 import (
-	common "github.com/aquasecurity/trivy/rpc/common"
+	common "github.com/deepfactor-io/trivy/rpc/common"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	reflect "reflect"

@@ -8,8 +8,8 @@ import (
 	"github.com/google/go-containerregistry/pkg/name"
 	"golang.org/x/xerrors"
 
-	"github.com/aquasecurity/trivy/pkg/log"
-	"github.com/aquasecurity/trivy/pkg/oci"
+	"github.com/deepfactor-io/trivy/pkg/log"
+	"github.com/deepfactor-io/trivy/pkg/oci"
 )
 
 const mediaType = "application/vnd.module.wasm.content.layer.v1+wasm"

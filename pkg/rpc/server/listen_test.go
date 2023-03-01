@@ -17,10 +17,10 @@ import (
 
 	"github.com/aquasecurity/trivy-db/pkg/db"
 	"github.com/aquasecurity/trivy-db/pkg/metadata"
-	dbFile "github.com/aquasecurity/trivy/pkg/db"
-	"github.com/aquasecurity/trivy/pkg/fanal/cache"
-	"github.com/aquasecurity/trivy/pkg/utils"
-	rpcCache "github.com/aquasecurity/trivy/rpc/cache"
+	dbFile "github.com/deepfactor-io/trivy/pkg/db"
+	"github.com/deepfactor-io/trivy/pkg/fanal/cache"
+	"github.com/deepfactor-io/trivy/pkg/utils"
+	rpcCache "github.com/deepfactor-io/trivy/rpc/cache"
 )
 
 func Test_dbWorker_update(t *testing.T) {

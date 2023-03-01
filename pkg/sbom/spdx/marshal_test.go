@@ -14,11 +14,11 @@ import (
 	"github.com/stretchr/testify/require"
 	fake "k8s.io/utils/clock/testing"
 
-	fos "github.com/aquasecurity/trivy/pkg/fanal/analyzer/os"
-	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
-	"github.com/aquasecurity/trivy/pkg/report"
-	tspdx "github.com/aquasecurity/trivy/pkg/sbom/spdx"
-	"github.com/aquasecurity/trivy/pkg/types"
+	fos "github.com/deepfactor-io/trivy/pkg/fanal/analyzer/os"
+	ftypes "github.com/deepfactor-io/trivy/pkg/fanal/types"
+	"github.com/deepfactor-io/trivy/pkg/report"
+	tspdx "github.com/deepfactor-io/trivy/pkg/sbom/spdx"
+	"github.com/deepfactor-io/trivy/pkg/types"
 )
 
 func TestMarshaler_Marshal(t *testing.T) {

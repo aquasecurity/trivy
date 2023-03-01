@@ -8,15 +8,15 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/aquasecurity/trivy/pkg/fanal/utils"
+	"github.com/deepfactor-io/trivy/pkg/fanal/utils"
 
-	"github.com/aquasecurity/trivy/pkg/fanal/types"
+	"github.com/deepfactor-io/trivy/pkg/fanal/types"
 
 	"golang.org/x/xerrors"
 
-	aos "github.com/aquasecurity/trivy/pkg/fanal/analyzer/os"
+	aos "github.com/deepfactor-io/trivy/pkg/fanal/analyzer/os"
 
-	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
+	"github.com/deepfactor-io/trivy/pkg/fanal/analyzer"
 )
 
 const redhatAnalyzerVersion = 1

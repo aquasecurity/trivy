@@ -14,9 +14,9 @@ import (
 	"golang.org/x/exp/slices"
 	"golang.org/x/xerrors"
 
-	dio "github.com/aquasecurity/go-dep-parser/pkg/io"
-	"github.com/aquasecurity/trivy/pkg/fanal/vm/filesystem"
-	"github.com/aquasecurity/trivy/pkg/log"
+	dio "github.com/deepfactor-io/go-dep-parser/pkg/io"
+	"github.com/deepfactor-io/trivy/pkg/fanal/vm/filesystem"
+	"github.com/deepfactor-io/trivy/pkg/log"
 )
 
 var requiredDiskName = []string{

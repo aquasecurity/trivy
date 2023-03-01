@@ -5,7 +5,7 @@ import (
 
 	version "github.com/aquasecurity/go-pep440-version"
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
-	"github.com/aquasecurity/trivy/pkg/detector/library/compare"
+	"github.com/deepfactor-io/trivy/pkg/detector/library/compare"
 )
 
 // Comparer represents a comparer for PEP 440

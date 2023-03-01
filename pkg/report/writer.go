@@ -8,15 +8,15 @@ import (
 	"golang.org/x/xerrors"
 
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
-	cr "github.com/aquasecurity/trivy/pkg/compliance/report"
-	"github.com/aquasecurity/trivy/pkg/compliance/spec"
-	"github.com/aquasecurity/trivy/pkg/log"
-	"github.com/aquasecurity/trivy/pkg/report/cyclonedx"
-	"github.com/aquasecurity/trivy/pkg/report/github"
-	"github.com/aquasecurity/trivy/pkg/report/predicate"
-	"github.com/aquasecurity/trivy/pkg/report/spdx"
-	"github.com/aquasecurity/trivy/pkg/report/table"
-	"github.com/aquasecurity/trivy/pkg/types"
+	cr "github.com/deepfactor-io/trivy/pkg/compliance/report"
+	"github.com/deepfactor-io/trivy/pkg/compliance/spec"
+	"github.com/deepfactor-io/trivy/pkg/log"
+	"github.com/deepfactor-io/trivy/pkg/report/cyclonedx"
+	"github.com/deepfactor-io/trivy/pkg/report/github"
+	"github.com/deepfactor-io/trivy/pkg/report/predicate"
+	"github.com/deepfactor-io/trivy/pkg/report/spdx"
+	"github.com/deepfactor-io/trivy/pkg/report/table"
+	"github.com/deepfactor-io/trivy/pkg/types"
 )
 
 const (

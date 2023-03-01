@@ -15,11 +15,11 @@ import (
 	"golang.org/x/sync/semaphore"
 	"golang.org/x/xerrors"
 
-	dio "github.com/aquasecurity/go-dep-parser/pkg/io"
-	godepparserutils "github.com/aquasecurity/go-dep-parser/pkg/utils"
-	aos "github.com/aquasecurity/trivy/pkg/fanal/analyzer/os"
-	"github.com/aquasecurity/trivy/pkg/fanal/log"
-	"github.com/aquasecurity/trivy/pkg/fanal/types"
+	dio "github.com/deepfactor-io/go-dep-parser/pkg/io"
+	godepparserutils "github.com/deepfactor-io/go-dep-parser/pkg/utils"
+	aos "github.com/deepfactor-io/trivy/pkg/fanal/analyzer/os"
+	"github.com/deepfactor-io/trivy/pkg/fanal/log"
+	"github.com/deepfactor-io/trivy/pkg/fanal/types"
 )
 
 var (

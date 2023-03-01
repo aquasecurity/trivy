@@ -5,7 +5,7 @@ import (
 
 	"github.com/spf13/cobra"
 
-	"github.com/aquasecurity/trivy/pkg/utils"
+	"github.com/deepfactor-io/trivy/pkg/utils"
 )
 
 var (

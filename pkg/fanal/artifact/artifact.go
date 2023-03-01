@@ -4,9 +4,9 @@ import (
 	"context"
 	"sort"
 
-	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
-	misconf "github.com/aquasecurity/trivy/pkg/fanal/analyzer/config"
-	"github.com/aquasecurity/trivy/pkg/fanal/types"
+	"github.com/deepfactor-io/trivy/pkg/fanal/analyzer"
+	misconf "github.com/deepfactor-io/trivy/pkg/fanal/analyzer/config"
+	"github.com/deepfactor-io/trivy/pkg/fanal/types"
 )
 
 type Option struct {

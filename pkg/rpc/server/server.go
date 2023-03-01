@@ -8,14 +8,14 @@ import (
 	"github.com/samber/lo"
 	"golang.org/x/xerrors"
 
-	"github.com/aquasecurity/trivy/pkg/fanal/cache"
-	"github.com/aquasecurity/trivy/pkg/log"
-	"github.com/aquasecurity/trivy/pkg/rpc"
-	"github.com/aquasecurity/trivy/pkg/scanner"
-	"github.com/aquasecurity/trivy/pkg/scanner/local"
-	"github.com/aquasecurity/trivy/pkg/types"
-	rpcCache "github.com/aquasecurity/trivy/rpc/cache"
-	rpcScanner "github.com/aquasecurity/trivy/rpc/scanner"
+	"github.com/deepfactor-io/trivy/pkg/fanal/cache"
+	"github.com/deepfactor-io/trivy/pkg/log"
+	"github.com/deepfactor-io/trivy/pkg/rpc"
+	"github.com/deepfactor-io/trivy/pkg/scanner"
+	"github.com/deepfactor-io/trivy/pkg/scanner/local"
+	"github.com/deepfactor-io/trivy/pkg/types"
+	rpcCache "github.com/deepfactor-io/trivy/rpc/cache"
+	rpcScanner "github.com/deepfactor-io/trivy/rpc/scanner"
 )
 
 // ScanSuperSet binds the dependencies for server

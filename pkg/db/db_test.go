@@ -17,8 +17,8 @@ import (
 
 	tdb "github.com/aquasecurity/trivy-db/pkg/db"
 	"github.com/aquasecurity/trivy-db/pkg/metadata"
-	"github.com/aquasecurity/trivy/pkg/db"
-	"github.com/aquasecurity/trivy/pkg/oci"
+	"github.com/deepfactor-io/trivy/pkg/db"
+	"github.com/deepfactor-io/trivy/pkg/oci"
 )
 
 const mediaType = "application/vnd.aquasec.trivy.db.layer.v1.tar+gzip"

@@ -17,13 +17,13 @@ import (
 	"golang.org/x/exp/slices"
 	"golang.org/x/xerrors"
 
-	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
-	"github.com/aquasecurity/trivy/pkg/log"
-	tapi "github.com/aquasecurity/trivy/pkg/module/api"
-	"github.com/aquasecurity/trivy/pkg/module/serialize"
-	"github.com/aquasecurity/trivy/pkg/scanner/post"
-	"github.com/aquasecurity/trivy/pkg/types"
-	"github.com/aquasecurity/trivy/pkg/utils"
+	"github.com/deepfactor-io/trivy/pkg/fanal/analyzer"
+	"github.com/deepfactor-io/trivy/pkg/log"
+	tapi "github.com/deepfactor-io/trivy/pkg/module/api"
+	"github.com/deepfactor-io/trivy/pkg/module/serialize"
+	"github.com/deepfactor-io/trivy/pkg/scanner/post"
+	"github.com/deepfactor-io/trivy/pkg/types"
+	"github.com/deepfactor-io/trivy/pkg/utils"
 )
 
 var (

@@ -8,7 +8,7 @@ import (
 	"testing"
 	"time"
 
-	rpcScanner "github.com/aquasecurity/trivy/rpc/scanner"
+	rpcScanner "github.com/deepfactor-io/trivy/rpc/scanner"
 
 	google_protobuf "github.com/golang/protobuf/ptypes/empty"
 	"github.com/stretchr/testify/assert"
@@ -16,10 +16,10 @@ import (
 	"github.com/twitchtv/twirp"
 	"golang.org/x/xerrors"
 
-	"github.com/aquasecurity/trivy/pkg/cache"
-	fcache "github.com/aquasecurity/trivy/pkg/fanal/cache"
-	"github.com/aquasecurity/trivy/pkg/fanal/types"
-	rpcCache "github.com/aquasecurity/trivy/rpc/cache"
+	"github.com/deepfactor-io/trivy/pkg/cache"
+	fcache "github.com/deepfactor-io/trivy/pkg/fanal/cache"
+	"github.com/deepfactor-io/trivy/pkg/fanal/types"
+	rpcCache "github.com/deepfactor-io/trivy/rpc/cache"
 )
 
 type mockCacheServer struct {

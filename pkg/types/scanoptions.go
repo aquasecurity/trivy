@@ -1,7 +1,7 @@
 package types
 
 import (
-	"github.com/aquasecurity/trivy/pkg/fanal/types"
+	"github.com/deepfactor-io/trivy/pkg/fanal/types"
 )
 
 // ScanOptions holds the attributes for scanning vulnerabilities

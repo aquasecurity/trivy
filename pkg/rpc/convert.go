@@ -8,12 +8,12 @@ import (
 	"google.golang.org/protobuf/types/known/structpb"
 
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
-	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
-	"github.com/aquasecurity/trivy/pkg/log"
-	"github.com/aquasecurity/trivy/pkg/types"
-	"github.com/aquasecurity/trivy/rpc/cache"
-	"github.com/aquasecurity/trivy/rpc/common"
-	"github.com/aquasecurity/trivy/rpc/scanner"
+	ftypes "github.com/deepfactor-io/trivy/pkg/fanal/types"
+	"github.com/deepfactor-io/trivy/pkg/log"
+	"github.com/deepfactor-io/trivy/pkg/types"
+	"github.com/deepfactor-io/trivy/rpc/cache"
+	"github.com/deepfactor-io/trivy/rpc/common"
+	"github.com/deepfactor-io/trivy/rpc/scanner"
 )
 
 // ConvertToRPCPkgs returns the list of RPC package objects

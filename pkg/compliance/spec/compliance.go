@@ -10,7 +10,7 @@ import (
 	"gopkg.in/yaml.v3"
 
 	sp "github.com/aquasecurity/defsec/pkg/spec"
-	"github.com/aquasecurity/trivy/pkg/types"
+	"github.com/deepfactor-io/trivy/pkg/types"
 )
 
 type Severity string

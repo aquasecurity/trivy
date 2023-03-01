@@ -6,21 +6,21 @@ import (
 	"os"
 	"strings"
 
-	"github.com/aquasecurity/trivy/pkg/policy"
+	"github.com/deepfactor-io/trivy/pkg/policy"
 
 	"github.com/samber/lo"
 
-	"github.com/aquasecurity/trivy/pkg/flag"
+	"github.com/deepfactor-io/trivy/pkg/flag"
 
 	"github.com/go-redis/redis/v8"
 	"github.com/google/wire"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy-db/pkg/metadata"
-	"github.com/aquasecurity/trivy/pkg/db"
-	"github.com/aquasecurity/trivy/pkg/fanal/cache"
-	"github.com/aquasecurity/trivy/pkg/log"
-	"github.com/aquasecurity/trivy/pkg/utils"
+	"github.com/deepfactor-io/trivy/pkg/db"
+	"github.com/deepfactor-io/trivy/pkg/fanal/cache"
+	"github.com/deepfactor-io/trivy/pkg/log"
+	"github.com/deepfactor-io/trivy/pkg/utils"
 )
 
 // SuperSet binds cache dependencies

@@ -6,14 +6,14 @@ import (
 	"os"
 	"strings"
 
-	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
+	"github.com/deepfactor-io/trivy/pkg/fanal/analyzer"
 
-	"github.com/aquasecurity/trivy/pkg/fanal/utils"
+	"github.com/deepfactor-io/trivy/pkg/fanal/utils"
 
 	"golang.org/x/xerrors"
 
-	aos "github.com/aquasecurity/trivy/pkg/fanal/analyzer/os"
-	"github.com/aquasecurity/trivy/pkg/fanal/types"
+	aos "github.com/deepfactor-io/trivy/pkg/fanal/analyzer/os"
+	"github.com/deepfactor-io/trivy/pkg/fanal/types"
 )
 
 const oracleAnalyzerVersion = 1

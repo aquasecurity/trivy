@@ -12,14 +12,14 @@ import (
 
 	"github.com/aquasecurity/defsec/pkg/errs"
 	awsScanner "github.com/aquasecurity/defsec/pkg/scanners/cloud/aws"
-	"github.com/aquasecurity/trivy/pkg/cloud"
-	"github.com/aquasecurity/trivy/pkg/cloud/aws/scanner"
-	"github.com/aquasecurity/trivy/pkg/cloud/report"
-	cmd "github.com/aquasecurity/trivy/pkg/commands/artifact"
-	cr "github.com/aquasecurity/trivy/pkg/compliance/report"
-	"github.com/aquasecurity/trivy/pkg/flag"
-	"github.com/aquasecurity/trivy/pkg/log"
-	"github.com/aquasecurity/trivy/pkg/types"
+	"github.com/deepfactor-io/trivy/pkg/cloud"
+	"github.com/deepfactor-io/trivy/pkg/cloud/aws/scanner"
+	"github.com/deepfactor-io/trivy/pkg/cloud/report"
+	cmd "github.com/deepfactor-io/trivy/pkg/commands/artifact"
+	cr "github.com/deepfactor-io/trivy/pkg/compliance/report"
+	"github.com/deepfactor-io/trivy/pkg/flag"
+	"github.com/deepfactor-io/trivy/pkg/log"
+	"github.com/deepfactor-io/trivy/pkg/types"
 )
 
 func getAccountIDAndRegion(ctx context.Context, region string) (string, string, error) {

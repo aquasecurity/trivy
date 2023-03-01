@@ -7,8 +7,8 @@ import (
 
 	"golang.org/x/xerrors"
 
-	dio "github.com/aquasecurity/go-dep-parser/pkg/io"
 	"github.com/aquasecurity/memoryfs"
+	dio "github.com/deepfactor-io/go-dep-parser/pkg/io"
 )
 
 // memFS is a wrapper of memoryfs.FS and can change its underlying file system
