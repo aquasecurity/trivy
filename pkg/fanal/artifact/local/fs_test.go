@@ -381,82 +381,6 @@ func TestTerraformMisconfigurationScan(t *testing.T) {
 						Misconfigurations: []types.Misconfiguration{
 							{
 								FileType: "terraform",
-								FilePath: ".",
-								Successes: types.MisconfResults{
-									{
-										Namespace: "builtin.aws.rds.aws0176",
-										Query:     "data.builtin.aws.rds.aws0176.deny",
-										Message:   "",
-										PolicyMetadata: types.PolicyMetadata{
-											ID:                 "N/A",
-											AVDID:              "AVD-AWS-0176",
-											Type:               "Terraform Security Check",
-											Title:              "RDS IAM Database Authentication Disabled",
-											Description:        "Ensure IAM Database Authentication is enabled for RDS database instances to manage database access",
-											Severity:           "MEDIUM",
-											RecommendedActions: "Modify the PostgreSQL and MySQL type RDS instances to enable IAM database authentication.",
-											References:         []string{"https://docs.aws.amazon.com/neptune/latest/userguide/iam-auth.html"},
-										},
-										CauseMetadata: types.CauseMetadata{
-											Resource:  "",
-											Provider:  "AWS",
-											Service:   "rds",
-											StartLine: 0,
-											EndLine:   0,
-											Code:      types.Code{Lines: []types.Line(nil)},
-										},
-										Traces: []string(nil),
-									},
-									{
-										Namespace: "builtin.aws.rds.aws0177",
-										Query:     "data.builtin.aws.rds.aws0177.deny",
-										PolicyMetadata: types.PolicyMetadata{
-											ID:                 "N/A",
-											AVDID:              "AVD-AWS-0177",
-											Type:               "Terraform Security Check",
-											Title:              "RDS Deletion Protection Disabled",
-											Description:        "Ensure deletion protection is enabled for RDS database instances.",
-											Severity:           "MEDIUM",
-											RecommendedActions: "Modify the RDS instances to enable deletion protection.",
-											References:         []string{"https://aws.amazon.com/about-aws/whats-new/2018/09/amazon-rds-now-provides-database-deletion-protection/"},
-										},
-										CauseMetadata: types.CauseMetadata{
-											Resource:  "",
-											Provider:  "AWS",
-											Service:   "rds",
-											StartLine: 0,
-											EndLine:   0,
-											Code:      types.Code{Lines: []types.Line(nil)},
-										},
-										Traces: []string(nil),
-									},
-									{
-										Namespace: "builtin.aws.rds.aws0180",
-										Query:     "data.builtin.aws.rds.aws0180.deny",
-										PolicyMetadata: types.PolicyMetadata{
-											ID:                 "N/A",
-											AVDID:              "AVD-AWS-0180",
-											Type:               "Terraform Security Check",
-											Title:              "RDS Publicly Accessible",
-											Description:        "Ensures RDS instances are not launched into the public cloud.",
-											Severity:           "HIGH",
-											RecommendedActions: "Remove the public endpoint from the RDS instance'",
-											References:         []string{"http://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_VPC.html"},
-										},
-										CauseMetadata: types.CauseMetadata{
-											Resource:  "",
-											Provider:  "AWS",
-											Service:   "rds",
-											StartLine: 0,
-											EndLine:   0,
-											Code:      types.Code{Lines: []types.Line(nil)},
-										},
-										Traces: []string(nil),
-									},
-								},
-							},
-							{
-								FileType: "terraform",
 								FilePath: "main.tf",
 								Failures: types.MisconfResults{
 									{
@@ -491,9 +415,9 @@ func TestTerraformMisconfigurationScan(t *testing.T) {
 			want: types.ArtifactReference{
 				Name: "testdata/misconfig/terraform/single-failure/src",
 				Type: types.ArtifactFilesystem,
-				ID:   "sha256:8a71a56f26890a69857f7515953e466d4df7515af8de827a895e2a394cd4e250",
+				ID:   "sha256:b3ae72efb468a0e17551fa4067c1f9d9dff9a1e520b9f8191f48829ab6e8356d",
 				BlobIDs: []string{
-					"sha256:8a71a56f26890a69857f7515953e466d4df7515af8de827a895e2a394cd4e250",
+					"sha256:b3ae72efb468a0e17551fa4067c1f9d9dff9a1e520b9f8191f48829ab6e8356d",
 				},
 			},
 		},
@@ -515,71 +439,6 @@ func TestTerraformMisconfigurationScan(t *testing.T) {
 					BlobInfo: types.BlobInfo{
 						SchemaVersion: 2,
 						Misconfigurations: []types.Misconfiguration{
-							{
-								FileType: "terraform",
-								FilePath: ".",
-								Successes: types.MisconfResults{
-									{
-										Namespace: "builtin.aws.rds.aws0176",
-										Query:     "data.builtin.aws.rds.aws0176.deny",
-										PolicyMetadata: types.PolicyMetadata{
-											ID:                 "N/A",
-											AVDID:              "AVD-AWS-0176",
-											Type:               "Terraform Security Check",
-											Title:              "RDS IAM Database Authentication Disabled",
-											Description:        "Ensure IAM Database Authentication is enabled for RDS database instances to manage database access",
-											Severity:           "MEDIUM",
-											RecommendedActions: "Modify the PostgreSQL and MySQL type RDS instances to enable IAM database authentication.",
-											References:         []string{"https://docs.aws.amazon.com/neptune/latest/userguide/iam-auth.html"},
-										},
-										CauseMetadata: types.CauseMetadata{
-											Provider: "AWS",
-											Service:  "rds",
-										},
-									},
-									{
-										Namespace: "builtin.aws.rds.aws0177",
-										Query:     "data.builtin.aws.rds.aws0177.deny",
-										PolicyMetadata: types.PolicyMetadata{
-											ID:                 "N/A",
-											AVDID:              "AVD-AWS-0177",
-											Type:               "Terraform Security Check",
-											Title:              "RDS Deletion Protection Disabled",
-											Description:        "Ensure deletion protection is enabled for RDS database instances.",
-											Severity:           "MEDIUM",
-											RecommendedActions: "Modify the RDS instances to enable deletion protection.",
-											References:         []string{"https://aws.amazon.com/about-aws/whats-new/2018/09/amazon-rds-now-provides-database-deletion-protection/"},
-										},
-										CauseMetadata: types.CauseMetadata{
-											Provider: "AWS",
-											Service:  "rds",
-										},
-									},
-									{
-										Namespace: "builtin.aws.rds.aws0180",
-										Query:     "data.builtin.aws.rds.aws0180.deny",
-										PolicyMetadata: types.PolicyMetadata{
-											ID:                 "N/A",
-											AVDID:              "AVD-AWS-0180",
-											Type:               "Terraform Security Check",
-											Title:              "RDS Publicly Accessible",
-											Description:        "Ensures RDS instances are not launched into the public cloud.",
-											Severity:           "HIGH",
-											RecommendedActions: "Remove the public endpoint from the RDS instance'",
-											References:         []string{"http://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_VPC.html"},
-										},
-										CauseMetadata: types.CauseMetadata{
-											Resource:  "",
-											Provider:  "AWS",
-											Service:   "rds",
-											StartLine: 0,
-											EndLine:   0,
-											Code:      types.Code{Lines: []types.Line(nil)},
-										},
-										Traces: []string(nil),
-									},
-								},
-							},
 							{
 								FileType: "terraform",
 								FilePath: "main.tf",
@@ -666,9 +525,9 @@ func TestTerraformMisconfigurationScan(t *testing.T) {
 			want: types.ArtifactReference{
 				Name: "testdata/misconfig/terraform/multiple-failures/src",
 				Type: types.ArtifactFilesystem,
-				ID:   "sha256:8c3691ae9fee1a61cff411cb3c8337d5e9571ac6d5b40fba97f448983bfe8673",
+				ID:   "sha256:340197e6c02b644e4d1310647e5b2503c224caeaeb5be01187467b71827614ce",
 				BlobIDs: []string{
-					"sha256:8c3691ae9fee1a61cff411cb3c8337d5e9571ac6d5b40fba97f448983bfe8673",
+					"sha256:340197e6c02b644e4d1310647e5b2503c224caeaeb5be01187467b71827614ce",
 				},
 			},
 		},
@@ -725,65 +584,6 @@ func TestTerraformMisconfigurationScan(t *testing.T) {
 								FilePath: ".",
 								Successes: types.MisconfResults{
 									{
-										Namespace: "builtin.aws.rds.aws0176",
-										Query:     "data.builtin.aws.rds.aws0176.deny",
-										PolicyMetadata: types.PolicyMetadata{
-											ID:                 "N/A",
-											AVDID:              "AVD-AWS-0176",
-											Type:               "Terraform Security Check",
-											Title:              "RDS IAM Database Authentication Disabled",
-											Description:        "Ensure IAM Database Authentication is enabled for RDS database instances to manage database access",
-											Severity:           "MEDIUM",
-											RecommendedActions: "Modify the PostgreSQL and MySQL type RDS instances to enable IAM database authentication.",
-											References:         []string{"https://docs.aws.amazon.com/neptune/latest/userguide/iam-auth.html"},
-										},
-										CauseMetadata: types.CauseMetadata{
-											Provider: "AWS",
-											Service:  "rds",
-										},
-									},
-									{
-										Namespace: "builtin.aws.rds.aws0177",
-										Query:     "data.builtin.aws.rds.aws0177.deny",
-										PolicyMetadata: types.PolicyMetadata{
-											ID:                 "N/A",
-											AVDID:              "AVD-AWS-0177",
-											Type:               "Terraform Security Check",
-											Title:              "RDS Deletion Protection Disabled",
-											Description:        "Ensure deletion protection is enabled for RDS database instances.",
-											Severity:           "MEDIUM",
-											RecommendedActions: "Modify the RDS instances to enable deletion protection.",
-											References:         []string{"https://aws.amazon.com/about-aws/whats-new/2018/09/amazon-rds-now-provides-database-deletion-protection/"},
-										},
-										CauseMetadata: types.CauseMetadata{
-											Provider: "AWS",
-											Service:  "rds",
-										},
-									},
-									{
-										Namespace: "builtin.aws.rds.aws0180",
-										Query:     "data.builtin.aws.rds.aws0180.deny",
-										PolicyMetadata: types.PolicyMetadata{
-											ID:                 "N/A",
-											AVDID:              "AVD-AWS-0180",
-											Type:               "Terraform Security Check",
-											Title:              "RDS Publicly Accessible",
-											Description:        "Ensures RDS instances are not launched into the public cloud.",
-											Severity:           "HIGH",
-											RecommendedActions: "Remove the public endpoint from the RDS instance'",
-											References:         []string{"http://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_VPC.html"},
-										},
-										CauseMetadata: types.CauseMetadata{
-											Resource:  "",
-											Provider:  "AWS",
-											Service:   "rds",
-											StartLine: 0,
-											EndLine:   0,
-											Code:      types.Code{Lines: []types.Line(nil)},
-										},
-										Traces: []string(nil),
-									},
-									{
 										Namespace: "user.something",
 										Query:     "data.user.something.deny",
 										PolicyMetadata: types.PolicyMetadata{
@@ -811,9 +611,9 @@ func TestTerraformMisconfigurationScan(t *testing.T) {
 			want: types.ArtifactReference{
 				Name: "testdata/misconfig/terraform/passed/src",
 				Type: types.ArtifactFilesystem,
-				ID:   "sha256:f5c729597d94109d375447f91db212baf1a13a75f02084432b5e650be5643961",
+				ID:   "sha256:ee80e0b4d07abe98c88119a1dc3d5cfd3b5f3cfda3b52cf3e566d7abc15f072b",
 				BlobIDs: []string{
-					"sha256:f5c729597d94109d375447f91db212baf1a13a75f02084432b5e650be5643961",
+					"sha256:ee80e0b4d07abe98c88119a1dc3d5cfd3b5f3cfda3b52cf3e566d7abc15f072b",
 				},
 			},
 		},
@@ -867,67 +667,6 @@ func TestCloudFormationMisconfigurationScan(t *testing.T) {
 							{
 								FileType: "cloudformation",
 								FilePath: "main.yaml",
-								Successes: types.MisconfResults{
-									{
-										Namespace: "builtin.aws.rds.aws0176",
-										Query:     "data.builtin.aws.rds.aws0176.deny",
-										PolicyMetadata: types.PolicyMetadata{
-											ID:                 "N/A",
-											AVDID:              "AVD-AWS-0176",
-											Type:               "CloudFormation Security Check",
-											Title:              "RDS IAM Database Authentication Disabled",
-											Description:        "Ensure IAM Database Authentication is enabled for RDS database instances to manage database access",
-											Severity:           "MEDIUM",
-											RecommendedActions: "Modify the PostgreSQL and MySQL type RDS instances to enable IAM database authentication.",
-											References:         []string{"https://docs.aws.amazon.com/neptune/latest/userguide/iam-auth.html"},
-										},
-										CauseMetadata: types.CauseMetadata{
-											Provider: "AWS",
-											Service:  "rds",
-										},
-									},
-									{
-										Namespace: "builtin.aws.rds.aws0177",
-										Query:     "data.builtin.aws.rds.aws0177.deny",
-										PolicyMetadata: types.PolicyMetadata{
-											ID:                 "N/A",
-											AVDID:              "AVD-AWS-0177",
-											Type:               "CloudFormation Security Check",
-											Title:              "RDS Deletion Protection Disabled",
-											Description:        "Ensure deletion protection is enabled for RDS database instances.",
-											Severity:           "MEDIUM",
-											RecommendedActions: "Modify the RDS instances to enable deletion protection.",
-											References:         []string{"https://aws.amazon.com/about-aws/whats-new/2018/09/amazon-rds-now-provides-database-deletion-protection/"},
-										},
-										CauseMetadata: types.CauseMetadata{
-											Provider: "AWS",
-											Service:  "rds",
-										},
-									},
-									{
-										Namespace: "builtin.aws.rds.aws0180",
-										Query:     "data.builtin.aws.rds.aws0180.deny",
-										PolicyMetadata: types.PolicyMetadata{
-											ID:                 "N/A",
-											AVDID:              "AVD-AWS-0180",
-											Type:               "CloudFormation Security Check",
-											Title:              "RDS Publicly Accessible",
-											Description:        "Ensures RDS instances are not launched into the public cloud.",
-											Severity:           "HIGH",
-											RecommendedActions: "Remove the public endpoint from the RDS instance'",
-											References:         []string{"http://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_VPC.html"},
-										},
-										CauseMetadata: types.CauseMetadata{
-											Resource:  "",
-											Provider:  "AWS",
-											Service:   "rds",
-											StartLine: 0,
-											EndLine:   0,
-											Code:      types.Code{Lines: []types.Line(nil)},
-										},
-										Traces: []string(nil),
-									},
-								},
 								Failures: types.MisconfResults{
 									{
 										Namespace: "user.something",
@@ -961,9 +700,9 @@ func TestCloudFormationMisconfigurationScan(t *testing.T) {
 			want: types.ArtifactReference{
 				Name: "testdata/misconfig/cloudformation/single-failure/src",
 				Type: types.ArtifactFilesystem,
-				ID:   "sha256:eb5454a2e393c2f7602d0905f29179767dbcf7a5e57ee23142acbbb9c748e511",
+				ID:   "sha256:f276c65a15cc7e54ec100f4abb9446b44da8cc39ff02596109faa44baf3e88b5",
 				BlobIDs: []string{
-					"sha256:eb5454a2e393c2f7602d0905f29179767dbcf7a5e57ee23142acbbb9c748e511",
+					"sha256:f276c65a15cc7e54ec100f4abb9446b44da8cc39ff02596109faa44baf3e88b5",
 				},
 			},
 		},
@@ -988,67 +727,6 @@ func TestCloudFormationMisconfigurationScan(t *testing.T) {
 							{
 								FileType: "cloudformation",
 								FilePath: "main.yaml",
-								Successes: types.MisconfResults{
-									{
-										Namespace: "builtin.aws.rds.aws0176",
-										Query:     "data.builtin.aws.rds.aws0176.deny",
-										PolicyMetadata: types.PolicyMetadata{
-											ID:                 "N/A",
-											AVDID:              "AVD-AWS-0176",
-											Type:               "CloudFormation Security Check",
-											Title:              "RDS IAM Database Authentication Disabled",
-											Description:        "Ensure IAM Database Authentication is enabled for RDS database instances to manage database access",
-											Severity:           "MEDIUM",
-											RecommendedActions: "Modify the PostgreSQL and MySQL type RDS instances to enable IAM database authentication.",
-											References:         []string{"https://docs.aws.amazon.com/neptune/latest/userguide/iam-auth.html"},
-										},
-										CauseMetadata: types.CauseMetadata{
-											Provider: "AWS",
-											Service:  "rds",
-										},
-									},
-									{
-										Namespace: "builtin.aws.rds.aws0177",
-										Query:     "data.builtin.aws.rds.aws0177.deny",
-										PolicyMetadata: types.PolicyMetadata{
-											ID:                 "N/A",
-											AVDID:              "AVD-AWS-0177",
-											Type:               "CloudFormation Security Check",
-											Title:              "RDS Deletion Protection Disabled",
-											Description:        "Ensure deletion protection is enabled for RDS database instances.",
-											Severity:           "MEDIUM",
-											RecommendedActions: "Modify the RDS instances to enable deletion protection.",
-											References:         []string{"https://aws.amazon.com/about-aws/whats-new/2018/09/amazon-rds-now-provides-database-deletion-protection/"},
-										},
-										CauseMetadata: types.CauseMetadata{
-											Provider: "AWS",
-											Service:  "rds",
-										},
-									},
-									{
-										Namespace: "builtin.aws.rds.aws0180",
-										Query:     "data.builtin.aws.rds.aws0180.deny",
-										PolicyMetadata: types.PolicyMetadata{
-											ID:                 "N/A",
-											AVDID:              "AVD-AWS-0180",
-											Type:               "CloudFormation Security Check",
-											Title:              "RDS Publicly Accessible",
-											Description:        "Ensures RDS instances are not launched into the public cloud.",
-											Severity:           "HIGH",
-											RecommendedActions: "Remove the public endpoint from the RDS instance'",
-											References:         []string{"http://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_VPC.html"},
-										},
-										CauseMetadata: types.CauseMetadata{
-											Resource:  "",
-											Provider:  "AWS",
-											Service:   "rds",
-											StartLine: 0,
-											EndLine:   0,
-											Code:      types.Code{Lines: []types.Line(nil)},
-										},
-										Traces: []string(nil),
-									},
-								},
 								Failures: types.MisconfResults{
 									types.MisconfResult{
 										Namespace: "user.something",
@@ -1104,9 +782,9 @@ func TestCloudFormationMisconfigurationScan(t *testing.T) {
 			want: types.ArtifactReference{
 				Name: "testdata/misconfig/cloudformation/multiple-failures/src",
 				Type: types.ArtifactFilesystem,
-				ID:   "sha256:9dfc40f988fcfbb90d6da1dedaad0fd83a652b7562e2cd2e4cb30afb72cdc93c",
+				ID:   "sha256:e4676a9d8ff2a2da3c63f61e34759cc53f504588c72625f241f6f0ee43db8ef9",
 				BlobIDs: []string{
-					"sha256:9dfc40f988fcfbb90d6da1dedaad0fd83a652b7562e2cd2e4cb30afb72cdc93c",
+					"sha256:e4676a9d8ff2a2da3c63f61e34759cc53f504588c72625f241f6f0ee43db8ef9",
 				},
 			},
 		},
@@ -1163,65 +841,6 @@ func TestCloudFormationMisconfigurationScan(t *testing.T) {
 								FilePath: "main.yaml",
 								Successes: types.MisconfResults{
 									{
-										Namespace: "builtin.aws.rds.aws0176",
-										Query:     "data.builtin.aws.rds.aws0176.deny",
-										PolicyMetadata: types.PolicyMetadata{
-											ID:                 "N/A",
-											AVDID:              "AVD-AWS-0176",
-											Type:               "CloudFormation Security Check",
-											Title:              "RDS IAM Database Authentication Disabled",
-											Description:        "Ensure IAM Database Authentication is enabled for RDS database instances to manage database access",
-											Severity:           "MEDIUM",
-											RecommendedActions: "Modify the PostgreSQL and MySQL type RDS instances to enable IAM database authentication.",
-											References:         []string{"https://docs.aws.amazon.com/neptune/latest/userguide/iam-auth.html"},
-										},
-										CauseMetadata: types.CauseMetadata{
-											Provider: "AWS",
-											Service:  "rds",
-										},
-									},
-									{
-										Namespace: "builtin.aws.rds.aws0177",
-										Query:     "data.builtin.aws.rds.aws0177.deny",
-										PolicyMetadata: types.PolicyMetadata{
-											ID:                 "N/A",
-											AVDID:              "AVD-AWS-0177",
-											Type:               "CloudFormation Security Check",
-											Title:              "RDS Deletion Protection Disabled",
-											Description:        "Ensure deletion protection is enabled for RDS database instances.",
-											Severity:           "MEDIUM",
-											RecommendedActions: "Modify the RDS instances to enable deletion protection.",
-											References:         []string{"https://aws.amazon.com/about-aws/whats-new/2018/09/amazon-rds-now-provides-database-deletion-protection/"},
-										},
-										CauseMetadata: types.CauseMetadata{
-											Provider: "AWS",
-											Service:  "rds",
-										},
-									},
-									{
-										Namespace: "builtin.aws.rds.aws0180",
-										Query:     "data.builtin.aws.rds.aws0180.deny",
-										PolicyMetadata: types.PolicyMetadata{
-											ID:                 "N/A",
-											AVDID:              "AVD-AWS-0180",
-											Type:               "CloudFormation Security Check",
-											Title:              "RDS Publicly Accessible",
-											Description:        "Ensures RDS instances are not launched into the public cloud.",
-											Severity:           "HIGH",
-											RecommendedActions: "Remove the public endpoint from the RDS instance'",
-											References:         []string{"http://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_VPC.html"},
-										},
-										CauseMetadata: types.CauseMetadata{
-											Resource:  "",
-											Provider:  "AWS",
-											Service:   "rds",
-											StartLine: 0,
-											EndLine:   0,
-											Code:      types.Code{Lines: []types.Line(nil)},
-										},
-										Traces: []string(nil),
-									},
-									{
 										Namespace: "user.something",
 										Query:     "data.user.something.deny",
 										PolicyMetadata: types.PolicyMetadata{
@@ -1249,9 +868,9 @@ func TestCloudFormationMisconfigurationScan(t *testing.T) {
 			want: types.ArtifactReference{
 				Name: "testdata/misconfig/cloudformation/passed/src",
 				Type: types.ArtifactFilesystem,
-				ID:   "sha256:f47eda75dac78ecc9ed4cd02143cdef7145000fc55064f9117ade7f92f55922f",
+				ID:   "sha256:dda92729eda80706a78c3bf2f118948c175a818305c7bd9f71336b9b795d2776",
 				BlobIDs: []string{
-					"sha256:f47eda75dac78ecc9ed4cd02143cdef7145000fc55064f9117ade7f92f55922f",
+					"sha256:dda92729eda80706a78c3bf2f118948c175a818305c7bd9f71336b9b795d2776",
 				},
 			},
 		},
@@ -1802,67 +1421,6 @@ func TestAzureARMMisconfigurationScan(t *testing.T) {
 							{
 								FileType: "azure-arm",
 								FilePath: "deploy.json",
-								Successes: types.MisconfResults{
-									{
-										Namespace: "builtin.aws.rds.aws0176",
-										Query:     "data.builtin.aws.rds.aws0176.deny",
-										PolicyMetadata: types.PolicyMetadata{
-											ID:                 "N/A",
-											AVDID:              "AVD-AWS-0176",
-											Type:               "Azure ARM Security Check",
-											Title:              "RDS IAM Database Authentication Disabled",
-											Description:        "Ensure IAM Database Authentication is enabled for RDS database instances to manage database access",
-											Severity:           "MEDIUM",
-											RecommendedActions: "Modify the PostgreSQL and MySQL type RDS instances to enable IAM database authentication.",
-											References:         []string{"https://docs.aws.amazon.com/neptune/latest/userguide/iam-auth.html"},
-										},
-										CauseMetadata: types.CauseMetadata{
-											Provider: "AWS",
-											Service:  "rds",
-										},
-									},
-									{
-										Namespace: "builtin.aws.rds.aws0177",
-										Query:     "data.builtin.aws.rds.aws0177.deny",
-										PolicyMetadata: types.PolicyMetadata{
-											ID:                 "N/A",
-											AVDID:              "AVD-AWS-0177",
-											Type:               "Azure ARM Security Check",
-											Title:              "RDS Deletion Protection Disabled",
-											Description:        "Ensure deletion protection is enabled for RDS database instances.",
-											Severity:           "MEDIUM",
-											RecommendedActions: "Modify the RDS instances to enable deletion protection.",
-											References:         []string{"https://aws.amazon.com/about-aws/whats-new/2018/09/amazon-rds-now-provides-database-deletion-protection/"},
-										},
-										CauseMetadata: types.CauseMetadata{
-											Provider: "AWS",
-											Service:  "rds",
-										},
-									},
-									{
-										Namespace: "builtin.aws.rds.aws0180",
-										Query:     "data.builtin.aws.rds.aws0180.deny",
-										PolicyMetadata: types.PolicyMetadata{
-											ID:                 "N/A",
-											AVDID:              "AVD-AWS-0180",
-											Type:               "Azure ARM Security Check",
-											Title:              "RDS Publicly Accessible",
-											Description:        "Ensures RDS instances are not launched into the public cloud.",
-											Severity:           "HIGH",
-											RecommendedActions: "Remove the public endpoint from the RDS instance'",
-											References:         []string{"http://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_VPC.html"},
-										},
-										CauseMetadata: types.CauseMetadata{
-											Resource:  "",
-											Provider:  "AWS",
-											Service:   "rds",
-											StartLine: 0,
-											EndLine:   0,
-											Code:      types.Code{Lines: []types.Line(nil)},
-										},
-										Traces: []string(nil),
-									},
-								},
 								Failures: types.MisconfResults{
 									{
 										Namespace: "user.something",
@@ -1896,9 +1454,9 @@ func TestAzureARMMisconfigurationScan(t *testing.T) {
 			want: types.ArtifactReference{
 				Name: "testdata/misconfig/azurearm/single-failure/src",
 				Type: types.ArtifactFilesystem,
-				ID:   "sha256:da3e9be7246410885dd6b8d994c5e757cd3f700367bd0f7790990c124cb69924",
+				ID:   "sha256:8d6ebb66f1cb65e92f90114b5b4555d53f8c8051a8a27b5a717644668d76e3a3",
 				BlobIDs: []string{
-					"sha256:da3e9be7246410885dd6b8d994c5e757cd3f700367bd0f7790990c124cb69924",
+					"sha256:8d6ebb66f1cb65e92f90114b5b4555d53f8c8051a8a27b5a717644668d76e3a3",
 				},
 			},
 		},
@@ -1923,67 +1481,6 @@ func TestAzureARMMisconfigurationScan(t *testing.T) {
 							{
 								FileType: "azure-arm",
 								FilePath: "deploy.json",
-								Successes: types.MisconfResults{
-									{
-										Namespace: "builtin.aws.rds.aws0176",
-										Query:     "data.builtin.aws.rds.aws0176.deny",
-										PolicyMetadata: types.PolicyMetadata{
-											ID:                 "N/A",
-											AVDID:              "AVD-AWS-0176",
-											Type:               "Azure ARM Security Check",
-											Title:              "RDS IAM Database Authentication Disabled",
-											Description:        "Ensure IAM Database Authentication is enabled for RDS database instances to manage database access",
-											Severity:           "MEDIUM",
-											RecommendedActions: "Modify the PostgreSQL and MySQL type RDS instances to enable IAM database authentication.",
-											References:         []string{"https://docs.aws.amazon.com/neptune/latest/userguide/iam-auth.html"},
-										},
-										CauseMetadata: types.CauseMetadata{
-											Provider: "AWS",
-											Service:  "rds",
-										},
-									},
-									{
-										Namespace: "builtin.aws.rds.aws0177",
-										Query:     "data.builtin.aws.rds.aws0177.deny",
-										PolicyMetadata: types.PolicyMetadata{
-											ID:                 "N/A",
-											AVDID:              "AVD-AWS-0177",
-											Type:               "Azure ARM Security Check",
-											Title:              "RDS Deletion Protection Disabled",
-											Description:        "Ensure deletion protection is enabled for RDS database instances.",
-											Severity:           "MEDIUM",
-											RecommendedActions: "Modify the RDS instances to enable deletion protection.",
-											References:         []string{"https://aws.amazon.com/about-aws/whats-new/2018/09/amazon-rds-now-provides-database-deletion-protection/"},
-										},
-										CauseMetadata: types.CauseMetadata{
-											Provider: "AWS",
-											Service:  "rds",
-										},
-									},
-									{
-										Namespace: "builtin.aws.rds.aws0180",
-										Query:     "data.builtin.aws.rds.aws0180.deny",
-										PolicyMetadata: types.PolicyMetadata{
-											ID:                 "N/A",
-											AVDID:              "AVD-AWS-0180",
-											Type:               "Azure ARM Security Check",
-											Title:              "RDS Publicly Accessible",
-											Description:        "Ensures RDS instances are not launched into the public cloud.",
-											Severity:           "HIGH",
-											RecommendedActions: "Remove the public endpoint from the RDS instance'",
-											References:         []string{"http://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_VPC.html"},
-										},
-										CauseMetadata: types.CauseMetadata{
-											Resource:  "",
-											Provider:  "AWS",
-											Service:   "rds",
-											StartLine: 0,
-											EndLine:   0,
-											Code:      types.Code{Lines: []types.Line(nil)},
-										},
-										Traces: []string(nil),
-									},
-								},
 								Failures: types.MisconfResults{
 									{
 										Namespace: "user.something",
@@ -2039,9 +1536,9 @@ func TestAzureARMMisconfigurationScan(t *testing.T) {
 			want: types.ArtifactReference{
 				Name: "testdata/misconfig/azurearm/multiple-failures/src",
 				Type: types.ArtifactFilesystem,
-				ID:   "sha256:6b50622ac08712437f5446e23da6d219ac279cc683526b76975dc2963c84f65d",
+				ID:   "sha256:640e36de479b97e639dc361863540467ad80caf6b0024555f64171e31a055cc5",
 				BlobIDs: []string{
-					"sha256:6b50622ac08712437f5446e23da6d219ac279cc683526b76975dc2963c84f65d",
+					"sha256:640e36de479b97e639dc361863540467ad80caf6b0024555f64171e31a055cc5",
 				},
 			},
 		},
@@ -2098,65 +1595,6 @@ func TestAzureARMMisconfigurationScan(t *testing.T) {
 								FilePath: "deploy.json",
 								Successes: types.MisconfResults{
 									{
-										Namespace: "builtin.aws.rds.aws0176",
-										Query:     "data.builtin.aws.rds.aws0176.deny",
-										PolicyMetadata: types.PolicyMetadata{
-											ID:                 "N/A",
-											AVDID:              "AVD-AWS-0176",
-											Type:               "Azure ARM Security Check",
-											Title:              "RDS IAM Database Authentication Disabled",
-											Description:        "Ensure IAM Database Authentication is enabled for RDS database instances to manage database access",
-											Severity:           "MEDIUM",
-											RecommendedActions: "Modify the PostgreSQL and MySQL type RDS instances to enable IAM database authentication.",
-											References:         []string{"https://docs.aws.amazon.com/neptune/latest/userguide/iam-auth.html"},
-										},
-										CauseMetadata: types.CauseMetadata{
-											Provider: "AWS",
-											Service:  "rds",
-										},
-									},
-									{
-										Namespace: "builtin.aws.rds.aws0177",
-										Query:     "data.builtin.aws.rds.aws0177.deny",
-										PolicyMetadata: types.PolicyMetadata{
-											ID:                 "N/A",
-											AVDID:              "AVD-AWS-0177",
-											Type:               "Azure ARM Security Check",
-											Title:              "RDS Deletion Protection Disabled",
-											Description:        "Ensure deletion protection is enabled for RDS database instances.",
-											Severity:           "MEDIUM",
-											RecommendedActions: "Modify the RDS instances to enable deletion protection.",
-											References:         []string{"https://aws.amazon.com/about-aws/whats-new/2018/09/amazon-rds-now-provides-database-deletion-protection/"},
-										},
-										CauseMetadata: types.CauseMetadata{
-											Provider: "AWS",
-											Service:  "rds",
-										},
-									},
-									{
-										Namespace: "builtin.aws.rds.aws0180",
-										Query:     "data.builtin.aws.rds.aws0180.deny",
-										PolicyMetadata: types.PolicyMetadata{
-											ID:                 "N/A",
-											AVDID:              "AVD-AWS-0180",
-											Type:               "Azure ARM Security Check",
-											Title:              "RDS Publicly Accessible",
-											Description:        "Ensures RDS instances are not launched into the public cloud.",
-											Severity:           "HIGH",
-											RecommendedActions: "Remove the public endpoint from the RDS instance'",
-											References:         []string{"http://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_VPC.html"},
-										},
-										CauseMetadata: types.CauseMetadata{
-											Resource:  "",
-											Provider:  "AWS",
-											Service:   "rds",
-											StartLine: 0,
-											EndLine:   0,
-											Code:      types.Code{Lines: []types.Line(nil)},
-										},
-										Traces: []string(nil),
-									},
-									{
 										Namespace: "user.something",
 										Query:     "data.user.something.deny",
 										PolicyMetadata: types.PolicyMetadata{
@@ -2184,9 +1622,9 @@ func TestAzureARMMisconfigurationScan(t *testing.T) {
 			want: types.ArtifactReference{
 				Name: "testdata/misconfig/azurearm/passed/src",
 				Type: types.ArtifactFilesystem,
-				ID:   "sha256:224e7796d0417367f334df40092b2910cab0d0e9ea2be0d90347b199c94e51ad",
+				ID:   "sha256:f90eabc657cedc83e3ebfd3c8f8840d4fea55a73f813e0a904ac4b0ae76f39ce",
 				BlobIDs: []string{
-					"sha256:224e7796d0417367f334df40092b2910cab0d0e9ea2be0d90347b199c94e51ad",
+					"sha256:f90eabc657cedc83e3ebfd3c8f8840d4fea55a73f813e0a904ac4b0ae76f39ce",
 				},
 			},
 		},

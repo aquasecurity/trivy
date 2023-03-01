@@ -25,7 +25,7 @@ func initGoogleClassifier() error {
 	// This loading is expensive and should be called only when the license classification is needed.
 	var err error
 	classifierOnce.Do(func() {
-		log.Logger.Debug("Loading the the default license classifier...")
+		log.Logger.Debug("Loading the default license classifier...")
 		cf, err = assets.DefaultClassifier()
 	})
 	return err

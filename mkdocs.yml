@@ -60,6 +60,7 @@ nav:
           - Languages:
               - Go: docs/vulnerability/languages/golang.md
               - Java: docs/vulnerability/languages/java.md
+              - Python: docs/vulnerability/languages/python.md
       - Misconfiguration:
           - Scanning: docs/misconfiguration/scanning.md
           - Policy:
@@ -69,6 +70,7 @@ nav:
               - Overview: docs/misconfiguration/custom/index.md
               - Data: docs/misconfiguration/custom/data.md
               - Combine: docs/misconfiguration/custom/combine.md
+              - Schemas: docs/misconfiguration/custom/schema.md
               - Testing: docs/misconfiguration/custom/testing.md
               - Debugging Policies: docs/misconfiguration/custom/debug.md
               - Examples: docs/misconfiguration/custom/examples.md

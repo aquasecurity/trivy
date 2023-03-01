@@ -524,8 +524,11 @@ func initScannerConfig(opts flag.Options, cacheClient cache.Cache) (ScannerConfi
 		opts.ImageConfigScanners = nil
 		// TODO: define image-config-scanners in the spec
 		if opts.Compliance.Spec.ID == "docker-cis" {
-			opts.Scanners = nil
-			opts.ImageConfigScanners = scanners
+			opts.Scanners = types.Scanners{types.VulnerabilityScanner}
+			opts.ImageConfigScanners = types.Scanners{
+				types.MisconfigScanner,
+				types.SecretScanner,
+			}
 		}
 	}
 
