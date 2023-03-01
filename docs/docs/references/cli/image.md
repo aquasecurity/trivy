@@ -39,7 +39,7 @@ Scan Flags
 
 Report Flags
       --exit-code int          specify exit code when any security issues are found
-      --exit-on-eol            exit with the specified code when the os of image ends of service/life
+      --exit-on-eol int        exit with the specified code when the os of image ends of service/life
   -f, --format string          format (table, json, sarif, template, cyclonedx, spdx, spdx-json, github, cosign-vuln) (default "table")
       --ignore-policy string   specify the Rego file path to evaluate each vulnerability
       --ignorefile string      specify .trivyignore file (default ".trivyignore")

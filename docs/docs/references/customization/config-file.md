@@ -64,8 +64,8 @@ ignore-policy:
 exit-code: 0
 
 # Same as '--exit-on-eol'
-# Default is false
-exit-on-eol: false
+# Default is 0
+exit-on-eol: 0
 
 # Same as '--output'
 # Default is empty (stdout)
