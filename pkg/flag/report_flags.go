@@ -72,11 +72,11 @@ var (
 		Value:      0,
 		Usage:      "specify exit code when any security issues are found",
 	}
-	ExitOnEOSLFlag = Flag{
-		Name:       "exit-on-eosl",
-		ConfigName: "exit-on-eosl",
-		Value:      false,
-		Usage:      "exit with the specified code when the os of image ends of service/life",
+	ExitOnEOLFlag = Flag{
+		Name:       "exit-on-eol",
+		ConfigName: "exit-on-eol",
+		Value:      0,
+		Usage:      "exit with the specified code when the OS reaches end of service/life",
 	}
 	OutputFlag = Flag{
 		Name:       "output",
@@ -111,7 +111,7 @@ type ReportFlagGroup struct {
 	IgnoreFile     *Flag
 	IgnorePolicy   *Flag
 	ExitCode       *Flag
-	ExitOnEOSL     *Flag
+	ExitOnEOL      *Flag
 	Output         *Flag
 	Severity       *Flag
 	Compliance     *Flag
@@ -125,7 +125,7 @@ type ReportOptions struct {
 	ListAllPkgs    bool
 	IgnoreFile     string
 	ExitCode       int
-	ExitOnEOSL     bool
+	ExitOnEOL      int
 	IgnorePolicy   string
 	Output         io.Writer
 	Severities     []dbTypes.Severity
@@ -142,7 +142,7 @@ func NewReportFlagGroup() *ReportFlagGroup {
 		IgnoreFile:     &IgnoreFileFlag,
 		IgnorePolicy:   &IgnorePolicyFlag,
 		ExitCode:       &ExitCodeFlag,
-		ExitOnEOSL:     &ExitOnEOSLFlag,
+		ExitOnEOL:      &ExitOnEOLFlag,
 		Output:         &OutputFlag,
 		Severity:       &SeverityFlag,
 		Compliance:     &ComplianceFlag,
@@ -163,7 +163,7 @@ func (f *ReportFlagGroup) Flags() []*Flag {
 		f.IgnoreFile,
 		f.IgnorePolicy,
 		f.ExitCode,
-		f.ExitOnEOSL,
+		f.ExitOnEOL,
 		f.Output,
 		f.Severity,
 		f.Compliance,
@@ -171,17 +171,11 @@ func (f *ReportFlagGroup) Flags() []*Flag {
 }
 
 func (f *ReportFlagGroup) ToOptions(out io.Writer) (ReportOptions, error) {
-	exitCode := getInt(f.ExitCode)
-	exitOnEOSL := getBool(f.ExitOnEOSL)
 	format := getString(f.Format)
 	template := getString(f.Template)
 	dependencyTree := getBool(f.DependencyTree)
 	listAllPkgs := getBool(f.ListAllPkgs)
 	output := getString(f.Output)
-
-	if exitOnEOSL && exitCode == 0 {
-		log.Logger.Warn("'--exit-on-eosl' is ignored because '--exit-code' is 0 or not specified. Use '--exit-on-eosl' option with non-zero '--exit-code' option.")
-	}
 
 	if format != "" && !slices.Contains(report.SupportedFormats, format) {
 		return ReportOptions{}, xerrors.Errorf("unknown format: %v", format)
@@ -239,8 +233,8 @@ func (f *ReportFlagGroup) ToOptions(out io.Writer) (ReportOptions, error) {
 		DependencyTree: dependencyTree,
 		ListAllPkgs:    listAllPkgs,
 		IgnoreFile:     getString(f.IgnoreFile),
-		ExitCode:       exitCode,
-		ExitOnEOSL:     exitOnEOSL,
+		ExitCode:       getInt(f.ExitCode),
+		ExitOnEOL:      getInt(f.ExitOnEOL),
 		IgnorePolicy:   getString(f.IgnorePolicy),
 		Output:         out,
 		Severities:     splitSeverity(getStringSlice(f.Severity)),
