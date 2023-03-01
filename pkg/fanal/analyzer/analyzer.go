@@ -348,15 +348,6 @@ func (ag AnalyzerGroup) AnalyzerVersions() map[string]int {
 	return versions
 }
 
-// ImageConfigAnalyzerVersions returns analyzer version identifier used for cache keys.
-func (ag AnalyzerGroup) ImageConfigAnalyzerVersions() map[string]int {
-	versions := map[string]int{}
-	for _, ca := range ag.configAnalyzers {
-		versions[string(ca.Type())] = ca.Version()
-	}
-	return versions
-}
-
 func (ag AnalyzerGroup) AnalyzeFile(ctx context.Context, wg *sync.WaitGroup, terminateWalk *bool, terminateError *string, limit *semaphore.Weighted, result *AnalysisResult,
 	dir, filePath string, info os.FileInfo, opener Opener, disabled []Type, opts AnalysisOptions) error {
 	// if a goroutine encountered an error while analyzing the file then skip further processing

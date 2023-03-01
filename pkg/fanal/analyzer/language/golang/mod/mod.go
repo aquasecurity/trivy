@@ -30,7 +30,7 @@ func (a gomodAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInput) 
 	var parser godeptypes.Parser
 	switch filepath.Base(input.FilePath) {
 	case types.GoMod:
-		parser = mod.NewParser()
+		parser = mod.NewParser(true)
 	case types.GoSum:
 		parser = sum.NewParser()
 	default:
