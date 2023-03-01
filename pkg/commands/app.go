@@ -161,7 +161,7 @@ func NewRootCommand(version string, globalFlags *flag.GlobalFlagGroup) *cobra.Co
 			// viper.BindPFlag cannot be called in init().
 			// cf. https://github.com/spf13/cobra/issues/875
 			//     https://github.com/spf13/viper/issues/233
-			if err := globalFlags.Bind(cmd.Root()); err != nil {
+			if err := globalFlags.Bind(cmd); err != nil {
 				return xerrors.Errorf("flag bind error: %w", err)
 			}
 
@@ -222,6 +222,7 @@ func NewImageCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 		ImageFlagGroup:         flag.NewImageFlagGroup(), // container image specific
 		LicenseFlagGroup:       flag.NewLicenseFlagGroup(),
 		MisconfFlagGroup:       flag.NewMisconfFlagGroup(),
+		ModuleFlagGroup:        flag.NewModuleFlagGroup(),
 		RemoteFlagGroup:        flag.NewClientFlags(), // for client/server mode
 		RegoFlagGroup:          flag.NewRegoFlagGroup(),
 		ReportFlagGroup:        reportFlagGroup,
@@ -297,6 +298,7 @@ func NewFilesystemCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 		DBFlagGroup:            flag.NewDBFlagGroup(),
 		LicenseFlagGroup:       flag.NewLicenseFlagGroup(),
 		MisconfFlagGroup:       flag.NewMisconfFlagGroup(),
+		ModuleFlagGroup:        flag.NewModuleFlagGroup(),
 		RemoteFlagGroup:        flag.NewClientFlags(), // for client/server mode
 		RegoFlagGroup:          flag.NewRegoFlagGroup(),
 		ReportFlagGroup:        reportFlagGroup,
@@ -351,6 +353,7 @@ func NewRootfsCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 		DBFlagGroup:            flag.NewDBFlagGroup(),
 		LicenseFlagGroup:       flag.NewLicenseFlagGroup(),
 		MisconfFlagGroup:       flag.NewMisconfFlagGroup(),
+		ModuleFlagGroup:        flag.NewModuleFlagGroup(),
 		RemoteFlagGroup:        flag.NewClientFlags(), // for client/server mode
 		RegoFlagGroup:          flag.NewRegoFlagGroup(),
 		ReportFlagGroup:        reportFlagGroup,
@@ -407,6 +410,7 @@ func NewRepositoryCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 		DBFlagGroup:            flag.NewDBFlagGroup(),
 		LicenseFlagGroup:       flag.NewLicenseFlagGroup(),
 		MisconfFlagGroup:       flag.NewMisconfFlagGroup(),
+		ModuleFlagGroup:        flag.NewModuleFlagGroup(),
 		RegoFlagGroup:          flag.NewRegoFlagGroup(),
 		RemoteFlagGroup:        flag.NewClientFlags(), // for client/server mode
 		ReportFlagGroup:        reportFlagGroup,
@@ -507,6 +511,7 @@ func NewServerCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	serverFlags := &flag.Flags{
 		CacheFlagGroup:  flag.NewCacheFlagGroup(),
 		DBFlagGroup:     flag.NewDBFlagGroup(),
+		ModuleFlagGroup: flag.NewModuleFlagGroup(),
 		RemoteFlagGroup: flag.NewServerFlags(),
 	}
 
@@ -560,6 +565,7 @@ func NewConfigCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	configFlags := &flag.Flags{
 		CacheFlagGroup:   flag.NewCacheFlagGroup(),
 		MisconfFlagGroup: flag.NewMisconfFlagGroup(),
+		ModuleFlagGroup:  flag.NewModuleFlagGroup(),
 		RegoFlagGroup:    flag.NewRegoFlagGroup(),
 		K8sFlagGroup: &flag.K8sFlagGroup{
 			// disable unneeded flags
@@ -708,6 +714,10 @@ func NewPluginCommand() *cobra.Command {
 }
 
 func NewModuleCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
+	moduleFlags := &flag.Flags{
+		ModuleFlagGroup: flag.NewModuleFlagGroup(),
+	}
+
 	cmd := &cobra.Command{
 		Use:           "module subcommand",
 		Aliases:       []string{"m"},
@@ -723,14 +733,23 @@ func NewModuleCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 			Aliases: []string{"i"},
 			Short:   "Install a module",
 			Args:    cobra.ExactArgs(1),
+			PreRunE: func(cmd *cobra.Command, args []string) error {
+				if err := moduleFlags.Bind(cmd); err != nil {
+					return xerrors.Errorf("flag bind error: %w", err)
+				}
+				return nil
+			},
 			RunE: func(cmd *cobra.Command, args []string) error {
 				if len(args) != 1 {
 					return cmd.Help()
 				}
 
 				repo := args[0]
-				opts := globalFlags.ToOptions()
-				return module.Install(cmd.Context(), repo, opts.Quiet, opts.Insecure)
+				opts, err := moduleFlags.ToOptions(cmd.Version, args, globalFlags, outputWriter)
+				if err != nil {
+					return xerrors.Errorf("flag error: %w", err)
+				}
+				return module.Install(cmd.Context(), opts.ModuleDir, repo, opts.Quiet, opts.Insecure)
 			},
 		},
 		&cobra.Command{
@@ -738,16 +757,27 @@ func NewModuleCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 			Aliases: []string{"u"},
 			Short:   "Uninstall a module",
 			Args:    cobra.ExactArgs(1),
+			PreRunE: func(cmd *cobra.Command, args []string) error {
+				if err := moduleFlags.Bind(cmd); err != nil {
+					return xerrors.Errorf("flag bind error: %w", err)
+				}
+				return nil
+			},
 			RunE: func(cmd *cobra.Command, args []string) error {
 				if len(args) != 1 {
 					return cmd.Help()
 				}
 
 				repo := args[0]
-				return module.Uninstall(cmd.Context(), repo)
+				opts, err := moduleFlags.ToOptions(cmd.Version, args, globalFlags, outputWriter)
+				if err != nil {
+					return xerrors.Errorf("flag error: %w", err)
+				}
+				return module.Uninstall(cmd.Context(), opts.ModuleDir, repo)
 			},
 		},
 	)
+	moduleFlags.AddFlags(cmd)
 	cmd.SetFlagErrorFunc(flagErrorFunc)
 	return cmd
 }
@@ -901,6 +931,7 @@ func NewVMCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 		DBFlagGroup:            flag.NewDBFlagGroup(),
 		LicenseFlagGroup:       flag.NewLicenseFlagGroup(),
 		MisconfFlagGroup:       flag.NewMisconfFlagGroup(),
+		ModuleFlagGroup:        flag.NewModuleFlagGroup(),
 		RemoteFlagGroup:        flag.NewClientFlags(), // for client/server mode
 		ReportFlagGroup:        reportFlagGroup,
 		ScanFlagGroup:          flag.NewScanFlagGroup(),
