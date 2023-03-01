@@ -170,25 +170,33 @@ Total: 1 (MEDIUM: 0, HIGH: 1)
 					Type:   "npm",
 					Packages: []ftypes.Package{
 						{
-							ID:      "node-fetch@1.7.3",
-							Name:    "node-fetch",
-							Version: "1.7.3",
+							ID:       "node-fetch@1.7.3",
+							Name:     "node-fetch",
+							Version:  "1.7.3",
+							Indirect: true,
 						},
 						{
-							ID:      "isomorphic-fetch@2.2.1",
-							Name:    "isomorphic-fetch",
-							Version: "2.2.1",
+							ID:       "isomorphic-fetch@2.2.1",
+							Name:     "isomorphic-fetch",
+							Version:  "2.2.1",
+							Indirect: true,
 							DependsOn: []string{
 								"node-fetch@1.7.3",
 							},
 						},
 						{
-							ID:      "fbjs@0.8.18",
-							Name:    "fbjs",
-							Version: "0.8.18",
+							ID:       "fbjs@0.8.18",
+							Name:     "fbjs",
+							Version:  "0.8.18",
+							Indirect: true,
 							DependsOn: []string{
 								"isomorphic-fetch@2.2.1",
 							},
+						},
+						{
+							ID:      "sanitize-html@1.20.0",
+							Name:    "sanitize-html",
+							Version: "1.20.0",
 						},
 						{
 							ID:      "styled-components@3.1.3",
@@ -244,9 +252,8 @@ Dependency Origin Tree (Reversed)
 =================================
 package-lock.json
 ├── node-fetch@1.7.3, (MEDIUM: 0, HIGH: 1)
-│   └── isomorphic-fetch@2.2.1
-│       └── fbjs@0.8.18
-│           └── styled-components@3.1.3
+│   └── ...(omitted)...
+│       └── styled-components@3.1.3
 └── sanitize-html@1.20.0, (MEDIUM: 1, HIGH: 0)
 `,
 		},
@@ -260,7 +267,10 @@ package-lock.json
 				Output:             &tableWritten,
 				Tree:               true,
 				IncludeNonFailures: tc.includeNonFailures,
-				Severities:         []dbTypes.Severity{dbTypes.SeverityHigh, dbTypes.SeverityMedium},
+				Severities: []dbTypes.Severity{
+					dbTypes.SeverityHigh,
+					dbTypes.SeverityMedium,
+				},
 			})
 			assert.NoError(t, err)
 			assert.Equal(t, tc.expectedOutput, tableWritten.String(), tc.name)
