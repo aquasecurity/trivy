@@ -209,12 +209,12 @@ func Test_nodePkgLibraryAnalyzer_Required(t *testing.T) {
 		},
 		{
 			name:     "happy path package.json file",
-			filePath: "npm/node_modules/package.json",
+			filePath: "npm/node_modules/ms/package.json",
 			want:     true,
 		},
 		{
 			name:     "sad path",
-			filePath: "npm/package.json",
+			filePath: "npm/node_modules/package.json",
 			want:     false,
 		},
 	}

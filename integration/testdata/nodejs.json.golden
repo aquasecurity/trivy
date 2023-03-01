@@ -26,6 +26,9 @@
           "Version": "2.0.6",
           "Indirect": true,
           "Layer": {},
+          "Licenses": [
+            "MIT"
+          ],
           "Locations": [
             {
               "StartLine": 6,
@@ -39,10 +42,13 @@
           "Version": "3.3.9",
           "Indirect": true,
           "Layer": {},
+          "Licenses": [
+            "MIT"
+          ],
           "Locations": [
             {
-              "StartLine": 16,
-              "EndLine": 20
+              "StartLine": 11,
+              "EndLine": 15
             }
           ]
         },
@@ -52,23 +58,13 @@
           "Version": "4.0.0",
           "Indirect": true,
           "Layer": {},
+          "Licenses": [
+            "MIT"
+          ],
           "Locations": [
             {
-              "StartLine": 21,
-              "EndLine": 25
-            }
-          ]
-        },
-        {
-          "ID": "lodash@4.17.4",
-          "Name": "lodash",
-          "Version": "4.17.4",
-          "Indirect": true,
-          "Layer": {},
-          "Locations": [
-            {
-              "StartLine": 11,
-              "EndLine": 15
+              "StartLine": 16,
+              "EndLine": 20
             }
           ]
         },
@@ -81,10 +77,13 @@
             "js-tokens@4.0.0"
           ],
           "Layer": {},
+          "Licenses": [
+            "MIT"
+          ],
           "Locations": [
             {
-              "StartLine": 26,
-              "EndLine": 33
+              "StartLine": 21,
+              "EndLine": 28
             }
           ]
         },
@@ -94,10 +93,13 @@
           "Version": "4.1.1",
           "Indirect": true,
           "Layer": {},
+          "Licenses": [
+            "MIT"
+          ],
           "Locations": [
             {
-              "StartLine": 34,
-              "EndLine": 38
+              "StartLine": 29,
+              "EndLine": 33
             }
           ]
         },
@@ -110,10 +112,13 @@
             "asap@2.0.6"
           ],
           "Layer": {},
+          "Licenses": [
+            "MIT"
+          ],
           "Locations": [
             {
-              "StartLine": 39,
-              "EndLine": 46
+              "StartLine": 34,
+              "EndLine": 41
             }
           ]
         },
@@ -128,10 +133,13 @@
             "react-is@16.8.6"
           ],
           "Layer": {},
+          "Licenses": [
+            "MIT"
+          ],
           "Locations": [
             {
-              "StartLine": 47,
-              "EndLine": 56
+              "StartLine": 42,
+              "EndLine": 51
             }
           ]
         },
@@ -147,10 +155,13 @@
             "scheduler@0.13.6"
           ],
           "Layer": {},
+          "Licenses": [
+            "MIT"
+          ],
           "Locations": [
             {
-              "StartLine": 57,
-              "EndLine": 67
+              "StartLine": 52,
+              "EndLine": 62
             }
           ]
         },
@@ -160,10 +171,13 @@
           "Version": "16.8.6",
           "Indirect": true,
           "Layer": {},
+          "Licenses": [
+            "MIT"
+          ],
           "Locations": [
             {
-              "StartLine": 68,
-              "EndLine": 72
+              "StartLine": 63,
+              "EndLine": 67
             }
           ]
         },
@@ -177,10 +191,13 @@
             "symbol-observable@1.2.0"
           ],
           "Layer": {},
+          "Licenses": [
+            "MIT"
+          ],
           "Locations": [
             {
-              "StartLine": 73,
-              "EndLine": 81
+              "StartLine": 68,
+              "EndLine": 76
             }
           ]
         },
@@ -194,10 +211,13 @@
             "object-assign@4.1.1"
           ],
           "Layer": {},
+          "Licenses": [
+            "MIT"
+          ],
           "Locations": [
             {
-              "StartLine": 82,
-              "EndLine": 90
+              "StartLine": 77,
+              "EndLine": 85
             }
           ]
         },
@@ -207,10 +227,13 @@
           "Version": "1.2.0",
           "Indirect": true,
           "Layer": {},
+          "Licenses": [
+            "MIT"
+          ],
           "Locations": [
             {
-              "StartLine": 91,
-              "EndLine": 95
+              "StartLine": 86,
+              "EndLine": 90
             }
           ]
         }
@@ -331,51 +354,6 @@
           ],
           "PublishedDate": "2019-04-20T00:29:00Z",
           "LastModifiedDate": "2021-10-20T11:15:00Z"
-        },
-        {
-          "VulnerabilityID": "CVE-2019-10744",
-          "PkgID": "lodash@4.17.4",
-          "PkgName": "lodash",
-          "InstalledVersion": "4.17.4",
-          "FixedVersion": "4.17.12",
-          "Layer": {},
-          "SeveritySource": "ghsa",
-          "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-10744",
-          "DataSource": {
-            "ID": "ghsa",
-            "Name": "GitHub Security Advisory Npm",
-            "URL": "https://github.com/advisories?query=type%3Areviewed+ecosystem%3Anpm"
-          },
-          "Title": "nodejs-lodash: prototype pollution in defaultsDeep function leading to modifying properties",
-          "Description": "Versions of lodash lower than 4.17.12 are vulnerable to Prototype Pollution. The function defaultsDeep could be tricked into adding or modifying properties of Object.prototype using a constructor payload.",
-          "Severity": "CRITICAL",
-          "CVSS": {
-            "nvd": {
-              "V2Vector": "AV:N/AC:L/Au:N/C:N/I:P/A:P",
-              "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:H/A:H",
-              "V2Score": 6.4,
-              "V3Score": 9.1
-            },
-            "redhat": {
-              "V3Vector": "CVSS:3.0/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:H/A:H",
-              "V3Score": 9.1
-            }
-          },
-          "References": [
-            "https://access.redhat.com/errata/RHSA-2019:3024",
-            "https://access.redhat.com/security/cve/CVE-2019-10744",
-            "https://github.com/advisories/GHSA-jf85-cpcp-j695",
-            "https://github.com/lodash/lodash/pull/4336",
-            "https://nvd.nist.gov/vuln/detail/CVE-2019-10744",
-            "https://security.netapp.com/advisory/ntap-20191004-0005/",
-            "https://snyk.io/vuln/SNYK-JS-LODASH-450202",
-            "https://support.f5.com/csp/article/K47105354?utm_source=f5support\u0026amp;utm_medium=RSS",
-            "https://www.npmjs.com/advisories/1065",
-            "https://www.oracle.com/security-alerts/cpujan2021.html",
-            "https://www.oracle.com/security-alerts/cpuoct2020.html"
-          ],
-          "PublishedDate": "2019-07-26T00:15:00Z",
-          "LastModifiedDate": "2021-03-16T13:57:00Z"
         }
       ]
     }

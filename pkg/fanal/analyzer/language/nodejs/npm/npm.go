@@ -3,11 +3,12 @@ package npm
 import (
 	"context"
 	"errors"
-	"golang.org/x/xerrors"
 	"io/fs"
 	"os"
 	"path/filepath"
 	"strings"
+
+	"golang.org/x/xerrors"
 
 	dio "github.com/aquasecurity/go-dep-parser/pkg/io"
 	"github.com/aquasecurity/go-dep-parser/pkg/nodejs/npm"
@@ -90,7 +91,15 @@ func (a npmLibraryAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAn
 
 func (a npmLibraryAnalyzer) Required(filePath string, _ os.FileInfo) bool {
 	fileName := filepath.Base(filePath)
-	return fileName == types.NpmPkgLock || strings.HasSuffix(filePath, filepath.Join("node_modules", types.NpmPkg))
+	if fileName == types.NpmPkgLock {
+		return true
+	}
+	// path to package.json files - */node_modules/<package_name>/package.json
+	dirs := strings.Split(filepath.Dir(filePath), "/")
+	if len(dirs) > 1 && dirs[len(dirs)-2] == "node_modules" && fileName == types.NpmPkg {
+		return true
+	}
+	return false
 }
 
 func (a npmLibraryAnalyzer) Type() analyzer.Type {
