@@ -33,6 +33,8 @@ const (
 
 	PropertySchemaVersion = "SchemaVersion"
 
+	NoAssertion = "NOASSERTION"
+
 	// Image properties
 	PropertySize       = "Size"
 	PropertyImageID    = "ImageID"
@@ -113,10 +115,10 @@ func NewMarshaler(opts ...marshalOption) *Marshaler {
 //  3. copyrightText (throws a warning if the value is empty)
 //  4. downloadLocation (throws a warning if the value is empty)
 func augmentSpdxData(p *spdx.Package2_2) {
-	p.PackageLicenseConcluded = "NOASSERTION"
-	p.PackageLicenseDeclared = "NOASSERTION"
-	p.PackageCopyrightText = "NOASSERTION"
-	p.PackageDownloadLocation = "NOASSERTION"
+	p.PackageLicenseConcluded = NoAssertion
+	p.PackageLicenseDeclared = NoAssertion
+	p.PackageCopyrightText = NoAssertion
+	p.PackageDownloadLocation = NoAssertion
 }
 
 func (m *Marshaler) Marshal(r types.Report) (*spdx.Document2_2, error) {
