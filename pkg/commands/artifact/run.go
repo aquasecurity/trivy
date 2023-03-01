@@ -19,7 +19,6 @@ import (
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer/config"
 	"github.com/aquasecurity/trivy/pkg/fanal/artifact"
 	"github.com/aquasecurity/trivy/pkg/fanal/cache"
-	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/flag"
 	"github.com/aquasecurity/trivy/pkg/javadb"
 	"github.com/aquasecurity/trivy/pkg/log"
@@ -164,7 +163,6 @@ func (r *runner) Close(ctx context.Context) error {
 func (r *runner) ScanImage(ctx context.Context, opts flag.Options) (types.Report, error) {
 	// Disable the lock file scanning
 	opts.DisabledAnalyzers = analyzer.TypeLockfiles
-	opts.DisabledHandlers = append(opts.DisabledHandlers, ftypes.NodeLicensesPostHandler)
 
 	var s InitializeScanner
 	switch {
@@ -195,7 +193,6 @@ func (r *runner) ScanFilesystem(ctx context.Context, opts flag.Options) (types.R
 func (r *runner) ScanRootfs(ctx context.Context, opts flag.Options) (types.Report, error) {
 	// Disable the lock file scanning
 	opts.DisabledAnalyzers = append(opts.DisabledAnalyzers, analyzer.TypeLockfiles...)
-	opts.DisabledHandlers = append(opts.DisabledHandlers, ftypes.NodeLicensesPostHandler)
 
 	return r.scanFS(ctx, opts)
 }
@@ -609,7 +606,6 @@ func initScannerConfig(opts flag.Options, cacheClient cache.Cache) (ScannerConfi
 		},
 		ArtifactOption: artifact.Option{
 			DisabledAnalyzers: disabledAnalyzers(opts),
-			DisabledHandlers:  opts.DisabledHandlers,
 			SkipFiles:         opts.SkipFiles,
 			SkipDirs:          opts.SkipDirs,
 			FilePatterns:      opts.FilePatterns,

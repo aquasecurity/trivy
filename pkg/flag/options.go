@@ -15,7 +15,6 @@ import (
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
-	"github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/report"
 )
@@ -100,9 +99,8 @@ type Options struct {
 	// Trivy's version, not populated via CLI flags
 	AppVersion string
 
-	// We don't want to allow disabled analyzers or handlers to be passed by users, but it is necessary for internal use.
+	// We don't want to allow disabled analyzers to be passed by users, but it is necessary for internal use.
 	DisabledAnalyzers []analyzer.Type
-	DisabledHandlers  []types.HandlerType
 }
 
 // Align takes consistency of options
