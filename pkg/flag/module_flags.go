@@ -22,7 +22,7 @@ var (
 		Name:       "enable-modules",
 		ConfigName: "module.enable-modules",
 		Value:      []string{},
-		Usage:      "module names to enable",
+		Usage:      "[EXPERIMENTAL] module names to enable",
 		Persistent: true,
 	}
 )
