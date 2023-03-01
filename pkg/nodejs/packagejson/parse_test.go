@@ -28,6 +28,7 @@ func TestParse(t *testing.T) {
 			// npm install --save promise jquery
 			// npm ls | grep -E -o "\S+@\S+" | awk -F@ 'NR>0 {printf("{\""$1"\", \""$2"\"},\n")}'
 			want: []types.Library{{
+				ID:      "bootstrap@5.0.2",
 				Name:    "bootstrap",
 				Version: "5.0.2",
 				License: "MIT",
@@ -38,6 +39,7 @@ func TestParse(t *testing.T) {
 			name:      "happy path - legacy license",
 			inputFile: "testdata/legacy_package.json",
 			want: []types.Library{{
+				ID:      "angular@4.1.2",
 				Name:    "angular",
 				Version: "4.1.2",
 				License: "ISC",

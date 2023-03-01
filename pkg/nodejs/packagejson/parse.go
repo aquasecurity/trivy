@@ -2,6 +2,7 @@ package packagejson
 
 import (
 	"encoding/json"
+	"github.com/aquasecurity/go-dep-parser/pkg/utils"
 
 	dio "github.com/aquasecurity/go-dep-parser/pkg/io"
 	"github.com/aquasecurity/go-dep-parser/pkg/types"
@@ -31,6 +32,7 @@ func (p *Parser) Parse(r dio.ReadSeekerAt) ([]types.Library, []types.Dependency,
 	}
 
 	return []types.Library{{
+		ID:      utils.PackageID(data.Name, data.Version),
 		Name:    data.Name,
 		Version: data.Version,
 		License: parseLicense(data.License),
