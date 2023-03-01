@@ -63,9 +63,9 @@ ignore-policy:
 # Default is 0
 exit-code: 0
 
-# Same as '--exit-on-eosl'
-# Default is false
-exit-on-eosl: false
+# Same as '--exit-on-eol'
+# Default is 0
+exit-on-eol: 0
 
 # Same as '--output'
 # Default is empty (stdout)
