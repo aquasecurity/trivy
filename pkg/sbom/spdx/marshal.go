@@ -23,12 +23,12 @@ const (
 	DataLicense         = "CC0-1.0"
 	SPDXIdentifier      = "DOCUMENT"
 	DocumentNamespace   = "http://aquasecurity.github.io/trivy"
-	CreatorOrganization = "aquasecurity"
-	CreatorTool         = "trivy"
+	CreatorOrganization = "Deepfactor"
+	CreatorTool         = "dfctl"
 )
 
 const (
-	CategoryPackageManager = "PACKAGE-MANAGER"
+	CategoryPackageManager = "PACKAGE_MANAGER"
 	RefTypePurl            = "purl"
 
 	PropertySchemaVersion = "SchemaVersion"
@@ -105,6 +105,20 @@ func NewMarshaler(opts ...marshalOption) *Marshaler {
 	return m
 }
 
+// The function augmentSpdxData updates each package in packages key,
+// ensuring the spdx json is valid as per https://tools.spdx.org/app/validate/
+// The following keys are being updated
+//  1. licenseConcluded (incorrect delimiter and string value throws error)
+//  2. licenseDeclared (incorrect delimiter and string value throws error)
+//  3. copyrightText (throws a warning if the value is empty)
+//  4. downloadLocation (throws a warning if the value is empty)
+func augmentSpdxData(p *spdx.Package2_2) {
+	p.PackageLicenseConcluded = "NOASSERTION"
+	p.PackageLicenseDeclared = "NOASSERTION"
+	p.PackageCopyrightText = "NOASSERTION"
+	p.PackageDownloadLocation = "NOASSERTION"
+}
+
 func (m *Marshaler) Marshal(r types.Report) (*spdx.Document2_2, error) {
 	var relationShips []*spdx.Relationship2_2
 	packages := make(map[spdx.ElementID]*spdx.Package2_2)
@@ -139,6 +153,11 @@ func (m *Marshaler) Marshal(r types.Report) (*spdx.Document2_2, error) {
 				relationShip(parentPackage.PackageSPDXIdentifier, spdxPackage.PackageSPDXIdentifier, RelationShipContains),
 			)
 		}
+	}
+
+	// Augment SPDX data
+	for _, val := range packages {
+		augmentSpdxData(val)
 	}
 
 	return &spdx.Document2_2{
