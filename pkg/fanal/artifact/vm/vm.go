@@ -41,6 +41,8 @@ type Storage struct {
 
 func (a *Storage) Analyze(ctx context.Context, r *io.SectionReader) (types.BlobInfo, error) {
 	var wg sync.WaitGroup
+	var terminateWalk bool
+	var terminateError string
 	limit := semaphore.New(a.artifactOption.Slow)
 	result := analyzer.NewAnalysisResult()
 
@@ -48,7 +50,7 @@ func (a *Storage) Analyze(ctx context.Context, r *io.SectionReader) (types.BlobI
 	err := a.walker.Walk(r, "/", func(filePath string, info os.FileInfo, opener analyzer.Opener) error {
 		opts := analyzer.AnalysisOptions{Offline: a.artifactOption.Offline}
 		path := strings.TrimPrefix(filePath, "/")
-		if err := a.analyzer.AnalyzeFile(ctx, &wg, limit, result, "/", path, info, opener, nil, opts); err != nil {
+		if err := a.analyzer.AnalyzeFile(ctx, &wg, &terminateWalk, &terminateError, limit, result, "/", path, info, opener, nil, opts); err != nil {
 			return xerrors.Errorf("analyze file (%s): %w", path, err)
 		}
 		return nil
