@@ -13,7 +13,6 @@
       "musl@1.1.22-r3"
     ],
     "Layer": {
-      "Digest": "sha256:9d48c3bd43c520dc2784e868a780e976b207cbf493eaff8c6596eb871cbd9609",
       "DiffID": "sha256:03901b4a2ea88eeaad62dbe59b072b28b6efa00491962b8741081c5df50c65e0"
     }
   },
@@ -27,7 +26,6 @@
       "MIT"
     ],
     "Layer": {
-      "Digest": "sha256:9d48c3bd43c520dc2784e868a780e976b207cbf493eaff8c6596eb871cbd9609",
       "DiffID": "sha256:03901b4a2ea88eeaad62dbe59b072b28b6efa00491962b8741081c5df50c65e0"
     }
   },
@@ -47,7 +45,6 @@
       "zlib@1.2.11-r1"
     ],
     "Layer": {
-      "Digest": "sha256:9d48c3bd43c520dc2784e868a780e976b207cbf493eaff8c6596eb871cbd9609",
       "DiffID": "sha256:03901b4a2ea88eeaad62dbe59b072b28b6efa00491962b8741081c5df50c65e0"
     }
   },
@@ -64,7 +61,6 @@
       "musl@1.1.22-r3"
     ],
     "Layer": {
-      "Digest": "sha256:9d48c3bd43c520dc2784e868a780e976b207cbf493eaff8c6596eb871cbd9609",
       "DiffID": "sha256:03901b4a2ea88eeaad62dbe59b072b28b6efa00491962b8741081c5df50c65e0"
     }
   },
@@ -79,7 +75,6 @@
       "GPL-2.0"
     ],
     "Layer": {
-      "Digest": "sha256:9d48c3bd43c520dc2784e868a780e976b207cbf493eaff8c6596eb871cbd9609",
       "DiffID": "sha256:03901b4a2ea88eeaad62dbe59b072b28b6efa00491962b8741081c5df50c65e0"
     }
   },
@@ -96,7 +91,6 @@
       "musl-utils@1.1.22-r3"
     ],
     "Layer": {
-      "Digest": "sha256:9d48c3bd43c520dc2784e868a780e976b207cbf493eaff8c6596eb871cbd9609",
       "DiffID": "sha256:03901b4a2ea88eeaad62dbe59b072b28b6efa00491962b8741081c5df50c65e0"
     }
   },
@@ -113,7 +107,6 @@
       "musl@1.1.22-r3"
     ],
     "Layer": {
-      "Digest": "sha256:9d48c3bd43c520dc2784e868a780e976b207cbf493eaff8c6596eb871cbd9609",
       "DiffID": "sha256:03901b4a2ea88eeaad62dbe59b072b28b6efa00491962b8741081c5df50c65e0"
     }
   },
@@ -131,7 +124,6 @@
       "musl@1.1.22-r3"
     ],
     "Layer": {
-      "Digest": "sha256:9d48c3bd43c520dc2784e868a780e976b207cbf493eaff8c6596eb871cbd9609",
       "DiffID": "sha256:03901b4a2ea88eeaad62dbe59b072b28b6efa00491962b8741081c5df50c65e0"
     }
   },
@@ -151,7 +143,6 @@
       "musl@1.1.22-r3"
     ],
     "Layer": {
-      "Digest": "sha256:9d48c3bd43c520dc2784e868a780e976b207cbf493eaff8c6596eb871cbd9609",
       "DiffID": "sha256:03901b4a2ea88eeaad62dbe59b072b28b6efa00491962b8741081c5df50c65e0"
     }
   },
@@ -165,7 +156,6 @@
       "MIT"
     ],
     "Layer": {
-      "Digest": "sha256:9d48c3bd43c520dc2784e868a780e976b207cbf493eaff8c6596eb871cbd9609",
       "DiffID": "sha256:03901b4a2ea88eeaad62dbe59b072b28b6efa00491962b8741081c5df50c65e0"
     }
   },
@@ -185,7 +175,6 @@
       "scanelf@1.2.3-r0"
     ],
     "Layer": {
-      "Digest": "sha256:9d48c3bd43c520dc2784e868a780e976b207cbf493eaff8c6596eb871cbd9609",
       "DiffID": "sha256:03901b4a2ea88eeaad62dbe59b072b28b6efa00491962b8741081c5df50c65e0"
     }
   },
@@ -202,7 +191,6 @@
       "musl@1.1.22-r3"
     ],
     "Layer": {
-      "Digest": "sha256:9d48c3bd43c520dc2784e868a780e976b207cbf493eaff8c6596eb871cbd9609",
       "DiffID": "sha256:03901b4a2ea88eeaad62dbe59b072b28b6efa00491962b8741081c5df50c65e0"
     }
   },
@@ -220,7 +208,6 @@
       "musl@1.1.22-r3"
     ],
     "Layer": {
-      "Digest": "sha256:9d48c3bd43c520dc2784e868a780e976b207cbf493eaff8c6596eb871cbd9609",
       "DiffID": "sha256:03901b4a2ea88eeaad62dbe59b072b28b6efa00491962b8741081c5df50c65e0"
     }
   },
@@ -237,7 +224,6 @@
       "musl@1.1.22-r3"
     ],
     "Layer": {
-      "Digest": "sha256:9d48c3bd43c520dc2784e868a780e976b207cbf493eaff8c6596eb871cbd9609",
       "DiffID": "sha256:03901b4a2ea88eeaad62dbe59b072b28b6efa00491962b8741081c5df50c65e0"
     }
   }
