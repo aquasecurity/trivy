@@ -3,6 +3,8 @@ package types
 import (
 	"encoding/json"
 
+	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
+
 	v1 "github.com/google/go-containerregistry/pkg/v1" // nolint: goimports
 
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
@@ -79,6 +81,7 @@ type Result struct {
 	Secrets           []ftypes.SecretFinding     `json:"Secrets,omitempty"`
 	Licenses          []DetectedLicense          `json:"Licenses,omitempty"`
 	CustomResources   []ftypes.CustomResource    `json:"CustomResources,omitempty"`
+	OSPkgType         analyzer.Type              `json:"OSPkgType,omitempty"`
 }
 
 func (r *Result) MarshalJSON() ([]byte, error) {

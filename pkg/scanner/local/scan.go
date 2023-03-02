@@ -197,11 +197,23 @@ func (s Scanner) osPkgsToResult(target string, detail ftypes.ArtifactDetail, opt
 		pkgs = mergePkgs(pkgs, detail.ImageConfig.Packages)
 	}
 	sort.Sort(pkgs)
+
+	var pkgType analyzer.Type
+	switch analyzer.Type(detail.OS.Family) {
+	case analyzer.TypeUbuntu, analyzer.TypeDebian:
+		pkgType = analyzer.TypeDpkg
+	case analyzer.TypeAlpine:
+		pkgType = analyzer.TypeApk
+	case analyzer.TypeCentOS:
+		pkgType = analyzer.TypeRpm
+	}
+
 	return &types.Result{
-		Target:   fmt.Sprintf("%s (%s %s)", target, detail.OS.Family, detail.OS.Name),
-		Class:    types.ClassOSPkg,
-		Type:     detail.OS.Family,
-		Packages: pkgs,
+		Target:    fmt.Sprintf("%s (%s %s)", target, detail.OS.Family, detail.OS.Name),
+		Class:     types.ClassOSPkg,
+		Type:      detail.OS.Family,
+		Packages:  pkgs,
+		OSPkgType: pkgType,
 	}
 }
 
