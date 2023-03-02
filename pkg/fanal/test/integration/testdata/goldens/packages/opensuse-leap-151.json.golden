@@ -1,6 +1,5 @@
 [
   {
-    "ID": "aaa_base@84.87+git20180409.04c9dae-lp151.5.12.1.x86_64",
     "Name": "aaa_base",
     "Version": "84.87+git20180409.04c9dae",
     "Release": "lp151.5.12.1",
@@ -8,23 +7,12 @@
     "SrcName": "aaa_base",
     "SrcVersion": "84.87+git20180409.04c9dae",
     "SrcRelease": "lp151.5.12.1",
-    "Licenses": [
-      "GPL-2.0+"
-    ],
-    "Maintainer": "openSUSE",
-    "DependsOn": [
-      "cpio@2.12-lp151.2.68.x86_64",
-      "filesystem@15.0-lp151.9.2.x86_64",
-      "fillup@1.42-lp151.3.2.x86_64",
-      "glibc@2.26-lp151.18.7.x86_64",
-      "openSUSE-release@15.1-lp151.301.1.x86_64"
-    ],
+    "License": "GPL-2.0+",
     "Layer": {
       "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
     }
   },
   {
-    "ID": "bash@4.4-lp151.10.3.1.x86_64",
     "Name": "bash",
     "Version": "4.4",
     "Release": "lp151.10.3.1",
@@ -32,20 +20,12 @@
     "SrcName": "bash",
     "SrcVersion": "4.4",
     "SrcRelease": "lp151.10.3.1",
-    "Licenses": [
-      "GPL-3.0-or-later"
-    ],
-    "Maintainer": "openSUSE",
-    "DependsOn": [
-      "glibc@2.26-lp151.18.7.x86_64",
-      "libreadline7@7.0-lp151.10.3.1.x86_64"
-    ],
+    "License": "GPL-3.0-or-later",
     "Layer": {
       "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
     }
   },
   {
-    "ID": "boost-license1_66_0@1.66.0-lp151.4.5.noarch",
     "Name": "boost-license1_66_0",
     "Version": "1.66.0",
     "Release": "lp151.4.5",
@@ -53,16 +33,12 @@
     "SrcName": "boost-base",
     "SrcVersion": "1.66.0",
     "SrcRelease": "lp151.4.5",
-    "Licenses": [
-      "BSL-1.0"
-    ],
-    "Maintainer": "openSUSE",
+    "License": "BSL-1.0",
     "Layer": {
       "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
     }
   },
   {
-    "ID": "ca-certificates@2+git20170807.10b2785-lp151.7.1.noarch",
     "Name": "ca-certificates",
     "Version": "2+git20170807.10b2785",
     "Release": "lp151.7.1",
@@ -70,23 +46,12 @@
     "SrcName": "ca-certificates",
     "SrcVersion": "2+git20170807.10b2785",
     "SrcRelease": "lp151.7.1",
-    "Licenses": [
-      "GPL-2.0-or-later"
-    ],
-    "Maintainer": "openSUSE",
-    "DependsOn": [
-      "coreutils@8.29-lp151.3.3.x86_64",
-      "openssl-1_1@1.1.0i-lp151.8.3.1.x86_64",
-      "openssl@1.1.0i-lp151.1.1.noarch",
-      "p11-kit-tools@0.23.2-lp151.3.3.x86_64",
-      "p11-kit@0.23.2-lp151.3.3.x86_64"
-    ],
+    "License": "GPL-2.0-or-later",
     "Layer": {
       "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
     }
   },
   {
-    "ID": "ca-certificates-mozilla@2.34-lp151.2.3.1.noarch",
     "Name": "ca-certificates-mozilla",
     "Version": "2.34",
     "Release": "lp151.2.3.1",
@@ -94,19 +59,12 @@
     "SrcName": "ca-certificates-mozilla",
     "SrcVersion": "2.34",
     "SrcRelease": "lp151.2.3.1",
-    "Licenses": [
-      "MPL-2.0"
-    ],
-    "Maintainer": "openSUSE",
-    "DependsOn": [
-      "ca-certificates@2+git20170807.10b2785-lp151.7.1.noarch"
-    ],
+    "License": "MPL-2.0",
     "Layer": {
       "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
     }
   },
   {
-    "ID": "coreutils@8.29-lp151.3.3.x86_64",
     "Name": "coreutils",
     "Version": "8.29",
     "Release": "lp151.3.3",
@@ -114,25 +72,12 @@
     "SrcName": "coreutils",
     "SrcVersion": "8.29",
     "SrcRelease": "lp151.3.3",
-    "Licenses": [
-      "GPL-3.0+"
-    ],
-    "Maintainer": "openSUSE",
-    "DependsOn": [
-      "glibc@2.26-lp151.18.7.x86_64",
-      "info@6.5-lp151.5.69.x86_64",
-      "libacl1@2.2.52-lp151.4.29.x86_64",
-      "libattr1@2.4.47-lp151.3.70.x86_64",
-      "libcap2@2.25-lp151.3.70.x86_64",
-      "libgmp10@6.1.2-lp151.3.70.x86_64",
-      "libselinux1@2.8-lp151.1.30.x86_64"
-    ],
+    "License": "GPL-3.0+",
     "Layer": {
       "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
     }
   },
   {
-    "ID": "cpio@2.12-lp151.2.68.x86_64",
     "Name": "cpio",
     "Version": "2.12",
     "Release": "lp151.2.68",
@@ -140,20 +85,12 @@
     "SrcName": "cpio",
     "SrcVersion": "2.12",
     "SrcRelease": "lp151.2.68",
-    "Licenses": [
-      "GPL-3.0"
-    ],
-    "Maintainer": "openSUSE",
-    "DependsOn": [
-      "glibc@2.26-lp151.18.7.x86_64",
-      "info@6.5-lp151.5.69.x86_64"
-    ],
+    "License": "GPL-3.0",
     "Layer": {
       "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
     }
   },
   {
-    "ID": "cracklib@2.9.6-lp151.3.69.x86_64",
     "Name": "cracklib",
     "Version": "2.9.6",
     "Release": "lp151.3.69",
@@ -161,21 +98,12 @@
     "SrcName": "cracklib",
     "SrcVersion": "2.9.6",
     "SrcRelease": "lp151.3.69",
-    "Licenses": [
-      "LGPL-2.1"
-    ],
-    "Maintainer": "openSUSE",
-    "DependsOn": [
-      "cracklib-dict-small@2.9.6-lp151.3.69.x86_64",
-      "glibc@2.26-lp151.18.7.x86_64",
-      "libcrack2@2.9.6-lp151.3.69.x86_64"
-    ],
+    "License": "LGPL-2.1",
     "Layer": {
       "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
     }
   },
   {
-    "ID": "cracklib-dict-small@2.9.6-lp151.3.69.x86_64",
     "Name": "cracklib-dict-small",
     "Version": "2.9.6",
     "Release": "lp151.3.69",
@@ -183,16 +111,12 @@
     "SrcName": "cracklib",
     "SrcVersion": "2.9.6",
     "SrcRelease": "lp151.3.69",
-    "Licenses": [
-      "LGPL-2.1"
-    ],
-    "Maintainer": "openSUSE",
+    "License": "LGPL-2.1",
     "Layer": {
       "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
     }
   },
   {
-    "ID": "diffutils@3.6-lp151.3.3.x86_64",
     "Name": "diffutils",
     "Version": "3.6",
     "Release": "lp151.3.3",
@@ -200,20 +124,12 @@
     "SrcName": "diffutils",
     "SrcVersion": "3.6",
     "SrcRelease": "lp151.3.3",
-    "Licenses": [
-      "GFDL-1.2 and GPL-3.0+"
-    ],
-    "Maintainer": "openSUSE",
-    "DependsOn": [
-      "glibc@2.26-lp151.18.7.x86_64",
-      "info@6.5-lp151.5.69.x86_64"
-    ],
+    "License": "GFDL-1.2 and GPL-3.0+",
     "Layer": {
       "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
     }
   },
   {
-    "ID": "file-magic@5.32-lp151.7.22.noarch",
     "Name": "file-magic",
     "Version": "5.32",
     "Release": "lp151.7.22",
@@ -221,16 +137,12 @@
     "SrcName": "file",
     "SrcVersion": "5.32",
     "SrcRelease": "lp151.7.22",
-    "Licenses": [
-      "BSD-2-Clause"
-    ],
-    "Maintainer": "openSUSE",
+    "License": "BSD-2-Clause",
     "Layer": {
       "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
     }
   },
   {
-    "ID": "filesystem@15.0-lp151.9.2.x86_64",
     "Name": "filesystem",
     "Version": "15.0",
     "Release": "lp151.9.2",
@@ -238,19 +150,12 @@
     "SrcName": "filesystem",
     "SrcVersion": "15.0",
     "SrcRelease": "lp151.9.2",
-    "Licenses": [
-      "MIT"
-    ],
-    "Maintainer": "openSUSE",
-    "DependsOn": [
-      "system-user-root@20190513-lp151.3.3.1.noarch"
-    ],
+    "License": "MIT",
     "Layer": {
       "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
     }
   },
   {
-    "ID": "fillup@1.42-lp151.3.2.x86_64",
     "Name": "fillup",
     "Version": "1.42",
     "Release": "lp151.3.2",
@@ -258,19 +163,12 @@
     "SrcName": "fillup",
     "SrcVersion": "1.42",
     "SrcRelease": "lp151.3.2",
-    "Licenses": [
-      "GPL-2.0+"
-    ],
-    "Maintainer": "openSUSE",
-    "DependsOn": [
-      "glibc@2.26-lp151.18.7.x86_64"
-    ],
+    "License": "GPL-2.0+",
     "Layer": {
       "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
     }
   },
   {
-    "ID": "findutils@4.6.0-lp151.3.71.x86_64",
     "Name": "findutils",
     "Version": "4.6.0",
     "Release": "lp151.3.71",
@@ -278,21 +176,12 @@
     "SrcName": "findutils",
     "SrcVersion": "4.6.0",
     "SrcRelease": "lp151.3.71",
-    "Licenses": [
-      "GPL-3.0+"
-    ],
-    "Maintainer": "openSUSE",
-    "DependsOn": [
-      "glibc@2.26-lp151.18.7.x86_64",
-      "info@6.5-lp151.5.69.x86_64",
-      "libselinux1@2.8-lp151.1.30.x86_64"
-    ],
+    "License": "GPL-3.0+",
     "Layer": {
       "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
     }
   },
   {
-    "ID": "gawk@4.2.1-lp151.2.70.x86_64",
     "Name": "gawk",
     "Version": "4.2.1",
     "Release": "lp151.2.70",
@@ -300,21 +189,12 @@
     "SrcName": "gawk",
     "SrcVersion": "4.2.1",
     "SrcRelease": "lp151.2.70",
-    "Licenses": [
-      "GPL-3.0+"
-    ],
-    "Maintainer": "openSUSE",
-    "DependsOn": [
-      "glibc@2.26-lp151.18.7.x86_64",
-      "info@6.5-lp151.5.69.x86_64",
-      "update-alternatives@1.19.0.4-lp151.3.67.x86_64"
-    ],
+    "License": "GPL-3.0+",
     "Layer": {
       "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
     }
   },
   {
-    "ID": "glibc@2.26-lp151.18.7.x86_64",
     "Name": "glibc",
     "Version": "2.26",
     "Release": "lp151.18.7",
@@ -322,58 +202,42 @@
     "SrcName": "glibc",
     "SrcVersion": "2.26",
     "SrcRelease": "lp151.18.7",
-    "Licenses": [
-      "LGPL-2.1+ AND SUSE-LGPL-2.1+-with-GCC-exception AND GPL-2.0+"
-    ],
-    "Maintainer": "openSUSE",
-    "DependsOn": [
-      "filesystem@15.0-lp151.9.2.x86_64"
-    ],
+    "License": "LGPL-2.1+ AND SUSE-LGPL-2.1+-with-GCC-exception AND GPL-2.0+",
     "Layer": {
       "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
     }
   },
   {
-    "ID": "gpg-pubkey@307e3d54-5aaa90a5.",
     "Name": "gpg-pubkey",
     "Version": "307e3d54",
     "Release": "5aaa90a5",
     "Arch": "None",
-    "Licenses": [
-      "pubkey"
-    ],
+    "License": "pubkey",
     "Layer": {
       "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
     }
   },
   {
-    "ID": "gpg-pubkey@39db7c82-5847eb1f.",
     "Name": "gpg-pubkey",
     "Version": "39db7c82",
     "Release": "5847eb1f",
     "Arch": "None",
-    "Licenses": [
-      "pubkey"
-    ],
+    "License": "pubkey",
     "Layer": {
       "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
     }
   },
   {
-    "ID": "gpg-pubkey@3dbdc284-53674dd4.",
     "Name": "gpg-pubkey",
     "Version": "3dbdc284",
     "Release": "53674dd4",
     "Arch": "None",
-    "Licenses": [
-      "pubkey"
-    ],
+    "License": "pubkey",
     "Layer": {
       "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
     }
   },
   {
-    "ID": "gpg2@2.2.5-lp151.6.3.1.x86_64",
     "Name": "gpg2",
     "Version": "2.2.5",
     "Release": "lp151.6.3.1",
@@ -381,33 +245,12 @@
     "SrcName": "gpg2",
     "SrcVersion": "2.2.5",
     "SrcRelease": "lp151.6.3.1",
-    "Licenses": [
-      "GPL-3.0+"
-    ],
-    "Maintainer": "openSUSE",
-    "DependsOn": [
-      "glibc@2.26-lp151.18.7.x86_64",
-      "info@6.5-lp151.5.69.x86_64",
-      "libassuan0@2.5.1-lp151.3.3.x86_64",
-      "libbz2-1@1.0.6-lp151.5.9.1.x86_64",
-      "libgcrypt20@1.8.2-lp151.9.4.1.x86_64",
-      "libgnutls30@3.6.7-lp151.2.3.1.x86_64",
-      "libgpg-error0@1.29-lp151.2.4.x86_64",
-      "libksba8@1.3.5-lp151.3.3.x86_64",
-      "libldap-2_4-2@2.4.46-lp151.10.3.1.x86_64",
-      "libnpth0@1.5-lp151.3.2.x86_64",
-      "libreadline7@7.0-lp151.10.3.1.x86_64",
-      "libsqlite3-0@3.28.0-lp151.2.3.1.x86_64",
-      "libusb-1_0-0@1.0.21-lp151.2.3.x86_64",
-      "libz1@1.2.11-lp151.5.3.1.x86_64",
-      "pinentry@1.1.0-lp151.4.3.1.x86_64"
-    ],
+    "License": "GPL-3.0+",
     "Layer": {
       "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
     }
   },
   {
-    "ID": "grep@3.1-lp151.3.29.x86_64",
     "Name": "grep",
     "Version": "3.1",
     "Release": "lp151.3.29",
@@ -415,21 +258,12 @@
     "SrcName": "grep",
     "SrcVersion": "3.1",
     "SrcRelease": "lp151.3.29",
-    "Licenses": [
-      "GPL-3.0+"
-    ],
-    "Maintainer": "openSUSE",
-    "DependsOn": [
-      "glibc@2.26-lp151.18.7.x86_64",
-      "info@6.5-lp151.5.69.x86_64",
-      "libpcre1@8.41-lp151.5.67.x86_64"
-    ],
+    "License": "GPL-3.0+",
     "Layer": {
       "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
     }
   },
   {
-    "ID": "info@6.5-lp151.5.69.x86_64",
     "Name": "info",
     "Version": "6.5",
     "Release": "lp151.5.69",
@@ -437,21 +271,12 @@
     "SrcName": "texinfo",
     "SrcVersion": "6.5",
     "SrcRelease": "lp151.5.69",
-    "Licenses": [
-      "GPL-3.0+"
-    ],
-    "Maintainer": "openSUSE",
-    "DependsOn": [
-      "glibc@2.26-lp151.18.7.x86_64",
-      "libncurses6@6.1-lp151.5.41.x86_64",
-      "libzio1@1.06-lp151.3.71.x86_64"
-    ],
+    "License": "GPL-3.0+",
     "Layer": {
       "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
     }
   },
   {
-    "ID": "krb5@1.16.3-lp151.2.6.1.x86_64",
     "Name": "krb5",
     "Version": "1.16.3",
     "Release": "lp151.2.6.1",
@@ -459,24 +284,12 @@
     "SrcName": "krb5",
     "SrcVersion": "1.16.3",
     "SrcRelease": "lp151.2.6.1",
-    "Licenses": [
-      "MIT"
-    ],
-    "Maintainer": "openSUSE",
-    "DependsOn": [
-      "glibc@2.26-lp151.18.7.x86_64",
-      "libcom_err2@1.43.8-lp151.5.6.1.x86_64",
-      "libkeyutils1@1.5.10-lp151.4.70.x86_64",
-      "libopenssl1_1@1.1.0i-lp151.8.3.1.x86_64",
-      "libselinux1@2.8-lp151.1.30.x86_64",
-      "libverto1@0.2.6-lp151.4.70.x86_64"
-    ],
+    "License": "MIT",
     "Layer": {
       "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
     }
   },
   {
-    "ID": "kubic-locale-archive@2.26-lp151.4.1.noarch",
     "Name": "kubic-locale-archive",
     "Version": "2.26",
     "Release": "lp151.4.1",
@@ -484,19 +297,12 @@
     "SrcName": "kubic-locale-archive",
     "SrcVersion": "2.26",
     "SrcRelease": "lp151.4.1",
-    "Licenses": [
-      "GPL-2.0+ AND MIT AND LGPL-2.1+"
-    ],
-    "Maintainer": "openSUSE",
-    "DependsOn": [
-      "glibc@2.26-lp151.18.7.x86_64"
-    ],
+    "License": "GPL-2.0+ AND MIT AND LGPL-2.1+",
     "Layer": {
       "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
     }
   },
   {
-    "ID": "libacl1@2.2.52-lp151.4.29.x86_64",
     "Name": "libacl1",
     "Version": "2.2.52",
     "Release": "lp151.4.29",
@@ -504,20 +310,12 @@
     "SrcName": "acl",
     "SrcVersion": "2.2.52",
     "SrcRelease": "lp151.4.29",
-    "Licenses": [
-      "GPL-2.0+ and LGPL-2.1+"
-    ],
-    "Maintainer": "openSUSE",
-    "DependsOn": [
-      "glibc@2.26-lp151.18.7.x86_64",
-      "libattr1@2.4.47-lp151.3.70.x86_64"
-    ],
+    "License": "GPL-2.0+ and LGPL-2.1+",
     "Layer": {
       "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
     }
   },
   {
-    "ID": "libassuan0@2.5.1-lp151.3.3.x86_64",
     "Name": "libassuan0",
     "Version": "2.5.1",
     "Release": "lp151.3.3",
@@ -525,20 +323,12 @@
     "SrcName": "libassuan",
     "SrcVersion": "2.5.1",
     "SrcRelease": "lp151.3.3",
-    "Licenses": [
-      "GPL-3.0+ and LGPL-2.1+"
-    ],
-    "Maintainer": "openSUSE",
-    "DependsOn": [
-      "glibc@2.26-lp151.18.7.x86_64",
-      "libgpg-error0@1.29-lp151.2.4.x86_64"
-    ],
+    "License": "GPL-3.0+ and LGPL-2.1+",
     "Layer": {
       "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
     }
   },
   {
-    "ID": "libattr1@2.4.47-lp151.3.70.x86_64",
     "Name": "libattr1",
     "Version": "2.4.47",
     "Release": "lp151.3.70",
@@ -546,19 +336,12 @@
     "SrcName": "attr",
     "SrcVersion": "2.4.47",
     "SrcRelease": "lp151.3.70",
-    "Licenses": [
-      "GPL-2.0-or-later AND LGPL-2.1-or-later"
-    ],
-    "Maintainer": "openSUSE",
-    "DependsOn": [
-      "glibc@2.26-lp151.18.7.x86_64"
-    ],
+    "License": "GPL-2.0-or-later AND LGPL-2.1-or-later",
     "Layer": {
       "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
     }
   },
   {
-    "ID": "libaudit1@2.8.1-lp151.4.66.x86_64",
     "Name": "libaudit1",
     "Version": "2.8.1",
     "Release": "lp151.4.66",
@@ -566,19 +349,12 @@
     "SrcName": "audit",
     "SrcVersion": "2.8.1",
     "SrcRelease": "lp151.4.66",
-    "Licenses": [
-      "LGPL-2.1+"
-    ],
-    "Maintainer": "openSUSE",
-    "DependsOn": [
-      "glibc@2.26-lp151.18.7.x86_64"
-    ],
+    "License": "LGPL-2.1+",
     "Layer": {
       "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
     }
   },
   {
-    "ID": "libaugeas0@1.10.1-lp151.2.3.x86_64",
     "Name": "libaugeas0",
     "Version": "1.10.1",
     "Release": "lp151.2.3",
@@ -586,20 +362,12 @@
     "SrcName": "augeas",
     "SrcVersion": "1.10.1",
     "SrcRelease": "lp151.2.3",
-    "Licenses": [
-      "GPL-3.0-or-later AND LGPL-2.1-or-later"
-    ],
-    "Maintainer": "openSUSE",
-    "DependsOn": [
-      "glibc@2.26-lp151.18.7.x86_64",
-      "libxml2-2@2.9.7-lp151.5.3.1.x86_64"
-    ],
+    "License": "GPL-3.0-or-later AND LGPL-2.1-or-later",
     "Layer": {
       "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
     }
   },
   {
-    "ID": "libblkid1@2.33.1-lp151.3.3.2.x86_64",
     "Name": "libblkid1",
     "Version": "2.33.1",
     "Release": "lp151.3.3.2",
@@ -607,20 +375,12 @@
     "SrcName": "util-linux",
     "SrcVersion": "2.33.1",
     "SrcRelease": "lp151.3.3.2",
-    "Licenses": [
-      "LGPL-2.1-or-later"
-    ],
-    "Maintainer": "openSUSE",
-    "DependsOn": [
-      "glibc@2.26-lp151.18.7.x86_64",
-      "libuuid1@2.33.1-lp151.3.3.2.x86_64"
-    ],
+    "License": "LGPL-2.1-or-later",
     "Layer": {
       "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
     }
   },
   {
-    "ID": "libboost_system1_66_0@1.66.0-lp151.4.5.x86_64",
     "Name": "libboost_system1_66_0",
     "Version": "1.66.0",
     "Release": "lp151.4.5",
@@ -628,22 +388,12 @@
     "SrcName": "boost-base",
     "SrcVersion": "1.66.0",
     "SrcRelease": "lp151.4.5",
-    "Licenses": [
-      "BSL-1.0"
-    ],
-    "Maintainer": "openSUSE",
-    "DependsOn": [
-      "boost-license1_66_0@1.66.0-lp151.4.5.noarch",
-      "glibc@2.26-lp151.18.7.x86_64",
-      "libgcc_s1@8.2.1+r264010-lp151.1.33.x86_64",
-      "libstdc++6@8.2.1+r264010-lp151.1.33.x86_64"
-    ],
+    "License": "BSL-1.0",
     "Layer": {
       "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
     }
   },
   {
-    "ID": "libboost_thread1_66_0@1.66.0-lp151.4.5.x86_64",
     "Name": "libboost_thread1_66_0",
     "Version": "1.66.0",
     "Release": "lp151.4.5",
@@ -651,23 +401,12 @@
     "SrcName": "boost-base",
     "SrcVersion": "1.66.0",
     "SrcRelease": "lp151.4.5",
-    "Licenses": [
-      "BSL-1.0"
-    ],
-    "Maintainer": "openSUSE",
-    "DependsOn": [
-      "boost-license1_66_0@1.66.0-lp151.4.5.noarch",
-      "glibc@2.26-lp151.18.7.x86_64",
-      "libboost_system1_66_0@1.66.0-lp151.4.5.x86_64",
-      "libgcc_s1@8.2.1+r264010-lp151.1.33.x86_64",
-      "libstdc++6@8.2.1+r264010-lp151.1.33.x86_64"
-    ],
+    "License": "BSL-1.0",
     "Layer": {
       "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
     }
   },
   {
-    "ID": "libbz2-1@1.0.6-lp151.5.9.1.x86_64",
     "Name": "libbz2-1",
     "Version": "1.0.6",
     "Release": "lp151.5.9.1",
@@ -675,19 +414,12 @@
     "SrcName": "bzip2",
     "SrcVersion": "1.0.6",
     "SrcRelease": "lp151.5.9.1",
-    "Licenses": [
-      "BSD-3-Clause"
-    ],
-    "Maintainer": "openSUSE",
-    "DependsOn": [
-      "glibc@2.26-lp151.18.7.x86_64"
-    ],
+    "License": "BSD-3-Clause",
     "Layer": {
       "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
     }
   },
   {
-    "ID": "libcap-ng0@0.7.9-lp151.3.39.x86_64",
     "Name": "libcap-ng0",
     "Version": "0.7.9",
     "Release": "lp151.3.39",
@@ -695,19 +427,12 @@
     "SrcName": "libcap-ng",
     "SrcVersion": "0.7.9",
     "SrcRelease": "lp151.3.39",
-    "Licenses": [
-      "LGPL-2.1-or-later"
-    ],
-    "Maintainer": "openSUSE",
-    "DependsOn": [
-      "glibc@2.26-lp151.18.7.x86_64"
-    ],
+    "License": "LGPL-2.1-or-later",
     "Layer": {
       "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
     }
   },
   {
-    "ID": "libcap2@2.25-lp151.3.70.x86_64",
     "Name": "libcap2",
     "Version": "2.25",
     "Release": "lp151.3.70",
@@ -715,19 +440,12 @@
     "SrcName": "libcap",
     "SrcVersion": "2.25",
     "SrcRelease": "lp151.3.70",
-    "Licenses": [
-      "BSD-3-Clause and GPL-2.0"
-    ],
-    "Maintainer": "openSUSE",
-    "DependsOn": [
-      "glibc@2.26-lp151.18.7.x86_64"
-    ],
+    "License": "BSD-3-Clause and GPL-2.0",
     "Layer": {
       "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
     }
   },
   {
-    "ID": "libcom_err2@1.43.8-lp151.5.6.1.x86_64",
     "Name": "libcom_err2",
     "Version": "1.43.8",
     "Release": "lp151.5.6.1",
@@ -735,19 +453,12 @@
     "SrcName": "e2fsprogs",
     "SrcVersion": "1.43.8",
     "SrcRelease": "lp151.5.6.1",
-    "Licenses": [
-      "MIT"
-    ],
-    "Maintainer": "openSUSE",
-    "DependsOn": [
-      "glibc@2.26-lp151.18.7.x86_64"
-    ],
+    "License": "MIT",
     "Layer": {
       "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
     }
   },
   {
-    "ID": "libcrack2@2.9.6-lp151.3.69.x86_64",
     "Name": "libcrack2",
     "Version": "2.9.6",
     "Release": "lp151.3.69",
@@ -755,21 +466,12 @@
     "SrcName": "cracklib",
     "SrcVersion": "2.9.6",
     "SrcRelease": "lp151.3.69",
-    "Licenses": [
-      "LGPL-2.1"
-    ],
-    "Maintainer": "openSUSE",
-    "DependsOn": [
-      "cracklib@2.9.6-lp151.3.69.x86_64",
-      "glibc@2.26-lp151.18.7.x86_64",
-      "libz1@1.2.11-lp151.5.3.1.x86_64"
-    ],
+    "License": "LGPL-2.1",
     "Layer": {
       "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
     }
   },
   {
-    "ID": "libcurl4@7.60.0-lp151.5.6.1.x86_64",
     "Name": "libcurl4",
     "Version": "7.60.0",
     "Release": "lp151.5.6.1",
@@ -777,27 +479,12 @@
     "SrcName": "curl",
     "SrcVersion": "7.60.0",
     "SrcRelease": "lp151.5.6.1",
-    "Licenses": [
-      "curl"
-    ],
-    "Maintainer": "openSUSE",
-    "DependsOn": [
-      "glibc@2.26-lp151.18.7.x86_64",
-      "krb5@1.16.3-lp151.2.6.1.x86_64",
-      "libidn2-0@2.0.4-lp151.2.3.x86_64",
-      "libldap-2_4-2@2.4.46-lp151.10.3.1.x86_64",
-      "libnghttp2-14@1.39.2-lp151.3.3.1.x86_64",
-      "libopenssl1_1@1.1.0i-lp151.8.3.1.x86_64",
-      "libpsl5@0.20.1-lp151.2.43.x86_64",
-      "libssh4@0.8.7-lp151.2.3.1.x86_64",
-      "libz1@1.2.11-lp151.5.3.1.x86_64"
-    ],
+    "License": "curl",
     "Layer": {
       "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
     }
   },
   {
-    "ID": "libdw1@0.168-lp151.4.3.1.x86_64",
     "Name": "libdw1",
     "Version": "0.168",
     "Release": "lp151.4.3.1",
@@ -805,23 +492,12 @@
     "SrcName": "elfutils",
     "SrcVersion": "0.168",
     "SrcRelease": "lp151.4.3.1",
-    "Licenses": [
-      "SUSE-GPL-2.0-with-OSI-exception"
-    ],
-    "Maintainer": "openSUSE",
-    "DependsOn": [
-      "glibc@2.26-lp151.18.7.x86_64",
-      "libbz2-1@1.0.6-lp151.5.9.1.x86_64",
-      "libelf1@0.168-lp151.4.3.1.x86_64",
-      "liblzma5@5.2.3-lp151.4.3.1.x86_64",
-      "libz1@1.2.11-lp151.5.3.1.x86_64"
-    ],
+    "License": "SUSE-GPL-2.0-with-OSI-exception",
     "Layer": {
       "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
     }
   },
   {
-    "ID": "libebl-plugins@0.168-lp151.4.3.1.x86_64",
     "Name": "libebl-plugins",
     "Version": "0.168",
     "Release": "lp151.4.3.1",
@@ -829,21 +505,12 @@
     "SrcName": "elfutils",
     "SrcVersion": "0.168",
     "SrcRelease": "lp151.4.3.1",
-    "Licenses": [
-      "SUSE-GPL-2.0-with-OSI-exception"
-    ],
-    "Maintainer": "openSUSE",
-    "DependsOn": [
-      "glibc@2.26-lp151.18.7.x86_64",
-      "libdw1@0.168-lp151.4.3.1.x86_64",
-      "libelf1@0.168-lp151.4.3.1.x86_64"
-    ],
+    "License": "SUSE-GPL-2.0-with-OSI-exception",
     "Layer": {
       "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
     }
   },
   {
-    "ID": "libelf1@0.168-lp151.4.3.1.x86_64",
     "Name": "libelf1",
     "Version": "0.168",
     "Release": "lp151.4.3.1",
@@ -851,21 +518,12 @@
     "SrcName": "elfutils",
     "SrcVersion": "0.168",
     "SrcRelease": "lp151.4.3.1",
-    "Licenses": [
-      "SUSE-GPL-2.0-with-OSI-exception"
-    ],
-    "Maintainer": "openSUSE",
-    "DependsOn": [
-      "glibc@2.26-lp151.18.7.x86_64",
-      "libebl-plugins@0.168-lp151.4.3.1.x86_64",
-      "libz1@1.2.11-lp151.5.3.1.x86_64"
-    ],
+    "License": "SUSE-GPL-2.0-with-OSI-exception",
     "Layer": {
       "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
     }
   },
   {
-    "ID": "libfdisk1@2.33.1-lp151.3.3.2.x86_64",
     "Name": "libfdisk1",
     "Version": "2.33.1",
     "Release": "lp151.3.3.2",
@@ -873,21 +531,12 @@
     "SrcName": "util-linux",
     "SrcVersion": "2.33.1",
     "SrcRelease": "lp151.3.3.2",
-    "Licenses": [
-      "LGPL-2.1-or-later"
-    ],
-    "Maintainer": "openSUSE",
-    "DependsOn": [
-      "glibc@2.26-lp151.18.7.x86_64",
-      "libblkid1@2.33.1-lp151.3.3.2.x86_64",
-      "libuuid1@2.33.1-lp151.3.3.2.x86_64"
-    ],
+    "License": "LGPL-2.1-or-later",
     "Layer": {
       "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
     }
   },
   {
-    "ID": "libffi7@3.2.1.git259-lp151.5.2.x86_64",
     "Name": "libffi7",
     "Version": "3.2.1.git259",
     "Release": "lp151.5.2",
@@ -895,19 +544,12 @@
     "SrcName": "libffi",
     "SrcVersion": "3.2.1.git259",
     "SrcRelease": "lp151.5.2",
-    "Licenses": [
-      "MIT"
-    ],
-    "Maintainer": "openSUSE",
-    "DependsOn": [
-      "glibc@2.26-lp151.18.7.x86_64"
-    ],
+    "License": "MIT",
     "Layer": {
       "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
     }
   },
   {
-    "ID": "libgcc_s1@8.2.1+r264010-lp151.1.33.x86_64",
     "Name": "libgcc_s1",
     "Version": "8.2.1+r264010",
     "Release": "lp151.1.33",
@@ -915,19 +557,12 @@
     "SrcName": "gcc8",
     "SrcVersion": "8.2.1+r264010",
     "SrcRelease": "lp151.1.33",
-    "Licenses": [
-      "GPL-3.0-with-GCC-exception"
-    ],
-    "Maintainer": "openSUSE",
-    "DependsOn": [
-      "glibc@2.26-lp151.18.7.x86_64"
-    ],
+    "License": "GPL-3.0-with-GCC-exception",
     "Layer": {
       "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
     }
   },
   {
-    "ID": "libgcrypt20@1.8.2-lp151.9.4.1.x86_64",
     "Name": "libgcrypt20",
     "Version": "1.8.2",
     "Release": "lp151.9.4.1",
@@ -935,20 +570,12 @@
     "SrcName": "libgcrypt",
     "SrcVersion": "1.8.2",
     "SrcRelease": "lp151.9.4.1",
-    "Licenses": [
-      "GPL-2.0+ AND LGPL-2.1+"
-    ],
-    "Maintainer": "openSUSE",
-    "DependsOn": [
-      "glibc@2.26-lp151.18.7.x86_64",
-      "libgpg-error0@1.29-lp151.2.4.x86_64"
-    ],
+    "License": "GPL-2.0+ AND LGPL-2.1+",
     "Layer": {
       "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
     }
   },
   {
-    "ID": "libgmp10@6.1.2-lp151.3.70.x86_64",
     "Name": "libgmp10",
     "Version": "6.1.2",
     "Release": "lp151.3.70",
@@ -956,19 +583,12 @@
     "SrcName": "gmp",
     "SrcVersion": "6.1.2",
     "SrcRelease": "lp151.3.70",
-    "Licenses": [
-      "GPL-3.0+ and LGPL-3.0+"
-    ],
-    "Maintainer": "openSUSE",
-    "DependsOn": [
-      "glibc@2.26-lp151.18.7.x86_64"
-    ],
+    "License": "GPL-3.0+ and LGPL-3.0+",
     "Layer": {
       "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
     }
   },
   {
-    "ID": "libgnutls30@3.6.7-lp151.2.3.1.x86_64",
     "Name": "libgnutls30",
     "Version": "3.6.7",
     "Release": "lp151.2.3.1",
@@ -976,26 +596,12 @@
     "SrcName": "gnutls",
     "SrcVersion": "3.6.7",
     "SrcRelease": "lp151.2.3.1",
-    "Licenses": [
-      "LGPL-2.1-or-later"
-    ],
-    "Maintainer": "openSUSE",
-    "DependsOn": [
-      "glibc@2.26-lp151.18.7.x86_64",
-      "libgmp10@6.1.2-lp151.3.70.x86_64",
-      "libhogweed4@3.4.1-lp151.1.1.x86_64",
-      "libidn2-0@2.0.4-lp151.2.3.x86_64",
-      "libnettle6@3.4.1-lp151.1.1.x86_64",
-      "libp11-kit0@0.23.2-lp151.3.3.x86_64",
-      "libtasn1-6@4.13-lp151.4.3.1.x86_64",
-      "libunistring2@0.9.9-lp151.2.3.x86_64"
-    ],
+    "License": "LGPL-2.1-or-later",
     "Layer": {
       "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
     }
   },
   {
-    "ID": "libgpg-error0@1.29-lp151.2.4.x86_64",
     "Name": "libgpg-error0",
     "Version": "1.29",
     "Release": "lp151.2.4",
@@ -1003,19 +609,12 @@
     "SrcName": "libgpg-error",
     "SrcVersion": "1.29",
     "SrcRelease": "lp151.2.4",
-    "Licenses": [
-      "GPL-2.0-or-later AND LGPL-2.1-or-later"
-    ],
-    "Maintainer": "openSUSE",
-    "DependsOn": [
-      "glibc@2.26-lp151.18.7.x86_64"
-    ],
+    "License": "GPL-2.0-or-later AND LGPL-2.1-or-later",
     "Layer": {
       "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
     }
   },
   {
-    "ID": "libgpgme11@1.10.0-lp151.4.1.x86_64",
     "Name": "libgpgme11",
     "Version": "1.10.0",
     "Release": "lp151.4.1",
@@ -1023,22 +622,12 @@
     "SrcName": "gpgme",
     "SrcVersion": "1.10.0",
     "SrcRelease": "lp151.4.1",
-    "Licenses": [
-      "LGPL-2.1-or-later AND GPL-3.0-or-later"
-    ],
-    "Maintainer": "openSUSE",
-    "DependsOn": [
-      "glibc@2.26-lp151.18.7.x86_64",
-      "gpg2@2.2.5-lp151.6.3.1.x86_64",
-      "libassuan0@2.5.1-lp151.3.3.x86_64",
-      "libgpg-error0@1.29-lp151.2.4.x86_64"
-    ],
+    "License": "LGPL-2.1-or-later AND GPL-3.0-or-later",
     "Layer": {
       "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
     }
   },
   {
-    "ID": "libhogweed4@3.4.1-lp151.1.1.x86_64",
     "Name": "libhogweed4",
     "Version": "3.4.1",
     "Release": "lp151.1.1",
@@ -1046,21 +635,12 @@
     "SrcName": "libnettle",
     "SrcVersion": "3.4.1",
     "SrcRelease": "lp151.1.1",
-    "Licenses": [
-      "LGPL-2.1-or-later"
-    ],
-    "Maintainer": "openSUSE",
-    "DependsOn": [
-      "glibc@2.26-lp151.18.7.x86_64",
-      "libgmp10@6.1.2-lp151.3.70.x86_64",
-      "libnettle6@3.4.1-lp151.1.1.x86_64"
-    ],
+    "License": "LGPL-2.1-or-later",
     "Layer": {
       "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
     }
   },
   {
-    "ID": "libidn2-0@2.0.4-lp151.2.3.x86_64",
     "Name": "libidn2-0",
     "Version": "2.0.4",
     "Release": "lp151.2.3",
@@ -1068,20 +648,12 @@
     "SrcName": "libidn2",
     "SrcVersion": "2.0.4",
     "SrcRelease": "lp151.2.3",
-    "Licenses": [
-      "GPL-3.0+"
-    ],
-    "Maintainer": "openSUSE",
-    "DependsOn": [
-      "glibc@2.26-lp151.18.7.x86_64",
-      "libunistring2@0.9.9-lp151.2.3.x86_64"
-    ],
+    "License": "GPL-3.0+",
     "Layer": {
       "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
     }
   },
   {
-    "ID": "libkeyutils1@1.5.10-lp151.4.70.x86_64",
     "Name": "libkeyutils1",
     "Version": "1.5.10",
     "Release": "lp151.4.70",
@@ -1089,19 +661,12 @@
     "SrcName": "keyutils",
     "SrcVersion": "1.5.10",
     "SrcRelease": "lp151.4.70",
-    "Licenses": [
-      "GPL-2.0+ and LGPL-2.1+"
-    ],
-    "Maintainer": "openSUSE",
-    "DependsOn": [
-      "glibc@2.26-lp151.18.7.x86_64"
-    ],
+    "License": "GPL-2.0+ and LGPL-2.1+",
     "Layer": {
       "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
     }
   },
   {
-    "ID": "libksba8@1.3.5-lp151.3.3.x86_64",
     "Name": "libksba8",
     "Version": "1.3.5",
     "Release": "lp151.3.3",
@@ -1109,20 +674,12 @@
     "SrcName": "libksba",
     "SrcVersion": "1.3.5",
     "SrcRelease": "lp151.3.3",
-    "Licenses": [
-      "(LGPL-3.0+ or GPL-2.0+) and GPL-3.0+ and MIT"
-    ],
-    "Maintainer": "openSUSE",
-    "DependsOn": [
-      "glibc@2.26-lp151.18.7.x86_64",
-      "libgpg-error0@1.29-lp151.2.4.x86_64"
-    ],
+    "License": "(LGPL-3.0+ or GPL-2.0+) and GPL-3.0+ and MIT",
     "Layer": {
       "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
     }
   },
   {
-    "ID": "libldap-2_4-2@2.4.46-lp151.10.3.1.x86_64",
     "Name": "libldap-2_4-2",
     "Version": "2.4.46",
     "Release": "lp151.10.3.1",
@@ -1130,21 +687,12 @@
     "SrcName": "openldap2",
     "SrcVersion": "2.4.46",
     "SrcRelease": "lp151.10.3.1",
-    "Licenses": [
-      "OLDAP-2.8"
-    ],
-    "Maintainer": "openSUSE",
-    "DependsOn": [
-      "glibc@2.26-lp151.18.7.x86_64",
-      "libopenssl1_1@1.1.0i-lp151.8.3.1.x86_64",
-      "libsasl2-3@2.1.26-lp151.5.1.x86_64"
-    ],
+    "License": "OLDAP-2.8",
     "Layer": {
       "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
     }
   },
   {
-    "ID": "liblua5_3-5@5.3.4-lp151.3.25.x86_64",
     "Name": "liblua5_3-5",
     "Version": "5.3.4",
     "Release": "lp151.3.25",
@@ -1152,19 +700,12 @@
     "SrcName": "lua53",
     "SrcVersion": "5.3.4",
     "SrcRelease": "lp151.3.25",
-    "Licenses": [
-      "MIT"
-    ],
-    "Maintainer": "openSUSE",
-    "DependsOn": [
-      "glibc@2.26-lp151.18.7.x86_64"
-    ],
+    "License": "MIT",
     "Layer": {
       "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
     }
   },
   {
-    "ID": "liblz4-1@1.8.0-lp151.3.3.1.x86_64",
     "Name": "liblz4-1",
     "Version": "1.8.0",
     "Release": "lp151.3.3.1",
@@ -1172,19 +713,12 @@
     "SrcName": "lz4",
     "SrcVersion": "1.8.0",
     "SrcRelease": "lp151.3.3.1",
-    "Licenses": [
-      "BSD-2-Clause"
-    ],
-    "Maintainer": "openSUSE",
-    "DependsOn": [
-      "glibc@2.26-lp151.18.7.x86_64"
-    ],
+    "License": "BSD-2-Clause",
     "Layer": {
       "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
     }
   },
   {
-    "ID": "liblzma5@5.2.3-lp151.4.3.1.x86_64",
     "Name": "liblzma5",
     "Version": "5.2.3",
     "Release": "lp151.4.3.1",
@@ -1192,19 +726,12 @@
     "SrcName": "xz",
     "SrcVersion": "5.2.3",
     "SrcRelease": "lp151.4.3.1",
-    "Licenses": [
-      "SUSE-Public-Domain"
-    ],
-    "Maintainer": "openSUSE",
-    "DependsOn": [
-      "glibc@2.26-lp151.18.7.x86_64"
-    ],
+    "License": "SUSE-Public-Domain",
     "Layer": {
       "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
     }
   },
   {
-    "ID": "libmagic1@5.32-lp151.7.22.x86_64",
     "Name": "libmagic1",
     "Version": "5.32",
     "Release": "lp151.7.22",
@@ -1212,21 +739,12 @@
     "SrcName": "file",
     "SrcVersion": "5.32",
     "SrcRelease": "lp151.7.22",
-    "Licenses": [
-      "BSD-2-Clause"
-    ],
-    "Maintainer": "openSUSE",
-    "DependsOn": [
-      "file-magic@5.32-lp151.7.22.noarch",
-      "glibc@2.26-lp151.18.7.x86_64",
-      "libz1@1.2.11-lp151.5.3.1.x86_64"
-    ],
+    "License": "BSD-2-Clause",
     "Layer": {
       "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
     }
   },
   {
-    "ID": "libmodman1@2.0.1-lp151.2.3.x86_64",
     "Name": "libmodman1",
     "Version": "2.0.1",
     "Release": "lp151.2.3",
@@ -1234,21 +752,12 @@
     "SrcName": "libmodman",
     "SrcVersion": "2.0.1",
     "SrcRelease": "lp151.2.3",
-    "Licenses": [
-      "LGPL-2.1+"
-    ],
-    "Maintainer": "openSUSE",
-    "DependsOn": [
-      "glibc@2.26-lp151.18.7.x86_64",
-      "libgcc_s1@8.2.1+r264010-lp151.1.33.x86_64",
-      "libstdc++6@8.2.1+r264010-lp151.1.33.x86_64"
-    ],
+    "License": "LGPL-2.1+",
     "Layer": {
       "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
     }
   },
   {
-    "ID": "libmount1@2.33.1-lp151.3.3.2.x86_64",
     "Name": "libmount1",
     "Version": "2.33.1",
     "Release": "lp151.3.3.2",
@@ -1256,21 +765,12 @@
     "SrcName": "util-linux",
     "SrcVersion": "2.33.1",
     "SrcRelease": "lp151.3.3.2",
-    "Licenses": [
-      "LGPL-2.1-or-later"
-    ],
-    "Maintainer": "openSUSE",
-    "DependsOn": [
-      "glibc@2.26-lp151.18.7.x86_64",
-      "libblkid1@2.33.1-lp151.3.3.2.x86_64",
-      "libselinux1@2.8-lp151.1.30.x86_64"
-    ],
+    "License": "LGPL-2.1-or-later",
     "Layer": {
       "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
     }
   },
   {
-    "ID": "libncurses6@6.1-lp151.5.41.x86_64",
     "Name": "libncurses6",
     "Version": "6.1",
     "Release": "lp151.5.41",
@@ -1278,22 +778,12 @@
     "SrcName": "ncurses",
     "SrcVersion": "6.1",
     "SrcRelease": "lp151.5.41",
-    "Licenses": [
-      "MIT"
-    ],
-    "Maintainer": "openSUSE",
-    "DependsOn": [
-      "glibc@2.26-lp151.18.7.x86_64",
-      "libgcc_s1@8.2.1+r264010-lp151.1.33.x86_64",
-      "libstdc++6@8.2.1+r264010-lp151.1.33.x86_64",
-      "terminfo-base@6.1-lp151.5.41.x86_64"
-    ],
+    "License": "MIT",
     "Layer": {
       "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
     }
   },
   {
-    "ID": "libnettle6@3.4.1-lp151.1.1.x86_64",
     "Name": "libnettle6",
     "Version": "3.4.1",
     "Release": "lp151.1.1",
@@ -1301,19 +791,12 @@
     "SrcName": "libnettle",
     "SrcVersion": "3.4.1",
     "SrcRelease": "lp151.1.1",
-    "Licenses": [
-      "LGPL-2.1-or-later"
-    ],
-    "Maintainer": "openSUSE",
-    "DependsOn": [
-      "glibc@2.26-lp151.18.7.x86_64"
-    ],
+    "License": "LGPL-2.1-or-later",
     "Layer": {
       "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
     }
   },
   {
-    "ID": "libnghttp2-14@1.39.2-lp151.3.3.1.x86_64",
     "Name": "libnghttp2-14",
     "Version": "1.39.2",
     "Release": "lp151.3.3.1",
@@ -1321,19 +804,12 @@
     "SrcName": "nghttp2",
     "SrcVersion": "1.39.2",
     "SrcRelease": "lp151.3.3.1",
-    "Licenses": [
-      "MIT"
-    ],
-    "Maintainer": "openSUSE",
-    "DependsOn": [
-      "glibc@2.26-lp151.18.7.x86_64"
-    ],
+    "License": "MIT",
     "Layer": {
       "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
     }
   },
   {
-    "ID": "libnpth0@1.5-lp151.3.2.x86_64",
     "Name": "libnpth0",
     "Version": "1.5",
     "Release": "lp151.3.2",
@@ -1341,19 +817,12 @@
     "SrcName": "npth",
     "SrcVersion": "1.5",
     "SrcRelease": "lp151.3.2",
-    "Licenses": [
-      "LGPL-2.0+"
-    ],
-    "Maintainer": "openSUSE",
-    "DependsOn": [
-      "glibc@2.26-lp151.18.7.x86_64"
-    ],
+    "License": "LGPL-2.0+",
     "Layer": {
       "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
     }
   },
   {
-    "ID": "libnsl2@1.2.0-lp151.3.67.x86_64",
     "Name": "libnsl2",
     "Version": "1.2.0",
     "Release": "lp151.3.67",
@@ -1361,20 +830,12 @@
     "SrcName": "libnsl",
     "SrcVersion": "1.2.0",
     "SrcRelease": "lp151.3.67",
-    "Licenses": [
-      "LGPL-2.1-only"
-    ],
-    "Maintainer": "openSUSE",
-    "DependsOn": [
-      "glibc@2.26-lp151.18.7.x86_64",
-      "libtirpc3@1.0.2-lp151.4.8.x86_64"
-    ],
+    "License": "LGPL-2.1-only",
     "Layer": {
       "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
     }
   },
   {
-    "ID": "libopenssl1_1@1.1.0i-lp151.8.3.1.x86_64",
     "Name": "libopenssl1_1",
     "Version": "1.1.0i",
     "Release": "lp151.8.3.1",
@@ -1382,20 +843,12 @@
     "SrcName": "openssl-1_1",
     "SrcVersion": "1.1.0i",
     "SrcRelease": "lp151.8.3.1",
-    "Licenses": [
-      "OpenSSL"
-    ],
-    "Maintainer": "openSUSE",
-    "DependsOn": [
-      "glibc@2.26-lp151.18.7.x86_64",
-      "libz1@1.2.11-lp151.5.3.1.x86_64"
-    ],
+    "License": "OpenSSL",
     "Layer": {
       "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
     }
   },
   {
-    "ID": "libp11-kit0@0.23.2-lp151.3.3.x86_64",
     "Name": "libp11-kit0",
     "Version": "0.23.2",
     "Release": "lp151.3.3",
@@ -1403,20 +856,12 @@
     "SrcName": "p11-kit",
     "SrcVersion": "0.23.2",
     "SrcRelease": "lp151.3.3",
-    "Licenses": [
-      "BSD-3-Clause"
-    ],
-    "Maintainer": "openSUSE",
-    "DependsOn": [
-      "glibc@2.26-lp151.18.7.x86_64",
-      "libffi7@3.2.1.git259-lp151.5.2.x86_64"
-    ],
+    "License": "BSD-3-Clause",
     "Layer": {
       "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
     }
   },
   {
-    "ID": "libpcre1@8.41-lp151.5.67.x86_64",
     "Name": "libpcre1",
     "Version": "8.41",
     "Release": "lp151.5.67",
@@ -1424,19 +869,12 @@
     "SrcName": "pcre",
     "SrcVersion": "8.41",
     "SrcRelease": "lp151.5.67",
-    "Licenses": [
-      "BSD-3-Clause"
-    ],
-    "Maintainer": "openSUSE",
-    "DependsOn": [
-      "glibc@2.26-lp151.18.7.x86_64"
-    ],
+    "License": "BSD-3-Clause",
     "Layer": {
       "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
     }
   },
   {
-    "ID": "libpopt0@1.16-lp151.3.67.x86_64",
     "Name": "libpopt0",
     "Version": "1.16",
     "Release": "lp151.3.67",
@@ -1444,19 +882,12 @@
     "SrcName": "popt",
     "SrcVersion": "1.16",
     "SrcRelease": "lp151.3.67",
-    "Licenses": [
-      "MIT"
-    ],
-    "Maintainer": "openSUSE",
-    "DependsOn": [
-      "glibc@2.26-lp151.18.7.x86_64"
-    ],
+    "License": "MIT",
     "Layer": {
       "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
     }
   },
   {
-    "ID": "libprocps7@3.3.15-lp151.6.3.1.x86_64",
     "Name": "libprocps7",
     "Version": "3.3.15",
     "Release": "lp151.6.3.1",
@@ -1464,20 +895,12 @@
     "SrcName": "procps",
     "SrcVersion": "3.3.15",
     "SrcRelease": "lp151.6.3.1",
-    "Licenses": [
-      "LGPL-2.1-or-later"
-    ],
-    "Maintainer": "openSUSE",
-    "DependsOn": [
-      "glibc@2.26-lp151.18.7.x86_64",
-      "libsystemd0@234-lp151.26.4.1.x86_64"
-    ],
+    "License": "LGPL-2.1-or-later",
     "Layer": {
       "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
     }
   },
   {
-    "ID": "libproxy1@0.4.15-lp151.3.3.x86_64",
     "Name": "libproxy1",
     "Version": "0.4.15",
     "Release": "lp151.3.3",
@@ -1485,22 +908,12 @@
     "SrcName": "libproxy",
     "SrcVersion": "0.4.15",
     "SrcRelease": "lp151.3.3",
-    "Licenses": [
-      "GPL-2.0+ AND LGPL-2.1+"
-    ],
-    "Maintainer": "openSUSE",
-    "DependsOn": [
-      "glibc@2.26-lp151.18.7.x86_64",
-      "libgcc_s1@8.2.1+r264010-lp151.1.33.x86_64",
-      "libmodman1@2.0.1-lp151.2.3.x86_64",
-      "libstdc++6@8.2.1+r264010-lp151.1.33.x86_64"
-    ],
+    "License": "GPL-2.0+ AND LGPL-2.1+",
     "Layer": {
       "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
     }
   },
   {
-    "ID": "libpsl5@0.20.1-lp151.2.43.x86_64",
     "Name": "libpsl5",
     "Version": "0.20.1",
     "Release": "lp151.2.43",
@@ -1508,21 +921,12 @@
     "SrcName": "libpsl",
     "SrcVersion": "0.20.1",
     "SrcRelease": "lp151.2.43",
-    "Licenses": [
-      "MIT AND MPL-2.0"
-    ],
-    "Maintainer": "openSUSE",
-    "DependsOn": [
-      "glibc@2.26-lp151.18.7.x86_64",
-      "libidn2-0@2.0.4-lp151.2.3.x86_64",
-      "libunistring2@0.9.9-lp151.2.3.x86_64"
-    ],
+    "License": "MIT AND MPL-2.0",
     "Layer": {
       "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
     }
   },
   {
-    "ID": "libreadline7@7.0-lp151.10.3.1.x86_64",
     "Name": "libreadline7",
     "Version": "7.0",
     "Release": "lp151.10.3.1",
@@ -1530,20 +934,12 @@
     "SrcName": "bash",
     "SrcVersion": "4.4",
     "SrcRelease": "lp151.10.3.1",
-    "Licenses": [
-      "GPL-3.0-or-later"
-    ],
-    "Maintainer": "openSUSE",
-    "DependsOn": [
-      "glibc@2.26-lp151.18.7.x86_64",
-      "libncurses6@6.1-lp151.5.41.x86_64"
-    ],
+    "License": "GPL-3.0-or-later",
     "Layer": {
       "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
     }
   },
   {
-    "ID": "libsasl2-3@2.1.26-lp151.5.1.x86_64",
     "Name": "libsasl2-3",
     "Version": "2.1.26",
     "Release": "lp151.5.1",
@@ -1551,19 +947,12 @@
     "SrcName": "cyrus-sasl",
     "SrcVersion": "2.1.26",
     "SrcRelease": "lp151.5.1",
-    "Licenses": [
-      "BSD-4-Clause"
-    ],
-    "Maintainer": "openSUSE",
-    "DependsOn": [
-      "glibc@2.26-lp151.18.7.x86_64"
-    ],
+    "License": "BSD-4-Clause",
     "Layer": {
       "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
     }
   },
   {
-    "ID": "libselinux1@2.8-lp151.1.30.x86_64",
     "Name": "libselinux1",
     "Version": "2.8",
     "Release": "lp151.1.30",
@@ -1571,20 +960,12 @@
     "SrcName": "libselinux",
     "SrcVersion": "2.8",
     "SrcRelease": "lp151.1.30",
-    "Licenses": [
-      "GPL-2.0-only AND SUSE-Public-Domain"
-    ],
-    "Maintainer": "openSUSE",
-    "DependsOn": [
-      "glibc@2.26-lp151.18.7.x86_64",
-      "libpcre1@8.41-lp151.5.67.x86_64"
-    ],
+    "License": "GPL-2.0-only AND SUSE-Public-Domain",
     "Layer": {
       "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
     }
   },
   {
-    "ID": "libsemanage1@2.8-lp151.1.32.x86_64",
     "Name": "libsemanage1",
     "Version": "2.8",
     "Release": "lp151.1.32",
@@ -1592,23 +973,12 @@
     "SrcName": "libsemanage",
     "SrcVersion": "2.8",
     "SrcRelease": "lp151.1.32",
-    "Licenses": [
-      "LGPL-2.1-or-later"
-    ],
-    "Maintainer": "openSUSE",
-    "DependsOn": [
-      "glibc@2.26-lp151.18.7.x86_64",
-      "libaudit1@2.8.1-lp151.4.66.x86_64",
-      "libbz2-1@1.0.6-lp151.5.9.1.x86_64",
-      "libselinux1@2.8-lp151.1.30.x86_64",
-      "libsepol1@2.8-lp151.1.36.x86_64"
-    ],
+    "License": "LGPL-2.1-or-later",
     "Layer": {
       "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
     }
   },
   {
-    "ID": "libsepol1@2.8-lp151.1.36.x86_64",
     "Name": "libsepol1",
     "Version": "2.8",
     "Release": "lp151.1.36",
@@ -1616,19 +986,12 @@
     "SrcName": "libsepol",
     "SrcVersion": "2.8",
     "SrcRelease": "lp151.1.36",
-    "Licenses": [
-      "LGPL-2.1-or-later"
-    ],
-    "Maintainer": "openSUSE",
-    "DependsOn": [
-      "glibc@2.26-lp151.18.7.x86_64"
-    ],
+    "License": "LGPL-2.1-or-later",
     "Layer": {
       "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
     }
   },
   {
-    "ID": "libsmartcols1@2.33.1-lp151.3.3.2.x86_64",
     "Name": "libsmartcols1",
     "Version": "2.33.1",
     "Release": "lp151.3.3.2",
@@ -1636,19 +999,12 @@
     "SrcName": "util-linux",
     "SrcVersion": "2.33.1",
     "SrcRelease": "lp151.3.3.2",
-    "Licenses": [
-      "LGPL-2.1-or-later"
-    ],
-    "Maintainer": "openSUSE",
-    "DependsOn": [
-      "glibc@2.26-lp151.18.7.x86_64"
-    ],
+    "License": "LGPL-2.1-or-later",
     "Layer": {
       "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
     }
   },
   {
-    "ID": "libsolv-tools@0.7.6-lp151.2.3.2.x86_64",
     "Name": "libsolv-tools",
     "Version": "0.7.6",
     "Release": "lp151.2.3.2",
@@ -1656,25 +1012,12 @@
     "SrcName": "libsolv",
     "SrcVersion": "0.7.6",
     "SrcRelease": "lp151.2.3.2",
-    "Licenses": [
-      "BSD-3-Clause"
-    ],
-    "Maintainer": "openSUSE",
-    "DependsOn": [
-      "glibc@2.26-lp151.18.7.x86_64",
-      "libbz2-1@1.0.6-lp151.5.9.1.x86_64",
-      "liblzma5@5.2.3-lp151.4.3.1.x86_64",
-      "libxml2-2@2.9.7-lp151.5.3.1.x86_64",
-      "libz1@1.2.11-lp151.5.3.1.x86_64",
-      "libzstd1@1.4.2-lp151.3.3.1.x86_64",
-      "rpm@4.14.1-lp151.13.10.x86_64"
-    ],
+    "License": "BSD-3-Clause",
     "Layer": {
       "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
     }
   },
   {
-    "ID": "libsqlite3-0@3.28.0-lp151.2.3.1.x86_64",
     "Name": "libsqlite3-0",
     "Version": "3.28.0",
     "Release": "lp151.2.3.1",
@@ -1682,19 +1025,12 @@
     "SrcName": "sqlite3",
     "SrcVersion": "3.28.0",
     "SrcRelease": "lp151.2.3.1",
-    "Licenses": [
-      "SUSE-Public-Domain"
-    ],
-    "Maintainer": "openSUSE",
-    "DependsOn": [
-      "glibc@2.26-lp151.18.7.x86_64"
-    ],
+    "License": "SUSE-Public-Domain",
     "Layer": {
       "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
     }
   },
   {
-    "ID": "libssh4@0.8.7-lp151.2.3.1.x86_64",
     "Name": "libssh4",
     "Version": "0.8.7",
     "Release": "lp151.2.3.1",
@@ -1702,22 +1038,12 @@
     "SrcName": "libssh",
     "SrcVersion": "0.8.7",
     "SrcRelease": "lp151.2.3.1",
-    "Licenses": [
-      "LGPL-2.1-or-later"
-    ],
-    "Maintainer": "openSUSE",
-    "DependsOn": [
-      "glibc@2.26-lp151.18.7.x86_64",
-      "krb5@1.16.3-lp151.2.6.1.x86_64",
-      "libopenssl1_1@1.1.0i-lp151.8.3.1.x86_64",
-      "libz1@1.2.11-lp151.5.3.1.x86_64"
-    ],
+    "License": "LGPL-2.1-or-later",
     "Layer": {
       "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
     }
   },
   {
-    "ID": "libstdc++6@8.2.1+r264010-lp151.1.33.x86_64",
     "Name": "libstdc++6",
     "Version": "8.2.1+r264010",
     "Release": "lp151.1.33",
@@ -1725,20 +1051,12 @@
     "SrcName": "gcc8",
     "SrcVersion": "8.2.1+r264010",
     "SrcRelease": "lp151.1.33",
-    "Licenses": [
-      "GPL-3.0-with-GCC-exception"
-    ],
-    "Maintainer": "openSUSE",
-    "DependsOn": [
-      "glibc@2.26-lp151.18.7.x86_64",
-      "libgcc_s1@8.2.1+r264010-lp151.1.33.x86_64"
-    ],
+    "License": "GPL-3.0-with-GCC-exception",
     "Layer": {
       "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
     }
   },
   {
-    "ID": "libsystemd0@234-lp151.26.4.1.x86_64",
     "Name": "libsystemd0",
     "Version": "234",
     "Release": "lp151.26.4.1",
@@ -1746,24 +1064,12 @@
     "SrcName": "systemd",
     "SrcVersion": "234",
     "SrcRelease": "lp151.26.4.1",
-    "Licenses": [
-      "LGPL-2.1-or-later"
-    ],
-    "Maintainer": "openSUSE",
-    "DependsOn": [
-      "glibc@2.26-lp151.18.7.x86_64",
-      "libcap2@2.25-lp151.3.70.x86_64",
-      "libgcrypt20@1.8.2-lp151.9.4.1.x86_64",
-      "liblz4-1@1.8.0-lp151.3.3.1.x86_64",
-      "liblzma5@5.2.3-lp151.4.3.1.x86_64",
-      "libselinux1@2.8-lp151.1.30.x86_64"
-    ],
+    "License": "LGPL-2.1-or-later",
     "Layer": {
       "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
     }
   },
   {
-    "ID": "libtasn1@4.13-lp151.4.3.1.x86_64",
     "Name": "libtasn1",
     "Version": "4.13",
     "Release": "lp151.4.3.1",
@@ -1771,21 +1077,12 @@
     "SrcName": "libtasn1",
     "SrcVersion": "4.13",
     "SrcRelease": "lp151.4.3.1",
-    "Licenses": [
-      "LGPL-2.1-or-later AND GPL-3.0-only"
-    ],
-    "Maintainer": "openSUSE",
-    "DependsOn": [
-      "glibc@2.26-lp151.18.7.x86_64",
-      "info@6.5-lp151.5.69.x86_64",
-      "libtasn1-6@4.13-lp151.4.3.1.x86_64"
-    ],
+    "License": "LGPL-2.1-or-later AND GPL-3.0-only",
     "Layer": {
       "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
     }
   },
   {
-    "ID": "libtasn1-6@4.13-lp151.4.3.1.x86_64",
     "Name": "libtasn1-6",
     "Version": "4.13",
     "Release": "lp151.4.3.1",
@@ -1793,20 +1090,12 @@
     "SrcName": "libtasn1",
     "SrcVersion": "4.13",
     "SrcRelease": "lp151.4.3.1",
-    "Licenses": [
-      "LGPL-2.1-or-later AND GPL-3.0-only"
-    ],
-    "Maintainer": "openSUSE",
-    "DependsOn": [
-      "glibc@2.26-lp151.18.7.x86_64",
-      "libtasn1@4.13-lp151.4.3.1.x86_64"
-    ],
+    "License": "LGPL-2.1-or-later AND GPL-3.0-only",
     "Layer": {
       "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
     }
   },
   {
-    "ID": "libtirpc-netconfig@1.0.2-lp151.4.8.x86_64",
     "Name": "libtirpc-netconfig",
     "Version": "1.0.2",
     "Release": "lp151.4.8",
@@ -1814,16 +1103,12 @@
     "SrcName": "libtirpc",
     "SrcVersion": "1.0.2",
     "SrcRelease": "lp151.4.8",
-    "Licenses": [
-      "BSD-3-Clause AND GPL-2.0+"
-    ],
-    "Maintainer": "openSUSE",
+    "License": "BSD-3-Clause AND GPL-2.0+",
     "Layer": {
       "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
     }
   },
   {
-    "ID": "libtirpc3@1.0.2-lp151.4.8.x86_64",
     "Name": "libtirpc3",
     "Version": "1.0.2",
     "Release": "lp151.4.8",
@@ -1831,21 +1116,12 @@
     "SrcName": "libtirpc",
     "SrcVersion": "1.0.2",
     "SrcRelease": "lp151.4.8",
-    "Licenses": [
-      "BSD-3-Clause AND GPL-2.0+"
-    ],
-    "Maintainer": "openSUSE",
-    "DependsOn": [
-      "glibc@2.26-lp151.18.7.x86_64",
-      "krb5@1.16.3-lp151.2.6.1.x86_64",
-      "libtirpc-netconfig@1.0.2-lp151.4.8.x86_64"
-    ],
+    "License": "BSD-3-Clause AND GPL-2.0+",
     "Layer": {
       "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
     }
   },
   {
-    "ID": "libudev1@234-lp151.26.4.1.x86_64",
     "Name": "libudev1",
     "Version": "234",
     "Release": "lp151.26.4.1",
@@ -1853,21 +1129,12 @@
     "SrcName": "systemd",
     "SrcVersion": "234",
     "SrcRelease": "lp151.26.4.1",
-    "Licenses": [
-      "LGPL-2.1-or-later"
-    ],
-    "Maintainer": "openSUSE",
-    "DependsOn": [
-      "glibc@2.26-lp151.18.7.x86_64",
-      "libcap2@2.25-lp151.3.70.x86_64",
-      "libselinux1@2.8-lp151.1.30.x86_64"
-    ],
+    "License": "LGPL-2.1-or-later",
     "Layer": {
       "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
     }
   },
   {
-    "ID": "libunistring2@0.9.9-lp151.2.3.x86_64",
     "Name": "libunistring2",
     "Version": "0.9.9",
     "Release": "lp151.2.3",
@@ -1875,19 +1142,12 @@
     "SrcName": "libunistring",
     "SrcVersion": "0.9.9",
     "SrcRelease": "lp151.2.3",
-    "Licenses": [
-      "LGPL-3.0-or-later OR GPL-2.0-only"
-    ],
-    "Maintainer": "openSUSE",
-    "DependsOn": [
-      "glibc@2.26-lp151.18.7.x86_64"
-    ],
+    "License": "LGPL-3.0-or-later OR GPL-2.0-only",
     "Layer": {
       "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
     }
   },
   {
-    "ID": "libusb-1_0-0@1.0.21-lp151.2.3.x86_64",
     "Name": "libusb-1_0-0",
     "Version": "1.0.21",
     "Release": "lp151.2.3",
@@ -1895,20 +1155,12 @@
     "SrcName": "libusb-1_0",
     "SrcVersion": "1.0.21",
     "SrcRelease": "lp151.2.3",
-    "Licenses": [
-      "LGPL-2.1+"
-    ],
-    "Maintainer": "openSUSE",
-    "DependsOn": [
-      "glibc@2.26-lp151.18.7.x86_64",
-      "libudev1@234-lp151.26.4.1.x86_64"
-    ],
+    "License": "LGPL-2.1+",
     "Layer": {
       "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
     }
   },
   {
-    "ID": "libutempter0@1.1.6-lp151.4.70.x86_64",
     "Name": "libutempter0",
     "Version": "1.1.6",
     "Release": "lp151.4.70",
@@ -1916,21 +1168,12 @@
     "SrcName": "utempter",
     "SrcVersion": "1.1.6",
     "SrcRelease": "lp151.4.70",
-    "Licenses": [
-      "MIT"
-    ],
-    "Maintainer": "openSUSE",
-    "DependsOn": [
-      "glibc@2.26-lp151.18.7.x86_64",
-      "permissions@20181116-lp151.4.6.1.x86_64",
-      "system-group-hardware@20170617-lp151.4.70.noarch"
-    ],
+    "License": "MIT",
     "Layer": {
       "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
     }
   },
   {
-    "ID": "libuuid1@2.33.1-lp151.3.3.2.x86_64",
     "Name": "libuuid1",
     "Version": "2.33.1",
     "Release": "lp151.3.3.2",
@@ -1938,19 +1181,12 @@
     "SrcName": "util-linux",
     "SrcVersion": "2.33.1",
     "SrcRelease": "lp151.3.3.2",
-    "Licenses": [
-      "BSD-3-Clause"
-    ],
-    "Maintainer": "openSUSE",
-    "DependsOn": [
-      "glibc@2.26-lp151.18.7.x86_64"
-    ],
+    "License": "BSD-3-Clause",
     "Layer": {
       "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
     }
   },
   {
-    "ID": "libverto1@0.2.6-lp151.4.70.x86_64",
     "Name": "libverto1",
     "Version": "0.2.6",
     "Release": "lp151.4.70",
@@ -1958,19 +1194,12 @@
     "SrcName": "libverto",
     "SrcVersion": "0.2.6",
     "SrcRelease": "lp151.4.70",
-    "Licenses": [
-      "MIT"
-    ],
-    "Maintainer": "openSUSE",
-    "DependsOn": [
-      "glibc@2.26-lp151.18.7.x86_64"
-    ],
+    "License": "MIT",
     "Layer": {
       "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
     }
   },
   {
-    "ID": "libxml2-2@2.9.7-lp151.5.3.1.x86_64",
     "Name": "libxml2-2",
     "Version": "2.9.7",
     "Release": "lp151.5.3.1",
@@ -1978,21 +1207,12 @@
     "SrcName": "libxml2",
     "SrcVersion": "2.9.7",
     "SrcRelease": "lp151.5.3.1",
-    "Licenses": [
-      "MIT"
-    ],
-    "Maintainer": "openSUSE",
-    "DependsOn": [
-      "glibc@2.26-lp151.18.7.x86_64",
-      "liblzma5@5.2.3-lp151.4.3.1.x86_64",
-      "libz1@1.2.11-lp151.5.3.1.x86_64"
-    ],
+    "License": "MIT",
     "Layer": {
       "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
     }
   },
   {
-    "ID": "libz1@1.2.11-lp151.5.3.1.x86_64",
     "Name": "libz1",
     "Version": "1.2.11",
     "Release": "lp151.5.3.1",
@@ -2000,19 +1220,12 @@
     "SrcName": "zlib",
     "SrcVersion": "1.2.11",
     "SrcRelease": "lp151.5.3.1",
-    "Licenses": [
-      "Zlib"
-    ],
-    "Maintainer": "openSUSE",
-    "DependsOn": [
-      "glibc@2.26-lp151.18.7.x86_64"
-    ],
+    "License": "Zlib",
     "Layer": {
       "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
     }
   },
   {
-    "ID": "libzio1@1.06-lp151.3.71.x86_64",
     "Name": "libzio1",
     "Version": "1.06",
     "Release": "lp151.3.71",
@@ -2020,22 +1233,12 @@
     "SrcName": "libzio",
     "SrcVersion": "1.06",
     "SrcRelease": "lp151.3.71",
-    "Licenses": [
-      "GPL-2.0+"
-    ],
-    "Maintainer": "openSUSE",
-    "DependsOn": [
-      "glibc@2.26-lp151.18.7.x86_64",
-      "libbz2-1@1.0.6-lp151.5.9.1.x86_64",
-      "liblzma5@5.2.3-lp151.4.3.1.x86_64",
-      "libz1@1.2.11-lp151.5.3.1.x86_64"
-    ],
+    "License": "GPL-2.0+",
     "Layer": {
       "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
     }
   },
   {
-    "ID": "libzstd1@1.4.2-lp151.3.3.1.x86_64",
     "Name": "libzstd1",
     "Version": "1.4.2",
     "Release": "lp151.3.3.1",
@@ -2043,19 +1246,12 @@
     "SrcName": "zstd",
     "SrcVersion": "1.4.2",
     "SrcRelease": "lp151.3.3.1",
-    "Licenses": [
-      "BSD-3-Clause AND GPL-2.0-only"
-    ],
-    "Maintainer": "openSUSE",
-    "DependsOn": [
-      "glibc@2.26-lp151.18.7.x86_64"
-    ],
+    "License": "BSD-3-Clause AND GPL-2.0-only",
     "Layer": {
       "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
     }
   },
   {
-    "ID": "libzypp@17.15.0-lp151.2.3.2.x86_64",
     "Name": "libzypp",
     "Version": "17.15.0",
     "Release": "lp151.2.3.2",
@@ -2063,31 +1259,12 @@
     "SrcName": "libzypp",
     "SrcVersion": "17.15.0",
     "SrcRelease": "lp151.2.3.2",
-    "Licenses": [
-      "GPL-2.0-or-later"
-    ],
-    "Maintainer": "openSUSE",
-    "DependsOn": [
-      "glibc@2.26-lp151.18.7.x86_64",
-      "libboost_thread1_66_0@1.66.0-lp151.4.5.x86_64",
-      "libcurl4@7.60.0-lp151.5.6.1.x86_64",
-      "libgcc_s1@8.2.1+r264010-lp151.1.33.x86_64",
-      "libgpgme11@1.10.0-lp151.4.1.x86_64",
-      "libopenssl1_1@1.1.0i-lp151.8.3.1.x86_64",
-      "libproxy1@0.4.15-lp151.3.3.x86_64",
-      "libsolv-tools@0.7.6-lp151.2.3.2.x86_64",
-      "libstdc++6@8.2.1+r264010-lp151.1.33.x86_64",
-      "libudev1@234-lp151.26.4.1.x86_64",
-      "libxml2-2@2.9.7-lp151.5.3.1.x86_64",
-      "libz1@1.2.11-lp151.5.3.1.x86_64",
-      "rpm@4.14.1-lp151.13.10.x86_64"
-    ],
+    "License": "GPL-2.0-or-later",
     "Layer": {
       "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
     }
   },
   {
-    "ID": "ncurses-utils@6.1-lp151.5.41.x86_64",
     "Name": "ncurses-utils",
     "Version": "6.1",
     "Release": "lp151.5.41",
@@ -2095,20 +1272,12 @@
     "SrcName": "ncurses",
     "SrcVersion": "6.1",
     "SrcRelease": "lp151.5.41",
-    "Licenses": [
-      "MIT"
-    ],
-    "Maintainer": "openSUSE",
-    "DependsOn": [
-      "glibc@2.26-lp151.18.7.x86_64",
-      "libncurses6@6.1-lp151.5.41.x86_64"
-    ],
+    "License": "MIT",
     "Layer": {
       "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
     }
   },
   {
-    "ID": "netcfg@11.6-lp151.2.2.noarch",
     "Name": "netcfg",
     "Version": "11.6",
     "Release": "lp151.2.2",
@@ -2116,19 +1285,12 @@
     "SrcName": "netcfg",
     "SrcVersion": "11.6",
     "SrcRelease": "lp151.2.2",
-    "Licenses": [
-      "BSD-3-Clause"
-    ],
-    "Maintainer": "openSUSE",
-    "DependsOn": [
-      "coreutils@8.29-lp151.3.3.x86_64"
-    ],
+    "License": "BSD-3-Clause",
     "Layer": {
       "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
     }
   },
   {
-    "ID": "openSUSE-build-key@1.0-lp151.3.1.noarch",
     "Name": "openSUSE-build-key",
     "Version": "1.0",
     "Release": "lp151.3.1",
@@ -2136,20 +1298,12 @@
     "SrcName": "openSUSE-build-key",
     "SrcVersion": "1.0",
     "SrcRelease": "lp151.3.1",
-    "Licenses": [
-      "GPL-2.0+"
-    ],
-    "Maintainer": "openSUSE",
-    "DependsOn": [
-      "coreutils@8.29-lp151.3.3.x86_64",
-      "gpg2@2.2.5-lp151.6.3.1.x86_64"
-    ],
+    "License": "GPL-2.0+",
     "Layer": {
       "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
     }
   },
   {
-    "ID": "openSUSE-release@15.1-lp151.301.1.x86_64",
     "Name": "openSUSE-release",
     "Version": "15.1",
     "Release": "lp151.301.1",
@@ -2157,20 +1311,12 @@
     "SrcName": "openSUSE-release",
     "SrcVersion": "15.1",
     "SrcRelease": "lp151.301.1",
-    "Licenses": [
-      "BSD-3-Clause"
-    ],
-    "Maintainer": "openSUSE",
-    "DependsOn": [
-      "gawk@4.2.1-lp151.2.70.x86_64",
-      "openSUSE-release-appliance-docker@15.1-lp151.301.1.x86_64"
-    ],
+    "License": "BSD-3-Clause",
     "Layer": {
       "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
     }
   },
   {
-    "ID": "openSUSE-release-appliance-docker@15.1-lp151.301.1.x86_64",
     "Name": "openSUSE-release-appliance-docker",
     "Version": "15.1",
     "Release": "lp151.301.1",
@@ -2178,16 +1324,12 @@
     "SrcName": "openSUSE-release",
     "SrcVersion": "15.1",
     "SrcRelease": "lp151.301.1",
-    "Licenses": [
-      "BSD-3-Clause"
-    ],
-    "Maintainer": "openSUSE",
+    "License": "BSD-3-Clause",
     "Layer": {
       "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
     }
   },
   {
-    "ID": "openssl@1.1.0i-lp151.1.1.noarch",
     "Name": "openssl",
     "Version": "1.1.0i",
     "Release": "lp151.1.1",
@@ -2195,19 +1337,12 @@
     "SrcName": "openssl",
     "SrcVersion": "1.1.0i",
     "SrcRelease": "lp151.1.1",
-    "Licenses": [
-      "OpenSSL"
-    ],
-    "Maintainer": "openSUSE",
-    "DependsOn": [
-      "openssl-1_1@1.1.0i-lp151.8.3.1.x86_64"
-    ],
+    "License": "OpenSSL",
     "Layer": {
       "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
     }
   },
   {
-    "ID": "openssl-1_1@1.1.0i-lp151.8.3.1.x86_64",
     "Name": "openssl-1_1",
     "Version": "1.1.0i",
     "Release": "lp151.8.3.1",
@@ -2215,21 +1350,12 @@
     "SrcName": "openssl-1_1",
     "SrcVersion": "1.1.0i",
     "SrcRelease": "lp151.8.3.1",
-    "Licenses": [
-      "OpenSSL"
-    ],
-    "Maintainer": "openSUSE",
-    "DependsOn": [
-      "glibc@2.26-lp151.18.7.x86_64",
-      "libopenssl1_1@1.1.0i-lp151.8.3.1.x86_64",
-      "libz1@1.2.11-lp151.5.3.1.x86_64"
-    ],
+    "License": "OpenSSL",
     "Layer": {
       "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
     }
   },
   {
-    "ID": "p11-kit@0.23.2-lp151.3.3.x86_64",
     "Name": "p11-kit",
     "Version": "0.23.2",
     "Release": "lp151.3.3",
@@ -2237,21 +1363,12 @@
     "SrcName": "p11-kit",
     "SrcVersion": "0.23.2",
     "SrcRelease": "lp151.3.3",
-    "Licenses": [
-      "BSD-3-Clause"
-    ],
-    "Maintainer": "openSUSE",
-    "DependsOn": [
-      "glibc@2.26-lp151.18.7.x86_64",
-      "libp11-kit0@0.23.2-lp151.3.3.x86_64",
-      "libtasn1-6@4.13-lp151.4.3.1.x86_64"
-    ],
+    "License": "BSD-3-Clause",
     "Layer": {
       "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
     }
   },
   {
-    "ID": "p11-kit-tools@0.23.2-lp151.3.3.x86_64",
     "Name": "p11-kit-tools",
     "Version": "0.23.2",
     "Release": "lp151.3.3",
@@ -2259,21 +1376,12 @@
     "SrcName": "p11-kit",
     "SrcVersion": "0.23.2",
     "SrcRelease": "lp151.3.3",
-    "Licenses": [
-      "BSD-3-Clause"
-    ],
-    "Maintainer": "openSUSE",
-    "DependsOn": [
-      "glibc@2.26-lp151.18.7.x86_64",
-      "libp11-kit0@0.23.2-lp151.3.3.x86_64",
-      "libtasn1-6@4.13-lp151.4.3.1.x86_64"
-    ],
+    "License": "BSD-3-Clause",
     "Layer": {
       "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
     }
   },
   {
-    "ID": "pam@1.3.0-lp151.7.38.x86_64",
     "Name": "pam",
     "Version": "1.3.0",
     "Release": "lp151.7.38",
@@ -2281,26 +1389,12 @@
     "SrcName": "pam",
     "SrcVersion": "1.3.0",
     "SrcRelease": "lp151.7.38",
-    "Licenses": [
-      "GPL-2.0+ or BSD-3-Clause"
-    ],
-    "Maintainer": "openSUSE",
-    "DependsOn": [
-      "glibc@2.26-lp151.18.7.x86_64",
-      "libaudit1@2.8.1-lp151.4.66.x86_64",
-      "libcrack2@2.9.6-lp151.3.69.x86_64",
-      "libnsl2@1.2.0-lp151.3.67.x86_64",
-      "libselinux1@2.8-lp151.1.30.x86_64",
-      "libtirpc3@1.0.2-lp151.4.8.x86_64",
-      "permissions@20181116-lp151.4.6.1.x86_64",
-      "system-user-root@20190513-lp151.3.3.1.noarch"
-    ],
+    "License": "GPL-2.0+ or BSD-3-Clause",
     "Layer": {
       "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
     }
   },
   {
-    "ID": "perl-base@5.26.1-lp151.8.37.x86_64",
     "Name": "perl-base",
     "Version": "5.26.1",
     "Release": "lp151.8.37",
@@ -2308,19 +1402,12 @@
     "SrcName": "perl",
     "SrcVersion": "5.26.1",
     "SrcRelease": "lp151.8.37",
-    "Licenses": [
-      "Artistic-1.0 or GPL-2.0+"
-    ],
-    "Maintainer": "openSUSE",
-    "DependsOn": [
-      "glibc@2.26-lp151.18.7.x86_64"
-    ],
+    "License": "Artistic-1.0 or GPL-2.0+",
     "Layer": {
       "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
     }
   },
   {
-    "ID": "permissions@20181116-lp151.4.6.1.x86_64",
     "Name": "permissions",
     "Version": "20181116",
     "Release": "lp151.4.6.1",
@@ -2328,25 +1415,12 @@
     "SrcName": "permissions",
     "SrcVersion": "20181116",
     "SrcRelease": "lp151.4.6.1",
-    "Licenses": [
-      "GPL-2.0+"
-    ],
-    "Maintainer": "openSUSE",
-    "DependsOn": [
-      "coreutils@8.29-lp151.3.3.x86_64",
-      "diffutils@3.6-lp151.3.3.x86_64",
-      "fillup@1.42-lp151.3.2.x86_64",
-      "glibc@2.26-lp151.18.7.x86_64",
-      "grep@3.1-lp151.3.29.x86_64",
-      "libcap2@2.25-lp151.3.70.x86_64",
-      "system-user-root@20190513-lp151.3.3.1.noarch"
-    ],
+    "License": "GPL-2.0+",
     "Layer": {
       "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
     }
   },
   {
-    "ID": "pinentry@1.1.0-lp151.4.3.1.x86_64",
     "Name": "pinentry",
     "Version": "1.1.0",
     "Release": "lp151.4.3.1",
@@ -2354,23 +1428,12 @@
     "SrcName": "pinentry",
     "SrcVersion": "1.1.0",
     "SrcRelease": "lp151.4.3.1",
-    "Licenses": [
-      "GPL-2.0+"
-    ],
-    "Maintainer": "openSUSE",
-    "DependsOn": [
-      "glibc@2.26-lp151.18.7.x86_64",
-      "info@6.5-lp151.5.69.x86_64",
-      "libassuan0@2.5.1-lp151.3.3.x86_64",
-      "libgpg-error0@1.29-lp151.2.4.x86_64",
-      "libncurses6@6.1-lp151.5.41.x86_64"
-    ],
+    "License": "GPL-2.0+",
     "Layer": {
       "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
     }
   },
   {
-    "ID": "procps@3.3.15-lp151.6.3.1.x86_64",
     "Name": "procps",
     "Version": "3.3.15",
     "Release": "lp151.6.3.1",
@@ -2378,21 +1441,12 @@
     "SrcName": "procps",
     "SrcVersion": "3.3.15",
     "SrcRelease": "lp151.6.3.1",
-    "Licenses": [
-      "GPL-2.0-or-later AND LGPL-2.1-or-later"
-    ],
-    "Maintainer": "openSUSE",
-    "DependsOn": [
-      "glibc@2.26-lp151.18.7.x86_64",
-      "libncurses6@6.1-lp151.5.41.x86_64",
-      "libprocps7@3.3.15-lp151.6.3.1.x86_64"
-    ],
+    "License": "GPL-2.0-or-later AND LGPL-2.1-or-later",
     "Layer": {
       "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
     }
   },
   {
-    "ID": "rpm@4.14.1-lp151.13.10.x86_64",
     "Name": "rpm",
     "Version": "4.14.1",
     "Release": "lp151.13.10",
@@ -2400,34 +1454,12 @@
     "SrcName": "rpm",
     "SrcVersion": "4.14.1",
     "SrcRelease": "lp151.13.10",
-    "Licenses": [
-      "GPL-2.0-or-later"
-    ],
-    "Maintainer": "openSUSE",
-    "DependsOn": [
-      "coreutils@8.29-lp151.3.3.x86_64",
-      "diffutils@3.6-lp151.3.3.x86_64",
-      "fillup@1.42-lp151.3.2.x86_64",
-      "glibc@2.26-lp151.18.7.x86_64",
-      "grep@3.1-lp151.3.29.x86_64",
-      "libacl1@2.2.52-lp151.4.29.x86_64",
-      "libbz2-1@1.0.6-lp151.5.9.1.x86_64",
-      "libcap2@2.25-lp151.3.70.x86_64",
-      "libdw1@0.168-lp151.4.3.1.x86_64",
-      "libelf1@0.168-lp151.4.3.1.x86_64",
-      "liblua5_3-5@5.3.4-lp151.3.25.x86_64",
-      "liblzma5@5.2.3-lp151.4.3.1.x86_64",
-      "libmagic1@5.32-lp151.7.22.x86_64",
-      "libpopt0@1.16-lp151.3.67.x86_64",
-      "libselinux1@2.8-lp151.1.30.x86_64",
-      "libz1@1.2.11-lp151.5.3.1.x86_64"
-    ],
+    "License": "GPL-2.0-or-later",
     "Layer": {
       "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
     }
   },
   {
-    "ID": "sed@4.4-lp151.3.4.x86_64",
     "Name": "sed",
     "Version": "4.4",
     "Release": "lp151.3.4",
@@ -2435,22 +1467,12 @@
     "SrcName": "sed",
     "SrcVersion": "4.4",
     "SrcRelease": "lp151.3.4",
-    "Licenses": [
-      "GPL-3.0+"
-    ],
-    "Maintainer": "openSUSE",
-    "DependsOn": [
-      "glibc@2.26-lp151.18.7.x86_64",
-      "info@6.5-lp151.5.69.x86_64",
-      "libacl1@2.2.52-lp151.4.29.x86_64",
-      "libselinux1@2.8-lp151.1.30.x86_64"
-    ],
+    "License": "GPL-3.0+",
     "Layer": {
       "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
     }
   },
   {
-    "ID": "shadow@4.6-lp151.2.3.2.x86_64",
     "Name": "shadow",
     "Version": "4.6",
     "Release": "lp151.2.3.2",
@@ -2458,27 +1480,12 @@
     "SrcName": "shadow",
     "SrcVersion": "4.6",
     "SrcRelease": "lp151.2.3.2",
-    "Licenses": [
-      "BSD-3-Clause AND GPL-2.0-or-later"
-    ],
-    "Maintainer": "openSUSE",
-    "DependsOn": [
-      "glibc@2.26-lp151.18.7.x86_64",
-      "libacl1@2.2.52-lp151.4.29.x86_64",
-      "libattr1@2.4.47-lp151.3.70.x86_64",
-      "libaudit1@2.8.1-lp151.4.66.x86_64",
-      "libselinux1@2.8-lp151.1.30.x86_64",
-      "libsemanage1@2.8-lp151.1.32.x86_64",
-      "pam@1.3.0-lp151.7.38.x86_64",
-      "permissions@20181116-lp151.4.6.1.x86_64",
-      "system-user-root@20190513-lp151.3.3.1.noarch"
-    ],
+    "License": "BSD-3-Clause AND GPL-2.0-or-later",
     "Layer": {
       "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
     }
   },
   {
-    "ID": "system-group-hardware@20170617-lp151.4.70.noarch",
     "Name": "system-group-hardware",
     "Version": "20170617",
     "Release": "lp151.4.70",
@@ -2486,20 +1493,12 @@
     "SrcName": "system-users",
     "SrcVersion": "20170617",
     "SrcRelease": "lp151.4.70",
-    "Licenses": [
-      "MIT"
-    ],
-    "Maintainer": "openSUSE",
-    "DependsOn": [
-      "shadow@4.6-lp151.2.3.2.x86_64",
-      "sysuser-shadow@2.0-lp151.3.70.noarch"
-    ],
+    "License": "MIT",
     "Layer": {
       "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
     }
   },
   {
-    "ID": "system-user-root@20190513-lp151.3.3.1.noarch",
     "Name": "system-user-root",
     "Version": "20190513",
     "Release": "lp151.3.3.1",
@@ -2507,16 +1506,12 @@
     "SrcName": "system-user-root",
     "SrcVersion": "20190513",
     "SrcRelease": "lp151.3.3.1",
-    "Licenses": [
-      "MIT"
-    ],
-    "Maintainer": "openSUSE",
+    "License": "MIT",
     "Layer": {
       "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
     }
   },
   {
-    "ID": "sysuser-shadow@2.0-lp151.3.70.noarch",
     "Name": "sysuser-shadow",
     "Version": "2.0",
     "Release": "lp151.3.70",
@@ -2524,19 +1519,12 @@
     "SrcName": "sysuser-tools",
     "SrcVersion": "2.0",
     "SrcRelease": "lp151.3.70",
-    "Licenses": [
-      "MIT"
-    ],
-    "Maintainer": "openSUSE",
-    "DependsOn": [
-      "shadow@4.6-lp151.2.3.2.x86_64"
-    ],
+    "License": "MIT",
     "Layer": {
       "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
     }
   },
   {
-    "ID": "terminfo-base@6.1-lp151.5.41.x86_64",
     "Name": "terminfo-base",
     "Version": "6.1",
     "Release": "lp151.5.41",
@@ -2544,19 +1532,12 @@
     "SrcName": "ncurses",
     "SrcVersion": "6.1",
     "SrcRelease": "lp151.5.41",
-    "Licenses": [
-      "MIT"
-    ],
-    "Maintainer": "openSUSE",
-    "DependsOn": [
-      "libncurses6@6.1-lp151.5.41.x86_64"
-    ],
+    "License": "MIT",
     "Layer": {
       "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
     }
   },
   {
-    "ID": "update-alternatives@1.19.0.4-lp151.3.67.x86_64",
     "Name": "update-alternatives",
     "Version": "1.19.0.4",
     "Release": "lp151.3.67",
@@ -2564,20 +1545,12 @@
     "SrcName": "update-alternatives",
     "SrcVersion": "1.19.0.4",
     "SrcRelease": "lp151.3.67",
-    "Licenses": [
-      "GPL-2.0+"
-    ],
-    "Maintainer": "openSUSE",
-    "DependsOn": [
-      "coreutils@8.29-lp151.3.3.x86_64",
-      "glibc@2.26-lp151.18.7.x86_64"
-    ],
+    "License": "GPL-2.0+",
     "Layer": {
       "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
     }
   },
   {
-    "ID": "util-linux@2.33.1-lp151.3.3.2.x86_64",
     "Name": "util-linux",
     "Version": "2.33.1",
     "Release": "lp151.3.3.2",
@@ -2585,35 +1558,12 @@
     "SrcName": "util-linux",
     "SrcVersion": "2.33.1",
     "SrcRelease": "lp151.3.3.2",
-    "Licenses": [
-      "GPL-2.0-or-later"
-    ],
-    "Maintainer": "openSUSE",
-    "DependsOn": [
-      "glibc@2.26-lp151.18.7.x86_64",
-      "info@6.5-lp151.5.69.x86_64",
-      "libaudit1@2.8.1-lp151.4.66.x86_64",
-      "libblkid1@2.33.1-lp151.3.3.2.x86_64",
-      "libcap-ng0@0.7.9-lp151.3.39.x86_64",
-      "libfdisk1@2.33.1-lp151.3.3.2.x86_64",
-      "libmount1@2.33.1-lp151.3.3.2.x86_64",
-      "libncurses6@6.1-lp151.5.41.x86_64",
-      "libreadline7@7.0-lp151.10.3.1.x86_64",
-      "libselinux1@2.8-lp151.1.30.x86_64",
-      "libsmartcols1@2.33.1-lp151.3.3.2.x86_64",
-      "libutempter0@1.1.6-lp151.4.70.x86_64",
-      "libuuid1@2.33.1-lp151.3.3.2.x86_64",
-      "libz1@1.2.11-lp151.5.3.1.x86_64",
-      "pam@1.3.0-lp151.7.38.x86_64",
-      "permissions@20181116-lp151.4.6.1.x86_64",
-      "system-group-hardware@20170617-lp151.4.70.noarch"
-    ],
+    "License": "GPL-2.0-or-later",
     "Layer": {
       "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
     }
   },
   {
-    "ID": "zypper@1.14.30-lp151.2.3.1.x86_64",
     "Name": "zypper",
     "Version": "1.14.30",
     "Release": "lp151.2.3.1",
@@ -2621,20 +1571,7 @@
     "SrcName": "zypper",
     "SrcVersion": "1.14.30",
     "SrcRelease": "lp151.2.3.1",
-    "Licenses": [
-      "GPL-2.0-or-later"
-    ],
-    "Maintainer": "openSUSE",
-    "DependsOn": [
-      "glibc@2.26-lp151.18.7.x86_64",
-      "libaugeas0@1.10.1-lp151.2.3.x86_64",
-      "libgcc_s1@8.2.1+r264010-lp151.1.33.x86_64",
-      "libreadline7@7.0-lp151.10.3.1.x86_64",
-      "libstdc++6@8.2.1+r264010-lp151.1.33.x86_64",
-      "libxml2-2@2.9.7-lp151.5.3.1.x86_64",
-      "libzypp@17.15.0-lp151.2.3.2.x86_64",
-      "procps@3.3.15-lp151.6.3.1.x86_64"
-    ],
+    "License": "GPL-2.0-or-later",
     "Layer": {
       "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
     }
