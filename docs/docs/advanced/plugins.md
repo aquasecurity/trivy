@@ -37,6 +37,8 @@ This means the following protocols are supported for downloading plugins:
 - Amazon S3
 - Google Cloud Storage
 
+A plugin should be archived `*.tar.gz`.
+
 For example, to download the Kubernetes Trivy plugin you can execute the following command:
 
 ```bash
@@ -80,7 +82,7 @@ Internally the kubectl plugin calls the kubectl binary to fetch information abou
 You can see the detail [here][trivy-plugin-kubectl].
 
 If you want to omit even the subcommand, you can use `TRIVY_RUN_AS_PLUGIN` environment variable.
-
+A plugin should be archived `*.tar.gz`.
 ```bash
 $ TRIVY_RUN_AS_PLUGIN=kubectl trivy job your-job -- --format json
 ```
