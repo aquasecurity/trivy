@@ -114,7 +114,7 @@ func (a poetryAnalyzer) mergePyProject(fsys fs.FS, dir string, app *types.Applic
 	return nil
 }
 
-func (a poetryAnalyzer) parsePyProject(fsys fs.FS, path string) (map[string]string, error) {
+func (a poetryAnalyzer) parsePyProject(fsys fs.FS, path string) (map[string]interface{}, error) {
 	// Parse pyproject.toml
 	f, err := fsys.Open(path)
 	if err != nil {
