@@ -1,9 +1,10 @@
 package pyproject
 
 import (
+	"io"
+
 	"github.com/BurntSushi/toml"
 	"golang.org/x/xerrors"
-	"io"
 )
 
 type PyProject struct {
@@ -15,7 +16,7 @@ type Tool struct {
 }
 
 type Poetry struct {
-	Dependencies map[string]string `toml:"dependencies"`
+	Dependencies map[string]interface{} `toml:"dependencies"`
 }
 
 // Parser parses pyproject.toml defined in PEP518.
@@ -27,7 +28,7 @@ func NewParser() *Parser {
 	return &Parser{}
 }
 
-func (p *Parser) Parse(r io.Reader) (map[string]string, error) {
+func (p *Parser) Parse(r io.Reader) (map[string]interface{}, error) {
 	var conf PyProject
 	if _, err := toml.NewDecoder(r).Decode(&conf); err != nil {
 		return nil, xerrors.Errorf("toml decode error: %w", err)

@@ -15,13 +15,29 @@ func TestParser_Parse(t *testing.T) {
 	tests := []struct {
 		name    string
 		file    string
-		want    map[string]string
+		want    map[string]interface{}
 		wantErr assert.ErrorAssertionFunc
 	}{
 		{
-			name:    "happy path",
-			file:    "testdata/happy.toml",
-			want:    map[string]string{"flask": "^1.0", "python": "^3.9"},
+			name: "happy path",
+			file: "testdata/happy.toml",
+			want: map[string]interface{}{
+				"flask":  "^1.0",
+				"python": "^3.9",
+				"requests": map[string]interface{}{
+					"version":  "2.28.1",
+					"optional": true,
+				},
+				"virtualenv": []interface{}{
+					map[string]interface{}{
+						"version": "^20.4.3,!=20.4.5,!=20.4.6",
+					},
+					map[string]interface{}{
+						"version": "<20.16.6",
+						"markers": "sys_platform == 'win32' and python_version == '3.9'",
+					},
+				},
+			},
 			wantErr: assert.NoError,
 		},
 		{
