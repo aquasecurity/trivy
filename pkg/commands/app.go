@@ -9,12 +9,11 @@ import (
 	"strings"
 	"time"
 
-	awsScanner "github.com/aquasecurity/defsec/pkg/scanners/cloud/aws"
-
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	"golang.org/x/xerrors"
 
+	awsScanner "github.com/aquasecurity/defsec/pkg/scanners/cloud/aws"
 	"github.com/aquasecurity/trivy-db/pkg/metadata"
 	awscommands "github.com/aquasecurity/trivy/pkg/cloud/aws/commands"
 	"github.com/aquasecurity/trivy/pkg/commands/artifact"
@@ -25,6 +24,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/module"
 	"github.com/aquasecurity/trivy/pkg/plugin"
+	"github.com/aquasecurity/trivy/pkg/policy"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
 
@@ -32,6 +32,7 @@ import (
 type VersionInfo struct {
 	Version         string             `json:",omitempty"`
 	VulnerabilityDB *metadata.Metadata `json:",omitempty"`
+	PolicyBundle    *policy.Metadata   `json:",omitempty"`
 }
 
 const (
@@ -1084,11 +1085,18 @@ func showVersion(cacheDir, outputFormat, version string, outputWriter io.Writer)
 		}
 	}
 
+	var pbMeta *policy.Metadata
+	pc, err := policy.NewClient(cacheDir, false)
+	if pc != nil && err == nil {
+		pbMeta, _ = pc.GetMetadata()
+	}
+
 	switch outputFormat {
 	case "json":
 		b, _ := json.Marshal(VersionInfo{
 			Version:         version,
 			VulnerabilityDB: dbMeta,
+			PolicyBundle:    pbMeta,
 		})
 		fmt.Fprintln(outputWriter, string(b))
 	default:
@@ -1100,6 +1108,13 @@ func showVersion(cacheDir, outputFormat, version string, outputWriter io.Writer)
   NextUpdate: %s
   DownloadedAt: %s
 `, dbMeta.Version, dbMeta.UpdatedAt.UTC(), dbMeta.NextUpdate.UTC(), dbMeta.DownloadedAt.UTC())
+		}
+
+		if pbMeta != nil {
+			output += fmt.Sprintf(`Policy Bundle:
+  Digest: %s
+  DownloadedAt: %s
+`, pbMeta.Digest, pbMeta.DownloadedAt.UTC())
 		}
 		fmt.Fprintf(outputWriter, output)
 	}
