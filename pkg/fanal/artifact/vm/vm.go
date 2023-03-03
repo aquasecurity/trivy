@@ -28,6 +28,7 @@ const (
 	TypeAMI  Type = "ami"
 	TypeEBS  Type = "ebs"
 	TypeFile Type = "file"
+	TypeGCS  Type = "gs"
 )
 
 type Storage struct {
@@ -120,6 +121,9 @@ func NewArtifact(target string, c cache.ArtifactCache, opt artifact.Option) (art
 	case TypeFile:
 		target = strings.TrimPrefix(target, TypeFile.Prefix())
 		return newFile(target, storage)
+	case TypeGCS:
+		target = strings.TrimPrefix(target, TypeFile.Prefix())
+		return newGCS(target, storage)
 	}
 	return nil, xerrors.Errorf("unsupported format")
 }
@@ -132,6 +136,8 @@ func detectType(target string) Type {
 		return TypeEBS
 	case strings.HasPrefix(target, TypeFile.Prefix()):
 		return TypeFile
+	case strings.HasPrefix(target, TypeGCS.Prefix()):
+		return TypeGCS
 	default:
 		return TypeFile
 	}
