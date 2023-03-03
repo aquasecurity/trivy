@@ -180,7 +180,6 @@ $ trivy plugin install myplugin.tar.gz
 
 $ trivy myplugin
 Hello from Trivy demo plugin!
-
 ```
 
 ## Example
