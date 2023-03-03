@@ -13,6 +13,7 @@ import (
 	"golang.org/x/xerrors"
 
 	dio "github.com/aquasecurity/go-dep-parser/pkg/io"
+	"github.com/aquasecurity/go-dep-parser/pkg/nodejs/packagejson"
 	"github.com/aquasecurity/go-dep-parser/pkg/nodejs/yarn"
 	godeptypes "github.com/aquasecurity/go-dep-parser/pkg/types"
 	godeputils "github.com/aquasecurity/go-dep-parser/pkg/utils"
@@ -30,13 +31,13 @@ func init() {
 const version = 1
 
 type yarnAnalyzer struct {
-	packageJsonParser PackageJsonParser
+	packageJsonParser packagejson.Parser
 	lockParser        godeptypes.Parser
 }
 
 func newYarnAnalyzer(_ analyzer.AnalyzerOptions) (analyzer.PostAnalyzer, error) {
 	return &yarnAnalyzer{
-		packageJsonParser: NewPackageJsonParser(),
+		packageJsonParser: packagejson.Parser{},
 		lockParser:        yarn.NewParser(),
 	}, nil
 }
@@ -90,7 +91,7 @@ func (a yarnAnalyzer) Version() int {
 func (a yarnAnalyzer) parseYarnLock(path string, r dio.ReadSeekerAt) (*types.Application, error) {
 	libs, deps, err := a.lockParser.Parse(r)
 	if err != nil {
-		return nil, xerrors.Errorf("unable to parse poetry.lock: %w", err)
+		return nil, xerrors.Errorf("unable to parse yarn.lock: %w", err)
 	}
 	return language.ToApplication(types.Yarn, path, "", libs, deps), nil
 }
@@ -98,7 +99,7 @@ func (a yarnAnalyzer) parseYarnLock(path string, r dio.ReadSeekerAt) (*types.App
 func (a yarnAnalyzer) removeDevDependencies(fsys fs.FS, path string, app *types.Application) error {
 	libs := map[string]types.Package{}
 	packageJsonPath := filepath.Join(path, types.NpmPkg)
-	packageJson, err := a.parsePackageJson(fsys, packageJsonPath)
+	rootDeps, err := a.parsePackageJsonDependencies(fsys, packageJsonPath)
 	if errors.Is(err, fs.ErrNotExist) {
 		log.Logger.Debugf("Yarn: %s not found", path)
 		return nil
@@ -111,7 +112,7 @@ func (a yarnAnalyzer) removeDevDependencies(fsys fs.FS, path string, app *types.
 	})
 
 	// add direct deps to the queue
-	for n, v := range packageJson.Dependencies {
+	for n, v := range rootDeps {
 		item := Item{
 			id:       godeputils.PackageID(n, v),
 			indirect: false,
@@ -156,17 +157,22 @@ func (a yarnAnalyzer) removeDevDependencies(fsys fs.FS, path string, app *types.
 	return nil
 }
 
-func (a yarnAnalyzer) parsePackageJson(fsys fs.FS, path string) (PackageJson, error) {
+func (a yarnAnalyzer) parsePackageJsonDependencies(fsys fs.FS, path string) (map[string]string, error) {
 	// Parse package.json
 	f, err := fsys.Open(path)
 	if err != nil {
-		return PackageJson{}, xerrors.Errorf("file open error: %w", err)
+		return nil, xerrors.Errorf("file open error: %w", err)
 	}
 	defer func() { _ = f.Close() }()
 
-	packageJson, err := a.packageJsonParser.Parse(f)
-	if err != nil {
-		return PackageJson{}, err
+	file, ok := f.(dio.ReadSeekCloserAt)
+	if !ok {
+		return nil, xerrors.Errorf("type assertion error: %w", err)
 	}
-	return packageJson, nil
+
+	rootDeps, err := a.packageJsonParser.ParseProdDependencies(file)
+	if err != nil {
+		return nil, err
+	}
+	return rootDeps, nil
 }
