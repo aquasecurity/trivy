@@ -37,13 +37,16 @@ This means the following protocols are supported for downloading plugins:
 - Amazon S3
 - Google Cloud Storage
 
-A plugin should be archived `*.tar.gz`.
-
 For example, to download the Kubernetes Trivy plugin you can execute the following command:
 
 ```bash
 $ trivy plugin install github.com/aquasecurity/trivy-plugin-kubectl
 ```
+Also, Trivy plugin can be installed from a local archive:
+```bash
+$ trivy plugin install myplugin.tar.gz
+```
+
 ## Using Plugins
 Once the plugin is installed, Trivy will load all available plugins in the cache on the start of the next Trivy execution.
 A plugin will be made in the Trivy CLI based on the plugin name.
@@ -82,7 +85,6 @@ Internally the kubectl plugin calls the kubectl binary to fetch information abou
 You can see the detail [here][trivy-plugin-kubectl].
 
 If you want to omit even the subcommand, you can use `TRIVY_RUN_AS_PLUGIN` environment variable.
-A plugin should be archived `*.tar.gz`.
 ```bash
 $ TRIVY_RUN_AS_PLUGIN=kubectl trivy job your-job -- --format json
 ```
@@ -163,6 +165,22 @@ After determining platform, Trivy will download the execution file from `uri` an
 When the plugin is called via Trivy CLI, `bin` command will be executed.
 
 The plugin is responsible for handling flags and arguments. Any arguments are passed to the plugin from the `trivy` command.
+
+A plugin should be archived `*.tar.gz`.
+
+```bash
+$ tar -czvf myplugin.tar.gz plugin.yaml script.py
+plugin.yaml
+script.py
+
+$ trivy plugin install myplugin.tar.gz
+2023-03-03T19:04:42.026+0600	INFO	Installing the plugin from myplugin.tar.gz...
+2023-03-03T19:04:42.026+0600	INFO	Loading the plugin metadata...
+
+$ trivy myplugin
+Hello from Trivy demo plugin!
+
+```
 
 ## Example
 https://github.com/aquasecurity/trivy-plugin-kubectl
