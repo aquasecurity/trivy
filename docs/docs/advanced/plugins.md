@@ -85,6 +85,7 @@ Internally the kubectl plugin calls the kubectl binary to fetch information abou
 You can see the detail [here][trivy-plugin-kubectl].
 
 If you want to omit even the subcommand, you can use `TRIVY_RUN_AS_PLUGIN` environment variable.
+
 ```bash
 $ TRIVY_RUN_AS_PLUGIN=kubectl trivy job your-job -- --format json
 ```
