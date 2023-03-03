@@ -105,7 +105,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 					DocumentName:         "rails:latest",
 					DocumentNamespace:    "http://aquasecurity.github.io/trivy/container_image/rails:latest-3ff14136-e09f-4df9-80ea-000000000001",
 					CreatorOrganizations: []string{"aquasecurity"},
-					CreatorTools:         []string{"trivy-v0.0.0"},
+					CreatorTools:         []string{"trivy-0.38.1"},
 					Created:              "2021-08-25T12:20:30Z",
 				},
 				Packages: map[spdx.ElementID]*spdx.Package2_2{
@@ -310,7 +310,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 					DocumentName:         "centos:latest",
 					DocumentNamespace:    "http://aquasecurity.github.io/trivy/container_image/centos:latest-3ff14136-e09f-4df9-80ea-000000000001",
 					CreatorOrganizations: []string{"aquasecurity"},
-					CreatorTools:         []string{"trivy-v0.0.0"},
+					CreatorTools:         []string{"trivy-0.38.1"},
 					Created:              "2021-08-25T12:20:30Z",
 				},
 				Packages: map[spdx.ElementID]*spdx.Package2_2{
@@ -463,7 +463,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 					DocumentName:         "masahiro331/CVE-2021-41098",
 					DocumentNamespace:    "http://aquasecurity.github.io/trivy/filesystem/masahiro331/CVE-2021-41098-3ff14136-e09f-4df9-80ea-000000000001",
 					CreatorOrganizations: []string{"aquasecurity"},
-					CreatorTools:         []string{"trivy-v0.0.0"},
+					CreatorTools:         []string{"trivy-0.38.1"},
 					Created:              "2021-08-25T12:20:30Z",
 				},
 				Packages: map[spdx.ElementID]*spdx.Package2_2{
@@ -546,7 +546,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 					DocumentName:         "test-aggregate",
 					DocumentNamespace:    "http://aquasecurity.github.io/trivy/repository/test-aggregate-3ff14136-e09f-4df9-80ea-000000000001",
 					CreatorOrganizations: []string{"aquasecurity"},
-					CreatorTools:         []string{"trivy-v0.0.0"},
+					CreatorTools:         []string{"trivy-0.38.1"},
 					Created:              "2021-08-25T12:20:30Z",
 				},
 				Packages: map[spdx.ElementID]*spdx.Package2_2{
@@ -621,7 +621,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 					DocumentName:         "empty/path",
 					DocumentNamespace:    "http://aquasecurity.github.io/trivy/filesystem/empty/path-3ff14136-e09f-4df9-80ea-000000000001",
 					CreatorOrganizations: []string{"aquasecurity"},
-					CreatorTools:         []string{"trivy-v0.0.0"},
+					CreatorTools:         []string{"trivy-0.38.1"},
 					Created:              "2021-08-25T12:20:30Z",
 				},
 				Packages: map[spdx.ElementID]*spdx.Package2_2{
@@ -678,7 +678,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 				return h.Sum64(), nil
 			}
 
-			marshaler := tspdx.NewMarshaler("v0.0.0", tspdx.WithClock(clock), tspdx.WithNewUUID(newUUID), tspdx.WithHasher(hasher))
+			marshaler := tspdx.NewMarshaler("0.38.1", tspdx.WithClock(clock), tspdx.WithNewUUID(newUUID), tspdx.WithHasher(hasher))
 			spdxDoc, err := marshaler.Marshal(tc.inputReport)
 			require.NoError(t, err)
 
