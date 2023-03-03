@@ -29,13 +29,25 @@ func Test_yarnLibraryAnalyzer_Analyze(t *testing.T) {
 						FilePath: "yarn.lock",
 						Libraries: []types.Package{
 							{
-								ID:      "js-tokens@4.0.0",
+								ID:      "js-tokens@2.0.0",
 								Name:    "js-tokens",
-								Version: "4.0.0",
+								Version: "2.0.0",
 								Locations: []types.Location{
 									{
 										StartLine: 5,
 										EndLine:   8,
+									},
+								},
+							},
+							{
+								ID:       "js-tokens@4.0.0",
+								Name:     "js-tokens",
+								Version:  "4.0.0",
+								Indirect: true,
+								Locations: []types.Location{
+									{
+										StartLine: 10,
+										EndLine:   13,
 									},
 								},
 							},
@@ -46,8 +58,8 @@ func Test_yarnLibraryAnalyzer_Analyze(t *testing.T) {
 								Indirect: true,
 								Locations: []types.Location{
 									{
-										StartLine: 10,
-										EndLine:   15,
+										StartLine: 15,
+										EndLine:   20,
 									},
 								},
 								DependsOn: []string{
@@ -61,8 +73,8 @@ func Test_yarnLibraryAnalyzer_Analyze(t *testing.T) {
 								Indirect: true,
 								Locations: []types.Location{
 									{
-										StartLine: 17,
-										EndLine:   20,
+										StartLine: 22,
+										EndLine:   25,
 									},
 								},
 							},
@@ -72,8 +84,8 @@ func Test_yarnLibraryAnalyzer_Analyze(t *testing.T) {
 								Version: "0.13.6",
 								Locations: []types.Location{
 									{
-										StartLine: 36,
-										EndLine:   42,
+										StartLine: 41,
+										EndLine:   47,
 									},
 								},
 								DependsOn: []string{
@@ -96,13 +108,24 @@ func Test_yarnLibraryAnalyzer_Analyze(t *testing.T) {
 						FilePath: "yarn.lock",
 						Libraries: []types.Package{
 							{
+								ID:      "js-tokens@2.0.0",
+								Name:    "js-tokens",
+								Version: "2.0.0",
+								Locations: []types.Location{
+									{
+										StartLine: 5,
+										EndLine:   8,
+									},
+								},
+							},
+							{
 								ID:      "js-tokens@4.0.0",
 								Name:    "js-tokens",
 								Version: "4.0.0",
 								Locations: []types.Location{
 									{
-										StartLine: 5,
-										EndLine:   8,
+										StartLine: 10,
+										EndLine:   13,
 									},
 								},
 							},
@@ -112,8 +135,8 @@ func Test_yarnLibraryAnalyzer_Analyze(t *testing.T) {
 								Version: "1.4.0",
 								Locations: []types.Location{
 									{
-										StartLine: 10,
-										EndLine:   15,
+										StartLine: 15,
+										EndLine:   20,
 									},
 								},
 								DependsOn: []string{
@@ -126,8 +149,8 @@ func Test_yarnLibraryAnalyzer_Analyze(t *testing.T) {
 								Version: "4.1.1",
 								Locations: []types.Location{
 									{
-										StartLine: 17,
-										EndLine:   20,
+										StartLine: 22,
+										EndLine:   25,
 									},
 								},
 							},
@@ -137,8 +160,8 @@ func Test_yarnLibraryAnalyzer_Analyze(t *testing.T) {
 								Version: "15.7.2",
 								Locations: []types.Location{
 									{
-										StartLine: 22,
-										EndLine:   29,
+										StartLine: 27,
+										EndLine:   34,
 									},
 								},
 								DependsOn: []string{
@@ -153,8 +176,8 @@ func Test_yarnLibraryAnalyzer_Analyze(t *testing.T) {
 								Version: "16.13.1",
 								Locations: []types.Location{
 									{
-										StartLine: 31,
-										EndLine:   34,
+										StartLine: 36,
+										EndLine:   39,
 									},
 								},
 							},
@@ -164,8 +187,8 @@ func Test_yarnLibraryAnalyzer_Analyze(t *testing.T) {
 								Version: "0.13.6",
 								Locations: []types.Location{
 									{
-										StartLine: 36,
-										EndLine:   42,
+										StartLine: 41,
+										EndLine:   47,
 									},
 								},
 								DependsOn: []string{

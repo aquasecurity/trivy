@@ -1,7 +1,8 @@
 package yarn
 
 type Item struct {
-	id       string
+	name     string
+	version  string
 	indirect bool
 }
 

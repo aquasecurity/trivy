@@ -2,7 +2,12 @@
 # yarn lockfile v1
 
 
-js-tokens@4.0.0, "js-tokens@^3.0.0 || ^4.0.0":
+js-tokens@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/js-tokens/-/js-tokens-2.0.0.tgz#79903f5563ee778cc1162e6dcf1a0027c97f9cb5"
+  integrity sha512-kk4RjoztHFeAlCNPdTr/uF04oN5z53L18LJfADBQ7YHkO3iR2rP2ZwOH0n33r2FRw0psRmjTDEkOWPE//zmujg==
+
+"js-tokens@^3.0.0 || ^4.0.0":
   version "4.0.0"
   resolved "https://registry.yarnpkg.com/js-tokens/-/js-tokens-4.0.0.tgz#19203fb59991df98e3a287050d4647cdeaf32499"
   integrity sha512-RdJUflcE3cUzKiMqQgsCu06FPu9UdIJO0beYbPhHN4k6apgJtifcoCtT9bcxOpYBtpD2kCM6Sbzg4CausW/PKQ==

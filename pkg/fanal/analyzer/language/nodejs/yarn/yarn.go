@@ -3,12 +3,13 @@ package yarn
 import (
 	"context"
 	"errors"
+	"github.com/aquasecurity/trivy/pkg/detector/library/compare/npm"
 	"io/fs"
 	"os"
 	"path/filepath"
 	"sort"
+	"strings"
 
-	"github.com/samber/lo"
 	"golang.org/x/exp/maps"
 	"golang.org/x/xerrors"
 
@@ -33,12 +34,14 @@ const version = 1
 type yarnAnalyzer struct {
 	packageJsonParser packagejson.Parser
 	lockParser        godeptypes.Parser
+	comparer          npm.Comparer
 }
 
 func newYarnAnalyzer(_ analyzer.AnalyzerOptions) (analyzer.PostAnalyzer, error) {
 	return &yarnAnalyzer{
 		packageJsonParser: packagejson.Parser{},
 		lockParser:        yarn.NewParser(),
+		comparer:          npm.Comparer{},
 	}, nil
 }
 
@@ -107,14 +110,25 @@ func (a yarnAnalyzer) removeDevDependencies(fsys fs.FS, path string, app *types.
 		return xerrors.Errorf("unable to parse %s: %w", path, err)
 	}
 	queue := newQueue()
-	usedLibs := lo.SliceToMap(app.Libraries, func(pkg types.Package) (string, types.Package) {
-		return pkg.ID, pkg
-	})
+	//usedLibs := lo.SliceToMap(app.Libraries, func(pkg types.Package) (string, types.Package) {
+	//	return pkg.ID, pkg
+	//})
+	usedLibs := map[string]map[string]types.Package{}
+	for _, pkg := range app.Libraries {
+		if versions, ok := usedLibs[pkg.Name]; ok {
+			// add new version to map
+			versions[pkg.Version] = pkg
+			usedLibs[pkg.Name] = versions
+			continue
+		}
+		usedLibs[pkg.Name] = map[string]types.Package{pkg.Version: pkg}
+	}
 
 	// add direct deps to the queue
 	for n, v := range rootDeps {
 		item := Item{
-			id:       godeputils.PackageID(n, v),
+			name:     n,
+			version:  v,
 			indirect: false,
 		}
 		queue.enqueue(item)
@@ -123,24 +137,40 @@ func (a yarnAnalyzer) removeDevDependencies(fsys fs.FS, path string, app *types.
 	for !queue.isEmpty() {
 		dep := queue.dequeue()
 
-		lib, ok := usedLibs[dep.id]
+		versions, ok := usedLibs[dep.name]
 		if !ok {
-			return xerrors.Errorf("unable to find dependency: %s", dep)
+			return xerrors.Errorf("unable to find versions for : %s", dep.name)
+		}
+		var pkg types.Package
+		for v, p := range versions {
+			match, err := a.comparer.MatchVersion(v, dep.version)
+			if err != nil {
+				return xerrors.Errorf("unable to match version for %s", dep.name)
+			}
+			if match {
+				// overwrite Indirect value
+				p.Indirect = dep.indirect
+				pkg = p
+				break
+			}
 		}
 
-		// overwrite Indirect value
-		lib.Indirect = dep.indirect
+		if pkg.ID == "" {
+			return xerrors.Errorf("unable to find %q", godeputils.PackageID(dep.name, dep.version))
+		}
 
 		// skip if we have already added this library
-		if _, ok := libs[lib.ID]; ok {
+		if _, ok := libs[pkg.ID]; ok {
 			continue
 		}
-		libs[lib.ID] = lib
+		libs[pkg.ID] = pkg
 
 		// add indirect deps to the queue
-		for _, d := range lib.DependsOn {
+		for _, d := range pkg.DependsOn {
+			s := strings.Split(d, "@")
 			item := Item{
-				id:       d,
+				name:     s[0],
+				version:  s[1],
 				indirect: true,
 			}
 			queue.enqueue(item)
