@@ -190,7 +190,7 @@ func (c *Client) initOCIArtifact() (*oci.Artifact, error) {
 	}
 
 	repo := fmt.Sprintf("%s:%d", c.dbRepository, db.SchemaVersion)
-	art, err := oci.NewArtifact(repo, dbMediaType, c.quiet, c.insecureSkipTLSVerify)
+	art, err := oci.NewArtifact(repo, dbMediaType, "", c.quiet, c.insecureSkipTLSVerify)
 	if err != nil {
 		var terr *transport.Error
 		if errors.As(err, &terr) {
