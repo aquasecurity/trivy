@@ -3103,8 +3103,11 @@ This means the following protocols are supported for downloading plugins:</p>
 <li>Google Cloud Storage</li>
 </ul>
 <p>For example, to download the Kubernetes Trivy plugin you can execute the following command:</p>
-<div class="highlight"><pre><span></span><code>$ trivy plugin install github.com/aquasecurity/trivy-plugin-kubectl
+<p><div class="highlight"><pre><span></span><code>$ trivy plugin install github.com/aquasecurity/trivy-plugin-kubectl
 </code></pre></div>
+Also, Trivy plugin can be installed from a local archive:
+<div class="highlight"><pre><span></span><code>$ trivy plugin install myplugin.tar.gz
+</code></pre></div></p>
 <h2 id="using-plugins">Using Plugins</h2>
 <p>Once the plugin is installed, Trivy will load all available plugins in the cache on the start of the next Trivy execution.
 A plugin will be made in the Trivy CLI based on the plugin name.
@@ -3202,6 +3205,18 @@ Here is an example YAML of trivy-plugin-kubectl plugin that adds support for Kub
 <p>After determining platform, Trivy will download the execution file from <code>uri</code> and store it in the plugin cache.
 When the plugin is called via Trivy CLI, <code>bin</code> command will be executed.</p>
 <p>The plugin is responsible for handling flags and arguments. Any arguments are passed to the plugin from the <code>trivy</code> command.</p>
+<p>A plugin should be archived <code>*.tar.gz</code>.</p>
+<div class="highlight"><pre><span></span><code>$ tar -czvf myplugin.tar.gz plugin.yaml script.py
+plugin.yaml
+script.py
+
+$ trivy plugin install myplugin.tar.gz
+<span class="m">2023</span>-03-03T19:04:42.026+0600    INFO    Installing the plugin from myplugin.tar.gz...
+<span class="m">2023</span>-03-03T19:04:42.026+0600    INFO    Loading the plugin metadata...
+
+$ trivy myplugin
+Hello from Trivy demo plugin!
+</code></pre></div>
 <h2 id="example">Example</h2>
 <p>https://github.com/aquasecurity/trivy-plugin-kubectl</p>
 
