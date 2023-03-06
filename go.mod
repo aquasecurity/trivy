@@ -26,7 +26,7 @@ require (
 	github.com/aquasecurity/tml v0.6.1
 	github.com/aquasecurity/trivy-db v0.0.0-20230116084806-4bcdf1c414d0
 	github.com/aquasecurity/trivy-java-db v0.0.0-20230209231723-7cddb1406728
-	github.com/aquasecurity/trivy-kubernetes v0.4.0
+	github.com/aquasecurity/trivy-kubernetes v0.4.1-0.20230306083551-8d68da1df82b
 	github.com/aws/aws-sdk-go v1.44.212
 	github.com/aws/aws-sdk-go-v2 v1.17.5
 	github.com/aws/aws-sdk-go-v2/config v1.18.15
@@ -83,7 +83,7 @@ require (
 	github.com/spf13/cobra v1.6.1
 	github.com/spf13/pflag v1.0.5
 	github.com/spf13/viper v1.15.0
-	github.com/stretchr/testify v1.8.1
+	github.com/stretchr/testify v1.8.2
 	github.com/testcontainers/testcontainers-go v0.17.0
 	github.com/tetratelabs/wazero v1.0.0-pre.9
 	github.com/twitchtv/twirp v8.1.2+incompatible
