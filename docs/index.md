@@ -37,7 +37,7 @@ Scanners (what Trivy can find there):
 
 To learn more, go to the [Trivy homepage][homepage] for feature highlights, or to the [Documentation site][Docs] for detailed information.
 
-## Quick Start
+## What's next?
 
 ### Get Trivy
 
