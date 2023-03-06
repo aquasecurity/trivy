@@ -222,6 +222,8 @@ In order to scan private GitHub or GitLab repositories, the environment variable
 
 The `GITHUB_TOKEN` environment variable will take precedence over `GITLAB_TOKEN`, so if a private GitLab repository will be scanned, then `GITHUB_TOKEN` must be unset.
 
+You can find how to generate your GitHub Token in the following [GitHub documentation.](https://docs.github.com/en/enterprise-server@3.4/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token)
+
 For example:
 
 ```
@@ -232,3 +234,70 @@ $ # or
 $ export GITLAB_TOKEN="your_private_gitlab_token"
 $ trivy repo <your private GitLab repo URL>
 ```
+
+Note that if the Trivy scan could not identify any vulnerabilities, you can try Trivy misconfiguration scanning instead with the following flag:
+```
+trivy repo --security-checks config <your private GitHub repo URL>
+```
+
+## Client/Server mode
+You must launch Trivy server in advance.
+
+```sh
+$ trivy server
+```
+
+Then, Trivy works as a client if you specify the `--server` option.
+
+```sh
+$ trivy repo https://github.com/knqyf263/trivy-ci-test --server http://localhost:4954
+```
+
+<details>
+<summary>Result</summary>
+
+```
+Cargo.lock (cargo)
+==================
+Total: 2 (UNKNOWN: 0, LOW: 0, MEDIUM: 0, HIGH: 1, CRITICAL: 1)
+
+┌───────────┬─────────────────────┬──────────┬───────────────────┬───────────────┬─────────────────────────────────────────────────────────────┐
+│  Library  │    Vulnerability    │ Severity │ Installed Version │ Fixed Version │                            Title                            │
+├───────────┼─────────────────────┼──────────┼───────────────────┼───────────────┼─────────────────────────────────────────────────────────────┤
+│ openssl   │ CVE-2018-20997      │ CRITICAL │ 0.8.3             │ 0.10.9        │ Use after free in openssl                                   │
+│           │                     │          │                   │               │ https://avd.aquasec.com/nvd/cve-2018-20997                  │
+│           ├─────────────────────┼──────────┤                   ├───────────────┼─────────────────────────────────────────────────────────────┤
+│           │ CVE-2016-10931      │ HIGH     │                   │ 0.9.0         │ Improper Certificate Validation in openssl                  │
+│           │                     │          │                   │               │ https://avd.aquasec.com/nvd/cve-2016-10931                  │
+└───────────┴─────────────────────┴──────────┴───────────────────┴───────────────┴─────────────────────────────────────────────────────────────┘
+
+Pipfile.lock (pipenv)
+=====================
+Total: 5 (UNKNOWN: 0, LOW: 0, MEDIUM: 0, HIGH: 3, CRITICAL: 2)
+
+┌─────────────────────┬────────────────┬──────────┬───────────────────┬────────────────────────┬──────────────────────────────────────────────────────────────┐
+│       Library       │ Vulnerability  │ Severity │ Installed Version │     Fixed Version      │                            Title                             │
+├─────────────────────┼────────────────┼──────────┼───────────────────┼────────────────────────┼──────────────────────────────────────────────────────────────┤
+│ py                  │ CVE-2020-29651 │ HIGH     │ 1.8.0             │ 1.10.0                 │ python-py: ReDoS in the py.path.svnwc component via          │
+│                     │                │          │                   │                        │ mailicious input to blame functionality...                   │
+│                     │                │          │                   │                        │ https://avd.aquasec.com/nvd/cve-2020-29651                   │
+│                     ├────────────────┤          │                   ├────────────────────────┼──────────────────────────────────────────────────────────────┤
+│                     │ CVE-2022-42969 │          │                   │                        │ The py library through 1.11.0 for Python allows remote       │
+│                     │                │          │                   │                        │ attackers to co...                                           │
+│                     │                │          │                   │                        │ https://avd.aquasec.com/nvd/cve-2022-42969                   │
+├─────────────────────┼────────────────┤          ├───────────────────┼────────────────────────┼──────────────────────────────────────────────────────────────┤
+│ pyjwt               │ CVE-2022-29217 │          │ 1.7.1             │ 2.4.0                  │ python-jwt: Key confusion through non-blocklisted public key │
+│                     │                │          │                   │                        │ formats                                                      │
+│                     │                │          │                   │                        │ https://avd.aquasec.com/nvd/cve-2022-29217                   │
+├─────────────────────┼────────────────┼──────────┼───────────────────┼────────────────────────┼──────────────────────────────────────────────────────────────┤
+│ pyyaml              │ CVE-2019-20477 │ CRITICAL │ 5.1               │ 5.2b1                  │ PyYAML: command execution through python/object/apply        │
+│                     │                │          │                   │                        │ constructor in FullLoader                                    │
+│                     │                │          │                   │                        │ https://avd.aquasec.com/nvd/cve-2019-20477                   │
+│                     ├────────────────┤          │                   ├────────────────────────┼──────────────────────────────────────────────────────────────┤
+│                     │ CVE-2020-1747  │          │                   │ 5.3.1                  │ PyYAML: arbitrary command execution through                  │
+│                     │                │          │                   │                        │ python/object/new when FullLoader is used                    │
+│                     │                │          │                   │                        │ https://avd.aquasec.com/nvd/cve-2020-1747                    │
+└─────────────────────┴────────────────┴──────────┴───────────────────┴────────────────────────┴──────────────────────────────────────────────────────────────┘
+
+```
+</details>
