@@ -124,9 +124,9 @@ func (sw SarifWriter) Write(report types.Report) error {
 	if err != nil {
 		return xerrors.Errorf("error creating a new sarif template: %w", err)
 	}
-	sw.run = sarif.NewRunWithInformationURI("Deepfactor", sw.ScannerImage)
+	sw.run = sarif.NewRunWithInformationURI("Dfctl", sw.ScannerImage)
 	sw.run.Tool.Driver.WithVersion(sw.Version)
-	sw.run.Tool.Driver.WithFullName("Dfctl")
+	sw.run.Tool.Driver.WithFullName("Dfctl Scanner")
 	sw.locationCache = map[string][]location{}
 
 	ruleIndexes := map[string]int{}
