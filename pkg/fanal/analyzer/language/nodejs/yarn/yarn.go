@@ -3,7 +3,7 @@ package yarn
 import (
 	"context"
 	"errors"
-	"github.com/aquasecurity/trivy/pkg/detector/library/compare/npm"
+
 	"io/fs"
 	"os"
 	"path/filepath"
@@ -18,6 +18,7 @@ import (
 	"github.com/aquasecurity/go-dep-parser/pkg/nodejs/yarn"
 	godeptypes "github.com/aquasecurity/go-dep-parser/pkg/types"
 	godeputils "github.com/aquasecurity/go-dep-parser/pkg/utils"
+	"github.com/aquasecurity/trivy/pkg/detector/library/compare/npm"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer/language"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
@@ -110,9 +111,9 @@ func (a yarnAnalyzer) removeDevDependencies(fsys fs.FS, path string, app *types.
 		return xerrors.Errorf("unable to parse %s: %w", path, err)
 	}
 	queue := newQueue()
-	//usedLibs := lo.SliceToMap(app.Libraries, func(pkg types.Package) (string, types.Package) {
-	//	return pkg.ID, pkg
-	//})
+
+	// yarn.lock file can contain same libraries with different versions
+	// save versions separately for version comparison by comparator
 	usedLibs := map[string]map[string]types.Package{}
 	for _, pkg := range app.Libraries {
 		if versions, ok := usedLibs[pkg.Name]; ok {
@@ -143,6 +144,7 @@ func (a yarnAnalyzer) removeDevDependencies(fsys fs.FS, path string, app *types.
 		}
 		var pkg types.Package
 		for v, p := range versions {
+			// npm has own comparer to compare versions
 			match, err := a.comparer.MatchVersion(v, dep.version)
 			if err != nil {
 				return xerrors.Errorf("unable to match version for %s", dep.name)
