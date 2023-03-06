@@ -454,9 +454,12 @@ func (ag AnalyzerGroup) AnalyzeFile(ctx context.Context, wg *sync.WaitGroup, lim
 }
 
 func (ag AnalyzerGroup) RequiredPostAnalyzers(filePath string, info os.FileInfo) []Type {
+	if info.IsDir() {
+		return nil
+	}
 	var postAnalyzerTypes []Type
 	for _, a := range ag.postAnalyzers {
-		if !info.IsDir() && a.Required(filePath, info) {
+		if a.Required(filePath, info) {
 			postAnalyzerTypes = append(postAnalyzerTypes, a.Type())
 		}
 	}
