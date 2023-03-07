@@ -52,6 +52,7 @@ Cache Flags
       --cache-backend string   cache backend (e.g. redis://localhost:6379) (default "fs")
       --cache-ttl duration     cache TTL when using redis as cache backend
       --clear-cache            clear image caches without scanning
+      --redis-tls              enable redis TLS with public certificates, if using redis as cache backend
       --redis-ca string        redis ca file location, if using redis as cache backend
       --redis-cert string      redis certificate file location, if using redis as cache backend
       --redis-key string       redis key file location, if using redis as cache backend

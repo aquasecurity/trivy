@@ -114,6 +114,7 @@ trivy:
       enabled: false
       url: ""  # e.g. redis://redis.redis.svc:6379
       ttl: ""  # e.g 3600s, 24h
+      tls: false
   serviceAccount:
     annotations: {}
       # eks.amazonaws.com/role-arn: arn:aws:iam::ACCOUNT_ID:role/IAM_ROLE_NAME

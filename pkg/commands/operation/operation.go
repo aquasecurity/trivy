@@ -53,6 +53,10 @@ func NewCache(c flag.CacheOptions) (Cache, error) {
 				Certificates: []tls.Certificate{cert},
 				MinVersion:   tls.VersionTLS12,
 			}
+		} else if c.RedisTLS {
+			options.TLSConfig = &tls.Config{
+				MinVersion: tls.VersionTLS12,
+			}
 		}
 
 		redisCache := cache.NewRedisCache(options, c.CacheTTL)
