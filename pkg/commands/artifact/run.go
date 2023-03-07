@@ -494,6 +494,12 @@ func disabledAnalyzers(opts flag.Options) []analyzer.Type {
 		analyzers = append(analyzers, analyzer.TypeLicenseFile)
 	}
 
+	// Some language files contain license information
+	// We don't need to parse other languages if we don't analyze vulnerabilities
+	if opts.Scanners.Enabled(types.LicenseScanner) && !opts.Scanners.Enabled(types.VulnerabilityScanner) {
+		analyzers = append(analyzers, analyzer.TypeLanguagesWithoutLicenses...)
+	}
+
 	// Do not perform misconfiguration scanning on container image config
 	// when it is not specified.
 	if !opts.ImageConfigScanners.Enabled(types.MisconfigScanner) {
