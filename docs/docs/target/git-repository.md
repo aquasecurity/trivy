@@ -222,7 +222,7 @@ In order to scan private GitHub or GitLab repositories, the environment variable
 
 The `GITHUB_TOKEN` environment variable will take precedence over `GITLAB_TOKEN`, so if a private GitLab repository will be scanned, then `GITHUB_TOKEN` must be unset.
 
-You can find how to generate your GitHub Token in the following [GitHub documentation.](https://docs.github.com/en/enterprise-server@3.4/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token)
+You can find how to generate your GitHub Token in the following [GitHub documentation.](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token)
 
 For example:
 
@@ -233,11 +233,6 @@ $
 $ # or
 $ export GITLAB_TOKEN="your_private_gitlab_token"
 $ trivy repo <your private GitLab repo URL>
-```
-
-Note that if the Trivy scan could not identify any vulnerabilities, you can try Trivy misconfiguration scanning instead with the following flag:
-```
-trivy repo --security-checks config <your private GitHub repo URL>
 ```
 
 ## Client/Server mode
