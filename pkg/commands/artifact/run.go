@@ -494,11 +494,13 @@ func disabledAnalyzers(opts flag.Options) []analyzer.Type {
 		analyzers = append(analyzers, analyzer.TypeLicenseFile)
 	}
 
-	// Some language files contain license information
-	// We don't need to parse other languages if we don't analyze vulnerabilities or use sbom format
+	// Parsing jar files requires Java-db client
+	// But we don't create client if vulnerability analysis is disabled and sbom format is not used
+	// We need to disable jar analyzer to avoid errors
+	// TODO disable all languages that don't contains license information for this case
 	if opts.Scanners.Enabled(types.LicenseScanner) && !opts.Scanners.Enabled(types.VulnerabilityScanner) &&
 		!slices.Contains(report.SupportedSBOMFormats, opts.Format) {
-		analyzers = append(analyzers, analyzer.TypeLanguagesWithoutLicenses...)
+		analyzers = append(analyzers, analyzer.TypeJar)
 	}
 
 	// Do not perform misconfiguration scanning on container image config

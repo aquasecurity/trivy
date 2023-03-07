@@ -218,28 +218,4 @@ var (
 		TypeCloudFormation,
 		TypeHelm,
 	}
-
-	// TypeLanguagesWithoutLicenses has all language analyzers which don't have licenses
-	TypeLanguagesWithoutLicenses = []Type{
-		TypeBundler,
-		TypeCargo,
-		TypeComposer,
-		TypeJar,
-		TypePom,
-		TypeGradleLock,
-		TypeNpmPkgLock,
-		TypeYarn,
-		TypePnpm,
-		TypeNuget,
-		TypeDotNetCore,
-		TypePip,
-		TypePipenv,
-		TypePoetry,
-		TypeGoBinary,
-		TypeRustBinary,
-		TypeConanLock,
-		TypeCocoaPods,
-		TypePubSpecLock,
-		TypeMixLock,
-	}
 )
