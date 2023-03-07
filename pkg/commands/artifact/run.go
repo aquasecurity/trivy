@@ -495,9 +495,9 @@ func disabledAnalyzers(opts flag.Options) []analyzer.Type {
 	}
 
 	// Parsing jar files requires Java-db client
-	// But we don't create client if vulnerability analysis is disabled and sbom format is not used
+	// But we don't create client if vulnerability analysis is disabled and SBOM format is not used
 	// We need to disable jar analyzer to avoid errors
-	// TODO disable all languages that don't contains license information for this case
+	// TODO disable all languages that don't contain license information for this case
 	if opts.Scanners.Enabled(types.LicenseScanner) && !opts.Scanners.Enabled(types.VulnerabilityScanner) &&
 		!slices.Contains(report.SupportedSBOMFormats, opts.Format) {
 		analyzers = append(analyzers, analyzer.TypeJar)
