@@ -495,8 +495,9 @@ func disabledAnalyzers(opts flag.Options) []analyzer.Type {
 	}
 
 	// Some language files contain license information
-	// We don't need to parse other languages if we don't analyze vulnerabilities
-	if opts.Scanners.Enabled(types.LicenseScanner) && !opts.Scanners.Enabled(types.VulnerabilityScanner) {
+	// We don't need to parse other languages if we don't analyze vulnerabilities or use sbom format
+	if opts.Scanners.Enabled(types.LicenseScanner) && !opts.Scanners.Enabled(types.VulnerabilityScanner) &&
+		!slices.Contains(report.SupportedSBOMFormats, opts.Format) {
 		analyzers = append(analyzers, analyzer.TypeLanguagesWithoutLicenses...)
 	}
 
