@@ -22,7 +22,7 @@ const (
 	SPDXVersion         = "SPDX-2.2"
 	DataLicense         = "CC0-1.0"
 	SPDXIdentifier      = "DOCUMENT"
-	DocumentNamespace   = "http://aquasecurity.github.io/trivy"
+	DocumentNamespace   = "https://deepfactor.io"
 	CreatorOrganization = "Deepfactor"
 	CreatorTool         = "dfctl"
 )
