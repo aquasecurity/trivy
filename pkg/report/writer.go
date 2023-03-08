@@ -57,9 +57,9 @@ var (
 )
 
 type Option struct {
-	AppVersion     string
-	DfctlVersion   string
-	DfScannerImage string
+	AppVersion   string
+	DfctlVersion string
+	DfctlImage   string
 
 	Format         string
 	Report         string
@@ -102,9 +102,9 @@ func Write(report types.Report, option Option) error {
 		writer = &JSONWriter{Output: option.Output}
 	case FormatGitHub:
 		writer = &github.Writer{
-			Output:         option.Output,
-			Version:        option.AppVersion,
-			DfScannerImage: option.DfScannerImage,
+			Output:     option.Output,
+			Version:    option.AppVersion,
+			DfctlImage: option.DfctlImage,
 		}
 	case FormatCycloneDX:
 		// TODO: support xml format option with cyclonedx writer
@@ -129,7 +129,7 @@ func Write(report types.Report, option Option) error {
 		writer = SarifWriter{
 			Output:       option.Output,
 			Version:      option.AppVersion,
-			ScannerImage: option.DfScannerImage,
+			ScannerImage: option.DfctlImage,
 		}
 	case FormatCosignVuln:
 		writer = predicate.NewVulnWriter(option.Output, option.AppVersion)

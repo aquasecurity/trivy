@@ -67,9 +67,9 @@ type DependencySnapshot struct {
 
 // Writer generates JSON for GitHub Dependency Snapshots
 type Writer struct {
-	Output         io.Writer
-	Version        string
-	DfScannerImage string
+	Output     io.Writer
+	Version    string
+	DfctlImage string
 }
 
 func (w Writer) Write(report types.Report) error {
@@ -80,7 +80,7 @@ func (w Writer) Write(report types.Report) error {
 	snapshot.Detector = Detector{
 		Name:    "dfctl",
 		Version: w.Version,
-		Url:     w.DfScannerImage,
+		Url:     w.DfctlImage,
 	}
 	snapshot.Version = 0 // The version of the repository snapshot submission.
 
