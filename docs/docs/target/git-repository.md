@@ -222,6 +222,8 @@ In order to scan private GitHub or GitLab repositories, the environment variable
 
 The `GITHUB_TOKEN` environment variable will take precedence over `GITLAB_TOKEN`, so if a private GitLab repository will be scanned, then `GITHUB_TOKEN` must be unset.
 
+You can find how to generate your GitHub Token in the following [GitHub documentation.](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token)
+
 For example:
 
 ```
