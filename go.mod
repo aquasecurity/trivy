@@ -26,7 +26,7 @@ require (
 	github.com/aquasecurity/tml v0.6.1
 	github.com/aquasecurity/trivy-db v0.0.0-20230116084806-4bcdf1c414d0
 	github.com/aquasecurity/trivy-java-db v0.0.0-20230209231723-7cddb1406728
-	github.com/aquasecurity/trivy-kubernetes v0.4.1-0.20230306083551-8d68da1df82b
+	github.com/aquasecurity/trivy-kubernetes v0.4.1-0.20230309065652-09a3572535fe
 	github.com/aws/aws-sdk-go v1.44.212
 	github.com/aws/aws-sdk-go-v2 v1.17.5
 	github.com/aws/aws-sdk-go-v2/config v1.18.15
