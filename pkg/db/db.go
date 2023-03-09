@@ -2,17 +2,18 @@ package db
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"time"
 
-	"github.com/aquasecurity/trivy/pkg/oci"
-
+	"github.com/google/go-containerregistry/pkg/v1/remote/transport"
 	"golang.org/x/xerrors"
 	"k8s.io/utils/clock"
 
 	"github.com/aquasecurity/trivy-db/pkg/db"
 	"github.com/aquasecurity/trivy-db/pkg/metadata"
 	"github.com/aquasecurity/trivy/pkg/log"
+	"github.com/aquasecurity/trivy/pkg/oci"
 )
 
 const (
@@ -191,6 +192,16 @@ func (c *Client) initOCIArtifact() (*oci.Artifact, error) {
 	repo := fmt.Sprintf("%s:%d", c.dbRepository, db.SchemaVersion)
 	art, err := oci.NewArtifact(repo, dbMediaType, c.quiet, c.insecureSkipTLSVerify)
 	if err != nil {
+		var terr *transport.Error
+		if errors.As(err, &terr) {
+			for _, diagnostic := range terr.Errors {
+				// For better user experience
+				if diagnostic.Code == transport.DeniedErrorCode || diagnostic.Code == transport.UnauthorizedErrorCode {
+					log.Logger.Warn("See https://aquasecurity.github.io/trivy/latest/docs/references/troubleshooting/#db")
+					break
+				}
+			}
+		}
 		return nil, xerrors.Errorf("OCI artifact error: %w", err)
 	}
 	return art, nil

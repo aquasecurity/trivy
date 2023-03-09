@@ -8,11 +8,11 @@ import (
 	"testing"
 	"time"
 
+	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
+	"github.com/aquasecurity/trivy/pkg/compliance/spec"
+	"github.com/aquasecurity/trivy/pkg/flag"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-
-	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
-	"github.com/aquasecurity/trivy/pkg/flag"
 )
 
 func Test_Run(t *testing.T) {
@@ -28,14 +28,17 @@ func Test_Run(t *testing.T) {
 		regoPolicy   string
 	}{
 		{
-			name:      "fail without region",
-			options:   flag.Options{},
+			name: "fail without region",
+			options: flag.Options{
+				RegoOptions: flag.RegoOptions{SkipPolicyUpdate: true},
+			},
 			want:      "",
 			expectErr: true,
 		},
 		{
 			name: "fail without creds",
 			options: flag.Options{
+				RegoOptions: flag.RegoOptions{SkipPolicyUpdate: true},
 				AWSOptions: flag.AWSOptions{
 					Region: "us-east-1",
 				},
@@ -46,6 +49,7 @@ func Test_Run(t *testing.T) {
 		{
 			name: "try to call aws if cache is expired",
 			options: flag.Options{
+				RegoOptions: flag.RegoOptions{SkipPolicyUpdate: true},
 				AWSOptions: flag.AWSOptions{
 					Region:   "us-east-1",
 					Services: []string{"s3"},
@@ -61,6 +65,7 @@ func Test_Run(t *testing.T) {
 		{
 			name: "succeed with cached infra",
 			options: flag.Options{
+				RegoOptions: flag.RegoOptions{SkipPolicyUpdate: true},
 				AWSOptions: flag.AWSOptions{
 					Region:   "us-east-1",
 					Services: []string{"s3"},
@@ -642,7 +647,30 @@ deny[res] {
 				CloudOptions: flag.CloudOptions{
 					MaxCacheAge: time.Hour * 24 * 365 * 100,
 				},
-				ReportOptions: flag.ReportOptions{Compliance: "@./testdata/example-spec.yaml", Format: "table", ReportFormat: "summary"},
+				ReportOptions: flag.ReportOptions{
+					Compliance: spec.ComplianceSpec{
+						Spec: spec.Spec{
+							// TODO: refactor defsec so that the parsed spec can be passed
+							ID:          "@testdata/example-spec.yaml",
+							Title:       "my-custom-spec",
+							Description: "My fancy spec",
+							Version:     "1.2",
+							Controls: []spec.Control{
+								{
+									ID:          "1.1",
+									Name:        "Unencrypted S3 bucket",
+									Description: "S3 Buckets should be encrypted to protect the data that is stored within them if access is compromised.",
+									Checks: []spec.SpecCheck{
+										{ID: "AVD-AWS-0088"},
+									},
+									Severity: "HIGH",
+								},
+							},
+						},
+					},
+					Format:       "table",
+					ReportFormat: "summary",
+				},
 			},
 			cacheContent: exampleS3Cache,
 			want: `
@@ -650,27 +678,9 @@ Summary Report for compliance: my-custom-spec
 ┌─────┬──────────┬───────────────────────┬────────┬────────┐
 │ ID  │ Severity │     Control Name      │ Status │ Issues │
 ├─────┼──────────┼───────────────────────┼────────┼────────┤
-│ 1.1 │ HIGH     │ Unencrypted S3 bucket │  FAIL  │   1    │
+│ 1.1 │   HIGH   │ Unencrypted S3 bucket │  FAIL  │   1    │
 └─────┴──────────┴───────────────────────┴────────┴────────┘
-
-
 `,
-		},
-		{
-			name:      "error loading compliance report",
-			expectErr: true,
-			options: flag.Options{
-				AWSOptions: flag.AWSOptions{
-					Region:   "us-east-1",
-					Services: []string{"s3"},
-					Account:  "12345678",
-				},
-				CloudOptions: flag.CloudOptions{
-					MaxCacheAge: time.Hour * 24 * 365 * 100,
-				},
-				ReportOptions: flag.ReportOptions{Compliance: "@./testdata/nosuchspec.yaml", Format: "table", ReportFormat: "summary"},
-			},
-			cacheContent: exampleS3Cache,
 		},
 	}
 	for _, test := range tests {

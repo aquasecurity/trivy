@@ -191,14 +191,14 @@ func externalRef(bomLink string, bomRef string) (string, error) {
 }
 
 func (e *Marshaler) marshalComponents(r types.Report, bomRef string) (*[]cdx.Component, *[]cdx.Dependency, *[]cdx.Vulnerability, error) {
-	var components []cdx.Component
+	components := make([]cdx.Component, 0) // To export an empty array in JSON
 	var dependencies []cdx.Dependency
-	var metadataDependencies []cdx.Dependency
+	metadataDependencies := make([]string, 0) // To export an empty array in JSON
 	libraryUniqMap := map[string]struct{}{}
 	vulnMap := map[string]cdx.Vulnerability{}
 	for _, result := range r.Results {
 		bomRefMap := map[string]string{}
-		var componentDependencies []cdx.Dependency
+		var componentDependencies []string
 		for _, pkg := range result.Packages {
 			pkgComponent, err := pkgToCdxComponent(result.Type, r.Metadata, pkg)
 			if err != nil {
@@ -207,7 +207,7 @@ func (e *Marshaler) marshalComponents(r types.Report, bomRef string) (*[]cdx.Com
 			pkgID := packageID(result.Target, pkg.Name, utils.FormatVersion(pkg), pkg.FilePath)
 			if _, ok := bomRefMap[pkgID]; !ok {
 				bomRefMap[pkgID] = pkgComponent.BOMRef
-				componentDependencies = append(componentDependencies, cdx.Dependency{Ref: pkgComponent.BOMRef})
+				componentDependencies = append(componentDependencies, pkgComponent.BOMRef)
 			}
 
 			// When multiple lock files have the same dependency with the same name and version,
@@ -249,7 +249,7 @@ func (e *Marshaler) marshalComponents(r types.Report, bomRef string) (*[]cdx.Com
 		}
 
 		if result.Type == ftypes.NodePkg || result.Type == ftypes.PythonPkg ||
-			result.Type == ftypes.GemSpec || result.Type == ftypes.Jar {
+			result.Type == ftypes.GemSpec || result.Type == ftypes.Jar || result.Type == ftypes.CondaPkg {
 			// If a package is language-specific package that isn't associated with a lock file,
 			// it will be a dependency of a component under "metadata".
 			// e.g.
@@ -284,11 +284,14 @@ func (e *Marshaler) marshalComponents(r types.Report, bomRef string) (*[]cdx.Com
 
 			// Dependency graph from #2 to #3
 			dependencies = append(dependencies,
-				cdx.Dependency{Ref: resultComponent.BOMRef, Dependencies: &componentDependencies},
+				cdx.Dependency{
+					Ref:          resultComponent.BOMRef,
+					Dependencies: &componentDependencies,
+				},
 			)
 
 			// Dependency graph from #1 to #2
-			metadataDependencies = append(metadataDependencies, cdx.Dependency{Ref: resultComponent.BOMRef})
+			metadataDependencies = append(metadataDependencies, resultComponent.BOMRef)
 		}
 	}
 	vulns := maps.Values(vulnMap)
@@ -297,7 +300,10 @@ func (e *Marshaler) marshalComponents(r types.Report, bomRef string) (*[]cdx.Com
 	})
 
 	dependencies = append(dependencies,
-		cdx.Dependency{Ref: bomRef, Dependencies: &metadataDependencies},
+		cdx.Dependency{
+			Ref:          bomRef,
+			Dependencies: &metadataDependencies,
+		},
 	)
 	return &components, &dependencies, &vulns, nil
 }
@@ -314,6 +320,9 @@ func toCdxVulnerability(bomRef string, vuln types.DetectedVulnerability) cdx.Vul
 		CWEs:        cwes(vuln.CweIDs),
 		Description: vuln.Description,
 		Advisories:  cdxAdvisories(vuln.References),
+	}
+	if vuln.FixedVersion != "" {
+		v.Recommendation = fmt.Sprintf("Upgrade %s to version %s", vuln.PkgName, vuln.FixedVersion)
 	}
 	if vuln.PublishedDate != nil {
 		v.Published = vuln.PublishedDate.Format(timeLayout)
@@ -438,16 +447,46 @@ func cdxProperties(pkgType string, pkg ftypes.Package) *[]cdx.Property {
 		name  string
 		value string
 	}{
-		{PropertyPkgID, pkg.ID},
-		{PropertyPkgType, pkgType},
-		{PropertyFilePath, pkg.FilePath},
-		{PropertySrcName, pkg.SrcName},
-		{PropertySrcVersion, pkg.SrcVersion},
-		{PropertySrcRelease, pkg.SrcRelease},
-		{PropertySrcEpoch, strconv.Itoa(pkg.SrcEpoch)},
-		{PropertyModularitylabel, pkg.Modularitylabel},
-		{PropertyLayerDigest, pkg.Layer.Digest},
-		{PropertyLayerDiffID, pkg.Layer.DiffID},
+		{
+			PropertyPkgID,
+			pkg.ID,
+		},
+		{
+			PropertyPkgType,
+			pkgType,
+		},
+		{
+			PropertyFilePath,
+			pkg.FilePath,
+		},
+		{
+			PropertySrcName,
+			pkg.SrcName,
+		},
+		{
+			PropertySrcVersion,
+			pkg.SrcVersion,
+		},
+		{
+			PropertySrcRelease,
+			pkg.SrcRelease,
+		},
+		{
+			PropertySrcEpoch,
+			strconv.Itoa(pkg.SrcEpoch),
+		},
+		{
+			PropertyModularitylabel,
+			pkg.Modularitylabel,
+		},
+		{
+			PropertyLayerDigest,
+			pkg.Layer.Digest,
+		},
+		{
+			PropertyLayerDiffID,
+			pkg.Layer.DiffID,
+		},
 	}
 
 	var properties []cdx.Property
@@ -504,7 +543,7 @@ func cwes(cweIDs []string) *[]int {
 }
 
 func cdxRatings(vulnerability types.DetectedVulnerability) *[]cdx.VulnerabilityRating {
-	var rates []cdx.VulnerabilityRating
+	rates := make([]cdx.VulnerabilityRating, 0) // To export an empty array in JSON
 	for sourceID, severity := range vulnerability.VendorSeverity {
 		// When the vendor also provides CVSS score/vector
 		if cvss, ok := vulnerability.CVSS[sourceID]; ok {

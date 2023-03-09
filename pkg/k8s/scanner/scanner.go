@@ -5,7 +5,6 @@ import (
 	"io"
 
 	"github.com/cheggaaa/pb/v3"
-	"golang.org/x/exp/slices"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy-kubernetes/pkg/artifacts"
@@ -24,7 +23,11 @@ type Scanner struct {
 }
 
 func NewScanner(cluster string, runner cmd.Runner, opts flag.Options) *Scanner {
-	return &Scanner{cluster, runner, opts}
+	return &Scanner{
+		cluster,
+		runner,
+		opts,
+	}
 }
 
 func (s *Scanner) Scan(ctx context.Context, artifacts []*artifacts.Artifact) (report.Report, error) {
@@ -59,7 +62,7 @@ func (s *Scanner) Scan(ctx context.Context, artifacts []*artifacts.Artifact) (re
 	for _, artifact := range artifacts {
 		bar.Increment()
 
-		if shouldScanVulnsOrSecrets(s.opts.SecurityChecks) {
+		if s.opts.Scanners.AnyEnabled(types.VulnerabilityScanner, types.SecretScanner) {
 			resources, err := s.scanVulns(ctx, artifact)
 			if err != nil {
 				return report.Report{}, xerrors.Errorf("scanning vulnerabilities error: %w", err)
@@ -67,7 +70,7 @@ func (s *Scanner) Scan(ctx context.Context, artifacts []*artifacts.Artifact) (re
 			vulns = append(vulns, resources...)
 		}
 
-		if local.ShouldScanMisconfigOrRbac(s.opts.SecurityChecks) {
+		if local.ShouldScanMisconfigOrRbac(s.opts.Scanners) {
 			resource, err := s.scanMisconfigs(ctx, artifact)
 			if err != nil {
 				return report.Report{}, xerrors.Errorf("scanning misconfigurations error: %w", err)
@@ -135,9 +138,4 @@ func (s *Scanner) filter(ctx context.Context, r types.Report, artifact *artifact
 		return report.Resource{}, xerrors.Errorf("filter error: %w", err)
 	}
 	return report.CreateResource(artifact, r, nil), nil
-}
-
-func shouldScanVulnsOrSecrets(securityChecks []string) bool {
-	return slices.Contains(securityChecks, types.SecurityCheckVulnerability) ||
-		slices.Contains(securityChecks, types.SecurityCheckSecret)
 }

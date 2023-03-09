@@ -31,6 +31,7 @@ import (
 var (
 	pkgTargets = map[string]string{
 		ftypes.PythonPkg: "Python",
+		ftypes.CondaPkg:  "Conda",
 		ftypes.GemSpec:   "Ruby",
 		ftypes.NodePkg:   "Node.js",
 		ftypes.Jar:       "Java",
@@ -40,7 +41,6 @@ var (
 // SuperSet binds dependencies for Local scan
 var SuperSet = wire.NewSet(
 	vulnerability.SuperSet,
-	wire.Value([]applier.Option(nil)), // functional options
 	applier.NewApplier,
 	wire.Bind(new(Applier), new(applier.Applier)),
 	wire.Struct(new(ospkgDetector.Detector)),
@@ -75,7 +75,7 @@ func NewScanner(applier Applier, ospkgDetector OspkgDetector, vulnClient vulnera
 }
 
 // Scan scans the artifact and return results.
-func (s Scanner) Scan(ctx context.Context, target, artifactKey string, blobKeys []string, options types.ScanOptions) (types.Results, *ftypes.OS, error) {
+func (s Scanner) Scan(ctx context.Context, target, artifactKey string, blobKeys []string, options types.ScanOptions) (types.Results, ftypes.OS, error) {
 	artifactDetail, err := s.applier.ApplyLayers(artifactKey, blobKeys)
 	switch {
 	case errors.Is(err, analyzer.ErrUnknownOS):
@@ -83,14 +83,14 @@ func (s Scanner) Scan(ctx context.Context, target, artifactKey string, blobKeys 
 
 		// Packages may contain OS-independent binary information even though OS is not detected.
 		if len(artifactDetail.Packages) != 0 {
-			artifactDetail.OS = &ftypes.OS{Family: "none"}
+			artifactDetail.OS = ftypes.OS{Family: "none"}
 		}
 
 		// If OS is not detected and repositories are detected, we'll try to use repositories as OS.
 		if artifactDetail.Repository != nil {
 			log.Logger.Debugf("Package repository: %s %s", artifactDetail.Repository.Family, artifactDetail.Repository.Release)
 			log.Logger.Debugf("Assuming OS is %s %s.", artifactDetail.Repository.Family, artifactDetail.Repository.Release)
-			artifactDetail.OS = &ftypes.OS{
+			artifactDetail.OS = ftypes.OS{
 				Family: artifactDetail.Repository.Family,
 				Name:   artifactDetail.Repository.Release,
 			}
@@ -99,7 +99,7 @@ func (s Scanner) Scan(ctx context.Context, target, artifactKey string, blobKeys 
 		log.Logger.Warn("No OS package is detected. Make sure you haven't deleted any files that contain information about the installed packages.")
 		log.Logger.Warn(`e.g. files under "/lib/apk/db/", "/var/lib/dpkg/" and "/var/lib/rpm"`)
 	case err != nil:
-		return nil, nil, xerrors.Errorf("failed to apply layers: %w", err)
+		return nil, ftypes.OS{}, xerrors.Errorf("failed to apply layers: %w", err)
 	}
 
 	var eosl bool
@@ -114,15 +114,14 @@ func (s Scanner) Scan(ctx context.Context, target, artifactKey string, blobKeys 
 	}
 
 	// Scan packages for vulnerabilities
-	if slices.Contains(options.SecurityChecks, types.SecurityCheckVulnerability) {
+	if options.Scanners.Enabled(types.VulnerabilityScanner) {
 		var vulnResults types.Results
 		vulnResults, eosl, err = s.scanVulnerabilities(target, artifactDetail, options)
 		if err != nil {
-			return nil, nil, xerrors.Errorf("failed to detect vulnerabilities: %w", err)
+			return nil, ftypes.OS{}, xerrors.Errorf("failed to detect vulnerabilities: %w", err)
 		}
-		if artifactDetail.OS != nil {
-			artifactDetail.OS.Eosl = eosl
-		}
+		artifactDetail.OS.Eosl = eosl
+
 		// Merge package results into vulnerability results
 		mergedResults := s.fillPkgsInVulns(pkgResults, vulnResults)
 
@@ -133,21 +132,37 @@ func (s Scanner) Scan(ctx context.Context, target, artifactKey string, blobKeys 
 	}
 
 	// Scan IaC config files
-	if ShouldScanMisconfigOrRbac(options.SecurityChecks) {
+	if ShouldScanMisconfigOrRbac(options.Scanners) {
 		configResults := s.MisconfsToResults(artifactDetail.Misconfigurations)
 		results = append(results, configResults...)
 	}
 
 	// Scan secrets
-	if slices.Contains(options.SecurityChecks, types.SecurityCheckSecret) {
+	if options.Scanners.Enabled(types.SecretScanner) {
 		secretResults := s.secretsToResults(artifactDetail.Secrets)
 		results = append(results, secretResults...)
 	}
 
 	// Scan licenses
-	if slices.Contains(options.SecurityChecks, types.SecurityCheckLicense) {
+	if options.Scanners.Enabled(types.LicenseScanner) {
 		licenseResults := s.scanLicenses(artifactDetail, options.LicenseCategories)
 		results = append(results, licenseResults...)
+	}
+
+	// Scan misconfigurations on container image config
+	if options.ImageConfigScanners.Enabled(types.MisconfigScanner) {
+		if im := artifactDetail.ImageConfig.Misconfiguration; im != nil {
+			im.FilePath = target // Set the target name to the file path as container image config is not a real file.
+			results = append(results, s.MisconfsToResults([]ftypes.Misconfiguration{*im})...)
+		}
+	}
+
+	// Scan secrets on container image config
+	if options.ImageConfigScanners.Enabled(types.SecretScanner) {
+		if is := artifactDetail.ImageConfig.Secret; is != nil {
+			is.FilePath = target // Set the target name to the file path as container image config is not a real file.
+			results = append(results, s.secretsToResults([]ftypes.Secret{*is})...)
+		}
 	}
 
 	// For WASM plugins and custom analyzers
@@ -166,20 +181,20 @@ func (s Scanner) Scan(ctx context.Context, target, artifactKey string, blobKeys 
 	// Post scanning
 	results, err = post.Scan(ctx, results)
 	if err != nil {
-		return nil, nil, xerrors.Errorf("post scan error: %w", err)
+		return nil, ftypes.OS{}, xerrors.Errorf("post scan error: %w", err)
 	}
 
 	return results, artifactDetail.OS, nil
 }
 
 func (s Scanner) osPkgsToResult(target string, detail ftypes.ArtifactDetail, options types.ScanOptions) *types.Result {
-	if len(detail.Packages) == 0 || detail.OS == nil {
+	if len(detail.Packages) == 0 || !detail.OS.Detected() {
 		return nil
 	}
 
 	pkgs := detail.Packages
 	if options.ScanRemovedPackages {
-		pkgs = mergePkgs(pkgs, detail.HistoryPackages)
+		pkgs = mergePkgs(pkgs, detail.ImageConfig.Packages)
 	}
 	sort.Sort(pkgs)
 	return &types.Result{
@@ -240,7 +255,7 @@ func (s Scanner) scanVulnerabilities(target string, detail ftypes.ArtifactDetail
 
 func (s Scanner) scanOSPkgs(target string, detail ftypes.ArtifactDetail, options types.ScanOptions) (
 	*types.Result, bool, error) {
-	if detail.OS == nil || detail.OS.Family == "" {
+	if !detail.OS.Detected() {
 		log.Logger.Debug("Detected OS: unknown")
 		return nil, false, nil
 	}
@@ -248,7 +263,12 @@ func (s Scanner) scanOSPkgs(target string, detail ftypes.ArtifactDetail, options
 
 	pkgs := detail.Packages
 	if options.ScanRemovedPackages {
-		pkgs = mergePkgs(pkgs, detail.HistoryPackages)
+		pkgs = mergePkgs(pkgs, detail.ImageConfig.Packages)
+	}
+
+	if detail.OS.Extended {
+		// TODO: move the logic to each detector
+		detail.OS.Name += "-ESM"
 	}
 
 	vulns, eosl, err := s.ospkgDetector.Detect("", detail.OS.Family, detail.OS.Name, detail.Repository, time.Time{}, pkgs)
@@ -534,7 +554,6 @@ func mergePkgs(pkgs, pkgsFromCommands []ftypes.Package) []ftypes.Package {
 	return pkgs
 }
 
-func ShouldScanMisconfigOrRbac(securityChecks []string) bool {
-	return slices.Contains(securityChecks, types.SecurityCheckConfig) ||
-		slices.Contains(securityChecks, types.SecurityCheckRbac)
+func ShouldScanMisconfigOrRbac(scanners types.Scanners) bool {
+	return scanners.AnyEnabled(types.MisconfigScanner, types.RBACScanner)
 }

@@ -10,9 +10,9 @@ hide:
 
 - You are currently in the [Getting Started] section where you can find general information and help with first steps.
 - In the [Tutorials] section you can find step-by-step guides that help you accomplish specific tasks.
-- In the [CLI] section you will find the complete reference documentation for all of the different features and settings that Trivy has to offer.
-- In the [Ecosystem] section you will find how Trivy works together with other tools and applications that you might already use.
-- In the [Contributing] section you will find instructions about developing Trivy, and contribution guidelines.
+- In the [Docs] section you can find the complete reference documentation for all of the different features and settings that Trivy has to offer.
+- In the [Ecosystem] section you can find how Trivy works together with other tools and applications that you might already use.
+- In the [Contributing] section you can find technical developer documentation and contribution guidelines.
 
 # About Trivy
 
@@ -35,30 +35,30 @@ Scanners (what Trivy can find there):
 - Sensitive information and secrets
 - Software licenses
 
+To learn more, go to the [Trivy homepage][homepage] for feature highlights, or to the [Documentation site][Docs] for detailed information.
+
 ## Quick Start
 
 ### Get Trivy
 
-Trivy is available in most common distribution methods. The full list of installation options is available in the [Installation] page, here are a few popular options:
+Trivy is available in most common distribution channels. The complete list of installation options is available in the [Installation] page. Here are a few popular examples:
 
-- `apt-get install trivy`
-- `yum install trivy`
-- `brew install aquasecurity/trivy/trivy`
+- `brew install trivy`
 - `docker run aquasec/trivy`
 - Download binary from <https://github.com/aquasecurity/trivy/releases/latest/>
+- See [Installation] for more
 
-Trivy is integrated with many popular platforms and applications. The full list of integrations is available in the [Ecosystem] page. Here are a few popular options:
+Trivy is integrated with many popular platforms and applications. The complete list of integrations is available in the [Ecosystem] page. Here are a few popular options examples:
 
 - [GitHub Actions](https://github.com/aquasecurity/trivy-action)
-- [CircleCI](https://circleci.com/developer/orbs/orb/fifteen5/trivy-orb)
 - [Kubernetes operator](https://github.com/aquasecurity/trivy-operator)
 - [VS Code plugin](https://github.com/aquasecurity/trivy-vscode-extension)
-
+- See [Ecosystem] for more
 
 ### General usage
 
 ```bash
-trivy <target> [--security-checks <scanner1,scanner2>] <subject>
+trivy <target> [--scanners <scanner1,scanner2>] <subject>
 ```
 
 Examples:
@@ -80,7 +80,7 @@ trivy image python:3.4-alpine
 </details>
 
 ```bash
-trivy fs --security-checks vuln,secret,config myproject/
+trivy fs --scanners vuln,secret,config myproject/
 ```
 
 <details>
@@ -108,43 +108,6 @@ trivy k8s --report summary cluster
 </figure>
 
 </details>
-
-## Highlights
-
-- Comprehensive vulnerability detection
-    - OS packages (Alpine Linux, Red Hat Universal Base Image, Red Hat Enterprise Linux, CentOS, AlmaLinux, Rocky Linux, CBL-Mariner, Oracle Linux, Debian, Ubuntu, Amazon Linux, openSUSE Leap, SUSE Enterprise Linux, Photon OS and Distroless)
-    - **Language-specific packages** (Bundler, Composer, Pipenv, Poetry, npm, yarn, Cargo, NuGet, Maven, and Go)
-    - High accuracy, especially [Alpine Linux][alpine] and RHEL/CentOS
-- Supply chain security (SBOM support)
-    - Support CycloneDX
-    - Support SPDX
-    - Generating and Scanning SBOM
-    - Leveraging in-toto attestations
-    - Integrated with [Sigstore]
-- Misconfiguration detection (IaC scanning) 
-    - Wide variety of security checks are provided **out of the box**
-    - Kubernetes, Docker, Terraform, and more
-    - User-defined policies using [OPA Rego][rego]
-- Secret detection
-    - A wide variety of built-in rules are provided **out of the box**
-    - User-defined patterns
-    - Efficient scanning of container images
-- Simple
-    - Available in apt, yum, brew, dockerhub
-    - **No pre-requisites** such as a database, system libraries, or eny environmental requirements. The binary runs anywhere.
-    - The first scan will finish within 10 seconds (depending on your network). Consequent scans will finish instantaneously.
-- Fits your workflow
-    - **Great for CI** such as GitHub Actions, Jenkins, GitLab CI, etc.
-    - Available as extension for IDEs such as vscode, jetbrains, vim
-    - Available as extension for Docker Desktop, Rancher Desktop
-    - See [Ecosystem] section in the documentation.
-
-## FAQ
-
-### How to pronounce the name "Trivy"?
-
-`tri` is pronounced like **tri**gger, `vy` is pronounced like en**vy**.
-
 ---
 
 Trivy is an [Aqua Security][aquasec] open source project.  
@@ -159,6 +122,8 @@ Contact us about any matter by opening a GitHub Discussion [here][discussions]
 [oss]: https://www.aquasec.com/products/open-source-projects/
 [discussions]: https://github.com/aquasecurity/trivy/discussions
 
+[homepage]: https://trivy.dev
 [Tutorials]: ./tutorials/overview
-[CLI]: ./docs
+[Docs]: ./docs
+[Getting Started]: ./
 [Contributing]: ./community/contribute/issue

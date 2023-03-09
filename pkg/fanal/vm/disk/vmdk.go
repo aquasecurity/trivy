@@ -12,7 +12,7 @@ import (
 
 type VMDK struct{}
 
-func (V VMDK) NewReader(rs io.ReadSeeker, cache vm.Cache) (*io.SectionReader, error) {
+func (V VMDK) NewReader(rs io.ReadSeeker, cache vm.Cache[string, []byte]) (*io.SectionReader, error) {
 	if _, err := rs.Seek(0, io.SeekStart); err != nil {
 		return nil, xerrors.Errorf("seek error: %w", err)
 	}

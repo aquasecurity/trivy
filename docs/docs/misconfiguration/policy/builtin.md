@@ -19,10 +19,18 @@ For suggestions or issues regarding policy content, please open an issue under t
 
 Helm Chart scanning will resolve the chart to Kubernetes manifests then run the [kubernetes][kubernetes] checks.
 
-Ansible scanning is coming soon.
+## Policy Distribution
+defsec policies are distributed as an OPA bundle on [GitHub Container Registry][ghcr] (GHCR).
+When misconfiguration detection is enabled, Trivy pulls the OPA bundle from GHCR as an OCI artifact and stores it in the cache.
+Those policies are then loaded into Trivy OPA engine and used for detecting misconfigurations.
+If Trivy is unable to pull down newer policies, it will use the embedded set of policies as a fallback. This is also the case in air-gap environments where `--skip-policy-update` might be passed.
 
-[rego]: https://www.openpolicyagent.org/docs/latest/policy-language
+## Update Interval
+Trivy checks for updates to OPA bundle on GHCR every 24 hours and pulls it if there are any updates.
+
+[rego]: https://www.openpolicyagent.org/docs/latest/policy-language/
 [defsec]: https://github.com/aquasecurity/defsec
-[kubernetes]: https://github.com/aquasecurity/defsec/tree/master/internal/rules/policies/kubernetes
+[kubernetes]: https://github.com/aquasecurity/defsec/tree/master/internal/rules/kubernetes
+[kubernetes]: https://github.com/aquasecurity/defsec/tree/master/internal/rules/rbac
 [docker]: https://github.com/aquasecurity/defsec/tree/master/internal/rules/policies/docker
-[rbac]: https://github.com/aquasecurity/defsec/tree/master/internal/rules/policies/rbac
+[ghcr]: https://github.com/aquasecurity/defsec/pkgs/container/defsec

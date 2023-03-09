@@ -41,7 +41,7 @@ report: all
 
 # Same as '--template'
 # Default is empty
-template: 
+template:
 
 # Same as '--dependency-tree'
 # Default is false
@@ -62,6 +62,10 @@ ignore-policy:
 # Same as '--exit-code'
 # Default is 0
 exit-code: 0
+
+# Same as '--exit-on-eol'
+# Default is 0
+exit-on-eol: 0
 
 # Same as '--output'
 # Default is empty (stdout)
@@ -92,19 +96,19 @@ scan:
   skip-dirs:
     - usr/local/
     - etc/
-  
+
   # Same as '--skip-files'
   # Default is empty
   skip-files:
     - package-dev.json
-  
+
   # Same as '--offline-scan'
   # Default is false
   offline-scan: false
-  
-  # Same as '--security-checks'
+
+  # Same as '--scanners'
   # Default depends on subcommand
-  security-checks:
+  scanners:
     - vuln
     - config
     - secret
@@ -115,23 +119,23 @@ scan:
 ```yaml
 cache:
   # Same as '--cache-backend'
-  # Default is 'fs' 
+  # Default is 'fs'
   backend: 'fs'
-  
+
   # Same as '--cache-ttl'
-  # Default is 0 (no ttl) 
+  # Default is 0 (no ttl)
   ttl: 0
-  
+
   # Redis options
   redis:
     # Same as '--redis-ca'
     # Default is empty
     ca:
-    
+
     # Same as '--redis-cert'
     # Default is empty
     cert:
-    
+
     # Same as '--redis-key'
     # Default is empty
     key:
@@ -144,14 +148,18 @@ db:
   # Same as '--skip-db-update'
   # Default is false
   skip-update: false
-  
+
   # Same as '--no-progress'
   # Default is false
   no-progress: false
-  
+
   # Same as '--db-repository'
-  # Default is 'github.com/aquasecurity-trivy-repo'
-  repository: github.com/aquasecurity-trivy-repo
+  # Default is 'ghcr.io/aquasecurity/trivy-db'
+  repository: ghcr.io/aquasecurity/trivy-db
+
+  # Same as '--java-db-repository'
+  # Default is 'ghcr.io/aquasecurity/trivy-java-db'
+  java-repository: ghcr.io/aquasecurity/trivy-java-db
 ```
 
 ## Image Options
@@ -162,7 +170,7 @@ image:
   # Same as '--input' (available with 'trivy image')
   # Default is empty
   input:
-  
+
   # Same as '--removed-pkgs'
   # Default is false
   removed-pkgs: false
@@ -178,7 +186,7 @@ vulnerability:
   type:
     - os
     - library
-  
+
   # Same as '--ignore-unfixed'
   # Default is false
   ignore-unfixed: false
@@ -265,25 +273,25 @@ kubernetes:
   # Same as '--context'
   # Default is empty
   context:
-  
+
   # Same as '--namespace'
   # Default is empty
   namespace:
 ```
 
 ## Repository Options
-Available with git repository scanning (`trivy repo`) 
+Available with git repository scanning (`trivy repo`)
 
 ```yaml
 repository:
   # Same as '--branch'
   # Default is empty
   branch:
-  
+
   # Same as '--commit'
   # Default is empty
   commit:
-  
+
   # Same as '--tag'
   # Default is empty
   tag:
@@ -297,21 +305,21 @@ server:
   # Same as '--server' (available in client mode)
   # Default is empty
   addr: http://localhost:4954
-  
+
   # Same as '--token'
   # Default is empty
   token: "something-secret"
-  
+
   # Same as '--token-header'
   # Default is 'Trivy-Token'
   token-header: 'My-Token-Header'
-  
+
   # Same as '--custom-headers'
   # Default is empty
   custom-headers:
     - scanner: trivy
     - x-api-token: xxx
-    
+
   # Same as '--listen' (available in server mode)
   # Default is 'localhost:4954'
   listen: 0.0.0.0:10000
@@ -325,18 +333,18 @@ Available for cloud scanning (currently only `trivy aws`)
 cloud:
   # whether to force a cache update for every scan
   update-cache: false
-  
+
   # how old cached results can be before being invalidated
   max-cache-age: 24h
-  
+
   # aws-specific cloud settings
   aws:
     # the aws region to use
     region: us-east-1
-    
+
     # the aws endpoint to use (not required for general use)
     endpoint: https://my.custom.aws.endpoint
-    
+
     # the aws account to use (this will be determined from your environment when not set)
     account: 123456789012
 ```

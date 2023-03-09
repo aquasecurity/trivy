@@ -20,14 +20,16 @@ import (
 	"github.com/aquasecurity/trivy/pkg/fanal/artifact"
 	"github.com/aquasecurity/trivy/pkg/fanal/cache"
 	"github.com/aquasecurity/trivy/pkg/flag"
+	"github.com/aquasecurity/trivy/pkg/javadb"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/module"
+	"github.com/aquasecurity/trivy/pkg/report"
 	pkgReport "github.com/aquasecurity/trivy/pkg/report"
 	"github.com/aquasecurity/trivy/pkg/result"
 	"github.com/aquasecurity/trivy/pkg/rpc/client"
 	"github.com/aquasecurity/trivy/pkg/scanner"
 	"github.com/aquasecurity/trivy/pkg/types"
-	"github.com/aquasecurity/trivy/pkg/utils"
+	"github.com/aquasecurity/trivy/pkg/utils/fsutils"
 )
 
 // TargetKind represents what kind of artifact Trivy scans
@@ -46,8 +48,12 @@ const (
 )
 
 var (
-	defaultPolicyNamespaces = []string{"appshield", "defsec", "builtin"}
-	SkipScan                = errors.New("skip subsequent processes")
+	defaultPolicyNamespaces = []string{
+		"appshield",
+		"defsec",
+		"builtin",
+	}
+	SkipScan = errors.New("skip subsequent processes")
 )
 
 // InitializeScanner defines the initialize function signature of scanner
@@ -59,7 +65,7 @@ type ScannerConfig struct {
 
 	// Cache
 	ArtifactCache      cache.ArtifactCache
-	LocalArtifactCache cache.Cache
+	LocalArtifactCache cache.LocalArtifactCache
 
 	// Client/Server options
 	RemoteOption client.ScannerOption
@@ -125,7 +131,10 @@ func NewRunner(ctx context.Context, cliOptions flag.Options, opts ...runnerOptio
 	}
 
 	// Initialize WASM modules
-	m, err := module.NewManager(ctx)
+	m, err := module.NewManager(ctx, module.Options{
+		Dir:            cliOptions.ModuleDir,
+		EnabledModules: cliOptions.EnabledModules,
+	})
 	if err != nil {
 		return nil, xerrors.Errorf("WASM module error: %w", err)
 	}
@@ -284,6 +293,8 @@ func (r *runner) Report(opts flag.Options, report types.Report) error {
 		OutputTemplate:     opts.Template,
 		IncludeNonFailures: opts.IncludeNonFailures,
 		Trace:              opts.Trace,
+		Report:             opts.ReportFormat,
+		Compliance:         opts.Compliance,
 	}); err != nil {
 		return xerrors.Errorf("unable to write results: %w", err)
 	}
@@ -292,8 +303,12 @@ func (r *runner) Report(opts flag.Options, report types.Report) error {
 }
 
 func (r *runner) initDB(opts flag.Options) error {
+	if err := r.initJavaDB(opts); err != nil {
+		return err
+	}
+
 	// When scanning config files or running as client mode, it doesn't need to download the vulnerability database.
-	if opts.ServerAddr != "" || !slices.Contains(opts.SecurityChecks, types.SecurityCheckVulnerability) {
+	if opts.ServerAddr != "" || !opts.Scanners.Enabled(types.VulnerabilityScanner) {
 		return nil
 	}
 
@@ -315,6 +330,31 @@ func (r *runner) initDB(opts flag.Options) error {
 	return nil
 }
 
+func (r *runner) initJavaDB(opts flag.Options) error {
+	// When running as server mode, it doesn't need to download the Java database.
+	if opts.Listen != "" {
+		return nil
+	}
+
+	// If vulnerability scanning and SBOM generation are disabled, it doesn't need to download the Java database.
+	if !opts.Scanners.Enabled(types.VulnerabilityScanner) &&
+		!slices.Contains(report.SupportedSBOMFormats, opts.Format) {
+		return nil
+	}
+
+	// Update the Java DB
+	noProgress := opts.Quiet || opts.NoProgress
+	javadb.Init(opts.CacheDir, opts.JavaDBRepository, opts.SkipJavaDBUpdate, noProgress, opts.Insecure)
+	if opts.DownloadJavaDBOnly {
+		if err := javadb.Update(); err != nil {
+			return xerrors.Errorf("Java DB error: %w", err)
+		}
+		return SkipScan
+	}
+
+	return nil
+}
+
 func (r *runner) initCache(opts flag.Options) error {
 	// Skip initializing cache when custom cache is passed
 	if r.cache != nil {
@@ -329,12 +369,12 @@ func (r *runner) initCache(opts flag.Options) error {
 	}
 
 	// standalone mode
-	utils.SetCacheDir(opts.CacheDir)
+	fsutils.SetCacheDir(opts.CacheDir)
 	cacheClient, err := operation.NewCache(opts.CacheOptions)
 	if err != nil {
 		return xerrors.Errorf("unable to initialize the cache: %w", err)
 	}
-	log.Logger.Debugf("cache dir:  %s", utils.CacheDir())
+	log.Logger.Debugf("cache dir:  %s", fsutils.CacheDir())
 
 	if opts.Reset {
 		defer cacheClient.Close()
@@ -356,22 +396,12 @@ func (r *runner) initCache(opts flag.Options) error {
 }
 
 // Run performs artifact scanning
-//func Run(cliCtx *cli.Context, targetKind TargetKind) error {
-//	opt, err := InitOption(cliCtx)
-//	if err != nil {
-//		return xerrors.Errorf("InitOption: %w", err)
-//	}
-//
-//	return run(cliCtx.Context, opt, targetKind)
-//}
-
-// Run performs artifact scanning
 func Run(ctx context.Context, opts flag.Options, targetKind TargetKind) (err error) {
 	ctx, cancel := context.WithTimeout(ctx, opts.Timeout)
 	defer cancel()
 
 	defer func() {
-		if xerrors.Is(err, context.DeadlineExceeded) {
+		if errors.Is(err, context.DeadlineExceeded) {
 			log.Logger.Warn("Increase --timeout value")
 		}
 	}()
@@ -427,6 +457,7 @@ func Run(ctx context.Context, opts flag.Options, targetKind TargetKind) (err err
 		return xerrors.Errorf("report error: %w", err)
 	}
 
+	exitOnEOL(opts, report.Metadata)
 	Exit(opts, report.Results.Failed())
 
 	return nil
@@ -448,20 +479,34 @@ func disabledAnalyzers(opts flag.Options) []analyzer.Type {
 	}
 
 	// Do not perform secret scanning when it is not specified.
-	if !slices.Contains(opts.SecurityChecks, types.SecurityCheckSecret) {
+	if !opts.Scanners.Enabled(types.SecretScanner) {
 		analyzers = append(analyzers, analyzer.TypeSecret)
 	}
 
 	// Do not perform misconfiguration scanning when it is not specified.
-	if !slices.Contains(opts.SecurityChecks, types.SecurityCheckConfig) &&
-		!slices.Contains(opts.SecurityChecks, types.SecurityCheckRbac) {
+	if !opts.Scanners.AnyEnabled(types.MisconfigScanner, types.RBACScanner) {
 		analyzers = append(analyzers, analyzer.TypeConfigFiles...)
 	}
 
 	// Scanning file headers and license files is expensive.
-	// It is performed only when '--security-checks license' and '--license-full' are specified.
-	if !slices.Contains(opts.SecurityChecks, types.SecurityCheckLicense) || !opts.LicenseFull {
+	// It is performed only when '--scanners license' and '--license-full' are specified together.
+	if !opts.Scanners.Enabled(types.LicenseScanner) || !opts.LicenseFull {
 		analyzers = append(analyzers, analyzer.TypeLicenseFile)
+	}
+
+	// Parsing jar files requires Java-db client
+	// But we don't create client if vulnerability analysis is disabled and SBOM format is not used
+	// We need to disable jar analyzer to avoid errors
+	// TODO disable all languages that don't contain license information for this case
+	if opts.Scanners.Enabled(types.LicenseScanner) && !opts.Scanners.Enabled(types.VulnerabilityScanner) &&
+		!slices.Contains(report.SupportedSBOMFormats, opts.Format) {
+		analyzers = append(analyzers, analyzer.TypeJar)
+	}
+
+	// Do not perform misconfiguration scanning on container image config
+	// when it is not specified.
+	if !opts.ImageConfigScanners.Enabled(types.MisconfigScanner) {
+		analyzers = append(analyzers, analyzer.TypeHistoryDockerfile)
 	}
 
 	if len(opts.SBOMSources) == 0 {
@@ -477,49 +522,87 @@ func initScannerConfig(opts flag.Options, cacheClient cache.Cache) (ScannerConfi
 		target = opts.Input
 	}
 
+	if opts.Compliance.Spec.ID != "" {
+		// set scanners types by spec
+		scanners, err := opts.Compliance.Scanners()
+		if err != nil {
+			return ScannerConfig{}, types.ScanOptions{}, xerrors.Errorf("scanner error: %w", err)
+		}
+
+		opts.Scanners = scanners
+		opts.ImageConfigScanners = nil
+		// TODO: define image-config-scanners in the spec
+		if opts.Compliance.Spec.ID == "docker-cis" {
+			opts.Scanners = types.Scanners{types.VulnerabilityScanner}
+			opts.ImageConfigScanners = types.Scanners{
+				types.MisconfigScanner,
+				types.SecretScanner,
+			}
+		}
+	}
+
 	scanOptions := types.ScanOptions{
 		VulnType:            opts.VulnType,
-		SecurityChecks:      opts.SecurityChecks,
-		ScanRemovedPackages: opts.ScanRemovedPkgs, // this is valid only for 'image' subcommand
-		Platform:            opts.Platform,        // this is valid only for 'image' subcommand
+		Scanners:            opts.Scanners,
+		ImageConfigScanners: opts.ImageConfigScanners, // this is valid only for 'image' subcommand
+		ScanRemovedPackages: opts.ScanRemovedPkgs,     // this is valid only for 'image' subcommand
+		Platform:            opts.Platform,            // this is valid only for 'image' subcommand
 		ListAllPackages:     opts.ListAllPkgs,
 		LicenseCategories:   opts.LicenseCategories,
 		FilePatterns:        opts.FilePatterns,
 	}
 
-	if slices.Contains(opts.SecurityChecks, types.SecurityCheckVulnerability) {
+	if len(opts.ImageConfigScanners) != 0 {
+		log.Logger.Infof("Container image config scanners: %q", opts.ImageConfigScanners)
+	}
+
+	if opts.Scanners.Enabled(types.VulnerabilityScanner) {
 		log.Logger.Info("Vulnerability scanning is enabled")
 		log.Logger.Debugf("Vulnerability type:  %s", scanOptions.VulnType)
 	}
 
 	// ScannerOption is filled only when config scanning is enabled.
 	var configScannerOptions config.ScannerOption
-	if slices.Contains(opts.SecurityChecks, types.SecurityCheckConfig) {
+	if opts.Scanners.Enabled(types.MisconfigScanner) || opts.ImageConfigScanners.Enabled(types.MisconfigScanner) {
 		log.Logger.Info("Misconfiguration scanning is enabled")
+
+		var downloadedPolicyPaths []string
+		var disableEmbedded bool
+		downloadedPolicyPaths, err := operation.InitBuiltinPolicies(context.Background(), opts.CacheDir, opts.Quiet, opts.SkipPolicyUpdate)
+		if err != nil {
+			if !opts.SkipPolicyUpdate {
+				log.Logger.Errorf("Falling back to embedded policies: %s", err)
+			}
+		} else {
+			log.Logger.Debug("Policies successfully loaded from disk")
+			disableEmbedded = true
+		}
 		configScannerOptions = config.ScannerOption{
-			Trace:            opts.Trace,
-			Namespaces:       append(opts.PolicyNamespaces, defaultPolicyNamespaces...),
-			PolicyPaths:      opts.PolicyPaths,
-			DataPaths:        opts.DataPaths,
-			HelmValues:       opts.HelmValues,
-			HelmValueFiles:   opts.HelmValueFiles,
-			HelmFileValues:   opts.HelmFileValues,
-			HelmStringValues: opts.HelmStringValues,
-			TerraformTFVars:  opts.TerraformTFVars,
+			Trace:                   opts.Trace,
+			Namespaces:              append(opts.PolicyNamespaces, defaultPolicyNamespaces...),
+			PolicyPaths:             append(opts.PolicyPaths, downloadedPolicyPaths...),
+			DataPaths:               opts.DataPaths,
+			HelmValues:              opts.HelmValues,
+			HelmValueFiles:          opts.HelmValueFiles,
+			HelmFileValues:          opts.HelmFileValues,
+			HelmStringValues:        opts.HelmStringValues,
+			TerraformTFVars:         opts.TerraformTFVars,
+			K8sVersion:              opts.K8sVersion,
+			DisableEmbeddedPolicies: disableEmbedded,
 		}
 	}
 
 	// Do not load config file for secret scanning
-	if slices.Contains(opts.SecurityChecks, types.SecurityCheckSecret) {
+	if opts.Scanners.Enabled(types.SecretScanner) {
 		ver := canonicalVersion(opts.AppVersion)
 		log.Logger.Info("Secret scanning is enabled")
-		log.Logger.Info("If your scanning is slow, please try '--security-checks vuln' to disable secret scanning")
+		log.Logger.Info("If your scanning is slow, please try '--scanners vuln' to disable secret scanning")
 		log.Logger.Infof("Please see also https://aquasecurity.github.io/trivy/%s/docs/secret/scanning/#recommendation for faster secret detection", ver)
 	} else {
 		opts.SecretConfigPath = ""
 	}
 
-	if slices.Contains(opts.SecurityChecks, types.SecurityCheckLicense) {
+	if opts.Scanners.Enabled(types.LicenseScanner) {
 		if opts.LicenseFull {
 			log.Logger.Info("Full license scanning is enabled")
 		} else {
@@ -571,12 +654,10 @@ func initScannerConfig(opts flag.Options, cacheClient cache.Cache) (ScannerConfi
 
 func scan(ctx context.Context, opts flag.Options, initializeScanner InitializeScanner, cacheClient cache.Cache) (
 	types.Report, error) {
-
 	scannerConfig, scanOptions, err := initScannerConfig(opts, cacheClient)
 	if err != nil {
 		return types.Report{}, err
 	}
-
 	s, cleanup, err := initializeScanner(ctx, scannerConfig)
 	if err != nil {
 		return types.Report{}, xerrors.Errorf("unable to initialize a scanner: %w", err)
@@ -593,6 +674,13 @@ func scan(ctx context.Context, opts flag.Options, initializeScanner InitializeSc
 func Exit(opts flag.Options, failedResults bool) {
 	if opts.ExitCode != 0 && failedResults {
 		os.Exit(opts.ExitCode)
+	}
+}
+
+func exitOnEOL(opts flag.Options, m types.Metadata) {
+	if opts.ExitOnEOL != 0 && m.OS != nil && m.OS.Eosl {
+		log.Logger.Errorf("Detected EOL OS: %s %s", m.OS.Family, m.OS.Name)
+		os.Exit(opts.ExitOnEOL)
 	}
 }
 

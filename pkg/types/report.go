@@ -8,7 +8,15 @@ import (
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 )
 
-var Compliances = []string{ComplianceNsa, ComplianceAWSCIS12, ComplianceAWSCIS14}
+var Compliances = []string{
+	ComplianceK8sNsa,
+	ComplianceK8sCIS,
+	ComplianceK8sPSSBaseline,
+	ComplianceK8sPSSRestricted,
+	ComplianceAWSCIS12,
+	ComplianceAWSCIS14,
+	ComplianceDockerCIS,
+}
 
 // Report represents a scan result
 type Report struct {
@@ -50,10 +58,13 @@ const (
 	ClassLicenseFile = "license-file" // For detected licenses in files
 	ClassCustom      = "custom"
 
-	// ComplianceNsa is the compliance checks for nsa
-	ComplianceNsa      = Compliance("nsa")
-	ComplianceAWSCIS12 = Compliance("awscis1.2")
-	ComplianceAWSCIS14 = Compliance("awscis1.4")
+	ComplianceK8sNsa           = Compliance("k8s-nsa")
+	ComplianceK8sCIS           = Compliance("k8s-cis")
+	ComplianceK8sPSSBaseline   = Compliance("k8s-pss-baseline")
+	ComplianceK8sPSSRestricted = Compliance("k8s-pss-restricted")
+	ComplianceAWSCIS12         = Compliance("aws-cis-1.2")
+	ComplianceAWSCIS14         = Compliance("aws-cis-1.4")
+	ComplianceDockerCIS        = Compliance("docker-cis")
 )
 
 // Result holds a target and detected vulnerabilities

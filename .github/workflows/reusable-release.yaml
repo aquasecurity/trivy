@@ -76,7 +76,7 @@ jobs:
           version: ^v1
 
       - name: GoReleaser
-        uses: goreleaser/goreleaser-action@v3
+        uses: goreleaser/goreleaser-action@v4
         with:
           version: v1.4.1
           args: release -f=${{ inputs.goreleaser_config}} ${{ inputs.goreleaser_options}}
@@ -87,7 +87,7 @@ jobs:
       ## only for canary build
       - name: Build and push
         if: ${{ inputs.goreleaser_config == 'goreleaser-canary.yml' }}
-        uses: docker/build-push-action@v3
+        uses: docker/build-push-action@v4
         with:
           platforms: linux/amd64, linux/arm64
           file: ./Dockerfile.canary # path to Dockerfile
@@ -99,7 +99,7 @@ jobs:
             public.ecr.aws/aquasecurity/trivy:canary
 
       - name: Cache Trivy binaries
-        uses: actions/cache@v3.0.11
+        uses: actions/cache@v3.2.6
         with:
           path: dist/
           # use 'github.sha' to create a unique cache folder for each run.

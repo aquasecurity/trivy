@@ -135,6 +135,21 @@ func TestNewPackageURL(t *testing.T) {
 			},
 		},
 		{
+			name: "conda package",
+			typ:  ftypes.CondaPkg,
+			pkg: ftypes.Package{
+				Name:    "absl-py",
+				Version: "0.4.1",
+			},
+			want: purl.PackageURL{
+				PackageURL: packageurl.PackageURL{
+					Type:    packageurl.TypeConda,
+					Name:    "absl-py",
+					Version: "0.4.1",
+				},
+			},
+		},
+		{
 			name: "composer package",
 			typ:  ftypes.Composer,
 			pkg: ftypes.Package{
@@ -163,6 +178,38 @@ func TestNewPackageURL(t *testing.T) {
 					Namespace: "github.com/go-sql-driver",
 					Name:      "mysql",
 					Version:   "v1.5.0",
+				},
+			},
+		},
+		{
+			name: "hex package",
+			typ:  ftypes.Hex,
+			pkg: ftypes.Package{
+				ID:        "bunt@0.2.0",
+				Name:      "bunt",
+				Version:   "0.2.0",
+				Locations: []ftypes.Location{{StartLine: 2, EndLine: 2}},
+			},
+			want: purl.PackageURL{
+				PackageURL: packageurl.PackageURL{
+					Type:    packageurl.TypeHex,
+					Name:    "bunt",
+					Version: "0.2.0",
+				},
+			},
+		},
+		{
+			name: "dart package",
+			typ:  ftypes.Pub,
+			pkg: ftypes.Package{
+				Name:    "http",
+				Version: "0.13.2",
+			},
+			want: purl.PackageURL{
+				PackageURL: packageurl.PackageURL{
+					Type:    purl.TypeDart,
+					Name:    "http",
+					Version: "0.13.2",
 				},
 			},
 		},
@@ -365,6 +412,30 @@ func TestFromString(t *testing.T) {
 			},
 		},
 		{
+			name: "happy path for hex",
+			purl: "pkg:hex/plug@1.14.0",
+			want: purl.PackageURL{
+				PackageURL: packageurl.PackageURL{
+					Type:       packageurl.TypeHex,
+					Name:       "plug",
+					Version:    "1.14.0",
+					Qualifiers: packageurl.Qualifiers{},
+				},
+			},
+		},
+		{
+			name: "happy path for dart",
+			purl: "pkg:dart/http@0.13.2",
+			want: purl.PackageURL{
+				PackageURL: packageurl.PackageURL{
+					Type:       purl.TypeDart,
+					Name:       "http",
+					Version:    "0.13.2",
+					Qualifiers: packageurl.Qualifiers{},
+				},
+			},
+		},
+		{
 			name: "happy path for apk",
 			purl: "pkg:apk/alpine/alpine-baselayout@3.2.0-r16?distro=3.14.2",
 			want: purl.PackageURL{
@@ -391,6 +462,18 @@ func TestFromString(t *testing.T) {
 					Namespace:  "redhat",
 					Name:       "containers-common",
 					Version:    "0.1.14",
+					Qualifiers: packageurl.Qualifiers{},
+				},
+			},
+		},
+		{
+			name: "happy path for conda",
+			purl: "pkg:conda/absl-py@0.4.1",
+			want: purl.PackageURL{
+				PackageURL: packageurl.PackageURL{
+					Type:       packageurl.TypeConda,
+					Name:       "absl-py",
+					Version:    "0.4.1",
 					Qualifiers: packageurl.Qualifiers{},
 				},
 			},

@@ -17,7 +17,7 @@ import (
 	dbc "github.com/aquasecurity/trivy/pkg/db"
 	"github.com/aquasecurity/trivy/pkg/fanal/cache"
 	"github.com/aquasecurity/trivy/pkg/log"
-	"github.com/aquasecurity/trivy/pkg/utils"
+	"github.com/aquasecurity/trivy/pkg/utils/fsutils"
 	rpcCache "github.com/aquasecurity/trivy/rpc/cache"
 	rpcScanner "github.com/aquasecurity/trivy/rpc/scanner"
 )
@@ -47,7 +47,7 @@ func NewServer(appVersion, addr, cacheDir, token, tokenHeader, dbRepository stri
 }
 
 // ListenAndServe starts Trivy server
-func (s Server) ListenAndServe(serverCache cache.Cache, insecure bool) error {
+func (s Server) ListenAndServe(serverCache cache.Cache, insecure, skipDBUpdate bool) error {
 	requestWg := &sync.WaitGroup{}
 	dbUpdateWg := &sync.WaitGroup{}
 
@@ -56,7 +56,7 @@ func (s Server) ListenAndServe(serverCache cache.Cache, insecure bool) error {
 		ctx := context.Background()
 		for {
 			time.Sleep(updateInterval)
-			if err := worker.update(ctx, s.appVersion, s.cacheDir, dbUpdateWg, requestWg); err != nil {
+			if err := worker.update(ctx, s.appVersion, s.cacheDir, skipDBUpdate, dbUpdateWg, requestWg); err != nil {
 				log.Logger.Errorf("%+v\n", err)
 			}
 		}
@@ -121,9 +121,9 @@ func newDBWorker(dbClient dbFile.Operation) dbWorker {
 }
 
 func (w dbWorker) update(ctx context.Context, appVersion, cacheDir string,
-	dbUpdateWg, requestWg *sync.WaitGroup) error {
+	skipDBUpdate bool, dbUpdateWg, requestWg *sync.WaitGroup) error {
 	log.Logger.Debug("Check for DB update...")
-	needsUpdate, err := w.dbClient.NeedsUpdate(appVersion, false)
+	needsUpdate, err := w.dbClient.NeedsUpdate(appVersion, skipDBUpdate)
 	if err != nil {
 		return xerrors.Errorf("failed to check if db needs an update")
 	} else if !needsUpdate {
@@ -160,12 +160,12 @@ func (w dbWorker) hotUpdate(ctx context.Context, cacheDir string, dbUpdateWg, re
 	}
 
 	// Copy trivy.db
-	if _, err = utils.CopyFile(db.Path(tmpDir), db.Path(cacheDir)); err != nil {
+	if _, err = fsutils.CopyFile(db.Path(tmpDir), db.Path(cacheDir)); err != nil {
 		return xerrors.Errorf("failed to copy the database file: %w", err)
 	}
 
 	// Copy metadata.json
-	if _, err = utils.CopyFile(metadata.Path(tmpDir), metadata.Path(cacheDir)); err != nil {
+	if _, err = fsutils.CopyFile(metadata.Path(tmpDir), metadata.Path(cacheDir)); err != nil {
 		return xerrors.Errorf("failed to copy the metadata file: %w", err)
 	}
 

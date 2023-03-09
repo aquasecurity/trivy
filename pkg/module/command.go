@@ -15,7 +15,7 @@ import (
 const mediaType = "application/vnd.module.wasm.content.layer.v1+wasm"
 
 // Install installs a module
-func Install(ctx context.Context, repo string, quiet, insecure bool) error {
+func Install(ctx context.Context, dir, repo string, quiet, insecure bool) error {
 	ref, err := name.ParseReference(repo)
 	if err != nil {
 		return xerrors.Errorf("repository parse error: %w", err)
@@ -27,7 +27,7 @@ func Install(ctx context.Context, repo string, quiet, insecure bool) error {
 		return xerrors.Errorf("module initialize error: %w", err)
 	}
 
-	dst := filepath.Join(dir(), ref.Context().Name())
+	dst := filepath.Join(dir, ref.Context().Name())
 	log.Logger.Debugf("Installing the module to %s...", dst)
 
 	if err = artifact.Download(ctx, dst); err != nil {
@@ -38,14 +38,14 @@ func Install(ctx context.Context, repo string, quiet, insecure bool) error {
 }
 
 // Uninstall uninstalls a module
-func Uninstall(_ context.Context, repo string) error {
+func Uninstall(_ context.Context, dir, repo string) error {
 	ref, err := name.ParseReference(repo)
 	if err != nil {
 		return xerrors.Errorf("repository parse error: %w", err)
 	}
 
 	log.Logger.Infof("Uninstalling %s ...", repo)
-	dst := filepath.Join(dir(), ref.Context().Name())
+	dst := filepath.Join(dir, ref.Context().Name())
 	if err = os.RemoveAll(dst); err != nil {
 		return xerrors.Errorf("remove error: %w", err)
 	}

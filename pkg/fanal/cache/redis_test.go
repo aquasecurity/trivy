@@ -112,7 +112,7 @@ func TestRedisCache_PutBlob(t *testing.T) {
 					SchemaVersion: 2,
 					Digest:        "sha256:9d48c3bd43c520dc2784e868a780e976b207cbf493eaff8c6596eb871cbd9609",
 					DiffID:        "sha256:03901b4a2ea88eeaad62dbe59b072b28b6efa00491962b8741081c5df50c65e0",
-					OS: &types.OS{
+					OS: types.OS{
 						Family: "alpine",
 						Name:   "3.10.2",
 					},
@@ -264,7 +264,7 @@ func TestRedisCache_GetBlob(t *testing.T) {
 		SchemaVersion: 2,
 		Digest:        "sha256:9d48c3bd43c520dc2784e868a780e976b207cbf493eaff8c6596eb871cbd9609",
 		DiffID:        "sha256:03901b4a2ea88eeaad62dbe59b072b28b6efa00491962b8741081c5df50c65e0",
-		OS: &types.OS{
+		OS: types.OS{
 			Family: "alpine",
 			Name:   "3.10.2",
 		},

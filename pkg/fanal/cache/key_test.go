@@ -1,6 +1,7 @@
 package cache
 
 import (
+	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -13,7 +14,7 @@ import (
 func TestCalcKey(t *testing.T) {
 	type args struct {
 		key              string
-		analyzerVersions map[string]int
+		analyzerVersions analyzer.Versions
 		hookVersions     map[string]int
 		skipFiles        []string
 		skipDirs         []string
@@ -31,128 +32,148 @@ func TestCalcKey(t *testing.T) {
 			name: "happy path",
 			args: args{
 				key: "sha256:5c534be56eca62e756ef2ef51523feda0f19cd7c15bb0c015e3d6e3ae090bf6e",
-				analyzerVersions: map[string]int{
-					"alpine": 1,
-					"debian": 1,
+				analyzerVersions: analyzer.Versions{
+					Analyzers: map[string]int{
+						"alpine": 1,
+						"debian": 1,
+					},
 				},
 				hookVersions: map[string]int{
 					"python-pkg": 1,
 				},
 			},
-			want: "sha256:8060f9cc9ba29039785a7116ae874673ad7a6eab37170ee1375b4064a72343ae",
+			want: "sha256:c720b502991465ea11929cfefc71cf4b5aeaa9a8c0ae59fdaf597f957f5cdb18",
 		},
 		{
 			name: "with disabled analyzer",
 			args: args{
 				key: "sha256:5c534be56eca62e756ef2ef51523feda0f19cd7c15bb0c015e3d6e3ae090bf6e",
-				analyzerVersions: map[string]int{
-					"alpine": 1,
-					"debian": 0,
-					"redhat": 2,
+				analyzerVersions: analyzer.Versions{
+					Analyzers: map[string]int{
+						"alpine": 1,
+						"debian": 0,
+						"redhat": 2,
+					},
 				},
 				hookVersions: map[string]int{
 					"python-pkg": 1,
 				},
 			},
-			want: "sha256:e6a28d20a3a901377dcb836959c8ac268ec573735a5ba9c29112a1f6c5b1edd2",
+			want: "sha256:d63724cc72729edd3c81205739d64fcb414a4e6345dd4dde7f0fe6bdd56bedf9",
 		},
 		{
 			name: "with empty slice file patterns",
 			args: args{
 				key: "sha256:5c534be56eca62e756ef2ef51523feda0f19cd7c15bb0c015e3d6e3ae090bf6e",
-				analyzerVersions: map[string]int{
-					"alpine": 1,
-					"debian": 1,
+				analyzerVersions: analyzer.Versions{
+					Analyzers: map[string]int{
+						"alpine": 1,
+						"debian": 1,
+					},
 				},
 				patterns: []string{},
 			},
-			want: "sha256:d69f13df33f4c159b4ea54c1967384782fcefb5e2a19af35f4cd6d2896e9285e",
+			want: "sha256:9f7afa4d27c4c4f371dc6bb47bcc09e7a4a00b1d870e8156f126e35d8f6522e6",
 		},
 		{
 			name: "with single empty string in file patterns",
 			args: args{
 				key: "sha256:5c534be56eca62e756ef2ef51523feda0f19cd7c15bb0c015e3d6e3ae090bf6e",
-				analyzerVersions: map[string]int{
-					"alpine": 1,
-					"debian": 1,
+				analyzerVersions: analyzer.Versions{
+					Analyzers: map[string]int{
+						"alpine": 1,
+						"debian": 1,
+					},
 				},
 				patterns: []string{""},
 			},
-			want: "sha256:9b81e0bf3aa7809a0f41bc696f353fca5645bcb63b975ab30e23d81886df2e61",
+			want: "sha256:bcfc5da13ef9bf0b85e719584800a010063474546f1051a781b78bd83de01102",
 		},
 		{
 			name: "with single non empty string in file patterns",
 			args: args{
 				key: "sha256:5c534be56eca62e756ef2ef51523feda0f19cd7c15bb0c015e3d6e3ae090bf6e",
-				analyzerVersions: map[string]int{
-					"alpine": 1,
-					"debian": 1,
+				analyzerVersions: analyzer.Versions{
+					Analyzers: map[string]int{
+						"alpine": 1,
+						"debian": 1,
+					},
 				},
 				patterns: []string{"test"},
 			},
-			want: "sha256:7d91b2623ae4b5641a1f36efa59c774231efe8c28c27a03869894fd49b047fe8",
+			want: "sha256:8c9750b8eca507628417f21d7db707a7876d2e22c3e75b13f31a795af4051c57",
 		},
 		{
 			name: "with non empty followed by empty string in file patterns",
 			args: args{
 				key: "sha256:5c534be56eca62e756ef2ef51523feda0f19cd7c15bb0c015e3d6e3ae090bf6e",
-				analyzerVersions: map[string]int{
-					"alpine": 1,
-					"debian": 1,
+				analyzerVersions: analyzer.Versions{
+					Analyzers: map[string]int{
+						"alpine": 1,
+						"debian": 1,
+					},
 				},
 				patterns: []string{"test", ""},
 			},
-			want: "sha256:5c7f1555e95fc60cdaa7e92e99aee15ee7be356fad9e83f1c24a3be06713a5a8",
+			want: "sha256:71abf09bf1422531e2838db692b80f9b9f48766f56b7d3d02aecdb36b019e103",
 		},
 		{
 			name: "with non empty preceded by empty string in file patterns",
 			args: args{
 				key: "sha256:5c534be56eca62e756ef2ef51523feda0f19cd7c15bb0c015e3d6e3ae090bf6e",
-				analyzerVersions: map[string]int{
-					"alpine": 1,
-					"debian": 1,
+				analyzerVersions: analyzer.Versions{
+					Analyzers: map[string]int{
+						"alpine": 1,
+						"debian": 1,
+					},
 				},
 				patterns: []string{"", "test"},
 			},
-			want: "sha256:5c7f1555e95fc60cdaa7e92e99aee15ee7be356fad9e83f1c24a3be06713a5a8",
+			want: "sha256:71abf09bf1422531e2838db692b80f9b9f48766f56b7d3d02aecdb36b019e103",
 		},
 		{
 			name: "with policy",
 			args: args{
 				key: "sha256:5c534be56eca62e756ef2ef51523feda0f19cd7c15bb0c015e3d6e3ae090bf6e",
-				analyzerVersions: map[string]int{
-					"alpine": 1,
-					"debian": 1,
+				analyzerVersions: analyzer.Versions{
+					Analyzers: map[string]int{
+						"alpine": 1,
+						"debian": 1,
+					},
 				},
 				policy: []string{"testdata/policy"},
 			},
-			want: "sha256:96e90ded238ad2ea8e1fd53a4202247aa65b69ad5e2f9f60d883104865ca4821",
+			want: "sha256:9602d5ef5af086112cc9fae8310390ed3fb79f4b309d8881b9807e379c8dfa57",
 		},
 		{
 			name: "skip files and dirs",
 			args: args{
 				key: "sha256:5c534be56eca62e756ef2ef51523feda0f19cd7c15bb0c015e3d6e3ae090bf6e",
-				analyzerVersions: map[string]int{
-					"alpine": 1,
-					"debian": 1,
+				analyzerVersions: analyzer.Versions{
+					Analyzers: map[string]int{
+						"alpine": 1,
+						"debian": 1,
+					},
 				},
 				skipFiles: []string{"app/deployment.yaml"},
 				skipDirs:  []string{"usr/java"},
 				policy:    []string{"testdata/policy"},
 			},
-			want: "sha256:b92c36d74172cbe3b7c07e169d9f594cd7822e8e95cb7bc1cd957ac17be62a4a",
+			want: "sha256:363f70f4ee795f250873caea11c2fc94ef12945444327e7e2f8a99e3884695e0",
 		},
 		{
 			name: "with policy/non-existent dir",
 			args: args{
 				key: "sha256:5c534be56eca62e756ef2ef51523feda0f19cd7c15bb0c015e3d6e3ae090bf6e",
-				analyzerVersions: map[string]int{
-					"alpine": 1,
-					"debian": 1,
+				analyzerVersions: analyzer.Versions{
+					Analyzers: map[string]int{
+						"alpine": 1,
+						"debian": 1,
+					},
 				},
 				policy: []string{"policydir"},
 			},
-			wantErr: "no such file or directory",
+			wantErr: "hash dir error",
 		},
 	}
 	for _, tt := range tests {
@@ -170,7 +191,7 @@ func TestCalcKey(t *testing.T) {
 			got, err := CalcKey(tt.args.key, tt.args.analyzerVersions, tt.args.hookVersions, artifactOpt)
 			if tt.wantErr != "" {
 				require.Error(t, err)
-				assert.Contains(t, err.Error(), tt.wantErr)
+				assert.ErrorContains(t, err, tt.wantErr)
 				return
 			}
 			assert.NoError(t, err)

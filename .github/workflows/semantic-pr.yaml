@@ -58,6 +58,7 @@ jobs:
             suse
             photon
             distroless
+            windows
 
             ruby
             php
@@ -68,7 +69,9 @@ jobs:
             java
             go
             c
-            c++
+            c\+\+
+            elixir
+            dart
 
             os
             lang

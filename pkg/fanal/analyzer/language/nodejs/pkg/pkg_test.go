@@ -29,6 +29,7 @@ func Test_nodePkgLibraryAnalyzer_Analyze(t *testing.T) {
 						FilePath: "testdata/package.json",
 						Libraries: []types.Package{
 							{
+								ID:       "lodash@5.0.0",
 								Name:     "lodash",
 								Version:  "5.0.0",
 								Licenses: []string{"MIT"},
@@ -42,7 +43,7 @@ func Test_nodePkgLibraryAnalyzer_Analyze(t *testing.T) {
 		{
 			name:      "sad path",
 			inputFile: "testdata/noname.json",
-			wantErr:   "unable to parse testdata/noname.json",
+			wantErr:   "unable to parse",
 		},
 	}
 	for _, tt := range tests {

@@ -33,7 +33,7 @@ func TestScanner_Scan(t *testing.T) {
 		fixtures               []string
 		applyLayersExpectation ApplierApplyLayersExpectation
 		wantResults            types.Results
-		wantOS                 *ftypes.OS
+		wantOS                 ftypes.OS
 		wantErr                string
 	}{
 		{
@@ -42,8 +42,11 @@ func TestScanner_Scan(t *testing.T) {
 				target:   "alpine:latest",
 				layerIDs: []string{"sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10"},
 				options: types.ScanOptions{
-					VulnType:       []string{types.VulnTypeOS, types.VulnTypeLibrary},
-					SecurityChecks: []string{types.SecurityCheckVulnerability},
+					VulnType: []string{
+						types.VulnTypeOS,
+						types.VulnTypeLibrary,
+					},
+					Scanners: types.Scanners{types.VulnerabilityScanner},
 				},
 			},
 			fixtures: []string{"testdata/fixtures/happy.yaml"},
@@ -53,7 +56,7 @@ func TestScanner_Scan(t *testing.T) {
 				},
 				Returns: ApplierApplyLayersReturns{
 					Detail: ftypes.ArtifactDetail{
-						OS: &ftypes.OS{
+						OS: ftypes.OS{
 							Family: fos.Alpine,
 							Name:   "3.11",
 						},
@@ -137,7 +140,7 @@ func TestScanner_Scan(t *testing.T) {
 					},
 				},
 			},
-			wantOS: &ftypes.OS{
+			wantOS: ftypes.OS{
 				Family: "alpine",
 				Name:   "3.11",
 				Eosl:   true,
@@ -149,8 +152,11 @@ func TestScanner_Scan(t *testing.T) {
 				target:   "alpine:latest",
 				layerIDs: []string{"sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10"},
 				options: types.ScanOptions{
-					VulnType:        []string{types.VulnTypeOS, types.VulnTypeLibrary},
-					SecurityChecks:  []string{types.SecurityCheckVulnerability},
+					VulnType: []string{
+						types.VulnTypeOS,
+						types.VulnTypeLibrary,
+					},
+					Scanners:        types.Scanners{types.VulnerabilityScanner},
 					ListAllPackages: true,
 				},
 			},
@@ -161,7 +167,7 @@ func TestScanner_Scan(t *testing.T) {
 				},
 				Returns: ApplierApplyLayersReturns{
 					Detail: ftypes.ArtifactDetail{
-						OS: &ftypes.OS{
+						OS: ftypes.OS{
 							Family: "alpine",
 							Name:   "3.11",
 						},
@@ -285,7 +291,7 @@ func TestScanner_Scan(t *testing.T) {
 					},
 				},
 			},
-			wantOS: &ftypes.OS{
+			wantOS: ftypes.OS{
 				Family: "alpine",
 				Name:   "3.11",
 				Eosl:   true,
@@ -297,8 +303,11 @@ func TestScanner_Scan(t *testing.T) {
 				target:   "alpine:latest",
 				layerIDs: []string{"sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10"},
 				options: types.ScanOptions{
-					VulnType:        []string{types.VulnTypeOS, types.VulnTypeLibrary},
-					SecurityChecks:  []string{types.SecurityCheckVulnerability},
+					VulnType: []string{
+						types.VulnTypeOS,
+						types.VulnTypeLibrary,
+					},
+					Scanners:        types.Scanners{types.VulnerabilityScanner},
 					ListAllPackages: true,
 				},
 			},
@@ -308,7 +317,7 @@ func TestScanner_Scan(t *testing.T) {
 				},
 				Returns: ApplierApplyLayersReturns{
 					Detail: ftypes.ArtifactDetail{
-						OS: &ftypes.OS{
+						OS: ftypes.OS{
 							Family: "alpine",
 							Name:   "3.11",
 						},
@@ -391,7 +400,7 @@ func TestScanner_Scan(t *testing.T) {
 					},
 				},
 			},
-			wantOS: &ftypes.OS{
+			wantOS: ftypes.OS{
 				Family: "alpine",
 				Name:   "3.11",
 				Eosl:   true,
@@ -403,8 +412,11 @@ func TestScanner_Scan(t *testing.T) {
 				target:   "alpine:latest",
 				layerIDs: []string{"sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10"},
 				options: types.ScanOptions{
-					VulnType:       []string{types.VulnTypeOS, types.VulnTypeLibrary},
-					SecurityChecks: []string{types.SecurityCheckVulnerability},
+					VulnType: []string{
+						types.VulnTypeOS,
+						types.VulnTypeLibrary,
+					},
+					Scanners: types.Scanners{types.VulnerabilityScanner},
 				},
 			},
 			fixtures: []string{"testdata/fixtures/happy.yaml"},
@@ -414,7 +426,7 @@ func TestScanner_Scan(t *testing.T) {
 				},
 				Returns: ApplierApplyLayersReturns{
 					Detail: ftypes.ArtifactDetail{
-						OS: &ftypes.OS{},
+						OS: ftypes.OS{},
 						Applications: []ftypes.Application{
 							{
 								Type:     ftypes.Bundler,
@@ -475,7 +487,7 @@ func TestScanner_Scan(t *testing.T) {
 					},
 				},
 			},
-			wantOS: &ftypes.OS{},
+			wantOS: ftypes.OS{},
 		},
 		{
 			name: "happy path with no package",
@@ -483,8 +495,11 @@ func TestScanner_Scan(t *testing.T) {
 				target:   "alpine:latest",
 				layerIDs: []string{"sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10"},
 				options: types.ScanOptions{
-					VulnType:       []string{types.VulnTypeOS, types.VulnTypeLibrary},
-					SecurityChecks: []string{types.SecurityCheckVulnerability},
+					VulnType: []string{
+						types.VulnTypeOS,
+						types.VulnTypeLibrary,
+					},
+					Scanners: types.Scanners{types.VulnerabilityScanner},
 				},
 			},
 			fixtures: []string{"testdata/fixtures/happy.yaml"},
@@ -494,7 +509,7 @@ func TestScanner_Scan(t *testing.T) {
 				},
 				Returns: ApplierApplyLayersReturns{
 					Detail: ftypes.ArtifactDetail{
-						OS: &ftypes.OS{
+						OS: ftypes.OS{
 							Family: "alpine",
 							Name:   "3.11",
 						},
@@ -551,7 +566,7 @@ func TestScanner_Scan(t *testing.T) {
 					},
 				},
 			},
-			wantOS: &ftypes.OS{
+			wantOS: ftypes.OS{
 				Family: "alpine",
 				Name:   "3.11",
 				Eosl:   true,
@@ -563,8 +578,11 @@ func TestScanner_Scan(t *testing.T) {
 				target:   "fedora:27",
 				layerIDs: []string{"sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10"},
 				options: types.ScanOptions{
-					VulnType:       []string{types.VulnTypeOS, types.VulnTypeLibrary},
-					SecurityChecks: []string{types.SecurityCheckVulnerability},
+					VulnType: []string{
+						types.VulnTypeOS,
+						types.VulnTypeLibrary,
+					},
+					Scanners: types.Scanners{types.VulnerabilityScanner},
 				},
 			},
 			fixtures: []string{"testdata/fixtures/happy.yaml"},
@@ -574,7 +592,7 @@ func TestScanner_Scan(t *testing.T) {
 				},
 				Returns: ApplierApplyLayersReturns{
 					Detail: ftypes.ArtifactDetail{
-						OS: &ftypes.OS{
+						OS: ftypes.OS{
 							Family: "fedora",
 							Name:   "27",
 						},
@@ -625,7 +643,7 @@ func TestScanner_Scan(t *testing.T) {
 					},
 				},
 			},
-			wantOS: &ftypes.OS{
+			wantOS: ftypes.OS{
 				Family: "fedora",
 				Name:   "27",
 			},
@@ -636,8 +654,11 @@ func TestScanner_Scan(t *testing.T) {
 				target:   "busybox:latest",
 				layerIDs: []string{"sha256:a6d503001157aedc826853f9b67f26d35966221b158bff03849868ae4a821116"},
 				options: types.ScanOptions{
-					VulnType:       []string{types.VulnTypeOS, types.VulnTypeLibrary},
-					SecurityChecks: []string{types.SecurityCheckVulnerability},
+					VulnType: []string{
+						types.VulnTypeOS,
+						types.VulnTypeLibrary,
+					},
+					Scanners: types.Scanners{types.VulnerabilityScanner},
 				},
 			},
 			fixtures: []string{"testdata/fixtures/happy.yaml"},
@@ -646,14 +667,10 @@ func TestScanner_Scan(t *testing.T) {
 					BlobIDs: []string{"sha256:a6d503001157aedc826853f9b67f26d35966221b158bff03849868ae4a821116"},
 				},
 				Returns: ApplierApplyLayersReturns{
-					Detail: ftypes.ArtifactDetail{
-						OS: nil,
-					},
 					Err: analyzer.ErrUnknownOS,
 				},
 			},
 			wantResults: nil,
-			wantOS:      nil,
 		},
 		{
 			name: "happy path with only language-specific package detection",
@@ -661,8 +678,8 @@ func TestScanner_Scan(t *testing.T) {
 				target:   "alpine:latest",
 				layerIDs: []string{"sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10"},
 				options: types.ScanOptions{
-					VulnType:       []string{types.VulnTypeLibrary},
-					SecurityChecks: []string{types.SecurityCheckVulnerability},
+					VulnType: []string{types.VulnTypeLibrary},
+					Scanners: types.Scanners{types.VulnerabilityScanner},
 				},
 			},
 			fixtures: []string{"testdata/fixtures/happy.yaml"},
@@ -672,7 +689,7 @@ func TestScanner_Scan(t *testing.T) {
 				},
 				Returns: ApplierApplyLayersReturns{
 					Detail: ftypes.ArtifactDetail{
-						OS: &ftypes.OS{
+						OS: ftypes.OS{
 							Family: "alpine",
 							Name:   "3.11",
 						},
@@ -760,7 +777,7 @@ func TestScanner_Scan(t *testing.T) {
 					},
 				},
 			},
-			wantOS: &ftypes.OS{
+			wantOS: ftypes.OS{
 				Family: "alpine",
 				Name:   "3.11",
 			},
@@ -771,7 +788,7 @@ func TestScanner_Scan(t *testing.T) {
 				target:   "/app/configs",
 				layerIDs: []string{"sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10"},
 				options: types.ScanOptions{
-					SecurityChecks: []string{types.SecurityCheckConfig},
+					Scanners: types.Scanners{types.MisconfigScanner},
 				},
 			},
 			fixtures: []string{"testdata/fixtures/happy.yaml"},
@@ -920,8 +937,11 @@ func TestScanner_Scan(t *testing.T) {
 				target:   "alpine:latest",
 				layerIDs: []string{"sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10"},
 				options: types.ScanOptions{
-					VulnType:       []string{types.VulnTypeOS, types.VulnTypeLibrary},
-					SecurityChecks: []string{types.SecurityCheckVulnerability},
+					VulnType: []string{
+						types.VulnTypeOS,
+						types.VulnTypeLibrary,
+					},
+					Scanners: types.Scanners{types.VulnerabilityScanner},
 				},
 			},
 			fixtures: []string{"testdata/fixtures/happy.yaml"},
@@ -941,8 +961,8 @@ func TestScanner_Scan(t *testing.T) {
 				target:   "alpine:latest",
 				layerIDs: []string{"sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10"},
 				options: types.ScanOptions{
-					VulnType:       []string{types.VulnTypeLibrary},
-					SecurityChecks: []string{types.SecurityCheckVulnerability},
+					VulnType: []string{types.VulnTypeLibrary},
+					Scanners: types.Scanners{types.VulnerabilityScanner},
 				},
 			},
 			fixtures: []string{"testdata/fixtures/sad.yaml"},
@@ -952,7 +972,7 @@ func TestScanner_Scan(t *testing.T) {
 				},
 				Returns: ApplierApplyLayersReturns{
 					Detail: ftypes.ArtifactDetail{
-						OS: &ftypes.OS{
+						OS: ftypes.OS{
 							Family: "alpine",
 							Name:   "3.11",
 						},

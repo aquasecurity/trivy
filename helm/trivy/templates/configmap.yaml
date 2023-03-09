@@ -12,7 +12,7 @@ data:
   TRIVY_CACHE_TTL: {{ .Values.trivy.cache.redis.ttl | quote }}
 {{- end }}
   TRIVY_DEBUG: {{ .Values.trivy.debugMode | quote }}
-  TRIVY_SKIP_UPDATE: {{ .Values.trivy.skipUpdate | quote }}
+  TRIVY_SKIP_DB_UPDATE: {{ .Values.trivy.skipDBUpdate | quote }}
   TRIVY_DB_REPOSITORY: {{ .Values.trivy.dbRepository | quote }}
 {{- if .Values.httpProxy }}
   HTTP_PROXY: {{ .Values.httpProxy | quote }}
