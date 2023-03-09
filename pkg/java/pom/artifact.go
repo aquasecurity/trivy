@@ -15,12 +15,14 @@ var (
 )
 
 type artifact struct {
-	GroupID              string
-	ArtifactID           string
-	Version              version
-	Module               bool
-	DependencyManagement map[string]pomDependency
-	Exclusions           map[string]struct{}
+	GroupID    string
+	ArtifactID string
+	Version    version
+
+	Exclusions map[string]struct{}
+
+	Module bool
+	Root   bool
 }
 
 func newArtifact(groupID, artifactID, version string, props map[string]string) artifact {
