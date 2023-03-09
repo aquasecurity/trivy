@@ -158,6 +158,9 @@ func ApplyLayers(layers []types.BlobInfo) types.ArtifactDetail {
 			}
 			nestedMap.SetByString(key, sep, customResource)
 		}
+
+		// weak password
+		mergedLayer.WeakPass = append(mergedLayer.WeakPass, layer.WeakPass...)
 	}
 
 	// nolint

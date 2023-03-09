@@ -32,6 +32,7 @@ var (
 		Value: types.Scanners{
 			types.VulnerabilityScanner,
 			types.SecretScanner,
+			types.WeakPassScanner,
 		}.StringSlice(),
 		Aliases: []Alias{
 			{

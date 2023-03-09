@@ -561,6 +561,9 @@ func initScannerConfig(opts flag.Options, cacheClient cache.Cache) (ScannerConfi
 		log.Logger.Debugf("Vulnerability type:  %s", scanOptions.VulnType)
 	}
 
+	if opts.Scanners.Enabled(types.WeakPassScanner) {
+		log.Logger.Info("Weak password scanning is enabled")
+	}
 	// ScannerOption is filled only when config scanning is enabled.
 	var configScannerOptions config.ScannerOption
 	if opts.Scanners.Enabled(types.MisconfigScanner) || opts.ImageConfigScanners.Enabled(types.MisconfigScanner) {

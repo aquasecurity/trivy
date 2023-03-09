@@ -8,6 +8,8 @@ import (
 	"strings"
 	"time"
 
+	"github.com/chaitin/veinmind-tools/plugins/go/veinmind-weakpass/model"
+
 	"github.com/google/wire"
 	"github.com/samber/lo"
 	"golang.org/x/exp/slices"
@@ -77,6 +79,8 @@ func NewScanner(applier Applier, ospkgDetector OspkgDetector, vulnClient vulnera
 // Scan scans the artifact and return results.
 func (s Scanner) Scan(ctx context.Context, target, artifactKey string, blobKeys []string, options types.ScanOptions) (types.Results, ftypes.OS, error) {
 	artifactDetail, err := s.applier.ApplyLayers(artifactKey, blobKeys)
+	log.Logger.Info("after ApplyLayers weak pass :", artifactDetail.WeakPass)
+
 	switch {
 	case errors.Is(err, analyzer.ErrUnknownOS):
 		log.Logger.Debug("OS is not detected.")
@@ -173,6 +177,9 @@ func (s Scanner) Scan(ctx context.Context, target, artifactKey string, blobKeys 
 		})
 	}
 
+	if options.Scanners.Enabled(types.WeakPassScanner) {
+		results = append(results, s.weakPassToResults(artifactDetail.WeakPass)...)
+	}
 	for i := range results {
 		// Fill vulnerability details
 		s.vulnClient.FillInfo(results[i].Vulnerabilities)
@@ -480,6 +487,15 @@ func (s Scanner) scanLicenses(detail ftypes.ArtifactDetail,
 		Licenses: fileLicenses,
 	})
 
+	return results
+}
+
+func (s Scanner) weakPassToResults(weakPass []model.WeakpassResult) types.Results {
+	var results types.Results
+	results = append(results, types.Result{
+		Class:    types.ClassWeakPass,
+		WeakPass: weakPass,
+	})
 	return results
 }
 

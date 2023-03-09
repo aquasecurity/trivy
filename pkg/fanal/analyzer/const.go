@@ -124,6 +124,11 @@ const (
 	// =======
 	TypeRedHatContentManifestType Type = "redhat-content-manifest"
 	TypeRedHatDockerfileType      Type = "redhat-dockerfile"
+
+	// ========
+	// Weak password
+	// ========
+	TypeWeakPassWord Type = "weak-password"
 )
 
 var (

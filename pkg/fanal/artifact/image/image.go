@@ -340,6 +340,8 @@ func (a Artifact) inspectLayer(ctx context.Context, layerInfo LayerInfo, disable
 
 		// For Red Hat
 		BuildInfo: result.BuildInfo,
+		// weak password
+		WeakPass: result.WeakPass,
 	}
 
 	// Call post handlers to modify blob info

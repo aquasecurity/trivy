@@ -4,6 +4,7 @@ go 1.19
 
 require (
 	github.com/CycloneDX/cyclonedx-go v0.7.0
+	github.com/Jeffail/tunny v0.1.4
 	github.com/Masterminds/sprig/v3 v3.2.3
 	github.com/NYTimes/gziphandler v1.1.1
 	github.com/alicebob/miniredis/v2 v2.23.0
@@ -29,6 +30,7 @@ require (
 	github.com/aws/aws-sdk-go-v2/service/sts v1.18.5
 	github.com/caarlos0/env/v6 v6.10.1
 	github.com/cenkalti/backoff v2.2.1+incompatible
+	github.com/chaitin/veinmind-tools/plugins/go/veinmind-weakpass v0.0.0-20230301085922-6c25c409f4d4
 	github.com/cheggaaa/pb/v3 v3.1.0
 	github.com/containerd/containerd v1.6.19
 	github.com/docker/docker v23.0.0-rc.1+incompatible
@@ -84,8 +86,12 @@ require (
 )
 
 require (
+	github.com/beevik/etree v1.1.0 // indirect
+	github.com/chaitin/libveinmind v1.5.2 // indirect
+	github.com/chaitin/veinmind-common-go v1.4.2 // indirect
 	github.com/cloudflare/circl v1.1.0 // indirect
 	github.com/go-logr/stdr v1.2.2 // indirect
+	github.com/jedib0t/go-pretty/v6 v6.4.4 // indirect
 	github.com/pjbgf/sha1cd v0.2.3 // indirect
 	github.com/skeema/knownhosts v1.1.0 // indirect
 	go.opentelemetry.io/otel v1.11.1 // indirect

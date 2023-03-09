@@ -3,6 +3,8 @@ package types
 import (
 	"encoding/json"
 
+	"github.com/chaitin/veinmind-tools/plugins/go/veinmind-weakpass/model"
+
 	v1 "github.com/google/go-containerregistry/pkg/v1" // nolint: goimports
 
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
@@ -57,6 +59,7 @@ const (
 	ClassLicense     = "license"      // For detected package licenses
 	ClassLicenseFile = "license-file" // For detected licenses in files
 	ClassCustom      = "custom"
+	ClassWeakPass    = "weak-pass"
 
 	ComplianceK8sNsa           = Compliance("k8s-nsa")
 	ComplianceK8sCIS           = Compliance("k8s-cis")
@@ -79,6 +82,7 @@ type Result struct {
 	Secrets           []ftypes.SecretFinding     `json:"Secrets,omitempty"`
 	Licenses          []DetectedLicense          `json:"Licenses,omitempty"`
 	CustomResources   []ftypes.CustomResource    `json:"CustomResources,omitempty"`
+	WeakPass          []model.WeakpassResult     `json:"WeakPass,omitempty"`
 }
 
 func (r *Result) MarshalJSON() ([]byte, error) {
@@ -106,7 +110,7 @@ func (r *Result) MarshalJSON() ([]byte, error) {
 
 func (r *Result) IsEmpty() bool {
 	return len(r.Packages) == 0 && len(r.Vulnerabilities) == 0 && len(r.Misconfigurations) == 0 &&
-		len(r.Secrets) == 0 && len(r.Licenses) == 0 && len(r.CustomResources) == 0
+		len(r.Secrets) == 0 && len(r.Licenses) == 0 && len(r.CustomResources) == 0 && len(r.WeakPass) == 0
 }
 
 type MisconfSummary struct {

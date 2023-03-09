@@ -10,6 +10,8 @@ import (
 	"strings"
 	"sync"
 
+	"github.com/chaitin/veinmind-tools/plugins/go/veinmind-weakpass/model"
+
 	"github.com/samber/lo"
 	"golang.org/x/exp/slices"
 	"golang.org/x/sync/semaphore"
@@ -169,6 +171,7 @@ type AnalysisResult struct {
 	// CustomResources hold analysis results from custom analyzers.
 	// It is for extensibility and not used in OSS.
 	CustomResources []types.CustomResource
+	WeakPass        []model.WeakpassResult
 }
 
 func NewAnalysisResult() *AnalysisResult {
@@ -180,7 +183,7 @@ func NewAnalysisResult() *AnalysisResult {
 func (r *AnalysisResult) isEmpty() bool {
 	return lo.IsEmpty(r.OS) && r.Repository == nil && len(r.PackageInfos) == 0 && len(r.Applications) == 0 &&
 		len(r.Secrets) == 0 && len(r.Licenses) == 0 && len(r.SystemInstalledFiles) == 0 &&
-		r.BuildInfo == nil && len(r.Files) == 0 && len(r.Digests) == 0 && len(r.CustomResources) == 0
+		r.BuildInfo == nil && len(r.Files) == 0 && len(r.Digests) == 0 && len(r.CustomResources) == 0 && len(r.WeakPass) == 0
 }
 
 func (r *AnalysisResult) Sort() {
@@ -302,6 +305,7 @@ func (r *AnalysisResult) Merge(new *AnalysisResult) {
 	}
 
 	r.CustomResources = append(r.CustomResources, new.CustomResources...)
+	r.WeakPass = append(r.WeakPass, new.WeakPass...)
 }
 
 func belongToGroup(groupName Group, analyzerType Type, disabledAnalyzers []Type, analyzer any) bool {

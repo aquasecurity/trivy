@@ -44,6 +44,9 @@ const (
 
 	// LicenseScanner is the scanner of licenses
 	LicenseScanner = Scanner("license")
+
+	//WeakPassScanner is the scanner of weak password
+	WeakPassScanner = Scanner("weak-pass")
 )
 
 var (
@@ -58,6 +61,7 @@ var (
 		RBACScanner,
 		SecretScanner,
 		LicenseScanner,
+		WeakPassScanner,
 		NoneScanner,
 	}
 

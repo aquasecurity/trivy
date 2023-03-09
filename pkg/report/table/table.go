@@ -86,6 +86,9 @@ func (tw Writer) write(result types.Result) {
 	// file license
 	case result.Class == types.ClassLicenseFile:
 		renderer = NewFileLicenseRenderer(result, tw.isOutputToTerminal(), tw.Severities)
+	// weak password
+	case result.Class == types.ClassWeakPass:
+		renderer = NewWeakPassRenderer(result, tw.isOutputToTerminal(), tw.Severities)
 	default:
 		return
 	}
