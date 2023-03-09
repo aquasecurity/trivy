@@ -52,7 +52,7 @@ Trivy is integrated with many popular platforms and applications. The complete l
 - See [Ecosystem] for more
 
 ### Canary builds
-There are canary builds ([Docker Hub image](https://hub.docker.com/r/aquasec/trivy/tags?page=1&name=canary), [ghcr image](https://github.com/aquasecurity/trivy/pkgs/container/trivy/75776514?tag=canary) and [binaries](https://github.com/aquasecurity/trivy/actions/workflows/canary.yaml)) as generated every push to main branch.
+There are canary builds ([Docker Hub](https://hub.docker.com/r/aquasec/trivy/tags?page=1&name=canary), [GitHub](https://github.com/aquasecurity/trivy/pkgs/container/trivy/75776514?tag=canary), [ECR](https://gallery.ecr.aws/aquasecurity/trivy#canary) images and [binaries](https://github.com/aquasecurity/trivy/actions/workflows/canary.yaml)) as generated every push to main branch.
 
 Please be aware: canary builds might have critical bugs, it's not recommended for use in production.
 
