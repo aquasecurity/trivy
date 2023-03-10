@@ -25,12 +25,10 @@ func init() {
 }
 
 func getRequiredFile() (pathList []string) {
-	for _, modName := range serviceName {
-		mod, err := service.GetModuleByName(modName)
-		if err != nil {
-			log.Logger.Error(err)
-			continue
-		}
+	svcMap := service.GetAllModules()
+
+	for _, mod := range svcMap {
+
 		var tmp []string
 		for _, v := range mod.FilePath() {
 			path := strings.TrimPrefix(v, "/")
@@ -39,19 +37,19 @@ func getRequiredFile() (pathList []string) {
 		}
 		pathList = append(pathList, tmp...)
 	}
+
 	return
 }
 
 const version = 1
 
 var requiredFiles []string
-var serviceName = []string{"mysql", "tomcat", "redis", "ssh"}
 var serviceMap = make(map[string]service.IService)
 
 type weakPassAnalyzer struct{}
 
 func (a weakPassAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInput) (*analyzer.AnalysisResult, error) {
-	var WeakpassResults []model.WeakpassResult
+	var weakPassResults []model.WeakpassResult
 	mod := serviceMap[input.FilePath]
 
 	hash, err := service.GetHash(mod.Name())
@@ -61,7 +59,7 @@ func (a weakPassAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInpu
 	}
 	dict := service.GetDict(mod.Name())
 
-	var weakpassResultsLock sync.Mutex
+	var weakPassResultsLock sync.Mutex
 	pool := tunny.NewFunc(2, func(opt interface{}) interface{} {
 		bruteOpt, ok := opt.(model.BruteOption)
 		if !ok {
@@ -79,9 +77,9 @@ func (a weakPassAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInpu
 				Filepath:    input.FilePath,
 				ServiceType: service.GetType(mod),
 			}
-			weakpassResultsLock.Lock()
-			WeakpassResults = append(WeakpassResults, w)
-			weakpassResultsLock.Unlock()
+			weakPassResultsLock.Lock()
+			weakPassResults = append(weakPassResults, w)
+			weakPassResultsLock.Unlock()
 			return true
 		}
 		return false
@@ -113,10 +111,10 @@ func (a weakPassAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInpu
 		}
 	}
 	// Report
-	if len(WeakpassResults) > 0 {
-		log.Logger.Debug("weak pass :", WeakpassResults)
+	if len(weakPassResults) > 0 {
+		log.Logger.Debug("weak pass :", weakPassResults)
 	}
-	return &analyzer.AnalysisResult{WeakPass: WeakpassResults}, nil
+	return &analyzer.AnalysisResult{WeakPass: weakPassResults}, nil
 }
 
 func (a weakPassAnalyzer) Required(filePath string, _ os.FileInfo) bool {
