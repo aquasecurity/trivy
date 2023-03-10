@@ -79,7 +79,6 @@ func NewScanner(applier Applier, ospkgDetector OspkgDetector, vulnClient vulnera
 // Scan scans the artifact and return results.
 func (s Scanner) Scan(ctx context.Context, target, artifactKey string, blobKeys []string, options types.ScanOptions) (types.Results, ftypes.OS, error) {
 	artifactDetail, err := s.applier.ApplyLayers(artifactKey, blobKeys)
-	log.Logger.Info("after ApplyLayers weak pass :", artifactDetail.WeakPass)
 
 	switch {
 	case errors.Is(err, analyzer.ErrUnknownOS):

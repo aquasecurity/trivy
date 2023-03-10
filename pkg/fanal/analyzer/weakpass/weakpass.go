@@ -2,7 +2,6 @@ package weakpass
 
 import (
 	"context"
-	"fmt"
 	"os"
 	"strings"
 	"sync"
@@ -23,7 +22,6 @@ import (
 func init() {
 	requiredFiles = getRequiredFile()
 	analyzer.RegisterAnalyzer(&weakPassAnalyzer{})
-	fmt.Println("weak pass require file :", requiredFiles)
 }
 
 func getRequiredFile() (pathList []string) {
