@@ -437,6 +437,7 @@ func (a Artifact) uncompressedLayer(diffID string) (string, io.ReadCloser, error
 		return "", nil, xerrors.Errorf("failed to get the layer content (%s): %w", diffID, err)
 	}
 	return digest, rc, nil
+
 }
 
 // ref. https://github.com/google/go-containerregistry/issues/701
