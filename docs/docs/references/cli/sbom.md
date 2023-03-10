@@ -1,12 +1,14 @@
-# SBOM
+## trivy sbom
 
-```bash
 Scan SBOM for vulnerabilities
 
-Usage:
-  trivy sbom [flags] SBOM_PATH
+```
+trivy sbom [flags] SBOM_PATH
+```
 
-Examples:
+### Examples
+
+```
   # Scan CycloneDX and show the result in tables
   $ trivy sbom /path/to/report.cdx
 
@@ -16,53 +18,56 @@ Examples:
   # Scan CycloneDX-type attestation and show the result in tables
   $ trivy sbom /path/to/report.cdx.intoto.jsonl
 
+```
 
-Scan Flags
-      --offline-scan             do not issue API requests to identify dependencies
-      --scanners string          comma-separated list of what security issues to detect (vuln,config,secret) (default "vuln,secret")
-      --skip-dirs strings        specify the directories where the traversal is skipped
-      --skip-files strings       specify the file paths to skip traversal
+### Options
 
-Report Flags
-      --exit-code int          specify exit code when any security issues are found
-  -f, --format string          format (table, json, sarif, template, cyclonedx, spdx, spdx-json, github, cosign-vuln) (default "table")
-      --ignore-policy string   specify the Rego file path to evaluate each vulnerability
-      --ignorefile string      specify .trivyignore file (default ".trivyignore")
-      --list-all-pkgs          enabling the option will output all packages regardless of vulnerability
-  -o, --output string          output file name
-  -s, --severity string        severities of security issues to be displayed (comma separated) (default "UNKNOWN,LOW,MEDIUM,HIGH,CRITICAL")
-  -t, --template string        output template
-
-Cache Flags
-      --cache-backend string   cache backend (e.g. redis://localhost:6379) (default "fs")
-      --cache-ttl duration     cache TTL when using redis as cache backend
-      --clear-cache            clear image caches without scanning
-      --redis-ca string        redis ca file location, if using redis as cache backend
-      --redis-cert string      redis certificate file location, if using redis as cache backend
-      --redis-key string       redis key file location, if using redis as cache backend
-
-DB Flags
-      --db-repository string   OCI repository to retrieve trivy-db from (default "ghcr.io/aquasecurity/trivy-db")
-      --download-db-only       download/update vulnerability database but don't run a scan
-      --download-java-db-only  download/update java indexes database but don't run a scan
+```
+      --cache-backend string        cache backend (e.g. redis://localhost:6379) (default "fs")
+      --cache-ttl duration          cache TTL when using redis as cache backend
+      --clear-cache                 clear image caches without scanning
+      --compliance string           compliance report to generate
+      --custom-headers strings      custom headers in client mode
+      --db-repository string        OCI repository to retrieve trivy-db from (default "ghcr.io/aquasecurity/trivy-db")
+      --download-db-only            download/update vulnerability database but don't run a scan
+      --download-java-db-only       download/update Java index database but don't run a scan
+      --exit-code int               specify exit code when any security issues are found
+      --exit-on-eol int             exit with the specified code when the OS reaches end of service/life
+      --file-patterns strings       specify config file patterns
+  -f, --format string               format (table, json, template, sarif, cyclonedx, spdx, spdx-json, github, cosign-vuln) (default "table")
+  -h, --help                        help for sbom
+      --ignore-policy string        specify the Rego file path to evaluate each vulnerability
+      --ignore-unfixed              display only fixed vulnerabilities
+      --ignorefile string           specify .trivyignore file (default ".trivyignore")
       --java-db-repository string   OCI repository to retrieve trivy-java-db from (default "ghcr.io/aquasecurity/trivy-java-db")
-      --no-progress            suppress progress bar
-      --reset                  remove all caches and database
-      --skip-db-update         skip updating vulnerability database
-      --skip-java-db-update    skip updating java indexes database
+      --list-all-pkgs               enabling the option will output all packages regardless of vulnerability
+      --no-progress                 suppress progress bar
+      --offline-scan                do not issue API requests to identify dependencies
+  -o, --output string               output file name
+      --redis-ca string             redis ca file location, if using redis as cache backend
+      --redis-cert string           redis certificate file location, if using redis as cache backend
+      --redis-key string            redis key file location, if using redis as cache backend
+      --rekor-url string            [EXPERIMENTAL] address of rekor STL server (default "https://rekor.sigstore.dev")
+      --reset                       remove all caches and database
+      --sbom-sources strings        [EXPERIMENTAL] try to retrieve SBOM from the specified sources (rekor)
+      --scanners strings            comma-separated list of what security issues to detect (vuln,config,secret,license) (default [vuln,secret])
+      --server string               server address in client mode
+  -s, --severity string             severities of security issues to be displayed (comma separated) (default "UNKNOWN,LOW,MEDIUM,HIGH,CRITICAL")
+      --skip-db-update              skip updating vulnerability database
+      --skip-dirs strings           specify the directories where the traversal is skipped
+      --skip-files strings          specify the file paths to skip traversal
+      --skip-java-db-update         skip updating Java index database
+      --slow                        scan over time with lower CPU and memory utilization
+  -t, --template string             output template
+      --token string                for authentication in client/server mode
+      --token-header string         specify a header name for token in client/server mode (default "Trivy-Token")
+      --vuln-type string            comma-separated list of vulnerability types (os,library) (default "os,library")
+```
 
-Vulnerability Flags
-      --ignore-unfixed     display only fixed vulnerabilities
-      --vuln-type string   comma-separated list of vulnerability types (os,library) (default "os,library")
+### Options inherited from parent commands
 
-Client/Server Flags
-      --custom-headers strings   custom headers in client mode
-      --server string            server address in client mode
-      --token string             for authentication in client/server mode
-      --token-header string      specify a header name for token in client/server mode (default "Trivy-Token")
-
-Global Flags:
-      --cache-dir string          cache directory (default "/Users/teppei/Library/Caches/trivy")
+```
+      --cache-dir string          cache directory (default "/home/shubham/.cache/trivy")
   -c, --config string             config path (default "trivy.yaml")
   -d, --debug                     debug mode
       --generate-default-config   write the default config to trivy-default.yaml
@@ -71,3 +76,9 @@ Global Flags:
       --timeout duration          timeout (default 5m0s)
   -v, --version                   show version
 ```
+
+### SEE ALSO
+
+* [trivy](index.md)	 - Unified security scanner
+
+###### Auto generated by spf13/cobra on 10-Mar-2023
