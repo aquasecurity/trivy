@@ -9,7 +9,6 @@ import (
 	"github.com/aws/aws-sdk-go/service/s3"
 	"github.com/aws/aws-sdk-go/service/s3/s3iface"
 	"github.com/aws/aws-sdk-go/service/s3/s3manager/s3manageriface"
-	"github.com/hashicorp/go-multierror"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
@@ -42,15 +41,21 @@ func (c S3Cache) PutArtifact(artifactID string, artifactConfig types.ArtifactInf
 }
 
 func (c S3Cache) DeleteBlobs(blobIDs []string) error {
-	var errs error
+	var objects []*s3.ObjectIdentifier
 	for _, blobID := range blobIDs {
 		key := fmt.Sprintf("%s/%s/%s", blobBucket, c.prefix, blobID)
-		input := &s3.DeleteBucketInput{Bucket: aws.String(key)}
-		if _, err := c.s3Client.DeleteBucket(input); err != nil {
-			errs = multierror.Append(errs, err)
-		}
+		objects = append(objects, &s3.ObjectIdentifier{
+			Key: aws.String(key),
+		})
 	}
-	return errs
+
+	_, err := c.s3Client.DeleteObjects(&s3.DeleteObjectsInput{
+		Bucket: aws.String(c.bucketName),
+		Delete: &s3.Delete{
+			Objects: objects,
+		},
+	})
+	return err
 }
 
 func (c S3Cache) PutBlob(blobID string, blobInfo types.BlobInfo) error {

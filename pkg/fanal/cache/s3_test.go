@@ -30,9 +30,9 @@ func (m *mockS3Client) HeadObject(*s3.HeadObjectInput) (*s3.HeadObjectOutput, er
 	return &s3.HeadObjectOutput{}, nil
 }
 
-func (m *mockS3Client) DeleteBucket(in *s3.DeleteBucketInput) (*s3.DeleteBucketOutput, error) {
-	if in != nil && *in.Bucket == blobBucket+"/prefix/"+correctHash {
-		return &s3.DeleteBucketOutput{}, nil
+func (m *mockS3Client) DeleteObjects(in *s3.DeleteObjectsInput) (*s3.DeleteObjectsOutput, error) {
+	if in != nil && in.Delete != nil && len(in.Delete.Objects) == 1 && *in.Delete.Objects[0].Key == blobBucket+"/prefix/"+correctHash {
+		return &s3.DeleteObjectsOutput{}, nil
 	}
 	return nil, errors.New("unknown bucket")
 }

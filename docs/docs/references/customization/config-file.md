@@ -139,6 +139,17 @@ cache:
     # Same as '--redis-key'
     # Default is empty
     key:
+
+  # S3 options
+  s3:
+    # Same as '--s3-endpoint'
+    # Default is empty
+    endpoint:
+
+    # Same as '--s3-prefix'
+    # Default is 'trivy'
+    prefix:
+  
 ```
 
 ## DB Options

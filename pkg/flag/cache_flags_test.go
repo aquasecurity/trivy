@@ -19,6 +19,8 @@ func TestCacheFlagGroup_ToOptions(t *testing.T) {
 		RedisCACert  string
 		RedisCert    string
 		RedisKey     string
+		S3Endpoint   string
+		S3Prefix     string
 	}
 	tests := []struct {
 		name      string
@@ -65,6 +67,37 @@ func TestCacheFlagGroup_ToOptions(t *testing.T) {
 			assertion: require.NoError,
 		},
 		{
+			name: "s3",
+			fields: fields{
+				CacheBackend: "s3://foobar",
+				S3Prefix:     "trivy",
+			},
+			want: flag.CacheOptions{
+				CacheBackend: "s3://foobar",
+				S3Options: flag.S3Options{
+					S3Endpoint: "",
+					S3Prefix:   "trivy",
+				},
+			},
+			assertion: require.NoError,
+		},
+		{
+			name: "s3 custom endpoint",
+			fields: fields{
+				CacheBackend: "s3://foobar2",
+				S3Endpoint:   "https://obj.mycompany.com",
+				S3Prefix:     "anotherprefix",
+			},
+			want: flag.CacheOptions{
+				CacheBackend: "s3://foobar2",
+				S3Options: flag.S3Options{
+					S3Endpoint: "https://obj.mycompany.com",
+					S3Prefix:   "anotherprefix",
+				},
+			},
+			assertion: require.NoError,
+		},
+		{
 			name: "unknown backend",
 			fields: fields{
 				CacheBackend: "unknown",
@@ -92,6 +125,8 @@ func TestCacheFlagGroup_ToOptions(t *testing.T) {
 			viper.Set(flag.RedisCACertFlag.ConfigName, tt.fields.RedisCACert)
 			viper.Set(flag.RedisCertFlag.ConfigName, tt.fields.RedisCert)
 			viper.Set(flag.RedisKeyFlag.ConfigName, tt.fields.RedisKey)
+			viper.Set(flag.S3EndpointFlag.ConfigName, tt.fields.S3Endpoint)
+			viper.Set(flag.S3PrefixFlag.ConfigName, tt.fields.S3Prefix)
 
 			f := &flag.CacheFlagGroup{
 				ClearCache:   &flag.ClearCacheFlag,
@@ -100,6 +135,8 @@ func TestCacheFlagGroup_ToOptions(t *testing.T) {
 				RedisCACert:  &flag.RedisCACertFlag,
 				RedisCert:    &flag.RedisCertFlag,
 				RedisKey:     &flag.RedisKeyFlag,
+				S3Endpoint:   &flag.S3EndpointFlag,
+				S3Prefix:     &flag.S3PrefixFlag,
 			}
 
 			got, err := f.ToOptions()

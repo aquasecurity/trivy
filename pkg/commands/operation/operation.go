@@ -7,6 +7,10 @@ import (
 	"os"
 	"strings"
 
+	"github.com/aws/aws-sdk-go/aws"
+	"github.com/aws/aws-sdk-go/aws/session"
+	"github.com/aws/aws-sdk-go/service/s3"
+	"github.com/aws/aws-sdk-go/service/s3/s3manager"
 	"github.com/go-redis/redis/v8"
 	"github.com/google/wire"
 	"github.com/samber/lo"
@@ -57,6 +61,20 @@ func NewCache(c flag.CacheOptions) (Cache, error) {
 
 		redisCache := cache.NewRedisCache(options, c.CacheTTL)
 		return Cache{Cache: redisCache}, nil
+	}
+	if strings.HasPrefix(c.CacheBackend, "s3://") {
+		log.Logger.Infof("S3 cache: %s with prefix: '%s'", c.CacheBackendMasked(), c.S3Prefix)
+		config := aws.NewConfig()
+		if c.S3Options.S3Endpoint != "" {
+			log.Logger.Infof("Using custom S3 endpoint: %s", c.S3Options.S3Endpoint)
+			config.Endpoint = aws.String(c.S3Options.S3Endpoint)
+		}
+		sess, err := session.NewSession(config)
+		if err != nil {
+			return Cache{}, err
+		}
+		s3Cache := cache.NewS3Cache(strings.TrimPrefix(c.CacheBackend, "s3://"), c.S3Prefix, s3.New(sess), s3manager.NewDownloader(sess))
+		return Cache{Cache: s3Cache}, nil
 	}
 
 	if c.CacheTTL != 0 {

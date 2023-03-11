@@ -18,12 +18,14 @@ Examples:
 
 
 Cache Flags
-      --cache-backend string   cache backend (e.g. redis://localhost:6379) (default "fs")
+      --cache-backend string   cache backend (e.g. redis://localhost:6379 or s3://yourbucket) (default "fs")
       --cache-ttl duration     cache TTL when using redis as cache backend
       --clear-cache            clear image caches without scanning
       --redis-ca string        redis ca file location, if using redis as cache backend
       --redis-cert string      redis certificate file location, if using redis as cache backend
       --redis-key string       redis key file location, if using redis as cache backend
+      --s3-endpoint string     s3 endpoint url (optional), if using s3 as cache backend
+      --s3-prefix string       s3 prefix name, if using s3 as cache backend
 
 DB Flags
       --db-repository string   OCI repository to retrieve trivy-db from (default "ghcr.io/aquasecurity/trivy-db")

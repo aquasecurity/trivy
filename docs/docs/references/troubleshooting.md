@@ -73,7 +73,7 @@ Reference : [boltdb: Opening a database][boltdb].
     ...
     - twirp error internal: failed scan, test-image: failed to apply layers: layer cache missing: sha256:*****
     ```
-To run multiple Trivy servers, you need to use Redis as the cache backend so that those servers can share the cache. 
+To run multiple Trivy servers, you need to use Redis or S3 as the cache backend so that those servers can share the cache. 
 Follow [this instruction][redis-cache] to do so.
 
 
