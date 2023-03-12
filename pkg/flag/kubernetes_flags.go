@@ -100,7 +100,7 @@ func (f *K8sFlagGroup) Flags() []*Flag {
 }
 
 func (f *K8sFlagGroup) ToOptions() (K8sOptions, error) {
-	tolerations, err := optionToToleration(getStringSlice(f.Tolerations))
+	tolerations, err := optionToTolerations(getStringSlice(f.Tolerations))
 	if err != nil {
 		return K8sOptions{}, err
 	}
@@ -114,24 +114,23 @@ func (f *K8sFlagGroup) ToOptions() (K8sOptions, error) {
 	}, nil
 }
 
-func optionToToleration(tolerationsOptions []string) ([]corev1.Toleration, error) {
+func optionToTolerations(tolerationsOptions []string) ([]corev1.Toleration, error) {
 	tolerations := make([]corev1.Toleration, 0)
 	for _, toleration := range tolerationsOptions {
 		tolerationParts := strings.Split(toleration, ":")
 		if len(tolerationParts) < 2 {
 			return []corev1.Toleration{}, fmt.Errorf("toleration must include key and effect")
 		}
+		if corev1.TaintEffect(tolerationParts[1]) != corev1.TaintEffectNoSchedule &&
+			corev1.TaintEffect(tolerationParts[1]) != corev1.TaintEffectPreferNoSchedule &&
+			corev1.TaintEffect(tolerationParts[1]) != corev1.TaintEffectNoExecute {
+			return []corev1.Toleration{}, fmt.Errorf("toleration effect must be a valid value")
+		}
 		keyValue := strings.Split(tolerationParts[0], "=")
 		operator := corev1.TolerationOpEqual
 		if len(keyValue[1]) == 0 {
 			operator = corev1.TolerationOpExists
 		}
-		if corev1.TaintEffect(tolerationParts[1]) != corev1.TaintEffectNoSchedule &&
-			corev1.TaintEffect(tolerationParts[1]) != corev1.TaintEffectPreferNoSchedule &&
-			corev1.TaintEffect(tolerationParts[1]) != corev1.TaintEffectNoExecute {
-			return []corev1.Toleration{}, fmt.Errorf("toleration effect must be a valid value include key and effect")
-		}
-
 		toleration := corev1.Toleration{
 			Key:      keyValue[0],
 			Value:    keyValue[1],
