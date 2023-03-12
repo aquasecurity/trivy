@@ -155,7 +155,7 @@ state 15
 state 16
 	compound:  '(' compound ')'.    (10)
 
-	.  reduce 10 (src line 68)
+	.  reduce 10 (src line 67)
 
 
 10 terminals, 5 nonterminals

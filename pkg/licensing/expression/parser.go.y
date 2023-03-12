@@ -62,7 +62,6 @@ compound
     }
     | compound WITH compound /* simple-expression "WITH" license-exception-id */
     {
-        __yyfmt__.Println("compound WITH compound")
         $$ = CompoundExpr{left: $1, conjunction: $2, right: $3}
     }
     | '(' compound ')'

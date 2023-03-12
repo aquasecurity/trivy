@@ -38,7 +38,7 @@ const yyEofCode = 1
 const yyErrCode = 2
 const yyInitialStackSize = 16
 
-//line parser.go.y:74
+//line parser.go.y:73
 
 //line yacctab:1
 var yyExca = [...]int8{
@@ -494,12 +494,11 @@ yydefault:
 		yyDollar = yyS[yypt-3 : yypt+1]
 //line parser.go.y:64
 		{
-			__yyfmt__.Println("compound WITH compound")
 			yyVAL.expr = CompoundExpr{left: yyDollar[1].expr, conjunction: yyDollar[2].token, right: yyDollar[3].expr}
 		}
 	case 10:
 		yyDollar = yyS[yypt-3 : yypt+1]
-//line parser.go.y:69
+//line parser.go.y:68
 		{
 			yyVAL.expr = yyDollar[2].expr
 		}
