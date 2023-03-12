@@ -1,8 +1,6 @@
 package flag
 
 import (
-	"strconv"
-
 	"golang.org/x/exp/slices"
 	"golang.org/x/xerrors"
 
@@ -56,12 +54,6 @@ var (
 		Value:      false,
 		Usage:      "scan over time with lower CPU and memory utilization",
 	}
-	ParallelFlag = Flag{
-		Name:       "parallel",
-		ConfigName: "scan.parallel",
-		Value:      "5",
-		Usage:      "number of goroutines enabled for parallel scanning",
-	}
 	SBOMSourcesFlag = Flag{
 		Name:       "sbom-sources",
 		ConfigName: "scan.sbom-sources",
@@ -85,7 +77,6 @@ type ScanFlagGroup struct {
 	Slow         *Flag
 	SBOMSources  *Flag
 	RekorURL     *Flag
-	Parallel     *Flag
 }
 
 type ScanOptions struct {
@@ -98,7 +89,6 @@ type ScanOptions struct {
 	Slow         bool
 	SBOMSources  []string
 	RekorURL     string
-	Parallel     int
 }
 
 func NewScanFlagGroup() *ScanFlagGroup {
@@ -111,7 +101,6 @@ func NewScanFlagGroup() *ScanFlagGroup {
 		Slow:         &SlowFlag,
 		SBOMSources:  &SBOMSourcesFlag,
 		RekorURL:     &RekorURLFlag,
-		Parallel:     &ParallelFlag,
 	}
 }
 
@@ -129,7 +118,6 @@ func (f *ScanFlagGroup) Flags() []*Flag {
 		f.Slow,
 		f.SBOMSources,
 		f.RekorURL,
-		f.Parallel,
 	}
 }
 
@@ -147,15 +135,6 @@ func (f *ScanFlagGroup) ToOptions(args []string) (ScanOptions, error) {
 	if err = validateSBOMSources(sbomSources); err != nil {
 		return ScanOptions{}, xerrors.Errorf("unable to parse SBOM sources: %w", err)
 	}
-	var parallel int
-	if f.Parallel != nil {
-		parallelFlag := getString(f.Parallel)
-		parallel, err = strconv.Atoi(parallelFlag)
-		// check parallel flag is a valid number between 1-20
-		if err != nil || parallel < 1 || parallel > 20 {
-			return ScanOptions{}, xerrors.Errorf("unable to parse parallel value, please ensure that the value entered is a valid number between 1-20.")
-		}
-	}
 
 	return ScanOptions{
 		Target:       target,
@@ -167,7 +146,6 @@ func (f *ScanFlagGroup) ToOptions(args []string) (ScanOptions, error) {
 		Slow:         getBool(f.Slow),
 		SBOMSources:  sbomSources,
 		RekorURL:     getString(f.RekorURL),
-		Parallel:     parallel,
 	}, nil
 }
 
