@@ -176,8 +176,8 @@ func TestMarshaler_Marshal(t *testing.T) {
 						PackageSPDXIdentifier:   spdx.ElementID("Package-fd0dc3cf913d5bc3"),
 						PackageName:             "binutils",
 						PackageVersion:          "2.30",
-						PackageLicenseConcluded: "GPL-3.0",
-						PackageLicenseDeclared:  "GPL-3.0",
+						PackageLicenseConcluded: "GPL-3.0-or-later",
+						PackageLicenseDeclared:  "GPL-3.0-or-later",
 						PackageExternalReferences: []*spdx.PackageExternalReference2_2{
 							{
 								Category: tspdx.CategoryPackageManager,
@@ -338,8 +338,8 @@ func TestMarshaler_Marshal(t *testing.T) {
 						PackageSPDXIdentifier:   spdx.ElementID("Package-d8dccb186bafaf37"),
 						PackageName:             "acl",
 						PackageVersion:          "2.2.53",
-						PackageLicenseConcluded: "GPL-2.0",
-						PackageLicenseDeclared:  "GPL-2.0",
+						PackageLicenseConcluded: "GPL-2.0-or-later",
+						PackageLicenseDeclared:  "GPL-2.0-or-later",
 						PackageExternalReferences: []*spdx.PackageExternalReference2_2{
 							{
 								Category: tspdx.CategoryPackageManager,
@@ -700,7 +700,7 @@ func Test_GetLicense(t *testing.T) {
 					"GPLv2+",
 				},
 			},
-			want: "GPL-2.0",
+			want: "GPL-2.0-or-later",
 		},
 		{
 			name: "happy path with multi license",
@@ -710,7 +710,7 @@ func Test_GetLicense(t *testing.T) {
 					"GPLv3+",
 				},
 			},
-			want: "GPL-2.0 AND GPL-3.0",
+			want: "GPL-2.0-or-later AND GPL-3.0-or-later",
 		},
 		{
 			name: "happy path with OR operator",
@@ -720,7 +720,7 @@ func Test_GetLicense(t *testing.T) {
 					"LGPL 2.0 or GNU LESSER",
 				},
 			},
-			want: "GPL-2.0 AND ( LGPL-2.0 OR LGPL-3.0 )",
+			want: "GPL-2.0-or-later AND (LGPL-2.0-only OR LGPL-3.0-only)",
 		},
 		{
 			name: "happy path with AND operator",
@@ -730,7 +730,7 @@ func Test_GetLicense(t *testing.T) {
 					"LGPL 2.0 and GNU LESSER",
 				},
 			},
-			want: "GPL-2.0 AND LGPL-2.0 AND LGPL-3.0",
+			want: "GPL-2.0-or-later AND (LGPL-2.0-only AND LGPL-3.0-only)",
 		},
 		{
 			name: "happy path with WITH operator",
@@ -740,7 +740,7 @@ func Test_GetLicense(t *testing.T) {
 					"AFL 3.0 with distribution exception",
 				},
 			},
-			want: "AFL-2.0 AND AFL-3.0 WITH distribution-exception",
+			want: "AFL-2.0 AND (AFL-3.0 WITH distribution-exception)",
 		},
 	}
 	for _, tt := range tests {
