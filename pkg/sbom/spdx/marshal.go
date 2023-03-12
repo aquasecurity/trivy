@@ -13,6 +13,8 @@ import (
 	"k8s.io/utils/clock"
 
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
+	"github.com/aquasecurity/trivy/pkg/licensing"
+	"github.com/aquasecurity/trivy/pkg/licensing/expression"
 	"github.com/aquasecurity/trivy/pkg/purl"
 	"github.com/aquasecurity/trivy/pkg/scanner/utils"
 	"github.com/aquasecurity/trivy/pkg/types"
@@ -263,7 +265,7 @@ func (m *Marshaler) langPackage(target, appType string) (spdx.Package2_2, error)
 }
 
 func (m *Marshaler) pkgToSpdxPackage(t string, class types.ResultClass, metadata types.Metadata, pkg ftypes.Package) (spdx.Package2_2, error) {
-	license := getLicense(pkg)
+	license := GetLicense(pkg)
 
 	pkgID, err := calcPkgID(m.hasher, pkg)
 	if err != nil {
@@ -355,12 +357,16 @@ func purlExternalReference(packageURL string) *spdx.PackageExternalReference2_2 
 	}
 }
 
-func getLicense(p ftypes.Package) string {
+func GetLicense(p ftypes.Package) string {
 	if len(p.Licenses) == 0 {
 		return "NONE"
 	}
 
-	return strings.Join(p.Licenses, ", ")
+	return expression.Normalize(
+		expression.Join(p.Licenses, expression.AND),
+		licensing.Normalize,
+		expression.NormalizeForSPDX,
+	)
 }
 
 func getDocumentNamespace(r types.Report, m *Marshaler) string {
