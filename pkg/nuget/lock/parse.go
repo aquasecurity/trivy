@@ -55,9 +55,10 @@ func (p *Parser) Parse(r dio.ReadSeekerAt) ([]types.Library, []types.Dependency,
 			depId := utils.PackageID(packageName, packageContent.Resolved)
 
 			lib := types.Library{
-				ID:      depId,
-				Name:    packageName,
-				Version: packageContent.Resolved,
+				ID:       depId,
+				Name:     packageName,
+				Version:  packageContent.Resolved,
+				Indirect: packageContent.Type != "Direct",
 				Locations: []types.Location{
 					{
 						StartLine: packageContent.StartLine,
