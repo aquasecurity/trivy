@@ -88,12 +88,7 @@ func (a *dpkgLicenseAnalyzer) parseCopyright(r dio.ReadSeekerAt) ([]types.Licens
 			// cf. https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/#:~:text=The%20debian%2Fcopyright%20file%20must,in%20the%20Debian%20Policy%20Manual.
 			l := strings.TrimSpace(line[8:])
 
-			// "The MIT License (MIT)" => "The MIT License"
-			l, _, _ = strings.Cut(l, "(")
-
-			// Very rarely has below phrases
-			l = strings.TrimPrefix(l, "The main library is licensed under ")
-			l = strings.TrimSuffix(l, " license")
+			l = normalizeLicense(l)
 			if len(l) > 0 {
 				// Split licenses without considering "and"/"or"
 				// examples:
@@ -142,4 +137,20 @@ func (a *dpkgLicenseAnalyzer) Type() analyzer.Type {
 
 func (a *dpkgLicenseAnalyzer) Version() int {
 	return dpkgLicenseAnalyzerVersion
+}
+
+// normalizeLicense returns a normalized license identifier in a heuristic way
+func normalizeLicense(s string) string {
+	// "The MIT License (MIT)" => "The MIT License"
+	s, _, _ = strings.Cut(s, "(")
+
+	// Very rarely has below phrases
+	s = strings.TrimPrefix(s, "The main library is licensed under ")
+	s = strings.TrimSuffix(s, " license")
+
+	// e.g. GPL-3.0-with-autoconf-exception
+	s = strings.ReplaceAll(s, "-with-", " WITH ")
+	s = strings.ReplaceAll(s, "-WITH-", " WITH ")
+
+	return strings.TrimSpace(s)
 }
