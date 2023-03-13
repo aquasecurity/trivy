@@ -370,7 +370,7 @@ func GetLicense(p ftypes.Package) string {
 	s, err := expression.Normalize(license, licensing.Normalize, expression.NormalizeForSPDX)
 	if err != nil {
 		// Not fail on the invalid license
-		log.Logger.Warnf("Unable to parse licenses %q", license)
+		log.Logger.Warnf("Unable to marshal SPDX licenses %q", license)
 		return ""
 	}
 	return s
