@@ -365,6 +365,10 @@ func GetLicense(p ftypes.Package) string {
 	}
 
 	license := strings.Join(lo.Map(p.Licenses, func(license string, index int) string {
+		// e.g. GPL-3.0-with-autoconf-exception
+		license = strings.ReplaceAll(license, "-with-", " WITH ")
+		license = strings.ReplaceAll(license, "-WITH-", " WITH ")
+
 		return fmt.Sprintf("(%s)", license)
 	}), " AND ")
 	s, err := expression.Normalize(license, licensing.Normalize, expression.NormalizeForSPDX)

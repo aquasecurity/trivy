@@ -148,9 +148,5 @@ func normalizeLicense(s string) string {
 	s = strings.TrimPrefix(s, "The main library is licensed under ")
 	s = strings.TrimSuffix(s, " license")
 
-	// e.g. GPL-3.0-with-autoconf-exception
-	s = strings.ReplaceAll(s, "-with-", " WITH ")
-	s = strings.ReplaceAll(s, "-WITH-", " WITH ")
-
 	return strings.TrimSpace(s)
 }
