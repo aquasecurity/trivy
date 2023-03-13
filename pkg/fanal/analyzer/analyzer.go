@@ -427,6 +427,10 @@ func (ag AnalyzerGroup) filePatternMatch(analyzerType Type, filePath string) boo
 	return false
 }
 
+// Used to terminate walk and trigger offline scans in dfscan
+// CRM-89 Updated the check to trigger offline scans in case of all types of "failed analysis" errors
+// i.e protocol , internal, unexpected EOF, semaphore acquire error etc.
+
 func IsWalkTerminationRequired(err error) bool {
-	return strings.Contains(err.Error(), godepparserutils.JAVA_ARTIFACT_PARSER_ERROR) || (strings.Contains(err.Error(), "PROTOCOL_ERROR") && strings.Contains(err.Error(), "walk error"))
+	return strings.Contains(err.Error(), godepparserutils.JAVA_ARTIFACT_PARSER_ERROR) || strings.Contains(err.Error(), "walk error") || strings.Contains(err.Error(), "failed analysis")
 }
