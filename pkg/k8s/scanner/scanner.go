@@ -64,28 +64,26 @@ func (s *Scanner) Scan(ctx context.Context, artifacts []*artifacts.Artifact) (re
 	g, ctx := errgroup.WithContext(ctx)
 
 	for workerIndex := 0; workerIndex < numOfWorkers; workerIndex++ {
-		workerIndex := workerIndex // https://go.dev/doc/faq#closures_and_goroutines
+		start := workerIndex * artifactsPerWorker
+		end := (workerIndex + 1) * artifactsPerWorker
+		// the remaining artiact will be added to last worker
+		if workerIndex == numOfWorkers-1 {
+			end = end + (len(artifacts) % numOfWorkers)
+		}
 		g.Go(func() error {
-			// calculate for each worker the range of artifact to iterate
-			start := workerIndex * artifactsPerWorker
-			end := (workerIndex + 1) * artifactsPerWorker
-			if workerIndex == numOfWorkers-1 {
-				end = end + (len(artifacts) % numOfWorkers)
-			}
-
-			for k := start; k < end; k++ {
+			for index := start; index < end; index++ {
 				bar.Increment()
 				// Loops once over all artifacts, and execute scanners as necessary. Not every artifacts has an image,
 				// so image scanner is not always executed.
 				if s.opts.Scanners.AnyEnabled(types.VulnerabilityScanner, types.SecretScanner) {
-					resources, err := s.scanVulns(ctx, artifacts[k])
+					resources, err := s.scanVulns(ctx, artifacts[index])
 					if err != nil {
 						return xerrors.Errorf("scanning vulnerabilities error: %w", err)
 					}
 					vulnsChan <- resources
 				}
 				if local.ShouldScanMisconfigOrRbac(s.opts.Scanners) {
-					resource, err := s.scanMisconfigs(ctx, artifacts[k])
+					resource, err := s.scanMisconfigs(ctx, artifacts[index])
 					if err != nil {
 						return xerrors.Errorf("scanning misconfigurations error: %w", err)
 					}

@@ -1,9 +1,12 @@
 package flag
 
 import (
+<<<<<<< HEAD
 	"strconv"
 
 	"fmt"
+=======
+>>>>>>> 802cfe640 (feat: parallel processing k8s subcommand)
 	"golang.org/x/xerrors"
 	"strings"
 
@@ -51,9 +54,9 @@ var (
 	}
 	ParallelFlag = Flag{
 		Name:       "parallel",
-		ConfigName: "scan.parallel",
-		Value:      "5",
-		Usage:      "number of goroutines enabled for parallel scanning",
+		ConfigName: "kubernetes.parallel",
+		Value:      5,
+		Usage:      "number (between 1-20) of goroutines enabled for parallel scanning",
 	}
 	TolerationsFlag = Flag{
 		Name:       "tolerations",
@@ -112,6 +115,7 @@ func (f *K8sFlagGroup) Flags() []*Flag {
 }
 
 func (f *K8sFlagGroup) ToOptions() (K8sOptions, error) {
+<<<<<<< HEAD
 	tolerations, err := optionToTolerations(getStringSlice(f.Tolerations))
 	if err != nil {
 		return K8sOptions{}, err
@@ -124,6 +128,12 @@ func (f *K8sFlagGroup) ToOptions() (K8sOptions, error) {
 		if err != nil || parallel < 1 || parallel > 20 {
 			return K8sOptions{}, xerrors.Errorf("unable to parse parallel value, please ensure that the value entered is a valid number between 1-20.")
 		}
+=======
+	parallel := getInt(f.Parallel)
+	// check parallel flag is a valid number between 1-20
+	if parallel < 1 || parallel > 20 {
+		return K8sOptions{}, xerrors.Errorf("unable to parse parallel value, please ensure that the value entered is a valid number between 1-20.")
+>>>>>>> 802cfe640 (feat: parallel processing k8s subcommand)
 	}
 	return K8sOptions{
 		ClusterContext: getString(f.ClusterContext),
