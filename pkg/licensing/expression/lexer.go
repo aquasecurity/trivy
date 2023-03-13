@@ -41,11 +41,24 @@ func NewLexer(reader io.Reader) *Lexer {
 			var r rune
 			r, width = utf8.DecodeRune(data[i:])
 			switch r {
-			case '(', ')', '+':
+			case '(', ')':
 				return i, data[start:i], nil
-			}
-			if unicode.IsSpace(r) {
-				return i + width, data[start:i], nil
+			case '+':
+				// Peek the next rune
+				if len(data) > i+width {
+					adv := i
+					i += width
+					r, width = utf8.DecodeRune(data[i:])
+					if unicode.IsSpace(r) || r == '(' || r == ')' {
+						return adv, data[start:adv], nil
+					}
+				} else if atEOF {
+					return i, data[start:i], nil
+				}
+			default:
+				if unicode.IsSpace(r) {
+					return i + width, data[start:i], nil
+				}
 			}
 		}
 		// If we're at EOF, we have a final, non-empty, non-terminated word. Return it.

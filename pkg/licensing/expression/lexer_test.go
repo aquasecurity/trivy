@@ -165,8 +165,40 @@ func TestLexer_Lex(t *testing.T) {
 			},
 		},
 		{
+			name:  "plus in the middle",
+			input: "ISC+IBM",
+			want: []Token{
+				{
+					token:   IDENT,
+					literal: "ISC+IBM",
+				},
+			},
+		},
+		{
+			name:  "plus with the parenthesis",
+			input: "(GPL1.0+)",
+			want: []Token{
+				{
+					token:   int('('),
+					literal: "(",
+				},
+				{
+					token:   IDENT,
+					literal: "GPL1.0",
+				},
+				{
+					token:   int('+'),
+					literal: "+",
+				},
+				{
+					token:   int(')'),
+					literal: ")",
+				},
+			},
+		},
+		{
 			name:  "utf-8",
-			input: "GPL1.0+" + string(byte(0x20)) + "あ🇯🇵" + " and LGPL1.0",
+			input: "GPL1.0+ " + string(byte(0x20)) + "あ🇯🇵" + " and LGPL1.0",
 			want: []Token{
 				{
 					token:   IDENT,
