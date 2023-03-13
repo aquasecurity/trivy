@@ -20,7 +20,7 @@ type Lexer struct {
 func NewLexer(reader io.Reader) *Lexer {
 	scanner := bufio.NewScanner(reader)
 	scanner.Split(func(data []byte, atEOF bool) (advance int, token []byte, err error) {
-		// cf. bufio.ScanWords()
+		// The implementation references bufio.ScanWords()
 
 		// Skip leading spaces.
 		start := 0
