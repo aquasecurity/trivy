@@ -57,12 +57,18 @@ type CompoundExpr struct {
 
 func (c CompoundExpr) String() string {
 	left := c.left.String()
-	if _, ok := c.left.(CompoundExpr); ok {
-		left = fmt.Sprintf("(%s)", left)
+	if l, ok := c.left.(CompoundExpr); ok {
+		// e.g. (A OR B) AND C
+		if c.conjunction.token > l.conjunction.token {
+			left = fmt.Sprintf("(%s)", left)
+		}
 	}
 	right := c.right.String()
-	if _, ok := c.right.(CompoundExpr); ok {
-		right = fmt.Sprintf("(%s)", right)
+	if r, ok := c.right.(CompoundExpr); ok {
+		// e.g. A AND (B OR C)
+		if c.conjunction.token > r.conjunction.token {
+			right = fmt.Sprintf("(%s)", right)
+		}
 	}
 	return fmt.Sprintf("%s %s %s", left, c.conjunction.literal, right)
 }

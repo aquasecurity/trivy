@@ -11,7 +11,7 @@ package expression
 %type<expr> simple
 %type<expr> plus
 %type<expr> compound
-%token<token> IDENT AND OR WITH
+%token<token> IDENT OR AND WITH
 
 %left OR
 %left AND

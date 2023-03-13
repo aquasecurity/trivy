@@ -730,7 +730,7 @@ func Test_GetLicense(t *testing.T) {
 					"LGPL 2.0 and GNU LESSER",
 				},
 			},
-			want: "GPL-2.0-or-later AND (LGPL-2.0-only AND LGPL-3.0-only)",
+			want: "GPL-2.0-or-later AND LGPL-2.0-only AND LGPL-3.0-only",
 		},
 		{
 			name: "happy path with WITH operator",
@@ -740,7 +740,7 @@ func Test_GetLicense(t *testing.T) {
 					"AFL 3.0 with distribution exception",
 				},
 			},
-			want: "AFL-2.0 AND (AFL-3.0 WITH distribution-exception)",
+			want: "AFL-2.0 AND AFL-3.0 WITH distribution-exception",
 		},
 	}
 	for _, tt := range tests {

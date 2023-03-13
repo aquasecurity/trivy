@@ -24,8 +24,8 @@ state 2
 	compound:  compound.OR compound 
 	compound:  compound.WITH compound 
 
-	AND  shift 7
 	OR  shift 8
+	AND  shift 7
 	WITH  shift 9
 	.  reduce 1 (src line 23)
 
@@ -114,8 +114,8 @@ state 12
 	compound:  compound.WITH compound 
 	compound:  '(' compound.')' 
 
-	AND  shift 7
 	OR  shift 8
+	AND  shift 7
 	WITH  shift 9
 	')'  shift 16
 	.  error

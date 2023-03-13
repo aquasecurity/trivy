@@ -85,7 +85,7 @@ func TestParse(t *testing.T) {
 					},
 				},
 			},
-			wantStr: "(Public Domain AND (GPLv2+ or AFL)) AND (LGPLv2+ with distribution exceptions)",
+			wantStr: "Public Domain AND (GPLv2+ or AFL) AND LGPLv2+ with distribution exceptions",
 		},
 		{
 			name:  "nested licenses",
@@ -130,7 +130,7 @@ func TestParse(t *testing.T) {
 					},
 				},
 			},
-			wantStr: "Public Domain AND (GPLv2+ or (AFL AND (CC0 or LGPL1.0)))",
+			wantStr: "Public Domain AND (GPLv2+ or AFL AND (CC0 or LGPL1.0))",
 		},
 		{
 			name:    "bad path close bracket not found",

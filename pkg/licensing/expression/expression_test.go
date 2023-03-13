@@ -32,7 +32,7 @@ func TestNormalize(t *testing.T) {
 			name:    "SPDX, invalid chars",
 			license: "LGPL_2.1_only or MIT OR BSD-3>Clause",
 			fn:      NormalizeForSPDX,
-			want:    "(LGPL-2.1-only OR MIT) OR BSD-3-Clause",
+			want:    "LGPL-2.1-only OR MIT OR BSD-3-Clause",
 		},
 		{
 			name:    "upper",
