@@ -340,8 +340,8 @@ github.com/aquasecurity/trivy-db v0.0.0-20230116084806-4bcdf1c414d0 h1:FI5qaSoJE
 github.com/aquasecurity/trivy-db v0.0.0-20230116084806-4bcdf1c414d0/go.mod h1:l3BWhRS80Mkeb++dgXij/6BmZIxLb9IpZCSAZHeI6Zk=
 github.com/aquasecurity/trivy-java-db v0.0.0-20230209231723-7cddb1406728 h1:0eS+V7SXHgqoT99tV1mtMW6HL4HdoB9qGLMCb1fZp8A=
 github.com/aquasecurity/trivy-java-db v0.0.0-20230209231723-7cddb1406728/go.mod h1:Ldya37FLi0e/5Cjq2T5Bty7cFkzUDwTcPeQua+2M8i8=
-github.com/aquasecurity/trivy-kubernetes v0.4.1-0.20230312112444-091b28be887c h1:/cK0GcZGKNNDhToIgKuen+hBSQFyW8xNRvLx0drlc+Q=
-github.com/aquasecurity/trivy-kubernetes v0.4.1-0.20230312112444-091b28be887c/go.mod h1:0cw9iQZXyG5PWtEThKDubdQMJg7TEwc/bu2Lc0p6mFg=
+github.com/aquasecurity/trivy-kubernetes v0.4.1-0.20230312114119-8bf469e48cf1 h1:XOsQvj882vxKtzH9w5GerVffBuRDYy5kcTwLbgoSLok=
+github.com/aquasecurity/trivy-kubernetes v0.4.1-0.20230312114119-8bf469e48cf1/go.mod h1:/fvNj+NTVYQdEms7sJ5pX2L0lu4zIvzZmKwkExcQuwk=
 github.com/arbovm/levenshtein v0.0.0-20160628152529-48b4e1c0c4d0 h1:jfIu9sQUG6Ig+0+Ap1h4unLjW6YQJpKZVmUzxsD4E/Q=
 github.com/arbovm/levenshtein v0.0.0-20160628152529-48b4e1c0c4d0/go.mod h1:t2tdKJDJF9BV14lnkjHmOQgcvEKgtqs5a1N3LNdJhGE=
 github.com/armon/circbuf v0.0.0-20150827004946-bbbad097214e/go.mod h1:3U/XgcO3hCbHZ8TKRvWD2dDTCfh9M9ya+I9JpbB7O8o=
@@ -2522,8 +2522,8 @@ k8s.io/gengo v0.0.0-20201113003025-83324d819ded/go.mod h1:FiNAH4ZV3gBg2Kwh89tzAE
 k8s.io/klog/v2 v2.0.0/go.mod h1:PBfzABfn139FHAV07az/IF9Wp1bkk3vpT2XSJ76fSDE=
 k8s.io/klog/v2 v2.2.0/go.mod h1:Od+F08eJP+W3HUb4pSrPpgp9DGU4GzlpG/TmITuYh/Y=
 k8s.io/klog/v2 v2.4.0/go.mod h1:Od+F08eJP+W3HUb4pSrPpgp9DGU4GzlpG/TmITuYh/Y=
-k8s.io/klog/v2 v2.90.0 h1:VkTxIV/FjRXn1fgNNcKGM8cfmL1Z33ZjXRTVxKCoF5M=
-k8s.io/klog/v2 v2.90.0/go.mod h1:y1WjHnz7Dj687irZUWR/WLkLc5N1YHtjLdmgWjndZn0=
+k8s.io/klog/v2 v2.90.1 h1:m4bYOKall2MmOiRaR1J+We67Do7vm9KiQVlT96lnHUw=
+k8s.io/klog/v2 v2.90.1/go.mod h1:y1WjHnz7Dj687irZUWR/WLkLc5N1YHtjLdmgWjndZn0=
 k8s.io/kube-openapi v0.0.0-20200805222855-6aeccd4b50c6/go.mod h1:UuqjUnNftUyPE5H64/qeyjQoUZhGpeFDVdxjTeEVN2o=
 k8s.io/kube-openapi v0.0.0-20201113171705-d219536bb9fd/go.mod h1:WOJ3KddDSol4tAGcJo0Tvi+dK12EcqSLqcWsryKMpfM=
 k8s.io/kube-openapi v0.0.0-20221012153701-172d655c2280 h1:+70TFaan3hfJzs+7VK2o+OGxg8HsuBr/5f6tVAjDu6E=

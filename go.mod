@@ -26,7 +26,7 @@ require (
 	github.com/aquasecurity/tml v0.6.1
 	github.com/aquasecurity/trivy-db v0.0.0-20230116084806-4bcdf1c414d0
 	github.com/aquasecurity/trivy-java-db v0.0.0-20230209231723-7cddb1406728
-	github.com/aquasecurity/trivy-kubernetes v0.4.1-0.20230309065652-09a3572535fe
+	github.com/aquasecurity/trivy-kubernetes v0.4.1-0.20230312114119-8bf469e48cf1
 	github.com/aws/aws-sdk-go v1.44.212
 	github.com/aws/aws-sdk-go-v2 v1.17.5
 	github.com/aws/aws-sdk-go-v2/config v1.18.15
@@ -348,7 +348,7 @@ require (
 	golang.org/x/net v0.8.0 // indirect
 	golang.org/x/oauth2 v0.1.0 // indirect
 	golang.org/x/sys v0.6.0 // indirect
-	golang.org/x/time v0.1.0 // indirect
+	golang.org/x/time v0.3.0 // indirect
 	golang.org/x/tools v0.6.0 // indirect
 	google.golang.org/api v0.107.0 // indirect
 	google.golang.org/appengine v1.6.7 // indirect
@@ -360,16 +360,16 @@ require (
 	gopkg.in/warnings.v0 v0.1.2 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 	helm.sh/helm/v3 v3.11.1 // indirect
-	k8s.io/api v0.26.1 // indirect
+	k8s.io/api v0.26.2 // indirect
 	k8s.io/apiextensions-apiserver v0.26.0 // indirect
-	k8s.io/apimachinery v0.26.1 // indirect
+	k8s.io/apimachinery v0.26.2 // indirect
 	k8s.io/apiserver v0.26.0 // indirect
-	k8s.io/cli-runtime v0.26.1 // indirect
-	k8s.io/client-go v0.26.1 // indirect
-	k8s.io/component-base v0.26.1 // indirect
-	k8s.io/klog/v2 v2.90.0 // indirect
+	k8s.io/cli-runtime v0.26.2 // indirect
+	k8s.io/client-go v0.26.2 // indirect
+	k8s.io/component-base v0.26.2 // indirect
+	k8s.io/klog/v2 v2.90.1 // indirect
 	k8s.io/kube-openapi v0.0.0-20221012153701-172d655c2280 // indirect
-	k8s.io/kubectl v0.26.1 // indirect
+	k8s.io/kubectl v0.26.2 // indirect
 	lukechampine.com/uint128 v1.2.0 // indirect
 	modernc.org/cc/v3 v3.40.0 // indirect
 	modernc.org/ccgo/v3 v3.16.13 // indirect
