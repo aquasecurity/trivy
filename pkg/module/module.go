@@ -35,6 +35,8 @@ var (
 	}
 
 	RelativeDir = filepath.Join(".trivy", "modules")
+
+	DefaultDir = dir()
 )
 
 // logDebug is defined as an api.GoModuleFunc for lower overhead vs reflection.
@@ -94,13 +96,23 @@ func readMemory(mem api.Memory, offset, size uint32) []byte {
 	return buf
 }
 
-type Manager struct {
-	cache   wazero.CompilationCache
-	modules []*wasmModule
+type Options struct {
+	Dir            string
+	EnabledModules []string
 }
 
-func NewManager(ctx context.Context) (*Manager, error) {
-	m := &Manager{}
+type Manager struct {
+	cache          wazero.CompilationCache
+	modules        []*wasmModule
+	dir            string
+	enabledModules []string
+}
+
+func NewManager(ctx context.Context, opts Options) (*Manager, error) {
+	m := &Manager{
+		dir:            opts.Dir,
+		enabledModules: opts.EnabledModules,
+	}
 
 	// Create a new WebAssembly Runtime.
 	m.cache = wazero.NewCompilationCache()
@@ -114,26 +126,25 @@ func NewManager(ctx context.Context) (*Manager, error) {
 }
 
 func (m *Manager) loadModules(ctx context.Context) error {
-	moduleDir := dir()
-	_, err := os.Stat(moduleDir)
+	_, err := os.Stat(m.dir)
 	if os.IsNotExist(err) {
 		return nil
 	}
-	log.Logger.Debugf("Module dir: %s", moduleDir)
+	log.Logger.Debugf("Module dir: %s", m.dir)
 
-	err = filepath.Walk(moduleDir, func(path string, info fs.FileInfo, err error) error {
+	err = filepath.Walk(m.dir, func(path string, info fs.FileInfo, err error) error {
 		if err != nil {
 			return err
 		} else if info.IsDir() || filepath.Ext(info.Name()) != ".wasm" {
 			return nil
 		}
 
-		rel, err := filepath.Rel(moduleDir, path)
+		rel, err := filepath.Rel(m.dir, path)
 		if err != nil {
 			return xerrors.Errorf("failed to get a relative path: %w", err)
 		}
 
-		log.Logger.Infof("Loading %s...", rel)
+		log.Logger.Infof("Reading %s...", rel)
 		wasmCode, err := os.ReadFile(path)
 		if err != nil {
 			return xerrors.Errorf("file read error: %w", err)
@@ -144,6 +155,12 @@ func (m *Manager) loadModules(ctx context.Context) error {
 			return xerrors.Errorf("WASM module init error %s: %w", rel, err)
 		}
 
+		// Skip Loading WASM modules if not in the list of enable modules flag.
+		if len(m.enabledModules) > 0 && !slices.Contains(m.enabledModules, p.Name()) {
+			return nil
+		}
+
+		log.Logger.Infof("%s loaded", rel)
 		m.modules = append(m.modules, p)
 
 		return nil
@@ -158,6 +175,13 @@ func (m *Manager) loadModules(ctx context.Context) error {
 func (m *Manager) Register() {
 	for _, mod := range m.modules {
 		mod.Register()
+	}
+}
+
+func (m *Manager) Deregister() {
+	for _, mod := range m.modules {
+		analyzer.DeregisterAnalyzer(analyzer.Type(mod.Name()))
+		post.DeregisterPostScanner(mod.Name())
 	}
 }
 

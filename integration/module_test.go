@@ -1,18 +1,14 @@
 //go:build module_integration
-
 package integration
 
 import (
-	"os"
 	"path/filepath"
 	"testing"
 
-	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
-	"github.com/aquasecurity/trivy/pkg/module"
-	"github.com/aquasecurity/trivy/pkg/utils/fsutils"
+	"github.com/aquasecurity/trivy/pkg/scanner/post"
 )
 
 func TestModule(t *testing.T) {
@@ -36,17 +32,6 @@ func TestModule(t *testing.T) {
 	// Set up testing DB
 	cacheDir := initDB(t)
 
-	// Set up module dir
-	moduleDir := filepath.Join(cacheDir, module.RelativeDir)
-	err := os.MkdirAll(moduleDir, 0700)
-	require.NoError(t, err)
-
-	// Set up Spring4Shell module
-	t.Setenv("XDG_DATA_HOME", cacheDir)
-	_, err = fsutils.CopyFile(filepath.Join("../", "examples", "module", "spring4shell", "spring4shell.wasm"),
-		filepath.Join(moduleDir, "spring4shell.wasm"))
-	require.NoError(t, err)
-
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			osArgs := []string{
@@ -56,8 +41,11 @@ func TestModule(t *testing.T) {
 				"--ignore-unfixed",
 				"--format",
 				"json",
-				"--skip-update",
+				"--skip-db-update",
 				"--offline-scan",
+				"--quiet",
+				"--module-dir",
+				filepath.Join("../", "examples", "module", "spring4shell"),
 				"--input",
 				tt.input,
 			}
@@ -74,9 +62,12 @@ func TestModule(t *testing.T) {
 			}...)
 
 			// Run Trivy
-			err = execute(osArgs)
-			assert.NoError(t, err)
-			defer analyzer.DeregisterAnalyzer("spring4shell")
+			err := execute(osArgs)
+			require.NoError(t, err)
+			defer func() {
+				analyzer.DeregisterAnalyzer("spring4shell")
+				post.DeregisterPostScanner("spring4shell")
+			}()
 
 			// Compare want and got
 			compareReports(t, tt.golden, outputFile)

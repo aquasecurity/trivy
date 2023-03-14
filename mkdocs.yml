@@ -10,6 +10,7 @@ nav:
   - Getting Started: 
       - Overview: index.md
       - Installation: getting-started/installation.md
+      - FAQ: getting-started/faq.md
   - Tutorials:
       - Overview: tutorials/overview.md   
       - CI/CD:

@@ -32,6 +32,9 @@ Vulnerability DB:
   UpdatedAt: 2022-03-02 06:07:07.99504083 +0000 UTC
   NextUpdate: 2022-03-02 12:07:07.99504023 +0000 UTC
   DownloadedAt: 2022-03-02 10:03:38.383312 +0000 UTC
+Policy Bundle:
+  Digest: sha256:19a017cdc798631ad42f6f4dce823d77b2989128f0e1a7f9bc83ae3c59024edd
+  DownloadedAt: 2023-03-02 01:06:08.191725 +0000 UTC
 `,
 		},
 		{
@@ -62,8 +65,11 @@ Vulnerability DB:
   UpdatedAt: 2022-03-02 06:07:07.99504083 +0000 UTC
   NextUpdate: 2022-03-02 12:07:07.99504023 +0000 UTC
   DownloadedAt: 2022-03-02 10:03:38.383312 +0000 UTC
+Policy Bundle:
+  Digest: sha256:19a017cdc798631ad42f6f4dce823d77b2989128f0e1a7f9bc83ae3c59024edd
+  DownloadedAt: 2023-03-02 01:06:08.191725 +0000 UTC
 `
-	jsonOutput := `{"Version":"test","VulnerabilityDB":{"Version":2,"NextUpdate":"2022-03-02T12:07:07.99504023Z","UpdatedAt":"2022-03-02T06:07:07.99504083Z","DownloadedAt":"2022-03-02T10:03:38.383312Z"}}
+	jsonOutput := `{"Version":"test","VulnerabilityDB":{"Version":2,"NextUpdate":"2022-03-02T12:07:07.99504023Z","UpdatedAt":"2022-03-02T06:07:07.99504083Z","DownloadedAt":"2022-03-02T10:03:38.383312Z"},"PolicyBundle":{"Digest":"sha256:19a017cdc798631ad42f6f4dce823d77b2989128f0e1a7f9bc83ae3c59024edd","DownloadedAt":"2023-03-01T17:06:08.191725-08:00"}}
 `
 
 	tests := []struct {

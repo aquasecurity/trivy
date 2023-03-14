@@ -9,12 +9,11 @@ import (
 	"strings"
 	"time"
 
-	awsScanner "github.com/aquasecurity/defsec/pkg/scanners/cloud/aws"
-
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	"golang.org/x/xerrors"
 
+	awsScanner "github.com/aquasecurity/defsec/pkg/scanners/cloud/aws"
 	"github.com/aquasecurity/trivy-db/pkg/metadata"
 	awscommands "github.com/aquasecurity/trivy/pkg/cloud/aws/commands"
 	"github.com/aquasecurity/trivy/pkg/commands/artifact"
@@ -25,6 +24,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/module"
 	"github.com/aquasecurity/trivy/pkg/plugin"
+	"github.com/aquasecurity/trivy/pkg/policy"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
 
@@ -32,6 +32,7 @@ import (
 type VersionInfo struct {
 	Version         string             `json:",omitempty"`
 	VulnerabilityDB *metadata.Metadata `json:",omitempty"`
+	PolicyBundle    *policy.Metadata   `json:",omitempty"`
 }
 
 const (
@@ -161,7 +162,7 @@ func NewRootCommand(version string, globalFlags *flag.GlobalFlagGroup) *cobra.Co
 			// viper.BindPFlag cannot be called in init().
 			// cf. https://github.com/spf13/cobra/issues/875
 			//     https://github.com/spf13/viper/issues/233
-			if err := globalFlags.Bind(cmd.Root()); err != nil {
+			if err := globalFlags.Bind(cmd); err != nil {
 				return xerrors.Errorf("flag bind error: %w", err)
 			}
 
@@ -222,6 +223,7 @@ func NewImageCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 		ImageFlagGroup:         flag.NewImageFlagGroup(), // container image specific
 		LicenseFlagGroup:       flag.NewLicenseFlagGroup(),
 		MisconfFlagGroup:       flag.NewMisconfFlagGroup(),
+		ModuleFlagGroup:        flag.NewModuleFlagGroup(),
 		RemoteFlagGroup:        flag.NewClientFlags(), // for client/server mode
 		RegoFlagGroup:          flag.NewRegoFlagGroup(),
 		ReportFlagGroup:        reportFlagGroup,
@@ -290,13 +292,14 @@ func NewFilesystemCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	reportFlagGroup := flag.NewReportFlagGroup()
 	reportFlagGroup.ReportFormat = nil // TODO: support --report summary
 	reportFlagGroup.Compliance = nil   // disable '--compliance'
-	reportFlagGroup.ExitOnEOSL = nil   // disable '--exit-on-eosl'
+	reportFlagGroup.ExitOnEOL = nil    // disable '--exit-on-eol'
 
 	fsFlags := &flag.Flags{
 		CacheFlagGroup:         flag.NewCacheFlagGroup(),
 		DBFlagGroup:            flag.NewDBFlagGroup(),
 		LicenseFlagGroup:       flag.NewLicenseFlagGroup(),
 		MisconfFlagGroup:       flag.NewMisconfFlagGroup(),
+		ModuleFlagGroup:        flag.NewModuleFlagGroup(),
 		RemoteFlagGroup:        flag.NewClientFlags(), // for client/server mode
 		RegoFlagGroup:          flag.NewRegoFlagGroup(),
 		ReportFlagGroup:        reportFlagGroup,
@@ -351,6 +354,7 @@ func NewRootfsCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 		DBFlagGroup:            flag.NewDBFlagGroup(),
 		LicenseFlagGroup:       flag.NewLicenseFlagGroup(),
 		MisconfFlagGroup:       flag.NewMisconfFlagGroup(),
+		ModuleFlagGroup:        flag.NewModuleFlagGroup(),
 		RemoteFlagGroup:        flag.NewClientFlags(), // for client/server mode
 		RegoFlagGroup:          flag.NewRegoFlagGroup(),
 		ReportFlagGroup:        reportFlagGroup,
@@ -400,13 +404,14 @@ func NewRepositoryCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	reportFlagGroup := flag.NewReportFlagGroup()
 	reportFlagGroup.ReportFormat = nil // TODO: support --report summary
 	reportFlagGroup.Compliance = nil   // disable '--compliance'
-	reportFlagGroup.ExitOnEOSL = nil   // disable '--exit-on-eosl'
+	reportFlagGroup.ExitOnEOL = nil    // disable '--exit-on-eol'
 
 	repoFlags := &flag.Flags{
 		CacheFlagGroup:         flag.NewCacheFlagGroup(),
 		DBFlagGroup:            flag.NewDBFlagGroup(),
 		LicenseFlagGroup:       flag.NewLicenseFlagGroup(),
 		MisconfFlagGroup:       flag.NewMisconfFlagGroup(),
+		ModuleFlagGroup:        flag.NewModuleFlagGroup(),
 		RegoFlagGroup:          flag.NewRegoFlagGroup(),
 		RemoteFlagGroup:        flag.NewClientFlags(), // for client/server mode
 		ReportFlagGroup:        reportFlagGroup,
@@ -507,6 +512,7 @@ func NewServerCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	serverFlags := &flag.Flags{
 		CacheFlagGroup:  flag.NewCacheFlagGroup(),
 		DBFlagGroup:     flag.NewDBFlagGroup(),
+		ModuleFlagGroup: flag.NewModuleFlagGroup(),
 		RemoteFlagGroup: flag.NewServerFlags(),
 	}
 
@@ -548,7 +554,7 @@ func NewConfigCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	reportFlagGroup.ListAllPkgs = nil    // disable '--list-all-pkgs'
 	reportFlagGroup.ReportFormat = nil   // TODO: support --report summary
 	reportFlagGroup.Compliance = nil     // disable '--compliance'
-	reportFlagGroup.ExitOnEOSL = nil     // disable '--exit-on-eosl'
+	reportFlagGroup.ExitOnEOL = nil      // disable '--exit-on-eol'
 
 	scanFlags := &flag.ScanFlagGroup{
 		// Enable only '--skip-dirs' and '--skip-files' and disable other flags
@@ -560,6 +566,7 @@ func NewConfigCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	configFlags := &flag.Flags{
 		CacheFlagGroup:   flag.NewCacheFlagGroup(),
 		MisconfFlagGroup: flag.NewMisconfFlagGroup(),
+		ModuleFlagGroup:  flag.NewModuleFlagGroup(),
 		RegoFlagGroup:    flag.NewRegoFlagGroup(),
 		K8sFlagGroup: &flag.K8sFlagGroup{
 			// disable unneeded flags
@@ -708,6 +715,10 @@ func NewPluginCommand() *cobra.Command {
 }
 
 func NewModuleCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
+	moduleFlags := &flag.Flags{
+		ModuleFlagGroup: flag.NewModuleFlagGroup(),
+	}
+
 	cmd := &cobra.Command{
 		Use:           "module subcommand",
 		Aliases:       []string{"m"},
@@ -723,14 +734,23 @@ func NewModuleCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 			Aliases: []string{"i"},
 			Short:   "Install a module",
 			Args:    cobra.ExactArgs(1),
+			PreRunE: func(cmd *cobra.Command, args []string) error {
+				if err := moduleFlags.Bind(cmd); err != nil {
+					return xerrors.Errorf("flag bind error: %w", err)
+				}
+				return nil
+			},
 			RunE: func(cmd *cobra.Command, args []string) error {
 				if len(args) != 1 {
 					return cmd.Help()
 				}
 
 				repo := args[0]
-				opts := globalFlags.ToOptions()
-				return module.Install(cmd.Context(), repo, opts.Quiet, opts.Insecure)
+				opts, err := moduleFlags.ToOptions(cmd.Version, args, globalFlags, outputWriter)
+				if err != nil {
+					return xerrors.Errorf("flag error: %w", err)
+				}
+				return module.Install(cmd.Context(), opts.ModuleDir, repo, opts.Quiet, opts.Insecure)
 			},
 		},
 		&cobra.Command{
@@ -738,16 +758,27 @@ func NewModuleCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 			Aliases: []string{"u"},
 			Short:   "Uninstall a module",
 			Args:    cobra.ExactArgs(1),
+			PreRunE: func(cmd *cobra.Command, args []string) error {
+				if err := moduleFlags.Bind(cmd); err != nil {
+					return xerrors.Errorf("flag bind error: %w", err)
+				}
+				return nil
+			},
 			RunE: func(cmd *cobra.Command, args []string) error {
 				if len(args) != 1 {
 					return cmd.Help()
 				}
 
 				repo := args[0]
-				return module.Uninstall(cmd.Context(), repo)
+				opts, err := moduleFlags.ToOptions(cmd.Version, args, globalFlags, outputWriter)
+				if err != nil {
+					return xerrors.Errorf("flag error: %w", err)
+				}
+				return module.Uninstall(cmd.Context(), opts.ModuleDir, repo)
 			},
 		},
 	)
+	moduleFlags.AddFlags(cmd)
 	cmd.SetFlagErrorFunc(flagErrorFunc)
 	return cmd
 }
@@ -766,9 +797,9 @@ func NewKubernetesCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 
 	reportFlagGroup := flag.NewReportFlagGroup()
 	compliance := flag.ComplianceFlag
-	compliance.Usage += fmt.Sprintf(" (%s,%s)", types.ComplianceK8sNsa, types.ComplianceK8sCIS)
+	compliance.Usage += fmt.Sprintf(" (%s,%s, %s, %s)", types.ComplianceK8sNsa, types.ComplianceK8sCIS, types.ComplianceK8sPSSBaseline, types.ComplianceK8sPSSRestricted)
 	reportFlagGroup.Compliance = &compliance // override usage as the accepted values differ for each subcommand.
-	reportFlagGroup.ExitOnEOSL = nil         // disable '--exit-on-eosl'
+	reportFlagGroup.ExitOnEOL = nil          // disable '--exit-on-eol'
 
 	k8sFlags := &flag.Flags{
 		CacheFlagGroup:         flag.NewCacheFlagGroup(),
@@ -831,7 +862,7 @@ func NewAWSCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	compliance := flag.ComplianceFlag
 	compliance.Usage += fmt.Sprintf(" (%s, %s)", types.ComplianceAWSCIS12, types.ComplianceAWSCIS14)
 	reportFlagGroup.Compliance = &compliance // override usage as the accepted values differ for each subcommand.
-	reportFlagGroup.ExitOnEOSL = nil         // disable '--exit-on-eosl'
+	reportFlagGroup.ExitOnEOL = nil          // disable '--exit-on-eol'
 
 	awsFlags := &flag.Flags{
 		AWSFlagGroup:     flag.NewAWSFlagGroup(),
@@ -901,6 +932,7 @@ func NewVMCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 		DBFlagGroup:            flag.NewDBFlagGroup(),
 		LicenseFlagGroup:       flag.NewLicenseFlagGroup(),
 		MisconfFlagGroup:       flag.NewMisconfFlagGroup(),
+		ModuleFlagGroup:        flag.NewModuleFlagGroup(),
 		RemoteFlagGroup:        flag.NewClientFlags(), // for client/server mode
 		ReportFlagGroup:        reportFlagGroup,
 		ScanFlagGroup:          flag.NewScanFlagGroup(),
@@ -1053,11 +1085,18 @@ func showVersion(cacheDir, outputFormat, version string, outputWriter io.Writer)
 		}
 	}
 
+	var pbMeta *policy.Metadata
+	pc, err := policy.NewClient(cacheDir, false)
+	if pc != nil && err == nil {
+		pbMeta, _ = pc.GetMetadata()
+	}
+
 	switch outputFormat {
 	case "json":
 		b, _ := json.Marshal(VersionInfo{
 			Version:         version,
 			VulnerabilityDB: dbMeta,
+			PolicyBundle:    pbMeta,
 		})
 		fmt.Fprintln(outputWriter, string(b))
 	default:
@@ -1069,6 +1108,13 @@ func showVersion(cacheDir, outputFormat, version string, outputWriter io.Writer)
   NextUpdate: %s
   DownloadedAt: %s
 `, dbMeta.Version, dbMeta.UpdatedAt.UTC(), dbMeta.NextUpdate.UTC(), dbMeta.DownloadedAt.UTC())
+		}
+
+		if pbMeta != nil {
+			output += fmt.Sprintf(`Policy Bundle:
+  Digest: %s
+  DownloadedAt: %s
+`, pbMeta.Digest, pbMeta.DownloadedAt.UTC())
 		}
 		fmt.Fprintf(outputWriter, output)
 	}

@@ -66,6 +66,7 @@ type Flags struct {
 	K8sFlagGroup           *K8sFlagGroup
 	LicenseFlagGroup       *LicenseFlagGroup
 	MisconfFlagGroup       *MisconfFlagGroup
+	ModuleFlagGroup        *ModuleFlagGroup
 	RemoteFlagGroup        *RemoteFlagGroup
 	RegoFlagGroup          *RegoFlagGroup
 	RepoFlagGroup          *RepoFlagGroup
@@ -87,6 +88,7 @@ type Options struct {
 	K8sOptions
 	LicenseOptions
 	MisconfOptions
+	ModuleOptions
 	RegoOptions
 	RemoteOptions
 	RepoOptions
@@ -156,14 +158,13 @@ func bind(cmd *cobra.Command, flag *Flag) error {
 	}
 
 	// Bind CLI flags
-	if flag.Persistent {
-		if err := viper.BindPFlag(flag.ConfigName, cmd.PersistentFlags().Lookup(flag.Name)); err != nil {
-			return xerrors.Errorf("bind flag error: %w", err)
-		}
-	} else {
-		if err := viper.BindPFlag(flag.ConfigName, cmd.Flags().Lookup(flag.Name)); err != nil {
-			return xerrors.Errorf("bind flag error: %w", err)
-		}
+	f := cmd.Flags().Lookup(flag.Name)
+	if f == nil {
+		// Lookup local persistent flags
+		f = cmd.PersistentFlags().Lookup(flag.Name)
+	}
+	if err := viper.BindPFlag(flag.ConfigName, f); err != nil {
+		return xerrors.Errorf("bind flag error: %w", err)
 	}
 
 	// Bind environmental variable
@@ -274,6 +275,9 @@ func (f *Flags) groups() []FlagGroup {
 	}
 	if f.MisconfFlagGroup != nil {
 		groups = append(groups, f.MisconfFlagGroup)
+	}
+	if f.ModuleFlagGroup != nil {
+		groups = append(groups, f.ModuleFlagGroup)
 	}
 	if f.SecretFlagGroup != nil {
 		groups = append(groups, f.SecretFlagGroup)
@@ -402,6 +406,10 @@ func (f *Flags) ToOptions(appVersion string, args []string, globalFlags *GlobalF
 		if err != nil {
 			return Options{}, xerrors.Errorf("misconfiguration flag error: %w", err)
 		}
+	}
+
+	if f.ModuleFlagGroup != nil {
+		opts.ModuleOptions = f.ModuleFlagGroup.ToOptions()
 	}
 
 	if f.RegoFlagGroup != nil {

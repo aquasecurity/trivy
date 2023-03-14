@@ -72,7 +72,7 @@ func (a *javaLibraryAnalyzer) PostAnalyze(ctx context.Context, input analyzer.Po
 		p := jar.NewParser(a.client, jar.WithSize(info.Size()), jar.WithFilePath(path))
 		libs, deps, err := p.Parse(r)
 		if err != nil {
-			return nil, xerrors.Errorf("jar/war/ear/par parse error: %w", err)
+			return nil, xerrors.Errorf("%q parse error: %w", path, err)
 		}
 
 		return language.ToApplication(types.Jar, path, path, libs, deps), nil

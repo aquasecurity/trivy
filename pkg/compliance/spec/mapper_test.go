@@ -5,8 +5,8 @@ import (
 
 	"github.com/stretchr/testify/assert"
 
-	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/compliance/spec"
+	"github.com/aquasecurity/trivy/pkg/fanal/secret"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
@@ -21,6 +21,9 @@ func TestMapSpecCheckIDToFilteredResults(t *testing.T) {
 		types.VulnerabilityScanner: {
 			"CVE-9999-9999",
 			"VULN-CRITICAL",
+		},
+		types.SecretScanner: {
+			"SECRET-CRITICAL",
 		},
 	}
 	tests := []struct {
@@ -91,53 +94,60 @@ func TestMapSpecCheckIDToFilteredResults(t *testing.T) {
 			},
 		},
 		{
-			name:     "vulnerability",
+			name:     "secret",
 			checkIDs: checkIDs,
 			result: types.Result{
 				Target: "target",
-				Class:  types.ClassLangPkg,
-				Type:   ftypes.GoModule,
-				Vulnerabilities: []types.DetectedVulnerability{
+				Class:  types.ClassSecret,
+				Secrets: []ftypes.SecretFinding{
 					{
-						VulnerabilityID: "CVE-9999-0001",
-						Vulnerability: dbTypes.Vulnerability{
-							Severity: "CRITICAL",
+						RuleID:   "aws-access-key-id",
+						Category: secret.CategoryAWS,
+						Severity: "CRITICAL",
+						Title:    "AWS Access Key ID",
+						Code: ftypes.Code{
+							Lines: []ftypes.Line{
+								{
+									Number:  2,
+									Content: "AWS_ACCESS_KEY_ID=*****",
+								},
+							},
 						},
 					},
 					{
-						VulnerabilityID: "CVE-9999-9999",
-						Vulnerability: dbTypes.Vulnerability{
-							Severity: "LOW",
-						},
-					},
-				},
-			},
-			want: map[string]types.Results{
-				"CVE-9999-9999": {
-					{
-						Target: "target",
-						Class:  types.ClassLangPkg,
-						Type:   ftypes.GoModule,
-						Vulnerabilities: []types.DetectedVulnerability{
-							{
-								VulnerabilityID: "CVE-9999-9999",
-								Vulnerability: dbTypes.Vulnerability{
-									Severity: "LOW",
+						RuleID:   "aws-account-id",
+						Category: secret.CategoryAWS,
+						Severity: "HIGH",
+						Title:    "AWS Account ID",
+						Code: ftypes.Code{
+							Lines: []ftypes.Line{
+								{
+									Number:  1,
+									Content: "AWS_ACCOUNT_ID=*****",
 								},
 							},
 						},
 					},
 				},
-				"VULN-CRITICAL": {
+			},
+			want: map[string]types.Results{
+				"SECRET-CRITICAL": {
 					{
 						Target: "target",
-						Class:  types.ClassLangPkg,
-						Type:   ftypes.GoModule,
-						Vulnerabilities: []types.DetectedVulnerability{
+						Class:  types.ClassSecret,
+						Secrets: []ftypes.SecretFinding{
 							{
-								VulnerabilityID: "CVE-9999-0001",
-								Vulnerability: dbTypes.Vulnerability{
-									Severity: "CRITICAL",
+								RuleID:   "aws-access-key-id",
+								Category: secret.CategoryAWS,
+								Severity: "CRITICAL",
+								Title:    "AWS Access Key ID",
+								Code: ftypes.Code{
+									Lines: []ftypes.Line{
+										{
+											Number:  2,
+											Content: "AWS_ACCESS_KEY_ID=*****",
+										},
+									},
 								},
 							},
 						},
@@ -149,7 +159,7 @@ func TestMapSpecCheckIDToFilteredResults(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			got := spec.MapSpecCheckIDToFilteredResults(tt.result, tt.checkIDs)
-			assert.Equalf(t, tt.want, got, "CheckIDs()")
+			assert.Equalf(t, tt.want, got, "MapSpecCheckIDToFilteredResults()")
 		})
 	}
 }
