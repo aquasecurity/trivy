@@ -12,7 +12,13 @@ import (
 
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
+	"github.com/aquasecurity/trivy/pkg/log"
 )
+
+func TestMain(m *testing.M) {
+	_ = log.InitLogger(false, true)
+	os.Exit(m.Run())
+}
 
 func Test_npmLibraryAnalyzer_Analyze(t *testing.T) {
 	tests := []struct {
@@ -22,7 +28,7 @@ func Test_npmLibraryAnalyzer_Analyze(t *testing.T) {
 		wantErr string
 	}{
 		{
-			name: "happy path",
+			name: "with node_modules",
 			dir:  "testdata/happy",
 			want: &analyzer.AnalysisResult{
 				Applications: []types.Application{
@@ -35,7 +41,6 @@ func Test_npmLibraryAnalyzer_Analyze(t *testing.T) {
 								Name:     "array-flatten",
 								Version:  "1.1.1",
 								Indirect: true,
-								Licenses: []string{"MIT"},
 								Locations: []types.Location{
 									{
 										StartLine: 12,
@@ -125,7 +130,7 @@ func Test_npmLibraryAnalyzer_Analyze(t *testing.T) {
 			},
 		},
 		{
-			name: "happy path",
+			name: "without node_modules",
 			dir:  "testdata/no-node_modules",
 			want: &analyzer.AnalysisResult{
 				Applications: []types.Application{
@@ -203,12 +208,12 @@ func Test_nodePkgLibraryAnalyzer_Required(t *testing.T) {
 		want     bool
 	}{
 		{
-			name:     "happy path lock file",
+			name:     "lock file",
 			filePath: "npm/package-lock.json",
 			want:     true,
 		},
 		{
-			name:     "happy path package.json file",
+			name:     "package.json",
 			filePath: "npm/node_modules/ms/package.json",
 			want:     true,
 		},
