@@ -8,6 +8,7 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/mitchellh/hashstructure/v2"
+	"github.com/samber/lo"
 	"github.com/spdx/tools-golang/spdx"
 	"golang.org/x/xerrors"
 	"k8s.io/utils/clock"
@@ -15,6 +16,7 @@ import (
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/licensing"
 	"github.com/aquasecurity/trivy/pkg/licensing/expression"
+	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/purl"
 	"github.com/aquasecurity/trivy/pkg/scanner/utils"
 	"github.com/aquasecurity/trivy/pkg/types"
@@ -362,11 +364,20 @@ func GetLicense(p ftypes.Package) string {
 		return "NONE"
 	}
 
-	return expression.Normalize(
-		expression.Join(p.Licenses, expression.AND),
-		licensing.Normalize,
-		expression.NormalizeForSPDX,
-	)
+	license := strings.Join(lo.Map(p.Licenses, func(license string, index int) string {
+		// e.g. GPL-3.0-with-autoconf-exception
+		license = strings.ReplaceAll(license, "-with-", " WITH ")
+		license = strings.ReplaceAll(license, "-WITH-", " WITH ")
+
+		return fmt.Sprintf("(%s)", license)
+	}), " AND ")
+	s, err := expression.Normalize(license, licensing.Normalize, expression.NormalizeForSPDX)
+	if err != nil {
+		// Not fail on the invalid license
+		log.Logger.Warnf("Unable to marshal SPDX licenses %q", license)
+		return ""
+	}
+	return s
 }
 
 func getDocumentNamespace(r types.Report, m *Marshaler) string {
