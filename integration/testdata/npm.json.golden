@@ -1,6 +1,6 @@
 {
   "SchemaVersion": 2,
-  "ArtifactName": "testdata/fixtures/fs/nodejs",
+  "ArtifactName": "testdata/fixtures/fs/npm",
   "ArtifactType": "filesystem",
   "Metadata": {
     "ImageConfig": {
@@ -26,9 +26,6 @@
           "Version": "2.0.6",
           "Indirect": true,
           "Layer": {},
-          "Licenses": [
-            "MIT"
-          ],
           "Locations": [
             {
               "StartLine": 6,
@@ -58,9 +55,6 @@
           "Version": "4.0.0",
           "Indirect": true,
           "Layer": {},
-          "Licenses": [
-            "MIT"
-          ],
           "Locations": [
             {
               "StartLine": 16,
@@ -77,9 +71,6 @@
             "js-tokens@4.0.0"
           ],
           "Layer": {},
-          "Licenses": [
-            "MIT"
-          ],
           "Locations": [
             {
               "StartLine": 21,
@@ -93,9 +84,6 @@
           "Version": "4.1.1",
           "Indirect": true,
           "Layer": {},
-          "Licenses": [
-            "MIT"
-          ],
           "Locations": [
             {
               "StartLine": 29,
@@ -133,9 +121,6 @@
             "react-is@16.8.6"
           ],
           "Layer": {},
-          "Licenses": [
-            "MIT"
-          ],
           "Locations": [
             {
               "StartLine": 42,
@@ -211,9 +196,6 @@
             "object-assign@4.1.1"
           ],
           "Layer": {},
-          "Licenses": [
-            "MIT"
-          ],
           "Locations": [
             {
               "StartLine": 77,
@@ -227,9 +209,6 @@
           "Version": "1.2.0",
           "Indirect": true,
           "Layer": {},
-          "Licenses": [
-            "MIT"
-          ],
           "Locations": [
             {
               "StartLine": 86,
