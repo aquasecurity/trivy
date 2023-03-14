@@ -2,6 +2,7 @@ package parallel
 
 import (
 	"context"
+	"github.com/aquasecurity/trivy/pkg/log"
 	"io/fs"
 
 	"golang.org/x/sync/errgroup"
@@ -25,6 +26,15 @@ func WalkDir[T any](ctx context.Context, fsys fs.FS, root string, slow bool,
 			if err != nil {
 				return err
 			} else if !d.Type().IsRegular() {
+				return nil
+			}
+
+			// check if file is empty
+			info, err := d.Info()
+			if err != nil {
+				return err
+			} else if info.Size() == 0 {
+				log.Logger.Debugf("%s is empty, skip this file", path)
 				return nil
 			}
 
