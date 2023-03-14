@@ -361,6 +361,20 @@
 
             
           
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../getting-started/faq/" class="md-nav__link">
+        FAQ
+      </a>
+    </li>
+  
+
+            
+          
         </ul>
       </nav>
     </li>
@@ -3052,34 +3066,11 @@
 </li>
 </ul>
 <p>There are several ways that you can install the Trivy Operator in your cluster. In this guide, we’re going to use the Helm installation based on the <a href="../../../docs/target/kubernetes/#trivy-operator">following documentation.</a></p>
-<p>Make sure that you have the <a href="https://helm.sh/docs/intro/install/">Helm CLI installed.</a>
-Next, run the following commands.</p>
-<p>First, we are going to add the Aqua Security Helm repository to our Helm repository list:
-<div class="highlight"><pre><span></span><code>helm repo add aqua https://aquasecurity.github.io/helm-charts/
-</code></pre></div></p>
-<p>Then, we will update all of our Helm repositories. Even if you have just added a new repository to your existing charts, this is generally good practice to have access to the latest changes:
-<div class="highlight"><pre><span></span><code>helm repo update
-</code></pre></div></p>
-<p>Lastly, we can install the Trivy operator Helm Chart to our cluster:
-<div class="highlight"><pre><span></span><code>helm install trivy-operator aqua/trivy-operator \
-   --namespace trivy-system \
-   --create-namespace \
-   --set=&quot;trivy.ignoreUnfixed=true&quot; \
-   --version v0.0.3
-</code></pre></div></p>
-<p>You can make sure that the operator is installed correctly via the following command: 
-<div class="highlight"><pre><span></span><code>kubectl get deployment -n trivy-system 
-</code></pre></div></p>
-<p>Trivy will automatically start scanning your Kubernetes resources. 
-For instance, you can view vulnerability reports with the following command: </p>
-<div class="highlight"><pre><span></span><code>kubectl get vulnerabilityreports --all-namespaces -o wide 
-</code></pre></div>
-<p>And then you can access the details of a security scan: 
-<div class="highlight"><pre><span></span><code>kubectl describe  vulnerabilityreports &lt;name of one of the above reports&gt; 
-</code></pre></div></p>
-<p>The same process can be applied to access Configauditreports: </p>
-<div class="highlight"><pre><span></span><code>kubectl get configauditreports --all-namespaces -o wide 
-</code></pre></div>
+<p>Please follow the Trivy Operator documentation for further information on:</p>
+<ul>
+<li><a href="https://aquasecurity.github.io/trivy-operator/latest/getting-started/installation/">Installation of the Trivy Operator</a></li>
+<li><a href="https://aquasecurity.github.io/trivy-operator/latest/getting-started/quick-start/">Getting started guide</a></li>
+</ul>
 
               
             </article>
