@@ -90,7 +90,7 @@ func (a npmLibraryAnalyzer) Required(filePath string, _ os.FileInfo) bool {
 	}
 	// The file path to package.json - */node_modules/<package_name>/package.json
 	// The path is slashed in analyzers.
-	dirs := strings.Split(filepath.Dir(filePath), "/")
+	dirs := strings.Split(path.Dir(filePath), "/")
 	if len(dirs) > 1 && dirs[len(dirs)-2] == "node_modules" && fileName == types.NpmPkg {
 		return true
 	}
