@@ -1,6 +1,7 @@
 package rocky
 
 import (
+	"sort"
 	"strings"
 	"time"
 
@@ -103,7 +104,9 @@ func (s *Scanner) Detect(osVer string, _ *ftypes.Repository, pkgs []ftypes.Packa
 	if len(skipPkgs) > 0 {
 		log.Logger.Infof("Skipped detection of these packages: %q because modular packages cannot be detected correctly due to a bug in Rocky Linux Errata. See also: https://forums.rockylinux.org/t/some-errata-missing-in-comparison-with-rhel-and-almalinux/3843", skipPkgs)
 	}
-
+	sort.Slice(vulns, func(i, j int) bool {
+		return vulns[i].VulnerabilityID < vulns[j].VulnerabilityID
+	})
 	return vulns, nil
 }
 

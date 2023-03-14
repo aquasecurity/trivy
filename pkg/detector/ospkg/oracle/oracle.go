@@ -1,6 +1,7 @@
 package oracle
 
 import (
+	"sort"
 	"strings"
 	"time"
 
@@ -99,6 +100,9 @@ func (s *Scanner) Detect(osVer string, _ *ftypes.Repository, pkgs []ftypes.Packa
 			}
 		}
 	}
+	sort.Slice(vulns, func(i, j int) bool {
+		return vulns[i].VulnerabilityID < vulns[j].VulnerabilityID
+	})
 	return vulns, nil
 }
 
