@@ -2,13 +2,13 @@ package parallel
 
 import (
 	"context"
-	"github.com/aquasecurity/trivy/pkg/log"
 	"io/fs"
 
 	"golang.org/x/sync/errgroup"
 	"golang.org/x/xerrors"
 
 	dio "github.com/aquasecurity/go-dep-parser/pkg/io"
+	"github.com/aquasecurity/trivy/pkg/log"
 )
 
 type onFile[T any] func(string, fs.FileInfo, dio.ReadSeekerAt) (T, error)
