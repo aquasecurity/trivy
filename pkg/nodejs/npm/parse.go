@@ -12,14 +12,16 @@ import (
 
 	dio "github.com/aquasecurity/go-dep-parser/pkg/io"
 	"github.com/aquasecurity/go-dep-parser/pkg/log"
-	"github.com/aquasecurity/go-dep-parser/pkg/utils"
-
 	"github.com/aquasecurity/go-dep-parser/pkg/types"
+	"github.com/aquasecurity/go-dep-parser/pkg/utils"
 )
 
+const nodeModulesFolder = "node_modules"
+
 type LockFile struct {
-	Dependencies map[string]Dependency `json:"dependencies"`
-	Packages     map[string]Package    `json:"packages"`
+	Dependencies    map[string]Dependency `json:"dependencies"`
+	Packages        map[string]Package    `json:"packages"`
+	LockfileVersion int                   `json:"lockfileVersion"`
 }
 type Dependency struct {
 	Version      string                `json:"version"`
@@ -35,6 +37,10 @@ type Package struct {
 	Name         string            `json:"name"`
 	Version      string            `json:"version"`
 	Dependencies map[string]string `json:"dependencies"`
+	Resolved     string            `json:"resolved"`
+	Dev          bool              `json:"dev"`
+	StartLine    int
+	EndLine      int
 }
 
 type Parser struct{}
@@ -53,13 +59,110 @@ func (p *Parser) Parse(r dio.ReadSeekerAt) ([]types.Library, []types.Dependency,
 		return nil, nil, xerrors.Errorf("decode error: %w", err)
 	}
 
-	dircetDeps := lockFile.Packages[""].Dependencies
-	libs, deps := p.parse(lockFile.Dependencies, dircetDeps, map[string]string{})
+	var libs []types.Library
+	var deps []types.Dependency
+	if lockFile.LockfileVersion == 1 {
+		libs, deps = p.parseV1(lockFile.Dependencies, map[string]string{})
+	} else {
+		libs, deps = p.parseV2(lockFile.Packages)
+	}
 
 	return utils.UniqueLibraries(libs), uniqueDeps(deps), nil
 }
 
-func (p *Parser) parse(dependencies map[string]Dependency, dircetDeps map[string]string, versions map[string]string) ([]types.Library, []types.Dependency) {
+func (p *Parser) parseV2(packages map[string]Package) ([]types.Library, []types.Dependency) {
+	libs := make(map[string]types.Library, len(packages)-1)
+	var deps []types.Dependency
+
+	directDeps := map[string]struct{}{}
+	for name, version := range packages[""].Dependencies {
+		pkgPath := joinPaths(nodeModulesFolder, name)
+		if _, ok := packages[pkgPath]; !ok {
+			log.Logger.Debugf("Unable to find the direct dependency: '%s@%s'", name, version)
+			continue
+		}
+		// Store the package paths of direct dependencies
+		// e.g. node_modules/body-parser
+		directDeps[pkgPath] = struct{}{}
+	}
+
+	for pkgPath, pkg := range packages {
+		if pkg.Dev || pkgPath == "" {
+			continue
+		}
+
+		pkgName := pkgNameFromPath(pkgPath)
+		pkgID := utils.PackageID(pkgName, pkg.Version)
+
+		// There are cases when similar libraries use same dependencies
+		// we need to add location for each these dependencies
+		if savedLib, ok := libs[pkgID]; ok {
+			savedLib.Locations = append(savedLib.Locations, types.Location{StartLine: pkg.StartLine, EndLine: pkg.EndLine})
+			libs[pkgID] = savedLib
+			continue
+		}
+
+		lib := types.Library{
+			ID:                 pkgID,
+			Name:               pkgName,
+			Version:            pkg.Version,
+			Indirect:           isIndirectLib(pkgPath, directDeps),
+			ExternalReferences: []types.ExternalRef{{Type: types.RefOther, URL: pkg.Resolved}},
+			Locations: []types.Location{
+				{
+					StartLine: pkg.StartLine,
+					EndLine:   pkg.EndLine,
+				},
+			},
+		}
+		libs[pkgID] = lib
+
+		dependsOn := make([]string, 0, len(pkg.Dependencies))
+		for depName, depVersion := range pkg.Dependencies {
+			depID, err := findDependsOn(pkgPath, depName, packages)
+			if err != nil {
+				log.Logger.Warnf("Cannot resolve the version: '%s@%s'", depName, depVersion)
+				continue
+			}
+			dependsOn = append(dependsOn, depID)
+		}
+
+		if len(dependsOn) > 0 {
+			dep := types.Dependency{
+				ID:        lib.ID,
+				DependsOn: dependsOn,
+			}
+			deps = append(deps, dep)
+		}
+
+	}
+	return maps.Values(libs), deps
+}
+
+func findDependsOn(pkgPath, depName string, packages map[string]Package) (string, error) {
+	depPath := joinPaths(pkgPath, nodeModulesFolder)
+	paths := strings.Split(depPath, "/")
+	// Try to resolve the version with the nearest directory
+	// e.g. for pkgPath == `node_modules/body-parser/node_modules/debug`, depName == `ms`:
+	//    - "node_modules/body-parser/node_modules/debug/node_modules/ms"
+	//    - "node_modules/body-parser/node_modules/ms"
+	//    - "node_modules/ms"
+	for i := len(paths) - 1; i >= 0; i-- {
+		if paths[i] != nodeModulesFolder {
+			continue
+		}
+		path := joinPaths(paths[:i+1]...)
+		path = joinPaths(path, depName)
+
+		if dep, ok := packages[path]; ok {
+			return utils.PackageID(depName, dep.Version), nil
+		}
+	}
+	// It should not reach here.
+	return "", xerrors.Errorf("can't find dependsOn for %s", depName)
+}
+
+func (p *Parser) parseV1(dependencies map[string]Dependency, versions map[string]string) ([]types.Library, []types.Dependency) {
 	// Update package name and version mapping.
 	for pkgName, dep := range dependencies {
 		// Overwrite the existing package version so that the nested version can take precedence.
@@ -77,7 +180,7 @@ func (p *Parser) parse(dependencies map[string]Dependency, dircetDeps map[string
 			ID:                 utils.PackageID(pkgName, dependency.Version),
 			Name:               pkgName,
 			Version:            dependency.Version,
-			Indirect:           isIndirectLib(pkgName, dircetDeps),
+			Indirect:           true, // lockfile v1 schema doesn't have information about Direct dependencies
 			ExternalReferences: []types.ExternalRef{{Type: types.RefOther, URL: dependency.Resolved}},
 			Locations: []types.Location{
 				{
@@ -113,7 +216,7 @@ func (p *Parser) parse(dependencies map[string]Dependency, dircetDeps map[string
 
 		if dependency.Dependencies != nil {
 			// Recursion
-			childLibs, childDeps := p.parse(dependency.Dependencies, dircetDeps, maps.Clone(versions))
+			childLibs, childDeps := p.parseV1(dependency.Dependencies, maps.Clone(versions))
 			libs = append(libs, childLibs...)
 			deps = append(deps, childDeps...)
 		}
@@ -137,13 +240,39 @@ func uniqueDeps(deps []types.Dependency) []types.Dependency {
 	return uniqDeps
 }
 
-func isIndirectLib(libName string, dircetDeps map[string]string) bool {
-	_, ok := dircetDeps[libName]
+func isIndirectLib(pkgPath string, directDeps map[string]struct{}) bool {
+	// A project can contain 2 different versions of the same dependency.
+	// e.g. `node_modules/string-width/node_modules/strip-ansi` and `node_modules/string-ansi`
+	// direct dependencies always have root path (`node_modules/<lib_name>`)
+	_, ok := directDeps[pkgPath]
 	return !ok
 }
 
-// UnmarshalJSONWithMetadata needed to detect start and end lines of deps
+func pkgNameFromPath(path string) string {
+	// lock file contains path to dependency in `node_modules` folder. e.g.:
+	// node_modules/string-width
+	// node_modules/string-width/node_modules/strip-ansi
+	paths := strings.Split(path, "/")
+	return paths[len(paths)-1]
+}
+
+func joinPaths(paths ...string) string {
+	return strings.Join(paths, "/")
+}
+
+// UnmarshalJSONWithMetadata needed to detect start and end lines of deps for v1
 func (t *Dependency) UnmarshalJSONWithMetadata(node jfather.Node) error {
+	if err := node.Decode(&t); err != nil {
+		return err
+	}
+	// Decode func will overwrite line numbers if we save them first
+	t.StartLine = node.Range().Start.Line
+	t.EndLine = node.Range().End.Line
+	return nil
+}
+
+// UnmarshalJSONWithMetadata needed to detect start and end lines of deps for v2 or newer
+func (t *Package) UnmarshalJSONWithMetadata(node jfather.Node) error {
 	if err := node.Decode(&t); err != nil {
 		return err
 	}

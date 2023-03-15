@@ -20,46 +20,22 @@ func TestParse(t *testing.T) {
 		wantDeps []types.Dependency
 	}{
 		{
-			name:     "normal",
-			file:     "testdata/package-lock_normal.json",
-			want:     npmNormal,
-			wantDeps: npmNormalDeps,
+			name:     "lock version v1",
+			file:     "testdata/package-lock_v1.json",
+			want:     npmV1Libs,
+			wantDeps: npmDeps,
 		},
 		{
-			name:     "react",
-			file:     "testdata/package-lock_react.json",
-			want:     npmReact,
-			wantDeps: npmReactDeps,
+			name:     "lock version v2",
+			file:     "testdata/package-lock_v2.json",
+			want:     npmV2Libs,
+			wantDeps: npmDeps,
 		},
 		{
-			name:     "with devDependencies",
-			file:     "testdata/package-lock_with_dev.json",
-			want:     npmWithDev,
-			wantDeps: npmWithDevDeps,
-		},
-		{
-			name:     "many packages",
-			file:     "testdata/package-lock_many.json",
-			want:     npmMany,
-			wantDeps: npmManyDeps,
-		},
-		{
-			name:     "nested packages",
-			file:     "testdata/package-lock_nested.json",
-			want:     npmNested,
-			wantDeps: npmNestedDeps,
-		},
-		{
-			name:     "deep nested packages",
-			file:     "testdata/package-lock_deep-nested.json",
-			want:     npmDeepNested,
-			wantDeps: npmDeepNestedDeps,
-		},
-		{
-			name:     "direct libraries",
-			file:     "testdata/package-lock_with_packages.json",
-			want:     npmWithPkgs,
-			wantDeps: npmWithPkgsDeps,
+			name:     "lock version v3",
+			file:     "testdata/package-lock_v3.json",
+			want:     npmV2Libs,
+			wantDeps: npmDeps,
 		},
 	}
 
@@ -95,16 +71,12 @@ func sortDeps(deps []types.Dependency) {
 }
 
 func sortLibs(libs []types.Library) {
-	sort.Slice(libs, func(i, j int) bool {
-		ret := strings.Compare(libs[i].Name, libs[j].Name)
-		if ret == 0 {
-			return libs[i].Version < libs[j].Version
-		}
-		return ret < 0
-	})
 	for _, lib := range libs {
 		sortLocations(lib.Locations)
 	}
+	sort.Slice(libs, func(i, j int) bool {
+		return strings.Compare(libs[i].ID, libs[j].ID) < 0
+	})
 }
 
 func sortLocations(locs []types.Location) {
