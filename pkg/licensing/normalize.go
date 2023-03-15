@@ -1,6 +1,8 @@
 package licensing
 
-import "strings"
+import (
+	"strings"
+)
 
 var mapping = map[string]string{
 	// GPL
@@ -14,6 +16,7 @@ var mapping = map[string]string{
 	"GPL-2":                          GPL20,
 	"GPL-2.0-ONLY":                   GPL20,
 	"GPL2+":                          GPL20,
+	"GPLV2":                          GPL20,
 	"GPLV2+":                         GPL20,
 	"GPL-2+":                         GPL20,
 	"GPL-2.0+":                       GPL20,
@@ -23,6 +26,7 @@ var mapping = map[string]string{
 	"GPL3":                           GPL30,
 	"GPL 3.0":                        GPL30,
 	"GPL 3":                          GPL30,
+	"GPLV3":                          GPL30,
 	"GPLV3+":                         GPL30,
 	"GPL-3":                          GPL30,
 	"GPL-3.0-ONLY":                   GPL30,
