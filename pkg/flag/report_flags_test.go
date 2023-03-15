@@ -4,6 +4,8 @@ import (
 	"os"
 	"testing"
 
+	defsecTypes "github.com/aquasecurity/defsec/pkg/types"
+
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
 	"go.uber.org/zap"
@@ -182,17 +184,17 @@ func TestReportFlagGroup_ToOptions(t *testing.T) {
 			want: flag.ReportOptions{
 				Output: os.Stdout,
 				Compliance: spec.ComplianceSpec{
-					Spec: spec.Spec{
+					Spec: defsecTypes.Spec{
 						ID:          "0001",
 						Title:       "my-custom-spec",
 						Description: "My fancy spec",
 						Version:     "1.2",
-						Controls: []spec.Control{
+						Controls: []defsecTypes.Control{
 							{
 								ID:          "1.1",
 								Name:        "Unencrypted S3 bucket",
 								Description: "S3 Buckets should be encrypted to protect the data that is stored within them if access is compromised.",
-								Checks: []spec.SpecCheck{
+								Checks: []defsecTypes.SpecCheck{
 									{ID: "AVD-AWS-0088"},
 								},
 								Severity: "HIGH",
