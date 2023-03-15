@@ -3039,11 +3039,11 @@ Those policies are managed under <a href="https://github.com/aquasecurity/defsec
 <tbody>
 <tr>
 <td>Kubernetes</td>
-<td><a href="https://github.com/aquasecurity/defsec/tree/master/internal/rules/rbac">defsec</a></td>
+<td><a href="https://github.com/aquasecurity/defsec/tree/master/rules/kubernetes/policies">defsec</a></td>
 </tr>
 <tr>
 <td>Dockerfile, Containerfile</td>
-<td><a href="https://github.com/aquasecurity/defsec/tree/master/internal/rules/policies/docker">defsec</a></td>
+<td><a href="https://github.com/aquasecurity/defsec/tree/master/rules/docker/policies">defsec</a></td>
 </tr>
 <tr>
 <td>Terraform</td>
@@ -3059,16 +3059,12 @@ Those policies are managed under <a href="https://github.com/aquasecurity/defsec
 </tr>
 <tr>
 <td>Helm Chart</td>
-<td><a href="https://github.com/aquasecurity/defsec/tree/master/internal/rules/rbac">defsec</a></td>
-</tr>
-<tr>
-<td>RBAC</td>
-<td><a href="https://github.com/aquasecurity/defsec">defsec</a>[rbac]</td>
+<td><a href="https://github.com/aquasecurity/defsec/tree/master/rules/kubernetes/policies">defsec</a></td>
 </tr>
 </tbody>
 </table>
 <p>For suggestions or issues regarding policy content, please open an issue under the <a href="https://github.com/aquasecurity/defsec">defsec</a> repository.</p>
-<p>Helm Chart scanning will resolve the chart to Kubernetes manifests then run the <a href="https://github.com/aquasecurity/defsec/tree/master/internal/rules/rbac">kubernetes</a> checks.</p>
+<p>Helm Chart scanning will resolve the chart to Kubernetes manifests then run the <a href="https://github.com/aquasecurity/defsec/tree/master/rules/kubernetes/policies">kubernetes</a> checks.</p>
 <h2 id="policy-distribution">Policy Distribution</h2>
 <p>defsec policies are distributed as an OPA bundle on <a href="https://github.com/aquasecurity/defsec/pkgs/container/defsec">GitHub Container Registry</a> (GHCR).
 When misconfiguration detection is enabled, Trivy pulls the OPA bundle from GHCR as an OCI artifact and stores it in the cache.
