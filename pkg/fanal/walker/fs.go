@@ -48,7 +48,8 @@ func (w FS) Walk(root string, fn WalkFunc) error {
 		}
 
 		if err := fn(relPath, fi, w.fileOpener(pathname)); err != nil {
-			return xerrors.Errorf("failed to analyze file: %w", err)
+			log.Logger.Warnf("failed to analyze file %s: %v", pathname, err)
+			return nil
 		}
 		return nil
 	}

@@ -422,7 +422,8 @@ func (ag AnalyzerGroup) AnalyzeFile(ctx context.Context, wg *sync.WaitGroup, lim
 			log.Logger.Debugf("Permission error: %s", filePath)
 			break
 		} else if err != nil {
-			return xerrors.Errorf("unable to open %s: %w", filePath, err)
+			log.Logger.Warnf("unable to open %s: %v, analyzer: %v", filePath, err, a.Type())
+			break
 		}
 
 		if err = limit.Acquire(ctx, 1); err != nil {
