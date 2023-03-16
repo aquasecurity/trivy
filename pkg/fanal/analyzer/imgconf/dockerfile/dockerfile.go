@@ -49,23 +49,25 @@ func (a *historyAnalyzer) Analyze(ctx context.Context, input analyzer.ConfigAnal
 			// RUN instruction
 			createdBy = strings.ReplaceAll(h.CreatedBy, "/bin/sh -c", "RUN")
 		case strings.HasPrefix(h.CreatedBy, "HEALTHCHECK"):
-			// HEALTHCHECK instruction
-			var interval, timeout, startPeriod, retries, command string
-			if input.Config.Config.Healthcheck.Interval != 0 {
-				interval = fmt.Sprintf("--interval=%s ", input.Config.Config.Healthcheck.Interval)
+			if input.Config.Config.Healthcheck != nil {
+				// HEALTHCHECK instruction
+				var interval, timeout, startPeriod, retries, command string
+				if input.Config.Config.Healthcheck.Interval != 0 {
+					interval = fmt.Sprintf("--interval=%s ", input.Config.Config.Healthcheck.Interval)
+				}
+				if input.Config.Config.Healthcheck.Timeout != 0 {
+					timeout = fmt.Sprintf("--timeout=%s ", input.Config.Config.Healthcheck.Timeout)
+				}
+				if input.Config.Config.Healthcheck.StartPeriod != 0 {
+					startPeriod = fmt.Sprintf("--startPeriod=%s ", input.Config.Config.Healthcheck.StartPeriod)
+				}
+				if input.Config.Config.Healthcheck.Retries != 0 {
+					retries = fmt.Sprintf("--retries=%d ", input.Config.Config.Healthcheck.Retries)
+				}
+				command = strings.Join(input.Config.Config.Healthcheck.Test, " ")
+				command = strings.ReplaceAll(command, "CMD-SHELL", "CMD")
+				createdBy = fmt.Sprintf("HEALTHCHECK %s%s%s%s%s", interval, timeout, startPeriod, retries, command)
 			}
-			if input.Config.Config.Healthcheck.Timeout != 0 {
-				timeout = fmt.Sprintf("--timeout=%s ", input.Config.Config.Healthcheck.Timeout)
-			}
-			if input.Config.Config.Healthcheck.StartPeriod != 0 {
-				startPeriod = fmt.Sprintf("--startPeriod=%s ", input.Config.Config.Healthcheck.StartPeriod)
-			}
-			if input.Config.Config.Healthcheck.Retries != 0 {
-				retries = fmt.Sprintf("--retries=%d ", input.Config.Config.Healthcheck.Retries)
-			}
-			command = strings.Join(input.Config.Config.Healthcheck.Test, " ")
-			command = strings.ReplaceAll(command, "CMD-SHELL", "CMD")
-			createdBy = fmt.Sprintf("HEALTHCHECK %s%s%s%s%s", interval, timeout, startPeriod, retries, command)
 		}
 		dockerfile.WriteString(strings.TrimSpace(createdBy) + "\n")
 	}
