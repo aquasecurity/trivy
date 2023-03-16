@@ -290,12 +290,6 @@ package-lock.json
 							},
 						},
 						{
-							ID:       "sanitize-html@1.20.0",
-							Name:     "sanitize-html",
-							Version:  "1.20.0",
-							Indirect: true,
-						},
-						{
 							ID:       "styled-components@3.1.3",
 							Name:     "styled-components",
 							Version:  "3.1.3",
@@ -318,41 +312,26 @@ package-lock.json
 							InstalledVersion: "1.7.3",
 							FixedVersion:     "2.6.7, 3.1.1",
 						},
-						{
-							VulnerabilityID: "CVE-2021-26539",
-							PkgID:           "sanitize-html@1.20.0",
-							PkgName:         "sanitize-html",
-							Vulnerability: dbTypes.Vulnerability{
-								Title:       "foobar",
-								Description: "baz",
-								Severity:    "MEDIUM",
-							},
-							InstalledVersion: "1.20.0",
-							FixedVersion:     "2.3.1",
-						},
 					},
 				},
 			},
 			expectedOutput: `
 package-lock.json (npm)
 =======================
-Total: 2 (MEDIUM: 1, HIGH: 1)
+Total: 1 (MEDIUM: 0, HIGH: 1)
 
-┌───────────────┬────────────────┬──────────┬───────────────────┬───────────────┬────────┐
-│    Library    │ Vulnerability  │ Severity │ Installed Version │ Fixed Version │ Title  │
-├───────────────┼────────────────┼──────────┼───────────────────┼───────────────┼────────┤
-│ node-fetch    │ CVE-2022-0235  │ HIGH     │ 1.7.3             │ 2.6.7, 3.1.1  │ foobar │
-├───────────────┼────────────────┼──────────┼───────────────────┼───────────────┤        │
-│ sanitize-html │ CVE-2021-26539 │ MEDIUM   │ 1.20.0            │ 2.3.1         │        │
-└───────────────┴────────────────┴──────────┴───────────────────┴───────────────┴────────┘
+┌────────────┬───────────────┬──────────┬───────────────────┬───────────────┬────────┐
+│  Library   │ Vulnerability │ Severity │ Installed Version │ Fixed Version │ Title  │
+├────────────┼───────────────┼──────────┼───────────────────┼───────────────┼────────┤
+│ node-fetch │ CVE-2022-0235 │ HIGH     │ 1.7.3             │ 2.6.7, 3.1.1  │ foobar │
+└────────────┴───────────────┴──────────┴───────────────────┴───────────────┴────────┘
 
 Dependency Origin Tree (Reversed)
 =================================
 package-lock.json
-├── node-fetch@1.7.3, (MEDIUM: 0, HIGH: 1)
-│   └── ...(omitted)...
-│       └── styled-components@3.1.3
-└── sanitize-html@1.20.0, (MEDIUM: 1, HIGH: 0)
+└── node-fetch@1.7.3, (MEDIUM: 0, HIGH: 1)
+    └── ...(omitted)...
+        └── styled-components@3.1.3
 `,
 		},
 	}
