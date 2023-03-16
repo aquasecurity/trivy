@@ -23,6 +23,7 @@ var (
 		"2": time.Date(2024, 6, 30, 23, 59, 59, 0, time.UTC),
 		// N/A
 		"2022": time.Date(3000, 1, 1, 23, 59, 59, 0, time.UTC),
+		"2023": time.Date(3000, 1, 1, 23, 59, 59, 0, time.UTC),
 	}
 )
 
@@ -66,7 +67,7 @@ func (s *Scanner) Detect(osVer string, _ *ftypes.Repository, pkgs []ftypes.Packa
 	log.Logger.Info("Detecting Amazon Linux vulnerabilities...")
 
 	osVer = strings.Fields(osVer)[0]
-	if osVer != "2" && osVer != "2022" {
+	if osVer != "2" && osVer != "2022" && osVer != "2023" {
 		osVer = "1"
 	}
 	log.Logger.Debugf("amazon: os version: %s", osVer)

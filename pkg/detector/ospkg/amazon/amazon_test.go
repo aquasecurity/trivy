@@ -128,6 +128,38 @@ func TestScanner_Detect(t *testing.T) {
 			},
 		},
 		{
+			name:     "amazon linux 2023",
+			fixtures: []string{"testdata/fixtures/amazon.yaml", "testdata/fixtures/data-source.yaml"},
+			args: args{
+				osVer: "2023",
+				pkgs: []ftypes.Package{
+					{
+						Name:    "protobuf",
+						Version: "3.14.0-7.amzn2023.0.3",
+						Layer: ftypes.Layer{
+							DiffID: "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
+						},
+					},
+				},
+			},
+			want: []types.DetectedVulnerability{
+				{
+					PkgName:          "protobuf",
+					VulnerabilityID:  "CVE-2022-1941",
+					InstalledVersion: "3.14.0-7.amzn2023.0.3",
+					FixedVersion:     "3.19.6-1.amzn2023.0.1",
+					Layer: ftypes.Layer{
+						DiffID: "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
+					},
+					DataSource: &dbTypes.DataSource{
+						ID:   vulnerability.Amazon,
+						Name: "Amazon Linux Security Center",
+						URL:  "https://alas.aws.amazon.com/",
+					},
+				},
+			},
+		},
+		{
 			name:     "empty version",
 			fixtures: []string{"testdata/fixtures/amazon.yaml", "testdata/fixtures/data-source.yaml"},
 			args: args{
