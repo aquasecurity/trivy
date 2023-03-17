@@ -36,6 +36,9 @@ $(GOBIN)/labeler:
 $(GOBIN)/easyjson:
 	go install github.com/mailru/easyjson/...@v0.7.7
 
+$(GOBIN)/goyacc:
+	go install golang.org/x/tools/cmd/goyacc@latest
+
 .PHONY: wire
 wire: $(GOBIN)/wire
 	wire gen ./pkg/commands/... ./pkg/rpc/...
@@ -133,3 +136,8 @@ mkdocs-serve:
 .PHONY: easyjson
 easyjson: $(GOBIN)/easyjson
 	easyjson pkg/module/serialize/types.go
+
+# Generate license parser with goyacc
+.PHONY: yacc
+yacc: $(GOBIN)/goyacc
+	go generate ./pkg/licensing/expression/... 	

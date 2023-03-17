@@ -105,7 +105,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 					DocumentName:         "rails:latest",
 					DocumentNamespace:    "http://aquasecurity.github.io/trivy/container_image/rails:latest-3ff14136-e09f-4df9-80ea-000000000001",
 					CreatorOrganizations: []string{"aquasecurity"},
-					CreatorTools:         []string{"trivy"},
+					CreatorTools:         []string{"trivy-0.38.1"},
 					Created:              "2021-08-25T12:20:30Z",
 				},
 				Packages: map[spdx.ElementID]*spdx.Package2_2{
@@ -176,8 +176,8 @@ func TestMarshaler_Marshal(t *testing.T) {
 						PackageSPDXIdentifier:   spdx.ElementID("Package-fd0dc3cf913d5bc3"),
 						PackageName:             "binutils",
 						PackageVersion:          "2.30",
-						PackageLicenseConcluded: "GPLv3+",
-						PackageLicenseDeclared:  "GPLv3+",
+						PackageLicenseConcluded: "GPL-3.0-or-later",
+						PackageLicenseDeclared:  "GPL-3.0-or-later",
 						PackageExternalReferences: []*spdx.PackageExternalReference2_2{
 							{
 								Category: tspdx.CategoryPackageManager,
@@ -310,7 +310,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 					DocumentName:         "centos:latest",
 					DocumentNamespace:    "http://aquasecurity.github.io/trivy/container_image/centos:latest-3ff14136-e09f-4df9-80ea-000000000001",
 					CreatorOrganizations: []string{"aquasecurity"},
-					CreatorTools:         []string{"trivy"},
+					CreatorTools:         []string{"trivy-0.38.1"},
 					Created:              "2021-08-25T12:20:30Z",
 				},
 				Packages: map[spdx.ElementID]*spdx.Package2_2{
@@ -338,8 +338,8 @@ func TestMarshaler_Marshal(t *testing.T) {
 						PackageSPDXIdentifier:   spdx.ElementID("Package-d8dccb186bafaf37"),
 						PackageName:             "acl",
 						PackageVersion:          "2.2.53",
-						PackageLicenseConcluded: "GPLv2+",
-						PackageLicenseDeclared:  "GPLv2+",
+						PackageLicenseConcluded: "GPL-2.0-or-later",
+						PackageLicenseDeclared:  "GPL-2.0-or-later",
 						PackageExternalReferences: []*spdx.PackageExternalReference2_2{
 							{
 								Category: tspdx.CategoryPackageManager,
@@ -463,7 +463,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 					DocumentName:         "masahiro331/CVE-2021-41098",
 					DocumentNamespace:    "http://aquasecurity.github.io/trivy/filesystem/masahiro331/CVE-2021-41098-3ff14136-e09f-4df9-80ea-000000000001",
 					CreatorOrganizations: []string{"aquasecurity"},
-					CreatorTools:         []string{"trivy"},
+					CreatorTools:         []string{"trivy-0.38.1"},
 					Created:              "2021-08-25T12:20:30Z",
 				},
 				Packages: map[spdx.ElementID]*spdx.Package2_2{
@@ -546,7 +546,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 					DocumentName:         "test-aggregate",
 					DocumentNamespace:    "http://aquasecurity.github.io/trivy/repository/test-aggregate-3ff14136-e09f-4df9-80ea-000000000001",
 					CreatorOrganizations: []string{"aquasecurity"},
-					CreatorTools:         []string{"trivy"},
+					CreatorTools:         []string{"trivy-0.38.1"},
 					Created:              "2021-08-25T12:20:30Z",
 				},
 				Packages: map[spdx.ElementID]*spdx.Package2_2{
@@ -621,7 +621,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 					DocumentName:         "empty/path",
 					DocumentNamespace:    "http://aquasecurity.github.io/trivy/filesystem/empty/path-3ff14136-e09f-4df9-80ea-000000000001",
 					CreatorOrganizations: []string{"aquasecurity"},
-					CreatorTools:         []string{"trivy"},
+					CreatorTools:         []string{"trivy-0.38.1"},
 					Created:              "2021-08-25T12:20:30Z",
 				},
 				Packages: map[spdx.ElementID]*spdx.Package2_2{
@@ -678,11 +678,74 @@ func TestMarshaler_Marshal(t *testing.T) {
 				return h.Sum64(), nil
 			}
 
-			marshaler := tspdx.NewMarshaler(tspdx.WithClock(clock), tspdx.WithNewUUID(newUUID), tspdx.WithHasher(hasher))
+			marshaler := tspdx.NewMarshaler("0.38.1", tspdx.WithClock(clock), tspdx.WithNewUUID(newUUID), tspdx.WithHasher(hasher))
 			spdxDoc, err := marshaler.Marshal(tc.inputReport)
 			require.NoError(t, err)
 
 			assert.Equal(t, tc.wantSBOM, spdxDoc)
+		})
+	}
+}
+
+func Test_GetLicense(t *testing.T) {
+	tests := []struct {
+		name  string
+		input ftypes.Package
+		want  string
+	}{
+		{
+			name: "happy path",
+			input: ftypes.Package{
+				Licenses: []string{
+					"GPLv2+",
+				},
+			},
+			want: "GPL-2.0-or-later",
+		},
+		{
+			name: "happy path with multi license",
+			input: ftypes.Package{
+				Licenses: []string{
+					"GPLv2+",
+					"GPLv3+",
+				},
+			},
+			want: "GPL-2.0-or-later AND GPL-3.0-or-later",
+		},
+		{
+			name: "happy path with OR operator",
+			input: ftypes.Package{
+				Licenses: []string{
+					"GPLv2+",
+					"LGPL 2.0 or GNU LESSER",
+				},
+			},
+			want: "GPL-2.0-or-later AND (LGPL-2.0-only OR LGPL-3.0-only)",
+		},
+		{
+			name: "happy path with AND operator",
+			input: ftypes.Package{
+				Licenses: []string{
+					"GPLv2+",
+					"LGPL 2.0 and GNU LESSER",
+				},
+			},
+			want: "GPL-2.0-or-later AND LGPL-2.0-only AND LGPL-3.0-only",
+		},
+		{
+			name: "happy path with WITH operator",
+			input: ftypes.Package{
+				Licenses: []string{
+					"AFL 2.0",
+					"AFL 3.0 with distribution exception",
+				},
+			},
+			want: "AFL-2.0 AND AFL-3.0 WITH distribution-exception",
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			assert.Equalf(t, tt.want, tspdx.GetLicense(tt.input), "getLicense(%v)", tt.input)
 		})
 	}
 }

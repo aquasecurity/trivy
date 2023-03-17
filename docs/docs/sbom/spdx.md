@@ -19,7 +19,7 @@ SPDXID: SPDXRef-DOCUMENT
 DocumentName: alpine:3.15
 DocumentNamespace: http://aquasecurity.github.io/trivy/container_image/alpine:3.15-bebf6b19-a94c-4e2c-af44-065f63923f48
 Creator: Organization: aquasecurity
-Creator: Tool: trivy
+Creator: Tool: trivy-0.38.1
 Created: 2022-04-28T07:32:57.142806Z
 
 ##### Package: zlib
@@ -167,7 +167,7 @@ $ cat result.spdx.json | jq .
 	"creationInfo": {
 		"created": "2022-04-28T08:16:55.328255Z",
 		"creators": [
-			"Tool: trivy",
+			"Tool: trivy-0.38.1",
 			"Organization: aquasecurity"
 		]
 	},

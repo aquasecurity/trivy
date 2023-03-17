@@ -65,13 +65,13 @@ func TestFilesystem(t *testing.T) {
 			golden: "testdata/gomod-skip.json.golden",
 		},
 		{
-			name: "nodejs",
+			name: "npm",
 			args: args{
 				scanner:     types.VulnerabilityScanner,
-				input:       "testdata/fixtures/fs/nodejs",
+				input:       "testdata/fixtures/fs/npm",
 				listAllPkgs: true,
 			},
-			golden: "testdata/nodejs.json.golden",
+			golden: "testdata/npm.json.golden",
 		},
 		{
 			name: "yarn",

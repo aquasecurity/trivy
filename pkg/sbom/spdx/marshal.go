@@ -8,11 +8,15 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/mitchellh/hashstructure/v2"
+	"github.com/samber/lo"
 	"github.com/spdx/tools-golang/spdx"
 	"golang.org/x/xerrors"
 	"k8s.io/utils/clock"
 
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
+	"github.com/aquasecurity/trivy/pkg/licensing"
+	"github.com/aquasecurity/trivy/pkg/licensing/expression"
+	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/purl"
 	"github.com/aquasecurity/trivy/pkg/scanner/utils"
 	"github.com/aquasecurity/trivy/pkg/types"
@@ -60,10 +64,11 @@ var (
 )
 
 type Marshaler struct {
-	format  spdx.Document2_1
-	clock   clock.Clock
-	newUUID newUUID
-	hasher  Hash
+	format     spdx.Document2_1
+	clock      clock.Clock
+	newUUID    newUUID
+	hasher     Hash
+	appVersion string // Trivy version. It needed for `creator` field
 }
 
 type Hash func(v interface{}, format hashstructure.Format, opts *hashstructure.HashOptions) (uint64, error)
@@ -90,12 +95,13 @@ func WithHasher(hasher Hash) marshalOption {
 	}
 }
 
-func NewMarshaler(opts ...marshalOption) *Marshaler {
+func NewMarshaler(version string, opts ...marshalOption) *Marshaler {
 	m := &Marshaler{
-		format:  spdx.Document2_1{},
-		clock:   clock.RealClock{},
-		newUUID: uuid.New,
-		hasher:  hashstructure.Hash,
+		format:     spdx.Document2_1{},
+		clock:      clock.RealClock{},
+		newUUID:    uuid.New,
+		hasher:     hashstructure.Hash,
+		appVersion: version,
 	}
 
 	for _, opt := range opts {
@@ -149,7 +155,7 @@ func (m *Marshaler) Marshal(r types.Report) (*spdx.Document2_2, error) {
 			DocumentName:         r.ArtifactName,
 			DocumentNamespace:    getDocumentNamespace(r, m),
 			CreatorOrganizations: []string{CreatorOrganization},
-			CreatorTools:         []string{CreatorTool},
+			CreatorTools:         []string{fmt.Sprintf("%s-%s", CreatorTool, m.appVersion)},
 			Created:              m.clock.Now().UTC().Format(time.RFC3339),
 		},
 		Packages:      packages,
@@ -261,7 +267,7 @@ func (m *Marshaler) langPackage(target, appType string) (spdx.Package2_2, error)
 }
 
 func (m *Marshaler) pkgToSpdxPackage(t string, class types.ResultClass, metadata types.Metadata, pkg ftypes.Package) (spdx.Package2_2, error) {
-	license := getLicense(pkg)
+	license := GetLicense(pkg)
 
 	pkgID, err := calcPkgID(m.hasher, pkg)
 	if err != nil {
@@ -353,12 +359,25 @@ func purlExternalReference(packageURL string) *spdx.PackageExternalReference2_2 
 	}
 }
 
-func getLicense(p ftypes.Package) string {
+func GetLicense(p ftypes.Package) string {
 	if len(p.Licenses) == 0 {
 		return "NONE"
 	}
 
-	return strings.Join(p.Licenses, ", ")
+	license := strings.Join(lo.Map(p.Licenses, func(license string, index int) string {
+		// e.g. GPL-3.0-with-autoconf-exception
+		license = strings.ReplaceAll(license, "-with-", " WITH ")
+		license = strings.ReplaceAll(license, "-WITH-", " WITH ")
+
+		return fmt.Sprintf("(%s)", license)
+	}), " AND ")
+	s, err := expression.Normalize(license, licensing.Normalize, expression.NormalizeForSPDX)
+	if err != nil {
+		// Not fail on the invalid license
+		log.Logger.Warnf("Unable to marshal SPDX licenses %q", license)
+		return ""
+	}
+	return s
 }
 
 func getDocumentNamespace(r types.Report, m *Marshaler) string {
