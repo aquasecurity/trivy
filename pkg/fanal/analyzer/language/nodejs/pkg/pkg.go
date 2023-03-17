@@ -2,6 +2,7 @@ package pkg
 
 import (
 	"context"
+	godeptypes "github.com/aquasecurity/go-dep-parser/pkg/types"
 	"os"
 	"path/filepath"
 
@@ -32,7 +33,16 @@ func (a nodePkgLibraryAnalyzer) Analyze(_ context.Context, input analyzer.Analys
 		return nil, xerrors.Errorf("unable to parse %s: %w", input.FilePath, err)
 	}
 
-	return language.ToAnalysisResult(types.NodePkg, input.FilePath, input.FilePath, libs, deps), nil
+	// package.json may contain version range in `dependencies` fields
+	// e.g.   "devDependencies": { "mocha": "^5.2.0", }
+	// so we get only information about project
+	for _, lib := range libs {
+		if lib.Root {
+			return language.ToAnalysisResult(types.NodePkg, input.FilePath, input.FilePath, []godeptypes.Library{lib}, deps), nil
+		}
+	}
+
+	return nil, xerrors.Errorf("unable to find root library for %s: %w", input.FilePath, err)
 
 }
 

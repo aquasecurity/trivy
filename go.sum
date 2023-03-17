@@ -227,8 +227,8 @@ github.com/BurntSushi/xgb v0.0.0-20160522181843-27f122750802/go.mod h1:IVnqGOEym
 github.com/CycloneDX/cyclonedx-go v0.7.0 h1:jNxp8hL7UpcvPDFXjY+Y1ibFtsW+e5zyF9QoSmhK/zg=
 github.com/CycloneDX/cyclonedx-go v0.7.0/go.mod h1:W5Z9w8pTTL+t+yG3PCiFRGlr8PUlE0pGWzKSJbsyXkg=
 github.com/DATA-DOG/go-sqlmock v1.5.0 h1:Shsta01QNfFxHCfpW6YH2STWB0MudeXXEWMr20OEh60=
-github.com/DmitriyLewen/go-dep-parser v0.0.0-20230303063707-10784154dde3 h1:7eCjpyhBnehzmFyW29TeoH2CJM7cSAbXA4FKbMQMjwY=
-github.com/DmitriyLewen/go-dep-parser v0.0.0-20230303063707-10784154dde3/go.mod h1:xx5OX/gVENa5dY60k9EliVvTbUf/EmRw1tJKzdskKGw=
+github.com/DmitriyLewen/go-dep-parser v0.0.0-20230317101343-ee89e32cbfe5 h1:bp+fVKyc/LjWvJq2CXcehbhlqOOY2b9fit0kzD4wWX0=
+github.com/DmitriyLewen/go-dep-parser v0.0.0-20230317101343-ee89e32cbfe5/go.mod h1:xx5OX/gVENa5dY60k9EliVvTbUf/EmRw1tJKzdskKGw=
 github.com/GoogleCloudPlatform/docker-credential-gcr v2.0.5+incompatible h1:juIaKLLVhqzP55d8x4cSVgwyQv76Z55/fRv/UBr2KkQ=
 github.com/GoogleCloudPlatform/docker-credential-gcr v2.0.5+incompatible/go.mod h1:BB1eHdMLYEFuFdBlRMb0N7YGVdM5s6Pt0njxgvfbGGs=
 github.com/MakeNowJust/heredoc v1.0.0 h1:cXCdzVdstXyiTqTvfqk9SDHpKNjxuom+DOlyEeQ4pzQ=

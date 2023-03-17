@@ -33,14 +33,14 @@ func init() {
 const version = 1
 
 type yarnAnalyzer struct {
-	packageJsonParser packagejson.Parser
+	packageJsonParser godeptypes.Parser
 	lockParser        godeptypes.Parser
 	comparer          npm.Comparer
 }
 
 func newYarnAnalyzer(_ analyzer.AnalyzerOptions) (analyzer.PostAnalyzer, error) {
 	return &yarnAnalyzer{
-		packageJsonParser: packagejson.Parser{},
+		packageJsonParser: packagejson.NewParser(),
 		lockParser:        yarn.NewParser(),
 		comparer:          npm.Comparer{},
 	}, nil
@@ -202,9 +202,17 @@ func (a yarnAnalyzer) parsePackageJsonDependencies(fsys fs.FS, path string) (map
 		return nil, xerrors.Errorf("type assertion error: %w", err)
 	}
 
-	rootDeps, err := a.packageJsonParser.ParseProdDependencies(file)
+	libs, _, err := a.packageJsonParser.Parse(file)
 	if err != nil {
 		return nil, err
 	}
-	return rootDeps, nil
+	var directDeps = map[string]string{}
+	for _, lib := range libs {
+		// libs contain information about project, we need to skip it
+		if !lib.Root {
+			directDeps[lib.Name] = lib.Version
+		}
+	}
+
+	return directDeps, nil
 }
