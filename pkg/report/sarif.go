@@ -130,7 +130,7 @@ func (sw SarifWriter) Write(report types.Report) error {
 
 	ruleIndexes := map[string]int{}
 	for _, res := range report.Results {
-		target := ToPathUri(res.Target)
+		target := ToPathUri(res.Target, res.Class)
 
 		for _, vuln := range res.Vulnerabilities {
 			fullDescription := vuln.Description
@@ -139,7 +139,7 @@ func (sw SarifWriter) Write(report types.Report) error {
 			}
 			path := target
 			if vuln.PkgPath != "" {
-				path = ToPathUri(vuln.PkgPath)
+				path = ToPathUri(vuln.PkgPath, res.Class)
 			}
 			sw.addSarifResult(&sarifData{
 				title:            "vulnerability",
@@ -270,7 +270,12 @@ func toSarifErrorLevel(severity string) string {
 	}
 }
 
-func ToPathUri(input string) string {
+func ToPathUri(input string, resultClass types.ResultClass) string {
+	// we only need to convert OS input
+	// e.g. image names, digests, etc...
+	if resultClass != types.ClassOSPkg {
+		return input
+	}
 	var matches = pathRegex.FindStringSubmatch(input)
 	if matches != nil {
 		input = matches[pathRegex.SubexpIndex("path")]
