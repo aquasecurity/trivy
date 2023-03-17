@@ -2,13 +2,13 @@ package pkg
 
 import (
 	"context"
-	godeptypes "github.com/aquasecurity/go-dep-parser/pkg/types"
 	"os"
 	"path/filepath"
 
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/go-dep-parser/pkg/nodejs/packagejson"
+	godeptypes "github.com/aquasecurity/go-dep-parser/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer/language"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"

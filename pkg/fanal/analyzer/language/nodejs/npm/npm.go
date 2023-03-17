@@ -148,7 +148,7 @@ func (a npmLibraryAnalyzer) findLicenses(fsys fs.FS, lockPath string) (map[strin
 			return xerrors.Errorf("unable to parse %q: %w", filePath, err)
 		}
 
-		// licence for library stored in Root library
+		// license for library stored in Root library
 		for _, lib := range libs {
 			if lib.Root {
 				licenses[lib.ID] = lib.License
