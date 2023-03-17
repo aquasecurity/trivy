@@ -1,6 +1,7 @@
 package compare
 
 import (
+	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"strings"
 
 	"golang.org/x/xerrors"
@@ -9,6 +10,16 @@ import (
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/log"
 )
+
+var osDetails ftypes.OS
+
+func SetOSDetails(os ftypes.OS) {
+	osDetails = os
+}
+
+func GetOSDetails() ftypes.OS {
+	return osDetails
+}
 
 // Comparer is an interface for version comparison
 type Comparer interface {

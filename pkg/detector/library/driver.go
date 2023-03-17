@@ -19,47 +19,64 @@ import (
 	"github.com/aquasecurity/trivy/pkg/types"
 )
 
+var comparers = map[string]compare.Comparer{
+	ftypes.Bundler:    rubygems.Comparer{},
+	ftypes.GemSpec:    rubygems.Comparer{},
+	ftypes.RustBinary: compare.GenericComparer{},
+	ftypes.Cargo:      compare.GenericComparer{},
+	ftypes.Composer:   compare.GenericComparer{},
+	ftypes.GoBinary:   compare.GenericComparer{},
+	ftypes.GoModule:   compare.GenericComparer{},
+	ftypes.Jar:        maven.Comparer{},
+	ftypes.Pom:        maven.Comparer{},
+	ftypes.Gradle:     maven.Comparer{},
+	ftypes.Npm:        npm.Comparer{},
+	ftypes.Yarn:       npm.Comparer{},
+	ftypes.Pnpm:       npm.Comparer{},
+	ftypes.NodePkg:    npm.Comparer{},
+	ftypes.JavaScript: npm.Comparer{},
+	ftypes.NuGet:      compare.GenericComparer{},
+	ftypes.DotNetCore: compare.GenericComparer{},
+	ftypes.Pipenv:     pep440.Comparer{},
+	ftypes.Poetry:     pep440.Comparer{},
+	ftypes.Pip:        pep440.Comparer{},
+	ftypes.PythonPkg:  pep440.Comparer{},
+}
+
+func RegisterComparer(name string, comparer compare.Comparer) {
+	comparers[name] = comparer
+}
+
 // NewDriver returns a driver according to the library type
 func NewDriver(libType string) (Driver, error) {
 	var ecosystem dbTypes.Ecosystem
-	var comparer compare.Comparer
-
 	switch libType {
 	case ftypes.Bundler, ftypes.GemSpec:
 		ecosystem = vulnerability.RubyGems
-		comparer = rubygems.Comparer{}
 	case ftypes.RustBinary, ftypes.Cargo:
 		ecosystem = vulnerability.Cargo
-		comparer = compare.GenericComparer{}
 	case ftypes.Composer:
 		ecosystem = vulnerability.Composer
-		comparer = compare.GenericComparer{}
 	case ftypes.GoBinary, ftypes.GoModule:
 		ecosystem = vulnerability.Go
-		comparer = compare.GenericComparer{}
 	case ftypes.Jar, ftypes.Pom, ftypes.Gradle:
 		ecosystem = vulnerability.Maven
-		comparer = maven.Comparer{}
 	case ftypes.Npm, ftypes.Yarn, ftypes.Pnpm, ftypes.NodePkg, ftypes.JavaScript:
 		ecosystem = vulnerability.Npm
-		comparer = npm.Comparer{}
 	case ftypes.NuGet, ftypes.DotNetCore:
 		ecosystem = vulnerability.NuGet
-		comparer = compare.GenericComparer{}
 	case ftypes.Pipenv, ftypes.Poetry, ftypes.Pip, ftypes.PythonPkg:
 		ecosystem = vulnerability.Pip
-		comparer = pep440.Comparer{}
 	case ftypes.Conan:
 		ecosystem = vulnerability.Conan
 		// Only semver can be used for version ranges
 		// https://docs.conan.io/en/latest/versioning/version_ranges.html
-		comparer = compare.GenericComparer{}
 	default:
 		return Driver{}, xerrors.Errorf("unsupported type %s", libType)
 	}
 	return Driver{
 		ecosystem: ecosystem,
-		comparer:  comparer,
+		comparer:  comparers[libType],
 		dbc:       db.Config{},
 	}, nil
 }
@@ -80,7 +97,7 @@ func (d *Driver) Type() string {
 // If "ecosystem" is pip, it looks for buckets with "pip::" and gets security advisories from those buckets.
 // It allows us to add a new data source with the ecosystem prefix (e.g. pip::new-data-source)
 // and detect vulnerabilities without specifying a specific bucket name.
-func (d *Driver) DetectVulnerabilities(pkgID, pkgName, pkgVer string) ([]types.DetectedVulnerability, error) {
+func (d *Driver) DetectVulnerabilities(pkgID, pkgName, pkgVer string, os ftypes.OS) ([]types.DetectedVulnerability, error) {
 	// e.g. "pip::", "npm::"
 	prefix := fmt.Sprintf("%s::", d.ecosystem)
 	advisories, err := d.dbc.GetAdvisories(prefix, vulnerability.NormalizePkgName(d.ecosystem, pkgName))
@@ -88,6 +105,7 @@ func (d *Driver) DetectVulnerabilities(pkgID, pkgName, pkgVer string) ([]types.D
 		return nil, xerrors.Errorf("failed to get %s advisories: %w", d.ecosystem, err)
 	}
 
+	compare.SetOSDetails(os)
 	var vulns []types.DetectedVulnerability
 	for _, adv := range advisories {
 		if !d.comparer.IsVulnerable(pkgVer, adv) {

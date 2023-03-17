@@ -230,7 +230,7 @@ func (s Scanner) scanVulnerabilities(target string, detail ftypes.ArtifactDetail
 	}
 
 	if slices.Contains(options.VulnType, types.VulnTypeLibrary) {
-		libResults, err := s.scanLangPkgs(detail.Applications)
+		libResults, err := s.scanLangPkgs(detail)
 		if err != nil {
 			return nil, false, xerrors.Errorf("failed to scan application libraries: %w", err)
 		}
@@ -270,7 +270,8 @@ func (s Scanner) scanOSPkgs(target string, detail ftypes.ArtifactDetail, options
 	return result, eosl, nil
 }
 
-func (s Scanner) scanLangPkgs(apps []ftypes.Application) (types.Results, error) {
+func (s Scanner) scanLangPkgs(detail ftypes.ArtifactDetail) (types.Results, error) {
+	apps := detail.Applications
 	log.Logger.Infof("Number of language-specific files: %d", len(apps))
 	if len(apps) == 0 {
 		return nil, nil
@@ -290,7 +291,7 @@ func (s Scanner) scanLangPkgs(apps []ftypes.Application) (types.Results, error) 
 		}
 
 		log.Logger.Debugf("Detecting library vulnerabilities, type: %s, path: %s", app.Type, app.FilePath)
-		vulns, err := library.Detect(app.Type, app.Libraries)
+		vulns, err := library.Detect(app.Type, detail.OS, app.Libraries)
 		if err != nil {
 			return nil, xerrors.Errorf("failed vulnerability detection of libraries: %w", err)
 		} else if len(vulns) == 0 {
