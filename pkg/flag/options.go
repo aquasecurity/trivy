@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"path/filepath"
 	"strings"
 	"sync"
 	"time"
@@ -247,6 +248,24 @@ func getValue(flag *Flag) any {
 		}
 	}
 	return viper.Get(flag.ConfigName)
+}
+
+func explodeGlob(paths []string, dir string) []string {
+	var exploded []string
+
+	for _, path := range paths {
+		if !strings.Contains(path, "*") {
+			exploded = append(exploded, path)
+			continue
+		}
+		if globPaths, err := filepath.Glob(filepath.Join(dir, path)); err == nil {
+			for _, globPath := range globPaths {
+				exploded = append(exploded, globPath)
+			}
+		}
+	}
+
+	return exploded
 }
 
 func (f *Flags) groups() []FlagGroup {
