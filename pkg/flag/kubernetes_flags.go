@@ -4,8 +4,9 @@ import (
 	"strconv"
 
 	"fmt"
-	"golang.org/x/xerrors"
 	"strings"
+
+	"golang.org/x/xerrors"
 
 	"github.com/samber/lo"
 	corev1 "k8s.io/api/core/v1"
