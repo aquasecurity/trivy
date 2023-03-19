@@ -100,6 +100,7 @@ require (
 	google.golang.org/protobuf v1.28.1
 	gopkg.in/yaml.v3 v3.0.1
 	gotest.tools v2.2.0+incompatible
+	k8s.io/api v0.26.2
 	k8s.io/utils v0.0.0-20230115233650-391b47cb4029
 	modernc.org/sqlite v1.20.3
 )
@@ -360,7 +361,6 @@ require (
 	gopkg.in/warnings.v0 v0.1.2 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 	helm.sh/helm/v3 v3.11.1 // indirect
-	k8s.io/api v0.26.2 // indirect
 	k8s.io/apiextensions-apiserver v0.26.0 // indirect
 	k8s.io/apimachinery v0.26.2 // indirect
 	k8s.io/apiserver v0.26.0 // indirect
