@@ -1,12 +1,9 @@
 package flag
 
 import (
-<<<<<<< HEAD
 	"strconv"
 
 	"fmt"
-=======
->>>>>>> 802cfe640 (feat: parallel processing k8s subcommand)
 	"golang.org/x/xerrors"
 	"strings"
 
@@ -115,25 +112,17 @@ func (f *K8sFlagGroup) Flags() []*Flag {
 }
 
 func (f *K8sFlagGroup) ToOptions() (K8sOptions, error) {
-<<<<<<< HEAD
 	tolerations, err := optionToTolerations(getStringSlice(f.Tolerations))
 	if err != nil {
 		return K8sOptions{}, err
 	}
 	var parallel int
 	if f.Parallel != nil {
-		parallelFlag := getString(f.Parallel)
-		parallel, err = strconv.Atoi(parallelFlag)
+		parallel := getInt(f.Parallel)
 		// check parallel flag is a valid number between 1-20
-		if err != nil || parallel < 1 || parallel > 20 {
+		if parallel < 1 || parallel > 20 {
 			return K8sOptions{}, xerrors.Errorf("unable to parse parallel value, please ensure that the value entered is a valid number between 1-20.")
 		}
-=======
-	parallel := getInt(f.Parallel)
-	// check parallel flag is a valid number between 1-20
-	if parallel < 1 || parallel > 20 {
-		return K8sOptions{}, xerrors.Errorf("unable to parse parallel value, please ensure that the value entered is a valid number between 1-20.")
->>>>>>> 802cfe640 (feat: parallel processing k8s subcommand)
 	}
 	return K8sOptions{
 		ClusterContext: getString(f.ClusterContext),
