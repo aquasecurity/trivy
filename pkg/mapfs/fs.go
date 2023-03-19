@@ -5,6 +5,7 @@ import (
 	"io/fs"
 	"os"
 	"path/filepath"
+	"strings"
 	"time"
 
 	"golang.org/x/exp/slices"
@@ -188,5 +189,6 @@ func (m *FS) RemoveAll(path string) error {
 func cleanPath(path string) string {
 	path = filepath.Clean(path)
 	path = filepath.ToSlash(path)
+	path = strings.TrimLeft(path, "/") // Remove the leading slash
 	return path
 }

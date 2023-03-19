@@ -281,7 +281,10 @@ func TestFS_Open(t *testing.T) {
 		{
 			name:     "dir",
 			filePath: "a/b/c",
-			wantErr:  assert.Error,
+			want: file{
+				fileInfo: cdirFileInfo,
+			},
+			wantErr: assert.NoError,
 		},
 		{
 			name:     "no such file",
@@ -306,9 +309,11 @@ func TestFS_Open(t *testing.T) {
 			require.NoError(t, err)
 			assertFileInfo(t, tt.want.fileInfo, fi)
 
-			b, err := io.ReadAll(f)
-			require.NoError(t, err)
-			assert.Equal(t, tt.want.body, string(b))
+			if tt.want.body != "" {
+				b, err := io.ReadAll(f)
+				require.NoError(t, err)
+				assert.Equal(t, tt.want.body, string(b))
+			}
 		})
 	}
 }
