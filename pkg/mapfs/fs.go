@@ -188,6 +188,7 @@ func (m *FS) RemoveAll(path string) error {
 
 func cleanPath(path string) string {
 	path = filepath.Clean(path)
+	path = strings.TrimPrefix(path, filepath.VolumeName(path)) // Remove the volume name
 	path = filepath.ToSlash(path)
 	path = strings.TrimLeft(path, "/") // Remove the leading slash
 	return path
