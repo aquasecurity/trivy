@@ -191,62 +191,112 @@
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>https://aquasecurity.github.io/trivy/dev/docs/references/cli/</loc>
+         <loc>https://aquasecurity.github.io/trivy/dev/docs/references/cli/trivy/</loc>
          <lastmod>2023-03-20</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>https://aquasecurity.github.io/trivy/dev/docs/references/cli/client/</loc>
+         <loc>https://aquasecurity.github.io/trivy/dev/docs/references/cli/trivy_aws/</loc>
          <lastmod>2023-03-20</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>https://aquasecurity.github.io/trivy/dev/docs/references/cli/completion/</loc>
+         <loc>https://aquasecurity.github.io/trivy/dev/docs/references/cli/trivy_config/</loc>
          <lastmod>2023-03-20</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>https://aquasecurity.github.io/trivy/dev/docs/references/cli/config/</loc>
+         <loc>https://aquasecurity.github.io/trivy/dev/docs/references/cli/trivy_filesystem/</loc>
          <lastmod>2023-03-20</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>https://aquasecurity.github.io/trivy/dev/docs/references/cli/fs/</loc>
+         <loc>https://aquasecurity.github.io/trivy/dev/docs/references/cli/trivy_image/</loc>
          <lastmod>2023-03-20</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>https://aquasecurity.github.io/trivy/dev/docs/references/cli/image/</loc>
+         <loc>https://aquasecurity.github.io/trivy/dev/docs/references/cli/trivy_kubernetes/</loc>
          <lastmod>2023-03-20</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>https://aquasecurity.github.io/trivy/dev/docs/references/cli/module/</loc>
+         <loc>https://aquasecurity.github.io/trivy/dev/docs/references/cli/trivy_module/</loc>
          <lastmod>2023-03-20</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>https://aquasecurity.github.io/trivy/dev/docs/references/cli/plugin/</loc>
+         <loc>https://aquasecurity.github.io/trivy/dev/docs/references/cli/trivy_module_install/</loc>
          <lastmod>2023-03-20</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>https://aquasecurity.github.io/trivy/dev/docs/references/cli/repo/</loc>
+         <loc>https://aquasecurity.github.io/trivy/dev/docs/references/cli/trivy_module_uninstall/</loc>
          <lastmod>2023-03-20</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>https://aquasecurity.github.io/trivy/dev/docs/references/cli/rootfs/</loc>
+         <loc>https://aquasecurity.github.io/trivy/dev/docs/references/cli/trivy_plugin/</loc>
          <lastmod>2023-03-20</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>https://aquasecurity.github.io/trivy/dev/docs/references/cli/sbom/</loc>
+         <loc>https://aquasecurity.github.io/trivy/dev/docs/references/cli/trivy_plugin_info/</loc>
          <lastmod>2023-03-20</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>https://aquasecurity.github.io/trivy/dev/docs/references/cli/server/</loc>
+         <loc>https://aquasecurity.github.io/trivy/dev/docs/references/cli/trivy_plugin_install/</loc>
+         <lastmod>2023-03-20</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://aquasecurity.github.io/trivy/dev/docs/references/cli/trivy_plugin_list/</loc>
+         <lastmod>2023-03-20</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://aquasecurity.github.io/trivy/dev/docs/references/cli/trivy_plugin_run/</loc>
+         <lastmod>2023-03-20</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://aquasecurity.github.io/trivy/dev/docs/references/cli/trivy_plugin_uninstall/</loc>
+         <lastmod>2023-03-20</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://aquasecurity.github.io/trivy/dev/docs/references/cli/trivy_plugin_update/</loc>
+         <lastmod>2023-03-20</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://aquasecurity.github.io/trivy/dev/docs/references/cli/trivy_repository/</loc>
+         <lastmod>2023-03-20</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://aquasecurity.github.io/trivy/dev/docs/references/cli/trivy_rootfs/</loc>
+         <lastmod>2023-03-20</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://aquasecurity.github.io/trivy/dev/docs/references/cli/trivy_sbom/</loc>
+         <lastmod>2023-03-20</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://aquasecurity.github.io/trivy/dev/docs/references/cli/trivy_server/</loc>
+         <lastmod>2023-03-20</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://aquasecurity.github.io/trivy/dev/docs/references/cli/trivy_version/</loc>
+         <lastmod>2023-03-20</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://aquasecurity.github.io/trivy/dev/docs/references/cli/trivy_vm/</loc>
          <lastmod>2023-03-20</lastmod>
          <changefreq>daily</changefreq>
     </url>
