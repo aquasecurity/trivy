@@ -52,6 +52,9 @@ func (p *Pipeline[T, U]) Do(ctx context.Context) error {
 	g.Go(func() error {
 		defer close(itemCh)
 		for _, item := range p.items {
+			if p.progress {
+				bar.Increment()
+			}
 			select {
 			case itemCh <- item:
 			case <-ctx.Done():
@@ -68,9 +71,6 @@ func (p *Pipeline[T, U]) Do(ctx context.Context) error {
 	for i := 0; i < p.numWorkers; i++ {
 		g.Go(func() error {
 			for item := range itemCh {
-				if p.progress {
-					bar.Increment()
-				}
 				res, err := p.onItem(item)
 				if err != nil {
 					return err
