@@ -2,6 +2,7 @@ package npm
 
 import (
 	"fmt"
+	"github.com/samber/lo"
 	"io"
 	"sort"
 	"strings"
@@ -34,13 +35,14 @@ type Dependency struct {
 }
 
 type Package struct {
-	Name         string            `json:"name"`
-	Version      string            `json:"version"`
-	Dependencies map[string]string `json:"dependencies"`
-	Resolved     string            `json:"resolved"`
-	Dev          bool              `json:"dev"`
-	StartLine    int
-	EndLine      int
+	Name                 string            `json:"name"`
+	Version              string            `json:"version"`
+	Dependencies         map[string]string `json:"dependencies"`
+	OptionalDependencies map[string]string `json:"optionalDependencies"`
+	Resolved             string            `json:"resolved"`
+	Dev                  bool              `json:"dev"`
+	StartLine            int
+	EndLine              int
 }
 
 type Parser struct{}
@@ -75,7 +77,7 @@ func (p *Parser) parseV2(packages map[string]Package) ([]types.Library, []types.
 	var deps []types.Dependency
 
 	directDeps := map[string]struct{}{}
-	for name, version := range packages[""].Dependencies {
+	for name, version := range lo.Assign(packages[""].Dependencies, packages[""].OptionalDependencies) {
 		pkgPath := joinPaths(nodeModulesFolder, name)
 		if _, ok := packages[pkgPath]; !ok {
 			log.Logger.Debugf("Unable to find the direct dependency: '%s@%s'", name, version)
@@ -117,8 +119,13 @@ func (p *Parser) parseV2(packages map[string]Package) ([]types.Library, []types.
 		}
 		libs[pkgID] = lib
 
-		dependsOn := make([]string, 0, len(pkg.Dependencies))
-		for depName, depVersion := range pkg.Dependencies {
+		// npm builds graph using optional deps. e.g.:
+		// └─┬ watchpack@1.7.5
+		// ├─┬ chokidar@3.5.3 - optional dependency
+		// │ └── glob-parent@5.1.
+		dependencies := lo.Assign(pkg.Dependencies, pkg.OptionalDependencies)
+		dependsOn := make([]string, 0, len(dependencies))
+		for depName, depVersion := range dependencies {
 			depID, err := findDependsOn(pkgPath, depName, packages)
 			if err != nil {
 				log.Logger.Warnf("Cannot resolve the version: '%s@%s'", depName, depVersion)
@@ -253,6 +260,11 @@ func pkgNameFromPath(path string) string {
 	// node_modules/string-width
 	// node_modules/string-width/node_modules/strip-ansi
 	paths := strings.Split(path, "/")
+	// deps starting from `@` have pgkName with one `/`
+	// e.g. path == `node_modules/@babel/plugin-transform-classes` => pkgName == `@babel/plugin-transform-classes`
+	if len(paths) >= 2 && strings.HasPrefix(paths[len(paths)-2], "@") {
+		return strings.Join(paths[len(paths)-2:], "/")
+	}
 	return paths[len(paths)-1]
 }
 
