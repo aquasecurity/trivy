@@ -119,7 +119,7 @@ func (f *K8sFlagGroup) ToOptions() (K8sOptions, error) {
 	}
 	var parallel int
 	if f.Parallel != nil {
-		parallel := getInt(f.Parallel)
+		parallel = getInt(f.Parallel)
 		// check parallel flag is a valid number between 1-20
 		if parallel < 1 || parallel > 20 {
 			return K8sOptions{}, xerrors.Errorf("unable to parse parallel value, please ensure that the value entered is a valid number between 1-20.")

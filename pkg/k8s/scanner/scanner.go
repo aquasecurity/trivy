@@ -2,10 +2,6 @@ package scanner
 
 import (
 	"context"
-	"io"
-
-	"github.com/cheggaaa/pb/v3"
-	"golang.org/x/sync/errgroup"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy-kubernetes/pkg/artifacts"
@@ -13,6 +9,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/flag"
 	"github.com/aquasecurity/trivy/pkg/k8s/report"
 	"github.com/aquasecurity/trivy/pkg/log"
+	"github.com/aquasecurity/trivy/pkg/parallel"
 	"github.com/aquasecurity/trivy/pkg/scanner/local"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
@@ -31,15 +28,7 @@ func NewScanner(cluster string, runner cmd.Runner, opts flag.Options) *Scanner {
 	}
 }
 
-func (s *Scanner) Scan(ctx context.Context, artifacts []*artifacts.Artifact) (report.Report, error) {
-	// progress bar
-	bar := pb.StartNew(len(artifacts))
-	if s.opts.NoProgress {
-		bar.SetWriter(io.Discard)
-	}
-	defer bar.Finish()
-
-	var vulns, misconfigs []report.Resource
+func (s *Scanner) Scan(ctx context.Context, artifactsData []*artifacts.Artifact) (report.Report, error) {
 
 	// disable logs before scanning
 	err := log.InitLogger(s.opts.Debug, true)
@@ -57,60 +46,44 @@ func (s *Scanner) Scan(ctx context.Context, artifacts []*artifacts.Artifact) (re
 			log.Fatal(xerrors.Errorf("can't enable logger error: %w", err))
 		}
 	}()
-	numOfWorkers := s.opts.Parallel
-	var vulnsChan = make(chan []report.Resource, len(artifacts))
-	var misconfigsChan = make(chan report.Resource, len(artifacts))
-	artifactsPerWorker := len(artifacts) / numOfWorkers
-	g, ctx := errgroup.WithContext(ctx)
+	var vulns, misconfigs []report.Resource
 
-	for workerIndex := 0; workerIndex < numOfWorkers; workerIndex++ {
-		start := workerIndex * artifactsPerWorker
-		end := (workerIndex + 1) * artifactsPerWorker
-		// the remaining artiact will be added to last worker
-		if workerIndex == numOfWorkers-1 {
-			end = end + (len(artifacts) % numOfWorkers)
-		}
-		g.Go(func() error {
-			for index := start; index < end; index++ {
-				bar.Increment()
-				// Loops once over all artifacts, and execute scanners as necessary. Not every artifacts has an image,
-				// so image scanner is not always executed.
-				if s.opts.Scanners.AnyEnabled(types.VulnerabilityScanner, types.SecretScanner) {
-					resources, err := s.scanVulns(ctx, artifacts[index])
-					if err != nil {
-						return xerrors.Errorf("scanning vulnerabilities error: %w", err)
-					}
-					vulnsChan <- resources
-				}
-				if local.ShouldScanMisconfigOrRbac(s.opts.Scanners) {
-					resource, err := s.scanMisconfigs(ctx, artifacts[index])
-					if err != nil {
-						return xerrors.Errorf("scanning misconfigurations error: %w", err)
-					}
-					misconfigsChan <- resource
-				}
-			}
-			return nil
-		},
-		)
+	type scanResult struct {
+		vulns     []report.Resource
+		misconfig report.Resource
 	}
-	if err := g.Wait(); err != nil {
+
+	onItem := func(artifact *artifacts.Artifact) (scanResult, error) {
+		resultResource := scanResult{}
+		if s.opts.Scanners.AnyEnabled(types.VulnerabilityScanner, types.SecretScanner) {
+			vulns, err := s.scanVulns(ctx, artifact)
+			if err != nil {
+				return scanResult{}, xerrors.Errorf("scanning vulnerabilities error: %w", err)
+			}
+			resultResource.vulns = vulns
+		}
+		if local.ShouldScanMisconfigOrRbac(s.opts.Scanners) {
+			misconfig, err := s.scanMisconfigs(ctx, artifact)
+			if err != nil {
+				return scanResult{}, xerrors.Errorf("scanning misconfigurations error: %w", err)
+			}
+			resultResource.misconfig = misconfig
+		}
+		return resultResource, nil
+	}
+
+	onResult := func(result scanResult) error {
+		vulns = append(vulns, result.vulns...)
+		misconfigs = append(misconfigs, result.misconfig)
+		return nil
+	}
+
+	p := parallel.NewPipeline(s.opts.Parallel, true, artifactsData, onItem, onResult)
+	err = p.Do(ctx)
+	if err != nil {
 		return report.Report{}, err
 	}
 
-	if len(vulnsChan) > 0 {
-		close(vulnsChan)
-		for vuln := range vulnsChan {
-			vulns = append(vulns, vuln...)
-		}
-	}
-
-	if len(misconfigsChan) > 0 {
-		close(misconfigsChan)
-		for misConfig := range misconfigsChan {
-			misconfigs = append(misconfigs, misConfig)
-		}
-	}
 	return report.Report{
 		SchemaVersion:     0,
 		ClusterName:       s.cluster,
