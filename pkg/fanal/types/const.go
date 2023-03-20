@@ -64,6 +64,7 @@ const (
 	PnpmLock   = "pnpm-lock.yaml"
 
 	ComposerLock = "composer.lock"
+	ComposerJson = "composer.json"
 
 	PyProject       = "pyproject.toml"
 	PipRequirements = "requirements.txt"
