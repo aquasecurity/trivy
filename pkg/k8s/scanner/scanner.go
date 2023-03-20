@@ -2,6 +2,7 @@ package scanner
 
 import (
 	"context"
+
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy-kubernetes/pkg/artifacts"
@@ -54,22 +55,22 @@ func (s *Scanner) Scan(ctx context.Context, artifactsData []*artifacts.Artifact)
 	}
 
 	onItem := func(artifact *artifacts.Artifact) (scanResult, error) {
-		resultResource := scanResult{}
+		scanResults := scanResult{}
 		if s.opts.Scanners.AnyEnabled(types.VulnerabilityScanner, types.SecretScanner) {
 			vulns, err := s.scanVulns(ctx, artifact)
 			if err != nil {
 				return scanResult{}, xerrors.Errorf("scanning vulnerabilities error: %w", err)
 			}
-			resultResource.vulns = vulns
+			scanResults.vulns = vulns
 		}
 		if local.ShouldScanMisconfigOrRbac(s.opts.Scanners) {
 			misconfig, err := s.scanMisconfigs(ctx, artifact)
 			if err != nil {
 				return scanResult{}, xerrors.Errorf("scanning misconfigurations error: %w", err)
 			}
-			resultResource.misconfig = misconfig
+			scanResults.misconfig = misconfig
 		}
-		return resultResource, nil
+		return scanResults, nil
 	}
 
 	onResult := func(result scanResult) error {
