@@ -36,8 +36,7 @@ func (f *file) Open(name string) (fs.File, error) {
 		return f.open()
 	}
 
-	// TODO: support directory
-	if sub, err := f.getFile(name); err == nil && !sub.stat.IsDir() {
+	if sub, err := f.getFile(name); err == nil {
 		return sub.open()
 	}
 
@@ -49,16 +48,26 @@ func (f *file) Open(name string) (fs.File, error) {
 }
 
 func (f *file) open() (fs.File, error) {
-	// virtual file
-	if len(f.data) != 0 {
+	switch {
+	case f.stat.IsDir(): // Directory
+		entries, err := f.ReadDir(".")
+		if err != nil {
+			return nil, xerrors.Errorf("read dir error: %w", err)
+		}
+		return &mapDir{
+			path:     f.path,
+			fileStat: f.stat,
+			entry:    entries,
+		}, nil
+	case len(f.data) != 0: // Virtual file
 		return &openMapFile{
 			path:   f.stat.name,
 			file:   f,
 			offset: 0,
 		}, nil
+	default: // Real file
+		return os.Open(f.path)
 	}
-	// real file
-	return os.Open(f.path)
 }
 
 func (f *file) Remove(name string) error {
@@ -213,6 +222,9 @@ func (f *file) WriteFile(path, underlyingPath string) error {
 }
 
 func (f *file) WriteVirtualFile(path string, data []byte, mode fs.FileMode) error {
+	if mode&fs.ModeDir != 0 {
+		return xerrors.Errorf("invalid perm: %v", mode)
+	}
 	parts := strings.Split(path, separator)
 
 	if len(parts) == 1 {
@@ -287,7 +299,11 @@ func (f *openMapFile) Read(b []byte) (int, error) {
 		return 0, io.EOF
 	}
 	if f.offset < 0 {
-		return 0, &fs.PathError{Op: "read", Path: f.path, Err: fs.ErrInvalid}
+		return 0, &fs.PathError{
+			Op:   "read",
+			Path: f.path,
+			Err:  fs.ErrInvalid,
+		}
 	}
 	n := copy(b, f.file.data[f.offset:])
 	f.offset += int64(n)
@@ -304,7 +320,11 @@ func (f *openMapFile) Seek(offset int64, whence int) (int64, error) {
 		offset += int64(len(f.file.data))
 	}
 	if offset < 0 || offset > int64(len(f.file.data)) {
-		return 0, &fs.PathError{Op: "seek", Path: f.path, Err: fs.ErrInvalid}
+		return 0, &fs.PathError{
+			Op:   "seek",
+			Path: f.path,
+			Err:  fs.ErrInvalid,
+		}
 	}
 	f.offset = offset
 	return offset, nil
@@ -312,11 +332,49 @@ func (f *openMapFile) Seek(offset int64, whence int) (int64, error) {
 
 func (f *openMapFile) ReadAt(b []byte, offset int64) (int, error) {
 	if offset < 0 || offset > int64(len(f.file.data)) {
-		return 0, &fs.PathError{Op: "read", Path: f.path, Err: fs.ErrInvalid}
+		return 0, &fs.PathError{
+			Op:   "read",
+			Path: f.path,
+			Err:  fs.ErrInvalid,
+		}
 	}
 	n := copy(b, f.file.data[offset:])
 	if n < len(b) {
 		return n, io.EOF
 	}
 	return n, nil
+}
+
+// A mapDir is a directory fs.File (so also an fs.ReadDirFile) open for reading.
+type mapDir struct {
+	path string
+	fileStat
+	entry  []fs.DirEntry
+	offset int
+}
+
+func (d *mapDir) Stat() (fs.FileInfo, error) { return &d.fileStat, nil }
+func (d *mapDir) Close() error               { return nil }
+func (d *mapDir) Read(_ []byte) (int, error) {
+	return 0, &fs.PathError{
+		Op:   "read",
+		Path: d.path,
+		Err:  fs.ErrInvalid,
+	}
+}
+
+func (d *mapDir) ReadDir(count int) ([]fs.DirEntry, error) {
+	n := len(d.entry) - d.offset
+	if n == 0 && count > 0 {
+		return nil, io.EOF
+	}
+	if count > 0 && n > count {
+		n = count
+	}
+	list := make([]fs.DirEntry, n)
+	for i := range list {
+		list[i] = d.entry[d.offset+i]
+	}
+	d.offset += n
+	return list, nil
 }

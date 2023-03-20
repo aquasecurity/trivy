@@ -12,10 +12,10 @@ import (
 )
 
 type onFile[T any] func(string, fs.FileInfo, dio.ReadSeekerAt) (T, error)
-type onResult[T any] func(T) error
+type onWalkResult[T any] func(T) error
 
 func WalkDir[T any](ctx context.Context, fsys fs.FS, root string, slow bool,
-	onFile onFile[T], onResult onResult[T]) error {
+	onFile onFile[T], onResult onWalkResult[T]) error {
 
 	g, ctx := errgroup.WithContext(ctx)
 	paths := make(chan string)
