@@ -146,6 +146,11 @@
          <changefreq>daily</changefreq>
     </url>
     <url>
+         <loc>https://aquasecurity.github.io/trivy/dev/docs/misconfiguration/custom/selectors/</loc>
+         <lastmod>2023-03-20</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
          <loc>https://aquasecurity.github.io/trivy/dev/docs/misconfiguration/custom/testing/</loc>
          <lastmod>2023-03-20</lastmod>
          <changefreq>daily</changefreq>
