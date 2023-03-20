@@ -341,7 +341,7 @@ type Match struct {
 func (s *Scanner) Scan(args ScanArgs) types.Secret {
 	// Global allowed paths
 	if s.AllowPath(args.FilePath) {
-		log.Logger.Debugf("found global allowed paths %q", args.FilePath)
+		log.Logger.Debugf("Skipped secret scanning on %q matching allowed paths", args.FilePath)
 		return types.Secret{
 			FilePath: args.FilePath,
 		}
