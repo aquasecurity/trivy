@@ -3,13 +3,12 @@ package yarn
 import (
 	"context"
 	"errors"
-
 	"io/fs"
 	"os"
 	"path/filepath"
 	"sort"
-	"strings"
 
+	"github.com/samber/lo"
 	"golang.org/x/exp/maps"
 	"golang.org/x/xerrors"
 
@@ -17,7 +16,6 @@ import (
 	"github.com/aquasecurity/go-dep-parser/pkg/nodejs/packagejson"
 	"github.com/aquasecurity/go-dep-parser/pkg/nodejs/yarn"
 	godeptypes "github.com/aquasecurity/go-dep-parser/pkg/types"
-	godeputils "github.com/aquasecurity/go-dep-parser/pkg/utils"
 	"github.com/aquasecurity/trivy/pkg/detector/library/compare/npm"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer/language"
@@ -33,7 +31,7 @@ func init() {
 const version = 1
 
 type yarnAnalyzer struct {
-	packageJsonParser godeptypes.Parser
+	packageJsonParser *packagejson.Parser
 	lockParser        godeptypes.Parser
 	comparer          npm.Comparer
 }
@@ -100,93 +98,71 @@ func (a yarnAnalyzer) parseYarnLock(path string, r dio.ReadSeekerAt) (*types.App
 	return language.ToApplication(types.Yarn, path, "", libs, deps), nil
 }
 
-func (a yarnAnalyzer) removeDevDependencies(fsys fs.FS, path string, app *types.Application) error {
-	libs := map[string]types.Package{}
-	packageJsonPath := filepath.Join(path, types.NpmPkg)
-	rootDeps, err := a.parsePackageJsonDependencies(fsys, packageJsonPath)
+func (a yarnAnalyzer) removeDevDependencies(fsys fs.FS, dir string, app *types.Application) error {
+	packageJsonPath := filepath.Join(dir, types.NpmPkg)
+	directDeps, err := a.parsePackageJsonDependencies(fsys, packageJsonPath)
 	if errors.Is(err, fs.ErrNotExist) {
-		log.Logger.Debugf("Yarn: %s not found", path)
+		log.Logger.Debugf("Yarn: %s not found", packageJsonPath)
 		return nil
 	} else if err != nil {
-		return xerrors.Errorf("unable to parse %s: %w", path, err)
+		return xerrors.Errorf("unable to parse %s: %w", dir, err)
 	}
-	queue := newQueue()
 
 	// yarn.lock file can contain same libraries with different versions
 	// save versions separately for version comparison by comparator
-	usedLibs := map[string]map[string]types.Package{}
-	for _, pkg := range app.Libraries {
-		if versions, ok := usedLibs[pkg.Name]; ok {
-			// add new version to map
-			versions[pkg.Version] = pkg
-			usedLibs[pkg.Name] = versions
-			continue
-		}
-		usedLibs[pkg.Name] = map[string]types.Package{pkg.Version: pkg}
-	}
+	pkgIDs := lo.SliceToMap(app.Libraries, func(pkg types.Package) (string, types.Package) {
+		return pkg.ID, pkg
+	})
 
-	// add direct deps to the queue
-	for n, v := range rootDeps {
-		item := Item{
-			name:     n,
-			version:  v,
-			indirect: false,
-		}
-		queue.enqueue(item)
-	}
-
-	for !queue.isEmpty() {
-		dep := queue.dequeue()
-
-		versions, ok := usedLibs[dep.name]
-		if !ok {
-			return xerrors.Errorf("unable to find versions for : %s", dep.name)
-		}
-		var pkg types.Package
-		for v, p := range versions {
-			// npm has own comparer to compare versions
-			match, err := a.comparer.MatchVersion(v, dep.version)
-			if err != nil {
-				return xerrors.Errorf("unable to match version for %s", dep.name)
+	// Identify direct dependencies
+	pkgs := map[string]types.Package{}
+	for name, constraint := range directDeps {
+		for _, pkg := range app.Libraries {
+			if pkg.Name != name {
+				continue
 			}
-			if match {
-				// overwrite Indirect value
-				p.Indirect = dep.indirect
-				pkg = p
+
+			// npm has own comparer to compare versions
+			if match, err := a.comparer.MatchVersion(pkg.Version, constraint); err != nil {
+				return xerrors.Errorf("unable to match version for %s", pkg.Name)
+			} else if match {
+				// Mark as a direct dependency
+				pkg.Indirect = false
+				pkgs[pkg.ID] = pkg
 				break
 			}
 		}
-
-		if pkg.ID == "" {
-			return xerrors.Errorf("unable to find %q", godeputils.PackageID(dep.name, dep.version))
-		}
-
-		// skip if we have already added this library
-		if _, ok := libs[pkg.ID]; ok {
-			continue
-		}
-		libs[pkg.ID] = pkg
-
-		// add indirect deps to the queue
-		for _, d := range pkg.DependsOn {
-			s := strings.Split(d, "@")
-			item := Item{
-				name:     s[0],
-				version:  s[1],
-				indirect: true,
-			}
-			queue.enqueue(item)
-		}
 	}
 
-	libSlice := maps.Values(libs)
-	sort.Slice(libSlice, func(i, j int) bool {
-		return libSlice[i].ID < libSlice[j].ID
-	})
+	// Walk indirect dependencies
+	// Since it starts from direct dependencies, devDependencies will not appear in this walk.
+	for _, pkg := range pkgs {
+		a.walkIndirectDependencies(pkg, pkgIDs, pkgs)
+	}
+
+	pkgSlice := maps.Values(pkgs)
+	sort.Sort(types.Packages(pkgSlice))
 
 	// Save only prod libraries
-	app.Libraries = libSlice
+	app.Libraries = pkgSlice
 	return nil
+}
+
+func (a yarnAnalyzer) walkIndirectDependencies(pkg types.Package, pkgIDs map[string]types.Package, deps map[string]types.Package) {
+	for _, pkgID := range pkg.DependsOn {
+		if _, ok := deps[pkgID]; ok {
+			continue
+		}
+
+		dep, ok := pkgIDs[pkgID]
+		if !ok {
+			continue
+		}
+
+		dep.Indirect = true
+		deps[dep.ID] = dep
+		a.walkIndirectDependencies(dep, pkgIDs, deps)
+	}
 }
 
 func (a yarnAnalyzer) parsePackageJsonDependencies(fsys fs.FS, path string) (map[string]string, error) {
@@ -197,22 +173,11 @@ func (a yarnAnalyzer) parsePackageJsonDependencies(fsys fs.FS, path string) (map
 	}
 	defer func() { _ = f.Close() }()
 
-	file, ok := f.(dio.ReadSeekCloserAt)
-	if !ok {
-		return nil, xerrors.Errorf("type assertion error: %w", err)
-	}
-
-	libs, _, err := a.packageJsonParser.Parse(file)
+	pkg, err := a.packageJsonParser.Parse(f)
 	if err != nil {
-		return nil, err
-	}
-	var directDeps = map[string]string{}
-	for _, lib := range libs {
-		// libs contain information about project, we need to skip it
-		if !lib.Root {
-			directDeps[lib.Name] = lib.Version
-		}
+		return nil, xerrors.Errorf("parse error: %w", err)
 	}
 
-	return directDeps, nil
+	// Merge dependencies and optionalDependencies
+	return lo.Assign(pkg.Dependencies, pkg.OptionalDependencies), nil
 }
