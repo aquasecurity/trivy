@@ -61,7 +61,7 @@ nav:
           - Languages:
               - Go: docs/vulnerability/languages/golang.md
               - Java: docs/vulnerability/languages/java.md
-              - NodeJS: docs/vulnerability/languages/nodejs.md
+              - Node.js: docs/vulnerability/languages/nodejs.md
               - Python: docs/vulnerability/languages/python.md
       - Misconfiguration:
           - Scanning: docs/misconfiguration/scanning.md
@@ -72,6 +72,7 @@ nav:
               - Overview: docs/misconfiguration/custom/index.md
               - Data: docs/misconfiguration/custom/data.md
               - Combine: docs/misconfiguration/custom/combine.md
+              - Selectors: docs/misconfiguration/custom/selectors.md
               - Schemas: docs/misconfiguration/custom/schema.md
               - Testing: docs/misconfiguration/custom/testing.md
               - Debugging Policies: docs/misconfiguration/custom/debug.md
@@ -117,18 +118,29 @@ nav:
               - Environment variables: docs/references/customization/envs.md
               - Config file: docs/references/customization/config-file.md
           - CLI:
-              - Overview: docs/references/cli/index.md
-              - Image: docs/references/cli/image.md
-              - Config: docs/references/cli/config.md
-              - Filesystem: docs/references/cli/fs.md
-              - Rootfs: docs/references/cli/rootfs.md
-              - Repository: docs/references/cli/repo.md
-              - Client: docs/references/cli/client.md
-              - Server: docs/references/cli/server.md
-              - Plugin: docs/references/cli/plugin.md
-              - SBOM: docs/references/cli/sbom.md
-              - Module: docs/references/cli/module.md
-              - Completion: docs/references/cli/completion.md
+              - Overview: docs/references/cli/trivy.md
+              - AWS: docs/references/cli/trivy_aws.md
+              - Config: docs/references/cli/trivy_config.md
+              - Filesystem: docs/references/cli/trivy_filesystem.md
+              - Image: docs/references/cli/trivy_image.md
+              - Kubernetes: docs/references/cli/trivy_kubernetes.md
+              - Module: docs/references/cli/trivy_module.md
+              - Module Install: docs/references/cli/trivy_module_install.md
+              - Module Uninstall: docs/references/cli/trivy_module_uninstall.md
+              - Plugin: docs/references/cli/trivy_plugin.md
+              - Plugin Info: docs/references/cli/trivy_plugin_info.md
+              - Plugin Install: docs/references/cli/trivy_plugin_install.md
+              - Plugin List: docs/references/cli/trivy_plugin_list.md
+              - Plugin Run: docs/references/cli/trivy_plugin_run.md
+              - Plugin Uninstall: docs/references/cli/trivy_plugin_uninstall.md
+              - Plugin Update: docs/references/cli/trivy_plugin_update.md
+              - Repository: docs/references/cli/trivy_repository.md
+              - Rootfs: docs/references/cli/trivy_rootfs.md
+              - SBOM: docs/references/cli/trivy_sbom.md
+              - Server: docs/references/cli/trivy_server.md
+              - Version: docs/references/cli/trivy_version.md
+              - VM: docs/references/cli/trivy_vm.md
+              
           - Modes:
               - Standalone: docs/references/modes/standalone.md
               - Client/Server: docs/references/modes/client-server.md
