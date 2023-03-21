@@ -162,7 +162,7 @@ Total: 1 (MEDIUM: 0, HIGH: 1)
 			expectedOutput: ``,
 		},
 		{
-			name: "happy path with vulnerability origin graph with",
+			name: "happy path with vulnerability origin graph with direct dependency info",
 			results: types.Results{
 				{
 					Target: "package-lock.json",
@@ -258,7 +258,7 @@ package-lock.json
 `,
 		},
 		{
-			name: "happy path with vulnerability origin graph(no info about direct deps)",
+			name: "happy path with vulnerability origin graph without direct dependency info",
 			results: types.Results{
 				{
 					Target: "package-lock.json",
