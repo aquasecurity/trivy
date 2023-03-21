@@ -172,7 +172,7 @@ func repoDigest(img ftypes.Image) (name.Digest, error) {
 	if err != nil {
 		return name.Digest{}, xerrors.Errorf("image name parse error: %w", err)
 	}
-	repoName := ref.Context().Name()
+	repoName := ref.Context().RepositoryStr()
 
 	for _, rd := range img.RepoDigests() {
 		if n, _, found := strings.Cut(rd, "@"); found && n == repoName {
