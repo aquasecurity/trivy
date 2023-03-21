@@ -62,6 +62,7 @@ nav:
           - Languages:
               - Go: docs/vulnerability/languages/golang.md
               - Java: docs/vulnerability/languages/java.md
+              - Node.js: docs/vulnerability/languages/nodejs.md
               - Python: docs/vulnerability/languages/python.md
       - Misconfiguration:
           - Scanning: docs/misconfiguration/scanning.md
