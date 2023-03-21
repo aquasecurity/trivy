@@ -266,6 +266,7 @@ signs:
   output: true
 - id: "gpg signing"
   artifacts: package
+  signature: "${artifact}.gpg.sig"
   args:
     - "--batch"
     - "--local-user"
