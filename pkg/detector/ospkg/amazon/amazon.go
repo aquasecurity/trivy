@@ -20,9 +20,9 @@ import (
 var (
 	eolDates = map[string]time.Time{
 		"1": time.Date(2023, 6, 30, 23, 59, 59, 0, time.UTC),
-		"2": time.Date(2024, 6, 30, 23, 59, 59, 0, time.UTC),
-		// N/A
-		"2022": time.Date(3000, 1, 1, 23, 59, 59, 0, time.UTC),
+		// https://aws.amazon.com/amazon-linux-2/faqs/?nc1=h_ls
+		"2": time.Date(2025, 6, 30, 23, 59, 59, 0, time.UTC),
+		// Amazon Linux 2022 was renamed to 2023. AL2022 is not currently supported.
 		"2023": time.Date(2028, 3, 15, 23, 59, 59, 0, time.UTC),
 	}
 )
