@@ -32,7 +32,7 @@ const (
 
 type npmLibraryAnalyzer struct {
 	lockParser    godeptypes.Parser
-	packageParser godeptypes.Parser
+	packageParser *packagejson.Parser
 }
 
 func newNpmLibraryAnalyzer(_ analyzer.AnalyzerOptions) (analyzer.PostAnalyzer, error) {
@@ -143,16 +143,12 @@ func (a npmLibraryAnalyzer) findLicenses(fsys fs.FS, lockPath string) (map[strin
 	// and path.Join should be used rather than filepath.Join.
 	licenses := map[string]string{}
 	err := fsutils.WalkDir(fsys, root, required, func(filePath string, d fs.DirEntry, r dio.ReadSeekerAt) error {
-		lib, _, err := a.packageParser.Parse(r)
-		// package.json always contains only 1 library.
-		// https://github.com/aquasecurity/go-dep-parser/blob/63a15cdc6bc3aaeb58c4172b275deadde4d55928/pkg/nodejs/packagejson/parse.go#L33-L37
+		pkg, err := a.packageParser.Parse(r)
 		if err != nil {
 			return xerrors.Errorf("unable to parse %q: %w", filePath, err)
-		} else if len(lib) != 1 {
-			return xerrors.Errorf("unable to parse %q", filePath)
 		}
 
-		licenses[lib[0].ID] = lib[0].License
+		licenses[pkg.ID] = pkg.License
 		return nil
 	})
 	if err != nil {
