@@ -4,6 +4,7 @@ import (
 	"context"
 	"testing"
 
+	v1 "github.com/google/go-containerregistry/pkg/v1"
 	fakei "github.com/google/go-containerregistry/pkg/v1/fake"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -19,7 +20,7 @@ import (
 type fakeImage struct {
 	name        string
 	repoDigests []string
-	fakei.FakeImage
+	*fakei.FakeImage
 	types.ImageExtension
 }
 
@@ -127,8 +128,8 @@ func TestArtifact_InspectRekorAttestation(t *testing.T) {
 			mockCache := new(cache.MockArtifactCache)
 			mockCache.ApplyPutBlobExpectations(tt.putBlobExpectations)
 
-			fi := fakei.FakeImage{}
-			fi.ConfigFileReturns(nil, nil)
+			fi := &fakei.FakeImage{}
+			fi.ConfigFileReturns(&v1.ConfigFile{}, nil)
 
 			img := &fakeImage{
 				name:        tt.fields.imageName,
