@@ -275,6 +275,8 @@ signs:
     - "${signature}"
     - "--detach-sign"
     - "${artifact}"
+  output: true
+  stdin: '{{ .Env.GPG_PASSPHRASE }}'
 
 docker_signs:
 - cmd: cosign
