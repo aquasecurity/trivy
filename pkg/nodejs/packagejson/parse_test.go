@@ -16,7 +16,7 @@ func TestParse(t *testing.T) {
 	vectors := []struct {
 		name      string
 		inputFile string
-		want      []types.Library
+		want      packagejson.Package
 		wantErr   string
 	}{
 		{
@@ -27,24 +27,33 @@ func TestParse(t *testing.T) {
 			// npm init --force
 			// npm install --save promise jquery
 			// npm ls | grep -E -o "\S+@\S+" | awk -F@ 'NR>0 {printf("{\""$1"\", \""$2"\"},\n")}'
-			want: []types.Library{{
-				ID:      "bootstrap@5.0.2",
-				Name:    "bootstrap",
-				Version: "5.0.2",
-				License: "MIT",
-			}},
-			wantErr: "",
+			want: packagejson.Package{
+				Library: types.Library{
+					ID:      "bootstrap@5.0.2",
+					Name:    "bootstrap",
+					Version: "5.0.2",
+					License: "MIT",
+				},
+				Dependencies: map[string]string{
+					"js-tokens": "^4.0.0",
+				},
+				OptionalDependencies: map[string]string{
+					"colors": "^1.4.0",
+				},
+			},
 		},
 		{
 			name:      "happy path - legacy license",
 			inputFile: "testdata/legacy_package.json",
-			want: []types.Library{{
-				ID:      "angular@4.1.2",
-				Name:    "angular",
-				Version: "4.1.2",
-				License: "ISC",
-			}},
-			wantErr: "",
+			want: packagejson.Package{
+				Library: types.Library{
+					ID:      "angular@4.1.2",
+					Name:    "angular",
+					Version: "4.1.2",
+					License: "ISC",
+				},
+				Dependencies: map[string]string{},
+			},
 		},
 		{
 			name:      "sad path",
@@ -54,7 +63,6 @@ func TestParse(t *testing.T) {
 			// npm init --force
 			// npm install --save promise jquery
 			// npm ls | grep -E -o "\S+@\S+" | awk -F@ 'NR>0 {printf("{\""$1"\", \""$2"\"},\n")}'
-			want:    []types.Library{},
 			wantErr: "JSON decode error",
 		},
 	}
@@ -63,11 +71,11 @@ func TestParse(t *testing.T) {
 		t.Run(path.Base(v.name), func(t *testing.T) {
 			f, err := os.Open(v.inputFile)
 			require.NoError(t, err)
+			defer f.Close()
 
-			got, _, err := packagejson.NewParser().Parse(f)
+			got, err := packagejson.NewParser().Parse(f)
 			if v.wantErr != "" {
-				require.Error(t, err)
-				assert.Contains(t, err.Error(), v.wantErr)
+				assert.ErrorContains(t, err, v.wantErr)
 				return
 			}
 
