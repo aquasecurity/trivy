@@ -219,6 +219,15 @@ func TestScanner_IsSupportedVersion(t *testing.T) {
 				osFamily: "amazon",
 				osVer:    "2022",
 			},
+			want: false,
+		},
+		{
+			name: "amazon linux 2023",
+			now:  time.Date(2020, 12, 1, 0, 0, 0, 0, time.UTC),
+			args: args{
+				osFamily: "amazon",
+				osVer:    "2023",
+			},
 			want: true,
 		},
 	}
