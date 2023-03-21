@@ -120,7 +120,7 @@ func (s *Scanner) Detect(osVer string, _ *ftypes.Repository, pkgs []ftypes.Packa
 // IsSupportedVersion checks if os can be scanned using amazon scanner
 func (s *Scanner) IsSupportedVersion(osFamily, osVer string) bool {
 	osVer = strings.Fields(osVer)[0]
-	if osVer != "2" {
+	if osVer != "2" && osVer != "2022" && osVer != "2023" {
 		osVer = "1"
 	}
 	eol, ok := eolDates[osVer]
