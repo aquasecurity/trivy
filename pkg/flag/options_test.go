@@ -1,7 +1,6 @@
 package flag
 
 import (
-	"fmt"
 	"testing"
 
 	"github.com/spf13/viper"
@@ -80,35 +79,4 @@ func Test_getStringSlice(t *testing.T) {
 			viper.Reset()
 		})
 	}
-}
-
-func Test_explodeGlob(t *testing.T) {
-	testCases := []struct {
-		skipInput []string
-		want      []string
-	}{
-		{
-			skipInput: []string{"./testdata/*/*"},
-			want:      []string{"testdata/.dotdir/bar", "testdata/.dotdir/foo"},
-		},
-		{
-			skipInput: []string{"./testdata/*/bar"},
-			want:      []string{"testdata/.dotdir/bar"},
-		},
-		{
-			skipInput: []string{"path/with/no/glob"},
-			want:      []string{"path/with/no/glob"},
-		},
-		{
-			skipInput: []string{"./testdata/doesnotexist/*"},
-			want:      []string(nil),
-		},
-	}
-
-	for i, tc := range testCases {
-		t.Run(fmt.Sprint(i), func(t *testing.T) {
-			assert.Equal(t, tc.want, explodeGlob(tc.skipInput, "."))
-		})
-	}
-
 }

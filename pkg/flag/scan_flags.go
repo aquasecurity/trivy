@@ -138,8 +138,8 @@ func (f *ScanFlagGroup) ToOptions(args []string) (ScanOptions, error) {
 
 	return ScanOptions{
 		Target:       target,
-		SkipDirs:     explodeGlob(getStringSlice(f.SkipDirs), target),
-		SkipFiles:    explodeGlob(getStringSlice(f.SkipFiles), target),
+		SkipDirs:     getStringSlice(f.SkipDirs),
+		SkipFiles:    getStringSlice(f.SkipFiles),
 		OfflineScan:  getBool(f.OfflineScan),
 		Scanners:     scanners,
 		FilePatterns: getStringSlice(f.FilePatterns),
