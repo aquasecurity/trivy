@@ -96,38 +96,6 @@ func TestScanner_Detect(t *testing.T) {
 			},
 		},
 		{
-			name:     "amazon linux 2022",
-			fixtures: []string{"testdata/fixtures/amazon.yaml", "testdata/fixtures/data-source.yaml"},
-			args: args{
-				osVer: "2022",
-				pkgs: []ftypes.Package{
-					{
-						Name:    "log4j",
-						Version: "2.14.0",
-						Layer: ftypes.Layer{
-							DiffID: "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
-						},
-					},
-				},
-			},
-			want: []types.DetectedVulnerability{
-				{
-					PkgName:          "log4j",
-					VulnerabilityID:  "CVE-2021-44228",
-					InstalledVersion: "2.14.0",
-					FixedVersion:     "2.15.0-1.amzn2022.0.1",
-					Layer: ftypes.Layer{
-						DiffID: "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
-					},
-					DataSource: &dbTypes.DataSource{
-						ID:   vulnerability.Amazon,
-						Name: "Amazon Linux Security Center",
-						URL:  "https://alas.aws.amazon.com/",
-					},
-				},
-			},
-		},
-		{
 			name:     "amazon linux 2023",
 			fixtures: []string{"testdata/fixtures/amazon.yaml", "testdata/fixtures/data-source.yaml"},
 			args: args{
@@ -250,6 +218,15 @@ func TestScanner_IsSupportedVersion(t *testing.T) {
 			args: args{
 				osFamily: "amazon",
 				osVer:    "2022",
+			},
+			want: false,
+		},
+		{
+			name: "amazon linux 2023",
+			now:  time.Date(2020, 12, 1, 0, 0, 0, 0, time.UTC),
+			args: args{
+				osFamily: "amazon",
+				osVer:    "2023",
 			},
 			want: true,
 		},
