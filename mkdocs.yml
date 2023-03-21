@@ -31,6 +31,8 @@ nav:
           - Vulnerability Scan Record Attestation: tutorials/signing/vuln-attestation.md
       - Shell:
           - Completion: tutorials/shell/shell-completion.md
+      - tfsec:
+          - Migration: tutorials/tfsec/migration.md
       - Additional Resources:
           - Additional Resources: tutorials/additional-resources/references.md
           - Community References: tutorials/additional-resources/community.md
