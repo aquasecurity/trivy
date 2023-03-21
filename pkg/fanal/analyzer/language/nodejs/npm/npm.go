@@ -32,7 +32,7 @@ const (
 
 type npmLibraryAnalyzer struct {
 	lockParser    godeptypes.Parser
-	packageParser godeptypes.Parser
+	packageParser *packagejson.Parser
 }
 
 func newNpmLibraryAnalyzer(_ analyzer.AnalyzerOptions) (analyzer.PostAnalyzer, error) {
@@ -143,19 +143,13 @@ func (a npmLibraryAnalyzer) findLicenses(fsys fs.FS, lockPath string) (map[strin
 	// and path.Join should be used rather than filepath.Join.
 	licenses := map[string]string{}
 	err := fsutils.WalkDir(fsys, root, required, func(filePath string, d fs.DirEntry, r dio.ReadSeekerAt) error {
-		libs, _, err := a.packageParser.Parse(r)
+		pkg, err := a.packageParser.Parse(r)
 		if err != nil {
 			return xerrors.Errorf("unable to parse %q: %w", filePath, err)
 		}
 
-		// license for library stored in Root library
-		for _, lib := range libs {
-			if lib.Root {
-				licenses[lib.ID] = lib.License
-				return nil
-			}
-		}
-		return xerrors.Errorf("unable to find root library for %q: %w", filePath, err)
+		licenses[pkg.ID] = pkg.License
+		return nil
 	})
 	if err != nil {
 		return nil, xerrors.Errorf("walk error: %w", err)
