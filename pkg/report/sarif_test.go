@@ -367,25 +367,39 @@ func TestReportWriter_Sarif(t *testing.T) {
 
 func TestToPathUri(t *testing.T) {
 	tests := []struct {
-		input  string
-		output string
+		input       string
+		resultClass types.ResultClass
+		output      string
 	}{
 		{
-			input:  "almalinux@sha256:08042694fffd61e6a0b3a22dadba207c8937977915ff6b1879ad744fd6638837",
-			output: "library/almalinux",
+			input:       "almalinux@sha256:08042694fffd61e6a0b3a22dadba207c8937977915ff6b1879ad744fd6638837",
+			resultClass: types.ClassOSPkg,
+			output:      "library/almalinux",
 		},
 		{
-			input:  "alpine:latest (alpine 3.13.4)",
-			output: "library/alpine",
+			input:       "alpine:latest (alpine 3.13.4)",
+			resultClass: types.ClassOSPkg,
+			output:      "library/alpine",
 		},
 		{
-			input:  "docker.io/my-organization/my-app:2c6912aee7bde44b84d810aed106ca84f40e2e29",
-			output: "my-organization/my-app",
+			input:       "docker.io/my-organization/my-app:2c6912aee7bde44b84d810aed106ca84f40e2e29",
+			resultClass: types.ClassOSPkg,
+			output:      "my-organization/my-app",
+		},
+		{
+			input:       "lib/test",
+			resultClass: types.ClassLangPkg,
+			output:      "lib/test",
+		},
+		{
+			input:       "lib(2)/test",
+			resultClass: types.ClassSecret,
+			output:      "lib(2)/test",
 		},
 	}
 
 	for _, test := range tests {
-		got := report.ToPathUri(test.input)
+		got := report.ToPathUri(test.input, test.resultClass)
 		if got != test.output {
 			t.Errorf("toPathUri(%q) got %q, wanted %q", test.input, got, test.output)
 		}

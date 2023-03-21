@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"path/filepath"
 	"strings"
 	"time"
 
@@ -15,6 +16,7 @@ import (
 
 	awsScanner "github.com/aquasecurity/defsec/pkg/scanners/cloud/aws"
 	"github.com/aquasecurity/trivy-db/pkg/metadata"
+	javadb "github.com/aquasecurity/trivy-java-db/pkg/db"
 	awscommands "github.com/aquasecurity/trivy/pkg/cloud/aws/commands"
 	"github.com/aquasecurity/trivy/pkg/commands/artifact"
 	"github.com/aquasecurity/trivy/pkg/commands/server"
@@ -32,6 +34,7 @@ import (
 type VersionInfo struct {
 	Version         string             `json:",omitempty"`
 	VulnerabilityDB *metadata.Metadata `json:",omitempty"`
+	JavaDB          *metadata.Metadata `json:",omitempty"`
 	PolicyBundle    *policy.Metadata   `json:",omitempty"`
 }
 
@@ -1073,6 +1076,7 @@ func NewVersionCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 
 func showVersion(cacheDir, outputFormat, version string, outputWriter io.Writer) {
 	var dbMeta *metadata.Metadata
+	var javadbMeta *metadata.Metadata
 
 	mc := metadata.NewClient(cacheDir)
 	meta, _ := mc.Get() // nolint: errcheck
@@ -1082,6 +1086,17 @@ func showVersion(cacheDir, outputFormat, version string, outputWriter io.Writer)
 			NextUpdate:   meta.NextUpdate.UTC(),
 			UpdatedAt:    meta.UpdatedAt.UTC(),
 			DownloadedAt: meta.DownloadedAt.UTC(),
+		}
+	}
+
+	mcJava := javadb.NewMetadata(filepath.Join(cacheDir, "java-db"))
+	metaJava, _ := mcJava.Get() // nolint: errcheck
+	if !metaJava.UpdatedAt.IsZero() && !metaJava.NextUpdate.IsZero() && metaJava.Version != 0 {
+		javadbMeta = &metadata.Metadata{
+			Version:      metaJava.Version,
+			NextUpdate:   metaJava.NextUpdate.UTC(),
+			UpdatedAt:    metaJava.UpdatedAt.UTC(),
+			DownloadedAt: metaJava.DownloadedAt.UTC(),
 		}
 	}
 
@@ -1096,6 +1111,7 @@ func showVersion(cacheDir, outputFormat, version string, outputWriter io.Writer)
 		b, _ := json.Marshal(VersionInfo{
 			Version:         version,
 			VulnerabilityDB: dbMeta,
+			JavaDB:          javadbMeta,
 			PolicyBundle:    pbMeta,
 		})
 		fmt.Fprintln(outputWriter, string(b))
@@ -1108,6 +1124,15 @@ func showVersion(cacheDir, outputFormat, version string, outputWriter io.Writer)
   NextUpdate: %s
   DownloadedAt: %s
 `, dbMeta.Version, dbMeta.UpdatedAt.UTC(), dbMeta.NextUpdate.UTC(), dbMeta.DownloadedAt.UTC())
+		}
+
+		if javadbMeta != nil {
+			output += fmt.Sprintf(`Java DB:
+  Version: %d
+  UpdatedAt: %s
+  NextUpdate: %s
+  DownloadedAt: %s
+`, javadbMeta.Version, javadbMeta.UpdatedAt.UTC(), javadbMeta.NextUpdate.UTC(), javadbMeta.DownloadedAt.UTC())
 		}
 
 		if pbMeta != nil {

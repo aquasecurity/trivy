@@ -176,8 +176,8 @@ func TestMarshaler_Marshal(t *testing.T) {
 						PackageSPDXIdentifier:   spdx.ElementID("Package-fd0dc3cf913d5bc3"),
 						PackageName:             "binutils",
 						PackageVersion:          "2.30",
-						PackageLicenseConcluded: "GPLv3+",
-						PackageLicenseDeclared:  "GPLv3+",
+						PackageLicenseConcluded: "GPL-3.0-or-later",
+						PackageLicenseDeclared:  "GPL-3.0-or-later",
 						PackageExternalReferences: []*spdx.PackageExternalReference2_2{
 							{
 								Category: tspdx.CategoryPackageManager,
@@ -338,8 +338,8 @@ func TestMarshaler_Marshal(t *testing.T) {
 						PackageSPDXIdentifier:   spdx.ElementID("Package-d8dccb186bafaf37"),
 						PackageName:             "acl",
 						PackageVersion:          "2.2.53",
-						PackageLicenseConcluded: "GPLv2+",
-						PackageLicenseDeclared:  "GPLv2+",
+						PackageLicenseConcluded: "GPL-2.0-or-later",
+						PackageLicenseDeclared:  "GPL-2.0-or-later",
 						PackageExternalReferences: []*spdx.PackageExternalReference2_2{
 							{
 								Category: tspdx.CategoryPackageManager,
@@ -683,6 +683,69 @@ func TestMarshaler_Marshal(t *testing.T) {
 			require.NoError(t, err)
 
 			assert.Equal(t, tc.wantSBOM, spdxDoc)
+		})
+	}
+}
+
+func Test_GetLicense(t *testing.T) {
+	tests := []struct {
+		name  string
+		input ftypes.Package
+		want  string
+	}{
+		{
+			name: "happy path",
+			input: ftypes.Package{
+				Licenses: []string{
+					"GPLv2+",
+				},
+			},
+			want: "GPL-2.0-or-later",
+		},
+		{
+			name: "happy path with multi license",
+			input: ftypes.Package{
+				Licenses: []string{
+					"GPLv2+",
+					"GPLv3+",
+				},
+			},
+			want: "GPL-2.0-or-later AND GPL-3.0-or-later",
+		},
+		{
+			name: "happy path with OR operator",
+			input: ftypes.Package{
+				Licenses: []string{
+					"GPLv2+",
+					"LGPL 2.0 or GNU LESSER",
+				},
+			},
+			want: "GPL-2.0-or-later AND (LGPL-2.0-only OR LGPL-3.0-only)",
+		},
+		{
+			name: "happy path with AND operator",
+			input: ftypes.Package{
+				Licenses: []string{
+					"GPLv2+",
+					"LGPL 2.0 and GNU LESSER",
+				},
+			},
+			want: "GPL-2.0-or-later AND LGPL-2.0-only AND LGPL-3.0-only",
+		},
+		{
+			name: "happy path with WITH operator",
+			input: ftypes.Package{
+				Licenses: []string{
+					"AFL 2.0",
+					"AFL 3.0 with distribution exception",
+				},
+			},
+			want: "AFL-2.0 AND AFL-3.0 WITH distribution-exception",
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			assert.Equalf(t, tt.want, tspdx.GetLicense(tt.input), "getLicense(%v)", tt.input)
 		})
 	}
 }
