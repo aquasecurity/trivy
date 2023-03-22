@@ -4,21 +4,22 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
-	dio "github.com/aquasecurity/go-dep-parser/pkg/io"
-	godeptypes "github.com/aquasecurity/go-dep-parser/pkg/types"
-	"github.com/aquasecurity/trivy/pkg/fanal/analyzer/language"
-	"github.com/aquasecurity/trivy/pkg/log"
-	"github.com/aquasecurity/trivy/pkg/utils/fsutils"
-	"golang.org/x/xerrors"
 	"io/fs"
 	"os"
 	"path/filepath"
 	"sort"
 	"strings"
 
+	"golang.org/x/xerrors"
+
+	dio "github.com/aquasecurity/go-dep-parser/pkg/io"
 	"github.com/aquasecurity/go-dep-parser/pkg/php/composer"
+	godeptypes "github.com/aquasecurity/go-dep-parser/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
+	"github.com/aquasecurity/trivy/pkg/fanal/analyzer/language"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
+	"github.com/aquasecurity/trivy/pkg/log"
+	"github.com/aquasecurity/trivy/pkg/utils/fsutils"
 )
 
 func init() {
