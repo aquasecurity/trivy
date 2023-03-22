@@ -111,11 +111,11 @@ func TestArtifact_InspectRekorAttestation(t *testing.T) {
 			},
 		},
 		{
-			name: "503",
+			name: "error",
 			fields: fields{
 				imageName: "test/image:10",
 				repoDigests: []string{
-					"test/image@sha256:unknown",
+					"test/image@sha256:123456e39f1e7a04e3f6da2d88b1c057e5657363c4f90679f3e8a071b7619e02",
 				},
 			},
 			artifactOpt: artifact.Option{
