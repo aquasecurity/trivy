@@ -3,18 +3,15 @@ package walker
 import (
 	"fmt"
 	"path/filepath"
-	"runtime"
 	"testing"
-
-	"github.com/aquasecurity/trivy/pkg/fanal/analyzer/os"
 
 	"github.com/stretchr/testify/assert"
 )
 
 func Test_shouldSkipFile(t *testing.T) {
-	if runtime.GOOS == os.Windows {
-		t.Skip("glob paths are not supported on Windows")
-	}
+	//if runtime.GOOS == os.Windows {
+	//	t.Skip("glob paths are not supported on Windows")
+	//}
 
 	testCases := []struct {
 		skipFiles []string
@@ -62,9 +59,9 @@ func Test_shouldSkipFile(t *testing.T) {
 }
 
 func Test_shouldSkipDir(t *testing.T) {
-	if runtime.GOOS == os.Windows {
-		t.Skip("glob paths are not supported on Windows")
-	}
+	//if runtime.GOOS == os.Windows {
+	//	t.Skip("glob paths are not supported on Windows")
+	//}
 
 	testCases := []struct {
 		skipDirs []string
