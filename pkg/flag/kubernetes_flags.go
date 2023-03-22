@@ -1,9 +1,12 @@
 package flag
 
 import (
-	"fmt"
 	"strconv"
+
+	"fmt"
 	"strings"
+
+	"golang.org/x/xerrors"
 
 	"github.com/samber/lo"
 	corev1 "k8s.io/api/core/v1"
@@ -47,6 +50,12 @@ var (
 		Value:      "",
 		Usage:      "specify k8s version to validate outdated api by it (example: 1.21.0)",
 	}
+	ParallelFlag = Flag{
+		Name:       "parallel",
+		ConfigName: "kubernetes.parallel",
+		Value:      5,
+		Usage:      "number (between 1-20) of goroutines enabled for parallel scanning",
+	}
 	TolerationsFlag = Flag{
 		Name:       "tolerations",
 		ConfigName: "kubernetes.tolerations",
@@ -61,6 +70,7 @@ type K8sFlagGroup struct {
 	KubeConfig     *Flag
 	Components     *Flag
 	K8sVersion     *Flag
+	Parallel       *Flag
 	Tolerations    *Flag
 }
 
@@ -70,6 +80,7 @@ type K8sOptions struct {
 	KubeConfig     string
 	Components     []string
 	K8sVersion     string
+	Parallel       int
 	Tolerations    []corev1.Toleration
 }
 
@@ -80,6 +91,7 @@ func NewK8sFlagGroup() *K8sFlagGroup {
 		KubeConfig:     &KubeConfigFlag,
 		Components:     &ComponentsFlag,
 		K8sVersion:     &K8sVersionFlag,
+		Parallel:       &ParallelFlag,
 		Tolerations:    &TolerationsFlag,
 	}
 }
@@ -95,6 +107,7 @@ func (f *K8sFlagGroup) Flags() []*Flag {
 		f.KubeConfig,
 		f.Components,
 		f.K8sVersion,
+		f.Parallel,
 		f.Tolerations,
 	}
 }
@@ -104,12 +117,21 @@ func (f *K8sFlagGroup) ToOptions() (K8sOptions, error) {
 	if err != nil {
 		return K8sOptions{}, err
 	}
+	var parallel int
+	if f.Parallel != nil {
+		parallel = getInt(f.Parallel)
+		// check parallel flag is a valid number between 1-20
+		if parallel < 1 || parallel > 20 {
+			return K8sOptions{}, xerrors.Errorf("unable to parse parallel value, please ensure that the value entered is a valid number between 1-20.")
+		}
+	}
 	return K8sOptions{
 		ClusterContext: getString(f.ClusterContext),
 		Namespace:      getString(f.Namespace),
 		KubeConfig:     getString(f.KubeConfig),
 		Components:     getStringSlice(f.Components),
 		K8sVersion:     getString(f.K8sVersion),
+		Parallel:       parallel,
 		Tolerations:    tolerations,
 	}, nil
 }

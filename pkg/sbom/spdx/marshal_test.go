@@ -110,8 +110,9 @@ func TestMarshaler_Marshal(t *testing.T) {
 				},
 				Packages: map[spdx.ElementID]*spdx.Package2_2{
 					spdx.ElementID("ContainerImage-9396d894cd0cb6cb"): {
-						PackageSPDXIdentifier: spdx.ElementID("ContainerImage-9396d894cd0cb6cb"),
-						PackageName:           "rails:latest",
+						PackageSPDXIdentifier:   spdx.ElementID("ContainerImage-9396d894cd0cb6cb"),
+						PackageDownloadLocation: "NONE",
+						PackageName:             "rails:latest",
 						PackageExternalReferences: []*spdx.PackageExternalReference2_2{
 							{
 								Category: tspdx.CategoryPackageManager,
@@ -129,23 +130,27 @@ func TestMarshaler_Marshal(t *testing.T) {
 						},
 					},
 					spdx.ElementID("Application-73c871d73f3c8248"): {
-						PackageSPDXIdentifier: spdx.ElementID("Application-73c871d73f3c8248"),
-						PackageName:           "bundler",
-						PackageSourceInfo:     "app/subproject/Gemfile.lock",
+						PackageSPDXIdentifier:   spdx.ElementID("Application-73c871d73f3c8248"),
+						PackageDownloadLocation: "NONE",
+						PackageName:             "bundler",
+						PackageSourceInfo:       "app/subproject/Gemfile.lock",
 					},
 					spdx.ElementID("Application-c3fac92c1ac0a9fa"): {
-						PackageSPDXIdentifier: spdx.ElementID("Application-c3fac92c1ac0a9fa"),
-						PackageName:           "bundler",
-						PackageSourceInfo:     "app/Gemfile.lock",
+						PackageSPDXIdentifier:   spdx.ElementID("Application-c3fac92c1ac0a9fa"),
+						PackageDownloadLocation: "NONE",
+						PackageName:             "bundler",
+						PackageSourceInfo:       "app/Gemfile.lock",
 					},
 					spdx.ElementID("OperatingSystem-197f9a00ebcb51f0"): {
-						PackageSPDXIdentifier: spdx.ElementID("OperatingSystem-197f9a00ebcb51f0"),
-						PackageName:           "centos",
-						PackageVersion:        "8.3.2011",
+						PackageSPDXIdentifier:   spdx.ElementID("OperatingSystem-197f9a00ebcb51f0"),
+						PackageDownloadLocation: "NONE",
+						PackageName:             "centos",
+						PackageVersion:          "8.3.2011",
 					},
 
 					spdx.ElementID("Package-eb0263038c3b445b"): {
 						PackageSPDXIdentifier:   spdx.ElementID("Package-eb0263038c3b445b"),
+						PackageDownloadLocation: "NONE",
 						PackageName:             "actioncontroller",
 						PackageVersion:          "7.0.1",
 						PackageLicenseConcluded: "NONE",
@@ -160,6 +165,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 					},
 					spdx.ElementID("Package-826226d056ff30c0"): {
 						PackageSPDXIdentifier:   spdx.ElementID("Package-826226d056ff30c0"),
+						PackageDownloadLocation: "NONE",
 						PackageName:             "actionpack",
 						PackageVersion:          "7.0.1",
 						PackageLicenseConcluded: "NONE",
@@ -174,6 +180,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 					},
 					spdx.ElementID("Package-fd0dc3cf913d5bc3"): {
 						PackageSPDXIdentifier:   spdx.ElementID("Package-fd0dc3cf913d5bc3"),
+						PackageDownloadLocation: "NONE",
 						PackageName:             "binutils",
 						PackageVersion:          "2.30",
 						PackageLicenseConcluded: "GPL-3.0-or-later",
@@ -315,8 +322,9 @@ func TestMarshaler_Marshal(t *testing.T) {
 				},
 				Packages: map[spdx.ElementID]*spdx.Package2_2{
 					spdx.ElementID("ContainerImage-413bfede37ad01fc"): {
-						PackageName:           "centos:latest",
-						PackageSPDXIdentifier: "ContainerImage-413bfede37ad01fc",
+						PackageName:             "centos:latest",
+						PackageSPDXIdentifier:   "ContainerImage-413bfede37ad01fc",
+						PackageDownloadLocation: "NONE",
 						PackageAttributionTexts: []string{
 							"SchemaVersion: 2",
 							"ImageID: sha256:5d0da3dc976460b72c77d94c8a1ad043720b0416bfc16c52c45d4847e53fadb6",
@@ -325,17 +333,20 @@ func TestMarshaler_Marshal(t *testing.T) {
 						},
 					},
 					spdx.ElementID("Application-441a648f2aeeee72"): {
-						PackageSPDXIdentifier: spdx.ElementID("Application-441a648f2aeeee72"),
-						PackageName:           "gemspec",
-						PackageSourceInfo:     "Ruby",
+						PackageSPDXIdentifier:   spdx.ElementID("Application-441a648f2aeeee72"),
+						PackageDownloadLocation: "NONE",
+						PackageName:             "gemspec",
+						PackageSourceInfo:       "Ruby",
 					},
 					spdx.ElementID("OperatingSystem-197f9a00ebcb51f0"): {
-						PackageSPDXIdentifier: spdx.ElementID("OperatingSystem-197f9a00ebcb51f0"),
-						PackageName:           "centos",
-						PackageVersion:        "8.3.2011",
+						PackageSPDXIdentifier:   spdx.ElementID("OperatingSystem-197f9a00ebcb51f0"),
+						PackageDownloadLocation: "NONE",
+						PackageName:             "centos",
+						PackageVersion:          "8.3.2011",
 					},
 					spdx.ElementID("Package-d8dccb186bafaf37"): {
 						PackageSPDXIdentifier:   spdx.ElementID("Package-d8dccb186bafaf37"),
+						PackageDownloadLocation: "NONE",
 						PackageName:             "acl",
 						PackageVersion:          "2.2.53",
 						PackageLicenseConcluded: "GPL-2.0-or-later",
@@ -351,6 +362,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 					},
 					spdx.ElementID("Package-13fe667a0805e6b7"): {
 						PackageSPDXIdentifier:   spdx.ElementID("Package-13fe667a0805e6b7"),
+						PackageDownloadLocation: "NONE",
 						PackageName:             "actionpack",
 						PackageVersion:          "7.0.1",
 						PackageLicenseConcluded: "NONE",
@@ -374,6 +386,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 					},
 					spdx.ElementID("Package-d5443dbcbba0dbd4"): {
 						PackageSPDXIdentifier:   spdx.ElementID("Package-d5443dbcbba0dbd4"),
+						PackageDownloadLocation: "NONE",
 						PackageName:             "actionpack",
 						PackageVersion:          "7.0.1",
 						PackageLicenseConcluded: "NONE",
@@ -468,19 +481,22 @@ func TestMarshaler_Marshal(t *testing.T) {
 				},
 				Packages: map[spdx.ElementID]*spdx.Package2_2{
 					spdx.ElementID("Filesystem-5af0f1f08c20909a"): {
-						PackageSPDXIdentifier: spdx.ElementID("Filesystem-5af0f1f08c20909a"),
-						PackageName:           "masahiro331/CVE-2021-41098",
+						PackageSPDXIdentifier:   spdx.ElementID("Filesystem-5af0f1f08c20909a"),
+						PackageDownloadLocation: "NONE",
+						PackageName:             "masahiro331/CVE-2021-41098",
 						PackageAttributionTexts: []string{
 							"SchemaVersion: 2",
 						},
 					},
 					spdx.ElementID("Application-9dd4a4ba7077cc5a"): {
-						PackageSPDXIdentifier: spdx.ElementID("Application-9dd4a4ba7077cc5a"),
-						PackageName:           "bundler",
-						PackageSourceInfo:     "Gemfile.lock",
+						PackageSPDXIdentifier:   spdx.ElementID("Application-9dd4a4ba7077cc5a"),
+						PackageDownloadLocation: "NONE",
+						PackageName:             "bundler",
+						PackageSourceInfo:       "Gemfile.lock",
 					},
 					spdx.ElementID("Package-3da61e86d0530402"): {
 						PackageSPDXIdentifier:   spdx.ElementID("Package-3da61e86d0530402"),
+						PackageDownloadLocation: "NONE",
 						PackageName:             "actioncable",
 						PackageVersion:          "6.1.4.1",
 						PackageLicenseConcluded: "NONE",
@@ -517,7 +533,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 			name: "happy path aggregate results",
 			inputReport: types.Report{
 				SchemaVersion: report.SchemaVersion,
-				ArtifactName:  "test-aggregate",
+				ArtifactName:  "http://test-aggregate",
 				ArtifactType:  ftypes.ArtifactRemoteRepository,
 				Results: types.Results{
 					{
@@ -543,27 +559,30 @@ func TestMarshaler_Marshal(t *testing.T) {
 					SPDXVersion:          "SPDX-2.2",
 					DataLicense:          "CC0-1.0",
 					SPDXIdentifier:       "DOCUMENT",
-					DocumentName:         "test-aggregate",
+					DocumentName:         "http://test-aggregate",
 					DocumentNamespace:    "http://aquasecurity.github.io/trivy/repository/test-aggregate-3ff14136-e09f-4df9-80ea-000000000001",
 					CreatorOrganizations: []string{"aquasecurity"},
 					CreatorTools:         []string{"trivy-0.38.1"},
 					Created:              "2021-08-25T12:20:30Z",
 				},
 				Packages: map[spdx.ElementID]*spdx.Package2_2{
-					spdx.ElementID("Repository-7cb7a269a391a798"): {
-						PackageName:           "test-aggregate",
-						PackageSPDXIdentifier: "Repository-7cb7a269a391a798",
+					spdx.ElementID("Repository-1a78857c1a6a759e"): {
+						PackageName:             "http://test-aggregate",
+						PackageSPDXIdentifier:   "Repository-1a78857c1a6a759e",
+						PackageDownloadLocation: "git+http://test-aggregate",
 						PackageAttributionTexts: []string{
 							"SchemaVersion: 2",
 						},
 					},
 					spdx.ElementID("Application-24f8a80152e2c0fc"): {
-						PackageSPDXIdentifier: "Application-24f8a80152e2c0fc",
-						PackageName:           "node-pkg",
-						PackageSourceInfo:     "Node.js",
+						PackageSPDXIdentifier:   "Application-24f8a80152e2c0fc",
+						PackageDownloadLocation: "git+http://test-aggregate",
+						PackageName:             "node-pkg",
+						PackageSourceInfo:       "Node.js",
 					},
 					spdx.ElementID("Package-daedb173cfd43058"): {
 						PackageSPDXIdentifier:   spdx.ElementID("Package-daedb173cfd43058"),
+						PackageDownloadLocation: "git+http://test-aggregate",
 						PackageName:             "ruby-typeprof",
 						PackageVersion:          "0.20.1",
 						PackageLicenseConcluded: "MIT",
@@ -589,11 +608,11 @@ func TestMarshaler_Marshal(t *testing.T) {
 				Relationships: []*spdx.Relationship2_2{
 					{
 						RefA:         spdx.DocElementID{ElementRefID: "DOCUMENT"},
-						RefB:         spdx.DocElementID{ElementRefID: "Repository-7cb7a269a391a798"},
+						RefB:         spdx.DocElementID{ElementRefID: "Repository-1a78857c1a6a759e"},
 						Relationship: "DESCRIBES",
 					},
 					{
-						RefA:         spdx.DocElementID{ElementRefID: "Repository-7cb7a269a391a798"},
+						RefA:         spdx.DocElementID{ElementRefID: "Repository-1a78857c1a6a759e"},
 						RefB:         spdx.DocElementID{ElementRefID: "Application-24f8a80152e2c0fc"},
 						Relationship: "CONTAINS",
 					},
@@ -626,8 +645,9 @@ func TestMarshaler_Marshal(t *testing.T) {
 				},
 				Packages: map[spdx.ElementID]*spdx.Package2_2{
 					spdx.ElementID("Filesystem-70f34983067dba86"): {
-						PackageName:           "empty/path",
-						PackageSPDXIdentifier: "Filesystem-70f34983067dba86",
+						PackageName:             "empty/path",
+						PackageSPDXIdentifier:   "Filesystem-70f34983067dba86",
+						PackageDownloadLocation: "NONE",
 						PackageAttributionTexts: []string{
 							"SchemaVersion: 2",
 						},
