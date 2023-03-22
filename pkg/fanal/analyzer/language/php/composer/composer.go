@@ -111,7 +111,7 @@ func (a composerAnalyzer) mergeComposerJson(fsys fs.FS, dir string, app *types.A
 	p, err := a.parseComposerJson(fsys, path)
 	if errors.Is(err, fs.ErrNotExist) {
 		// Assume all the packages are direct dependencies as it cannot identify them from composer.lock
-		log.Logger.Debugf("composer.json: %s not found", path)
+		log.Logger.Debugf("composer.json: %s not found. Detecttion of direct dependencies is not possible", path)
 		return nil
 	} else if err != nil {
 		return xerrors.Errorf("unable to parse %s: %w", path, err)
