@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
-	"strings"
 
 	"github.com/google/go-containerregistry/pkg/authn"
 	"github.com/google/go-containerregistry/pkg/name"
@@ -173,12 +172,15 @@ func repoDigest(img ftypes.Image, insecure bool) (name.Digest, error) {
 	if err != nil {
 		return name.Digest{}, xerrors.Errorf("image name parse error: %w", err)
 	}
-	repoName := ref.Context().RepositoryStr()
 
 	for _, rd := range img.RepoDigests() {
-		if n, _, found := strings.Cut(rd, "@"); found && n == repoName {
-			opts := lo.Ternary(insecure, []name.Option{name.Insecure}, nil)
-			return name.NewDigest(rd, opts...)
+		opts := lo.Ternary(insecure, []name.Option{name.Insecure}, nil)
+		digest, err := name.NewDigest(rd, opts...)
+		if err != nil {
+			continue
+		}
+		if ref.Context().String() == digest.Context().String() {
+			return digest, nil
 		}
 	}
 	return name.Digest{}, xerrors.Errorf("no repo digest found: %w", errNoSBOMFound)
