@@ -74,6 +74,9 @@ nfpms:
     contents:
      - src: contrib/*.tpl
        dst: /usr/local/share/trivy/templates
+    rpm:
+      signature:
+         key_file: '{{ .Env.GPG_FILE }}'
 
 archives:
   -
@@ -251,6 +254,19 @@ docker_manifests:
     - 'public.ecr.aws/aquasecurity/trivy:{{ .Version }}-ppc64le'
 
 signs:
+- id: "gpg signing"
+  artifacts: all
+  signature: "${artifact}.gpg.sig"
+  args:
+    - "--batch"
+    - "-u"
+    - "{{ .Env.GPG_FINGERPRINT }}"
+    - "--output"
+    - "${signature}"
+    - "--detach-sign"
+    - "${artifact}"
+  output: true
+  stdin: '{{ .Env.GPG_PASSPHRASE }}'
 - cmd: cosign
   env:
   - COSIGN_EXPERIMENTAL=1
@@ -264,19 +280,6 @@ signs:
     - "${artifact}"
   artifacts: all
   output: true
-- id: "gpg signing"
-  artifacts: package
-  signature: "${artifact}.gpg.sig"
-  args:
-    - "--batch"
-    - "--local-user"
-    - "{{ .Env.GPG_FINGERPRINT }}"
-    - "--output"
-    - "${signature}"
-    - "--detach-sign"
-    - "${artifact}"
-  output: true
-  stdin: '{{ .Env.GPG_PASSPHRASE }}'
 
 docker_signs:
 - cmd: cosign
