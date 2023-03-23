@@ -14,10 +14,11 @@ import (
 
 func Test_gemspecLibraryAnalyzer_Analyze(t *testing.T) {
 	tests := []struct {
-		name      string
-		inputFile string
-		want      *analyzer.AnalysisResult
-		wantErr   string
+		name            string
+		inputFile       string
+		includeChecksum bool
+		want            *analyzer.AnalysisResult
+		wantErr         string
 	}{
 		{
 			name:      "happy path",
@@ -33,6 +34,28 @@ func Test_gemspecLibraryAnalyzer_Analyze(t *testing.T) {
 								Version:  "3.3.7",
 								Licenses: []string{"Ruby", "BSDL", "PSFL"},
 								FilePath: "testdata/multiple_licenses.gemspec",
+							},
+						},
+					},
+				},
+			},
+		},
+		{
+			name:            "happy path with checksum",
+			inputFile:       "testdata/multiple_licenses.gemspec",
+			includeChecksum: true,
+			want: &analyzer.AnalysisResult{
+				Applications: []types.Application{
+					{
+						Type:     types.GemSpec,
+						FilePath: "testdata/multiple_licenses.gemspec",
+						Libraries: []types.Package{
+							{
+								Name:     "test-unit",
+								Version:  "3.3.7",
+								Licenses: []string{"Ruby", "BSDL", "PSFL"},
+								FilePath: "testdata/multiple_licenses.gemspec",
+								Checksum: "d683b9b0057ea3d27798e6df36a9bb49dbc0a2c8224295a3ba27186071ec5f4c",
 							},
 						},
 					},
@@ -57,6 +80,7 @@ func Test_gemspecLibraryAnalyzer_Analyze(t *testing.T) {
 			got, err := a.Analyze(ctx, analyzer.AnalysisInput{
 				FilePath: tt.inputFile,
 				Content:  f,
+				Options:  analyzer.AnalysisOptions{IncludeChecksum: tt.includeChecksum},
 			})
 
 			if tt.wantErr != "" {

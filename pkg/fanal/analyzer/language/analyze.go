@@ -94,9 +94,9 @@ func ToAnalysisResult(fileType, filePath, libFilePath string, r dio.ReadSeekerAt
 
 func calculateChecksum(r dio.ReadSeekerAt) (string, error) {
 	// return reader to start after it has been read in analyzer
-	//if _, err := r.Seek(0, io.SeekStart); err != nil {
-	//	return "", xerrors.Errorf("unable to seek: %w", err)
-	//}
+	if _, err := r.Seek(0, io.SeekStart); err != nil {
+		return "", xerrors.Errorf("unable to seek: %w", err)
+	}
 
 	// calculate checksum
 	h := sha256.New()

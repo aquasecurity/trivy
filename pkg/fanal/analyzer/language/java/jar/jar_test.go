@@ -97,7 +97,7 @@ func Test_javaLibraryAnalyzer_Analyze(t *testing.T) {
 								Name:     "com.fasterxml.jackson.core:jackson-core",
 								FilePath: "testdata/test.par",
 								Version:  "2.9.10",
-								Checksum: "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+								Checksum: "d5b9e07b3058824baedf26d60b91760f7d110a1aa516266f0d87c0df5312d508",
 							},
 						},
 					},

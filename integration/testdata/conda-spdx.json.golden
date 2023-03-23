@@ -33,10 +33,10 @@
 		},
 		{
 			"SPDXID": "SPDXRef-Filesystem-6e0ac6a0fab50ab4",
+			"downloadLocation": "NONE",
 			"attributionTexts": [
 				"SchemaVersion: 2"
 			],
-			"downloadLocation": "NONE",
 			"filesAnalyzed": false,
 			"name": "testdata/fixtures/fs/conda"
 		},

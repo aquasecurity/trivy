@@ -14,10 +14,11 @@ import (
 
 func Test_nodePkgLibraryAnalyzer_Analyze(t *testing.T) {
 	tests := []struct {
-		name      string
-		inputFile string
-		want      *analyzer.AnalysisResult
-		wantErr   string
+		name            string
+		inputFile       string
+		includeChecksum bool
+		want            *analyzer.AnalysisResult
+		wantErr         string
 	}{
 		{
 			name:      "happy path",
@@ -41,6 +42,29 @@ func Test_nodePkgLibraryAnalyzer_Analyze(t *testing.T) {
 			},
 		},
 		{
+			name:            "happy path with checksum",
+			inputFile:       "testdata/package.json",
+			includeChecksum: true,
+			want: &analyzer.AnalysisResult{
+				Applications: []types.Application{
+					{
+						Type:     types.NodePkg,
+						FilePath: "testdata/package.json",
+						Libraries: []types.Package{
+							{
+								ID:       "lodash@5.0.0",
+								Name:     "lodash",
+								Version:  "5.0.0",
+								Licenses: []string{"MIT"},
+								FilePath: "testdata/package.json",
+								Checksum: "9d73022d4fd8a11a0b4f7efc8736d8d606b334e570d7b8cc8956a7ee67b840ca",
+							},
+						},
+					},
+				},
+			},
+		},
+		{
 			name:      "sad path",
 			inputFile: "testdata/noname.json",
 			wantErr:   "unable to parse",
@@ -57,6 +81,7 @@ func Test_nodePkgLibraryAnalyzer_Analyze(t *testing.T) {
 			got, err := a.Analyze(ctx, analyzer.AnalysisInput{
 				FilePath: tt.inputFile,
 				Content:  f,
+				Options:  analyzer.AnalysisOptions{IncludeChecksum: tt.includeChecksum},
 			})
 
 			if tt.wantErr != "" {
