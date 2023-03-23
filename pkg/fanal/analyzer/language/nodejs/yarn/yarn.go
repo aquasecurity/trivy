@@ -95,7 +95,7 @@ func (a yarnAnalyzer) parseYarnLock(path string, r dio.ReadSeekerAt) (*types.App
 	if err != nil {
 		return nil, xerrors.Errorf("unable to parse yarn.lock: %w", err)
 	}
-	return language.ToApplication(types.Yarn, path, "", libs, deps), nil
+	return language.ToApplication(types.Yarn, path, "", nil, libs, deps), nil
 }
 
 func (a yarnAnalyzer) removeDevDependencies(fsys fs.FS, dir string, app *types.Application) error {

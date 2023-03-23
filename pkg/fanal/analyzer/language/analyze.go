@@ -1,6 +1,10 @@
 package language
 
 import (
+	"crypto/sha256"
+	"fmt"
+	"github.com/aquasecurity/trivy/pkg/log"
+	"io"
 	"strings"
 
 	"golang.org/x/xerrors"
@@ -23,11 +27,15 @@ func Analyze(fileType, filePath string, r dio.ReadSeekerAt, parser godeptypes.Pa
 	return ToAnalysisResult(fileType, filePath, "", parsedLibs, parsedDependencies), nil
 }
 
-func ToApplication(fileType, filePath, libFilePath string, libs []godeptypes.Library, depGraph []godeptypes.Dependency) *types.Application {
+func ToApplication(fileType, filePath, libFilePath string, r dio.ReadSeekerAt, libs []godeptypes.Library, depGraph []godeptypes.Dependency) *types.Application {
 	if len(libs) == 0 {
 		return nil
 	}
 
+	checksum, err := calculateChecksum(r)
+	if err != nil {
+		log.Logger.Warnf("unable to get checksum for %s: %s", filePath, err)
+	}
 	deps := make(map[string][]string)
 	for _, dep := range depGraph {
 		deps[dep.ID] = dep.DependsOn
@@ -59,6 +67,7 @@ func ToApplication(fileType, filePath, libFilePath string, libs []godeptypes.Lib
 			Licenses:  licenses,
 			DependsOn: deps[lib.ID],
 			Locations: locs,
+			Checksum:  checksum,
 		})
 	}
 
@@ -70,10 +79,24 @@ func ToApplication(fileType, filePath, libFilePath string, libs []godeptypes.Lib
 }
 
 func ToAnalysisResult(fileType, filePath, libFilePath string, libs []godeptypes.Library, depGraph []godeptypes.Dependency) *analyzer.AnalysisResult {
-	app := ToApplication(fileType, filePath, libFilePath, libs, depGraph)
+	app := ToApplication(fileType, filePath, libFilePath, nil, libs, depGraph)
 	if app == nil {
 		return nil
 	}
 
 	return &analyzer.AnalysisResult{Applications: []types.Application{*app}}
+}
+
+func calculateChecksum(r dio.ReadSeekerAt) (string, error) {
+	// return reader to start after it has been read in analyzer
+	if _, err := r.Seek(0, io.SeekStart); err != nil {
+		return "", xerrors.Errorf("unable to seek: %w", err)
+	}
+
+	// calculate checksum
+	h := sha256.New()
+	if _, err := io.Copy(h, r); err != nil {
+		return "", xerrors.Errorf("unable to calculate checksum: %w", err)
+	}
+	return fmt.Sprintf("%x", h.Sum(nil)), nil
 }

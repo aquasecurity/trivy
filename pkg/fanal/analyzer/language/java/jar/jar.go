@@ -75,7 +75,7 @@ func (a *javaLibraryAnalyzer) PostAnalyze(ctx context.Context, input analyzer.Po
 			return nil, xerrors.Errorf("%q parse error: %w", path, err)
 		}
 
-		return language.ToApplication(types.Jar, path, path, libs, deps), nil
+		return language.ToApplication(types.Jar, path, path, r, libs, deps), nil
 	}
 
 	var apps []types.Application

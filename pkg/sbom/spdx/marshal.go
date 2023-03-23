@@ -185,7 +185,7 @@ func (m *Marshaler) resultToSpdxPackage(result types.Result, os *ftypes.OS, pkgD
 	}
 }
 
-func (m *Marshaler) parseFile(filePath string) (spdx.File2_2, error) {
+func (m *Marshaler) parseFile(filePath, checksum string) (spdx.File2_2, error) {
 	pkgID, err := calcPkgID(m.hasher, filePath)
 	if err != nil {
 		return spdx.File2_2{}, xerrors.Errorf("failed to get %s package ID: %w", filePath, err)
@@ -193,6 +193,9 @@ func (m *Marshaler) parseFile(filePath string) (spdx.File2_2, error) {
 	file := spdx.File2_2{
 		FileSPDXIdentifier: spdx.ElementID(fmt.Sprintf("File-%s", pkgID)),
 		FileName:           filePath,
+		FileChecksums: map[spdx.ChecksumAlgorithm]spdx.Checksum{
+			spdx.SHA256: {Algorithm: spdx.SHA256, Value: checksum},
+		},
 	}
 	return file, nil
 }
@@ -324,7 +327,7 @@ func (m *Marshaler) pkgFiles(pkg ftypes.Package) (map[spdx.ElementID]*spdx.File2
 		return nil, nil
 	}
 
-	file, err := m.parseFile(pkg.FilePath)
+	file, err := m.parseFile(pkg.FilePath, pkg.Checksum)
 	if err != nil {
 		return nil, xerrors.Errorf("failed to parse file: %w")
 	}
