@@ -31,7 +31,7 @@ func (a rustBinaryLibraryAnalyzer) Analyze(_ context.Context, input analyzer.Ana
 		return nil, xerrors.Errorf("rust binary parse error: %w", err)
 	}
 
-	return language.ToAnalysisResult(types.RustBinary, input.FilePath, "", libs, deps), nil
+	return language.ToAnalysisResult(types.RustBinary, input.FilePath, "", nil, false, libs, deps), nil
 }
 
 func (a rustBinaryLibraryAnalyzer) Required(_ string, fileInfo os.FileInfo) bool {

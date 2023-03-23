@@ -634,6 +634,8 @@ func initScannerConfig(opts flag.Options, cacheClient cache.Cache) (ScannerConfi
 			Platform:          opts.Platform,
 			Slow:              opts.Slow,
 			AWSRegion:         opts.Region,
+			// For spdx formats
+			IncludeChecksum: opts.IncludeChecksum,
 
 			// For misconfiguration scanning
 			MisconfScannerOption: configScannerOptions,

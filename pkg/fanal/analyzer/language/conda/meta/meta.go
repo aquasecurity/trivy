@@ -31,7 +31,7 @@ func (a metaAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInput) (
 		return nil, xerrors.Errorf("%s parse error: %w", input.FilePath, err)
 	}
 
-	return language.ToAnalysisResult(types.CondaPkg, input.FilePath, input.FilePath, libs, deps), nil
+	return language.ToAnalysisResult(types.CondaPkg, input.FilePath, input.FilePath, nil, false, libs, deps), nil
 }
 func (a metaAnalyzer) Required(filePath string, _ os.FileInfo) bool {
 	return fileRegex.MatchString(filepath.ToSlash(filePath))

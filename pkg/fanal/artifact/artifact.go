@@ -28,6 +28,7 @@ type Option struct {
 	Platform          string
 	Slow              bool // Lower CPU and memory
 	AWSRegion         string
+	IncludeChecksum   bool // only for spdx formats
 
 	MisconfScannerOption misconf.ScannerOption
 	SecretScannerOption  analyzer.SecretScannerOption

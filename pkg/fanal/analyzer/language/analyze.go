@@ -3,7 +3,6 @@ package language
 import (
 	"crypto/sha256"
 	"fmt"
-	"github.com/aquasecurity/trivy/pkg/log"
 	"io"
 	"strings"
 
@@ -14,6 +13,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/licensing"
+	"github.com/aquasecurity/trivy/pkg/log"
 )
 
 func Analyze(fileType, filePath string, r dio.ReadSeekerAt, parser godeptypes.Parser) (*analyzer.AnalysisResult, error) {
@@ -24,18 +24,23 @@ func Analyze(fileType, filePath string, r dio.ReadSeekerAt, parser godeptypes.Pa
 
 	// The file path of each library should be empty in case of dependency list such as lock file
 	// since they all will be the same path.
-	return ToAnalysisResult(fileType, filePath, "", parsedLibs, parsedDependencies), nil
+	return ToAnalysisResult(fileType, filePath, "", nil, false, parsedLibs, parsedDependencies), nil
 }
 
-func ToApplication(fileType, filePath, libFilePath string, r dio.ReadSeekerAt, libs []godeptypes.Library, depGraph []godeptypes.Dependency) *types.Application {
+func ToApplication(fileType, filePath, libFilePath string, r dio.ReadSeekerAt, includeChecksum bool, libs []godeptypes.Library, depGraph []godeptypes.Dependency) *types.Application {
 	if len(libs) == 0 {
 		return nil
 	}
 
-	checksum, err := calculateChecksum(r)
-	if err != nil {
-		log.Logger.Warnf("unable to get checksum for %s: %s", filePath, err)
+	var checksum string
+	var err error
+	if includeChecksum { // This happens if one of `spdx` formats is selected and `--include-checksum` flag is used
+		checksum, err = calculateChecksum(r)
+		if err != nil {
+			log.Logger.Warnf("unable to get checksum for %s: %s", filePath, err)
+		}
 	}
+
 	deps := make(map[string][]string)
 	for _, dep := range depGraph {
 		deps[dep.ID] = dep.DependsOn
@@ -78,8 +83,8 @@ func ToApplication(fileType, filePath, libFilePath string, r dio.ReadSeekerAt, l
 	}
 }
 
-func ToAnalysisResult(fileType, filePath, libFilePath string, libs []godeptypes.Library, depGraph []godeptypes.Dependency) *analyzer.AnalysisResult {
-	app := ToApplication(fileType, filePath, libFilePath, nil, libs, depGraph)
+func ToAnalysisResult(fileType, filePath, libFilePath string, r dio.ReadSeekerAt, includeChecksum bool, libs []godeptypes.Library, depGraph []godeptypes.Dependency) *analyzer.AnalysisResult {
+	app := ToApplication(fileType, filePath, libFilePath, r, includeChecksum, libs, depGraph)
 	if app == nil {
 		return nil
 	}
@@ -89,9 +94,9 @@ func ToAnalysisResult(fileType, filePath, libFilePath string, libs []godeptypes.
 
 func calculateChecksum(r dio.ReadSeekerAt) (string, error) {
 	// return reader to start after it has been read in analyzer
-	if _, err := r.Seek(0, io.SeekStart); err != nil {
-		return "", xerrors.Errorf("unable to seek: %w", err)
-	}
+	//if _, err := r.Seek(0, io.SeekStart); err != nil {
+	//	return "", xerrors.Errorf("unable to seek: %w", err)
+	//}
 
 	// calculate checksum
 	h := sha256.New()

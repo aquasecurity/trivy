@@ -31,7 +31,7 @@ func (a gemspecLibraryAnalyzer) Analyze(_ context.Context, input analyzer.Analys
 		return nil, xerrors.Errorf("%s parse error: %w", input.FilePath, err)
 	}
 
-	return language.ToAnalysisResult(types.GemSpec, input.FilePath, input.FilePath, libs, deps), nil
+	return language.ToAnalysisResult(types.GemSpec, input.FilePath, input.FilePath, nil, false, libs, deps), nil
 }
 
 func (a gemspecLibraryAnalyzer) Required(filePath string, _ os.FileInfo) bool {

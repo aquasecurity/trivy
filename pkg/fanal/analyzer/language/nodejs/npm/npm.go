@@ -122,7 +122,7 @@ func (a npmLibraryAnalyzer) parseNpmPkgLock(fsys fs.FS, path string) (*types.App
 	if err != nil {
 		return nil, xerrors.Errorf("unable to parse package-lock.json: %w", err)
 	}
-	return language.ToApplication(types.Npm, path, "", nil, libs, deps), nil
+	return language.ToApplication(types.Npm, path, "", nil, false, libs, deps), nil
 }
 
 func (a npmLibraryAnalyzer) findLicenses(fsys fs.FS, lockPath string) (map[string]string, error) {

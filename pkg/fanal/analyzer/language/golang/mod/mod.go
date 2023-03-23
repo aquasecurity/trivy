@@ -230,7 +230,7 @@ func parse(fsys fs.FS, path string, parser godeptypes.Parser) (*types.Applicatio
 		return nil, xerrors.Errorf("%s parse error: %w", path, err)
 	}
 
-	return language.ToApplication(types.GoModule, path, "", nil, libs, deps), nil
+	return language.ToApplication(types.GoModule, path, "", nil, false, libs, deps), nil
 }
 
 func lessThanGo117(gomod *types.Application) bool {

@@ -36,7 +36,7 @@ func (a nodePkgLibraryAnalyzer) Analyze(_ context.Context, input analyzer.Analys
 	// package.json may contain version range in `dependencies` fields
 	// e.g.   "devDependencies": { "mocha": "^5.2.0", }
 	// so we get only information about project
-	return language.ToAnalysisResult(types.NodePkg, input.FilePath, input.FilePath, []godeptypes.Library{pkg.Library}, nil), nil
+	return language.ToAnalysisResult(types.NodePkg, input.FilePath, input.FilePath, nil, false, []godeptypes.Library{pkg.Library}, nil), nil
 }
 
 func (a nodePkgLibraryAnalyzer) Required(filePath string, _ os.FileInfo) bool {

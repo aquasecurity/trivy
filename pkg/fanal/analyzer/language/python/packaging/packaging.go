@@ -68,7 +68,7 @@ func (a packagingAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInp
 		return nil, xerrors.Errorf("unable to parse %s: %w", input.FilePath, err)
 	}
 
-	return language.ToAnalysisResult(types.PythonPkg, input.FilePath, input.FilePath, libs, deps), nil
+	return language.ToAnalysisResult(types.PythonPkg, input.FilePath, input.FilePath, nil, false, libs, deps), nil
 }
 
 func (a packagingAnalyzer) analyzeEggZip(r io.ReaderAt, size int64) (dio.ReadSeekerAt, error) {
