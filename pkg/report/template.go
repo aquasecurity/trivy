@@ -72,7 +72,7 @@ func NewTemplateWriter(output io.Writer, outputTemplate string) (*TemplateWriter
 
 // Write writes result
 func (tw TemplateWriter) Write(report types.Report) error {
-	err := tw.Template.Execute(tw.Output, report.Results)
+	err := tw.Template.Execute(tw.Output, report)
 	if err != nil {
 		return xerrors.Errorf("failed to write with template: %w", err)
 	}
