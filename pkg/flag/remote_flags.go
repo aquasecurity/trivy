@@ -24,6 +24,12 @@ var (
 		Value:      DefaultTokenHeader,
 		Usage:      "specify a header name for token in client/server mode",
 	}
+	ServerPathPrefixFlag = Flag{
+		Name:       "path-prefix",
+		ConfigName: "server.path-prefix",
+		Value:      "",
+		Usage:      "path prefix for server endpoints",
+	}
 	ServerAddrFlag = Flag{
 		Name:       "server",
 		ConfigName: "server.addr",
@@ -50,6 +56,7 @@ type RemoteFlagGroup struct {
 	// for client/server
 	Token       *Flag
 	TokenHeader *Flag
+	PathPrefix  *Flag
 
 	// for client
 	ServerAddr    *Flag
@@ -62,6 +69,7 @@ type RemoteFlagGroup struct {
 type RemoteOptions struct {
 	Token       string
 	TokenHeader string
+	PathPrefix  string
 
 	ServerAddr    string
 	Listen        string
@@ -72,6 +80,7 @@ func NewClientFlags() *RemoteFlagGroup {
 	return &RemoteFlagGroup{
 		Token:         &ServerTokenFlag,
 		TokenHeader:   &ServerTokenHeaderFlag,
+		PathPrefix:    &ServerPathPrefixFlag,
 		ServerAddr:    &ServerAddrFlag,
 		CustomHeaders: &ServerCustomHeadersFlag,
 	}
@@ -81,6 +90,7 @@ func NewServerFlags() *RemoteFlagGroup {
 	return &RemoteFlagGroup{
 		Token:       &ServerTokenFlag,
 		TokenHeader: &ServerTokenHeaderFlag,
+		PathPrefix:  &ServerPathPrefixFlag,
 		Listen:      &ServerListenFlag,
 	}
 }
@@ -90,7 +100,7 @@ func (f *RemoteFlagGroup) Name() string {
 }
 
 func (f *RemoteFlagGroup) Flags() []*Flag {
-	return []*Flag{f.Token, f.TokenHeader, f.ServerAddr, f.CustomHeaders, f.Listen}
+	return []*Flag{f.Token, f.TokenHeader, f.PathPrefix, f.ServerAddr, f.CustomHeaders, f.Listen}
 }
 
 func (f *RemoteFlagGroup) ToOptions() RemoteOptions {
@@ -99,6 +109,7 @@ func (f *RemoteFlagGroup) ToOptions() RemoteOptions {
 	listen := getString(f.Listen)
 	token := getString(f.Token)
 	tokenHeader := getString(f.TokenHeader)
+	pathPrefix := getString(f.PathPrefix)
 
 	if serverAddr == "" && listen == "" {
 		switch {
@@ -108,6 +119,8 @@ func (f *RemoteFlagGroup) ToOptions() RemoteOptions {
 			log.Logger.Warn(`"--token" can be used only with "--server"`)
 		case tokenHeader != "" && tokenHeader != DefaultTokenHeader:
 			log.Logger.Warn(`"--token-header" can be used only with "--server"`)
+		case pathPrefix != "":
+			log.Logger.Warn(`"--path-prefix" can be used only with "--server"`)
 		}
 	}
 
@@ -122,6 +135,7 @@ func (f *RemoteFlagGroup) ToOptions() RemoteOptions {
 	return RemoteOptions{
 		Token:         token,
 		TokenHeader:   tokenHeader,
+		PathPrefix:    pathPrefix,
 		ServerAddr:    serverAddr,
 		CustomHeaders: customHeaders,
 		Listen:        listen,

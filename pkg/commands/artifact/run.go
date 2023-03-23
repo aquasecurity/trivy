@@ -363,7 +363,7 @@ func (r *runner) initCache(opts flag.Options) error {
 
 	// client/server mode
 	if opts.ServerAddr != "" {
-		remoteCache := tcache.NewRemoteCache(opts.ServerAddr, opts.CustomHeaders, opts.Insecure)
+		remoteCache := tcache.NewRemoteCache(opts.ServerAddr, opts.CustomHeaders, opts.Insecure, opts.PathPrefix)
 		r.cache = tcache.NopCache(remoteCache)
 		return nil
 	}
@@ -615,6 +615,7 @@ func initScannerConfig(opts flag.Options, cacheClient cache.Cache) (ScannerConfi
 		LocalArtifactCache: cacheClient,
 		RemoteOption: client.ScannerOption{
 			RemoteURL:     opts.ServerAddr,
+			PathPrefix:    opts.PathPrefix,
 			CustomHeaders: opts.CustomHeaders,
 			Insecure:      opts.Insecure,
 		},

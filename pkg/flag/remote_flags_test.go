@@ -19,6 +19,7 @@ func TestRemoteFlagGroup_ToOptions(t *testing.T) {
 		CustomHeaders []string
 		Token         string
 		TokenHeader   string
+		PathPrefix    string
 	}
 	tests := []struct {
 		name     string
@@ -46,6 +47,45 @@ func TestRemoteFlagGroup_ToOptions(t *testing.T) {
 				},
 				Token:       "token",
 				TokenHeader: "Trivy-Token",
+			},
+		},
+		{
+			name: "happy with path prefix",
+			fields: fields{
+				Server: "http://localhost:4954",
+				CustomHeaders: []string{
+					"x-api-token:foo bar",
+					"Authorization:user:password",
+				},
+				Token:       "token",
+				TokenHeader: "Trivy-Token",
+				PathPrefix:  "/custom-path-prefix",
+			},
+			want: flag.RemoteOptions{
+				ServerAddr: "http://localhost:4954",
+				CustomHeaders: http.Header{
+					"X-Api-Token":   []string{"foo bar"},
+					"Authorization": []string{"user:password"},
+					"Trivy-Token":   []string{"token"},
+				},
+				Token:       "token",
+				TokenHeader: "Trivy-Token",
+				PathPrefix:  "/custom-path-prefix",
+			},
+		},
+		{
+			name: "path prefix and no server",
+			fields: fields{
+				TokenHeader: "Trivy-Token",
+				PathPrefix:  "/custom-path-prefix",
+			},
+			want: flag.RemoteOptions{
+				CustomHeaders: http.Header{},
+				TokenHeader:   "Trivy-Token",
+				PathPrefix:    "/custom-path-prefix",
+			},
+			wantLogs: []string{
+				`"--path-prefix" can be used only with "--server"`,
 			},
 		},
 		{
@@ -105,6 +145,7 @@ func TestRemoteFlagGroup_ToOptions(t *testing.T) {
 			viper.Set(flag.ServerCustomHeadersFlag.ConfigName, tt.fields.CustomHeaders)
 			viper.Set(flag.ServerTokenFlag.ConfigName, tt.fields.Token)
 			viper.Set(flag.ServerTokenHeaderFlag.ConfigName, tt.fields.TokenHeader)
+			viper.Set(flag.ServerPathPrefixFlag.ConfigName, tt.fields.PathPrefix)
 
 			// Assert options
 			f := &flag.RemoteFlagGroup{
@@ -112,6 +153,7 @@ func TestRemoteFlagGroup_ToOptions(t *testing.T) {
 				CustomHeaders: &flag.ServerCustomHeadersFlag,
 				Token:         &flag.ServerTokenFlag,
 				TokenHeader:   &flag.ServerTokenHeaderFlag,
+				PathPrefix:    &flag.ServerPathPrefixFlag,
 			}
 			got := f.ToOptions()
 			assert.Equalf(t, tt.want, got, "ToOptions()")

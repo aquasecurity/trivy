@@ -34,6 +34,7 @@ type csArgs struct {
 	Input             string
 	ClientToken       string
 	ClientTokenHeader string
+	ClientPathPrefix  string
 	ListAllPackages   bool
 	Target            string
 	secretConfig      string
@@ -543,10 +544,67 @@ func TestClientServerWithRedis(t *testing.T) {
 	})
 }
 
+func TestClientServerWithPathPrefix(t *testing.T) {
+	pathPrefix := "/custom/path/prefix"
+	cases := []struct {
+		name    string
+		args    csArgs
+		golden  string
+		wantErr string
+	}{
+		{
+			name: "alpine 3.9 with path prefix",
+			args: csArgs{
+				Input:             "testdata/fixtures/images/alpine-39.tar.gz",
+				ClientToken:       "token",
+				ClientTokenHeader: "Trivy-Token",
+				ClientPathPrefix:  pathPrefix,
+			},
+			golden: "testdata/alpine-39.json.golden",
+		},
+		{
+			name: "invalid path prefix",
+			args: csArgs{
+				Input:             "testdata/fixtures/images/distroless-base.tar.gz",
+				ClientToken:       "token",
+				ClientTokenHeader: "Unknown-Header",
+				ClientPathPrefix:  "invalid/path/prefix",
+			},
+			wantErr: "twirp error bad_route",
+		},
+	}
+
+	serverToken := "token"
+	serverTokenHeader := "Trivy-Token"
+	addr, cacheDir := setup(t, setupOptions{
+		token:       serverToken,
+		tokenHeader: serverTokenHeader,
+		pathPrefix:  pathPrefix,
+	})
+
+	for _, c := range cases {
+		t.Run(c.name, func(t *testing.T) {
+			osArgs, outputFile := setupClient(t, c.args, addr, cacheDir, c.golden)
+
+			// Run Trivy client
+			err := execute(osArgs)
+			if c.wantErr != "" {
+				require.Error(t, err, c.name)
+				assert.Contains(t, err.Error(), c.wantErr, c.name)
+				return
+			}
+
+			require.NoError(t, err, c.name)
+			compareReports(t, c.golden, outputFile)
+		})
+	}
+}
+
 type setupOptions struct {
 	token        string
 	tokenHeader  string
 	cacheBackend string
+	pathPrefix   string
 }
 
 func setup(t *testing.T, options setupOptions) (string, string) {
@@ -563,7 +621,7 @@ func setup(t *testing.T, options setupOptions) (string, string) {
 	addr := fmt.Sprintf("localhost:%d", port)
 
 	go func() {
-		osArgs := setupServer(addr, options.token, options.tokenHeader, cacheDir, options.cacheBackend)
+		osArgs := setupServer(addr, cacheDir, options)
 
 		// Run Trivy server
 		require.NoError(t, execute(osArgs))
@@ -576,13 +634,17 @@ func setup(t *testing.T, options setupOptions) (string, string) {
 	return addr, cacheDir
 }
 
-func setupServer(addr, token, tokenHeader, cacheDir, cacheBackend string) []string {
+func setupServer(addr string, cacheDir string, options setupOptions) []string {
+	//osArgs := setupServer(addr, options.token, options.tokenHeader, cacheDir, options.cacheBackend)
 	osArgs := []string{"--cache-dir", cacheDir, "server", "--skip-update", "--listen", addr}
-	if token != "" {
-		osArgs = append(osArgs, []string{"--token", token, "--token-header", tokenHeader}...)
+	if options.token != "" {
+		osArgs = append(osArgs, []string{"--token", options.token, "--token-header", options.tokenHeader}...)
 	}
-	if cacheBackend != "" {
-		osArgs = append(osArgs, "--cache-backend", cacheBackend)
+	if options.cacheBackend != "" {
+		osArgs = append(osArgs, "--cache-backend", options.cacheBackend)
+	}
+	if options.pathPrefix != "" {
+		osArgs = append(osArgs, "--path-prefix", options.pathPrefix)
 	}
 	return osArgs
 }
@@ -623,6 +685,9 @@ func setupClient(t *testing.T, c csArgs, addr string, cacheDir string, golden st
 	}
 	if c.ClientToken != "" {
 		osArgs = append(osArgs, "--token", c.ClientToken, "--token-header", c.ClientTokenHeader)
+	}
+	if c.ClientPathPrefix != "" {
+		osArgs = append(osArgs, "--path-prefix", c.ClientPathPrefix)
 	}
 	if c.Input != "" {
 		osArgs = append(osArgs, "--input", c.Input)

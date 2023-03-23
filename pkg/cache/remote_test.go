@@ -144,7 +144,7 @@ func TestRemoteCache_PutArtifact(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			c := cache.NewRemoteCache(ts.URL, tt.args.customHeaders, false)
+			c := cache.NewRemoteCache(ts.URL, tt.args.customHeaders, false, "")
 			err := c.PutArtifact(tt.args.imageID, tt.args.imageInfo)
 			if tt.wantErr != "" {
 				require.NotNil(t, err, tt.name)
@@ -205,7 +205,7 @@ func TestRemoteCache_PutBlob(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			c := cache.NewRemoteCache(ts.URL, tt.args.customHeaders, false)
+			c := cache.NewRemoteCache(ts.URL, tt.args.customHeaders, false, "")
 			err := c.PutBlob(tt.args.diffID, tt.args.layerInfo)
 			if tt.wantErr != "" {
 				require.NotNil(t, err, tt.name)
@@ -283,7 +283,7 @@ func TestRemoteCache_MissingBlobs(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			c := cache.NewRemoteCache(ts.URL, tt.args.customHeaders, false)
+			c := cache.NewRemoteCache(ts.URL, tt.args.customHeaders, false, "")
 			gotMissingImage, gotMissingLayerIDs, err := c.MissingBlobs(tt.args.imageID, tt.args.layerIDs)
 			if tt.wantErr != "" {
 				require.NotNil(t, err, tt.name)
@@ -333,7 +333,7 @@ func TestRemoteCache_PutArtifactInsecure(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			c := cache.NewRemoteCache(ts.URL, nil, tt.args.insecure)
+			c := cache.NewRemoteCache(ts.URL, nil, tt.args.insecure, "")
 			err := c.PutArtifact(tt.args.imageID, tt.args.imageInfo)
 			if tt.wantErr != "" {
 				require.Error(t, err)
@@ -343,4 +343,33 @@ func TestRemoteCache_PutArtifactInsecure(t *testing.T) {
 			assert.NoError(t, err, tt.name)
 		})
 	}
+}
+
+func TestRemoteCache_WithPathPrefix(t *testing.T) {
+	pathPrefix := "/custom/path/prefix"
+	mux := http.NewServeMux()
+	layerHandler := rpcCache.NewCacheServer(new(mockCacheServer), twirp.WithServerPathPrefix(pathPrefix))
+	mux.Handle(layerHandler.PathPrefix(), withToken(layerHandler, "valid-token", "Trivy-Token"))
+	ts := httptest.NewServer(mux)
+
+	imageID := "sha256:e7d92cdc71feacf90708cb59182d0df1b911f8ae022d29e8e95d75ca6a99776a"
+	imageInfo := types.ArtifactInfo{
+		SchemaVersion: 1,
+		Architecture:  "amd64",
+		Created:       time.Time{},
+		DockerVersion: "18.06",
+		OS:            "linux",
+		HistoryPackages: []types.Package{
+			{
+				Name:    "musl",
+				Version: "1.2.3",
+			},
+		},
+	}
+	customHeaders := http.Header{
+		"Trivy-Token": []string{"valid-token"},
+	}
+	c := cache.NewRemoteCache(ts.URL, customHeaders, false, pathPrefix)
+	err := c.PutArtifact(imageID, imageInfo)
+	assert.NoError(t, err)
 }

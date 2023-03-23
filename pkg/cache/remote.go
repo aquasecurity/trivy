@@ -3,6 +3,7 @@ package cache
 import (
 	"context"
 	"crypto/tls"
+	"github.com/twitchtv/twirp"
 	"net/http"
 
 	"golang.org/x/xerrors"
@@ -21,7 +22,7 @@ type RemoteCache struct {
 }
 
 // NewRemoteCache is the factory method for RemoteCache
-func NewRemoteCache(url string, customHeaders http.Header, insecure bool) cache.ArtifactCache {
+func NewRemoteCache(url string, customHeaders http.Header, insecure bool, pathPrefix string) cache.ArtifactCache {
 	ctx := client.WithCustomHeaders(context.Background(), customHeaders)
 
 	httpClient := &http.Client{
@@ -32,7 +33,11 @@ func NewRemoteCache(url string, customHeaders http.Header, insecure bool) cache.
 			},
 		},
 	}
-	c := rpcCache.NewCacheProtobufClient(url, httpClient)
+	var pathPrefixOption twirp.ClientOption = func(_ *twirp.ClientOptions) {}
+	if pathPrefix != "" {
+		pathPrefixOption = twirp.WithClientPathPrefix(pathPrefix)
+	}
+	c := rpcCache.NewCacheProtobufClient(url, httpClient, pathPrefixOption)
 	return &RemoteCache{ctx: ctx, client: c}
 }
 

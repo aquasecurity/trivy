@@ -31,17 +31,19 @@ type Server struct {
 	cacheDir     string
 	token        string
 	tokenHeader  string
+	pathPrefix   string
 	dbRepository string
 }
 
 // NewServer returns an instance of Server
-func NewServer(appVersion, addr, cacheDir, token, tokenHeader, dbRepository string) Server {
+func NewServer(appVersion, addr, cacheDir, token, tokenHeader, pathPrefix, dbRepository string) Server {
 	return Server{
 		appVersion:   appVersion,
 		addr:         addr,
 		cacheDir:     cacheDir,
 		token:        token,
 		tokenHeader:  tokenHeader,
+		pathPrefix:   pathPrefix,
 		dbRepository: dbRepository,
 	}
 }
@@ -62,13 +64,13 @@ func (s Server) ListenAndServe(serverCache cache.Cache, insecure, skipDBUpdate b
 		}
 	}()
 
-	mux := newServeMux(serverCache, dbUpdateWg, requestWg, s.token, s.tokenHeader)
+	mux := newServeMux(serverCache, dbUpdateWg, requestWg, s.token, s.tokenHeader, s.pathPrefix)
 	log.Logger.Infof("Listening %s...", s.addr)
 
 	return http.ListenAndServe(s.addr, mux)
 }
 
-func newServeMux(serverCache cache.Cache, dbUpdateWg, requestWg *sync.WaitGroup, token, tokenHeader string) *http.ServeMux {
+func newServeMux(serverCache cache.Cache, dbUpdateWg, requestWg *sync.WaitGroup, token, tokenHeader, pathPrefix string) *http.ServeMux {
 	withWaitGroup := func(base http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			// Stop processing requests during DB update
@@ -85,13 +87,18 @@ func newServeMux(serverCache cache.Cache, dbUpdateWg, requestWg *sync.WaitGroup,
 
 	mux := http.NewServeMux()
 
-	scanServer := rpcScanner.NewScannerServer(initializeScanServer(serverCache), nil)
-	scanHandler := withToken(withWaitGroup(scanServer), token, tokenHeader)
-	mux.Handle(rpcScanner.ScannerPathPrefix, gziphandler.GzipHandler(scanHandler))
+	var pathPrefixOption twirp.ServerOption = func(_ *twirp.ServerOptions) {}
+	if pathPrefix != "" {
+		pathPrefixOption = twirp.WithServerPathPrefix(pathPrefix)
+	}
 
-	layerServer := rpcCache.NewCacheServer(NewCacheServer(serverCache), nil)
+	scanServer := rpcScanner.NewScannerServer(initializeScanServer(serverCache), pathPrefixOption)
+	scanHandler := withToken(withWaitGroup(scanServer), token, tokenHeader)
+	mux.Handle(scanServer.PathPrefix(), gziphandler.GzipHandler(scanHandler))
+
+	layerServer := rpcCache.NewCacheServer(NewCacheServer(serverCache), pathPrefixOption)
 	layerHandler := withToken(withWaitGroup(layerServer), token, tokenHeader)
-	mux.Handle(rpcCache.CachePathPrefix, gziphandler.GzipHandler(layerHandler))
+	mux.Handle(layerServer.PathPrefix(), gziphandler.GzipHandler(layerHandler))
 
 	mux.HandleFunc("/healthz", func(rw http.ResponseWriter, r *http.Request) {
 		if _, err := rw.Write([]byte("ok")); err != nil {

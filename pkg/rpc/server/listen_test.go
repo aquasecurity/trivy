@@ -6,6 +6,7 @@ import (
 	"net/http/httptest"
 	"os"
 	"path"
+	"strings"
 	"sync"
 	"testing"
 	"time"
@@ -186,6 +187,7 @@ func Test_newServeMux(t *testing.T) {
 	type args struct {
 		token       string
 		tokenHeader string
+		pathPrefix  string
 	}
 	tests := []struct {
 		name   string
@@ -201,6 +203,17 @@ func Test_newServeMux(t *testing.T) {
 		},
 		{
 			name: "cache endpoint",
+			path: path.Join(rpcCache.CachePathPrefix, "MissingBlobs"),
+			header: http.Header{
+				"Content-Type": []string{"application/protobuf"},
+			},
+			want: http.StatusOK,
+		},
+		{
+			name: "with path prefix",
+			args: args{
+				pathPrefix: "/custom/path/prefix",
+			},
 			path: path.Join(rpcCache.CachePathPrefix, "MissingBlobs"),
 			header: http.Header{
 				"Content-Type": []string{"application/protobuf"},
@@ -250,12 +263,15 @@ func Test_newServeMux(t *testing.T) {
 			defer func() { _ = c.Close() }()
 
 			ts := httptest.NewServer(newServeMux(
-				c, dbUpdateWg, requestWg, tt.args.token, tt.args.tokenHeader),
+				c, dbUpdateWg, requestWg, tt.args.token, tt.args.tokenHeader, tt.args.pathPrefix),
 			)
 			defer ts.Close()
 
 			var resp *http.Response
 			url := ts.URL + tt.path
+			if tt.args.pathPrefix != "" {
+				url = strings.ReplaceAll(url, "/twirp", tt.args.pathPrefix)
+			}
 			if tt.header == nil {
 				resp, err = http.Get(url)
 			} else {

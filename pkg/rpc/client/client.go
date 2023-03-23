@@ -3,6 +3,7 @@ package client
 import (
 	"context"
 	"crypto/tls"
+	"github.com/twitchtv/twirp"
 	"net/http"
 
 	"golang.org/x/xerrors"
@@ -29,6 +30,7 @@ func WithRPCClient(c rpc.Scanner) Option {
 // ScannerOption holds options for RPC client
 type ScannerOption struct {
 	RemoteURL     string
+	PathPrefix    string
 	Insecure      bool
 	CustomHeaders http.Header
 }
@@ -50,7 +52,11 @@ func NewScanner(scannerOptions ScannerOption, opts ...Option) Scanner {
 		},
 	}
 
-	c := rpc.NewScannerProtobufClient(scannerOptions.RemoteURL, httpClient)
+	var pathPrefixOption twirp.ClientOption = func(_ *twirp.ClientOptions) {}
+	if scannerOptions.PathPrefix != "" {
+		pathPrefixOption = twirp.WithClientPathPrefix(scannerOptions.PathPrefix)
+	}
+	c := rpc.NewScannerProtobufClient(scannerOptions.RemoteURL, httpClient, pathPrefixOption)
 
 	o := &options{rpcClient: c}
 	for _, opt := range opts {
