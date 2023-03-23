@@ -16,8 +16,8 @@ func Test_shouldSkipFile(t *testing.T) {
 		{
 			skipFiles: []string{filepath.Join("/etc/*")},
 			skipMap: map[string]bool{
-				filepath.Join("/etc/foo"): true,
-				//filepath.Join("/etc/foo/bar"): false,	// TODO: On windows this is true, on linux/macos it is false
+				filepath.Join("/etc/foo"):     true,
+				filepath.Join("/etc/foo/bar"): false, // TODO: On windows this is true, on linux/macos it is false
 			},
 		},
 		{
@@ -70,8 +70,8 @@ func Test_shouldSkipDir(t *testing.T) {
 		{
 			skipDirs: []string{filepath.Join("/*")},
 			skipMap: map[string]bool{
-				filepath.Join("/etc"): true,
-				//filepath.Join("/etc/foo/bar"): false, // TODO: On windows this is true, on linux/macos it is false
+				filepath.Join("/etc"):         true,
+				filepath.Join("/etc/foo/bar"): false, // TODO: On windows this is true, on linux/macos it is false
 			},
 		},
 		{
