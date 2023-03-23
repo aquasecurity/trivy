@@ -385,6 +385,8 @@ See [here](../sbom/index.md) for the detail.
 ### Discovery
 Trivy can search for Software Bill of Materials (SBOMs) that reference container images.
 If an SBOM is found, the vulnerability scan is performed using the SBOM instead of the container image.
+By using the SBOM, you can perform a vulnerability scan more quickly, as it allows you to skip pulling the container image and analyzing its layers.
+
 To enable this functionality, you need to specify the `--sbom-sources` flag.
 The following two sources are supported:
 
