@@ -193,9 +193,7 @@ func (m *Marshaler) parseFile(filePath, checksum string) (spdx.File2_2, error) {
 	file := spdx.File2_2{
 		FileSPDXIdentifier: spdx.ElementID(fmt.Sprintf("File-%s", pkgID)),
 		FileName:           filePath,
-		FileChecksums: map[spdx.ChecksumAlgorithm]spdx.Checksum{
-			spdx.SHA256: {Algorithm: spdx.SHA256, Value: checksum},
-		},
+		FileChecksums:      checksumToSpdxFileChecksum(checksum),
 	}
 	return file, nil
 }
@@ -442,4 +440,16 @@ func getPackageDownloadLocation(t ftypes.ArtifactType, artifactName string) stri
 		location = fmt.Sprintf("git+%s", artifactName)
 	}
 	return location
+}
+
+func checksumToSpdxFileChecksum(checksum string) map[spdx.ChecksumAlgorithm]spdx.Checksum {
+	if checksum == "" {
+		return nil
+	}
+	return map[spdx.ChecksumAlgorithm]spdx.Checksum{
+		spdx.SHA256: spdx.Checksum{
+			Algorithm: spdx.SHA256,
+			Value:     checksum,
+		},
+	}
 }

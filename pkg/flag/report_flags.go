@@ -226,8 +226,8 @@ func (f *ReportFlagGroup) ToOptions(out io.Writer) (ReportOptions, error) {
 			log.Logger.Infof(`Trivy does not calculate a checksum for spdx formats by default. '` +
 				`Use "--include-checksum" flag to save digests to report`)
 		} else {
-			log.Logger.Infof(`If you scanned before without "--include-checksum" flag - ` +
-				`reset cache with command "trivy image --reset" to include checksum to cache`)
+			log.Logger.Infof(`If you scanned before without "--include-checksum" flag, ` +
+				`then reset cache with command "trivy image --reset" to include checksum to cache`)
 		}
 	} else {
 		if includeChecksum {

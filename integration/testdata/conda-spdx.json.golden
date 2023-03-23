@@ -33,34 +33,15 @@
 		},
 		{
 			"SPDXID": "SPDXRef-Filesystem-6e0ac6a0fab50ab4",
-			"downloadLocation": "NONE",
 			"attributionTexts": [
 				"SchemaVersion: 2"
 			],
+			"downloadLocation": "NONE",
 			"filesAnalyzed": false,
 			"name": "testdata/fixtures/fs/conda"
 		},
 		{
-			"SPDXID": "SPDXRef-Package-2984084f02572600",
-			"downloadLocation": "NONE",
-			"externalRefs": [
-				{
-					"referenceCategory": "PACKAGE-MANAGER",
-					"referenceLocator": "pkg:conda/openssl@1.1.1q",
-					"referenceType": "purl"
-				}
-			],
-			"filesAnalyzed": false,
-			"hasFiles": [
-				"SPDXRef-File-600e5e0110a84891"
-			],
-			"licenseConcluded": "OpenSSL",
-			"licenseDeclared": "OpenSSL",
-			"name": "openssl",
-			"versionInfo": "1.1.1q"
-		},
-		{
-			"SPDXID": "SPDXRef-Package-ac33eb699b3aa81d",
+			"SPDXID": "SPDXRef-Package-3ba7c3963d3b5954",
 			"downloadLocation": "NONE",
 			"externalRefs": [
 				{
@@ -77,6 +58,25 @@
 			"licenseDeclared": "MIT",
 			"name": "pip",
 			"versionInfo": "22.2.2"
+		},
+		{
+			"SPDXID": "SPDXRef-Package-3fe8f51b33a973b6",
+			"downloadLocation": "NONE",
+			"externalRefs": [
+				{
+					"referenceCategory": "PACKAGE-MANAGER",
+					"referenceLocator": "pkg:conda/openssl@1.1.1q",
+					"referenceType": "purl"
+				}
+			],
+			"filesAnalyzed": false,
+			"hasFiles": [
+				"SPDXRef-File-600e5e0110a84891"
+			],
+			"licenseConcluded": "OpenSSL",
+			"licenseDeclared": "OpenSSL",
+			"name": "openssl",
+			"versionInfo": "1.1.1q"
 		}
 	],
 	"relationships": [
@@ -91,12 +91,12 @@
 			"spdxElementId": "SPDXRef-Filesystem-6e0ac6a0fab50ab4"
 		},
 		{
-			"relatedSpdxElement": "SPDXRef-Package-2984084f02572600",
+			"relatedSpdxElement": "SPDXRef-Package-3fe8f51b33a973b6",
 			"relationshipType": "CONTAINS",
 			"spdxElementId": "SPDXRef-Application-ee5ef1aa4ac89125"
 		},
 		{
-			"relatedSpdxElement": "SPDXRef-Package-ac33eb699b3aa81d",
+			"relatedSpdxElement": "SPDXRef-Package-3ba7c3963d3b5954",
 			"relationshipType": "CONTAINS",
 			"spdxElementId": "SPDXRef-Application-ee5ef1aa4ac89125"
 		}

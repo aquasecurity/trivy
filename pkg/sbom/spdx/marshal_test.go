@@ -296,6 +296,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 									DiffID: "sha256:ccb64cf0b7ba2e50741d0b64cae324eb5de3b1e2f580bbf177e721b67df38488",
 								},
 								FilePath: "tools/project-john/specifications/actionpack.gemspec",
+								Checksum: "test_checksum_for_actionpack_7.0.1",
 							},
 							{
 								Name:    "actionpack",
@@ -304,6 +305,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 									DiffID: "sha256:ccb64cf0b7ba2e50741d0b64cae324eb5de3b1e2f580bbf177e721b67df38488",
 								},
 								FilePath: "tools/project-doe/specifications/actionpack.gemspec",
+								Checksum: "test_checksum_for_actionpack_7.0.1",
 							},
 						},
 					},
@@ -381,6 +383,9 @@ func TestMarshaler_Marshal(t *testing.T) {
 							"File-fa42187221d0d0a8": {
 								FileSPDXIdentifier: "File-fa42187221d0d0a8",
 								FileName:           "tools/project-doe/specifications/actionpack.gemspec",
+								FileChecksums: map[spdx.ChecksumAlgorithm]spdx.Checksum{
+									spdx.SHA256: {Algorithm: spdx.SHA256, Value: "test_checksum_for_actionpack_7.0.1"},
+								},
 							},
 						},
 					},
@@ -405,6 +410,9 @@ func TestMarshaler_Marshal(t *testing.T) {
 							"File-6a540784b0dc6d55": {
 								FileSPDXIdentifier: "File-6a540784b0dc6d55",
 								FileName:           "tools/project-john/specifications/actionpack.gemspec",
+								FileChecksums: map[spdx.ChecksumAlgorithm]spdx.Checksum{
+									spdx.SHA256: {Algorithm: spdx.SHA256, Value: "test_checksum_for_actionpack_7.0.1"},
+								},
 							},
 						},
 					},
