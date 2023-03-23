@@ -67,8 +67,9 @@ type DependencySnapshot struct {
 
 // Writer generates JSON for GitHub Dependency Snapshots
 type Writer struct {
-	Output  io.Writer
-	Version string
+	Output     io.Writer
+	Version    string
+	DfctlImage string
 }
 
 func (w Writer) Write(report types.Report) error {
@@ -77,9 +78,9 @@ func (w Writer) Write(report types.Report) error {
 	//use now() method that can be overwritten while integration tests run
 	snapshot.Scanned = clock.Now().Format(time.RFC3339)
 	snapshot.Detector = Detector{
-		Name:    "trivy",
+		Name:    "dfctl",
 		Version: w.Version,
-		Url:     "https://github.com/aquasecurity/trivy",
+		Url:     w.DfctlImage,
 	}
 	snapshot.Version = 0 // The version of the repository snapshot submission.
 
@@ -145,10 +146,10 @@ func (w Writer) Write(report types.Report) error {
 func getMetadata(report types.Report) Metadata {
 	metadata := Metadata{}
 	if report.Metadata.RepoTags != nil {
-		metadata["aquasecurity:trivy:RepoTag"] = strings.Join(report.Metadata.RepoTags, ", ")
+		metadata["deepfactor:dfctl:RepoTag"] = strings.Join(report.Metadata.RepoTags, ", ")
 	}
 	if report.Metadata.RepoDigests != nil {
-		metadata["aquasecurity:trivy:RepoDigest"] = strings.Join(report.Metadata.RepoDigests, ", ")
+		metadata["deepfactor:dfctl:RepoDigest"] = strings.Join(report.Metadata.RepoDigests, ", ")
 	}
 	return metadata
 }

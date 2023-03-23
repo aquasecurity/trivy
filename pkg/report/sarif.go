@@ -45,6 +45,7 @@ type SarifWriter struct {
 	Version       string
 	run           *sarif.Run
 	locationCache map[string][]location
+	ScannerImage  string
 }
 
 type sarifData struct {
@@ -123,9 +124,9 @@ func (sw SarifWriter) Write(report types.Report) error {
 	if err != nil {
 		return xerrors.Errorf("error creating a new sarif template: %w", err)
 	}
-	sw.run = sarif.NewRunWithInformationURI("Trivy", "https://github.com/aquasecurity/trivy")
+	sw.run = sarif.NewRunWithInformationURI("Dfctl", sw.ScannerImage)
 	sw.run.Tool.Driver.WithVersion(sw.Version)
-	sw.run.Tool.Driver.WithFullName("Trivy Vulnerability Scanner")
+	sw.run.Tool.Driver.WithFullName("Dfctl Scanner")
 	sw.locationCache = map[string][]location{}
 
 	ruleIndexes := map[string]int{}
