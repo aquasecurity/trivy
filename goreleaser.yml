@@ -254,19 +254,6 @@ docker_manifests:
     - 'public.ecr.aws/aquasecurity/trivy:{{ .Version }}-ppc64le'
 
 signs:
-- id: "gpg signing"
-  artifacts: all
-  signature: "${artifact}.gpg.sig"
-  args:
-    - "--batch"
-    - "-u"
-    - "{{ .Env.GPG_FINGERPRINT }}"
-    - "--output"
-    - "${signature}"
-    - "--detach-sign"
-    - "${artifact}"
-  output: true
-  stdin: '{{ .Env.GPG_PASSPHRASE }}'
 - cmd: cosign
   env:
   - COSIGN_EXPERIMENTAL=1

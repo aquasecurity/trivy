@@ -75,13 +75,6 @@ jobs:
           args: mod -licenses -json -output bom.json
           version: ^v1
 
-      - name: Import GPG key
-        id: import_gpg
-        uses: crazy-max/ghaction-import-gpg@v5
-        with:
-          gpg_private_key: ${{ secrets.GPG_KEY }}
-          passphrase: ${{ secrets.GPG_PASSPHRASE }}
-
       - name: "save gpg key"
         env:
           GPG_KEY: ${{ secrets.GPG_KEY }}
@@ -95,8 +88,6 @@ jobs:
           args: release -f=${{ inputs.goreleaser_config}} ${{ inputs.goreleaser_options}}
         env:
           GITHUB_TOKEN: ${{ secrets.ORG_REPO_TOKEN }}
-          GPG_FINGERPRINT: ${{ steps.import_gpg.outputs.fingerprint }}
-          GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
           NFPM_DEFAULT_RPM_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
           GPG_FILE: "gpg.txt"
 
