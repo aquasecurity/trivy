@@ -131,99 +131,26 @@ func addHelmOpts(opts []options.ScannerOption, scannerOption config.ScannerOptio
 	return opts
 }
 
-// for a given set of paths, find the most specific filesystem path that contains all the descendants
-// the function also returns a filtered version of the input paths that are compatible with a fs.FS
-// using the resultant target path. This means they will always use "/" as a separator
-func findFSTarget(paths []string) (string, []string, error) {
-	if len(paths) == 0 {
-		return "", nil, xerrors.New("must specify at least one path")
-	}
-
-	var absPaths []string
-	var minSegmentCount int
-	for _, relPath := range paths {
-		abs, err := filepath.Abs(relPath)
-		if err != nil {
-			return "", nil, xerrors.Errorf("failed to derive absolute path from '%s': %w", relPath, err)
-		}
-		count := len(strings.Split(filepath.ToSlash(abs), "/"))
-		if count < minSegmentCount || minSegmentCount == 0 {
-			minSegmentCount = count
-		}
-		absPaths = append(absPaths, abs)
-	}
-
-	var outputSegments []string
-	for i := 0; i < minSegmentCount; i++ {
-		required := strings.Split(absPaths[0], string(filepath.Separator))[i]
-		match := true
-		for _, path := range absPaths[1:] {
-			actual := strings.Split(path, string(filepath.Separator))[i]
-			if required != actual {
-				match = false
-				break
-			}
-		}
-		if !match {
-			break
-		}
-		outputSegments = append(outputSegments, required)
-	}
-
-	slashTarget := strings.Join(outputSegments, "/")
-	if slashTarget == "" {
-		slashTarget = string(filepath.Separator)
-	}
-
-	var cleanPaths []string
-	for _, path := range absPaths {
-		path := filepath.ToSlash(path)
-		path = strings.TrimPrefix(path, slashTarget)
-		path = strings.TrimPrefix(path, "/")
-		if path == "" {
-			path = "."
-		}
-		cleanPaths = append(cleanPaths, path)
-	}
-
-	// we don't use filepath.Join here as we need to maintain the root "/"
-	target := strings.Join(outputSegments, string(filepath.Separator))
-	if target == "" || filepath.VolumeName(target) == target {
-		target += string(filepath.Separator)
-	}
-	return target, cleanPaths, nil
-}
-
 func createPolicyFS(policyPaths []string) (fs.FS, []string, error) {
 	if len(policyPaths) == 0 {
 		return nil, nil, nil
 	}
-	var outsideCWD bool
-	for _, path := range policyPaths {
-		if strings.Contains(path, "..") || strings.HasPrefix(path, "/") || (len(path) > 1 && path[1] == ':') {
-			outsideCWD = true
-			break
-		}
-	}
-	// all policy paths are inside the CWD, so create a filesystem from CWD to load from
-	if !outsideCWD {
-		cwd, err := os.Getwd()
+
+	mfs := mapfs.New()
+	for _, p := range policyPaths {
+		abs, err := filepath.Abs(p)
 		if err != nil {
-			return nil, nil, err
+			return nil, nil, xerrors.Errorf("failed to derive absolute path from '%s': %w", p, err)
 		}
-		var cleanPaths []string
-		for _, path := range policyPaths {
-			cleanPaths = append(cleanPaths, filepath.Clean(path))
+		if err = mfs.CopyFilesUnder(abs); err != nil {
+			return nil, nil, xerrors.Errorf("mapfs file copy error: %w", err)
 		}
-		return os.DirFS(cwd), cleanPaths, nil
 	}
 
-	target, cleanPaths, err := findFSTarget(policyPaths)
-	if err != nil {
-		return nil, nil, err
-	}
+	// policy paths are no longer needed as fs.FS contains only needed files now.
+	policyPaths = []string{"."}
 
-	return os.DirFS(target), cleanPaths, nil
+	return mfs, policyPaths, nil
 }
 
 func createDataFS(dataPaths []string, k8sVersion string) (fs.FS, []string, error) {
