@@ -21,7 +21,7 @@ import (
 const (
 	// Artifact types
 	CycloneDXArtifactType = "application/vnd.cyclonedx+json"
-	SPDXArtifactType      = "application/vnd.spdx+json"
+	SPDXArtifactType      = "application/spdx+json"
 
 	// Media types
 	OCIImageManifest = "application/vnd.oci.image.manifest.v1+json"
