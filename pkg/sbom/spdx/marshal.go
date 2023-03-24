@@ -171,7 +171,7 @@ func (m *Marshaler) Marshal(r types.Report) (*spdx.Document2_2, error) {
 			DocumentNamespace:    getDocumentNamespace(r, m),
 			CreatorOrganizations: []string{CreatorOrganization},
 			CreatorTools:         []string{CreatorTool},
-			Created:              m.clock.Now().UTC().Format(time.RFC3339Nano),
+			Created:              m.clock.Now().UTC().Format(time.RFC3339),
 		},
 		Packages:      packages,
 		Relationships: relationShips,
