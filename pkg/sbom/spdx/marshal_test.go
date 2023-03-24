@@ -182,7 +182,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 						PackageSPDXIdentifier:   spdx.ElementID("Package-fd0dc3cf913d5bc3"),
 						PackageDownloadLocation: "NONE",
 						PackageName:             "binutils",
-						PackageVersion:          "2.30",
+						PackageVersion:          "2.30-93.el8",
 						PackageLicenseConcluded: "GPL-3.0-or-later",
 						PackageLicenseDeclared:  "GPL-3.0-or-later",
 						PackageExternalReferences: []*spdx.PackageExternalReference2_2{
@@ -348,7 +348,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 						PackageSPDXIdentifier:   spdx.ElementID("Package-d8dccb186bafaf37"),
 						PackageDownloadLocation: "NONE",
 						PackageName:             "acl",
-						PackageVersion:          "2.2.53",
+						PackageVersion:          "1:2.2.53-1.el8",
 						PackageLicenseConcluded: "GPL-2.0-or-later",
 						PackageLicenseDeclared:  "GPL-2.0-or-later",
 						PackageExternalReferences: []*spdx.PackageExternalReference2_2{
