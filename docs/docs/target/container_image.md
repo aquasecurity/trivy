@@ -407,7 +407,7 @@ ghcr.io/knqyf263/oci-referrers (alpine 3.16.2)
 Total: 17 (UNKNOWN: 0, LOW: 0, MEDIUM: 5, HIGH: 9, CRITICAL: 3)
 ```
 
-The OCI Registry utilizes the Referrers API (https://github.com/opencontainers/distribution-spec/blob/main/spec.md#listing-referrers).
+The OCI Registry utilizes the [Referrers API](https://github.com/opencontainers/distribution-spec/blob/main/spec.md#listing-referrers).
 For more information about Rekor, please refer to [its documentation](../attestation/rekor.md).
 
 ## Compliance
