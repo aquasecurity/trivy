@@ -302,7 +302,7 @@ func (m *Marshaler) pkgToSpdxPackage(t, pkgDownloadLocation string, class types.
 
 	return spdx.Package2_2{
 		PackageName:             pkg.Name,
-		PackageVersion:          pkg.Version,
+		PackageVersion:          utils.FormatVersion(pkg),
 		PackageSPDXIdentifier:   elementID(ElementPackage, pkgID),
 		PackageDownloadLocation: pkgDownloadLocation,
 		PackageSourceInfo:       pkgSrcInfo,
