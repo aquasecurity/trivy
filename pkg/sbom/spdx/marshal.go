@@ -28,7 +28,7 @@ const (
 )
 
 const (
-	CategoryPackageManager = "PACKAGE_MANAGER"
+	CategoryPackageManager = "PACKAGE-MANAGER"
 	RefTypePurl            = "purl"
 
 	PropertySchemaVersion = "SchemaVersion"
