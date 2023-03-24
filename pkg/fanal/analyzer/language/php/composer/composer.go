@@ -10,6 +10,7 @@ import (
 	"sort"
 	"strings"
 
+	"golang.org/x/exp/slices"
 	"golang.org/x/xerrors"
 
 	dio "github.com/aquasecurity/go-dep-parser/pkg/io"
@@ -27,6 +28,11 @@ func init() {
 }
 
 const version = 1
+
+var requiredFiles = []string{
+	types.ComposerLock,
+	types.ComposerJson,
+}
 
 type composerAnalyzer struct {
 	lockParser godeptypes.Parser
@@ -58,9 +64,7 @@ func (a composerAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAnal
 		if err = a.mergeComposerJson(input.FS, filepath.Dir(path), app); err != nil {
 			return err
 		}
-		sort.Slice(app.Libraries, func(i, j int) bool {
-			return app.Libraries[i].ID < app.Libraries[j].ID
-		})
+		sort.Sort(types.Packages(app.Libraries))
 		apps = append(apps, *app)
 
 		return nil
@@ -76,7 +80,7 @@ func (a composerAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAnal
 
 func (a composerAnalyzer) Required(filePath string, _ os.FileInfo) bool {
 	fileName := filepath.Base(filePath)
-	if fileName != types.ComposerLock && fileName != types.ComposerJson {
+	if !slices.Contains(requiredFiles, fileName) {
 		return false
 	}
 
@@ -142,7 +146,7 @@ func (a composerAnalyzer) parseComposerJson(fsys fs.FS, path string) (map[string
 	jsonFile := composerJson{}
 	err = json.NewDecoder(f).Decode(&jsonFile)
 	if err != nil {
-		return nil, err
+		return nil, xerrors.Errorf("json decode error: %w", err)
 	}
 	return jsonFile.Require, nil
 }
