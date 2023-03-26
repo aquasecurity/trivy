@@ -1,9 +1,11 @@
 package flag
 
 import (
-	"github.com/aquasecurity/trivy/pkg/fanal/types"
-	"golang.org/x/xerrors"
 	"strings"
+
+	"golang.org/x/xerrors"
+
+	"github.com/aquasecurity/trivy/pkg/fanal/types"
 )
 
 var (
