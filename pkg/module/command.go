@@ -22,7 +22,7 @@ func Install(ctx context.Context, dir, repo string, quiet, insecure bool) error 
 	}
 
 	log.Logger.Infof("Installing the module from %s...", repo)
-	artifact, err := oci.NewArtifact(repo, mediaType, quiet, insecure)
+	artifact, err := oci.NewArtifact(repo, mediaType, "", quiet, insecure)
 	if err != nil {
 		return xerrors.Errorf("module initialize error: %w", err)
 	}
