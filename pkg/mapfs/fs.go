@@ -5,6 +5,7 @@ import (
 	"io/fs"
 	"os"
 	"path/filepath"
+	"strings"
 	"time"
 
 	"golang.org/x/exp/slices"
@@ -186,7 +187,14 @@ func (m *FS) RemoveAll(path string) error {
 }
 
 func cleanPath(path string) string {
+	// Return if the file path is a volume name only.
+	// Otherwise, `filepath.Clean` changes "C:" to "C:." and
+	// it will no longer match the pathname held by mapfs.
+	if path == filepath.VolumeName(path) {
+		return path
+	}
 	path = filepath.Clean(path)
 	path = filepath.ToSlash(path)
+	path = strings.TrimLeft(path, "/") // Remove the leading slash
 	return path
 }

@@ -8,13 +8,13 @@ import (
 	"golang.org/x/xerrors"
 
 	dio "github.com/aquasecurity/go-dep-parser/pkg/io"
-	"github.com/aquasecurity/memoryfs"
+	"github.com/aquasecurity/trivy/pkg/mapfs"
 )
 
-// memFS is a wrapper of memoryfs.FS and can change its underlying file system
+// memFS is a wrapper of mapfs.FS and can change its underlying file system
 // at runtime. This implements fs.FS.
 type memFS struct {
-	current *memoryfs.FS
+	current *mapfs.FS
 }
 
 // Open implements fs.FS.
@@ -29,18 +29,20 @@ func (m *memFS) Open(name string) (fs.File, error) {
 //
 // Note: it is always to safe swap the underlying FS with this API since this is called only at the beginning of
 // Analyze interface call, which is not concurrently called per module instance.
-func (m *memFS) initialize(filePath string, content dio.ReadSeekerAt) (err error) {
-	memfs := memoryfs.New()
-	if err = memfs.MkdirAll(filepath.Dir(filePath), fs.ModePerm); err != nil {
-		return xerrors.Errorf("memory fs mkdir error: %w", err)
+func (m *memFS) initialize(filePath string, content dio.ReadSeekerAt) error {
+	mfs := mapfs.New()
+	if err := mfs.MkdirAll(filepath.Dir(filePath), fs.ModePerm); err != nil {
+		return xerrors.Errorf("mapfs mkdir error: %w", err)
 	}
-	err = memfs.WriteLazyFile(filePath, func() (io.Reader, error) {
-		return content, nil
-	}, fs.ModePerm)
+	b, err := io.ReadAll(content)
 	if err != nil {
-		return xerrors.Errorf("memory fs write error: %w", err)
+		return xerrors.Errorf("read error: %w", err)
+	}
+	err = mfs.WriteVirtualFile(filePath, b, fs.ModePerm)
+	if err != nil {
+		return xerrors.Errorf("mapfs write error: %w", err)
 	}
 
-	m.current = memfs
-	return
+	m.current = mfs
+	return nil
 }

@@ -208,7 +208,8 @@ func TestClient_Download(t *testing.T) {
 						Size:      100,
 						Digest: v1.Hash{
 							Algorithm: "sha256",
-							Hex:       "aec482bc254b5dd025d3eaf5bb35997d3dba783e394e8f91d5a415963151bfb8"},
+							Hex:       "aec482bc254b5dd025d3eaf5bb35997d3dba783e394e8f91d5a415963151bfb8",
+						},
 						Annotations: map[string]string{
 							"org.opencontainers.image.title": "db.tar.gz",
 						},
@@ -217,7 +218,7 @@ func TestClient_Download(t *testing.T) {
 			}, nil)
 
 			// Mock OCI artifact
-			art, err := oci.NewArtifact("db", mediaType, true, false, oci.WithImage(img))
+			art, err := oci.NewArtifact("db", mediaType, "", true, false, oci.WithImage(img))
 			require.NoError(t, err)
 
 			client := db.NewClient(cacheDir, true, false, db.WithOCIArtifact(art), db.WithClock(timeDownloadedAt))

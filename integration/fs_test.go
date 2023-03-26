@@ -65,13 +65,13 @@ func TestFilesystem(t *testing.T) {
 			golden: "testdata/gomod-skip.json.golden",
 		},
 		{
-			name: "nodejs",
+			name: "npm",
 			args: args{
 				scanner:     types.VulnerabilityScanner,
-				input:       "testdata/fixtures/fs/nodejs",
+				input:       "testdata/fixtures/fs/npm",
 				listAllPkgs: true,
 			},
-			golden: "testdata/nodejs.json.golden",
+			golden: "testdata/npm.json.golden",
 		},
 		{
 			name: "yarn",
@@ -186,6 +186,15 @@ func TestFilesystem(t *testing.T) {
 				input:       "testdata/fixtures/fs/mixlock",
 			},
 			golden: "testdata/mix.lock.json.golden",
+		},
+		{
+			name: "composer.lock",
+			args: args{
+				scanner:     types.VulnerabilityScanner,
+				listAllPkgs: true,
+				input:       "testdata/fixtures/fs/composer",
+			},
+			golden: "testdata/composer.lock.json.golden",
 		},
 		{
 			name: "dockerfile",

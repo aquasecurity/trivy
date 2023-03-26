@@ -25,7 +25,8 @@ timeout: 10m
 
 # Same as '--cache-dir'
 # Default is your system cache dir
-cache-dir: $HOME/.cache/trivy
+cache:
+  dir: $HOME/.cache/trivy
 ```
 
 ## Report Options

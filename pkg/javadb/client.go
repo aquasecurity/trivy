@@ -42,7 +42,7 @@ func (u *Updater) Update() error {
 			return xerrors.Errorf("Java DB metadata error: %w", err)
 		} else if u.skip {
 			log.Logger.Error("The first run cannot skip downloading Java DB")
-			return xerrors.New("'--skip-java-update' cannot be specified on the first run")
+			return xerrors.New("'--skip-java-db-update' cannot be specified on the first run")
 		}
 	}
 
@@ -52,7 +52,7 @@ func (u *Updater) Update() error {
 		log.Logger.Info("Downloading the Java DB...")
 
 		var a *oci.Artifact
-		if a, err = oci.NewArtifact(u.repo, mediaType, u.quiet, u.insecure); err != nil {
+		if a, err = oci.NewArtifact(u.repo, mediaType, "", u.quiet, u.insecure); err != nil {
 			return xerrors.Errorf("oci error: %w", err)
 		}
 		if err = a.Download(context.Background(), dbDir); err != nil {

@@ -4,7 +4,7 @@ SPDXID: SPDXRef-DOCUMENT
 DocumentName: integration/testdata/fixtures/images/centos-7.tar.gz
 DocumentNamespace: http://aquasecurity.github.io/trivy/container_image/integration/testdata/fixtures/images/centos-7.tar.gz-6a2c050f-bc12-46dc-b2df-1f4e3e0b5e1d
 Creator: Organization: aquasecurity
-Creator: Tool: trivy
+Creator: Tool: trivy-dev
 Created: 2022-09-13T13:24:58.796907Z
 
 ##### Package: integration/testdata/fixtures/images/centos-7.tar.gz

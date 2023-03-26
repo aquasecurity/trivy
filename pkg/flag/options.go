@@ -394,7 +394,10 @@ func (f *Flags) ToOptions(appVersion string, args []string, globalFlags *GlobalF
 	}
 
 	if f.K8sFlagGroup != nil {
-		opts.K8sOptions = f.K8sFlagGroup.ToOptions()
+		opts.K8sOptions, err = f.K8sFlagGroup.ToOptions()
+		if err != nil {
+			return Options{}, xerrors.Errorf("k8s flag error: %w", err)
+		}
 	}
 
 	if f.LicenseFlagGroup != nil {

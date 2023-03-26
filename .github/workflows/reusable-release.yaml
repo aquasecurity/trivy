@@ -75,6 +75,12 @@ jobs:
           args: mod -licenses -json -output bom.json
           version: ^v1
 
+      - name: "save gpg key"
+        env:
+          GPG_KEY: ${{ secrets.GPG_KEY }}
+        run: |
+          echo "$GPG_KEY" > gpg.txt
+
       - name: GoReleaser
         uses: goreleaser/goreleaser-action@v4
         with:
@@ -82,6 +88,12 @@ jobs:
           args: release -f=${{ inputs.goreleaser_config}} ${{ inputs.goreleaser_options}}
         env:
           GITHUB_TOKEN: ${{ secrets.ORG_REPO_TOKEN }}
+          NFPM_DEFAULT_RPM_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
+          GPG_FILE: "gpg.txt"
+
+      - name: "remove gpg key"
+        run: |
+          rm gpg.txt
 
       ## push images to registries
       ## only for canary build
@@ -99,7 +111,7 @@ jobs:
             public.ecr.aws/aquasecurity/trivy:canary
 
       - name: Cache Trivy binaries
-        uses: actions/cache@v3.2.4
+        uses: actions/cache@v3.2.6
         with:
           path: dist/
           # use 'github.sha' to create a unique cache folder for each run.
