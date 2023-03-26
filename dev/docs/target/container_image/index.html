@@ -1079,9 +1079,29 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#sbom-generation" class="md-nav__link">
-    SBOM generation
+  <a href="#sbom" class="md-nav__link">
+    SBOM
   </a>
+  
+    <nav class="md-nav" aria-label="SBOM">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#generation" class="md-nav__link">
+    Generation
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#discovery" class="md-nav__link">
+    Discovery
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -3436,9 +3456,29 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#sbom-generation" class="md-nav__link">
-    SBOM generation
+  <a href="#sbom" class="md-nav__link">
+    SBOM
   </a>
+  
+    <nav class="md-nav" aria-label="SBOM">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#generation" class="md-nav__link">
+    Generation
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#discovery" class="md-nav__link">
+    Discovery
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -3815,9 +3855,34 @@ $ trivy image --input /path/to/alpine
 <div class="highlight"><pre><span></span><code>$ skopeo copy docker-daemon:alpine:3.11 oci:/path/to/alpine
 $ trivy image --input /path/to/alpine
 </code></pre></div>
-<h2 id="sbom-generation">SBOM generation</h2>
+<h2 id="sbom">SBOM</h2>
+<p>Trivy supports the generation of Software Bill of Materials (SBOM) for container images and the search for SBOMs during vulnerability scanning.</p>
+<h3 id="generation">Generation</h3>
 <p>Trivy can generate SBOM for container images.
 See <a href="../../sbom/">here</a> for the detail.</p>
+<h3 id="discovery">Discovery</h3>
+<p>Trivy can search for Software Bill of Materials (SBOMs) that reference container images.
+If an SBOM is found, the vulnerability scan is performed using the SBOM instead of the container image.
+By using the SBOM, you can perform a vulnerability scan more quickly, as it allows you to skip pulling the container image and analyzing its layers.</p>
+<p>To enable this functionality, you need to specify the <code>--sbom-sources</code> flag.
+The following two sources are supported:</p>
+<ul>
+<li>OCI Registry (<code>oci</code>)</li>
+<li>Rekor (<code>rekor</code>)</li>
+</ul>
+<p>Example:</p>
+<div class="highlight"><pre><span></span><code>$ trivy image --sbom-sources oci ghcr.io/knqyf263/oci-referrers
+<span class="m">2023</span>-03-05T17:36:55.278+0200    INFO    Vulnerability scanning is enabled
+<span class="m">2023</span>-03-05T17:36:58.103+0200    INFO    Detected SBOM format: cyclonedx-json
+<span class="m">2023</span>-03-05T17:36:58.129+0200    INFO    Found SBOM <span class="o">(</span>cyclonedx<span class="o">)</span> <span class="k">in</span> the OCI referrers
+...
+
+ghcr.io/knqyf263/oci-referrers <span class="o">(</span>alpine <span class="m">3</span>.16.2<span class="o">)</span>
+<span class="o">==============================================</span>
+Total: <span class="m">17</span> <span class="o">(</span>UNKNOWN: <span class="m">0</span>, LOW: <span class="m">0</span>, MEDIUM: <span class="m">5</span>, HIGH: <span class="m">9</span>, CRITICAL: <span class="m">3</span><span class="o">)</span>
+</code></pre></div>
+<p>The OCI Registry utilizes the <a href="https://github.com/opencontainers/distribution-spec/blob/main/spec.md#listing-referrers">Referrers API</a>.
+For more information about Rekor, please refer to <a href="../../attestation/rekor/">its documentation</a>.</p>
 <h2 id="compliance">Compliance</h2>
 <div class="admonition warning">
 <p class="admonition-title">EXPERIMENTAL</p>
