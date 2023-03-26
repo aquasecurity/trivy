@@ -1,6 +1,7 @@
 package flag
 
 import (
+	"os"
 	"time"
 
 	"github.com/spf13/cobra"
@@ -45,7 +46,7 @@ var (
 		Name:       "insecure",
 		ConfigName: "insecure",
 		Value:      false,
-		Usage:      "allow insecure server connections when using TLS",
+		Usage:      "allow insecure server connections",
 		Persistent: true,
 	}
 	TimeoutFlag = Flag{
@@ -137,12 +138,15 @@ func (f *GlobalFlagGroup) Bind(cmd *cobra.Command) error {
 }
 
 func (f *GlobalFlagGroup) ToOptions() GlobalOptions {
+	// Keep TRIVY_NON_SSL for backward compatibility
+	insecure := getBool(f.Insecure) || os.Getenv("TRIVY_NON_SSL") != ""
+
 	return GlobalOptions{
 		ConfigFile:            getString(f.ConfigFile),
 		ShowVersion:           getBool(f.ShowVersion),
 		Quiet:                 getBool(f.Quiet),
 		Debug:                 getBool(f.Debug),
-		Insecure:              getBool(f.Insecure),
+		Insecure:              insecure,
 		Timeout:               getDuration(f.Timeout),
 		CacheDir:              getString(f.CacheDir),
 		GenerateDefaultConfig: getBool(f.GenerateDefaultConfig),
