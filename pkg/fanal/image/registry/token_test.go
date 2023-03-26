@@ -1,4 +1,4 @@
-package token
+package registry
 
 import (
 	"context"
@@ -14,7 +14,7 @@ import (
 func TestGetToken(t *testing.T) {
 	type args struct {
 		domain string
-		opt    types.DockerOption
+		opt    types.RemoteOptions
 	}
 	tests := []struct {
 		name     string
@@ -32,9 +32,13 @@ func TestGetToken(t *testing.T) {
 			name: "happy path with a credential",
 			args: args{
 				domain: "docker.io",
-				opt: types.DockerOption{
-					UserName: "user",
-					Password: "pass",
+				opt: types.RemoteOptions{
+					Credentials: []types.Credential{
+						{
+							Username: "user",
+							Password: "pass",
+						},
+					},
 				},
 			},
 			wantAuth: authn.Basic{

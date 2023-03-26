@@ -1,15 +1,14 @@
-package token
+package registry
 
 import (
 	"context"
-
+	"github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/google/go-containerregistry/pkg/authn"
 
-	"github.com/aquasecurity/trivy/pkg/fanal/image/token/azure"
-	"github.com/aquasecurity/trivy/pkg/fanal/image/token/ecr"
-	"github.com/aquasecurity/trivy/pkg/fanal/image/token/google"
+	"github.com/aquasecurity/trivy/pkg/fanal/image/registry/azure"
+	"github.com/aquasecurity/trivy/pkg/fanal/image/registry/ecr"
+	"github.com/aquasecurity/trivy/pkg/fanal/image/registry/google"
 	"github.com/aquasecurity/trivy/pkg/fanal/log"
-	"github.com/aquasecurity/trivy/pkg/fanal/types"
 )
 
 var (
@@ -23,7 +22,7 @@ func init() {
 }
 
 type Registry interface {
-	CheckOptions(domain string, option types.DockerOption) error
+	CheckOptions(domain string, option types.RemoteOptions) error
 	GetCredential(ctx context.Context) (string, string, error)
 }
 
@@ -31,11 +30,7 @@ func RegisterRegistry(registry Registry) {
 	registries = append(registries, registry)
 }
 
-func GetToken(ctx context.Context, domain string, opt types.DockerOption) (auth authn.Basic) {
-	if opt.UserName != "" || opt.Password != "" {
-		return authn.Basic{Username: opt.UserName, Password: opt.Password}
-	}
-
+func GetToken(ctx context.Context, domain string, opt types.RemoteOptions) (auth authn.Basic) {
 	// check registry which particular to get credential
 	for _, registry := range registries {
 		err := registry.CheckOptions(domain, opt)
@@ -48,7 +43,10 @@ func GetToken(ctx context.Context, domain string, opt types.DockerOption) (auth 
 			log.Logger.Debug(err)
 			break
 		}
-		return authn.Basic{Username: username, Password: password}
+		return authn.Basic{
+			Username: username,
+			Password: password,
+		}
 	}
 	return authn.Basic{}
 }
