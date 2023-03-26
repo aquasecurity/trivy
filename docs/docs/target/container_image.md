@@ -375,9 +375,40 @@ $ skopeo copy docker-daemon:alpine:3.11 oci:/path/to/alpine
 $ trivy image --input /path/to/alpine
 ```
 
-## SBOM generation
+## SBOM
+Trivy supports the generation of Software Bill of Materials (SBOM) for container images and the search for SBOMs during vulnerability scanning.
+
+### Generation
 Trivy can generate SBOM for container images.
 See [here](../sbom/index.md) for the detail.
+
+### Discovery
+Trivy can search for Software Bill of Materials (SBOMs) that reference container images.
+If an SBOM is found, the vulnerability scan is performed using the SBOM instead of the container image.
+By using the SBOM, you can perform a vulnerability scan more quickly, as it allows you to skip pulling the container image and analyzing its layers.
+
+To enable this functionality, you need to specify the `--sbom-sources` flag.
+The following two sources are supported:
+
+- OCI Registry (`oci`)
+- Rekor (`rekor`)
+
+Example:
+
+```bash
+$ trivy image --sbom-sources oci ghcr.io/knqyf263/oci-referrers
+2023-03-05T17:36:55.278+0200    INFO    Vulnerability scanning is enabled
+2023-03-05T17:36:58.103+0200    INFO    Detected SBOM format: cyclonedx-json
+2023-03-05T17:36:58.129+0200    INFO    Found SBOM (cyclonedx) in the OCI referrers
+...
+
+ghcr.io/knqyf263/oci-referrers (alpine 3.16.2)
+==============================================
+Total: 17 (UNKNOWN: 0, LOW: 0, MEDIUM: 5, HIGH: 9, CRITICAL: 3)
+```
+
+The OCI Registry utilizes the [Referrers API](https://github.com/opencontainers/distribution-spec/blob/main/spec.md#listing-referrers).
+For more information about Rekor, please refer to [its documentation](../attestation/rekor.md).
 
 ## Compliance
 

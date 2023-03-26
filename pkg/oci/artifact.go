@@ -18,7 +18,22 @@ import (
 	"github.com/aquasecurity/trivy/pkg/downloader"
 )
 
-const titleAnnotation = "org.opencontainers.image.title"
+const (
+	// Artifact types
+	CycloneDXArtifactType = "application/vnd.cyclonedx+json"
+	SPDXArtifactType      = "application/spdx+json"
+
+	// Media types
+	OCIImageManifest = "application/vnd.oci.image.manifest.v1+json"
+
+	// Annotations
+	titleAnnotation = "org.opencontainers.image.title"
+)
+
+var SupportedSBOMArtifactTypes = []string{
+	CycloneDXArtifactType,
+	SPDXArtifactType,
+}
 
 type options struct {
 	img v1.Image
@@ -43,7 +58,7 @@ type Artifact struct {
 }
 
 // NewArtifact returns a new artifact
-func NewArtifact(repo, mediaType string, quiet, insecure bool, opts ...Option) (*Artifact, error) {
+func NewArtifact(repo, mediaType, fileName string, quiet, insecure bool, opts ...Option) (*Artifact, error) {
 	o := &options{}
 
 	for _, opt := range opts {
@@ -89,10 +104,13 @@ func NewArtifact(repo, mediaType string, quiet, insecure bool, opts ...Option) (
 	// Take the first layer
 	layer := layers[0]
 
-	// Take the file name of the first layer
-	fileName, ok := manifest.Layers[0].Annotations[titleAnnotation]
-	if !ok {
-		return nil, xerrors.Errorf("annotation %s is missing", titleAnnotation)
+	// Take the file name of the first layer if not specified
+	if fileName == "" {
+		if v, ok := manifest.Layers[0].Annotations[titleAnnotation]; !ok {
+			return nil, xerrors.Errorf("annotation %s is missing", titleAnnotation)
+		} else {
+			fileName = v
+		}
 	}
 
 	layerMediaType, err := layer.MediaType()
