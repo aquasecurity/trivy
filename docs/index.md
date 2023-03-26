@@ -58,7 +58,7 @@ Trivy is integrated with many popular platforms and applications. The complete l
 ### General usage
 
 ```bash
-trivy <target> [--security-checks <scanner1,scanner2>] <subject>
+trivy <target> [--scanners <scanner1,scanner2>] <subject>
 ```
 
 Examples:
@@ -80,7 +80,7 @@ trivy image python:3.4-alpine
 </details>
 
 ```bash
-trivy fs --security-checks vuln,secret,config myproject/
+trivy fs --scanners vuln,secret,config myproject/
 ```
 
 <details>
@@ -108,13 +108,6 @@ trivy k8s --report summary cluster
 </figure>
 
 </details>
-
-## FAQ
-
-### How to pronounce the name "Trivy"?
-
-`tri` is pronounced like **tri**gger, `vy` is pronounced like en**vy**.
-
 ---
 
 Trivy is an [Aqua Security][aquasec] open source project.  

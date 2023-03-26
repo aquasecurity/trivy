@@ -80,7 +80,7 @@ func NewClient(cacheDir string, quiet bool, opts ...Option) (*Client, error) {
 func (c *Client) populateOCIArtifact() error {
 	if c.artifact == nil {
 		repo := fmt.Sprintf("%s:%d", bundleRepository, bundleVersion)
-		art, err := oci.NewArtifact(repo, policyMediaType, c.quiet, c.insecure)
+		art, err := oci.NewArtifact(repo, policyMediaType, "", c.quiet, c.insecure)
 		if err != nil {
 			return xerrors.Errorf("OCI artifact error: %w", err)
 		}
@@ -143,16 +143,8 @@ func (c *Client) LoadBuiltinPolicies() ([]string, error) {
 
 // NeedsUpdate returns if the default policy should be updated
 func (c *Client) NeedsUpdate() (bool, error) {
-	f, err := os.Open(c.metadataPath())
+	meta, err := c.GetMetadata()
 	if err != nil {
-		log.Logger.Debugf("Failed to open the policy metadata: %s", err)
-		return true, nil
-	}
-	defer f.Close()
-
-	var meta Metadata
-	if err = json.NewDecoder(f).Decode(&meta); err != nil {
-		log.Logger.Warnf("Policy metadata decode error: %s", err)
 		return true, nil
 	}
 
@@ -213,4 +205,21 @@ func (c *Client) updateMetadata(digest string, now time.Time) error {
 	}
 
 	return nil
+}
+
+func (c *Client) GetMetadata() (*Metadata, error) {
+	f, err := os.Open(c.metadataPath())
+	if err != nil {
+		log.Logger.Debugf("Failed to open the policy metadata: %s", err)
+		return nil, err
+	}
+	defer f.Close()
+
+	var meta Metadata
+	if err = json.NewDecoder(f).Decode(&meta); err != nil {
+		log.Logger.Warnf("Policy metadata decode error: %s", err)
+		return nil, err
+	}
+
+	return &meta, nil
 }

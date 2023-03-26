@@ -2,10 +2,7 @@ package scanner
 
 import (
 	"context"
-	"io"
 
-	"github.com/cheggaaa/pb/v3"
-	"golang.org/x/exp/slices"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy-kubernetes/pkg/artifacts"
@@ -13,6 +10,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/flag"
 	"github.com/aquasecurity/trivy/pkg/k8s/report"
 	"github.com/aquasecurity/trivy/pkg/log"
+	"github.com/aquasecurity/trivy/pkg/parallel"
 	"github.com/aquasecurity/trivy/pkg/scanner/local"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
@@ -24,18 +22,14 @@ type Scanner struct {
 }
 
 func NewScanner(cluster string, runner cmd.Runner, opts flag.Options) *Scanner {
-	return &Scanner{cluster, runner, opts}
+	return &Scanner{
+		cluster,
+		runner,
+		opts,
+	}
 }
 
-func (s *Scanner) Scan(ctx context.Context, artifacts []*artifacts.Artifact) (report.Report, error) {
-	// progress bar
-	bar := pb.StartNew(len(artifacts))
-	if s.opts.NoProgress {
-		bar.SetWriter(io.Discard)
-	}
-	defer bar.Finish()
-
-	var vulns, misconfigs []report.Resource
+func (s *Scanner) Scan(ctx context.Context, artifactsData []*artifacts.Artifact) (report.Report, error) {
 
 	// disable logs before scanning
 	err := log.InitLogger(s.opts.Debug, true)
@@ -53,27 +47,42 @@ func (s *Scanner) Scan(ctx context.Context, artifacts []*artifacts.Artifact) (re
 			log.Fatal(xerrors.Errorf("can't enable logger error: %w", err))
 		}
 	}()
+	var vulns, misconfigs []report.Resource
 
-	// Loops once over all artifacts, and execute scanners as necessary. Not every artifacts has an image,
-	// so image scanner is not always executed.
-	for _, artifact := range artifacts {
-		bar.Increment()
+	type scanResult struct {
+		vulns     []report.Resource
+		misconfig report.Resource
+	}
 
-		if shouldScanVulnsOrSecrets(s.opts.SecurityChecks) {
-			resources, err := s.scanVulns(ctx, artifact)
+	onItem := func(artifact *artifacts.Artifact) (scanResult, error) {
+		scanResults := scanResult{}
+		if s.opts.Scanners.AnyEnabled(types.VulnerabilityScanner, types.SecretScanner) {
+			vulns, err := s.scanVulns(ctx, artifact)
 			if err != nil {
-				return report.Report{}, xerrors.Errorf("scanning vulnerabilities error: %w", err)
+				return scanResult{}, xerrors.Errorf("scanning vulnerabilities error: %w", err)
 			}
-			vulns = append(vulns, resources...)
+			scanResults.vulns = vulns
 		}
-
-		if local.ShouldScanMisconfigOrRbac(s.opts.SecurityChecks) {
-			resource, err := s.scanMisconfigs(ctx, artifact)
+		if local.ShouldScanMisconfigOrRbac(s.opts.Scanners) {
+			misconfig, err := s.scanMisconfigs(ctx, artifact)
 			if err != nil {
-				return report.Report{}, xerrors.Errorf("scanning misconfigurations error: %w", err)
+				return scanResult{}, xerrors.Errorf("scanning misconfigurations error: %w", err)
 			}
-			misconfigs = append(misconfigs, resource)
+			scanResults.misconfig = misconfig
 		}
+		return scanResults, nil
+	}
+
+	onResult := func(result scanResult) error {
+		vulns = append(vulns, result.vulns...)
+		misconfigs = append(misconfigs, result.misconfig)
+		return nil
+	}
+
+	p := parallel.NewPipeline(s.opts.Parallel, true, artifactsData, onItem, onResult)
+	err = p.Do(ctx)
+	if err != nil {
+		return report.Report{}, err
 	}
 
 	return report.Report{
@@ -135,9 +144,4 @@ func (s *Scanner) filter(ctx context.Context, r types.Report, artifact *artifact
 		return report.Resource{}, xerrors.Errorf("filter error: %w", err)
 	}
 	return report.CreateResource(artifact, r, nil), nil
-}
-
-func shouldScanVulnsOrSecrets(securityChecks []string) bool {
-	return slices.Contains(securityChecks, types.SecurityCheckVulnerability) ||
-		slices.Contains(securityChecks, types.SecurityCheckSecret)
 }

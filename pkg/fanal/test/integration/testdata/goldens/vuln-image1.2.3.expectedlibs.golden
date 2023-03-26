@@ -4,274 +4,833 @@
     "FilePath": "ruby-app/Gemfile.lock",
     "Libraries": [
       {
+        "ID": "actioncable@5.2.3",
         "Name": "actioncable",
         "Version": "5.2.3",
-        "Layer": {}
+        "Indirect": true,
+        "DependsOn": [
+          "actionpack@5.2.3",
+          "nio4r@2.3.1",
+          "websocket-driver@0.7.0"
+        ],
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 4,
+            "EndLine": 4
+          }
+        ]
       },
       {
+        "ID": "actionmailer@5.2.3",
         "Name": "actionmailer",
         "Version": "5.2.3",
-        "Layer": {}
+        "Indirect": true,
+        "DependsOn": [
+          "actionpack@5.2.3",
+          "actionview@5.2.3",
+          "activejob@5.2.3",
+          "mail@2.7.1",
+          "rails-dom-testing@2.0.3"
+        ],
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 8,
+            "EndLine": 8
+          }
+        ]
       },
       {
+        "ID": "actionpack@5.2.3",
         "Name": "actionpack",
         "Version": "5.2.3",
-        "Layer": {}
+        "Indirect": true,
+        "DependsOn": [
+          "actionview@5.2.3",
+          "activesupport@5.2.3",
+          "rack-test@1.1.0",
+          "rack@2.0.7",
+          "rails-dom-testing@2.0.3",
+          "rails-html-sanitizer@1.0.3"
+        ],
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 14,
+            "EndLine": 14
+          }
+        ]
       },
       {
+        "ID": "actionview@5.2.3",
         "Name": "actionview",
         "Version": "5.2.3",
-        "Layer": {}
+        "Indirect": true,
+        "DependsOn": [
+          "activesupport@5.2.3",
+          "builder@3.2.3",
+          "erubi@1.8.0",
+          "rails-dom-testing@2.0.3",
+          "rails-html-sanitizer@1.0.3"
+        ],
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 21,
+            "EndLine": 21
+          }
+        ]
       },
       {
+        "ID": "activejob@5.2.3",
         "Name": "activejob",
         "Version": "5.2.3",
-        "Layer": {}
+        "Indirect": true,
+        "DependsOn": [
+          "activesupport@5.2.3",
+          "globalid@0.4.2"
+        ],
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 27,
+            "EndLine": 27
+          }
+        ]
       },
       {
+        "ID": "activemodel@5.2.3",
         "Name": "activemodel",
         "Version": "5.2.3",
-        "Layer": {}
+        "Indirect": true,
+        "DependsOn": [
+          "activesupport@5.2.3"
+        ],
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 30,
+            "EndLine": 30
+          }
+        ]
       },
       {
+        "ID": "activerecord@5.2.3",
         "Name": "activerecord",
         "Version": "5.2.3",
-        "Layer": {}
+        "Indirect": true,
+        "DependsOn": [
+          "activemodel@5.2.3",
+          "activesupport@5.2.3",
+          "arel@9.0.0"
+        ],
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 32,
+            "EndLine": 32
+          }
+        ]
       },
       {
+        "ID": "activestorage@5.2.3",
         "Name": "activestorage",
         "Version": "5.2.3",
-        "Layer": {}
+        "Indirect": true,
+        "DependsOn": [
+          "actionpack@5.2.3",
+          "activerecord@5.2.3",
+          "marcel@0.3.3"
+        ],
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 36,
+            "EndLine": 36
+          }
+        ]
       },
       {
+        "ID": "activesupport@5.2.3",
         "Name": "activesupport",
         "Version": "5.2.3",
-        "Layer": {}
+        "Indirect": true,
+        "DependsOn": [
+          "concurrent-ruby@1.1.5",
+          "i18n@1.6.0",
+          "minitest@5.11.3",
+          "tzinfo@1.2.5"
+        ],
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 40,
+            "EndLine": 40
+          }
+        ]
       },
       {
+        "ID": "arel@9.0.0",
         "Name": "arel",
         "Version": "9.0.0",
-        "Layer": {}
+        "Indirect": true,
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 45,
+            "EndLine": 45
+          }
+        ]
       },
       {
+        "ID": "ast@2.4.0",
         "Name": "ast",
         "Version": "2.4.0",
-        "Layer": {}
+        "Indirect": true,
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 46,
+            "EndLine": 46
+          }
+        ]
       },
       {
+        "ID": "builder@3.2.3",
         "Name": "builder",
         "Version": "3.2.3",
-        "Layer": {}
+        "Indirect": true,
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 47,
+            "EndLine": 47
+          }
+        ]
       },
       {
+        "ID": "coderay@1.1.2",
         "Name": "coderay",
         "Version": "1.1.2",
-        "Layer": {}
+        "Indirect": true,
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 48,
+            "EndLine": 48
+          }
+        ]
       },
       {
+        "ID": "concurrent-ruby@1.1.5",
         "Name": "concurrent-ruby",
         "Version": "1.1.5",
-        "Layer": {}
+        "Indirect": true,
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 49,
+            "EndLine": 49
+          }
+        ]
       },
       {
+        "ID": "crass@1.0.4",
         "Name": "crass",
         "Version": "1.0.4",
-        "Layer": {}
+        "Indirect": true,
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 50,
+            "EndLine": 50
+          }
+        ]
       },
       {
+        "ID": "dotenv@2.7.2",
         "Name": "dotenv",
         "Version": "2.7.2",
-        "Layer": {}
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 51,
+            "EndLine": 51
+          }
+        ]
       },
       {
+        "ID": "erubi@1.8.0",
         "Name": "erubi",
         "Version": "1.8.0",
-        "Layer": {}
+        "Indirect": true,
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 52,
+            "EndLine": 52
+          }
+        ]
       },
       {
+        "ID": "faker@1.9.3",
         "Name": "faker",
         "Version": "1.9.3",
-        "Layer": {}
+        "DependsOn": [
+          "i18n@1.6.0"
+        ],
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 53,
+            "EndLine": 53
+          }
+        ]
       },
       {
+        "ID": "globalid@0.4.2",
         "Name": "globalid",
         "Version": "0.4.2",
-        "Layer": {}
+        "Indirect": true,
+        "DependsOn": [
+          "activesupport@5.2.3"
+        ],
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 55,
+            "EndLine": 55
+          }
+        ]
       },
       {
+        "ID": "i18n@1.6.0",
         "Name": "i18n",
         "Version": "1.6.0",
-        "Layer": {}
+        "Indirect": true,
+        "DependsOn": [
+          "concurrent-ruby@1.1.5"
+        ],
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 57,
+            "EndLine": 57
+          }
+        ]
       },
       {
+        "ID": "jaro_winkler@1.5.2",
         "Name": "jaro_winkler",
         "Version": "1.5.2",
-        "Layer": {}
+        "Indirect": true,
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 59,
+            "EndLine": 59
+          }
+        ]
       },
       {
+        "ID": "json@2.2.0",
         "Name": "json",
         "Version": "2.2.0",
-        "Layer": {}
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 60,
+            "EndLine": 60
+          }
+        ]
       },
       {
+        "ID": "loofah@2.2.3",
         "Name": "loofah",
         "Version": "2.2.3",
-        "Layer": {}
+        "Indirect": true,
+        "DependsOn": [
+          "crass@1.0.4",
+          "nokogiri@1.10.3"
+        ],
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 61,
+            "EndLine": 61
+          }
+        ]
       },
       {
+        "ID": "mail@2.7.1",
         "Name": "mail",
         "Version": "2.7.1",
-        "Layer": {}
+        "Indirect": true,
+        "DependsOn": [
+          "mini_mime@1.0.1"
+        ],
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 64,
+            "EndLine": 64
+          }
+        ]
       },
       {
+        "ID": "marcel@0.3.3",
         "Name": "marcel",
         "Version": "0.3.3",
-        "Layer": {}
+        "Indirect": true,
+        "DependsOn": [
+          "mimemagic@0.3.3"
+        ],
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 66,
+            "EndLine": 66
+          }
+        ]
       },
       {
+        "ID": "method_source@0.9.2",
         "Name": "method_source",
         "Version": "0.9.2",
-        "Layer": {}
+        "Indirect": true,
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 68,
+            "EndLine": 68
+          }
+        ]
       },
       {
+        "ID": "mimemagic@0.3.3",
         "Name": "mimemagic",
         "Version": "0.3.3",
-        "Layer": {}
+        "Indirect": true,
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 69,
+            "EndLine": 69
+          }
+        ]
       },
       {
+        "ID": "mini_mime@1.0.1",
         "Name": "mini_mime",
         "Version": "1.0.1",
-        "Layer": {}
+        "Indirect": true,
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 70,
+            "EndLine": 70
+          }
+        ]
       },
       {
+        "ID": "mini_portile2@2.4.0",
         "Name": "mini_portile2",
         "Version": "2.4.0",
-        "Layer": {}
+        "Indirect": true,
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 71,
+            "EndLine": 71
+          }
+        ]
       },
       {
+        "ID": "minitest@5.11.3",
         "Name": "minitest",
         "Version": "5.11.3",
-        "Layer": {}
+        "Indirect": true,
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 72,
+            "EndLine": 72
+          }
+        ]
       },
       {
+        "ID": "nio4r@2.3.1",
         "Name": "nio4r",
         "Version": "2.3.1",
-        "Layer": {}
+        "Indirect": true,
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 73,
+            "EndLine": 73
+          }
+        ]
       },
       {
+        "ID": "nokogiri@1.10.3",
         "Name": "nokogiri",
         "Version": "1.10.3",
-        "Layer": {}
+        "Indirect": true,
+        "DependsOn": [
+          "mini_portile2@2.4.0"
+        ],
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 74,
+            "EndLine": 74
+          }
+        ]
       },
       {
+        "ID": "parallel@1.17.0",
         "Name": "parallel",
         "Version": "1.17.0",
-        "Layer": {}
+        "Indirect": true,
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 76,
+            "EndLine": 76
+          }
+        ]
       },
       {
+        "ID": "parser@2.6.3.0",
         "Name": "parser",
         "Version": "2.6.3.0",
-        "Layer": {}
+        "Indirect": true,
+        "DependsOn": [
+          "ast@2.4.0"
+        ],
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 77,
+            "EndLine": 77
+          }
+        ]
       },
       {
+        "ID": "pry@0.12.2",
         "Name": "pry",
         "Version": "0.12.2",
-        "Layer": {}
+        "DependsOn": [
+          "coderay@1.1.2",
+          "method_source@0.9.2"
+        ],
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 79,
+            "EndLine": 79
+          }
+        ]
       },
       {
+        "ID": "psych@3.1.0",
         "Name": "psych",
         "Version": "3.1.0",
-        "Layer": {}
+        "Indirect": true,
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 82,
+            "EndLine": 82
+          }
+        ]
       },
       {
+        "ID": "rack@2.0.7",
         "Name": "rack",
         "Version": "2.0.7",
-        "Layer": {}
+        "Indirect": true,
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 83,
+            "EndLine": 83
+          }
+        ]
       },
       {
+        "ID": "rack-test@1.1.0",
         "Name": "rack-test",
         "Version": "1.1.0",
-        "Layer": {}
+        "Indirect": true,
+        "DependsOn": [
+          "rack@2.0.7"
+        ],
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 84,
+            "EndLine": 84
+          }
+        ]
       },
       {
+        "ID": "rails@5.2.0",
         "Name": "rails",
         "Version": "5.2.0",
-        "Layer": {}
+        "DependsOn": [
+          "actioncable@5.2.3",
+          "actionmailer@5.2.3",
+          "actionpack@5.2.3",
+          "actionview@5.2.3",
+          "activejob@5.2.3",
+          "activemodel@5.2.3",
+          "activerecord@5.2.3",
+          "activestorage@5.2.3",
+          "activesupport@5.2.3",
+          "railties@5.2.3",
+          "sprockets-rails@3.2.1"
+        ],
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 86,
+            "EndLine": 86
+          }
+        ]
       },
       {
+        "ID": "rails-dom-testing@2.0.3",
         "Name": "rails-dom-testing",
         "Version": "2.0.3",
-        "Layer": {}
+        "Indirect": true,
+        "DependsOn": [
+          "activesupport@5.2.3",
+          "nokogiri@1.10.3"
+        ],
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 99,
+            "EndLine": 99
+          }
+        ]
       },
       {
+        "ID": "rails-html-sanitizer@1.0.3",
         "Name": "rails-html-sanitizer",
         "Version": "1.0.3",
-        "Layer": {}
+        "Indirect": true,
+        "DependsOn": [
+          "loofah@2.2.3"
+        ],
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 102,
+            "EndLine": 102
+          }
+        ]
       },
       {
+        "ID": "railties@5.2.3",
         "Name": "railties",
         "Version": "5.2.3",
-        "Layer": {}
+        "Indirect": true,
+        "DependsOn": [
+          "actionpack@5.2.3",
+          "activesupport@5.2.3",
+          "method_source@0.9.2",
+          "rake@12.3.2",
+          "thor@0.20.3"
+        ],
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 104,
+            "EndLine": 104
+          }
+        ]
       },
       {
+        "ID": "rainbow@3.0.0",
         "Name": "rainbow",
         "Version": "3.0.0",
-        "Layer": {}
+        "Indirect": true,
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 110,
+            "EndLine": 110
+          }
+        ]
       },
       {
+        "ID": "rake@12.3.2",
         "Name": "rake",
         "Version": "12.3.2",
-        "Layer": {}
+        "Indirect": true,
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 111,
+            "EndLine": 111
+          }
+        ]
       },
       {
+        "ID": "rubocop@0.67.2",
         "Name": "rubocop",
         "Version": "0.67.2",
-        "Layer": {}
+        "DependsOn": [
+          "jaro_winkler@1.5.2",
+          "parallel@1.17.0",
+          "parser@2.6.3.0",
+          "psych@3.1.0",
+          "rainbow@3.0.0",
+          "ruby-progressbar@1.10.0",
+          "unicode-display_width@1.5.0"
+        ],
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 112,
+            "EndLine": 112
+          }
+        ]
       },
       {
+        "ID": "ruby-progressbar@1.10.0",
         "Name": "ruby-progressbar",
         "Version": "1.10.0",
-        "Layer": {}
+        "Indirect": true,
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 120,
+            "EndLine": 120
+          }
+        ]
       },
       {
+        "ID": "sprockets@3.7.2",
         "Name": "sprockets",
         "Version": "3.7.2",
-        "Layer": {}
+        "Indirect": true,
+        "DependsOn": [
+          "concurrent-ruby@1.1.5",
+          "rack@2.0.7"
+        ],
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 121,
+            "EndLine": 121
+          }
+        ]
       },
       {
+        "ID": "sprockets-rails@3.2.1",
         "Name": "sprockets-rails",
         "Version": "3.2.1",
-        "Layer": {}
+        "Indirect": true,
+        "DependsOn": [
+          "actionpack@5.2.3",
+          "activesupport@5.2.3",
+          "sprockets@3.7.2"
+        ],
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 124,
+            "EndLine": 124
+          }
+        ]
       },
       {
+        "ID": "thor@0.20.3",
         "Name": "thor",
         "Version": "0.20.3",
-        "Layer": {}
+        "Indirect": true,
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 128,
+            "EndLine": 128
+          }
+        ]
       },
       {
+        "ID": "thread_safe@0.3.6",
         "Name": "thread_safe",
         "Version": "0.3.6",
-        "Layer": {}
+        "Indirect": true,
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 129,
+            "EndLine": 129
+          }
+        ]
       },
       {
+        "ID": "tzinfo@1.2.5",
         "Name": "tzinfo",
         "Version": "1.2.5",
-        "Layer": {}
+        "Indirect": true,
+        "DependsOn": [
+          "thread_safe@0.3.6"
+        ],
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 130,
+            "EndLine": 130
+          }
+        ]
       },
       {
+        "ID": "unicode-display_width@1.5.0",
         "Name": "unicode-display_width",
         "Version": "1.5.0",
-        "Layer": {}
+        "Indirect": true,
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 132,
+            "EndLine": 132
+          }
+        ]
       },
       {
+        "ID": "websocket-driver@0.7.0",
         "Name": "websocket-driver",
         "Version": "0.7.0",
-        "Layer": {}
+        "Indirect": true,
+        "DependsOn": [
+          "websocket-extensions@0.1.3"
+        ],
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 133,
+            "EndLine": 133
+          }
+        ]
       },
       {
+        "ID": "websocket-extensions@0.1.3",
         "Name": "websocket-extensions",
         "Version": "0.1.3",
-        "Layer": {}
+        "Indirect": true,
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 135,
+            "EndLine": 135
+          }
+        ]
       }
     ]
   },
@@ -730,73 +1289,237 @@
     "FilePath": "php-app/composer.lock",
     "Libraries": [
       {
+        "ID": "guzzlehttp/guzzle@6.2.0",
         "Name": "guzzlehttp/guzzle",
         "Version": "6.2.0",
+        "Licenses": [
+          "MIT"
+        ],
+        "DependsOn": [
+          "guzzlehttp/promises@v1.3.1",
+          "guzzlehttp/psr7@1.5.2"
+        ],
+        "Locations": [
+          {
+            "StartLine": 9,
+            "EndLine": 73
+          }
+        ],
         "Layer": {}
       },
       {
+        "ID": "guzzlehttp/promises@v1.3.1",
         "Name": "guzzlehttp/promises",
         "Version": "v1.3.1",
+        "Licenses": [
+          "MIT"
+        ],
+        "Locations": [
+          {
+            "StartLine": 74,
+            "EndLine": 124
+          }
+        ],
         "Layer": {}
       },
       {
+        "ID": "guzzlehttp/psr7@1.5.2",
         "Name": "guzzlehttp/psr7",
         "Version": "1.5.2",
+        "Licenses": [
+          "MIT"
+        ],
+        "DependsOn": [
+          "psr/http-message@1.0.1",
+          "ralouphie/getallheaders@2.0.5"
+        ],
+        "Locations": [
+          {
+            "StartLine": 125,
+            "EndLine": 191
+          }
+        ],
         "Layer": {}
       },
       {
+        "ID": "laravel/installer@v2.0.1",
         "Name": "laravel/installer",
         "Version": "v2.0.1",
+        "Licenses": [
+          "MIT"
+        ],
+        "DependsOn": [
+          "guzzlehttp/guzzle@6.2.0",
+          "symfony/console@v4.2.7",
+          "symfony/filesystem@v4.2.7",
+          "symfony/process@v4.2.7"
+        ],
+        "Locations": [
+          {
+            "StartLine": 192,
+            "EndLine": 237
+          }
+        ],
         "Layer": {}
       },
       {
+        "ID": "pear/log@1.13.1",
         "Name": "pear/log",
         "Version": "1.13.1",
+        "Licenses": [
+          "MIT"
+        ],
+        "DependsOn": [
+          "pear/pear_exception@v1.0.0"
+        ],
+        "Locations": [
+          {
+            "StartLine": 238,
+            "EndLine": 290
+          }
+        ],
         "Layer": {}
       },
       {
+        "ID": "pear/pear_exception@v1.0.0",
         "Name": "pear/pear_exception",
         "Version": "v1.0.0",
+        "Licenses": [
+          "BSD-2-Clause"
+        ],
+        "Locations": [
+          {
+            "StartLine": 291,
+            "EndLine": 345
+          }
+        ],
         "Layer": {}
       },
       {
+        "ID": "psr/http-message@1.0.1",
         "Name": "psr/http-message",
         "Version": "1.0.1",
+        "Licenses": [
+          "MIT"
+        ],
+        "Locations": [
+          {
+            "StartLine": 346,
+            "EndLine": 395
+          }
+        ],
         "Layer": {}
       },
       {
+        "ID": "ralouphie/getallheaders@2.0.5",
         "Name": "ralouphie/getallheaders",
         "Version": "2.0.5",
+        "Licenses": [
+          "MIT"
+        ],
+        "Locations": [
+          {
+            "StartLine": 396,
+            "EndLine": 435
+          }
+        ],
         "Layer": {}
       },
       {
+        "ID": "symfony/console@v4.2.7",
         "Name": "symfony/console",
         "Version": "v4.2.7",
+        "Licenses": [
+          "MIT"
+        ],
+        "DependsOn": [
+          "symfony/contracts@v1.0.2",
+          "symfony/polyfill-mbstring@v1.11.0"
+        ],
+        "Locations": [
+          {
+            "StartLine": 436,
+            "EndLine": 507
+          }
+        ],
         "Layer": {}
       },
       {
+        "ID": "symfony/contracts@v1.0.2",
         "Name": "symfony/contracts",
         "Version": "v1.0.2",
+        "Licenses": [
+          "MIT"
+        ],
+        "Locations": [
+          {
+            "StartLine": 508,
+            "EndLine": 575
+          }
+        ],
         "Layer": {}
       },
       {
+        "ID": "symfony/filesystem@v4.2.7",
         "Name": "symfony/filesystem",
         "Version": "v4.2.7",
+        "Licenses": [
+          "MIT"
+        ],
+        "DependsOn": [
+          "symfony/polyfill-ctype@v1.11.0"
+        ],
+        "Locations": [
+          {
+            "StartLine": 576,
+            "EndLine": 625
+          }
+        ],
         "Layer": {}
       },
       {
+        "ID": "symfony/polyfill-ctype@v1.11.0",
         "Name": "symfony/polyfill-ctype",
         "Version": "v1.11.0",
+        "Licenses": [
+          "MIT"
+        ],
+        "Locations": [
+          {
+            "StartLine": 626,
+            "EndLine": 683
+          }
+        ],
         "Layer": {}
       },
       {
+        "ID": "symfony/polyfill-mbstring@v1.11.0",
         "Name": "symfony/polyfill-mbstring",
         "Version": "v1.11.0",
+        "Licenses": [
+          "MIT"
+        ],
+        "Locations": [
+          {
+            "StartLine": 684,
+            "EndLine": 742
+          }
+        ],
         "Layer": {}
       },
       {
+        "ID": "symfony/process@v4.2.7",
         "Name": "symfony/process",
         "Version": "v4.2.7",
+        "Licenses": [
+          "MIT"
+        ],
+        "Locations": [
+          {
+            "StartLine": 743,
+            "EndLine": 791
+          }
+        ],
         "Layer": {}
       }
     ]
@@ -1008,276 +1731,606 @@
       {
         "Name": "amqp",
         "Version": "2.4.2",
-        "Layer": {}
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 19,
+            "EndLine": 25
+          }
+        ]
       },
       {
         "Name": "autopep8",
         "Version": "1.4.3",
-        "Layer": {}
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 26,
+            "EndLine": 31
+          }
+        ]
       },
       {
         "Name": "babel",
         "Version": "2.6.0",
-        "Layer": {}
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 32,
+            "EndLine": 38
+          }
+        ]
       },
       {
         "Name": "billiard",
         "Version": "3.6.0.0",
-        "Layer": {}
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 39,
+            "EndLine": 44
+          }
+        ]
       },
       {
         "Name": "boto3",
         "Version": "1.9.130",
-        "Layer": {}
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 45,
+            "EndLine": 52
+          }
+        ]
       },
       {
         "Name": "botocore",
         "Version": "1.12.130",
-        "Layer": {}
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 53,
+            "EndLine": 59
+          }
+        ]
       },
       {
         "Name": "celery",
         "Version": "4.3.0",
-        "Layer": {}
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 60,
+            "EndLine": 70
+          }
+        ]
       },
       {
         "Name": "certifi",
         "Version": "2019.3.9",
-        "Layer": {}
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 71,
+            "EndLine": 77
+          }
+        ]
       },
       {
         "Name": "chardet",
         "Version": "3.0.4",
-        "Layer": {}
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 78,
+            "EndLine": 84
+          }
+        ]
       },
       {
         "Name": "decorator",
         "Version": "4.4.0",
-        "Layer": {}
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 85,
+            "EndLine": 91
+          }
+        ]
       },
       {
         "Name": "django",
         "Version": "2.0.9",
-        "Layer": {}
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 92,
+            "EndLine": 99
+          }
+        ]
       },
       {
         "Name": "django-celery-beat",
         "Version": "1.4.0",
-        "Layer": {}
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 100,
+            "EndLine": 107
+          }
+        ]
       },
       {
         "Name": "django-cors-headers",
         "Version": "2.5.2",
-        "Layer": {}
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 108,
+            "EndLine": 115
+          }
+        ]
       },
       {
         "Name": "django-extensions",
         "Version": "2.1.6",
-        "Layer": {}
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 116,
+            "EndLine": 123
+          }
+        ]
       },
       {
         "Name": "django-postgres-extra",
-        "Layer": {}
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 124,
+            "EndLine": 128
+          }
+        ]
       },
       {
         "Name": "django-redis-cache",
         "Version": "2.0.0",
-        "Layer": {}
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 129,
+            "EndLine": 135
+          }
+        ]
       },
       {
         "Name": "django-silk",
         "Version": "3.0.1",
-        "Layer": {}
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 136,
+            "EndLine": 143
+          }
+        ]
       },
       {
         "Name": "django-timezone-field",
         "Version": "3.0",
-        "Layer": {}
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 144,
+            "EndLine": 150
+          }
+        ]
       },
       {
         "Name": "djangorestframework",
         "Version": "3.9.2",
-        "Layer": {}
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 151,
+            "EndLine": 158
+          }
+        ]
       },
       {
         "Name": "djangorestframework-jwt",
         "Version": "1.11.0",
-        "Layer": {}
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 159,
+            "EndLine": 166
+          }
+        ]
       },
       {
         "Name": "docutils",
         "Version": "0.14",
-        "Layer": {}
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 167,
+            "EndLine": 174
+          }
+        ]
       },
       {
         "Name": "flower",
         "Version": "0.9.3",
-        "Layer": {}
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 175,
+            "EndLine": 181
+          }
+        ]
       },
       {
         "Name": "gprof2dot",
         "Version": "2016.10.13",
-        "Layer": {}
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 182,
+            "EndLine": 187
+          }
+        ]
       },
       {
         "Name": "gunicorn",
         "Version": "19.9.0",
-        "Layer": {}
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 188,
+            "EndLine": 195
+          }
+        ]
       },
       {
         "Name": "hiredis",
         "Version": "1.0.0",
-        "Layer": {}
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 196,
+            "EndLine": 229
+          }
+        ]
       },
       {
         "Name": "httplib2",
         "Version": "0.12.1",
-        "Layer": {}
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 230,
+            "EndLine": 235
+          }
+        ]
       },
       {
         "Name": "idna",
         "Version": "2.8",
-        "Layer": {}
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 236,
+            "EndLine": 242
+          }
+        ]
       },
       {
         "Name": "jinja2",
         "Version": "2.10.1",
-        "Layer": {}
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 243,
+            "EndLine": 249
+          }
+        ]
       },
       {
         "Name": "jmespath",
         "Version": "0.9.4",
-        "Layer": {}
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 250,
+            "EndLine": 256
+          }
+        ]
       },
       {
         "Name": "kombu",
         "Version": "4.5.0",
-        "Layer": {}
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 257,
+            "EndLine": 263
+          }
+        ]
       },
       {
         "Name": "markupsafe",
         "Version": "1.1.1",
-        "Layer": {}
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 264,
+            "EndLine": 296
+          }
+        ]
       },
       {
         "Name": "oauth2",
         "Version": "1.9.0.post1",
-        "Layer": {}
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 297,
+            "EndLine": 304
+          }
+        ]
       },
       {
         "Name": "psycopg2-binary",
         "Version": "2.8.1",
-        "Layer": {}
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 305,
+            "EndLine": 338
+          }
+        ]
       },
       {
         "Name": "py",
         "Version": "1.8.0",
-        "Layer": {}
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 339,
+            "EndLine": 345
+          }
+        ]
       },
       {
         "Name": "pycodestyle",
         "Version": "2.5.0",
-        "Layer": {}
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 346,
+            "EndLine": 352
+          }
+        ]
       },
       {
         "Name": "pycurl",
         "Version": "7.43.0.2",
-        "Layer": {}
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 353,
+            "EndLine": 365
+          }
+        ]
       },
       {
         "Name": "pygments",
         "Version": "2.3.1",
-        "Layer": {}
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 366,
+            "EndLine": 372
+          }
+        ]
       },
       {
         "Name": "pyjwt",
         "Version": "1.7.1",
-        "Layer": {}
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 373,
+            "EndLine": 379
+          }
+        ]
       },
       {
         "Name": "python-crontab",
         "Version": "2.3.6",
-        "Layer": {}
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 380,
+            "EndLine": 385
+          }
+        ]
       },
       {
         "Name": "python-dateutil",
         "Version": "2.8.0",
-        "Layer": {}
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 386,
+            "EndLine": 393
+          }
+        ]
       },
       {
         "Name": "python-http-client",
         "Version": "3.1.0",
-        "Layer": {}
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 394,
+            "EndLine": 399
+          }
+        ]
       },
       {
         "Name": "pytz",
         "Version": "2019.1",
-        "Layer": {}
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 400,
+            "EndLine": 406
+          }
+        ]
       },
       {
         "Name": "pyyaml",
         "Version": "5.1",
-        "Layer": {}
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 407,
+            "EndLine": 423
+          }
+        ]
       },
       {
         "Name": "redis",
         "Version": "3.2.1",
-        "Layer": {}
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 424,
+            "EndLine": 430
+          }
+        ]
       },
       {
         "Name": "requests",
         "Version": "2.21.0",
-        "Layer": {}
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 431,
+            "EndLine": 438
+          }
+        ]
       },
       {
         "Name": "retry",
         "Version": "0.9.2",
-        "Layer": {}
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 439,
+            "EndLine": 446
+          }
+        ]
       },
       {
         "Name": "s3transfer",
         "Version": "0.2.0",
-        "Layer": {}
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 447,
+            "EndLine": 453
+          }
+        ]
       },
       {
         "Name": "sendgrid",
         "Version": "6.0.4",
-        "Layer": {}
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 454,
+            "EndLine": 461
+          }
+        ]
       },
       {
         "Name": "sentry-sdk",
         "Version": "0.7.10",
-        "Layer": {}
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 462,
+            "EndLine": 469
+          }
+        ]
       },
       {
         "Name": "six",
         "Version": "1.12.0",
-        "Layer": {}
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 470,
+            "EndLine": 476
+          }
+        ]
       },
       {
         "Name": "sqlparse",
         "Version": "0.3.0",
-        "Layer": {}
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 477,
+            "EndLine": 483
+          }
+        ]
       },
       {
         "Name": "tornado",
         "Version": "5.1.1",
-        "Layer": {}
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 484,
+            "EndLine": 495
+          }
+        ]
       },
       {
         "Name": "urllib3",
         "Version": "1.24.1",
-        "Layer": {}
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 496,
+            "EndLine": 503
+          }
+        ]
       },
       {
         "Name": "vine",
         "Version": "1.3.0",
-        "Layer": {}
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 504,
+            "EndLine": 510
+          }
+        ]
       },
       {
         "Name": "xmltodict",
         "Version": "0.12.0",
-        "Layer": {}
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 511,
+            "EndLine": 518
+          }
+        ]
       }
     ]
   }

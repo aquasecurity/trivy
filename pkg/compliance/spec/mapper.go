@@ -7,11 +7,11 @@ import (
 )
 
 // MapSpecCheckIDToFilteredResults map spec check id to filtered scan results
-func MapSpecCheckIDToFilteredResults(result types.Result, checkIDs map[types.SecurityCheck][]string) map[string]types.Results {
+func MapSpecCheckIDToFilteredResults(result types.Result, checkIDs map[types.Scanner][]string) map[string]types.Results {
 	mapCheckByID := make(map[string]types.Results)
 	for _, vuln := range result.Vulnerabilities {
 		// Skip irrelevant check IDs
-		if !slices.Contains(checkIDs[types.SecurityCheckVulnerability], vuln.GetID()) {
+		if !slices.Contains(checkIDs[types.VulnerabilityScanner], vuln.GetID()) {
 			continue
 		}
 		mapCheckByID[vuln.GetID()] = append(mapCheckByID[vuln.GetID()], types.Result{
@@ -23,7 +23,7 @@ func MapSpecCheckIDToFilteredResults(result types.Result, checkIDs map[types.Sec
 	}
 	for _, m := range result.Misconfigurations {
 		// Skip irrelevant check IDs
-		if !slices.Contains(checkIDs[types.SecurityCheckConfig], m.GetID()) {
+		if !slices.Contains(checkIDs[types.MisconfigScanner], m.GetID()) {
 			continue
 		}
 
@@ -35,6 +35,10 @@ func MapSpecCheckIDToFilteredResults(result types.Result, checkIDs map[types.Sec
 			Misconfigurations: []types.DetectedMisconfiguration{m},
 		})
 	}
+
+	// Evaluate custom IDs
+	mapCustomIDsToFilteredResults(result, checkIDs, mapCheckByID)
+
 	return mapCheckByID
 }
 

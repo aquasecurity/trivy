@@ -1,0 +1,16 @@
+[tool.poetry]
+name = "example"
+version = "0.1.0"
+description = "My Hello World Example"
+authors = ["Trivy"]
+
+[tool.poetry.dependencies]
+python = "^3.9"
+flask = "^1.0"
+requests = {version = "2.28.1", optional = true}
+
+[tool.poetry.dev-dependencies]
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"

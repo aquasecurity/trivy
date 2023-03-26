@@ -2,8 +2,13 @@ package image_test
 
 import (
 	"context"
+	"net/http"
+	"net/http/httptest"
+	"net/url"
+	"os"
 	"testing"
 
+	v1 "github.com/google/go-containerregistry/pkg/v1"
 	fakei "github.com/google/go-containerregistry/pkg/v1/fake"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -16,10 +21,15 @@ import (
 	"github.com/aquasecurity/trivy/pkg/rekortest"
 )
 
+func TestMain(m *testing.M) {
+	log.InitLogger(false, true)
+	os.Exit(m.Run())
+}
+
 type fakeImage struct {
 	name        string
 	repoDigests []string
-	fakei.FakeImage
+	*fakei.FakeImage
 	types.ImageExtension
 }
 
@@ -59,7 +69,7 @@ func TestArtifact_InspectRekorAttestation(t *testing.T) {
 			putBlobExpectations: []cache.ArtifactCachePutBlobExpectation{
 				{
 					Args: cache.ArtifactCachePutBlobArgs{
-						BlobID: "sha256:8c90c68f385a8067778a200fd3e56e257d4d6dd563e519a7be65902ee0b6e861",
+						BlobID: "sha256:9c23872047046e145f49fb5533b63ace0cbf819f5b68e33f69f4e9bbab4c517e",
 						BlobInfo: types.BlobInfo{
 							SchemaVersion: types.BlobJSONSchemaVersion,
 							OS: types.OS{
@@ -94,18 +104,18 @@ func TestArtifact_InspectRekorAttestation(t *testing.T) {
 			want: types.ArtifactReference{
 				Name: "test/image:10",
 				Type: types.ArtifactCycloneDX,
-				ID:   "sha256:8c90c68f385a8067778a200fd3e56e257d4d6dd563e519a7be65902ee0b6e861",
+				ID:   "sha256:9c23872047046e145f49fb5533b63ace0cbf819f5b68e33f69f4e9bbab4c517e",
 				BlobIDs: []string{
-					"sha256:8c90c68f385a8067778a200fd3e56e257d4d6dd563e519a7be65902ee0b6e861",
+					"sha256:9c23872047046e145f49fb5533b63ace0cbf819f5b68e33f69f4e9bbab4c517e",
 				},
 			},
 		},
 		{
-			name: "503",
+			name: "error",
 			fields: fields{
 				imageName: "test/image:10",
 				repoDigests: []string{
-					"test/image@sha256:unknown",
+					"test/image@sha256:123456e39f1e7a04e3f6da2d88b1c057e5657363c4f90679f3e8a071b7619e02",
 				},
 			},
 			artifactOpt: artifact.Option{
@@ -127,8 +137,8 @@ func TestArtifact_InspectRekorAttestation(t *testing.T) {
 			mockCache := new(cache.MockArtifactCache)
 			mockCache.ApplyPutBlobExpectations(tt.putBlobExpectations)
 
-			fi := fakei.FakeImage{}
-			fi.ConfigFileReturns(nil, nil)
+			fi := &fakei.FakeImage{}
+			fi.ConfigFileReturns(&v1.ConfigFile{}, nil)
 
 			img := &fakeImage{
 				name:        tt.fields.imageName,
@@ -143,6 +153,131 @@ func TestArtifact_InspectRekorAttestation(t *testing.T) {
 				assert.ErrorContains(t, err, tt.wantErr)
 				return
 			}
+			require.NoError(t, err, tt.name)
+			got.CycloneDX = nil
+			assert.Equal(t, tt.want, got)
+		})
+	}
+}
+
+func TestArtifact_inspectOCIReferrerSBOM(t *testing.T) {
+	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		switch r.URL.Path {
+		case "/v2":
+			_, err := w.Write([]byte("ok"))
+			require.NoError(t, err)
+		case "/v2/test/image/referrers/sha256:782143e39f1e7a04e3f6da2d88b1c057e5657363c4f90679f3e8a071b7619e02":
+			http.ServeFile(w, r, "testdata/index.json")
+		case "/v2/test/image/manifests/sha256:37c89af4907fa0af078aeba12d6f18dc0c63937c010030baaaa88e958f0719a5":
+			http.ServeFile(w, r, "testdata/manifest.json")
+		case "/v2/test/image/blobs/sha256:9e05dda2a2dcdd526c9204be8645ae48742861c27f093bf496a6397834acecf2":
+			http.ServeFile(w, r, "testdata/cyclonedx.json")
+		}
+		return
+	}))
+	defer ts.Close()
+
+	u, err := url.Parse(ts.URL)
+	require.NoError(t, err)
+	registry := u.Host
+
+	type fields struct {
+		imageName   string
+		repoDigests []string
+	}
+
+	tests := []struct {
+		name                string
+		fields              fields
+		artifactOpt         artifact.Option
+		putBlobExpectations []cache.ArtifactCachePutBlobExpectation
+		want                types.ArtifactReference
+		wantErr             string
+	}{
+		{
+			name: "happy path",
+			fields: fields{
+				imageName: registry + "/test/image:10",
+				repoDigests: []string{
+					registry + "/test/image@sha256:782143e39f1e7a04e3f6da2d88b1c057e5657363c4f90679f3e8a071b7619e02",
+				},
+			},
+			artifactOpt: artifact.Option{
+				SBOMSources: []string{"oci"},
+			},
+			putBlobExpectations: []cache.ArtifactCachePutBlobExpectation{
+				{
+					Args: cache.ArtifactCachePutBlobArgs{
+						BlobID: "sha256:d07a1894bfd283b4ac26682ab48f12ad22cdc4fef9cf8b4c09056f631d3667a5",
+						BlobInfo: types.BlobInfo{
+							SchemaVersion: types.BlobJSONSchemaVersion,
+							Applications: []types.Application{
+								{
+									Type: types.GoBinary,
+									Libraries: []types.Package{
+										{
+											Name:    "github.com/opencontainers/go-digest",
+											Version: "v1.0.0",
+											Ref:     "pkg:golang/github.com/opencontainers/go-digest@v1.0.0",
+										},
+										{
+											Name:    "golang.org/x/sync",
+											Version: "v0.1.0",
+											Ref:     "pkg:golang/golang.org/x/sync@v0.1.0",
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+			want: types.ArtifactReference{
+				Name: registry + "/test/image:10",
+				Type: types.ArtifactCycloneDX,
+				ID:   "sha256:d07a1894bfd283b4ac26682ab48f12ad22cdc4fef9cf8b4c09056f631d3667a5",
+				BlobIDs: []string{
+					"sha256:d07a1894bfd283b4ac26682ab48f12ad22cdc4fef9cf8b4c09056f631d3667a5",
+				},
+			},
+		},
+		{
+			name: "404",
+			fields: fields{
+				imageName: registry + "/test/image:unknown",
+				repoDigests: []string{
+					registry + "/test/image@sha256:123456e39f1e7a04e3f6da2d88b1c057e5657363c4f90679f3e8a071b7619e02",
+				},
+			},
+			artifactOpt: artifact.Option{
+				SBOMSources: []string{"oci"},
+			},
+			wantErr: "unable to fetch referrers",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			mockCache := new(cache.MockArtifactCache)
+			mockCache.ApplyPutBlobExpectations(tt.putBlobExpectations)
+
+			fi := &fakei.FakeImage{}
+			fi.ConfigFileReturns(&v1.ConfigFile{}, nil)
+
+			img := &fakeImage{
+				name:        tt.fields.imageName,
+				repoDigests: tt.fields.repoDigests,
+				FakeImage:   fi,
+			}
+			a, err := image2.NewArtifact(img, mockCache, tt.artifactOpt)
+			require.NoError(t, err)
+
+			got, err := a.Inspect(context.Background())
+			if tt.wantErr != "" {
+				assert.ErrorContains(t, err, tt.wantErr)
+				return
+			}
+
 			require.NoError(t, err, tt.name)
 			got.CycloneDX = nil
 			assert.Equal(t, tt.want, got)

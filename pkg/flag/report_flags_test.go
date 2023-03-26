@@ -4,12 +4,15 @@ import (
 	"os"
 	"testing"
 
+	defsecTypes "github.com/aquasecurity/defsec/pkg/types"
+
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zaptest/observer"
 
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
+	"github.com/aquasecurity/trivy/pkg/compliance/spec"
 	"github.com/aquasecurity/trivy/pkg/flag"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/report"
@@ -24,6 +27,7 @@ func TestReportFlagGroup_ToOptions(t *testing.T) {
 		ignoreUnfixed  bool
 		ignoreFile     string
 		exitCode       int
+		exitOnEOSL     bool
 		ignorePolicy   string
 		output         string
 		severities     string
@@ -174,12 +178,30 @@ func TestReportFlagGroup_ToOptions(t *testing.T) {
 		{
 			name: "happy path with compliance",
 			fields: fields{
-				compliane:  "k8s-nsa",
+				compliane:  "@testdata/example-spec.yaml",
 				severities: "low",
 			},
 			want: flag.ReportOptions{
-				Output:     os.Stdout,
-				Compliance: "k8s-nsa",
+				Output: os.Stdout,
+				Compliance: spec.ComplianceSpec{
+					Spec: defsecTypes.Spec{
+						ID:          "0001",
+						Title:       "my-custom-spec",
+						Description: "My fancy spec",
+						Version:     "1.2",
+						Controls: []defsecTypes.Control{
+							{
+								ID:          "1.1",
+								Name:        "Unencrypted S3 bucket",
+								Description: "S3 Buckets should be encrypted to protect the data that is stored within them if access is compromised.",
+								Checks: []defsecTypes.SpecCheck{
+									{ID: "AVD-AWS-0088"},
+								},
+								Severity: "HIGH",
+							},
+						},
+					},
+				},
 				Severities: []dbTypes.Severity{dbTypes.SeverityLow},
 			},
 		},
@@ -201,6 +223,7 @@ func TestReportFlagGroup_ToOptions(t *testing.T) {
 			viper.Set(flag.IgnoreUnfixedFlag.ConfigName, tt.fields.ignoreUnfixed)
 			viper.Set(flag.IgnorePolicyFlag.ConfigName, tt.fields.ignorePolicy)
 			viper.Set(flag.ExitCodeFlag.ConfigName, tt.fields.exitCode)
+			viper.Set(flag.ExitOnEOLFlag.ConfigName, tt.fields.exitOnEOSL)
 			viper.Set(flag.OutputFlag.ConfigName, tt.fields.output)
 			viper.Set(flag.SeverityFlag.ConfigName, tt.fields.severities)
 			viper.Set(flag.ComplianceFlag.ConfigName, tt.fields.compliane)
@@ -214,6 +237,7 @@ func TestReportFlagGroup_ToOptions(t *testing.T) {
 				IgnoreFile:     &flag.IgnoreFileFlag,
 				IgnorePolicy:   &flag.IgnorePolicyFlag,
 				ExitCode:       &flag.ExitCodeFlag,
+				ExitOnEOL:      &flag.ExitOnEOLFlag,
 				Output:         &flag.OutputFlag,
 				Severity:       &flag.SeverityFlag,
 				Compliance:     &flag.ComplianceFlag,

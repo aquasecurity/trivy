@@ -5,7 +5,7 @@ import (
 
 	"github.com/spf13/cobra"
 
-	"github.com/aquasecurity/trivy/pkg/utils"
+	"github.com/aquasecurity/trivy/pkg/utils/fsutils"
 )
 
 var (
@@ -58,7 +58,7 @@ var (
 	CacheDirFlag = Flag{
 		Name:       "cache-dir",
 		ConfigName: "cache.dir",
-		Value:      utils.DefaultCacheDir(),
+		Value:      fsutils.DefaultCacheDir(),
 		Usage:      "cache directory",
 		Persistent: true,
 	}
@@ -109,7 +109,16 @@ func NewGlobalFlagGroup() *GlobalFlagGroup {
 }
 
 func (f *GlobalFlagGroup) flags() []*Flag {
-	return []*Flag{f.ConfigFile, f.ShowVersion, f.Quiet, f.Debug, f.Insecure, f.Timeout, f.CacheDir, f.GenerateDefaultConfig}
+	return []*Flag{
+		f.ConfigFile,
+		f.ShowVersion,
+		f.Quiet,
+		f.Debug,
+		f.Insecure,
+		f.Timeout,
+		f.CacheDir,
+		f.GenerateDefaultConfig,
+	}
 }
 
 func (f *GlobalFlagGroup) AddFlags(cmd *cobra.Command) {

@@ -5,22 +5,24 @@ import (
 	"sort"
 	"testing"
 
+	defsecTypes "github.com/aquasecurity/defsec/pkg/types"
+
 	"github.com/stretchr/testify/assert"
 
 	"github.com/aquasecurity/trivy/pkg/compliance/spec"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
 
-func TestComplianceSpec_SecurityChecks(t *testing.T) {
+func TestComplianceSpec_Scanners(t *testing.T) {
 	tests := []struct {
 		name    string
-		spec    spec.Spec
-		want    []types.SecurityCheck
+		spec    defsecTypes.Spec
+		want    types.Scanners
 		wantErr assert.ErrorAssertionFunc
 	}{
 		{
 			name: "get config scanner type by check id prefix",
-			spec: spec.Spec{
+			spec: defsecTypes.Spec{
 				ID:          "1234",
 				Title:       "NSA",
 				Description: "National Security Agency - Kubernetes Hardening Guidance",
@@ -28,12 +30,12 @@ func TestComplianceSpec_SecurityChecks(t *testing.T) {
 					"https://example.com",
 				},
 				Version: "1.0",
-				Controls: []spec.Control{
+				Controls: []defsecTypes.Control{
 					{
 						Name:        "Non-root containers",
 						Description: "Check that container is not running as root",
 						ID:          "1.0",
-						Checks: []spec.SpecCheck{
+						Checks: []defsecTypes.SpecCheck{
 							{ID: "AVD-KSV012"},
 						},
 					},
@@ -41,19 +43,19 @@ func TestComplianceSpec_SecurityChecks(t *testing.T) {
 						Name:        "Check that encryption resource has been set",
 						Description: "Control checks whether encryption resource has been set",
 						ID:          "1.1",
-						Checks: []spec.SpecCheck{
+						Checks: []defsecTypes.SpecCheck{
 							{ID: "AVD-1.2.31"},
 							{ID: "AVD-1.2.32"},
 						},
 					},
 				},
 			},
-			want:    []types.SecurityCheck{types.SecurityCheckConfig},
+			want:    []types.Scanner{types.MisconfigScanner},
 			wantErr: assert.NoError,
 		},
 		{
 			name: "get config and vuln scanners types by check id prefix",
-			spec: spec.Spec{
+			spec: defsecTypes.Spec{
 				ID:          "1234",
 				Title:       "NSA",
 				Description: "National Security Agency - Kubernetes Hardening Guidance",
@@ -61,12 +63,12 @@ func TestComplianceSpec_SecurityChecks(t *testing.T) {
 					"https://example.com",
 				},
 				Version: "1.0",
-				Controls: []spec.Control{
+				Controls: []defsecTypes.Control{
 					{
 						Name:        "Non-root containers",
 						Description: "Check that container is not running as root",
 						ID:          "1.0",
-						Checks: []spec.SpecCheck{
+						Checks: []defsecTypes.SpecCheck{
 							{ID: "AVD-KSV012"},
 						},
 					},
@@ -74,7 +76,7 @@ func TestComplianceSpec_SecurityChecks(t *testing.T) {
 						Name:        "Check that encryption resource has been set",
 						Description: "Control checks whether encryption resource has been set",
 						ID:          "1.1",
-						Checks: []spec.SpecCheck{
+						Checks: []defsecTypes.SpecCheck{
 							{ID: "AVD-1.2.31"},
 							{ID: "AVD-1.2.32"},
 						},
@@ -83,18 +85,21 @@ func TestComplianceSpec_SecurityChecks(t *testing.T) {
 						Name:        "Ensure no critical vulnerabilities",
 						Description: "Control checks whether critical vulnerabilities are not found",
 						ID:          "7.0",
-						Checks: []spec.SpecCheck{
+						Checks: []defsecTypes.SpecCheck{
 							{ID: "CVE-9999-9999"},
 						},
 					},
 				},
 			},
-			want:    []types.SecurityCheck{types.SecurityCheckConfig, types.SecurityCheckVulnerability},
+			want: []types.Scanner{
+				types.MisconfigScanner,
+				types.VulnerabilityScanner,
+			},
 			wantErr: assert.NoError,
 		},
 		{
 			name: "unknown prefix",
-			spec: spec.Spec{
+			spec: defsecTypes.Spec{
 				ID:          "1234",
 				Title:       "NSA",
 				Description: "National Security Agency - Kubernetes Hardening Guidance",
@@ -102,11 +107,11 @@ func TestComplianceSpec_SecurityChecks(t *testing.T) {
 					"https://example.com",
 				},
 				Version: "1.0",
-				Controls: []spec.Control{
+				Controls: []defsecTypes.Control{
 					{
 						Name: "Unknown",
 						ID:   "1.0",
-						Checks: []spec.SpecCheck{
+						Checks: []defsecTypes.SpecCheck{
 							{ID: "UNKNOWN-001"},
 						},
 					},
@@ -120,12 +125,14 @@ func TestComplianceSpec_SecurityChecks(t *testing.T) {
 			cs := &spec.ComplianceSpec{
 				Spec: tt.spec,
 			}
-			got, err := cs.SecurityChecks()
-			if !tt.wantErr(t, err, fmt.Sprintf("SecurityChecks()")) {
+			got, err := cs.Scanners()
+			if !tt.wantErr(t, err, fmt.Sprintf("Scanners()")) {
 				return
 			}
-			sort.Strings(got) // for consistency
-			assert.Equalf(t, tt.want, got, "SecurityChecks()")
+			sort.Slice(got, func(i, j int) bool {
+				return got[i] < got[j]
+			}) // for consistency
+			assert.Equalf(t, tt.want, got, "Scanners()")
 		})
 	}
 }
@@ -133,12 +140,12 @@ func TestComplianceSpec_SecurityChecks(t *testing.T) {
 func TestComplianceSpec_CheckIDs(t *testing.T) {
 	tests := []struct {
 		name string
-		spec spec.Spec
-		want map[types.SecurityCheck][]string
+		spec defsecTypes.Spec
+		want map[types.Scanner][]string
 	}{
 		{
 			name: "get config scanner type by check id prefix",
-			spec: spec.Spec{
+			spec: defsecTypes.Spec{
 				ID:          "1234",
 				Title:       "NSA",
 				Description: "National Security Agency - Kubernetes Hardening Guidance",
@@ -146,12 +153,12 @@ func TestComplianceSpec_CheckIDs(t *testing.T) {
 					"https://example.com",
 				},
 				Version: "1.0",
-				Controls: []spec.Control{
+				Controls: []defsecTypes.Control{
 					{
 						Name:        "Non-root containers",
 						Description: "Check that container is not running as root",
 						ID:          "1.0",
-						Checks: []spec.SpecCheck{
+						Checks: []defsecTypes.SpecCheck{
 							{ID: "AVD-KSV012"},
 						},
 					},
@@ -159,15 +166,15 @@ func TestComplianceSpec_CheckIDs(t *testing.T) {
 						Name:        "Check that encryption resource has been set",
 						Description: "Control checks whether encryption resource has been set",
 						ID:          "1.1",
-						Checks: []spec.SpecCheck{
+						Checks: []defsecTypes.SpecCheck{
 							{ID: "AVD-1.2.31"},
 							{ID: "AVD-1.2.32"},
 						},
 					},
 				},
 			},
-			want: map[types.SecurityCheck][]string{
-				types.SecurityCheckConfig: {
+			want: map[types.Scanner][]string{
+				types.MisconfigScanner: {
 					"AVD-KSV012",
 					"AVD-1.2.31",
 					"AVD-1.2.32",
@@ -176,7 +183,7 @@ func TestComplianceSpec_CheckIDs(t *testing.T) {
 		},
 		{
 			name: "get config and vuln scanners types by check id prefix",
-			spec: spec.Spec{
+			spec: defsecTypes.Spec{
 				ID:          "1234",
 				Title:       "NSA",
 				Description: "National Security Agency - Kubernetes Hardening Guidance",
@@ -184,12 +191,12 @@ func TestComplianceSpec_CheckIDs(t *testing.T) {
 					"https://example.com",
 				},
 				Version: "1.0",
-				Controls: []spec.Control{
+				Controls: []defsecTypes.Control{
 					{
 						Name:        "Non-root containers",
 						Description: "Check that container is not running as root",
 						ID:          "1.0",
-						Checks: []spec.SpecCheck{
+						Checks: []defsecTypes.SpecCheck{
 							{ID: "AVD-KSV012"},
 						},
 					},
@@ -197,7 +204,7 @@ func TestComplianceSpec_CheckIDs(t *testing.T) {
 						Name:        "Check that encryption resource has been set",
 						Description: "Control checks whether encryption resource has been set",
 						ID:          "1.1",
-						Checks: []spec.SpecCheck{
+						Checks: []defsecTypes.SpecCheck{
 							{ID: "AVD-1.2.31"},
 							{ID: "AVD-1.2.32"},
 						},
@@ -206,19 +213,19 @@ func TestComplianceSpec_CheckIDs(t *testing.T) {
 						Name:        "Ensure no critical vulnerabilities",
 						Description: "Control checks whether critical vulnerabilities are not found",
 						ID:          "7.0",
-						Checks: []spec.SpecCheck{
+						Checks: []defsecTypes.SpecCheck{
 							{ID: "CVE-9999-9999"},
 						},
 					},
 				},
 			},
-			want: map[types.SecurityCheck][]string{
-				types.SecurityCheckConfig: {
+			want: map[types.Scanner][]string{
+				types.MisconfigScanner: {
 					"AVD-KSV012",
 					"AVD-1.2.31",
 					"AVD-1.2.32",
 				},
-				types.SecurityCheckVulnerability: {
+				types.VulnerabilityScanner: {
 					"CVE-9999-9999",
 				},
 			},

@@ -23,7 +23,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/module/serialize"
 	"github.com/aquasecurity/trivy/pkg/scanner/post"
 	"github.com/aquasecurity/trivy/pkg/types"
-	"github.com/aquasecurity/trivy/pkg/utils"
+	"github.com/aquasecurity/trivy/pkg/utils/fsutils"
 )
 
 var (
@@ -35,6 +35,8 @@ var (
 	}
 
 	RelativeDir = filepath.Join(".trivy", "modules")
+
+	DefaultDir = dir()
 )
 
 // logDebug is defined as an api.GoModuleFunc for lower overhead vs reflection.
@@ -94,16 +96,26 @@ func readMemory(mem api.Memory, offset, size uint32) []byte {
 	return buf
 }
 
-type Manager struct {
-	runtime wazero.Runtime
-	modules []*wasmModule
+type Options struct {
+	Dir            string
+	EnabledModules []string
 }
 
-func NewManager(ctx context.Context) (*Manager, error) {
-	m := &Manager{}
+type Manager struct {
+	cache          wazero.CompilationCache
+	modules        []*wasmModule
+	dir            string
+	enabledModules []string
+}
+
+func NewManager(ctx context.Context, opts Options) (*Manager, error) {
+	m := &Manager{
+		dir:            opts.Dir,
+		enabledModules: opts.EnabledModules,
+	}
 
 	// Create a new WebAssembly Runtime.
-	m.runtime = wazero.NewRuntime(ctx)
+	m.cache = wazero.NewCompilationCache()
 
 	// Load WASM modules in local
 	if err := m.loadModules(ctx); err != nil {
@@ -114,36 +126,41 @@ func NewManager(ctx context.Context) (*Manager, error) {
 }
 
 func (m *Manager) loadModules(ctx context.Context) error {
-	moduleDir := dir()
-	_, err := os.Stat(moduleDir)
+	_, err := os.Stat(m.dir)
 	if os.IsNotExist(err) {
 		return nil
 	}
-	log.Logger.Debugf("Module dir: %s", moduleDir)
+	log.Logger.Debugf("Module dir: %s", m.dir)
 
-	err = filepath.Walk(moduleDir, func(path string, info fs.FileInfo, err error) error {
+	err = filepath.Walk(m.dir, func(path string, info fs.FileInfo, err error) error {
 		if err != nil {
 			return err
 		} else if info.IsDir() || filepath.Ext(info.Name()) != ".wasm" {
 			return nil
 		}
 
-		rel, err := filepath.Rel(moduleDir, path)
+		rel, err := filepath.Rel(m.dir, path)
 		if err != nil {
 			return xerrors.Errorf("failed to get a relative path: %w", err)
 		}
 
-		log.Logger.Infof("Loading %s...", rel)
+		log.Logger.Infof("Reading %s...", rel)
 		wasmCode, err := os.ReadFile(path)
 		if err != nil {
 			return xerrors.Errorf("file read error: %w", err)
 		}
 
-		p, err := newWASMPlugin(ctx, m.runtime, wasmCode)
+		p, err := newWASMPlugin(ctx, m.cache, wasmCode)
 		if err != nil {
 			return xerrors.Errorf("WASM module init error %s: %w", rel, err)
 		}
 
+		// Skip Loading WASM modules if not in the list of enable modules flag.
+		if len(m.enabledModules) > 0 && !slices.Contains(m.enabledModules, p.Name()) {
+			return nil
+		}
+
+		log.Logger.Infof("%s loaded", rel)
 		m.modules = append(m.modules, p)
 
 		return nil
@@ -161,8 +178,15 @@ func (m *Manager) Register() {
 	}
 }
 
+func (m *Manager) Deregister() {
+	for _, mod := range m.modules {
+		analyzer.DeregisterAnalyzer(analyzer.Type(mod.Name()))
+		post.DeregisterPostScanner(mod.Name())
+	}
+}
+
 func (m *Manager) Close(ctx context.Context) error {
-	return m.runtime.Close(ctx)
+	return m.cache.Close(ctx)
 }
 
 func splitPtrSize(u uint64) (uint32, uint32) {
@@ -253,12 +277,12 @@ type wasmModule struct {
 	free     api.Function // TinyGo specific
 }
 
-func newWASMPlugin(ctx context.Context, r wazero.Runtime, code []byte) (*wasmModule, error) {
+func newWASMPlugin(ctx context.Context, ccache wazero.CompilationCache, code []byte) (*wasmModule, error) {
 	mf := &memFS{}
 	config := wazero.NewModuleConfig().WithStdout(os.Stdout).WithFS(mf)
 
 	// Create an empty namespace so that multiple modules will not conflict
-	ns := r.NewNamespace(ctx)
+	r := wazero.NewRuntimeWithConfig(ctx, wazero.NewRuntimeConfig().WithCompilationCache(ccache))
 
 	// Instantiate a Go-defined module named "env" that exports functions.
 	envBuilder := r.NewHostModuleBuilder("env")
@@ -266,16 +290,19 @@ func newWASMPlugin(ctx context.Context, r wazero.Runtime, code []byte) (*wasmMod
 	// Avoid reflection for logging as it implies an overhead of >1us per call.
 	for n, f := range logFunctions {
 		envBuilder.NewFunctionBuilder().
-			WithGoModuleFunction(f, []api.ValueType{api.ValueTypeI32, api.ValueTypeI32}, []api.ValueType{}).
+			WithGoModuleFunction(f, []api.ValueType{
+				api.ValueTypeI32,
+				api.ValueTypeI32,
+			}, []api.ValueType{}).
 			WithParameterNames("offset", "size").
 			Export(n)
 	}
 
-	if _, err := envBuilder.Instantiate(ctx, ns); err != nil {
+	if _, err := envBuilder.Instantiate(ctx); err != nil {
 		return nil, xerrors.Errorf("wasm module build error: %w", err)
 	}
 
-	if _, err := wasi.NewBuilder(r).Instantiate(ctx, ns); err != nil {
+	if _, err := wasi.NewBuilder(r).Instantiate(ctx); err != nil {
 		return nil, xerrors.Errorf("WASI init error: %w", err)
 	}
 
@@ -286,7 +313,7 @@ func newWASMPlugin(ctx context.Context, r wazero.Runtime, code []byte) (*wasmMod
 	}
 
 	// InstantiateModule runs the "_start" function which is what TinyGo compiles "main" to.
-	mod, err := ns.InstantiateModule(ctx, compiled, config)
+	mod, err := r.InstantiateModule(ctx, compiled, config)
 	if err != nil {
 		return nil, xerrors.Errorf("module init error: %w", err)
 	}
@@ -698,7 +725,7 @@ func isType(ctx context.Context, mod api.Module, name string) (bool, error) {
 }
 
 func dir() string {
-	return filepath.Join(utils.HomeDir(), RelativeDir)
+	return filepath.Join(fsutils.HomeDir(), RelativeDir)
 }
 
 func modulePostScanSpec(ctx context.Context, mod api.Module) (serialize.PostScanSpec, error) {

@@ -1,0 +1,72 @@
+{
+  "bomFormat": "CycloneDX",
+  "specVersion": "1.4",
+  "serialNumber": "urn:uuid:2e3c684c-1f99-466c-ad6b-b783942eb9d1",
+  "version": 1,
+  "metadata": {
+    "timestamp": "2023-03-22T11:35:38+00:00",
+    "tools": [
+      {
+        "vendor": "aquasecurity",
+        "name": "trivy",
+        "version": "0.39.0"
+      }
+    ],
+    "component": {
+      "bom-ref": "pkg:oci/demo-referrers-2023@sha256:e76a13475c6b4a713a0e4a7a8574ce450274d340357a2c40b8221cfcfedf8b19?repository_url=localhost:5001%2Fdemo-referrers-2023\u0026arch=arm64",
+      "type": "container",
+      "name": "localhost:5001/demo-referrers-2023:app",
+      "purl": "pkg:oci/demo-referrers-2023@sha256:e76a13475c6b4a713a0e4a7a8574ce450274d340357a2c40b8221cfcfedf8b19?repository_url=localhost:5001%2Fdemo-referrers-2023\u0026arch=arm64",
+      "properties": [
+        {
+          "name": "aquasecurity:trivy:SchemaVersion",
+          "value": "2"
+        }
+      ]
+    }
+  },
+  "components": [
+    {
+      "bom-ref": "pkg:golang/github.com/opencontainers/go-digest@v1.0.0",
+      "type": "library",
+      "name": "github.com/opencontainers/go-digest",
+      "version": "v1.0.0",
+      "purl": "pkg:golang/github.com/opencontainers/go-digest@v1.0.0",
+      "properties": [
+        {
+          "name": "aquasecurity:trivy:PkgType",
+          "value": "gobinary"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:golang/golang.org/x/sync@v0.1.0",
+      "type": "library",
+      "name": "golang.org/x/sync",
+      "version": "v0.1.0",
+      "purl": "pkg:golang/golang.org/x/sync@v0.1.0",
+      "properties": [
+        {
+          "name": "aquasecurity:trivy:PkgType",
+          "value": "gobinary"
+        }
+      ]
+    }
+  ],
+  "dependencies": [
+    {
+      "ref": "c6309d4a-f6db-4acc-8e44-f0d271492b65",
+      "dependsOn": [
+        "pkg:golang/github.com/opencontainers/go-digest@v1.0.0",
+        "pkg:golang/golang.org/x/sync@v0.1.0"
+      ]
+    },
+    {
+      "ref": "pkg:oci/demo-referrers-2023@sha256:e76a13475c6b4a713a0e4a7a8574ce450274d340357a2c40b8221cfcfedf8b19?repository_url=localhost:5001%2Fdemo-referrers-2023\u0026arch=arm64",
+      "dependsOn": [
+        "c6309d4a-f6db-4acc-8e44-f0d271492b65"
+      ]
+    }
+  ],
+  "vulnerabilities": []
+}

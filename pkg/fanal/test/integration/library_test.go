@@ -29,6 +29,8 @@ import (
 	_ "github.com/aquasecurity/trivy/pkg/fanal/handler/all"
 	"github.com/aquasecurity/trivy/pkg/fanal/image"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
+
+	_ "modernc.org/sqlite"
 )
 
 var update = flag.Bool("update", false, "update golden files")
@@ -47,56 +49,83 @@ var tests = []testCase{
 		name:            "happy path, alpine:3.10",
 		remoteImageName: "ghcr.io/aquasecurity/trivy-test-images:alpine-310",
 		imageFile:       "../../../../integration/testdata/fixtures/images/alpine-310.tar.gz",
-		wantOS:          types.OS{Name: "3.10.2", Family: "alpine"},
+		wantOS: types.OS{
+			Name:   "3.10.2",
+			Family: "alpine",
+		},
 	},
 	{
 		name:            "happy path, amazonlinux:2",
 		remoteImageName: "ghcr.io/aquasecurity/trivy-test-images:amazon-2",
 		imageFile:       "../../../../integration/testdata/fixtures/images/amazon-2.tar.gz",
-		wantOS:          types.OS{Name: "2 (Karoo)", Family: "amazon"},
+		wantOS: types.OS{
+			Name:   "2 (Karoo)",
+			Family: "amazon",
+		},
 	},
 	{
 		name:            "happy path, debian:buster",
 		remoteImageName: "ghcr.io/aquasecurity/trivy-test-images:debian-buster",
 		imageFile:       "../../../../integration/testdata/fixtures/images/debian-buster.tar.gz",
-		wantOS:          types.OS{Name: "10.1", Family: "debian"},
+		wantOS: types.OS{
+			Name:   "10.1",
+			Family: "debian",
+		},
 	},
 	{
 		name:            "happy path, photon:3.0",
 		remoteImageName: "ghcr.io/aquasecurity/trivy-test-images:photon-30",
 		imageFile:       "../../../../integration/testdata/fixtures/images/photon-30.tar.gz",
-		wantOS:          types.OS{Name: "3.0", Family: "photon"},
+		wantOS: types.OS{
+			Name:   "3.0",
+			Family: "photon",
+		},
 	},
 	{
 		name:            "happy path, registry.redhat.io/ubi7",
 		remoteImageName: "ghcr.io/aquasecurity/trivy-test-images:ubi-7",
 		imageFile:       "../../../../integration/testdata/fixtures/images/ubi-7.tar.gz",
-		wantOS:          types.OS{Name: "7.7", Family: "redhat"},
+		wantOS: types.OS{
+			Name:   "7.7",
+			Family: "redhat",
+		},
 	},
 	{
 		name:            "happy path, opensuse leap 15.1",
 		remoteImageName: "ghcr.io/aquasecurity/trivy-test-images:opensuse-leap-151",
 		imageFile:       "../../../../integration/testdata/fixtures/images/opensuse-leap-151.tar.gz",
-		wantOS:          types.OS{Name: "15.1", Family: "opensuse.leap"},
+		wantOS: types.OS{
+			Name:   "15.1",
+			Family: "opensuse.leap",
+		},
 	},
 	{
 		// from registry.suse.com/suse/sle15:15.3.17.8.16
 		name:            "happy path, suse 15.3 (NDB)",
 		remoteImageName: "ghcr.io/aquasecurity/trivy-test-images:suse-15.3_ndb",
 		imageFile:       "../../../../integration/testdata/fixtures/images/suse-15.3_ndb.tar.gz",
-		wantOS:          types.OS{Name: "15.3", Family: "suse linux enterprise server"},
+		wantOS: types.OS{
+			Name:   "15.3",
+			Family: "suse linux enterprise server",
+		},
 	},
 	{
 		name:            "happy path, Fedora 35",
 		remoteImageName: "ghcr.io/aquasecurity/trivy-test-images:fedora-35",
 		imageFile:       "../../../../integration/testdata/fixtures/images/fedora-35.tar.gz",
-		wantOS:          types.OS{Name: "35", Family: "fedora"},
+		wantOS: types.OS{
+			Name:   "35",
+			Family: "fedora",
+		},
 	},
 	{
-		name:                "happy path, vulnimage with lock files",
-		remoteImageName:     "ghcr.io/aquasecurity/trivy-test-images:vulnimage",
-		imageFile:           "../../../../integration/testdata/fixtures/images/vulnimage.tar.gz",
-		wantOS:              types.OS{Name: "3.7.1", Family: "alpine"},
+		name:            "happy path, vulnimage with lock files",
+		remoteImageName: "ghcr.io/aquasecurity/trivy-test-images:vulnimage",
+		imageFile:       "../../../../integration/testdata/fixtures/images/vulnimage.tar.gz",
+		wantOS: types.OS{
+			Name:   "3.7.1",
+			Family: "alpine",
+		},
 		wantApplicationFile: "testdata/goldens/vuln-image1.2.3.expectedlibs.golden",
 		wantPkgsFromCmds:    "testdata/goldens/vuln-image1.2.3.expectedpkgsfromcmds.golden",
 	},
@@ -333,8 +362,8 @@ func checkPackageFromCommands(t *testing.T, detail types.ArtifactDetail, tc test
 
 		err := json.Unmarshal(data, &expectedPkgsFromCmds)
 		require.NoError(t, err)
-		assert.ElementsMatch(t, expectedPkgsFromCmds, detail.HistoryPackages, tc.name)
+		assert.ElementsMatch(t, expectedPkgsFromCmds, detail.ImageConfig.Packages, tc.name)
 	} else {
-		assert.Equal(t, []types.Package(nil), detail.HistoryPackages, tc.name)
+		assert.Equal(t, []types.Package(nil), detail.ImageConfig.Packages, tc.name)
 	}
 }

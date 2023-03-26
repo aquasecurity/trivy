@@ -11,11 +11,13 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+
+	"github.com/aquasecurity/trivy/pkg/types"
 )
 
 func TestFilesystem(t *testing.T) {
 	type args struct {
-		securityChecks string
+		scanner        types.Scanner
 		severity       []string
 		ignoreIDs      []string
 		policyPaths    []string
@@ -39,210 +41,237 @@ func TestFilesystem(t *testing.T) {
 		{
 			name: "gomod",
 			args: args{
-				securityChecks: "vuln",
-				input:          "testdata/fixtures/fs/gomod",
+				scanner: types.VulnerabilityScanner,
+				input:   "testdata/fixtures/fs/gomod",
 			},
 			golden: "testdata/gomod.json.golden",
 		},
 		{
 			name: "gomod with skip files",
 			args: args{
-				securityChecks: "vuln",
-				input:          "testdata/fixtures/fs/gomod",
-				skipFiles:      []string{"testdata/fixtures/fs/gomod/submod2/go.mod"},
+				scanner:   types.VulnerabilityScanner,
+				input:     "testdata/fixtures/fs/gomod",
+				skipFiles: []string{"testdata/fixtures/fs/gomod/submod2/go.mod"},
 			},
 			golden: "testdata/gomod-skip.json.golden",
 		},
 		{
 			name: "gomod with skip dirs",
 			args: args{
-				securityChecks: "vuln",
-				input:          "testdata/fixtures/fs/gomod",
-				skipDirs:       []string{"testdata/fixtures/fs/gomod/submod2"},
+				scanner:  types.VulnerabilityScanner,
+				input:    "testdata/fixtures/fs/gomod",
+				skipDirs: []string{"testdata/fixtures/fs/gomod/submod2"},
 			},
 			golden: "testdata/gomod-skip.json.golden",
 		},
 		{
-			name: "nodejs",
+			name: "npm",
 			args: args{
-				securityChecks: "vuln",
-				input:          "testdata/fixtures/fs/nodejs",
-				listAllPkgs:    true,
+				scanner:     types.VulnerabilityScanner,
+				input:       "testdata/fixtures/fs/npm",
+				listAllPkgs: true,
 			},
-			golden: "testdata/nodejs.json.golden",
+			golden: "testdata/npm.json.golden",
 		},
 		{
 			name: "yarn",
 			args: args{
-				securityChecks: "vuln",
-				input:          "testdata/fixtures/fs/yarn",
-				listAllPkgs:    true,
+				scanner:     types.VulnerabilityScanner,
+				input:       "testdata/fixtures/fs/yarn",
+				listAllPkgs: true,
 			},
 			golden: "testdata/yarn.json.golden",
 		},
 		{
 			name: "pnpm",
 			args: args{
-				securityChecks: "vuln",
-				input:          "testdata/fixtures/fs/pnpm",
+				scanner: types.VulnerabilityScanner,
+				input:   "testdata/fixtures/fs/pnpm",
 			},
 			golden: "testdata/pnpm.json.golden",
 		},
 		{
 			name: "pip",
 			args: args{
-				securityChecks: "vuln",
-				listAllPkgs:    true,
-				input:          "testdata/fixtures/fs/pip",
+				scanner:     types.VulnerabilityScanner,
+				listAllPkgs: true,
+				input:       "testdata/fixtures/fs/pip",
 			},
 			golden: "testdata/pip.json.golden",
 		},
 		{
+			name: "pipenv",
+			args: args{
+				scanner:     types.VulnerabilityScanner,
+				listAllPkgs: true,
+				input:       "testdata/fixtures/fs/pipenv",
+			},
+			golden: "testdata/pipenv.json.golden",
+		},
+		{
+			name: "poetry",
+			args: args{
+				scanner:     types.VulnerabilityScanner,
+				listAllPkgs: true,
+				input:       "testdata/fixtures/fs/poetry",
+			},
+			golden: "testdata/poetry.json.golden",
+		},
+		{
 			name: "pom",
 			args: args{
-				securityChecks: "vuln",
-				input:          "testdata/fixtures/fs/pom",
+				scanner: types.VulnerabilityScanner,
+				input:   "testdata/fixtures/fs/pom",
 			},
 			golden: "testdata/pom.json.golden",
 		},
 		{
 			name: "gradle",
 			args: args{
-				securityChecks: "vuln",
-				input:          "testdata/fixtures/fs/gradle",
+				scanner: types.VulnerabilityScanner,
+				input:   "testdata/fixtures/fs/gradle",
 			},
 			golden: "testdata/gradle.json.golden",
 		},
 		{
 			name: "conan",
 			args: args{
-				securityChecks: "vuln",
-				listAllPkgs:    true,
-				input:          "testdata/fixtures/fs/conan",
+				scanner:     types.VulnerabilityScanner,
+				listAllPkgs: true,
+				input:       "testdata/fixtures/fs/conan",
 			},
 			golden: "testdata/conan.json.golden",
 		},
 		{
 			name: "nuget",
 			args: args{
-				securityChecks: "vuln",
-				listAllPkgs:    true,
-				input:          "testdata/fixtures/fs/nuget",
+				scanner:     types.VulnerabilityScanner,
+				listAllPkgs: true,
+				input:       "testdata/fixtures/fs/nuget",
 			},
 			golden: "testdata/nuget.json.golden",
 		},
 		{
 			name: "dotnet",
 			args: args{
-				securityChecks: "vuln",
-				listAllPkgs:    true,
-				input:          "testdata/fixtures/fs/dotnet",
+				scanner:     types.VulnerabilityScanner,
+				listAllPkgs: true,
+				input:       "testdata/fixtures/fs/dotnet",
 			},
 			golden: "testdata/dotnet.json.golden",
 		},
 		{
 			name: "cocoapods",
 			args: args{
-				securityChecks: "vuln",
-				listAllPkgs:    true,
-				input:          "testdata/fixtures/fs/cocoapods",
+				scanner:     types.VulnerabilityScanner,
+				listAllPkgs: true,
+				input:       "testdata/fixtures/fs/cocoapods",
 			},
 			golden: "testdata/cocoapods.json.golden",
 		},
 		{
 			name: "pubspec.lock",
 			args: args{
-				securityChecks: "vuln",
-				listAllPkgs:    true,
-				input:          "testdata/fixtures/fs/pubspec",
+				scanner:     types.VulnerabilityScanner,
+				listAllPkgs: true,
+				input:       "testdata/fixtures/fs/pubspec",
 			},
 			golden: "testdata/pubspec.lock.json.golden",
 		},
 		{
 			name: "mix.lock",
 			args: args{
-				securityChecks: "vuln",
-				listAllPkgs:    true,
-				input:          "testdata/fixtures/fs/mixlock",
+				scanner:     types.VulnerabilityScanner,
+				listAllPkgs: true,
+				input:       "testdata/fixtures/fs/mixlock",
 			},
 			golden: "testdata/mix.lock.json.golden",
 		},
 		{
+			name: "composer.lock",
+			args: args{
+				scanner:     types.VulnerabilityScanner,
+				listAllPkgs: true,
+				input:       "testdata/fixtures/fs/composer",
+			},
+			golden: "testdata/composer.lock.json.golden",
+		},
+		{
 			name: "dockerfile",
 			args: args{
-				securityChecks: "config",
-				input:          "testdata/fixtures/fs/dockerfile",
-				namespaces:     []string{"testing"},
+				scanner:    types.MisconfigScanner,
+				input:      "testdata/fixtures/fs/dockerfile",
+				namespaces: []string{"testing"},
 			},
 			golden: "testdata/dockerfile.json.golden",
 		},
 		{
 			name: "dockerfile with custom file pattern",
 			args: args{
-				securityChecks: "config",
-				input:          "testdata/fixtures/fs/dockerfile_file_pattern",
-				namespaces:     []string{"testing"},
-				filePatterns:   []string{"dockerfile:Customfile"},
+				scanner:      types.MisconfigScanner,
+				input:        "testdata/fixtures/fs/dockerfile_file_pattern",
+				namespaces:   []string{"testing"},
+				filePatterns: []string{"dockerfile:Customfile"},
 			},
 			golden: "testdata/dockerfile_file_pattern.json.golden",
 		},
 		{
 			name: "dockerfile with rule exception",
 			args: args{
-				securityChecks: "config",
-				policyPaths:    []string{"testdata/fixtures/fs/rule-exception/policy"},
-				input:          "testdata/fixtures/fs/rule-exception",
+				scanner:     types.MisconfigScanner,
+				policyPaths: []string{"testdata/fixtures/fs/rule-exception/policy"},
+				input:       "testdata/fixtures/fs/rule-exception",
 			},
 			golden: "testdata/dockerfile-rule-exception.json.golden",
 		},
 		{
 			name: "dockerfile with namespace exception",
 			args: args{
-				securityChecks: "config",
-				policyPaths:    []string{"testdata/fixtures/fs/namespace-exception/policy"},
-				input:          "testdata/fixtures/fs/namespace-exception",
+				scanner:     types.MisconfigScanner,
+				policyPaths: []string{"testdata/fixtures/fs/namespace-exception/policy"},
+				input:       "testdata/fixtures/fs/namespace-exception",
 			},
 			golden: "testdata/dockerfile-namespace-exception.json.golden",
 		},
 		{
 			name: "dockerfile with custom policies",
 			args: args{
-				securityChecks: "config",
-				policyPaths:    []string{"testdata/fixtures/fs/custom-policy/policy"},
-				namespaces:     []string{"user"},
-				input:          "testdata/fixtures/fs/custom-policy",
+				scanner:     types.MisconfigScanner,
+				policyPaths: []string{"testdata/fixtures/fs/custom-policy/policy"},
+				namespaces:  []string{"user"},
+				input:       "testdata/fixtures/fs/custom-policy",
 			},
 			golden: "testdata/dockerfile-custom-policies.json.golden",
 		},
 		{
 			name: "tarball helm chart scanning with builtin policies",
 			args: args{
-				securityChecks: "config",
-				input:          "testdata/fixtures/fs/helm",
+				scanner: types.MisconfigScanner,
+				input:   "testdata/fixtures/fs/helm",
 			},
 			golden: "testdata/helm.json.golden",
 		},
 		{
 			name: "helm chart directory scanning with builtin policies",
 			args: args{
-				securityChecks: "config",
-				input:          "testdata/fixtures/fs/helm_testchart",
+				scanner: types.MisconfigScanner,
+				input:   "testdata/fixtures/fs/helm_testchart",
 			},
 			golden: "testdata/helm_testchart.json.golden",
 		},
 		{
 			name: "helm chart directory scanning with value overrides using set",
 			args: args{
-				securityChecks: "config",
-				input:          "testdata/fixtures/fs/helm_testchart",
-				helmSet:        []string{"securityContext.runAsUser=0"},
+				scanner: types.MisconfigScanner,
+				input:   "testdata/fixtures/fs/helm_testchart",
+				helmSet: []string{"securityContext.runAsUser=0"},
 			},
 			golden: "testdata/helm_testchart.overridden.json.golden",
 		},
 		{
 			name: "helm chart directory scanning with value overrides using value file",
 			args: args{
-				securityChecks: "config",
+				scanner:        types.MisconfigScanner,
 				input:          "testdata/fixtures/fs/helm_testchart",
 				helmValuesFile: []string{"testdata/fixtures/fs/helm_values/values.yaml"},
 			},
@@ -251,17 +280,17 @@ func TestFilesystem(t *testing.T) {
 		{
 			name: "helm chart directory scanning with builtin policies and non string Chart name",
 			args: args{
-				securityChecks: "config",
-				input:          "testdata/fixtures/fs/helm_badname",
+				scanner: types.MisconfigScanner,
+				input:   "testdata/fixtures/fs/helm_badname",
 			},
 			golden: "testdata/helm_badname.json.golden",
 		},
 		{
 			name: "secrets",
 			args: args{
-				securityChecks: "vuln,secret",
-				input:          "testdata/fixtures/fs/secrets",
-				secretConfig:   "testdata/fixtures/fs/secrets/trivy-secret.yaml",
+				scanner:      "vuln,secret",
+				input:        "testdata/fixtures/fs/secrets",
+				secretConfig: "testdata/fixtures/fs/secrets/trivy-secret.yaml",
 			},
 			golden: "testdata/secrets.json.golden",
 		},
@@ -305,12 +334,19 @@ func TestFilesystem(t *testing.T) {
 			}
 
 			osArgs := []string{
-				"-q", "--cache-dir", cacheDir, command, "--skip-db-update", "--skip-policy-update",
-				"--format", format, "--offline-scan",
+				"-q",
+				"--cache-dir",
+				cacheDir,
+				command,
+				"--skip-db-update",
+				"--skip-policy-update",
+				"--format",
+				format,
+				"--offline-scan",
 			}
 
-			if tt.args.securityChecks != "" {
-				osArgs = append(osArgs, "--security-checks", tt.args.securityChecks)
+			if tt.args.scanner != "" {
+				osArgs = append(osArgs, "--scanners", string(tt.args.scanner))
 			}
 
 			if len(tt.args.policyPaths) != 0 {
