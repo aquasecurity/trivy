@@ -73,6 +73,9 @@ type ScannerConfig struct {
 
 	// Artifact options
 	ArtifactOption artifact.Option
+
+	// Registry options
+	RegistryOption ftypes.RemoteOptions
 }
 
 type Runner interface {
@@ -658,6 +661,13 @@ func initScannerConfig(opts flag.Options, cacheClient cache.Cache) (ScannerConfi
 			LicenseScannerOption: analyzer.LicenseScannerOption{
 				Full: opts.LicenseFull,
 			},
+		},
+		RegistryOption: ftypes.RemoteOptions{
+			Credentials:   opts.Credentials,
+			RegistryToken: opts.RegistryToken,
+			Insecure:      opts.Insecure,
+			Platform:      opts.Platform,
+			AWSRegion:     opts.AWSOptions.Region,
 		},
 	}, scanOptions, nil
 }
