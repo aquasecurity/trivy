@@ -52,7 +52,7 @@ require (
 	github.com/hashicorp/go-getter v1.7.0
 	github.com/hashicorp/go-multierror v1.1.1
 	github.com/hashicorp/golang-lru/v2 v2.0.1
-	github.com/in-toto/in-toto-golang v0.5.0
+	github.com/in-toto/in-toto-golang v0.7.0
 	github.com/knqyf263/go-apk-version v0.0.0-20200609155635-041fdbb8563f
 	github.com/knqyf263/go-deb-version v0.0.0-20230223133812-3ed183d23422
 	github.com/knqyf263/go-rpm-version v0.0.0-20220614171824-631e686d1075
@@ -75,8 +75,8 @@ require (
 	github.com/package-url/packageurl-go v0.1.1-0.20220428063043-89078438f170
 	github.com/samber/lo v1.37.0
 	github.com/saracen/walker v0.1.3
-	github.com/secure-systems-lab/go-securesystemslib v0.4.0
-	github.com/sigstore/rekor v1.0.1
+	github.com/secure-systems-lab/go-securesystemslib v0.5.0
+	github.com/sigstore/rekor v0.7.0
 	github.com/sosedoff/gitkit v0.3.0
 	github.com/spdx/tools-golang v0.3.1-0.20230104082527-d6f58551be3f
 	github.com/spf13/cast v1.5.0
@@ -190,7 +190,7 @@ require (
 	github.com/bmatcuk/doublestar v1.3.4 // indirect
 	github.com/briandowns/spinner v1.19.0 // indirect
 	github.com/cenkalti/backoff/v4 v4.2.0 // indirect
-	github.com/cespare/xxhash/v2 v2.1.2 // indirect
+	github.com/cespare/xxhash/v2 v2.2.0 // indirect
 	github.com/chai2010/gettext-go v1.0.2 // indirect
 	github.com/cloudflare/circl v1.1.0 // indirect
 	github.com/containerd/cgroups v1.0.4 // indirect
@@ -356,7 +356,7 @@ require (
 	google.golang.org/api v0.108.0 // indirect
 	google.golang.org/appengine v1.6.7 // indirect
 	google.golang.org/genproto v0.0.0-20230124163310-31e0e69b6fc2 // indirect
-	google.golang.org/grpc v1.52.0 // indirect
+	google.golang.org/grpc v1.53.0 // indirect
 	gopkg.in/cheggaaa/pb.v1 v1.0.28 // indirect
 	gopkg.in/inf.v0 v0.9.1 // indirect
 	gopkg.in/ini.v1 v1.67.0 // indirect
