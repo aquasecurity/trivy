@@ -28,7 +28,7 @@ type Option struct {
 	Slow              bool // Lower CPU and memory
 	AWSRegion         string
 
-	// For container registries
+	// For OCI registries
 	types.RemoteOptions
 
 	MisconfScannerOption misconf.ScannerOption

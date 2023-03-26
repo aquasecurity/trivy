@@ -759,7 +759,7 @@ func NewModuleCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 				if err != nil {
 					return xerrors.Errorf("flag error: %w", err)
 				}
-				return module.Install(cmd.Context(), opts.ModuleDir, repo, opts.Quiet, opts.Insecure)
+				return module.Install(cmd.Context(), opts.ModuleDir, repo, opts.Quiet, opts.Remote())
 			},
 		},
 		&cobra.Command{

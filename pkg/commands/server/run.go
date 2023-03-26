@@ -2,7 +2,6 @@ package server
 
 import (
 	"context"
-
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy-db/pkg/db"
@@ -35,7 +34,7 @@ func Run(ctx context.Context, opts flag.Options) (err error) {
 
 	// download the database file
 	if err = operation.DownloadDB(opts.AppVersion, opts.CacheDir, opts.DBRepository,
-		true, opts.Insecure, opts.SkipDBUpdate); err != nil {
+		true, opts.SkipDBUpdate, opts.Remote()); err != nil {
 		return err
 	}
 
@@ -57,6 +56,7 @@ func Run(ctx context.Context, opts flag.Options) (err error) {
 	}
 	m.Register()
 
-	server := rpcServer.NewServer(opts.AppVersion, opts.Listen, opts.CacheDir, opts.Token, opts.TokenHeader, opts.DBRepository)
-	return server.ListenAndServe(cache, opts.Insecure, opts.SkipDBUpdate)
+	server := rpcServer.NewServer(opts.AppVersion, opts.Listen, opts.CacheDir, opts.Token, opts.TokenHeader,
+		opts.DBRepository, opts.Remote())
+	return server.ListenAndServe(cache, opts.SkipDBUpdate)
 }

@@ -58,6 +58,29 @@ func Get(ctx context.Context, ref name.Reference, option types.RemoteOptions) (*
 	return nil, errs
 }
 
+// Image is a wrapper of google/go-containerregistry/pkg/v1/remote.Image
+// so that it can try multiple authentication methods.
+func Image(ctx context.Context, ref name.Reference, option types.RemoteOptions) (v1.Image, error) {
+	remoteOpts := []remote.Option{remote.WithTransport(transport(option.Insecure))}
+
+	var errs error
+	for _, authOpt := range authOptions(ctx, ref, option) {
+		// Try each authentication method until it succeeds
+		remoteOpts = append(remoteOpts, authOpt)
+		index, err := remote.Image(ref, remoteOpts...)
+		if err != nil {
+			errs = multierror.Append(errs, err)
+			continue
+		}
+		return index, nil
+	}
+
+	// No authentication succeeded
+	return nil, errs
+}
+
+// Referrers is a wrapper of google/go-containerregistry/pkg/v1/remote.Referrers
+// so that it can try multiple authentication methods.
 func Referrers(ctx context.Context, d name.Digest, option types.RemoteOptions) (*v1.IndexManifest, error) {
 	remoteOpts := []remote.Option{remote.WithTransport(transport(option.Insecure))}
 
