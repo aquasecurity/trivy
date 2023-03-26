@@ -9,7 +9,7 @@ require (
 	github.com/alicebob/miniredis/v2 v2.23.0
 	github.com/aquasecurity/bolt-fixtures v0.0.0-20200903104109-d34e7f983986
 	github.com/aquasecurity/defsec v0.84.0
-	github.com/aquasecurity/go-dep-parser v0.0.0-20230228091112-63a15cdc6bc3
+	github.com/aquasecurity/go-dep-parser v0.0.0-20230324043952-2172dc218241
 	github.com/aquasecurity/go-gem-version v0.0.0-20201115065557-8eed6fe000ce
 	github.com/aquasecurity/go-npm-version v0.0.0-20201110091526-0b796d180798
 	github.com/aquasecurity/go-pep440-version v0.0.0-20210121094942-22b2f8951d46
@@ -68,7 +68,7 @@ require (
 	github.com/spf13/cobra v1.6.1
 	github.com/spf13/pflag v1.0.5
 	github.com/spf13/viper v1.15.0
-	github.com/stretchr/testify v1.8.1
+	github.com/stretchr/testify v1.8.2
 	github.com/testcontainers/testcontainers-go v0.17.0
 	github.com/tetratelabs/wazero v1.0.0-pre.9
 	github.com/twitchtv/twirp v8.1.2+incompatible
@@ -344,15 +344,15 @@ require (
 	go.uber.org/atomic v1.10.0 // indirect
 	go.uber.org/multierr v1.8.0 // indirect
 	golang.org/x/crypto v0.5.0
-	golang.org/x/mod v0.8.0
-	golang.org/x/net v0.7.0 // indirect
+	golang.org/x/mod v0.9.0
+	golang.org/x/net v0.8.0 // indirect
 	golang.org/x/oauth2 v0.1.0 // indirect
 	golang.org/x/sync v0.1.0
-	golang.org/x/sys v0.5.0 // indirect
-	golang.org/x/term v0.5.0
-	golang.org/x/text v0.7.0
+	golang.org/x/sys v0.6.0 // indirect
+	golang.org/x/term v0.6.0
+	golang.org/x/text v0.8.0
 	golang.org/x/time v0.1.0 // indirect
-	golang.org/x/tools v0.2.0 // indirect
+	golang.org/x/tools v0.6.0 // indirect
 	google.golang.org/api v0.107.0 // indirect
 	google.golang.org/appengine v1.6.7 // indirect
 	google.golang.org/genproto v0.0.0-20221227171554-f9683d7f8bef // indirect
@@ -399,5 +399,3 @@ replace oras.land/oras-go => oras.land/oras-go v1.1.1
 // v0.3.1-0.20230104082527-d6f58551be3f is taken from github.com/moby/buildkit v0.11.0
 // spdx logic write on v0.3.0 and incompatible with v0.3.1-0.20230104082527-d6f58551be3f
 replace github.com/spdx/tools-golang => github.com/spdx/tools-golang v0.3.0
-
-replace github.com/aquasecurity/go-dep-parser => github.com/AndreyLevchenko/go-dep-parser v0.0.0-20230301125855-450fdf6ea954
