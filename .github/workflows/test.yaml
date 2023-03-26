@@ -41,7 +41,7 @@ jobs:
       - name: Lint
         uses: golangci/golangci-lint-action@v3.4.0
         with:
-          version: v1.49
+          version: v1.52
           args: --deadline=30m
           skip-cache: true # https://github.com/golangci/golangci-lint-action/issues/244#issuecomment-1052197778
         if: matrix.operating-system == 'ubuntu-latest'
