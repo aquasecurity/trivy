@@ -1289,73 +1289,237 @@
     "FilePath": "php-app/composer.lock",
     "Libraries": [
       {
+        "ID": "guzzlehttp/guzzle@6.2.0",
         "Name": "guzzlehttp/guzzle",
         "Version": "6.2.0",
+        "Licenses": [
+          "MIT"
+        ],
+        "DependsOn": [
+          "guzzlehttp/promises@v1.3.1",
+          "guzzlehttp/psr7@1.5.2"
+        ],
+        "Locations": [
+          {
+            "StartLine": 9,
+            "EndLine": 73
+          }
+        ],
         "Layer": {}
       },
       {
+        "ID": "guzzlehttp/promises@v1.3.1",
         "Name": "guzzlehttp/promises",
         "Version": "v1.3.1",
+        "Licenses": [
+          "MIT"
+        ],
+        "Locations": [
+          {
+            "StartLine": 74,
+            "EndLine": 124
+          }
+        ],
         "Layer": {}
       },
       {
+        "ID": "guzzlehttp/psr7@1.5.2",
         "Name": "guzzlehttp/psr7",
         "Version": "1.5.2",
+        "Licenses": [
+          "MIT"
+        ],
+        "DependsOn": [
+          "psr/http-message@1.0.1",
+          "ralouphie/getallheaders@2.0.5"
+        ],
+        "Locations": [
+          {
+            "StartLine": 125,
+            "EndLine": 191
+          }
+        ],
         "Layer": {}
       },
       {
+        "ID": "laravel/installer@v2.0.1",
         "Name": "laravel/installer",
         "Version": "v2.0.1",
+        "Licenses": [
+          "MIT"
+        ],
+        "DependsOn": [
+          "guzzlehttp/guzzle@6.2.0",
+          "symfony/console@v4.2.7",
+          "symfony/filesystem@v4.2.7",
+          "symfony/process@v4.2.7"
+        ],
+        "Locations": [
+          {
+            "StartLine": 192,
+            "EndLine": 237
+          }
+        ],
         "Layer": {}
       },
       {
+        "ID": "pear/log@1.13.1",
         "Name": "pear/log",
         "Version": "1.13.1",
+        "Licenses": [
+          "MIT"
+        ],
+        "DependsOn": [
+          "pear/pear_exception@v1.0.0"
+        ],
+        "Locations": [
+          {
+            "StartLine": 238,
+            "EndLine": 290
+          }
+        ],
         "Layer": {}
       },
       {
+        "ID": "pear/pear_exception@v1.0.0",
         "Name": "pear/pear_exception",
         "Version": "v1.0.0",
+        "Licenses": [
+          "BSD-2-Clause"
+        ],
+        "Locations": [
+          {
+            "StartLine": 291,
+            "EndLine": 345
+          }
+        ],
         "Layer": {}
       },
       {
+        "ID": "psr/http-message@1.0.1",
         "Name": "psr/http-message",
         "Version": "1.0.1",
+        "Licenses": [
+          "MIT"
+        ],
+        "Locations": [
+          {
+            "StartLine": 346,
+            "EndLine": 395
+          }
+        ],
         "Layer": {}
       },
       {
+        "ID": "ralouphie/getallheaders@2.0.5",
         "Name": "ralouphie/getallheaders",
         "Version": "2.0.5",
+        "Licenses": [
+          "MIT"
+        ],
+        "Locations": [
+          {
+            "StartLine": 396,
+            "EndLine": 435
+          }
+        ],
         "Layer": {}
       },
       {
+        "ID": "symfony/console@v4.2.7",
         "Name": "symfony/console",
         "Version": "v4.2.7",
+        "Licenses": [
+          "MIT"
+        ],
+        "DependsOn": [
+          "symfony/contracts@v1.0.2",
+          "symfony/polyfill-mbstring@v1.11.0"
+        ],
+        "Locations": [
+          {
+            "StartLine": 436,
+            "EndLine": 507
+          }
+        ],
         "Layer": {}
       },
       {
+        "ID": "symfony/contracts@v1.0.2",
         "Name": "symfony/contracts",
         "Version": "v1.0.2",
+        "Licenses": [
+          "MIT"
+        ],
+        "Locations": [
+          {
+            "StartLine": 508,
+            "EndLine": 575
+          }
+        ],
         "Layer": {}
       },
       {
+        "ID": "symfony/filesystem@v4.2.7",
         "Name": "symfony/filesystem",
         "Version": "v4.2.7",
+        "Licenses": [
+          "MIT"
+        ],
+        "DependsOn": [
+          "symfony/polyfill-ctype@v1.11.0"
+        ],
+        "Locations": [
+          {
+            "StartLine": 576,
+            "EndLine": 625
+          }
+        ],
         "Layer": {}
       },
       {
+        "ID": "symfony/polyfill-ctype@v1.11.0",
         "Name": "symfony/polyfill-ctype",
         "Version": "v1.11.0",
+        "Licenses": [
+          "MIT"
+        ],
+        "Locations": [
+          {
+            "StartLine": 626,
+            "EndLine": 683
+          }
+        ],
         "Layer": {}
       },
       {
+        "ID": "symfony/polyfill-mbstring@v1.11.0",
         "Name": "symfony/polyfill-mbstring",
         "Version": "v1.11.0",
+        "Licenses": [
+          "MIT"
+        ],
+        "Locations": [
+          {
+            "StartLine": 684,
+            "EndLine": 742
+          }
+        ],
         "Layer": {}
       },
       {
+        "ID": "symfony/process@v4.2.7",
         "Name": "symfony/process",
         "Version": "v4.2.7",
+        "Licenses": [
+          "MIT"
+        ],
+        "Locations": [
+          {
+            "StartLine": 743,
+            "EndLine": 791
+          }
+        ],
         "Layer": {}
       }
     ]

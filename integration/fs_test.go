@@ -188,6 +188,15 @@ func TestFilesystem(t *testing.T) {
 			golden: "testdata/mix.lock.json.golden",
 		},
 		{
+			name: "composer.lock",
+			args: args{
+				scanner:     types.VulnerabilityScanner,
+				listAllPkgs: true,
+				input:       "testdata/fixtures/fs/composer",
+			},
+			golden: "testdata/composer.lock.json.golden",
+		},
+		{
 			name: "dockerfile",
 			args: args{
 				scanner:    types.MisconfigScanner,
