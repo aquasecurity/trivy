@@ -27,17 +27,7 @@ type Descriptor = remote.Descriptor
 // Get is a wrapper of google/go-containerregistry/pkg/v1/remote.Get
 // so that it can try multiple authentication methods.
 func Get(ctx context.Context, ref name.Reference, option types.RemoteOptions) (*Descriptor, error) {
-	d := &net.Dialer{
-		Timeout: 10 * time.Minute,
-	}
-	t := &http.Transport{
-		Proxy:             http.ProxyFromEnvironment,
-		DisableKeepAlives: true,
-		DialContext:       d.DialContext,
-		TLSClientConfig:   &tls.Config{InsecureSkipVerify: option.Insecure},
-	}
-
-	remoteOpts := []remote.Option{remote.WithTransport(t)}
+	remoteOpts := []remote.Option{remote.WithTransport(transport(option.Insecure))}
 
 	var errs error
 	for _, authOpt := range authOptions(ctx, ref, option) {
@@ -66,6 +56,37 @@ func Get(ctx context.Context, ref name.Reference, option types.RemoteOptions) (*
 
 	// No authentication succeeded
 	return nil, errs
+}
+
+func Referrers(ctx context.Context, d name.Digest, option types.RemoteOptions) (*v1.IndexManifest, error) {
+	remoteOpts := []remote.Option{remote.WithTransport(transport(option.Insecure))}
+
+	var errs error
+	for _, authOpt := range authOptions(ctx, d, option) {
+		// Try each authentication method until it succeeds
+		remoteOpts = append(remoteOpts, authOpt)
+		index, err := remote.Referrers(d, remoteOpts...)
+		if err != nil {
+			errs = multierror.Append(errs, err)
+			continue
+		}
+		return index, nil
+	}
+
+	// No authentication succeeded
+	return nil, errs
+}
+
+func transport(insecure bool) *http.Transport {
+	d := &net.Dialer{
+		Timeout: 10 * time.Minute,
+	}
+	return &http.Transport{
+		Proxy:             http.ProxyFromEnvironment,
+		DisableKeepAlives: true,
+		DialContext:       d.DialContext,
+		TLSClientConfig:   &tls.Config{InsecureSkipVerify: insecure},
+	}
 }
 
 func authOptions(ctx context.Context, ref name.Reference, option types.RemoteOptions) []remote.Option {

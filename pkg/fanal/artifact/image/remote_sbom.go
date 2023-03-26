@@ -7,28 +7,26 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/google/go-containerregistry/pkg/authn"
 	"github.com/google/go-containerregistry/pkg/name"
 	v1 "github.com/google/go-containerregistry/pkg/v1"
-	"github.com/google/go-containerregistry/pkg/v1/remote"
 	"github.com/samber/lo"
 	"golang.org/x/exp/slices"
 	"golang.org/x/xerrors"
 
 	sbomatt "github.com/aquasecurity/trivy/pkg/attestation/sbom"
-	"github.com/aquasecurity/trivy/pkg/fanal/artifact"
 	"github.com/aquasecurity/trivy/pkg/fanal/artifact/sbom"
 	"github.com/aquasecurity/trivy/pkg/fanal/log"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/oci"
+	"github.com/aquasecurity/trivy/pkg/remote"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
 
 var errNoSBOMFound = xerrors.New("remote SBOM not found")
 
-type inspectRemoteSBOM func(context.Context, artifact.Option) (ftypes.ArtifactReference, error)
+type inspectRemoteSBOM func(context.Context) (ftypes.ArtifactReference, error)
 
-func (a Artifact) retrieveRemoteSBOM(ctx context.Context, opt artifact.Option) (ftypes.ArtifactReference, error) {
+func (a Artifact) retrieveRemoteSBOM(ctx context.Context) (ftypes.ArtifactReference, error) {
 	for _, sbomSource := range a.artifactOption.SBOMSources {
 		var inspect inspectRemoteSBOM
 		switch sbomSource {
@@ -41,7 +39,7 @@ func (a Artifact) retrieveRemoteSBOM(ctx context.Context, opt artifact.Option) (
 			continue
 		}
 
-		ref, err := inspect(ctx, opt)
+		ref, err := inspect(ctx)
 		if errors.Is(err, errNoSBOMFound) {
 			// Try the next SBOM source
 			log.Logger.Debugf("No SBOM found in the source: %s", sbomSource)
@@ -54,14 +52,14 @@ func (a Artifact) retrieveRemoteSBOM(ctx context.Context, opt artifact.Option) (
 	return ftypes.ArtifactReference{}, errNoSBOMFound
 }
 
-func (a Artifact) inspectOCIReferrerSBOM(ctx context.Context, opt artifact.Option) (ftypes.ArtifactReference, error) {
-	digest, err := repoDigest(a.image, opt.InsecureSkipTLS)
+func (a Artifact) inspectOCIReferrerSBOM(ctx context.Context) (ftypes.ArtifactReference, error) {
+	digest, err := repoDigest(a.image, a.artifactOption.Insecure)
 	if err != nil {
 		return ftypes.ArtifactReference{}, xerrors.Errorf("repo digest error: %w", err)
 	}
 
 	// Fetch referrers
-	index, err := remote.Referrers(digest, remote.WithAuthFromKeychain(authn.DefaultKeychain))
+	index, err := remote.Referrers(ctx, digest, a.artifactOption.RemoteOptions)
 	if err != nil {
 		return ftypes.ArtifactReference{}, xerrors.Errorf("unable to fetch referrers: %w", err)
 	}
@@ -83,7 +81,7 @@ func (a Artifact) inspectOCIReferrerSBOM(ctx context.Context, opt artifact.Optio
 func (a Artifact) parseReferrer(ctx context.Context, repo string, desc v1.Descriptor) (ftypes.ArtifactReference, error) {
 	const fileName string = "referrer.sbom"
 	repoName := fmt.Sprintf("%s@%s", repo, desc.Digest)
-	referrer, err := oci.NewArtifact(repoName, desc.ArtifactType, fileName, true, a.artifactOption.InsecureSkipTLS)
+	referrer, err := oci.NewArtifact(repoName, desc.ArtifactType, fileName, true, a.artifactOption.Insecure)
 	if err != nil {
 		return ftypes.ArtifactReference{}, xerrors.Errorf("OCI error: %w", err)
 	}
@@ -110,8 +108,8 @@ func (a Artifact) parseReferrer(ctx context.Context, repo string, desc v1.Descri
 	return res, nil
 }
 
-func (a Artifact) inspectRekorSBOMAttestation(ctx context.Context, opt artifact.Option) (ftypes.ArtifactReference, error) {
-	digest, err := repoDigest(a.image, opt.InsecureSkipTLS)
+func (a Artifact) inspectRekorSBOMAttestation(ctx context.Context) (ftypes.ArtifactReference, error) {
+	digest, err := repoDigest(a.image, a.artifactOption.Insecure)
 	if err != nil {
 		return ftypes.ArtifactReference{}, xerrors.Errorf("repo digest error: %w", err)
 	}
