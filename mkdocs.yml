@@ -65,6 +65,7 @@ nav:
               - Node.js: docs/vulnerability/languages/nodejs.md
               - PHP: docs/vulnerability/languages/php.md
               - Python: docs/vulnerability/languages/python.md
+              - Rust: docs/vulnerability/languages/rust.md
       - Misconfiguration:
           - Scanning: docs/misconfiguration/scanning.md
           - Policy:
