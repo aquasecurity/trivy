@@ -466,6 +466,11 @@
          <changefreq>daily</changefreq>
     </url>
     <url>
+         <loc>https://aquasecurity.github.io/trivy/dev/docs/vulnerability/languages/rust/</loc>
+         <lastmod>2023-03-26</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
          <loc>https://aquasecurity.github.io/trivy/dev/ecosystem/</loc>
          <lastmod>2023-03-26</lastmod>
          <changefreq>daily</changefreq>
