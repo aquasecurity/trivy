@@ -2,7 +2,6 @@ package image
 
 import (
 	"context"
-
 	"github.com/google/go-containerregistry/pkg/name"
 	v1 "github.com/google/go-containerregistry/pkg/v1"
 	multierror "github.com/hashicorp/go-multierror"
@@ -44,7 +43,7 @@ func DisableRemote() Option {
 	}
 }
 
-func NewContainerImage(ctx context.Context, imageName string, option types.DockerOption, opts ...Option) (types.Image, func(), error) {
+func NewContainerImage(ctx context.Context, imageName string, opt types.RemoteOptions, opts ...Option) (types.Image, func(), error) {
 	o := &options{
 		dockerd:    true,
 		podman:     true,
@@ -57,7 +56,7 @@ func NewContainerImage(ctx context.Context, imageName string, option types.Docke
 
 	var errs error
 	var nameOpts []name.Option
-	if option.NonSSL {
+	if opt.Insecure {
 		nameOpts = append(nameOpts, name.Insecure)
 	}
 	ref, err := name.ParseReference(imageName, nameOpts...)
@@ -95,21 +94,14 @@ func NewContainerImage(ctx context.Context, imageName string, option types.Docke
 		errs = multierror.Append(errs, err)
 	}
 
-	if len(option.Credentials) == 0 {
-		option.Credentials = append(option.Credentials, types.Credential{}) // no credential use-case
-	}
 	// Try accessing Docker Registry
 	if o.remote {
-		for _, credential := range option.Credentials {
-			option.UserName = credential.UserName
-			option.Password = credential.Password
-			img, err := tryRemote(ctx, imageName, ref, option)
-			if err == nil {
-				// Return v1.Image if the image is found in a remote registry
-				return img, func() {}, nil
-			}
-			errs = multierror.Append(errs, err)
+		img, err := tryRemote(ctx, imageName, ref, opt)
+		if err == nil {
+			// Return v1.Image if the image is found in a remote registry
+			return img, func() {}, nil
 		}
+		errs = multierror.Append(errs, err)
 	}
 
 	return nil, func() {}, errs

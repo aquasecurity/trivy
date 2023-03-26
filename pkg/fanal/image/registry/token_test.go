@@ -28,24 +28,6 @@ func TestGetToken(t *testing.T) {
 			},
 			wantAuth: authn.Basic{},
 		},
-		{
-			name: "happy path with a credential",
-			args: args{
-				domain: "docker.io",
-				opt: types.RemoteOptions{
-					Credentials: []types.Credential{
-						{
-							Username: "user",
-							Password: "pass",
-						},
-					},
-				},
-			},
-			wantAuth: authn.Basic{
-				Username: "user",
-				Password: "pass",
-			},
-		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
