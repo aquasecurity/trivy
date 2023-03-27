@@ -55,6 +55,62 @@ Trivy is integrated with many popular platforms and applications. The complete l
 - [VS Code plugin](https://github.com/aquasecurity/trivy-vscode-extension)
 - See [Ecosystem] for more
 
+### General usage
+
+```bash
+trivy <target> [--scanners <scanner1,scanner2>] <subject>
+```
+
+Examples:
+
+```bash
+trivy image python:3.4-alpine
+```
+
+<details>
+<summary>Result</summary>
+
+<figure style="text-align: center">
+  <video width="1000" autoplay muted controls loop>
+    <source src="https://user-images.githubusercontent.com/1161307/171013513-95f18734-233d-45d3-aaf5-d6aec687db0e.mov" type="video/mp4" />
+  </video>
+  <figcaption>Demo: Vulnerability Detection</figcaption>
+</figure>
+
+</details>
+
+```bash
+trivy fs --scanners vuln,secret,config myproject/
+```
+
+<details>
+<summary>Result</summary>
+
+<figure style="text-align: center">
+  <video width="1000" autoplay muted controls loop>
+    <source src="https://user-images.githubusercontent.com/1161307/171013917-b1f37810-f434-465c-b01a-22de036bd9b3.mov" type="video/mp4" />
+  </video>
+  <figcaption>Demo: Misconfiguration Detection</figcaption>
+</figure>
+
+</details>
+
+```bash
+trivy k8s --report summary cluster
+```
+
+<details>
+<summary>Result</summary>
+
+<figure style="text-align: center">
+  <img src="imgs/secret-demo.gif" width="1000">
+  <figcaption>Demo: Secret Detection</figcaption>
+</figure>
+
+</details>
+
+More examples on getting-started are provided in the [Getting Started Guide](https://aquasecurity.github.io/trivy/latest/getting-started/getting-strated/) of the Documentation.
+
 ---
 
 Trivy is an [Aqua Security][aquasec] open source project.  

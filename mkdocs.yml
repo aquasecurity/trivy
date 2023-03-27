@@ -9,7 +9,7 @@ edit_uri: ""
 nav:
   - Getting Started: 
       - Overview: index.md
-      - Quick Start: getting-started/quick-start.md
+      - Getting Started Guide: getting-started/getting-started.md
       - Installation: getting-started/installation.md
       - FAQ: getting-started/faq.md
   - Tutorials:

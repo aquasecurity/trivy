@@ -97,6 +97,8 @@ trivy k8s --report summary cluster
 
 </details>
 
+More examples on getting-started are provided in the [Getting Started Guide](https://aquasecurity.github.io/trivy/latest/getting-started/getting-strated/) of the Documentation.
+
 ## FAQ
 
 ### How to pronounce the name "Trivy"?
