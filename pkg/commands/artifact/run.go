@@ -73,9 +73,6 @@ type ScannerConfig struct {
 
 	// Artifact options
 	ArtifactOption artifact.Option
-
-	// Registry options
-	RemoteOption ftypes.RemoteOptions
 }
 
 type Runner interface {
@@ -662,7 +659,6 @@ func initScannerConfig(opts flag.Options, cacheClient cache.Cache) (ScannerConfi
 				Full: opts.LicenseFull,
 			},
 		},
-		RemoteOption: remoteOption,
 	}, scanOptions, nil
 }
 
