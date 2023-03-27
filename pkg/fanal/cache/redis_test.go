@@ -67,8 +67,8 @@ func TestRedisCache_PutArtifact(t *testing.T) {
 				addr = "dummy:16379"
 			}
 
-			c := cache.NewRedisCache(&redis.Options{
-				Addr: addr,
+			c := cache.NewRedisCache(&redis.UniversalOptions{
+				Addrs: []string{addr},
 			}, 0)
 
 			err = c.PutArtifact(tt.args.artifactID, tt.args.artifactConfig)
@@ -156,8 +156,8 @@ func TestRedisCache_PutBlob(t *testing.T) {
 				addr = "dummy:16379"
 			}
 
-			c := cache.NewRedisCache(&redis.Options{
-				Addr: addr,
+			c := cache.NewRedisCache(&redis.UniversalOptions{
+				Addrs: []string{addr},
 			}, 0)
 
 			err = c.PutBlob(tt.args.blobID, tt.args.blobConfig)
@@ -241,8 +241,8 @@ func TestRedisCache_GetArtifact(t *testing.T) {
 				addr = "dummy:16379"
 			}
 
-			c := cache.NewRedisCache(&redis.Options{
-				Addr: addr,
+			c := cache.NewRedisCache(&redis.UniversalOptions{
+				Addrs: []string{addr},
 			}, 0)
 
 			got, err := c.GetArtifact(tt.artifactID)
@@ -334,8 +334,8 @@ func TestRedisCache_GetBlob(t *testing.T) {
 				addr = "dummy:16379"
 			}
 
-			c := cache.NewRedisCache(&redis.Options{
-				Addr: addr,
+			c := cache.NewRedisCache(&redis.UniversalOptions{
+				Addrs: []string{addr},
 			}, 0)
 
 			got, err := c.GetBlob(tt.blobID)
@@ -445,8 +445,8 @@ func TestRedisCache_MissingBlobs(t *testing.T) {
 				addr = "dummy:6379"
 			}
 
-			c := cache.NewRedisCache(&redis.Options{
-				Addr: addr,
+			c := cache.NewRedisCache(&redis.UniversalOptions{
+				Addrs: []string{addr},
 			}, 0)
 
 			missingArtifact, missingBlobIDs, err := c.MissingBlobs(tt.args.artifactID, tt.args.blobIDs)
@@ -470,8 +470,8 @@ func TestRedisCache_Close(t *testing.T) {
 	defer s.Close()
 
 	t.Run("close", func(t *testing.T) {
-		c := cache.NewRedisCache(&redis.Options{
-			Addr: s.Addr(),
+		c := cache.NewRedisCache(&redis.UniversalOptions{
+			Addrs: []string{s.Addr()},
 		}, 0)
 		closeErr := c.Close()
 		require.NoError(t, closeErr)
@@ -492,8 +492,8 @@ func TestRedisCache_Clear(t *testing.T) {
 	s.Set("foo", "bar")
 
 	t.Run("clear", func(t *testing.T) {
-		c := cache.NewRedisCache(&redis.Options{
-			Addr: s.Addr(),
+		c := cache.NewRedisCache(&redis.UniversalOptions{
+			Addrs: []string{s.Addr()},
 		}, 0)
 		require.NoError(t, c.Clear())
 		for i := 0; i < 200; i++ {
@@ -546,8 +546,8 @@ func TestRedisCache_DeleteBlobs(t *testing.T) {
 				addr = "dummy:16379"
 			}
 
-			c := cache.NewRedisCache(&redis.Options{
-				Addr: addr,
+			c := cache.NewRedisCache(&redis.UniversalOptions{
+				Addrs: []string{addr},
 			}, 0)
 
 			err = c.DeleteBlobs(tt.args.blobIDs)
