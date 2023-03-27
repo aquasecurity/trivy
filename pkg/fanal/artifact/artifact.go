@@ -26,6 +26,7 @@ type Option struct {
 	SBOMSources       []string
 	RekorURL          string
 	Platform          string
+	ForcePlatform     bool
 	Slow              bool // Lower CPU and memory
 	AWSRegion         string
 

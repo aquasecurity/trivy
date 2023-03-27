@@ -549,6 +549,7 @@ func initScannerConfig(opts flag.Options, cacheClient cache.Cache) (ScannerConfi
 		ListAllPackages:     opts.ListAllPkgs,
 		LicenseCategories:   opts.LicenseCategories,
 		FilePatterns:        opts.FilePatterns,
+		ForcePlatform:       opts.ForcePlatform,
 	}
 
 	if len(opts.ImageConfigScanners) != 0 {
@@ -632,6 +633,7 @@ func initScannerConfig(opts flag.Options, cacheClient cache.Cache) (ScannerConfi
 			SBOMSources:       opts.SBOMSources,
 			RekorURL:          opts.RekorURL,
 			Platform:          opts.Platform,
+			ForcePlatform:     opts.ForcePlatform,
 			Slow:              opts.Slow,
 			AWSRegion:         opts.Region,
 

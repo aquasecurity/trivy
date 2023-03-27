@@ -36,6 +36,12 @@ var (
 		Value:      "",
 		Usage:      "set platform in the form os/arch if image is multi-platform capable",
 	}
+	ForcePlatformFlag = Flag{
+		Name:       "force-platform",
+		ConfigName: "image.force.platform",
+		Value:      false,
+		Usage:      "forces the scan to continue only when --platform os/arch matches exactly",
+	}
 )
 
 type ImageFlagGroup struct {
@@ -43,6 +49,7 @@ type ImageFlagGroup struct {
 	ImageConfigScanners *Flag
 	ScanRemovedPkgs     *Flag
 	Platform            *Flag
+	ForcePlatform       *Flag
 }
 
 type ImageOptions struct {
@@ -50,6 +57,7 @@ type ImageOptions struct {
 	ImageConfigScanners types.Scanners
 	ScanRemovedPkgs     bool
 	Platform            string
+	ForcePlatform       bool
 }
 
 func NewImageFlagGroup() *ImageFlagGroup {
@@ -58,6 +66,7 @@ func NewImageFlagGroup() *ImageFlagGroup {
 		ImageConfigScanners: &ImageConfigScannersFlag,
 		ScanRemovedPkgs:     &ScanRemovedPkgsFlag,
 		Platform:            &PlatformFlag,
+		ForcePlatform:       &ForcePlatformFlag,
 	}
 }
 
@@ -66,7 +75,7 @@ func (f *ImageFlagGroup) Name() string {
 }
 
 func (f *ImageFlagGroup) Flags() []*Flag {
-	return []*Flag{f.Input, f.ImageConfigScanners, f.ScanRemovedPkgs, f.Platform}
+	return []*Flag{f.Input, f.ImageConfigScanners, f.ScanRemovedPkgs, f.Platform, f.ForcePlatform}
 }
 
 func (f *ImageFlagGroup) ToOptions() (ImageOptions, error) {
@@ -79,5 +88,6 @@ func (f *ImageFlagGroup) ToOptions() (ImageOptions, error) {
 		ImageConfigScanners: scanners,
 		ScanRemovedPkgs:     getBool(f.ScanRemovedPkgs),
 		Platform:            getString(f.Platform),
+		ForcePlatform:       getBool(f.ForcePlatform),
 	}, nil
 }

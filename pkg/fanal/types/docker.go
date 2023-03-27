@@ -22,7 +22,8 @@ type DockerOption struct {
 	NonSSL                bool
 
 	// Architecture
-	Platform string
+	Platform      string
+	ForcePlatform bool
 }
 
 type Credential struct {
