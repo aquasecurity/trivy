@@ -1,4 +1,4 @@
-# Quick Start
+# Getting Started Guide
 
 ## Trivy CLI
 
