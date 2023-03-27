@@ -33,26 +33,61 @@ type Cache struct {
 	cache.Cache
 }
 
+// redisOptsFromCacheOpions gets redis options from
+func redisOptsFromCacheOpions(c flag.CacheOptions) (*redis.UniversalOptions, error) {
+	log.Logger.Infof("Redis cache: %s", c.CacheBackendMasked())
+
+	var addrs []string
+	var pass string
+	var redisDB int
+
+	for _, url := range strings.Split(c.CacheBackend, ",") {
+		url, err := redis.ParseURL(url)
+		if err != nil {
+			return nil, err
+		}
+
+		addrs = append(addrs, url.Addr)
+		redisDB = url.DB
+		pass = url.Password
+	}
+
+	log.Logger.Infof("Redis password: %s", pass)
+	log.Logger.Infof("Redis address: %s", addrs[0])
+	log.Logger.Infof("Redis DB: %d", redisDB)
+
+	options := &redis.UniversalOptions{
+		Addrs:    addrs,
+		DB:       redisDB,
+		Password: pass,
+	}
+
+	if c.RedisMasterName != "" {
+		options.MasterName = c.RedisMasterName
+	}
+
+	if !lo.IsEmpty(c.RedisOptions) && c.RedisOptions.RedisMasterName == "" {
+		caCert, cert, err := GetTLSConfig(c.RedisCACert, c.RedisCert, c.RedisKey)
+		if err != nil {
+			return nil, err
+		}
+
+		options.TLSConfig = &tls.Config{
+			RootCAs:      caCert,
+			Certificates: []tls.Certificate{cert},
+			MinVersion:   tls.VersionTLS12,
+		}
+	}
+	return options, nil
+}
+
 // NewCache is the factory method for Cache
 func NewCache(c flag.CacheOptions) (Cache, error) {
 	if strings.HasPrefix(c.CacheBackend, "redis://") {
 		log.Logger.Infof("Redis cache: %s", c.CacheBackendMasked())
-		options, err := redis.ParseURL(c.CacheBackend)
+		options, err := redisOptsFromCacheOpions(c)
 		if err != nil {
 			return Cache{}, err
-		}
-
-		if !lo.IsEmpty(c.RedisOptions) {
-			caCert, cert, err := GetTLSConfig(c.RedisCACert, c.RedisCert, c.RedisKey)
-			if err != nil {
-				return Cache{}, err
-			}
-
-			options.TLSConfig = &tls.Config{
-				RootCAs:      caCert,
-				Certificates: []tls.Certificate{cert},
-				MinVersion:   tls.VersionTLS12,
-			}
 		}
 
 		redisCache := cache.NewRedisCache(options, c.CacheTTL)

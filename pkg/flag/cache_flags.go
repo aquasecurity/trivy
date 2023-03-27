@@ -55,6 +55,12 @@ var (
 		Value:      "",
 		Usage:      "redis key file location, if using redis as cache backend",
 	}
+	RedisMasterNameFlag = Flag{
+		Name:       "redis-master-name",
+		ConfigName: "cache.redis.master-name",
+		Value:      "",
+		Usage:      "redis master name, if using redis as cache backend in Sentinel mode",
+	}
 )
 
 // CacheFlagGroup composes common printer flag structs used for commands requiring cache logic.
@@ -63,9 +69,10 @@ type CacheFlagGroup struct {
 	CacheBackend *Flag
 	CacheTTL     *Flag
 
-	RedisCACert *Flag
-	RedisCert   *Flag
-	RedisKey    *Flag
+	RedisCACert     *Flag
+	RedisCert       *Flag
+	RedisKey        *Flag
+	RedisMasterName *Flag
 }
 
 type CacheOptions struct {
@@ -77,20 +84,22 @@ type CacheOptions struct {
 
 // RedisOptions holds the options for redis cache
 type RedisOptions struct {
-	RedisCACert string
-	RedisCert   string
-	RedisKey    string
+	RedisCACert     string
+	RedisCert       string
+	RedisKey        string
+	RedisMasterName string
 }
 
 // NewCacheFlagGroup returns a default CacheFlagGroup
 func NewCacheFlagGroup() *CacheFlagGroup {
 	return &CacheFlagGroup{
-		ClearCache:   &ClearCacheFlag,
-		CacheBackend: &CacheBackendFlag,
-		CacheTTL:     &CacheTTLFlag,
-		RedisCACert:  &RedisCACertFlag,
-		RedisCert:    &RedisCertFlag,
-		RedisKey:     &RedisKeyFlag,
+		ClearCache:      &ClearCacheFlag,
+		CacheBackend:    &CacheBackendFlag,
+		CacheTTL:        &CacheTTLFlag,
+		RedisCACert:     &RedisCACertFlag,
+		RedisCert:       &RedisCertFlag,
+		RedisKey:        &RedisKeyFlag,
+		RedisMasterName: &RedisMasterNameFlag,
 	}
 }
 
@@ -99,15 +108,16 @@ func (fg *CacheFlagGroup) Name() string {
 }
 
 func (fg *CacheFlagGroup) Flags() []*Flag {
-	return []*Flag{fg.ClearCache, fg.CacheBackend, fg.CacheTTL, fg.RedisCACert, fg.RedisCert, fg.RedisKey}
+	return []*Flag{fg.ClearCache, fg.CacheBackend, fg.CacheTTL, fg.RedisCACert, fg.RedisCert, fg.RedisKey, fg.RedisMasterName}
 }
 
 func (fg *CacheFlagGroup) ToOptions() (CacheOptions, error) {
 	cacheBackend := getString(fg.CacheBackend)
 	redisOptions := RedisOptions{
-		RedisCACert: getString(fg.RedisCACert),
-		RedisCert:   getString(fg.RedisCert),
-		RedisKey:    getString(fg.RedisKey),
+		RedisCACert:     getString(fg.RedisCACert),
+		RedisCert:       getString(fg.RedisCert),
+		RedisKey:        getString(fg.RedisKey),
+		RedisMasterName: getString(fg.RedisMasterName),
 	}
 
 	// "redis://" or "fs" are allowed for now
@@ -117,7 +127,7 @@ func (fg *CacheFlagGroup) ToOptions() (CacheOptions, error) {
 		return CacheOptions{}, xerrors.Errorf("unsupported cache backend: %s", cacheBackend)
 	}
 	// if one of redis option not nil, make sure CA, cert, and key provided
-	if !lo.IsEmpty(redisOptions) {
+	if !lo.IsEmpty(redisOptions) && redisOptions.RedisMasterName == "" {
 		if redisOptions.RedisCACert == "" || redisOptions.RedisCert == "" || redisOptions.RedisKey == "" {
 			return CacheOptions{}, xerrors.Errorf("you must provide Redis CA, cert and key file path when using TLS")
 		}

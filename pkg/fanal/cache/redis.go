@@ -20,13 +20,13 @@ const (
 )
 
 type RedisCache struct {
-	client     *redis.Client
+	client     redis.UniversalClient
 	expiration time.Duration
 }
 
-func NewRedisCache(options *redis.Options, expiration time.Duration) RedisCache {
+func NewRedisCache(options *redis.UniversalOptions, expiration time.Duration) RedisCache {
 	return RedisCache{
-		client:     redis.NewClient(options),
+		client:     redis.NewUniversalClient(options),
 		expiration: expiration,
 	}
 }
