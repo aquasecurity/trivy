@@ -437,6 +437,9 @@ $ trivy image --compliance docker-cis [YOUR_IMAGE_NAME]
 !!! note
     The `Issues` column represent the total number of failed checks for this control.
 
+## Authentication
+Please reference [this page](../advanced/private-registries/index.md).
+
 ## Options
 ### Scan Image on a specific Architecture and OS
 By default, Trivy loads an image on a "linux/amd64" machine.

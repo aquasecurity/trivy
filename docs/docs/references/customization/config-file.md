@@ -163,6 +163,23 @@ db:
   java-repository: ghcr.io/aquasecurity/trivy-java-db
 ```
 
+## Registry Options
+
+```yaml
+registry:
+  # Same as '--username'
+  # Default is empty
+  username:
+
+  # Same as '--password'
+  # Default is empty
+  password:
+    
+  # Same as '--registry-token'
+  # Default is empty
+  registry-token:
+```
+
 ## Image Options
 Available with container image scanning
 

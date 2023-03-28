@@ -68,6 +68,7 @@ type Flags struct {
 	MisconfFlagGroup       *MisconfFlagGroup
 	ModuleFlagGroup        *ModuleFlagGroup
 	RemoteFlagGroup        *RemoteFlagGroup
+	RegistryFlagGroup      *RegistryFlagGroup
 	RegoFlagGroup          *RegoFlagGroup
 	RepoFlagGroup          *RepoFlagGroup
 	ReportFlagGroup        *ReportFlagGroup
@@ -89,6 +90,7 @@ type Options struct {
 	LicenseOptions
 	MisconfOptions
 	ModuleOptions
+	RegistryOptions
 	RegoOptions
 	RemoteOptions
 	RepoOptions
@@ -264,6 +266,9 @@ func (f *Flags) groups() []FlagGroup {
 	if f.DBFlagGroup != nil {
 		groups = append(groups, f.DBFlagGroup)
 	}
+	if f.RegistryFlagGroup != nil {
+		groups = append(groups, f.RegistryFlagGroup)
+	}
 	if f.ImageFlagGroup != nil {
 		groups = append(groups, f.ImageFlagGroup)
 	}
@@ -424,6 +429,13 @@ func (f *Flags) ToOptions(appVersion string, args []string, globalFlags *GlobalF
 
 	if f.RemoteFlagGroup != nil {
 		opts.RemoteOptions = f.RemoteFlagGroup.ToOptions()
+	}
+
+	if f.RegistryFlagGroup != nil {
+		opts.RegistryOptions, err = f.RegistryFlagGroup.ToOptions()
+		if err != nil {
+			return Options{}, xerrors.Errorf("registry flag error: %w", err)
+		}
 	}
 
 	if f.RepoFlagGroup != nil {

@@ -22,18 +22,18 @@ type ECR struct {
 	Client ecriface.ECRAPI
 }
 
-func getSession(option types.DockerOption) (*session.Session, error) {
+func getSession(option types.RemoteOptions) (*session.Session, error) {
 	// create custom credential information if option is valid
-	if option.AwsSecretKey != "" && option.AwsAccessKey != "" && option.AwsRegion != "" {
+	if option.AWSSecretKey != "" && option.AWSAccessKey != "" && option.AWSRegion != "" {
 		return session.NewSessionWithOptions(
 			session.Options{
 				Config: aws.Config{
-					Region: aws.String(option.AwsRegion),
+					Region: aws.String(option.AWSRegion),
 					Credentials: credentials.NewStaticCredentialsFromCreds(
 						credentials.Value{
-							AccessKeyID:     option.AwsAccessKey,
-							SecretAccessKey: option.AwsSecretKey,
-							SessionToken:    option.AwsSessionToken,
+							AccessKeyID:     option.AWSAccessKey,
+							SecretAccessKey: option.AWSSecretKey,
+							SessionToken:    option.AWSSessionToken,
 						},
 					),
 				},
@@ -45,7 +45,7 @@ func getSession(option types.DockerOption) (*session.Session, error) {
 	})
 }
 
-func (e *ECR) CheckOptions(domain string, option types.DockerOption) error {
+func (e *ECR) CheckOptions(domain string, option types.RemoteOptions) error {
 	if !strings.HasSuffix(domain, ecrURL) {
 		return xerrors.Errorf("ECR : %w", types.InvalidURLPattern)
 	}

@@ -30,14 +30,14 @@ import (
 
 // initializeDockerScanner is for container image scanning in standalone mode
 // e.g. dockerd, container registry, podman, etc.
-func initializeDockerScanner(ctx context.Context, imageName string, artifactCache cache.ArtifactCache, localArtifactCache cache.LocalArtifactCache, dockerOpt types.DockerOption, artifactOption artifact.Option) (scanner.Scanner, func(), error) {
+func initializeDockerScanner(ctx context.Context, imageName string, artifactCache cache.ArtifactCache, localArtifactCache cache.LocalArtifactCache, remoteOpt types.RemoteOptions, artifactOption artifact.Option) (scanner.Scanner, func(), error) {
 	applierApplier := applier.NewApplier(localArtifactCache)
 	detector := ospkg.Detector{}
 	config := db.Config{}
 	client := vulnerability.NewClient(config)
 	localScanner := local.NewScanner(applierApplier, detector, client)
 	v := _wireValue
-	typesImage, cleanup, err := image.NewContainerImage(ctx, imageName, dockerOpt, v...)
+	typesImage, cleanup, err := image.NewContainerImage(ctx, imageName, remoteOpt, v...)
 	if err != nil {
 		return scanner.Scanner{}, nil, err
 	}
@@ -140,11 +140,11 @@ func initializeVMScanner(ctx context.Context, filePath string, artifactCache cac
 
 // initializeRemoteDockerScanner is for container image scanning in client/server mode
 // e.g. dockerd, container registry, podman, etc.
-func initializeRemoteDockerScanner(ctx context.Context, imageName string, artifactCache cache.ArtifactCache, remoteScanOptions client.ScannerOption, dockerOpt types.DockerOption, artifactOption artifact.Option) (scanner.Scanner, func(), error) {
+func initializeRemoteDockerScanner(ctx context.Context, imageName string, artifactCache cache.ArtifactCache, remoteScanOptions client.ScannerOption, remoteOpt types.RemoteOptions, artifactOption artifact.Option) (scanner.Scanner, func(), error) {
 	v := _wireValue2
 	clientScanner := client.NewScanner(remoteScanOptions, v...)
 	v2 := _wireValue3
-	typesImage, cleanup, err := image.NewContainerImage(ctx, imageName, dockerOpt, v2...)
+	typesImage, cleanup, err := image.NewContainerImage(ctx, imageName, remoteOpt, v2...)
 	if err != nil {
 		return scanner.Scanner{}, nil, err
 	}
