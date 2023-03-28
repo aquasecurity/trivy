@@ -35,8 +35,6 @@ type Cache struct {
 
 // redisOptsFromCacheOptions gets redis options from
 func redisOptsFromCacheOptions(c flag.CacheOptions) (*redis.UniversalOptions, error) {
-	log.Logger.Infof("Redis cache: %s", c.CacheBackendMasked())
-
 	var addrs []string
 	var pass string
 	var redisDB int
@@ -51,10 +49,6 @@ func redisOptsFromCacheOptions(c flag.CacheOptions) (*redis.UniversalOptions, er
 		redisDB = url.DB
 		pass = url.Password
 	}
-
-	log.Logger.Infof("Redis password: %s", pass)
-	log.Logger.Infof("Redis address: %s", addrs[0])
-	log.Logger.Infof("Redis DB: %d", redisDB)
 
 	options := &redis.UniversalOptions{
 		Addrs:    addrs,
