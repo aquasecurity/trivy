@@ -1,0 +1,2 @@
+db:
+  repository: docker.io/stefandef/trivy-db

@@ -9,7 +9,7 @@ import (
 	"github.com/stretchr/testify/require"
 
 	fixtures "github.com/aquasecurity/bolt-fixtures"
-	"github.com/aquasecurity/trivy-db/pkg/db"
+	"github.com/ipaqsa/trivy-db/pkg/db"
 	jdb "github.com/aquasecurity/trivy-java-db/pkg/db"
 )
 

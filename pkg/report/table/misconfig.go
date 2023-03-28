@@ -7,7 +7,7 @@ import (
 
 	"github.com/fatih/color"
 
-	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
+	dbTypes "github.com/ipaqsa/trivy-db/pkg/types"
 
 	"golang.org/x/crypto/ssh/terminal"
 

@@ -61,7 +61,7 @@ trivy:
   # gitHubToken the GitHub access token to download Trivy DB
   #
   # Trivy DB contains vulnerability information from NVD, Red Hat, and many other upstream vulnerability databases.
-  # It is downloaded by Trivy from the GitHub release page https://github.com/aquasecurity/trivy-db/releases and cached
+  # It is downloaded by Trivy from the GitHub release page https://github.com/ipaqsa/trivy-db/releases and cached
   # in the local file system (`/home/scanner/.cache/trivy/db/trivy.db`). In addition, the database contains the update
   # timestamp so Trivy can detect whether it should download a newer version from the Internet or use the cached one.
   # Currently, the database is updated every 12 hours and published as a new release to GitHub.

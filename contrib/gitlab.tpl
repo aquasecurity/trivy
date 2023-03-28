@@ -54,7 +54,7 @@
       },
       "identifiers": [
         {
-	  {{- /* TODO: Type not extractable - https://github.com/aquasecurity/trivy-db/pull/24 */}}
+	  {{- /* TODO: Type not extractable - https://github.com/ipaqsa/trivy-db/pull/24 */}}
           "type": "cve",
           "name": "{{ .VulnerabilityID }}",
           "value": "{{ .VulnerabilityID }}",

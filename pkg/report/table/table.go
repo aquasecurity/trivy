@@ -14,7 +14,7 @@ import (
 	"github.com/aquasecurity/tml"
 
 	"github.com/aquasecurity/table"
-	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
+	dbTypes "github.com/ipaqsa/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
 

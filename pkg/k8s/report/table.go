@@ -6,7 +6,7 @@ import (
 
 	"golang.org/x/xerrors"
 
-	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
+	dbTypes "github.com/ipaqsa/trivy-db/pkg/types"
 	pkgReport "github.com/aquasecurity/trivy/pkg/report/table"
 )
 

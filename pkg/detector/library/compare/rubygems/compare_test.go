@@ -5,7 +5,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 
-	"github.com/aquasecurity/trivy-db/pkg/types"
+	"github.com/ipaqsa/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/detector/library/compare/rubygems"
 )
 

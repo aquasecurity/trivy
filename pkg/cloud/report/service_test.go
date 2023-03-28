@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"testing"
 
-	"github.com/aquasecurity/trivy-db/pkg/types"
+	"github.com/ipaqsa/trivy-db/pkg/types"
 
 	"github.com/stretchr/testify/require"
 

@@ -7,7 +7,7 @@
 package server
 
 import (
-	"github.com/aquasecurity/trivy-db/pkg/db"
+	"github.com/ipaqsa/trivy-db/pkg/db"
 	"github.com/aquasecurity/trivy/pkg/detector/ospkg"
 	"github.com/aquasecurity/trivy/pkg/fanal/applier"
 	"github.com/aquasecurity/trivy/pkg/fanal/cache"

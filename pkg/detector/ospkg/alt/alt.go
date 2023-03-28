@@ -1,15 +1,14 @@
 package alt
 
 import (
-	"fmt"
-	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
-	ustrings "github.com/aquasecurity/trivy-db/pkg/utils/strings"
-	redhat "github.com/aquasecurity/trivy-db/pkg/vulnsrc/redhat-oval"
-	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/vulnerability"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/scanner/utils"
 	"github.com/aquasecurity/trivy/pkg/types"
+	dbTypes "github.com/ipaqsa/trivy-db/pkg/types"
+	ustrings "github.com/ipaqsa/trivy-db/pkg/utils/strings"
+	"github.com/ipaqsa/trivy-db/pkg/vulnsrc/fstec"
+	"github.com/ipaqsa/trivy-db/pkg/vulnsrc/vulnerability"
 	version "github.com/knqyf263/go-rpm-version"
 	"golang.org/x/exp/maps"
 	"golang.org/x/exp/slices"
@@ -41,7 +40,7 @@ func WithClock(clock clock.Clock) option {
 
 // Scanner implements the ALT scanner with RedHat` vuln source
 type Scanner struct {
-	vs redhat.VulnSrc
+	vs fstec.VulnSrc
 	*options
 }
 
@@ -55,7 +54,7 @@ func NewScanner(opts ...option) *Scanner {
 		opt(o)
 	}
 	return &Scanner{
-		vs:      redhat.NewVulnSrc(),
+		vs:      fstec.NewVulnSrc(),
 		options: o,
 	}
 }
@@ -97,23 +96,24 @@ func (s *Scanner) Detect(osVer string, _ *ftypes.Repository, pkgs []ftypes.Packa
 func (s *Scanner) detect(osVer string, pkg ftypes.Package) ([]types.DetectedVulnerability, error) {
 	// For Red Hat OVAL v2 containing only binary package names
 	pkgName := addModularNamespace(pkg.Name, pkg.Modularitylabel)
-
-	var contentSets []string
-	var nvr string
-	if pkg.BuildInfo == nil {
-		contentSets = []string{"rhel-9-for-x86_64-baseos-rpms", "rhel-9-for-x86_64-appstream-rpms"}
-	} else {
-		contentSets = pkg.BuildInfo.ContentSets
-		nvr = fmt.Sprintf("%s-%s", pkg.BuildInfo.Nvr, pkg.BuildInfo.Arch)
-	}
-	advisories, err := s.vs.Get(pkgName, contentSets, []string{nvr})
+	//var contentSets []string
+	//var nvr string
+	//if pkg.BuildInfo == nil {
+	//	contentSets = defaultContentSets[osVer]
+	//	contentSets = []string{"rhel-7-server-rpms", "rhel-7-server-extras-rpms"}
+	//contentSets = []string{"rhel-9-for-x86_64-baseos-rpms", "rhel-9-for-x86_64-appstream-rpms"}
+	//} else {
+	//	contentSets = pkg.BuildInfo.ContentSets
+	//	nvr = fmt.Sprintf("%s-%s", pkg.BuildInfo.Nvr, pkg.BuildInfo.Arch)
+	//}
+	//advisories, err := s.vs.Get(pkgName, contentSets, []string{nvr})
+	advisories, err := s.vs.Get(pkgName)
 	if err != nil {
 		return nil, xerrors.Errorf("failed to get Red Hat advisories: %w", err)
 	}
 
 	installed := utils.FormatVersion(pkg)
 	installedVersion := version.NewVersion(installed)
-
 	uniqVulns := map[string]types.DetectedVulnerability{}
 	for _, adv := range advisories {
 		// if Arches for advisory is empty or pkg.Arch is "noarch", then any Arches are affected

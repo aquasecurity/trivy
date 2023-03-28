@@ -8,9 +8,9 @@ import (
 	"github.com/stretchr/testify/require"
 	fake "k8s.io/utils/clock/testing"
 
-	"github.com/aquasecurity/trivy-db/pkg/db"
-	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
-	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/vulnerability"
+	"github.com/ipaqsa/trivy-db/pkg/db"
+	dbTypes "github.com/ipaqsa/trivy-db/pkg/types"
+	"github.com/ipaqsa/trivy-db/pkg/vulnsrc/vulnerability"
 	"github.com/aquasecurity/trivy/pkg/dbtest"
 	"github.com/aquasecurity/trivy/pkg/detector/ospkg/suse"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
