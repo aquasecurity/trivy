@@ -681,14 +681,14 @@ func TestMarshaler_Marshal(t *testing.T) {
 				},
 				Components: &[]cdx.Component{
 					{
-						BOMRef:  "pkg:rpm/centos/acl@1:2.2.53-1.el8?arch=aarch64&distro=centos-8.3.2011",
+						BOMRef:  "pkg:rpm/centos/acl@2.2.53-1.el8?arch=aarch64&epoch=1&distro=centos-8.3.2011",
 						Type:    cdx.ComponentTypeLibrary,
 						Name:    "acl",
-						Version: "1:2.2.53-1.el8",
+						Version: "2.2.53-1.el8",
 						Licenses: &cdx.Licenses{
 							cdx.LicenseChoice{Expression: "GPLv2+"},
 						},
-						PackageURL: "pkg:rpm/centos/acl@1:2.2.53-1.el8?arch=aarch64&distro=centos-8.3.2011",
+						PackageURL: "pkg:rpm/centos/acl@2.2.53-1.el8?arch=aarch64&epoch=1&distro=centos-8.3.2011",
 						Properties: &[]cdx.Property{
 							{
 								Name:  "aquasecurity:trivy:PkgType",
@@ -775,7 +775,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 					{
 						Ref: "3ff14136-e09f-4df9-80ea-000000000003",
 						Dependencies: &[]string{
-							"pkg:rpm/centos/acl@1:2.2.53-1.el8?arch=aarch64&distro=centos-8.3.2011",
+							"pkg:rpm/centos/acl@2.2.53-1.el8?arch=aarch64&epoch=1&distro=centos-8.3.2011",
 						},
 					},
 					{
