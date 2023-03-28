@@ -33,8 +33,8 @@ type Cache struct {
 	cache.Cache
 }
 
-// redisOptsFromCacheOpions gets redis options from
-func redisOptsFromCacheOpions(c flag.CacheOptions) (*redis.UniversalOptions, error) {
+// redisOptsFromCacheOptions gets redis options from
+func redisOptsFromCacheOptions(c flag.CacheOptions) (*redis.UniversalOptions, error) {
 	log.Logger.Infof("Redis cache: %s", c.CacheBackendMasked())
 
 	var addrs []string
@@ -85,7 +85,7 @@ func redisOptsFromCacheOpions(c flag.CacheOptions) (*redis.UniversalOptions, err
 func NewCache(c flag.CacheOptions) (Cache, error) {
 	if strings.HasPrefix(c.CacheBackend, "redis://") {
 		log.Logger.Infof("Redis cache: %s", c.CacheBackendMasked())
-		options, err := redisOptsFromCacheOpions(c)
+		options, err := redisOptsFromCacheOptions(c)
 		if err != nil {
 			return Cache{}, err
 		}
