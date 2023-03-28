@@ -74,6 +74,7 @@ trivy image [flags] IMAGE_NAME
       --redis-ca string                redis ca file location, if using redis as cache backend
       --redis-cert string              redis certificate file location, if using redis as cache backend
       --redis-key string               redis key file location, if using redis as cache backend
+      --redis-master-name string       redis master name, if using redis as cache backend in Sentinel mode
       --rekor-url string               [EXPERIMENTAL] address of rekor STL server (default "https://rekor.sigstore.dev")
       --removed-pkgs                   detect vulnerabilities of removed packages (only for Alpine)
       --report string                  specify a format for the compliance report. (default "summary")

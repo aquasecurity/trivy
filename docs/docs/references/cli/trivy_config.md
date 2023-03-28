@@ -32,6 +32,7 @@ trivy config [flags] DIR
       --redis-ca string             redis ca file location, if using redis as cache backend
       --redis-cert string           redis certificate file location, if using redis as cache backend
       --redis-key string            redis key file location, if using redis as cache backend
+      --redis-master-name string    redis master name, if using redis as cache backend in Sentinel mode
   -s, --severity string             severities of security issues to be displayed (comma separated) (default "UNKNOWN,LOW,MEDIUM,HIGH,CRITICAL")
       --skip-dirs strings           specify the directories where the traversal is skipped
       --skip-files strings          specify the file paths to skip traversal

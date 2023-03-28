@@ -140,6 +140,10 @@ cache:
     # Same as '--redis-key'
     # Default is empty
     key:
+
+    # Same as '--redis-master-name'
+    # Default is empty
+    master-name:
 ```
 
 ## DB Options

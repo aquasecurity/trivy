@@ -35,6 +35,7 @@ trivy server [flags]
       --redis-ca string             redis ca file location, if using redis as cache backend
       --redis-cert string           redis certificate file location, if using redis as cache backend
       --redis-key string            redis key file location, if using redis as cache backend
+      --redis-master-name string    redis master name, if using redis as cache backend in Sentinel mode
       --reset                       remove all caches and database
       --skip-db-update              skip updating vulnerability database
       --skip-java-db-update         skip updating Java index database
