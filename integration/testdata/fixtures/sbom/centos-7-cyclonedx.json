@@ -68,16 +68,16 @@
       ]
     },
     {
-      "bom-ref": "pkg:rpm/centos/openssl-libs@1:1.0.2k-16.el7?arch=x86_64&distro=centos-7.6.1810",
+      "bom-ref": "pkg:rpm/centos/openssl-libs@1.0.2k-16.el7?arch=x86_64&epoch=1&distro=centos-7.6.1810",
       "type": "library",
       "name": "openssl-libs",
-      "version": "1:1.0.2k-16.el7",
+      "version": "1.0.2k-16.el7",
       "licenses": [
         {
           "expression": "OpenSSL"
         }
       ],
-      "purl": "pkg:rpm/centos/openssl-libs@1:1.0.2k-16.el7?arch=x86_64&distro=centos-7.6.1810",
+      "purl": "pkg:rpm/centos/openssl-libs@1.0.2k-16.el7?arch=x86_64&epoch=1&distro=centos-7.6.1810",
       "properties": [
         {
           "name": "aquasecurity:trivy:SrcName",
@@ -127,7 +127,7 @@
       "ref": "0175f732-df9d-4bb8-9f56-870898e3ff89",
       "dependsOn": [
         "pkg:rpm/centos/bash@4.2.46-31.el7?arch=x86_64&distro=centos-7.6.1810",
-        "pkg:rpm/centos/openssl-libs@1:1.0.2k-16.el7?arch=x86_64&distro=centos-7.6.1810"
+        "pkg:rpm/centos/openssl-libs@1.0.2k-16.el7?arch=x86_64&epoch=1&distro=centos-7.6.1810"
       ]
     },
     {
