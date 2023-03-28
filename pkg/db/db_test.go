@@ -18,6 +18,7 @@ import (
 	tdb "github.com/aquasecurity/trivy-db/pkg/db"
 	"github.com/aquasecurity/trivy-db/pkg/metadata"
 	"github.com/aquasecurity/trivy/pkg/db"
+	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/oci"
 )
 
@@ -152,7 +153,7 @@ func TestClient_NeedsUpdate(t *testing.T) {
 				require.NoError(t, err)
 			}
 
-			client := db.NewClient(cacheDir, true, false, db.WithClock(tt.clock))
+			client := db.NewClient(cacheDir, true, db.WithClock(tt.clock))
 			needsUpdate, err := client.NeedsUpdate("test", tt.skip)
 
 			switch {
@@ -218,11 +219,14 @@ func TestClient_Download(t *testing.T) {
 			}, nil)
 
 			// Mock OCI artifact
-			art, err := oci.NewArtifact("db", mediaType, "", true, false, oci.WithImage(img))
+			opt := ftypes.RemoteOptions{
+				Insecure: false,
+			}
+			art, err := oci.NewArtifact("db", true, opt, oci.WithImage(img))
 			require.NoError(t, err)
 
-			client := db.NewClient(cacheDir, true, false, db.WithOCIArtifact(art), db.WithClock(timeDownloadedAt))
-			err = client.Download(context.Background(), cacheDir)
+			client := db.NewClient(cacheDir, true, db.WithOCIArtifact(art), db.WithClock(timeDownloadedAt))
+			err = client.Download(context.Background(), cacheDir, opt)
 			if tt.wantErr != "" {
 				require.Error(t, err)
 				assert.Contains(t, err.Error(), tt.wantErr)
