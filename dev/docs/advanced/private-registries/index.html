@@ -63,6 +63,11 @@
     <label class="md-overlay" for="__drawer"></label>
     <div data-md-component="skip">
       
+        
+        <a href="#credential" class="md-skip">
+          Skip to content
+        </a>
+      
     </div>
     <div data-md-component="announce">
       
@@ -2228,9 +2233,45 @@
       
       
       
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          Overview
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
       <a href="./" class="md-nav__link md-nav__link--active">
         Overview
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#credential" class="md-nav__link">
+    Credential
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#docker-login" class="md-nav__link">
+    docker login
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
       
     </li>
   
@@ -3128,6 +3169,28 @@
   
   
   
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#credential" class="md-nav__link">
+    Credential
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#docker-login" class="md-nav__link">
+    docker login
+  </a>
+  
+</li>
+      
+    </ul>
+  
 </nav>
                   </div>
                 </div>
@@ -3142,9 +3205,43 @@
 
   <h1>Overview</h1>
 
-<p>Trivy can download images from a private registry, without installing <code>Docker</code> or any other 3rd party tools.
-That's because it's easy to run in a CI process.</p>
-<p>All you have to do is install <code>Trivy</code> and set ENV vars.</p>
+<p>Trivy can download images from a private registry without the need for installing Docker or any other 3rd party tools.
+This makes it easy to run within a CI process.</p>
+<h2 id="credential">Credential</h2>
+<p>To use Trivy with private images, simply install it and provide your credentials:</p>
+<div class="highlight"><pre><span></span><code>$ <span class="nv">TRIVY_USERNAME</span><span class="o">=</span>YOUR_USERNAME <span class="nv">TRIVY_PASSWORD</span><span class="o">=</span>YOUR_PASSWORD trivy image YOUR_PRIVATE_IMAGE
+</code></pre></div>
+<p>Trivy also supports providing credentials through CLI flags:</p>
+<div class="highlight"><pre><span></span><code>$ <span class="nv">TRIVY_PASSWORD</span><span class="o">=</span>YOUR_PASSWORD trivy image --username YOUR_USERNAME YOUR_PRIVATE_IMAGE
+</code></pre></div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>The CLI flag <code>--password</code> is available, but its use is not recommended for security reasons.</p>
+</div>
+<p>You can also store your credentials in <code>trivy.yaml</code>.
+For more information, please refer to <a href="../../references/customization/config-file/">the documentation</a>.</p>
+<p>It can handle multiple sets of credentials as well:</p>
+<div class="highlight"><pre><span></span><code>$ <span class="nb">export</span> <span class="nv">TRIVY_USERNAME</span><span class="o">=</span>USERNAME1,USERNAME2
+$ <span class="nb">export</span> <span class="nv">TRIVY_PASSWORD</span><span class="o">=</span>PASSWORD1,PASSWORD2
+$ trivy image YOUR_PRIVATE_IMAGE
+</code></pre></div>
+<p>In the example above, Trivy attempts to use two pairs of credentials:</p>
+<ul>
+<li>USERNAME1/PASSWORD1</li>
+<li>USERNAME2/PASSWORD2</li>
+</ul>
+<p>Please note that the number of usernames and passwords must be the same.</p>
+<h2 id="docker-login">docker login</h2>
+<p>If you have Docker configured locally and have set up the credentials, Trivy can access them.</p>
+<div class="highlight"><pre><span></span><code>$ docker login ghcr.io
+Username: 
+Password:
+$ trivy image ghcr.io/your/private_image
+</code></pre></div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p><code>docker login</code> can be used with any container runtime, such as Podman.</p>
+</div>
 
               
             </article>
