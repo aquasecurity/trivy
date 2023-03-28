@@ -2,6 +2,7 @@ package server
 
 import (
 	"context"
+
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy-db/pkg/db"

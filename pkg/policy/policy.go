@@ -51,7 +51,6 @@ type Client struct {
 	*options
 	policyDir string
 	quiet     bool
-	insecure  bool
 }
 
 // Metadata holds default policy metadata
