@@ -19,6 +19,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer/config"
 	"github.com/aquasecurity/trivy/pkg/fanal/artifact"
 	"github.com/aquasecurity/trivy/pkg/fanal/cache"
+	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/flag"
 	"github.com/aquasecurity/trivy/pkg/javadb"
 	"github.com/aquasecurity/trivy/pkg/log"
@@ -68,7 +69,7 @@ type ScannerConfig struct {
 	LocalArtifactCache cache.LocalArtifactCache
 
 	// Client/Server options
-	RemoteOption client.ScannerOption
+	ServerOption client.ScannerOption
 
 	// Artifact options
 	ArtifactOption artifact.Option
@@ -609,11 +610,19 @@ func initScannerConfig(opts flag.Options, cacheClient cache.Cache) (ScannerConfi
 		}
 	}
 
+	remoteOption := ftypes.RemoteOptions{
+		Credentials:   opts.Credentials,
+		RegistryToken: opts.RegistryToken,
+		Insecure:      opts.Insecure,
+		Platform:      opts.Platform,
+		AWSRegion:     opts.AWSOptions.Region,
+	}
+
 	return ScannerConfig{
 		Target:             target,
 		ArtifactCache:      cacheClient,
 		LocalArtifactCache: cacheClient,
-		RemoteOption: client.ScannerOption{
+		ServerOption: client.ScannerOption{
 			RemoteURL:     opts.ServerAddr,
 			CustomHeaders: opts.CustomHeaders,
 			Insecure:      opts.Insecure,
@@ -623,7 +632,6 @@ func initScannerConfig(opts flag.Options, cacheClient cache.Cache) (ScannerConfi
 			SkipFiles:         opts.SkipFiles,
 			SkipDirs:          opts.SkipDirs,
 			FilePatterns:      opts.FilePatterns,
-			InsecureSkipTLS:   opts.Insecure,
 			Offline:           opts.OfflineScan,
 			NoProgress:        opts.NoProgress || opts.Quiet,
 			RepoBranch:        opts.RepoBranch,
@@ -634,6 +642,9 @@ func initScannerConfig(opts flag.Options, cacheClient cache.Cache) (ScannerConfi
 			Platform:          opts.Platform,
 			Slow:              opts.Slow,
 			AWSRegion:         opts.Region,
+
+			// For container registries
+			RemoteOptions: remoteOption,
 
 			// For misconfiguration scanning
 			MisconfScannerOption: configScannerOptions,

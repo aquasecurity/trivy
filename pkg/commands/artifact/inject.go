@@ -22,7 +22,7 @@ import (
 // initializeDockerScanner is for container image scanning in standalone mode
 // e.g. dockerd, container registry, podman, etc.
 func initializeDockerScanner(ctx context.Context, imageName string, artifactCache cache.ArtifactCache,
-	localArtifactCache cache.LocalArtifactCache, dockerOpt types.DockerOption, artifactOption artifact.Option) (
+	localArtifactCache cache.LocalArtifactCache, remoteOpt types.RemoteOptions, artifactOption artifact.Option) (
 	scanner.Scanner, func(), error) {
 	wire.Build(scanner.StandaloneDockerSet)
 	return scanner.Scanner{}, nil, nil
@@ -69,7 +69,7 @@ func initializeVMScanner(ctx context.Context, filePath string, artifactCache cac
 // initializeRemoteDockerScanner is for container image scanning in client/server mode
 // e.g. dockerd, container registry, podman, etc.
 func initializeRemoteDockerScanner(ctx context.Context, imageName string, artifactCache cache.ArtifactCache,
-	remoteScanOptions client.ScannerOption, dockerOpt types.DockerOption, artifactOption artifact.Option) (
+	remoteScanOptions client.ScannerOption, remoteOpt types.RemoteOptions, artifactOption artifact.Option) (
 	scanner.Scanner, func(), error) {
 	wire.Build(scanner.RemoteDockerSet)
 	return scanner.Scanner{}, nil, nil

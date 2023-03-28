@@ -24,13 +24,13 @@ const gcrURL = "gcr.io"
 // Google artifact registry
 const garURL = "docker.pkg.dev"
 
-func (g *Registry) CheckOptions(domain string, d types.DockerOption) error {
+func (g *Registry) CheckOptions(domain string, option types.RemoteOptions) error {
 	if !strings.HasSuffix(domain, gcrURL) && !strings.HasSuffix(domain, garURL) {
 		return xerrors.Errorf("Google registry: %w", types.InvalidURLPattern)
 	}
 	g.domain = domain
-	if d.GcpCredPath != "" {
-		g.Store = store.NewGCRCredStore(d.GcpCredPath)
+	if option.GCPCredPath != "" {
+		g.Store = store.NewGCRCredStore(option.GCPCredPath)
 	}
 	return nil
 }

@@ -28,7 +28,7 @@ $(GOBIN)/crane:
 	go install github.com/google/go-containerregistry/cmd/crane@v0.9.0
 
 $(GOBIN)/golangci-lint:
-	curl -sfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh| sh -s -- -b $(GOBIN) v1.49.0
+	curl -sfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh| sh -s -- -b $(GOBIN) v1.52.2
 
 $(GOBIN)/labeler:
 	go install github.com/knqyf263/labeler@latest

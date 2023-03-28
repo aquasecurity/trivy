@@ -5,7 +5,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 
-	"github.com/aquasecurity/trivy/pkg/fanal/image/token/azure"
+	"github.com/aquasecurity/trivy/pkg/fanal/image/registry/azure"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 )
 
@@ -28,7 +28,7 @@ func TestRegistry_CheckOptions(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			r := azure.Registry{}
-			err := r.CheckOptions(tt.domain, types.DockerOption{})
+			err := r.CheckOptions(tt.domain, types.RemoteOptions{})
 			if tt.wantErr != "" {
 				assert.EqualError(t, err, tt.wantErr)
 			} else {
