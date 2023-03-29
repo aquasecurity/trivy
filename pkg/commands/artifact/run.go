@@ -19,7 +19,6 @@ import (
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer/config"
 	"github.com/aquasecurity/trivy/pkg/fanal/artifact"
 	"github.com/aquasecurity/trivy/pkg/fanal/cache"
-	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/flag"
 	"github.com/aquasecurity/trivy/pkg/javadb"
 	"github.com/aquasecurity/trivy/pkg/log"
@@ -73,9 +72,6 @@ type ScannerConfig struct {
 
 	// Artifact options
 	ArtifactOption artifact.Option
-
-	// Registry options
-	RemoteOption ftypes.RemoteOptions
 }
 
 type Runner interface {
@@ -656,7 +652,6 @@ func initScannerConfig(opts flag.Options, cacheClient cache.Cache) (ScannerConfi
 				Full: opts.LicenseFull,
 			},
 		},
-		RemoteOption: remoteOpts,
 	}, scanOptions, nil
 }
 
