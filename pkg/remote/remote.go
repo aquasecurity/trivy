@@ -27,13 +27,13 @@ type Descriptor = remote.Descriptor
 // Get is a wrapper of google/go-containerregistry/pkg/v1/remote.Get
 // so that it can try multiple authentication methods.
 func Get(ctx context.Context, ref name.Reference, option types.RemoteOptions) (*Descriptor, error) {
-	t := transport(option.Insecure)
+	transport := httpTransport(option.Insecure)
 
 	var errs error
 	// Try each authentication method until it succeeds
 	for _, authOpt := range authOptions(ctx, ref, option) {
 		remoteOpts := []remote.Option{
-			remote.WithTransport(t),
+			remote.WithTransport(transport),
 			authOpt,
 		}
 
@@ -64,12 +64,15 @@ func Get(ctx context.Context, ref name.Reference, option types.RemoteOptions) (*
 // Image is a wrapper of google/go-containerregistry/pkg/v1/remote.Image
 // so that it can try multiple authentication methods.
 func Image(ctx context.Context, ref name.Reference, option types.RemoteOptions) (v1.Image, error) {
-	remoteOpts := []remote.Option{remote.WithTransport(transport(option.Insecure))}
+	transport := httpTransport(option.Insecure)
 
 	var errs error
+	// Try each authentication method until it succeeds
 	for _, authOpt := range authOptions(ctx, ref, option) {
-		// Try each authentication method until it succeeds
-		remoteOpts = append(remoteOpts, authOpt)
+		remoteOpts := []remote.Option{
+			remote.WithTransport(transport),
+			authOpt,
+		}
 		index, err := remote.Image(ref, remoteOpts...)
 		if err != nil {
 			errs = multierror.Append(errs, err)
@@ -85,12 +88,15 @@ func Image(ctx context.Context, ref name.Reference, option types.RemoteOptions) 
 // Referrers is a wrapper of google/go-containerregistry/pkg/v1/remote.Referrers
 // so that it can try multiple authentication methods.
 func Referrers(ctx context.Context, d name.Digest, option types.RemoteOptions) (*v1.IndexManifest, error) {
-	remoteOpts := []remote.Option{remote.WithTransport(transport(option.Insecure))}
+	transport := httpTransport(option.Insecure)
 
 	var errs error
+	// Try each authentication method until it succeeds
 	for _, authOpt := range authOptions(ctx, d, option) {
-		// Try each authentication method until it succeeds
-		remoteOpts = append(remoteOpts, authOpt)
+		remoteOpts := []remote.Option{
+			remote.WithTransport(transport),
+			authOpt,
+		}
 		index, err := remote.Referrers(d, remoteOpts...)
 		if err != nil {
 			errs = multierror.Append(errs, err)
@@ -103,7 +109,7 @@ func Referrers(ctx context.Context, d name.Digest, option types.RemoteOptions) (
 	return nil, errs
 }
 
-func transport(insecure bool) *http.Transport {
+func httpTransport(insecure bool) *http.Transport {
 	d := &net.Dialer{
 		Timeout: 10 * time.Minute,
 	}
