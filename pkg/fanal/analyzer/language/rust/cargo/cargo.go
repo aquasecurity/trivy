@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"github.com/BurntSushi/toml"
 	dio "github.com/aquasecurity/go-dep-parser/pkg/io"
-	"github.com/aquasecurity/go-dep-parser/pkg/python/poetry"
+	"github.com/aquasecurity/go-dep-parser/pkg/rust/cargo"
 	godeptypes "github.com/aquasecurity/go-dep-parser/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/detector/library/compare"
 	"github.com/aquasecurity/trivy/pkg/log"
@@ -44,7 +44,7 @@ type cargoAnalyzer struct {
 
 func newCargoAnalyzer(_ analyzer.AnalyzerOptions) (analyzer.PostAnalyzer, error) {
 	return &cargoAnalyzer{
-		lockParser: poetry.NewParser(),
+		lockParser: cargo.NewParser(),
 		comparer:   compare.GenericComparer{},
 	}, nil
 }
@@ -108,7 +108,7 @@ func (a cargoAnalyzer) removeDevDependencies(fsys fs.FS, dir string, app *types.
 	packageJsonPath := filepath.Join(dir, types.CargoToml)
 	directDeps, err := a.parseCargoToml(fsys, packageJsonPath)
 	if errors.Is(err, fs.ErrNotExist) {
-		log.Logger.Debugf("Yarn: %s not found", packageJsonPath)
+		log.Logger.Debugf("Cargo.toml: %s not found", packageJsonPath)
 		return nil
 	} else if err != nil {
 		return xerrors.Errorf("unable to parse %s: %w", dir, err)
@@ -208,33 +208,44 @@ func (a cargoAnalyzer) walkIndirectDependencies(pkg types.Package, pkgIDs map[st
 }
 
 func (a cargoAnalyzer) matchVersion(currentVersion, constraint string) (bool, error) {
-	// there are next prefixes:
-	// `>=`, `>`, `<`, `=`, ``, `^`
-	switch {
-	case strings.HasPrefix(constraint, "<") || strings.HasPrefix(constraint, ">"):
-		match, err := a.comparer.MatchVersion(currentVersion, constraint)
-		if err != nil {
-			return false, xerrors.Errorf("unable to match version: %w", err)
-		}
-		return match, nil
-	case strings.HasPrefix(constraint, "="):
+	// information about prefixes - https://doc.rust-lang.org/cargo/reference/specifying-dependencies.html
+
+	// version can contain spase after prefix
+	// e.g. `= 1.2.3`
+	constraint = strings.ReplaceAll(constraint, " ", "")
+
+	// `*` contains all versions
+	if constraint == "*" {
+		return true, nil
+	}
+
+	if strings.HasPrefix(constraint, "=") {
 		// `=` prefix uses max version for major/minor/patch... version
 		// e.g. for `memchr`:  2 => 2.5.0; 2.4 => 2.4.1
 		constraint = strings.TrimLeft(constraint, "=")
-		constraint = strings.TrimSpace(constraint)
 		splitConstraint := strings.Split(constraint, ".")
 		splitVersion := strings.Split(currentVersion, ".")
 		shortCurrentVersion := strings.Join(splitVersion[:len(splitConstraint)], ".")
 		return constraint == shortCurrentVersion, nil
-	default:
-		// `` == `^`
-		if !strings.HasPrefix(constraint, "^") {
-			constraint = fmt.Sprintf("^ %s", constraint)
-		}
-		match, err := a.comparer.MatchVersion(currentVersion, constraint)
-		if err != nil {
-			return false, xerrors.Errorf("unable to match version: %w", err)
-		}
-		return match, nil
 	}
+
+	if constraint[0] >= '0' && constraint[0] <= '9' {
+		if strings.Contains(constraint, ".*") {
+			constraint = strings.ReplaceAll(constraint, ".*", "")
+			// version with `~` has same logic as version with `.*`. e.g.:
+			// ~1.2 := >=1.2.0, <1.3.0
+			// 1.2.* := >=1.2.0, <1.3.0
+			constraint = fmt.Sprintf("~%s", constraint)
+		} else {
+			// `` == `^` - https://doc.rust-lang.org/cargo/reference/specifying-dependencies.html#caret-requirements
+			// add `^` for correct version comparison
+			constraint = fmt.Sprintf("^%s", constraint)
+		}
+	}
+
+	match, err := a.comparer.MatchVersion(currentVersion, constraint)
+	if err != nil {
+		return false, xerrors.Errorf("unable to match version: %w", err)
+	}
+	return match, nil
 }
