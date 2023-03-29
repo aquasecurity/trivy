@@ -829,12 +829,6 @@ func TestMarshaler_Marshal(t *testing.T) {
 				},
 				Dependencies: &[]cdx.Dependency{
 					{
-						Ref: "3ff14136-e09f-4df9-80ea-000000000003",
-						Dependencies: &[]string{
-							"pkg:rpm/centos/acl@2.2.53-1.el8?arch=aarch64&epoch=1&distro=centos-8.3.2011",
-						},
-					},
-					{
 						Ref: "3ff14136-e09f-4df9-80ea-000000000002",
 						Dependencies: &[]string{
 							"3ff14136-e09f-4df9-80ea-000000000003",
@@ -845,7 +839,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 					{
 						Ref: "3ff14136-e09f-4df9-80ea-000000000003",
 						Dependencies: &[]string{
-							"pkg:rpm/centos/acl@1:2.2.53-1.el8?arch=aarch64&distro=centos-8.3.2011",
+							"pkg:rpm/centos/acl@2.2.53-1.el8?arch=aarch64&epoch=1&distro=centos-8.3.2011",
 						},
 					},
 					{
@@ -857,7 +851,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 						Dependencies: &[]string{},
 					},
 					{
-						Ref:          "pkg:rpm/centos/acl@1:2.2.53-1.el8?arch=aarch64&distro=centos-8.3.2011",
+						Ref:          "pkg:rpm/centos/acl@2.2.53-1.el8?arch=aarch64&epoch=1&distro=centos-8.3.2011",
 						Dependencies: &[]string{},
 					},
 				},
