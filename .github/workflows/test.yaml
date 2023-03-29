@@ -52,7 +52,7 @@ jobs:
           aqua_version: v1.25.0
 
       - name: Run unit tests
-        run: make test
+        run: mage test:unit
 
   integration:
     name: Integration Test
@@ -67,7 +67,7 @@ jobs:
           go-version-file: go.mod
 
       - name: Run integration tests
-        run: make test-integration
+        run: mage test:integration
 
   module-test:
     name: Module Integration Test
@@ -81,15 +81,15 @@ jobs:
         with:
           go-version-file: go.mod
 
-      # Install tools
-      - uses: aquaproj/aqua-installer@v2.0.2
+      - name: Install tools
+        uses: aquaproj/aqua-installer@v2.0.2
         with:
           aqua_version: v1.25.0
 
       - name: Run module integration tests
         shell: bash
         run: |
-          make test-module-integration
+          mage test:module
 
   build-test:
     name: Build Test
