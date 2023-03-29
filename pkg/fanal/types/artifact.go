@@ -6,6 +6,7 @@ import (
 	v1 "github.com/google/go-containerregistry/pkg/v1"
 	"github.com/samber/lo"
 
+	"github.com/aquasecurity/trivy/pkg/digest"
 	aos "github.com/aquasecurity/trivy/pkg/fanal/analyzer/os"
 )
 
@@ -89,8 +90,9 @@ type Package struct {
 
 	// Each package metadata have the file path, while the package from lock files does not have.
 	FilePath string `json:",omitempty"`
-	// This is required when using SPDX formats and the `--include-checksum` flag. Otherwise, it will be empty
-	Checksum string `json:",omitempty"`
+
+	// This is required when using SPDX formats. Otherwise, it will be empty.
+	Digest digest.Digest `json:",omitempty"`
 
 	// lines from the lock file where the dependency is written
 	Locations []Location `json:",omitempty"`

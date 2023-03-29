@@ -13,6 +13,7 @@ import (
 	"golang.org/x/xerrors"
 	"k8s.io/utils/clock"
 
+	"github.com/aquasecurity/trivy/pkg/digest"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/licensing"
 	"github.com/aquasecurity/trivy/pkg/licensing/expression"
@@ -185,7 +186,7 @@ func (m *Marshaler) resultToSpdxPackage(result types.Result, os *ftypes.OS, pkgD
 	}
 }
 
-func (m *Marshaler) parseFile(filePath, checksum string) (spdx.File2_2, error) {
+func (m *Marshaler) parseFile(filePath string, digest digest.Digest) (spdx.File2_2, error) {
 	pkgID, err := calcPkgID(m.hasher, filePath)
 	if err != nil {
 		return spdx.File2_2{}, xerrors.Errorf("failed to get %s package ID: %w", filePath, err)
@@ -193,7 +194,7 @@ func (m *Marshaler) parseFile(filePath, checksum string) (spdx.File2_2, error) {
 	file := spdx.File2_2{
 		FileSPDXIdentifier: spdx.ElementID(fmt.Sprintf("File-%s", pkgID)),
 		FileName:           filePath,
-		FileChecksums:      checksumToSpdxFileChecksum(checksum),
+		FileChecksums:      digestToSpdxFileChecksum(digest),
 	}
 	return file, nil
 }
@@ -325,7 +326,7 @@ func (m *Marshaler) pkgFiles(pkg ftypes.Package) (map[spdx.ElementID]*spdx.File2
 		return nil, nil
 	}
 
-	file, err := m.parseFile(pkg.FilePath, pkg.Checksum)
+	file, err := m.parseFile(pkg.FilePath, pkg.Digest)
 	if err != nil {
 		return nil, xerrors.Errorf("failed to parse file: %w")
 	}
@@ -442,14 +443,25 @@ func getPackageDownloadLocation(t ftypes.ArtifactType, artifactName string) stri
 	return location
 }
 
-func checksumToSpdxFileChecksum(checksum string) map[spdx.ChecksumAlgorithm]spdx.Checksum {
-	if checksum == "" {
+func digestToSpdxFileChecksum(d digest.Digest) map[spdx.ChecksumAlgorithm]spdx.Checksum {
+	if d == "" {
 		return nil
 	}
+
+	var alg spdx.ChecksumAlgorithm
+	switch d.Algorithm() {
+	case digest.SHA1:
+		alg = spdx.SHA1
+	case digest.SHA256:
+		alg = spdx.SHA256
+	default:
+		return nil
+	}
+
 	return map[spdx.ChecksumAlgorithm]spdx.Checksum{
-		spdx.SHA256: spdx.Checksum{
-			Algorithm: spdx.SHA256,
-			Value:     checksum,
+		alg: {
+			Algorithm: alg,
+			Value:     d.Encoded(),
 		},
 	}
 }
