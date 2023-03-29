@@ -54,7 +54,7 @@ func TestNewDockerImage(t *testing.T) {
 
 	type args struct {
 		imageName string
-		option    types.DockerOption
+		option    types.RemoteOptions
 	}
 	tests := []struct {
 		name            string
@@ -184,14 +184,16 @@ func TestNewDockerImage(t *testing.T) {
 				OS: "linux",
 
 				RootFS: v1.RootFS{
-					Type: "layers", DiffIDs: []v1.Hash{
+					Type: "layers",
+					DiffIDs: []v1.Hash{
 						{
 							Algorithm: "sha256",
 							Hex:       "531743b7098cb2aaf615641007a129173f63ed86ca32fe7b5a246a1c47286028",
 						},
 					},
 				},
-				Config: v1.Config{Env: []string{"PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"},
+				Config: v1.Config{
+					Env:         []string{"PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"},
 					Cmd:         []string{"/bin/sh"},
 					Image:       "sha256:7c41e139ba64dd2eba852a2e963ee86f2e8da3a5bbfaf10cf4349535dbf0ff08",
 					ArgsEscaped: true,
@@ -203,11 +205,14 @@ func TestNewDockerImage(t *testing.T) {
 			name: "happy path with insecure Docker Registry",
 			args: args{
 				imageName: fmt.Sprintf("%s/library/alpine:3.10", serverAddr),
-				option: types.DockerOption{
-					UserName:              "test",
-					Password:              "test",
-					NonSSL:                true,
-					InsecureSkipTLSVerify: true,
+				option: types.RemoteOptions{
+					Credentials: []types.Credential{
+						{
+							Username: "test",
+							Password: "test",
+						},
+					},
+					Insecure: true,
 				},
 			},
 			wantID:       "sha256:af341ccd2df8b0e2d67cf8dd32e087bfda4e5756ebd1c76bbf3efa0dc246590e",
@@ -240,10 +245,12 @@ func TestNewDockerImage(t *testing.T) {
 					DiffIDs: []v1.Hash{
 						{
 							Algorithm: "sha256",
-							Hex:       "531743b7098cb2aaf615641007a129173f63ed86ca32fe7b5a246a1c47286028"},
+							Hex:       "531743b7098cb2aaf615641007a129173f63ed86ca32fe7b5a246a1c47286028",
+						},
 					},
 				},
-				Config: v1.Config{Env: []string{"PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"},
+				Config: v1.Config{
+					Env:         []string{"PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"},
 					Cmd:         []string{"/bin/sh"},
 					Image:       "sha256:7c41e139ba64dd2eba852a2e963ee86f2e8da3a5bbfaf10cf4349535dbf0ff08",
 					ArgsEscaped: true,
@@ -324,7 +331,7 @@ func TestNewDockerImageWithPrivateRegistry(t *testing.T) {
 
 	type args struct {
 		imageName string
-		option    types.DockerOption
+		option    types.RemoteOptions
 	}
 	tests := []struct {
 		name    string
@@ -336,10 +343,14 @@ func TestNewDockerImageWithPrivateRegistry(t *testing.T) {
 			name: "happy path with private Docker Registry",
 			args: args{
 				imageName: fmt.Sprintf("%s/library/alpine:3.10", serverAddr),
-				option: types.DockerOption{
-					Credentials:           []types.Credential{{UserName: "test", Password: "testpass"}},
-					NonSSL:                true,
-					InsecureSkipTLSVerify: true,
+				option: types.RemoteOptions{
+					Credentials: []types.Credential{
+						{
+							Username: "test",
+							Password: "testpass",
+						},
+					},
+					Insecure: true,
 				},
 			},
 		},
@@ -347,9 +358,9 @@ func TestNewDockerImageWithPrivateRegistry(t *testing.T) {
 			name: "happy path with registry token",
 			args: args{
 				imageName: fmt.Sprintf("%s/library/alpine:3.10", serverAddr),
-				option: types.DockerOption{
+				option: types.RemoteOptions{
 					RegistryToken: registryToken,
-					NonSSL:        true,
+					Insecure:      true,
 				},
 			},
 		},
@@ -364,9 +375,9 @@ func TestNewDockerImageWithPrivateRegistry(t *testing.T) {
 			name: "sad path with invalid registry token",
 			args: args{
 				imageName: fmt.Sprintf("%s/library/alpine:3.11", serverAddr),
-				option: types.DockerOption{
+				option: types.RemoteOptions{
 					RegistryToken: registryToken + "invalid",
-					NonSSL:        true,
+					Insecure:      true,
 				},
 			},
 			wantErr: "signature is invalid",
@@ -490,7 +501,7 @@ func TestDockerPlatformArguments(t *testing.T) {
 	serverAddr := tr.Listener.Addr().String()
 
 	type args struct {
-		option types.DockerOption
+		option types.RemoteOptions
 	}
 	tests := []struct {
 		name    string
@@ -501,11 +512,15 @@ func TestDockerPlatformArguments(t *testing.T) {
 		{
 			name: "happy path with valid platform",
 			args: args{
-				option: types.DockerOption{
-					Credentials:           []types.Credential{{UserName: "test", Password: "testpass"}},
-					NonSSL:                true,
-					InsecureSkipTLSVerify: true,
-					Platform:              "arm/linux",
+				option: types.RemoteOptions{
+					Credentials: []types.Credential{
+						{
+							Username: "test",
+							Password: "testpass",
+						},
+					},
+					Insecure: true,
+					Platform: "arm/linux",
 				},
 			},
 		},

@@ -2,9 +2,8 @@ package ecr
 
 import (
 	"context"
+	"errors"
 	"testing"
-
-	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 
@@ -18,25 +17,22 @@ import (
 func TestCheckOptions(t *testing.T) {
 	var tests = map[string]struct {
 		domain  string
-		opt     types.DockerOption
 		wantErr error
 	}{
 		"InvalidURL": {
 			domain:  "alpine:3.9",
-			opt:     types.DockerOption{},
 			wantErr: types.InvalidURLPattern,
 		},
 		"NoOption": {
 			domain: "xxx.ecr.ap-northeast-1.amazonaws.com",
-			opt:    types.DockerOption{},
 		},
 	}
 
 	for testname, v := range tests {
 		a := &ECR{}
-		err := a.CheckOptions(v.domain, v.opt)
+		err := a.CheckOptions(v.domain, types.RemoteOptions{})
 		if err != nil {
-			if !xerrors.Is(err, v.wantErr) {
+			if !errors.Is(err, v.wantErr) {
 				t.Errorf("[%s]\nexpected error based on %v\nactual : %v", testname, v.wantErr, err)
 			}
 			continue

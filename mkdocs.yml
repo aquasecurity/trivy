@@ -62,7 +62,9 @@ nav:
               - Go: docs/vulnerability/languages/golang.md
               - Java: docs/vulnerability/languages/java.md
               - Node.js: docs/vulnerability/languages/nodejs.md
+              - PHP: docs/vulnerability/languages/php.md
               - Python: docs/vulnerability/languages/python.md
+              - Rust: docs/vulnerability/languages/rust.md
       - Misconfiguration:
           - Scanning: docs/misconfiguration/scanning.md
           - Policy:

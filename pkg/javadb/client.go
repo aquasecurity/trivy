@@ -52,7 +52,7 @@ func (u *Updater) Update() error {
 		log.Logger.Info("Downloading the Java DB...")
 
 		var a *oci.Artifact
-		if a, err = oci.NewArtifact(u.repo, mediaType, u.quiet, u.insecure); err != nil {
+		if a, err = oci.NewArtifact(u.repo, mediaType, "", u.quiet, u.insecure); err != nil {
 			return xerrors.Errorf("oci error: %w", err)
 		}
 		if err = a.Download(context.Background(), dbDir); err != nil {
