@@ -15,7 +15,7 @@ type Registry struct {
 
 const azureURL = "azurecr.io"
 
-func (r *Registry) CheckOptions(domain string, _ types.DockerOption) error {
+func (r *Registry) CheckOptions(domain string, _ types.RemoteOptions) error {
 	if !strings.HasSuffix(domain, azureURL) {
 		return xerrors.Errorf("Azure registry: %w", types.InvalidURLPattern)
 	}

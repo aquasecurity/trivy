@@ -102,7 +102,7 @@ func (a Artifact) Inspect(ctx context.Context) (types.ArtifactReference, error) 
 	log.Logger.Debugf("Diff IDs: %v", diffIDs)
 
 	// Try retrieving a remote SBOM document
-	if res, err := a.retrieveRemoteSBOM(ctx, a.artifactOption); err == nil {
+	if res, err := a.retrieveRemoteSBOM(ctx); err == nil {
 		// Found SBOM
 		return res, nil
 	} else if !errors.Is(err, errNoSBOMFound) {

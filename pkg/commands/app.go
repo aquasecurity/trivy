@@ -228,6 +228,7 @@ func NewImageCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 		MisconfFlagGroup:       flag.NewMisconfFlagGroup(),
 		ModuleFlagGroup:        flag.NewModuleFlagGroup(),
 		RemoteFlagGroup:        flag.NewClientFlags(), // for client/server mode
+		RegistryFlagGroup:      flag.NewRegistryFlagGroup(),
 		RegoFlagGroup:          flag.NewRegoFlagGroup(),
 		ReportFlagGroup:        reportFlagGroup,
 		ScanFlagGroup:          flag.NewScanFlagGroup(),
@@ -304,6 +305,7 @@ func NewFilesystemCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 		MisconfFlagGroup:       flag.NewMisconfFlagGroup(),
 		ModuleFlagGroup:        flag.NewModuleFlagGroup(),
 		RemoteFlagGroup:        flag.NewClientFlags(), // for client/server mode
+		RegistryFlagGroup:      flag.NewRegistryFlagGroup(),
 		RegoFlagGroup:          flag.NewRegoFlagGroup(),
 		ReportFlagGroup:        reportFlagGroup,
 		ScanFlagGroup:          flag.NewScanFlagGroup(),
@@ -359,6 +361,7 @@ func NewRootfsCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 		MisconfFlagGroup:       flag.NewMisconfFlagGroup(),
 		ModuleFlagGroup:        flag.NewModuleFlagGroup(),
 		RemoteFlagGroup:        flag.NewClientFlags(), // for client/server mode
+		RegistryFlagGroup:      flag.NewRegistryFlagGroup(),
 		RegoFlagGroup:          flag.NewRegoFlagGroup(),
 		ReportFlagGroup:        reportFlagGroup,
 		ScanFlagGroup:          flag.NewScanFlagGroup(),
@@ -415,6 +418,7 @@ func NewRepositoryCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 		LicenseFlagGroup:       flag.NewLicenseFlagGroup(),
 		MisconfFlagGroup:       flag.NewMisconfFlagGroup(),
 		ModuleFlagGroup:        flag.NewModuleFlagGroup(),
+		RegistryFlagGroup:      flag.NewRegistryFlagGroup(),
 		RegoFlagGroup:          flag.NewRegoFlagGroup(),
 		RemoteFlagGroup:        flag.NewClientFlags(), // for client/server mode
 		ReportFlagGroup:        reportFlagGroup,
@@ -472,6 +476,7 @@ func NewClientCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 		CacheFlagGroup:         flag.NewCacheFlagGroup(),
 		DBFlagGroup:            flag.NewDBFlagGroup(),
 		MisconfFlagGroup:       flag.NewMisconfFlagGroup(),
+		RegistryFlagGroup:      flag.NewRegistryFlagGroup(),
 		RegoFlagGroup:          flag.NewRegoFlagGroup(),
 		RemoteFlagGroup:        remoteFlags,
 		ReportFlagGroup:        flag.NewReportFlagGroup(),
@@ -567,10 +572,11 @@ func NewConfigCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	}
 
 	configFlags := &flag.Flags{
-		CacheFlagGroup:   flag.NewCacheFlagGroup(),
-		MisconfFlagGroup: flag.NewMisconfFlagGroup(),
-		ModuleFlagGroup:  flag.NewModuleFlagGroup(),
-		RegoFlagGroup:    flag.NewRegoFlagGroup(),
+		CacheFlagGroup:    flag.NewCacheFlagGroup(),
+		MisconfFlagGroup:  flag.NewMisconfFlagGroup(),
+		ModuleFlagGroup:   flag.NewModuleFlagGroup(),
+		RegistryFlagGroup: flag.NewRegistryFlagGroup(),
+		RegoFlagGroup:     flag.NewRegoFlagGroup(),
 		K8sFlagGroup: &flag.K8sFlagGroup{
 			// disable unneeded flags
 			K8sVersion: &flag.K8sVersionFlag,

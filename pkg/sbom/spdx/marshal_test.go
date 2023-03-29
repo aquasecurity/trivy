@@ -355,7 +355,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 							{
 								Category: tspdx.CategoryPackageManager,
 								RefType:  tspdx.RefTypePurl,
-								Locator:  "pkg:rpm/centos/acl@1:2.2.53-1.el8?arch=aarch64&distro=centos-8.3.2011",
+								Locator:  "pkg:rpm/centos/acl@2.2.53-1.el8?arch=aarch64&epoch=1&distro=centos-8.3.2011",
 							},
 						},
 						PackageSourceInfo: "built package from: acl 1:2.2.53-1.el8",
