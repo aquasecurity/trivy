@@ -27,12 +27,15 @@ type Descriptor = remote.Descriptor
 // Get is a wrapper of google/go-containerregistry/pkg/v1/remote.Get
 // so that it can try multiple authentication methods.
 func Get(ctx context.Context, ref name.Reference, option types.RemoteOptions) (*Descriptor, error) {
-	remoteOpts := []remote.Option{remote.WithTransport(transport(option.Insecure))}
+	t := transport(option.Insecure)
 
 	var errs error
+	// Try each authentication method until it succeeds
 	for _, authOpt := range authOptions(ctx, ref, option) {
-		// Try each authentication method until it succeeds
-		remoteOpts = append(remoteOpts, authOpt)
+		remoteOpts := []remote.Option{
+			remote.WithTransport(t),
+			authOpt,
+		}
 
 		if option.Platform != "" {
 			s, err := parsePlatform(ref, option.Platform, remoteOpts)
