@@ -98,63 +98,54 @@ var (
 		Value:      "",
 		Usage:      "compliance report to generate",
 	}
-	IncludeChecksum = Flag{
-		Name:       "include-checksum",
-		ConfigName: "include-checksum",
-		Value:      false,
-		Usage:      "enabling the option will include the checksum in the report in spdx formats",
-	}
 )
 
 // ReportFlagGroup composes common printer flag structs
 // used for commands requiring reporting logic.
 type ReportFlagGroup struct {
-	Format          *Flag
-	ReportFormat    *Flag
-	Template        *Flag
-	DependencyTree  *Flag
-	ListAllPkgs     *Flag
-	IgnoreFile      *Flag
-	IgnorePolicy    *Flag
-	ExitCode        *Flag
-	ExitOnEOL       *Flag
-	Output          *Flag
-	Severity        *Flag
-	Compliance      *Flag
-	IncludeChecksum *Flag
+	Format         *Flag
+	ReportFormat   *Flag
+	Template       *Flag
+	DependencyTree *Flag
+	ListAllPkgs    *Flag
+	IgnoreFile     *Flag
+	IgnorePolicy   *Flag
+	ExitCode       *Flag
+	ExitOnEOL      *Flag
+	Output         *Flag
+	Severity       *Flag
+	Compliance     *Flag
 }
 
 type ReportOptions struct {
-	Format          string
-	ReportFormat    string
-	Template        string
-	DependencyTree  bool
-	ListAllPkgs     bool
-	IgnoreFile      string
-	ExitCode        int
-	ExitOnEOL       int
-	IgnorePolicy    string
-	Output          io.Writer
-	Severities      []dbTypes.Severity
-	Compliance      spec.ComplianceSpec
-	IncludeChecksum bool
+	Format         string
+	ReportFormat   string
+	Template       string
+	DependencyTree bool
+	ListAllPkgs    bool
+	IgnoreFile     string
+	ExitCode       int
+	ExitOnEOL      int
+	IgnorePolicy   string
+	Output         io.Writer
+	Severities     []dbTypes.Severity
+	Compliance     spec.ComplianceSpec
 }
 
 func NewReportFlagGroup() *ReportFlagGroup {
 	return &ReportFlagGroup{
-		Format:          &FormatFlag,
-		ReportFormat:    &ReportFormatFlag,
-		Template:        &TemplateFlag,
-		DependencyTree:  &DependencyTreeFlag,
-		ListAllPkgs:     &ListAllPkgsFlag,
-		IgnoreFile:      &IgnoreFileFlag,
-		IgnorePolicy:    &IgnorePolicyFlag,
-		ExitCode:        &ExitCodeFlag,
-		ExitOnEOL:       &ExitOnEOLFlag,
-		Output:          &OutputFlag,
-		Severity:        &SeverityFlag,
-		Compliance:      &ComplianceFlag,
-		IncludeChecksum: &IncludeChecksum,
+		Format:         &FormatFlag,
+		ReportFormat:   &ReportFormatFlag,
+		Template:       &TemplateFlag,
+		DependencyTree: &DependencyTreeFlag,
+		ListAllPkgs:    &ListAllPkgsFlag,
+		IgnoreFile:     &IgnoreFileFlag,
+		IgnorePolicy:   &IgnorePolicyFlag,
+		ExitCode:       &ExitCodeFlag,
+		ExitOnEOL:      &ExitOnEOLFlag,
+		Output:         &OutputFlag,
+		Severity:       &SeverityFlag,
+		Compliance:     &ComplianceFlag,
 	}
 }
 
@@ -176,7 +167,6 @@ func (f *ReportFlagGroup) Flags() []*Flag {
 		f.Output,
 		f.Severity,
 		f.Compliance,
-		f.IncludeChecksum,
 	}
 }
 
@@ -186,7 +176,6 @@ func (f *ReportFlagGroup) ToOptions(out io.Writer) (ReportOptions, error) {
 	dependencyTree := getBool(f.DependencyTree)
 	listAllPkgs := getBool(f.ListAllPkgs)
 	output := getString(f.Output)
-	includeChecksum := getBool(f.IncludeChecksum)
 
 	if format != "" && !slices.Contains(report.SupportedFormats, format) {
 		return ReportOptions{}, xerrors.Errorf("unknown format: %v", format)
@@ -220,22 +209,6 @@ func (f *ReportFlagGroup) ToOptions(out io.Writer) (ReportOptions, error) {
 		}
 	}
 
-	// "--include-checksum" option is available only with spdx formats.
-	if format == report.FormatSPDXJSON || format == report.FormatSPDX {
-		if !includeChecksum {
-			log.Logger.Infof(`Trivy does not calculate a checksum for spdx formats by default. '` +
-				`Use "--include-checksum" flag to save digests to report`)
-		} else {
-			log.Logger.Infof(`If you scanned before without "--include-checksum" flag, ` +
-				`then reset cache with command "trivy image --reset" to include checksum to cache`)
-		}
-	} else {
-		if includeChecksum {
-			log.Logger.Warn(`"--include-checksum" can be use only with "--format spdx" or "--format spdx-json"`)
-			includeChecksum = false
-		}
-	}
-
 	// Enable '--list-all-pkgs' if needed
 	if f.forceListAllPkgs(format, listAllPkgs, dependencyTree) {
 		listAllPkgs = true
@@ -254,19 +227,18 @@ func (f *ReportFlagGroup) ToOptions(out io.Writer) (ReportOptions, error) {
 	}
 
 	return ReportOptions{
-		Format:          format,
-		ReportFormat:    getString(f.ReportFormat),
-		Template:        template,
-		DependencyTree:  dependencyTree,
-		ListAllPkgs:     listAllPkgs,
-		IgnoreFile:      getString(f.IgnoreFile),
-		ExitCode:        getInt(f.ExitCode),
-		ExitOnEOL:       getInt(f.ExitOnEOL),
-		IgnorePolicy:    getString(f.IgnorePolicy),
-		Output:          out,
-		Severities:      splitSeverity(getStringSlice(f.Severity)),
-		Compliance:      cs,
-		IncludeChecksum: includeChecksum,
+		Format:         format,
+		ReportFormat:   getString(f.ReportFormat),
+		Template:       template,
+		DependencyTree: dependencyTree,
+		ListAllPkgs:    listAllPkgs,
+		IgnoreFile:     getString(f.IgnoreFile),
+		ExitCode:       getInt(f.ExitCode),
+		ExitOnEOL:      getInt(f.ExitOnEOL),
+		IgnorePolicy:   getString(f.IgnorePolicy),
+		Output:         out,
+		Severities:     splitSeverity(getStringSlice(f.Severity)),
+		Compliance:     cs,
 	}, nil
 }
 
