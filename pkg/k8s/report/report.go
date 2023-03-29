@@ -34,7 +34,7 @@ type Option struct {
 	Output        io.Writer
 	Severities    []dbTypes.Severity
 	ColumnHeading []string
-	Scanners      []string
+	Scanners      types.Scanners
 	Components    []string
 }
 
@@ -176,7 +176,7 @@ type reports struct {
 // - misconfiguration report
 // - rbac report
 // - infra checks report
-func separateMisconfigReports(k8sReport Report, scanners, components []string) []reports {
+func separateMisconfigReports(k8sReport Report, scanners types.Scanners, components []string) []reports {
 
 	workloadMisconfig := make([]Resource, 0)
 	infraMisconfig := make([]Resource, 0)
@@ -184,7 +184,7 @@ func separateMisconfigReports(k8sReport Report, scanners, components []string) [
 
 	for _, misConfig := range k8sReport.Misconfigurations {
 		switch {
-		case slices.Contains(scanners, types.RBACScanner) && rbacResource(misConfig):
+		case scanners.Enabled(types.RBACScanner) && rbacResource(misConfig):
 			rbacAssessment = append(rbacAssessment, misConfig)
 		case infraResource(misConfig):
 			workload, infra := splitInfraAndWorkloadResources(misConfig)
@@ -197,7 +197,7 @@ func separateMisconfigReports(k8sReport Report, scanners, components []string) [
 				workloadMisconfig = append(workloadMisconfig, workload)
 			}
 
-		case slices.Contains(scanners, types.MisconfigScanner) && !rbacResource(misConfig):
+		case scanners.Enabled(types.MisconfigScanner) && !rbacResource(misConfig):
 			if slices.Contains(components, workloadComponent) {
 				workloadMisconfig = append(workloadMisconfig, misConfig)
 			}
@@ -225,7 +225,7 @@ func separateMisconfigReports(k8sReport Report, scanners, components []string) [
 		}
 	}
 
-	if slices.Contains(scanners, types.RBACScanner) && len(rbacAssessment) > 0 {
+	if scanners.Enabled(types.RBACScanner) && len(rbacAssessment) > 0 {
 		r = append(r, reports{
 			report: Report{
 				SchemaVersion:     0,
@@ -237,7 +237,7 @@ func separateMisconfigReports(k8sReport Report, scanners, components []string) [
 		})
 	}
 
-	if slices.Contains(scanners, types.MisconfigScanner) &&
+	if scanners.Enabled(types.MisconfigScanner) &&
 		slices.Contains(components, infraComponent) &&
 		len(infraMisconfig) > 0 {
 
@@ -260,7 +260,7 @@ func rbacResource(misConfig Resource) bool {
 }
 
 func infraResource(misConfig Resource) bool {
-	return misConfig.Kind == "Pod" && misConfig.Namespace == "kube-system"
+	return (misConfig.Kind == "Pod" && misConfig.Namespace == "kube-system") || misConfig.Kind == "NodeInfo"
 }
 
 func CreateResource(artifact *artifacts.Artifact, report types.Report, err error) Resource {
@@ -363,8 +363,6 @@ func copyResult(r types.Result, misconfigs []types.DetectedMisconfiguration) typ
 	}
 }
 
-func shouldAddWorkloadReport(scanners []string) bool {
-	return slices.Contains(scanners, types.MisconfigScanner) ||
-		slices.Contains(scanners, types.VulnerabilityScanner) ||
-		slices.Contains(scanners, types.SecretScanner)
+func shouldAddWorkloadReport(scanners types.Scanners) bool {
+	return scanners.AnyEnabled(types.MisconfigScanner, types.VulnerabilityScanner, types.SecretScanner)
 }

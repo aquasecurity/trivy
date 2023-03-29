@@ -2,7 +2,7 @@ package module_test
 
 import (
 	"context"
-	"os"
+	"io/fs"
 	"path/filepath"
 	"runtime"
 	"testing"
@@ -13,7 +13,6 @@ import (
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/module"
 	"github.com/aquasecurity/trivy/pkg/scanner/post"
-	"github.com/aquasecurity/trivy/pkg/utils"
 )
 
 func TestManager_Register(t *testing.T) {
@@ -23,78 +22,101 @@ func TestManager_Register(t *testing.T) {
 	}
 	tests := []struct {
 		name                    string
-		noModuleDir             bool
-		moduleName              string
-		wantAnalyzerVersions    map[string]int
+		moduleDir               string
+		enabledModules          []string
+		wantAnalyzerVersions    analyzer.Versions
 		wantPostScannerVersions map[string]int
 		wantErr                 bool
 	}{
 		{
-			name:       "happy path",
-			moduleName: "happy",
-			wantAnalyzerVersions: map[string]int{
-				"happy": 1,
+			name:      "happy path",
+			moduleDir: "testdata/happy",
+			wantAnalyzerVersions: analyzer.Versions{
+				Analyzers: map[string]int{
+					"happy": 1,
+				},
+				PostAnalyzers: map[string]int{},
 			},
 			wantPostScannerVersions: map[string]int{
 				"happy": 1,
 			},
 		},
 		{
-			name:       "only analyzer",
-			moduleName: "analyzer",
-			wantAnalyzerVersions: map[string]int{
-				"analyzer": 1,
+			name:      "only analyzer",
+			moduleDir: "testdata/analyzer",
+			wantAnalyzerVersions: analyzer.Versions{
+				Analyzers: map[string]int{
+					"analyzer": 1,
+				},
+				PostAnalyzers: map[string]int{},
 			},
 			wantPostScannerVersions: map[string]int{},
 		},
 		{
-			name:                 "only post scanner",
-			moduleName:           "scanner",
-			wantAnalyzerVersions: map[string]int{},
+			name:      "only post scanner",
+			moduleDir: "testdata/scanner",
+			wantAnalyzerVersions: analyzer.Versions{
+				Analyzers:     map[string]int{},
+				PostAnalyzers: map[string]int{},
+			},
 			wantPostScannerVersions: map[string]int{
 				"scanner": 2,
 			},
 		},
 		{
-			name:                    "no module dir",
-			noModuleDir:             true,
-			moduleName:              "happy",
-			wantAnalyzerVersions:    map[string]int{},
+			name:      "no module dir",
+			moduleDir: "no-such-dir",
+			wantAnalyzerVersions: analyzer.Versions{
+				Analyzers:     map[string]int{},
+				PostAnalyzers: map[string]int{},
+			},
 			wantPostScannerVersions: map[string]int{},
 		},
+		{
+			name:      "pass enabled modules",
+			moduleDir: "testdata",
+			enabledModules: []string{
+				"happy",
+				"analyzer",
+			},
+			wantAnalyzerVersions: analyzer.Versions{
+				Analyzers: map[string]int{
+					"happy":    1,
+					"analyzer": 1,
+				},
+				PostAnalyzers: map[string]int{},
+			},
+			wantPostScannerVersions: map[string]int{
+				"happy": 1,
+			},
+		},
 	}
+
+	// Confirm that wasm modules are generated beforehand
+	var count int
+	err := filepath.WalkDir("testdata", func(path string, d fs.DirEntry, err error) error {
+		if filepath.Ext(path) == ".wasm" {
+			count++
+		}
+		return nil
+	})
+	require.NoError(t, err)
+	// WASM modules must be generated before running the tests.
+	require.Equal(t, count, 3, "missing WASM modules, try 'make test' or 'make generate-test-modules'")
+
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			modulePath := filepath.Join("testdata", tt.moduleName, tt.moduleName+".wasm")
-
-			// WASM modules must be generated before running this test.
-			if _, err := os.Stat(modulePath); os.IsNotExist(err) {
-				require.Fail(t, "missing WASM modules, try 'make test' or 'make generate-test-modules'")
-			}
-
-			// Set up a temp dir for modules
-			tmpDir := t.TempDir()
-			t.Setenv("XDG_DATA_HOME", tmpDir)
-			moduleDir := filepath.Join(tmpDir, module.RelativeDir)
-
-			if !tt.noModuleDir {
-				err := os.MkdirAll(moduleDir, 0777)
-				require.NoError(t, err)
-
-				// Copy the wasm module for testing
-				_, err = utils.CopyFile(modulePath, filepath.Join(moduleDir, filepath.Base(modulePath)))
-				require.NoError(t, err)
-			}
-
-			m, err := module.NewManager(context.Background())
+			m, err := module.NewManager(context.Background(), module.Options{
+				Dir:            tt.moduleDir,
+				EnabledModules: tt.enabledModules,
+			})
 			require.NoError(t, err)
 
 			// Register analyzer and post scanner from WASM module
 			m.Register()
-			defer func() {
-				analyzer.DeregisterAnalyzer(analyzer.Type(tt.moduleName))
-				post.DeregisterPostScanner(tt.moduleName)
-			}()
+
+			// Remove registered analyzers and post scanners so that it will not affect other tests.
+			defer m.Deregister()
 
 			// Confirm the analyzer is registered
 			a, err := analyzer.NewAnalyzerGroup(analyzer.AnalyzerOptions{})
@@ -104,8 +126,8 @@ func TestManager_Register(t *testing.T) {
 			assert.Equal(t, tt.wantAnalyzerVersions, got)
 
 			// Confirm the post scanner is registered
-			got = post.ScannerVersions()
-			assert.Equal(t, tt.wantPostScannerVersions, got)
+			gotScannerVersions := post.ScannerVersions()
+			assert.Equal(t, tt.wantPostScannerVersions, gotScannerVersions)
 		})
 	}
 }

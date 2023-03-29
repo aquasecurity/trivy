@@ -208,10 +208,10 @@ func getDependencyHead(dependenciesById map[string][]string, mapIdToBom map[stri
 }
 
 func (e *Marshaler) marshalComponents(r types.Report, bomRef string) (*[]cdx.Component, *[]cdx.Dependency, *[]cdx.Vulnerability, error) {
-	var components []cdx.Component
+	components := make([]cdx.Component, 0) // To export an empty array in JSON
 	// we use map to avoid duplicate components
 	dependencies := map[string]cdx.Dependency{}
-	var metadataDependencies []string
+	metadataDependencies := make([]string, 0) // To export an empty array in JSON
 	libraryUniqMap := map[string]struct{}{}
 	vulnMap := map[string]cdx.Vulnerability{}
 	for _, result := range r.Results {
@@ -322,7 +322,6 @@ func (e *Marshaler) marshalComponents(r types.Report, bomRef string) (*[]cdx.Com
 
 			// Dependency graph from #2 to #3
 			dependencies[resultComponent.BOMRef] = cdx.Dependency{Ref: resultComponent.BOMRef, Dependencies: &headDependencies}
-
 			// Dependency graph from #1 to #2
 			metadataDependencies = append(metadataDependencies, resultComponent.BOMRef)
 		}
@@ -480,16 +479,46 @@ func cdxProperties(pkgType string, pkg ftypes.Package) *[]cdx.Property {
 		name  string
 		value string
 	}{
-		{PropertyPkgID, pkg.ID},
-		{PropertyPkgType, pkgType},
-		{PropertyFilePath, pkg.FilePath},
-		{PropertySrcName, pkg.SrcName},
-		{PropertySrcVersion, pkg.SrcVersion},
-		{PropertySrcRelease, pkg.SrcRelease},
-		{PropertySrcEpoch, strconv.Itoa(pkg.SrcEpoch)},
-		{PropertyModularitylabel, pkg.Modularitylabel},
-		{PropertyLayerDigest, pkg.Layer.Digest},
-		{PropertyLayerDiffID, pkg.Layer.DiffID},
+		{
+			PropertyPkgID,
+			pkg.ID,
+		},
+		{
+			PropertyPkgType,
+			pkgType,
+		},
+		{
+			PropertyFilePath,
+			pkg.FilePath,
+		},
+		{
+			PropertySrcName,
+			pkg.SrcName,
+		},
+		{
+			PropertySrcVersion,
+			pkg.SrcVersion,
+		},
+		{
+			PropertySrcRelease,
+			pkg.SrcRelease,
+		},
+		{
+			PropertySrcEpoch,
+			strconv.Itoa(pkg.SrcEpoch),
+		},
+		{
+			PropertyModularitylabel,
+			pkg.Modularitylabel,
+		},
+		{
+			PropertyLayerDigest,
+			pkg.Layer.Digest,
+		},
+		{
+			PropertyLayerDiffID,
+			pkg.Layer.DiffID,
+		},
 	}
 
 	var properties []cdx.Property
@@ -546,7 +575,7 @@ func cwes(cweIDs []string) *[]int {
 }
 
 func cdxRatings(vulnerability types.DetectedVulnerability) *[]cdx.VulnerabilityRating {
-	var rates []cdx.VulnerabilityRating
+	rates := make([]cdx.VulnerabilityRating, 0) // To export an empty array in JSON
 	for sourceID, severity := range vulnerability.VendorSeverity {
 		// When the vendor also provides CVSS score/vector
 		if cvss, ok := vulnerability.CVSS[sourceID]; ok {

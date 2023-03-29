@@ -2,7 +2,6 @@ package remote
 
 import (
 	"context"
-	"io/ioutil"
 	"net/url"
 	"os"
 
@@ -31,7 +30,7 @@ func NewArtifact(rawurl string, c cache.ArtifactCache, artifactOpt artifact.Opti
 		return nil, cleanup, err
 	}
 
-	tmpDir, err := ioutil.TempDir("", "fanal-remote")
+	tmpDir, err := os.MkdirTemp("", "fanal-remote")
 	if err != nil {
 		return nil, cleanup, err
 	}
@@ -40,7 +39,7 @@ func NewArtifact(rawurl string, c cache.ArtifactCache, artifactOpt artifact.Opti
 		URL:             u.String(),
 		Auth:            gitAuth(),
 		Progress:        os.Stdout,
-		InsecureSkipTLS: artifactOpt.InsecureSkipTLS,
+		InsecureSkipTLS: artifactOpt.Insecure,
 	}
 
 	// suppress clone output if noProgress

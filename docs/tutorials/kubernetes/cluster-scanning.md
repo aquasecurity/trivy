@@ -68,52 +68,13 @@ This has several benefits:
 - The CRDs can be both machine and human-readable depending on which applications consume the CRDs. This allows for more versatile applications of the Trivy operator. 
 
  
-There are several ways that you can install the Trivy Operator in your cluster. In this guide, we’re going to use the Helm installation based on the [following documentation.](../../docs/kubernetes/operator/index.md)
+There are several ways that you can install the Trivy Operator in your cluster. In this guide, we’re going to use the Helm installation based on the [following documentation.](../../docs/target/kubernetes.md#trivy-operator)
 
-Make sure that you have the [Helm CLI installed.](https://helm.sh/docs/intro/install/)
-Next, run the following commands.
+Please follow the Trivy Operator documentation for further information on:
 
-First, we are going to add the Aqua Security Helm repository to our Helm repository list:
-```
-helm repo add aqua https://aquasecurity.github.io/helm-charts/
-```
+- [Installation of the Trivy Operator](https://aquasecurity.github.io/trivy-operator/latest/getting-started/installation/)
+- [Getting started guide](https://aquasecurity.github.io/trivy-operator/latest/getting-started/quick-start/)
 
-Then, we will update all of our Helm repositories. Even if you have just added a new repository to your existing charts, this is generally good practice to have access to the latest changes:
-```
-helm repo update
-```
-
-Lastly, we can install the Trivy operator Helm Chart to our cluster:
-```
-helm install trivy-operator aqua/trivy-operator \
-   --namespace trivy-system \
-   --create-namespace \
-   --set="trivy.ignoreUnfixed=true" \
-   --version v0.0.3
-```
-
-You can make sure that the operator is installed correctly via the following command: 
-```
-kubectl get deployment -n trivy-system 
-```
-
-Trivy will automatically start scanning your Kubernetes resources. 
-For instance, you can view vulnerability reports with the following command: 
-
-```
-kubectl get vulnerabilityreports --all-namespaces -o wide 
-```
-
-And then you can access the details of a security scan: 
-```
-kubectl describe  vulnerabilityreports <name of one of the above reports> 
-```
-
-The same process can be applied to access Configauditreports: 
-
-```
-kubectl get configauditreports --all-namespaces -o wide 
-```
 
 
  

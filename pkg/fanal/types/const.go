@@ -43,7 +43,6 @@ const (
 	Kubernetes     = "kubernetes"
 	Ansible        = "ansible"
 	Helm           = "helm"
-	Rbac           = "rbac"
 	Cloud          = "cloud"
 	AzureARM       = "azure-arm"
 
@@ -59,12 +58,15 @@ const (
 
 	MavenPom = "pom.xml"
 
+	NpmPkg     = "package.json"
 	NpmPkgLock = "package-lock.json"
 	YarnLock   = "yarn.lock"
 	PnpmLock   = "pnpm-lock.yaml"
 
 	ComposerLock = "composer.lock"
+	ComposerJson = "composer.json"
 
+	PyProject       = "pyproject.toml"
 	PipRequirements = "requirements.txt"
 	PipfileLock     = "Pipfile.lock"
 	PoetryLock      = "poetry.lock"
@@ -80,7 +82,4 @@ const (
 	PubSpecLock = "pubspec.lock"
 
 	MixLock = "mix.lock"
-
-	// Container image config
-	HistoryPkgs = "pkgs-from-history"
 )

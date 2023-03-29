@@ -44,7 +44,7 @@ func DisableRemote() Option {
 	}
 }
 
-func NewContainerImage(ctx context.Context, imageName string, option types.DockerOption, opts ...Option) (types.Image, func(), error) {
+func NewContainerImage(ctx context.Context, imageName string, opt types.RemoteOptions, opts ...Option) (types.Image, func(), error) {
 	o := &options{
 		dockerd:    true,
 		podman:     true,
@@ -57,7 +57,7 @@ func NewContainerImage(ctx context.Context, imageName string, option types.Docke
 
 	var errs error
 	var nameOpts []name.Option
-	if option.NonSSL {
+	if opt.Insecure {
 		nameOpts = append(nameOpts, name.Insecure)
 	}
 	ref, err := name.ParseReference(imageName, nameOpts...)
@@ -97,7 +97,7 @@ func NewContainerImage(ctx context.Context, imageName string, option types.Docke
 
 	// Try accessing Docker Registry
 	if o.remote {
-		img, err := tryRemote(ctx, imageName, ref, option)
+		img, err := tryRemote(ctx, imageName, ref, opt)
 		if err == nil {
 			// Return v1.Image if the image is found in a remote registry
 			return img, func() {}, nil

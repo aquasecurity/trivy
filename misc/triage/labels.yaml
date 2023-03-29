@@ -120,6 +120,12 @@ labels:
 - name: target/kubernetes
   color: 0ebdb0
   description: Issues relating to kubernetes cluster scanning
+- name: target/cloud
+  color: 0ebdb0
+  description: Issues relating to cloud account scanning
+- name: target/vm
+  color: 0ebdb0
+  description: Issues relating to virtual machine scanning
 
 # others
 - name: good first issue

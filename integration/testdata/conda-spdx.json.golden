@@ -3,7 +3,7 @@
 	"creationInfo": {
 		"created": "2023-01-08T23:58:16.700785648Z",
 		"creators": [
-			"Tool: trivy",
+			"Tool: trivy-dev",
 			"Organization: aquasecurity"
 		]
 	},
@@ -26,12 +26,14 @@
 	"packages": [
 		{
 			"SPDXID": "SPDXRef-Application-ee5ef1aa4ac89125",
+			"downloadLocation": "NONE",
 			"filesAnalyzed": false,
 			"name": "conda-pkg",
 			"sourceInfo": "Conda"
 		},
 		{
 			"SPDXID": "SPDXRef-Filesystem-6e0ac6a0fab50ab4",
+			"downloadLocation": "NONE",
 			"attributionTexts": [
 				"SchemaVersion: 2"
 			],
@@ -40,6 +42,7 @@
 		},
 		{
 			"SPDXID": "SPDXRef-Package-2984084f02572600",
+			"downloadLocation": "NONE",
 			"externalRefs": [
 				{
 					"referenceCategory": "PACKAGE-MANAGER",
@@ -58,6 +61,7 @@
 		},
 		{
 			"SPDXID": "SPDXRef-Package-ac33eb699b3aa81d",
+			"downloadLocation": "NONE",
 			"externalRefs": [
 				{
 					"referenceCategory": "PACKAGE-MANAGER",

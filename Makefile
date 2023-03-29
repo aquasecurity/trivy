@@ -16,6 +16,8 @@ EXAMPLE_MODULES := $(patsubst %.go,%.wasm,$(EXAMPLE_MODULE_SRCS))
 MKDOCS_IMAGE := aquasec/mkdocs-material:dev
 MKDOCS_PORT := 8000
 
+export CGO_ENABLED := 0 
+
 u := $(if $(update),-u)
 
 # Tools
@@ -26,13 +28,16 @@ $(GOBIN)/crane:
 	go install github.com/google/go-containerregistry/cmd/crane@v0.9.0
 
 $(GOBIN)/golangci-lint:
-	curl -sfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh| sh -s -- -b $(GOBIN) v1.49.0
+	curl -sfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh| sh -s -- -b $(GOBIN) v1.52.2
 
 $(GOBIN)/labeler:
 	go install github.com/knqyf263/labeler@latest
 
 $(GOBIN)/easyjson:
 	go install github.com/mailru/easyjson/...@v0.7.7
+
+$(GOBIN)/goyacc:
+	go install golang.org/x/tools/cmd/goyacc@latest
 
 .PHONY: wire
 wire: $(GOBIN)/wire
@@ -131,3 +136,8 @@ mkdocs-serve:
 .PHONY: easyjson
 easyjson: $(GOBIN)/easyjson
 	easyjson pkg/module/serialize/types.go
+
+# Generate license parser with goyacc
+.PHONY: yacc
+yacc: $(GOBIN)/goyacc
+	go generate ./pkg/licensing/expression/... 	

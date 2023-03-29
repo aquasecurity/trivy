@@ -85,8 +85,8 @@ func (s *AWSScanner) Scan(ctx context.Context, option flag.Options) (scan.Result
 		)
 	}
 
-	if len(option.Compliance) > 0 {
-		scannerOpts = append(scannerOpts, options.ScannerWithSpec(option.Compliance))
+	if option.Compliance.Spec.ID != "" {
+		scannerOpts = append(scannerOpts, options.ScannerWithSpec(option.Compliance.Spec.ID))
 	} else {
 		scannerOpts = append(scannerOpts, options.ScannerWithFrameworks(
 			framework.Default,
@@ -96,7 +96,7 @@ func (s *AWSScanner) Scan(ctx context.Context, option flag.Options) (scan.Result
 	scanner := aws.New(scannerOpts...)
 
 	var freshState *state.State
-	if len(missing) > 0 {
+	if len(missing) > 0 || option.CloudOptions.UpdateCache {
 		var err error
 		freshState, err = scanner.CreateState(ctx)
 		if err != nil {

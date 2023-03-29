@@ -4,7 +4,7 @@ SPDXID: SPDXRef-DOCUMENT
 DocumentName: integration/testdata/fixtures/images/centos-7.tar.gz
 DocumentNamespace: http://aquasecurity.github.io/trivy/container_image/integration/testdata/fixtures/images/centos-7.tar.gz-6a2c050f-bc12-46dc-b2df-1f4e3e0b5e1d
 Creator: Organization: aquasecurity
-Creator: Tool: trivy
+Creator: Tool: trivy-dev
 Created: 2022-09-13T13:24:58.796907Z
 
 ##### Package: integration/testdata/fixtures/images/centos-7.tar.gz
@@ -46,7 +46,7 @@ FilesAnalyzed: false
 PackageSourceInfo: built package from: openssl-libs 1:1.0.2k-16.el7
 PackageLicenseConcluded: OpenSSL
 PackageLicenseDeclared: OpenSSL
-ExternalRef: PACKAGE-MANAGER purl pkg:rpm/centos/openssl-libs@1:1.0.2k-16.el7?arch=x86_64&distro=centos-7.6.1810
+ExternalRef: PACKAGE-MANAGER purl pkg:rpm/centos/openssl-libs@1.0.2k-16.el7?arch=x86_64&epoch=1&distro=centos-7.6.1810
 PackageAttributionText: PkgID: openssl-libs@1.0.2k-16.el7.x86_64
 PackageAttributionText: LayerDigest: sha256:ac9208207adaac3a48e54a4dc6b49c69e78c3072d2b3add7efdabf814db2133b
 PackageAttributionText: LayerDiffID: sha256:89169d87dbe2b72ba42bfbb3579c957322baca28e03a1e558076542a1c1b2b4a

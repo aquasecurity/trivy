@@ -20,6 +20,7 @@ const (
 	TypeRedHatBase Type = "redhat"
 	TypeSUSE       Type = "suse"
 	TypeUbuntu     Type = "ubuntu"
+	TypeUbuntuESM  Type = "ubuntu-esm"
 
 	// OS Package
 	TypeApk         Type = "apk"
@@ -94,7 +95,9 @@ const (
 	// ============
 	// Image Config
 	// ============
-	TypeApkCommand Type = "apk-command"
+	TypeApkCommand        Type = "apk-command"
+	TypeHistoryDockerfile Type = "history-dockerfile"
+	TypeImageConfigSecret Type = "image-config-secret"
 
 	// =================
 	// Structured Config
@@ -126,30 +129,93 @@ const (
 var (
 	// TypeOSes has all OS-related analyzers
 	TypeOSes = []Type{
-		TypeOSRelease, TypeAlpine, TypeAmazon, TypeCBLMariner, TypeDebian, TypePhoton, TypeCentOS,
-		TypeRocky, TypeAlma, TypeFedora, TypeOracle, TypeRedHatBase, TypeSUSE, TypeUbuntu,
-		TypeApk, TypeDpkg, TypeDpkgLicense, TypeRpm, TypeRpmqa,
+		TypeOSRelease,
+		TypeAlpine,
+		TypeAmazon,
+		TypeCBLMariner,
+		TypeDebian,
+		TypePhoton,
+		TypeCentOS,
+		TypeRocky,
+		TypeAlma,
+		TypeFedora,
+		TypeOracle,
+		TypeRedHatBase,
+		TypeSUSE,
+		TypeUbuntu,
+		TypeApk,
+		TypeDpkg,
+		TypeDpkgLicense,
+		TypeRpm,
+		TypeRpmqa,
 		TypeApkRepo,
 	}
 
 	// TypeLanguages has all language analyzers
 	TypeLanguages = []Type{
-		TypeBundler, TypeGemSpec, TypeCargo, TypeComposer, TypeJar, TypePom, TypeGradleLock,
-		TypeNpmPkgLock, TypeNodePkg, TypeYarn, TypePnpm, TypeNuget, TypeDotNetCore, TypeCondaPkg,
-		TypePythonPkg, TypePip, TypePipenv, TypePoetry, TypeGoBinary, TypeGoMod, TypeRustBinary, TypeConanLock,
-		TypeCocoaPods, TypePubSpecLock, TypeMixLock,
+		TypeBundler,
+		TypeGemSpec,
+		TypeCargo,
+		TypeComposer,
+		TypeJar,
+		TypePom,
+		TypeGradleLock,
+		TypeNpmPkgLock,
+		TypeNodePkg,
+		TypeYarn,
+		TypePnpm,
+		TypeNuget,
+		TypeDotNetCore,
+		TypeCondaPkg,
+		TypePythonPkg,
+		TypePip,
+		TypePipenv,
+		TypePoetry,
+		TypeGoBinary,
+		TypeGoMod,
+		TypeRustBinary,
+		TypeConanLock,
+		TypeCocoaPods,
+		TypePubSpecLock,
+		TypeMixLock,
 	}
 
 	// TypeLockfiles has all lock file analyzers
 	TypeLockfiles = []Type{
-		TypeBundler, TypeNpmPkgLock, TypeYarn,
-		TypePnpm, TypePip, TypePipenv, TypePoetry, TypeGoMod, TypePom, TypeConanLock, TypeGradleLock,
-		TypeCocoaPods, TypePubSpecLock, TypeMixLock,
+		TypeBundler,
+		TypeNpmPkgLock,
+		TypeYarn,
+		TypePnpm,
+		TypePip,
+		TypePipenv,
+		TypePoetry,
+		TypeGoMod,
+		TypePom,
+		TypeConanLock,
+		TypeGradleLock,
+		TypeCocoaPods,
+		TypePubSpecLock,
+		TypeMixLock,
 	}
 
 	// TypeIndividualPkgs has all analyzers for individual packages
-	TypeIndividualPkgs = []Type{TypeGemSpec, TypeNodePkg, TypeCondaPkg, TypePythonPkg, TypeGoBinary, TypeJar, TypeRustBinary}
+	TypeIndividualPkgs = []Type{
+		TypeGemSpec,
+		TypeNodePkg,
+		TypeCondaPkg,
+		TypePythonPkg,
+		TypeGoBinary,
+		TypeJar,
+		TypeRustBinary,
+	}
 
 	// TypeConfigFiles has all config file analyzers
-	TypeConfigFiles = []Type{TypeYaml, TypeJSON, TypeDockerfile, TypeTerraform, TypeCloudFormation, TypeHelm}
+	TypeConfigFiles = []Type{
+		TypeYaml,
+		TypeJSON,
+		TypeDockerfile,
+		TypeTerraform,
+		TypeCloudFormation,
+		TypeHelm,
+	}
 )

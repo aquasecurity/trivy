@@ -2,7 +2,9 @@ package jar
 
 import (
 	"context"
+	"github.com/aquasecurity/trivy/pkg/mapfs"
 	"os"
+	"path/filepath"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -10,6 +12,13 @@ import (
 
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
+	"github.com/aquasecurity/trivy/pkg/javadb"
+
+	_ "modernc.org/sqlite"
+)
+
+const (
+	defaultJavaDBRepository = "ghcr.io/aquasecurity/trivy-java-db"
 )
 
 func Test_javaLibraryAnalyzer_Analyze(t *testing.T) {
@@ -93,6 +102,25 @@ func Test_javaLibraryAnalyzer_Analyze(t *testing.T) {
 			},
 		},
 		{
+			name:      "happy path (package found in trivy-java-db by sha1)",
+			inputFile: "testdata/test.jar",
+			want: &analyzer.AnalysisResult{
+				Applications: []types.Application{
+					{
+						Type:     types.Jar,
+						FilePath: "testdata/test.jar",
+						Libraries: []types.Package{
+							{
+								Name:     "org.apache.tomcat.embed:tomcat-embed-websocket",
+								FilePath: "testdata/test.jar",
+								Version:  "9.0.65",
+							},
+						},
+					},
+				},
+			},
+		},
+		{
 			name:      "sad path",
 			inputFile: "testdata/test.txt",
 			wantErr:   "not a valid zip file",
@@ -100,19 +128,20 @@ func Test_javaLibraryAnalyzer_Analyze(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			f, err := os.Open(tt.inputFile)
-			require.NoError(t, err)
-			defer f.Close()
+			// init java-trivy-db with skip update
+			javadb.Init("testdata", defaultJavaDBRepository, true, false, false)
 
-			stat, err := f.Stat()
-			require.NoError(t, err)
-
-			a := javaLibraryAnalyzer{}
+			a := javaLibraryAnalyzer{slow: true}
 			ctx := context.Background()
-			got, err := a.Analyze(ctx, analyzer.AnalysisInput{
-				FilePath: tt.inputFile,
-				Info:     stat,
-				Content:  f,
+
+			mfs := mapfs.New()
+			err := mfs.MkdirAll(filepath.Dir(tt.inputFile), os.ModePerm)
+			assert.NoError(t, err)
+			err = mfs.WriteFile(tt.inputFile, tt.inputFile)
+			assert.NoError(t, err)
+
+			got, err := a.PostAnalyze(ctx, analyzer.PostAnalysisInput{
+				FS: mfs,
 			})
 
 			if tt.wantErr != "" {

@@ -3,7 +3,7 @@
 	"creationInfo": {
 		"created": "2022-09-13T13:27:55.874784Z",
 		"creators": [
-			"Tool: trivy",
+			"Tool: trivy-dev",
 			"Organization: aquasecurity"
 		]
 	},
@@ -58,7 +58,7 @@
 			"externalRefs": [
 				{
 					"referenceCategory": "PACKAGE-MANAGER",
-					"referenceLocator": "pkg:rpm/centos/openssl-libs@1:1.0.2k-16.el7?arch=x86_64\u0026distro=centos-7.6.1810",
+					"referenceLocator": "pkg:rpm/centos/openssl-libs@1.0.2k-16.el7?arch=x86_64\u0026epoch=1\u0026distro=centos-7.6.1810",
 					"referenceType": "purl"
 				}
 			],
@@ -67,7 +67,7 @@
 			"licenseDeclared": "OpenSSL",
 			"name": "openssl-libs",
 			"sourceInfo": "built package from: openssl-libs 1:1.0.2k-16.el7",
-			"versionInfo": "1.0.2k"
+			"versionInfo": "1:1.0.2k-19.el7"
 		}
 	],
 	"relationships": [

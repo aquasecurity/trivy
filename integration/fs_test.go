@@ -17,7 +17,7 @@ import (
 
 func TestFilesystem(t *testing.T) {
 	type args struct {
-		scanners       string
+		scanner        types.Scanner
 		severity       []string
 		ignoreIDs      []string
 		policyPaths    []string
@@ -41,15 +41,15 @@ func TestFilesystem(t *testing.T) {
 		{
 			name: "gomod",
 			args: args{
-				scanners: types.VulnerabilityScanner,
-				input:    "testdata/fixtures/fs/gomod",
+				scanner: types.VulnerabilityScanner,
+				input:   "testdata/fixtures/fs/gomod",
 			},
 			golden: "testdata/gomod.json.golden",
 		},
 		{
 			name: "gomod with skip files",
 			args: args{
-				scanners:  types.VulnerabilityScanner,
+				scanner:   types.VulnerabilityScanner,
 				input:     "testdata/fixtures/fs/gomod",
 				skipFiles: []string{"testdata/fixtures/fs/gomod/submod2/go.mod"},
 			},
@@ -58,25 +58,25 @@ func TestFilesystem(t *testing.T) {
 		{
 			name: "gomod with skip dirs",
 			args: args{
-				scanners: types.VulnerabilityScanner,
+				scanner:  types.VulnerabilityScanner,
 				input:    "testdata/fixtures/fs/gomod",
 				skipDirs: []string{"testdata/fixtures/fs/gomod/submod2"},
 			},
 			golden: "testdata/gomod-skip.json.golden",
 		},
 		{
-			name: "nodejs",
+			name: "npm",
 			args: args{
-				scanners:    types.VulnerabilityScanner,
-				input:       "testdata/fixtures/fs/nodejs",
+				scanner:     types.VulnerabilityScanner,
+				input:       "testdata/fixtures/fs/npm",
 				listAllPkgs: true,
 			},
-			golden: "testdata/nodejs.json.golden",
+			golden: "testdata/npm.json.golden",
 		},
 		{
 			name: "yarn",
 			args: args{
-				scanners:    types.VulnerabilityScanner,
+				scanner:     types.VulnerabilityScanner,
 				input:       "testdata/fixtures/fs/yarn",
 				listAllPkgs: true,
 			},
@@ -85,40 +85,58 @@ func TestFilesystem(t *testing.T) {
 		{
 			name: "pnpm",
 			args: args{
-				scanners: types.VulnerabilityScanner,
-				input:    "testdata/fixtures/fs/pnpm",
+				scanner: types.VulnerabilityScanner,
+				input:   "testdata/fixtures/fs/pnpm",
 			},
 			golden: "testdata/pnpm.json.golden",
 		},
 		{
 			name: "pip",
 			args: args{
-				scanners:    types.VulnerabilityScanner,
+				scanner:     types.VulnerabilityScanner,
 				listAllPkgs: true,
 				input:       "testdata/fixtures/fs/pip",
 			},
 			golden: "testdata/pip.json.golden",
 		},
 		{
+			name: "pipenv",
+			args: args{
+				scanner:     types.VulnerabilityScanner,
+				listAllPkgs: true,
+				input:       "testdata/fixtures/fs/pipenv",
+			},
+			golden: "testdata/pipenv.json.golden",
+		},
+		{
+			name: "poetry",
+			args: args{
+				scanner:     types.VulnerabilityScanner,
+				listAllPkgs: true,
+				input:       "testdata/fixtures/fs/poetry",
+			},
+			golden: "testdata/poetry.json.golden",
+		},
+		{
 			name: "pom",
 			args: args{
-				scanners: types.VulnerabilityScanner,
-				input:    "testdata/fixtures/fs/pom",
+				scanner: types.VulnerabilityScanner,
+				input:   "testdata/fixtures/fs/pom",
 			},
 			golden: "testdata/pom.json.golden",
 		},
 		{
 			name: "gradle",
 			args: args{
-				scanners: types.VulnerabilityScanner,
-				input:    "testdata/fixtures/fs/gradle",
+				scanner: types.VulnerabilityScanner,
+				input:   "testdata/fixtures/fs/gradle",
 			},
 			golden: "testdata/gradle.json.golden",
 		},
 		{
 			name: "conan",
 			args: args{
-				scanners:    types.VulnerabilityScanner,
+				scanner:     types.VulnerabilityScanner,
 				listAllPkgs: true,
 				input:       "testdata/fixtures/fs/conan",
 			},
@@ -127,7 +145,7 @@ func TestFilesystem(t *testing.T) {
 		{
 			name: "nuget",
 			args: args{
-				scanners:    types.VulnerabilityScanner,
+				scanner:     types.VulnerabilityScanner,
 				listAllPkgs: true,
 				input:       "testdata/fixtures/fs/nuget",
 			},
@@ -136,7 +154,7 @@ func TestFilesystem(t *testing.T) {
 		{
 			name: "dotnet",
 			args: args{
-				scanners:    types.VulnerabilityScanner,
+				scanner:     types.VulnerabilityScanner,
 				listAllPkgs: true,
 				input:       "testdata/fixtures/fs/dotnet",
 			},
@@ -145,7 +163,7 @@ func TestFilesystem(t *testing.T) {
 		{
 			name: "cocoapods",
 			args: args{
-				scanners:    types.VulnerabilityScanner,
+				scanner:     types.VulnerabilityScanner,
 				listAllPkgs: true,
 				input:       "testdata/fixtures/fs/cocoapods",
 			},
@@ -154,7 +172,7 @@ func TestFilesystem(t *testing.T) {
 		{
 			name: "pubspec.lock",
 			args: args{
-				scanners:    types.VulnerabilityScanner,
+				scanner:     types.VulnerabilityScanner,
 				listAllPkgs: true,
 				input:       "testdata/fixtures/fs/pubspec",
 			},
@@ -163,16 +181,25 @@ func TestFilesystem(t *testing.T) {
 		{
 			name: "mix.lock",
 			args: args{
-				scanners:    types.VulnerabilityScanner,
+				scanner:     types.VulnerabilityScanner,
 				listAllPkgs: true,
 				input:       "testdata/fixtures/fs/mixlock",
 			},
 			golden: "testdata/mix.lock.json.golden",
 		},
 		{
+			name: "composer.lock",
+			args: args{
+				scanner:     types.VulnerabilityScanner,
+				listAllPkgs: true,
+				input:       "testdata/fixtures/fs/composer",
+			},
+			golden: "testdata/composer.lock.json.golden",
+		},
+		{
 			name: "dockerfile",
 			args: args{
-				scanners:   types.MisconfigScanner,
+				scanner:    types.MisconfigScanner,
 				input:      "testdata/fixtures/fs/dockerfile",
 				namespaces: []string{"testing"},
 			},
@@ -181,7 +208,7 @@ func TestFilesystem(t *testing.T) {
 		{
 			name: "dockerfile with custom file pattern",
 			args: args{
-				scanners:     types.MisconfigScanner,
+				scanner:      types.MisconfigScanner,
 				input:        "testdata/fixtures/fs/dockerfile_file_pattern",
 				namespaces:   []string{"testing"},
 				filePatterns: []string{"dockerfile:Customfile"},
@@ -191,7 +218,7 @@ func TestFilesystem(t *testing.T) {
 		{
 			name: "dockerfile with rule exception",
 			args: args{
-				scanners:    types.MisconfigScanner,
+				scanner:     types.MisconfigScanner,
 				policyPaths: []string{"testdata/fixtures/fs/rule-exception/policy"},
 				input:       "testdata/fixtures/fs/rule-exception",
 			},
@@ -200,7 +227,7 @@ func TestFilesystem(t *testing.T) {
 		{
 			name: "dockerfile with namespace exception",
 			args: args{
-				scanners:    types.MisconfigScanner,
+				scanner:     types.MisconfigScanner,
 				policyPaths: []string{"testdata/fixtures/fs/namespace-exception/policy"},
 				input:       "testdata/fixtures/fs/namespace-exception",
 			},
@@ -209,7 +236,7 @@ func TestFilesystem(t *testing.T) {
 		{
 			name: "dockerfile with custom policies",
 			args: args{
-				scanners:    types.MisconfigScanner,
+				scanner:     types.MisconfigScanner,
 				policyPaths: []string{"testdata/fixtures/fs/custom-policy/policy"},
 				namespaces:  []string{"user"},
 				input:       "testdata/fixtures/fs/custom-policy",
@@ -219,32 +246,32 @@ func TestFilesystem(t *testing.T) {
 		{
 			name: "tarball helm chart scanning with builtin policies",
 			args: args{
-				scanners: types.MisconfigScanner,
-				input:    "testdata/fixtures/fs/helm",
+				scanner: types.MisconfigScanner,
+				input:   "testdata/fixtures/fs/helm",
 			},
 			golden: "testdata/helm.json.golden",
 		},
 		{
 			name: "helm chart directory scanning with builtin policies",
 			args: args{
-				scanners: types.MisconfigScanner,
-				input:    "testdata/fixtures/fs/helm_testchart",
+				scanner: types.MisconfigScanner,
+				input:   "testdata/fixtures/fs/helm_testchart",
 			},
 			golden: "testdata/helm_testchart.json.golden",
 		},
 		{
 			name: "helm chart directory scanning with value overrides using set",
 			args: args{
-				scanners: types.MisconfigScanner,
-				input:    "testdata/fixtures/fs/helm_testchart",
-				helmSet:  []string{"securityContext.runAsUser=0"},
+				scanner: types.MisconfigScanner,
+				input:   "testdata/fixtures/fs/helm_testchart",
+				helmSet: []string{"securityContext.runAsUser=0"},
 			},
 			golden: "testdata/helm_testchart.overridden.json.golden",
 		},
 		{
 			name: "helm chart directory scanning with value overrides using value file",
 			args: args{
-				scanners:       types.MisconfigScanner,
+				scanner:        types.MisconfigScanner,
 				input:          "testdata/fixtures/fs/helm_testchart",
 				helmValuesFile: []string{"testdata/fixtures/fs/helm_values/values.yaml"},
 			},
@@ -253,15 +280,15 @@ func TestFilesystem(t *testing.T) {
 		{
 			name: "helm chart directory scanning with builtin policies and non string Chart name",
 			args: args{
-				scanners: types.MisconfigScanner,
-				input:    "testdata/fixtures/fs/helm_badname",
+				scanner: types.MisconfigScanner,
+				input:   "testdata/fixtures/fs/helm_badname",
 			},
 			golden: "testdata/helm_badname.json.golden",
 		},
 		{
 			name: "secrets",
 			args: args{
-				scanners:     "vuln,secret",
+				scanner:      "vuln,secret",
 				input:        "testdata/fixtures/fs/secrets",
 				secretConfig: "testdata/fixtures/fs/secrets/trivy-secret.yaml",
 			},
@@ -318,8 +345,8 @@ func TestFilesystem(t *testing.T) {
 				"--offline-scan",
 			}
 
-			if tt.args.scanners != "" {
-				osArgs = append(osArgs, "--scanners", tt.args.scanners)
+			if tt.args.scanner != "" {
+				osArgs = append(osArgs, "--scanners", string(tt.args.scanner))
 			}
 
 			if len(tt.args.policyPaths) != 0 {
