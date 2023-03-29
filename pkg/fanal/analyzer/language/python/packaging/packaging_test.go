@@ -55,7 +55,7 @@ func Test_packagingAnalyzer_Analyze(t *testing.T) {
 								Version:  "0.3.1",
 								Licenses: []string{"Python license"},
 								FilePath: "testdata/happy.egg-info/PKG-INFO",
-								Checksum: "e1e0cc85f3a0290192c50d8010be9f915200b5928d35123c9e91504fb82f7786",
+								Digest:   "sha1:d9d89d8ed3b2b683767c96814c9c5d3e57ef2e1b",
 							},
 						},
 					},
@@ -122,7 +122,7 @@ func Test_packagingAnalyzer_Analyze(t *testing.T) {
 				FilePath: tt.inputFile,
 				Info:     stat,
 				Content:  f,
-				Options:  analyzer.AnalysisOptions{IncludeChecksum: tt.includeChecksum},
+				Options:  analyzer.AnalysisOptions{FileChecksum: tt.includeChecksum},
 			})
 
 			if tt.wantErr != "" {

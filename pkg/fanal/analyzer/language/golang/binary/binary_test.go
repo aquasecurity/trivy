@@ -7,7 +7,6 @@ import (
 	"testing"
 
 	"github.com/samber/lo"
-
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
@@ -17,10 +16,9 @@ import (
 
 func Test_gobinaryLibraryAnalyzer_Analyze(t *testing.T) {
 	tests := []struct {
-		name            string
-		inputFile       string
-		includeChecksum bool
-		want            *analyzer.AnalysisResult
+		name      string
+		inputFile string
+		want      *analyzer.AnalysisResult
 	}{
 		{
 			name:      "happy path",
@@ -32,52 +30,16 @@ func Test_gobinaryLibraryAnalyzer_Analyze(t *testing.T) {
 						FilePath: "testdata/executable_gobinary",
 						Libraries: []types.Package{
 							{
-								Name:     "github.com/aquasecurity/go-pep440-version",
-								Version:  "v0.0.0-20210121094942-22b2f8951d46",
-								FilePath: "testdata/executable_gobinary",
+								Name:    "github.com/aquasecurity/go-pep440-version",
+								Version: "v0.0.0-20210121094942-22b2f8951d46",
 							},
 							{
-								Name:     "github.com/aquasecurity/go-version",
-								Version:  "v0.0.0-20210121072130-637058cfe492",
-								FilePath: "testdata/executable_gobinary",
+								Name:    "github.com/aquasecurity/go-version",
+								Version: "v0.0.0-20210121072130-637058cfe492",
 							},
 							{
-								Name:     "golang.org/x/xerrors",
-								Version:  "v0.0.0-20200804184101-5ec99f83aff1",
-								FilePath: "testdata/executable_gobinary",
-							},
-						},
-					},
-				},
-			},
-		},
-		{
-			name:            "happy path with checksum",
-			inputFile:       "testdata/executable_gobinary",
-			includeChecksum: true,
-			want: &analyzer.AnalysisResult{
-				Applications: []types.Application{
-					{
-						Type:     types.GoBinary,
-						FilePath: "testdata/executable_gobinary",
-						Libraries: []types.Package{
-							{
-								Name:     "github.com/aquasecurity/go-pep440-version",
-								Version:  "v0.0.0-20210121094942-22b2f8951d46",
-								FilePath: "testdata/executable_gobinary",
-								Checksum: "7f865415e54997cb175f4be7bd8006ef200525dac195099c14668d5671208a91",
-							},
-							{
-								Name:     "github.com/aquasecurity/go-version",
-								Version:  "v0.0.0-20210121072130-637058cfe492",
-								FilePath: "testdata/executable_gobinary",
-								Checksum: "7f865415e54997cb175f4be7bd8006ef200525dac195099c14668d5671208a91",
-							},
-							{
-								Name:     "golang.org/x/xerrors",
-								Version:  "v0.0.0-20200804184101-5ec99f83aff1",
-								FilePath: "testdata/executable_gobinary",
-								Checksum: "7f865415e54997cb175f4be7bd8006ef200525dac195099c14668d5671208a91",
+								Name:    "golang.org/x/xerrors",
+								Version: "v0.0.0-20200804184101-5ec99f83aff1",
 							},
 						},
 					},
@@ -104,7 +66,6 @@ func Test_gobinaryLibraryAnalyzer_Analyze(t *testing.T) {
 			got, err := a.Analyze(ctx, analyzer.AnalysisInput{
 				FilePath: tt.inputFile,
 				Content:  f,
-				Options:  analyzer.AnalysisOptions{IncludeChecksum: tt.includeChecksum},
 			})
 
 			assert.NoError(t, err)

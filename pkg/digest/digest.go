@@ -1,13 +1,14 @@
 package digest
 
 import (
-	"crypto/sha1"
+	"crypto/sha1" // nolint
 	"crypto/sha256"
 	"fmt"
-	"golang.org/x/xerrors"
 	"hash"
 	"io"
 	"strings"
+
+	"golang.org/x/xerrors"
 )
 
 type Algorithm string
@@ -57,7 +58,7 @@ func (d Digest) sepIndex() int {
 func CalcSHA1(r io.ReadSeeker) (Digest, error) {
 	defer r.Seek(0, io.SeekStart)
 
-	h := sha1.New()
+	h := sha1.New() // nolint
 	if _, err := io.Copy(h, r); err != nil {
 		return "", xerrors.Errorf("unable to calculate sha1 digest: %w", err)
 	}

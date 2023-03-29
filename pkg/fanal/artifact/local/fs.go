@@ -124,7 +124,10 @@ func (a Artifact) Inspect(ctx context.Context) (types.ArtifactReference, error) 
 	var wg sync.WaitGroup
 	result := analyzer.NewAnalysisResult()
 	limit := semaphore.New(a.artifactOption.Slow)
-	opts := analyzer.AnalysisOptions{Offline: a.artifactOption.Offline, IncludeChecksum: a.artifactOption.IncludeChecksum}
+	opts := analyzer.AnalysisOptions{
+		Offline:      a.artifactOption.Offline,
+		FileChecksum: a.artifactOption.FileChecksum,
+	}
 
 	// Prepare filesystem for post analysis
 	files := new(syncx.Map[analyzer.Type, *mapfs.FS])

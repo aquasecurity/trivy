@@ -142,7 +142,7 @@ func Test_poetryLibraryAnalyzer_Analyze(t *testing.T) {
 		{
 			name:    "broken poetry.lock",
 			dir:     "testdata/sad",
-			wantErr: "unable to parse poetry.lock",
+			wantErr: "failed to parse poetry.lock",
 		},
 	}
 

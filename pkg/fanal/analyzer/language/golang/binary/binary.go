@@ -24,14 +24,14 @@ type gobinaryLibraryAnalyzer struct{}
 
 func (a gobinaryLibraryAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInput) (*analyzer.AnalysisResult, error) {
 	p := binary.NewParser()
-	libs, deps, err := p.Parse(input.Content)
+	res, err := language.Analyze(types.GoBinary, input.FilePath, input.Content, p)
 	if errors.Is(err, binary.ErrUnrecognizedExe) || errors.Is(err, binary.ErrNonGoBinary) {
 		return nil, nil
 	} else if err != nil {
 		return nil, xerrors.Errorf("go binary (filepath: %s) parse error: %w", input.FilePath, err)
 	}
 
-	return language.ToAnalysisResult(types.GoBinary, input.FilePath, input.FilePath, input.Content, input.Options.IncludeChecksum, libs, deps), nil
+	return res, nil
 }
 
 func (a gobinaryLibraryAnalyzer) Required(_ string, fileInfo os.FileInfo) bool {

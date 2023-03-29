@@ -609,6 +609,12 @@ func initScannerConfig(opts flag.Options, cacheClient cache.Cache) (ScannerConfi
 		}
 	}
 
+	// SPDX needs to calculate digests for package files
+	var fileChecksum bool
+	if opts.Format == report.FormatSPDXJSON || opts.Format == report.FormatSPDX {
+		fileChecksum = true
+	}
+
 	return ScannerConfig{
 		Target:             target,
 		ArtifactCache:      cacheClient,
@@ -634,8 +640,7 @@ func initScannerConfig(opts flag.Options, cacheClient cache.Cache) (ScannerConfi
 			Platform:          opts.Platform,
 			Slow:              opts.Slow,
 			AWSRegion:         opts.Region,
-			// For spdx formats
-			IncludeChecksum: opts.IncludeChecksum,
+			FileChecksum:      fileChecksum,
 
 			// For misconfiguration scanning
 			MisconfScannerOption: configScannerOptions,

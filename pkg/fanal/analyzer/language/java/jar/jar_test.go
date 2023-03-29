@@ -2,7 +2,6 @@ package jar
 
 import (
 	"context"
-	"github.com/aquasecurity/trivy/pkg/mapfs"
 	"os"
 	"path/filepath"
 	"testing"
@@ -13,6 +12,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/javadb"
+	"github.com/aquasecurity/trivy/pkg/mapfs"
 
 	_ "modernc.org/sqlite"
 )
@@ -97,7 +97,7 @@ func Test_javaLibraryAnalyzer_Analyze(t *testing.T) {
 								Name:     "com.fasterxml.jackson.core:jackson-core",
 								FilePath: "testdata/test.par",
 								Version:  "2.9.10",
-								Checksum: "d5b9e07b3058824baedf26d60b91760f7d110a1aa516266f0d87c0df5312d508",
+								Digest:   "sha1:d40913470259cfba6dcc90f96bcaa9bcff1b72e0",
 							},
 						},
 					},
@@ -145,7 +145,7 @@ func Test_javaLibraryAnalyzer_Analyze(t *testing.T) {
 
 			got, err := a.PostAnalyze(ctx, analyzer.PostAnalysisInput{
 				FS:      mfs,
-				Options: analyzer.AnalysisOptions{IncludeChecksum: tt.includeChecksum},
+				Options: analyzer.AnalysisOptions{FileChecksum: tt.includeChecksum},
 			})
 
 			if tt.wantErr != "" {

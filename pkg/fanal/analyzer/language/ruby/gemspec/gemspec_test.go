@@ -30,9 +30,13 @@ func Test_gemspecLibraryAnalyzer_Analyze(t *testing.T) {
 						FilePath: "testdata/multiple_licenses.gemspec",
 						Libraries: []types.Package{
 							{
-								Name:     "test-unit",
-								Version:  "3.3.7",
-								Licenses: []string{"Ruby", "BSDL", "PSFL"},
+								Name:    "test-unit",
+								Version: "3.3.7",
+								Licenses: []string{
+									"Ruby",
+									"BSDL",
+									"PSFL",
+								},
 								FilePath: "testdata/multiple_licenses.gemspec",
 							},
 						},
@@ -51,11 +55,15 @@ func Test_gemspecLibraryAnalyzer_Analyze(t *testing.T) {
 						FilePath: "testdata/multiple_licenses.gemspec",
 						Libraries: []types.Package{
 							{
-								Name:     "test-unit",
-								Version:  "3.3.7",
-								Licenses: []string{"Ruby", "BSDL", "PSFL"},
+								Name:    "test-unit",
+								Version: "3.3.7",
+								Licenses: []string{
+									"Ruby",
+									"BSDL",
+									"PSFL",
+								},
 								FilePath: "testdata/multiple_licenses.gemspec",
-								Checksum: "d683b9b0057ea3d27798e6df36a9bb49dbc0a2c8224295a3ba27186071ec5f4c",
+								Digest:   "sha1:6ba7904180fad7e09f224cd3e4d449ea53401fb9",
 							},
 						},
 					},
@@ -80,7 +88,7 @@ func Test_gemspecLibraryAnalyzer_Analyze(t *testing.T) {
 			got, err := a.Analyze(ctx, analyzer.AnalysisInput{
 				FilePath: tt.inputFile,
 				Content:  f,
-				Options:  analyzer.AnalysisOptions{IncludeChecksum: tt.includeChecksum},
+				Options:  analyzer.AnalysisOptions{FileChecksum: tt.includeChecksum},
 			})
 
 			if tt.wantErr != "" {

@@ -57,7 +57,7 @@ func Test_nodePkgLibraryAnalyzer_Analyze(t *testing.T) {
 								Version:  "5.0.0",
 								Licenses: []string{"MIT"},
 								FilePath: "testdata/package.json",
-								Checksum: "9d73022d4fd8a11a0b4f7efc8736d8d606b334e570d7b8cc8956a7ee67b840ca",
+								Digest:   "sha1:901a7b55410321c4d35543506cff2a8613ef5aa2",
 							},
 						},
 					},
@@ -81,7 +81,7 @@ func Test_nodePkgLibraryAnalyzer_Analyze(t *testing.T) {
 			got, err := a.Analyze(ctx, analyzer.AnalysisInput{
 				FilePath: tt.inputFile,
 				Content:  f,
-				Options:  analyzer.AnalysisOptions{IncludeChecksum: tt.includeChecksum},
+				Options:  analyzer.AnalysisOptions{FileChecksum: tt.includeChecksum},
 			})
 
 			if tt.wantErr != "" {

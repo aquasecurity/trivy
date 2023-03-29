@@ -143,8 +143,8 @@ type PostAnalysisInput struct {
 }
 
 type AnalysisOptions struct {
-	Offline         bool
-	IncludeChecksum bool
+	Offline      bool
+	FileChecksum bool
 }
 
 type AnalysisResult struct {
