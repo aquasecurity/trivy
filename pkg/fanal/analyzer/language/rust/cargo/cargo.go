@@ -128,19 +128,7 @@ func (a cargoAnalyzer) removeDevDependencies(fsys fs.FS, dir string, app *types.
 				continue
 			}
 
-			if !strings.HasPrefix(constraint, "<") && !strings.HasPrefix(constraint, ">") {
-				constraint = strings.Trim(constraint, "^=")
-				constraint = strings.ReplaceAll(constraint, ".*", "")
-				if constraint == "*" {
-					pkg.Indirect = false
-					pkgs[pkg.ID] = pkg
-					continue
-				}
-				constraint = fmt.Sprintf("^%s", constraint)
-			}
-			// Cargo uses Semver to compare versions
-			// https://doc.rust-lang.org/cargo/guide/dependencies.html#adding-a-dependency
-			if match, err := a.comparer.MatchVersion(pkg.Version, constraint); err != nil {
+			if match, err := a.matchVersion(pkg.Version, constraint); err != nil {
 				return xerrors.Errorf("unable to match version for %s", pkg.Name)
 			} else if match {
 				// Mark as a direct dependency
@@ -193,15 +181,7 @@ func (a cargoAnalyzer) parseCargoToml(fsys fs.FS, path string) (map[string]strin
 			// e.g. serde = { version = "1.0", features = ["derive"] }
 			for k, v := range ver {
 				if k == "version" {
-					v := v.(string)
-					// version can contain range
-					// e.g. `>= 2.4.0, < 2.4.1`, `=2`
-					// if version is just a number => add `^` to get the maximum version for that major/minor/path version
-					// e.g. `1` => `^1`, `1.2` => `^1.2`
-					if v[0] >= '0' && v[0] <= '9' {
-						v = fmt.Sprintf("^%s", v)
-					}
-					deps[name] = v
+					deps[name] = v.(string)
 				}
 			}
 		}
@@ -224,5 +204,37 @@ func (a cargoAnalyzer) walkIndirectDependencies(pkg types.Package, pkgIDs map[st
 		dep.Indirect = true
 		deps[dep.ID] = dep
 		a.walkIndirectDependencies(dep, pkgIDs, deps)
+	}
+}
+
+func (a cargoAnalyzer) matchVersion(currentVersion, constraint string) (bool, error) {
+	// there are next prefixes:
+	// `>=`, `>`, `<`, `=`, ``, `^`
+	switch {
+	case strings.HasPrefix(constraint, "<") || strings.HasPrefix(constraint, ">"):
+		match, err := a.comparer.MatchVersion(currentVersion, constraint)
+		if err != nil {
+			return false, xerrors.Errorf("unable to match version: %w", err)
+		}
+		return match, nil
+	case strings.HasPrefix(constraint, "="):
+		// `=` prefix uses max version for major/minor/patch... version
+		// e.g. for `memchr`:  2 => 2.5.0; 2.4 => 2.4.1
+		constraint = strings.TrimLeft(constraint, "=")
+		constraint = strings.TrimSpace(constraint)
+		splitConstraint := strings.Split(constraint, ".")
+		splitVersion := strings.Split(currentVersion, ".")
+		shortCurrentVersion := strings.Join(splitVersion[:len(splitConstraint)], ".")
+		return constraint == shortCurrentVersion, nil
+	default:
+		// `` == `^`
+		if !strings.HasPrefix(constraint, "^") {
+			constraint = fmt.Sprintf("^ %s", constraint)
+		}
+		match, err := a.comparer.MatchVersion(currentVersion, constraint)
+		if err != nil {
+			return false, xerrors.Errorf("unable to match version: %w", err)
+		}
+		return match, nil
 	}
 }
