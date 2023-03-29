@@ -128,13 +128,13 @@ func authOptions(ctx context.Context, ref name.Reference, option types.RemoteOpt
 	}
 
 	switch {
-	case len(opts) > 0:
-		return opts
 	case option.RegistryToken != "":
 		bearer := authn.Bearer{Token: option.RegistryToken}
 		return []remote.Option{remote.WithAuth(&bearer)}
 	default:
-		return []remote.Option{remote.WithAuthFromKeychain(authn.DefaultKeychain)}
+		// Use the keychain anyway at the end
+		opts = append(opts, remote.WithAuthFromKeychain(authn.DefaultKeychain))
+		return opts
 	}
 }
 
