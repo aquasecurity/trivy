@@ -64,7 +64,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#title" class="md-skip">
+        <a href="#development" class="md-skip">
           Skip to content
         </a>
       
@@ -3063,6 +3063,54 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#development" class="md-nav__link">
+    Development
+  </a>
+  
+    <nav class="md-nav" aria-label="Development">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#build" class="md-nav__link">
+    Build
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lint" class="md-nav__link">
+    Lint
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#unit-tests" class="md-nav__link">
+    Unit tests
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#integration-tests" class="md-nav__link">
+    Integration tests
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#documentation" class="md-nav__link">
+    Documentation
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#title" class="md-nav__link">
     Title
   </a>
@@ -3090,22 +3138,8 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#unit-tests" class="md-nav__link">
-    Unit tests
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#integration-tests" class="md-nav__link">
-    Integration tests
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#documentation" class="md-nav__link">
-    Documentation
+  <a href="#commits" class="md-nav__link">
+    Commits
   </a>
   
 </li>
@@ -3227,6 +3261,54 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#development" class="md-nav__link">
+    Development
+  </a>
+  
+    <nav class="md-nav" aria-label="Development">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#build" class="md-nav__link">
+    Build
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lint" class="md-nav__link">
+    Lint
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#unit-tests" class="md-nav__link">
+    Unit tests
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#integration-tests" class="md-nav__link">
+    Integration tests
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#documentation" class="md-nav__link">
+    Documentation
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#title" class="md-nav__link">
     Title
   </a>
@@ -3254,22 +3336,8 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#unit-tests" class="md-nav__link">
-    Unit tests
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#integration-tests" class="md-nav__link">
-    Integration tests
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#documentation" class="md-nav__link">
-    Documentation
+  <a href="#commits" class="md-nav__link">
+    Commits
   </a>
   
 </li>
@@ -3308,10 +3376,40 @@
 <li>Your PR is more likely to be accepted if it includes tests (We have not historically been very strict about tests, but we would like to improve this!).</li>
 <li>If your PR affects the user experience in some way, please update the README.md and the CLI help accordingly.</li>
 </ol>
-<h3 id="title">Title</h3>
+<h2 id="development">Development</h2>
+<p>Install the necessary tools for development by following their respective installation instructions.</p>
+<ul>
+<li><a href="https://go.dev/doc/install">Go</a></li>
+<li><a href="https://magefile.org/">Mage</a></li>
+</ul>
+<h3 id="build">Build</h3>
+<p>After making changes to the Go source code, build the project with the following command:</p>
+<div class="highlight"><pre><span></span><code>$ mage build
+$ ./trivy -h
+</code></pre></div>
+<h3 id="lint">Lint</h3>
+<p>You must pass the linter checks:</p>
+<div class="highlight"><pre><span></span><code>$ mage lint
+</code></pre></div>
+<p>Additionally, you need to have run <code>go mod tidy</code>, so execute the following command as well:</p>
+<div class="highlight"><pre><span></span><code>$ mage tidy
+</code></pre></div>
+<h3 id="unit-tests">Unit tests</h3>
+<p>Your PR must pass all the unit tests. You can test it as below.</p>
+<div class="highlight"><pre><span></span><code>$ mage test:unit
+</code></pre></div>
+<h3 id="integration-tests">Integration tests</h3>
+<p>Your PR must pass all the integration tests. You can test it as below.</p>
+<div class="highlight"><pre><span></span><code>$ mage test:integration
+</code></pre></div>
+<h3 id="documentation">Documentation</h3>
+<p>You can build the documents as below and view it at http://localhost:8000.</p>
+<div class="highlight"><pre><span></span><code>$ mage docs:serve
+</code></pre></div>
+<h2 id="title">Title</h2>
 <p>It is not that strict, but we use the title conventions in this repository.
 Each commit message doesn't have to follow the conventions as long as it is clear and descriptive since it will be squashed and merged.</p>
-<h4 id="format-of-the-title">Format of the title</h4>
+<h3 id="format-of-the-title">Format of the title</h3>
 <div class="highlight"><pre><span></span><code>&lt;type&gt;(&lt;scope&gt;): &lt;subject&gt;
 </code></pre></div>
 <p>The <code>type</code> and <code>scope</code> should always be lowercase as shown below.</p>
@@ -3414,7 +3512,7 @@ Each commit message doesn't have to follow the conventions as long as it is clea
 <li>deps</li>
 </ul>
 <p>The <code>&lt;scope&gt;</code> can be empty (e.g. if the change is a global or difficult to assign to a single component), in which case the parentheses are omitted.</p>
-<h4 id="example-titles">Example titles</h4>
+<h3 id="example-titles">Example titles</h3>
 <div class="highlight"><pre><span></span><code>feat(alma): add support for AlmaLinux
 </code></pre></div>
 <div class="highlight"><pre><span></span><code>fix(oracle): handle advisories with ksplice versions
@@ -3425,23 +3523,12 @@ Each commit message doesn't have to follow the conventions as long as it is clea
 </code></pre></div>
 <p><strong>NOTE</strong>: please do not use <code>chore(deps): update fanal</code> and something like that if you add new features or fix bugs in Trivy-related projects.
 The PR title should describe what the PR adds or fixes even though it just updates the dependency in Trivy.</p>
-<h3 id="unit-tests">Unit tests</h3>
-<p>Your PR must pass all the unit tests. You can test it as below.</p>
-<div class="highlight"><pre><span></span><code>$ make test
-</code></pre></div>
-<h3 id="integration-tests">Integration tests</h3>
-<p>Your PR must pass all the integration tests. You can test it as below.</p>
-<div class="highlight"><pre><span></span><code>$ make test-integration
-</code></pre></div>
-<h3 id="documentation">Documentation</h3>
-<p>You can build the documents as below and view it at http://localhost:8000.</p>
-<div class="highlight"><pre><span></span><code>$ make mkdocs-serve
-</code></pre></div>
+<h2 id="commits">Commits</h2>
 <h2 id="understand-where-your-pull-request-belongs">Understand where your pull request belongs</h2>
 <p>Trivy is composed of several repositories that work together:</p>
 <ul>
 <li><a href="https://github.com/aquasecurity/trivy">Trivy</a> is the client-side, user-facing, command line tool.</li>
-<li><a href="https://github.com/aquasecurity/vuln-list">vuln-list</a> is a vulnerabilities database, aggregated from different sources, and normalized for easy consumption. Think of this as the "server" side of the trivy command line tool. <strong>There should be no pull requests to this repo</strong></li>
+<li><a href="https://github.com/aquasecurity/vuln-list">vuln-list</a> is a vulnerability database, aggregated from different sources, and normalized for easy consumption. Think of this as the "server" side of the trivy command line tool. <strong>There should be no pull requests to this repo</strong></li>
 <li><a href="https://github.com/aquasecurity/vuln-list-update">vuln-list-update</a> is the code that maintains the vuln-list database.</li>
 <li><a href="https://github.com/aquasecurity/trivy-db">trivy-db</a> maintains the vulnerability database pulled by Trivy CLI.</li>
 <li><a href="https://github.com/aquasecurity/go-dep-parser">go-dep-parser</a> is a library for parsing lock files such as package-lock.json and Gemfile.lock.</li>
