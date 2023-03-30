@@ -179,15 +179,11 @@ func (a cargoAnalyzer) parseCargoToml(fsys fs.FS, path string) (map[string]strin
 
 	// https://doc.rust-lang.org/cargo/reference/specifying-dependencies.html#platform-specific-dependencies
 	for _, target := range tomlFile.Target {
-		if targetDeps, ok := target["dependencies"]; ok {
-			maps.Copy(dependencies, targetDeps)
-		}
+		maps.Copy(dependencies, target["dependencies"])
 	}
 
 	// https://doc.rust-lang.org/cargo/reference/specifying-dependencies.html#inheriting-a-dependency-from-a-workspace
-	if workspaceDeps, ok := tomlFile.Workspace["dependencies"]; ok {
-		maps.Copy(dependencies, workspaceDeps)
-	}
+	maps.Copy(dependencies, tomlFile.Workspace["dependencies"])
 
 	for name, value := range tomlFile.Dependencies {
 		switch ver := value.(type) {
