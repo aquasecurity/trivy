@@ -15,6 +15,7 @@ import (
 	"github.com/aquasecurity/trivy-db/pkg/metadata"
 	"github.com/aquasecurity/trivy/pkg/db"
 	"github.com/aquasecurity/trivy/pkg/fanal/cache"
+	"github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/flag"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/policy"
@@ -101,8 +102,8 @@ func (c Cache) ClearArtifacts() error {
 }
 
 // DownloadDB downloads the DB
-func DownloadDB(appVersion, cacheDir, dbRepository string, quiet, insecure, skipUpdate bool) error {
-	client := db.NewClient(cacheDir, quiet, insecure, db.WithDBRepository(dbRepository))
+func DownloadDB(appVersion, cacheDir, dbRepository string, quiet, skipUpdate bool, opt types.RemoteOptions) error {
+	client := db.NewClient(cacheDir, quiet, db.WithDBRepository(dbRepository))
 	ctx := context.Background()
 	needsUpdate, err := client.NeedsUpdate(appVersion, skipUpdate)
 	if err != nil {
@@ -113,7 +114,7 @@ func DownloadDB(appVersion, cacheDir, dbRepository string, quiet, insecure, skip
 		log.Logger.Info("Need to update DB")
 		log.Logger.Infof("DB Repository: %s", dbRepository)
 		log.Logger.Info("Downloading DB...")
-		if err = client.Download(ctx, cacheDir); err != nil {
+		if err = client.Download(ctx, cacheDir, opt); err != nil {
 			return xerrors.Errorf("failed to download vulnerability DB: %w", err)
 		}
 	}
@@ -145,7 +146,7 @@ func InitBuiltinPolicies(ctx context.Context, cacheDir string, quiet, skipUpdate
 
 	needsUpdate := false
 	if !skipUpdate {
-		needsUpdate, err = client.NeedsUpdate()
+		needsUpdate, err = client.NeedsUpdate(ctx)
 		if err != nil {
 			return nil, xerrors.Errorf("unable to check if built-in policies need to be updated: %w", err)
 		}

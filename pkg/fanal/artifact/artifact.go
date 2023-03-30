@@ -29,7 +29,7 @@ type Option struct {
 	AWSRegion         string
 	FileChecksum      bool // For SPDX
 
-	// For container registries
+	// For OCI registries
 	types.RemoteOptions
 
 	MisconfScannerOption misconf.ScannerOption

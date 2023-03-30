@@ -15,6 +15,7 @@ import (
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
+	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/report"
 )
@@ -118,6 +119,17 @@ func (o *Options) Align() {
 	if o.Format == report.FormatCycloneDX && !viper.IsSet(ScannersFlag.ConfigName) {
 		log.Logger.Info(`"--format cyclonedx" disables security scanning. Specify "--scanners vuln" explicitly if you want to include vulnerabilities in the CycloneDX report.`)
 		o.Scanners = nil
+	}
+}
+
+// Remote returns options for OCI registries
+func (o *Options) Remote() ftypes.RemoteOptions {
+	return ftypes.RemoteOptions{
+		Credentials:   o.Credentials,
+		RegistryToken: o.RegistryToken,
+		Insecure:      o.Insecure,
+		Platform:      o.Platform,
+		AWSRegion:     o.AWSOptions.Region,
 	}
 }
 

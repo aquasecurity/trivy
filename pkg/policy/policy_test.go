@@ -19,6 +19,7 @@ import (
 	"k8s.io/utils/clock"
 	fake "k8s.io/utils/clock/testing"
 
+	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/oci"
 	"github.com/aquasecurity/trivy/pkg/policy"
 )
@@ -115,8 +116,7 @@ func TestClient_LoadBuiltinPolicies(t *testing.T) {
 			}, nil)
 
 			// Mock OCI artifact
-			mediaType := "application/vnd.cncf.openpolicyagent.layer.v1.tar+gzip"
-			art, err := oci.NewArtifact("repo", mediaType, "", true, true, oci.WithImage(img))
+			art, err := oci.NewArtifact("repo", true, ftypes.RemoteOptions{}, oci.WithImage(img))
 			require.NoError(t, err)
 
 			c, err := policy.NewClient(tt.cacheDir, true, policy.WithOCIArtifact(art))
@@ -257,15 +257,14 @@ func TestClient_NeedsUpdate(t *testing.T) {
 				require.NoError(t, err)
 			}
 
-			mediaType := "application/vnd.cncf.openpolicyagent.layer.v1.tar+gzip"
-			art, err := oci.NewArtifact("repo", mediaType, "", true, true, oci.WithImage(img))
+			art, err := oci.NewArtifact("repo", true, ftypes.RemoteOptions{}, oci.WithImage(img))
 			require.NoError(t, err)
 
 			c, err := policy.NewClient(tmpDir, true, policy.WithOCIArtifact(art), policy.WithClock(tt.clock))
 			require.NoError(t, err)
 
 			// Assert results
-			got, err := c.NeedsUpdate()
+			got, err := c.NeedsUpdate(context.Background())
 			assert.Equal(t, tt.wantErr, err != nil)
 			assert.Equal(t, tt.want, got)
 		})
@@ -362,8 +361,7 @@ func TestClient_DownloadBuiltinPolicies(t *testing.T) {
 			}, nil)
 
 			// Mock OCI artifact
-			mediaType := "application/vnd.cncf.openpolicyagent.layer.v1.tar+gzip"
-			art, err := oci.NewArtifact("repo", mediaType, "", true, true, oci.WithImage(img))
+			art, err := oci.NewArtifact("repo", true, ftypes.RemoteOptions{}, oci.WithImage(img))
 			require.NoError(t, err)
 
 			c, err := policy.NewClient(tempDir, true, policy.WithClock(tt.clock), policy.WithOCIArtifact(art))
