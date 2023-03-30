@@ -4,15 +4,14 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"github.com/aquasecurity/go-version/pkg/semver"
-	"golang.org/x/exp/maps"
-	"golang.org/x/exp/slices"
-	"golang.org/x/xerrors"
 	"io/fs"
 	"os"
 	"path/filepath"
 	"sort"
-	"strings"
+
+	"golang.org/x/exp/maps"
+	"golang.org/x/exp/slices"
+	"golang.org/x/xerrors"
 
 	"github.com/BurntSushi/toml"
 	"github.com/samber/lo"
@@ -20,6 +19,8 @@ import (
 	dio "github.com/aquasecurity/go-dep-parser/pkg/io"
 	"github.com/aquasecurity/go-dep-parser/pkg/rust/cargo"
 	godeptypes "github.com/aquasecurity/go-dep-parser/pkg/types"
+	"github.com/aquasecurity/go-version/pkg/semver"
+	goversion "github.com/aquasecurity/go-version/pkg/version"
 	"github.com/aquasecurity/trivy/pkg/detector/library/compare"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer/language"
@@ -231,12 +232,12 @@ func (a cargoAnalyzer) walkIndirectDependencies(pkg types.Package, pkgIDs map[st
 func (a cargoAnalyzer) matchVersion(currentVersion, constraint string) (bool, error) {
 	// information about prefixes - https://doc.rust-lang.org/cargo/reference/specifying-dependencies.html
 
-	// version can contain spase after prefix
-	// e.g. `= 1.2.3`
-	constraint = strings.ReplaceAll(constraint, " ", "")
 	// `` == `^` - https://doc.rust-lang.org/cargo/reference/specifying-dependencies.html#caret-requirements
 	// add `^` for correct version comparison
-	if constraint[0] >= '0' && constraint[0] <= '9' {
+	// 1.2.3 -> no error, so add ^.
+	// 1.2.* -> error, not add ^
+	// ^1.2 -> error, not add ^
+	if _, err := goversion.Parse(constraint); err == nil {
 		constraint = fmt.Sprintf("^%s", constraint)
 	}
 
