@@ -11,6 +11,10 @@ import (
 	"sort"
 	"strings"
 
+	"github.com/liamg/memoryfs"
+
+	"github.com/aquasecurity/defsec/pkg/extrafs"
+
 	"github.com/samber/lo"
 	"golang.org/x/xerrors"
 
@@ -25,7 +29,6 @@ import (
 	k8sscanner "github.com/aquasecurity/defsec/pkg/scanners/kubernetes"
 	"github.com/aquasecurity/defsec/pkg/scanners/options"
 	tfscanner "github.com/aquasecurity/defsec/pkg/scanners/terraform"
-	"github.com/aquasecurity/memoryfs"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer/config"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
@@ -50,6 +53,7 @@ func NewScanner(filePatterns []string, opt config.ScannerOption) (Scanner, error
 	opts := []options.ScannerOption{
 		options.ScannerWithSkipRequiredCheck(true),
 		options.ScannerWithEmbeddedPolicies(!opt.DisableEmbeddedPolicies),
+		options.ScannerWithDebug(os.Stdout),
 	}
 
 	policyFS, policyPaths, err := createPolicyFS(opt.PolicyPaths)
@@ -187,6 +191,86 @@ func (s *Scanner) hasCustomPatternForType(t string) bool {
 	return false
 }
 
+func (s *Scanner) filterDefsecFiletypes(files []types.File, selectedTypes []string) []types.File {
+	scannersMap := make(map[detection.FileType]string)
+	for k, v := range enabledDefsecTypes {
+		for _, s := range selectedTypes {
+			if v == s {
+				scannersMap[k] = v
+			}
+		}
+	}
+
+	var filteredFiles []types.File
+	for _, file := range files {
+		for defsecType, localType := range scannersMap {
+			buffer := bytes.NewReader(file.Content)
+			if !s.hasCustomPatternForType(localType) && !detection.IsType(file.Path, buffer, defsecType) {
+				continue
+			} else {
+				filteredFiles = append(filteredFiles, file)
+			}
+		}
+	}
+	return filteredFiles
+}
+
+func findCommonPrefix(files []types.File) string {
+	var filePaths []string
+	for _, f := range files {
+		filePaths = append(filePaths, f.Path)
+	}
+
+	longestPrefix := ""
+	var endPrefix = false
+
+	if len(filePaths) > 0 {
+		sort.Strings(filePaths)
+		first := filePaths[0]
+		last := filePaths[len(filePaths)-1]
+
+		for i := 0; i < len(first); i++ {
+			if !endPrefix && string(last[i]) == string(first[i]) {
+				longestPrefix += string(last[i])
+			} else {
+				endPrefix = true
+			}
+		}
+	}
+
+	index := strings.LastIndex(longestPrefix, fmt.Sprintf("%c", os.PathSeparator))
+	if index < 0 {
+		log.Logger.Debug("cannot find common prefix in modules")
+		return ""
+	}
+
+	return filepath.Clean(longestPrefix[:index])
+}
+
+func getRootDir(filePath string) (string, error) {
+	var rootDir string
+	absPath, err := filepath.Abs(filePath)
+	if err != nil {
+		return "", err
+	}
+
+	fileInfo, err := os.Stat(absPath)
+	if err != nil {
+		return "", err
+	}
+
+	if !fileInfo.IsDir() {
+		rootDir = filepath.Dir(absPath)
+	} else {
+		rootDir = absPath
+	}
+
+	rootDir = strings.TrimPrefix(filepath.Clean(rootDir), fmt.Sprintf("%c", os.PathSeparator))
+
+	log.Logger.Debug("Using root directory: ", rootDir)
+	return rootDir, nil
+}
+
 // Scan detects misconfigurations.
 func (s *Scanner) Scan(ctx context.Context, files []types.File) ([]types.Misconfiguration, error) {
 	mapMemoryFS := make(map[string]*memoryfs.FS)
@@ -194,14 +278,20 @@ func (s *Scanner) Scan(ctx context.Context, files []types.File) ([]types.Misconf
 		mapMemoryFS[t] = memoryfs.New()
 	}
 
-	for _, file := range files {
-		for defsecType, localType := range enabledDefsecTypes {
-			buffer := bytes.NewReader(file.Content)
-			if !s.hasCustomPatternForType(localType) && !detection.IsType(file.Path, buffer, defsecType) {
-				continue
-			}
+	var misconfs []types.Misconfiguration
+	for t, scanner := range s.scanners {
+		var results scan.Results
+		var err error
+
+		relevantFiles := s.filterDefsecFiletypes(files, []string{t})
+		if len(relevantFiles) == 0 {
+			log.Logger.Debugf("No %s config files found, skipping %s scan", t, t)
+			continue
+		}
+
+		for _, file := range relevantFiles {
 			// Replace with more detailed config type
-			file.Type = localType
+			file.Type = t
 
 			if memfs, ok := mapMemoryFS[file.Type]; ok {
 				if filepath.Dir(file.Path) != "." {
@@ -214,11 +304,20 @@ func (s *Scanner) Scan(ctx context.Context, files []types.File) ([]types.Misconf
 				}
 			}
 		}
-	}
 
-	var misconfs []types.Misconfiguration
-	for t, scanner := range s.scanners {
-		results, err := scanner.ScanFS(ctx, mapMemoryFS[t], ".")
+		switch t {
+		case types.Terraform:
+			rootDir, err := getRootDir(findCommonPrefix(relevantFiles))
+			if err != nil {
+				log.Logger.Debugf("failed to find config root path: %s", err)
+				results, err = scanner.ScanFS(ctx, mapMemoryFS[t], ".")
+			} else {
+				results, err = scanner.ScanFS(ctx, extrafs.OSDir("/"), rootDir)
+			}
+		default:
+			results, err = scanner.ScanFS(ctx, mapMemoryFS[t], ".")
+		}
+
 		if err != nil {
 			if _, ok := err.(*cfparser.InvalidContentError); ok {
 				log.Logger.Errorf("scan %q was broken with InvalidContentError: %v", scanner.Name(), err)

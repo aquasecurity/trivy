@@ -3,8 +3,11 @@ package local
 import (
 	"context"
 	"errors"
+	"fmt"
+	"os"
 	"path/filepath"
 	"runtime"
+	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -350,6 +353,11 @@ func TestBuildPathsToSkip(t *testing.T) {
 	}
 }
 
+func getAbsCleanPath(path string) string {
+	p, _ := filepath.Abs(path)
+	return strings.TrimPrefix(filepath.Clean(p), fmt.Sprintf("%c", os.PathSeparator))
+}
+
 func TestTerraformMisconfigurationScan(t *testing.T) {
 	type fields struct {
 		dir string
@@ -381,7 +389,7 @@ func TestTerraformMisconfigurationScan(t *testing.T) {
 						Misconfigurations: []types.Misconfiguration{
 							{
 								FileType: "terraform",
-								FilePath: "main.tf",
+								FilePath: getAbsCleanPath("testdata/misconfig/terraform/single-failure/src/main.tf"),
 								Failures: types.MisconfResults{
 									{
 										Namespace: "user.something",
@@ -415,9 +423,9 @@ func TestTerraformMisconfigurationScan(t *testing.T) {
 			want: types.ArtifactReference{
 				Name: "testdata/misconfig/terraform/single-failure/src",
 				Type: types.ArtifactFilesystem,
-				ID:   "sha256:b3ae72efb468a0e17551fa4067c1f9d9dff9a1e520b9f8191f48829ab6e8356d",
+				ID:   "sha256:cd67fdacdcde2338a7ea3b5bb311830e28605e18de749cd06e6af6cbe3af8aac",
 				BlobIDs: []string{
-					"sha256:b3ae72efb468a0e17551fa4067c1f9d9dff9a1e520b9f8191f48829ab6e8356d",
+					"sha256:cd67fdacdcde2338a7ea3b5bb311830e28605e18de749cd06e6af6cbe3af8aac",
 				},
 			},
 		},
@@ -441,7 +449,7 @@ func TestTerraformMisconfigurationScan(t *testing.T) {
 						Misconfigurations: []types.Misconfiguration{
 							{
 								FileType: "terraform",
-								FilePath: "main.tf",
+								FilePath: getAbsCleanPath("testdata/misconfig/terraform/multiple-failures/src/main.tf"),
 								Failures: types.MisconfResults{
 									{
 										Namespace: "user.something",
@@ -491,7 +499,7 @@ func TestTerraformMisconfigurationScan(t *testing.T) {
 							},
 							{
 								FileType: "terraform",
-								FilePath: "more.tf",
+								FilePath: getAbsCleanPath("testdata/misconfig/terraform/multiple-failures/src/more.tf"),
 								Failures: types.MisconfResults{
 									{
 										Namespace: "user.something",
@@ -525,9 +533,9 @@ func TestTerraformMisconfigurationScan(t *testing.T) {
 			want: types.ArtifactReference{
 				Name: "testdata/misconfig/terraform/multiple-failures/src",
 				Type: types.ArtifactFilesystem,
-				ID:   "sha256:340197e6c02b644e4d1310647e5b2503c224caeaeb5be01187467b71827614ce",
+				ID:   "sha256:17ba2edf33bb25b6f9f4c7b2eb3509203c70c2de71628de8cc969a4853bde99d",
 				BlobIDs: []string{
-					"sha256:340197e6c02b644e4d1310647e5b2503c224caeaeb5be01187467b71827614ce",
+					"sha256:17ba2edf33bb25b6f9f4c7b2eb3509203c70c2de71628de8cc969a4853bde99d",
 				},
 			},
 		},
@@ -581,7 +589,7 @@ func TestTerraformMisconfigurationScan(t *testing.T) {
 						Misconfigurations: []types.Misconfiguration{
 							{
 								FileType: "terraform",
-								FilePath: ".",
+								FilePath: getAbsCleanPath("testdata/misconfig/terraform/passed/src"),
 								Successes: types.MisconfResults{
 									{
 										Namespace: "user.something",
@@ -611,9 +619,91 @@ func TestTerraformMisconfigurationScan(t *testing.T) {
 			want: types.ArtifactReference{
 				Name: "testdata/misconfig/terraform/passed/src",
 				Type: types.ArtifactFilesystem,
-				ID:   "sha256:ee80e0b4d07abe98c88119a1dc3d5cfd3b5f3cfda3b52cf3e566d7abc15f072b",
+				ID:   "sha256:38c7bc96437b2b991ccac313e31dec5f52508a648c2275c09d9a83f5477fb62b",
 				BlobIDs: []string{
-					"sha256:ee80e0b4d07abe98c88119a1dc3d5cfd3b5f3cfda3b52cf3e566d7abc15f072b",
+					"sha256:38c7bc96437b2b991ccac313e31dec5f52508a648c2275c09d9a83f5477fb62b",
+				},
+			},
+		},
+		{
+			name: "multiple failures busted relative paths",
+			fields: fields{
+				dir: "./testdata/misconfig/terraform/busted-relative-paths/src/child/main.tf",
+			},
+			artifactOpt: artifact.Option{
+				MisconfScannerOption: config.ScannerOption{
+					RegoOnly:    true,
+					Namespaces:  []string{"user"},
+					PolicyPaths: []string{"./testdata/misconfig/terraform/busted-relative-paths/rego"},
+				},
+			},
+			putBlobExpectation: cache.ArtifactCachePutBlobExpectation{
+				Args: cache.ArtifactCachePutBlobArgs{
+					BlobIDAnything: true,
+					BlobInfo: types.BlobInfo{
+						SchemaVersion: 2,
+						Misconfigurations: []types.Misconfiguration{
+							{
+								FileType: "terraform",
+								FilePath: getAbsCleanPath("testdata/misconfig/terraform/busted-relative-paths/src/child/main.tf"),
+								Failures: types.MisconfResults{
+									{
+										Namespace: "user.something",
+										Query:     "data.user.something.deny",
+										Message:   "No buckets allowed!",
+										PolicyMetadata: types.PolicyMetadata{
+											ID:                 "TEST001",
+											AVDID:              "AVD-TEST-0001",
+											Type:               "Terraform Security Check",
+											Title:              "Test policy",
+											Description:        "This is a test policy.",
+											Severity:           "LOW",
+											RecommendedActions: "Have a cup of tea.",
+											References:         []string{"https://trivy.dev/"},
+										},
+										CauseMetadata: types.CauseMetadata{
+											Resource:  "aws_s3_bucket.one",
+											Provider:  "Generic",
+											Service:   "general",
+											StartLine: 1,
+											EndLine:   3,
+										},
+									},
+									{
+										Namespace: "user.something",
+										Query:     "data.user.something.deny",
+										Message:   "No buckets allowed!",
+										PolicyMetadata: types.PolicyMetadata{
+											ID:                 "TEST001",
+											AVDID:              "AVD-TEST-0001",
+											Type:               "Terraform Security Check",
+											Title:              "Test policy",
+											Description:        "This is a test policy.",
+											Severity:           "LOW",
+											RecommendedActions: "Have a cup of tea.",
+											References:         []string{"https://trivy.dev/"},
+										},
+										CauseMetadata: types.CauseMetadata{
+											Resource:  "aws_s3_bucket.two",
+											Provider:  "Generic",
+											Service:   "general",
+											StartLine: 5,
+											EndLine:   7,
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+				Returns: cache.ArtifactCachePutBlobReturns{},
+			},
+			want: types.ArtifactReference{
+				Name: "testdata/misconfig/terraform/busted-relative-paths/src/child/main.tf",
+				Type: types.ArtifactFilesystem,
+				ID:   "sha256:9f7370b98466c1df5cef197e84f405da1a8ac2dc03d5181a21d735617ad74147",
+				BlobIDs: []string{
+					"sha256:9f7370b98466c1df5cef197e84f405da1a8ac2dc03d5181a21d735617ad74147",
 				},
 			},
 		},
@@ -1644,4 +1734,123 @@ func TestAzureARMMisconfigurationScan(t *testing.T) {
 			assert.Equal(t, tt.want, got)
 		})
 	}
+}
+
+func TestMixedConfigurationScan(t *testing.T) {
+	type fields struct {
+		dir string
+	}
+	tests := []struct {
+		name               string
+		fields             fields
+		putBlobExpectation cache.ArtifactCachePutBlobExpectation
+		artifactOpt        artifact.Option
+		want               types.ArtifactReference
+	}{
+		{
+			name: "single failure each within terraform and cloudformation",
+			fields: fields{
+				dir: "./testdata/misconfig/mixed/src",
+			},
+			artifactOpt: artifact.Option{
+				MisconfScannerOption: config.ScannerOption{
+					RegoOnly:    true,
+					Namespaces:  []string{"user"},
+					PolicyPaths: []string{"./testdata/misconfig/mixed/rego"},
+				},
+			},
+			putBlobExpectation: cache.ArtifactCachePutBlobExpectation{
+				Args: cache.ArtifactCachePutBlobArgs{
+					BlobIDAnything: true,
+					BlobInfo: types.BlobInfo{
+						SchemaVersion: 2,
+						Misconfigurations: []types.Misconfiguration{
+							{
+								FileType: "terraform",
+								FilePath: getAbsCleanPath("testdata/misconfig/mixed/src/main.tf"),
+								Failures: types.MisconfResults{
+									{
+										Namespace: "user.something",
+										Query:     "data.user.something.deny",
+										Message:   "No buckets allowed!",
+										PolicyMetadata: types.PolicyMetadata{
+											ID:                 "TEST001",
+											AVDID:              "AVD-TEST-0001",
+											Type:               "Terraform Security Check",
+											Title:              "Test policy",
+											Description:        "This is a test policy.",
+											Severity:           "LOW",
+											RecommendedActions: "Have a cup of tea.",
+											References:         []string{"https://trivy.dev/"},
+										},
+										CauseMetadata: types.CauseMetadata{
+											Resource:  "aws_s3_bucket.asd",
+											Provider:  "Generic",
+											Service:   "general",
+											StartLine: 1,
+											EndLine:   3,
+										},
+									},
+								},
+							},
+							{
+								FileType: "cloudformation",
+								FilePath: "main.yaml",
+								Failures: types.MisconfResults{
+									{
+										Namespace: "user.something",
+										Query:     "data.user.something.deny",
+										Message:   "No buckets allowed!",
+										PolicyMetadata: types.PolicyMetadata{
+											ID:                 "TEST001",
+											AVDID:              "AVD-TEST-0001",
+											Type:               "CloudFormation Security Check",
+											Title:              "Test policy",
+											Description:        "This is a test policy.",
+											Severity:           "LOW",
+											RecommendedActions: "Have a cup of tea.",
+											References:         []string{"https://trivy.dev/"},
+										},
+										CauseMetadata: types.CauseMetadata{
+											Resource:  "main.yaml:3-6",
+											Provider:  "Generic",
+											Service:   "general",
+											StartLine: 3,
+											EndLine:   6,
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+				Returns: cache.ArtifactCachePutBlobReturns{},
+			},
+			want: types.ArtifactReference{
+				Name: "testdata/misconfig/mixed/src",
+				Type: types.ArtifactFilesystem,
+				ID:   "sha256:392cbe9bb3d805091b030a03a84784c0a44735cf127e0e908e019629849ff5ac",
+				BlobIDs: []string{
+					"sha256:392cbe9bb3d805091b030a03a84784c0a44735cf127e0e908e019629849ff5ac",
+				},
+			},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			c := new(cache.MockArtifactCache)
+			c.ApplyPutBlobExpectation(tt.putBlobExpectation)
+			tt.artifactOpt.DisabledHandlers = []types.HandlerType{
+				types.SystemFileFilteringPostHandler,
+			}
+			a, err := NewArtifact(tt.fields.dir, c, tt.artifactOpt)
+			require.NoError(t, err)
+
+			got, err := a.Inspect(context.Background())
+			require.NoError(t, err)
+			assert.Equal(t, tt.want, got)
+		})
+	}
+
 }

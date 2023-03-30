@@ -30,7 +30,7 @@ func TestConfigAnalyzer_Analyze(t *testing.T) {
 					types.MisconfPostHandler: {
 						{
 							Type:    types.Terraform,
-							Path:    "main.tf",
+							Path:    "path/to/main.tf",
 							Content: []byte{},
 						},
 					},
