@@ -19,7 +19,6 @@ import (
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer/config"
 	"github.com/aquasecurity/trivy/pkg/fanal/artifact"
 	"github.com/aquasecurity/trivy/pkg/fanal/cache"
-	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/flag"
 	"github.com/aquasecurity/trivy/pkg/javadb"
 	"github.com/aquasecurity/trivy/pkg/log"
@@ -315,7 +314,7 @@ func (r *runner) initDB(opts flag.Options) error {
 
 	// download the database file
 	noProgress := opts.Quiet || opts.NoProgress
-	if err := operation.DownloadDB(opts.AppVersion, opts.CacheDir, opts.DBRepository, noProgress, opts.Insecure, opts.SkipDBUpdate); err != nil {
+	if err := operation.DownloadDB(opts.AppVersion, opts.CacheDir, opts.DBRepository, noProgress, opts.SkipDBUpdate, opts.Remote()); err != nil {
 		return err
 	}
 
@@ -610,13 +609,7 @@ func initScannerConfig(opts flag.Options, cacheClient cache.Cache) (ScannerConfi
 		}
 	}
 
-	remoteOption := ftypes.RemoteOptions{
-		Credentials:   opts.Credentials,
-		RegistryToken: opts.RegistryToken,
-		Insecure:      opts.Insecure,
-		Platform:      opts.Platform,
-		AWSRegion:     opts.AWSOptions.Region,
-	}
+	remoteOpts := opts.Remote()
 
 	return ScannerConfig{
 		Target:             target,
@@ -643,8 +636,8 @@ func initScannerConfig(opts flag.Options, cacheClient cache.Cache) (ScannerConfi
 			Slow:              opts.Slow,
 			AWSRegion:         opts.Region,
 
-			// For container registries
-			RemoteOptions: remoteOption,
+			// For OCI registries
+			RemoteOptions: remoteOpts,
 
 			// For misconfiguration scanning
 			MisconfScannerOption: configScannerOptions,

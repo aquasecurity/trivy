@@ -12,6 +12,7 @@ import (
 
 	"github.com/aquasecurity/trivy-db/pkg/db"
 	"github.com/aquasecurity/trivy-db/pkg/metadata"
+	"github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/oci"
 )
@@ -24,7 +25,7 @@ const (
 // Operation defines the DB operations
 type Operation interface {
 	NeedsUpdate(cliVersion string, skip bool) (need bool, err error)
-	Download(ctx context.Context, dst string) (err error)
+	Download(ctx context.Context, dst string, opt types.RemoteOptions) (err error)
 }
 
 type options struct {
@@ -61,14 +62,13 @@ func WithClock(clock clock.Clock) Option {
 type Client struct {
 	*options
 
-	cacheDir              string
-	metadata              metadata.Client
-	quiet                 bool
-	insecureSkipTLSVerify bool
+	cacheDir string
+	metadata metadata.Client
+	quiet    bool
 }
 
 // NewClient is the factory method for DB client
-func NewClient(cacheDir string, quiet, insecure bool, opts ...Option) *Client {
+func NewClient(cacheDir string, quiet bool, opts ...Option) *Client {
 	o := &options{
 		clock:        clock.RealClock{},
 		dbRepository: defaultDBRepository,
@@ -79,11 +79,10 @@ func NewClient(cacheDir string, quiet, insecure bool, opts ...Option) *Client {
 	}
 
 	return &Client{
-		options:               o,
-		cacheDir:              cacheDir,
-		metadata:              metadata.NewClient(cacheDir),
-		quiet:                 quiet,
-		insecureSkipTLSVerify: insecure, // insecure skip for download DB
+		options:  o,
+		cacheDir: cacheDir,
+		metadata: metadata.NewClient(cacheDir),
+		quiet:    quiet,
 	}
 }
 
@@ -144,18 +143,18 @@ func (c *Client) isNewDB(meta metadata.Metadata) bool {
 }
 
 // Download downloads the DB file
-func (c *Client) Download(ctx context.Context, dst string) error {
+func (c *Client) Download(ctx context.Context, dst string, opt types.RemoteOptions) error {
 	// Remove the metadata file under the cache directory before downloading DB
 	if err := c.metadata.Delete(); err != nil {
 		log.Logger.Debug("no metadata file")
 	}
 
-	art, err := c.initOCIArtifact()
+	art, err := c.initOCIArtifact(opt)
 	if err != nil {
 		return xerrors.Errorf("OCI artifact error: %w", err)
 	}
 
-	if err = art.Download(ctx, db.Dir(dst)); err != nil {
+	if err = art.Download(ctx, db.Dir(dst), oci.DownloadOption{MediaType: dbMediaType}); err != nil {
 		return xerrors.Errorf("database download error: %w", err)
 	}
 
@@ -184,13 +183,13 @@ func (c *Client) updateDownloadedAt(dst string) error {
 	return nil
 }
 
-func (c *Client) initOCIArtifact() (*oci.Artifact, error) {
+func (c *Client) initOCIArtifact(opt types.RemoteOptions) (*oci.Artifact, error) {
 	if c.artifact != nil {
 		return c.artifact, nil
 	}
 
 	repo := fmt.Sprintf("%s:%d", c.dbRepository, db.SchemaVersion)
-	art, err := oci.NewArtifact(repo, dbMediaType, "", c.quiet, c.insecureSkipTLSVerify)
+	art, err := oci.NewArtifact(repo, c.quiet, opt)
 	if err != nil {
 		var terr *transport.Error
 		if errors.As(err, &terr) {

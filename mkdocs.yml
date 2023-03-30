@@ -52,6 +52,7 @@ nav:
               - OS Packages: docs/vulnerability/detection/os.md
               - Language-specific Packages: docs/vulnerability/detection/language.md
               - Data Sources: docs/vulnerability/detection/data-source.md
+          - Database: docs/vulnerability/db.md
           - Examples:
               - Vulnerability Filtering: docs/vulnerability/examples/filter.md
               - Report Formats: docs/vulnerability/examples/report.md
