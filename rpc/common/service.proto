@@ -49,7 +49,7 @@ message Package {
   Layer           layer       = 11;
   string          file_path   = 12;
   repeated string depends_on  = 14;
-  string          digest = 16;
+  string          digest      = 16;
 }
 
 message Misconfiguration {
