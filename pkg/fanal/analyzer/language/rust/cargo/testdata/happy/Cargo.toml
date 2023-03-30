@@ -12,4 +12,7 @@ regex = "=1.7.3"
 memchr = { version = "1.*", optional = true }
 
 [workspace.dependencies]
-regex-syntax = { version = "<0.6", optional = true }
+regex-syntax = { version = "<0.6"}
+
+[dev-dependencies]
+winapi = "*"

@@ -169,6 +169,28 @@ func Test_cargoAnalyzer_Analyze(t *testing.T) {
 								Indirect:  false,
 								Locations: []types.Location{{StartLine: 69, EndLine: 73}},
 							},
+							{
+								ID:        "winapi@0.3.9",
+								Name:      "winapi",
+								Version:   "0.3.9",
+								Indirect:  false,
+								Locations: []types.Location{{StartLine: 75, EndLine: 83}},
+								DependsOn: []string{"winapi-i686-pc-windows-gnu@0.4.0", "winapi-x86_64-pc-windows-gnu@0.4.0"},
+							},
+							{
+								ID:        "winapi-i686-pc-windows-gnu@0.4.0",
+								Name:      "winapi-i686-pc-windows-gnu",
+								Version:   "0.4.0",
+								Indirect:  false,
+								Locations: []types.Location{{StartLine: 85, EndLine: 89}},
+							},
+							{
+								ID:        "winapi-x86_64-pc-windows-gnu@0.4.0",
+								Name:      "winapi-x86_64-pc-windows-gnu",
+								Version:   "0.4.0",
+								Indirect:  false,
+								Locations: []types.Location{{StartLine: 91, EndLine: 95}},
+							},
 						},
 					},
 				},
@@ -177,7 +199,7 @@ func Test_cargoAnalyzer_Analyze(t *testing.T) {
 		{
 			name:    "broken Cargo.lock",
 			dir:     "testdata/sad",
-			wantErr: "unable to parse Cargo.lock",
+			wantErr: "failed to parse Cargo.lock",
 		},
 	}
 
