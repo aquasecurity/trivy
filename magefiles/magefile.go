@@ -356,7 +356,11 @@ func (Docs) Serve() error {
 
 // Generate generates CLI references
 func (Docs) Generate() error {
-	// TODO
+	
+	if err := sh.Run("go", "run", "docs/doc_creator/main.go"); err != nil {
+		  
+		return err
+	}
 	return nil
 }
 
