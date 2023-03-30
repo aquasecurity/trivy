@@ -4,15 +4,15 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"github.com/aquasecurity/go-version/pkg/semver"
+	"golang.org/x/exp/maps"
+	"golang.org/x/exp/slices"
+	"golang.org/x/xerrors"
 	"io/fs"
 	"os"
 	"path/filepath"
 	"sort"
 	"strings"
-
-	"golang.org/x/exp/maps"
-	"golang.org/x/exp/slices"
-	"golang.org/x/xerrors"
 
 	"github.com/BurntSushi/toml"
 	"github.com/samber/lo"
@@ -234,39 +234,21 @@ func (a cargoAnalyzer) matchVersion(currentVersion, constraint string) (bool, er
 	// version can contain spase after prefix
 	// e.g. `= 1.2.3`
 	constraint = strings.ReplaceAll(constraint, " ", "")
-
-	// `*` contains all versions
-	if constraint == "*" {
-		return true, nil
-	}
-
-	if strings.HasPrefix(constraint, "=") {
-		// `=` prefix uses max version for major/minor/patch... version
-		// e.g. for `memchr`:  2 => 2.5.0; 2.4 => 2.4.1
-		constraint = strings.TrimLeft(constraint, "=")
-		splitConstraint := strings.Split(constraint, ".")
-		splitVersion := strings.Split(currentVersion, ".")
-		shortCurrentVersion := strings.Join(splitVersion[:len(splitConstraint)], ".")
-		return constraint == shortCurrentVersion, nil
-	}
-
+	// `` == `^` - https://doc.rust-lang.org/cargo/reference/specifying-dependencies.html#caret-requirements
+	// add `^` for correct version comparison
 	if constraint[0] >= '0' && constraint[0] <= '9' {
-		if strings.Contains(constraint, ".*") {
-			constraint = strings.ReplaceAll(constraint, ".*", "")
-			// version with `~` has same logic as version with `.*`. e.g.:
-			// ~1.2 := >=1.2.0, <1.3.0
-			// 1.2.* := >=1.2.0, <1.3.0
-			constraint = fmt.Sprintf("~%s", constraint)
-		} else {
-			// `` == `^` - https://doc.rust-lang.org/cargo/reference/specifying-dependencies.html#caret-requirements
-			// add `^` for correct version comparison
-			constraint = fmt.Sprintf("^%s", constraint)
-		}
+		constraint = fmt.Sprintf("^%s", constraint)
 	}
 
-	match, err := a.comparer.MatchVersion(currentVersion, constraint)
+	ver, err := semver.Parse(currentVersion)
 	if err != nil {
-		return false, xerrors.Errorf("unable to match version: %w", err)
+		return false, xerrors.Errorf("version error (%s): %s", currentVersion, err)
 	}
-	return match, nil
+
+	c, err := semver.NewConstraints(constraint)
+	if err != nil {
+		return false, xerrors.Errorf("constraint error (%s): %s", currentVersion, err)
+	}
+
+	return c.Check(ver), nil
 }

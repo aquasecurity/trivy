@@ -222,7 +222,7 @@ func TestMatchVersion(t *testing.T) {
 		},
 		{
 			name:       "Caret prefix",
-			version:    "1.5",
+			version:    "1.5.0",
 			constraint: "^1.2",
 			want:       true,
 		},
