@@ -239,25 +239,25 @@ func compileWasmModules(pattern string) error {
 // Unit runs unit tests
 func (t Test) Unit() error {
 	mg.Deps(t.GenerateModules)
-	return sh.RunWith(ENV, "go", "test", "-v", "-short", "-coverprofile=coverage.txt", "-covermode=atomic", "./...")
+	return sh.RunWithV(ENV, "go", "test", "-v", "-short", "-coverprofile=coverage.txt", "-covermode=atomic", "./...")
 }
 
 // Integration runs integration tests
 func (t Test) Integration() error {
 	mg.Deps(t.FixtureContainerImages)
-	return sh.RunWith(ENV, "go", "test", "-v", "-tags=integration", "./integration/...", "./pkg/fanal/test/integration/...")
+	return sh.RunWithV(ENV, "go", "test", "-v", "-tags=integration", "./integration/...", "./pkg/fanal/test/integration/...")
 }
 
 // Module runs Wasm integration tests
 func (t Test) Module() error {
 	mg.Deps(t.FixtureContainerImages, t.GenerateExampleModules)
-	return sh.RunWith(ENV, "go", "test", "-v", "-tags=module_integration", "./integration/...")
+	return sh.RunWithV(ENV, "go", "test", "-v", "-tags=module_integration", "./integration/...")
 }
 
 // VM runs VM integration tests
 func (t Test) VM() error {
 	mg.Deps(t.FixtureVMImages)
-	return sh.RunWith(ENV, "go", "test", "-v", "-tags=vm_integration", "./integration/...")
+	return sh.RunWithV(ENV, "go", "test", "-v", "-tags=vm_integration", "./integration/...")
 }
 
 // Lint runs linters
