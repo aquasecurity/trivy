@@ -175,6 +175,7 @@ type Test mg.Namespace
 
 // FixtureContainerImages downloads and extracts required images
 func (Test) FixtureContainerImages() error {
+	mg.Deps(Tool{}.Crane)
 	if err := os.MkdirAll(filepath.Join("integration", "testdata", "fixtures", "images"), 0750); err != nil {
 		return err
 	}
@@ -185,6 +186,7 @@ func (Test) FixtureContainerImages() error {
 
 // FixtureVMImages downloads and extracts required VM images
 func (Test) FixtureVMImages() error {
+	mg.Deps(Tool{}.Crane)
 	downloadScript := filepath.Join("integration", "scripts", "download-vm-images.sh")
 	return sh.Run(downloadScript)
 }
