@@ -46,8 +46,8 @@ jobs:
           skip-cache: true # https://github.com/golangci/golangci-lint-action/issues/244#issuecomment-1052197778
         if: matrix.operating-system == 'ubuntu-latest'
 
-      # Install tools
-      - uses: aquaproj/aqua-installer@v2.0.2
+      - name: Install tools
+        uses: aquaproj/aqua-installer@v2.0.2
         with:
           aqua_version: v1.25.0
 
@@ -65,6 +65,11 @@ jobs:
         uses: actions/setup-go@v3
         with:
           go-version-file: go.mod
+
+      - name: Install tools
+        uses: aquaproj/aqua-installer@v2.0.2
+        with:
+          aqua_version: v1.25.0
 
       - name: Run integration tests
         run: mage test:integration
