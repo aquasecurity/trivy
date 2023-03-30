@@ -7,5 +7,9 @@ edition = "2021"
 
 [dependencies]
 regex = "=1.7.3"
-memchr = "1.*"
-regex-syntax = "<0.6"
+
+[target.'cfg(not(target_os = "windows"))'.dependencies]
+memchr = { version = "1.*", optional = true }
+
+[workspace.dependencies]
+regex-syntax = { version = "<0.6", optional = true }

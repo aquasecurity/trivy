@@ -156,8 +156,12 @@ func (a cargoAnalyzer) removeDevDependencies(fsys fs.FS, dir string, app *types.
 }
 
 type cargoToml struct {
-	Dependencies map[string]interface{} `toml:"dependencies"`
+	Dependencies Dependencies                       `toml:"dependencies"`
+	Target       map[string]map[string]Dependencies `toml:"target"`
+	Workspace    map[string]Dependencies            `toml:"workspace"`
 }
+
+type Dependencies map[string]interface{}
 
 func (a cargoAnalyzer) parseCargoToml(fsys fs.FS, path string) (map[string]string, error) {
 	// Parse Cargo.json
@@ -174,6 +178,20 @@ func (a cargoAnalyzer) parseCargoToml(fsys fs.FS, path string) (map[string]strin
 		return nil, xerrors.Errorf("toml decode error: %w", err)
 	}
 
+	dependencies := tomlFile.Dependencies
+
+	// https://doc.rust-lang.org/cargo/reference/specifying-dependencies.html#platform-specific-dependencies
+	for _, target := range tomlFile.Target {
+		if targetDeps, ok := target["dependencies"]; ok {
+			maps.Copy(dependencies, targetDeps)
+		}
+	}
+
+	// https://doc.rust-lang.org/cargo/reference/specifying-dependencies.html#inheriting-a-dependency-from-a-workspace
+	if workspaceDeps, ok := tomlFile.Workspace["dependencies"]; ok {
+		maps.Copy(dependencies, workspaceDeps)
+	}
+
 	for name, value := range tomlFile.Dependencies {
 		switch ver := value.(type) {
 		case string:
@@ -184,6 +202,7 @@ func (a cargoAnalyzer) parseCargoToml(fsys fs.FS, path string) (map[string]strin
 			for k, v := range ver {
 				if k == "version" {
 					deps[name] = v.(string)
+					break
 				}
 			}
 		}
