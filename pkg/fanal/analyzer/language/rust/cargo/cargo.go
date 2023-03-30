@@ -104,13 +104,13 @@ func (a cargoAnalyzer) parseCargoLock(path string, r dio.ReadSeekerAt) (*types.A
 }
 
 func (a cargoAnalyzer) removeDevDependencies(fsys fs.FS, dir string, app *types.Application) error {
-	packageJsonPath := filepath.Join(dir, types.CargoToml)
-	directDeps, err := a.parseCargoToml(fsys, packageJsonPath)
+	cargoTOMLPath := filepath.Join(dir, types.CargoToml)
+	directDeps, err := a.parseCargoTOML(fsys, cargoTOMLPath)
 	if errors.Is(err, fs.ErrNotExist) {
-		log.Logger.Debugf("Cargo.toml: %s not found", packageJsonPath)
+		log.Logger.Debugf("Cargo: %s not found", cargoTOMLPath)
 		return nil
 	} else if err != nil {
-		return xerrors.Errorf("unable to parse %s: %w", dir, err)
+		return xerrors.Errorf("unable to parse %s: %w", cargoTOMLPath, err)
 	}
 
 	// cargo.toml file can contain same libraries with different versions
@@ -160,7 +160,7 @@ type cargoToml struct {
 
 type Dependencies map[string]interface{}
 
-func (a cargoAnalyzer) parseCargoToml(fsys fs.FS, path string) (map[string]string, error) {
+func (a cargoAnalyzer) parseCargoTOML(fsys fs.FS, path string) (map[string]string, error) {
 	// Parse Cargo.json
 	f, err := fsys.Open(path)
 	if err != nil {
