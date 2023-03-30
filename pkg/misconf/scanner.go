@@ -11,6 +11,8 @@ import (
 	"sort"
 	"strings"
 
+	"github.com/aquasecurity/defsec/pkg/extrafs"
+
 	"github.com/samber/lo"
 	"golang.org/x/xerrors"
 
@@ -25,7 +27,6 @@ import (
 	k8sscanner "github.com/aquasecurity/defsec/pkg/scanners/kubernetes"
 	"github.com/aquasecurity/defsec/pkg/scanners/options"
 	tfscanner "github.com/aquasecurity/defsec/pkg/scanners/terraform"
-	"github.com/aquasecurity/memoryfs"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer/config"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
@@ -186,39 +187,81 @@ func (s *Scanner) hasCustomPatternForType(t string) bool {
 	}
 	return false
 }
-
-// Scan detects misconfigurations.
-func (s *Scanner) Scan(ctx context.Context, files []types.File) ([]types.Misconfiguration, error) {
-	mapMemoryFS := make(map[string]*memoryfs.FS)
-	for t := range s.scanners {
-		mapMemoryFS[t] = memoryfs.New()
-	}
-
+func (s *Scanner) filterDefsecFiletypes(files []types.File) []types.File {
+	var filteredFiles []types.File
 	for _, file := range files {
 		for defsecType, localType := range enabledDefsecTypes {
 			buffer := bytes.NewReader(file.Content)
 			if !s.hasCustomPatternForType(localType) && !detection.IsType(file.Path, buffer, defsecType) {
 				continue
-			}
-			// Replace with more detailed config type
-			file.Type = localType
-
-			if memfs, ok := mapMemoryFS[file.Type]; ok {
-				if filepath.Dir(file.Path) != "." {
-					if err := memfs.MkdirAll(filepath.Dir(file.Path), os.ModePerm); err != nil {
-						return nil, xerrors.Errorf("memoryfs mkdir error: %w", err)
-					}
-				}
-				if err := memfs.WriteFile(file.Path, file.Content, os.ModePerm); err != nil {
-					return nil, xerrors.Errorf("memoryfs write error: %w", err)
-				}
+			} else {
+				filteredFiles = append(filteredFiles, file)
 			}
 		}
+	}
+	return filteredFiles
+}
+
+func findCommonPrefix(files []types.File) string {
+	var filePaths []string
+	for _, f := range files {
+		filePaths = append(filePaths, f.Path)
+	}
+
+	longestPrefix := ""
+	var endPrefix = false
+
+	if len(filePaths) > 0 {
+		sort.Strings(filePaths)
+		first := filePaths[0]
+		last := filePaths[len(filePaths)-1]
+
+		for i := 0; i < len(first); i++ {
+			if !endPrefix && string(last[i]) == string(first[i]) {
+				longestPrefix += string(last[i])
+			} else {
+				endPrefix = true
+			}
+		}
+	}
+	return longestPrefix
+}
+
+func getRootDir(filePath string) (string, error) {
+	var rootDir string
+	absPath, err := filepath.Abs(filePath)
+	if err != nil {
+		return "", err
+	}
+
+	fileInfo, err := os.Stat(absPath)
+	if err != nil {
+		return "", err
+	}
+
+	if !fileInfo.IsDir() {
+		rootDir = filepath.Dir(absPath)
+	} else {
+		rootDir = absPath
+	}
+
+	rootDir = strings.TrimPrefix(filepath.Clean(rootDir), fmt.Sprintf("%c", os.PathSeparator))
+
+	log.Logger.Debug("Using root directory: ", rootDir)
+	return rootDir, nil
+}
+
+// Scan detects misconfigurations.
+func (s *Scanner) Scan(ctx context.Context, files []types.File) ([]types.Misconfiguration, error) {
+	rootDir, err := getRootDir(findCommonPrefix(s.filterDefsecFiletypes(files)))
+	if err != nil {
+		log.Logger.Errorf("failed to find config root path: %s", err)
+		return nil, err
 	}
 
 	var misconfs []types.Misconfiguration
 	for t, scanner := range s.scanners {
-		results, err := scanner.ScanFS(ctx, mapMemoryFS[t], ".")
+		results, err := scanner.ScanFS(ctx, extrafs.OSDir("/"), rootDir)
 		if err != nil {
 			if _, ok := err.(*cfparser.InvalidContentError); ok {
 				log.Logger.Errorf("scan %q was broken with InvalidContentError: %v", scanner.Name(), err)

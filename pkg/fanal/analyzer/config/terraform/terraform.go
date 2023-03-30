@@ -35,7 +35,7 @@ func (a terraformConfigAnalyzer) Analyze(_ context.Context, input analyzer.Analy
 			types.MisconfPostHandler: {
 				{
 					Type:    types.Terraform,
-					Path:    input.FilePath,
+					Path:    filepath.Join(input.Dir, input.FilePath),
 					Content: b,
 				},
 			},
