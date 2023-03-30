@@ -47,26 +47,15 @@ func tryRemote(ctx context.Context, imageName string, ref name.Reference, option
 	}
 
 	if option.Platform != "" {
-		if option.ForcePlatform {
-			s, err := forcePlatform(ref, option.Platform, remoteOpts)
-			if err != nil {
-				return nil, xerrors.Errorf("platform error: %w", err)
-			}
-			if s != nil {
-				remoteOpts = append(remoteOpts, remote.WithPlatform(*s))
-			}
-		} else {
-			s, err := parsePlatform(ref, option.Platform, remoteOpts)
-			if err != nil {
-				return nil, xerrors.Errorf("platform error: %w", err)
-			}
-			// Don't pass platform when the specified image is single-arch.
-			if s != nil {
-				remoteOpts = append(remoteOpts, remote.WithPlatform(*s))
-			}
+		s, err := parsePlatform(ref, option.Platform, remoteOpts, option.ForcePlatform)
+		if err != nil {
+			return nil, xerrors.Errorf("platform error: %w", err)
+		}
+		// Don't pass platform when the specified image is single-arch.
+		if s != nil {
+			remoteOpts = append(remoteOpts, remote.WithPlatform(*s))
 		}
 	}
-
 	desc, err := remote.Get(ref, remoteOpts...)
 	if err != nil {
 		return nil, err
@@ -87,7 +76,7 @@ func tryRemote(ctx context.Context, imageName string, ref name.Reference, option
 
 }
 
-func forcePlatform(ref name.Reference, p string, options []remote.Option) (*v1.Platform, error) {
+func parsePlatform(ref name.Reference, p string, options []remote.Option, forcePlatform bool) (*v1.Platform, error) {
 	// OS wildcard, implicitly pick up the first os found in the image list.
 	// e.g. */amd64
 	d, err := remote.Get(ref, options...)
@@ -95,10 +84,16 @@ func forcePlatform(ref name.Reference, p string, options []remote.Option) (*v1.P
 		return nil, xerrors.Errorf("image get error: %w", err)
 	}
 	platform, err := v1.ParsePlatform(p)
+	if err != nil {
+		return nil, xerrors.Errorf("platform parse error: %w", err)
+	}
 	switch d.MediaType {
 	case v1types.OCIManifestSchema1, v1types.DockerManifestSchema2:
 		// We want an index but the registry has an image, not multi-arch. We just ignore "--platform".
-		log.Logger.Debug("image is not multi-arch")
+		if !forcePlatform {
+			log.Logger.Debug("Ignore --platform as the image is not multi-arch")
+			return nil, nil
+		}
 		// Image is not a multi-arch image, but we can extract the OS from the image's config file.
 		img, err := d.Image()
 		if err != nil {
@@ -109,15 +104,14 @@ func forcePlatform(ref name.Reference, p string, options []remote.Option) (*v1.P
 			return nil, xerrors.Errorf("remote config file error: %w", err)
 		}
 		// set image OS if platform's is "*"
-		if platform.Architecture == cfg.Architecture {
-			if platform.OS != "*" && cfg.OS != platform.OS {
-				return nil, xerrors.Errorf("image does not support the requested platform: %w", err)
-			} else if platform.OS == "*" && cfg.OS != "" {
-				platform.OS = cfg.OS
-			}
-		} else {
+		platform, err = platformCompare(platform, &v1.Platform{
+			Architecture: cfg.Architecture,
+			OS:           cfg.OS,
+		})
+		if err != nil {
 			return nil, xerrors.Errorf("image does not support the requested platform: %w", err)
 		}
+
 	case v1types.OCIImageIndex, v1types.DockerManifestList:
 		index, err := d.ImageIndex()
 		if err != nil {
@@ -131,70 +125,43 @@ func forcePlatform(ref name.Reference, p string, options []remote.Option) (*v1.P
 			log.Logger.Debug("Ignore --platform as the image is not multi-arch")
 			return nil, nil
 		}
-		var foundPlatform bool
-		for _, manifest := range m.Manifests {
-			// set image OS only if the arch matches
-			if platform.Architecture == manifest.Platform.Architecture {
-				if platform.OS == "*" && manifest.Platform.OS != "" {
-					platform.OS = manifest.Platform.OS
-				} else if platform.OS != "*" && manifest.Platform.OS != platform.OS {
-					return nil, xerrors.Errorf("image does not support the requested platform: %w", err)
+		if !forcePlatform {
+			if len(m.Manifests) > 0 && m.Manifests[0].Platform != nil {
+				// Replace with the detected OS
+				// e.g. */amd64 => linux/amd64
+				platform.OS = m.Manifests[0].Platform.OS
+				platform.Architecture = m.Manifests[0].Platform.Architecture
+			}
+		} else {
+			var foundPlatform bool
+			for _, manifest := range m.Manifests {
+				// set image OS only if the arch matches
+				platformNew, err := platformCompare(platform, manifest.Platform)
+				if err != nil && platformNew == nil {
+					continue
 				}
 				foundPlatform = true
 				break
 			}
+			if !foundPlatform {
+				return nil, xerrors.Errorf("image does not support the requested platform: %w", err)
+			}
 		}
-		if !foundPlatform {
-			return nil, xerrors.Errorf("image does not support the requested platform: %w", err)
-		}
-	}
-	if err != nil {
-		return nil, xerrors.Errorf("platform parse error: %w", err)
 	}
 	return platform, nil
 }
 
-func parsePlatform(ref name.Reference, p string, options []remote.Option) (*v1.Platform, error) {
-	// OS wildcard, implicitly pick up the first os found in the image list.
-	// e.g. */amd64
-	if strings.HasPrefix(p, "*/") {
-		d, err := remote.Get(ref, options...)
-		if err != nil {
-			return nil, xerrors.Errorf("image get error: %w", err)
+func platformCompare(sourcePlatform *v1.Platform, targetPlatform *v1.Platform) (*v1.Platform, error) {
+	if sourcePlatform.Architecture == targetPlatform.Architecture {
+		if sourcePlatform.OS != "*" && targetPlatform.OS != sourcePlatform.OS {
+			return nil, xerrors.Errorf("image does not support the requested platform")
+		} else if sourcePlatform.OS == "*" && targetPlatform.OS != "" {
+			sourcePlatform.OS = targetPlatform.OS
 		}
-		switch d.MediaType {
-		case v1types.OCIManifestSchema1, v1types.DockerManifestSchema2:
-			// We want an index but the registry has an image, not multi-arch. We just ignore "--platform".
-			log.Logger.Debug("Ignore --platform as the image is not multi-arch")
-			return nil, nil
-		case v1types.OCIImageIndex, v1types.DockerManifestList:
-			// These are expected.
-		}
-
-		index, err := d.ImageIndex()
-		if err != nil {
-			return nil, xerrors.Errorf("image index error: %w", err)
-		}
-
-		m, err := index.IndexManifest()
-		if err != nil {
-			return nil, xerrors.Errorf("remote index manifest error: %w", err)
-		}
-		if len(m.Manifests) == 0 {
-			log.Logger.Debug("Ignore --platform as the image is not multi-arch")
-			return nil, nil
-		}
-		if m.Manifests[0].Platform != nil {
-			// Replace with the detected OS
-			// e.g. */amd64 => linux/amd64
-			p = m.Manifests[0].Platform.OS + strings.TrimPrefix(p, "*")
-		}
+	} else {
+		return nil, xerrors.Errorf("image does not support the requested platform")
 	}
-	platform, err := v1.ParsePlatform(p)
-	if err != nil {
-		return nil, xerrors.Errorf("platform parse error: %w", err)
-	}
-	return platform, nil
+	return sourcePlatform, nil
 }
 
 type remoteImage struct {
