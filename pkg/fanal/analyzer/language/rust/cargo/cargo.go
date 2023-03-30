@@ -100,11 +100,7 @@ func (a cargoAnalyzer) Version() int {
 }
 
 func (a cargoAnalyzer) parseCargoLock(path string, r dio.ReadSeekerAt) (*types.Application, error) {
-	libs, deps, err := a.lockParser.Parse(r)
-	if err != nil {
-		return nil, xerrors.Errorf("unable to parse Cargo.lock: %w", err)
-	}
-	return language.ToApplication(types.Cargo, path, "", libs, deps), nil
+	return language.Parse(types.Cargo, path, r, a.lockParser)
 }
 
 func (a cargoAnalyzer) removeDevDependencies(fsys fs.FS, dir string, app *types.Application) error {
