@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io/fs"
 	"os"
+	"os/exec"
 	"path/filepath"
 	"strings"
 
@@ -383,8 +384,6 @@ func exists(filename string) bool {
 }
 
 func installed(cmd string) bool {
-	if err := sh.Run("type", cmd); err != nil {
-		return false
-	}
-	return true
+	_, err := exec.LookPath(cmd)
+	return err == nil
 }
