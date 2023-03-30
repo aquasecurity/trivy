@@ -25,7 +25,8 @@ timeout: 10m
 
 # Same as '--cache-dir'
 # Default is your system cache dir
-cache-dir: $HOME/.cache/trivy
+cache:
+  dir: $HOME/.cache/trivy
 ```
 
 ## Report Options
@@ -160,6 +161,23 @@ db:
   # Same as '--java-db-repository'
   # Default is 'ghcr.io/aquasecurity/trivy-java-db'
   java-repository: ghcr.io/aquasecurity/trivy-java-db
+```
+
+## Registry Options
+
+```yaml
+registry:
+  # Same as '--username'
+  # Default is empty
+  username:
+
+  # Same as '--password'
+  # Default is empty
+  password:
+    
+  # Same as '--registry-token'
+  # Default is empty
+  registry-token:
 ```
 
 ## Image Options

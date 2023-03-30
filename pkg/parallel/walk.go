@@ -8,13 +8,14 @@ import (
 	"golang.org/x/xerrors"
 
 	dio "github.com/aquasecurity/go-dep-parser/pkg/io"
+	"github.com/aquasecurity/trivy/pkg/log"
 )
 
 type onFile[T any] func(string, fs.FileInfo, dio.ReadSeekerAt) (T, error)
-type onResult[T any] func(T) error
+type onWalkResult[T any] func(T) error
 
 func WalkDir[T any](ctx context.Context, fsys fs.FS, root string, slow bool,
-	onFile onFile[T], onResult onResult[T]) error {
+	onFile onFile[T], onResult onWalkResult[T]) error {
 
 	g, ctx := errgroup.WithContext(ctx)
 	paths := make(chan string)
@@ -25,6 +26,15 @@ func WalkDir[T any](ctx context.Context, fsys fs.FS, root string, slow bool,
 			if err != nil {
 				return err
 			} else if !d.Type().IsRegular() {
+				return nil
+			}
+
+			// check if file is empty
+			info, err := d.Info()
+			if err != nil {
+				return err
+			} else if info.Size() == 0 {
+				log.Logger.Debugf("%s is empty, skip this file", path)
 				return nil
 			}
 

@@ -8,11 +8,16 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/mitchellh/hashstructure/v2"
+	"github.com/samber/lo"
 	"github.com/spdx/tools-golang/spdx"
 	"golang.org/x/xerrors"
 	"k8s.io/utils/clock"
 
+	"github.com/aquasecurity/trivy/pkg/digest"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
+	"github.com/aquasecurity/trivy/pkg/licensing"
+	"github.com/aquasecurity/trivy/pkg/licensing/expression"
+	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/purl"
 	"github.com/aquasecurity/trivy/pkg/scanner/utils"
 	"github.com/aquasecurity/trivy/pkg/types"
@@ -25,6 +30,7 @@ const (
 	DocumentNamespace   = "http://aquasecurity.github.io/trivy"
 	CreatorOrganization = "aquasecurity"
 	CreatorTool         = "trivy"
+	noneField           = "NONE"
 )
 
 const (
@@ -110,9 +116,10 @@ func NewMarshaler(version string, opts ...marshalOption) *Marshaler {
 func (m *Marshaler) Marshal(r types.Report) (*spdx.Document2_2, error) {
 	var relationShips []*spdx.Relationship2_2
 	packages := make(map[spdx.ElementID]*spdx.Package2_2)
+	pkgDownloadLocation := getPackageDownloadLocation(r.ArtifactType, r.ArtifactName)
 
 	// Root package contains OS, OS packages, language-specific packages and so on.
-	rootPkg, err := m.rootPackage(r)
+	rootPkg, err := m.rootPackage(r, pkgDownloadLocation)
 	if err != nil {
 		return nil, xerrors.Errorf("failed to generate a root package: %w", err)
 	}
@@ -122,7 +129,7 @@ func (m *Marshaler) Marshal(r types.Report) (*spdx.Document2_2, error) {
 	)
 
 	for _, result := range r.Results {
-		parentPackage, err := m.resultToSpdxPackage(result, r.Metadata.OS)
+		parentPackage, err := m.resultToSpdxPackage(result, r.Metadata.OS, pkgDownloadLocation)
 		if err != nil {
 			return nil, xerrors.Errorf("failed to parse result: %w", err)
 		}
@@ -132,7 +139,7 @@ func (m *Marshaler) Marshal(r types.Report) (*spdx.Document2_2, error) {
 		)
 
 		for _, pkg := range result.Packages {
-			spdxPackage, err := m.pkgToSpdxPackage(result.Type, result.Class, r.Metadata, pkg)
+			spdxPackage, err := m.pkgToSpdxPackage(result.Type, pkgDownloadLocation, result.Class, r.Metadata, pkg)
 			if err != nil {
 				return nil, xerrors.Errorf("failed to parse package: %w", err)
 			}
@@ -159,16 +166,16 @@ func (m *Marshaler) Marshal(r types.Report) (*spdx.Document2_2, error) {
 	}, nil
 }
 
-func (m *Marshaler) resultToSpdxPackage(result types.Result, os *ftypes.OS) (spdx.Package2_2, error) {
+func (m *Marshaler) resultToSpdxPackage(result types.Result, os *ftypes.OS, pkgDownloadLocation string) (spdx.Package2_2, error) {
 	switch result.Class {
 	case types.ClassOSPkg:
-		osPkg, err := m.osPackage(os)
+		osPkg, err := m.osPackage(os, pkgDownloadLocation)
 		if err != nil {
 			return spdx.Package2_2{}, xerrors.Errorf("failed to parse operating system package: %w", err)
 		}
 		return osPkg, nil
 	case types.ClassLangPkg:
-		langPkg, err := m.langPackage(result.Target, result.Type)
+		langPkg, err := m.langPackage(result.Target, result.Type, pkgDownloadLocation)
 		if err != nil {
 			return spdx.Package2_2{}, xerrors.Errorf("failed to parse application package: %w", err)
 		}
@@ -179,7 +186,7 @@ func (m *Marshaler) resultToSpdxPackage(result types.Result, os *ftypes.OS) (spd
 	}
 }
 
-func (m *Marshaler) parseFile(filePath string) (spdx.File2_2, error) {
+func (m *Marshaler) parseFile(filePath string, digest digest.Digest) (spdx.File2_2, error) {
 	pkgID, err := calcPkgID(m.hasher, filePath)
 	if err != nil {
 		return spdx.File2_2{}, xerrors.Errorf("failed to get %s package ID: %w", filePath, err)
@@ -187,11 +194,12 @@ func (m *Marshaler) parseFile(filePath string) (spdx.File2_2, error) {
 	file := spdx.File2_2{
 		FileSPDXIdentifier: spdx.ElementID(fmt.Sprintf("File-%s", pkgID)),
 		FileName:           filePath,
+		FileChecksums:      digestToSpdxFileChecksum(digest),
 	}
 	return file, nil
 }
 
-func (m *Marshaler) rootPackage(r types.Report) (*spdx.Package2_2, error) {
+func (m *Marshaler) rootPackage(r types.Report, pkgDownloadLocation string) (*spdx.Package2_2, error) {
 	var externalReferences []*spdx.PackageExternalReference2_2
 	attributionTexts := []string{attributionText(PropertySchemaVersion, strconv.Itoa(r.SchemaVersion))}
 
@@ -227,12 +235,13 @@ func (m *Marshaler) rootPackage(r types.Report) (*spdx.Package2_2, error) {
 	return &spdx.Package2_2{
 		PackageName:               r.ArtifactName,
 		PackageSPDXIdentifier:     elementID(camelCase(string(r.ArtifactType)), pkgID),
+		PackageDownloadLocation:   pkgDownloadLocation,
 		PackageAttributionTexts:   attributionTexts,
 		PackageExternalReferences: externalReferences,
 	}, nil
 }
 
-func (m *Marshaler) osPackage(osFound *ftypes.OS) (spdx.Package2_2, error) {
+func (m *Marshaler) osPackage(osFound *ftypes.OS, pkgDownloadLocation string) (spdx.Package2_2, error) {
 	if osFound == nil {
 		return spdx.Package2_2{}, nil
 	}
@@ -243,27 +252,29 @@ func (m *Marshaler) osPackage(osFound *ftypes.OS) (spdx.Package2_2, error) {
 	}
 
 	return spdx.Package2_2{
-		PackageName:           osFound.Family,
-		PackageVersion:        osFound.Name,
-		PackageSPDXIdentifier: elementID(ElementOperatingSystem, pkgID),
+		PackageName:             osFound.Family,
+		PackageVersion:          osFound.Name,
+		PackageSPDXIdentifier:   elementID(ElementOperatingSystem, pkgID),
+		PackageDownloadLocation: pkgDownloadLocation,
 	}, nil
 }
 
-func (m *Marshaler) langPackage(target, appType string) (spdx.Package2_2, error) {
+func (m *Marshaler) langPackage(target, appType, pkgDownloadLocation string) (spdx.Package2_2, error) {
 	pkgID, err := calcPkgID(m.hasher, fmt.Sprintf("%s-%s", target, appType))
 	if err != nil {
 		return spdx.Package2_2{}, xerrors.Errorf("failed to get %s package ID: %w", target, err)
 	}
 
 	return spdx.Package2_2{
-		PackageName:           appType,
-		PackageSourceInfo:     target, // TODO: Files seems better
-		PackageSPDXIdentifier: elementID(ElementApplication, pkgID),
+		PackageName:             appType,
+		PackageSourceInfo:       target, // TODO: Files seems better
+		PackageSPDXIdentifier:   elementID(ElementApplication, pkgID),
+		PackageDownloadLocation: pkgDownloadLocation,
 	}, nil
 }
 
-func (m *Marshaler) pkgToSpdxPackage(t string, class types.ResultClass, metadata types.Metadata, pkg ftypes.Package) (spdx.Package2_2, error) {
-	license := getLicense(pkg)
+func (m *Marshaler) pkgToSpdxPackage(t, pkgDownloadLocation string, class types.ResultClass, metadata types.Metadata, pkg ftypes.Package) (spdx.Package2_2, error) {
+	license := GetLicense(pkg)
 
 	pkgID, err := calcPkgID(m.hasher, pkg)
 	if err != nil {
@@ -292,10 +303,11 @@ func (m *Marshaler) pkgToSpdxPackage(t string, class types.ResultClass, metadata
 	}
 
 	return spdx.Package2_2{
-		PackageName:           pkg.Name,
-		PackageVersion:        pkg.Version,
-		PackageSPDXIdentifier: elementID(ElementPackage, pkgID),
-		PackageSourceInfo:     pkgSrcInfo,
+		PackageName:             pkg.Name,
+		PackageVersion:          utils.FormatVersion(pkg),
+		PackageSPDXIdentifier:   elementID(ElementPackage, pkgID),
+		PackageDownloadLocation: pkgDownloadLocation,
+		PackageSourceInfo:       pkgSrcInfo,
 
 		// The Declared License is what the authors of a project believe govern the package
 		PackageLicenseConcluded: license,
@@ -314,7 +326,7 @@ func (m *Marshaler) pkgFiles(pkg ftypes.Package) (map[spdx.ElementID]*spdx.File2
 		return nil, nil
 	}
 
-	file, err := m.parseFile(pkg.FilePath)
+	file, err := m.parseFile(pkg.FilePath, pkg.Digest)
 	if err != nil {
 		return nil, xerrors.Errorf("failed to parse file: %w")
 	}
@@ -355,19 +367,32 @@ func purlExternalReference(packageURL string) *spdx.PackageExternalReference2_2 
 	}
 }
 
-func getLicense(p ftypes.Package) string {
+func GetLicense(p ftypes.Package) string {
 	if len(p.Licenses) == 0 {
-		return "NONE"
+		return noneField
 	}
 
-	return strings.Join(p.Licenses, ", ")
+	license := strings.Join(lo.Map(p.Licenses, func(license string, index int) string {
+		// e.g. GPL-3.0-with-autoconf-exception
+		license = strings.ReplaceAll(license, "-with-", " WITH ")
+		license = strings.ReplaceAll(license, "-WITH-", " WITH ")
+
+		return fmt.Sprintf("(%s)", license)
+	}), " AND ")
+	s, err := expression.Normalize(license, licensing.Normalize, expression.NormalizeForSPDX)
+	if err != nil {
+		// Not fail on the invalid license
+		log.Logger.Warnf("Unable to marshal SPDX licenses %q", license)
+		return ""
+	}
+	return s
 }
 
 func getDocumentNamespace(r types.Report, m *Marshaler) string {
 	return fmt.Sprintf("%s/%s/%s-%s",
 		DocumentNamespace,
 		string(r.ArtifactType),
-		r.ArtifactName,
+		strings.ReplaceAll(strings.ReplaceAll(r.ArtifactName, "https://", ""), "http://", ""), // remove http(s):// prefix when scanning repos
 		m.newUUID().String(),
 	)
 }
@@ -403,4 +428,40 @@ func camelCase(inputUnderScoreStr string) (camelCase string) {
 		}
 	}
 	return
+}
+
+func getPackageDownloadLocation(t ftypes.ArtifactType, artifactName string) string {
+	location := noneField
+	// this field is used for git/mercurial/subversion/bazaar:
+	// https://spdx.github.io/spdx-spec/v2.2.2/package-information/#77-package-download-location-field
+	if t == ftypes.ArtifactRemoteRepository {
+		// Trivy currently only supports git repositories. Format examples:
+		// git+https://git.myproject.org/MyProject.git
+		// git+http://git.myproject.org/MyProject
+		location = fmt.Sprintf("git+%s", artifactName)
+	}
+	return location
+}
+
+func digestToSpdxFileChecksum(d digest.Digest) map[spdx.ChecksumAlgorithm]spdx.Checksum {
+	if d == "" {
+		return nil
+	}
+
+	var alg spdx.ChecksumAlgorithm
+	switch d.Algorithm() {
+	case digest.SHA1:
+		alg = spdx.SHA1
+	case digest.SHA256:
+		alg = spdx.SHA256
+	default:
+		return nil
+	}
+
+	return map[spdx.ChecksumAlgorithm]spdx.Checksum{
+		alg: {
+			Algorithm: alg,
+			Value:     d.Encoded(),
+		},
+	}
 }

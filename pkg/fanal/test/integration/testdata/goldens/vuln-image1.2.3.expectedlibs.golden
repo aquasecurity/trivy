@@ -842,445 +842,1111 @@
         "ID": "ammonia@1.9.0",
         "Name": "ammonia",
         "Version": "1.9.0",
-        "Layer": {}
+        "DependsOn": [
+          "html5ever@0.23.0",
+          "lazy_static@1.3.0",
+          "maplit@1.0.1",
+          "matches@0.1.8",
+          "tendril@0.4.1",
+          "url@1.7.2"
+        ],
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 2,
+            "EndLine": 13
+          }
+        ]
       },
       {
         "ID": "autocfg@0.1.2",
         "Name": "autocfg",
         "Version": "0.1.2",
-        "Layer": {}
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 15,
+            "EndLine": 18
+          }
+        ]
       },
       {
         "ID": "bitflags@0.7.0",
         "Name": "bitflags",
         "Version": "0.7.0",
-        "Layer": {}
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 20,
+            "EndLine": 23
+          }
+        ]
       },
       {
         "ID": "bitflags@1.0.4",
         "Name": "bitflags",
         "Version": "1.0.4",
-        "Layer": {}
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 25,
+            "EndLine": 28
+          }
+        ]
       },
       {
         "ID": "cfg-if@0.1.7",
         "Name": "cfg-if",
         "Version": "0.1.7",
-        "Layer": {}
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 30,
+            "EndLine": 33
+          }
+        ]
       },
       {
         "ID": "cloudabi@0.0.3",
         "Name": "cloudabi",
         "Version": "0.0.3",
-        "Layer": {}
+        "DependsOn": [
+          "bitflags@1.0.4"
+        ],
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 35,
+            "EndLine": 41
+          }
+        ]
       },
       {
         "ID": "fuchsia-cprng@0.1.1",
         "Name": "fuchsia-cprng",
         "Version": "0.1.1",
-        "Layer": {}
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 43,
+            "EndLine": 46
+          }
+        ]
       },
       {
         "ID": "futf@0.1.4",
         "Name": "futf",
         "Version": "0.1.4",
-        "Layer": {}
+        "DependsOn": [
+          "mac@0.1.1",
+          "new_debug_unreachable@1.0.3"
+        ],
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 48,
+            "EndLine": 55
+          }
+        ]
       },
       {
         "ID": "gdi32-sys@0.2.0",
         "Name": "gdi32-sys",
         "Version": "0.2.0",
-        "Layer": {}
+        "DependsOn": [
+          "winapi-build@0.1.1",
+          "winapi@0.2.8"
+        ],
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 57,
+            "EndLine": 64
+          }
+        ]
       },
       {
         "ID": "html5ever@0.23.0",
         "Name": "html5ever",
         "Version": "0.23.0",
-        "Layer": {}
+        "DependsOn": [
+          "log@0.4.6",
+          "mac@0.1.1",
+          "markup5ever@0.8.1",
+          "proc-macro2@0.4.30",
+          "quote@0.6.12",
+          "syn@0.15.34"
+        ],
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 66,
+            "EndLine": 77
+          }
+        ]
       },
       {
         "ID": "idna@0.1.5",
         "Name": "idna",
         "Version": "0.1.5",
-        "Layer": {}
+        "DependsOn": [
+          "matches@0.1.8",
+          "unicode-bidi@0.3.4",
+          "unicode-normalization@0.1.8"
+        ],
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 79,
+            "EndLine": 87
+          }
+        ]
       },
       {
         "ID": "itoa@0.4.4",
         "Name": "itoa",
         "Version": "0.4.4",
-        "Layer": {}
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 89,
+            "EndLine": 92
+          }
+        ]
       },
       {
         "ID": "kernel32-sys@0.2.2",
         "Name": "kernel32-sys",
         "Version": "0.2.2",
-        "Layer": {}
+        "DependsOn": [
+          "winapi-build@0.1.1",
+          "winapi@0.2.8"
+        ],
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 94,
+            "EndLine": 101
+          }
+        ]
       },
       {
         "ID": "lazy_static@0.2.11",
         "Name": "lazy_static",
         "Version": "0.2.11",
-        "Layer": {}
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 103,
+            "EndLine": 106
+          }
+        ]
       },
       {
         "ID": "lazy_static@1.3.0",
         "Name": "lazy_static",
         "Version": "1.3.0",
-        "Layer": {}
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 108,
+            "EndLine": 111
+          }
+        ]
       },
       {
         "ID": "libc@0.2.54",
         "Name": "libc",
         "Version": "0.2.54",
-        "Layer": {}
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 113,
+            "EndLine": 116
+          }
+        ]
       },
       {
         "ID": "libressl-pnacl-sys@2.1.6",
         "Name": "libressl-pnacl-sys",
         "Version": "2.1.6",
-        "Layer": {}
+        "DependsOn": [
+          "pnacl-build-helper@1.4.11"
+        ],
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 118,
+            "EndLine": 124
+          }
+        ]
       },
       {
         "ID": "log@0.4.6",
         "Name": "log",
         "Version": "0.4.6",
-        "Layer": {}
+        "DependsOn": [
+          "cfg-if@0.1.7"
+        ],
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 126,
+            "EndLine": 132
+          }
+        ]
       },
       {
         "ID": "mac@0.1.1",
         "Name": "mac",
         "Version": "0.1.1",
-        "Layer": {}
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 134,
+            "EndLine": 137
+          }
+        ]
       },
       {
         "ID": "maplit@1.0.1",
         "Name": "maplit",
         "Version": "1.0.1",
-        "Layer": {}
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 139,
+            "EndLine": 142
+          }
+        ]
       },
       {
         "ID": "markup5ever@0.8.1",
         "Name": "markup5ever",
         "Version": "0.8.1",
-        "Layer": {}
+        "DependsOn": [
+          "log@0.4.6",
+          "phf@0.7.24",
+          "phf_codegen@0.7.24",
+          "serde@1.0.91",
+          "serde_derive@1.0.91",
+          "serde_json@1.0.39",
+          "string_cache@0.7.3",
+          "string_cache_codegen@0.4.2",
+          "tendril@0.4.1"
+        ],
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 144,
+            "EndLine": 158
+          }
+        ]
       },
       {
         "ID": "matches@0.1.8",
         "Name": "matches",
         "Version": "0.1.8",
-        "Layer": {}
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 160,
+            "EndLine": 163
+          }
+        ]
       },
       {
         "ID": "new_debug_unreachable@1.0.3",
         "Name": "new_debug_unreachable",
         "Version": "1.0.3",
-        "Layer": {}
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 165,
+            "EndLine": 168
+          }
+        ]
       },
       {
         "ID": "normal@0.1.0",
         "Name": "normal",
         "Version": "0.1.0",
-        "Layer": {}
+        "DependsOn": [
+          "ammonia@2.0.0",
+          "libc@0.2.54",
+          "openssl@0.8.3"
+        ],
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 170,
+            "EndLine": 177
+          }
+        ]
       },
       {
         "ID": "openssl@0.8.3",
         "Name": "openssl",
         "Version": "0.8.3",
-        "Layer": {}
+        "DependsOn": [
+          "bitflags@0.7.0",
+          "lazy_static@0.2.11",
+          "libc@0.2.54",
+          "openssl-sys@0.7.17"
+        ],
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 179,
+            "EndLine": 188
+          }
+        ]
       },
       {
         "ID": "openssl-sys@0.7.17",
         "Name": "openssl-sys",
         "Version": "0.7.17",
-        "Layer": {}
+        "DependsOn": [
+          "gdi32-sys@0.2.0",
+          "libc@0.2.54",
+          "libressl-pnacl-sys@2.1.6",
+          "pkg-config@0.3.14",
+          "user32-sys@0.2.0"
+        ],
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 190,
+            "EndLine": 200
+          }
+        ]
       },
       {
         "ID": "percent-encoding@1.0.1",
         "Name": "percent-encoding",
         "Version": "1.0.1",
-        "Layer": {}
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 202,
+            "EndLine": 205
+          }
+        ]
       },
       {
         "ID": "phf@0.7.24",
         "Name": "phf",
         "Version": "0.7.24",
-        "Layer": {}
+        "DependsOn": [
+          "phf_shared@0.7.24"
+        ],
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 207,
+            "EndLine": 213
+          }
+        ]
       },
       {
         "ID": "phf_codegen@0.7.24",
         "Name": "phf_codegen",
         "Version": "0.7.24",
-        "Layer": {}
+        "DependsOn": [
+          "phf_generator@0.7.24",
+          "phf_shared@0.7.24"
+        ],
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 215,
+            "EndLine": 222
+          }
+        ]
       },
       {
         "ID": "phf_generator@0.7.24",
         "Name": "phf_generator",
         "Version": "0.7.24",
-        "Layer": {}
+        "DependsOn": [
+          "phf_shared@0.7.24",
+          "rand@0.6.5"
+        ],
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 224,
+            "EndLine": 231
+          }
+        ]
       },
       {
         "ID": "phf_shared@0.7.24",
         "Name": "phf_shared",
         "Version": "0.7.24",
-        "Layer": {}
+        "DependsOn": [
+          "siphasher@0.2.3"
+        ],
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 233,
+            "EndLine": 239
+          }
+        ]
       },
       {
         "ID": "pkg-config@0.3.14",
         "Name": "pkg-config",
         "Version": "0.3.14",
-        "Layer": {}
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 241,
+            "EndLine": 244
+          }
+        ]
       },
       {
         "ID": "pnacl-build-helper@1.4.11",
         "Name": "pnacl-build-helper",
         "Version": "1.4.11",
-        "Layer": {}
+        "DependsOn": [
+          "tempdir@0.3.7",
+          "walkdir@1.0.7"
+        ],
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 246,
+            "EndLine": 253
+          }
+        ]
       },
       {
         "ID": "precomputed-hash@0.1.1",
         "Name": "precomputed-hash",
         "Version": "0.1.1",
-        "Layer": {}
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 255,
+            "EndLine": 258
+          }
+        ]
       },
       {
         "ID": "proc-macro2@0.4.30",
         "Name": "proc-macro2",
         "Version": "0.4.30",
-        "Layer": {}
+        "DependsOn": [
+          "unicode-xid@0.1.0"
+        ],
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 260,
+            "EndLine": 266
+          }
+        ]
       },
       {
         "ID": "quote@0.6.12",
         "Name": "quote",
         "Version": "0.6.12",
-        "Layer": {}
+        "DependsOn": [
+          "proc-macro2@0.4.30"
+        ],
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 268,
+            "EndLine": 274
+          }
+        ]
       },
       {
         "ID": "rand@0.4.6",
         "Name": "rand",
         "Version": "0.4.6",
-        "Layer": {}
+        "DependsOn": [
+          "fuchsia-cprng@0.1.1",
+          "libc@0.2.54",
+          "rand_core@0.3.1",
+          "rdrand@0.4.0",
+          "winapi@0.3.7"
+        ],
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 276,
+            "EndLine": 286
+          }
+        ]
       },
       {
         "ID": "rand@0.6.5",
         "Name": "rand",
         "Version": "0.6.5",
-        "Layer": {}
+        "DependsOn": [
+          "autocfg@0.1.2",
+          "libc@0.2.54",
+          "rand_chacha@0.1.1",
+          "rand_core@0.4.0",
+          "rand_hc@0.1.0",
+          "rand_isaac@0.1.1",
+          "rand_jitter@0.1.4",
+          "rand_os@0.1.3",
+          "rand_pcg@0.1.2",
+          "rand_xorshift@0.1.1",
+          "winapi@0.3.7"
+        ],
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 288,
+            "EndLine": 304
+          }
+        ]
       },
       {
         "ID": "rand_chacha@0.1.1",
         "Name": "rand_chacha",
         "Version": "0.1.1",
-        "Layer": {}
+        "DependsOn": [
+          "autocfg@0.1.2",
+          "rand_core@0.3.1"
+        ],
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 306,
+            "EndLine": 313
+          }
+        ]
       },
       {
         "ID": "rand_core@0.3.1",
         "Name": "rand_core",
         "Version": "0.3.1",
-        "Layer": {}
+        "DependsOn": [
+          "rand_core@0.4.0"
+        ],
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 315,
+            "EndLine": 321
+          }
+        ]
       },
       {
         "ID": "rand_core@0.4.0",
         "Name": "rand_core",
         "Version": "0.4.0",
-        "Layer": {}
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 323,
+            "EndLine": 326
+          }
+        ]
       },
       {
         "ID": "rand_hc@0.1.0",
         "Name": "rand_hc",
         "Version": "0.1.0",
-        "Layer": {}
+        "DependsOn": [
+          "rand_core@0.3.1"
+        ],
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 328,
+            "EndLine": 334
+          }
+        ]
       },
       {
         "ID": "rand_isaac@0.1.1",
         "Name": "rand_isaac",
         "Version": "0.1.1",
-        "Layer": {}
+        "DependsOn": [
+          "rand_core@0.3.1"
+        ],
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 336,
+            "EndLine": 342
+          }
+        ]
       },
       {
         "ID": "rand_jitter@0.1.4",
         "Name": "rand_jitter",
         "Version": "0.1.4",
-        "Layer": {}
+        "DependsOn": [
+          "libc@0.2.54",
+          "rand_core@0.4.0",
+          "winapi@0.3.7"
+        ],
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 344,
+            "EndLine": 352
+          }
+        ]
       },
       {
         "ID": "rand_os@0.1.3",
         "Name": "rand_os",
         "Version": "0.1.3",
-        "Layer": {}
+        "DependsOn": [
+          "cloudabi@0.0.3",
+          "fuchsia-cprng@0.1.1",
+          "libc@0.2.54",
+          "rand_core@0.4.0",
+          "rdrand@0.4.0",
+          "winapi@0.3.7"
+        ],
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 354,
+            "EndLine": 365
+          }
+        ]
       },
       {
         "ID": "rand_pcg@0.1.2",
         "Name": "rand_pcg",
         "Version": "0.1.2",
-        "Layer": {}
+        "DependsOn": [
+          "autocfg@0.1.2",
+          "rand_core@0.4.0"
+        ],
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 367,
+            "EndLine": 374
+          }
+        ]
       },
       {
         "ID": "rand_xorshift@0.1.1",
         "Name": "rand_xorshift",
         "Version": "0.1.1",
-        "Layer": {}
+        "DependsOn": [
+          "rand_core@0.3.1"
+        ],
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 376,
+            "EndLine": 382
+          }
+        ]
       },
       {
         "ID": "rdrand@0.4.0",
         "Name": "rdrand",
         "Version": "0.4.0",
-        "Layer": {}
+        "DependsOn": [
+          "rand_core@0.3.1"
+        ],
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 384,
+            "EndLine": 390
+          }
+        ]
       },
       {
         "ID": "remove_dir_all@0.5.1",
         "Name": "remove_dir_all",
         "Version": "0.5.1",
-        "Layer": {}
+        "DependsOn": [
+          "winapi@0.3.7"
+        ],
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 392,
+            "EndLine": 398
+          }
+        ]
       },
       {
         "ID": "ryu@0.2.8",
         "Name": "ryu",
         "Version": "0.2.8",
-        "Layer": {}
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 400,
+            "EndLine": 403
+          }
+        ]
       },
       {
         "ID": "same-file@0.1.3",
         "Name": "same-file",
         "Version": "0.1.3",
-        "Layer": {}
+        "DependsOn": [
+          "kernel32-sys@0.2.2",
+          "winapi@0.2.8"
+        ],
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 405,
+            "EndLine": 412
+          }
+        ]
       },
       {
         "ID": "serde@1.0.91",
         "Name": "serde",
         "Version": "1.0.91",
-        "Layer": {}
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 414,
+            "EndLine": 417
+          }
+        ]
       },
       {
         "ID": "serde_derive@1.0.91",
         "Name": "serde_derive",
         "Version": "1.0.91",
-        "Layer": {}
+        "DependsOn": [
+          "proc-macro2@0.4.30",
+          "quote@0.6.12",
+          "syn@0.15.34"
+        ],
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 419,
+            "EndLine": 427
+          }
+        ]
       },
       {
         "ID": "serde_json@1.0.39",
         "Name": "serde_json",
         "Version": "1.0.39",
-        "Layer": {}
+        "DependsOn": [
+          "itoa@0.4.4",
+          "ryu@0.2.8",
+          "serde@1.0.91"
+        ],
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 429,
+            "EndLine": 437
+          }
+        ]
       },
       {
         "ID": "siphasher@0.2.3",
         "Name": "siphasher",
         "Version": "0.2.3",
-        "Layer": {}
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 439,
+            "EndLine": 442
+          }
+        ]
       },
       {
         "ID": "smallvec@0.6.9",
         "Name": "smallvec",
         "Version": "0.6.9",
-        "Layer": {}
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 444,
+            "EndLine": 447
+          }
+        ]
       },
       {
         "ID": "string_cache@0.7.3",
         "Name": "string_cache",
         "Version": "0.7.3",
-        "Layer": {}
+        "DependsOn": [
+          "lazy_static@1.3.0",
+          "new_debug_unreachable@1.0.3",
+          "phf_shared@0.7.24",
+          "precomputed-hash@0.1.1",
+          "serde@1.0.91",
+          "string_cache_codegen@0.4.2",
+          "string_cache_shared@0.3.0"
+        ],
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 449,
+            "EndLine": 461
+          }
+        ]
       },
       {
         "ID": "string_cache_codegen@0.4.2",
         "Name": "string_cache_codegen",
         "Version": "0.4.2",
-        "Layer": {}
+        "DependsOn": [
+          "phf_generator@0.7.24",
+          "phf_shared@0.7.24",
+          "proc-macro2@0.4.30",
+          "quote@0.6.12",
+          "string_cache_shared@0.3.0"
+        ],
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 463,
+            "EndLine": 473
+          }
+        ]
       },
       {
         "ID": "string_cache_shared@0.3.0",
         "Name": "string_cache_shared",
         "Version": "0.3.0",
-        "Layer": {}
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 475,
+            "EndLine": 478
+          }
+        ]
       },
       {
         "ID": "syn@0.15.34",
         "Name": "syn",
         "Version": "0.15.34",
-        "Layer": {}
+        "DependsOn": [
+          "proc-macro2@0.4.30",
+          "quote@0.6.12",
+          "unicode-xid@0.1.0"
+        ],
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 480,
+            "EndLine": 488
+          }
+        ]
       },
       {
         "ID": "tempdir@0.3.7",
         "Name": "tempdir",
         "Version": "0.3.7",
-        "Layer": {}
+        "DependsOn": [
+          "rand@0.4.6",
+          "remove_dir_all@0.5.1"
+        ],
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 490,
+            "EndLine": 497
+          }
+        ]
       },
       {
         "ID": "tendril@0.4.1",
         "Name": "tendril",
         "Version": "0.4.1",
-        "Layer": {}
+        "DependsOn": [
+          "futf@0.1.4",
+          "mac@0.1.1",
+          "utf-8@0.7.5"
+        ],
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 499,
+            "EndLine": 507
+          }
+        ]
       },
       {
         "ID": "unicode-bidi@0.3.4",
         "Name": "unicode-bidi",
         "Version": "0.3.4",
-        "Layer": {}
+        "DependsOn": [
+          "matches@0.1.8"
+        ],
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 509,
+            "EndLine": 515
+          }
+        ]
       },
       {
         "ID": "unicode-normalization@0.1.8",
         "Name": "unicode-normalization",
         "Version": "0.1.8",
-        "Layer": {}
+        "DependsOn": [
+          "smallvec@0.6.9"
+        ],
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 517,
+            "EndLine": 523
+          }
+        ]
       },
       {
         "ID": "unicode-xid@0.1.0",
         "Name": "unicode-xid",
         "Version": "0.1.0",
-        "Layer": {}
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 525,
+            "EndLine": 528
+          }
+        ]
       },
       {
         "ID": "url@1.7.2",
         "Name": "url",
         "Version": "1.7.2",
-        "Layer": {}
+        "DependsOn": [
+          "idna@0.1.5",
+          "matches@0.1.8",
+          "percent-encoding@1.0.1"
+        ],
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 530,
+            "EndLine": 538
+          }
+        ]
       },
       {
         "ID": "user32-sys@0.2.0",
         "Name": "user32-sys",
         "Version": "0.2.0",
-        "Layer": {}
+        "DependsOn": [
+          "winapi-build@0.1.1",
+          "winapi@0.2.8"
+        ],
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 540,
+            "EndLine": 547
+          }
+        ]
       },
       {
         "ID": "utf-8@0.7.5",
         "Name": "utf-8",
         "Version": "0.7.5",
-        "Layer": {}
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 549,
+            "EndLine": 552
+          }
+        ]
       },
       {
         "ID": "walkdir@1.0.7",
         "Name": "walkdir",
         "Version": "1.0.7",
-        "Layer": {}
+        "DependsOn": [
+          "kernel32-sys@0.2.2",
+          "same-file@0.1.3",
+          "winapi@0.2.8"
+        ],
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 554,
+            "EndLine": 562
+          }
+        ]
       },
       {
         "ID": "winapi@0.2.8",
         "Name": "winapi",
         "Version": "0.2.8",
-        "Layer": {}
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 564,
+            "EndLine": 567
+          }
+        ]
       },
       {
         "ID": "winapi@0.3.7",
         "Name": "winapi",
         "Version": "0.3.7",
-        "Layer": {}
+        "DependsOn": [
+          "winapi-i686-pc-windows-gnu@0.4.0",
+          "winapi-x86_64-pc-windows-gnu@0.4.0"
+        ],
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 569,
+            "EndLine": 576
+          }
+        ]
       },
       {
         "ID": "winapi-build@0.1.1",
         "Name": "winapi-build",
         "Version": "0.1.1",
-        "Layer": {}
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 578,
+            "EndLine": 581
+          }
+        ]
       },
       {
         "ID": "winapi-i686-pc-windows-gnu@0.4.0",
         "Name": "winapi-i686-pc-windows-gnu",
         "Version": "0.4.0",
-        "Layer": {}
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 583,
+            "EndLine": 586
+          }
+        ]
       },
       {
         "ID": "winapi-x86_64-pc-windows-gnu@0.4.0",
         "Name": "winapi-x86_64-pc-windows-gnu",
         "Version": "0.4.0",
-        "Layer": {}
+        "Layer": {},
+        "Locations": [
+          {
+            "StartLine": 588,
+            "EndLine": 591
+          }
+        ]
       }
     ]
   },
@@ -1289,73 +1955,237 @@
     "FilePath": "php-app/composer.lock",
     "Libraries": [
       {
+        "ID": "guzzlehttp/guzzle@6.2.0",
         "Name": "guzzlehttp/guzzle",
         "Version": "6.2.0",
+        "Licenses": [
+          "MIT"
+        ],
+        "DependsOn": [
+          "guzzlehttp/promises@v1.3.1",
+          "guzzlehttp/psr7@1.5.2"
+        ],
+        "Locations": [
+          {
+            "StartLine": 9,
+            "EndLine": 73
+          }
+        ],
         "Layer": {}
       },
       {
+        "ID": "guzzlehttp/promises@v1.3.1",
         "Name": "guzzlehttp/promises",
         "Version": "v1.3.1",
+        "Licenses": [
+          "MIT"
+        ],
+        "Locations": [
+          {
+            "StartLine": 74,
+            "EndLine": 124
+          }
+        ],
         "Layer": {}
       },
       {
+        "ID": "guzzlehttp/psr7@1.5.2",
         "Name": "guzzlehttp/psr7",
         "Version": "1.5.2",
+        "Licenses": [
+          "MIT"
+        ],
+        "DependsOn": [
+          "psr/http-message@1.0.1",
+          "ralouphie/getallheaders@2.0.5"
+        ],
+        "Locations": [
+          {
+            "StartLine": 125,
+            "EndLine": 191
+          }
+        ],
         "Layer": {}
       },
       {
+        "ID": "laravel/installer@v2.0.1",
         "Name": "laravel/installer",
         "Version": "v2.0.1",
+        "Licenses": [
+          "MIT"
+        ],
+        "DependsOn": [
+          "guzzlehttp/guzzle@6.2.0",
+          "symfony/console@v4.2.7",
+          "symfony/filesystem@v4.2.7",
+          "symfony/process@v4.2.7"
+        ],
+        "Locations": [
+          {
+            "StartLine": 192,
+            "EndLine": 237
+          }
+        ],
         "Layer": {}
       },
       {
+        "ID": "pear/log@1.13.1",
         "Name": "pear/log",
         "Version": "1.13.1",
+        "Licenses": [
+          "MIT"
+        ],
+        "DependsOn": [
+          "pear/pear_exception@v1.0.0"
+        ],
+        "Locations": [
+          {
+            "StartLine": 238,
+            "EndLine": 290
+          }
+        ],
         "Layer": {}
       },
       {
+        "ID": "pear/pear_exception@v1.0.0",
         "Name": "pear/pear_exception",
         "Version": "v1.0.0",
+        "Licenses": [
+          "BSD-2-Clause"
+        ],
+        "Locations": [
+          {
+            "StartLine": 291,
+            "EndLine": 345
+          }
+        ],
         "Layer": {}
       },
       {
+        "ID": "psr/http-message@1.0.1",
         "Name": "psr/http-message",
         "Version": "1.0.1",
+        "Licenses": [
+          "MIT"
+        ],
+        "Locations": [
+          {
+            "StartLine": 346,
+            "EndLine": 395
+          }
+        ],
         "Layer": {}
       },
       {
+        "ID": "ralouphie/getallheaders@2.0.5",
         "Name": "ralouphie/getallheaders",
         "Version": "2.0.5",
+        "Licenses": [
+          "MIT"
+        ],
+        "Locations": [
+          {
+            "StartLine": 396,
+            "EndLine": 435
+          }
+        ],
         "Layer": {}
       },
       {
+        "ID": "symfony/console@v4.2.7",
         "Name": "symfony/console",
         "Version": "v4.2.7",
+        "Licenses": [
+          "MIT"
+        ],
+        "DependsOn": [
+          "symfony/contracts@v1.0.2",
+          "symfony/polyfill-mbstring@v1.11.0"
+        ],
+        "Locations": [
+          {
+            "StartLine": 436,
+            "EndLine": 507
+          }
+        ],
         "Layer": {}
       },
       {
+        "ID": "symfony/contracts@v1.0.2",
         "Name": "symfony/contracts",
         "Version": "v1.0.2",
+        "Licenses": [
+          "MIT"
+        ],
+        "Locations": [
+          {
+            "StartLine": 508,
+            "EndLine": 575
+          }
+        ],
         "Layer": {}
       },
       {
+        "ID": "symfony/filesystem@v4.2.7",
         "Name": "symfony/filesystem",
         "Version": "v4.2.7",
+        "Licenses": [
+          "MIT"
+        ],
+        "DependsOn": [
+          "symfony/polyfill-ctype@v1.11.0"
+        ],
+        "Locations": [
+          {
+            "StartLine": 576,
+            "EndLine": 625
+          }
+        ],
         "Layer": {}
       },
       {
+        "ID": "symfony/polyfill-ctype@v1.11.0",
         "Name": "symfony/polyfill-ctype",
         "Version": "v1.11.0",
+        "Licenses": [
+          "MIT"
+        ],
+        "Locations": [
+          {
+            "StartLine": 626,
+            "EndLine": 683
+          }
+        ],
         "Layer": {}
       },
       {
+        "ID": "symfony/polyfill-mbstring@v1.11.0",
         "Name": "symfony/polyfill-mbstring",
         "Version": "v1.11.0",
+        "Licenses": [
+          "MIT"
+        ],
+        "Locations": [
+          {
+            "StartLine": 684,
+            "EndLine": 742
+          }
+        ],
         "Layer": {}
       },
       {
+        "ID": "symfony/process@v4.2.7",
         "Name": "symfony/process",
         "Version": "v4.2.7",
+        "Licenses": [
+          "MIT"
+        ],
+        "Locations": [
+          {
+            "StartLine": 743,
+            "EndLine": 791
+          }
+        ],
         "Layer": {}
       }
     ]

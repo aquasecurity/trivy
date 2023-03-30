@@ -68,7 +68,7 @@ type ScannerConfig struct {
 	LocalArtifactCache cache.LocalArtifactCache
 
 	// Client/Server options
-	RemoteOption client.ScannerOption
+	ServerOption client.ScannerOption
 
 	// Artifact options
 	ArtifactOption artifact.Option
@@ -314,7 +314,7 @@ func (r *runner) initDB(opts flag.Options) error {
 
 	// download the database file
 	noProgress := opts.Quiet || opts.NoProgress
-	if err := operation.DownloadDB(opts.AppVersion, opts.CacheDir, opts.DBRepository, noProgress, opts.Insecure, opts.SkipDBUpdate); err != nil {
+	if err := operation.DownloadDB(opts.AppVersion, opts.CacheDir, opts.DBRepository, noProgress, opts.SkipDBUpdate, opts.Remote()); err != nil {
 		return err
 	}
 
@@ -494,6 +494,14 @@ func disabledAnalyzers(opts flag.Options) []analyzer.Type {
 		analyzers = append(analyzers, analyzer.TypeLicenseFile)
 	}
 
+	// Parsing jar files requires Java-db client
+	// But we don't create client if vulnerability analysis is disabled and SBOM format is not used
+	// We need to disable jar analyzer to avoid errors
+	// TODO disable all languages that don't contain license information for this case
+	if !opts.Scanners.Enabled(types.VulnerabilityScanner) && !slices.Contains(report.SupportedSBOMFormats, opts.Format) {
+		analyzers = append(analyzers, analyzer.TypeJar)
+	}
+
 	// Do not perform misconfiguration scanning on container image config
 	// when it is not specified.
 	if !opts.ImageConfigScanners.Enabled(types.MisconfigScanner) {
@@ -601,11 +609,19 @@ func initScannerConfig(opts flag.Options, cacheClient cache.Cache) (ScannerConfi
 		}
 	}
 
+	// SPDX needs to calculate digests for package files
+	var fileChecksum bool
+	if opts.Format == report.FormatSPDXJSON || opts.Format == report.FormatSPDX {
+		fileChecksum = true
+	}
+
+	remoteOpts := opts.Remote()
+
 	return ScannerConfig{
 		Target:             target,
 		ArtifactCache:      cacheClient,
 		LocalArtifactCache: cacheClient,
-		RemoteOption: client.ScannerOption{
+		ServerOption: client.ScannerOption{
 			RemoteURL:     opts.ServerAddr,
 			CustomHeaders: opts.CustomHeaders,
 			Insecure:      opts.Insecure,
@@ -615,7 +631,6 @@ func initScannerConfig(opts flag.Options, cacheClient cache.Cache) (ScannerConfi
 			SkipFiles:         opts.SkipFiles,
 			SkipDirs:          opts.SkipDirs,
 			FilePatterns:      opts.FilePatterns,
-			InsecureSkipTLS:   opts.Insecure,
 			Offline:           opts.OfflineScan,
 			NoProgress:        opts.NoProgress || opts.Quiet,
 			RepoBranch:        opts.RepoBranch,
@@ -626,6 +641,10 @@ func initScannerConfig(opts flag.Options, cacheClient cache.Cache) (ScannerConfi
 			Platform:          opts.Platform,
 			Slow:              opts.Slow,
 			AWSRegion:         opts.Region,
+			FileChecksum:      fileChecksum,
+
+			// For OCI registries
+			RemoteOptions: remoteOpts,
 
 			// For misconfiguration scanning
 			MisconfScannerOption: configScannerOptions,

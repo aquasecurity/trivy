@@ -70,12 +70,7 @@ func (a *javaLibraryAnalyzer) PostAnalyze(ctx context.Context, input analyzer.Po
 	// It will be called on each JAR file
 	onFile := func(path string, info fs.FileInfo, r dio.ReadSeekerAt) (*types.Application, error) {
 		p := jar.NewParser(a.client, jar.WithSize(info.Size()), jar.WithFilePath(path))
-		libs, deps, err := p.Parse(r)
-		if err != nil {
-			return nil, xerrors.Errorf("%q parse error: %w", path, err)
-		}
-
-		return language.ToApplication(types.Jar, path, path, libs, deps), nil
+		return language.ParsePackage(types.Jar, path, r, p, input.Options.FileChecksum)
 	}
 
 	var apps []types.Application

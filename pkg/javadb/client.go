@@ -14,6 +14,7 @@ import (
 	"github.com/aquasecurity/go-dep-parser/pkg/java/jar"
 	"github.com/aquasecurity/trivy-java-db/pkg/db"
 	"github.com/aquasecurity/trivy-java-db/pkg/types"
+	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/oci"
 )
@@ -42,7 +43,7 @@ func (u *Updater) Update() error {
 			return xerrors.Errorf("Java DB metadata error: %w", err)
 		} else if u.skip {
 			log.Logger.Error("The first run cannot skip downloading Java DB")
-			return xerrors.New("'--skip-java-update' cannot be specified on the first run")
+			return xerrors.New("'--skip-java-db-update' cannot be specified on the first run")
 		}
 	}
 
@@ -51,11 +52,12 @@ func (u *Updater) Update() error {
 		log.Logger.Infof("Java DB Repository: %s", u.repo)
 		log.Logger.Info("Downloading the Java DB...")
 
+		// TODO: support remote options
 		var a *oci.Artifact
-		if a, err = oci.NewArtifact(u.repo, mediaType, u.quiet, u.insecure); err != nil {
+		if a, err = oci.NewArtifact(u.repo, u.quiet, ftypes.RemoteOptions{}); err != nil {
 			return xerrors.Errorf("oci error: %w", err)
 		}
-		if err = a.Download(context.Background(), dbDir); err != nil {
+		if err = a.Download(context.Background(), dbDir, oci.DownloadOption{MediaType: mediaType}); err != nil {
 			return xerrors.Errorf("DB download error: %w", err)
 		}
 
