@@ -2,11 +2,13 @@ package walker
 
 import (
 	"os"
+	"path"
 	"path/filepath"
 	"strings"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/utils"
+	"github.com/aquasecurity/trivy/pkg/log"
 )
 
 var (
@@ -53,7 +55,16 @@ func (w *walker) shouldSkipFile(filePath string) bool {
 	filePath = strings.TrimLeft(filePath, "/")
 
 	// skip files
-	return utils.StringInSlice(filePath, w.skipFiles)
+	for _, pattern := range w.skipFiles {
+		match, err := path.Match(pattern, filePath)
+		if err != nil {
+			return false // return early if bad pattern
+		} else if match {
+			log.Logger.Debugf("Skipping file: %s", filePath)
+			return true
+		}
+	}
+	return false
 }
 
 func (w *walker) shouldSkipDir(dir string) bool {
@@ -66,8 +77,13 @@ func (w *walker) shouldSkipDir(dir string) bool {
 	}
 
 	// Skip system dirs and specified dirs (absolute path)
-	if utils.StringInSlice(dir, w.skipDirs) {
-		return true
+	for _, pattern := range w.skipDirs {
+		if match, err := path.Match(pattern, dir); err != nil {
+			return false // return early if bad pattern
+		} else if match {
+			log.Logger.Debugf("Skipping directory: %s", dir)
+			return true
+		}
 	}
 
 	return false
