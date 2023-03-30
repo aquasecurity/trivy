@@ -194,7 +194,9 @@ func (a cargoAnalyzer) parseCargoTOML(fsys fs.FS, path string) (map[string]strin
 			// e.g. serde = { version = "1.0", features = ["derive"] }
 			for k, v := range ver {
 				if k == "version" {
-					deps[name] = v.(string)
+					if vv, ok := v.(string); ok {
+						deps[name] = vv
+					}
 					break
 				}
 			}
