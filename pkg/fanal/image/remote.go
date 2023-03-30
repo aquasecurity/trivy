@@ -76,7 +76,7 @@ func tryRemote(ctx context.Context, imageName string, ref name.Reference, option
 
 }
 
-func parsePlatform(ref name.Reference, p string, options []remote.Option, forcePlatform bool) (*v1.Platform, error) {
+func parsePlatform(ref name.Reference, p string, options []remote.Option, force bool) (*v1.Platform, error) {
 	// OS wildcard, implicitly pick up the first os found in the image list.
 	// e.g. */amd64
 	d, err := remote.Get(ref, options...)
@@ -90,7 +90,7 @@ func parsePlatform(ref name.Reference, p string, options []remote.Option, forceP
 	switch d.MediaType {
 	case v1types.OCIManifestSchema1, v1types.DockerManifestSchema2:
 		// We want an index but the registry has an image, not multi-arch. We just ignore "--platform".
-		if !forcePlatform {
+		if !force {
 			log.Logger.Debug("Ignore --platform as the image is not multi-arch")
 			return nil, nil
 		}
@@ -125,7 +125,7 @@ func parsePlatform(ref name.Reference, p string, options []remote.Option, forceP
 			log.Logger.Debug("Ignore --platform as the image is not multi-arch")
 			return nil, nil
 		}
-		if !forcePlatform {
+		if !force {
 			if len(m.Manifests) > 0 && m.Manifests[0].Platform != nil {
 				// Replace with the detected OS
 				// e.g. */amd64 => linux/amd64
