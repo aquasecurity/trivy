@@ -58,6 +58,7 @@ require (
 	github.com/knqyf263/go-rpmdb v0.0.0-20230301153543-ba94b245509b
 	github.com/knqyf263/nested v0.0.1
 	github.com/kylelemons/godebug v1.1.0
+	github.com/magefile/mage v1.14.0
 	github.com/mailru/easyjson v0.7.7
 	github.com/masahiro331/go-disk v0.0.0-20220919035250-c8da316f91ac
 	github.com/masahiro331/go-ebs-file v0.0.0-20221225061409-5ef263bb2cc3

@@ -27,6 +27,10 @@ jobs:
         uses: actions/setup-go@v3
         with:
           go-version-file: go.mod
+      - name: Install tools
+        uses: aquaproj/aqua-installer@v2.0.2
+        with:
+          aqua_version: v1.25.0
       - name: Run vm integration tests
         run: |
-          make test-vm-integration
+          mage test:vm
