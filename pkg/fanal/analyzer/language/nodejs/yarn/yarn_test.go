@@ -204,7 +204,7 @@ func Test_yarnLibraryAnalyzer_Analyze(t *testing.T) {
 		{
 			name:    "sad path",
 			dir:     "testdata/sad",
-			wantErr: "unable to parse yarn.lock",
+			wantErr: "failed to parse yarn.lock",
 		},
 	}
 	for _, tt := range tests {

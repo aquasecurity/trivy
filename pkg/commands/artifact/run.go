@@ -609,6 +609,12 @@ func initScannerConfig(opts flag.Options, cacheClient cache.Cache) (ScannerConfi
 		}
 	}
 
+	// SPDX needs to calculate digests for package files
+	var fileChecksum bool
+	if opts.Format == report.FormatSPDXJSON || opts.Format == report.FormatSPDX {
+		fileChecksum = true
+	}
+
 	remoteOpts := opts.Remote()
 
 	return ScannerConfig{
@@ -635,6 +641,7 @@ func initScannerConfig(opts flag.Options, cacheClient cache.Cache) (ScannerConfi
 			Platform:          opts.Platform,
 			Slow:              opts.Slow,
 			AWSRegion:         opts.Region,
+			FileChecksum:      fileChecksum,
 
 			// For OCI registries
 			RemoteOptions: remoteOpts,

@@ -27,6 +27,7 @@ type Option struct {
 	Platform          string
 	Slow              bool // Lower CPU and memory
 	AWSRegion         string
+	FileChecksum      bool // For SPDX
 
 	// For OCI registries
 	types.RemoteOptions
