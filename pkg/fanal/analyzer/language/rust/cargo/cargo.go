@@ -113,8 +113,8 @@ func (a cargoAnalyzer) removeDevDependencies(fsys fs.FS, dir string, app *types.
 		return xerrors.Errorf("unable to parse %s: %w", cargoTOMLPath, err)
 	}
 
-	// cargo.toml file can contain same libraries with different versions
-	// save versions separately for version comparison by comparator
+	// Cargo.toml file can contain same libraries with different versions.
+	// Save versions separately for version comparison by comparator
 	pkgIDs := lo.SliceToMap(app.Libraries, func(pkg types.Package) (string, types.Package) {
 		return pkg.ID, pkg
 	})
@@ -128,7 +128,8 @@ func (a cargoAnalyzer) removeDevDependencies(fsys fs.FS, dir string, app *types.
 			}
 
 			if match, err := a.matchVersion(pkg.Version, constraint); err != nil {
-				return xerrors.Errorf("unable to match version for %s", pkg.Name)
+				log.Logger.Warnf("Unable to match Cargo version: package: %s, error: %s", pkg.ID, err)
+				continue
 			} else if match {
 				// Mark as a direct dependency
 				pkg.Indirect = false
@@ -223,14 +224,13 @@ func (a cargoAnalyzer) walkIndirectDependencies(pkg types.Package, pkgIDs map[st
 	}
 }
 
+// cf. https://doc.rust-lang.org/cargo/reference/specifying-dependencies.html
 func (a cargoAnalyzer) matchVersion(currentVersion, constraint string) (bool, error) {
-	// information about prefixes - https://doc.rust-lang.org/cargo/reference/specifying-dependencies.html
-
 	// `` == `^` - https://doc.rust-lang.org/cargo/reference/specifying-dependencies.html#caret-requirements
-	// add `^` for correct version comparison
-	// 1.2.3 -> no error, so add ^.
-	// 1.2.* -> error, not add ^
-	// ^1.2 -> error, not add ^
+	// Add `^` for correct version comparison
+	//   - 1.2.3 -> ^1.2.3
+	//   - 1.2.* -> 1.2.*
+	//   - ^1.2  -> ^1.2
 	if _, err := goversion.Parse(constraint); err == nil {
 		constraint = fmt.Sprintf("^%s", constraint)
 	}
