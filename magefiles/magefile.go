@@ -9,11 +9,12 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/aquasecurity/trivy/pkg/commands"
 	"github.com/magefile/mage/mg"
 	"github.com/magefile/mage/sh"
 	"github.com/magefile/mage/target"
 	"github.com/spf13/cobra/doc"
+
+	"github.com/aquasecurity/trivy/pkg/commands"
 )
 
 var (
