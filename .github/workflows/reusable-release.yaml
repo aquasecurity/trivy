@@ -79,7 +79,7 @@ jobs:
         env:
           GPG_KEY: ${{ secrets.GPG_KEY }}
         run: |
-          echo "$GPG_KEY" > gpg.txt
+          echo "$GPG_KEY" > gpg.key
 
       - name: GoReleaser
         uses: goreleaser/goreleaser-action@v4
@@ -89,11 +89,11 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.ORG_REPO_TOKEN }}
           NFPM_DEFAULT_RPM_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
-          GPG_FILE: "gpg.txt"
+          GPG_FILE: "gpg.key"
 
       - name: "remove gpg key"
         run: |
-          rm gpg.txt
+          rm gpg.key
 
       ## push images to registries
       ## only for canary build
