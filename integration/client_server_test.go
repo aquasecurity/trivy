@@ -57,8 +57,11 @@ func TestClientServer(t *testing.T) {
 			name: "alpine 3.9 with high and critical severity",
 			args: csArgs{
 				IgnoreUnfixed: true,
-				Severity:      []string{"HIGH", "CRITICAL"},
-				Input:         "testdata/fixtures/images/alpine-39.tar.gz",
+				Severity: []string{
+					"HIGH",
+					"CRITICAL",
+				},
+				Input: "testdata/fixtures/images/alpine-39.tar.gz",
 			},
 			golden: "testdata/alpine-39-high-critical.json.golden",
 		},
@@ -66,8 +69,11 @@ func TestClientServer(t *testing.T) {
 			name: "alpine 3.9 with .trivyignore",
 			args: csArgs{
 				IgnoreUnfixed: false,
-				IgnoreIDs:     []string{"CVE-2019-1549", "CVE-2019-14697"},
-				Input:         "testdata/fixtures/images/alpine-39.tar.gz",
+				IgnoreIDs: []string{
+					"CVE-2019-1549",
+					"CVE-2019-14697",
+				},
+				Input: "testdata/fixtures/images/alpine-39.tar.gz",
 			},
 			golden: "testdata/alpine-39-ignore-cveids.json.golden",
 		},
@@ -409,7 +415,7 @@ func TestClientServerWithCycloneDX(t *testing.T) {
 				Input:  "testdata/fixtures/images/fluentd-multiple-lockfiles.tar.gz",
 			},
 			wantComponentsCount:   161,
-			wantDependenciesCount: 162,
+			wantDependenciesCount: 80,
 		},
 	}
 
@@ -569,9 +575,21 @@ func setup(t *testing.T, options setupOptions) (string, string) {
 }
 
 func setupServer(addr, token, tokenHeader, cacheDir, cacheBackend string) []string {
-	osArgs := []string{"--cache-dir", cacheDir, "server", "--skip-update", "--listen", addr}
+	osArgs := []string{
+		"--cache-dir",
+		cacheDir,
+		"server",
+		"--skip-update",
+		"--listen",
+		addr,
+	}
 	if token != "" {
-		osArgs = append(osArgs, []string{"--token", token, "--token-header", tokenHeader}...)
+		osArgs = append(osArgs, []string{
+			"--token",
+			token,
+			"--token-header",
+			tokenHeader,
+		}...)
 	}
 	if cacheBackend != "" {
 		osArgs = append(osArgs, "--cache-backend", cacheBackend)
@@ -587,7 +605,13 @@ func setupClient(t *testing.T, c csArgs, addr string, cacheDir string, golden st
 		c.RemoteAddrOption = "--server"
 	}
 	t.Helper()
-	osArgs := []string{"--cache-dir", cacheDir, c.Command, c.RemoteAddrOption, "http://" + addr}
+	osArgs := []string{
+		"--cache-dir",
+		cacheDir,
+		c.Command,
+		c.RemoteAddrOption,
+		"http://" + addr,
+	}
 
 	if c.Format != "" {
 		osArgs = append(osArgs, "--format", c.Format)
