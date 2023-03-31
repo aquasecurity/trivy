@@ -19,6 +19,7 @@ import (
 	"github.com/aquasecurity/trivy-db/pkg/metadata"
 	dbFile "github.com/aquasecurity/trivy/pkg/db"
 	"github.com/aquasecurity/trivy/pkg/fanal/cache"
+	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/utils/fsutils"
 	rpcCache "github.com/aquasecurity/trivy/rpc/cache"
 )
@@ -140,7 +141,7 @@ func Test_dbWorker_update(t *testing.T) {
 			defer func() { _ = db.Close() }()
 
 			if tt.download.call {
-				mockDBClient.On("Download", mock.Anything, mock.Anything).Run(
+				mockDBClient.On("Download", mock.Anything, mock.Anything, mock.Anything).Run(
 					func(args mock.Arguments) {
 						// fake download: copy testdata/new.db to tmpDir/db/trivy.db
 						tmpDir := args.String(1)
@@ -160,7 +161,7 @@ func Test_dbWorker_update(t *testing.T) {
 
 			var dbUpdateWg, requestWg sync.WaitGroup
 			err := w.update(context.Background(), tt.args.appVersion, cacheDir,
-				tt.needsUpdate.input.skip, &dbUpdateWg, &requestWg)
+				tt.needsUpdate.input.skip, &dbUpdateWg, &requestWg, ftypes.RemoteOptions{})
 			if tt.wantErr != "" {
 				require.NotNil(t, err, tt.name)
 				assert.Contains(t, err.Error(), tt.wantErr, tt.name)

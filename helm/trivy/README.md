@@ -74,6 +74,7 @@ The following table lists the configurable parameters of the Trivy chart and the
 | `trivy.cache.redis.url`               | Specify redis connection url, e.g. redis://redis.redis.svc:6379         | `` |
 | `trivy.cache.redis.ttl`               | Specify redis TTL, e.g. 3600s or 24h                                    | `` |
 | `trivy.cache.redis.masterName`        | Specify redis master name, if using redis as cache backend in Sentinel mode | `` |
+| `trivy.cache.redis.tls`               | Enable Redis TLS with public certificates                               | `` |
 | `trivy.serverToken`                   | The token to authenticate Trivy client with Trivy server                | `` |
 | `trivy.existingSecret`                | existingSecret if an existing secret has been created outside the chart. Overrides gitHubToken, registryUsername, registryPassword, serverToken | `` |
 | `trivy.podAnnotations`                | Annotations for pods created by statefulset                             | `{}` |

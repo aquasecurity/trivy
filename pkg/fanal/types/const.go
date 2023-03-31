@@ -74,6 +74,7 @@ const (
 	GemfileLock = "Gemfile.lock"
 
 	CargoLock = "Cargo.lock"
+	CargoToml = "Cargo.toml"
 
 	ConanLock = "conan.lock"
 

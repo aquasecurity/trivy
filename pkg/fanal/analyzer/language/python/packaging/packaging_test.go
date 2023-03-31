@@ -14,10 +14,11 @@ import (
 
 func Test_packagingAnalyzer_Analyze(t *testing.T) {
 	tests := []struct {
-		name      string
-		inputFile string
-		want      *analyzer.AnalysisResult
-		wantErr   string
+		name            string
+		inputFile       string
+		includeChecksum bool
+		want            *analyzer.AnalysisResult
+		wantErr         string
 	}{
 		{
 			name:      "egg zip",
@@ -40,8 +41,9 @@ func Test_packagingAnalyzer_Analyze(t *testing.T) {
 			},
 		},
 		{
-			name:      "egg-info",
-			inputFile: "testdata/happy.egg-info/PKG-INFO",
+			name:            "egg-info",
+			inputFile:       "testdata/happy.egg-info/PKG-INFO",
+			includeChecksum: true,
 			want: &analyzer.AnalysisResult{
 				Applications: []types.Application{
 					{
@@ -53,6 +55,7 @@ func Test_packagingAnalyzer_Analyze(t *testing.T) {
 								Version:  "0.3.1",
 								Licenses: []string{"Python license"},
 								FilePath: "testdata/happy.egg-info/PKG-INFO",
+								Digest:   "sha1:d9d89d8ed3b2b683767c96814c9c5d3e57ef2e1b",
 							},
 						},
 					},
@@ -119,6 +122,7 @@ func Test_packagingAnalyzer_Analyze(t *testing.T) {
 				FilePath: tt.inputFile,
 				Info:     stat,
 				Content:  f,
+				Options:  analyzer.AnalysisOptions{FileChecksum: tt.includeChecksum},
 			})
 
 			if tt.wantErr != "" {

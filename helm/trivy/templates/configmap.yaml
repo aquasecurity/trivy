@@ -11,6 +11,7 @@ data:
   TRIVY_CACHE_BACKEND: {{ .Values.trivy.cache.redis.url | quote }}
   TRIVY_CACHE_TTL: {{ .Values.trivy.cache.redis.ttl | quote }}
   TRIVY_REDIS_MASTER_NAME: {{ .Values.trivy.cache.redis.masterName | quote }}
+  TRIVY_REDIS_TLS: {{ .Values.trivy.cache.redis.tls | quote }}
 {{- end }}
   TRIVY_DEBUG: {{ .Values.trivy.debugMode | quote }}
   TRIVY_SKIP_DB_UPDATE: {{ .Values.trivy.skipDBUpdate | quote }}
