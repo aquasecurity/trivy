@@ -356,9 +356,8 @@ func (Docs) Serve() error {
 
 // Generate generates CLI references
 func (Docs) Generate() error {
-	
-	if err := sh.Run("go", "run", "docs/doc_creator/main.go"); err != nil {
-		  
+	err := doc.GenMarkdownTree(commands.NewApp("v0.38"), "./docs/docs/references/cli")
+	if err != nil {
 		return err
 	}
 	return nil
