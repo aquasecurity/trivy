@@ -75,7 +75,7 @@ type CacheFlagGroup struct {
 	CacheBackend *Flag
 	CacheTTL     *Flag
 
-	RedisTLS    *Flag
+	RedisTLS        *Flag
 	RedisCACert     *Flag
 	RedisCert       *Flag
 	RedisKey        *Flag
@@ -104,7 +104,7 @@ func NewCacheFlagGroup() *CacheFlagGroup {
 		ClearCache:      &ClearCacheFlag,
 		CacheBackend:    &CacheBackendFlag,
 		CacheTTL:        &CacheTTLFlag,
-                RedisTLS:        &RedisTLSFlag,
+		RedisTLS:        &RedisTLSFlag,
 		RedisCACert:     &RedisCACertFlag,
 		RedisCert:       &RedisCertFlag,
 		RedisKey:        &RedisKeyFlag,
