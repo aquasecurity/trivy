@@ -190,23 +190,6 @@ func externalRef(bomLink string, bomRef string) (string, error) {
 	return fmt.Sprintf("%s/%d#%s", strings.Replace(bomLink, "uuid", "cdx", 1), cdx.BOMFileFormatJSON, bomRef), nil
 }
 
-func getDependencyHead(dependenciesById map[string][]string, mapIdToBom map[string]string) []string {
-	res := []string{}
-	dependent := map[string]bool{}
-	for _, v := range dependenciesById {
-		for _, id := range v {
-			dependent[id] = true
-		}
-	}
-	for id, bom := range mapIdToBom {
-		if !dependent[id] {
-			res = append(res, bom)
-		}
-	}
-	sort.Strings(res)
-	return res
-}
-
 func (e *Marshaler) marshalComponents(r types.Report, bomRef string) (*[]cdx.Component, *[]cdx.Dependency, *[]cdx.Vulnerability, error) {
 	components := make([]cdx.Component, 0) // To export an empty array in JSON
 	// we use map to avoid duplicate components
@@ -216,9 +199,11 @@ func (e *Marshaler) marshalComponents(r types.Report, bomRef string) (*[]cdx.Com
 	vulnMap := map[string]cdx.Vulnerability{}
 	for _, result := range r.Results {
 		bomRefMap := map[string]string{}
+		pkgIDToRef := map[string]string{}
+		var directDepRefs []string
 
-		mapPkgIdToBom := map[string]string{}
-		depsGraphByIDs := map[string][]string{}
+		// Get dependency parents first
+		parents := ftypes.Packages(result.Packages).ParentDeps()
 
 		for _, pkg := range result.Packages {
 			pkgComponent, err := pkgToCdxComponent(result.Type, r.Metadata, pkg)
@@ -226,17 +211,14 @@ func (e *Marshaler) marshalComponents(r types.Report, bomRef string) (*[]cdx.Com
 				return nil, nil, nil, xerrors.Errorf("failed to parse pkg: %w", err)
 			}
 			pkgID := packageID(result.Target, pkg.Name, utils.FormatVersion(pkg), pkg.FilePath)
-			if _, ok := bomRefMap[pkgID]; !ok {
-				bomRefMap[pkgID] = pkgComponent.BOMRef
+			bomRefMap[pkgID] = pkgComponent.BOMRef
+			if pkg.ID != "" {
+				pkgIDToRef[pkg.ID] = pkgComponent.BOMRef
 			}
-			// collect data for dependency tree
-			originalPkgId := pkg.ID
-			// we can't create dependency tree for packages without ID (e.x. conda)
-			if originalPkgId == "" {
-				originalPkgId = fmt.Sprintf("%s:%s", pkg.Name, pkg.Version)
+			// This package is a direct dependency
+			if !pkg.Indirect || len(parents[pkg.ID]) == 0 {
+				directDepRefs = append(directDepRefs, pkgComponent.BOMRef)
 			}
-			mapPkgIdToBom[originalPkgId] = pkgComponent.BOMRef
-			depsGraphByIDs[originalPkgId] = pkg.DependsOn
 
 			// When multiple lock files have the same dependency with the same name and version,
 			// "bom-ref" (PURL technically) of Library components may conflict.
@@ -257,18 +239,26 @@ func (e *Marshaler) marshalComponents(r types.Report, bomRef string) (*[]cdx.Com
 				components = append(components, pkgComponent)
 			}
 		}
-		// constructs dependency tree
-		for pkgID, deps := range depsGraphByIDs {
-			bomDeps := []string{}
-			for _, dep := range deps {
-				bomDeps = append(bomDeps, mapPkgIdToBom[dep])
+
+		// Iterate packages again to build dependency graph
+		for _, pkg := range result.Packages {
+			deps := lo.FilterMap(pkg.DependsOn, func(dep string, _ int) (string, bool) {
+				if ref, ok := pkgIDToRef[dep]; ok {
+					return ref, true
+				}
+				return "", false
+			})
+			if len(deps) == 0 {
+				continue
 			}
-			dependencies[mapPkgIdToBom[pkgID]] = cdx.Dependency{
-				Ref:          mapPkgIdToBom[pkgID],
-				Dependencies: &bomDeps,
+			sort.Strings(deps)
+			ref := pkgIDToRef[pkg.ID]
+			dependencies[ref] = cdx.Dependency{
+				Ref:          ref,
+				Dependencies: &deps,
 			}
 		}
-		headDependencies := getDependencyHead(depsGraphByIDs, mapPkgIdToBom)
+		sort.Strings(directDepRefs)
 
 		for _, vuln := range result.Vulnerabilities {
 			// Take a bom-ref
@@ -298,7 +288,7 @@ func (e *Marshaler) marshalComponents(r types.Report, bomRef string) (*[]cdx.Com
 			// ref. https://cyclonedx.org/use-cases/#inventory
 
 			// Dependency graph from #1 to #2
-			metadataDependencies = append(metadataDependencies, headDependencies...)
+			metadataDependencies = append(metadataDependencies, directDepRefs...)
 		} else if result.Class == types.ClassOSPkg || result.Class == types.ClassLangPkg {
 			// If a package is OS package, it will be a dependency of "Operating System" component.
 			// e.g.
@@ -321,7 +311,10 @@ func (e *Marshaler) marshalComponents(r types.Report, bomRef string) (*[]cdx.Com
 			components = append(components, resultComponent)
 
 			// Dependency graph from #2 to #3
-			dependencies[resultComponent.BOMRef] = cdx.Dependency{Ref: resultComponent.BOMRef, Dependencies: &headDependencies}
+			dependencies[resultComponent.BOMRef] = cdx.Dependency{
+				Ref:          resultComponent.BOMRef,
+				Dependencies: &directDepRefs,
+			}
 			// Dependency graph from #1 to #2
 			metadataDependencies = append(metadataDependencies, resultComponent.BOMRef)
 		}
@@ -332,12 +325,15 @@ func (e *Marshaler) marshalComponents(r types.Report, bomRef string) (*[]cdx.Com
 		return vulns[i].ID > vulns[j].ID
 	})
 
-	dependencies[bomRef] = cdx.Dependency{Ref: bomRef, Dependencies: &metadataDependencies}
-	dependenciesList := maps.Values(dependencies)
-	sort.Slice(dependenciesList, func(i, j int) bool {
-		return dependenciesList[i].Ref < dependenciesList[j].Ref
+	dependencies[bomRef] = cdx.Dependency{
+		Ref:          bomRef,
+		Dependencies: &metadataDependencies,
+	}
+	dependencyList := maps.Values(dependencies)
+	sort.Slice(dependencyList, func(i, j int) bool {
+		return dependencyList[i].Ref < dependencyList[j].Ref
 	})
-	return &components, &dependenciesList, &vulns, nil
+	return &components, &dependencyList, &vulns, nil
 }
 
 func packageID(target, pkgName, pkgVersion, pkgFilePath string) string {

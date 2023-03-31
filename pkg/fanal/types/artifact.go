@@ -130,6 +130,24 @@ func (pkgs Packages) Less(i, j int) bool {
 	return pkgs[i].FilePath < pkgs[j].FilePath
 }
 
+// ParentDeps returns a map where the keys are package IDs and the values are the packages
+// that depend on the respective package ID (parent dependencies).
+func (pkgs Packages) ParentDeps() map[string]Packages {
+	parents := make(map[string]Packages)
+	for _, pkg := range pkgs {
+		for _, dependOn := range pkg.DependsOn {
+			parents[dependOn] = append(parents[dependOn], pkg)
+		}
+	}
+
+	for k, v := range parents {
+		parents[k] = lo.UniqBy(v, func(pkg Package) string {
+			return pkg.ID
+		})
+	}
+	return parents
+}
+
 type SrcPackage struct {
 	Name        string   `json:"name"`
 	Version     string   `json:"version"`

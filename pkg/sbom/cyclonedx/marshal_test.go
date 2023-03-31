@@ -131,6 +131,9 @@ func TestMarshaler_Marshal(t *testing.T) {
 								ID:      "actioncontroller@7.0.0",
 								Name:    "actioncontroller",
 								Version: "7.0.0",
+								DependsOn: []string{
+									"actionpack@7.0.0",
+								},
 							},
 						},
 					},
@@ -424,26 +427,16 @@ func TestMarshaler_Marshal(t *testing.T) {
 						},
 					},
 					{
-						Ref:          "pkg:gem/actioncontroller@7.0.0",
-						Dependencies: &[]string{},
-					},
-					{
-						Ref:          "pkg:gem/actionpack@7.0.0",
-						Dependencies: &[]string{},
-					},
-					{
-						Ref:          "pkg:nuget/Newtonsoft.Json@9.0.1",
-						Dependencies: &[]string{},
-					},
-					{
 						Ref: "3ff14136-e09f-4df9-80ea-000000000006",
 						Dependencies: &[]string{
 							"pkg:golang/golang.org/x/crypto@v0.0.0-20210421170649-83a5a9bb288b",
 						},
 					},
 					{
-						Ref:          "pkg:golang/golang.org/x/crypto@v0.0.0-20210421170649-83a5a9bb288b",
-						Dependencies: &[]string{},
+						Ref: "pkg:gem/actioncontroller@7.0.0",
+						Dependencies: &[]string{
+							"pkg:gem/actionpack@7.0.0",
+						},
 					},
 					{
 						Ref: "pkg:oci/rails@sha256:a27fd8080b517143cbbbab9dfb7c8571c40d67d534bbdee55bd6c473f432b177?repository_url=index.docker.io%2Flibrary%2Frails&arch=arm64",
@@ -454,10 +447,6 @@ func TestMarshaler_Marshal(t *testing.T) {
 							"3ff14136-e09f-4df9-80ea-000000000005",
 							"3ff14136-e09f-4df9-80ea-000000000006",
 						},
-					},
-					{
-						Ref:          "pkg:rpm/centos/binutils@2.30-93.el8?arch=aarch64&distro=centos-8.3.2011",
-						Dependencies: &[]string{},
 					},
 				},
 				Vulnerabilities: &[]cdx.Vulnerability{
@@ -565,6 +554,23 @@ func TestMarshaler_Marshal(t *testing.T) {
 								SrcVersion:      "2.2.53",
 								SrcRelease:      "1.el8",
 								SrcEpoch:        1,
+								Modularitylabel: "",
+								Licenses:        []string{"GPLv2+"},
+								DependsOn: []string{
+									"glibc@2.28-151.el8",
+								},
+							},
+							{
+								ID:              "glibc@2.28-151.el8",
+								Name:            "glibc",
+								Version:         "2.28",
+								Release:         "151.el8",
+								Epoch:           0,
+								Arch:            "aarch64",
+								SrcName:         "glibc",
+								SrcVersion:      "2.28",
+								SrcRelease:      "151.el8",
+								SrcEpoch:        0,
 								Modularitylabel: "",
 								Licenses:        []string{"GPLv2+"},
 							},
@@ -761,6 +767,38 @@ func TestMarshaler_Marshal(t *testing.T) {
 						},
 					},
 					{
+						BOMRef:  "pkg:rpm/centos/glibc@2.28-151.el8?arch=aarch64&distro=centos-8.3.2011",
+						Type:    cdx.ComponentTypeLibrary,
+						Name:    "glibc",
+						Version: "2.28-151.el8",
+						Licenses: &cdx.Licenses{
+							cdx.LicenseChoice{Expression: "GPLv2+"},
+						},
+						PackageURL: "pkg:rpm/centos/glibc@2.28-151.el8?arch=aarch64&distro=centos-8.3.2011",
+						Properties: &[]cdx.Property{
+							{
+								Name:  "aquasecurity:trivy:PkgID",
+								Value: "glibc@2.28-151.el8",
+							},
+							{
+								Name:  "aquasecurity:trivy:PkgType",
+								Value: "centos",
+							},
+							{
+								Name:  "aquasecurity:trivy:SrcName",
+								Value: "glibc",
+							},
+							{
+								Name:  "aquasecurity:trivy:SrcVersion",
+								Value: "2.28",
+							},
+							{
+								Name:  "aquasecurity:trivy:SrcRelease",
+								Value: "151.el8",
+							},
+						},
+					},
+					{
 						BOMRef:  "3ff14136-e09f-4df9-80ea-000000000003",
 						Type:    cdx.ComponentTypeOS,
 						Name:    fos.CentOS,
@@ -840,19 +878,15 @@ func TestMarshaler_Marshal(t *testing.T) {
 						Ref: "3ff14136-e09f-4df9-80ea-000000000003",
 						Dependencies: &[]string{
 							"pkg:rpm/centos/acl@2.2.53-1.el8?arch=aarch64&epoch=1&distro=centos-8.3.2011",
+							// Trivy is unable to identify the direct OS packages as of today.
+							"pkg:rpm/centos/glibc@2.28-151.el8?arch=aarch64&distro=centos-8.3.2011",
 						},
 					},
 					{
-						Ref:          "pkg:gem/actionpack@7.0.0?file_path=tools%2Fproject-john%2Fspecifications%2Factionpack.gemspec",
-						Dependencies: &[]string{},
-					},
-					{
-						Ref:          "pkg:gem/actionpack@7.0.1?file_path=tools%2Fproject-doe%2Fspecifications%2Factionpack.gemspec",
-						Dependencies: &[]string{},
-					},
-					{
-						Ref:          "pkg:rpm/centos/acl@2.2.53-1.el8?arch=aarch64&epoch=1&distro=centos-8.3.2011",
-						Dependencies: &[]string{},
+						Ref: "pkg:rpm/centos/acl@2.2.53-1.el8?arch=aarch64&epoch=1&distro=centos-8.3.2011",
+						Dependencies: &[]string{
+							"pkg:rpm/centos/glibc@2.28-151.el8?arch=aarch64&distro=centos-8.3.2011",
+						},
 					},
 				},
 				Vulnerabilities: &[]cdx.Vulnerability{
@@ -1013,20 +1047,16 @@ func TestMarshaler_Marshal(t *testing.T) {
 				Vulnerabilities: &[]cdx.Vulnerability{},
 				Dependencies: &[]cdx.Dependency{
 					{
-						Ref: "3ff14136-e09f-4df9-80ea-000000000003",
-						Dependencies: &[]string{
-							"pkg:gem/actioncable@6.1.4.1",
-						},
-					},
-					{
 						Ref: "3ff14136-e09f-4df9-80ea-000000000002",
 						Dependencies: &[]string{
 							"3ff14136-e09f-4df9-80ea-000000000003",
 						},
 					},
 					{
-						Ref:          "pkg:gem/actioncable@6.1.4.1",
-						Dependencies: &[]string{},
+						Ref: "3ff14136-e09f-4df9-80ea-000000000003",
+						Dependencies: &[]string{
+							"pkg:gem/actioncable@6.1.4.1",
+						},
 					},
 				},
 			},
@@ -1122,10 +1152,6 @@ func TestMarshaler_Marshal(t *testing.T) {
 							"pkg:npm/ruby-typeprof@0.20.1?file_path=usr%2Flocal%2Flib%2Fruby%2Fgems%2F3.1.0%2Fgems%2Ftypeprof-0.21.1%2Fvscode%2Fpackage.json",
 						},
 					},
-					{
-						Ref:          "pkg:npm/ruby-typeprof@0.20.1?file_path=usr%2Flocal%2Flib%2Fruby%2Fgems%2F3.1.0%2Fgems%2Ftypeprof-0.21.1%2Fvscode%2Fpackage.json",
-						Dependencies: &[]string{},
-					},
 				},
 			},
 		},
@@ -1189,8 +1215,6 @@ func TestMarshaler_Marshal(t *testing.T) {
 			marshaler := cyclonedx.NewMarshaler("dev", cyclonedx.WithClock(clock), cyclonedx.WithNewUUID(newUUID))
 			got, err := marshaler.Marshal(tt.inputReport)
 			require.NoError(t, err)
-			assert.ElementsMatch(t, *tt.want.Dependencies, *got.Dependencies)
-			tt.want.Dependencies, got.Dependencies = nil, nil
 			assert.Equal(t, tt.want, got)
 		})
 	}
