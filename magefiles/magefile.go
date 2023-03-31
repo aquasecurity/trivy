@@ -368,7 +368,6 @@ func (Docs) Generate() error {
 		return err
 	}
 	return nil
-	return nil
 }
 
 func findProtoFiles() ([]string, error) {
