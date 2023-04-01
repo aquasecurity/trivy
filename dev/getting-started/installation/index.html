@@ -3408,9 +3408,8 @@ cat <span class="s">&lt;&lt; EOF | sudo tee -a /etc/yum.repos.d/trivy.repo</span
 <span class="s">[trivy]</span>
 <span class="s">name=Trivy repository</span>
 <span class="s">baseurl=https://aquasecurity.github.io/trivy-repo/rpm/releases/$RELEASE_VERSION/\$basearch/</span>
-<span class="s">gpgcheck=1</span>
+<span class="s">gpgcheck=0</span>
 <span class="s">enabled=1</span>
-<span class="s">gpgkey=https://aquasecurity.github.io/trivy-repo/rpm/public.key</span>
 <span class="s">EOF</span>
 sudo yum -y update
 sudo yum -y install trivy
