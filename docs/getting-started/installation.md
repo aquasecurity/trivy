@@ -15,9 +15,8 @@ In this section you will find an aggregation of the different ways to install Tr
     [trivy]
     name=Trivy repository
     baseurl=https://aquasecurity.github.io/trivy-repo/rpm/releases/$RELEASE_VERSION/\$basearch/
-    gpgcheck=1
+    gpgcheck=0
     enabled=1
-    gpgkey=https://aquasecurity.github.io/trivy-repo/rpm/public.key
     EOF
     sudo yum -y update
     sudo yum -y install trivy

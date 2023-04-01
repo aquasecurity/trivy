@@ -125,5 +125,4 @@ jobs:
       with:
         version: v1.4.1
         args: release --skip-sign --snapshot --rm-dist --skip-publish --timeout 90m
-      env:
-        GPG_FILE: "nofile"
+
