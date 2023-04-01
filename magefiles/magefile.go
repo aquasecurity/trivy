@@ -12,6 +12,9 @@ import (
 	"github.com/magefile/mage/mg"
 	"github.com/magefile/mage/sh"
 	"github.com/magefile/mage/target"
+	"github.com/spf13/cobra/doc"
+
+	"github.com/aquasecurity/trivy/pkg/commands"
 )
 
 var (
@@ -356,7 +359,15 @@ func (Docs) Serve() error {
 
 // Generate generates CLI references
 func (Docs) Generate() error {
-	// TODO
+	ver, err := version()
+	if err != nil {
+		return err
+	}
+	cmd := commands.NewApp(ver)
+	cmd.DisableAutoGenTag = true
+	if err = doc.GenMarkdownTree(cmd, "./docs/docs/references/cli"); err != nil {
+		return err
+	}
 	return nil
 }
 
