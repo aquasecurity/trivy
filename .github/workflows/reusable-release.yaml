@@ -99,7 +99,7 @@ jobs:
             public.ecr.aws/aquasecurity/trivy:canary
 
       - name: Cache Trivy binaries
-        uses: actions/cache@v3.2.6
+        uses: actions/cache@v3.3.1
         with:
           path: dist/
           # use 'github.sha' to create a unique cache folder for each run.
