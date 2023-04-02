@@ -366,6 +366,7 @@ func (Docs) Generate() error {
 	}
 	// Set a dummy path for the documents
 	flag.CacheDirFlag.Value = "/path/to/cache"
+	flag.ModuleDirFlag.Value = "$HOME/.trivy/modules"
 
 	cmd := commands.NewApp(ver)
 	cmd.DisableAutoGenTag = true

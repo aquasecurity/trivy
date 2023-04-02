@@ -21,7 +21,7 @@ trivy module uninstall [flags] REPOSITORY
       --enable-modules strings    [EXPERIMENTAL] module names to enable
       --generate-default-config   write the default config to trivy-default.yaml
       --insecure                  allow insecure server connections
-      --module-dir string         specify directory to the wasm modules that will be loaded (default "/Users/teppei/.trivy/modules")
+      --module-dir string         specify directory to the wasm modules that will be loaded (default "$HOME/.trivy/modules")
   -q, --quiet                     suppress progress bar and log output
       --timeout duration          timeout (default 5m0s)
   -v, --version                   show version

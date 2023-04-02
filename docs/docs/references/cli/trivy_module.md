@@ -7,7 +7,7 @@ Manage modules
 ```
       --enable-modules strings   [EXPERIMENTAL] module names to enable
   -h, --help                     help for module
-      --module-dir string        specify directory to the wasm modules that will be loaded (default "/Users/teppei/.trivy/modules")
+      --module-dir string        specify directory to the wasm modules that will be loaded (default "$HOME/.trivy/modules")
 ```
 
 ### Options inherited from parent commands

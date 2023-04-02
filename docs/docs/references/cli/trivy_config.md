@@ -26,7 +26,7 @@ trivy config [flags] DIR
       --ignorefile string           specify .trivyignore file (default ".trivyignore")
       --include-non-failures        include successes and exceptions, available with '--scanners config'
       --k8s-version string          specify k8s version to validate outdated api by it (example: 1.21.0)
-      --module-dir string           specify directory to the wasm modules that will be loaded (default "/Users/teppei/.trivy/modules")
+      --module-dir string           specify directory to the wasm modules that will be loaded (default "$HOME/.trivy/modules")
   -o, --output string               output file name
       --password strings            password. Comma-separated passwords allowed. TRIVY_PASSWORD should be used for security reasons.
       --policy-namespaces strings   Rego namespaces

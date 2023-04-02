@@ -48,7 +48,7 @@ trivy vm [flags] VM_IMAGE
       --java-db-repository string   OCI repository to retrieve trivy-java-db from (default "ghcr.io/aquasecurity/trivy-java-db")
       --license-full                eagerly look for licenses in source code headers and license files
       --list-all-pkgs               enabling the option will output all packages regardless of vulnerability
-      --module-dir string           specify directory to the wasm modules that will be loaded (default "/Users/teppei/.trivy/modules")
+      --module-dir string           specify directory to the wasm modules that will be loaded (default "$HOME/.trivy/modules")
       --no-progress                 suppress progress bar
       --offline-scan                do not issue API requests to identify dependencies
   -o, --output string               output file name
