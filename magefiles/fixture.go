@@ -15,6 +15,9 @@ func fixtureContainerImages() error {
 		testImages = "ghcr.io/aquasecurity/trivy-test-images"
 		dir        = "integration/testdata/fixtures/images/"
 	)
+	if err := os.MkdirAll(dir, 0755); err != nil {
+		return err
+	}
 	tags, err := crane.ListTags(testImages)
 	if err != nil {
 		return err
@@ -41,7 +44,11 @@ func fixtureVMImages() error {
 	const (
 		testVMImages    = "ghcr.io/aquasecurity/trivy-test-vm-images"
 		titleAnnotation = "org.opencontainers.image.title"
+		dir             = "integration/testdata/fixtures/vm-images/"
 	)
+	if err := os.MkdirAll(dir, 0755); err != nil {
+		return err
+	}
 	tags, err := crane.ListTags(testVMImages)
 	if err != nil {
 		return err
@@ -67,7 +74,12 @@ func fixtureVMImages() error {
 			if !ok {
 				continue
 			}
-			if err = saveLayer(layer, fileName); err != nil {
+			filePath := filepath.Join(dir, fileName)
+			if exists(filePath) {
+				return nil
+			}
+			fmt.Printf("Downloading %s...\n", fileName)
+			if err = saveLayer(layer, filePath); err != nil {
 				return err
 			}
 		}
@@ -75,15 +87,7 @@ func fixtureVMImages() error {
 	return nil
 }
 
-func saveLayer(layer v1.Layer, fileName string) error {
-	const dir = "integration/testdata/fixtures/vm-images/"
-
-	filePath := filepath.Join(dir, fileName)
-	if exists(filePath) {
-		return nil
-	}
-	fmt.Printf("Downloading %s...\n", fileName)
-
+func saveLayer(layer v1.Layer, filePath string) error {
 	f, err := os.Create(filePath)
 	if err != nil {
 		return err
