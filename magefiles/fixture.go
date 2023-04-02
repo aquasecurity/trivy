@@ -5,9 +5,11 @@ import (
 	"io"
 	"os"
 	"path/filepath"
+	"strings"
 
 	"github.com/google/go-containerregistry/pkg/crane"
 	v1 "github.com/google/go-containerregistry/pkg/v1"
+	"github.com/magefile/mage/sh"
 )
 
 func fixtureContainerImages() error {
@@ -33,7 +35,11 @@ func fixtureContainerImages() error {
 		if err != nil {
 			return err
 		}
-		if err = crane.Save(img, tag, filePath); err != nil {
+		tarPath := strings.TrimSuffix(filePath, ".gz")
+		if err = crane.Save(img, tag, tarPath); err != nil {
+			return err
+		}
+		if err = sh.Run("gzip", tarPath); err != nil {
 			return err
 		}
 	}
