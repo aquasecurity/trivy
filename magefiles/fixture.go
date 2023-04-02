@@ -15,7 +15,7 @@ func fixtureContainerImages() error {
 		testImages = "ghcr.io/aquasecurity/trivy-test-images"
 		dir        = "integration/testdata/fixtures/images/"
 	)
-	if err := os.MkdirAll(dir, 0755); err != nil {
+	if err := os.MkdirAll(dir, 0750); err != nil {
 		return err
 	}
 	tags, err := crane.ListTags(testImages)
@@ -46,7 +46,7 @@ func fixtureVMImages() error {
 		titleAnnotation = "org.opencontainers.image.title"
 		dir             = "integration/testdata/fixtures/vm-images/"
 	)
-	if err := os.MkdirAll(dir, 0755); err != nil {
+	if err := os.MkdirAll(dir, 0750); err != nil {
 		return err
 	}
 	tags, err := crane.ListTags(testVMImages)
