@@ -58,6 +58,7 @@ jobs:
             echo "Run 'mage docs:generate' and push it"
             exit 1
           fi
+        if: matrix.operating-system == 'ubuntu-latest'
 
       - name: Run unit tests
         run: mage test:unit
