@@ -59,7 +59,7 @@ var (
 	CacheDirFlag = Flag{
 		Name:       "cache-dir",
 		ConfigName: "cache.dir",
-		Value:      fsutils.DefaultCacheDir(),
+		Value:      fsutils.CacheDir(),
 		Usage:      "cache directory",
 		Persistent: true,
 	}
