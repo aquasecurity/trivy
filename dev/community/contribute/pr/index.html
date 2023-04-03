@@ -3403,6 +3403,10 @@ $ ./trivy -h
 <div class="highlight"><pre><span></span><code>$ mage test:integration
 </code></pre></div>
 <h3 id="documentation">Documentation</h3>
+<p>If you update CLI flags, you need to generate the CLI references.
+The test will fail if they are not up-to-date.</p>
+<div class="highlight"><pre><span></span><code>$ mage docs:generate
+</code></pre></div>
 <p>You can build the documents as below and view it at http://localhost:8000.</p>
 <div class="highlight"><pre><span></span><code>$ mage docs:serve
 </code></pre></div>
