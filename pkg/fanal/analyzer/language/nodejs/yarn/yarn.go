@@ -62,7 +62,7 @@ func (a yarnAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAnalysis
 
 		// Parse package.json alongside yarn.lock to remove dev dependencies
 		if err = a.removeDevDependencies(input.FS, filepath.Dir(path), app); err != nil {
-			return err
+			log.Logger.Warnf("unable to parse %q to remove dev dependencies: %s", filepath.Join(filepath.Dir(path), types.NpmPkg), err)
 		}
 		apps = append(apps, *app)
 

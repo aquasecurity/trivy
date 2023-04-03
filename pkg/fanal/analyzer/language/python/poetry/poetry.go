@@ -56,7 +56,7 @@ func (a poetryAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAnalys
 
 		// Parse pyproject.toml alongside poetry.lock to identify the direct dependencies
 		if err = a.mergePyProject(input.FS, filepath.Dir(path), app); err != nil {
-			return err
+			log.Logger.Warnf("unable to parse %q to identify direct dependencies: %s", filepath.Join(filepath.Dir(path), types.PyProject), err)
 		}
 		apps = append(apps, *app)
 
