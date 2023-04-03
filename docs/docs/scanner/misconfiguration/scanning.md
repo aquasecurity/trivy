@@ -2,7 +2,7 @@
 Trivy provides built-in policies to detect configuration issues in popular Infrastructure as Code files, such as: Docker, Kubernetes, Terraform, CloudFormation, and more. 
 In addition to built-in policies, you can write your own custom policies, as you can see [here][custom].
 
-![misconf](../../imgs/misconf.png)
+![misconf](../../../imgs/misconf.png)
 
 ## Quick start
 
@@ -316,4 +316,4 @@ Failures: 2 (MEDIUM: 2, HIGH: 0, CRITICAL: 0)
 ## Examples
 See [here](https://github.com/aquasecurity/trivy/tree/{{ git.tag }}/examples/misconf/mixed)
 
-[custom]: ./custom/index.md
+[custom]: custom/index.md

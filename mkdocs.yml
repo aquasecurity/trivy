@@ -46,26 +46,19 @@ nav:
           Kubernetes: docs/target/kubernetes.md
           AWS: docs/target/aws.md
           SBOM: docs/target/sbom.md
-      - Vulnerability:
-          - Scanning: docs/vulnerability/scanning.md
-          - Detection:
-              - OS Packages: docs/vulnerability/detection/os.md
-              - Language-specific Packages: docs/vulnerability/detection/language.md
-              - Data Sources: docs/vulnerability/detection/data-source.md
-          - Database: docs/vulnerability/db.md
-          - Examples:
-              - Vulnerability Filtering: docs/vulnerability/examples/filter.md
-              - Report Formats: docs/vulnerability/examples/report.md
-              - Vulnerability DB: docs/vulnerability/examples/db.md
-              - Cache: docs/vulnerability/examples/cache.md
-              - Others: docs/vulnerability/examples/others.md
-          - Languages:
-              - Go: docs/vulnerability/languages/golang.md
-              - Java: docs/vulnerability/languages/java.md
-              - Node.js: docs/vulnerability/languages/nodejs.md
-              - PHP: docs/vulnerability/languages/php.md
-              - Python: docs/vulnerability/languages/python.md
-              - Rust: docs/vulnerability/languages/rust.md
+      - Scanner:
+          Vulnerability:
+            - Overview: docs/scanner/vulnerability/index.md
+            - OS Packages: docs/scanner/vulnerability/os.md
+            - Language-specific Packages:
+                - Overview: docs/scanner/vulnerability/language/index.md
+                - Go: docs/scanner/vulnerability/language/golang.md
+                - Java: docs/scanner/vulnerability/language/java.md
+                - Node.js: docs/scanner/vulnerability/language/nodejs.md
+                - PHP: docs/scanner/vulnerability/language/php.md
+                - Python: docs/scanner/vulnerability/language/python.md
+                - Rust: docs/scanner/vulnerability/language/rust.md
+          Secret: docs/scanner/secret.md
       - Misconfiguration:
           - Scanning: docs/misconfiguration/scanning.md
           - Policy:

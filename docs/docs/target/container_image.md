@@ -22,7 +22,7 @@ By default, vulnerability and secret scanning are enabled, and you can configure
 It is enabled by default.
 You can simply specify your image name (and a tag).
 It detects known vulnerabilities in your container image.
-See [here](../vulnerability/scanning.md) for the detail.
+See [here](../scanner/vulnerability/scanning.md) for the detail.
 
 ```
 $ trivy image [YOUR_IMAGE_NAME]
@@ -63,7 +63,7 @@ $ trivy image --scanners vuln [YOUR_IMAGE_NAME]
 
 ### Misconfigurations
 It is supported, but it is not useful in most cases.
-As mentioned [here](../misconfiguration/scanning.md), Trivy mainly supports Infrastructure as Code (IaC) files for misconfigurations.
+As mentioned [here](../scanner/misconfiguration/scanning.md), Trivy mainly supports Infrastructure as Code (IaC) files for misconfigurations.
 If your container image includes IaC files such as Kubernetes YAML files or Terraform files, you should enable this feature with `--scanners config`.
 
 ```
@@ -72,7 +72,7 @@ $ trivy image --scanners config [YOUR_IMAGE_NAME]
 
 ### Secrets
 It is enabled by default.
-See [here](../secret/scanning.md) for the detail.
+See [here](../scanner/secret/scanning.md) for the detail.
 
 ```shell
 $ trivy image [YOUR_IMAGE_NAME]
@@ -104,7 +104,7 @@ You can enable them with `--image-config-scanners`.
 ### Misconfigurations
 Trivy detects misconfigurations on the configuration of container images.
 The image config is converted into Dockerfile and Trivy handles it as Dockerfile.
-See [here](../misconfiguration/scanning.md) for the detail of Dockerfile scanning.
+See [here](../scanner/misconfiguration/scanning.md) for the detail of Dockerfile scanning.
 
 It is disabled by default.
 You can enable it with `--image-config-scanners config`.
@@ -165,7 +165,7 @@ See https://avd.aquasec.com/misconfig/ds026
 Trivy detects secrets on the configuration of container images.
 The image config is converted into JSON and Trivy scans the file for secrets.
 It is especially useful for environment variables that are likely to have credentials by accident.
-See [here](../secret/scanning.md) for the detail.
+See [here](../scanner/secret/scanning.md) for the detail.
 
 ```shell
 $ trivy image --image-config-scanners secret [YOUR_IMAGE_NAME]

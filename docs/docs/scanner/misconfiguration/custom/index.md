@@ -196,7 +196,7 @@ You can specify input format via the `custom.input` annotation.
     `type` accepts `kubernetes`, `dockerfile`, `cloudformation`, `terraform`, `terraformplan`, `json`, or `yaml`.
 
 ### Schemas
-See [here](./schema.md) for the detail.
+See [here](schema.md) for the detail.
 
 [rego]: https://www.openpolicyagent.org/docs/latest/policy-language/
 [package]: https://www.openpolicyagent.org/docs/latest/policy-language/#packages

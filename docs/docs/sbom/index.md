@@ -199,5 +199,5 @@ In addition to the above packages, Trivy also supports the following packages fo
 [cyclonedx]: cyclonedx.md
 [spdx]: spdx.md
 
-[os_packages]: ../vulnerability/detection/os.md
-[language_packages]: ../vulnerability/detection/language.md
+[os_packages]: ../scanner/vulnerability/detection/os.md
+[language_packages]: ../scanner/vulnerability/detection/language.md

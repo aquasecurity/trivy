@@ -103,5 +103,5 @@ Regardless of whether the cache is used or not, rules will be evaluated again wi
 
 You can write custom policies for Trivy to evaluate against your AWS account.
 These policies are written in [Rego](https://www.openpolicyagent.org/docs/latest/policy-language/), the same language used by [Open Policy Agent](https://www.openpolicyagent.org/).
-See the [Custom Policies](../misconfiguration/custom/index.md) page for more information.
+See the [Custom Policies](../scanner/misconfiguration/custom/index.md) page for more information.
 

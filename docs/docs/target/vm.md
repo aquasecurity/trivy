@@ -144,7 +144,7 @@ Trivy supports VM image scanning for
 It is enabled by default.
 You can simply specify your VM image location.
 It detects known vulnerabilities in your VM image.
-See [here](../vulnerability/scanning.md) for the detail.
+See [here](../scanner/vulnerability/scanning.md) for the detail.
 
 ```
 $ trivy vm [YOUR_VM_IMAGE]
@@ -152,7 +152,7 @@ $ trivy vm [YOUR_VM_IMAGE]
 
 ### Misconfigurations
 It is supported, but it is not useful in most cases.
-As mentioned [here](../misconfiguration/scanning.md), Trivy mainly supports Infrastructure as Code (IaC) files for misconfigurations.
+As mentioned [here](../scanner/misconfiguration/scanning.md), Trivy mainly supports Infrastructure as Code (IaC) files for misconfigurations.
 If your VM image includes IaC files such as Kubernetes YAML files or Terraform files, you should enable this feature with `--scanners config`.
 
 ```
@@ -161,7 +161,7 @@ $ trivy vm --scanners config [YOUR_VM_IMAGE]
 
 ### Secrets
 It is enabled by default.
-See [here](../secret/scanning.md) for the detail.
+See [here](../scanner/secret/scanning.md) for the detail.
 
 ```shell
 $ trivy vm [YOUR_VM_IMAGE]

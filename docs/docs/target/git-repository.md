@@ -17,7 +17,7 @@ $ trivy repo [YOUR_REPO_URL]
 ### Vulnerabilities
 It is enabled by default.
 Trivy will look for vulnerabilities based on lock files such as Gemfile.lock and package-lock.json.
-See [here](../vulnerability/scanning.md) for the detail.
+See [here](../scanner/vulnerability/scanning.md) for the detail.
 
 ```
 $ trivy repo https://github.com/knqyf263/trivy-ci-test
@@ -166,7 +166,7 @@ Total: 20 (UNKNOWN: 3, LOW: 0, MEDIUM: 7, HIGH: 5, CRITICAL: 5)
 
 ### Misconfigurations
 It is disabled by default and can be enabled with `--scanners config`.
-See [here](../misconfiguration/scanning.md) for the detail.
+See [here](../scanner/misconfiguration/scanning.md) for the detail.
 
 ```shell
 $ trivy repo --scanners config [YOUR_REPO_URL]
@@ -174,7 +174,7 @@ $ trivy repo --scanners config [YOUR_REPO_URL]
 
 ### Secrets
 It is enabled by default.
-See [here](../secret/scanning.md) for the detail.
+See [here](../scanner/secret/scanning.md) for the detail.
 
 ```shell
 $ trivy repo [YOUR_REPO_URL]
