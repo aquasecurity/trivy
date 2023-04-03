@@ -115,10 +115,20 @@ jobs:
       with:
         go-version-file: go.mod
 
+    - name: "save gpg key"
+      env:
+        GPG_KEY: ${{ secrets.GPG_KEY }}
+      run: |
+        echo "$GPG_KEY" > gpg.key
+
     - name: Run GoReleaser
       uses: goreleaser/goreleaser-action@v4
       with:
         version: v1.4.1
-        args: release --skip-sign --snapshot --rm-dist --skip-publish --timeout 90m
+        args: release --snapshot --rm-dist --skip-publish --timeout 90m
       env:
-        GPG_FILE: "nofile"
+        GPG_FILE: "gpg.key"
+
+    - name: "remove gpg key"
+      run: |
+        rm gpg.key
