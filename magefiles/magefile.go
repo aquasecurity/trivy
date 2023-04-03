@@ -62,14 +62,6 @@ func (Tool) Wire() error {
 	return sh.Run("go", "install", "github.com/google/wire/cmd/wire@v0.5.0")
 }
 
-// Crane installs crane
-func (Tool) Crane() error {
-	if exists(filepath.Join(GOBIN, "crane")) {
-		return nil
-	}
-	return sh.Run("go", "install", "github.com/google/go-containerregistry/cmd/crane@v0.9.0")
-}
-
 // GolangciLint installs golangci-lint
 func (Tool) GolangciLint() error {
 	const version = "v1.52.2"
@@ -180,20 +172,12 @@ type Test mg.Namespace
 
 // FixtureContainerImages downloads and extracts required images
 func (Test) FixtureContainerImages() error {
-	mg.Deps(Tool{}.Crane)
-	if err := os.MkdirAll(filepath.Join("integration", "testdata", "fixtures", "images"), 0750); err != nil {
-		return err
-	}
-
-	downloadScript := filepath.Join("integration", "scripts", "download-images.sh")
-	return sh.Run(downloadScript)
+	return fixtureContainerImages()
 }
 
 // FixtureVMImages downloads and extracts required VM images
 func (Test) FixtureVMImages() error {
-	mg.Deps(Tool{}.Crane)
-	downloadScript := filepath.Join("integration", "scripts", "download-vm-images.sh")
-	return sh.Run(downloadScript)
+	return fixtureVMImages()
 }
 
 // GenerateModules compiles WASM modules for unit tests
