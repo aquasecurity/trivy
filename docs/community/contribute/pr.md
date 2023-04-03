@@ -51,6 +51,13 @@ $ mage test:integration
 ```
 
 ### Documentation
+If you update CLI flags, you need to generate the CLI references.
+The test will fail if they are not up-to-date.
+
+```shell
+$ mage docs:generate
+```
+
 You can build the documents as below and view it at http://localhost:8000.
 
 ```

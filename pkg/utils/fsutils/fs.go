@@ -18,8 +18,8 @@ const (
 
 var cacheDir string
 
-// DefaultCacheDir returns/creates the cache-dir to be used for trivy operations
-func DefaultCacheDir() string {
+// defaultCacheDir returns/creates the cache-dir to be used for trivy operations
+func defaultCacheDir() string {
 	tmpDir, err := os.UserCacheDir()
 	if err != nil {
 		tmpDir = os.TempDir()
@@ -29,6 +29,9 @@ func DefaultCacheDir() string {
 
 // CacheDir returns the directory used for caching
 func CacheDir() string {
+	if cacheDir == "" {
+		return defaultCacheDir()
+	}
 	return cacheDir
 }
 

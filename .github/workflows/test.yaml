@@ -25,7 +25,7 @@ jobs:
       - uses: actions/checkout@v3
 
       - name: Set up Go
-        uses: actions/setup-go@v3
+        uses: actions/setup-go@v4
         with:
           go-version: oldstable
 
@@ -51,6 +51,15 @@ jobs:
         with:
           aqua_version: v1.25.0
 
+      - name: Check if CLI references are up-to-date
+        run: |
+          mage docs:generate
+          if [ -n "$(git status --porcelain)" ]; then
+            echo "Run 'mage docs:generate' and push it"
+            exit 1
+          fi
+        if: matrix.operating-system == 'ubuntu-latest'
+
       - name: Run unit tests
         run: mage test:unit
 
@@ -62,7 +71,7 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Set up Go
-        uses: actions/setup-go@v3
+        uses: actions/setup-go@v4
         with:
           go-version-file: go.mod
 
@@ -82,7 +91,7 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Set up Go
-        uses: actions/setup-go@v3
+        uses: actions/setup-go@v4
         with:
           go-version-file: go.mod
 
@@ -116,7 +125,7 @@ jobs:
       uses: actions/checkout@v3
 
     - name: Set up Go
-      uses: actions/setup-go@v3
+      uses: actions/setup-go@v4
       with:
         go-version-file: go.mod
 
@@ -125,5 +134,4 @@ jobs:
       with:
         version: v1.4.1
         args: release --skip-sign --snapshot --rm-dist --skip-publish --timeout 90m
-      env:
-        GPG_FILE: "nofile"
+
