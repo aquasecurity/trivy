@@ -15,6 +15,7 @@ import (
 	"github.com/spf13/cobra/doc"
 
 	"github.com/aquasecurity/trivy/pkg/commands"
+	"github.com/aquasecurity/trivy/pkg/flag"
 )
 
 var (
@@ -363,6 +364,10 @@ func (Docs) Generate() error {
 	if err != nil {
 		return err
 	}
+	// Set a dummy path for the documents
+	flag.CacheDirFlag.Value = "/path/to/cache"
+	flag.ModuleDirFlag.Value = "$HOME/.trivy/modules"
+
 	cmd := commands.NewApp(ver)
 	cmd.DisableAutoGenTag = true
 	if err = doc.GenMarkdownTree(cmd, "./docs/docs/references/cli"); err != nil {

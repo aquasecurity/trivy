@@ -51,6 +51,15 @@ jobs:
         with:
           aqua_version: v1.25.0
 
+      - name: Check if CLI references are up-to-date
+        run: |
+          mage docs:generate
+          if [ -n "$(git status --porcelain)" ]; then
+            echo "Run 'mage docs:generate' and push it"
+            exit 1
+          fi
+        if: matrix.operating-system == 'ubuntu-latest'
+
       - name: Run unit tests
         run: mage test:unit
 
