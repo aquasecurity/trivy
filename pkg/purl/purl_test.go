@@ -251,6 +251,10 @@ func TestNewPackageURL(t *testing.T) {
 							Value: "1",
 						},
 						{
+							Key:   "upstream",
+							Value: "acl",
+						},
+						{
 							Key:   "distro",
 							Value: "redhat-8",
 						},
@@ -441,7 +445,7 @@ func TestFromString(t *testing.T) {
 		},
 		{
 			name: "happy path for apk",
-			purl: "pkg:apk/alpine/alpine-baselayout@3.2.0-r16?distro=3.14.2&epoch=1",
+			purl: "pkg:apk/alpine/alpine-baselayout@3.2.0-r16?distro=3.14.2&epoch=1&upstream=alpine-baselayout",
 			want: purl.PackageURL{
 				PackageURL: packageurl.PackageURL{
 					Type:      string(analyzer.TypeApk),
@@ -456,6 +460,10 @@ func TestFromString(t *testing.T) {
 						{
 							Key:   "epoch",
 							Value: "1",
+						},
+						{
+							Key:   "upstream",
+							Value: "alpine-baselayout",
 						},
 					},
 				},

@@ -224,14 +224,14 @@ func TestMarshaler_Marshal(t *testing.T) {
 				},
 				Components: &[]cdx.Component{
 					{
-						BOMRef:  "pkg:rpm/centos/binutils@2.30-93.el8?arch=aarch64&distro=centos-8.3.2011",
+						BOMRef:  "pkg:rpm/centos/binutils@2.30-93.el8?arch=aarch64&upstream=binutils&distro=centos-8.3.2011",
 						Type:    cdx.ComponentTypeLibrary,
 						Name:    "binutils",
 						Version: "2.30-93.el8",
 						Licenses: &cdx.Licenses{
 							cdx.LicenseChoice{Expression: "GPLv3+"},
 						},
-						PackageURL: "pkg:rpm/centos/binutils@2.30-93.el8?arch=aarch64&distro=centos-8.3.2011",
+						PackageURL: "pkg:rpm/centos/binutils@2.30-93.el8?arch=aarch64&upstream=binutils&distro=centos-8.3.2011",
 						Properties: &[]cdx.Property{
 							{
 								Name:  "aquasecurity:trivy:PkgID",
@@ -404,7 +404,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 					{
 						Ref: "3ff14136-e09f-4df9-80ea-000000000002",
 						Dependencies: &[]string{
-							"pkg:rpm/centos/binutils@2.30-93.el8?arch=aarch64&distro=centos-8.3.2011",
+							"pkg:rpm/centos/binutils@2.30-93.el8?arch=aarch64&upstream=binutils&distro=centos-8.3.2011",
 						},
 					},
 					{
@@ -504,7 +504,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 						Updated:   "2019-10-31T01:15:00+00:00",
 						Affects: &[]cdx.Affects{
 							{
-								Ref: "pkg:rpm/centos/binutils@2.30-93.el8?arch=aarch64&distro=centos-8.3.2011",
+								Ref: "pkg:rpm/centos/binutils@2.30-93.el8?arch=aarch64&upstream=binutils&distro=centos-8.3.2011",
 								Range: &[]cdx.AffectedVersions{
 									{
 										Version: "2.30-93.el8",
@@ -731,14 +731,14 @@ func TestMarshaler_Marshal(t *testing.T) {
 				},
 				Components: &[]cdx.Component{
 					{
-						BOMRef:  "pkg:rpm/centos/acl@2.2.53-1.el8?arch=aarch64&epoch=1&distro=centos-8.3.2011",
+						BOMRef:  "pkg:rpm/centos/acl@2.2.53-1.el8?arch=aarch64&epoch=1&upstream=acl&distro=centos-8.3.2011",
 						Type:    cdx.ComponentTypeLibrary,
 						Name:    "acl",
 						Version: "2.2.53-1.el8",
 						Licenses: &cdx.Licenses{
 							cdx.LicenseChoice{Expression: "GPLv2+"},
 						},
-						PackageURL: "pkg:rpm/centos/acl@2.2.53-1.el8?arch=aarch64&epoch=1&distro=centos-8.3.2011",
+						PackageURL: "pkg:rpm/centos/acl@2.2.53-1.el8?arch=aarch64&epoch=1&upstream=acl&distro=centos-8.3.2011",
 						Properties: &[]cdx.Property{
 							{
 								Name:  "aquasecurity:trivy:PkgID",
@@ -767,14 +767,14 @@ func TestMarshaler_Marshal(t *testing.T) {
 						},
 					},
 					{
-						BOMRef:  "pkg:rpm/centos/glibc@2.28-151.el8?arch=aarch64&distro=centos-8.3.2011",
+						BOMRef:  "pkg:rpm/centos/glibc@2.28-151.el8?arch=aarch64&upstream=glibc&distro=centos-8.3.2011",
 						Type:    cdx.ComponentTypeLibrary,
 						Name:    "glibc",
 						Version: "2.28-151.el8",
 						Licenses: &cdx.Licenses{
 							cdx.LicenseChoice{Expression: "GPLv2+"},
 						},
-						PackageURL: "pkg:rpm/centos/glibc@2.28-151.el8?arch=aarch64&distro=centos-8.3.2011",
+						PackageURL: "pkg:rpm/centos/glibc@2.28-151.el8?arch=aarch64&upstream=glibc&distro=centos-8.3.2011",
 						Properties: &[]cdx.Property{
 							{
 								Name:  "aquasecurity:trivy:PkgID",
@@ -877,15 +877,15 @@ func TestMarshaler_Marshal(t *testing.T) {
 					{
 						Ref: "3ff14136-e09f-4df9-80ea-000000000003",
 						Dependencies: &[]string{
-							"pkg:rpm/centos/acl@2.2.53-1.el8?arch=aarch64&epoch=1&distro=centos-8.3.2011",
+							"pkg:rpm/centos/acl@2.2.53-1.el8?arch=aarch64&epoch=1&upstream=acl&distro=centos-8.3.2011",
 							// Trivy is unable to identify the direct OS packages as of today.
-							"pkg:rpm/centos/glibc@2.28-151.el8?arch=aarch64&distro=centos-8.3.2011",
+							"pkg:rpm/centos/glibc@2.28-151.el8?arch=aarch64&upstream=glibc&distro=centos-8.3.2011",
 						},
 					},
 					{
-						Ref: "pkg:rpm/centos/acl@2.2.53-1.el8?arch=aarch64&epoch=1&distro=centos-8.3.2011",
+						Ref: "pkg:rpm/centos/acl@2.2.53-1.el8?arch=aarch64&epoch=1&upstream=acl&distro=centos-8.3.2011",
 						Dependencies: &[]string{
-							"pkg:rpm/centos/glibc@2.28-151.el8?arch=aarch64&distro=centos-8.3.2011",
+							"pkg:rpm/centos/glibc@2.28-151.el8?arch=aarch64&upstream=glibc&distro=centos-8.3.2011",
 						},
 					},
 				},
@@ -1265,7 +1265,7 @@ func TestMarshaler_MarshalVulnerabilities(t *testing.T) {
 						Packages: []ftypes.Package{
 							{
 								Name:            "binutils",
-								Ref:             "pkg:rpm/centos/binutils@2.30-93.el8?arch=aarch64&distro=centos-8.3.2011",
+								Ref:             "pkg:rpm/centos/binutils@2.30-93.el8?arch=aarch64&upstream=binutils&distro=centos-8.3.2011",
 								Version:         "2.30",
 								Release:         "93.el8",
 								Epoch:           0,
@@ -1288,7 +1288,7 @@ func TestMarshaler_MarshalVulnerabilities(t *testing.T) {
 								VulnerabilityID:  "CVE-2018-20623",
 								PkgName:          "binutils",
 								InstalledVersion: "2.30-93.el8",
-								Ref:              "pkg:rpm/centos/binutils@2.30-93.el8?arch=aarch64&distro=centos-8.3.2011",
+								Ref:              "pkg:rpm/centos/binutils@2.30-93.el8?arch=aarch64&upstream=binutils&distro=centos-8.3.2011",
 								Layer: ftypes.Layer{
 									DiffID: "sha256:d871dadfb37b53ef1ca45be04fc527562b91989991a8f545345ae3be0b93f92a",
 								},
@@ -1407,7 +1407,7 @@ func TestMarshaler_MarshalVulnerabilities(t *testing.T) {
 						Updated:   "2019-10-31T01:15:00+00:00",
 						Affects: &[]cdx.Affects{
 							{
-								Ref: "urn:cdx:f08a6ccd-4dce-4759-bd84-c626675d60a7/1#pkg:rpm/centos/binutils@2.30-93.el8?arch=aarch64&distro=centos-8.3.2011",
+								Ref: "urn:cdx:f08a6ccd-4dce-4759-bd84-c626675d60a7/1#pkg:rpm/centos/binutils@2.30-93.el8?arch=aarch64&upstream=binutils&distro=centos-8.3.2011",
 								Range: &[]cdx.AffectedVersions{
 									{
 										Version: "2.30-93.el8",
@@ -1458,7 +1458,7 @@ func TestMarshaler_MarshalVulnerabilities(t *testing.T) {
 						Packages: []ftypes.Package{
 							{
 								Name:            "binutils",
-								Ref:             "pkg:rpm/centos/binutils@2.30-93.el8?arch=aarch64&distro=centos-8.3.2011",
+								Ref:             "pkg:rpm/centos/binutils@2.30-93.el8?arch=aarch64&upstream=binutils&distro=centos-8.3.2011",
 								Version:         "2.30",
 								Release:         "93.el8",
 								Epoch:           0,
@@ -1481,7 +1481,7 @@ func TestMarshaler_MarshalVulnerabilities(t *testing.T) {
 								VulnerabilityID:  "CVE-2018-20623",
 								PkgName:          "binutils",
 								InstalledVersion: "2.30-93.el8",
-								Ref:              "pkg:rpm/centos/binutils@2.30-93.el8?arch=aarch64&distro=centos-8.3.2011",
+								Ref:              "pkg:rpm/centos/binutils@2.30-93.el8?arch=aarch64&upstream=binutils&distro=centos-8.3.2011",
 								Layer: ftypes.Layer{
 									DiffID: "sha256:d871dadfb37b53ef1ca45be04fc527562b91989991a8f545345ae3be0b93f92a",
 								},
@@ -1565,7 +1565,7 @@ func TestMarshaler_MarshalVulnerabilities(t *testing.T) {
 						Updated:   "2019-10-31T01:15:00+00:00",
 						Affects: &[]cdx.Affects{
 							{
-								Ref: "pkg:rpm/centos/binutils@2.30-93.el8?arch=aarch64&distro=centos-8.3.2011",
+								Ref: "pkg:rpm/centos/binutils@2.30-93.el8?arch=aarch64&upstream=binutils&distro=centos-8.3.2011",
 								Range: &[]cdx.AffectedVersions{
 									{
 										Version: "2.30-93.el8",

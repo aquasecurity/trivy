@@ -54,7 +54,10 @@ func (p *PackageURL) Package() *ftypes.Package {
 			if err == nil {
 				pkg.Epoch = epoch
 			}
+		case "upstream":
+			pkg.SrcName = q.Value
 		}
+
 	}
 
 	if p.Type == packageurl.TypeRPM {
@@ -353,6 +356,12 @@ func parseQualifier(pkg ftypes.Package) packageurl.Qualifiers {
 		qualifiers = append(qualifiers, packageurl.Qualifier{
 			Key:   "epoch",
 			Value: strconv.Itoa(pkg.Epoch),
+		})
+	}
+	if pkg.SrcName != "" {
+		qualifiers = append(qualifiers, packageurl.Qualifier{
+			Key:   "upstream",
+			Value: pkg.SrcName,
 		})
 	}
 	return qualifiers
