@@ -100,7 +100,7 @@ func (a *gomodAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAnalys
 	}
 
 	if err = a.fillAdditionalData(apps); err != nil {
-		log.Logger.Warnf("unable to collect additional info: %s", err)
+		log.Logger.Warnf("Unable to collect additional info: %s", err)
 	}
 
 	return &analyzer.AnalysisResult{
