@@ -29,6 +29,7 @@ resources:
 rbac:
   create: true
   pspEnabled: false
+  pspAnnotations: {}
 
 podSecurityContext:
   runAsUser: 65534
