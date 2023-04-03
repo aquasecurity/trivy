@@ -31,12 +31,13 @@ func fixtureContainerImages() error {
 			continue
 		}
 		fmt.Printf("Downloading %s...\n", tag)
-		img, err := crane.Pull(fmt.Sprintf("%s:%s", testImages, tag))
+		imgName := fmt.Sprintf("%s:%s", testImages, tag)
+		img, err := crane.Pull(imgName)
 		if err != nil {
 			return err
 		}
 		tarPath := strings.TrimSuffix(filePath, ".gz")
-		if err = crane.Save(img, tag, tarPath); err != nil {
+		if err = crane.Save(img, imgName, tarPath); err != nil {
 			return err
 		}
 		if err = sh.Run("gzip", tarPath); err != nil {
