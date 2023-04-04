@@ -197,6 +197,35 @@ func Test_cargoAnalyzer_Analyze(t *testing.T) {
 			},
 		},
 		{
+			name: "wrong Cargo.toml",
+			dir:  "testdata/wrong-cargo-toml",
+			want: &analyzer.AnalysisResult{
+				Applications: []types.Application{
+					{
+						Type:     types.Cargo,
+						FilePath: "Cargo.lock",
+						Libraries: []types.Package{
+							{
+								ID:        "app@0.1.0",
+								Name:      "app",
+								Version:   "0.1.0",
+								Indirect:  false,
+								Locations: []types.Location{{StartLine: 5, EndLine: 10}},
+								DependsOn: []string{"memchr@2.5.0"},
+							},
+							{
+								ID:        "memchr@2.5.0",
+								Name:      "memchr",
+								Version:   "2.5.0",
+								Indirect:  false,
+								Locations: []types.Location{{StartLine: 12, EndLine: 16}},
+							},
+						},
+					},
+				},
+			},
+		},
+		{
 			name:    "broken Cargo.lock",
 			dir:     "testdata/sad",
 			wantErr: "failed to parse Cargo.lock",
