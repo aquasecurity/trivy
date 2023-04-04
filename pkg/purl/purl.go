@@ -2,7 +2,6 @@ package purl
 
 import (
 	"fmt"
-	"github.com/aquasecurity/trivy/pkg/log"
 	"strconv"
 	"strings"
 
@@ -13,6 +12,7 @@ import (
 
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer/os"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
+	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/scanner/utils"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
