@@ -291,7 +291,7 @@ func (s Scanner) scanLangPkgs(detail ftypes.ArtifactDetail) (types.Results, erro
 		}
 
 		log.Logger.Debugf("Detecting library vulnerabilities, type: %s, path: %s", app.Type, app.FilePath)
-		vulns, err := library.Detect(app.Type, detail.OS, app.Libraries)
+		vulns, err := library.Detect(app.Type, *detail.OS, app.Libraries)
 		if err != nil {
 			return nil, xerrors.Errorf("failed vulnerability detection of libraries: %w", err)
 		} else if len(vulns) == 0 {

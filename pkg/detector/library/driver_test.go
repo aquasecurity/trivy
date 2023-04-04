@@ -19,6 +19,7 @@ func TestDriver_Detect(t *testing.T) {
 	type args struct {
 		pkgName string
 		pkgVer  string
+		os      ftypes.OS
 	}
 	tests := []struct {
 		name     string
@@ -38,6 +39,11 @@ func TestDriver_Detect(t *testing.T) {
 			args: args{
 				pkgName: "symfony/symfony",
 				pkgVer:  "4.2.6",
+				os: ftypes.OS{
+					Family: "alpine",
+					Name:   "3.11",
+					Eosl:   true,
+				},
 			},
 			want: []types.DetectedVulnerability{
 				{
@@ -63,6 +69,11 @@ func TestDriver_Detect(t *testing.T) {
 			args: args{
 				pkgName: "github.com/Masterminds/vcs",
 				pkgVer:  "v1.13.1",
+				os: ftypes.OS{
+					Family: "alpine",
+					Name:   "3.11",
+					Eosl:   true,
+				},
 			},
 			want: []types.DetectedVulnerability{
 				{
@@ -85,6 +96,11 @@ func TestDriver_Detect(t *testing.T) {
 			args: args{
 				pkgName: "symfony/symfony",
 				pkgVer:  "4.2.6",
+				os: ftypes.OS{
+					Family: "alpine",
+					Name:   "3.11",
+					Eosl:   true,
+				},
 			},
 			want: nil,
 		},
@@ -98,6 +114,11 @@ func TestDriver_Detect(t *testing.T) {
 			args: args{
 				pkgName: "symfony/symfony",
 				pkgVer:  "4.4.6",
+				os: ftypes.OS{
+					Family: "alpine",
+					Name:   "3.11",
+					Eosl:   true,
+				},
 			},
 			want: []types.DetectedVulnerability{
 				{
@@ -123,6 +144,11 @@ func TestDriver_Detect(t *testing.T) {
 			args: args{
 				pkgName: "activesupport",
 				pkgVer:  "4.1.1",
+				os: ftypes.OS{
+					Family: "alpine",
+					Name:   "3.11",
+					Eosl:   true,
+				},
 			},
 			want: []types.DetectedVulnerability{
 				{
@@ -145,6 +171,11 @@ func TestDriver_Detect(t *testing.T) {
 			args: args{
 				pkgName: "symfony/symfony",
 				pkgVer:  "4.4.7",
+				os: ftypes.OS{
+					Family: "alpine",
+					Name:   "3.11",
+					Eosl:   true,
+				},
 			},
 		},
 		{
@@ -154,6 +185,11 @@ func TestDriver_Detect(t *testing.T) {
 			args: args{
 				pkgName: "symfony/symfony",
 				pkgVer:  "5.1.5",
+				os: ftypes.OS{
+					Family: "alpine",
+					Name:   "3.11",
+					Eosl:   true,
+				},
 			},
 			wantErr: "failed to unmarshal advisory JSON",
 		},
@@ -167,7 +203,7 @@ func TestDriver_Detect(t *testing.T) {
 			driver, err := library.NewDriver(tt.libType)
 			require.NoError(t, err)
 
-			got, err := driver.DetectVulnerabilities("", tt.args.pkgName, tt.args.pkgVer)
+			got, err := driver.DetectVulnerabilities("", tt.args.pkgName, tt.args.pkgVer, tt.args.os)
 			if tt.wantErr != "" {
 				require.Error(t, err)
 				assert.Contains(t, err.Error(), tt.wantErr)
