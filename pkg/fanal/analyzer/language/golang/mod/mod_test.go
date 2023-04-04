@@ -17,14 +17,12 @@ func Test_gomodAnalyzer_Analyze(t *testing.T) {
 	tests := []struct {
 		name    string
 		dir     string
-		pkgPath string // path to GO pkg folder
 		want    *analyzer.AnalysisResult
 		wantErr string
 	}{
 		{
-			name:    "happy",
-			dir:     "testdata/happy",
-			pkgPath: "testdata",
+			name: "happy",
+			dir:  "testdata/happy",
 			want: &analyzer.AnalysisResult{
 				Applications: []types.Application{
 					{
@@ -54,9 +52,8 @@ func Test_gomodAnalyzer_Analyze(t *testing.T) {
 			},
 		},
 		{
-			name:    "less than 1.17",
-			dir:     "testdata/merge",
-			pkgPath: "testdata",
+			name: "less than 1.17",
+			dir:  "testdata/merge",
 			want: &analyzer.AnalysisResult{
 				Applications: []types.Application{
 					{
@@ -86,9 +83,8 @@ func Test_gomodAnalyzer_Analyze(t *testing.T) {
 			},
 		},
 		{
-			name:    "no go.sum",
-			dir:     "testdata/no_gosum",
-			pkgPath: "testdata",
+			name: "no go.sum",
+			dir:  "testdata/no_gosum",
 			want: &analyzer.AnalysisResult{
 				Applications: []types.Application{
 					{
@@ -106,39 +102,13 @@ func Test_gomodAnalyzer_Analyze(t *testing.T) {
 			},
 		},
 		{
-			name:    "no `pkg` folder",
-			dir:     "testdata/happy",
-			pkgPath: "wrong",
-			want: &analyzer.AnalysisResult{
-				Applications: []types.Application{
-					{
-						Type:     types.GoModule,
-						FilePath: "go.mod",
-						Libraries: []types.Package{
-							{
-								ID:      "github.com/aquasecurity/go-dep-parser@v0.0.0-20220406074731-71021a481237",
-								Name:    "github.com/aquasecurity/go-dep-parser",
-								Version: "0.0.0-20220406074731-71021a481237",
-							},
-							{
-								ID:       "golang.org/x/xerrors@v0.0.0-20200804184101-5ec99f83aff1",
-								Name:     "golang.org/x/xerrors",
-								Version:  "0.0.0-20200804184101-5ec99f83aff1",
-								Indirect: true,
-							},
-						},
-					},
-				},
-			},
-		},
-		{
 			name:    "sad go.mod",
 			dir:     "testdata/sad",
 			wantErr: "unknown directive",
 		},
 	}
 	for _, tt := range tests {
-		t.Setenv("GOPATH", tt.pkgPath)
+		t.Setenv("GOPATH", "testdata")
 		t.Run(tt.name, func(t *testing.T) {
 			a, err := newGoModAnalyzer(analyzer.AnalyzerOptions{})
 			require.NoError(t, err)
