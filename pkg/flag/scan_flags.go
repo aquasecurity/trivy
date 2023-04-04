@@ -20,6 +20,12 @@ var (
 		Value:      []string{},
 		Usage:      "specify the file paths to skip traversal",
 	}
+	IgnoreErrorsFlag = Flag{
+		Name:       "ignore-errors",
+		ConfigName: "scan.ignore-errors",
+		Value:      []string{},
+		Usage:      "specify texts of analyzers errors to skip these errors",
+	}
 	OfflineScanFlag = Flag{
 		Name:       "offline-scan",
 		ConfigName: "scan.offline",
@@ -71,6 +77,7 @@ var (
 type ScanFlagGroup struct {
 	SkipDirs     *Flag
 	SkipFiles    *Flag
+	IgnoreErrors *Flag
 	OfflineScan  *Flag
 	Scanners     *Flag
 	FilePatterns *Flag
@@ -83,6 +90,7 @@ type ScanOptions struct {
 	Target       string
 	SkipDirs     []string
 	SkipFiles    []string
+	IgnoreErrors []string
 	OfflineScan  bool
 	Scanners     types.Scanners
 	FilePatterns []string
@@ -95,6 +103,7 @@ func NewScanFlagGroup() *ScanFlagGroup {
 	return &ScanFlagGroup{
 		SkipDirs:     &SkipDirsFlag,
 		SkipFiles:    &SkipFilesFlag,
+		IgnoreErrors: &IgnoreErrorsFlag,
 		OfflineScan:  &OfflineScanFlag,
 		Scanners:     &ScannersFlag,
 		FilePatterns: &FilePatternsFlag,
@@ -112,6 +121,7 @@ func (f *ScanFlagGroup) Flags() []*Flag {
 	return []*Flag{
 		f.SkipDirs,
 		f.SkipFiles,
+		f.IgnoreErrors,
 		f.OfflineScan,
 		f.Scanners,
 		f.FilePatterns,
@@ -140,6 +150,7 @@ func (f *ScanFlagGroup) ToOptions(args []string) (ScanOptions, error) {
 		Target:       target,
 		SkipDirs:     getStringSlice(f.SkipDirs),
 		SkipFiles:    getStringSlice(f.SkipFiles),
+		IgnoreErrors: getStringSlice(f.IgnoreErrors),
 		OfflineScan:  getBool(f.OfflineScan),
 		Scanners:     scanners,
 		FilePatterns: getStringSlice(f.FilePatterns),

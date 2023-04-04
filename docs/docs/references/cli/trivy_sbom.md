@@ -36,6 +36,7 @@ trivy sbom [flags] SBOM_PATH
       --file-patterns strings       specify config file patterns
   -f, --format string               format (table, json, template, sarif, cyclonedx, spdx, spdx-json, github, cosign-vuln) (default "table")
   -h, --help                        help for sbom
+      --ignore-errors strings       specify texts of analyzers errors to skip these errors
       --ignore-policy string        specify the Rego file path to evaluate each vulnerability
       --ignore-unfixed              display only fixed vulnerabilities
       --ignorefile string           specify .trivyignore file (default ".trivyignore")

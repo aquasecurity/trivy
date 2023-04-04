@@ -632,6 +632,7 @@ func initScannerConfig(opts flag.Options, cacheClient cache.Cache) (ScannerConfi
 			SkipDirs:          opts.SkipDirs,
 			FilePatterns:      opts.FilePatterns,
 			Offline:           opts.OfflineScan,
+			IgnoreErrors:      opts.IgnoreErrors,
 			NoProgress:        opts.NoProgress || opts.Quiet,
 			RepoBranch:        opts.RepoBranch,
 			RepoCommit:        opts.RepoCommit,

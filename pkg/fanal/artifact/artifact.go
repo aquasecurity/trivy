@@ -15,6 +15,7 @@ type Option struct {
 	DisabledHandlers  []types.HandlerType
 	SkipFiles         []string
 	SkipDirs          []string
+	IgnoreErrors      []string
 	FilePatterns      []string
 	NoProgress        bool
 	Offline           bool

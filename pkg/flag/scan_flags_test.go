@@ -13,10 +13,11 @@ import (
 
 func TestScanFlagGroup_ToOptions(t *testing.T) {
 	type fields struct {
-		skipDirs    []string
-		skipFiles   []string
-		offlineScan bool
-		scanners    string
+		skipDirs     []string
+		skipFiles    []string
+		ignoreErrors []string
+		offlineScan  bool
+		scanners     string
 	}
 	tests := []struct {
 		name      string
@@ -106,6 +107,22 @@ func TestScanFlagGroup_ToOptions(t *testing.T) {
 			assertion: require.NoError,
 		},
 		{
+			name: "ignore two errors",
+			fields: fields{
+				ignoreErrors: []string{
+					"Invalid Zip Files",
+					"The process cannot access",
+				},
+			},
+			want: flag.ScanOptions{
+				IgnoreErrors: []string{
+					"Invalid Zip Files",
+					"The process cannot access",
+				},
+			},
+			assertion: require.NoError,
+		},
+		{
 			name: "offline scan",
 			fields: fields{
 				offlineScan: true,
@@ -121,15 +138,17 @@ func TestScanFlagGroup_ToOptions(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			viper.Set(flag.SkipDirsFlag.ConfigName, tt.fields.skipDirs)
 			viper.Set(flag.SkipFilesFlag.ConfigName, tt.fields.skipFiles)
+			viper.Set(flag.IgnoreErrorsFlag.ConfigName, tt.fields.ignoreErrors)
 			viper.Set(flag.OfflineScanFlag.ConfigName, tt.fields.offlineScan)
 			viper.Set(flag.ScannersFlag.ConfigName, tt.fields.scanners)
 
 			// Assert options
 			f := &flag.ScanFlagGroup{
-				SkipDirs:    &flag.SkipDirsFlag,
-				SkipFiles:   &flag.SkipFilesFlag,
-				OfflineScan: &flag.OfflineScanFlag,
-				Scanners:    &flag.ScannersFlag,
+				SkipDirs:     &flag.SkipDirsFlag,
+				SkipFiles:    &flag.SkipFilesFlag,
+				IgnoreErrors: &flag.IgnoreErrorsFlag,
+				OfflineScan:  &flag.OfflineScanFlag,
+				Scanners:     &flag.ScannersFlag,
 			}
 
 			got, err := f.ToOptions(tt.args)

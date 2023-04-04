@@ -37,6 +37,7 @@ trivy repository [flags] REPO_URL
       --helm-set-string strings     specify Helm string values on the command line (can specify multiple or separate values with commas: key1=val1,key2=val2)
       --helm-values strings         specify paths to override the Helm values.yaml files
   -h, --help                        help for repository
+      --ignore-errors strings       specify texts of analyzers errors to skip these errors
       --ignore-policy string        specify the Rego file path to evaluate each vulnerability
       --ignore-unfixed              display only fixed vulnerabilities
       --ignored-licenses strings    specify a list of license to ignore

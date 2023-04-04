@@ -127,6 +127,7 @@ func (a Artifact) Inspect(ctx context.Context) (types.ArtifactReference, error) 
 	opts := analyzer.AnalysisOptions{
 		Offline:      a.artifactOption.Offline,
 		FileChecksum: a.artifactOption.FileChecksum,
+		IgnoreErrors: a.artifactOption.IgnoreErrors,
 	}
 
 	// Prepare filesystem for post analysis
