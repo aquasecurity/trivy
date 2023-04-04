@@ -2,6 +2,7 @@ package purl
 
 import (
 	"fmt"
+	"github.com/aquasecurity/trivy/pkg/log"
 	"strconv"
 	"strings"
 
@@ -64,6 +65,7 @@ func (p *PackageURL) Package() *ftypes.Package {
 		rpmVer := version.NewVersion(p.Version)
 		pkg.Release = rpmVer.Release()
 		pkg.Version = rpmVer.Version()
+		pkg.SrcName, pkg.SrcVersion, pkg.SrcRelease = parseUpstreamPRM(pkg.SrcName)
 	}
 
 	// Return packages without namespace.
@@ -82,6 +84,16 @@ func (p *PackageURL) Package() *ftypes.Package {
 	}
 
 	return pkg
+}
+
+func parseUpstreamPRM(upstream string) (string, string, string) {
+	upstream = strings.TrimRight(upstream, ".src.rpm")
+	ss := strings.Split(upstream, "-")
+	if len(ss) != 3 {
+		log.Logger.Debugf("unable to parse upstream: %s", upstream)
+		return "", "", ""
+	}
+	return ss[0], ss[1], ss[2]
 }
 
 // PackageType returns an application type in Trivy
@@ -152,16 +164,16 @@ func NewPackageURL(t string, metadata types.Metadata, pkg ftypes.Package) (Packa
 
 	switch ptype {
 	case packageurl.TypeRPM:
-		ns, qs := parseRPM(metadata.OS, pkg.Modularitylabel)
+		ns, qs := parseRPM(metadata.OS, pkg)
 		namespace = ns
 		qualifiers = append(qualifiers, qs...)
 	case packageurl.TypeDebian:
-		qualifiers = append(qualifiers, parseDeb(metadata.OS)...)
+		qualifiers = append(qualifiers, parseDeb(metadata.OS, pkg.SrcName)...)
 		if metadata.OS != nil {
 			namespace = metadata.OS.Family
 		}
 	case TypeAPK: // TODO: replace with packageurl.TypeApk once they add it.
-		qualifiers = append(qualifiers, parseApk(metadata.OS)...)
+		qualifiers = append(qualifiers, parseApk(metadata.OS, pkg.SrcName)...)
 		if metadata.OS != nil {
 			namespace = metadata.OS.Family
 		}
@@ -219,37 +231,54 @@ func parseOCI(metadata types.Metadata) (packageurl.PackageURL, error) {
 	return *packageurl.NewPackageURL(packageurl.TypeOCI, "", name, digest.DigestStr(), qualifiers, ""), nil
 }
 
-func parseApk(fos *ftypes.OS) packageurl.Qualifiers {
+// ref. https://github.com/package-url/purl-spec/blob/c02b002f09bdc88a501f62259eec18761957828a/PURL-TYPES.rst#apk
+func parseApk(fos *ftypes.OS, srcName string) packageurl.Qualifiers {
+	qualifiers := packageurl.Qualifiers{}
+
 	if fos == nil {
-		return packageurl.Qualifiers{}
+		return qualifiers
 	}
 
-	return packageurl.Qualifiers{
-		{
-			Key:   "distro",
-			Value: fos.Name,
-		},
+	qualifiers = append(qualifiers, packageurl.Qualifier{
+		Key:   "distro",
+		Value: fos.Name,
+	})
+
+	if srcName != "" {
+		qualifiers = append(qualifiers, packageurl.Qualifier{
+			Key:   "upstream",
+			Value: srcName,
+		})
 	}
+
+	return qualifiers
 }
 
 // ref. https://github.com/package-url/purl-spec/blob/a748c36ad415c8aeffe2b8a4a5d8a50d16d6d85f/PURL-TYPES.rst#deb
-func parseDeb(fos *ftypes.OS) packageurl.Qualifiers {
+func parseDeb(fos *ftypes.OS, srcName string) packageurl.Qualifiers {
+	qualifiers := packageurl.Qualifiers{}
 
 	if fos == nil {
-		return packageurl.Qualifiers{}
+		return qualifiers
 	}
 
 	distro := fmt.Sprintf("%s-%s", fos.Family, fos.Name)
-	return packageurl.Qualifiers{
-		{
-			Key:   "distro",
-			Value: distro,
-		},
+	qualifiers = append(qualifiers, packageurl.Qualifier{
+		Key:   "distro",
+		Value: distro,
+	})
+
+	if srcName != "" {
+		qualifiers = append(qualifiers, packageurl.Qualifier{
+			Key:   "upstream",
+			Value: srcName,
+		})
 	}
+	return qualifiers
 }
 
 // ref. https://github.com/package-url/purl-spec/blob/a748c36ad415c8aeffe2b8a4a5d8a50d16d6d85f/PURL-TYPES.rst#rpm
-func parseRPM(fos *ftypes.OS, modularityLabel string) (string, packageurl.Qualifiers) {
+func parseRPM(fos *ftypes.OS, pkg ftypes.Package) (string, packageurl.Qualifiers) {
 	if fos == nil {
 		return "", packageurl.Qualifiers{}
 	}
@@ -267,12 +296,20 @@ func parseRPM(fos *ftypes.OS, modularityLabel string) (string, packageurl.Qualif
 		},
 	}
 
-	if modularityLabel != "" {
+	if pkg.Modularitylabel != "" {
 		qualifiers = append(qualifiers, packageurl.Qualifier{
 			Key:   "modularitylabel",
-			Value: modularityLabel,
+			Value: pkg.Modularitylabel,
 		})
 	}
+
+	if pkg.SrcName != "" && pkg.SrcVersion != "" && pkg.SrcRelease != "" {
+		qualifiers = append(qualifiers, packageurl.Qualifier{
+			Key:   "upstream",
+			Value: fmt.Sprintf("%s-%s-%s.src.rpm", pkg.SrcName, pkg.SrcVersion, pkg.SrcRelease),
+		})
+	}
+
 	return family, qualifiers
 }
 
@@ -356,12 +393,6 @@ func parseQualifier(pkg ftypes.Package) packageurl.Qualifiers {
 		qualifiers = append(qualifiers, packageurl.Qualifier{
 			Key:   "epoch",
 			Value: strconv.Itoa(pkg.Epoch),
-		})
-	}
-	if pkg.SrcName != "" {
-		qualifiers = append(qualifiers, packageurl.Qualifier{
-			Key:   "upstream",
-			Value: pkg.SrcName,
 		})
 	}
 	return qualifiers

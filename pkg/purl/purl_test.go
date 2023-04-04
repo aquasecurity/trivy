@@ -214,7 +214,7 @@ func TestNewPackageURL(t *testing.T) {
 			},
 		},
 		{
-			name: "os package",
+			name: "rpm package",
 			typ:  os.RedHat,
 			pkg: ftypes.Package{
 				Name:            "acl",
@@ -251,12 +251,50 @@ func TestNewPackageURL(t *testing.T) {
 							Value: "1",
 						},
 						{
-							Key:   "upstream",
-							Value: "acl",
-						},
-						{
 							Key:   "distro",
 							Value: "redhat-8",
+						},
+						{
+							Key:   "upstream",
+							Value: "acl-2.2.53-1.el8.src.rpm",
+						},
+					},
+				},
+			},
+		},
+		{
+			name: "deb package",
+			typ:  os.Debian,
+			pkg: ftypes.Package{
+				ID:         "bash@5.1-2+deb11u1",
+				Name:       "bash",
+				Version:    "5.1",
+				Release:    "2+deb11u1",
+				SrcName:    "bash",
+				SrcVersion: "5.1",
+				SrcRelease: "2+deb11u1",
+			},
+
+			metadata: types.Metadata{
+				OS: &ftypes.OS{
+					Family: os.Debian,
+					Name:   "11.6",
+				},
+			},
+			want: purl.PackageURL{
+				PackageURL: packageurl.PackageURL{
+					Type:      packageurl.TypeDebian,
+					Namespace: "debian",
+					Name:      "bash",
+					Version:   "5.1-2+deb11u1",
+					Qualifiers: packageurl.Qualifiers{
+						{
+							Key:   "distro",
+							Value: "debian-11.6",
+						},
+						{
+							Key:   "upstream",
+							Value: "bash",
 						},
 					},
 				},
@@ -471,14 +509,19 @@ func TestFromString(t *testing.T) {
 		},
 		{
 			name: "happy path for rpm",
-			purl: "pkg:rpm/redhat/containers-common@0.1.14",
+			purl: "pkg:rpm/redhat/containers-common@0.1.40?upstream=skopeo-0.1.40-11.el7_8.src.rpm",
 			want: purl.PackageURL{
 				PackageURL: packageurl.PackageURL{
-					Type:       packageurl.TypeRPM,
-					Namespace:  "redhat",
-					Name:       "containers-common",
-					Version:    "0.1.14",
-					Qualifiers: packageurl.Qualifiers{},
+					Type:      packageurl.TypeRPM,
+					Namespace: "redhat",
+					Name:      "containers-common",
+					Version:   "0.1.40",
+					Qualifiers: packageurl.Qualifiers{
+						{
+							Key:   "upstream",
+							Value: "skopeo-0.1.40-11.el7_8.src.rpm",
+						},
+					},
 				},
 			},
 		},
@@ -519,6 +562,87 @@ func TestFromString(t *testing.T) {
 			}
 			assert.NoError(t, err)
 			assert.Equal(t, tc.want, *pkg, tc.name)
+		})
+	}
+}
+
+func TestPackage(t *testing.T) {
+	tests := []struct {
+		name        string
+		packageURL  *purl.PackageURL
+		wantPackage *ftypes.Package
+	}{
+		{
+			name: "happy convert upstream RPM",
+			packageURL: &purl.PackageURL{
+				PackageURL: packageurl.PackageURL{
+					Name:    "containers-common",
+					Version: "0.1.40-11.el7_8",
+					Type:    packageurl.TypeRPM,
+					Qualifiers: packageurl.Qualifiers{
+						{
+							Key:   "upstream",
+							Value: "skopeo-0.1.40-11.el7_8.src.rpm",
+						},
+					},
+				},
+			},
+			wantPackage: &ftypes.Package{
+				Name:       "containers-common",
+				Version:    "0.1.40",
+				Release:    "11.el7_8",
+				SrcName:    "skopeo",
+				SrcVersion: "0.1.40",
+				SrcRelease: "11.el7_8",
+			},
+		},
+		{
+			name: "sad convert upstream RPM",
+			packageURL: &purl.PackageURL{
+				PackageURL: packageurl.PackageURL{
+					Name:    "containers-common",
+					Version: "0.1.40",
+					Type:    packageurl.TypeRPM,
+					Qualifiers: packageurl.Qualifiers{
+						{
+							Key:   "upstream",
+							Value: "skopeo-0.1.40.src.rpm",
+						},
+					},
+				},
+			},
+			wantPackage: &ftypes.Package{
+				Name:    "containers-common",
+				Version: "0.1.40",
+			},
+		},
+		{
+			name: "happy convert upstream Deb",
+			packageURL: &purl.PackageURL{
+				PackageURL: packageurl.PackageURL{
+					Name:    "openssl-libs",
+					Version: "1.0.2k",
+					Type:    packageurl.TypeDebian,
+					Qualifiers: packageurl.Qualifiers{
+						{
+							Key:   "upstream",
+							Value: "openssl",
+						},
+					},
+				},
+			},
+			wantPackage: &ftypes.Package{
+				Name:    "openssl-libs",
+				Version: "1.0.2k",
+				SrcName: "openssl",
+			},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			gotPackage := tt.packageURL.Package()
+
+			assert.Equal(t, tt.wantPackage, gotPackage)
 		})
 	}
 }
