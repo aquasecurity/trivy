@@ -314,15 +314,6 @@ func TestFilesystem(t *testing.T) {
 			golden: "testdata/conda-spdx.json.golden",
 		},
 		{
-			name: "pip",
-			args: args{
-				scanner:     types.VulnerabilityScanner,
-				listAllPkgs: true,
-				input:       "testdata/fixtures/fs/pip",
-			},
-			golden: "testdata/pip.json.golden",
-		},
-		{
 			name: "ignore analyzer error",
 			args: args{
 				command:      "rootfs",
