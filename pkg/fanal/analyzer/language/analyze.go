@@ -105,11 +105,15 @@ func toApplication(fileType, filePath, libFilePath string, r dio.ReadSeekerAt, l
 			}
 			locs = append(locs, l)
 		}
+		libPath := libFilePath
+		if lib.FilePath != "" {
+			libPath = lib.FilePath
+		}
 		pkgs = append(pkgs, types.Package{
 			ID:        lib.ID,
 			Name:      lib.Name,
 			Version:   lib.Version,
-			FilePath:  libFilePath,
+			FilePath:  libPath,
 			Indirect:  lib.Indirect,
 			Licenses:  licenses,
 			DependsOn: deps[lib.ID],
