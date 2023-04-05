@@ -107,6 +107,21 @@ Try:
 $ TMPDIR=/my/custom/path trivy image ...
 ```
 
+### Post Analyzers errors
+
+!!! error
+    ``` bash
+    $ trivy image ...
+    ...
+    post analysis error: 
+    ... 
+    not a valid zip file/unknown protocol: 'unsupported'/other errors
+    ```
+
+Trivy stops scanning if it finds invalid files (e.g. `jar` license files). You can ignore these error and continue scanning using `--ignore-errors` flag.
+
+`--ignore-errors` flag supports partial error text and multiple values.
+
 ## DB
 ### Old DB schema
 

@@ -102,6 +102,11 @@ scan:
   # Default is empty
   skip-files:
     - package-dev.json
+      
+  # Same as '--ignore-errors'
+  # Default is empty
+  ignore-errors:
+    - not a valid zip file    
 
   # Same as '--offline-scan'
   # Default is false
