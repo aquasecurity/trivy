@@ -1,6 +1,6 @@
 # Jenkins
 
-An Jenkins Pipeline that generates and publishes trivy reports in HTML. See [trivy-jenkins][trivy-jenkins] for details.
+A Jenkins Pipeline that generates and publishes trivy reports in HTML. See [trivy-jenkins][trivy-jenkins] for details.
 
 ```groovy
 pipeline {
