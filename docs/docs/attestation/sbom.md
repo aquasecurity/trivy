@@ -59,17 +59,22 @@ $ COSIGN_EXPERIMENTAL=1 cosign verify-attestation --type cyclonedx <IMAGE>
 
 ## Scanning
 
-Trivy can take an SBOM attestation as input and scan for vulnerabilities. Currently, Trivy supports CycloneDX-type attestation.
+Trivy can take an SBOM attestation as input and scan for vulnerabilities. Currently, Trivy supports SPDX & CycloneDX (`cyclonedx`, `spdx`, `spdx-json`) type attestations.
 
-In the following example, Cosign can get an CycloneDX-type attestation and trivy scan it.
-You must create CycloneDX-type attestation before trying the example.
-To learn more about how to create an CycloneDX-Type attestation and attach it to an image, see the [Sign with a local key pair](#sign-with-a-local-key-pair) section.
+In the following example, Cosign can get an `spdxjson` type attestation and trivy scan it. ([See here](https://github.com/sigstore/cosign/blob/main/doc/cosign_attest.md) for all of the cosign attestation types supported).
+You must create spdx-json type attestation before trying the example.
+To learn more about how to create an attestation and attach it to an image, see the [Sign with a local key pair](#sign-with-a-local-key-pair) section.
 
 ```bash
-$ cosign verify-attestation --key /path/to/cosign.pub --type cyclonedx <IMAGE> > sbom.cdx.intoto.jsonl
-$ trivy sbom ./sbom.cdx.intoto.jsonl
+# assuming it's attested as... 
+# trivy image --format spdx-json -o sbom-in.spdx.json ${IMAGE}
+# cosign attest --key vendor.key --type spdxjson --predicate sbom-in.spdx.json ${IMAGE}
 
-sbom.cdx.intoto.jsonl (alpine 3.7.3)
+# verify and extract spdx payload (predicate) from base64 encoded statement in the intoto envelope
+$ cosign verify-attestation --key vendor.pub --type spdxjson ${IMAGE} | jq -r '.payload' | base64 -d | jq -r '.predicate' > sbom-out.spdx.json
+$ trivy sbom ./sbom-out.spdx.json
+
+sbom-out.spdx.json (alpine 3.7.3)
 =========================
 Total: 2 (UNKNOWN: 0, LOW: 0, MEDIUM: 0, HIGH: 0, CRITICAL: 2)
 
