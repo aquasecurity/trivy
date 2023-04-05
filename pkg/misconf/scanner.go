@@ -278,8 +278,6 @@ func (s *Scanner) Scan(ctx context.Context, files []types.File) ([]types.Misconf
 
 	var misconfs []types.Misconfiguration
 	for t, scanner := range s.scanners {
-		var results scan.Results
-		var err error
 
 		relevantFiles := s.filterDefsecFiletypes(files, []string{t})
 		if len(relevantFiles) == 0 {
@@ -303,17 +301,30 @@ func (s *Scanner) Scan(ctx context.Context, files []types.File) ([]types.Misconf
 			}
 		}
 
+		var results scan.Results
+		var rootDir string
+		var err error
+
 		switch t {
 		case types.Terraform:
-			rootDir, err := getRootDir(findCommonPrefix(relevantFiles))
+			rootDir, err = getRootDir(findCommonPrefix(relevantFiles))
 			if err != nil {
 				log.Logger.Debugf("failed to find config root path: %s", err)
 				results, err = scanner.ScanFS(ctx, mapMemoryFS[t], ".")
+				if err != nil {
+					return nil, xerrors.Errorf("scanfs for %s scan from memoryfs failed: %w", t, err)
+				}
 			} else {
 				results, err = scanner.ScanFS(ctx, extrafs.OSDir("/"), rootDir)
+				if err != nil {
+					return nil, xerrors.Errorf("scanfs for %s scan failed: %w", t, err)
+				}
 			}
 		default:
 			results, err = scanner.ScanFS(ctx, mapMemoryFS[t], ".")
+			if err != nil {
+				return nil, xerrors.Errorf("scanfs for %s scan failed: %w", t, err)
+			}
 		}
 
 		if err != nil {
