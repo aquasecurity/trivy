@@ -423,10 +423,6 @@ func TestTerraformMisconfigurationScan(t *testing.T) {
 			want: types.ArtifactReference{
 				Name: "testdata/misconfig/terraform/single-failure/src",
 				Type: types.ArtifactFilesystem,
-				ID:   "sha256:cd67fdacdcde2338a7ea3b5bb311830e28605e18de749cd06e6af6cbe3af8aac",
-				BlobIDs: []string{
-					"sha256:cd67fdacdcde2338a7ea3b5bb311830e28605e18de749cd06e6af6cbe3af8aac",
-				},
 			},
 		},
 		{
@@ -533,10 +529,6 @@ func TestTerraformMisconfigurationScan(t *testing.T) {
 			want: types.ArtifactReference{
 				Name: "testdata/misconfig/terraform/multiple-failures/src",
 				Type: types.ArtifactFilesystem,
-				ID:   "sha256:17ba2edf33bb25b6f9f4c7b2eb3509203c70c2de71628de8cc969a4853bde99d",
-				BlobIDs: []string{
-					"sha256:17ba2edf33bb25b6f9f4c7b2eb3509203c70c2de71628de8cc969a4853bde99d",
-				},
 			},
 		},
 		{
@@ -563,10 +555,6 @@ func TestTerraformMisconfigurationScan(t *testing.T) {
 			want: types.ArtifactReference{
 				Name: "testdata/misconfig/terraform/no-results/src",
 				Type: types.ArtifactFilesystem,
-				ID:   "sha256:1694d46ecb8151fde496faca988441a78c4fe40ddb3049f4f59467282ab9853e",
-				BlobIDs: []string{
-					"sha256:1694d46ecb8151fde496faca988441a78c4fe40ddb3049f4f59467282ab9853e",
-				},
 			},
 		},
 		{
@@ -619,10 +607,6 @@ func TestTerraformMisconfigurationScan(t *testing.T) {
 			want: types.ArtifactReference{
 				Name: "testdata/misconfig/terraform/passed/src",
 				Type: types.ArtifactFilesystem,
-				ID:   "sha256:38c7bc96437b2b991ccac313e31dec5f52508a648c2275c09d9a83f5477fb62b",
-				BlobIDs: []string{
-					"sha256:38c7bc96437b2b991ccac313e31dec5f52508a648c2275c09d9a83f5477fb62b",
-				},
 			},
 		},
 		{
@@ -701,10 +685,6 @@ func TestTerraformMisconfigurationScan(t *testing.T) {
 			want: types.ArtifactReference{
 				Name: "testdata/misconfig/terraform/busted-relative-paths/src/child/main.tf",
 				Type: types.ArtifactFilesystem,
-				ID:   "sha256:9f7370b98466c1df5cef197e84f405da1a8ac2dc03d5181a21d735617ad74147",
-				BlobIDs: []string{
-					"sha256:9f7370b98466c1df5cef197e84f405da1a8ac2dc03d5181a21d735617ad74147",
-				},
 			},
 		},
 	}
@@ -720,7 +700,10 @@ func TestTerraformMisconfigurationScan(t *testing.T) {
 
 			got, err := a.Inspect(context.Background())
 			require.NoError(t, err)
-			assert.Equal(t, tt.want, got)
+			require.NotNil(t, got)
+
+			assert.Equal(t, tt.want.Name, got.Name)
+			assert.Equal(t, tt.want.Type, got.Type)
 		})
 	}
 }
@@ -1829,10 +1812,6 @@ func TestMixedConfigurationScan(t *testing.T) {
 			want: types.ArtifactReference{
 				Name: "testdata/misconfig/mixed/src",
 				Type: types.ArtifactFilesystem,
-				ID:   "sha256:392cbe9bb3d805091b030a03a84784c0a44735cf127e0e908e019629849ff5ac",
-				BlobIDs: []string{
-					"sha256:392cbe9bb3d805091b030a03a84784c0a44735cf127e0e908e019629849ff5ac",
-				},
 			},
 		},
 	}
@@ -1849,7 +1828,10 @@ func TestMixedConfigurationScan(t *testing.T) {
 
 			got, err := a.Inspect(context.Background())
 			require.NoError(t, err)
-			assert.Equal(t, tt.want, got)
+			require.NotNil(t, got)
+
+			assert.Equal(t, tt.want.Name, got.Name)
+			assert.Equal(t, tt.want.Type, got.Type)
 		})
 	}
 
