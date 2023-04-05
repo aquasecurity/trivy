@@ -25,7 +25,7 @@ jobs:
       - uses: actions/checkout@v3
 
       - name: Set up Go
-        uses: actions/setup-go@v3
+        uses: actions/setup-go@v4
         with:
           go-version: oldstable
 
@@ -46,13 +46,22 @@ jobs:
           skip-cache: true # https://github.com/golangci/golangci-lint-action/issues/244#issuecomment-1052197778
         if: matrix.operating-system == 'ubuntu-latest'
 
-      # Install tools
-      - uses: aquaproj/aqua-installer@v2.0.2
+      - name: Install tools
+        uses: aquaproj/aqua-installer@v2.0.2
         with:
           aqua_version: v1.25.0
 
+      - name: Check if CLI references are up-to-date
+        run: |
+          mage docs:generate
+          if [ -n "$(git status --porcelain)" ]; then
+            echo "Run 'mage docs:generate' and push it"
+            exit 1
+          fi
+        if: matrix.operating-system == 'ubuntu-latest'
+
       - name: Run unit tests
-        run: make test
+        run: mage test:unit
 
   integration:
     name: Integration Test
@@ -62,12 +71,17 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Set up Go
-        uses: actions/setup-go@v3
+        uses: actions/setup-go@v4
         with:
           go-version-file: go.mod
 
+      - name: Install tools
+        uses: aquaproj/aqua-installer@v2.0.2
+        with:
+          aqua_version: v1.25.0
+
       - name: Run integration tests
-        run: make test-integration
+        run: mage test:integration
 
   module-test:
     name: Module Integration Test
@@ -77,19 +91,19 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Set up Go
-        uses: actions/setup-go@v3
+        uses: actions/setup-go@v4
         with:
           go-version-file: go.mod
 
-      # Install tools
-      - uses: aquaproj/aqua-installer@v2.0.2
+      - name: Install tools
+        uses: aquaproj/aqua-installer@v2.0.2
         with:
           aqua_version: v1.25.0
 
       - name: Run module integration tests
         shell: bash
         run: |
-          make test-module-integration
+          mage test:module
 
   build-test:
     name: Build Test
@@ -111,7 +125,7 @@ jobs:
       uses: actions/checkout@v3
 
     - name: Set up Go
-      uses: actions/setup-go@v3
+      uses: actions/setup-go@v4
       with:
         go-version-file: go.mod
 
@@ -120,5 +134,4 @@ jobs:
       with:
         version: v1.4.1
         args: release --skip-sign --snapshot --rm-dist --skip-publish --timeout 90m
-      env:
-        GPG_FILE: "nofile"
+

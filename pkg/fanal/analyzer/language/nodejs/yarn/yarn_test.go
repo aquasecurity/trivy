@@ -202,9 +202,34 @@ func Test_yarnLibraryAnalyzer_Analyze(t *testing.T) {
 			},
 		},
 		{
+			name: "wrong package.json",
+			dir:  "testdata/wrong-packagejson",
+			want: &analyzer.AnalysisResult{
+				Applications: []types.Application{
+					{
+						Type:     types.Yarn,
+						FilePath: "yarn.lock",
+						Libraries: []types.Package{
+							{
+								ID:      "js-tokens@2.0.0",
+								Name:    "js-tokens",
+								Version: "2.0.0",
+								Locations: []types.Location{
+									{
+										StartLine: 5,
+										EndLine:   8,
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+		{
 			name:    "sad path",
 			dir:     "testdata/sad",
-			wantErr: "unable to parse yarn.lock",
+			wantErr: "failed to parse yarn.lock",
 		},
 	}
 	for _, tt := range tests {

@@ -158,7 +158,7 @@ func Test_npmLibraryAnalyzer_Analyze(t *testing.T) {
 		{
 			name:    "sad path",
 			dir:     "testdata/sad",
-			wantErr: "unable to parse",
+			wantErr: "failed to parse",
 		},
 	}
 	for _, tt := range tests {

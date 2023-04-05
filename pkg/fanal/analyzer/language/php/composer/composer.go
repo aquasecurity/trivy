@@ -62,7 +62,7 @@ func (a composerAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAnal
 
 		// Parse composer.json alongside composer.lock to identify the direct dependencies
 		if err = a.mergeComposerJson(input.FS, filepath.Dir(path), app); err != nil {
-			return err
+			log.Logger.Warnf("Unable to parse %q to identify direct dependencies: %s", filepath.Join(filepath.Dir(path), types.ComposerJson), err)
 		}
 		sort.Sort(types.Packages(app.Libraries))
 		apps = append(apps, *app)
@@ -100,11 +100,7 @@ func (a composerAnalyzer) Version() int {
 }
 
 func (a composerAnalyzer) parseComposerLock(path string, r dio.ReadSeekerAt) (*types.Application, error) {
-	libs, deps, err := a.lockParser.Parse(r)
-	if err != nil {
-		return nil, xerrors.Errorf("unable to parse composer.lock: %w", err)
-	}
-	return language.ToApplication(types.Composer, path, "", libs, deps), nil
+	return language.Parse(types.Composer, path, r, a.lockParser)
 }
 
 func (a composerAnalyzer) mergeComposerJson(fsys fs.FS, dir string, app *types.Application) error {

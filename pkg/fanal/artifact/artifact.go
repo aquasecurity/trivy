@@ -27,8 +27,9 @@ type Option struct {
 	Platform          string
 	Slow              bool // Lower CPU and memory
 	AWSRegion         string
+	FileChecksum      bool // For SPDX
 
-	// For container registries
+	// For OCI registries
 	types.RemoteOptions
 
 	MisconfScannerOption misconf.ScannerOption

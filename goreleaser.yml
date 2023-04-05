@@ -74,9 +74,6 @@ nfpms:
     contents:
      - src: contrib/*.tpl
        dst: /usr/local/share/trivy/templates
-    rpm:
-      signature:
-         key_file: '{{ .Env.GPG_FILE }}'
 
 archives:
   -

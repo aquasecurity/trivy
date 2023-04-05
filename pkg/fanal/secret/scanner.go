@@ -341,6 +341,7 @@ type Match struct {
 func (s *Scanner) Scan(args ScanArgs) types.Secret {
 	// Global allowed paths
 	if s.AllowPath(args.FilePath) {
+		log.Logger.Debugf("Skipped secret scanning on %q matching allowed paths", args.FilePath)
 		return types.Secret{
 			FilePath: args.FilePath,
 		}
@@ -355,11 +356,13 @@ func (s *Scanner) Scan(args ScanArgs) types.Secret {
 	for _, rule := range s.Rules {
 		// Check if the file path should be scanned by this rule
 		if !rule.MatchPath(args.FilePath) {
+			log.Logger.Debugf("Skipped secret scanning on %q as non-compliant to the rule %q", args.FilePath, rule.ID)
 			continue
 		}
 
 		// Check if the file path should be allowed
 		if rule.AllowPath(args.FilePath) {
+			log.Logger.Debugf("Skipped secret scanning on %q as allowed", args.FilePath)
 			continue
 		}
 

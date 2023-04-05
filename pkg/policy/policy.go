@@ -9,12 +9,12 @@ import (
 	"time"
 
 	"github.com/open-policy-agent/opa/bundle"
-
-	"github.com/aquasecurity/trivy/pkg/log"
-	"github.com/aquasecurity/trivy/pkg/oci"
-
 	"golang.org/x/xerrors"
 	"k8s.io/utils/clock"
+
+	"github.com/aquasecurity/trivy/pkg/fanal/types"
+	"github.com/aquasecurity/trivy/pkg/log"
+	"github.com/aquasecurity/trivy/pkg/oci"
 )
 
 const (
@@ -51,7 +51,6 @@ type Client struct {
 	*options
 	policyDir string
 	quiet     bool
-	insecure  bool
 }
 
 // Metadata holds default policy metadata
@@ -80,7 +79,7 @@ func NewClient(cacheDir string, quiet bool, opts ...Option) (*Client, error) {
 func (c *Client) populateOCIArtifact() error {
 	if c.artifact == nil {
 		repo := fmt.Sprintf("%s:%d", bundleRepository, bundleVersion)
-		art, err := oci.NewArtifact(repo, policyMediaType, "", c.quiet, c.insecure)
+		art, err := oci.NewArtifact(repo, c.quiet, types.RemoteOptions{})
 		if err != nil {
 			return xerrors.Errorf("OCI artifact error: %w", err)
 		}
@@ -96,11 +95,11 @@ func (c *Client) DownloadBuiltinPolicies(ctx context.Context) error {
 	}
 
 	dst := c.contentDir()
-	if err := c.artifact.Download(ctx, dst); err != nil {
+	if err := c.artifact.Download(ctx, dst, oci.DownloadOption{MediaType: policyMediaType}); err != nil {
 		return xerrors.Errorf("download error: %w", err)
 	}
 
-	digest, err := c.artifact.Digest()
+	digest, err := c.artifact.Digest(ctx)
 	if err != nil {
 		return xerrors.Errorf("digest error: %w", err)
 	}
@@ -142,7 +141,7 @@ func (c *Client) LoadBuiltinPolicies() ([]string, error) {
 }
 
 // NeedsUpdate returns if the default policy should be updated
-func (c *Client) NeedsUpdate() (bool, error) {
+func (c *Client) NeedsUpdate(ctx context.Context) (bool, error) {
 	meta, err := c.GetMetadata()
 	if err != nil {
 		return true, nil
@@ -157,7 +156,7 @@ func (c *Client) NeedsUpdate() (bool, error) {
 		return false, xerrors.Errorf("OPA bundle error: %w", err)
 	}
 
-	digest, err := c.artifact.Digest()
+	digest, err := c.artifact.Digest(ctx)
 	if err != nil {
 		return false, xerrors.Errorf("digest error: %w", err)
 	}

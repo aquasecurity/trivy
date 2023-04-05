@@ -52,6 +52,25 @@ func Test_gomodAnalyzer_Analyze(t *testing.T) {
 			},
 		},
 		{
+			name: "wrong go.mod from `pkg`",
+			dir:  "testdata/wrong-gomod-in-pkg",
+			want: &analyzer.AnalysisResult{
+				Applications: []types.Application{
+					{
+						Type:     types.GoModule,
+						FilePath: "go.mod",
+						Libraries: []types.Package{
+							{
+								ID:      "github.com/sad/sad@v0.0.1",
+								Name:    "github.com/sad/sad",
+								Version: "0.0.1",
+							},
+						},
+					},
+				},
+			},
+		},
+		{
 			name: "less than 1.17",
 			dir:  "testdata/merge",
 			want: &analyzer.AnalysisResult{

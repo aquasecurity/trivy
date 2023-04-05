@@ -2,7 +2,6 @@ package jar
 
 import (
 	"context"
-	"github.com/aquasecurity/trivy/pkg/mapfs"
 	"os"
 	"path/filepath"
 	"testing"
@@ -13,6 +12,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/javadb"
+	"github.com/aquasecurity/trivy/pkg/mapfs"
 
 	_ "modernc.org/sqlite"
 )
@@ -23,10 +23,11 @@ const (
 
 func Test_javaLibraryAnalyzer_Analyze(t *testing.T) {
 	tests := []struct {
-		name      string
-		inputFile string
-		want      *analyzer.AnalysisResult
-		wantErr   string
+		name            string
+		inputFile       string
+		includeChecksum bool
+		want            *analyzer.AnalysisResult
+		wantErr         string
 	}{
 		{
 			name:      "happy path (WAR file)",
@@ -83,8 +84,9 @@ func Test_javaLibraryAnalyzer_Analyze(t *testing.T) {
 			},
 		},
 		{
-			name:      "happy path (PAR file)",
-			inputFile: "testdata/test.par",
+			name:            "happy path (PAR file)",
+			inputFile:       "testdata/test.par",
+			includeChecksum: true,
 			want: &analyzer.AnalysisResult{
 				Applications: []types.Application{
 					{
@@ -95,6 +97,7 @@ func Test_javaLibraryAnalyzer_Analyze(t *testing.T) {
 								Name:     "com.fasterxml.jackson.core:jackson-core",
 								FilePath: "testdata/test.par",
 								Version:  "2.9.10",
+								Digest:   "sha1:d40913470259cfba6dcc90f96bcaa9bcff1b72e0",
 							},
 						},
 					},
@@ -141,7 +144,8 @@ func Test_javaLibraryAnalyzer_Analyze(t *testing.T) {
 			assert.NoError(t, err)
 
 			got, err := a.PostAnalyze(ctx, analyzer.PostAnalysisInput{
-				FS: mfs,
+				FS:      mfs,
+				Options: analyzer.AnalysisOptions{FileChecksum: tt.includeChecksum},
 			})
 
 			if tt.wantErr != "" {
