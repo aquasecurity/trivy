@@ -445,6 +445,34 @@ func TestTerraformMisconfigurationScan(t *testing.T) {
 						Misconfigurations: []types.Misconfiguration{
 							{
 								FileType: "terraform",
+								FilePath: getAbsCleanPath("testdata/misconfig/terraform/multiple-failures/src/more.tf"),
+								Failures: types.MisconfResults{
+									{
+										Namespace: "user.something",
+										Query:     "data.user.something.deny",
+										Message:   "No buckets allowed!",
+										PolicyMetadata: types.PolicyMetadata{
+											ID:                 "TEST001",
+											AVDID:              "AVD-TEST-0001",
+											Type:               "Terraform Security Check",
+											Title:              "Test policy",
+											Description:        "This is a test policy.",
+											Severity:           "LOW",
+											RecommendedActions: "Have a cup of tea.",
+											References:         []string{"https://trivy.dev/"},
+										},
+										CauseMetadata: types.CauseMetadata{
+											Resource:  "aws_s3_bucket.three",
+											Provider:  "Generic",
+											Service:   "general",
+											StartLine: 1,
+											EndLine:   3,
+										},
+									},
+								},
+							},
+							{
+								FileType: "terraform",
 								FilePath: getAbsCleanPath("testdata/misconfig/terraform/multiple-failures/src/main.tf"),
 								Failures: types.MisconfResults{
 									{
@@ -489,34 +517,6 @@ func TestTerraformMisconfigurationScan(t *testing.T) {
 											Service:   "general",
 											StartLine: 5,
 											EndLine:   7,
-										},
-									},
-								},
-							},
-							{
-								FileType: "terraform",
-								FilePath: getAbsCleanPath("testdata/misconfig/terraform/multiple-failures/src/more.tf"),
-								Failures: types.MisconfResults{
-									{
-										Namespace: "user.something",
-										Query:     "data.user.something.deny",
-										Message:   "No buckets allowed!",
-										PolicyMetadata: types.PolicyMetadata{
-											ID:                 "TEST001",
-											AVDID:              "AVD-TEST-0001",
-											Type:               "Terraform Security Check",
-											Title:              "Test policy",
-											Description:        "This is a test policy.",
-											Severity:           "LOW",
-											RecommendedActions: "Have a cup of tea.",
-											References:         []string{"https://trivy.dev/"},
-										},
-										CauseMetadata: types.CauseMetadata{
-											Resource:  "aws_s3_bucket.three",
-											Provider:  "Generic",
-											Service:   "general",
-											StartLine: 1,
-											EndLine:   3,
 										},
 									},
 								},
@@ -1749,34 +1749,6 @@ func TestMixedConfigurationScan(t *testing.T) {
 						SchemaVersion: 2,
 						Misconfigurations: []types.Misconfiguration{
 							{
-								FileType: "terraform",
-								FilePath: getAbsCleanPath("testdata/misconfig/mixed/src/main.tf"),
-								Failures: types.MisconfResults{
-									{
-										Namespace: "user.something",
-										Query:     "data.user.something.deny",
-										Message:   "No buckets allowed!",
-										PolicyMetadata: types.PolicyMetadata{
-											ID:                 "TEST001",
-											AVDID:              "AVD-TEST-0001",
-											Type:               "Terraform Security Check",
-											Title:              "Test policy",
-											Description:        "This is a test policy.",
-											Severity:           "LOW",
-											RecommendedActions: "Have a cup of tea.",
-											References:         []string{"https://trivy.dev/"},
-										},
-										CauseMetadata: types.CauseMetadata{
-											Resource:  "aws_s3_bucket.asd",
-											Provider:  "Generic",
-											Service:   "general",
-											StartLine: 1,
-											EndLine:   3,
-										},
-									},
-								},
-							},
-							{
 								FileType: "cloudformation",
 								FilePath: "main.yaml",
 								Failures: types.MisconfResults{
@@ -1800,6 +1772,34 @@ func TestMixedConfigurationScan(t *testing.T) {
 											Service:   "general",
 											StartLine: 3,
 											EndLine:   6,
+										},
+									},
+								},
+							},
+							{
+								FileType: "terraform",
+								FilePath: getAbsCleanPath("testdata/misconfig/mixed/src/main.tf"),
+								Failures: types.MisconfResults{
+									{
+										Namespace: "user.something",
+										Query:     "data.user.something.deny",
+										Message:   "No buckets allowed!",
+										PolicyMetadata: types.PolicyMetadata{
+											ID:                 "TEST001",
+											AVDID:              "AVD-TEST-0001",
+											Type:               "Terraform Security Check",
+											Title:              "Test policy",
+											Description:        "This is a test policy.",
+											Severity:           "LOW",
+											RecommendedActions: "Have a cup of tea.",
+											References:         []string{"https://trivy.dev/"},
+										},
+										CauseMetadata: types.CauseMetadata{
+											Resource:  "aws_s3_bucket.asd",
+											Provider:  "Generic",
+											Service:   "general",
+											StartLine: 1,
+											EndLine:   3,
 										},
 									},
 								},

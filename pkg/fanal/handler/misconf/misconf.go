@@ -3,6 +3,8 @@ package misconf
 import (
 	"context"
 	_ "embed"
+	"sort"
+	"strings"
 
 	"golang.org/x/xerrors"
 
@@ -44,6 +46,13 @@ func (h misconfPostHandler) Handle(ctx context.Context, result *analyzer.Analysi
 	if err != nil {
 		return xerrors.Errorf("misconfiguration scan error: %w", err)
 	}
+
+	sort.Slice(misconfs, func(i, j int) bool {
+		if strings.Compare(misconfs[i].FilePath, misconfs[j].FilePath) > 0 {
+			return true
+		}
+		return false
+	})
 
 	blob.Misconfigurations = misconfs
 
