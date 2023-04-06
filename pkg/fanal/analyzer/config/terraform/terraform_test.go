@@ -3,6 +3,7 @@ package terraform
 import (
 	"bytes"
 	"context"
+	"path/filepath"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -30,7 +31,7 @@ func TestConfigAnalyzer_Analyze(t *testing.T) {
 					types.MisconfPostHandler: {
 						{
 							Type:    types.Terraform,
-							Path:    "path/to/main.tf",
+							Path:    filepath.Clean("path/to/main.tf"),
 							Content: []byte{},
 						},
 					},

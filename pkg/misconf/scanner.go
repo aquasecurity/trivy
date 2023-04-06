@@ -247,7 +247,7 @@ func findCommonPrefix(files []types.File) string {
 
 func getRootDir(filePath string) (string, error) {
 	var rootDir string
-	absPath, err := filepath.Abs(filePath)
+	absPath, err := filepath.Abs(filepath.Clean(filePath))
 	if err != nil {
 		return "", err
 	}
@@ -315,7 +315,7 @@ func (s *Scanner) Scan(ctx context.Context, files []types.File) ([]types.Misconf
 					return nil, xerrors.Errorf("scanfs for %s scan from memoryfs failed: %w", t, err)
 				}
 			} else {
-				results, err = scanner.ScanFS(ctx, extrafs.OSDir("/"), rootDir)
+				results, err = scanner.ScanFS(ctx, extrafs.OSDir(fmt.Sprintf("%c", os.PathSeparator)), rootDir)
 				if err != nil {
 					return nil, xerrors.Errorf("scanfs for %s scan failed: %w", t, err)
 				}
