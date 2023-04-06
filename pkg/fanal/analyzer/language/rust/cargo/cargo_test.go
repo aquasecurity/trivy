@@ -93,6 +93,27 @@ func Test_cargoAnalyzer_Analyze(t *testing.T) {
 			},
 		},
 		{
+			name: "Cargo.toml doesn't include `Dependencies` field",
+			dir:  "testdata/toml-only-workspace-deps",
+			want: &analyzer.AnalysisResult{
+				Applications: []types.Application{
+					{
+						Type:     types.Cargo,
+						FilePath: "Cargo.lock",
+						Libraries: []types.Package{
+							{
+								ID:        "memchr@2.5.0",
+								Name:      "memchr",
+								Version:   "2.5.0",
+								Indirect:  false,
+								Locations: []types.Location{{StartLine: 11, EndLine: 15}},
+							},
+						},
+					},
+				},
+			},
+		},
+		{
 			name: "no Cargo.toml",
 			dir:  "testdata/no-cargo-toml",
 			want: &analyzer.AnalysisResult{
