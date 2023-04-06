@@ -270,6 +270,7 @@ func getRootDir(filePath string) (string, error) {
 }
 
 // Scan detects misconfigurations.
+// nolint: gocyclo
 func (s *Scanner) Scan(ctx context.Context, files []types.File) ([]types.Misconfiguration, error) {
 	mapMemoryFS := make(map[string]*memoryfs.FS)
 	for t := range s.scanners {
@@ -315,7 +316,12 @@ func (s *Scanner) Scan(ctx context.Context, files []types.File) ([]types.Misconf
 					return nil, xerrors.Errorf("scanfs for %s scan from memoryfs failed: %w", t, err)
 				}
 			} else {
-				results, err = scanner.ScanFS(ctx, extrafs.OSDir(fmt.Sprintf("%c", os.PathSeparator)), rootDir)
+				// Support Windows paths
+				if volume := filepath.VolumeName(rootDir); volume != "" {
+					rootDir = strings.TrimPrefix(filepath.ToSlash(rootDir), volume+"/")
+				}
+
+				results, err = scanner.ScanFS(ctx, extrafs.OSDir("/"), rootDir)
 				if err != nil {
 					return nil, xerrors.Errorf("scanfs for %s scan failed: %w", t, err)
 				}

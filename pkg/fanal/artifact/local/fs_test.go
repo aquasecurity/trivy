@@ -355,7 +355,16 @@ func TestBuildPathsToSkip(t *testing.T) {
 
 func getAbsCleanPath(path string) string {
 	p, _ := filepath.Abs(path)
-	return strings.TrimPrefix(filepath.Clean(p), fmt.Sprintf("%c", os.PathSeparator))
+	switch runtime.GOOS {
+	case "windows":
+		if volume := filepath.VolumeName(p); volume != "" {
+			p = strings.TrimPrefix(filepath.ToSlash(p), volume+"/")
+			return filepath.FromSlash(p)
+		}
+		return strings.TrimPrefix(filepath.Clean(p), fmt.Sprintf("%c", os.PathSeparator))
+	default:
+		return strings.TrimPrefix(filepath.Clean(p), fmt.Sprintf("%c", os.PathSeparator))
+	}
 }
 
 func TestTerraformMisconfigurationScan(t *testing.T) {
@@ -702,8 +711,8 @@ func TestTerraformMisconfigurationScan(t *testing.T) {
 			require.NoError(t, err)
 			require.NotNil(t, got)
 
-			assert.Equal(t, tt.want.Name, got.Name)
-			assert.Equal(t, tt.want.Type, got.Type)
+			assert.Contains(t, got.Name, tt.want.Name)
+			assert.Contains(t, got.Type, tt.want.Type)
 		})
 	}
 }

@@ -357,6 +357,8 @@ func (s Scanner) MisconfsToResults(misconfs []ftypes.Misconfiguration) types.Res
 	log.Logger.Infof("Detected config files: %d", len(misconfs))
 	var results types.Results
 	for _, misconf := range misconfs {
+		log.Logger.Debugf("Scanned config file: %s", misconf.FilePath)
+
 		var detected []types.DetectedMisconfiguration
 
 		for _, f := range misconf.Failures {
