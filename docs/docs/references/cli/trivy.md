@@ -56,5 +56,4 @@ trivy [global flags] command [flags] target
 * [trivy server](trivy_server.md)	 - Server mode
 * [trivy version](trivy_version.md)	 - Print the version
 * [trivy vm](trivy_vm.md)	 - [EXPERIMENTAL] Scan a virtual machine image
-* [trivy webhook](trivy_webhook.md)	 - trivy webhook -- <plugin args> -- <trivy args>
 
