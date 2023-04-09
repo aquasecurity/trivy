@@ -48,6 +48,40 @@ var (
 		{ID: "idna@0.1.5", Name: "idna", Version: "0.1.5", Locations: []types.Location{{StartLine: 36, EndLine: 39}}},
 		{ID: "percent-encoding@1.0.1", Name: "percent-encoding", Version: "1.0.1", Locations: []types.Location{{StartLine: 46, EndLine: 49}}},
 	}
+
+	cargoV3Libs = []types.Library{
+		{ID: "aho-corasick@0.7.20", Name: "aho-corasick", Version: "0.7.20", Locations: []types.Location{{StartLine: 5, EndLine: 12}}},
+		{ID: "app@0.1.0", Name: "app", Version: "0.1.0", Locations: []types.Location{{StartLine: 14, EndLine: 21}}},
+		{ID: "libc@0.2.140", Name: "libc", Version: "0.2.140", Locations: []types.Location{{StartLine: 23, EndLine: 27}}},
+		{ID: "memchr@1.0.2", Name: "memchr", Version: "1.0.2", Locations: []types.Location{{StartLine: 29, EndLine: 36}}},
+		{ID: "memchr@2.5.0", Name: "memchr", Version: "2.5.0", Locations: []types.Location{{StartLine: 38, EndLine: 42}}},
+		{ID: "regex@1.7.3", Name: "regex", Version: "1.7.3", Locations: []types.Location{{StartLine: 44, EndLine: 53}}},
+		{ID: "regex-syntax@0.5.6", Name: "regex-syntax", Version: "0.5.6", Locations: []types.Location{{StartLine: 55, EndLine: 62}}},
+		{ID: "regex-syntax@0.6.29", Name: "regex-syntax", Version: "0.6.29", Locations: []types.Location{{StartLine: 64, EndLine: 68}}},
+		{ID: "ucd-util@0.1.10", Name: "ucd-util", Version: "0.1.10", Locations: []types.Location{{StartLine: 70, EndLine: 74}}},
+	}
+
+	cargoV3Deps = []types.Dependency{
+		{
+			ID:        "aho-corasick@0.7.20",
+			DependsOn: []string{"memchr@2.5.0"}},
+		{
+			ID:        "app@0.1.0",
+			DependsOn: []string{"memchr@1.0.2", "regex-syntax@0.5.6", "regex@1.7.3"},
+		},
+		{
+			ID:        "memchr@1.0.2",
+			DependsOn: []string{"libc@0.2.140"},
+		},
+		{
+			ID:        "regex@1.7.3",
+			DependsOn: []string{"aho-corasick@0.7.20", "memchr@2.5.0", "regex-syntax@0.6.29"},
+		},
+		{
+			ID:        "regex-syntax@0.5.6",
+			DependsOn: []string{"ucd-util@0.1.10"},
+		},
+	}
 )
 
 func TestParse(t *testing.T) {
@@ -70,6 +104,12 @@ func TestParse(t *testing.T) {
 			wantErr:  assert.NoError,
 		},
 		{
+			file:     "testdata/cargo_v3.lock",
+			wantLibs: cargoV3Libs,
+			wantDeps: cargoV3Deps,
+			wantErr:  assert.NoError,
+		},
+		{
 			file:    "testdata/cargo_invalid.lock",
 			wantErr: assert.Error,
 		},
@@ -80,7 +120,7 @@ func TestParse(t *testing.T) {
 			f, err := os.Open(v.file)
 			require.NoError(t, err)
 
-			libs, deps, err := NewParser().Parse(f)
+			gotLibs, gotDeps, err := NewParser().Parse(f)
 
 			if !v.wantErr(t, err, fmt.Sprintf("Parse(%v)", v.file)) {
 				return
@@ -90,14 +130,11 @@ func TestParse(t *testing.T) {
 				return
 			}
 
-			sortLibs(libs)
 			sortLibs(v.wantLibs)
-
-			sortDeps(deps)
 			sortDeps(v.wantDeps)
 
-			assert.Equalf(t, v.wantLibs, libs, "Parse libraries(%v)", v.file)
-			assert.Equalf(t, v.wantDeps, deps, "Parse dependencies(%v)", v.file)
+			assert.Equalf(t, v.wantLibs, gotLibs, "Parse libraries(%v)", v.file)
+			assert.Equalf(t, v.wantDeps, gotDeps, "Parse dependencies(%v)", v.file)
 		})
 	}
 }
