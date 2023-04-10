@@ -37,7 +37,7 @@ func NewLayerTar(skipFiles, skipDirs []string, slow bool) LayerTar {
 	}
 }
 
-func (w LayerTar) Walk(layer io.Reader, analyzeFn WalkFunc) ([]string, []string, error) {
+func (w LayerTar) Walk(layer io.Reader, ignoreErrors []string, analyzeFn WalkFunc) ([]string, []string, error) {
 	var opqDirs, whFiles, skipDirs []string
 	tr := tar.NewReader(layer)
 	for {
@@ -45,7 +45,7 @@ func (w LayerTar) Walk(layer io.Reader, analyzeFn WalkFunc) ([]string, []string,
 		if err == io.EOF {
 			break
 		} else if err != nil {
-			return nil, nil, xerrors.Errorf("failed to extract the archive: %w", err)
+			return nil, nil, filterError(ignoreErrors, xerrors.Errorf("failed to extract the archive: %w", err))
 		}
 
 		// filepath.Clean cannot be used since tar file paths should be OS-agnostic.
@@ -87,7 +87,7 @@ func (w LayerTar) Walk(layer io.Reader, analyzeFn WalkFunc) ([]string, []string,
 
 		// A symbolic/hard link or regular file will reach here.
 		if err = w.processFile(filePath, tr, hdr.FileInfo(), analyzeFn); err != nil {
-			return nil, nil, xerrors.Errorf("failed to process the file: %w", err)
+			return nil, nil, filterError(ignoreErrors, xerrors.Errorf("failed to process the file: %w", err))
 		}
 	}
 	return opqDirs, whFiles, nil

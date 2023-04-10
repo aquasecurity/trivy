@@ -127,13 +127,12 @@ func (a Artifact) Inspect(ctx context.Context) (types.ArtifactReference, error) 
 	opts := analyzer.AnalysisOptions{
 		Offline:      a.artifactOption.Offline,
 		FileChecksum: a.artifactOption.FileChecksum,
-		IgnoreErrors: a.artifactOption.IgnoreErrors,
 	}
 
 	// Prepare filesystem for post analysis
 	files := new(syncx.Map[analyzer.Type, *mapfs.FS])
 
-	err := a.walker.Walk(a.rootPath, func(filePath string, info os.FileInfo, opener analyzer.Opener) error {
+	err := a.walker.Walk(a.rootPath, a.artifactOption.IgnoreErrors, func(filePath string, info os.FileInfo, opener analyzer.Opener) error {
 		dir := a.rootPath
 
 		// When the directory is the same as the filePath, a file was given

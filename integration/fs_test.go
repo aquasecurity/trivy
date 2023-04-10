@@ -30,7 +30,6 @@ func TestFilesystem(t *testing.T) {
 		helmValuesFile []string
 		skipFiles      []string
 		skipDirs       []string
-		ignoreErrors   []string
 		command        string
 		format         string
 	}
@@ -313,16 +312,6 @@ func TestFilesystem(t *testing.T) {
 			},
 			golden: "testdata/conda-spdx.json.golden",
 		},
-		{
-			name: "ignore analyzer error",
-			args: args{
-				command:      "rootfs",
-				format:       "json",
-				ignoreErrors: []string{"not a valid zip file"},
-				input:        "testdata/fixtures/fs/ignore-errors",
-			},
-			golden: "testdata/ignore-errors.json.golden",
-		},
 	}
 
 	// Set up testing DB
@@ -410,12 +399,6 @@ func TestFilesystem(t *testing.T) {
 			if len(tt.args.skipDirs) != 0 {
 				for _, skipDir := range tt.args.skipDirs {
 					osArgs = append(osArgs, "--skip-dirs", skipDir)
-				}
-			}
-
-			if len(tt.args.ignoreErrors) != 0 {
-				for _, ignoreError := range tt.args.ignoreErrors {
-					osArgs = append(osArgs, "--ignore-errors", ignoreError)
 				}
 			}
 

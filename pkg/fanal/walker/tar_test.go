@@ -18,8 +18,9 @@ import (
 
 func TestLayerTar_Walk(t *testing.T) {
 	type fields struct {
-		skipFiles []string
-		skipDirs  []string
+		skipFiles    []string
+		skipDirs     []string
+		ignoreErrors []string
 	}
 	tests := []struct {
 		name        string
@@ -70,6 +71,16 @@ func TestLayerTar_Walk(t *testing.T) {
 			wantWhFiles: []string{"foo/foo"},
 		},
 		{
+			name:      "ignore error",
+			inputFile: "testdata/test.tar",
+			fields: fields{
+				ignoreErrors: []string{"error"},
+			},
+			analyzeFn: func(filePath string, info os.FileInfo, opener analyzer.Opener) error {
+				return errors.New("error")
+			},
+		},
+		{
 			name:      "sad path",
 			inputFile: "testdata/test.tar",
 			analyzeFn: func(filePath string, info os.FileInfo, opener analyzer.Opener) error {
@@ -85,7 +96,7 @@ func TestLayerTar_Walk(t *testing.T) {
 
 			w := walker.NewLayerTar(tt.fields.skipFiles, tt.fields.skipDirs, true)
 
-			gotOpqDirs, gotWhFiles, err := w.Walk(f, tt.analyzeFn)
+			gotOpqDirs, gotWhFiles, err := w.Walk(f, tt.fields.ignoreErrors, tt.analyzeFn)
 			if tt.wantErr != "" {
 				require.Error(t, err)
 				assert.Contains(t, err.Error(), tt.wantErr)

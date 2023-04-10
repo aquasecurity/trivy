@@ -17,8 +17,9 @@ import (
 
 func TestDir_Walk(t *testing.T) {
 	type fields struct {
-		skipFiles []string
-		skipDirs  []string
+		skipFiles    []string
+		skipDirs     []string
+		ignoreErrors []string
 	}
 	tests := []struct {
 		name      string
@@ -70,6 +71,16 @@ func TestDir_Walk(t *testing.T) {
 			},
 		},
 		{
+			name:    "ignore error",
+			rootDir: filepath.Join("testdata", "fs"),
+			fields: fields{
+				ignoreErrors: []string{"error"},
+			},
+			analyzeFn: func(filePath string, info os.FileInfo, opener analyzer.Opener) error {
+				return errors.New("error")
+			},
+		},
+		{
 			name:    "sad path",
 			rootDir: filepath.Join("testdata", "fs"),
 			analyzeFn: func(filePath string, info os.FileInfo, opener analyzer.Opener) error {
@@ -82,7 +93,7 @@ func TestDir_Walk(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			w := walker.NewFS(tt.fields.skipFiles, tt.fields.skipDirs, true)
 
-			err := w.Walk(tt.rootDir, tt.analyzeFn)
+			err := w.Walk(tt.rootDir, tt.fields.ignoreErrors, tt.analyzeFn)
 			if tt.wantErr != "" {
 				require.Error(t, err)
 				assert.Contains(t, err.Error(), tt.wantErr)

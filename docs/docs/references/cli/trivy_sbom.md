@@ -36,7 +36,6 @@ trivy sbom [flags] SBOM_PATH
       --file-patterns strings       specify config file patterns
   -f, --format string               format (table, json, template, sarif, cyclonedx, spdx, spdx-json, github, cosign-vuln) (default "table")
   -h, --help                        help for sbom
-      --ignore-errors strings       specify texts of analyzers errors to skip these errors
       --ignore-policy string        specify the Rego file path to evaluate each vulnerability
       --ignore-unfixed              display only fixed vulnerabilities
       --ignorefile string           specify .trivyignore file (default ".trivyignore")
@@ -52,7 +51,6 @@ trivy sbom [flags] SBOM_PATH
       --rekor-url string            [EXPERIMENTAL] address of rekor STL server (default "https://rekor.sigstore.dev")
       --reset                       remove all caches and database
       --sbom-sources strings        [EXPERIMENTAL] try to retrieve SBOM from the specified sources (oci,rekor)
-      --scanners strings            comma-separated list of what security issues to detect (vuln,config,secret,license) (default [vuln,secret])
       --server string               server address in client mode
   -s, --severity string             severities of security issues to be displayed (comma separated) (default "UNKNOWN,LOW,MEDIUM,HIGH,CRITICAL")
       --skip-db-update              skip updating vulnerability database

@@ -88,3 +88,13 @@ func (w *walker) shouldSkipDir(dir string) bool {
 
 	return false
 }
+
+func filterError(ignoreErrors []string, err error) error {
+	for _, ignoreError := range ignoreErrors {
+		if strings.Contains(err.Error(), ignoreError) {
+			log.Logger.Debugf("Ignore error: %s", err)
+			return nil
+		}
+	}
+	return err
+}

@@ -107,18 +107,18 @@ Try:
 $ TMPDIR=/my/custom/path trivy image ...
 ```
 
-### Post Analyzers errors
+### Filesystem walking errors
 
 !!! error
     ``` bash
     $ trivy image ...
     ...
-    post analysis error: 
-    ... 
-    not a valid zip file/unknown protocol: 'unsupported'/other errors
+    walk filesystem:
+    walk error:
+    ...
     ```
 
-Trivy stops scanning if it finds invalid files (e.g. `jar` license files). You can ignore these error and continue scanning using `--ignore-errors` flag.
+To ignore filesystem walking errors and continue scanning use `--ignore-errors` flag.
 
 `--ignore-errors` flag supports partial error text and multiple values.
 

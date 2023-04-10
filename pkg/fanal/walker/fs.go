@@ -24,7 +24,7 @@ func NewFS(skipFiles, skipDirs []string, slow bool) FS {
 
 // Walk walks the file tree rooted at root, calling WalkFunc for each file or
 // directory in the tree, including root, but a directory to be ignored will be skipped.
-func (w FS) Walk(root string, fn WalkFunc) error {
+func (w FS) Walk(root string, ignoreErrors []string, fn WalkFunc) error {
 	// walk function called for every path found
 	walkFn := func(pathname string, fi os.FileInfo) error {
 		pathname = filepath.Clean(pathname)
@@ -55,24 +55,24 @@ func (w FS) Walk(root string, fn WalkFunc) error {
 
 	if w.slow {
 		// In series: fast, with higher CPU/memory
-		return walkSlow(root, walkFn)
+		return walkSlow(root, ignoreErrors, walkFn)
 	}
 
 	// In parallel: slow, with lower CPU/memory
-	return walkFast(root, walkFn)
+	return walkFast(root, ignoreErrors, walkFn)
 }
 
 type fastWalkFunc func(pathname string, fi os.FileInfo) error
 
-func walkFast(root string, walkFn fastWalkFunc) error {
+func walkFast(root string, ignoreErrors []string, walkFn fastWalkFunc) error {
 	// error function called for every error encountered
 	errorCallbackOption := swalker.WithErrorCallback(func(pathname string, err error) error {
 		// ignore permission errors
 		if os.IsPermission(err) {
 			return nil
 		}
-		// halt traversal on any other error
-		return xerrors.Errorf("unknown error with %s: %w", pathname, err)
+		// halt traversal on any other error, unless that error is ignored
+		return filterError(ignoreErrors, xerrors.Errorf("unknown error with %s: %w", pathname, err))
 	})
 
 	// Multiple goroutines stat the filesystem concurrently. The provided
@@ -84,14 +84,18 @@ func walkFast(root string, walkFn fastWalkFunc) error {
 	return nil
 }
 
-func walkSlow(root string, walkFn fastWalkFunc) error {
+func walkSlow(root string, ignoreErrors []string, walkFn fastWalkFunc) error {
 	log.Logger.Debugf("Walk the file tree rooted at '%s' in series", root)
 	err := filepath.WalkDir(root, func(path string, d fs.DirEntry, err error) error {
 		info, err := d.Info()
 		if err != nil {
-			return xerrors.Errorf("file info error: %w", err)
+			return filterError(ignoreErrors, xerrors.Errorf("file info error: %w", err))
 		}
-		return walkFn(path, info)
+		err = walkFn(path, info)
+		if err != nil {
+			return filterError(ignoreErrors, err)
+		}
+		return nil
 	})
 	if err != nil {
 		return xerrors.Errorf("walk dir error: %w", err)

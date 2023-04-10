@@ -145,7 +145,6 @@ type PostAnalysisInput struct {
 type AnalysisOptions struct {
 	Offline      bool
 	FileChecksum bool
-	IgnoreErrors []string
 }
 
 type AnalysisResult struct {
@@ -445,10 +444,6 @@ func (ag AnalyzerGroup) AnalyzeFile(ctx context.Context, wg *sync.WaitGroup, lim
 				Options:  opts,
 			})
 			if err != nil && !errors.Is(err, aos.AnalyzeOSError) {
-				if ignoreErrors(err, opts.IgnoreErrors) {
-					log.Logger.Debugf("Ignore error for %s", filePath)
-					return
-				}
 				log.Logger.Debugf("Analysis error: %s", err)
 				return
 			}
@@ -489,11 +484,8 @@ func (ag AnalyzerGroup) PostAnalyze(ctx context.Context, files *syncx.Map[Type, 
 			Options: opts,
 		})
 		if err != nil {
-			if ignoreErrors(err, opts.IgnoreErrors) {
-				log.Logger.Debugf("Ignore error: %s", err)
-				return nil
-			}
-			return xerrors.Errorf("post analysis error: %w", err)
+			log.Logger.Debugf("Analysis error: %s", err)
+			return nil
 		}
 		result.Merge(res)
 	}
@@ -503,15 +495,6 @@ func (ag AnalyzerGroup) PostAnalyze(ctx context.Context, files *syncx.Map[Type, 
 func (ag AnalyzerGroup) filePatternMatch(analyzerType Type, filePath string) bool {
 	for _, pattern := range ag.filePatterns[analyzerType] {
 		if pattern.MatchString(filePath) {
-			return true
-		}
-	}
-	return false
-}
-
-func ignoreErrors(err error, ignoreErrors []string) bool {
-	for _, ignoreError := range ignoreErrors {
-		if strings.Contains(err.Error(), ignoreError) {
 			return true
 		}
 	}

@@ -47,8 +47,7 @@ func (a *Storage) Analyze(ctx context.Context, r *io.SectionReader) (types.BlobI
 	// TODO: Always walk from the root directory. Consider whether there is a need to be able to set optional
 	err := a.walker.Walk(r, "/", func(filePath string, info os.FileInfo, opener analyzer.Opener) error {
 		opts := analyzer.AnalysisOptions{
-			Offline:      a.artifactOption.Offline,
-			IgnoreErrors: a.artifactOption.IgnoreErrors,
+			Offline: a.artifactOption.Offline,
 		}
 		path := strings.TrimPrefix(filePath, "/")
 		if err := a.analyzer.AnalyzeFile(ctx, &wg, limit, result, "/", path, info, opener, nil, opts); err != nil {
