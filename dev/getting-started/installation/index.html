@@ -3416,7 +3416,7 @@ sudo yum -y install trivy
 </code></pre></div>
 </div>
 <div class="tabbed-block">
-<div class="highlight"><pre><span></span><code>rpm -ivh https://github.com/aquasecurity/trivy/releases/download/v0.39.0/trivy_0.39.0_Linux-64bit.rpm
+<div class="highlight"><pre><span></span><code>rpm -ivh https://github.com/aquasecurity/trivy/releases/download/v0.39.1/trivy_0.39.1_Linux-64bit.rpm
 </code></pre></div>
 </div>
 </div>
@@ -3434,8 +3434,8 @@ sudo apt-get install trivy
 </code></pre></div>
 </div>
 <div class="tabbed-block">
-<div class="highlight"><pre><span></span><code>wget https://github.com/aquasecurity/trivy/releases/download/v0.39.0/trivy_0.39.0_Linux-64bit.deb
-sudo dpkg -i trivy_0.39.0_Linux-64bit.deb
+<div class="highlight"><pre><span></span><code>wget https://github.com/aquasecurity/trivy/releases/download/v0.39.1/trivy_0.39.1_Linux-64bit.deb
+sudo dpkg -i trivy_0.39.1_Linux-64bit.deb
 </code></pre></div>
 </div>
 </div>
@@ -3492,28 +3492,28 @@ sudo dpkg -i trivy_0.39.0_Linux-64bit.deb
 <h2 id="install-from-github-release-official">Install from GitHub Release (Official)</h2>
 <h3 id="download-binary">Download Binary</h3>
 <ol>
-<li>Download the file for your operating system/architecture from <a href="https://github.com/aquasecurity/trivy/releases/tag/v0.39.0">GitHub Release assets</a> (<code>curl -LO https://url.to/trivy.tar.gz</code>).  </li>
+<li>Download the file for your operating system/architecture from <a href="https://github.com/aquasecurity/trivy/releases/tag/v0.39.1">GitHub Release assets</a> (<code>curl -LO https://url.to/trivy.tar.gz</code>).  </li>
 <li>Unpack the downloaded archive (<code>tar -xzf ./trivy.tar.gz</code>).</li>
 <li>Put the binary somewhere in your <code>$PATH</code> (e.g <code>mv ./trivy /usr/local/bin/</code>).</li>
 <li>Make sure the binary has execution bit turned on (<code>chmod +x ./trivy</code>).</li>
 </ol>
 <h3 id="install-script">Install Script</h3>
 <p>The process above can be automated by the following script:</p>
-<div class="highlight"><pre><span></span><code>curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh <span class="p">|</span> sh -s -- -b /usr/local/bin v0.39.0
+<div class="highlight"><pre><span></span><code>curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh <span class="p">|</span> sh -s -- -b /usr/local/bin v0.39.1
 </code></pre></div>
 <h3 id="install-from-source">Install from source</h3>
-<div class="highlight"><pre><span></span><code>git clone --depth <span class="m">1</span> --branch v0.39.0 https://github.com/aquasecurity/trivy
+<div class="highlight"><pre><span></span><code>git clone --depth <span class="m">1</span> --branch v0.39.1 https://github.com/aquasecurity/trivy
 <span class="nb">cd</span> trivy
 go install
 </code></pre></div>
 <h2 id="use-container-image">Use container image</h2>
 <ol>
-<li>Pull Trivy image (<code>docker pull aquasec/trivy:0.39.0</code>)</li>
-<li>It is advisable to mount a consistent <a href="https://aquasecurity.github.io/trivy/v0.39.0/docs/vulnerability/examples/cache/">cache dir</a> on the host into the Trivy container.</li>
+<li>Pull Trivy image (<code>docker pull aquasec/trivy:0.39.1</code>)</li>
+<li>It is advisable to mount a consistent <a href="https://aquasecurity.github.io/trivy/v0.39.1/docs/vulnerability/examples/cache/">cache dir</a> on the host into the Trivy container.</li>
 <li>For scanning container images with Trivy, mount <code>docker.sock</code> from the host into the Trivy container.</li>
 </ol>
 <p>Example:</p>
-<div class="highlight"><pre><span></span><code>docker run -v /var/run/docker.sock:/var/run/docker.sock -v <span class="nv">$HOME</span>/Library/Caches:/root/.cache/ aquasec/trivy:0.39.0 image python:3.4-alpine
+<div class="highlight"><pre><span></span><code>docker run -v /var/run/docker.sock:/var/run/docker.sock -v <span class="nv">$HOME</span>/Library/Caches:/root/.cache/ aquasec/trivy:0.39.1 image python:3.4-alpine
 </code></pre></div>
 <p>Registry | Repository | Link | Supportability
 Docker Hub | <code>docker.io/aquasec/trivy</code> | https://hub.docker.com/r/aquasec/trivy | Official
