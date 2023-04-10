@@ -76,6 +76,7 @@ trivy image [flags] IMAGE_NAME
       --redis-cert string              redis certificate file location, if using redis as cache backend
       --redis-key string               redis key file location, if using redis as cache backend
       --redis-tls                      enable redis TLS with public certificates, if using redis as cache backend
+      --registry-only                  skip scanning local images and only scan the Docker registry
       --registry-token string          registry token
       --rekor-url string               [EXPERIMENTAL] address of rekor STL server (default "https://rekor.sigstore.dev")
       --removed-pkgs                   detect vulnerabilities of removed packages (only for Alpine)

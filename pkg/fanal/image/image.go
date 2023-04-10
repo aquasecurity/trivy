@@ -51,6 +51,9 @@ func NewContainerImage(ctx context.Context, imageName string, opt types.RemoteOp
 		containerd: true,
 		remote:     true,
 	}
+	if opt.RegistryOnly {
+		opts = append(opts, DisableDockerd(), DisablePodman(), DisableContainerd())
+	}
 	for _, opt := range opts {
 		opt(o)
 	}

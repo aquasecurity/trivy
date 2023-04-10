@@ -151,8 +151,7 @@ func TestFanal_Library_DockerLessMode(t *testing.T) {
 			})
 
 			// Enable only registry scanning
-			img, cleanup, err := image.NewContainerImage(ctx, tt.remoteImageName, types.RemoteOptions{},
-				image.DisableDockerd(), image.DisablePodman(), image.DisableContainerd())
+			img, cleanup, err := image.NewContainerImage(ctx, tt.remoteImageName, types.RemoteOptions{RegistryOnly: true})
 			require.NoError(t, err)
 			defer cleanup()
 

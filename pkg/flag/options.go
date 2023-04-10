@@ -130,6 +130,7 @@ func (o *Options) Remote() ftypes.RemoteOptions {
 		Insecure:      o.Insecure,
 		Platform:      o.Platform,
 		AWSRegion:     o.AWSOptions.Region,
+		RegistryOnly:  o.RegistryOnly,
 	}
 }
 

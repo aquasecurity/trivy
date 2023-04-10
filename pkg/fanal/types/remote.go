@@ -13,6 +13,9 @@ type RemoteOptions struct {
 	// Architecture
 	Platform string
 
+	// Skip scanning local images and only scan the Docker registry
+	RegistryOnly bool
+
 	// ECR
 	AWSAccessKey    string
 	AWSSecretKey    string
