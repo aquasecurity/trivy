@@ -383,3 +383,21 @@ Total: 9 (UNKNOWN: 0, LOW: 0, MEDIUM: 0, HIGH: 4, CRITICAL: 5)
 
 [helper]: https://github.com/aquasecurity/trivy/tree/{{ git.tag }}/pkg/result/module.go
 [policy]: https://github.com/aquasecurity/trivy/tree/{{ git.tag }}/contrib/example_policy
+
+## By Inline Comments
+
+Some configuration file formats (e.g. Terraform) support inline comments.
+
+In cases where trivy can detect comments of a specific format immediately adjacent to resource definitions, it is possible to filter/ignore findings from a single point of resource definition (in contrast to `.trivyignore`, which has a directory-wide scope on all of the files scanned).
+
+The format for these comments is `trivy:ignore:<Vulnerability ID>` immediately following the format-specific line-comment token.
+
+For example, to filter a Vulnerability ID "AVD-GCP-0051" in a Terraform HCL file:
+
+```terraform
+#trivy:ignore:AVD-GCP-0051
+resource "google_container_cluster" "one_off_test" {
+  name     = var.cluster_name
+  location = var.region
+}
+```
