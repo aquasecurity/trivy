@@ -136,7 +136,7 @@ func Test_cargoAnalyzer_Analyze(t *testing.T) {
 								Version:   "0.1.0",
 								Indirect:  false,
 								Locations: []types.Location{{StartLine: 13, EndLine: 20}},
-								DependsOn: []string{"memchr@1.0.2", "regex@1.7.3", "regex-syntax@0.5.6"},
+								DependsOn: []string{"memchr@1.0.2", "regex-syntax@0.5.6", "regex@1.7.3"},
 							},
 							{
 								ID:        "libc@0.2.140",
