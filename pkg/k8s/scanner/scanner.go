@@ -79,7 +79,7 @@ func (s *Scanner) Scan(ctx context.Context, artifactsData []*artifacts.Artifact)
 		return nil
 	}
 
-	p := parallel.NewPipeline(s.opts.Parallel, true, artifactsData, onItem, onResult)
+	p := parallel.NewPipeline(s.opts.Parallel, s.opts.Quiet, artifactsData, onItem, onResult)
 	err = p.Do(ctx)
 	if err != nil {
 		return report.Report{}, err
