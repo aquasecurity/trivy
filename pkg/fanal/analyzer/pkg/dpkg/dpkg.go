@@ -127,6 +127,7 @@ func (a dpkgAnalyzer) parseDpkgPkg(scanner *bufio.Scanner) (pkg *types.Package) 
 		isInstalled   bool
 		sourceVersion string
 		maintainer    string
+		architecture  string
 	)
 	isInstalled = true
 	for {
@@ -160,6 +161,8 @@ func (a dpkgAnalyzer) parseDpkgPkg(scanner *bufio.Scanner) (pkg *types.Package) 
 			dependencies = a.parseDepends(line)
 		case strings.HasPrefix(line, "Maintainer: "):
 			maintainer = strings.TrimSpace(strings.TrimPrefix(line, "Maintainer: "))
+		case strings.HasPrefix(line, "Architecture: "):
+			architecture = strings.TrimPrefix(line, "Architecture: ")
 		}
 		if !scanner.Scan() {
 			break
@@ -183,6 +186,7 @@ func (a dpkgAnalyzer) parseDpkgPkg(scanner *bufio.Scanner) (pkg *types.Package) 
 		Release:    v.Revision(),
 		DependsOn:  dependencies, // Will be consolidated later
 		Maintainer: maintainer,
+		Arch:       architecture,
 	}
 
 	// Source version and names are computed from binary package names and versions
