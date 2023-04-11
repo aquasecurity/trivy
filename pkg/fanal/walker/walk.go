@@ -6,6 +6,8 @@ import (
 	"path/filepath"
 	"strings"
 
+	"github.com/bmatcuk/doublestar"
+
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/utils"
 	"github.com/aquasecurity/trivy/pkg/log"
@@ -56,7 +58,7 @@ func (w *walker) shouldSkipFile(filePath string) bool {
 
 	// skip files
 	for _, pattern := range w.skipFiles {
-		match, err := path.Match(pattern, filePath)
+		match, err := doublestar.Match(pattern, filePath)
 		if err != nil {
 			return false // return early if bad pattern
 		} else if match {
