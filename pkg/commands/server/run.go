@@ -34,7 +34,7 @@ func Run(ctx context.Context, opts flag.Options) (err error) {
 	}
 
 	// download the database file
-	if err = operation.DownloadDB(opts.AppVersion, opts.CacheDir, opts.DBRepository,
+	if err = operation.DownloadDB(ctx, opts.AppVersion, opts.CacheDir, opts.DBRepository,
 		true, opts.SkipDBUpdate, opts.Remote()); err != nil {
 		return err
 	}

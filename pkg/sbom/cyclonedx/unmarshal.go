@@ -152,7 +152,7 @@ func (c *CycloneDX) parseSBOM(bom *cdx.BOM) error {
 }
 
 func (c *CycloneDX) parseOSPkgs(component cdx.Component, seen map[string]struct{}) (ftypes.PackageInfo, error) {
-	components := c.walkDependencies(component.BOMRef)
+	components := c.walkDependencies(component.BOMRef, map[string]struct{}{})
 	pkgs, err := parsePkgs(components, seen)
 	if err != nil {
 		return ftypes.PackageInfo{}, xerrors.Errorf("failed to parse os package: %w", err)
@@ -164,7 +164,7 @@ func (c *CycloneDX) parseOSPkgs(component cdx.Component, seen map[string]struct{
 }
 
 func (c *CycloneDX) parseLangPkgs(component cdx.Component, seen map[string]struct{}) (*ftypes.Application, error) {
-	components := c.walkDependencies(component.BOMRef)
+	components := c.walkDependencies(component.BOMRef, map[string]struct{}{})
 	components = lo.UniqBy(components, func(c cdx.Component) string {
 		return c.BOMRef
 	})
@@ -196,7 +196,7 @@ func parsePkgs(components []cdx.Component, seen map[string]struct{}) ([]ftypes.P
 }
 
 // walkDependencies takes all nested dependencies of the root component.
-func (c *CycloneDX) walkDependencies(rootRef string) []cdx.Component {
+func (c *CycloneDX) walkDependencies(rootRef string, uniqComponents map[string]struct{}) []cdx.Component {
 	// e.g. Library A, B, C, D and E will be returned as dependencies of Application 1.
 	// type: Application 1
 	//   - type: Library A
@@ -213,12 +213,24 @@ func (c *CycloneDX) walkDependencies(rootRef string) []cdx.Component {
 			continue
 		}
 
+		// there are cases of looped components:
+		// type: Application 1
+		//  - type: Library A
+		//    - type: Library B
+		// 	    - type: Library A
+		// ...
+		// use uniqComponents to fix infinite loop
+		if _, ok = uniqComponents[dep]; ok {
+			continue
+		}
+		uniqComponents[dep] = struct{}{}
+
 		// Take only 'Libraries'
 		if component.Type == cdx.ComponentTypeLibrary {
 			components = append(components, component)
 		}
 
-		components = append(components, c.walkDependencies(dep)...)
+		components = append(components, c.walkDependencies(dep, uniqComponents)...)
 	}
 	return components
 }
