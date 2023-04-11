@@ -119,7 +119,7 @@ func Write(report types.Report, option Option) error {
 			break
 		}
 		var err error
-		if writer, err = NewTemplateWriter(option.Output, option.OutputTemplate); err != nil {
+		if writer, err = NewTemplateWriter(option.Output, option.OutputTemplate, option.AppVersion); err != nil {
 			return xerrors.Errorf("failed to initialize template writer: %w", err)
 		}
 	case FormatSarif:
