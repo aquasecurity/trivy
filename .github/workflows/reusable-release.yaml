@@ -78,7 +78,7 @@ jobs:
       - name: GoReleaser
         uses: goreleaser/goreleaser-action@v4
         with:
-          version: v1.4.1
+          version: v1.16.2
           args: release -f=${{ inputs.goreleaser_config}} ${{ inputs.goreleaser_options}}
         env:
           GITHUB_TOKEN: ${{ secrets.ORG_REPO_TOKEN }}
