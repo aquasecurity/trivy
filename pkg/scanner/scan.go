@@ -34,7 +34,7 @@ var StandaloneSuperSet = wire.NewSet(
 
 // StandaloneDockerSet binds docker dependencies
 var StandaloneDockerSet = wire.NewSet(
-	wire.Value([]image.Option(nil)), // optional functions
+	image.SelectRuntime,
 	image.NewContainerImage,
 	aimage.NewArtifact,
 	StandaloneSuperSet,

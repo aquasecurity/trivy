@@ -12,7 +12,7 @@ import (
 // $ trivy image alpine:3.15
 func imageStandaloneScanner(ctx context.Context, conf ScannerConfig) (scanner.Scanner, func(), error) {
 	s, cleanup, err := initializeDockerScanner(ctx, conf.Target, conf.ArtifactCache, conf.LocalArtifactCache,
-		conf.ArtifactOption.RemoteOptions, conf.ArtifactOption)
+		conf.ArtifactOption.RemoteOptions, conf.ArtifactOption, conf.Runtimes)
 	if err != nil {
 		return scanner.Scanner{}, func() {}, xerrors.Errorf("unable to initialize a docker scanner: %w", err)
 	}

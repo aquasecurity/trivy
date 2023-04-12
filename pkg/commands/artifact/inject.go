@@ -13,6 +13,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/rpc/client"
 	"github.com/aquasecurity/trivy/pkg/scanner"
+	types2 "github.com/aquasecurity/trivy/pkg/types"
 )
 
 //////////////
@@ -22,7 +23,7 @@ import (
 // initializeDockerScanner is for container image scanning in standalone mode
 // e.g. dockerd, container registry, podman, etc.
 func initializeDockerScanner(ctx context.Context, imageName string, artifactCache cache.ArtifactCache,
-	localArtifactCache cache.LocalArtifactCache, remoteOpt types.RemoteOptions, artifactOption artifact.Option) (
+	localArtifactCache cache.LocalArtifactCache, remoteOpt types.RemoteOptions, artifactOption artifact.Option, runtimes types2.Runtimes) (
 	scanner.Scanner, func(), error) {
 	wire.Build(scanner.StandaloneDockerSet)
 	return scanner.Scanner{}, nil, nil

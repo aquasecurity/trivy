@@ -9,6 +9,7 @@ import (
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
+	types2 "github.com/aquasecurity/trivy/pkg/types"
 )
 
 type options struct {
@@ -42,6 +43,26 @@ func DisableRemote() Option {
 	return func(opts *options) {
 		opts.remote = false
 	}
+}
+
+func SelectRuntime(runtimes types2.Runtimes) []Option {
+	m := map[types2.Runtime]Option{
+		types2.ContainerdRuntime: DisableContainerd(),
+		types2.PodmanRuntime:     DisablePodman(),
+		types2.DockerRuntime:     DisableDockerd(),
+		types2.RemoteRuntime:     DisableRemote(),
+	}
+
+	for _, r := range runtimes {
+		delete(m, r)
+	}
+
+	opts := []Option{}
+	for _, opt := range m {
+		opts = append(opts, opt)
+	}
+
+	return opts
 }
 
 func NewContainerImage(ctx context.Context, imageName string, opt types.RemoteOptions, opts ...Option) (types.Image, func(), error) {

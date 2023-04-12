@@ -14,6 +14,12 @@ type Scanner string
 // Scanners is a slice of scanners
 type Scanners []Scanner
 
+// Runtime represents a container runtime
+type Runtime string
+
+// Runtimes is a slice of runtimes
+type Runtimes []Runtime
+
 const (
 	// VulnTypeUnknown is a vulnerability type of unknown
 	VulnTypeUnknown = VulnType("unknown")
@@ -44,6 +50,18 @@ const (
 
 	// LicenseScanner is the scanner of licenses
 	LicenseScanner = Scanner("license")
+
+	// DockerRuntime is the docker runtime
+	DockerRuntime Runtime = "docker"
+
+	// ContainerdRuntime is the containerd runtime
+	ContainerdRuntime Runtime = "containerd"
+
+	// PodmanRuntime is the podman runtime
+	PodmanRuntime Runtime = "podman"
+
+	// RemoteRuntime represents a remote scan
+	RemoteRuntime Runtime = "remote"
 )
 
 var (
@@ -69,6 +87,13 @@ var (
 		SecretScanner,
 		NoneScanner,
 	}
+
+	AllRuntimes = Runtimes{
+		DockerRuntime,
+		ContainerdRuntime,
+		PodmanRuntime,
+		RemoteRuntime,
+	}
 )
 
 func (scanners Scanners) Enabled(s Scanner) bool {
@@ -88,5 +113,11 @@ func (scanners Scanners) AnyEnabled(ss ...Scanner) bool {
 func (scanners Scanners) StringSlice() []string {
 	return lo.Map(scanners, func(s Scanner, _ int) string {
 		return string(s)
+	})
+}
+
+func (runtimes Runtimes) StringSlice() []string {
+	return lo.Map(runtimes, func(r Runtime, _ int) string {
+		return string(r)
 	})
 }
