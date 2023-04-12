@@ -1,6 +1,7 @@
 package flag
 
 import (
+	"golang.org/x/exp/slices"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/types"
@@ -42,6 +43,12 @@ var (
 		Value:      "",
 		Usage:      "unix domain socket path to use for docker scanning",
 	}
+	RuntimeFlag = Flag{
+		Name:       "runtimes",
+		ConfigName: "scan.runtimes",
+		Value:      types.AllRuntimes.StringSlice(),
+		Usage:      "Runtime(s) to use, in priority order (docker,containerd,podman,remote)",
+	}
 )
 
 type ImageFlagGroup struct {
@@ -50,6 +57,7 @@ type ImageFlagGroup struct {
 	ScanRemovedPkgs     *Flag
 	Platform            *Flag
 	DockerHost          *Flag
+	Runtimes            *Flag
 }
 
 type ImageOptions struct {
@@ -58,6 +66,7 @@ type ImageOptions struct {
 	ScanRemovedPkgs     bool
 	Platform            string
 	DockerHost          string
+	Runtimes            types.Runtimes
 }
 
 func NewImageFlagGroup() *ImageFlagGroup {
@@ -67,6 +76,7 @@ func NewImageFlagGroup() *ImageFlagGroup {
 		ScanRemovedPkgs:     &ScanRemovedPkgsFlag,
 		Platform:            &PlatformFlag,
 		DockerHost:          &DockerHostFlag,
+		Runtimes:            &RuntimeFlag,
 	}
 }
 
@@ -81,6 +91,7 @@ func (f *ImageFlagGroup) Flags() []*Flag {
 		f.ScanRemovedPkgs,
 		f.Platform,
 		f.DockerHost,
+		f.Runtimes,
 	}
 }
 
@@ -89,11 +100,30 @@ func (f *ImageFlagGroup) ToOptions() (ImageOptions, error) {
 	if err != nil {
 		return ImageOptions{}, xerrors.Errorf("unable to parse image config scanners: %w", err)
 	}
+
+	runtimes, err := parseRuntimes(getStringSlice(f.Runtimes), types.AllRuntimes)
+	if err != nil {
+		return ImageOptions{}, xerrors.Errorf("unable to parse runtimes: %w", err)
+	}
+
 	return ImageOptions{
 		Input:               getString(f.Input),
 		ImageConfigScanners: scanners,
 		ScanRemovedPkgs:     getBool(f.ScanRemovedPkgs),
 		Platform:            getString(f.Platform),
 		DockerHost:          getString(f.DockerHost),
+		Runtimes:            runtimes,
 	}, nil
+}
+
+func parseRuntimes(runtime []string, allowedRuntimes types.Runtimes) (types.Runtimes, error) {
+	var runtimes types.Runtimes
+	for _, v := range runtime {
+		s := types.Runtime(v)
+		if !slices.Contains(allowedRuntimes, s) {
+			return nil, xerrors.Errorf("unknown runtime: %s", v)
+		}
+		runtimes = append(runtimes, s)
+	}
+	return runtimes, nil
 }

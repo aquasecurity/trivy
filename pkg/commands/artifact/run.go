@@ -73,6 +73,7 @@ type ScannerConfig struct {
 
 	// Artifact options
 	ArtifactOption artifact.Option
+	Runtimes       types.Runtimes
 }
 
 type Runner interface {
@@ -666,6 +667,7 @@ func initScannerConfig(opts flag.Options, cacheClient cache.Cache) (ScannerConfi
 				ClassifierConfidenceLevel: opts.LicenseConfidenceLevel,
 			},
 		},
+		Runtimes: opts.Runtimes,
 	}, scanOptions, nil
 }
 

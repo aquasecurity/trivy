@@ -16,7 +16,7 @@ import (
 	"github.com/aquasecurity/testdocker/auth"
 	"github.com/aquasecurity/testdocker/engine"
 	"github.com/aquasecurity/testdocker/registry"
-	"github.com/aquasecurity/trivy/pkg/fanal/types"
+	"github.com/aquasecurity/trivy/pkg/types"
 )
 
 func setupEngineAndRegistry() (*httptest.Server, *httptest.Server) {
@@ -276,7 +276,7 @@ func TestNewDockerImage(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			img, cleanup, err := NewContainerImage(context.Background(), tt.args.imageName, tt.args.option)
+			img, cleanup, err := NewContainerImage(context.Background(), tt.args.imageName, tt.args.option, WithRuntimes(types.AllRuntimes))
 			defer cleanup()
 
 			if tt.wantErr {
@@ -393,7 +393,7 @@ func TestNewDockerImageWithPrivateRegistry(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			_, cleanup, err := NewContainerImage(context.Background(), tt.args.imageName, tt.args.option)
+			_, cleanup, err := NewContainerImage(context.Background(), tt.args.imageName, tt.args.option, WithRuntimes(types.AllRuntimes))
 			defer cleanup()
 
 			if tt.wantErr != "" {
@@ -539,7 +539,7 @@ func TestDockerPlatformArguments(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			imageName := fmt.Sprintf("%s/library/alpine:3.10", serverAddr)
 
-			_, cleanup, err := NewContainerImage(context.Background(), imageName, tt.args.option)
+			_, cleanup, err := NewContainerImage(context.Background(), imageName, tt.args.option, WithRuntimes(types.AllRuntimes))
 			defer cleanup()
 
 			if tt.wantErr != "" {

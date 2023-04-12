@@ -9,50 +9,35 @@ import (
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
+	ftypes "github.com/aquasecurity/trivy/pkg/types"
 )
 
-type options struct {
-	dockerd    bool
-	podman     bool
-	containerd bool
-	remote     bool
+type RuntimeFunc func(ctx context.Context, imageName string, ref name.Reference, option types.RemoteOptions) (types.Image, func(), error)
+
+var runtimeFuncs = map[ftypes.Runtime]RuntimeFunc{
+	ftypes.ContainerdRuntime: tryContainerdDaemon,
+	ftypes.PodmanRuntime:     tryPodmanDaemon,
+	ftypes.DockerRuntime:     tryDockerDaemon,
+	ftypes.RemoteRuntime:     tryRemote,
 }
 
-type Option func(*options)
+func WithRuntimes(runtimes ftypes.Runtimes) ([]RuntimeFunc, error) {
+	funcs := []RuntimeFunc{}
 
-func DisableDockerd() Option {
-	return func(opts *options) {
-		opts.dockerd = false
+	for _, r := range runtimes {
+		f, ok := runtimeFuncs[r]
+		if !ok {
+			return nil, xerrors.Errorf("unrecoginized runtime: '%s'", r)
+		}
+		funcs = append(funcs, f)
 	}
+
+	return funcs, nil
 }
 
-func DisablePodman() Option {
-	return func(opts *options) {
-		opts.podman = false
-	}
-}
-
-func DisableContainerd() Option {
-	return func(opts *options) {
-		opts.containerd = false
-	}
-}
-
-func DisableRemote() Option {
-	return func(opts *options) {
-		opts.remote = false
-	}
-}
-
-func NewContainerImage(ctx context.Context, imageName string, opt types.ImageOptions, opts ...Option) (types.Image, func(), error) {
-	o := &options{
-		dockerd:    true,
-		podman:     true,
-		containerd: true,
-		remote:     true,
-	}
-	for _, opt := range opts {
-		opt(o)
+func NewContainerImage(ctx context.Context, imageName string, opt types.ImageOptions, runtimes []RuntimeFunc) (types.Image, func(), error) {
+	if len(runtimes) == 0 {
+		return nil, func() {}, xerrors.Errorf("no runtimes supplied")
 	}
 
 	var errs error
@@ -60,47 +45,16 @@ func NewContainerImage(ctx context.Context, imageName string, opt types.ImageOpt
 	if opt.RegistryOptions.Insecure {
 		nameOpts = append(nameOpts, name.Insecure)
 	}
+
 	ref, err := name.ParseReference(imageName, nameOpts...)
 	if err != nil {
 		return nil, func() {}, xerrors.Errorf("failed to parse the image name: %w", err)
 	}
 
-	// Try accessing Docker Daemon
-	if o.dockerd {
-		img, cleanup, err := tryDockerDaemon(imageName, ref, opt.DockerOptions)
+	for _, tryRuntime := range runtimes {
+		img, cleanup, err := tryRuntime(ctx, imageName, ref, opt)
 		if err == nil {
-			// Return v1.Image if the image is found in Docker Engine
 			return img, cleanup, nil
-		}
-		errs = multierror.Append(errs, err)
-	}
-
-	// Try accessing Podman
-	if o.podman {
-		img, cleanup, err := tryPodmanDaemon(imageName)
-		if err == nil {
-			// Return v1.Image if the image is found in Podman
-			return img, cleanup, nil
-		}
-		errs = multierror.Append(errs, err)
-	}
-
-	// Try containerd
-	if o.containerd {
-		img, cleanup, err := tryContainerdDaemon(ctx, imageName)
-		if err == nil {
-			// Return v1.Image if the image is found in containerd
-			return img, cleanup, nil
-		}
-		errs = multierror.Append(errs, err)
-	}
-
-	// Try accessing Docker Registry
-	if o.remote {
-		img, err := tryRemote(ctx, imageName, ref, opt.RegistryOptions)
-		if err == nil {
-			// Return v1.Image if the image is found in a remote registry
-			return img, func() {}, nil
 		}
 		errs = multierror.Append(errs, err)
 	}

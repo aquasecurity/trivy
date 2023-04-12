@@ -27,7 +27,8 @@ import (
 	"github.com/aquasecurity/trivy/pkg/fanal/cache"
 	"github.com/aquasecurity/trivy/pkg/fanal/image"
 	testdocker "github.com/aquasecurity/trivy/pkg/fanal/test/integration/docker"
-	"github.com/aquasecurity/trivy/pkg/fanal/types"
+	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
+	"github.com/aquasecurity/trivy/pkg/types"
 )
 
 const (
@@ -84,8 +85,8 @@ func TestTLSRegistry(t *testing.T) {
 		imageFile    string
 		option       types.ImageOptions
 		login        bool
-		expectedOS   types.OS
-		expectedRepo types.Repository
+		expectedOS   ftypes.OS
+		expectedRepo ftypes.Repository
 		wantErr      bool
 	}{
 		{
@@ -103,11 +104,11 @@ func TestTLSRegistry(t *testing.T) {
 					Insecure: true,
 				},
 			},
-			expectedOS: types.OS{
+			expectedOS: ftypes.OS{
 				Name:   "3.10.2",
 				Family: "alpine",
 			},
-			expectedRepo: types.Repository{
+			expectedRepo: ftypes.Repository{
 				Family:  "alpine",
 				Release: "3.10",
 			},
@@ -123,11 +124,11 @@ func TestTLSRegistry(t *testing.T) {
 				},
 			},
 			login: true,
-			expectedOS: types.OS{
+			expectedOS: ftypes.OS{
 				Name:   "3.10.2",
 				Family: "alpine",
 			},
-			expectedRepo: types.Repository{
+			expectedRepo: ftypes.Repository{
 				Family:  "alpine",
 				Release: "3.10",
 			},
@@ -207,7 +208,7 @@ func getRegistryURL(ctx context.Context, registryC testcontainers.Container, exp
 	return url.Parse(urlStr)
 }
 
-func analyze(ctx context.Context, imageRef string, opt types.ImageOptions) (*types.ArtifactDetail, error) {
+func analyze(ctx context.Context, imageRef string, opt types.ImageOptions) (*ftypes.ArtifactDetail, error) {
 	d, err := ioutil.TempDir("", "TestRegistry-*")
 	if err != nil {
 		return nil, err
@@ -225,7 +226,12 @@ func analyze(ctx context.Context, imageRef string, opt types.ImageOptions) (*typ
 	}
 	cli.NegotiateAPIVersion(ctx)
 
-	img, cleanup, err := image.NewContainerImage(ctx, imageRef, opt)
+	runtimes, err := image.WithRuntimes(types.AllRuntimes)
+	if err != nil {
+		return nil, err
+	}
+
+	img, cleanup, err := image.NewContainerImage(ctx, imageRef, opt, runtimes)
 	if err != nil {
 		return nil, err
 	}
