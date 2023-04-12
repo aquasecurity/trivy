@@ -140,6 +140,33 @@ func Test_poetryLibraryAnalyzer_Analyze(t *testing.T) {
 			},
 		},
 		{
+			name: "wrong pyproject.toml",
+			dir:  "testdata/wrong-pyproject",
+			want: &analyzer.AnalysisResult{
+				Applications: []types.Application{
+					{
+						Type:     types.Poetry,
+						FilePath: "poetry.lock",
+						Libraries: []types.Package{
+							{
+								ID:      "click@8.1.3",
+								Name:    "click",
+								Version: "8.1.3",
+								DependsOn: []string{
+									"colorama@0.4.6",
+								},
+							},
+							{
+								ID:      "colorama@0.4.6",
+								Name:    "colorama",
+								Version: "0.4.6",
+							},
+						},
+					},
+				},
+			},
+		},
+		{
 			name:    "broken poetry.lock",
 			dir:     "testdata/sad",
 			wantErr: "failed to parse poetry.lock",

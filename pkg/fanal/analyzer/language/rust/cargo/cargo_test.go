@@ -93,6 +93,27 @@ func Test_cargoAnalyzer_Analyze(t *testing.T) {
 			},
 		},
 		{
+			name: "Cargo.toml doesn't include `Dependencies` field",
+			dir:  "testdata/toml-only-workspace-deps",
+			want: &analyzer.AnalysisResult{
+				Applications: []types.Application{
+					{
+						Type:     types.Cargo,
+						FilePath: "Cargo.lock",
+						Libraries: []types.Package{
+							{
+								ID:        "memchr@2.5.0",
+								Name:      "memchr",
+								Version:   "2.5.0",
+								Indirect:  false,
+								Locations: []types.Location{{StartLine: 11, EndLine: 15}},
+							},
+						},
+					},
+				},
+			},
+		},
+		{
 			name: "no Cargo.toml",
 			dir:  "testdata/no-cargo-toml",
 			want: &analyzer.AnalysisResult{
@@ -115,7 +136,7 @@ func Test_cargoAnalyzer_Analyze(t *testing.T) {
 								Version:   "0.1.0",
 								Indirect:  false,
 								Locations: []types.Location{{StartLine: 13, EndLine: 20}},
-								DependsOn: []string{"memchr@1.0.2", "regex@1.7.3", "regex-syntax@0.5.6"},
+								DependsOn: []string{"memchr@1.0.2", "regex-syntax@0.5.6", "regex@1.7.3"},
 							},
 							{
 								ID:        "libc@0.2.140",
@@ -190,6 +211,35 @@ func Test_cargoAnalyzer_Analyze(t *testing.T) {
 								Version:   "0.4.0",
 								Indirect:  false,
 								Locations: []types.Location{{StartLine: 91, EndLine: 95}},
+							},
+						},
+					},
+				},
+			},
+		},
+		{
+			name: "wrong Cargo.toml",
+			dir:  "testdata/wrong-cargo-toml",
+			want: &analyzer.AnalysisResult{
+				Applications: []types.Application{
+					{
+						Type:     types.Cargo,
+						FilePath: "Cargo.lock",
+						Libraries: []types.Package{
+							{
+								ID:        "app@0.1.0",
+								Name:      "app",
+								Version:   "0.1.0",
+								Indirect:  false,
+								Locations: []types.Location{{StartLine: 5, EndLine: 10}},
+								DependsOn: []string{"memchr@2.5.0"},
+							},
+							{
+								ID:        "memchr@2.5.0",
+								Name:      "memchr",
+								Version:   "2.5.0",
+								Indirect:  false,
+								Locations: []types.Location{{StartLine: 12, EndLine: 16}},
 							},
 						},
 					},
