@@ -10,6 +10,7 @@ import (
 	"golang.org/x/xerrors"
 
 	dio "github.com/aquasecurity/go-dep-parser/pkg/io"
+	"github.com/aquasecurity/trivy/pkg/log"
 )
 
 const (
@@ -106,6 +107,9 @@ func WalkDir(fsys fs.FS, root string, required WalkDirRequiredFunc, fn WalkDirFu
 		}
 		defer f.Close()
 
-		return fn(path, d, file)
+		if err = fn(path, d, file); err != nil {
+			log.Logger.Debugf("Unable to parse %q: %s", path, err)
+		}
+		return nil
 	})
 }

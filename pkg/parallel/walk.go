@@ -104,7 +104,8 @@ func walk[T any](ctx context.Context, fsys fs.FS, path string, c chan T, onFile 
 	}
 	res, err := onFile(path, info, rsa)
 	if err != nil {
-		return xerrors.Errorf("on file: %w", err)
+		log.Logger.Debugf("Unable to parse %q: %s", path, err)
+		return nil
 	}
 
 	select {

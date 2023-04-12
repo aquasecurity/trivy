@@ -14,10 +14,9 @@ import (
 
 func Test_poetryLibraryAnalyzer_Analyze(t *testing.T) {
 	tests := []struct {
-		name    string
-		dir     string
-		want    *analyzer.AnalysisResult
-		wantErr string
+		name string
+		dir  string
+		want *analyzer.AnalysisResult
 	}{
 		{
 			name: "happy path",
@@ -167,9 +166,9 @@ func Test_poetryLibraryAnalyzer_Analyze(t *testing.T) {
 			},
 		},
 		{
-			name:    "broken poetry.lock",
-			dir:     "testdata/sad",
-			wantErr: "failed to parse poetry.lock",
+			name: "broken poetry.lock",
+			dir:  "testdata/sad",
+			want: &analyzer.AnalysisResult{},
 		},
 	}
 
@@ -181,11 +180,6 @@ func Test_poetryLibraryAnalyzer_Analyze(t *testing.T) {
 			got, err := a.PostAnalyze(context.Background(), analyzer.PostAnalysisInput{
 				FS: os.DirFS(tt.dir),
 			})
-
-			if tt.wantErr != "" {
-				assert.ErrorContains(t, err, tt.wantErr)
-				return
-			}
 
 			assert.NoError(t, err)
 			assert.Equal(t, tt.want, got)

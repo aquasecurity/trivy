@@ -15,10 +15,9 @@ import (
 
 func Test_gomodAnalyzer_Analyze(t *testing.T) {
 	tests := []struct {
-		name    string
-		dir     string
-		want    *analyzer.AnalysisResult
-		wantErr string
+		name string
+		dir  string
+		want *analyzer.AnalysisResult
 	}{
 		{
 			name: "happy",
@@ -121,9 +120,9 @@ func Test_gomodAnalyzer_Analyze(t *testing.T) {
 			},
 		},
 		{
-			name:    "sad go.mod",
-			dir:     "testdata/sad",
-			wantErr: "unknown directive",
+			name: "sad go.mod",
+			dir:  "testdata/sad",
+			want: &analyzer.AnalysisResult{},
 		},
 	}
 	for _, tt := range tests {
@@ -136,12 +135,9 @@ func Test_gomodAnalyzer_Analyze(t *testing.T) {
 			got, err := a.PostAnalyze(ctx, analyzer.PostAnalysisInput{
 				FS: os.DirFS(tt.dir),
 			})
+			assert.NoError(t, err)
 
-			if tt.wantErr != "" {
-				require.ErrorContains(t, err, tt.wantErr)
-				return
-			}
-			if got != nil {
+			if len(got.Applications) > 0 {
 				slices.SortFunc(got.Applications[0].Libraries, func(a, b types.Package) bool {
 					return a.Name < b.Name
 				})

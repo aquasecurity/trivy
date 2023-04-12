@@ -62,18 +62,12 @@ func newGoModAnalyzer(_ analyzer.AnalyzerOptions) (analyzer.PostAnalyzer, error)
 
 func (a *gomodAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAnalysisInput) (*analyzer.AnalysisResult, error) {
 	var apps []types.Application
-	err := fs.WalkDir(input.FS, ".", func(path string, d fs.DirEntry, err error) error {
-		if err != nil {
-			return err
-		} else if !d.Type().IsRegular() {
-			return nil
-		}
 
-		dir, file := filepath.Split(path)
-		if file != types.GoMod {
-			return nil
-		}
+	required := func(path string, d fs.DirEntry) bool {
+		return filepath.Base(path) == types.GoMod
+	}
 
+	err := fsutils.WalkDir(input.FS, ".", required, func(path string, d fs.DirEntry, r dio.ReadSeekerAt) error {
 		// Parse go.mod
 		gomod, err := parse(input.FS, path, a.modParser)
 		if err != nil {
@@ -84,7 +78,7 @@ func (a *gomodAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAnalys
 
 		if lessThanGo117(gomod) {
 			// e.g. /app/go.mod => /app/go.sum
-			sumPath := filepath.Join(dir, types.GoSum)
+			sumPath := filepath.Join(filepath.Dir(path), types.GoSum)
 			gosum, err := parse(input.FS, sumPath, a.sumParser)
 			if err != nil && !errors.Is(err, fs.ErrNotExist) {
 				return xerrors.Errorf("parse error: %w", err)

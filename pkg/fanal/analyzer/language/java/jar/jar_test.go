@@ -6,13 +6,11 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
-
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/javadb"
 	"github.com/aquasecurity/trivy/pkg/mapfs"
+	"github.com/stretchr/testify/assert"
 
 	_ "modernc.org/sqlite"
 )
@@ -27,7 +25,6 @@ func Test_javaLibraryAnalyzer_Analyze(t *testing.T) {
 		inputFile       string
 		includeChecksum bool
 		want            *analyzer.AnalysisResult
-		wantErr         string
 	}{
 		{
 			name:      "happy path (WAR file)",
@@ -126,7 +123,7 @@ func Test_javaLibraryAnalyzer_Analyze(t *testing.T) {
 		{
 			name:      "sad path",
 			inputFile: "testdata/test.txt",
-			wantErr:   "not a valid zip file",
+			want:      &analyzer.AnalysisResult{},
 		},
 	}
 	for _, tt := range tests {
@@ -148,11 +145,6 @@ func Test_javaLibraryAnalyzer_Analyze(t *testing.T) {
 				Options: analyzer.AnalysisOptions{FileChecksum: tt.includeChecksum},
 			})
 
-			if tt.wantErr != "" {
-				require.NotNil(t, err)
-				assert.Contains(t, err.Error(), tt.wantErr)
-				return
-			}
 			assert.NoError(t, err)
 			assert.Equal(t, tt.want, got)
 		})

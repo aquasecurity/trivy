@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"os"
+	"path/filepath"
 	"sync"
 	"testing"
 
@@ -16,15 +17,21 @@ import (
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	aos "github.com/aquasecurity/trivy/pkg/fanal/analyzer/os"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
+	"github.com/aquasecurity/trivy/pkg/javadb"
+	"github.com/aquasecurity/trivy/pkg/mapfs"
+	"github.com/aquasecurity/trivy/pkg/syncx"
 
 	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/imgconf/apk"
 	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/language/java/jar"
+	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/language/python/poetry"
 	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/language/ruby/bundler"
 	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/os/alpine"
 	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/os/ubuntu"
 	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/pkg/apk"
 	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/repo/apk"
 	_ "github.com/aquasecurity/trivy/pkg/fanal/handler/all"
+
+	_ "modernc.org/sqlite"
 )
 
 func TestAnalysisResult_Merge(t *testing.T) {
@@ -546,6 +553,100 @@ func TestAnalyzerGroup_AnalyzeFile(t *testing.T) {
 	}
 }
 
+func TestAnalyzerGroup_PostAnalyze(t *testing.T) {
+	tests := []struct {
+		name         string
+		filePaths    []string
+		analyzerType analyzer.Type
+		want         *analyzer.AnalysisResult
+		wantErr      string
+	}{
+		{
+			name:         "jars with invalid jar",
+			filePaths:    []string{"testdata/post-apps/jar/jackson-annotations-2.15.0-rc2.jar", "testdata/post-apps/jar/invalid.jar"},
+			analyzerType: analyzer.TypeJar,
+			want: &analyzer.AnalysisResult{
+				Applications: []types.Application{
+					{
+						Type:     string(analyzer.TypeJar),
+						FilePath: "testdata/post-apps/jar/jackson-annotations-2.15.0-rc2.jar",
+						Libraries: []types.Package{
+							{
+								Name:     "com.fasterxml.jackson.core:jackson-annotations",
+								Version:  "2.15.0-rc2",
+								FilePath: "testdata/post-apps/jar/jackson-annotations-2.15.0-rc2.jar",
+							},
+						},
+					},
+				},
+			},
+		},
+		{
+			name:         "poetry files with invalid file",
+			filePaths:    []string{"testdata/post-apps/poetry/happy/poetry.lock", "testdata/post-apps/poetry/sad/poetry.lock"},
+			analyzerType: analyzer.TypePoetry,
+			want: &analyzer.AnalysisResult{
+				Applications: []types.Application{
+					{
+						Type:     string(analyzer.TypePoetry),
+						FilePath: "testdata/post-apps/poetry/happy/poetry.lock",
+						Libraries: []types.Package{
+							{
+								ID:      "certifi@2022.12.7",
+								Name:    "certifi",
+								Version: "2022.12.7",
+							},
+						},
+					},
+				},
+			},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+
+			got := new(analyzer.AnalysisResult)
+			a, err := analyzer.NewAnalyzerGroup(analyzer.AnalyzerOptions{})
+			if err != nil && tt.wantErr != "" {
+				require.NotNil(t, err)
+				assert.Contains(t, err.Error(), tt.wantErr)
+				return
+			}
+			require.NoError(t, err)
+
+			files := new(syncx.Map[analyzer.Type, *mapfs.FS])
+
+			for _, filePath := range tt.filePaths {
+				mfs, _ := files.LoadOrStore(tt.analyzerType, mapfs.New())
+				if d := filepath.Dir(filePath); d != "." {
+					err = mfs.MkdirAll(d, os.ModePerm)
+					assert.NoError(t, err)
+				}
+				err = mfs.WriteFile(filePath, filePath)
+				assert.NoError(t, err)
+			}
+
+			if tt.analyzerType == analyzer.TypeJar {
+				// init java-trivy-db with skip update
+				javadb.Init("./language/java/jar/testdata", "ghcr.io/aquasecurity/trivy-java-db", true, false, false)
+
+			}
+
+			ctx := context.Background()
+			err = a.PostAnalyze(ctx, files, got, analyzer.AnalysisOptions{})
+
+			if tt.wantErr != "" {
+				require.NotNil(t, err)
+				assert.Contains(t, err.Error(), tt.wantErr)
+				return
+			}
+
+			require.NoError(t, err)
+			assert.Equal(t, tt.want, got)
+		})
+	}
+}
+
 func TestAnalyzerGroup_AnalyzerVersions(t *testing.T) {
 	tests := []struct {
 		name     string
@@ -565,7 +666,8 @@ func TestAnalyzerGroup_AnalyzerVersions(t *testing.T) {
 					"ubuntu-esm": 1,
 				},
 				PostAnalyzers: map[string]int{
-					"jar": 1,
+					"jar":    1,
+					"poetry": 1,
 				},
 			},
 		},
@@ -583,7 +685,9 @@ func TestAnalyzerGroup_AnalyzerVersions(t *testing.T) {
 					"apk":     2,
 					"bundler": 1,
 				},
-				PostAnalyzers: map[string]int{},
+				PostAnalyzers: map[string]int{
+					"poetry": 1,
+				},
 			},
 		},
 	}
