@@ -62,6 +62,7 @@ trivy sbom [flags] SBOM_PATH
   -t, --template string             output template
       --token string                for authentication in client/server mode
       --token-header string         specify a header name for token in client/server mode (default "Trivy-Token")
+      --vex string                  [EXPERIMENTAL] file path to VEX
       --vuln-type string            comma-separated list of vulnerability types (os,library) (default "os,library")
 ```
 
