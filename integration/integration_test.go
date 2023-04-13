@@ -15,6 +15,7 @@ import (
 	"time"
 
 	cdx "github.com/CycloneDX/cyclonedx-go"
+	spdxjson "github.com/spdx/tools-golang/json"
 	"github.com/spdx/tools-golang/spdx"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -162,12 +163,12 @@ func readCycloneDX(t *testing.T, filePath string) *cdx.BOM {
 	return bom
 }
 
-func readSpdxJson(t *testing.T, filePath string) *spdx.Document2_2 {
+func readSpdxJson(t *testing.T, filePath string) *spdx.Document {
 	f, err := os.Open(filePath)
 	require.NoError(t, err)
 	defer f.Close()
 
-	bom, err := jsonloader.Load2_2(f)
+	bom, err := spdxjson.Read(f)
 	require.NoError(t, err)
 
 	sort.Slice(bom.Relationships, func(i, j int) bool {
