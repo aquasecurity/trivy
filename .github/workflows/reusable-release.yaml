@@ -83,9 +83,9 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.ORG_REPO_TOKEN }}
 
-      ## push images to registries
-      ## only for canary build
-      ## the custom Dockerfile.canary is necessary, because GoReleaser Free didn't push images with `--snapshot` flag.
+      # Push images to registries (only for canary build)
+      # The custom Dockerfile.canary is necessary
+      # because GoReleaser Free doesn't support pushing images with the `--snapshot` flag.
       - name: Build and push
         if: ${{ inputs.goreleaser_config == 'goreleaser-canary.yml' }}
         uses: docker/build-push-action@v4
