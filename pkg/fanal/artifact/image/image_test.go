@@ -35,24 +35,32 @@ import (
 func TestArtifact_Inspect(t *testing.T) {
 	alpinePkgs := []types.Package{
 		{
-			ID:   "alpine-baselayout@3.2.0-r3",
-			Name: "alpine-baselayout", Version: "3.2.0-r3",
-			SrcName: "alpine-baselayout", SrcVersion: "3.2.0-r3",
-			Licenses: []string{"GPL-2.0"},
+			ID:         "alpine-baselayout@3.2.0-r3",
+			Name:       "alpine-baselayout",
+			Version:    "3.2.0-r3",
+			SrcName:    "alpine-baselayout",
+			SrcVersion: "3.2.0-r3",
+			Licenses:   []string{"GPL-2.0"},
 			DependsOn: []string{
 				"busybox@1.31.1-r9",
 				"musl@1.1.24-r2",
 			},
 		},
 		{
-			ID:   "alpine-keys@2.1-r2",
-			Name: "alpine-keys", Version: "2.1-r2", SrcName: "alpine-keys",
-			SrcVersion: "2.1-r2", Licenses: []string{"MIT"},
+			ID:         "alpine-keys@2.1-r2",
+			Name:       "alpine-keys",
+			Version:    "2.1-r2",
+			SrcName:    "alpine-keys",
+			SrcVersion: "2.1-r2",
+			Licenses:   []string{"MIT"},
 		},
 		{
-			ID:   "apk-tools@2.10.4-r3",
-			Name: "apk-tools", Version: "2.10.4-r3", SrcName: "apk-tools",
-			SrcVersion: "2.10.4-r3", Licenses: []string{"GPL-2.0"},
+			ID:         "apk-tools@2.10.4-r3",
+			Name:       "apk-tools",
+			Version:    "2.10.4-r3",
+			SrcName:    "apk-tools",
+			SrcVersion: "2.10.4-r3",
+			Licenses:   []string{"GPL-2.0"},
 			DependsOn: []string{
 				"libcrypto1.1@1.1.1d-r3",
 				"libssl1.1@1.1.1d-r3",
@@ -61,49 +69,68 @@ func TestArtifact_Inspect(t *testing.T) {
 			},
 		},
 		{
-			ID:   "busybox@1.31.1-r9",
-			Name: "busybox", Version: "1.31.1-r9", SrcName: "busybox",
-			SrcVersion: "1.31.1-r9", Licenses: []string{"GPL-2.0"},
+			ID:         "busybox@1.31.1-r9",
+			Name:       "busybox",
+			Version:    "1.31.1-r9",
+			SrcName:    "busybox",
+			SrcVersion: "1.31.1-r9",
+			Licenses:   []string{"GPL-2.0"},
 			DependsOn: []string{
 				"musl@1.1.24-r2",
 			},
 		},
 		{
-			ID:   "ca-certificates-cacert@20191127-r1",
-			Name: "ca-certificates-cacert", Version: "20191127-r1",
-			SrcName: "ca-certificates", SrcVersion: "20191127-r1",
-			Licenses: []string{"MPL-2.0", "GPL-2.0"},
+			ID:         "ca-certificates-cacert@20191127-r1",
+			Name:       "ca-certificates-cacert",
+			Version:    "20191127-r1",
+			SrcName:    "ca-certificates",
+			SrcVersion: "20191127-r1",
+			Licenses: []string{
+				"MPL-2.0",
+				"GPL-2.0",
+			},
 		},
 		{
-			ID:   "libc-utils@0.7.2-r0",
-			Name: "libc-utils", Version: "0.7.2-r0", SrcName: "libc-dev",
-			SrcVersion: "0.7.2-r0", Licenses: []string{"BSD-3-Clause"},
+			ID:         "libc-utils@0.7.2-r0",
+			Name:       "libc-utils",
+			Version:    "0.7.2-r0",
+			SrcName:    "libc-dev",
+			SrcVersion: "0.7.2-r0",
+			Licenses:   []string{"BSD-3-Clause"},
 			DependsOn: []string{
 				"musl-utils@1.1.24-r2",
 			},
 		},
 		{
-			ID:   "libcrypto1.1@1.1.1d-r3",
-			Name: "libcrypto1.1", Version: "1.1.1d-r3", SrcName: "openssl",
-			SrcVersion: "1.1.1d-r3", Licenses: []string{"OpenSSL"},
+			ID:         "libcrypto1.1@1.1.1d-r3",
+			Name:       "libcrypto1.1",
+			Version:    "1.1.1d-r3",
+			SrcName:    "openssl",
+			SrcVersion: "1.1.1d-r3",
+			Licenses:   []string{"OpenSSL"},
 			DependsOn: []string{
 				"musl@1.1.24-r2",
 			},
 		},
 		{
-			ID:   "libssl1.1@1.1.1d-r3",
-			Name: "libssl1.1", Version: "1.1.1d-r3", SrcName: "openssl",
-			SrcVersion: "1.1.1d-r3", Licenses: []string{"OpenSSL"},
+			ID:         "libssl1.1@1.1.1d-r3",
+			Name:       "libssl1.1",
+			Version:    "1.1.1d-r3",
+			SrcName:    "openssl",
+			SrcVersion: "1.1.1d-r3",
+			Licenses:   []string{"OpenSSL"},
 			DependsOn: []string{
 				"libcrypto1.1@1.1.1d-r3",
 				"musl@1.1.24-r2",
 			},
 		},
 		{
-			ID:   "libtls-standalone@2.9.1-r0",
-			Name: "libtls-standalone", Version: "2.9.1-r0",
-			SrcName: "libtls-standalone", SrcVersion: "2.9.1-r0",
-			Licenses: []string{"ISC"},
+			ID:         "libtls-standalone@2.9.1-r0",
+			Name:       "libtls-standalone",
+			Version:    "2.9.1-r0",
+			SrcName:    "libtls-standalone",
+			SrcVersion: "2.9.1-r0",
+			Licenses:   []string{"ISC"},
 			DependsOn: []string{
 				"ca-certificates-cacert@20191127-r1",
 				"libcrypto1.1@1.1.1d-r3",
@@ -112,40 +139,59 @@ func TestArtifact_Inspect(t *testing.T) {
 			},
 		},
 		{
-			ID:   "musl@1.1.24-r2",
-			Name: "musl", Version: "1.1.24-r2", SrcName: "musl",
-			SrcVersion: "1.1.24-r2", Licenses: []string{"MIT"},
+			ID:         "musl@1.1.24-r2",
+			Name:       "musl",
+			Version:    "1.1.24-r2",
+			SrcName:    "musl",
+			SrcVersion: "1.1.24-r2",
+			Licenses:   []string{"MIT"},
 		},
 		{
-			ID:   "musl-utils@1.1.24-r2",
-			Name: "musl-utils", Version: "1.1.24-r2", SrcName: "musl",
-			SrcVersion: "1.1.24-r2", Licenses: []string{"MIT", "BSD-3-Clause", "GPL-2.0"},
+			ID:         "musl-utils@1.1.24-r2",
+			Name:       "musl-utils",
+			Version:    "1.1.24-r2",
+			SrcName:    "musl",
+			SrcVersion: "1.1.24-r2",
+			Licenses: []string{
+				"MIT",
+				"BSD-3-Clause",
+				"GPL-2.0",
+			},
 			DependsOn: []string{
 				"musl@1.1.24-r2",
 				"scanelf@1.2.4-r0",
 			},
 		},
 		{
-			ID:   "scanelf@1.2.4-r0",
-			Name: "scanelf", Version: "1.2.4-r0", SrcName: "pax-utils",
-			SrcVersion: "1.2.4-r0", Licenses: []string{"GPL-2.0"},
+			ID:         "scanelf@1.2.4-r0",
+			Name:       "scanelf",
+			Version:    "1.2.4-r0",
+			SrcName:    "pax-utils",
+			SrcVersion: "1.2.4-r0",
+			Licenses:   []string{"GPL-2.0"},
 			DependsOn: []string{
 				"musl@1.1.24-r2",
 			},
 		},
 		{
-			ID:   "ssl_client@1.31.1-r9",
-			Name: "ssl_client", Version: "1.31.1-r9", SrcName: "busybox",
-			SrcVersion: "1.31.1-r9", Licenses: []string{"GPL-2.0"},
+			ID:         "ssl_client@1.31.1-r9",
+			Name:       "ssl_client",
+			Version:    "1.31.1-r9",
+			SrcName:    "busybox",
+			SrcVersion: "1.31.1-r9",
+			Licenses:   []string{"GPL-2.0"},
 			DependsOn: []string{
 				"libtls-standalone@2.9.1-r0",
 				"musl@1.1.24-r2",
 			},
 		},
 		{
-			ID:   "zlib@1.2.11-r3",
-			Name: "zlib", Version: "1.2.11-r3", SrcName: "zlib",
-			SrcVersion: "1.2.11-r3", Licenses: []string{"Zlib"},
+			ID:         "zlib@1.2.11-r3",
+			Name:       "zlib",
+			Version:    "1.2.11-r3",
+			SrcName:    "zlib",
+			SrcVersion: "1.2.11-r3",
+			Licenses:   []string{"Zlib"},
 			DependsOn: []string{
 				"musl@1.1.24-r2",
 			},
@@ -170,18 +216,18 @@ func TestArtifact_Inspect(t *testing.T) {
 			},
 			missingBlobsExpectation: cache.ArtifactCacheMissingBlobsExpectation{
 				Args: cache.ArtifactCacheMissingBlobsArgs{
-					ArtifactID: "sha256:059741cfbdc039e88e337d621e57e03e99b0e0a75df32f2027ebef13f839af65",
-					BlobIDs:    []string{"sha256:a07b19e0e0a4339c00d982f6d80f305cd9dbb98f88b3c74e57b97574b9ce9ba3"},
+					ArtifactID: "sha256:c232b7d8ac8aa08aa767313d0b53084c4380d1c01a213a5971bdb039e6538313",
+					BlobIDs:    []string{"sha256:1ee72875fbb6def206801205982d81b4c2be24974906823266224527badad8e3"},
 				},
 				Returns: cache.ArtifactCacheMissingBlobsReturns{
 					MissingArtifact: true,
-					MissingBlobIDs:  []string{"sha256:a07b19e0e0a4339c00d982f6d80f305cd9dbb98f88b3c74e57b97574b9ce9ba3"},
+					MissingBlobIDs:  []string{"sha256:1ee72875fbb6def206801205982d81b4c2be24974906823266224527badad8e3"},
 				},
 			},
 			putBlobExpectations: []cache.ArtifactCachePutBlobExpectation{
 				{
 					Args: cache.ArtifactCachePutBlobArgs{
-						BlobID: "sha256:a07b19e0e0a4339c00d982f6d80f305cd9dbb98f88b3c74e57b97574b9ce9ba3",
+						BlobID: "sha256:1ee72875fbb6def206801205982d81b4c2be24974906823266224527badad8e3",
 						BlobInfo: types.BlobInfo{
 							SchemaVersion: types.BlobJSONSchemaVersion,
 							Digest:        "",
@@ -233,7 +279,7 @@ func TestArtifact_Inspect(t *testing.T) {
 			putArtifactExpectations: []cache.ArtifactCachePutArtifactExpectation{
 				{
 					Args: cache.ArtifactCachePutArtifactArgs{
-						ArtifactID: "sha256:059741cfbdc039e88e337d621e57e03e99b0e0a75df32f2027ebef13f839af65",
+						ArtifactID: "sha256:c232b7d8ac8aa08aa767313d0b53084c4380d1c01a213a5971bdb039e6538313",
 						ArtifactInfo: types.ArtifactInfo{
 							SchemaVersion: types.ArtifactJSONSchemaVersion,
 							Architecture:  "amd64",
@@ -247,8 +293,8 @@ func TestArtifact_Inspect(t *testing.T) {
 			want: types.ArtifactReference{
 				Name:    "../../test/testdata/alpine-311.tar.gz",
 				Type:    types.ArtifactContainerImage,
-				ID:      "sha256:059741cfbdc039e88e337d621e57e03e99b0e0a75df32f2027ebef13f839af65",
-				BlobIDs: []string{"sha256:a07b19e0e0a4339c00d982f6d80f305cd9dbb98f88b3c74e57b97574b9ce9ba3"},
+				ID:      "sha256:c232b7d8ac8aa08aa767313d0b53084c4380d1c01a213a5971bdb039e6538313",
+				BlobIDs: []string{"sha256:1ee72875fbb6def206801205982d81b4c2be24974906823266224527badad8e3"},
 				ImageMetadata: types.ImageMetadata{
 					ID: "sha256:a187dde48cd289ac374ad8539930628314bc581a481cdb41409c9289419ddb72",
 					DiffIDs: []string{
@@ -278,7 +324,8 @@ func TestArtifact_Inspect(t *testing.T) {
 						},
 						OS: "linux",
 						RootFS: v1.RootFS{
-							Type: "layers", DiffIDs: []v1.Hash{
+							Type: "layers",
+							DiffIDs: []v1.Hash{
 								{
 									Algorithm: "sha256",
 									Hex:       "beee9f30bc1f711043e78d4a2be0668955d4b761d587d6f60c2c8dc081efb203",
@@ -304,27 +351,27 @@ func TestArtifact_Inspect(t *testing.T) {
 			},
 			missingBlobsExpectation: cache.ArtifactCacheMissingBlobsExpectation{
 				Args: cache.ArtifactCacheMissingBlobsArgs{
-					ArtifactID: "sha256:a646bb11d39c149d4aaf9b888233048e0848304e5abd75667ea6f21d540d800c",
+					ArtifactID: "sha256:33f9415ed2cd5a9cef5d5144333619745b9ec0f851f0684dd45fa79c6b26a650",
 					BlobIDs: []string{
-						"sha256:3bfd543b4467abb972bfeeaa7a7d75ee18e7c92f077600d48fd1532f09129b54",
-						"sha256:9f8cf74dff8cad6bb4df8fc0fa81dca446bd6f44c2d811a167ffca34ab90a6f8",
-						"sha256:7487a77e30f32bd00fc35322a7fa308686bf3da17bb63f6a2bb2e9398a9a0357",
-						"sha256:9aead687f9207ee718401fef3174f8e5b9a99114f3bcdcae18ddc34d88ed4906",
+						"sha256:673f305ef9cede893bc9a1851da8152b1f7597321e06f551a1d875f20f947f5b",
+						"sha256:2886467019d514a49e74ce4507da571023c97798e3f0f3805e9c9826b5b993ef",
+						"sha256:f77cea0f8767d9520ea9001de1f1102e0e5e85ccf726c91271e3d63e963ab4d4",
+						"sha256:c5233a461c9ead1191adfa7a34d9cd66e6b319460939bbf0f085a3fa0faae635",
 					},
 				},
 				Returns: cache.ArtifactCacheMissingBlobsReturns{
 					MissingBlobIDs: []string{
-						"sha256:3bfd543b4467abb972bfeeaa7a7d75ee18e7c92f077600d48fd1532f09129b54",
-						"sha256:9f8cf74dff8cad6bb4df8fc0fa81dca446bd6f44c2d811a167ffca34ab90a6f8",
-						"sha256:7487a77e30f32bd00fc35322a7fa308686bf3da17bb63f6a2bb2e9398a9a0357",
-						"sha256:9aead687f9207ee718401fef3174f8e5b9a99114f3bcdcae18ddc34d88ed4906",
+						"sha256:673f305ef9cede893bc9a1851da8152b1f7597321e06f551a1d875f20f947f5b",
+						"sha256:2886467019d514a49e74ce4507da571023c97798e3f0f3805e9c9826b5b993ef",
+						"sha256:f77cea0f8767d9520ea9001de1f1102e0e5e85ccf726c91271e3d63e963ab4d4",
+						"sha256:c5233a461c9ead1191adfa7a34d9cd66e6b319460939bbf0f085a3fa0faae635",
 					},
 				},
 			},
 			putBlobExpectations: []cache.ArtifactCachePutBlobExpectation{
 				{
 					Args: cache.ArtifactCachePutBlobArgs{
-						BlobID: "sha256:3bfd543b4467abb972bfeeaa7a7d75ee18e7c92f077600d48fd1532f09129b54",
+						BlobID: "sha256:673f305ef9cede893bc9a1851da8152b1f7597321e06f551a1d875f20f947f5b",
 						BlobInfo: types.BlobInfo{
 							SchemaVersion: types.BlobJSONSchemaVersion,
 							Digest:        "",
@@ -339,28 +386,43 @@ func TestArtifact_Inspect(t *testing.T) {
 									FilePath: "var/lib/dpkg/status.d/base",
 									Packages: []types.Package{
 										{
-											ID:   "base-files@9.9+deb9u9",
-											Name: "base-files", Version: "9.9+deb9u9", SrcName: "base-files",
+											ID:         "base-files@9.9+deb9u9",
+											Name:       "base-files",
+											Version:    "9.9+deb9u9",
+											SrcName:    "base-files",
 											SrcVersion: "9.9+deb9u9",
 											Maintainer: "Santiago Vila <sanvila@debian.org>",
+											Arch:       "amd64",
 										},
 									},
 								},
 								{
 									FilePath: "var/lib/dpkg/status.d/netbase",
 									Packages: []types.Package{
-										{ID: "netbase@5.4", Name: "netbase", Version: "5.4",
-											SrcName: "netbase", SrcVersion: "5.4", Maintainer: "Marco d'Itri <md@linux.it>"},
+										{
+											ID:         "netbase@5.4",
+											Name:       "netbase",
+											Version:    "5.4",
+											SrcName:    "netbase",
+											SrcVersion: "5.4",
+											Maintainer: "Marco d'Itri <md@linux.it>",
+											Arch:       "all",
+										},
 									},
 								},
 								{
 									FilePath: "var/lib/dpkg/status.d/tzdata",
 									Packages: []types.Package{
 										{
-											ID:   "tzdata@2019a-0+deb9u1",
-											Name: "tzdata", Version: "2019a-0+deb9u1", SrcName: "tzdata",
-											SrcVersion: "2019a-0+deb9u1",
+											ID:         "tzdata@2019a-0+deb9u1",
+											Name:       "tzdata",
+											Version:    "2019a",
+											SrcName:    "tzdata",
+											Release:    "0+deb9u1",
+											SrcVersion: "2019a",
+											SrcRelease: "0+deb9u1",
 											Maintainer: "GNU Libc Maintainers <debian-glibc@lists.debian.org>",
+											Arch:       "all",
 										},
 									},
 								},
@@ -397,7 +459,7 @@ func TestArtifact_Inspect(t *testing.T) {
 				},
 				{
 					Args: cache.ArtifactCachePutBlobArgs{
-						BlobID: "sha256:9f8cf74dff8cad6bb4df8fc0fa81dca446bd6f44c2d811a167ffca34ab90a6f8",
+						BlobID: "sha256:2886467019d514a49e74ce4507da571023c97798e3f0f3805e9c9826b5b993ef",
 						BlobInfo: types.BlobInfo{
 							SchemaVersion: types.BlobJSONSchemaVersion,
 							Digest:        "",
@@ -408,10 +470,15 @@ func TestArtifact_Inspect(t *testing.T) {
 									FilePath: "var/lib/dpkg/status.d/libc6",
 									Packages: []types.Package{
 										{
-											ID:   "libc6@2.24-11+deb9u4",
-											Name: "libc6", Version: "2.24-11+deb9u4", SrcName: "glibc",
-											SrcVersion: "2.24-11+deb9u4",
+											ID:         "libc6@2.24-11+deb9u4",
+											Name:       "libc6",
+											Version:    "2.24",
+											Release:    "11+deb9u4",
+											SrcName:    "glibc",
+											SrcVersion: "2.24",
+											SrcRelease: "11+deb9u4",
 											Maintainer: "GNU Libc Maintainers <debian-glibc@lists.debian.org>",
+											Arch:       "amd64",
 										},
 									},
 								},
@@ -419,10 +486,15 @@ func TestArtifact_Inspect(t *testing.T) {
 									FilePath: "var/lib/dpkg/status.d/libssl1",
 									Packages: []types.Package{
 										{
-											ID:   "libssl1.1@1.1.0k-1~deb9u1",
-											Name: "libssl1.1", Version: "1.1.0k-1~deb9u1", SrcName: "openssl",
-											SrcVersion: "1.1.0k-1~deb9u1",
+											ID:         "libssl1.1@1.1.0k-1~deb9u1",
+											Name:       "libssl1.1",
+											Version:    "1.1.0k",
+											SrcName:    "openssl",
+											Release:    "1~deb9u1",
+											SrcVersion: "1.1.0k",
+											SrcRelease: "1~deb9u1",
 											Maintainer: "Debian OpenSSL Team <pkg-openssl-devel@lists.alioth.debian.org>",
+											Arch:       "amd64",
 										},
 									},
 								},
@@ -430,10 +502,15 @@ func TestArtifact_Inspect(t *testing.T) {
 									FilePath: "var/lib/dpkg/status.d/openssl",
 									Packages: []types.Package{
 										{
-											ID:   "openssl@1.1.0k-1~deb9u1",
-											Name: "openssl", Version: "1.1.0k-1~deb9u1", SrcName: "openssl",
-											SrcVersion: "1.1.0k-1~deb9u1",
+											ID:         "openssl@1.1.0k-1~deb9u1",
+											Name:       "openssl",
+											Version:    "1.1.0k",
+											SrcName:    "openssl",
+											Release:    "1~deb9u1",
+											SrcVersion: "1.1.0k",
+											SrcRelease: "1~deb9u1",
 											Maintainer: "Debian OpenSSL Team <pkg-openssl-devel@lists.alioth.debian.org>",
+											Arch:       "amd64",
 										},
 									},
 								},
@@ -478,7 +555,7 @@ func TestArtifact_Inspect(t *testing.T) {
 				},
 				{
 					Args: cache.ArtifactCachePutBlobArgs{
-						BlobID: "sha256:7487a77e30f32bd00fc35322a7fa308686bf3da17bb63f6a2bb2e9398a9a0357",
+						BlobID: "sha256:f77cea0f8767d9520ea9001de1f1102e0e5e85ccf726c91271e3d63e963ab4d4",
 						BlobInfo: types.BlobInfo{
 							SchemaVersion: types.BlobJSONSchemaVersion,
 							Digest:        "",
@@ -486,22 +563,113 @@ func TestArtifact_Inspect(t *testing.T) {
 							CreatedBy:     "COPY file:842584685f26edb24dc305d76894f51cfda2bad0c24a05e727f9d4905d184a70 in /php-app/composer.lock ",
 							Applications: []types.Application{
 								{
-									Type: "composer", FilePath: "php-app/composer.lock",
+									Type:     "composer",
+									FilePath: "php-app/composer.lock",
 									Libraries: []types.Package{
-										{Name: "guzzlehttp/guzzle", Version: "6.2.0"},
-										{Name: "guzzlehttp/promises", Version: "v1.3.1"},
-										{Name: "guzzlehttp/psr7", Version: "1.5.2"},
-										{Name: "laravel/installer", Version: "v2.0.1"},
-										{Name: "pear/log", Version: "1.13.1"},
-										{Name: "pear/pear_exception", Version: "v1.0.0"},
-										{Name: "psr/http-message", Version: "1.0.1"},
-										{Name: "ralouphie/getallheaders", Version: "2.0.5"},
-										{Name: "symfony/console", Version: "v4.2.7"},
-										{Name: "symfony/contracts", Version: "v1.0.2"},
-										{Name: "symfony/filesystem", Version: "v4.2.7"},
-										{Name: "symfony/polyfill-ctype", Version: "v1.11.0"},
-										{Name: "symfony/polyfill-mbstring", Version: "v1.11.0"},
-										{Name: "symfony/process", Version: "v4.2.7"},
+										{
+											ID:        "guzzlehttp/guzzle@6.2.0",
+											Name:      "guzzlehttp/guzzle",
+											Version:   "6.2.0",
+											Licenses:  []string{"MIT"},
+											DependsOn: []string{"guzzlehttp/promises@v1.3.1", "guzzlehttp/psr7@1.5.2"},
+											Locations: []types.Location{{StartLine: 9, EndLine: 73}},
+										},
+										{
+											ID:        "guzzlehttp/promises@v1.3.1",
+											Name:      "guzzlehttp/promises",
+											Version:   "v1.3.1",
+											Licenses:  []string{"MIT"},
+											Locations: []types.Location{{StartLine: 74, EndLine: 124}},
+										},
+										{
+											ID:        "guzzlehttp/psr7@1.5.2",
+											Name:      "guzzlehttp/psr7",
+											Version:   "1.5.2",
+											Licenses:  []string{"MIT"},
+											DependsOn: []string{"psr/http-message@1.0.1", "ralouphie/getallheaders@2.0.5"},
+											Locations: []types.Location{{StartLine: 125, EndLine: 191}},
+										},
+										{
+											ID:        "laravel/installer@v2.0.1",
+											Name:      "laravel/installer",
+											Version:   "v2.0.1",
+											Licenses:  []string{"MIT"},
+											DependsOn: []string{"guzzlehttp/guzzle@6.2.0", "symfony/console@v4.2.7", "symfony/filesystem@v4.2.7", "symfony/process@v4.2.7"},
+											Locations: []types.Location{{StartLine: 192, EndLine: 237}},
+										},
+										{
+											ID:        "pear/log@1.13.1",
+											Name:      "pear/log",
+											Version:   "1.13.1",
+											Licenses:  []string{"MIT"},
+											DependsOn: []string{"pear/pear_exception@v1.0.0"},
+											Locations: []types.Location{{StartLine: 238, EndLine: 290}},
+										},
+										{
+											ID:        "pear/pear_exception@v1.0.0",
+											Name:      "pear/pear_exception",
+											Version:   "v1.0.0",
+											Licenses:  []string{"BSD-2-Clause"},
+											Locations: []types.Location{{StartLine: 291, EndLine: 345}},
+										},
+										{
+											ID:        "psr/http-message@1.0.1",
+											Name:      "psr/http-message",
+											Version:   "1.0.1",
+											Licenses:  []string{"MIT"},
+											Locations: []types.Location{{StartLine: 346, EndLine: 395}},
+										},
+										{
+											ID:        "ralouphie/getallheaders@2.0.5",
+											Name:      "ralouphie/getallheaders",
+											Version:   "2.0.5",
+											Licenses:  []string{"MIT"},
+											Locations: []types.Location{{StartLine: 396, EndLine: 435}},
+										},
+										{
+											ID:        "symfony/console@v4.2.7",
+											Name:      "symfony/console",
+											Version:   "v4.2.7",
+											Licenses:  []string{"MIT"},
+											DependsOn: []string{"symfony/contracts@v1.0.2", "symfony/polyfill-mbstring@v1.11.0"},
+											Locations: []types.Location{{StartLine: 436, EndLine: 507}},
+										},
+										{
+											ID:        "symfony/contracts@v1.0.2",
+											Name:      "symfony/contracts",
+											Version:   "v1.0.2",
+											Licenses:  []string{"MIT"},
+											Locations: []types.Location{{StartLine: 508, EndLine: 575}},
+										},
+										{
+											ID:        "symfony/filesystem@v4.2.7",
+											Name:      "symfony/filesystem",
+											Version:   "v4.2.7",
+											Licenses:  []string{"MIT"},
+											DependsOn: []string{"symfony/polyfill-ctype@v1.11.0"},
+											Locations: []types.Location{{StartLine: 576, EndLine: 625}},
+										},
+										{
+											ID:        "symfony/polyfill-ctype@v1.11.0",
+											Name:      "symfony/polyfill-ctype",
+											Version:   "v1.11.0",
+											Licenses:  []string{"MIT"},
+											Locations: []types.Location{{StartLine: 626, EndLine: 683}},
+										},
+										{
+											ID:        "symfony/polyfill-mbstring@v1.11.0",
+											Name:      "symfony/polyfill-mbstring",
+											Version:   "v1.11.0",
+											Licenses:  []string{"MIT"},
+											Locations: []types.Location{{StartLine: 684, EndLine: 742}},
+										},
+										{
+											ID:        "symfony/process@v4.2.7",
+											Name:      "symfony/process",
+											Version:   "v4.2.7",
+											Licenses:  []string{"MIT"},
+											Locations: []types.Location{{StartLine: 743, EndLine: 791}},
+										},
 									},
 								},
 							},
@@ -511,7 +679,7 @@ func TestArtifact_Inspect(t *testing.T) {
 				},
 				{
 					Args: cache.ArtifactCachePutBlobArgs{
-						BlobID: "sha256:9aead687f9207ee718401fef3174f8e5b9a99114f3bcdcae18ddc34d88ed4906",
+						BlobID: "sha256:c5233a461c9ead1191adfa7a34d9cd66e6b319460939bbf0f085a3fa0faae635",
 						BlobInfo: types.BlobInfo{
 							SchemaVersion: types.BlobJSONSchemaVersion,
 							Digest:        "",
@@ -519,62 +687,792 @@ func TestArtifact_Inspect(t *testing.T) {
 							CreatedBy:     "COPY file:c6d0373d380252b91829a5bb3c81d5b1afa574c91cef7752d18170a231c31f6d in /ruby-app/Gemfile.lock ",
 							Applications: []types.Application{
 								{
-									Type: types.Bundler, FilePath: "ruby-app/Gemfile.lock",
+									Type:     "bundler",
+									FilePath: "ruby-app/Gemfile.lock",
 									Libraries: []types.Package{
-										{Name: "actioncable", Version: "5.2.3"},
-										{Name: "actionmailer", Version: "5.2.3"},
-										{Name: "actionpack", Version: "5.2.3"},
-										{Name: "actionview", Version: "5.2.3"},
-										{Name: "activejob", Version: "5.2.3"},
-										{Name: "activemodel", Version: "5.2.3"},
-										{Name: "activerecord", Version: "5.2.3"},
-										{Name: "activestorage", Version: "5.2.3"},
-										{Name: "activesupport", Version: "5.2.3"},
-										{Name: "arel", Version: "9.0.0"},
-										{Name: "ast", Version: "2.4.0"},
-										{Name: "builder", Version: "3.2.3"},
-										{Name: "coderay", Version: "1.1.2"},
-										{Name: "concurrent-ruby", Version: "1.1.5"},
-										{Name: "crass", Version: "1.0.4"},
-										{Name: "dotenv", Version: "2.7.2"},
-										{Name: "erubi", Version: "1.8.0"},
-										{Name: "faker", Version: "1.9.3"},
-										{Name: "globalid", Version: "0.4.2"},
-										{Name: "i18n", Version: "1.6.0"},
-										{Name: "jaro_winkler", Version: "1.5.2"},
-										{Name: "json", Version: "2.2.0"},
-										{Name: "loofah", Version: "2.2.3"},
-										{Name: "mail", Version: "2.7.1"},
-										{Name: "marcel", Version: "0.3.3"},
-										{Name: "method_source", Version: "0.9.2"},
-										{Name: "mimemagic", Version: "0.3.3"},
-										{Name: "mini_mime", Version: "1.0.1"},
-										{Name: "mini_portile2", Version: "2.4.0"},
-										{Name: "minitest", Version: "5.11.3"},
-										{Name: "nio4r", Version: "2.3.1"},
-										{Name: "nokogiri", Version: "1.10.3"},
-										{Name: "parallel", Version: "1.17.0"},
-										{Name: "parser", Version: "2.6.3.0"},
-										{Name: "pry", Version: "0.12.2"},
-										{Name: "psych", Version: "3.1.0"},
-										{Name: "rack", Version: "2.0.7"},
-										{Name: "rack-test", Version: "1.1.0"},
-										{Name: "rails", Version: "5.2.0"},
-										{Name: "rails-dom-testing", Version: "2.0.3"},
-										{Name: "rails-html-sanitizer", Version: "1.0.3"},
-										{Name: "railties", Version: "5.2.3"},
-										{Name: "rainbow", Version: "3.0.0"},
-										{Name: "rake", Version: "12.3.2"},
-										{Name: "rubocop", Version: "0.67.2"},
-										{Name: "ruby-progressbar", Version: "1.10.0"},
-										{Name: "sprockets", Version: "3.7.2"},
-										{Name: "sprockets-rails", Version: "3.2.1"},
-										{Name: "thor", Version: "0.20.3"},
-										{Name: "thread_safe", Version: "0.3.6"},
-										{Name: "tzinfo", Version: "1.2.5"},
-										{Name: "unicode-display_width", Version: "1.5.0"},
-										{Name: "websocket-driver", Version: "0.7.0"},
-										{Name: "websocket-extensions", Version: "0.1.3"},
+										{
+											ID:       "actioncable@5.2.3",
+											Name:     "actioncable",
+											Version:  "5.2.3",
+											Indirect: true,
+											DependsOn: []string{
+												"actionpack@5.2.3",
+												"nio4r@2.3.1",
+												"websocket-driver@0.7.0",
+											},
+											Locations: []types.Location{
+												{
+													StartLine: 4,
+													EndLine:   4,
+												},
+											},
+										},
+										{
+											ID:       "actionmailer@5.2.3",
+											Name:     "actionmailer",
+											Version:  "5.2.3",
+											Indirect: true,
+											DependsOn: []string{
+												"actionpack@5.2.3",
+												"actionview@5.2.3",
+												"activejob@5.2.3",
+												"mail@2.7.1",
+												"rails-dom-testing@2.0.3",
+											},
+											Locations: []types.Location{
+												{
+													StartLine: 8,
+													EndLine:   8,
+												},
+											},
+										},
+										{
+											ID:       "actionpack@5.2.3",
+											Name:     "actionpack",
+											Version:  "5.2.3",
+											Indirect: true,
+											DependsOn: []string{
+												"actionview@5.2.3",
+												"activesupport@5.2.3",
+												"rack@2.0.7",
+												"rack-test@1.1.0",
+												"rails-dom-testing@2.0.3",
+												"rails-html-sanitizer@1.0.3",
+											},
+											Locations: []types.Location{
+												{
+													StartLine: 14,
+													EndLine:   14,
+												},
+											},
+										},
+										{
+											ID:       "actionview@5.2.3",
+											Name:     "actionview",
+											Version:  "5.2.3",
+											Indirect: true,
+											DependsOn: []string{
+												"activesupport@5.2.3",
+												"builder@3.2.3",
+												"erubi@1.8.0",
+												"rails-dom-testing@2.0.3",
+												"rails-html-sanitizer@1.0.3",
+											},
+											Locations: []types.Location{
+												{
+													StartLine: 21,
+													EndLine:   21,
+												},
+											},
+										},
+										{
+											ID:       "activejob@5.2.3",
+											Name:     "activejob",
+											Version:  "5.2.3",
+											Indirect: true,
+											DependsOn: []string{
+												"activesupport@5.2.3",
+												"globalid@0.4.2",
+											},
+											Locations: []types.Location{
+												{
+													StartLine: 27,
+													EndLine:   27,
+												},
+											},
+										},
+										{
+											ID:        "activemodel@5.2.3",
+											Name:      "activemodel",
+											Version:   "5.2.3",
+											Indirect:  true,
+											DependsOn: []string{"activesupport@5.2.3"},
+											Locations: []types.Location{
+												{
+													StartLine: 30,
+													EndLine:   30,
+												},
+											},
+										},
+										{
+											ID:       "activerecord@5.2.3",
+											Name:     "activerecord",
+											Version:  "5.2.3",
+											Indirect: true,
+											DependsOn: []string{
+												"activemodel@5.2.3",
+												"activesupport@5.2.3",
+												"arel@9.0.0",
+											},
+											Locations: []types.Location{
+												{
+													StartLine: 32,
+													EndLine:   32,
+												},
+											},
+										},
+										{
+											ID:       "activestorage@5.2.3",
+											Name:     "activestorage",
+											Version:  "5.2.3",
+											Indirect: true,
+											DependsOn: []string{
+												"actionpack@5.2.3",
+												"activerecord@5.2.3",
+												"marcel@0.3.3",
+											},
+											Locations: []types.Location{
+												{
+													StartLine: 36,
+													EndLine:   36,
+												},
+											},
+										},
+										{
+											ID:       "activesupport@5.2.3",
+											Name:     "activesupport",
+											Version:  "5.2.3",
+											Indirect: true,
+											DependsOn: []string{
+												"concurrent-ruby@1.1.5",
+												"i18n@1.6.0",
+												"minitest@5.11.3",
+												"tzinfo@1.2.5",
+											},
+											Locations: []types.Location{
+												{
+													StartLine: 40,
+													EndLine:   40,
+												},
+											},
+										},
+										{
+											ID:        "arel@9.0.0",
+											Name:      "arel",
+											Version:   "9.0.0",
+											Indirect:  true,
+											DependsOn: []string(nil),
+											Locations: []types.Location{
+												{
+													StartLine: 45,
+													EndLine:   45,
+												},
+											},
+										},
+										{
+											ID:        "ast@2.4.0",
+											Name:      "ast",
+											Version:   "2.4.0",
+											Indirect:  true,
+											DependsOn: []string(nil),
+											Locations: []types.Location{
+												{
+													StartLine: 46,
+													EndLine:   46,
+												},
+											},
+										},
+										{
+											ID:        "builder@3.2.3",
+											Name:      "builder",
+											Version:   "3.2.3",
+											Indirect:  true,
+											DependsOn: []string(nil),
+											Locations: []types.Location{
+												{
+													StartLine: 47,
+													EndLine:   47,
+												},
+											},
+										},
+										{
+											ID:        "coderay@1.1.2",
+											Name:      "coderay",
+											Version:   "1.1.2",
+											Indirect:  true,
+											DependsOn: []string(nil),
+											Locations: []types.Location{
+												{
+													StartLine: 48,
+													EndLine:   48,
+												},
+											},
+										},
+										{
+											ID:        "concurrent-ruby@1.1.5",
+											Name:      "concurrent-ruby",
+											Version:   "1.1.5",
+											Indirect:  true,
+											DependsOn: []string(nil),
+											Locations: []types.Location{
+												{
+													StartLine: 49,
+													EndLine:   49,
+												},
+											},
+										},
+										{
+											ID:        "crass@1.0.4",
+											Name:      "crass",
+											Version:   "1.0.4",
+											Indirect:  true,
+											DependsOn: []string(nil),
+											Locations: []types.Location{
+												{
+													StartLine: 50,
+													EndLine:   50,
+												},
+											},
+										},
+										{
+											ID:        "dotenv@2.7.2",
+											Name:      "dotenv",
+											Version:   "2.7.2",
+											Indirect:  false,
+											DependsOn: []string(nil),
+											Locations: []types.Location{
+												{
+													StartLine: 51,
+													EndLine:   51,
+												},
+											},
+										},
+										{
+											ID:        "erubi@1.8.0",
+											Name:      "erubi",
+											Version:   "1.8.0",
+											Indirect:  true,
+											DependsOn: []string(nil),
+											Locations: []types.Location{
+												{
+													StartLine: 52,
+													EndLine:   52,
+												},
+											},
+										},
+										{
+											ID:        "faker@1.9.3",
+											Name:      "faker",
+											Version:   "1.9.3",
+											Indirect:  false,
+											DependsOn: []string{"i18n@1.6.0"},
+											Locations: []types.Location{
+												{
+													StartLine: 53,
+													EndLine:   53,
+												},
+											},
+										},
+										{
+											ID:        "globalid@0.4.2",
+											Name:      "globalid",
+											Version:   "0.4.2",
+											Indirect:  true,
+											DependsOn: []string{"activesupport@5.2.3"},
+											Locations: []types.Location{
+												{
+													StartLine: 55,
+													EndLine:   55,
+												},
+											},
+										},
+										{
+											ID:        "i18n@1.6.0",
+											Name:      "i18n",
+											Version:   "1.6.0",
+											Indirect:  true,
+											DependsOn: []string{"concurrent-ruby@1.1.5"},
+											Locations: []types.Location{
+												{
+													StartLine: 57,
+													EndLine:   57,
+												},
+											},
+										},
+										{
+											ID:        "jaro_winkler@1.5.2",
+											Name:      "jaro_winkler",
+											Version:   "1.5.2",
+											Indirect:  true,
+											DependsOn: []string(nil),
+											Locations: []types.Location{
+												{
+													StartLine: 59,
+													EndLine:   59,
+												},
+											},
+										},
+										{
+											ID:        "json@2.2.0",
+											Name:      "json",
+											Version:   "2.2.0",
+											Indirect:  false,
+											DependsOn: []string(nil),
+											Locations: []types.Location{
+												{
+													StartLine: 60,
+													EndLine:   60,
+												},
+											},
+										},
+										{
+											ID:       "loofah@2.2.3",
+											Name:     "loofah",
+											Version:  "2.2.3",
+											Indirect: true,
+											DependsOn: []string{
+												"crass@1.0.4",
+												"nokogiri@1.10.3",
+											},
+											Locations: []types.Location{
+												{
+													StartLine: 61,
+													EndLine:   61,
+												},
+											},
+										},
+										{
+											ID:        "mail@2.7.1",
+											Name:      "mail",
+											Version:   "2.7.1",
+											Indirect:  true,
+											DependsOn: []string{"mini_mime@1.0.1"},
+											Locations: []types.Location{
+												{
+													StartLine: 64,
+													EndLine:   64,
+												},
+											},
+										},
+										{
+											ID:        "marcel@0.3.3",
+											Name:      "marcel",
+											Version:   "0.3.3",
+											Indirect:  true,
+											DependsOn: []string{"mimemagic@0.3.3"},
+											Locations: []types.Location{
+												{
+													StartLine: 66,
+													EndLine:   66,
+												},
+											},
+										},
+										{
+											ID:        "method_source@0.9.2",
+											Name:      "method_source",
+											Version:   "0.9.2",
+											Indirect:  true,
+											DependsOn: []string(nil),
+											Locations: []types.Location{
+												{
+													StartLine: 68,
+													EndLine:   68,
+												},
+											},
+										},
+										{
+											ID:        "mimemagic@0.3.3",
+											Name:      "mimemagic",
+											Version:   "0.3.3",
+											Indirect:  true,
+											DependsOn: []string(nil),
+											Locations: []types.Location{
+												{
+													StartLine: 69,
+													EndLine:   69,
+												},
+											},
+										},
+										{
+											ID:        "mini_mime@1.0.1",
+											Name:      "mini_mime",
+											Version:   "1.0.1",
+											Indirect:  true,
+											DependsOn: []string(nil),
+											Locations: []types.Location{
+												{
+													StartLine: 70,
+													EndLine:   70,
+												},
+											},
+										},
+										{
+											ID:        "mini_portile2@2.4.0",
+											Name:      "mini_portile2",
+											Version:   "2.4.0",
+											Indirect:  true,
+											DependsOn: []string(nil),
+											Locations: []types.Location{
+												{
+													StartLine: 71,
+													EndLine:   71,
+												},
+											},
+										},
+										{
+											ID:        "minitest@5.11.3",
+											Name:      "minitest",
+											Version:   "5.11.3",
+											Indirect:  true,
+											DependsOn: []string(nil),
+											Locations: []types.Location{
+												{
+													StartLine: 72,
+													EndLine:   72,
+												},
+											},
+										},
+										{
+											ID:        "nio4r@2.3.1",
+											Name:      "nio4r",
+											Version:   "2.3.1",
+											Indirect:  true,
+											DependsOn: []string(nil),
+											Locations: []types.Location{
+												{
+													StartLine: 73,
+													EndLine:   73,
+												},
+											},
+										},
+										{
+											ID:        "nokogiri@1.10.3",
+											Name:      "nokogiri",
+											Version:   "1.10.3",
+											Indirect:  true,
+											DependsOn: []string{"mini_portile2@2.4.0"},
+											Locations: []types.Location{
+												{
+													StartLine: 74,
+													EndLine:   74,
+												},
+											},
+										},
+										{
+											ID:        "parallel@1.17.0",
+											Name:      "parallel",
+											Version:   "1.17.0",
+											Indirect:  true,
+											DependsOn: []string(nil),
+											Locations: []types.Location{
+												{
+													StartLine: 76,
+													EndLine:   76,
+												},
+											},
+										},
+										{
+											ID:        "parser@2.6.3.0",
+											Name:      "parser",
+											Version:   "2.6.3.0",
+											Indirect:  true,
+											DependsOn: []string{"ast@2.4.0"},
+											Locations: []types.Location{
+												{
+													StartLine: 77,
+													EndLine:   77,
+												},
+											},
+										},
+										{
+											ID:       "pry@0.12.2",
+											Name:     "pry",
+											Version:  "0.12.2",
+											Indirect: false,
+											DependsOn: []string{
+												"coderay@1.1.2",
+												"method_source@0.9.2",
+											},
+											Locations: []types.Location{
+												{
+													StartLine: 79,
+													EndLine:   79,
+												},
+											},
+										},
+										{
+											ID:        "psych@3.1.0",
+											Name:      "psych",
+											Version:   "3.1.0",
+											Indirect:  true,
+											DependsOn: []string(nil),
+											Locations: []types.Location{
+												{
+													StartLine: 82,
+													EndLine:   82,
+												},
+											},
+										},
+										{
+											ID:        "rack@2.0.7",
+											Name:      "rack",
+											Version:   "2.0.7",
+											Indirect:  true,
+											DependsOn: []string(nil),
+											Locations: []types.Location{
+												{
+													StartLine: 83,
+													EndLine:   83,
+												},
+											},
+										},
+										{
+											ID:        "rack-test@1.1.0",
+											Name:      "rack-test",
+											Version:   "1.1.0",
+											Indirect:  true,
+											DependsOn: []string{"rack@2.0.7"},
+											Locations: []types.Location{
+												{
+													StartLine: 84,
+													EndLine:   84,
+												},
+											},
+										},
+										{
+											ID:       "rails@5.2.0",
+											Name:     "rails",
+											Version:  "5.2.0",
+											Indirect: false,
+											DependsOn: []string{
+												"actioncable@5.2.3",
+												"actionmailer@5.2.3",
+												"actionpack@5.2.3",
+												"actionview@5.2.3",
+												"activejob@5.2.3",
+												"activemodel@5.2.3",
+												"activerecord@5.2.3",
+												"activestorage@5.2.3",
+												"activesupport@5.2.3",
+												"railties@5.2.3",
+												"sprockets-rails@3.2.1",
+											},
+											Locations: []types.Location{
+												{
+													StartLine: 86,
+													EndLine:   86,
+												},
+											},
+										},
+										{
+											ID:       "rails-dom-testing@2.0.3",
+											Name:     "rails-dom-testing",
+											Version:  "2.0.3",
+											Indirect: true,
+											DependsOn: []string{
+												"activesupport@5.2.3",
+												"nokogiri@1.10.3",
+											},
+											Locations: []types.Location{
+												{
+													StartLine: 99,
+													EndLine:   99,
+												},
+											},
+										},
+										{
+											ID:        "rails-html-sanitizer@1.0.3",
+											Name:      "rails-html-sanitizer",
+											Version:   "1.0.3",
+											Indirect:  true,
+											DependsOn: []string{"loofah@2.2.3"},
+											Locations: []types.Location{
+												{
+													StartLine: 102,
+													EndLine:   102,
+												},
+											},
+										},
+										{
+											ID:       "railties@5.2.3",
+											Name:     "railties",
+											Version:  "5.2.3",
+											Indirect: true,
+											DependsOn: []string{
+												"actionpack@5.2.3",
+												"activesupport@5.2.3",
+												"method_source@0.9.2",
+												"rake@12.3.2",
+												"thor@0.20.3",
+											},
+											Locations: []types.Location{
+												{
+													StartLine: 104,
+													EndLine:   104,
+												},
+											},
+										},
+										{
+											ID:        "rainbow@3.0.0",
+											Name:      "rainbow",
+											Version:   "3.0.0",
+											Indirect:  true,
+											DependsOn: []string(nil),
+											Locations: []types.Location{
+												{
+													StartLine: 110,
+													EndLine:   110,
+												},
+											},
+										},
+										{
+											ID:        "rake@12.3.2",
+											Name:      "rake",
+											Version:   "12.3.2",
+											Indirect:  true,
+											DependsOn: []string(nil),
+											Locations: []types.Location{
+												{
+													StartLine: 111,
+													EndLine:   111,
+												},
+											},
+										},
+										{
+											ID:       "rubocop@0.67.2",
+											Name:     "rubocop",
+											Version:  "0.67.2",
+											Indirect: false,
+											DependsOn: []string{
+												"jaro_winkler@1.5.2",
+												"parallel@1.17.0",
+												"parser@2.6.3.0",
+												"psych@3.1.0",
+												"rainbow@3.0.0",
+												"ruby-progressbar@1.10.0",
+												"unicode-display_width@1.5.0",
+											},
+											Locations: []types.Location{
+												{
+													StartLine: 112,
+													EndLine:   112,
+												},
+											},
+										},
+										{
+											ID:        "ruby-progressbar@1.10.0",
+											Name:      "ruby-progressbar",
+											Version:   "1.10.0",
+											Indirect:  true,
+											DependsOn: []string(nil),
+											Locations: []types.Location{
+												{
+													StartLine: 120,
+													EndLine:   120,
+												},
+											},
+										},
+										{
+											ID:       "sprockets@3.7.2",
+											Name:     "sprockets",
+											Version:  "3.7.2",
+											Indirect: true,
+											DependsOn: []string{
+												"concurrent-ruby@1.1.5",
+												"rack@2.0.7",
+											},
+											Locations: []types.Location{
+												{
+													StartLine: 121,
+													EndLine:   121,
+												},
+											},
+										},
+										{
+											ID:       "sprockets-rails@3.2.1",
+											Name:     "sprockets-rails",
+											Version:  "3.2.1",
+											Indirect: true,
+											DependsOn: []string{
+												"actionpack@5.2.3",
+												"activesupport@5.2.3",
+												"sprockets@3.7.2",
+											},
+											Locations: []types.Location{
+												{
+													StartLine: 124,
+													EndLine:   124,
+												},
+											},
+										},
+										{
+											ID:        "thor@0.20.3",
+											Name:      "thor",
+											Version:   "0.20.3",
+											Indirect:  true,
+											DependsOn: []string(nil),
+											Locations: []types.Location{
+												{
+													StartLine: 128,
+													EndLine:   128,
+												},
+											},
+										},
+										{
+											ID:        "thread_safe@0.3.6",
+											Name:      "thread_safe",
+											Version:   "0.3.6",
+											Indirect:  true,
+											DependsOn: []string(nil),
+											Locations: []types.Location{
+												{
+													StartLine: 129,
+													EndLine:   129,
+												},
+											},
+										},
+										{
+											ID:        "tzinfo@1.2.5",
+											Name:      "tzinfo",
+											Version:   "1.2.5",
+											Indirect:  true,
+											DependsOn: []string{"thread_safe@0.3.6"},
+											Locations: []types.Location{
+												{
+													StartLine: 130,
+													EndLine:   130,
+												},
+											},
+										},
+										{
+											ID:        "unicode-display_width@1.5.0",
+											Name:      "unicode-display_width",
+											Version:   "1.5.0",
+											Indirect:  true,
+											DependsOn: []string(nil),
+											Locations: []types.Location{
+												{
+													StartLine: 132,
+													EndLine:   132,
+												},
+											},
+										},
+										{
+											ID:        "websocket-driver@0.7.0",
+											Name:      "websocket-driver",
+											Version:   "0.7.0",
+											Indirect:  true,
+											DependsOn: []string{"websocket-extensions@0.1.3"},
+											Locations: []types.Location{
+												{
+													StartLine: 133,
+													EndLine:   133,
+												},
+											},
+										},
+										{
+											ID:        "websocket-extensions@0.1.3",
+											Name:      "websocket-extensions",
+											Version:   "0.1.3",
+											Indirect:  true,
+											DependsOn: []string(nil),
+											Locations: []types.Location{
+												{
+													StartLine: 135,
+													EndLine:   135,
+												},
+											},
+										},
 									},
 								},
 							},
@@ -588,12 +1486,12 @@ func TestArtifact_Inspect(t *testing.T) {
 			want: types.ArtifactReference{
 				Name: "../../test/testdata/vuln-image.tar.gz",
 				Type: types.ArtifactContainerImage,
-				ID:   "sha256:a646bb11d39c149d4aaf9b888233048e0848304e5abd75667ea6f21d540d800c",
+				ID:   "sha256:33f9415ed2cd5a9cef5d5144333619745b9ec0f851f0684dd45fa79c6b26a650",
 				BlobIDs: []string{
-					"sha256:3bfd543b4467abb972bfeeaa7a7d75ee18e7c92f077600d48fd1532f09129b54",
-					"sha256:9f8cf74dff8cad6bb4df8fc0fa81dca446bd6f44c2d811a167ffca34ab90a6f8",
-					"sha256:7487a77e30f32bd00fc35322a7fa308686bf3da17bb63f6a2bb2e9398a9a0357",
-					"sha256:9aead687f9207ee718401fef3174f8e5b9a99114f3bcdcae18ddc34d88ed4906",
+					"sha256:673f305ef9cede893bc9a1851da8152b1f7597321e06f551a1d875f20f947f5b",
+					"sha256:2886467019d514a49e74ce4507da571023c97798e3f0f3805e9c9826b5b993ef",
+					"sha256:f77cea0f8767d9520ea9001de1f1102e0e5e85ccf726c91271e3d63e963ab4d4",
+					"sha256:c5233a461c9ead1191adfa7a34d9cd66e6b319460939bbf0f085a3fa0faae635",
 				},
 				ImageMetadata: types.ImageMetadata{
 					ID: "sha256:58701fd185bda36cab0557bb6438661831267aa4a9e0b54211c4d5317a48aff4",
@@ -643,13 +1541,16 @@ func TestArtifact_Inspect(t *testing.T) {
 								{
 									Algorithm: "sha256",
 									Hex:       "932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
-								}, {
+								},
+								{
 									Algorithm: "sha256",
 									Hex:       "dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5",
-								}, {
+								},
+								{
 									Algorithm: "sha256",
 									Hex:       "24df0d4e20c0f42d3703bf1f1db2bdd77346c7956f74f423603d651e8e5ae8a7",
-								}, {
+								},
+								{
 									Algorithm: "sha256",
 									Hex:       "a4595c43a874856bf95f3bfc4fbf78bbaa04c92c726276d4f64193a47ced0566",
 								},
@@ -671,34 +1572,38 @@ func TestArtifact_Inspect(t *testing.T) {
 			imagePath: "../../test/testdata/vuln-image.tar.gz",
 			artifactOpt: artifact.Option{
 				DisabledAnalyzers: []analyzer.Type{
-					analyzer.TypeDebian, analyzer.TypeDpkg, analyzer.TypeDpkgLicense, analyzer.TypeComposer,
-					analyzer.TypeBundler, analyzer.TypeLicenseFile,
+					analyzer.TypeDebian,
+					analyzer.TypeDpkg,
+					analyzer.TypeDpkgLicense,
+					analyzer.TypeComposer,
+					analyzer.TypeBundler,
+					analyzer.TypeLicenseFile,
 				},
 				LicenseScannerOption: analyzer.LicenseScannerOption{Full: true},
 			},
 			missingBlobsExpectation: cache.ArtifactCacheMissingBlobsExpectation{
 				Args: cache.ArtifactCacheMissingBlobsArgs{
-					ArtifactID: "sha256:a646bb11d39c149d4aaf9b888233048e0848304e5abd75667ea6f21d540d800c",
+					ArtifactID: "sha256:33f9415ed2cd5a9cef5d5144333619745b9ec0f851f0684dd45fa79c6b26a650",
 					BlobIDs: []string{
-						"sha256:ef7f3617f4e698a7378c222861ad779caf39293eb75bc40a297feb0f04997773",
-						"sha256:47b4982cb2f3465af796707b5d3204ecebff8904a7de34b994b0f349b00749e3",
-						"sha256:4c59618ffe6b2dd606b9342bc7cf5673d87e562789b7f132e5234b2e7412a01f",
-						"sha256:3943af1221bbd84efc398958163456fca57e1400c24eeb2db9e2ddad7c1f37c0",
+						"sha256:ce763fafc4c45bc6311188adfcd8b932fa42553f3324bb9ec8649e5f7c3f9f14",
+						"sha256:b3765fc11963a0c92cc8c8ef0c8a3c54c9a3111100ae69384049b2d7b15419ae",
+						"sha256:1bd6f23a3c252702080dd0e524f9ef13d8ff918e15b322fd8b5c2ceb9f5b8b4f",
+						"sha256:9589cedce50fd3d37c19f22a5653dece7a092edff293a598d15125eb2a4d8849",
 					},
 				},
 				Returns: cache.ArtifactCacheMissingBlobsReturns{
 					MissingBlobIDs: []string{
-						"sha256:ef7f3617f4e698a7378c222861ad779caf39293eb75bc40a297feb0f04997773",
-						"sha256:47b4982cb2f3465af796707b5d3204ecebff8904a7de34b994b0f349b00749e3",
-						"sha256:4c59618ffe6b2dd606b9342bc7cf5673d87e562789b7f132e5234b2e7412a01f",
-						"sha256:3943af1221bbd84efc398958163456fca57e1400c24eeb2db9e2ddad7c1f37c0",
+						"sha256:ce763fafc4c45bc6311188adfcd8b932fa42553f3324bb9ec8649e5f7c3f9f14",
+						"sha256:b3765fc11963a0c92cc8c8ef0c8a3c54c9a3111100ae69384049b2d7b15419ae",
+						"sha256:1bd6f23a3c252702080dd0e524f9ef13d8ff918e15b322fd8b5c2ceb9f5b8b4f",
+						"sha256:9589cedce50fd3d37c19f22a5653dece7a092edff293a598d15125eb2a4d8849",
 					},
 				},
 			},
 			putBlobExpectations: []cache.ArtifactCachePutBlobExpectation{
 				{
 					Args: cache.ArtifactCachePutBlobArgs{
-						BlobID: "sha256:ef7f3617f4e698a7378c222861ad779caf39293eb75bc40a297feb0f04997773",
+						BlobID: "sha256:ce763fafc4c45bc6311188adfcd8b932fa42553f3324bb9ec8649e5f7c3f9f14",
 						BlobInfo: types.BlobInfo{
 							SchemaVersion: types.BlobJSONSchemaVersion,
 							Digest:        "",
@@ -709,7 +1614,7 @@ func TestArtifact_Inspect(t *testing.T) {
 				},
 				{
 					Args: cache.ArtifactCachePutBlobArgs{
-						BlobID: "sha256:47b4982cb2f3465af796707b5d3204ecebff8904a7de34b994b0f349b00749e3",
+						BlobID: "sha256:b3765fc11963a0c92cc8c8ef0c8a3c54c9a3111100ae69384049b2d7b15419ae",
 						BlobInfo: types.BlobInfo{
 							SchemaVersion: types.BlobJSONSchemaVersion,
 							Digest:        "",
@@ -720,7 +1625,7 @@ func TestArtifact_Inspect(t *testing.T) {
 				},
 				{
 					Args: cache.ArtifactCachePutBlobArgs{
-						BlobID: "sha256:4c59618ffe6b2dd606b9342bc7cf5673d87e562789b7f132e5234b2e7412a01f",
+						BlobID: "sha256:1bd6f23a3c252702080dd0e524f9ef13d8ff918e15b322fd8b5c2ceb9f5b8b4f",
 						BlobInfo: types.BlobInfo{
 							SchemaVersion: types.BlobJSONSchemaVersion,
 							Digest:        "",
@@ -732,7 +1637,7 @@ func TestArtifact_Inspect(t *testing.T) {
 				},
 				{
 					Args: cache.ArtifactCachePutBlobArgs{
-						BlobID: "sha256:3943af1221bbd84efc398958163456fca57e1400c24eeb2db9e2ddad7c1f37c0",
+						BlobID: "sha256:9589cedce50fd3d37c19f22a5653dece7a092edff293a598d15125eb2a4d8849",
 						BlobInfo: types.BlobInfo{
 							SchemaVersion: types.BlobJSONSchemaVersion,
 							Digest:        "",
@@ -746,12 +1651,12 @@ func TestArtifact_Inspect(t *testing.T) {
 			want: types.ArtifactReference{
 				Name: "../../test/testdata/vuln-image.tar.gz",
 				Type: types.ArtifactContainerImage,
-				ID:   "sha256:a646bb11d39c149d4aaf9b888233048e0848304e5abd75667ea6f21d540d800c",
+				ID:   "sha256:33f9415ed2cd5a9cef5d5144333619745b9ec0f851f0684dd45fa79c6b26a650",
 				BlobIDs: []string{
-					"sha256:ef7f3617f4e698a7378c222861ad779caf39293eb75bc40a297feb0f04997773",
-					"sha256:47b4982cb2f3465af796707b5d3204ecebff8904a7de34b994b0f349b00749e3",
-					"sha256:4c59618ffe6b2dd606b9342bc7cf5673d87e562789b7f132e5234b2e7412a01f",
-					"sha256:3943af1221bbd84efc398958163456fca57e1400c24eeb2db9e2ddad7c1f37c0",
+					"sha256:ce763fafc4c45bc6311188adfcd8b932fa42553f3324bb9ec8649e5f7c3f9f14",
+					"sha256:b3765fc11963a0c92cc8c8ef0c8a3c54c9a3111100ae69384049b2d7b15419ae",
+					"sha256:1bd6f23a3c252702080dd0e524f9ef13d8ff918e15b322fd8b5c2ceb9f5b8b4f",
+					"sha256:9589cedce50fd3d37c19f22a5653dece7a092edff293a598d15125eb2a4d8849",
 				},
 				ImageMetadata: types.ImageMetadata{
 					ID: "sha256:58701fd185bda36cab0557bb6438661831267aa4a9e0b54211c4d5317a48aff4",
@@ -833,8 +1738,8 @@ func TestArtifact_Inspect(t *testing.T) {
 			imagePath: "../../test/testdata/alpine-311.tar.gz",
 			missingBlobsExpectation: cache.ArtifactCacheMissingBlobsExpectation{
 				Args: cache.ArtifactCacheMissingBlobsArgs{
-					ArtifactID: "sha256:059741cfbdc039e88e337d621e57e03e99b0e0a75df32f2027ebef13f839af65",
-					BlobIDs:    []string{"sha256:a07b19e0e0a4339c00d982f6d80f305cd9dbb98f88b3c74e57b97574b9ce9ba3"},
+					ArtifactID: "sha256:c232b7d8ac8aa08aa767313d0b53084c4380d1c01a213a5971bdb039e6538313",
+					BlobIDs:    []string{"sha256:1ee72875fbb6def206801205982d81b4c2be24974906823266224527badad8e3"},
 				},
 				Returns: cache.ArtifactCacheMissingBlobsReturns{
 					Err: xerrors.New("MissingBlobs failed"),
@@ -847,17 +1752,17 @@ func TestArtifact_Inspect(t *testing.T) {
 			imagePath: "../../test/testdata/alpine-311.tar.gz",
 			missingBlobsExpectation: cache.ArtifactCacheMissingBlobsExpectation{
 				Args: cache.ArtifactCacheMissingBlobsArgs{
-					ArtifactID: "sha256:059741cfbdc039e88e337d621e57e03e99b0e0a75df32f2027ebef13f839af65",
-					BlobIDs:    []string{"sha256:a07b19e0e0a4339c00d982f6d80f305cd9dbb98f88b3c74e57b97574b9ce9ba3"},
+					ArtifactID: "sha256:c232b7d8ac8aa08aa767313d0b53084c4380d1c01a213a5971bdb039e6538313",
+					BlobIDs:    []string{"sha256:1ee72875fbb6def206801205982d81b4c2be24974906823266224527badad8e3"},
 				},
 				Returns: cache.ArtifactCacheMissingBlobsReturns{
-					MissingBlobIDs: []string{"sha256:a07b19e0e0a4339c00d982f6d80f305cd9dbb98f88b3c74e57b97574b9ce9ba3"},
+					MissingBlobIDs: []string{"sha256:1ee72875fbb6def206801205982d81b4c2be24974906823266224527badad8e3"},
 				},
 			},
 			putBlobExpectations: []cache.ArtifactCachePutBlobExpectation{
 				{
 					Args: cache.ArtifactCachePutBlobArgs{
-						BlobID: "sha256:a07b19e0e0a4339c00d982f6d80f305cd9dbb98f88b3c74e57b97574b9ce9ba3",
+						BlobID: "sha256:1ee72875fbb6def206801205982d81b4c2be24974906823266224527badad8e3",
 						BlobInfo: types.BlobInfo{
 							SchemaVersion: types.BlobJSONSchemaVersion,
 							Digest:        "",
@@ -915,18 +1820,18 @@ func TestArtifact_Inspect(t *testing.T) {
 			imagePath: "../../test/testdata/alpine-311.tar.gz",
 			missingBlobsExpectation: cache.ArtifactCacheMissingBlobsExpectation{
 				Args: cache.ArtifactCacheMissingBlobsArgs{
-					ArtifactID: "sha256:059741cfbdc039e88e337d621e57e03e99b0e0a75df32f2027ebef13f839af65",
-					BlobIDs:    []string{"sha256:a07b19e0e0a4339c00d982f6d80f305cd9dbb98f88b3c74e57b97574b9ce9ba3"},
+					ArtifactID: "sha256:c232b7d8ac8aa08aa767313d0b53084c4380d1c01a213a5971bdb039e6538313",
+					BlobIDs:    []string{"sha256:1ee72875fbb6def206801205982d81b4c2be24974906823266224527badad8e3"},
 				},
 				Returns: cache.ArtifactCacheMissingBlobsReturns{
 					MissingArtifact: true,
-					MissingBlobIDs:  []string{"sha256:a07b19e0e0a4339c00d982f6d80f305cd9dbb98f88b3c74e57b97574b9ce9ba3"},
+					MissingBlobIDs:  []string{"sha256:1ee72875fbb6def206801205982d81b4c2be24974906823266224527badad8e3"},
 				},
 			},
 			putBlobExpectations: []cache.ArtifactCachePutBlobExpectation{
 				{
 					Args: cache.ArtifactCachePutBlobArgs{
-						BlobID: "sha256:a07b19e0e0a4339c00d982f6d80f305cd9dbb98f88b3c74e57b97574b9ce9ba3",
+						BlobID: "sha256:1ee72875fbb6def206801205982d81b4c2be24974906823266224527badad8e3",
 						BlobInfo: types.BlobInfo{
 							SchemaVersion: types.BlobJSONSchemaVersion,
 							Digest:        "",
@@ -978,7 +1883,7 @@ func TestArtifact_Inspect(t *testing.T) {
 			putArtifactExpectations: []cache.ArtifactCachePutArtifactExpectation{
 				{
 					Args: cache.ArtifactCachePutArtifactArgs{
-						ArtifactID: "sha256:059741cfbdc039e88e337d621e57e03e99b0e0a75df32f2027ebef13f839af65",
+						ArtifactID: "sha256:c232b7d8ac8aa08aa767313d0b53084c4380d1c01a213a5971bdb039e6538313",
 						ArtifactInfo: types.ArtifactInfo{
 							SchemaVersion: types.ArtifactJSONSchemaVersion,
 							Architecture:  "amd64",
@@ -1010,11 +1915,10 @@ func TestArtifact_Inspect(t *testing.T) {
 
 			got, err := a.Inspect(context.Background())
 			if tt.wantErr != "" {
-				require.NotNil(t, err)
-				assert.Contains(t, err.Error(), tt.wantErr, tt.name)
-			} else {
-				require.NoError(t, err, tt.name)
+				assert.ErrorContains(t, err, tt.wantErr, tt.name)
+				return
 			}
+			require.NoError(t, err, tt.name)
 			assert.Equal(t, tt.want, got)
 		})
 	}

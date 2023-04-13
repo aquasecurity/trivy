@@ -191,23 +191,33 @@ func externalRef(bomLink string, bomRef string) (string, error) {
 }
 
 func (e *Marshaler) marshalComponents(r types.Report, bomRef string) (*[]cdx.Component, *[]cdx.Dependency, *[]cdx.Vulnerability, error) {
-	var components []cdx.Component
-	var dependencies []cdx.Dependency
-	var metadataDependencies []string
+	components := make([]cdx.Component, 0) // To export an empty array in JSON
+	// we use map to avoid duplicate components
+	dependencies := map[string]cdx.Dependency{}
+	metadataDependencies := make([]string, 0) // To export an empty array in JSON
 	libraryUniqMap := map[string]struct{}{}
 	vulnMap := map[string]cdx.Vulnerability{}
 	for _, result := range r.Results {
 		bomRefMap := map[string]string{}
-		var componentDependencies []string
+		pkgIDToRef := map[string]string{}
+		var directDepRefs []string
+
+		// Get dependency parents first
+		parents := ftypes.Packages(result.Packages).ParentDeps()
+
 		for _, pkg := range result.Packages {
 			pkgComponent, err := pkgToCdxComponent(result.Type, r.Metadata, pkg)
 			if err != nil {
 				return nil, nil, nil, xerrors.Errorf("failed to parse pkg: %w", err)
 			}
 			pkgID := packageID(result.Target, pkg.Name, utils.FormatVersion(pkg), pkg.FilePath)
-			if _, ok := bomRefMap[pkgID]; !ok {
-				bomRefMap[pkgID] = pkgComponent.BOMRef
-				componentDependencies = append(componentDependencies, pkgComponent.BOMRef)
+			bomRefMap[pkgID] = pkgComponent.BOMRef
+			if pkg.ID != "" {
+				pkgIDToRef[pkg.ID] = pkgComponent.BOMRef
+			}
+			// This package is a direct dependency
+			if !pkg.Indirect || len(parents[pkg.ID]) == 0 {
+				directDepRefs = append(directDepRefs, pkgComponent.BOMRef)
 			}
 
 			// When multiple lock files have the same dependency with the same name and version,
@@ -226,11 +236,29 @@ func (e *Marshaler) marshalComponents(r types.Report, bomRef string) (*[]cdx.Com
 
 				// For components
 				// ref. https://cyclonedx.org/use-cases/#inventory
-				//
-				// TODO: All packages are flattened at the moment. We should construct dependency tree.
 				components = append(components, pkgComponent)
 			}
 		}
+
+		// Iterate packages again to build dependency graph
+		for _, pkg := range result.Packages {
+			deps := lo.FilterMap(pkg.DependsOn, func(dep string, _ int) (string, bool) {
+				if ref, ok := pkgIDToRef[dep]; ok {
+					return ref, true
+				}
+				return "", false
+			})
+			if len(deps) == 0 {
+				continue
+			}
+			sort.Strings(deps)
+			ref := pkgIDToRef[pkg.ID]
+			dependencies[ref] = cdx.Dependency{
+				Ref:          ref,
+				Dependencies: &deps,
+			}
+		}
+		sort.Strings(directDepRefs)
 
 		for _, vuln := range result.Vulnerabilities {
 			// Take a bom-ref
@@ -260,7 +288,7 @@ func (e *Marshaler) marshalComponents(r types.Report, bomRef string) (*[]cdx.Com
 			// ref. https://cyclonedx.org/use-cases/#inventory
 
 			// Dependency graph from #1 to #2
-			metadataDependencies = append(metadataDependencies, componentDependencies...)
+			metadataDependencies = append(metadataDependencies, directDepRefs...)
 		} else if result.Class == types.ClassOSPkg || result.Class == types.ClassLangPkg {
 			// If a package is OS package, it will be a dependency of "Operating System" component.
 			// e.g.
@@ -283,23 +311,29 @@ func (e *Marshaler) marshalComponents(r types.Report, bomRef string) (*[]cdx.Com
 			components = append(components, resultComponent)
 
 			// Dependency graph from #2 to #3
-			dependencies = append(dependencies,
-				cdx.Dependency{Ref: resultComponent.BOMRef, Dependencies: &componentDependencies},
-			)
-
+			dependencies[resultComponent.BOMRef] = cdx.Dependency{
+				Ref:          resultComponent.BOMRef,
+				Dependencies: &directDepRefs,
+			}
 			// Dependency graph from #1 to #2
 			metadataDependencies = append(metadataDependencies, resultComponent.BOMRef)
 		}
 	}
+
 	vulns := maps.Values(vulnMap)
 	sort.Slice(vulns, func(i, j int) bool {
 		return vulns[i].ID > vulns[j].ID
 	})
 
-	dependencies = append(dependencies,
-		cdx.Dependency{Ref: bomRef, Dependencies: &metadataDependencies},
-	)
-	return &components, &dependencies, &vulns, nil
+	dependencies[bomRef] = cdx.Dependency{
+		Ref:          bomRef,
+		Dependencies: &metadataDependencies,
+	}
+	dependencyList := maps.Values(dependencies)
+	sort.Slice(dependencyList, func(i, j int) bool {
+		return dependencyList[i].Ref < dependencyList[j].Ref
+	})
+	return &components, &dependencyList, &vulns, nil
 }
 
 func packageID(target, pkgName, pkgVersion, pkgFilePath string) string {
@@ -441,16 +475,46 @@ func cdxProperties(pkgType string, pkg ftypes.Package) *[]cdx.Property {
 		name  string
 		value string
 	}{
-		{PropertyPkgID, pkg.ID},
-		{PropertyPkgType, pkgType},
-		{PropertyFilePath, pkg.FilePath},
-		{PropertySrcName, pkg.SrcName},
-		{PropertySrcVersion, pkg.SrcVersion},
-		{PropertySrcRelease, pkg.SrcRelease},
-		{PropertySrcEpoch, strconv.Itoa(pkg.SrcEpoch)},
-		{PropertyModularitylabel, pkg.Modularitylabel},
-		{PropertyLayerDigest, pkg.Layer.Digest},
-		{PropertyLayerDiffID, pkg.Layer.DiffID},
+		{
+			PropertyPkgID,
+			pkg.ID,
+		},
+		{
+			PropertyPkgType,
+			pkgType,
+		},
+		{
+			PropertyFilePath,
+			pkg.FilePath,
+		},
+		{
+			PropertySrcName,
+			pkg.SrcName,
+		},
+		{
+			PropertySrcVersion,
+			pkg.SrcVersion,
+		},
+		{
+			PropertySrcRelease,
+			pkg.SrcRelease,
+		},
+		{
+			PropertySrcEpoch,
+			strconv.Itoa(pkg.SrcEpoch),
+		},
+		{
+			PropertyModularitylabel,
+			pkg.Modularitylabel,
+		},
+		{
+			PropertyLayerDigest,
+			pkg.Layer.Digest,
+		},
+		{
+			PropertyLayerDiffID,
+			pkg.Layer.DiffID,
+		},
 	}
 
 	var properties []cdx.Property
@@ -507,7 +571,7 @@ func cwes(cweIDs []string) *[]int {
 }
 
 func cdxRatings(vulnerability types.DetectedVulnerability) *[]cdx.VulnerabilityRating {
-	var rates []cdx.VulnerabilityRating
+	rates := make([]cdx.VulnerabilityRating, 0) // To export an empty array in JSON
 	for sourceID, severity := range vulnerability.VendorSeverity {
 		// When the vendor also provides CVSS score/vector
 		if cvss, ok := vulnerability.CVSS[sourceID]; ok {

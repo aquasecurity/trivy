@@ -11,7 +11,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/module"
 	rpcServer "github.com/aquasecurity/trivy/pkg/rpc/server"
-	"github.com/aquasecurity/trivy/pkg/utils"
+	"github.com/aquasecurity/trivy/pkg/utils/fsutils"
 )
 
 // Run runs the scan
@@ -21,21 +21,21 @@ func Run(ctx context.Context, opts flag.Options) (err error) {
 	}
 
 	// configure cache dir
-	utils.SetCacheDir(opts.CacheDir)
+	fsutils.SetCacheDir(opts.CacheDir)
 	cache, err := operation.NewCache(opts.CacheOptions)
 	if err != nil {
 		return xerrors.Errorf("server cache error: %w", err)
 	}
 	defer cache.Close()
-	log.Logger.Debugf("cache dir:  %s", utils.CacheDir())
+	log.Logger.Debugf("cache dir:  %s", fsutils.CacheDir())
 
 	if opts.Reset {
 		return cache.ClearDB()
 	}
 
 	// download the database file
-	if err = operation.DownloadDB(opts.AppVersion, opts.CacheDir, opts.DBRepository,
-		true, opts.Insecure, opts.SkipDBUpdate); err != nil {
+	if err = operation.DownloadDB(ctx, opts.AppVersion, opts.CacheDir, opts.DBRepository,
+		true, opts.SkipDBUpdate, opts.Remote()); err != nil {
 		return err
 	}
 
@@ -48,12 +48,16 @@ func Run(ctx context.Context, opts flag.Options) (err error) {
 	}
 
 	// Initialize WASM modules
-	m, err := module.NewManager(ctx)
+	m, err := module.NewManager(ctx, module.Options{
+		Dir:            opts.ModuleDir,
+		EnabledModules: opts.EnabledModules,
+	})
 	if err != nil {
 		return xerrors.Errorf("WASM module error: %w", err)
 	}
 	m.Register()
 
-	server := rpcServer.NewServer(opts.AppVersion, opts.Listen, opts.CacheDir, opts.Token, opts.TokenHeader, opts.DBRepository)
-	return server.ListenAndServe(cache, opts.Insecure, opts.SkipDBUpdate)
+	server := rpcServer.NewServer(opts.AppVersion, opts.Listen, opts.CacheDir, opts.Token, opts.TokenHeader,
+		opts.DBRepository, opts.Remote())
+	return server.ListenAndServe(cache, opts.SkipDBUpdate)
 }

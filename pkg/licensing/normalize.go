@@ -1,6 +1,8 @@
 package licensing
 
-import "strings"
+import (
+	"strings"
+)
 
 var mapping = map[string]string{
 	// GPL
@@ -14,6 +16,7 @@ var mapping = map[string]string{
 	"GPL-2":                          GPL20,
 	"GPL-2.0-ONLY":                   GPL20,
 	"GPL2+":                          GPL20,
+	"GPLV2":                          GPL20,
 	"GPLV2+":                         GPL20,
 	"GPL-2+":                         GPL20,
 	"GPL-2.0+":                       GPL20,
@@ -23,30 +26,34 @@ var mapping = map[string]string{
 	"GPL3":                           GPL30,
 	"GPL 3.0":                        GPL30,
 	"GPL 3":                          GPL30,
+	"GPLV3":                          GPL30,
 	"GPLV3+":                         GPL30,
 	"GPL-3":                          GPL30,
 	"GPL-3.0-ONLY":                   GPL30,
 	"GPL3+":                          GPL30,
 	"GPL-3+":                         GPL30,
 	"GPL-3.0-OR-LATER":               GPL30,
+	"GPL-3+ WITH AUTOCONF EXCEPTION": GPL30withautoconfexception,
+	"GPL-3+-WITH-BISON-EXCEPTION":    GPL20withbisonexception,
 	"GPL":                            GPL30, // 2? 3?
 
 	// LGPL
-	"LGPL2":     LGPL20,
-	"LGPL 2":    LGPL20,
-	"LGPL 2.0":  LGPL20,
-	"LGPL-2":    LGPL20,
-	"LGPL2+":    LGPL20,
-	"LGPL-2+":   LGPL20,
-	"LGPL-2.0+": LGPL20,
-	"LGPL-2.1":  LGPL21,
-	"LGPL 2.1":  LGPL21,
-	"LGPL-2.1+": LGPL21,
-	"LGPLV2.1+": LGPL21,
-	"LGPL-3":    LGPL30,
-	"LGPL 3":    LGPL30,
-	"LGPL-3+":   LGPL30,
-	"LGPL":      LGPL30, // 2? 3?
+	"LGPL2":      LGPL20,
+	"LGPL 2":     LGPL20,
+	"LGPL 2.0":   LGPL20,
+	"LGPL-2":     LGPL20,
+	"LGPL2+":     LGPL20,
+	"LGPL-2+":    LGPL20,
+	"LGPL-2.0+":  LGPL20,
+	"LGPL-2.1":   LGPL21,
+	"LGPL 2.1":   LGPL21,
+	"LGPL-2.1+":  LGPL21,
+	"LGPLV2.1+":  LGPL21,
+	"LGPL-3":     LGPL30,
+	"LGPL 3":     LGPL30,
+	"LGPL-3+":    LGPL30,
+	"LGPL":       LGPL30, // 2? 3?
+	"GNU LESSER": LGPL30, // 2? 3?
 
 	// MPL
 	"MPL1.0":  MPL10,
@@ -68,6 +75,9 @@ var mapping = map[string]string{
 	"APACHE 2.0": Apache20,
 	"RUBY":       Ruby,
 	"ZLIB":       Zlib,
+
+	// Public Domain
+	"PUBLIC DOMAIN": Unlicense,
 }
 
 func Normalize(name string) string {

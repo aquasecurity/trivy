@@ -24,7 +24,7 @@ func init() {
 }
 
 const (
-	analyzerVersion = 3
+	analyzerVersion = 4
 
 	statusFile = "var/lib/dpkg/status"
 	statusDir  = "var/lib/dpkg/status.d/"
@@ -127,6 +127,7 @@ func (a dpkgAnalyzer) parseDpkgPkg(scanner *bufio.Scanner) (pkg *types.Package) 
 		isInstalled   bool
 		sourceVersion string
 		maintainer    string
+		architecture  string
 	)
 	isInstalled = true
 	for {
@@ -160,6 +161,8 @@ func (a dpkgAnalyzer) parseDpkgPkg(scanner *bufio.Scanner) (pkg *types.Package) 
 			dependencies = a.parseDepends(line)
 		case strings.HasPrefix(line, "Maintainer: "):
 			maintainer = strings.TrimSpace(strings.TrimPrefix(line, "Maintainer: "))
+		case strings.HasPrefix(line, "Architecture: "):
+			architecture = strings.TrimPrefix(line, "Architecture: ")
 		}
 		if !scanner.Scan() {
 			break
@@ -168,16 +171,22 @@ func (a dpkgAnalyzer) parseDpkgPkg(scanner *bufio.Scanner) (pkg *types.Package) 
 
 	if name == "" || version == "" || !isInstalled {
 		return nil
-	} else if !debVersion.Valid(version) {
-		log.Logger.Warnf("Invalid Version Found : OS %s, Package %s, Version %s", "debian", name, version)
+	}
+
+	v, err := debVersion.NewVersion(version)
+	if err != nil {
+		log.Logger.Warnf("Invalid Version: OS %s, Package %s, Version %s", "debian", name, version)
 		return nil
 	}
 	pkg = &types.Package{
 		ID:         a.pkgID(name, version),
 		Name:       name,
-		Version:    version,
+		Epoch:      v.Epoch(),
+		Version:    v.Version(),
+		Release:    v.Revision(),
 		DependsOn:  dependencies, // Will be consolidated later
 		Maintainer: maintainer,
+		Arch:       architecture,
 	}
 
 	// Source version and names are computed from binary package names and versions
@@ -194,12 +203,15 @@ func (a dpkgAnalyzer) parseDpkgPkg(scanner *bufio.Scanner) (pkg *types.Package) 
 		sourceVersion = version
 	}
 
-	if !debVersion.Valid(sourceVersion) {
-		log.Logger.Warnf("Invalid Version Found : OS %s, Package %s, Version %s", "debian", sourceName, sourceVersion)
-		return pkg
+	sv, err := debVersion.NewVersion(sourceVersion)
+	if err != nil {
+		log.Logger.Warnf("Invalid SourceVersion Found : OS %s, Package %s, Version %s", "debian", sourceName, sourceVersion)
+		return nil
 	}
 	pkg.SrcName = sourceName
-	pkg.SrcVersion = sourceVersion
+	pkg.SrcVersion = sv.Version()
+	pkg.SrcEpoch = sv.Epoch()
+	pkg.SrcRelease = sv.Revision()
 
 	return pkg
 }

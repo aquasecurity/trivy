@@ -40,7 +40,7 @@ A single package must contain only one policy.
     # title: Deployment not allowed
     # description: Deployments are not allowed because of some reasons.
     # schemas:
-    #   - input: schema.input
+    #   - input: schema["kubernetes"]
     # custom:
     #   id: ID001
     #   severity: LOW
@@ -124,16 +124,16 @@ All fields are optional. The `schemas` field should be used to enable policy val
 schema that will be used is based on the input document type. It is recommended to use this to ensure your policies are 
 correct and do not reference incorrect properties/values.
 
-| Field name                 | Allowed values                           |        Default value         |     In table     |     In JSON      |
-|----------------------------|------------------------------------------|:----------------------------:|:----------------:|:----------------:|
-| title                      | Any characters                           |             N/A              | :material-check: | :material-check: |
-| description                | Any characters                           |                              | :material-close: | :material-check: |
-| schemas.input              | `schema.input`                           | (applied to all input types) | :material-close: | :material-close: |
-| custom.id                  | Any characters                           |             N/A              | :material-check: | :material-check: |
-| custom.severity            | `LOW`, `MEDIUM`, `HIGH`, `CRITICAL`      |           UNKNOWN            | :material-check: | :material-check: |
-| custom.recommended_actions | Any characters                           |                              | :material-close: | :material-check: | 
-| custom.input.selector.type | Any item(s) in [this list][source-types] |                              | :material-close: | :material-check: | 
-| url                        | Any characters                           |                              | :material-close: | :material-check: |
+| Field name                 | Allowed values                                                    |        Default value         |     In table     |     In JSON      |
+|----------------------------|-------------------------------------------------------------------|:----------------------------:|:----------------:|:----------------:|
+| title                      | Any characters                                                    |             N/A              | :material-check: | :material-check: |
+| description                | Any characters                                                    |                              | :material-close: | :material-check: |
+| schemas.input              | `schema["kubernetes"]`, `schema["dockerfile"]`, `schema["cloud"]` | (applied to all input types) | :material-close: | :material-close: |
+| custom.id                  | Any characters                                                    |             N/A              | :material-check: | :material-check: |
+| custom.severity            | `LOW`, `MEDIUM`, `HIGH`, `CRITICAL`                               |           UNKNOWN            | :material-check: | :material-check: |
+| custom.recommended_actions | Any characters                                                    |                              | :material-close: | :material-check: | 
+| custom.input.selector.type | Any item(s) in [this list][source-types]                          |                              | :material-close: | :material-check: | 
+| url                        | Any characters                                                    |                              | :material-close: | :material-check: |
 
 
 Some fields are displayed in scan results.
@@ -196,13 +196,7 @@ You can specify input format via the `custom.input` annotation.
     `type` accepts `kubernetes`, `dockerfile`, `cloudformation`, `terraform`, `terraformplan`, `json`, or `yaml`.
 
 ### Schemas
-
-You can explore the format of input documents by browsing the schema for the relevant input type:
-
-- [Cloud](https://github.com/aquasecurity/defsec/blob/master/pkg/rego/schemas/cloud.json)
-- [Dockerfile](https://github.com/aquasecurity/defsec/blob/master/pkg/rego/schemas/dockerfile.json)
-- [Kubernetes](https://github.com/aquasecurity/defsec/blob/master/pkg/rego/schemas/kubernetes.json)
-- [RBAC](https://github.com/aquasecurity/defsec/blob/master/pkg/rego/schemas/rbac.json)
+See [here](./schema.md) for the detail.
 
 [rego]: https://www.openpolicyagent.org/docs/latest/policy-language/
 [package]: https://www.openpolicyagent.org/docs/latest/policy-language/#packages

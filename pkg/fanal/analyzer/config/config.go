@@ -17,6 +17,7 @@ type ScannerOption struct {
 	HelmFileValues   []string
 	HelmStringValues []string
 	TerraformTFVars  []string
+	K8sVersion       string
 }
 
 func (o *ScannerOption) Sort() {

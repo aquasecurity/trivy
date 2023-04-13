@@ -210,7 +210,11 @@ func TestSecretRequire(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			a := secret.SecretAnalyzer{}
-			err := a.Init(analyzer.AnalyzerOptions{})
+			err := a.Init(analyzer.AnalyzerOptions{
+				SecretScannerOption: analyzer.SecretScannerOption{
+					ConfigPath: "testdata/skip-tests-config.yaml",
+				},
+			})
 			require.NoError(t, err)
 
 			fi, err := os.Stat(tt.filePath)

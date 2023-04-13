@@ -29,6 +29,8 @@ import (
 	_ "github.com/aquasecurity/trivy/pkg/fanal/handler/all"
 	"github.com/aquasecurity/trivy/pkg/fanal/image"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
+
+	_ "modernc.org/sqlite"
 )
 
 var update = flag.Bool("update", false, "update golden files")
@@ -149,7 +151,7 @@ func TestFanal_Library_DockerLessMode(t *testing.T) {
 			})
 
 			// Enable only registry scanning
-			img, cleanup, err := image.NewContainerImage(ctx, tt.remoteImageName, types.DockerOption{},
+			img, cleanup, err := image.NewContainerImage(ctx, tt.remoteImageName, types.RemoteOptions{},
 				image.DisableDockerd(), image.DisablePodman(), image.DisableContainerd())
 			require.NoError(t, err)
 			defer cleanup()
@@ -198,7 +200,7 @@ func TestFanal_Library_DockerMode(t *testing.T) {
 			require.NoError(t, err, tt.name)
 
 			// Enable only dockerd scanning
-			img, cleanup, err := image.NewContainerImage(ctx, tt.remoteImageName, types.DockerOption{},
+			img, cleanup, err := image.NewContainerImage(ctx, tt.remoteImageName, types.RemoteOptions{},
 				image.DisablePodman(), image.DisableContainerd(), image.DisableRemote())
 			require.NoError(t, err, tt.name)
 			defer cleanup()

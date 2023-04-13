@@ -16,6 +16,7 @@ func TestCacheFlagGroup_ToOptions(t *testing.T) {
 		ClearCache   bool
 		CacheBackend string
 		CacheTTL     time.Duration
+		RedisTLS     bool
 		RedisCACert  string
 		RedisCert    string
 		RedisKey     string
@@ -65,6 +66,18 @@ func TestCacheFlagGroup_ToOptions(t *testing.T) {
 			assertion: require.NoError,
 		},
 		{
+			name: "redis tls with public certificates",
+			fields: fields{
+				CacheBackend: "redis://localhost:6379",
+				RedisTLS:     true,
+			},
+			want: flag.CacheOptions{
+				CacheBackend: "redis://localhost:6379",
+				RedisTLS:     true,
+			},
+			assertion: require.NoError,
+		},
+		{
 			name: "unknown backend",
 			fields: fields{
 				CacheBackend: "unknown",
@@ -89,6 +102,7 @@ func TestCacheFlagGroup_ToOptions(t *testing.T) {
 			viper.Set(flag.ClearCacheFlag.ConfigName, tt.fields.ClearCache)
 			viper.Set(flag.CacheBackendFlag.ConfigName, tt.fields.CacheBackend)
 			viper.Set(flag.CacheTTLFlag.ConfigName, tt.fields.CacheTTL)
+			viper.Set(flag.RedisTLSFlag.ConfigName, tt.fields.RedisTLS)
 			viper.Set(flag.RedisCACertFlag.ConfigName, tt.fields.RedisCACert)
 			viper.Set(flag.RedisCertFlag.ConfigName, tt.fields.RedisCert)
 			viper.Set(flag.RedisKeyFlag.ConfigName, tt.fields.RedisKey)
@@ -97,6 +111,7 @@ func TestCacheFlagGroup_ToOptions(t *testing.T) {
 				ClearCache:   &flag.ClearCacheFlag,
 				CacheBackend: &flag.CacheBackendFlag,
 				CacheTTL:     &flag.CacheTTLFlag,
+				RedisTLS:     &flag.RedisTLSFlag,
 				RedisCACert:  &flag.RedisCACertFlag,
 				RedisCert:    &flag.RedisCertFlag,
 				RedisKey:     &flag.RedisKeyFlag,

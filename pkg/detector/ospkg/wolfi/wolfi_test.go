@@ -63,7 +63,7 @@ func TestScanner_Detect(t *testing.T) {
 					DataSource: &dbTypes.DataSource{
 						ID:   vulnerability.Wolfi,
 						Name: "Wolfi Secdb",
-						URL:  "https://packages.wolfi.dev/os/security.json/",
+						URL:  "https://packages.wolfi.dev/os/security.json",
 					},
 				},
 			},
@@ -90,7 +90,7 @@ func TestScanner_Detect(t *testing.T) {
 					DataSource: &dbTypes.DataSource{
 						ID:   vulnerability.Wolfi,
 						Name: "Wolfi Secdb",
-						URL:  "https://packages.wolfi.dev/os/security.json/",
+						URL:  "https://packages.wolfi.dev/os/security.json",
 					},
 				},
 			},
@@ -123,7 +123,7 @@ func TestScanner_Detect(t *testing.T) {
 					DataSource: &dbTypes.DataSource{
 						ID:   vulnerability.Wolfi,
 						Name: "Wolfi Secdb",
-						URL:  "https://packages.wolfi.dev/os/security.json/",
+						URL:  "https://packages.wolfi.dev/os/security.json",
 					},
 				},
 			},
@@ -168,7 +168,7 @@ func TestScanner_Detect(t *testing.T) {
 					DataSource: &dbTypes.DataSource{
 						ID:   vulnerability.Wolfi,
 						Name: "Wolfi Secdb",
-						URL:  "https://packages.wolfi.dev/os/security.json/",
+						URL:  "https://packages.wolfi.dev/os/security.json",
 					},
 				},
 			},

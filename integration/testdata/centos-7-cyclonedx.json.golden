@@ -321,7 +321,7 @@
       "updated": "2021-01-20T15:15:00+00:00",
       "affects": [
         {
-          "ref": "urn:cdx:1455c02d-64ca-453e-a5df-ddfb70a7c804/1#pkg:rpm/centos/openssl-libs@1:1.0.2k-16.el7?arch=x86_64\u0026distro=centos-7.6.1810",
+          "ref": "urn:cdx:1455c02d-64ca-453e-a5df-ddfb70a7c804/1#pkg:rpm/centos/openssl-libs@1.0.2k-16.el7?arch=x86_64\u0026epoch=1\u0026distro=centos-7.6.1810",
           "versions": [
             {
               "version": "1:1.0.2k-16.el7",
@@ -514,7 +514,7 @@
       "updated": "2020-08-24T17:37:00+00:00",
       "affects": [
         {
-          "ref": "urn:cdx:1455c02d-64ca-453e-a5df-ddfb70a7c804/1#pkg:rpm/centos/openssl-libs@1:1.0.2k-16.el7?arch=x86_64\u0026distro=centos-7.6.1810",
+          "ref": "urn:cdx:1455c02d-64ca-453e-a5df-ddfb70a7c804/1#pkg:rpm/centos/openssl-libs@1.0.2k-16.el7?arch=x86_64\u0026epoch=1\u0026distro=centos-7.6.1810",
           "versions": [
             {
               "version": "1:1.0.2k-16.el7",

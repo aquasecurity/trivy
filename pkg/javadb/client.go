@@ -6,22 +6,21 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"sort"
 	"time"
 
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/go-dep-parser/pkg/java/jar"
 	"github.com/aquasecurity/trivy-java-db/pkg/db"
-	"github.com/aquasecurity/trivy-java-db/pkg/metadata"
 	"github.com/aquasecurity/trivy-java-db/pkg/types"
+	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/oci"
 )
 
 const (
-	version                 = 1
-	defaultJavaDBRepository = "ghcr.io/aquasecurity/trivy-java-db"
-	mediaType               = "application/vnd.aquasec.trivy.javadb.layer.v1.tar+gzip"
+	mediaType = "application/vnd.aquasec.trivy.javadb.layer.v1.tar+gzip"
 )
 
 var updater *Updater
@@ -36,27 +35,29 @@ type Updater struct {
 
 func (u *Updater) Update() error {
 	dbDir := u.dbDir
-	metac := metadata.New(dbDir)
+	metac := db.NewMetadata(dbDir)
 
 	meta, err := metac.Get()
 	if err != nil {
 		if !errors.Is(err, os.ErrNotExist) {
 			return xerrors.Errorf("Java DB metadata error: %w", err)
 		} else if u.skip {
-			log.Logger.Error("The first run cannot skip downloading java DB")
-			return xerrors.New("--skip-java-update cannot be specified on the first run")
+			log.Logger.Error("The first run cannot skip downloading Java DB")
+			return xerrors.New("'--skip-java-db-update' cannot be specified on the first run")
 		}
 	}
 
-	if (meta.Version != version || meta.NextUpdate.Before(time.Now().UTC())) && !u.skip {
+	if (meta.Version != db.SchemaVersion || meta.NextUpdate.Before(time.Now().UTC())) && !u.skip {
 		// Download DB
+		log.Logger.Infof("Java DB Repository: %s", u.repo)
 		log.Logger.Info("Downloading the Java DB...")
 
+		// TODO: support remote options
 		var a *oci.Artifact
-		if a, err = oci.NewArtifact(u.repo, mediaType, u.quiet, u.insecure); err != nil {
+		if a, err = oci.NewArtifact(u.repo, u.quiet, ftypes.RemoteOptions{}); err != nil {
 			return xerrors.Errorf("oci error: %w", err)
 		}
-		if err = a.Download(context.Background(), dbDir); err != nil {
+		if err = a.Download(context.Background(), dbDir, oci.DownloadOption{MediaType: mediaType}); err != nil {
 			return xerrors.Errorf("DB download error: %w", err)
 		}
 
@@ -78,9 +79,9 @@ func (u *Updater) Update() error {
 	return nil
 }
 
-func Init(cacheDir string, skip, quiet, insecure bool) {
+func Init(cacheDir string, javaDBRepository string, skip, quiet, insecure bool) {
 	updater = &Updater{
-		repo:     fmt.Sprintf("%s:%d", defaultJavaDBRepository, version), // TODO: make it configurable
+		repo:     fmt.Sprintf("%s:%d", javaDBRepository, db.SchemaVersion),
 		dbDir:    filepath.Join(cacheDir, "java-db"),
 		skip:     skip,
 		quiet:    quiet,
@@ -144,6 +145,9 @@ func (d *DB) SearchByArtifactID(artifactID string) (string, error) {
 	} else if len(indexes) == 0 {
 		return "", xerrors.Errorf("artifactID %s: %w", artifactID, jar.ArtifactNotFoundErr)
 	}
+	sort.Slice(indexes, func(i, j int) bool {
+		return indexes[i].GroupID < indexes[j].GroupID
+	})
 
 	// Some artifacts might have the same artifactId.
 	// e.g. "javax.servlet:jstl" and "jstl:jstl"
@@ -159,6 +163,7 @@ func (d *DB) SearchByArtifactID(artifactID string) (string, error) {
 	var groupID string
 	for k, v := range groupIDs {
 		if v > maxCount {
+			maxCount = v
 			groupID = k
 		}
 	}

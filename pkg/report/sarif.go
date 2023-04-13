@@ -118,7 +118,7 @@ func getRuleIndex(id string, indexes map[string]int) int {
 	}
 }
 
-func (sw SarifWriter) Write(report types.Report) error {
+func (sw *SarifWriter) Write(report types.Report) error {
 	sarifReport, err := sarif.New(sarif.Version210)
 	if err != nil {
 		return xerrors.Errorf("error creating a new sarif template: %w", err)
@@ -127,10 +127,17 @@ func (sw SarifWriter) Write(report types.Report) error {
 	sw.run.Tool.Driver.WithVersion(sw.Version)
 	sw.run.Tool.Driver.WithFullName("Trivy Vulnerability Scanner")
 	sw.locationCache = map[string][]location{}
+	if report.ArtifactType == ftypes.ArtifactContainerImage {
+		sw.run.Properties = sarif.Properties{
+			"imageName":   report.ArtifactName,
+			"repoTags":    report.Metadata.RepoTags,
+			"repoDigests": report.Metadata.RepoDigests,
+		}
+	}
 
 	ruleIndexes := map[string]int{}
 	for _, res := range report.Results {
-		target := ToPathUri(res.Target)
+		target := ToPathUri(res.Target, res.Class)
 
 		for _, vuln := range res.Vulnerabilities {
 			fullDescription := vuln.Description
@@ -139,7 +146,7 @@ func (sw SarifWriter) Write(report types.Report) error {
 			}
 			path := target
 			if vuln.PkgPath != "" {
-				path = ToPathUri(vuln.PkgPath)
+				path = ToPathUri(vuln.PkgPath, res.Class)
 			}
 			sw.addSarifResult(&sarifData{
 				title:            "vulnerability",
@@ -270,7 +277,12 @@ func toSarifErrorLevel(severity string) string {
 	}
 }
 
-func ToPathUri(input string) string {
+func ToPathUri(input string, resultClass types.ResultClass) string {
+	// we only need to convert OS input
+	// e.g. image names, digests, etc...
+	if resultClass != types.ClassOSPkg {
+		return input
+	}
 	var matches = pathRegex.FindStringSubmatch(input)
 	if matches != nil {
 		input = matches[pathRegex.SubexpIndex("path")]
@@ -283,7 +295,7 @@ func ToPathUri(input string) string {
 	return strings.ReplaceAll(input, "\\", "/")
 }
 
-func (sw SarifWriter) getLocations(name, version, path string, pkgs []ftypes.Package) []location {
+func (sw *SarifWriter) getLocations(name, version, path string, pkgs []ftypes.Package) []location {
 	id := fmt.Sprintf("%s@%s@%s", path, name, version)
 	locs, ok := sw.locationCache[id]
 	if !ok {

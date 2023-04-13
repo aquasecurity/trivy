@@ -23,15 +23,13 @@ const version = 1
 type rustBinaryLibraryAnalyzer struct{}
 
 func (a rustBinaryLibraryAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInput) (*analyzer.AnalysisResult, error) {
-	p := binary.NewParser()
-	libs, deps, err := p.Parse(input.Content)
+	res, err := language.Analyze(types.RustBinary, input.FilePath, input.Content, binary.NewParser())
 	if errors.Is(err, binary.ErrUnrecognizedExe) || errors.Is(err, binary.ErrNonRustBinary) {
 		return nil, nil
 	} else if err != nil {
 		return nil, xerrors.Errorf("rust binary parse error: %w", err)
 	}
-
-	return language.ToAnalysisResult(types.RustBinary, input.FilePath, "", libs, deps), nil
+	return res, nil
 }
 
 func (a rustBinaryLibraryAnalyzer) Required(_ string, fileInfo os.FileInfo) bool {

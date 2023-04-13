@@ -112,7 +112,7 @@ func Write(report types.Report, option Option) error {
 		// We keep `sarif.tpl` template working for backward compatibility for a while.
 		if strings.HasPrefix(option.OutputTemplate, "@") && strings.HasSuffix(option.OutputTemplate, "sarif.tpl") {
 			log.Logger.Warn("Using `--template sarif.tpl` is deprecated. Please migrate to `--format sarif`. See https://github.com/aquasecurity/trivy/discussions/1571")
-			writer = SarifWriter{
+			writer = &SarifWriter{
 				Output:  option.Output,
 				Version: option.AppVersion,
 			}
@@ -123,7 +123,7 @@ func Write(report types.Report, option Option) error {
 			return xerrors.Errorf("failed to initialize template writer: %w", err)
 		}
 	case FormatSarif:
-		writer = SarifWriter{
+		writer = &SarifWriter{
 			Output:  option.Output,
 			Version: option.AppVersion,
 		}

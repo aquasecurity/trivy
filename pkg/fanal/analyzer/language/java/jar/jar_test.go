@@ -2,8 +2,8 @@ package jar
 
 import (
 	"context"
-	"github.com/aquasecurity/trivy/pkg/javadb"
 	"os"
+	"path/filepath"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -11,14 +11,23 @@ import (
 
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
+	"github.com/aquasecurity/trivy/pkg/javadb"
+	"github.com/aquasecurity/trivy/pkg/mapfs"
+
+	_ "modernc.org/sqlite"
+)
+
+const (
+	defaultJavaDBRepository = "ghcr.io/aquasecurity/trivy-java-db"
 )
 
 func Test_javaLibraryAnalyzer_Analyze(t *testing.T) {
 	tests := []struct {
-		name      string
-		inputFile string
-		want      *analyzer.AnalysisResult
-		wantErr   string
+		name            string
+		inputFile       string
+		includeChecksum bool
+		want            *analyzer.AnalysisResult
+		wantErr         string
 	}{
 		{
 			name:      "happy path (WAR file)",
@@ -75,8 +84,9 @@ func Test_javaLibraryAnalyzer_Analyze(t *testing.T) {
 			},
 		},
 		{
-			name:      "happy path (PAR file)",
-			inputFile: "testdata/test.par",
+			name:            "happy path (PAR file)",
+			inputFile:       "testdata/test.par",
+			includeChecksum: true,
 			want: &analyzer.AnalysisResult{
 				Applications: []types.Application{
 					{
@@ -87,6 +97,7 @@ func Test_javaLibraryAnalyzer_Analyze(t *testing.T) {
 								Name:     "com.fasterxml.jackson.core:jackson-core",
 								FilePath: "testdata/test.par",
 								Version:  "2.9.10",
+								Digest:   "sha1:d40913470259cfba6dcc90f96bcaa9bcff1b72e0",
 							},
 						},
 					},
@@ -120,22 +131,21 @@ func Test_javaLibraryAnalyzer_Analyze(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			f, err := os.Open(tt.inputFile)
-			require.NoError(t, err)
-			defer f.Close()
-
-			stat, err := f.Stat()
-			require.NoError(t, err)
-
 			// init java-trivy-db with skip update
-			javadb.Init("testdata/testdb", true, false, false)
+			javadb.Init("testdata", defaultJavaDBRepository, true, false, false)
 
-			a := javaLibraryAnalyzer{}
+			a := javaLibraryAnalyzer{slow: true}
 			ctx := context.Background()
-			got, err := a.Analyze(ctx, analyzer.AnalysisInput{
-				FilePath: tt.inputFile,
-				Info:     stat,
-				Content:  f,
+
+			mfs := mapfs.New()
+			err := mfs.MkdirAll(filepath.Dir(tt.inputFile), os.ModePerm)
+			assert.NoError(t, err)
+			err = mfs.WriteFile(tt.inputFile, tt.inputFile)
+			assert.NoError(t, err)
+
+			got, err := a.PostAnalyze(ctx, analyzer.PostAnalysisInput{
+				FS:      mfs,
+				Options: analyzer.AnalysisOptions{FileChecksum: tt.includeChecksum},
 			})
 
 			if tt.wantErr != "" {

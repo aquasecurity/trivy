@@ -19,7 +19,8 @@ import (
 	"github.com/aquasecurity/trivy-db/pkg/metadata"
 	dbFile "github.com/aquasecurity/trivy/pkg/db"
 	"github.com/aquasecurity/trivy/pkg/fanal/cache"
-	"github.com/aquasecurity/trivy/pkg/utils"
+	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
+	"github.com/aquasecurity/trivy/pkg/utils/fsutils"
 	rpcCache "github.com/aquasecurity/trivy/rpc/cache"
 )
 
@@ -59,7 +60,10 @@ func Test_dbWorker_update(t *testing.T) {
 		{
 			name: "happy path",
 			needsUpdate: needsUpdate{
-				input:  needsUpdateInput{appVersion: "1", skip: false},
+				input: needsUpdateInput{
+					appVersion: "1",
+					skip:       false,
+				},
 				output: needsUpdateOutput{needsUpdate: true},
 			},
 			download: download{
@@ -75,7 +79,10 @@ func Test_dbWorker_update(t *testing.T) {
 		{
 			name: "not update",
 			needsUpdate: needsUpdate{
-				input:  needsUpdateInput{appVersion: "1", skip: false},
+				input: needsUpdateInput{
+					appVersion: "1",
+					skip:       false,
+				},
 				output: needsUpdateOutput{needsUpdate: false},
 			},
 			args: args{appVersion: "1"},
@@ -83,7 +90,10 @@ func Test_dbWorker_update(t *testing.T) {
 		{
 			name: "skip update",
 			needsUpdate: needsUpdate{
-				input:  needsUpdateInput{appVersion: "1", skip: true},
+				input: needsUpdateInput{
+					appVersion: "1",
+					skip:       true,
+				},
 				output: needsUpdateOutput{needsUpdate: false},
 			},
 			args: args{appVersion: "1"},
@@ -91,7 +101,10 @@ func Test_dbWorker_update(t *testing.T) {
 		{
 			name: "NeedsUpdate returns an error",
 			needsUpdate: needsUpdate{
-				input:  needsUpdateInput{appVersion: "1", skip: false},
+				input: needsUpdateInput{
+					appVersion: "1",
+					skip:       false,
+				},
 				output: needsUpdateOutput{err: xerrors.New("fail")},
 			},
 			args:    args{appVersion: "1"},
@@ -100,7 +113,10 @@ func Test_dbWorker_update(t *testing.T) {
 		{
 			name: "Download returns an error",
 			needsUpdate: needsUpdate{
-				input:  needsUpdateInput{appVersion: "1", skip: false},
+				input: needsUpdateInput{
+					appVersion: "1",
+					skip:       false,
+				},
 				output: needsUpdateOutput{needsUpdate: true},
 			},
 			download: download{
@@ -125,18 +141,18 @@ func Test_dbWorker_update(t *testing.T) {
 			defer func() { _ = db.Close() }()
 
 			if tt.download.call {
-				mockDBClient.On("Download", mock.Anything, mock.Anything).Run(
+				mockDBClient.On("Download", mock.Anything, mock.Anything, mock.Anything).Run(
 					func(args mock.Arguments) {
 						// fake download: copy testdata/new.db to tmpDir/db/trivy.db
 						tmpDir := args.String(1)
 						err := os.MkdirAll(db.Dir(tmpDir), 0744)
 						require.NoError(t, err)
 
-						_, err = utils.CopyFile("testdata/new.db", db.Path(tmpDir))
+						_, err = fsutils.CopyFile("testdata/new.db", db.Path(tmpDir))
 						require.NoError(t, err)
 
 						// fake download: copy testdata/metadata.json to tmpDir/db/metadata.json
-						_, err = utils.CopyFile("testdata/metadata.json", metadata.Path(tmpDir))
+						_, err = fsutils.CopyFile("testdata/metadata.json", metadata.Path(tmpDir))
 						require.NoError(t, err)
 					}).Return(tt.download.err)
 			}
@@ -145,7 +161,7 @@ func Test_dbWorker_update(t *testing.T) {
 
 			var dbUpdateWg, requestWg sync.WaitGroup
 			err := w.update(context.Background(), tt.args.appVersion, cacheDir,
-				tt.needsUpdate.input.skip, &dbUpdateWg, &requestWg)
+				tt.needsUpdate.input.skip, &dbUpdateWg, &requestWg, ftypes.RemoteOptions{})
 			if tt.wantErr != "" {
 				require.NotNil(t, err, tt.name)
 				assert.Contains(t, err.Error(), tt.wantErr, tt.name)

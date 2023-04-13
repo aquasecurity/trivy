@@ -3,25 +3,27 @@ package operation
 import (
 	"context"
 	"crypto/tls"
+	"crypto/x509"
 	"os"
 	"strings"
-
-	"github.com/aquasecurity/trivy/pkg/policy"
-
-	"github.com/samber/lo"
-
-	"github.com/aquasecurity/trivy/pkg/flag"
+	"sync"
 
 	"github.com/go-redis/redis/v8"
 	"github.com/google/wire"
+	"github.com/samber/lo"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy-db/pkg/metadata"
 	"github.com/aquasecurity/trivy/pkg/db"
 	"github.com/aquasecurity/trivy/pkg/fanal/cache"
+	"github.com/aquasecurity/trivy/pkg/fanal/types"
+	"github.com/aquasecurity/trivy/pkg/flag"
 	"github.com/aquasecurity/trivy/pkg/log"
-	"github.com/aquasecurity/trivy/pkg/utils"
+	"github.com/aquasecurity/trivy/pkg/policy"
+	"github.com/aquasecurity/trivy/pkg/utils/fsutils"
 )
+
+var mu sync.Mutex
 
 // SuperSet binds cache dependencies
 var SuperSet = wire.NewSet(
@@ -45,7 +47,7 @@ func NewCache(c flag.CacheOptions) (Cache, error) {
 		}
 
 		if !lo.IsEmpty(c.RedisOptions) {
-			caCert, cert, err := utils.GetTLSConfig(c.RedisCACert, c.RedisCert, c.RedisKey)
+			caCert, cert, err := GetTLSConfig(c.RedisCACert, c.RedisCert, c.RedisKey)
 			if err != nil {
 				return Cache{}, err
 			}
@@ -54,6 +56,10 @@ func NewCache(c flag.CacheOptions) (Cache, error) {
 				RootCAs:      caCert,
 				Certificates: []tls.Certificate{cert},
 				MinVersion:   tls.VersionTLS12,
+			}
+		} else if c.RedisTLS {
+			options.TLSConfig = &tls.Config{
+				MinVersion: tls.VersionTLS12,
 			}
 		}
 
@@ -66,7 +72,7 @@ func NewCache(c flag.CacheOptions) (Cache, error) {
 	}
 
 	// standalone mode
-	fsCache, err := cache.NewFSCache(utils.CacheDir())
+	fsCache, err := cache.NewFSCache(fsutils.CacheDir())
 	if err != nil {
 		return Cache{}, xerrors.Errorf("unable to initialize fs cache: %w", err)
 	}
@@ -87,8 +93,8 @@ func (c Cache) Reset() (err error) {
 // ClearDB clears the DB cache
 func (c Cache) ClearDB() (err error) {
 	log.Logger.Info("Removing DB file...")
-	if err = os.RemoveAll(utils.CacheDir()); err != nil {
-		return xerrors.Errorf("failed to remove the directory (%s) : %w", utils.CacheDir(), err)
+	if err = os.RemoveAll(fsutils.CacheDir()); err != nil {
+		return xerrors.Errorf("failed to remove the directory (%s) : %w", fsutils.CacheDir(), err)
 	}
 	return nil
 }
@@ -103,9 +109,11 @@ func (c Cache) ClearArtifacts() error {
 }
 
 // DownloadDB downloads the DB
-func DownloadDB(appVersion, cacheDir, dbRepository string, quiet, insecure, skipUpdate bool) error {
-	client := db.NewClient(cacheDir, quiet, insecure, db.WithDBRepository(dbRepository))
-	ctx := context.Background()
+func DownloadDB(ctx context.Context, appVersion, cacheDir, dbRepository string, quiet, skipUpdate bool, opt types.RemoteOptions) error {
+	mu.Lock()
+	defer mu.Unlock()
+
+	client := db.NewClient(cacheDir, quiet, db.WithDBRepository(dbRepository))
 	needsUpdate, err := client.NeedsUpdate(appVersion, skipUpdate)
 	if err != nil {
 		return xerrors.Errorf("database error: %w", err)
@@ -115,7 +123,7 @@ func DownloadDB(appVersion, cacheDir, dbRepository string, quiet, insecure, skip
 		log.Logger.Info("Need to update DB")
 		log.Logger.Infof("DB Repository: %s", dbRepository)
 		log.Logger.Info("Downloading DB...")
-		if err = client.Download(ctx, cacheDir); err != nil {
+		if err = client.Download(ctx, cacheDir, opt); err != nil {
 			return xerrors.Errorf("failed to download vulnerability DB: %w", err)
 		}
 	}
@@ -140,6 +148,9 @@ func showDBInfo(cacheDir string) error {
 
 // InitBuiltinPolicies downloads the built-in policies and loads them
 func InitBuiltinPolicies(ctx context.Context, cacheDir string, quiet, skipUpdate bool) ([]string, error) {
+	mu.Lock()
+	defer mu.Unlock()
+
 	client, err := policy.NewClient(cacheDir, quiet)
 	if err != nil {
 		return nil, xerrors.Errorf("policy client error: %w", err)
@@ -147,7 +158,7 @@ func InitBuiltinPolicies(ctx context.Context, cacheDir string, quiet, skipUpdate
 
 	needsUpdate := false
 	if !skipUpdate {
-		needsUpdate, err = client.NeedsUpdate()
+		needsUpdate, err = client.NeedsUpdate(ctx)
 		if err != nil {
 			return nil, xerrors.Errorf("unable to check if built-in policies need to be updated: %w", err)
 		}
@@ -171,4 +182,22 @@ func InitBuiltinPolicies(ctx context.Context, cacheDir string, quiet, skipUpdate
 		return nil, xerrors.Errorf("policy load error: %w", err)
 	}
 	return policyPaths, nil
+}
+
+// GetTLSConfig gets tls config from CA, Cert and Key file
+func GetTLSConfig(caCertPath, certPath, keyPath string) (*x509.CertPool, tls.Certificate, error) {
+	cert, err := tls.LoadX509KeyPair(certPath, keyPath)
+	if err != nil {
+		return nil, tls.Certificate{}, err
+	}
+
+	caCert, err := os.ReadFile(caCertPath)
+	if err != nil {
+		return nil, tls.Certificate{}, err
+	}
+
+	caCertPool := x509.NewCertPool()
+	caCertPool.AppendCertsFromPEM(caCert)
+
+	return caCertPool, cert, nil
 }

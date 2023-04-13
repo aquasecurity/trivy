@@ -1,0 +1,5 @@
+{
+  "require": {
+    "guzzlehttp/guzzle": "7.4.4"
+  }
+}
