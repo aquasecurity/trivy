@@ -85,6 +85,7 @@ jobs:
 
       ## push images to registries
       ## only for canary build
+      ## the custom Dockerfile.canary is necessary, because GoReleaser Free didn't push images with `--snapshot` flag.
       - name: Build and push
         if: ${{ inputs.goreleaser_config == 'goreleaser-canary.yml' }}
         uses: docker/build-push-action@v4
