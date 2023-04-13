@@ -122,7 +122,11 @@ func TestClient_Filter(t *testing.T) {
 						},
 					},
 				},
-				severities:    []dbTypes.Severity{dbTypes.SeverityCritical, dbTypes.SeverityHigh, dbTypes.SeverityUnknown},
+				severities: []dbTypes.Severity{
+					dbTypes.SeverityCritical,
+					dbTypes.SeverityHigh,
+					dbTypes.SeverityUnknown,
+				},
 				ignoreUnfixed: false,
 			},
 			wantVulns: []types.DetectedVulnerability{
@@ -479,7 +483,11 @@ func TestClient_Filter(t *testing.T) {
 						},
 					},
 				},
-				severities:    []dbTypes.Severity{dbTypes.SeverityCritical, dbTypes.SeverityHigh, dbTypes.SeverityUnknown},
+				severities: []dbTypes.Severity{
+					dbTypes.SeverityCritical,
+					dbTypes.SeverityHigh,
+					dbTypes.SeverityUnknown,
+				},
 				ignoreUnfixed: false,
 			},
 			wantVulns: []types.DetectedVulnerability{
@@ -607,7 +615,11 @@ func TestClient_Filter(t *testing.T) {
 						},
 					},
 				},
-				severities:    []dbTypes.Severity{dbTypes.SeverityCritical, dbTypes.SeverityHigh, dbTypes.SeverityUnknown},
+				severities: []dbTypes.Severity{
+					dbTypes.SeverityCritical,
+					dbTypes.SeverityHigh,
+					dbTypes.SeverityUnknown,
+				},
 				ignoreUnfixed: false,
 			},
 			wantVulns: []types.DetectedVulnerability{
@@ -666,8 +678,13 @@ func TestClient_Filter(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			err := result.Filter(context.Background(), &tt.args.result,
-				tt.args.severities, tt.args.ignoreUnfixed, false, tt.args.ignoreFile, tt.args.policyFile, tt.args.ignoreLicenses)
+			err := result.Filter(context.Background(), &tt.args.result, result.FilterOption{
+				Severities:     tt.args.severities,
+				IgnoreUnfixed:  tt.args.ignoreUnfixed,
+				IgnoreFile:     tt.args.ignoreFile,
+				PolicyFile:     tt.args.policyFile,
+				IgnoreLicenses: tt.args.ignoreLicenses,
+			})
 			require.NoError(t, err)
 			assert.Equal(t, tt.wantVulns, tt.args.result.Vulnerabilities)
 			assert.Equal(t, tt.wantMisconfSummary, tt.args.result.MisconfSummary)

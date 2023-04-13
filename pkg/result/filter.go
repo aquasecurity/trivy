@@ -9,9 +9,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/samber/lo"
-
 	"github.com/open-policy-agent/opa/rego"
+	"github.com/samber/lo"
 	"golang.org/x/exp/maps"
 	"golang.org/x/exp/slices"
 	"golang.org/x/xerrors"
@@ -20,6 +19,7 @@ import (
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/types"
+	"github.com/aquasecurity/trivy/pkg/vex"
 )
 
 const (
@@ -62,10 +62,38 @@ func Filter(ctx context.Context, result *types.Result, opt FilterOption) error {
 	return nil
 }
 
-func filterVulnerabilities(vulns []types.DetectedVulnerability, severities []dbTypes.Severity,
-	ignoreUnfixed bool, ignoredIDs []string) []types.DetectedVulnerability {
+// filterByVEX determines whether a detected vulnerability should be filtered out based on the provided VEX document.
+// If the VEX document is not nil and the vulnerability is either not affected or fixed according to the VEX statement,
+// the function returns true, indicating the vulnerability should be filtered out.
+func filterByVEX(vuln types.DetectedVulnerability, vexDoc vex.VEX) bool {
+	if vexDoc == nil {
+		return false
+	}
+	stmt := vexDoc.Statement(vuln.VulnerabilityID)
+	if slices.Contains(stmt.Affects, vuln.PkgRef) &&
+		(stmt.Status == vex.StatusNotAffected || stmt.Status == vex.StatusFixed) {
+		log.Logger.Infof("Filtered out %s according to VEX: status: %s, justification: %s",
+			vuln.VulnerabilityID, stmt.Status, stmt.Justification)
+		return true
+	}
+	return false
+}
+
+func filterVulnerabilities(vulns []types.DetectedVulnerability, severities []dbTypes.Severity, ignoreUnfixed bool,
+	ignoredIDs []string, vexPath string) []types.DetectedVulnerability {
 	uniqVulns := make(map[string]types.DetectedVulnerability)
+
+	// Parse VEX if passed
+	vexDoc, err := vex.Open(vexPath)
+	if err != nil {
+		log.Logger.Warnf("VEX error: %s", err)
+	}
+
 	for _, vuln := range vulns {
+		if filterByVEX(vuln, vexDoc) {
+			continue
+		}
+
 		if vuln.Severity == "" {
 			vuln.Severity = dbTypes.SeverityUnknown.String()
 		}
