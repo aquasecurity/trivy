@@ -3,13 +3,16 @@ package spdx_test
 import (
 	"fmt"
 	"hash/fnv"
+	"sort"
 	"testing"
 	"time"
 
+	"github.com/google/go-cmp/cmp"
 	v1 "github.com/google/go-containerregistry/pkg/v1"
 	"github.com/google/uuid"
 	"github.com/mitchellh/hashstructure/v2"
 	"github.com/spdx/tools-golang/spdx"
+	"github.com/spdx/tools-golang/spdx/v2/common"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	fake "k8s.io/utils/clock/testing"
@@ -25,7 +28,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 	testCases := []struct {
 		name        string
 		inputReport types.Report
-		wantSBOM    *spdx.Document2_2
+		wantSBOM    *spdx.Document
 	}{
 		{
 			name: "happy path for container scan",
@@ -97,23 +100,31 @@ func TestMarshaler_Marshal(t *testing.T) {
 					},
 				},
 			},
-			wantSBOM: &spdx.Document2_2{
-				CreationInfo: &spdx.CreationInfo2_2{
-					SPDXVersion:          "SPDX-2.2",
-					DataLicense:          "CC0-1.0",
-					SPDXIdentifier:       "DOCUMENT",
-					DocumentName:         "rails:latest",
-					DocumentNamespace:    "http://aquasecurity.github.io/trivy/container_image/rails:latest-3ff14136-e09f-4df9-80ea-000000000001",
-					CreatorOrganizations: []string{"aquasecurity"},
-					CreatorTools:         []string{"trivy-0.38.1"},
-					Created:              "2021-08-25T12:20:30Z",
+			wantSBOM: &spdx.Document{
+				SPDXVersion:       spdx.Version,
+				DataLicense:       spdx.DataLicense,
+				SPDXIdentifier:    "DOCUMENT",
+				DocumentName:      "rails:latest",
+				DocumentNamespace: "http://aquasecurity.github.io/trivy/container_image/rails:latest-3ff14136-e09f-4df9-80ea-000000000001",
+				CreationInfo: &spdx.CreationInfo{
+					Creators: []common.Creator{
+						{
+							Creator:     "aquasecurity",
+							CreatorType: "Organization",
+						},
+						{
+							Creator:     fmt.Sprintf("trivy-0.38.1"),
+							CreatorType: "Tool",
+						},
+					},
+					Created: "2021-08-25T12:20:30Z",
 				},
-				Packages: map[spdx.ElementID]*spdx.Package2_2{
-					spdx.ElementID("ContainerImage-9396d894cd0cb6cb"): {
+				Packages: []*spdx.Package{
+					{
 						PackageSPDXIdentifier:   spdx.ElementID("ContainerImage-9396d894cd0cb6cb"),
 						PackageDownloadLocation: "NONE",
 						PackageName:             "rails:latest",
-						PackageExternalReferences: []*spdx.PackageExternalReference2_2{
+						PackageExternalReferences: []*spdx.PackageExternalReference{
 							{
 								Category: tspdx.CategoryPackageManager,
 								RefType:  tspdx.RefTypePurl,
@@ -129,33 +140,33 @@ func TestMarshaler_Marshal(t *testing.T) {
 							"RepoTag: rails:latest",
 						},
 					},
-					spdx.ElementID("Application-73c871d73f3c8248"): {
+					{
 						PackageSPDXIdentifier:   spdx.ElementID("Application-73c871d73f3c8248"),
 						PackageDownloadLocation: "NONE",
 						PackageName:             "bundler",
 						PackageSourceInfo:       "app/subproject/Gemfile.lock",
 					},
-					spdx.ElementID("Application-c3fac92c1ac0a9fa"): {
+					{
 						PackageSPDXIdentifier:   spdx.ElementID("Application-c3fac92c1ac0a9fa"),
 						PackageDownloadLocation: "NONE",
 						PackageName:             "bundler",
 						PackageSourceInfo:       "app/Gemfile.lock",
 					},
-					spdx.ElementID("OperatingSystem-197f9a00ebcb51f0"): {
+					{
 						PackageSPDXIdentifier:   spdx.ElementID("OperatingSystem-197f9a00ebcb51f0"),
 						PackageDownloadLocation: "NONE",
 						PackageName:             "centos",
 						PackageVersion:          "8.3.2011",
 					},
 
-					spdx.ElementID("Package-eb0263038c3b445b"): {
+					{
 						PackageSPDXIdentifier:   spdx.ElementID("Package-eb0263038c3b445b"),
 						PackageDownloadLocation: "NONE",
 						PackageName:             "actioncontroller",
 						PackageVersion:          "7.0.1",
 						PackageLicenseConcluded: "NONE",
 						PackageLicenseDeclared:  "NONE",
-						PackageExternalReferences: []*spdx.PackageExternalReference2_2{
+						PackageExternalReferences: []*spdx.PackageExternalReference{
 							{
 								Category: tspdx.CategoryPackageManager,
 								RefType:  tspdx.RefTypePurl,
@@ -163,14 +174,14 @@ func TestMarshaler_Marshal(t *testing.T) {
 							},
 						},
 					},
-					spdx.ElementID("Package-826226d056ff30c0"): {
+					{
 						PackageSPDXIdentifier:   spdx.ElementID("Package-826226d056ff30c0"),
 						PackageDownloadLocation: "NONE",
 						PackageName:             "actionpack",
 						PackageVersion:          "7.0.1",
 						PackageLicenseConcluded: "NONE",
 						PackageLicenseDeclared:  "NONE",
-						PackageExternalReferences: []*spdx.PackageExternalReference2_2{
+						PackageExternalReferences: []*spdx.PackageExternalReference{
 							{
 								Category: tspdx.CategoryPackageManager,
 								RefType:  tspdx.RefTypePurl,
@@ -178,14 +189,14 @@ func TestMarshaler_Marshal(t *testing.T) {
 							},
 						},
 					},
-					spdx.ElementID("Package-fd0dc3cf913d5bc3"): {
+					{
 						PackageSPDXIdentifier:   spdx.ElementID("Package-fd0dc3cf913d5bc3"),
 						PackageDownloadLocation: "NONE",
 						PackageName:             "binutils",
 						PackageVersion:          "2.30-93.el8",
 						PackageLicenseConcluded: "GPL-3.0-or-later",
 						PackageLicenseDeclared:  "GPL-3.0-or-later",
-						PackageExternalReferences: []*spdx.PackageExternalReference2_2{
+						PackageExternalReferences: []*spdx.PackageExternalReference{
 							{
 								Category: tspdx.CategoryPackageManager,
 								RefType:  tspdx.RefTypePurl,
@@ -195,7 +206,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 						PackageSourceInfo: "built package from: binutils 2.30-93.el8",
 					},
 				},
-				Relationships: []*spdx.Relationship2_2{
+				Relationships: []*spdx.Relationship{
 					{
 						RefA:         spdx.DocElementID{ElementRefID: "DOCUMENT"},
 						RefB:         spdx.DocElementID{ElementRefID: "ContainerImage-9396d894cd0cb6cb"},
@@ -237,10 +248,9 @@ func TestMarshaler_Marshal(t *testing.T) {
 						Relationship: "CONTAINS",
 					},
 				},
-				UnpackagedFiles: nil,
-				OtherLicenses:   nil,
-				Annotations:     nil,
-				Reviews:         nil,
+				OtherLicenses: nil,
+				Annotations:   nil,
+				Reviews:       nil,
 			},
 		},
 		{
@@ -311,19 +321,27 @@ func TestMarshaler_Marshal(t *testing.T) {
 					},
 				},
 			},
-			wantSBOM: &spdx.Document2_2{
-				CreationInfo: &spdx.CreationInfo2_2{
-					SPDXVersion:          "SPDX-2.2",
-					DataLicense:          "CC0-1.0",
-					SPDXIdentifier:       "DOCUMENT",
-					DocumentName:         "centos:latest",
-					DocumentNamespace:    "http://aquasecurity.github.io/trivy/container_image/centos:latest-3ff14136-e09f-4df9-80ea-000000000001",
-					CreatorOrganizations: []string{"aquasecurity"},
-					CreatorTools:         []string{"trivy-0.38.1"},
-					Created:              "2021-08-25T12:20:30Z",
+			wantSBOM: &spdx.Document{
+				SPDXVersion:       spdx.Version,
+				DataLicense:       spdx.DataLicense,
+				SPDXIdentifier:    "DOCUMENT",
+				DocumentName:      "centos:latest",
+				DocumentNamespace: "http://aquasecurity.github.io/trivy/container_image/centos:latest-3ff14136-e09f-4df9-80ea-000000000001",
+				CreationInfo: &spdx.CreationInfo{
+					Creators: []common.Creator{
+						{
+							Creator:     "aquasecurity",
+							CreatorType: "Organization",
+						},
+						{
+							Creator:     fmt.Sprintf("trivy-0.38.1"),
+							CreatorType: "Tool",
+						},
+					},
+					Created: "2021-08-25T12:20:30Z",
 				},
-				Packages: map[spdx.ElementID]*spdx.Package2_2{
-					spdx.ElementID("ContainerImage-413bfede37ad01fc"): {
+				Packages: []*spdx.Package{
+					{
 						PackageName:             "centos:latest",
 						PackageSPDXIdentifier:   "ContainerImage-413bfede37ad01fc",
 						PackageDownloadLocation: "NONE",
@@ -334,26 +352,26 @@ func TestMarshaler_Marshal(t *testing.T) {
 							"RepoTag: centos:latest",
 						},
 					},
-					spdx.ElementID("Application-441a648f2aeeee72"): {
+					{
 						PackageSPDXIdentifier:   spdx.ElementID("Application-441a648f2aeeee72"),
 						PackageDownloadLocation: "NONE",
 						PackageName:             "gemspec",
 						PackageSourceInfo:       "Ruby",
 					},
-					spdx.ElementID("OperatingSystem-197f9a00ebcb51f0"): {
+					{
 						PackageSPDXIdentifier:   spdx.ElementID("OperatingSystem-197f9a00ebcb51f0"),
 						PackageDownloadLocation: "NONE",
 						PackageName:             "centos",
 						PackageVersion:          "8.3.2011",
 					},
-					spdx.ElementID("Package-d8dccb186bafaf37"): {
+					{
 						PackageSPDXIdentifier:   spdx.ElementID("Package-d8dccb186bafaf37"),
 						PackageDownloadLocation: "NONE",
 						PackageName:             "acl",
 						PackageVersion:          "1:2.2.53-1.el8",
 						PackageLicenseConcluded: "GPL-2.0-or-later",
 						PackageLicenseDeclared:  "GPL-2.0-or-later",
-						PackageExternalReferences: []*spdx.PackageExternalReference2_2{
+						PackageExternalReferences: []*spdx.PackageExternalReference{
 							{
 								Category: tspdx.CategoryPackageManager,
 								RefType:  tspdx.RefTypePurl,
@@ -362,14 +380,14 @@ func TestMarshaler_Marshal(t *testing.T) {
 						},
 						PackageSourceInfo: "built package from: acl 1:2.2.53-1.el8",
 					},
-					spdx.ElementID("Package-13fe667a0805e6b7"): {
+					{
 						PackageSPDXIdentifier:   spdx.ElementID("Package-13fe667a0805e6b7"),
 						PackageDownloadLocation: "NONE",
 						PackageName:             "actionpack",
 						PackageVersion:          "7.0.1",
 						PackageLicenseConcluded: "NONE",
 						PackageLicenseDeclared:  "NONE",
-						PackageExternalReferences: []*spdx.PackageExternalReference2_2{
+						PackageExternalReferences: []*spdx.PackageExternalReference{
 							{
 								Category: tspdx.CategoryPackageManager,
 								RefType:  tspdx.RefTypePurl,
@@ -379,12 +397,12 @@ func TestMarshaler_Marshal(t *testing.T) {
 						PackageAttributionTexts: []string{
 							"LayerDiffID: sha256:ccb64cf0b7ba2e50741d0b64cae324eb5de3b1e2f580bbf177e721b67df38488",
 						},
-						Files: map[spdx.ElementID]*spdx.File2_2{
-							"File-fa42187221d0d0a8": {
+						Files: []*spdx.File{
+							{
 								FileSPDXIdentifier: "File-fa42187221d0d0a8",
 								FileName:           "tools/project-doe/specifications/actionpack.gemspec",
-								FileChecksums: map[spdx.ChecksumAlgorithm]spdx.Checksum{
-									spdx.SHA1: {
+								Checksums: []spdx.Checksum{
+									{
 										Algorithm: spdx.SHA1,
 										Value:     "413f98442c83808042b5d1d2611a346b999bdca5",
 									},
@@ -392,14 +410,14 @@ func TestMarshaler_Marshal(t *testing.T) {
 							},
 						},
 					},
-					spdx.ElementID("Package-d5443dbcbba0dbd4"): {
+					{
 						PackageSPDXIdentifier:   spdx.ElementID("Package-d5443dbcbba0dbd4"),
 						PackageDownloadLocation: "NONE",
 						PackageName:             "actionpack",
 						PackageVersion:          "7.0.1",
 						PackageLicenseConcluded: "NONE",
 						PackageLicenseDeclared:  "NONE",
-						PackageExternalReferences: []*spdx.PackageExternalReference2_2{
+						PackageExternalReferences: []*spdx.PackageExternalReference{
 							{
 								Category: tspdx.CategoryPackageManager,
 								RefType:  tspdx.RefTypePurl,
@@ -409,12 +427,12 @@ func TestMarshaler_Marshal(t *testing.T) {
 						PackageAttributionTexts: []string{
 							"LayerDiffID: sha256:ccb64cf0b7ba2e50741d0b64cae324eb5de3b1e2f580bbf177e721b67df38488",
 						},
-						Files: map[spdx.ElementID]*spdx.File2_2{
-							"File-6a540784b0dc6d55": {
+						Files: []*spdx.File{
+							{
 								FileSPDXIdentifier: "File-6a540784b0dc6d55",
 								FileName:           "tools/project-john/specifications/actionpack.gemspec",
-								FileChecksums: map[spdx.ChecksumAlgorithm]spdx.Checksum{
-									spdx.SHA1: {
+								Checksums: []spdx.Checksum{
+									{
 										Algorithm: spdx.SHA1,
 										Value:     "d2f9f9aed5161f6e4116a3f9573f41cd832f137c",
 									},
@@ -423,7 +441,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 						},
 					},
 				},
-				Relationships: []*spdx.Relationship2_2{
+				Relationships: []*spdx.Relationship{
 					{
 						RefA:         spdx.DocElementID{ElementRefID: "DOCUMENT"},
 						RefB:         spdx.DocElementID{ElementRefID: "ContainerImage-413bfede37ad01fc"},
@@ -456,10 +474,9 @@ func TestMarshaler_Marshal(t *testing.T) {
 					},
 				},
 
-				UnpackagedFiles: nil,
-				OtherLicenses:   nil,
-				Annotations:     nil,
-				Reviews:         nil,
+				OtherLicenses: nil,
+				Annotations:   nil,
+				Reviews:       nil,
 			},
 		},
 		{
@@ -482,19 +499,27 @@ func TestMarshaler_Marshal(t *testing.T) {
 					},
 				},
 			},
-			wantSBOM: &spdx.Document2_2{
-				CreationInfo: &spdx.CreationInfo2_2{
-					SPDXVersion:          "SPDX-2.2",
-					DataLicense:          "CC0-1.0",
-					SPDXIdentifier:       "DOCUMENT",
-					DocumentName:         "masahiro331/CVE-2021-41098",
-					DocumentNamespace:    "http://aquasecurity.github.io/trivy/filesystem/masahiro331/CVE-2021-41098-3ff14136-e09f-4df9-80ea-000000000001",
-					CreatorOrganizations: []string{"aquasecurity"},
-					CreatorTools:         []string{"trivy-0.38.1"},
-					Created:              "2021-08-25T12:20:30Z",
+			wantSBOM: &spdx.Document{
+				SPDXVersion:       spdx.Version,
+				DataLicense:       spdx.DataLicense,
+				SPDXIdentifier:    "DOCUMENT",
+				DocumentName:      "masahiro331/CVE-2021-41098",
+				DocumentNamespace: "http://aquasecurity.github.io/trivy/filesystem/masahiro331/CVE-2021-41098-3ff14136-e09f-4df9-80ea-000000000001",
+				CreationInfo: &spdx.CreationInfo{
+					Creators: []common.Creator{
+						{
+							Creator:     "aquasecurity",
+							CreatorType: "Organization",
+						},
+						{
+							Creator:     fmt.Sprintf("trivy-0.38.1"),
+							CreatorType: "Tool",
+						},
+					},
+					Created: "2021-08-25T12:20:30Z",
 				},
-				Packages: map[spdx.ElementID]*spdx.Package2_2{
-					spdx.ElementID("Filesystem-5af0f1f08c20909a"): {
+				Packages: []*spdx.Package{
+					{
 						PackageSPDXIdentifier:   spdx.ElementID("Filesystem-5af0f1f08c20909a"),
 						PackageDownloadLocation: "NONE",
 						PackageName:             "masahiro331/CVE-2021-41098",
@@ -502,20 +527,20 @@ func TestMarshaler_Marshal(t *testing.T) {
 							"SchemaVersion: 2",
 						},
 					},
-					spdx.ElementID("Application-9dd4a4ba7077cc5a"): {
+					{
 						PackageSPDXIdentifier:   spdx.ElementID("Application-9dd4a4ba7077cc5a"),
 						PackageDownloadLocation: "NONE",
 						PackageName:             "bundler",
 						PackageSourceInfo:       "Gemfile.lock",
 					},
-					spdx.ElementID("Package-3da61e86d0530402"): {
+					{
 						PackageSPDXIdentifier:   spdx.ElementID("Package-3da61e86d0530402"),
 						PackageDownloadLocation: "NONE",
 						PackageName:             "actioncable",
 						PackageVersion:          "6.1.4.1",
 						PackageLicenseConcluded: "NONE",
 						PackageLicenseDeclared:  "NONE",
-						PackageExternalReferences: []*spdx.PackageExternalReference2_2{
+						PackageExternalReferences: []*spdx.PackageExternalReference{
 							{
 								Category: tspdx.CategoryPackageManager,
 								RefType:  tspdx.RefTypePurl,
@@ -524,7 +549,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 						},
 					},
 				},
-				Relationships: []*spdx.Relationship2_2{
+				Relationships: []*spdx.Relationship{
 					{
 						RefA:         spdx.DocElementID{ElementRefID: "DOCUMENT"},
 						RefB:         spdx.DocElementID{ElementRefID: "Filesystem-5af0f1f08c20909a"},
@@ -568,19 +593,27 @@ func TestMarshaler_Marshal(t *testing.T) {
 					},
 				},
 			},
-			wantSBOM: &spdx.Document2_2{
-				CreationInfo: &spdx.CreationInfo2_2{
-					SPDXVersion:          "SPDX-2.2",
-					DataLicense:          "CC0-1.0",
-					SPDXIdentifier:       "DOCUMENT",
-					DocumentName:         "http://test-aggregate",
-					DocumentNamespace:    "http://aquasecurity.github.io/trivy/repository/test-aggregate-3ff14136-e09f-4df9-80ea-000000000001",
-					CreatorOrganizations: []string{"aquasecurity"},
-					CreatorTools:         []string{"trivy-0.38.1"},
-					Created:              "2021-08-25T12:20:30Z",
+			wantSBOM: &spdx.Document{
+				SPDXVersion:       spdx.Version,
+				DataLicense:       spdx.DataLicense,
+				SPDXIdentifier:    "DOCUMENT",
+				DocumentName:      "http://test-aggregate",
+				DocumentNamespace: "http://aquasecurity.github.io/trivy/repository/test-aggregate-3ff14136-e09f-4df9-80ea-000000000001",
+				CreationInfo: &spdx.CreationInfo{
+					Creators: []common.Creator{
+						{
+							Creator:     "aquasecurity",
+							CreatorType: "Organization",
+						},
+						{
+							Creator:     fmt.Sprintf("trivy-0.38.1"),
+							CreatorType: "Tool",
+						},
+					},
+					Created: "2021-08-25T12:20:30Z",
 				},
-				Packages: map[spdx.ElementID]*spdx.Package2_2{
-					spdx.ElementID("Repository-1a78857c1a6a759e"): {
+				Packages: []*spdx.Package{
+					{
 						PackageName:             "http://test-aggregate",
 						PackageSPDXIdentifier:   "Repository-1a78857c1a6a759e",
 						PackageDownloadLocation: "git+http://test-aggregate",
@@ -588,20 +621,20 @@ func TestMarshaler_Marshal(t *testing.T) {
 							"SchemaVersion: 2",
 						},
 					},
-					spdx.ElementID("Application-24f8a80152e2c0fc"): {
+					{
 						PackageSPDXIdentifier:   "Application-24f8a80152e2c0fc",
 						PackageDownloadLocation: "git+http://test-aggregate",
 						PackageName:             "node-pkg",
 						PackageSourceInfo:       "Node.js",
 					},
-					spdx.ElementID("Package-daedb173cfd43058"): {
+					{
 						PackageSPDXIdentifier:   spdx.ElementID("Package-daedb173cfd43058"),
 						PackageDownloadLocation: "git+http://test-aggregate",
 						PackageName:             "ruby-typeprof",
 						PackageVersion:          "0.20.1",
 						PackageLicenseConcluded: "MIT",
 						PackageLicenseDeclared:  "MIT",
-						PackageExternalReferences: []*spdx.PackageExternalReference2_2{
+						PackageExternalReferences: []*spdx.PackageExternalReference{
 							{
 								Category: tspdx.CategoryPackageManager,
 								RefType:  tspdx.RefTypePurl,
@@ -611,15 +644,15 @@ func TestMarshaler_Marshal(t *testing.T) {
 						PackageAttributionTexts: []string{
 							"LayerDiffID: sha256:661c3fd3cc16b34c070f3620ca6b03b6adac150f9a7e5d0e3c707a159990f88e",
 						},
-						Files: map[spdx.ElementID]*spdx.File2_2{
-							"File-a52825a3e5bc6dfe": {
+						Files: []*spdx.File{
+							{
 								FileName:           "usr/local/lib/ruby/gems/3.1.0/gems/typeprof-0.21.1/vscode/package.json",
 								FileSPDXIdentifier: "File-a52825a3e5bc6dfe",
 							},
 						},
 					},
 				},
-				Relationships: []*spdx.Relationship2_2{
+				Relationships: []*spdx.Relationship{
 					{
 						RefA:         spdx.DocElementID{ElementRefID: "DOCUMENT"},
 						RefB:         spdx.DocElementID{ElementRefID: "Repository-1a78857c1a6a759e"},
@@ -646,19 +679,28 @@ func TestMarshaler_Marshal(t *testing.T) {
 				ArtifactType:  ftypes.ArtifactFilesystem,
 				Results:       types.Results{},
 			},
-			wantSBOM: &spdx.Document2_2{
-				CreationInfo: &spdx.CreationInfo2_2{
-					SPDXVersion:          "SPDX-2.2",
-					DataLicense:          "CC0-1.0",
-					SPDXIdentifier:       "DOCUMENT",
-					DocumentName:         "empty/path",
-					DocumentNamespace:    "http://aquasecurity.github.io/trivy/filesystem/empty/path-3ff14136-e09f-4df9-80ea-000000000001",
-					CreatorOrganizations: []string{"aquasecurity"},
-					CreatorTools:         []string{"trivy-0.38.1"},
-					Created:              "2021-08-25T12:20:30Z",
+			wantSBOM: &spdx.Document{
+				SPDXVersion:       spdx.Version,
+				DataLicense:       spdx.DataLicense,
+				SPDXIdentifier:    "DOCUMENT",
+				DocumentName:      "empty/path",
+				DocumentNamespace: "http://aquasecurity.github.io/trivy/filesystem/empty/path-3ff14136-e09f-4df9-80ea-000000000001",
+
+				CreationInfo: &spdx.CreationInfo{
+					Creators: []common.Creator{
+						{
+							Creator:     "aquasecurity",
+							CreatorType: "Organization",
+						},
+						{
+							Creator:     fmt.Sprintf("trivy-0.38.1"),
+							CreatorType: "Tool",
+						},
+					},
+					Created: "2021-08-25T12:20:30Z",
 				},
-				Packages: map[spdx.ElementID]*spdx.Package2_2{
-					spdx.ElementID("Filesystem-70f34983067dba86"): {
+				Packages: []*spdx.Package{
+					{
 						PackageName:             "empty/path",
 						PackageSPDXIdentifier:   "Filesystem-70f34983067dba86",
 						PackageDownloadLocation: "NONE",
@@ -667,7 +709,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 						},
 					},
 				},
-				Relationships: []*spdx.Relationship2_2{
+				Relationships: []*spdx.Relationship{
 					{
 						RefA:         spdx.DocElementID{ElementRefID: "DOCUMENT"},
 						RefB:         spdx.DocElementID{ElementRefID: "Filesystem-70f34983067dba86"},
@@ -716,6 +758,17 @@ func TestMarshaler_Marshal(t *testing.T) {
 			spdxDoc, err := marshaler.Marshal(tc.inputReport)
 			require.NoError(t, err)
 
+			sort.Slice(spdxDoc.Packages, func(i, j int) bool {
+				return spdxDoc.Packages[i].PackageSPDXIdentifier < spdxDoc.Packages[j].PackageSPDXIdentifier
+			})
+			sort.Slice(tc.wantSBOM.Packages, func(i, j int) bool {
+				return tc.wantSBOM.Packages[i].PackageSPDXIdentifier < tc.wantSBOM.Packages[j].PackageSPDXIdentifier
+			})
+
+			if diff := cmp.Diff(tc.wantSBOM, spdxDoc,
+				cmp.AllowUnexported(spdx.Package{})); diff != "" {
+				t.Fatalf("Marshal mismatch (-want +got):\n%s", diff)
+			}
 			assert.Equal(t, tc.wantSBOM, spdxDoc)
 		})
 	}

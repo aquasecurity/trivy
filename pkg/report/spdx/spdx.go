@@ -3,8 +3,8 @@ package spdx
 import (
 	"io"
 
-	"github.com/spdx/tools-golang/jsonsaver"
-	"github.com/spdx/tools-golang/tvsaver"
+	"github.com/spdx/tools-golang/json"
+	"github.com/spdx/tools-golang/tagvalue"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/sbom/spdx"
@@ -34,11 +34,11 @@ func (w Writer) Write(report types.Report) error {
 	}
 
 	if w.format == "spdx-json" {
-		if err := jsonsaver.Save2_2(spdxDoc, w.output); err != nil {
+		if err := json.Write(spdxDoc, w.output); err != nil {
 			return xerrors.Errorf("failed to save spdx json: %w", err)
 		}
 	} else {
-		if err := tvsaver.Save2_2(spdxDoc, w.output); err != nil {
+		if err := tagvalue.Write(spdxDoc, w.output); err != nil {
 			return xerrors.Errorf("failed to save spdx tag-value: %w", err)
 		}
 	}

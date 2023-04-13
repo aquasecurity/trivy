@@ -12,7 +12,7 @@ type SBOM struct {
 	Applications []types.Application
 
 	CycloneDX *types.CycloneDX
-	SPDX      *stypes.Document2_2
+	SPDX      *stypes.Document
 }
 
 type SBOMSource = string
