@@ -70,7 +70,7 @@ func (a cargoAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAnalysi
 
 		// Parse Cargo.toml alongside Cargo.lock to identify the direct dependencies
 		if err = a.removeDevDependencies(input.FS, filepath.Dir(path), app); err != nil {
-			return err
+			log.Logger.Warnf("Unable to parse %q to identify direct dependencies: %s", filepath.Join(filepath.Dir(path), types.CargoToml), err)
 		}
 		sort.Sort(types.Packages(app.Libraries))
 		apps = append(apps, *app)
@@ -176,7 +176,11 @@ func (a cargoAnalyzer) parseCargoTOML(fsys fs.FS, path string) (map[string]strin
 		return nil, xerrors.Errorf("toml decode error: %w", err)
 	}
 
-	dependencies := tomlFile.Dependencies
+	// There are cases when toml file doesn't include `Dependencies` field (then map will be nil).
+	// e.g. when only `workspace.Dependencies` are used
+	// declare `dependencies` to avoid panic
+	dependencies := Dependencies{}
+	maps.Copy(dependencies, tomlFile.Dependencies)
 
 	// https://doc.rust-lang.org/cargo/reference/specifying-dependencies.html#platform-specific-dependencies
 	for _, target := range tomlFile.Target {
@@ -186,7 +190,7 @@ func (a cargoAnalyzer) parseCargoTOML(fsys fs.FS, path string) (map[string]strin
 	// https://doc.rust-lang.org/cargo/reference/specifying-dependencies.html#inheriting-a-dependency-from-a-workspace
 	maps.Copy(dependencies, tomlFile.Workspace["dependencies"])
 
-	for name, value := range tomlFile.Dependencies {
+	for name, value := range dependencies {
 		switch ver := value.(type) {
 		case string:
 			// e.g. regex = "1.5"

@@ -16,7 +16,7 @@ jobs:
     uses: ./.github/workflows/reusable-release.yaml
     with:
       goreleaser_config: goreleaser-canary.yml
-      goreleaser_options: '--snapshot --rm-dist --timeout 60m' # will not release
+      goreleaser_options: '--snapshot --clean --timeout 60m' # will not release
     secrets: inherit
 
   upload-binaries:

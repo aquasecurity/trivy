@@ -6,6 +6,7 @@ import (
 	"crypto/x509"
 	"os"
 	"strings"
+	"sync"
 
 	"github.com/go-redis/redis/v8"
 	"github.com/google/wire"
@@ -21,6 +22,8 @@ import (
 	"github.com/aquasecurity/trivy/pkg/policy"
 	"github.com/aquasecurity/trivy/pkg/utils/fsutils"
 )
+
+var mu sync.Mutex
 
 // SuperSet binds cache dependencies
 var SuperSet = wire.NewSet(
@@ -106,9 +109,11 @@ func (c Cache) ClearArtifacts() error {
 }
 
 // DownloadDB downloads the DB
-func DownloadDB(appVersion, cacheDir, dbRepository string, quiet, skipUpdate bool, opt types.RemoteOptions) error {
+func DownloadDB(ctx context.Context, appVersion, cacheDir, dbRepository string, quiet, skipUpdate bool, opt types.RemoteOptions) error {
+	mu.Lock()
+	defer mu.Unlock()
+
 	client := db.NewClient(cacheDir, quiet, db.WithDBRepository(dbRepository))
-	ctx := context.Background()
 	needsUpdate, err := client.NeedsUpdate(appVersion, skipUpdate)
 	if err != nil {
 		return xerrors.Errorf("database error: %w", err)
@@ -143,6 +148,9 @@ func showDBInfo(cacheDir string) error {
 
 // InitBuiltinPolicies downloads the built-in policies and loads them
 func InitBuiltinPolicies(ctx context.Context, cacheDir string, quiet, skipUpdate bool) ([]string, error) {
+	mu.Lock()
+	defer mu.Unlock()
+
 	client, err := policy.NewClient(cacheDir, quiet)
 	if err != nil {
 		return nil, xerrors.Errorf("policy client error: %w", err)
