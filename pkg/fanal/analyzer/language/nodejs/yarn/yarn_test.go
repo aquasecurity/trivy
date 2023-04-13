@@ -227,9 +227,9 @@ func Test_yarnLibraryAnalyzer_Analyze(t *testing.T) {
 			},
 		},
 		{
-			name:    "sad path",
-			dir:     "testdata/sad",
-			wantErr: "failed to parse yarn.lock",
+			name: "sad path",
+			dir:  "testdata/sad",
+			want: &analyzer.AnalysisResult{},
 		},
 	}
 	for _, tt := range tests {
