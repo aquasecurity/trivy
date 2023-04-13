@@ -1,5 +1,28 @@
 {
-  "version": "14.0.6",
+  "version": "15.0.4",
+  "scan": {
+    "analyzer": {
+      "id": "trivy",
+      "name": "Trivy",
+      "vendor": {
+        "name": "Aquasecurity"
+      },
+      "version": "dev"
+    },
+    "end_time": "2020-08-10T07:28:17",
+    "scanner": {
+      "id": "trivy",
+      "name": "Trivy",
+      "url": "https://github.com/aquasecurity/trivy/",
+      "vendor": {
+        "name": "Aquasecurity"
+      },
+      "version": "dev"
+    },
+    "start_time": "2020-08-10T07:28:17",
+    "status": "success",
+    "type": "container_scanning"
+  },
   "vulnerabilities": [
     {
       "id": "CVE-2019-1549",
