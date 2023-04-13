@@ -40,64 +40,102 @@ const (
 
 var ErrUnknownFormat = xerrors.New("Unknown SBOM format")
 
+type cdxHeader struct {
+	// XML specific field
+	XMLNS string `json:"-" xml:"xmlns,attr"`
+
+	// JSON specific field
+	BOMFormat string `json:"bomFormat" xml:"-"`
+}
+
+type spdxHeader struct {
+	SpdxID string `json:"SPDXID"`
+}
+
+func IsCycloneDXJSON(r io.ReadSeeker) (bool, error) {
+	if _, err := r.Seek(0, io.SeekStart); err != nil {
+		return false, xerrors.Errorf("seek error: %w", err)
+	}
+
+	var cdxBom cdxHeader
+	if err := json.NewDecoder(r).Decode(&cdxBom); err == nil {
+		if cdxBom.BOMFormat == "CycloneDX" {
+			return true, nil
+		}
+	}
+	return false, nil
+}
+func IsCycloneDXXML(r io.ReadSeeker) (bool, error) {
+	if _, err := r.Seek(0, io.SeekStart); err != nil {
+		return false, xerrors.Errorf("seek error: %w", err)
+	}
+
+	var cdxBom cdxHeader
+	if err := xml.NewDecoder(r).Decode(&cdxBom); err == nil {
+		if strings.HasPrefix(cdxBom.XMLNS, "http://cyclonedx.org") {
+			return true, nil
+		}
+	}
+	return false, nil
+}
+
+func IsSPDXJSON(r io.ReadSeeker) (bool, error) {
+	if _, err := r.Seek(0, io.SeekStart); err != nil {
+		return false, xerrors.Errorf("seek error: %w", err)
+	}
+
+	var spdxBom spdxHeader
+	if err := json.NewDecoder(r).Decode(&spdxBom); err == nil {
+		if strings.HasPrefix(spdxBom.SpdxID, "SPDX") {
+			return true, nil
+		}
+	}
+	return false, nil
+}
+
+func IsSPDXTV(r io.ReadSeeker) (bool, error) {
+	if _, err := r.Seek(0, io.SeekStart); err != nil {
+		return false, xerrors.Errorf("seek error: %w", err)
+	}
+
+	if scanner := bufio.NewScanner(r); scanner.Scan() {
+		if strings.HasPrefix(scanner.Text(), "SPDX") {
+			return true, nil
+		}
+	}
+	return false, nil
+}
+
 func DetectFormat(r io.ReadSeeker) (Format, error) {
 	// Rewind the SBOM file at the end
 	defer r.Seek(0, io.SeekStart)
 
-	type (
-		cyclonedx struct {
-			// XML specific field
-			XMLNS string `json:"-" xml:"xmlns,attr"`
-
-			// JSON specific field
-			BOMFormat string `json:"bomFormat" xml:"-"`
-		}
-
-		spdx struct {
-			SpdxID string `json:"SPDXID"`
-		}
-	)
-
 	// Try CycloneDX JSON
-	var cdxBom cyclonedx
-	if err := json.NewDecoder(r).Decode(&cdxBom); err == nil {
-		if cdxBom.BOMFormat == "CycloneDX" {
-			return FormatCycloneDXJSON, nil
-		}
-	}
-
-	if _, err := r.Seek(0, io.SeekStart); err != nil {
-		return FormatUnknown, xerrors.Errorf("seek error: %w", err)
+	if ok, err := IsCycloneDXJSON(r); err != nil {
+		return FormatUnknown, err
+	} else if ok {
+		return FormatCycloneDXJSON, nil
 	}
 
 	// Try CycloneDX XML
-	if err := xml.NewDecoder(r).Decode(&cdxBom); err == nil {
-		if strings.HasPrefix(cdxBom.XMLNS, "http://cyclonedx.org") {
-			return FormatCycloneDXXML, nil
-		}
-	}
-
-	if _, err := r.Seek(0, io.SeekStart); err != nil {
-		return FormatUnknown, xerrors.Errorf("seek error: %w", err)
+	if ok, err := IsCycloneDXXML(r); err != nil {
+		return FormatUnknown, err
+	} else if ok {
+		return FormatCycloneDXXML, nil
 	}
 
 	// Try SPDX json
-	var spdxBom spdx
-	if err := json.NewDecoder(r).Decode(&spdxBom); err == nil {
-		if strings.HasPrefix(spdxBom.SpdxID, "SPDX") {
-			return FormatSPDXJSON, nil
-		}
-	}
-
-	if _, err := r.Seek(0, io.SeekStart); err != nil {
-		return FormatUnknown, xerrors.Errorf("seek error: %w", err)
+	if ok, err := IsSPDXJSON(r); err != nil {
+		return FormatUnknown, err
+	} else if ok {
+		return FormatSPDXJSON, nil
 	}
 
 	// Try SPDX tag-value
-	if scanner := bufio.NewScanner(r); scanner.Scan() {
-		if strings.HasPrefix(scanner.Text(), "SPDX") {
-			return FormatSPDXTV, nil
-		}
+	if ok, err := IsSPDXTV(r); err != nil {
+		return FormatUnknown, err
+	} else if ok {
+		return FormatSPDXTV, nil
 	}
 
 	if _, err := r.Seek(0, io.SeekStart); err != nil {
