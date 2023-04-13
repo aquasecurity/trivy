@@ -116,7 +116,7 @@ func validProtocol(protocol string) bool {
 
 func ignoreProtocol(protocol string) bool {
 	switch protocol {
-	case "workspace", "patch", "file", "link", "portal", "github":
+	case "workspace", "patch", "file", "link", "portal", "github", "git", "git+ssh", "git+http", "git+https", "git+file":
 		return true
 	}
 	return false

@@ -318,6 +318,10 @@ func TestParse(t *testing.T) {
 			wantDeps: yarnNormalDeps,
 		},
 		{
+			name: "yarn with git dependency",
+			file: "testdata/yarn_with_git.lock",
+		},
+		{
 			name:     "bad yarn file",
 			file:     "testdata/bad_yarn.lock",
 			wantErr:  true,
