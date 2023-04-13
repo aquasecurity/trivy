@@ -3,6 +3,7 @@ package cyclonedx
 import (
 	"bytes"
 	"errors"
+	"io"
 	"sort"
 	"strconv"
 	"strings"
@@ -29,14 +30,22 @@ type CycloneDX struct {
 	components   map[string]cdx.Component
 }
 
+func DecodeJSON(r io.Reader) (*cdx.BOM, error) {
+	bom := cdx.NewBOM()
+	decoder := cdx.NewBOMDecoder(r, cdx.BOMFileFormatJSON)
+	if err := decoder.Decode(bom); err != nil {
+		return nil, xerrors.Errorf("CycloneDX decode error: %w", err)
+	}
+	return bom, nil
+}
+
 func (c *CycloneDX) UnmarshalJSON(b []byte) error {
 	log.Logger.Debug("Unmarshaling CycloneDX JSON...")
 	if c.SBOM == nil {
 		c.SBOM = &types.SBOM{}
 	}
-	bom := cdx.NewBOM()
-	decoder := cdx.NewBOMDecoder(bytes.NewReader(b), cdx.BOMFileFormatJSON)
-	if err := decoder.Decode(bom); err != nil {
+	bom, err := DecodeJSON(bytes.NewReader(b))
+	if err != nil {
 		return xerrors.Errorf("CycloneDX decode error: %w", err)
 	}
 
@@ -45,7 +54,7 @@ func (c *CycloneDX) UnmarshalJSON(b []byte) error {
 		log.Logger.Warnf("Recommend using Trivy to generate SBOMs")
 	}
 
-	if err := c.parseSBOM(bom); err != nil {
+	if err = c.parseSBOM(bom); err != nil {
 		return xerrors.Errorf("failed to parse sbom: %w", err)
 	}
 
