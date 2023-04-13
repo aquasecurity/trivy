@@ -72,12 +72,14 @@ require (
 	github.com/open-policy-agent/opa v0.45.0
 	github.com/opencontainers/go-digest v1.0.0
 	github.com/opencontainers/image-spec v1.1.0-rc2.0.20221020182949-4df8887994e8
+	github.com/openvex/go-vex v0.2.0
 	github.com/owenrumney/go-sarif/v2 v2.1.2
 	github.com/package-url/packageurl-go v0.1.1-0.20220428063043-89078438f170
 	github.com/samber/lo v1.37.0
 	github.com/saracen/walker v0.1.3
 	github.com/secure-systems-lab/go-securesystemslib v0.5.0
 	github.com/sigstore/rekor v1.1.0
+	github.com/sirupsen/logrus v1.9.0
 	github.com/sosedoff/gitkit v0.3.0
 	github.com/spdx/tools-golang v0.3.1-0.20230104082527-d6f58551be3f
 	github.com/spf13/cast v1.5.0
@@ -309,7 +311,6 @@ require (
 	github.com/opencontainers/runtime-spec v1.1.0-rc.1 // indirect
 	github.com/opencontainers/selinux v1.11.0 // indirect
 	github.com/opentracing/opentracing-go v1.2.0 // indirect
-	github.com/openvex/go-vex v0.2.0 // indirect
 	github.com/owenrumney/squealer v1.1.1 // indirect
 	github.com/pelletier/go-toml/v2 v2.0.6 // indirect
 	github.com/peterbourgon/diskv v2.0.1+incompatible // indirect
@@ -328,7 +329,6 @@ require (
 	github.com/sergi/go-diff v1.2.0 // indirect
 	github.com/shibumi/go-pathspec v1.3.0 // indirect
 	github.com/shopspring/decimal v1.2.0 // indirect
-	github.com/sirupsen/logrus v1.9.0 // indirect
 	github.com/skeema/knownhosts v1.1.0 // indirect
 	github.com/spf13/afero v1.9.3 // indirect
 	github.com/spf13/jwalterweatherman v1.1.0 // indirect
