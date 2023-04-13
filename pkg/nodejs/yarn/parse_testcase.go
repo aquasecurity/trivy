@@ -15867,4 +15867,8 @@ var (
 	yarnWithNpm = []types.Library{
 		{ID: "jquery@3.6.0", Name: "jquery", Version: "3.6.0", Locations: []types.Location{{StartLine: 1, EndLine: 4}}},
 	}
+
+	yarnBadProtocol = []types.Library{
+		{ID: "jquery@3.4.1", Name: "jquery", Version: "3.4.1", Locations: []types.Location{{StartLine: 4, EndLine: 7}}},
+	}
 )

@@ -3,6 +3,7 @@ package yarn
 import (
 	"bufio"
 	"bytes"
+	"github.com/aquasecurity/go-dep-parser/pkg/log"
 	"io"
 	"regexp"
 	"strings"
@@ -205,7 +206,10 @@ func parseBlock(block []byte, lineNum int) (lib Library, deps []string, newLine 
 			if patterns == nil || !validProtocol(protocol) {
 				skipBlock = true
 				if !ignoreProtocol(protocol) {
-					return Library{}, nil, -1, xerrors.Errorf("failed to parse package pattern: '%s', unknown protocol: '%s'", line, protocol)
+					// we need to calculate the last line of the block in order to correctly determine the line numbers of the next blocks
+					// store the error. we will handle it later
+					err = xerrors.Errorf("unknown protocol: '%s', line: %s", protocol, line)
+					continue
 				}
 				continue
 			} else {
@@ -214,6 +218,13 @@ func parseBlock(block []byte, lineNum int) (lib Library, deps []string, newLine 
 				continue
 			}
 		}
+	}
+
+	// in case an unsupported protocol is detected
+	// show warning and continue parsing
+	if err != nil {
+		log.Logger.Warnf("Yarn protocol error: %s", err)
+		return Library{}, nil, scanner.LineNum(lineNum), nil
 	}
 
 	lib.Location = types.Location{
