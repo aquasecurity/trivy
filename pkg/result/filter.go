@@ -27,19 +27,28 @@ const (
 	DefaultIgnoreFile = ".trivyignore"
 )
 
+type FilterOption struct {
+	Severities         []dbTypes.Severity
+	IgnoreUnfixed      bool
+	IncludeNonFailures bool
+	IgnoreFile         string
+	PolicyFile         string
+	IgnoreLicenses     []string
+	VEXPath            string
+}
+
 // Filter filters out the vulnerabilities
-func Filter(ctx context.Context, result *types.Result, severities []dbTypes.Severity, ignoreUnfixed, includeNonFailures bool,
-	ignoreFile, policyFile string, ignoreLicenses []string) error {
-	ignoredIDs := getIgnoredIDs(ignoreFile)
+func Filter(ctx context.Context, result *types.Result, opt FilterOption) error {
+	ignoredIDs := getIgnoredIDs(opt.IgnoreFile)
 
-	filteredVulns := filterVulnerabilities(result.Vulnerabilities, severities, ignoreUnfixed, ignoredIDs)
-	misconfSummary, filteredMisconfs := filterMisconfigurations(result.Misconfigurations, severities, includeNonFailures, ignoredIDs)
-	result.Secrets = filterSecrets(result.Secrets, severities, ignoredIDs)
-	result.Licenses = filterLicenses(result.Licenses, severities, ignoreLicenses)
+	filteredVulns := filterVulnerabilities(result.Vulnerabilities, opt.Severities, opt.IgnoreUnfixed, ignoredIDs, opt.VEXPath)
+	misconfSummary, filteredMisconfs := filterMisconfigurations(result.Misconfigurations, opt.Severities, opt.IncludeNonFailures, ignoredIDs)
+	result.Secrets = filterSecrets(result.Secrets, opt.Severities, ignoredIDs)
+	result.Licenses = filterLicenses(result.Licenses, opt.Severities, opt.IgnoreLicenses)
 
-	if policyFile != "" {
+	if opt.PolicyFile != "" {
 		var err error
-		filteredVulns, filteredMisconfs, err = applyPolicy(ctx, filteredVulns, filteredMisconfs, policyFile)
+		filteredVulns, filteredMisconfs, err = applyPolicy(ctx, filteredVulns, filteredMisconfs, opt.PolicyFile)
 		if err != nil {
 			return xerrors.Errorf("failed to apply the policy: %w", err)
 		}
