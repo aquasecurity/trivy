@@ -158,7 +158,7 @@ func (s *Scanner) detect(osVer string, pkg ftypes.Package) ([]types.DetectedVuln
 			PkgID:            pkg.ID,
 			PkgName:          pkg.Name,
 			InstalledVersion: utils.FormatVersion(pkg),
-			Ref:              pkg.Ref,
+			PkgRef:           pkg.Ref,
 			Layer:            pkg.Layer,
 			SeveritySource:   vulnerability.RedHat,
 			Vulnerability: dbTypes.Vulnerability{
