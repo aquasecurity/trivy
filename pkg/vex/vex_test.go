@@ -63,7 +63,7 @@ func TestOpen(t *testing.T) {
 				VEX: &openvex.VEX{
 					Metadata: openvex.Metadata{
 						Context:    "https://openvex.dev/ns",
-						Author:     "Spring Builds <spring-builds@users.noreply.github.com>",
+						Author:     "Aqua Security",
 						AuthorRole: "Project Release Bot",
 						Version:    "1",
 						Timestamp:  lo.ToPtr(lo.Must(time.Parse(time.RFC3339Nano, "2023-01-16T19:07:16.853479631-06:00"))),

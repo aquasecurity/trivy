@@ -6,9 +6,9 @@
   "version": "1",
   "statements": [
     {
-      "vulnerability": "CVE-2021-44228",
+      "vulnerability": "CVE-2019-0001",
       "products": [
-        "pkg:maven/org.springframework.boot/spring-boot@2.6.0"
+        "pkg:golang/github.com/aquasecurity/foo@1.2.3"
       ],
       "status": "not_affected",
       "justification": "vulnerable_code_not_in_execute_path"

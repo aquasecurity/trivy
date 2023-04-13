@@ -7,24 +7,21 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/aquasecurity/trivy/pkg/result"
-
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
+	"github.com/aquasecurity/trivy/pkg/result"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
 
 func TestClient_Filter(t *testing.T) {
 	type args struct {
-		result types.Result
-		//vulns         []types.DetectedVulnerability
-		//misconfs      []types.DetectedMisconfiguration
-		//secrets       []ftypes.SecretFinding
+		result         types.Result
 		severities     []dbTypes.Severity
 		ignoreUnfixed  bool
 		ignoreFile     string
 		policyFile     string
 		ignoreLicenses []string
+		vexPath        string
 	}
 	tests := []struct {
 		name               string
@@ -675,6 +672,55 @@ func TestClient_Filter(t *testing.T) {
 				},
 			},
 		},
+		{
+			name: "filter by VEX",
+			args: args{
+				result: types.Result{
+					Vulnerabilities: []types.DetectedVulnerability{
+						{
+							VulnerabilityID:  "CVE-2019-0001",
+							PkgName:          "foo",
+							PkgRef:           "pkg:golang/github.com/aquasecurity/foo@1.2.3",
+							InstalledVersion: "1.2.3",
+							FixedVersion:     "1.2.4",
+							Vulnerability: dbTypes.Vulnerability{
+								Severity: dbTypes.SeverityLow.String(),
+							},
+						},
+						{
+							VulnerabilityID:  "CVE-2019-0001",
+							PkgName:          "bar",
+							PkgRef:           "pkg:golang/github.com/aquasecurity/bar@1.2.3",
+							InstalledVersion: "1.2.3",
+							FixedVersion:     "1.2.4",
+							Vulnerability: dbTypes.Vulnerability{
+								Severity: dbTypes.SeverityCritical.String(),
+							},
+						},
+					},
+				},
+				severities: []dbTypes.Severity{
+					dbTypes.SeverityCritical,
+					dbTypes.SeverityHigh,
+					dbTypes.SeverityMedium,
+					dbTypes.SeverityLow,
+					dbTypes.SeverityUnknown,
+				},
+				vexPath: "testdata/openvex.json",
+			},
+			wantVulns: []types.DetectedVulnerability{
+				{
+					VulnerabilityID:  "CVE-2019-0001",
+					PkgName:          "bar",
+					PkgRef:           "pkg:golang/github.com/aquasecurity/bar@1.2.3",
+					InstalledVersion: "1.2.3",
+					FixedVersion:     "1.2.4",
+					Vulnerability: dbTypes.Vulnerability{
+						Severity: dbTypes.SeverityCritical.String(),
+					},
+				},
+			},
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -684,6 +730,7 @@ func TestClient_Filter(t *testing.T) {
 				IgnoreFile:     tt.args.ignoreFile,
 				PolicyFile:     tt.args.policyFile,
 				IgnoreLicenses: tt.args.ignoreLicenses,
+				VEXPath:        tt.args.vexPath,
 			})
 			require.NoError(t, err)
 			assert.Equal(t, tt.wantVulns, tt.args.result.Vulnerabilities)
