@@ -17,7 +17,7 @@ $ trivy repo [YOUR_REPO_URL]
 ### Vulnerabilities
 It is enabled by default.
 Trivy will look for vulnerabilities based on lock files such as Gemfile.lock and package-lock.json.
-See [here](../scanner/vulnerability/scanning.md) for the detail.
+See [here](../scanner/vulnerability/index.md) for the detail.
 
 ```
 $ trivy repo https://github.com/knqyf263/trivy-ci-test
@@ -174,7 +174,7 @@ $ trivy repo --scanners config [YOUR_REPO_URL]
 
 ### Secrets
 It is enabled by default.
-See [here](../scanner/secret/scanning.md) for the detail.
+See [here](../scanner/secret.md) for the detail.
 
 ```shell
 $ trivy repo [YOUR_REPO_URL]
@@ -182,7 +182,7 @@ $ trivy repo [YOUR_REPO_URL]
 
 ### Licenses
 It is disabled by default.
-See [here](../licenses/scanning.md) for the detail.
+See [here](../scanner/license.md) for the detail.
 
 ```shell
 $ trivy repo --scanners license [YOUR_REPO_URL]
@@ -190,7 +190,7 @@ $ trivy repo --scanners license [YOUR_REPO_URL]
 
 ## SBOM generation
 Trivy can generate SBOM for git repositories.
-See [here](../sbom/index.md) for the detail.
+See [here](../supply-chain/index.md) for the detail.
 
 ## References
 ### Scanning a Branch

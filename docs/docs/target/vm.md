@@ -144,7 +144,7 @@ Trivy supports VM image scanning for
 It is enabled by default.
 You can simply specify your VM image location.
 It detects known vulnerabilities in your VM image.
-See [here](../scanner/vulnerability/scanning.md) for the detail.
+See [here](../scanner/vulnerability/index.md) for the detail.
 
 ```
 $ trivy vm [YOUR_VM_IMAGE]
@@ -161,7 +161,7 @@ $ trivy vm --scanners config [YOUR_VM_IMAGE]
 
 ### Secrets
 It is enabled by default.
-See [here](../scanner/secret/scanning.md) for the detail.
+See [here](../scanner/secret.md) for the detail.
 
 ```shell
 $ trivy vm [YOUR_VM_IMAGE]
@@ -172,7 +172,7 @@ $ trivy vm [YOUR_VM_IMAGE]
 
 ### Licenses
 It is disabled by default.
-See [here](../licenses/scanning.md) for the detail.
+See [here](../scanner/license.md) for the detail.
 
 ```shell
 $ trivy vm --scanners license [YOUR_VM_IMAGE]
@@ -180,7 +180,7 @@ $ trivy vm --scanners license [YOUR_VM_IMAGE]
 
 ## SBOM generation
 Trivy can generate SBOM for VM images.
-See [here](../sbom/index.md) for the detail.
+See [here](../supply-chain/index.md) for the detail.
 
 ## Supported Architectures
 
@@ -234,7 +234,6 @@ Reference: [VMware Virtual Disk Format 1.1.pdf][vmdk]
 | ZFS               |         |
 
 
-[aws]: ../vm/aws.md
 [vmdk]: https://www.vmware.com/app/vmdk/?src=vmdk
 [ebsapi-elements]: https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ebs-accessing-snapshot.html#ebsapi-elements
 [coldsnap]: https://github.com/awslabs/coldsnap

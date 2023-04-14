@@ -47,54 +47,48 @@ nav:
           AWS: docs/target/aws.md
           SBOM: docs/target/sbom.md
       - Scanner:
-          Vulnerability:
-            - Overview: docs/scanner/vulnerability/index.md
-            - OS Packages: docs/scanner/vulnerability/os.md
-            - Language-specific Packages:
-                - Overview: docs/scanner/vulnerability/language/index.md
-                - Go: docs/scanner/vulnerability/language/golang.md
-                - Java: docs/scanner/vulnerability/language/java.md
-                - Node.js: docs/scanner/vulnerability/language/nodejs.md
-                - PHP: docs/scanner/vulnerability/language/php.md
-                - Python: docs/scanner/vulnerability/language/python.md
-                - Rust: docs/scanner/vulnerability/language/rust.md
-          Secret: docs/scanner/secret.md
-      - Misconfiguration:
-          - Scanning: docs/misconfiguration/scanning.md
-          - Policy:
-              - Built-in Policies: docs/misconfiguration/policy/builtin.md
-              - Exceptions: docs/misconfiguration/policy/exceptions.md
-          - Custom Policies:
-              - Overview: docs/misconfiguration/custom/index.md
-              - Data: docs/misconfiguration/custom/data.md
-              - Combine: docs/misconfiguration/custom/combine.md
-              - Selectors: docs/misconfiguration/custom/selectors.md
-              - Schemas: docs/misconfiguration/custom/schema.md
-              - Testing: docs/misconfiguration/custom/testing.md
-              - Debugging Policies: docs/misconfiguration/custom/debug.md
-              - Examples: docs/misconfiguration/custom/examples.md
-          - Options:
-              - Policy: docs/misconfiguration/options/policy.md
-              - Filtering: docs/misconfiguration/options/filter.md
-              - Report Formats: docs/misconfiguration/options/report.md
-              - Value Overrides: docs/misconfiguration/options/values.md
-              - Others: docs/misconfiguration/options/others.md
-      - Secret:
-          - Scanning: docs/secret/scanning.md
-          - Configuration: docs/secret/configuration.md
-          - Examples: docs/secret/examples.md
-      - License:
-            - Scanning: docs/licenses/scanning.md
+          - Vulnerability:
+              - Overview: docs/scanner/vulnerability/index.md
+              - OS Packages: docs/scanner/vulnerability/os.md
+              - Language-specific Packages:
+                  - Overview: docs/scanner/vulnerability/language/index.md
+                  - Go: docs/scanner/vulnerability/language/golang.md
+                  - Java: docs/scanner/vulnerability/language/java.md
+                  - Node.js: docs/scanner/vulnerability/language/nodejs.md
+                  - PHP: docs/scanner/vulnerability/language/php.md
+                  - Python: docs/scanner/vulnerability/language/python.md
+                  - Rust: docs/scanner/vulnerability/language/rust.md
+          - Misconfiguration:
+              - Overview: docs/scanner/misconfiguration/index.md
+              - Policy:
+                  - Built-in Policies: docs/scanner/misconfiguration/policy/builtin.md
+                  - Exceptions: docs/scanner/misconfiguration/policy/exceptions.md
+              - Custom Policies:
+                  - Overview: docs/scanner/misconfiguration/custom/index.md
+                  - Data: docs/scanner/misconfiguration/custom/data.md
+                  - Combine: docs/scanner/misconfiguration/custom/combine.md
+                  - Selectors: docs/scanner/misconfiguration/custom/selectors.md
+                  - Schemas: docs/scanner/misconfiguration/custom/schema.md
+                  - Testing: docs/scanner/misconfiguration/custom/testing.md
+                  - Debugging Policies: docs/scanner/misconfiguration/custom/debug.md
+                  - Examples: docs/scanner/misconfiguration/custom/examples.md
+          - Secret: docs/scanner/secret.md
+          - License: docs/scanner/license.md
+      - Configuration:
+          - Overview: docs/configuration/index.md
+          - Filtering: docs/configuration/filtering.md
+          - Reporting: docs/configuration/reporting.md
+          - Cache: docs/configuration/cache.md
+          - DB: docs/configuration/db.md
+          - Others: docs/configuration/others.md
+      - Supply Chain:
+          - SBOM: docs/supply-chain/sbom.md
+          - Attestation:
+                - SBOM: docs/attestation/sbom.md
+                - Cosign Vulnerability Scan Record: docs/attestation/vuln.md
+                - SBOM Attestation in Rekor: docs/attestation/rekor.md
       - Compliance:
-            - Reports:  docs/compliance/compliance.md
-      - SBOM:
-          - Overview: docs/sbom/index.md
-          - CycloneDX: docs/sbom/cyclonedx.md
-          - SPDX: docs/sbom/spdx.md
-      - Attestation:
-          - SBOM: docs/attestation/sbom.md
-          - Cosign Vulnerability Scan Record: docs/attestation/vuln.md
-          - SBOM Attestation in Rekor: docs/attestation/rekor.md
+          - Reports:  docs/compliance/compliance.md
       - Advanced:
           - Modules: docs/advanced/modules.md
           - Plugins: docs/advanced/plugins.md
@@ -110,33 +104,31 @@ nav:
                   - ACR (Azure Container Registry): docs/advanced/private-registries/acr.md
                   - Self-Hosted: docs/advanced/private-registries/self.md
       - References:
-          - Customization:
-              - Environment variables: docs/references/customization/envs.md
-              - Config file: docs/references/customization/config-file.md
-          - CLI:
-              - Overview: docs/references/cli/trivy.md
-              - AWS: docs/references/cli/trivy_aws.md
-              - Config: docs/references/cli/trivy_config.md
-              - Filesystem: docs/references/cli/trivy_filesystem.md
-              - Image: docs/references/cli/trivy_image.md
-              - Kubernetes: docs/references/cli/trivy_kubernetes.md
-              - Module: docs/references/cli/trivy_module.md
-              - Module Install: docs/references/cli/trivy_module_install.md
-              - Module Uninstall: docs/references/cli/trivy_module_uninstall.md
-              - Plugin: docs/references/cli/trivy_plugin.md
-              - Plugin Info: docs/references/cli/trivy_plugin_info.md
-              - Plugin Install: docs/references/cli/trivy_plugin_install.md
-              - Plugin List: docs/references/cli/trivy_plugin_list.md
-              - Plugin Run: docs/references/cli/trivy_plugin_run.md
-              - Plugin Uninstall: docs/references/cli/trivy_plugin_uninstall.md
-              - Plugin Update: docs/references/cli/trivy_plugin_update.md
-              - Repository: docs/references/cli/trivy_repository.md
-              - Rootfs: docs/references/cli/trivy_rootfs.md
-              - SBOM: docs/references/cli/trivy_sbom.md
-              - Server: docs/references/cli/trivy_server.md
-              - Version: docs/references/cli/trivy_version.md
-              - VM: docs/references/cli/trivy_vm.md
-              
+          - Configuration:
+              - CLI:
+                  - Overview: docs/references/configuration/cli/trivy.md
+                  - AWS: docs/references/configuration/cli/trivy_aws.md
+                  - Config: docs/references/configuration/cli/trivy_config.md
+                  - Filesystem: docs/references/configuration/cli/trivy_filesystem.md
+                  - Image: docs/references/configuration/cli/trivy_image.md
+                  - Kubernetes: docs/references/configuration/cli/trivy_kubernetes.md
+                  - Module: docs/references/configuration/cli/trivy_module.md
+                  - Module Install: docs/references/configuration/cli/trivy_module_install.md
+                  - Module Uninstall: docs/references/configuration/cli/trivy_module_uninstall.md
+                  - Plugin: docs/references/configuration/cli/trivy_plugin.md
+                  - Plugin Info: docs/references/configuration/cli/trivy_plugin_info.md
+                  - Plugin Install: docs/references/configuration/cli/trivy_plugin_install.md
+                  - Plugin List: docs/references/configuration/cli/trivy_plugin_list.md
+                  - Plugin Run: docs/references/configuration/cli/trivy_plugin_run.md
+                  - Plugin Uninstall: docs/references/configuration/cli/trivy_plugin_uninstall.md
+                  - Plugin Update: docs/references/configuration/cli/trivy_plugin_update.md
+                  - Repository: docs/references/configuration/cli/trivy_repository.md
+                  - Rootfs: docs/references/configuration/cli/trivy_rootfs.md
+                  - SBOM: docs/references/configuration/cli/trivy_sbom.md
+                  - Server: docs/references/configuration/cli/trivy_server.md
+                  - Version: docs/references/configuration/cli/trivy_version.md
+                  - VM: docs/references/configuration/cli/trivy_vm.md
+              - Config file: docs/references/configuration/config-file.md
           - Modes:
               - Standalone: docs/references/modes/standalone.md
               - Client/Server: docs/references/modes/client-server.md

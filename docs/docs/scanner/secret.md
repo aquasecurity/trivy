@@ -87,6 +87,9 @@ Total: 1 (UNKNOWN: 0, LOW: 0, MEDIUM: 0, HIGH: 1, CRITICAL: 0)
     Also, you can specify paths to be allowed in a configuration file. See the detail [here](#configuration).
 
 ## Configuration
+This section describes secret-specific configuration.
+Other common options are documented [here](../configuration/index.md).
+
 Trivy has a set of builtin rules for secret scanning, which can be extended or modified by a configuration file.
 Trivy tries to load `trivy-secret.yaml` in the current directory by default.
 If the file doesn't exist, only built-in rules are used.
@@ -228,7 +231,7 @@ We would recommend specifying `--skip-dirs` for faster secret scanning.
 In container image scanning, Trivy walks the file tree rooted  `/` and scans all the files other than [built-in allowed paths][builtin-allow].
 It will take a while if your image contains a lot of files even though Trivy tries to avoid scanning layers from a base image.
 If you want to make scanning faster, `--skip-dirs` and `--skip-files` helps so that Trivy will skip scanning those files and directories.
-The usage examples are [here](#examples).
+You can see more options [here](../configuration/others.md).
 
 `allow-rules` is also helpful. See the [allow-rules](#allow-rules) section.
 
@@ -245,63 +248,7 @@ If you don't need secret scanning, you can disable it via the `--scanners` flag.
 $ trivy image --scanners vuln alpine:3.15
 ```
 
-## Examples
-Also see [quick start](#quick-start).
-
-### Skip Directories
-Trivy traversals directories and scans all files except those matching the built-in allow rules by default.
-If your have a lot of files in your container image or project, the scanning takes time.
-To make it faster, you can skip traversal in the specific directory.
-Also, it would be helpful if your project contains secrets and certificates for testing.
-
-``` shell
-$ trivy image --skip-dirs /var/lib --skip-dirs /var/log YOUR_IMAGE
-```
-
-``` shell
-$ trivy fs --skip-dirs ./my-test-dir --skip-dirs ./my-testing-cert/ /path/to/your_project
-```
-
-`--skip-files` also works similarly.
-
-### Filter by severity
-
-Use `--severity` option.
-
-``` shell
-$ trivy fs --severity CRITICAL ./
-
-app/secret.sh (secrets)
-=======================
-Total: 1 (CRITICAL: 1)
-
-+----------+-------------------+----------+---------+--------------------------------+
-| CATEGORY |    DESCRIPTION    | SEVERITY | LINE NO |             MATCH              |
-+----------+-------------------+----------+---------+--------------------------------+
-|   AWS    | AWS Access Key ID | CRITICAL |   10    | export AWS_ACCESS_KEY_ID=***** |
-+----------+-------------------+----------+---------+--------------------------------+
-```
-
-### Filter by RuleID
-
-Use `.trivyignore`.
-
-```bash
-$ cat .trivyignore
-
-# Ignore these rules
-generic-unwanted-rule
-aws-account-id
-```
-
-### Disable secret scanning
-If you need vulnerability scanning only, you can disable secret scanning via the `--scanners` flag.
-
-``` shell
-$ trivy image --scanners vuln alpine:3.15
-```
-
-### With configuration file
+## Example
 `trivy-secret.yaml` in the working directory is loaded by default.
 
 ``` yaml

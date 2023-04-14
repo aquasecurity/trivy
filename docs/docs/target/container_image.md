@@ -22,7 +22,7 @@ By default, vulnerability and secret scanning are enabled, and you can configure
 It is enabled by default.
 You can simply specify your image name (and a tag).
 It detects known vulnerabilities in your container image.
-See [here](../scanner/vulnerability/scanning.md) for the detail.
+See [here](../scanner/vulnerability/index.md) for the detail.
 
 ```
 $ trivy image [YOUR_IMAGE_NAME]
@@ -72,7 +72,7 @@ $ trivy image --scanners config [YOUR_IMAGE_NAME]
 
 ### Secrets
 It is enabled by default.
-See [here](../scanner/secret/scanning.md) for the detail.
+See [here](../scanner/secret.md) for the detail.
 
 ```shell
 $ trivy image [YOUR_IMAGE_NAME]
@@ -80,7 +80,7 @@ $ trivy image [YOUR_IMAGE_NAME]
 
 ### Licenses
 It is disabled by default.
-See [here](../licenses/scanning.md) for the detail.
+See [here](../scanner/license.md) for the detail.
 
 ```shell
 $ trivy image --scanners license [YOUR_IMAGE_NAME]
@@ -165,7 +165,7 @@ See https://avd.aquasec.com/misconfig/ds026
 Trivy detects secrets on the configuration of container images.
 The image config is converted into JSON and Trivy scans the file for secrets.
 It is especially useful for environment variables that are likely to have credentials by accident.
-See [here](../scanner/secret/scanning.md) for the detail.
+See [here](../scanner/secret.md) for the detail.
 
 ```shell
 $ trivy image --image-config-scanners secret [YOUR_IMAGE_NAME]
@@ -380,7 +380,7 @@ Trivy supports the generation of Software Bill of Materials (SBOM) for container
 
 ### Generation
 Trivy can generate SBOM for container images.
-See [here](../sbom/index.md) for the detail.
+See [here](../supply-chain/index.md) for the detail.
 
 ### Discovery
 Trivy can search for Software Bill of Materials (SBOMs) that reference container images.
