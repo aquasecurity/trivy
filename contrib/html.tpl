@@ -26,7 +26,7 @@
         margin: 0 auto;
       }
       .pkg-path {
-          overflow-wrap: anywhere
+        white-space: normal;
       }
       .severity {
         text-align: center;
@@ -55,9 +55,7 @@
       }
       a.toggle-more-links { cursor: pointer; }
     </style>
-    <title>
-      Trivy Report - {{ now }}
-    </title>
+    <title>Trivy Report - {{ now }}</title>
     <script>
       window.onload = function() {
         document.querySelectorAll('td.links').forEach(function(linkCell) {
@@ -115,7 +113,7 @@
         <td class="pkg-path">{{ escapeXML .PkgPath }}</td>
         <td class="links" data-more-links="off">
           {{- range .Vulnerability.References }}
-          <a href={{ escapeXML . | printf "%q" }}>{{ abbrev 50 . | escapeXML }}</a>
+          <a href={{ escapeXML . | printf "%q" }}>{{ escapeXML . }}</a>
           {{- end }}
         </td>
       </tr>
