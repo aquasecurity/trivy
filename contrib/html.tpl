@@ -25,6 +25,9 @@
       table {
         margin: 0 auto;
       }
+      .pkg-path {
+        white-space: normal;
+      }
       .severity {
         text-align: center;
         font-weight: bold;
@@ -52,7 +55,7 @@
       }
       a.toggle-more-links { cursor: pointer; }
     </style>
-    <title>{{- escapeXML ( index . 0 ).Target }} - Trivy Report - {{ now }} </title>
+    <title>Trivy Report - {{ now }}</title>
     <script>
       window.onload = function() {
         document.querySelectorAll('td.links').forEach(function(linkCell) {
@@ -82,12 +85,14 @@
     </script>
   </head>
   <body>
-    <h1>{{- escapeXML ( index . 0 ).Target }} - Trivy Report - {{ now }}</h1>
+    <h1>Trivy Report - {{ now }}</h1>
     <table>
     {{- range . }}
-      <tr class="group-header"><th colspan="6">{{ escapeXML .Type }}</th></tr>
+    <tr class="group-header">
+      <th colspan="7">Target: {{ escapeXML .Target }} &mdash; Type: {{ escapeXML .Type }}</th>
+    </tr>
       {{- if (eq (len .Vulnerabilities) 0) }}
-      <tr><th colspan="6">No Vulnerabilities found</th></tr>
+      <tr><th colspan="7">No Vulnerabilities found</th></tr>
       {{- else }}
       <tr class="sub-header">
         <th>Package</th>
@@ -95,6 +100,7 @@
         <th>Severity</th>
         <th>Installed Version</th>
         <th>Fixed Version</th>
+        <th>Package Path</th>
         <th>Links</th>
       </tr>
         {{- range .Vulnerabilities }}
@@ -104,6 +110,7 @@
         <td class="severity">{{ escapeXML .Vulnerability.Severity }}</td>
         <td class="pkg-version">{{ escapeXML .InstalledVersion }}</td>
         <td>{{ escapeXML .FixedVersion }}</td>
+        <td class="pkg-path">{{ escapeXML .PkgPath }}</td>
         <td class="links" data-more-links="off">
           {{- range .Vulnerability.References }}
           <a href={{ escapeXML . | printf "%q" }}>{{ escapeXML . }}</a>
@@ -113,7 +120,7 @@
         {{- end }}
       {{- end }}
       {{- if (eq (len .Misconfigurations ) 0) }}
-      <tr><th colspan="6">No Misconfigurations found</th></tr>
+      <tr><th colspan="7">No Misconfigurations found</th></tr>
       {{- else }}
       <tr class="sub-header">
         <th>Type</th>
