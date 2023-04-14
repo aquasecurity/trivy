@@ -354,7 +354,7 @@ func (Docs) Generate() error {
 
 	cmd := commands.NewApp(ver)
 	cmd.DisableAutoGenTag = true
-	if err = doc.GenMarkdownTree(cmd, "./docs/docs/references/cli"); err != nil {
+	if err = doc.GenMarkdownTree(cmd, "./docs/docs/references/configuration/cli"); err != nil {
 		return err
 	}
 	return nil
