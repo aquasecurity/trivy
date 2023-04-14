@@ -227,8 +227,8 @@ func Test_yarnLibraryAnalyzer_Analyze(t *testing.T) {
 			},
 		},
 		{
-			name: "sad path",
-			dir:  "testdata/sad",
+			name: "unsupported_protocol",
+			dir:  "testdata/unsupported_protocol",
 			want: &analyzer.AnalysisResult{},
 		},
 	}
