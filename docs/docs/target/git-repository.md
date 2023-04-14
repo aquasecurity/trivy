@@ -166,7 +166,7 @@ Total: 20 (UNKNOWN: 3, LOW: 0, MEDIUM: 7, HIGH: 5, CRITICAL: 5)
 
 ### Misconfigurations
 It is disabled by default and can be enabled with `--scanners config`.
-See [here](../scanner/misconfiguration/scanning.md) for the detail.
+See [here](../scanner/misconfiguration/index.md) for the detail.
 
 ```shell
 $ trivy repo --scanners config [YOUR_REPO_URL]
@@ -190,7 +190,7 @@ $ trivy repo --scanners license [YOUR_REPO_URL]
 
 ## SBOM generation
 Trivy can generate SBOM for git repositories.
-See [here](../supply-chain/index.md) for the detail.
+See [here](../supply-chain/sbom.md) for the detail.
 
 ## References
 ### Scanning a Branch

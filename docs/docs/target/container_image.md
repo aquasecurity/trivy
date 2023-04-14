@@ -63,7 +63,7 @@ $ trivy image --scanners vuln [YOUR_IMAGE_NAME]
 
 ### Misconfigurations
 It is supported, but it is not useful in most cases.
-As mentioned [here](../scanner/misconfiguration/scanning.md), Trivy mainly supports Infrastructure as Code (IaC) files for misconfigurations.
+As mentioned [here](../scanner/misconfiguration/index.md), Trivy mainly supports Infrastructure as Code (IaC) files for misconfigurations.
 If your container image includes IaC files such as Kubernetes YAML files or Terraform files, you should enable this feature with `--scanners config`.
 
 ```
@@ -104,7 +104,7 @@ You can enable them with `--image-config-scanners`.
 ### Misconfigurations
 Trivy detects misconfigurations on the configuration of container images.
 The image config is converted into Dockerfile and Trivy handles it as Dockerfile.
-See [here](../scanner/misconfiguration/scanning.md) for the detail of Dockerfile scanning.
+See [here](../scanner/misconfiguration/index.md) for the detail of Dockerfile scanning.
 
 It is disabled by default.
 You can enable it with `--image-config-scanners config`.
@@ -380,7 +380,7 @@ Trivy supports the generation of Software Bill of Materials (SBOM) for container
 
 ### Generation
 Trivy can generate SBOM for container images.
-See [here](../supply-chain/index.md) for the detail.
+See [here](../supply-chain/sbom.md) for the detail.
 
 ### Discovery
 Trivy can search for Software Bill of Materials (SBOMs) that reference container images.
@@ -408,7 +408,7 @@ Total: 17 (UNKNOWN: 0, LOW: 0, MEDIUM: 5, HIGH: 9, CRITICAL: 3)
 ```
 
 The OCI Registry utilizes the [Referrers API](https://github.com/opencontainers/distribution-spec/blob/main/spec.md#listing-referrers).
-For more information about Rekor, please refer to [its documentation](../attestation/rekor.md).
+For more information about Rekor, please refer to [its documentation](../supply-chain/attestation/rekor.md).
 
 ## Compliance
 

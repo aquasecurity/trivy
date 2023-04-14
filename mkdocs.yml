@@ -84,9 +84,9 @@ nav:
       - Supply Chain:
           - SBOM: docs/supply-chain/sbom.md
           - Attestation:
-                - SBOM: docs/attestation/sbom.md
-                - Cosign Vulnerability Scan Record: docs/attestation/vuln.md
-                - SBOM Attestation in Rekor: docs/attestation/rekor.md
+                - SBOM: docs/supply-chain/attestation/sbom.md
+                - Cosign Vulnerability Scan Record: docs/supply-chain/attestation/vuln.md
+                - SBOM Attestation in Rekor: docs/supply-chain/attestation/rekor.md
       - Compliance:
           - Reports:  docs/compliance/compliance.md
       - Advanced:

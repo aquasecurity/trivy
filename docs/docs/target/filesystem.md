@@ -90,4 +90,4 @@ $ trivy fs --scanners license /path/to/project
 
 ## SBOM generation
 Trivy can generate SBOM for local projects.
-See [here](../supply-chain/index.md) for the detail.
+See [here](../supply-chain/sbom.md) for the detail.

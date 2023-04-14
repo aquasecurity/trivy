@@ -152,7 +152,7 @@ $ trivy vm [YOUR_VM_IMAGE]
 
 ### Misconfigurations
 It is supported, but it is not useful in most cases.
-As mentioned [here](../scanner/misconfiguration/scanning.md), Trivy mainly supports Infrastructure as Code (IaC) files for misconfigurations.
+As mentioned [here](../scanner/misconfiguration/index.md), Trivy mainly supports Infrastructure as Code (IaC) files for misconfigurations.
 If your VM image includes IaC files such as Kubernetes YAML files or Terraform files, you should enable this feature with `--scanners config`.
 
 ```
@@ -180,7 +180,7 @@ $ trivy vm --scanners license [YOUR_VM_IMAGE]
 
 ## SBOM generation
 Trivy can generate SBOM for VM images.
-See [here](../supply-chain/index.md) for the detail.
+See [here](../supply-chain/sbom.md) for the detail.
 
 ## Supported Architectures
 
