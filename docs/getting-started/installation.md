@@ -139,7 +139,7 @@ go install
 ## Use container image
 
 1. Pull Trivy image (`docker pull aquasec/trivy:{{ git.tag[1:] }}`)
-   2. It is advisable to mount a consistent [cache dir](../docs/vulnerability/examples/cache.md) on the host into the Trivy container.
+   2. It is advisable to mount a consistent [cache dir](../docs/configuration/cache.md) on the host into the Trivy container.
 3. For scanning container images with Trivy, mount `docker.sock` from the host into the Trivy container.
 
 Example:
