@@ -18,7 +18,8 @@ echo "Create RPM releases for Trivy v$TRIVY_VERSION"
 
 cd trivy-repo
 
-VERSIONS=(5 6 7 8 9)
+# 2 - is a specific version for Amazon Linux 2
+VERSIONS=(2 5 6 7 8 9)
 for version in ${VERSIONS[@]}; do
         echo "Processing RHEL/CentOS $version..."
         create_rpm_repo $version
