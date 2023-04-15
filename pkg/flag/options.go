@@ -155,6 +155,8 @@ func addFlag(cmd *cobra.Command, flag *Flag) {
 		flags.BoolP(flag.Name, flag.Shorthand, v, flag.Usage)
 	case time.Duration:
 		flags.DurationP(flag.Name, flag.Shorthand, v, flag.Usage)
+	case float64:
+		flags.Float64P(flag.Name, flag.Shorthand, v, flag.Usage)
 	}
 
 	if flag.Deprecated {

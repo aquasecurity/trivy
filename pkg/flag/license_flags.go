@@ -105,7 +105,7 @@ func (f *LicenseFlagGroup) Name() string {
 
 func (f *LicenseFlagGroup) Flags() []*Flag {
 	return []*Flag{f.LicenseFull, f.IgnoredLicenses, f.LicenseForbidden, f.LicenseRestricted, f.LicenseReciprocal,
-		f.LicenseNotice, f.LicensePermissive, f.LicenseUnencumbered}
+		f.LicenseNotice, f.LicensePermissive, f.LicenseUnencumbered, f.LicenseConfidenceLevel}
 }
 
 func (f *LicenseFlagGroup) ToOptions() LicenseOptions {
