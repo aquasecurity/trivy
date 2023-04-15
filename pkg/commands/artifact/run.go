@@ -126,7 +126,7 @@ func NewRunner(ctx context.Context, cliOptions flag.Options, opts ...runnerOptio
 	}
 
 	// Update the vulnerability database if needed.
-	if err := r.initDB(cliOptions); err != nil {
+	if err := r.initDB(ctx, cliOptions); err != nil {
 		return nil, xerrors.Errorf("DB error: %w", err)
 	}
 
@@ -302,7 +302,7 @@ func (r *runner) Report(opts flag.Options, report types.Report) error {
 	return nil
 }
 
-func (r *runner) initDB(opts flag.Options) error {
+func (r *runner) initDB(ctx context.Context, opts flag.Options) error {
 	if err := r.initJavaDB(opts); err != nil {
 		return err
 	}
@@ -314,7 +314,7 @@ func (r *runner) initDB(opts flag.Options) error {
 
 	// download the database file
 	noProgress := opts.Quiet || opts.NoProgress
-	if err := operation.DownloadDB(opts.AppVersion, opts.CacheDir, opts.DBRepository, noProgress, opts.SkipDBUpdate, opts.Remote()); err != nil {
+	if err := operation.DownloadDB(ctx, opts.AppVersion, opts.CacheDir, opts.DBRepository, noProgress, opts.SkipDBUpdate, opts.Remote()); err != nil {
 		return err
 	}
 
