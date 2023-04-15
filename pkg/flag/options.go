@@ -234,6 +234,10 @@ func getInt(flag *Flag) int {
 	return cast.ToInt(getValue(flag))
 }
 
+func getFloat(flag *Flag) float64 {
+	return cast.ToFloat64(getValue(flag))
+}
+
 func getBool(flag *Flag) bool {
 	return cast.ToBool(getValue(flag))
 }

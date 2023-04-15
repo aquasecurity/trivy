@@ -50,13 +50,16 @@ type gomodAnalyzer struct {
 
 	// go.mod/go.sum in dependencies
 	leafModParser godeptypes.Parser
+
+	opt analyzer.AnalyzerOptions
 }
 
-func newGoModAnalyzer(_ analyzer.AnalyzerOptions) (analyzer.PostAnalyzer, error) {
+func newGoModAnalyzer(opt analyzer.AnalyzerOptions) (analyzer.PostAnalyzer, error) {
 	return &gomodAnalyzer{
 		modParser:     mod.NewParser(true), // Only the root module should replace
 		sumParser:     sum.NewParser(),
 		leafModParser: mod.NewParser(false),
+		opt:           opt,
 	}, nil
 }
 
@@ -152,7 +155,7 @@ func (a *gomodAnalyzer) fillAdditionalData(apps []types.Application) error {
 			modDir := filepath.Join(modPath, fmt.Sprintf("%s@v%s", normalizeModName(lib.Name), lib.Version))
 
 			// Collect licenses
-			if licenseNames, err := findLicense(modDir); err != nil {
+			if licenseNames, err := findLicense(modDir, a.opt.LicenseScannerOption.ClassifierConfidenceLevel); err != nil {
 				return xerrors.Errorf("license error: %w", err)
 			} else {
 				// Cache the detected licenses
@@ -263,7 +266,7 @@ func mergeGoSum(gomod, gosum *types.Application) {
 	gomod.Libraries = maps.Values(uniq)
 }
 
-func findLicense(dir string) ([]string, error) {
+func findLicense(dir string, classifierConfidenceLevel float64) ([]string, error) {
 	var license *types.LicenseFile
 	err := filepath.WalkDir(dir, func(path string, d fs.DirEntry, err error) error {
 		if err != nil {
@@ -281,7 +284,7 @@ func findLicense(dir string) ([]string, error) {
 		}
 		defer f.Close()
 
-		l, err := licensing.Classify(path, f)
+		l, err := licensing.Classify(path, f, classifierConfidenceLevel)
 		if err != nil {
 			return xerrors.Errorf("license classify error: %w", err)
 		}

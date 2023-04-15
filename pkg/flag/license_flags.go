@@ -18,6 +18,12 @@ var (
 		Value:      []string{},
 		Usage:      "specify a list of license to ignore",
 	}
+	LicenseConfidenceLevel = Flag{
+		Name:       "license-confidence-level",
+		ConfigName: "license.confidenceLevel",
+		Value:      0.9,
+		Usage:      "specify classifier confidence level",
+	}
 
 	// LicenseForbidden is an option only in a config file
 	LicenseForbidden = Flag{
@@ -58,8 +64,9 @@ var (
 )
 
 type LicenseFlagGroup struct {
-	LicenseFull     *Flag
-	IgnoredLicenses *Flag
+	LicenseFull            *Flag
+	IgnoredLicenses        *Flag
+	LicenseConfidenceLevel *Flag
 
 	// License Categories
 	LicenseForbidden    *Flag // mapped to CRITICAL
@@ -71,22 +78,24 @@ type LicenseFlagGroup struct {
 }
 
 type LicenseOptions struct {
-	LicenseFull          bool
-	IgnoredLicenses      []string
-	LicenseRiskThreshold int
-	LicenseCategories    map[types.LicenseCategory][]string
+	LicenseFull            bool
+	IgnoredLicenses        []string
+	LicenseConfidenceLevel float64
+	LicenseRiskThreshold   int
+	LicenseCategories      map[types.LicenseCategory][]string
 }
 
 func NewLicenseFlagGroup() *LicenseFlagGroup {
 	return &LicenseFlagGroup{
-		LicenseFull:         &LicenseFull,
-		IgnoredLicenses:     &IgnoredLicenses,
-		LicenseForbidden:    &LicenseForbidden,
-		LicenseRestricted:   &LicenseRestricted,
-		LicenseReciprocal:   &LicenseReciprocal,
-		LicenseNotice:       &LicenseNotice,
-		LicensePermissive:   &LicensePermissive,
-		LicenseUnencumbered: &LicenseUnencumbered,
+		LicenseFull:            &LicenseFull,
+		IgnoredLicenses:        &IgnoredLicenses,
+		LicenseConfidenceLevel: &LicenseConfidenceLevel,
+		LicenseForbidden:       &LicenseForbidden,
+		LicenseRestricted:      &LicenseRestricted,
+		LicenseReciprocal:      &LicenseReciprocal,
+		LicenseNotice:          &LicenseNotice,
+		LicensePermissive:      &LicensePermissive,
+		LicenseUnencumbered:    &LicenseUnencumbered,
 	}
 }
 
@@ -109,8 +118,9 @@ func (f *LicenseFlagGroup) ToOptions() LicenseOptions {
 	licenseCategories[types.CategoryUnencumbered] = getStringSlice(f.LicenseUnencumbered)
 
 	return LicenseOptions{
-		LicenseFull:       getBool(f.LicenseFull),
-		IgnoredLicenses:   getStringSlice(f.IgnoredLicenses),
-		LicenseCategories: licenseCategories,
+		LicenseFull:            getBool(f.LicenseFull),
+		IgnoredLicenses:        getStringSlice(f.IgnoredLicenses),
+		LicenseConfidenceLevel: getFloat(f.LicenseConfidenceLevel),
+		LicenseCategories:      licenseCategories,
 	}
 }

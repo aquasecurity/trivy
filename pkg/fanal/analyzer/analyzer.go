@@ -55,7 +55,8 @@ type SecretScannerOption struct {
 
 type LicenseScannerOption struct {
 	// Use license classifier to get better results though the classification is expensive.
-	Full bool
+	Full                      bool
+	ClassifierConfidenceLevel float64
 }
 
 ////////////////
@@ -143,8 +144,9 @@ type PostAnalysisInput struct {
 }
 
 type AnalysisOptions struct {
-	Offline      bool
-	FileChecksum bool
+	Offline                   bool
+	FileChecksum              bool
+	ClassifierConfidenceLevel float64
 }
 
 type AnalysisResult struct {

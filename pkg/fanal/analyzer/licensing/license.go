@@ -63,7 +63,7 @@ func (a licenseFileAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisI
 		return nil, nil
 	}
 
-	lf, err := licensing.Classify(input.FilePath, input.Content)
+	lf, err := licensing.Classify(input.FilePath, input.Content, input.Options.ClassifierConfidenceLevel)
 	if err != nil {
 		return nil, xerrors.Errorf("license classification error: %w", err)
 	} else if len(lf.Findings) == 0 {
