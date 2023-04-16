@@ -47,6 +47,7 @@ jobs:
 
             alpine
             wolfi
+            chainguard
             redhat
             alma
             rocky

@@ -1,10 +1,10 @@
-package wolfi_test
+package chainguard_test
 
 import (
 	"sort"
 	"testing"
 
-	"github.com/aquasecurity/trivy/pkg/detector/ospkg/wolfi"
+	"github.com/aquasecurity/trivy/pkg/detector/ospkg/chainguard"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer/os"
 
 	"github.com/aquasecurity/trivy-db/pkg/db"
@@ -31,7 +31,7 @@ func TestScanner_Detect(t *testing.T) {
 	}{
 		{
 			name:     "happy path",
-			fixtures: []string{"testdata/fixtures/wolfi.yaml", "testdata/fixtures/data-source.yaml"},
+			fixtures: []string{"testdata/fixtures/chainguard.yaml", "testdata/fixtures/data-source.yaml"},
 			args: args{
 				pkgs: []ftypes.Package{
 					{
@@ -61,16 +61,16 @@ func TestScanner_Detect(t *testing.T) {
 						DiffID: "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
 					},
 					DataSource: &dbTypes.DataSource{
-						ID:   vulnerability.Wolfi,
-						Name: "Wolfi Secdb",
-						URL:  "https://packages.wolfi.dev/os/security.json",
+						ID:   vulnerability.Chainguard,
+						Name: "Chainguard Secdb",
+						URL:  "https://packages.cgr.dev/chainguard/security.json",
 					},
 				},
 			},
 		},
 		{
 			name:     "contain rc",
-			fixtures: []string{"testdata/fixtures/wolfi.yaml", "testdata/fixtures/data-source.yaml"},
+			fixtures: []string{"testdata/fixtures/chainguard.yaml", "testdata/fixtures/data-source.yaml"},
 			args: args{
 				pkgs: []ftypes.Package{
 					{
@@ -88,16 +88,16 @@ func TestScanner_Detect(t *testing.T) {
 					InstalledVersion: "1.6-r0",
 					FixedVersion:     "1.6-r1",
 					DataSource: &dbTypes.DataSource{
-						ID:   vulnerability.Wolfi,
-						Name: "Wolfi Secdb",
-						URL:  "https://packages.wolfi.dev/os/security.json",
+						ID:   vulnerability.Chainguard,
+						Name: "Chainguard Secdb",
+						URL:  "https://packages.cgr.dev/chainguard/security.json",
 					},
 				},
 			},
 		},
 		{
 			name:     "contain pre",
-			fixtures: []string{"testdata/fixtures/wolfi.yaml", "testdata/fixtures/data-source.yaml"},
+			fixtures: []string{"testdata/fixtures/chainguard.yaml", "testdata/fixtures/data-source.yaml"},
 			args: args{
 				pkgs: []ftypes.Package{
 					{
@@ -121,9 +121,9 @@ func TestScanner_Detect(t *testing.T) {
 						DiffID: "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
 					},
 					DataSource: &dbTypes.DataSource{
-						ID:   vulnerability.Wolfi,
-						Name: "Wolfi Secdb",
-						URL:  "https://packages.wolfi.dev/os/security.json",
+						ID:   vulnerability.Chainguard,
+						Name: "Chainguard Secdb",
+						URL:  "https://packages.cgr.dev/chainguard/security.json",
 					},
 				},
 			},
@@ -141,14 +141,14 @@ func TestScanner_Detect(t *testing.T) {
 					},
 				},
 			},
-			wantErr: "failed to get Wolfi advisories",
+			wantErr: "failed to get Chainguard advisories",
 		},
 		{
 			name:     "No src name",
-			fixtures: []string{"testdata/fixtures/wolfi.yaml", "testdata/fixtures/data-source.yaml"},
+			fixtures: []string{"testdata/fixtures/chainguard.yaml", "testdata/fixtures/data-source.yaml"},
 			args: args{
 				repo: &ftypes.Repository{
-					Family:  os.Wolfi,
+					Family:  os.Chainguard,
 					Release: "3.10",
 				},
 				pkgs: []ftypes.Package{
@@ -166,9 +166,9 @@ func TestScanner_Detect(t *testing.T) {
 					InstalledVersion: "1.6-r0",
 					FixedVersion:     "1.6-r1",
 					DataSource: &dbTypes.DataSource{
-						ID:   vulnerability.Wolfi,
-						Name: "Wolfi Secdb",
-						URL:  "https://packages.wolfi.dev/os/security.json",
+						ID:   vulnerability.Chainguard,
+						Name: "Chainguard Secdb",
+						URL:  "https://packages.cgr.dev/chainguard/security.json",
 					},
 				},
 			},
@@ -179,7 +179,7 @@ func TestScanner_Detect(t *testing.T) {
 			_ = dbtest.InitDB(t, tt.fixtures)
 			defer db.Close()
 
-			s := wolfi.NewScanner()
+			s := chainguard.NewScanner()
 			got, err := s.Detect("", tt.args.repo, tt.args.pkgs)
 			if tt.wantErr != "" {
 				require.Error(t, err)
