@@ -180,7 +180,6 @@ func readSpdxJson(t *testing.T, filePath string) *spdx.Document {
 
 	// We don't compare values which change each time an SBOM is generated
 	bom.CreationInfo.Created = ""
-	bom.CreationInfo.DocumentNamespace = ""
 
 	return bom
 }
