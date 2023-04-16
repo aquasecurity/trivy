@@ -6,7 +6,6 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
-	"sync"
 	"time"
 
 	"golang.org/x/exp/slices"
@@ -28,7 +27,6 @@ var _ allFS = &FS{}
 
 // FS is an in-memory filesystem
 type FS struct {
-	mu   sync.Mutex
 	root *file
 }
 
@@ -44,7 +42,6 @@ func New() *FS {
 			},
 			files: syncx.Map[string, *file]{},
 		},
-		mu: sync.Mutex{},
 	}
 }
 
@@ -142,8 +139,6 @@ func (m *FS) MkdirAll(path string, perm fs.FileMode) error {
 	// file1 checks that `foo/bar` folder doesn't exist
 	// at that moment file2 creates `foo/bar/folder2` folder
 	// but file1 doesn't know about this and overwrite `foo/bar` folder( and removes `foo/bar/folder2`)
-	m.mu.Lock()
-	defer m.mu.Unlock()
 	return m.root.MkdirAll(cleanPath(path), perm)
 }
 

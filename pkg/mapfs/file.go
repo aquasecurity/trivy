@@ -176,24 +176,24 @@ func (f *file) MkdirAll(path string, perm fs.FileMode) error {
 		return nil
 	}
 
-	sub, ok := f.files.Load(parts[0])
-	if ok && !sub.stat.IsDir() {
-		return fs.ErrExist
-	} else if !ok {
-		if perm&fs.ModeDir == 0 {
-			perm |= fs.ModeDir
-		}
+	if perm&fs.ModeDir == 0 {
+		perm |= fs.ModeDir
+	}
 
-		sub = &file{
-			stat: fileStat{
-				name:    parts[0],
-				size:    0x100,
-				modTime: time.Now(),
-				mode:    perm,
-			},
-			files: syncx.Map[string, *file]{},
-		}
-		f.files.Store(parts[0], sub)
+	sub := &file{
+		stat: fileStat{
+			name:    parts[0],
+			size:    0x100,
+			modTime: time.Now(),
+			mode:    perm,
+		},
+		files: syncx.Map[string, *file]{},
+	}
+
+	// Create the directory when the key is not present
+	sub, loaded := f.files.LoadOrStore(parts[0], sub)
+	if loaded && !sub.stat.IsDir() {
+		return fs.ErrExist
 	}
 
 	if len(parts) == 1 {
