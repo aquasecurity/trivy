@@ -312,7 +312,7 @@ $ trivy image --format template --template "@/path/to/template" golang:1.12-alpi
 
 If Trivy is installed using rpm then default templates can be found at `/usr/local/share/trivy/templates`.
 
-#### XML
+#### JUnit
 |     Scanner      | Supported |
 |:----------------:|:---------:|
 |  Vulnerability   |     ✓     |
