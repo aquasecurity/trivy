@@ -2,10 +2,11 @@
 
 Trivy supports the following formats:
 
-- table
-- json
-- sarif 
-- template
+- Table
+- JSON
+- [SARIF](https://docs.github.com/en/code-security/code-scanning/integrating-with-code-scanning/sarif-support-for-code-scanning)
+- Template
+- SBOM
 
 ## Table (Default)
 
@@ -116,9 +117,6 @@ Then, you can try to update **axios@0.21.4** and **cra-append-sw@2.7.0** to reso
 ```
 $ trivy image -f json -o results.json golang:1.12-alpine
 ```
-
-!!! caution
-    v0.20.0 changes the JSON schema. For more details, see [here][new-json].
 
 <details>
 <summary>Result</summary>
@@ -355,8 +353,10 @@ The following example shows use of default HTML template when Trivy is installed
 $ trivy image --format template --template "@/usr/local/share/trivy/templates/html.tpl" -o report.html golang:1.12-alpine
 ```
 
+## SBOM
+See [here](../supply-chain/sbom.md) for details.
+
 [cargo-auditable]: https://github.com/rust-secure-code/cargo-auditable/
-[new-json]: https://github.com/aquasecurity/trivy/discussions/1050
 [action]: https://github.com/aquasecurity/trivy-action
 [asff]: ../../tutorials/integrations/aws-security-hub.md
 [sarif]: https://docs.github.com/en/github/finding-security-vulnerabilities-and-errors-in-your-code/managing-results-from-code-scanning
