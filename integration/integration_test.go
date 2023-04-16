@@ -178,8 +178,39 @@ func readSpdxJson(t *testing.T, filePath string) *spdx.Document {
 		return bom.Relationships[i].RefB.ElementRefID < bom.Relationships[j].RefB.ElementRefID
 	})
 
+	if bom.CreationInfo != nil {
+		sort.Slice(bom.CreationInfo.Creators, func(i, j int) bool {
+			if bom.CreationInfo.Creators[i].Creator != bom.CreationInfo.Creators[j].Creator {
+				return bom.CreationInfo.Creators[i].Creator < bom.CreationInfo.Creators[j].Creator
+			}
+			return bom.CreationInfo.Creators[i].CreatorType < bom.CreationInfo.Creators[j].CreatorType
+		})
+	}
+
+	if bom.Packages != nil {
+		sort.Slice(bom.Packages, func(i, j int) bool {
+			if bom.Packages[i].PackageName != bom.Packages[j].PackageName {
+				return bom.Packages[i].PackageName < bom.Packages[j].PackageName
+			}
+			return bom.Packages[i].PackageSPDXIdentifier < bom.Packages[j].PackageSPDXIdentifier
+		})
+		for i := range bom.Packages {
+			bom.Packages[i].PackageVerificationCode = nil
+		}
+	}
+
+	if bom.Files != nil {
+		sort.Slice(bom.Files, func(i, j int) bool {
+			if bom.Files[i].FileName != bom.Files[j].FileName {
+				return bom.Files[i].FileName < bom.Files[j].FileName
+			}
+			return bom.Files[i].FileSPDXIdentifier < bom.Files[j].FileSPDXIdentifier
+		})
+	}
+
 	// We don't compare values which change each time an SBOM is generated
 	bom.CreationInfo.Created = ""
+	bom.DocumentNamespace = ""
 
 	return bom
 }

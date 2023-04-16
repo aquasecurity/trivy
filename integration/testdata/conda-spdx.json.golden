@@ -1,117 +1,107 @@
 {
-	"SPDXID": "SPDXRef-DOCUMENT",
-	"creationInfo": {
-		"created": "2023-03-29T19:07:18Z",
-		"creators": [
-			"Tool: trivy-dev",
-			"Organization: aquasecurity"
-		]
-	},
-	"dataLicense": "CC0-1.0",
-	"documentDescribes": [
-		"SPDXRef-Filesystem-6e0ac6a0fab50ab4"
-	],
-	"documentNamespace": "http://aquasecurity.github.io/trivy/filesystem/testdata/fixtures/fs/conda-d872c7e3-4c6c-4fa1-a9b6-3e69dc71ff3b",
-	"files": [
-		{
-			"SPDXID": "SPDXRef-File-600e5e0110a84891",
-			"checksums": [
-				{
-					"algorithm": "SHA1",
-					"checksumValue": "237db0da53131e4548cb1181337fa0f420299e1f"
-				}
-			],
-			"fileName": "miniconda3/envs/testenv/conda-meta/openssl-1.1.1q-h7f8727e_0.json"
-		},
-		{
-			"SPDXID": "SPDXRef-File-7eb62e2a3edddc0a",
-			"checksums": [
-				{
-					"algorithm": "SHA1",
-					"checksumValue": "a6a2db7668f1ad541d704369fc66c96a4415aa24"
-				}
-			],
-			"fileName": "miniconda3/envs/testenv/conda-meta/pip-22.2.2-py38h06a4308_0.json"
-		}
-	],
-	"name": "testdata/fixtures/fs/conda",
-	"packages": [
-		{
-			"SPDXID": "SPDXRef-Application-ee5ef1aa4ac89125",
-			"downloadLocation": "NONE",
-			"filesAnalyzed": false,
-			"name": "conda-pkg",
-			"sourceInfo": "Conda"
-		},
-		{
-			"SPDXID": "SPDXRef-Filesystem-6e0ac6a0fab50ab4",
-			"attributionTexts": [
-				"SchemaVersion: 2"
-			],
-			"downloadLocation": "NONE",
-			"filesAnalyzed": false,
-			"name": "testdata/fixtures/fs/conda"
-		},
-		{
-			"SPDXID": "SPDXRef-Package-6b677e82217fb5bd",
-			"downloadLocation": "NONE",
-			"externalRefs": [
-				{
-					"referenceCategory": "PACKAGE-MANAGER",
-					"referenceLocator": "pkg:conda/pip@22.2.2",
-					"referenceType": "purl"
-				}
-			],
-			"filesAnalyzed": false,
-			"hasFiles": [
-				"SPDXRef-File-7eb62e2a3edddc0a"
-			],
-			"licenseConcluded": "MIT",
-			"licenseDeclared": "MIT",
-			"name": "pip",
-			"versionInfo": "22.2.2"
-		},
-		{
-			"SPDXID": "SPDXRef-Package-b1088cb4090e3a55",
-			"downloadLocation": "NONE",
-			"externalRefs": [
-				{
-					"referenceCategory": "PACKAGE-MANAGER",
-					"referenceLocator": "pkg:conda/openssl@1.1.1q",
-					"referenceType": "purl"
-				}
-			],
-			"filesAnalyzed": false,
-			"hasFiles": [
-				"SPDXRef-File-600e5e0110a84891"
-			],
-			"licenseConcluded": "OpenSSL",
-			"licenseDeclared": "OpenSSL",
-			"name": "openssl",
-			"versionInfo": "1.1.1q"
-		}
-	],
-	"relationships": [
-		{
-			"relatedSpdxElement": "SPDXRef-Filesystem-6e0ac6a0fab50ab4",
-			"relationshipType": "DESCRIBES",
-			"spdxElementId": "SPDXRef-DOCUMENT"
-		},
-		{
-			"relatedSpdxElement": "SPDXRef-Application-ee5ef1aa4ac89125",
-			"relationshipType": "CONTAINS",
-			"spdxElementId": "SPDXRef-Filesystem-6e0ac6a0fab50ab4"
-		},
-		{
-			"relatedSpdxElement": "SPDXRef-Package-b1088cb4090e3a55",
-			"relationshipType": "CONTAINS",
-			"spdxElementId": "SPDXRef-Application-ee5ef1aa4ac89125"
-		},
-		{
-			"relatedSpdxElement": "SPDXRef-Package-6b677e82217fb5bd",
-			"relationshipType": "CONTAINS",
-			"spdxElementId": "SPDXRef-Application-ee5ef1aa4ac89125"
-		}
-	],
-	"spdxVersion": "SPDX-2.2"
+  "spdxVersion": "SPDX-2.3",
+  "dataLicense": "CC0-1.0",
+  "SPDXID": "SPDXRef-DOCUMENT",
+  "name": "testdata/fixtures/fs/conda",
+  "creationInfo": {
+    "licenseListVersion": "",
+    "creators": [
+      "Organization: aquasecurity",
+      "Tool: trivy-dev"
+    ],
+    "created": "2023-04-16T11:00:02Z"
+  },
+  "packages": [
+    {
+      "name": "openssl",
+      "SPDXID": "SPDXRef-Package-b1088cb4090e3a55",
+      "versionInfo": "1.1.1q",
+      "downloadLocation": "NONE",
+      "licenseConcluded": "OpenSSL",
+      "licenseDeclared": "OpenSSL",
+      "copyrightText": "",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:conda/openssl@1.1.1q"
+        }
+      ],
+      "files": [
+        {
+          "fileName": "miniconda3/envs/testenv/conda-meta/openssl-1.1.1q-h7f8727e_0.json",
+          "SPDXID": "SPDXRef-File-600e5e0110a84891",
+          "checksums": [
+            {
+              "algorithm": "SHA1",
+              "checksumValue": "237db0da53131e4548cb1181337fa0f420299e1f"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "pip",
+      "SPDXID": "SPDXRef-Package-6b677e82217fb5bd",
+      "versionInfo": "22.2.2",
+      "downloadLocation": "NONE",
+      "licenseConcluded": "MIT",
+      "licenseDeclared": "MIT",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:conda/pip@22.2.2"
+        }
+      ],
+      "files": [
+        {
+          "fileName": "miniconda3/envs/testenv/conda-meta/pip-22.2.2-py38h06a4308_0.json",
+          "SPDXID": "SPDXRef-File-7eb62e2a3edddc0a",
+          "checksums": [
+            {
+              "algorithm": "SHA1",
+              "checksumValue": "a6a2db7668f1ad541d704369fc66c96a4415aa24"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "testdata/fixtures/fs/conda",
+      "SPDXID": "SPDXRef-Filesystem-6e0ac6a0fab50ab4",
+      "downloadLocation": "NONE",
+      "attributionTexts": [
+        "SchemaVersion: 2"
+      ]
+    },
+    {
+      "name": "conda-pkg",
+      "SPDXID": "SPDXRef-Application-ee5ef1aa4ac89125",
+      "downloadLocation": "NONE",
+      "sourceInfo": "Conda"
+    }
+  ],
+  "relationships": [
+    {
+      "spdxElementId": "SPDXRef-DOCUMENT",
+      "relatedSpdxElement": "SPDXRef-Filesystem-6e0ac6a0fab50ab4",
+      "relationshipType": "DESCRIBES"
+    },
+    {
+      "spdxElementId": "SPDXRef-Filesystem-6e0ac6a0fab50ab4",
+      "relatedSpdxElement": "SPDXRef-Application-ee5ef1aa4ac89125",
+      "relationshipType": "CONTAINS"
+    },
+    {
+      "spdxElementId": "SPDXRef-Application-ee5ef1aa4ac89125",
+      "relatedSpdxElement": "SPDXRef-Package-b1088cb4090e3a55",
+      "relationshipType": "CONTAINS"
+    },
+    {
+      "spdxElementId": "SPDXRef-Application-ee5ef1aa4ac89125",
+      "relatedSpdxElement": "SPDXRef-Package-6b677e82217fb5bd",
+      "relationshipType": "CONTAINS"
+    }
+  ]
 }
