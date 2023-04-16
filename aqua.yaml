@@ -5,5 +5,5 @@ registries:
 - type: standard
   ref: v3.106.0 # renovate: depName=aquaproj/aqua-registry
 packages:
-- name: tinygo-org/tinygo@v0.26.0
+- name: tinygo-org/tinygo@v0.27.0
 - name: magefile/mage@v1.14.0
