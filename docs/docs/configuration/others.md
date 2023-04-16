@@ -70,7 +70,7 @@ Will skip all subdirectories of the testdata directory.
 ## File patterns
 |     Scanner      | Supported |
 |:----------------:|:---------:|
-|  Vulnerability   |           |
+|  Vulnerability   |     ✓     |
 | Misconfiguration |     ✓     |
 |      Secret      |           |
 |     License      |           |
@@ -88,7 +88,7 @@ A file pattern contains the analyzer it is used for, and the pattern itself, joi
 --file-patterns "dockerfile:.*.docker" --file-patterns "yaml:deployment" --file-patterns "pip:requirements-.*\.txt"
 ```
 
-For more details, see [an example](https://github.com/aquasecurity/trivy/tree/{{ git.commit }}/examples/misconf/file-patterns)
+The prefixes are listed [here](https://github.com/aquasecurity/trivy/tree/{{ git.commit }}/pkg/fanal/analyzer/const.go)
 
 ## Exit Code
 |     Scanner      | Supported |
