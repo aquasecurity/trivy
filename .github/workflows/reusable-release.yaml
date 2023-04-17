@@ -75,16 +75,29 @@ jobs:
           args: mod -licenses -json -output bom.json
           version: ^v1
 
+      - name: "save gpg key"
+        env:
+          GPG_KEY: ${{ secrets.GPG_KEY }}
+        run: |
+          echo "$GPG_KEY" > gpg.key
+
       - name: GoReleaser
         uses: goreleaser/goreleaser-action@v4
         with:
-          version: v1.4.1
+          version: v1.16.2
           args: release -f=${{ inputs.goreleaser_config}} ${{ inputs.goreleaser_options}}
         env:
           GITHUB_TOKEN: ${{ secrets.ORG_REPO_TOKEN }}
+          NFPM_DEFAULT_RPM_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
+          GPG_FILE: "gpg.key"
 
-      ## push images to registries
-      ## only for canary build
+      - name: "remove gpg key"
+        run: |
+          rm gpg.key
+
+      # Push images to registries (only for canary build)
+      # The custom Dockerfile.canary is necessary
+      # because GoReleaser Free doesn't support pushing images with the `--snapshot` flag.
       - name: Build and push
         if: ${{ inputs.goreleaser_config == 'goreleaser-canary.yml' }}
         uses: docker/build-push-action@v4
