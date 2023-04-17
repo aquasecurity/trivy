@@ -13,6 +13,12 @@
   },
   "packages": [
     {
+      "name": "conda-pkg",
+      "SPDXID": "SPDXRef-Application-ee5ef1aa4ac89125",
+      "downloadLocation": "NONE",
+      "sourceInfo": "Conda"
+    }
+    {
       "name": "openssl",
       "SPDXID": "SPDXRef-Package-b1088cb4090e3a55",
       "versionInfo": "1.1.1q",
@@ -75,12 +81,6 @@
         "SchemaVersion: 2"
       ]
     },
-    {
-      "name": "conda-pkg",
-      "SPDXID": "SPDXRef-Application-ee5ef1aa4ac89125",
-      "downloadLocation": "NONE",
-      "sourceInfo": "Conda"
-    }
   ],
   "relationships": [
     {

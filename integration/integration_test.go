@@ -178,18 +178,6 @@ func readSpdxJson(t *testing.T, filePath string) *spdx.Document {
 		return bom.Relationships[i].RefB.ElementRefID < bom.Relationships[j].RefB.ElementRefID
 	})
 
-	if bom.Packages != nil {
-		sort.Slice(bom.Packages, func(i, j int) bool {
-			if bom.Packages[i].PackageName != bom.Packages[j].PackageName {
-				return bom.Packages[i].PackageName < bom.Packages[j].PackageName
-			}
-			return bom.Packages[i].PackageSPDXIdentifier < bom.Packages[j].PackageSPDXIdentifier
-		})
-		for i := range bom.Packages {
-			bom.Packages[i].PackageVerificationCode = nil
-		}
-	}
-
 	// We don't compare values which change each time an SBOM is generated
 	bom.CreationInfo.Created = ""
 	bom.DocumentNamespace = ""

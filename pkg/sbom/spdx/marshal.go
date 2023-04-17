@@ -2,6 +2,7 @@ package spdx
 
 import (
 	"fmt"
+	"sort"
 	"strconv"
 	"strings"
 	"time"
@@ -11,6 +12,7 @@ import (
 	"github.com/samber/lo"
 	"github.com/spdx/tools-golang/spdx"
 	"github.com/spdx/tools-golang/spdx/v2/common"
+	"golang.org/x/exp/maps"
 	"golang.org/x/xerrors"
 	"k8s.io/utils/clock"
 
@@ -174,10 +176,13 @@ func (m *Marshaler) Marshal(r types.Report) (*spdx.Document, error) {
 }
 
 func toPackages(packages map[spdx.ElementID]*spdx.Package) []*spdx.Package {
-	var ret []*spdx.Package
-	for _, pkg := range packages {
-		ret = append(ret, pkg)
-	}
+	ret := maps.Values(packages)
+	sort.Slice(ret, func(i, j int) bool {
+		if ret[i].PackageName != ret[j].PackageName {
+			return ret[i].PackageName < ret[j].PackageName
+		}
+		return ret[i].PackageSPDXIdentifier < ret[j].PackageSPDXIdentifier
+	})
 	return ret
 }
 
