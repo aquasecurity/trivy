@@ -134,4 +134,5 @@ jobs:
       with:
         version: v1.16.2
         args: release --skip-sign --snapshot --clean --skip-publish --timeout 90m
-
+      env:
+        GPG_FILE: "nogpg.key"

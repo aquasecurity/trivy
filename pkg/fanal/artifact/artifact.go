@@ -7,6 +7,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	misconf "github.com/aquasecurity/trivy/pkg/fanal/analyzer/config"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
+	"github.com/aquasecurity/trivy/pkg/fanal/walker"
 )
 
 type Option struct {
@@ -19,9 +20,6 @@ type Option struct {
 	NoProgress        bool
 	Offline           bool
 	AppDirs           []string
-	RepoBranch        string
-	RepoCommit        string
-	RepoTag           string
 	SBOMSources       []string
 	RekorURL          string
 	Platform          string
@@ -29,12 +27,26 @@ type Option struct {
 	AWSRegion         string
 	FileChecksum      bool // For SPDX
 
+	// Git repositories
+	RepoBranch string
+	RepoCommit string
+	RepoTag    string
+
 	// For OCI registries
 	types.RemoteOptions
 
 	MisconfScannerOption misconf.ScannerOption
 	SecretScannerOption  analyzer.SecretScannerOption
 	LicenseScannerOption analyzer.LicenseScannerOption
+
+	// File walk
+	WalkOption WalkOption
+}
+
+// WalkOption is a struct that allows users to define a custom walking behavior.
+// This option is only available when using Trivy as an imported library and not through CLI flags.
+type WalkOption struct {
+	ErrorCallback walker.ErrorCallback
 }
 
 func (o *Option) Sort() {

@@ -54,7 +54,7 @@ func (u *Updater) Update() error {
 
 		// TODO: support remote options
 		var a *oci.Artifact
-		if a, err = oci.NewArtifact(u.repo, u.quiet, ftypes.RemoteOptions{}); err != nil {
+		if a, err = oci.NewArtifact(u.repo, u.quiet, ftypes.RemoteOptions{Insecure: u.insecure}); err != nil {
 			return xerrors.Errorf("oci error: %w", err)
 		}
 		if err = a.Download(context.Background(), dbDir, oci.DownloadOption{MediaType: mediaType}); err != nil {

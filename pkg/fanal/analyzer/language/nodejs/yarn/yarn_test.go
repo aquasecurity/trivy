@@ -227,9 +227,9 @@ func Test_yarnLibraryAnalyzer_Analyze(t *testing.T) {
 			},
 		},
 		{
-			name:    "sad path",
-			dir:     "testdata/sad",
-			wantErr: "failed to parse yarn.lock",
+			name: "unsupported_protocol",
+			dir:  "testdata/unsupported_protocol",
+			want: &analyzer.AnalysisResult{},
 		},
 	}
 	for _, tt := range tests {
