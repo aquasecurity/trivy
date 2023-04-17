@@ -3,7 +3,6 @@ package spdx_test
 import (
 	"fmt"
 	"hash/fnv"
-	"sort"
 	"testing"
 	"time"
 
@@ -120,45 +119,6 @@ func TestMarshaler_Marshal(t *testing.T) {
 				},
 				Packages: []*spdx.Package{
 					{
-						PackageSPDXIdentifier:   spdx.ElementID("ContainerImage-9396d894cd0cb6cb"),
-						PackageDownloadLocation: "NONE",
-						PackageName:             "rails:latest",
-						PackageExternalReferences: []*spdx.PackageExternalReference{
-							{
-								Category: tspdx.CategoryPackageManager,
-								RefType:  tspdx.RefTypePurl,
-								Locator:  "pkg:oci/rails@sha256:a27fd8080b517143cbbbab9dfb7c8571c40d67d534bbdee55bd6c473f432b177?repository_url=index.docker.io%2Flibrary%2Frails&arch=arm64",
-							},
-						},
-						PackageAttributionTexts: []string{
-							"SchemaVersion: 2",
-							"ImageID: sha256:5d0da3dc976460b72c77d94c8a1ad043720b0416bfc16c52c45d4847e53fadb6",
-							"Size: 1024",
-							"RepoDigest: rails@sha256:a27fd8080b517143cbbbab9dfb7c8571c40d67d534bbdee55bd6c473f432b177",
-							"DiffID: sha256:d871dadfb37b53ef1ca45be04fc527562b91989991a8f545345ae3be0b93f92a",
-							"RepoTag: rails:latest",
-						},
-					},
-					{
-						PackageSPDXIdentifier:   spdx.ElementID("Application-73c871d73f3c8248"),
-						PackageDownloadLocation: "NONE",
-						PackageName:             "bundler",
-						PackageSourceInfo:       "app/subproject/Gemfile.lock",
-					},
-					{
-						PackageSPDXIdentifier:   spdx.ElementID("Application-c3fac92c1ac0a9fa"),
-						PackageDownloadLocation: "NONE",
-						PackageName:             "bundler",
-						PackageSourceInfo:       "app/Gemfile.lock",
-					},
-					{
-						PackageSPDXIdentifier:   spdx.ElementID("OperatingSystem-197f9a00ebcb51f0"),
-						PackageDownloadLocation: "NONE",
-						PackageName:             "centos",
-						PackageVersion:          "8.3.2011",
-					},
-
-					{
 						PackageSPDXIdentifier:   spdx.ElementID("Package-eb0263038c3b445b"),
 						PackageDownloadLocation: "NONE",
 						PackageName:             "actioncontroller",
@@ -203,6 +163,44 @@ func TestMarshaler_Marshal(t *testing.T) {
 							},
 						},
 						PackageSourceInfo: "built package from: binutils 2.30-93.el8",
+					},
+					{
+						PackageSPDXIdentifier:   spdx.ElementID("Application-73c871d73f3c8248"),
+						PackageDownloadLocation: "NONE",
+						PackageName:             "bundler",
+						PackageSourceInfo:       "app/subproject/Gemfile.lock",
+					},
+					{
+						PackageSPDXIdentifier:   spdx.ElementID("Application-c3fac92c1ac0a9fa"),
+						PackageDownloadLocation: "NONE",
+						PackageName:             "bundler",
+						PackageSourceInfo:       "app/Gemfile.lock",
+					},
+					{
+						PackageSPDXIdentifier:   spdx.ElementID("OperatingSystem-197f9a00ebcb51f0"),
+						PackageDownloadLocation: "NONE",
+						PackageName:             "centos",
+						PackageVersion:          "8.3.2011",
+					},
+					{
+						PackageSPDXIdentifier:   spdx.ElementID("ContainerImage-9396d894cd0cb6cb"),
+						PackageDownloadLocation: "NONE",
+						PackageName:             "rails:latest",
+						PackageExternalReferences: []*spdx.PackageExternalReference{
+							{
+								Category: tspdx.CategoryPackageManager,
+								RefType:  tspdx.RefTypePurl,
+								Locator:  "pkg:oci/rails@sha256:a27fd8080b517143cbbbab9dfb7c8571c40d67d534bbdee55bd6c473f432b177?repository_url=index.docker.io%2Flibrary%2Frails&arch=arm64",
+							},
+						},
+						PackageAttributionTexts: []string{
+							"SchemaVersion: 2",
+							"ImageID: sha256:5d0da3dc976460b72c77d94c8a1ad043720b0416bfc16c52c45d4847e53fadb6",
+							"Size: 1024",
+							"RepoDigest: rails@sha256:a27fd8080b517143cbbbab9dfb7c8571c40d67d534bbdee55bd6c473f432b177",
+							"DiffID: sha256:d871dadfb37b53ef1ca45be04fc527562b91989991a8f545345ae3be0b93f92a",
+							"RepoTag: rails:latest",
+						},
 					},
 				},
 				Relationships: []*spdx.Relationship{
@@ -756,13 +754,6 @@ func TestMarshaler_Marshal(t *testing.T) {
 			marshaler := tspdx.NewMarshaler("0.38.1", tspdx.WithClock(clock), tspdx.WithNewUUID(newUUID), tspdx.WithHasher(hasher))
 			spdxDoc, err := marshaler.Marshal(tc.inputReport)
 			require.NoError(t, err)
-
-			sort.Slice(spdxDoc.Packages, func(i, j int) bool {
-				return spdxDoc.Packages[i].PackageSPDXIdentifier < spdxDoc.Packages[j].PackageSPDXIdentifier
-			})
-			sort.Slice(tc.wantSBOM.Packages, func(i, j int) bool {
-				return tc.wantSBOM.Packages[i].PackageSPDXIdentifier < tc.wantSBOM.Packages[j].PackageSPDXIdentifier
-			})
 
 			assert.Equal(t, tc.wantSBOM, spdxDoc)
 		})
