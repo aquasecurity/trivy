@@ -111,7 +111,7 @@ func Test_dpkgLicenseAnalyzer_Required(t *testing.T) {
 			want:     true,
 		},
 		{
-			name:     "not a package file",
+			name:     "copyright files in subfolder",
 			filePath: "usr/share/doc/ca-certificates/examples/ca-certificates-local/debian/copyright",
 			want:     false,
 		},
