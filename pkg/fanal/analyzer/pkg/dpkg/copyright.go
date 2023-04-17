@@ -128,6 +128,11 @@ func (a *dpkgLicenseAnalyzer) Init(opt analyzer.AnalyzerOptions) error {
 }
 
 func (a *dpkgLicenseAnalyzer) Required(filePath string, _ os.FileInfo) bool {
+	// To exclude not package files
+	// e.g. usr/share/doc/ca-certificates/examples/ca-certificates-local/debian/copyright
+	if len(strings.Split(filePath, "/")) != 5 {
+		return false
+	}
 	return strings.HasPrefix(filePath, "usr/share/doc/") && filepath.Base(filePath) == "copyright"
 }
 
