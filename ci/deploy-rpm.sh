@@ -5,16 +5,19 @@ TRIVY_VERSION=$(find dist/ -type f -name "*64bit.rpm" -printf "%f\n" | head -n1 
 function create_common_rpm_repo () {
         rpm_path=$1
 
-        ARCHES=("x86_64" "ARM64")
+        ARCHES=("x86_64" "aarch64")
         for arch in ${ARCHES[@]}; do
                 prefix=$arch
                 if [ "$arch" == "x86_64" ]; then
                         prefix="64bit"
                 fi
+                if [ "$arch" == "aarch64" ]; then
+                        prefix="ARM64"
+                fi
 
                 mkdir -p $rpm_path/$arch
                 cp ../dist/*${prefix}.rpm ${rpm_path}/$arch/
-                createrepo_c -u "https://github.com/aquasecurity/trivy/releases/download/v"$TRIVY_VERSION --update $rpm_path/$arch
+                createrepo_c -u https://github.com/aquasecurity/trivy/releases/download/ --location-prefix="v"$TRIVY_VERSION --update $rpm_path/$arch
                 rm ${rpm_path}/$arch/*${prefix}.rpm
         done
 }
