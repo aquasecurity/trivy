@@ -64,8 +64,17 @@ $ trivy image --skip-dirs "./testdata/*" .
 Will skip all subdirectories of the testdata directory.
 
 !!! tip
-    Glob patters work with any trivy subcommand (image, config, etc.) and can be specified to skip both directories (with `--skip-dirs`) and files (with `--skip-files`).
+    Glob patterns work with any trivy subcommand (image, config, etc.) and can be specified to skip both directories (with `--skip-dirs`) and files (with `--skip-files`).
 
+
+### Advanced globbing
+Trivy also supports the [globstar](https://www.gnu.org/savannah-checkouts/gnu/bash/manual/bash.html#Pattern-Matching) pattern matching. 
+
+```bash
+$ trivy image --skip-files "**/foo"``` image:tag
+```
+
+Will skip the file `foo` that happens to be nested under any parent(s). 
 
 ## File patterns
 |     Scanner      | Supported |
