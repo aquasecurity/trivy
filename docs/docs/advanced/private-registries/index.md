@@ -18,7 +18,7 @@ $ TRIVY_PASSWORD=YOUR_PASSWORD trivy image --username YOUR_USERNAME YOUR_PRIVATE
     The CLI flag `--password` is available, but its use is not recommended for security reasons.
 
 You can also store your credentials in `trivy.yaml`.
-For more information, please refer to [the documentation](../../references/customization/config-file.md).
+For more information, please refer to [the documentation](../../references/configuration/config-file.md).
 
 It can handle multiple sets of credentials as well:
 
