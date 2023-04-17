@@ -7,7 +7,6 @@ import (
 	"testing"
 	"time"
 
-	"github.com/google/go-cmp/cmp"
 	v1 "github.com/google/go-containerregistry/pkg/v1"
 	"github.com/google/uuid"
 	"github.com/mitchellh/hashstructure/v2"
@@ -765,10 +764,6 @@ func TestMarshaler_Marshal(t *testing.T) {
 				return tc.wantSBOM.Packages[i].PackageSPDXIdentifier < tc.wantSBOM.Packages[j].PackageSPDXIdentifier
 			})
 
-			if diff := cmp.Diff(tc.wantSBOM, spdxDoc,
-				cmp.AllowUnexported(spdx.Package{})); diff != "" {
-				t.Fatalf("Marshal mismatch (-want +got):\n%s", diff)
-			}
 			assert.Equal(t, tc.wantSBOM, spdxDoc)
 		})
 	}
