@@ -5,7 +5,7 @@ import (
 	"context"
 	"io"
 	"os"
-	"path/filepath"
+	"path"
 	"regexp"
 	"strings"
 
@@ -130,10 +130,11 @@ func (a *dpkgLicenseAnalyzer) Init(opt analyzer.AnalyzerOptions) error {
 func (a *dpkgLicenseAnalyzer) Required(filePath string, _ os.FileInfo) bool {
 	// To exclude files from subfolders
 	// e.g. usr/share/doc/ca-certificates/examples/ca-certificates-local/debian/copyright
-	if len(strings.Split(filePath, "/")) != 5 {
+	match, err := path.Match("usr/share/doc/*/copyright", filePath)
+	if err != nil {
 		return false
 	}
-	return strings.HasPrefix(filePath, "usr/share/doc/") && filepath.Base(filePath) == "copyright"
+	return match
 }
 
 func (a *dpkgLicenseAnalyzer) Type() analyzer.Type {
