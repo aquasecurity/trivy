@@ -28,6 +28,14 @@ func Test_shouldSkipFile(t *testing.T) {
 			},
 		},
 		{
+			skipFiles: []string{filepath.Join("**/*.txt")},
+			skipMap: map[string]bool{
+				filepath.Join("/etc/foo"):         false,
+				filepath.Join("/etc/foo/bar"):     false,
+				filepath.Join("/var/log/bar.txt"): true,
+			},
+		},
+		{
 			skipFiles: []string{filepath.Join("/etc/*/*"), filepath.Join("/var/log/*.txt")},
 			skipMap: map[string]bool{
 				filepath.Join("/etc/foo"):         false,
