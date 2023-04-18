@@ -327,13 +327,10 @@ func (m *Marshaler) pkgToSpdxPackage(t string, class types.ResultClass, metadata
 	// Create a pkg object that will be common for cli and deepfactor portal
 	dfPkgObj := createDFPkgObject(pkg)
 
-	fmt.Println("========================================")
-	fmt.Println(ToString(dfPkgObj))
 	pkgID, err := calcPkgID(m.hasher, dfPkgObj)
 	if err != nil {
 		return spdx.Package2_2{}, xerrors.Errorf("failed to get %s package ID: %w", pkg.Name, err)
 	}
-	fmt.Println(fmt.Sprintf("==>'%s'", pkgID))
 
 	var pkgSrcInfo string
 	if class == types.ClassOSPkg {
