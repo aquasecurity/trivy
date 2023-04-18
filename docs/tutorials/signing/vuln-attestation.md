@@ -33,4 +33,4 @@ Note: Replace the container image with the container image that you would like t
 
 See [here][vuln-attestation] for more details.
 
-[vuln-attestation]: ../../docs/attestation/vuln.md
+[vuln-attestation]: ../../docs/supply-chain/attestation/vuln.md
