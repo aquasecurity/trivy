@@ -1,6 +1,3 @@
-//go:build integration
-// +build integration
-
 package integration
 
 import (
@@ -28,7 +25,8 @@ import (
 	"github.com/aquasecurity/trivy/pkg/fanal/cache"
 	"github.com/aquasecurity/trivy/pkg/fanal/image"
 	testdocker "github.com/aquasecurity/trivy/pkg/fanal/test/integration/docker"
-	"github.com/aquasecurity/trivy/pkg/fanal/types"
+	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
+	"github.com/aquasecurity/trivy/pkg/types"
 )
 
 const (
@@ -83,18 +81,18 @@ func TestTLSRegistry(t *testing.T) {
 		name         string
 		imageName    string
 		imageFile    string
-		option       types.RemoteOptions
+		option       ftypes.RemoteOptions
 		login        bool
-		expectedOS   types.OS
-		expectedRepo types.Repository
+		expectedOS   ftypes.OS
+		expectedRepo ftypes.Repository
 		wantErr      bool
 	}{
 		{
 			name:      "happy path",
 			imageName: "ghcr.io/aquasecurity/trivy-test-images:alpine-310",
 			imageFile: "../../../../integration/testdata/fixtures/images/alpine-310.tar.gz",
-			option: types.RemoteOptions{
-				Credentials: []types.Credential{
+			option: ftypes.RemoteOptions{
+				Credentials: []ftypes.Credential{
 					{
 						Username: registryUsername,
 						Password: registryPassword,
@@ -102,11 +100,11 @@ func TestTLSRegistry(t *testing.T) {
 				},
 				Insecure: true,
 			},
-			expectedOS: types.OS{
+			expectedOS: ftypes.OS{
 				Name:   "3.10.2",
 				Family: "alpine",
 			},
-			expectedRepo: types.Repository{
+			expectedRepo: ftypes.Repository{
 				Family:  "alpine",
 				Release: "3.10",
 			},
@@ -116,15 +114,15 @@ func TestTLSRegistry(t *testing.T) {
 			name:      "happy path with docker login",
 			imageName: "ghcr.io/aquasecurity/trivy-test-images:alpine-310",
 			imageFile: "../../../../integration/testdata/fixtures/images/alpine-310.tar.gz",
-			option: types.RemoteOptions{
+			option: ftypes.RemoteOptions{
 				Insecure: true,
 			},
 			login: true,
-			expectedOS: types.OS{
+			expectedOS: ftypes.OS{
 				Name:   "3.10.2",
 				Family: "alpine",
 			},
-			expectedRepo: types.Repository{
+			expectedRepo: ftypes.Repository{
 				Family:  "alpine",
 				Release: "3.10",
 			},
@@ -134,8 +132,8 @@ func TestTLSRegistry(t *testing.T) {
 			name:      "sad path: tls verify",
 			imageName: "ghcr.io/aquasecurity/trivy-test-images:alpine-310",
 			imageFile: "../../../../integration/testdata/fixtures/images/alpine-310.tar.gz",
-			option: types.RemoteOptions{
-				Credentials: []types.Credential{
+			option: ftypes.RemoteOptions{
+				Credentials: []ftypes.Credential{
 					{
 						Username: registryUsername,
 						Password: registryPassword,
@@ -148,7 +146,7 @@ func TestTLSRegistry(t *testing.T) {
 			name:      "sad path: no credential",
 			imageName: "ghcr.io/aquasecurity/trivy-test-images:alpine-310",
 			imageFile: "../../../../integration/testdata/fixtures/images/alpine-310.tar.gz",
-			option: types.RemoteOptions{
+			option: ftypes.RemoteOptions{
 				Insecure: true,
 			},
 			wantErr: true,
@@ -200,7 +198,7 @@ func getRegistryURL(ctx context.Context, registryC testcontainers.Container, exp
 	return url.Parse(urlStr)
 }
 
-func analyze(ctx context.Context, imageRef string, opt types.RemoteOptions) (*types.ArtifactDetail, error) {
+func analyze(ctx context.Context, imageRef string, opt ftypes.RemoteOptions) (*ftypes.ArtifactDetail, error) {
 	d, err := ioutil.TempDir("", "TestRegistry-*")
 	if err != nil {
 		return nil, err
@@ -218,7 +216,8 @@ func analyze(ctx context.Context, imageRef string, opt types.RemoteOptions) (*ty
 	}
 	cli.NegotiateAPIVersion(ctx)
 
-	img, cleanup, err := image.NewContainerImage(ctx, imageRef, opt)
+	runtimes := image.WithRuntimes(types.AllRuntimes)
+	img, cleanup, err := image.NewContainerImage(ctx, imageRef, opt, runtimes)
 	if err != nil {
 		return nil, err
 	}

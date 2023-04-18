@@ -28,7 +28,8 @@ import (
 	"github.com/aquasecurity/trivy/pkg/fanal/cache"
 	_ "github.com/aquasecurity/trivy/pkg/fanal/handler/all"
 	"github.com/aquasecurity/trivy/pkg/fanal/image"
-	"github.com/aquasecurity/trivy/pkg/fanal/types"
+	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
+	"github.com/aquasecurity/trivy/pkg/types"
 
 	_ "modernc.org/sqlite"
 )
@@ -39,7 +40,7 @@ type testCase struct {
 	name                string
 	remoteImageName     string
 	imageFile           string
-	wantOS              types.OS
+	wantOS              ftypes.OS
 	wantPkgsFromCmds    string
 	wantApplicationFile string
 }
@@ -49,7 +50,7 @@ var tests = []testCase{
 		name:            "happy path, alpine:3.10",
 		remoteImageName: "ghcr.io/aquasecurity/trivy-test-images:alpine-310",
 		imageFile:       "../../../../integration/testdata/fixtures/images/alpine-310.tar.gz",
-		wantOS: types.OS{
+		wantOS: ftypes.OS{
 			Name:   "3.10.2",
 			Family: "alpine",
 		},
@@ -58,7 +59,7 @@ var tests = []testCase{
 		name:            "happy path, amazonlinux:2",
 		remoteImageName: "ghcr.io/aquasecurity/trivy-test-images:amazon-2",
 		imageFile:       "../../../../integration/testdata/fixtures/images/amazon-2.tar.gz",
-		wantOS: types.OS{
+		wantOS: ftypes.OS{
 			Name:   "2 (Karoo)",
 			Family: "amazon",
 		},
@@ -67,7 +68,7 @@ var tests = []testCase{
 		name:            "happy path, debian:buster",
 		remoteImageName: "ghcr.io/aquasecurity/trivy-test-images:debian-buster",
 		imageFile:       "../../../../integration/testdata/fixtures/images/debian-buster.tar.gz",
-		wantOS: types.OS{
+		wantOS: ftypes.OS{
 			Name:   "10.1",
 			Family: "debian",
 		},
@@ -76,7 +77,7 @@ var tests = []testCase{
 		name:            "happy path, photon:3.0",
 		remoteImageName: "ghcr.io/aquasecurity/trivy-test-images:photon-30",
 		imageFile:       "../../../../integration/testdata/fixtures/images/photon-30.tar.gz",
-		wantOS: types.OS{
+		wantOS: ftypes.OS{
 			Name:   "3.0",
 			Family: "photon",
 		},
@@ -85,7 +86,7 @@ var tests = []testCase{
 		name:            "happy path, registry.redhat.io/ubi7",
 		remoteImageName: "ghcr.io/aquasecurity/trivy-test-images:ubi-7",
 		imageFile:       "../../../../integration/testdata/fixtures/images/ubi-7.tar.gz",
-		wantOS: types.OS{
+		wantOS: ftypes.OS{
 			Name:   "7.7",
 			Family: "redhat",
 		},
@@ -94,7 +95,7 @@ var tests = []testCase{
 		name:            "happy path, opensuse leap 15.1",
 		remoteImageName: "ghcr.io/aquasecurity/trivy-test-images:opensuse-leap-151",
 		imageFile:       "../../../../integration/testdata/fixtures/images/opensuse-leap-151.tar.gz",
-		wantOS: types.OS{
+		wantOS: ftypes.OS{
 			Name:   "15.1",
 			Family: "opensuse.leap",
 		},
@@ -104,7 +105,7 @@ var tests = []testCase{
 		name:            "happy path, suse 15.3 (NDB)",
 		remoteImageName: "ghcr.io/aquasecurity/trivy-test-images:suse-15.3_ndb",
 		imageFile:       "../../../../integration/testdata/fixtures/images/suse-15.3_ndb.tar.gz",
-		wantOS: types.OS{
+		wantOS: ftypes.OS{
 			Name:   "15.3",
 			Family: "suse linux enterprise server",
 		},
@@ -113,7 +114,7 @@ var tests = []testCase{
 		name:            "happy path, Fedora 35",
 		remoteImageName: "ghcr.io/aquasecurity/trivy-test-images:fedora-35",
 		imageFile:       "../../../../integration/testdata/fixtures/images/fedora-35.tar.gz",
-		wantOS: types.OS{
+		wantOS: ftypes.OS{
 			Name:   "35",
 			Family: "fedora",
 		},
@@ -122,7 +123,7 @@ var tests = []testCase{
 		name:            "happy path, vulnimage with lock files",
 		remoteImageName: "ghcr.io/aquasecurity/trivy-test-images:vulnimage",
 		imageFile:       "../../../../integration/testdata/fixtures/images/vulnimage.tar.gz",
-		wantOS: types.OS{
+		wantOS: ftypes.OS{
 			Name:   "3.7.1",
 			Family: "alpine",
 		},
@@ -151,8 +152,8 @@ func TestFanal_Library_DockerLessMode(t *testing.T) {
 			})
 
 			// Enable only registry scanning
-			img, cleanup, err := image.NewContainerImage(ctx, tt.remoteImageName, types.RemoteOptions{},
-				image.DisableDockerd(), image.DisablePodman(), image.DisableContainerd())
+			runtimes := image.WithRuntimes(types.Runtimes{types.RemoteRuntime})
+			img, cleanup, err := image.NewContainerImage(ctx, tt.remoteImageName, ftypes.RemoteOptions{}, runtimes)
 			require.NoError(t, err)
 			defer cleanup()
 
@@ -200,8 +201,8 @@ func TestFanal_Library_DockerMode(t *testing.T) {
 			require.NoError(t, err, tt.name)
 
 			// Enable only dockerd scanning
-			img, cleanup, err := image.NewContainerImage(ctx, tt.remoteImageName, types.RemoteOptions{},
-				image.DisablePodman(), image.DisableContainerd(), image.DisableRemote())
+			runtimes := image.WithRuntimes(types.Runtimes{types.DockerRuntime})
+			img, cleanup, err := image.NewContainerImage(ctx, tt.remoteImageName, ftypes.RemoteOptions{}, runtimes)
 			require.NoError(t, err, tt.name)
 			defer cleanup()
 
@@ -271,14 +272,14 @@ func runChecks(t *testing.T, ctx context.Context, ar artifact.Artifact, applier 
 	commonChecks(t, imageDetail, tc)
 }
 
-func commonChecks(t *testing.T, detail types.ArtifactDetail, tc testCase) {
+func commonChecks(t *testing.T, detail ftypes.ArtifactDetail, tc testCase) {
 	assert.Equal(t, tc.wantOS, detail.OS, tc.name)
 	checkOSPackages(t, detail, tc)
 	checkPackageFromCommands(t, detail, tc)
 	checkLangPkgs(detail, t, tc)
 }
 
-func checkOSPackages(t *testing.T, detail types.ArtifactDetail, tc testCase) {
+func checkOSPackages(t *testing.T, detail ftypes.ArtifactDetail, tc testCase) {
 	// Sort OS packages for consistency
 	sort.Sort(detail.Packages)
 
@@ -295,7 +296,7 @@ func checkOSPackages(t *testing.T, detail types.ArtifactDetail, tc testCase) {
 	data, err := os.ReadFile(goldenFile)
 	require.NoError(t, err, tc.name)
 
-	var expectedPkgs []types.Package
+	var expectedPkgs []ftypes.Package
 	err = json.Unmarshal(data, &expectedPkgs)
 	require.NoError(t, err)
 
@@ -309,7 +310,7 @@ func checkOSPackages(t *testing.T, detail types.ArtifactDetail, tc testCase) {
 	}
 }
 
-func checkLangPkgs(detail types.ArtifactDetail, t *testing.T, tc testCase) {
+func checkLangPkgs(detail ftypes.ArtifactDetail, t *testing.T, tc testCase) {
 	if tc.wantApplicationFile != "" {
 		// Sort applications for consistency
 		sort.Slice(detail.Applications, func(i, j int) bool {
@@ -331,7 +332,7 @@ func checkLangPkgs(detail types.ArtifactDetail, t *testing.T, tc testCase) {
 		// Do not compare layers
 		for _, app := range detail.Applications {
 			for i := range app.Libraries {
-				app.Libraries[i].Layer = types.Layer{}
+				app.Libraries[i].Layer = ftypes.Layer{}
 			}
 		}
 
@@ -343,7 +344,7 @@ func checkLangPkgs(detail types.ArtifactDetail, t *testing.T, tc testCase) {
 			return
 		}
 
-		var wantApps []types.Application
+		var wantApps []ftypes.Application
 		data, err := os.ReadFile(tc.wantApplicationFile)
 		require.NoError(t, err)
 		err = json.Unmarshal(data, &wantApps)
@@ -355,15 +356,15 @@ func checkLangPkgs(detail types.ArtifactDetail, t *testing.T, tc testCase) {
 	}
 }
 
-func checkPackageFromCommands(t *testing.T, detail types.ArtifactDetail, tc testCase) {
+func checkPackageFromCommands(t *testing.T, detail ftypes.ArtifactDetail, tc testCase) {
 	if tc.wantPkgsFromCmds != "" {
 		data, _ := os.ReadFile(tc.wantPkgsFromCmds)
-		var expectedPkgsFromCmds []types.Package
+		var expectedPkgsFromCmds []ftypes.Package
 
 		err := json.Unmarshal(data, &expectedPkgsFromCmds)
 		require.NoError(t, err)
 		assert.ElementsMatch(t, expectedPkgsFromCmds, detail.ImageConfig.Packages, tc.name)
 	} else {
-		assert.Equal(t, []types.Package(nil), detail.ImageConfig.Packages, tc.name)
+		assert.Equal(t, []ftypes.Package(nil), detail.ImageConfig.Packages, tc.name)
 	}
 }

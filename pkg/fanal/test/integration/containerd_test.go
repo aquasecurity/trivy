@@ -30,7 +30,8 @@ import (
 	aimage "github.com/aquasecurity/trivy/pkg/fanal/artifact/image"
 	"github.com/aquasecurity/trivy/pkg/fanal/cache"
 	"github.com/aquasecurity/trivy/pkg/fanal/image"
-	"github.com/aquasecurity/trivy/pkg/fanal/types"
+	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
+	"github.com/aquasecurity/trivy/pkg/types"
 )
 
 func configureTestDataPaths(t *testing.T, namespace string) (string, string) {
@@ -233,8 +234,9 @@ func TestContainerd_SearchLocalStoreByNameOrDigest(t *testing.T) {
 				}
 			})
 
-			img, cleanup, err := image.NewContainerImage(ctx, tt.searchName, types.RemoteOptions{},
-				image.DisableDockerd(), image.DisablePodman(), image.DisableRemote())
+			// enable only containerd
+			runtimes := image.WithRuntimes(types.Runtimes{types.ContainerdRuntime})
+			img, cleanup, err := image.NewContainerImage(ctx, tt.searchName, ftypes.RemoteOptions{}, runtimes)
 			defer cleanup()
 			if tt.expectErr {
 				require.Error(t, err)
@@ -273,13 +275,13 @@ func localImageTestWithNamespace(t *testing.T, namespace string) {
 		name         string
 		imageName    string
 		tarArchive   string
-		wantMetadata types.ImageMetadata
+		wantMetadata ftypes.ImageMetadata
 	}{
 		{
 			name:       "alpine 3.10",
 			imageName:  "ghcr.io/aquasecurity/trivy-test-images:alpine-310",
 			tarArchive: "../../../../integration/testdata/fixtures/images/alpine-310.tar.gz",
-			wantMetadata: types.ImageMetadata{
+			wantMetadata: ftypes.ImageMetadata{
 				ID: "sha256:961769676411f082461f9ef46626dd7a2d1e2b2a38e6a44364bcbecf51e66dd4",
 				DiffIDs: []string{
 					"sha256:03901b4a2ea88eeaad62dbe59b072b28b6efa00491962b8741081c5df50c65e0",
@@ -327,7 +329,7 @@ func localImageTestWithNamespace(t *testing.T, namespace string) {
 			name:       "vulnimage",
 			imageName:  "ghcr.io/aquasecurity/trivy-test-images:vulnimage",
 			tarArchive: "../../../../integration/testdata/fixtures/images/vulnimage.tar.gz",
-			wantMetadata: types.ImageMetadata{
+			wantMetadata: ftypes.ImageMetadata{
 				ID: "sha256:c17083664da903e13e9092fa3a3a1aeee2431aa2728298e3dbcec72f26369c41",
 				DiffIDs: []string{
 					"sha256:ebf12965380b39889c99a9c02e82ba465f887b45975b6e389d42e9e6a3857888",
@@ -679,8 +681,8 @@ func localImageTestWithNamespace(t *testing.T, namespace string) {
 			require.NoError(t, err)
 
 			// Enable only containerd
-			img, cleanup, err := image.NewContainerImage(ctx, tt.imageName, types.RemoteOptions{},
-				image.DisableDockerd(), image.DisablePodman(), image.DisableRemote())
+			runtimes := image.WithRuntimes(types.Runtimes{types.ContainerdRuntime})
+			img, cleanup, err := image.NewContainerImage(ctx, tt.imageName, ftypes.RemoteOptions{}, runtimes)
 			require.NoError(t, err)
 			defer cleanup()
 
@@ -715,7 +717,7 @@ func localImageTestWithNamespace(t *testing.T, namespace string) {
 			require.NoError(t, err)
 			defer golden.Close()
 
-			var wantPkgs types.Packages
+			var wantPkgs ftypes.Packages
 			err = json.NewDecoder(golden).Decode(&wantPkgs)
 			require.NoError(t, err)
 
@@ -729,12 +731,12 @@ func TestContainerd_PullImage(t *testing.T) {
 	tests := []struct {
 		name         string
 		imageName    string
-		wantMetadata types.ImageMetadata
+		wantMetadata ftypes.ImageMetadata
 	}{
 		{
 			name:      "remote alpine 3.10",
 			imageName: "ghcr.io/aquasecurity/trivy-test-images:alpine-310",
-			wantMetadata: types.ImageMetadata{
+			wantMetadata: ftypes.ImageMetadata{
 				ID: "sha256:961769676411f082461f9ef46626dd7a2d1e2b2a38e6a44364bcbecf51e66dd4",
 				DiffIDs: []string{
 					"sha256:03901b4a2ea88eeaad62dbe59b072b28b6efa00491962b8741081c5df50c65e0",
@@ -814,8 +816,8 @@ func TestContainerd_PullImage(t *testing.T) {
 			require.NoError(t, err)
 
 			// Enable only containerd
-			img, cleanup, err := image.NewContainerImage(ctx, tt.imageName, types.RemoteOptions{},
-				image.DisableDockerd(), image.DisablePodman(), image.DisableRemote())
+			runtimes := image.WithRuntimes(types.Runtimes{types.ContainerdRuntime})
+			img, cleanup, err := image.NewContainerImage(ctx, tt.imageName, ftypes.RemoteOptions{}, runtimes)
 			require.NoError(t, err)
 			defer cleanup()
 
@@ -841,7 +843,7 @@ func TestContainerd_PullImage(t *testing.T) {
 			golden, err := os.Open(fmt.Sprintf("testdata/goldens/packages/%s.json.golden", tag))
 			require.NoError(t, err)
 
-			var wantPkgs types.Packages
+			var wantPkgs ftypes.Packages
 			err = json.NewDecoder(golden).Decode(&wantPkgs)
 			require.NoError(t, err)
 
