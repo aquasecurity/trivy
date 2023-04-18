@@ -16,7 +16,8 @@ import (
 	"github.com/aquasecurity/testdocker/auth"
 	"github.com/aquasecurity/testdocker/engine"
 	"github.com/aquasecurity/testdocker/registry"
-	"github.com/aquasecurity/trivy/pkg/fanal/types"
+	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
+	"github.com/aquasecurity/trivy/pkg/types"
 )
 
 func setupEngineAndRegistry() (*httptest.Server, *httptest.Server) {
@@ -54,7 +55,7 @@ func TestNewDockerImage(t *testing.T) {
 
 	type args struct {
 		imageName string
-		option    types.RemoteOptions
+		option    ftypes.RemoteOptions
 	}
 	tests := []struct {
 		name            string
@@ -205,8 +206,8 @@ func TestNewDockerImage(t *testing.T) {
 			name: "happy path with insecure Docker Registry",
 			args: args{
 				imageName: fmt.Sprintf("%s/library/alpine:3.10", serverAddr),
-				option: types.RemoteOptions{
-					Credentials: []types.Credential{
+				option: ftypes.RemoteOptions{
+					Credentials: []ftypes.Credential{
 						{
 							Username: "test",
 							Password: "test",
@@ -274,7 +275,7 @@ func TestNewDockerImage(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			img, cleanup, err := NewContainerImage(context.Background(), tt.args.imageName, tt.args.option)
+			img, cleanup, err := NewContainerImage(context.Background(), tt.args.imageName, tt.args.option, WithRuntimes(types.AllRuntimes))
 			defer cleanup()
 
 			if tt.wantErr {
@@ -331,7 +332,7 @@ func TestNewDockerImageWithPrivateRegistry(t *testing.T) {
 
 	type args struct {
 		imageName string
-		option    types.RemoteOptions
+		option    ftypes.RemoteOptions
 	}
 	tests := []struct {
 		name    string
@@ -343,8 +344,8 @@ func TestNewDockerImageWithPrivateRegistry(t *testing.T) {
 			name: "happy path with private Docker Registry",
 			args: args{
 				imageName: fmt.Sprintf("%s/library/alpine:3.10", serverAddr),
-				option: types.RemoteOptions{
-					Credentials: []types.Credential{
+				option: ftypes.RemoteOptions{
+					Credentials: []ftypes.Credential{
 						{
 							Username: "test",
 							Password: "testpass",
@@ -358,7 +359,7 @@ func TestNewDockerImageWithPrivateRegistry(t *testing.T) {
 			name: "happy path with registry token",
 			args: args{
 				imageName: fmt.Sprintf("%s/library/alpine:3.10", serverAddr),
-				option: types.RemoteOptions{
+				option: ftypes.RemoteOptions{
 					RegistryToken: registryToken,
 					Insecure:      true,
 				},
@@ -375,7 +376,7 @@ func TestNewDockerImageWithPrivateRegistry(t *testing.T) {
 			name: "sad path with invalid registry token",
 			args: args{
 				imageName: fmt.Sprintf("%s/library/alpine:3.11", serverAddr),
-				option: types.RemoteOptions{
+				option: ftypes.RemoteOptions{
 					RegistryToken: registryToken + "invalid",
 					Insecure:      true,
 				},
@@ -385,7 +386,7 @@ func TestNewDockerImageWithPrivateRegistry(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			_, cleanup, err := NewContainerImage(context.Background(), tt.args.imageName, tt.args.option)
+			_, cleanup, err := NewContainerImage(context.Background(), tt.args.imageName, tt.args.option, WithRuntimes(types.AllRuntimes))
 			defer cleanup()
 
 			if tt.wantErr != "" {
@@ -501,7 +502,7 @@ func TestDockerPlatformArguments(t *testing.T) {
 	serverAddr := tr.Listener.Addr().String()
 
 	type args struct {
-		option types.RemoteOptions
+		option ftypes.RemoteOptions
 	}
 	tests := []struct {
 		name    string
@@ -512,8 +513,8 @@ func TestDockerPlatformArguments(t *testing.T) {
 		{
 			name: "happy path with valid platform",
 			args: args{
-				option: types.RemoteOptions{
-					Credentials: []types.Credential{
+				option: ftypes.RemoteOptions{
+					Credentials: []ftypes.Credential{
 						{
 							Username: "test",
 							Password: "testpass",
@@ -529,7 +530,7 @@ func TestDockerPlatformArguments(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			imageName := fmt.Sprintf("%s/library/alpine:3.10", serverAddr)
 
-			_, cleanup, err := NewContainerImage(context.Background(), imageName, tt.args.option)
+			_, cleanup, err := NewContainerImage(context.Background(), imageName, tt.args.option, WithRuntimes(types.AllRuntimes))
 			defer cleanup()
 
 			if tt.wantErr != "" {
