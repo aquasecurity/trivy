@@ -170,7 +170,7 @@ $ trivy fs --scanners license --license-full <path/to/spdx/list/data>
 
 Loose File License(s) (license)
 ===============================
-[0mTotal: 258 (UNKNOWN: 70, LOW: 90, MEDIUM: 18, HIGH: 58, CRITICAL: 22)
+Total: 258 (UNKNOWN: 70, LOW: 90, MEDIUM: 18, HIGH: 58, CRITICAL: 22)
 ```
 
 However, by configuring the confidence level to 0.8, the scanner is now able to detect 282 licenses.
@@ -181,7 +181,7 @@ $ trivy fs --scanners license --license-full --license-confidence-level 0.8 <pat
 
 Loose File License(s) (license)
 ===============================
-[0mTotal: 282 (UNKNOWN: 81, LOW: 97, MEDIUM: 24, HIGH: 58, CRITICAL: 22)
+Total: 282 (UNKNOWN: 81, LOW: 97, MEDIUM: 24, HIGH: 58, CRITICAL: 22)
 ```
 
 ### Custom Classification
