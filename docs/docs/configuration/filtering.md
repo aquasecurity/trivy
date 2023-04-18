@@ -386,6 +386,13 @@ Total: 9 (UNKNOWN: 0, LOW: 0, MEDIUM: 0, HIGH: 4, CRITICAL: 5)
 
 ## By Inline Comments
 
+|     Scanner      | Supported |
+|:----------------:|:---------:|
+|  Vulnerability   |           |
+| Misconfiguration |     ✓     |
+|      Secret      |           |
+|     License      |           |
+
 Some configuration file formats (e.g. Terraform) support inline comments.
 
 In cases where trivy can detect comments of a specific format immediately adjacent to resource definitions, it is possible to filter/ignore findings from a single point of resource definition (in contrast to `.trivyignore`, which has a directory-wide scope on all of the files scanned).
