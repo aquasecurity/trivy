@@ -545,7 +545,6 @@ func initScannerConfig(opts flag.Options, cacheClient cache.Cache) (ScannerConfi
 		Scanners:            opts.Scanners,
 		ImageConfigScanners: opts.ImageConfigScanners, // this is valid only for 'image' subcommand
 		ScanRemovedPackages: opts.ScanRemovedPkgs,     // this is valid only for 'image' subcommand
-		Platform:            opts.Platform,            // this is valid only for 'image' subcommand
 		ListAllPackages:     opts.ListAllPkgs,
 		LicenseCategories:   opts.LicenseCategories,
 		FilePatterns:        opts.FilePatterns,
@@ -615,8 +614,6 @@ func initScannerConfig(opts flag.Options, cacheClient cache.Cache) (ScannerConfi
 		fileChecksum = true
 	}
 
-	remoteOpts := opts.Remote()
-
 	return ScannerConfig{
 		Target:             target,
 		ArtifactCache:      cacheClient,
@@ -638,13 +635,12 @@ func initScannerConfig(opts flag.Options, cacheClient cache.Cache) (ScannerConfi
 			RepoTag:           opts.RepoTag,
 			SBOMSources:       opts.SBOMSources,
 			RekorURL:          opts.RekorURL,
-			Platform:          opts.Platform,
 			Slow:              opts.Slow,
 			AWSRegion:         opts.Region,
 			FileChecksum:      fileChecksum,
 
 			// For OCI registries
-			RemoteOptions: remoteOpts,
+			RemoteOptions: opts.Remote(),
 
 			// For misconfiguration scanning
 			MisconfScannerOption: configScannerOptions,

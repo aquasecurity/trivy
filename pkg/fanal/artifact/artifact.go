@@ -22,7 +22,6 @@ type Option struct {
 	AppDirs           []string
 	SBOMSources       []string
 	RekorURL          string
-	Platform          string
 	Slow              bool // Lower CPU and memory
 	AWSRegion         string
 	FileChecksum      bool // For SPDX

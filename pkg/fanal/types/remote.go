@@ -11,7 +11,7 @@ type RemoteOptions struct {
 	Insecure bool
 
 	// Architecture
-	Platform string
+	Platform *Platform
 
 	// ECR
 	AWSAccessKey    string
