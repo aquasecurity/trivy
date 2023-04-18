@@ -1659,6 +1659,13 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#by-inline-comments" class="md-nav__link">
+    By Inline Comments
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -2988,6 +2995,13 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#by-inline-comments" class="md-nav__link">
+    By Inline Comments
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -3446,6 +3460,44 @@ Total: <span class="m">9</span> <span class="o">(</span>UNKNOWN: <span class="m"
 </code></pre></div>
 
 </details>
+
+<h2 id="by-inline-comments">By Inline Comments</h2>
+<table>
+<thead>
+<tr>
+<th align="center">Scanner</th>
+<th align="center">Supported</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="center">Vulnerability</td>
+<td align="center"></td>
+</tr>
+<tr>
+<td align="center">Misconfiguration</td>
+<td align="center">✓</td>
+</tr>
+<tr>
+<td align="center">Secret</td>
+<td align="center"></td>
+</tr>
+<tr>
+<td align="center">License</td>
+<td align="center"></td>
+</tr>
+</tbody>
+</table>
+<p>Some configuration file formats (e.g. Terraform) support inline comments.</p>
+<p>In cases where trivy can detect comments of a specific format immediately adjacent to resource definitions, it is possible to filter/ignore findings from a single point of resource definition (in contrast to <code>.trivyignore</code>, which has a directory-wide scope on all of the files scanned).</p>
+<p>The format for these comments is <code>trivy:ignore:&lt;Vulnerability ID&gt;</code> immediately following the format-specific line-comment token.</p>
+<p>For example, to filter a Vulnerability ID "AVD-GCP-0051" in a Terraform HCL file:</p>
+<div class="highlight"><pre><span></span><code><span class="c1">#trivy:ignore:AVD-GCP-0051</span>
+<span class="kr">resource</span><span class="w"> </span><span class="nc">&quot;google_container_cluster&quot;</span><span class="w"> </span><span class="nv">&quot;one_off_test&quot;</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">  </span><span class="na">name</span><span class="w">     </span><span class="o">=</span><span class="w"> </span><span class="nv">var.cluster_name</span><span class="w"></span>
+<span class="w">  </span><span class="na">location</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">var.region</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
+</code></pre></div>
 
               
             </article>
