@@ -22,7 +22,7 @@ var (
 		Name:       "license-confidence-level",
 		ConfigName: "license.confidenceLevel",
 		Value:      0.9,
-		Usage:      "specify classifier confidence level",
+		Usage:      "specify license classifier's confidence level",
 	}
 
 	// LicenseForbidden is an option only in a config file

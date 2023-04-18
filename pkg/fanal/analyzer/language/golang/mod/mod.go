@@ -51,15 +51,15 @@ type gomodAnalyzer struct {
 	// go.mod/go.sum in dependencies
 	leafModParser godeptypes.Parser
 
-	opt analyzer.AnalyzerOptions
+	licenseClassifierConfidenceLevel float64
 }
 
 func newGoModAnalyzer(opt analyzer.AnalyzerOptions) (analyzer.PostAnalyzer, error) {
 	return &gomodAnalyzer{
-		modParser:     mod.NewParser(true), // Only the root module should replace
-		sumParser:     sum.NewParser(),
-		leafModParser: mod.NewParser(false),
-		opt:           opt,
+		modParser:                        mod.NewParser(true), // Only the root module should replace
+		sumParser:                        sum.NewParser(),
+		leafModParser:                    mod.NewParser(false),
+		licenseClassifierConfidenceLevel: opt.LicenseScannerOption.ClassifierConfidenceLevel,
 	}, nil
 }
 
@@ -155,7 +155,7 @@ func (a *gomodAnalyzer) fillAdditionalData(apps []types.Application) error {
 			modDir := filepath.Join(modPath, fmt.Sprintf("%s@v%s", normalizeModName(lib.Name), lib.Version))
 
 			// Collect licenses
-			if licenseNames, err := findLicense(modDir, a.opt.LicenseScannerOption.ClassifierConfidenceLevel); err != nil {
+			if licenseNames, err := findLicense(modDir, a.licenseClassifierConfidenceLevel); err != nil {
 				return xerrors.Errorf("license error: %w", err)
 			} else {
 				// Cache the detected licenses

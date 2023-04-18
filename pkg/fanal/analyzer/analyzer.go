@@ -144,9 +144,8 @@ type PostAnalysisInput struct {
 }
 
 type AnalysisOptions struct {
-	Offline                   bool
-	FileChecksum              bool
-	ClassifierConfidenceLevel float64
+	Offline      bool
+	FileChecksum bool
 }
 
 type AnalysisResult struct {

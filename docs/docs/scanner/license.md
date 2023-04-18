@@ -20,6 +20,9 @@ By default, Trivy scans licenses for packages installed by `apk`, `apt-get`, `dn
 To enable extended license scanning, you can use `--license-full`.
 In addition to package licenses, Trivy scans source code files, Markdown documents, text files and `LICENSE` documents to identify license usage within the image or filesystem.
 
+By default, Trivy only classifies licenses that are matched with a confidence level of 0.9 by the classifer.
+To configure the confidence level, you can use `--license-confidence-level`. This enables us to classify licenses that might be matched with a lower confidence level by the classifer. 
+
 !!! note
     The full license scanning is expensive. It takes a while.
 
@@ -155,6 +158,30 @@ Total: 2 (HIGH: 2, CRITICAL: 0)
 │ ssl_client        │         │                │          │
 └───────────────────┴─────────┴────────────────┴──────────┘
 
+```
+
+### Configuring Classifier Confidence Level
+You can use the `--license-confidence-level` flag to adjust the confidence level between 0.0 to 1.0 (default 0.9).
+For example, when you run the scanner with the default confidence level on [SPDX license list data](https://github.com/spdx/license-list-data/tree/main/text), it is able to detect only 258 licenses.
+
+```shell
+$ trivy fs --scanners license --license-full <path/to/spdx/list/data>
+2023-04-18T10:05:13.601-0700    INFO    Full license scanning is enabled
+
+Loose File License(s) (license)
+===============================
+[0mTotal: 258 (UNKNOWN: 70, LOW: 90, MEDIUM: 18, HIGH: 58, CRITICAL: 22)
+```
+
+However, by configuring the confidence level to 0.8, the scanner is now able to detect 282 licenses.
+
+```shell
+$ trivy fs --scanners license --license-full --license-confidence-level 0.8 <path/to/spdx/list/data>
+2023-04-18T10:21:39.637-0700    INFO    Full license scanning is enabled
+
+Loose File License(s) (license)
+===============================
+[0mTotal: 282 (UNKNOWN: 81, LOW: 97, MEDIUM: 24, HIGH: 58, CRITICAL: 22)
 ```
 
 ### Custom Classification
