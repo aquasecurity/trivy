@@ -50,6 +50,7 @@ trivy sbom [flags] SBOM_PATH
       --redis-tls                   enable redis TLS with public certificates, if using redis as cache backend
       --rekor-url string            [EXPERIMENTAL] address of rekor STL server (default "https://rekor.sigstore.dev")
       --reset                       remove all caches and database
+      --runtime strings             Runtime(s) to use (docker,containerd,podman,remote) (default [docker,containerd,podman,remote])
       --sbom-sources strings        [EXPERIMENTAL] try to retrieve SBOM from the specified sources (oci,rekor)
       --scanners strings            comma-separated list of what security issues to detect (vuln,config,secret,license) (default [vuln,secret])
       --server string               server address in client mode
