@@ -16,7 +16,7 @@ Briefly describe the problem you are having in a few paragraphs.
 ## What happened instead?
 
 
-## Output of run with `-debug`:
+## Output of run with `--debug`:
 
 ```
 (paste your output here)
