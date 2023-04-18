@@ -1,7 +1,6 @@
 package walker
 
 import (
-	"io/fs"
 	"os"
 	"path/filepath"
 
@@ -71,44 +70,25 @@ func (w FS) Walk(root string, fn WalkFunc) error {
 		return nil
 	}
 
-	if w.parallel <= 1 {
-		// In series: fast, with higher CPU/memory
-		return w.walkSlow(root, walkFn)
-	}
-
-	// In parallel: slow, with lower CPU/memory
-	return w.walkFast(root, walkFn)
+	return w.walk(root, walkFn)
 }
 
 type fastWalkFunc func(pathname string, fi os.FileInfo) error
 
-func (w FS) walkFast(root string, walkFn fastWalkFunc) error {
+func (w FS) walk(root string, walkFn fastWalkFunc, walkOpts ...swalker.Option) error {
 	// error function called for every error encountered
 	errorCallbackOption := swalker.WithErrorCallback(w.errCallback)
 
-	// Multiple goroutines stat the filesystem concurrently. The provided
-	// walkFn must be safe for concurrent use.
-	log.Logger.Debugf("Walk the file tree rooted at '%s' in parallel", root)
-	if err := swalker.Walk(root, walkFn, errorCallbackOption); err != nil {
-		return xerrors.Errorf("walk error: %w", err)
+	if w.parallel <= 1 {
+		log.Logger.Debugf("Walk the file tree rooted at '%s' in series", root)
+	} else {
+		// Multiple goroutines stat the filesystem concurrently. The provided
+		// walkFn must be safe for concurrent use.
+		log.Logger.Debugf("Walk the file tree rooted at '%s' in parallel", root)
 	}
-	return nil
-}
 
-func (w FS) walkSlow(root string, walkFn fastWalkFunc) error {
-	log.Logger.Debugf("Walk the file tree rooted at '%s' in series", root)
-	err := filepath.WalkDir(root, func(path string, d fs.DirEntry, err error) error {
-		if err != nil {
-			return w.errCallback(path, err)
-		}
-		info, err := d.Info()
-		if err != nil {
-			return xerrors.Errorf("file info error: %w", err)
-		}
-		return walkFn(path, info)
-	})
-	if err != nil {
-		return xerrors.Errorf("walk dir error: %w", err)
+	if err := swalker.Walk(root, walkFn, append(walkOpts, errorCallbackOption)...); err != nil {
+		return xerrors.Errorf("walk error: %w", err)
 	}
 	return nil
 }
