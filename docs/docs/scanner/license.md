@@ -20,7 +20,7 @@ By default, Trivy scans licenses for packages installed by `apk`, `apt-get`, `dn
 To enable extended license scanning, you can use `--license-full`.
 In addition to package licenses, Trivy scans source code files, Markdown documents, text files and `LICENSE` documents to identify license usage within the image or filesystem.
 
-By default, Trivy only classifies licenses that are matched with a confidence level of 0.9 by the classifer.
+By default, Trivy only classifies licenses that are matched with a confidence level of 0.9 or more by the classifer.
 To configure the confidence level, you can use `--license-confidence-level`. This enables us to classify licenses that might be matched with a lower confidence level by the classifer. 
 
 !!! note
