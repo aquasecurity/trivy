@@ -37,8 +37,8 @@ func initializeDockerScanner(ctx context.Context, imageName string, artifactCach
 	config := db.Config{}
 	client := vulnerability.NewClient(config)
 	localScanner := local.NewScanner(applierApplier, detector, client)
-	v := image.SelectRuntime(runtimes)
-	typesImage, cleanup, err := image.NewContainerImage(ctx, imageName, remoteOpt, v...)
+	v := image.WithRuntimes(runtimes)
+	typesImage, cleanup, err := image.NewContainerImage(ctx, imageName, remoteOpt, v)
 	if err != nil {
 		return scanner.Scanner{}, nil, err
 	}
@@ -140,8 +140,9 @@ func initializeVMScanner(ctx context.Context, filePath string, artifactCache cac
 func initializeRemoteDockerScanner(ctx context.Context, imageName string, artifactCache cache.ArtifactCache, remoteScanOptions client.ScannerOption, remoteOpt types.RemoteOptions, artifactOption artifact.Option) (scanner.Scanner, func(), error) {
 	v := _wireValue
 	clientScanner := client.NewScanner(remoteScanOptions, v...)
-	v2 := _wireValue2
-	typesImage, cleanup, err := image.NewContainerImage(ctx, imageName, remoteOpt, v2...)
+	runtimes := _wireRuntimesValue
+	v2 := image.WithRuntimes(runtimes)
+	typesImage, cleanup, err := image.NewContainerImage(ctx, imageName, remoteOpt, v2)
 	if err != nil {
 		return scanner.Scanner{}, nil, err
 	}
@@ -157,8 +158,8 @@ func initializeRemoteDockerScanner(ctx context.Context, imageName string, artifa
 }
 
 var (
-	_wireValue  = []client.Option(nil)
-	_wireValue2 = []image.Option(nil)
+	_wireValue         = []client.Option(nil)
+	_wireRuntimesValue = types2.Runtimes{types2.RemoteRuntime}
 )
 
 // initializeRemoteArchiveScanner is for container image archive scanning in client/server mode

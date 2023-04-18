@@ -34,7 +34,7 @@ var StandaloneSuperSet = wire.NewSet(
 
 // StandaloneDockerSet binds docker dependencies
 var StandaloneDockerSet = wire.NewSet(
-	image.SelectRuntime,
+	image.WithRuntimes,
 	image.NewContainerImage,
 	aimage.NewArtifact,
 	StandaloneSuperSet,
@@ -110,7 +110,8 @@ var RemoteVMSet = wire.NewSet(
 // RemoteDockerSet binds remote docker dependencies
 var RemoteDockerSet = wire.NewSet(
 	aimage.NewArtifact,
-	wire.Value([]image.Option(nil)), // optional functions
+	wire.Value(types.Runtimes{types.RemoteRuntime}),
+	image.WithRuntimes,
 	image.NewContainerImage,
 	RemoteSuperSet,
 )
