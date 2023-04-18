@@ -281,10 +281,43 @@ func (m *Marshaler) langPackage(target, appType string) (spdx.Package2_2, error)
 	}, nil
 }
 
+// Create a pkg object that will be common for cli and deepfactor portal
+func createDFPkgObject(pkg ftypes.Package) ftypes.Package {
+	return ftypes.Package{
+		ID:         pkg.ID,
+		Arch:       pkg.Arch,
+		Name:       pkg.Name,
+		Version:    pkg.Version,
+		SrcName:    pkg.SrcName,
+		SrcVersion: pkg.SrcVersion,
+		SrcRelease: pkg.SrcRelease,
+		SrcEpoch:   pkg.SrcEpoch,
+		Licenses:   pkg.Licenses,
+		Layer: ftypes.Layer{
+			Digest:    pkg.Layer.Digest,
+			DiffID:    pkg.Layer.DiffID,
+			CreatedBy: pkg.Layer.CreatedBy,
+		},
+		FilePath:   pkg.FilePath,
+		Release:    pkg.Release,
+		Ref:        pkg.Ref,
+		Epoch:      pkg.Epoch,
+		DependsOn:  pkg.DependsOn,
+		Maintainer: pkg.Maintainer,
+		// BuildInfo: pkg.BuildInfo,
+		Modularitylabel: pkg.Modularitylabel,
+		Indirect:        pkg.Indirect,
+		// Locations:       pkg.Locations,
+	}
+}
+
 func (m *Marshaler) pkgToSpdxPackage(t string, class types.ResultClass, metadata types.Metadata, pkg ftypes.Package) (spdx.Package2_2, error) {
 	license := getLicense(pkg)
 
-	pkgID, err := calcPkgID(m.hasher, pkg)
+	// Create a pkg object that will be common for cli and deepfactor portal
+	dfPkgObj := createDFPkgObject(pkg)
+
+	pkgID, err := calcPkgID(m.hasher, dfPkgObj)
 	if err != nil {
 		return spdx.Package2_2{}, xerrors.Errorf("failed to get %s package ID: %w", pkg.Name, err)
 	}
