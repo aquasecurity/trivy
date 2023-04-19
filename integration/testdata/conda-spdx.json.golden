@@ -17,7 +17,7 @@
       "SPDXID": "SPDXRef-Application-ee5ef1aa4ac89125",
       "downloadLocation": "NONE",
       "sourceInfo": "Conda"
-    }
+    },
     {
       "name": "openssl",
       "SPDXID": "SPDXRef-Package-b1088cb4090e3a55",
@@ -80,7 +80,7 @@
       "attributionTexts": [
         "SchemaVersion: 2"
       ]
-    },
+    }
   ],
   "relationships": [
     {
