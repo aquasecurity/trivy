@@ -339,29 +339,6 @@ func TestMarshaler_Marshal(t *testing.T) {
 				},
 				Packages: []*spdx.Package{
 					{
-						PackageName:             "centos:latest",
-						PackageSPDXIdentifier:   "ContainerImage-413bfede37ad01fc",
-						PackageDownloadLocation: "NONE",
-						PackageAttributionTexts: []string{
-							"SchemaVersion: 2",
-							"ImageID: sha256:5d0da3dc976460b72c77d94c8a1ad043720b0416bfc16c52c45d4847e53fadb6",
-							"Size: 1024",
-							"RepoTag: centos:latest",
-						},
-					},
-					{
-						PackageSPDXIdentifier:   spdx.ElementID("Application-441a648f2aeeee72"),
-						PackageDownloadLocation: "NONE",
-						PackageName:             "gemspec",
-						PackageSourceInfo:       "Ruby",
-					},
-					{
-						PackageSPDXIdentifier:   spdx.ElementID("OperatingSystem-197f9a00ebcb51f0"),
-						PackageDownloadLocation: "NONE",
-						PackageName:             "centos",
-						PackageVersion:          "8.3.2011",
-					},
-					{
 						PackageSPDXIdentifier:   spdx.ElementID("Package-d8dccb186bafaf37"),
 						PackageDownloadLocation: "NONE",
 						PackageName:             "acl",
@@ -436,6 +413,29 @@ func TestMarshaler_Marshal(t *testing.T) {
 								},
 							},
 						},
+					},
+					{
+						PackageSPDXIdentifier:   spdx.ElementID("OperatingSystem-197f9a00ebcb51f0"),
+						PackageDownloadLocation: "NONE",
+						PackageName:             "centos",
+						PackageVersion:          "8.3.2011",
+					},
+					{
+						PackageName:             "centos:latest",
+						PackageSPDXIdentifier:   "ContainerImage-413bfede37ad01fc",
+						PackageDownloadLocation: "NONE",
+						PackageAttributionTexts: []string{
+							"SchemaVersion: 2",
+							"ImageID: sha256:5d0da3dc976460b72c77d94c8a1ad043720b0416bfc16c52c45d4847e53fadb6",
+							"Size: 1024",
+							"RepoTag: centos:latest",
+						},
+					},
+					{
+						PackageSPDXIdentifier:   spdx.ElementID("Application-441a648f2aeeee72"),
+						PackageDownloadLocation: "NONE",
+						PackageName:             "gemspec",
+						PackageSourceInfo:       "Ruby",
 					},
 				},
 				Relationships: []*spdx.Relationship{
@@ -517,20 +517,6 @@ func TestMarshaler_Marshal(t *testing.T) {
 				},
 				Packages: []*spdx.Package{
 					{
-						PackageSPDXIdentifier:   spdx.ElementID("Filesystem-5af0f1f08c20909a"),
-						PackageDownloadLocation: "NONE",
-						PackageName:             "masahiro331/CVE-2021-41098",
-						PackageAttributionTexts: []string{
-							"SchemaVersion: 2",
-						},
-					},
-					{
-						PackageSPDXIdentifier:   spdx.ElementID("Application-9dd4a4ba7077cc5a"),
-						PackageDownloadLocation: "NONE",
-						PackageName:             "bundler",
-						PackageSourceInfo:       "Gemfile.lock",
-					},
-					{
 						PackageSPDXIdentifier:   spdx.ElementID("Package-3da61e86d0530402"),
 						PackageDownloadLocation: "NONE",
 						PackageName:             "actioncable",
@@ -543,6 +529,20 @@ func TestMarshaler_Marshal(t *testing.T) {
 								RefType:  tspdx.RefTypePurl,
 								Locator:  "pkg:gem/actioncable@6.1.4.1",
 							},
+						},
+					},
+					{
+						PackageSPDXIdentifier:   spdx.ElementID("Application-9dd4a4ba7077cc5a"),
+						PackageDownloadLocation: "NONE",
+						PackageName:             "bundler",
+						PackageSourceInfo:       "Gemfile.lock",
+					},
+					{
+						PackageSPDXIdentifier:   spdx.ElementID("Filesystem-5af0f1f08c20909a"),
+						PackageDownloadLocation: "NONE",
+						PackageName:             "masahiro331/CVE-2021-41098",
+						PackageAttributionTexts: []string{
+							"SchemaVersion: 2",
 						},
 					},
 				},
