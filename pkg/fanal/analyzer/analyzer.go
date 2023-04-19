@@ -20,6 +20,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/fanal/log"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/mapfs"
+	"github.com/aquasecurity/trivy/pkg/misconf"
 	"github.com/aquasecurity/trivy/pkg/syncx"
 )
 
@@ -45,6 +46,7 @@ type AnalyzerOptions struct {
 	Slow                 bool
 	FilePatterns         []string
 	DisabledAnalyzers    []Type
+	MisconfScannerOption misconf.ScannerOption
 	SecretScannerOption  SecretScannerOption
 	LicenseScannerOption LicenseScannerOption
 }
@@ -153,6 +155,7 @@ type AnalysisResult struct {
 	Repository           *types.Repository
 	PackageInfos         []types.PackageInfo
 	Applications         []types.Application
+	Misconfigurations    []types.Misconfiguration
 	Secrets              []types.Secret
 	Licenses             []types.LicenseFile
 	SystemInstalledFiles []string // A list of files installed by OS package manager
@@ -180,7 +183,7 @@ func NewAnalysisResult() *AnalysisResult {
 
 func (r *AnalysisResult) isEmpty() bool {
 	return lo.IsEmpty(r.OS) && r.Repository == nil && len(r.PackageInfos) == 0 && len(r.Applications) == 0 &&
-		len(r.Secrets) == 0 && len(r.Licenses) == 0 && len(r.SystemInstalledFiles) == 0 &&
+		len(r.Misconfigurations) == 0 && len(r.Secrets) == 0 && len(r.Licenses) == 0 && len(r.SystemInstalledFiles) == 0 &&
 		r.BuildInfo == nil && len(r.Files) == 0 && len(r.Digests) == 0 && len(r.CustomResources) == 0
 }
 
@@ -218,6 +221,11 @@ func (r *AnalysisResult) Sort() {
 			return files[i].Path < files[j].Path
 		})
 	}
+
+	// Misconfigurations
+	sort.Slice(r.Misconfigurations, func(i, j int) bool {
+		return r.Misconfigurations[i].FilePath < r.Misconfigurations[j].FilePath
+	})
 
 	// Secrets
 	sort.Slice(r.Secrets, func(i, j int) bool {
@@ -282,6 +290,7 @@ func (r *AnalysisResult) Merge(new *AnalysisResult) {
 		}
 	}
 
+	r.Misconfigurations = append(r.Misconfigurations, new.Misconfigurations...)
 	r.Secrets = append(r.Secrets, new.Secrets...)
 	r.Licenses = append(r.Licenses, new.Licenses...)
 	r.SystemInstalledFiles = append(r.SystemInstalledFiles, new.SystemInstalledFiles...)
@@ -400,6 +409,9 @@ func (ag AnalyzerGroup) AnalyzerVersions() Versions {
 	}
 }
 
+// AnalyzeFile determines which files are required by the analyzers based on the file name and attributes,
+// and passes only those files to the analyzer for analysis.
+// This function may be called concurrently and must be thread-safe.
 func (ag AnalyzerGroup) AnalyzeFile(ctx context.Context, wg *sync.WaitGroup, limit *semaphore.Weighted, result *AnalysisResult,
 	dir, filePath string, info os.FileInfo, opener Opener, disabled []Type, opts AnalysisOptions) error {
 	if info.IsDir() {
@@ -454,6 +466,7 @@ func (ag AnalyzerGroup) AnalyzeFile(ctx context.Context, wg *sync.WaitGroup, lim
 	return nil
 }
 
+// RequiredPostAnalyzers returns a list of analyzer types that require the given file.
 func (ag AnalyzerGroup) RequiredPostAnalyzers(filePath string, info os.FileInfo) []Type {
 	if info.IsDir() {
 		return nil
@@ -467,6 +480,10 @@ func (ag AnalyzerGroup) RequiredPostAnalyzers(filePath string, info os.FileInfo)
 	return postAnalyzerTypes
 }
 
+// PostAnalyze passes a virtual filesystem containing only required files
+// and passes it to the respective post-analyzer.
+// The obtained results are merged into the "result".
+// This function may be called concurrently and must be thread-safe.
 func (ag AnalyzerGroup) PostAnalyze(ctx context.Context, files *syncx.Map[Type, *mapfs.FS], result *AnalysisResult, opts AnalysisOptions) error {
 	for _, a := range ag.postAnalyzers {
 		fsys, ok := files.Load(a.Type())

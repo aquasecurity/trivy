@@ -16,12 +16,12 @@ import (
 	tcache "github.com/aquasecurity/trivy/pkg/cache"
 	"github.com/aquasecurity/trivy/pkg/commands/operation"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
-	"github.com/aquasecurity/trivy/pkg/fanal/analyzer/config"
 	"github.com/aquasecurity/trivy/pkg/fanal/artifact"
 	"github.com/aquasecurity/trivy/pkg/fanal/cache"
 	"github.com/aquasecurity/trivy/pkg/flag"
 	"github.com/aquasecurity/trivy/pkg/javadb"
 	"github.com/aquasecurity/trivy/pkg/log"
+	"github.com/aquasecurity/trivy/pkg/misconf"
 	"github.com/aquasecurity/trivy/pkg/module"
 	"github.com/aquasecurity/trivy/pkg/report"
 	pkgReport "github.com/aquasecurity/trivy/pkg/report"
@@ -561,7 +561,7 @@ func initScannerConfig(opts flag.Options, cacheClient cache.Cache) (ScannerConfi
 	}
 
 	// ScannerOption is filled only when config scanning is enabled.
-	var configScannerOptions config.ScannerOption
+	var configScannerOptions misconf.ScannerOption
 	if opts.Scanners.Enabled(types.MisconfigScanner) || opts.ImageConfigScanners.Enabled(types.MisconfigScanner) {
 		log.Logger.Info("Misconfiguration scanning is enabled")
 
@@ -576,7 +576,7 @@ func initScannerConfig(opts flag.Options, cacheClient cache.Cache) (ScannerConfi
 			log.Logger.Debug("Policies successfully loaded from disk")
 			disableEmbedded = true
 		}
-		configScannerOptions = config.ScannerOption{
+		configScannerOptions = misconf.ScannerOption{
 			Trace:                   opts.Trace,
 			Namespaces:              append(opts.PolicyNamespaces, defaultPolicyNamespaces...),
 			PolicyPaths:             append(opts.PolicyPaths, downloadedPolicyPaths...),

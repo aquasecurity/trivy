@@ -12,11 +12,11 @@ import (
 
 	"github.com/aquasecurity/trivy/internal/testutil"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
-	"github.com/aquasecurity/trivy/pkg/fanal/analyzer/config"
 	"github.com/aquasecurity/trivy/pkg/fanal/artifact"
 	"github.com/aquasecurity/trivy/pkg/fanal/artifact/vm"
 	"github.com/aquasecurity/trivy/pkg/fanal/cache"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
+	"github.com/aquasecurity/trivy/pkg/misconf"
 	ebsfile "github.com/masahiro331/go-ebs-file"
 
 	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/os/amazonlinux"
@@ -72,7 +72,7 @@ func TestArtifact_Inspect(t *testing.T) {
 		name                    string
 		filePath                string
 		artifactOpt             artifact.Option
-		scannerOpt              config.ScannerOption
+		scannerOpt              misconf.ScannerOption
 		disabledAnalyzers       []analyzer.Type
 		disabledHandlers        []types.HandlerType
 		missingBlobsExpectation cache.ArtifactCacheMissingBlobsExpectation
