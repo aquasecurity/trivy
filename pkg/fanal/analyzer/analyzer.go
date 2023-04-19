@@ -473,7 +473,7 @@ func (ag AnalyzerGroup) RequiredPostAnalyzers(filePath string, info os.FileInfo)
 	}
 	var postAnalyzerTypes []Type
 	for _, a := range ag.postAnalyzers {
-		if a.Required(filePath, info) {
+		if ag.filePatternMatch(a.Type(), filePath) || a.Required(filePath, info) {
 			postAnalyzerTypes = append(postAnalyzerTypes, a.Type())
 		}
 	}
