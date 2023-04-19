@@ -48,10 +48,7 @@ func (h misconfPostHandler) Handle(ctx context.Context, result *analyzer.Analysi
 	}
 
 	sort.Slice(misconfs, func(i, j int) bool {
-		if strings.Compare(misconfs[i].FilePath, misconfs[j].FilePath) > 0 {
-			return true
-		}
-		return false
+		return strings.Compare(misconfs[i].FilePath, misconfs[j].FilePath) > 0
 	})
 
 	blob.Misconfigurations = misconfs
