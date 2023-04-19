@@ -160,9 +160,6 @@ type AnalysisResult struct {
 	Licenses             []types.LicenseFile
 	SystemInstalledFiles []string // A list of files installed by OS package manager
 
-	// Files holds necessary file contents for the respective post-handler
-	Files map[types.HandlerType][]types.File
-
 	// Digests contains SHA-256 digests of unpackaged files
 	// used to search for SBOM attestation.
 	Digests map[string]string
@@ -177,14 +174,13 @@ type AnalysisResult struct {
 
 func NewAnalysisResult() *AnalysisResult {
 	result := new(AnalysisResult)
-	result.Files = map[types.HandlerType][]types.File{}
 	return result
 }
 
 func (r *AnalysisResult) isEmpty() bool {
 	return lo.IsEmpty(r.OS) && r.Repository == nil && len(r.PackageInfos) == 0 && len(r.Applications) == 0 &&
 		len(r.Misconfigurations) == 0 && len(r.Secrets) == 0 && len(r.Licenses) == 0 && len(r.SystemInstalledFiles) == 0 &&
-		r.BuildInfo == nil && len(r.Files) == 0 && len(r.Digests) == 0 && len(r.CustomResources) == 0
+		r.BuildInfo == nil && len(r.Digests) == 0 && len(r.CustomResources) == 0
 }
 
 func (r *AnalysisResult) Sort() {
@@ -215,12 +211,6 @@ func (r *AnalysisResult) Sort() {
 	sort.Slice(r.CustomResources, func(i, j int) bool {
 		return r.CustomResources[i].FilePath < r.CustomResources[j].FilePath
 	})
-
-	for _, files := range r.Files {
-		sort.Slice(files, func(i, j int) bool {
-			return files[i].Path < files[j].Path
-		})
-	}
 
 	// Misconfigurations
 	sort.Slice(r.Misconfigurations, func(i, j int) bool {
@@ -280,14 +270,6 @@ func (r *AnalysisResult) Merge(new *AnalysisResult) {
 	// Merge SHA-256 digests of unpackaged files
 	if new.Digests != nil {
 		r.Digests = lo.Assign(r.Digests, new.Digests)
-	}
-
-	for t, files := range new.Files {
-		if v, ok := r.Files[t]; ok {
-			r.Files[t] = append(v, files...)
-		} else {
-			r.Files[t] = files
-		}
 	}
 
 	r.Misconfigurations = append(r.Misconfigurations, new.Misconfigurations...)
