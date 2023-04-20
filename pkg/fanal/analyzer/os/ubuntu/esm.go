@@ -54,7 +54,7 @@ func (a ubuntuESMAnalyzer) Required(filePath string, _ os.FileInfo) bool {
 }
 
 func (a ubuntuESMAnalyzer) Type() analyzer.Type {
-	return analyzer.TypeUbuntu
+	return analyzer.TypeUbuntuESM
 }
 
 func (a ubuntuESMAnalyzer) Version() int {

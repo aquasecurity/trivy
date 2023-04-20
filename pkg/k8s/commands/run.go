@@ -32,6 +32,14 @@ func Run(ctx context.Context, args []string, opts flag.Options) error {
 	if err != nil {
 		return xerrors.Errorf("failed getting k8s cluster: %w", err)
 	}
+	ctx, cancel := context.WithTimeout(ctx, opts.Timeout)
+	defer cancel()
+
+	defer func() {
+		if xerrors.Is(err, context.DeadlineExceeded) {
+			log.Logger.Warn("Increase --timeout value")
+		}
+	}()
 
 	switch args[0] {
 	case clusterArtifact:
@@ -56,16 +64,6 @@ func newRunner(flagOpts flag.Options, cluster string) *runner {
 }
 
 func (r *runner) run(ctx context.Context, artifacts []*artifacts.Artifact) error {
-	ctx, cancel := context.WithTimeout(ctx, r.flagOpts.Timeout)
-	defer cancel()
-
-	var err error
-	defer func() {
-		if xerrors.Is(err, context.DeadlineExceeded) {
-			log.Logger.Warn("Increase --timeout value")
-		}
-	}()
-
 	runner, err := cmd.NewRunner(ctx, r.flagOpts)
 	if err != nil {
 		if errors.Is(err, cmd.SkipScan) {

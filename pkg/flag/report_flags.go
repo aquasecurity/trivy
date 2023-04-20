@@ -72,6 +72,12 @@ var (
 		Value:      0,
 		Usage:      "specify exit code when any security issues are found",
 	}
+	ExitOnEOLFlag = Flag{
+		Name:       "exit-on-eol",
+		ConfigName: "exit-on-eol",
+		Value:      0,
+		Usage:      "exit with the specified code when the OS reaches end of service/life",
+	}
 	OutputFlag = Flag{
 		Name:       "output",
 		ConfigName: "output",
@@ -105,6 +111,7 @@ type ReportFlagGroup struct {
 	IgnoreFile     *Flag
 	IgnorePolicy   *Flag
 	ExitCode       *Flag
+	ExitOnEOL      *Flag
 	Output         *Flag
 	Severity       *Flag
 	Compliance     *Flag
@@ -118,6 +125,7 @@ type ReportOptions struct {
 	ListAllPkgs    bool
 	IgnoreFile     string
 	ExitCode       int
+	ExitOnEOL      int
 	IgnorePolicy   string
 	Output         io.Writer
 	Severities     []dbTypes.Severity
@@ -134,6 +142,7 @@ func NewReportFlagGroup() *ReportFlagGroup {
 		IgnoreFile:     &IgnoreFileFlag,
 		IgnorePolicy:   &IgnorePolicyFlag,
 		ExitCode:       &ExitCodeFlag,
+		ExitOnEOL:      &ExitOnEOLFlag,
 		Output:         &OutputFlag,
 		Severity:       &SeverityFlag,
 		Compliance:     &ComplianceFlag,
@@ -154,6 +163,7 @@ func (f *ReportFlagGroup) Flags() []*Flag {
 		f.IgnoreFile,
 		f.IgnorePolicy,
 		f.ExitCode,
+		f.ExitOnEOL,
 		f.Output,
 		f.Severity,
 		f.Compliance,
@@ -193,7 +203,7 @@ func (f *ReportFlagGroup) ToOptions(out io.Writer) (ReportOptions, error) {
 	if dependencyTree {
 		log.Logger.Infof(`"--dependency-tree" only shows the dependents of vulnerable packages. ` +
 			`Note that it is the reverse of the usual dependency tree, which shows the packages that depend on the vulnerable package. ` +
-			`It supports "package-lock.json", "Cargo.lock" and OS packages. Please see the document for the detail.`)
+			`It supports limited package managers. Please see the document for the detail.`)
 		if format != report.FormatTable {
 			log.Logger.Warn(`"--dependency-tree" can be used only with "--format table".`)
 		}
@@ -224,6 +234,7 @@ func (f *ReportFlagGroup) ToOptions(out io.Writer) (ReportOptions, error) {
 		ListAllPkgs:    listAllPkgs,
 		IgnoreFile:     getString(f.IgnoreFile),
 		ExitCode:       getInt(f.ExitCode),
+		ExitOnEOL:      getInt(f.ExitOnEOL),
 		IgnorePolicy:   getString(f.IgnorePolicy),
 		Output:         out,
 		Severities:     splitSeverity(getStringSlice(f.Severity)),

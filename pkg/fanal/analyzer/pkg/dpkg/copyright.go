@@ -5,7 +5,7 @@ import (
 	"context"
 	"io"
 	"os"
-	"path/filepath"
+	"path"
 	"regexp"
 	"strings"
 
@@ -87,6 +87,8 @@ func (a *dpkgLicenseAnalyzer) parseCopyright(r dio.ReadSeekerAt) ([]types.Licens
 			// Machine-readable format
 			// cf. https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/#:~:text=The%20debian%2Fcopyright%20file%20must,in%20the%20Debian%20Policy%20Manual.
 			l := strings.TrimSpace(line[8:])
+
+			l = normalizeLicense(l)
 			if len(l) > 0 {
 				// Split licenses without considering "and"/"or"
 				// examples:
@@ -126,7 +128,13 @@ func (a *dpkgLicenseAnalyzer) Init(opt analyzer.AnalyzerOptions) error {
 }
 
 func (a *dpkgLicenseAnalyzer) Required(filePath string, _ os.FileInfo) bool {
-	return strings.HasPrefix(filePath, "usr/share/doc/") && filepath.Base(filePath) == "copyright"
+	// To exclude files from subfolders
+	// e.g. usr/share/doc/ca-certificates/examples/ca-certificates-local/debian/copyright
+	match, err := path.Match("usr/share/doc/*/copyright", filePath)
+	if err != nil {
+		return false
+	}
+	return match
 }
 
 func (a *dpkgLicenseAnalyzer) Type() analyzer.Type {
@@ -135,4 +143,16 @@ func (a *dpkgLicenseAnalyzer) Type() analyzer.Type {
 
 func (a *dpkgLicenseAnalyzer) Version() int {
 	return dpkgLicenseAnalyzerVersion
+}
+
+// normalizeLicense returns a normalized license identifier in a heuristic way
+func normalizeLicense(s string) string {
+	// "The MIT License (MIT)" => "The MIT License"
+	s, _, _ = strings.Cut(s, "(")
+
+	// Very rarely has below phrases
+	s = strings.TrimPrefix(s, "The main library is licensed under ")
+	s = strings.TrimSuffix(s, " license")
+
+	return strings.TrimSpace(s)
 }

@@ -8,6 +8,7 @@ import (
 	"google.golang.org/protobuf/types/known/structpb"
 
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
+	"github.com/aquasecurity/trivy/pkg/digest"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/types"
@@ -35,6 +36,7 @@ func ConvertToRPCPkgs(pkgs []ftypes.Package) []*common.Package {
 			Layer:      ConvertToRPCLayer(pkg.Layer),
 			FilePath:   pkg.FilePath,
 			DependsOn:  pkg.DependsOn,
+			Digest:     pkg.Digest.String(),
 		})
 	}
 	return rpcPkgs
@@ -127,6 +129,7 @@ func ConvertFromRPCPkgs(rpcPkgs []*common.Package) []ftypes.Package {
 			Layer:      ConvertFromRPCLayer(pkg.Layer),
 			FilePath:   pkg.FilePath,
 			DependsOn:  pkg.DependsOn,
+			Digest:     digest.Digest(pkg.Digest),
 		})
 	}
 	return pkgs

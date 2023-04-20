@@ -69,8 +69,8 @@ func TestSBOM(t *testing.T) {
 						Target: "testdata/fixtures/sbom/centos-7-spdx.txt (centos 7.6.1810)",
 						Vulnerabilities: []types.DetectedVulnerability{
 							{Ref: "pkg:rpm/centos/bash@4.2.46-31.el7?arch=x86_64&distro=centos-7.6.1810"},
-							{Ref: "pkg:rpm/centos/openssl-libs@1:1.0.2k-16.el7?arch=x86_64&distro=centos-7.6.1810"},
-							{Ref: "pkg:rpm/centos/openssl-libs@1:1.0.2k-16.el7?arch=x86_64&distro=centos-7.6.1810"},
+							{Ref: "pkg:rpm/centos/openssl-libs@1.0.2k-16.el7?arch=x86_64&epoch=1&distro=centos-7.6.1810"},
+							{Ref: "pkg:rpm/centos/openssl-libs@1.0.2k-16.el7?arch=x86_64&epoch=1&distro=centos-7.6.1810"},
 						},
 					},
 				},
@@ -92,8 +92,8 @@ func TestSBOM(t *testing.T) {
 						Target: "testdata/fixtures/sbom/centos-7-spdx.json (centos 7.6.1810)",
 						Vulnerabilities: []types.DetectedVulnerability{
 							{Ref: "pkg:rpm/centos/bash@4.2.46-31.el7?arch=x86_64&distro=centos-7.6.1810"},
-							{Ref: "pkg:rpm/centos/openssl-libs@1:1.0.2k-16.el7?arch=x86_64&distro=centos-7.6.1810"},
-							{Ref: "pkg:rpm/centos/openssl-libs@1:1.0.2k-16.el7?arch=x86_64&distro=centos-7.6.1810"},
+							{Ref: "pkg:rpm/centos/openssl-libs@1.0.2k-16.el7?arch=x86_64&epoch=1&distro=centos-7.6.1810"},
+							{Ref: "pkg:rpm/centos/openssl-libs@1.0.2k-16.el7?arch=x86_64&epoch=1&distro=centos-7.6.1810"},
 						},
 					},
 				},

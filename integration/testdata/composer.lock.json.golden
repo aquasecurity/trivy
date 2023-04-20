@@ -1,0 +1,96 @@
+{
+  "SchemaVersion": 2,
+  "ArtifactName": "testdata/fixtures/fs/composer",
+  "ArtifactType": "filesystem",
+  "Metadata": {
+    "ImageConfig": {
+      "architecture": "",
+      "created": "0001-01-01T00:00:00Z",
+      "os": "",
+      "rootfs": {
+        "type": "",
+        "diff_ids": null
+      },
+      "config": {}
+    }
+  },
+  "Results": [
+    {
+      "Target": "composer.lock",
+      "Class": "lang-pkgs",
+      "Type": "composer",
+      "Packages": [
+        {
+          "ID": "guzzlehttp/guzzle@7.4.4",
+          "Name": "guzzlehttp/guzzle",
+          "Version": "7.4.4",
+          "Indirect": false,
+          "Layer": {},
+          "Licenses": [
+            "MIT"
+          ],
+          "DependsOn": [
+            "guzzlehttp/psr7@1.8.3"
+          ],
+          "Locations": [
+            {
+              "StartLine": 9,
+              "EndLine": 129
+            }
+          ]
+        },
+        {
+          "ID": "guzzlehttp/psr7@1.8.3",
+          "Name": "guzzlehttp/psr7",
+          "Version": "1.8.3",
+          "Indirect": true,
+          "Layer": {},
+          "Licenses": [
+            "MIT"
+          ],
+          "Locations": [
+            {
+              "StartLine": 130,
+              "EndLine": 245
+            }
+          ]
+        }
+      ],
+      "Vulnerabilities": [
+        {
+          "VulnerabilityID": "CVE-2022-24775",
+          "PkgID": "guzzlehttp/psr7@1.8.3",
+          "PkgName": "guzzlehttp/psr7",
+          "InstalledVersion": "1.8.3",
+          "FixedVersion": "1.8.4",
+          "Layer": {},
+          "SeveritySource": "ghsa",
+          "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2022-24775",
+          "DataSource": {
+            "ID": "ghsa",
+            "Name": "GitHub Security Advisory Composer",
+            "URL": "https://github.com/advisories?query=type%%3Areviewed+ecosystem%%3Acomposer"
+          },
+          "Title": "Improper Input Validation in guzzlehttp/psr7",
+          "Description": "### Impact\nIn proper header parsing. An attacker could sneak in a new line character and pass untrusted values. \n\n### Patches\nThe issue is patched in 1.8.4 and 2.1.1.\n\n### Workarounds\nThere are no known workarounds.\n",
+          "Severity": "HIGH",
+          "CweIDs": [
+            "CWE-20"
+          ],
+          "CVSS": {
+            "ghsa": {
+              "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:H/A:N",
+              "V3Score": 7.5
+            }
+          },
+          "References": [
+            "https://github.com/guzzle/psr7/security/advisories/GHSA-q7rv-6hp3-vh96",
+            "https://nvd.nist.gov/vuln/detail/CVE-2022-24775"
+          ],
+          "PublishedDate": "2022-03-25T19:26:33Z",
+          "LastModifiedDate": "2022-06-14T20:02:29Z"
+        }
+      ]
+    }
+  ]
+}

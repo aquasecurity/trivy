@@ -23,7 +23,7 @@ func NewWriter(output io.Writer, version string, spdxFormat string) Writer {
 		output:    output,
 		version:   version,
 		format:    spdxFormat,
-		marshaler: spdx.NewMarshaler(),
+		marshaler: spdx.NewMarshaler(version),
 	}
 }
 

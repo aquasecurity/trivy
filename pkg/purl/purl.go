@@ -2,6 +2,7 @@ package purl
 
 import (
 	"fmt"
+	"strconv"
 	"strings"
 
 	cn "github.com/google/go-containerregistry/pkg/name"
@@ -48,6 +49,11 @@ func (p *PackageURL) Package() *ftypes.Package {
 			pkg.Arch = q.Value
 		case "modularitylabel":
 			pkg.Modularitylabel = q.Value
+		case "epoch":
+			epoch, err := strconv.Atoi(q.Value)
+			if err == nil {
+				pkg.Epoch = epoch
+			}
 		}
 	}
 
@@ -55,7 +61,6 @@ func (p *PackageURL) Package() *ftypes.Package {
 		rpmVer := version.NewVersion(p.Version)
 		pkg.Release = rpmVer.Release()
 		pkg.Version = rpmVer.Version()
-		pkg.Epoch = rpmVer.Epoch()
 	}
 
 	// Return packages without namespace.
@@ -134,6 +139,7 @@ func NewPackageURL(t string, metadata types.Metadata, pkg ftypes.Package) (Packa
 	var qualifiers packageurl.Qualifiers
 	if metadata.OS != nil {
 		qualifiers = parseQualifier(pkg)
+		pkg.Epoch = 0 // we moved Epoch to qualifiers so we don't need it in version
 	}
 
 	ptype := purlType(t)
@@ -341,6 +347,12 @@ func parseQualifier(pkg ftypes.Package) packageurl.Qualifiers {
 		qualifiers = append(qualifiers, packageurl.Qualifier{
 			Key:   "arch",
 			Value: pkg.Arch,
+		})
+	}
+	if pkg.Epoch != 0 {
+		qualifiers = append(qualifiers, packageurl.Qualifier{
+			Key:   "epoch",
+			Value: strconv.Itoa(pkg.Epoch),
 		})
 	}
 	return qualifiers

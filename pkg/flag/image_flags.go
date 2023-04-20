@@ -38,9 +38,9 @@ var (
 	}
 	DockerHostFlag = Flag{
 		Name:       "docker-host",
-		ConfigName: "image.docker-host",
+		ConfigName: "image.docker.host",
 		Value:      "",
-		Usage:      "unix domain socket path to use for docker standalone scanning",
+		Usage:      "unix domain socket path to use for docker scanning",
 	}
 )
 
@@ -75,7 +75,13 @@ func (f *ImageFlagGroup) Name() string {
 }
 
 func (f *ImageFlagGroup) Flags() []*Flag {
-	return []*Flag{f.Input, f.ImageConfigScanners, f.ScanRemovedPkgs, f.Platform, f.DockerHost}
+	return []*Flag{
+		f.Input,
+		f.ImageConfigScanners,
+		f.ScanRemovedPkgs,
+		f.Platform,
+		f.DockerHost,
+	}
 }
 
 func (f *ImageFlagGroup) ToOptions() (ImageOptions, error) {

@@ -108,13 +108,6 @@ trivy k8s --report summary cluster
 </figure>
 
 </details>
-
-## FAQ
-
-### How to pronounce the name "Trivy"?
-
-`tri` is pronounced like **tri**gger, `vy` is pronounced like en**vy**.
-
 ---
 
 Trivy is an [Aqua Security][aquasec] open source project.  

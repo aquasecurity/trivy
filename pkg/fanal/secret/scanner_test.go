@@ -554,6 +554,7 @@ func TestSecretScanner(t *testing.T) {
 		},
 		{
 			name:          "find Asymmetric Private Key secrets",
+			configPath:    filepath.Join("testdata", "skip-test.yaml"),
 			inputFilePath: filepath.Join("testdata", "asymmetric-private-secret.txt"),
 			want: types.Secret{
 				FilePath: filepath.Join("testdata", "asymmetric-private-secret.txt"),
@@ -562,6 +563,7 @@ func TestSecretScanner(t *testing.T) {
 		},
 		{
 			name:          "find Alibaba AccessKey ID txt",
+			configPath:    filepath.Join("testdata", "skip-test.yaml"),
 			inputFilePath: "testdata/alibaba-access-key-id.txt",
 			want: types.Secret{
 				FilePath: "testdata/alibaba-access-key-id.txt",
@@ -570,6 +572,7 @@ func TestSecretScanner(t *testing.T) {
 		},
 		{
 			name:          "find Asymmetric Private Key secrets json",
+			configPath:    filepath.Join("testdata", "skip-test.yaml"),
 			inputFilePath: filepath.Join("testdata", "asymmetric-private-secret.json"),
 			want: types.Secret{
 				FilePath: filepath.Join("testdata", "asymmetric-private-secret.json"),
@@ -610,7 +613,7 @@ func TestSecretScanner(t *testing.T) {
 		},
 		{
 			name:          "should find ghp builtin secret",
-			configPath:    "",
+			configPath:    filepath.Join("testdata", "skip-test.yaml"),
 			inputFilePath: filepath.Join("testdata", "builtin-rule-secret.txt"),
 			want: types.Secret{
 				FilePath: filepath.Join("testdata", "builtin-rule-secret.txt"),
@@ -673,6 +676,7 @@ func TestSecretScanner(t *testing.T) {
 		},
 		{
 			name:          "skip examples file",
+			configPath:    filepath.Join("testdata", "skip-test.yaml"),
 			inputFilePath: filepath.Join("testdata", "example-secret.txt"),
 			want: types.Secret{
 				FilePath: filepath.Join("testdata", "example-secret.txt"),
@@ -716,6 +720,7 @@ func TestSecretScanner(t *testing.T) {
 		},
 		{
 			name:          "truncate long line",
+			configPath:    filepath.Join("testdata", "skip-test.yaml"),
 			inputFilePath: filepath.Join("testdata", "long-line-secret.txt"),
 			want: types.Secret{
 				FilePath: filepath.Join("testdata", "long-line-secret.txt"),
@@ -733,12 +738,13 @@ func TestSecretScanner(t *testing.T) {
 		},
 		{
 			name:          "invalid aws secrets",
+			configPath:    filepath.Join("testdata", "skip-test.yaml"),
 			inputFilePath: filepath.Join("testdata", "invalid-aws-secrets.txt"),
 			want:          types.Secret{},
 		},
 		{
 			name:          "asymmetric file",
-			configPath:    "",
+			configPath:    filepath.Join("testdata", "skip-test.yaml"),
 			inputFilePath: "testdata/asymmetric-private-key.txt",
 			want: types.Secret{
 				FilePath: "testdata/asymmetric-private-key.txt",

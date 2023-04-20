@@ -58,7 +58,7 @@ var (
 		Name:       "sbom-sources",
 		ConfigName: "scan.sbom-sources",
 		Value:      []string{},
-		Usage:      "[EXPERIMENTAL] try to retrieve SBOM from the specified sources (rekor)",
+		Usage:      "[EXPERIMENTAL] try to retrieve SBOM from the specified sources (oci,rekor)",
 	}
 	RekorURLFlag = Flag{
 		Name:       "rekor-url",

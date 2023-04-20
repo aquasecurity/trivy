@@ -91,12 +91,14 @@ func NewConfigAnalyzerGroup(opts ConfigAnalyzerOptions) (ConfigAnalyzerGroup, er
 }
 
 // AnalyzerVersions returns analyzer version identifier used for cache keys.
-func (ag *ConfigAnalyzerGroup) AnalyzerVersions() map[string]int {
+func (ag *ConfigAnalyzerGroup) AnalyzerVersions() Versions {
 	versions := map[string]int{}
 	for _, ca := range ag.configAnalyzers {
 		versions[string(ca.Type())] = ca.Version()
 	}
-	return versions
+	return Versions{
+		Analyzers: versions,
+	}
 }
 
 func (ag *ConfigAnalyzerGroup) AnalyzeImageConfig(ctx context.Context, targetOS types.OS, config *v1.ConfigFile) *ConfigAnalysisResult {

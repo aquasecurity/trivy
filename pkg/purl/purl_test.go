@@ -220,12 +220,12 @@ func TestNewPackageURL(t *testing.T) {
 				Name:            "acl",
 				Version:         "2.2.53",
 				Release:         "1.el8",
-				Epoch:           0,
+				Epoch:           1,
 				Arch:            "aarch64",
 				SrcName:         "acl",
 				SrcVersion:      "2.2.53",
 				SrcRelease:      "1.el8",
-				SrcEpoch:        0,
+				SrcEpoch:        1,
 				Modularitylabel: "",
 			},
 
@@ -245,6 +245,10 @@ func TestNewPackageURL(t *testing.T) {
 						{
 							Key:   "arch",
 							Value: "aarch64",
+						},
+						{
+							Key:   "epoch",
+							Value: "1",
 						},
 						{
 							Key:   "distro",
@@ -437,7 +441,7 @@ func TestFromString(t *testing.T) {
 		},
 		{
 			name: "happy path for apk",
-			purl: "pkg:apk/alpine/alpine-baselayout@3.2.0-r16?distro=3.14.2",
+			purl: "pkg:apk/alpine/alpine-baselayout@3.2.0-r16?distro=3.14.2&epoch=1",
 			want: purl.PackageURL{
 				PackageURL: packageurl.PackageURL{
 					Type:      string(analyzer.TypeApk),
@@ -448,6 +452,10 @@ func TestFromString(t *testing.T) {
 						{
 							Key:   "distro",
 							Value: "3.14.2",
+						},
+						{
+							Key:   "epoch",
+							Value: "1",
 						},
 					},
 				},

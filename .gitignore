@@ -35,3 +35,6 @@ dist
 
 # WebAssembly
 *.wasm
+
+# Signing
+gpg.key

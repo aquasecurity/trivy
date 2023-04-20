@@ -18,11 +18,13 @@ type SBOM struct {
 type SBOMSource = string
 
 const (
+	SBOMSourceOCI   = SBOMSource("oci")
 	SBOMSourceRekor = SBOMSource("rekor")
 )
 
 var (
 	SBOMSources = []string{
+		SBOMSourceOCI,
 		SBOMSourceRekor,
 	}
 )

@@ -27,6 +27,11 @@ const (
 	FormatAttestCycloneDXJSON Format = "attest-cyclonedx-json"
 	FormatUnknown             Format = "unknown"
 
+	// FormatLegacyCosignAttestCycloneDXJSON is used to support the older format of CycloneDX JSON Attestation
+	// produced by the Cosign V1.
+	// ref. https://github.com/sigstore/cosign/pull/2718
+	FormatLegacyCosignAttestCycloneDXJSON Format = "legacy-cosign-attest-cyclonedx-json"
+
 	// PredicateCycloneDXBeforeV05 is the PredicateCycloneDX value defined in in-toto-golang before v0.5.0.
 	// This is necessary for backward-compatible SBOM detection.
 	// ref. https://github.com/in-toto/in-toto-golang/pull/188
@@ -100,14 +105,39 @@ func DetectFormat(r io.ReadSeeker) (Format, error) {
 	}
 
 	// Try in-toto attestation
-	var s attestation.Statement
-	if err := json.NewDecoder(r).Decode(&s); err == nil {
-		if s.PredicateType == in_toto.PredicateCycloneDX || s.PredicateType == PredicateCycloneDXBeforeV05 {
-			return FormatAttestCycloneDXJSON, nil
-		}
+	format, ok := decodeAttestCycloneDXJSONFormat(r)
+	if ok {
+		return format, nil
 	}
 
 	return FormatUnknown, nil
+}
+
+func decodeAttestCycloneDXJSONFormat(r io.ReadSeeker) (Format, bool) {
+	var s attestation.Statement
+
+	if err := json.NewDecoder(r).Decode(&s); err != nil {
+		return "", false
+	}
+
+	if s.PredicateType != in_toto.PredicateCycloneDX && s.PredicateType != PredicateCycloneDXBeforeV05 {
+		return "", false
+	}
+
+	if s.Predicate == nil {
+		return "", false
+	}
+
+	m, ok := s.Predicate.(map[string]interface{})
+	if !ok {
+		return "", false
+	}
+
+	if _, ok := m["Data"]; ok {
+		return FormatLegacyCosignAttestCycloneDXJSON, true
+	}
+
+	return FormatAttestCycloneDXJSON, true
 }
 
 func Decode(f io.Reader, format Format) (types.SBOM, error) {
@@ -122,6 +152,14 @@ func Decode(f io.Reader, format Format) (types.SBOM, error) {
 		v = &cyclonedx.CycloneDX{SBOM: &bom}
 		decoder = json.NewDecoder(f)
 	case FormatAttestCycloneDXJSON:
+		// dsse envelope
+		//   => in-toto attestation
+		//     => CycloneDX JSON
+		v = &attestation.Statement{
+			Predicate: &cyclonedx.CycloneDX{SBOM: &bom},
+		}
+		decoder = json.NewDecoder(f)
+	case FormatLegacyCosignAttestCycloneDXJSON:
 		// dsse envelope
 		//   => in-toto attestation
 		//     => cosign predicate

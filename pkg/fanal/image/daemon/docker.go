@@ -14,9 +14,12 @@ import (
 func DockerImage(ref name.Reference, host string) (Image, func(), error) {
 	cleanup := func() {}
 
-	opts := []client.Opt{client.FromEnv, client.WithAPIVersionNegotiation()}
+	opts := []client.Opt{
+		client.FromEnv,
+		client.WithAPIVersionNegotiation(),
+	}
 	if host != "" {
-		// adding host parameter to the last assuming it will pickup more preference
+		// adding host parameter to the last assuming it will pick up more preference
 		opts = append(opts, client.WithHost(host))
 	}
 	c, err := client.NewClientWithOpts(opts...)

@@ -1,0 +1,12 @@
+{
+  "name": "integration",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "dependencies": {
+    "jquery": "^3.2.1"
+  },
+  "devDependencies": {
+    "promise": "^8.0.3"
+  }
+}

@@ -127,6 +127,7 @@ adjust_arch() {
     386) ARCH=32bit ;;
     amd64) ARCH=64bit ;;
     arm) ARCH=ARM ;;
+    armv7) ARCH=ARM ;;
     arm64) ARCH=ARM64 ;;
     ppc64le) OS=PPC64LE ;;
     darwin) ARCH=macOS ;;
