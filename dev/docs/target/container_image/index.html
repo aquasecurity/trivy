@@ -1154,6 +1154,13 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#configure-docker-daemon-socket-to-connect-to" class="md-nav__link">
+    Configure Docker daemon socket to connect to.
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -3321,6 +3328,13 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#configure-docker-daemon-socket-to-connect-to" class="md-nav__link">
+    Configure Docker daemon socket to connect to.
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -3751,6 +3765,11 @@ Total: 1 (UNKNOWN: 0, LOW: 0, MEDIUM: 0, HIGH: 0, CRITICAL: 1)
 </code></pre></div>
 
 </details>
+
+<h3 id="configure-docker-daemon-socket-to-connect-to">Configure Docker daemon socket to connect to.</h3>
+<p>You can configure Docker daemon socket with <code>DOCKER_HOST</code> or <code>--docker-host</code>.</p>
+<div class="highlight"><pre><span></span><code>$ trivy image --docker-host tcp://127.0.0.1:2375 YOUR_IMAGE
+</code></pre></div>
 
               
             </article>
