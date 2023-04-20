@@ -18,11 +18,13 @@ type Option struct {
 	SkipDirs          []string
 	FilePatterns      []string
 	NoProgress        bool
+	Insecure          bool
 	Offline           bool
 	AppDirs           []string
 	SBOMSources       []string
 	RekorURL          string
 	Platform          string
+	DockerHost        string
 	Slow              bool // Lower CPU and memory
 	AWSRegion         string
 	FileChecksum      bool // For SPDX
@@ -32,8 +34,8 @@ type Option struct {
 	RepoCommit string
 	RepoTag    string
 
-	// For OCI registries
-	types.RemoteOptions
+	// For image scanning
+	ImageOption types.ImageOptions
 
 	MisconfScannerOption misconf.ScannerOption
 	SecretScannerOption  analyzer.SecretScannerOption

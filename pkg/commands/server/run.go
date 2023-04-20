@@ -35,7 +35,7 @@ func Run(ctx context.Context, opts flag.Options) (err error) {
 
 	// download the database file
 	if err = operation.DownloadDB(ctx, opts.AppVersion, opts.CacheDir, opts.DBRepository,
-		true, opts.SkipDBUpdate, opts.Remote()); err != nil {
+		true, opts.SkipDBUpdate, opts.Registry()); err != nil {
 		return err
 	}
 
@@ -58,6 +58,6 @@ func Run(ctx context.Context, opts flag.Options) (err error) {
 	m.Register()
 
 	server := rpcServer.NewServer(opts.AppVersion, opts.Listen, opts.CacheDir, opts.Token, opts.TokenHeader,
-		opts.DBRepository, opts.Remote())
+		opts.DBRepository, opts.Registry())
 	return server.ListenAndServe(cache, opts.SkipDBUpdate)
 }

@@ -12,7 +12,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/remote"
 )
 
-func tryRemote(ctx context.Context, imageName string, ref name.Reference, option types.RemoteOptions) (types.Image, error) {
+func tryRemote(ctx context.Context, imageName string, ref name.Reference, option types.RegistryOptions) (types.Image, error) {
 	desc, err := remote.Get(ctx, ref, option)
 	if err != nil {
 		return nil, err
