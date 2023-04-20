@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"os"
 
 	"github.com/hashicorp/go-multierror"
@@ -20,6 +19,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer/config"
 	"github.com/aquasecurity/trivy/pkg/fanal/artifact"
 	"github.com/aquasecurity/trivy/pkg/fanal/cache"
+	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/flag"
 	"github.com/aquasecurity/trivy/pkg/javadb"
 	"github.com/aquasecurity/trivy/pkg/log"
