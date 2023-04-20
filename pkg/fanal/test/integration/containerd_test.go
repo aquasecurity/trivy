@@ -235,7 +235,8 @@ func TestContainerd_SearchLocalStoreByNameOrDigest(t *testing.T) {
 			})
 
 			// enable only containerd
-			runtimes := image.WithRuntimes(types.Runtimes{types.ContainerdRuntime})
+			runtimes, err := image.WithRuntimes(types.Runtimes{types.ContainerdRuntime})
+			require.NoError(t, err)
 			img, cleanup, err := image.NewContainerImage(ctx, tt.searchName, ftypes.RemoteOptions{}, runtimes)
 			defer cleanup()
 			if tt.expectErr {
@@ -681,7 +682,8 @@ func localImageTestWithNamespace(t *testing.T, namespace string) {
 			require.NoError(t, err)
 
 			// Enable only containerd
-			runtimes := image.WithRuntimes(types.Runtimes{types.ContainerdRuntime})
+			runtimes, err := image.WithRuntimes(types.Runtimes{types.ContainerdRuntime})
+			require.NoError(t, err)
 			img, cleanup, err := image.NewContainerImage(ctx, tt.imageName, ftypes.RemoteOptions{}, runtimes)
 			require.NoError(t, err)
 			defer cleanup()
@@ -816,7 +818,8 @@ func TestContainerd_PullImage(t *testing.T) {
 			require.NoError(t, err)
 
 			// Enable only containerd
-			runtimes := image.WithRuntimes(types.Runtimes{types.ContainerdRuntime})
+			runtimes, err := image.WithRuntimes(types.Runtimes{types.ContainerdRuntime})
+			require.NoError(t, err)
 			img, cleanup, err := image.NewContainerImage(ctx, tt.imageName, ftypes.RemoteOptions{}, runtimes)
 			require.NoError(t, err)
 			defer cleanup()
