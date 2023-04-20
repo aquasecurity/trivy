@@ -240,7 +240,9 @@ func (a Artifact) buildFS(dir, filePath string, info os.FileInfo, files *syncx.M
 
 	// Create fs.FS for each post-analyzer that wants to analyze the current file
 	for _, at := range atypes {
-		mfs, _ := files.LoadOrStore(at, mapfs.New())
+		// Since filesystem scanning may require access outside the specified path, (e.g. Terraform modules)
+		// it allows "../" access with "WithUnderlyingRoot".
+		mfs, _ := files.LoadOrStore(at, mapfs.New(mapfs.WithUnderlyingRoot(dir)))
 		if d := filepath.Dir(filePath); d != "." {
 			if err := mfs.MkdirAll(d, os.ModePerm); err != nil && !errors.Is(err, fs.ErrExist) {
 				return xerrors.Errorf("mapfs mkdir error: %w", err)
