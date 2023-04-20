@@ -74,8 +74,8 @@ func (p *Parser) Parse(r dio.ReadSeekerAt) ([]types.Library, []types.Dependency,
 	return p.parseArtifact(p.rootFilePath, p.size, r)
 }
 
-func (p *Parser) parseArtifact(fileName string, size int64, r dio.ReadSeekerAt) ([]types.Library, []types.Dependency, error) {
-	log.Logger.Debugw("Parsing Java artifacts...", zap.String("file", fileName))
+func (p *Parser) parseArtifact(filePath string, size int64, r dio.ReadSeekerAt) ([]types.Library, []types.Dependency, error) {
+	log.Logger.Debugw("Parsing Java artifacts...", zap.String("file", filePath))
 
 	zr, err := zip.NewReader(r, size)
 	if err != nil {
@@ -84,8 +84,8 @@ func (p *Parser) parseArtifact(fileName string, size int64, r dio.ReadSeekerAt) 
 
 	// Try to extract artifactId and version from the file name
 	// e.g. spring-core-5.3.4-SNAPSHOT.jar => sprint-core, 5.3.4-SNAPSHOT
-	fileName = filepath.Base(fileName)
-	fileProps := parseFileName(fileName)
+	fileName := filepath.Base(filePath)
+	fileProps := parseFileName(filePath)
 
 	var libs []types.Library
 	var m manifest
@@ -94,7 +94,7 @@ func (p *Parser) parseArtifact(fileName string, size int64, r dio.ReadSeekerAt) 
 	for _, fileInJar := range zr.File {
 		switch {
 		case filepath.Base(fileInJar.Name) == "pom.properties":
-			props, err := parsePomProperties(fileInJar)
+			props, err := parsePomProperties(fileInJar, filePath)
 			if err != nil {
 				return nil, nil, xerrors.Errorf("failed to parse %s: %w", fileInJar.Name, err)
 			}
@@ -110,7 +110,7 @@ func (p *Parser) parseArtifact(fileName string, size int64, r dio.ReadSeekerAt) 
 				return nil, nil, xerrors.Errorf("failed to parse MANIFEST.MF: %w", err)
 			}
 		case isArtifact(fileInJar.Name):
-			innerLibs, _, err := p.parseInnerJar(fileInJar) //TODO process inner deps
+			innerLibs, _, err := p.parseInnerJar(fileInJar, filePath) //TODO process inner deps
 			if err != nil {
 				log.Logger.Debugf("Failed to parse %s: %s", fileInJar.Name, err)
 				continue
@@ -124,7 +124,7 @@ func (p *Parser) parseArtifact(fileName string, size int64, r dio.ReadSeekerAt) 
 		return libs, nil, nil
 	}
 
-	manifestProps := m.properties()
+	manifestProps := m.properties(filePath)
 	if p.offline {
 		// In offline mode, we will not check if the artifact information is correct.
 		if !manifestProps.Valid() {
@@ -144,7 +144,7 @@ func (p *Parser) parseArtifact(fileName string, size int64, r dio.ReadSeekerAt) 
 	}
 
 	// If groupId and artifactId are not found, call Maven Central's search API with SHA-1 digest.
-	props, err := p.searchBySHA1(r)
+	props, err := p.searchBySHA1(r, filePath)
 	if err == nil {
 		return append(libs, props.Library()), nil, nil
 	} else if !xerrors.Is(err, ArtifactNotFoundErr) {
@@ -172,7 +172,7 @@ func (p *Parser) parseArtifact(fileName string, size int64, r dio.ReadSeekerAt) 
 	return libs, nil, nil
 }
 
-func (p *Parser) parseInnerJar(zf *zip.File) ([]types.Library, []types.Dependency, error) {
+func (p *Parser) parseInnerJar(zf *zip.File, rootPath string) ([]types.Library, []types.Dependency, error) {
 	fr, err := zf.Open()
 	if err != nil {
 		return nil, nil, xerrors.Errorf("unable to open %s: %w", zf.Name, err)
@@ -192,8 +192,11 @@ func (p *Parser) parseInnerJar(zf *zip.File) ([]types.Library, []types.Dependenc
 		return nil, nil, xerrors.Errorf("file copy error: %w", err)
 	}
 
+	// build full path to inner jar
+	path := filepath.Join(rootPath, zf.Name)
+
 	// Parse jar/war/ear recursively
-	innerLibs, innerDeps, err := p.parseArtifact(zf.Name, int64(zf.UncompressedSize64), f)
+	innerLibs, innerDeps, err := p.parseArtifact(path, int64(zf.UncompressedSize64), f)
 	if err != nil {
 		return nil, nil, xerrors.Errorf("failed to parse %s: %w", zf.Name, err)
 	}
@@ -201,7 +204,7 @@ func (p *Parser) parseInnerJar(zf *zip.File) ([]types.Library, []types.Dependenc
 	return innerLibs, innerDeps, nil
 }
 
-func (p *Parser) searchBySHA1(r io.ReadSeeker) (Properties, error) {
+func (p *Parser) searchBySHA1(r io.ReadSeeker, filePath string) (Properties, error) {
 	if _, err := r.Seek(0, io.SeekStart); err != nil {
 		return Properties{}, xerrors.Errorf("file seek error: %w", err)
 	}
@@ -215,6 +218,7 @@ func (p *Parser) searchBySHA1(r io.ReadSeeker) (Properties, error) {
 	if err != nil {
 		return Properties{}, err
 	}
+	prop.FilePath = filePath
 	return prop, nil
 }
 
@@ -226,7 +230,8 @@ func isArtifact(name string) bool {
 	return false
 }
 
-func parseFileName(fileName string) Properties {
+func parseFileName(filePath string) Properties {
+	fileName := filepath.Base(filePath)
 	packageVersion := jarFileRegEx.FindStringSubmatch(fileName)
 	if len(packageVersion) != 3 {
 		return Properties{}
@@ -235,17 +240,20 @@ func parseFileName(fileName string) Properties {
 	return Properties{
 		ArtifactID: packageVersion[1],
 		Version:    packageVersion[2],
+		FilePath:   filePath,
 	}
 }
 
-func parsePomProperties(f *zip.File) (Properties, error) {
+func parsePomProperties(f *zip.File, filePath string) (Properties, error) {
 	file, err := f.Open()
 	if err != nil {
 		return Properties{}, xerrors.Errorf("unable to open pom.properties: %w", err)
 	}
 	defer file.Close()
 
-	var p Properties
+	p := Properties{
+		FilePath: filePath,
+	}
 	scanner := bufio.NewScanner(file)
 	for scanner.Scan() {
 		line := strings.TrimSpace(scanner.Text())
@@ -328,7 +336,7 @@ func parseManifest(f *zip.File) (manifest, error) {
 	return m, nil
 }
 
-func (m manifest) properties() Properties {
+func (m manifest) properties(filePath string) Properties {
 	groupID, err := m.determineGroupID()
 	if err != nil {
 		return Properties{}
@@ -348,6 +356,7 @@ func (m manifest) properties() Properties {
 		GroupID:    groupID,
 		ArtifactID: artifactID,
 		Version:    version,
+		FilePath:   filePath,
 	}
 }
 

@@ -12,12 +12,14 @@ type Properties struct {
 	GroupID    string
 	ArtifactID string
 	Version    string
+	FilePath   string // path to file containing these props
 }
 
 func (p Properties) Library() types.Library {
 	return types.Library{
-		Name:    fmt.Sprintf("%s:%s", p.GroupID, p.ArtifactID),
-		Version: p.Version,
+		Name:     fmt.Sprintf("%s:%s", p.GroupID, p.ArtifactID),
+		Version:  p.Version,
+		FilePath: p.FilePath,
 	}
 }
 

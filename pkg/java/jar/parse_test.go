@@ -22,108 +22,149 @@ var (
 	// docker run --rm --name test -it test bash
 	// mvn dependency:list
 	// mvn dependency:tree -Dscope=compile -Dscope=runtime | awk '/:tree/,/BUILD SUCCESS/' | awk 'NR > 1 { print }' | head -n -2 | awk '{print $NF}' | awk -F":" '{printf("{\""$1":"$2"\", \""$4 "\", \"\"},\n")}'
+	// paths filled in manually
 	wantMaven = []types.Library{
 		{
-			Name:    "com.example:web-app",
-			Version: "1.0-SNAPSHOT",
+			Name:     "com.example:web-app",
+			Version:  "1.0-SNAPSHOT",
+			FilePath: "testdata/maven.war",
 		},
 		{
-			Name:    "com.fasterxml.jackson.core:jackson-databind",
-			Version: "2.9.10.6",
+			Name:     "com.fasterxml.jackson.core:jackson-databind",
+			Version:  "2.9.10.6",
+			FilePath: "testdata/maven.war/WEB-INF/lib/jackson-databind-2.9.10.6.jar",
 		},
 		{
-			Name:    "com.fasterxml.jackson.core:jackson-annotations",
-			Version: "2.9.10",
+			Name:     "com.fasterxml.jackson.core:jackson-annotations",
+			Version:  "2.9.10",
+			FilePath: "testdata/maven.war/WEB-INF/lib/jackson-annotations-2.9.10.jar",
 		},
 		{
-			Name:    "com.fasterxml.jackson.core:jackson-core",
-			Version: "2.9.10",
+			Name:     "com.fasterxml.jackson.core:jackson-core",
+			Version:  "2.9.10",
+			FilePath: "testdata/maven.war/WEB-INF/lib/jackson-core-2.9.10.jar",
 		},
 		{
-			Name:    "com.cronutils:cron-utils",
-			Version: "9.1.2",
+			Name:     "com.cronutils:cron-utils",
+			Version:  "9.1.2",
+			FilePath: "testdata/maven.war/WEB-INF/lib/cron-utils-9.1.2.jar",
 		},
 		{
-			Name:    "org.slf4j:slf4j-api",
-			Version: "1.7.30",
+			Name:     "org.slf4j:slf4j-api",
+			Version:  "1.7.30",
+			FilePath: "testdata/maven.war/WEB-INF/lib/slf4j-api-1.7.30.jar",
 		},
 		{
-			Name:    "org.glassfish:javax.el",
-			Version: "3.0.0",
+			Name:     "org.glassfish:javax.el",
+			Version:  "3.0.0",
+			FilePath: "testdata/maven.war/WEB-INF/lib/javax.el-3.0.0.jar",
 		},
 		{
-			Name:    "org.apache.commons:commons-lang3",
-			Version: "3.11",
+			Name:     "org.apache.commons:commons-lang3",
+			Version:  "3.11",
+			FilePath: "testdata/maven.war/WEB-INF/lib/commons-lang3-3.11.jar",
 		},
 	}
 
 	// cd testdata/testimage/gradle && docker build -t test .
 	// docker run --rm --name test -it test bash
 	// gradle app:dependencies --configuration implementation | grep "[+\]---" | cut -d" " -f2 | awk -F":" '{printf("{\""$1":"$2"\", \""$3"\", \"\"},\n")}'
+	// paths filled in manually
 	wantGradle = []types.Library{
 		{
-			Name:    "commons-dbcp:commons-dbcp",
-			Version: "1.4",
+			Name:     "commons-dbcp:commons-dbcp",
+			Version:  "1.4",
+			FilePath: "testdata/gradle.war/WEB-INF/lib/commons-dbcp-1.4.jar",
 		},
 		{
-			Name:    "commons-pool:commons-pool",
-			Version: "1.6",
+			Name:     "commons-pool:commons-pool",
+			Version:  "1.6",
+			FilePath: "testdata/gradle.war/WEB-INF/lib/commons-pool-1.6.jar",
 		},
 		{
-			Name:    "log4j:log4j",
-			Version: "1.2.17",
+			Name:     "log4j:log4j",
+			Version:  "1.2.17",
+			FilePath: "testdata/gradle.war/WEB-INF/lib/log4j-1.2.17.jar",
 		},
 		{
-			Name:    "org.apache.commons:commons-compress",
-			Version: "1.19",
+			Name:     "org.apache.commons:commons-compress",
+			Version:  "1.19",
+			FilePath: "testdata/gradle.war/WEB-INF/lib/commons-compress-1.19.jar",
 		},
 	}
 
 	// manually created
 	wantSHA1 = []types.Library{
 		{
-			Name:    "org.springframework:spring-core",
-			Version: "5.3.3",
+			Name:     "org.springframework:spring-core",
+			Version:  "5.3.3",
+			FilePath: "testdata/test.jar",
 		},
 	}
 
 	// offline
 	wantOffline = []types.Library{
 		{
-			Name:    "org.springframework:Spring Framework",
-			Version: "2.5.6.SEC03",
+			Name:     "org.springframework:Spring Framework",
+			Version:  "2.5.6.SEC03",
+			FilePath: "testdata/test.jar",
 		},
 	}
 
 	// manually created
 	wantHeuristic = []types.Library{
 		{
-			Name:    "com.example:heuristic",
-			Version: "1.0.0-SNAPSHOT",
+			Name:     "com.example:heuristic",
+			Version:  "1.0.0-SNAPSHOT",
+			FilePath: "testdata/heuristic-1.0.0-SNAPSHOT.jar",
 		},
 	}
 
 	// manually created
 	wantFatjar = []types.Library{
 		{
-			Name:    "com.google.guava:failureaccess",
-			Version: "1.0.1",
+			Name:     "com.google.guava:failureaccess",
+			Version:  "1.0.1",
+			FilePath: "testdata/hadoop-shaded-guava-1.1.0-SNAPSHOT.jar",
 		},
 		{
-			Name:    "com.google.guava:guava",
-			Version: "29.0-jre",
+			Name:     "com.google.guava:guava",
+			Version:  "29.0-jre",
+			FilePath: "testdata/hadoop-shaded-guava-1.1.0-SNAPSHOT.jar",
 		},
 		{
-			Name:    "com.google.guava:listenablefuture",
-			Version: "9999.0-empty-to-avoid-conflict-with-guava",
+			Name:     "com.google.guava:listenablefuture",
+			Version:  "9999.0-empty-to-avoid-conflict-with-guava",
+			FilePath: "testdata/hadoop-shaded-guava-1.1.0-SNAPSHOT.jar",
 		},
 		{
-			Name:    "com.google.j2objc:j2objc-annotations",
-			Version: "1.3",
+			Name:     "com.google.j2objc:j2objc-annotations",
+			Version:  "1.3",
+			FilePath: "testdata/hadoop-shaded-guava-1.1.0-SNAPSHOT.jar",
 		},
 		{
-			Name:    "org.apache.hadoop.thirdparty:hadoop-shaded-guava",
-			Version: "1.1.0-SNAPSHOT",
+			Name:     "org.apache.hadoop.thirdparty:hadoop-shaded-guava",
+			Version:  "1.1.0-SNAPSHOT",
+			FilePath: "testdata/hadoop-shaded-guava-1.1.0-SNAPSHOT.jar",
+		},
+	}
+
+	// manually created
+	wantNestedJar = []types.Library{
+		{
+			Name:     "test:nested",
+			Version:  "0.0.1",
+			FilePath: "testdata/nested.jar",
+		},
+		{
+			Name:     "test:nested2",
+			Version:  "0.0.2",
+			FilePath: "testdata/nested.jar/META-INF/jars/nested2.jar",
+		},
+		{
+			Name:     "test:nested3",
+			Version:  "0.0.3",
+			FilePath: "testdata/nested.jar/META-INF/jars/nested2.jar/META-INF/jars/nested3.jar",
 		},
 	}
 )
@@ -162,6 +203,11 @@ func TestParse(t *testing.T) {
 			name: "gradle",
 			file: "testdata/gradle.war",
 			want: wantGradle,
+		},
+		{
+			name: "nested jars",
+			file: "testdata/nested.jar",
+			want: wantNestedJar,
 		},
 		{
 			name: "sha1 search",
