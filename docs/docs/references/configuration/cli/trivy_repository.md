@@ -43,7 +43,7 @@ trivy repository [flags] REPO_URL
       --ignorefile string                specify .trivyignore file (default ".trivyignore")
       --include-non-failures             include successes and exceptions, available with '--scanners config'
       --java-db-repository string        OCI repository to retrieve trivy-java-db from (default "ghcr.io/aquasecurity/trivy-java-db")
-      --license-confidence-level float   specify classifier confidence level (default 0.9)
+      --license-confidence-level float   specify license classifier's confidence level (default 0.9)
       --license-full                     eagerly look for licenses in source code headers and license files
       --list-all-pkgs                    enabling the option will output all packages regardless of vulnerability
       --module-dir string                specify directory to the wasm modules that will be loaded (default "$HOME/.trivy/modules")
