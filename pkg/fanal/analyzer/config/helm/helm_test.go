@@ -2,10 +2,10 @@ package helm
 
 import (
 	"os"
-	"path/filepath"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func Test_helmConfigAnalyzer_Required(t *testing.T) {
@@ -16,55 +16,57 @@ func Test_helmConfigAnalyzer_Required(t *testing.T) {
 	}{
 		{
 			name:     "yaml",
-			filePath: "testdata/testchart/Chart.yaml",
+			filePath: "Chart.yaml",
 			want:     true,
 		},
 		{
 			name:     "yaml - shorthand",
-			filePath: "testdata/testchart/templates/deployment.yml",
+			filePath: "templates/deployment.yml",
 			want:     true,
 		},
 		{
 			name:     "tpl",
-			filePath: "testdata/testchart/templates/_helpers.tpl",
+			filePath: "templates/_helpers.tpl",
 			want:     true,
 		},
 		{
 			name:     "json",
-			filePath: "testdata/testchart/values.yaml",
+			filePath: "values.json",
 			want:     true,
 		},
 		{
 			name:     "NOTES.txt",
-			filePath: "testdata/testchart/templates/NOTES.txt",
+			filePath: "templates/NOTES.txt",
 			want:     false,
 		},
 		{
 			name:     ".helmignore",
-			filePath: "testdata/testchart/.helmignore",
+			filePath: ".helmignore",
 			want:     true,
 		},
 		{
 			name:     "testchart.tgz",
-			filePath: filepath.Join("testdata", "testchart.tgz"),
+			filePath: "testchart.tgz",
 			want:     true,
 		},
 		{
 			name:     "testchart.tar.gz",
-			filePath: filepath.Join("testdata", "testchart.tar.gz"),
+			filePath: "testchart.tar.gz",
 			want:     true,
 		},
 		{
 			name:     "nope.tgz",
-			filePath: filepath.Join("testdata", "nope.tgz"),
-			want:     true, // its a tarball after all
+			filePath: "nope.tgz",
+			want:     true, // it's a tarball after all
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			s := helmConfigAnalyzer{}
 
-			info, _ := os.Stat(tt.filePath)
+			// Create a dummy file info
+			info, err := os.Stat("./helm_test.go")
+			require.NoError(t, err)
 
 			got := s.Required(tt.filePath, info)
 			assert.Equal(t, tt.want, got)
