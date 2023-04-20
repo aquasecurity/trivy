@@ -1,8 +1,9 @@
 package testutil
 
 import (
-	"github.com/samber/lo"
 	"runtime"
+
+	"github.com/samber/lo"
 )
 
 var ErrNotExist string = lo.Ternary(runtime.GOOS == "windows",
