@@ -219,11 +219,7 @@ func analyze(ctx context.Context, imageRef string, opt ftypes.RemoteOptions) (*f
 	}
 	cli.NegotiateAPIVersion(ctx)
 
-	runtimes, err := image.WithRuntimes(types.Runtimes{types.ContainerdRuntime})
-	if err != nil {
-		return nil, err
-	}
-
+	runtimes := image.WithRuntimes(types.AllRuntimes)
 	img, cleanup, err := image.NewContainerImage(ctx, imageRef, opt, runtimes)
 	if err != nil {
 		return nil, err

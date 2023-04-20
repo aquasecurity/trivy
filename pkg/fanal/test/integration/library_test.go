@@ -152,8 +152,7 @@ func TestFanal_Library_DockerLessMode(t *testing.T) {
 			})
 
 			// Enable only registry scanning
-			runtimes, err := image.WithRuntimes(types.Runtimes{types.ContainerdRuntime})
-			require.NoError(t, err)
+			runtimes := image.WithRuntimes(types.Runtimes{types.RemoteRuntime})
 			img, cleanup, err := image.NewContainerImage(ctx, tt.remoteImageName, ftypes.RemoteOptions{}, runtimes)
 			require.NoError(t, err)
 			defer cleanup()
@@ -202,8 +201,7 @@ func TestFanal_Library_DockerMode(t *testing.T) {
 			require.NoError(t, err, tt.name)
 
 			// Enable only dockerd scanning
-			runtimes, err := image.WithRuntimes(types.Runtimes{types.ContainerdRuntime})
-			require.NoError(t, err)
+			runtimes := image.WithRuntimes(types.Runtimes{types.DockerRuntime})
 			img, cleanup, err := image.NewContainerImage(ctx, tt.remoteImageName, ftypes.RemoteOptions{}, runtimes)
 			require.NoError(t, err, tt.name)
 			defer cleanup()
