@@ -644,7 +644,7 @@ func initScannerConfig(opts flag.Options, cacheClient cache.Cache) (ScannerConfi
 			AWSRegion:         opts.Region,
 			FileChecksum:      fileChecksum,
 
-			// For OCI registries
+			// For image scanning
 			ImageOption: ftypes.ImageOptions{
 				RegistryOptions: opts.Registry(),
 				DockerOptions: ftypes.DockerOptions{

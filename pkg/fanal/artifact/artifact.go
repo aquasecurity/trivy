@@ -34,7 +34,7 @@ type Option struct {
 	RepoCommit string
 	RepoTag    string
 
-	// For OCI registries
+	// For image scanning
 	ImageOption types.ImageOptions
 
 	MisconfScannerOption misconf.ScannerOption
