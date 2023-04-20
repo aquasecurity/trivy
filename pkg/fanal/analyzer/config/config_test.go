@@ -3,6 +3,7 @@ package config_test
 import (
 	"context"
 	"github.com/aquasecurity/defsec/pkg/detection"
+	"github.com/aquasecurity/trivy/internal/testutil"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer/config"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
@@ -83,7 +84,7 @@ func TestAnalyzer_PostAnalyze(t *testing.T) {
 				},
 			},
 			dir:     "testdata/non-existent",
-			wantErr: "no such file or directory",
+			wantErr: testutil.ErrNotExist,
 		},
 	}
 	for _, tt := range tests {
