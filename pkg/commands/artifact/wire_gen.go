@@ -37,7 +37,10 @@ func initializeDockerScanner(ctx context.Context, imageName string, artifactCach
 	config := db.Config{}
 	client := vulnerability.NewClient(config)
 	localScanner := local.NewScanner(applierApplier, detector, client)
-	v := image.WithRuntimes(runtimes)
+	v, err := image.WithRuntimes(runtimes)
+	if err != nil {
+		return scanner.Scanner{}, nil, err
+	}
 	typesImage, cleanup, err := image.NewContainerImage(ctx, imageName, remoteOpt, v)
 	if err != nil {
 		return scanner.Scanner{}, nil, err
@@ -141,7 +144,10 @@ func initializeRemoteDockerScanner(ctx context.Context, imageName string, artifa
 	v := _wireValue
 	clientScanner := client.NewScanner(remoteScanOptions, v...)
 	runtimes := _wireRuntimesValue
-	v2 := image.WithRuntimes(runtimes)
+	v2, err := image.WithRuntimes(runtimes)
+	if err != nil {
+		return scanner.Scanner{}, nil, err
+	}
 	typesImage, cleanup, err := image.NewContainerImage(ctx, imageName, remoteOpt, v2)
 	if err != nil {
 		return scanner.Scanner{}, nil, err

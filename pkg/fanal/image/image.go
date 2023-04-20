@@ -21,18 +21,22 @@ var runtimeFuncs = map[ftypes.Runtime]RuntimeFunc{
 	ftypes.RemoteRuntime:     tryRemote,
 }
 
-func WithRuntimes(runtimes ftypes.Runtimes) []RuntimeFunc {
+func WithRuntimes(runtimes ftypes.Runtimes) ([]RuntimeFunc, error) {
 	funcs := []RuntimeFunc{}
 
 	for _, r := range runtimes {
-		funcs = append(funcs, runtimeFuncs[r])
+		f, ok := runtimeFuncs[r]
+		if !ok {
+			return nil, xerrors.Errorf("unrecoginized runtime: '%s'", r)
+		}
+		funcs = append(funcs, f)
 	}
 
-	return funcs
+	return funcs, nil
 }
 
-func NewContainerImage(ctx context.Context, imageName string, opt types.RemoteOptions, tryRuntimes []RuntimeFunc) (types.Image, func(), error) {
-	if len(tryRuntimes) == 0 {
+func NewContainerImage(ctx context.Context, imageName string, opt types.RemoteOptions, runtimes []RuntimeFunc) (types.Image, func(), error) {
+	if len(runtimes) == 0 {
 		return nil, func() {}, xerrors.Errorf("no runtimes supplied")
 	}
 
@@ -47,7 +51,7 @@ func NewContainerImage(ctx context.Context, imageName string, opt types.RemoteOp
 		return nil, func() {}, xerrors.Errorf("failed to parse the image name: %w", err)
 	}
 
-	for _, tryRuntime := range tryRuntimes {
+	for _, tryRuntime := range runtimes {
 		img, cleanup, err := tryRuntime(ctx, imageName, ref, opt)
 		if err == nil {
 			return img, cleanup, nil
