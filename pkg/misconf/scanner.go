@@ -122,7 +122,7 @@ func newScanner(t detection.FileType, filePatterns []string, opt ScannerOption) 
 func (s *Scanner) Scan(ctx context.Context, fsys fs.FS) ([]types.Misconfiguration, error) {
 	newfs, err := s.filterFS(fsys)
 	if err != nil {
-		return nil, xerrors.Errorf("terraform fs filter error: %w", err)
+		return nil, xerrors.Errorf("fs filter error: %w", err)
 	}
 
 	results, err := s.scanner.ScanFS(ctx, newfs, ".")
@@ -150,7 +150,7 @@ func (s *Scanner) Scan(ctx context.Context, fsys fs.FS) ([]types.Misconfiguratio
 func (s *Scanner) filterFS(fsys fs.FS) (fs.FS, error) {
 	mfs, ok := fsys.(*mapfs.FS)
 	if !ok {
-		return nil, xerrors.New("filesystem type assertion error")
+		return fsys, nil
 	}
 	filter := func(path string, d fs.DirEntry) (bool, error) {
 		file, err := fsys.Open(path)
