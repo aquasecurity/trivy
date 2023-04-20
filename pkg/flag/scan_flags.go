@@ -66,12 +66,6 @@ var (
 		Value:      "https://rekor.sigstore.dev",
 		Usage:      "[EXPERIMENTAL] address of rekor STL server",
 	}
-	RuntimeFlag = Flag{
-		Name:       "runtime",
-		ConfigName: "scan.runtime",
-		Value:      types.AllRuntimes.StringSlice(),
-		Usage:      "Runtime(s) to use (docker,containerd,podman,remote)",
-	}
 )
 
 type ScanFlagGroup struct {
@@ -83,7 +77,6 @@ type ScanFlagGroup struct {
 	Slow         *Flag
 	SBOMSources  *Flag
 	RekorURL     *Flag
-	Runtimes     *Flag
 }
 
 type ScanOptions struct {
@@ -96,7 +89,6 @@ type ScanOptions struct {
 	Slow         bool
 	SBOMSources  []string
 	RekorURL     string
-	Runtimes     types.Runtimes
 }
 
 func NewScanFlagGroup() *ScanFlagGroup {
@@ -109,7 +101,6 @@ func NewScanFlagGroup() *ScanFlagGroup {
 		Slow:         &SlowFlag,
 		SBOMSources:  &SBOMSourcesFlag,
 		RekorURL:     &RekorURLFlag,
-		Runtimes:     &RuntimeFlag,
 	}
 }
 
@@ -127,7 +118,6 @@ func (f *ScanFlagGroup) Flags() []*Flag {
 		f.Slow,
 		f.SBOMSources,
 		f.RekorURL,
-		f.Runtimes,
 	}
 }
 
@@ -139,11 +129,6 @@ func (f *ScanFlagGroup) ToOptions(args []string) (ScanOptions, error) {
 	scanners, err := parseScanners(getStringSlice(f.Scanners), types.AllScanners)
 	if err != nil {
 		return ScanOptions{}, xerrors.Errorf("unable to parse scanners: %w", err)
-	}
-
-	runtimes, err := parseRuntimes(getStringSlice(f.Runtimes), types.AllRuntimes)
-	if err != nil {
-		return ScanOptions{}, xerrors.Errorf("unable to parse runtimes: %w", err)
 	}
 
 	sbomSources := getStringSlice(f.SBOMSources)
@@ -161,7 +146,6 @@ func (f *ScanFlagGroup) ToOptions(args []string) (ScanOptions, error) {
 		Slow:         getBool(f.Slow),
 		SBOMSources:  sbomSources,
 		RekorURL:     getString(f.RekorURL),
-		Runtimes:     runtimes,
 	}, nil
 }
 
@@ -175,18 +159,6 @@ func parseScanners(scanner []string, allowedScanners []types.Scanner) (types.Sca
 		scanners = append(scanners, s)
 	}
 	return scanners, nil
-}
-
-func parseRuntimes(runtime []string, allowedRuntimes types.Runtimes) (types.Runtimes, error) {
-	var runtimes types.Runtimes
-	for _, v := range runtime {
-		s := types.Runtime(v)
-		if !slices.Contains(allowedRuntimes, s) {
-			return nil, xerrors.Errorf("unknown runtime: %s", v)
-		}
-		runtimes = append(runtimes, s)
-	}
-	return runtimes, nil
 }
 
 func validateSBOMSources(sbomSources []string) error {

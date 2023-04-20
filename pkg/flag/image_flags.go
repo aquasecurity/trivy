@@ -1,6 +1,7 @@
 package flag
 
 import (
+	"golang.org/x/exp/slices"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/types"
@@ -36,6 +37,12 @@ var (
 		Value:      "",
 		Usage:      "set platform in the form os/arch if image is multi-platform capable",
 	}
+	RuntimeFlag = Flag{
+		Name:       "runtimes",
+		ConfigName: "scan.runtimes",
+		Value:      types.AllRuntimes.StringSlice(),
+		Usage:      "Runtime(s) to use, in priority order (docker,containerd,podman,remote)",
+	}
 )
 
 type ImageFlagGroup struct {
@@ -43,6 +50,7 @@ type ImageFlagGroup struct {
 	ImageConfigScanners *Flag
 	ScanRemovedPkgs     *Flag
 	Platform            *Flag
+	Runtimes            *Flag
 }
 
 type ImageOptions struct {
@@ -50,6 +58,7 @@ type ImageOptions struct {
 	ImageConfigScanners types.Scanners
 	ScanRemovedPkgs     bool
 	Platform            string
+	Runtimes            types.Runtimes
 }
 
 func NewImageFlagGroup() *ImageFlagGroup {
@@ -58,6 +67,7 @@ func NewImageFlagGroup() *ImageFlagGroup {
 		ImageConfigScanners: &ImageConfigScannersFlag,
 		ScanRemovedPkgs:     &ScanRemovedPkgsFlag,
 		Platform:            &PlatformFlag,
+		Runtimes:            &RuntimeFlag,
 	}
 }
 
@@ -66,7 +76,7 @@ func (f *ImageFlagGroup) Name() string {
 }
 
 func (f *ImageFlagGroup) Flags() []*Flag {
-	return []*Flag{f.Input, f.ImageConfigScanners, f.ScanRemovedPkgs, f.Platform}
+	return []*Flag{f.Input, f.ImageConfigScanners, f.ScanRemovedPkgs, f.Platform, f.Runtimes}
 }
 
 func (f *ImageFlagGroup) ToOptions() (ImageOptions, error) {
@@ -74,10 +84,29 @@ func (f *ImageFlagGroup) ToOptions() (ImageOptions, error) {
 	if err != nil {
 		return ImageOptions{}, xerrors.Errorf("unable to parse image config scanners: %w", err)
 	}
+
+	runtimes, err := parseRuntimes(getStringSlice(f.Runtimes), types.AllRuntimes)
+	if err != nil {
+		return ImageOptions{}, xerrors.Errorf("unable to parse runtimes: %w", err)
+	}
+
 	return ImageOptions{
 		Input:               getString(f.Input),
 		ImageConfigScanners: scanners,
 		ScanRemovedPkgs:     getBool(f.ScanRemovedPkgs),
 		Platform:            getString(f.Platform),
+		Runtimes:            runtimes,
 	}, nil
+}
+
+func parseRuntimes(runtime []string, allowedRuntimes types.Runtimes) (types.Runtimes, error) {
+	var runtimes types.Runtimes
+	for _, v := range runtime {
+		s := types.Runtime(v)
+		if !slices.Contains(allowedRuntimes, s) {
+			return nil, xerrors.Errorf("unknown runtime: %s", v)
+		}
+		runtimes = append(runtimes, s)
+	}
+	return runtimes, nil
 }
