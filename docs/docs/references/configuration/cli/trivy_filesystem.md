@@ -22,6 +22,7 @@ trivy filesystem [flags] PATH
       --cache-backend string        cache backend (e.g. redis://localhost:6379) (default "fs")
       --cache-ttl duration          cache TTL when using redis as cache backend
       --clear-cache                 clear image caches without scanning
+      --compliance string           compliance report to generate
       --config-data strings         specify paths from which data for the Rego policies will be recursively loaded
       --config-policy strings       specify paths to the Rego policy files directory, applying config files
       --custom-headers strings      custom headers in client mode
