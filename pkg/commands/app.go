@@ -295,7 +295,6 @@ func NewImageCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 func NewFilesystemCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	reportFlagGroup := flag.NewReportFlagGroup()
 	reportFlagGroup.ReportFormat = nil // TODO: support --report summary
-	reportFlagGroup.Compliance = nil   // disable '--compliance'
 	reportFlagGroup.ExitOnEOL = nil    // disable '--exit-on-eol'
 
 	fsFlags := &flag.Flags{
@@ -562,7 +561,6 @@ func NewConfigCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	reportFlagGroup.IgnorePolicy = nil   // disable '--ignore-policy'
 	reportFlagGroup.ListAllPkgs = nil    // disable '--list-all-pkgs'
 	reportFlagGroup.ReportFormat = nil   // TODO: support --report summary
-	reportFlagGroup.Compliance = nil     // disable '--compliance'
 	reportFlagGroup.ExitOnEOL = nil      // disable '--exit-on-eol'
 
 	scanFlags := &flag.ScanFlagGroup{
