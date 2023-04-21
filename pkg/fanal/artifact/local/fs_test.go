@@ -1644,3 +1644,121 @@ func TestAzureARMMisconfigurationScan(t *testing.T) {
 		})
 	}
 }
+
+func TestMixedConfigurationScan(t *testing.T) {
+	type fields struct {
+		dir string
+	}
+	tests := []struct {
+		name               string
+		fields             fields
+		putBlobExpectation cache.ArtifactCachePutBlobExpectation
+		artifactOpt        artifact.Option
+		want               types.ArtifactReference
+	}{
+		{
+			name: "single failure each within terraform and cloudformation",
+			fields: fields{
+				dir: "./testdata/misconfig/mixed/src",
+			},
+			artifactOpt: artifact.Option{
+				MisconfScannerOption: misconf.ScannerOption{
+					RegoOnly:    true,
+					Namespaces:  []string{"user"},
+					PolicyPaths: []string{"./testdata/misconfig/mixed/rego"},
+				},
+			},
+			putBlobExpectation: cache.ArtifactCachePutBlobExpectation{
+				Args: cache.ArtifactCachePutBlobArgs{
+					BlobIDAnything: true,
+					BlobInfo: types.BlobInfo{
+						SchemaVersion: 2,
+						Misconfigurations: []types.Misconfiguration{
+							{
+								FileType: "terraform",
+								FilePath: "main.tf",
+								Failures: types.MisconfResults{
+									{
+										Namespace: "user.something",
+										Query:     "data.user.something.deny",
+										Message:   "No buckets allowed!",
+										PolicyMetadata: types.PolicyMetadata{
+											ID:                 "TEST001",
+											AVDID:              "AVD-TEST-0001",
+											Type:               "Terraform Security Check",
+											Title:              "Test policy",
+											Description:        "This is a test policy.",
+											Severity:           "LOW",
+											RecommendedActions: "Have a cup of tea.",
+											References:         []string{"https://trivy.dev/"},
+										},
+										CauseMetadata: types.CauseMetadata{
+											Resource:  "aws_s3_bucket.asd",
+											Provider:  "Generic",
+											Service:   "general",
+											StartLine: 1,
+											EndLine:   3,
+										},
+									},
+								},
+							},
+							{
+								FileType: "cloudformation",
+								FilePath: "main.yaml",
+								Failures: types.MisconfResults{
+									{
+										Namespace: "user.something",
+										Query:     "data.user.something.deny",
+										Message:   "No buckets allowed!",
+										PolicyMetadata: types.PolicyMetadata{
+											ID:                 "TEST001",
+											AVDID:              "AVD-TEST-0001",
+											Type:               "CloudFormation Security Check",
+											Title:              "Test policy",
+											Description:        "This is a test policy.",
+											Severity:           "LOW",
+											RecommendedActions: "Have a cup of tea.",
+											References:         []string{"https://trivy.dev/"},
+										},
+										CauseMetadata: types.CauseMetadata{
+											Resource:  "main.yaml:3-6",
+											Provider:  "Generic",
+											Service:   "general",
+											StartLine: 3,
+											EndLine:   6,
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+				Returns: cache.ArtifactCachePutBlobReturns{},
+			},
+			want: types.ArtifactReference{
+				Name: "testdata/misconfig/mixed/src",
+				Type: types.ArtifactFilesystem,
+			},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			c := new(cache.MockArtifactCache)
+			c.ApplyPutBlobExpectation(tt.putBlobExpectation)
+			tt.artifactOpt.DisabledHandlers = []types.HandlerType{
+				types.SystemFileFilteringPostHandler,
+			}
+			a, err := NewArtifact(tt.fields.dir, c, tt.artifactOpt)
+			require.NoError(t, err)
+
+			got, err := a.Inspect(context.Background())
+			require.NoError(t, err)
+			require.NotNil(t, got)
+
+			assert.Equal(t, tt.want.Name, got.Name)
+			assert.Equal(t, tt.want.Type, got.Type)
+		})
+	}
+
+}
