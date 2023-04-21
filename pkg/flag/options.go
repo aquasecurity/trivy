@@ -122,9 +122,9 @@ func (o *Options) Align() {
 	}
 }
 
-// Remote returns options for OCI registries
-func (o *Options) Remote() ftypes.RemoteOptions {
-	return ftypes.RemoteOptions{
+// Registry returns options for OCI registries
+func (o *Options) Registry() ftypes.RegistryOptions {
+	return ftypes.RegistryOptions{
 		Credentials:   o.Credentials,
 		RegistryToken: o.RegistryToken,
 		Insecure:      o.Insecure,

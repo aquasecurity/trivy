@@ -59,7 +59,7 @@ func (a Artifact) inspectOCIReferrerSBOM(ctx context.Context) (ftypes.ArtifactRe
 	}
 
 	// Fetch referrers
-	index, err := remote.Referrers(ctx, digest, a.artifactOption.RemoteOptions)
+	index, err := remote.Referrers(ctx, digest, a.artifactOption.ImageOption.RegistryOptions)
 	if err != nil {
 		return ftypes.ArtifactReference{}, xerrors.Errorf("unable to fetch referrers: %w", err)
 	}
@@ -81,7 +81,7 @@ func (a Artifact) inspectOCIReferrerSBOM(ctx context.Context) (ftypes.ArtifactRe
 func (a Artifact) parseReferrer(ctx context.Context, repo string, desc v1.Descriptor) (ftypes.ArtifactReference, error) {
 	const fileName string = "referrer.sbom"
 	repoName := fmt.Sprintf("%s@%s", repo, desc.Digest)
-	referrer, err := oci.NewArtifact(repoName, true, a.artifactOption.RemoteOptions)
+	referrer, err := oci.NewArtifact(repoName, true, a.artifactOption.ImageOption.RegistryOptions)
 	if err != nil {
 		return ftypes.ArtifactReference{}, xerrors.Errorf("OCI error: %w", err)
 	}
