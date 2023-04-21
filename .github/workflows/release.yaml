@@ -10,7 +10,7 @@ jobs:
     uses: ./.github/workflows/reusable-release.yaml
     with:
       goreleaser_config: goreleaser.yml
-      goreleaser_options: '--rm-dist --timeout 90m'
+      goreleaser_options: '--clean --timeout 90m'
     secrets: inherit
 
   deploy-packages:

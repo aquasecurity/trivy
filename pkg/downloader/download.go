@@ -5,6 +5,7 @@ import (
 	"os"
 
 	getter "github.com/hashicorp/go-getter"
+	"golang.org/x/exp/maps"
 	"golang.org/x/xerrors"
 )
 
@@ -34,8 +35,11 @@ func Download(ctx context.Context, src, dst, pwd string) error {
 
 	var opts []getter.ClientOption
 
+	// Clone the global map so that it will not be accessed concurrently.
+	getters := maps.Clone(getter.Getters)
+
 	// Overwrite the file getter so that a file will be copied
-	getter.Getters["file"] = &getter.FileGetter{Copy: true}
+	getters["file"] = &getter.FileGetter{Copy: true}
 
 	// Build the client
 	client := &getter.Client{
@@ -43,7 +47,7 @@ func Download(ctx context.Context, src, dst, pwd string) error {
 		Src:     src,
 		Dst:     dst,
 		Pwd:     pwd,
-		Getters: getter.Getters,
+		Getters: getters,
 		Mode:    getter.ClientModeAny,
 		Options: opts,
 	}

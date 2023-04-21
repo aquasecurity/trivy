@@ -118,7 +118,7 @@ func getRuleIndex(id string, indexes map[string]int) int {
 	}
 }
 
-func (sw SarifWriter) Write(report types.Report) error {
+func (sw *SarifWriter) Write(report types.Report) error {
 	sarifReport, err := sarif.New(sarif.Version210)
 	if err != nil {
 		return xerrors.Errorf("error creating a new sarif template: %w", err)
@@ -127,6 +127,13 @@ func (sw SarifWriter) Write(report types.Report) error {
 	sw.run.Tool.Driver.WithVersion(sw.Version)
 	sw.run.Tool.Driver.WithFullName("Trivy Vulnerability Scanner")
 	sw.locationCache = map[string][]location{}
+	if report.ArtifactType == ftypes.ArtifactContainerImage {
+		sw.run.Properties = sarif.Properties{
+			"imageName":   report.ArtifactName,
+			"repoTags":    report.Metadata.RepoTags,
+			"repoDigests": report.Metadata.RepoDigests,
+		}
+	}
 
 	ruleIndexes := map[string]int{}
 	for _, res := range report.Results {
@@ -288,7 +295,7 @@ func ToPathUri(input string, resultClass types.ResultClass) string {
 	return strings.ReplaceAll(input, "\\", "/")
 }
 
-func (sw SarifWriter) getLocations(name, version, path string, pkgs []ftypes.Package) []location {
+func (sw *SarifWriter) getLocations(name, version, path string, pkgs []ftypes.Package) []location {
 	id := fmt.Sprintf("%s@%s@%s", path, name, version)
 	locs, ok := sw.locationCache[id]
 	if !ok {

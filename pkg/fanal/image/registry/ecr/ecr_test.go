@@ -30,7 +30,7 @@ func TestCheckOptions(t *testing.T) {
 
 	for testname, v := range tests {
 		a := &ECR{}
-		err := a.CheckOptions(v.domain, types.RemoteOptions{})
+		err := a.CheckOptions(v.domain, types.RegistryOptions{})
 		if err != nil {
 			if !errors.Is(err, v.wantErr) {
 				t.Errorf("[%s]\nexpected error based on %v\nactual : %v", testname, v.wantErr, err)

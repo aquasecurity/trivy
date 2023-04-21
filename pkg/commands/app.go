@@ -518,10 +518,11 @@ func NewClientCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 
 func NewServerCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	serverFlags := &flag.Flags{
-		CacheFlagGroup:  flag.NewCacheFlagGroup(),
-		DBFlagGroup:     flag.NewDBFlagGroup(),
-		ModuleFlagGroup: flag.NewModuleFlagGroup(),
-		RemoteFlagGroup: flag.NewServerFlags(),
+		CacheFlagGroup:    flag.NewCacheFlagGroup(),
+		DBFlagGroup:       flag.NewDBFlagGroup(),
+		ModuleFlagGroup:   flag.NewModuleFlagGroup(),
+		RemoteFlagGroup:   flag.NewServerFlags(),
+		RegistryFlagGroup: flag.NewRegistryFlagGroup(),
 	}
 
 	cmd := &cobra.Command{
@@ -759,7 +760,7 @@ func NewModuleCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 				if err != nil {
 					return xerrors.Errorf("flag error: %w", err)
 				}
-				return module.Install(cmd.Context(), opts.ModuleDir, repo, opts.Quiet, opts.Remote())
+				return module.Install(cmd.Context(), opts.ModuleDir, repo, opts.Quiet, opts.Registry())
 			},
 		},
 		&cobra.Command{

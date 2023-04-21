@@ -53,7 +53,7 @@ func (_m *MockOperation) ApplyDownloadExpectations(expectations []OperationDownl
 }
 
 // Download provides a mock function with given fields: ctx, dst
-func (_m *MockOperation) Download(ctx context.Context, dst string, opt types.RemoteOptions) error {
+func (_m *MockOperation) Download(ctx context.Context, dst string, opt types.RegistryOptions) error {
 	ret := _m.Called(ctx, dst, opt)
 
 	var r0 error

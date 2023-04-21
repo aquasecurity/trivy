@@ -182,6 +182,11 @@
         "ROOTPATH": {
           "uri": "file:///"
         }
+      },
+      "properties": {
+        "imageName": "testdata/fixtures/images/alpine-310.tar.gz",
+        "repoDigests": null,
+        "repoTags": null
       }
     }
   ]

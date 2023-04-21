@@ -22,7 +22,7 @@ type ECR struct {
 	Client ecriface.ECRAPI
 }
 
-func getSession(option types.RemoteOptions) (*session.Session, error) {
+func getSession(option types.RegistryOptions) (*session.Session, error) {
 	// create custom credential information if option is valid
 	if option.AWSSecretKey != "" && option.AWSAccessKey != "" && option.AWSRegion != "" {
 		return session.NewSessionWithOptions(
@@ -45,7 +45,7 @@ func getSession(option types.RemoteOptions) (*session.Session, error) {
 	})
 }
 
-func (e *ECR) CheckOptions(domain string, option types.RemoteOptions) error {
+func (e *ECR) CheckOptions(domain string, option types.RegistryOptions) error {
 	if !strings.HasSuffix(domain, ecrURL) {
 		return xerrors.Errorf("ECR : %w", types.InvalidURLPattern)
 	}

@@ -8,6 +8,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/detector/ospkg/alma"
 	"github.com/aquasecurity/trivy/pkg/detector/ospkg/alpine"
 	"github.com/aquasecurity/trivy/pkg/detector/ospkg/amazon"
+	"github.com/aquasecurity/trivy/pkg/detector/ospkg/chainguard"
 	"github.com/aquasecurity/trivy/pkg/detector/ospkg/debian"
 	"github.com/aquasecurity/trivy/pkg/detector/ospkg/mariner"
 	"github.com/aquasecurity/trivy/pkg/detector/ospkg/oracle"
@@ -42,6 +43,7 @@ var (
 		fos.SLES:         suse.NewScanner(suse.SUSEEnterpriseLinux),
 		fos.Photon:       photon.NewScanner(),
 		fos.Wolfi:        wolfi.NewScanner(),
+		fos.Chainguard:   chainguard.NewScanner(),
 	}
 )
 

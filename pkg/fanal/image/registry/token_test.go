@@ -14,7 +14,7 @@ import (
 func TestGetToken(t *testing.T) {
 	type args struct {
 		domain string
-		opt    types.RemoteOptions
+		opt    types.RegistryOptions
 	}
 	tests := []struct {
 		name     string

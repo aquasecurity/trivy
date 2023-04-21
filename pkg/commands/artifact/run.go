@@ -19,6 +19,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer/config"
 	"github.com/aquasecurity/trivy/pkg/fanal/artifact"
 	"github.com/aquasecurity/trivy/pkg/fanal/cache"
+	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/flag"
 	"github.com/aquasecurity/trivy/pkg/javadb"
 	"github.com/aquasecurity/trivy/pkg/log"
@@ -126,7 +127,7 @@ func NewRunner(ctx context.Context, cliOptions flag.Options, opts ...runnerOptio
 	}
 
 	// Update the vulnerability database if needed.
-	if err := r.initDB(cliOptions); err != nil {
+	if err := r.initDB(ctx, cliOptions); err != nil {
 		return nil, xerrors.Errorf("DB error: %w", err)
 	}
 
@@ -302,7 +303,7 @@ func (r *runner) Report(opts flag.Options, report types.Report) error {
 	return nil
 }
 
-func (r *runner) initDB(opts flag.Options) error {
+func (r *runner) initDB(ctx context.Context, opts flag.Options) error {
 	if err := r.initJavaDB(opts); err != nil {
 		return err
 	}
@@ -314,7 +315,7 @@ func (r *runner) initDB(opts flag.Options) error {
 
 	// download the database file
 	noProgress := opts.Quiet || opts.NoProgress
-	if err := operation.DownloadDB(opts.AppVersion, opts.CacheDir, opts.DBRepository, noProgress, opts.SkipDBUpdate, opts.Remote()); err != nil {
+	if err := operation.DownloadDB(ctx, opts.AppVersion, opts.CacheDir, opts.DBRepository, noProgress, opts.SkipDBUpdate, opts.Registry()); err != nil {
 		return err
 	}
 
@@ -615,8 +616,6 @@ func initScannerConfig(opts flag.Options, cacheClient cache.Cache) (ScannerConfi
 		fileChecksum = true
 	}
 
-	remoteOpts := opts.Remote()
-
 	return ScannerConfig{
 		Target:             target,
 		ArtifactCache:      cacheClient,
@@ -633,18 +632,25 @@ func initScannerConfig(opts flag.Options, cacheClient cache.Cache) (ScannerConfi
 			FilePatterns:      opts.FilePatterns,
 			Offline:           opts.OfflineScan,
 			NoProgress:        opts.NoProgress || opts.Quiet,
+			Insecure:          opts.Insecure,
 			RepoBranch:        opts.RepoBranch,
 			RepoCommit:        opts.RepoCommit,
 			RepoTag:           opts.RepoTag,
 			SBOMSources:       opts.SBOMSources,
 			RekorURL:          opts.RekorURL,
 			Platform:          opts.Platform,
+			DockerHost:        opts.DockerHost,
 			Slow:              opts.Slow,
 			AWSRegion:         opts.Region,
 			FileChecksum:      fileChecksum,
 
-			// For OCI registries
-			RemoteOptions: remoteOpts,
+			// For image scanning
+			ImageOption: ftypes.ImageOptions{
+				RegistryOptions: opts.Registry(),
+				DockerOptions: ftypes.DockerOptions{
+					Host: opts.DockerHost,
+				},
+			},
 
 			// For misconfiguration scanning
 			MisconfScannerOption: configScannerOptions,
