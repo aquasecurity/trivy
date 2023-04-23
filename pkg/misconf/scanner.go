@@ -123,6 +123,9 @@ func (s *Scanner) Scan(ctx context.Context, fsys fs.FS) ([]types.Misconfiguratio
 	newfs, err := s.filterFS(fsys)
 	if err != nil {
 		return nil, xerrors.Errorf("fs filter error: %w", err)
+	} else if newfs == nil {
+		// Skip scanning if no relevant files are found
+		return nil, nil
 	}
 
 	results, err := s.scanner.ScanFS(ctx, newfs, ".")
@@ -150,8 +153,11 @@ func (s *Scanner) Scan(ctx context.Context, fsys fs.FS) ([]types.Misconfiguratio
 func (s *Scanner) filterFS(fsys fs.FS) (fs.FS, error) {
 	mfs, ok := fsys.(*mapfs.FS)
 	if !ok {
+		// Unable to filter this filesystem
 		return fsys, nil
 	}
+
+	var foundRelevantFile bool
 	filter := func(path string, d fs.DirEntry) (bool, error) {
 		file, err := fsys.Open(path)
 		if err != nil {
@@ -166,11 +172,15 @@ func (s *Scanner) filterFS(fsys fs.FS) (fs.FS, error) {
 		if !s.hasFilePattern && !detection.IsType(path, rs, s.fileType) {
 			return true, nil
 		}
+		foundRelevantFile = true
 		return false, nil
 	}
 	newfs, err := mfs.FilterFunc(filter)
 	if err != nil {
 		return nil, xerrors.Errorf("fs filter error: %w", err)
+	}
+	if !foundRelevantFile {
+		return nil, nil
 	}
 	return newfs, nil
 }
