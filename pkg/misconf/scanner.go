@@ -128,6 +128,7 @@ func (s *Scanner) Scan(ctx context.Context, fsys fs.FS) ([]types.Misconfiguratio
 		return nil, nil
 	}
 
+	log.Logger.Debugf("Scanning %s files for misconfigurations...", s.scanner.Name())
 	results, err := s.scanner.ScanFS(ctx, newfs, ".")
 	if err != nil {
 		if _, ok := err.(*cfparser.InvalidContentError); ok {
