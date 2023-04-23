@@ -84,10 +84,14 @@ func (r MisconfResults) Less(i, j int) bool {
 	switch {
 	case r[i].Type != r[j].Type:
 		return r[i].Type < r[j].Type
+	case r[i].AVDID != r[j].AVDID:
+		return r[i].AVDID < r[j].AVDID
 	case r[i].ID != r[j].ID:
 		return r[i].ID < r[j].ID
 	case r[i].Severity != r[j].Severity:
 		return r[i].Severity < r[j].Severity
+	case r[i].Resource != r[j].Resource:
+		return r[i].Resource < r[j].Resource
 	}
 	return r[i].Message < r[j].Message
 }
