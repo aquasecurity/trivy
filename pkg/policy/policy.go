@@ -79,7 +79,7 @@ func NewClient(cacheDir string, quiet bool, opts ...Option) (*Client, error) {
 func (c *Client) populateOCIArtifact() error {
 	if c.artifact == nil {
 		repo := fmt.Sprintf("%s:%d", bundleRepository, bundleVersion)
-		art, err := oci.NewArtifact(repo, c.quiet, types.RemoteOptions{})
+		art, err := oci.NewArtifact(repo, c.quiet, types.RegistryOptions{})
 		if err != nil {
 			return xerrors.Errorf("OCI artifact error: %w", err)
 		}

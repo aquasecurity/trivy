@@ -193,6 +193,15 @@ image:
   # Same as '--removed-pkgs'
   # Default is false
   removed-pkgs: false
+  
+  # Same as '--platform'
+  # Default is empty
+  platform: 
+  
+  docker:
+    # Same as '--docker-host'
+    # Default is empty
+    host: 
 ```
 
 ## Vulnerability Options

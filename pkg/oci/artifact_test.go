@@ -118,7 +118,7 @@ func TestArtifact_Download(t *testing.T) {
 				},
 			}, nil)
 
-			artifact, err := oci.NewArtifact("repo", true, ftypes.RemoteOptions{}, oci.WithImage(img))
+			artifact, err := oci.NewArtifact("repo", true, ftypes.RegistryOptions{}, oci.WithImage(img))
 			require.NoError(t, err)
 
 			err = artifact.Download(context.Background(), tempDir, oci.DownloadOption{

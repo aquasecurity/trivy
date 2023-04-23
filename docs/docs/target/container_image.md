@@ -482,3 +482,9 @@ Total: 1 (UNKNOWN: 0, LOW: 0, MEDIUM: 0, HIGH: 0, CRITICAL: 1)
 
 </details>
 
+### Configure Docker daemon socket to connect to.
+You can configure Docker daemon socket with `DOCKER_HOST` or `--docker-host`.
+
+```shell
+$ trivy image --docker-host tcp://127.0.0.1:2375 YOUR_IMAGE
+```

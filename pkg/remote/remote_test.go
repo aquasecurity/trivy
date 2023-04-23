@@ -62,7 +62,7 @@ func TestGet(t *testing.T) {
 	type args struct {
 		imageName string
 		config    string
-		option    types.RemoteOptions
+		option    types.RegistryOptions
 	}
 	tests := []struct {
 		name    string
@@ -74,7 +74,7 @@ func TestGet(t *testing.T) {
 			name: "single credential",
 			args: args{
 				imageName: fmt.Sprintf("%s/library/alpine:3.10", serverAddr),
-				option: types.RemoteOptions{
+				option: types.RegistryOptions{
 					Credentials: []types.Credential{
 						{
 							Username: "test",
@@ -89,7 +89,7 @@ func TestGet(t *testing.T) {
 			name: "multiple credential",
 			args: args{
 				imageName: fmt.Sprintf("%s/library/alpine:3.10", serverAddr),
-				option: types.RemoteOptions{
+				option: types.RegistryOptions{
 					Credentials: []types.Credential{
 						{
 							Username: "foo",
@@ -109,7 +109,7 @@ func TestGet(t *testing.T) {
 			args: args{
 				imageName: fmt.Sprintf("%s/library/alpine:3.10", serverAddr),
 				config:    fmt.Sprintf(`{"auths": {"%s": {"auth": %q}}}`, serverAddr, encode("test", "testpass")),
-				option: types.RemoteOptions{
+				option: types.RegistryOptions{
 					Insecure: true,
 				},
 			},
@@ -118,7 +118,7 @@ func TestGet(t *testing.T) {
 			name: "platform",
 			args: args{
 				imageName: fmt.Sprintf("%s/library/alpine:3.10", serverAddr),
-				option: types.RemoteOptions{
+				option: types.RegistryOptions{
 					Credentials: []types.Credential{
 						{
 							Username: "test",
@@ -134,7 +134,7 @@ func TestGet(t *testing.T) {
 			name: "bad credential",
 			args: args{
 				imageName: fmt.Sprintf("%s/library/alpine:3.10", serverAddr),
-				option: types.RemoteOptions{
+				option: types.RegistryOptions{
 					Credentials: []types.Credential{
 						{
 							Username: "foo",
@@ -151,7 +151,7 @@ func TestGet(t *testing.T) {
 			args: args{
 				imageName: fmt.Sprintf("%s/library/alpine:3.10", serverAddr),
 				config:    fmt.Sprintf(`{"auths": {"%s": {"auth": %q}}}`, serverAddr, encode("foo", "bar")),
-				option: types.RemoteOptions{
+				option: types.RegistryOptions{
 					Insecure: true,
 				},
 			},
