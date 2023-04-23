@@ -37,8 +37,23 @@ type FilterOption struct {
 	VEXPath            string
 }
 
-// Filter filters out the vulnerabilities
-func Filter(ctx context.Context, result *types.Result, opt FilterOption) error {
+// Filter filters out the report
+func Filter(ctx context.Context, report types.Report, opt FilterOption) error {
+	// Filter out vulnerabilities based on the given VEX document.
+	if err := filterByVEX(report, opt); err != nil {
+		return xerrors.Errorf("VEX error: %w", err)
+	}
+
+	for i := range report.Results {
+		if err := FilterResult(ctx, &report.Results[i], opt); err != nil {
+			return xerrors.Errorf("unable to filter vulnerabilities: %w", err)
+		}
+	}
+	return nil
+}
+
+// FilterResult filters out the result
+func FilterResult(ctx context.Context, result *types.Result, opt FilterOption) error {
 	ignoredIDs := getIgnoredIDs(opt.IgnoreFile)
 
 	filteredVulns := filterVulnerabilities(result.Vulnerabilities, opt.Severities, opt.IgnoreUnfixed, ignoredIDs, opt.VEXPath)
@@ -64,36 +79,29 @@ func Filter(ctx context.Context, result *types.Result, opt FilterOption) error {
 
 // filterByVEX determines whether a detected vulnerability should be filtered out based on the provided VEX document.
 // If the VEX document is not nil and the vulnerability is either not affected or fixed according to the VEX statement,
-// the function returns true, indicating the vulnerability should be filtered out.
-func filterByVEX(vuln types.DetectedVulnerability, vexDoc vex.VEX) bool {
-	if vexDoc == nil {
-		return false
+// the vulnerability is filtered out.
+func filterByVEX(report types.Report, opt FilterOption) error {
+	vexDoc, err := vex.New(opt.VEXPath, report)
+	if err != nil {
+		return err
+	} else if vexDoc == nil {
+		return nil
 	}
-	stmt := vexDoc.Statement(vuln.VulnerabilityID)
-	if slices.Contains(stmt.Affects, vuln.PkgRef) &&
-		(stmt.Status == vex.StatusNotAffected || stmt.Status == vex.StatusFixed) {
-		log.Logger.Infof("Filtered out %s according to VEX: status: %s, justification: %s",
-			vuln.VulnerabilityID, stmt.Status, stmt.Justification)
-		return true
+
+	for i, result := range report.Results {
+		if len(result.Vulnerabilities) == 0 {
+			continue
+		}
+		report.Results[i].Vulnerabilities = vexDoc.Filter(result.Vulnerabilities)
 	}
-	return false
+	return nil
 }
 
 func filterVulnerabilities(vulns []types.DetectedVulnerability, severities []dbTypes.Severity, ignoreUnfixed bool,
 	ignoredIDs []string, vexPath string) []types.DetectedVulnerability {
 	uniqVulns := make(map[string]types.DetectedVulnerability)
 
-	// Parse VEX if passed
-	vexDoc, err := vex.Open(vexPath)
-	if err != nil {
-		log.Logger.Warnf("VEX error: %s", err)
-	}
-
 	for _, vuln := range vulns {
-		if filterByVEX(vuln, vexDoc) {
-			continue
-		}
-
 		if vuln.Severity == "" {
 			vuln.Severity = dbTypes.SeverityUnknown.String()
 		}

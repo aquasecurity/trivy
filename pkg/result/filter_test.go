@@ -724,7 +724,7 @@ func TestClient_Filter(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			err := result.Filter(context.Background(), &tt.args.result, result.FilterOption{
+			err := result.FilterResult(context.Background(), &tt.args.result, result.FilterOption{
 				Severities:     tt.args.severities,
 				IgnoreUnfixed:  tt.args.ignoreUnfixed,
 				IgnoreFile:     tt.args.ignoreFile,
