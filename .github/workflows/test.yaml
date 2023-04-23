@@ -50,6 +50,7 @@ jobs:
         uses: aquaproj/aqua-installer@v2.0.2
         with:
           aqua_version: v1.25.0
+          aqua_opts: ""
 
       - name: Check if CLI references are up-to-date
         run: |
