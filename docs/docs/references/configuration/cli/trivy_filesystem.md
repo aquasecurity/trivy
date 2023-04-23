@@ -59,7 +59,7 @@ trivy filesystem [flags] PATH
       --redis-tls                   enable redis TLS with public certificates, if using redis as cache backend
       --registry-token string       registry token
       --rekor-url string            [EXPERIMENTAL] address of rekor STL server (default "https://rekor.sigstore.dev")
-      --report string               specify a report format for the output. (all,summary) (default "all")
+      --report string               specify a compliance report format for the output. (all,summary) (default "all")
       --reset                       remove all caches and database
       --sbom-sources strings        [EXPERIMENTAL] try to retrieve SBOM from the specified sources (oci,rekor)
       --scanners strings            comma-separated list of what security issues to detect (vuln,config,secret,license) (default [vuln,secret])

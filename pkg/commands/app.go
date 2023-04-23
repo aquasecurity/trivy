@@ -294,6 +294,9 @@ func NewImageCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 
 func NewFilesystemCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	reportFlagGroup := flag.NewReportFlagGroup()
+	reportFormat := flag.ReportFormatFlag
+	reportFormat.Usage = "specify a compliance report format for the output. (all,summary)" //@TODO: support --report summary for non compliance reports
+	reportFlagGroup.ReportFormat = &reportFormat
 	reportFlagGroup.ExitOnEOL = nil // disable '--exit-on-eol'
 
 	fsFlags := &flag.Flags{
@@ -560,6 +563,9 @@ func NewConfigCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	reportFlagGroup.IgnorePolicy = nil   // disable '--ignore-policy'
 	reportFlagGroup.ListAllPkgs = nil    // disable '--list-all-pkgs'
 	reportFlagGroup.ExitOnEOL = nil      // disable '--exit-on-eol'
+	reportFormat := flag.ReportFormatFlag
+	reportFormat.Usage = "specify a compliance report format for the output. (all,summary)" //@TODO: support --report summary for non compliance reports
+	reportFlagGroup.ReportFormat = &reportFormat
 
 	scanFlags := &flag.ScanFlagGroup{
 		// Enable only '--skip-dirs' and '--skip-files' and disable other flags
