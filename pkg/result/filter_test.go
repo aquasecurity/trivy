@@ -13,7 +13,202 @@ import (
 	"github.com/aquasecurity/trivy/pkg/types"
 )
 
-func TestClient_Filter(t *testing.T) {
+func TestFilter(t *testing.T) {
+	type args struct {
+		report     types.Report
+		severities []dbTypes.Severity
+		vexPath    string
+	}
+	tests := []struct {
+		name string
+		args args
+		want types.Report
+	}{
+		{
+			name: "severities",
+			args: args{
+				report: types.Report{
+					Results: []types.Result{
+						{
+							Vulnerabilities: []types.DetectedVulnerability{
+								{
+									VulnerabilityID:  "CVE-2019-0001",
+									PkgName:          "foo",
+									InstalledVersion: "1.2.3",
+									FixedVersion:     "1.2.4",
+									Vulnerability: dbTypes.Vulnerability{
+										Severity: dbTypes.SeverityLow.String(),
+									},
+								},
+								{
+									VulnerabilityID:  "CVE-2019-0002",
+									PkgName:          "bar",
+									InstalledVersion: "1.2.3",
+									FixedVersion:     "1.2.4",
+									Vulnerability: dbTypes.Vulnerability{
+										Severity: dbTypes.SeverityCritical.String(),
+									},
+								},
+							},
+							Misconfigurations: []types.DetectedMisconfiguration{
+								{
+									Type:     ftypes.Kubernetes,
+									ID:       "ID100",
+									Title:    "Bad Deployment",
+									Message:  "something bad",
+									Severity: dbTypes.SeverityCritical.String(),
+									Status:   types.StatusFailure,
+								},
+								{
+									Type:     ftypes.Kubernetes,
+									ID:       "ID200",
+									Title:    "Bad Pod",
+									Message:  "something bad",
+									Severity: dbTypes.SeverityMedium.String(),
+									Status:   types.StatusPassed,
+								},
+							},
+							Secrets: []ftypes.SecretFinding{
+								{
+									RuleID:    "generic-critical-rule",
+									Severity:  dbTypes.SeverityCritical.String(),
+									Title:     "Critical Secret should pass filter",
+									StartLine: 1,
+									EndLine:   2,
+									Match:     "*****",
+								},
+								{
+									RuleID:    "generic-low-rule",
+									Severity:  dbTypes.SeverityLow.String(),
+									Title:     "Low Secret should be ignored",
+									StartLine: 3,
+									EndLine:   4,
+									Match:     "*****",
+								},
+							},
+						},
+					},
+				},
+				severities: []dbTypes.Severity{
+					dbTypes.SeverityCritical,
+				},
+			},
+			want: types.Report{
+				Results: []types.Result{
+					{
+						Vulnerabilities: []types.DetectedVulnerability{
+							{
+								VulnerabilityID:  "CVE-2019-0002",
+								PkgName:          "bar",
+								InstalledVersion: "1.2.3",
+								FixedVersion:     "1.2.4",
+								Vulnerability: dbTypes.Vulnerability{
+									Severity: dbTypes.SeverityCritical.String(),
+								},
+							},
+						},
+						MisconfSummary: &types.MisconfSummary{
+							Successes:  0,
+							Failures:   1,
+							Exceptions: 0,
+						},
+						Misconfigurations: []types.DetectedMisconfiguration{
+							{
+								Type:     ftypes.Kubernetes,
+								ID:       "ID100",
+								Title:    "Bad Deployment",
+								Message:  "something bad",
+								Severity: dbTypes.SeverityCritical.String(),
+								Status:   types.StatusFailure,
+							},
+						},
+						Secrets: []ftypes.SecretFinding{
+							{
+								RuleID:    "generic-critical-rule",
+								Severity:  dbTypes.SeverityCritical.String(),
+								Title:     "Critical Secret should pass filter",
+								StartLine: 1,
+								EndLine:   2,
+								Match:     "*****",
+							},
+						},
+					},
+				},
+			},
+		},
+		{
+			name: "filter by VEX",
+			args: args{
+				report: types.Report{
+					Results: types.Results{
+						types.Result{
+							Vulnerabilities: []types.DetectedVulnerability{
+								{
+									VulnerabilityID:  "CVE-2019-0001",
+									PkgName:          "foo",
+									PkgRef:           "pkg:golang/github.com/aquasecurity/foo@1.2.3",
+									InstalledVersion: "1.2.3",
+									FixedVersion:     "1.2.4",
+									Vulnerability: dbTypes.Vulnerability{
+										Severity: dbTypes.SeverityLow.String(),
+									},
+								},
+								{
+									VulnerabilityID:  "CVE-2019-0001",
+									PkgName:          "bar",
+									PkgRef:           "pkg:golang/github.com/aquasecurity/bar@1.2.3",
+									InstalledVersion: "1.2.3",
+									FixedVersion:     "1.2.4",
+									Vulnerability: dbTypes.Vulnerability{
+										Severity: dbTypes.SeverityCritical.String(),
+									},
+								},
+							},
+						},
+					},
+				},
+				severities: []dbTypes.Severity{
+					dbTypes.SeverityCritical,
+					dbTypes.SeverityHigh,
+					dbTypes.SeverityMedium,
+					dbTypes.SeverityLow,
+					dbTypes.SeverityUnknown,
+				},
+				vexPath: "testdata/openvex.json",
+			},
+			want: types.Report{
+				Results: types.Results{
+					types.Result{
+						Vulnerabilities: []types.DetectedVulnerability{
+							{
+								VulnerabilityID:  "CVE-2019-0001",
+								PkgName:          "bar",
+								PkgRef:           "pkg:golang/github.com/aquasecurity/bar@1.2.3",
+								InstalledVersion: "1.2.3",
+								FixedVersion:     "1.2.4",
+								Vulnerability: dbTypes.Vulnerability{
+									Severity: dbTypes.SeverityCritical.String(),
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			err := result.Filter(context.Background(), tt.args.report, result.FilterOption{
+				Severities: tt.args.severities,
+				VEXPath:    tt.args.vexPath,
+			})
+			require.NoError(t, err)
+			assert.Equal(t, tt.want, tt.args.report)
+		})
+	}
+
+}
+func TestFilterResult(t *testing.T) {
 	type args struct {
 		result         types.Result
 		severities     []dbTypes.Severity
@@ -21,7 +216,6 @@ func TestClient_Filter(t *testing.T) {
 		ignoreFile     string
 		policyFile     string
 		ignoreLicenses []string
-		vexPath        string
 	}
 	tests := []struct {
 		name               string
@@ -672,55 +866,6 @@ func TestClient_Filter(t *testing.T) {
 				},
 			},
 		},
-		{
-			name: "filter by VEX",
-			args: args{
-				result: types.Result{
-					Vulnerabilities: []types.DetectedVulnerability{
-						{
-							VulnerabilityID:  "CVE-2019-0001",
-							PkgName:          "foo",
-							PkgRef:           "pkg:golang/github.com/aquasecurity/foo@1.2.3",
-							InstalledVersion: "1.2.3",
-							FixedVersion:     "1.2.4",
-							Vulnerability: dbTypes.Vulnerability{
-								Severity: dbTypes.SeverityLow.String(),
-							},
-						},
-						{
-							VulnerabilityID:  "CVE-2019-0001",
-							PkgName:          "bar",
-							PkgRef:           "pkg:golang/github.com/aquasecurity/bar@1.2.3",
-							InstalledVersion: "1.2.3",
-							FixedVersion:     "1.2.4",
-							Vulnerability: dbTypes.Vulnerability{
-								Severity: dbTypes.SeverityCritical.String(),
-							},
-						},
-					},
-				},
-				severities: []dbTypes.Severity{
-					dbTypes.SeverityCritical,
-					dbTypes.SeverityHigh,
-					dbTypes.SeverityMedium,
-					dbTypes.SeverityLow,
-					dbTypes.SeverityUnknown,
-				},
-				vexPath: "testdata/openvex.json",
-			},
-			wantVulns: []types.DetectedVulnerability{
-				{
-					VulnerabilityID:  "CVE-2019-0001",
-					PkgName:          "bar",
-					PkgRef:           "pkg:golang/github.com/aquasecurity/bar@1.2.3",
-					InstalledVersion: "1.2.3",
-					FixedVersion:     "1.2.4",
-					Vulnerability: dbTypes.Vulnerability{
-						Severity: dbTypes.SeverityCritical.String(),
-					},
-				},
-			},
-		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -730,7 +875,6 @@ func TestClient_Filter(t *testing.T) {
 				IgnoreFile:     tt.args.ignoreFile,
 				PolicyFile:     tt.args.policyFile,
 				IgnoreLicenses: tt.args.ignoreLicenses,
-				VEXPath:        tt.args.vexPath,
 			})
 			require.NoError(t, err)
 			assert.Equal(t, tt.wantVulns, tt.args.result.Vulnerabilities)

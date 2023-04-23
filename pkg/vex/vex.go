@@ -40,7 +40,7 @@ type OpenVEX struct {
 	logger     *zap.SugaredLogger
 }
 
-func NewOpenVEX(cycloneDX *ftypes.CycloneDX, vex openvex.VEX) VEX {
+func newOpenVEX(cycloneDX *ftypes.CycloneDX, vex openvex.VEX) VEX {
 	logger := log.Logger.With(zap.String("VEX format", "OpenVEX"))
 
 	openvex.SortStatements(vex.Statements, lo.FromPtr(vex.Timestamp))
@@ -100,7 +100,7 @@ type CycloneDX struct {
 	logger     *zap.SugaredLogger
 }
 
-func NewCycloneDX(sbom *ftypes.CycloneDX, vex *cdx.BOM) *CycloneDX {
+func newCycloneDX(sbom *ftypes.CycloneDX, vex *cdx.BOM) *CycloneDX {
 	var stmts []Statement
 	for _, vuln := range lo.FromPtr(vex.Vulnerabilities) {
 		affects := lo.Map(lo.FromPtr(vuln.Affects), func(item cdx.Affects, index int) string {
@@ -144,7 +144,7 @@ func (v *CycloneDX) affected(vuln types.DetectedVulnerability, stmt Statement) b
 			continue
 		}
 		if v.sbom.SerialNumber != link.SerialNumber() || v.sbom.Version != link.Version() {
-			v.logger.Warnw("URN doesn't match", zap.String("serial number", link.SerialNumber()),
+			v.logger.Warnw("URN doesn't match with SBOM", zap.String("serial number", link.SerialNumber()),
 				zap.Int("version", link.Version()))
 			continue
 		}
@@ -212,7 +212,7 @@ func decodeCycloneDXJSON(r io.ReadSeeker, report types.Report) (VEX, error) {
 	if report.CycloneDX == nil {
 		return nil, xerrors.New("CycloneDX VEX can be used with CycloneDX SBOM")
 	}
-	return NewCycloneDX(report.CycloneDX, vex), nil
+	return newCycloneDX(report.CycloneDX, vex), nil
 }
 
 func decodeOpenVEX(r io.ReadSeeker, report types.Report) (VEX, error) {
@@ -229,5 +229,5 @@ func decodeOpenVEX(r io.ReadSeeker, report types.Report) (VEX, error) {
 	if openVEX.Context == "" {
 		return nil, nil
 	}
-	return NewOpenVEX(report.CycloneDX, openVEX), nil
+	return newOpenVEX(report.CycloneDX, openVEX), nil
 }

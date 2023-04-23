@@ -181,6 +181,9 @@ func filterSecrets(secrets []ftypes.SecretFinding, severities []dbTypes.Severity
 }
 
 func filterLicenses(licenses []types.DetectedLicense, severities []dbTypes.Severity, ignoredLicenses []string) []types.DetectedLicense {
+	if len(licenses) == 0 {
+		return nil
+	}
 	return lo.Filter(licenses, func(l types.DetectedLicense, _ int) bool {
 		// Skip the license if it is included in ignored licenses.
 		if slices.Contains(ignoredLicenses, l.Name) {
