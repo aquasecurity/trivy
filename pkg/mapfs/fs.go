@@ -76,7 +76,7 @@ func (m *FS) Filter(skippedFiles []string) (*FS, error) {
 }
 
 func (m *FS) FilterFunc(fn func(path string, d fs.DirEntry) (bool, error)) (*FS, error) {
-	newFS := New()
+	newFS := New(WithUnderlyingRoot(m.underlyingRoot))
 	err := fs.WalkDir(m, ".", func(path string, d fs.DirEntry, err error) error {
 		if err != nil {
 			return err
