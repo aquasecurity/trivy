@@ -5,12 +5,12 @@ import (
 	"errors"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
-	"github.com/aquasecurity/trivy/pkg/fanal/analyzer/config"
 	"github.com/aquasecurity/trivy/pkg/fanal/applier"
 	"github.com/aquasecurity/trivy/pkg/fanal/artifact"
 	"github.com/aquasecurity/trivy/pkg/fanal/artifact/local"
 	"github.com/aquasecurity/trivy/pkg/fanal/cache"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
+	"github.com/aquasecurity/trivy/pkg/misconf"
 
 	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/config/all"
 )
@@ -41,7 +41,7 @@ func NewConfigScanner(cacheDir string, policyPaths, dataPaths, namespaces []stri
 
 func (s ConfigScanner) Scan(dir string) ([]types.Misconfiguration, error) {
 	art, err := local.NewArtifact(dir, s.cache, artifact.Option{
-		MisconfScannerOption: config.ScannerOption{
+		MisconfScannerOption: misconf.ScannerOption{
 			PolicyPaths:             s.policyPaths,
 			DataPaths:               s.dataPaths,
 			Namespaces:              s.namespaces,

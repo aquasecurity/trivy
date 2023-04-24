@@ -8,8 +8,9 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/external"
-	_ "github.com/aquasecurity/trivy/pkg/fanal/handler/misconf"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
+
+	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/config/all"
 )
 
 func TestConfigScanner_Scan(t *testing.T) {

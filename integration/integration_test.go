@@ -15,13 +15,14 @@ import (
 	"time"
 
 	cdx "github.com/CycloneDX/cyclonedx-go"
-	"github.com/spdx/tools-golang/jsonloader"
+	spdxjson "github.com/spdx/tools-golang/json"
 	"github.com/spdx/tools-golang/spdx"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
 	"github.com/aquasecurity/trivy-db/pkg/db"
 	"github.com/aquasecurity/trivy-db/pkg/metadata"
+
 	"github.com/aquasecurity/trivy/pkg/commands"
 	"github.com/aquasecurity/trivy/pkg/dbtest"
 	"github.com/aquasecurity/trivy/pkg/types"
@@ -162,12 +163,12 @@ func readCycloneDX(t *testing.T, filePath string) *cdx.BOM {
 	return bom
 }
 
-func readSpdxJson(t *testing.T, filePath string) *spdx.Document2_2 {
+func readSpdxJson(t *testing.T, filePath string) *spdx.Document {
 	f, err := os.Open(filePath)
 	require.NoError(t, err)
 	defer f.Close()
 
-	bom, err := jsonloader.Load2_2(f)
+	bom, err := spdxjson.Read(f)
 	require.NoError(t, err)
 
 	sort.Slice(bom.Relationships, func(i, j int) bool {
@@ -179,7 +180,7 @@ func readSpdxJson(t *testing.T, filePath string) *spdx.Document2_2 {
 
 	// We don't compare values which change each time an SBOM is generated
 	bom.CreationInfo.Created = ""
-	bom.CreationInfo.DocumentNamespace = ""
+	bom.DocumentNamespace = ""
 
 	return bom
 }

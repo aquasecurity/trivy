@@ -1,3 +1,0 @@
-circular: &circular
-  name:
-    <<: *circular

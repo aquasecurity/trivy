@@ -1,14 +1,14 @@
 package cache
 
 import (
-	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/aquasecurity/trivy/pkg/fanal/analyzer/config"
+	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/artifact"
+	"github.com/aquasecurity/trivy/pkg/misconf"
 )
 
 func TestCalcKey(t *testing.T) {
@@ -183,7 +183,7 @@ func TestCalcKey(t *testing.T) {
 				SkipDirs:     tt.args.skipDirs,
 				FilePatterns: tt.args.patterns,
 
-				MisconfScannerOption: config.ScannerOption{
+				MisconfScannerOption: misconf.ScannerOption{
 					PolicyPaths: tt.args.policy,
 					DataPaths:   tt.args.data,
 				},
