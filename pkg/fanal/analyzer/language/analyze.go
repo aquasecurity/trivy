@@ -105,6 +105,8 @@ func toApplication(fileType, filePath, libFilePath string, r dio.ReadSeekerAt, l
 			}
 			locs = append(locs, l)
 		}
+
+		// This file path is populated for virtual file paths within archives, such as nested JAR files.
 		libPath := libFilePath
 		if lib.FilePath != "" {
 			libPath = lib.FilePath
