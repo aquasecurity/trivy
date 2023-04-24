@@ -12,7 +12,7 @@ import (
 	ftypes "github.com/aquasecurity/trivy/pkg/types"
 )
 
-type RuntimeFunc func(ctx context.Context, imageName string, ref name.Reference, option types.RemoteOptions) (types.Image, func(), error)
+type RuntimeFunc func(ctx context.Context, imageName string, ref name.Reference, option types.ImageOptions) (types.Image, func(), error)
 
 var runtimeFuncs = map[ftypes.Runtime]RuntimeFunc{
 	ftypes.ContainerdRuntime: tryContainerdDaemon,

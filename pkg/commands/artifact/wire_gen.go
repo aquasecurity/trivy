@@ -41,7 +41,7 @@ func initializeDockerScanner(ctx context.Context, imageName string, artifactCach
 	if err != nil {
 		return scanner.Scanner{}, nil, err
 	}
-	typesImage, cleanup, err := image.NewContainerImage(ctx, imageName, remoteOpt, v)
+	typesImage, cleanup, err := image.NewContainerImage(ctx, imageName, imageOpt, v)
 	if err != nil {
 		return scanner.Scanner{}, nil, err
 	}
@@ -148,7 +148,7 @@ func initializeRemoteDockerScanner(ctx context.Context, imageName string, artifa
 	if err != nil {
 		return scanner.Scanner{}, nil, err
 	}
-	typesImage, cleanup, err := image.NewContainerImage(ctx, imageName, remoteOpt, v2)
+	typesImage, cleanup, err := image.NewContainerImage(ctx, imageName, imageOpt, v2)
 	if err != nil {
 		return scanner.Scanner{}, nil, err
 	}
