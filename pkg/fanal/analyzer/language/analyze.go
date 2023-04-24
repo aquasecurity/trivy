@@ -2,7 +2,6 @@ package language
 
 import (
 	"io"
-	"path/filepath"
 	"strings"
 
 	"golang.org/x/xerrors"
@@ -108,7 +107,7 @@ func toApplication(fileType, filePath, libFilePath string, r dio.ReadSeekerAt, l
 		}
 		libPath := libFilePath
 		if lib.FilePath != "" {
-			libPath = filepath.ToSlash(lib.FilePath)
+			libPath = lib.FilePath
 		}
 		pkgs = append(pkgs, types.Package{
 			ID:        lib.ID,
