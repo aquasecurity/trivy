@@ -14,6 +14,8 @@ const (
 	commentMarker string = "#"
 	endColon      string = ";"
 	hashMarker    string = "--"
+	startExtras   string = "["
+	endExtras     string = "]"
 )
 
 type Parser struct{}
@@ -30,6 +32,7 @@ func (p *Parser) Parse(r dio.ReadSeekerAt) ([]types.Library, []types.Dependency,
 		line := scanner.Text()
 		line = strings.ReplaceAll(line, " ", "")
 		line = strings.ReplaceAll(line, `\`, "")
+		line = removeExtras(line)
 		line = rStripByKey(line, commentMarker)
 		line = rStripByKey(line, endColon)
 		line = rStripByKey(line, hashMarker)
@@ -51,6 +54,15 @@ func (p *Parser) Parse(r dio.ReadSeekerAt) ([]types.Library, []types.Dependency,
 func rStripByKey(line string, key string) string {
 	if pos := strings.Index(line, key); pos >= 0 {
 		line = strings.TrimRightFunc((line)[:pos], unicode.IsSpace)
+	}
+	return line
+}
+
+func removeExtras(line string) string {
+	startIndex := strings.Index(line, startExtras)
+	endIndex := strings.Index(line, endExtras) + 1
+	if startIndex != -1 && endIndex != -1 {
+		line = line[:startIndex] + line[endIndex:]
 	}
 	return line
 }

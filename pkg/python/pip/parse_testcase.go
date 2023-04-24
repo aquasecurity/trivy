@@ -44,4 +44,9 @@ var (
 		{Name: "oauth2-client", Version: "4.0.0"},
 		{Name: "python-gitlab", Version: "2.0.0"},
 	}
+
+	requirementsExtras = []types.Library{
+		{Name: "pyjwt", Version: "2.1.0"},
+		{Name: "celery", Version: "4.4.7"},
+	}
 )
