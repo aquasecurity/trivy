@@ -62,6 +62,13 @@ var (
 		Value:      []string{},
 		Usage:      "specify node-collector job tolerations (example: key1=value1:NoExecute,key2=value2:NoSchedule)",
 	}
+	AllNamespaces = Flag{
+		Name:       "all-namespaces",
+		ConfigName: "kubernetes.all.namespaces",
+		Shorthand:  "A",
+		Value:      false,
+		Usage:      "fetch resources from all cluster namespaces",
+	}
 )
 
 type K8sFlagGroup struct {
@@ -72,6 +79,7 @@ type K8sFlagGroup struct {
 	K8sVersion     *Flag
 	Parallel       *Flag
 	Tolerations    *Flag
+	AllNamespaces  *Flag
 }
 
 type K8sOptions struct {
@@ -82,6 +90,7 @@ type K8sOptions struct {
 	K8sVersion     string
 	Parallel       int
 	Tolerations    []corev1.Toleration
+	AllNamespaces  bool
 }
 
 func NewK8sFlagGroup() *K8sFlagGroup {
@@ -93,6 +102,7 @@ func NewK8sFlagGroup() *K8sFlagGroup {
 		K8sVersion:     &K8sVersionFlag,
 		Parallel:       &ParallelFlag,
 		Tolerations:    &TolerationsFlag,
+		AllNamespaces:  &AllNamespaces,
 	}
 }
 
@@ -109,6 +119,7 @@ func (f *K8sFlagGroup) Flags() []*Flag {
 		f.K8sVersion,
 		f.Parallel,
 		f.Tolerations,
+		f.AllNamespaces,
 	}
 }
 
@@ -133,6 +144,7 @@ func (f *K8sFlagGroup) ToOptions() (K8sOptions, error) {
 		K8sVersion:     getString(f.K8sVersion),
 		Parallel:       parallel,
 		Tolerations:    tolerations,
+		AllNamespaces:  getBool(f.AllNamespaces),
 	}, nil
 }
 

@@ -171,7 +171,7 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 				return
 			}
 
-			// Not compare the CycloneDX field
+			// Not compare the SPDX field
 			v.SPDX = nil
 
 			sort.Slice(v.Applications, func(i, j int) bool {

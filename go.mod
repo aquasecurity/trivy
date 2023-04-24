@@ -21,13 +21,12 @@ require (
 	github.com/aquasecurity/go-pep440-version v0.0.0-20210121094942-22b2f8951d46
 	github.com/aquasecurity/go-version v0.0.0-20210121072130-637058cfe492
 	github.com/aquasecurity/loading v0.0.5
-	github.com/aquasecurity/memoryfs v1.4.4
 	github.com/aquasecurity/table v1.8.0
 	github.com/aquasecurity/testdocker v0.0.0-20230111101738-e741bda259da
 	github.com/aquasecurity/tml v0.6.1
 	github.com/aquasecurity/trivy-db v0.0.0-20230411140759-3c2ee2168575
 	github.com/aquasecurity/trivy-java-db v0.0.0-20230209231723-7cddb1406728
-	github.com/aquasecurity/trivy-kubernetes v0.4.1-0.20230413111230-522e0fca9814
+	github.com/aquasecurity/trivy-kubernetes v0.4.1-0.20230420095211-019a895da295
 	github.com/aws/aws-sdk-go v1.44.234
 	github.com/aws/aws-sdk-go-v2 v1.17.7
 	github.com/aws/aws-sdk-go-v2/config v1.18.15
@@ -80,7 +79,7 @@ require (
 	github.com/secure-systems-lab/go-securesystemslib v0.5.0
 	github.com/sigstore/rekor v1.1.0
 	github.com/sosedoff/gitkit v0.3.0
-	github.com/spdx/tools-golang v0.3.1-0.20230104082527-d6f58551be3f
+	github.com/spdx/tools-golang v0.5.0
 	github.com/spf13/cast v1.5.0
 	github.com/spf13/cobra v1.6.1
 	github.com/spf13/pflag v1.0.5
@@ -136,6 +135,7 @@ require (
 	github.com/agnivade/levenshtein v1.1.1 // indirect
 	github.com/alecthomas/chroma v0.10.0 // indirect
 	github.com/alicebob/gopher-json v0.0.0-20200520072559-a9ecdc9d1d3a // indirect
+	github.com/anchore/go-struct-converter v0.0.0-20221118182256-c68fdcfa2092 // indirect
 	github.com/apparentlymart/go-cidr v1.1.0 // indirect
 	github.com/apparentlymart/go-textseg/v13 v13.0.0 // indirect
 	github.com/asaskevich/govalidator v0.0.0-20230301143203-a9d515a09cc2 // indirect
@@ -396,7 +396,3 @@ require (
 // v1.2.0 is taken from github.com/open-policy-agent/opa v0.42.0
 // v1.2.0 incompatible with github.com/docker/docker v23.0.0-rc.1+incompatible
 replace oras.land/oras-go => oras.land/oras-go v1.1.1
-
-// v0.3.1-0.20230104082527-d6f58551be3f is taken from github.com/moby/buildkit v0.11.0
-// spdx logic write on v0.3.0 and incompatible with v0.3.1-0.20230104082527-d6f58551be3f
-replace github.com/spdx/tools-golang => github.com/spdx/tools-golang v0.3.0
