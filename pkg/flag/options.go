@@ -155,6 +155,8 @@ func addFlag(cmd *cobra.Command, flag *Flag) {
 		flags.BoolP(flag.Name, flag.Shorthand, v, flag.Usage)
 	case time.Duration:
 		flags.DurationP(flag.Name, flag.Shorthand, v, flag.Usage)
+	case float64:
+		flags.Float64P(flag.Name, flag.Shorthand, v, flag.Usage)
 	}
 
 	if flag.Deprecated {
@@ -232,6 +234,10 @@ func getStringSlice(flag *Flag) []string {
 
 func getInt(flag *Flag) int {
 	return cast.ToInt(getValue(flag))
+}
+
+func getFloat(flag *Flag) float64 {
+	return cast.ToFloat64(getValue(flag))
 }
 
 func getBool(flag *Flag) bool {
