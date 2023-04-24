@@ -1,51 +1,44 @@
 package dockerfile
 
 import (
-	"context"
-	"io"
 	"os"
 	"path/filepath"
 	"strings"
 
-	"golang.org/x/xerrors"
-
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
-	"github.com/aquasecurity/trivy/pkg/fanal/types"
+	"github.com/aquasecurity/trivy/pkg/fanal/analyzer/config"
+	"github.com/aquasecurity/trivy/pkg/misconf"
 )
 
-func init() {
-	analyzer.RegisterAnalyzer(&dockerConfigAnalyzer{})
-}
-
-const version = 1
+const (
+	version      = 1
+	analyzerType = analyzer.TypeDockerfile
+)
 
 var requiredFiles = []string{"Dockerfile", "Containerfile"}
 
-type dockerConfigAnalyzer struct{}
+func init() {
+	analyzer.RegisterPostAnalyzer(analyzerType, newDockerfileConfigAnalyzer)
+}
 
-func (s dockerConfigAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInput) (*analyzer.AnalysisResult, error) {
-	b, err := io.ReadAll(input.Content)
+// dockerConfigAnalyzer is an analyzer for detecting misconfigurations in Dockerfiles.
+// It embeds config.Analyzer so it can implement analyzer.PostAnalyzer.
+type dockerConfigAnalyzer struct {
+	*config.Analyzer
+}
+
+func newDockerfileConfigAnalyzer(opts analyzer.AnalyzerOptions) (analyzer.PostAnalyzer, error) {
+	a, err := config.NewAnalyzer(analyzerType, version, misconf.NewDockerfileScanner, opts)
 	if err != nil {
-		return nil, xerrors.Errorf("failed to read %s: %w", input.FilePath, err)
+		return nil, err
 	}
-
-	return &analyzer.AnalysisResult{
-		Files: map[types.HandlerType][]types.File{
-			// It will be passed to misconfig post handler
-			types.MisconfPostHandler: {
-				{
-					Type:    types.Dockerfile,
-					Path:    input.FilePath,
-					Content: b,
-				},
-			},
-		},
-	}, nil
+	return &dockerConfigAnalyzer{Analyzer: a}, nil
 }
 
 // Required does a case-insensitive check for filePath and returns true if
 // filePath equals/startsWith/hasExtension requiredFiles
-func (s dockerConfigAnalyzer) Required(filePath string, _ os.FileInfo) bool {
+// It overrides config.Analyzer.Required().
+func (a *dockerConfigAnalyzer) Required(filePath string, _ os.FileInfo) bool {
 	base := filepath.Base(filePath)
 	ext := filepath.Ext(base)
 	for _, file := range requiredFiles {
@@ -58,12 +51,4 @@ func (s dockerConfigAnalyzer) Required(filePath string, _ os.FileInfo) bool {
 	}
 
 	return false
-}
-
-func (s dockerConfigAnalyzer) Type() analyzer.Type {
-	return analyzer.TypeDockerfile
-}
-
-func (s dockerConfigAnalyzer) Version() int {
-	return version
 }

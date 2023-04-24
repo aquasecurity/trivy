@@ -35,14 +35,14 @@ func WithRuntimes(runtimes ftypes.Runtimes) ([]RuntimeFunc, error) {
 	return funcs, nil
 }
 
-func NewContainerImage(ctx context.Context, imageName string, opt types.RemoteOptions, runtimes []RuntimeFunc) (types.Image, func(), error) {
+func NewContainerImage(ctx context.Context, imageName string, opt types.ImageOptions, runtimes []RuntimeFunc) (types.Image, func(), error) {
 	if len(runtimes) == 0 {
 		return nil, func() {}, xerrors.Errorf("no runtimes supplied")
 	}
 
 	var errs error
 	var nameOpts []name.Option
-	if opt.Insecure {
+	if opt.RegistryOptions.Insecure {
 		nameOpts = append(nameOpts, name.Insecure)
 	}
 

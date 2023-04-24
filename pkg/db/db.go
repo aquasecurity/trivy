@@ -25,7 +25,7 @@ const (
 // Operation defines the DB operations
 type Operation interface {
 	NeedsUpdate(cliVersion string, skip bool) (need bool, err error)
-	Download(ctx context.Context, dst string, opt types.RemoteOptions) (err error)
+	Download(ctx context.Context, dst string, opt types.RegistryOptions) (err error)
 }
 
 type options struct {
@@ -143,7 +143,7 @@ func (c *Client) isNewDB(meta metadata.Metadata) bool {
 }
 
 // Download downloads the DB file
-func (c *Client) Download(ctx context.Context, dst string, opt types.RemoteOptions) error {
+func (c *Client) Download(ctx context.Context, dst string, opt types.RegistryOptions) error {
 	// Remove the metadata file under the cache directory before downloading DB
 	if err := c.metadata.Delete(); err != nil {
 		log.Logger.Debug("no metadata file")
@@ -183,7 +183,7 @@ func (c *Client) updateDownloadedAt(dst string) error {
 	return nil
 }
 
-func (c *Client) initOCIArtifact(opt types.RemoteOptions) (*oci.Artifact, error) {
+func (c *Client) initOCIArtifact(opt types.RegistryOptions) (*oci.Artifact, error) {
 	if c.artifact != nil {
 		return c.artifact, nil
 	}

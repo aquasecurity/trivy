@@ -37,6 +37,12 @@ var (
 		Value:      "",
 		Usage:      "set platform in the form os/arch if image is multi-platform capable",
 	}
+	DockerHostFlag = Flag{
+		Name:       "docker-host",
+		ConfigName: "image.docker.host",
+		Value:      "",
+		Usage:      "unix domain socket path to use for docker scanning",
+	}
 	RuntimeFlag = Flag{
 		Name:       "runtimes",
 		ConfigName: "scan.runtimes",
@@ -50,6 +56,7 @@ type ImageFlagGroup struct {
 	ImageConfigScanners *Flag
 	ScanRemovedPkgs     *Flag
 	Platform            *Flag
+	DockerHost          *Flag
 	Runtimes            *Flag
 }
 
@@ -58,6 +65,7 @@ type ImageOptions struct {
 	ImageConfigScanners types.Scanners
 	ScanRemovedPkgs     bool
 	Platform            string
+	DockerHost          string
 	Runtimes            types.Runtimes
 }
 
@@ -67,6 +75,7 @@ func NewImageFlagGroup() *ImageFlagGroup {
 		ImageConfigScanners: &ImageConfigScannersFlag,
 		ScanRemovedPkgs:     &ScanRemovedPkgsFlag,
 		Platform:            &PlatformFlag,
+		DockerHost:          &DockerHostFlag,
 		Runtimes:            &RuntimeFlag,
 	}
 }
@@ -76,7 +85,14 @@ func (f *ImageFlagGroup) Name() string {
 }
 
 func (f *ImageFlagGroup) Flags() []*Flag {
-	return []*Flag{f.Input, f.ImageConfigScanners, f.ScanRemovedPkgs, f.Platform, f.Runtimes}
+	return []*Flag{
+		f.Input,
+		f.ImageConfigScanners,
+		f.ScanRemovedPkgs,
+		f.Platform,
+		f.DockerHost,
+		f.Runtimes,
+	}
 }
 
 func (f *ImageFlagGroup) ToOptions() (ImageOptions, error) {
@@ -95,6 +111,7 @@ func (f *ImageFlagGroup) ToOptions() (ImageOptions, error) {
 		ImageConfigScanners: scanners,
 		ScanRemovedPkgs:     getBool(f.ScanRemovedPkgs),
 		Platform:            getString(f.Platform),
+		DockerHost:          getString(f.DockerHost),
 		Runtimes:            runtimes,
 	}, nil
 }

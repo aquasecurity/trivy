@@ -27,6 +27,7 @@ trivy kubernetes [flags] { cluster | all | specific resources like kubectl. eg: 
 ### Options
 
 ```
+  -A, --all-namespaces              fetch resources from all cluster namespaces
       --cache-backend string        cache backend (e.g. redis://localhost:6379) (default "fs")
       --cache-ttl duration          cache TTL when using redis as cache backend
       --clear-cache                 clear image caches without scanning
@@ -49,13 +50,11 @@ trivy kubernetes [flags] { cluster | all | specific resources like kubectl. eg: 
   -h, --help                        help for kubernetes
       --ignore-policy string        specify the Rego file path to evaluate each vulnerability
       --ignore-unfixed              display only fixed vulnerabilities
-      --ignored-licenses strings    specify a list of license to ignore
       --ignorefile string           specify .trivyignore file (default ".trivyignore")
       --include-non-failures        include successes and exceptions, available with '--scanners config'
       --java-db-repository string   OCI repository to retrieve trivy-java-db from (default "ghcr.io/aquasecurity/trivy-java-db")
       --k8s-version string          specify k8s version to validate outdated api by it (example: 1.21.0)
       --kubeconfig string           specify the kubeconfig file path to use
-      --license-full                eagerly look for licenses in source code headers and license files
       --list-all-pkgs               enabling the option will output all packages regardless of vulnerability
   -n, --namespace string            specify a namespace to scan
       --no-progress                 suppress progress bar
