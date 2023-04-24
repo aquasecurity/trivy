@@ -26,7 +26,7 @@ type Descriptor = remote.Descriptor
 
 // Get is a wrapper of google/go-containerregistry/pkg/v1/remote.Get
 // so that it can try multiple authentication methods.
-func Get(ctx context.Context, ref name.Reference, option types.RemoteOptions) (*Descriptor, error) {
+func Get(ctx context.Context, ref name.Reference, option types.RegistryOptions) (*Descriptor, error) {
 	transport := httpTransport(option.Insecure)
 
 	var errs error
@@ -63,7 +63,7 @@ func Get(ctx context.Context, ref name.Reference, option types.RemoteOptions) (*
 
 // Image is a wrapper of google/go-containerregistry/pkg/v1/remote.Image
 // so that it can try multiple authentication methods.
-func Image(ctx context.Context, ref name.Reference, option types.RemoteOptions) (v1.Image, error) {
+func Image(ctx context.Context, ref name.Reference, option types.RegistryOptions) (v1.Image, error) {
 	transport := httpTransport(option.Insecure)
 
 	var errs error
@@ -87,7 +87,7 @@ func Image(ctx context.Context, ref name.Reference, option types.RemoteOptions) 
 
 // Referrers is a wrapper of google/go-containerregistry/pkg/v1/remote.Referrers
 // so that it can try multiple authentication methods.
-func Referrers(ctx context.Context, d name.Digest, option types.RemoteOptions) (*v1.IndexManifest, error) {
+func Referrers(ctx context.Context, d name.Digest, option types.RegistryOptions) (*v1.IndexManifest, error) {
 	transport := httpTransport(option.Insecure)
 
 	var errs error
@@ -121,7 +121,7 @@ func httpTransport(insecure bool) *http.Transport {
 	}
 }
 
-func authOptions(ctx context.Context, ref name.Reference, option types.RemoteOptions) []remote.Option {
+func authOptions(ctx context.Context, ref name.Reference, option types.RegistryOptions) []remote.Option {
 	var opts []remote.Option
 	for _, cred := range option.Credentials {
 		opts = append(opts, remote.WithAuth(&authn.Basic{

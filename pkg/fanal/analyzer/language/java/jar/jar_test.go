@@ -40,37 +40,37 @@ func Test_javaLibraryAnalyzer_Analyze(t *testing.T) {
 						Libraries: []types.Package{
 							{
 								Name:     "org.glassfish:javax.el",
-								FilePath: "testdata/test.war",
+								FilePath: "testdata/test.war/WEB-INF/lib/javax.el-3.0.0.jar",
 								Version:  "3.0.0",
 							},
 							{
 								Name:     "com.fasterxml.jackson.core:jackson-databind",
-								FilePath: "testdata/test.war",
+								FilePath: "testdata/test.war/WEB-INF/lib/jackson-databind-2.9.10.6.jar",
 								Version:  "2.9.10.6",
 							},
 							{
 								Name:     "com.fasterxml.jackson.core:jackson-annotations",
-								FilePath: "testdata/test.war",
+								FilePath: "testdata/test.war/WEB-INF/lib/jackson-annotations-2.9.10.jar",
 								Version:  "2.9.10",
 							},
 							{
 								Name:     "com.fasterxml.jackson.core:jackson-core",
-								FilePath: "testdata/test.war",
+								FilePath: "testdata/test.war/WEB-INF/lib/jackson-core-2.9.10.jar",
 								Version:  "2.9.10",
 							},
 							{
 								Name:     "org.slf4j:slf4j-api",
-								FilePath: "testdata/test.war",
+								FilePath: "testdata/test.war/WEB-INF/lib/slf4j-api-1.7.30.jar",
 								Version:  "1.7.30",
 							},
 							{
 								Name:     "com.cronutils:cron-utils",
-								FilePath: "testdata/test.war",
+								FilePath: "testdata/test.war/WEB-INF/lib/cron-utils-9.1.2.jar",
 								Version:  "9.1.2",
 							},
 							{
 								Name:     "org.apache.commons:commons-lang3",
-								FilePath: "testdata/test.war",
+								FilePath: "testdata/test.war/WEB-INF/lib/commons-lang3-3.11.jar",
 								Version:  "3.11",
 							},
 							{
@@ -95,7 +95,7 @@ func Test_javaLibraryAnalyzer_Analyze(t *testing.T) {
 						Libraries: []types.Package{
 							{
 								Name:     "com.fasterxml.jackson.core:jackson-core",
-								FilePath: "testdata/test.par",
+								FilePath: "testdata/test.par/lib/jackson-core-2.9.10.jar",
 								Version:  "2.9.10",
 								Digest:   "sha1:d40913470259cfba6dcc90f96bcaa9bcff1b72e0",
 							},

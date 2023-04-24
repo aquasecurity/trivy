@@ -1,5 +1,7 @@
 package analyzer
 
+import "github.com/aquasecurity/defsec/pkg/detection"
+
 type Type string
 
 const (
@@ -102,12 +104,12 @@ const (
 	// =================
 	// Structured Config
 	// =================
-	TypeYaml           Type = "yaml"
-	TypeJSON           Type = "json"
-	TypeDockerfile     Type = "dockerfile"
-	TypeTerraform      Type = "terraform"
-	TypeCloudFormation Type = "cloudFormation"
-	TypeHelm           Type = "helm"
+	TypeAzureARM       Type = Type(detection.FileTypeAzureARM)
+	TypeCloudFormation Type = Type(detection.FileTypeCloudFormation)
+	TypeDockerfile     Type = Type(detection.FileTypeDockerfile)
+	TypeHelm           Type = Type(detection.FileTypeHelm)
+	TypeKubernetes     Type = Type(detection.FileTypeKubernetes)
+	TypeTerraform      Type = Type(detection.FileTypeTerraform)
 
 	// ========
 	// License
@@ -211,11 +213,11 @@ var (
 
 	// TypeConfigFiles has all config file analyzers
 	TypeConfigFiles = []Type{
-		TypeYaml,
-		TypeJSON,
-		TypeDockerfile,
-		TypeTerraform,
+		TypeAzureARM,
 		TypeCloudFormation,
+		TypeDockerfile,
 		TypeHelm,
+		TypeKubernetes,
+		TypeTerraform,
 	}
 )

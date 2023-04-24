@@ -1,76 +1,49 @@
 package helm
 
 import (
-	"archive/tar"
-	"bytes"
-	"compress/gzip"
-	"context"
-	"errors"
-	"io"
 	"os"
 	"path/filepath"
 	"strings"
 
-	"golang.org/x/xerrors"
-
-	dio "github.com/aquasecurity/go-dep-parser/pkg/io"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
-	"github.com/aquasecurity/trivy/pkg/fanal/types"
+	"github.com/aquasecurity/trivy/pkg/fanal/analyzer/config"
+	"github.com/aquasecurity/trivy/pkg/misconf"
 )
 
+const (
+	analyzerType = analyzer.TypeHelm
+	version      = 1
+	maxTarSize   = 209_715_200 // 200MB
+)
+
+var acceptedExts = []string{".tpl", ".json", ".yml", ".yaml", ".tar", ".tgz", ".tar.gz"}
+
 func init() {
-	analyzer.RegisterAnalyzer(&helmConfigAnalyzer{})
+	analyzer.RegisterPostAnalyzer(analyzerType, newHelmConfigAnalyzer)
 }
 
-const version = 1
+// helmConfigAnalyzer is an analyzer for detecting misconfigurations in Helm charts.
+// It embeds config.Analyzer so it can implement analyzer.PostAnalyzer.
+type helmConfigAnalyzer struct {
+	*config.Analyzer
+}
 
-const maxTarSize = 209_715_200 // 200MB
-
-type helmConfigAnalyzer struct{}
-
-func (a helmConfigAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInput) (*analyzer.AnalysisResult, error) {
-	isAnArchive := false
-	if isArchive(input.FilePath) {
-		isAnArchive = true
-		if !isHelmChart(input.FilePath, input.Content) {
-			return nil, nil
-		}
-		// reset the content
-		_, err := input.Content.Seek(0, 0)
-		if err != nil {
-			return nil, err
-		}
-	}
-	b, err := io.ReadAll(input.Content)
+func newHelmConfigAnalyzer(opts analyzer.AnalyzerOptions) (analyzer.PostAnalyzer, error) {
+	a, err := config.NewAnalyzer(analyzerType, version, misconf.NewHelmScanner, opts)
 	if err != nil {
-		return nil, xerrors.Errorf("failed to read %s: %w", input.FilePath, err)
+		return nil, err
 	}
-	if !isAnArchive {
-		// if it's not an archive we need to remove the carriage returns
-		b = bytes.ReplaceAll(b, []byte("\r"), []byte(""))
-	}
-
-	return &analyzer.AnalysisResult{
-		Files: map[types.HandlerType][]types.File{
-			// it will be passed to misconfig post handler
-			types.MisconfPostHandler: {
-				{
-					Type:    types.Helm,
-					Path:    input.FilePath,
-					Content: b,
-				},
-			},
-		},
-	}, nil
+	return &helmConfigAnalyzer{Analyzer: a}, nil
 }
 
-func (a helmConfigAnalyzer) Required(filePath string, info os.FileInfo) bool {
+// Required overrides config.Analyzer.Required() and checks if the given file is a Helm chart.
+func (*helmConfigAnalyzer) Required(filePath string, info os.FileInfo) bool {
 	if info.Size() > maxTarSize {
 		// tarball is too big to be Helm chart - move on
 		return false
 	}
 
-	for _, acceptable := range []string{".tpl", ".json", ".yml", ".yaml", ".tar", ".tgz", ".tar.gz"} {
+	for _, acceptable := range acceptedExts {
 		if strings.HasSuffix(strings.ToLower(filePath), acceptable) {
 			return true
 		}
@@ -83,56 +56,5 @@ func (a helmConfigAnalyzer) Required(filePath string, info os.FileInfo) bool {
 		}
 	}
 
-	return false
-}
-
-func (helmConfigAnalyzer) Type() analyzer.Type {
-	return analyzer.TypeHelm
-}
-
-func (helmConfigAnalyzer) Version() int {
-	return version
-}
-
-func isHelmChart(path string, file dio.ReadSeekerAt) bool {
-
-	var err error
-	var fr io.Reader = file
-
-	if isGzip(path) {
-		if fr, err = gzip.NewReader(file); err != nil {
-			return false
-		}
-	}
-	tr := tar.NewReader(fr)
-
-	for {
-		header, err := tr.Next()
-		if err != nil {
-			if errors.Is(err, io.EOF) {
-				break
-			}
-			return false
-		}
-
-		if header.Typeflag == tar.TypeReg && strings.HasSuffix(header.Name, "Chart.yaml") {
-			return true
-		}
-	}
-	return false
-}
-
-func isArchive(path string) bool {
-	if strings.HasSuffix(path, ".tar") || isGzip(path) {
-		return true
-	}
-	return false
-}
-
-func isGzip(path string) bool {
-	if strings.HasSuffix(path, ".tgz") ||
-		strings.HasSuffix(path, ".tar.gz") {
-		return true
-	}
 	return false
 }
