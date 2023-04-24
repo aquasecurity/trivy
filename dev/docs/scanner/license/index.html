@@ -1604,6 +1604,13 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#configuring-classifier-confidence-level" class="md-nav__link">
+    Configuring Classifier Confidence Level
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#custom-classification" class="md-nav__link">
     Custom Classification
   </a>
@@ -3015,6 +3022,13 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#configuring-classifier-confidence-level" class="md-nav__link">
+    Configuring Classifier Confidence Level
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#custom-classification" class="md-nav__link">
     Custom Classification
   </a>
@@ -3060,6 +3074,8 @@ As those licenses may be in violation, it is recommended to check those unknown 
 <p>By default, Trivy scans licenses for packages installed by <code>apk</code>, <code>apt-get</code>, <code>dnf</code>, <code>npm</code>, <code>pip</code>, <code>gem</code>, etc.
 To enable extended license scanning, you can use <code>--license-full</code>.
 In addition to package licenses, Trivy scans source code files, Markdown documents, text files and <code>LICENSE</code> documents to identify license usage within the image or filesystem.</p>
+<p>By default, Trivy only classifies licenses that are matched with a confidence level of 0.9 or more by the classifer.
+To configure the confidence level, you can use <code>--license-confidence-level</code>. This enables us to classify licenses that might be matched with a lower confidence level by the classifer. </p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>The full license scanning is expensive. It takes a while.</p>
@@ -3231,6 +3247,24 @@ Total: <span class="m">2</span> <span class="o">(</span>HIGH: <span class="m">2<
 ├───────────────────┤         │                │          │
 │ ssl_client        │         │                │          │
 └───────────────────┴─────────┴────────────────┴──────────┘
+</code></pre></div>
+<h3 id="configuring-classifier-confidence-level">Configuring Classifier Confidence Level</h3>
+<p>You can use the <code>--license-confidence-level</code> flag to adjust the confidence level between 0.0 to 1.0 (default 0.9).
+For example, when you run the scanner with the default confidence level on <a href="https://github.com/spdx/license-list-data/tree/main/text">SPDX license list data</a>, it is able to detect only 258 licenses.</p>
+<div class="highlight"><pre><span></span><code>$ trivy fs --scanners license --license-full &lt;path/to/spdx/list/data&gt;
+<span class="m">2023</span>-04-18T10:05:13.601-0700    INFO    Full license scanning is enabled
+
+Loose File License<span class="o">(</span>s<span class="o">)</span> <span class="o">(</span>license<span class="o">)</span>
+<span class="o">===============================</span>
+Total: <span class="m">258</span> <span class="o">(</span>UNKNOWN: <span class="m">70</span>, LOW: <span class="m">90</span>, MEDIUM: <span class="m">18</span>, HIGH: <span class="m">58</span>, CRITICAL: <span class="m">22</span><span class="o">)</span>
+</code></pre></div>
+<p>However, by configuring the confidence level to 0.8, the scanner is now able to detect 282 licenses.</p>
+<div class="highlight"><pre><span></span><code>$ trivy fs --scanners license --license-full --license-confidence-level <span class="m">0</span>.8 &lt;path/to/spdx/list/data&gt;
+<span class="m">2023</span>-04-18T10:21:39.637-0700    INFO    Full license scanning is enabled
+
+Loose File License<span class="o">(</span>s<span class="o">)</span> <span class="o">(</span>license<span class="o">)</span>
+<span class="o">===============================</span>
+Total: <span class="m">282</span> <span class="o">(</span>UNKNOWN: <span class="m">81</span>, LOW: <span class="m">97</span>, MEDIUM: <span class="m">24</span>, HIGH: <span class="m">58</span>, CRITICAL: <span class="m">22</span><span class="o">)</span>
 </code></pre></div>
 <h3 id="custom-classification">Custom Classification</h3>
 <p>You can generate the default config by the <code>--generate-default-config</code> flag and customize the license classification.
