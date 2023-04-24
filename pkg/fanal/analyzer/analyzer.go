@@ -44,6 +44,7 @@ var (
 type AnalyzerOptions struct {
 	Group                Group
 	Slow                 bool
+	ThirdPartyOSPkgs     []string // To exclude these package files from system files
 	FilePatterns         []string
 	DisabledAnalyzers    []Type
 	MisconfScannerOption misconf.ScannerOption

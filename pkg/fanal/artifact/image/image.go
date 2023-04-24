@@ -54,6 +54,7 @@ func NewArtifact(img types.Image, c cache.ArtifactCache, opt artifact.Option) (a
 	a, err := analyzer.NewAnalyzerGroup(analyzer.AnalyzerOptions{
 		Group:                opt.AnalyzerGroup,
 		Slow:                 opt.Slow,
+		ThirdPartyOSPkgs:     opt.ThirdPartyOSPkgs,
 		FilePatterns:         opt.FilePatterns,
 		DisabledAnalyzers:    opt.DisabledAnalyzers,
 		MisconfScannerOption: opt.MisconfScannerOption,

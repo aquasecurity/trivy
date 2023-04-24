@@ -16,6 +16,7 @@ type Option struct {
 	DisabledHandlers  []types.HandlerType
 	SkipFiles         []string
 	SkipDirs          []string
+	ThirdPartyOSPkgs  []string
 	FilePatterns      []string
 	NoProgress        bool
 	Insecure          bool

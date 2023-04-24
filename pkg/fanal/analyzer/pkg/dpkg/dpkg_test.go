@@ -15,16 +15,18 @@ import (
 
 func Test_dpkgAnalyzer_Analyze(t *testing.T) {
 	tests := []struct {
-		name     string
-		testFile string
-		filePath string
-		want     *analyzer.AnalysisResult
-		wantErr  bool
+		name           string
+		testFile       string
+		filePath       string
+		thirdPartyPkgs []string
+		want           *analyzer.AnalysisResult
+		wantErr        bool
 	}{
 		{
-			name:     "valid",
-			testFile: "./testdata/dpkg",
-			filePath: "var/lib/dpkg/status",
+			name:           "valid",
+			testFile:       "./testdata/dpkg",
+			filePath:       "var/lib/dpkg/status",
+			thirdPartyPkgs: []string{"ubuntu-keyring"},
 			want: &analyzer.AnalysisResult{
 				PackageInfos: []types.PackageInfo{
 					{
@@ -58,7 +60,6 @@ func Test_dpkgAnalyzer_Analyze(t *testing.T) {
 									"libgnutls30@3.5.18-1ubuntu1",
 									"libseccomp2@2.3.1-2.1ubuntu4",
 									"libstdc++6@8-20180414-1ubuntu2",
-									"ubuntu-keyring@2018.02.28",
 								},
 								Maintainer: "Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>",
 								Arch:       "amd64",
@@ -1163,15 +1164,6 @@ func Test_dpkgAnalyzer_Analyze(t *testing.T) {
 								Arch:       "amd64",
 							},
 							{
-								ID:         "ubuntu-keyring@2018.02.28",
-								Name:       "ubuntu-keyring",
-								Version:    "2018.02.28",
-								SrcName:    "ubuntu-keyring",
-								SrcVersion: "2018.02.28",
-								Maintainer: "Dimitri John Ledkov <dimitri.ledkov@canonical.com>",
-								Arch:       "all",
-							},
-							{
 								ID:         "util-linux@2.31.1-0.4ubuntu3.1",
 								Name:       "util-linux",
 								Version:    "2.31.1",
@@ -1302,6 +1294,31 @@ func Test_dpkgAnalyzer_Analyze(t *testing.T) {
 				},
 			},
 		},
+		{
+			name:           "info list of third party package",
+			testFile:       "./testdata/bash.list",
+			thirdPartyPkgs: []string{"bash"},
+			filePath:       "var/lib/dpkg/info/tar.list",
+			want: &analyzer.AnalysisResult{
+				SystemInstalledFiles: []string{
+					"/bin/tar",
+					"/etc",
+					"/usr/lib/mime/packages/tar",
+					"/usr/sbin/rmt-tar",
+					"/usr/sbin/tarcat",
+					"/usr/share/doc/tar/AUTHORS",
+					"/usr/share/doc/tar/NEWS.gz",
+					"/usr/share/doc/tar/README.Debian",
+					"/usr/share/doc/tar/THANKS.gz",
+					"/usr/share/doc/tar/changelog.Debian.gz",
+					"/usr/share/doc/tar/copyright",
+					"/usr/share/man/man1/tar.1.gz",
+					"/usr/share/man/man1/tarcat.1.gz",
+					"/usr/share/man/man8/rmt-tar.8.gz",
+					"/etc/rmt",
+				},
+			},
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -1309,7 +1326,7 @@ func Test_dpkgAnalyzer_Analyze(t *testing.T) {
 			require.NoError(t, err)
 			defer f.Close()
 
-			a := dpkgAnalyzer{}
+			a := dpkgAnalyzer{ThirdPartyPkgs: tt.thirdPartyPkgs}
 			ctx := context.Background()
 			got, err := a.Analyze(ctx, analyzer.AnalysisInput{
 				FilePath: tt.filePath,

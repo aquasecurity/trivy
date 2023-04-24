@@ -629,6 +629,7 @@ func initScannerConfig(opts flag.Options, cacheClient cache.Cache) (ScannerConfi
 			DisabledAnalyzers: disabledAnalyzers(opts),
 			SkipFiles:         opts.SkipFiles,
 			SkipDirs:          opts.SkipDirs,
+			ThirdPartyOSPkgs:  opts.ThirdPartyOSPkgs,
 			FilePatterns:      opts.FilePatterns,
 			Offline:           opts.OfflineScan,
 			NoProgress:        opts.NoProgress || opts.Quiet,

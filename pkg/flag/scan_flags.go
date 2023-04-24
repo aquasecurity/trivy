@@ -66,41 +66,50 @@ var (
 		Value:      "https://rekor.sigstore.dev",
 		Usage:      "[EXPERIMENTAL] address of rekor STL server",
 	}
+	ThirdPartyOSPkgs = Flag{
+		Name:       "third-party-os-pkgs",
+		ConfigName: "scan.third-party-os-pkgs",
+		Value:      []string{},
+		Usage:      "parse files of these os packages as language packages (use GitHub and GitLab database for these files)",
+	}
 )
 
 type ScanFlagGroup struct {
-	SkipDirs     *Flag
-	SkipFiles    *Flag
-	OfflineScan  *Flag
-	Scanners     *Flag
-	FilePatterns *Flag
-	Slow         *Flag
-	SBOMSources  *Flag
-	RekorURL     *Flag
+	SkipDirs         *Flag
+	SkipFiles        *Flag
+	ThirdPartyOSPkgs *Flag
+	OfflineScan      *Flag
+	Scanners         *Flag
+	FilePatterns     *Flag
+	Slow             *Flag
+	SBOMSources      *Flag
+	RekorURL         *Flag
 }
 
 type ScanOptions struct {
-	Target       string
-	SkipDirs     []string
-	SkipFiles    []string
-	OfflineScan  bool
-	Scanners     types.Scanners
-	FilePatterns []string
-	Slow         bool
-	SBOMSources  []string
-	RekorURL     string
+	Target           string
+	SkipDirs         []string
+	SkipFiles        []string
+	ThirdPartyOSPkgs []string
+	OfflineScan      bool
+	Scanners         types.Scanners
+	FilePatterns     []string
+	Slow             bool
+	SBOMSources      []string
+	RekorURL         string
 }
 
 func NewScanFlagGroup() *ScanFlagGroup {
 	return &ScanFlagGroup{
-		SkipDirs:     &SkipDirsFlag,
-		SkipFiles:    &SkipFilesFlag,
-		OfflineScan:  &OfflineScanFlag,
-		Scanners:     &ScannersFlag,
-		FilePatterns: &FilePatternsFlag,
-		Slow:         &SlowFlag,
-		SBOMSources:  &SBOMSourcesFlag,
-		RekorURL:     &RekorURLFlag,
+		SkipDirs:         &SkipDirsFlag,
+		SkipFiles:        &SkipFilesFlag,
+		ThirdPartyOSPkgs: &ThirdPartyOSPkgs,
+		OfflineScan:      &OfflineScanFlag,
+		Scanners:         &ScannersFlag,
+		FilePatterns:     &FilePatternsFlag,
+		Slow:             &SlowFlag,
+		SBOMSources:      &SBOMSourcesFlag,
+		RekorURL:         &RekorURLFlag,
 	}
 }
 
@@ -112,6 +121,7 @@ func (f *ScanFlagGroup) Flags() []*Flag {
 	return []*Flag{
 		f.SkipDirs,
 		f.SkipFiles,
+		f.ThirdPartyOSPkgs,
 		f.OfflineScan,
 		f.Scanners,
 		f.FilePatterns,
@@ -137,15 +147,16 @@ func (f *ScanFlagGroup) ToOptions(args []string) (ScanOptions, error) {
 	}
 
 	return ScanOptions{
-		Target:       target,
-		SkipDirs:     getStringSlice(f.SkipDirs),
-		SkipFiles:    getStringSlice(f.SkipFiles),
-		OfflineScan:  getBool(f.OfflineScan),
-		Scanners:     scanners,
-		FilePatterns: getStringSlice(f.FilePatterns),
-		Slow:         getBool(f.Slow),
-		SBOMSources:  sbomSources,
-		RekorURL:     getString(f.RekorURL),
+		Target:           target,
+		SkipDirs:         getStringSlice(f.SkipDirs),
+		SkipFiles:        getStringSlice(f.SkipFiles),
+		ThirdPartyOSPkgs: getStringSlice(f.ThirdPartyOSPkgs),
+		OfflineScan:      getBool(f.OfflineScan),
+		Scanners:         scanners,
+		FilePatterns:     getStringSlice(f.FilePatterns),
+		Slow:             getBool(f.Slow),
+		SBOMSources:      sbomSources,
+		RekorURL:         getString(f.RekorURL),
 	}, nil
 }
 

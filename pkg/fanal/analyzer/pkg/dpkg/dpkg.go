@@ -12,6 +12,7 @@ import (
 
 	debVersion "github.com/knqyf263/go-deb-version"
 	"github.com/samber/lo"
+	"golang.org/x/exp/slices"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
@@ -36,11 +37,17 @@ var (
 	dpkgSrcCaptureRegexpNames = dpkgSrcCaptureRegexp.SubexpNames()
 )
 
-type dpkgAnalyzer struct{}
+type dpkgAnalyzer struct {
+	ThirdPartyPkgs []string
+}
 
-func (a dpkgAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInput) (*analyzer.AnalysisResult, error) {
+func (a *dpkgAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInput) (*analyzer.AnalysisResult, error) {
 	scanner := bufio.NewScanner(input.Content)
 	if a.isListFile(filepath.Split(input.FilePath)) {
+		// If user has marked package as third party package - we will parse files of this package as language packages
+		if a.skipThirdPartyPkg(filepath.Base(input.FilePath)) {
+			return nil, nil
+		}
 		return a.parseDpkgInfoList(scanner)
 	}
 
@@ -48,7 +55,7 @@ func (a dpkgAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInput) (
 }
 
 // parseDpkgStatus parses /var/lib/dpkg/info/*.list
-func (a dpkgAnalyzer) parseDpkgInfoList(scanner *bufio.Scanner) (*analyzer.AnalysisResult, error) {
+func (a *dpkgAnalyzer) parseDpkgInfoList(scanner *bufio.Scanner) (*analyzer.AnalysisResult, error) {
 	var installedFiles []string
 	var previous string
 	for scanner.Scan() {
@@ -82,7 +89,7 @@ func (a dpkgAnalyzer) parseDpkgInfoList(scanner *bufio.Scanner) (*analyzer.Analy
 }
 
 // parseDpkgStatus parses /var/lib/dpkg/status or /var/lib/dpkg/status/*
-func (a dpkgAnalyzer) parseDpkgStatus(filePath string, scanner *bufio.Scanner) (*analyzer.AnalysisResult, error) {
+func (a *dpkgAnalyzer) parseDpkgStatus(filePath string, scanner *bufio.Scanner) (*analyzer.AnalysisResult, error) {
 	var pkg *types.Package
 	pkgs := map[string]*types.Package{}
 	pkgIDs := map[string]string{}
@@ -118,7 +125,8 @@ func (a dpkgAnalyzer) parseDpkgStatus(filePath string, scanner *bufio.Scanner) (
 	}, nil
 }
 
-func (a dpkgAnalyzer) parseDpkgPkg(scanner *bufio.Scanner) (pkg *types.Package) {
+// nolint: gocyclo
+func (a *dpkgAnalyzer) parseDpkgPkg(scanner *bufio.Scanner) (pkg *types.Package) {
 	var (
 		name          string
 		version       string
@@ -138,6 +146,10 @@ func (a dpkgAnalyzer) parseDpkgPkg(scanner *bufio.Scanner) (pkg *types.Package) 
 		switch {
 		case strings.HasPrefix(line, "Package: "):
 			name = strings.TrimSpace(strings.TrimPrefix(line, "Package: "))
+			if slices.Contains(a.ThirdPartyPkgs, name) {
+				log.Logger.Debugf("Skipping %q as OS package. Parse files of this package as language packages", name)
+				return nil
+			}
 		case strings.HasPrefix(line, "Source: "):
 			// Source line (Optional)
 			// Gives the name of the source package
@@ -216,7 +228,7 @@ func (a dpkgAnalyzer) parseDpkgPkg(scanner *bufio.Scanner) (pkg *types.Package) 
 	return pkg
 }
 
-func (a dpkgAnalyzer) Required(filePath string, _ os.FileInfo) bool {
+func (a *dpkgAnalyzer) Required(filePath string, _ os.FileInfo) bool {
 	dir, fileName := filepath.Split(filePath)
 	if a.isListFile(dir, fileName) || filePath == statusFile {
 		return true
@@ -228,11 +240,11 @@ func (a dpkgAnalyzer) Required(filePath string, _ os.FileInfo) bool {
 	return false
 }
 
-func (a dpkgAnalyzer) pkgID(name, version string) string {
+func (a *dpkgAnalyzer) pkgID(name, version string) string {
 	return fmt.Sprintf("%s@%s", name, version)
 }
 
-func (a dpkgAnalyzer) parseStatus(line string) bool {
+func (a *dpkgAnalyzer) parseStatus(line string) bool {
 	for _, ss := range strings.Fields(strings.TrimPrefix(line, "Status: ")) {
 		if ss == "deinstall" || ss == "purge" {
 			return false
@@ -241,7 +253,7 @@ func (a dpkgAnalyzer) parseStatus(line string) bool {
 	return true
 }
 
-func (a dpkgAnalyzer) parseDepends(line string) []string {
+func (a *dpkgAnalyzer) parseDepends(line string) []string {
 	line = strings.TrimPrefix(line, "Depends: ")
 	// e.g. Depends: passwd, debconf (>= 0.5) | debconf-2.0
 
@@ -259,7 +271,7 @@ func (a dpkgAnalyzer) parseDepends(line string) []string {
 	return dependencies
 }
 
-func (a dpkgAnalyzer) trimVersionRequirement(s string) string {
+func (a *dpkgAnalyzer) trimVersionRequirement(s string) string {
 	// e.g.
 	//	libapt-pkg6.0 (>= 2.2.4) => libapt-pkg6.0
 	//	adduser => adduser
@@ -269,7 +281,7 @@ func (a dpkgAnalyzer) trimVersionRequirement(s string) string {
 	return s
 }
 
-func (a dpkgAnalyzer) consolidateDependencies(pkgs map[string]*types.Package, pkgIDs map[string]string) {
+func (a *dpkgAnalyzer) consolidateDependencies(pkgs map[string]*types.Package, pkgIDs map[string]string) {
 	for _, pkg := range pkgs {
 		// e.g. libc6 => libc6@2.31-13+deb11u4
 		pkg.DependsOn = lo.FilterMap(pkg.DependsOn, func(d string, _ int) (string, bool) {
@@ -285,7 +297,12 @@ func (a dpkgAnalyzer) consolidateDependencies(pkgs map[string]*types.Package, pk
 	}
 }
 
-func (a dpkgAnalyzer) isListFile(dir, fileName string) bool {
+func (a *dpkgAnalyzer) Init(opt analyzer.AnalyzerOptions) error {
+	a.ThirdPartyPkgs = opt.ThirdPartyOSPkgs
+	return nil
+}
+
+func (a *dpkgAnalyzer) isListFile(dir, fileName string) bool {
 	if dir != infoDir {
 		return false
 	}
@@ -293,10 +310,16 @@ func (a dpkgAnalyzer) isListFile(dir, fileName string) bool {
 	return strings.HasSuffix(fileName, ".list")
 }
 
-func (a dpkgAnalyzer) Type() analyzer.Type {
+// skipThirdPartyPkg is true when user has marked this package as third party package
+func (a *dpkgAnalyzer) skipThirdPartyPkg(fileName string) bool {
+	pkgName := strings.TrimSuffix(fileName, filepath.Ext(fileName))
+	return slices.Contains(a.ThirdPartyPkgs, pkgName)
+}
+
+func (a *dpkgAnalyzer) Type() analyzer.Type {
 	return analyzer.TypeDpkg
 }
 
-func (a dpkgAnalyzer) Version() int {
+func (a *dpkgAnalyzer) Version() int {
 	return analyzerVersion
 }
