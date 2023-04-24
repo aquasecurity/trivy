@@ -9,6 +9,7 @@ import (
 	"golang.org/x/xerrors"
 	"io"
 	"os"
+	"path"
 	"path/filepath"
 	"regexp"
 	"strings"
@@ -193,10 +194,10 @@ func (p *Parser) parseInnerJar(zf *zip.File, rootPath string) ([]types.Library, 
 	}
 
 	// build full path to inner jar
-	path := filepath.Join(rootPath, zf.Name)
+	fullPath := path.Join(rootPath, zf.Name)
 
 	// Parse jar/war/ear recursively
-	innerLibs, innerDeps, err := p.parseArtifact(path, int64(zf.UncompressedSize64), f)
+	innerLibs, innerDeps, err := p.parseArtifact(fullPath, int64(zf.UncompressedSize64), f)
 	if err != nil {
 		return nil, nil, xerrors.Errorf("failed to parse %s: %w", zf.Name, err)
 	}
