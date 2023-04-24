@@ -56,6 +56,7 @@ func NewArtifact(img types.Image, c cache.ArtifactCache, opt artifact.Option) (a
 		Slow:                 opt.Slow,
 		FilePatterns:         opt.FilePatterns,
 		DisabledAnalyzers:    opt.DisabledAnalyzers,
+		MisconfScannerOption: opt.MisconfScannerOption,
 		SecretScannerOption:  opt.SecretScannerOption,
 		LicenseScannerOption: opt.LicenseScannerOption,
 	})
@@ -327,19 +328,20 @@ func (a Artifact) inspectLayer(ctx context.Context, layerInfo LayerInfo, disable
 	result.Sort()
 
 	blobInfo := types.BlobInfo{
-		SchemaVersion:   types.BlobJSONSchemaVersion,
-		Digest:          layerDigest,
-		DiffID:          layerInfo.DiffID,
-		CreatedBy:       layerInfo.CreatedBy,
-		OpaqueDirs:      opqDirs,
-		WhiteoutFiles:   whFiles,
-		OS:              result.OS,
-		Repository:      result.Repository,
-		PackageInfos:    result.PackageInfos,
-		Applications:    result.Applications,
-		Secrets:         result.Secrets,
-		Licenses:        result.Licenses,
-		CustomResources: result.CustomResources,
+		SchemaVersion:     types.BlobJSONSchemaVersion,
+		Digest:            layerDigest,
+		DiffID:            layerInfo.DiffID,
+		CreatedBy:         layerInfo.CreatedBy,
+		OpaqueDirs:        opqDirs,
+		WhiteoutFiles:     whFiles,
+		OS:                result.OS,
+		Repository:        result.Repository,
+		PackageInfos:      result.PackageInfos,
+		Applications:      result.Applications,
+		Misconfigurations: result.Misconfigurations,
+		Secrets:           result.Secrets,
+		Licenses:          result.Licenses,
+		CustomResources:   result.CustomResources,
 
 		// For Red Hat
 		BuildInfo: result.BuildInfo,

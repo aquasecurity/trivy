@@ -27,6 +27,7 @@ trivy kubernetes [flags] { cluster | all | specific resources like kubectl. eg: 
 ### Options
 
 ```
+  -A, --all-namespaces              fetch resources from all cluster namespaces
       --cache-backend string        cache backend (e.g. redis://localhost:6379) (default "fs")
       --cache-ttl duration          cache TTL when using redis as cache backend
       --clear-cache                 clear image caches without scanning

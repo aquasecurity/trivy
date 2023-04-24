@@ -50,6 +50,13 @@ func (m *FS) Filter(skippedFiles []string) (*FS, error) {
 	if len(skippedFiles) == 0 {
 		return m, nil
 	}
+	filter := func(path string, _ fs.DirEntry) (bool, error) {
+		return slices.Contains(skippedFiles, path), nil
+	}
+	return m.FilterFunc(filter)
+}
+
+func (m *FS) FilterFunc(fn func(path string, d fs.DirEntry) (bool, error)) (*FS, error) {
 	newFS := New()
 	err := fs.WalkDir(m, ".", func(path string, d fs.DirEntry, err error) error {
 		if err != nil {
@@ -60,7 +67,9 @@ func (m *FS) Filter(skippedFiles []string) (*FS, error) {
 			return newFS.MkdirAll(path, d.Type().Perm())
 		}
 
-		if slices.Contains(skippedFiles, path) {
+		if filtered, err := fn(path, d); err != nil {
+			return err
+		} else if filtered {
 			return nil
 		}
 
@@ -68,7 +77,11 @@ func (m *FS) Filter(skippedFiles []string) (*FS, error) {
 		if err != nil {
 			return xerrors.Errorf("unable to get %s: %w", path, err)
 		}
-		return newFS.WriteFile(path, f.path)
+		// Virtual file
+		if f.underlyingPath == "" {
+			return newFS.WriteVirtualFile(path, f.data, f.stat.mode)
+		}
+		return newFS.WriteFile(path, f.underlyingPath)
 	})
 	if err != nil {
 		return nil, xerrors.Errorf("walk error", err)
@@ -102,7 +115,7 @@ func (m *FS) Stat(name string) (fs.FileInfo, error) {
 	if f.isVirtual() {
 		return &f.stat, nil
 	}
-	return os.Stat(f.path)
+	return os.Stat(f.underlyingPath)
 }
 
 // ReadDir reads the named directory
