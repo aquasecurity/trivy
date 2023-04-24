@@ -51,7 +51,6 @@ trivy sbom [flags] SBOM_PATH
       --rekor-url string            [EXPERIMENTAL] address of rekor STL server (default "https://rekor.sigstore.dev")
       --reset                       remove all caches and database
       --sbom-sources strings        [EXPERIMENTAL] try to retrieve SBOM from the specified sources (oci,rekor)
-      --scanners strings            comma-separated list of what security issues to detect (vuln,config,secret,license) (default [vuln,secret])
       --server string               server address in client mode
   -s, --severity string             severities of security issues to be displayed (comma separated) (default "UNKNOWN,LOW,MEDIUM,HIGH,CRITICAL")
       --skip-db-update              skip updating vulnerability database

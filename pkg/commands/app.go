@@ -298,6 +298,9 @@ func NewFilesystemCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	reportFlagGroup.Compliance = nil   // disable '--compliance'
 	reportFlagGroup.ExitOnEOL = nil    // disable '--exit-on-eol'
 
+	scanFlagGroup := flag.NewScanFlagGroup()
+	scanFlagGroup.ThirdPartyOSPkgs = nil // disable `--third-party-os-pkgs`
+
 	fsFlags := &flag.Flags{
 		CacheFlagGroup:         flag.NewCacheFlagGroup(),
 		DBFlagGroup:            flag.NewDBFlagGroup(),
@@ -308,7 +311,7 @@ func NewFilesystemCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 		RegistryFlagGroup:      flag.NewRegistryFlagGroup(),
 		RegoFlagGroup:          flag.NewRegoFlagGroup(),
 		ReportFlagGroup:        reportFlagGroup,
-		ScanFlagGroup:          flag.NewScanFlagGroup(),
+		ScanFlagGroup:          scanFlagGroup,
 		SecretFlagGroup:        flag.NewSecretFlagGroup(),
 		VulnerabilityFlagGroup: flag.NewVulnerabilityFlagGroup(),
 	}
@@ -412,6 +415,9 @@ func NewRepositoryCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	reportFlagGroup.Compliance = nil   // disable '--compliance'
 	reportFlagGroup.ExitOnEOL = nil    // disable '--exit-on-eol'
 
+	scanFlagGroup := flag.NewScanFlagGroup()
+	scanFlagGroup.ThirdPartyOSPkgs = nil // disable `--third-party-os-pkgs`
+
 	repoFlags := &flag.Flags{
 		CacheFlagGroup:         flag.NewCacheFlagGroup(),
 		DBFlagGroup:            flag.NewDBFlagGroup(),
@@ -422,7 +428,7 @@ func NewRepositoryCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 		RegoFlagGroup:          flag.NewRegoFlagGroup(),
 		RemoteFlagGroup:        flag.NewClientFlags(), // for client/server mode
 		ReportFlagGroup:        reportFlagGroup,
-		ScanFlagGroup:          flag.NewScanFlagGroup(),
+		ScanFlagGroup:          scanFlagGroup,
 		SecretFlagGroup:        flag.NewSecretFlagGroup(),
 		VulnerabilityFlagGroup: flag.NewVulnerabilityFlagGroup(),
 		RepoFlagGroup:          flag.NewRepoFlagGroup(),
@@ -795,6 +801,7 @@ func NewModuleCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 
 func NewKubernetesCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	scanFlags := flag.NewScanFlagGroup()
+	scanFlags.ThirdPartyOSPkgs = nil // disable `--third-party-os-pkgs`
 	scanners := flag.ScannersFlag
 	scanners.Value = fmt.Sprintf( // overwrite the default value
 		"%s,%s,%s,%s",
@@ -937,6 +944,9 @@ func NewVMCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	reportFlagGroup := flag.NewReportFlagGroup()
 	reportFlagGroup.ReportFormat = nil // TODO: support --report summary
 
+	scanFlagGroup := flag.NewScanFlagGroup()
+	scanFlagGroup.ThirdPartyOSPkgs = nil // disable `--third-party-os-pkgs`
+
 	vmFlags := &flag.Flags{
 		CacheFlagGroup:         flag.NewCacheFlagGroup(),
 		DBFlagGroup:            flag.NewDBFlagGroup(),
@@ -945,7 +955,7 @@ func NewVMCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 		ModuleFlagGroup:        flag.NewModuleFlagGroup(),
 		RemoteFlagGroup:        flag.NewClientFlags(), // for client/server mode
 		ReportFlagGroup:        reportFlagGroup,
-		ScanFlagGroup:          flag.NewScanFlagGroup(),
+		ScanFlagGroup:          scanFlagGroup,
 		SecretFlagGroup:        flag.NewSecretFlagGroup(),
 		VulnerabilityFlagGroup: flag.NewVulnerabilityFlagGroup(),
 		AWSFlagGroup: &flag.AWSFlagGroup{
@@ -1004,14 +1014,15 @@ func NewSBOMCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	reportFlagGroup.ReportFormat = nil   // TODO: support --report summary
 
 	scanFlags := flag.NewScanFlagGroup()
-	scanFlags.Scanners = nil // disable '--scanners' as it always scans for vulnerabilities
+	scanFlags.Scanners = nil         // disable '--scanners' as it always scans for vulnerabilities
+	scanFlags.ThirdPartyOSPkgs = nil // disable `--third-party-os-pkgs`
 
 	sbomFlags := &flag.Flags{
 		CacheFlagGroup:         flag.NewCacheFlagGroup(),
 		DBFlagGroup:            flag.NewDBFlagGroup(),
 		RemoteFlagGroup:        flag.NewClientFlags(), // for client/server mode
 		ReportFlagGroup:        reportFlagGroup,
-		ScanFlagGroup:          flag.NewScanFlagGroup(),
+		ScanFlagGroup:          scanFlags,
 		SBOMFlagGroup:          flag.NewSBOMFlagGroup(),
 		VulnerabilityFlagGroup: flag.NewVulnerabilityFlagGroup(),
 	}
