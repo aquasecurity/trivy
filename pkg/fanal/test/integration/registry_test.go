@@ -83,7 +83,7 @@ func TestTLSRegistry(t *testing.T) {
 		name         string
 		imageName    string
 		imageFile    string
-		option       types.ImageOptions
+		option       ftypes.ImageOptions
 		login        bool
 		expectedOS   ftypes.OS
 		expectedRepo ftypes.Repository
@@ -93,9 +93,9 @@ func TestTLSRegistry(t *testing.T) {
 			name:      "happy path",
 			imageName: "ghcr.io/aquasecurity/trivy-test-images:alpine-310",
 			imageFile: "../../../../integration/testdata/fixtures/images/alpine-310.tar.gz",
-			option: types.ImageOptions{
-				RegistryOptions: types.RegistryOptions{
-					Credentials: []types.Credential{
+			option: ftypes.ImageOptions{
+				RegistryOptions: ftypes.RegistryOptions{
+					Credentials: []ftypes.Credential{
 						{
 							Username: registryUsername,
 							Password: registryPassword,
@@ -118,8 +118,8 @@ func TestTLSRegistry(t *testing.T) {
 			name:      "happy path with docker login",
 			imageName: "ghcr.io/aquasecurity/trivy-test-images:alpine-310",
 			imageFile: "../../../../integration/testdata/fixtures/images/alpine-310.tar.gz",
-			option: types.ImageOptions{
-				RegistryOptions: types.RegistryOptions{
+			option: ftypes.ImageOptions{
+				RegistryOptions: ftypes.RegistryOptions{
 					Insecure: true,
 				},
 			},
@@ -138,9 +138,9 @@ func TestTLSRegistry(t *testing.T) {
 			name:      "sad path: tls verify",
 			imageName: "ghcr.io/aquasecurity/trivy-test-images:alpine-310",
 			imageFile: "../../../../integration/testdata/fixtures/images/alpine-310.tar.gz",
-			option: types.ImageOptions{
-				RegistryOptions: types.RegistryOptions{
-					Credentials: []types.Credential{
+			option: ftypes.ImageOptions{
+				RegistryOptions: ftypes.RegistryOptions{
+					Credentials: []ftypes.Credential{
 						{
 							Username: registryUsername,
 							Password: registryPassword,
@@ -154,8 +154,8 @@ func TestTLSRegistry(t *testing.T) {
 			name:      "sad path: no credential",
 			imageName: "ghcr.io/aquasecurity/trivy-test-images:alpine-310",
 			imageFile: "../../../../integration/testdata/fixtures/images/alpine-310.tar.gz",
-			option: types.ImageOptions{
-				RegistryOptions: types.RegistryOptions{
+			option: ftypes.ImageOptions{
+				RegistryOptions: ftypes.RegistryOptions{
 					Insecure: true,
 				},
 			},
@@ -208,7 +208,7 @@ func getRegistryURL(ctx context.Context, registryC testcontainers.Container, exp
 	return url.Parse(urlStr)
 }
 
-func analyze(ctx context.Context, imageRef string, opt types.ImageOptions) (*ftypes.ArtifactDetail, error) {
+func analyze(ctx context.Context, imageRef string, opt ftypes.ImageOptions) (*ftypes.ArtifactDetail, error) {
 	d, err := ioutil.TempDir("", "TestRegistry-*")
 	if err != nil {
 		return nil, err

@@ -13,7 +13,8 @@ import (
 )
 
 func tryRemote(ctx context.Context, imageName string, ref name.Reference, option types.ImageOptions) (types.Image, func(), error) {
-	desc, err := remote.Get(ctx, ref, option)
+
+	desc, err := remote.Get(ctx, ref, option.RegistryOptions)
 	if err != nil {
 		return nil, func() {}, err
 	}
