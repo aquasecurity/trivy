@@ -16,8 +16,7 @@ import (
 	"github.com/aquasecurity/testdocker/auth"
 	"github.com/aquasecurity/testdocker/engine"
 	"github.com/aquasecurity/testdocker/registry"
-	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
-	"github.com/aquasecurity/trivy/pkg/types"
+	"github.com/aquasecurity/trivy/pkg/fanal/types"
 )
 
 func setupEngineAndRegistry() (*httptest.Server, *httptest.Server) {
@@ -55,7 +54,7 @@ func TestNewDockerImage(t *testing.T) {
 
 	type args struct {
 		imageName string
-		option    ftypes.ImageOptions
+		option    types.ImageOptions
 	}
 	tests := []struct {
 		name            string
@@ -206,9 +205,9 @@ func TestNewDockerImage(t *testing.T) {
 			name: "happy path with insecure Docker Registry",
 			args: args{
 				imageName: fmt.Sprintf("%s/library/alpine:3.10", serverAddr),
-				option: ftypes.ImageOptions{
-					RegistryOptions: ftypes.RegistryOptions{
-						Credentials: []ftypes.Credential{
+				option: types.ImageOptions{
+					RegistryOptions: types.RegistryOptions{
+						Credentials: []types.Credential{
 							{
 								Username: "test",
 								Password: "test",
@@ -277,10 +276,8 @@ func TestNewDockerImage(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			runtimes, err := WithRuntimes(types.AllRuntimes)
-			assert.NoError(t, err)
-
-			img, cleanup, err := NewContainerImage(context.Background(), tt.args.imageName, tt.args.option, runtimes)
+			tt.args.option.Runtimes = types.AllRuntimes
+			img, cleanup, err := NewContainerImage(context.Background(), tt.args.imageName, tt.args.option)
 			defer cleanup()
 
 			if tt.wantErr {
@@ -337,7 +334,7 @@ func TestNewDockerImageWithPrivateRegistry(t *testing.T) {
 
 	type args struct {
 		imageName string
-		option    ftypes.ImageOptions
+		option    types.ImageOptions
 	}
 	tests := []struct {
 		name    string
@@ -349,9 +346,9 @@ func TestNewDockerImageWithPrivateRegistry(t *testing.T) {
 			name: "happy path with private Docker Registry",
 			args: args{
 				imageName: fmt.Sprintf("%s/library/alpine:3.10", serverAddr),
-				option: ftypes.ImageOptions{
-					RegistryOptions: ftypes.RegistryOptions{
-						Credentials: []ftypes.Credential{
+				option: types.ImageOptions{
+					RegistryOptions: types.RegistryOptions{
+						Credentials: []types.Credential{
 							{
 								Username: "test",
 								Password: "testpass",
@@ -366,8 +363,8 @@ func TestNewDockerImageWithPrivateRegistry(t *testing.T) {
 			name: "happy path with registry token",
 			args: args{
 				imageName: fmt.Sprintf("%s/library/alpine:3.10", serverAddr),
-				option: ftypes.ImageOptions{
-					RegistryOptions: ftypes.RegistryOptions{
+				option: types.ImageOptions{
+					RegistryOptions: types.RegistryOptions{
 						RegistryToken: registryToken,
 						Insecure:      true,
 					},
@@ -385,8 +382,8 @@ func TestNewDockerImageWithPrivateRegistry(t *testing.T) {
 			name: "sad path with invalid registry token",
 			args: args{
 				imageName: fmt.Sprintf("%s/library/alpine:3.11", serverAddr),
-				option: ftypes.ImageOptions{
-					RegistryOptions: ftypes.RegistryOptions{
+				option: types.ImageOptions{
+					RegistryOptions: types.RegistryOptions{
 						RegistryToken: registryToken + "invalid",
 						Insecure:      true,
 					},
@@ -397,10 +394,8 @@ func TestNewDockerImageWithPrivateRegistry(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			runtimes, err := WithRuntimes(types.AllRuntimes)
-			assert.NoError(t, err)
-
-			_, cleanup, err := NewContainerImage(context.Background(), tt.args.imageName, tt.args.option, runtimes)
+			tt.args.option.Runtimes = types.AllRuntimes
+			_, cleanup, err := NewContainerImage(context.Background(), tt.args.imageName, tt.args.option)
 			defer cleanup()
 
 			if tt.wantErr != "" {
@@ -516,7 +511,7 @@ func TestDockerPlatformArguments(t *testing.T) {
 	serverAddr := tr.Listener.Addr().String()
 
 	type args struct {
-		option ftypes.ImageOptions
+		option types.ImageOptions
 	}
 	tests := []struct {
 		name    string
@@ -527,9 +522,9 @@ func TestDockerPlatformArguments(t *testing.T) {
 		{
 			name: "happy path with valid platform",
 			args: args{
-				option: ftypes.ImageOptions{
-					RegistryOptions: ftypes.RegistryOptions{
-						Credentials: []ftypes.Credential{
+				option: types.ImageOptions{
+					RegistryOptions: types.RegistryOptions{
+						Credentials: []types.Credential{
 							{
 								Username: "test",
 								Password: "testpass",
@@ -545,11 +540,8 @@ func TestDockerPlatformArguments(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			imageName := fmt.Sprintf("%s/library/alpine:3.10", serverAddr)
-
-			runtimes, err := WithRuntimes(types.AllRuntimes)
-			assert.NoError(t, err)
-
-			_, cleanup, err := NewContainerImage(context.Background(), imageName, tt.args.option, runtimes)
+			tt.args.option.Runtimes = types.AllRuntimes
+			_, cleanup, err := NewContainerImage(context.Background(), imageName, tt.args.option)
 			defer cleanup()
 
 			if tt.wantErr != "" {

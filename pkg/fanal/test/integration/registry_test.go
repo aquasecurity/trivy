@@ -28,7 +28,6 @@ import (
 	"github.com/aquasecurity/trivy/pkg/fanal/image"
 	testdocker "github.com/aquasecurity/trivy/pkg/fanal/test/integration/docker"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
-	"github.com/aquasecurity/trivy/pkg/types"
 )
 
 const (
@@ -168,6 +167,8 @@ func TestTLSRegistry(t *testing.T) {
 			d, err := testdocker.New()
 			require.NoError(t, err)
 
+			tc.option.Runtimes = []ftypes.Runtime{ftypes.RemoteRuntime}
+
 			// 1. Load a test image from the tar file, tag it and push to the test registry.
 			err = d.ReplicateImage(ctx, tc.imageName, tc.imageFile, config)
 			require.NoError(t, err)
@@ -226,12 +227,7 @@ func analyze(ctx context.Context, imageRef string, opt ftypes.ImageOptions) (*ft
 	}
 	cli.NegotiateAPIVersion(ctx)
 
-	runtimes, err := image.WithRuntimes(types.AllRuntimes)
-	if err != nil {
-		return nil, err
-	}
-
-	img, cleanup, err := image.NewContainerImage(ctx, imageRef, opt, runtimes)
+	img, cleanup, err := image.NewContainerImage(ctx, imageRef, opt)
 	if err != nil {
 		return nil, err
 	}
