@@ -51,6 +51,12 @@ const (
 	PropertyPkgID       = "PkgID"
 	PropertyLayerDiffID = "LayerDiffID"
 	PropertyLayerDigest = "LayerDigest"
+	// Package Purpose fields
+	PackagePurposeOS          = "OPERATING-SYSTEM"
+	PackagePurposeContainer   = "CONTAINER"
+	PackagePurposeSource      = "SOURCE"
+	PackagePurposeApplication = "APPLICATION"
+	PackagePurposeLibrary     = "LIBRARY"
 
 	RelationShipContains  = common.TypeRelationshipContains
 	RelationShipDescribe  = common.TypeRelationshipDescribe
@@ -252,12 +258,18 @@ func (m *Marshaler) rootPackage(r types.Report, pkgDownloadLocation string) (*sp
 		return nil, xerrors.Errorf("failed to get %s package ID: %w", err)
 	}
 
+	pkgPurpose := PackagePurposeSource
+	if r.ArtifactType == ftypes.ArtifactContainerImage {
+		pkgPurpose = PackagePurposeContainer
+	}
+
 	return &spdx.Package{
 		PackageName:               r.ArtifactName,
 		PackageSPDXIdentifier:     elementID(camelCase(string(r.ArtifactType)), pkgID),
 		PackageDownloadLocation:   pkgDownloadLocation,
 		PackageAttributionTexts:   attributionTexts,
 		PackageExternalReferences: externalReferences,
+		PrimaryPackagePurpose:     pkgPurpose,
 	}, nil
 }
 
@@ -276,6 +288,7 @@ func (m *Marshaler) osPackage(osFound *ftypes.OS, pkgDownloadLocation string) (s
 		PackageVersion:          osFound.Name,
 		PackageSPDXIdentifier:   elementID(ElementOperatingSystem, pkgID),
 		PackageDownloadLocation: pkgDownloadLocation,
+		PrimaryPackagePurpose:   PackagePurposeOS,
 	}, nil
 }
 
@@ -290,6 +303,7 @@ func (m *Marshaler) langPackage(target, appType, pkgDownloadLocation string) (sp
 		PackageSourceInfo:       target, // TODO: Files seems better
 		PackageSPDXIdentifier:   elementID(ElementApplication, pkgID),
 		PackageDownloadLocation: pkgDownloadLocation,
+		PrimaryPackagePurpose:   PackagePurposeApplication,
 	}, nil
 }
 
@@ -337,6 +351,7 @@ func (m *Marshaler) pkgToSpdxPackage(t, pkgDownloadLocation string, class types.
 
 		PackageExternalReferences: pkgExtRefs,
 		PackageAttributionTexts:   attrTexts,
+		PrimaryPackagePurpose:     PackagePurposeLibrary,
 		Files:                     files,
 	}, nil
 }
