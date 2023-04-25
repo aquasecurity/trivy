@@ -9,19 +9,18 @@ import (
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
-	ftypes "github.com/aquasecurity/trivy/pkg/types"
 )
 
 type RuntimeFunc func(ctx context.Context, imageName string, ref name.Reference, option types.ImageOptions) (types.Image, func(), error)
 
-var runtimeFuncs = map[ftypes.Runtime]RuntimeFunc{
-	ftypes.ContainerdRuntime: tryContainerdDaemon,
-	ftypes.PodmanRuntime:     tryPodmanDaemon,
-	ftypes.DockerRuntime:     tryDockerDaemon,
-	ftypes.RemoteRuntime:     tryRemote,
+var runtimeFuncs = map[types.Runtime]RuntimeFunc{
+	types.ContainerdRuntime: tryContainerdDaemon,
+	types.PodmanRuntime:     tryPodmanDaemon,
+	types.DockerRuntime:     tryDockerDaemon,
+	types.RemoteRuntime:     tryRemote,
 }
 
-func WithRuntimes(runtimes ftypes.Runtimes) ([]RuntimeFunc, error) {
+func WithRuntimes(runtimes types.Runtimes) ([]RuntimeFunc, error) {
 	funcs := []RuntimeFunc{}
 
 	for _, r := range runtimes {
@@ -35,9 +34,14 @@ func WithRuntimes(runtimes ftypes.Runtimes) ([]RuntimeFunc, error) {
 	return funcs, nil
 }
 
-func NewContainerImage(ctx context.Context, imageName string, opt types.ImageOptions, runtimes []RuntimeFunc) (types.Image, func(), error) {
-	if len(runtimes) == 0 {
+func NewContainerImage(ctx context.Context, imageName string, opt types.ImageOptions) (types.Image, func(), error) {
+	if len(opt.Runtimes) == 0 {
 		return nil, func() {}, xerrors.Errorf("no runtimes supplied")
+	}
+
+	runtimes, err := WithRuntimes(opt.Runtimes)
+	if err != nil {
+		return nil, func() {}, xerrors.Errorf("unable to parse runtimes: %w", err)
 	}
 
 	var errs error

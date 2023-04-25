@@ -110,7 +110,6 @@ var RemoteVMSet = wire.NewSet(
 // RemoteDockerSet binds remote docker dependencies
 var RemoteDockerSet = wire.NewSet(
 	aimage.NewArtifact,
-	wire.Value(types.Runtimes{types.RemoteRuntime}),
 	image.WithRuntimes,
 	image.NewContainerImage,
 	RemoteSuperSet,

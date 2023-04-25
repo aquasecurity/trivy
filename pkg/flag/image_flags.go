@@ -4,6 +4,7 @@ import (
 	"golang.org/x/exp/slices"
 	"golang.org/x/xerrors"
 
+	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
 
@@ -46,7 +47,7 @@ var (
 	RuntimeFlag = Flag{
 		Name:       "runtimes",
 		ConfigName: "scan.runtimes",
-		Value:      types.AllRuntimes.StringSlice(),
+		Value:      ftypes.AllRuntimes.StringSlice(),
 		Usage:      "Runtime(s) to use, in priority order (docker,containerd,podman,remote)",
 	}
 )
@@ -66,7 +67,7 @@ type ImageOptions struct {
 	ScanRemovedPkgs     bool
 	Platform            string
 	DockerHost          string
-	Runtimes            types.Runtimes
+	Runtimes            ftypes.Runtimes
 }
 
 func NewImageFlagGroup() *ImageFlagGroup {
@@ -101,7 +102,7 @@ func (f *ImageFlagGroup) ToOptions() (ImageOptions, error) {
 		return ImageOptions{}, xerrors.Errorf("unable to parse image config scanners: %w", err)
 	}
 
-	runtimes, err := parseRuntimes(getStringSlice(f.Runtimes), types.AllRuntimes)
+	runtimes, err := parseRuntimes(getStringSlice(f.Runtimes), ftypes.AllRuntimes)
 	if err != nil {
 		return ImageOptions{}, xerrors.Errorf("unable to parse runtimes: %w", err)
 	}
@@ -116,10 +117,10 @@ func (f *ImageFlagGroup) ToOptions() (ImageOptions, error) {
 	}, nil
 }
 
-func parseRuntimes(runtime []string, allowedRuntimes types.Runtimes) (types.Runtimes, error) {
-	var runtimes types.Runtimes
+func parseRuntimes(runtime []string, allowedRuntimes ftypes.Runtimes) (ftypes.Runtimes, error) {
+	var runtimes ftypes.Runtimes
 	for _, v := range runtime {
-		s := types.Runtime(v)
+		s := ftypes.Runtime(v)
 		if !slices.Contains(allowedRuntimes, s) {
 			return nil, xerrors.Errorf("unknown runtime: %s", v)
 		}

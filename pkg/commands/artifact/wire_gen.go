@@ -23,7 +23,6 @@ import (
 	"github.com/aquasecurity/trivy/pkg/rpc/client"
 	"github.com/aquasecurity/trivy/pkg/scanner"
 	"github.com/aquasecurity/trivy/pkg/scanner/local"
-	types2 "github.com/aquasecurity/trivy/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/vulnerability"
 )
 
@@ -31,17 +30,13 @@ import (
 
 // initializeDockerScanner is for container image scanning in standalone mode
 // e.g. dockerd, container registry, podman, etc.
-func initializeDockerScanner(ctx context.Context, imageName string, artifactCache cache.ArtifactCache, localArtifactCache cache.LocalArtifactCache, imageOpt types.ImageOptions, artifactOption artifact.Option, runtimes types2.Runtimes) (scanner.Scanner, func(), error) {
+func initializeDockerScanner(ctx context.Context, imageName string, artifactCache cache.ArtifactCache, localArtifactCache cache.LocalArtifactCache, imageOpt types.ImageOptions, artifactOption artifact.Option) (scanner.Scanner, func(), error) {
 	applierApplier := applier.NewApplier(localArtifactCache)
 	detector := ospkg.Detector{}
 	config := db.Config{}
 	client := vulnerability.NewClient(config)
 	localScanner := local.NewScanner(applierApplier, detector, client)
-	v, err := image.WithRuntimes(runtimes)
-	if err != nil {
-		return scanner.Scanner{}, nil, err
-	}
-	typesImage, cleanup, err := image.NewContainerImage(ctx, imageName, imageOpt, v)
+	typesImage, cleanup, err := image.NewContainerImage(ctx, imageName, imageOpt)
 	if err != nil {
 		return scanner.Scanner{}, nil, err
 	}
@@ -143,12 +138,7 @@ func initializeVMScanner(ctx context.Context, filePath string, artifactCache cac
 func initializeRemoteDockerScanner(ctx context.Context, imageName string, artifactCache cache.ArtifactCache, remoteScanOptions client.ScannerOption, imageOpt types.ImageOptions, artifactOption artifact.Option) (scanner.Scanner, func(), error) {
 	v := _wireValue
 	clientScanner := client.NewScanner(remoteScanOptions, v...)
-	runtimes := _wireRuntimesValue
-	v2, err := image.WithRuntimes(runtimes)
-	if err != nil {
-		return scanner.Scanner{}, nil, err
-	}
-	typesImage, cleanup, err := image.NewContainerImage(ctx, imageName, imageOpt, v2)
+	typesImage, cleanup, err := image.NewContainerImage(ctx, imageName, imageOpt)
 	if err != nil {
 		return scanner.Scanner{}, nil, err
 	}
@@ -164,8 +154,7 @@ func initializeRemoteDockerScanner(ctx context.Context, imageName string, artifa
 }
 
 var (
-	_wireValue         = []client.Option(nil)
-	_wireRuntimesValue = types2.Runtimes{types2.RemoteRuntime}
+	_wireValue = []client.Option(nil)
 )
 
 // initializeRemoteArchiveScanner is for container image archive scanning in client/server mode

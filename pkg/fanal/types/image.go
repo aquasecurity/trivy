@@ -1,6 +1,32 @@
 package types
 
-import v1 "github.com/google/go-containerregistry/pkg/v1"
+import (
+	v1 "github.com/google/go-containerregistry/pkg/v1"
+	"github.com/samber/lo"
+)
+
+const (
+	// DockerRuntime is the docker runtime
+	DockerRuntime Runtime = "docker"
+
+	// ContainerdRuntime is the containerd runtime
+	ContainerdRuntime Runtime = "containerd"
+
+	// PodmanRuntime is the podman runtime
+	PodmanRuntime Runtime = "podman"
+
+	// RemoteRuntime represents a remote scan
+	RemoteRuntime Runtime = "remote"
+)
+
+var (
+	AllRuntimes = Runtimes{
+		DockerRuntime,
+		ContainerdRuntime,
+		PodmanRuntime,
+		RemoteRuntime,
+	}
+)
 
 type Image interface {
 	v1.Image
@@ -19,6 +45,7 @@ type ImageOptions struct {
 	DockerOptions     DockerOptions
 	PodmanOptions     PodmanOptions
 	ContainerdOptions ContainerdOptions
+	Runtimes          Runtimes
 }
 
 type DockerOptions struct {
@@ -32,6 +59,12 @@ type PodmanOptions struct {
 type ContainerdOptions struct {
 	// TODO
 }
+
+// Runtime represents a container runtime
+type Runtime string
+
+// Runtimes is a slice of runtimes
+type Runtimes []Runtime
 
 type RegistryOptions struct {
 	// Auth for registries
@@ -59,4 +92,10 @@ type RegistryOptions struct {
 type Credential struct {
 	Username string
 	Password string
+}
+
+func (runtimes Runtimes) StringSlice() []string {
+	return lo.Map(runtimes, func(r Runtime, _ int) string {
+		return string(r)
+	})
 }
