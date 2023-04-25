@@ -20,7 +20,7 @@ var runtimeFuncs = map[types.Runtime]RuntimeFunc{
 	types.RemoteRuntime:     tryRemote,
 }
 
-func WithRuntimes(runtimes types.Runtimes) ([]RuntimeFunc, error) {
+func parseRuntimes(runtimes types.Runtimes) ([]RuntimeFunc, error) {
 	funcs := []RuntimeFunc{}
 
 	for _, r := range runtimes {
@@ -39,7 +39,7 @@ func NewContainerImage(ctx context.Context, imageName string, opt types.ImageOpt
 		return nil, func() {}, xerrors.Errorf("no runtimes supplied")
 	}
 
-	runtimes, err := WithRuntimes(opt.Runtimes)
+	runtimes, err := parseRuntimes(opt.Runtimes)
 	if err != nil {
 		return nil, func() {}, xerrors.Errorf("unable to parse runtimes: %w", err)
 	}
