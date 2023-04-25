@@ -6,25 +6,25 @@ import (
 )
 
 const (
-	// DockerRuntime is the docker runtime
-	DockerRuntime Runtime = "docker"
+	// DockerImageSource is the docker runtime
+	DockerImageSource ImageSource = "docker"
 
-	// ContainerdRuntime is the containerd runtime
-	ContainerdRuntime Runtime = "containerd"
+	// ContainerdImageSource is the containerd runtime
+	ContainerdImageSource ImageSource = "containerd"
 
-	// PodmanRuntime is the podman runtime
-	PodmanRuntime Runtime = "podman"
+	// PodmanImageSource is the podman runtime
+	PodmanImageSource ImageSource = "podman"
 
-	// RemoteRuntime represents a remote scan
-	RemoteRuntime Runtime = "remote"
+	// RemoteImageSource represents a remote scan
+	RemoteImageSource ImageSource = "remote"
 )
 
 var (
-	AllRuntimes = Runtimes{
-		DockerRuntime,
-		ContainerdRuntime,
-		PodmanRuntime,
-		RemoteRuntime,
+	AllImageSources = ImageSources{
+		DockerImageSource,
+		ContainerdImageSource,
+		PodmanImageSource,
+		RemoteImageSource,
 	}
 )
 
@@ -45,7 +45,7 @@ type ImageOptions struct {
 	DockerOptions     DockerOptions
 	PodmanOptions     PodmanOptions
 	ContainerdOptions ContainerdOptions
-	Runtimes          Runtimes
+	ImageSources      ImageSources
 }
 
 type DockerOptions struct {
@@ -60,11 +60,11 @@ type ContainerdOptions struct {
 	// TODO
 }
 
-// Runtime represents a container runtime
-type Runtime string
+// ImageSource represents a container runtime
+type ImageSource string
 
-// Runtimes is a slice of runtimes
-type Runtimes []Runtime
+// ImageSources is a slice of runtimes
+type ImageSources []ImageSource
 
 type RegistryOptions struct {
 	// Auth for registries
@@ -94,8 +94,8 @@ type Credential struct {
 	Password string
 }
 
-func (runtimes Runtimes) StringSlice() []string {
-	return lo.Map(runtimes, func(r Runtime, _ int) string {
+func (runtimes ImageSources) StringSlice() []string {
+	return lo.Map(runtimes, func(r ImageSource, _ int) string {
 		return string(r)
 	})
 }

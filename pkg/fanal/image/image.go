@@ -11,22 +11,22 @@ import (
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 )
 
-type RuntimeFunc func(ctx context.Context, imageName string, ref name.Reference, option types.ImageOptions) (types.Image, func(), error)
+type imageSourceFunc func(ctx context.Context, imageName string, ref name.Reference, option types.ImageOptions) (types.Image, func(), error)
 
-var runtimeFuncs = map[types.Runtime]RuntimeFunc{
-	types.ContainerdRuntime: tryContainerdDaemon,
-	types.PodmanRuntime:     tryPodmanDaemon,
-	types.DockerRuntime:     tryDockerDaemon,
-	types.RemoteRuntime:     tryRemote,
+var imageSourceFuncs = map[types.ImageSource]imageSourceFunc{
+	types.ContainerdImageSource: tryContainerdDaemon,
+	types.PodmanImageSource:     tryPodmanDaemon,
+	types.DockerImageSource:     tryDockerDaemon,
+	types.RemoteImageSource:     tryRemote,
 }
 
-func parseRuntimes(runtimes types.Runtimes) ([]RuntimeFunc, error) {
-	funcs := []RuntimeFunc{}
+func parseImageSources(imageSources types.ImageSources) ([]imageSourceFunc, error) {
+	funcs := []imageSourceFunc{}
 
-	for _, r := range runtimes {
-		f, ok := runtimeFuncs[r]
+	for _, r := range imageSources {
+		f, ok := imageSourceFuncs[r]
 		if !ok {
-			return nil, xerrors.Errorf("unrecoginized runtime: '%s'", r)
+			return nil, xerrors.Errorf("unrecoginized image source: '%s'", r)
 		}
 		funcs = append(funcs, f)
 	}
@@ -35,13 +35,13 @@ func parseRuntimes(runtimes types.Runtimes) ([]RuntimeFunc, error) {
 }
 
 func NewContainerImage(ctx context.Context, imageName string, opt types.ImageOptions) (types.Image, func(), error) {
-	if len(opt.Runtimes) == 0 {
-		return nil, func() {}, xerrors.Errorf("no runtimes supplied")
+	if len(opt.ImageSources) == 0 {
+		return nil, func() {}, xerrors.Errorf("no image sources supplied")
 	}
 
-	runtimes, err := parseRuntimes(opt.Runtimes)
+	imageSources, err := parseImageSources(opt.ImageSources)
 	if err != nil {
-		return nil, func() {}, xerrors.Errorf("unable to parse runtimes: %w", err)
+		return nil, func() {}, xerrors.Errorf("unable to parse image source: %w", err)
 	}
 
 	var errs error
@@ -55,8 +55,8 @@ func NewContainerImage(ctx context.Context, imageName string, opt types.ImageOpt
 		return nil, func() {}, xerrors.Errorf("failed to parse the image name: %w", err)
 	}
 
-	for _, tryRuntime := range runtimes {
-		img, cleanup, err := tryRuntime(ctx, imageName, ref, opt)
+	for _, tryImageSource := range imageSources {
+		img, cleanup, err := tryImageSource(ctx, imageName, ref, opt)
 		if err == nil {
 			return img, cleanup, nil
 		}

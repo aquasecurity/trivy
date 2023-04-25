@@ -44,11 +44,11 @@ var (
 		Value:      "",
 		Usage:      "unix domain socket path to use for docker scanning",
 	}
-	RuntimeFlag = Flag{
-		Name:       "runtimes",
-		ConfigName: "scan.runtimes",
-		Value:      ftypes.AllRuntimes.StringSlice(),
-		Usage:      "Runtime(s) to use, in priority order (docker,containerd,podman,remote)",
+	SourceFlag = Flag{
+		Name:       "image-src",
+		ConfigName: "image.source",
+		Value:      ftypes.AllImageSources.StringSlice(),
+		Usage:      "image source(s) to use, in priority order (docker,containerd,podman,remote)",
 	}
 )
 
@@ -58,7 +58,7 @@ type ImageFlagGroup struct {
 	ScanRemovedPkgs     *Flag
 	Platform            *Flag
 	DockerHost          *Flag
-	Runtimes            *Flag
+	ImageSources        *Flag
 }
 
 type ImageOptions struct {
@@ -67,7 +67,7 @@ type ImageOptions struct {
 	ScanRemovedPkgs     bool
 	Platform            string
 	DockerHost          string
-	Runtimes            ftypes.Runtimes
+	ImageSources        ftypes.ImageSources
 }
 
 func NewImageFlagGroup() *ImageFlagGroup {
@@ -77,7 +77,7 @@ func NewImageFlagGroup() *ImageFlagGroup {
 		ScanRemovedPkgs:     &ScanRemovedPkgsFlag,
 		Platform:            &PlatformFlag,
 		DockerHost:          &DockerHostFlag,
-		Runtimes:            &RuntimeFlag,
+		ImageSources:        &SourceFlag,
 	}
 }
 
@@ -92,7 +92,7 @@ func (f *ImageFlagGroup) Flags() []*Flag {
 		f.ScanRemovedPkgs,
 		f.Platform,
 		f.DockerHost,
-		f.Runtimes,
+		f.ImageSources,
 	}
 }
 
@@ -102,7 +102,7 @@ func (f *ImageFlagGroup) ToOptions() (ImageOptions, error) {
 		return ImageOptions{}, xerrors.Errorf("unable to parse image config scanners: %w", err)
 	}
 
-	runtimes, err := parseRuntimes(getStringSlice(f.Runtimes), ftypes.AllRuntimes)
+	imageSources, err := parseImageSources(getStringSlice(f.ImageSources), ftypes.AllImageSources)
 	if err != nil {
 		return ImageOptions{}, xerrors.Errorf("unable to parse runtimes: %w", err)
 	}
@@ -113,18 +113,18 @@ func (f *ImageFlagGroup) ToOptions() (ImageOptions, error) {
 		ScanRemovedPkgs:     getBool(f.ScanRemovedPkgs),
 		Platform:            getString(f.Platform),
 		DockerHost:          getString(f.DockerHost),
-		Runtimes:            runtimes,
+		ImageSources:        imageSources,
 	}, nil
 }
 
-func parseRuntimes(runtime []string, allowedRuntimes ftypes.Runtimes) (ftypes.Runtimes, error) {
-	var runtimes ftypes.Runtimes
+func parseImageSources(runtime []string, allowedImageSources ftypes.ImageSources) (ftypes.ImageSources, error) {
+	var imageSources ftypes.ImageSources
 	for _, v := range runtime {
-		s := ftypes.Runtime(v)
-		if !slices.Contains(allowedRuntimes, s) {
+		s := ftypes.ImageSource(v)
+		if !slices.Contains(allowedImageSources, s) {
 			return nil, xerrors.Errorf("unknown runtime: %s", v)
 		}
-		runtimes = append(runtimes, s)
+		imageSources = append(imageSources, s)
 	}
-	return runtimes, nil
+	return imageSources, nil
 }

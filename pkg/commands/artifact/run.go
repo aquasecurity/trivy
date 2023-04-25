@@ -650,7 +650,7 @@ func initScannerConfig(opts flag.Options, cacheClient cache.Cache) (ScannerConfi
 				DockerOptions: ftypes.DockerOptions{
 					Host: opts.DockerHost,
 				},
-				Runtimes: opts.Runtimes,
+				ImageSources: opts.ImageSources,
 			},
 
 			// For misconfiguration scanning
