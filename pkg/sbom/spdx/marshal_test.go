@@ -165,21 +165,21 @@ func TestMarshaler_Marshal(t *testing.T) {
 							},
 						},
 						PackageSourceInfo:     "built package from: binutils 2.30-93.el8",
-						PrimaryPackagePurpose: tspdx.PackagePurposeInstall,
+						PrimaryPackagePurpose: tspdx.PackagePurposeLibrary,
 					},
 					{
 						PackageSPDXIdentifier:   spdx.ElementID("Application-73c871d73f3c8248"),
 						PackageDownloadLocation: "NONE",
 						PackageName:             "bundler",
 						PackageSourceInfo:       "app/subproject/Gemfile.lock",
-						PrimaryPackagePurpose:   tspdx.PackagePurposeLibrary,
+						PrimaryPackagePurpose:   tspdx.PackagePurposeApplication,
 					},
 					{
 						PackageSPDXIdentifier:   spdx.ElementID("Application-c3fac92c1ac0a9fa"),
 						PackageDownloadLocation: "NONE",
 						PackageName:             "bundler",
 						PackageSourceInfo:       "app/Gemfile.lock",
-						PrimaryPackagePurpose:   tspdx.PackagePurposeLibrary,
+						PrimaryPackagePurpose:   tspdx.PackagePurposeApplication,
 					},
 					{
 						PackageSPDXIdentifier:   spdx.ElementID("OperatingSystem-197f9a00ebcb51f0"),
@@ -360,7 +360,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 							},
 						},
 						PackageSourceInfo:     "built package from: acl 1:2.2.53-1.el8",
-						PrimaryPackagePurpose: tspdx.PackagePurposeInstall,
+						PrimaryPackagePurpose: tspdx.PackagePurposeLibrary,
 					},
 					{
 						PackageSPDXIdentifier:   spdx.ElementID("Package-13fe667a0805e6b7"),
@@ -448,7 +448,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 						PackageDownloadLocation: "NONE",
 						PackageName:             "gemspec",
 						PackageSourceInfo:       "Ruby",
-						PrimaryPackagePurpose:   tspdx.PackagePurposeLibrary,
+						PrimaryPackagePurpose:   tspdx.PackagePurposeApplication,
 					},
 				},
 				Relationships: []*spdx.Relationship{
@@ -550,7 +550,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 						PackageDownloadLocation: "NONE",
 						PackageName:             "bundler",
 						PackageSourceInfo:       "Gemfile.lock",
-						PrimaryPackagePurpose:   tspdx.PackagePurposeLibrary,
+						PrimaryPackagePurpose:   tspdx.PackagePurposeApplication,
 					},
 					{
 						PackageSPDXIdentifier:   spdx.ElementID("Filesystem-5af0f1f08c20909a"),
@@ -559,6 +559,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 						PackageAttributionTexts: []string{
 							"SchemaVersion: 2",
 						},
+						PrimaryPackagePurpose: tspdx.PackagePurposeSource,
 					},
 				},
 				Relationships: []*spdx.Relationship{
@@ -632,6 +633,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 						PackageAttributionTexts: []string{
 							"SchemaVersion: 2",
 						},
+						PrimaryPackagePurpose: tspdx.PackagePurposeSource,
 					},
 					{
 						PackageSPDXIdentifier:   "Application-24f8a80152e2c0fc",
@@ -663,7 +665,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 								FileSPDXIdentifier: "File-a52825a3e5bc6dfe",
 							},
 						},
-						PrimaryPackagePurpose: tspdx.PackagePurposeApplication,
+						PrimaryPackagePurpose: tspdx.PackagePurposeLibrary,
 					},
 				},
 				Relationships: []*spdx.Relationship{
@@ -721,6 +723,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 						PackageAttributionTexts: []string{
 							"SchemaVersion: 2",
 						},
+						PrimaryPackagePurpose: tspdx.PackagePurposeSource,
 					},
 				},
 				Relationships: []*spdx.Relationship{

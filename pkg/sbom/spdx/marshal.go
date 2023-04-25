@@ -13,7 +13,6 @@ import (
 	"github.com/spdx/tools-golang/spdx"
 	"github.com/spdx/tools-golang/spdx/v2/common"
 	"golang.org/x/exp/maps"
-	"golang.org/x/exp/slices"
 	"golang.org/x/xerrors"
 	"k8s.io/utils/clock"
 
@@ -55,9 +54,9 @@ const (
 	// Package Purpose fields
 	PackagePurposeOS          = "OPERATING-SYSTEM"
 	PackagePurposeContainer   = "CONTAINER"
+	PackagePurposeSource      = "SOURCE"
 	PackagePurposeApplication = "APPLICATION"
 	PackagePurposeLibrary     = "LIBRARY"
-	PackagePurposeInstall     = "INSTALL"
 
 	RelationShipContains  = common.TypeRelationshipContains
 	RelationShipDescribe  = common.TypeRelationshipDescribe
@@ -259,11 +258,7 @@ func (m *Marshaler) rootPackage(r types.Report, pkgDownloadLocation string) (*sp
 		return nil, xerrors.Errorf("failed to get %s package ID: %w", err)
 	}
 
-	// If root package is filesystem, we can't correct determine package purpose
-	// Because it can contain both applications and libraries at same time
-	// This field is optional. Use this field for images only
-	// https://spdx.github.io/spdx-spec/v2.3/package-information/#724-primary-package-purpose-field
-	pkgPurpose := ""
+	pkgPurpose := PackagePurposeSource
 	if r.ArtifactType == ftypes.ArtifactContainerImage {
 		pkgPurpose = PackagePurposeContainer
 	}
@@ -308,7 +303,7 @@ func (m *Marshaler) langPackage(target, appType, pkgDownloadLocation string) (sp
 		PackageSourceInfo:       target, // TODO: Files seems better
 		PackageSPDXIdentifier:   elementID(ElementApplication, pkgID),
 		PackageDownloadLocation: pkgDownloadLocation,
-		PrimaryPackagePurpose:   getPackagePurpose(appType, ""),
+		PrimaryPackagePurpose:   PackagePurposeApplication,
 	}, nil
 }
 
@@ -356,7 +351,7 @@ func (m *Marshaler) pkgToSpdxPackage(t, pkgDownloadLocation string, class types.
 
 		PackageExternalReferences: pkgExtRefs,
 		PackageAttributionTexts:   attrTexts,
-		PrimaryPackagePurpose:     getPackagePurpose(t, class),
+		PrimaryPackagePurpose:     PackagePurposeLibrary,
 		Files:                     files,
 	}, nil
 }
@@ -504,14 +499,4 @@ func digestToSpdxFileChecksum(d digest.Digest) []common.Checksum {
 			Value:     d.Encoded(),
 		},
 	}
-}
-
-func getPackagePurpose(typ string, class types.ResultClass) string {
-	if class == types.ClassOSPkg || typ == ftypes.CondaPkg {
-		return PackagePurposeInstall
-	}
-	if slices.Contains(ftypes.ApplicationTypes, typ) {
-		return PackagePurposeApplication
-	}
-	return PackagePurposeLibrary
 }

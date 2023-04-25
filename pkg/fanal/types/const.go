@@ -84,13 +84,3 @@ const (
 
 	MixLock = "mix.lock"
 )
-
-// ApplicationTypes contains types  we cat think of as Application
-// Required to `primary purpose` field of SBOM
-// https://github.com/interlynk-io/sbomqs/blob/main/Features.md#primary-purpose
-var ApplicationTypes = []string{
-	GoBinary,
-	RustBinary,
-	Jar,
-	NodePkg,
-}

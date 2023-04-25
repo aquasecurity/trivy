@@ -16,7 +16,7 @@
       "name": "conda-pkg",
       "SPDXID": "SPDXRef-Application-ee5ef1aa4ac89125",
       "downloadLocation": "NONE",
-      "primaryPackagePurpose": "INSTALL",
+      "primaryPackagePurpose": "APPLICATION",
       "sourceInfo": "Conda"
     },
     {
@@ -34,7 +34,7 @@
           "referenceLocator": "pkg:conda/openssl@1.1.1q"
         }
       ],
-      "primaryPackagePurpose": "INSTALL",
+      "primaryPackagePurpose": "LIBRARY",
       "files": [
         {
           "fileName": "miniconda3/envs/testenv/conda-meta/openssl-1.1.1q-h7f8727e_0.json",
@@ -62,7 +62,7 @@
           "referenceLocator": "pkg:conda/pip@22.2.2"
         }
       ],
-      "primaryPackagePurpose": "INSTALL",
+      "primaryPackagePurpose": "LIBRARY",
       "files": [
         {
           "fileName": "miniconda3/envs/testenv/conda-meta/pip-22.2.2-py38h06a4308_0.json",
@@ -80,6 +80,7 @@
       "name": "testdata/fixtures/fs/conda",
       "SPDXID": "SPDXRef-Filesystem-6e0ac6a0fab50ab4",
       "downloadLocation": "NONE",
+      "primaryPackagePurpose": "SOURCE",
       "attributionTexts": [
         "SchemaVersion: 2"
       ]
