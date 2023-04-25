@@ -43,12 +43,13 @@ var enabledDefsecTypes = map[detection.FileType]string{
 }
 
 type ScannerOption struct {
-	Trace                   bool
-	RegoOnly                bool
-	Namespaces              []string
-	PolicyPaths             []string
-	DataPaths               []string
-	DisableEmbeddedPolicies bool
+	Trace                    bool
+	RegoOnly                 bool
+	Namespaces               []string
+	PolicyPaths              []string
+	DataPaths                []string
+	DisableEmbeddedPolicies  bool
+	DisableEmbeddedLibraries bool
 
 	HelmValues          []string
 	HelmValueFiles      []string
