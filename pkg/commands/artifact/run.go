@@ -576,19 +576,19 @@ func initScannerConfig(opts flag.Options, cacheClient cache.Cache) (ScannerConfi
 			disableEmbedded = true
 		}
 		configScannerOptions = misconf.ScannerOption{
-			Trace:                   opts.Trace,
-			Namespaces:              append(opts.PolicyNamespaces, defaultPolicyNamespaces...),
-			PolicyPaths:             append(opts.PolicyPaths, downloadedPolicyPaths...),
-			DataPaths:               append(opts.DataPaths),
-			HelmValues:              opts.HelmValues,
-			HelmValueFiles:          opts.HelmValueFiles,
-			HelmFileValues:          opts.HelmFileValues,
-			HelmStringValues:        opts.HelmStringValues,
-			TerraformTFVars:         opts.TerraformTFVars,
-			K8sVersion:              opts.K8sVersion,
-			DisableEmbeddedPolicies: disableEmbedded,
+			Trace:                    opts.Trace,
+			Namespaces:               append(opts.PolicyNamespaces, defaultPolicyNamespaces...),
+			PolicyPaths:              append(opts.PolicyPaths, downloadedPolicyPaths...),
+			DataPaths:                opts.DataPaths,
+			HelmValues:               opts.HelmValues,
+			HelmValueFiles:           opts.HelmValueFiles,
+			HelmFileValues:           opts.HelmFileValues,
+			HelmStringValues:         opts.HelmStringValues,
+			TerraformTFVars:          opts.TerraformTFVars,
+			K8sVersion:               opts.K8sVersion,
+			DisableEmbeddedPolicies:  disableEmbedded,
 			DisableEmbeddedLibraries: disableEmbedded,
-			TfExcludeDownloaded:     opts.TfExcludeDownloaded,
+			TfExcludeDownloaded:      opts.TfExcludeDownloaded,
 		}
 	}
 
