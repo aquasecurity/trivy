@@ -467,6 +467,12 @@ func pkgToCdxComponent(pkgType string, meta types.Metadata, pkg ftypes.Package) 
 		component.Licenses = lo.ToPtr(cdx.Licenses(choices))
 	}
 
+	if pkg.Maintainer != "" {
+		component.Supplier = &cdx.OrganizationalEntity{
+			Name: pkg.Maintainer,
+		}
+	}
+
 	return component, nil
 }
 
