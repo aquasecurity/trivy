@@ -12,12 +12,14 @@ import (
 
 func TestParseApkInfo(t *testing.T) {
 	var tests = map[string]struct {
-		path      string
-		wantPkgs  []types.Package
-		wantFiles []string
+		path           string
+		thirdPartyPkgs []string
+		wantPkgs       []types.Package
+		wantFiles      []string
 	}{
 		"Valid": {
-			path: "./testdata/apk",
+			path:           "./testdata/apk",
+			thirdPartyPkgs: []string{"busybox"},
 			wantPkgs: []types.Package{
 				{
 					ID:         "musl@1.1.14-r10",
@@ -28,22 +30,13 @@ func TestParseApkInfo(t *testing.T) {
 					Licenses:   []string{"MIT"},
 				},
 				{
-					ID:         "busybox@1.24.2-r9",
-					Name:       "busybox",
-					Version:    "1.24.2-r9",
-					SrcName:    "busybox",
-					SrcVersion: "1.24.2-r9",
-					Licenses:   []string{"GPL-2.0"},
-					DependsOn:  []string{"musl@1.1.14-r10"},
-				},
-				{
 					ID:         "alpine-baselayout@3.0.3-r0",
 					Name:       "alpine-baselayout",
 					Version:    "3.0.3-r0",
 					SrcName:    "alpine-baselayout",
 					SrcVersion: "3.0.3-r0",
 					Licenses:   []string{"GPL-2.0"},
-					DependsOn:  []string{"busybox@1.24.2-r9", "musl@1.1.14-r10"},
+					DependsOn:  []string{"musl@1.1.14-r10"},
 				},
 				{
 					ID:         "alpine-keys@1.1-r0",
@@ -165,13 +158,6 @@ func TestParseApkInfo(t *testing.T) {
 				"lib/libc.musl-x86_64.so.1",
 				"lib/ld-musl-x86_64.so.1",
 
-				// busybox-1.24.2-r9
-				"bin/busybox",
-				"bin/sh",
-				"etc/securetty",
-				"etc/udhcpd.conf",
-				"etc/logrotate.d/acpid",
-
 				// alpine-baselayout-3.0.3-r0
 				"etc/hosts",
 				"etc/sysctl.conf",
@@ -265,8 +251,9 @@ func TestParseApkInfo(t *testing.T) {
 			},
 		},
 	}
-	a := alpinePkgAnalyzer{}
+
 	for testname, v := range tests {
+		a := alpinePkgAnalyzer{ThirdPartyPkgs: v.thirdPartyPkgs}
 		read, err := os.Open(v.path)
 		if err != nil {
 			t.Errorf("%s : can't open file %s", testname, v.path)

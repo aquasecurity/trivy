@@ -27,9 +27,11 @@ const analyzerVersion = 2
 
 var requiredFiles = []string{"lib/apk/db/installed"}
 
-type alpinePkgAnalyzer struct{}
+type alpinePkgAnalyzer struct {
+	ThirdPartyPkgs []string
+}
 
-func (a alpinePkgAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInput) (*analyzer.AnalysisResult, error) {
+func (a *alpinePkgAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInput) (*analyzer.AnalysisResult, error) {
 	scanner := bufio.NewScanner(input.Content)
 	parsedPkgs, installedFiles := a.parseApkInfo(scanner)
 
@@ -44,14 +46,15 @@ func (a alpinePkgAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInp
 	}, nil
 }
 
-func (a alpinePkgAnalyzer) parseApkInfo(scanner *bufio.Scanner) ([]types.Package, []string) {
+func (a *alpinePkgAnalyzer) parseApkInfo(scanner *bufio.Scanner) ([]types.Package, []string) {
 	var (
-		pkgs           []types.Package
-		pkg            types.Package
-		version        string
-		dir            string
-		installedFiles []string
-		provides       = map[string]string{} // for dependency graph
+		pkgs              []types.Package
+		pkg               types.Package
+		pkgInstalledFiles []string
+		version           string
+		dir               string
+		installedFiles    []string
+		provides          = map[string]string{} // for dependency graph
 	)
 
 	for scanner.Scan() {
@@ -61,15 +64,20 @@ func (a alpinePkgAnalyzer) parseApkInfo(scanner *bufio.Scanner) ([]types.Package
 		if len(line) < 2 {
 			if !pkg.Empty() {
 				pkgs = append(pkgs, pkg)
+				installedFiles = append(installedFiles, pkgInstalledFiles...)
 			}
 			pkg = types.Package{}
+			pkgInstalledFiles = []string{}
 			continue
 		}
 
 		// ref. https://wiki.alpinelinux.org/wiki/Apk_spec
 		switch line[:2] {
 		case "P:":
-			pkg.Name = line[2:]
+			// If user has marked package as third party package - we need to skip this package and parse files of this package as language packages
+			if !slices.Contains(a.ThirdPartyPkgs, line[2:]) {
+				pkg.Name = line[2:]
+			}
 		case "V:":
 			version = line[2:]
 			if !apkVersion.Valid(version) {
@@ -86,7 +94,7 @@ func (a alpinePkgAnalyzer) parseApkInfo(scanner *bufio.Scanner) ([]types.Package
 		case "F:":
 			dir = line[2:]
 		case "R:":
-			installedFiles = append(installedFiles, path.Join(dir, line[2:]))
+			pkgInstalledFiles = append(pkgInstalledFiles, path.Join(dir, line[2:]))
 		case "p:": // provides (corresponds to provides in PKGINFO, concatenated by spaces into a single line)
 			a.parseProvides(line, pkg.ID, provides)
 		case "D:": // dependencies (corresponds to depend in PKGINFO, concatenated by spaces into a single line)
@@ -104,6 +112,7 @@ func (a alpinePkgAnalyzer) parseApkInfo(scanner *bufio.Scanner) ([]types.Package
 	// in case of last paragraph
 	if !pkg.Empty() {
 		pkgs = append(pkgs, pkg)
+		installedFiles = append(installedFiles, pkgInstalledFiles...)
 	}
 
 	pkgs = a.uniquePkgs(pkgs)
@@ -114,7 +123,7 @@ func (a alpinePkgAnalyzer) parseApkInfo(scanner *bufio.Scanner) ([]types.Package
 	return pkgs, installedFiles
 }
 
-func (a alpinePkgAnalyzer) trimRequirement(s string) string {
+func (a *alpinePkgAnalyzer) trimRequirement(s string) string {
 	// Trim version requirements
 	// e.g.
 	//   so:libssl.so.1.1=1.1 => so:libssl.so.1.1
@@ -125,7 +134,7 @@ func (a alpinePkgAnalyzer) trimRequirement(s string) string {
 	return s
 }
 
-func (a alpinePkgAnalyzer) parseLicense(line string) []string {
+func (a *alpinePkgAnalyzer) parseLicense(line string) []string {
 	line = line[2:] // Remove "L:"
 	if line == "" {
 		return nil
@@ -145,7 +154,7 @@ func (a alpinePkgAnalyzer) parseLicense(line string) []string {
 	return licenses
 }
 
-func (a alpinePkgAnalyzer) parseProvides(line, pkgID string, provides map[string]string) {
+func (a *alpinePkgAnalyzer) parseProvides(line, pkgID string, provides map[string]string) {
 	for _, p := range strings.Fields(line[2:]) {
 		p = a.trimRequirement(p)
 
@@ -154,7 +163,7 @@ func (a alpinePkgAnalyzer) parseProvides(line, pkgID string, provides map[string
 	}
 }
 
-func (a alpinePkgAnalyzer) parseDependencies(line string) []string {
+func (a *alpinePkgAnalyzer) parseDependencies(line string) []string {
 	line = line[2:] // Remove "D:"
 	return lo.FilterMap(strings.Fields(line), func(d string, _ int) (string, bool) {
 		// e.g. D:!uclibc-utils scanelf musl=1.1.14-r10 so:libc.musl-x86_64.so.1
@@ -165,7 +174,7 @@ func (a alpinePkgAnalyzer) parseDependencies(line string) []string {
 	})
 }
 
-func (a alpinePkgAnalyzer) consolidateDependencies(pkgs []types.Package, provides map[string]string) {
+func (a *alpinePkgAnalyzer) consolidateDependencies(pkgs []types.Package, provides map[string]string) {
 	for i := range pkgs {
 		// e.g. libc6 => libc6@2.31-13+deb11u4
 		pkgs[i].DependsOn = lo.FilterMap(pkgs[i].DependsOn, func(d string, _ int) (string, bool) {
@@ -183,7 +192,7 @@ func (a alpinePkgAnalyzer) consolidateDependencies(pkgs []types.Package, provide
 	}
 }
 
-func (a alpinePkgAnalyzer) uniquePkgs(pkgs []types.Package) (uniqPkgs []types.Package) {
+func (a *alpinePkgAnalyzer) uniquePkgs(pkgs []types.Package) (uniqPkgs []types.Package) {
 	uniq := map[string]struct{}{}
 	for _, pkg := range pkgs {
 		if _, ok := uniq[pkg.Name]; ok {
@@ -195,14 +204,19 @@ func (a alpinePkgAnalyzer) uniquePkgs(pkgs []types.Package) (uniqPkgs []types.Pa
 	return uniqPkgs
 }
 
-func (a alpinePkgAnalyzer) Required(filePath string, _ os.FileInfo) bool {
+func (a *alpinePkgAnalyzer) Required(filePath string, _ os.FileInfo) bool {
 	return slices.Contains(requiredFiles, filePath)
 }
 
-func (a alpinePkgAnalyzer) Type() analyzer.Type {
+func (a *alpinePkgAnalyzer) Type() analyzer.Type {
 	return analyzer.TypeApk
 }
 
-func (a alpinePkgAnalyzer) Version() int {
+func (a *alpinePkgAnalyzer) Version() int {
 	return analyzerVersion
+}
+
+func (a *alpinePkgAnalyzer) Init(opt analyzer.AnalyzerOptions) error {
+	a.ThirdPartyPkgs = opt.ThirdPartyOSPkgs
+	return nil
 }

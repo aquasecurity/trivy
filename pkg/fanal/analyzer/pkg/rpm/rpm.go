@@ -123,7 +123,7 @@ func (a *rpmPkgAnalyzer) parsePkgInfo(rc io.Reader) (types.Packages, []string, e
 		}
 
 		// If user has marked package as third party package - we need to skip this package and parse files of this package as language packages
-		if slices.Contains(a.ThirdPartyPkgs, pkg.Name) || slices.Contains(a.ThirdPartyPkgs, srcName) {
+		if slices.Contains(a.ThirdPartyPkgs, pkg.Name) {
 			continue
 		}
 
