@@ -60,9 +60,11 @@ var osVendors = []string{
 	"Rocky",                 // Rocky Linux
 }
 
-type rpmPkgAnalyzer struct{}
+type rpmPkgAnalyzer struct {
+	ThirdPartyPkgs []string
+}
 
-func (a rpmPkgAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInput) (*analyzer.AnalysisResult, error) {
+func (a *rpmPkgAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInput) (*analyzer.AnalysisResult, error) {
 	parsedPkgs, installedFiles, err := a.parsePkgInfo(input.Content)
 	if err != nil {
 		return nil, xerrors.Errorf("failed to parse rpmdb: %w", err)
@@ -79,7 +81,7 @@ func (a rpmPkgAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInput)
 	}, nil
 }
 
-func (a rpmPkgAnalyzer) parsePkgInfo(rc io.Reader) (types.Packages, []string, error) {
+func (a *rpmPkgAnalyzer) parsePkgInfo(rc io.Reader) (types.Packages, []string, error) {
 	filePath, err := writeToTempFile(rc)
 	if err != nil {
 		return nil, nil, xerrors.Errorf("temp file error: %w", err)
@@ -118,6 +120,11 @@ func (a rpmPkgAnalyzer) parsePkgInfo(rc io.Reader) (types.Packages, []string, er
 			if err != nil {
 				log.Logger.Debugf("Invalid Source RPM Found: %s", pkg.SourceRpm)
 			}
+		}
+
+		// If user has marked package as third party package - we need to skip this package and parse files of this package as language packages
+		if slices.Contains(a.ThirdPartyPkgs, pkg.Name) || slices.Contains(a.ThirdPartyPkgs, srcName) {
+			continue
 		}
 
 		// Check if the package is vendor-provided.
@@ -164,16 +171,21 @@ func (a rpmPkgAnalyzer) parsePkgInfo(rc io.Reader) (types.Packages, []string, er
 	return pkgs, installedFiles, nil
 }
 
-func (a rpmPkgAnalyzer) Required(filePath string, _ os.FileInfo) bool {
+func (a *rpmPkgAnalyzer) Required(filePath string, _ os.FileInfo) bool {
 	return utils.StringInSlice(filePath, requiredFiles)
 }
 
-func (a rpmPkgAnalyzer) Type() analyzer.Type {
+func (a *rpmPkgAnalyzer) Type() analyzer.Type {
 	return analyzer.TypeRpm
 }
 
-func (a rpmPkgAnalyzer) Version() int {
+func (a *rpmPkgAnalyzer) Version() int {
 	return version
+}
+
+func (a *rpmPkgAnalyzer) Init(opt analyzer.AnalyzerOptions) error {
+	a.ThirdPartyPkgs = opt.ThirdPartyOSPkgs
+	return nil
 }
 
 // splitFileName returns a name, version, release, epoch, arch:

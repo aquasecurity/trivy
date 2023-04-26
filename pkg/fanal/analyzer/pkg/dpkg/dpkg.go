@@ -44,7 +44,7 @@ type dpkgAnalyzer struct {
 func (a *dpkgAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInput) (*analyzer.AnalysisResult, error) {
 	scanner := bufio.NewScanner(input.Content)
 	if a.isListFile(filepath.Split(input.FilePath)) {
-		// If user has marked package as third party package - we will parse files of this package as language packages
+		// If user has marked package as third party package - we need to skip this package and parse files of this package as language packages
 		if a.skipThirdPartyPkg(filepath.Base(input.FilePath)) {
 			return nil, nil
 		}

@@ -13,16 +13,18 @@ import (
 
 func TestParseRpmInfo(t *testing.T) {
 	var tests = map[string]struct {
-		path string
-		pkgs types.Packages
+		path           string
+		thirdPartyPkgs []string
+		pkgs           types.Packages
 	}{
 		"Valid": {
-			path: "./testdata/valid",
+			path:           "./testdata/valid",
+			thirdPartyPkgs: []string{"filesystem"},
 			// cp ./testdata/valid /path/to/testdir/Packages
 			// rpm --dbpath /path/to/testdir -qa --qf "{Name: \"%{NAME}\", Epoch: %{EPOCHNUM}, Version: \"%{VERSION}\", Release: \"%{RELEASE}\", Arch: \"%{ARCH}\"\},\n"
+			// remove `filesystem`, because it is marked as third party package
 			pkgs: []types.Package{
 				{Name: "centos-release", Epoch: 0, Version: "7", Release: "1.1503.el7.centos.2.8", Arch: "x86_64", SrcName: "centos-release", SrcEpoch: 0, SrcVersion: "7", SrcRelease: "1.1503.el7.centos.2.8", Licenses: []string{"GPLv2"}, Maintainer: "CentOS"},
-				{Name: "filesystem", Epoch: 0, Version: "3.2", Release: "18.el7", Arch: "x86_64", SrcName: "filesystem", SrcEpoch: 0, SrcVersion: "3.2", SrcRelease: "18.el7", Licenses: []string{"Public Domain"}, Maintainer: "CentOS"},
 			},
 		},
 		"ValidBig": {
@@ -578,9 +580,9 @@ func TestParseRpmInfo(t *testing.T) {
 			},
 		},
 	}
-	a := rpmPkgAnalyzer{}
 	for testname, tc := range tests {
 		t.Run(testname, func(t *testing.T) {
+			a := rpmPkgAnalyzer{tc.thirdPartyPkgs}
 			f, err := os.Open(tc.path)
 			require.NoError(t, err)
 			defer f.Close()
