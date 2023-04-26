@@ -58,6 +58,8 @@ const (
 	PackagePurposeApplication = "APPLICATION"
 	PackagePurposeLibrary     = "LIBRARY"
 
+	PackageSupplierNoAssertion = "NOASSERTION"
+
 	RelationShipContains  = common.TypeRelationshipContains
 	RelationShipDescribe  = common.TypeRelationshipDescribe
 	RelationShipDependsOn = common.TypeRelationshipDependsOn
@@ -336,6 +338,14 @@ func (m *Marshaler) pkgToSpdxPackage(t, pkgDownloadLocation string, class types.
 		return spdx.Package{}, xerrors.Errorf("package file error: %w", err)
 	}
 
+	var supplier *spdx.Supplier
+	if pkg.Maintainer != "" {
+		supplier = &spdx.Supplier{
+			SupplierType: PackageSupplierNoAssertion,
+			Supplier:     pkg.Maintainer,
+		}
+	}
+
 	return spdx.Package{
 		PackageName:             pkg.Name,
 		PackageVersion:          utils.FormatVersion(pkg),
@@ -352,6 +362,7 @@ func (m *Marshaler) pkgToSpdxPackage(t, pkgDownloadLocation string, class types.
 		PackageExternalReferences: pkgExtRefs,
 		PackageAttributionTexts:   attrTexts,
 		PrimaryPackagePurpose:     PackagePurposeLibrary,
+		PackageSupplier:           supplier,
 		Files:                     files,
 	}, nil
 }

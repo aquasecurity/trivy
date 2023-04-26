@@ -67,6 +67,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 								SrcEpoch:        0,
 								Modularitylabel: "",
 								Licenses:        []string{"GPLv3+"},
+								Maintainer:      "CentOS",
 							},
 						},
 					},
@@ -157,6 +158,10 @@ func TestMarshaler_Marshal(t *testing.T) {
 						PackageVersion:          "2.30-93.el8",
 						PackageLicenseConcluded: "GPL-3.0-or-later",
 						PackageLicenseDeclared:  "GPL-3.0-or-later",
+						PackageSupplier: &spdx.Supplier{
+							SupplierType: tspdx.PackageSupplierNoAssertion,
+							Supplier:     "CentOS",
+						},
 						PackageExternalReferences: []*spdx.PackageExternalReference{
 							{
 								Category: tspdx.CategoryPackageManager,
