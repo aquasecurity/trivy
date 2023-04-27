@@ -338,14 +338,13 @@ func (m *Marshaler) pkgToSpdxPackage(t, pkgDownloadLocation string, class types.
 		return spdx.Package{}, xerrors.Errorf("package file error: %w", err)
 	}
 
-	var supplier *spdx.Supplier
+	supplier := &spdx.Supplier{Supplier: PackageSupplierNoAssertion}
 	if pkg.Maintainer != "" {
 		supplier = &spdx.Supplier{
-			SupplierType: PackageSupplierNoAssertion,
+			SupplierType: "Organization", // Always use "Organisation" at the moment as it is difficult to distinguish between "Person" or "Organization".
 			Supplier:     pkg.Maintainer,
 		}
 	}
-
 	return spdx.Package{
 		PackageName:             pkg.Name,
 		PackageVersion:          utils.FormatVersion(pkg),
