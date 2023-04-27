@@ -9,9 +9,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/samber/lo"
-
 	"github.com/open-policy-agent/opa/rego"
+	"github.com/samber/lo"
 	"golang.org/x/exp/maps"
 	"golang.org/x/exp/slices"
 	"golang.org/x/xerrors"
@@ -20,6 +19,7 @@ import (
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/types"
+	"github.com/aquasecurity/trivy/pkg/vex"
 )
 
 const (
@@ -27,19 +27,43 @@ const (
 	DefaultIgnoreFile = ".trivyignore"
 )
 
-// Filter filters out the vulnerabilities
-func Filter(ctx context.Context, result *types.Result, severities []dbTypes.Severity, ignoreUnfixed, includeNonFailures bool,
-	ignoreFile, policyFile string, ignoreLicenses []string) error {
-	ignoredIDs := getIgnoredIDs(ignoreFile)
+type FilterOption struct {
+	Severities         []dbTypes.Severity
+	IgnoreUnfixed      bool
+	IncludeNonFailures bool
+	IgnoreFile         string
+	PolicyFile         string
+	IgnoreLicenses     []string
+	VEXPath            string
+}
 
-	filteredVulns := filterVulnerabilities(result.Vulnerabilities, severities, ignoreUnfixed, ignoredIDs)
-	misconfSummary, filteredMisconfs := filterMisconfigurations(result.Misconfigurations, severities, includeNonFailures, ignoredIDs)
-	result.Secrets = filterSecrets(result.Secrets, severities, ignoredIDs)
-	result.Licenses = filterLicenses(result.Licenses, severities, ignoreLicenses)
+// Filter filters out the report
+func Filter(ctx context.Context, report types.Report, opt FilterOption) error {
+	// Filter out vulnerabilities based on the given VEX document.
+	if err := filterByVEX(report, opt); err != nil {
+		return xerrors.Errorf("VEX error: %w", err)
+	}
 
-	if policyFile != "" {
+	for i := range report.Results {
+		if err := FilterResult(ctx, &report.Results[i], opt); err != nil {
+			return xerrors.Errorf("unable to filter vulnerabilities: %w", err)
+		}
+	}
+	return nil
+}
+
+// FilterResult filters out the result
+func FilterResult(ctx context.Context, result *types.Result, opt FilterOption) error {
+	ignoredIDs := getIgnoredIDs(opt.IgnoreFile)
+
+	filteredVulns := filterVulnerabilities(result.Vulnerabilities, opt.Severities, opt.IgnoreUnfixed, ignoredIDs, opt.VEXPath)
+	misconfSummary, filteredMisconfs := filterMisconfigurations(result.Misconfigurations, opt.Severities, opt.IncludeNonFailures, ignoredIDs)
+	result.Secrets = filterSecrets(result.Secrets, opt.Severities, ignoredIDs)
+	result.Licenses = filterLicenses(result.Licenses, opt.Severities, opt.IgnoreLicenses)
+
+	if opt.PolicyFile != "" {
 		var err error
-		filteredVulns, filteredMisconfs, err = applyPolicy(ctx, filteredVulns, filteredMisconfs, policyFile)
+		filteredVulns, filteredMisconfs, err = applyPolicy(ctx, filteredVulns, filteredMisconfs, opt.PolicyFile)
 		if err != nil {
 			return xerrors.Errorf("failed to apply the policy: %w", err)
 		}
@@ -53,9 +77,30 @@ func Filter(ctx context.Context, result *types.Result, severities []dbTypes.Seve
 	return nil
 }
 
-func filterVulnerabilities(vulns []types.DetectedVulnerability, severities []dbTypes.Severity,
-	ignoreUnfixed bool, ignoredIDs []string) []types.DetectedVulnerability {
+// filterByVEX determines whether a detected vulnerability should be filtered out based on the provided VEX document.
+// If the VEX document is not nil and the vulnerability is either not affected or fixed according to the VEX statement,
+// the vulnerability is filtered out.
+func filterByVEX(report types.Report, opt FilterOption) error {
+	vexDoc, err := vex.New(opt.VEXPath, report)
+	if err != nil {
+		return err
+	} else if vexDoc == nil {
+		return nil
+	}
+
+	for i, result := range report.Results {
+		if len(result.Vulnerabilities) == 0 {
+			continue
+		}
+		report.Results[i].Vulnerabilities = vexDoc.Filter(result.Vulnerabilities)
+	}
+	return nil
+}
+
+func filterVulnerabilities(vulns []types.DetectedVulnerability, severities []dbTypes.Severity, ignoreUnfixed bool,
+	ignoredIDs []string, vexPath string) []types.DetectedVulnerability {
 	uniqVulns := make(map[string]types.DetectedVulnerability)
+
 	for _, vuln := range vulns {
 		if vuln.Severity == "" {
 			vuln.Severity = dbTypes.SeverityUnknown.String()
@@ -136,6 +181,9 @@ func filterSecrets(secrets []ftypes.SecretFinding, severities []dbTypes.Severity
 }
 
 func filterLicenses(licenses []types.DetectedLicense, severities []dbTypes.Severity, ignoredLicenses []string) []types.DetectedLicense {
+	if len(licenses) == 0 {
+		return nil
+	}
 	return lo.Filter(licenses, func(l types.DetectedLicense, _ int) bool {
 		// Skip the license if it is included in ignored licenses.
 		if slices.Contains(ignoredLicenses, l.Name) {

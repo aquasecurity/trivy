@@ -271,16 +271,20 @@ func (r *runner) scanArtifact(ctx context.Context, opts flag.Options, initialize
 }
 
 func (r *runner) Filter(ctx context.Context, opts flag.Options, report types.Report) (types.Report, error) {
-	results := report.Results
-
 	// Filter results
-	for i := range results {
-		err := result.Filter(ctx, &results[i], opts.Severities, opts.IgnoreUnfixed, opts.IncludeNonFailures,
-			opts.IgnoreFile, opts.IgnorePolicy, opts.IgnoredLicenses)
-		if err != nil {
-			return types.Report{}, xerrors.Errorf("unable to filter vulnerabilities: %w", err)
-		}
+	err := result.Filter(ctx, report, result.FilterOption{
+		Severities:         opts.Severities,
+		IgnoreUnfixed:      opts.IgnoreUnfixed,
+		IncludeNonFailures: opts.IncludeNonFailures,
+		IgnoreFile:         opts.IgnoreFile,
+		PolicyFile:         opts.IgnorePolicy,
+		IgnoreLicenses:     opts.IgnoredLicenses,
+		VEXPath:            opts.VEXPath,
+	})
+	if err != nil {
+		return types.Report{}, xerrors.Errorf("filtering error: %w", err)
 	}
+
 	return report, nil
 }
 

@@ -52,7 +52,7 @@ func (s *Scanner) Detect(osVer string, _ *ftypes.Repository, pkgs []ftypes.Packa
 				VulnerabilityID:  adv.VulnerabilityID,
 				PkgName:          pkg.Name,
 				InstalledVersion: utils.FormatVersion(pkg),
-				Ref:              pkg.Ref,
+				PkgRef:           pkg.Ref,
 				Layer:            pkg.Layer,
 				DataSource:       adv.DataSource,
 			}

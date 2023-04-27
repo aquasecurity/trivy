@@ -120,7 +120,7 @@ func (e *Marshaler) MarshalVulnerabilities(report types.Report) (*cdx.BOM, error
 	vulnMap := map[string]cdx.Vulnerability{}
 	for _, result := range report.Results {
 		for _, vuln := range result.Vulnerabilities {
-			ref, err := externalRef(report.CycloneDX.SerialNumber, vuln.Ref)
+			ref, err := externalRef(report.CycloneDX.SerialNumber, vuln.PkgRef)
 			if err != nil {
 				return nil, err
 			}
