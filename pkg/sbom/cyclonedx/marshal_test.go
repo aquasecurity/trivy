@@ -69,6 +69,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 								SrcEpoch:        0,
 								Modularitylabel: "",
 								Licenses:        []string{"GPLv3+"},
+								Maintainer:      "CentOS",
 							},
 						},
 						Vulnerabilities: []types.DetectedVulnerability{
@@ -232,6 +233,9 @@ func TestMarshaler_Marshal(t *testing.T) {
 							cdx.LicenseChoice{Expression: "GPLv3+"},
 						},
 						PackageURL: "pkg:rpm/centos/binutils@2.30-93.el8?arch=aarch64&distro=centos-8.3.2011",
+						Supplier: &cdx.OrganizationalEntity{
+							Name: "CentOS",
+						},
 						Properties: &[]cdx.Property{
 							{
 								Name:  "aquasecurity:trivy:PkgID",
