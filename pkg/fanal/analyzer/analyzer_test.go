@@ -559,7 +559,6 @@ func TestAnalyzerGroup_PostAnalyze(t *testing.T) {
 		filePaths    []string
 		analyzerType analyzer.Type
 		want         *analyzer.AnalysisResult
-		wantErr      string
 	}{
 		{
 			name:         "jars with invalid jar",
@@ -607,11 +606,6 @@ func TestAnalyzerGroup_PostAnalyze(t *testing.T) {
 
 			got := new(analyzer.AnalysisResult)
 			a, err := analyzer.NewAnalyzerGroup(analyzer.AnalyzerOptions{})
-			if err != nil && tt.wantErr != "" {
-				require.NotNil(t, err)
-				assert.Contains(t, err.Error(), tt.wantErr)
-				return
-			}
 			require.NoError(t, err)
 
 			files := new(syncx.Map[analyzer.Type, *mapfs.FS])
@@ -634,13 +628,6 @@ func TestAnalyzerGroup_PostAnalyze(t *testing.T) {
 
 			ctx := context.Background()
 			err = a.PostAnalyze(ctx, files, got, analyzer.AnalysisOptions{})
-
-			if tt.wantErr != "" {
-				require.NotNil(t, err)
-				assert.Contains(t, err.Error(), tt.wantErr)
-				return
-			}
-
 			require.NoError(t, err)
 			assert.Equal(t, tt.want, got)
 		})
